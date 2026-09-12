@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { i18n } from '../../../i18n/config';
 import { getLogbookPrompt, getCurationPrompt } from '../../Home/lib/prompts.js';
 import { apiClient } from '../../Home/lib/apiClient.js';
+import { GEMINI_MODELS } from '../../../utils/geminiModels.js';
 import { convertToBase64 } from './useLogbookMedia';
 import { getCoordinatesFromAddress } from '../../Home/lib/geocoding.js';
 import { TRAVEL_SPOTS } from '../../Home/data/travelSpots.js';
@@ -66,7 +67,7 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
         "사용자의 메모와 사진을 분석하여 블로그 형식으로 변환하세요. 팩트를 왜곡하지 않는 세련된 에세이를 지향합니다.",
         prompt,
         base64Images,
-        "gemini-2.5-pro"
+        GEMINI_MODELS.WRITE
       );
 
       setContent(resultText);

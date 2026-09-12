@@ -1,10 +1,11 @@
 // src/pages/Home/lib/apiClient.js
 // 🚨 [Fix] Orientation 필터 제거 -> 웹 검색 결과와 동일한 풀(Pool) 확보
 // 🚨 [New] 멀티모달(Vision) 지원을 위해 images 매개변수 추가 및 parts 배열 동적 생성
-// 🚨 [Fix] 404 에러 해결 및 모델 티어 라우팅을 위해 엔드포인트를 gemini-2.5-flash로 전면 교체 (안정성 확보)
+// 모델 ID는 geminiModels.js SSOT · Edge gemini-proxy 경유
 
 import { supabase } from '../../../shared/api/supabase';
 import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFilter';
+import { GEMINI_MODELS, resolveGeminiModelId } from '../../../utils/geminiModels';
 import {
   classifyGeminiProxyFailure,
   GeminiProxyError,
@@ -12,7 +13,7 @@ import {
 
 export const apiClient = {
   // --- 1. 프록시 기반 Gemini 통신 (New) ---
-  fetchProxyGemini: async (apiKey, history, systemInstruction, userText, images = [], modelId = "gemini-2.5-flash") => {
+  fetchProxyGemini: async (apiKey, history, systemInstruction, userText, images = [], modelId = GEMINI_MODELS.QUALITY) => {
     try {
       // 1. parts 배열 생성 (기존과 동일)
       const parts = [{ text: `${systemInstruction}\n\n[이전 대화 내역]\n${JSON.stringify(history)}\n\n사용자 질문: ${userText}` }];
@@ -32,11 +33,7 @@ export const apiClient = {
         });
       }
 
-      // 제미나이 3.1 라우팅 지원 (modelId가 gemini-3.1-pro로 올 경우 gemini-3.1-pro-preview로 매핑)
-      let finalModelId = modelId;
-      if (modelId === "gemini-3.1-pro") {
-        finalModelId = "gemini-3.1-pro-preview";
-      }
+      const finalModelId = resolveGeminiModelId(modelId);
 
       // 2. Edge Function 프록시 호출
       console.log(`[API Proxy] Calling gemini-proxy with model: ${finalModelId}`);
@@ -60,7 +57,7 @@ export const apiClient = {
   },
 
   // --- 기존 클라이언트 직접 호출 (Fallback 용도로 유지) ---
-  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = [], modelId = "gemini-2.5-flash") => {
+  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = [], modelId = GEMINI_MODELS.QUALITY) => {
     // 🚨 보안 수정: 더 이상 클라이언트에서 직접 구글 API를 호출하지 않습니다.
     // 기존에 fetchGeminiResponse를 사용하던 모든 호출은 프록시를 통하도록 리다이렉트합니다.
     console.warn("[API Deprecated] fetchGeminiResponse is deprecated. Redirecting to fetchProxyGemini.");

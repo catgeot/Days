@@ -8,6 +8,22 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'gemini',
+    label: 'Gemini 2.5 종료 교체 · 무니 채팅',
+    branch: 'cursor/gemini-models-df4c',
+    destination:
+      'https://days-git-cursor-gemini-models-df4c-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'korea-tna-strip',
+    label: '축제·명승 본문 투어·티켓 카드 섹션',
+    branch: 'cursor/korea-tna-strip-ef65',
+    destination:
+      'https://days-git-cursor-korea-tna-strip-ef65-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
     slug: 'scenic-stay',
     label: '명승 본문 숙소 섹션',
     branch: 'cursor/scenic-stay-692c',

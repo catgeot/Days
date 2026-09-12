@@ -6,6 +6,7 @@ import {
 } from "../_shared/resolveCanonicalPlaceId.ts";
 import { isRegionalGatewayIata, REGIONAL_GATEWAY_IATAS_BY_SLUG } from "../_shared/regionalGatewayIatas.ts";
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
+import { GEMINI_QUALITY, GEMINI_WRITE } from "../_shared/geminiModels.ts";
 import toolkitAirportCoords from "../_shared/toolkitAirportCoords.json" with { type: "json" };
 
 const corsHeaders = {
@@ -302,10 +303,10 @@ serve(async (req) => {
       slugNorm || slug || null
     );
 
-    // 🆕 [Phase 8 Fix] Gemini 모델 폴백 로직 추가 (3.1 Pro → 2.5 Pro)
+    // Gemini 모델 폴백 (WRITE → QUALITY)
     const modelsToTry = [
-      'gemini-3.1-pro-preview',  // 최우선 시도
-      'gemini-2.5-pro'            // 폴백 모델
+      GEMINI_WRITE,
+      GEMINI_QUALITY,
     ];
 
     let response: Response | null = null;

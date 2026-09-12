@@ -19,6 +19,7 @@ import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
+import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
 import {
   mergeCanonicalTravelSpot,
@@ -1426,7 +1427,7 @@ export function useHomeHandlers({
               "당신은 감정 기반 여행지 매칭 전문가입니다. 실재 지명만 사용하고 오직 유효한 JSON만 출력해야 합니다.",
               aiPrompt,
               [],
-              "gemini-3.1-flash-lite"
+              GEMINI_MODELS.FAST
             );
 
             const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
