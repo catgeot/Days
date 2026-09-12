@@ -870,6 +870,21 @@ const GJ_CELADON_3 = 'https://tong.visitkorea.or.kr/cms2/website/82/1676782.jpg'
 const GJ_VILLAGE = 'https://tong.visitkorea.or.kr/cms/resource/36/4101936_image2_1.jpg';
 const GJ_VILLAGE_2 = 'https://tong.visitkorea.or.kr/cms/resource/35/4101935_image2_1.jpg';
 const GJ_VILLAGE_3 = 'https://tong.visitkorea.or.kr/cms/resource/37/4101937_image2_1.jpg';
+const GS_NAKJO = 'https://tong.visitkorea.or.kr/cms2/website/27/3587127.jpg';
+const GS_NAKJO_2 = 'https://tong.visitkorea.or.kr/cms2/website/26/3587126.jpg';
+const GS_NAKJO_3 = 'https://www.khs.go.kr/unisearch/images/scenic_site/2018060814463900.JPG';
+const GS_MYEONGSA = 'https://tong.visitkorea.or.kr/cms2/website/78/2812178.jpg';
+const GS_MYEONGSA_2 = 'https://tong.visitkorea.or.kr/cms2/website/04/2812204.jpg';
+const GS_MYEONGSA_3 = 'https://tong.visitkorea.or.kr/cms2/website/77/2812177.jpg';
+const GS_MANGJU = 'https://www.khs.go.kr/unisearch/images/scenic_site/2018060817221700.jpg';
+const GS_MANGJU_2 = 'https://tong.visitkorea.or.kr/cms2/website/77/2812177.jpg';
+const GS_MANGJU_3 = 'https://www.khs.go.kr/unisearch/images/scenic_site/2018060817244600.jpg';
+const GS_WOLYEONG = 'https://tong.visitkorea.or.kr/cms2/website/81/3345581.jpg';
+const GS_WOLYEONG_2 = 'https://tong.visitkorea.or.kr/cms2/website/15/3086015.jpg';
+const GS_WOLYEONG_3 = 'https://tong.visitkorea.or.kr/cms2/website/00/3043300.jpg';
+const GS_MUSAN = 'https://tong.visitkorea.or.kr/cms2/website/64/1961764.jpg';
+const GS_MUSAN_2 = 'https://tong.visitkorea.or.kr/cms2/website/32/3587532.jpg';
+const GS_MUSAN_3 = 'https://tong.visitkorea.or.kr/cms2/website/44/1674144.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1768,6 +1783,36 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 강진군 대구면 청자촌길 일원 (고려청자촌)',
     GJ_VILLAGE,
     [GJ_VILLAGE_2, GJ_VILLAGE_3],
+  ),
+  'local-scenic:gunsan-palgyeong:선유낙조': localScenicPhotoOverlay(
+    '선유8경 제1경 선유낙조는 선유도 망주봉과 해수욕장에서 바라보는 서해 석양입니다. 군산시 문화관광은 점점이 떠 있는 섬 사이 수평선으로 해가 질 때 하늘과 바다가 불바다를 이룬다고 적습니다. 국가유산청 명승 「군산 선유도 망주봉 일원」 안내에 따르면 하늘과 바다가 붉은 색조로 변하여 서해 낙조기관 중 으뜸입니다. 주소는 옥도면 선유도1길 106-4(망주봉 일원)입니다.',
+    '전북특별자치도 군산시 옥도면 선유도1길 106-4 (망주봉 일원)',
+    GS_NAKJO,
+    [GS_NAKJO_2, GS_NAKJO_3],
+  ),
+  'local-scenic:gunsan-palgyeong:명사십리': localScenicPhotoOverlay(
+    '선유8경 제2경 명사십리는 선유도해수욕장의 백사장입니다. 군산시 문화관광은 유리알처럼 고운 천연 모래가 10여 리에 펼쳐져 명사십리 해수욕장으로도 불린다고 적습니다. 한국관광공사에 따르면 100여 m를 들어가도 수심이 허리까지뿐이고 파도가 낮아 물놀이에 안전합니다. 주소는 옥도면 선유도리입니다.',
+    '전북특별자치도 군산시 옥도면 선유도리 (선유도해수욕장)',
+    GS_MYEONGSA,
+    [GS_MYEONGSA_2, GS_MYEONGSA_3],
+  ),
+  'local-scenic:gunsan-palgyeong:망주폭포': localScenicPhotoOverlay(
+    '선유8경 제3경 망주폭포는 해발 152m 망주봉 암벽입니다. 군산시 문화관광은 바위 봉우리 둘이 북쪽을 향해 마주 서 있고, 여름 큰비에 큰 망주봉에서 7~8개 물줄기가 폭포처럼 쏟아진다고 적습니다. 국가유산청은 솔섬에서 비가 오면 망주봉 정상 암벽을 타고 흐르는 폭포를 본다고 적습니다. 주소는 옥도면 선유도리(망주봉·솔섬)입니다.',
+    '전북특별자치도 군산시 옥도면 선유도리 (망주봉·솔섬)',
+    GS_MANGJU,
+    [GS_MANGJU_2, GS_MANGJU_3],
+  ),
+  'local-scenic:gunsan-palgyeong:월영단풍': localScenicPhotoOverlay(
+    '선유8경 제7경 월영단풍은 신시도 해발 198m 월영봉의 가을입니다. 군산시 문화관광은 가을 신시도 앞바다를 지날 때 월영봉 단풍이 한국 병풍 같고, 최치원이 절경에 반해 머물며 글을 읽었다고 적습니다. 월영봉 옆 대각산(187m) 전망대에서 고군산군도와 새만금방조제를 조망합니다. 사진은 같은 섬 대각산 한국관광공사 공식 사진으로 근사했습니다.',
+    '전북특별자치도 군산시 옥도면 신시도리 (월영봉·대각산)',
+    GS_WOLYEONG,
+    [GS_WOLYEONG_2, GS_WOLYEONG_3],
+  ),
+  'local-scenic:gunsan-palgyeong:무산십이봉': localScenicPhotoOverlay(
+    '선유8경 제8경 무산십이봉은 방축도·말도 등 12개 섬 봉우리입니다. 군산시 문화관광은 고군산의 방벽인 방축도와 말도 등 12봉이 투구를 쓴 병사처럼 도열하고, 선유봉에서 병풍 또는 무사로 보인다고 적습니다. 한국민족문화대백과사전은 방축도·명도·말도의 봉우리가 무사와 같다고 적습니다. 주소는 옥도면 방축도리·말도리 일원입니다.',
+    '전북특별자치도 군산시 옥도면 방축도리·말도리 일원',
+    GS_MUSAN,
+    [GS_MUSAN_2, GS_MUSAN_3],
   ),
 };
 
