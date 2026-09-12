@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 29,
-  sessionPhase: '군산 결손 오버레이',
+  sessionNo: 30,
+  sessionPhase: '금산 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gunsan',
+  previewPath: '/korea/theme/scenic?hub=geumsan',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-30-geumsan-overlays',
+    session: '팔경 활용 #30, 금산 결손 오버레이',
+    title: '금산10경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 금산10경 결손 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 금산산림문화타운·인삼약령시장·월영산 출렁다리·기러기공원·태조대왕 태실 사진을 연결했고, 세계농업유산은 같은 군 금산인삼관 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geumsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T13:20:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-29-gunsan-overlays',
     session: '팔경 활용 #29, 군산 결손 오버레이',

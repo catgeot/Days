@@ -1114,6 +1114,47 @@ assert.ok(gsWolyeong?.overview?.includes('월영봉'), '군산 월영단풍 over
 const gsMusan = resolveLocalScenicListSpotById('local-scenic:gunsan-palgyeong:무산십이봉');
 assert.ok(gsMusan?.overview?.includes('방축도'), '군산 무산십이봉 overlay overview');
 
+const geumsanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'geumsan');
+const geumsanTen = geumsanMerged.filter((s) => s.localScenicListId === 'geumsan-sipgyeong');
+assert.equal(geumsanTen.length, 10, '금산10경 10명');
+const geumsanDeficitNames = [
+  '산림문화 힐링명소',
+  '금산인삼 세계농업유산',
+  '인삼·약령시장',
+  '월영산 원골',
+  '태조태실 요광은행나무',
+];
+const geumsanDeficit = geumsanTen.filter((s) => geumsanDeficitNames.includes(s.attractionName));
+assert.equal(geumsanDeficit.length, 5, '금산10경 결손 5명');
+assert.ok(
+  geumsanDeficit.every((s) => s.overview && s.imageUrl),
+  '금산 결손 5명 overlay 사진·개요',
+);
+assert.ok(
+  geumsanDeficit.every((s) => !s.contentId),
+  '금산 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(geumsanDeficit.map((s) => s.imageUrl)).size,
+  5,
+  '금산 결손 5명 썸네일 서로 다름',
+);
+const geumForest = resolveLocalScenicListSpotById('local-scenic:geumsan-sipgyeong:산림문화힐링명소');
+assert.ok(geumForest?.overview?.includes('산림문화타운'), '금산 산림문화 힐링명소 overlay overview');
+const geumGiahs = resolveLocalScenicListSpotById(
+  'local-scenic:geumsan-sipgyeong:금산인삼세계농업유산',
+);
+assert.ok(geumGiahs?.overview?.includes('세계중요농업유산'), '금산 세계농업유산 overlay overview');
+const geumMarket = resolveLocalScenicListSpotById('local-scenic:geumsan-sipgyeong:인삼·약령시장');
+assert.ok(geumMarket?.overview?.includes('인삼의 거리'), '금산 인삼·약령시장 overlay overview');
+const geumWol = resolveLocalScenicListSpotById('local-scenic:geumsan-sipgyeong:월영산원골');
+assert.ok(geumWol?.overview?.includes('달을 맞이'), '금산 월영산 원골 overlay overview');
+const geumTaejo = resolveLocalScenicListSpotById(
+  'local-scenic:geumsan-sipgyeong:태조태실요광은행나무',
+);
+assert.ok(geumTaejo?.overview?.includes('태조대왕태실'), '금산 태조태실 overlay overview');
+assert.ok(geumTaejo?.overview?.includes('천연기념물'), '금산 요광은행나무 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
