@@ -22,18 +22,23 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use
 - **다음** 사람 Preview QA — 「한천」검색 그룹 한천팔경 · 행 한천 1경~8경
 
-## 팔경 활용 #19 다음 — 함안·사천 결손 오버레이
+## 팔경 활용 #19 — 함안·사천 결손 오버레이 (Cloud)
 
-- **#18** PR [#217](https://github.com/catgeot/Days/pull/217) merge ✅ `d24e0bd1`
-- **잔여**: 사진/개요 순수 누락 **209**/876. 큐 다음 허브 **함안9경 7** · 사천9경 6 · 그다음 이천9경 6
-- **다음** 함안·사천 결손 오버레이 (`LOCAL_SCENIC_MEMBER_OVERLAYS` · JSON contentId 금지)
+- **세션** `팔경 활용 #19, 함안·사천 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `13d69f11` · PR [#219](https://github.com/catgeot/Days/pull/219)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 함안9경 결손 7건·사천9경 결손 6건의 개요·주소·공식 사진 보강. 합강정·대평늪·비토섬은 같은 시군 수변·해안 공식 사진으로 근사.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=haman` · `?hub=sacheon`
+- **잔여**: 사진/개요 순수 누락 **196**/876. QA 후 다음 허브 **이천9경 6**
+
+## 팔경 활용 #20 다음 — 사람 Preview QA
 
 ```
-팔경 활용 #19, 함안·사천 결손 오버레이
+팔경 활용 #20, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 함안9경 사진·개요 없는 7건(말이산고분군·악양의 꽃길과 노을·무진정의 사계·연꽃테마파크의 아라홍련·장춘사의 산사풍경·합강정과 반구정의 해돋이·대평늪의 늪지식물)과 사천9경 6건(삼천포대교와 사천바다케이블카·남일대 코끼리바위·선진리성 벚꽃·봉명산 다솔사·비토섬 갯벌·용두공원과 청룡사 겹벚꽃)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haman · ?hub=sacheon
+작업: Preview /korea/theme/scenic?hub=haman · ?hub=sacheon 결손 행 썸네일·개요·행마다 다른 사진
 ```

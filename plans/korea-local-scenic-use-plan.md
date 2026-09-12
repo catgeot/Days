@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#18 merge ✅** `d24e0bd1` · **#19 함안·사천 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#19** tip `13d69f11` · PR [#219](https://github.com/catgeot/Days/pull/219) · **#20 사람 Preview QA** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -116,7 +116,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 16 | `팔경 활용 #16, 사람 Preview QA 피드백 반영` | A | **완료** · tip `64e018c8` · 한천 검색 8행 주입 · 양산 12경 내원사계곡·황산공원 오버레이 |
 | 17 | `팔경 활용 #17, 한천 공식명·지구본 검색` | A | **완료** · tip `61c72ba3` · PR [#217](https://github.com/catgeot/Days/pull/217) · 한천팔경 공식명 · 지구본 한천 검색 |
 | 18 | `팔경 활용 #18, 한천 행 부제 공식명` | A | **완료** · tip `900d77af` · PR [#217](https://github.com/catgeot/Days/pull/217) merge ✅ `d24e0bd1` |
-| 19 | `팔경 활용 #19, 함안·사천 결손 오버레이` | A | **열기 가능** · 함안9경 7 · 사천9경 6 · 그다음 이천9경 6 |
+| 19 | `팔경 활용 #19, 함안·사천 결손 오버레이` | A | **완료** · tip `13d69f11` · PR [#219](https://github.com/catgeot/Days/pull/219) · 함안 7·사천 6 |
+| 20 | `팔경 활용 #20, 사람 Preview QA` | A 사람 | **열기 가능** · `?hub=haman` · `?hub=sacheon` 결손 행 · 그다음 이천9경 6 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -302,16 +303,28 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 한천팔경 행 부제를 영동 N경에서 한천 N경으로
 ```
 
-### §1.2 A #19 함안·사천 결손 오버레이 (다음)
+### §1.2 A #19 함안·사천 결손 오버레이 (실행됨)
 
 ```
 팔경 활용 #19, 함안·사천 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · PR #219 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 함안9경 사진·개요 없는 7건(말이산고분군·악양의 꽃길과 노을·무진정의 사계·연꽃테마파크의 아라홍련·장춘사의 산사풍경·합강정과 반구정의 해돋이·대평늪의 늪지식물)과 사천9경 6건(삼천포대교와 사천바다케이블카·남일대 코끼리바위·선진리성 벚꽃·봉명산 다솔사·비토섬 갯벌·용두공원과 청룡사 겹벚꽃)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haman · ?hub=sacheon
+```
+
+### §1.2 A #20 사람 Preview QA (다음)
+
+```
+팔경 활용 #20, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: Preview /korea/theme/scenic?hub=haman · ?hub=sacheon 결손 행 썸네일·개요·행마다 다른 사진
 ```
 
 
