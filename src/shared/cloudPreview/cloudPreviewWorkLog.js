@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-12T10:20:00.000Z',
   },
   {
+    id: '2026-09-12-palgyeong-use-25-jinju-overlays',
+    session: '팔경 활용 #25, 진주 결손 오버레이',
+    title: '진주8경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 진주8경 결손 6건(남강 의암·뒤벼리·새벼리·망진산 봉수대·비봉산의 봄·월아산 해돋이)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 의기사와 의암·망진산 봉수대 사진을 연결했고, 뒤벼리는 남가람공원·선학산전망대, 새벼리는 석류공원, 비봉산은 의곡사, 월아산은 청곡사 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jinju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T09:55:00.000Z',
+  },
+  {
     id: '2026-09-12-palgyeong-use-24-changnyeong-alias',
     session: '팔경 활용 #24, 창령→창녕 별칭',
     title: '창령·창령군을 창녕 발음 별칭으로 연결',

@@ -777,6 +777,24 @@ const CNG_TOMB_3 = 'https://tong.visitkorea.or.kr/cms2/website/47/3567247.jpg';
 const CNG_MANNYEON = 'https://tong.visitkorea.or.kr/cms/resource/11/4046211_image2_1.jpg';
 const CNG_MANNYEON_2 = 'https://tong.visitkorea.or.kr/cms2/website/33/2761533.jpg';
 const CNG_MANNYEON_3 = 'https://tong.visitkorea.or.kr/cms2/website/00/2907700.jpg';
+const JINJU_UIAM = 'https://tong.visitkorea.or.kr/cms/resource/92/3349292_image2_1.jpg';
+const JINJU_UIAM_2 = 'https://tong.visitkorea.or.kr/cms/resource/93/3349293_image2_1.jpg';
+const JINJU_UIAM_3 = 'https://tong.visitkorea.or.kr/cms/resource/94/3349294_image2_1.jpg';
+const JINJU_DWIBYORI = 'https://tong.visitkorea.or.kr/cms/resource/41/2894541_image2_1.jpg';
+const JINJU_DWIBYORI_2 = 'https://tong.visitkorea.or.kr/cms/resource/37/2894537_image2_1.jpg';
+const JINJU_DWIBYORI_3 = 'https://tong.visitkorea.or.kr/cms/resource/56/3492756_image2_1.jpg';
+const JINJU_SAEBYEORI = 'https://tong.visitkorea.or.kr/cms/resource/65/3522165_image2_1.jpg';
+const JINJU_SAEBYEORI_2 = 'https://tong.visitkorea.or.kr/cms/resource/66/3522166_image2_1.jpg';
+const JINJU_SAEBYEORI_3 = 'https://tong.visitkorea.or.kr/cms/resource/67/3522167_image2_1.jpg';
+const JINJU_MANGJIN = 'https://tong.visitkorea.or.kr/cms2/website/36/1966336.jpg';
+const JINJU_MANGJIN_2 = 'https://tong.visitkorea.or.kr/cms2/website/40/1966340.jpg';
+const JINJU_MANGJIN_3 = 'https://tong.visitkorea.or.kr/cms2/website/43/1966343.jpg';
+const JINJU_BIBONG = 'https://tong.visitkorea.or.kr/cms/resource/55/3040855_image2_1.jpg';
+const JINJU_BIBONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/52/3040852_image2_1.jpg';
+const JINJU_BIBONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/56/3040856_image2_1.jpg';
+const JINJU_WOLA = 'https://tong.visitkorea.or.kr/cms/resource/22/3538822_image2_1.jpg';
+const JINJU_WOLA_2 = 'https://tong.visitkorea.or.kr/cms/resource/20/3538820_image2_1.jpg';
+const JINJU_WOLA_3 = 'https://tong.visitkorea.or.kr/cms/resource/21/3538821_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1537,6 +1555,42 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 창녕군 영산면 원다리길 42 (영산 만년교) · 영산면 일원 (3·1민속문화제)',
     CNG_MANNYEON,
     [CNG_MANNYEON_2, CNG_MANNYEON_3],
+  ),
+  'local-scenic:jinju-palgyeong:남강의암': localScenicPhotoOverlay(
+    '진주8경 제2경 남강 의암은 진주성 촉석루 암벽 아래 남강 물속의 바위입니다. 디지털진주문화대전에 따르면 임진왜란 전까지 위암이라 불렀고, 제2차 진주성전투에서 성이 함락되자 논개가 왜장을 유인해 껴안고 투신한 뒤 의암이 되었습니다. 윗면은 3.65m×3.3m이고, 서쪽면에 정대륭이 새긴 의암 글자가 있습니다. 진주시 문화관광은 진주성(남강로 626) 안에서 본다고 적습니다.',
+    '경상남도 진주시 남강로 626 (본성동, 진주성)',
+    JINJU_UIAM,
+    [JINJU_UIAM_2, JINJU_UIAM_3],
+  ),
+  'local-scenic:jinju-palgyeong:뒤벼리': localScenicPhotoOverlay(
+    '진주8경 제3경 뒤벼리는 상대동에서 옥봉동까지 남강 변 절벽입니다. 디지털진주문화대전은 벼랑을 뜻하는 벼리에 뒤를 붙여 뒤에 있는 벼랑이라 하며, 진주성 동쪽 기슭을 흐르던 남강이 오른쪽으로 휘돌아 병풍처럼 깎은 절경이라고 적습니다. 제3경은 남가람문화거리와 짝을 이룹니다. 진주시 주소는 남강로 일원입니다.',
+    '경상남도 진주시 남강로 일원 (상대동·옥봉동, 뒤벼리)',
+    JINJU_DWIBYORI,
+    [JINJU_DWIBYORI_2, JINJU_DWIBYORI_3],
+  ),
+  'local-scenic:jinju-palgyeong:새벼리': localScenicPhotoOverlay(
+    '진주8경 제4경 새벼리는 가좌동에서 시내로 들어오는 길목의 벼랑입니다. 디지털진주문화대전은 동쪽에 있는 벼랑이라는 뜻이며, 남해고속도로에서 진주로 들어오던 관문이라고 적습니다. 정상 석류공원에서 비봉산·뒤벼리·선학산과 남강이 한눈에 들어옵니다. 진주시 주소는 진주대로 685(가좌동)입니다.',
+    '경상남도 진주시 진주대로 685 (가좌동, 석류공원·새벼리)',
+    JINJU_SAEBYEORI,
+    [JINJU_SAEBYEORI_2, JINJU_SAEBYEORI_3],
+  ),
+  'local-scenic:jinju-palgyeong:망진산봉수대': localScenicPhotoOverlay(
+    '진주8경 제5경 망진산 봉수대는 망경동 망진산(망경산, 172.4m) 정상 아래입니다. 디지털진주문화대전에 따르면 조선 초기 망진봉수로 제2직봉의 간봉이었고, 1895년 폐지된 뒤 1995~1996년 시민 성금으로 복원했습니다. 진주시는 2025년 8월 말 5연조 봉수대와 방호벽을 완공했다고 적습니다. 주소는 봉수대길 116입니다.',
+    '경상남도 진주시 봉수대길 116 (망경동, 망진산 봉수대)',
+    JINJU_MANGJIN,
+    [JINJU_MANGJIN_2, JINJU_MANGJIN_3],
+  ),
+  'local-scenic:jinju-palgyeong:비봉산의봄': localScenicPhotoOverlay(
+    '진주8경 제6경 비봉산의 봄은 상봉동 진산 비봉산(138m)입니다. 디지털진주문화대전은 남쪽에 시가지·진주성·남강이 이어지고, 비봉공원과 동쪽 의곡사·연화사, 서쪽 비봉루·봉산사가 있다고 적습니다. 옛 진주12경의 비봉청람은 묵은 나무에 새순이 돋는 봄 풍경입니다. 진주시 주소는 상봉동·초장동 일원입니다.',
+    '경상남도 진주시 상봉동·초장동 일원 (비봉산)',
+    JINJU_BIBONG,
+    [JINJU_BIBONG_2, JINJU_BIBONG_3],
+  ),
+  'local-scenic:jinju-palgyeong:월아산해돋이': localScenicPhotoOverlay(
+    '진주8경 제7경 월아산 해돋이는 진성면·금산면·문산읍에 걸친 월아산(달음산, 482m)입니다. 디지털진주문화대전은 달이 떠오르는 모양의 산으로 1986년 도시자연공원 지정, 정상 장군대는 기우제터이자 임진왜란 김덕령 목책성 본영이라고 적습니다. 산행은 약 4.6km·1시간 30분~2시간입니다. 진주시 주소는 진성면 달음산로 313입니다.',
+    '경상남도 진주시 진성면 달음산로 313 (월아산)',
+    JINJU_WOLA,
+    [JINJU_WOLA_2, JINJU_WOLA_3],
   ),
 };
 
