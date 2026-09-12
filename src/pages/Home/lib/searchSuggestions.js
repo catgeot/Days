@@ -26,7 +26,7 @@ import {
   resolveSettlement,
 } from './mapboxSettlementPlaces';
 import {
-  resolveLocalScenicList,
+  resolveLocalScenicListFromSearchQuery,
   buildLocalScenicListHubCluster,
   listsForHub,
   localScenicMemberToSuggestion,
@@ -232,7 +232,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const out = [];
   const seen = new Set();
 
-  const exactListHit = resolveLocalScenicList(q);
+  const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
     : resolveCityAttractionHub(q);
@@ -346,7 +346,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
 
   const local = buildLocalSearchSuggestions(q, { spotLimit: opts.spotLimit ?? 5 });
   const includeMapbox = opts.includeMapbox !== false;
-  const exactListHit = resolveLocalScenicList(q);
+  const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
     : resolveCityAttractionHub(q);
@@ -416,11 +416,12 @@ export async function buildHubCandidatesForEnter(hub) {
  * 선택 카드·Enter 후보 앞에 팔경 멤버.
  * @param {object} hub
  * @param {object[]} candidates
+ * @param {object[]} [lists]
  */
-export function prependLocalScenicToHubCandidates(hub, candidates) {
+export function prependLocalScenicToHubCandidates(hub, candidates, lists) {
   const out = [];
   const seen = new Set();
-  pushLocalScenicMembersFirst(hub, out, seen);
+  pushLocalScenicMembersFirst(hub, out, seen, lists);
   for (const item of candidates || []) pushUnique(out, seen, item);
   return out;
 }
@@ -491,7 +492,7 @@ export async function buildCuratedEnterDisambiguation(query) {
   const q = String(query || '').trim();
   if (!q) return null;
 
-  const listHit = resolveLocalScenicList(q);
+  const listHit = resolveLocalScenicListFromSearchQuery(q);
   const hubHit = listHit?.hub || resolveCityAttractionHub(q);
   if (hubHit) {
     let candidates = await buildHubCandidatesForEnter(hubHit);
@@ -506,7 +507,11 @@ export async function buildCuratedEnterDisambiguation(query) {
         candidates = [spotToSuggestion(spot), ...candidates];
       }
     }
-    candidates = prependLocalScenicToHubCandidates(hubHit, candidates);
+    candidates = prependLocalScenicToHubCandidates(
+      hubHit,
+      candidates,
+      listHit ? [listHit.list] : undefined,
+    );
     const titleName = listHit
       ? localScenicListDisplayTitle(listHit.list, hubHit)
       : hubHit.name;

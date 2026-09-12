@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 16,
-  sessionPhase: '사람 Preview QA 피드백 반영',
+  sessionNo: 17,
+  sessionPhase: '한천 공식명·지구본 검색',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-17-hancheon-name-globe',
+    session: '팔경 활용 #17, 한천 공식명·지구본 검색',
+    title: '한천팔경 공식명 · 지구본 검색 누락 보강',
+    detail:
+      '영동은 한천팔경·양산팔경이 같이 있어 그룹명이 「영동 팔경」으로 겹쳤습니다. 같은 시군에 팔경이 둘이면 공식 title(한천팔경·양산팔경)을 씁니다. 지구본 홈에서 「한천」이 영동 도시만 나오던 것은 includes 매칭을 검색에 연결해 한천팔경 8행이 먼저 나오게 했습니다. Preview /qa/palgyeong-use — 명승 「한천」그룹명 · 지구본 검색 한천.',
+    at: '2026-09-12T00:30:00.000Z',
+  },
   {
     id: '2026-09-11-palgyeong-use-16-search-and-yangsan',
     session: '팔경 활용 #16, 사람 Preview QA 피드백 반영',

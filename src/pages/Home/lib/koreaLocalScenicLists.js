@@ -141,8 +141,15 @@ export function listsForHub(hubId) {
   return listsByHubId.get(id) || [];
 }
 
+function listsOfSameKindOnHub(list, hub) {
+  const hid = String(hub?.hubId || list?.hubId || '').trim();
+  if (!hid) return [];
+  return listsForHub(hid).filter((row) => row?.listKind === list?.listKind);
+}
+
 /**
  * 표시 제목 `{시군명} {종류}` — SSOT title(문경8경)은 유지.
+ * 같은 시군에 같은 종류가 둘이면(영동 한천팔경·양산팔경) 공식 title.
  * @param {object} list
  * @param {object} [hub]
  * @param {string} [locale]
@@ -150,6 +157,12 @@ export function listsForHub(hubId) {
 export function localScenicListDisplayTitle(list, hub, locale = 'ko') {
   const h = hub || resolveCityAttractionHub(list?.hubId);
   const isEn = String(locale || '').toLowerCase().startsWith('en');
+  if (listsOfSameKindOnHub(list, h).length > 1) {
+    const ssot = isEn
+      ? String(list?.title_en || list?.title || '').trim()
+      : String(list?.title || '').trim();
+    if (ssot) return ssot;
+  }
   const city = isEn
     ? String(h?.name_en || h?.name || list?.hubId || '').trim()
     : String(h?.name || list?.hubId || '').trim();
@@ -248,6 +261,20 @@ export function resolveLocalScenicList(query) {
   const key = normalizeKey(query);
   if (!key) return null;
   const list = listByKey.get(key);
+  if (!list) return null;
+  const hub = resolveCityAttractionHub(list.hubId);
+  return { list, hub };
+}
+
+/**
+ * 지구본·명승 검색 — title/alias exact, 아니면 includes(한천→한천팔경).
+ * 시군 단독(양산·영동)은 hub 가드라 exact가 아니면 null.
+ * @param {string} query
+ */
+export function resolveLocalScenicListFromSearchQuery(query) {
+  const exact = resolveLocalScenicList(query);
+  if (exact) return exact;
+  const list = matchLocalScenicListForScenicSearch(query);
   if (!list) return null;
   const hub = resolveCityAttractionHub(list.hubId);
   return { list, hub };

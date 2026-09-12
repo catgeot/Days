@@ -15,6 +15,7 @@ import {
 import {
   listKoreaLocalScenicLists,
   resolveLocalScenicList,
+  resolveLocalScenicListFromSearchQuery,
   matchLocalScenicListForScenicSearch,
   matchLocalScenicListsForQuery,
   buildLocalScenicListHubCluster,
@@ -84,8 +85,8 @@ assert.ok(
 
 // searchSuggestions 브리지 wiring
 assert.ok(
-  searchSrc.includes('resolveLocalScenicList'),
-  'searchSuggestions imports resolveLocalScenicList',
+  searchSrc.includes('resolveLocalScenicListFromSearchQuery'),
+  'searchSuggestions imports resolveLocalScenicListFromSearchQuery',
 );
 assert.ok(
   searchSrc.includes('buildLocalScenicListHubCluster'),
@@ -607,6 +608,31 @@ assert.equal(
   16,
   '영동 16행 썸네일 16장 모두 고유',
 );
+const yeongdongHub = resolveCityAttractionHub('yeongdong');
+const hancheonList = listKoreaLocalScenicLists().find(
+  (l) => l.listId === 'yeongdong-hancheon-palgyeong',
+);
+const yangsanPalgyeongList = listKoreaLocalScenicLists().find(
+  (l) => l.listId === 'yeongdong-yangsan-palgyeong',
+);
+assert.equal(
+  localScenicListDisplayTitle(hancheonList, yeongdongHub),
+  '한천팔경',
+  '영동 한천 그룹은 공식명 한천팔경 (영동 팔경 아님)',
+);
+assert.equal(
+  localScenicListDisplayTitle(yangsanPalgyeongList, yeongdongHub),
+  '양산팔경',
+  '영동 양산 그룹은 공식명 양산팔경',
+);
+assert.ok(
+  yeongdongHancheon.every((s) => s.groupTitle === '한천팔경'),
+  '한천팔경 행 groupTitle 한천팔경',
+);
+assert.ok(
+  yeongdongYangsan.every((s) => s.groupTitle === '양산팔경'),
+  '양산팔경 행 groupTitle 양산팔경',
+);
 
 const hancheonSearch = filterScenicSpotsByQuery(
   listKoreaScenicSpots(),
@@ -622,6 +648,33 @@ assert.equal(
   new Set(hancheonSearch.map((s) => s.imageUrl)).size,
   8,
   '한천 검색 8행 썸네일 서로 다름',
+);
+assert.ok(
+  hancheonSearch.every((s) => s.groupTitle === '한천팔경'),
+  '한천 검색 그룹명 한천팔경 (영동 팔경 아님)',
+);
+
+assert.equal(
+  resolveLocalScenicListFromSearchQuery('한천')?.list?.listId,
+  'yeongdong-hancheon-palgyeong',
+  '한천 includes → 한천팔경',
+);
+assert.equal(
+  resolveLocalScenicListFromSearchQuery('양산'),
+  null,
+  '양산 시군 단독은 영동 양산팔경으로 안 묶임',
+);
+const hancheonGlobeMembers = (hancheonList.members || [])
+  .map((member) => localScenicMemberToSuggestion(hancheonList, yeongdongHub, member))
+  .filter(Boolean);
+assert.equal(hancheonGlobeMembers.length, 8, '한천팔경 지구본 멤버 8행');
+assert.ok(
+  hancheonGlobeMembers.every((s) => s.groupTitle === '한천팔경'),
+  '지구본 한천 멤버 groupTitle 한천팔경',
+);
+assert.ok(
+  searchSrc.includes('resolveLocalScenicListFromSearchQuery(q)'),
+  '지구본 검색이 includes 리스트 매칭을 씀',
 );
 
 const ysNaewonsa = resolveLocalScenicListSpotById(
