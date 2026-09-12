@@ -45,9 +45,9 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `404878dc` · PR [#223](https://github.com/catgeot/Days/pull/223) · 숙소·투어 **기본 20개** · **크게 보기** 세로 펼침 |
+| **상태** | **#4 push** · tip `13bd6974` · PR [#223](https://github.com/catgeot/Days/pull/223) · 숙소·투어 **기본 20개** · **크게 = 가로로 카드만 키움** |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `404878dc` |
+| **tip** | `13bd6974` |
 | **PR** | [#223](https://github.com/catgeot/Days/pull/223) |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
@@ -58,12 +58,12 @@ AI 모델 #3, Preview OK면 PR 병합
 **다음 제시어**:
 
 ```
-한국 투어티켓 #4, Preview OK면 PR 병합
+한국 투어티켓 #5, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
 금지: UI 임의 리디자인 · feature에 plans/** 커밋
-작업: 숙소·투어 카드 기본 20개 · 「크게」세로 펼침이 맞으면 PR #223 병합 후 이 행 삭제. 추가 피드백이면 개수·펼침만 수정
+작업: 「크게」가 카드만 키우고 좌우 스크롤인지 · 아래로 본문 스킵이 되는지 확인. OK·추가 피드백 없으면 PR #223 병합 후 이 행 삭제
 ```
 
 ---
