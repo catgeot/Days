@@ -147,6 +147,27 @@ function listsOfSameKindOnHub(list, hub) {
   return listsForHub(hid).filter((row) => row?.listKind === list?.listKind);
 }
 
+function localScenicRankPlaceLabel(list, hub, locale = 'ko') {
+  const h = hub || resolveCityAttractionHub(list?.hubId);
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  if (listsOfSameKindOnHub(list, h).length > 1) {
+    if (isEn) {
+      const stem = String(list?.title_en || list?.title || '')
+        .replace(/\s+((Eight|Nine|Ten|Twelve)\s+)?(Scenic\s+)?(Views|Valleys)\s*$/i, '')
+        .trim();
+      if (stem) return stem;
+    } else {
+      const stem = String(list?.title || '')
+        .replace(/(팔경|구경|십이경|십경|구곡|명소|\d+경)\s*$/u, '')
+        .trim();
+      if (stem) return stem;
+    }
+  }
+  return isEn
+    ? String(h?.name_en || h?.name || list?.hubId || '').trim()
+    : String(h?.name || list?.hubId || '').trim();
+}
+
 /**
  * 표시 제목 `{시군명} {종류}` — SSOT title(문경8경)은 유지.
  * 같은 시군에 같은 종류가 둘이면(영동 한천팔경·양산팔경) 공식 title.
@@ -183,7 +204,8 @@ function memberIndexInList(list, member) {
 }
 
 /**
- * 행 부제 `{시군} {N}경` · 구곡은 `{N}곡`. 그룹 칩(groupTitle)은 바꾸지 않음.
+ * 행 부제 `{시군} {N}경` · 구곡은 `{N}곡`.
+ * 같은 시군에 팔경이 둘이면 공식명 어간(한천팔경→한천 1경).
  * @param {object} list
  * @param {object} [hub]
  * @param {object} member
@@ -193,11 +215,8 @@ export function localScenicMemberRankBlurb(list, hub, member, locale = 'ko') {
   const fallback = localScenicListDisplayTitle(list, hub, locale);
   const rank = memberIndexInList(list, member);
   if (!rank) return fallback;
-  const h = hub || resolveCityAttractionHub(list?.hubId);
   const isEn = String(locale || '').toLowerCase().startsWith('en');
-  const city = isEn
-    ? String(h?.name_en || h?.name || list?.hubId || '').trim()
-    : String(h?.name || list?.hubId || '').trim();
+  const city = localScenicRankPlaceLabel(list, hub, locale);
   if (isEn) {
     const unit = list?.listKind === 'gugok' ? 'Valley' : 'View';
     return city ? `${city} ${unit} ${rank}` : `${unit} ${rank}`;

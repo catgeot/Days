@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 17,
-  sessionPhase: '한천 공식명·지구본 검색',
+  sessionNo: 18,
+  sessionPhase: '한천 행 부제 공식명',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-18-hancheon-rank-blurb',
+    session: '팔경 활용 #18, 한천 행 부제 공식명',
+    title: '한천팔경 행 부제를 한천 N경으로',
+    detail:
+      '그룹명은 한천팔경인데 행 부제가 영동 1경으로 남아 어긋났습니다. 같은 시군에 팔경이 둘이면 공식명 어간으로 번호를 붙입니다(한천 1경·양산 1경). Preview /qa/palgyeong-use — 명승 「한천」검색 행 부제.',
+    at: '2026-09-12T03:20:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-17-hancheon-name-globe',
     session: '팔경 활용 #17, 한천 공식명·지구본 검색',

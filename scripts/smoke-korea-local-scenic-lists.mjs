@@ -633,6 +633,16 @@ assert.ok(
   yeongdongYangsan.every((s) => s.groupTitle === '양산팔경'),
   '양산팔경 행 groupTitle 양산팔경',
 );
+assert.equal(yeongdongHancheon[0]?.blurb, '한천 1경', '한천팔경 1행 부제 한천 1경');
+assert.equal(yeongdongYangsan[0]?.blurb, '양산 1경', '양산팔경 1행 부제 양산 1경');
+assert.ok(
+  yeongdongHancheon.every((s) => String(s.blurb || '').startsWith('한천 ')),
+  '한천팔경 행 부제 한천 N경',
+);
+assert.ok(
+  yeongdongYangsan.every((s) => String(s.blurb || '').startsWith('양산 ')),
+  '양산팔경 행 부제 양산 N경',
+);
 
 const hancheonSearch = filterScenicSpotsByQuery(
   listKoreaScenicSpots(),
@@ -652,6 +662,10 @@ assert.equal(
 assert.ok(
   hancheonSearch.every((s) => s.groupTitle === '한천팔경'),
   '한천 검색 그룹명 한천팔경 (영동 팔경 아님)',
+);
+assert.ok(
+  hancheonSearch.every((s) => String(s.blurb || '').startsWith('한천 ')),
+  '한천 검색 행 부제 한천 N경 (영동 N경 아님)',
 );
 
 assert.equal(
