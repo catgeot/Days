@@ -741,6 +741,24 @@ const SACHEON_BITO_3 = 'https://tong.visitkorea.or.kr/cms/resource/43/3583243_im
 const SACHEON_YONGDU = 'https://tong.visitkorea.or.kr/cms/resource/62/3515562_image2_1.jpg';
 const SACHEON_YONGDU_2 = 'https://tong.visitkorea.or.kr/cms/resource/63/3515563_image2_1.jpg';
 const SACHEON_YONGDU_3 = 'https://tong.visitkorea.or.kr/cms/resource/66/3515566_image2_1.jpg';
+const ICHEON_NOSEONG = 'https://tong.visitkorea.or.kr/cms/resource/36/3060436_image2_1.jpg';
+const ICHEON_NOSEONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/27/2617227_image2_1.jpg';
+const ICHEON_NOSEONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/37/3060437_image2_1.jpg';
+const ICHEON_DODEURAM = 'https://tong.visitkorea.or.kr/cms/resource/40/3060440_image2_1.jpg';
+const ICHEON_DODEURAM_2 = 'https://tong.visitkorea.or.kr/cms/resource/38/3060438_image2_1.jpg';
+const ICHEON_DODEURAM_3 = 'https://tong.visitkorea.or.kr/cms/resource/29/2617229_image2_1.JPG';
+const ICHEON_BANRYONG = 'https://tong.visitkorea.or.kr/cms/resource/74/3383574_image2_1.jpg';
+const ICHEON_BANRYONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/75/3383575_image2_1.jpg';
+const ICHEON_BANRYONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/76/3383576_image2_1.jpg';
+const ICHEON_SAGIMAK = 'https://tong.visitkorea.or.kr/cms/resource/46/3541546_image2_1.jpg';
+const ICHEON_SAGIMAK_2 = 'https://tong.visitkorea.or.kr/cms/resource/45/3541545_image2_1.jpg';
+const ICHEON_SAGIMAK_3 = 'https://tong.visitkorea.or.kr/cms/resource/47/3541547_image2_1.jpg';
+const ICHEON_SAMHYEONGJE = 'https://tong.visitkorea.or.kr/cms/resource/52/3058352_image2_1.jpg';
+const ICHEON_SAMHYEONGJE_2 = 'https://tong.visitkorea.or.kr/cms/resource/53/3058353_image2_1.jpg';
+const ICHEON_SAMHYEONGJE_3 = 'https://tong.visitkorea.or.kr/cms/resource/55/3058355_image2_1.jpg';
+const ICHEON_AERYEON = 'https://tong.visitkorea.or.kr/cms/resource/26/3541426_image2_1.jpg';
+const ICHEON_AERYEON_2 = 'https://tong.visitkorea.or.kr/cms/resource/27/3541427_image2_1.jpg';
+const ICHEON_AERYEON_3 = 'https://tong.visitkorea.or.kr/cms/resource/28/3541428_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1429,6 +1447,42 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 사천시 용강동 (용두공원) · 와룡산 자락 청룡사',
     SACHEON_YONGDU,
     [SACHEON_YONGDU_2, SACHEON_YONGDU_3],
+  ),
+  'local-scenic:icheon-gugyeong:노성산말머리바위': localScenicPhotoOverlay(
+    '이천9경 제8경 노성산 말머리바위는 설성면·안성 일죽면에 걸친 노성산 7부 능선의 바위입니다. 이천시 문화관광에 따르면 노성·마국·설성 세 산 장수가 말을 나눠 가진 전설에서 노성산 장수가 머리를 차지했고, 말 머리 형상의 바위와 병풍바위·굴바위가 있습니다. 산행은 약 2시간이며 산 아래 노성산시민공원이 있습니다.',
+    '경기도 이천시 설성면 진상미로 238-7 (노성산)',
+    ICHEON_NOSEONG,
+    [ICHEON_NOSEONG_2, ICHEON_NOSEONG_3],
+  ),
+  'local-scenic:icheon-gugyeong:도드람산삼봉': localScenicPhotoOverlay(
+    '이천9경 제1경 도드람산 삼봉은 마장면 일명 저명산(猪鳴山)입니다. 이천시 문화관광은 효자가 석이를 따다 산돼지 울음으로 밧줄이 끊기기 전에 올라왔다는 전설에서 돗울음산이 도드람산이 되었다고 적습니다. 해발 349m 주능선이 바위로 이루어졌고, 정상 부근 세 봉우리가 이천의 대표 절경입니다.',
+    '경기도 이천시 마장면 장암리 산144 일원',
+    ICHEON_DODEURAM,
+    [ICHEON_DODEURAM_2, ICHEON_DODEURAM_3],
+  ),
+  'local-scenic:icheon-gugyeong:반룡송': localScenicPhotoOverlay(
+    '이천9경 제6경 반룡송은 백사면 도립리의 소나무로, 이천시는 1996년 천연기념물 제381호에 지정되었다고 적습니다. 하늘에 오르기 전 땅에 서린 용이라는 뜻이며, 지상 2m에서 가지가 사방으로 갈라져 용틀임합니다. 신라 말 도선이 심은 만년송으로 전하고, 키에 비해 수형이 넓어 생물학적 자료 가치도 높습니다.',
+    '경기도 이천시 백사면 원적로 910 (도립리 반룡송)',
+    ICHEON_BANRYONG,
+    [ICHEON_BANRYONG_2, ICHEON_BANRYONG_3],
+  ),
+  'local-scenic:icheon-gugyeong:사기막골도예촌': localScenicPhotoOverlay(
+    '이천9경 제9경 사기막골도예촌은 사음동·신둔면 일대 도자 마을입니다. 한국관광공사에 따르면 사기막골은 예부터 사기를 굽던 골짜기라는 뜻이며, 입구 도자 조형물에서 공방·상점 수십 곳이 이어집니다. 이천시는 경충대로 2995 일원을 구경으로 두었고, 끊겼던 전통 도자 기법을 재현하는 공방이 모인 이천 도예의 얼굴입니다.',
+    '경기도 이천시 경충대로2993번길 56 (사음동, 사기막골도예촌)',
+    ICHEON_SAGIMAK,
+    [ICHEON_SAGIMAK_2, ICHEON_SAGIMAK_3],
+  ),
+  'local-scenic:icheon-gugyeong:설봉산삼형제바위': localScenicPhotoOverlay(
+    '이천9경 제3경 설봉산 삼형제 바위는 관고동 설봉산 등산로 입구에서 약 15분 거리의 세 바위입니다. 이천시 문화관광은 나란히 선 커다란 세 바위로, 효심 깊은 삼형제가 호랑이에게 쫓기는 어머니를 구하려 절벽에서 뛰어내려 바위로 변했다는 전설을 전합니다. 이천 시가지를 품은 진산 중턱의 대표 기암입니다.',
+    '경기도 이천시 관고동 산66-1 일원 (설봉산)',
+    ICHEON_SAMHYEONGJE,
+    [ICHEON_SAMHYEONGJE_2, ICHEON_SAMHYEONGJE_3],
+  ),
+  'local-scenic:icheon-gugyeong:애련정': localScenicPhotoOverlay(
+    '이천9경 제7경 애련정은 안흥동 안흥지 위의 정자입니다. 이천시 문화관광에 따르면 부사 이세보가 중건하고 신숙주에게 애련정이라는 이름을 얻었으며, 1998년 이천시가 복원했습니다. 조선왕조실록에는 중종의 양로연과 숙종·영조·정조의 방문이 남아 있고, 연못과 단청 정자가 시민의 휴식 공간이 됩니다.',
+    '경기도 이천시 안흥동 404 (안흥지 애련정)',
+    ICHEON_AERYEON,
+    [ICHEON_AERYEON_2, ICHEON_AERYEON_3],
   ),
 };
 

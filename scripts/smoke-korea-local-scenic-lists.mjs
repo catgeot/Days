@@ -795,6 +795,47 @@ const sacheonNamil = resolveLocalScenicListSpotById(
 );
 assert.ok(sacheonNamil?.overview?.includes('코끼리'), '사천 남일대 overlay overview');
 
+const icheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'icheon');
+const icheonNine = icheonMerged.filter((s) => s.localScenicListId === 'icheon-gugyeong');
+assert.equal(icheonNine.length, 9, '이천9경 9명');
+assert.equal(icheonNine[0]?.groupTitle, '이천 구경');
+assert.equal(icheonNine[0]?.blurb, '이천 1경');
+const icheonDeficitNames = [
+  '노성산 말머리바위',
+  '도드람산 삼봉',
+  '반룡송',
+  '사기막골도예촌',
+  '설봉산 삼형제 바위',
+  '애련정',
+];
+const icheonDeficit = icheonNine.filter((s) => icheonDeficitNames.includes(s.attractionName));
+assert.equal(icheonDeficit.length, 6, '이천9경 결손 6명');
+assert.ok(
+  icheonDeficit.every((s) => s.overview && s.imageUrl),
+  '이천 결손 6명 overlay 사진·개요',
+);
+assert.ok(
+  icheonDeficit.every((s) => !s.contentId),
+  '이천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(icheonDeficit.map((s) => s.imageUrl)).size,
+  6,
+  '이천 결손 6명 썸네일 서로 다름',
+);
+const icheonHorse = resolveLocalScenicListSpotById(
+  'local-scenic:icheon-gugyeong:노성산말머리바위',
+);
+assert.ok(icheonHorse?.overview?.includes('말머리'), '이천 노성산 overlay overview');
+const icheonPine = resolveLocalScenicListSpotById('local-scenic:icheon-gugyeong:반룡송');
+assert.ok(icheonPine?.overview?.includes('천연기념물'), '이천 반룡송 overlay overview');
+const icheonPottery = resolveLocalScenicListSpotById(
+  'local-scenic:icheon-gugyeong:사기막골도예촌',
+);
+assert.ok(icheonPottery?.overview?.includes('도예'), '이천 사기막골 overlay overview');
+const icheonPavilion = resolveLocalScenicListSpotById('local-scenic:icheon-gugyeong:애련정');
+assert.ok(icheonPavilion?.overview?.includes('애련정'), '이천 애련정 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
