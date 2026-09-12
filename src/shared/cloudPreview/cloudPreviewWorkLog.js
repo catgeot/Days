@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 18,
-  sessionPhase: '한천 행 부제 공식명',
+  sessionNo: 19,
+  sessionPhase: '함안·사천 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-19-haman-sacheon-overlays',
+    session: '팔경 활용 #19, 함안·사천 결손 오버레이',
+    title: '함안9경 7건·사천9경 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 함안9경 결손 7건(말이산고분군·악양의 꽃길과 노을·무진정의 사계·연꽃테마파크의 아라홍련·장춘사의 산사풍경·합강정과 반구정의 해돋이·대평늪의 늪지식물)과 사천9경 결손 6건(삼천포대교와 사천바다케이블카·남일대 코끼리바위·선진리성 벚꽃·봉명산 다솔사·비토섬 갯벌·용두공원과 청룡사 겹벚꽃)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 말이산·악양둑방·무진정·아라홍련·장춘사·사천바다케이블카·남일대·선진리성·다솔사 사진을 연결했고, 합강정·대평늪·비토섬은 같은 시군 수변·해안 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=haman · ?hub=sacheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T03:50:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-18-hancheon-rank-blurb',
     session: '팔경 활용 #18, 한천 행 부제 공식명',

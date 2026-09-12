@@ -702,6 +702,45 @@ const YD_GALGI = 'https://tong.visitkorea.or.kr/cms/resource/51/3341351_image2_1
 const YD_GAHAK = 'https://tong.visitkorea.or.kr/cms/resource/62/3572762_image2_1.jpg';
 const YD_CHEONTAE = 'https://tong.visitkorea.or.kr/cms/resource/36/3059936_image2_1.JPG';
 const YD_MULHAN = 'https://tong.visitkorea.or.kr/cms/resource/27/3082527_image2_1.jpg';
+const HAMAN_MARI = 'https://tong.visitkorea.or.kr/cms/resource/21/4002121_image2_1.jpg';
+const HAMAN_MARI_2 = 'https://tong.visitkorea.or.kr/cms/resource/16/4002116_image2_1.jpg';
+const HAMAN_MARI_3 = 'https://tong.visitkorea.or.kr/cms2/website/81/3034481.jpg';
+const HAMAN_AGYANG_POPPY = 'https://tong.visitkorea.or.kr/cms2/website/23/2761523.jpg';
+const HAMAN_AGYANG_SUNSET = 'https://tong.visitkorea.or.kr/cms2/website/74/2761574.jpg';
+const HAMAN_AGYANG_MAY = 'https://tong.visitkorea.or.kr/cms2/website/31/2761531.jpg';
+const HAMAN_MUJIN = 'https://tong.visitkorea.or.kr/cms2/website/51/3034451.jpg';
+const HAMAN_MUJIN_2 = 'https://tong.visitkorea.or.kr/cms2/website/52/3034452.jpg';
+const HAMAN_MUJIN_NAKWA = 'https://tong.visitkorea.or.kr/cms2/website/98/3567298.JPG';
+const HAMAN_LOTUS = 'https://tong.visitkorea.or.kr/cms/resource/15/2755215_image2_1.JPG';
+const HAMAN_LOTUS_2 = 'https://tong.visitkorea.or.kr/cms/resource/21/2755221_image2_1.JPG';
+const HAMAN_LOTUS_3 = 'https://tong.visitkorea.or.kr/cms/resource/17/2755217_image2_1.JPG';
+const HAMAN_JANGCHUN = 'https://tong.visitkorea.or.kr/cms/resource/59/3077459_image2_1.jpg';
+const HAMAN_JANGCHUN_2 = 'https://tong.visitkorea.or.kr/cms/resource/60/3077460_image2_1.jpg';
+const HAMAN_JANGCHUN_3 = 'https://tong.visitkorea.or.kr/cms/resource/63/3077463_image2_1.jpg';
+const HAMAN_DAESAN_WALK = 'https://tong.visitkorea.or.kr/cms2/website/96/2761696.jpg';
+const HAMAN_AGYANG_ECO = 'https://tong.visitkorea.or.kr/cms/resource/16/3538216_image2_1.jpg';
+const HAMAN_AGYANG_ECO_2 = 'https://tong.visitkorea.or.kr/cms/resource/10/3538210_image2_1.jpg';
+const HAMAN_AGYANG_ECO_3 = 'https://tong.visitkorea.or.kr/cms/resource/12/3538212_image2_1.jpg';
+const HAMAN_AGYANG_ECO_4 = 'https://tong.visitkorea.or.kr/cms/resource/11/3538211_image2_1.jpg';
+const HAMAN_AGYANG_ECO_5 = 'https://tong.visitkorea.or.kr/cms/resource/14/3538214_image2_1.jpg';
+const SACHEON_CABLE = 'https://tong.visitkorea.or.kr/cms2/website/65/2704865.jpg';
+const SACHEON_CABLE_2 = 'https://tong.visitkorea.or.kr/cms2/website/68/2704868.jpg';
+const SACHEON_BRIDGE = 'https://tong.visitkorea.or.kr/cms2/website/24/2705324.jpg';
+const SACHEON_NAMIL = 'https://tong.visitkorea.or.kr/cms/resource/62/3374262_image2_1.JPG';
+const SACHEON_NAMIL_2 = 'https://tong.visitkorea.or.kr/cms/resource/63/3374263_image2_1.JPG';
+const SACHEON_NAMIL_3 = 'https://tong.visitkorea.or.kr/cms/resource/94/3374294_image2_1.JPG';
+const SACHEON_SEONJIN = 'https://tong.visitkorea.or.kr/cms/resource/24/3564424_image2_1.jpg';
+const SACHEON_SEONJIN_2 = 'https://tong.visitkorea.or.kr/cms/resource/25/3564425_image2_1.jpg';
+const SACHEON_SEONJIN_3 = 'https://tong.visitkorea.or.kr/cms/resource/12/3515512_image2_1.jpg';
+const SACHEON_DASOL = 'https://tong.visitkorea.or.kr/cms/resource/33/3510333_image2_1.jpg';
+const SACHEON_DASOL_2 = 'https://tong.visitkorea.or.kr/cms/resource/34/3510334_image2_1.jpg';
+const SACHEON_DASOL_3 = 'https://tong.visitkorea.or.kr/cms/resource/36/3510336_image2_1.jpg';
+const SACHEON_BITO = 'https://tong.visitkorea.or.kr/cms/resource/19/3537819_image2_1.jpg';
+const SACHEON_BITO_2 = 'https://tong.visitkorea.or.kr/cms/resource/42/3583242_image2_1.jpg';
+const SACHEON_BITO_3 = 'https://tong.visitkorea.or.kr/cms/resource/43/3583243_image2_1.jpg';
+const SACHEON_YONGDU = 'https://tong.visitkorea.or.kr/cms/resource/62/3515562_image2_1.jpg';
+const SACHEON_YONGDU_2 = 'https://tong.visitkorea.or.kr/cms/resource/63/3515563_image2_1.jpg';
+const SACHEON_YONGDU_3 = 'https://tong.visitkorea.or.kr/cms/resource/66/3515566_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1313,6 +1352,84 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
       'https://tong.visitkorea.or.kr/cms/resource/82/2731482_image2_1.jpg',
     ],
   },
+  'local-scenic:haman-gugyeong:말이산고분군': localScenicPhotoOverlay(
+    '함안9경 제1경 말이산고분군은 아라가야 왕과 귀족의 묘역입니다. 디지털함안문화대전에 따르면 가야읍 말이산 능선에 100여 기가 이어지고, 사적으로 지정된 면적은 약 52만㎡입니다. 도항리·말산리 고분군을 2011년 통합했고, 2023년 유네스코 세계유산 가야고분군에 포함되었습니다. 함안박물관과 이어진 고분 산책이 대표 경관입니다.',
+    '경상남도 함안군 가야읍 도항리 484 (말이산고분군)',
+    HAMAN_MARI,
+    [HAMAN_MARI_2, HAMAN_MARI_3],
+  ),
+  'local-scenic:haman-gugyeong:악양의꽃길과노을': localScenicPhotoOverlay(
+    '함안9경 제2경 악양의 꽃길과 노을은 법수면 남강 변 악양둑방입니다. 함안군은 2009년 둑방길을 조성했고, 봄에는 양귀비·안개꽃, 가을에는 코스모스·메밀이 핍니다. 한국관광공사는 둑방 너머 악양루에서 바라보는 남강 노을이 깊다고 적습니다. 왕복 약 6.5km 둑방 산책과 꽃밭 위 경비행 풍경이 짝을 이룹니다.',
+    '경상남도 함안군 법수면 윤외리 73-4 (악양둑방)',
+    HAMAN_AGYANG_POPPY,
+    [HAMAN_AGYANG_SUNSET, HAMAN_AGYANG_MAY],
+  ),
+  'local-scenic:haman-gugyeong:무진정의사계': localScenicPhotoOverlay(
+    '함안9경 제4경 무진정의 사계는 함안면 괴산리 충노담 언덕 위 정자입니다. 디지털함안문화대전은 조삼이 후학을 위해 짓고 호를 따 이름 붙였으며, 경상남도 유형문화유산이라고 적습니다. 왕버들 연못과 정자가 사철 바뀌고, 매년 함안낙화놀이가 연등과 숯가루 불꽃을 물 위에 뿌립니다. 말이산고분군과 가까운 사진 명소입니다.',
+    '경상남도 함안군 함안면 괴산4길 25 (괴산리)',
+    HAMAN_MUJIN,
+    [HAMAN_MUJIN_2, HAMAN_MUJIN_NAKWA],
+  ),
+  'local-scenic:haman-gugyeong:연꽃테마파크의아라홍련': localScenicPhotoOverlay(
+    '함안9경 제5경 연꽃테마파크의 아라홍련은 가야읍 옛 늪지를 활용한 공원입니다. 한국관광공사에 따르면 2013년 개장했고, 2009년 성산산성에서 나온 고려 시대 연씨를 함안박물관이 피워 아라홍련이라 이름 붙였습니다. 홍련·백련·수련·가시연과 함안에서만 보는 아라홍련이 7~8월에 핍니다. 징검다리와 정자에서 가까이 볼 수 있습니다.',
+    '경상남도 함안군 가야읍 왕궁1길 38-20',
+    HAMAN_LOTUS,
+    [HAMAN_LOTUS_2, HAMAN_LOTUS_3],
+  ),
+  'local-scenic:haman-gugyeong:장춘사의산사풍경': localScenicPhotoOverlay(
+    '함안9경 제7경 장춘사의 산사풍경은 칠북면 무릉산 자락 고찰입니다. 디지털함안문화대전은 832년(흥덕왕 7) 무염국사가 초창했다고 전하며, 대웅전·약사전의 석조 여래와 오층석탑이 경상남도 유형문화유산입니다. 계곡을 따라 오르는 산사와 약수가 고요하고, 신증동국여지승람에도 칠원현 대표 사찰로 적혀 있습니다.',
+    '경상남도 함안군 칠북면 북원로 110-1 (영동리)',
+    HAMAN_JANGCHUN,
+    [HAMAN_JANGCHUN_2, HAMAN_JANGCHUN_3],
+  ),
+  'local-scenic:haman-gugyeong:합강정과반구정의해돋이': localScenicPhotoOverlay(
+    '함안9경 제8경 합강정과 반구정의 해돋이는 대산면 용화산 기슭 낙동강 변입니다. 디지털함안문화대전에 따르면 합강정은 1633년 조임도가 수학하던 정자로, 남강과 낙동강이 합류한다 하여 이름 붙었습니다. 반구정은 정유재란 뒤 조방이 말바위 위에 세웠고 1858년 지금 자리로 옮겼습니다. 강에서 떠오르는 해와 남지철교·들판 조망이 짝을 이룹니다.',
+    '경상남도 함안군 대산면 구암로 469 (장암리, 합강정) · 구암4길 116-2 (반구정)',
+    HAMAN_DAESAN_WALK,
+    [HAMAN_AGYANG_ECO_2, HAMAN_AGYANG_ECO_3],
+  ),
+  'local-scenic:haman-gugyeong:대평늪의늪지식물': localScenicPhotoOverlay(
+    '함안9경 제9경 대평늪의 늪지식물은 법수면 대송리 남강 배후습지입니다. 디지털함안문화대전은 함안 대송리 늪지식물을 우리나라에서 늪지 식물대를 천연기념물로 지정한 곳으로 적으며, 지정 면적 약 3만 3,911㎡·수심 1.5~2m에 가시연꽃·자라풀 등 21종이 산다고 합니다. 광주 안씨가 풍수에 따라 늪을 지켜 오늘에 이릅니다.',
+    '경상남도 함안군 법수면 대송리 883-1 (함안 대송리 늪지식물)',
+    HAMAN_AGYANG_ECO,
+    [HAMAN_AGYANG_ECO_4, HAMAN_AGYANG_ECO_5],
+  ),
+  'local-scenic:sacheon-gugyeong:삼천포대교와사천바다케이블카': localScenicPhotoOverlay(
+    '사천9경 제1경 삼천포대교와 사천바다케이블카는 대방동과 남해 창선을 잇는 연륙교와 해상 케이블카입니다. 디지털사천문화대전은 창선·삼천포대교가 모개섬·초양도·늑도를 잇는 최초 연륙교이며 낮의 한려해상과 밤 야경으로 「한국의 아름다운 길 100선」에 올랐다고 적습니다. 사천바다케이블카는 각산·바다·초양도를 잇는 국내 최초 코스로 왕복 약 25분입니다.',
+    '경상남도 사천시 사천대로 18 (대방동, 사천바다케이블카)',
+    SACHEON_CABLE,
+    [SACHEON_BRIDGE, SACHEON_CABLE_2],
+  ),
+  'local-scenic:sacheon-gugyeong:남일대코끼리바위': localScenicPhotoOverlay(
+    '사천9경 제3경 남일대 코끼리바위는 남일대해수욕장 동쪽 끝의 기암입니다. 디지털사천문화대전은 코끼리가 코를 박고 바닷물을 마시는 형상이며, 코와 몸 사이 천연 동굴로 파도가 넘실거린다고 적습니다. 신라 말 최치원이 남해 으뜸 절경이라 하여 남일대(南一臺)라 이름 붙였다는 이야기가 전합니다. 은빛 백사장과 병풍 절벽이 한 폭입니다.',
+    '경상남도 사천시 모례2길 11-19 (향촌동, 남일대해수욕장)',
+    SACHEON_NAMIL,
+    [SACHEON_NAMIL_2, SACHEON_NAMIL_3],
+  ),
+  'local-scenic:sacheon-gugyeong:선진리성벚꽃': localScenicPhotoOverlay(
+    '사천9경 제4경 선진리성 벚꽃은 용현면 사천선진리성입니다. 디지털사천문화대전은 고려 12조창 통양창을 지키려 쌓았으나 임진왜란 때 왜군이 왜성으로 고쳤다고 적습니다. 토성과 문지·장대 흔적이 남아 있고, 1,000여 그루 벚나무가 봄철 사천의 대표 볼거리입니다. 성벽을 따라 이충무공 사천해전 승첩비와 전적기념비가 이어집니다.',
+    '경상남도 사천시 용현면 선진리 770 일원 (사천선진리성)',
+    SACHEON_SEONJIN,
+    [SACHEON_SEONJIN_2, SACHEON_SEONJIN_3],
+  ),
+  'local-scenic:sacheon-gugyeong:봉명산다솔사': localScenicPhotoOverlay(
+    '사천9경 제6경 봉명산 다솔사는 곤명면 1,500여 년 고찰입니다. 디지털사천문화대전은 임진왜란 승병의 자리이자 만해 한용운이 「독립선언서」 초안을 쓴 곳, 김동리가 소설 『등신불』의 모티브를 얻은 곳이라고 적습니다. 영조 때 대양루와 극락전·응진전이 남아 봉명산 솔숲과 어우러집니다. 역사와 산사 경치가 같이 남는 사천의 고찰입니다.',
+    '경상남도 사천시 곤명면 다솔사길 417',
+    SACHEON_DASOL,
+    [SACHEON_DASOL_2, SACHEON_DASOL_3],
+  ),
+  'local-scenic:sacheon-gugyeong:비토섬갯벌': localScenicPhotoOverlay(
+    '사천9경 제8경 비토섬 갯벌은 서포면 비토리의 연륙 섬 갯벌입니다. 디지털사천문화대전은 『별주부전』 전설이 전하는 섬이며, 나타났다 사라지는 갯벌이 천연자원의 보고라고 적습니다. 하봉마을과 월등도는 하루 두 차례 바닷길이 열리고, 모래·자갈·진흙·바위가 섞인 갯벌에서 생태 체험을 할 수 있습니다. 다리로 육지와 이어집니다.',
+    '경상남도 사천시 서포면 비토리 (비토섬 갯벌)',
+    SACHEON_BITO,
+    [SACHEON_BITO_2, SACHEON_BITO_3],
+  ),
+  'local-scenic:sacheon-gugyeong:용두공원과청룡사겹벚꽃': localScenicPhotoOverlay(
+    '사천9경 제9경 용두공원과 청룡사 겹벚꽃은 와룡산 자락의 공원과 사찰입니다. 디지털사천문화대전은 2023년 사천8경에 더해진 구경이며, 4월 청룡사 진입로에 겹벚꽃이 터널을 이룬다고 적습니다. 용두공원은 2009년 삼천포천·와룡저수지 아래 조성되어 편백숲·바닥분수·풍차·데크가 있습니다. 차로 약 10분 거리의 벚꽃과 친수 공원이 한 경입니다.',
+    '경상남도 사천시 용강동 (용두공원) · 와룡산 자락 청룡사',
+    SACHEON_YONGDU,
+    [SACHEON_YONGDU_2, SACHEON_YONGDU_3],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
