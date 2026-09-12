@@ -48,6 +48,22 @@ const KIND_LABEL_EN = {
   other: 'Views',
 };
 
+/** 강진12경 → 강진 12경. listKind other 인데 공식명이 N경인 경우. */
+function spacedKoNumberedGyeongTitle(title) {
+  const t = String(title || '').trim();
+  if (!/(\d+)경\s*$/u.test(t)) return '';
+  return t.replace(/(\d+)경\s*$/u, ' $1경').replace(/\s+/g, ' ').trim();
+}
+
+function localScenicOtherNumberedDisplayTitle(list, locale = 'ko') {
+  if (list?.listKind !== 'other') return '';
+  const spaced = spacedKoNumberedGyeongTitle(list?.title);
+  if (!spaced) return '';
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  if (isEn) return String(list?.title_en || spaced).trim();
+  return spaced;
+}
+
 const LOCAL_SCENIC_NEAR_HUB_KM = 40;
 
 /** @type {Map<string, object>} */
@@ -71,11 +87,13 @@ for (const list of LISTS) {
   const cityKo = String(hubForKeys?.name || list.hubId || '').trim();
   const kindKo = KIND_LABEL_KO[list.listKind] || KIND_LABEL_KO.other;
   const displayKo = cityKo ? `${cityKo} ${kindKo}` : kindKo;
+  const numberedKo = localScenicOtherNumberedDisplayTitle(list, 'ko');
   const keys = [
     list.listId,
     list.title,
     list.title_en,
     displayKo,
+    numberedKo,
     ...(list.aliases || []),
   ];
   for (const k of keys) {
@@ -182,8 +200,13 @@ export function localScenicListDisplayTitle(list, hub, locale = 'ko') {
     const ssot = isEn
       ? String(list?.title_en || list?.title || '').trim()
       : String(list?.title || '').trim();
-    if (ssot) return ssot;
+    if (ssot) {
+      if (!isEn) return spacedKoNumberedGyeongTitle(ssot) || ssot;
+      return ssot;
+    }
   }
+  const numberedOther = localScenicOtherNumberedDisplayTitle(list, locale);
+  if (numberedOther) return numberedOther;
   const city = isEn
     ? String(h?.name_en || h?.name || list?.hubId || '').trim()
     : String(h?.name || list?.hubId || '').trim();
@@ -844,6 +867,9 @@ const GJ_NAMDO_3 = 'https://tong.visitkorea.or.kr/cms2/website/63/1676863.jpg';
 const GJ_CELADON = 'https://tong.visitkorea.or.kr/cms/resource/34/4101934_image2_1.jpg';
 const GJ_CELADON_2 = 'https://tong.visitkorea.or.kr/cms/resource/29/4101929_image2_1.jpg';
 const GJ_CELADON_3 = 'https://tong.visitkorea.or.kr/cms2/website/82/1676782.jpg';
+const GJ_VILLAGE = 'https://tong.visitkorea.or.kr/cms/resource/36/4101936_image2_1.jpg';
+const GJ_VILLAGE_2 = 'https://tong.visitkorea.or.kr/cms/resource/35/4101935_image2_1.jpg';
+const GJ_VILLAGE_3 = 'https://tong.visitkorea.or.kr/cms/resource/37/4101937_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1736,6 +1762,12 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 강진군 대구면 청자촌길 33 (고려청자박물관)',
     GJ_CELADON,
     [GJ_CELADON_2, GJ_CELADON_3],
+  ),
+  'local-scenic:gangjin-other:청자단지': localScenicPhotoOverlay(
+    '강진12경 제12경 청자단지는 대구면 고려청자촌입니다. 강진군 문화관광은 청자요지·고려청자박물관·공방·판매장이 한곳에 모인 단지라고 안내하며, 고려 때 청자를 굽던 가마터가 사적으로 남아 있습니다. 주소는 대구면 청자촌길 일원입니다. 사진은 한국관광공사 고려청자박물관 단지 공식 사진입니다.',
+    '전라남도 강진군 대구면 청자촌길 일원 (고려청자촌)',
+    GJ_VILLAGE,
+    [GJ_VILLAGE_2, GJ_VILLAGE_3],
   ),
 };
 
