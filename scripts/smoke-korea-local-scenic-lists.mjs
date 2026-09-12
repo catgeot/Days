@@ -891,6 +891,47 @@ const cngMannyeon = resolveLocalScenicListSpotById(
 );
 assert.ok(cngMannyeon?.overview?.includes('만년교'), '창녕 만년교 overlay overview');
 
+const jinjuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jinju');
+const jinjuEight = jinjuMerged.filter((s) => s.localScenicListId === 'jinju-palgyeong');
+assert.equal(jinjuEight.length, 8, '진주8경 8명');
+assert.equal(jinjuEight[0]?.groupTitle, '진주 팔경');
+assert.equal(jinjuEight[0]?.blurb, '진주 1경');
+const jinjuDeficitNames = [
+  '남강 의암',
+  '뒤벼리',
+  '새벼리',
+  '망진산 봉수대',
+  '비봉산의 봄',
+  '월아산 해돋이',
+];
+const jinjuDeficit = jinjuEight.filter((s) => jinjuDeficitNames.includes(s.attractionName));
+assert.equal(jinjuDeficit.length, 6, '진주8경 결손 6명');
+assert.ok(
+  jinjuDeficit.every((s) => s.overview && s.imageUrl),
+  '진주 결손 6명 overlay 사진·개요',
+);
+assert.ok(
+  jinjuDeficit.every((s) => !s.contentId),
+  '진주 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jinjuDeficit.map((s) => s.imageUrl)).size,
+  6,
+  '진주 결손 6명 썸네일 서로 다름',
+);
+const jinjuUiam = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:남강의암');
+assert.ok(jinjuUiam?.overview?.includes('의암'), '진주 의암 overlay overview');
+const jinjuDwibyeori = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:뒤벼리');
+assert.ok(jinjuDwibyeori?.overview?.includes('절벽'), '진주 뒤벼리 overlay overview');
+const jinjuSaebyeori = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:새벼리');
+assert.ok(jinjuSaebyeori?.overview?.includes('석류공원'), '진주 새벼리 overlay overview');
+const jinjuMangjin = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:망진산봉수대');
+assert.ok(jinjuMangjin?.overview?.includes('봉수'), '진주 망진산 overlay overview');
+const jinjuBibong = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:비봉산의봄');
+assert.ok(jinjuBibong?.overview?.includes('진산'), '진주 비봉산 overlay overview');
+const jinjuWola = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:월아산해돋이');
+assert.ok(jinjuWola?.overview?.includes('해돋이'), '진주 월아산 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
