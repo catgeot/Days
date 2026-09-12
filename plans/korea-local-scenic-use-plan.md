@@ -92,11 +92,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#26** tip `29c7bb3a` · PR [#225](https://github.com/catgeot/Days/pull/225) · **#27 구례 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#27** tip `2ed942ea` · PR [#226](https://github.com/catgeot/Days/pull/226) · **#28 강진 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **구례10경 5**.
+**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **강진12경 5**.
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
@@ -128,7 +128,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 24 | `팔경 활용 #24, 창령→창녕 별칭` | A | **완료** · tip `e601302f` · PR [#221](https://github.com/catgeot/Days/pull/221) · 창령·창령군 |
 | 25 | `팔경 활용 #25, 진주 결손 오버레이` | A | **완료** · tip `7f537719` · PR [#222](https://github.com/catgeot/Days/pull/222) · 진주 6 |
 | 26 | `팔경 활용 #26, 상산(진천) 결손 오버레이` | A | **완료** · tip `29c7bb3a` · PR [#225](https://github.com/catgeot/Days/pull/225) · 상산 6 |
-| 27 | `팔경 활용 #27, 구례 결손 오버레이` | A | **열기 가능** · 구례10경 5 · Preview QA는 사람 병행(세션 생략) |
+| 27 | `팔경 활용 #27, 구례 결손 오버레이` | A | **완료** · tip `2ed942ea` · PR [#226](https://github.com/catgeot/Days/pull/226) · 구례 5 |
+| 28 | `팔경 활용 #28, 강진 결손 오버레이` | A | **열기 가능** · 강진12경 5 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -410,7 +411,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 상산팔경 사진·개요 없는 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jincheon
 ```
 
-### §1.2 A #27 구례 결손 오버레이 (다음)
+### §1.2 A #27 구례 결손 오버레이 (실행됨)
 
 ```
 팔경 활용 #27, 구례 결손 오버레이
@@ -420,6 +421,18 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 구례10경 사진·개요 없는 5건(노고단 운해·반야봉 낙조·피아골 단풍·산동 산수유꽃·노고단 설경)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gurye
+```
+
+### §1.2 A #28 강진 결손 오버레이 (다음)
+
+```
+팔경 활용 #28, 강진 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 강진12경 사진·개요 없는 5건(월출산·가학산·백야김좌진기념관·남도별미식문화박물관·강진청자박물관)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gangjin
 ```
 
 

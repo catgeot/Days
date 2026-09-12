@@ -424,28 +424,28 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#26** tip `29c7bb3a` · PR [#225](https://github.com/catgeot/Days/pull/225) · **#27 구례 결손 오버레이** |
+| **상태** | **#27** tip `2ed942ea` · PR [#226](https://github.com/catgeot/Days/pull/226) · **#28 강진 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `29c7bb3a` |
-| **PR** | [#225](https://github.com/catgeot/Days/pull/225) · [#222](https://github.com/catgeot/Days/pull/222) merge ✅ |
+| **tip** | `2ed942ea` |
+| **PR** | [#226](https://github.com/catgeot/Days/pull/226) · [#225](https://github.com/catgeot/Days/pull/225) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=jincheon` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gurye` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). 순수 사진/개요 누락 **172**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **구례10경 5** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5(#226). 순수 사진/개요 누락 **167**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **강진12경 5** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #27, 구례 결손 오버레이
+팔경 활용 #28, 강진 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 구례10경 사진·개요 없는 5건(노고단 운해·반야봉 낙조·피아골 단풍·산동 산수유꽃·노고단 설경)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gurye
+작업: 강진12경 사진·개요 없는 5건(월출산·가학산·백야김좌진기념관·남도별미식문화박물관·강진청자박물관)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gangjin
 ```
 
 ---
