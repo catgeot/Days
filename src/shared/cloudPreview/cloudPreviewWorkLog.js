@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '한국 투어티켓',
-  sessionNo: 2,
-  sessionPhase: '사람 Preview QA',
+  sessionNo: 3,
+  sessionPhase: '20개·크게 보기',
   branch: 'cursor/korea-tna-strip-ef65',
   previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
   qaShareSlug: 'korea-tna-strip',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-korea-tna-strip-3-large-20',
+    session: '한국 투어티켓 #3, 20개·크게 보기',
+    title: '숙소·투어 기본 20개 · 크게 보기 세로 펼침',
+    detail:
+      '사람 Preview 피드백으로 숙소(EventStayStrip)와 투어(EventTnaStrip) 본문 카드를 기본 20개로 맞췄습니다. 「크게」를 누르면 가로 스크롤이 세로 그리드로 펼쳐져 본문을 아래로 스크롤하며 볼 수 있고, 「기본」으로 되돌립니다. 더보기는 마이리얼트립입니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:20:00.000Z',
+  },
   {
     id: '2026-09-12-korea-tna-strip-2-preview-qa',
     session: '한국 투어티켓 #2, 사람 Preview QA',

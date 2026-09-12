@@ -7,8 +7,10 @@ import {
   canShowMrtTnaStrip,
   fetchMrtTnas,
   fetchMrtTnasForLocation,
+  MRT_TNA_FETCH_SIZE,
   resolveMrtTnaQuery,
 } from '../../utils/fetchMrtTnas';
+import StripListLargeToggle from './StripListLargeToggle';
 
 function formatTnaPrice(item, locale = 'ko', t) {
   if (item?.priceDisplay) return String(item.priceDisplay);
@@ -19,7 +21,7 @@ function formatTnaPrice(item, locale = 'ko', t) {
   return t ? t('home.stayStrip.priceFrom', { price: formatted }) : (isEn ? `KRW ${formatted}` : `${formatted}원~`);
 }
 
-function TnaStripCard({ item, locale, t }) {
+function TnaStripCard({ item, locale, t, large = false }) {
   const href = buildMrtTnaProductUrl(item);
   const price = formatTnaPrice(item, locale, t);
 
@@ -28,9 +30,13 @@ function TnaStripCard({ item, locale, t }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      className="flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40 sm:w-[168px]"
+      className={
+        large
+          ? 'flex w-full flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40'
+          : 'flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40 sm:w-[168px]'
+      }
     >
-      <div className="relative h-[88px] w-full bg-stone-100">
+      <div className={`relative w-full bg-stone-100 ${large ? 'h-32' : 'h-[88px]'}`}>
         {item.imageUrl ? (
           <img
             src={item.imageUrl}
@@ -50,10 +56,18 @@ function TnaStripCard({ item, locale, t }) {
         ) : null}
       </div>
       <div className="flex flex-1 flex-col justify-between space-y-1 p-2">
-        <p className="line-clamp-2 text-[11px] font-semibold leading-snug text-stone-900">
+        <p
+          className={`line-clamp-2 font-semibold leading-snug text-stone-900 ${
+            large ? 'text-sm' : 'text-[11px]'
+          }`}
+        >
           {item.itemName}
         </p>
-        <div className="flex items-center justify-between gap-1 pt-0.5 text-[10px]">
+        <div
+          className={`flex items-center justify-between gap-1 pt-0.5 ${
+            large ? 'text-xs' : 'text-[10px]'
+          }`}
+        >
           {item.reviewScore != null && Number(item.reviewScore) > 0 ? (
             <span className="font-bold tabular-nums text-amber-700">
               ★ {Number(item.reviewScore).toFixed(1)}
@@ -104,6 +118,7 @@ export default function EventTnaStrip({
   const { t } = useTranslation();
   const [items, setItems] = useState(null);
   const [status, setStatus] = useState('idle');
+  const [listLarge, setListLarge] = useState(false);
   const fetchedKeyRef = useRef('');
 
   const eligible = canShowMrtTnaStrip(location);
@@ -143,10 +158,10 @@ export default function EventTnaStrip({
             keyword: resolvedQuery.keyword,
             altKeywords: resolvedQuery.altKeywords,
             nearbyKeywords: resolvedQuery.nearbyKeywords,
-            size: 10,
+            size: MRT_TNA_FETCH_SIZE,
           });
         } else {
-          result = await fetchMrtTnasForLocation(location, { size: 10 });
+          result = await fetchMrtTnasForLocation(location, { size: MRT_TNA_FETCH_SIZE });
         }
 
         if (cancelled) return;
@@ -192,16 +207,24 @@ export default function EventTnaStrip({
             {hint || t('worldEventDetail.tnaStrip.hint')}
           </p>
         </div>
-        {mrtSearchUrl ? (
-          <a
-            href={mrtSearchUrl}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className="shrink-0 text-[11px] font-bold text-amber-800 hover:text-amber-900"
-          >
-            {t('worldEventDetail.tnaStrip.moreOnMrt')}
-          </a>
-        ) : null}
+        <div className="flex shrink-0 items-center gap-1.5">
+          {status === 'ready' && items?.length ? (
+            <StripListLargeToggle
+              listLarge={listLarge}
+              onToggle={() => setListLarge((v) => !v)}
+            />
+          ) : null}
+          {mrtSearchUrl ? (
+            <a
+              href={mrtSearchUrl}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="shrink-0 text-[11px] font-bold text-amber-800 hover:text-amber-900"
+            >
+              {t('worldEventDetail.tnaStrip.moreOnMrt')}
+            </a>
+          ) : null}
+        </div>
       </div>
 
       {status === 'loading' ? (
@@ -229,13 +252,20 @@ export default function EventTnaStrip({
       ) : null}
 
       {status === 'ready' && items?.length ? (
-        <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1">
+        <div
+          className={
+            listLarge
+              ? 'mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2'
+              : '-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1'
+          }
+        >
           {items.map((item) => (
             <TnaStripCard
               key={item.gid || item.productUrl || item.itemName}
               item={item}
               locale={locale}
               t={t}
+              large={listLarge}
             />
           ))}
         </div>

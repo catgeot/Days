@@ -21,10 +21,12 @@ import {
   fetchMrtStaysForLocation,
   filterBookableMrtStays,
   isMrtDomesticLocation,
+  MRT_STAY_PAGE_SIZE,
   mrtStayNights,
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
 } from '../../utils/fetchMrtStays';
+import StripListLargeToggle from './StripListLargeToggle';
 import { MRT_HOME_MYLINK_ID } from '../Home/data/mrtPackageThemeLinks';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
 import { resolveTripcomPartnerLocale } from '../../utils/tripcomPartnerLocale.js';
@@ -95,7 +97,7 @@ function EventFlightHotelCta({
   );
 }
 
-function StayCard({ item, price }) {
+function StayCard({ item, price, large = false }) {
   const productHref = item.productUrl ? buildMrtMylinkUrl(item.productUrl) : null;
   if (!productHref) return null;
 
@@ -104,9 +106,13 @@ function StayCard({ item, price }) {
       href={productHref}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      className="flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40 sm:w-[168px]"
+      className={
+        large
+          ? 'flex w-full flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40'
+          : 'flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40 sm:w-[168px]'
+      }
     >
-      <div className="relative h-[88px] w-full bg-stone-100">
+      <div className={`relative w-full bg-stone-100 ${large ? 'h-32' : 'h-[88px]'}`}>
         {item.imageUrl ? (
           <img src={item.imageUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
         ) : (
@@ -114,11 +120,21 @@ function StayCard({ item, price }) {
         )}
       </div>
       <div className="space-y-0.5 p-2">
-        <p className="line-clamp-2 text-[11px] font-semibold leading-snug text-stone-900">
+        <p
+          className={`line-clamp-2 font-semibold leading-snug text-stone-900 ${
+            large ? 'text-sm' : 'text-[11px]'
+          }`}
+        >
           {item.itemName}
         </p>
         {price ? (
-          <p className="truncate text-[10px] font-bold tabular-nums text-amber-800">{price}</p>
+          <p
+            className={`truncate font-bold tabular-nums text-amber-800 ${
+              large ? 'text-xs' : 'text-[10px]'
+            }`}
+          >
+            {price}
+          </p>
         ) : null}
       </div>
     </a>
@@ -159,6 +175,7 @@ export default function EventStayStrip({
   const [guests, setGuests] = useState(() => normalizeMrtGuestCounts(2, 0));
   const [items, setItems] = useState(null);
   const [status, setStatus] = useState('idle');
+  const [listLarge, setListLarge] = useState(false);
   const fetchedKeyRef = useRef('');
 
   const placeMeta = placeLabelOverride
@@ -251,7 +268,10 @@ export default function EventStayStrip({
       fetchedKeyRef.current = fetchKey;
       const listed = Array.isArray(result?.items) ? result.items : [];
       const bookable = filterBookableMrtStays(listed);
-      const displayItems = (bookable.length > 0 ? bookable : listed).slice(0, 12);
+      const displayItems = (bookable.length > 0 ? bookable : listed).slice(
+        0,
+        MRT_STAY_PAGE_SIZE,
+      );
       if (displayItems.length > 0 && bookable.length > 0) {
         setItems(displayItems);
         setMrtListMeta({
@@ -450,16 +470,24 @@ export default function EventStayStrip({
               {t('worldEventDetail.stayStrip.staysTitle', { place: staysTitlePlace })}
             </h3>
           </div>
-          {mrtStayListUrl ? (
-            <a
-              href={mrtStayListUrl}
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              className="shrink-0 text-[11px] font-bold text-amber-800 hover:text-amber-900"
-            >
-              {t('worldEventDetail.stayStrip.moreOnMrt')}
-            </a>
-          ) : null}
+          <div className="flex shrink-0 items-center gap-1.5">
+            {status === 'ready' && items?.length ? (
+              <StripListLargeToggle
+                listLarge={listLarge}
+                onToggle={() => setListLarge((v) => !v)}
+              />
+            ) : null}
+            {mrtStayListUrl ? (
+              <a
+                href={mrtStayListUrl}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                className="shrink-0 text-[11px] font-bold text-amber-800 hover:text-amber-900"
+              >
+                {t('worldEventDetail.stayStrip.moreOnMrt')}
+              </a>
+            ) : null}
+          </div>
         </div>
 
         {status === 'loading' ? (
@@ -476,12 +504,19 @@ export default function EventStayStrip({
         ) : null}
 
         {status === 'ready' && items?.length ? (
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+          <div
+            className={
+              listLarge
+                ? 'grid grid-cols-1 gap-2.5 sm:grid-cols-2'
+                : '-mx-1 flex gap-2 overflow-x-auto px-1 pb-1'
+            }
+          >
             {items.map((item) => (
               <StayCard
                 key={item.itemId || item.productUrl || item.itemName}
                 item={item}
                 price={formatPrice(item.salePrice, t, i18n.language)}
+                large={listLarge}
               />
             ))}
           </div>

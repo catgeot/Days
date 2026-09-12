@@ -95,7 +95,10 @@ assert.match(scenicTnaSrc, /EventTnaStrip/, 'ScenicTnaStrip uses EventTnaStrip')
 assert.match(eventTnaSrc, /buildMrtTnaProductUrl/, 'EventTnaStrip uses buildMrtTnaProductUrl');
 assert.match(eventTnaSrc, /buildMrtTnaSearchMoreUrl/, 'EventTnaStrip uses buildMrtTnaSearchMoreUrl');
 assert.match(eventTnaSrc, /canShowMrtTnaStrip/, 'EventTnaStrip checks canShowMrtTnaStrip');
-assert.match(eventTnaSrc, /size: 10/, 'EventTnaStrip requests at most 10 tour cards');
+assert.match(eventTnaSrc, /MRT_TNA_FETCH_SIZE/, 'EventTnaStrip requests default TNA fetch size (20)');
+assert.match(eventTnaSrc, /StripListLargeToggle/, 'EventTnaStrip has 크게 보기 toggle');
+assert.match(eventTnaSrc, /listLarge/, 'EventTnaStrip expands cards into a vertical grid');
+assert.match(eventTnaSrc, /grid-cols-1 gap-2\.5 sm:grid-cols-2/, 'EventTnaStrip large view stacks cards for vertical scroll');
 
 // 4. i18n 다국어 검증
 assert.match(koSrc, /"tnaStripTitle"/, 'ko.json has tnaStripTitle');

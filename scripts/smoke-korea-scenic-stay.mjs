@@ -74,6 +74,9 @@ assert.match(
   /title \|\| t\('worldEventDetail\.stayStrip\.title'\)/,
   'EventStayStrip supports title override',
 );
+assert.match(eventStripSrc, /MRT_STAY_PAGE_SIZE/, 'EventStayStrip shows default stay page size (20)');
+assert.match(eventStripSrc, /StripListLargeToggle/, 'EventStayStrip has 크게 보기 toggle');
+assert.match(eventStripSrc, /listLarge/, 'EventStayStrip expands cards into a vertical grid');
 assert.match(festivalStripSrc, /EventStayStrip/, 'FestivalStayStrip still reuses EventStayStrip');
 assert.match(koSrc, /"stayStripHint"/, 'ko i18n has scenic stay strip hint');
 assert.match(qaSrc, /slug:\s*'scenic-stay'/, 'cloudQaShareLinks has scenic-stay slug');
