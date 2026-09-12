@@ -1084,6 +1084,36 @@ assert.ok(
   '지구본 청자단지 썸네일',
 );
 
+const gunsanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gunsan');
+const gunsanEight = gunsanMerged.filter((s) => s.localScenicListId === 'gunsan-palgyeong');
+assert.equal(gunsanEight.length, 8, '선유8경 8명');
+const gunsanDeficitNames = ['선유낙조', '명사십리', '망주폭포', '월영단풍', '무산십이봉'];
+const gunsanDeficit = gunsanEight.filter((s) => gunsanDeficitNames.includes(s.attractionName));
+assert.equal(gunsanDeficit.length, 5, '선유8경 결손 5명');
+assert.ok(
+  gunsanDeficit.every((s) => s.overview && s.imageUrl),
+  '군산 결손 5명 overlay 사진·개요',
+);
+assert.ok(
+  gunsanDeficit.every((s) => !s.contentId),
+  '군산 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(gunsanDeficit.map((s) => s.imageUrl)).size,
+  5,
+  '군산 결손 5명 썸네일 서로 다름',
+);
+const gsNakjo = resolveLocalScenicListSpotById('local-scenic:gunsan-palgyeong:선유낙조');
+assert.ok(gsNakjo?.overview?.includes('낙조기관'), '군산 선유낙조 overlay overview');
+const gsMyeongsa = resolveLocalScenicListSpotById('local-scenic:gunsan-palgyeong:명사십리');
+assert.ok(gsMyeongsa?.overview?.includes('선유도해수욕장'), '군산 명사십리 overlay overview');
+const gsMangju = resolveLocalScenicListSpotById('local-scenic:gunsan-palgyeong:망주폭포');
+assert.ok(gsMangju?.overview?.includes('솔섬'), '군산 망주폭포 overlay overview');
+const gsWolyeong = resolveLocalScenicListSpotById('local-scenic:gunsan-palgyeong:월영단풍');
+assert.ok(gsWolyeong?.overview?.includes('월영봉'), '군산 월영단풍 overlay overview');
+const gsMusan = resolveLocalScenicListSpotById('local-scenic:gunsan-palgyeong:무산십이봉');
+assert.ok(gsMusan?.overview?.includes('방축도'), '군산 무산십이봉 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

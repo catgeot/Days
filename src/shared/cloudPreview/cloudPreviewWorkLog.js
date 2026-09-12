@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 28,
-  sessionPhase: '강진 12경 제목·청자단지',
+  sessionNo: 29,
+  sessionPhase: '군산 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gangjin',
+  previewPath: '/korea/theme/scenic?hub=gunsan',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-29-gunsan-overlays',
+    session: '팔경 활용 #29, 군산 결손 오버레이',
+    title: '선유8경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 선유8경 결손 5건(선유낙조·명사십리·망주폭포·월영단풍·무산십이봉)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 선유도 낙조·선유도해수욕장·말도 사진과 국가유산 망주봉 폭포 사진을 연결했고, 월영단풍은 같은 섬 대각산 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gunsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T12:50:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-28-gangjin-title-village',
     session: '팔경 활용 #28, 강진 12경 제목·청자단지',
