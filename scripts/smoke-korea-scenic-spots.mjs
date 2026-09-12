@@ -163,6 +163,17 @@ for (const id of ['gyeongbokgung', 'nami-island', 'haeinsa', 'seongsan-ilchulbon
   const spot = byId.get(id);
   assert(Boolean(String(spot?.imageUrl || '').trim()), `${id} has imageUrl`);
 }
+const guryeArboretum = byId.get('gurye-arboretum');
+assert(Boolean(guryeArboretum), 'gurye-arboretum present');
+assert(
+  Boolean(String(guryeArboretum?.imageUrl || '').trim()),
+  'gurye-arboretum has imageUrl',
+);
+assert(
+  Array.isArray(guryeArboretum?.galleryUrls) &&
+    guryeArboretum.galleryUrls.length >= 4,
+  `gurye-arboretum galleryUrls ≥4 (got ${guryeArboretum?.galleryUrls?.length || 0})`,
+);
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);

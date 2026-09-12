@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 27,
-  sessionPhase: '구례 결손 오버레이',
+  sessionPhase: '구례 수목원 사진',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=gurye',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-27-gurye-arboretum-photos',
+    session: '팔경 활용 #27, 구례 수목원 사진',
+    title: '구례 수목원 목록·본문 공식 사진',
+    detail:
+      'GATEO 선정 구례 수목원(gurye-arboretum)은 TourAPI contentId 3001143 개요만 있고 firstimage가 비어 목록·상세가 아이콘이었습니다. 한국관광공사 구석구석 공공 사진 6장을 대표 이미지·galleryUrls로 넣어 리스트 썸네일과 상세 본문 갤러리가 보이게 했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gurye 지역 대표 명소 구례 수목원.',
+    at: '2026-09-12T11:30:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-27-gurye-overlays',
     session: '팔경 활용 #27, 구례 결손 오버레이',
