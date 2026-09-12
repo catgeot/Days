@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 29,
-  sessionPhase: '군산 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gunsan',
-  qaShareSlug: 'palgyeong-use',
+  title: '한국 투어티켓',
+  sessionNo: 6,
+  sessionPhase: '클룩 즐길거리·렌터카 연동',
+  branch: 'cursor/korea-tna-strip-ef65',
+  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
+  qaShareSlug: 'korea-tna-strip',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-korea-tna-strip-6-klook-chips',
+    session: '한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동',
+    title: '투어 카드 아래 클룩 즐길거리·렌터카 칩',
+    detail:
+      '마이리얼트립 투어·티켓 카드 규격은 그대로 두고, EventTnaStrip 하단에 클룩 즐길거리 검색(getKlookSearchUrl)과 렌터카 최저가 비교(getKlookRentalUrlByLocation) 아웃링크 칩을 넣었습니다. 상품이 없어도 칩은 보입니다. Preview /qa/korea-tna-strip — 경복궁 등 명승·축제 상세 투어 섹션 하단.',
+    at: '2026-09-12T13:20:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-29-gunsan-overlays',
     session: '팔경 활용 #29, 군산 결손 오버레이',
