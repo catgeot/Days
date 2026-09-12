@@ -795,6 +795,24 @@ const JINJU_BIBONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/56/3040856_im
 const JINJU_WOLA = 'https://tong.visitkorea.or.kr/cms/resource/22/3538822_image2_1.jpg';
 const JINJU_WOLA_2 = 'https://tong.visitkorea.or.kr/cms/resource/20/3538820_image2_1.jpg';
 const JINJU_WOLA_3 = 'https://tong.visitkorea.or.kr/cms/resource/21/3538821_image2_1.jpg';
+const JC_PYEONGSA = 'https://tong.visitkorea.or.kr/cms2/website/31/3343431.jpg';
+const JC_PYEONGSA_2 = 'https://tong.visitkorea.or.kr/cms2/website/41/3343441.jpg';
+const JC_PYEONGSA_3 = 'https://tong.visitkorea.or.kr/cms2/website/47/3343447.jpg';
+const JC_UDAM = 'https://tong.visitkorea.or.kr/cms2/website/92/3343492.jpg';
+const JC_UDAM_2 = 'https://tong.visitkorea.or.kr/cms2/website/93/3343493.jpg';
+const JC_UDAM_3 = 'https://tong.visitkorea.or.kr/cms2/website/77/3414777.jpg';
+const JC_GEUMGYE = 'https://tong.visitkorea.or.kr/cms2/website/32/1436432.jpg';
+const JC_GEUMGYE_2 = 'https://tong.visitkorea.or.kr/cms2/website/40/1436440.jpg';
+const JC_GEUMGYE_3 = 'https://tong.visitkorea.or.kr/cms2/website/44/1436444.jpg';
+const JC_SANGSAN = 'https://tong.visitkorea.or.kr/cms2/website/68/1363968.jpg';
+const JC_SANGSAN_2 = 'https://tong.visitkorea.or.kr/cms2/website/70/1363970.jpg';
+const JC_SANGSAN_3 = 'https://tong.visitkorea.or.kr/cms2/website/75/1363975.jpg';
+const JC_EOEUN = 'https://tong.visitkorea.or.kr/cms2/website/38/1436038.jpg';
+const JC_EOEUN_2 = 'https://tong.visitkorea.or.kr/cms2/website/39/1436039.jpg';
+const JC_EOEUN_3 = 'https://tong.visitkorea.or.kr/cms2/website/40/1436040.jpg';
+const JC_JEOKDAE = 'https://tong.visitkorea.or.kr/cms2/website/51/3343451.jpg';
+const JC_JEOKDAE_2 = 'https://tong.visitkorea.or.kr/cms2/website/64/3343464.jpg';
+const JC_JEOKDAE_3 = 'https://tong.visitkorea.or.kr/cms2/website/74/3343474.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1591,6 +1609,42 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 진주시 진성면 달음산로 313 (월아산)',
     JINJU_WOLA,
     [JINJU_WOLA_2, JINJU_WOLA_3],
+  ),
+  'local-scenic:jincheon-palgyeong:평사낙안': localScenicPhotoOverlay(
+    '상산팔경 제1경 평사낙안은 문백면 평산리 미호천 백사장입니다. 디지털진천문화대전에 따르면 흰 모래가 십리에 펼쳐지고 기암과 기러기 떼가 앉는 절경이며, 통산별업팔경의 하나입니다. 인문지리는 미호천·백곡천·초평천이 만나는 평사리에서 소두머니까지를 평사십리라 적습니다. 진천군 주소는 문백면 평산리 일원입니다.',
+    '충청북도 진천군 문백면 평산리 일원 (미호천 백사장)',
+    JC_PYEONGSA,
+    [JC_PYEONGSA_2, JC_PYEONGSA_3],
+  ),
+  'local-scenic:jincheon-palgyeong:우담제월': localScenicPhotoOverlay(
+    '상산팔경 제2경 우담제월은 문백면 은탄리 우담입니다. 디지털진천문화대전은 우담을 은탄리의 큰 호수, 제월을 비가 개인 뒤의 달이라 하며, 티 없이 맑은 호숫가 달빛이 상산팔경의 하나라고 적습니다. 인문지리는 소두머니를 우담의 다른 이름이라 합니다. 봄여름 휴식처로도 불립니다.',
+    '충청북도 진천군 문백면 은탄리 (우담·소두머니)',
+    JC_UDAM,
+    [JC_UDAM_2, JC_UDAM_3],
+  ),
+  'local-scenic:jincheon-palgyeong:금계완사': localScenicPhotoOverlay(
+    '상산팔경 제3경 금계완사는 광혜원면 광혜원리 금계입니다. 디지털진천문화대전은 금계 물가에서 빨래하는 풍경을 읊은 한시이며, 충청도관찰사가 경질될 때 신·구 관찰사가 도장을 주고받던 곳이라고 적습니다. 금계완사(錦溪浣紗)는 비단 시내에서 비단옷을 입고 놀던 정취입니다. 진천군 문화관광도 광혜원리 금계 물가를 가리킵니다.',
+    '충청북도 진천군 광혜원면 광혜원리 (금계)',
+    JC_GEUMGYE,
+    [JC_GEUMGYE_2, JC_GEUMGYE_3],
+  ),
+  'local-scenic:jincheon-palgyeong:상산모운': localScenicPhotoOverlay(
+    '상산팔경 제5경 상산모운은 이월면 사곡리 상산입니다. 디지털진천문화대전은 유수응의 한시 「상산모운(常山暮雲)」이 저녁노을과 구름이 상산 허리를 감싸는 정경이며, 벽오팔경 제1경이기도 하다고 적습니다. 인문지리는 상선모운(常仙暮雲)으로도 전합니다. 사진은 같은 군 만뢰산 보탑사 공식 사진으로 근사했습니다.',
+    '충청북도 진천군 이월면 사곡리 일원 (상산)',
+    JC_SANGSAN,
+    [JC_SANGSAN_2, JC_SANGSAN_3],
+  ),
+  'local-scenic:jincheon-palgyeong:어은계석': localScenicPhotoOverlay(
+    '상산팔경 제7경 어은계석은 문백면 봉죽리 어은동 계곡입니다. 진천군 문화관광은 송강 정철 묘소가 있는 계곡 풍경이라 적습니다. 디지털진천문화대전에 따르면 1665년 묘를 환희산 동쪽으로 옮기며 정송강사가 들어섰고, 어은마을은 연일 정씨 세거지입니다. 주소는 송강로 523(정송강사)입니다.',
+    '충청북도 진천군 문백면 봉죽리 562 (송강로 523, 정송강사)',
+    JC_EOEUN,
+    [JC_EOEUN_2, JC_EOEUN_3],
+  ),
+  'local-scenic:jincheon-palgyeong:적대청람': localScenicPhotoOverlay(
+    '상산팔경 제8경 적대청람은 문백면 평산리 백사장 암벽입니다. 디지털진천문화대전은 한원진이 암벽 위 정자에서 지은 「적대청람(笛臺晴嵐)」이며, 신선이 피리를 불다 간 자리라고 적습니다. 지금은 정자 흔적만 남고 높은 대에서 푸른 물을 굽어봅니다. 진천군은 화창한 날 아지랑이를 구경으로 적습니다.',
+    '충청북도 진천군 문백면 평산리 일원 (백사장 암벽)',
+    JC_JEOKDAE,
+    [JC_JEOKDAE_2, JC_JEOKDAE_3],
   ),
 };
 
