@@ -141,8 +141,36 @@ export function listsForHub(hubId) {
   return listsByHubId.get(id) || [];
 }
 
+function listsOfSameKindOnHub(list, hub) {
+  const hid = String(hub?.hubId || list?.hubId || '').trim();
+  if (!hid) return [];
+  return listsForHub(hid).filter((row) => row?.listKind === list?.listKind);
+}
+
+function localScenicRankPlaceLabel(list, hub, locale = 'ko') {
+  const h = hub || resolveCityAttractionHub(list?.hubId);
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  if (listsOfSameKindOnHub(list, h).length > 1) {
+    if (isEn) {
+      const stem = String(list?.title_en || list?.title || '')
+        .replace(/\s+((Eight|Nine|Ten|Twelve)\s+)?(Scenic\s+)?(Views|Valleys)\s*$/i, '')
+        .trim();
+      if (stem) return stem;
+    } else {
+      const stem = String(list?.title || '')
+        .replace(/(팔경|구경|십이경|십경|구곡|명소|\d+경)\s*$/u, '')
+        .trim();
+      if (stem) return stem;
+    }
+  }
+  return isEn
+    ? String(h?.name_en || h?.name || list?.hubId || '').trim()
+    : String(h?.name || list?.hubId || '').trim();
+}
+
 /**
  * 표시 제목 `{시군명} {종류}` — SSOT title(문경8경)은 유지.
+ * 같은 시군에 같은 종류가 둘이면(영동 한천팔경·양산팔경) 공식 title.
  * @param {object} list
  * @param {object} [hub]
  * @param {string} [locale]
@@ -150,6 +178,12 @@ export function listsForHub(hubId) {
 export function localScenicListDisplayTitle(list, hub, locale = 'ko') {
   const h = hub || resolveCityAttractionHub(list?.hubId);
   const isEn = String(locale || '').toLowerCase().startsWith('en');
+  if (listsOfSameKindOnHub(list, h).length > 1) {
+    const ssot = isEn
+      ? String(list?.title_en || list?.title || '').trim()
+      : String(list?.title || '').trim();
+    if (ssot) return ssot;
+  }
   const city = isEn
     ? String(h?.name_en || h?.name || list?.hubId || '').trim()
     : String(h?.name || list?.hubId || '').trim();
@@ -170,7 +204,8 @@ function memberIndexInList(list, member) {
 }
 
 /**
- * 행 부제 `{시군} {N}경` · 구곡은 `{N}곡`. 그룹 칩(groupTitle)은 바꾸지 않음.
+ * 행 부제 `{시군} {N}경` · 구곡은 `{N}곡`.
+ * 같은 시군에 팔경이 둘이면 공식명 어간(한천팔경→한천 1경).
  * @param {object} list
  * @param {object} [hub]
  * @param {object} member
@@ -180,11 +215,8 @@ export function localScenicMemberRankBlurb(list, hub, member, locale = 'ko') {
   const fallback = localScenicListDisplayTitle(list, hub, locale);
   const rank = memberIndexInList(list, member);
   if (!rank) return fallback;
-  const h = hub || resolveCityAttractionHub(list?.hubId);
   const isEn = String(locale || '').toLowerCase().startsWith('en');
-  const city = isEn
-    ? String(h?.name_en || h?.name || list?.hubId || '').trim()
-    : String(h?.name || list?.hubId || '').trim();
+  const city = localScenicRankPlaceLabel(list, hub, locale);
   if (isEn) {
     const unit = list?.listKind === 'gugok' ? 'Valley' : 'View';
     return city ? `${city} ${unit} ${rank}` : `${unit} ${rank}`;
@@ -254,15 +286,52 @@ export function resolveLocalScenicList(query) {
 }
 
 /**
+ * 지구본·명승 검색 — title/alias exact, 아니면 includes(한천→한천팔경).
+ * 시군 단독(양산·영동)은 hub 가드라 exact가 아니면 null.
+ * @param {string} query
+ */
+export function resolveLocalScenicListFromSearchQuery(query) {
+  const exact = resolveLocalScenicList(query);
+  if (exact) return exact;
+  const list = matchLocalScenicListForScenicSearch(query);
+  if (!list) return null;
+  const hub = resolveCityAttractionHub(list.hubId);
+  return { list, hub };
+}
+
+const GENERIC_SCENIC_QUERY_TERMS = new Set([
+  '팔경',
+  '8경',
+  '구경',
+  '9경',
+  '십경',
+  '10경',
+  '십이경',
+  '12경',
+  '경',
+  '명승',
+  '명소',
+  'scenic',
+]);
+
+/**
  * 명승 페이지 검색 — title/alias exact 또는 includes.
  * @param {string} query
  */
 export function matchLocalScenicListForScenicSearch(query) {
   const q = normalizeKey(query);
-  if (!q) return null;
+  if (!q || GENERIC_SCENIC_QUERY_TERMS.has(q)) return null;
 
   const exact = listByKey.get(q);
   if (exact) return exact;
+
+  const hub = resolveCityAttractionHub(query);
+  if (hub?.hubId) {
+    const hubNameKey = normalizeKey(hub.name);
+    if (q === hubNameKey || q === normalizeKey(hub.hubId)) {
+      return null;
+    }
+  }
 
   for (const list of LISTS) {
     const keys = [list.title, list.title_en, ...(list.aliases || [])].filter(Boolean);
@@ -614,6 +683,25 @@ const VISITKOREA_HADONG_SONGRIM =
   'https://tong.visitkorea.or.kr/cms/resource_photo/88/3312688_image2_1.jpg';
 const VISITKOREA_HADONG_PARK =
   'https://tong.visitkorea.or.kr/cms/resource/48/3549648_image2_1.jpg';
+const YD_HANCHEON = 'https://tong.visitkorea.or.kr/cms/resource/62/3577262_image2_1.jpg';
+const YD_HANCHEON_2 = 'https://tong.visitkorea.or.kr/cms/resource/60/3577260_image2_1.jpg';
+const YD_HANCHEON_3 = 'https://tong.visitkorea.or.kr/cms/resource/61/3577261_image2_1.jpg';
+const YD_HANCHEON_4 = 'https://tong.visitkorea.or.kr/cms/resource/63/3577263_image2_1.jpg';
+const YD_WOLLYU = 'https://tong.visitkorea.or.kr/cms/resource/60/3543160_image2_1.jpg';
+const YD_WOLLYU_2 = 'https://tong.visitkorea.or.kr/cms/resource/54/3543154_image2_1.jpg';
+const YD_WOLLYU_3 = 'https://tong.visitkorea.or.kr/cms/resource/55/3543155_image2_1.jpg';
+const YD_WOLLYU_4 = 'https://tong.visitkorea.or.kr/cms/resource/56/3543156_image2_1.jpg';
+const YD_GANGSEON = 'https://tong.visitkorea.or.kr/cms/resource/06/3572806_image2_1.jpg';
+const YD_GANGSEON_2 = 'https://tong.visitkorea.or.kr/cms/resource/03/3572803_image2_1.jpg';
+const YD_GANGSEON_3 = 'https://tong.visitkorea.or.kr/cms/resource/04/3572804_image2_1.jpg';
+const YD_BIDAN = 'https://tong.visitkorea.or.kr/cms/resource/21/3060021_image2_1.JPG';
+const YD_BIDAN_2 = 'https://tong.visitkorea.or.kr/cms/resource/18/3060018_image2_1.JPG';
+const YD_SONGHO = 'https://tong.visitkorea.or.kr/cms/resource/88/3572788_image2_1.jpg';
+const YD_SONGHO_2 = 'https://tong.visitkorea.or.kr/cms/resource/04/2949504_image2_1.jpg';
+const YD_GALGI = 'https://tong.visitkorea.or.kr/cms/resource/51/3341351_image2_1.JPG';
+const YD_GAHAK = 'https://tong.visitkorea.or.kr/cms/resource/62/3572762_image2_1.jpg';
+const YD_CHEONTAE = 'https://tong.visitkorea.or.kr/cms/resource/36/3059936_image2_1.JPG';
+const YD_MULHAN = 'https://tong.visitkorea.or.kr/cms/resource/27/3082527_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1104,6 +1192,127 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
       'https://tong.visitkorea.or.kr/cms2/website/80/1342380.jpg',
     ],
   ),
+  'local-scenic:yeongdong-yangsan-palgyeong:비봉산': localScenicPhotoOverlay(
+    '양산팔경 제3경 비봉산은 양산면 수두리에 솟은 해발 460m의 산입니다. 영동군에 따르면 산세보다 정상 조망이 뛰어나 금강과 양산면 일대를 한눈에 볼 수 있고, 비단강 숲마을 강변에서 바라보는 낙조가 아름답다고 소개합니다.',
+    '충청북도 영동군 양산면 수두리',
+    YD_GALGI,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/52/3341352_image2_1.JPG',
+      YD_BIDAN_2,
+    ],
+  ),
+  'local-scenic:yeongdong-yangsan-palgyeong:봉황대': localScenicPhotoOverlay(
+    '양산팔경 제4경 봉황대는 수두리 비단강 숲마을 강변 절벽 위 정자입니다. 영동군은 과거 봉화대 앞으로 돌아오는 돛단배 풍경이 아름다워 으뜸 경치로 꼽았다고 적으며, 예전 누각은 소실되었고 2012년 정자를 세웠습니다. 금강변 산책 휴식처로 이어집니다.',
+    '충청북도 영동군 양산면 수두리 비단강 숲마을 강변',
+    YD_BIDAN,
+    [YD_BIDAN_2, YD_GANGSEON_3],
+  ),
+  'local-scenic:yeongdong-yangsan-palgyeong:함벽정': localScenicPhotoOverlay(
+    '양산팔경 제5경 함벽정은 봉황대 동쪽 강변 바위 위 정자입니다. 영동군에 따르면 송호리에서 금강을 따라 약 500m 올라가면 강가 나무 사이에 서 있으며, 시 읊고 글 쓰는 이들이 모여 풍류를 즐기던 곳으로 함벽정팔경을 따로 즐겼다고 전합니다. 비봉산 낙조를 볼 수 있는 위치입니다.',
+    '충청북도 영동군 양산면 봉곡리',
+    YD_GANGSEON,
+    [YD_GANGSEON_2, YD_GANGSEON_3],
+  ),
+  'local-scenic:yeongdong-yangsan-palgyeong:여의정': localScenicPhotoOverlay(
+    '양산팔경 제6경 여의정은 송호관광지 솔밭 바위 위 정자입니다. 영동군은 금강을 사이에 두고 강선대와 마주하는 절경이라 적으며, 만취당 박응종이 낙향해 세운 만취당을 1935년 후손이 여의정으로 고친 곳입니다. 백여 년 묵은 송림이 1만여 그루 우거진 송호관광지와 함께합니다.',
+    '충청북도 영동군 양산면 송호로 103 (송호리)',
+    YD_SONGHO,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/89/3572789_image2_1.jpg',
+      YD_SONGHO_2,
+    ],
+  ),
+  'local-scenic:yeongdong-yangsan-palgyeong:자풍서당': localScenicPhotoOverlay(
+    '양산팔경 제7경 자풍서당은 양강면 두평리 조선시대 서당입니다. 영동군에 따르면 중기 유학자 이충범이 제자를 양성한 곳으로, 최초는 양강 강가에 지었고 인조 4년(1626)부터 숙종 46년(1720)까지 여러 차례 보수해 시도유형문화재 영동 자풍서당으로 이어집니다.',
+    '충청북도 영동군 양강면 두평길 2-153 (두평리)',
+    YD_GAHAK,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/55/3572755_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/08/3335708_image2_1.JPG',
+    ],
+  ),
+  'local-scenic:yeongdong-yangsan-palgyeong:용암': localScenicPhotoOverlay(
+    '양산팔경 제8경 용암은 송호관광지 금강변의 바위입니다. 영동군은 양강 물살을 견디는 용암 경치가 송림과 어우러져 한 폭의 그림을 이룬다고 소개하며, 선녀가 목욕한 강선대와 선녀를 보느라 승천하지 못한 용암 전설이 짝을 이룬다고 전합니다.',
+    '충청북도 영동군 양산면 송호로 105 (송호리, 송호관광지관리사무소)',
+    YD_GANGSEON_2,
+    [YD_SONGHO_2, YD_WOLLYU],
+  ),
+  'local-scenic:yeongdong-hancheon-palgyeong:화헌악': localScenicPhotoOverlay(
+    '한천팔경 제2경 화헌악은 한천정 뒤쪽 산봉우리입니다. 영동군에 따르면 꽃과 나무가 우거져 화헌이라 이름 붙었으며, 봄이면 진달래·철쭉이 만산홍을 이룹니다. 황간면 원촌리 월류봉 일대 우암 송시열이 머문 한천정사에서 유래한 팔경의 꽃 산경입니다.',
+    '충청북도 영동군 황간면 원촌리',
+    YD_WOLLYU_2,
+    [YD_WOLLYU, YD_HANCHEON_3],
+  ),
+  'local-scenic:yeongdong-hancheon-palgyeong:용연대': localScenicPhotoOverlay(
+    '한천팔경 제3경 용연대는 월류봉 앞 절벽입니다. 영동군은 산줄기가 평지에서 우뚝 솟아 용연(龍淵)에 이른 돌머리 모양 대(臺)라고 소개합니다. 월류봉 절벽과 초강천이 어우러진 황간 원촌리 경승입니다.',
+    '충청북도 영동군 황간면 원촌리',
+    YD_WOLLYU_3,
+    [YD_WOLLYU_4, YD_HANCHEON],
+  ),
+  'local-scenic:yeongdong-hancheon-palgyeong:산양벽': localScenicPhotoOverlay(
+    '한천팔경 제4경 산양벽은 월류봉 첫·두 번째 봉을 이루는 절벽입니다. 영동군에 따르면 병풍처럼 깎아지른 암벽으로 인적이 닿지 않고 새들의 보금자리가 되며, 돌 틈 뿌리내린 수목의 자연미가 빼어납니다.',
+    '충청북도 영동군 황간면 원촌리',
+    YD_WOLLYU_4,
+    [YD_HANCHEON_3, YD_WOLLYU],
+  ),
+  'local-scenic:yeongdong-hancheon-palgyeong:청학굴': localScenicPhotoOverlay(
+    '한천팔경 제5경 청학굴은 월류봉 중턱 자연동굴입니다. 영동군은 가을 단풍이 붉게 물들고 청학(靑鶴)이 깃든다 하여 이름 붙였다고 적습니다. 월류봉 하산길 옆 입이 벌어진 동굴이 탐방객의 발길을 사로잡습니다.',
+    '충청북도 영동군 황간면 원촌리',
+    YD_HANCHEON_4,
+    [YD_MULHAN, YD_HANCHEON_2],
+  ),
+  'local-scenic:yeongdong-hancheon-palgyeong:법존암': localScenicPhotoOverlay(
+    '한천팔경 제6경 법존암은 작은 암자가 있었다 전해지는 곳입니다. 영동군에 따르면 암자 위치는 현재 황간면 원촌마을로 추정합니다. 초강천과 백사장이 어우러진 한천팔경 중심 경승입니다.',
+    '충청북도 영동군 황간면 원촌리',
+    YD_HANCHEON_2,
+    [YD_HANCHEON, YD_HANCHEON_3],
+  ),
+  'local-scenic:yeongdong-hancheon-palgyeong:사군봉': localScenicPhotoOverlay(
+    '한천팔경 제7경 사군봉은 황간면 북쪽 명산으로 ‘나라의 사신(使臣)이 되는 산’이라는 뜻을 지녔다고 영동군이 소개하며, 설경으로 유명합니다. 월류봉 일대와 맞닿은 황간의 겨울 산경 명소입니다.',
+    '충청북도 영동군 황간면 원촌리 일원',
+    YD_CHEONTAE,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/33/3059933_image2_1.JPG',
+      YD_WOLLYU,
+    ],
+  ),
+  'local-scenic:yeongdong-hancheon-palgyeong:냉천정': localScenicPhotoOverlay(
+    '한천팔경 제8경 냉천정은 법존암 앞 모래밭 샘에서 여덟 팔(八)자로 흘러 팔연(八淵)에 이르는 곳입니다. 영동군에 따르면 한여름에도 물이 무척 차며, 냉천정에 올라 바라보는 풍경이 아름답기로 유명하고 옛 선비들의 풍류 정취가 느껴진다고 적습니다.',
+    '충청북도 영동군 황간면 원촌리',
+    YD_HANCHEON,
+    [YD_HANCHEON_4, YD_MULHAN],
+  ),
+  'local-scenic:yeongdong-yangsan-palgyeong:강선대': localScenicPhotoOverlay(
+    '양산팔경 제2경 강선대는 금강 상류 물가 절벽 위에 홀로 우뚝 선 육각 정자입니다. 멀리서 보면 강물 위에 떠 있는 바위 위에 정자가 앉아 있는 듯하며, 옛날 하늘에서 선녀들이 내려와 목욕을 하고 놀았다는 아름다운 전설이 전해집니다. 주변의 노송과 맑은 금강 물줄기가 어우러진 풍광이 양산팔경 중에서도 으뜸 절경으로 꼽힙니다.',
+    '충청북도 영동군 양산면 봉곡리 756-1',
+    YD_GANGSEON_3,
+    [YD_GANGSEON, YD_GANGSEON_2],
+  ),
+  'local-scenic:yangsan-other:내원사계곡': {
+    contentId: '126073',
+    overview:
+      '양산 12경 제3경 내원사 계곡은 천성산 기슭에 자리한 유서 깊은 청정 계곡입니다. 예부터 소금강이라 불릴 정도로 자연경관이 빼어나며, 사시사철 맑고 깨끗한 계류가 기암괴석과 첩첩이 선 삼층바위, 병풍바위 사이를 굽이쳐 흐릅니다. 여름철 피서와 봄·가을 등산 및 단풍 명소로 널리 알려져 있습니다.',
+    addr1: '경상남도 양산시 하북면 용연리 (내원사 계곡 일원)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
+      'https://tong.visitkorea.or.kr/cms/resource/25/3489425_image2_1.JPG',
+      'https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg',
+    ],
+  },
+  'local-scenic:yangsan-other:황산공원': {
+    contentId: '2784326',
+    overview:
+      '양산 12경 제9경 황산공원은 물금읍 낙동강변에 187만㎡ 규모로 조성된 대규모 수변문화공원입니다. 드넓은 억새 생태탐방로와 사계절 야생화 단지, 캠핑장, 산책로, 자전거길, 파크골프장 등 다양한 휴식·레저 공간을 갖추고 있습니다. 시원한 강바람과 낙동강을 붉게 물들이는 저녁 낙조가 아름다운 양산의 대표 힐링 명소입니다.',
+    addr1: '경상남도 양산시 물금읍 물금리 162-1 (황산문화체육공원)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
+      'https://tong.visitkorea.or.kr/cms/resource/82/2731482_image2_1.jpg',
+    ],
+  },
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {

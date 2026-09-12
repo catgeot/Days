@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '세계행사 일정',
-  sessionNo: 57,
-  sessionPhase: '리스트 썸네일 컬러 우선',
-  branch: 'cursor/world-events-wave3',
-  previewPath: '/world-events',
-  qaShareSlug: 'world-events',
+  title: '팔경 활용',
+  sessionNo: 18,
+  sessionPhase: '한천 행 부제 공식명',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,38 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-18-hancheon-rank-blurb',
+    session: '팔경 활용 #18, 한천 행 부제 공식명',
+    title: '한천팔경 행 부제를 한천 N경으로',
+    detail:
+      '그룹명은 한천팔경인데 행 부제가 영동 1경으로 남아 어긋났습니다. 같은 시군에 팔경이 둘이면 공식명 어간으로 번호를 붙입니다(한천 1경·양산 1경). Preview /qa/palgyeong-use — 명승 「한천」검색 행 부제.',
+    at: '2026-09-12T03:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-17-hancheon-name-globe',
+    session: '팔경 활용 #17, 한천 공식명·지구본 검색',
+    title: '한천팔경 공식명 · 지구본 검색 누락 보강',
+    detail:
+      '영동은 한천팔경·양산팔경이 같이 있어 그룹명이 「영동 팔경」으로 겹쳤습니다. 같은 시군에 팔경이 둘이면 공식 title(한천팔경·양산팔경)을 씁니다. 지구본 홈에서 「한천」이 영동 도시만 나오던 것은 includes 매칭을 검색에 연결해 한천팔경 8행이 먼저 나오게 했습니다. Preview /qa/palgyeong-use — 명승 「한천」그룹명 · 지구본 검색 한천.',
+    at: '2026-09-12T00:30:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-16-search-and-yangsan',
+    session: '팔경 활용 #16, 사람 Preview QA 피드백 반영',
+    title: '「한천」검색 8행 주입 · 양산 12경 내원사계곡·황산공원 오버레이',
+    detail:
+      '검색창에 「한천」입력 시 한천팔경 8행이 GATEO 명소에 주입되지 않던 문제를 고치고, 경남 양산 12경의 결손 멤버인 내원사 계곡(3경)과 황산공원(9경)에 한국관광공사 공식 사진·개요·갤러리를 보강했습니다. 영동 양산팔경 제2경 강선대도 실사진을 보강해 영동 16행 썸네일이 모두 고유하게 표시됩니다. Preview /qa/palgyeong-use 확인.',
+    at: '2026-09-11T09:15:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-15-yeongdong-overlays',
+    session: '팔경 활용 #15, 영동 결손 오버레이',
+    title: '영동 한천·양산 팔경 결손 13건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 한천팔경 결손 7건(화헌악·용연대·산양벽·청학굴·법존암·사군봉·냉천정)과 양산팔경 결손 6건(비봉산·봉황대·함벽정·여의정·자풍서당·용암)의 영동군 공식 팩트 개요·주소·한국관광공사 사진을 보강했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongdong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-11T08:15:00.000Z',
+  },
   {
     id: '2026-09-11-world-events-57-color-thumbs',
     session: '세계행사 일정 #57, 리스트 썸네일 컬러 우선',

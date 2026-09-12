@@ -15,6 +15,7 @@ import {
 import {
   listKoreaLocalScenicLists,
   resolveLocalScenicList,
+  resolveLocalScenicListFromSearchQuery,
   matchLocalScenicListForScenicSearch,
   matchLocalScenicListsForQuery,
   buildLocalScenicListHubCluster,
@@ -84,8 +85,8 @@ assert.ok(
 
 // searchSuggestions 브리지 wiring
 assert.ok(
-  searchSrc.includes('resolveLocalScenicList'),
-  'searchSuggestions imports resolveLocalScenicList',
+  searchSrc.includes('resolveLocalScenicListFromSearchQuery'),
+  'searchSuggestions imports resolveLocalScenicListFromSearchQuery',
 );
 assert.ok(
   searchSrc.includes('buildLocalScenicListHubCluster'),
@@ -539,6 +540,181 @@ assert.ok(
   '하동 검색 대표 명소는 십경 뒤에만',
 );
 assert.equal(hadongGrouped[0]?.blurb, '하동 1경', '하동 검색 선두가 1경');
+
+const yeongdongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeongdong');
+const yeongdongYangsan = yeongdongMerged.filter(
+  (s) => s.localScenicListId === 'yeongdong-yangsan-palgyeong',
+);
+const yeongdongHancheon = yeongdongMerged.filter(
+  (s) => s.localScenicListId === 'yeongdong-hancheon-palgyeong',
+);
+assert.equal(yeongdongYangsan.length, 8, '양산팔경 8명');
+assert.equal(yeongdongHancheon.length, 8, '한천팔경 8명');
+const yeongdongYangsanDeficitNames = [
+  '비봉산',
+  '봉황대',
+  '함벽정',
+  '여의정',
+  '자풍서당',
+  '용암',
+];
+const yeongdongHancheonDeficitNames = [
+  '화헌악',
+  '용연대',
+  '산양벽',
+  '청학굴',
+  '법존암',
+  '사군봉',
+  '냉천정',
+];
+const yeongdongYangsanDeficit = yeongdongYangsan.filter((s) =>
+  yeongdongYangsanDeficitNames.includes(s.attractionName),
+);
+const yeongdongHancheonDeficit = yeongdongHancheon.filter((s) =>
+  yeongdongHancheonDeficitNames.includes(s.attractionName),
+);
+assert.equal(yeongdongYangsanDeficit.length, 6, '양산팔경 결손 6명');
+assert.equal(yeongdongHancheonDeficit.length, 7, '한천팔경 결손 7명');
+assert.ok(
+  [...yeongdongYangsanDeficit, ...yeongdongHancheonDeficit].every(
+    (s) => s.overview && s.imageUrl,
+  ),
+  '영동 결손 13명 overlay 사진·개요',
+);
+assert.ok(
+  [...yeongdongYangsanDeficit, ...yeongdongHancheonDeficit].every((s) => !s.contentId),
+  '영동 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(
+    [...yeongdongYangsanDeficit, ...yeongdongHancheonDeficit].map((s) => s.imageUrl),
+  ).size,
+  13,
+  '영동 결손 13명 썸네일 서로 다름',
+);
+const ydBibong = resolveLocalScenicListSpotById(
+  'local-scenic:yeongdong-yangsan-palgyeong:비봉산',
+);
+assert.ok(ydBibong?.overview?.includes('양산팔경'), '영동 비봉산 overlay overview');
+const ydNaengcheon = resolveLocalScenicListSpotById(
+  'local-scenic:yeongdong-hancheon-palgyeong:냉천정',
+);
+assert.ok(ydNaengcheon?.overview?.includes('냉천정'), '영동 냉천정 overlay overview');
+
+const yeongdongAll = mergeLocalScenicMembersIntoScenicSpots([], 'yeongdong');
+assert.equal(yeongdongAll.length, 16, '영동 2개 팔경 16행');
+assert.equal(
+  new Set(yeongdongAll.map((s) => s.imageUrl).filter(Boolean)).size,
+  16,
+  '영동 16행 썸네일 16장 모두 고유',
+);
+const yeongdongHub = resolveCityAttractionHub('yeongdong');
+const hancheonList = listKoreaLocalScenicLists().find(
+  (l) => l.listId === 'yeongdong-hancheon-palgyeong',
+);
+const yangsanPalgyeongList = listKoreaLocalScenicLists().find(
+  (l) => l.listId === 'yeongdong-yangsan-palgyeong',
+);
+assert.equal(
+  localScenicListDisplayTitle(hancheonList, yeongdongHub),
+  '한천팔경',
+  '영동 한천 그룹은 공식명 한천팔경 (영동 팔경 아님)',
+);
+assert.equal(
+  localScenicListDisplayTitle(yangsanPalgyeongList, yeongdongHub),
+  '양산팔경',
+  '영동 양산 그룹은 공식명 양산팔경',
+);
+assert.ok(
+  yeongdongHancheon.every((s) => s.groupTitle === '한천팔경'),
+  '한천팔경 행 groupTitle 한천팔경',
+);
+assert.ok(
+  yeongdongYangsan.every((s) => s.groupTitle === '양산팔경'),
+  '양산팔경 행 groupTitle 양산팔경',
+);
+assert.equal(yeongdongHancheon[0]?.blurb, '한천 1경', '한천팔경 1행 부제 한천 1경');
+assert.equal(yeongdongYangsan[0]?.blurb, '양산 1경', '양산팔경 1행 부제 양산 1경');
+assert.ok(
+  yeongdongHancheon.every((s) => String(s.blurb || '').startsWith('한천 ')),
+  '한천팔경 행 부제 한천 N경',
+);
+assert.ok(
+  yeongdongYangsan.every((s) => String(s.blurb || '').startsWith('양산 ')),
+  '양산팔경 행 부제 양산 N경',
+);
+
+const hancheonSearch = filterScenicSpotsByQuery(
+  listKoreaScenicSpots(),
+  '한천',
+  { injectLocalScenic: true },
+);
+assert.equal(hancheonSearch.length, 8, '한천 검색 시 한천팔경 8행 주입');
+assert.ok(
+  hancheonSearch.every((s) => s.localScenicListId === 'yeongdong-hancheon-palgyeong'),
+  '한천 검색 결과 전원 한천팔경',
+);
+assert.equal(
+  new Set(hancheonSearch.map((s) => s.imageUrl)).size,
+  8,
+  '한천 검색 8행 썸네일 서로 다름',
+);
+assert.ok(
+  hancheonSearch.every((s) => s.groupTitle === '한천팔경'),
+  '한천 검색 그룹명 한천팔경 (영동 팔경 아님)',
+);
+assert.ok(
+  hancheonSearch.every((s) => String(s.blurb || '').startsWith('한천 ')),
+  '한천 검색 행 부제 한천 N경 (영동 N경 아님)',
+);
+
+assert.equal(
+  resolveLocalScenicListFromSearchQuery('한천')?.list?.listId,
+  'yeongdong-hancheon-palgyeong',
+  '한천 includes → 한천팔경',
+);
+assert.equal(
+  resolveLocalScenicListFromSearchQuery('양산'),
+  null,
+  '양산 시군 단독은 영동 양산팔경으로 안 묶임',
+);
+const hancheonGlobeMembers = (hancheonList.members || [])
+  .map((member) => localScenicMemberToSuggestion(hancheonList, yeongdongHub, member))
+  .filter(Boolean);
+assert.equal(hancheonGlobeMembers.length, 8, '한천팔경 지구본 멤버 8행');
+assert.ok(
+  hancheonGlobeMembers.every((s) => s.groupTitle === '한천팔경'),
+  '지구본 한천 멤버 groupTitle 한천팔경',
+);
+assert.ok(
+  searchSrc.includes('resolveLocalScenicListFromSearchQuery(q)'),
+  '지구본 검색이 includes 리스트 매칭을 씀',
+);
+
+const ysNaewonsa = resolveLocalScenicListSpotById(
+  'local-scenic:yangsan-other:내원사계곡',
+);
+assert.ok(ysNaewonsa?.imageUrl, '양산 내원사계곡 overlay imageUrl');
+assert.ok(ysNaewonsa?.overview?.includes('내원사'), '양산 내원사계곡 overlay overview');
+assert.equal(ysNaewonsa?.contentId, '126073', '양산 내원사계곡 overlay contentId');
+
+const ysHwangsan = resolveLocalScenicListSpotById(
+  'local-scenic:yangsan-other:황산공원',
+);
+assert.ok(ysHwangsan?.imageUrl, '양산 황산공원 overlay imageUrl');
+assert.ok(ysHwangsan?.overview?.includes('황산공원'), '양산 황산공원 overlay overview');
+assert.equal(ysHwangsan?.contentId, '2784326', '양산 황산공원 overlay contentId');
+
+const yangsanSearch = filterScenicSpotsByQuery(
+  listKoreaScenicSpots(),
+  '양산',
+  { injectLocalScenic: true },
+);
+assert.equal(yangsanSearch.length, 15, '양산 검색 시 양산 허브 15곳');
+const yangsanSearchNaewon = yangsanSearch.find((s) => s.name === '내원사 계곡');
+assert.ok(yangsanSearchNaewon?.imageUrl, '양산 검색 내원사 계곡 사진 있음');
+const yangsanSearchHwangsan = yangsanSearch.find((s) => s.name === '황산공원');
+assert.ok(yangsanSearchHwangsan?.imageUrl, '양산 검색 황산공원 사진 있음');
 
 const extra = process.argv.slice(2);
 for (const q of extra) {
