@@ -156,16 +156,26 @@
 - **잔여**: 사진/개요 순수 누락 **157**/876. QA 후 다음 허브 **금산10경 5**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #30 다음 — 금산 결손 오버레이
+## 팔경 활용 #30 — 금산 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #30, 금산 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `f6c7a3f2` · PR [#231](https://github.com/catgeot/Days/pull/231)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 금산10경 결손 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)의 개요·주소·공식 사진 보강. 한국관광공사 금산산림문화타운·인삼약령시장·월영산 출렁다리·기러기공원·태조대왕 태실 사진을 연결했고, 세계농업유산은 같은 군 금산인삼관 공식 사진으로 근사했다.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=geumsan`
+- **잔여**: 사진/개요 순수 누락 **152**/876. QA 후 다음 허브 **남해12경 5**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #31 다음 — 남해 결손 오버레이
 
 ```
-팔경 활용 #30, 금산 결손 오버레이
+팔경 활용 #31, 남해 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 금산10경 사진·개요 없는 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=geumsan
+작업: 남해12경 사진·개요 없는 5건(남해 금산과 보리암·창선교와 남해지족해협 죽방렴·서포 김만중 선생 유허와 노도·남해 물건리 방조어부림과 물미해안·창선-삼천포대교)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=namhae
 ```
 
 ## 같은 세션 QA — AGENTS.md 전 주제 규칙
@@ -173,7 +183,8 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#30 금산 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#31 남해 결손 오버레이**
+
 
 ## 한국 투어티켓 #1 — 축제·명승 본문 투어·티켓 카드 섹션 (Cloud)
 
@@ -242,6 +253,26 @@
 - **플랜**: [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) 신설
 - **내용**: 본문 TNA 마이리얼트립 카드 하단에 클룩 즐길거리("즐길거리 클룩에서 더보기") 및 렌터카("렌터카 최저가 비교") 아웃링크 칩 연계 방안 확정 및 세션 로드맵 세분화.
 - **다음**: `한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동` 진행.
+
+## 한국 투어티켓 #6 — 클룩 즐길거리·렌터카 연동 (Cloud)
+
+- **세션**: `한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동`
+- **브랜치**: `cursor/korea-tna-strip-ef65` · tip `0c77e661` · PR [#230](https://github.com/catgeot/Days/pull/230)
+- **완료**: `EventTnaStrip` 하단에 클룩 즐길거리(`getKlookSearchUrl`)·렌터카(`getKlookRentalUrlByLocation`) 아웃링크 칩. 마이리얼트립 카드 규격 유지. empty에서도 칩 표시. KO/EN i18n.
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS · `npm run build` PASS
+- **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
+- **QA 체크**: 투어 섹션 하단 클룩 칩 2개 · 카드 가로 스크롤 유지 · 칩이 클룩으로 열리는지
+- **다음**: Preview OK면 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정
+
+```
+한국 투어티켓 #7, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-tna-strip-plan.md
+브랜치 cursor/korea-tna-strip-ef65 · PR #230 · Preview /qa/korea-tna-strip
+금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
+작업: 경복궁·축제 상세 투어 섹션 하단 클룩 칩이 보이면 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정
+```
 
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
 
