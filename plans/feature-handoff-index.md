@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 한국 투어티켓
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `b47d8880` · PR [#223](https://github.com/catgeot/Days/pull/223) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/korea-tna-strip-ef65` |
+| **tip** | `b47d8880` |
+| **PR** | [#223](https://github.com/catgeot/Days/pull/223) |
+| **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
+| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
+| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `FestivalDetailSheet.jsx` · `ThemeSpotDetailModal.jsx` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:korea-tna-strip` · `npm run build` PASS |
+
+**다음 제시어**:
+
+```
+한국 투어티켓 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 경복궁 등 명승 상세 및 축제 상세 본문에서 투어·티켓 카드 섹션(썸네일·가격·평점·더보기) 정상 노출 확인
+```
+
+---
+
 ### 명승 숙소
 
 | | |
@@ -370,28 +397,28 @@
 
 | | |
 |--|--|
-| **상태** | **#24** tip `e601302f` · PR [#221](https://github.com/catgeot/Days/pull/221) · **#25 진주 결손 오버레이** |
+| **상태** | **#25** tip `7f537719` · PR [#222](https://github.com/catgeot/Days/pull/222) · **#26 상산(진천) 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `e601302f` |
-| **PR** | [#221](https://github.com/catgeot/Days/pull/221) |
+| **tip** | `7f537719` |
+| **PR** | [#222](https://github.com/catgeot/Days/pull/222) · [#221](https://github.com/catgeot/Days/pull/221) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=changnyeong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=jinju` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22** 창녕 6 · **#23** 검색 빈 문구 · **#24** 창령→창녕 별칭(#221). 순수 사진/개요 누락 **184**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **진주8경 6** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). 순수 사진/개요 누락 **178**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **상산팔경 6** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #25, 진주 결손 오버레이
+팔경 활용 #26, 상산(진천) 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 진주8경 사진·개요 없는 6건(남강 의암·뒤벼리·새벼리·망진산 봉수대·비봉산의 봄·월아산 해돋이)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jinju
+작업: 상산팔경 사진·개요 없는 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jincheon
 ```
 
 ---
