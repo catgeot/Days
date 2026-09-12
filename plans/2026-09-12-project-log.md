@@ -118,6 +118,15 @@
 - **잔여**: 사진/개요 순수 누락 **167**/876. QA 후 다음 허브 **강진12경 5**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #27 — 구례 수목원 사진 (Cloud QA)
+
+- **세션** `팔경 활용 #27, 구례 결손 오버레이` 사람 Preview 피드백
+- **브랜치** `cursor/palgyeong-use-e744` · tip `fbc921de` · PR [#226](https://github.com/catgeot/Days/pull/226)
+- **완료**: GATEO 선정 구례 수목원(`gurye-arboretum`, TourAPI 3001143)은 개요만 있고 firstimage가 비어 목록·상세가 아이콘이었다. 한국관광공사 구석구석 공공 사진 6장을 대표 이미지·galleryUrls로 넣었다. palgyeong JSON contentId·scenic 승격 없음.
+- **VERIFY**: `npm run smoke:korea-scenic-spots` PASS · `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gurye` 지역 대표 명소 구례 수목원
+- **다음**: #28 강진12경 5. 사람은 같은 턴에 수목원 썸네일·본문 갤러리 확인.
+
 ## 팔경 활용 #28 다음 — 강진 결손 오버레이
 
 ```
@@ -149,6 +158,37 @@
 - **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS · `npm run smoke:mrt-tna` PASS · `npm run build` PASS
 - **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
 - **다음**: 사람 Preview QA (경복궁 등 명승 상세 및 축제 상세 본문 TNA 카드 섹션 확인)
+
+## 한국 투어티켓 #2 — 사람 Preview QA (Cloud)
+
+- **세션**: `한국 투어티켓 #2, 사람 Preview QA`
+- **브랜치**: `cursor/korea-tna-strip-ef65` · tip `c567a1c2` · PR [#223](https://github.com/catgeot/Days/pull/223)
+- **사람**: Preview에서 명승·축제 상세 투어·티켓 카드 노출 확인. 목록이 몇 개까지인지 질문.
+- **답**: 본문 스트립은 `EventTnaStrip`이 마이리얼트립에 `size: 10`을 요청해 **최대 10개** 가로 스크롤. 검색이 적으면 그만큼만. 더보기는 마이리얼트립 검색(외부).
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS (`size: 10` 상한 포함)
+- **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
+- **다음**: 개수 조정이면 `EventTnaStrip` `size`만 수정. 추가 피드백 없으면 PR #223 병합 후 인덱스 행 삭제
+
+## 한국 투어티켓 #3 — 숙소·투어 20개 · 크게 보기 (Cloud)
+
+- **세션**: `한국 투어티켓 #3, Preview OK면 PR 병합`
+- **브랜치**: `cursor/korea-tna-strip-ef65` · tip `404878dc` · PR [#223](https://github.com/catgeot/Days/pull/223)
+- **사람 피드백**: 숙소·투어 모두 기본 20개 · 「크게 보기」로 펼쳐 아래로 스크롤
+- **완료**:
+  1. `EventTnaStrip` `MRT_TNA_FETCH_SIZE`(20) · `EventStayStrip` `MRT_STAY_PAGE_SIZE`(20)
+  2. `StripListLargeToggle` — 축제·명승 리스트와 같은 「크게/기본」칩. 펼치면 1열(sm 2열) 세로 그리드, 접으면 기존 가로 스크롤
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS · `npm run build` PASS
+- **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
+- **다음**: 사람 Preview — 20개·크게 펼침 확인. OK·추가 피드백 없으면 PR #223 병합 후 인덱스 행 삭제
+
+```
+한국 투어티켓 #4, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 숙소·투어 카드 기본 20개 · 「크게」세로 펼침이 맞으면 PR #223 병합 후 이 행 삭제. 추가 피드백이면 개수·펼침만 수정
+```
 
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
 
