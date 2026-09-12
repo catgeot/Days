@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: 'AI 모델',
-  sessionNo: 1,
-  sessionPhase: '2.5 종료 교체',
+  sessionNo: 2,
+  sessionPhase: 'Preview 피드백 수정',
   branch: 'cursor/gemini-models-df4c',
   previewPath: '/',
   qaShareSlug: 'gemini',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-gemini-models-2-health-quality',
+    session: 'AI 모델 #2, Preview 피드백 수정',
+    title: '사이트 점검이 QUALITY 3.5 Flash도 ping',
+    detail:
+      '무니 일반 대화는 FAST라 그대로입니다. 워크스페이스 사이트 점검(smoke-health P0-3)이 3.1-flash-lite만 하드코딩하고 있어, geminiModels SSOT의 FAST·QUALITY를 같이 ping하게 바꿨습니다. 3.5-flash가 404면 헬스도 실패합니다. Preview /qa/gemini.',
+    at: '2026-09-12T10:25:00.000Z',
+  },
   {
     id: '2026-09-12-gemini-models-1-retire-2-5',
     session: 'AI 모델 #1, 2.5 종료 교체',

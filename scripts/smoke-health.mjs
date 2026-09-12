@@ -2,6 +2,7 @@
  * gateo.kr 사이트·API 헬스 스모크 (Phase 1-A)
  * @see plans/site-health-monitoring-plan.md
  */
+import { GEMINI_MODELS } from '../src/utils/geminiModels.js';
 import { loadEnvFile } from './lib/load-env-file.mjs';
 
 if (!process.env.GITHUB_ACTIONS) {
@@ -165,6 +166,30 @@ async function probeSupabaseRest() {
   }
 }
 
+const GEMINI_HEALTH_PROBES = [
+  { key: 'FAST', modelId: GEMINI_MODELS.FAST },
+  { key: 'QUALITY', modelId: GEMINI_MODELS.QUALITY },
+];
+
+async function pingGeminiProxy(modelId) {
+  const response = await fetchWithTimeout(
+    `${supabaseUrl.replace(/\/$/, '')}/functions/v1/gemini-proxy`,
+    {
+      method: 'POST',
+      headers: {
+        ...supabaseHeaders(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        modelId,
+        parts: [{ text: 'ping' }],
+      }),
+    }
+  );
+  const { raw, body } = await parseJsonBody(response);
+  return { status: response.status, raw, body, combined: `${response.status} ${raw}` };
+}
+
 async function probeGeminiProxy() {
   const id = 'P0-3';
   const name = 'gemini-proxy';
@@ -179,56 +204,41 @@ async function probeGeminiProxy() {
     return;
   }
 
-  try {
-    const response = await fetchWithTimeout(
-      `${supabaseUrl.replace(/\/$/, '')}/functions/v1/gemini-proxy`,
-      {
-        method: 'POST',
-        headers: {
-          ...supabaseHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          modelId: 'gemini-3.1-flash-lite',
-          parts: [{ text: 'ping' }],
-        }),
-      }
-    );
+  const used = [];
 
-    const raw = await response.text();
-    let body = null;
+  for (const { key, modelId } of GEMINI_HEALTH_PROBES) {
     try {
-      body = raw ? JSON.parse(raw) : null;
-    } catch {
-      body = null;
-    }
+      const { status, raw, body, combined } = await pingGeminiProxy(modelId);
 
-    const combined = `${response.status} ${raw}`;
+      if (status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
+        record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
+        return;
+      }
 
-    if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
-      record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
+      if (body?.success === true) {
+        used.push(`${key}=${body.modelUsed ?? modelId}`);
+        continue;
+      }
+
+      if (
+        status === 429 ||
+        /429|RESOURCE_EXHAUSTED|prepayment credits are depleted/i.test(combined)
+      ) {
+        record(id, name, 'warn', '429 RESOURCE_EXHAUSTED — Gemini credits depleted', 'P0');
+        return;
+      }
+
+      const errMsg = body?.error || raw.slice(0, 200) || `HTTP ${status}`;
+      record(id, name, 'fail', `${key} ${modelId}: ${errMsg}`, 'P0');
+      return;
+    } catch (error) {
+      const detail = error.name === 'AbortError' ? 'timeout' : error.message;
+      record(id, name, 'fail', `${key} ${modelId}: ${detail}`, 'P0');
       return;
     }
-
-    if (body?.success === true) {
-      record(id, name, 'pass', `modelUsed=${body.modelUsed ?? 'unknown'}`, 'P0');
-      return;
-    }
-
-    if (
-      response.status === 429 ||
-      /429|RESOURCE_EXHAUSTED|prepayment credits are depleted/i.test(combined)
-    ) {
-      record(id, name, 'warn', '429 RESOURCE_EXHAUSTED — Gemini credits depleted', 'P0');
-      return;
-    }
-
-    const errMsg = body?.error || raw.slice(0, 200) || `HTTP ${response.status}`;
-    record(id, name, 'fail', errMsg, 'P0');
-  } catch (error) {
-    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
-    record(id, name, 'fail', detail, 'P0');
   }
+
+  record(id, name, 'pass', used.join(' · '), 'P0');
 }
 
 /**
