@@ -191,14 +191,14 @@
 - **Preview**: https://www.gateo.kr/qa/korea-tna-strip
 - **다음**: 사람 Preview — 크게가 가로인지 · 아래로 스킵되는지. OK면 PR #223 병합
 
-```
-한국 투어티켓 #5, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-12-project-log.md
-브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
-금지: UI 임의 리디자인 · feature에 plans/** 커밋
-작업: 「크게」가 카드만 키우고 좌우 스크롤인지 · 아래로 본문 스킵이 되는지 확인. OK·추가 피드백 없으면 PR #223 병합 후 이 행 삭제
-```
+## 한국 투어티켓 #5 — 사람 Preview QA PASS · PR 병합
+
+- **세션**: `한국 투어티켓 #5, Preview OK면 PR 병합`
+- **사람**: QA 통과 — 「크게」가 카드만 키우고 좌우 스크롤 · 아래로 본문 스킵
+- **브랜치**: `cursor/korea-tna-strip-ef65` · merge `0071d2cb` · PR [#223](https://github.com/catgeot/Days/pull/223) merge ✅
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS
+- **PROD**: https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung
+- **다음 제시어 없음** (주제 종료). 인덱스 행을 병합 완료로 닫음
 
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
 
