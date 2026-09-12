@@ -759,6 +759,24 @@ const ICHEON_SAMHYEONGJE_3 = 'https://tong.visitkorea.or.kr/cms/resource/55/3058
 const ICHEON_AERYEON = 'https://tong.visitkorea.or.kr/cms/resource/26/3541426_image2_1.jpg';
 const ICHEON_AERYEON_2 = 'https://tong.visitkorea.or.kr/cms/resource/27/3541427_image2_1.jpg';
 const ICHEON_AERYEON_3 = 'https://tong.visitkorea.or.kr/cms/resource/28/3541428_image2_1.jpg';
+const CNG_UPO = 'https://tong.visitkorea.or.kr/cms2/website/85/2620285.jpg';
+const CNG_UPO_2 = 'https://tong.visitkorea.or.kr/cms2/website/56/2761856.jpg';
+const CNG_UPO_3 = 'https://tong.visitkorea.or.kr/cms2/website/72/1961572.jpg';
+const CNG_HWAWANG = 'https://tong.visitkorea.or.kr/cms/resource/29/3496729_image2_1.jpg';
+const CNG_HWAWANG_2 = 'https://tong.visitkorea.or.kr/cms/resource/28/3496728_image2_1.jpg';
+const CNG_HWAWANG_3 = 'https://tong.visitkorea.or.kr/cms/resource/30/3496730_image2_1.jpg';
+const CNG_RAPESEED = 'https://tong.visitkorea.or.kr/cms/resource/54/4053654_image2_1.jpg';
+const CNG_GAEBIRI = 'https://tong.visitkorea.or.kr/cms/resource/88/4046188_image2_1.jpg';
+const CNG_GAEBIRI_2 = 'https://tong.visitkorea.or.kr/cms/resource/65/3564565_image2_1.JPG';
+const CNG_MANOK = 'https://tong.visitkorea.or.kr/cms/resource/41/3496641_image2_1.jpg';
+const CNG_MANOK_2 = 'https://tong.visitkorea.or.kr/cms/resource/35/3496635_image2_1.jpg';
+const CNG_PAGODA = 'https://tong.visitkorea.or.kr/cms/resource/71/3376171_image2_1.JPG';
+const CNG_TOMB = 'https://tong.visitkorea.or.kr/cms/resource/27/3538827_image2_1.jpg';
+const CNG_TOMB_2 = 'https://tong.visitkorea.or.kr/cms2/website/31/3567231.jpg';
+const CNG_TOMB_3 = 'https://tong.visitkorea.or.kr/cms2/website/47/3567247.jpg';
+const CNG_MANNYEON = 'https://tong.visitkorea.or.kr/cms/resource/11/4046211_image2_1.jpg';
+const CNG_MANNYEON_2 = 'https://tong.visitkorea.or.kr/cms2/website/33/2761533.jpg';
+const CNG_MANNYEON_3 = 'https://tong.visitkorea.or.kr/cms2/website/00/2907700.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1483,6 +1501,42 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경기도 이천시 안흥동 404 (안흥지 애련정)',
     ICHEON_AERYEON,
     [ICHEON_AERYEON_2, ICHEON_AERYEON_3],
+  ),
+  'local-scenic:changnyeong-gugyeong:우포늪과따오기': localScenicPhotoOverlay(
+    '창녕구경 제1경 우포늪과 따오기는 유어·이방·대합·대지 네 면에 걸친 국내 최대 내륙습지입니다. 한국관광공사는 면적 약 250만 5,000㎡, 1998년 람사르습지 등록과 2018년 세계 최초 람사르습지도시 인증을 적습니다. 창녕군은 2008년 유어면 따오기복원센터를 열고 중국에서 기증받은 천연기념물 따오기를 증식·복원하고 있습니다.',
+    '경상남도 창녕군 유어면 우포늪길 220 (우포늪) · 유어면 세진리 355 (따오기복원센터)',
+    CNG_UPO,
+    [CNG_UPO_2, CNG_UPO_3],
+  ),
+  'local-scenic:changnyeong-gugyeong:화왕산억새와진달래': localScenicPhotoOverlay(
+    '창녕구경 제2경 화왕산 억새와 진달래는 창녕읍 옥천리 화왕산군립공원입니다. 한국관광공사에 따르면 정상 둘레에 화왕산성이 있고, 봄에는 수십만 평 진달래·철쭉, 가을에는 억새초원이 장관입니다. 창녕군은 한국의 100대 명산으로 봄 진달래와 가을 은빛 억새를 구경으로 꼽습니다.',
+    '경상남도 창녕군 창녕읍 옥천리 (화왕산군립공원)',
+    CNG_HWAWANG,
+    [CNG_HWAWANG_2, CNG_HWAWANG_3],
+  ),
+  'local-scenic:changnyeong-gugyeong:낙동강유채축제와남지개비리': localScenicPhotoOverlay(
+    '창녕구경 제4경 낙동강유채축제와 남지개비리는 남지읍 낙동강 변입니다. 한국관광공사는 유채단지가 전국 단일면적 최대 약 110ha이며 2006년부터 창녕낙동강유채축제를 연다고 적습니다. 남지개비리길은 용산·영아지 마을을 잇는 순환 트레킹으로, 창나루에서 전망대·쉼터를 돌아 약 2시간 30분입니다.',
+    '경상남도 창녕군 남지읍 남지강변길 177 (유채단지) · 용산리 160-2 (남지개비리길)',
+    CNG_RAPESEED,
+    [CNG_GAEBIRI, CNG_GAEBIRI_2],
+  ),
+  'local-scenic:changnyeong-gugyeong:만옥정공원과신라진흥왕척경비,술정리동삼층석탑': localScenicPhotoOverlay(
+    '창녕구경 제6경 만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑은 창녕읍 도심 문화유산입니다. 한국관광공사에 따르면 만옥정공원은 봄 벚꽃 명소이며, 언덕에 국보 창녕 신라 진흥왕 척경비(561년경, 1924년 이전)가 있습니다. 인근 술정리 동 삼층석탑은 통일신라 이중기단 삼층석탑으로, 국가유산청은 경주 불국사 석탑에 비길 기품이 있다고 적습니다.',
+    '경상남도 창녕군 창녕읍 교상리 28-34 (만옥정공원) · 시장2길 37 (술정리 동 삼층석탑)',
+    CNG_MANOK,
+    [CNG_PAGODA, CNG_MANOK_2],
+  ),
+  'local-scenic:changnyeong-gugyeong:교동과송현동고분군': localScenicPhotoOverlay(
+    '창녕구경 제7경 교동과 송현동고분군은 창녕읍 교리·송현리의 비화가야 대형 고분군입니다. 한국관광공사·국가유산청에 따르면 150여 기가 확인되고 5~6세기가 중심이며, 진한 불사국(비사벌) 터로 알려져 있습니다. 2011년 사적으로 묶였고, 2023년 가야고분군 세계유산의 구성 유산입니다.',
+    '경상남도 창녕군 창녕읍 창밀로 34 (교동과 송현동 고분군)',
+    CNG_TOMB,
+    [CNG_TOMB_2, CNG_TOMB_3],
+  ),
+  'local-scenic:changnyeong-gugyeong:3·1민속문화제와영산만년교': localScenicPhotoOverlay(
+    '창녕구경 제8경 3·1민속문화제와 영산만년교는 영산면입니다. 한국민족문화대백과에 따르면 축제는 1961년부터 3월 1일 전후 나흘간 열리며, 중심은 국가무형유산 영산쇠머리대기와 영산줄다리기입니다. 한국관광공사는 영산 만년교를 1780년 석수 백진기가 쌓고 1892년 중수한 무지개 홍예 돌다리(보물)로 적습니다.',
+    '경상남도 창녕군 영산면 원다리길 42 (영산 만년교) · 영산면 일원 (3·1민속문화제)',
+    CNG_MANNYEON,
+    [CNG_MANNYEON_2, CNG_MANNYEON_3],
   ),
 };
 

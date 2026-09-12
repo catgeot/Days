@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 21,
-  sessionPhase: '이천 결손 오버레이',
+  sessionNo: 22,
+  sessionPhase: '창녕 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=icheon',
+  previewPath: '/korea/theme/scenic?hub=changnyeong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-22-changnyeong-overlays',
+    session: '팔경 활용 #22, 창녕 결손 오버레이',
+    title: '창녕구경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 창녕구경 결손 6건(우포늪과 따오기·화왕산 억새와 진달래·낙동강유채축제와 남지개비리·만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑·교동과 송현동고분군·3·1민속문화제와 영산만년교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 우포늪·화왕산군립공원·낙동강유채축제·남지개비리길·만옥정공원·술정리 동 삼층석탑·교동·송현동 고분군·영산 만년교 사진을 연결했고, 만년교 쥐불놀이 공식 사진으로 민속제를 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=changnyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T08:50:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-21-icheon-overlays',
     session: '팔경 활용 #21, 이천 결손 오버레이',

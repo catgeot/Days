@@ -836,6 +836,61 @@ assert.ok(icheonPottery?.overview?.includes('도예'), '이천 사기막골 over
 const icheonPavilion = resolveLocalScenicListSpotById('local-scenic:icheon-gugyeong:애련정');
 assert.ok(icheonPavilion?.overview?.includes('애련정'), '이천 애련정 overlay overview');
 
+const changnyeongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'changnyeong');
+const changnyeongNine = changnyeongMerged.filter(
+  (s) => s.localScenicListId === 'changnyeong-gugyeong',
+);
+assert.equal(changnyeongNine.length, 9, '창녕구경 9명');
+assert.equal(changnyeongNine[0]?.groupTitle, '창녕 구경');
+assert.equal(changnyeongNine[0]?.blurb, '창녕 1경');
+const changnyeongDeficitNames = [
+  '우포늪과 따오기',
+  '화왕산 억새와 진달래',
+  '낙동강유채축제와 남지개비리',
+  '만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑',
+  '교동과 송현동고분군',
+  '3·1민속문화제와 영산만년교',
+];
+const changnyeongDeficit = changnyeongNine.filter((s) =>
+  changnyeongDeficitNames.includes(s.attractionName),
+);
+assert.equal(changnyeongDeficit.length, 6, '창녕구경 결손 6명');
+assert.ok(
+  changnyeongDeficit.every((s) => s.overview && s.imageUrl),
+  '창녕 결손 6명 overlay 사진·개요',
+);
+assert.ok(
+  changnyeongDeficit.every((s) => !s.contentId),
+  '창녕 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(changnyeongDeficit.map((s) => s.imageUrl)).size,
+  6,
+  '창녕 결손 6명 썸네일 서로 다름',
+);
+const cngUpo = resolveLocalScenicListSpotById('local-scenic:changnyeong-gugyeong:우포늪과따오기');
+assert.ok(cngUpo?.overview?.includes('따오기'), '창녕 우포늪 overlay overview');
+const cngHwawang = resolveLocalScenicListSpotById(
+  'local-scenic:changnyeong-gugyeong:화왕산억새와진달래',
+);
+assert.ok(cngHwawang?.overview?.includes('억새'), '창녕 화왕산 overlay overview');
+const cngGaebiri = resolveLocalScenicListSpotById(
+  'local-scenic:changnyeong-gugyeong:낙동강유채축제와남지개비리',
+);
+assert.ok(cngGaebiri?.overview?.includes('개비리'), '창녕 남지개비리 overlay overview');
+const cngManok = resolveLocalScenicListSpotById(
+  'local-scenic:changnyeong-gugyeong:만옥정공원과신라진흥왕척경비,술정리동삼층석탑',
+);
+assert.ok(cngManok?.overview?.includes('척경비'), '창녕 만옥정 overlay overview');
+const cngTomb = resolveLocalScenicListSpotById(
+  'local-scenic:changnyeong-gugyeong:교동과송현동고분군',
+);
+assert.ok(cngTomb?.overview?.includes('고분'), '창녕 고분군 overlay overview');
+const cngMannyeon = resolveLocalScenicListSpotById(
+  'local-scenic:changnyeong-gugyeong:3·1민속문화제와영산만년교',
+);
+assert.ok(cngMannyeon?.overview?.includes('만년교'), '창녕 만년교 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
