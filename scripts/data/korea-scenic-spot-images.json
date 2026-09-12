@@ -1,11 +1,12 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T22:33:32.913Z",
-    "count": 792,
+    "updatedAt": "2026-09-12T11:30:00.000Z",
+    "count": 794,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
+    "gurye-arboretum": "https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=9c111f7e-492d-42ae-82f5-3f9df7d31ba3",
     "namhansanseong": "https://tong.visitkorea.or.kr/cms/resource/56/2612856_image2_1.jpg",
     "chaeseokgang": "https://tong.visitkorea.or.kr/cms/resource/44/3356644_image2_1.jpg",
     "taean-coast": "https://tong.visitkorea.or.kr/cms/resource/94/1962094_image2_1.jpg",

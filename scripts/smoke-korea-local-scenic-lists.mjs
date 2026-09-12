@@ -975,6 +975,86 @@ assert.ok(jcEoeun?.overview?.includes('정송강사'), '진천 어은계석 over
 const jcJeokdae = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:적대청람');
 assert.ok(jcJeokdae?.overview?.includes('암벽'), '진천 적대청람 overlay overview');
 
+const guryeMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gurye');
+const guryeTen = guryeMerged.filter((s) => s.localScenicListId === 'gurye-other');
+assert.equal(guryeTen.length, 10, '구례10경 10명');
+assert.equal(guryeTen[0]?.groupTitle, '구례 명소');
+assert.equal(guryeTen[0]?.blurb, '구례 1경');
+const guryeDeficitNames = [
+  '노고단 운해',
+  '반야봉 낙조',
+  '피아골 단풍',
+  '산동 산수유꽃',
+  '노고단 설경',
+];
+const guryeDeficit = guryeTen.filter((s) =>
+  guryeDeficitNames.includes(s.attractionName),
+);
+assert.equal(guryeDeficit.length, 5, '구례10경 결손 5명');
+assert.ok(
+  guryeDeficit.every((s) => s.overview && s.imageUrl),
+  '구례 결손 5명 overlay 사진·개요',
+);
+assert.ok(
+  guryeDeficit.every((s) => !s.contentId),
+  '구례 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(guryeDeficit.map((s) => s.imageUrl)).size,
+  5,
+  '구례 결손 5명 썸네일 서로 다름',
+);
+const gyeUnhae = resolveLocalScenicListSpotById('local-scenic:gurye-other:노고단운해');
+assert.ok(gyeUnhae?.overview?.includes('운해'), '구례 노고단 운해 overlay overview');
+const gyeBanya = resolveLocalScenicListSpotById('local-scenic:gurye-other:반야봉낙조');
+assert.ok(gyeBanya?.overview?.includes('낙조'), '구례 반야봉 낙조 overlay overview');
+const gyePiagol = resolveLocalScenicListSpotById('local-scenic:gurye-other:피아골단풍');
+assert.ok(gyePiagol?.overview?.includes('삼홍'), '구례 피아골 단풍 overlay overview');
+const gyeSandong = resolveLocalScenicListSpotById('local-scenic:gurye-other:산동산수유꽃');
+assert.ok(gyeSandong?.overview?.includes('산수유'), '구례 산동 산수유꽃 overlay overview');
+const gyeSnow = resolveLocalScenicListSpotById('local-scenic:gurye-other:노고단설경');
+assert.ok(gyeSnow?.overview?.includes('설화'), '구례 노고단 설경 overlay overview');
+
+const gangjinMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gangjin');
+const gangjinTwelve = gangjinMerged.filter((s) => s.localScenicListId === 'gangjin-other');
+assert.equal(gangjinTwelve.length, 12, '강진12경 12명');
+assert.equal(gangjinTwelve[0]?.groupTitle, '강진 명소');
+assert.equal(gangjinTwelve[0]?.blurb, '강진 1경');
+const gangjinDeficitNames = [
+  '월출산',
+  '가학산',
+  '백야김좌진기념관',
+  '남도별미식문화박물관',
+  '강진청자박물관',
+];
+const gangjinDeficit = gangjinTwelve.filter((s) =>
+  gangjinDeficitNames.includes(s.attractionName),
+);
+assert.equal(gangjinDeficit.length, 5, '강진12경 결손 5명');
+assert.ok(
+  gangjinDeficit.every((s) => s.overview && s.imageUrl),
+  '강진 결손 5명 overlay 사진·개요',
+);
+assert.ok(
+  gangjinDeficit.every((s) => !s.contentId),
+  '강진 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(gangjinDeficit.map((s) => s.imageUrl)).size,
+  5,
+  '강진 결손 5명 썸네일 서로 다름',
+);
+const gjWolchul = resolveLocalScenicListSpotById('local-scenic:gangjin-other:월출산');
+assert.ok(gjWolchul?.overview?.includes('경포대'), '강진 월출산 overlay overview');
+const gjGahak = resolveLocalScenicListSpotById('local-scenic:gangjin-other:가학산');
+assert.ok(gjGahak?.overview?.includes('제전마을'), '강진 가학산 overlay overview');
+const gjBaekya = resolveLocalScenicListSpotById('local-scenic:gangjin-other:백야김좌진기념관');
+assert.ok(gjBaekya?.overview?.includes('청산리'), '강진 백야김좌진기념관 overlay overview');
+const gjNamdo = resolveLocalScenicListSpotById('local-scenic:gangjin-other:남도별미식문화박물관');
+assert.ok(gjNamdo?.overview?.includes('사의재'), '강진 남도별미식문화박물관 overlay overview');
+const gjCeladon = resolveLocalScenicListSpotById('local-scenic:gangjin-other:강진청자박물관');
+assert.ok(gjCeladon?.overview?.includes('고려청자'), '강진 청자박물관 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

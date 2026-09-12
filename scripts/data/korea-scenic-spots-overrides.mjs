@@ -9289,7 +9289,15 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gurye',
       attractionName: '구례 수목원',
       contentId: '3001143',
-    }, // TODO contentId
+      galleryUrls: [
+        'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=9c111f7e-492d-42ae-82f5-3f9df7d31ba3',
+        'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=a51136f0-439a-46d8-84a2-0bc215c8eae3',
+        'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=7a669bfd-92f2-401b-9484-c2afb222578c',
+        'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=ac93961b-fba8-4feb-b747-26144ba32b50',
+        'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=60316838-bbf8-4b0b-96ed-b83aff97807b',
+        'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=6ef31460-52f7-4cb1-a5cd-f630aa6150eb',
+      ],
+    },
     {
       order: 8530,
       id: 'saseongam',

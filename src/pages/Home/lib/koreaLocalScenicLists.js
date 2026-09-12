@@ -813,6 +813,37 @@ const JC_EOEUN_3 = 'https://tong.visitkorea.or.kr/cms2/website/40/1436040.jpg';
 const JC_JEOKDAE = 'https://tong.visitkorea.or.kr/cms2/website/51/3343451.jpg';
 const JC_JEOKDAE_2 = 'https://tong.visitkorea.or.kr/cms2/website/64/3343464.jpg';
 const JC_JEOKDAE_3 = 'https://tong.visitkorea.or.kr/cms2/website/74/3343474.jpg';
+const vkScenicImg = (id) => `https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=${id}`;
+const GYE_NOGO_UNHAE = vkScenicImg('b77aaed7-f970-42d6-8df1-beead1d4ca33');
+const GYE_NOGO_UNHAE_2 = vkScenicImg('79ef576f-f392-4f80-bfc4-ba5fea640dcd');
+const GYE_NOGO_UNHAE_3 = vkScenicImg('4b1547e7-44cb-49d9-93a9-cd11a834b0e8');
+const GYE_BANYA = vkScenicImg('b2fb54e2-2be7-47d1-838f-bf0cada98366');
+const GYE_BANYA_2 = vkScenicImg('65ec10f8-8c7a-4e09-b827-8cb20e97e6c2');
+const GYE_BANYA_3 = vkScenicImg('65d1b496-ab69-4144-99a2-086c58caedc9');
+const GYE_PIAGOL = vkScenicImg('fc5efde4-a53b-4a39-9607-66eebdfd965a');
+const GYE_PIAGOL_2 = vkScenicImg('aa51788c-f230-4c31-a357-4829bdf4dff0');
+const GYE_PIAGOL_3 = vkScenicImg('c1ed2033-9a74-42c3-b5b4-00143f7d862c');
+const GYE_SANDONG = vkScenicImg('fe28d36e-f32b-4355-a8c1-b6e54526a2e1');
+const GYE_SANDONG_2 = vkScenicImg('5e490224-ad27-491e-973e-3c75755f1486');
+const GYE_SANDONG_3 = vkScenicImg('1ea3d24c-30a2-46e5-a025-26149136ae0d');
+const GYE_NOGO_SNOW = vkScenicImg('65f69570-fb78-4d74-9965-215ba64cf433');
+const GYE_NOGO_SNOW_2 = vkScenicImg('b08d8a75-4da7-4a47-82a6-f75347d43790');
+const GYE_NOGO_SNOW_3 = vkScenicImg('68714b1a-a7c2-4d34-bdb5-5cb71d4acea4');
+const GJ_WOLCHUL = 'https://tong.visitkorea.or.kr/cms/resource/81/3518681_image2_1.jpg';
+const GJ_WOLCHUL_2 = 'https://tong.visitkorea.or.kr/cms/resource/59/4057159_image2_1.jpg';
+const GJ_WOLCHUL_3 = 'https://tong.visitkorea.or.kr/cms/resource/82/3518682_image2_1.jpg';
+const GJ_GAHAK = 'https://tong.visitkorea.or.kr/cms/resource/09/3061309_image2_1.jpg';
+const GJ_GAHAK_2 = 'https://tong.visitkorea.or.kr/cms/resource/92/3061292_image2_1.jpg';
+const GJ_GAHAK_3 = 'https://tong.visitkorea.or.kr/cms/resource/01/3061301_image2_1.jpg';
+const GJ_BAEKYA = 'https://tong.visitkorea.or.kr/cms/resource/61/3340061_image2_1.jpg';
+const GJ_BAEKYA_2 = 'https://tong.visitkorea.or.kr/cms/resource/62/3340062_image2_1.jpg';
+const GJ_BAEKYA_3 = 'https://tong.visitkorea.or.kr/cms/resource/63/3340063_image2_1.jpg';
+const GJ_NAMDO = 'https://tong.visitkorea.or.kr/cms2/website/61/1676861.jpg';
+const GJ_NAMDO_2 = 'https://tong.visitkorea.or.kr/cms2/website/62/1676862.jpg';
+const GJ_NAMDO_3 = 'https://tong.visitkorea.or.kr/cms2/website/63/1676863.jpg';
+const GJ_CELADON = 'https://tong.visitkorea.or.kr/cms/resource/34/4101934_image2_1.jpg';
+const GJ_CELADON_2 = 'https://tong.visitkorea.or.kr/cms/resource/29/4101929_image2_1.jpg';
+const GJ_CELADON_3 = 'https://tong.visitkorea.or.kr/cms2/website/82/1676782.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1645,6 +1676,66 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청북도 진천군 문백면 평산리 일원 (백사장 암벽)',
     JC_JEOKDAE,
     [JC_JEOKDAE_2, JC_JEOKDAE_3],
+  ),
+  'local-scenic:gurye-other:노고단운해': localScenicPhotoOverlay(
+    '구례10경 제1경 노고단 운해는 산동면 성삼재에서 오르는 지리산 서봉 노고단(1,507m)입니다. 구례군 문화관광은 천왕봉·반야봉과 함께 지리산 3대 주봉이자 영봉이라 적으며, 남쪽에서 구름과 안개가 파도처럼 밀려와 노고단을 감쌀 때 구름 바다가 장관을 이룬다고 합니다. 한국관광공사에 따르면 정상 탐방은 예약제이며, 주소는 산동면 노고단로 1068(성삼재)입니다.',
+    '전라남도 구례군 산동면 노고단로 1068 (성삼재·노고단)',
+    GYE_NOGO_UNHAE,
+    [GYE_NOGO_UNHAE_2, GYE_NOGO_UNHAE_3],
+  ),
+  'local-scenic:gurye-other:반야봉낙조': localScenicPhotoOverlay(
+    '구례10경 제2경 반야봉 낙조는 해발 1,732m 지리산 제2봉입니다. 구례군 문화관광은 노고단에서 임걸령으로 이어지는 능선 동북방 약 5.5km의 지리산권 중심에 있어 전경을 한눈에 조망하고, 해질 녘 낙조가 번뇌를 사그라뜨린다고 적습니다. 한국관광공사는 남원시 산내면과 구례군 산동면 사이 서부 지리산 최고봉이며, 반야봉에서 본 낙조를 지리산 팔경의 하나로 적습니다.',
+    '전라남도 구례군 산동면 노고단로 1068 일원 (반야봉·성삼재 접근)',
+    GYE_BANYA,
+    [GYE_BANYA_2, GYE_BANYA_3],
+  ),
+  'local-scenic:gurye-other:피아골단풍': localScenicPhotoOverlay(
+    '구례10경 제3경 피아골 단풍은 토지면 연곡사 위 지리산 최대 활엽수림 계곡입니다. 구례군 문화관광은 연곡사를 지나 약 4km를 오르면 피아골이며, 산·물·사람이 붉게 물드는 삼홍의 명소라고 적습니다. 한국관광공사에 따르면 반야봉 중턱에서 발원한 물이 임걸령·피아골 삼거리·연곡사를 지나 섬진강으로 흐르고, 10월 중순부터 11월 초 단풍이 지리산 10경의 하나입니다.',
+    '전라남도 구례군 토지면 내서리 (피아골로·연곡사)',
+    GYE_PIAGOL,
+    [GYE_PIAGOL_2, GYE_PIAGOL_3],
+  ),
+  'local-scenic:gurye-other:산동산수유꽃': localScenicPhotoOverlay(
+    '구례10경 제5경 산동 산수유꽃은 산동면 위안·월계 일대입니다. 구례군 문화관광은 산수유가 2월 말부터 4월 초까지 피고, 11월에는 붉은 열매가 열리며 전국 생산량의 큰 몫을 차지한다고 적습니다. 한국관광공사에 따르면 위안월계 산수유마을 산수유는 전국의 70% 이상을 점유하고, 봄 산수유꽃축제와 가을 열매 축제가 열립니다.',
+    '전라남도 구례군 산동면 위안리 (위안월계 산수유마을)',
+    GYE_SANDONG,
+    [GYE_SANDONG_2, GYE_SANDONG_3],
+  ),
+  'local-scenic:gurye-other:노고단설경': localScenicPhotoOverlay(
+    '구례10경 제10경 노고단 설경은 같은 봉우리 겨울 설화입니다. 구례군 문화관광은 정상을 길상봉이라고도 하며, 선도성모를 모시던 남악사가 있어 산신 할머니의 단이라는 뜻의 노고단이라 이름 붙였다고 적습니다. 봄 철쭉·여름 원추리와 운해·가을 단풍과 함께 겨울 눈꽃이 철따라 극치를 이루고, 화엄사·천은사·만복대·피아골 코스가 이곳을 지납니다.',
+    '전라남도 구례군 산동면 노고단로 1068 (노고단·성삼재)',
+    GYE_NOGO_SNOW,
+    [GYE_NOGO_SNOW_2, GYE_NOGO_SNOW_3],
+  ),
+  'local-scenic:gangjin-other:월출산': localScenicPhotoOverlay(
+    '강진12경 제6경 월출산은 강진군 성전면과 영암군 경계의 국립공원입니다. 강진군 문화관광은 호남의 소금강이라 부르며 해발 809m 천황봉과 구정봉·장군봉·사자봉이 이어지고, 산행 기점은 성전면 월남리 경포대라고 적습니다. 한국관광공사 금릉경포대 안내에 따르면 천황봉·구정봉에서 흘러내리는 물줄기가 무명베를 늘어놓은 듯하여 경포대라 하며, 주소는 성전면 백운로 148-4(경포대지구)입니다.',
+    '전라남도 강진군 성전면 백운로 148-4 (월출산국립공원 경포대지구)',
+    GJ_WOLCHUL,
+    [GJ_WOLCHUL_2, GJ_WOLCHUL_3],
+  ),
+  'local-scenic:gangjin-other:가학산': localScenicPhotoOverlay(
+    '강진12경 제7경 가학산은 해남·영암·강진 성전면이 맞닿는 575m 바위산입니다. 디지털해남문화대전은 산세가 학이 나는 모습이라 가학산이라 하며, 정상은 돔형 바위 봉이고 북동쪽으로 월출산이 보인다고 적습니다. 강진 쪽 들머리는 성전면 월평리 제전마을입니다. 사진은 같은 능선 흑석산자연휴양림(옛 가학산) 한국관광공사 공식 사진으로 근사했습니다.',
+    '전라남도 강진군 성전면 월평리 (제전마을·가학산 들머리)',
+    GJ_GAHAK,
+    [GJ_GAHAK_2, GJ_GAHAK_3],
+  ),
+  'local-scenic:gangjin-other:백야김좌진기념관': localScenicPhotoOverlay(
+    '강진12경 제8경 백야김좌진기념관은 독립운동가 백야 김좌진 장군을 기리는 기념관입니다. 한국관광공사에 따르면 백야기념관은 충남 홍성군 갈산면 백야로546번길 12에 있으며, 청산리 전투를 이끈 생애와 계몽·독립운동을 전시합니다. 사진은 한국관광공사 백야기념관 공식 사진입니다.',
+    '충청남도 홍성군 갈산면 백야로546번길 12 (백야기념관)',
+    GJ_BAEKYA,
+    [GJ_BAEKYA_2, GJ_BAEKYA_3],
+  ),
+  'local-scenic:gangjin-other:남도별미식문화박물관': localScenicPhotoOverlay(
+    '강진12경 제9경 남도별미식문화박물관은 남도 별미·식문화를 다루는 시설명입니다. 강진군은 사의재 한옥체험관과 저잣거리에서 전통 먹거리·체험을 안내하며, 사의재는 다산 정약용이 유배 초기 머문 집입니다. 주소는 강진읍 사의재길 27입니다. 사진은 같은 읍 사의재 공식 사진으로 근사했습니다.',
+    '전라남도 강진군 강진읍 사의재길 27 (사의재 저잣거리)',
+    GJ_NAMDO,
+    [GJ_NAMDO_2, GJ_NAMDO_3],
+  ),
+  'local-scenic:gangjin-other:강진청자박물관': localScenicPhotoOverlay(
+    '강진12경 제10경 강진청자박물관은 대구면 고려청자박물관입니다. 강진군 문화관광에 따르면 1997년 개관해 청자요지와 고려청자 문화유산을 보존·전시하며, 고려 500여 년 청자 생산지이자 2007년 태안 죽도 목간에 탐진(강진)이 확인되었습니다. 주소는 대구면 청자촌길 33입니다.',
+    '전라남도 강진군 대구면 청자촌길 33 (고려청자박물관)',
+    GJ_CELADON,
+    [GJ_CELADON_2, GJ_CELADON_3],
   ),
 };
 

@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: 'AI 모델',
-  sessionNo: 2,
-  sessionPhase: 'Preview 피드백 수정',
-  branch: 'cursor/gemini-models-df4c',
-  previewPath: '/',
-  qaShareSlug: 'gemini',
+  title: '팔경 활용',
+  sessionNo: 28,
+  sessionPhase: '강진 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=gangjin',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-28-gangjin-overlays',
+    session: '팔경 활용 #28, 강진 결손 오버레이',
+    title: '강진12경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 강진12경 결손 5건(월출산·가학산·백야김좌진기념관·남도별미식문화박물관·강진청자박물관)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 금릉경포대·경포대지구·고려청자박물관 사진을 연결했고, 가학산은 같은 능선 흑석산자연휴양림, 남도별미식은 사의재 공식 사진으로 근사했으며, 백야김좌진기념관은 백야기념관 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gangjin 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T11:45:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-27-gurye-arboretum-photos',
+    session: '팔경 활용 #27, 구례 수목원 사진',
+    title: '구례 수목원 목록·본문 공식 사진',
+    detail:
+      'GATEO 선정 구례 수목원(gurye-arboretum)은 TourAPI contentId 3001143 개요만 있고 firstimage가 비어 목록·상세가 아이콘이었습니다. 한국관광공사 구석구석 공공 사진 6장을 대표 이미지·galleryUrls로 넣어 리스트 썸네일과 상세 본문 갤러리가 보이게 했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gurye 지역 대표 명소 구례 수목원.',
+    at: '2026-09-12T11:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-27-gurye-overlays',
+    session: '팔경 활용 #27, 구례 결손 오버레이',
+    title: '구례10경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 구례10경 결손 5건(노고단 운해·반야봉 낙조·피아골 단풍·산동 산수유꽃·노고단 설경)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 노고단 정상·운해·설화·반야봉 낙조·피아골 단풍·산동 산수유꽃 사진을 연결했고, 구례군청 피아골 출렁다리 단풍 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gurye 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T11:20:00.000Z',
+  },
   {
     id: '2026-09-12-gemini-models-2-health-quality',
     session: 'AI 모델 #2, Preview 피드백 수정',
