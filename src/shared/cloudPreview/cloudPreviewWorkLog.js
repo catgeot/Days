@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 30,
-  sessionPhase: '금산 결손 오버레이',
+  sessionNo: 31,
+  sessionPhase: '금산 은행나무·썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=geumsan',
   qaShareSlug: 'palgyeong-use',

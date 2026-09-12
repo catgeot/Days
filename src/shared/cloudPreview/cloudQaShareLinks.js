@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'gallery-fresh',
+    label: '갤러리 DB 캐시 + 최신 사진',
+    branch: 'cursor/gallery-swr-6b36',
+    destination:
+      'https://days-git-cursor-gallery-swr-6b36-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
     slug: 'gemini',
     label: 'Gemini 2.5 종료 교체 · 무니 채팅',
     branch: 'cursor/gemini-models-df4c',
