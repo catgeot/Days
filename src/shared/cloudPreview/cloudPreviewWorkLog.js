@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '한국 투어티켓',
-  sessionNo: 1,
-  sessionPhase: '본문 TNA 섹션',
+  sessionNo: 2,
+  sessionPhase: '사람 Preview QA',
   branch: 'cursor/korea-tna-strip-ef65',
   previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
   qaShareSlug: 'korea-tna-strip',
@@ -24,12 +24,36 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-12-korea-tna-strip-2-preview-qa',
+    session: '한국 투어티켓 #2, 사람 Preview QA',
+    title: '본문 투어 카드는 최대 10개',
+    detail:
+      '사람 Preview에서 경복궁 등 명승·축제 상세 투어·티켓 카드 노출을 확인했습니다. EventTnaStrip은 마이리얼트립에서 size 10을 요청하고 그 결과를 가로 스크롤로 나열합니다. 검색이 10개 미만이면 그만큼만 보이고, 더보기는 마이리얼트립 검색입니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:10:00.000Z',
+  },
+  {
     id: '2026-09-12-korea-tna-strip-1-mvp',
     session: '한국 투어티켓 #1, 본문 TNA 섹션',
     title: '축제·명승 본문에 마이리얼트립 투어·티켓 카드 섹션 구현',
     detail:
       '축제 상세(FestivalDetailSheet)와 명승 상세(ThemeSpotDetailModal) 본문에 마이리얼트립 투어·티켓 카드 스트립(FestivalTnaStrip, ScenicTnaStrip, EventTnaStrip)을 신설했습니다. 숙소 카드와 조화로운 규격(148px~168px 가로 스크롤 카드, 썸네일, 카테고리, 평점, 가격, 딥링크)으로 주변 체험·액티비티를 노출하며, 우측 상단 더보기 링크를 함께 제공합니다. Preview /qa/korea-tna-strip — 경복궁 등 명승 상세 및 축제 상세 본문.',
     at: '2026-09-12T10:00:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-26-jincheon-overlays',
+    session: '팔경 활용 #26, 상산(진천) 결손 오버레이',
+    title: '상산팔경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 상산팔경 결손 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 미호천 농다리·초평호 미르숲·진천 농교·보탑사·정송강사 사진을 연결했고, 금계완사는 같은 군 농교 물가, 상산모운은 만뢰산 보탑사, 우담제월·적대청람은 초평호·미르숲 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jincheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T10:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-25-jinju-overlays',
+    session: '팔경 활용 #25, 진주 결손 오버레이',
+    title: '진주8경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 진주8경 결손 6건(남강 의암·뒤벼리·새벼리·망진산 봉수대·비봉산의 봄·월아산 해돋이)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 의기사와 의암·망진산 봉수대 사진을 연결했고, 뒤벼리는 남가람공원·선학산전망대, 새벼리는 석류공원, 비봉산은 의곡사, 월아산은 청곡사 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jinju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T09:55:00.000Z',
   },
   {
     id: '2026-09-12-palgyeong-use-24-changnyeong-alias',

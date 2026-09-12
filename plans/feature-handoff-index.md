@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### AI 모델
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `7ab5d0fb` · PR [#224](https://github.com/catgeot/Days/pull/224) · Edge 배포됨 · **사람 Preview** |
+| **브랜치** | `cursor/gemini-models-df4c` |
+| **tip** | `7ab5d0fb` |
+| **PR** | [#224](https://github.com/catgeot/Days/pull/224) |
+| **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
+| **Preview** | `/qa/gemini` → git Preview `/` |
+| **소유** | `geminiModels.js` · `gemini-proxy` · `smoke-health` P0-3 · 위키·툴킷·매거진·무니 |
+| **금지** | UI 리디자인 · 최신 Flash(3.6+) 추격 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gemini-models` · `smoke:health` P0-3 FAST+QUALITY · `vite build` |
+
+**다음 제시어**:
+
+```
+AI 모델 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/gemini-models-df4c · PR #224 · Preview /qa/gemini
+금지: UI 리디자인 · 최신 Flash 추격 · feature에 plans/** 커밋
+작업: 무니 대화가 이전과 같으면 PR #224 병합 후 이 행 삭제. 추가 티어 피드백이면 모델 티어만 수정
+```
+
+---
+
 ### 한국 투어티켓
 
 | | |
@@ -397,28 +424,28 @@
 
 | | |
 |--|--|
-| **상태** | **#25** tip `7f537719` · PR [#222](https://github.com/catgeot/Days/pull/222) · **#26 상산(진천) 결손 오버레이** |
+| **상태** | **#26** tip `29c7bb3a` · PR [#225](https://github.com/catgeot/Days/pull/225) · **#27 구례 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `7f537719` |
-| **PR** | [#222](https://github.com/catgeot/Days/pull/222) · [#221](https://github.com/catgeot/Days/pull/221) merge ✅ |
+| **tip** | `29c7bb3a` |
+| **PR** | [#225](https://github.com/catgeot/Days/pull/225) · [#222](https://github.com/catgeot/Days/pull/222) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=jinju` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=jincheon` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). 순수 사진/개요 누락 **178**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **상산팔경 6** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). 순수 사진/개요 누락 **172**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **구례10경 5** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #26, 상산(진천) 결손 오버레이
+팔경 활용 #27, 구례 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 상산팔경 사진·개요 없는 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jincheon
+작업: 구례10경 사진·개요 없는 5건(노고단 운해·반야봉 낙조·피아골 단풍·산동 산수유꽃·노고단 설경)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gurye
 ```
 
 ---

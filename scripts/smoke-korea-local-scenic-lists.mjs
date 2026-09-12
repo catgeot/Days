@@ -891,6 +891,90 @@ const cngMannyeon = resolveLocalScenicListSpotById(
 );
 assert.ok(cngMannyeon?.overview?.includes('만년교'), '창녕 만년교 overlay overview');
 
+const jinjuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jinju');
+const jinjuEight = jinjuMerged.filter((s) => s.localScenicListId === 'jinju-palgyeong');
+assert.equal(jinjuEight.length, 8, '진주8경 8명');
+assert.equal(jinjuEight[0]?.groupTitle, '진주 팔경');
+assert.equal(jinjuEight[0]?.blurb, '진주 1경');
+const jinjuDeficitNames = [
+  '남강 의암',
+  '뒤벼리',
+  '새벼리',
+  '망진산 봉수대',
+  '비봉산의 봄',
+  '월아산 해돋이',
+];
+const jinjuDeficit = jinjuEight.filter((s) => jinjuDeficitNames.includes(s.attractionName));
+assert.equal(jinjuDeficit.length, 6, '진주8경 결손 6명');
+assert.ok(
+  jinjuDeficit.every((s) => s.overview && s.imageUrl),
+  '진주 결손 6명 overlay 사진·개요',
+);
+assert.ok(
+  jinjuDeficit.every((s) => !s.contentId),
+  '진주 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jinjuDeficit.map((s) => s.imageUrl)).size,
+  6,
+  '진주 결손 6명 썸네일 서로 다름',
+);
+const jinjuUiam = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:남강의암');
+assert.ok(jinjuUiam?.overview?.includes('의암'), '진주 의암 overlay overview');
+const jinjuDwibyeori = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:뒤벼리');
+assert.ok(jinjuDwibyeori?.overview?.includes('절벽'), '진주 뒤벼리 overlay overview');
+const jinjuSaebyeori = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:새벼리');
+assert.ok(jinjuSaebyeori?.overview?.includes('석류공원'), '진주 새벼리 overlay overview');
+const jinjuMangjin = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:망진산봉수대');
+assert.ok(jinjuMangjin?.overview?.includes('봉수'), '진주 망진산 overlay overview');
+const jinjuBibong = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:비봉산의봄');
+assert.ok(jinjuBibong?.overview?.includes('진산'), '진주 비봉산 overlay overview');
+const jinjuWola = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:월아산해돋이');
+assert.ok(jinjuWola?.overview?.includes('해돋이'), '진주 월아산 overlay overview');
+
+const jincheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jincheon');
+const jincheonEight = jincheonMerged.filter((s) => s.localScenicListId === 'jincheon-palgyeong');
+assert.equal(jincheonEight.length, 8, '상산팔경 8명');
+assert.equal(jincheonEight[0]?.groupTitle, '진천 팔경');
+assert.equal(jincheonEight[0]?.blurb, '진천 1경');
+const jincheonDeficitNames = [
+  '평사낙안',
+  '우담제월',
+  '금계완사',
+  '상산모운',
+  '어은계석',
+  '적대청람',
+];
+const jincheonDeficit = jincheonEight.filter((s) =>
+  jincheonDeficitNames.includes(s.attractionName),
+);
+assert.equal(jincheonDeficit.length, 6, '상산팔경 결손 6명');
+assert.ok(
+  jincheonDeficit.every((s) => s.overview && s.imageUrl),
+  '진천 결손 6명 overlay 사진·개요',
+);
+assert.ok(
+  jincheonDeficit.every((s) => !s.contentId),
+  '진천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jincheonDeficit.map((s) => s.imageUrl)).size,
+  6,
+  '진천 결손 6명 썸네일 서로 다름',
+);
+const jcPyeongsa = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:평사낙안');
+assert.ok(jcPyeongsa?.overview?.includes('백사장'), '진천 평사낙안 overlay overview');
+const jcUdam = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:우담제월');
+assert.ok(jcUdam?.overview?.includes('우담'), '진천 우담제월 overlay overview');
+const jcGeumgye = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:금계완사');
+assert.ok(jcGeumgye?.overview?.includes('금계'), '진천 금계완사 overlay overview');
+const jcSangsan = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:상산모운');
+assert.ok(jcSangsan?.overview?.includes('상산'), '진천 상산모운 overlay overview');
+const jcEoeun = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:어은계석');
+assert.ok(jcEoeun?.overview?.includes('정송강사'), '진천 어은계석 overlay overview');
+const jcJeokdae = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:적대청람');
+assert.ok(jcJeokdae?.overview?.includes('암벽'), '진천 적대청람 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
