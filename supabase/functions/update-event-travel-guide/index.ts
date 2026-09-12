@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { GEMINI_QUALITY, GEMINI_WRITE } from "../_shared/geminiModels.ts";
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
 import { buildEventTravelGuidePrompt } from "../_shared/eventTravelGuidePrompts.ts";
 import {
@@ -13,7 +14,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const MODELS_TO_TRY = ["gemini-2.5-pro", "gemini-2.5-flash"];
+const MODELS_TO_TRY = [GEMINI_WRITE, GEMINI_QUALITY];
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 4000;
 

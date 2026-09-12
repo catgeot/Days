@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '한국 투어티켓',
-  sessionNo: 4,
-  sessionPhase: '크게는 가로로 카드만',
-  branch: 'cursor/korea-tna-strip-ef65',
-  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
-  qaShareSlug: 'korea-tna-strip',
+  title: 'AI 모델',
+  sessionNo: 2,
+  sessionPhase: 'Preview 피드백 수정',
+  branch: 'cursor/gemini-models-df4c',
+  previewPath: '/',
+  qaShareSlug: 'gemini',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-gemini-models-2-health-quality',
+    session: 'AI 모델 #2, Preview 피드백 수정',
+    title: '사이트 점검이 QUALITY 3.5 Flash도 ping',
+    detail:
+      '무니 일반 대화는 FAST라 그대로입니다. 워크스페이스 사이트 점검(smoke-health P0-3)이 3.1-flash-lite만 하드코딩하고 있어, geminiModels SSOT의 FAST·QUALITY를 같이 ping하게 바꿨습니다. 3.5-flash가 404면 헬스도 실패합니다. Preview /qa/gemini.',
+    at: '2026-09-12T10:25:00.000Z',
+  },
+  {
+    id: '2026-09-12-gemini-models-1-retire-2-5',
+    session: 'AI 모델 #1, 2.5 종료 교체',
+    title: 'Gemini 2.5 Flash/Pro를 3.5 Flash·3.1 Pro로 교체',
+    detail:
+      'Vertex 퇴직 2026-10-20인 gemini-2.5-flash/pro를 사이트에서 뺐습니다. 무니 일반 대화는 기존 3.1-flash-lite, 품질·인트로·리뷰는 3.5-flash, 위키·툴킷·매거진·일기는 3.1-pro-preview(폴백 3.5-flash)입니다. 옛 2.5 ID는 프록시에서 자동 매핑됩니다. Preview /qa/gemini — 홈 무니 한 턴.',
+    at: '2026-09-12T10:20:00.000Z',
+  },
   {
     id: '2026-09-12-korea-tna-strip-4-large-hscroll',
     session: '한국 투어티켓 #4, 크게는 가로로 카드만',
