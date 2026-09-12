@@ -237,6 +237,12 @@
 - **VERIFY**: `npm run smoke:release-notes-footer` PASS
 - **PROD**: 로고 패널 → Updates. 배포 후 확인
 
+## 한국 투어티켓 — 실행 계획서 수립 및 클룩·렌터카 연계 준비
+
+- **플랜**: [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) 신설
+- **내용**: 본문 TNA 마이리얼트립 카드 하단에 클룩 즐길거리("즐길거리 클룩에서 더보기") 및 렌터카("렌터카 최저가 비교") 아웃링크 칩 연계 방안 확정 및 세션 로드맵 세분화.
+- **다음**: `한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동` 진행.
+
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
 
 - **세션** `AI 모델 #1, 2.5 종료 교체`
