@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#15 push** `4b354407` · **#16 사람 Preview QA** (영동 한천 7·양산 6) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#17 push** `61c72ba3` · **#18 사람 Preview QA** (한천 공식명·지구본 검색) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -114,7 +114,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 14 | `팔경 활용 #14, 하동 검색 그룹 묶기` | A | **완료** · PR [#216](https://github.com/catgeot/Days/pull/216) merge ✅ `210d8a56` |
 | 15 | `팔경 활용 #15, 영동 결손 오버레이` | A | **완료** · tip `4b354407` · 한천 7·양산 6 |
 | 16 | `팔경 활용 #16, 사람 Preview QA 피드백 반영` | A | **완료** · tip `64e018c8` · 한천 검색 8행 주입 · 양산 12경 내원사계곡·황산공원 오버레이 |
-| 17 | `팔경 활용 #17, 사람 Preview QA` | A 사람 | **열기 가능** · 영동 16행 및 양산/한천 검색 확인 · 그다음 함안9경 7 |
+| 17 | `팔경 활용 #17, 한천 공식명·지구본 검색` | A | **완료** · tip `61c72ba3` · PR [#217](https://github.com/catgeot/Days/pull/217) · 한천팔경 공식명 · 지구본 한천 검색 |
+| 18 | `팔경 활용 #18, 사람 Preview QA` | A 사람 | **열기 가능** · 한천 그룹명·지구본 검색 · 그다음 함안9경 7 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -264,7 +265,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 영동 한천팔경 사진·개요 없는 7건(화헌악·용연대·산양벽·청학굴·법존암·사군봉·냉천정)과 양산팔경 6건(비봉산·봉황대·함벽정·여의정·자풍서당·용암)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeongdong
 ```
 
-### §1.2 A #16 다음 제시어
+### §1.2 A #16 다음 제시어 (실행됨)
 
 ```
 팔경 활용 #16, 사람 Preview QA
@@ -274,6 +275,30 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: /korea/theme/scenic?hub=yeongdong 한천팔경 결손 7행·양산팔경 결손 6행 썸네일·개요 · 행마다 사진이 다른지
+```
+
+### §1.2 A #17 한천 공식명·지구본 검색 (실행됨)
+
+```
+팔경 활용 #17, 한천 공식명·지구본 검색
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #217 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 한천 검색 그룹명을 공식 한천팔경으로 · 지구본 홈 「한천」에 한천팔경 행 주입
+```
+
+### §1.2 A #18 다음 제시어
+
+```
+팔경 활용 #18, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #217 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 명승 검색 「한천」그룹명이 한천팔경인지 · 지구본 홈 「한천」에 한천팔경 행이 있는지 · ?hub=yeongdong 한천·양산이 따로 묶이는지
 ```
 
 
