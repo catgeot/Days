@@ -88,16 +88,26 @@
 - **잔여**: 다음 허브 **진주8경 6**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #25 다음 — 진주 결손 오버레이
+## 팔경 활용 #25 — 진주 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #25, 진주 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `7f537719` · PR [#222](https://github.com/catgeot/Days/pull/222)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 진주8경 결손 6건(남강 의암·뒤벼리·새벼리·망진산 봉수대·비봉산의 봄·월아산 해돋이)의 개요·주소·공식 사진 보강. 한국관광공사 의기사와 의암·망진산 봉수대 사진을 연결했고, 뒤벼리는 남가람공원·선학산전망대, 새벼리는 석류공원, 비봉산은 의곡사, 월아산은 청곡사 공식 사진으로 근사했다.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=jinju`
+- **잔여**: 사진/개요 순수 누락 **178**/876. QA 후 다음 허브 **상산팔경 6**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #26 다음 — 상산(진천) 결손 오버레이
 
 ```
-팔경 활용 #25, 진주 결손 오버레이
+팔경 활용 #26, 상산(진천) 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 진주8경 사진·개요 없는 6건(남강 의암·뒤벼리·새벼리·망진산 봉수대·비봉산의 봄·월아산 해돋이)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jinju
+작업: 상산팔경 사진·개요 없는 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jincheon
 ```
 
 ## 같은 세션 QA — AGENTS.md 전 주제 규칙
@@ -105,4 +115,4 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#25 진주 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#26 상산(진천) 결손 오버레이**
