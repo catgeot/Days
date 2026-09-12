@@ -200,6 +200,14 @@
 - **PROD**: https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung
 - **다음 제시어 없음** (주제 종료). 인덱스 행을 병합 완료로 닫음
 
+## 한국 투어티켓 — 릴리스 노트 Updates 반영
+
+- **세션**: 사람 요청 — 합의 초안을 로고 패널 Updates에 넣음
+- **브랜치**: `cursor/tna-notes-058f` · merge `488816f5` · PR [#227](https://github.com/catgeot/Days/pull/227) merge ✅
+- **완료**: `releaseNotes.js` 맨 앞 `2026-09-12` KO+EN. 홈 자동 팝업 없음
+- **VERIFY**: `npm run smoke:release-notes-footer` PASS
+- **PROD**: 로고 패널 → Updates. 배포 후 확인
+
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
 
 - **세션** `AI 모델 #1, 2.5 종료 교체`
