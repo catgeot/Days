@@ -1421,6 +1421,10 @@
         "nearScenicMore": "More {{region}} scenic spots",
         "stayTour": "Stays · tours",
         "stayKeyword": "Stays · {{keyword}}",
+        "stayStripTitle": "Your trip dates",
+        "stayStripHint": "Search stays near this scenic site for the nights you pick.",
+        "tnaStripTitle": "Tours & Tickets",
+        "tnaStripHint": "Activities and admission tickets to enjoy alongside the festival",
         "plannerKeyword": "Planner · {{keyword}}",
         "tourKeyword": "Tours · {{keyword}}",
         "packages": "Packages",
@@ -1585,6 +1589,8 @@
         "stayKeyword": "Stays · {{keyword}}",
         "stayStripTitle": "Your trip dates",
         "stayStripHint": "Search stays near this scenic site for the nights you pick.",
+        "tnaStripTitle": "Tours & Tickets",
+        "tnaStripHint": "Activities, experiences, and tickets to enjoy around this spot",
         "tourKeyword": "Tours · {{keyword}}",
         "packageCtaFallback": "View packages",
         "loadingDetail": "Loading details…",
@@ -1898,6 +1904,14 @@
         "midWeekend": "Mid-season weekend",
         "closing": "Closing"
       }
+    },
+    "tnaStrip": {
+      "title": "Tours & Tickets",
+      "hint": "Browse nearby tours, activities, and admission tickets bookable on MyRealTrip.",
+      "activitiesTitle": "{{place}} Tours & Tickets",
+      "moreOnMrt": "More on MRT",
+      "empty": "No tours or tickets found for this location.",
+      "loading": "Loading tours and tickets…"
     },
     "executionStrip": {
       "title": "Book & go",

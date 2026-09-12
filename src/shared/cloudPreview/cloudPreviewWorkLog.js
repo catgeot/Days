@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 24,
-  sessionPhase: '창령→창녕 별칭',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=changnyeong',
-  qaShareSlug: 'palgyeong-use',
+  title: '한국 투어티켓',
+  sessionNo: 1,
+  sessionPhase: '본문 TNA 섹션',
+  branch: 'cursor/korea-tna-strip-ef65',
+  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
+  qaShareSlug: 'korea-tna-strip',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-korea-tna-strip-1-mvp',
+    session: '한국 투어티켓 #1, 본문 TNA 섹션',
+    title: '축제·명승 본문에 마이리얼트립 투어·티켓 카드 섹션 구현',
+    detail:
+      '축제 상세(FestivalDetailSheet)와 명승 상세(ThemeSpotDetailModal) 본문에 마이리얼트립 투어·티켓 카드 스트립(FestivalTnaStrip, ScenicTnaStrip, EventTnaStrip)을 신설했습니다. 숙소 카드와 조화로운 규격(148px~168px 가로 스크롤 카드, 썸네일, 카테고리, 평점, 가격, 딥링크)으로 주변 체험·액티비티를 노출하며, 우측 상단 더보기 링크를 함께 제공합니다. Preview /qa/korea-tna-strip — 경복궁 등 명승 상세 및 축제 상세 본문.',
+    at: '2026-09-12T10:00:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-24-changnyeong-alias',
     session: '팔경 활용 #24, 창령→창녕 별칭',

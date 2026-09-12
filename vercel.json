@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/korea-tna-strip",
+      "destination": "https://days-git-cursor-korea-tna-strip-ef65-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-stay",
       "destination": "https://days-git-cursor-scenic-stay-692c-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
       "permanent": false

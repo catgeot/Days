@@ -66,6 +66,7 @@ import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import FestivalStayStrip from './FestivalStayStrip';
+import FestivalTnaStrip from './FestivalTnaStrip';
 import FestivalMooniFab from './FestivalMooniFab';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
@@ -602,6 +603,10 @@ export default function FestivalDetailSheet({
     festivalCross?.tna?.keyword ||
     '';
   const showFestivalStayStrip = Boolean(festivalCross?.stay?.location);
+  const showFestivalTnaStrip = Boolean(
+    (festivalCross?.tna?.location || festivalCross?.stay?.location) &&
+      festivalCross?.tna?.keyword,
+  );
 
   const openScenicPage = () => {
     const back = {
@@ -1482,9 +1487,19 @@ export default function FestivalDetailSheet({
                 </div>
               ) : null}
 
-              {(festivalTnaHref || festivalCross?.packageCta?.url) && (
+              {showFestivalTnaStrip ? (
+                <div className="pt-1">
+                  <FestivalTnaStrip
+                    item={item}
+                    festivalCross={festivalCross}
+                    locale={locale}
+                  />
+                </div>
+              ) : null}
+
+              {((!showFestivalTnaStrip && festivalTnaHref) || festivalCross?.packageCta?.url) && (
                 <div className="space-y-3 pt-1">
-                  {festivalTnaHref ? (
+                  {!showFestivalTnaStrip && festivalTnaHref ? (
                     <div className="space-y-2">
                       <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                         {t('korea.festival.detail.stayTour')}
