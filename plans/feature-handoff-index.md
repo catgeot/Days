@@ -14,6 +14,60 @@
 
 ## 활성 목록
 
+### AI 모델
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `9a0dc58d` · PR [#224](https://github.com/catgeot/Days/pull/224) · Edge 배포됨 · **사람 Preview** |
+| **브랜치** | `cursor/gemini-models-df4c` |
+| **tip** | `9a0dc58d` |
+| **PR** | [#224](https://github.com/catgeot/Days/pull/224) |
+| **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
+| **Preview** | `/qa/gemini` → git Preview `/` |
+| **소유** | `geminiModels.js` · `gemini-proxy` · 위키·툴킷·매거진·무니 |
+| **금지** | UI 리디자인 · 최신 Flash(3.6+) 추격 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gemini-models` · `vite build` · LIVE proxy ping |
+
+**다음 제시어**:
+
+```
+AI 모델 #2, Preview 피드백 수정
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/gemini-models-df4c · PR #224 · Preview /qa/gemini
+금지: UI 리디자인 · 최신 Flash 추격 · feature에 plans/** 커밋
+작업: 사람 Preview 피드백이 있으면 모델 티어만 수정. 없으면 PR 병합 후 이 행 삭제
+```
+
+---
+
+### 한국 투어티켓
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `b47d8880` · PR [#223](https://github.com/catgeot/Days/pull/223) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/korea-tna-strip-ef65` |
+| **tip** | `b47d8880` |
+| **PR** | [#223](https://github.com/catgeot/Days/pull/223) |
+| **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
+| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
+| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `FestivalDetailSheet.jsx` · `ThemeSpotDetailModal.jsx` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:korea-tna-strip` · `npm run build` PASS |
+
+**다음 제시어**:
+
+```
+한국 투어티켓 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 경복궁 등 명승 상세 및 축제 상세 본문에서 투어·티켓 카드 섹션(썸네일·가격·평점·더보기) 정상 노출 확인
+```
+
+---
+
 ### 명승 숙소
 
 | | |
