@@ -92,7 +92,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#22** tip `ddd01ca0` · PR [#221](https://github.com/catgeot/Days/pull/221) · **#23 진주 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#23** tip `251cd352` · PR [#221](https://github.com/catgeot/Days/pull/221) · **#24 진주 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -124,7 +124,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 20 | `팔경 활용 #20, 사람 Preview QA` | A 사람 | **완료** · 함안·사천 Preview QA PASS ✅ |
 | 21 | `팔경 활용 #21, 이천 결손 오버레이` | A | **완료** · tip `7903a22c` · PR [#220](https://github.com/catgeot/Days/pull/220) · 이천 6 |
 | 22 | `팔경 활용 #22, 창녕 결손 오버레이` | A | **완료** · tip `ddd01ca0` · PR [#221](https://github.com/catgeot/Days/pull/221) · 창녕 6 |
-| 23 | `팔경 활용 #23, 진주 결손 오버레이` | A | **열기 가능** · 진주8경 6 · Preview QA는 사람 병행(세션 생략) |
+| 23 | `팔경 활용 #23, 창녕 검색 버그픽스` | A | **완료** · tip `251cd352` · PR [#221](https://github.com/catgeot/Days/pull/221) · 창령 오탐·관광지 빈 문구 |
+| 24 | `팔경 활용 #24, 진주 결손 오버레이` | A | **열기 가능** · 진주8경 6 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -358,10 +359,22 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 창녕구경 사진·개요 없는 6건(우포늪과 따오기·화왕산 억새와 진달래·낙동강유채축제와 남지개비리·만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑·교동과 송현동고분군·3·1민속문화제와 영산만년교)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=changnyeong
 ```
 
-### §1.2 A #23 진주 결손 오버레이 (다음)
+### §1.2 A #23 창녕 검색 버그픽스 (실행됨)
 
 ```
-팔경 활용 #23, 진주 결손 오버레이
+팔경 활용 #23, 창녕 검색 버그픽스
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 창령 검색이 창녕구경을 넣지 않게. 창녕 관광지는 분류칩 건수와 목록이 맞고 빈 문구가 칩과 함께 뜨지 않게.
+```
+
+### §1.2 A #24 진주 결손 오버레이 (다음)
+
+```
+팔경 활용 #24, 진주 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
