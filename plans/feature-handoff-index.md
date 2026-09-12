@@ -45,25 +45,25 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `c567a1c2` · PR [#223](https://github.com/catgeot/Days/pull/223) · 사람 Preview 카드 노출 확인 · 목록 **최대 10개** |
+| **상태** | **#3 push** · tip `404878dc` · PR [#223](https://github.com/catgeot/Days/pull/223) · 숙소·투어 **기본 20개** · **크게 보기** 세로 펼침 |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `c567a1c2` |
+| **tip** | `404878dc` |
 | **PR** | [#223](https://github.com/catgeot/Days/pull/223) |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
-| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `FestivalDetailSheet.jsx` · `ThemeSpotDetailModal.jsx` |
+| **소유** | `EventTnaStrip.jsx` · `EventStayStrip.jsx` · `StripListLargeToggle.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `npm run smoke:korea-tna-strip` · `npm run build` PASS |
+| **VERIFY** | `npm run smoke:korea-tna-strip` · `npm run smoke:korea-scenic-stay` · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-한국 투어티켓 #3, Preview OK면 PR 병합
+한국 투어티켓 #4, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
 금지: UI 임의 리디자인 · feature에 plans/** 커밋
-작업: 본문 투어 카드는 최대 10개(더보기는 마이리얼트립). 개수 조정이면 EventTnaStrip size만 수정. 추가 피드백 없으면 PR #223 병합 후 이 행 삭제
+작업: 숙소·투어 카드 기본 20개 · 「크게」세로 펼침이 맞으면 PR #223 병합 후 이 행 삭제. 추가 피드백이면 개수·펼침만 수정
 ```
 
 ---

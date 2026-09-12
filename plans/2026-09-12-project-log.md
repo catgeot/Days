@@ -160,13 +160,25 @@
 - **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
 - **다음**: 개수 조정이면 `EventTnaStrip` `size`만 수정. 추가 피드백 없으면 PR #223 병합 후 인덱스 행 삭제
 
+## 한국 투어티켓 #3 — 숙소·투어 20개 · 크게 보기 (Cloud)
+
+- **세션**: `한국 투어티켓 #3, Preview OK면 PR 병합`
+- **브랜치**: `cursor/korea-tna-strip-ef65` · tip `404878dc` · PR [#223](https://github.com/catgeot/Days/pull/223)
+- **사람 피드백**: 숙소·투어 모두 기본 20개 · 「크게 보기」로 펼쳐 아래로 스크롤
+- **완료**:
+  1. `EventTnaStrip` `MRT_TNA_FETCH_SIZE`(20) · `EventStayStrip` `MRT_STAY_PAGE_SIZE`(20)
+  2. `StripListLargeToggle` — 축제·명승 리스트와 같은 「크게/기본」칩. 펼치면 1열(sm 2열) 세로 그리드, 접으면 기존 가로 스크롤
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS · `npm run build` PASS
+- **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
+- **다음**: 사람 Preview — 20개·크게 펼침 확인. OK·추가 피드백 없으면 PR #223 병합 후 인덱스 행 삭제
+
 ```
-한국 투어티켓 #3, Preview OK면 PR 병합
+한국 투어티켓 #4, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
 금지: UI 임의 리디자인 · feature에 plans/** 커밋
-작업: 본문 투어 카드는 최대 10개(더보기는 마이리얼트립). 개수 조정이면 EventTnaStrip size만 수정. 추가 피드백 없으면 PR #223 병합 후 이 행 삭제
+작업: 숙소·투어 카드 기본 20개 · 「크게」세로 펼침이 맞으면 PR #223 병합 후 이 행 삭제. 추가 피드백이면 개수·펼침만 수정
 ```
 
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
