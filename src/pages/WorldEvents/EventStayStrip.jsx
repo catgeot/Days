@@ -108,11 +108,11 @@ function StayCard({ item, price, large = false }) {
       rel="noopener noreferrer sponsored"
       className={
         large
-          ? 'flex w-full flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40'
+          ? 'flex w-[220px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40 sm:w-[252px]'
           : 'flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40 sm:w-[168px]'
       }
     >
-      <div className={`relative w-full bg-stone-100 ${large ? 'h-32' : 'h-[88px]'}`}>
+      <div className={`relative w-full bg-stone-100 ${large ? 'h-[132px]' : 'h-[88px]'}`}>
         {item.imageUrl ? (
           <img src={item.imageUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
         ) : (
@@ -504,13 +504,7 @@ export default function EventStayStrip({
         ) : null}
 
         {status === 'ready' && items?.length ? (
-          <div
-            className={
-              listLarge
-                ? 'grid grid-cols-1 gap-2.5 sm:grid-cols-2'
-                : '-mx-1 flex gap-2 overflow-x-auto px-1 pb-1'
-            }
-          >
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
             {items.map((item) => (
               <StayCard
                 key={item.itemId || item.productUrl || item.itemName}

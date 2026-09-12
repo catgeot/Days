@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '한국 투어티켓',
-  sessionNo: 3,
-  sessionPhase: '20개·크게 보기',
+  sessionNo: 4,
+  sessionPhase: '크게는 가로로 카드만',
   branch: 'cursor/korea-tna-strip-ef65',
   previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
   qaShareSlug: 'korea-tna-strip',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-korea-tna-strip-4-large-hscroll',
+    session: '한국 투어티켓 #4, 크게는 가로로 카드만',
+    title: '크게 보기 = 카드만 키우고 좌우 스크롤 유지',
+    detail:
+      '세로 그리드는 본문 스킵을 막아 뺐습니다. 「크게」는 숙소·투어 카드를 더 크게(220~252px) 만들고 가로 스크롤을 유지합니다. 아래로 스크롤하면 섹션을 바로 지나갈 수 있습니다. 5개씩 더보기는 MRT 더보기와 겹쳐 넣지 않았습니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:30:00.000Z',
+  },
   {
     id: '2026-09-12-korea-tna-strip-3-large-20',
     session: '한국 투어티켓 #3, 20개·크게 보기',

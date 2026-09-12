@@ -97,8 +97,10 @@ assert.match(eventTnaSrc, /buildMrtTnaSearchMoreUrl/, 'EventTnaStrip uses buildM
 assert.match(eventTnaSrc, /canShowMrtTnaStrip/, 'EventTnaStrip checks canShowMrtTnaStrip');
 assert.match(eventTnaSrc, /MRT_TNA_FETCH_SIZE/, 'EventTnaStrip requests default TNA fetch size (20)');
 assert.match(eventTnaSrc, /StripListLargeToggle/, 'EventTnaStrip has 크게 보기 toggle');
-assert.match(eventTnaSrc, /listLarge/, 'EventTnaStrip expands cards into a vertical grid');
-assert.match(eventTnaSrc, /grid-cols-1 gap-2\.5 sm:grid-cols-2/, 'EventTnaStrip large view stacks cards for vertical scroll');
+assert.match(eventTnaSrc, /listLarge/, 'EventTnaStrip enlarges cards in the same rail');
+assert.match(eventTnaSrc, /overflow-x-auto/, 'EventTnaStrip keeps horizontal scroll when enlarged');
+assert.match(eventTnaSrc, /w-\[220px\]/, 'EventTnaStrip large cards are wider, not a vertical stack');
+assert.doesNotMatch(eventTnaSrc, /grid-cols-1/, 'EventTnaStrip large view does not switch to vertical grid');
 
 // 4. i18n 다국어 검증
 assert.match(koSrc, /"tnaStripTitle"/, 'ko.json has tnaStripTitle');
