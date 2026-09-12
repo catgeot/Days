@@ -116,3 +116,16 @@
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
 - **팔경**: 다음 에이전트 = **#26 상산(진천) 결손 오버레이**
+
+## 한국 투어티켓 #1 — 축제·명승 본문 투어·티켓 카드 섹션 (Cloud)
+
+- **세션**: `한국 투어티켓 #1, 본문 TNA 섹션`
+- **브랜치**: `cursor/korea-tna-strip-ef65` · tip `b47d8880` · PR [#223](https://github.com/catgeot/Days/pull/223)
+- **완료**:
+  1. `EventTnaStrip.jsx` 공통 컴포넌트 신설: 숙소 스트립과 일관된 카드 규격(148px~168px 가로 스크롤, 썸네일, 카테고리, 평점/리뷰수, 가격 포맷, 마이리얼트립 딥링크) 및 헤더 검색 더보기 링크 지원.
+  2. 축제 상세 바텀시트(`FestivalDetailSheet.jsx`): `FestivalStayStrip` 바로 아래에 `FestivalTnaStrip` 연동. 카드 스트립 노출 시 중복 텍스트 칩 숨김 처리.
+  3. 명승 상세 모달(`ThemeSpotDetailModal.jsx`): `ScenicStayStrip` 바로 아래에 `ScenicTnaStrip` 연동. POI 중첩 모달(`hideTnaStrip={isApiPoiCross}`) 숨김 및 하단 CrossRail 텍스트 칩 조건부 처리.
+  4. 다국어(`ko.json`, `en.json`) 번역 키 등록 및 `scripts/smoke-korea-tna-strip.mjs` 신설 (`npm run smoke:korea-tna-strip` PASS).
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS · `npm run smoke:mrt-tna` PASS · `npm run build` PASS
+- **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
+- **다음**: 사람 Preview QA (경복궁 등 명승 상세 및 축제 상세 본문 TNA 카드 섹션 확인)

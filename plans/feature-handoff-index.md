@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 한국 투어티켓
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `b47d8880` · PR [#223](https://github.com/catgeot/Days/pull/223) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/korea-tna-strip-ef65` |
+| **tip** | `b47d8880` |
+| **PR** | [#223](https://github.com/catgeot/Days/pull/223) |
+| **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
+| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
+| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `FestivalDetailSheet.jsx` · `ThemeSpotDetailModal.jsx` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:korea-tna-strip` · `npm run build` PASS |
+
+**다음 제시어**:
+
+```
+한국 투어티켓 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 경복궁 등 명승 상세 및 축제 상세 본문에서 투어·티켓 카드 섹션(썸네일·가격·평점·더보기) 정상 노출 확인
+```
+
+---
+
 ### 명승 숙소
 
 | | |
