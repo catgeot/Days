@@ -370,28 +370,28 @@
 
 | | |
 |--|--|
-| **상태** | **#18 merge ✅** `d24e0bd1` · PR [#217](https://github.com/catgeot/Days/pull/217) · **#19 함안·사천 결손 오버레이** |
+| **상태** | **#19** tip `13d69f11` · PR [#219](https://github.com/catgeot/Days/pull/219) · **#20 사람 Preview QA** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `d24e0bd1` (main) |
-| **PR** | [#217](https://github.com/catgeot/Days/pull/217) merge ✅ `d24e0bd1` |
+| **tip** | `13d69f11` |
+| **PR** | [#219](https://github.com/catgeot/Days/pull/219) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=haman` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=haman` · `?hub=sacheon` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). 순수 사진/개요 누락 **209**/876. 다음 허브 **함안9경 7** · 사천9경 6 · 그다음 이천9경 6 |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). 순수 사진/개요 누락 **196**/876. QA 후 다음 허브 **이천9경 6** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #19, 함안·사천 결손 오버레이
+팔경 활용 #20, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 함안9경 사진·개요 없는 7건(말이산고분군·악양의 꽃길과 노을·무진정의 사계·연꽃테마파크의 아라홍련·장춘사의 산사풍경·합강정과 반구정의 해돋이·대평늪의 늪지식물)과 사천9경 6건(삼천포대교와 사천바다케이블카·남일대 코끼리바위·선진리성 벚꽃·봉명산 다솔사·비토섬 갯벌·용두공원과 청룡사 겹벚꽃)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haman · ?hub=sacheon
+작업: Preview /korea/theme/scenic?hub=haman · ?hub=sacheon 결손 행 썸네일·개요·행마다 다른 사진
 ```
 
 ---
