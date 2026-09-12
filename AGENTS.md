@@ -20,6 +20,7 @@
 - 복붙 Core Rules 부활 금지(구조 제안→승인→전체 코드) · 주석 **희소**(`.ai-context` **4.0**/**4.2**) · 사람에게는 동작·QA(**사람** Preview 체크 · 에이전트 대행 아님)
 - **오류 루프**: 동일 FAIL **2회** 후 추측 패치 중단·보고 · 요청 밖 확장 금지 (`.ai-context` **4.1**)
 - **브라우저/`computerUse` QA** — 사람 **명시 요청 시에만**. 기본은 `/qa/…`·Preview 핸드오프 + 사람 QA. 에이전트 검증은 audit/smoke/`build`만 (`.ai-context` **§4.1 13** · **1.6**)
+- **같은 세션 QA (기본)** — 로직이 복잡하거나 토큰 소비가 큰 작업 **외에는** 작업 세션에서 QA를 마무리한다. 요약에 Preview 링크 + 사람 체크 1~3줄. **다음 제시어 = 다음 작업**. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 **넘기지 않음**. 예외·상세는 Cloud 절.
 
 ## 커밋·푸시 (검증 게이트)
 
@@ -81,6 +82,7 @@ npm run audit:docs-handoff-sync   # Cloud feature — origin/main 핸드오프 m
 | **짧은 공유 링크 (테스터)** | 사람에게는 **`https://www.gateo.kr/qa/<slug>`** 를 우선 안내 (예: `/qa/puzzle` → 퍼즐 Preview). SSOT [`cloudQaShareLinks.js`](src/shared/cloudPreview/cloudQaShareLinks.js) + [`vercel.json`](vercel.json) `redirects` 동기화. 목록 페이지 `/qa`. 주제 종료 시 항목 `active: false` 또는 destination을 PROD path로 변경. |
 | **Preview 작업 로그** | Preview/로컬 화면 **우측** 「작업 로그」패널. 세션마다 로그 append · `qaShareSlug` 있으면 공유 링크 표시. PROD에는 안 보임. |
 | **턴 종료 링크** | 요약에 **세션 표기 + 짧은 `/qa/…` 링크(있으면) + git Preview URL + 이번 적용 1줄** 필수. 다음 세션이 있으면 **다음 채팅명**(한 줄 펜스) 포함. Preview 링크 없이 「로컬만」으로 세션 종료 **금지**. |
+| **같은 세션 QA (기본)** | 로직이 복잡하거나 토큰 소비가 큰 작업 **외에는** 그 작업 세션에서 QA를 마무리한다. 사람은 **같은 턴**에 Preview 링크로 확인. **다음 제시어 = 다음 작업**. `{주제} #N, 사람 Preview QA`를 다음 Cloud 채팅으로 **두지 않음**. **예외**(복잡 로직·토큰 과다): 별도 사람 Preview QA 세션 허용. 사람 피드백 → **수정** 세션. 상세 [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§5**. |
 
 ### Feature 브랜치 · Vercel Preview (사람 QA 경로)
 
@@ -91,6 +93,7 @@ npm run audit:docs-handoff-sync   # Cloud feature — origin/main 핸드오프 m
 | | 규칙 |
 |--|------|
 | **매 턴** | 최소 검증 PASS → **한글 커밋 + `git push`** — **사람 「커밋해」·허가 대기 금지** · Preview 링크 필수 |
+| **같은 세션 QA** | 기본: push 직후 **같은 요약**에서 사람 QA(링크+체크 1~3줄)까지. 다음 에이전트 채팅은 **다음 작업**. 복잡 로직·토큰 과다만 다음 채팅을 `사람 Preview QA`로. |
 | **디자인·UI 조율** | 색·폰트·배치 조율이라도 **매 턴 커밋·push**. Preview에 올라가야 사람이 본다 |
 | **PR** | feature면 **PR 없으면 `gh pr create`** · 있으면 같은 PR에 push(오케 §3.4와 동일 · 비오케 Cloud UI도) |
 | **「완료」** | push ≠ PROD 완료. 사람 Preview QA OK 전 **완료 단정·main 병합 금지** |
@@ -155,3 +158,5 @@ VERIFY FAIL tip은 커밋하지 않는다. 워커는 commit/PR 금지.
 작업이 Preview·QA로 끝나면 일지에 **세션 표기 · 브랜치 · SHA · PR · `/qa/…` 공유 링크 · git Preview URL · QA path** · **작업 로그 제목** · **남은 일**을 명시한다.
 
 **열린 feature**는 추가로 [`plans/feature-handoff-index.md`](plans/feature-handoff-index.md) 해당 행 갱신 + [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.2 다음 제시어** + **§6 [`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md) main docs push 필수**.
+
+**다음 제시어**: 기본 = **다음 작업**. `{주제} #N, 사람 Preview QA`는 복잡 로직·토큰 과다 세션의 예외만. 사람은 작업 세션 요약의 Preview 링크로 같은 턴에 확인한다.
