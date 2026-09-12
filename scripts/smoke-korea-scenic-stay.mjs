@@ -74,6 +74,12 @@ assert.match(
   /title \|\| t\('worldEventDetail\.stayStrip\.title'\)/,
   'EventStayStrip supports title override',
 );
+assert.match(eventStripSrc, /MRT_STAY_PAGE_SIZE/, 'EventStayStrip shows default stay page size (20)');
+assert.match(eventStripSrc, /StripListLargeToggle/, 'EventStayStrip has 크게 보기 toggle');
+assert.match(eventStripSrc, /listLarge/, 'EventStayStrip enlarges cards in the same rail');
+assert.match(eventStripSrc, /overflow-x-auto/, 'EventStayStrip keeps horizontal scroll when enlarged');
+assert.match(eventStripSrc, /w-\[220px\]/, 'EventStayStrip large cards are wider, not a vertical stack');
+assert.doesNotMatch(eventStripSrc, /grid-cols-1/, 'EventStayStrip large view does not switch to vertical grid');
 assert.match(festivalStripSrc, /EventStayStrip/, 'FestivalStayStrip still reuses EventStayStrip');
 assert.match(koSrc, /"stayStripHint"/, 'ko i18n has scenic stay strip hint');
 assert.match(qaSrc, /slug:\s*'scenic-stay'/, 'cloudQaShareLinks has scenic-stay slug');

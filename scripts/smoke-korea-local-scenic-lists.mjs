@@ -932,6 +932,49 @@ assert.ok(jinjuBibong?.overview?.includes('진산'), '진주 비봉산 overlay o
 const jinjuWola = resolveLocalScenicListSpotById('local-scenic:jinju-palgyeong:월아산해돋이');
 assert.ok(jinjuWola?.overview?.includes('해돋이'), '진주 월아산 overlay overview');
 
+const jincheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jincheon');
+const jincheonEight = jincheonMerged.filter((s) => s.localScenicListId === 'jincheon-palgyeong');
+assert.equal(jincheonEight.length, 8, '상산팔경 8명');
+assert.equal(jincheonEight[0]?.groupTitle, '진천 팔경');
+assert.equal(jincheonEight[0]?.blurb, '진천 1경');
+const jincheonDeficitNames = [
+  '평사낙안',
+  '우담제월',
+  '금계완사',
+  '상산모운',
+  '어은계석',
+  '적대청람',
+];
+const jincheonDeficit = jincheonEight.filter((s) =>
+  jincheonDeficitNames.includes(s.attractionName),
+);
+assert.equal(jincheonDeficit.length, 6, '상산팔경 결손 6명');
+assert.ok(
+  jincheonDeficit.every((s) => s.overview && s.imageUrl),
+  '진천 결손 6명 overlay 사진·개요',
+);
+assert.ok(
+  jincheonDeficit.every((s) => !s.contentId),
+  '진천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jincheonDeficit.map((s) => s.imageUrl)).size,
+  6,
+  '진천 결손 6명 썸네일 서로 다름',
+);
+const jcPyeongsa = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:평사낙안');
+assert.ok(jcPyeongsa?.overview?.includes('백사장'), '진천 평사낙안 overlay overview');
+const jcUdam = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:우담제월');
+assert.ok(jcUdam?.overview?.includes('우담'), '진천 우담제월 overlay overview');
+const jcGeumgye = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:금계완사');
+assert.ok(jcGeumgye?.overview?.includes('금계'), '진천 금계완사 overlay overview');
+const jcSangsan = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:상산모운');
+assert.ok(jcSangsan?.overview?.includes('상산'), '진천 상산모운 overlay overview');
+const jcEoeun = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:어은계석');
+assert.ok(jcEoeun?.overview?.includes('정송강사'), '진천 어은계석 overlay overview');
+const jcJeokdae = resolveLocalScenicListSpotById('local-scenic:jincheon-palgyeong:적대청람');
+assert.ok(jcJeokdae?.overview?.includes('암벽'), '진천 적대청람 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

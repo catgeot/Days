@@ -1184,6 +1184,10 @@
         "nearScenicMore": "{{region}} 명소 더보기",
         "stayTour": "숙소 · 투어",
         "stayKeyword": "숙소 · {{keyword}}",
+        "stayStripTitle": "내 여행 일정",
+        "stayStripHint": "선택한 숙박 일정으로 이 명소 근처 숙소를 조회합니다.",
+        "tnaStripTitle": "투어 · 체험 · 티켓",
+        "tnaStripHint": "축제와 함께 즐기기 좋은 주변 액티비티·입장권",
         "plannerKeyword": "플래너 · {{keyword}}",
         "tourKeyword": "투어 · {{keyword}}",
         "packages": "패키지",
@@ -1348,6 +1352,8 @@
         "stayKeyword": "숙소 · {{keyword}}",
         "stayStripTitle": "내 여행 일정",
         "stayStripHint": "선택한 숙박 일정으로 이 명소 근처 숙소를 조회합니다.",
+        "tnaStripTitle": "투어 · 체험 · 티켓",
+        "tnaStripHint": "명소 주변 액티비티·체험·입장권을 모아봅니다.",
         "tourKeyword": "투어 · {{keyword}}",
         "packageCtaFallback": "패키지 보기",
         "loadingDetail": "상세를 불러오는 중…",
@@ -1661,6 +1667,14 @@
         "midWeekend": "중순 주말",
         "closing": "막바지"
       }
+    },
+    "tnaStrip": {
+      "title": "투어 · 티켓",
+      "hint": "마이리얼트립에서 예약 가능한 주변 투어·체험·입장권을 모아봅니다.",
+      "activitiesTitle": "{{place}} 투어·티켓",
+      "moreOnMrt": "MRT에서 더보기",
+      "empty": "선택 지역에 맞는 투어·티켓 상품이 없습니다.",
+      "loading": "투어·티켓 상품을 불러오는 중…"
     },
     "executionStrip": {
       "title": "실행·예약",

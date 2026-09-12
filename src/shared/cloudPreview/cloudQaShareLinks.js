@@ -16,6 +16,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'korea-tna-strip',
+    label: '축제·명승 본문 투어·티켓 카드 섹션',
+    branch: 'cursor/korea-tna-strip-ef65',
+    destination:
+      'https://days-git-cursor-korea-tna-strip-ef65-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
     slug: 'scenic-stay',
     label: '명승 본문 숙소 섹션',
     branch: 'cursor/scenic-stay-692c',
