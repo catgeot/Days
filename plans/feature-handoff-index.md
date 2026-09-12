@@ -45,9 +45,9 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `404878dc` · PR [#223](https://github.com/catgeot/Days/pull/223) · 숙소·투어 **기본 20개** · **크게 보기** 세로 펼침 |
+| **상태** | **#4 push** · tip `13bd6974` · PR [#223](https://github.com/catgeot/Days/pull/223) · 숙소·투어 **기본 20개** · **크게 = 가로로 카드만 키움** |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `404878dc` |
+| **tip** | `13bd6974` |
 | **PR** | [#223](https://github.com/catgeot/Days/pull/223) |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
@@ -58,12 +58,12 @@ AI 모델 #3, Preview OK면 PR 병합
 **다음 제시어**:
 
 ```
-한국 투어티켓 #4, Preview OK면 PR 병합
+한국 투어티켓 #5, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
 금지: UI 임의 리디자인 · feature에 plans/** 커밋
-작업: 숙소·투어 카드 기본 20개 · 「크게」세로 펼침이 맞으면 PR #223 병합 후 이 행 삭제. 추가 피드백이면 개수·펼침만 수정
+작업: 「크게」가 카드만 키우고 좌우 스크롤인지 · 아래로 본문 스킵이 되는지 확인. OK·추가 피드백 없으면 PR #223 병합 후 이 행 삭제
 ```
 
 ---
@@ -424,17 +424,17 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#27** tip `2ed942ea` · PR [#226](https://github.com/catgeot/Days/pull/226) · **#28 강진 결손 오버레이** |
+| **상태** | **#27** tip `fbc921de` · PR [#226](https://github.com/catgeot/Days/pull/226) · 구례 수목원 사진 보강 · **#28 강진 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `2ed942ea` |
+| **tip** | `fbc921de` |
 | **PR** | [#226](https://github.com/catgeot/Days/pull/226) · [#225](https://github.com/catgeot/Days/pull/225) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gurye` |
-| **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
+| **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
-| **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5(#226). 순수 사진/개요 누락 **167**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **강진12경 5** |
+| **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). 순수 사진/개요 누락 **167**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **강진12경 5** |
 
 **다음 제시어**:
 
