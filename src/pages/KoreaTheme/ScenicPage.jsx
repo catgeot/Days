@@ -153,10 +153,12 @@ import {
   resolveDefaultHeritageChips,
   resolveDefaultTourAreaCode,
   resolveDefaultTourCatChips,
+  nextTourCatsWhenCountsZero,
 } from './scenicDefaultChips';
 import {
   filterScenicSpotsByQuery,
   pickBestRegionByCounts,
+  shouldMergeHubLocalScenic,
 } from '../Home/lib/scenicSearch';
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
@@ -1105,7 +1107,11 @@ export default function KoreaThemeScenicPage() {
   }, [curatedSpots, curatedImageByContentId]);
 
   const curatedSpotsWithLocalScenic = useMemo(() => {
-    const merged = hubId
+    const merged = shouldMergeHubLocalScenic({
+      hubId,
+      searchActive,
+      searchPoolCount: curatedSearchPool?.length || 0,
+    })
       ? mergeLocalScenicMembersIntoScenicSpots(
           curatedSpotsWithThumbs,
           hubId,
@@ -1119,7 +1125,14 @@ export default function KoreaThemeScenicPage() {
         localScenicTourBySpotId.get(String(spot.id || '')),
       ),
     );
-  }, [curatedSpotsWithThumbs, hubId, locale, localScenicTourBySpotId]);
+  }, [
+    curatedSpotsWithThumbs,
+    hubId,
+    locale,
+    localScenicTourBySpotId,
+    searchActive,
+    curatedSearchPool,
+  ]);
 
   const curatedSpotsWithLocalScenicThumbs = useMemo(() => {
     const peeked = peekKoreaTourAttractionFirstImagesByIds(
@@ -1796,23 +1809,25 @@ export default function KoreaThemeScenicPage() {
         searchParams.get('region');
 
       const applyPodRegions = (curatedR, heritageR, tourR) => {
-        const next = new URLSearchParams(searchParams);
-        next.set('cregion', resolveRegion(curatedR));
-        next.set('hregion', resolveRegion(heritageR));
-        next.set('tregion', resolveRegion(tourR));
-        next.delete('carea');
-        next.delete('ccluster');
-        next.delete('harea');
-        next.delete('tarea');
-        next.delete('region');
-        next.delete('area');
-        next.delete('hub');
-        next.delete('hcat');
-        next.delete('cat2');
-        next.delete('cat3');
-        next.delete('page');
-        next.delete('spot');
-        setSearchParams(next, { replace: true });
+        setSearchParams((prev) => {
+          const next = new URLSearchParams(prev);
+          next.set('cregion', resolveRegion(curatedR));
+          next.set('hregion', resolveRegion(heritageR));
+          next.set('tregion', resolveRegion(tourR));
+          next.delete('carea');
+          next.delete('ccluster');
+          next.delete('harea');
+          next.delete('tarea');
+          next.delete('region');
+          next.delete('area');
+          next.delete('hub');
+          next.delete('hcat');
+          next.delete('cat2');
+          next.delete('cat3');
+          next.delete('page');
+          next.delete('spot');
+          return next;
+        }, { replace: true });
       };
 
       // 명소·명승 0건이면 TourAPI 권역 건수로 관광지 파드만 고름 (화천→강원)
@@ -2951,6 +2966,40 @@ export default function KoreaThemeScenicPage() {
     chipCounts.cat1Counts,
     cat1,
     setCat1,
+  ]);
+
+  /** 검색·내 주변: 0건 중·소분류가 URL에 남으면 칩은 있고 목록만 빔 */
+  useEffect(() => {
+    const poolReady =
+      (searchActive && dbSearchActive) ||
+      (nearActive && nearTourStatus === 'ok');
+    if (!poolReady) return;
+    const resolved = nextTourCatsWhenCountsZero(cat1, cat2, cat3, chipCounts);
+    if (!resolved.changed) return;
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (resolved.cat2) next.set('cat2', resolved.cat2);
+        else next.delete('cat2');
+        if (resolved.cat3) next.set('cat3', resolved.cat3);
+        else next.delete('cat3');
+        next.delete('page');
+        next.delete('spot');
+        return next;
+      },
+      { replace: true },
+    );
+  }, [
+    searchActive,
+    dbSearchActive,
+    nearActive,
+    nearTourStatus,
+    cat1,
+    cat2,
+    cat3,
+    chipCounts.cat2Counts,
+    chipCounts.cat3Counts,
+    setSearchParams,
   ]);
 
   /**
@@ -5283,7 +5332,13 @@ export default function KoreaThemeScenicPage() {
                 {dbError ? ` (${dbError})` : ''}.
               </p>
             ) : null}
-            {dbStatus === 'empty' ? (
+            {dbStatus === 'empty' &&
+            !(
+              searchActive &&
+              (tourCat1ChipsVisible.length > 0 ||
+                tourCat2ChipsVisible.length > 0 ||
+                tourCat3ChipsVisible.length > 0)
+            ) ? (
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
                   ? t('korea.theme.scenicEmptyTourSearchChip', {

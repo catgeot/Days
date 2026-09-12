@@ -15,7 +15,9 @@ import {
   normalizeScenicQuery,
   pickBestRegionByCounts,
   sanitizeScenicDbSearchQuery,
+  shouldMergeHubLocalScenic,
 } from '../src/pages/Home/lib/scenicSearch.js';
+import { nextTourCatsWhenCountsZero } from '../src/pages/KoreaTheme/scenicDefaultChips.js';
 import { SCENIC_REGION_ORDER } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -318,5 +320,93 @@ assert.ok(
   chipCountFn.includes('searchQuery,'),
   'region/cat chip counts pass searchQuery',
 );
+
+const changnyeongCurated = filterScenicSpotsByQuery(curated, '창녕', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  changnyeongCurated.some((s) => s.localScenicListId === 'changnyeong-gugyeong'),
+  '창녕 검색은 창녕구경 팔경 주입',
+);
+assert.ok(
+  changnyeongCurated.some((s) => s.id === 'upo-wetland-changnyeong'),
+  '창녕 검색은 GATEO 선정 우포늪 유지',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '창녕').length,
+  2,
+  '창녕 국가유산 명승 2',
+);
+assert.equal(
+  filterScenicSpotsByQuery(curated, '창령', { injectLocalScenic: true }).length,
+  0,
+  '창령 검색은 창녕 팔경·선정을 넣지 않음',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '창령').length,
+  0,
+  '창령 검색은 창녕 명승을 넣지 않음',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: true,
+    searchPoolCount: 0,
+  }),
+  false,
+  '검색 0건이면 hub URL 팔경 주입 금지',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: false,
+    searchPoolCount: 0,
+  }),
+  true,
+  '검색 아니면 hub 팔경 주입',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: true,
+    searchPoolCount: 13,
+  }),
+  true,
+  '창녕 검색 풀이 있으면 hub 병합 허용',
+);
+assert.ok(
+  pageSrc.includes('shouldMergeHubLocalScenic'),
+  'ScenicPage gates hub palgyeong merge',
+);
+assert.ok(
+  pageSrc.includes('nextTourCatsWhenCountsZero'),
+  'ScenicPage clears zero-count tour cats during search',
+);
+assert.ok(
+  pageSrc.includes('tourCat1ChipsVisible.length > 0'),
+  'search empty copy hidden when tour chips have hits',
+);
+
+const zeroCat3 = nextTourCatsWhenCountsZero('A02', 'A0201', 'A02010100', {
+  cat2Counts: { A0201: 12, A0202: 3 },
+  cat3Counts: { A02010100: 0, A02010700: 8, A02010800: 3 },
+});
+assert.equal(zeroCat3.changed, true, '0건 소분류 해제');
+assert.equal(zeroCat3.cat2, 'A0201', '소분류만 해제하면 중분류 유지');
+assert.equal(zeroCat3.cat3, null, '0건 소분류 null');
+
+const zeroCat2 = nextTourCatsWhenCountsZero('A01', 'A0101', null, {
+  cat2Counts: { A0101: 0, A0102: 2 },
+  cat3Counts: {},
+});
+assert.equal(zeroCat2.changed, true, '0건 중분류 해제');
+assert.equal(zeroCat2.cat2, null);
+assert.equal(zeroCat2.cat3, null);
+
+const keepCats = nextTourCatsWhenCountsZero('A02', 'A0201', null, {
+  cat2Counts: { A0201: 12, A0202: 3 },
+  cat3Counts: {},
+});
+assert.equal(keepCats.changed, false, '건수 있는 중분류는 유지');
 
 console.log('smoke-korea-scenic-search: PASS');

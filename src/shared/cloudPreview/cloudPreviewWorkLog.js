@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 22,
-  sessionPhase: '창녕 결손 오버레이',
+  sessionNo: 23,
+  sessionPhase: '창녕 검색 버그픽스',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=changnyeong',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-23-changnyeong-search-fix',
+    session: '팔경 활용 #23, 창녕 검색 버그픽스',
+    title: '창령 팔경 오탐 · 창녕 관광지 빈 문구',
+    detail:
+      'hub=changnyeong에서 「창령」검색 시 URL hub가 남아 창녕구경이 주입되던 오탐을 막았습니다(검색 풀 0건이면 팔경 병합 안 함). 「창녕」관광지는 검색 전 종목 칩이 URL에 남아 목록 0건인데 분류칩만 보이던 빈 문구를, 0건 중·소분류 해제와 칩 건수 있을 때 빈 카피 숨김으로 고쳤습니다. Preview /qa/palgyeong-use — 창령은 팔경 없음, 창녕은 관광지 목록·칩 일치.',
+    at: '2026-09-12T09:30:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-22-changnyeong-overlays',
     session: '팔경 활용 #22, 창녕 결손 오버레이',

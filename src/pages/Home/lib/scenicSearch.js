@@ -181,3 +181,14 @@ export function pickBestRegionByCounts(regionOrder, regionCounts, fallback) {
   }
   return best || fallback;
 }
+
+/**
+ * hub URL 팔경 주입 — 검색 풀이 0이면 넣지 않음 (창령+?hub=changnyeong → 창녕구경 오탐).
+ * @param {{ hubId?: string | null, searchActive?: boolean, searchPoolCount?: number }} opts
+ */
+export function shouldMergeHubLocalScenic(opts = {}) {
+  const hubId = String(opts.hubId || '').trim();
+  if (!hubId) return false;
+  if (opts.searchActive && Number(opts.searchPoolCount) === 0) return false;
+  return true;
+}
