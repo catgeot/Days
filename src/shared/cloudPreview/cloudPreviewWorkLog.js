@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 26,
-  sessionPhase: '상산(진천) 결손 오버레이',
+  sessionNo: 27,
+  sessionPhase: '구례 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jincheon',
+  previewPath: '/korea/theme/scenic?hub=gurye',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-27-gurye-overlays',
+    session: '팔경 활용 #27, 구례 결손 오버레이',
+    title: '구례10경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 구례10경 결손 5건(노고단 운해·반야봉 낙조·피아골 단풍·산동 산수유꽃·노고단 설경)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 노고단 정상·운해·설화·반야봉 낙조·피아골 단풍·산동 산수유꽃 사진을 연결했고, 구례군청 피아골 출렁다리 단풍 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gurye 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T11:20:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-26-jincheon-overlays',
     session: '팔경 활용 #26, 상산(진천) 결손 오버레이',
