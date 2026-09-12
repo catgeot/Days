@@ -370,28 +370,28 @@
 
 | | |
 |--|--|
-| **상태** | **#18 push** · tip `900d77af` · PR [#217](https://github.com/catgeot/Days/pull/217) · **#19 사람 Preview QA** (한천 행 부제) |
+| **상태** | **#18 merge ✅** `d24e0bd1` · PR [#217](https://github.com/catgeot/Days/pull/217) · **#19 함안·사천 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `900d77af` |
-| **PR** | [#217](https://github.com/catgeot/Days/pull/217) · [#216](https://github.com/catgeot/Days/pull/216) merge ✅ `210d8a56` |
+| **tip** | `d24e0bd1` (main) |
+| **PR** | [#217](https://github.com/catgeot/Days/pull/217) merge ✅ `d24e0bd1` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=yeongdong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=haman` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15** 영동 한천 7·양산 6 오버레이. **#16** 한천 검색 8행 주입. **#17** 한천팔경 공식명·지구본 검색. **#18** 한천 1경·양산 1경 부제. 다음 허브 **함안 7** · 사천 6 |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). 순수 사진/개요 누락 **209**/876. 다음 허브 **함안9경 7** · 사천9경 6 · 그다음 이천9경 6 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #19, 사람 Preview QA
+팔경 활용 #19, 함안·사천 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #217 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 명승 검색 「한천」그룹명 한천팔경 · 행 부제 한천 1경~8경인지 (영동 N경 아님)
+작업: 함안9경 사진·개요 없는 7건(말이산고분군·악양의 꽃길과 노을·무진정의 사계·연꽃테마파크의 아라홍련·장춘사의 산사풍경·합강정과 반구정의 해돋이·대평늪의 늪지식물)과 사천9경 6건(삼천포대교와 사천바다케이블카·남일대 코끼리바위·선진리성 벚꽃·봉명산 다솔사·비토섬 갯벌·용두공원과 청룡사 겹벚꽃)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haman · ?hub=sacheon
 ```
 
 ---

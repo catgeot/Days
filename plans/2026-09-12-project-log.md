@@ -22,12 +22,18 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use
 - **다음** 사람 Preview QA — 「한천」검색 그룹 한천팔경 · 행 한천 1경~8경
 
+## 팔경 활용 #19 다음 — 함안·사천 결손 오버레이
+
+- **#18** PR [#217](https://github.com/catgeot/Days/pull/217) merge ✅ `d24e0bd1`
+- **잔여**: 사진/개요 순수 누락 **209**/876. 큐 다음 허브 **함안9경 7** · 사천9경 6 · 그다음 이천9경 6
+- **다음** 함안·사천 결손 오버레이 (`LOCAL_SCENIC_MEMBER_OVERLAYS` · JSON contentId 금지)
+
 ```
-팔경 활용 #19, 사람 Preview QA
+팔경 활용 #19, 함안·사천 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #217 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 명승 검색 「한천」그룹명 한천팔경 · 행 부제 한천 1경~8경인지 (영동 N경 아님)
+작업: 함안9경 사진·개요 없는 7건(말이산고분군·악양의 꽃길과 노을·무진정의 사계·연꽃테마파크의 아라홍련·장춘사의 산사풍경·합강정과 반구정의 해돋이·대평늪의 늪지식물)과 사천9경 6건(삼천포대교와 사천바다케이블카·남일대 코끼리바위·선진리성 벚꽃·봉명산 다솔사·비토섬 갯벌·용두공원과 청룡사 겹벚꽃)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haman · ?hub=sacheon
 ```
