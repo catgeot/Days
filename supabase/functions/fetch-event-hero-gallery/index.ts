@@ -15,6 +15,7 @@ type GalleryImage = {
   captionKo?: string;
   captionEn?: string;
   source?: string;
+  color?: string;
 };
 
 function normalizeImageUrl(raw: unknown): string {
@@ -31,20 +32,134 @@ function imageKey(url: string): string {
   }
 }
 
+const REJECTED_GALLERY_CAPTION =
+  /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of|libretto|title page|stamp of)\b/i;
+const REJECTED_GALLERY_FILE = /\.(pdf|svg|tif|tiff|djvu)$/i;
+const ATMOSPHERE_POS =
+  /\b(festival|parade|carnival|crowd|celebration|lantern|firework|concert|performance|audience|orchestra|stage|auditorium|theater|theatre|tent|beer|costume|dancer|illuminat|sakura|blossom|marathon|running|runner|yoga|fitness|fairground|ferris|carousel|samba|mask|ballet|chandelier|float|interior|group exercise|cycling|peloton)\b/i;
+const ATMOSPHERE_NEG =
+  /\b(skyline|cityscape|facade|aerial view|camel|traffic|office tower|empty street|concrete building|stamp of|libretto|title page)\b/i;
+const BLACK_AND_WHITE_CAPTION =
+  /\b(black and white|black-and-white|b&w|b\/w|monochrome|grayscale|greyscale)\b/i;
+
+function isHangulQuery(value: string): boolean {
+  return /[\uAC00-\uD7A3]/.test(value);
+}
+
+function isRejectedFiller(image: GalleryImage): boolean {
+  const url = normalizeImageUrl(image?.url).toLowerCase();
+  const caption = `${image?.captionEn || ""} ${image?.captionKo || ""}`.trim();
+  if (REJECTED_GALLERY_FILE.test(url) || REJECTED_GALLERY_FILE.test(caption)) return true;
+  return REJECTED_GALLERY_CAPTION.test(caption);
+}
+
+function nearDupKey(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("unsplash.com")) {
+      return `${parsed.hostname}${parsed.pathname}`.toLowerCase();
+    }
+    let file = decodeURIComponent(parsed.pathname.split("/").pop() || "");
+    file = file.replace(/^\d+px-/i, "").replace(/\.[a-z0-9]+$/i, "");
+    file = file.replace(/(\d)[a-z]$/i, "$1");
+    file = file.replace(/[_-][a-z]$/i, "");
+    file = file.replace(/[_-]\d{1,3}$/i, "");
+    file = file.replace(/[_-]\(\d+\)$/i, "");
+    return `${parsed.hostname}/${file}`.toLowerCase();
+  } catch {
+    return url.toLowerCase();
+  }
+}
+
+function isUnsplashImage(image: GalleryImage): boolean {
+  if (!image) return false;
+  if (String(image.source ?? "").toLowerCase() === "unsplash") return true;
+  const url = normalizeImageUrl(image.url).toLowerCase();
+  return url.includes("images.unsplash.com");
+}
+
 function mergeImages(seed: GalleryImage[], fetched: GalleryImage[]): GalleryImage[] {
   const seen = new Set<string>();
-  const merged: GalleryImage[] = [];
+  const nearSeen = new Set<string>();
+  const unsplash: GalleryImage[] = [];
+  const others: GalleryImage[] = [];
 
-  for (const image of [...seed, ...fetched]) {
+  const push = (image: GalleryImage, allowRejected: boolean, skipNear: boolean) => {
     const url = normalizeImageUrl(image?.url);
-    if (!url.startsWith("http")) continue;
+    if (!url.startsWith("http")) return;
     const key = imageKey(url);
-    if (seen.has(key)) continue;
+    if (seen.has(key)) return;
+    if (!allowRejected && isRejectedFiller(image)) return;
+    const near = nearDupKey(url);
+    if (skipNear && nearSeen.has(near)) return;
     seen.add(key);
-    merged.push({ ...image, url });
-  }
+    nearSeen.add(near);
+    const item: GalleryImage = {
+      ...image,
+      url,
+      source: image.source || (isUnsplashImage(image) ? "unsplash" : undefined),
+    };
+    if (isUnsplashImage(item)) {
+      unsplash.push(item);
+    } else {
+      others.push(item);
+    }
+  };
 
-  return merged;
+  for (const image of seed) push(image, true, false);
+  for (const image of fetched) push(image, false, true);
+
+  return rankImages([...unsplash, ...others]);
+}
+
+function isCaptionBlackAndWhite(image: GalleryImage): boolean {
+  const text = `${image.captionEn || ""} ${image.captionKo || ""}`;
+  return BLACK_AND_WHITE_CAPTION.test(text);
+}
+
+function isLikelyGrayscaleColor(hex: string | undefined): boolean {
+  const match = /^#?([0-9a-f]{6})$/i.exec(String(hex || "").trim());
+  if (!match) return false;
+  const value = Number.parseInt(match[1], 16);
+  const red = ((value >> 16) & 255) / 255;
+  const green = ((value >> 8) & 255) / 255;
+  const blue = (value & 255) / 255;
+  const max = Math.max(red, green, blue);
+  const min = Math.min(red, green, blue);
+  const delta = max - min;
+  if (delta === 0) return true;
+  const lightness = (max + min) / 2;
+  const saturation = delta / (1 - Math.abs(2 * lightness - 1));
+  return saturation < 0.12;
+}
+
+function scoreAtmosphere(image: GalleryImage): number {
+  const text = `${image.captionEn || ""} ${image.captionKo || ""} ${image.url || ""}`;
+  let score = 0;
+  if (isUnsplashImage(image)) score += 2;
+  if (ATMOSPHERE_POS.test(text)) score += 6;
+  if (ATMOSPHERE_NEG.test(text)) score -= 6;
+  if (isCaptionBlackAndWhite(image) || isLikelyGrayscaleColor(image.color)) score -= 8;
+  return score;
+}
+
+function rankImages(images: GalleryImage[]): GalleryImage[] {
+  return images
+    .map((image, index) => ({ image, index, score: scoreAtmosphere(image) }))
+    .sort((left, right) => right.score - left.score || left.index - right.index)
+    .map((item) => item.image);
+}
+
+function needsAtmosphereRefresh(images: GalleryImage[]): boolean {
+  if (!images.length) return true;
+  let positive = 0;
+  let negative = 0;
+  for (const image of images) {
+    const score = scoreAtmosphere(image);
+    if (score >= 6) positive += 1;
+    if (score < 0) negative += 1;
+  }
+  return positive === 0 && negative >= 2;
 }
 
 function mapUnsplashPhoto(photo: Record<string, unknown>): GalleryImage | null {
@@ -54,17 +169,19 @@ function mapUnsplashPhoto(photo: Record<string, unknown>): GalleryImage | null {
   const url = normalizeImageUrl(urls.regular || urls.small);
   if (!url.startsWith("http")) return null;
   const caption = String(photo.alt_description || photo.description || "").trim();
+  const color = String(photo.color || "").trim();
   return {
     url,
     captionKo: caption,
     captionEn: caption,
     source: "unsplash",
+    color: color || undefined,
   };
 }
 
 async function fetchUnsplashImages(searchQuery: string, limit = 10): Promise<GalleryImage[]> {
   const q = String(searchQuery || "").trim();
-  if (!q) return [];
+  if (!q || isHangulQuery(q)) return [];
 
   const accessKey =
     Deno.env.get("UNSPLASH_ACCESS_KEY") ||
@@ -104,7 +221,7 @@ async function fetchWikimediaImages(searchQuery: string, limit = 10): Promise<Ga
     format: "json",
     origin: "*",
     generator: "search",
-    gsrsearch: q,
+    gsrsearch: `${q} filetype:bitmap`,
     gsrnamespace: "6",
     gsrlimit: String(Math.min(20, limit + 4)),
     prop: "imageinfo",
@@ -127,12 +244,14 @@ async function fetchWikimediaImages(searchQuery: string, limit = 10): Promise<Ga
     const url = normalizeImageUrl(info?.thumburl || info?.url);
     if (!url.startsWith("http")) continue;
     const title = String(page.title || "").replace(/^File:/, "").replace(/_/g, " ").trim();
-    images.push({
+    const candidate: GalleryImage = {
       url,
       captionKo: title,
       captionEn: title,
       source: "wikimedia",
-    });
+    };
+    if (isRejectedFiller(candidate)) continue;
+    images.push(candidate);
     if (images.length >= limit) break;
   }
 
@@ -144,6 +263,7 @@ async function fetchWikimediaFromQueries(queries: string[], limit = 10): Promise
 
   for (const query of queries) {
     if (fetched.length >= limit) break;
+    if (isHangulQuery(query)) continue;
     try {
       fetched.push(...await fetchWikimediaImages(query, limit - fetched.length));
     } catch (err) {
@@ -158,11 +278,14 @@ function seedCacheMatches(cachedImages: GalleryImage[], seedImages: GalleryImage
   if (!seedImages.length) return true;
   if (!cachedImages.length || cachedImages.length < seedImages.length) return false;
 
-  return seedImages.every((seed, index) => {
-    const cachedUrl = normalizeImageUrl(cachedImages[index]?.url);
+  const cachedKeys = new Set(
+    cachedImages.map((img) => imageKey(normalizeImageUrl(img?.url))).filter(Boolean)
+  );
+
+  return seedImages.every((seed) => {
     const seedUrl = normalizeImageUrl(seed?.url);
-    if (!cachedUrl || !seedUrl) return false;
-    return imageKey(cachedUrl) === imageKey(seedUrl);
+    if (!seedUrl) return false;
+    return cachedKeys.has(imageKey(seedUrl));
   });
 }
 
@@ -208,8 +331,21 @@ serve(async (req) => {
         .maybeSingle();
 
       if (cached && Array.isArray(cached.images) && cached.images.length >= MIN_CACHE_COUNT) {
-        if (seedCacheMatches(cached.images as GalleryImage[], normalizedSeed)) {
-          const images = mergeImages(normalizedSeed, cached.images as GalleryImage[]).slice(0, TARGET_COUNT);
+        const cachedImages = cached.images as GalleryImage[];
+        if (seedCacheMatches(cachedImages, normalizedSeed) && !needsAtmosphereRefresh(cachedImages)) {
+          const images = mergeImages(normalizedSeed, cachedImages).slice(0, TARGET_COUNT);
+          if (
+            images.length >= MIN_CACHE_COUNT &&
+            images[0]?.url !== cachedImages[0]?.url
+          ) {
+            void supabaseAdmin
+              .from("event_hero_gallery")
+              .update({
+                images,
+                gallery_updated_at: new Date().toISOString(),
+              })
+              .eq("event_id", eventId);
+          }
           return new Response(
             JSON.stringify({ success: true, images, fromCache: true }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 },
@@ -220,20 +356,15 @@ serve(async (req) => {
 
     const need = Math.max(8, TARGET_COUNT - normalizedSeed.length);
     const fetched: GalleryImage[] = [];
+    const unsplashQueries = [searchQuery, fallbackSearchQuery, ...wikimediaQueries]
+      .filter((query, index, list) => query && list.indexOf(query) === index);
 
-    if (searchQuery) {
+    for (const query of unsplashQueries) {
+      if (fetched.length >= need) break;
       try {
-        fetched.push(...await fetchUnsplashImages(searchQuery, need));
+        fetched.push(...await fetchUnsplashImages(query, need - fetched.length));
       } catch (err) {
-        console.warn("Unsplash primary failed:", err);
-      }
-    }
-
-    if (fetched.length < need && fallbackSearchQuery && fallbackSearchQuery !== searchQuery) {
-      try {
-        fetched.push(...await fetchUnsplashImages(fallbackSearchQuery, need - fetched.length));
-      } catch (err) {
-        console.warn("Unsplash fallback failed:", err);
+        console.warn("Unsplash query failed:", query, err);
       }
     }
 
@@ -241,6 +372,7 @@ serve(async (req) => {
       const wikiQueries = [
         ...wikimediaQueries,
         fallbackSearchQuery,
+        searchQuery,
       ].filter((query, index, list) => query && list.indexOf(query) === index);
 
       if (wikiQueries.length) {

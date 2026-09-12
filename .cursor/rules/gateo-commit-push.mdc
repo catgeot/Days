@@ -15,7 +15,7 @@ alwaysApply: true
 |------|-------------|------------|---------------|---------|
 | 로직·SSOT·버그픽스 | 검증 PASS → **즉시** | feature **즉시** | **금지** | 기능 변경 시만 |
 | 문서·핸드오프 (§1.5.4) | **즉시** on `main` | **`origin/main` docs-only — 세션 종료 즉시** | **금지** | **불필요** |
-| Cloud UI·Preview | 매 턴 on feature | **매 턴 feature** (필수) | **금지** | Preview 1~3줄 |
+| Cloud UI·Preview | 매 턴 on feature | **매 턴 feature** (필수) | **금지** | **같은 세션** Preview 1~3줄 (복잡·토큰 과다만 별도 QA 세션) |
 | main 코드 → PROD | — | **PR merge 또는 사람 요청** | 선택 | 병합 전 |
 | 로컬 UI 색·폰트 | 사람 OK 후 1회 | — | 조율 시작 시만 | 확정 전 |
 

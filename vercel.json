@@ -1,6 +1,56 @@
 {
   "redirects": [
     {
+      "source": "/qa/gemini",
+      "destination": "https://days-git-cursor-gemini-models-df4c-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/korea-tna-strip",
+      "destination": "https://days-git-cursor-korea-tna-strip-ef65-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-stay",
+      "destination": "https://days-git-cursor-scenic-stay-692c-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
+      "source": "/qa/planner-empty",
+      "destination": "https://days-git-cursor-planner-empty-pad-6089-catgeots-projects.vercel.app/place/yanggu-arboretum/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/globe-frame-zoom",
+      "destination": "https://days-git-cursor-globe-frame-zoom-7106-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/summary-close",
+      "destination": "https://days-git-cursor-summary-close-1030-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/gallery-panel",
+      "destination": "https://days-git-cursor-gallery-panel-032e-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
+      "source": "/qa/zakynthos",
+      "destination": "https://days-git-cursor-zakynthos-search-e84a-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/gallery-portrait",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/agencies",
+      "destination": "https://days-git-cursor-agencies-85ab-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/logbook",
       "destination": "https://www.gateo.kr/blog",
       "permanent": true
@@ -8,6 +58,26 @@
     {
       "source": "/qa/gallery-fresh",
       "destination": "https://days-git-cursor-gallery-swr-6b36-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
+      "source": "/qa/palgyeong-use",
+      "destination": "https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/pickup",
+      "destination": "https://days-git-cursor-klook-pickup-d5a5-catgeots-projects.vercel.app/place/fukuoka/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/updates",
+      "destination": "https://days-git-cursor-updates-0e16-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/gallery-related",
+      "destination": "https://days-git-cursor-gallery-scroll-76a6-catgeots-projects.vercel.app/place/paris/gallery",
       "permanent": false
     },
     {

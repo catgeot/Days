@@ -31,6 +31,12 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* 홈 지구본 캔버스 — 브라우저 페이지 핀치 금지, Mapbox 제스처만 */
+.gateo-globe-map,
+.gateo-mapbox-map {
+  touch-action: none;
+}
+
 @keyframes mooni-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
@@ -74,6 +80,136 @@ body {
     box-shadow:
       0 0 14px rgba(34, 211, 238, 0.38),
       0 2px 10px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* 홈 좌상단 바로가기 접힘 라벨 — 테마별 컬러 순차 반짝임 (축제: amber, 행사: orange, 명승: emerald, 추천: sky) */
+@keyframes quick-links-twinkle-festival {
+  0%, 24%, 100% {
+    color: rgba(252, 211, 77, 0.7);
+    text-shadow: none;
+    filter: brightness(0.92);
+  }
+  12% {
+    color: #fef08a;
+    text-shadow:
+      0 0 10px rgba(251, 191, 36, 0.75),
+      0 0 16px rgba(245, 158, 11, 0.55);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes quick-links-twinkle-worldEvents {
+  0%, 24%, 100% {
+    color: rgba(253, 186, 116, 0.7);
+    text-shadow: none;
+    filter: brightness(0.92);
+  }
+  12% {
+    color: #fed7aa;
+    text-shadow:
+      0 0 10px rgba(251, 146, 60, 0.75),
+      0 0 16px rgba(234, 88, 12, 0.55);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes quick-links-twinkle-scenic {
+  0%, 24%, 100% {
+    color: rgba(110, 231, 183, 0.7);
+    text-shadow: none;
+    filter: brightness(0.92);
+  }
+  12% {
+    color: #a7f3d0;
+    text-shadow:
+      0 0 10px rgba(52, 211, 153, 0.75),
+      0 0 16px rgba(16, 185, 129, 0.55);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes quick-links-twinkle-curation {
+  0%, 24%, 100% {
+    color: rgba(125, 211, 252, 0.7);
+    text-shadow: none;
+    filter: brightness(0.92);
+  }
+  12% {
+    color: #bae6fd;
+    text-shadow:
+      0 0 10px rgba(56, 189, 248, 0.75),
+      0 0 16px rgba(14, 165, 233, 0.55);
+    filter: brightness(1.2);
+  }
+}
+
+.quick-links-collapsed-item-festival {
+  display: inline-block;
+  animation: quick-links-twinkle-festival 5.6s ease-in-out infinite;
+}
+
+.quick-links-collapsed-item-worldEvents {
+  display: inline-block;
+  animation: quick-links-twinkle-worldEvents 5.6s ease-in-out infinite;
+}
+
+.quick-links-collapsed-item-scenic {
+  display: inline-block;
+  animation: quick-links-twinkle-scenic 5.6s ease-in-out infinite;
+}
+
+.quick-links-collapsed-item-curation {
+  display: inline-block;
+  animation: quick-links-twinkle-curation 5.6s ease-in-out infinite;
+}
+
+/* 홈 좌상단 바로가기 접힘 배너 — 호흡하는 앰비언트 글로우 & 테두리 */
+@keyframes quick-links-banner-breathe {
+  0%, 100% {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 0 12px rgba(255, 255, 255, 0.06),
+      0 0 18px rgba(245, 158, 11, 0.08);
+  }
+  50% {
+    border-color: rgba(245, 158, 11, 0.48);
+    box-shadow:
+      0 0 18px rgba(245, 158, 11, 0.24),
+      0 0 28px rgba(56, 189, 248, 0.16),
+      0 2px 12px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.quick-links-banner-breathe {
+  animation: quick-links-banner-breathe 4.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-links-collapsed-item-festival {
+    animation: none;
+    color: #fcd34d;
+    filter: none;
+  }
+  .quick-links-collapsed-item-worldEvents {
+    animation: none;
+    color: #fdba74;
+    filter: none;
+  }
+  .quick-links-collapsed-item-scenic {
+    animation: none;
+    color: #6ee7b7;
+    filter: none;
+  }
+  .quick-links-collapsed-item-curation {
+    animation: none;
+    color: #7dd3fc;
+    filter: none;
+  }
+  .quick-links-banner-breathe {
+    animation: none;
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.08);
   }
 }
 

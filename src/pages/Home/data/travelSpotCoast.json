@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generatedAt": "2026-08-16T06:20:37.242Z",
-    "spotCount": 124,
+    "generatedAt": "2026-09-06T11:09:11.208Z",
+    "spotCount": 125,
     "source": "scripts/data/travel-spot-coast-overrides.mjs"
   },
   "spots": {
@@ -282,6 +282,15 @@
       "source": "curated-override"
     },
     "kota-kinabalu": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea",
+        "celebes"
+      ],
+      "source": "curated-override"
+    },
+    "sabah": {
       "coastKind": "coastal-city",
       "seaPrimary": "south-china-sea",
       "seaIds": [

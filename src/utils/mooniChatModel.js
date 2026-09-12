@@ -1,15 +1,13 @@
 import { PERSONA_TYPES } from '../pages/Home/lib/prompts';
 import { detectBookingIntent } from './bookingIntentResolver';
 import { classifyChatIntent } from './chatIntentClassifier';
+import { GEMINI_MODELS } from './geminiModels';
 
 /** MOONi·장소 채팅 Gemini 모델 SSOT */
 export const MOONI_GEMINI = {
-  /** 본문 대화 기본 — 비용·속도 */
-  CHAT: 'gemini-3.1-flash-lite',
-  /** 복잡 예약·교통·PLANNER persona */
-  CHAT_QUALITY: 'gemini-2.5-flash',
-  /** 여행지 첫인상 intro (단발 호출) */
-  INTRO: 'gemini-2.5-flash',
+  CHAT: GEMINI_MODELS.FAST,
+  CHAT_QUALITY: GEMINI_MODELS.QUALITY,
+  INTRO: GEMINI_MODELS.QUALITY,
 };
 
 const COMPLEX_INTENTS = new Set([

@@ -13,8 +13,10 @@ import { citiesData } from '../../../pages/Home/data/citiesData';
 import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
+import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
-import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFilter';
+import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
+import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
 import {
   GALLERY_SWR_TTL_MS,
   filterHiddenGalleryIncoming,
@@ -30,8 +32,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.20 — 갤러리 최대 60장 · 단일 인물 제외 · DB 즉시 + 스톡 SWR */
-const CACHE_VERSION = 'v1.20';
+/** v1.22 — 라틴 지명 스톡 · 단일 인물 제외 · DB 즉시 + 스톡 SWR */
+const CACHE_VERSION = 'v1.22';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -56,6 +58,8 @@ const FALLBACK_DICTIONARY = {
   "아마존 분지": "Amazon Basin",
   "갈라파고스": "Galapagos Islands",
   "이스터 섬": "Easter Island",
+  "사바": "Sabah",
+  "사바섬": "Sabah",
   "세렝게티": "Serengeti",
   "통가": "Tonga",
   "투발루": "Tuvalu",
@@ -189,7 +193,8 @@ function isThinStockGallery(images) {
 
 function resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlug) {
   const extras = spotSlug ? (GALLERY_PEXELS_EXTRA_QUERIES[spotSlug] || []) : [];
-  return [...new Set([primaryQuery, backupQuery, ...extras, koreanName].filter(Boolean))];
+  const extraName = isLatinPlaceName(koreanName) ? koreanName : '';
+  return [...new Set([primaryQuery, backupQuery, ...extras, extraName].filter(Boolean))];
 }
 
 function mergeGalleryAppend(existing, incoming, max = GALLERY_MAX_IMAGES) {
@@ -391,27 +396,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     let koreanName = '';
 
     if (typeof targetSpot === 'object') {
-        // 🚨 [Fix] 검색 정확도 향상을 위해 영어 지명에 쉼표가 있을 경우 첫 번째 구역(단어)만 추출
-        const rawNameEn = targetSpot.name_en || '';
-        const simpleNameEn = rawNameEn.split(',')[0].trim();
-
-        primaryQuery = simpleNameEn || targetSpot.name || '';
-        koreanName = targetSpot.name || '';
-
-        const regionSpot =
-          (typeof locationSource === 'object' && locationSource?.galleryRegionSpot) ||
-          (typeof targetSpot === 'object' && targetSpot?.galleryRegionSpot) ||
-          null;
-        const country = targetSpot.country_en || targetSpot.country;
-
-        if (regionSpot?.name_en && primaryQuery && regionSpot.name_en.toLowerCase() !== primaryQuery.toLowerCase()) {
-          backupQuery = `${primaryQuery} ${regionSpot.name_en}`;
-        } else if (country && primaryQuery && country !== primaryQuery) {
-          backupQuery = `${primaryQuery} ${country}`;
-        }
+        const resolved = resolveGalleryStockQuery(
+          {
+            ...targetSpot,
+            galleryRegionSpot:
+              targetSpot.galleryRegionSpot ||
+              (typeof locationSource === 'object' ? locationSource.galleryRegionSpot : null),
+          },
+          FALLBACK_DICTIONARY,
+        );
+        primaryQuery = resolved.primaryQuery;
+        backupQuery = resolved.backupQuery;
+        koreanName = resolved.koreanName;
     } else {
-        primaryQuery = String(targetSpot);
-        koreanName = String(targetSpot);
+        const resolved = resolveGalleryStockQuery({ name: String(targetSpot) }, FALLBACK_DICTIONARY);
+        primaryQuery = resolved.primaryQuery;
+        koreanName = resolved.koreanName;
     }
 
     primaryQuery = primaryQuery.trim();
@@ -432,13 +432,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     if (slugOverride) {
       primaryQuery = slugOverride.primary;
       backupQuery = slugOverride.backup || backupQuery;
-    }
-
-    // 🚨 [Fix] 한글 검색어로 API 호출 시 결과가 희박하므로 Dictionary로 영문 강제 치환
-    if (FALLBACK_DICTIONARY[koreanName]) {
-      primaryQuery = FALLBACK_DICTIONARY[koreanName];
-    } else if (FALLBACK_DICTIONARY[primaryQuery]) {
-      primaryQuery = FALLBACK_DICTIONARY[primaryQuery];
     }
 
     const placeKey =
@@ -514,7 +507,34 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         typeof locationSource === 'object' && locationSource ? locationSource : null,
       ) ||
       Boolean(resolvedTourMapping?.curated);
-    const tourMapping = isDomesticKorea ? resolvedTourMapping : null;
+    let tourMapping = isDomesticKorea ? resolvedTourMapping : null;
+    if (isDomesticKorea && !tourMapping?.contentId) {
+      const loc =
+        (typeof targetSpot === 'object' && targetSpot) ||
+        (typeof locationSource === 'object' && locationSource) ||
+        null;
+      const hubId = String(loc?.hubId || '').trim();
+      const placeName = String(loc?.name || koreanName || '').trim();
+      if (hubId && placeName) {
+        const row = await lookupKoreaTourAttractionByTitle({
+          title: placeName,
+          hubId,
+        });
+        const foundId = String(row?.contentId || '').trim();
+        if (/^\d{1,32}$/.test(foundId)) {
+          tourMapping = {
+            slug: tourMapping?.slug || null,
+            photoKeyword: tourMapping?.photoKeyword || placeName.slice(0, 80),
+            photoKeywords: tourMapping?.photoKeywords || [
+              `${placeName} 전경`.slice(0, 80),
+            ],
+            contentId: foundId,
+            title: tourMapping?.title || placeName,
+            curated: Boolean(tourMapping?.curated),
+          };
+        }
+      }
+    }
     const hasOfficialTourContentId = Boolean(tourMapping?.contentId);
 
     const clearSafety = () => {
@@ -659,11 +679,15 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       if (validCache && validCache.length > 0 && !isThinStockGallery(validCache)) {
         if (isStale()) return;
         processAndSetImages(validCache);
-        saveToSmartCache(CACHE_KEY, allImagesRef.current);
-        markFetchDone();
-        finishLoading();
-        afterInstantGallery();
-        return;
+        if (allImagesRef.current.length === 0) {
+          console.warn('⚠️ session cache all portraits — live Unsplash/Pexels refetch');
+        } else {
+          saveToSmartCache(CACHE_KEY, allImagesRef.current);
+          markFetchDone();
+          finishLoading();
+          afterInstantGallery();
+          return;
+        }
       }
       if (validCache?.length > 0 && isThinStockGallery(validCache)) {
         console.warn('⚠️ session cache thin stock — live Unsplash/Pexels refetch');
@@ -673,18 +697,20 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       // 더보기(append)는 DB 미반영. thumbnailOnly는 SWR/Pexels 없음.
       if (!GALLERY_DB_SKIP_SLUGS.has(spotSlugForDb) && dbCandidates.length) {
         try {
-          const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
+          const dbSelect = thumbnailOnly
+            ? 'place_id, image_url, gallery_urls'
+            : 'place_id, gallery_urls';
           const { data: dbRows, error: dbError } = await withTimeout(
             supabase
               .from('place_stats')
               .select(dbSelect)
               .in('place_id', dbCandidates)
-              .limit(1),
+              .limit(8),
             PLACE_STATS_QUERY_MS,
             'place_stats gallery',
           );
 
-          const dbData = dbRows?.[0];
+          const dbData = pickPlaceStatsGalleryRow(dbRows, dbStatsId);
 
           if (isStale()) return;
 
@@ -729,13 +755,19 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 );
               } else {
                 processAndSetImages(gallerySlice);
-                saveToSmartCache(CACHE_KEY, allImagesRef.current);
-                unsplashPageRef.current = 1;
-                pexelsPageRef.current = 0;
-                markFetchDone();
-                finishLoading();
-                afterInstantGallery();
-                return;
+                if (allImagesRef.current.length === 0) {
+                  console.warn(
+                    '⚠️ place_stats all portraits — live Unsplash/Pexels refetch',
+                  );
+                } else {
+                  saveToSmartCache(CACHE_KEY, allImagesRef.current);
+                  unsplashPageRef.current = 1;
+                  pexelsPageRef.current = 0;
+                  markFetchDone();
+                  finishLoading();
+                  afterInstantGallery();
+                  return;
+                }
               }
             }
           }
@@ -944,7 +976,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         saveToSmartCache(CACHE_KEY, allImagesRef.current);
 
         // 더보기(append)는 세션만 — place_stats 큐레이션을 Unsplash 병합본으로 덮지 않음
-        if (!forceRefresh && (dbStatsId || koreanName)) {
+        if (!forceRefresh && allImagesRef.current.length > 0 && (dbStatsId || koreanName)) {
           const thumbnailToSave = allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
           const statsPlaceId = dbStatsId || koreanName;
 

@@ -57,6 +57,8 @@ const warnings = [];
 const listIds = new Map();
 const titleKeys = new Map();
 let memberTotal = 0;
+let membersWithContentId = 0;
+const contentIds = new Map();
 
 for (const list of lists) {
   if (!list?.listId) {
@@ -130,6 +132,24 @@ for (const list of lists) {
     if (m.mapboxId != null && typeof m.mapboxId !== 'string') {
       issues.push(`${list.listId}: member "${m.attractionName}" mapboxId must be string|null`);
     }
+    if (m.contentId != null && m.contentId !== '') {
+      const cid = String(m.contentId).trim();
+      if (!/^\d{1,32}$/.test(cid)) {
+        issues.push(
+          `${list.listId}: member "${m.attractionName}" contentId must be numeric string (${m.contentId})`,
+        );
+      } else {
+        membersWithContentId += 1;
+        const prev = contentIds.get(cid);
+        if (prev && prev !== `${list.listId}:${m.attractionName}`) {
+          warnings.push(
+            `${list.listId}: contentId ${cid} reused (was ${prev})`,
+          );
+        } else {
+          contentIds.set(cid, `${list.listId}:${m.attractionName}`);
+        }
+      }
+    }
 
     const memberKey = normalizeKey(m.attractionName);
     if (list.status === 'verified' && m.linkStatus === 'linked') {
@@ -151,6 +171,7 @@ const summary = {
   lists: lists.length,
   uniqueListIds: listIds.size,
   members: memberTotal,
+  membersWithContentId,
   warnings: warnings.length,
   issues: issues.length,
 };

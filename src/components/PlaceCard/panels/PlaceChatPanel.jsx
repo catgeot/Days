@@ -10,7 +10,7 @@ import { PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
-import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
+import { mergeCanonicalTravelSpot, isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import { getPlaceTitleLinesForLocale, getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { copyToClipboard } from '../common/copyToClipboard';
@@ -67,7 +67,8 @@ const PlaceChatPanel = React.memo(({
   const skipRelatedRefreshRef = useRef(false);
   const [relatedPlaces, setRelatedPlaces] = useState([]);
   const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
-  const countryLabel = getLocalizedCountryName(location, locale) || t('place.fallback.global');
+  const rawCountry = getLocalizedCountryName(location, locale);
+  const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
 
   const getPlaceKey = (place) => `${place?.id ?? ''}:${place?.name ?? ''}`;
 
@@ -92,7 +93,7 @@ const PlaceChatPanel = React.memo(({
     if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
     }
-  }, [activeInfo.title, activeInfo.mode, mediaMode]);
+  }, [activeInfo.title, activeInfo.mode, mediaMode, location?.id, location?.name, location?.slug]);
 
   const openMooni = () => {
     onOpenMooni?.({ persona: PERSONA_TYPES.GENERAL });
@@ -114,19 +115,27 @@ const PlaceChatPanel = React.memo(({
       }
       skipRelatedRefreshRef.current = true;
 
+      if (scrollRef.current) scrollRef.current.scrollTop = 0;
+      if (mediaMode === 'GALLERY') {
+        dispatchPlaceScrollToTop('GALLERY', { behavior: 'auto' });
+      }
+
+      const relatedNavOpts = mediaMode === 'GALLERY' ? { tab: 'gallery' } : undefined;
+
       if (onNavigateToPlace) {
-          onNavigateToPlace(targetPlace);
+          onNavigateToPlace(targetPlace, relatedNavOpts);
           return;
       }
 
       const param = getPlaceUrlParam(mergeCanonicalTravelSpot(targetPlace));
       if (param) {
-          navigate(`/place/${param}`);
+          const suffix = mediaMode === 'GALLERY' ? '/gallery' : '';
+          navigate(`/place/${param}${suffix}`);
           return;
       }
 
       if (targetPlace.lat !== undefined && targetPlace.lng !== undefined) {
-          navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}`);
+          navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}${mediaMode === 'GALLERY' ? '/gallery' : ''}`);
           return;
       }
 
@@ -319,10 +328,12 @@ const PlaceChatPanel = React.memo(({
          </div>
       </div>
 
-      {/* Body */}
+      {/* Body — gallery: fill leftover height; related chips stay above MOONi */}
       <div
         ref={scrollRef}
-        className="hidden md:flex flex-col flex-1 overflow-y-auto relative custom-scrollbar"
+        className={`hidden md:flex flex-col flex-1 min-h-0 relative custom-scrollbar ${
+            mediaMode !== 'WIKI' && activeInfo.mode !== 'VIDEO' ? 'overflow-hidden' : 'overflow-y-auto'
+        }`}
       >
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -341,8 +352,14 @@ const PlaceChatPanel = React.memo(({
                 onOpenPackage={onOpenPackage}
             />
         ) : (
-            <div className="animate-fade-in flex flex-col gap-6 p-6">
-                <PlaceWorldEventsSection location={location} variant="dark" />
+            <div
+                className={`animate-fade-in flex flex-col ${
+                    activeInfo.mode === 'VIDEO'
+                        ? 'gap-6 p-6'
+                        : 'min-h-0 flex-1 gap-4 px-6 pt-6 pb-3'
+                }`}
+            >
+                <PlaceWorldEventsSection location={location} variant="dark" className="shrink-0" />
                 {activeInfo.mode === 'VIDEO' ? (
                     <VideoInfoView
                         videoData={activeInfo}

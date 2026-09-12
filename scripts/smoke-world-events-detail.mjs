@@ -19,18 +19,28 @@ import {
   buildWorldEventYoutubeSearchQuery,
   getWorldEventHubAttractions,
 } from '../src/utils/worldEventMedia.js';
+import {
+  isRejectedGalleryFillerImage,
+  galleryNearDupKey,
+  mergeWorldEventHeroGalleryImages,
+  rankWorldEventHeroGalleryImages,
+  galleryNeedsAtmosphereRefresh,
+  scoreHeroGalleryAtmosphere,
+} from '../src/utils/worldEventHeroGalleryMerge.js';
 import { addDaysYmd } from '../src/shared/tripWindow.js';
 import {
   extractGoogleMapsSearchQuery,
   googleWebSearchUrl,
 } from '../src/utils/worldEventOutboundLinks.js';
 import { isLikelyTruncatedGlossaryAnswer } from '../src/utils/worldEventGlossaryAnswer.js';
+import { resolveWorldEventHubRegionId } from '../src/pages/WorldEvents/worldEventHubRegions.js';
+import { googleMapsSearchUrl } from '../src/utils/worldEventOutboundLinks.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 19, 'Wave1+Wave2 has 19 events');
+assert.equal(events.length, 23, 'Wave1+Wave2+Wave3 paris+los-angeles+london+rome has 23 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -79,6 +89,10 @@ assertTier05('sydney-vivid-2027', 3);
 assertTier05('prague-spring-festival-2027', 3);
 assertTier05('marrakech-rose-festival-2027', 2);
 assertTier05('hanoi-tet-2027', 4);
+assertTier05('paris-nuit-blanche-2027', 3);
+assertTier05('los-angeles-rose-parade-2027', 3);
+assertTier05('london-notting-hill-2026', 3);
+assertTier05('rome-carnevale-2027', 3);
 
 const WAVE1_EVENT_IDS = [
   'edinburgh-fringe-2026',
@@ -103,6 +117,13 @@ const WAVE2_EVENT_IDS = [
   'dubai-fitness-challenge-2026',
   'barcelona-la-merce-2026',
   'istanbul-marathon-2026',
+];
+
+const WAVE3_EVENT_IDS = [
+  'paris-nuit-blanche-2027',
+  'los-angeles-rose-parade-2027',
+  'london-notting-hill-2026',
+  'rome-carnevale-2027',
 ];
 
 const D5_B_BATCH_A_EVENT_IDS = [
@@ -136,6 +157,19 @@ for (const eventId of WAVE1_EVENT_IDS) {
 for (const eventId of WAVE2_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave2 roster`);
+  assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of WAVE3_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in Wave3 roster`);
   assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
   assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
   assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
@@ -238,6 +272,123 @@ assert.equal(
   2,
   'istanbul two highlight link groups',
 );
+const parisLoc = getWorldEventLocation('paris');
+assert.equal(resolvePlannerFlightArrivalIata(parisLoc), 'CDG', 'paris arrival IATA');
+const paris = getWorldEventById('paris-nuit-blanche-2027');
+const parisOfficial = paris.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'nuit-blanche-official');
+assert.equal(parisOfficial?.href, 'https://www.paris.fr/nuit-blanche', 'paris official site');
+assert.equal(paris.sourceUrl, 'https://www.paris.fr/nuit-blanche', 'paris sourceUrl official');
+const parisParcoursLink = paris.highlightContextLinks
+  .find((group) => group.highlightIndex === 2)
+  ?.links.find((link) => link.id === 'parcours-map');
+assert.equal(parisParcoursLink?.searchTarget, 'maps', 'paris parcours map searchTarget');
+assert.equal(
+  googleMapsSearchUrl(parisParcoursLink?.searchQueryKo, 'ko'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('파리 시청')}&hl=ko`,
+  'paris parcours map opens Google Maps at Hôtel de Ville (KO place name)',
+);
+assert.equal(
+  googleMapsSearchUrl(parisParcoursLink?.searchQueryEn, 'en'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Hôtel de Ville, Paris, France')}&hl=en`,
+  'paris parcours map opens Google Maps at Hôtel de Ville (EN)',
+);
+assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris hub region europe');
+assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague hub region europe after reorg');
+const losAngelesLoc = getWorldEventLocation('los-angeles');
+assert.equal(resolvePlannerFlightArrivalIata(losAngelesLoc), 'LAX', 'los-angeles arrival IATA');
+const losAngeles = getWorldEventById('los-angeles-rose-parade-2027');
+const roseParadeOfficial = losAngeles.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'rose-parade-official');
+assert.equal(roseParadeOfficial?.href, 'https://www.tournamentofroses.com/', 'los-angeles official site');
+assert.equal(losAngeles.sourceUrl, 'https://www.tournamentofroses.com/', 'los-angeles sourceUrl official');
+const floatfestMap = losAngeles.highlightContextLinks
+  .find((group) => group.highlightIndex === 2)
+  ?.links.find((link) => link.id === 'floatfest-map');
+assert.equal(floatfestMap?.searchTarget, 'maps', 'los-angeles floatfest map searchTarget');
+assert.equal(
+  googleMapsSearchUrl(floatfestMap?.searchQueryKo, 'ko'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('패서디나 콜로라도 대로')}&hl=ko`,
+  'los-angeles floatfest map opens Google Maps at Colorado Blvd (KO)',
+);
+assert.equal(
+  googleMapsSearchUrl(floatfestMap?.searchQueryEn, 'en'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Colorado Blvd, Pasadena, CA, USA')}&hl=en`,
+  'los-angeles floatfest map opens Google Maps at Colorado Blvd (EN)',
+);
+assert.equal(resolveWorldEventHubRegionId('los-angeles'), 'americas', 'los-angeles hub region americas');
+for (const area of losAngeles.stayAreas) {
+  assert.equal(area.mrtKeyword, 'Pasadena', `${area.name} uses Pasadena CITY mrtKeyword`);
+}
+assert.equal(losAngeles.stayAreas.length, 1, 'los-angeles single Pasadena stay area (MRT CITY SSOT)');
+const pasadenaTerm = losAngeles.glossaryTerms.find((term) => term.id === 'pasadena');
+assert.equal(pasadenaTerm?.searchQueryKo, '패서디나 로즈 퍼레이드', 'pasadena glossary google query');
+const londonLoc = getWorldEventLocation('london');
+assert.equal(resolvePlannerFlightArrivalIata(londonLoc), 'LHR', 'london arrival IATA');
+const london = getWorldEventById('london-notting-hill-2026');
+const carnivalOfficial = london.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'carnival-official');
+assert.equal(carnivalOfficial?.href, 'https://nhcarnival.org/', 'london official site');
+assert.equal(london.sourceUrl, 'https://nhcarnival.org/', 'london sourceUrl official');
+const paradeRouteMap = london.highlightContextLinks
+  .find((group) => group.highlightIndex === 2)
+  ?.links.find((link) => link.id === 'parade-route-map');
+assert.equal(paradeRouteMap?.searchTarget, 'maps', 'london parade route map searchTarget');
+assert.equal(
+  googleMapsSearchUrl(paradeRouteMap?.searchQueryKo, 'ko'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('런던 Great Western Road 노팅힐')}&hl=ko`,
+  'london parade route map opens Google Maps at Great Western Road (KO)',
+);
+assert.equal(
+  googleMapsSearchUrl(paradeRouteMap?.searchQueryEn, 'en'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Great Western Road, Notting Hill, London, UK')}&hl=en`,
+  'london parade route map opens Google Maps at Great Western Road (EN)',
+);
+assert.equal(resolveWorldEventHubRegionId('london'), 'europe', 'london hub region europe');
+assert.equal(london.stayAreas.length, 2, 'london Notting Hill + Bayswater stay areas');
+const romeLoc = getWorldEventLocation('rome');
+assert.equal(resolvePlannerFlightArrivalIata(romeLoc), 'FCO', 'rome arrival IATA');
+const rome = getWorldEventById('rome-carnevale-2027');
+const romeOfficial = rome.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'carnevale-official');
+assert.equal(romeOfficial?.href, 'https://carnevale.roma.it/', 'rome official site');
+assert.equal(rome.sourceUrl, 'https://carnevale.roma.it/', 'rome sourceUrl official');
+const navonaMap = rome.highlightContextLinks
+  .find((group) => group.highlightIndex === 2)
+  ?.links.find((link) => link.id === 'navona-map');
+assert.equal(navonaMap?.searchTarget, 'maps', 'rome navona map searchTarget');
+assert.equal(
+  googleMapsSearchUrl(navonaMap?.searchQueryKo, 'ko'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('로마 피아차 나보나')}&hl=ko`,
+  'rome navona map opens Google Maps at Piazza Navona (KO)',
+);
+assert.equal(
+  googleMapsSearchUrl(navonaMap?.searchQueryEn, 'en'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Piazza Navona, Rome, Italy')}&hl=en`,
+  'rome navona map opens Google Maps at Piazza Navona (EN)',
+);
+assert.equal(resolveWorldEventHubRegionId('rome'), 'europe', 'rome hub region europe');
+assert.equal(rome.stayAreas.length, 2, 'rome Centro Storico + Tridente stay areas');
+assert.ok(
+  london.glossaryTerms.some((term) => term.id === 'sound-system'),
+  'london sound-system glossary',
+);
+assert.ok(
+  london.glossaryTerms.some((term) => term.id === 'family-day'),
+  'london family-day glossary',
+);
+assert.ok(
+  rome.glossaryTerms.some((term) => term.id === 'piazza-navona'),
+  'rome piazza-navona glossary',
+);
+assert.ok(
+  rome.glossaryTerms.some((term) => term.id === 'carnival-mask'),
+  'rome carnival-mask glossary',
+);
 
 /** @param {string} eventId @param {string} linkId @param {string} expectedHref */
 function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
@@ -323,6 +474,8 @@ assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
 
 const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
 assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
+assert.match(detailSrc, /EventDetailStayAreasPanel/, 'EventDetailPage renders stay areas above stay strip');
+assert.match(detailSrc, /hideStayAreas=\{showStayStrip\}/, 'EventDetailPage dedupes static stay areas when strip shown');
 assert.match(detailSrc, /shouldShowEventTravelGuidePanel/, 'EventDetailPage gates AI panel to pilot events');
 const travelGuidePanelSrc = readFileSync(
   join(root, 'src/pages/WorldEvents/EventTravelGuidePanel.jsx'),
@@ -332,7 +485,8 @@ assert.match(travelGuidePanelSrc, /localizeEventTravelGuide/, 'EventTravelGuideP
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
 assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
 assert.match(detailSrc, /EventActionChips/, 'EventDetailPage renders action chips');
-assert.match(detailSrc, /EventMooniChips/, 'EventDetailPage renders Mooni chips');
+assert.match(detailSrc, /placeMeta\.label/, 'EventDetailPage header shows city label');
+assert.match(detailSrc, /showMooniChips/, 'EventDetailPage mooni chips gate');
 assert.match(detailSrc, /EventDetailHero/, 'EventDetailPage renders hero image');
 assert.match(detailSrc, /EventDetailMediaSection/, 'EventDetailPage renders D3 media section');
 assert.match(detailSrc, /hasWorldEventD3Media/, 'EventDetailPage gates D3 media');
@@ -529,6 +683,7 @@ assert.match(staticPanelSrc, /getWorldEventRecurrenceNote/, 'EventDetailStaticPa
 assert.match(staticPanelSrc, /getWorldEventStayAreas/, 'EventDetailStaticPanel locale stayAreas');
 assert.match(staticPanelSrc, /linkedTermIdsRef/, 'EventDetailStaticPanel shared glossary refs');
 assert.match(staticPanelSrc, /hideHeaderSummary/, 'EventDetailStaticPanel hideHeaderSummary gate');
+assert.match(staticPanelSrc, /hideStayAreas/, 'EventDetailStaticPanel hideStayAreas gate');
 assert.match(detailSrc, /hideHeaderSummary/, 'EventDetailPage D5-b summary dedupe');
 assert.match(detailSrc, /heroEyebrow/, 'EventDetailPage season meta strip highlight label');
 
@@ -598,15 +753,161 @@ assert.match(fetchHeroGallerySrc, /fetchUnsplashImages/, 'fetchEventHeroGallery 
 assert.match(fetchHeroGallerySrc, /fetchWikimediaGalleryFromQueries/, 'fetchEventHeroGallery wikimedia fallback');
 assert.match(fetchHeroGallerySrc, /heroGallerySeedCacheMatches/, 'fetchEventHeroGallery stale cache detection');
 assert.match(fetchHeroGallerySrc, /buildHeroGalleryFromCache/, 'fetchEventHeroGallery cache re-merge');
+assert.match(fetchHeroGallerySrc, /galleryCacheHasUnsplash/, 'fetchEventHeroGallery skips wiki-only cache');
+assert.match(fetchHeroGallerySrc, /galleryNeedsAtmosphereRefresh/, 'fetchEventHeroGallery refreshes bland skyline caches');
+assert.match(fetchHeroGallerySrc, /unsplashQueries/, 'fetchEventHeroGallery searches extra English atmosphere queries');
+assert.match(fetchHeroGallerySrc, /invoke:/, 'fetchEventHeroGallery continues after Edge timeout');
 
 const heroGalleryMergeSrc = readFileSync(join(root, 'src/utils/worldEventHeroGalleryMerge.js'), 'utf8');
 assert.match(heroGalleryMergeSrc, /mergeWorldEventHeroGalleryImages/, 'hero gallery merge util');
+assert.match(heroGalleryMergeSrc, /isRejectedGalleryFillerImage/, 'hero gallery rejects document fillers');
+assert.match(heroGalleryMergeSrc, /galleryNearDupKey/, 'hero gallery collapses similar Wikimedia crops');
 
 const baliGalleryQueries = buildWorldEventHeroGalleryQueries(bali, 'ko');
-assert.ok(baliGalleryQueries.primary.includes('갈룽안'), 'bali unsplash primary uses ko title');
+assert.ok(/galungan/i.test(baliGalleryQueries.primary), 'bali unsplash primary uses English event name');
 assert.ok(
-  baliGalleryQueries.wikimediaQueries.some((query) => /galungan/i.test(query)),
-  'bali wikimedia queries include galungan',
+  !/[\uAC00-\uD7A3]/.test(baliGalleryQueries.primary),
+  'bali unsplash primary has no Hangul',
+);
+assert.ok(
+  baliGalleryQueries.wikimediaQueries.every((query) => !/[\uAC00-\uD7A3]/.test(query)),
+  'bali wikimedia queries are English-only',
+);
+
+const viennaGalleryQueries = buildWorldEventHeroGalleryQueries(
+  getWorldEventById('vienna-staatsoper-season-2026'),
+  'ko',
+);
+assert.match(
+  viennaGalleryQueries.primary,
+  /opera house interior/i,
+  'vienna unsplash primary is auditorium atmosphere not building facade',
+);
+assert.doesNotMatch(
+  viennaGalleryQueries.primary,
+  /season/i,
+  'vienna unsplash primary drops Season filler',
+);
+
+const dubaiGalleryQueries = buildWorldEventHeroGalleryQueries(
+  getWorldEventById('dubai-fitness-challenge-2026'),
+  'ko',
+);
+assert.match(
+  dubaiGalleryQueries.primary,
+  /marathon|running|fitness class/i,
+  'dubai unsplash primary is running/fitness not marina skyline',
+);
+assert.ok(
+  getWorldEventById('vienna-staatsoper-season-2026')?.heroGallerySearchQueryEn,
+  'vienna heroGallerySearchQueryEn survives generate',
+);
+assert.ok(
+  getWorldEventById('dubai-fitness-challenge-2026')?.heroGallerySearchQueryEn,
+  'dubai heroGallerySearchQueryEn survives generate',
+);
+
+assert.equal(
+  isRejectedGalleryFillerImage({
+    url: 'https://upload.wikimedia.org/wikipedia/commons/x.jpg',
+    captionEn: 'Philadelphia Commission to Vienna, to the Select and Common Councils',
+  }),
+  true,
+  'rejects historical document captions',
+);
+assert.equal(
+  galleryNearDupKey(
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/x/Penjor_Galungan_20120906a.jpg',
+  ),
+  galleryNearDupKey(
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/x/Penjor_Galungan_20120906b.jpg',
+  ),
+  'near-dup key collapses a/b Wikimedia crops',
+);
+const mergedGallery = mergeWorldEventHeroGalleryImages(
+  [{ url: 'https://upload.wikimedia.org/wikipedia/commons/seed.jpg', captionEn: 'seed' }],
+  [
+    {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/doc.pdf',
+      captionEn: 'Philadelphia Commission to Vienna',
+    },
+    {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/Penjor_Galungan_20120906a.jpg',
+      captionEn: 'Penjor a',
+    },
+    {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/Penjor_Galungan_20120906b.jpg',
+      captionEn: 'Penjor b',
+    },
+  ],
+);
+assert.equal(mergedGallery.length, 2, 'merge keeps seed + one near-dup filler');
+assert.ok(
+  mergedGallery.every((image) => !/commission/i.test(image.captionEn || '')),
+  'merge drops document filler',
+);
+assert.equal(
+  isRejectedGalleryFillerImage({
+    url: 'https://upload.wikimedia.org/wikipedia/commons/x.jpg',
+    captionEn: 'Caldara Venceslao libretto title page Vienna',
+  }),
+  true,
+  'rejects libretto title-page fillers',
+);
+
+const rankedGallery = rankWorldEventHeroGalleryImages([
+  {
+    url: 'https://upload.wikimedia.org/wikipedia/commons/skyline.jpg',
+    captionEn: 'Dubai Marina skyline',
+    source: 'wikimedia',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-marathon',
+    captionEn: 'A large group of people running a marathon',
+    source: 'unsplash',
+  },
+  {
+    url: 'https://upload.wikimedia.org/wikipedia/commons/facade.jpg',
+    captionEn: 'brown concrete building facade',
+    source: 'wikimedia',
+  },
+]);
+assert.match(
+  rankedGallery[0]?.captionEn || '',
+  /marathon/i,
+  'atmosphere rank puts marathon crowd before skyline',
+);
+assert.equal(
+  galleryNeedsAtmosphereRefresh([
+    { url: 'https://upload.wikimedia.org/wikipedia/commons/a.jpg', captionEn: 'Dubai Marina skyline' },
+    { url: 'https://upload.wikimedia.org/wikipedia/commons/b.jpg', captionEn: 'cityscape at night' },
+    { url: 'https://upload.wikimedia.org/wikipedia/commons/c.jpg', captionEn: 'office tower facade' },
+  ]),
+  true,
+  'bland skyline galleries need Unsplash refresh',
+);
+assert.equal(
+  galleryNeedsAtmosphereRefresh([
+    {
+      url: 'https://images.unsplash.com/photo-oktoberfest',
+      captionEn: 'A crowd of people standing around a carnival beer tent',
+      source: 'unsplash',
+    },
+  ]),
+  false,
+  'festive Unsplash cache is kept',
+);
+assert.ok(
+  scoreHeroGalleryAtmosphere({
+    url: 'https://images.unsplash.com/photo-x',
+    captionEn: 'opera house interior audience',
+    source: 'unsplash',
+  }) >
+    scoreHeroGalleryAtmosphere({
+      url: 'https://upload.wikimedia.org/wikipedia/commons/x.jpg',
+      captionEn: 'concrete building facade',
+    }),
+  'interior/audience scores above facade',
 );
 
 const fetchWorldVideosSrc = readFileSync(join(root, 'src/utils/fetchWorldEventVideos.js'), 'utf8');
@@ -718,6 +1019,11 @@ async function assertPilotHeroImagesReachable(eventId) {
       if (status !== 429) break;
     }
 
+    if (!ok && status === 429) {
+      console.warn(`[smoke-world-events-detail] skip HEAD 429 ${eventId}: ${url}`);
+      continue;
+    }
+
     assert.equal(
       ok,
       true,
@@ -735,6 +1041,10 @@ for (const pilotId of [
   'dubai-fitness-challenge-2026',
   'barcelona-la-merce-2026',
   'istanbul-marathon-2026',
+  'paris-nuit-blanche-2027',
+  'los-angeles-rose-parade-2027',
+  'london-notting-hill-2026',
+  'rome-carnevale-2027',
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,
@@ -814,6 +1124,7 @@ for (const pilotId of PILOT_D4) {
 
 assert.match(stayStripSrc, /stayAreas/, 'EventStayStrip uses event.stayAreas');
 assert.match(stayStripSrc, /keywordOverride/, 'EventStayStrip passes stayArea mrtKeyword');
+assert.match(stayStripSrc, /filterBookableMrtStays/, 'EventStayStrip prefers bookable MRT stays');
 assert.match(stayStripSrc, /buildMrtStayListUrl/, 'EventStayStrip MRT list more link');
 assert.match(stayStripSrc, /selectedAreaIndex/, 'EventStayStrip area chip state');
 

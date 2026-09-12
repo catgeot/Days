@@ -1,10 +1,14 @@
 /**
  * /korea/theme/scenic 텍스트 검색 — name·addr·지역 부분 일치.
- * 지자체 팔경·구경 title/alias 매칭 시 curated 멤버만 (§5.2).
+ * 지자체 팔경·구경: 기본은 curated 멤버 필터. 명소 풀은 injectLocalScenic로 결손 멤버 주입.
  * (호출측: 전국 풀에서 매칭한 뒤 권역·종목 칩으로 분해)
  */
+import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 import {
+  listsForHub,
   matchLocalScenicListForScenicSearch,
+  mergeLocalScenicMembersIntoScenicSpots,
+  resolveLocalScenicList,
   spotMatchesLocalScenicListMember,
 } from './koreaLocalScenicLists.js';
 
@@ -28,6 +32,20 @@ export function sanitizeScenicDbSearchQuery(value) {
     .trim()
     .replace(/[,.()%*_'"\\]/g, '')
     .slice(0, 40);
+}
+
+/**
+ * 시군 허브 별칭·발음 표기 → 공식명 (창령→창녕).
+ * 팔경 리스트 공식 제목(창녕구경)은 그대로 둔다.
+ * @param {string} query
+ */
+export function canonicalScenicSearchQuery(query) {
+  const raw = String(query || '').trim();
+  if (!raw) return raw;
+  if (resolveLocalScenicList(raw)?.list) return raw;
+  const hub = resolveCityAttractionHub(raw);
+  if (hub?.name) return String(hub.name).trim();
+  return raw;
 }
 
 /**
@@ -107,14 +125,51 @@ function spotMatchesScenicQuery(spot, normalizedQuery) {
 /**
  * @param {object[]} items
  * @param {string} query
+ * @param {{ injectLocalScenic?: boolean }} [opts]
+ *   명소(GATEO 선정) 풀에만 true — 명승(유산) 풀에는 넣지 않음.
  */
-export function filterScenicSpotsByQuery(items, query) {
-  const q = normalizeScenicQuery(query);
+export function filterScenicSpotsByQuery(items, query, opts = {}) {
+  const resolvedQuery = canonicalScenicSearchQuery(query);
+  const q = normalizeScenicQuery(resolvedQuery);
   if (!q) return Array.isArray(items) ? items : [];
 
-  const listMatch = matchLocalScenicListForScenicSearch(query);
+  if (opts.injectLocalScenic) {
+    const exactList = resolveLocalScenicList(resolvedQuery);
+    if (exactList?.list) {
+      const curatedMembers = (items || []).filter((item) =>
+        spotMatchesLocalScenicListMember(item, exactList.list),
+      );
+      return mergeLocalScenicMembersIntoScenicSpots(
+        curatedMembers,
+        exactList.list.hubId,
+      ).filter((spot) => spot.localScenicListId === exactList.list.listId);
+    }
+
+    const hub = resolveCityAttractionHub(resolvedQuery);
+    if (hub?.hubId && listsForHub(hub.hubId).length) {
+      const pooled = (items || []).filter(
+        (item) => String(item.hubId || '').trim() === hub.hubId,
+      );
+      return mergeLocalScenicMembersIntoScenicSpots(pooled, hub.hubId);
+    }
+
+    const listMatch = matchLocalScenicListForScenicSearch(resolvedQuery);
+    if (listMatch) {
+      const curatedMembers = (items || []).filter((item) =>
+        spotMatchesLocalScenicListMember(item, listMatch),
+      );
+      return mergeLocalScenicMembersIntoScenicSpots(
+        curatedMembers,
+        listMatch.hubId,
+      ).filter((spot) => spot.localScenicListId === listMatch.listId);
+    }
+  }
+
+  const listMatch = matchLocalScenicListForScenicSearch(resolvedQuery);
   if (listMatch) {
-    return (items || []).filter((item) => spotMatchesLocalScenicListMember(item, listMatch));
+    return (items || []).filter((item) =>
+      spotMatchesLocalScenicListMember(item, listMatch),
+    );
   }
 
   return (items || []).filter((item) => spotMatchesScenicQuery(item, q));
@@ -140,4 +195,15 @@ export function pickBestRegionByCounts(regionOrder, regionCounts, fallback) {
     }
   }
   return best || fallback;
+}
+
+/**
+ * hub URL 팔경 주입 — 검색 풀이 0이면 넣지 않음 (창령+?hub=changnyeong → 창녕구경 오탐).
+ * @param {{ hubId?: string | null, searchActive?: boolean, searchPoolCount?: number }} opts
+ */
+export function shouldMergeHubLocalScenic(opts = {}) {
+  const hubId = String(opts.hubId || '').trim();
+  if (!hubId) return false;
+  if (opts.searchActive && Number(opts.searchPoolCount) === 0) return false;
+  return true;
 }

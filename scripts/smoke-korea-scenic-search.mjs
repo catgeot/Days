@@ -15,7 +15,10 @@ import {
   normalizeScenicQuery,
   pickBestRegionByCounts,
   sanitizeScenicDbSearchQuery,
+  shouldMergeHubLocalScenic,
+  canonicalScenicSearchQuery,
 } from '../src/pages/Home/lib/scenicSearch.js';
+import { nextTourCatsWhenCountsZero } from '../src/pages/KoreaTheme/scenicDefaultChips.js';
 import { SCENIC_REGION_ORDER } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -79,7 +82,10 @@ assert.equal(
 
 assert.ok(pageSrc.includes('filterScenicSpotsByQuery'), 'ScenicPage uses filter');
 assert.ok(pageSrc.includes('korea-scenic-search'), 'ScenicPage search input');
-assert.ok(pageSrc.includes('명소·지역 검색'), 'ScenicPage search placeholder');
+assert.ok(
+  pageSrc.includes('scenicSearchPlaceholder') || pageSrc.includes('명소·지역 검색'),
+  'ScenicPage search placeholder',
+);
 assert.ok(pageSrc.includes('searchQuery'), 'ScenicPage DB searchQuery');
 assert.ok(pageSrc.includes('commitSearch'), 'ScenicPage commitSearch');
 assert.ok(pageSrc.includes('closeSearch'), 'ScenicPage closeSearch');
@@ -87,7 +93,10 @@ assert.ok(
   pageSrc.includes('korea-scenic-search-modal-title'),
   'search results render as modal',
 );
-assert.ok(pageSrc.includes('aria-label="맨 위로"'), 'scroll-to-top FAB');
+assert.ok(
+  pageSrc.includes('scrollToTop') || pageSrc.includes('aria-label="맨 위로"'),
+  'scroll-to-top FAB',
+);
 assert.ok(pageSrc.includes('mainScrollRef'), 'scroll container ref');
 assert.ok(
   pageSrc.includes('bg-amber-500 shadow-sm') &&
@@ -112,7 +121,8 @@ assert.ok(
   'curated/heritage/tour region chips are independent',
 );
 assert.ok(
-  pageSrc.includes('한국관광공사 선정 관광지입니다.'),
+  pageSrc.includes('scenicTourAttribution') ||
+    pageSrc.includes('한국관광공사 선정 관광지입니다.'),
   'tour catalog blurb is short',
 );
 assert.ok(
@@ -120,17 +130,18 @@ assert.ok(
   'search keeps category chips',
 );
 assert.ok(
-  pageSrc.includes('분류 칩으로 결과 분해'),
+  pageSrc.includes('분류 칩으로 결과 분해') ||
+    pageSrc.includes('showCuratedFilterChips'),
   'search comment mentions chip breakdown',
 );
 assert.ok(pageSrc.includes('showCuratedFilterChips'), 'hide curated chips if empty');
 assert.ok(
-  pageSrc.includes('시·군 hub에 선정 명소 0건이면') &&
-    pageSrc.includes('Boolean(hubId) && curatedSpots.length === 0 && !searchActive'),
+  pageSrc.includes('Boolean(hubId) && curatedSpots.length === 0 && !searchActive'),
   'hub with 0 curated spots hides region/hub chips',
 );
 assert.ok(
-  pageSrc.includes('에는 아직 GATEO 선정 명소가 없습니다') &&
+  (pageSrc.includes('scenicEmptyCuratedHub') ||
+    pageSrc.includes('에는 아직 GATEO 선정 명소가 없습니다')) &&
     pageSrc.includes('curatedSpots.length > 0 ? ('),
   'empty hub copy skips “골랐습니다” blurb',
 );
@@ -310,5 +321,115 @@ assert.ok(
   chipCountFn.includes('searchQuery,'),
   'region/cat chip counts pass searchQuery',
 );
+
+const changnyeongCurated = filterScenicSpotsByQuery(curated, '창녕', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  changnyeongCurated.some((s) => s.localScenicListId === 'changnyeong-gugyeong'),
+  '창녕 검색은 창녕구경 팔경 주입',
+);
+assert.ok(
+  changnyeongCurated.some((s) => s.id === 'upo-wetland-changnyeong'),
+  '창녕 검색은 GATEO 선정 우포늪 유지',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '창녕').length,
+  2,
+  '창녕 국가유산 명승 2',
+);
+assert.equal(
+  canonicalScenicSearchQuery('창령'),
+  '창녕',
+  '창령 발음 별칭 → 창녕',
+);
+assert.equal(
+  canonicalScenicSearchQuery('창령군'),
+  '창녕',
+  '창령군 별칭 → 창녕',
+);
+assert.equal(
+  canonicalScenicSearchQuery('창녕구경'),
+  '창녕구경',
+  '팔경 리스트 제목은 공식명으로 바꾸지 않음',
+);
+const changnyeongAliasCurated = filterScenicSpotsByQuery(curated, '창령', {
+  injectLocalScenic: true,
+});
+assert.equal(
+  changnyeongAliasCurated.length,
+  changnyeongCurated.length,
+  '창령 검색 = 창녕 명소·팔경',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '창령').length,
+  2,
+  '창령 검색 = 창녕 국가유산 명승 2',
+);
+assert.ok(
+  pageSrc.includes('canonicalScenicSearchQuery(searchFilter)'),
+  '관광지 DB 검색도 허브 공식명 사용',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: true,
+    searchPoolCount: 0,
+  }),
+  false,
+  '검색 0건이면 hub URL 팔경 주입 금지',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: false,
+    searchPoolCount: 0,
+  }),
+  true,
+  '검색 아니면 hub 팔경 주입',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: true,
+    searchPoolCount: 13,
+  }),
+  true,
+  '창녕 검색 풀이 있으면 hub 병합 허용',
+);
+assert.ok(
+  pageSrc.includes('shouldMergeHubLocalScenic'),
+  'ScenicPage gates hub palgyeong merge',
+);
+assert.ok(
+  pageSrc.includes('nextTourCatsWhenCountsZero'),
+  'ScenicPage clears zero-count tour cats during search',
+);
+assert.ok(
+  pageSrc.includes('tourCat1ChipsVisible.length > 0'),
+  'search empty copy hidden when tour chips have hits',
+);
+
+const zeroCat3 = nextTourCatsWhenCountsZero('A02', 'A0201', 'A02010100', {
+  cat2Counts: { A0201: 12, A0202: 3 },
+  cat3Counts: { A02010100: 0, A02010700: 8, A02010800: 3 },
+});
+assert.equal(zeroCat3.changed, true, '0건 소분류 해제');
+assert.equal(zeroCat3.cat2, 'A0201', '소분류만 해제하면 중분류 유지');
+assert.equal(zeroCat3.cat3, null, '0건 소분류 null');
+
+const zeroCat2 = nextTourCatsWhenCountsZero('A01', 'A0101', null, {
+  cat2Counts: { A0101: 0, A0102: 2 },
+  cat3Counts: {},
+});
+assert.equal(zeroCat2.changed, true, '0건 중분류 해제');
+assert.equal(zeroCat2.cat2, null);
+assert.equal(zeroCat2.cat3, null);
+
+const keepCats = nextTourCatsWhenCountsZero('A02', 'A0201', null, {
+  cat2Counts: { A0201: 12, A0202: 3 },
+  cat3Counts: {},
+});
+assert.equal(keepCats.changed, false, '건수 있는 중분류는 유지');
 
 console.log('smoke-korea-scenic-search: PASS');

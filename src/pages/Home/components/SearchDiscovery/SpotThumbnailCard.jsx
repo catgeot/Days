@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { usePlaceGallery } from '../../../../components/PlaceCard/hooks/usePlaceGallery';
 import { CATEGORY_COLORS, CATEGORY_ICONS } from './constants';
 import { localizedExploreCategoryLabel } from '../../../../i18n/exploreUi';
+import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve';
 import {
   getLocalizedCountryName,
   getLocalizedPlaceName,
@@ -45,8 +46,9 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
   const locale = i18n.language;
   const displayName =
     getLocalizedPlaceName(spot, locale) || String(spot?.name || '').trim();
-  const countryLabel =
+  const rawCountry =
     getLocalizedCountryName(spot, locale) || String(spot?.country || '').trim();
+  const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
   const englishName = String(spot?.name_en || '').trim();
   const locationLine =
     locale === 'en'

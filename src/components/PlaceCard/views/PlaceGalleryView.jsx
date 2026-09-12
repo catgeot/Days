@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp, Trash2 } from 'lucide-react';
 import { i18n } from '../../../i18n/config';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
-import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
+import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
@@ -12,6 +12,7 @@ import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
+import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
 
@@ -271,6 +272,7 @@ const PlaceGalleryView = React.memo(({
   /** 그리드 클릭 직후 라이트박스에 같은 클릭이 전달되어 즉시 닫히는 것 방지 */
   const suppressOpenClickRef = useRef(false);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const pendingPlaceScrollResetRef = useRef(false);
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -326,6 +328,23 @@ const PlaceGalleryView = React.memo(({
     setPaintedCount(0);
     setGalleryVisuallyReady(false);
   }, [galleryPlaceKey]);
+
+  useLayoutEffect(() => {
+    pendingPlaceScrollResetRef.current = true;
+    resetPlaceMediaScrollInstant(scrollContainerRef.current);
+    setShowScrollToTop(false);
+    const raf = window.requestAnimationFrame(() => {
+      resetPlaceMediaScrollInstant(scrollContainerRef.current);
+    });
+    return () => window.cancelAnimationFrame(raf);
+  }, [galleryPlaceKey]);
+
+  useLayoutEffect(() => {
+    if (!pendingPlaceScrollResetRef.current || isImgLoading || isRefreshing) return;
+    resetPlaceMediaScrollInstant(scrollContainerRef.current);
+    pendingPlaceScrollResetRef.current = false;
+    setShowScrollToTop(false);
+  }, [isImgLoading, isRefreshing, galleryPlaceKey]);
 
   useEffect(() => {
     if (paintedCount >= paintTarget && paintTarget > 0) {
@@ -459,7 +478,7 @@ const PlaceGalleryView = React.memo(({
     el.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => el.removeEventListener('scroll', onScroll);
-  }, [selectedImg, images.length, isImgLoading]);
+  }, [selectedImg, images.length, isImgLoading, galleryPlaceKey]);
 
   const handlePrev = useCallback((e) => {
     e?.stopPropagation();
@@ -946,6 +965,12 @@ const PlaceGalleryView = React.memo(({
                 </div>
               </div>
             )}
+
+            <PlaceScenicGateway
+              location={location}
+              variant="dark"
+              className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+            />
 
             <PlaceWorldEventsSection
               location={location}

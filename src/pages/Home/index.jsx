@@ -66,6 +66,8 @@ import {
   topOceanToFlyRegion,
 } from './lib/seaBasinRail.js';
 import { syncHomeViewportAfterInput, syncHomeChromeAfterNavigation } from '../../shared/lib/mobileViewport';
+import { shouldLockHomeGlobePageZoom } from './lib/homeGlobePageZoomLock';
+import { useHomeGlobePageZoomLock } from './hooks/useHomeGlobePageZoomLock';
 import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
@@ -322,6 +324,7 @@ function Home() {
   const tourReadyAnchorRef = useRef(null);
   const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
+  useHomeGlobePageZoomLock(shouldLockHomeGlobePageZoom(routeLocation.pathname));
   const shouldPauseGlobe =
     !flightCinemaActive
     && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
@@ -1216,6 +1219,9 @@ function Home() {
 
   /** 써머리·투어 UI만 닫고 지구본 마지막 방문 핀은 유지 */
   const dismissPlaceSelectionKeepGlobePin = useCallback(() => {
+    const globeApi = globeRef.current || getGlobeApi();
+    // Android Chrome: summary X unmounts on pointerdown, then a ghost click hits Mapbox.
+    globeApi?.suppressOverlayClick?.();
     if (selectedLocation) {
       const lat = Number(selectedLocation.lat);
       const lng = Number(selectedLocation.lng);

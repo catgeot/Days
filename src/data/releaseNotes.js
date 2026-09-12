@@ -2,14 +2,14 @@
  * 사용자-facing 업데이트 공지 SSOT.
  *
  * 추가 기준 (`.ai-context` §1.7): **새 기능·중대한 기능/UX 업데이트·제휴/공지**만.
- * 버그픽스·미세 UI·내부 SSOT·리팩터·작은 후속은 **항목 추가하지 않음**(잦은 팝업 방지).
+ * 버그픽스·미세 UI·내부 SSOT·리팩터·작은 후속은 **항목 추가하지 않음**.
  * 반영은 사용자 합의 후 · 최신 항목을 RELEASE_NOTES 배열 **맨 앞**.
+ * 자동 팝업 없음 — LogoPanel FooterModal **Updates** 탭에서만 표시.
  * id는 YYYY-MM-DD (같은 날 여러 건이면 -2, -3) — 남발 금지.
  *
  * **EN (?lang=en)**:
  * - Updates 탭: `resolveReleaseNote` → `RELEASE_NOTES_EN_BY_ID[id]` 있으면 EN, 없으면 KO 폴백.
  * - 신규 추가 시 **동일 id**로 `RELEASE_NOTES_EN_BY_ID`에 title·items EN도 함께 넣을 것.
- * - 홈 팝업(`SiteUpdateBanner`): `resolveReleaseNote` 연동 (#42e).
  *
  * @typedef {'feature' | 'partner' | 'fix' | 'notice'} ReleaseCategory
  * @typedef {{ id: string, title: string, items: string[], category?: ReleaseCategory, date?: string }} ReleaseNote
@@ -17,6 +17,15 @@
 
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
+  {
+    id: '2026-09-12',
+    category: 'feature',
+    title: '축제·명승 본문에서 투어·티켓을 바로 볼 수 있어요',
+    items: [
+      '축제·명승 상세에 마이리얼트립 투어·티켓 카드가 숙소 아래에 나와요.',
+      '「크게」를 누르면 카드만 커지고, 목록은 좌우로 넘길 수 있어요.',
+    ],
+  },
   {
     id: '2026-08-18',
     category: 'feature',
@@ -379,6 +388,13 @@ export const RELEASE_CATEGORY_LABELS_EN = {
 
 /** EN overlay — id → { title, items } */
 const RELEASE_NOTES_EN_BY_ID = {
+  '2026-09-12': {
+    title: 'See tours and tickets in Korea festival and scenic spot details',
+    items: [
+      'Festival and scenic spot pages now show MyRealTrip tour and ticket cards under stays.',
+      'Tap Large to enlarge the cards only; swipe the row left and right.',
+    ],
+  },
   '2026-08-18': {
     title: 'Browse home, places, and Korea hubs in English',
     items: [

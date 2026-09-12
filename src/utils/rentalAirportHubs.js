@@ -57,7 +57,7 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'KUL', officialKo: '쿠알라룸푸르국제공항', lat: 2.7456, lng: 101.7099, radiusKm: 200, aliases: ['kuala lumpur', '쿠알라룸푸르', 'kl', 'kul'] },
   { iata: 'PEN', officialKo: '페낭국제공항', lat: 5.2971, lng: 100.2767, radiusKm: 120, aliases: ['penang', '페낭'] },
   { iata: 'LGK', officialKo: '랑카위국제공항', lat: 6.3297, lng: 99.7287, radiusKm: 100, aliases: ['langkawi', '랑카위', 'lgk'] },
-  { iata: 'BKI', officialKo: '코타키나발루공항', lat: 5.9372, lng: 116.0512, radiusKm: 160, aliases: ['kota kinabalu', '코타키나발루', 'bki', 'borneo', '보르네오', 'kinabalu', '키나발루'] },
+  { iata: 'BKI', officialKo: '코타키나발루공항', lat: 5.9372, lng: 116.0512, radiusKm: 160, aliases: ['kota kinabalu', '코타키나발루', 'bki', 'borneo', '보르네오', 'kinabalu', '키나발루', 'sabah', '사바', '사바섬'] },
   {
     iata: 'KCH',
     officialKo: '쿠칭국제공항',
@@ -330,6 +330,14 @@ export const RENTAL_AIRPORT_HUBS = [
     lng: 25.4793,
     radiusKm: 80,
     aliases: ['santorini', '산토리니', 'thira', '티라', 'jtr']
+  },
+  {
+    iata: 'ZTH',
+    officialKo: '자킨토스 국제공항',
+    lat: 37.7509,
+    lng: 20.8843,
+    radiusKm: 80,
+    aliases: ['zakynthos', '자킨토스', '자킨토시', 'zante', '잔테', 'zth']
   },
   {
     iata: 'HER',

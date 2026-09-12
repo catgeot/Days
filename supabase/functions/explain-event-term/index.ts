@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { GEMINI_QUALITY } from "../_shared/geminiModels.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,7 +12,7 @@ const SYSTEM_KO =
 const SYSTEM_EN =
   "You are MOONi, GATEO travel assistant. Explain the term in 2-4 short sentences for event travel context. Be practical and factual. End with complete sentences.";
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = GEMINI_QUALITY;
 const MAX_OUTPUT_TOKENS = 2048;
 
 type GeminiPart = { text?: string; thought?: boolean };

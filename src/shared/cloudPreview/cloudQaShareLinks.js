@@ -16,6 +16,117 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'gemini',
+    label: 'Gemini 2.5 종료 교체 · 무니 채팅',
+    branch: 'cursor/gemini-models-df4c',
+    destination:
+      'https://days-git-cursor-gemini-models-df4c-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'korea-tna-strip',
+    label: '축제·명승 본문 투어·티켓 카드 섹션',
+    branch: 'cursor/korea-tna-strip-ef65',
+    destination:
+      'https://days-git-cursor-korea-tna-strip-ef65-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
+    slug: 'scenic-stay',
+    label: '명승 본문 숙소 섹션',
+    branch: 'cursor/scenic-stay-692c',
+    destination:
+      'https://days-git-cursor-scenic-stay-692c-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
+    slug: 'planner-empty',
+    label: '플래너 실행 전 하단 여유·여행사 펼침',
+    branch: 'cursor/planner-empty-pad-6089',
+    destination:
+      'https://days-git-cursor-planner-empty-pad-6089-catgeots-projects.vercel.app/place/yanggu-arboretum/planner',
+    active: true,
+  },
+  {
+    slug: 'palgyeong-use',
+    label: '팔경 활용 검색·리스트',
+    branch: 'cursor/palgyeong-use-e744',
+    destination:
+      'https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'globe-frame-zoom',
+    label: '홈 지구본 페이지 줌 복귀',
+    branch: 'cursor/globe-frame-zoom-7106',
+    destination:
+      'https://days-git-cursor-globe-frame-zoom-7106-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'summary-close',
+    label: '써머리 닫기 X · Android Chrome',
+    branch: 'cursor/summary-close-1030',
+    destination:
+      'https://days-git-cursor-summary-close-1030-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'gallery-panel',
+    label: '갤러리 좌측 패널 공간',
+    branch: 'cursor/gallery-panel-032e',
+    destination:
+      'https://days-git-cursor-gallery-panel-032e-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
+    slug: 'zakynthos',
+    label: '자킨토스·사바섬 검색',
+    branch: 'cursor/zakynthos-search-e84a',
+    destination:
+      'https://days-git-cursor-zakynthos-search-e84a-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'pickup',
+    label: '공항픽업 링크',
+    branch: 'cursor/klook-pickup-d5a5',
+    destination:
+      'https://days-git-cursor-klook-pickup-d5a5-catgeots-projects.vercel.app/place/fukuoka/planner',
+    active: true,
+  },
+  {
+    slug: 'gallery-portrait',
+    label: '갤러리 단일 인물 제외',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: true,
+  },
+  {
+    slug: 'agencies',
+    label: '여행사 목록·방문 기록',
+    branch: 'cursor/agencies-85ab',
+    destination:
+      'https://days-git-cursor-agencies-85ab-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'updates',
+    label: '릴리스 노트 푸터',
+    branch: 'cursor/updates-0e16',
+    destination:
+      'https://days-git-cursor-updates-0e16-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'gallery-related',
+    label: '갤러리 연관 여행지 스크롤',
+    branch: 'cursor/gallery-scroll-76a6',
+    destination:
+      'https://days-git-cursor-gallery-scroll-76a6-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
     slug: 'gallery',
     label: '갤러리 사진 관리',
     branch: 'cursor/gallery-manage-173f',
@@ -338,9 +449,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'world-events',
     label: '세계 행사 일정 허브',
-    branch: 'cursor/world-events-wave2',
+    branch: 'cursor/world-events-wave3',
     destination:
-      'https://days-git-cursor-world-events-wave2-catgeots-projects.vercel.app/world-events',
+      'https://days-git-cursor-world-events-wave3-catgeots-projects.vercel.app/world-events',
     active: true,
   },
 ];

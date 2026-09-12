@@ -2,6 +2,7 @@ import React from 'react';
 import { ExternalLink, Tag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
+import { openPartnerExternalUrl } from '../../../../components/PlaceCard/common/partnerNavigation';
 
 const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
 
   const handleCardClick = () => {
     if (pkg.url) {
-      window.open(pkg.url, '_blank', 'noopener,noreferrer');
+      openPartnerExternalUrl(pkg.url);
     }
   };
 

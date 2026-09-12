@@ -1,11 +1,11 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-08-29T08:31:16.938Z",
-    "spotCount": 273,
+    "generatedAt": "2026-09-06T11:09:11.489Z",
+    "spotCount": 274,
     "placeIdCount": 647,
     "stats": {
-      "override": 172,
+      "override": 173,
       "curatedPreserved": 0,
       "toolkitSync": 101,
       "runtime": 0,
@@ -4263,6 +4263,17 @@
       "rationale": "오키나와 본섬(나하) 관문 — 미야코(SHI/MMY)·이시가키(ISG)와 분리",
       "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "graph-direct"
+    },
+    "sabah": {
+      "primaryIatas": [
+        "BKI"
+      ],
+      "preferredLinkIata": "BKI",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "말레이시아 사바는 보통 코타키나발루공항(BKI)이 관문입니다. 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 카리브해 네덜란드령 사바(SAB)와 도착 공항이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "사바주 관문 코타키나발루(BKI)"
     }
   },
   "placeIds": {

@@ -9,6 +9,7 @@ import {
   resolveGygCurrency,
   resolveGygLocale,
 } from '../../../../../utils/affiliate';
+import { recordTravelAgencyVisit } from '../../../../../utils/travelAgencyVisits.js';
 import { buildGygActivitiesSearchQuery } from '../locationRules';
 
 /** 파트너 프리뷰 공식 폭 — 740에서 Activities 2열 (560은 패딩 후 1열로 남는 경우 많음) */
@@ -33,6 +34,7 @@ export function GygHomeMoreLink({
   const { t, i18n } = useTranslation();
   const cmp = cmpProp || buildGygPlannerCmp(location);
   const href = getGygHomeUrl({ cmp, locale: i18n.language });
+  const placeLabel = location?.name || location?.name_ko || location?.name_en || '';
   const linkLabel = label ?? t('place.planner.banners.gyg.moreLink');
   const toneClass =
     tone === 'light'
@@ -47,7 +49,11 @@ export function GygHomeMoreLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      onClick={(e) => e.stopPropagation()}
+      data-gateo-place={placeLabel}
+      onClick={(e) => {
+        e.stopPropagation();
+        recordTravelAgencyVisit({ href, placeLabel, kind: 'tour' });
+      }}
       className={className || toneClass}
     >
       <span>{linkLabel}</span>
@@ -220,7 +226,11 @@ const GetYourGuideActivitiesWidget = ({
       href={homeHref}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      onClick={(e) => e.stopPropagation()}
+      data-gateo-place={query}
+      onClick={(e) => {
+        e.stopPropagation();
+        recordTravelAgencyVisit({ href: homeHref, placeLabel: query, kind: 'tour' });
+      }}
       className={`inline-flex items-center gap-1 underline-offset-2 hover:underline ${
         isBoxed ? 'hover:opacity-90' : 'hover:opacity-95'
       }`}

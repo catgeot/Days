@@ -93,7 +93,7 @@ assert.equal(capped.merged[0].id, 'hero-db');
 assert.equal(capped.merged[1].id, 'n1');
 assert.equal(capped.merged.at(-1).id !== 'old-b', true, 'oldest non-hero can drop');
 
-assert.match(hookSrc, /CACHE_VERSION = 'v1\.20'/, 'cache version after SWR');
+assert.match(hookSrc, /CACHE_VERSION = 'v1\.22'/, 'cache version after SWR');
 assert.match(hookSrc, /shouldRunGalleryStockSwr/, 'hook uses SWR gate');
 assert.match(hookSrc, /mergeGalleryFreshKeepHero/, 'hook merges keep-hero');
 assert.match(hookSrc, /gallery_urls: galleryUrls/, 'SWR upsert gallery_urls only');

@@ -16,13 +16,10 @@
     },
     "siteNotice": {
       "refreshHeader": "Update",
-      "systemHeader": "Notice",
       "refreshTitle": "A new version is available",
       "refreshBody": "Refresh the page to use the latest features.",
       "close": "Close",
-      "reload": "Refresh",
-      "pastNotices": "Past notices",
-      "dismissPermanent": "Don't show again"
+      "reload": "Refresh"
     },
     "auth": {
       "signIn": "Sign in",
@@ -426,19 +423,20 @@
       "recentVisitedCount": "Recent places {{count}}",
       "keywordVisits": "Keyword history",
       "keywordVisitsCount": "Keyword history {{count}}",
+      "agenciesVisitedCount": "Agencies opened {{count}}",
       "recentSearch": "Recent search",
       "removeItem": "Remove {{item}}",
       "removeRecord": "Remove {{keyword}} record",
       "collectionCount": "{{count}} curated places",
-      "aiExploreTitle": "Explore the world for <query>{{query}}</query>",
-      "aiExploreHint": "Pick a suggestion below the search bar, or press <strong>Enter</strong> for AI and map search.",
+      "aiExploreTitle": "Map search for <query>{{query}}</query>",
+      "aiExploreHint": "Pick a suggestion below the search bar, or press <strong>Enter</strong> for map search. AI steps in only if the map has no match.",
       "spotCount": "{{count}} places",
-      "aiLoadingTitle": "AI is exploring destinations",
-      "aiLoadingBody": "Checking similar names and typos…",
+      "aiLoadingTitle": "Finding this place",
+      "aiLoadingBody": "Checking the map for this name…",
       "suggestionsTitle": "Cities, sights & places for \"{{query}}\"",
       "suggestionsDefault": "Suggestions for \"{{query}}\"",
       "suggestionsLoading": "Loading",
-      "suggestionsEmpty": "No suggestions. Press Enter for AI and map search.",
+      "suggestionsEmpty": "No suggestions. Press Enter for map search.",
       "disambiguationTitle": "Choose a place",
       "disambiguationBody": "This name may match several places. Tap a card to open it.",
       "more": "See more",
@@ -632,6 +630,29 @@
       "signIn": "Sign in",
       "signOut": "Sign out"
     },
+    "agencies": {
+      "title": "Visited agencies",
+      "visitedTitle": "Agencies I opened",
+      "visitedEmpty": "No agencies opened on this device yet. Stay and tour links you open will show up here.",
+      "catalogTitle": "Connected agencies",
+      "hint": "Even if you did not bookmark the booking site, you can return to agencies opened from GATEO. You may need to sign in on that site to see reservations.",
+      "clearVisits": "Clear visit history",
+      "removeVisit": "Remove {{name}} from visit history",
+      "kind": {
+        "stay": "Stays",
+        "tour": "Tours",
+        "package": "Packages",
+        "flight": "Flights",
+        "rental": "Car rental",
+        "esim": "eSIM",
+        "ferry": "Ferry",
+        "transfer": "Transfer",
+        "tickets": "Tickets",
+        "luggage": "Luggage",
+        "scooter": "Scooter",
+        "browse": "Browse"
+      }
+    },
     "footerModal": {
       "tab": {
         "about": "About Us",
@@ -785,6 +806,16 @@
       "plannerCta": "Planner for this event",
       "stayCta": "Stays in {{keyword}}",
       "official": "Official schedule"
+    },
+    "scenicGateway": {
+      "badgeHeritage": "National Heritage Scenic Site",
+      "badgeHub": "Regional Attraction Collection",
+      "badgeTheme": "Korea Scenic Site",
+      "actionHub": "View Attractions",
+      "actionSpot": "View Story & Details",
+      "titleSuffix": "Overview & Story",
+      "tagStory": "Overview & Photos",
+      "tagSurroundings": "Nearby Stays & Food"
     },
     "planner": {
       "title": "Smart travel toolkit",
@@ -1390,6 +1421,10 @@
         "nearScenicMore": "More {{region}} scenic spots",
         "stayTour": "Stays · tours",
         "stayKeyword": "Stays · {{keyword}}",
+        "stayStripTitle": "Your trip dates",
+        "stayStripHint": "Search stays near this scenic site for the nights you pick.",
+        "tnaStripTitle": "Tours & Tickets",
+        "tnaStripHint": "Activities and admission tickets to enjoy alongside the festival",
         "plannerKeyword": "Planner · {{keyword}}",
         "tourKeyword": "Tours · {{keyword}}",
         "packages": "Packages",
@@ -1504,6 +1539,7 @@
       "scenicCuratedDisclaimer": "Popular spots travelers search for most.",
       "scenicHeritageDisclaimer": "National heritage scenic sites designated by the Cultural Heritage Administration.",
       "scenicSectionCurated": "GATEO curated spots",
+      "scenicSectionCuratedRest": "Regional highlights",
       "scenicSectionHeritage": "National heritage scenic sites",
       "spotCount": "{{count}} spots",
       "nationwideSuffix": " · nationwide {{count}}",
@@ -1551,6 +1587,10 @@
         "festivalsInArea": "Festivals in this area",
         "coursesInArea": "Travel courses in this area",
         "stayKeyword": "Stays · {{keyword}}",
+        "stayStripTitle": "Your trip dates",
+        "stayStripHint": "Search stays near this scenic site for the nights you pick.",
+        "tnaStripTitle": "Tours & Tickets",
+        "tnaStripHint": "Activities, experiences, and tickets to enjoy around this spot",
         "tourKeyword": "Tours · {{keyword}}",
         "packageCtaFallback": "View packages",
         "loadingDetail": "Loading details…",
@@ -1571,6 +1611,8 @@
         "heritageManager": "Manager",
         "naverSearch": "Naver details",
         "naverSearchAria": "Open Naver details in a new tab",
+        "googleSearch": "Google details",
+        "googleSearchAria": "Open Google details in a new tab",
         "heroExpandSwipe": "Expand photo · swipe left or right",
         "heroExpand": "Expand photo",
         "expandView": "Expand",
@@ -1747,7 +1789,7 @@
     "title": "World events",
     "seoTitle": "World events — GATEO",
     "seoDescription": "Browse flagship festivals and seasonal events across Europe, Asia-Pacific, the Americas, Oceania, and niche cities — then open place cards and event-tailored planners.",
-    "intro": "Wave 1 curated city events. Open a card for event details, place pages, planners, or stays.",
+    "intro": "Wave 1 curated city events. Open a card for the event page.",
     "koreaLink": "Korea festivals",
     "regionChipsAria": "Region filter",
     "headlineAll": "All {{count}}",
@@ -1862,6 +1904,14 @@
         "midWeekend": "Mid-season weekend",
         "closing": "Closing"
       }
+    },
+    "tnaStrip": {
+      "title": "Tours & Tickets",
+      "hint": "Browse nearby tours, activities, and admission tickets bookable on MyRealTrip.",
+      "activitiesTitle": "{{place}} Tours & Tickets",
+      "moreOnMrt": "More on MRT",
+      "empty": "No tours or tickets found for this location.",
+      "loading": "Loading tours and tickets…"
     },
     "executionStrip": {
       "title": "Book & go",
