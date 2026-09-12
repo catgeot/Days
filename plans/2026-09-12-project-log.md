@@ -69,3 +69,10 @@
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 창녕구경 사진·개요 없는 6건(우포늪과 따오기·화왕산 억새와 진달래·낙동강유채축제와 남지개비리·만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑·교동과 송현동고분군·3·1민속문화제와 영산만년교)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=changnyeong
 ```
+
+## 같은 세션 QA — AGENTS.md 전 주제 규칙
+
+- **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
+- **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
+- **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
+- **팔경**: 다음 에이전트 = **#22 창녕 결손 오버레이** (변경 없음)
