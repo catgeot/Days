@@ -181,13 +181,23 @@
 - **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
 - **다음**: 사람 Preview — 20개·크게 펼침 확인. OK·추가 피드백 없으면 PR #223 병합 후 인덱스 행 삭제
 
+## 한국 투어티켓 #4 — 크게는 가로로 카드만 (Cloud)
+
+- **세션**: 사람 피드백 — 세로 펼침은 본문 스킵이 어렵다. 가로로 카드만 키울지, 5개씩 더보기인지
+- **결정**: **크게 = 카드만 키우고 좌우 스크롤 유지**. 5개씩 더보기는 MRT 더보기와 겹치고 「크게」도 아니어서 넣지 않음
+- **브랜치**: `cursor/korea-tna-strip-ef65` · tip `13bd6974` · PR [#223](https://github.com/catgeot/Days/pull/223)
+- **완료**: 숙소·투어 「크게」카드 220~252px · 썸네일 132px · `overflow-x-auto` 유지. 세로 그리드 제거
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS · `npm run build` PASS
+- **Preview**: https://www.gateo.kr/qa/korea-tna-strip
+- **다음**: 사람 Preview — 크게가 가로인지 · 아래로 스킵되는지. OK면 PR #223 병합
+
 ```
-한국 투어티켓 #4, Preview OK면 PR 병합
+한국 투어티켓 #5, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
 금지: UI 임의 리디자인 · feature에 plans/** 커밋
-작업: 숙소·투어 카드 기본 20개 · 「크게」세로 펼침이 맞으면 PR #223 병합 후 이 행 삭제. 추가 피드백이면 개수·펼침만 수정
+작업: 「크게」가 카드만 키우고 좌우 스크롤인지 · 아래로 본문 스킵이 되는지 확인. OK·추가 피드백 없으면 PR #223 병합 후 이 행 삭제
 ```
 
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
