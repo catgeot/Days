@@ -146,16 +146,26 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → 지구본·명승 「강진」검색 그룹명 · 청자단지 썸네일
 - **다음**: #29 선유8경 5. 사람은 같은 턴에 그룹명·청자단지 사진 확인.
 
-## 팔경 활용 #29 다음 — 군산 결손 오버레이
+## 팔경 활용 #29 — 군산 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #29, 군산 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `ba1a57e2` · PR [#229](https://github.com/catgeot/Days/pull/229)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 선유8경 결손 5건(선유낙조·명사십리·망주폭포·월영단풍·무산십이봉)의 개요·주소·공식 사진 보강. 한국관광공사 선유도 낙조·선유도해수욕장·말도 사진과 국가유산 망주봉 폭포 사진을 연결했고, 월영단풍은 같은 섬 대각산 공식 사진으로 근사했다.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gunsan`
+- **잔여**: 사진/개요 순수 누락 **157**/876. QA 후 다음 허브 **금산10경 5**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #30 다음 — 금산 결손 오버레이
 
 ```
-팔경 활용 #29, 군산 결손 오버레이
+팔경 활용 #30, 금산 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 선유8경 사진·개요 없는 5건(선유낙조·명사십리·망주폭포·월영단풍·무산십이봉)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gunsan
+작업: 금산10경 사진·개요 없는 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=geumsan
 ```
 
 ## 같은 세션 QA — AGENTS.md 전 주제 규칙
@@ -163,7 +173,7 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#29 군산 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#30 금산 결손 오버레이**
 
 ## 한국 투어티켓 #1 — 축제·명승 본문 투어·티켓 카드 섹션 (Cloud)
 
