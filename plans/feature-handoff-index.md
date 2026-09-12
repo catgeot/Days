@@ -18,25 +18,25 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `9a0dc58d` · PR [#224](https://github.com/catgeot/Days/pull/224) · Edge 배포됨 · **사람 Preview** |
+| **상태** | **#2 push** · tip `7ab5d0fb` · PR [#224](https://github.com/catgeot/Days/pull/224) · Edge 배포됨 · **사람 Preview** |
 | **브랜치** | `cursor/gemini-models-df4c` |
-| **tip** | `9a0dc58d` |
+| **tip** | `7ab5d0fb` |
 | **PR** | [#224](https://github.com/catgeot/Days/pull/224) |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/gemini` → git Preview `/` |
-| **소유** | `geminiModels.js` · `gemini-proxy` · 위키·툴킷·매거진·무니 |
+| **소유** | `geminiModels.js` · `gemini-proxy` · `smoke-health` P0-3 · 위키·툴킷·매거진·무니 |
 | **금지** | UI 리디자인 · 최신 Flash(3.6+) 추격 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:gemini-models` · `vite build` · LIVE proxy ping |
+| **VERIFY** | `smoke:gemini-models` · `smoke:health` P0-3 FAST+QUALITY · `vite build` |
 
 **다음 제시어**:
 
 ```
-AI 모델 #2, Preview 피드백 수정
+AI 모델 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 브랜치 cursor/gemini-models-df4c · PR #224 · Preview /qa/gemini
 금지: UI 리디자인 · 최신 Flash 추격 · feature에 plans/** 커밋
-작업: 사람 Preview 피드백이 있으면 모델 티어만 수정. 없으면 PR 병합 후 이 행 삭제
+작업: 무니 대화가 이전과 같으면 PR #224 병합 후 이 행 삭제. 추가 티어 피드백이면 모델 티어만 수정
 ```
 
 ---
