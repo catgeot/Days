@@ -370,28 +370,28 @@
 
 | | |
 |--|--|
-| **상태** | **#21** tip `7903a22c` · PR [#220](https://github.com/catgeot/Days/pull/220) · **#22 창녕 결손 오버레이** |
+| **상태** | **#22** tip `ddd01ca0` · PR [#221](https://github.com/catgeot/Days/pull/221) · **#23 진주 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `7903a22c` |
-| **PR** | [#220](https://github.com/catgeot/Days/pull/220) |
+| **tip** | `ddd01ca0` |
+| **PR** | [#221](https://github.com/catgeot/Days/pull/221) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=icheon` · 다음 `?hub=changnyeong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=changnyeong` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). 순수 사진/개요 누락 **190**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **창녕구경 6** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22** 창녕 6(#221). 순수 사진/개요 누락 **184**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **진주8경 6** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #22, 창녕 결손 오버레이
+팔경 활용 #23, 진주 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 창녕구경 사진·개요 없는 6건(우포늪과 따오기·화왕산 억새와 진달래·낙동강유채축제와 남지개비리·만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑·교동과 송현동고분군·3·1민속문화제와 영산만년교)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=changnyeong
+작업: 진주8경 사진·개요 없는 6건(남강 의암·뒤벼리·새벼리·망진산 봉수대·비봉산의 봄·월아산 해돋이)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jinju
 ```
 
 ---
