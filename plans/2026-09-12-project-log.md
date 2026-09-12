@@ -68,10 +68,20 @@
 - **잔여**: 사진/개요 순수 누락 **184**/876. QA 후 다음 허브 **진주8경 6**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #23 다음 — 진주 결손 오버레이
+## 팔경 활용 #23 — 창녕 검색 버그픽스 (Cloud)
+
+- **세션** `팔경 활용 #23, 창녕 검색 버그픽스`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `251cd352` · PR [#221](https://github.com/catgeot/Days/pull/221)
+- **완료**: `창령`+hub URL이면 창녕구경이 주입되던 오탐을 검색 풀 0건일 때 팔경 병합 금지로 막음. `창녕` 관광지는 0건 중·소분류 URL을 해제하고, 분류칩 건수가 있으면 빈 문구를 숨김.
+- **VERIFY**: `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-local-scenic-lists` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `창령`은 팔경 없음 · `창녕`은 관광지 목록·칩 일치
+- **잔여**: 다음 허브 **진주8경 6**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #24 다음 — 진주 결손 오버레이
 
 ```
-팔경 활용 #23, 진주 결손 오버레이
+팔경 활용 #24, 진주 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
@@ -85,4 +95,4 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#23 진주 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#24 진주 결손 오버레이**
