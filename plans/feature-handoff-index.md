@@ -370,28 +370,28 @@
 
 | | |
 |--|--|
-| **상태** | **#19 merge ✅** `985bf7b7` · PR [#219](https://github.com/catgeot/Days/pull/219) · **#20 QA PASS ✅** · **#21 이천 결손 오버레이** |
+| **상태** | **#21** tip `7903a22c` · PR [#220](https://github.com/catgeot/Days/pull/220) · **#22 사람 Preview QA** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `985bf7b7` (main) |
-| **PR** | [#219](https://github.com/catgeot/Days/pull/219) merge ✅ `985bf7b7` |
+| **tip** | `7903a22c` |
+| **PR** | [#220](https://github.com/catgeot/Days/pull/220) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=icheon` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#20** 함안·사천 Preview QA PASS. 순수 사진/개요 누락 **196**/876. 다음 허브 **이천9경 6** · 그다음 창녕구경 6 |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). 순수 사진/개요 누락 **190**/876. QA 후 다음 허브 **창녕구경 6** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #21, 이천 결손 오버레이
+팔경 활용 #22, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 이천9경 사진·개요 없는 6건(노성산 말머리바위·도드람산 삼봉·반룡송·사기막골도예촌·설봉산 삼형제 바위·애련정)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=icheon
+작업: Preview /korea/theme/scenic?hub=icheon 결손 행 썸네일·개요·행마다 다른 사진
 ```
 
 ---

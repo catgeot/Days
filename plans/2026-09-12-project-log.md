@@ -47,3 +47,24 @@
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 이천9경 사진·개요 없는 6건(노성산 말머리바위·도드람산 삼봉·반룡송·사기막골도예촌·설봉산 삼형제 바위·애련정)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=icheon
 ```
+
+## 팔경 활용 #21 — 이천 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #21, 이천 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `7903a22c` · PR [#220](https://github.com/catgeot/Days/pull/220)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 이천9경 결손 6건(노성산 말머리바위·도드람산 삼봉·반룡송·사기막골도예촌·설봉산 삼형제 바위·애련정)의 개요·주소·공식 사진 보강. 노성산 말머리바위는 같은 시 기암 공식 사진으로 근사.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=icheon`
+- **잔여**: 사진/개요 순수 누락 **190**/876. QA 후 다음 허브 **창녕구경 6**
+
+## 팔경 활용 #22 다음 — 사람 Preview QA
+
+```
+팔경 활용 #22, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: Preview /korea/theme/scenic?hub=icheon 결손 행 썸네일·개요·행마다 다른 사진
+```
