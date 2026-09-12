@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 28,
-  sessionPhase: '강진 결손 오버레이',
+  sessionPhase: '강진 12경 제목·청자단지',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=gangjin',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-28-gangjin-title-village',
+    session: '팔경 활용 #28, 강진 12경 제목·청자단지',
+    title: '강진 12경 그룹명 · 청자단지 썸네일',
+    detail:
+      '강진 검색 시 지구본·명승 리스트 소제목이 「강진 명소」로 나오던 것을 공식명 「강진 12경」으로 맞췄습니다. listKind other인데 제목이 N경이면 띄어 씁니다. 청자단지는 contentId만 있고 사진이 없어 고려청자촌 공식 사진(가마터·공방 단지)을 런타임 오버레이로 보강했습니다. JSON contentId는 넣지 않았습니다. Preview /qa/palgyeong-use — 「강진」검색 그룹명 · 청자단지 썸네일.',
+    at: '2026-09-12T12:30:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-28-gangjin-overlays',
     session: '팔경 활용 #28, 강진 결손 오버레이',

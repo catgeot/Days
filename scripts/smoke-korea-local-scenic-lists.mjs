@@ -390,7 +390,7 @@ assert.ok(mujuIlsadae?.imageUrl?.includes('1629007'), '무주 일사대 KHS 사�
 const mujuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'muju');
 const mujuGucheon = mujuMerged.filter((s) => s.localScenicListId === 'muju-other');
 assert.equal(mujuGucheon.length, 33, '무주 구천동33경 33명');
-assert.equal(mujuGucheon[0]?.groupTitle, '무주 명소');
+assert.equal(mujuGucheon[0]?.groupTitle, '구천동 33경');
 assert.equal(mujuGucheon[0]?.blurb, '무주 1경');
 assert.equal(mujuGucheon[32]?.blurb, '무주 33경');
 const mujuDeficit = mujuGucheon.filter((s) => !s.contentId);
@@ -978,7 +978,7 @@ assert.ok(jcJeokdae?.overview?.includes('암벽'), '진천 적대청람 overlay 
 const guryeMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gurye');
 const guryeTen = guryeMerged.filter((s) => s.localScenicListId === 'gurye-other');
 assert.equal(guryeTen.length, 10, '구례10경 10명');
-assert.equal(guryeTen[0]?.groupTitle, '구례 명소');
+assert.equal(guryeTen[0]?.groupTitle, '구례 10경');
 assert.equal(guryeTen[0]?.blurb, '구례 1경');
 const guryeDeficitNames = [
   '노고단 운해',
@@ -1018,8 +1018,29 @@ assert.ok(gyeSnow?.overview?.includes('설화'), '구례 노고단 설경 overla
 const gangjinMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gangjin');
 const gangjinTwelve = gangjinMerged.filter((s) => s.localScenicListId === 'gangjin-other');
 assert.equal(gangjinTwelve.length, 12, '강진12경 12명');
-assert.equal(gangjinTwelve[0]?.groupTitle, '강진 명소');
+assert.equal(gangjinTwelve[0]?.groupTitle, '강진 12경');
 assert.equal(gangjinTwelve[0]?.blurb, '강진 1경');
+const gangjinHub = resolveCityAttractionHub('gangjin');
+const gangjinList = resolveLocalScenicList('강진12경')?.list;
+assert.ok(gangjinList?.listId === 'gangjin-other', '강진12경 resolve');
+const gangjinGlobeMembers = (gangjinList.members || [])
+  .map((member) => localScenicMemberToSuggestion(gangjinList, gangjinHub, member))
+  .filter(Boolean);
+assert.ok(
+  gangjinGlobeMembers.every((s) => s.groupTitle === '강진 12경'),
+  '지구본 강진 멤버 groupTitle 강진 12경',
+);
+const gangjinSearch = filterScenicSpotsByQuery(listKoreaScenicSpots(), '강진', {
+  injectLocalScenic: true,
+});
+const gangjinSearchPalgyeong = gangjinSearch.filter(
+  (s) => s.localScenicListId === 'gangjin-other',
+);
+assert.equal(gangjinSearchPalgyeong.length, 12, '명승 강진 검색 12경 12행');
+assert.ok(
+  gangjinSearchPalgyeong.every((s) => s.groupTitle === '강진 12경'),
+  '명승 강진 검색 그룹명 강진 12경',
+);
 const gangjinDeficitNames = [
   '월출산',
   '가학산',
@@ -1054,6 +1075,14 @@ const gjNamdo = resolveLocalScenicListSpotById('local-scenic:gangjin-other:남�
 assert.ok(gjNamdo?.overview?.includes('사의재'), '강진 남도별미식문화박물관 overlay overview');
 const gjCeladon = resolveLocalScenicListSpotById('local-scenic:gangjin-other:강진청자박물관');
 assert.ok(gjCeladon?.overview?.includes('고려청자'), '강진 청자박물관 overlay overview');
+const gjVillage = resolveLocalScenicListSpotById('local-scenic:gangjin-other:청자단지');
+assert.ok(gjVillage?.imageUrl, '강진 청자단지 overlay 썸네일');
+assert.ok(gjVillage?.overview?.includes('청자촌'), '강진 청자단지 overlay overview');
+assert.notEqual(gjVillage?.imageUrl, gjCeladon?.imageUrl, '청자단지·청자박물관 썸네일 다름');
+assert.ok(
+  gangjinGlobeMembers.find((s) => s.name === '청자단지')?.imageUrl,
+  '지구본 청자단지 썸네일',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {
