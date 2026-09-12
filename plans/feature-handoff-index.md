@@ -426,28 +426,28 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#29** tip `ba1a57e2` · PR [#229](https://github.com/catgeot/Days/pull/229) · 선유8경 5 · **#30 금산 결손 오버레이** |
+| **상태** | **#30** tip `f6c7a3f2` · PR [#231](https://github.com/catgeot/Days/pull/231) · 금산10경 5 · **#31 남해 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `ba1a57e2` |
-| **PR** | [#229](https://github.com/catgeot/Days/pull/229) · [#228](https://github.com/catgeot/Days/pull/228) merge ✅ |
+| **tip** | `f6c7a3f2` |
+| **PR** | [#231](https://github.com/catgeot/Days/pull/231) · [#229](https://github.com/catgeot/Days/pull/229) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gunsan` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=geumsan` |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지 썸네일(#228). **#29** 선유8경 5(#229). 순수 사진/개요 누락 **157**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **금산10경 5** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지 썸네일(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). 순수 사진/개요 누락 **152**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **남해12경 5** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #30, 금산 결손 오버레이
+팔경 활용 #31, 남해 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 금산10경 사진·개요 없는 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=geumsan
+작업: 남해12경 사진·개요 없는 5건(남해 금산과 보리암·창선교와 남해지족해협 죽방렴·서포 김만중 선생 유허와 노도·남해 물건리 방조어부림과 물미해안·창선-삼천포대교)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=namhae
 ```
 
 ---

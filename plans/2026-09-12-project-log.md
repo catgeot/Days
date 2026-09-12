@@ -156,16 +156,26 @@
 - **잔여**: 사진/개요 순수 누락 **157**/876. QA 후 다음 허브 **금산10경 5**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #30 다음 — 금산 결손 오버레이
+## 팔경 활용 #30 — 금산 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #30, 금산 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `f6c7a3f2` · PR [#231](https://github.com/catgeot/Days/pull/231)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 금산10경 결손 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)의 개요·주소·공식 사진 보강. 한국관광공사 금산산림문화타운·인삼약령시장·월영산 출렁다리·기러기공원·태조대왕 태실 사진을 연결했고, 세계농업유산은 같은 군 금산인삼관 공식 사진으로 근사했다.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=geumsan`
+- **잔여**: 사진/개요 순수 누락 **152**/876. QA 후 다음 허브 **남해12경 5**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #31 다음 — 남해 결손 오버레이
 
 ```
-팔경 활용 #30, 금산 결손 오버레이
+팔경 활용 #31, 남해 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 금산10경 사진·개요 없는 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=geumsan
+작업: 남해12경 사진·개요 없는 5건(남해 금산과 보리암·창선교와 남해지족해협 죽방렴·서포 김만중 선생 유허와 노도·남해 물건리 방조어부림과 물미해안·창선-삼천포대교)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=namhae
 ```
 
 ## 같은 세션 QA — AGENTS.md 전 주제 규칙
@@ -173,7 +183,8 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#30 금산 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#31 남해 결손 오버레이**
+
 
 ## 한국 투어티켓 #1 — 축제·명승 본문 투어·티켓 카드 섹션 (Cloud)
 
