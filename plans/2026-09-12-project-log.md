@@ -127,16 +127,26 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gurye` 지역 대표 명소 구례 수목원
 - **다음**: #28 강진12경 5. 사람은 같은 턴에 수목원 썸네일·본문 갤러리 확인.
 
-## 팔경 활용 #28 다음 — 강진 결손 오버레이
+## 팔경 활용 #28 — 강진 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #28, 강진 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `5ced5845` · PR [#226](https://github.com/catgeot/Days/pull/226)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 강진12경 결손 5건(월출산·가학산·백야김좌진기념관·남도별미식문화박물관·강진청자박물관)의 개요·주소·공식 사진 보강. 가학산은 같은 능선 흑석산자연휴양림 근사 사진. 백야김좌진기념관은 실제 시설이 충남 홍성(강진 동명 시설 없음). 남도별미식문화박물관은 강진 동명 시설이 없어 사의재 저잣거리 안내·근사 사진. 강진청자박물관은 고려청자박물관 공식 사진.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gangjin`
+- **잔여**: 사진/개요 순수 누락 **162**/876. QA 후 다음 허브 **선유8경 5**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #29 다음 — 군산 결손 오버레이
 
 ```
-팔경 활용 #28, 강진 결손 오버레이
+팔경 활용 #29, 군산 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 강진12경 사진·개요 없는 5건(월출산·가학산·백야김좌진기념관·남도별미식문화박물관·강진청자박물관)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gangjin
+작업: 선유8경 사진·개요 없는 5건(선유낙조·명사십리·망주폭포·월영단풍·무산십이봉)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gunsan
 ```
 
 ## 같은 세션 QA — AGENTS.md 전 주제 규칙
@@ -144,7 +154,7 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#28 강진 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#29 군산 결손 오버레이**
 
 ## 한국 투어티켓 #1 — 축제·명승 본문 투어·티켓 카드 섹션 (Cloud)
 
