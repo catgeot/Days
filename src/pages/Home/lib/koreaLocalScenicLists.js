@@ -897,9 +897,14 @@ const GEUM_MARKET_3 = 'https://tong.visitkorea.or.kr/cms/resource/53/3045153_ima
 const GEUM_WOL = 'https://tong.visitkorea.or.kr/cms/resource/44/4086844_image2_1.jpg';
 const GEUM_WOL_2 = 'https://tong.visitkorea.or.kr/cms/resource/79/3036479_image2_1.jpg';
 const GEUM_WOL_3 = 'https://tong.visitkorea.or.kr/cms/resource/60/3559860_image2_1.jpg';
-const GEUM_TAEJO = 'https://tong.visitkorea.or.kr/cms/resource/88/3559888_image2_1.jpg';
-const GEUM_TAEJO_2 = 'https://tong.visitkorea.or.kr/cms/resource/87/3559887_image2_1.jpg';
-const GEUM_TAEJO_3 = 'https://tong.visitkorea.or.kr/cms/resource/89/3559889_image2_1.jpg';
+const GEUM_GINKGO = 'https://www.geumsan.go.kr/tour/img/sub02/sub020610_img02.jpg';
+const GEUM_GINKGO_2 = 'https://www.khs.go.kr/unisearch/images/natural_monument/1630483.jpg';
+const GEUM_SEODAE = 'https://www.geumsan.go.kr/tour/img/sub02/sub020604_img02.jpg';
+const GEUM_SEODAE_2 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020604_img01.jpg';
+const GEUM_SEODAE_3 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020604_img03.jpg';
+const GEUM_JINAK = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img01.jpg';
+const GEUM_JINAK_2 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img02.jpg';
+const GEUM_JINAK_3 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img03.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1854,16 +1859,55 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [GEUM_WOL_2, GEUM_WOL_3],
   ),
   'local-scenic:geumsan-sipgyeong:태조태실요광은행나무': localScenicPhotoOverlay(
-    '금산10경 제10경 태조태실 요광은행나무는 추부면 만인산 태조대왕태실과 요광리 은행나무입니다. 금산군 문화관광에 따르면 태조가 함경도 용연의 태를 만인산으로 옮겨 태자와 함께 안치했고, 1928년 총독부가 태 항아리를 옮긴 뒤 1993년 주민이 복원했습니다. 충청남도 유형문화재 제131호입니다. 요광리 은행나무는 수령 약 1000년 천연기념물 제84호이며 마을 수호신으로 모십니다. 사진은 한국관광공사 태조대왕 태실 공식 사진입니다.',
+    '금산10경 제10경 태조태실 요광은행나무는 추부면 만인산 태조대왕태실과 요광리 은행나무입니다. 금산군 문화관광에 따르면 태조가 함경도 용연의 태를 만인산으로 옮겨 태자와 함께 안치했고, 1928년 총독부가 태 항아리를 옮긴 뒤 1993년 주민이 복원했습니다. 충청남도 유형문화재 제131호입니다. 요광리 은행나무는 수령 약 1000년 천연기념물 제84호이며 마을 수호신으로 모십니다. 사진은 금산군 문화관광·국가유산청 요광리 은행나무 공식 사진입니다.',
     '충청남도 금산군 추부면 마전리 산1-66 · 요광리 329-8 (태조대왕태실·요광리 은행나무)',
-    GEUM_TAEJO,
-    [GEUM_TAEJO_2, GEUM_TAEJO_3],
+    GEUM_GINKGO,
+    [GEUM_GINKGO_2],
+  ),
+  'local-scenic:geumsan-sipgyeong:서대산산꽃세상': localScenicPhotoOverlay(
+    '금산10경 제4경 서대산 산꽃세상은 군북면 보곡산골입니다. 금산군 문화관광은 전국 최대 규모 산벚꽃 자생군락지이며 산딸나무·병꽃나무·조팝나무·진달래·생강나무가 앞다퉈 핀다고 적습니다. 매년 4월 비단고을 산꽃축제와 산꽃벚꽃마을 오토캠핑장이 있습니다. 주소는 군북면 자진뱅이길 39입니다. TourAPI 서대산(contentId 127518)은 사진이 없어 금산군 산꽃세상 공식 사진을 연결했습니다.',
+    '충청남도 금산군 군북면 자진뱅이길 39 (산꽃벚꽃마을·보곡산골)',
+    GEUM_SEODAE,
+    [GEUM_SEODAE_2, GEUM_SEODAE_3],
+  ),
+  'local-scenic:geumsan-sipgyeong:금산진악산': localScenicPhotoOverlay(
+    '금산10경 제3경 금산 진악산은 남이면 성곡리 일원입니다. 금산군 문화관광은 개삼터(開蔘터)가 있는 명산으로, 강처사가 진악산 백년약수에 인삼 씨앗을 씻어 심은 개삼 전설을 전합니다. TourAPI 진악산(contentId 126811)은 사진이 없어 금산군 진악산·개삼터 공식 사진을 연결했습니다.',
+    '충청남도 금산군 남이면 성곡리 (진악산·개삼터)',
+    GEUM_JINAK,
+    [GEUM_JINAK_2, GEUM_JINAK_3],
   ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
   if (!spotId) return null;
   return LOCAL_SCENIC_MEMBER_OVERLAYS[spotId] || null;
+}
+
+const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
+  /** @type {Map<string, ReturnType<typeof localScenicPhotoOverlay>>} */
+  const map = new Map();
+  for (const list of LISTS) {
+    for (const member of list.members || []) {
+      const contentId = String(member.contentId || '').trim();
+      if (!/^\d{1,32}$/.test(contentId) || map.has(contentId)) continue;
+      const overlay = lookupLocalScenicMemberOverlay(
+        localScenicMemberSpotId(list.listId, member.attractionName),
+      );
+      if (overlay?.imageUrl) map.set(contentId, overlay);
+    }
+  }
+  return map;
+})();
+
+/**
+ * TourAPI contentId → 팔경 멤버 런타임 오버레이 (사진 없는 Tour 행 보강).
+ * JSON contentId 쓰기는 아님.
+ * @param {string | number | null | undefined} contentId
+ */
+export function lookupLocalScenicPhotoByContentId(contentId) {
+  const id = String(contentId || '').trim();
+  if (!/^\d{1,32}$/.test(id)) return null;
+  return LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID.get(id) || null;
 }
 
 /**

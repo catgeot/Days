@@ -30,6 +30,7 @@ import {
   hasTourContentId,
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
+  lookupLocalScenicPhotoByContentId,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import { pickTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
 import {
@@ -128,6 +129,10 @@ assert.ok(
 assert.ok(
   scenicPageSrc.includes('resolveLocalScenicListSpotById'),
   'ScenicPage resolves local-scenic: list ids for detail',
+);
+assert.ok(
+  scenicPageSrc.includes('lookupLocalScenicPhotoByContentId'),
+  'ScenicPage fills empty Tour thumbs from palgyeong overlay contentId',
 );
 assert.ok(
   !scenicPageSrc.includes('hasTourContentId(spot.contentId) ? openSpot'),
@@ -1154,6 +1159,64 @@ const geumTaejo = resolveLocalScenicListSpotById(
 );
 assert.ok(geumTaejo?.overview?.includes('태조대왕태실'), '금산 태조태실 overlay overview');
 assert.ok(geumTaejo?.overview?.includes('천연기념물'), '금산 요광은행나무 overlay overview');
+assert.ok(
+  String(geumTaejo?.imageUrl || '').includes('geumsan.go.kr'),
+  '금산 요광은행나무 썸네일은 금산군 은행나무 공식 사진',
+);
+assert.ok(
+  !String(geumTaejo?.imageUrl || '').includes('3559888'),
+  '금산 요광은행나무 썸네일이 태실 사진이 아님',
+);
+assert.ok(
+  (geumTaejo?.galleryUrls || []).some((u) => String(u).includes('khs.go.kr')),
+  '금산 요광은행나무 갤러리에 국가유산청 은행나무 사진',
+);
+assert.ok(
+  !(geumTaejo?.galleryUrls || []).some((u) => String(u).includes('355988')),
+  '금산 요광은행나무 갤러리에 태실 사진 없음',
+);
+
+const geumSeodae = resolveLocalScenicListSpotById(
+  'local-scenic:geumsan-sipgyeong:서대산산꽃세상',
+);
+assert.ok(geumSeodae?.imageUrl, '금산 서대산 산꽃세상 overlay 썸네일');
+assert.ok(geumSeodae?.overview?.includes('산벚꽃'), '금산 서대산 산꽃세상 overlay overview');
+assert.equal(geumSeodae?.contentId, '127518', '금산 서대산 JSON contentId 유지');
+const geumJinak = resolveLocalScenicListSpotById(
+  'local-scenic:geumsan-sipgyeong:금산진악산',
+);
+assert.ok(geumJinak?.imageUrl, '금산 진악산 overlay 썸네일');
+assert.ok(geumJinak?.overview?.includes('개삼터'), '금산 진악산 overlay overview');
+assert.equal(geumJinak?.contentId, '126811', '금산 진악산 JSON contentId 유지');
+assert.notEqual(geumSeodae?.imageUrl, geumJinak?.imageUrl, '서대산·진악산 썸네일 다름');
+assert.equal(
+  lookupLocalScenicPhotoByContentId('127518')?.imageUrl,
+  geumSeodae.imageUrl,
+  'Tour 서대산 contentId 127518 → 산꽃세상 오버레이',
+);
+assert.equal(
+  lookupLocalScenicPhotoByContentId('126811')?.imageUrl,
+  geumJinak.imageUrl,
+  'Tour 진악산 contentId 126811 → 진악산 오버레이',
+);
+
+const geumsanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '금산', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  geumsanGlobe.find((s) => s.attractionName === '서대산 산꽃세상')?.imageUrl,
+  '금산 검색 팔경 서대산 산꽃세상 썸네일',
+);
+assert.ok(
+  geumsanGlobe.find((s) => s.attractionName === '금산 진악산')?.imageUrl,
+  '금산 검색 팔경 금산 진악산 썸네일',
+);
+assert.ok(
+  geumsanGlobe.find((s) => s.attractionName === '태조태실 요광은행나무')?.imageUrl?.includes(
+    'geumsan.go.kr',
+  ),
+  '금산 검색 팔경 요광은행나무 금산군 사진',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

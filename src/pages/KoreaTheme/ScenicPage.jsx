@@ -108,6 +108,7 @@ import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
   listKoreaLocalScenicLists,
   listLocalScenicMemberJobs,
+  lookupLocalScenicPhotoByContentId,
   memberToScenicListSpot,
   mergeLocalScenicMembersIntoScenicSpots,
   resolveLocalScenicListSpotById,
@@ -487,6 +488,22 @@ function overlayLocalScenicTourMeta(spot, extra) {
     galleryUrls: spot.galleryUrls || extra.galleryUrls || null,
     overview: spot.overview || extra.overview || null,
     addr1: spot.addr1 || extra.addr1 || null,
+  };
+}
+
+function applyLocalScenicContentIdThumb(spot) {
+  if (!spot) return spot;
+  const hasThumb = String(spot.firstImage || spot.imageUrl || '').trim();
+  if (hasThumb) return spot;
+  const contentId = String(spot.contentId || spot.id || '').trim();
+  const overlay = lookupLocalScenicPhotoByContentId(contentId);
+  const url = overlay?.imageUrl;
+  if (!url) return spot;
+  return {
+    ...spot,
+    firstImage: url,
+    imageUrl: url,
+    galleryUrls: overlay.galleryUrls || spot.galleryUrls,
   };
 }
 
@@ -1513,6 +1530,10 @@ export default function KoreaThemeScenicPage() {
   ]);
 
   const [dbSpots, setDbSpots] = useState([]);
+  const dbSpotsWithThumbs = useMemo(
+    () => dbSpots.map((spot) => applyLocalScenicContentIdThumb(spot)),
+    [dbSpots],
+  );
   const [dbCount, setDbCount] = useState(0);
   const [scopeCount, setScopeCount] = useState(0);
   const [dbStatus, setDbStatus] = useState('loading');
@@ -2568,7 +2589,7 @@ export default function KoreaThemeScenicPage() {
       setSelectedSpot(heritage);
       return undefined;
     }
-    const fromPage = dbSpots.find((s) => s.id === selectedId);
+    const fromPage = dbSpotsWithThumbs.find((s) => s.id === selectedId);
     if (fromPage) {
       setSelectedSpot(
         fromPage.firstImage && !fromPage.imageUrl
@@ -2620,9 +2641,11 @@ export default function KoreaThemeScenicPage() {
         return;
       }
       setSelectedSpot(
-        spot.firstImage && !spot.imageUrl
-          ? { ...spot, imageUrl: spot.firstImage }
-          : spot,
+        applyLocalScenicContentIdThumb(
+          spot.firstImage && !spot.imageUrl
+            ? { ...spot, imageUrl: spot.firstImage }
+            : spot,
+        ),
       );
     });
     return () => {
@@ -2630,7 +2653,7 @@ export default function KoreaThemeScenicPage() {
     };
   }, [
     selectedId,
-    dbSpots,
+    dbSpotsWithThumbs,
     curatedImageByContentId,
     localScenicTourBySpotId,
     favoriteList,
@@ -3127,7 +3150,7 @@ export default function KoreaThemeScenicPage() {
     for (const s of listKoreaHeritageScenic()) {
       if (s?.id) map.set(String(s.id), s);
     }
-    for (const s of dbSpots) {
+    for (const s of dbSpotsWithThumbs) {
       if (s?.id && !map.has(String(s.id))) map.set(String(s.id), s);
     }
     for (const list of listKoreaLocalScenicLists()) {
@@ -3137,7 +3160,7 @@ export default function KoreaThemeScenicPage() {
       }
     }
     return map;
-  }, [dbSpots, locale]);
+  }, [dbSpotsWithThumbs, locale]);
 
   const refreshFavorites = useCallback(() => {
     const list = loadScenicFavorites();
@@ -5360,7 +5383,7 @@ export default function KoreaThemeScenicPage() {
               <ul
                 className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
               >
-                {dbSpots.map((spot) => (
+                {dbSpotsWithThumbs.map((spot) => (
                   <li key={`d-${spot.id}`} className="[overflow-anchor:none]">
                     <ScenicListRow
                       spot={spot}
