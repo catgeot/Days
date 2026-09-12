@@ -243,6 +243,26 @@
 - **내용**: 본문 TNA 마이리얼트립 카드 하단에 클룩 즐길거리("즐길거리 클룩에서 더보기") 및 렌터카("렌터카 최저가 비교") 아웃링크 칩 연계 방안 확정 및 세션 로드맵 세분화.
 - **다음**: `한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동` 진행.
 
+## 한국 투어티켓 #6 — 클룩 즐길거리·렌터카 연동 (Cloud)
+
+- **세션**: `한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동`
+- **브랜치**: `cursor/korea-tna-strip-ef65` · tip `0c77e661` · PR [#230](https://github.com/catgeot/Days/pull/230)
+- **완료**: `EventTnaStrip` 하단에 클룩 즐길거리(`getKlookSearchUrl`)·렌터카(`getKlookRentalUrlByLocation`) 아웃링크 칩. 마이리얼트립 카드 규격 유지. empty에서도 칩 표시. KO/EN i18n.
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS · `npm run build` PASS
+- **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
+- **QA 체크**: 투어 섹션 하단 클룩 칩 2개 · 카드 가로 스크롤 유지 · 칩이 클룩으로 열리는지
+- **다음**: Preview OK면 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정
+
+```
+한국 투어티켓 #7, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-tna-strip-plan.md
+브랜치 cursor/korea-tna-strip-ef65 · PR #230 · Preview /qa/korea-tna-strip
+금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
+작업: 경복궁·축제 상세 투어 섹션 하단 클룩 칩이 보이면 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정
+```
+
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
 
 - **세션** `AI 모델 #1, 2.5 종료 교체`

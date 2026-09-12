@@ -47,9 +47,9 @@
 | 세션 | 단계명 | 주요 작업 | 상태 |
 |---|---|---|---|
 | **#1~#5** | 본문 TNA 섹션 구축 및 크게보기 | `EventTnaStrip`, `FestivalTnaStrip`, `ScenicTnaStrip` 신설, 축제/명승 상세 연동, 20개 로드 및 가로 카드 확대 지원, PR #223 병합 | ✅ 완료 (`0071d2cb`) |
-| **#6** | 클룩 즐길거리·렌터카 링크 연동 | `EventTnaStrip.jsx` 하단에 클룩 "즐길거리 더보기" 및 "렌터카 최저가 비교" 링크 칩 연동, i18n 반영, `smoke:korea-tna-strip` 검증 | ⬜ 다음 세션 |
-| **#7** | 사람 Preview QA | `/qa/korea-tna-strip`에서 모바일/데스크톱 뷰포트 점검: 경복궁, 강릉 등 명소/축제에서 클룩 딥링크 동작 및 레이아웃 조화 검증 | ⬜ 대기 |
-| **#8** | 해외 이벤트/독립 섹션 확장 검토 | 세계 행사(`EventExecutionStrip`)와의 공통화 검토 및 본선 main 병합 | ⬜ 대기 |
+| **#6** | 클룩 즐길거리·렌터카 링크 연동 | `EventTnaStrip.jsx` 하단에 클룩 "즐길거리 더보기" 및 "렌터카 최저가 비교" 링크 칩 연동, i18n 반영, `smoke:korea-tna-strip` 검증 | ✅ 완료 (`0c77e661` · PR [#230](https://github.com/catgeot/Days/pull/230)) |
+| **#7** | Preview OK면 PR 병합 | `/qa/korea-tna-strip`에서 칩·카드 규격 확인 후 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정 | ⬜ 다음 세션 |
+| **#8** | 해외 이벤트/독립 섹션 확장 검토 | 세계 행사(`EventExecutionStrip`)와의 공통화 검토 | ⬜ 대기 |
 
 ---
 
@@ -69,14 +69,27 @@
 
 ## 5. 다음 에이전트 세션 제시어
 
-다음 작업을 수행하는 에이전트는 아래 블록을 복사하여 즉시 작업을 진행합니다:
+사람은 같은 턴 Preview. 다음 채팅 = **Preview OK면 PR 병합**.
 
 ```
-한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동
+한국 투어티켓 #7, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-tna-strip-plan.md
-브랜치 cursor/korea-tna-strip-ef65 · Preview /qa/korea-tna-strip
+브랜치 cursor/korea-tna-strip-ef65 · PR #230 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: EventTnaStrip.jsx 하단에 getKlookSearchUrl('즐길거리 클룩에서 더보기') 및 getKlookRentalUrlByLocation('렌터카 최저가 비교') 아웃링크 칩 추가, i18n 반영 및 smoke 검증
+작업: 경복궁·축제 상세 투어 섹션 하단 클룩 칩이 보이면 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정
 ```
+
+---
+
+## 9. 핸드오프
+
+| | |
+|--|--|
+| **상태** | **#6 push** · tip `0c77e661` · PR [#230](https://github.com/catgeot/Days/pull/230) |
+| **브랜치** | `cursor/korea-tna-strip-ef65` |
+| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-scenic-stay` · `vite build` PASS |
+| **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
+| **다음** | #7 Preview OK면 PR 병합. 같은 세션 QA — `사람 Preview QA` 채팅 생략 |

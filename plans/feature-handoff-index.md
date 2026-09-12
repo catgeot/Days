@@ -45,25 +45,27 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#5 main 병합 완료** · **#6 클룩 즐길거리·렌터카 연계 준비** |
+| **상태** | **#6 push** · tip `0c77e661` · PR [#230](https://github.com/catgeot/Days/pull/230) |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
+| **tip** | `0c77e661` |
+| **PR** | [#230](https://github.com/catgeot/Days/pull/230) |
 | **플랜** | [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
-| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `FestivalDetailSheet.jsx` · `ThemeSpotDetailModal.jsx` |
+| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` |
 | **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-scenic-stay` · `vite build` PASS |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-scenic-stay` · `vite build` |
 
 **다음 제시어**:
 
 ```
-한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동
+한국 투어티켓 #7, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-tna-strip-plan.md
-브랜치 cursor/korea-tna-strip-ef65 · Preview /qa/korea-tna-strip
+브랜치 cursor/korea-tna-strip-ef65 · PR #230 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: EventTnaStrip.jsx 하단에 getKlookSearchUrl('즐길거리 클룩에서 더보기') 및 getKlookRentalUrlByLocation('렌터카 최저가 비교') 아웃링크 칩 추가, i18n 반영 및 smoke 검증
+작업: 경복궁·축제 상세 투어 섹션 하단 클룩 칩이 보이면 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정
 ```
 
 ---
