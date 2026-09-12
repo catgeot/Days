@@ -45,9 +45,9 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `b47d8880` · PR [#223](https://github.com/catgeot/Days/pull/223) · **#2 사람 Preview QA** |
+| **상태** | **#2 push** · tip `c567a1c2` · PR [#223](https://github.com/catgeot/Days/pull/223) · 사람 Preview 카드 노출 확인 · 목록 **최대 10개** |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `b47d8880` |
+| **tip** | `c567a1c2` |
 | **PR** | [#223](https://github.com/catgeot/Days/pull/223) |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
@@ -58,12 +58,12 @@ AI 모델 #3, Preview OK면 PR 병합
 **다음 제시어**:
 
 ```
-한국 투어티켓 #2, 사람 Preview QA
+한국 투어티켓 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
 금지: UI 임의 리디자인 · feature에 plans/** 커밋
-작업: 경복궁 등 명승 상세 및 축제 상세 본문에서 투어·티켓 카드 섹션(썸네일·가격·평점·더보기) 정상 노출 확인
+작업: 본문 투어 카드는 최대 10개(더보기는 마이리얼트립). 개수 조정이면 EventTnaStrip size만 수정. 추가 피드백 없으면 PR #223 병합 후 이 행 삭제
 ```
 
 ---

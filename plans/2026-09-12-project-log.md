@@ -150,6 +150,25 @@
 - **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
 - **다음**: 사람 Preview QA (경복궁 등 명승 상세 및 축제 상세 본문 TNA 카드 섹션 확인)
 
+## 한국 투어티켓 #2 — 사람 Preview QA (Cloud)
+
+- **세션**: `한국 투어티켓 #2, 사람 Preview QA`
+- **브랜치**: `cursor/korea-tna-strip-ef65` · tip `c567a1c2` · PR [#223](https://github.com/catgeot/Days/pull/223)
+- **사람**: Preview에서 명승·축제 상세 투어·티켓 카드 노출 확인. 목록이 몇 개까지인지 질문.
+- **답**: 본문 스트립은 `EventTnaStrip`이 마이리얼트립에 `size: 10`을 요청해 **최대 10개** 가로 스크롤. 검색이 적으면 그만큼만. 더보기는 마이리얼트립 검색(외부).
+- **VERIFY**: `npm run smoke:korea-tna-strip` PASS (`size: 10` 상한 포함)
+- **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
+- **다음**: 개수 조정이면 `EventTnaStrip` `size`만 수정. 추가 피드백 없으면 PR #223 병합 후 인덱스 행 삭제
+
+```
+한국 투어티켓 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/korea-tna-strip-ef65 · PR #223 · Preview /qa/korea-tna-strip
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 본문 투어 카드는 최대 10개(더보기는 마이리얼트립). 개수 조정이면 EventTnaStrip size만 수정. 추가 피드백 없으면 PR #223 병합 후 이 행 삭제
+```
+
 ## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
 
 - **세션** `AI 모델 #1, 2.5 종료 교체`
