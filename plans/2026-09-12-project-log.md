@@ -152,3 +152,23 @@ AI 모델 #2, Preview 피드백 수정
 작업: 사람 Preview 피드백이 있으면 모델 티어만 수정. 없으면 PR 병합 후 이 행 삭제
 ```
 
+## AI 모델 #2 — 사이트 점검 FAST·QUALITY ping (Cloud)
+
+- **세션** `AI 모델 #2, Preview 피드백 수정`
+- **브랜치** `cursor/gemini-models-df4c` · tip `7ab5d0fb` · PR [#224](https://github.com/catgeot/Days/pull/224)
+- **사람**: 무니 대화 이상 없음. 워크스페이스 사이트 점검(`smoke-health`)도 티어를 맞춰야 하는지 질문.
+- **완료**: P0-3가 `gemini-3.1-flash-lite`만 하드코딩 → `geminiModels` SSOT **FAST + QUALITY**. WRITE(위키·툴킷)는 6시간 cron 비용 때문에 ping 안 함.
+- **LIVE**: `FAST=gemini-3.1-flash-lite · QUALITY=gemini-3.5-flash`
+- **VERIFY**: `npm run smoke:gemini-models` PASS · `npm run smoke:health` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/gemini → git Preview `/`
+- **다음**: 무니 유지 확인되면 PR 병합 후 index 행 삭제
+
+```
+AI 모델 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/gemini-models-df4c · PR #224 · Preview /qa/gemini
+금지: UI 리디자인 · 최신 Flash 추격 · feature에 plans/** 커밋
+작업: 무니 대화가 이전과 같으면 PR #224 병합 후 이 행 삭제. 추가 티어 피드백이면 모델 티어만 수정
+```
+
