@@ -35,7 +35,7 @@
 ## 팔경 활용 #39 — 담양 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #39, 담양 결손 오버레이`
-- **브랜치** `cursor/palgyeong-use-e744` · tip `1c2fa1c2` · PR [#244](https://github.com/catgeot/Days/pull/244)
+- **브랜치** `cursor/palgyeong-use-e744` · tip `1c2fa1c2` · PR [#245](https://github.com/catgeot/Days/pull/244)
 - **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 담양10경 결손 4건(가마골용소·삼인산·메타세쿼이아 가로수길·담양관방제림)의 개요·주소·공식 사진 보강. 담양군 문화관광 게시판 공식 사진을 연결했고, 가마골용소·관방제림·메타세쿼이아는 한국관광공사 사진을 보탰다.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=damyang`

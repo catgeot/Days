@@ -485,10 +485,10 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#39** tip `1c2fa1c2` · PR [#244](https://github.com/catgeot/Days/pull/244) · 담양10경 4 · **#40 밀양 결손 오버레이** |
+| **상태** | **#39** tip `1c2fa1c2` · PR [#245](https://github.com/catgeot/Days/pull/244) · 담양10경 4 · **#40 밀양 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
 | **tip** | `1c2fa1c2` |
-| **PR** | [#244](https://github.com/catgeot/Days/pull/244) · [#243](https://github.com/catgeot/Days/pull/243) merge ✅ · [#240](https://github.com/catgeot/Days/pull/240) merge ✅ |
+| **PR** | [#245](https://github.com/catgeot/Days/pull/244) · [#243](https://github.com/catgeot/Days/pull/243) merge ✅ · [#240](https://github.com/catgeot/Days/pull/240) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=damyang` |
