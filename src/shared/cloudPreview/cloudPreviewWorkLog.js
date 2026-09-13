@@ -32,6 +32,30 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-13T12:58:00.000Z',
   },
   {
+    id: '2026-09-13-visitor-growth-1-clear-mobile',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: '일반 탐색 버튼 모바일 노출',
+    detail:
+      '장소 선택 후 채팅 진입 시 onClearPlaceBinding이 빠지던 조건 수정. 모바일은 헤더 컴패스(🧭) 아이콘 + 칩 위 「일반 탐색」 바. Preview /qa/visitor-growth 재확인.',
+    at: '2026-09-13T12:25:00.000Z',
+  },
+  {
+    id: '2026-09-13-visitor-growth-1-general-explore',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: 'MOONi 일반 탐색(여행지 해제) 버튼',
+    detail:
+      '여행지 바인딩 후 채팅 헤더에 「일반 탐색」을 추가했습니다. 탭하면 MOONi 일반 세션·범용 칩 4종으로 돌아가고, 기존 trip은 사이드바에 남습니다. Preview /qa/visitor-growth — 장소 선택 후 헤더 버튼 확인.',
+    at: '2026-09-13T09:55:00.000Z',
+  },
+  {
+    id: '2026-09-13-visitor-growth-1-404-mooni',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: '404 라우트 복구·MOONi 기본 바인딩·탐색 칩',
+    detail:
+      '/about 신설, /pricing→/about·/product→/explore 리다이렉트, 와일드카드 404→홈. 장소 미선택 AI 채팅은 MOONi로 열리고 범용 탐색 칩 4종 노출. Preview /qa/visitor-growth — /about·/pricing·하단 AI 버튼(장소 없음) 확인.',
+    at: '2026-09-13T09:45:00.000Z',
+  },
+  {
     id: '2026-09-13-explore-search-6-merge',
     session: '탐색홈 검색 #6, Preview OK면 PR 병합',
     title: '문경 팔경·선정 썸네일 PROD 병합',

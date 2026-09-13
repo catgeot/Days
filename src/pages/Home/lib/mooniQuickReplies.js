@@ -93,6 +93,33 @@ const L2_ENJOY = [
   { id: 'companion' },
 ];
 
+const GENERAL_DISCOVERY_CHIP_DEFS = [
+  {
+    id: 'warm_resort',
+    label: '🌴 따뜻한 휴양지 추천해줘',
+    sendText: '따뜻한 휴양지 추천해줘',
+    persona: PERSONA_TYPES.INSPIRER,
+  },
+  {
+    id: 'healing_weekend',
+    label: '✨ 2박 3일 힐링 코스',
+    sendText: '2박 3일 힐링 코스 추천해줘',
+    persona: PERSONA_TYPES.INSPIRER,
+  },
+  {
+    id: 'short_flight',
+    label: '✈️ 비행시간 5시간 이내 여행지',
+    sendText: '비행시간 5시간 이내 여행지 추천해줘',
+    persona: PERSONA_TYPES.INSPIRER,
+  },
+  {
+    id: 'family_trip',
+    label: '👨‍👩‍👧 가족과 함께 가기 좋은 곳',
+    sendText: '가족과 함께 가기 좋은 여행지 추천해줘',
+    persona: PERSONA_TYPES.INSPIRER,
+  },
+];
+
 function localizeL1Def(def) {
   const base = `mooni.chips.l1.${def.id}`;
   const mobileLabel = chipTranslation(`${base}.mobileLabel`);
@@ -182,6 +209,16 @@ function getL2ForParent(slug, parentId, essentialGuide, allowNameBound = false) 
  * @param {{ essentialGuide?: Record<string, unknown> | null, omitPlanner?: boolean, allowNameBound?: boolean }} [options]
  * @returns {Array<{ id: string, label: string, sendText?: string, action?: string, drillDown?: boolean, persona?: string }>}
  */
+/** 장소 미선택 MOONi 세션 — 범용 탐색 질문 칩 */
+export function getMooniGeneralDiscoveryChips() {
+  return GENERAL_DISCOVERY_CHIP_DEFS.map(({ id, label, sendText, persona }) => ({
+    id,
+    label,
+    sendText,
+    persona,
+  }));
+}
+
 export function getMooniQuickReplies(slug, level = 1, parentId = null, options = {}) {
   const { essentialGuide = null, omitPlanner = false, allowNameBound = false } = options;
   if (!slug && !allowNameBound) return [];

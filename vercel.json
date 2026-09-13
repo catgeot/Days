@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/visitor-growth",
+      "destination": "https://days-git-cursor-visitor-growth-1f90-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/explore-search",
       "destination": "https://days-git-cursor-explore-search-d14b-catgeots-projects.vercel.app/explore",
       "permanent": false

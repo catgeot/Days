@@ -344,6 +344,34 @@ function Home() {
     toggleBookmark
   });
 
+  const handleClearMooniPlaceBinding = useCallback(() => {
+    if (activeChatId) {
+      persistMooniLastChatId(activeChatId, user?.id ?? null);
+    }
+    setMooniPlaceContext(null);
+    setSelectedLocation(null);
+    setActiveChatId(null);
+    setInitialQuery(null);
+    setMooniChatEntry(true);
+    setChatDraft({
+      destination: 'MOONi',
+      lat: 0,
+      lng: 0,
+      persona: PERSONA_TYPES.GENERAL,
+      category,
+    });
+  }, [
+    activeChatId,
+    user?.id,
+    category,
+    setMooniPlaceContext,
+    setSelectedLocation,
+    setActiveChatId,
+    setInitialQuery,
+    setMooniChatEntry,
+    setChatDraft,
+  ]);
+
   const handleCategorySelect = useCallback(async (nextCategory) => {
     if (flightCinemaActive) {
       globeRef.current?.closeFlightCinema?.();
@@ -1519,7 +1547,7 @@ function Home() {
           externalInput={draftInput}
           savedTrips={filteredSavedTrips}
           onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
-          onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
+          onOpenChat={(p) => handleStartChat(selectedLocation?.name || 'MOONi', p)}
           onLogoClick={() => setIsLogoPanelOpen(true)}
           relatedPlaces={relatedPlaces} isTagLoading={isTagLoading}
           selectedCategory={category} onCategorySelect={handleCategorySelect}
@@ -1695,6 +1723,7 @@ function Home() {
             }
           }}
           onDeleteChat={deleteTrip}
+          onClearPlaceBinding={handleClearMooniPlaceBinding}
         />
 
         <SearchDiscoveryModal

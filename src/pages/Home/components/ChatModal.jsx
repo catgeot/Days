@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft } from 'lucide-react';
+import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
@@ -50,6 +50,7 @@ import {
 import {
   buildMooniIntroWithHint,
   getMooniQuickReplies,
+  getMooniGeneralDiscoveryChips,
   getMooniL1ChipLabel,
   buildAccessRouteAskText,
 } from '../lib/mooniQuickReplies';
@@ -81,6 +82,7 @@ const ChatModal = ({
   onDeleteChat,
   /** 무니 인트로 본문 준비 시 장소카드 desc hydrate (DB 캐시·신규 생성 공통) */
   onPlaceIntroReady = null,
+  onClearPlaceBinding = null,
 }) => {
   const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState([]);
@@ -276,7 +278,12 @@ const ChatModal = ({
       return localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
     }
     if (isMooniUi) return '';
-    return introDestinationRaw;
+    const raw = introDestinationRaw.trim();
+    const lower = raw.toLowerCase();
+    if (!raw || lower === 'new session' || lower === 'scanning...' || lower === 'searching...' || lower === 'mooni') {
+      return '';
+    }
+    return raw;
   }, [isOpen, activeSessionPlace, isMooniUi, introDestinationRaw, i18n.language]);
 
   const effectiveQuickReplySlug = boundDestinationSlug;
@@ -313,14 +320,28 @@ const ChatModal = ({
     ]
   );
 
+  const discoveryChips = useMemo(
+    () => (isMooniUi && !hasPlaceBoundName ? getMooniGeneralDiscoveryChips() : []),
+    [isMooniUi, hasPlaceBoundName, i18n.language],
+  );
+
+  const dockChips = hasPlaceBoundName ? quickReplies : discoveryChips;
+
   const showBoundTopicDock =
     isMooniUi && hasPlaceBoundName && quickReplies.length > 0;
+
+  const showDiscoveryDock =
+    isMooniUi && !hasPlaceBoundName && discoveryChips.length > 0 && messages.length === 0;
+
+  const showMooniChipDock = showBoundTopicDock || showDiscoveryDock;
+
+  const showClearPlaceBinding = hasPlaceBoundName && Boolean(onClearPlaceBinding);
 
   const showAccessOriginDock =
     isMooniUi && topicDockParent === 'access' && hasPlaceBoundName;
 
   const mobileDockInputExpanded =
-    showBoundTopicDock &&
+    showMooniChipDock &&
     !showAccessOriginDock &&
     (mobileDockInputFocused || Boolean(input.trim()));
 
@@ -900,7 +921,7 @@ const ChatModal = ({
   const topicDockChipsProps = useMemo(
     () => ({
       slug: effectiveQuickReplySlug,
-      chips: quickReplies,
+      chips: dockChips,
       onSelect: (text, persona, chip) =>
         handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
       onDrillDown: (parentId) => setTopicDockParent(parentId),
@@ -916,7 +937,7 @@ const ChatModal = ({
     }),
     [
       effectiveQuickReplySlug,
-      quickReplies,
+      dockChips,
       handleSend,
       topicDockParent,
       handlePlannerNavigate,
@@ -1037,7 +1058,29 @@ const ChatModal = ({
                    {isMooniUi ? t('mooni.chat.mooniSessionTitle') : t('mooni.chat.travelSessionTitle')}
                  </span>
                </div>
-               <div className="flex items-center gap-2 shrink-0">
+               <div className="flex items-center gap-1.5 shrink-0 max-w-[46%] md:max-w-none">
+                 {showClearPlaceBinding ? (
+                   <>
+                     <button
+                       type="button"
+                       onClick={onClearPlaceBinding}
+                       className="md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/45 bg-cyan-500/20 text-cyan-100 touch-manipulation hover:bg-cyan-500/30"
+                       title={t('mooni.chat.clearPlaceBindingAria')}
+                       aria-label={t('mooni.chat.clearPlaceBindingAria')}
+                     >
+                       <Compass size={15} />
+                     </button>
+                     <button
+                       type="button"
+                       onClick={onClearPlaceBinding}
+                       className="hidden md:inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-gray-200 hover:border-white/35 hover:bg-white/10 transition-colors touch-manipulation"
+                       title={t('mooni.chat.clearPlaceBindingAria')}
+                       aria-label={t('mooni.chat.clearPlaceBindingAria')}
+                     >
+                       {t('mooni.chat.clearPlaceBinding')}
+                     </button>
+                   </>
+                 ) : null}
                  {effectiveQuickReplySlug ? (
                    <button
                      type="button"
@@ -1319,9 +1362,20 @@ const ChatModal = ({
                     />
                   ) : null}
                 </div>
-              ) : showBoundTopicDock ? (
+              ) : showMooniChipDock ? (
                 <>
                   <div className="md:hidden px-3 pt-2 pb-1 flex flex-col gap-1.5">
+                    {showClearPlaceBinding && !mobileDockInputExpanded ? (
+                      <button
+                        type="button"
+                        onClick={onClearPlaceBinding}
+                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-cyan-400/45 bg-cyan-500/15 px-3 py-2 text-[12px] font-semibold text-cyan-100 touch-manipulation hover:bg-cyan-500/25"
+                        aria-label={t('mooni.chat.clearPlaceBindingAria')}
+                      >
+                        <Compass size={14} className="shrink-0" />
+                        {t('mooni.chat.clearPlaceBinding')}
+                      </button>
+                    ) : null}
                     {!mobileDockInputExpanded ? (
                       <div className="min-w-0 w-full">
                         <MooniQuickReplyChips {...topicDockChipsProps} />
@@ -1420,7 +1474,7 @@ const ChatModal = ({
               ) : null}
               <div
                 className={`px-3 pt-3 md:px-4 md:pt-2.5 md:pb-3 ${
-                  showAccessOriginDock || showBoundTopicDock
+                  showAccessOriginDock || showMooniChipDock
                     ? 'hidden'
                     : 'pb-0'
                 }`}
@@ -1433,7 +1487,7 @@ const ChatModal = ({
                   className="relative"
                 >
                   <input
-                    ref={!showBoundTopicDock ? chatInputRef : undefined}
+                    ref={!showMooniChipDock ? chatInputRef : undefined}
                     type="text"
                     inputMode="text"
                     enterKeyHint="send"
