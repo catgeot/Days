@@ -10,10 +10,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'explore-search',
     label: '탐색홈 검색 선택 카드',
-    branch: 'cursor/explore-search-d14b',
-    destination:
-      'https://days-git-cursor-explore-search-d14b-catgeots-projects.vercel.app/explore',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/explore',
+    active: false,
   },
   {
     slug: 'gallery-fresh',

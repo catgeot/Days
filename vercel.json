@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/qa/explore-search",
-      "destination": "https://days-git-cursor-explore-search-d14b-catgeots-projects.vercel.app/explore",
+      "destination": "https://www.gateo.kr/explore",
       "permanent": false
     },
     {
