@@ -345,7 +345,7 @@ function Home() {
   });
 
   const handleClearMooniPlaceBinding = useCallback(() => {
-    if (activeChatId && mooniChatEntry) {
+    if (activeChatId) {
       persistMooniLastChatId(activeChatId, user?.id ?? null);
     }
     setMooniPlaceContext(null);
@@ -362,7 +362,6 @@ function Home() {
     });
   }, [
     activeChatId,
-    mooniChatEntry,
     user?.id,
     category,
     setMooniPlaceContext,
@@ -1724,7 +1723,7 @@ function Home() {
             }
           }}
           onDeleteChat={deleteTrip}
-          onClearPlaceBinding={mooniChatEntry ? handleClearMooniPlaceBinding : undefined}
+          onClearPlaceBinding={handleClearMooniPlaceBinding}
         />
 
         <SearchDiscoveryModal
