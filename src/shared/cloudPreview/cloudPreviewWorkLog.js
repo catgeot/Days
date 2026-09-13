@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 31,
-  sessionPhase: '금산 은행나무·썸네일',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=geumsan',
-  qaShareSlug: 'palgyeong-use',
+  title: '한국 투어티켓',
+  sessionNo: 6,
+  sessionPhase: '클룩 즐길거리·렌터카 연동',
+  branch: 'cursor/korea-tna-strip-ef65',
+  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
+  qaShareSlug: 'korea-tna-strip',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -37,6 +37,14 @@ export const cloudPreviewWorkLog = [
     title: '금산10경 결손 5건 런타임 오버레이',
     detail:
       'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 금산10경 결손 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 금산산림문화타운·인삼약령시장·월영산 출렁다리·기러기공원·태조대왕 태실 사진을 연결했고, 세계농업유산은 같은 군 금산인삼관 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geumsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T13:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-6-klook-chips',
+    session: '한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동',
+    title: '투어 카드 아래 클룩 즐길거리·렌터카 칩',
+    detail:
+      '마이리얼트립 투어·티켓 카드 규격은 그대로 두고, EventTnaStrip 하단에 클룩 즐길거리 검색(getKlookSearchUrl)과 렌터카 최저가 비교(getKlookRentalUrlByLocation) 아웃링크 칩을 넣었습니다. 상품이 없어도 칩은 보입니다. Preview /qa/korea-tna-strip — 경복궁 등 명승·축제 상세 투어 섹션 하단.',
     at: '2026-09-12T13:20:00.000Z',
   },
   {
