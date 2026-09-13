@@ -13,6 +13,7 @@ import {
   getThemeMembership,
   listSameHubCrossSpots,
   resolveFestivalThemeCrossLinks,
+  resolveStayTnaHubId,
   resolveThemeCrossLinks,
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
@@ -294,11 +295,48 @@ assert(
   `haksan nearby hub is michuhol (got ${haksanFest.nearbyHubs?.[0]?.hubId})`,
 );
 assert(
-  haksanFest.stay?.keyword === '미추홀' || haksanFest.stay?.location?.hubId === 'michuhol',
-  `haksan stay is 미추홀 not 옹진 (got ${haksanFest.stay?.keyword} / ${haksanFest.stay?.location?.hubId})`,
+  resolveStayTnaHubId('michuhol', '2', [{ hubId: 'ongjin' }, { hubId: 'incheon' }]) ===
+    'incheon',
+  'unseeded 미추홀 stay hub falls back to incheon not ongjin',
+);
+assert(
+  resolveStayTnaHubId('ongjin', '2', [{ hubId: 'incheon' }]) === 'ongjin',
+  'seeded 옹진 stay hub is kept',
+);
+assert(
+  resolveStayTnaHubId('hoengseong', '32', []) === 'hoengseong',
+  'seeded 횡성 stay hub is kept',
+);
+assert(
+  haksanFest.stay?.keyword === '인천' && haksanFest.stay?.location?.hubId === 'incheon',
+  `haksan stay falls back to 인천 (got ${haksanFest.stay?.keyword} / ${haksanFest.stay?.location?.hubId})`,
 );
 assert(haksanFest.stay?.keyword !== '옹진', 'haksan stay keyword is not 옹진');
+assert(haksanFest.stay?.keyword !== '미추홀', 'haksan stay keyword is not empty-inventory 미추홀');
+assert(
+  haksanFest.tna?.keyword === '인천' && haksanFest.tna?.location?.hubId === 'incheon',
+  `haksan tna falls back to 인천 (got ${haksanFest.tna?.keyword} / ${haksanFest.tna?.location?.hubId})`,
+);
 assert(haksanFest.tna?.keyword !== '옹진', 'haksan tna keyword is not 옹진');
+assert(
+  (haksanFest.stay?.altKeywords || []).includes('강화') ||
+    (haksanFest.stay?.altKeywords || []).includes('옹진'),
+  `haksan stay alts include nearby seeded hubs (got ${haksanFest.stay?.altKeywords?.join(',')})`,
+);
+
+const hoengseongCross = resolveFestivalThemeCrossLinks({
+  title: '횡성한우축제',
+  addr1: '강원특별자치도 횡성군 횡성읍',
+  areaCode: '32',
+  mapx: 128.0,
+  mapy: 37.49,
+  contentId: 'hoengseong-hanwoo',
+});
+assert(
+  hoengseongCross.stay?.keyword === '횡성' ||
+    hoengseongCross.stay?.location?.hubId === 'hoengseong',
+  `seeded 횡성 stay stays local (got ${hoengseongCross.stay?.keyword} / ${hoengseongCross.stay?.location?.hubId})`,
+);
 
 assert(
   extractTourAttractionSigungu('강원특별자치도 춘천시 동면 순환로 1150') ===

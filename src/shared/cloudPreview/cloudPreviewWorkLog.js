@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '축제 숙소허브',
-  sessionNo: 1,
-  sessionPhase: '주소 매칭',
+  sessionNo: 2,
+  sessionPhase: '숙소·투어 폴백',
   branch: 'cursor/festival-stay-hub-c241',
   previewPath: '/korea',
   qaShareSlug: 'festival-stay-hub',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-festival-stay-hub-2-stay-fallback',
+    session: '축제 숙소허브 #2, 숙소·투어 폴백',
+    title: '미추홀처럼 시드 없는 구는 인천 숙소·투어로',
+    detail:
+      '학산마당극놀래 지리는 미추홀 그대로이고, 숙소·투어 검색만 시드 여행지(인천)로 폴백합니다. 구 허브는 MRT 재고가 없어 섹션이 비었습니다. 시드에 없는 허브는 인근 시드 도시로 찾고, 재고가 없으면 강화·옹진 같은 인근 시드 키워드로 다시 찾습니다. 횡성처럼 시드 도시는 그대로입니다. Preview /korea 학산마당극놀래 본문 — 숙소·투어 제목이 인천이고 카드가 보이는지.',
+    at: '2026-09-13T01:40:00.000Z',
+  },
   {
     id: '2026-09-13-festival-stay-hub-1-ongjin',
     session: '축제 숙소허브 #1, 주소 매칭',
