@@ -90,6 +90,15 @@
 - **잔여**: 사진/개요 순수 누락 **110**/876. QA 후 다음 허브 **문경8경 4**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #41 QA — 영덕 썸네일·투어 오탐 (Cloud)
+
+- **세션** `팔경 활용 #41, 영덕 QA 수정`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `024252fd` · PR [#245](https://github.com/catgeot/Days/pull/245)
+- **완료**: 사람 Preview 피드백 — 영덕 검색 하저·경정 해수욕장·삼사해상공원 빈 썸네일 → `LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID`(127160·1621219·126143). 하저 상세 투어에 잔지바르·나이로비 사파리 노출 → 인근 키워드 `영양`이 투어 제목 일반어와 부분일치한 MRT 오탐. `mrtTnaRelevance`·Edge `fetch-mrt-tnas` 동형어·해외 필터, `EventTnaStrip` 로딩 시 이전 목록 제거.
+- **VERIFY**: `npm run build` PASS · `node scripts/smoke-mrt-tna-queries.mjs` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use — 검색「영덕」·하저 상세 투어
+- **다음**: **#42 문경 결손 오버레이** (동일 브랜치)
+
 ## 팔경 활용 #42 다음 — 문경 결손 오버레이
 
 ```
