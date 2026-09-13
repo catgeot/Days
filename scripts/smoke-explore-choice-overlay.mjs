@@ -95,12 +95,34 @@ const saejaeGateo = enrichSearchCandidateScenicMedia({
 });
 assert.ok(saejaeGateo?.imageUrl, '문경새재 GATEO curated thumb on explore enrich');
 
+const seonyudong = localScenicMemberToSuggestion(
+  mungyeongLists[0],
+  mungyeong,
+  mungyeongLists[0].members.find((m) => m.attractionName === '선유동계곡'),
+);
+assert.ok(seonyudong?.imageUrl, '문경 2경 선유동계곡 overlay thumb');
+
+const yongchu = localScenicMemberToSuggestion(
+  mungyeongLists[0],
+  mungyeong,
+  mungyeongLists[0].members.find((m) => m.attractionName === '용추계곡'),
+);
+assert.ok(yongchu?.imageUrl, '문경 3경 용추계곡 overlay thumb');
+
+const gyeongcheon = localScenicMemberToSuggestion(
+  mungyeongLists[0],
+  mungyeong,
+  mungyeongLists[0].members.find((m) => m.attractionName === '경천호'),
+);
+assert.ok(gyeongcheon?.imageUrl, '문경 7경 경천호 overlay thumb');
+
 const museum = enrichSearchCandidateScenicMedia({
   name: '문경석탄박물관',
   hubId: 'mungyeong',
   kind: 'attraction',
 });
 assert.equal(museum?.contentId, '2599737', '문경석탄박물관 curated contentId for TourAPI thumb');
+assert.ok(museum?.imageUrl, '문경석탄박물관 contentId overlay thumb');
 assert.equal(hubAttractionSearchGroupTitle(mungyeong), '', '문경 keeps palgyeong group only');
 
 const cards = makeDisambiguationResult('옹진', candidates, {

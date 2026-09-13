@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-12T11:26:04.695Z",
+    "generatedAt": "2026-09-13T12:58:47.563Z",
     "count": 871,
-    "imageCount": 795,
+    "imageCount": 796,
     "curation": "GATEO",
     "disclaimer": "많이 찾는 인기 관광지를 골랐습니다.",
     "source": "scripts/data/korea-scenic-spots-overrides.mjs",
@@ -6833,7 +6833,7 @@
       "lng": 128.066415,
       "contentId": "2599737",
       "overview": "문경석탄박물관 — 탄광 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
-      "imageUrl": null
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/97/4059797_image2_1.jpg"
     },
     {
       "order": 4150,
