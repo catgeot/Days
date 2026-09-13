@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-13-palgyeong-use-41-yeongdeok-qa-fix',
+    session: '팔경 활용 #41, 영덕 QA 수정',
+    title: '영덕 썸네일·투어 오탐 수정',
+    detail:
+      '영덕 검색 하저·경정 해수욕장·삼사해상공원 빈 썸네일을 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID(127160·1621219·126143)로 보강했습니다. 명승 상세 투어에 잔지바르·나이로비 사파리가 뜨던 원인은 인근 키워드「영양」이 투어 제목 일반어(영양)와 부분일치한 오탐이었습니다 — 해외·동형어 필터·EventTnaStrip 로딩 시 이전 목록 제거로 수정. Preview /qa/palgyeong-use — 영덕 검색·하저 상세 투어.',
+    at: '2026-09-13T22:05:00.000Z',
+  },
+  {
     id: '2026-09-13-palgyeong-use-41-yeongdeok-overlays',
     session: '팔경 활용 #41, 영덕 결손 오버레이',
     title: '영덕9경 결손 4건 오버레이',

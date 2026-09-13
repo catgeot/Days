@@ -1151,6 +1151,13 @@ const YD_CAMELLIA_3 = 'https://tong.visitkorea.or.kr/cms2/website/67/2006167.jpg
 const YD_NAONG = 'https://tong.visitkorea.or.kr/cms2/website/46/2648746.jpg';
 const YD_NAONG_2 = 'https://tong.visitkorea.or.kr/cms2/website/47/2648747.jpg';
 const YD_NAONG_3 = 'https://tong.visitkorea.or.kr/cms2/website/48/2648748.jpg';
+const YD_SAMSA = 'https://tong.visitkorea.or.kr/cms/resource/52/4076752_image2_1.jpg';
+const YD_SAMSA_2 = 'https://tong.visitkorea.or.kr/cms/resource/53/4076753_image2_1.jpg';
+const YD_SAMSA_3 = 'https://tong.visitkorea.or.kr/cms/resource/55/4076755_image2_1.jpg';
+const YD_HAJEO = 'https://tong.visitkorea.or.kr/cms/resource/96/3590496_image2_1.jpg';
+const YD_GYEONGJEONG = 'https://tong.visitkorea.or.kr/cms/resource/85/3400985_image2_1.jpg';
+const YD_GYEONGJEONG_2 =
+  'https://tong.visitkorea.or.kr/cms/resource/55/2917755_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2387,6 +2394,9 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   2750930: localScenicThumbOverlay(NS_YANGCHON, [NS_YANGCHON_2]),
   946844: localScenicThumbOverlay(NS_HISTORY, [NS_HISTORY_2, NS_HISTORY_3]),
   1956315: localScenicThumbOverlay(NS_NOGANG, [NS_NOGANG_2]),
+  126143: localScenicThumbOverlay(YD_SAMSA, [YD_SAMSA_2, YD_SAMSA_3]),
+  127160: localScenicThumbOverlay(YD_HAJEO),
+  1621219: localScenicThumbOverlay(YD_GYEONGJEONG, [YD_GYEONGJEONG_2]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
