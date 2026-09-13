@@ -17,6 +17,7 @@ import KoreaThemeScenicPage from './pages/KoreaTheme/ScenicPage';
 import KoreaThemeCoursesPage from './pages/KoreaTheme/CoursesPage';
 import QaShareIndex from './pages/QaShare';
 import QaShareRedirect from './pages/QaShare/QaShareRedirect';
+import AboutPage from './pages/AboutPage';
 
 import Dashboard from './pages/DailyReport/Dashboard';
 import Curation from './pages/DailyReport/Curation';
@@ -115,6 +116,9 @@ function App() {
               <Route path="/en/world-events/:eventId" element={<EnWorldEventDetailRedirect />} />
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/pricing" element={<Navigate to="/about" replace />} />
+              <Route path="/product" element={<Navigate to="/explore" replace />} />
             </Route>
 
             <Route path="/blog" element={<DashboardLayout />}>
@@ -131,6 +135,7 @@ function App() {
             <Route path="/auth/signup" element={<Signup />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/update-password" element={<UpdatePassword />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ReportProvider>
         </LocaleProvider>

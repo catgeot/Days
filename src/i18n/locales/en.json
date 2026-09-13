@@ -2314,6 +2314,8 @@
       "travelAiHelper": "Travel AI assistant",
       "travelChat": "{{destination}} chat",
       "openPlanner": "Open travel planner",
+      "clearPlaceBinding": "Explore freely",
+      "clearPlaceBindingAria": "Clear selected destination and return to general exploration",
       "loadingDefault": "AI is preparing a reply...",
       "loadingStatuses": [
         "Scanning destination info...",

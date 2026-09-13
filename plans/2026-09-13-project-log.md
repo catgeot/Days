@@ -2,6 +2,15 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 방문자 개선 #2 — 홈 가치제안 및 모바일 뷰포트 (Cloud)
+
+- **세션** `방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `eda60c94`
+- **완료**: `HomeUI` 검색바 상단 글래스 히어로(헤드라인·서브·투톱 CTA `/explore`·MOONi 채팅). 모바일 검색 플레이스홀더 `여행지 검색...`·우측 로그인 원형·AI 미니 뱃지. `HomeGlobeMapbox` `pixelRatio` 최대 2.
+- **VERIFY**: `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **QA**: 390px 홈 — 히어로 가치제안·CTA 2종·검색 플레이스홀더 잘림 없음·우측 로그인·AI 탭. 지구본 드래그·CTA 터치 간섭 없음.
+
 ## 방문자 개선 #1 — 404 복구 및 AI채팅 초기화 (Cloud)
 
 - **세션** `방문자 개선 #1, 404 복구 및 AI채팅 초기화`
@@ -21,7 +30,7 @@
 - **플랜**: [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) (4단계 8세션 독립 완결형 실행 계획서)
   - 세션 #3에 크롤러 대상 여행지 시맨틱 HTML(`<h1>`, `<p>`, 탭 안내) 본문 주입 및 봇 감지 전수화 배치
 - **핸드오프**: [`feature-handoff-index.md`](./feature-handoff-index.md)에 `방문자 개선` 행 및 다음 제시어 등록
-- **진행 현황**: 세션 #1 완료 후 현재 세션 #2 대기 중
+- **진행 현황**: 세션 #2 완료 후 세션 #3(크롤러 SEO) 대기 중
 
 ## 팔경 활용 #38 — 천안 결손 오버레이 (Cloud)
 
@@ -53,16 +62,26 @@
 - **잔여**: 사진/개요 순수 누락 **114**/876. QA 후 다음 허브 **영덕9경 4**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #41 다음 — 영덕 결손 오버레이
+## 팔경 활용 #41 — 영덕 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #41, 영덕 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `1a2f148b` · PR [#245](https://github.com/catgeot/Days/pull/245)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 영덕9경 결손 4건(영덕 도천숲·영덕 팔각산·영덕 사월의 복사꽃·영덕 나옹왕사 사적비)의 개요·주소·공식 사진 보강. 도천숲은 정책브리핑 국가유산청 공식 사진, 팔각산은 한국관광공사 옥계계곡·국가유산청 옥계 침수정, 사월의 복사꽃은 한국관광공사 복사꽃마을, 나옹왕사 사적비는 한국관광공사 장육사(나옹왕사 창건) 사진을 연결했다.
+- **VERIFY**: `npm run build` PASS · `report-local-scenic-missing-content --hub=yeongdeok` 영덕9경 9/9(100%)
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=yeongdeok`
+- **잔여**: 사진/개요 순수 누락 **110**/876. QA 후 다음 허브 **문경8경 4**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #42 다음 — 문경 결손 오버레이
 
 ```
-팔경 활용 #41, 영덕 결손 오버레이
+팔경 활용 #42, 문경 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 영덕9경 사진·개요 없는 4건(영덕 도천숲·영덕 팔각산·영덕 사월의 복사꽃·영덕 나옹왕사 사적비)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeongdeok
+작업: 문경8경 사진·개요 없는 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=mungyeong
 ```
 
 ## 탐색홈 검색 #5 — 문경 썸네일 경로 통일 (Cloud)

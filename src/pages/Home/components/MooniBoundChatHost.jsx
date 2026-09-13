@@ -139,6 +139,21 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
     onClose?.();
   }, [activeChatId, onClose, resetSession, user?.id]);
 
+  const handleClearPlaceBinding = useCallback(() => {
+    if (activeChatId) {
+      persistMooniLastChatId(activeChatId, user?.id ?? null);
+    }
+    setMooniPlaceContext(null);
+    setActiveChatId(null);
+    setChatDraft({
+      destination: 'MOONi',
+      lat: 0,
+      lng: 0,
+      persona: PERSONA_TYPES.GENERAL,
+      category: THEME_CHAT_CATEGORY,
+    });
+  }, [activeChatId, setActiveChatId, user?.id]);
+
   useEffect(() => {
     if (isOpen) return;
     if (activeChatId) {
@@ -162,6 +177,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       mooniEntry
       mooniPlaceContext={mooniPlaceContext}
       onClose={handleClose}
+      onClearPlaceBinding={handleClearPlaceBinding}
       initialQuery={initialQuery}
       chatHistory={savedTrips}
       chatDraft={chatDraft}

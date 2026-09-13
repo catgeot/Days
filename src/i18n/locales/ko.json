@@ -2077,6 +2077,8 @@
       "travelAiHelper": "여행 AI 도우미",
       "travelChat": "{{destination}} 대화",
       "openPlanner": "여행 플래너 열기",
+      "clearPlaceBinding": "일반 탐색",
+      "clearPlaceBindingAria": "선택한 여행지 해제하고 일반 탐색으로 돌아가기",
       "loadingDefault": "AI가 답변을 준비 중입니다...",
       "loadingStatuses": [
         "새로운 여행지 정보를 스캔하고 있습니다...",
