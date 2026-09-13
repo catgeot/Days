@@ -2,6 +2,28 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 팔경 활용 #35 — 증평 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #35, 증평 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `f9f4528c` · PR [#237](https://github.com/catgeot/Days/pull/237) · [#236](https://github.com/catgeot/Days/pull/236) merge ✅
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 증평구경 결손 4건(좌구산 천문대·삼기저수지 등잔길·추성산성·연병호 항일역사공원)의 개요·주소·공식 사진 보강. 증평군 문화관광 천문대 사진, 한국관광공사 삼기저수지 사진, 국가유산청·증평기록관 추성산성·연병호 사진을 연결했다. 좌구산 천문대 썸네일은 GATEO 선정 좌구산휴양림과 다르게 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=jeungpyeong`
+- **잔여**: 사진/개요 순수 누락 **134**/876. QA 후 다음 허브 **계룡9경 4**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #36 다음 — 계룡 결손 오버레이
+
+```
+팔경 활용 #36, 계룡 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 계룡9경 사진·개요 없는 4건(향적산 국사봉·숫용추·암용추·계룡대 통일탑)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gyeryong
+```
+
 ## 팔경 활용 #34 — 안양 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #34, 안양 결손 오버레이`
@@ -9,20 +31,8 @@
 - **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 안양9경 결손 4건(망해암일몰·수리산성지·평촌1번가 문화의거리·만안교)의 개요·주소·공식 사진 보강. 안양시 문화관광 망해암·수리산성지·평촌1번가·만안교 사진을 연결했다. TourAPI searchPhoto는 0건이었다.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=anyang`
-- **잔여**: 사진/개요 순수 누락 **138**/876. QA 후 다음 허브 **증평구경 4**
+- **잔여**: 사진/개요 순수 누락 **138**/876. 다음은 증평구경 4 → **#35 완료**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
-
-## 팔경 활용 #35 다음 — 증평 결손 오버레이
-
-```
-팔경 활용 #35, 증평 결손 오버레이
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-@plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
-금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 증평구경 사진·개요 없는 4건(좌구산 천문대·삼기저수지 등잔길·추성산성·연병호 항일역사공원)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jeungpyeong
-```
 
 ## 팔경 활용 #33 — 포항 결손 오버레이 (Cloud)
 
@@ -48,7 +58,7 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#35 증평 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#36 계룡 결손 오버레이**
 
 ## 축제 숙소허브 #1 — 미추홀→옹진 오탐 (Cloud)
 
@@ -103,14 +113,24 @@
 - **Preview** https://www.gateo.kr/qa/korea-tna-strip
 - **QA**: 왕가의 산책 숙소·투어 **인천**(옹진·룩소르 아님). 비면 인천·강화 칩. 경복궁 「렌터카 보기」·MRT·기차표
 
-## 한국 투어티켓 #9 다음
+## 한국 투어티켓 #9 — 명승·축제 숙소·투어 시도 폴백 (Cloud)
+
+- **세션** `한국 투어티켓 #9, Preview OK면 PR 병합`
+- **브랜치** `cursor/korea-tna-strip-ef65` · tip `e885df64` · PR [#234](https://github.com/catgeot/Days/pull/234)
+- **병합 안 함**: 옹진 대청도 숙소가 비고 폴백이 안 됨. 시드 군·섬은 재고 0인데 명승이 `stayAreas`를 안 넘기고, `cityHints=옹진`이 인천 CITY를 거절함
+- **수정**: 명승에도 축제와 같은 인천·강화 칩. 같은 시도 시드를 숙소·투어 알트에 넣음. 빈 alt 배열이 지역 알트를 지우지 않음. cityHints에 폴백 도시명. 재고 0이면 인접 칩으로 재조회
+- **VERIFY**: `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-stay` · `smoke:korea-festival-personal` · `smoke:mrt-stay` · `smoke:travel-agencies` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=daecheongdo-ongjin`
+- **QA**: 대청도 숙소·투어 카드·인천·강화 칩. 왕가의 산책 인천. 경복궁 렌터카·기차표. 이번 턴 Preview 후 OK면 병합
+
+## 한국 투어티켓 #10 다음
 
 ```
-한국 투어티켓 #9, Preview OK면 PR 병합
+한국 투어티켓 #10, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-tna-strip-plan.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 왕가의 산책 숙소·투어가 인천인지(옹진·룩소르 아님)·비면 인천·강화 칩인지. 경복궁 「렌터카 보기」·MRT·기차표 OK면 PR #234 병합
+작업: 대청도 숙소·투어가 비지 않고 인천·강화 칩인지. 왕가의 산책 인천(룩소르 아님). 경복궁 렌터카·기차표 OK면 PR #234 병합
 ```
