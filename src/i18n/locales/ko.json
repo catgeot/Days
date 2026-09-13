@@ -1673,6 +1673,8 @@
       "hint": "마이리얼트립에서 예약 가능한 주변 투어·체험·입장권을 모아봅니다.",
       "activitiesTitle": "{{place}} 투어·티켓",
       "moreOnMrt": "MRT에서 더보기",
+      "klookActivities": "{{place}} 즐길거리 클룩에서 더보기",
+      "klookRental": "{{place}} 렌터카 최저가 비교",
       "empty": "선택 지역에 맞는 투어·티켓 상품이 없습니다.",
       "loading": "투어·티켓 상품을 불러오는 중…"
     },

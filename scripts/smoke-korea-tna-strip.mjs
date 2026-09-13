@@ -101,14 +101,35 @@ assert.match(eventTnaSrc, /listLarge/, 'EventTnaStrip enlarges cards in the same
 assert.match(eventTnaSrc, /overflow-x-auto/, 'EventTnaStrip keeps horizontal scroll when enlarged');
 assert.match(eventTnaSrc, /w-\[220px\]/, 'EventTnaStrip large cards are wider, not a vertical stack');
 assert.doesNotMatch(eventTnaSrc, /grid-cols-1/, 'EventTnaStrip large view does not switch to vertical grid');
+assert.match(
+  eventTnaSrc,
+  /getKlookSearchUrl\(searchKeyword,\s*locale\)/,
+  'EventTnaStrip builds Klook activities URL from searchKeyword',
+);
+assert.match(
+  eventTnaSrc,
+  /getKlookRentalUrlByLocation\(location\)/,
+  'EventTnaStrip builds Klook rental URL from location',
+);
+assert.match(eventTnaSrc, /klookActivities/, 'EventTnaStrip renders klookActivities chip');
+assert.match(eventTnaSrc, /klookRental/, 'EventTnaStrip renders klookRental chip');
+assert.match(
+  eventTnaSrc,
+  /KlookOutboundChips/,
+  'EventTnaStrip keeps Klook chips below the MRT card rail and empty state',
+);
 
 // 4. i18n 다국어 검증
 assert.match(koSrc, /"tnaStripTitle"/, 'ko.json has tnaStripTitle');
 assert.match(koSrc, /"tnaStripHint"/, 'ko.json has tnaStripHint');
 assert.match(koSrc, /"tnaStrip": \{/, 'ko.json has worldEventDetail.tnaStrip');
+assert.match(koSrc, /"klookActivities": "{{place}} 즐길거리 클룩에서 더보기"/, 'ko.json has klookActivities');
+assert.match(koSrc, /"klookRental": "{{place}} 렌터카 최저가 비교"/, 'ko.json has klookRental');
 assert.match(enSrc, /"tnaStripTitle"/, 'en.json has tnaStripTitle');
 assert.match(enSrc, /"tnaStripHint"/, 'en.json has tnaStripHint');
 assert.match(enSrc, /"tnaStrip": \{/, 'en.json has worldEventDetail.tnaStrip');
+assert.match(enSrc, /"klookActivities": "Explore {{place}} activities on Klook"/, 'en.json has klookActivities');
+assert.match(enSrc, /"klookRental": "Compare {{place}} rental cars on Klook"/, 'en.json has klookRental');
 
 // 5. 런타임 crossLinks 및 canShowMrtTnaStrip 검증
 const scenicSpots = listKoreaScenicSpots();

@@ -1910,6 +1910,8 @@
       "hint": "Browse nearby tours, activities, and admission tickets bookable on MyRealTrip.",
       "activitiesTitle": "{{place}} Tours & Tickets",
       "moreOnMrt": "More on MRT",
+      "klookActivities": "Explore {{place}} activities on Klook",
+      "klookRental": "Compare {{place}} rental cars on Klook",
       "empty": "No tours or tickets found for this location.",
       "loading": "Loading tours and tickets…"
     },

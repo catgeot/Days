@@ -48,6 +48,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-12T13:20:00.000Z',
   },
   {
+    id: '2026-09-12-korea-tna-strip-6-klook-chips',
+    session: '한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동',
+    title: '투어 카드 아래 클룩 즐길거리·렌터카 칩',
+    detail:
+      '마이리얼트립 투어·티켓 카드 규격은 그대로 두고, EventTnaStrip 하단에 클룩 즐길거리 검색(getKlookSearchUrl)과 렌터카 최저가 비교(getKlookRentalUrlByLocation) 아웃링크 칩을 넣었습니다. 상품이 없어도 칩은 보입니다. Preview /qa/korea-tna-strip — 경복궁 등 명승·축제 상세 투어 섹션 하단.',
+    at: '2026-09-12T13:20:00.000Z',
+  },
+  {
     id: '2026-09-12-palgyeong-use-29-gunsan-overlays',
     session: '팔경 활용 #29, 군산 결손 오버레이',
     title: '선유8경 결손 5건 런타임 오버레이',
