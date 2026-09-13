@@ -56,6 +56,11 @@
       "permanent": true
     },
     {
+      "source": "/qa/gallery-fresh",
+      "destination": "https://days-git-cursor-gallery-swr-6b36-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
       "source": "/qa/palgyeong-use",
       "destination": "https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/",
       "permanent": false

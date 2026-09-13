@@ -24,6 +24,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-12-palgyeong-use-31-geumsan-ginkgo-thumbs',
+    session: '팔경 활용 #31, 금산 은행나무·썸네일',
+    title: '요광리 은행나무 사진 · 서대산·진악산 빈 썸네일',
+    detail:
+      '태조태실 요광은행나무 상세 사진을 태실 석물에서 금산군·국가유산청 요광리 은행나무 공식 사진으로 바꿨습니다. TourAPI에 사진이 없던 서대산 산꽃세상(127518)·진악산(126811)은 금산군 산꽃축제·진악산·개삼터 공식 사진을 런타임 오버레이로 넣고, 관광지 검색 행도 같은 contentId면 그 썸네일을 쓰게 했습니다. JSON contentId는 넣지 않았습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geumsan 10경 카드·「금산」검색 진악산·서대산.',
+    at: '2026-09-12T23:40:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-30-geumsan-overlays',
+    session: '팔경 활용 #30, 금산 결손 오버레이',
+    title: '금산10경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 금산10경 결손 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 금산산림문화타운·인삼약령시장·월영산 출렁다리·기러기공원·태조대왕 태실 사진을 연결했고, 세계농업유산은 같은 군 금산인삼관 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geumsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T13:20:00.000Z',
+  },
+  {
     id: '2026-09-12-korea-tna-strip-6-klook-chips',
     session: '한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동',
     title: '투어 카드 아래 클룩 즐길거리·렌터카 칩',
