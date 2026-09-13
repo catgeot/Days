@@ -1552,6 +1552,91 @@ assert.ok(
   '증평 검색 팔경 연병호 개요',
 );
 
+const gyeryongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gyeryong');
+const gyeryongNine = gyeryongMerged.filter(
+  (s) => s.localScenicListId === 'gyeryong-gugyeong',
+);
+assert.equal(gyeryongNine.length, 9, '계룡9경 9명');
+assert.equal(gyeryongNine[0]?.groupTitle, '계룡 구경');
+const gyeryongDeficitNames = [
+  '향적산 국사봉',
+  '숫용추',
+  '암용추',
+  '계룡대 통일탑',
+];
+const gyeryongDeficit = gyeryongNine.filter((s) =>
+  gyeryongDeficitNames.includes(s.attractionName),
+);
+assert.equal(gyeryongDeficit.length, 4, '계룡9경 결손 4명');
+assert.ok(
+  gyeryongDeficit.every((s) => s.overview && s.imageUrl),
+  '계룡 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  gyeryongDeficit.every((s) => !s.contentId),
+  '계룡 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(gyeryongDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '계룡 결손 4명 썸네일 서로 다름',
+);
+const grGuksa = resolveLocalScenicListSpotById(
+  'local-scenic:gyeryong-gugyeong:향적산국사봉',
+);
+assert.ok(grGuksa?.overview?.includes('574m'), '계룡 향적산 국사봉 overlay overview');
+assert.ok(grGuksa?.overview?.includes('향한리'), '계룡 향적산 국사봉 향한리');
+assert.ok(
+  grGuksa?.imageUrl?.includes('sub06020204_img01'),
+  '계룡 국사봉 시 공식 사진',
+);
+const grSut = resolveLocalScenicListSpotById('local-scenic:gyeryong-gugyeong:숫용추');
+assert.ok(grSut?.overview?.includes('서용추'), '계룡 숫용추 overlay overview');
+assert.ok(grSut?.overview?.includes('10m'), '계룡 숫용추 10m 폭포');
+assert.ok(grSut?.imageUrl?.includes('YDCLKBZE'), '계룡 숫용추 시 공식 사진');
+const grAm = resolveLocalScenicListSpotById('local-scenic:gyeryong-gugyeong:암용추');
+assert.ok(grAm?.overview?.includes('동용추'), '계룡 암용추 overlay overview');
+assert.ok(grAm?.overview?.includes('12m'), '계룡 암용추 12m');
+assert.ok(grAm?.imageUrl?.includes('K69Z04LL'), '계룡 암용추 시 공식 사진');
+const grUni = resolveLocalScenicListSpotById(
+  'local-scenic:gyeryong-gugyeong:계룡대통일탑',
+);
+assert.ok(grUni?.overview?.includes('36m'), '계룡 통일탑 overlay overview');
+assert.ok(grUni?.overview?.includes('충·의·지'), '계룡 통일탑 충의지인용');
+assert.ok(grUni?.imageUrl?.includes('7de9c26193dec2a10ac8431a9a12e589'), '계룡 통일탑 시 공식 사진');
+assert.notEqual(grGuksa?.imageUrl, grSut?.imageUrl, '국사봉·숫용추 썸네일 다름');
+assert.notEqual(grAm?.imageUrl, grUni?.imageUrl, '암용추·통일탑 썸네일 다름');
+
+const gyeryongPark = listKoreaScenicSpots().find(
+  (s) => s.id === 'gyeryongsan-national-park' || s.attractionName === '계룡산국립공원',
+);
+assert.ok(gyeryongPark?.imageUrl, 'GATEO 선정 계룡산국립공원 썸네일');
+assert.notEqual(
+  grGuksa?.imageUrl,
+  gyeryongPark?.imageUrl,
+  '국사봉 썸네일 ≠ GATEO 선정 계룡산국립공원',
+);
+
+const gyeryongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '계룡', {
+  injectLocalScenic: true,
+});
+const gyeryongGlobeNine = gyeryongGlobe.filter(
+  (s) => s.localScenicListId === 'gyeryong-gugyeong',
+);
+assert.equal(gyeryongGlobeNine.length, 9, '계룡 검색 계룡9경 9행');
+assert.ok(
+  gyeryongGlobeNine.every((s) => s.groupTitle === '계룡 구경'),
+  '계룡 검색 그룹명 계룡 구경',
+);
+assert.ok(
+  gyeryongGlobe.find((s) => s.attractionName === '향적산 국사봉')?.imageUrl,
+  '계룡 검색 팔경 향적산 국사봉 썸네일',
+);
+assert.ok(
+  gyeryongGlobe.find((s) => s.attractionName === '계룡대 통일탑')?.overview?.includes('통일탑'),
+  '계룡 검색 팔경 통일탑 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
