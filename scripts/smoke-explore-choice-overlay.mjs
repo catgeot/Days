@@ -90,10 +90,11 @@ assert.match(suggestionListSrc, /SearchResultThumb/);
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'explore-search'/);
-assert.match(qa, /cursor\/explore-search-d14b/);
+assert.match(qa, /www\.gateo\.kr\/explore/);
+assert.match(qa, /active:\s*false/);
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(vercel, /\/qa\/explore-search/);
-assert.match(vercel, /days-git-cursor-explore-search-d14b/);
+assert.match(vercel, /www\.gateo\.kr\/explore/);
 
 console.log(
   `PASS explore-choice-overlay (옹진 hub + ${candidates.length} choice cards, dropdown gated)`,
