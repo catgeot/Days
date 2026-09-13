@@ -2,10 +2,37 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 방문자 개선 #2 후속 — 모바일 히어로 지구본 노출 (Cloud)
+
+- **세션** `방문자 개선 #2 후속, 모바일 히어로 지구본 노출`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `86090dbe` · PR [#247](https://github.com/catgeot/Days/pull/247)
+- **완료**: 모바일 390px — 로고+검색+로그인/AI **1행** 복원. 히어로는 컴팩트 헤드라인 1줄만(서브·CTA 제거). 지구본 drag/zoom/클릭 시 `heroDismissed`+`sessionStorage`. placeholder `3D 지구본으로 여행지 검색...`. 데스크톱 히어로 유지.
+- **VERIFY**: `npm run build` PASS · `node scripts/smoke-home-mobile-globe-exposure.mjs` — 390px 지구본 노출 **100%** · 드래그 후 히어로 숨김 OK
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **QA**: 390px 홈 — 지구본 중앙 노출 40%+ · 검색 1행·로그인·AI 탭 · 드래그 시 히어로 슬라이드 아웃 · 터치 간섭 없음.
+
+## 방문자 개선 #2 — 사람 Preview QA (지구본 가림)
+
+- **세션** `방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트` — QA 피드백
+- **브랜치** `cursor/visitor-growth-1f90` · tip `c311693f`
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **이슈**: 모바일 390px — 히어로(헤드+서브+CTA2)+검색+퀵링크 3~4단 스택으로 상단 UI **45~55%** · 지구본 노출 **25~35%**. 기존 대비 지구본 탐색 저하 우려 타당. `pointer-events` 간섭 없음.
+- **권장**: 모바일 히어로 축소·검색 1행 복원·드래그 시 히어로 숨김. CTA 중복(검색·MOONi) 정리. 데스크톱 히어로 유지.
+- **다음**: `방문자 개선 #2 후속, 모바일 히어로 지구본 노출` — 플랜 세션 2 후속 명세. #3 크롤러 SEO는 후속 후.
+
+## 방문자 개선 #2 — 홈 가치제안 및 모바일 뷰포트 (Cloud)
+
+- **세션** `방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `eda60c94`
+- **완료**: `HomeUI` 검색바 상단 글래스 히어로(헤드라인·서브·투톱 CTA `/explore`·MOONi 채팅). 모바일 검색 플레이스홀더 `여행지 검색...`·우측 로그인 원형·AI 미니 뱃지. `HomeGlobeMapbox` `pixelRatio` 최대 2.
+- **VERIFY**: `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **QA**: 390px 홈 — 히어로 가치제안·CTA 2종·검색 플레이스홀더 잘림 없음·우측 로그인·AI 탭. 지구본 드래그·CTA 터치 간섭 없음.
+
 ## 방문자 개선 #1 — 404 복구 및 AI채팅 초기화 (Cloud)
 
 - **세션** `방문자 개선 #1, 404 복구 및 AI채팅 초기화`
-- **브랜치** `cursor/visitor-growth-1f90` · tip `62287e27`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `62287e27` · PR [#244](https://github.com/catgeot/Days/pull/244) merge ✅ · main `b33c50ab`
 - **완료**: `AboutPage` 신설·`/about` 라우트, `/pricing`→`/about`·`/product`→`/explore` 리다이렉트, 와일드카드 404→`/`. 장소 미선택 AI 채팅은 `MOONi` 바인딩·`placeIntroTarget` 가드로 `Invalid destination name` 차단. 범용 탐색 칩 4종(휴양지·힐링·5시간 이내·가족). **후속**: 여행지 바인딩 후 헤더 「일반 탐색」→ MOONi 일반 세션·범용 칩 복귀(기존 trip 사이드바 보존).
 - **VERIFY**: `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
@@ -21,7 +48,7 @@
 - **플랜**: [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) (4단계 8세션 독립 완결형 실행 계획서)
   - 세션 #3에 크롤러 대상 여행지 시맨틱 HTML(`<h1>`, `<p>`, 탭 안내) 본문 주입 및 봇 감지 전수화 배치
 - **핸드오프**: [`feature-handoff-index.md`](./feature-handoff-index.md)에 `방문자 개선` 행 및 다음 제시어 등록
-- **진행 현황**: 세션 #1 완료 후 현재 세션 #2 대기 중
+- **진행 현황**: 세션 #2 완료 후 세션 #3(크롤러 SEO) 대기 중
 
 ## 팔경 활용 #38 — 천안 결손 오버레이 (Cloud)
 
@@ -62,6 +89,15 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=yeongdeok`
 - **잔여**: 사진/개요 순수 누락 **110**/876. QA 후 다음 허브 **문경8경 4**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #41 QA — 영덕 썸네일·투어 오탐 (Cloud)
+
+- **세션** `팔경 활용 #41, 영덕 QA 수정`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `024252fd` · PR [#245](https://github.com/catgeot/Days/pull/245)
+- **완료**: 사람 Preview 피드백 — 영덕 검색 하저·경정 해수욕장·삼사해상공원 빈 썸네일 → `LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID`(127160·1621219·126143). 하저 상세 투어에 잔지바르·나이로비 사파리 노출 → 인근 키워드 `영양`이 투어 제목 일반어와 부분일치한 MRT 오탐. `mrtTnaRelevance`·Edge `fetch-mrt-tnas` 동형어·해외 필터, `EventTnaStrip` 로딩 시 이전 목록 제거.
+- **VERIFY**: `npm run build` PASS · `node scripts/smoke-mrt-tna-queries.mjs` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use — 검색「영덕」·하저 상세 투어
+- **다음**: **#42 문경 결손 오버레이** (동일 브랜치)
 
 ## 팔경 활용 #42 다음 — 문경 결손 오버레이
 
