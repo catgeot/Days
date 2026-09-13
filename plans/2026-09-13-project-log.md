@@ -24,6 +24,28 @@
 작업: 천안8경 사진·개요 없는 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=cheonan
 ```
 
+## 탐색홈 검색 #4 — 옹진은 팔경 없음 (Cloud)
+
+- **세션** `탐색홈 검색 #4, 옹진은 팔경 그룹이 없어요`
+- **브랜치** `cursor/explore-search-d14b` · tip `86a381d3` · PR [#239](https://github.com/catgeot/Days/pull/239)
+- **병합 안 함**: 무팔경 허브 소제목이 새 동작이라 Preview 전 merge 금지
+- **완료**: 옹진은 지자체 팔경 SSOT가 없어 N경을 붙이지 않음. 섬은 「옹진 명소」소제목만. 문경 팔경·문경 1경은 유지
+- **VERIFY**: `smoke:explore-choice-overlay` PASS · `smoke:korea-local-scenic-lists` PASS · `smoke:explore-search-aliases` PASS · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/explore-search → git Preview `/explore`
+- **QA**: 옹진 Enter — 옹진 명소·섬 사진·1경 없음. 문경 — 문경 팔경·문경 1경
+- **QA 방식**: 사람은 **같은 턴** Preview QA
+
+## 탐색홈 검색 #5 다음
+
+```
+탐색홈 검색 #5, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
+금지: UI 리디자인 · 선택 카드 규격 파손 · 옹진에 N경 날조 · feature에 plans/** 커밋
+작업: 옹진 Enter — 옹진 명소 소제목·섬 사진·1경 없음. 문경 — 문경 팔경·문경 1경. OK면 PR #239 병합
+```
+
 ## 탐색홈 검색 #3 — 팔경식 리스트·카드 썸네일 (Cloud)
 
 - **세션** `탐색홈 검색 #3, Preview OK면 PR 병합`
@@ -34,17 +56,6 @@
 - **Preview** https://www.gateo.kr/qa/explore-search → git Preview `/explore`
 - **QA**: 옹진 Enter — 도시·섬 한 줄 행+사진 · 문경 검색 — 문경 팔경·문경 1경
 - **QA 방식**: 사람은 **같은 턴** Preview QA
-
-## 탐색홈 검색 #4 다음
-
-```
-탐색홈 검색 #4, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
-금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
-작업: 옹진 Enter 후 도시·섬이 한 줄 행+사진인지. 문경 검색에 문경 팔경·문경 1경이 보이는지. OK면 PR #239 병합
-```
 
 ## 탐색홈 검색 #2 — QA 링크 PROD 연결 (Cloud)
 
