@@ -5,11 +5,11 @@
 ## 방문자 개선 #1 — 404 복구 및 AI채팅 초기화 (Cloud)
 
 - **세션** `방문자 개선 #1, 404 복구 및 AI채팅 초기화`
-- **브랜치** `cursor/visitor-growth-1f90` · tip `47809606`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `62287e27`
 - **완료**: `AboutPage` 신설·`/about` 라우트, `/pricing`→`/about`·`/product`→`/explore` 리다이렉트, 와일드카드 404→`/`. 장소 미선택 AI 채팅은 `MOONi` 바인딩·`placeIntroTarget` 가드로 `Invalid destination name` 차단. 범용 탐색 칩 4종(휴양지·힐링·5시간 이내·가족). **후속**: 여행지 바인딩 후 헤더 「일반 탐색」→ MOONi 일반 세션·범용 칩 복귀(기존 trip 사이드바 보존).
 - **VERIFY**: `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
-- **QA**: `/about`·`/pricing`·`/product`·존재하지 않는 URL → 홈. 장소 없이 하단 「AI와 여행 대화」→ 환영 멘트·칩 4종. 여행지 선택 후 헤더 「일반 탐색」→ 범용 칩 복귀.
+- **QA**: `/about`·`/pricing`·`/product`·존재하지 않는 URL → 홈. 장소 없이 하단 「AI와 여행 대화」→ 환영 멘트·칩 4종. 여행지 선택 후 **모바일**: 헤더 컴패스(🧭) 또는 칩 위 「일반 탐색」→ 범용 칩 복귀.
 
 ## 방문자 활성화 — 사이트 체질 개선 13대 과제 및 크롤러 SEO 계획 수립
 
@@ -43,16 +43,26 @@
 - **잔여**: 사진/개요 순수 누락 **118**/876. QA 후 다음 허브 **밀양8경 4**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #40 다음 — 밀양 결손 오버레이
+## 팔경 활용 #40 — 밀양 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #40, 밀양 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `bd5827d2` · PR [#245](https://github.com/catgeot/Days/pull/245)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 밀양8경 결손 4건(시례 호박소·월연정 풍경·만어사 운해·종남산 진달래)의 개요·주소·공식 사진 보강. 호박소·만어사·종남산은 한국관광공사, 월연정은 국가유산청 명승 밀양 월연대 일원 사진을 연결했고, 만어사 운해는 공식 만어사 사진에 능선·안개 느낌 사진을 보탰다.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=miryang`
+- **잔여**: 사진/개요 순수 누락 **114**/876. QA 후 다음 허브 **영덕9경 4**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #41 다음 — 영덕 결손 오버레이
 
 ```
-팔경 활용 #40, 밀양 결손 오버레이
+팔경 활용 #41, 영덕 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 밀양8경 사진·개요 없는 4건(시례 호박소·월연정 풍경·만어사 운해·종남산 진달래)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=miryang
+작업: 영덕9경 사진·개요 없는 4건(영덕 도천숲·영덕 팔각산·영덕 사월의 복사꽃·영덕 나옹왕사 사적비)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeongdeok
 ```
 
 ## 탐색홈 검색 #5 — 문경 썸네일 경로 통일 (Cloud)
