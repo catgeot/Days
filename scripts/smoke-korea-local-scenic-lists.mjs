@@ -1326,6 +1326,91 @@ assert.ok(
   '남해 검색 팔경 노도 개요',
 );
 
+const pohangMerged = mergeLocalScenicMembersIntoScenicSpots([], 'pohang');
+const pohangTwelve = pohangMerged.filter((s) => s.localScenicListId === 'pohang-sipgyeong');
+assert.equal(pohangTwelve.length, 12, '포항12경 12명');
+assert.equal(pohangTwelve[0]?.groupTitle, '포항 12경');
+assert.ok(
+  pohangTwelve.every((s) => s.groupTitle === '포항 12경'),
+  '포항12경 그룹명 포항 12경 (십경 아님)',
+);
+assert.equal(
+  localScenicListDisplayTitle(
+    listKoreaLocalScenicLists().find((l) => l.listId === 'pohang-sipgyeong'),
+  ),
+  '포항 12경',
+);
+const pohangDeficitNames = [
+  '호미곶 일출',
+  '내연산 12폭포',
+  '운제산 오어사 사계',
+  '영일대 포스코 야경',
+  '철길숲 불의 정원',
+];
+const pohangDeficit = pohangTwelve.filter((s) => pohangDeficitNames.includes(s.attractionName));
+assert.equal(pohangDeficit.length, 5, '포항12경 결손 5명');
+assert.ok(
+  pohangDeficit.every((s) => s.overview && s.imageUrl),
+  '포항 결손 5명 overlay 사진·개요',
+);
+assert.ok(
+  pohangDeficit.every((s) => !s.contentId),
+  '포항 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(pohangDeficit.map((s) => s.imageUrl)).size,
+  5,
+  '포항 결손 5명 썸네일 서로 다름',
+);
+const phHomi = resolveLocalScenicListSpotById('local-scenic:pohang-sipgyeong:호미곶일출');
+assert.ok(phHomi?.overview?.includes('상생의 손'), '포항 호미곶 overlay overview');
+assert.ok(phHomi?.overview?.includes('최동단'), '포항 호미곶 최동단');
+const phFalls = resolveLocalScenicListSpotById('local-scenic:pohang-sipgyeong:내연산12폭포');
+assert.ok(phFalls?.overview?.includes('연산폭포'), '포항 내연산 overlay overview');
+assert.ok(phFalls?.overview?.includes('관음폭포'), '포항 내연산 관음폭포');
+const phOeo = resolveLocalScenicListSpotById('local-scenic:pohang-sipgyeong:운제산오어사사계');
+assert.ok(phOeo?.overview?.includes('오어사'), '포항 오어사 overlay overview');
+assert.ok(phOeo?.overview?.includes('보물 제1280호'), '포항 오어사 범종');
+const phYeongil = resolveLocalScenicListSpotById('local-scenic:pohang-sipgyeong:영일대포스코야경');
+assert.ok(phYeongil?.overview?.includes('해상 누각'), '포항 영일대 overlay overview');
+assert.ok(phYeongil?.overview?.includes('LED'), '포항 포스코 야경 LED');
+assert.notEqual(
+  phYeongil?.imageUrl,
+  'https://tong.visitkorea.or.kr/cms/resource/79/4078979_image2_1.jpg',
+  '영일대 포스코 야경 썸네일이 GATEO 영일대해수욕장 사진이 아님',
+);
+assert.notEqual(
+  phYeongil?.imageUrl,
+  'https://tong.visitkorea.or.kr/cms/resource/63/4078963_image2_1.jpg',
+  '영일대 포스코 야경 썸네일이 스페이스워크 사진이 아님',
+);
+const phRail = resolveLocalScenicListSpotById('local-scenic:pohang-sipgyeong:철길숲불의정원');
+assert.ok(phRail?.overview?.includes('4.3km'), '포항 철길숲 overlay overview');
+assert.ok(phRail?.overview?.includes('천연가스'), '포항 불의정원 천연가스');
+assert.ok(phRail?.imageUrl?.includes('pohang.go.kr'), '포항 철길숲 포항시 공식 사진');
+
+const pohangGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '포항', {
+  injectLocalScenic: true,
+});
+const pohangGlobeTwelve = pohangGlobe.filter(
+  (s) => s.localScenicListId === 'pohang-sipgyeong',
+);
+assert.equal(pohangGlobeTwelve.length, 12, '포항 검색 포항12경 12행');
+assert.ok(
+  pohangGlobeTwelve.every((s) => s.groupTitle === '포항 12경'),
+  '포항 검색 그룹명 포항 12경',
+);
+assert.ok(
+  pohangGlobe.find((s) => s.attractionName === '호미곶 일출')?.imageUrl,
+  '포항 검색 팔경 호미곶 일출 썸네일',
+);
+assert.ok(
+  pohangGlobe.find((s) => s.attractionName === '철길숲 불의 정원')?.overview?.includes(
+    '불의정원',
+  ),
+  '포항 검색 팔경 철길숲 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

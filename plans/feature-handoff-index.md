@@ -45,27 +45,27 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#7 push** · tip `593fd59f` · PR [#234](https://github.com/catgeot/Days/pull/234) · #6 PR [#230](https://github.com/catgeot/Days/pull/230) MERGED |
+| **상태** | **#8 push** · tip `beb65f1a` · PR [#234](https://github.com/catgeot/Days/pull/234) · 병합 보류(왕가의 산책 옹진·행사명 투어) |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `593fd59f` |
+| **tip** | `beb65f1a` |
 | **PR** | [#234](https://github.com/catgeot/Days/pull/234) |
 | **플랜** | [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
-| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `getMrtDomesticRentalUrl` · `getTripcomTrainUrl` |
+| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` · 축제 왕가의 산책 |
+| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `resolveFestivalThemeCrossLinks` · `buildFestivalStayAreas` |
 | **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-tna-strip` · `smoke:travel-agencies` · `smoke:korea-scenic-stay` · `vite build` |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-festival-personal` · `smoke:travel-agencies` · `vite build` |
 
 **다음 제시어**:
 
 ```
-한국 투어티켓 #8, Preview OK면 PR 병합
+한국 투어티켓 #9, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-tna-strip-plan.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 경복궁 투어 섹션 하단이 「렌터카 보기」(최저가 비교 없음)·마이리얼트립 국내 렌터카·트립닷컴 기차표인지 확인. OK면 PR #234 병합
+작업: 왕가의 산책 숙소·투어가 인천인지(옹진·룩소르 아님)·비면 인천·강화 칩인지. 경복궁 「렌터카 보기」·MRT·기차표 OK면 PR #234 병합
 ```
 
 ---
