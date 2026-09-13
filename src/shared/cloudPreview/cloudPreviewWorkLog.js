@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '한국 투어티켓',
-  sessionNo: 9,
-  sessionPhase: '명승·축제 숙소·투어 시도 폴백',
-  branch: 'cursor/korea-tna-strip-ef65',
-  previewPath: '/korea/theme/scenic?spot=daecheongdo-ongjin',
-  qaShareSlug: 'korea-tna-strip',
+  title: '팔경 활용',
+  sessionNo: 35,
+  sessionPhase: '증평 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=jeungpyeong',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
