@@ -1284,6 +1284,39 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
       'https://tong.visitkorea.or.kr/cms2/website/88/1120888.jpg',
     ],
   },
+  'local-scenic:mungyeong-palgyeong:선유동계곡': {
+    contentId: '126056',
+    overview:
+      '문경8경 중 제2경 선유동계곡은 조령산과 주흘산 사이 깊은 협곡을 따라 흐르는 맑은 계곡입니다. 울창한 숲과 바위, 폭포가 어우러진 산책로가 이어지며 사계절 피서·트레킹 명소로 알려져 있습니다.',
+    addr1: '경상북도 문경시 문경읍 선유동계곡 일원',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/91/3517191_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/91/3517191_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/91/3517191_image2_1.jpg',
+    ],
+  },
+  'local-scenic:mungyeong-palgyeong:용추계곡': {
+    contentId: '127913',
+    overview:
+      '문경8경 중 제3경 용추계곡은 대야산 자락에 자리한 계곡으로, 맑은 계류와 기암괴석·폭포가 어우러진 산수 경관이 뛰어납니다.',
+    addr1: '경상북도 문경시 산북면 용추계곡 일원',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/30/3517030_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/30/3517030_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/30/3517030_image2_1.jpg',
+    ],
+  },
+  'local-scenic:mungyeong-palgyeong:경천호': {
+    contentId: '131064',
+    overview:
+      '문경8경 중 제7경 경천호는 문경시 동쪽 산간에 조성된 인공호로, 호수와 주변 산세가 어우러진 힐링·드라이브 명소입니다.',
+    addr1: '경상북도 문경시 동로면 경천리 일원',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/43/3517043_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/43/3517043_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/43/3517043_image2_1.jpg',
+    ],
+  },
   'local-scenic:uiseong-binggye-palgyeong:빙계빙혈': localScenicPhotoOverlay(
     '빙계팔경 제1경 빙혈(氷穴)은 춘산면 서원마을 뒷산 기슭 바위 아래, 너덧 명이 들어설 수 있는 방 한 칸 넓이의 얼음 구멍입니다. 의성군에 따르면 입춘이면 찬 기운이 나고 한여름에는 얼음이 얼며, 입추가 지나면 녹아 동지에는 훈훈한 바람이 나옵니다. 경사면 암괴(애추)가 만드는 이 현상으로 빙계리 일대는 2011년 천연기념물 제527호 의성 빙계리 얼음골로 지정되었습니다.',
     BINGGYE_PARK_ADDR,
@@ -2275,6 +2308,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   2750930: localScenicThumbOverlay(NS_YANGCHON, [NS_YANGCHON_2]),
   946844: localScenicThumbOverlay(NS_HISTORY, [NS_HISTORY_2, NS_HISTORY_3]),
   1956315: localScenicThumbOverlay(NS_NOGANG, [NS_NOGANG_2]),
+  // 문경석탄박물관 — TourAPI 상세는 문경에코월드(2599737). DB first_image 미동기화.
+  2599737: localScenicThumbOverlay(
+    'https://tong.visitkorea.or.kr/cms/resource/97/4059797_image2_1.jpg',
+  ),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

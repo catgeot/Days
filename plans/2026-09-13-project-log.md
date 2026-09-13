@@ -2,6 +2,15 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 방문자 개선 #2 — 사람 Preview QA (지구본 가림)
+
+- **세션** `방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트` — QA 피드백
+- **브랜치** `cursor/visitor-growth-1f90` · tip `c311693f`
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **이슈**: 모바일 390px — 히어로(헤드+서브+CTA2)+검색+퀵링크 3~4단 스택으로 상단 UI **45~55%** · 지구본 노출 **25~35%**. 기존 대비 지구본 탐색 저하 우려 타당. `pointer-events` 간섭 없음.
+- **권장**: 모바일 히어로 축소·검색 1행 복원·드래그 시 히어로 숨김. CTA 중복(검색·MOONi) 정리. 데스크톱 히어로 유지.
+- **다음**: `방문자 개선 #2 후속, 모바일 히어로 지구본 노출` — 플랜 세션 2 후속 명세. #3 크롤러 SEO는 후속 후.
+
 ## 방문자 개선 #2 — 홈 가치제안 및 모바일 뷰포트 (Cloud)
 
 - **세션** `방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트`
@@ -14,7 +23,7 @@
 ## 방문자 개선 #1 — 404 복구 및 AI채팅 초기화 (Cloud)
 
 - **세션** `방문자 개선 #1, 404 복구 및 AI채팅 초기화`
-- **브랜치** `cursor/visitor-growth-1f90` · tip `62287e27`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `62287e27` · PR [#244](https://github.com/catgeot/Days/pull/244) merge ✅ · main `b33c50ab`
 - **완료**: `AboutPage` 신설·`/about` 라우트, `/pricing`→`/about`·`/product`→`/explore` 리다이렉트, 와일드카드 404→`/`. 장소 미선택 AI 채팅은 `MOONi` 바인딩·`placeIntroTarget` 가드로 `Invalid destination name` 차단. 범용 탐색 칩 4종(휴양지·힐링·5시간 이내·가족). **후속**: 여행지 바인딩 후 헤더 「일반 탐색」→ MOONi 일반 세션·범용 칩 복귀(기존 trip 사이드바 보존).
 - **VERIFY**: `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
