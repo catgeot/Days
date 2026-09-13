@@ -92,7 +92,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#32** tip `f39ca073` · PR [#232](https://github.com/catgeot/Days/pull/232) · 남해12경 결손 5 · **#33 포항 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#32** tip `2dbb33e9` · PR [#232](https://github.com/catgeot/Days/pull/232) · 남해12경 결손 5 · 그룹명 남해 12경 · **#33 포항 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -133,7 +133,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 29 | `팔경 활용 #29, 군산 결손 오버레이` | A | **완료** · tip `ba1a57e2` · PR [#229](https://github.com/catgeot/Days/pull/229) · 선유8경 5 |
 | 30 | `팔경 활용 #30, 금산 결손 오버레이` | A | **완료** · tip `f6c7a3f2` · PR [#231](https://github.com/catgeot/Days/pull/231) · 금산 5 |
 | 31 | `팔경 활용 #31, 금산 은행나무·썸네일` | A | **완료** · tip `6b5aaeae` · PR [#231](https://github.com/catgeot/Days/pull/231) · 요광리 은행나무 사진 · 서대산·진악산 빈 썸네일 |
-| 32 | `팔경 활용 #32, 남해 결손 오버레이` | A | **완료** · tip `f39ca073` · PR [#232](https://github.com/catgeot/Days/pull/232) · 남해12경 5 |
+| 32 | `팔경 활용 #32, 남해 결손 오버레이` | A | **완료** · tip `2dbb33e9` · PR [#232](https://github.com/catgeot/Days/pull/232) · 남해12경 5 · 그룹명 남해 12경 |
 | 33 | `팔경 활용 #33, 포항 결손 오버레이` | A | **열기 가능** · 포항12경 5 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |

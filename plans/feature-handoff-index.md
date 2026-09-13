@@ -70,6 +70,33 @@ AI 모델 #3, Preview OK면 PR 병합
 
 ---
 
+### 축제 숙소허브
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `60e7e10d` · PR [#233](https://github.com/catgeot/Days/pull/233) |
+| **브랜치** | `cursor/festival-stay-hub-c241` |
+| **tip** | `60e7e10d` |
+| **PR** | [#233](https://github.com/catgeot/Days/pull/233) |
+| **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
+| **Preview** | `/qa/festival-stay-hub` → git Preview `/korea` |
+| **소유** | `nearbyFestivalHubs.js` · `resolveFestivalThemeCrossLinks` |
+| **금지** | UI 리디자인 · 축제 시트 리팩터 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-festival-personal` · `smoke:korea-theme-cross-links` · `smoke:korea-tna-strip` · `vite build` |
+
+**다음 제시어**:
+
+```
+축제 숙소허브 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/festival-stay-hub-c241 · PR #233 · Preview /qa/festival-stay-hub
+금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
+작업: 학산마당극놀래 본문 숙소·투어가 미추홀인지(옹진 아님). OK면 PR #233 병합
+```
+
+---
+
 ### 명승 숙소
 
 | | |
@@ -426,9 +453,9 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#32** tip `f39ca073` · PR [#232](https://github.com/catgeot/Days/pull/232) · 남해12경 결손 5 · **#33 포항 결손 오버레이** |
+| **상태** | **#32** tip `2dbb33e9` · PR [#232](https://github.com/catgeot/Days/pull/232) · 남해12경 결손 5 · 그룹명 **남해 12경** · **#33 포항 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `f39ca073` |
+| **tip** | `2dbb33e9` |
 | **PR** | [#232](https://github.com/catgeot/Days/pull/232) · [#231](https://github.com/catgeot/Days/pull/231) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
@@ -436,7 +463,7 @@ AI 모델 #3, Preview OK면 PR 병합
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지 썸네일(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5(#232). 순수 사진/개요 누락 **147**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **포항12경 5** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232). 순수 사진/개요 누락 **147**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **포항12경 5** |
 
 **다음 제시어**:
 
