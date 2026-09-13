@@ -24,6 +24,28 @@
 작업: 천안8경 사진·개요 없는 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=cheonan
 ```
 
+## 탐색홈 검색 #3 — 팔경식 리스트·카드 썸네일 (Cloud)
+
+- **세션** `탐색홈 검색 #3, Preview OK면 PR 병합`
+- **브랜치** `cursor/explore-search-d14b` · tip `d7bdccd9` · PR [#239](https://github.com/catgeot/Days/pull/239)
+- **병합 안 함**: Preview가 팔경식 나열·카드 보강을 요청. 새 동작이라 Preview 전 merge 금지
+- **완료**: Enter 선택 결과를 명승 팔경 리스트처럼 한 줄 행으로 나열. 팔경 멤버에 「문경 1경」 행 부제. GATEO 선정 썸네일을 드롭다운·선택 행에 연결(옹진 덕적도 등). Enter 후 드롭다운은 닫힘 유지
+- **VERIFY**: `smoke:explore-choice-overlay` PASS · `smoke:korea-local-scenic-lists` PASS · `smoke:explore-search-aliases` PASS · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/explore-search → git Preview `/explore`
+- **QA**: 옹진 Enter — 도시·섬 한 줄 행+사진 · 문경 검색 — 문경 팔경·문경 1경
+- **QA 방식**: 사람은 **같은 턴** Preview QA
+
+## 탐색홈 검색 #4 다음
+
+```
+탐색홈 검색 #4, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
+금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
+작업: 옹진 Enter 후 도시·섬이 한 줄 행+사진인지. 문경 검색에 문경 팔경·문경 1경이 보이는지. OK면 PR #239 병합
+```
+
 ## 탐색홈 검색 #2 — QA 링크 PROD 연결 (Cloud)
 
 - **세션** `탐색홈 검색 #2, QA 링크 PROD 연결`
@@ -32,17 +54,6 @@
 - **Preview** https://www.gateo.kr/qa/explore-search → git Preview `/explore`
 - **QA**: `/qa` 목록에 「탐색홈 검색 선택 카드」가 있는지 · 누르면 `/explore` Preview인지
 - **QA 방식**: 사람은 **같은 턴** Preview QA
-
-## 탐색홈 검색 #3 다음
-
-```
-탐색홈 검색 #3, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
-금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
-작업: /qa/explore-search가 탐색홈으로 열리는지. 옹진 검색 후 Enter — 도시·섬 카드만 보이는지. OK면 PR #239 병합
-```
 
 ## 탐색홈 검색 #1 — 선택 카드·드롭다운 중첩 (Cloud)
 
