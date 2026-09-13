@@ -2,6 +2,28 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 팔경 활용 #37 — 논산 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #37, 논산 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `2e8f2439` · PR [#240](https://github.com/catgeot/Days/pull/240) · [#238](https://github.com/catgeot/Days/pull/238) merge ✅
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 논산11경 결손 4건(대둔산 수락계곡·강경포구와 근대역사거리·노성산성과 명재고택·종학당과 한국유교문화진흥원)의 개요·주소·공식 사진 보강. 논산시 문화관광 11경 수락계곡·강경포구·명재고택·종학당 사진을 연결했고, 수락계곡은 시 여름명소 선녀폭포·수락폭포 사진, 강경·고택·종학당은 한국관광공사 옥녀봉·강경역사관·명재고택·종학당 사진을 보탰다. 수락계곡 썸네일은 GATEO 선정 대둔산(완주)과 다르게 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=nonsan`
+- **잔여**: 사진/개요 순수 누락 **126**/876. QA 후 다음 허브 **천안8경 4**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #38 다음 — 천안 결손 오버레이
+
+```
+팔경 활용 #38, 천안 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 천안8경 사진·개요 없는 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=cheonan
+```
+
 ## 탐색홈 검색 #2 — QA 링크 PROD 연결 (Cloud)
 
 - **세션** `탐색홈 검색 #2, QA 링크 PROD 연결`
@@ -109,7 +131,7 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#37 논산 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#38 천안 결손 오버레이**
 
 ## 축제 숙소허브 #1 — 미추홀→옹진 오탐 (Cloud)
 
