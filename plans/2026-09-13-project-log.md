@@ -2,6 +2,29 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 탐색홈 검색 #5 — 문경 썸네일 경로 통일 (Cloud)
+
+- **세션** `탐색홈 검색 #5, 문경 썸네일 경로 통일`
+- **브랜치** `cursor/explore-search-d14b` · tip `1aa00b90` · PR [#242](https://github.com/catgeot/Days/pull/242) · [#239](https://github.com/catgeot/Days/pull/239) merge ✅
+- **원인**: 탐색홈은 팔경 오버레이·GATEO 선정 `imageUrl`만, 명소홈은 TourAPI `first_image`·contentId 오버레이까지. 드롭다운은 TourAPI 미조회
+- **완료**: `resolveSearchScenicMedia`로 팔경 오버레이 → contentId 오버레이 → GATEO 선정 순 해석. 드롭다운도 선택 행과 같이 TourAPI 캐시. 팔경 결손 오버레이가 추가되면 탐색에도 같이 반영
+- **VERIFY**: `smoke:explore-choice-overlay` PASS · `smoke:korea-local-scenic-lists` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/explore-search → git Preview `/explore`
+- **QA**: 문경 검색 — 새재계곡·쌍용·진남교반·운달·봉암사 사진. 선정(문경새재·오픈세트장·오미자) 사진. 선유동·용추·경천호는 TourAPI 또는 이후 팔경 오버레이
+- **주의**: `/qa/explore-search`→PROD PR [#241](https://github.com/catgeot/Days/pull/241)은 이 Preview QA가 끝날 때까지 병합 보류
+- **QA 방식**: 사람은 **같은 턴** Preview QA
+
+## 탐색홈 검색 #6 다음
+
+```
+탐색홈 검색 #6, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/explore-search-d14b · PR #242 · Preview /qa/explore-search
+금지: UI 리디자인 · 선택 카드 규격 파손 · 옹진에 N경 날조 · feature에 plans/** 커밋 · #241 Preview 전 병합
+작업: 문경 검색 — 팔경·선정 행 사진. 선유동·용추·경천호는 TourAPI 또는 이후 팔경 오버레이. OK면 PR #242 병합
+```
+
 ## 팔경 활용 #37 — 논산 검색 빈 썸네일 (Cloud)
 
 - **세션** `팔경 활용 #37, 논산 검색 빈 썸네일` — #37 Preview QA 피드백
