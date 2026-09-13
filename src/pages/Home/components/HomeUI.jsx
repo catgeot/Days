@@ -135,6 +135,7 @@ const HomeUI = React.memo(({
   onTourEnd,
   onTourBarClose,
   onTourBarStartTour,
+  heroDismissed = false,
 }) => {
   const { t, i18n } = useTranslation();
   const mobileQuickLinks = React.useMemo(
@@ -273,7 +274,7 @@ const HomeUI = React.memo(({
     </div>
   );
 
-  const renderValueHero = () => (
+  const renderValueHeroDesktop = () => (
     <div className="pointer-events-none flex w-full flex-col items-center text-center">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/60 px-3.5 py-3 shadow-lg backdrop-blur-md md:px-5 md:py-4">
         <h2 className="text-sm font-bold leading-snug text-white break-keep md:text-lg">
@@ -301,6 +302,21 @@ const HomeUI = React.memo(({
           </button>
         </div>
       </div>
+    </div>
+  );
+
+  const renderMobileCompactHero = () => (
+    <div
+      className={`pointer-events-none w-full overflow-hidden transition-all duration-300 ease-out ${
+        heroDismissed
+          ? 'max-h-0 opacity-0 -translate-y-1'
+          : 'max-h-12 opacity-100 translate-y-0'
+      }`}
+      aria-hidden={heroDismissed}
+    >
+      <p className="rounded-xl bg-gradient-to-b from-black/50 to-transparent px-2 py-1 text-center text-[11px] font-bold leading-snug text-white/95 break-keep">
+        {t('home.hero.headline')}
+      </p>
     </div>
   );
 
@@ -378,7 +394,7 @@ const HomeUI = React.memo(({
         />
 
         {!isTourCinema ? (
-          <div className="flex md:hidden w-full flex-col gap-2 min-w-0 pointer-events-auto">
+          <div className="flex md:hidden w-full flex-col gap-1.5 min-w-0 pointer-events-auto">
             <div className="flex w-full items-center gap-2 min-w-0">
               <div
                 key={`${homeChromeEpoch}-mobile`}
@@ -403,15 +419,12 @@ const HomeUI = React.memo(({
                   <LocaleToggle compact />
                 </div>
               </div>
-              <div className="flex-1 min-w-0" aria-hidden="true" />
+              <div className="group relative z-50 flex-1 min-w-0">
+                {renderSearchPill()}
+              </div>
               {renderMobileHeaderActions()}
             </div>
-            {!hideExploreChrome ? (
-              <div className="w-full min-w-0">{renderValueHero()}</div>
-            ) : null}
-            <div className="group relative w-full min-w-0">
-              {renderSearchPill()}
-            </div>
+            {!hideExploreChrome ? renderMobileCompactHero() : null}
           </div>
         ) : null}
 
@@ -503,7 +516,7 @@ const HomeUI = React.memo(({
             data-site-notice-anchor
             className="group pointer-events-auto min-w-0 hidden md:flex md:col-span-5 md:relative md:z-50 md:flex-col md:items-center md:gap-3 md:pt-2 md:animate-fade-in-down md:delay-100"
           >
-            {!hideExploreChrome ? renderValueHero() : null}
+            {!hideExploreChrome ? renderValueHeroDesktop() : null}
             {renderSearchPill()}
           </div>
         ) : null}

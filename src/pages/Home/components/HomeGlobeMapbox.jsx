@@ -424,6 +424,7 @@ const markGlobeLoadPhase = (phase) => {
 const HomeGlobeMapbox = React.memo(forwardRef(({
   onGlobeClick,
   onMarkerClick,
+  onGlobeInteraction,
   isChatOpen,
   savedTrips = [],
   tempPinsData = [],
@@ -2921,6 +2922,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         onDragStart={(event) => {
           pauseAutoRotateIfGlobeHit(event);
           suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
+          onGlobeInteraction?.();
         }}
         onDragEnd={() => {
           interactionRef.current = false;
@@ -2928,6 +2930,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         }}
         onZoomStart={(event) => {
           pauseAutoRotateIfGlobeHit(event);
+          onGlobeInteraction?.();
         }}
         onZoomEnd={() => {
           interactionRef.current = false;

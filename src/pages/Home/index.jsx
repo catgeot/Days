@@ -137,6 +137,8 @@ function resolveFocusLocationFromPlacePath(pathname, category, savedTrips = []) 
   return null;
 }
 
+const HOME_HERO_DISMISSED_KEY = 'gateo.homeHeroDismissed';
+
 function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
@@ -174,6 +176,13 @@ function Home() {
   const [mooniPlaceContext, setMooniPlaceContext] = useState(null);
   const [chatDraft, setChatDraft] = useState(null);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
+  const [heroDismissed, setHeroDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem(HOME_HERO_DISMISSED_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
 
   const setIsPlaceCardOpen = (isOpen) => {
     if (!isOpen) {
@@ -343,6 +352,32 @@ function Home() {
     setIsChatOpen, setInitialQuery, setActiveChatId, setChatDraft, setSavedTrips, setMooniChatEntry, setMooniPlaceContext, fetchData,
     toggleBookmark
   });
+
+  const dismissHomeHero = useCallback(() => {
+    setHeroDismissed((prev) => {
+      if (prev) return prev;
+      try {
+        sessionStorage.setItem(HOME_HERO_DISMISSED_KEY, '1');
+      } catch {
+        // ignore storage failures
+      }
+      return true;
+    });
+  }, []);
+
+  const handleGlobeClickWithHeroDismiss = useCallback((payload) => {
+    dismissHomeHero();
+    handleGlobeClick(payload);
+  }, [dismissHomeHero, handleGlobeClick]);
+
+  const handleLocationSelectWithHeroDismiss = useCallback((location, options) => {
+    dismissHomeHero();
+    handleLocationSelect(location, options);
+  }, [dismissHomeHero, handleLocationSelect]);
+
+  const handleGlobeInteraction = useCallback(() => {
+    dismissHomeHero();
+  }, [dismissHomeHero]);
 
   const handleClearMooniPlaceBinding = useCallback(() => {
     if (activeChatId) {
@@ -1515,8 +1550,9 @@ function Home() {
       <div className="w-full h-full">
         <HomeGlobe
           ref={globeRef}
-          onGlobeClick={handleGlobeClick}
-          onMarkerClick={handleLocationSelect}
+          onGlobeClick={handleGlobeClickWithHeroDismiss}
+          onMarkerClick={handleLocationSelectWithHeroDismiss}
+          onGlobeInteraction={handleGlobeInteraction}
           isChatOpen={isChatOpen}
           savedTrips={isPinVisible ? globeRenderedTrips : []}
           tempPinsData={isPinVisible ? scoutedPins : []}
@@ -1582,6 +1618,7 @@ function Home() {
                   clearScouts(); setDraftInput(''); setSelectedLocation(null);
               }
           }}
+          heroDismissed={heroDismissed}
         />
 
         <LogoPanel
