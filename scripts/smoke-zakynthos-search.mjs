@@ -166,18 +166,18 @@ const modalSrc = readFileSync(
 assert.match(modalSrc, /hydrateSearchBoxLatinName/, 'dropdown select hydrates latin name');
 assert.match(
   modalSrc,
-  /setIsSearchHistoryOpen\(keepChoiceDropdown\)/,
-  'Enter choice cards keep the typing dropdown open',
-);
-assert.match(
-  modalSrc,
-  /disambiguation\?\.candidates\?\.length\s*\?\s*disambiguation\.candidates/,
-  'dropdown lists the same pins as left choice cards',
+  /!hasChoiceCards/,
+  'Enter choice cards hide the typing dropdown',
 );
 assert.doesNotMatch(
   modalSrc,
-  /if \(disambiguation\?\.candidates\?\.length\) return;/,
-  'focus/click still open autocomplete when choice cards exist',
+  /keepChoiceDropdown/,
+  'Enter does not keep autocomplete open over choice cards',
+);
+assert.doesNotMatch(
+  modalSrc,
+  /disambiguation\?\.candidates\?\.length\s*\?\s*disambiguation\.candidates/,
+  'dropdown does not reuse choice-card pins',
 );
 
 const handlersSrc = readFileSync(
