@@ -41,7 +41,7 @@
 - **완료**: Preview OK 후 PR #239를 `origin/main`에 병합. #1 Enter 후 드롭다운 닫힘. #3 팔경식 행·문경 1경 썸네일. #4 옹진은 「옹진 명소」만(N경 없음)
 - **VERIFY**: `smoke:explore-choice-overlay` · `smoke:korea-local-scenic-lists` · `smoke:explore-search-aliases` · `vite build` PASS
 - **PROD** https://www.gateo.kr/explore
-- **다음 제시어 없음** (주제 종료). `/qa/explore-search` → PROD는 후속 PR. 작업 로그는 팔경 활용(#240)이 현재 프로젝트
+- **다음 제시어 없음** (주제 종료). `/qa/explore-search` → PROD는 PR [#241](https://github.com/catgeot/Days/pull/241). 작업 로그는 팔경 활용(#240)이 현재 프로젝트
 
 ## 탐색홈 검색 #4 — 옹진은 팔경 없음 (Cloud)
 

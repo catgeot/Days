@@ -24,7 +24,7 @@
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **PROD** | `https://www.gateo.kr/explore` — 옹진 Enter 「옹진 명소」·섬 사진·N경 없음 · 문경 팔경·문경 1경 |
 | **VERIFY** | `smoke:explore-choice-overlay` · `smoke:korea-local-scenic-lists` · `smoke:explore-search-aliases` · `vite build` PASS |
-| **성과** | #1 Enter 후 드롭다운 닫힘. #3 팔경식 행·문경 1경 썸네일. #4 무팔경 허브는 `{시군} 명소`만. `/qa/explore-search` → PROD는 후속 PR |
+| **성과** | #1 Enter 후 드롭다운 닫힘. #3 팔경식 행·문경 1경 썸네일. #4 무팔경 허브는 `{시군} 명소`만. `/qa/explore-search` → PROD는 PR [#241](https://github.com/catgeot/Days/pull/241) |
 
 **다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr/explore`.
 
