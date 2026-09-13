@@ -1126,6 +1126,7 @@ const DY_GWANBANG_2 =
   'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128368';
 const DY_GWANBANG_3 =
   'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128367';
+const DY_GWANBANG_4 = 'https://tong.visitkorea.or.kr/cms/resource/57/3533957_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2296,7 +2297,7 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '담양10경 제9경 담양관방제림은 담양읍 죽녹원로 98 일대입니다. 담양군 문화관광은 담양천 제방인 관방제를 보호하기 위해 조성한 숲으로, 푸조나무·느티나무·팽나무·벚나무·은단풍 등 300년 넘은 활엽수가 1.2km 이어진다고 적습니다. 조선 인조 26년(1648) 부사 성이성이 제방을 쌓고 나무를 심기 시작했고, 철종 5년(1854) 부사 황종림이 제방을 늘려 숲을 다듬었다고 전해집니다. 1991년 11월 27일 천연기념물로 지정되었고 2004년 제5회 아름다운 숲 전국대회 대상을 수상했습니다. 여름 피서지·연인 데이트 코스로 알려졌습니다. 사진은 담양군 문화관광 관방제림 공식 사진이며, 한국관광공사 관방제림 사진을 보탰습니다.',
     '전라남도 담양군 담양읍 죽녹원로 98 (담양관방제림)',
     DY_GWANBANG,
-    [DY_GWANBANG_2, DY_GWANBANG_3],
+    [DY_GWANBANG_2, DY_GWANBANG_3, DY_GWANBANG_4],
   ),
 };
 
