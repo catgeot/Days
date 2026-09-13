@@ -11,6 +11,7 @@ import {
   localizedExploreBadgeLabel,
 } from '../../../../i18n/exploreUi';
 import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve.js';
+import { fetchKoreaTourAttractionFirstImagesByIds } from '../../lib/koreaTourAttractions';
 import {
   getLocalizedCountryName,
   getLocalizedPlaceName,
@@ -88,11 +89,42 @@ function resolveCardDesc(item, locationLine) {
   return desc;
 }
 
-function SuggestionIcon({ kind }) {
-  if (kind === 'spot') return <Compass size={16} className="text-emerald-300 shrink-0" />;
-  if (kind === 'city') return <Building2 size={16} className="text-blue-300 shrink-0" />;
-  if (kind === 'attraction') return <Landmark size={16} className="text-amber-300 shrink-0" />;
-  return <MapPin size={16} className="text-white/70 shrink-0" />;
+function SuggestionIcon({ kind, size = 16 }) {
+  if (kind === 'spot') return <Compass size={size} className="text-emerald-300 shrink-0" />;
+  if (kind === 'city') return <Building2 size={size} className="text-blue-300 shrink-0" />;
+  if (kind === 'attraction') return <Landmark size={size} className="text-amber-300 shrink-0" />;
+  return <MapPin size={size} className="text-white/70 shrink-0" />;
+}
+
+function searchCandidateThumbUrl(item) {
+  return String(
+    item?.imageUrl || item?.thumbUrl || item?.firstImage || item?.image_url || '',
+  ).trim();
+}
+
+function SearchResultThumb({ item, sizeClass, kind, iconSize = 16 }) {
+  const url = searchCandidateThumbUrl(item);
+  const [failed, setFailed] = useState(false);
+  if (!url || failed) {
+    return (
+      <div
+        className={`flex shrink-0 items-center justify-center rounded-xl bg-white/10 ${sizeClass}`}
+        aria-hidden="true"
+      >
+        <SuggestionIcon kind={kind} size={iconSize} />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={url}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className={`shrink-0 rounded-xl object-cover bg-white/10 ${sizeClass}`}
+    />
+  );
 }
 
 /**
@@ -161,6 +193,7 @@ export function SearchSuggestionList({
             const groupTitle = String(item.groupTitle || '').trim();
             const prevGroup = String(items[index - 1]?.groupTitle || '').trim();
             const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
+            const rankBlurb = String(item.rankBlurb || '').trim();
 
             return (
               <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
@@ -175,16 +208,24 @@ export function SearchSuggestionList({
                 <button
                   type="button"
                   onClick={() => onSelect?.(item)}
-                  className={`w-full flex items-start gap-3 text-left hover:bg-white/[0.1] transition-colors ${
+                  className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
                     isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
                   }`}
                 >
-                  <div className="mt-0.5">
-                    <SuggestionIcon kind={item.kind} />
-                  </div>
+                  <SearchResultThumb
+                    item={item}
+                    kind={item.kind}
+                    iconSize={isPopover ? 16 : 18}
+                    sizeClass={isPopover ? 'h-10 w-10' : 'h-12 w-12'}
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-white truncate">{displayName}</span>
+                      {rankBlurb ? (
+                        <span className="shrink-0 rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
+                          {rankBlurb}
+                        </span>
+                      ) : null}
                       <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
                         {badge}
                       </span>
@@ -216,6 +257,7 @@ export function SearchDisambiguationCards({
 }) {
   const { t, i18n } = useTranslation();
   const [introByKey, setIntroByKey] = useState({});
+  const [thumbByIndex, setThumbByIndex] = useState({});
 
   const candidateKey = useMemo(
     () =>
@@ -248,6 +290,31 @@ export function SearchDisambiguationCards({
     };
   }, [candidateKey, candidates]);
 
+  useEffect(() => {
+    let cancelled = false;
+    setThumbByIndex({});
+    const ids = candidates
+      .filter((item) => !searchCandidateThumbUrl(item))
+      .map((item) => item?.contentId)
+      .filter(Boolean);
+    if (!ids.length) return undefined;
+
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
+      if (cancelled) return;
+      const next = {};
+      candidates.forEach((item, index) => {
+        if (searchCandidateThumbUrl(item)) return;
+        const url = dbMap.get(String(item?.contentId || '').trim());
+        if (url) next[index] = url;
+      });
+      if (Object.keys(next).length) setThumbByIndex(next);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [candidateKey, candidates]);
+
   if (!candidates.length) return null;
 
   return (
@@ -272,7 +339,7 @@ export function SearchDisambiguationCards({
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 items-stretch">
+      <div className="flex flex-col gap-2">
         {candidates.map((item, index) => {
           const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
           const badge = localizedExploreBadgeLabel(t, badgeKey);
@@ -287,22 +354,38 @@ export function SearchDisambiguationCards({
           const groupTitle = String(item.groupTitle || '').trim();
           const prevGroup = String(candidates[index - 1]?.groupTitle || '').trim();
           const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
+          const rankBlurb = String(item.rankBlurb || '').trim();
+          const thumbItem = thumbByIndex[index]
+            ? { ...hydrated, imageUrl: thumbByIndex[index] }
+            : hydrated;
           return (
             <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
               {showGroup ? (
-                <div className="col-span-full pt-1">
-                  <p className="text-[11px] font-semibold tracking-wide text-amber-200/90 break-keep">
+                <div className="flex items-center gap-2 pt-1">
+                  <p className="inline-flex items-center rounded-md border border-amber-300/60 bg-amber-400/15 px-2 py-0.5 text-[11px] font-extrabold text-amber-100 break-keep">
                     {groupTitle}
                   </p>
+                  <span className="h-px flex-1 bg-white/15" />
                 </div>
               ) : null}
             <button
               type="button"
               onClick={() => onSelect?.(hydrated)}
-              className="group flex h-full w-full flex-col rounded-2xl border border-white/25 bg-[#32281f]/95 p-4 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
+              className="group flex w-full items-stretch gap-3 rounded-2xl border border-white/25 bg-[#32281f]/95 p-3 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <SuggestionIcon kind={item.kind} />
+              <SearchResultThumb
+                item={thumbItem}
+                kind={item.kind}
+                iconSize={22}
+                sizeClass="h-20 w-20 sm:h-24 sm:w-24"
+              />
+              <div className="min-w-0 flex-1 py-0.5">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                {rankBlurb ? (
+                  <span className="rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
+                    {rankBlurb}
+                  </span>
+                ) : null}
                 <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
                   {badge}
                 </span>
@@ -311,15 +394,15 @@ export function SearchDisambiguationCards({
                 {primaryName || item.name}
               </div>
               {secondaryName ? (
-                <div className="mt-1 text-[13px] text-white/90 leading-snug">{secondaryName}</div>
+                <div className="mt-0.5 text-[13px] text-white/90 leading-snug">{secondaryName}</div>
               ) : null}
               {locationLine ? (
-                <div className="mt-2 text-[13px] text-amber-50/80 break-keep">{locationLine}</div>
+                <div className="mt-1 text-[13px] text-amber-50/80 break-keep">{locationLine}</div>
               ) : null}
               {desc ? (
-                <div className="relative mt-2.5 min-h-[calc(1.55em*3)]">
+                <div className="relative mt-1.5 min-h-[calc(1.55em*2)]">
                   <p
-                    className={`line-clamp-3 break-keep text-[13px] md:text-sm leading-[1.55] text-amber-50/90 ${
+                    className={`line-clamp-2 break-keep text-[13px] md:text-sm leading-[1.55] text-amber-50/90 ${
                       showIntroMore ? 'pr-[3.5rem]' : ''
                     }`}
                   >
@@ -336,6 +419,7 @@ export function SearchDisambiguationCards({
                   ) : null}
                 </div>
               ) : null}
+              </div>
             </button>
             </React.Fragment>
           );

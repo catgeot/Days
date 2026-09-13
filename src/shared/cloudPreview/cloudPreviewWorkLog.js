@@ -32,12 +32,36 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-13T05:20:00.000Z',
   },
   {
+    id: '2026-09-13-explore-search-4-ongjin-no-palgyeong',
+    session: '탐색홈 검색 #4, 옹진은 팔경 없음',
+    title: '옹진 섬은 명소 그룹, N경 아님',
+    detail:
+      '옹진에는 지자체 팔경 리스트가 없습니다. 문경만 「문경 팔경」·「문경 1경」을 쓰고, 옹진 섬은 「옹진 명소」소제목만 붙입니다. 1경 번호는 없습니다. Preview /qa/explore-search — 옹진 Enter 옹진 명소, 문경 팔경 유지.',
+    at: '2026-09-13T05:20:00.000Z',
+  },
+  {
+    id: '2026-09-13-explore-search-3-palgyeong-list-cards',
+    session: '탐색홈 검색 #3, 팔경식 리스트·카드 썸네일',
+    title: '검색 결과에 N경 표기·썸네일 행',
+    detail:
+      '탐색홈 검색 결과를 명승 팔경 리스트처럼 한 줄 행으로 나열하고, 팔경 멤버에는 「문경 1경」 같은 행 부제를 붙였습니다. 선택 카드·드롭다운에 GATEO 선정 썸네일을 넣었고, 옹진 섬(덕적도 등)도 같은 사진이 보입니다. Enter 후 드롭다운은 닫힌 채 선택 행만 남습니다. Preview /qa/explore-search — 옹진 Enter 섬 사진, 문경 검색 문경 1경.',
+    at: '2026-09-13T04:20:00.000Z',
+  },
+  {
     id: '2026-09-13-palgyeong-use-37-nonsan-overlays',
     session: '팔경 활용 #37, 논산 결손 오버레이',
     title: '논산11경 결손 4건 런타임 오버레이',
     detail:
       'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 논산11경 결손 4건(대둔산 수락계곡·강경포구와 근대역사거리·노성산성과 명재고택·종학당과 한국유교문화진흥원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 논산시 문화관광 11경 수락계곡·강경포구·명재고택·종학당 사진을 연결했고, 수락계곡은 시 여름명소 선녀폭포·수락폭포 사진, 강경·고택·종학당은 한국관광공사 옥녀봉·강경역사관·명재고택·종학당 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=nonsan 팔경 행 썸네일·상세 개요.',
     at: '2026-09-13T04:05:00.000Z',
+  },
+  {
+    id: '2026-09-13-explore-search-1-choice-overlay',
+    session: '탐색홈 검색 #1, 선택 카드 중첩 정리',
+    title: '옹진 Enter 후 드롭다운·선택 카드 한 겹',
+    detail:
+      '탐색홈에서 옹진처럼 동명이 많은 검색어를 Enter하면 타이핑 드롭다운과 선택 카드가 같은 후보를 두 겹으로 띄웠습니다. Enter 이후에는 설명 있는 선택 카드만 남기고 드롭다운·안내문을 닫았습니다. 타이핑 중 제안 목록은 그대로입니다. Preview /qa/explore-search — /explore 에서 옹진 검색 후 Enter.',
+    at: '2026-09-13T03:50:00.000Z',
   },
   {
     id: '2026-09-13-palgyeong-use-36-gyeryong-overlays',
