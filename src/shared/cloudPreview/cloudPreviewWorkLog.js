@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '탐색홈 검색',
-  sessionNo: 4,
-  sessionPhase: '옹진은 팔경 없음',
-  branch: 'cursor/explore-search-d14b',
-  previewPath: '/explore',
-  qaShareSlug: 'explore-search',
+  title: '팔경 활용',
+  sessionNo: 37,
+  sessionPhase: '논산 검색 빈 썸네일',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=nonsan',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-37-nonsan-tour-thumbs',
+    session: '팔경 활용 #37, 논산 검색 빈 썸네일',
+    title: '논산 관광지 검색 빈 썸네일 3건',
+    detail:
+      '「논산」 관광지 검색에서 TourAPI first_image가 없던 양촌자연휴양림·강경역사관·노강서원(논산)에 JSON contentId 기입 없이 런타임 썸네일 오버레이를 연결했습니다. 양촌·노강은 논산시 문화관광 공식 갤러리, 강경역사관은 한국관광공사 detailImage입니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색 「논산」 자연·인문 행.',
+    at: '2026-09-13T05:20:00.000Z',
+  },
   {
     id: '2026-09-13-explore-search-4-ongjin-no-palgyeong',
     session: '탐색홈 검색 #4, 옹진은 팔경 없음',
@@ -38,6 +46,14 @@ export const cloudPreviewWorkLog = [
     detail:
       '탐색홈 검색 결과를 명승 팔경 리스트처럼 한 줄 행으로 나열하고, 팔경 멤버에는 「문경 1경」 같은 행 부제를 붙였습니다. 선택 카드·드롭다운에 GATEO 선정 썸네일을 넣었고, 옹진 섬(덕적도 등)도 같은 사진이 보입니다. Enter 후 드롭다운은 닫힌 채 선택 행만 남습니다. Preview /qa/explore-search — 옹진 Enter 섬 사진, 문경 검색 문경 1경.',
     at: '2026-09-13T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-37-nonsan-overlays',
+    session: '팔경 활용 #37, 논산 결손 오버레이',
+    title: '논산11경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 논산11경 결손 4건(대둔산 수락계곡·강경포구와 근대역사거리·노성산성과 명재고택·종학당과 한국유교문화진흥원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 논산시 문화관광 11경 수락계곡·강경포구·명재고택·종학당 사진을 연결했고, 수락계곡은 시 여름명소 선녀폭포·수락폭포 사진, 강경·고택·종학당은 한국관광공사 옥녀봉·강경역사관·명재고택·종학당 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=nonsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T04:05:00.000Z',
   },
   {
     id: '2026-09-13-explore-search-1-choice-overlay',
