@@ -1218,6 +1218,80 @@ assert.ok(
   '금산 검색 팔경 요광은행나무 금산군 사진',
 );
 
+const namhaeMerged = mergeLocalScenicMembersIntoScenicSpots([], 'namhae');
+const namhaeTwelve = namhaeMerged.filter((s) => s.localScenicListId === 'namhae-sipgyeong');
+assert.equal(namhaeTwelve.length, 12, '남해12경 12명');
+const namhaeDeficitNames = [
+  '남해 금산과 보리암',
+  '창선교와 남해지족해협 죽방렴',
+  '서포 김만중 선생 유허와 노도',
+  '남해 물건리 방조어부림과 물미해안',
+  '창선-삼천포대교',
+];
+const namhaeDeficit = namhaeTwelve.filter((s) => namhaeDeficitNames.includes(s.attractionName));
+assert.equal(namhaeDeficit.length, 5, '남해12경 결손 5명');
+assert.ok(
+  namhaeDeficit.every((s) => s.overview && s.imageUrl),
+  '남해 결손 5명 overlay 사진·개요',
+);
+assert.ok(
+  namhaeDeficit.every((s) => !s.contentId),
+  '남해 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(namhaeDeficit.map((s) => s.imageUrl)).size,
+  5,
+  '남해 결손 5명 썸네일 서로 다름',
+);
+const nhBoriam = resolveLocalScenicListSpotById('local-scenic:namhae-sipgyeong:남해금산과보리암');
+assert.ok(nhBoriam?.overview?.includes('보리암'), '남해 금산과 보리암 overlay overview');
+assert.ok(nhBoriam?.overview?.includes('3대 기도처'), '남해 보리암 3대 기도처');
+const nhJuk = resolveLocalScenicListSpotById(
+  'local-scenic:namhae-sipgyeong:창선교와남해지족해협죽방렴',
+);
+assert.ok(nhJuk?.overview?.includes('죽방렴'), '남해 죽방렴 overlay overview');
+assert.ok(nhJuk?.overview?.includes('명승'), '남해 죽방렴 명승');
+const nhNodo = resolveLocalScenicListSpotById(
+  'local-scenic:namhae-sipgyeong:서포김만중선생유허와노도',
+);
+assert.ok(nhNodo?.overview?.includes('김만중'), '남해 노도 overlay overview');
+assert.ok(nhNodo?.overview?.includes('구운몽'), '남해 노도 구운몽');
+const nhForest = resolveLocalScenicListSpotById(
+  'local-scenic:namhae-sipgyeong:남해물건리방조어부림과물미해안',
+);
+assert.ok(nhForest?.overview?.includes('방조어부림'), '남해 방조어부림 overlay overview');
+assert.ok(nhForest?.overview?.includes('천연기념물'), '남해 방조어부림 천연기념물');
+const nhBridge = resolveLocalScenicListSpotById('local-scenic:namhae-sipgyeong:창선-삼천포대교');
+assert.ok(nhBridge?.overview?.includes('3.4km'), '남해 창선-삼천포대교 overlay overview');
+assert.notEqual(
+  nhBridge?.imageUrl,
+  'https://tong.visitkorea.or.kr/cms2/website/65/2704865.jpg',
+  '남해 대교 썸네일이 사천 케이블카 사진이 아님',
+);
+assert.notEqual(
+  nhBridge?.imageUrl,
+  'https://tong.visitkorea.or.kr/cms2/website/24/2705324.jpg',
+  '남해 대교 썸네일이 사천9경 교량 사진과 다름',
+);
+
+const namhaeGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '남해', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  namhaeGlobe.find((s) => s.attractionName === '남해 금산과 보리암')?.imageUrl,
+  '남해 검색 팔경 금산과 보리암 썸네일',
+);
+assert.ok(
+  namhaeGlobe.find((s) => s.attractionName === '창선-삼천포대교')?.imageUrl,
+  '남해 검색 팔경 창선-삼천포대교 썸네일',
+);
+assert.ok(
+  namhaeGlobe.find((s) => s.attractionName === '서포 김만중 선생 유허와 노도')?.overview?.includes(
+    '김만중',
+  ),
+  '남해 검색 팔경 노도 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

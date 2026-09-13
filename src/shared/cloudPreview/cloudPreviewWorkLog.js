@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 31,
-  sessionPhase: '금산 은행나무·썸네일',
+  sessionNo: 32,
+  sessionPhase: '남해 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=geumsan',
+  previewPath: '/korea/theme/scenic?hub=namhae',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-32-namhae-overlays',
+    session: '팔경 활용 #32, 남해 결손 오버레이',
+    title: '남해12경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 남해12경 결손 5건(남해 금산과 보리암·창선교와 남해지족해협 죽방렴·서포 김만중 선생 유허와 노도·남해 물건리 방조어부림과 물미해안·창선-삼천포대교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 보리암·죽방렴·창선교·노도·방조어부림·창선삼천포대교 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=namhae 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T00:55:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-31-geumsan-ginkgo-thumbs',
     session: '팔경 활용 #31, 금산 은행나무·썸네일',

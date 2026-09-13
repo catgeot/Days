@@ -905,6 +905,21 @@ const GEUM_SEODAE_3 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020604_img03.
 const GEUM_JINAK = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img01.jpg';
 const GEUM_JINAK_2 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img02.jpg';
 const GEUM_JINAK_3 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img03.jpg';
+const NH_BORIAM = 'https://tong.visitkorea.or.kr/cms2/website/11/1579511.jpg';
+const NH_BORIAM_2 = 'https://tong.visitkorea.or.kr/cms2/website/14/1579514.jpg';
+const NH_BORIAM_3 = 'https://tong.visitkorea.or.kr/cms2/website/16/1579516.jpg';
+const NH_JUK = 'https://tong.visitkorea.or.kr/cms2/website/72/1764272.jpg';
+const NH_JUK_2 = 'https://tong.visitkorea.or.kr/cms2/website/73/1764273.jpg';
+const NH_JUK_3 = 'https://tong.visitkorea.or.kr/cms2/website/95/2613895.jpg';
+const NH_NODO = 'https://tong.visitkorea.or.kr/cms/resource/64/3556464_image2_1.jpg';
+const NH_NODO_2 = 'https://tong.visitkorea.or.kr/cms/resource/56/3556456_image2_1.jpg';
+const NH_NODO_3 = 'https://tong.visitkorea.or.kr/cms/resource/61/3556461_image2_1.jpg';
+const NH_FOREST = 'https://tong.visitkorea.or.kr/cms2/website/20/1571320.jpg';
+const NH_FOREST_2 = 'https://tong.visitkorea.or.kr/cms2/website/22/1571322.jpg';
+const NH_FOREST_3 = 'https://tong.visitkorea.or.kr/cms2/website/24/1571324.jpg';
+const NH_BRIDGE = 'https://tong.visitkorea.or.kr/cms2/website/98/1576398.jpg';
+const NH_BRIDGE_2 = 'https://tong.visitkorea.or.kr/cms2/website/01/1576401.jpg';
+const NH_BRIDGE_3 = 'https://tong.visitkorea.or.kr/cms2/website/10/1576410.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1875,6 +1890,36 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 금산군 남이면 성곡리 (진악산·개삼터)',
     GEUM_JINAK,
     [GEUM_JINAK_2, GEUM_JINAK_3],
+  ),
+  'local-scenic:namhae-sipgyeong:남해금산과보리암': localScenicPhotoOverlay(
+    '남해12경 제1경 남해 금산과 보리암은 상주면 보리암로 665입니다. 남해군 문화관광은 소금강·남해금강이라 불리는 삼남 제일의 명산이며, 금산(704m)은 한려해상국립공원의 유일한 산악공원으로 기암 38경이 이어진다고 적습니다. 한국관광공사에 따르면 원효가 보광사(보광산)를 열었고, 이성계가 백일기도 뒤 조선을 연 뒤 현종이 1660년 왕실 원당으로 삼아 산 이름을 금산·절 이름을 보리암으로 바꿨습니다. 강화 보문사·낙산사 홍련암과 함께 3대 기도처입니다.',
+    '경상남도 남해군 상주면 보리암로 665 (금산·보리암)',
+    NH_BORIAM,
+    [NH_BORIAM_2, NH_BORIAM_3],
+  ),
+  'local-scenic:namhae-sipgyeong:창선교와남해지족해협죽방렴': localScenicPhotoOverlay(
+    '남해12경 제4경 창선교와 남해지족해협 죽방렴은 삼동면·창선면 사이 지족해협입니다. 남해군 문화관광은 창선교가 창선면 지족마을과 삼동면을 잇고, 죽방렴 홍보관 주소는 삼동면 죽방로 65라고 안내합니다. 국가유산청 명승 「남해 지족해협 죽방렴」은 시속 13~15km 물살에 참나무 말목과 대나무 발을 세워 멸치를 잡는 전통 어살이며 2010년 지정되었습니다. 한국관광공사는 창선교 길이 438m·1995년 재가설이라고 적습니다.',
+    '경상남도 남해군 삼동면 죽방로 65 (지족해협·창선교)',
+    NH_JUK,
+    [NH_JUK_2, NH_JUK_3],
+  ),
+  'local-scenic:namhae-sipgyeong:서포김만중선생유허와노도': localScenicPhotoOverlay(
+    '남해12경 제7경 서포 김만중 선생 유허와 노도는 상주면 노도입니다. 남해군 문화관광은 섬에서 바라보는 금산과 앵강만 풍광, 주소 상주면 노도길 73-34를 안내합니다. 한국관광공사에 따르면 삿갓처럼 생겨 삿갓섬이라 불리다 노를 많이 만들어 노도가 되었고, 구운몽·사씨남정기의 작가 서포 김만중이 유배되어 생을 마친 문학의 섬입니다. 벽련항에서 나룻배로 건너가며 초옥 터·샘터·허묘와 서포문학관이 있습니다.',
+    '경상남도 남해군 상주면 노도길 73-34 (노도·서포 김만중 유허)',
+    NH_NODO,
+    [NH_NODO_2, NH_NODO_3],
+  ),
+  'local-scenic:namhae-sipgyeong:남해물건리방조어부림과물미해안': localScenicPhotoOverlay(
+    '남해12경 제10경 남해 물건리 방조어부림과 물미해안은 삼동면 물건리입니다. 남해군 문화관광은 태풍·염해로부터 마을을 지키고 고기를 모으는 숲으로, 길이 약 1.5km·너비 30m 반달형에 팽나무·푸조나무·느티나무·이팝나무·후박나무 등 300년 수종이 천연기념물 제150호라고 적습니다. 물미해안은 물건과 미조를 잇는 해안도로입니다. 주소는 삼동면 동부대로1030번길 59입니다.',
+    '경상남도 남해군 삼동면 동부대로1030번길 59 (물건리 방조어부림)',
+    NH_FOREST,
+    [NH_FOREST_2, NH_FOREST_3],
+  ),
+  'local-scenic:namhae-sipgyeong:창선-삼천포대교': localScenicPhotoOverlay(
+    '남해12경 제12경 창선-삼천포대교는 창선면과 사천 삼천포를 잇는 연륙교입니다. 남해군 문화관광은 총연장 3.4km의 5개 교량이며 주소는 창선면 동부대로2964번길 49-10이라고 적습니다. 디지털사천문화대전은 모개섬·초양도·늑도를 잇는 연륙교로 낮의 한려해상과 밤 야경이 「한국의 아름다운 길 100선」에 올랐다고 안내합니다. 사진은 한국관광공사 창선·삼천포대교 공식 사진입니다.',
+    '경상남도 남해군 창선면 동부대로2964번길 49-10 (창선·삼천포대교)',
+    NH_BRIDGE,
+    [NH_BRIDGE_2, NH_BRIDGE_3],
   ),
 };
 
