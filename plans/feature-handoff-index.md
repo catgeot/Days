@@ -45,27 +45,27 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#8 push** · tip `beb65f1a` · PR [#234](https://github.com/catgeot/Days/pull/234) · 병합 보류(왕가의 산책 옹진·행사명 투어) |
+| **상태** | **#9 push** · tip `e885df64` · PR [#234](https://github.com/catgeot/Days/pull/234) · 병합 보류(대청도 숙소 폴백 Preview) |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `beb65f1a` |
+| **tip** | `e885df64` |
 | **PR** | [#234](https://github.com/catgeot/Days/pull/234) |
 | **플랜** | [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` · 축제 왕가의 산책 |
-| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `resolveFestivalThemeCrossLinks` · `buildFestivalStayAreas` |
+| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=daecheongdo-ongjin` · 경복궁 · 축제 왕가의 산책 |
+| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `resolveFestivalThemeCrossLinks` · `buildFestivalStayAreas` · `mergeMrtStayFetchQuery` |
 | **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-festival-personal` · `smoke:travel-agencies` · `vite build` |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-stay` · `smoke:korea-festival-personal` · `smoke:mrt-stay` · `smoke:travel-agencies` · `vite build` |
 
 **다음 제시어**:
 
 ```
-한국 투어티켓 #9, Preview OK면 PR 병합
+한국 투어티켓 #10, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-tna-strip-plan.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 왕가의 산책 숙소·투어가 인천인지(옹진·룩소르 아님)·비면 인천·강화 칩인지. 경복궁 「렌터카 보기」·MRT·기차표 OK면 PR #234 병합
+작업: 대청도 숙소·투어가 비지 않고 인천·강화 칩인지. 왕가의 산책 인천(룩소르 아님). 경복궁 렌터카·기차표 OK면 PR #234 병합
 ```
 
 ---

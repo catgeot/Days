@@ -944,6 +944,14 @@ const PH_YEONGIL_3 = 'https://tong.visitkorea.or.kr/cms2/website/23/2504223.jpg'
 const PH_RAIL = 'https://www.pohang.go.kr/phtour/data/tour/image/112/1663228413252.jpg';
 const PH_RAIL_2 = 'https://www.pohang.go.kr/phtour/data/tour/image/112/1663228416441.jpg';
 const PH_RAIL_3 = 'https://www.pohang.go.kr/phtour/data/tour/image/112/1671447358825.jpg';
+const AY_MANG = 'https://www.anyang.go.kr/DATA/tour/19/20230209031933577Iau219.jpg';
+const AY_MANG_2 = 'https://www.anyang.go.kr/DATA/tour/36/EDDFDB77-5710-49ED-2111-FD88E457F2BF-20200116.jpg';
+const AY_MANG_3 = 'https://www.anyang.go.kr/DATA/tour/36/4C305641-5246-EAB1-A49D-D88D5476DE91-20191218.jpg';
+const AY_SURI = 'https://www.anyang.go.kr/DATA/tour/21/thumb/p_20220504110521911YvDW1i.jpg';
+const AY_PYEONG = 'https://www.anyang.go.kr/DATA/tour/22/thumb/p_20210108105653517zEGNSR.jpg';
+const AY_MANAN = 'https://www.anyang.go.kr/DATA/tour/19/74C657E2-741C-120D-39E4-BACBDEA3A796-20191126.jpg';
+const AY_MANAN_2 = 'https://www.anyang.go.kr/DATA/tour/19/24EACAED-B757-CEE7-1685-95FF4839039E-20200115.jpg';
+const AY_MANAN_3 = 'https://www.anyang.go.kr/DATA/tour/19/1C04209B-7D12-6F1C-EE94-DE7DFA1DDF00-20200115.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1974,6 +1982,28 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상북도 포항시 남구 대이로1번길 37 (대잠동 철길숲·불의정원)',
     PH_RAIL,
     [PH_RAIL_2, PH_RAIL_3],
+  ),
+  'local-scenic:anyang-gugyeong:망해암일몰': localScenicPhotoOverlay(
+    '안양9경 제4경 망해암일몰은 만안구 임곡로 245입니다. 안양시 문화관광은 망해암(望海庵)이 바다를 볼 수 있는 암자라는 뜻이며, 신라 원효대사가 창건하고 조선 순조 3년 정조대왕의 모친인 혜경궁 홍씨가 중건했다고 알려진 사찰이라고 적습니다. 한국관광공사에 따르면 용화전 석불 입상에 성화 15년(1479) 조성이 새겨져 있고, 1803년·1863년 중창 뒤 1922년 화재와 한국전쟁으로 소실된 것을 다시 지었습니다. 서향이라 서해 낙조와 안양 시가지를 함께 볼 수 있습니다. 사진은 안양시 문화관광 망해암 공식 사진입니다.',
+    '경기도 안양시 만안구 임곡로 245 (망해암)',
+    AY_MANG,
+    [AY_MANG_2, AY_MANG_3],
+  ),
+  'local-scenic:anyang-gugyeong:수리산성지': localScenicPhotoOverlay(
+    '안양9경 제6경 수리산성지는 만안구 병목안로 394입니다. 안양시 문화관광은 대한민국 두 번째 신부인 최양업의 아버지 최경환과 부인 이성례가 안양 담배촌에 정착해 교우촌을 이루다 기해박해(헌종 5, 1839) 때 순교한 것을 기리는 순례지라고 적습니다. 한국관광공사에 따르면 1984년 교황 요한 바오로 2세가 최경환을 시성했고, 순례자성당·기념관·십자가 모양 생가 성당에 유해(팔뼈)가 모셔져 있으며 묘역과 야외 미사터가 있습니다. 사진은 안양시 문화관광 수리산성지 공식 사진입니다.',
+    '경기도 안양시 만안구 병목안로 394 (수리산성지)',
+    AY_SURI,
+  ),
+  'local-scenic:anyang-gugyeong:평촌1번가문화의거리': localScenicPhotoOverlay(
+    '안양9경 제7경 평촌1번가 문화의거리는 4호선 범계역 2번출구 일대입니다. 안양시 문화관광은 범계역을 중심으로 형성된 거리로 버스킹 공연과 음식점·카페·주점이 밀집해 전국적으로 손꼽히는 만남의 장소라고 적습니다. 사진은 안양시 문화관광 평촌1번가 공식 사진입니다.',
+    '경기도 안양시 동안구 4호선 범계역 2번출구 일대 (평촌1번가 문화의거리)',
+    AY_PYEONG,
+  ),
+  'local-scenic:anyang-gugyeong:만안교': localScenicPhotoOverlay(
+    '안양9경 제9경 만안교는 만안구 석수동 679입니다. 안양시 문화관광은 정조가 아버지 사도세자의 능을 참배하러 갈 때 임시 다리를 없애고 백성도 편히 쓰도록 만든 석조 다리이며, 조선 후기 대표적인 무지개(아치형) 돌다리로 경기도 유형문화유산이라고 적습니다. 만안교(萬安橋)는 만 년 동안의 편안함을 뜻합니다. 안양시 문화유산 안내에 따르면 1795년(정조 19) 축조되었고 만안구 지명의 유래입니다. 사진은 안양시 문화관광 만안교 공식 사진입니다.',
+    '경기도 안양시 만안구 석수동 679 (만안교)',
+    AY_MANAN,
+    [AY_MANAN_2, AY_MANAN_3],
   ),
 };
 

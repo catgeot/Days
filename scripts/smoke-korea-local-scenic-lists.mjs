@@ -1411,6 +1411,64 @@ assert.ok(
   '포항 검색 팔경 철길숲 개요',
 );
 
+const anyangMerged = mergeLocalScenicMembersIntoScenicSpots([], 'anyang');
+const anyangNine = anyangMerged.filter((s) => s.localScenicListId === 'anyang-gugyeong');
+assert.equal(anyangNine.length, 9, '안양9경 9명');
+assert.equal(anyangNine[0]?.groupTitle, '안양 구경');
+const anyangDeficitNames = ['망해암일몰', '수리산성지', '평촌1번가 문화의거리', '만안교'];
+const anyangDeficit = anyangNine.filter((s) => anyangDeficitNames.includes(s.attractionName));
+assert.equal(anyangDeficit.length, 4, '안양9경 결손 4명');
+assert.ok(
+  anyangDeficit.every((s) => s.overview && s.imageUrl),
+  '안양 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  anyangDeficit.every((s) => !s.contentId),
+  '안양 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(anyangDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '안양 결손 4명 썸네일 서로 다름',
+);
+const ayMang = resolveLocalScenicListSpotById('local-scenic:anyang-gugyeong:망해암일몰');
+assert.ok(ayMang?.overview?.includes('혜경궁 홍씨'), '안양 망해암 overlay overview');
+assert.ok(ayMang?.overview?.includes('서해 낙조'), '안양 망해암 서해 낙조');
+assert.ok(ayMang?.imageUrl?.includes('anyang.go.kr'), '안양 망해암 안양시 공식 사진');
+const aySuri = resolveLocalScenicListSpotById('local-scenic:anyang-gugyeong:수리산성지');
+assert.ok(aySuri?.overview?.includes('최경환'), '안양 수리산성지 overlay overview');
+assert.ok(aySuri?.overview?.includes('기해박해'), '안양 수리산성지 기해박해');
+assert.ok(aySuri?.imageUrl?.includes('/DATA/tour/21/'), '안양 수리산성지 안양시 성지 사진');
+const ayPyeong = resolveLocalScenicListSpotById(
+  'local-scenic:anyang-gugyeong:평촌1번가문화의거리',
+);
+assert.ok(ayPyeong?.overview?.includes('범계역'), '안양 평촌1번가 overlay overview');
+assert.ok(ayPyeong?.overview?.includes('버스킹'), '안양 평촌1번가 버스킹');
+assert.ok(ayPyeong?.imageUrl?.includes('/DATA/tour/22/'), '안양 평촌1번가 안양시 거리 사진');
+const ayManan = resolveLocalScenicListSpotById('local-scenic:anyang-gugyeong:만안교');
+assert.ok(ayManan?.overview?.includes('사도세자'), '안양 만안교 overlay overview');
+assert.ok(ayManan?.overview?.includes('1795년'), '안양 만안교 1795년');
+assert.ok(ayManan?.imageUrl?.includes('74C657E2'), '안양 만안교 대표 사진');
+assert.notEqual(ayMang?.imageUrl, ayManan?.imageUrl, '망해암·만안교 썸네일 다름');
+
+const anyangGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '안양', {
+  injectLocalScenic: true,
+});
+const anyangGlobeNine = anyangGlobe.filter((s) => s.localScenicListId === 'anyang-gugyeong');
+assert.equal(anyangGlobeNine.length, 9, '안양 검색 안양9경 9행');
+assert.ok(
+  anyangGlobeNine.every((s) => s.groupTitle === '안양 구경'),
+  '안양 검색 그룹명 안양 구경',
+);
+assert.ok(
+  anyangGlobe.find((s) => s.attractionName === '망해암일몰')?.imageUrl,
+  '안양 검색 팔경 망해암일몰 썸네일',
+);
+assert.ok(
+  anyangGlobe.find((s) => s.attractionName === '만안교')?.overview?.includes('만안교'),
+  '안양 검색 팔경 만안교 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

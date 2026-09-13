@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-13T03:20:00.000Z',
   },
   {
+    id: '2026-09-13-palgyeong-use-34-anyang-overlays',
+    session: '팔경 활용 #34, 안양 결손 오버레이',
+    title: '안양9경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 안양9경 결손 4건(망해암일몰·수리산성지·평촌1번가 문화의거리·만안교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 안양시 문화관광 망해암·수리산성지·평촌1번가·만안교 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=anyang 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T02:20:00.000Z',
+  },
+  {
     id: '2026-09-13-korea-tna-strip-8-ongjin-title-fallback',
     session: '한국 투어티켓 #8, Preview OK면 PR 병합',
     title: '왕가의 산책 인천 폴백 · 행사명 투어 제외',
