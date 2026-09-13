@@ -139,7 +139,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 35 | `팔경 활용 #35, 증평 결손 오버레이` | A | **완료** · tip `f9f4528c` · PR [#237](https://github.com/catgeot/Days/pull/237) · 증평구경 4 |
 | 36 | `팔경 활용 #36, 계룡 결손 오버레이` | A | **완료** · tip `6ebd84b2` · PR [#238](https://github.com/catgeot/Days/pull/238) · 계룡9경 4 |
 | 37 | `팔경 활용 #37, 논산 결손 오버레이` | A | **완료** · tip `e3b1711a` · PR [#240](https://github.com/catgeot/Days/pull/240) · 논산11경 4 · 관광지 검색 빈 썸네일 3 |
-| 38 | `팔경 활용 #38, 천안 결손 오버레이` | A | **완료** · tip `3f045d7d` · PR [#243](https://github.com/catgeot/Days/pull/243) · 천안8경 4 |
+| 38 | `팔경 활용 #38, 천안 결손 오버레이` | A | **완료** · tip `86066c69` · PR [#243](https://github.com/catgeot/Days/pull/243) · 천안8경 4 |
 | 39 | `팔경 활용 #39, 담양 결손 오버레이` | A | **열기 가능** · 담양10경 4 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
