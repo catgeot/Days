@@ -1139,6 +1139,18 @@ const MR_MANEO_3 = 'https://tong.visitkorea.or.kr/cms/resource/42/3494642_image2
 const MR_JONGNAM = 'https://tong.visitkorea.or.kr/cms/resource/40/2778040_image2_1.jpg';
 const MR_JONGNAM_2 = 'https://tong.visitkorea.or.kr/cms/resource/39/2778039_image2_1.jpg';
 const MR_JONGNAM_3 = 'https://tong.visitkorea.or.kr/cms/resource/43/2778043_image2_1.jpg';
+const YD_DOCHON =
+  'https://www.korea.kr/newsWeb/resources/attaches/2025.02/05/0743c1bfdce5922af816a3742c8af5de.jpg';
+const YD_PALGAK = 'https://tong.visitkorea.or.kr/cms/resource/71/3465371_image2_1.jpg';
+const YD_PALGAK_2 = 'https://tong.visitkorea.or.kr/cms/resource/73/3465373_image2_1.jpg';
+const YD_PALGAK_3 = 'https://tong.visitkorea.or.kr/cms/resource/74/3465374_image2_1.jpg';
+const YD_PALGAK_4 = 'https://www.khs.go.kr/unisearch/images/scenic_site/2022030409555300.JPG';
+const YD_CAMELLIA = 'https://tong.visitkorea.or.kr/cms2/website/61/2006161.jpg';
+const YD_CAMELLIA_2 = 'https://tong.visitkorea.or.kr/cms2/website/65/2006165.jpg';
+const YD_CAMELLIA_3 = 'https://tong.visitkorea.or.kr/cms2/website/67/2006167.jpg';
+const YD_NAONG = 'https://tong.visitkorea.or.kr/cms2/website/46/2648746.jpg';
+const YD_NAONG_2 = 'https://tong.visitkorea.or.kr/cms2/website/47/2648747.jpg';
+const YD_NAONG_3 = 'https://tong.visitkorea.or.kr/cms2/website/48/2648748.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2334,6 +2346,29 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 밀양시 상남면 조남길 408 일대 (종남산 진달래·팔각정 코스)',
     MR_JONGNAM,
     [MR_JONGNAM_2, MR_JONGNAM_3],
+  ),
+  'local-scenic:yeongdeok-sipgyeong:영덕도천숲': localScenicPhotoOverlay(
+    '영덕9경 제3경 영덕 도천숲은 남정면 도천리 75 일대입니다. 영덕군·국가유산청에 따르면 약 400년 전 마을 개척 때 조성된 비보(裨補) 마을숲으로, 앞산 뱀머리(사두혈) 형상을 막기 위해 풍수적으로 만들었다 전합니다. 사암천을 따라 느티나무·팽나무·말채나무 등 낙엽수 200여 그루가 자라며 정자·탁자·의자가 있는 휴식 공간입니다. 대마를 땅속 구덩이에서 삶아 옷을 만들던 삼굿 흔적이 남한에서 유일하게 남아 있고, 제당에서 대보름 동제를 지냅니다. 2009년 12월 30일 천연기념물 제514호입니다. 사진은 대한민국 정책브리핑 국가유산청 「영덕 도천리 도천숲」 소개 공식 사진입니다.',
+    '경상북도 영덕군 남정면 도천리 75 (영덕 도천리 도천숲)',
+    YD_DOCHON,
+  ),
+  'local-scenic:yeongdeok-sipgyeong:영덕팔각산': localScenicPhotoOverlay(
+    '영덕9경 제4경 영덕 팔각산은 달산면 옥계리 해발 628m 산입니다. 영덕군 문화관광은 여덟 개 모가 난 바위봉우리가 이어져 옥계팔봉이라 부르는 명산이며, 독립된 암봉과 기암괴석·주변 경관이 뛰어나다고 적습니다. 팔각산장 주차장에서 108계단·1~8봉 능선을 도는 원점회귀 코스는 약 4.5km·3시간이며 로프·난간이 설치된 암릉 산행입니다. 산 아래 옥계계곡과 침수정 일원의 맑은 물·기암괴석이 어우러집니다. 입산통제구역이 있어 산림과·군청 안내에 따라 등산을 확인합니다. 사진은 한국관광공사 옥계계곡 공식 사진이며, 국가유산청 명승 영덕 옥계 침수정 일원 사진을 보탰습니다.',
+    '경상북도 영덕군 달산면 팔각산로 737 일대 (영덕 팔각산·팔각산장)',
+    YD_PALGAK,
+    [YD_PALGAK_2, YD_PALGAK_3, YD_PALGAK_4],
+  ),
+  'local-scenic:yeongdeok-sipgyeong:영덕사월의복사꽃': localScenicPhotoOverlay(
+    '영덕9경 제5경 영덕 사월의 복사꽃은 지품면 삼화리 영덕복사꽃마을 일대입니다. 1959년 태풍 사라호 이후 사토에 복숭아나무를 심어 조성한 밭으로, 4월 초~중순 복사꽃이 만개하면 마을과 국도 34호선 언덕이 분홍빛으로 물듭니다. 마을회관 주변 약 2km 복사꽃 터널·전망대가 사진 명소이며, 매년 영덕복사꽃축제가 열립니다. 주소는 삼화2길 18(삼화2리)입니다. 사진은 한국관광공사 영덕 복사꽃마을 공식 사진입니다.',
+    '경상북도 영덕군 지품면 삼화2길 18 (영덕복사꽃마을)',
+    YD_CAMELLIA,
+    [YD_CAMELLIA_2, YD_CAMELLIA_3],
+  ),
+  'local-scenic:yeongdeok-sipgyeong:영덕나옹왕사사적비': localScenicPhotoOverlay(
+    '영덕9경 제9경 영덕 나옹왕사 사적비는 창수면 신기리 반송유적지입니다. 영덕군 문화관광에 따르면 고려 말 왕사 나옹혜근(1320~1376)이 출가할 때 반송 지팡이를 꽂아 “이 나무가 살아 있으면 내가 살아 있는 줄 알라”고 남긴 자리로, 625년을 살았던 반송이 1965년경 고사한 뒤 2008년 사적비를 세우고 반송을 다시 심어 반송유적지로 정비했습니다. 폭 5m·높이 3.4m·47t 보령오석 비석이며, 비문은 지관 큰스님 근찬·초당 이무호 선생이 집필·서사했습니다. 나옹왕사는 인량리 까치소 탄생 설화·장육사 창건 등 영덕 역사와 연결됩니다. 사진은 한국관광공사 장육사(나옹왕사가 창건) 공식 사진입니다.',
+    '경상북도 영덕군 창수면 신기리 (반송유적지·나옹왕사 사적비)',
+    YD_NAONG,
+    [YD_NAONG_2, YD_NAONG_3],
   ),
 };
 
