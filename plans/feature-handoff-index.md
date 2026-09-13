@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 탐색홈 검색
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `09d5c2a8` · PR [#239](https://github.com/catgeot/Days/pull/239) |
+| **브랜치** | `cursor/explore-search-d14b` |
+| **tip** | `09d5c2a8` |
+| **PR** | [#239](https://github.com/catgeot/Days/pull/239) |
+| **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
+| **Preview** | `/qa/explore-search` → git Preview `/explore` |
+| **소유** | `SearchDiscoveryModal.jsx` · Enter 선택 카드 vs 타이핑 드롭다운 |
+| **금지** | UI 리디자인 · 선택 카드 규격 파손 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:explore-choice-overlay` · `smoke:explore-search-aliases` · `vite build` |
+
+**다음 제시어**:
+
+```
+탐색홈 검색 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
+금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
+작업: /explore에서 옹진 검색 후 Enter — 도시·섬 카드만 보이는지, 위 콤팩트 리스트와 겹치지 않는지. OK면 PR #239 병합
+```
+
+---
+
 ### AI 모델
 
 | | |

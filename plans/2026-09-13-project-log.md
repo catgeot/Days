@@ -2,6 +2,27 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 탐색홈 검색 #1 — 선택 카드·드롭다운 중첩 (Cloud)
+
+- **세션** `탐색홈 검색 #1, 선택 카드 중첩 정리`
+- **브랜치** `cursor/explore-search-d14b` · tip `09d5c2a8` · PR [#239](https://github.com/catgeot/Days/pull/239)
+- **완료**: 옹진처럼 동명이 많은 검색어를 Enter하면 타이핑 드롭다운과 선택 카드가 같은 후보를 두 겹으로 띄웠다. Enter 이후에는 설명 있는 선택 카드만 남기고 드롭다운·안내문을 닫음. 타이핑 중 제안 목록은 유지.
+- **VERIFY**: `npm run smoke:explore-choice-overlay` PASS · `npm run smoke:explore-search-aliases` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/explore-search → git Preview `/explore`
+- **QA**: `/explore`에서 「옹진」 검색 후 Enter — 도시·섬 카드만 보이는지, 스크롤해도 목록이 두 겹으로 바뀌지 않는지
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 탐색홈 검색 #2 다음
+
+```
+탐색홈 검색 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
+금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
+작업: /explore에서 옹진 검색 후 Enter — 도시·섬 카드만 보이는지, 위 콤팩트 리스트와 겹치지 않는지. OK면 PR #239 병합
+```
+
 ## 팔경 활용 #36 — 계룡 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #36, 계룡 결손 오버레이`
