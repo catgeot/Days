@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-13-visitor-growth-1-general-explore',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: 'MOONi 일반 탐색(여행지 해제) 버튼',
+    detail:
+      '여행지 바인딩 후 채팅 헤더에 「일반 탐색」을 추가했습니다. 탭하면 MOONi 일반 세션·범용 칩 4종으로 돌아가고, 기존 trip은 사이드바에 남습니다. Preview /qa/visitor-growth — 장소 선택 후 헤더 버튼 확인.',
+    at: '2026-09-13T09:55:00.000Z',
+  },
+  {
     id: '2026-09-13-visitor-growth-1-404-mooni',
     session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
     title: '404 라우트 복구·MOONi 기본 바인딩·탐색 칩',
