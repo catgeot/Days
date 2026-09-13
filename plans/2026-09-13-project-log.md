@@ -2,6 +2,28 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 팔경 활용 #38 — 천안 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #38, 천안 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `86066c69` · PR [#243](https://github.com/catgeot/Days/pull/243) · [#240](https://github.com/catgeot/Days/pull/240) merge ✅
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 천안8경 결손 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)의 개요·주소·공식 사진 보강. 천안시 문화관광 유관순 추모각·각원사 청동대좌불·아라리오 조각·봉선홍경사갈기비 사진을 연결했고, 청동대좌불은 GATEO 선정 각원사와 다른 시 공식 사진을 썼다.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=cheonan`
+- **잔여**: 사진/개요 순수 누락 **122**/876. QA 후 다음 허브 **담양10경 4**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #39 다음 — 담양 결손 오버레이
+
+```
+팔경 활용 #39, 담양 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 담양10경 사진·개요 없는 4건(가마골용소·삼인산·메타세쿼이아 가로수길·담양관방제림)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=damyang
+```
+
 ## 탐색홈 검색 #5 — 문경 썸네일 경로 통일 (Cloud)
 
 - **세션** `탐색홈 검색 #5, 문경 썸네일 경로 통일`
@@ -43,18 +65,6 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=nonsan`
 - **잔여**: 사진/개요 순수 누락 **126**/876. QA 후 다음 허브 **천안8경 4**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
-
-## 팔경 활용 #38 다음 — 천안 결손 오버레이
-
-```
-팔경 활용 #38, 천안 결손 오버레이
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-@plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
-금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 천안8경 사진·개요 없는 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=cheonan
-```
 
 ## 탐색홈 검색 #4 — origin/main 반영 (Cloud)
 
