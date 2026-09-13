@@ -30,3 +30,24 @@
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
 - **팔경**: 다음 에이전트 = **#33 포항 결손 오버레이**
+
+## 축제 숙소허브 #1 — 미추홀→옹진 오탐 (Cloud)
+
+- **세션** `축제 숙소허브 #1, 주소 매칭`
+- **브랜치** `cursor/festival-stay-hub-c241` · tip `60e7e10d` · PR [#233](https://github.com/catgeot/Days/pull/233)
+- **원인**: 인천 시드가 인천·강화·옹진뿐 · 옹진 좌표가 군청(미추홀 인근) → 학산마당극놀래 숙소·투어가 「옹진」
+- **수정**: 주소 시·군·구로 구 허브(`michuhol`) 우선 · 없으면 인천 시도 대표 · 옹진군 주소는 옹진 유지
+- **VERIFY**: `smoke:korea-festival-personal` · `smoke:korea-theme-cross-links` · `smoke:korea-tna-strip` · `smoke:korea-festival-stay-url` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/festival-stay-hub → git Preview `/korea`
+- **QA**: 학산마당극놀래 본문 숙소·투어 제목이 **미추홀**인지(옹진 아님)
+
+## 축제 숙소허브 #2 다음
+
+```
+축제 숙소허브 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/festival-stay-hub-c241 · PR #233 · Preview /qa/festival-stay-hub
+금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
+작업: 학산마당극놀래 본문 숙소·투어가 미추홀인지(옹진 아님). OK면 PR #233 병합
+```
