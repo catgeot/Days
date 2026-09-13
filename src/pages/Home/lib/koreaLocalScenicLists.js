@@ -952,6 +952,18 @@ const AY_PYEONG = 'https://www.anyang.go.kr/DATA/tour/22/thumb/p_202101081056535
 const AY_MANAN = 'https://www.anyang.go.kr/DATA/tour/19/74C657E2-741C-120D-39E4-BACBDEA3A796-20191126.jpg';
 const AY_MANAN_2 = 'https://www.anyang.go.kr/DATA/tour/19/24EACAED-B757-CEE7-1685-95FF4839039E-20200115.jpg';
 const AY_MANAN_3 = 'https://www.anyang.go.kr/DATA/tour/19/1C04209B-7D12-6F1C-EE94-DE7DFA1DDF00-20200115.jpg';
+const JP_STAR = 'https://www.jp.go.kr/uloads_clone/tursmCn/TUCN_201802050508247131.jpg';
+const JP_STAR_2 = 'https://www.jp.go.kr/uloads_clone/tursmCn/TUCN_201802050508248363.jpg';
+const JP_STAR_3 = 'https://www.jp.go.kr/uloads_clone/tursmCn/TUCN_201802050508248924.jpg';
+const JP_SAMGI = 'https://tong.visitkorea.or.kr/cms2/website/36/3450336.jpg';
+const JP_SAMGI_2 = 'https://tong.visitkorea.or.kr/cms2/website/37/3450337.jpg';
+const JP_SAMGI_3 = 'https://tong.visitkorea.or.kr/cms2/website/38/3450338.jpg';
+const JP_CHU = 'https://www.khs.go.kr/unisearch/images/history_site/1626405.jpg';
+const JP_CHU_2 = 'https://jparchives.kr/images/108253.jpg';
+const JP_CHU_3 = 'https://jparchives.kr/images/108254.jpg';
+const JP_YEON = 'https://jparchives.kr/images/107492.jpg';
+const JP_YEON_2 = 'https://www.jp.go.kr/images/facility/sub02/sub02_08_01_img01.jpg';
+const JP_YEON_3 = 'https://jparchives.kr/images/107520.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2004,6 +2016,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경기도 안양시 만안구 석수동 679 (만안교)',
     AY_MANAN,
     [AY_MANAN_2, AY_MANAN_3],
+  ),
+  'local-scenic:jeungpyeong-gugyeong:좌구산천문대': localScenicPhotoOverlay(
+    '증평구경 제3경 좌구산 천문대는 증평읍 솟점말길 187입니다. 증평군 문화관광은 한남금북정맥과 청주·증평 최고봉 좌구산(657m)에 있으며, 거북이가 앉아 남쪽을 보는 형상에서 산 이름이 붙었고 주변에 큰 도시가 없어 맑은 밤하늘을 간직한다고 적습니다. 국내에서 가장 큰 356mm 굴절망원경과 천체투영실을 갖추고, 광공해가 적어 밤에 5등급 별 약 1,500개를 헤아릴 수 있습니다. 사진은 증평군 문화관광 좌구산 천문대 공식 사진입니다.',
+    '충청북도 증평군 증평읍 솟점말길 187 (좌구산 천문대)',
+    JP_STAR,
+    [JP_STAR_2, JP_STAR_3],
+  ),
+  'local-scenic:jeungpyeong-gugyeong:삼기저수지등잔길': localScenicPhotoOverlay(
+    '증평구경 제4경 삼기저수지 등잔길은 증평읍 율리휴양로 163 수변산책로 일원입니다. 증평군 문화관광은 좌구산에서 발원한 삼기천이 삼기저수지에서 사곡리 합수점까지 8km를 흐르며, 저수지 일원 총장 3km 수변산책로가 생태공원에서 한 바퀴 돌아온다고 적습니다. 목재 탐방데크가 수면 위를 지나 좌구산 사계절 풍경을 보며 걷습니다. 사진은 한국관광공사 삼기저수지 공식 사진입니다.',
+    '충청북도 증평군 증평읍 율리휴양로 163 (삼기저수지 등잔길)',
+    JP_SAMGI,
+    [JP_SAMGI_2, JP_SAMGI_3],
+  ),
+  'local-scenic:jeungpyeong-gugyeong:추성산성': localScenicPhotoOverlay(
+    '증평구경 제7경 추성산성은 도안면 노암리 산74입니다. 증평군 문화관광은 해발 259m·242m 두 봉우리에 북성과 남성 토성이 있으며 북성 둘레 429m·남성 둘레 1,411m라고 적습니다. 국가유산청 사적 제527호(2014.1.23.)이며 한성백제 시기 지방 최대 규모 토축산성입니다. 사진은 국가유산청·증평기록관 추성산성 공식 사진입니다.',
+    '충청북도 증평군 도안면 노암리 산74 (추성산성)',
+    JP_CHU,
+    [JP_CHU_2, JP_CHU_3],
+  ),
+  'local-scenic:jeungpyeong-gugyeong:연병호항일역사공원': localScenicPhotoOverlay(
+    '증평구경 제9경 연병호 항일역사공원은 도안면 산정길 5입니다. 증평군은 독립운동가 연병호 선생의 삶과 생가를 둘러보는 쉼터로 2016년 조성했고, 항일기념관·상징조형물·무궁화동산·생가가 있다고 안내합니다. 증평군 문화관광에 따르면 형 연병환, 딸 연미당, 제부 엄항섭, 외손녀 엄기선까지 일가가 독립운동에 투신했습니다. 사진은 증평기록관·증평군 시설 안내 공식 사진입니다.',
+    '충청북도 증평군 도안면 산정길 5 (연병호 항일역사공원)',
+    JP_YEON,
+    [JP_YEON_2, JP_YEON_3],
   ),
 };
 
