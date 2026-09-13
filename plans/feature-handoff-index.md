@@ -34,7 +34,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `62287e27` · **사람 Preview** |
+| **상태** | **#2 push** · tip `eda60c94` · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
@@ -46,14 +46,14 @@
 **다음 제시어**:
 
 ```
-방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트
+방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/visitor-growth-activation-plan.md
 브랜치 cursor/visitor-growth-1f90 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: HomeUI.jsx 히어로 가치제안·투톱 CTA · 모바일 검색 플레이스홀더·로그인 노출 · HomeGlobeMapbox DPR≤2
-검증: npm run build PASS
+작업: botDetect.js 봇 전수화 · generate-crawler-place-meta 274개 · injectCrawlerMeta body 시맨틱 HTML 주입
+검증: npm run generate:crawler-place-meta && npm run build PASS
 ```
 
 ---

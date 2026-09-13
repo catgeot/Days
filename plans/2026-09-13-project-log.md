@@ -2,6 +2,15 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 방문자 개선 #2 — 홈 가치제안 및 모바일 뷰포트 (Cloud)
+
+- **세션** `방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `eda60c94`
+- **완료**: `HomeUI` 검색바 상단 글래스 히어로(헤드라인·서브·투톱 CTA `/explore`·MOONi 채팅). 모바일 검색 플레이스홀더 `여행지 검색...`·우측 로그인 원형·AI 미니 뱃지. `HomeGlobeMapbox` `pixelRatio` 최대 2.
+- **VERIFY**: `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **QA**: 390px 홈 — 히어로 가치제안·CTA 2종·검색 플레이스홀더 잘림 없음·우측 로그인·AI 탭. 지구본 드래그·CTA 터치 간섭 없음.
+
 ## 방문자 개선 #1 — 404 복구 및 AI채팅 초기화 (Cloud)
 
 - **세션** `방문자 개선 #1, 404 복구 및 AI채팅 초기화`
@@ -21,7 +30,7 @@
 - **플랜**: [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) (4단계 8세션 독립 완결형 실행 계획서)
   - 세션 #3에 크롤러 대상 여행지 시맨틱 HTML(`<h1>`, `<p>`, 탭 안내) 본문 주입 및 봇 감지 전수화 배치
 - **핸드오프**: [`feature-handoff-index.md`](./feature-handoff-index.md)에 `방문자 개선` 행 및 다음 제시어 등록
-- **진행 현황**: 세션 #1 완료 후 현재 세션 #2 대기 중
+- **진행 현황**: 세션 #2 완료 후 세션 #3(크롤러 SEO) 대기 중
 
 ## 팔경 활용 #38 — 천안 결손 오버레이 (Cloud)
 
