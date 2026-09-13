@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-13T03:20:00.000Z',
   },
   {
+    id: '2026-09-13-palgyeong-use-35-jeungpyeong-overlays',
+    session: '팔경 활용 #35, 증평 결손 오버레이',
+    title: '증평구경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 증평구경 결손 4건(좌구산 천문대·삼기저수지 등잔길·추성산성·연병호 항일역사공원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 증평군 문화관광 천문대 사진, 한국관광공사 삼기저수지 사진, 국가유산청·증평기록관 추성산성·연병호 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jeungpyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T02:50:00.000Z',
+  },
+  {
     id: '2026-09-13-palgyeong-use-34-anyang-overlays',
     session: '팔경 활용 #34, 안양 결손 오버레이',
     title: '안양9경 결손 4건 런타임 오버레이',
