@@ -82,14 +82,25 @@
 - **Preview** https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
 - **QA**: 투어 섹션 하단 「렌터카 보기」·MRT 국내 렌터카·트립닷컴 기차표. 최저가 비교 문구 없음.
 
-## 한국 투어티켓 #8 다음
+## 한국 투어티켓 #8 — 왕가의 산책 인천 폴백 (Cloud)
+
+- **세션** `한국 투어티켓 #8, Preview OK면 PR 병합`
+- **브랜치** `cursor/korea-tna-strip-ef65` · tip `beb65f1a` · PR [#234](https://github.com/catgeot/Days/pull/234)
+- **병합 안 함**: 인천공항 「왕가의 산책」이 옹진 숙소·행사명 투어(룩소르 왕가의 계곡)로 나옴
+- **원인**: 인천 시드가 인천·강화·옹진뿐이고 옹진 군청 좌표가 최근접. `location.name`이 행사명이라 재고 0이면 「왕가의 산책」으로 TNA 폴백
+- **수정**: 중구(공항)는 시도 대표 인천. 숙소 칩 인천·강화(옹진 주소가 아니면 옹진 제외). 투어 키워드·알트에서 행사명 제거
+- **VERIFY**: `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-festival-personal` · `smoke:travel-agencies` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/korea-tna-strip
+- **QA**: 왕가의 산책 숙소·투어 **인천**(옹진·룩소르 아님). 비면 인천·강화 칩. 경복궁 「렌터카 보기」·MRT·기차표
+
+## 한국 투어티켓 #9 다음
 
 ```
-한국 투어티켓 #8, Preview OK면 PR 병합
+한국 투어티켓 #9, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-tna-strip-plan.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 경복궁 투어 섹션 하단이 「렌터카 보기」(최저가 비교 없음)·마이리얼트립 국내 렌터카·트립닷컴 기차표인지 확인. OK면 PR #234 병합
+작업: 왕가의 산책 숙소·투어가 인천인지(옹진·룩소르 아님)·비면 인천·강화 칩인지. 경복궁 「렌터카 보기」·MRT·기차표 OK면 PR #234 병합
 ```
