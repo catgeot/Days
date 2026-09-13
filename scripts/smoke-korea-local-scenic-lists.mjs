@@ -23,6 +23,7 @@ import {
   listsForHub,
   localScenicListDisplayTitle,
   localScenicMemberToSuggestion,
+  hubAttractionSearchGroupTitle,
   localScenicMemberSpotId,
   mergeLocalScenicMembersIntoScenicSpots,
   groupNearbySpotsWithLocalScenic,
@@ -192,6 +193,14 @@ assert.ok(
   memberRows.some((s) => s.rankBlurb === '문경 2경'),
   '탐색 제안에 문경 2경 표기',
 );
+const ongjinHub = resolveCityAttractionHub('옹진');
+assert.equal(listsForHub('ongjin').length, 0, '옹진 has no palgyeong list');
+assert.equal(
+  hubAttractionSearchGroupTitle(ongjinHub),
+  '옹진 명소',
+  '옹진 fallback group is 명소 not 팔경',
+);
+assert.equal(hubAttractionSearchGroupTitle(mungyeongHub), '');
 assert.ok(
   memberRows.some((s) => s.name === '새재계곡'),
   '새재계곡 under 문경 팔경',

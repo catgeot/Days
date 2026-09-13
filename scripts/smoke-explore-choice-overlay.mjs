@@ -18,6 +18,7 @@ import {
   enrichSearchCandidateScenicMedia,
   listsForHub,
   localScenicMemberToSuggestion,
+  hubAttractionSearchGroupTitle,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -53,6 +54,12 @@ assert.equal(candidates.some((item) => String(item.name).includes('덕적도')),
 const deok = candidates.find((item) => String(item.name).includes('덕적도'));
 const deokMedia = enrichSearchCandidateScenicMedia(deok);
 assert.ok(deokMedia?.imageUrl, '옹진 덕적도 choice card gets GATEO scenic thumb');
+assert.equal(listsForHub('ongjin').length, 0, '옹진 has no palgyeong list');
+assert.equal(hubAttractionSearchGroupTitle(hub), '옹진 명소');
+assert.equal(deokMedia.groupTitle, '옹진 명소');
+assert.equal(deokMedia.rankBlurb || '', '', '옹진 섬 is not N경');
+assert.equal(candidates[0].kind, 'city');
+assert.equal(enrichSearchCandidateScenicMedia(candidates[0]).groupTitle || '', '');
 
 const mungyeong = resolveCityAttractionHub('문경');
 assert.ok(mungyeong, '문경 hub');
@@ -65,6 +72,7 @@ const firstMember = localScenicMemberToSuggestion(
 );
 assert.equal(firstMember?.rankBlurb, '문경 1경');
 assert.equal(firstMember?.groupTitle, '문경 팔경');
+assert.equal(hubAttractionSearchGroupTitle(mungyeong), '', '문경 keeps palgyeong group only');
 
 const cards = makeDisambiguationResult('옹진', candidates, {
   title: `'${hub.name}' → 도시와 명소를 골라주세요`,

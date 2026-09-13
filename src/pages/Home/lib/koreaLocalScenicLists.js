@@ -168,6 +168,22 @@ export function listsForHub(hubId) {
   return listsByHubId.get(id) || [];
 }
 
+/**
+ * 공식 팔경·구경이 없는 허브의 탐색 명소 소제목. 있으면 빈 문자열 (N경 그룹만).
+ * @param {object} [hub]
+ * @param {string} [locale]
+ */
+export function hubAttractionSearchGroupTitle(hub, locale = 'ko') {
+  if (!hub?.hubId || listsForHub(hub.hubId).length) return '';
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  const city = isEn
+    ? String(hub.name_en || hub.name || '').trim()
+    : String(hub.name || '').trim();
+  if (!city) return '';
+  const kind = isEn ? KIND_LABEL_EN.other : KIND_LABEL_KO.other;
+  return `${city} ${kind}`;
+}
+
 function listsOfSameKindOnHub(list, hub) {
   const hid = String(hub?.hubId || list?.hubId || '').trim();
   if (!hid) return [];
@@ -475,26 +491,47 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
 
 /**
  * 탐색 검색 행에 GATEO 선정 썸네일·contentId를 붙인다 (JSON 쓰기 아님).
+ * 공식 팔경이 없는 허브 명소는 `{시군} 명소` 소제목만 (N경 아님).
  * @param {object} item
+ * @param {string} [locale]
  */
-export function enrichSearchCandidateScenicMedia(item) {
+export function enrichSearchCandidateScenicMedia(item, locale = 'ko') {
   if (!item || typeof item !== 'object') return item;
+  let next = item;
+  const hubId = String(item.hubId || '').trim();
+  const name = String(item.name || '').trim();
   const hasThumb = Boolean(
     String(item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '').trim(),
   );
-  const hubId = String(item.hubId || '').trim();
-  const name = String(item.name || '').trim();
-  if (!hubId || !name) return item;
-  const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
-  if (!fromCurated.imageUrl && !fromCurated.contentId) return item;
-  if (hasThumb && item.contentId) return item;
-  return {
-    ...item,
-    ...(fromCurated.imageUrl && !hasThumb
-      ? { imageUrl: fromCurated.imageUrl, thumbUrl: fromCurated.imageUrl }
-      : {}),
-    ...(fromCurated.contentId && !item.contentId ? { contentId: fromCurated.contentId } : {}),
-  };
+  if (hubId && name) {
+    const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
+    if (fromCurated.imageUrl || fromCurated.contentId) {
+      if (!(hasThumb && item.contentId)) {
+        next = {
+          ...next,
+          ...(fromCurated.imageUrl && !hasThumb
+            ? { imageUrl: fromCurated.imageUrl, thumbUrl: fromCurated.imageUrl }
+            : {}),
+          ...(fromCurated.contentId && !next.contentId
+            ? { contentId: fromCurated.contentId }
+            : {}),
+        };
+      }
+    }
+  }
+  if (
+    !next.groupTitle &&
+    !next.rankBlurb &&
+    next.kind === 'attraction' &&
+    hubId
+  ) {
+    const groupTitle = hubAttractionSearchGroupTitle(
+      resolveCityAttractionHub(hubId),
+      locale,
+    );
+    if (groupTitle) next = { ...next, groupTitle };
+  }
+  return next;
 }
 
 /**

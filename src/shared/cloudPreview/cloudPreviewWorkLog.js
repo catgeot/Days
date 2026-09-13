@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '탐색홈 검색',
-  sessionNo: 3,
-  sessionPhase: '팔경식 리스트·카드 썸네일',
+  sessionNo: 4,
+  sessionPhase: '옹진은 팔경 없음',
   branch: 'cursor/explore-search-d14b',
   previewPath: '/explore',
   qaShareSlug: 'explore-search',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-explore-search-4-ongjin-no-palgyeong',
+    session: '탐색홈 검색 #4, 옹진은 팔경 없음',
+    title: '옹진 섬은 명소 그룹, N경 아님',
+    detail:
+      '옹진에는 지자체 팔경 리스트가 없습니다. 문경만 「문경 팔경」·「문경 1경」을 쓰고, 옹진 섬은 「옹진 명소」소제목만 붙입니다. 1경 번호는 없습니다. Preview /qa/explore-search — 옹진 Enter 옹진 명소, 문경 팔경 유지.',
+    at: '2026-09-13T05:20:00.000Z',
+  },
   {
     id: '2026-09-13-explore-search-3-palgyeong-list-cards',
     session: '탐색홈 검색 #3, 팔경식 리스트·카드 썸네일',
