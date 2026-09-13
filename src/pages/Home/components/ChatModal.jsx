@@ -82,6 +82,7 @@ const ChatModal = ({
   onDeleteChat,
   /** 무니 인트로 본문 준비 시 장소카드 desc hydrate (DB 캐시·신규 생성 공통) */
   onPlaceIntroReady = null,
+  onClearPlaceBinding = null,
 }) => {
   const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState([]);
@@ -1056,6 +1057,17 @@ const ChatModal = ({
                  </span>
                </div>
                <div className="flex items-center gap-2 shrink-0">
+                 {isMooniUi && hasPlaceBoundName && onClearPlaceBinding ? (
+                   <button
+                     type="button"
+                     onClick={onClearPlaceBinding}
+                     className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-gray-200 hover:border-white/35 hover:bg-white/10 transition-colors touch-manipulation"
+                     title={t('mooni.chat.clearPlaceBindingAria')}
+                     aria-label={t('mooni.chat.clearPlaceBindingAria')}
+                   >
+                     {t('mooni.chat.clearPlaceBinding')}
+                   </button>
+                 ) : null}
                  {effectiveQuickReplySlug ? (
                    <button
                      type="button"

@@ -344,6 +344,35 @@ function Home() {
     toggleBookmark
   });
 
+  const handleClearMooniPlaceBinding = useCallback(() => {
+    if (activeChatId && mooniChatEntry) {
+      persistMooniLastChatId(activeChatId, user?.id ?? null);
+    }
+    setMooniPlaceContext(null);
+    setSelectedLocation(null);
+    setActiveChatId(null);
+    setInitialQuery(null);
+    setMooniChatEntry(true);
+    setChatDraft({
+      destination: 'MOONi',
+      lat: 0,
+      lng: 0,
+      persona: PERSONA_TYPES.GENERAL,
+      category,
+    });
+  }, [
+    activeChatId,
+    mooniChatEntry,
+    user?.id,
+    category,
+    setMooniPlaceContext,
+    setSelectedLocation,
+    setActiveChatId,
+    setInitialQuery,
+    setMooniChatEntry,
+    setChatDraft,
+  ]);
+
   const handleCategorySelect = useCallback(async (nextCategory) => {
     if (flightCinemaActive) {
       globeRef.current?.closeFlightCinema?.();
@@ -1695,6 +1724,7 @@ function Home() {
             }
           }}
           onDeleteChat={deleteTrip}
+          onClearPlaceBinding={mooniChatEntry ? handleClearMooniPlaceBinding : undefined}
         />
 
         <SearchDiscoveryModal
