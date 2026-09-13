@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 38,
-  sessionPhase: '천안 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=cheonan',
-  qaShareSlug: 'palgyeong-use',
+  title: '방문자 개선',
+  sessionNo: 1,
+  sessionPhase: '404 복구 및 AI채팅 초기화',
+  branch: 'cursor/visitor-growth-1f90',
+  previewPath: '/',
+  qaShareSlug: 'visitor-growth',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-visitor-growth-1-404-mooni',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: '404 라우트 복구·MOONi 기본 바인딩·탐색 칩',
+    detail:
+      '/about 신설, /pricing→/about·/product→/explore 리다이렉트, 와일드카드 404→홈. 장소 미선택 AI 채팅은 MOONi로 열리고 범용 탐색 칩 4종 노출. Preview /qa/visitor-growth — /about·/pricing·하단 AI 버튼(장소 없음) 확인.',
+    at: '2026-09-13T09:45:00.000Z',
+  },
   {
     id: '2026-09-13-explore-search-6-merge',
     session: '탐색홈 검색 #6, Preview OK면 PR 병합',

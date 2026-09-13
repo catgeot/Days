@@ -50,6 +50,7 @@ import {
 import {
   buildMooniIntroWithHint,
   getMooniQuickReplies,
+  getMooniGeneralDiscoveryChips,
   getMooniL1ChipLabel,
   buildAccessRouteAskText,
 } from '../lib/mooniQuickReplies';
@@ -276,7 +277,12 @@ const ChatModal = ({
       return localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
     }
     if (isMooniUi) return '';
-    return introDestinationRaw;
+    const raw = introDestinationRaw.trim();
+    const lower = raw.toLowerCase();
+    if (!raw || lower === 'new session' || lower === 'scanning...' || lower === 'searching...' || lower === 'mooni') {
+      return '';
+    }
+    return raw;
   }, [isOpen, activeSessionPlace, isMooniUi, introDestinationRaw, i18n.language]);
 
   const effectiveQuickReplySlug = boundDestinationSlug;
@@ -313,14 +319,26 @@ const ChatModal = ({
     ]
   );
 
+  const discoveryChips = useMemo(
+    () => (isMooniUi && !hasPlaceBoundName ? getMooniGeneralDiscoveryChips() : []),
+    [isMooniUi, hasPlaceBoundName, i18n.language],
+  );
+
+  const dockChips = hasPlaceBoundName ? quickReplies : discoveryChips;
+
   const showBoundTopicDock =
     isMooniUi && hasPlaceBoundName && quickReplies.length > 0;
+
+  const showDiscoveryDock =
+    isMooniUi && !hasPlaceBoundName && discoveryChips.length > 0 && messages.length === 0;
+
+  const showMooniChipDock = showBoundTopicDock || showDiscoveryDock;
 
   const showAccessOriginDock =
     isMooniUi && topicDockParent === 'access' && hasPlaceBoundName;
 
   const mobileDockInputExpanded =
-    showBoundTopicDock &&
+    showMooniChipDock &&
     !showAccessOriginDock &&
     (mobileDockInputFocused || Boolean(input.trim()));
 
@@ -900,7 +918,7 @@ const ChatModal = ({
   const topicDockChipsProps = useMemo(
     () => ({
       slug: effectiveQuickReplySlug,
-      chips: quickReplies,
+      chips: dockChips,
       onSelect: (text, persona, chip) =>
         handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
       onDrillDown: (parentId) => setTopicDockParent(parentId),
@@ -916,7 +934,7 @@ const ChatModal = ({
     }),
     [
       effectiveQuickReplySlug,
-      quickReplies,
+      dockChips,
       handleSend,
       topicDockParent,
       handlePlannerNavigate,
@@ -1319,7 +1337,7 @@ const ChatModal = ({
                     />
                   ) : null}
                 </div>
-              ) : showBoundTopicDock ? (
+              ) : showMooniChipDock ? (
                 <>
                   <div className="md:hidden px-3 pt-2 pb-1 flex flex-col gap-1.5">
                     {!mobileDockInputExpanded ? (
@@ -1420,7 +1438,7 @@ const ChatModal = ({
               ) : null}
               <div
                 className={`px-3 pt-3 md:px-4 md:pt-2.5 md:pb-3 ${
-                  showAccessOriginDock || showBoundTopicDock
+                  showAccessOriginDock || showMooniChipDock
                     ? 'hidden'
                     : 'pb-0'
                 }`}
@@ -1433,7 +1451,7 @@ const ChatModal = ({
                   className="relative"
                 >
                   <input
-                    ref={!showBoundTopicDock ? chatInputRef : undefined}
+                    ref={!showMooniChipDock ? chatInputRef : undefined}
                     type="text"
                     inputMode="text"
                     enterKeyHint="send"

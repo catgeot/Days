@@ -1519,7 +1519,7 @@ function Home() {
           externalInput={draftInput}
           savedTrips={filteredSavedTrips}
           onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
-          onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
+          onOpenChat={(p) => handleStartChat(selectedLocation?.name || 'MOONi', p)}
           onLogoClick={() => setIsLogoPanelOpen(true)}
           relatedPlaces={relatedPlaces} isTagLoading={isTagLoading}
           selectedCategory={category} onCategorySelect={handleCategorySelect}
