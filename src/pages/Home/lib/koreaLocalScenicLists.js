@@ -1109,6 +1109,48 @@ const CN_ARARIO_3 = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/tursmCn/TU
 const CN_STELE = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337447340.JPG';
 const CN_STELE_2 = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337493453.JPG';
 const CN_STELE_3 = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337496804.JPG';
+const DY_GAMA =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128366';
+const DY_GAMA_2 = 'https://tong.visitkorea.or.kr/cms/resource/35/3027135_image2_1.jpg';
+const DY_GAMA_3 = 'https://tong.visitkorea.or.kr/cms/resource/36/3027136_image2_1.jpg';
+const DY_SAMIN =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128341';
+const DY_META =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128338';
+const DY_META_2 =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128339';
+const DY_META_3 = 'https://tong.visitkorea.or.kr/cms/resource/45/4105445_image2_1.jpg';
+const DY_GWANBANG =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128370';
+const DY_GWANBANG_2 =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128368';
+const DY_GWANBANG_3 =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128367';
+const DY_GWANBANG_4 = 'https://tong.visitkorea.or.kr/cms/resource/57/3533957_image2_1.jpg';
+const MR_HOBAKSO = 'https://tong.visitkorea.or.kr/cms/resource/72/2660872_image2_1.jpg';
+const MR_HOBAKSO_2 = 'https://tong.visitkorea.or.kr/cms/resource/65/2589465_image2_1.jpg';
+const MR_HOBAKSO_3 = 'https://tong.visitkorea.or.kr/cms/resource/63/2589463_image2_1.jpg';
+const MR_WOLYEON = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629308.jpg';
+const MR_WOLYEON_2 = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629309.jpg';
+const MR_WOLYEON_3 = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629310.jpg';
+const MR_MANEO = 'https://tong.visitkorea.or.kr/cms/resource/43/3494643_image2_1.JPG';
+const MR_MANEO_2 = 'https://tong.visitkorea.or.kr/cms/resource/40/3494640_image2_1.JPG';
+const MR_MANEO_3 = 'https://tong.visitkorea.or.kr/cms/resource/42/3494642_image2_1.JPG';
+const MR_JONGNAM = 'https://tong.visitkorea.or.kr/cms/resource/40/2778040_image2_1.jpg';
+const MR_JONGNAM_2 = 'https://tong.visitkorea.or.kr/cms/resource/39/2778039_image2_1.jpg';
+const MR_JONGNAM_3 = 'https://tong.visitkorea.or.kr/cms/resource/43/2778043_image2_1.jpg';
+const YD_DOCHON =
+  'https://www.korea.kr/newsWeb/resources/attaches/2025.02/05/0743c1bfdce5922af816a3742c8af5de.jpg';
+const YD_PALGAK = 'https://tong.visitkorea.or.kr/cms/resource/71/3465371_image2_1.jpg';
+const YD_PALGAK_2 = 'https://tong.visitkorea.or.kr/cms/resource/73/3465373_image2_1.jpg';
+const YD_PALGAK_3 = 'https://tong.visitkorea.or.kr/cms/resource/74/3465374_image2_1.jpg';
+const YD_PALGAK_4 = 'https://www.khs.go.kr/unisearch/images/scenic_site/2022030409555300.JPG';
+const YD_CAMELLIA = 'https://tong.visitkorea.or.kr/cms2/website/61/2006161.jpg';
+const YD_CAMELLIA_2 = 'https://tong.visitkorea.or.kr/cms2/website/65/2006165.jpg';
+const YD_CAMELLIA_3 = 'https://tong.visitkorea.or.kr/cms2/website/67/2006167.jpg';
+const YD_NAONG = 'https://tong.visitkorea.or.kr/cms2/website/46/2648746.jpg';
+const YD_NAONG_2 = 'https://tong.visitkorea.or.kr/cms2/website/47/2648747.jpg';
+const YD_NAONG_3 = 'https://tong.visitkorea.or.kr/cms2/website/48/2648748.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2257,6 +2299,76 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 천안시 서북구 성환읍 대홍3길 77-48 (봉선홍경사갈기비)',
     CN_STELE,
     [CN_STELE_2, CN_STELE_3],
+  ),
+  'local-scenic:damyang-other:가마골용소': localScenicPhotoOverlay(
+    '담양10경 제1경 가마골용소는 용면 용소길 261입니다. 담양군 문화관광은 용연리 용추산(해발 523m)을 중심으로 사방 4km를 가마골이라 부르고, 깊은 계곡·폭포·기암괴석이 어우러져 사계절 관광객이 찾는다고 적습니다. 영산강의 시원(발원지)으로 알려진 용소가 있고 1986년부터 관광지로 지정·개발되어 등산로·쉼터·편의시설이 갖춰졌습니다. 안쪽에는 가마골생태공원이 있고 하류 가마골계곡은 물놀이가 가능합니다. 옛 가마터가 많아 붙은 이름이며 용이 솟은 못을 용소라 부른 전설이 전해집니다. 사진은 담양군 문화관광 가마골용소 공식 사진이며, 한국관광공사 가마골계곡 사진을 보탰습니다.',
+    '전라남도 담양군 용면 용소길 261 (가마골용소)',
+    DY_GAMA,
+    [DY_GAMA_2, DY_GAMA_3],
+  ),
+  'local-scenic:damyang-other:삼인산': localScenicPhotoOverlay(
+    '담양10경 제5경 삼인산은 대전면 행성리 산 55입니다. 담양군 문화관광은 대전면 행성리와 수북면 오정리 경계에 있는 해발 564m 산으로, 북쪽에 삼인동(三人洞) 마을이 있다고 적습니다. 삼인산은 옛이름 몽선암(夢仙庵)이며, 견훤 난 때 피난한 여인들이 몽골 병졸의 만행에 맞서 절벽 아래로 떨어졌다는 전설이 전해집니다. 이성계가 명산을 찾아 기도하던 중 꿈에서 삼인산을 찾으라는 성몽을 받고 제를 올려 등극했다 하여 몽성산(夢聖山)이라 부르기도 합니다. 산형이 人자 세 겹을 겹친 형국이라 三人山이라 이름붙였다고 안내합니다. 사진은 담양군 문화관광 삼인산 공식 사진입니다.',
+    '전라남도 담양군 대전면 행성리 산 55 (삼인산)',
+    DY_SAMIN,
+  ),
+  'local-scenic:damyang-other:메타세쿼이아가로수길': localScenicPhotoOverlay(
+    '담양10경 제6경 메타세쿼이아 가로수길은 담양읍 메타세쿼이아로 일대입니다. 담양군 문화관광은 1972년 당시 김기회 군수 때 국도 24호선 군청~금성면 원율삼거리 5km 구간에 5년생 메타세쿼이아 1,300본을 식재해 조성했다고 적습니다. 이후 읍·면 연결 도로에도 식재·관리해 담양의 대표 가로수길이 되었고, 영화 「와니와 준하」·「화려한 휴가」와 예능 「1박 2일」 촬영지로 알려졌습니다. 하절기 09:00~19:00·동절기 09:00~18:00 운영(설·추석 당일 휴무)이며 입장료가 있습니다. 사진은 담양군 문화관광 메타세쿼이아 길 공식 사진이며, 한국관광공사 담양 메타세쿼이아길 사진을 보탰습니다.',
+    '전라남도 담양군 담양읍 메타세쿼이아로 12 (메타세쿼이아 가로수길)',
+    DY_META,
+    [DY_META_2, DY_META_3],
+  ),
+  'local-scenic:damyang-other:담양관방제림': localScenicPhotoOverlay(
+    '담양10경 제9경 담양관방제림은 담양읍 죽녹원로 98 일대입니다. 담양군 문화관광은 담양천 제방인 관방제를 보호하기 위해 조성한 숲으로, 푸조나무·느티나무·팽나무·벚나무·은단풍 등 300년 넘은 활엽수가 1.2km 이어진다고 적습니다. 조선 인조 26년(1648) 부사 성이성이 제방을 쌓고 나무를 심기 시작했고, 철종 5년(1854) 부사 황종림이 제방을 늘려 숲을 다듬었다고 전해집니다. 1991년 11월 27일 천연기념물로 지정되었고 2004년 제5회 아름다운 숲 전국대회 대상을 수상했습니다. 여름 피서지·연인 데이트 코스로 알려졌습니다. 사진은 담양군 문화관광 관방제림 공식 사진이며, 한국관광공사 관방제림 사진을 보탰습니다.',
+    '전라남도 담양군 담양읍 죽녹원로 98 (담양관방제림)',
+    DY_GWANBANG,
+    [DY_GWANBANG_2, DY_GWANBANG_3, DY_GWANBANG_4],
+  ),
+  'local-scenic:miryang-palgyeong:시례호박소': localScenicPhotoOverlay(
+    '밀양8경 제2경 시례 호박소는 산내면 얼음골로 334-1 호박소계곡입니다. 한국관광공사에 따르면 호박소는 수백만 년 동안 물살이 바위를 깎아 만든 포트홀(호박소)과 폭포가 어우러진 계곡으로, 둘레가 약 30m인 대형 호박소가 대표적입니다. 한국의 명수 100선에 선정되었고, 계곡에는 백련사·형제소·오천평반석 등이 있습니다. 밀양시는 밀양8경 제2경으로 안내합니다. 사진은 한국관광공사 호박소계곡 사진입니다.',
+    '경상남도 밀양시 산내면 얼음골로 334-1 (시례 호박소·호박소계곡)',
+    MR_HOBAKSO,
+    [MR_HOBAKSO_2, MR_HOBAKSO_3],
+  ),
+  'local-scenic:miryang-palgyeong:월연정풍경': localScenicPhotoOverlay(
+    '밀양8경 제4경 월연정 풍경은 용평동 월연대 일원입니다. 국가유산청 명승 밀양 월연대 일원(2012.2.8.)에 따르면 조선 중종 때 문신 월연(月淵) 이태가 관직에서 물러나 쌍경당과 월연대를 조성한 데서 유래했고, 월연정에서 바라본 강변 풍경이 빼어나 월주경(月洲景)으로 불립니다. 바위에 새겨진 글씨와 월연대 12경 등 문화경관이 함께합니다. 주소는 용평로 330-7(용평동 2-1)입니다. 사진은 국가유산청 명승 밀양 월연대 일원 공식 사진입니다.',
+    '경상남도 밀양시 용평로 330-7 (월연정 풍경·월연대 일원)',
+    MR_WOLYEON,
+    [MR_WOLYEON_2, MR_WOLYEON_3],
+  ),
+  'local-scenic:miryang-palgyeong:만어사운해': localScenicPhotoOverlay(
+    '밀양8경 제6경 만어사 운해는 삼랑진읍 만어로 776 만어사 일대입니다. 한국관광공사·밀양시 문화관광에 따르면 해발 674m 만어산 8부 능선에 자리한 만어사는 가락국 수로왕 창건 전설과 암괴류·종석이 있는 사찰이며, 얼음골·표충비와 함께 밀양 3대 신비로 꼽힙니다. 산 정상 부근 입지 덕분에 비가 내린 뒤나 새벽에는 사찰 아래로 구름이 바다처럼 펼쳐지는 운해를 볼 수 있다고 안내합니다. 사진은 한국관광공사 만어사 사진이며, 능선·안개 느낌 사진을 보탰습니다.',
+    '경상남도 밀양시 삼랑진읍 만어로 776 (만어사 운해)',
+    MR_MANEO,
+    [MR_MANEO_2, MR_MANEO_3],
+  ),
+  'local-scenic:miryang-palgyeong:종남산진달래': localScenicPhotoOverlay(
+    '밀양8경 제7경 종남산 진달래는 상남면·부북면·초동면에 걸친 해발 663m 종남산 능선입니다. 디지털밀양문화대전·밀양시 문화관광에 따르면 수백 년간 이어진 진달래 군락이 약 2만 600㎡에 이르며, 3월 말~4월 초에 만개해 능선이 분홍빛으로 물듭니다. 6부 능선부터 진달래가 본격적으로 보이고 8부 능선부터 대규모 군락이 형성됩니다. 정상에서는 밀양 시가지·낙동강 들녘·영남알프스가 조망되며, 팔각정 코스(상남면 조남길 408 등)가 대표입니다. 매년 종남산진달래축제가 열립니다. 사진은 한국관광공사 종남산(밀양) 사진입니다.',
+    '경상남도 밀양시 상남면 조남길 408 일대 (종남산 진달래·팔각정 코스)',
+    MR_JONGNAM,
+    [MR_JONGNAM_2, MR_JONGNAM_3],
+  ),
+  'local-scenic:yeongdeok-sipgyeong:영덕도천숲': localScenicPhotoOverlay(
+    '영덕9경 제3경 영덕 도천숲은 남정면 도천리 75 일대입니다. 영덕군·국가유산청에 따르면 약 400년 전 마을 개척 때 조성된 비보(裨補) 마을숲으로, 앞산 뱀머리(사두혈) 형상을 막기 위해 풍수적으로 만들었다 전합니다. 사암천을 따라 느티나무·팽나무·말채나무 등 낙엽수 200여 그루가 자라며 정자·탁자·의자가 있는 휴식 공간입니다. 대마를 땅속 구덩이에서 삶아 옷을 만들던 삼굿 흔적이 남한에서 유일하게 남아 있고, 제당에서 대보름 동제를 지냅니다. 2009년 12월 30일 천연기념물 제514호입니다. 사진은 대한민국 정책브리핑 국가유산청 「영덕 도천리 도천숲」 소개 공식 사진입니다.',
+    '경상북도 영덕군 남정면 도천리 75 (영덕 도천리 도천숲)',
+    YD_DOCHON,
+  ),
+  'local-scenic:yeongdeok-sipgyeong:영덕팔각산': localScenicPhotoOverlay(
+    '영덕9경 제4경 영덕 팔각산은 달산면 옥계리 해발 628m 산입니다. 영덕군 문화관광은 여덟 개 모가 난 바위봉우리가 이어져 옥계팔봉이라 부르는 명산이며, 독립된 암봉과 기암괴석·주변 경관이 뛰어나다고 적습니다. 팔각산장 주차장에서 108계단·1~8봉 능선을 도는 원점회귀 코스는 약 4.5km·3시간이며 로프·난간이 설치된 암릉 산행입니다. 산 아래 옥계계곡과 침수정 일원의 맑은 물·기암괴석이 어우러집니다. 입산통제구역이 있어 산림과·군청 안내에 따라 등산을 확인합니다. 사진은 한국관광공사 옥계계곡 공식 사진이며, 국가유산청 명승 영덕 옥계 침수정 일원 사진을 보탰습니다.',
+    '경상북도 영덕군 달산면 팔각산로 737 일대 (영덕 팔각산·팔각산장)',
+    YD_PALGAK,
+    [YD_PALGAK_2, YD_PALGAK_3, YD_PALGAK_4],
+  ),
+  'local-scenic:yeongdeok-sipgyeong:영덕사월의복사꽃': localScenicPhotoOverlay(
+    '영덕9경 제5경 영덕 사월의 복사꽃은 지품면 삼화리 영덕복사꽃마을 일대입니다. 1959년 태풍 사라호 이후 사토에 복숭아나무를 심어 조성한 밭으로, 4월 초~중순 복사꽃이 만개하면 마을과 국도 34호선 언덕이 분홍빛으로 물듭니다. 마을회관 주변 약 2km 복사꽃 터널·전망대가 사진 명소이며, 매년 영덕복사꽃축제가 열립니다. 주소는 삼화2길 18(삼화2리)입니다. 사진은 한국관광공사 영덕 복사꽃마을 공식 사진입니다.',
+    '경상북도 영덕군 지품면 삼화2길 18 (영덕복사꽃마을)',
+    YD_CAMELLIA,
+    [YD_CAMELLIA_2, YD_CAMELLIA_3],
+  ),
+  'local-scenic:yeongdeok-sipgyeong:영덕나옹왕사사적비': localScenicPhotoOverlay(
+    '영덕9경 제9경 영덕 나옹왕사 사적비는 창수면 신기리 반송유적지입니다. 영덕군 문화관광에 따르면 고려 말 왕사 나옹혜근(1320~1376)이 출가할 때 반송 지팡이를 꽂아 “이 나무가 살아 있으면 내가 살아 있는 줄 알라”고 남긴 자리로, 625년을 살았던 반송이 1965년경 고사한 뒤 2008년 사적비를 세우고 반송을 다시 심어 반송유적지로 정비했습니다. 폭 5m·높이 3.4m·47t 보령오석 비석이며, 비문은 지관 큰스님 근찬·초당 이무호 선생이 집필·서사했습니다. 나옹왕사는 인량리 까치소 탄생 설화·장육사 창건 등 영덕 역사와 연결됩니다. 사진은 한국관광공사 장육사(나옹왕사가 창건) 공식 사진입니다.',
+    '경상북도 영덕군 창수면 신기리 (반송유적지·나옹왕사 사적비)',
+    YD_NAONG,
+    [YD_NAONG_2, YD_NAONG_3],
   ),
 };
 

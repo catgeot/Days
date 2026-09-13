@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '방문자 개선',
-  sessionNo: 1,
-  sessionPhase: '404 복구 및 AI채팅 초기화',
-  branch: 'cursor/visitor-growth-1f90',
-  previewPath: '/',
-  qaShareSlug: 'visitor-growth',
+  title: '팔경 활용',
+  sessionNo: 41,
+  sessionPhase: '영덕 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=yeongdeok',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-41-yeongdeok-overlays',
+    session: '팔경 활용 #41, 영덕 결손 오버레이',
+    title: '영덕9경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영덕9경 결손 4건(영덕 도천숲·영덕 팔각산·영덕 사월의 복사꽃·영덕 나옹왕사 사적비)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 도천숲은 정책브리핑 국가유산청 사진, 팔각산은 한국관광공사 옥계계곡·명승 침수정 사진, 사월의 복사꽃은 한국관광공사 영덕 복사꽃마을 사진, 나옹왕사 사적비는 한국관광공사 장육사 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongdeok 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T12:58:00.000Z',
+  },
   {
     id: '2026-09-13-visitor-growth-1-clear-mobile',
     session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
