@@ -166,6 +166,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const isSearching = query.trim().length > 0;
   const isCurationMode = !isSearching && selectedContinent === 'all' && selectedTheme === 'all';
   const trimmedQuery = query.trim();
+  const hasChoiceCards = Boolean(disambiguation?.candidates?.length);
 
   const searchGuideText = useMemo(() => {
     if (!trimmedQuery) {
@@ -254,13 +255,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
   /** 선택 카드·Enter 검색 후 키보드가 남아 리스트를 가리지 않게 */
   useEffect(() => {
-    if (!disambiguation?.candidates?.length) return undefined;
+    if (!hasChoiceCards) return undefined;
     dismissSearchKeyboard();
+    scrollContainerRef.current?.scrollTo({ top: 0 });
     const t = window.setTimeout(() => dismissSearchKeyboard(), 50);
     return () => window.clearTimeout(t);
     // dismissSearchKeyboard는 inputRef 기반 — 매 렌더 동일 동작
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [disambiguation]);
+  }, [hasChoiceCards, disambiguation]);
 
   /** 검색/섹션 확장 패널 바깥 클릭 시 닫기 (앵커·패널 내부는 유지) */
   useEffect(() => {
@@ -283,8 +285,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     };
   }, [isOpen, isSearchHistoryOpen, activeQuickSection]);
 
+  // 선택 카드와 타이핑 드롭다운을 동시에 띄우면 같은 후보가 두 겹으로 중첩됨 (옹진 등).
   const showSearchDropdown =
     isSearchHistoryOpen &&
+    !hasChoiceCards &&
     (trimmedQuery.length > 0 || recentSearches.length > 0);
 
   useLayoutEffect(() => {
@@ -404,18 +408,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     setIsAILoading(true);
     setDisambiguation(null);
     setIsSearchHistoryOpen(false);
-    let keepChoiceDropdown = false;
     try {
       const result = await onSearch(finalQuery);
       if (isSearchDisambiguation(result)) {
         setDisambiguation(result);
-        keepChoiceDropdown = true;
         dismissSearchKeyboard();
         return;
       }
     } finally {
       setIsAILoading(false);
-      setIsSearchHistoryOpen(keepChoiceDropdown);
+      setIsSearchHistoryOpen(false);
       setActiveQuickSection(null);
     }
   };
@@ -915,6 +917,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               if (e.button !== 0) return;
               if (e.target instanceof Element && e.target.closest('[data-search-clear]')) return;
               setActiveQuickSection(null);
+              if (hasChoiceCards) return;
               setIsSearchHistoryOpen((prev) => !prev);
             }}
             className="relative flex h-12 items-center overflow-hidden rounded-2xl border border-white/[0.25] bg-white/[0.12] focus-within:bg-white/[0.15] md:h-10"
@@ -928,6 +931,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               value={query}
               onFocus={() => {
                 setActiveQuickSection(null);
+                if (hasChoiceCards) return;
                 setIsSearchHistoryOpen(true);
               }}
               onChange={(e) => {
@@ -958,8 +962,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             )}
           </form>
         </div>
-        {/* 드롭다운·섹션 패널 열림 시 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
-        {!showSearchDropdown && !activeQuickSection && (
+        {/* 드롭다운·선택 카드가 열린 동안 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
+        {!showSearchDropdown && !activeQuickSection && !hasChoiceCards && (
           <p className="text-xs md:text-sm text-blue-200/80 px-1 pt-1.5 leading-relaxed">
             {searchGuideText}
           </p>
@@ -1229,11 +1233,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               <SearchSuggestionList
                 variant="popover"
                 query={query}
-                items={
-                  disambiguation?.candidates?.length
-                    ? disambiguation.candidates
-                    : hybridSuggestions
-                }
+                items={hybridSuggestions}
                 loading={suggestionsLoading}
                 onSelect={(item) => {
                   setIsSearchHistoryOpen(false);

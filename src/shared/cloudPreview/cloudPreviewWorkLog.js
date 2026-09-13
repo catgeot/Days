@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 35,
-  sessionPhase: '증평 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jeungpyeong',
-  qaShareSlug: 'palgyeong-use',
+  title: '탐색홈 검색',
+  sessionNo: 1,
+  sessionPhase: '선택 카드 중첩 정리',
+  branch: 'cursor/explore-search-d14b',
+  previewPath: '/explore',
+  qaShareSlug: 'explore-search',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-explore-search-1-choice-overlay',
+    session: '탐색홈 검색 #1, 선택 카드 중첩 정리',
+    title: '옹진 Enter 후 드롭다운·선택 카드 한 겹',
+    detail:
+      '탐색홈에서 옹진처럼 동명이 많은 검색어를 Enter하면 타이핑 드롭다운과 선택 카드가 같은 후보를 두 겹으로 띄웠습니다. Enter 이후에는 설명 있는 선택 카드만 남기고 드롭다운·안내문을 닫았습니다. 타이핑 중 제안 목록은 그대로입니다. Preview /qa/explore-search — /explore 에서 옹진 검색 후 Enter.',
+    at: '2026-09-13T03:50:00.000Z',
+  },
   {
     id: '2026-09-13-korea-tna-strip-9-sido-stay-fallback',
     session: '한국 투어티켓 #9, Preview OK면 PR 병합',
