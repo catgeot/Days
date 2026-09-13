@@ -2,6 +2,16 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 팔경 활용 #37 — 논산 검색 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #37, 논산 검색 빈 썸네일` — #37 Preview QA 피드백
+- **브랜치** `cursor/palgyeong-use-e744` · tip `e3b1711a` · PR [#240](https://github.com/catgeot/Days/pull/240)
+- **완료**: 「논산」 관광지 검색에서 TourAPI `first_image`가 없던 3건(양촌자연휴양림 2750930·강경역사관 946844·노강서원 1956315)에 JSON contentId 기입 없이 런타임 썸네일 오버레이. 양촌·노강은 논산시 문화관광 공식 갤러리, 강경역사관은 한국관광공사 detailImage.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview 검색 「논산」 자연·인문
+- **잔여**: 다음 허브 **천안8경 4**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #37 — 논산 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #37, 논산 결손 오버레이`
