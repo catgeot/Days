@@ -24,12 +24,12 @@ export default function ScenicTnaStrip({ spot, tna, locale = 'ko' }) {
   const placeLabel = useMemo(
     () =>
       localizedHubLabel(locale, {
-        hubId: spot?.hubId,
+        hubId: location?.hubId || spot?.hubId,
         name: tna?.keyword,
       }) ||
       tna?.keyword ||
       '',
-    [locale, spot?.hubId, tna?.keyword],
+    [locale, location?.hubId, spot?.hubId, tna?.keyword],
   );
 
   if (!location || !tna?.keyword) return null;

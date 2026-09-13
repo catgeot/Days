@@ -3,7 +3,7 @@
  * 홈 URL은 {@link ../utils/travelAgencyHome.js} — 이 파일은 식별·호스트만.
  */
 
-/** @typedef {'stay'|'tour'|'package'|'flight'|'rental'|'esim'|'ferry'|'transfer'|'tickets'|'luggage'|'scooter'|'browse'} TravelAgencyKind */
+/** @typedef {'stay'|'tour'|'package'|'flight'|'rental'|'esim'|'ferry'|'train'|'transfer'|'tickets'|'luggage'|'scooter'|'browse'} TravelAgencyKind */
 
 /**
  * @typedef {object} TravelAgency
@@ -21,7 +21,7 @@ export const TRAVEL_AGENCIES = [
     id: 'mrt',
     nameKo: '마이리얼트립',
     nameEn: 'MyRealTrip',
-    kinds: ['stay', 'tour', 'package'],
+    kinds: ['stay', 'tour', 'package', 'rental'],
     hosts: ['myrealtrip.com', 'experiences.myrealtrip.com'],
   },
   {
@@ -35,7 +35,7 @@ export const TRAVEL_AGENCIES = [
     id: 'tripcom',
     nameKo: '트립닷컴',
     nameEn: 'Trip.com',
-    kinds: ['flight', 'stay'],
+    kinds: ['flight', 'stay', 'train'],
     hosts: ['trip.com', 'kr.trip.com'],
   },
   {
@@ -49,7 +49,7 @@ export const TRAVEL_AGENCIES = [
     id: 'twelve_go',
     nameKo: '12Go',
     nameEn: '12Go',
-    kinds: ['ferry'],
+    kinds: ['ferry', 'train'],
     hosts: ['12go.asia', 'trainbusferry.com'],
   },
   {

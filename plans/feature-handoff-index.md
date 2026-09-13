@@ -41,32 +41,20 @@ AI 모델 #3, Preview OK면 PR 병합
 
 ---
 
-### 한국 투어티켓
+### 한국 투어티켓 — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | **#9 push** · tip `e885df64` · PR [#234](https://github.com/catgeot/Days/pull/234) · 병합 보류(대청도 숙소 폴백 Preview) |
-| **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `e885df64` |
-| **PR** | [#234](https://github.com/catgeot/Days/pull/234) |
+| **상태** | **#10 merge ✅ · 주제 종료** · main `2374db5f` · PR [#234](https://github.com/catgeot/Days/pull/234) |
+| **브랜치** | `cursor/korea-tna-strip-ef65` · merge `2374db5f` |
+| **PR** | [#234](https://github.com/catgeot/Days/pull/234) (MERGED) |
 | **플랜** | [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=daecheongdo-ongjin` · 경복궁 · 축제 왕가의 산책 |
-| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `resolveFestivalThemeCrossLinks` · `buildFestivalStayAreas` · `mergeMrtStayFetchQuery` |
-| **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-stay` · `smoke:korea-festival-personal` · `smoke:mrt-stay` · `smoke:travel-agencies` · `vite build` |
+| **PROD** | `https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung` — 명승·축제 본문 투어·렌터카·기차표 · 시드 군 숙소 폴백 |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-stay` · `smoke:korea-festival-personal` · `smoke:mrt-stay` · `smoke:travel-agencies` PASS |
+| **성과** | #7 국내 렌터카(마이리얼트립)·기차표. #8 왕가의 산책 인천(룩소르 아님). #9 대청도 등 시드 군 숙소·투어 시도 폴백. `/qa/korea-tna-strip` → PROD |
 
-**다음 제시어**:
-
-```
-한국 투어티켓 #10, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-@plans/korea-tna-strip-plan.md
-브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
-금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 대청도 숙소·투어가 비지 않고 인천·강화 칩인지. 왕가의 산책 인천(룩소르 아님). 경복궁 렌터카·기차표 OK면 PR #234 병합
-```
+**다음 제시어 없음** (주제 종료). 해외 이벤트 TNA 공통화(#11)는 별도 요청 시. 확인은 `www.gateo.kr`.
 
 ---
 
@@ -453,28 +441,28 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#35** tip `f9f4528c` · PR [#237](https://github.com/catgeot/Days/pull/237) · 증평구경 결손 4 · **#36 계룡 결손 오버레이** |
+| **상태** | **#36** tip `6ebd84b2` · PR [#238](https://github.com/catgeot/Days/pull/238) · 계룡9경 결손 4 · **#37 논산 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `f9f4528c` |
-| **PR** | [#237](https://github.com/catgeot/Days/pull/237) · [#236](https://github.com/catgeot/Days/pull/236) merge ✅ |
+| **tip** | `6ebd84b2` |
+| **PR** | [#238](https://github.com/catgeot/Days/pull/238) · [#237](https://github.com/catgeot/Days/pull/237) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=jeungpyeong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gyeryong` |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237). 순수 사진/개요 누락 **134**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **계룡9경 4** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238). 순수 사진/개요 누락 **130**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **논산11경 4** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #36, 계룡 결손 오버레이
+팔경 활용 #37, 논산 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 계룡9경 사진·개요 없는 4건(향적산 국사봉·숫용추·암용추·계룡대 통일탑)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gyeryong
+작업: 논산11경 사진·개요 없는 4건(대둔산 수락계곡·강경포구와 근대역사거리·노성산성과 명재고택·종학당과 한국유교문화진흥원)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=nonsan
 ```
 
 ---

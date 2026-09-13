@@ -533,6 +533,39 @@ export function resolveMrtStayQuery(location) {
 }
 
 /**
+ * 칩·인근 도시 폴백을 1차 키워드와 같이 보냄.
+ * 빈 altKeywords 배열로 location 알트를 지우지 않음.
+ * cityHints에 폴백 도시명을 넣어 Edge가 인천 CITY를 옹진 힌트로 거부하지 않게 함.
+ */
+export function mergeMrtStayFetchQuery(location, opts = {}) {
+  const query = resolveMrtStayQuery(location);
+  const keywordOverride = String(opts.keywordOverride || '').trim();
+  const keyword = keywordOverride || query.keyword;
+  const extraAlts = Array.isArray(opts.altKeywords)
+    ? opts.altKeywords.map((k) => String(k || '').trim()).filter(Boolean)
+    : [];
+  const altKeywords = [];
+  const altSeen = new Set();
+  const skip = String(keyword || '').trim().toLowerCase();
+  if (skip) altSeen.add(skip);
+  for (const raw of [...extraAlts, ...(query.altKeywords || [])]) {
+    pushUnique(altKeywords, altSeen, raw);
+  }
+  const cityHints = [];
+  const citySeen = new Set();
+  for (const raw of [keyword, ...extraAlts, ...(query.cityHints || [])]) {
+    pushUnique(cityHints, citySeen, raw);
+    pushUnique(cityHints, citySeen, stripKoAdminSuffix(raw));
+  }
+  return {
+    ...query,
+    keyword,
+    altKeywords: altKeywords.slice(0, 12),
+    cityHints: cityHints.slice(0, 8),
+  };
+}
+
+/**
  * 숙소 토글 노출 — slug SSOT + uiPlace(국가·키워드 있을 때).
  * @param {object} location
  * @param {{ hidden?: boolean }} [opts]

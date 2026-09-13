@@ -2002,6 +2002,7 @@ export default function ThemeSpotDetailModal({
                 <ScenicStayStrip
                   spot={stayCrossInput}
                   stay={stayCross.stay}
+                  stayAreas={stayCross.stayAreas}
                   locale={locale}
                 />
               </div>

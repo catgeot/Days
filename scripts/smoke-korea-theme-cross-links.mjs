@@ -13,6 +13,7 @@ import {
   getThemeMembership,
   listSameHubCrossSpots,
   resolveFestivalThemeCrossLinks,
+  resolveStayTnaHubId,
   resolveThemeCrossLinks,
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
@@ -309,6 +310,117 @@ assert(
 assert(
   poiBundle.tna?.keyword === '춘천' || poiBundle.tna?.keyword === '춘천시',
   `POI tna uses region not title (got ${poiBundle.tna?.keyword})`,
+);
+
+const haksanFest = resolveFestivalThemeCrossLinks({
+  title: '시민창작예술축제 학산마당극놀래',
+  addr1: '인천광역시 미추홀구 경인로 216-1 (도화동)',
+  mapx: 126.6505,
+  mapy: 37.4636,
+  areaCode: '2',
+  contentId: 'haksan-madang',
+});
+assert(
+  resolveStayTnaHubId('michuhol', '2', [{ hubId: 'ongjin' }, { hubId: 'incheon' }]) ===
+    'incheon',
+  'unseeded 미추홀 stay hub falls back to incheon not ongjin',
+);
+assert(
+  resolveStayTnaHubId('ongjin', '2', [{ hubId: 'incheon' }]) === 'ongjin',
+  'seeded 옹진 stay hub is kept',
+);
+assert(
+  haksanFest.stay?.keyword === '인천' && haksanFest.stay?.location?.hubId === 'incheon',
+  `haksan stay falls back to 인천 (got ${haksanFest.stay?.keyword} / ${haksanFest.stay?.location?.hubId})`,
+);
+assert(haksanFest.stay?.keyword !== '옹진', 'haksan stay keyword is not 옹진');
+assert(haksanFest.tna?.keyword === '인천', `haksan tna is 인천 (got ${haksanFest.tna?.keyword})`);
+assert(haksanFest.tna?.keyword !== '옹진', 'haksan tna keyword is not 옹진');
+assert(
+  (haksanFest.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `haksan stayAreas includes 인천 (got ${JSON.stringify(haksanFest.stayAreas)})`,
+);
+
+const royalWalk = resolveFestivalThemeCrossLinks({
+  title: '왕가의 산책',
+  addr1: '인천광역시 중구 공항로 272 (운서동)',
+  mapx: 126.4407,
+  mapy: 37.4602,
+  areaCode: '2',
+  contentId: 'royal-walk',
+});
+assert(
+  royalWalk.stay?.keyword === '인천' && royalWalk.stay?.location?.hubId === 'incheon',
+  `왕가의 산책 stay is 인천 not 옹진 (got ${royalWalk.stay?.keyword} / ${royalWalk.stay?.location?.hubId})`,
+);
+assert(royalWalk.stay?.keyword !== '옹진', '왕가의 산책 stay keyword is not 옹진');
+assert(
+  royalWalk.tna?.keyword === '인천',
+  `왕가의 산책 tna is 인천 not 행사명 (got ${royalWalk.tna?.keyword})`,
+);
+assert(royalWalk.tna?.keyword !== '왕가의 산책', '왕가의 산책 tna keyword is not event title');
+assert(
+  !(royalWalk.tna?.altKeywords || []).includes('왕가의 산책'),
+  `왕가의 산책 tna alts must not include event title (got ${royalWalk.tna?.altKeywords?.join(',')})`,
+);
+assert(
+  (royalWalk.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  '왕가의 산책 stayAreas includes parent city 인천',
+);
+assert(
+  (royalWalk.stayAreas || []).some((a) => a.mrtKeyword === '강화' || a.name === '강화'),
+  `왕가의 산책 stayAreas includes adjacent 강화 (got ${JSON.stringify(royalWalk.stayAreas)})`,
+);
+assert(
+  !(royalWalk.stayAreas || []).some((a) => a.hubId === 'ongjin' || a.mrtKeyword === '옹진'),
+  '왕가의 산책 stayAreas omits 옹진 unless address is 옹진군',
+);
+
+const daecheong = listKoreaScenicSpots().find(
+  (s) => s.id === 'daecheongdo-ongjin' || s.placeSlug === 'daecheongdo-ongjin',
+);
+assert(Boolean(daecheong), '대청도 scenic spot exists');
+const daecheongCross = resolveThemeCrossLinks(daecheong);
+assert(
+  daecheongCross.stay?.keyword === '옹진' || daecheongCross.stay?.location?.hubId === 'ongjin',
+  `대청도 stay hub stays 옹진 (got ${daecheongCross.stay?.keyword} / ${daecheongCross.stay?.location?.hubId})`,
+);
+assert(
+  (daecheongCross.stay?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `대청도 stay alts include 인천 (got ${daecheongCross.stay?.altKeywords?.join(',')})`,
+);
+assert(
+  (daecheongCross.tna?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `대청도 tna alts include 인천 (got ${daecheongCross.tna?.altKeywords?.join(',')})`,
+);
+assert(
+  (daecheongCross.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `대청도 stayAreas includes 인천 (got ${JSON.stringify(daecheongCross.stayAreas)})`,
+);
+assert(
+  (daecheongCross.stayAreas || []).some((a) => a.mrtKeyword === '강화' || a.name === '강화'),
+  `대청도 stayAreas includes 강화 (got ${JSON.stringify(daecheongCross.stayAreas)})`,
+);
+
+const ongjinIslandFest = resolveFestivalThemeCrossLinks({
+  title: '대청도 모래축제',
+  addr1: '인천광역시 옹진군 대청면 대청리',
+  mapx: 124.7,
+  mapy: 37.82,
+  areaCode: '2',
+  contentId: 'daecheong-sand',
+});
+assert(
+  ongjinIslandFest.stay?.location?.hubId === 'ongjin',
+  `옹진군 주소 축제 stay hub is ongjin (got ${ongjinIslandFest.stay?.location?.hubId})`,
+);
+assert(
+  (ongjinIslandFest.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `옹진군 축제 stayAreas includes 인천 fallback (got ${JSON.stringify(ongjinIslandFest.stayAreas)})`,
+);
+assert(
+  (ongjinIslandFest.stay?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `옹진군 축제 stay alts include 인천 (got ${ongjinIslandFest.stay?.altKeywords?.join(',')})`,
 );
 
 const libSrc = readFileSync(

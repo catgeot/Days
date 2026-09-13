@@ -14,7 +14,7 @@ import { worldEventFromTourApiFestival } from './worldEventFromTourApiFestival';
 export default function FestivalStayStrip({ item, festivalCross, locale = 'ko' }) {
   const event = useMemo(() => worldEventFromTourApiFestival(item), [item]);
   const location = festivalCross?.stay?.location;
-  const nearestHub = festivalCross?.nearbyHubs?.[0];
+  const stayHubId = location?.hubId || festivalCross?.stayAreas?.[0]?.hubId;
 
   const presets = useMemo(() => (event ? tripWindowPresetsFromEvent(event) : null), [event]);
 
@@ -34,13 +34,15 @@ export default function FestivalStayStrip({ item, festivalCross, locale = 'ko' }
   const placeLabel = useMemo(() => {
     return (
       localizedHubLabel(locale, {
-        hubId: nearestHub?.hubId,
+        hubId: stayHubId,
         name: festivalCross?.stay?.keyword,
       }) ||
       festivalCross?.stay?.keyword ||
       ''
     );
-  }, [locale, nearestHub?.hubId, festivalCross?.stay?.keyword]);
+  }, [locale, stayHubId, festivalCross?.stay?.keyword]);
+
+  const stayAreas = festivalCross?.stayAreas;
 
   if (!event || !location || !presets || !tripDates.checkIn || !tripDates.checkOut) return null;
 
@@ -54,6 +56,7 @@ export default function FestivalStayStrip({ item, festivalCross, locale = 'ko' }
       onDatesChange={setTripDates}
       locale={locale}
       placeLabel={placeLabel}
+      stayAreas={stayAreas}
     />
   );
 }

@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-13T03:40:00.000Z',
   },
   {
+    id: '2026-09-13-korea-tna-strip-9-sido-stay-fallback',
+    session: '한국 투어티켓 #9, Preview OK면 PR 병합',
+    title: '명승·축제 숙소·투어 시도 폴백',
+    detail:
+      '옹진 대청도처럼 시드 군·섬은 숙소 재고가 없어도 폴백이 안 됐습니다. 명승에도 축제와 같은 인천·강화 칩을 붙이고, 같은 시도 시드 키워드를 숙소·투어 알트에 넣었습니다. 빈 alt 배열이 지역 알트를 지우지 않게 했고, cityHints에 폴백 도시명을 넣어 인천 CITY가 옹진 힌트로 거절되지 않게 했습니다. Preview /qa/korea-tna-strip — 대청도 숙소·투어, 왕가의 산책 인천, 경복궁 렌터카·기차표.',
+    at: '2026-09-13T03:20:00.000Z',
+  },
+  {
     id: '2026-09-13-palgyeong-use-35-jeungpyeong-overlays',
     session: '팔경 활용 #35, 증평 결손 오버레이',
     title: '증평구경 결손 4건 런타임 오버레이',
@@ -48,12 +56,28 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-13T02:20:00.000Z',
   },
   {
+    id: '2026-09-13-korea-tna-strip-8-ongjin-title-fallback',
+    session: '한국 투어티켓 #8, Preview OK면 PR 병합',
+    title: '왕가의 산책 인천 폴백 · 행사명 투어 제외',
+    detail:
+      '인천공항 「왕가의 산책」이 옹진 군청 최근접으로 숙소·투어가 붙고, 재고가 없으면 행사명으로 룩소르 「왕가의 계곡」이 나왔습니다. 주소가 옹진군이 아니면 시도 대표(인천)로 찾고, 숙소 칩은 인천·강화 같은 상위·인접 시드만 보여 줍니다. 투어 키워드·알트에서 행사명을 빼 클룩 칩도 지역명입니다. Preview /qa/korea-tna-strip — 왕가의 산책 본문 숙소·투어.',
+    at: '2026-09-13T02:10:00.000Z',
+  },
+  {
     id: '2026-09-13-palgyeong-use-33-pohang-overlays',
     session: '팔경 활용 #33, 포항 결손 오버레이',
     title: '포항12경 결손 5건 런타임 오버레이',
     detail:
       'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 포항12경 결손 5건(호미곶 일출·내연산 12폭포·운제산 오어사 사계·영일대 포스코 야경·철길숲 불의 정원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 호미곶 해맞이광장·내연산 연산폭포·오어사·영일대 누각 사진을 연결했고, 철길숲은 포항시 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=pohang 팔경 행 썸네일·상세 개요.',
     at: '2026-09-13T01:40:00.000Z',
+  },
+  {
+    id: '2026-09-13-korea-tna-strip-7-rental-train',
+    session: '한국 투어티켓 #7, 국내 렌터카·기차표',
+    title: '렌터카 보기 · 마이리얼트립 · 기차표',
+    detail:
+      '투어 섹션 하단 렌터카 문구를 「{{지역}} 렌터카 보기」로 바꿨습니다(최저가 비교 없음). 국내 렌터카는 클룩 검색 대신 마이리얼트립 /rentalcars?category=domestic 로 연결합니다. 기차표는 트립닷컴 /trains/ 칩을 같은 줄에 넣었습니다. Preview /qa/korea-tna-strip — 경복궁 등 명승·축제 상세 투어 섹션 하단.',
+    at: '2026-09-13T01:30:00.000Z',
   },
   {
     id: '2026-09-13-palgyeong-use-32-namhae-12gyeong-title',

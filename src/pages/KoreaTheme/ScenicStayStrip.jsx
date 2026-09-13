@@ -11,12 +11,14 @@ import EventStayStrip from '../WorldEvents/EventStayStrip';
  * @param {{
  *   spot: Record<string, unknown> | null,
  *   stay: { keyword?: string, location?: Record<string, unknown> } | null,
+ *   stayAreas?: Array<{ name?: string, mrtKeyword?: string, hubId?: string }>,
  *   locale?: string,
  * }} props
  */
-export default function ScenicStayStrip({ spot, stay, locale = 'ko' }) {
+export default function ScenicStayStrip({ spot, stay, stayAreas, locale = 'ko' }) {
   const { t } = useTranslation();
   const location = stay?.location;
+  const stayHubId = location?.hubId || stayAreas?.[0]?.hubId || spot?.hubId;
   const [tripDates, setTripDates] = useState(() => normalizeMrtStayDates());
 
   const event = useMemo(
@@ -29,12 +31,12 @@ export default function ScenicStayStrip({ spot, stay, locale = 'ko' }) {
   const placeLabel = useMemo(
     () =>
       localizedHubLabel(locale, {
-        hubId: spot?.hubId,
+        hubId: stayHubId,
         name: stay?.keyword,
       }) ||
       stay?.keyword ||
       '',
-    [locale, spot?.hubId, stay?.keyword],
+    [locale, stayHubId, stay?.keyword],
   );
 
   if (!location || !tripDates.checkIn || !tripDates.checkOut) return null;
@@ -49,6 +51,7 @@ export default function ScenicStayStrip({ spot, stay, locale = 'ko' }) {
       onDatesChange={setTripDates}
       locale={locale}
       placeLabel={placeLabel}
+      stayAreas={stayAreas}
       title={t('korea.theme.spotDetail.stayStripTitle')}
       hint={t('korea.theme.spotDetail.stayStripHint')}
     />
