@@ -31,6 +31,7 @@ import {
   listsForHub,
   localScenicMemberToSuggestion,
   localScenicListDisplayTitle,
+  enrichSearchCandidateScenicMedia,
 } from './koreaLocalScenicLists';
 import {
   findCityBySearchQuery,
@@ -332,7 +333,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     }
   }
 
-  return out.slice(0, 24);
+  return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
 }
 
 /**
@@ -409,7 +410,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
  * @param {object} hub
  */
 export async function buildHubCandidatesForEnter(hub) {
-  return buildHubDisambiguationCandidates(hub, []);
+  return buildHubDisambiguationCandidates(hub, []).map(enrichSearchCandidateScenicMedia);
 }
 
 /**
@@ -422,7 +423,9 @@ export function prependLocalScenicToHubCandidates(hub, candidates, lists) {
   const out = [];
   const seen = new Set();
   pushLocalScenicMembersFirst(hub, out, seen, lists);
-  for (const item of candidates || []) pushUnique(out, seen, item);
+  for (const item of candidates || []) {
+    pushUnique(out, seen, enrichSearchCandidateScenicMedia(item));
+  }
   return out;
 }
 
@@ -467,7 +470,10 @@ export function locationToChoiceCandidate(loc) {
  * @param {string} [title]
  */
 export function ensureDisambiguation(query, candidates, title) {
-  const list = (candidates || []).map(locationToChoiceCandidate).filter(Boolean);
+  const list = (candidates || [])
+    .map(locationToChoiceCandidate)
+    .filter(Boolean)
+    .map(enrichSearchCandidateScenicMedia);
   if (!list.length) return null;
   const seen = new Set();
   const deduped = [];

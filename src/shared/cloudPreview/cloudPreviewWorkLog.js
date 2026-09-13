@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '탐색홈 검색',
-  sessionNo: 1,
-  sessionPhase: '선택 카드 중첩 정리',
+  sessionNo: 3,
+  sessionPhase: '팔경식 리스트·카드 썸네일',
   branch: 'cursor/explore-search-d14b',
   previewPath: '/explore',
   qaShareSlug: 'explore-search',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-explore-search-3-palgyeong-list-cards',
+    session: '탐색홈 검색 #3, 팔경식 리스트·카드 썸네일',
+    title: '검색 결과에 N경 표기·썸네일 행',
+    detail:
+      '탐색홈 검색 결과를 명승 팔경 리스트처럼 한 줄 행으로 나열하고, 팔경 멤버에는 「문경 1경」 같은 행 부제를 붙였습니다. 선택 카드·드롭다운에 GATEO 선정 썸네일을 넣었고, 옹진 섬(덕적도 등)도 같은 사진이 보입니다. Enter 후 드롭다운은 닫힌 채 선택 행만 남습니다. Preview /qa/explore-search — 옹진 Enter 섬 사진, 문경 검색 문경 1경.',
+    at: '2026-09-13T04:20:00.000Z',
+  },
   {
     id: '2026-09-13-explore-search-1-choice-overlay',
     session: '탐색홈 검색 #1, 선택 카드 중첩 정리',

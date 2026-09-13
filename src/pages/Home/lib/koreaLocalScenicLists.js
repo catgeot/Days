@@ -460,14 +460,40 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
   const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
   const overlay = lookupLocalScenicMemberOverlay(spotId);
   const thumb = overlay?.imageUrl || fromCurated.imageUrl;
+  const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
   return {
     ...base,
     groupTitle: localScenicListDisplayTitle(list, h, locale),
+    rankBlurb,
     localScenicListId: list.listId,
     source: 'localScenicList',
     contentId: overlay?.contentId || contentId || fromCurated.contentId,
     imageUrl: thumb,
     thumbUrl: thumb,
+  };
+}
+
+/**
+ * 탐색 검색 행에 GATEO 선정 썸네일·contentId를 붙인다 (JSON 쓰기 아님).
+ * @param {object} item
+ */
+export function enrichSearchCandidateScenicMedia(item) {
+  if (!item || typeof item !== 'object') return item;
+  const hasThumb = Boolean(
+    String(item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '').trim(),
+  );
+  const hubId = String(item.hubId || '').trim();
+  const name = String(item.name || '').trim();
+  if (!hubId || !name) return item;
+  const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
+  if (!fromCurated.imageUrl && !fromCurated.contentId) return item;
+  if (hasThumb && item.contentId) return item;
+  return {
+    ...item,
+    ...(fromCurated.imageUrl && !hasThumb
+      ? { imageUrl: fromCurated.imageUrl, thumbUrl: fromCurated.imageUrl }
+      : {}),
+    ...(fromCurated.contentId && !item.contentId ? { contentId: fromCurated.contentId } : {}),
   };
 }
 

@@ -118,6 +118,10 @@ assert.ok(
   suggestionListSrc.includes('groupTitle'),
   'SearchSuggestionList renders groupTitle subtitle',
 );
+assert.ok(
+  suggestionListSrc.includes('rankBlurb'),
+  'SearchSuggestionList renders palgyeong rankBlurb',
+);
 const scenicPageSrc = readFileSync(
   join(root, 'src/pages/KoreaTheme/ScenicPage.jsx'),
   'utf8',
@@ -182,6 +186,11 @@ assert.ok(memberRows.length >= 3, '문경 팔경 member suggestions');
 assert.ok(
   memberRows.every((s) => s.groupTitle === '문경 팔경'),
   'member groupTitle 문경 팔경',
+);
+assert.equal(memberRows[0].rankBlurb, '문경 1경', '탐색 제안 행 부제 문경 1경');
+assert.ok(
+  memberRows.some((s) => s.rankBlurb === '문경 2경'),
+  '탐색 제안에 문경 2경 표기',
 );
 assert.ok(
   memberRows.some((s) => s.name === '새재계곡'),
