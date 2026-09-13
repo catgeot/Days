@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 32,
-  sessionPhase: '남해 12경 제목',
+  sessionNo: 33,
+  sessionPhase: '포항 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=namhae',
+  previewPath: '/korea/theme/scenic?hub=pohang',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-33-pohang-overlays',
+    session: '팔경 활용 #33, 포항 결손 오버레이',
+    title: '포항12경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 포항12경 결손 5건(호미곶 일출·내연산 12폭포·운제산 오어사 사계·영일대 포스코 야경·철길숲 불의 정원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 호미곶 해맞이광장·내연산 연산폭포·오어사·영일대 누각 사진을 연결했고, 철길숲은 포항시 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=pohang 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T01:40:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-32-namhae-12gyeong-title',
     session: '팔경 활용 #32, 남해 결손 오버레이',

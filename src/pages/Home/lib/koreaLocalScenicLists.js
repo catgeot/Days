@@ -929,6 +929,21 @@ const NH_FOREST_3 = 'https://tong.visitkorea.or.kr/cms2/website/24/1571324.jpg';
 const NH_BRIDGE = 'https://tong.visitkorea.or.kr/cms2/website/98/1576398.jpg';
 const NH_BRIDGE_2 = 'https://tong.visitkorea.or.kr/cms2/website/01/1576401.jpg';
 const NH_BRIDGE_3 = 'https://tong.visitkorea.or.kr/cms2/website/10/1576410.jpg';
+const PH_HOMI = 'https://tong.visitkorea.or.kr/cms2/website/99/2644199.jpg';
+const PH_HOMI_2 = 'https://tong.visitkorea.or.kr/cms2/website/00/2644200.jpg';
+const PH_HOMI_3 = 'https://tong.visitkorea.or.kr/cms2/website/14/1224414.jpg';
+const PH_FALLS = 'https://tong.visitkorea.or.kr/cms2/website/21/3543621.jpg';
+const PH_FALLS_2 = 'https://tong.visitkorea.or.kr/cms2/website/05/3543605.jpg';
+const PH_FALLS_3 = 'https://tong.visitkorea.or.kr/cms2/website/06/3543606.jpg';
+const PH_OEO = 'https://tong.visitkorea.or.kr/cms2/website/20/2454220.jpg';
+const PH_OEO_2 = 'https://tong.visitkorea.or.kr/cms2/website/23/2454223.jpg';
+const PH_OEO_3 = 'https://tong.visitkorea.or.kr/cms2/website/26/2454226.jpg';
+const PH_YEONGIL = 'https://tong.visitkorea.or.kr/cms2/website/79/2454079.jpg';
+const PH_YEONGIL_2 = 'https://tong.visitkorea.or.kr/cms2/website/81/2454081.jpg';
+const PH_YEONGIL_3 = 'https://tong.visitkorea.or.kr/cms2/website/23/2504223.jpg';
+const PH_RAIL = 'https://www.pohang.go.kr/phtour/data/tour/image/112/1663228413252.jpg';
+const PH_RAIL_2 = 'https://www.pohang.go.kr/phtour/data/tour/image/112/1663228416441.jpg';
+const PH_RAIL_3 = 'https://www.pohang.go.kr/phtour/data/tour/image/112/1671447358825.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1929,6 +1944,36 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 남해군 창선면 동부대로2964번길 49-10 (창선·삼천포대교)',
     NH_BRIDGE,
     [NH_BRIDGE_2, NH_BRIDGE_3],
+  ),
+  'local-scenic:pohang-sipgyeong:호미곶일출': localScenicPhotoOverlay(
+    '포항12경 제1경 호미곶 일출은 남구 호미곶면 해맞이로150번길 20입니다. 포항시 문화관광은 한반도 지형상 호랑이 꼬리·최동단으로 가장 먼저 해가 뜨며, 2000년·2001년 1월 1일 국가지정 해맞이 축전이 열렸고 해마다 한민족 해맞이 축전이 열린다고 적습니다. 해맞이광장에는 영원의 불씨함, 바다와 육지의 상생의 손, 연오랑세오녀상이 있고 호미곶등대와 국립등대박물관이 있습니다. 육당 최남선이 일출제일의 이곳을 조선십경의 하나로 꼽았습니다.',
+    '경상북도 포항시 남구 호미곶면 해맞이로150번길 20 (호미곶 해맞이광장)',
+    PH_HOMI,
+    [PH_HOMI_2, PH_HOMI_3],
+  ),
+  'local-scenic:pohang-sipgyeong:내연산12폭포': localScenicPhotoOverlay(
+    '포항12경 제2경 내연산 12폭포는 북구 송라면 보경로 523 내연산 보경사 시립공원입니다. 포항시 문화관광은 청하골 열두 폭포 가운데 관음폭포(제6)와 연산폭포(제7) 경관이 빼어나며, 관음폭포 위 구름다리를 건너면 높이 30m·길이 40m 연산폭포가 보인다고 적습니다. 보경사에서 연산폭포까지 왕복 약 6km·2시간이며 등산로가 잘 닦여 있습니다. 보경사에는 원진국사비(보물 제252호)·원진국사부도(보물 제430호)가 있습니다.',
+    '경상북도 포항시 북구 송라면 보경로 523 (내연산 보경사 시립공원)',
+    PH_FALLS,
+    [PH_FALLS_2, PH_FALLS_3],
+  ),
+  'local-scenic:pohang-sipgyeong:운제산오어사사계': localScenicPhotoOverlay(
+    '포항12경 제3경 운제산 오어사 사계는 남구 오천읍 오어로 1입니다. 포항시 문화관광은 신라 진평왕 대 창건 항사사로, 원효와 혜공이 법력으로 고기를 살리는 시합을 하다 나 오(吾)·고기 어(魚)를 써서 오어사라 하였다고 전합니다. 대웅전은 영조 17년(1741) 중건 정면 3칸 팔작지붕이며 경북문화재, 범종은 보물 제1280호입니다. 운제산과 오어지, 자장암·원효암이 사계절 경관을 이룹니다.',
+    '경상북도 포항시 남구 오천읍 오어로 1 (운제산 오어사)',
+    PH_OEO,
+    [PH_OEO_2, PH_OEO_3],
+  ),
+  'local-scenic:pohang-sipgyeong:영일대포스코야경': localScenicPhotoOverlay(
+    '포항12경 제5경 영일대 포스코 야경은 북구 해안로 95 영일대해수욕장입니다. 포항시 문화관광은 백사장 길이 1,750m·너비 40~70m이며 POSCO와 영일만이 보인다고 적습니다. 영일대는 전국 최초 해상 누각으로 2013년 대한민국 공간문화대상을 받았고 누각 123㎡·전망데크 738㎡·인도교 80m입니다. 포스코 야경은 2010년 야간경관 개선으로 1,500여 개 LED가 금빛 테마이며 형산강변·영일대·환호공원·송도에서 보입니다. 사진은 한국관광공사 영일대 누각(영일정)·포항불빛축제 공식 사진입니다.',
+    '경상북도 포항시 북구 해안로 95 (영일대해수욕장·영일대)',
+    PH_YEONGIL,
+    [PH_YEONGIL_2, PH_YEONGIL_3],
+  ),
+  'local-scenic:pohang-sipgyeong:철길숲불의정원': localScenicPhotoOverlay(
+    '포항12경 제9경 철길숲 불의 정원은 남구 대이로1번길 37(대잠동)입니다. 포항시 문화관광은 효자역과 옛 포항역 사이 4.3km 폐철도가 2015년 KTX 이전 뒤 도시숲이 되었고, 왕벚나무·느티나무·메타세쿼이아 등 4,800여 그루가 심겼다고 적습니다. 2017년 3월 관정 굴착 중 지하 200m 천연가스에 불이 붙어 불의정원을 조성했습니다. 포항시에 따르면 불꽃은 2024년 9월 27일 꺼졌습니다. 사진은 포항시 철길숲·불의정원 공식 사진입니다.',
+    '경상북도 포항시 남구 대이로1번길 37 (대잠동 철길숲·불의정원)',
+    PH_RAIL,
+    [PH_RAIL_2, PH_RAIL_3],
   ),
 };
 
