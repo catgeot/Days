@@ -20,25 +20,27 @@ gateo.kr은 **"3D 인터랙티브 지구본과 AI 도슨트(MOONi)를 결합하�
 6. **모바일 차단**: 390px 화면에서 검색 텍스트 잘림, 로그인 버튼 완전 은닉, 고해상도 Retina 모바일 발열/배터리 누수.
 7. **신뢰 및 투명성 결여**: 로고를 클릭해 스크롤해야만 보이는 약관/출처, 제휴 광고와 순수 유틸리티 구분이 모호한 플래너 CTA.
 8. **인지 과부하 (Cognitive Overload)**: 플래너 진입 시 복잡도 90/100 표기와 함께 25~30개의 제휴 배너/버튼이 단일 스크롤에 쏟아져 피로감 유발.
+9. **SEO 및 검색엔진 색인 저하**: SPA 구조로 인해 크롤러(네이버 서치어드바이저, 구글봇, 카카오봇 등)에게 서빙되는 `<body>` 본문 텍스트가 모든 `/place/:slug`에서 동일한 홈 소개글로 전달됨. 중복 콘텐츠(Duplicate Content) 판정 및 저품질/색인 제외로 외부 오가닉 유입 차단.
 
 ---
 
-## 1. 12대 개선점 현황 정밀 진단 매트릭스
+## 1. 13대 개선점 현황 정밀 진단 매트릭스
 
 | # | 항목 | 현재 상태 및 원인 코드 위치 | 영향도 / 우선순위 | 해결 핵심 요약 |
 |---|---|---|---|---|
 | **1** | **홈 가치제안 + CTA** | `HomeUI.jsx` 상단/하단 분산. 헤드라인 부재, 모바일 하단 CTA 완전 은닉 | **P0 (최상)** | 검색바 상단 중앙 히어로 가치제안 + `[여행지 탐색]`, `[MOONi 추천]` 투톱 CTA |
 | **2** | **빈 페이지 복구** | `App.jsx` 내 `/about`, `/pricing`, `/product` 및 와일드카드 404 라우트 완전 누락 | **P0 (최상)** | `App.jsx` 404 폴백, `AboutPage` 신설(`footerData.js` 활용), `/pricing`·`/product` 리다이렉트 |
 | **3** | **AI 채팅 초기 오류** | `HomeUI.jsx` 655행 `onOpenChat()` 호출 시 `selectedLocation` 누락 -> `'New Session'` -> `placeChatIntro.js`에서 유효성 에러 throw | **P0 (최상)** | 장소 미선택 시 `'MOONi'` 기본 바인딩, 유효성 가드, 범용 탐색 질문 칩 4종 제공 |
-| **4** | **무드 검색 vs 지오코딩** | `useHomeHandlers.js` 1140행. `MOOD_HINT_KEYWORDS` 미흡으로 지오코딩이 앞서 실행되어 도로/상호 오탐 | **P1 (상)** | 무드/의도 정규식 확장, 지오코딩 사전 스킵 후 AI 무드 큐레이션 연결, 드롭다운 내 "MOONi에게 물어보기" 카드 |
-| **5** | **언어 일관성** | `PlaceCardExpanded.jsx` 118행 raw `location.desc` 참조, `toolkitPlaceIdResolve.js` 한글 폴백, `HomeUI.jsx` 영문 하드코딩 | **P2 (중)** | `getLocalizedPlaceDesc` 연결, 네비 `t()` 적용, DB 미번역 안내 배너 |
+| **4** | **크롤러 SEO & 본문 프리렌더링** | `middleware.js`는 `<head>`만 치환하고 `<body>`는 홈 텍스트 그대로 서빙. 봇 감지 정규식에 카카오/다음/슬랙 누락. 274개 중 58개 여행지 메타 생성 제외 | **P0 (최상)** | Edge Middleware에서 크롤러 대상 여행지 시맨틱 HTML(`<h1>`, `<p>`, 탭 설명) 본문 주입, 카카오/다음 봇 추가, 274개 전수 메타 생성 |
+| **5** | **무드 검색 vs 지오코딩** | `useHomeHandlers.js` 1140행. `MOOD_HINT_KEYWORDS` 미흡으로 지오코딩이 앞서 실행되어 도로/상호 오탐 | **P1 (상)** | 무드/의도 정규식 확장, 지오코딩 사전 스킵 후 AI 무드 큐레이션 연결, 드롭다운 내 "MOONi에게 물어보기" 카드 |
 | **6** | **모바일 CTA & 반응형** | `HomeUI.jsx` 314행 로고+토글로 검색폭 140px 축소(텍스트 잘림), 로그인 숨김, Mapbox Retina 3x DPR 렌더링 부하 | **P1 (상)** | 모바일 플레이스홀더 단축, 모바일 헤더 로그인 아이콘 노출, Mapbox `pixelRatio` 최대 2 제한 |
-| **7** | **신뢰 요소** | 전역 푸터 부재, `LogoPanel.jsx` 로고 클릭 드로어에만 은닉, TourAPI/Open-Meteo 출처 누락 | **P2 (중)** | 서브페이지/전역 최소 푸터 바 신설, `mapboxAttribution.js` 데이터 출처 보강 |
-| **8** | **제휴 Disclosure** | `PreTravelChecklist.jsx` 거대 CTA 3개(항공/숙소/픽업)에 광고 표기 누락, 종합 안내가 플래너 최하단에 매몰 | **P1 (상)** | 체크리스트 버튼 `[AD/제휴]` 인라인 명시, 플래너 상단으로 `hybridNotice` 승격 |
-| **9** | **플래너 복잡도** | `(복잡도 90/100)` 직결 노출, 11개 섹션 25~30개 버튼이 단일 스크롤에 전개되어 과부하 | **P1 (상)** | 3단계 점진적 노출(1.필수 비자·항공·숙소 -> 2.이동·유심 -> 3.투어·패스), 중복 CTA 통합, 복잡도 문구 완화 |
-| **10** | **로딩/빈 상태 UX** | `/korea` 행 이미지 `onError` 누락(엑박), `/blog/curation` 브라우저 `alert()` 후 초기화 | **P2 (중)** | 축제 이미지 `onError` 그라데이션 폴백, 축제 리스트 스켈레톤, 큐레이션 인라인 에러 및 재시도 버튼 |
-| **11** | **가입 전 혜택** | `Login.jsx` 혜택 안내 전무, `SignUp.jsx` "일보 작성" 레거시 노출, 버킷리스트/필명 가치 단절 | **P2 (중)** | 인증 폼 좌측/상단에 4대 핵심 혜택(버킷리스트, 작가필명, AI맞춤추천, 플래너저장) 시각화 |
-| **12** | **접근성 & 모션** | `Trash2` 등 무속성 아이콘 버튼, 9px 저대비 텍스트, 3D 지구본 `prefers-reduced-motion` 미연동 및 일시정지 부재 | **P2 (중)** | 아이콘 `aria-label` 부여, 텍스트 명도대비(7:1) 개선, 3D 지구본 자전 일시정지 토글 및 감속 연동 |
+| **7** | **제휴 Disclosure** | `PreTravelChecklist.jsx` 거대 CTA 3개(항공/숙소/픽업)에 광고 표기 누락, 종합 안내가 플래너 최하단에 매몰 | **P1 (상)** | 체크리스트 버튼 `[AD/제휴]` 인라인 명시, 플래너 상단으로 `hybridNotice` 승격 |
+| **8** | **플래너 복잡도** | `(복잡도 90/100)` 직결 노출, 11개 섹션 25~30개 버튼이 단일 스크롤에 전개되어 과부하 | **P1 (상)** | 3단계 점진적 노출(1.필수 비자·항공·숙소 -> 2.이동·유심 -> 3.투어·패스), 중복 CTA 통합, 복잡도 문구 완화 |
+| **9** | **언어 일관성** | `PlaceCardExpanded.jsx` 118행 raw `location.desc` 참조, `toolkitPlaceIdResolve.js` 한글 폴백, `HomeUI.jsx` 영문 하드코딩 | **P2 (중)** | `getLocalizedPlaceDesc` 연결, 네비 `t()` 적용, DB 미번역 안내 배너 |
+| **10** | **신뢰 요소** | 전역 푸터 부재, `LogoPanel.jsx` 로고 클릭 드로어에만 은닉, TourAPI/Open-Meteo 출처 누락 | **P2 (중)** | 서브페이지/전역 최소 푸터 바 신설, `mapboxAttribution.js` 데이터 출처 보강 |
+| **11** | **로딩/빈 상태 UX** | `/korea` 행 이미지 `onError` 누락(엑박), `/blog/curation` 브라우저 `alert()` 후 초기화 | **P2 (중)** | 축제 이미지 `onError` 그라데이션 폴백, 축제 리스트 스켈레톤, 큐레이션 인라인 에러 및 재시도 버튼 |
+| **12** | **가입 전 혜택** | `Login.jsx` 혜택 안내 전무, `SignUp.jsx` "일보 작성" 레거시 노출, 버킷리스트/필명 가치 단절 | **P2 (중)** | 인증 폼 좌측/상단에 4대 핵심 혜택(버킷리스트, 작가필명, AI맞춤추천, 플래너저장) 시각화 |
+| **13** | **접근성 & 모션** | `Trash2` 등 무속성 아이콘 버튼, 9px 저대비 텍스트, 3D 지구본 `prefers-reduced-motion` 미연동 및 일시정지 부재 | **P2 (중)** | 아이콘 `aria-label` 부여, 텍스트 명도대비(7:1) 개선, 3D 지구본 자전 일시정지 토글 및 감속 연동 |
 
 ---
 
@@ -49,24 +51,24 @@ gateo.kr은 **"3D 인터랙티브 지구본과 AI 도슨트(MOONi)를 결합하�
 
 ```mermaid
 flowchart TD
-  subgraph Phase1 [Phase 1: 첫인상 및 긴급 이탈 방지 P0]
+  subgraph Phase1 [Phase 1: 첫인상, 검색엔진 색인 및 긴급 이탈 방지 P0]
     S1[세션 #1: 빈 페이지 404 복구 & AI 채팅 초기 에러 수리]
     S2[세션 #2: 홈 가치제안 + 투톱 CTA & 모바일 상단/DPR 최적화]
+    S3[세션 #3: 크롤러 SEO 여행지 본문 프리렌더링 & 봇 감지 전수화]
   end
 
   subgraph Phase2 [Phase 2: 탐색 및 검색 경험 고도화 P1]
-    S3[세션 #3: 무드 검색 지오코딩 분리 & AI 추천 브릿지]
-    S4[세션 #4: 로딩 스켈레톤 & 빈 상태/에러 복구 UX]
+    S4[세션 #4: 무드 검색 지오코딩 분리 & AI 추천 브릿지]
+    S5[세션 #5: 로딩 스켈레톤 & 빈 상태/에러 복구 UX]
   end
 
   subgraph Phase3 [Phase 3: 신뢰도, 제휴 투명성 및 플래너 혁신 P1]
-    S5[세션 #5: 신뢰 요소 구축 & 제휴 Disclosure 투명성 강화]
-    S6[세션 #6: 플래너 3단계 점진적 노출 & 복잡도 리팩토링]
+    S6[세션 #6: 신뢰 요소 구축 & 제휴 Disclosure 투명성 강화]
+    S7[세션 #7: 플래너 3단계 점진적 노출 & 복잡도 리팩토링]
   end
 
   subgraph Phase4 [Phase 4: 글로벌, 접근성 및 가입 가치 P2]
-    S7[세션 #7: 언어 일관성 & 미번역 안내 UI]
-    S8[세션 #8: 가입 4대 혜택 시각화 & 접근성/지구본 모션 제어]
+    S8[세션 #8: 언어 일관성, 가입 혜택 시각화 & 접근성/지구본 모션 제어]
   end
 
   S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8
@@ -175,11 +177,55 @@ flowchart TD
 
 ---
 
+#### [세션 3] 크롤러 SEO 여행지 본문 프리렌더링 & 봇 감지 전수화
+- **세션 식별자**: `방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링`
+- **담당 항목**: 항목 4 (크롤러 SEO & 본문 프리렌더링)
+- **예상 분량**: 보통~큼 (Medium-Large, ~2h)
+- **고정 브랜치**: `cursor/visitor-growth-1f90`
+- **대상 파일**:
+  - `/workspace/middleware.js`
+  - `/workspace/src/edge/botDetect.js`
+  - `/workspace/src/edge/injectCrawlerMeta.js`
+  - `/workspace/scripts/generate-crawler-place-meta.mjs`
+  - `/workspace/src/edge/crawlerPlaceMeta.generated.js`
+
+- **상세 구현 작업 명세**:
+  1. **크롤러 봇 감지 정규식 전수 보강 (`src/edge/botDetect.js`)**:
+     - 기존 누락되어 홈 메타태그/본문으로 바이패스되던 메신저 및 포털 크롤러 추가:
+       ```javascript
+       const BOT_UA =
+         /googlebot|google-inspectiontool|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|embedly|whatsapp|telegrambot|applebot|semrushbot|ahrefsbot|mj12bot|dotbot|petalbot|yeti|naverbot|kakaotalk-scrap|kakaostory|daumoa|slackbot/i;
+       ```
+     - 카카오톡 링크 공유 및 네이버 서치어드바이저/다음 봇에 장소별 메타태그와 본문이 100% 정상 매칭되도록 보장.
+  2. **크롤러 대상 여행지 274개 전수 커버리지 확대 (`scripts/generate-crawler-place-meta.mjs`)**:
+     - 기존 `popularity >= 70` (216개) 필터를 제거하고 `TRAVEL_SPOTS` 전체(274개)를 사전 생성.
+     - 산토리니, 칸쿤, 하와이 등 인기도 70 미만 휴양지 58곳이 크롤러에게 홈 메타태그로 서빙되던 결함 완전 해소.
+  3. **크롤러 대상 여행지 시맨틱 HTML 본문 주입 (`src/edge/injectCrawlerMeta.js`, `middleware.js`)**:
+     - 기존 `<head>` 태그만 치환하던 로직을 확장하여, 크롤러 응답 시 `<body>` 내부의 숨김 텍스트(`<div id="root">...</div>`)를 **해당 여행지의 고유 시맨틱 HTML 블록**으로 동적 교체:
+       - `<h1>{장소명} ({국가}) - 여행 가이드 & 명소</h1>`
+       - `<p>{장소 설명 및 테마 키워드}</p>`
+       - `<h2>추천 코스 및 필수 정보 (갤러리 · 플래너 · AI 도슨트)</h2>`
+       - `<nav>{인근 공항, 투어, 숙소 정보 안내 링크}</nav>`
+     - 검색엔진(구글, 네이버)이 첫 요청 즉시 도시별 고유 콘텐츠를 읽을 수 있어 **중복 콘텐츠(Duplicate Content) 탈피 및 검색 색인 생성(Indexing) 순위 대폭 상승**.
+
+- **안전 가드 및 주의사항**:
+  - 일반 브라우저 사용자에게는 기존과 동일하게 초고속 SPA 번들이 서빙되며, 오직 크롤러 봇에게만 시맨틱 본문이 서빙되므로 클라이언트 렌더링에 영향 제로.
+  - Vercel Edge Middleware의 런타임 레이턴시를 10ms 이하로 유지하기 위해 사전 빌드된 `crawlerPlaceMeta.generated.js`의 경량 필드만 활용.
+- **검증 커맨드**:
+  ```bash
+  npm run generate:crawler-place-meta
+  npm run build
+  # curl -A "Googlebot" http://localhost:3000/place/tokyo 로 본문에 도쿄 고유 텍스트가 반환되는지 검증
+  # curl -A "kakaotalk-scrap/1.0" http://localhost:3000/place/tokyo 로 봇 감지 동작 확인
+  ```
+
+---
+
 ### Phase 2: 탐색 및 검색 경험 고도화 (P1)
 
-#### [세션 3] 무드 검색 지오코딩 분리 & AI 추천 브릿지
-- **세션 식별자**: `방문자 개선 #3, 무드검색 분리 및 AI추천 브릿지`
-- **담당 항목**: 항목 4 (무드 검색 vs 장소 검색 분리)
+#### [세션 4] 무드 검색 지오코딩 분리 & AI 추천 브릿지
+- **세션 식별자**: `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
+- **담당 항목**: 항목 5 (무드 검색 vs 장소 검색 분리)
 - **예상 분량**: 보통~큼 (Medium-Large, ~2h)
 - **고정 브랜치**: `cursor/visitor-growth-1f90`
 - **대상 파일**:
@@ -211,9 +257,9 @@ flowchart TD
 
 ---
 
-#### [세션 4] 로딩 스켈레톤 & 빈 상태/에러 복구 UX
-- **세션 식별자**: `방문자 개선 #4, 로딩스켈레톤 및 에러복구 UX`
-- **담당 항목**: 항목 10 (로딩/빈 상태 UX)
+#### [세션 5] 로딩 스켈레톤 & 빈 상태/에러 복구 UX
+- **세션 식별자**: `방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX`
+- **담당 항목**: 항목 11 (로딩/빈 상태 UX)
 - **예상 분량**: 보통 (Medium, ~1.5h)
 - **고정 브랜치**: `cursor/visitor-growth-1f90`
 - **대상 파일**:
@@ -246,9 +292,9 @@ flowchart TD
 
 ### Phase 3: 신뢰도, 제휴 투명성 및 플래너 혁신 (P1)
 
-#### [세션 5] 신뢰 요소 구축 & 제휴 Disclosure 투명성 강화
-- **세션 식별자**: `방문자 개선 #5, 신뢰요소 및 제휴투명성 강화`
-- **담당 항목**: 항목 7 (신뢰 요소), 항목 8 (제휴 disclosure)
+#### [세션 6] 신뢰 요소 구축 & 제휴 Disclosure 투명성 강화
+- **세션 식별자**: `방문자 개선 #6, 신뢰요소 및 제휴투명성 강화`
+- **담당 항목**: 항목 7 (제휴 disclosure), 항목 10 (신뢰 요소)
 - **예상 분량**: 보통 (Medium, ~1.5h)
 - **고정 브랜치**: `cursor/visitor-growth-1f90`
 - **대상 파일**:
@@ -286,9 +332,9 @@ flowchart TD
 
 ---
 
-#### [세션 6] 플래너 3단계 점진적 노출(Progressive Disclosure) & 복잡도 리팩토링
-- **세션 식별자**: `방문자 개선 #6, 플래너 3단계 점진적 노출`
-- **담당 항목**: 항목 9 (플래너 복잡도)
+#### [세션 7] 플래너 3단계 점진적 노출(Progressive Disclosure) & 복잡도 리팩토링
+- **세션 식별자**: `방문자 개선 #7, 플래너 3단계 점진적 노출`
+- **담당 항목**: 항목 8 (플래너 복잡도)
 - **예상 분량**: 큼 (Large, ~2.5h)
 - **고정 브랜치**: `cursor/visitor-growth-1f90`
 - **대상 파일**:
@@ -322,71 +368,48 @@ flowchart TD
 
 ### Phase 4: 글로벌, 접근성 및 가입 가치 (P2)
 
-#### [세션 7] 언어 일관성 & 미번역 안내 UI
-- **세션 식별자**: `방문자 개선 #7, 다국어 일관성 및 번역배너`
-- **담당 항목**: 항목 5 (언어 일관성)
-- **예상 분량**: 보통 (Medium, ~1.5h)
+#### [세션 8] 언어 일관성, 가입 혜택 시각화 & 접근성/지구본 모션 제어
+- **세션 식별자**: `방문자 개선 #8, 언어일관성 및 가입혜택/접근성`
+- **담당 항목**: 항목 9 (언어 일관성), 항목 12 (가입 전 혜택 안내), 항목 13 (접근성 및 모션)
+- **예상 분량**: 보통~큼 (Medium-Large, ~2.5h)
 - **고정 브랜치**: `cursor/visitor-growth-1f90`
 - **대상 파일**:
   - `/workspace/src/components/PlaceCard/modes/PlaceCardExpanded.jsx`
-  - `/workspace/src/pages/Home/components/HomeUI.jsx`
-  - `/workspace/src/i18n/locales/ko.json`, `en.json`
-  - `/workspace/src/components/PlaceCard/common/magazineLocale.js`
-
-- **상세 구현 작업 명세**:
-  1. **PlaceCardExpanded 내 설명/태그 로컬라이징 연동**:
-     - raw `location.desc` 직접 참조를 중단하고 `getLocalizedPlaceDesc(location, locale)` 호출로 교체.
-     - 국가명 및 카테고리 태그(`location.country`, `location.keywords`)의 다국어 번역 키 매핑 적용.
-  2. **헤더/네비게이션 하드코딩 문자열 제거 (`HomeUI.jsx`)**:
-     - `LOGIN`, `LOGOUT`, `LOGBOOK` 문자열을 `t('layout.nav.login')`, `t('layout.nav.logout')`, `t('layout.nav.logbook')`로 교체하여 한글/영문 토글 시 완벽하게 동기화.
-  3. **DB 미번역 데이터에 대한 언어 가이드 배너 제공**:
-     - 영문 DB 데이터(`essential_guide_en`)가 없어 한글로 폴백될 때 본문 상단에 단정한 영문 안내 칩 배치:
-       - `"ℹ️ Detailed guide is currently provided in Korean."`
-
-- **안전 가드 및 주의사항**:
-  - `ko.json` 및 `en.json`의 JSON 문법 깨짐 방지.
-- **검증 커맨드**:
-  ```bash
-  npm run build
-  # EN 언어 모드 전환 후 홈 네비게이션 및 여행지 상세 모달에서의 한/영 일관성 검증
-  ```
-
----
-
-#### [세션 8] 가입 4대 혜택 시각화 & 접근성/지구본 모션 제어
-- **세션 식별자**: `방문자 개선 #8, 가입혜택 시각화 및 접근성 보강`
-- **담당 항목**: 항목 11 (가입 전 혜택 안내), 항목 12 (접근성 및 모션)
-- **예상 분량**: 보통 (Medium, ~2h)
-- **고정 브랜치**: `cursor/visitor-growth-1f90`
-- **대상 파일**:
   - `/workspace/src/shared/Auth/Login.jsx`
   - `/workspace/src/shared/Auth/SignUp.jsx`
   - `/workspace/src/pages/Home/components/HomeUI.jsx`
   - `/workspace/src/pages/Home/components/LogoPanel.jsx`
   - `/workspace/src/pages/Home/components/HomeGlobeMapbox.jsx`
+  - `/workspace/src/i18n/locales/ko.json`, `en.json`
 
 - **상세 구현 작업 명세**:
-  1. **회원가입 4대 핵심 혜택 시각화 (`Login.jsx`, `SignUp.jsx`)**:
+  1. **PlaceCardExpanded 내 설명/태그 로컬라이징 연동**:
+     - raw `location.desc` 직접 참조를 중단하고 `getLocalizedPlaceDesc(location, locale)` 호출로 교체.
+     - 국가명 및 카테고리 태그(`location.country`, `location.keywords`)의 다국어 번역 키 매핑 적용.
+     - `HomeUI.jsx`의 `LOGIN`, `LOGOUT`, `LOGBOOK` 문자열을 `t('layout.nav.login')`, `t('layout.nav.logout')`, `t('layout.nav.logbook')`로 교체.
+     - DB 미번역 시 본문 상단에 단정한 영문 안내 칩(`"ℹ️ Detailed guide is currently provided in Korean."`) 제공.
+  2. **회원가입 4대 핵심 혜택 시각화 (`Login.jsx`, `SignUp.jsx`)**:
      - `SignUp.jsx`의 구시대적 카피 `"나만의 일보 작성"`을 `"나만의 여행 스케치와 로그북을 시작해보세요"`로 전면 개편.
      - 폼 좌측(데스크톱) 또는 상단(모바일)에 4대 핵심 혜택 카드 블록 추가:
        - 🌟 **나만의 버킷리스트**: 전 세계 숨은 명소 50곳 실시간 동기화
        - ✍️ **작가 필명 & 여행 스케치**: 사진과 위치를 남기는 3D 로그북
        - 🤖 **AI 맞춤 도슨트**: 취향 분석 기반 1:1 파라다이스 추천
        - 📋 **스마트 플래너**: 비자·항공·숙소·교통 원클릭 보관함
-  2. **아이콘 버튼 `aria-label` 웹 접근성 보강**:
+  3. **아이콘 버튼 `aria-label` 웹 접근성 보강**:
      - `HomeUI.jsx` 내 `Trash2`, 테마 토글, Zen 모드 토글, 핀 토글 버튼에 다국어 `aria-label` 부여.
      - GATEO 로고에 `role="button"` 및 `tabIndex={0}` 부여하여 키보드 탭 네비게이션 지원.
-  3. **명도 대비 개선**:
      - `LogoPanel.jsx` 푸터 텍스트 색상을 `text-gray-500` -> `text-gray-300`으로 올려 WCAG AA (4.5:1 이상) 명도 대비 확보.
   4. **3D 지구본 모션 접근성(Reduced Motion) 및 일시정지 연동 (`HomeGlobeMapbox.jsx`, `HomeUI.jsx`)**:
      - `HomeGlobeMapbox.jsx`의 자전 루프에 `prefers-reduced-motion: reduce` 감지 연동: 전정기관 장애인이나 3D 멀미 사용자의 브라우저에서는 기본 자동 회전 차단.
      - 상단 컨트롤 바에 자전 일시정지/재생(Play/Pause) 토글 버튼을 추가하여 사용자가 지구본을 멈추고 편안하게 탐색할 수 있는 선택권 보장.
 
 - **안전 가드 및 주의사항**:
+  - 다국어 사전 키 매핑 시 JSON syntax 오류 주의.
   - 3D 지구본 회전 정지 시 카메라 좌표나 포커스가 튀지 않도록 현재 각도에서 부드럽게 고정.
 - **검증 커맨드**:
   ```bash
   npm run build
+  # EN 모드 전환 후 한/영 일관성 확인
   # /auth/login 및 /auth/signup 페이지에서 혜택 카드 확인
   # 키보드 Tab 키를 이용한 상단 네비게이션 접근성 및 지구본 일시정지 버튼 동작 검증
   ```

@@ -5,22 +5,23 @@
 ## 방문자 개선 #1 — 404 복구 및 AI채팅 초기화 (Cloud)
 
 - **세션** `방문자 개선 #1, 404 복구 및 AI채팅 초기화`
-- **브랜치** `cursor/visitor-growth-1f90` · tip `7a0e5abc`
-- **완료**: `AboutPage` 신설·`/about` 라우트, `/pricing`→`/about`·`/product`→`/explore` 리다이렉트, 와일드카드 404→`/`. 장소 미선택 AI 채팅은 `MOONi` 바인딩·`placeIntroTarget` 가드로 `Invalid destination name` 차단. 범용 탐색 칩 4종(휴양지·힐링·5시간 이내·가족).
+- **브랜치** `cursor/visitor-growth-1f90` · tip `47809606`
+- **완료**: `AboutPage` 신설·`/about` 라우트, `/pricing`→`/about`·`/product`→`/explore` 리다이렉트, 와일드카드 404→`/`. 장소 미선택 AI 채팅은 `MOONi` 바인딩·`placeIntroTarget` 가드로 `Invalid destination name` 차단. 범용 탐색 칩 4종(휴양지·힐링·5시간 이내·가족). **후속**: 여행지 바인딩 후 헤더 「일반 탐색」→ MOONi 일반 세션·범용 칩 복귀(기존 trip 사이드바 보존).
 - **VERIFY**: `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
-- **QA**: `/about`·`/pricing`·`/product`·존재하지 않는 URL → 홈. 장소 없이 하단 「AI와 여행 대화」→ 환영 멘트·칩 4종.
+- **QA**: `/about`·`/pricing`·`/product`·존재하지 않는 URL → 홈. 장소 없이 하단 「AI와 여행 대화」→ 환영 멘트·칩 4종. 여행지 선택 후 헤더 「일반 탐색」→ 범용 칩 복귀.
 
-## 방문자 활성화 — 사이트 체질 개선 12대 과제 종합 계획 수립
+## 방문자 활성화 — 사이트 체질 개선 13대 과제 및 크롤러 SEO 계획 수립
 
-- **작업**: 그록봇(Grok) 진단 12대 문제점 실사 및 개선 로드맵 수립
-- **실사**: 서브에이전트 3기 병렬 기동으로 12개 항목 코드베이스 정밀 진단
-  - P0: 404 빈 화면(App.jsx 라우트 누락), 장소 미선택 AI 채팅 Invalid destination name 에러(ChatModal/placeChatIntro.js), 홈 가치제안 부재
+- **작업**: 그록봇(Grok) 진단 12대 문제점 + 크롤러 SEO(SPA 본문 동일 문제) 실사 및 종합 개선 로드맵 수립
+- **실사**: 서브에이전트 병렬 기동으로 13개 항목 코드베이스 정밀 진단
+  - P0: 404 빈 화면(App.jsx 라우트 누락), 장소 미선택 AI 채팅 Invalid destination name 에러(ChatModal/placeChatIntro.js), 홈 가치제안 부재, **크롤러 SEO(Edge Middleware가 head만 치환하고 body는 전 페이지 동일 홈 텍스트 서빙하여 중복 콘텐츠 색인 저하 발생)**
   - P1: 무드 검색 지오코딩 오탐(useHomeHandlers.js), 모바일 390px 검색 잘림/로그인 은닉, 플래너 복잡도 90/100 과밀(25~30개 버튼), 제휴 AD 표기 누락
   - P2: EN 모드 한글 노출(PlaceCardExpanded.jsx), 신뢰 요소(전역 푸터 부재), 로딩 스켈레톤/빈 상태 에러 복구(korea/curation), 가입 혜택 전무, 접근성(aria-label/지구본 모션)
 - **플랜**: [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) (4단계 8세션 독립 완결형 실행 계획서)
+  - 세션 #3에 크롤러 대상 여행지 시맨틱 HTML(`<h1>`, `<p>`, 탭 안내) 본문 주입 및 봇 감지 전수화 배치
 - **핸드오프**: [`feature-handoff-index.md`](./feature-handoff-index.md)에 `방문자 개선` 행 및 다음 제시어 등록
-- **다음**: 세션 #1 `방문자 개선 #1, 404 복구 및 AI채팅 초기화` (브랜치 `cursor/visitor-growth-1f90`)
+- **진행 현황**: 세션 #1 완료 후 현재 세션 #2 대기 중
 
 ## 팔경 활용 #38 — 천안 결손 오버레이 (Cloud)
 
