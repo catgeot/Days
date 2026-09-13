@@ -14,16 +14,15 @@
 - **주의**: `/qa/explore-search`→PROD PR [#241](https://github.com/catgeot/Days/pull/241)은 이 Preview QA가 끝날 때까지 병합 보류
 - **QA 방식**: 사람은 **같은 턴** Preview QA
 
-## 탐색홈 검색 #6 다음
+## 탐색홈 검색 #6 — Preview OK 후 PR 병합 (Cloud)
 
-```
-탐색홈 검색 #6, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-브랜치 cursor/explore-search-d14b · PR #242 · Preview /qa/explore-search
-금지: UI 리디자인 · 선택 카드 규격 파손 · 옹진에 N경 날조 · feature에 plans/** 커밋 · #241 Preview 전 병합
-작업: 문경 검색 — 팔경·선정 행 사진. 선유동·용추·경천호는 TourAPI 또는 이후 팔경 오버레이. OK면 PR #242 병합
-```
+- **세션** `탐색홈 검색 #6, Preview OK면 PR 병합`
+- **브랜치** `cursor/explore-search-d14b` · merge `ad333614` · PR [#242](https://github.com/catgeot/Days/pull/242) (MERGED)
+- **완료**: Preview QA 후 PR #242 병합. #5 `resolveSearchScenicMedia`·드롭다운 TourAPI 썸네일 포함. 쌍용계곡 VisitKorea 1050806(실내 사진) → 문경시 문화관광 mg8_0401·0402. 팔경·선정 행 사진 OK. 선유동·용추·경천호는 TourAPI 또는 이후 팔경 오버레이
+- **VERIFY**: `smoke:explore-choice-overlay` PASS · `smoke:korea-local-scenic-lists` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **PROD** https://www.gateo.kr/explore (배포 후)
+- **잔여**: `/qa/explore-search`→PROD PR [#241](https://github.com/catgeot/Days/pull/241) — 병합 보류 유지
+- **다음 제시어 없음** (주제 종료)
 
 ## 팔경 활용 #37 — 논산 검색 빈 썸네일 (Cloud)
 

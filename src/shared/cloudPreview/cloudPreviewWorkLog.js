@@ -4,10 +4,10 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '탐색홈 검색',
-  sessionNo: 5,
-  sessionPhase: '문경 썸네일 경로 통일',
+  sessionNo: 6,
+  sessionPhase: '문경 팔경·선정 썸네일 병합',
   branch: 'cursor/explore-search-d14b',
   previewPath: '/explore',
   qaShareSlug: 'explore-search',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-explore-search-6-merge',
+    session: '탐색홈 검색 #6, Preview OK면 PR 병합',
+    title: '문경 팔경·선정 썸네일 PROD 병합',
+    detail:
+      'Preview QA 후 PR #242를 main에 병합했습니다. #5 resolveSearchScenicMedia·드롭다운 TourAPI 썸네일과 함께, 쌍용계곡은 VisitKorea 1050806(실내 사진) 대신 문경시 문화관광 mg8_0401·0402 공식 사진을 씁니다. 선유동·용추·경천호는 TourAPI 또는 이후 팔경 오버레이. /qa/explore-search→PROD는 PR #241.',
+    at: '2026-09-13T09:10:00.000Z',
+  },
   {
     id: '2026-09-13-explore-search-5-mungyeong-thumbs',
     session: '탐색홈 검색 #5, 문경 썸네일 경로 통일',
