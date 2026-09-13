@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/explore-search",
+      "destination": "https://days-git-cursor-explore-search-d14b-catgeots-projects.vercel.app/explore",
+      "permanent": false
+    },
+    {
       "source": "/qa/gemini",
       "destination": "https://days-git-cursor-gemini-models-df4c-catgeots-projects.vercel.app/",
       "permanent": false
