@@ -117,20 +117,17 @@
 
 - **세션** `한국 투어티켓 #9, Preview OK면 PR 병합`
 - **브랜치** `cursor/korea-tna-strip-ef65` · tip `e885df64` · PR [#234](https://github.com/catgeot/Days/pull/234)
-- **병합 안 함**: 옹진 대청도 숙소가 비고 폴백이 안 됨. 시드 군·섬은 재고 0인데 명승이 `stayAreas`를 안 넘기고, `cityHints=옹진`이 인천 CITY를 거절함
+- **이후 #10에서 `origin/main` 병합** (`2374db5f`). 당시 보류 이유: 옹진 대청도 숙소가 비고 폴백이 안 됨. 시드 군·섬은 재고 0인데 명승이 `stayAreas`를 안 넘기고, `cityHints=옹진`이 인천 CITY를 거절함
 - **수정**: 명승에도 축제와 같은 인천·강화 칩. 같은 시도 시드를 숙소·투어 알트에 넣음. 빈 alt 배열이 지역 알트를 지우지 않음. cityHints에 폴백 도시명. 재고 0이면 인접 칩으로 재조회
 - **VERIFY**: `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-stay` · `smoke:korea-festival-personal` · `smoke:mrt-stay` · `smoke:travel-agencies` · `vite build` PASS
 - **Preview** https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=daecheongdo-ongjin`
-- **QA**: 대청도 숙소·투어 카드·인천·강화 칩. 왕가의 산책 인천. 경복궁 렌터카·기차표. 이번 턴 Preview 후 OK면 병합
+- **QA**: 대청도 숙소·투어 카드·인천·강화 칩. 왕가의 산책 인천. 경복궁 렌터카·기차표. #10에서 main 병합
 
-## 한국 투어티켓 #10 다음
+## 한국 투어티켓 #10 — origin/main 반영 (Cloud)
 
-```
-한국 투어티켓 #10, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-@plans/korea-tna-strip-plan.md
-브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
-금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 대청도 숙소·투어가 비지 않고 인천·강화 칩인지. 왕가의 산책 인천(룩소르 아님). 경복궁 렌터카·기차표 OK면 PR #234 병합
-```
+- **세션** `한국 투어티켓 #10, main 반영`
+- **브랜치** `cursor/korea-tna-strip-ef65` · merge `2374db5f` · PR [#234](https://github.com/catgeot/Days/pull/234)
+- **완료**: Preview OK 후 PR #234를 `origin/main`에 병합. #7 렌터카·기차표, #8 왕가의 산책 인천, #9 시드 군 숙소·투어 시도 폴백. 작업 로그는 팔경 활용으로 되돌림. `/qa/korea-tna-strip` → PROD `/korea/theme/scenic?spot=gyeongbokgung`
+- **VERIFY**: `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-stay` · `smoke:korea-festival-personal` · `smoke:mrt-stay` · `smoke:travel-agencies` PASS
+- **PROD** https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung
+- **다음 제시어 없음** (주제 종료). 축제 숙소허브 PR [#233](https://github.com/catgeot/Days/pull/233)은 병합하지 않음

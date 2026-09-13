@@ -41,32 +41,20 @@ AI 모델 #3, Preview OK면 PR 병합
 
 ---
 
-### 한국 투어티켓
+### 한국 투어티켓 — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | **#9 push** · tip `e885df64` · PR [#234](https://github.com/catgeot/Days/pull/234) · 병합 보류(대청도 숙소 폴백 Preview) |
-| **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `e885df64` |
-| **PR** | [#234](https://github.com/catgeot/Days/pull/234) |
+| **상태** | **#10 merge ✅ · 주제 종료** · main `2374db5f` · PR [#234](https://github.com/catgeot/Days/pull/234) |
+| **브랜치** | `cursor/korea-tna-strip-ef65` · merge `2374db5f` |
+| **PR** | [#234](https://github.com/catgeot/Days/pull/234) (MERGED) |
 | **플랜** | [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=daecheongdo-ongjin` · 경복궁 · 축제 왕가의 산책 |
-| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `resolveFestivalThemeCrossLinks` · `buildFestivalStayAreas` · `mergeMrtStayFetchQuery` |
-| **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-stay` · `smoke:korea-festival-personal` · `smoke:mrt-stay` · `smoke:travel-agencies` · `vite build` |
+| **PROD** | `https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung` — 명승·축제 본문 투어·렌터카·기차표 · 시드 군 숙소 폴백 |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-stay` · `smoke:korea-festival-personal` · `smoke:mrt-stay` · `smoke:travel-agencies` PASS |
+| **성과** | #7 국내 렌터카(마이리얼트립)·기차표. #8 왕가의 산책 인천(룩소르 아님). #9 대청도 등 시드 군 숙소·투어 시도 폴백. `/qa/korea-tna-strip` → PROD |
 
-**다음 제시어**:
-
-```
-한국 투어티켓 #10, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-@plans/korea-tna-strip-plan.md
-브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
-금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 대청도 숙소·투어가 비지 않고 인천·강화 칩인지. 왕가의 산책 인천(룩소르 아님). 경복궁 렌터카·기차표 OK면 PR #234 병합
-```
+**다음 제시어 없음** (주제 종료). 해외 이벤트 TNA 공통화(#11)는 별도 요청 시. 확인은 `www.gateo.kr`.
 
 ---
 
