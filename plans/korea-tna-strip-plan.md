@@ -47,23 +47,27 @@
 | 세션 | 단계명 | 주요 작업 | 상태 |
 |---|---|---|---|
 | **#1~#5** | 본문 TNA 섹션 구축 및 크게보기 | `EventTnaStrip`, `FestivalTnaStrip`, `ScenicTnaStrip` 신설, 축제/명승 상세 연동, 20개 로드 및 가로 카드 확대 지원, PR #223 병합 | ✅ 완료 (`0071d2cb`) |
-| **#6** | 클룩 즐길거리·렌터카 링크 연동 | `EventTnaStrip.jsx` 하단에 클룩 "즐길거리 더보기" 및 "렌터카 최저가 비교" 링크 칩 연동, i18n 반영, `smoke:korea-tna-strip` 검증 | ✅ 완료 (`0c77e661` · PR [#230](https://github.com/catgeot/Days/pull/230)) |
-| **#7** | Preview OK면 PR 병합 | `/qa/korea-tna-strip`에서 칩·카드 규격 확인 후 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정 | ⬜ 다음 세션 |
-| **#8** | 해외 이벤트/독립 섹션 확장 검토 | 세계 행사(`EventExecutionStrip`)와의 공통화 검토 | ⬜ 대기 |
+| **#6** | 클룩 즐길거리·렌터카 링크 연동 | `EventTnaStrip` 하단 클룩 즐길거리·렌터카 칩, PR [#230](https://github.com/catgeot/Days/pull/230) 병합 | ✅ 완료 (MERGED) |
+| **#7** | 국내 렌터카·기차표 | 렌터카 문구 「{{place}} 렌터카 보기」 · 국내 렌터카 마이리얼트립 `/rentalcars?category=domestic` · 기차표 트립닷컴 `/trains/` · 클룩 즐길거리는 유지 | ✅ 완료 (`593fd59f` · PR [#234](https://github.com/catgeot/Days/pull/234)) |
+| **#8** | Preview OK면 PR 병합 | `/qa/korea-tna-strip`에서 렌터카·기차표 칩 확인 후 PR #234 병합 | ⬜ 다음 세션 |
+| **#9** | 해외 이벤트/독립 섹션 확장 검토 | 세계 행사(`EventExecutionStrip`)와의 공통화 검토 | ⬜ 대기 |
 
 ---
 
 ## 4. 세부 구현 대상 파일
 
 1. **`src/pages/WorldEvents/EventTnaStrip.jsx`**:
-   - `getKlookSearchUrl`, `getKlookRentalUrlByLocation` import.
-   - `location` 객체 및 `searchKeyword` 기반으로 클룩 즐길거리/렌터카 URL 계산.
-   - 카드 영역 하단 및 `empty` 영역에 클룩 아웃링크 칩 렌더링.
-2. **`src/i18n/locales/ko.json` & `en.json`**:
-   - `worldEventDetail.tnaStrip.klookActivities`: `"{{place}} 즐길거리 클룩에서 더보기"` / `"Explore {{place}} activities on Klook"`
-   - `worldEventDetail.tnaStrip.klookRental`: `"{{place}} 렌터카 최저가 비교"` / `"Compare {{place}} rental cars on Klook"`
-3. **`scripts/smoke-korea-tna-strip.mjs`**:
-   - 클룩 즐길거리 및 렌터카 URL 렌더링 검증 추가.
+   - `getKlookSearchUrl` · `getMrtDomesticRentalUrl` · `getTripcomTrainUrl`.
+   - 카드 하단 칩: 클룩 즐길거리 · **마이리얼트립 국내 렌터카** · **트립닷컴 기차표**.
+2. **`src/utils/affiliate.js`**:
+   - `getMrtDomesticRentalUrl` → `https://www.myrealtrip.com/rentalcars?category=domestic` + mylink.
+   - `getTripcomTrainUrl` → `kr.trip.com/trains/` + Alliance/SID. (12Go는 동남아·외국인 KR Pass 중심 — 국내 명승·축제 칩에는 쓰지 않음.)
+3. **`src/i18n/locales/ko.json` & `en.json`**:
+   - `worldEventDetail.tnaStrip.klookActivities`: `"{{place}} 즐길거리 클룩에서 더보기"`
+   - `worldEventDetail.tnaStrip.rental`: `"{{place}} 렌터카 보기"` (최저가 비교 없음)
+   - `worldEventDetail.tnaStrip.train`: `"{{place}} 기차표 보기"`
+4. **`scripts/smoke-korea-tna-strip.mjs`**:
+   - 렌터카 MRT · 기차표 Trip.com · 카피 검증.
 
 ---
 
@@ -72,13 +76,13 @@
 사람은 같은 턴 Preview. 다음 채팅 = **Preview OK면 PR 병합**.
 
 ```
-한국 투어티켓 #7, Preview OK면 PR 병합
+한국 투어티켓 #8, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/2026-09-12-project-log.md
+@plans/2026-09-13-project-log.md
 @plans/korea-tna-strip-plan.md
-브랜치 cursor/korea-tna-strip-ef65 · PR #230 · Preview /qa/korea-tna-strip
+브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 경복궁·축제 상세 투어 섹션 하단 클룩 칩이 보이면 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정
+작업: 경복궁 투어 섹션 하단이 「렌터카 보기」(최저가 비교 없음)·마이리얼트립 국내 렌터카·트립닷컴 기차표인지 확인. OK면 PR #234 병합
 ```
 
 ---
@@ -87,9 +91,9 @@
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `0c77e661` · PR [#230](https://github.com/catgeot/Days/pull/230) |
+| **상태** | **#7 push** · tip `593fd59f` · PR [#234](https://github.com/catgeot/Days/pull/234) · #6 MERGED [#230](https://github.com/catgeot/Days/pull/230) |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
 | **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
-| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-scenic-stay` · `vite build` PASS |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:travel-agencies` · `smoke:korea-scenic-stay` · `vite build` PASS |
 | **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **다음** | #7 Preview OK면 PR 병합. 같은 세션 QA — `사람 Preview QA` 채팅 생략 |
+| **다음** | #8 Preview OK면 PR 병합. 같은 세션 QA — `사람 Preview QA` 채팅 생략 |
