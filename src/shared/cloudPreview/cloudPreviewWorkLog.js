@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 32,
-  sessionPhase: '남해 결손 오버레이',
+  sessionPhase: '남해 12경 제목',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=namhae',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-32-namhae-12gyeong-title',
+    session: '팔경 활용 #32, 남해 결손 오버레이',
+    title: '남해12경 그룹 제목',
+    detail:
+      '남해12경이 listKind sipgyeong 때문에 검색·리스트 소제목이 「남해 십경」으로 나왔습니다. 공식명 「남해 12경」으로 맞췄습니다. 하동·금산 십경(실제 10경) 표시는 그대로입니다. Preview /qa/palgyeong-use — 「남해」검색 그룹명.',
+    at: '2026-09-13T01:10:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-32-namhae-overlays',
     session: '팔경 활용 #32, 남해 결손 오버레이',

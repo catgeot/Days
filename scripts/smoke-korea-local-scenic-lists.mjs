@@ -1221,6 +1221,32 @@ assert.ok(
 const namhaeMerged = mergeLocalScenicMembersIntoScenicSpots([], 'namhae');
 const namhaeTwelve = namhaeMerged.filter((s) => s.localScenicListId === 'namhae-sipgyeong');
 assert.equal(namhaeTwelve.length, 12, '남해12경 12명');
+assert.equal(namhaeTwelve[0]?.groupTitle, '남해 12경');
+assert.ok(
+  namhaeTwelve.every((s) => s.groupTitle === '남해 12경'),
+  '남해12경 그룹명 남해 12경 (십경 아님)',
+);
+assert.equal(
+  localScenicListDisplayTitle(
+    listKoreaLocalScenicLists().find((l) => l.listId === 'namhae-sipgyeong'),
+  ),
+  '남해 12경',
+);
+assert.equal(
+  localScenicListDisplayTitle(
+    listKoreaLocalScenicLists().find((l) => l.listId === 'hadong-sipgyeong'),
+  ),
+  '하동 십경',
+);
+for (const list of listKoreaLocalScenicLists()) {
+  if (!/12경\s*$/u.test(String(list.title || ''))) continue;
+  const display = localScenicListDisplayTitle(list);
+  assert.match(
+    display,
+    /12경$/,
+    `${list.listId} 표시명이 12경 (got ${display})`,
+  );
+}
 const namhaeDeficitNames = [
   '남해 금산과 보리암',
   '창선교와 남해지족해협 죽방렴',
@@ -1277,6 +1303,14 @@ assert.notEqual(
 const namhaeGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '남해', {
   injectLocalScenic: true,
 });
+const namhaeGlobeTwelve = namhaeGlobe.filter(
+  (s) => s.localScenicListId === 'namhae-sipgyeong',
+);
+assert.equal(namhaeGlobeTwelve.length, 12, '남해 검색 남해12경 12행');
+assert.ok(
+  namhaeGlobeTwelve.every((s) => s.groupTitle === '남해 12경'),
+  '남해 검색 그룹명 남해 12경',
+);
 assert.ok(
   namhaeGlobe.find((s) => s.attractionName === '남해 금산과 보리암')?.imageUrl,
   '남해 검색 팔경 금산과 보리암 썸네일',

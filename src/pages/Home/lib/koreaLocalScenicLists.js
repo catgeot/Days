@@ -48,17 +48,26 @@ const KIND_LABEL_EN = {
   other: 'Views',
 };
 
-/** 강진12경 → 강진 12경. listKind other 인데 공식명이 N경인 경우. */
+/** 강진12경 → 강진 12경. */
 function spacedKoNumberedGyeongTitle(title) {
   const t = String(title || '').trim();
   if (!/(\d+)경\s*$/u.test(t)) return '';
   return t.replace(/(\d+)경\s*$/u, ' $1경').replace(/\s+/g, ' ').trim();
 }
 
-function localScenicOtherNumberedDisplayTitle(list, locale = 'ko') {
-  if (list?.listKind !== 'other') return '';
+function titleGyeongCount(title) {
+  const m = String(title || '').trim().match(/(\d+)경\s*$/u);
+  return m ? Number(m[1]) : 0;
+}
+
+/** other 공식 N경, 또는 sipgyeong인데 12경(남해·포항 등 — 「십경」은 10경). */
+function localScenicNumberedDisplayTitle(list, locale = 'ko') {
   const spaced = spacedKoNumberedGyeongTitle(list?.title);
   if (!spaced) return '';
+  const n = titleGyeongCount(list?.title);
+  const useNumbered =
+    list?.listKind === 'other' || (list?.listKind === 'sipgyeong' && n === 12);
+  if (!useNumbered) return '';
   const isEn = String(locale || '').toLowerCase().startsWith('en');
   if (isEn) return String(list?.title_en || spaced).trim();
   return spaced;
@@ -87,7 +96,7 @@ for (const list of LISTS) {
   const cityKo = String(hubForKeys?.name || list.hubId || '').trim();
   const kindKo = KIND_LABEL_KO[list.listKind] || KIND_LABEL_KO.other;
   const displayKo = cityKo ? `${cityKo} ${kindKo}` : kindKo;
-  const numberedKo = localScenicOtherNumberedDisplayTitle(list, 'ko');
+  const numberedKo = localScenicNumberedDisplayTitle(list, 'ko');
   const keys = [
     list.listId,
     list.title,
@@ -205,8 +214,8 @@ export function localScenicListDisplayTitle(list, hub, locale = 'ko') {
       return ssot;
     }
   }
-  const numberedOther = localScenicOtherNumberedDisplayTitle(list, locale);
-  if (numberedOther) return numberedOther;
+  const numberedTitle = localScenicNumberedDisplayTitle(list, locale);
+  if (numberedTitle) return numberedTitle;
   const city = isEn
     ? String(h?.name_en || h?.name || list?.hubId || '').trim()
     : String(h?.name || list?.hubId || '').trim();
