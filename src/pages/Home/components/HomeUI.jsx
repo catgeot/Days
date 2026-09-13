@@ -237,6 +237,73 @@ const HomeUI = React.memo(({
 
   const [mobileQuickLinkFirst, ...mobileQuickLinkRest] = mobileQuickLinks;
 
+  const renderMobileHeaderActions = () => (
+    <div className="relative z-10 flex shrink-0 items-center gap-1.5">
+      {user ? (
+        <button
+          type="button"
+          onClick={onLogout}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/50 text-gray-200 backdrop-blur-md transition-colors hover:border-red-400/40 hover:text-red-300 touch-manipulation"
+          aria-label={t('home.logoPanel.signOut')}
+          title={t('home.logoPanel.signOut')}
+        >
+          <User size={16} aria-hidden="true" />
+        </button>
+      ) : (
+        <Link
+          to="/auth/login"
+          state={{ from: window.location.pathname + window.location.search }}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/50 text-gray-200 backdrop-blur-md transition-colors hover:border-purple-400/40 hover:text-purple-300 touch-manipulation"
+          aria-label={t('layout.auth.signIn')}
+          title={t('layout.auth.signIn')}
+        >
+          <User size={16} aria-hidden="true" />
+        </Link>
+      )}
+      <button
+        type="button"
+        onClick={() => onOpenChat()}
+        className="flex h-9 items-center gap-1 rounded-full border border-blue-400/35 bg-blue-500/15 px-2.5 text-[10px] font-bold text-blue-100 backdrop-blur-md transition-colors hover:border-blue-300/55 hover:bg-blue-500/25 touch-manipulation"
+        aria-label={t('home.chatWithAi')}
+        title={t('home.chatWithAi')}
+      >
+        <MessageSquare size={14} aria-hidden="true" />
+        <span className="max-[360px]:hidden">AI</span>
+      </button>
+    </div>
+  );
+
+  const renderValueHero = () => (
+    <div className="pointer-events-none flex w-full flex-col items-center text-center">
+      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/60 px-3.5 py-3 shadow-lg backdrop-blur-md md:px-5 md:py-4">
+        <h2 className="text-sm font-bold leading-snug text-white break-keep md:text-lg">
+          {t('home.hero.headline')}
+        </h2>
+        <p className="mt-1 text-[11px] leading-relaxed text-gray-300/90 break-keep md:text-xs">
+          {t('home.hero.subheadline')}
+        </p>
+        <div className="pointer-events-auto mt-3 flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => navigate('/explore')}
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-2 text-[11px] font-bold text-white transition-colors hover:border-cyan-400/45 hover:bg-cyan-500/15 touch-manipulation md:text-xs"
+          >
+            <Map size={14} aria-hidden="true" />
+            <span>{t('home.hero.exploreCta')}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onOpenChat()}
+            className="inline-flex items-center gap-1.5 rounded-full border border-purple-400/35 bg-purple-500/15 px-3.5 py-2 text-[11px] font-bold text-purple-100 transition-colors hover:border-purple-300/55 hover:bg-purple-500/25 touch-manipulation md:text-xs"
+          >
+            <MessageSquare size={14} aria-hidden="true" />
+            <span>{t('home.hero.mooniCta')}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderSearchPill = () => (
     <>
       <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -256,7 +323,8 @@ const HomeUI = React.memo(({
           <Search size={16} className="md:w-[18px] md:h-[18px]" />
         </div>
         <span className="min-w-0 flex-1 bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate">
-          {t('layout.search.placeholder')}
+          <span className="md:hidden">{t('layout.search.placeholderMobile')}</span>
+          <span className="hidden md:inline">{t('layout.search.placeholder')}</span>
         </span>
       </div>
     </>
@@ -310,31 +378,38 @@ const HomeUI = React.memo(({
         />
 
         {!isTourCinema ? (
-          <div className="flex md:hidden w-full items-center gap-2 min-w-0 pointer-events-auto">
-            <div
-              key={`${homeChromeEpoch}-mobile`}
-              className="relative shrink-0 z-[110]"
-              data-home-chrome-hit
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => e.stopPropagation()}
-            >
+          <div className="flex md:hidden w-full flex-col gap-2 min-w-0 pointer-events-auto">
+            <div className="flex w-full items-center gap-2 min-w-0">
               <div
-                aria-hidden="true"
-                className="pointer-events-auto absolute -inset-y-2 -left-2 right-0 z-0 rounded-2xl bg-[#070707]/92"
-              />
-              <div className="relative z-10 flex items-center gap-1">
+                key={`${homeChromeEpoch}-mobile`}
+                className="relative shrink-0 z-[110]"
+                data-home-chrome-hit
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div
-                  onClick={onLogoClick}
-                  className="cursor-pointer group touch-manipulation"
-                >
-                  <h1 className="group-hover:opacity-90 transition-opacity origin-left">
-                    <Logo />
-                  </h1>
+                  aria-hidden="true"
+                  className="pointer-events-auto absolute -inset-y-2 -left-2 right-0 z-0 rounded-2xl bg-[#070707]/92"
+                />
+                <div className="relative z-10 flex items-center gap-1">
+                  <div
+                    onClick={onLogoClick}
+                    className="cursor-pointer group touch-manipulation"
+                  >
+                    <h1 className="group-hover:opacity-90 transition-opacity origin-left">
+                      <Logo />
+                    </h1>
+                  </div>
+                  <LocaleToggle compact />
                 </div>
-                <LocaleToggle compact />
               </div>
+              <div className="flex-1 min-w-0" aria-hidden="true" />
+              {renderMobileHeaderActions()}
             </div>
-            <div className="group relative flex-1 min-w-0">
+            {!hideExploreChrome ? (
+              <div className="w-full min-w-0">{renderValueHero()}</div>
+            ) : null}
+            <div className="group relative w-full min-w-0">
               {renderSearchPill()}
             </div>
           </div>
@@ -426,8 +501,9 @@ const HomeUI = React.memo(({
         ) : !isTourCinema ? (
           <div
             data-site-notice-anchor
-            className="group pointer-events-auto min-w-0 hidden md:flex md:col-span-5 md:relative md:z-50 md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100"
+            className="group pointer-events-auto min-w-0 hidden md:flex md:col-span-5 md:relative md:z-50 md:flex-col md:items-center md:gap-3 md:pt-2 md:animate-fade-in-down md:delay-100"
           >
+            {!hideExploreChrome ? renderValueHero() : null}
             {renderSearchPill()}
           </div>
         ) : null}

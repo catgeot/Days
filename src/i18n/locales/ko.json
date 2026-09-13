@@ -12,7 +12,8 @@
       "labelKo": "KO"
     },
     "search": {
-      "placeholder": "지금 기분, 느낌으로 검색해 보세요"
+      "placeholder": "지금 기분, 느낌으로 검색해 보세요",
+      "placeholderMobile": "여행지 검색..."
     },
     "siteNotice": {
       "refreshHeader": "업데이트 안내",
@@ -170,6 +171,12 @@
       "urban": "도심",
       "culture": "문화",
       "adventure": "모험"
+    },
+    "hero": {
+      "headline": "3D 지구본과 AI로 만나는 다음 여행지",
+      "subheadline": "전 세계 숨은 파라다이스와 한국의 명승을 탐색하고 플랜을 세워보세요",
+      "exploreCta": "여행지 탐색",
+      "mooniCta": "MOONi에게 추천받기"
     },
     "chatWithAi": "AI와 대화하기",
     "ticker": {
