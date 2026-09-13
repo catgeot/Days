@@ -1061,6 +1061,18 @@ const NS_NOGANG =
   'https://www.nonsan.go.kr/_prog/download/?d_type=1&filename=20221222134750_005oh6xhh6tp6jsk3shswc6989u7wa.jpg&func_gbn_cd=tourinfo&site_dvs_cd=tour';
 const NS_NOGANG_2 =
   'https://www.nonsan.go.kr/_prog/download/?d_type=1&filename=20221222134732_01uf5luuxcjcn6e21u0eu4j262dc6x.jpg&func_gbn_cd=tourinfo&site_dvs_cd=tour';
+const CN_YU = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/tursmCn/TUCN_202311160351371300.jpg';
+const CN_YU_2 = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/images/tour/sub01/photo01_img04.jpg';
+const CN_YU_3 = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/images/tour/sub01/photo01_img01.jpg';
+const CN_TAEJO = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090307011892.JPG';
+const CN_TAEJO_2 = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090307013903.JPG';
+const CN_TAEJO_3 = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/images/tour/sub01/photo05_img01.jpg';
+const CN_ARARIO = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/tursmCn/TUCN_202311160356224720.jpg';
+const CN_ARARIO_2 = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/tursmCn/TUCN_201512300206334556.JPG';
+const CN_ARARIO_3 = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/tursmCn/TUCN_201512300206338437.jpg';
+const CN_STELE = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337447340.JPG';
+const CN_STELE_2 = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337493453.JPG';
+const CN_STELE_3 = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337496804.JPG';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2184,6 +2196,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 논산시 노성면 종학길 39-6 (종학당과 한국유교문화진흥원)',
     NS_JONGHAK,
     [NS_JONGHAK_2, NS_JONGHAK_3],
+  ),
+  'local-scenic:cheonan-palgyeong:유관순열사사적지': localScenicPhotoOverlay(
+    '천안8경 제2경 유관순열사사적지는 동남구 병천면 유관순길 38입니다. 천안시 문화관광은 1919년 3월 1일 탑골공원에서 시작된 독립만세가 같은 달 5일 학생단 시위로 이어지다 휴교령으로 막히자, 이화학당 학생 유관순열사(1902.12.16.~1920.9.28.)가 고향 병천으로 내려와 김구응·조인원·유중무 등과 4월 1일 아우내장터 만세운동을 일으켰다고 적습니다. 병천천을 사이에 두고 아우내장터와 사적(구 사적 제230호)이 마주 보며, 매봉산 일원 3,544㎡에 기념관·생가·봉화대·추모각·초혼묘·열사의 거리가 있습니다. 1972년 사당을 세우고 초상을 모셨으며 매년 3월 마지막 날에 봉화를 올립니다. 사진은 천안시 문화관광 유관순열사사적지 공식 사진입니다.',
+    '충청남도 천안시 동남구 병천면 유관순길 38 (유관순열사사적지)',
+    CN_YU,
+    [CN_YU_2, CN_YU_3],
+  ),
+  'local-scenic:cheonan-palgyeong:태조산왕건길과청동대좌불': localScenicPhotoOverlay(
+    '천안8경 제4경 태조산 왕건길과 청동대좌불은 동남구 각원사길 245입니다. 천안시 문화관광은 태조산(421m)이 고려 태조가 머물렀다 하여 붙은 천안의 진산이며, 930년 태조가 후백제 신검과 대치할 때 이 산에 올라 주둔지를 살폈고 산신제 제단 흔적이 남는다고 적습니다. 서쪽 자락에 각원사와 성불사가 직선거리 700m로 있고, 각원사는 남북통일의 염원으로 1977년 창건한 조계종 직할교구입니다. 남북통일기원 청동대불은 1977년 5월 9일 태조산 중봉에 봉안했으며 좌대 지름 10m·좌대와 불상 전체 높이 15m·둘레 30m·무게 청동 60톤입니다. 시는 국내 최고 크기 좌불이라고 안내합니다. 사진은 천안시 문화관광 태조산 각원사 청동대좌불 공식 사진이며, GATEO 선정 각원사와 다른 시 공식 사진을 썼습니다.',
+    '충청남도 천안시 동남구 각원사길 245 (태조산 왕건길과 청동대좌불)',
+    CN_TAEJO,
+    [CN_TAEJO_2, CN_TAEJO_3],
+  ),
+  'local-scenic:cheonan-palgyeong:아라리오조각광장': localScenicPhotoOverlay(
+    '천안8경 제5경 아라리오조각광장은 동남구 만남로 43(신부동)입니다. 천안시 문화관광은 하루 7만 명 이상이 이용하는 광장으로 종합터미널·아라리오갤러리·신세계백화점을 잇는 중심이며, 학생·청소년이 많이 찾는 젊음의 광장이라고 적습니다. 2007년 우리나라 최고의 아름다운 광장 최우수상(국무총리상)을 받았고, 설치된 작품은 총 28점입니다. ARARIO Small City는 어디서나 현대미술을 볼 수 있게 했고, 시는 국내 미술 애호가의 순례지이자 해외 여행객의 관광 코스라고 안내합니다. 사진은 천안시 문화관광 아라리오조각광장 공식 사진입니다.',
+    '충청남도 천안시 동남구 만남로 43 (아라리오조각광장)',
+    CN_ARARIO,
+    [CN_ARARIO_2, CN_ARARIO_3],
+  ),
+  'local-scenic:cheonan-palgyeong:봉선홍경사갈기비': localScenicPhotoOverlay(
+    '천안8경 제8경 봉선홍경사갈기비는 서북구 성환읍 대홍3길 77-48입니다. 천안시 문화관광은 봉선홍경사가 고려 현종 12년(1021)에 창건된 절이며, 절 이름 앞의 봉선(奉先)은 불교를 전하고자 절을 짓다 마치지 못하고 돌아간 아버지 안종(安宗)의 뜻을 아들 현종이 받든다는 의미라고 적습니다. 현재 절터에는 창건 기록을 담은 비석만 남았습니다. 갈비(碣碑)는 보통 머릿돌·지붕돌을 얹지 않으나 이 비는 거북받침돌과 머릿돌을 갖추었고, 거북 머리가 용머리로 바뀌고 지느러미 같은 날개가 있습니다. 비몸 앞면 위에 「봉선홍경사갈기」가 가로로 새겨져 있고 머릿돌에는 구름에 휩싸인 용이 있습니다. 현종 17년(1026)에 세웠으며 비문은 해동공자로 불리던 최충이 짓고 백현례가 썼습니다. 1962년 12월 20일 국보로 지정되었습니다. 사진은 천안시 문화관광 봉선홍경사갈기비 공식 사진입니다.',
+    '충청남도 천안시 서북구 성환읍 대홍3길 77-48 (봉선홍경사갈기비)',
+    CN_STELE,
+    [CN_STELE_2, CN_STELE_3],
   ),
 };
 

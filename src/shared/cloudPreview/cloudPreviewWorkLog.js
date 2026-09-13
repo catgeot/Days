@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 37,
-  sessionPhase: '논산 검색 빈 썸네일',
+  sessionNo: 38,
+  sessionPhase: '천안 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=nonsan',
+  previewPath: '/korea/theme/scenic?hub=cheonan',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-38-cheonan-overlays',
+    session: '팔경 활용 #38, 천안 결손 오버레이',
+    title: '천안8경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 천안8경 결손 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 천안시 문화관광 유관순 추모각·각원사 청동대좌불·아라리오 조각·봉선홍경사갈기비 사진을 연결했고, 청동대좌불은 GATEO 선정 각원사와 다른 시 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=cheonan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T08:10:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-37-nonsan-tour-thumbs',
     session: '팔경 활용 #37, 논산 검색 빈 썸네일',
