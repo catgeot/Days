@@ -30,7 +30,7 @@
 
 ---
 
-### 방문자 개선 (체질 개선 12대 과제)
+### 방문자 개선 (체질 개선 13대 과제 및 크롤러 SEO)
 
 | | |
 |--|--|
@@ -39,7 +39,7 @@
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **Preview** | `/qa/visitor-growth` → git Preview `/` |
-| **소유** | `App.jsx` · `AboutPage.jsx` · `HomeUI.jsx` · `ChatModal.jsx` · `mooniQuickReplies.js` |
+| **소유** | `App.jsx` · `AboutPage.jsx` · `HomeUI.jsx` · `ChatModal.jsx` · `PlannerTab.jsx` · `Login.jsx` · `middleware.js` · `injectCrawlerMeta.js` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run build` PASS |
 
