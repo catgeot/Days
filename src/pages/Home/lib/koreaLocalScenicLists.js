@@ -1127,6 +1127,18 @@ const DY_GWANBANG_2 =
 const DY_GWANBANG_3 =
   'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128367';
 const DY_GWANBANG_4 = 'https://tong.visitkorea.or.kr/cms/resource/57/3533957_image2_1.jpg';
+const MR_HOBAKSO = 'https://tong.visitkorea.or.kr/cms/resource/72/2660872_image2_1.jpg';
+const MR_HOBAKSO_2 = 'https://tong.visitkorea.or.kr/cms/resource/65/2589465_image2_1.jpg';
+const MR_HOBAKSO_3 = 'https://tong.visitkorea.or.kr/cms/resource/63/2589463_image2_1.jpg';
+const MR_WOLYEON = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629308.jpg';
+const MR_WOLYEON_2 = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629309.jpg';
+const MR_WOLYEON_3 = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629310.jpg';
+const MR_MANEO = 'https://tong.visitkorea.or.kr/cms/resource/43/3494643_image2_1.JPG';
+const MR_MANEO_2 = 'https://tong.visitkorea.or.kr/cms/resource/40/3494640_image2_1.JPG';
+const MR_MANEO_3 = 'https://tong.visitkorea.or.kr/cms/resource/42/3494642_image2_1.JPG';
+const MR_JONGNAM = 'https://tong.visitkorea.or.kr/cms/resource/40/2778040_image2_1.jpg';
+const MR_JONGNAM_2 = 'https://tong.visitkorea.or.kr/cms/resource/39/2778039_image2_1.jpg';
+const MR_JONGNAM_3 = 'https://tong.visitkorea.or.kr/cms/resource/43/2778043_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2298,6 +2310,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 담양군 담양읍 죽녹원로 98 (담양관방제림)',
     DY_GWANBANG,
     [DY_GWANBANG_2, DY_GWANBANG_3, DY_GWANBANG_4],
+  ),
+  'local-scenic:miryang-palgyeong:시례호박소': localScenicPhotoOverlay(
+    '밀양8경 제2경 시례 호박소는 산내면 얼음골로 334-1 호박소계곡입니다. 한국관광공사에 따르면 호박소는 수백만 년 동안 물살이 바위를 깎아 만든 포트홀(호박소)과 폭포가 어우러진 계곡으로, 둘레가 약 30m인 대형 호박소가 대표적입니다. 한국의 명수 100선에 선정되었고, 계곡에는 백련사·형제소·오천평반석 등이 있습니다. 밀양시는 밀양8경 제2경으로 안내합니다. 사진은 한국관광공사 호박소계곡 사진입니다.',
+    '경상남도 밀양시 산내면 얼음골로 334-1 (시례 호박소·호박소계곡)',
+    MR_HOBAKSO,
+    [MR_HOBAKSO_2, MR_HOBAKSO_3],
+  ),
+  'local-scenic:miryang-palgyeong:월연정풍경': localScenicPhotoOverlay(
+    '밀양8경 제4경 월연정 풍경은 용평동 월연대 일원입니다. 국가유산청 명승 밀양 월연대 일원(2012.2.8.)에 따르면 조선 중종 때 문신 월연(月淵) 이태가 관직에서 물러나 쌍경당과 월연대를 조성한 데서 유래했고, 월연정에서 바라본 강변 풍경이 빼어나 월주경(月洲景)으로 불립니다. 바위에 새겨진 글씨와 월연대 12경 등 문화경관이 함께합니다. 주소는 용평로 330-7(용평동 2-1)입니다. 사진은 국가유산청 명승 밀양 월연대 일원 공식 사진입니다.',
+    '경상남도 밀양시 용평로 330-7 (월연정 풍경·월연대 일원)',
+    MR_WOLYEON,
+    [MR_WOLYEON_2, MR_WOLYEON_3],
+  ),
+  'local-scenic:miryang-palgyeong:만어사운해': localScenicPhotoOverlay(
+    '밀양8경 제6경 만어사 운해는 삼랑진읍 만어로 776 만어사 일대입니다. 한국관광공사·밀양시 문화관광에 따르면 해발 674m 만어산 8부 능선에 자리한 만어사는 가락국 수로왕 창건 전설과 암괴류·종석이 있는 사찰이며, 얼음골·표충비와 함께 밀양 3대 신비로 꼽힙니다. 산 정상 부근 입지 덕분에 비가 내린 뒤나 새벽에는 사찰 아래로 구름이 바다처럼 펼쳐지는 운해를 볼 수 있다고 안내합니다. 사진은 한국관광공사 만어사 사진이며, 능선·안개 느낌 사진을 보탰습니다.',
+    '경상남도 밀양시 삼랑진읍 만어로 776 (만어사 운해)',
+    MR_MANEO,
+    [MR_MANEO_2, MR_MANEO_3],
+  ),
+  'local-scenic:miryang-palgyeong:종남산진달래': localScenicPhotoOverlay(
+    '밀양8경 제7경 종남산 진달래는 상남면·부북면·초동면에 걸친 해발 663m 종남산 능선입니다. 디지털밀양문화대전·밀양시 문화관광에 따르면 수백 년간 이어진 진달래 군락이 약 2만 600㎡에 이르며, 3월 말~4월 초에 만개해 능선이 분홍빛으로 물듭니다. 6부 능선부터 진달래가 본격적으로 보이고 8부 능선부터 대규모 군락이 형성됩니다. 정상에서는 밀양 시가지·낙동강 들녘·영남알프스가 조망되며, 팔각정 코스(상남면 조남길 408 등)가 대표입니다. 매년 종남산진달래축제가 열립니다. 사진은 한국관광공사 종남산(밀양) 사진입니다.',
+    '경상남도 밀양시 상남면 조남길 408 일대 (종남산 진달래·팔각정 코스)',
+    MR_JONGNAM,
+    [MR_JONGNAM_2, MR_JONGNAM_3],
   ),
 };
 
