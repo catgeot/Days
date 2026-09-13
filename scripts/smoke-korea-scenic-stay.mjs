@@ -68,6 +68,7 @@ assert.doesNotMatch(
   'ScenicStayStrip does not use festival trip presets',
 );
 assert.match(stripSrc, /EventStayStrip/, 'ScenicStayStrip reuses EventStayStrip');
+assert.match(stripSrc, /stayAreas=\{stayAreas\}/, 'ScenicStayStrip passes sido fallback stayAreas');
 assert.match(stripSrc, /normalizeMrtStayDates/, 'ScenicStayStrip uses default MRT stay dates');
 assert.match(
   eventStripSrc,
@@ -95,6 +96,30 @@ assert.equal(
   canShowMrtStayStrip(bundle.stay.location),
   true,
   'gyeongbokgung location is eligible for MRT stay strip',
+);
+assert.ok(
+  Array.isArray(bundle.stayAreas) && bundle.stayAreas.length >= 1,
+  `gyeongbokgung stayAreas is wired (got ${JSON.stringify(bundle.stayAreas)})`,
+);
+
+const daecheong = listKoreaScenicSpots().find(
+  (s) => s.id === 'daecheongdo-ongjin' || s.placeSlug === 'daecheongdo-ongjin',
+);
+assert.ok(daecheong, 'daecheongdo scenic spot exists');
+const daecheongStay = resolveThemeCrossLinks(daecheong);
+assert.ok(
+  (daecheongStay.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `대청도 stayAreas includes 인천 (got ${JSON.stringify(daecheongStay.stayAreas)})`,
+);
+assert.match(
+  modalSrc,
+  /stayAreas=\{stayCross\.stayAreas\}/,
+  'ThemeSpotDetailModal passes stayAreas into ScenicStayStrip',
+);
+assert.match(
+  eventStripSrc,
+  /siblingAlts\[0\]/,
+  'EventStayStrip retries sibling stay area when primary inventory is empty',
 );
 
 console.log('smoke-korea-scenic-stay: all assertions passed');

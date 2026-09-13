@@ -7,6 +7,7 @@
 import {
   canShowMrtStayStrip,
   expandMrtCountryHintAlts,
+  mergeMrtStayFetchQuery,
   resolveMrtStayQuery,
 } from '../src/utils/mrtStayQuery.js';
 
@@ -349,6 +350,43 @@ async function main() {
 
   const baliAlts = expandMrtCountryHintAlts('인도네시아', ['Indonesia']);
   assert(!baliAlts.some((a) => a === '인도'), 'bali alts must not include bare 인도');
+
+  const ongjinMerge = mergeMrtStayFetchQuery(
+    {
+      slug: 'ongjin',
+      hubId: 'ongjin',
+      name: '대청도',
+      name_ko: '대청도',
+      parentCity: '옹진',
+      country: '대한민국',
+      country_en: 'South Korea',
+    },
+    { keywordOverride: '옹진', altKeywords: ['인천', '강화'] },
+  );
+  assert(ongjinMerge.keyword === '옹진', `ongjin merge keyword (got ${ongjinMerge.keyword})`);
+  assert(
+    ongjinMerge.altKeywords.includes('인천') && ongjinMerge.altKeywords.includes('강화'),
+    `ongjin merge alts include 인천·강화 (got ${ongjinMerge.altKeywords.join(',')})`,
+  );
+  assert(
+    ongjinMerge.cityHints.includes('인천'),
+    `ongjin merge cityHints include 인천 so Edge does not reject fallback CITY (got ${ongjinMerge.cityHints.join(',')})`,
+  );
+
+  const emptyAltsKeepQuery = mergeMrtStayFetchQuery(
+    {
+      slug: 'ongjin',
+      hubId: 'ongjin',
+      name: '대청도',
+      parentCity: '옹진',
+      country: '대한민국',
+    },
+    { altKeywords: [] },
+  );
+  assert(
+    emptyAltsKeepQuery.altKeywords.length > 0,
+    `empty altKeywords array must not wipe location alts (got ${emptyAltsKeepQuery.altKeywords.join(',')})`,
+  );
 
   if (process.env.MRT_STAY_SMOKE_LIVE === '1') {
     const url = (process.env.VITE_SUPABASE_URL || 'https://phdjnbfitvmrguqzverm.supabase.co').replace(/\/$/, '');

@@ -26,10 +26,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'korea-tna-strip',
     label: '축제·명승 본문 투어·티켓 카드 섹션',
-    branch: 'cursor/korea-tna-strip-ef65',
-    destination:
-      'https://days-git-cursor-korea-tna-strip-ef65-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung',
+    active: false,
   },
   {
     slug: 'scenic-stay',
