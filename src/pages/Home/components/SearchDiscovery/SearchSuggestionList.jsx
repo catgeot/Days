@@ -12,6 +12,7 @@ import {
 } from '../../../../i18n/exploreUi';
 import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve.js';
 import { fetchKoreaTourAttractionFirstImagesByIds } from '../../lib/koreaTourAttractions';
+import { resolveSearchScenicMedia } from '../../lib/koreaLocalScenicLists';
 import {
   getLocalizedCountryName,
   getLocalizedPlaceName,
@@ -97,9 +98,46 @@ function SuggestionIcon({ kind, size = 16 }) {
 }
 
 function searchCandidateThumbUrl(item) {
-  return String(
-    item?.imageUrl || item?.thumbUrl || item?.firstImage || item?.image_url || '',
-  ).trim();
+  return String(resolveSearchScenicMedia(item).imageUrl || '').trim();
+}
+
+function useMissingTourAttractionThumbs(items) {
+  const [thumbByIndex, setThumbByIndex] = useState({});
+  const candidateKey = useMemo(
+    () =>
+      (items || [])
+        .map((c) => `${c?.id || ''}|${c?.name || ''}|${c?.lat}|${c?.lng}|${c?.contentId || ''}`)
+        .join(';'),
+    [items],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    setThumbByIndex({});
+    const list = items || [];
+    const ids = list
+      .filter((item) => !searchCandidateThumbUrl(item))
+      .map((item) => item?.contentId)
+      .filter(Boolean);
+    if (!ids.length) return undefined;
+
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
+      if (cancelled) return;
+      const next = {};
+      list.forEach((item, index) => {
+        if (searchCandidateThumbUrl(item)) return;
+        const url = dbMap.get(String(item?.contentId || '').trim());
+        if (url) next[index] = url;
+      });
+      if (Object.keys(next).length) setThumbByIndex(next);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [candidateKey, items]);
+
+  return thumbByIndex;
 }
 
 function SearchResultThumb({ item, sizeClass, kind, iconSize = 16 }) {
@@ -140,6 +178,7 @@ export function SearchSuggestionList({
   variant = 'panel',
 }) {
   const { t, i18n } = useTranslation();
+  const thumbByIndex = useMissingTourAttractionThumbs(items);
   if (!query.trim()) return null;
 
   const isPopover = variant === 'popover';
@@ -194,6 +233,9 @@ export function SearchSuggestionList({
             const prevGroup = String(items[index - 1]?.groupTitle || '').trim();
             const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
             const rankBlurb = String(item.rankBlurb || '').trim();
+            const thumbItem = thumbByIndex[index]
+              ? { ...item, imageUrl: thumbByIndex[index] }
+              : item;
 
             return (
               <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
@@ -213,7 +255,7 @@ export function SearchSuggestionList({
                   }`}
                 >
                   <SearchResultThumb
-                    item={item}
+                    item={thumbItem}
                     kind={item.kind}
                     iconSize={isPopover ? 16 : 18}
                     sizeClass={isPopover ? 'h-10 w-10' : 'h-12 w-12'}
@@ -257,7 +299,7 @@ export function SearchDisambiguationCards({
 }) {
   const { t, i18n } = useTranslation();
   const [introByKey, setIntroByKey] = useState({});
-  const [thumbByIndex, setThumbByIndex] = useState({});
+  const thumbByIndex = useMissingTourAttractionThumbs(candidates);
 
   const candidateKey = useMemo(
     () =>
@@ -284,31 +326,6 @@ export function SearchDisambiguationCards({
       );
       if (!cancelled) setIntroByKey(next);
     })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [candidateKey, candidates]);
-
-  useEffect(() => {
-    let cancelled = false;
-    setThumbByIndex({});
-    const ids = candidates
-      .filter((item) => !searchCandidateThumbUrl(item))
-      .map((item) => item?.contentId)
-      .filter(Boolean);
-    if (!ids.length) return undefined;
-
-    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
-      if (cancelled) return;
-      const next = {};
-      candidates.forEach((item, index) => {
-        if (searchCandidateThumbUrl(item)) return;
-        const url = dbMap.get(String(item?.contentId || '').trim());
-        if (url) next[index] = url;
-      });
-      if (Object.keys(next).length) setThumbByIndex(next);
-    });
 
     return () => {
       cancelled = true;

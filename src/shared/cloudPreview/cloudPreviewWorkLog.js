@@ -24,6 +24,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-13-explore-search-6-merge',
+    session: '탐색홈 검색 #6, Preview OK면 PR 병합',
+    title: '문경 팔경·선정 썸네일 PROD 병합',
+    detail:
+      'Preview QA 후 PR #242를 main에 병합했습니다. #5 resolveSearchScenicMedia·드롭다운 TourAPI 썸네일과 함께, 쌍용계곡은 VisitKorea 1050806(실내 사진) 대신 문경시 문화관광 mg8_0401·0402 공식 사진을 씁니다. 선유동·용추·경천호는 TourAPI 또는 이후 팔경 오버레이. /qa/explore-search→PROD는 PR #241.',
+    at: '2026-09-13T09:10:00.000Z',
+  },
+  {
+    id: '2026-09-13-explore-search-5-mungyeong-thumbs',
+    session: '탐색홈 검색 #5, 문경 썸네일 경로 통일',
+    title: '탐색 검색 썸네일 = 명승·명소 SSOT',
+    detail:
+      '문경 검색에서 일부 행만 사진이 비던 이유는 경로가 달랐습니다. 탐색홈은 팔경 오버레이·GATEO 선정 imageUrl만 보고, 명소홈은 TourAPI first_image와 contentId 오버레이까지 보강합니다. 탐색 드롭다운·선택 행이 명승과 같은 오버레이·선정·contentId 사진을 쓰고, 남은 contentId는 TourAPI 캐시로 채웁니다. 팔경 결손 오버레이가 추가되면 탐색에도 같이 반영됩니다. Preview /qa/explore-search — /explore 문경 검색 행 사진.',
+    at: '2026-09-13T08:40:00.000Z',
+  },
+  {
     id: '2026-09-13-palgyeong-use-38-cheonan-overlays',
     session: '팔경 활용 #38, 천안 결손 오버레이',
     title: '천안8경 결손 4건 오버레이',

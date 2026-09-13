@@ -18,15 +18,15 @@
 
 | | |
 |--|--|
-| **상태** | **#4 merge ✅ · 주제 종료** · main `b67985a8` · PR [#239](https://github.com/catgeot/Days/pull/239) |
-| **브랜치** | `cursor/explore-search-d14b` · merge `b67985a8` |
-| **PR** | [#239](https://github.com/catgeot/Days/pull/239) (MERGED) |
+| **상태** | **#6 merge ✅ · 주제 종료** · main `ad333614` · PR [#242](https://github.com/catgeot/Days/pull/242) |
+| **브랜치** | `cursor/explore-search-d14b` · merge `ad333614` |
+| **PR** | [#242](https://github.com/catgeot/Days/pull/242) (MERGED) · [#239](https://github.com/catgeot/Days/pull/239) merge ✅ |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **PROD** | `https://www.gateo.kr/explore` — 옹진 Enter 「옹진 명소」·섬 사진·N경 없음 · 문경 팔경·문경 1경 |
+| **PROD** | `https://www.gateo.kr/explore` — 문경 팔경·선정 사진 · 옹진 N경 없음 |
 | **VERIFY** | `smoke:explore-choice-overlay` · `smoke:korea-local-scenic-lists` · `smoke:explore-search-aliases` · `vite build` PASS |
-| **성과** | #1 Enter 후 드롭다운 닫힘. #3 팔경식 행·문경 1경 썸네일. #4 무팔경 허브는 `{시군} 명소`만. `/qa/explore-search` → PROD는 PR [#241](https://github.com/catgeot/Days/pull/241) |
+| **성과** | #5 `resolveSearchScenicMedia`·TourAPI 드롭다운. #6 쌍용계곡 문경시 공식 사진. 선유동·용추·경천호는 TourAPI 또는 팔경 오버레이 대기. `/qa/explore-search`→PROD는 PR [#241](https://github.com/catgeot/Days/pull/241) |
 
-**다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr/explore`.
+**다음 제시어 없음** (주제 종료). `/qa/explore-search` PROD 전환은 PR [#241](https://github.com/catgeot/Days/pull/241). 확인은 `www.gateo.kr/explore`.
 
 ---
 
