@@ -974,6 +974,19 @@ const GR_UNI = 'https://www.gyeryong.go.kr/_prog/dn00/?file_id=7de9c26193dec2a10
 const GR_UNI_2 =
   'https://www.gyeryong.go.kr/_prog/download/?site_dvs_cd=tour&func_gbn_cd=tourist&filename=20210825144327_00442b143tp5az6mhqcqo4an81rycz.png&editor=Y';
 const GR_UNI_3 = 'https://www.gyeryong.go.kr/kr/img/sub06/sub06030204_img02.jpg';
+const NS_SURAK = 'https://www.nonsan.go.kr/site/tour/img/sub02/sub020201_img03.jpg';
+const NS_SURAK_2 = 'https://www.nonsan.go.kr/site/tour/img/sub01/28/photo01.jpg';
+const NS_SURAK_3 = 'https://www.nonsan.go.kr/site/tour/img/sub01/28/photo18.jpg';
+const NS_SURAK_4 = 'https://www.nonsan.go.kr/site/tour/img/sub01/28/photo23.jpg';
+const NS_GANG = 'https://www.nonsan.go.kr/site/tour/img/sub02/sub020201_img07.jpg';
+const NS_GANG_2 = 'https://tong.visitkorea.or.kr/cms2/website/66/2442466.jpg';
+const NS_GANG_3 = 'https://tong.visitkorea.or.kr/cms2/website/90/2442490.jpg';
+const NS_NOSEONG = 'https://www.nonsan.go.kr/site/tour/img/sub02/sub020201_img08.jpg';
+const NS_NOSEONG_2 = 'https://tong.visitkorea.or.kr/cms2/website/17/1222217.jpg';
+const NS_NOSEONG_3 = 'https://tong.visitkorea.or.kr/cms2/website/47/1414447.jpg';
+const NS_JONGHAK = 'https://www.nonsan.go.kr/site/tour/img/sub02/sub020201_img11.jpg';
+const NS_JONGHAK_2 = 'https://tong.visitkorea.or.kr/cms2/website/00/1222500.jpg';
+const NS_JONGHAK_3 = 'https://tong.visitkorea.or.kr/cms2/website/38/2442538.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2073,6 +2086,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 계룡시 신도안면 부남리 (계룡대 통일탑)',
     GR_UNI,
     [GR_UNI_2, GR_UNI_3],
+  ),
+  'local-scenic:nonsan-other:대둔산수락계곡': localScenicPhotoOverlay(
+    '논산11경 제3경 대둔산 수락계곡은 벌곡면 수락계곡길(수락리 산 14-2)입니다. 논산시 문화관광은 대둔산을 호남의 소금강이라 부르며 논산·금산·완주 3개 시군에 걸쳐 있고 면적은 논산이 가장 넓다고 적습니다. 군지계곡과 수락폭포가 소금강의 진수이며, 수락계곡은 한여름에도 차가운 물이 흐르고 여름마다 반딧불 축제가 열리기도 합니다. 시 여름명소 안내는 경찰승전탑 광장에서 수락폭포까지 0.82km 오솔길, 선녀폭포 탐방데크, 수락폭포에서 마천대까지 군지구름다리를 안내합니다. 수락계곡에서 정상 마천대까지는 약 2시간입니다. 사진은 논산시 문화관광 대둔산 수락계곡 공식 사진이며, 같은 시 여름명소 수락계곡 오솔길·선녀폭포·수락폭포 공식 사진을 보탰습니다.',
+    '충청남도 논산시 벌곡면 수락계곡길 (대둔산 수락계곡)',
+    NS_SURAK,
+    [NS_SURAK_2, NS_SURAK_3, NS_SURAK_4],
+  ),
+  'local-scenic:nonsan-other:강경포구와근대역사거리': localScenicPhotoOverlay(
+    '논산11경 제7경 강경포구와 근대역사거리는 강경읍 옥녀봉로73번길입니다. 논산시 문화관광은 「택리지」 저자 이중환이 강경의 풍물과 경치에 빠져 살며 책을 썼다고 적습니다. 달 밝은 보름날 선녀들이 산마루에 내려와 금강에서 목욕했다는 전설이 있고, 옥녀봉 정자에서 논산평야와 부여·익산이 한눈에 들어옵니다. 부여에서 내려온 금강이 옥녀봉에서 꺾여 서해로 나갑니다. 옥녀봉은 1919년 3월 10일 강경읍 장날 500여 명이 독립만세를 외친 현장으로, 1985년 산정에 강경항일독립만세운동기념비가 세워졌습니다. 발효젓갈로 유명한 읍내에는 근대 건축물이 남아 있고, 강경 천주교회는 배 모양 설계로 지붕이 큰 돛을 연상케 합니다. 사진은 논산시 문화관광 강경포구 공식 사진이며, 한국관광공사 옥녀봉·강경역사관(구 한일은행 강경지점) 사진을 보탰습니다.',
+    '충청남도 논산시 강경읍 옥녀봉로73번길 (강경포구와 근대역사거리)',
+    NS_GANG,
+    [NS_GANG_2, NS_GANG_3],
+  ),
+  'local-scenic:nonsan-other:노성산성과명재고택': localScenicPhotoOverlay(
+    '논산11경 제8경 노성산성과 명재고택은 노성면 노성산성길 일원입니다. 논산시 문화관광은 노성산성이 백제 때 축성되어 연산 황산성과 함께 신라에 대한 백제의 마지막 방어기지였고, 자연 지세를 이용해 약 1km를 석축으로 쌓았으며 「신증동국여지승람」에 성 둘레 590m·높이 2.4m라고 적습니다. 정상에는 장대지, 동쪽 벽 아래에는 봉수대 터가 있고 성 안 우물 4개는 지금도 씁니다. 국가유산청 사적(1995.8.2., 구 사적 제393호)입니다. 산 아래 명재고택은 유학자 명재 윤증 생전(1709, 숙종)에 지어진 상류 양반가옥으로 안채는 ㄷ자형, 사랑채까지 포함하면 ㅁ자형이며 국가민속문화유산입니다. 주소는 산성이 송당리 산1-1, 고택이 노성산성길 50입니다. 사진은 논산시 문화관광 명재고택 공식 사진이며, 한국관광공사 명재고택 사진을 보탰습니다.',
+    '충청남도 논산시 노성면 노성산성길 50 (노성산성과 명재고택)',
+    NS_NOSEONG,
+    [NS_NOSEONG_2, NS_NOSEONG_3],
+  ),
+  'local-scenic:nonsan-other:종학당과한국유교문화진흥원': localScenicPhotoOverlay(
+    '논산11경 제11경 종학당과 한국유교문화진흥원은 노성면 종학길 39-6(종학당)입니다. 논산시 문화관광은 파평 윤씨 문중 자녀와 내외척·처가 자녀가 모여 합숙교육을 받던 교육도장으로, 인조 21년(1643) 윤순거가 세운 뒤 종약(宗約)을 정했다고 적습니다. 화재로 없어졌다가 1970년 윤정규가 다시 지었고, 정면 3칸·측면 2칸에 가운데 대청과 양쪽 방을 둔 한옥입니다. 일반 서원·서당과 달리 교육목표·교육과정·학칙을 두고 1910년까지 운영되었습니다. 충청남도 유형문화유산 제152호(1997.12.30.)입니다. 시는 2012년 기호유학 중심지인 논산을 한국유교문화진흥원 최적지로 꼽았고, 세계유산 돈암서원·종학당과 연계해 유교 가치를 현대화한다고 안내합니다. 진흥원 위치는 종학길 10(병사리 산 41-4)입니다. 사진은 논산시 문화관광 종학당·한국유교문화진흥원 공식 사진이며, 한국관광공사 종학당 사진을 보탰습니다.',
+    '충청남도 논산시 노성면 종학길 39-6 (종학당과 한국유교문화진흥원)',
+    NS_JONGHAK,
+    [NS_JONGHAK_2, NS_JONGHAK_3],
   ),
 };
 

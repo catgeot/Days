@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 36,
-  sessionPhase: '계룡 결손 오버레이',
+  sessionNo: 37,
+  sessionPhase: '논산 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gyeryong',
+  previewPath: '/korea/theme/scenic?hub=nonsan',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-37-nonsan-overlays',
+    session: '팔경 활용 #37, 논산 결손 오버레이',
+    title: '논산11경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 논산11경 결손 4건(대둔산 수락계곡·강경포구와 근대역사거리·노성산성과 명재고택·종학당과 한국유교문화진흥원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 논산시 문화관광 11경 수락계곡·강경포구·명재고택·종학당 사진을 연결했고, 수락계곡은 시 여름명소 선녀폭포·수락폭포 사진, 강경·고택·종학당은 한국관광공사 옥녀봉·강경역사관·명재고택·종학당 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=nonsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T04:05:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-36-gyeryong-overlays',
     session: '팔경 활용 #36, 계룡 결손 오버레이',
