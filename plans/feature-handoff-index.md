@@ -18,25 +18,25 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · 팔경식 리스트·카드 썸네일 · PR [#239](https://github.com/catgeot/Days/pull/239) · **병합 보류(Preview)** |
+| **상태** | **#4 push** · 옹진은 팔경 없음 · PR [#239](https://github.com/catgeot/Days/pull/239) · **병합 보류(Preview)** |
 | **브랜치** | `cursor/explore-search-d14b` |
-| **tip** | `d7bdccd9` |
+| **tip** | `86a381d3` |
 | **PR** | [#239](https://github.com/catgeot/Days/pull/239) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **Preview** | `/qa/explore-search` → git Preview `/explore` |
-| **소유** | `SearchSuggestionList.jsx` · Enter 선택 행 vs 타이핑 드롭다운 · 팔경 `rankBlurb` · GATEO 선정 썸네일 |
-| **금지** | UI 리디자인 · 선택 카드 규격 파손 · feature에 `plans/**` 커밋 |
+| **소유** | `SearchSuggestionList.jsx` · Enter 선택 행 vs 타이핑 드롭다운 · 팔경 `rankBlurb` · 무팔경 `{시군} 명소` |
+| **금지** | UI 리디자인 · 선택 카드 규격 파손 · 옹진에 N경 날조 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `smoke:explore-choice-overlay` · `smoke:korea-local-scenic-lists` · `smoke:explore-search-aliases` · `vite build` |
 
 **다음 제시어**:
 
 ```
-탐색홈 검색 #4, Preview OK면 PR 병합
+탐색홈 검색 #5, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
-금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
-작업: 옹진 Enter 후 도시·섬이 한 줄 행+사진인지. 문경 검색에 문경 팔경·문경 1경이 보이는지. OK면 PR #239 병합
+금지: UI 리디자인 · 선택 카드 규격 파손 · 옹진에 N경 날조 · feature에 plans/** 커밋
+작업: 옹진 Enter — 옹진 명소 소제목·섬 사진·1경 없음. 문경 — 문경 팔경·문경 1경. OK면 PR #239 병합
 ```
 
 ---
@@ -468,9 +468,9 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#37** tip `2e8f2439` · PR [#240](https://github.com/catgeot/Days/pull/240) · 논산11경 결손 4 · **#38 천안 결손 오버레이** |
+| **상태** | **#37** tip `e3b1711a` · PR [#240](https://github.com/catgeot/Days/pull/240) · 논산11경 4 · 관광지 검색 빈 썸네일 3 · **#38 천안 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `2e8f2439` |
+| **tip** | `e3b1711a` |
 | **PR** | [#240](https://github.com/catgeot/Days/pull/240) · [#238](https://github.com/catgeot/Days/pull/238) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
@@ -478,7 +478,7 @@ AI 모델 #3, Preview OK면 PR 병합
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4(#240). 순수 사진/개요 누락 **126**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **천안8경 4** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). 순수 사진/개요 누락 **126**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **천안8경 4** |
 
 **다음 제시어**:
 
