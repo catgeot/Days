@@ -1766,6 +1766,90 @@ assert.notEqual(
   '강경역사관 썸네일 ≠ 강경포구 팔경 썸네일',
 );
 
+const cheonanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'cheonan');
+const cheonanEight = cheonanMerged.filter((s) => s.localScenicListId === 'cheonan-palgyeong');
+assert.equal(cheonanEight.length, 8, '천안8경 8명');
+assert.equal(cheonanEight[0]?.groupTitle, '천안 팔경');
+const cheonanDeficitNames = [
+  '유관순열사사적지',
+  '태조산 왕건길과 청동대좌불',
+  '아라리오조각광장',
+  '봉선홍경사갈기비',
+];
+const cheonanDeficit = cheonanEight.filter((s) =>
+  cheonanDeficitNames.includes(s.attractionName),
+);
+assert.equal(cheonanDeficit.length, 4, '천안8경 결손 4명');
+assert.ok(
+  cheonanDeficit.every((s) => s.overview && s.imageUrl),
+  '천안 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  cheonanDeficit.every((s) => !s.contentId),
+  '천안 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(cheonanDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '천안 결손 4명 썸네일 서로 다름',
+);
+const cnYu = resolveLocalScenicListSpotById(
+  'local-scenic:cheonan-palgyeong:유관순열사사적지',
+);
+assert.ok(cnYu?.overview?.includes('아우내장터'), '천안 유관순 overlay overview');
+assert.ok(cnYu?.overview?.includes('사적'), '천안 유관순 사적');
+assert.ok(cnYu?.imageUrl?.includes('TUCN_202311160351371300'), '천안 유관순 시 공식 사진');
+const cnTaejo = resolveLocalScenicListSpotById(
+  'local-scenic:cheonan-palgyeong:태조산왕건길과청동대좌불',
+);
+assert.ok(cnTaejo?.overview?.includes('청동대불'), '천안 태조산 overlay overview');
+assert.ok(cnTaejo?.overview?.includes('15m'), '천안 청동대좌불 높이');
+assert.ok(cnTaejo?.imageUrl?.includes('TT_202602090307011892'), '천안 태조산 시 공식 사진');
+const cnArario = resolveLocalScenicListSpotById(
+  'local-scenic:cheonan-palgyeong:아라리오조각광장',
+);
+assert.ok(cnArario?.overview?.includes('28점'), '천안 아라리오 overlay overview');
+assert.ok(cnArario?.overview?.includes('국무총리상'), '천안 아라리오 국무총리상');
+assert.ok(cnArario?.imageUrl?.includes('TUCN_202311160356224720'), '천안 아라리오 시 공식 사진');
+const cnStele = resolveLocalScenicListSpotById(
+  'local-scenic:cheonan-palgyeong:봉선홍경사갈기비',
+);
+assert.ok(cnStele?.overview?.includes('최충'), '천안 갈기비 overlay overview');
+assert.ok(cnStele?.overview?.includes('1026'), '천안 갈기비 1026');
+assert.ok(cnStele?.imageUrl?.includes('TT_202602090337447340'), '천안 갈기비 시 공식 사진');
+assert.notEqual(cnYu?.imageUrl, cnTaejo?.imageUrl, '유관순·태조산 썸네일 다름');
+assert.notEqual(cnArario?.imageUrl, cnStele?.imageUrl, '아라리오·갈기비 썸네일 다름');
+
+const gakwonsaPark = listKoreaScenicSpots().find(
+  (s) => s.id === 'gakwonsa' || s.attractionName === '각원사',
+);
+assert.ok(gakwonsaPark?.imageUrl, 'GATEO 선정 각원사 썸네일');
+assert.notEqual(
+  cnTaejo?.imageUrl,
+  gakwonsaPark?.imageUrl,
+  '태조산 청동대좌불 썸네일 ≠ GATEO 선정 각원사',
+);
+
+const cheonanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '천안', {
+  injectLocalScenic: true,
+});
+const cheonanGlobeEight = cheonanGlobe.filter((s) => s.localScenicListId === 'cheonan-palgyeong');
+assert.equal(cheonanGlobeEight.length, 8, '천안 검색 천안8경 8행');
+assert.ok(
+  cheonanGlobeEight.every((s) => s.groupTitle === '천안 팔경'),
+  '천안 검색 그룹명 천안 팔경',
+);
+assert.ok(
+  cheonanGlobe.find((s) => s.attractionName === '유관순열사사적지')?.imageUrl,
+  '천안 검색 팔경 유관순열사사적지 썸네일',
+);
+assert.ok(
+  cheonanGlobe
+    .find((s) => s.attractionName === '봉선홍경사갈기비')
+    ?.overview?.includes('갈기비'),
+  '천안 검색 팔경 갈기비 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

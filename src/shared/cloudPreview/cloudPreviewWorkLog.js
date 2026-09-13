@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '탐색홈 검색',
-  sessionNo: 6,
-  sessionPhase: '문경 팔경·선정 썸네일 병합',
-  branch: 'cursor/explore-search-d14b',
-  previewPath: '/explore',
-  qaShareSlug: 'explore-search',
+  active: true,
+  title: '팔경 활용',
+  sessionNo: 38,
+  sessionPhase: '천안 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=cheonan',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -38,6 +38,14 @@ export const cloudPreviewWorkLog = [
     detail:
       '문경 검색에서 일부 행만 사진이 비던 이유는 경로가 달랐습니다. 탐색홈은 팔경 오버레이·GATEO 선정 imageUrl만 보고, 명소홈은 TourAPI first_image와 contentId 오버레이까지 보강합니다. 탐색 드롭다운·선택 행이 명승과 같은 오버레이·선정·contentId 사진을 쓰고, 남은 contentId는 TourAPI 캐시로 채웁니다. 팔경 결손 오버레이가 추가되면 탐색에도 같이 반영됩니다. Preview /qa/explore-search — /explore 문경 검색 행 사진.',
     at: '2026-09-13T08:40:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-38-cheonan-overlays',
+    session: '팔경 활용 #38, 천안 결손 오버레이',
+    title: '천안8경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 천안8경 결손 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 천안시 문화관광 유관순 추모각·각원사 청동대좌불·아라리오 조각·봉선홍경사갈기비 사진을 연결했고, 청동대좌불은 GATEO 선정 각원사와 다른 시 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=cheonan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T08:10:00.000Z',
   },
   {
     id: '2026-09-13-palgyeong-use-37-nonsan-tour-thumbs',
