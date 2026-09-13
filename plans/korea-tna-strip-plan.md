@@ -49,8 +49,9 @@
 | **#1~#5** | 본문 TNA 섹션 구축 및 크게보기 | `EventTnaStrip`, `FestivalTnaStrip`, `ScenicTnaStrip` 신설, 축제/명승 상세 연동, 20개 로드 및 가로 카드 확대 지원, PR #223 병합 | ✅ 완료 (`0071d2cb`) |
 | **#6** | 클룩 즐길거리·렌터카 링크 연동 | `EventTnaStrip` 하단 클룩 즐길거리·렌터카 칩, PR [#230](https://github.com/catgeot/Days/pull/230) 병합 | ✅ 완료 (MERGED) |
 | **#7** | 국내 렌터카·기차표 | 렌터카 문구 「{{place}} 렌터카 보기」 · 국내 렌터카 마이리얼트립 `/rentalcars?category=domestic` · 기차표 트립닷컴 `/trains/` · 클룩 즐길거리는 유지 | ✅ 완료 (`593fd59f` · PR [#234](https://github.com/catgeot/Days/pull/234)) |
-| **#8** | Preview OK면 PR 병합 | `/qa/korea-tna-strip`에서 렌터카·기차표 칩 확인 후 PR #234 병합 | ⬜ 다음 세션 |
-| **#9** | 해외 이벤트/독립 섹션 확장 검토 | 세계 행사(`EventExecutionStrip`)와의 공통화 검토 | ⬜ 대기 |
+| **#8** | 왕가의 산책 인천 폴백 | Preview에서 인천공항 행사가 옹진 숙소·행사명 투어(룩소르)로 나옴. 시도 대표 인천·인접 칩·행사명 TNA 제외. **병합 안 함** | ✅ 완료 (`beb65f1a` · PR [#234](https://github.com/catgeot/Days/pull/234)) |
+| **#9** | Preview OK면 PR 병합 | 왕가의 산책 인천·경복궁 렌터카/기차표 확인 후 PR #234 병합 | ⬜ 다음 세션 |
+| **#10** | 해외 이벤트/독립 섹션 확장 검토 | 세계 행사(`EventExecutionStrip`)와의 공통화 검토 | ⬜ 대기 |
 
 ---
 
@@ -76,13 +77,13 @@
 사람은 같은 턴 Preview. 다음 채팅 = **Preview OK면 PR 병합**.
 
 ```
-한국 투어티켓 #8, Preview OK면 PR 병합
+한국 투어티켓 #9, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-tna-strip-plan.md
 브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 경복궁 투어 섹션 하단이 「렌터카 보기」(최저가 비교 없음)·마이리얼트립 국내 렌터카·트립닷컴 기차표인지 확인. OK면 PR #234 병합
+작업: 왕가의 산책 숙소·투어가 인천인지(옹진·룩소르 아님)·비면 인천·강화 칩인지. 경복궁 「렌터카 보기」·MRT·기차표 OK면 PR #234 병합
 ```
 
 ---
@@ -91,9 +92,9 @@
 
 | | |
 |--|--|
-| **상태** | **#7 push** · tip `593fd59f` · PR [#234](https://github.com/catgeot/Days/pull/234) · #6 MERGED [#230](https://github.com/catgeot/Days/pull/230) |
+| **상태** | **#8 push** · tip `beb65f1a` · PR [#234](https://github.com/catgeot/Days/pull/234) · 병합 보류 |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
-| **VERIFY** | `smoke:korea-tna-strip` · `smoke:travel-agencies` · `smoke:korea-scenic-stay` · `vite build` PASS |
+| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` · 왕가의 산책 |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-theme-cross-links` · `smoke:korea-festival-personal` · `smoke:travel-agencies` · `vite build` PASS |
 | **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **다음** | #8 Preview OK면 PR 병합. 같은 세션 QA — `사람 Preview QA` 채팅 생략 |
+| **다음** | #9 Preview OK면 PR 병합. 같은 세션 QA — `사람 Preview QA` 채팅 생략 |
