@@ -41,15 +41,26 @@
 - **Preview** https://www.gateo.kr/qa/festival-stay-hub → git Preview `/korea`
 - **QA**: 학산마당극놀래 본문 숙소·투어 제목이 **미추홀**인지(옹진 아님)
 
-## 축제 숙소허브 #2 다음
+## 축제 숙소허브 #2 — 시드 없는 구 숙소·투어 폴백 (Cloud)
+
+- **세션** `축제 숙소허브 #2, Preview OK면 PR 병합`
+- **브랜치** `cursor/festival-stay-hub-c241` · tip `31780152` · PR [#233](https://github.com/catgeot/Days/pull/233)
+- **피드백**: 미추홀 매칭은 맞지만 MRT 숙소·투어 재고가 없어 섹션이 빔. 다른 구도 동일
+- **수정**: 시드에 없는 구 허브는 숙소·투어만 시도 대표(인천)로 폴백 · 지리 nearby는 미추홀 · 옹진군청 최근접은 쓰지 않음 · 시드 도시(횡성)는 유지 · 재고 0이면 인근 시드 키워드 alt
+- **VERIFY**: `smoke:korea-festival-personal` · `smoke:korea-theme-cross-links` · `smoke:korea-tna-strip` · `smoke:korea-festival-stay-url` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/festival-stay-hub → git Preview `/korea`
+- **QA**: 학산마당극놀래 숙소·투어 제목 **인천** · 카드 보임(옹진·빈 미추홀 아님). 이번 턴 Preview 후 OK면 병합
+- **병합 안 함**: 폴백은 새 동작이라 Preview 전 merge 금지
+
+## 축제 숙소허브 #3 다음
 
 ```
-축제 숙소허브 #2, Preview OK면 PR 병합
+축제 숙소허브 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 브랜치 cursor/festival-stay-hub-c241 · PR #233 · Preview /qa/festival-stay-hub
 금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
-작업: 학산마당극놀래 본문 숙소·투어가 미추홀인지(옹진 아님). OK면 PR #233 병합
+작업: 학산마당극놀래 본문 숙소·투어가 인천이고 카드가 보이는지(옹진·빈 미추홀 아님). OK면 PR #233 병합
 ```
 
 ## 한국 투어티켓 #7 — 국내 렌터카·기차표 (Cloud)

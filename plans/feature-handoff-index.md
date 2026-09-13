@@ -74,25 +74,25 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `60e7e10d` · PR [#233](https://github.com/catgeot/Days/pull/233) |
+| **상태** | **#2 push** · tip `31780152` · PR [#233](https://github.com/catgeot/Days/pull/233) |
 | **브랜치** | `cursor/festival-stay-hub-c241` |
-| **tip** | `60e7e10d` |
+| **tip** | `31780152` |
 | **PR** | [#233](https://github.com/catgeot/Days/pull/233) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **Preview** | `/qa/festival-stay-hub` → git Preview `/korea` |
-| **소유** | `nearbyFestivalHubs.js` · `resolveFestivalThemeCrossLinks` |
+| **소유** | `nearbyFestivalHubs.js` · `resolveFestivalThemeCrossLinks` · `resolveStayTnaHubId` |
 | **금지** | UI 리디자인 · 축제 시트 리팩터 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `smoke:korea-festival-personal` · `smoke:korea-theme-cross-links` · `smoke:korea-tna-strip` · `vite build` |
 
 **다음 제시어**:
 
 ```
-축제 숙소허브 #2, Preview OK면 PR 병합
+축제 숙소허브 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 브랜치 cursor/festival-stay-hub-c241 · PR #233 · Preview /qa/festival-stay-hub
 금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
-작업: 학산마당극놀래 본문 숙소·투어가 미추홀인지(옹진 아님). OK면 PR #233 병합
+작업: 학산마당극놀래 본문 숙소·투어가 인천이고 카드가 보이는지(옹진·빈 미추홀 아님). OK면 PR #233 병합
 ```
 
 ---
