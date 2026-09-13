@@ -18,25 +18,25 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · QA 링크 PROD 연결 · PR [#239](https://github.com/catgeot/Days/pull/239) |
+| **상태** | **#3 push** · 팔경식 리스트·카드 썸네일 · PR [#239](https://github.com/catgeot/Days/pull/239) · **병합 보류(Preview)** |
 | **브랜치** | `cursor/explore-search-d14b` |
-| **tip** | `a3b4569a` |
+| **tip** | `d7bdccd9` |
 | **PR** | [#239](https://github.com/catgeot/Days/pull/239) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **Preview** | `/qa/explore-search` → git Preview `/explore` |
-| **소유** | `SearchDiscoveryModal.jsx` · Enter 선택 카드 vs 타이핑 드롭다운 · `/qa/explore-search` PROD 리다이렉트 |
+| **소유** | `SearchSuggestionList.jsx` · Enter 선택 행 vs 타이핑 드롭다운 · 팔경 `rankBlurb` · GATEO 선정 썸네일 |
 | **금지** | UI 리디자인 · 선택 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:explore-choice-overlay` · `smoke:explore-search-aliases` · `vite build` |
+| **VERIFY** | `smoke:explore-choice-overlay` · `smoke:korea-local-scenic-lists` · `smoke:explore-search-aliases` · `vite build` |
 
 **다음 제시어**:
 
 ```
-탐색홈 검색 #3, Preview OK면 PR 병합
+탐색홈 검색 #4, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
 금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
-작업: /qa/explore-search가 탐색홈으로 열리는지. 옹진 검색 후 Enter — 도시·섬 카드만 보이는지. OK면 PR #239 병합
+작업: 옹진 Enter 후 도시·섬이 한 줄 행+사진인지. 문경 검색에 문경 팔경·문경 1경이 보이는지. OK면 PR #239 병합
 ```
 
 ---
