@@ -2,6 +2,15 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 방문자 개선 #1 — 404 복구 및 AI채팅 초기화 (Cloud)
+
+- **세션** `방문자 개선 #1, 404 복구 및 AI채팅 초기화`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `7a0e5abc`
+- **완료**: `AboutPage` 신설·`/about` 라우트, `/pricing`→`/about`·`/product`→`/explore` 리다이렉트, 와일드카드 404→`/`. 장소 미선택 AI 채팅은 `MOONi` 바인딩·`placeIntroTarget` 가드로 `Invalid destination name` 차단. 범용 탐색 칩 4종(휴양지·힐링·5시간 이내·가족).
+- **VERIFY**: `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **QA**: `/about`·`/pricing`·`/product`·존재하지 않는 URL → 홈. 장소 없이 하단 「AI와 여행 대화」→ 환영 멘트·칩 4종.
+
 ## 방문자 활성화 — 사이트 체질 개선 12대 과제 종합 계획 수립
 
 - **작업**: 그록봇(Grok) 진단 12대 문제점 실사 및 개선 로드맵 수립
@@ -23,16 +32,26 @@
 - **잔여**: 사진/개요 순수 누락 **122**/876. QA 후 다음 허브 **담양10경 4**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #39 다음 — 담양 결손 오버레이
+## 팔경 활용 #39 — 담양 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #39, 담양 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `1c2fa1c2` · PR [#244](https://github.com/catgeot/Days/pull/244)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 담양10경 결손 4건(가마골용소·삼인산·메타세쿼이아 가로수길·담양관방제림)의 개요·주소·공식 사진 보강. 담양군 문화관광 게시판 공식 사진을 연결했고, 가마골용소·관방제림·메타세쿼이아는 한국관광공사 사진을 보탰다.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=damyang`
+- **잔여**: 사진/개요 순수 누락 **118**/876. QA 후 다음 허브 **밀양8경 4**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #40 다음 — 밀양 결손 오버레이
 
 ```
-팔경 활용 #39, 담양 결손 오버레이
+팔경 활용 #40, 밀양 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 담양10경 사진·개요 없는 4건(가마골용소·삼인산·메타세쿼이아 가로수길·담양관방제림)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=damyang
+작업: 밀양8경 사진·개요 없는 4건(시례 호박소·월연정 풍경·만어사 운해·종남산 진달래)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=miryang
 ```
 
 ## 탐색홈 검색 #5 — 문경 썸네일 경로 통일 (Cloud)

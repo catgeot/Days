@@ -34,28 +34,25 @@
 
 | | |
 |--|--|
-| **상태** | **플랜 수립 완료 · #1 대기** |
-| **브랜치** | `cursor/visitor-growth-1f90` (세션 #1 진입 시 생성) |
+| **상태** | **#1 push** · tip `7a0e5abc` · **사람 Preview** |
+| **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **Preview** | `/qa/visitor-growth` → git Preview `/` |
-| **소유** | `App.jsx` · `AboutPage.jsx` · `HomeUI.jsx` · `ChatModal.jsx` · `PlannerTab.jsx` · `Login.jsx` |
+| **소유** | `App.jsx` · `AboutPage.jsx` · `HomeUI.jsx` · `ChatModal.jsx` · `mooniQuickReplies.js` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-방문자 개선 #1, 404 복구 및 AI채팅 초기화
+방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/visitor-growth-activation-plan.md
 브랜치 cursor/visitor-growth-1f90 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업:
-1. App.jsx 내 /about 페이지 신설 및 /pricing, /product 리다이렉트, 404 폴백 라우트 추가
-2. HomeUI.jsx/index.jsx에서 장소 미선택 시 'MOONi' 바인딩하여 Invalid destination name 에러 차단
-3. mooniQuickReplies.js에 범용 탐색 질문 칩 4종 추가
+작업: HomeUI.jsx 히어로 가치제안·투톱 CTA · 모바일 검색 플레이스홀더·로그인 노출 · HomeGlobeMapbox DPR≤2
 검증: npm run build PASS
 ```
 
@@ -488,28 +485,28 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#38** tip `86066c69` · PR [#243](https://github.com/catgeot/Days/pull/243) · 천안8경 4 · **#39 담양 결손 오버레이** |
+| **상태** | **#39** tip `1c2fa1c2` · PR [#244](https://github.com/catgeot/Days/pull/244) · 담양10경 4 · **#40 밀양 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `86066c69` |
-| **PR** | [#243](https://github.com/catgeot/Days/pull/243) · [#240](https://github.com/catgeot/Days/pull/240) merge ✅ |
+| **tip** | `1c2fa1c2` |
+| **PR** | [#244](https://github.com/catgeot/Days/pull/244) · [#243](https://github.com/catgeot/Days/pull/243) merge ✅ · [#240](https://github.com/catgeot/Days/pull/240) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=cheonan` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=damyang` |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). **#38** 천안8경 4(#243). 순수 사진/개요 누락 **122**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **담양10경 4** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). **#38** 천안8경 4(#243). **#39** 담양10경 4. 순수 사진/개요 누락 **118**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **밀양8경 4** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #39, 담양 결손 오버레이
+팔경 활용 #40, 밀양 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 담양10경 사진·개요 없는 4건(가마골용소·삼인산·메타세쿼이아 가로수길·담양관방제림)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=damyang
+작업: 밀양8경 사진·개요 없는 4건(시례 호박소·월연정 풍경·만어사 운해·종남산 진달래)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=miryang
 ```
 
 ---
