@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-13-visitor-growth-1-clear-mobile',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: '일반 탐색 버튼 모바일 노출',
+    detail:
+      '장소 선택 후 채팅 진입 시 onClearPlaceBinding이 빠지던 조건 수정. 모바일은 헤더 컴패스(🧭) 아이콘 + 칩 위 「일반 탐색」 바. Preview /qa/visitor-growth 재확인.',
+    at: '2026-09-13T12:25:00.000Z',
+  },
+  {
     id: '2026-09-13-visitor-growth-1-general-explore',
     session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
     title: 'MOONi 일반 탐색(여행지 해제) 버튼',
