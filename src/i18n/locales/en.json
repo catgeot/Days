@@ -12,7 +12,8 @@
       "labelKo": "KO"
     },
     "search": {
-      "placeholder": "Search by mood or vibe"
+      "placeholder": "Search by mood or vibe",
+      "placeholderMobile": "Search places..."
     },
     "siteNotice": {
       "refreshHeader": "Update",
@@ -391,6 +392,12 @@
       "urban": "Urban",
       "culture": "Culture",
       "adventure": "Adventure"
+    },
+    "hero": {
+      "headline": "Discover Your Next Destination with 3D Globe & AI",
+      "subheadline": "Explore hidden paradises worldwide and Korea's scenic gems, then plan your trip",
+      "exploreCta": "Explore destinations",
+      "mooniCta": "Ask MOONi"
     },
     "chatWithAi": "Chat with AI",
     "ticker": {
