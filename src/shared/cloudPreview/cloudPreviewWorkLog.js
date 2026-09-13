@@ -32,6 +32,22 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-13T01:30:00.000Z',
   },
   {
+    id: '2026-09-13-palgyeong-use-32-namhae-12gyeong-title',
+    session: '팔경 활용 #32, 남해 결손 오버레이',
+    title: '남해12경 그룹 제목',
+    detail:
+      '남해12경이 listKind sipgyeong 때문에 검색·리스트 소제목이 「남해 십경」으로 나왔습니다. 공식명 「남해 12경」으로 맞췄습니다. 하동·금산 십경(실제 10경) 표시는 그대로입니다. Preview /qa/palgyeong-use — 「남해」검색 그룹명.',
+    at: '2026-09-13T01:10:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-32-namhae-overlays',
+    session: '팔경 활용 #32, 남해 결손 오버레이',
+    title: '남해12경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 남해12경 결손 5건(남해 금산과 보리암·창선교와 남해지족해협 죽방렴·서포 김만중 선생 유허와 노도·남해 물건리 방조어부림과 물미해안·창선-삼천포대교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 보리암·죽방렴·창선교·노도·방조어부림·창선삼천포대교 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=namhae 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T00:55:00.000Z',
+  },
+  {
     id: '2026-09-12-palgyeong-use-31-geumsan-ginkgo-thumbs',
     session: '팔경 활용 #31, 금산 은행나무·썸네일',
     title: '요광리 은행나무 사진 · 서대산·진악산 빈 썸네일',

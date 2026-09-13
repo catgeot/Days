@@ -45,27 +45,27 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `0c77e661` · PR [#230](https://github.com/catgeot/Days/pull/230) |
+| **상태** | **#7 push** · tip `593fd59f` · PR [#234](https://github.com/catgeot/Days/pull/234) · #6 PR [#230](https://github.com/catgeot/Days/pull/230) MERGED |
 | **브랜치** | `cursor/korea-tna-strip-ef65` |
-| **tip** | `0c77e661` |
-| **PR** | [#230](https://github.com/catgeot/Days/pull/230) |
+| **tip** | `593fd59f` |
+| **PR** | [#234](https://github.com/catgeot/Days/pull/234) |
 | **플랜** | [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) |
-| **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
+| **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
-| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` |
+| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `getMrtDomesticRentalUrl` · `getTripcomTrainUrl` |
 | **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-scenic-stay` · `vite build` |
+| **VERIFY** | `smoke:korea-tna-strip` · `smoke:travel-agencies` · `smoke:korea-scenic-stay` · `vite build` |
 
 **다음 제시어**:
 
 ```
-한국 투어티켓 #7, Preview OK면 PR 병합
+한국 투어티켓 #8, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/2026-09-12-project-log.md
+@plans/2026-09-13-project-log.md
 @plans/korea-tna-strip-plan.md
-브랜치 cursor/korea-tna-strip-ef65 · PR #230 · Preview /qa/korea-tna-strip
+브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
 금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
-작업: 경복궁·축제 상세 투어 섹션 하단 클룩 칩이 보이면 PR #230 병합. 레이아웃 피드백이면 칩 스타일만 수정
+작업: 경복궁 투어 섹션 하단이 「렌터카 보기」(최저가 비교 없음)·마이리얼트립 국내 렌터카·트립닷컴 기차표인지 확인. OK면 PR #234 병합
 ```
 
 ---
