@@ -34,7 +34,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `7a0e5abc` · **사람 Preview** |
+| **상태** | **#1 push** · tip `47809606` · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |

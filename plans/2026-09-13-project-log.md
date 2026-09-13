@@ -5,11 +5,11 @@
 ## 방문자 개선 #1 — 404 복구 및 AI채팅 초기화 (Cloud)
 
 - **세션** `방문자 개선 #1, 404 복구 및 AI채팅 초기화`
-- **브랜치** `cursor/visitor-growth-1f90` · tip `7a0e5abc`
-- **완료**: `AboutPage` 신설·`/about` 라우트, `/pricing`→`/about`·`/product`→`/explore` 리다이렉트, 와일드카드 404→`/`. 장소 미선택 AI 채팅은 `MOONi` 바인딩·`placeIntroTarget` 가드로 `Invalid destination name` 차단. 범용 탐색 칩 4종(휴양지·힐링·5시간 이내·가족).
+- **브랜치** `cursor/visitor-growth-1f90` · tip `47809606`
+- **완료**: `AboutPage` 신설·`/about` 라우트, `/pricing`→`/about`·`/product`→`/explore` 리다이렉트, 와일드카드 404→`/`. 장소 미선택 AI 채팅은 `MOONi` 바인딩·`placeIntroTarget` 가드로 `Invalid destination name` 차단. 범용 탐색 칩 4종(휴양지·힐링·5시간 이내·가족). **후속**: 여행지 바인딩 후 헤더 「일반 탐색」→ MOONi 일반 세션·범용 칩 복귀(기존 trip 사이드바 보존).
 - **VERIFY**: `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
-- **QA**: `/about`·`/pricing`·`/product`·존재하지 않는 URL → 홈. 장소 없이 하단 「AI와 여행 대화」→ 환영 멘트·칩 4종.
+- **QA**: `/about`·`/pricing`·`/product`·존재하지 않는 URL → 홈. 장소 없이 하단 「AI와 여행 대화」→ 환영 멘트·칩 4종. 여행지 선택 후 헤더 「일반 탐색」→ 범용 칩 복귀.
 
 ## 방문자 활성화 — 사이트 체질 개선 13대 과제 및 크롤러 SEO 계획 수립
 
