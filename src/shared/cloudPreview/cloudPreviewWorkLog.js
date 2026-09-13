@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 37,
-  sessionPhase: '논산 결손 오버레이',
+  sessionPhase: '논산 검색 빈 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=nonsan',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-37-nonsan-tour-thumbs',
+    session: '팔경 활용 #37, 논산 검색 빈 썸네일',
+    title: '논산 관광지 검색 빈 썸네일 3건',
+    detail:
+      '「논산」 관광지 검색에서 TourAPI first_image가 없던 양촌자연휴양림·강경역사관·노강서원(논산)에 JSON contentId 기입 없이 런타임 썸네일 오버레이를 연결했습니다. 양촌·노강은 논산시 문화관광 공식 갤러리, 강경역사관은 한국관광공사 detailImage입니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색 「논산」 자연·인문 행.',
+    at: '2026-09-13T05:20:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-37-nonsan-overlays',
     session: '팔경 활용 #37, 논산 결손 오버레이',

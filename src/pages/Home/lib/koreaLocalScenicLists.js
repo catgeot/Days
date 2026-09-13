@@ -987,6 +987,17 @@ const NS_NOSEONG_3 = 'https://tong.visitkorea.or.kr/cms2/website/47/1414447.jpg'
 const NS_JONGHAK = 'https://www.nonsan.go.kr/site/tour/img/sub02/sub020201_img11.jpg';
 const NS_JONGHAK_2 = 'https://tong.visitkorea.or.kr/cms2/website/00/1222500.jpg';
 const NS_JONGHAK_3 = 'https://tong.visitkorea.or.kr/cms2/website/38/2442538.jpg';
+const NS_YANGCHON =
+  'https://www.nonsan.go.kr/_prog/download/?d_type=1&filename=20240129135124_00g51rm9gy97sfntbmkbocer3sip5x.jpg&func_gbn_cd=tourinfo&site_dvs_cd=tour';
+const NS_YANGCHON_2 =
+  'https://www.nonsan.go.kr/_prog/download/?d_type=1&filename=20240129135124_01ffjt8rh0p1af8ur4jxn1gmecydzv.jpg&func_gbn_cd=tourinfo&site_dvs_cd=tour';
+const NS_HISTORY = 'https://tong.visitkorea.or.kr/cms/resource/35/3082135_image2_1.JPG';
+const NS_HISTORY_2 = 'https://tong.visitkorea.or.kr/cms/resource/36/3082136_image2_1.JPG';
+const NS_HISTORY_3 = 'https://tong.visitkorea.or.kr/cms/resource/37/3082137_image2_1.JPG';
+const NS_NOGANG =
+  'https://www.nonsan.go.kr/_prog/download/?d_type=1&filename=20221222134750_005oh6xhh6tp6jsk3shswc6989u7wa.jpg&func_gbn_cd=tourinfo&site_dvs_cd=tour';
+const NS_NOGANG_2 =
+  'https://www.nonsan.go.kr/_prog/download/?d_type=1&filename=20221222134732_01uf5luuxcjcn6e21u0eu4j262dc6x.jpg&func_gbn_cd=tourinfo&site_dvs_cd=tour';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2118,8 +2129,20 @@ function lookupLocalScenicMemberOverlay(spotId) {
   return LOCAL_SCENIC_MEMBER_OVERLAYS[spotId] || null;
 }
 
+function localScenicThumbOverlay(imageUrl, extraGallery = []) {
+  const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
+  return { imageUrl, firstImage: imageUrl, galleryUrls };
+}
+
+/** TourAPI first_image 없는 검색 행 — JSON contentId 기입 아님. */
+const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
+  2750930: localScenicThumbOverlay(NS_YANGCHON, [NS_YANGCHON_2]),
+  946844: localScenicThumbOverlay(NS_HISTORY, [NS_HISTORY_2, NS_HISTORY_3]),
+  1956315: localScenicThumbOverlay(NS_NOGANG, [NS_NOGANG_2]),
+};
+
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
-  /** @type {Map<string, ReturnType<typeof localScenicPhotoOverlay>>} */
+  /** @type {Map<string, ReturnType<typeof localScenicPhotoOverlay> | ReturnType<typeof localScenicThumbOverlay>>} */
   const map = new Map();
   for (const list of LISTS) {
     for (const member of list.members || []) {
@@ -2130,6 +2153,12 @@ const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
       );
       if (overlay?.imageUrl) map.set(contentId, overlay);
     }
+  }
+  for (const [contentId, overlay] of Object.entries(
+    LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID,
+  )) {
+    if (!overlay?.imageUrl || map.has(contentId)) continue;
+    map.set(contentId, overlay);
   }
   return map;
 })();

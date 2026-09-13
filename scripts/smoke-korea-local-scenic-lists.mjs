@@ -1720,6 +1720,33 @@ assert.ok(
     ?.overview?.includes('종학당'),
   '논산 검색 팔경 종학당 개요',
 );
+const nsYangchonThumb = lookupLocalScenicPhotoByContentId('2750930');
+assert.ok(
+  nsYangchonThumb?.imageUrl?.includes('20240129135124_00g51rm9'),
+  '논산 양촌자연휴양림 Tour 빈 썸네일 overlay',
+);
+const nsHistoryThumb = lookupLocalScenicPhotoByContentId('946844');
+assert.ok(
+  nsHistoryThumb?.imageUrl?.includes('3082135'),
+  '논산 강경역사관 Tour 빈 썸네일 overlay',
+);
+const nsNogangThumb = lookupLocalScenicPhotoByContentId('1956315');
+assert.ok(
+  nsNogangThumb?.imageUrl?.includes('20221222134750_005oh6xhh6'),
+  '논산 노강서원 Tour 빈 썸네일 overlay',
+);
+assert.equal(
+  new Set(
+    [nsYangchonThumb, nsHistoryThumb, nsNogangThumb].map((s) => s.imageUrl),
+  ).size,
+  3,
+  '논산 Tour 빈 썸네일 3건 서로 다름',
+);
+assert.notEqual(
+  nsHistoryThumb?.imageUrl,
+  nsGang?.imageUrl,
+  '강경역사관 썸네일 ≠ 강경포구 팔경 썸네일',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {
