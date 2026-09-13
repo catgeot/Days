@@ -458,6 +458,19 @@ export function getMrtSearchUrl(query) {
   return buildMrtMylinkUrl(`${MRT_HOME_URL}/search?q=${encodeURIComponent(q)}`);
 }
 
+/** 마이리얼트립 국내 렌터카 검색 홈 — 픽업 도시는 사이트에서 선택 */
+export const MRT_DOMESTIC_RENTAL_URL = `${MRT_HOME_URL}/rentalcars?category=domestic`;
+
+/**
+ * 국내 렌터카 제휴 URL.
+ * 클룩 `{지명} 렌터카` 검색은 국내 매칭이 거의 없어, 명승·축제 본문은 이 랜딩을 쓴다.
+ *
+ * @returns {string}
+ */
+export function getMrtDomesticRentalUrl() {
+  return buildMrtMylinkUrl(MRT_DOMESTIC_RENTAL_URL);
+}
+
 /**
  * 숙소 도메인 키워드 검색 제휴 URL (`accommodation…/union/products`).
  * 플래너 숙소 툴킷(지역별·한인민박) — 장소카드「숙소 찾기」목록과 동일 패턴.
@@ -741,6 +754,27 @@ export function getTripcomHomeUrl(options = {}) {
   if (options.campaign) params.set('trip_sub1', options.campaign);
   if (options.locationName) params.set('trip_sub2', options.locationName);
   return `${origin}/?${params.toString()}`;
+}
+
+/**
+ * Trip.com 기차표(KTX 등) 제휴 URL.
+ * 12Go는 동남아·KR Pass(외국인) 중심이라, 국내 명승·축제는 트립닷컴 기차 랜딩을 쓴다.
+ *
+ * @param {{ campaign?: string, locationName?: string, partnerLocale?: 'ko-KR' | 'en-US' }} [options]
+ * @returns {string}
+ */
+export function getTripcomTrainUrl(options = {}) {
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale);
+  const params = new URLSearchParams({
+    locale: partnerLocale,
+    curr: resolveTripcomCurrency(partnerLocale),
+    Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+    SID: TRIPCOM_KR_PARTNER.sid,
+  });
+  params.set('trip_sub1', options.campaign || '축제·명승 기차표');
+  if (options.locationName) params.set('trip_sub2', options.locationName);
+  return `${origin}/trains/?${params.toString()}`;
 }
 
 /** Klook 사이트 홈 제휴 URL */

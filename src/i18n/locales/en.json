@@ -646,6 +646,7 @@
         "rental": "Car rental",
         "esim": "eSIM",
         "ferry": "Ferry",
+        "train": "Trains",
         "transfer": "Transfer",
         "tickets": "Tickets",
         "luggage": "Luggage",
@@ -1911,7 +1912,8 @@
       "activitiesTitle": "{{place}} Tours & Tickets",
       "moreOnMrt": "More on MRT",
       "klookActivities": "Explore {{place}} activities on Klook",
-      "klookRental": "Compare {{place}} rental cars on Klook",
+      "rental": "{{place}} rental cars",
+      "train": "{{place}} train tickets",
       "empty": "No tours or tickets found for this location.",
       "loading": "Loading tours and tickets…"
     },

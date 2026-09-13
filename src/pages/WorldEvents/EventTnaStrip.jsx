@@ -10,22 +10,22 @@ import {
   MRT_TNA_FETCH_SIZE,
   resolveMrtTnaQuery,
 } from '../../utils/fetchMrtTnas';
-import { getKlookRentalUrlByLocation, getKlookSearchUrl } from '../../utils/affiliate';
+import { getKlookSearchUrl, getMrtDomesticRentalUrl, getTripcomTrainUrl } from '../../utils/affiliate';
 import StripListLargeToggle from './StripListLargeToggle';
 
-const klookChipClass =
+const outboundChipClass =
   'inline-flex max-w-full items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 transition-colors hover:border-amber-300 hover:bg-amber-50';
 
-function KlookOutboundChips({ klookSearchUrl, klookRentalUrl, place, t }) {
-  if (!klookSearchUrl && !klookRentalUrl) return null;
+function TnaOutboundChips({ activitiesUrl, rentalUrl, trainUrl, place, t }) {
+  if (!activitiesUrl && !rentalUrl && !trainUrl) return null;
   return (
     <div className="mt-3 flex min-w-0 flex-wrap gap-1.5">
-      {klookSearchUrl ? (
+      {activitiesUrl ? (
         <a
-          href={klookSearchUrl}
+          href={activitiesUrl}
           target="_blank"
           rel="noopener noreferrer sponsored"
-          className={klookChipClass}
+          className={outboundChipClass}
         >
           <span className="min-w-0 break-keep">
             {t('worldEventDetail.tnaStrip.klookActivities', { place })}
@@ -33,15 +33,28 @@ function KlookOutboundChips({ klookSearchUrl, klookRentalUrl, place, t }) {
           <ExternalLink size={12} className="shrink-0 opacity-70" aria-hidden />
         </a>
       ) : null}
-      {klookRentalUrl ? (
+      {rentalUrl ? (
         <a
-          href={klookRentalUrl}
+          href={rentalUrl}
           target="_blank"
           rel="noopener noreferrer sponsored"
-          className={klookChipClass}
+          className={outboundChipClass}
         >
           <span className="min-w-0 break-keep">
-            {t('worldEventDetail.tnaStrip.klookRental', { place })}
+            {t('worldEventDetail.tnaStrip.rental', { place })}
+          </span>
+          <ExternalLink size={12} className="shrink-0 opacity-70" aria-hidden />
+        </a>
+      ) : null}
+      {trainUrl ? (
+        <a
+          href={trainUrl}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className={outboundChipClass}
+        >
+          <span className="min-w-0 break-keep">
+            {t('worldEventDetail.tnaStrip.train', { place })}
           </span>
           <ExternalLink size={12} className="shrink-0 opacity-70" aria-hidden />
         </a>
@@ -230,9 +243,15 @@ export default function EventTnaStrip({
 
   const searchKeyword = effectiveKeyword || placeLabel || '';
   const mrtSearchUrl = searchKeyword ? buildMrtTnaSearchMoreUrl(searchKeyword) : null;
-  const klookPlace = placeLabel || searchKeyword || location?.name || '';
+  const chipPlace = placeLabel || searchKeyword || location?.name || '';
   const klookSearchUrl = searchKeyword ? getKlookSearchUrl(searchKeyword, locale) : '';
-  const klookRentalUrl = getKlookRentalUrlByLocation(location) || '';
+  const rentalUrl = getMrtDomesticRentalUrl();
+  const trainPartnerLocale = String(locale).startsWith('en') ? 'en-US' : 'ko-KR';
+  const trainUrl = getTripcomTrainUrl({
+    campaign: '축제·명승 기차표',
+    locationName: chipPlace,
+    partnerLocale: trainPartnerLocale,
+  });
 
   return (
     <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
@@ -306,10 +325,11 @@ export default function EventTnaStrip({
         </div>
       ) : null}
 
-      <KlookOutboundChips
-        klookSearchUrl={klookSearchUrl}
-        klookRentalUrl={klookRentalUrl}
-        place={klookPlace}
+      <TnaOutboundChips
+        activitiesUrl={klookSearchUrl}
+        rentalUrl={rentalUrl}
+        trainUrl={trainUrl}
+        place={chipPlace}
         t={t}
       />
     </section>

@@ -416,6 +416,7 @@
         "rental": "렌터카",
         "esim": "eSIM",
         "ferry": "페리",
+        "train": "기차표",
         "transfer": "픽업",
         "tickets": "티켓",
         "luggage": "짐보관",
@@ -1674,7 +1675,8 @@
       "activitiesTitle": "{{place}} 투어·티켓",
       "moreOnMrt": "MRT에서 더보기",
       "klookActivities": "{{place}} 즐길거리 클룩에서 더보기",
-      "klookRental": "{{place}} 렌터카 최저가 비교",
+      "rental": "{{place}} 렌터카 보기",
+      "train": "{{place}} 기차표 보기",
       "empty": "선택 지역에 맞는 투어·티켓 상품이 없습니다.",
       "loading": "투어·티켓 상품을 불러오는 중…"
     },

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '한국 투어티켓',
-  sessionNo: 6,
-  sessionPhase: '클룩 즐길거리·렌터카 연동',
+  sessionNo: 7,
+  sessionPhase: '국내 렌터카·기차표',
   branch: 'cursor/korea-tna-strip-ef65',
   previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
   qaShareSlug: 'korea-tna-strip',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-korea-tna-strip-7-rental-train',
+    session: '한국 투어티켓 #7, 국내 렌터카·기차표',
+    title: '렌터카 보기 · 마이리얼트립 · 기차표',
+    detail:
+      '투어 섹션 하단 렌터카 문구를 「{{지역}} 렌터카 보기」로 바꿨습니다(최저가 비교 없음). 국내 렌터카는 클룩 검색 대신 마이리얼트립 /rentalcars?category=domestic 로 연결합니다. 기차표는 트립닷컴 /trains/ 칩을 같은 줄에 넣었습니다. Preview /qa/korea-tna-strip — 경복궁 등 명승·축제 상세 투어 섹션 하단.',
+    at: '2026-09-13T01:30:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-31-geumsan-ginkgo-thumbs',
     session: '팔경 활용 #31, 금산 은행나무·썸네일',

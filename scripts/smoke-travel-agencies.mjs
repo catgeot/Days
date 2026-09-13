@@ -44,6 +44,9 @@ assert.ok(TRAVEL_AGENCIES.length >= 8);
 assert.ok(getTravelAgencyById('mrt'));
 assert.ok(getTravelAgencyById('klook'));
 assert.ok(getTravelAgencyById('tripcom'));
+assert.ok(getTravelAgencyById('mrt').kinds.includes('rental'));
+assert.ok(getTravelAgencyById('tripcom').kinds.includes('train'));
+assert.ok(getTravelAgencyById('twelve_go').kinds.includes('train'));
 
 assert.equal(matchTravelAgencyFromUrl('https://www.myrealtrip.com/accommodations?q=파리')?.id, 'mrt');
 assert.equal(matchTravelAgencyFromUrl('https://experiences.myrealtrip.com/products/1')?.id, 'mrt');
@@ -59,7 +62,9 @@ assert.equal(matchTravelAgencyFromUrl('javascript:alert(1)'), null);
 
 assert.equal(inferTravelAgencyKind('https://www.myrealtrip.com/accommodations?q=파리'), 'stay');
 assert.equal(inferTravelAgencyKind('https://www.myrealtrip.com/pkc'), 'package');
+assert.equal(inferTravelAgencyKind('https://www.myrealtrip.com/rentalcars?category=domestic'), 'rental');
 assert.equal(inferTravelAgencyKind('https://kr.trip.com/flights/'), 'flight');
+assert.equal(inferTravelAgencyKind('https://kr.trip.com/trains/?locale=ko-KR'), 'train');
 assert.equal(inferTravelAgencyKind('https://www.getyourguide.com/ko-kr/'), 'tour');
 assert.equal(inferTravelAgencyKind('https://widget.getyourguide.com/default/activities.frame'), 'tour');
 assert.equal(inferPlaceLabelFromHref('https://www.myrealtrip.com/search?q=%ED%8C%8C%EB%A6%AC%20%EC%88%99%EC%86%8C'), '파리 숙소');
