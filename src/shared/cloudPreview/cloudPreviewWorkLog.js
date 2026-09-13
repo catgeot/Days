@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 33,
-  sessionPhase: '포항 결손 오버레이',
+  sessionNo: 34,
+  sessionPhase: '안양 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=pohang',
+  previewPath: '/korea/theme/scenic?hub=anyang',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-34-anyang-overlays',
+    session: '팔경 활용 #34, 안양 결손 오버레이',
+    title: '안양9경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 안양9경 결손 4건(망해암일몰·수리산성지·평촌1번가 문화의거리·만안교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 안양시 문화관광 망해암·수리산성지·평촌1번가·만안교 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=anyang 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T02:20:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-33-pohang-overlays',
     session: '팔경 활용 #33, 포항 결손 오버레이',
