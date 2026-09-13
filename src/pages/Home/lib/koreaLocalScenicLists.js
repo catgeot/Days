@@ -964,6 +964,16 @@ const JP_CHU_3 = 'https://jparchives.kr/images/108254.jpg';
 const JP_YEON = 'https://jparchives.kr/images/107492.jpg';
 const JP_YEON_2 = 'https://www.jp.go.kr/images/facility/sub02/sub02_08_01_img01.jpg';
 const JP_YEON_3 = 'https://jparchives.kr/images/107520.jpg';
+const GR_GUKSA = 'https://www.gyeryong.go.kr/kr/img/sub06/sub06020204_img01.jpg';
+const GR_GUKSA_2 = 'https://www.gyeryong.go.kr/_prog/dn00/?file_id=9cd17e27542283522df76ca9775de896';
+const GR_GUKSA_3 = 'https://www.gyeryong.go.kr/_prog/dn00/?file_id=396c2ea4177fe67130695258ffd854e5';
+const GR_SUT = 'https://www.gyeryong.go.kr/_prog/download/?editor_image=20211227161510442_YDCLKBZE.jpg';
+const GR_AM = 'https://www.gyeryong.go.kr/_prog/download/?editor_image=20211227161405101_K69Z04LL.jpg';
+const GR_AM_2 = 'https://www.gyeryong.go.kr/_prog/dn00/?file_id=2b70b0d4b37063d583728062f3eb209f';
+const GR_UNI = 'https://www.gyeryong.go.kr/_prog/dn00/?file_id=7de9c26193dec2a10ac8431a9a12e589';
+const GR_UNI_2 =
+  'https://www.gyeryong.go.kr/_prog/download/?site_dvs_cd=tour&func_gbn_cd=tourist&filename=20210825144327_00442b143tp5az6mhqcqo4an81rycz.png&editor=Y';
+const GR_UNI_3 = 'https://www.gyeryong.go.kr/kr/img/sub06/sub06030204_img02.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2040,6 +2050,29 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청북도 증평군 도안면 산정길 5 (연병호 항일역사공원)',
     JP_YEON,
     [JP_YEON_2, JP_YEON_3],
+  ),
+  'local-scenic:gyeryong-gugyeong:향적산국사봉': localScenicPhotoOverlay(
+    '계룡9경 향적산 국사봉은 엄사면 향한리 산 50-1입니다. 계룡시 엄사면 안내는 계룡산 남쪽 봉우리로 해발 574m이며 논산시 상월면과 계룡시 엄사면의 경계를 이룬다고 적습니다. 향기로운 땀(香積)이 쌓인 산으로, 공부와 도를 깨우치려 용맹정진하는 곳이라 일컫습니다. 국사봉은 조선초 태조 이성계가 신도안에 도읍을 정할 때 친히 올라가 국사를 논했다 하여 붙은 이름입니다. 서쪽 연천봉 능선과 동쪽 천황봉 능선이 보여 계룡산을 조망하는 등산 코스입니다. 사진은 계룡시 엄사면 향적산 국사봉 공식 사진이며, 같은 산 향적산 치유의 숲 공식 사진을 보탰습니다.',
+    '충청남도 계룡시 엄사면 향한리 산 50-1 (향적산 국사봉)',
+    GR_GUKSA,
+    [GR_GUKSA_2, GR_GUKSA_3],
+  ),
+  'local-scenic:gyeryong-gugyeong:숫용추': localScenicPhotoOverlay(
+    '계룡9경 숫용추는 신도안면 부남리입니다. 계룡시 문화관광은 대궐터에서 서쪽으로 계곡을 따라 약 2km 가면 10m 높이 폭포 아래 화강암 바위 속 약 4m 깊이 웅덩이가 숫용추라고 적습니다. 계룡산 서쪽에 있어 서용추(西龍湫)라고도 하며, 숫용이 도를 닦아 승천한 자리라는 전설이 있습니다. 동쪽 용동리 암용추의 암용과 땅속으로 왕래했다는 이야기도 전합니다. 군사보호구역으로 출입이 제한됩니다. 사진은 계룡시 문화관광 숫용추 공식 사진입니다.',
+    '충청남도 계룡시 신도안면 부남리 (숫용추)',
+    GR_SUT,
+  ),
+  'local-scenic:gyeryong-gugyeong:암용추': localScenicPhotoOverlay(
+    '계룡9경 암용추는 신도안면 용동리입니다. 계룡시 문화관광은 구룡관사 위쪽 제석사 앞 계곡에 너비 12m·깊이 2.5m 바위 웅덩이가 있으며, 암용이 도를 닦아 승천한 자리라는 전설이 깃든 암용추이고 동쪽에 있어 동용추(東龍湫)라고도 부른다고 적습니다. 군사보호구역이며, 계룡시는 계룡안보생태탐방로 예약으로 하늘소리길 구간을 안내합니다. 사진은 계룡시 문화관광 암용추 공식 사진입니다.',
+    '충청남도 계룡시 신도안면 용동리 (암용추)',
+    GR_AM,
+    [GR_AM_2],
+  ),
+  'local-scenic:gyeryong-gugyeong:계룡대통일탑': localScenicPhotoOverlay(
+    '계룡9경 계룡대 통일탑은 신도안면 부남리 계룡대 영내입니다. 계룡시 문화관광은 높이 36m의 통일탑이 국군의 충·의·지·인·용 기치 아래 국가를 보위하고 민족의 번영과 약진을 보장한다는 의미를 지닌다고 적습니다. 주변에는 전투기·전차 등 무기를 전시합니다. 군사보호구역으로 출입이 제한되며, 나라사랑 계룡대견학(월~금 오전 10:30·오후 14:00)에서 통일탑 단체사진을 안내합니다. 계룡시 신도안면 안내에 따르면 육·공군본부는 1989년 7월 18일까지, 해군본부는 1993년 이전했습니다. 사진은 계룡시 문화관광·신도안면 계룡대 통일탑 공식 사진입니다.',
+    '충청남도 계룡시 신도안면 부남리 (계룡대 통일탑)',
+    GR_UNI,
+    [GR_UNI_2, GR_UNI_3],
   ),
 };
 

@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 35,
-  sessionPhase: '증평 결손 오버레이',
+  sessionNo: 36,
+  sessionPhase: '계룡 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jeungpyeong',
+  previewPath: '/korea/theme/scenic?hub=gyeryong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-palgyeong-use-36-gyeryong-overlays',
+    session: '팔경 활용 #36, 계룡 결손 오버레이',
+    title: '계룡9경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 계룡9경 결손 4건(향적산 국사봉·숫용추·암용추·계룡대 통일탑)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 계룡시 엄사면 향적산 국사봉 사진, 문화관광 숫용추·암용추 사진, 문화관광·신도안면 계룡대 통일탑 사진을 연결했고, 국사봉 갤러리는 같은 산 향적산 치유의 숲 공식 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gyeryong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T03:40:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-35-jeungpyeong-overlays',
     session: '팔경 활용 #35, 증평 결손 오버레이',
