@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-09-01T12:12:22.986Z",
+    "pilotRegion": "gangwon",
+    "beltCount": 4,
+    "source": "scripts/data/korea-festival-belt-overrides.mjs"
+  },
+  "belts": [
+    {
+      "id": "gw-north-inland",
+      "label": "강원 북부 내륙로",
+      "labelEn": "Gangwon North Inland Road",
+      "order": 1,
+      "pilot": true,
+      "blurb": "춘천·철원·양구·화천·홍천·횡성 — DMZ·산천어·내륙 축제 동선",
+      "stops": [
+        {
+          "hubId": "chuncheon",
+          "name": "춘천",
+          "nameEn": "Chuncheon",
+          "lat": 37.8811,
+          "lng": 127.7298,
+          "areaCode": "32",
+          "stopIndex": 0
+        },
+        {
+          "hubId": "cheorwon",
+          "name": "철원",
+          "nameEn": "Cheorwon",
+          "lat": 38.1466,
+          "lng": 127.3135,
+          "areaCode": "32",
+          "stopIndex": 1
+        },
+        {
+          "hubId": "yanggu",
+          "name": "양구",
+          "nameEn": "Yanggu",
+          "lat": 38.1075,
+          "lng": 127.9897,
+          "areaCode": "32",
+          "stopIndex": 2
+        },
+        {
+          "hubId": "hwacheon",
+          "name": "화천",
+          "nameEn": "Hwacheon",
+          "lat": 38.1063,
+          "lng": 127.7082,
+          "areaCode": "32",
+          "stopIndex": 3
+        },
+        {
+          "hubId": "hongcheon",
+          "name": "홍천",
+          "nameEn": "Hongcheon",
+          "lat": 37.6971,
+          "lng": 127.8887,
+          "areaCode": "32",
+          "stopIndex": 4
+        },
+        {
+          "hubId": "hoengseong",
+          "name": "횡성",
+          "nameEn": "Hoengseong",
+          "lat": 37.4917,
+          "lng": 128.0019,
+          "areaCode": "32",
+          "stopIndex": 5
+        }
+      ]
+    },
+    {
+      "id": "gw-east-coast",
+      "label": "강원 동해안 축제로드",
+      "labelEn": "Gangwon East Coast Festival Road",
+      "order": 2,
+      "pilot": true,
+      "blurb": "고성·양양·속초·강릉·삼척 — 동해안 해변·해맞이 축제 루트",
+      "stops": [
+        {
+          "hubId": "goseong",
+          "name": "고성",
+          "nameEn": "Goseong",
+          "lat": 38.38,
+          "lng": 128.467,
+          "areaCode": "32",
+          "stopIndex": 0
+        },
+        {
+          "hubId": "yangyang",
+          "name": "양양",
+          "nameEn": "Yangyang",
+          "lat": 38.0754,
+          "lng": 128.619,
+          "areaCode": "32",
+          "stopIndex": 1
+        },
+        {
+          "hubId": "sokcho",
+          "name": "속초",
+          "nameEn": "Sokcho",
+          "lat": 38.207,
+          "lng": 128.5918,
+          "areaCode": "32",
+          "stopIndex": 2
+        },
+        {
+          "hubId": "gangneung",
+          "name": "강릉",
+          "nameEn": "Gangneung",
+          "lat": 37.7519,
+          "lng": 128.8761,
+          "areaCode": "32",
+          "stopIndex": 3
+        },
+        {
+          "hubId": "samcheok",
+          "name": "삼척",
+          "nameEn": "Samcheok",
+          "lat": 37.4499,
+          "lng": 129.1652,
+          "areaCode": "32",
+          "stopIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "gw-central",
+      "label": "강원 중부 횡단로",
+      "labelEn": "Gangwon Central Cross Road",
+      "order": 3,
+      "pilot": true,
+      "blurb": "원주·정선·평창 — 중부 내륙·겨울·레저 축제 횡단",
+      "stops": [
+        {
+          "hubId": "wonju",
+          "name": "원주",
+          "nameEn": "Wonju",
+          "lat": 37.3422,
+          "lng": 127.9202,
+          "areaCode": "32",
+          "stopIndex": 0
+        },
+        {
+          "hubId": "jeongseon",
+          "name": "정선",
+          "nameEn": "Jeongseon",
+          "lat": 37.3806,
+          "lng": 128.6608,
+          "areaCode": "32",
+          "stopIndex": 1
+        },
+        {
+          "hubId": "pyeongchang",
+          "name": "평창",
+          "nameEn": "Pyeongchang",
+          "lat": 37.3705,
+          "lng": 128.3901,
+          "areaCode": "32",
+          "stopIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "gw-west-jungbu",
+      "label": "원주·충북 북부로",
+      "labelEn": "Wonju · Northern Chungbuk Road",
+      "order": 4,
+      "pilot": true,
+      "blurb": "원주·제천·단양 — 강원-충북 경계 내륙·계곡 축제",
+      "stops": [
+        {
+          "hubId": "wonju",
+          "name": "원주",
+          "nameEn": "Wonju",
+          "lat": 37.3422,
+          "lng": 127.9202,
+          "areaCode": "32",
+          "stopIndex": 0
+        },
+        {
+          "hubId": "jecheon",
+          "name": "제천",
+          "nameEn": "Jecheon",
+          "lat": 37.1326,
+          "lng": 128.191,
+          "areaCode": "33",
+          "stopIndex": 1
+        },
+        {
+          "hubId": "danyang",
+          "name": "단양",
+          "nameEn": "Danyang",
+          "lat": 36.9846,
+          "lng": 128.3655,
+          "areaCode": "33",
+          "stopIndex": 2
+        }
+      ]
+    }
+  ]
+}
