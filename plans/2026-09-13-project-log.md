@@ -51,3 +51,25 @@
 금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
 작업: 학산마당극놀래 본문 숙소·투어가 미추홀인지(옹진 아님). OK면 PR #233 병합
 ```
+
+## 한국 투어티켓 #7 — 국내 렌터카·기차표 (Cloud)
+
+- **세션** `한국 투어티켓 #7, 국내 렌터카·기차표`
+- **브랜치** `cursor/korea-tna-strip-ef65` · tip `593fd59f` · PR [#234](https://github.com/catgeot/Days/pull/234) · #6 [#230](https://github.com/catgeot/Days/pull/230) MERGED
+- **렌터카**: 문구 「{{지역}} 렌터카 보기」(최저가 비교 없음). 클룩 국내 `{지명} 렌터카` 검색은 매칭이 거의 없어 **마이리얼트립** `/rentalcars?category=domestic` 로 변경. 픽업 도시는 MRT 페이지에서 선택.
+- **기차표**: 제휴사 중 기차는 **12Go**(trainbusferry, 동남아·외국인 KR Pass)와 **트립닷컴**(KTX). 국내 명승·축제는 **트립닷컴 `/trains/`** 칩. 클룩 즐길거리 칩·MRT 투어 카드는 유지.
+- **VERIFY**: `smoke:korea-tna-strip` · `smoke:travel-agencies` · `smoke:korea-scenic-stay` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
+- **QA**: 투어 섹션 하단 「렌터카 보기」·MRT 국내 렌터카·트립닷컴 기차표. 최저가 비교 문구 없음.
+
+## 한국 투어티켓 #8 다음
+
+```
+한국 투어티켓 #8, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+@plans/korea-tna-strip-plan.md
+브랜치 cursor/korea-tna-strip-ef65 · PR #234 · Preview /qa/korea-tna-strip
+금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
+작업: 경복궁 투어 섹션 하단이 「렌터카 보기」(최저가 비교 없음)·마이리얼트립 국내 렌터카·트립닷컴 기차표인지 확인. OK면 PR #234 병합
+```
