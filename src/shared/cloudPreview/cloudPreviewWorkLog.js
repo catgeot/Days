@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '탐색홈 검색',
-  sessionNo: 4,
-  sessionPhase: '옹진은 팔경 없음',
+  sessionNo: 5,
+  sessionPhase: '문경 썸네일 경로 통일',
   branch: 'cursor/explore-search-d14b',
   previewPath: '/explore',
   qaShareSlug: 'explore-search',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-explore-search-5-mungyeong-thumbs',
+    session: '탐색홈 검색 #5, 문경 썸네일 경로 통일',
+    title: '탐색 검색 썸네일 = 명승·명소 SSOT',
+    detail:
+      '문경 검색에서 일부 행만 사진이 비던 이유는 경로가 달랐습니다. 탐색홈은 팔경 오버레이·GATEO 선정 imageUrl만 보고, 명소홈은 TourAPI first_image와 contentId 오버레이까지 보강합니다. 탐색 드롭다운·선택 행이 명승과 같은 오버레이·선정·contentId 사진을 쓰고, 남은 contentId는 TourAPI 캐시로 채웁니다. 팔경 결손 오버레이가 추가되면 탐색에도 같이 반영됩니다. Preview /qa/explore-search — /explore 문경 검색 행 사진.',
+    at: '2026-09-13T08:40:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-37-nonsan-tour-thumbs',
     session: '팔경 활용 #37, 논산 검색 빈 썸네일',

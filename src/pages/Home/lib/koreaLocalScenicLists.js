@@ -168,6 +168,51 @@ export function listsForHub(hubId) {
   return listsByHubId.get(id) || [];
 }
 
+function overlayForHubMemberName(hubId, attractionName) {
+  const id = String(hubId || '').trim();
+  const name = String(attractionName || '').trim();
+  if (!id || !name) return null;
+  for (const list of listsForHub(id)) {
+    const overlay = lookupLocalScenicMemberOverlay(
+      localScenicMemberSpotId(list.listId, name),
+    );
+    if (overlay?.imageUrl || overlay?.contentId) return overlay;
+  }
+  return null;
+}
+
+/**
+ * 탐색 검색 행 썸네일·contentId — 명승 팔경 오버레이 → contentId 오버레이 → GATEO 선정.
+ * JSON 쓰기 아님.
+ * @param {object} [item]
+ * @returns {{ imageUrl: string | null, contentId: string | null }}
+ */
+export function resolveSearchScenicMedia(item) {
+  if (!item || typeof item !== 'object') {
+    return { imageUrl: null, contentId: null };
+  }
+  const hubId = String(item.hubId || '').trim();
+  const name = String(item.name || item.attractionName || '').trim();
+  const existing =
+    String(
+      item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '',
+    ).trim() || null;
+  const overlay = overlayForHubMemberName(hubId, name);
+  const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
+  const rawId = String(
+    overlay?.contentId || item.contentId || fromCurated.contentId || '',
+  ).trim();
+  const contentId = /^\d{1,32}$/.test(rawId) ? rawId : null;
+  const byContentId = lookupLocalScenicPhotoByContentId(contentId);
+  const imageUrl =
+    existing ||
+    overlay?.imageUrl ||
+    byContentId?.imageUrl ||
+    fromCurated.imageUrl ||
+    null;
+  return { imageUrl, contentId };
+}
+
 /**
  * 공식 팔경·구경이 없는 허브의 탐색 명소 소제목. 있으면 빈 문자열 (N경 그룹만).
  * @param {object} [hub]
@@ -471,11 +516,12 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
   const base = memberSuggestionBase(list, h, member);
   if (!base) return null;
   const contentId = memberContentId(member, resolveMemberAttraction(h, member));
-  const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
-  const fromCurated = scenicThumbFromCurated(curated);
-  const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
-  const overlay = lookupLocalScenicMemberOverlay(spotId);
-  const thumb = overlay?.imageUrl || fromCurated.imageUrl;
+  const media = resolveSearchScenicMedia({
+    ...base,
+    name: member.attractionName,
+    hubId: list.hubId,
+    contentId,
+  });
   const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
   return {
     ...base,
@@ -483,15 +529,15 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
     rankBlurb,
     localScenicListId: list.listId,
     source: 'localScenicList',
-    contentId: overlay?.contentId || contentId || fromCurated.contentId,
-    imageUrl: thumb,
-    thumbUrl: thumb,
+    contentId: media.contentId,
+    imageUrl: media.imageUrl,
+    thumbUrl: media.imageUrl,
   };
 }
 
 /**
- * 탐색 검색 행에 GATEO 선정 썸네일·contentId를 붙인다 (JSON 쓰기 아님).
- * 공식 팔경이 없는 허브 명소는 `{시군} 명소` 소제목만 (N경 아님).
+ * 탐색 검색 행에 명승과 같은 썸네일·contentId를 붙인다 (JSON 쓰기 아님).
+ * 팔경 오버레이 → contentId 오버레이 → GATEO 선정. 공식 팔경이 없는 허브 명소는 `{시군} 명소` 소제목만 (N경 아님).
  * @param {object} item
  * @param {string} [locale]
  */
@@ -499,25 +545,15 @@ export function enrichSearchCandidateScenicMedia(item, locale = 'ko') {
   if (!item || typeof item !== 'object') return item;
   let next = item;
   const hubId = String(item.hubId || '').trim();
-  const name = String(item.name || '').trim();
   const hasThumb = Boolean(
     String(item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '').trim(),
   );
-  if (hubId && name) {
-    const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
-    if (fromCurated.imageUrl || fromCurated.contentId) {
-      if (!(hasThumb && item.contentId)) {
-        next = {
-          ...next,
-          ...(fromCurated.imageUrl && !hasThumb
-            ? { imageUrl: fromCurated.imageUrl, thumbUrl: fromCurated.imageUrl }
-            : {}),
-          ...(fromCurated.contentId && !next.contentId
-            ? { contentId: fromCurated.contentId }
-            : {}),
-        };
-      }
-    }
+  const media = resolveSearchScenicMedia(item);
+  if (media.imageUrl && !hasThumb) {
+    next = { ...next, imageUrl: media.imageUrl, thumbUrl: media.imageUrl };
+  }
+  if (media.contentId && !next.contentId) {
+    next = { ...next, contentId: media.contentId };
   }
   if (
     !next.groupTitle &&
