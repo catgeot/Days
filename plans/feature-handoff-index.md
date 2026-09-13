@@ -34,26 +34,26 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `eda60c94` · **사람 Preview** |
+| **상태** | **#2 QA 피드백** · tip `c311693f` · **#2 후속 대기** (#3은 후속 후) |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
 | **Preview** | `/qa/visitor-growth` → git Preview `/` |
-| **소유** | `App.jsx` · `AboutPage.jsx` · `HomeUI.jsx` · `ChatModal.jsx` · `PlannerTab.jsx` · `Login.jsx` · `middleware.js` · `injectCrawlerMeta.js` |
+| **소유** | `App.jsx` · `AboutPage.jsx` · `HomeUI.jsx` · `Home/index.jsx` · `ChatModal.jsx` · `PlannerTab.jsx` · `Login.jsx` · `middleware.js` · `injectCrawlerMeta.js` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링
+방문자 개선 #2 후속, 모바일 히어로 지구본 노출
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/visitor-growth-activation-plan.md
 브랜치 cursor/visitor-growth-1f90 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: botDetect.js 봇 전수화 · generate-crawler-place-meta 274개 · injectCrawlerMeta body 시맨틱 HTML 주입
-검증: npm run generate:crawler-place-meta && npm run build PASS
+작업: 모바일 히어로 축소·검색 1행 복원·지구본 드래그 시 히어로 숨김 — 플랜 세션 2 후속 명세
+검증: npm run build PASS · 390px 지구본 노출 40%+
 ```
 
 ---

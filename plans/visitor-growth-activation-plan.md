@@ -174,6 +174,60 @@ flowchart TD
   npm run build
   # 390px 뷰포트(iPhone 12/13/14 크기)에서 검색바 텍스트 잘림 여부 및 버튼 터치 테스트
   ```
+- **사람 Preview QA (2026-09-13)**: 히어로·검색·퀵링크 3단 스택으로 모바일 뷰포트 상단 **45~55%** 차지 → 지구본 탐색 영역 **25~35%**로 축소. `pointer-events` 간섭 없음. **#2 후속 세션으로 지구본 노출 회복 선행** — #3(크롤러 SEO)은 후속 완료 후.
+
+---
+
+#### [세션 2 후속] 모바일 히어로 축소 — 지구본 탐색 영역 회복
+- **세션 식별자**: `방문자 개선 #2 후속, 모바일 히어로 지구본 노출`
+- **담당 항목**: 항목 1 (홈 가치제안 + CTA) — #2 QA 피드백 반영
+- **예상 분량**: 보통 (Medium, ~1h)
+- **고정 브랜치**: `cursor/visitor-growth-1f90`
+- **선행**: #2 tip `c311693f` (또는 최신) · 사람 Preview QA 지구본 가림 피드백
+- **대상 파일**:
+  - `/workspace/src/pages/Home/components/HomeUI.jsx`
+  - `/workspace/src/pages/Home/index.jsx` (지구본 드래그 시 히어로 숨김 prop 연동 시)
+  - `/workspace/src/i18n/locales/ko.json`, `en.json`
+
+- **QA 문제 요약** (390px):
+  - Before: 로고+검색 1행 · 퀵링크 1행 → 지구본 중앙 노출 양호
+  - After(#2): 로고행 + **히어로 카드(헤드+서브+CTA2)** + 검색 + 퀵링크 → 상·하단 UI로 지구본 첫인상 약화
+  - `bg-black/60 backdrop-blur-md` 히어로가 시각적으로 지구본을 가림 (`pointer-events-none`은 OK)
+
+- **상세 구현 작업 명세** (우선순위 순 — **모바일 `max-md:`만**, 데스크톱 히어로 유지):
+  1. **모바일 상단 레이아웃 복원·축소 (`HomeUI.jsx`)**:
+     - **1행**: 로고+언어 | (spacer) | 로그인·AI — 유지
+     - **2행**: 기존처럼 **로고 옆 검색바 1행** 복원(가능하면) 또는 히어로 제거 후 검색만 2행
+     - 모바일 `renderValueHero()` 기본 **미노출** 또는 **1줄 컴팩트**만:
+       - 헤드라인 1줄 + 서브·CTA 제거 또는 아이콘 2개 한 줄(`🗺️` `/explore` · `🤖` MOONi)
+     - 검색 placeholder에 가치 전달 보강(선택): `layout.search.placeholderMobile` → `3D 지구본으로 여행지 검색...` 등
+  2. **지구본 인터랙션 시 히어로 자동 숨김**:
+     - `Home/index.jsx`에서 지구본 첫 `drag`/`touchmove`/`click`(마커·지구본) 시 `heroDismissed` state → `HomeUI`에 prop
+     - `opacity-0` + `translateY` 슬라이드 아웃, `transition` 300ms
+     - `sessionStorage` 키 `gateo.homeHeroDismissed` — 같은 탭 세션 내 유지(또는 `localStorage` 영구 닫기 + X 버튼)
+  3. **CTA 중복 정리 (모바일)**:
+     - 「여행지 탐색」↔ 검색바(`/explore`) 중복 → 컴팩트 모드에서는 **검색바만** 또는 아이콘 1개
+     - 「MOONi에게 추천받기」↔ 우하단 MOONi 캐릭터·상단 AI 뱃지 중복 → 히어로 CTA 제거 시 상단 AI·MOONi로 충분
+  4. **히어로 시각 밀도 완화** (컴팩트 유지 시):
+     - `bg-black/60` → `bg-black/30` 또는 상단만 `bg-gradient-to-b from-black/50 to-transparent`
+     - 퀵링크 칩을 히어로 아래가 아닌 **하단 카테고리 바 위**로 이동 검토(상단 1단 절약)
+
+- **수용 기준 (390px QA)**:
+  - 홈 진입 직후 지구본이 **뷰포트 높이 40% 이상** 보임(브라우저 UI 제외)
+  - 지구본 드래그·핀치·마커 탭 — 히어로/검색과 **터치 간섭 없음**
+  - 가치제안(헤드라인 또는 placeholder) **1곳 이상** 노출 — 완전 제거 금지
+  - 데스크톱 중앙 히어로+검색 — **변경 최소**
+
+- **안전 가드**:
+  - `.ai-context.md` §4.1 5: 기존 다크 톤·버튼 스타일 유지 — 리디자인 금지
+  - `pointer-events-none` 히어로 컨테이너 유지
+  - #1에서 추가한 모바일 로그인·AI 헤더 — **유지**
+
+- **검증 커맨드**:
+  ```bash
+  npm run build
+  # 390px: 지구본 노출 면적·드래그 시 히어로 숨김·검색/CTA 터치
+  ```
 
 ---
 
@@ -434,6 +488,19 @@ flowchart TD
 ## 5. 차기 세션을 위한 표준 제시어 블록 (Next Session Prompt)
 
 다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
+
+```
+방문자 개선 #2 후속, 모바일 히어로 지구본 노출
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+@plans/visitor-growth-activation-plan.md
+브랜치 cursor/visitor-growth-1f90 · Preview /qa/visitor-growth
+금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: 모바일 히어로 축소·검색 1행 복원·지구본 드래그 시 히어로 숨김 — 플랜 세션 2 후속 명세
+검증: npm run build PASS · 390px 지구본 노출 40%+
+```
+
+**#2 후속 완료 후** → 세션 #3(크롤러 SEO) 제시어:
 
 ```
 방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링
