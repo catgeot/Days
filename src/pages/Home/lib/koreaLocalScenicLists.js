@@ -885,6 +885,26 @@ const GS_WOLYEONG_3 = 'https://tong.visitkorea.or.kr/cms2/website/00/3043300.jpg
 const GS_MUSAN = 'https://tong.visitkorea.or.kr/cms2/website/64/1961764.jpg';
 const GS_MUSAN_2 = 'https://tong.visitkorea.or.kr/cms2/website/32/3587532.jpg';
 const GS_MUSAN_3 = 'https://tong.visitkorea.or.kr/cms2/website/44/1674144.jpg';
+const GEUM_FOREST = 'https://tong.visitkorea.or.kr/cms/resource/05/2749805_image2_1.jpg';
+const GEUM_FOREST_2 = 'https://tong.visitkorea.or.kr/cms/resource/11/2749811_image2_1.jpg';
+const GEUM_FOREST_3 = 'https://tong.visitkorea.or.kr/cms/resource/37/2952537_image2_1.jpg';
+const GEUM_GIAHS = 'https://tong.visitkorea.or.kr/cms/resource/71/3559771_image2_1.jpg';
+const GEUM_GIAHS_2 = 'https://tong.visitkorea.or.kr/cms/resource/70/3559770_image2_1.jpg';
+const GEUM_GIAHS_3 = 'https://tong.visitkorea.or.kr/cms/resource/74/3559774_image2_1.jpg';
+const GEUM_MARKET = 'https://tong.visitkorea.or.kr/cms/resource/69/4086869_image2_1.jpg';
+const GEUM_MARKET_2 = 'https://tong.visitkorea.or.kr/cms/resource/52/3045152_image2_1.JPG';
+const GEUM_MARKET_3 = 'https://tong.visitkorea.or.kr/cms/resource/53/3045153_image2_1.JPG';
+const GEUM_WOL = 'https://tong.visitkorea.or.kr/cms/resource/44/4086844_image2_1.jpg';
+const GEUM_WOL_2 = 'https://tong.visitkorea.or.kr/cms/resource/79/3036479_image2_1.jpg';
+const GEUM_WOL_3 = 'https://tong.visitkorea.or.kr/cms/resource/60/3559860_image2_1.jpg';
+const GEUM_GINKGO = 'https://www.geumsan.go.kr/tour/img/sub02/sub020610_img02.jpg';
+const GEUM_GINKGO_2 = 'https://www.khs.go.kr/unisearch/images/natural_monument/1630483.jpg';
+const GEUM_SEODAE = 'https://www.geumsan.go.kr/tour/img/sub02/sub020604_img02.jpg';
+const GEUM_SEODAE_2 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020604_img01.jpg';
+const GEUM_SEODAE_3 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020604_img03.jpg';
+const GEUM_JINAK = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img01.jpg';
+const GEUM_JINAK_2 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img02.jpg';
+const GEUM_JINAK_3 = 'https://www.geumsan.go.kr/tour/img/sub02/sub020603_img03.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1814,11 +1834,80 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     GS_MUSAN,
     [GS_MUSAN_2, GS_MUSAN_3],
   ),
+  'local-scenic:geumsan-sipgyeong:산림문화힐링명소': localScenicPhotoOverlay(
+    '금산10경 제5경 산림문화 힐링명소는 남이면 금산산림문화타운입니다. 금산군 문화관광은 남이자연휴양림·느티골산림욕장·금산생태숲·금산건강숲·산림생태문화체험단지·목재문화체험장·생태치유숲길·유아숲체험원 8개 산림복지시설이 통합 운영되는 중부권 산림힐링단지라고 적습니다. 무장애나눔길이 있어 휴양·생태체험·산림치유를 함께 누립니다. 주소는 남이면 느티골길 200입니다.',
+    '충청남도 금산군 남이면 느티골길 200 (금산산림문화타운)',
+    GEUM_FOREST,
+    [GEUM_FOREST_2, GEUM_FOREST_3],
+  ),
+  'local-scenic:geumsan-sipgyeong:금산인삼세계농업유산': localScenicPhotoOverlay(
+    '금산10경 제6경 금산인삼 세계농업유산은 제원면 천내리 일원의 전통 인삼농업입니다. 금산군 문화관광에 따르면 유엔식량농업기구(FAO) 세계중요농업유산으로 국내 4번째·인삼으로는 세계 최초 등재되었습니다. 순환식 이동농법과 해가림, 농가 자가채종이 유산 가치로 인정받았습니다. 사진은 같은 군 금산인삼관 한국관광공사 공식 사진으로 근사했습니다.',
+    '충청남도 금산군 제원면 천내리 일원 (금산전통인삼농업)',
+    GEUM_GIAHS,
+    [GEUM_GIAHS_2, GEUM_GIAHS_3],
+  ),
+  'local-scenic:geumsan-sipgyeong:인삼·약령시장': localScenicPhotoOverlay(
+    '금산10경 제7경 인삼·약령시장은 금산읍 인삼약초로 24입니다. 금산군 문화관광은 인삼·약초상가가 밀집한 인삼의 거리가 국내 인삼유통의 중심이며 전국 인삼생산량의 70%가 이곳에서 집산·거래된다고 적습니다. 한국관광공사에 따르면 재래시장·국제시장·수삼센터가 있고, 매달 2·7일 오일장에 상인과 소비자가 모입니다.',
+    '충청남도 금산군 금산읍 인삼약초로 24 (금산인삼약령시장)',
+    GEUM_MARKET,
+    [GEUM_MARKET_2, GEUM_MARKET_3],
+  ),
+  'local-scenic:geumsan-sipgyeong:월영산원골': localScenicPhotoOverlay(
+    '금산10경 제9경 월영산 원골은 제원면 월영산길 23 일원입니다. 금산군 문화관광은 월영산을 달을 맞이하는 산이라 하며, 제원면 사람들이 대보름 달로 농사를 점쳤다고 적습니다. 주봉에서 갈기산·천태산·덕유산·마이산·서대산이 조망됩니다. 원골유원지(기러기공원)와 월영산·부엉산을 잇는 출렁다리(높이 45m·길이 275m)가 있습니다.',
+    '충청남도 금산군 제원면 월영산길 23 (원골·월영산)',
+    GEUM_WOL,
+    [GEUM_WOL_2, GEUM_WOL_3],
+  ),
+  'local-scenic:geumsan-sipgyeong:태조태실요광은행나무': localScenicPhotoOverlay(
+    '금산10경 제10경 태조태실 요광은행나무는 추부면 만인산 태조대왕태실과 요광리 은행나무입니다. 금산군 문화관광에 따르면 태조가 함경도 용연의 태를 만인산으로 옮겨 태자와 함께 안치했고, 1928년 총독부가 태 항아리를 옮긴 뒤 1993년 주민이 복원했습니다. 충청남도 유형문화재 제131호입니다. 요광리 은행나무는 수령 약 1000년 천연기념물 제84호이며 마을 수호신으로 모십니다. 사진은 금산군 문화관광·국가유산청 요광리 은행나무 공식 사진입니다.',
+    '충청남도 금산군 추부면 마전리 산1-66 · 요광리 329-8 (태조대왕태실·요광리 은행나무)',
+    GEUM_GINKGO,
+    [GEUM_GINKGO_2],
+  ),
+  'local-scenic:geumsan-sipgyeong:서대산산꽃세상': localScenicPhotoOverlay(
+    '금산10경 제4경 서대산 산꽃세상은 군북면 보곡산골입니다. 금산군 문화관광은 전국 최대 규모 산벚꽃 자생군락지이며 산딸나무·병꽃나무·조팝나무·진달래·생강나무가 앞다퉈 핀다고 적습니다. 매년 4월 비단고을 산꽃축제와 산꽃벚꽃마을 오토캠핑장이 있습니다. 주소는 군북면 자진뱅이길 39입니다. TourAPI 서대산(contentId 127518)은 사진이 없어 금산군 산꽃세상 공식 사진을 연결했습니다.',
+    '충청남도 금산군 군북면 자진뱅이길 39 (산꽃벚꽃마을·보곡산골)',
+    GEUM_SEODAE,
+    [GEUM_SEODAE_2, GEUM_SEODAE_3],
+  ),
+  'local-scenic:geumsan-sipgyeong:금산진악산': localScenicPhotoOverlay(
+    '금산10경 제3경 금산 진악산은 남이면 성곡리 일원입니다. 금산군 문화관광은 개삼터(開蔘터)가 있는 명산으로, 강처사가 진악산 백년약수에 인삼 씨앗을 씻어 심은 개삼 전설을 전합니다. TourAPI 진악산(contentId 126811)은 사진이 없어 금산군 진악산·개삼터 공식 사진을 연결했습니다.',
+    '충청남도 금산군 남이면 성곡리 (진악산·개삼터)',
+    GEUM_JINAK,
+    [GEUM_JINAK_2, GEUM_JINAK_3],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
   if (!spotId) return null;
   return LOCAL_SCENIC_MEMBER_OVERLAYS[spotId] || null;
+}
+
+const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
+  /** @type {Map<string, ReturnType<typeof localScenicPhotoOverlay>>} */
+  const map = new Map();
+  for (const list of LISTS) {
+    for (const member of list.members || []) {
+      const contentId = String(member.contentId || '').trim();
+      if (!/^\d{1,32}$/.test(contentId) || map.has(contentId)) continue;
+      const overlay = lookupLocalScenicMemberOverlay(
+        localScenicMemberSpotId(list.listId, member.attractionName),
+      );
+      if (overlay?.imageUrl) map.set(contentId, overlay);
+    }
+  }
+  return map;
+})();
+
+/**
+ * TourAPI contentId → 팔경 멤버 런타임 오버레이 (사진 없는 Tour 행 보강).
+ * JSON contentId 쓰기는 아님.
+ * @param {string | number | null | undefined} contentId
+ */
+export function lookupLocalScenicPhotoByContentId(contentId) {
+  const id = String(contentId || '').trim();
+  if (!/^\d{1,32}$/.test(id)) return null;
+  return LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID.get(id) || null;
 }
 
 /**
