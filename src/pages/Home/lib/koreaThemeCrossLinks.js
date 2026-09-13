@@ -11,6 +11,7 @@ import {
 } from './koreaTourAttractionMap.js';
 import { scenicClusterIdForHubId } from './koreaScenicClusters.js';
 import { nearbyHubsForFestival } from '../../Korea/nearbyFestivalHubs.js';
+import { festivalLngLat } from '../../Korea/koreaFestivalCorridors.js';
 import {
   resolveMrtStayQuery,
   stripKoAdminSuffix,
@@ -648,16 +649,17 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
     }
   }
 
+  const pt = festivalLngLat(item?.mapx, item?.mapy);
   const cross = resolveThemeCrossLinks(
     {
       hubId: nearestHubId,
       areaCode,
       region: opts.region,
       name: item.title,
-      lat: undefined,
-      lng: undefined,
-      mapx: item.mapx,
-      mapy: item.mapy,
+      addr1: item.addr1,
+      addr2: item.addr2,
+      lat: pt?.lat,
+      lng: pt?.lng,
       contentId: item.contentId,
     },
     {
@@ -665,6 +667,17 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
       utmContentPrefix: opts.utmContentPrefix || 'korea-festival-cross',
     },
   );
+
+  if (nearby.length) {
+    cross.nearbyHubs = nearby.map((h) => {
+      const hubId = String(h.hubId);
+      return {
+        hubId,
+        name: String(h.name || h.hubId),
+        scenicPath: scenicHomePathForHubId(hubId),
+      };
+    });
+  }
 
   if (!cross.packageCta && packageHubId && packageHubId !== nearestHubId) {
     const pkgOnly = resolveThemeCrossLinks(

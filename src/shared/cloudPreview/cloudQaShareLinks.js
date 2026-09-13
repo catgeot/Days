@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'festival-stay-hub',
+    label: '축제 숙소·투어 지역 매칭',
+    branch: 'cursor/festival-stay-hub-c241',
+    destination:
+      'https://days-git-cursor-festival-stay-hub-c241-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
     slug: 'gallery-fresh',
     label: '갤러리 DB 캐시 + 최신 사진',
     branch: 'cursor/gallery-swr-6b36',

@@ -281,6 +281,25 @@ assert(
   'festival scenic deep link keeps region',
 );
 
+const haksanFest = resolveFestivalThemeCrossLinks({
+  title: '시민창작예술축제 학산마당극놀래',
+  addr1: '인천광역시 미추홀구 경인로 216-1 (도화동)',
+  areaCode: '2',
+  mapx: 126.6505,
+  mapy: 37.4636,
+  contentId: 'haksan-madang',
+});
+assert(
+  haksanFest.nearbyHubs?.[0]?.hubId === 'michuhol',
+  `haksan nearby hub is michuhol (got ${haksanFest.nearbyHubs?.[0]?.hubId})`,
+);
+assert(
+  haksanFest.stay?.keyword === '미추홀' || haksanFest.stay?.location?.hubId === 'michuhol',
+  `haksan stay is 미추홀 not 옹진 (got ${haksanFest.stay?.keyword} / ${haksanFest.stay?.location?.hubId})`,
+);
+assert(haksanFest.stay?.keyword !== '옹진', 'haksan stay keyword is not 옹진');
+assert(haksanFest.tna?.keyword !== '옹진', 'haksan tna keyword is not 옹진');
+
 assert(
   extractTourAttractionSigungu('강원특별자치도 춘천시 동면 순환로 1150') ===
     '춘천시',

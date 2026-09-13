@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '한국 투어티켓',
-  sessionNo: 6,
-  sessionPhase: '클룩 즐길거리·렌터카 연동',
-  branch: 'cursor/korea-tna-strip-ef65',
-  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
-  qaShareSlug: 'korea-tna-strip',
+  title: '축제 숙소허브',
+  sessionNo: 1,
+  sessionPhase: '주소 매칭',
+  branch: 'cursor/festival-stay-hub-c241',
+  previewPath: '/korea',
+  qaShareSlug: 'festival-stay-hub',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-festival-stay-hub-1-ongjin',
+    session: '축제 숙소허브 #1, 주소 매칭',
+    title: '미추홀 축제 숙소·투어가 옹진으로 붙던 오탐',
+    detail:
+      '학산마당극놀래처럼 인천 미추홀구 축제가 숙소·투어를 「옹진」으로 검색하던 원인을 고쳤습니다. 인천 시드가 인천·강화·옹진뿐이고 옹진 좌표가 군청(미추홀 인근)이라 지리 최근접이 섬 군으로 붙었습니다. 이제 주소 시·군·구로 구 허브(미추홀)를 찾고, 구 허브가 없으면 인천으로 되돌립니다. 옹진군 주소 축제는 그대로 옹진입니다. Preview /korea 에서 해당 축제 본문 숙소·투어 제목이 미추홀인지 확인해 주세요.',
+    at: '2026-09-13T01:20:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-31-geumsan-ginkgo-thumbs',
     session: '팔경 활용 #31, 금산 은행나무·썸네일',

@@ -1,12 +1,63 @@
 import { festivalLngLat } from './koreaFestivalCorridors.js';
 import { detectSidoCode } from './festivalRegionTags.js';
 import { areaCodeForHubId, hubIdsForArea } from './koreaHubSeeds.js';
+import koreaAreaCodes from '../Home/data/koreaAreaCodes.json' with { type: 'json' };
 import { extractTourAttractionSigungu } from '../Home/lib/koreaTourAttractionLocality.js';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
 import { stripKoAdminSuffix } from '../../utils/mrtStayQuery.js';
 
 const DEFAULT_LIMIT = 4;
 const MAX_KM = 120;
+
+function sidoNameForArea(sido) {
+  const entry = koreaAreaCodes?.areas?.[String(sido || '')];
+  return String(entry?.name || '').trim();
+}
+
+function hubRecord(hub) {
+  if (!hub?.hubId) return null;
+  return {
+    hubId: String(hub.hubId).toLowerCase(),
+    name: String(hub.name || hub.hubId),
+    lat: Number(hub.lat),
+    lng: Number(hub.lng),
+  };
+}
+
+function hubBelongsToFestivalSido(hub, sido) {
+  if (!hub?.hubId || !sido) return true;
+  const mapped = areaCodeForHubId(hub.hubId);
+  if (mapped) return String(mapped) === String(sido);
+  const label = sidoNameForArea(sido);
+  if (!label) return false;
+  const full = resolveCityAttractionHub(hub.hubId) || hub;
+  const blob = [full.name, full.name_en, full.hubId, ...(full.aliases || [])].join(' ');
+  return blob.includes(label);
+}
+
+function hubNameFitsSigungu(hub, sigungu) {
+  if (!hub || !sigungu) return false;
+  const short = stripKoAdminSuffix(sigungu) || sigungu;
+  const name = String(hub.name || '').trim();
+  if (name && (name === short || name === sigungu)) return true;
+  if (name && name.length >= 2 && sigungu.includes(name)) return true;
+  if (name && short.length >= 2 && (name.includes(short) || short.includes(name))) return true;
+  const full = resolveCityAttractionHub(hub.hubId) || hub;
+  const aliases = Array.isArray(full?.aliases) ? full.aliases : [];
+  return aliases.some((alias) => {
+    const a = String(alias || '').trim();
+    if (!a) return false;
+    if (a === sigungu || a === short) return true;
+    return a.length >= 2 && sigungu.includes(a);
+  });
+}
+
+function sidoPrimaryHub(hubs, sido) {
+  if (!sido) return null;
+  const primaryId = String(hubIdsForArea(sido)[0] || '').toLowerCase();
+  if (!primaryId) return null;
+  return hubs.find((h) => String(h.hubId || '').toLowerCase() === primaryId) || null;
+}
 
 function toRad(d) {
   return (d * Math.PI) / 180;
@@ -27,27 +78,22 @@ function haversineKm(lat1, lng1, lat2, lng2) {
  * @param {Record<string, unknown> | null | undefined} item
  * @param {Array<{ hubId: string, name: string, lat?: number, lng?: number }>} hubs
  */
-function hubFromFestivalAddr(item, hubs) {
+function hubFromFestivalAddr(item, hubs, sido) {
   const sigungu = extractTourAttractionSigungu(item?.addr1, item?.addr2);
   if (!sigungu) return null;
   const short = stripKoAdminSuffix(sigungu) || sigungu;
 
   for (const hub of hubs) {
     if (!hub?.hubId) continue;
-    const name = String(hub.name || '').trim();
-    if (name && (sigungu.includes(name) || name.includes(short) || short.includes(name))) {
-      return hub;
-    }
-    const full = resolveCityAttractionHub(hub.hubId);
-    const aliases = Array.isArray(full?.aliases) ? full.aliases : [];
-    if (
-      aliases.some((alias) => {
-        const a = String(alias || '').trim();
-        return a && (sigungu.includes(a) || a.includes(short) || short.includes(a));
-      })
-    ) {
-      return hub;
-    }
+    if (hubNameFitsSigungu(hub, sigungu)) return hub;
+  }
+
+  // 구 hub가 시도 시드에 없어도 카탈로그 exact로 찾음 (미추홀구 → michuhol, 인천 시드는 인천·강화·옹진만)
+  const resolved =
+    resolveCityAttractionHub(sigungu) ||
+    (short !== sigungu ? resolveCityAttractionHub(short) : null);
+  if (resolved && hubBelongsToFestivalSido(resolved, sido)) {
+    return hubRecord(resolved);
   }
   return null;
 }
@@ -58,6 +104,16 @@ function promoteAddrHub(hubs, addrHub, limit) {
   const key = String(addrHub.hubId).toLowerCase();
   const rest = hubs.filter((h) => String(h.hubId || '').toLowerCase() !== key);
   return [addrHub, ...rest].slice(0, limit);
+}
+
+function finalizeNearby(rankedHubs, addrHub, item, hubs, sido, limit) {
+  const out = rankedHubs.slice(0, limit);
+  if (addrHub) return promoteAddrHub(out, addrHub, limit);
+  const sigungu = extractTourAttractionSigungu(item?.addr1, item?.addr2);
+  if (!sigungu || !out[0] || hubNameFitsSigungu(out[0], sigungu)) return out;
+  const primary = sidoPrimaryHub(hubs, sido);
+  if (primary) return promoteAddrHub(out, primary, limit);
+  return out;
 }
 
 /**
@@ -74,13 +130,13 @@ export function nearbyHubsForFestival(item, hubList, opts = {}) {
   const hubs = Array.isArray(hubList) ? hubList : [];
   if (!item || !hubs.length) return [];
 
-  const addrHub = hubFromFestivalAddr(item, hubs);
-  const pt = festivalLngLat(item?.mapx, item?.mapy);
   const rawArea = item?.areaCode;
   const sido =
     (rawArea != null && String(rawArea).trim() !== '' && String(rawArea).trim()) ||
     detectSidoCode(item?.addr1) ||
     null;
+  const addrHub = hubFromFestivalAddr(item, hubs, sido);
+  const pt = festivalLngLat(item?.mapx, item?.mapy);
 
   if (pt) {
     /** @type {{ hub: (typeof hubs)[number], km: number }[]} */
@@ -107,11 +163,14 @@ export function nearbyHubsForFestival(item, hubList, opts = {}) {
         }
       }
       const out = [...same, ...other].slice(0, limit).map((r) => r.hub);
-      if (out.length) return promoteAddrHub(out, addrHub, limit);
+      if (out.length) return finalizeNearby(out, addrHub, item, hubs, sido, limit);
     } else if (ranked.length) {
-      return promoteAddrHub(
+      return finalizeNearby(
         ranked.slice(0, limit).map((r) => r.hub),
         addrHub,
+        item,
+        hubs,
+        sido,
         limit,
       );
     }
@@ -125,7 +184,7 @@ export function nearbyHubsForFestival(item, hubList, opts = {}) {
       .map((id) => byId.get(String(id).toLowerCase()))
       .filter(Boolean)
       .slice(0, limit);
-    if (seeded.length) return promoteAddrHub(seeded, addrHub, limit);
+    if (seeded.length) return finalizeNearby(seeded, addrHub, item, hubs, sido, limit);
   }
 
   if (addrHub) return [addrHub].slice(0, limit);

@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/festival-stay-hub",
+      "destination": "https://days-git-cursor-festival-stay-hub-c241-catgeots-projects.vercel.app/korea",
+      "permanent": false
+    },
+    {
       "source": "/qa/gemini",
       "destination": "https://days-git-cursor-gemini-models-df4c-catgeots-projects.vercel.app/",
       "permanent": false
