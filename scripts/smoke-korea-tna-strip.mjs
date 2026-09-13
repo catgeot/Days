@@ -104,8 +104,8 @@ assert.match(eventTnaSrc, /w-\[220px\]/, 'EventTnaStrip large cards are wider, n
 assert.doesNotMatch(eventTnaSrc, /grid-cols-1/, 'EventTnaStrip large view does not switch to vertical grid');
 assert.match(
   eventTnaSrc,
-  /getKlookSearchUrl\(searchKeyword,\s*locale\)/,
-  'EventTnaStrip builds Klook activities URL from searchKeyword',
+  /getKlookSearchUrl\(chipPlace,\s*locale\)/,
+  'EventTnaStrip builds Klook activities URL from place label, not event title',
 );
 assert.match(
   eventTnaSrc,
@@ -179,6 +179,39 @@ const festivalCross = resolveFestivalThemeCrossLinks(sampleFestivalItem);
 assert.ok(festivalCross.tna, 'festival cross link has tna');
 assert.ok(festivalCross.tna.keyword, 'festival tna has keyword');
 assert.equal(canShowMrtTnaStrip(festivalCross.tna.location || festivalCross.stay.location), true, 'festival is eligible for TNA strip');
+assert.notEqual(festivalCross.tna.keyword, sampleFestivalItem.title, 'festival tna keyword is hub, not event title');
+
+const royalWalkTna = resolveFestivalThemeCrossLinks({
+  contentId: 'royal-walk',
+  title: '왕가의 산책',
+  addr1: '인천광역시 중구 공항로 272 (운서동)',
+  mapx: 126.4407,
+  mapy: 37.4602,
+  areaCode: '2',
+});
+assert.equal(royalWalkTna.tna?.keyword, '인천', `왕가의 산책 tna keyword (got ${royalWalkTna.tna?.keyword})`);
+assert.notEqual(royalWalkTna.tna?.keyword, '왕가의 산책', '왕가의 산책 must not search by event title');
+assert.ok(
+  !(royalWalkTna.tna?.altKeywords || []).includes('왕가의 산책'),
+  '왕가의 산책 altKeywords exclude event title',
+);
+assert.equal(royalWalkTna.stay?.keyword, '인천', `왕가의 산책 stay keyword (got ${royalWalkTna.stay?.keyword})`);
+assert.notEqual(royalWalkTna.stay?.keyword, '옹진', '왕가의 산책 stay is not 옹진');
+assert.ok(
+  (royalWalkTna.stayAreas || []).length >= 2,
+  `왕가의 산책 stayAreas lists parent/adjacent cities (got ${royalWalkTna.stayAreas?.length})`,
+);
+
+assert.match(
+  festivalTnaSrc,
+  /location\?\.hubId/,
+  'FestivalTnaStrip labels chips from stay/tna hub, not nearest geo hub',
+);
+assert.match(
+  readFileSync(join(root, 'src/pages/Korea/FestivalStayStrip.jsx'), 'utf8'),
+  /stayAreas=\{stayAreas\}/,
+  'FestivalStayStrip passes parent/adjacent stayAreas into EventStayStrip',
+);
 
 assert.match(
   affiliateSrc,

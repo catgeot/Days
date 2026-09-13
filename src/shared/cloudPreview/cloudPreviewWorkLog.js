@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '한국 투어티켓',
-  sessionNo: 7,
-  sessionPhase: '국내 렌터카·기차표',
+  sessionNo: 8,
+  sessionPhase: '옹진 숙소·행사명 투어 폴백',
   branch: 'cursor/korea-tna-strip-ef65',
   previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
   qaShareSlug: 'korea-tna-strip',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-korea-tna-strip-8-ongjin-title-fallback',
+    session: '한국 투어티켓 #8, Preview OK면 PR 병합',
+    title: '왕가의 산책 인천 폴백 · 행사명 투어 제외',
+    detail:
+      '인천공항 「왕가의 산책」이 옹진 군청 최근접으로 숙소·투어가 붙고, 재고가 없으면 행사명으로 룩소르 「왕가의 계곡」이 나왔습니다. 주소가 옹진군이 아니면 시도 대표(인천)로 찾고, 숙소 칩은 인천·강화 같은 상위·인접 시드만 보여 줍니다. 투어 키워드·알트에서 행사명을 빼 클룩 칩도 지역명입니다. Preview /qa/korea-tna-strip — 왕가의 산책 본문 숙소·투어.',
+    at: '2026-09-13T02:10:00.000Z',
+  },
   {
     id: '2026-09-13-korea-tna-strip-7-rental-train',
     session: '한국 투어티켓 #7, 국내 렌터카·기차표',

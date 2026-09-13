@@ -151,6 +151,7 @@ function StayCard({ item, price, large = false }) {
  *   onDatesChange?: (next: { checkIn: string, checkOut: string }) => void,
  *   locale?: string,
  *   placeLabel?: string,
+ *   stayAreas?: Array<{ name?: string, mrtKeyword?: string, hubId?: string }>,
  *   title?: string,
  *   hint?: string,
  * }} props
@@ -164,6 +165,7 @@ export default function EventStayStrip({
   onDatesChange,
   locale = 'ko',
   placeLabel: placeLabelOverride,
+  stayAreas: stayAreasOverride,
   title,
   hint,
 }) {
@@ -181,13 +183,13 @@ export default function EventStayStrip({
   const placeMeta = placeLabelOverride
     ? { label: placeLabelOverride }
     : getWorldEventPlaceMeta(event?.slug, locale);
-  const stayAreas = useMemo(
-    () =>
-      getWorldEventStayAreas(event, locale).filter(
-        (area) => area?.name && (area.mrtKeyword || area.name),
-      ),
-    [event, locale],
-  );
+  const stayAreas = useMemo(() => {
+    const fromProp = Array.isArray(stayAreasOverride) ? stayAreasOverride : [];
+    const source = fromProp.length
+      ? fromProp
+      : getWorldEventStayAreas(event, locale);
+    return source.filter((area) => area?.name && (area.mrtKeyword || area.name));
+  }, [stayAreasOverride, event, locale]);
   const [selectedAreaIndex, setSelectedAreaIndex] = useState(0);
   const selectedArea = stayAreas[selectedAreaIndex] ?? null;
   const stayKeyword = selectedArea?.mrtKeyword || selectedArea?.name || '';
@@ -258,11 +260,15 @@ export default function EventStayStrip({
     setMrtListMeta(null);
 
     (async () => {
+      const siblingAlts = stayAreas
+        .map((area) => String(area.mrtKeyword || area.name || '').trim())
+        .filter((k) => k && k !== stayKeyword);
       const result = await fetchMrtStaysForLocation(location, {
         checkIn,
         checkOut,
         ...guests,
         keywordOverride: stayKeyword || undefined,
+        altKeywords: siblingAlts,
       });
       if (cancelled) return;
       fetchedKeyRef.current = fetchKey;
@@ -298,12 +304,13 @@ export default function EventStayStrip({
     return () => {
       cancelled = true;
     };
-  }, [eligible, fetchKey, location, checkIn, checkOut, guests, stayKeyword, placeMeta.label]);
+  }, [eligible, fetchKey, location, checkIn, checkOut, guests, stayKeyword, stayAreas, placeMeta.label]);
 
   const flightArrivalIata = getPlannerFlightArrivalIata(location);
   const departureIata = resolveFlightDepartureIataForTrip('ICN');
   const showFlightCta = Boolean(location && flightArrivalIata);
-  const staysTitlePlace = selectedArea?.name || placeMeta.label;
+  const staysTitlePlace =
+    selectedArea?.name || mrtListMeta?.keyword || placeMeta.label;
   const mrtStayListUrl =
     mrtListMeta?.keyword
       ? buildMrtStayListUrl({

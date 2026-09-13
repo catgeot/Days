@@ -13,6 +13,7 @@ import {
   getThemeMembership,
   listSameHubCrossSpots,
   resolveFestivalThemeCrossLinks,
+  resolveStayTnaHubId,
   resolveThemeCrossLinks,
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
@@ -309,6 +310,70 @@ assert(
 assert(
   poiBundle.tna?.keyword === '춘천' || poiBundle.tna?.keyword === '춘천시',
   `POI tna uses region not title (got ${poiBundle.tna?.keyword})`,
+);
+
+const haksanFest = resolveFestivalThemeCrossLinks({
+  title: '시민창작예술축제 학산마당극놀래',
+  addr1: '인천광역시 미추홀구 경인로 216-1 (도화동)',
+  mapx: 126.6505,
+  mapy: 37.4636,
+  areaCode: '2',
+  contentId: 'haksan-madang',
+});
+assert(
+  resolveStayTnaHubId('michuhol', '2', [{ hubId: 'ongjin' }, { hubId: 'incheon' }]) ===
+    'incheon',
+  'unseeded 미추홀 stay hub falls back to incheon not ongjin',
+);
+assert(
+  resolveStayTnaHubId('ongjin', '2', [{ hubId: 'incheon' }]) === 'ongjin',
+  'seeded 옹진 stay hub is kept',
+);
+assert(
+  haksanFest.stay?.keyword === '인천' && haksanFest.stay?.location?.hubId === 'incheon',
+  `haksan stay falls back to 인천 (got ${haksanFest.stay?.keyword} / ${haksanFest.stay?.location?.hubId})`,
+);
+assert(haksanFest.stay?.keyword !== '옹진', 'haksan stay keyword is not 옹진');
+assert(haksanFest.tna?.keyword === '인천', `haksan tna is 인천 (got ${haksanFest.tna?.keyword})`);
+assert(haksanFest.tna?.keyword !== '옹진', 'haksan tna keyword is not 옹진');
+assert(
+  (haksanFest.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `haksan stayAreas includes 인천 (got ${JSON.stringify(haksanFest.stayAreas)})`,
+);
+
+const royalWalk = resolveFestivalThemeCrossLinks({
+  title: '왕가의 산책',
+  addr1: '인천광역시 중구 공항로 272 (운서동)',
+  mapx: 126.4407,
+  mapy: 37.4602,
+  areaCode: '2',
+  contentId: 'royal-walk',
+});
+assert(
+  royalWalk.stay?.keyword === '인천' && royalWalk.stay?.location?.hubId === 'incheon',
+  `왕가의 산책 stay is 인천 not 옹진 (got ${royalWalk.stay?.keyword} / ${royalWalk.stay?.location?.hubId})`,
+);
+assert(royalWalk.stay?.keyword !== '옹진', '왕가의 산책 stay keyword is not 옹진');
+assert(
+  royalWalk.tna?.keyword === '인천',
+  `왕가의 산책 tna is 인천 not 행사명 (got ${royalWalk.tna?.keyword})`,
+);
+assert(royalWalk.tna?.keyword !== '왕가의 산책', '왕가의 산책 tna keyword is not event title');
+assert(
+  !(royalWalk.tna?.altKeywords || []).includes('왕가의 산책'),
+  `왕가의 산책 tna alts must not include event title (got ${royalWalk.tna?.altKeywords?.join(',')})`,
+);
+assert(
+  (royalWalk.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  '왕가의 산책 stayAreas includes parent city 인천',
+);
+assert(
+  (royalWalk.stayAreas || []).some((a) => a.mrtKeyword === '강화' || a.name === '강화'),
+  `왕가의 산책 stayAreas includes adjacent 강화 (got ${JSON.stringify(royalWalk.stayAreas)})`,
+);
+assert(
+  !(royalWalk.stayAreas || []).some((a) => a.hubId === 'ongjin' || a.mrtKeyword === '옹진'),
+  '왕가의 산책 stayAreas omits 옹진 unless address is 옹진군',
 );
 
 const libSrc = readFileSync(

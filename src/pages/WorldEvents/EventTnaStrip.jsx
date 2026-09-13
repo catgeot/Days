@@ -244,7 +244,7 @@ export default function EventTnaStrip({
   const searchKeyword = effectiveKeyword || placeLabel || '';
   const mrtSearchUrl = searchKeyword ? buildMrtTnaSearchMoreUrl(searchKeyword) : null;
   const chipPlace = placeLabel || searchKeyword || location?.name || '';
-  const klookSearchUrl = searchKeyword ? getKlookSearchUrl(searchKeyword, locale) : '';
+  const klookSearchUrl = chipPlace ? getKlookSearchUrl(chipPlace, locale) : '';
   const rentalUrl = getMrtDomesticRentalUrl();
   const trainPartnerLocale = String(locale).startsWith('en') ? 'en-US' : 'ko-KR';
   const trainUrl = getTripcomTrainUrl({

@@ -16,18 +16,17 @@ export default function FestivalTnaStrip({ item, festivalCross, locale = 'ko' })
   const { t } = useTranslation();
   const location = festivalCross?.tna?.location || festivalCross?.stay?.location;
   const tna = festivalCross?.tna;
-  const nearestHub = festivalCross?.nearbyHubs?.[0];
 
   const placeLabel = useMemo(() => {
     return (
       localizedHubLabel(locale, {
-        hubId: nearestHub?.hubId,
+        hubId: location?.hubId,
         name: tna?.keyword,
       }) ||
       tna?.keyword ||
       ''
     );
-  }, [locale, nearestHub?.hubId, tna?.keyword]);
+  }, [locale, location?.hubId, tna?.keyword]);
 
   if (!location || !tna?.keyword) return null;
 
