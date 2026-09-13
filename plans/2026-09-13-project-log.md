@@ -57,17 +57,6 @@
 - **QA**: 옹진 Enter — 도시·섬 한 줄 행+사진 · 문경 검색 — 문경 팔경·문경 1경
 - **QA 방식**: 사람은 **같은 턴** Preview QA
 
-## 탐색홈 검색 #4 다음
-
-```
-탐색홈 검색 #4, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
-금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
-작업: 옹진 Enter 후 도시·섬이 한 줄 행+사진인지. 문경 검색에 문경 팔경·문경 1경이 보이는지. OK면 PR #239 병합
-```
-
 ## 탐색홈 검색 #2 — QA 링크 PROD 연결 (Cloud)
 
 - **세션** `탐색홈 검색 #2, QA 링크 PROD 연결`
