@@ -14,30 +14,19 @@
 
 ## 활성 목록
 
-### 탐색홈 검색
+### 탐색홈 검색 — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | **#4 push** · 옹진은 팔경 없음 · PR [#239](https://github.com/catgeot/Days/pull/239) · **병합 보류(Preview)** |
-| **브랜치** | `cursor/explore-search-d14b` |
-| **tip** | `86a381d3` |
-| **PR** | [#239](https://github.com/catgeot/Days/pull/239) |
+| **상태** | **#4 merge ✅ · 주제 종료** · main `b67985a8` · PR [#239](https://github.com/catgeot/Days/pull/239) |
+| **브랜치** | `cursor/explore-search-d14b` · merge `b67985a8` |
+| **PR** | [#239](https://github.com/catgeot/Days/pull/239) (MERGED) |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **Preview** | `/qa/explore-search` → git Preview `/explore` |
-| **소유** | `SearchSuggestionList.jsx` · Enter 선택 행 vs 타이핑 드롭다운 · 팔경 `rankBlurb` · 무팔경 `{시군} 명소` |
-| **금지** | UI 리디자인 · 선택 카드 규격 파손 · 옹진에 N경 날조 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:explore-choice-overlay` · `smoke:korea-local-scenic-lists` · `smoke:explore-search-aliases` · `vite build` |
+| **PROD** | `https://www.gateo.kr/explore` — 옹진 Enter 「옹진 명소」·섬 사진·N경 없음 · 문경 팔경·문경 1경 |
+| **VERIFY** | `smoke:explore-choice-overlay` · `smoke:korea-local-scenic-lists` · `smoke:explore-search-aliases` · `vite build` PASS |
+| **성과** | #1 Enter 후 드롭다운 닫힘. #3 팔경식 행·문경 1경 썸네일. #4 무팔경 허브는 `{시군} 명소`만. `/qa/explore-search` → PROD는 PR [#241](https://github.com/catgeot/Days/pull/241) |
 
-**다음 제시어**:
-
-```
-탐색홈 검색 #5, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
-금지: UI 리디자인 · 선택 카드 규격 파손 · 옹진에 N경 날조 · feature에 plans/** 커밋
-작업: 옹진 Enter — 옹진 명소 소제목·섬 사진·1경 없음. 문경 — 문경 팔경·문경 1경. OK면 PR #239 병합
-```
+**다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr/explore`.
 
 ---
 
