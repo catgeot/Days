@@ -11,6 +11,7 @@ import {
 } from './koreaTourAttractionMap.js';
 import { scenicClusterIdForHubId } from './koreaScenicClusters.js';
 import { nearbyHubsForFestival } from '../../Korea/nearbyFestivalHubs.js';
+import { festivalLngLat } from '../../Korea/koreaFestivalCorridors.js';
 import {
   resolveMrtStayQuery,
   stripKoAdminSuffix,
@@ -454,6 +455,97 @@ export function resolveThemePackageKey(spot) {
   return PACKAGE_BY_HUB[hid] || null;
 }
 
+/** 시도 시드·byHubId에 있는 여행지 hub만 숙소·투어 1차 검색 */
+export function isSeededStayHub(hubId) {
+  return Boolean(areaCodeForHubId(hubId));
+}
+
+/**
+ * 구 허브(미추홀)처럼 시드 여행지가 아니면 시도 대표(인천)로 숙소·투어 검색.
+ * 지리 최근접 시드(옹진군청)는 쓰지 않음 — 축제 nearby 표시와 분리.
+ * hub 없는 POI는 인근 시드(춘천)를 씀.
+ *
+ * @param {string | null | undefined} preferredHubId
+ * @param {string | null | undefined} areaCode
+ * @param {Array<{ hubId?: string }>} [nearbyHubs]
+ */
+export function resolveStayTnaHubId(preferredHubId, areaCode, nearbyHubs = []) {
+  const preferred = normId(preferredHubId);
+  if (preferred && isSeededStayHub(preferred)) return preferred;
+
+  const seededNearby = [];
+  for (const h of nearbyHubs || []) {
+    const id = normId(h?.hubId);
+    if (id && isSeededStayHub(id)) seededNearby.push(id);
+  }
+  const primary = areaCode ? normId(hubIdsForArea(areaCode)[0]) : '';
+
+  if (preferred) return primary || seededNearby[0] || preferred;
+  return seededNearby[0] || primary || null;
+}
+
+function locationForStayTna(spot, stayHubId) {
+  const preferred = normId(spot?.hubId);
+  if (!stayHubId || stayHubId === preferred) return buildThemeSpotLocation(spot);
+  const hub = resolveCityAttractionHub(stayHubId);
+  if (!hub) return buildThemeSpotLocation(spot);
+  return buildThemeSpotLocation({
+    hubId: stayHubId,
+    placeSlug: stayHubId,
+    name: hub.name,
+    nameEn: hub.name_en,
+    lat: hub.lat,
+    lng: hub.lng,
+    areaCode: spot?.areaCode,
+    region: spot?.region,
+    addr1: spot?.addr1,
+    addr2: spot?.addr2,
+  });
+}
+
+function nearbyHubKeywordFallbacks(nearbyHubs, stayHubId, primaryKeyword) {
+  const extras = [];
+  const seen = new Set();
+  const skip = String(primaryKeyword || '')
+    .trim()
+    .toLowerCase();
+  if (skip) seen.add(skip);
+  const stayId = normId(stayHubId);
+  for (const h of nearbyHubs || []) {
+    const id = normId(h?.hubId);
+    if (!id || id === stayId || !isSeededStayHub(id)) continue;
+    const name = String(h?.name || '').trim();
+    const bare = stripKoAdminSuffix(name) || name;
+    for (const k of [bare, name]) {
+      const key = String(k || '').trim();
+      if (!key) continue;
+      const lk = key.toLowerCase();
+      if (seen.has(lk)) continue;
+      seen.add(lk);
+      extras.push(key);
+    }
+  }
+  return extras.slice(0, 6);
+}
+
+function mergeAltKeywords(existing, extras, primaryKeyword) {
+  const out = [];
+  const seen = new Set();
+  const skip = String(primaryKeyword || '')
+    .trim()
+    .toLowerCase();
+  if (skip) seen.add(skip);
+  for (const k of [...(existing || []), ...(extras || [])]) {
+    const s = String(k || '').trim();
+    if (!s) continue;
+    const lk = s.toLowerCase();
+    if (seen.has(lk)) continue;
+    seen.add(lk);
+    out.push(s);
+  }
+  return out.slice(0, 12);
+}
+
 /**
  * 테마 상세 모달용 크로스 링크 번들 (UI 배선 = #19).
  *
@@ -518,6 +610,21 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
   }
 
   const nearbyHubs = listNearbyHubsForThemeSpot(spot, hubList);
+  const stayHubId = resolveStayTnaHubId(spot.hubId, areaCode, nearbyHubs);
+  const location = locationForStayTna(spot, stayHubId);
+  const stayQ = resolveMrtStayQuery(location);
+  const tnaQ = resolveMrtTnaQuery(location);
+  const fallbackKw = nearbyHubKeywordFallbacks(
+    nearbyHubs,
+    stayHubId,
+    stayQ?.keyword || tnaQ?.keyword,
+  );
+  const stayAlts = stayQ
+    ? mergeAltKeywords(stayQ.altKeywords, fallbackKw, stayQ.keyword)
+    : [];
+  const tnaAlts = tnaQ
+    ? mergeAltKeywords(tnaQ.altKeywords, fallbackKw, tnaQ.keyword)
+    : [];
 
   const deepLinks = {
     festivals: areaCode
@@ -532,10 +639,6 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
     scenic: '/korea/theme/scenic',
     top10: '/korea/theme/top10',
   };
-
-  const location = buildThemeSpotLocation(spot);
-  const stayQ = resolveMrtStayQuery(location);
-  const tnaQ = resolveMrtTnaQuery(location);
 
   const packageKey = resolveThemePackageKey(spot);
   let packageCta = null;
@@ -580,14 +683,14 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
     stay: stayQ
       ? {
           keyword: stayQ.keyword,
-          altKeywords: stayQ.altKeywords || [],
+          altKeywords: stayAlts,
           location,
         }
       : null,
     tna: tnaQ
       ? {
           keyword: tnaQ.keyword,
-          altKeywords: tnaQ.altKeywords || [],
+          altKeywords: tnaAlts,
           nearbyKeywords: tnaQ.nearbyKeywords || [],
           location,
         }
@@ -648,16 +751,17 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
     }
   }
 
+  const pt = festivalLngLat(item?.mapx, item?.mapy);
   const cross = resolveThemeCrossLinks(
     {
       hubId: nearestHubId,
       areaCode,
       region: opts.region,
       name: item.title,
-      lat: undefined,
-      lng: undefined,
-      mapx: item.mapx,
-      mapy: item.mapy,
+      addr1: item.addr1,
+      addr2: item.addr2,
+      lat: pt?.lat,
+      lng: pt?.lng,
       contentId: item.contentId,
     },
     {
@@ -665,6 +769,17 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
       utmContentPrefix: opts.utmContentPrefix || 'korea-festival-cross',
     },
   );
+
+  if (nearby.length) {
+    cross.nearbyHubs = nearby.map((h) => {
+      const hubId = String(h.hubId);
+      return {
+        hubId,
+        name: String(h.name || h.hubId),
+        scenicPath: scenicHomePathForHubId(hubId),
+      };
+    });
+  }
 
   if (!cross.packageCta && packageHubId && packageHubId !== nearestHubId) {
     const pkgOnly = resolveThemeCrossLinks(

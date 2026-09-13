@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 32,
-  sessionPhase: '남해 12경 제목',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=namhae',
-  qaShareSlug: 'palgyeong-use',
+  title: '축제 숙소허브',
+  sessionNo: 2,
+  sessionPhase: '숙소·투어 폴백',
+  branch: 'cursor/festival-stay-hub-c241',
+  previewPath: '/korea',
+  qaShareSlug: 'festival-stay-hub',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-festival-stay-hub-2-stay-fallback',
+    session: '축제 숙소허브 #2, 숙소·투어 폴백',
+    title: '미추홀처럼 시드 없는 구는 인천 숙소·투어로',
+    detail:
+      '학산마당극놀래 지리는 미추홀 그대로이고, 숙소·투어 검색만 시드 여행지(인천)로 폴백합니다. 구 허브는 MRT 재고가 없어 섹션이 비었습니다. 시드에 없는 허브는 시도 대표(인천)로 찾고, 재고가 없으면 강화·옹진 같은 인근 시드 키워드로 다시 찾습니다. 횡성처럼 시드 도시는 그대로입니다. Preview /korea 학산마당극놀래 본문 — 숙소·투어 제목이 인천이고 카드가 보이는지.',
+    at: '2026-09-13T01:40:00.000Z',
+  },
+  {
+    id: '2026-09-13-festival-stay-hub-1-ongjin',
+    session: '축제 숙소허브 #1, 주소 매칭',
+    title: '미추홀 축제 숙소·투어가 옹진으로 붙던 오탐',
+    detail:
+      '학산마당극놀래처럼 인천 미추홀구 축제가 숙소·투어를 「옹진」으로 검색하던 원인을 고쳤습니다. 인천 시드가 인천·강화·옹진뿐이고 옹진 좌표가 군청(미추홀 인근)이라 지리 최근접이 섬 군으로 붙었습니다. 이제 주소 시·군·구로 구 허브(미추홀)를 찾고, 구 허브가 없으면 인천으로 되돌립니다. 옹진군 주소 축제는 그대로 옹진입니다. Preview /korea 에서 해당 축제 본문 숙소·투어 제목이 미추홀인지 확인해 주세요.',
+    at: '2026-09-13T01:20:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-32-namhae-12gyeong-title',
     session: '팔경 활용 #32, 남해 결손 오버레이',

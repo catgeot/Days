@@ -13,6 +13,7 @@ import {
   getThemeMembership,
   listSameHubCrossSpots,
   resolveFestivalThemeCrossLinks,
+  resolveStayTnaHubId,
   resolveThemeCrossLinks,
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
@@ -279,6 +280,62 @@ assert(jejuFest.packageCta?.key === 'koreaJeju', 'festival jeju package koreaJej
 assert(
   jejuFest.deepLinks.scenic.includes('region='),
   'festival scenic deep link keeps region',
+);
+
+const haksanFest = resolveFestivalThemeCrossLinks({
+  title: '시민창작예술축제 학산마당극놀래',
+  addr1: '인천광역시 미추홀구 경인로 216-1 (도화동)',
+  areaCode: '2',
+  mapx: 126.6505,
+  mapy: 37.4636,
+  contentId: 'haksan-madang',
+});
+assert(
+  haksanFest.nearbyHubs?.[0]?.hubId === 'michuhol',
+  `haksan nearby hub is michuhol (got ${haksanFest.nearbyHubs?.[0]?.hubId})`,
+);
+assert(
+  resolveStayTnaHubId('michuhol', '2', [{ hubId: 'ongjin' }, { hubId: 'incheon' }]) ===
+    'incheon',
+  'unseeded 미추홀 stay hub falls back to incheon not ongjin',
+);
+assert(
+  resolveStayTnaHubId('ongjin', '2', [{ hubId: 'incheon' }]) === 'ongjin',
+  'seeded 옹진 stay hub is kept',
+);
+assert(
+  resolveStayTnaHubId('hoengseong', '32', []) === 'hoengseong',
+  'seeded 횡성 stay hub is kept',
+);
+assert(
+  haksanFest.stay?.keyword === '인천' && haksanFest.stay?.location?.hubId === 'incheon',
+  `haksan stay falls back to 인천 (got ${haksanFest.stay?.keyword} / ${haksanFest.stay?.location?.hubId})`,
+);
+assert(haksanFest.stay?.keyword !== '옹진', 'haksan stay keyword is not 옹진');
+assert(haksanFest.stay?.keyword !== '미추홀', 'haksan stay keyword is not empty-inventory 미추홀');
+assert(
+  haksanFest.tna?.keyword === '인천' && haksanFest.tna?.location?.hubId === 'incheon',
+  `haksan tna falls back to 인천 (got ${haksanFest.tna?.keyword} / ${haksanFest.tna?.location?.hubId})`,
+);
+assert(haksanFest.tna?.keyword !== '옹진', 'haksan tna keyword is not 옹진');
+assert(
+  (haksanFest.stay?.altKeywords || []).includes('강화') ||
+    (haksanFest.stay?.altKeywords || []).includes('옹진'),
+  `haksan stay alts include nearby seeded hubs (got ${haksanFest.stay?.altKeywords?.join(',')})`,
+);
+
+const hoengseongCross = resolveFestivalThemeCrossLinks({
+  title: '횡성한우축제',
+  addr1: '강원특별자치도 횡성군 횡성읍',
+  areaCode: '32',
+  mapx: 128.0,
+  mapy: 37.49,
+  contentId: 'hoengseong-hanwoo',
+});
+assert(
+  hoengseongCross.stay?.keyword === '횡성' ||
+    hoengseongCross.stay?.location?.hubId === 'hoengseong',
+  `seeded 횡성 stay stays local (got ${hoengseongCross.stay?.keyword} / ${hoengseongCross.stay?.location?.hubId})`,
 );
 
 assert(

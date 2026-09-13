@@ -12,6 +12,8 @@ import {
 } from '../src/pages/Korea/festivalRegionTags.js';
 import { nearbyHubsForFestival } from '../src/pages/Korea/nearbyFestivalHubs.js';
 import { DEFAULT_AREA_CODE } from '../src/pages/Korea/koreaFestivalDefaults.js';
+import { hubIdsForArea } from '../src/pages/Korea/koreaHubSeeds.js';
+import { resolveCityAttractionHub } from '../src/pages/Home/lib/cityAttractionHubs.js';
 
 assert.equal(DEFAULT_AREA_CODE, 'all');
 assert.equal(sidoLabel(DEFAULT_AREA_CODE), '');
@@ -218,6 +220,58 @@ const hoengseongFest = {
 };
 const nearHoengseong = nearbyHubsForFestival(hoengseongFest, gangwonHubs, { limit: 3 });
 assert.equal(nearHoengseong[0]?.hubId, 'hoengseong', 'addr 횡성군 → hoengseong hub 우선');
+
+const incheonHubs = hubIdsForArea('2')
+  .map((id) => {
+    const hub = resolveCityAttractionHub(id);
+    if (!hub) return null;
+    return {
+      hubId: String(hub.hubId || id).toLowerCase(),
+      name: String(hub.name || id),
+      lat: Number(hub.lat),
+      lng: Number(hub.lng),
+    };
+  })
+  .filter(Boolean);
+const haksanFest = {
+  title: '시민창작예술축제 학산마당극놀래',
+  addr1: '인천광역시 미추홀구 경인로 216-1 (도화동)',
+  mapx: 126.6505,
+  mapy: 37.4636,
+  areaCode: '2',
+};
+const nearHaksan = nearbyHubsForFestival(haksanFest, incheonHubs, { limit: 3 });
+assert.equal(
+  nearHaksan[0]?.hubId,
+  'michuhol',
+  `미추홀구 축제 → michuhol (not ongjin geo office, got ${nearHaksan[0]?.hubId})`,
+);
+assert.ok(
+  nearHaksan[0]?.hubId !== 'ongjin',
+  '미추홀구 축제는 옹진군청 좌표 오탐 금지',
+);
+const dongguFest = {
+  title: '인천 동구 축제',
+  addr1: '인천광역시 동구 금곡로 1',
+  mapx: 126.632,
+  mapy: 37.474,
+  areaCode: '2',
+};
+const nearDonggu = nearbyHubsForFestival(dongguFest, incheonHubs, { limit: 3 });
+assert.equal(
+  nearDonggu[0]?.hubId,
+  'incheon',
+  `동구 축제(구 hub 없음) → 인천 시도 대표 (not ongjin, got ${nearDonggu[0]?.hubId})`,
+);
+const ongjinFest = {
+  title: '옹진 섬 축제',
+  addr1: '인천광역시 옹진군 덕적면',
+  mapx: 126.15,
+  mapy: 37.23,
+  areaCode: '2',
+};
+const nearOngjin = nearbyHubsForFestival(ongjinFest, incheonHubs, { limit: 3 });
+assert.equal(nearOngjin[0]?.hubId, 'ongjin', '옹진군 주소 축제는 ongjin 유지');
 
 assert.equal(mem.get(FAVORITES_KEY) != null, true);
 assert.equal(mem.get(VIEWED_KEY) != null, true);
