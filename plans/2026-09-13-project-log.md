@@ -2,6 +2,26 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 탐색홈 검색 #2 — QA 링크 PROD 연결 (Cloud)
+
+- **세션** `탐색홈 검색 #2, QA 링크 PROD 연결`
+- **원인**: `/qa/explore-search`가 PROD SSOT에 없어 모르는 slug → `/qa` 목록으로 떨어짐
+- **완료**: `cloudQaShareLinks.js`·`vercel.json`에 `/qa/explore-search` → git Preview `/explore` 를 `origin/main`에 반영. 배포 후 짧은 링크가 탐색홈 Preview로 바로 감
+- **Preview** https://www.gateo.kr/qa/explore-search → git Preview `/explore`
+- **QA**: `/qa` 목록에 「탐색홈 검색 선택 카드」가 있는지 · 누르면 `/explore` Preview인지
+- **QA 방식**: 사람은 **같은 턴** Preview QA
+
+## 탐색홈 검색 #3 다음
+
+```
+탐색홈 검색 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
+금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
+작업: /qa/explore-search가 탐색홈으로 열리는지. 옹진 검색 후 Enter — 도시·섬 카드만 보이는지. OK면 PR #239 병합
+```
+
 ## 탐색홈 검색 #1 — 선택 카드·드롭다운 중첩 (Cloud)
 
 - **세션** `탐색홈 검색 #1, 선택 카드 중첩 정리`
