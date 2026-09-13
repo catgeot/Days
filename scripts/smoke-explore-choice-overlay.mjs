@@ -72,6 +72,35 @@ const firstMember = localScenicMemberToSuggestion(
 );
 assert.equal(firstMember?.rankBlurb, '문경 1경');
 assert.equal(firstMember?.groupTitle, '문경 팔경');
+assert.ok(firstMember?.imageUrl, '문경 1경 새재계곡 overlay thumb');
+
+const jinnam = localScenicMemberToSuggestion(
+  mungyeongLists[0],
+  mungyeong,
+  mungyeongLists[0].members.find((m) => m.attractionName === '진남교반'),
+);
+assert.ok(jinnam?.imageUrl, '문경 진남교반 GATEO curated thumb');
+
+const ssangyong = enrichSearchCandidateScenicMedia({
+  name: '쌍용계곡',
+  hubId: 'mungyeong',
+  kind: 'attraction',
+});
+assert.ok(ssangyong?.imageUrl, '문경 쌍용계곡 explore enrich gets palgyeong overlay');
+
+const saejaeGateo = enrichSearchCandidateScenicMedia({
+  name: '문경새재',
+  hubId: 'mungyeong',
+  kind: 'attraction',
+});
+assert.ok(saejaeGateo?.imageUrl, '문경새재 GATEO curated thumb on explore enrich');
+
+const museum = enrichSearchCandidateScenicMedia({
+  name: '문경석탄박물관',
+  hubId: 'mungyeong',
+  kind: 'attraction',
+});
+assert.equal(museum?.contentId, '2599737', '문경석탄박물관 curated contentId for TourAPI thumb');
 assert.equal(hubAttractionSearchGroupTitle(mungyeong), '', '문경 keeps palgyeong group only');
 
 const cards = makeDisambiguationResult('옹진', candidates, {
@@ -87,6 +116,8 @@ const suggestionListSrc = readFileSync(
 assert.doesNotMatch(suggestionListSrc, /grid-cols-1 sm:grid-cols-2/);
 assert.match(suggestionListSrc, /rankBlurb/);
 assert.match(suggestionListSrc, /SearchResultThumb/);
+assert.match(suggestionListSrc, /function useMissingTourAttractionThumbs/);
+assert.match(suggestionListSrc, /resolveSearchScenicMedia/);
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'explore-search'/);
