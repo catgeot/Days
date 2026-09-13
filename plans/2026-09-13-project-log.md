@@ -2,6 +2,17 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 방문자 활성화 — 사이트 체질 개선 12대 과제 종합 계획 수립
+
+- **작업**: 그록봇(Grok) 진단 12대 문제점 실사 및 개선 로드맵 수립
+- **실사**: 서브에이전트 3기 병렬 기동으로 12개 항목 코드베이스 정밀 진단
+  - P0: 404 빈 화면(App.jsx 라우트 누락), 장소 미선택 AI 채팅 Invalid destination name 에러(ChatModal/placeChatIntro.js), 홈 가치제안 부재
+  - P1: 무드 검색 지오코딩 오탐(useHomeHandlers.js), 모바일 390px 검색 잘림/로그인 은닉, 플래너 복잡도 90/100 과밀(25~30개 버튼), 제휴 AD 표기 누락
+  - P2: EN 모드 한글 노출(PlaceCardExpanded.jsx), 신뢰 요소(전역 푸터 부재), 로딩 스켈레톤/빈 상태 에러 복구(korea/curation), 가입 혜택 전무, 접근성(aria-label/지구본 모션)
+- **플랜**: [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) (4단계 8세션 독립 완결형 실행 계획서)
+- **핸드오프**: [`feature-handoff-index.md`](./feature-handoff-index.md)에 `방문자 개선` 행 및 다음 제시어 등록
+- **다음**: 세션 #1 `방문자 개선 #1, 404 복구 및 AI채팅 초기화` (브랜치 `cursor/visitor-growth-1f90`)
+
 ## 팔경 활용 #38 — 천안 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #38, 천안 결손 오버레이`

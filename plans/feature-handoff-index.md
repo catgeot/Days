@@ -30,6 +30,37 @@
 
 ---
 
+### 방문자 개선 (체질 개선 12대 과제)
+
+| | |
+|--|--|
+| **상태** | **플랜 수립 완료 · #1 대기** |
+| **브랜치** | `cursor/visitor-growth-1f90` (세션 #1 진입 시 생성) |
+| **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
+| **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
+| **Preview** | `/qa/visitor-growth` → git Preview `/` |
+| **소유** | `App.jsx` · `AboutPage.jsx` · `HomeUI.jsx` · `ChatModal.jsx` · `PlannerTab.jsx` · `Login.jsx` |
+| **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `npm run build` PASS |
+
+**다음 제시어**:
+
+```
+방문자 개선 #1, 404 복구 및 AI채팅 초기화
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+@plans/visitor-growth-activation-plan.md
+브랜치 cursor/visitor-growth-1f90 · Preview /qa/visitor-growth
+금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
+작업:
+1. App.jsx 내 /about 페이지 신설 및 /pricing, /product 리다이렉트, 404 폴백 라우트 추가
+2. HomeUI.jsx/index.jsx에서 장소 미선택 시 'MOONi' 바인딩하여 Invalid destination name 에러 차단
+3. mooniQuickReplies.js에 범용 탐색 질문 칩 4종 추가
+검증: npm run build PASS
+```
+
+---
+
 ### AI 모델
 
 | | |
