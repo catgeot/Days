@@ -212,6 +212,34 @@ assert.match(
   /stayAreas=\{stayAreas\}/,
   'FestivalStayStrip passes parent/adjacent stayAreas into EventStayStrip',
 );
+assert.match(
+  scenicTnaSrc,
+  /location\?\.hubId/,
+  'ScenicTnaStrip labels chips from stay/tna hub',
+);
+assert.match(
+  readFileSync(join(root, 'src/pages/KoreaTheme/ScenicStayStrip.jsx'), 'utf8'),
+  /stayAreas=\{stayAreas\}/,
+  'ScenicStayStrip passes sido fallback stayAreas into EventStayStrip',
+);
+
+const daecheongTna = listKoreaScenicSpots().find(
+  (s) => s.id === 'daecheongdo-ongjin' || s.placeSlug === 'daecheongdo-ongjin',
+);
+assert.ok(daecheongTna, '대청도 scenic spot exists');
+const daecheongBundle = resolveThemeCrossLinks(daecheongTna);
+assert.ok(
+  (daecheongBundle.stay?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `대청도 stay alts include 인천 (got ${daecheongBundle.stay?.altKeywords?.join(',')})`,
+);
+assert.ok(
+  (daecheongBundle.tna?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `대청도 tna alts include 인천 (got ${daecheongBundle.tna?.altKeywords?.join(',')})`,
+);
+assert.ok(
+  (daecheongBundle.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `대청도 stayAreas includes 인천 (got ${JSON.stringify(daecheongBundle.stayAreas)})`,
+);
 
 assert.match(
   affiliateSrc,

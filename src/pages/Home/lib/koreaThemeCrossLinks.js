@@ -507,6 +507,31 @@ function isOngjinFallbackMismatch(hubId, stayHubId) {
   return normId(hubId) === 'ongjin' && normId(stayHubId) !== 'ongjin';
 }
 
+/**
+ * 같은 시도 시드 도시 — 거리(120km) 밖 섬·군(대청도)도 인천·강화 숙소·투어 폴백.
+ * 주소가 옹진이 아니면 옹진은 제외(왕가의 산책).
+ */
+export function areaSeedStayHubs(areaCode, stayHubId) {
+  if (!areaCode) return [];
+  const stayId = normId(stayHubId);
+  const out = [];
+  const seen = new Set();
+  for (const id of hubIdsForArea(areaCode) || []) {
+    const hid = normId(id);
+    if (!hid || seen.has(hid) || !isSeededStayHub(hid)) continue;
+    if (hid === stayId) continue;
+    if (isOngjinFallbackMismatch(hid, stayId)) continue;
+    seen.add(hid);
+    const hub = resolveCityAttractionHub(hid);
+    if (!hub) continue;
+    out.push({
+      hubId: hid,
+      name: String(hub.name || hid),
+    });
+  }
+  return out;
+}
+
 function nearbyHubKeywordFallbacks(nearbyHubs, stayHubId, primaryKeyword) {
   const extras = [];
   const seen = new Set();
@@ -581,7 +606,11 @@ export function buildFestivalStayAreas(cross) {
     const hub = stayId ? resolveCityAttractionHub(stayId) : null;
     push(hub?.name || stayKw, stayKw, stayId);
   }
-  for (const h of cross?.nearbyHubs || []) {
+  const areaCode =
+    areaCodeForHubId(stayId) ||
+    areaCodeForHubId(cross?.nearbyHubs?.[0]?.hubId);
+  const seedHubs = areaSeedStayHubs(areaCode, stayId);
+  for (const h of [...(cross?.nearbyHubs || []), ...seedHubs]) {
     const id = normId(h?.hubId);
     if (!id || !isSeededStayHub(id)) continue;
     const name = String(h?.name || '').trim();
@@ -680,8 +709,9 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
   const location = locationForStayTna(spot, stayHubId);
   const stayQ = resolveMrtStayQuery(location);
   const tnaQ = resolveMrtTnaQuery(location);
+  const fallbackHubs = [...nearbyHubs, ...areaSeedStayHubs(areaCode, stayHubId)];
   const fallbackKw = nearbyHubKeywordFallbacks(
-    nearbyHubs,
+    fallbackHubs,
     stayHubId,
     stayQ?.keyword || tnaQ?.keyword,
   );
@@ -690,6 +720,9 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
     : [];
   const tnaAlts = tnaQ
     ? mergeAltKeywords(tnaQ.altKeywords, fallbackKw, tnaQ.keyword)
+    : [];
+  const tnaNearby = tnaQ
+    ? mergeAltKeywords(tnaQ.nearbyKeywords, fallbackKw, tnaQ.keyword)
     : [];
 
   const deepLinks = {
@@ -724,7 +757,7 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
     }
   }
 
-  return {
+  const bundle = {
     areaCode,
     membership: membership
       ? {
@@ -757,12 +790,14 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
       ? {
           keyword: tnaQ.keyword,
           altKeywords: tnaAlts,
-          nearbyKeywords: tnaQ.nearbyKeywords || [],
+          nearbyKeywords: tnaNearby,
           location,
         }
       : null,
     packageCta,
   };
+  bundle.stayAreas = buildFestivalStayAreas(bundle);
+  return bundle;
 }
 
 function hubListForArea(areaCode) {
@@ -852,7 +887,7 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
 
   const stayHubId = cross.stay?.location?.hubId || nearestHubId;
   const fallbackKw = nearbyHubKeywordFallbacks(
-    cross.nearbyHubs,
+    [...(cross.nearbyHubs || []), ...areaSeedStayHubs(areaCode, stayHubId)],
     stayHubId,
     cross.stay?.keyword || cross.tna?.keyword,
   );
@@ -875,7 +910,11 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
       fallbackKw,
       cross.tna.keyword,
     );
-    cross.tna.nearbyKeywords = omitBannedKeywords(cross.tna.nearbyKeywords, [eventTitle]);
+    cross.tna.nearbyKeywords = mergeAltKeywords(
+      omitBannedKeywords(cross.tna.nearbyKeywords, [eventTitle]),
+      fallbackKw,
+      cross.tna.keyword,
+    );
   }
   cross.stayAreas = buildFestivalStayAreas(cross);
 

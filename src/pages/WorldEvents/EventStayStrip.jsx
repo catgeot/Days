@@ -263,17 +263,35 @@ export default function EventStayStrip({
       const siblingAlts = stayAreas
         .map((area) => String(area.mrtKeyword || area.name || '').trim())
         .filter((k) => k && k !== stayKeyword);
-      const result = await fetchMrtStaysForLocation(location, {
+      const fetchOpts = {
         checkIn,
         checkOut,
         ...guests,
+      };
+      let result = await fetchMrtStaysForLocation(location, {
+        ...fetchOpts,
         keywordOverride: stayKeyword || undefined,
         altKeywords: siblingAlts,
       });
       if (cancelled) return;
+      let listed = Array.isArray(result?.items) ? result.items : [];
+      let bookable = filterBookableMrtStays(listed);
+      if (bookable.length === 0 && siblingAlts.length) {
+        const retry = await fetchMrtStaysForLocation(location, {
+          ...fetchOpts,
+          keywordOverride: siblingAlts[0],
+          altKeywords: [...siblingAlts.slice(1), stayKeyword].filter(Boolean),
+        });
+        if (cancelled) return;
+        const retryListed = Array.isArray(retry?.items) ? retry.items : [];
+        const retryBookable = filterBookableMrtStays(retryListed);
+        if (retryBookable.length > 0 || (listed.length === 0 && retryListed.length > 0)) {
+          result = retry;
+          listed = retryListed;
+          bookable = retryBookable;
+        }
+      }
       fetchedKeyRef.current = fetchKey;
-      const listed = Array.isArray(result?.items) ? result.items : [];
-      const bookable = filterBookableMrtStays(listed);
       const displayItems = (bookable.length > 0 ? bookable : listed).slice(
         0,
         MRT_STAY_PAGE_SIZE,

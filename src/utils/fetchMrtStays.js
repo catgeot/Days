@@ -8,6 +8,7 @@ import {
   canShowMrtStayStrip,
   expandMrtCountryHintAlts,
   isMrtDomesticLocation,
+  mergeMrtStayFetchQuery,
   normalizeMrtCountryHint,
   resolveMrtCityHints,
   resolveMrtStayQuery,
@@ -18,6 +19,7 @@ export {
   canShowMrtStayStrip,
   expandMrtCountryHintAlts,
   isMrtDomesticLocation,
+  mergeMrtStayFetchQuery,
   normalizeMrtCountryHint,
   resolveMrtCityHints,
   resolveMrtStayQuery,
@@ -345,13 +347,9 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
   if (!location || location.isScanning) return null;
   if (!canShowMrtStayStrip(location)) return null;
 
-  const query = resolveMrtStayQuery(location);
-  const keywordOverride = String(opts.keywordOverride || '').trim();
-  const keyword = keywordOverride || query.keyword;
+  const query = mergeMrtStayFetchQuery(location, opts);
+  const keyword = String(query.keyword || '').trim();
   if (!keyword) return null;
-  const overrideAlts = Array.isArray(opts.altKeywords)
-    ? opts.altKeywords.map((k) => String(k || '').trim()).filter(Boolean)
-    : null;
 
   const isDomestic = isMrtDomesticLocation(location);
   const normalized = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
@@ -359,7 +357,6 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
   return fetchMrtStays({
     ...query,
     keyword,
-    altKeywords: overrideAlts || (keywordOverride ? [] : query.altKeywords),
     countryHint: normalizeMrtCountryHint(query.countryHint || location?.country, isDomestic),
     isDomestic,
     ...normalized,

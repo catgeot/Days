@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '한국 투어티켓',
-  sessionNo: 8,
-  sessionPhase: '옹진 숙소·행사명 투어 폴백',
+  sessionNo: 9,
+  sessionPhase: '명승·축제 숙소·투어 시도 폴백',
   branch: 'cursor/korea-tna-strip-ef65',
-  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
+  previewPath: '/korea/theme/scenic?spot=daecheongdo-ongjin',
   qaShareSlug: 'korea-tna-strip',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-13-korea-tna-strip-9-sido-stay-fallback',
+    session: '한국 투어티켓 #9, Preview OK면 PR 병합',
+    title: '명승·축제 숙소·투어 시도 폴백',
+    detail:
+      '옹진 대청도처럼 시드 군·섬은 숙소 재고가 없어도 폴백이 안 됐습니다. 명승에도 축제와 같은 인천·강화 칩을 붙이고, 같은 시도 시드 키워드를 숙소·투어 알트에 넣었습니다. 빈 alt 배열이 지역 알트를 지우지 않게 했고, cityHints에 폴백 도시명을 넣어 인천 CITY가 옹진 힌트로 거절되지 않게 했습니다. Preview /qa/korea-tna-strip — 대청도 숙소·투어, 왕가의 산책 인천, 경복궁 렌터카·기차표.',
+    at: '2026-09-13T03:20:00.000Z',
+  },
   {
     id: '2026-09-13-korea-tna-strip-8-ongjin-title-fallback',
     session: '한국 투어티켓 #8, Preview OK면 PR 병합',

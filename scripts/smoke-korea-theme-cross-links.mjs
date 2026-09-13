@@ -376,6 +376,53 @@ assert(
   '왕가의 산책 stayAreas omits 옹진 unless address is 옹진군',
 );
 
+const daecheong = listKoreaScenicSpots().find(
+  (s) => s.id === 'daecheongdo-ongjin' || s.placeSlug === 'daecheongdo-ongjin',
+);
+assert(Boolean(daecheong), '대청도 scenic spot exists');
+const daecheongCross = resolveThemeCrossLinks(daecheong);
+assert(
+  daecheongCross.stay?.keyword === '옹진' || daecheongCross.stay?.location?.hubId === 'ongjin',
+  `대청도 stay hub stays 옹진 (got ${daecheongCross.stay?.keyword} / ${daecheongCross.stay?.location?.hubId})`,
+);
+assert(
+  (daecheongCross.stay?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `대청도 stay alts include 인천 (got ${daecheongCross.stay?.altKeywords?.join(',')})`,
+);
+assert(
+  (daecheongCross.tna?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `대청도 tna alts include 인천 (got ${daecheongCross.tna?.altKeywords?.join(',')})`,
+);
+assert(
+  (daecheongCross.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `대청도 stayAreas includes 인천 (got ${JSON.stringify(daecheongCross.stayAreas)})`,
+);
+assert(
+  (daecheongCross.stayAreas || []).some((a) => a.mrtKeyword === '강화' || a.name === '강화'),
+  `대청도 stayAreas includes 강화 (got ${JSON.stringify(daecheongCross.stayAreas)})`,
+);
+
+const ongjinIslandFest = resolveFestivalThemeCrossLinks({
+  title: '대청도 모래축제',
+  addr1: '인천광역시 옹진군 대청면 대청리',
+  mapx: 124.7,
+  mapy: 37.82,
+  areaCode: '2',
+  contentId: 'daecheong-sand',
+});
+assert(
+  ongjinIslandFest.stay?.location?.hubId === 'ongjin',
+  `옹진군 주소 축제 stay hub is ongjin (got ${ongjinIslandFest.stay?.location?.hubId})`,
+);
+assert(
+  (ongjinIslandFest.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `옹진군 축제 stayAreas includes 인천 fallback (got ${JSON.stringify(ongjinIslandFest.stayAreas)})`,
+);
+assert(
+  (ongjinIslandFest.stay?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `옹진군 축제 stay alts include 인천 (got ${ongjinIslandFest.stay?.altKeywords?.join(',')})`,
+);
+
 const libSrc = readFileSync(
   join(root, 'src/pages/Home/lib/koreaThemeCrossLinks.js'),
   'utf8',
