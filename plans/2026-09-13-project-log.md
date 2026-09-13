@@ -2,6 +2,15 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 방문자 개선 #2 후속 — 모바일 히어로 지구본 노출 (Cloud)
+
+- **세션** `방문자 개선 #2 후속, 모바일 히어로 지구본 노출`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `86090dbe` · PR [#247](https://github.com/catgeot/Days/pull/247)
+- **완료**: 모바일 390px — 로고+검색+로그인/AI **1행** 복원. 히어로는 컴팩트 헤드라인 1줄만(서브·CTA 제거). 지구본 drag/zoom/클릭 시 `heroDismissed`+`sessionStorage`. placeholder `3D 지구본으로 여행지 검색...`. 데스크톱 히어로 유지.
+- **VERIFY**: `npm run build` PASS · `node scripts/smoke-home-mobile-globe-exposure.mjs` — 390px 지구본 노출 **100%** · 드래그 후 히어로 숨김 OK
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **QA**: 390px 홈 — 지구본 중앙 노출 40%+ · 검색 1행·로그인·AI 탭 · 드래그 시 히어로 슬라이드 아웃 · 터치 간섭 없음.
+
 ## 방문자 개선 #2 — 사람 Preview QA (지구본 가림)
 
 - **세션** `방문자 개선 #2, 홈 가치제안 및 모바일 뷰포트` — QA 피드백

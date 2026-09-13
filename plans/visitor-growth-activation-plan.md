@@ -489,18 +489,7 @@ flowchart TD
 
 다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
 
-```
-방문자 개선 #2 후속, 모바일 히어로 지구본 노출
-@plans/feature-handoff-index.md
-@plans/2026-09-13-project-log.md
-@plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · Preview /qa/visitor-growth
-금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: 모바일 히어로 축소·검색 1행 복원·지구본 드래그 시 히어로 숨김 — 플랜 세션 2 후속 명세
-검증: npm run build PASS · 390px 지구본 노출 40%+
-```
-
-**#2 후속 완료 후** → 세션 #3(크롤러 SEO) 제시어:
+**#2 후속 완료** (`86090dbe`) — 세션 #3(크롤러 SEO) 제시어:
 
 ```
 방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링
