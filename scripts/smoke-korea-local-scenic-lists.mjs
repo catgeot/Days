@@ -1469,6 +1469,89 @@ assert.ok(
   '안양 검색 팔경 만안교 개요',
 );
 
+const jeungpyeongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jeungpyeong');
+const jeungpyeongNine = jeungpyeongMerged.filter(
+  (s) => s.localScenicListId === 'jeungpyeong-gugyeong',
+);
+assert.equal(jeungpyeongNine.length, 9, '증평구경 9명');
+assert.equal(jeungpyeongNine[0]?.groupTitle, '증평 구경');
+const jeungpyeongDeficitNames = [
+  '좌구산 천문대',
+  '삼기저수지 등잔길',
+  '추성산성',
+  '연병호 항일역사공원',
+];
+const jeungpyeongDeficit = jeungpyeongNine.filter((s) =>
+  jeungpyeongDeficitNames.includes(s.attractionName),
+);
+assert.equal(jeungpyeongDeficit.length, 4, '증평구경 결손 4명');
+assert.ok(
+  jeungpyeongDeficit.every((s) => s.overview && s.imageUrl),
+  '증평 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  jeungpyeongDeficit.every((s) => !s.contentId),
+  '증평 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jeungpyeongDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '증평 결손 4명 썸네일 서로 다름',
+);
+const jpStar = resolveLocalScenicListSpotById('local-scenic:jeungpyeong-gugyeong:좌구산천문대');
+assert.ok(jpStar?.overview?.includes('356mm'), '증평 좌구산 천문대 overlay overview');
+assert.ok(jpStar?.overview?.includes('솟점말길'), '증평 좌구산 천문대 주소');
+assert.ok(jpStar?.imageUrl?.includes('TUCN_201802050508247131'), '증평 천문대 군 공식 사진');
+const jpSamgi = resolveLocalScenicListSpotById(
+  'local-scenic:jeungpyeong-gugyeong:삼기저수지등잔길',
+);
+assert.ok(jpSamgi?.overview?.includes('3km'), '증평 등잔길 overlay overview');
+assert.ok(jpSamgi?.overview?.includes('탐방데크'), '증평 등잔길 탐방데크');
+assert.ok(jpSamgi?.imageUrl?.includes('3450336'), '증평 등잔길 한국관광공사 사진');
+const jpChu = resolveLocalScenicListSpotById('local-scenic:jeungpyeong-gugyeong:추성산성');
+assert.ok(jpChu?.overview?.includes('사적 제527호'), '증평 추성산성 overlay overview');
+assert.ok(jpChu?.overview?.includes('토축산성'), '증평 추성산성 토축산성');
+assert.ok(jpChu?.imageUrl?.includes('1626405'), '증평 추성산성 국가유산 사진');
+const jpYeon = resolveLocalScenicListSpotById(
+  'local-scenic:jeungpyeong-gugyeong:연병호항일역사공원',
+);
+assert.ok(jpYeon?.overview?.includes('2016년'), '증평 연병호 overlay overview');
+assert.ok(jpYeon?.overview?.includes('산정길'), '증평 연병호 산정길');
+assert.ok(jpYeon?.imageUrl?.includes('107492'), '증평 연병호 기록관 사진');
+assert.notEqual(jpStar?.imageUrl, jpSamgi?.imageUrl, '천문대·등잔길 썸네일 다름');
+
+const jwagusanForest = listKoreaScenicSpots().find(
+  (s) => s.id === 'jwagusan-recreation-forest' || s.attractionName === '증평 좌구산휴양림',
+);
+assert.ok(jwagusanForest?.imageUrl, 'GATEO 선정 좌구산휴양림 썸네일');
+assert.notEqual(
+  jpStar?.imageUrl,
+  jwagusanForest?.imageUrl,
+  '천문대 썸네일은 좌구산휴양림과 다름',
+);
+
+const jeungpyeongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '증평', {
+  injectLocalScenic: true,
+});
+const jeungpyeongGlobeNine = jeungpyeongGlobe.filter(
+  (s) => s.localScenicListId === 'jeungpyeong-gugyeong',
+);
+assert.equal(jeungpyeongGlobeNine.length, 9, '증평 검색 증평구경 9행');
+assert.ok(
+  jeungpyeongGlobeNine.every((s) => s.groupTitle === '증평 구경'),
+  '증평 검색 그룹명 증평 구경',
+);
+assert.ok(
+  jeungpyeongGlobe.find((s) => s.attractionName === '좌구산 천문대')?.imageUrl,
+  '증평 검색 팔경 좌구산 천문대 썸네일',
+);
+assert.ok(
+  jeungpyeongGlobe
+    .find((s) => s.attractionName === '연병호 항일역사공원')
+    ?.overview?.includes('연병호'),
+  '증평 검색 팔경 연병호 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
