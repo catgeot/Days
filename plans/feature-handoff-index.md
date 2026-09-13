@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 탐색홈 검색
+
+| | |
+|--|--|
+| **상태** | **#2 push** · QA 링크 PROD 연결 · PR [#239](https://github.com/catgeot/Days/pull/239) |
+| **브랜치** | `cursor/explore-search-d14b` |
+| **tip** | `a3b4569a` |
+| **PR** | [#239](https://github.com/catgeot/Days/pull/239) |
+| **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
+| **Preview** | `/qa/explore-search` → git Preview `/explore` |
+| **소유** | `SearchDiscoveryModal.jsx` · Enter 선택 카드 vs 타이핑 드롭다운 · `/qa/explore-search` PROD 리다이렉트 |
+| **금지** | UI 리디자인 · 선택 카드 규격 파손 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:explore-choice-overlay` · `smoke:explore-search-aliases` · `vite build` |
+
+**다음 제시어**:
+
+```
+탐색홈 검색 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-13-project-log.md
+브랜치 cursor/explore-search-d14b · PR #239 · Preview /qa/explore-search
+금지: UI 리디자인 · 선택 카드 규격 파손 · feature에 plans/** 커밋
+작업: /qa/explore-search가 탐색홈으로 열리는지. 옹진 검색 후 Enter — 도시·섬 카드만 보이는지. OK면 PR #239 병합
+```
+
+---
+
 ### AI 모델
 
 | | |
@@ -441,28 +468,28 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#36** tip `6ebd84b2` · PR [#238](https://github.com/catgeot/Days/pull/238) · 계룡9경 결손 4 · **#37 논산 결손 오버레이** |
+| **상태** | **#37** tip `2e8f2439` · PR [#240](https://github.com/catgeot/Days/pull/240) · 논산11경 결손 4 · **#38 천안 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `6ebd84b2` |
-| **PR** | [#238](https://github.com/catgeot/Days/pull/238) · [#237](https://github.com/catgeot/Days/pull/237) merge ✅ |
+| **tip** | `2e8f2439` |
+| **PR** | [#240](https://github.com/catgeot/Days/pull/240) · [#238](https://github.com/catgeot/Days/pull/238) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-13-project-log.md`](./2026-09-13-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gyeryong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=nonsan` |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238). 순수 사진/개요 누락 **130**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **논산11경 4** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4(#240). 순수 사진/개요 누락 **126**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **천안8경 4** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #37, 논산 결손 오버레이
+팔경 활용 #38, 천안 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-13-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 논산11경 사진·개요 없는 4건(대둔산 수락계곡·강경포구와 근대역사거리·노성산성과 명재고택·종학당과 한국유교문화진흥원)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=nonsan
+작업: 천안8경 사진·개요 없는 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=cheonan
 ```
 
 ---
