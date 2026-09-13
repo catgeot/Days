@@ -1109,6 +1109,23 @@ const CN_ARARIO_3 = 'https://www.cheonan.go.kr/thumbnail/tranPROGFile/tursmCn/TU
 const CN_STELE = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337447340.JPG';
 const CN_STELE_2 = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337493453.JPG';
 const CN_STELE_3 = 'https://www.cheonan.go.kr/thumbnail/tuTrsm/TT_202602090337496804.JPG';
+const DY_GAMA =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128366';
+const DY_GAMA_2 = 'https://tong.visitkorea.or.kr/cms/resource/35/3027135_image2_1.jpg';
+const DY_GAMA_3 = 'https://tong.visitkorea.or.kr/cms/resource/36/3027136_image2_1.jpg';
+const DY_SAMIN =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128341';
+const DY_META =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128338';
+const DY_META_2 =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128339';
+const DY_META_3 = 'https://tong.visitkorea.or.kr/cms/resource/45/4105445_image2_1.jpg';
+const DY_GWANBANG =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128370';
+const DY_GWANBANG_2 =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128368';
+const DY_GWANBANG_3 =
+  'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128367';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2257,6 +2274,29 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 천안시 서북구 성환읍 대홍3길 77-48 (봉선홍경사갈기비)',
     CN_STELE,
     [CN_STELE_2, CN_STELE_3],
+  ),
+  'local-scenic:damyang-other:가마골용소': localScenicPhotoOverlay(
+    '담양10경 제1경 가마골용소는 용면 용소길 261입니다. 담양군 문화관광은 용연리 용추산(해발 523m)을 중심으로 사방 4km를 가마골이라 부르고, 깊은 계곡·폭포·기암괴석이 어우러져 사계절 관광객이 찾는다고 적습니다. 영산강의 시원(발원지)으로 알려진 용소가 있고 1986년부터 관광지로 지정·개발되어 등산로·쉼터·편의시설이 갖춰졌습니다. 안쪽에는 가마골생태공원이 있고 하류 가마골계곡은 물놀이가 가능합니다. 옛 가마터가 많아 붙은 이름이며 용이 솟은 못을 용소라 부른 전설이 전해집니다. 사진은 담양군 문화관광 가마골용소 공식 사진이며, 한국관광공사 가마골계곡 사진을 보탰습니다.',
+    '전라남도 담양군 용면 용소길 261 (가마골용소)',
+    DY_GAMA,
+    [DY_GAMA_2, DY_GAMA_3],
+  ),
+  'local-scenic:damyang-other:삼인산': localScenicPhotoOverlay(
+    '담양10경 제5경 삼인산은 대전면 행성리 산 55입니다. 담양군 문화관광은 대전면 행성리와 수북면 오정리 경계에 있는 해발 564m 산으로, 북쪽에 삼인동(三人洞) 마을이 있다고 적습니다. 삼인산은 옛이름 몽선암(夢仙庵)이며, 견훤 난 때 피난한 여인들이 몽골 병졸의 만행에 맞서 절벽 아래로 떨어졌다는 전설이 전해집니다. 이성계가 명산을 찾아 기도하던 중 꿈에서 삼인산을 찾으라는 성몽을 받고 제를 올려 등극했다 하여 몽성산(夢聖山)이라 부르기도 합니다. 산형이 人자 세 겹을 겹친 형국이라 三人山이라 이름붙였다고 안내합니다. 사진은 담양군 문화관광 삼인산 공식 사진입니다.',
+    '전라남도 담양군 대전면 행성리 산 55 (삼인산)',
+    DY_SAMIN,
+  ),
+  'local-scenic:damyang-other:메타세쿼이아가로수길': localScenicPhotoOverlay(
+    '담양10경 제6경 메타세쿼이아 가로수길은 담양읍 메타세쿼이아로 일대입니다. 담양군 문화관광은 1972년 당시 김기회 군수 때 국도 24호선 군청~금성면 원율삼거리 5km 구간에 5년생 메타세쿼이아 1,300본을 식재해 조성했다고 적습니다. 이후 읍·면 연결 도로에도 식재·관리해 담양의 대표 가로수길이 되었고, 영화 「와니와 준하」·「화려한 휴가」와 예능 「1박 2일」 촬영지로 알려졌습니다. 하절기 09:00~19:00·동절기 09:00~18:00 운영(설·추석 당일 휴무)이며 입장료가 있습니다. 사진은 담양군 문화관광 메타세쿼이아 길 공식 사진이며, 한국관광공사 담양 메타세쿼이아길 사진을 보탰습니다.',
+    '전라남도 담양군 담양읍 메타세쿼이아로 12 (메타세쿼이아 가로수길)',
+    DY_META,
+    [DY_META_2, DY_META_3],
+  ),
+  'local-scenic:damyang-other:담양관방제림': localScenicPhotoOverlay(
+    '담양10경 제9경 담양관방제림은 담양읍 죽녹원로 98 일대입니다. 담양군 문화관광은 담양천 제방인 관방제를 보호하기 위해 조성한 숲으로, 푸조나무·느티나무·팽나무·벚나무·은단풍 등 300년 넘은 활엽수가 1.2km 이어진다고 적습니다. 조선 인조 26년(1648) 부사 성이성이 제방을 쌓고 나무를 심기 시작했고, 철종 5년(1854) 부사 황종림이 제방을 늘려 숲을 다듬었다고 전해집니다. 1991년 11월 27일 천연기념물로 지정되었고 2004년 제5회 아름다운 숲 전국대회 대상을 수상했습니다. 여름 피서지·연인 데이트 코스로 알려졌습니다. 사진은 담양군 문화관광 관방제림 공식 사진이며, 한국관광공사 관방제림 사진을 보탰습니다.',
+    '전라남도 담양군 담양읍 죽녹원로 98 (담양관방제림)',
+    DY_GWANBANG,
+    [DY_GWANBANG_2, DY_GWANBANG_3],
   ),
 };
 
