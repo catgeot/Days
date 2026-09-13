@@ -1655,6 +1655,117 @@ assert.ok(
   '계룡 검색 팔경 통일탑 개요',
 );
 
+const nonsanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'nonsan');
+const nonsanEleven = nonsanMerged.filter((s) => s.localScenicListId === 'nonsan-other');
+assert.equal(nonsanEleven.length, 11, '논산11경 11명');
+assert.equal(nonsanEleven[0]?.groupTitle, '논산 11경');
+const nonsanDeficitNames = [
+  '대둔산 수락계곡',
+  '강경포구와 근대역사거리',
+  '노성산성과 명재고택',
+  '종학당과 한국유교문화진흥원',
+];
+const nonsanDeficit = nonsanEleven.filter((s) =>
+  nonsanDeficitNames.includes(s.attractionName),
+);
+assert.equal(nonsanDeficit.length, 4, '논산11경 결손 4명');
+assert.ok(
+  nonsanDeficit.every((s) => s.overview && s.imageUrl),
+  '논산 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  nonsanDeficit.every((s) => !s.contentId),
+  '논산 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(nonsanDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '논산 결손 4명 썸네일 서로 다름',
+);
+const nsSurak = resolveLocalScenicListSpotById(
+  'local-scenic:nonsan-other:대둔산수락계곡',
+);
+assert.ok(nsSurak?.overview?.includes('호남의 소금강'), '논산 수락계곡 overlay overview');
+assert.ok(nsSurak?.overview?.includes('마천대'), '논산 수락계곡 마천대');
+assert.ok(nsSurak?.imageUrl?.includes('sub020201_img03'), '논산 수락계곡 시 공식 사진');
+const nsGang = resolveLocalScenicListSpotById(
+  'local-scenic:nonsan-other:강경포구와근대역사거리',
+);
+assert.ok(nsGang?.overview?.includes('택리지'), '논산 강경포구 overlay overview');
+assert.ok(nsGang?.overview?.includes('1919년'), '논산 강경포구 3·1 만세');
+assert.ok(nsGang?.imageUrl?.includes('sub020201_img07'), '논산 강경포구 시 공식 사진');
+const nsNoseong = resolveLocalScenicListSpotById(
+  'local-scenic:nonsan-other:노성산성과명재고택',
+);
+assert.ok(nsNoseong?.overview?.includes('1709'), '논산 명재고택 overlay overview');
+assert.ok(nsNoseong?.overview?.includes('590m'), '논산 노성산성 둘레');
+assert.ok(nsNoseong?.imageUrl?.includes('sub020201_img08'), '논산 명재고택 시 공식 사진');
+const nsJonghak = resolveLocalScenicListSpotById(
+  'local-scenic:nonsan-other:종학당과한국유교문화진흥원',
+);
+assert.ok(nsJonghak?.overview?.includes('1643'), '논산 종학당 overlay overview');
+assert.ok(nsJonghak?.overview?.includes('윤순거'), '논산 종학당 윤순거');
+assert.ok(nsJonghak?.imageUrl?.includes('sub020201_img11'), '논산 종학당 시 공식 사진');
+assert.notEqual(nsSurak?.imageUrl, nsGang?.imageUrl, '수락계곡·강경포구 썸네일 다름');
+assert.notEqual(nsNoseong?.imageUrl, nsJonghak?.imageUrl, '명재고택·종학당 썸네일 다름');
+
+const daedunsanPark = listKoreaScenicSpots().find(
+  (s) => s.id === 'daedunsan' || s.attractionName === '대둔산',
+);
+assert.ok(daedunsanPark?.imageUrl, 'GATEO 선정 대둔산 썸네일');
+assert.notEqual(
+  nsSurak?.imageUrl,
+  daedunsanPark?.imageUrl,
+  '수락계곡 썸네일 ≠ GATEO 선정 대둔산',
+);
+
+const nonsanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '논산', {
+  injectLocalScenic: true,
+});
+const nonsanGlobeEleven = nonsanGlobe.filter((s) => s.localScenicListId === 'nonsan-other');
+assert.equal(nonsanGlobeEleven.length, 11, '논산 검색 논산11경 11행');
+assert.ok(
+  nonsanGlobeEleven.every((s) => s.groupTitle === '논산 11경'),
+  '논산 검색 그룹명 논산 11경',
+);
+assert.ok(
+  nonsanGlobe.find((s) => s.attractionName === '대둔산 수락계곡')?.imageUrl,
+  '논산 검색 팔경 수락계곡 썸네일',
+);
+assert.ok(
+  nonsanGlobe
+    .find((s) => s.attractionName === '종학당과 한국유교문화진흥원')
+    ?.overview?.includes('종학당'),
+  '논산 검색 팔경 종학당 개요',
+);
+const nsYangchonThumb = lookupLocalScenicPhotoByContentId('2750930');
+assert.ok(
+  nsYangchonThumb?.imageUrl?.includes('20240129135124_00g51rm9'),
+  '논산 양촌자연휴양림 Tour 빈 썸네일 overlay',
+);
+const nsHistoryThumb = lookupLocalScenicPhotoByContentId('946844');
+assert.ok(
+  nsHistoryThumb?.imageUrl?.includes('3082135'),
+  '논산 강경역사관 Tour 빈 썸네일 overlay',
+);
+const nsNogangThumb = lookupLocalScenicPhotoByContentId('1956315');
+assert.ok(
+  nsNogangThumb?.imageUrl?.includes('20221222134750_005oh6xhh6'),
+  '논산 노강서원 Tour 빈 썸네일 overlay',
+);
+assert.equal(
+  new Set(
+    [nsYangchonThumb, nsHistoryThumb, nsNogangThumb].map((s) => s.imageUrl),
+  ).size,
+  3,
+  '논산 Tour 빈 썸네일 3건 서로 다름',
+);
+assert.notEqual(
+  nsHistoryThumb?.imageUrl,
+  nsGang?.imageUrl,
+  '강경역사관 썸네일 ≠ 강경포구 팔경 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
