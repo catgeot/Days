@@ -129,14 +129,24 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hongseong` · 검색「홍성」
 - **잔여**: 사진/개요 순수 누락 **94**/876. 다음 허브 **화순11경 4**
 
-## 팔경 활용 #46 다음 — 화순 결손 오버레이
+## 팔경 활용 #46 — 화순 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #46, 화순 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `980f452e` · PR [#254](https://github.com/catgeot/Days/pull/254)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 화순11경 결손 4건(백아산 하늘다리·고인돌 유적지·수만리 철쭉공원·화순 꽃강길 음악분수) 보강. 하늘다리는 백아면 백아로 1310-56 66m 산악현수교, 고인돌은 도곡 효산리·춘양 대신리 세계유산 지석묘군, 수만리는 화순읍 안양산로 258, 꽃강길은 화순읍 대리 481·개미산 전망대. 고창 고인돌·GATEO 선정 만연산 치유숲과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS · `report-local-scenic-missing-content --hub=hwasun` 사진/개요 11/11, 순수 누락 0
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hwasun`
+- **잔여**: 사진/개요 순수 누락 **90**/876. 다음 허브 **거제9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #47 다음 — 거제 결손 오버레이
 
 ```
-팔경 활용 #46, 화순 결손 오버레이
+팔경 활용 #47, 거제 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-14-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 화순11경 사진·개요 없는 4건(백아산 하늘다리·고인돌 유적지·수만리 철쭉공원·화순 꽃강길 음악분수)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=hwasun
+작업: 거제9경 사진·개요 없는 3건(학동몽돌해수욕장·거제포로수용소유적공원·공곶이·내도)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=geoje
 ```
