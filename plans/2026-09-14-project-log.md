@@ -2,6 +2,15 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #3 — 크롤러 SEO 및 본문 프리렌더링 (Cloud)
+
+- **세션** `방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `dd317cf9` · PR [#248](https://github.com/catgeot/Days/pull/248)
+- **완료**: `botDetect`에 카카오·다음·슬랙 봇 추가. `TRAVEL_SPOTS` 274곳 전수 크롤러 메타. 봇 응답 `#root`에 장소별 `h1`·설명·갤러리/플래너/AI 도슨트 nav 주입(허브는 기존 본문 유지).
+- **VERIFY**: `npm run generate:crawler-place-meta` 274 slugs · `npm run smoke:crawler-place-meta` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/place/tokyo?crawler=1` · `/place/santorini?crawler=1`
+- **QA**: `?crawler=1` 도쿄·산토리니 본문이 홈 소개글이 아닌지 · 일반 브라우저 UI 그대로인지.
+
 ## 팔경 활용 #42 — 진도 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #42, 진도 결손 오버레이`
