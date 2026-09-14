@@ -34,12 +34,12 @@
 
 | | |
 |--|--|
-| **상태** | **#4 QA** · tip `f708581d` · PR [#249](https://github.com/catgeot/Days/pull/249) · **사람 Preview** |
+| **상태** | **#4 QA** · tip `3074fdda` · PR [#249](https://github.com/catgeot/Days/pull/249) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-14-project-log.md`](./2026-09-14-project-log.md) |
 | **Preview** | `/qa/visitor-growth` → git Preview `/` · `/explore` |
-| **소유** | `moodSearchIntent.js` · `useHomeHandlers.js` · `searchSuggestions.js` · `SearchSuggestionList.jsx` |
+| **소유** | `moodSearchIntent.js` · `useHomeHandlers.js` · `SearchSuggestionList.jsx` · `ChatModal.jsx` · `mooniChipDockMode.js` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:mood-search-intent` · `npm run smoke:mooni-ask-bridge` · `npm run smoke:explore-search-aliases` · `npx vite build` PASS |
 
