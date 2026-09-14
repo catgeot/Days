@@ -54,6 +54,7 @@ import {
   getMooniL1ChipLabel,
   buildAccessRouteAskText,
 } from '../lib/mooniQuickReplies';
+import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { getMooniChipPromptHint, MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
@@ -264,7 +265,21 @@ const ChatModal = ({
   const boundDestinationSlug = resolveCatalogPlaceSlug(activeSessionPlace?.slug) || null;
   /** 지명만 있는 uiPlace도 주제 칩 허용 (플래너·카탈로그 연동은 slug 있을 때만) */
   const hasPlaceBoundName = Boolean(String(activeSessionPlace?.name || '').trim());
-  const allowNameBoundChips = hasPlaceBoundName && !boundDestinationSlug;
+  const hasAskSeed = Boolean(
+    String(
+      typeof initialQuery === 'string'
+        ? initialQuery
+        : initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
+    ).trim(),
+  );
+  const chipDockMode = resolveMooniChipDockMode({
+    isMooniUi,
+    hasPlaceBoundName,
+    messageCount: messages.length,
+    hasInitialQuery: hasAskSeed,
+  });
+  const allowNameBoundChips =
+    chipDockMode === 'topic' && !boundDestinationSlug;
 
   const mooniHeaderLabel = useMemo(() => {
     if (!isMooniUi) return introDestinationRaw || 'MOONi';
@@ -325,20 +340,24 @@ const ChatModal = ({
     [isMooniUi, hasPlaceBoundName, i18n.language],
   );
 
-  const dockChips = hasPlaceBoundName ? quickReplies : discoveryChips;
+  const dockChips = chipDockMode === 'discovery' ? discoveryChips : quickReplies;
 
   const showBoundTopicDock =
-    isMooniUi && hasPlaceBoundName && quickReplies.length > 0;
+    chipDockMode === 'topic' && hasPlaceBoundName && quickReplies.length > 0;
 
   const showDiscoveryDock =
-    isMooniUi && !hasPlaceBoundName && discoveryChips.length > 0 && messages.length === 0;
+    chipDockMode === 'discovery' && discoveryChips.length > 0;
 
-  const showMooniChipDock = showBoundTopicDock || showDiscoveryDock;
+  const showUnboundTopicDock =
+    chipDockMode === 'topic' && !hasPlaceBoundName && quickReplies.length > 0;
+
+  const showMooniChipDock =
+    showBoundTopicDock || showDiscoveryDock || showUnboundTopicDock;
 
   const showClearPlaceBinding = hasPlaceBoundName && Boolean(onClearPlaceBinding);
 
   const showAccessOriginDock =
-    isMooniUi && topicDockParent === 'access' && hasPlaceBoundName;
+    isMooniUi && topicDockParent === 'access' && chipDockMode === 'topic';
 
   const mobileDockInputExpanded =
     showMooniChipDock &&

@@ -9,6 +9,11 @@
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
 import {
+  isLikelyMoodQuery,
+  shouldSkipGeocodeForMood as shouldSkipGeocodeForMoodIntent,
+  isWeakGeocodeHitForMood,
+} from '../lib/moodSearchIntent';
+import {
   collectKoHomonymPlaceCandidates,
   isKoHomonymPlaceSearchQuery,
 } from '../lib/koHomonymRiSearch';
@@ -153,21 +158,6 @@ const isAdminRegionName = (name) => {
   return /(?:gun|si|gu|-gun|-si|city\s*hall|town\s*hall)$/i.test(n);
 };
 const MOOD_VARIANT_RECENT_COOLDOWN_HOURS = 24;
-const MOOD_HINT_KEYWORDS = [
-  '감정', '기분', '마음', '분위기', '무드',
-  '우울', '우울해', '울적', '침울', '슬픔', '슬퍼', '눈물',
-  '외로', '쓸쓸', '적적', '공허', '허무', '허전',
-  '번아웃', '지침', '지쳤', '피곤', '피폐', '무기력', '탈진', '현타', '현실자각',
-  '스트레스', '압박', '불안', '초조', '답답', '갑갑', '멘붕', '멘탈',
-  '화남', '화나', '짜증', '분노', '빡침',
-  '설렘', '설레', '두근', '흥분', '떨림', '신남', '행복',
-  '그리움', '향수', '추억', '보고싶', '회상',
-  '힐링', '위로', '치유', '회복', '휴식', '쉼', '충전', '리프레시',
-  '도망가고 싶다', '떠나고 싶다', '어디론가 가고 싶다', '바람 쐬고 싶다', '잠깐 쉬고 싶다',
-  '놀고 싶다', '재밌는 데', '감성', '센치', '낭만', '로맨틱',
-  'burnout', 'lonely', 'sad', 'angry', 'anxious', 'stressed', 'overwhelmed', 'tired',
-  'excited', 'nostalgic', 'healing', 'rest', 'calm', 'refresh', 'escape'
-];
 
 const normalizeSearchKey = (s) => String(s || '').replace(/\s+/g, '').toLowerCase();
 
@@ -564,6 +554,7 @@ export function useHomeHandlers({
 
     const isMooniRequest = String(dest ?? '').trim() === 'MOONi';
     const boundSpot = initPayload?.boundSpot ?? null;
+    const freshSession = initPayload?.freshSession === true;
     const boundPlaceLabel =
       String(boundSpot?.displayLabel || boundSpot?.name || '').trim() || null;
     logCurationHandoff('chat.start', {
@@ -580,6 +571,21 @@ export function useHomeHandlers({
     if (isMooniRequest) {
       setMooniChatEntry?.(true);
       setMooniPlaceContext?.(boundSpot ?? null);
+
+      if (freshSession) {
+        setChatDraft({
+          destination: 'MOONi',
+          lat: 0,
+          lng: 0,
+          persona,
+          category,
+        });
+        setActiveChatId(null);
+        setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+        logCurationHandoff('chat.open.fresh', { destination: 'MOONi' });
+        setIsChatOpen(true);
+        return;
+      }
 
       if (!existingId && boundPlaceLabel) {
         let placeTrip = savedTrips.find(
@@ -864,24 +870,10 @@ export function useHomeHandlers({
 
     // 테마 키워드(반딧불·빙하 등)는 지오코딩 실패 후에만 — 성산일출봉 등 명소가 제주 SSOT로 먼저 묶이지 않게.
 
-    const isLikelyMoodQuery = (text) => {
-      const compact = normalizeSearchKey(text);
-      if (!compact) return false;
-      if (compact.length >= 8) return true;
-      if (/[?!.]/.test(text || '')) return true;
-      return MOOD_HINT_KEYWORDS.some((keyword) => compact.includes(normalizeSearchKey(keyword)));
-    };
-
-    /** 감정 키워드·문장부호 — Mapbox가 임의 지명으로 가로채기 전에 AI 무드 큐레이션으로 보냄 */
-    const shouldSkipGeocodeForMood = (text) => {
-      if (isFacilityQuery(text)) return false;
-      // 테마 키워드가 있으면 지오코딩·테마 경로 우선 (「빙하를 보고 싶어」≠ 순수 감정)
-      if (findThemeKeywordHits(text).length > 0) return false;
-      const compact = normalizeSearchKey(text);
-      if (!compact) return false;
-      if (/[?!.]/.test(text || '')) return true;
-      return MOOD_HINT_KEYWORDS.some((keyword) => compact.includes(normalizeSearchKey(keyword)));
-    };
+    const shouldSkipGeocodeForMood = (text) =>
+      shouldSkipGeocodeForMoodIntent(text, {
+        hasThemeHits: findThemeKeywordHits(text).length > 0,
+      });
 
     const pickMoodVariant = (variants = []) => {
       if (!Array.isArray(variants) || variants.length === 0) return null;
@@ -1135,9 +1127,12 @@ export function useHomeHandlers({
       }
     }
 
-    const coords = shouldSkipGeocodeForMood(query)
+    let coords = shouldSkipGeocodeForMood(query)
       ? null
       : await getCoordinatesFromAddress(query);
+    if (isWeakGeocodeHitForMood(query, coords)) {
+      coords = null;
+    }
 
     if (coords) {
       // 검색어가 SSOT 공식명·별칭과 일치할 때만 큐레이션 여행지로 연결.
@@ -1236,14 +1231,17 @@ export function useHomeHandlers({
       }, coords.lat, coords.lng);
       return commitLocation(normalizedLoc);
     } else {
-      // 지오코딩 실패 시에만 테마 큐레이션 (반딧불·빙하 문장 등)
-      const themeSpot = pickThemeCurationSpot(query, category);
-      if (themeSpot) {
-        if (!requireChoice) {
-          setDraftInput(themeSpot.name);
-          processSearchKeywords(themeSpot);
+      // 지오코딩 실패 시에만 테마 큐레이션 (반딧불·빙하 문장 등).
+      // 무드 결합(따뜻한 휴양지)은 테마 스냅 없이 AI 큐레이션으로.
+      if (!shouldSkipGeocodeForMood(query)) {
+        const themeSpot = pickThemeCurationSpot(query, category);
+        if (themeSpot) {
+          if (!requireChoice) {
+            setDraftInput(themeSpot.name);
+            processSearchKeywords(themeSpot);
+          }
+          return commitLocation(themeSpot);
         }
-        return commitLocation(themeSpot);
       }
 
       // 🚨 [New] Smart Search Fallback (AI 자동 교정 엔진)

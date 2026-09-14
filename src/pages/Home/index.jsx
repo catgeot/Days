@@ -1730,6 +1730,16 @@ function Home() {
           isOpen={routeLocation.pathname.startsWith('/explore')}
           isFromPlaceCard={isExploreFromPlace}
           onClose={() => navigate('/')}
+          onAskMooni={(askQuery) => {
+            const q = String(askQuery || '').trim();
+            if (!q) return;
+            handleStartChat('MOONi', {
+              text: `${q} 여행지 추천해줘`,
+              persona: PERSONA_TYPES.INSPIRER,
+              freshSession: true,
+            });
+            navigate('/');
+          }}
           onSelect={(spot) => {
             // 검색 선택(카탈로그 포함) → 홈 써머리 장소카드 (/place 직행 금지)
             const lat = Number(spot?.lat);

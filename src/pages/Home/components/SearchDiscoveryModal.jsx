@@ -79,7 +79,7 @@ const HistoryPopoverHeader = ({ title, onClearAll, clearAllLabel }) => (
   </div>
 );
 
-const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '', isFromPlaceCard = false }) => {
+const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni, initialQuery = '', isFromPlaceCard = false }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -1239,6 +1239,17 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                   setIsSearchHistoryOpen(false);
                   handleSuggestionSelect(item);
                 }}
+                onAskMooni={
+                  onAskMooni
+                    ? (askQuery) => {
+                        dismissSearchKeyboard();
+                        setIsSearchHistoryOpen(false);
+                        setActiveQuickSection(null);
+                        onAskMooni(askQuery);
+                        onClose?.();
+                      }
+                    : undefined
+                }
                 title={t('home.explore.suggestionsTitle', { query: trimmedQuery })}
               />
             </div>
