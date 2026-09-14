@@ -2,6 +2,18 @@
 
 직전: [`2026-09-12-project-log.md`](./2026-09-12-project-log.md)
 
+## 방문자 개선 #2 후속 — 배포본 UI 복원 및 가치제안(검색+무니) 반영 (Cloud)
+
+- **세션** `방문자 개선 #2 후속, 배포본 UI 복원 및 검색·무니 넛지 가치제안`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `f546ee2c` · PR [#247](https://github.com/catgeot/Days/pull/247)
+- **완료**: 상단 공간을 점유하던 히어로 박스 및 모바일 우측 중복 아이콘(로그인/AI) 제거 → **기존 배포본 미니멀 UI 100% 복원**. 상단 공간 점유 제로.
+  - **대안 A (검색바 문구)**: `3D 지구본과 AI로 여행지 탐색...` (모바일 `3D 지구본으로 여행지 검색...`, EN `Explore places with 3D Globe & AI...` / `Search on 3D globe...`)
+  - **대안 B (무니 인트로 넛지)**: 첫 방문 시 우하단 MOONi 말풍선에 `지구본을 돌리거나 제게 여행을 물어보세요! ✨` (EN `Spin the globe or ask me about travel! ✨`) 노출 후 자동 페이드아웃.
+  - **모바일 Retina 최적화 유지**: `HomeGlobeMapbox` `pixelRatio` 최대 2 클램핑 유지.
+- **VERIFY**: `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **QA**: PC 및 모바일 390px — 상단에 불필요한 박스 없이 시원한 3D 지구본 전면 노출. 검색바 안내 문구와 우하단 무니 인트로 말풍선으로 정체성과 첫 행동 유도 확인.
+
 ## 방문자 개선 #2 후속 — 모바일 히어로 지구본 노출 (Cloud)
 
 - **세션** `방문자 개선 #2 후속, 모바일 히어로 지구본 노출`
