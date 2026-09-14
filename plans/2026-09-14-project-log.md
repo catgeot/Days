@@ -41,14 +41,24 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use — 검색「진도」`조도(조도6군도)` 행
 - **다음**: **#43 함평 결손 오버레이** (동일 브랜치)
 
-## 팔경 활용 #43 다음 — 함평 결손 오버레이
+## 팔경 활용 #43 — 함평 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #43, 함평 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `bdd87bac` · PR [#250](https://github.com/catgeot/Days/pull/250) (#245는 #42 squash merge)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 함평8경 결손 4건(백제고도·모악산·삼호천·청계산) 보강. 백제고도는 예덕리고분군, 모악산은 해보 348m·꽃무릇공원(용천사 GATEO `3061070`과 다른 URL), 삼호천은 함평천수변공원, 청계산은 신광 청계·군유산 자락 양재리 이팝나무. 부여·전주·창원·과천 동명과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS · `report-local-scenic-missing-content --hub=hampyeong` 사진/개요 8/8, 순수 누락 0
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hampyeong`
+- **잔여**: 사진/개요 순수 누락 **102**/876. 다음 허브 **해남8경 4** (그다음 홍성12경·화순11경)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #44 다음 — 해남 결손 오버레이
 
 ```
-팔경 활용 #43, 함평 결손 오버레이
+팔경 활용 #44, 해남 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-14-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 함평8경 사진·개요 없는 4건(백제고도·모악산·삼호천·청계산)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=hampyeong
+작업: 해남8경 사진·개요 없는 4건(해남 구 목포구등대 낙조 전망대·해남윤씨 옥우당·미황사 및 도솔암·울돌목)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haenam
 ```

@@ -92,11 +92,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#42 QA** tip `8b3aa5ed` · PR [#245](https://github.com/catgeot/Days/pull/245) · 진도10경 4 + 검색 조도 썸네일 · **#43 함평 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#43** tip `bdd87bac` · PR [#250](https://github.com/catgeot/Days/pull/250) · 함평8경 4 · **#44 해남 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **함평8경 4**.
+**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **해남8경 4**.
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
@@ -144,7 +144,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 40 | `팔경 활용 #40, 밀양 결손 오버레이` | A | **완료** · tip `bd5827d2` · PR [#245](https://github.com/catgeot/Days/pull/245) · 밀양8경 4 |
 | 41 | `팔경 활용 #41, 영덕 결손 오버레이` | A | **완료** · tip `1a2f148b` · PR [#245](https://github.com/catgeot/Days/pull/245) · 영덕9경 4 |
 | 42 | `팔경 활용 #42, 진도 결손 오버레이` | A | **완료** · tip `8b3aa5ed` · PR [#245](https://github.com/catgeot/Days/pull/245) · 진도10경 4 · QA 검색 조도(조도6군도) 553447 썸네일 |
-| 43 | `팔경 활용 #43, 함평 결손 오버레이` | A | **열기 가능** · 함평8경 4 · Preview QA는 사람 병행(세션 생략) |
+| 43 | `팔경 활용 #43, 함평 결손 오버레이` | A | **완료** · tip `bdd87bac` · PR [#250](https://github.com/catgeot/Days/pull/250) · 함평8경 4 |
+| 44 | `팔경 활용 #44, 해남 결손 오버레이` | A | **열기 가능** · 해남8경 4 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -584,7 +585,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 진도10경 사진·개요 없는 4건(조도관음도·의장대·돈대산·하조대)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jindo
 ```
 
-### §1.2 A #43 함평 결손 오버레이 (다음)
+### §1.2 A #43 함평 결손 오버레이 (실행됨)
 
 ```
 팔경 활용 #43, 함평 결손 오버레이
@@ -594,6 +595,18 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 함평8경 사진·개요 없는 4건(백제고도·모악산·삼호천·청계산)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=hampyeong
+```
+
+### §1.2 A #44 해남 결손 오버레이 (다음)
+
+```
+팔경 활용 #44, 해남 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-14-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 해남8경 사진·개요 없는 4건(해남 구 목포구등대 낙조 전망대·해남윤씨 옥우당·미황사 및 도솔암·울돌목)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haenam
 ```
 
 
