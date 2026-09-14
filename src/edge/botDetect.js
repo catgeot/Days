@@ -1,5 +1,5 @@
 const BOT_UA =
-  /googlebot|google-inspectiontool|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|embedly|whatsapp|telegrambot|applebot|semrushbot|ahrefsbot|mj12bot|dotbot|petalbot|yeti|naverbot/i;
+  /googlebot|google-inspectiontool|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|embedly|whatsapp|telegrambot|applebot|semrushbot|ahrefsbot|mj12bot|dotbot|petalbot|yeti|naverbot|kakaotalk-scrap|kakaostory|daumoa|slackbot/i;
 
 export function isCrawlerRequest(request) {
   const url = new URL(request.url);

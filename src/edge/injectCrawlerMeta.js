@@ -9,8 +9,93 @@ function escapeAttr(value) {
     .replace(/</g, '&lt;');
 }
 
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function escapeJsonForScript(value) {
   return JSON.stringify(value).replace(/</g, '\\u003c');
+}
+
+function placeHref(slug, tab, locale) {
+  const path = tab ? `/place/${slug}/${tab}` : `/place/${slug}`;
+  return locale === 'en' ? `${path}?lang=en` : path;
+}
+
+function replaceRootInnerHtml(html, inner) {
+  const openMatch = html.match(/<div id="root">/i);
+  if (!openMatch || openMatch.index == null) return html;
+  const openEnd = openMatch.index + openMatch[0].length;
+  let depth = 1;
+  let i = openEnd;
+  while (i < html.length && depth > 0) {
+    const nextOpen = html.indexOf('<div', i);
+    const nextClose = html.indexOf('</div>', i);
+    if (nextClose === -1) return html;
+    if (nextOpen !== -1 && nextOpen < nextClose) {
+      depth += 1;
+      i = nextOpen + 4;
+      continue;
+    }
+    depth -= 1;
+    if (depth === 0) {
+      return `${html.slice(0, openMatch.index)}<div id="root">\n${inner}\n    </div>${html.slice(nextClose + 6)}`;
+    }
+    i = nextClose + 6;
+  }
+  return html;
+}
+
+export function buildCrawlerPlaceBodyHtml(meta) {
+  const slug = String(meta?.slug || '').trim();
+  const placeName = String(meta?.placeName || '').trim();
+  if (!slug || !placeName) return '';
+
+  const locale = meta.locale === 'en' ? 'en' : 'ko';
+  const country = String(meta.countryName || '').trim();
+  const destIata = String(meta.destIata || '').trim();
+  const titlePlace = country ? `${placeName} (${country})` : placeName;
+  const h1 =
+    locale === 'en'
+      ? `${escapeHtml(titlePlace)} — travel guide &amp; attractions`
+      : `${escapeHtml(titlePlace)} - 여행 가이드 &amp; 명소`;
+  const h2 =
+    locale === 'en'
+      ? 'Suggested routes and essentials (Gallery · Planner · AI docent)'
+      : '추천 코스 및 필수 정보 (갤러리 · 플래너 · AI 도슨트)';
+  const galleryLabel = locale === 'en' ? `${placeName} gallery` : `${placeName} 갤러리`;
+  const plannerLabel =
+    locale === 'en'
+      ? `${placeName} planner · stays · tours`
+      : `${placeName} 플래너 · 숙소 · 투어`;
+  const wikiLabel = locale === 'en' ? `${placeName} AI docent` : `${placeName} AI 도슨트`;
+  const airportLine = destIata
+    ? locale === 'en'
+      ? `Nearby airport: ${destIata}`
+      : `인근 공항: ${destIata}`
+    : locale === 'en'
+      ? 'Airport, stay, and tour links are in the planner.'
+      : '인근 공항 · 숙소 · 투어 안내는 플래너에서 확인할 수 있습니다.';
+
+  return `      <!-- crawler-body-injected -->
+      <article id="crawler-place-body">
+        <h1>${h1}</h1>
+        <p>${escapeHtml(meta.description)}</p>
+        <p>${escapeHtml(meta.keywords)}</p>
+        <h2>${h2}</h2>
+        <nav>
+          <ul>
+            <li><a href="${escapeAttr(placeHref(slug, 'gallery', locale))}">${escapeHtml(galleryLabel)}</a></li>
+            <li><a href="${escapeAttr(placeHref(slug, 'planner', locale))}">${escapeHtml(plannerLabel)}</a></li>
+            <li><a href="${escapeAttr(placeHref(slug, 'wiki', locale))}">${escapeHtml(wikiLabel)}</a></li>
+          </ul>
+          <p>${escapeHtml(airportLine)}</p>
+        </nav>
+      </article>`;
 }
 
 export function buildCrawlerHeadTags(meta) {
@@ -83,5 +168,11 @@ export function injectCrawlerMetaIntoHtml(html, meta) {
   );
   out = out.replace(/<!-- crawler-meta-injected -->[\s\S]*?(?=<meta|<link rel="icon"|<script)/i, '');
 
-  return out.replace(/<head>/i, `<head>\n${headTags}\n`);
+  out = out.replace(/<head>/i, `<head>\n${headTags}\n`);
+
+  const bodyHtml = buildCrawlerPlaceBodyHtml(meta);
+  if (bodyHtml) {
+    out = replaceRootInnerHtml(out, bodyHtml);
+  }
+  return out;
 }
