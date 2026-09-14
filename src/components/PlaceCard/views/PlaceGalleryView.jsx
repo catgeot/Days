@@ -261,6 +261,8 @@ const PlaceGalleryView = React.memo(({
   galleryAtMax = false,
   handleRemoveImage,
   handleDropBrokenImage,
+  loadFailed = false,
+  handleRetryLoad,
   mobileSecondaryNav = null
 }) => {
   const { t } = useTranslation();
@@ -1054,7 +1056,19 @@ const PlaceGalleryView = React.memo(({
               {!showInitialSkeleton && !isPaintPending && images.length === 0 && (
                 <div className="w-full h-[300px] flex flex-col items-center justify-center text-white/20 gap-4">
                   <ImageIcon size={48} />
-                  <p className="text-sm">{t('place.gallery.empty')}</p>
+                  <p className="text-sm text-center px-6">
+                    {loadFailed ? t('place.gallery.networkError') : t('place.gallery.empty')}
+                  </p>
+                  {loadFailed && handleRetryLoad ? (
+                    <button
+                      type="button"
+                      onClick={handleRetryLoad}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/70 hover:bg-blue-500/10 hover:text-blue-300/90 hover:border-blue-500/30 transition-all duration-300 text-xs font-medium"
+                    >
+                      <RefreshCw size={14} />
+                      {t('place.gallery.retry')}
+                    </button>
+                  ) : null}
                 </div>
               )}
             </div>

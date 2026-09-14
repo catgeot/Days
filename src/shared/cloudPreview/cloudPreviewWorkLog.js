@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '방문자 개선',
-  sessionNo: 4,
-  sessionPhase: '무드검색 분리 및 AI추천 브릿지',
+  sessionNo: 5,
+  sessionPhase: '로딩스켈레톤 및 에러복구 UX',
   branch: 'cursor/visitor-growth-1f90',
-  previewPath: '/',
+  previewPath: '/korea',
   qaShareSlug: 'visitor-growth',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-visitor-growth-5-loading-error-ux',
+    session: '방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX',
+    title: '축제 스켈레톤·큐레이션 재시도·갤러리 네트워크 안내',
+    detail:
+      '/korea 축제 행은 깨진 이미지에 그라데이션 폴백, 로딩 중 5행 스켈레톤, 빈 필터에 초기화 버튼을 둡니다. /blog/curation은 실패 시 alert 대신 인라인 재시도·결과 카드형 스켈레톤입니다. 갤러리는 모든 소스 실패 시 네트워크 재시도 안내를 보여 줍니다. Preview /qa/visitor-growth — /korea · /blog/curation · /place/paris/gallery.',
+    at: '2026-09-14T21:30:00.000Z',
+  },
   {
     id: '2026-09-14-visitor-growth-4-mooni-ask-chips',
     session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',

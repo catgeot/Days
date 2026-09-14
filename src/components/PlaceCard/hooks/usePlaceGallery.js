@@ -277,6 +277,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   /** 더보기(append) 전용 — 기존 그리드를 스켈레톤으로 바꾸지 않음 */
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   /** 같은 영문 쿼리를 쓰는 서로 다른 장소 구분 + in-flight 요청 무효화 */
   const lastFetchKeyRef = useRef(null);
@@ -370,6 +371,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     if (!locationSource) {
       setIsImgLoading(false);
       setIsRefreshing(false);
+      setLoadFailed(false);
       return;
     }
 
@@ -418,6 +420,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     if (!primaryQuery) {
       setIsImgLoading(false);
       setIsRefreshing(false);
+      setLoadFailed(false);
       return;
     }
 
@@ -467,6 +470,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       processAndSetImages(allImagesRef.current);
       setIsImgLoading(false);
       setIsRefreshing(false);
+      setLoadFailed(false);
       return;
     }
 
@@ -482,6 +486,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       setIsImgLoading(true);
       setIsRefreshing(false);
       setImages([]);
+      setLoadFailed(false);
     }
 
     const CACHE_KEY = thumbnailOnly
@@ -1004,12 +1009,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
         if (!forceRefresh) writeGallerySwrAt(stablePlaceKey);
       } else {
-        console.warn(`⚠️ 검색 최종 실패. 기본 Fallback 이미지를 렌더링합니다.`);
-        const fallbackImgs = [
-          { id: 'fallback-1', urls: { regular: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' }, user: { name: 'GATEO Default' } },
-          { id: 'fallback-2', urls: { regular: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80' }, user: { name: 'GATEO Default' } }
-        ];
-        if (!isStale()) processAndSetImages(fallbackImgs);
+        console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
+        if (!isStale()) {
+          processAndSetImages([]);
+          setLoadFailed(true);
+        }
       }
     } catch (error) {
       console.error("Gallery API Error:", error);
@@ -1017,8 +1021,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         unsplashPageRef.current = Math.max(1, unsplashPageRef.current - 1);
         pexelsPageRef.current = Math.max(0, pexelsPageRef.current - 1);
         restorePreservedImages();
+        if (!isStale() && allImagesRef.current.length === 0) setLoadFailed(true);
       } else if (!isStale()) {
         processAndSetImages([]);
+        setLoadFailed(true);
       }
     } finally {
       markFetchDone();
@@ -1188,6 +1194,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
   }, []);
 
+  const handleRetryLoad = useCallback(() => {
+    lastFetchKeyRef.current = null;
+    fetchImages(false);
+  }, [fetchImages]);
+
   const handleRefresh = useCallback(() => {
     const placeKey =
       resolveGalleryStablePlaceKey(locationSource) || currentPlaceKeyRef.current;
@@ -1220,12 +1231,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     images,
     isImgLoading,
     isRefreshing,
+    loadFailed,
     selectedImg,
     setSelectedImg,
     handleDownload,
     handleRemoveImage,
     handleDropBrokenImage,
     handleRefresh,
+    handleRetryLoad,
     getRefreshCooldownRemaining,
     refreshCooldownSec: GALLERY_REFRESH_COOLDOWN_MS / 1000,
     galleryMaxImages: GALLERY_MAX_IMAGES,
