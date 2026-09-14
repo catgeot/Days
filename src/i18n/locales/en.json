@@ -12,7 +12,8 @@
       "labelKo": "KO"
     },
     "search": {
-      "placeholder": "Search by mood or vibe"
+      "placeholder": "Explore places with 3D Globe & AI...",
+      "placeholderMobile": "Search on 3D globe..."
     },
     "siteNotice": {
       "refreshHeader": "Update",
@@ -2223,9 +2224,9 @@
     },
     "lines": {
       "intro": [
-        "Hi! I'm MOONi.",
-        "Nice to meet you — MOONi here.",
-        "Travel vibes today? MOONi here."
+        "Spin the globe or ask me about travel! ✨",
+        "Hi! Explore destinations with 3D globe & AI.",
+        "Welcome! Tell me where you want to go."
       ],
       "peek": {
         "invite": [

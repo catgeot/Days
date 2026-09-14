@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  User, Search, Ticket, MessageSquare, X, Trash2,
+  Search, Ticket, MessageSquare, X, Trash2,
   Palmtree, Mountain, Building2, Landmark, Compass,
   Eye, EyeOff, Droplet, Sun, Moon,
   PenTool,
   Leaf,
-  LogOut,
   Sparkles,
   CalendarDays,
   Globe2,
   Map,
   ChevronDown,
   ChevronUp,
+  User,
+  LogOut,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -256,7 +257,8 @@ const HomeUI = React.memo(({
           <Search size={16} className="md:w-[18px] md:h-[18px]" />
         </div>
         <span className="min-w-0 flex-1 bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate">
-          {t('layout.search.placeholder')}
+          <span className="md:hidden">{t('layout.search.placeholderMobile')}</span>
+          <span className="hidden md:inline">{t('layout.search.placeholder')}</span>
         </span>
       </div>
     </>

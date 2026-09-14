@@ -2,6 +2,15 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #3 — 크롤러 SEO 및 본문 프리렌더링 (Cloud)
+
+- **세션** `방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `dd317cf9` · PR [#248](https://github.com/catgeot/Days/pull/248)
+- **완료**: `botDetect`에 카카오·다음·슬랙 봇 추가. `TRAVEL_SPOTS` 274곳 전수 크롤러 메타. 봇 응답 `#root`에 장소별 `h1`·설명·갤러리/플래너/AI 도슨트 nav 주입(허브는 기존 본문 유지).
+- **VERIFY**: `npm run generate:crawler-place-meta` 274 slugs · `npm run smoke:crawler-place-meta` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/place/tokyo?crawler=1` · `/place/santorini?crawler=1`
+- **QA**: `?crawler=1` 도쿄·산토리니 본문이 홈 소개글이 아닌지 · 일반 브라우저 UI 그대로인지.
+
 ## 팔경 활용 #42 — 진도 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #42, 진도 결손 오버레이`
@@ -12,6 +21,16 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=jindo`
 - **잔여**: 사진/개요 순수 누락 **106**/876. 다음 허브 **함평8경 4** (그다음 해남8경·홍성12경·화순11경)
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #42 QA — 진도 검색 조도 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #42, 진도 QA 조도 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `8b3aa5ed` · PR [#245](https://github.com/catgeot/Days/pull/245)
+- **원인**: 진도 검색 관광지 행 `조도(조도6군도)`는 TourAPI contentId `553447`인데 DB `first_image`가 비어 플레이스홀더가 뜸. 속초 조도·남해 조도와는 다른 진도 조도 6군도.
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID`에 진도군 조도 다도해 공식 사진 연결. 진도 주소 TourAPI 빈 썸네일은 이 1건.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use — 검색「진도」`조도(조도6군도)` 행
+- **다음**: **#43 함평 결손 오버레이** (동일 브랜치)
 
 ## 팔경 활용 #43 다음 — 함평 결손 오버레이
 

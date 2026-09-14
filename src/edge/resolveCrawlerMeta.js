@@ -25,6 +25,10 @@ function toMetaRow(row, locale) {
     hreflangAlternates: row.hreflangAlternates,
     ogImage: row.ogImage,
     placeName: row.placeName,
+    countryName: row.countryName,
+    slug: row.slug,
+    tab: row.tab,
+    destIata: row.destIata,
     galleryImages: row.galleryImages,
   };
 }

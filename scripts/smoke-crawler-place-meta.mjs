@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 /**
- * Crawler HTML — hub + tier1 place meta inject smoke (Googlebot UA).
+ * Crawler HTML — hub + all TRAVEL_SPOTS place meta inject smoke (Googlebot + portal UAs).
  *
  *   npm run smoke:crawler-place-meta
  *
- * #13 tier2 batch4: generate script INCLUDED 80→109 · count 187→216
- * · bohol gallery assert ON · tier2 pop<70 (santorini) still null
+ * #3: 274 slugs · santorini/hawaii/cancun in meta · body semantic HTML · kakao/daum/slack bots
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -25,6 +24,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const GOOGLEBOT_UA =
   'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
+const EXPECTED_SLUG_COUNT = 274;
 
 let failed = 0;
 function assert(cond, msg) {
@@ -44,14 +44,22 @@ function googlebotRequest(pathname, locale = 'ko') {
   });
 }
 
+function uaRequest(ua, pathname = '/place/tokyo/gallery') {
+  return new Request(`https://www.gateo.kr${pathname}`, {
+    headers: { 'user-agent': ua },
+  });
+}
+
 assert(
-  getCrawlerPlaceMetaSlugCount() === 216,
-  'crawler meta covers tier1 64 + tier2 pop≥80 (43) + pop70–79 109/109 (216 slugs)',
+  getCrawlerPlaceMetaSlugCount() === EXPECTED_SLUG_COUNT,
+  `crawler meta covers all TRAVEL_SPOTS (${EXPECTED_SLUG_COUNT} slugs)`,
 );
 
 const tokyoGalleryKo = resolveCrawlerMeta('/place/tokyo/gallery', 'ko');
 assert(Boolean(tokyoGalleryKo?.title), 'tokyo gallery KO meta resolved');
 assert(/도쿄|東京|tokyo/i.test(tokyoGalleryKo.title), 'tokyo gallery KO title localized');
+assert(tokyoGalleryKo.slug === 'tokyo', 'tokyo gallery meta includes slug');
+assert(Boolean(tokyoGalleryKo.countryName), 'tokyo gallery meta includes countryName');
 
 const tokyoGalleryEn = resolveCrawlerMeta('/place/tokyo/gallery', 'en');
 assert(/Tokyo/i.test(tokyoGalleryEn.title), 'tokyo gallery EN title');
@@ -127,6 +135,18 @@ assert(Boolean(boholGalleryKo?.title), 'bohol tier2 pop70–79 batch4 gallery KO
 assert(/보홀|Bohol/i.test(boholGalleryKo.title), 'bohol gallery KO title localized');
 assert(Boolean(boholGalleryKo?.ogImage), 'bohol gallery meta includes ogImage');
 
+const santoriniGalleryKo = resolveCrawlerMeta('/place/santorini/gallery', 'ko');
+assert(Boolean(santoriniGalleryKo?.title), 'santorini pop<70 gallery KO meta resolved');
+assert(/산토리니|Santorini/i.test(santoriniGalleryKo.title), 'santorini gallery KO title localized');
+
+const hawaiiGalleryKo = resolveCrawlerMeta('/place/hawaii/gallery', 'ko');
+assert(Boolean(hawaiiGalleryKo?.title), 'hawaii gallery KO meta resolved');
+assert(/하와이|Hawaii/i.test(hawaiiGalleryKo.title), 'hawaii gallery KO title localized');
+
+const cancunGalleryKo = resolveCrawlerMeta('/place/cancun/gallery', 'ko');
+assert(Boolean(cancunGalleryKo?.title), 'cancun gallery KO meta resolved');
+assert(/칸쿤|Cancun/i.test(cancunGalleryKo.title), 'cancun gallery KO title localized');
+
 const tokyoPlannerKo = resolveCrawlerMeta('/place/tokyo/planner', 'ko');
 assert(/ICN.*HND|인천.*HND/i.test(tokyoPlannerKo.description), 'tokyo tier1 planner crawler desc includes ICN→HND');
 assert(/항공|직항/.test(tokyoPlannerKo.description), 'tokyo planner crawler desc mentions flight route');
@@ -143,11 +163,6 @@ assert(/도쿄|스케치/.test(tokyoWikiKo.title), 'tokyo wiki KO title has sket
 assert(/로컬 왓슨|현지 팁/.test(tokyoWikiKo.description), 'tokyo wiki crawler desc includes Local Watson');
 assert(/자유여행/.test(tokyoWikiKo.keywords), 'tokyo wiki crawler keywords include 자유여행');
 assert(parseCrawlerPath('/place/tokyo/wiki')?.tab === 'wiki', 'wiki path parsed as wiki tab');
-
-assert(
-  resolveCrawlerMeta('/place/santorini/gallery', 'ko') === null,
-  'tier2 pop<70 (santorini) not in crawler meta',
-);
 
 assert(parseCrawlerPath('/korea').kind === 'hub', 'korea parsed as hub');
 assert(parseCrawlerPath('/korea/theme/scenic').kind === 'hub', 'scenic parsed as hub');
@@ -186,6 +201,14 @@ assert(!isCrawlerRequest(humanReq), 'Chrome UA not treated as crawler');
 const previewReq = new Request('https://www.gateo.kr/place/tokyo/gallery?crawler=1');
 assert(isCrawlerRequest(previewReq), 'crawler=1 preview flag works');
 
+assert(isCrawlerRequest(uaRequest('kakaotalk-scrap/1.0')), 'kakaotalk-scrap detected');
+assert(isCrawlerRequest(uaRequest('kakaostory')), 'kakaostory detected');
+assert(isCrawlerRequest(uaRequest('Mozilla/5.0 (compatible; Daumoa/4.0; +http://tab.search.daum.net/spider)')), 'daumoa detected');
+assert(
+  isCrawlerRequest(uaRequest('Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)')),
+  'slackbot detected',
+);
+
 const exploreAsiaParadiseKo = resolveCrawlerMeta('/explore/asia/paradise', 'ko');
 assert(/아시아/.test(exploreAsiaParadiseKo.title) && /휴양|호캉스/.test(exploreAsiaParadiseKo.title), 'explore asia paradise KO title');
 assert(/휴양지|호캉스/.test(exploreAsiaParadiseKo.keywords), 'explore asia paradise KO keywords');
@@ -206,6 +229,8 @@ const injectedHome = injectCrawlerMetaIntoHtml(indexHtml, homeKo);
 assert(injectedHome.includes('<!-- crawler-meta-injected -->'), 'home injection marker present');
 assert(injectedHome.includes(`${homeKo.title} | GATEO`), 'home title injected in head');
 assert(!injectedHome.includes('AI 도슨트와 함께하는 3D 세계 여행</title>'), 'default SPA title removed on home');
+assert(!injectedHome.includes('id="crawler-place-body"'), 'home crawler keeps hub body (no place article)');
+assert(injectedHome.includes('GATEO (게이트제로)'), 'home crawler still has home body copy');
 
 const injectedTokyo = injectCrawlerMetaIntoHtml(indexHtml, tokyoGalleryKo);
 assert(injectedTokyo.includes(`${tokyoGalleryKo.title} | GATEO`), 'tokyo title injected in head');
@@ -226,6 +251,18 @@ assert(
     injectedTokyo.includes('ImageObject'),
   'tokyo gallery crawler injects ImageGallery JSON-LD',
 );
+assert(injectedTokyo.includes('<!-- crawler-body-injected -->'), 'tokyo body injection marker present');
+assert(injectedTokyo.includes('id="crawler-place-body"'), 'tokyo body article present');
+assert(/<h1>[^<]*도쿄[^<]*<\/h1>/.test(injectedTokyo), 'tokyo body h1 includes place name');
+assert(injectedTokyo.includes('여행 가이드'), 'tokyo body h1 includes travel-guide wording');
+assert(injectedTokyo.includes('/place/tokyo/planner'), 'tokyo body nav includes planner');
+assert(injectedTokyo.includes('/place/tokyo/wiki'), 'tokyo body nav includes wiki');
+assert(!injectedTokyo.includes('GATEO (게이트제로) - 전 세계 100여 개 도시'), 'tokyo body replaces home duplicate copy');
+assert(injectedTokyo.includes('type="module"'), 'tokyo crawler HTML still loads SPA bundle');
+
+const injectedSantorini = injectCrawlerMetaIntoHtml(indexHtml, santoriniGalleryKo);
+assert(injectedSantorini.includes('산토리니'), 'santorini body includes place name');
+assert(injectedSantorini.includes('id="crawler-place-body"'), 'santorini body article present');
 
 const tokyoGalleryKoMeta = resolveCrawlerMeta('/place/tokyo/gallery', 'ko');
 assert(Boolean(tokyoGalleryKoMeta?.ogImage), 'tokyo gallery meta includes ogImage');
@@ -262,9 +299,14 @@ assert(middlewareSrc.includes('/blog'), 'middleware matcher includes blog hub');
 assert(middlewareSrc.includes('/place/:slug'), 'middleware matcher includes tier1 base');
 assert(middlewareSrc.includes('/place/:slug/wiki'), 'middleware matcher includes wiki tab');
 
+const botDetectSrc = readFileSync(join(root, 'src/edge/botDetect.js'), 'utf8');
+assert(botDetectSrc.includes('kakaotalk-scrap'), 'botDetect includes kakaotalk-scrap');
+assert(botDetectSrc.includes('daumoa'), 'botDetect includes daumoa');
+assert(botDetectSrc.includes('slackbot'), 'botDetect includes slackbot');
+
 if (failed > 0) {
   console.error(`\n${failed} check(s) failed`);
   process.exit(1);
 }
 
-console.log('\nAll crawler meta smoke checks passed (hub + tier1 + Googlebot).');
+console.log('\nAll crawler meta smoke checks passed (hub + 274 places + Googlebot + portal bots).');
