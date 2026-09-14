@@ -2466,6 +2466,8 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   2599737: localScenicThumbOverlay(
     'https://tong.visitkorea.or.kr/cms/resource/97/4059797_image2_1.jpg',
   ),
+  // 진도 검색 조도(조도6군도) — TourAPI first_image 없음. JSON contentId 기입 아님.
+  553447: localScenicThumbOverlay(JD_JODO, [JD_GASA]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

@@ -1768,6 +1768,14 @@ assert.ok(
   lookupLocalScenicPhotoByContentId('2599737')?.imageUrl?.includes('4059797'),
   '문경석탄박물관 Tour 빈 썸네일 overlay',
 );
+assert.ok(
+  lookupLocalScenicPhotoByContentId('553447')?.imageUrl?.includes('201611080750465200'),
+  '진도 조도(조도6군도) Tour 빈 썸네일 overlay',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('553447')?.imageUrl?.includes('jindo.go.kr'),
+  '진도 조도 Tour 썸네일은 진도군 공식 사진',
+);
 assert.notEqual(
   nsHistoryThumb?.imageUrl,
   nsGang?.imageUrl,

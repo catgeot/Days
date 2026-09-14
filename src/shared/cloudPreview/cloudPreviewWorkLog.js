@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 42,
-  sessionPhase: '진도 결손 오버레이',
+  sessionPhase: '진도 QA 조도 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=jindo',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-palgyeong-use-42-jindo-jodo-thumb',
+    session: '팔경 활용 #42, 진도 QA 조도 썸네일',
+    title: '진도 검색 조도(조도6군도) 빈 썸네일',
+    detail:
+      '진도 검색 관광지 행 조도(조도6군도)는 TourAPI contentId 553447인데 DB first_image가 없어 플레이스홀더가 떴습니다. JSON contentId 기입 없이 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID에 진도군 조도 다도해 공식 사진을 연결했습니다. 속초 조도·남해 조도와 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「진도」조도(조도6군도) 행.',
+    at: '2026-09-14T12:50:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-42-jindo-overlays',
     session: '팔경 활용 #42, 진도 결손 오버레이',
