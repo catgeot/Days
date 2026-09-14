@@ -2151,6 +2151,164 @@ assert.ok(
   '해남 검색 팔경 울돌목 개요',
 );
 
+const hongseongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hongseong');
+const hongseongTwelve = hongseongMerged.filter((s) => s.localScenicListId === 'hongseong-other');
+assert.equal(hongseongTwelve.length, 12, '홍성12경 12명');
+assert.equal(hongseongTwelve[0]?.groupTitle, '홍성 12경');
+const hongseongDeficitNames = [
+  '만해한용운생가지',
+  '선상문선생 유허지',
+  '고암이응노 생가 기념관',
+  '그림같은수목원',
+];
+const hongseongDeficit = hongseongTwelve.filter((s) =>
+  hongseongDeficitNames.includes(s.attractionName),
+);
+assert.equal(hongseongDeficit.length, 4, '홍성12경 결손 4명');
+assert.ok(
+  hongseongDeficit.every((s) => s.overview && s.imageUrl),
+  '홍성 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  hongseongDeficit.every((s) => !s.contentId),
+  '홍성 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(hongseongDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '홍성 결손 4명 썸네일 서로 다름',
+);
+assert.ok(
+  hongseongDeficit.every((s) => String(s.imageUrl).includes('hongseong.go.kr')),
+  '홍성 결손 썸네일은 홍성군 공식 사진',
+);
+
+const hsManhae = resolveLocalScenicListSpotById('local-scenic:hongseong-other:만해한용운생가지');
+assert.ok(hsManhae?.overview?.includes('제7경'), '홍성 만해 overlay overview');
+assert.ok(hsManhae?.overview?.includes('결성면'), '홍성 만해 결성면');
+assert.ok(hsManhae?.overview?.includes('만해로318번길 83'), '홍성 만해 주소');
+assert.ok(hsManhae?.overview?.includes('제75호'), '홍성 만해 기념물');
+assert.ok(!hsManhae?.overview?.includes('인제'), '홍성 만해 개요에 인제 없음');
+assert.ok(!hsManhae?.overview?.includes('백담사'), '홍성 만해 개요에 백담사 없음');
+assert.ok(hsManhae?.imageUrl?.includes('TUCN_202011200459391045'), '홍성 만해 군 공식 사진');
+
+const hsSeong = resolveLocalScenicListSpotById('local-scenic:hongseong-other:선상문선생유허지');
+assert.ok(hsSeong?.overview?.includes('성삼문선생유허지'), '홍성 선상문=성삼문 overlay overview');
+assert.ok(hsSeong?.overview?.includes('홍북읍'), '홍성 성삼문 홍북읍');
+assert.ok(hsSeong?.overview?.includes('매죽헌길 403-12'), '홍성 성삼문 주소');
+assert.ok(hsSeong?.overview?.includes('제5호'), '홍성 성삼문 기념물');
+assert.ok(hsSeong?.imageUrl?.includes('TUCN_202011270145581511'), '홍성 성삼문 군 공식 사진');
+
+const hsLee = resolveLocalScenicListSpotById('local-scenic:hongseong-other:고암이응노생가기념관');
+assert.ok(hsLee?.overview?.includes('이응노의 집'), '홍성 이응노 overlay overview');
+assert.ok(hsLee?.overview?.includes('이응노로 61-7'), '홍성 이응노 주소');
+assert.ok(hsLee?.overview?.includes('2011년 11월 8일'), '홍성 이응노 개관');
+assert.ok(!hsLee?.overview?.includes('대전'), '홍성 이응노 개요에 대전 없음');
+assert.ok(hsLee?.imageUrl?.includes('TUCN_202011200428043631'), '홍성 이응노 군 공식 사진');
+
+const hsGarden = resolveLocalScenicListSpotById('local-scenic:hongseong-other:그림같은수목원');
+assert.ok(hsGarden?.overview?.includes('제12경'), '홍성 그림같은수목원 overlay overview');
+assert.ok(hsGarden?.overview?.includes('광천읍'), '홍성 그림같은수목원 광천읍');
+assert.ok(hsGarden?.overview?.includes('충서로400번길 102-36'), '홍성 그림같은수목원 주소');
+assert.ok(hsGarden?.overview?.includes('1,330여 종'), '홍성 그림같은수목원 수종');
+assert.ok(!hsGarden?.overview?.includes('구례'), '홍성 그림같은수목원 개요에 구례 없음');
+assert.ok(hsGarden?.imageUrl?.includes('TUCN_202011200511080921'), '홍성 그림같은수목원 군 공식 사진');
+assert.notEqual(hsManhae?.imageUrl, hsSeong?.imageUrl, '만해·성삼문 썸네일 다름');
+assert.notEqual(hsLee?.imageUrl, hsGarden?.imageUrl, '이응노·수목원 썸네일 다름');
+
+const guryeArboretum = listKoreaScenicSpots().find((s) => s.id === 'gurye-arboretum');
+assert.ok(guryeArboretum?.imageUrl, '구례 수목원 GATEO 선정 썸네일');
+assert.notEqual(
+  hsGarden?.imageUrl,
+  guryeArboretum?.imageUrl,
+  '홍성 그림같은수목원 썸네일 ≠ 구례 수목원',
+);
+
+const hongseongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '홍성', {
+  injectLocalScenic: true,
+});
+const hongseongGlobeTwelve = hongseongGlobe.filter(
+  (s) => s.localScenicListId === 'hongseong-other',
+);
+assert.equal(hongseongGlobeTwelve.length, 12, '홍성 검색 홍성12경 12행');
+assert.ok(
+  hongseongGlobeTwelve.every((s) => s.groupTitle === '홍성 12경'),
+  '홍성 검색 그룹명 홍성 12경',
+);
+assert.ok(
+  hongseongGlobe.find((s) => s.attractionName === '만해한용운생가지')?.imageUrl?.includes(
+    'TUCN_202011200459391045',
+  ),
+  '홍성 검색 팔경 만해 군 공식 썸네일',
+);
+assert.ok(
+  hongseongGlobe.find((s) => s.attractionName === '선상문선생 유허지')?.overview?.includes(
+    '성삼문선생유허지',
+  ),
+  '홍성 검색 팔경 선상문=성삼문 개요',
+);
+
+const hsYong = resolveLocalScenicListSpotById('local-scenic:hongseong-other:홍성용봉산');
+assert.ok(hsYong?.overview?.includes('제3경'), '홍성 용봉산 overlay overview');
+assert.ok(hsYong?.overview?.includes('홍북읍'), '홍성 용봉산 홍북읍');
+assert.ok(!hsYong?.overview?.includes('자연휴양림'), '홍성 용봉산 개요에 휴양림 없음');
+assert.ok(hsYong?.imageUrl?.includes('TUCN_202011130259425353'), '홍성 용봉산 군 공식 사진');
+
+const hsOseo = resolveLocalScenicListSpotById('local-scenic:hongseong-other:오서산');
+assert.ok(hsOseo?.overview?.includes('제4경'), '홍성 오서산 overlay overview');
+assert.ok(hsOseo?.overview?.includes('광천읍'), '홍성 오서산 광천읍');
+assert.ok(hsOseo?.imageUrl?.includes('TUCN_202011270102041141'), '홍성 오서산 군 공식 사진');
+
+const hsJuk = resolveLocalScenicListSpotById('local-scenic:hongseong-other:죽도');
+assert.ok(hsJuk?.overview?.includes('제5경'), '홍성 죽도 overlay overview');
+assert.ok(hsJuk?.overview?.includes('서부면'), '홍성 죽도 서부면');
+assert.ok(hsJuk?.overview?.includes('죽도길 86'), '홍성 죽도 주소');
+assert.ok(!hsJuk?.overview?.includes('영덕'), '홍성 죽도 개요에 영덕 없음');
+assert.ok(hsJuk?.imageUrl?.includes('TUCN_202011271144168288'), '홍성 죽도 군 공식 사진');
+
+const hsUisa = resolveLocalScenicListSpotById('local-scenic:hongseong-other:홍주의사총');
+assert.ok(hsUisa?.overview?.includes('제11경'), '홍성 홍주의사총 overlay overview');
+assert.ok(hsUisa?.overview?.includes('의사로 79'), '홍성 홍주의사총 주소');
+assert.ok(hsUisa?.overview?.includes('사적'), '홍성 홍주의사총 사적');
+assert.ok(hsUisa?.imageUrl?.includes('TUCN_202011200614597037'), '홍성 홍주의사총 군 공식 사진');
+
+const hsEmptyThumbs = [hsYong, hsOseo, hsJuk, hsUisa].map((s) => s.imageUrl);
+assert.equal(new Set(hsEmptyThumbs).size, 4, '홍성 QA 빈 썸네일 4건 서로 다름');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125821')?.imageUrl?.includes('TUCN_202011130259425353'),
+  '홍성 용봉산 Tour 빈 썸네일 overlay 125821',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126746')?.imageUrl?.includes('TUCN_202011270102041141'),
+  '홍성 오서산 Tour 빈 썸네일 overlay 126746',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126721')?.imageUrl?.includes('TUCN_202011271144168288'),
+  '홍성 죽도 Tour 빈 썸네일 overlay 126721',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125993')?.imageUrl?.includes('TUCN_202011200614597037'),
+  '홍성 홍주의사총 Tour 빈 썸네일 overlay 125993',
+);
+assert.ok(
+  hongseongGlobe.find((s) => s.attractionName === '홍주의사총')?.imageUrl?.includes(
+    'TUCN_202011200614597037',
+  ),
+  '홍성 검색 팔경 홍주의사총 군 공식 썸네일',
+);
+assert.ok(
+  hongseongGlobe.find((s) => s.attractionName === '오서산')?.imageUrl?.includes(
+    'TUCN_202011270102041141',
+  ),
+  '홍성 검색 팔경 오서산 군 공식 썸네일',
+);
+assert.ok(
+  hongseongTwelve.find((s) => s.attractionName === '홍주의사총')?.imageUrl?.includes(
+    'TUCN_202011200614597037',
+  ),
+  '홍성12경 리스트 홍주의사총 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
