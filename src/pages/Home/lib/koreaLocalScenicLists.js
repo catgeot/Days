@@ -1242,6 +1242,18 @@ const HS_UISA_2 =
   'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200616128968.JPG';
 const HS_UISA_3 =
   'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_2020112701475843510.jpg';
+const HW_SKY = 'https://www.hwasun.go.kr/culture/img/sub_010103_sdimg01.jpg';
+const HW_SKY_2 = 'https://www.hwasun.go.kr/culture/img/sub_010103_sdimg02.jpg';
+const HW_SKY_3 = 'https://www.hwasun.go.kr/culture/img/sub_010103_sdimg03.jpg';
+const HW_DOLMEN = 'https://www.hwasun.go.kr/culture/img/sub_010104_sdimg01.jpg';
+const HW_DOLMEN_2 = 'https://www.hwasun.go.kr/culture/img/sub_010104_sdimg02.jpg';
+const HW_DOLMEN_3 = 'https://www.hwasun.go.kr/culture/img/sub_010104_sdimg03.jpg';
+const HW_AZALEA = 'https://www.hwasun.go.kr/culture/img/sub_010105_sdimg01.jpg';
+const HW_AZALEA_2 = 'https://www.hwasun.go.kr/culture/img/sub_010105_sdimg02.jpg';
+const HW_AZALEA_3 = 'https://www.hwasun.go.kr/culture/img/sub_010105_sdimg03.jpg';
+const HW_FOUNTAIN = 'https://www.hwasun.go.kr/culture/img/sub_010111_sdimg01.png';
+const HW_FOUNTAIN_2 = 'https://www.hwasun.go.kr/culture/img/sub_010111_sdimg02.png';
+const HW_FOUNTAIN_3 = 'https://www.hwasun.go.kr/culture/img/sub_010111_sdimg03.png';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2611,6 +2623,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 홍성군 홍성읍 의사로 79 (홍주의사총)',
     HS_UISA,
     [HS_UISA_2, HS_UISA_3],
+  ),
+  'local-scenic:hwasun-other:백아산하늘다리': localScenicPhotoOverlay(
+    '화순11경 제3경 백아산 하늘다리는 백아면 백아산 산악 현수교입니다. 화순군 문화관광은 주소를 백아면 백아로 1310-56으로 두고, 희끗한 바위가 흰 거위처럼 보여 백아산이라 부르며 해발 756m 마당바위와 절터바위를 잇는 연장 66m·폭 1.2m 산악현수교라고 적습니다. 다리 가운데 강화유리 조망창(가로 40cm·세로 1m) 3곳이 있어 하늘 위를 걷는 듯한 스릴을 느낄 수 있습니다. 한국관광공사는 산 높이 810m이며 무등산·만연산과 함께 화순을 대표하는 산이라고 안내합니다. 사진은 화순군 문화관광 백아산하늘다리 공식 사진입니다.',
+    '전라남도 화순군 백아면 백아로 1310-56 (백아산 하늘다리)',
+    HW_SKY,
+    [HW_SKY_2, HW_SKY_3],
+  ),
+  'local-scenic:hwasun-other:고인돌유적지': localScenicPhotoOverlay(
+    '화순11경 제4경 고인돌 유적지는 도곡면 효산리와 춘양면 대신리의 지석묘군입니다. 화순군 문화관광은 약 3km에 596기가 밀집하고 채석장이 함께 남아 동북아시아 고인돌 변천을 밝히는 자료이며 2000년 유네스코 세계문화유산에 등재됐다고 적습니다. 11경 위치는 도곡면 효산리 64(유적지 부근)·춘양면 지동길 10(발굴지 보호각 부근)입니다. 국가유산청 사적은 화순 효산리와 대신리 지석묘군으로, 1998년 9월 17일 지정됐습니다. 대신리에는 약 280톤 초대형 고인돌이 있습니다. 사진은 화순군 문화관광 고인돌 유적지 공식 사진입니다.',
+    '전라남도 화순군 도곡면 효산리 64 · 춘양면 지동길 10 (효산리·대신리 지석묘군)',
+    HW_DOLMEN,
+    [HW_DOLMEN_2, HW_DOLMEN_3],
+  ),
+  'local-scenic:hwasun-other:수만리철쭉공원': localScenicPhotoOverlay(
+    '화순11경 제5경 수만리 철쭉공원은 화순읍 수만리에서 큰 재를 지나 안양산까지 이어지는 철쭉 경관입니다. 화순군 문화관광은 주소를 화순읍 안양산로 258로 두고, 한국의 알프스라 불릴 만큼 경관이 뛰어나며 봄철 철쭉이 도로변에서 산 정상까지 융단처럼 덮인다고 적습니다. 무등산 자락이 화순을 향해 이룬 봉우리와 깊은 골짜기입니다. 11경 공식명은 수만리 철쭉공원이며 GATEO 선정 만연산 치유숲과 다른 자리입니다. 사진은 화순군 문화관광 수만리 철쭉공원 공식 사진입니다.',
+    '전라남도 화순군 화순읍 안양산로 258 (수만리 철쭉공원)',
+    HW_AZALEA,
+    [HW_AZALEA_2, HW_AZALEA_3],
+  ),
+  'local-scenic:hwasun-other:화순꽃강길음악분수': localScenicPhotoOverlay(
+    '화순11경 제10경 화순 꽃강길 음악분수는 화순읍 대리 화순천의 야간 분수입니다. 화순군 문화관광은 주소를 화순읍 대리 481로 두고, 2023년 10월 문을 연 랜드마크이며 길이 60m·폭 10m 음악 수조와 최대 높이 50m 캐논 슈터·LED 수중조명이 화순 야경을 밝힌다고 적습니다. 함께 조성된 광장·코스모스 산책로와 3층 개미산 전망대에서 공연을 볼 수 있습니다. 개미산 전망대 주소는 화순읍 연양1길 31입니다. 사진은 화순군 문화관광 꽃강길 음악분수 공식 사진입니다.',
+    '전라남도 화순군 화순읍 대리 481 (화순 꽃강길 음악분수)',
+    HW_FOUNTAIN,
+    [HW_FOUNTAIN_2, HW_FOUNTAIN_3],
   ),
 };
 
