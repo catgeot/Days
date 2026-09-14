@@ -1949,6 +1949,118 @@ assert.ok(
   '진도 검색 팔경 조도관음도 개요',
 );
 
+const hampyeongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hampyeong');
+const hampyeongEight = hampyeongMerged.filter((s) => s.localScenicListId === 'hampyeong-palgyeong');
+assert.equal(hampyeongEight.length, 8, '함평8경 8명');
+assert.equal(hampyeongEight[0]?.groupTitle, '함평 팔경');
+const hampyeongDeficitNames = ['백제고도', '모악산', '삼호천', '청계산'];
+const hampyeongDeficit = hampyeongEight.filter((s) =>
+  hampyeongDeficitNames.includes(s.attractionName),
+);
+assert.equal(hampyeongDeficit.length, 4, '함평8경 결손 4명');
+assert.ok(
+  hampyeongDeficit.every((s) => s.overview && s.imageUrl),
+  '함평 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  hampyeongDeficit.every((s) => !s.contentId),
+  '함평 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(hampyeongDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '함평 결손 4명 썸네일 서로 다름',
+);
+assert.ok(
+  hampyeongDeficit.every((s) => String(s.imageUrl).includes('tong.visitkorea.or.kr')),
+  '함평 결손 썸네일은 한국관광공사 공식 사진',
+);
+
+const hpBaekje = resolveLocalScenicListSpotById('local-scenic:hampyeong-palgyeong:백제고도');
+assert.ok(hpBaekje?.overview?.includes('예덕리'), '함평 백제고도 overlay overview');
+assert.ok(hpBaekje?.overview?.includes('신덕'), '함평 백제고도 신덕 고분');
+assert.ok(hpBaekje?.overview?.includes('사적'), '함평 백제고도 사적');
+assert.ok(!hpBaekje?.overview?.includes('부여'), '함평 백제고도 개요에 부여 없음');
+assert.ok(!hpBaekje?.overview?.includes('백제문화단지'), '함평 백제고도 개요에 백제문화단지 없음');
+assert.ok(hpBaekje?.imageUrl?.includes('3536122'), '함평 백제고도 한국관광공사 고분 사진');
+
+const hpMoak = resolveLocalScenicListSpotById('local-scenic:hampyeong-palgyeong:모악산');
+assert.ok(hpMoak?.overview?.includes('348m'), '함평 모악산 overlay overview');
+assert.ok(hpMoak?.overview?.includes('해보면'), '함평 모악산 해보면');
+assert.ok(hpMoak?.overview?.includes('꽃무릇공원'), '함평 모악산 꽃무릇공원');
+assert.ok(!hpMoak?.overview?.includes('전주'), '함평 모악산 개요에 전주 없음');
+assert.ok(!hpMoak?.overview?.includes('김제'), '함평 모악산 개요에 김제 없음');
+assert.ok(!hpMoak?.overview?.includes('도립공원'), '함평 모악산 개요에 도립공원 없음');
+assert.ok(hpMoak?.imageUrl?.includes('3061145'), '함평 모악산 꽃무릇공원 공식 사진');
+assert.ok(!hpMoak?.imageUrl?.includes('3061070'), '함평 모악산 썸네일 ≠ 용천사 GATEO 선정');
+
+const hpSamho = resolveLocalScenicListSpotById('local-scenic:hampyeong-palgyeong:삼호천');
+assert.ok(hpSamho?.overview?.includes('함평천수변공원'), '함평 삼호천 overlay overview');
+assert.ok(hpSamho?.overview?.includes('기산영수'), '함평 삼호천 기산영수');
+assert.ok(!hpSamho?.overview?.includes('창원'), '함평 삼호천 개요에 창원 없음');
+assert.ok(!hpSamho?.overview?.includes('고막천'), '함평 삼호천 개요에 고막천 없음');
+assert.ok(hpSamho?.imageUrl?.includes('3081704'), '함평 삼호천 함평천수변공원 공식 사진');
+
+const hpCheong = resolveLocalScenicListSpotById('local-scenic:hampyeong-palgyeong:청계산');
+assert.ok(hpCheong?.overview?.includes('청계'), '함평 청계산 overlay overview');
+assert.ok(hpCheong?.overview?.includes('군유산'), '함평 청계산 군유산');
+assert.ok(hpCheong?.overview?.includes('신광면'), '함평 청계산 신광면');
+assert.ok(!hpCheong?.overview?.includes('과천'), '함평 청계산 개요에 과천 없음');
+assert.ok(!hpCheong?.overview?.includes('서울'), '함평 청계산 개요에 서울 없음');
+assert.ok(hpCheong?.imageUrl?.includes('3061121'), '함평 청계산 양재리 이팝나무 공식 사진');
+assert.notEqual(hpBaekje?.imageUrl, hpMoak?.imageUrl, '백제고도·모악산 썸네일 다름');
+assert.notEqual(hpSamho?.imageUrl, hpCheong?.imageUrl, '삼호천·청계산 썸네일 다름');
+
+const gimjeMoak = listKoreaScenicSpots().find((s) => s.id === 'moaksan');
+assert.ok(gimjeMoak?.imageUrl, '김제 모악산 GATEO 선정 썸네일');
+assert.notEqual(hpMoak?.imageUrl, gimjeMoak?.imageUrl, '함평 모악산 썸네일 ≠ 김제 모악산');
+const yongcheonsaHp = listKoreaScenicSpots().find((s) => s.id === 'yongcheonsa-hampyeong');
+assert.ok(yongcheonsaHp?.imageUrl?.includes('3061070'), '용천사 함평 GATEO 선정 썸네일');
+assert.notEqual(
+  hpMoak?.imageUrl,
+  yongcheonsaHp?.imageUrl,
+  '함평 모악산 썸네일 ≠ 용천사 함평',
+);
+
+const hampyeongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '함평', {
+  injectLocalScenic: true,
+});
+const hampyeongGlobeEight = hampyeongGlobe.filter(
+  (s) => s.localScenicListId === 'hampyeong-palgyeong',
+);
+assert.equal(hampyeongGlobeEight.length, 8, '함평 검색 함평8경 8행');
+assert.ok(
+  hampyeongGlobeEight.every((s) => s.groupTitle === '함평 팔경'),
+  '함평 검색 그룹명 함평 팔경',
+);
+assert.ok(
+  hampyeongGlobe.find((s) => s.attractionName === '백제고도')?.imageUrl?.includes('3536122'),
+  '함평 검색 팔경 백제고도 한국관광공사 썸네일',
+);
+assert.ok(
+  hampyeongGlobe.find((s) => s.attractionName === '모악산')?.overview?.includes('348m'),
+  '함평 검색 팔경 모악산 개요',
+);
+const hpEco = hampyeongEight.find((s) => s.attractionName === '함평자연생태공원');
+const hpExpo = hampyeongEight.find((s) => s.attractionName === '함평엑스포공원');
+assert.ok(hpEco?.imageUrl?.includes('3536105'), '함평 1경 자연생태공원 TourAPI 사진');
+assert.ok(hpExpo?.imageUrl?.includes('4065063'), '함평 2경 엑스포공원 나비축제 사진');
+assert.notEqual(hpEco?.imageUrl, hpExpo?.imageUrl, '함평 1경·2경 썸네일 다름');
+assert.equal(
+  new Set(hampyeongEight.map((s) => s.imageUrl).filter(Boolean)).size,
+  8,
+  '함평8경 썸네일 8장 서로 다름',
+);
+assert.ok(
+  hampyeongGlobe.find((s) => s.attractionName === '함평엑스포공원')?.imageUrl?.includes('4065063'),
+  '함평 검색 팔경 엑스포공원 나비축제 썸네일',
+);
+assert.notEqual(
+  hampyeongGlobe.find((s) => s.attractionName === '함평자연생태공원')?.imageUrl,
+  hampyeongGlobe.find((s) => s.attractionName === '함평엑스포공원')?.imageUrl,
+  '함평 검색 1경·2경 썸네일 다름',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
