@@ -2,6 +2,16 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #4 QA — 추천받기 하단 주제 칩 (Cloud)
+
+- **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `3074fdda` · PR [#249](https://github.com/catgeot/Days/pull/249)
+- **원인**: 추천받기(문경)는 첫 메시지가 바로 들어가 범용 디스커버리 칩이 사라지고, 장소 바인딩(도쿄)만 주제 칩이 남음.
+- **완료**: 추천받기·이후 대화에도 기존 MOONi와 같은 하단 주제 칩(궁금해/가는 방법/출발 준비/즐길)을 유지. 빈 범용 세션 디스커버리 칩은 그대로.
+- **VERIFY**: `npm run smoke:mood-search-intent` PASS · `npm run smoke:mooni-ask-bridge` PASS · `npm run smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` · `/explore`
+- **QA**: 문경 추천받기 후 하단 칩 · 도쿄 바인딩 칩과 동일 여부 · 헤더가 이전 목적지와 안 겹치는지.
+
 ## 방문자 개선 #4 QA — MOONi 카드 상단·목적지 중첩 해제 (Cloud)
 
 - **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
