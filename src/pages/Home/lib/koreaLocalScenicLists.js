@@ -1165,6 +1165,18 @@ const JD_LIGHT =
   'https://www.jindo.go.kr/uploads/tour/info/nature/201612230215081201.jpg';
 const JD_GASA =
   'https://www.jindo.go.kr/uploads/tour/info/nature/201611080739579140.jpg';
+const HP_BAEKJE = 'https://tong.visitkorea.or.kr/cms/resource/22/3536122_image2_1.jpg';
+const HP_BAEKJE_2 = 'https://tong.visitkorea.or.kr/cms/resource/23/3536123_image2_1.jpg';
+const HP_BAEKJE_3 = 'https://tong.visitkorea.or.kr/cms/resource/24/3536124_image2_1.jpg';
+const HP_BAEKJE_GUN = 'https://www.hampyeong.go.kr/home/tour/images/sub/thum_mk010.jpg';
+const HP_MOAK = 'https://tong.visitkorea.or.kr/cms/resource/45/3061145_image2_1.jpg';
+const HP_MOAK_2 = 'https://tong.visitkorea.or.kr/cms/resource/41/3061141_image2_1.jpg';
+const HP_MOAK_GUN = 'https://www.hampyeong.go.kr/home/tour/images/sub/thum_mk009.jpg';
+const HP_SAMHO = 'https://tong.visitkorea.or.kr/cms/resource/04/3081704_image2_1.jpg';
+const HP_SAMHO_2 = 'https://tong.visitkorea.or.kr/cms/resource/00/3081700_image2_1.jpg';
+const HP_SAMHO_3 = 'https://tong.visitkorea.or.kr/cms/resource/01/3081701_image2_1.jpg';
+const HP_CHEONG = 'https://tong.visitkorea.or.kr/cms/resource/21/3061121_image2_1.jpg';
+const HP_CHEONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/13/3061113_image2_1.jpg';
 const YD_GYEONGJEONG = 'https://tong.visitkorea.or.kr/cms/resource/85/3400985_image2_1.jpg';
 const YD_GYEONGJEONG_2 =
   'https://tong.visitkorea.or.kr/cms/resource/55/2917755_image2_1.jpg';
@@ -2441,6 +2453,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 진도군 조도면 조도등대길 429 (하조도등대)',
     JD_LIGHT,
     [JD_LIGHT_AIR],
+  ),
+  'local-scenic:hampyeong-palgyeong:백제고도': localScenicPhotoOverlay(
+    '함평8경 백제고도는 월야면 예덕리·신덕 고분 경관입니다. 함평군 문화관광은 예덕리고분을 4세기부터 5세기에 걸쳐 형성된 백제시대 독무덤이라 적고, 영산강 하류 옹관묘·전방후원분으로 안내합니다. 국가유산청은 2026년 함평 예덕리 고분군(일명 만가촌 고분군)을 사적으로 지정했고, 고막원천 상류에 3세기부터 약 300년에 걸쳐 조성된 마한 고분 14기라고 밝혔습니다. 사진은 한국관광공사 함평예덕리고분군 공식 사진이며, 함평군 문화관광 예덕리신덕고분군 사진을 보탰습니다.',
+    '전라남도 함평군 월야면 예덕리 산170-3 일원 (예덕리·신덕 고분군)',
+    HP_BAEKJE,
+    [HP_BAEKJE_2, HP_BAEKJE_3, HP_BAEKJE_GUN],
+  ),
+  'local-scenic:hampyeong-palgyeong:모악산': localScenicPhotoOverlay(
+    '함평8경 모악산은 해보면 산입니다. 함평군 문화관광은 높이 348m, 불갑산 줄기를 이은 봉우리로 활엽수와 단풍나무가 우거져 녹음과 단풍이 절경을 이룬다고 적습니다. 등산로는 주차장(연방죽) 0.8km → 모악산 0.2km → 용천봉 0.3km → 용봉 0.7km → 용천사입구이며, 용천사입구에서 구수재·연실봉으로 이어집니다. 산자락 해보면 용천사길 209에 용천사와 꽃무릇공원이 있고, 군은 함평모악산 꽃무릇축제를 안내합니다. 사진은 한국관광공사 용천사 꽃무릇공원 공식 사진입니다.',
+    '전라남도 함평군 해보면 용천사길 209 (모악산·용천사 꽃무릇공원)',
+    HP_MOAK,
+    [HP_MOAK_2, HP_MOAK_GUN],
+  ),
+  'local-scenic:hampyeong-palgyeong:삼호천': localScenicPhotoOverlay(
+    '함평8경 삼호천은 함평 수변 경관입니다. 함평군 문화관광에 삼호천이라는 독립 하천 안내는 없고, 함평읍 주산과 함평천을 기산영수라 부릅니다. 한국관광공사는 함평천수변공원을 함평읍 수호리에 두었고, 바로 옆 엑스포공원과 연결되어 있으며 물가에 수양버들이 많다고 적습니다. 함평천은 엑스포공원·생태공원 옆을 지나 영산강으로 합류합니다. 사진은 한국관광공사 함평천수변공원 공식 사진입니다.',
+    '전라남도 함평군 함평읍 수호리 (함평천수변공원·기산영수 일원)',
+    HP_SAMHO,
+    [HP_SAMHO_2, HP_SAMHO_3],
+  ),
+  'local-scenic:hampyeong-palgyeong:청계산': localScenicPhotoOverlay(
+    '함평8경 청계산은 신광면 산줄기 경관입니다. 함평군 신광면은 함정리 청계(淸溪) 마을을, 가뭄에도 마르지 않는 원천수가 있어 맑은 물이 흐른다 하여 청계라 부른다고 적습니다. 인접 함봉마을 뒷산은 옛 이름 함봉(咸峰)입니다. 같은 면 등산 안내는 신광·손불·영광 경계의 군유산(403m)을 공민왕이 노닐다 갔다 하여 군유산이라 소개합니다. 사진은 한국관광공사 손불면 양재리 이팝나무(군유산 자락 동산) 공식 사진입니다.',
+    '전라남도 함평군 신광면 함정리 청계 일원 (군유산·손불면 양재리 자락)',
+    HP_CHEONG,
+    [HP_CHEONG_2],
   ),
 };
 

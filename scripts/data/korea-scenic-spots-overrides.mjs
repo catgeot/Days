@@ -5952,9 +5952,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'hampyeong',
       attractionName: '함평엑스포공원',
-      overview: '함평엑스포공원 — 나비·축제장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전라남도 함평군 함평읍 곤재로 27 일원. 2008년 나비곤충엑스포 개최지이며 봄 함평나비대축제·가을 대한민국 국향대전의 주무대다. 나비·곤충생태관·주제영상관 등이 있고, 인근 함평자연생태공원과 다른 장소다.',
+      addr1: '전라남도 함평군 함평읍 곤재로 27',
+      homepage: 'https://www.hampyeong.go.kr/expopark/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/63/4065063_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/63/4065063_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/55/4065055_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/54/4065054_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/60/4065060_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/53/4065053_image2_1.jpg',
+      ],
       contentId: '130864',
-    }, // TODO contentId
+    },
     {
       order: 5550,
       id: 'hampyeong-eco-park',
