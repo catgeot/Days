@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 42,
-  sessionPhase: '진도 QA 조도 썸네일',
+  sessionNo: 43,
+  sessionPhase: '함평 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jindo',
+  previewPath: '/korea/theme/scenic?hub=hampyeong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-palgyeong-use-43-hampyeong-overlays',
+    session: '팔경 활용 #43, 함평 결손 오버레이',
+    title: '함평8경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 함평8경 결손 4건(백제고도·모악산·삼호천·청계산)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 백제고도는 한국관광공사 함평예덕리고분군 사진, 모악산은 용천사 꽃무릇공원 사진(GATEO 선정 용천사 함평과 다른 URL), 삼호천은 함평천수변공원 사진, 청계산은 손불면 양재리 이팝나무(군유산 자락) 사진입니다. 부여 백제문화단지·전주 모악산도립공원·창원 삼호천·과천 청계산과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hampyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T13:20:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-42-jindo-jodo-thumb',
     session: '팔경 활용 #42, 진도 QA 조도 썸네일',
