@@ -18,6 +18,7 @@ import {
   MapPin,
   Maximize2,
   Minimize2,
+  Route,
   Search,
   Sparkles,
   Star,
@@ -75,6 +76,15 @@ import KoreaFestivalMap, {
   KOREA_MAP_OVERVIEW,
 } from './KoreaFestivalMap';
 import FestivalDetailSheet from './FestivalDetailSheet';
+import FestivalBeltPanel from './FestivalBeltPanel';
+import {
+  beltLegsToPanelGroups,
+  buildFestivalHubList,
+  getFestivalBeltById,
+  getFestivalBelts,
+  localizedBeltLabel,
+  summarizeBeltFestivals,
+} from './festivalBelts.js';
 import {
   localizeCityChips,
   localizeSidoChips,
@@ -159,7 +169,7 @@ function buildPanelListMeta({ areaCode, cityName, count, t, locale = 'ko' }) {
   return bits.join(' · ');
 }
 
-/** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
+/** @typedef {'time' | 'region' | 'taste' | 'belt'} ChipPanelId */
 
 const NEAR_KM = NEAR_FESTIVAL_KM;
 
@@ -286,6 +296,7 @@ const CHIP_PANEL_ICONS = {
   time: CalendarDays,
   region: MapPin,
   taste: Sparkles,
+  belt: Route,
 };
 
 function ChipPanelIcon({ panel, size = 12 }) {
@@ -729,6 +740,8 @@ export default function KoreaFestivalHub() {
   const [chipPanel, setChipPanel] = useState(/** @type {ChipPanelId} */ ('region'));
   /** @type {[string[] | null, function]} */
   const [nearIds, setNearIds] = useState(null);
+  /** @type {[string | null, function]} */
+  const [beltId, setBeltId] = useState(null);
   const [mapFocusView, setMapFocusView] = useState(null);
   /** @type {[{ lat: number, lng: number } | null, function]} */
   const [nearOrigin, setNearOrigin] = useState(null);
@@ -772,7 +785,7 @@ export default function KoreaFestivalHub() {
   const mountLocTriedRef = useRef(false);
   /** 내 주변 진입 직전 필터 — 재탭 시 복원 */
   const preNearSnapshotRef = useRef(
-    /** @type {null | { timeTab: string, tasteId: string, areaCode: string, cityName: string, chipPanel: ChipPanelId }} */ (
+    /** @type {null | { timeTab: string, tasteId: string, areaCode: string, cityName: string, chipPanel: ChipPanelId, beltId: string | null }} */ (
       null
     ),
   );
@@ -925,6 +938,13 @@ export default function KoreaFestivalHub() {
   );
 
   const indexTitle = useMemo(() => {
+    if (chipPanel === 'belt') {
+      if (beltId) {
+        const belt = getFestivalBeltById(beltId);
+        if (belt) return localizedBeltLabel(belt, locale);
+      }
+      return t('korea.festival.belt.major');
+    }
     if (nearOrigin && nearLabel) {
       return t('korea.common.nearAround', { label: nearLabel });
     }
@@ -941,6 +961,9 @@ export default function KoreaFestivalHub() {
       locale,
     });
   }, [
+    chipPanel,
+    beltId,
+    locale,
     nearOrigin,
     nearLabel,
     searchActive,
@@ -951,7 +974,6 @@ export default function KoreaFestivalHub() {
     tasteId,
     timeTabs,
     t,
-    locale,
   ]);
 
   const indexNeighborChips = useMemo(
@@ -1007,6 +1029,40 @@ export default function KoreaFestivalHub() {
       compareFestivalsByOpenDate(a, b, now),
     );
   }, [nearBaseItems, filteredItems, now]);
+
+  const festivalHubList = useMemo(() => buildFestivalHubList(), []);
+
+  const selectedBelt = useMemo(
+    () => (beltId ? getFestivalBeltById(beltId) : null),
+    [beltId],
+  );
+
+  const beltViewActive = chipPanel === 'belt';
+
+  const beltSummaries = useMemo(
+    () =>
+      getFestivalBelts().map((belt) => {
+        const { legs, festivalCount, activeStopCount } = summarizeBeltFestivals(
+          belt,
+          panelItems,
+          festivalHubList,
+        );
+        return {
+          belt,
+          legs,
+          groups: beltLegsToPanelGroups(legs, locale),
+          festivalCount,
+          activeStopCount,
+          stopCount: belt.stops?.length ?? 0,
+        };
+      }),
+    [panelItems, festivalHubList, locale],
+  );
+
+  const expandedBeltSummary = useMemo(
+    () => beltSummaries.find((row) => row.belt.id === beltId) || null,
+    [beltSummaries, beltId],
+  );
 
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
@@ -1099,10 +1155,11 @@ export default function KoreaFestivalHub() {
       : '';
 
   const flapHasRelated =
-    flapChildChips.length > 0 ||
-    flapNeighborChips.length > 0 ||
-    flapTasteChips.length > 0 ||
-    (Boolean(parentRegionLabel) && cityName !== 'all');
+    !beltViewActive &&
+    (flapChildChips.length > 0 ||
+      flapNeighborChips.length > 0 ||
+      flapTasteChips.length > 0 ||
+      (Boolean(parentRegionLabel) && cityName !== 'all'));
 
   const personalItems = useMemo(() => {
     if (personalTab === 'favorites') {
@@ -1201,6 +1258,7 @@ export default function KoreaFestivalHub() {
       setAreaCode(snap.areaCode);
       setCityName(snap.cityName);
       setChipPanel(snap.chipPanel);
+      setBeltId(snap.beltId ?? null);
     }
     setSelected(null);
     setMapFocusView(null);
@@ -1242,6 +1300,7 @@ export default function KoreaFestivalHub() {
       setAreaCode(String(hubResolved.areaCode));
       setCityName('all');
       setChipPanel('region');
+      setBeltId(null);
       setSelected(null);
       setPersonalTab(null);
       setSearchDraft('');
@@ -1311,6 +1370,7 @@ export default function KoreaFestivalHub() {
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
+      setBeltId(null);
     }
     setPersonalTab(null);
     clearNear();
@@ -1330,6 +1390,7 @@ export default function KoreaFestivalHub() {
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
+      setBeltId(null);
     }
     if (typeof document !== 'undefined') {
       const el =
@@ -1392,6 +1453,17 @@ export default function KoreaFestivalHub() {
     !searchActive;
 
   const panelListMeta = useMemo(() => {
+    if (beltViewActive) {
+      if (expandedBeltSummary) {
+        return t('korea.festival.belt.panelMeta', {
+          stops: expandedBeltSummary.stopCount,
+          count: expandedBeltSummary.festivalCount,
+        });
+      }
+      return t('korea.festival.belt.roadCount', {
+        count: beltSummaries.length,
+      });
+    }
     if (nearBaseItems && nearLabel) {
       return t('korea.festival.nearPanelMeta', {
         km: NEAR_KM,
@@ -1407,6 +1479,9 @@ export default function KoreaFestivalHub() {
       locale,
     });
   }, [
+    beltViewActive,
+    expandedBeltSummary,
+    beltSummaries.length,
     nearBaseItems,
     nearLabel,
     nearActive,
@@ -1452,6 +1527,18 @@ export default function KoreaFestivalHub() {
     setSelected(null);
   };
 
+  const toggleBeltExpand = (id) => {
+    const next = id ? String(id) : null;
+    setBeltId(next);
+    setChipPanel('belt');
+    setSelected(null);
+  };
+
+  const openBeltMajor = () => {
+    dismissSearchUi();
+    setChipPanel('belt');
+  };
+
   const openTimeMajor = () => {
     dismissSearchUi();
     setChipPanel('time');
@@ -1486,9 +1573,18 @@ export default function KoreaFestivalHub() {
   const majorTasteDisplay =
     locale === 'en' ? t('korea.common.theme') : tasteMajorLabel;
 
+  const beltMajorLabel =
+    beltViewActive && beltId && selectedBelt
+      ? localizedBeltLabel(selectedBelt, locale)
+      : t('korea.festival.belt.major');
+  const majorBeltDisplay =
+    locale === 'en' ? t('korea.festival.belt.major') : beltMajorLabel;
+
   const detailChipPanelKey = chipPanel;
   const detailChipActiveKey =
-    chipPanel === 'time'
+    chipPanel === 'belt'
+      ? beltId || 'all'
+      : chipPanel === 'time'
       ? timeTab
       : chipPanel === 'region'
         ? `${areaCode}:${cityName}`
@@ -1561,6 +1657,7 @@ export default function KoreaFestivalHub() {
       areaCode,
       cityName,
       chipPanel,
+      beltId,
     };
     setNearBusy(true);
     setNearLabel('');
@@ -1971,6 +2068,18 @@ export default function KoreaFestivalHub() {
                     <ChipPanelIcon panel="taste" size={13} />
                     {majorTasteDisplay}
                   </button>
+                  <button
+                    type="button"
+                    onClick={openBeltMajor}
+                    className={majorChipClass(chipPanel === 'belt')}
+                    aria-pressed={chipPanel === 'belt'}
+                    aria-label={t('korea.festival.belt.majorAria', {
+                      label: beltMajorLabel,
+                    })}
+                  >
+                    <ChipPanelIcon panel="belt" size={13} />
+                    {majorBeltDisplay}
+                  </button>
                 </div>
                 <div className="flex shrink-0 items-center border-l border-stone-200 pl-3">
                   <button
@@ -2007,6 +2116,7 @@ export default function KoreaFestivalHub() {
                   </button>
                 </div>
               </div>
+              {chipPanel !== 'belt' ? (
               <ChipScrollRow
                 ariaLabel={t('korea.common.detailChips')}
                 panelKey={detailChipPanelKey}
@@ -2081,6 +2191,7 @@ export default function KoreaFestivalHub() {
                   </>
                 )}
               </ChipScrollRow>
+              ) : null}
             </div>
           </div>
         </div>
@@ -2371,6 +2482,27 @@ export default function KoreaFestivalHub() {
                     </div>
                   ))
                 )
+              ) : beltViewActive ? (
+                <FestivalBeltPanel
+                  summaries={beltSummaries}
+                  expandedBeltId={beltId}
+                  onToggleExpand={toggleBeltExpand}
+                  locale={locale}
+                  renderFestival={(item) => (
+                    <FestivalRow
+                      key={festivalKey(item)}
+                      item={item}
+                      large={listLarge}
+                      active={
+                        selected?.contentId != null &&
+                        String(selected.contentId) === String(item.contentId)
+                      }
+                      favorited={favoriteIds.has(String(item.contentId))}
+                      onToggleFavorite={handleToggleFavorite}
+                      onSelect={openItem}
+                    />
+                  )}
+                />
               ) : panelItems.length === 0 ? (
                 <p className="px-1 py-4 text-sm text-stone-500">
                   {loading
