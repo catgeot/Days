@@ -34,12 +34,12 @@
 
 | | |
 |--|--|
-| **상태** | **#4 QA** · tip `f708581d` · PR [#249](https://github.com/catgeot/Days/pull/249) · **사람 Preview** |
+| **상태** | **#4 QA** · tip `3074fdda` · PR [#249](https://github.com/catgeot/Days/pull/249) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-14-project-log.md`](./2026-09-14-project-log.md) |
 | **Preview** | `/qa/visitor-growth` → git Preview `/` · `/explore` |
-| **소유** | `moodSearchIntent.js` · `useHomeHandlers.js` · `searchSuggestions.js` · `SearchSuggestionList.jsx` |
+| **소유** | `moodSearchIntent.js` · `useHomeHandlers.js` · `SearchSuggestionList.jsx` · `ChatModal.jsx` · `mooniChipDockMode.js` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:mood-search-intent` · `npm run smoke:mooni-ask-bridge` · `npm run smoke:explore-search-aliases` · `npx vite build` PASS |
 
@@ -485,28 +485,28 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#43 QA** tip `5d812d09` · PR [#250](https://github.com/catgeot/Days/pull/250) · 함평 1경·2경 썸네일 분리 · **#44 해남 결손 오버레이** |
+| **상태** | **#44** tip `b48d9624` · PR [#251](https://github.com/catgeot/Days/pull/251) · 해남8경 4 · **#45 홍성 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `5d812d09` |
-| **PR** | [#250](https://github.com/catgeot/Days/pull/250) · [#245](https://github.com/catgeot/Days/pull/245) merge ✅ · [#243](https://github.com/catgeot/Days/pull/243) merge ✅ |
+| **tip** | `b48d9624` |
+| **PR** | [#251](https://github.com/catgeot/Days/pull/251) · [#250](https://github.com/catgeot/Days/pull/250) merge ✅ · [#245](https://github.com/catgeot/Days/pull/245) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-14-project-log.md`](./2026-09-14-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=hampyeong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=haenam` |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). **#38** 천안8경 4(#243). **#39** 담양10경 4(#245). **#40** 밀양8경 4. **#41** 영덕9경 4 + QA 영덕 검색 썸네일 3·투어 오탐. **#42** 진도10경 4 + QA 검색 조도(조도6군도) 553447 썸네일(문경8경은 사진·개요 기완료로 건너뜀). **#43** 함평8경 4 + QA 1경·2경 썸네일 분리(엑스포 `4065063` ≠ 생태 `3536105`). 순수 사진/개요 누락 **102**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **해남8경 4** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). **#38** 천안8경 4(#243). **#39** 담양10경 4(#245). **#40** 밀양8경 4. **#41** 영덕9경 4 + QA 영덕 검색 썸네일 3·투어 오탐. **#42** 진도10경 4 + QA 검색 조도(조도6군도) 553447 썸네일(문경8경은 사진·개요 기완료로 건너뜀). **#43** 함평8경 4 + QA 1경·2경 썸네일 분리(엑스포 `4065063` ≠ 생태 `3536105`). **#44** 해남8경 4. 순수 사진/개요 누락 **98**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **홍성12경 4** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #44, 해남 결손 오버레이
+팔경 활용 #45, 홍성 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-14-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 해남8경 사진·개요 없는 4건(해남 구 목포구등대 낙조 전망대·해남윤씨 옥우당·미황사 및 도솔암·울돌목)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haenam
+작업: 홍성12경 사진·개요 없는 4건(만해한용운생가지·선상문선생 유허지·고암이응노 생가 기념관·그림같은수목원)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=hongseong
 ```
 
 ---

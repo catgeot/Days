@@ -2,6 +2,16 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #4 QA — 추천받기 하단 주제 칩 (Cloud)
+
+- **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `3074fdda` · PR [#249](https://github.com/catgeot/Days/pull/249)
+- **원인**: 추천받기(문경)는 첫 메시지가 바로 들어가 범용 디스커버리 칩이 사라지고, 장소 바인딩(도쿄)만 주제 칩이 남음.
+- **완료**: 추천받기·이후 대화에도 기존 MOONi와 같은 하단 주제 칩(궁금해/가는 방법/출발 준비/즐길)을 유지. 빈 범용 세션 디스커버리 칩은 그대로.
+- **VERIFY**: `npm run smoke:mood-search-intent` PASS · `npm run smoke:mooni-ask-bridge` PASS · `npm run smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` · `/explore`
+- **QA**: 문경 추천받기 후 하단 칩 · 도쿄 바인딩 칩과 동일 여부 · 헤더가 이전 목적지와 안 겹치는지.
+
 ## 방문자 개선 #4 QA — MOONi 카드 상단·목적지 중첩 해제 (Cloud)
 
 - **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
@@ -71,14 +81,24 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hampyeong`
 - **다음**: **#44 해남 결손 오버레이** (동일 브랜치)
 
-## 팔경 활용 #44 다음 — 해남 결손 오버레이
+## 팔경 활용 #44 — 해남 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #44, 해남 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `b48d9624` · PR [#251](https://github.com/catgeot/Days/pull/251)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 해남8경 결손 4건(해남 구 목포구등대 낙조 전망대·해남윤씨 옥우당·미황사 및 도솔암·울돌목) 보강. 등대는 화원면 매봉길 582 구 목포구등대·낙조전망대(국가등록문화재 제379호), 옥우당은 사적 해남윤씨 녹우당 일원, 미황사·도솔암은 달마산 명승, 울돌목은 문내면 스카이워크. 목포 고하도등대·보길도 원림·고창 선운산 도솔암·진도 군내면과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS · `report-local-scenic-missing-content --hub=haenam` 사진/개요 8/8, 순수 누락 0
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=haenam`
+- **잔여**: 사진/개요 순수 누락 **98**/876. 다음 허브 **홍성12경 4** (그다음 화순11경)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #45 다음 — 홍성 결손 오버레이
 
 ```
-팔경 활용 #44, 해남 결손 오버레이
+팔경 활용 #45, 홍성 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-14-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 해남8경 사진·개요 없는 4건(해남 구 목포구등대 낙조 전망대·해남윤씨 옥우당·미황사 및 도솔암·울돌목)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=haenam
+작업: 홍성12경 사진·개요 없는 4건(만해한용운생가지·선상문선생 유허지·고암이응노 생가 기념관·그림같은수목원)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=hongseong
 ```

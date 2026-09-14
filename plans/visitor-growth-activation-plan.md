@@ -493,7 +493,7 @@ flowchart TD
 
 다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
 
-**#4 QA** (`f708581d` · PR [#249](https://github.com/catgeot/Days/pull/249)) — MOONi 카드 상단·기존 목적지 중첩 해제. 세션 #5(로딩/에러 UX) 제시어:
+**#4 QA** (`3074fdda` · PR [#249](https://github.com/catgeot/Days/pull/249)) — 추천받기 채팅 하단 주제 칩 유지. 세션 #5(로딩/에러 UX) 제시어:
 
 ```
 방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX
