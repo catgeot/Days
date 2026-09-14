@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 44,
-  sessionPhase: '해남 결손 오버레이',
+  sessionNo: 45,
+  sessionPhase: '홍성 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=haenam',
+  previewPath: '/korea/theme/scenic?hub=hongseong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-palgyeong-use-45-hongseong-overlays',
+    session: '팔경 활용 #45, 홍성 결손 오버레이',
+    title: '홍성12경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 홍성12경 결손 4건(만해한용운생가지·선상문선생 유허지·고암이응노 생가 기념관·그림같은수목원)의 공공 공식 팩트 개요·주소·홍성군 문화관광 공식 사진을 보강했습니다. 만해는 결성면 성곡리 생가(기념물 제75호), 선상문은 군 공식명 성삼문선생유허지(홍북읍 노은리·기념물 제5호), 고암은 홍북읍 이응노의 집, 그림같은수목원은 광천읍 사립 수목원입니다. 인제 만해마을·대전 이응노미술관·구례 수목원과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T22:30:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-44-haenam-overlays',
     session: '팔경 활용 #44, 해남 결손 오버레이',

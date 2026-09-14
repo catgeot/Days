@@ -1192,6 +1192,32 @@ const HN_ULDOL_3 = 'https://tong.visitkorea.or.kr/cms2/website/82/1832682.jpg';
 const YD_GYEONGJEONG = 'https://tong.visitkorea.or.kr/cms/resource/85/3400985_image2_1.jpg';
 const YD_GYEONGJEONG_2 =
   'https://tong.visitkorea.or.kr/cms/resource/55/2917755_image2_1.jpg';
+const HS_MANHAE =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200459391045.JPG';
+const HS_MANHAE_2 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200459392536.JPG';
+const HS_MANHAE_3 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200459396739.JPG';
+const HS_MANHAE_KHS =
+  'https://www.khs.go.kr/unisearch/images/tangible_cult_prop/1639122.jpg';
+const HS_SEONG =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011270145581511.jpg';
+const HS_SEONG_2 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011270145582902.jpg';
+const HS_SEONG_3 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011270145584203.jpg';
+const HS_LEE =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200428043631.JPG';
+const HS_LEE_2 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200428044972.JPG';
+const HS_LEE_3 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200428046323.JPG';
+const HS_GARDEN =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200511080921.JPG';
+const HS_GARDEN_2 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200511082322.JPG';
+const HS_GARDEN_3 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200511083833.JPG';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2513,6 +2539,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 해남군 문내면 학동리 1467-10 (울돌목 스카이워크·우수영관광지)',
     HN_ULDOL,
     [HN_ULDOL_2, HN_ULDOL_3],
+  ),
+  'local-scenic:hongseong-other:만해한용운생가지': localScenicPhotoOverlay(
+    '홍성12경 제7경 만해한용운생가지는 결성면 성곡리 생가입니다. 홍성군 문화관광은 주소를 결성면 만해로318번길 83으로 두고, 독립운동가이자 승려·시인인 만해 한용운이 태어난 곳이며 1919년 3·1운동 민족대표 33인으로 독립선언서 공약 3장을 쓰고 1926년 시집 『님의 침묵』을 냈다고 적습니다. 생가가 쓰러진 뒤 앞면 3칸·옆면 2칸 초가와 만해사·민족시비공원·만해문학체험관을 조성했습니다. 국가유산청은 충청남도 기념물 제75호(1989년 12월 29일)로 지정했고, 한국민족문화대백과사전은 1992년 복원이라고 적습니다. 사진은 홍성군 문화관광 한용운선생생가지 공식 사진이며, 국가유산청 기념물 사진을 보탰습니다.',
+    '충청남도 홍성군 결성면 만해로318번길 83 (성곡리 만해 한용운 생가지)',
+    HS_MANHAE,
+    [HS_MANHAE_2, HS_MANHAE_3, HS_MANHAE_KHS],
+  ),
+  'local-scenic:hongseong-other:선상문선생유허지': localScenicPhotoOverlay(
+    '홍성12경 제9경 선상문선생 유허지는 군 공식명 성삼문선생유허지입니다. 홍성군 문화관광은 주소를 홍북읍 매죽헌길 403-12로 두고, 사육신 성삼문의 외가이자 출생 집터라고 적습니다. 세종 때 집현전 학자로 훈민정음에 참여했고, 수양대군이 단종을 폐한 뒤 절개를 지키다 죽임을 당했습니다. 국가유산청은 충청남도 기념물 제5호(1973년 12월 24일)로 지정했습니다. 군은 1954년 홍성 고적현창회가 제단을 보수했고 해마다 음력 10월 20일 제사를 지내며, 유허비는 마을 앞 약 30m에 있다고 안내합니다. 사진은 홍성군 문화관광 성삼문선생유허지 공식 사진입니다.',
+    '충청남도 홍성군 홍북읍 매죽헌길 403-12 (노은리 성삼문선생유허지)',
+    HS_SEONG,
+    [HS_SEONG_2, HS_SEONG_3],
+  ),
+  'local-scenic:hongseong-other:고암이응노생가기념관': localScenicPhotoOverlay(
+    '홍성12경 제10경 고암이응노 생가 기념관은 홍북읍 중계리 홍천마을의 이응노의 집입니다. 홍성군 문화관광은 주소를 홍북읍 이응노로 61-7로 두고, 고암 이응노가 그림의 꿈을 품은 생가 터 위에 2011년 11월 8일 개관했다고 적습니다. 전시동·복원 생가·야외전시장·연지공원·북카페가 있고 유품·작품 863점을 소장하며, 2012년 1월 25일 전문미술관으로 등록했습니다. 군 기념관 안내는 대지 2만596㎡·건축 1,002㎡이며 월산 품에서 용봉산을 바라보던 자리라고 적습니다. 사진은 홍성군 문화관광 고암이응노 생가기념관 공식 사진입니다.',
+    '충청남도 홍성군 홍북읍 이응노로 61-7 (중계리 홍천마을 이응노의 집)',
+    HS_LEE,
+    [HS_LEE_2, HS_LEE_3],
+  ),
+  'local-scenic:hongseong-other:그림같은수목원': localScenicPhotoOverlay(
+    '홍성12경 제12경 그림같은수목원은 광천읍 사립 수목원입니다. 홍성군 문화관광은 주소를 광천읍 충서로400번길 102-36으로 두고, 89,449㎡ 대지에 소나무를 중심으로 목본류 460여 종·초본류 870여 종 등 1,330여 종을 갖춰 2005년에 문을 열었다고 적습니다. 한국관광공사 연계 안내는 2004년 12월 29일 산림청 등록 사립수목원이며 온실식물원·미술관·폭포·전망대가 있다고 적습니다. 사진은 홍성군 문화관광 그림같은 수목원 공식 사진입니다.',
+    '충청남도 홍성군 광천읍 충서로400번길 102-36 (매현리 그림같은 수목원)',
+    HS_GARDEN,
+    [HS_GARDEN_2, HS_GARDEN_3],
   ),
 };
 
