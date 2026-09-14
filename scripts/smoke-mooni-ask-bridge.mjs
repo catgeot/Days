@@ -1,14 +1,54 @@
 #!/usr/bin/env node
 /**
  * 탐색 드롭다운 MOONi 추천 카드 — 상단 고정 · 기존 목적지 세션 중첩 금지
+ * 추천받기(첫 메시지) 이후에도 기존 MOONi 주제 칩 독 유지
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveMooniChipDockMode } from '../src/pages/Home/lib/mooniChipDockMode.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
+
+assert.equal(
+  resolveMooniChipDockMode({ isMooniUi: true, hasPlaceBoundName: false }),
+  'discovery',
+  'empty general MOONi keeps discovery chips',
+);
+assert.equal(
+  resolveMooniChipDockMode({
+    isMooniUi: true,
+    hasPlaceBoundName: false,
+    hasInitialQuery: true,
+  }),
+  'topic',
+  'search-ask seed uses topic chips',
+);
+assert.equal(
+  resolveMooniChipDockMode({
+    isMooniUi: true,
+    hasPlaceBoundName: false,
+    messageCount: 2,
+  }),
+  'topic',
+  'unbound chat after replies keeps topic chips',
+);
+assert.equal(
+  resolveMooniChipDockMode({
+    isMooniUi: true,
+    hasPlaceBoundName: true,
+    messageCount: 4,
+  }),
+  'topic',
+  'place-bound MOONi keeps topic chips',
+);
+assert.equal(
+  resolveMooniChipDockMode({ isMooniUi: false }),
+  'none',
+  'non-MOONi has no chip dock mode',
+);
 
 const listSrc = read('src/pages/Home/components/SearchDiscovery/SearchSuggestionList.jsx');
 const moonIdx = listSrc.indexOf('{showMooni ? (');
@@ -35,6 +75,15 @@ assert.ok(freshIdx < resumeIdx, 'freshSession returns before last-trip resume');
 assert.ok(
   handlerSrc.includes("destination: 'MOONi'"),
   'fresh session draft destination is generic MOONi',
+);
+
+const chatSrc = read('src/pages/Home/components/ChatModal.jsx');
+assert.ok(chatSrc.includes('resolveMooniChipDockMode'), 'ChatModal uses chip dock mode');
+assert.ok(chatSrc.includes('showUnboundTopicDock'), 'unbound topic dock stays after ask');
+assert.equal(
+  chatSrc.includes('discoveryChips.length > 0 && messages.length === 0'),
+  false,
+  'discovery dock must not be the only unbound dock after first message',
 );
 
 console.log('smoke-mooni-ask-bridge: PASS');

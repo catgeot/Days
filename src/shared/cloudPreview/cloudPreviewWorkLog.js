@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-14-visitor-growth-4-mooni-ask-chips',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: '추천받기 채팅에도 하단 주제 칩 유지',
+    detail:
+      '검색 드롭다운에서 MOONi 추천받기를 누르면 첫 메시지가 바로 들어가 범용 디스커버리 칩이 사라졌습니다. 추천받기·이후 대화에도 기존 MOONi처럼 궁금해/가는 방법/출발 준비/즐길 주제 칩을 하단에 둡니다. Preview /qa/visitor-growth — 문경 추천받기 후 하단 칩이 보이는지, 도쿄 장소 바인딩 칩과 같은지.',
+    at: '2026-09-14T20:40:00.000Z',
+  },
+  {
     id: '2026-09-14-visitor-growth-4-mooni-ask-top',
     session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
     title: 'MOONi 카드 상단·기존 목적지 중첩 해제',
