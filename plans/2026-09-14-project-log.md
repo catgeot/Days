@@ -2,6 +2,15 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #5 — 로딩스켈레톤 및 에러복구 UX (Cloud)
+
+- **세션** `방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `5cf98ba1` · PR [#253](https://github.com/catgeot/Days/pull/253) (#249 merge 후 동일 브랜치)
+- **완료**: `/korea` 축제 행 `onError` 그라데이션 폴백·로딩 5행 스켈레톤·빈 필터 초기화. `/blog/curation` AI 실패 `alert()` 제거·인라인 재시도·결과 카드형 스켈레톤. 갤러리 전 소스 실패 시 네트워크 재시도 안내.
+- **VERIFY**: `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/korea` · `/blog/curation` · `/place/paris/gallery`
+- **QA**: `/korea` 스켈레톤·깨진 썸네일·필터 초기화 · `/blog/curation` alert 없이 재시도 · 갤러리 실패 시 네트워크 안내.
+
 ## 방문자 개선 #4 QA — 추천받기 하단 주제 칩 (Cloud)
 
 - **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`

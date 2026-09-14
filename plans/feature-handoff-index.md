@@ -34,25 +34,25 @@
 
 | | |
 |--|--|
-| **상태** | **#4 QA** · tip `3074fdda` · PR [#249](https://github.com/catgeot/Days/pull/249) · **사람 Preview** |
+| **상태** | **#5 push** · tip `5cf98ba1` · PR [#253](https://github.com/catgeot/Days/pull/253) · **사람 Preview**
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-14-project-log.md`](./2026-09-14-project-log.md) |
-| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/explore` |
-| **소유** | `moodSearchIntent.js` · `useHomeHandlers.js` · `SearchSuggestionList.jsx` · `ChatModal.jsx` · `mooniChipDockMode.js` |
+| **Preview** | `/qa/visitor-growth` → git Preview `/korea` · `/blog/curation` · `/place/paris/gallery` |
+| **소유** | `Korea/index.jsx` · `useLogbookAI.js` · `CurationHub.jsx` · `usePlaceGallery.js` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:mood-search-intent` · `npm run smoke:mooni-ask-bridge` · `npm run smoke:explore-search-aliases` · `npx vite build` PASS |
+| **VERIFY** | `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX
+방문자 개선 #6, 신뢰요소 및 제휴투명성 강화
 @plans/feature-handoff-index.md
 @plans/2026-09-14-project-log.md
 @plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · PR #249 · Preview /qa/visitor-growth
+브랜치 cursor/visitor-growth-1f90 · PR #253 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: /korea 축제 행 onError·스켈레톤·필터 초기화 · /blog/curation alert 제거·인라인 재시도 · 갤러리 네트워크 안내
+작업: MainLayout 신뢰 링크 바 · Credits 출처 보강 · 체크리스트 CTA 제휴 고지 · 플래너 hybridNotice 상단
 검증: npm run build PASS
 ```
 
