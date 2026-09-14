@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '방문자 개선',
-  sessionNo: 3,
-  sessionPhase: '크롤러 SEO 및 본문 프리렌더링',
+  sessionNo: 4,
+  sessionPhase: '무드검색 분리 및 AI추천 브릿지',
   branch: 'cursor/visitor-growth-1f90',
   previewPath: '/',
   qaShareSlug: 'visitor-growth',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-visitor-growth-4-mood-bridge',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: '무드 결합 지오코딩 스킵·MOONi 추천 카드',
+    detail:
+      'quiet beaches·따뜻한 휴양지·조용한 바다처럼 분위기+여행명사 결합은 Mapbox 지오코딩을 건너뛰고 AI 무드 큐레이션으로 갑니다. 도로명·상호 POI 오탐은 버리고, 탐색 드롭다운에 MOONi에게 물어보기 카드를 붙입니다. Preview /qa/visitor-growth — 검색창에 위 질의 후 엉뚱한 핀이 아닌지, AI 카드가 열리는지.',
+    at: '2026-09-14T13:20:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-42-jindo-jodo-thumb',
     session: '팔경 활용 #42, 진도 QA 조도 썸네일',

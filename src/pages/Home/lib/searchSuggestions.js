@@ -48,6 +48,7 @@ import {
   isDistinctTravelPlace,
   relabelHomonymDisplay,
 } from './travelSearchHomonyms';
+import { shouldSkipGeocodeForMood } from './moodSearchIntent';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -357,12 +358,14 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     exactHub || exactListHit || exactAttraction ? null : resolveSettlement(q);
 
   // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
+  // 무드 결합(quiet beaches)은 도로·상호 오탐을 막기 위해 Mapbox 보강도 생략
   if (
     !includeMapbox ||
     exactHub ||
     exactListHit ||
     exactAttraction ||
-    exactSettlement
+    exactSettlement ||
+    shouldSkipGeocodeForMood(q)
   ) {
     return local;
   }

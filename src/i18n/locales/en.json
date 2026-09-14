@@ -438,6 +438,8 @@
       "suggestionsDefault": "Suggestions for \"{{query}}\"",
       "suggestionsLoading": "Loading",
       "suggestionsEmpty": "No suggestions. Press Enter for map search.",
+      "askMooni": "Ask MOONi for \"{{query}}\" destinations",
+      "askMooniBadge": "AI",
       "disambiguationTitle": "Choose a place",
       "disambiguationBody": "This name may match several places. Tap a card to open it.",
       "more": "See more",
