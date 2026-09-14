@@ -1155,6 +1155,16 @@ const YD_SAMSA = 'https://tong.visitkorea.or.kr/cms/resource/52/4076752_image2_1
 const YD_SAMSA_2 = 'https://tong.visitkorea.or.kr/cms/resource/53/4076753_image2_1.jpg';
 const YD_SAMSA_3 = 'https://tong.visitkorea.or.kr/cms/resource/55/4076755_image2_1.jpg';
 const YD_HAJEO = 'https://tong.visitkorea.or.kr/cms/resource/96/3590496_image2_1.jpg';
+const JD_JODO =
+  'https://www.jindo.go.kr/uploads/tour/info/nature/201611080750465200.jpg';
+const JD_DECK =
+  'https://www.jindo.go.kr/uploads/tour/info/nature/201611080750470042.jpg';
+const JD_LIGHT_AIR =
+  'https://www.jindo.go.kr/uploads/tour/info/nature/201612230215081020.jpg';
+const JD_LIGHT =
+  'https://www.jindo.go.kr/uploads/tour/info/nature/201612230215081201.jpg';
+const JD_GASA =
+  'https://www.jindo.go.kr/uploads/tour/info/nature/201611080739579140.jpg';
 const YD_GYEONGJEONG = 'https://tong.visitkorea.or.kr/cms/resource/85/3400985_image2_1.jpg';
 const YD_GYEONGJEONG_2 =
   'https://tong.visitkorea.or.kr/cms/resource/55/2917755_image2_1.jpg';
@@ -2410,6 +2420,28 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     YD_NAONG,
     [YD_NAONG_2, YD_NAONG_3],
   ),
+  'local-scenic:jindo-other:조도관음도': localScenicPhotoOverlay(
+    '진도10경 조도관음도는 조도면 다도해 섬 경관입니다. 진도군 문화관광은 조도를 조도 6군도(가사·거차·관매·상조·성남·하조) 178여 개 섬이 새떼처럼 펼쳐진 곳이라 적습니다. 같은 안내는 광대도(사자섬) 바위굴의 돌부처와 신선바위·바둑바위 해발 77m 상봉, 구멍 뚫린 혈도(공도)를 소개합니다. 사진은 진도군 문화관광 가사도(조도 6군도) 공식 사진이며, 같은 군 조도 다도해 조망 사진을 보탰습니다.',
+    '전라남도 진도군 조도면 가사도길 일원 (조도 6군도·가사도)',
+    JD_GASA,
+    [JD_JODO],
+  ),
+  'local-scenic:jindo-other:의장대': localScenicPhotoOverlay(
+    '진도10경 의장대는 조도면에서 다도해를 내려다보는 정자·전망 경관입니다. 진도군 문화관광은 기암괴석이 즐비한 하조도 등대와 다도해 풍광을 느낄 수 있는 돈대산·도리산 등산로를 안내합니다. 군 스탬프투어는 상조도 여미리 도리산 전망대를 인증 장소로 두었고, 한국관광공사 여행안내는 나무 데크 전망대에서 남쪽으로 관매도·서거차도, 북쪽으로 옥도·성남도·내병도가 보인다고 적습니다. 사진은 진도군 문화관광 조도 전망 데크 공식 사진입니다.',
+    '전라남도 진도군 조도면 여미리 (도리산 전망대 일원)',
+    JD_DECK,
+  ),
+  'local-scenic:jindo-other:돈대산': localScenicPhotoOverlay(
+    '진도10경 돈대산은 조도면 하조도 창유리 뒷산입니다. 디지털진도문화대전은 한자 墩臺山, 높이 231m이며 봉수대가 있던 곳이라고 적습니다. 봉수대는 창유리 남서쪽 약 1㎞ 제2봉에 있고, 산정은 암벽으로 둘러싸여 있으며 상단 직경 약 7m·높이 280㎝, 하단 직경 약 5m·높이 320㎝의 원형 석축이 남았습니다. 진도군 문화관광은 다도해 풍광을 느낄 수 있는 돈대산 등산로를 안내합니다. 사진은 진도군 문화관광 조도 다도해 조망 공식 사진입니다.',
+    '전라남도 진도군 조도면 창유리 (하조도 돈대산)',
+    JD_JODO,
+  ),
+  'local-scenic:jindo-other:하조대': localScenicPhotoOverlay(
+    '진도10경 하조대는 조도면 하조도등대입니다. 진도군 문화관광은 1909년 만들어진 유인등대로 높이 48m 하조도 끝자락 마디단에 있으며 만물상 바위와 어우러진다고 적습니다. 디지털진도문화대전은 1909년 2월 1일 점등, 등탑 12m·등고 평균해수면 48m, 주소 창유리 1-1이라고 적습니다. 장죽수도를 지나는 배의 길잡이이며 스탬프투어 주소는 조도등대길 429입니다. 사진은 진도군 문화관광 하조도등대 공식 사진입니다.',
+    '전라남도 진도군 조도면 조도등대길 429 (하조도등대)',
+    JD_LIGHT,
+    [JD_LIGHT_AIR],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -2427,16 +2459,13 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   2750930: localScenicThumbOverlay(NS_YANGCHON, [NS_YANGCHON_2]),
   946844: localScenicThumbOverlay(NS_HISTORY, [NS_HISTORY_2, NS_HISTORY_3]),
   1956315: localScenicThumbOverlay(NS_NOGANG, [NS_NOGANG_2]),
-<<<<<<< HEAD
   126143: localScenicThumbOverlay(YD_SAMSA, [YD_SAMSA_2, YD_SAMSA_3]),
   127160: localScenicThumbOverlay(YD_HAJEO),
   1621219: localScenicThumbOverlay(YD_GYEONGJEONG, [YD_GYEONGJEONG_2]),
-=======
   // 문경석탄박물관 — TourAPI 상세는 문경에코월드(2599737). DB first_image 미동기화.
   2599737: localScenicThumbOverlay(
     'https://tong.visitkorea.or.kr/cms/resource/97/4059797_image2_1.jpg',
   ),
->>>>>>> origin/main
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

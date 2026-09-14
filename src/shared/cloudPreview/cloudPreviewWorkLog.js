@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 41,
-  sessionPhase: '영덕 결손 오버레이',
+  sessionNo: 42,
+  sessionPhase: '진도 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=yeongdeok',
+  previewPath: '/korea/theme/scenic?hub=jindo',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-palgyeong-use-42-jindo-overlays',
+    session: '팔경 활용 #42, 진도 결손 오버레이',
+    title: '진도10경 결손 4건 오버레이',
+    detail:
+      '문경8경 4건은 사진·개요가 이미 채워져 있어 건너뛰고, JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 진도10경 결손 4건(조도관음도·의장대·돈대산·하조대)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 조도관음도는 진도군 가사도·조도 다도해 사진, 의장대는 조도 전망 데크 사진, 돈대산은 조도 다도해 조망 사진, 하조대는 하조도등대 사진입니다. 양양 하조대·울릉 관음도와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jindo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T09:10:00.000Z',
+  },
   {
     id: '2026-09-13-palgyeong-use-41-yeongdeok-qa-fix',
     session: '팔경 활용 #41, 영덕 QA 수정',
