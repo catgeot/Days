@@ -2,6 +2,16 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #4 QA — MOONi 카드 상단·목적지 중첩 해제 (Cloud)
+
+- **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `f708581d` · PR [#249](https://github.com/catgeot/Days/pull/249)
+- **원인**: 지명 검색(김포)에서 MOONi 카드가 드롭다운 맨 아래. 탭하면 `freshSession` 없이 마지막 장소 대화(코타키나발루)를 이어받아 질의와 목적지가 겹침.
+- **완료**: MOONi 카드를 드롭다운 맨 위(sticky)로. `freshSession: true`로 일반 MOONi 세션을 열고 이전 여행지 resume을 건너뜀.
+- **VERIFY**: `npm run smoke:mood-search-intent` PASS · `npm run smoke:mooni-ask-bridge` PASS · `npm run smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` · `/explore`
+- **QA**: 김포 드롭다운 카드가 맨 위인지 · 탭 후 헤더가 코타키나발루가 아닌지 · 파리/도쿄/제주 지명 회귀.
+
 ## 방문자 개선 #4 — 무드검색 분리 및 AI추천 브릿지 (Cloud)
 
 - **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
@@ -50,6 +60,16 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hampyeong`
 - **잔여**: 사진/개요 순수 누락 **102**/876. 다음 허브 **해남8경 4** (그다음 홍성12경·화순11경)
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #43 QA — 함평 1경·2경 중복 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #43, 함평 엑스포 중복 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `5d812d09` · PR [#250](https://github.com/catgeot/Days/pull/250)
+- **원인**: GATEO 선정 `hampyeong-expo-park` fill 폴백이 생태공원 contentId `129235`라 1경·2경이 같은 한국관광공사 사진 `3536105`를 씀.
+- **완료**: 엑스포는 TourAPI `130864` firstimage `4065063`(함평나비대축제)와 생태관·온실 갤러리. fill 관련 매핑 제거. JSON contentId 기입·scenic 승격 없음.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hampyeong`
+- **다음**: **#44 해남 결손 오버레이** (동일 브랜치)
 
 ## 팔경 활용 #44 다음 — 해남 결손 오버레이
 
