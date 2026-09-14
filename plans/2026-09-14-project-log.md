@@ -120,6 +120,15 @@
 - **잔여**: 사진/개요 순수 누락 **94**/876. 다음 허브 **화순11경 4**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #45 QA — 홍성 검색·11경 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #45, 홍성 검색·11경 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `995baff2` · PR [#252](https://github.com/catgeot/Days/pull/252)
+- **완료**: Preview QA 빈 썸네일 4건(검색 오서산·죽도(홍성)·용봉산, 12경 홍주의사총)을 홍성군 문화관광 공식 사진 overlay로 채움. TourAPI first_image 없음. CID 126746·126721·125821·125993. 용봉산 ≠ 용봉산자연휴양림.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hongseong` · 검색「홍성」
+- **잔여**: 사진/개요 순수 누락 **94**/876. 다음 허브 **화순11경 4**
+
 ## 팔경 활용 #46 다음 — 화순 결손 오버레이
 
 ```
