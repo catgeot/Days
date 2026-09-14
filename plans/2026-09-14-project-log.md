@@ -91,14 +91,24 @@
 - **잔여**: 사진/개요 순수 누락 **98**/876. 다음 허브 **홍성12경 4** (그다음 화순11경)
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #45 다음 — 홍성 결손 오버레이
+## 팔경 활용 #45 — 홍성 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #45, 홍성 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `47f2ac91` · PR [#252](https://github.com/catgeot/Days/pull/252)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 홍성12경 결손 4건(만해한용운생가지·선상문선생 유허지·고암이응노 생가 기념관·그림같은수목원) 보강. 만해는 결성면 만해로318번길 83(기념물 제75호), 선상문은 군 공식명 성삼문선생유허지(홍북읍 매죽헌길 403-12·기념물 제5호), 고암은 홍북읍 이응노의 집, 그림같은수목원은 광천읍 사립 수목원. 인제 만해마을·대전 이응노미술관·구례 수목원과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS · `report-local-scenic-missing-content --hub=hongseong` 사진/개요 12/12, 순수 누락 0
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hongseong`
+- **잔여**: 사진/개요 순수 누락 **94**/876. 다음 허브 **화순11경 4**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #46 다음 — 화순 결손 오버레이
 
 ```
-팔경 활용 #45, 홍성 결손 오버레이
+팔경 활용 #46, 화순 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-14-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 홍성12경 사진·개요 없는 4건(만해한용운생가지·선상문선생 유허지·고암이응노 생가 기념관·그림같은수목원)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=hongseong
+작업: 화순11경 사진·개요 없는 4건(백아산 하늘다리·고인돌 유적지·수만리 철쭉공원·화순 꽃강길 음악분수)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=hwasun
 ```
