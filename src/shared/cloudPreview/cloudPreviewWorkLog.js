@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 45,
-  sessionPhase: '홍성 결손 오버레이',
+  sessionPhase: '홍성 검색·11경 빈 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=hongseong',
   qaShareSlug: 'palgyeong-use',
@@ -24,6 +24,13 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-14-palgyeong-use-45-hongseong-empty-thumbs',
+    session: '팔경 활용 #45, 홍성 검색·11경 빈 썸네일',
+    title: '홍성 검색 오서산·죽도·용봉산·11경 홍주의사총 빈 썸네일',
+    detail:
+      'Preview QA에서 홍성 검색 관광지 오서산·죽도(홍성)·용봉산과 홍성12경 11경 홍주의사총이 플레이스홀더였습니다. TourAPI first_image가 비어 있어 JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 홍성군 문화관광 공식 사진을 넣었습니다. 용봉산은 용봉산자연휴양림과 다른 사진, 죽도는 영덕·포항 죽도와 다른 사진입니다. Preview /qa/palgyeong-use — 검색「홍성」오서산·죽도(홍성)·용봉산, /korea/theme/scenic?hub=hongseong 홍주의사총.',
+    at: '2026-09-14T21:15:00.000Z',
+  },
     id: '2026-09-14-palgyeong-use-45-hongseong-overlays',
     session: '팔경 활용 #45, 홍성 결손 오버레이',
     title: '홍성12경 결손 4건 오버레이',

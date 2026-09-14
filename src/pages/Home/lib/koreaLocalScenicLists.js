@@ -1218,6 +1218,30 @@ const HS_GARDEN_2 =
   'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200511082322.JPG';
 const HS_GARDEN_3 =
   'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200511083833.JPG';
+const HS_YONG =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011130259425353.JPG';
+const HS_YONG_2 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011130259427504.JPG';
+const HS_YONG_3 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011130259429665.JPG';
+const HS_OSEO =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011270102041141.jpg';
+const HS_OSEO_2 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011270102042372.jpg';
+const HS_OSEO_3 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011270102043973.jpg';
+const HS_JUK =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011271144168288.jpg';
+const HS_JUK_2 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011271144169689.jpg';
+const HS_JUK_3 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_2020112711441709210.jpg';
+const HS_UISA =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200614597037.JPG';
+const HS_UISA_2 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_202011200616128968.JPG';
+const HS_UISA_3 =
+  'https://www.hongseong.go.kr/thumbnail/tursmCn/TUCN_2020112701475843510.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2564,6 +2588,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     HS_GARDEN,
     [HS_GARDEN_2, HS_GARDEN_3],
   ),
+  'local-scenic:hongseong-other:홍성용봉산': localScenicPhotoOverlay(
+    '홍성12경 제3경 용봉산은 홍북읍 상하리의 기암 산입니다. 홍성군 문화관광은 내포의 금강산이라 부르며 홍성·예산에 걸쳐 있고, 정상에서 예당평야와 서해가 보인다고 적습니다. 사진은 홍성군 문화관광 용봉산 공식 사진입니다.',
+    '충청남도 홍성군 홍북읍 상하리 (용봉산)',
+    HS_YONG,
+    [HS_YONG_2, HS_YONG_3],
+  ),
+  'local-scenic:hongseong-other:오서산': localScenicPhotoOverlay(
+    '홍성12경 제4경 오서산은 광천읍 담산리의 억새 산입니다. 홍성군 문화관광은 충남 서북부 최고봉 791m이며 멀리 바다에서도 보여 서해의 등대라고 적습니다. 사진은 홍성군 문화관광 오서산 공식 사진입니다.',
+    '충청남도 홍성군 광천읍 담산리 일원 (오서산)',
+    HS_OSEO,
+    [HS_OSEO_2, HS_OSEO_3],
+  ),
+  'local-scenic:hongseong-other:죽도': localScenicPhotoOverlay(
+    '홍성12경 제5경 죽도는 서부면 천수만의 유인도입니다. 홍성군 문화관광은 주소를 서부면 죽도길 86으로 두고, 섬 주위에 대나무가 많아 죽도라 부르며 남당항에서 배로 약 15분이라고 적습니다. 사진은 홍성군 문화관광 죽도 공식 사진입니다.',
+    '충청남도 홍성군 서부면 죽도길 86 (죽도리)',
+    HS_JUK,
+    [HS_JUK_2, HS_JUK_3],
+  ),
+  'local-scenic:hongseong-other:홍주의사총': localScenicPhotoOverlay(
+    '홍성12경 제11경 홍주의사총은 홍성읍 남산의 의병 묘소입니다. 홍성군 문화관광은 주소를 홍성읍 의사로 79로 두고, 1906년 홍주성 전투에서 희생된 의병을 모셨으며 옛 이름은 구백의총이고 2001년 8월 17일 사적으로 지정됐다고 적습니다. 사진은 홍성군 문화관광 홍주의사총 공식 사진입니다.',
+    '충청남도 홍성군 홍성읍 의사로 79 (홍주의사총)',
+    HS_UISA,
+    [HS_UISA_2, HS_UISA_3],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -2590,6 +2638,11 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   ),
   // 진도 검색 조도(조도6군도) — TourAPI first_image 없음. JSON contentId 기입 아님.
   553447: localScenicThumbOverlay(JD_JODO, [JD_GASA]),
+  // 홍성 검색 용봉산·오서산·죽도(홍성)·홍주의사총 — TourAPI first_image 없음.
+  125821: localScenicThumbOverlay(HS_YONG, [HS_YONG_2, HS_YONG_3]),
+  126746: localScenicThumbOverlay(HS_OSEO, [HS_OSEO_2, HS_OSEO_3]),
+  126721: localScenicThumbOverlay(HS_JUK, [HS_JUK_2, HS_JUK_3]),
+  125993: localScenicThumbOverlay(HS_UISA, [HS_UISA_2, HS_UISA_3]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
