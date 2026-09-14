@@ -69,7 +69,13 @@
       "subtitle": "새로운 비밀번호를 입력해주세요.",
       "newPassword": "NEW PASSWORD",
       "placeholder": "새 비밀번호 입력",
+      "confirmPassword": "비밀번호 확인",
+      "confirmPlaceholder": "새 비밀번호 다시 입력",
+      "mismatch": "비밀번호가 일치하지 않습니다.",
+      "fail": "비밀번호를 변경하지 못했습니다. 다시 시도해 주세요.",
+      "signedInSubtitle": "로그인된 계정의 새 비밀번호를 입력해 주세요.",
       "submit": "변경 완료",
+      "successStay": "비밀번호가 변경되었습니다.",
       "successAlert": "비밀번호가 성공적으로 변경되었습니다! 다시 로그인해주세요."
     }
   },
@@ -401,7 +407,8 @@
       "signInTitle": "당신의 여행을 기록하세요",
       "signInBody": "로그인하고 나만의 버킷리스트를 만들고 지구본의 모든 기능을 제한 없이 이용할 수 있습니다.",
       "signIn": "로그인",
-      "signOut": "로그아웃"
+      "signOut": "로그아웃",
+      "changePassword": "비밀번호 변경"
     },
     "agencies": {
       "title": "방문한 여행사",
@@ -1870,7 +1877,8 @@
       "penName": "공개 필명",
       "nicknamePlaceholder": "닉네임",
       "penNameHint": "공개 로그북·명소 여행기에 표시됩니다. 비우면 이메일 앞부분·ID로 대체됩니다.",
-      "loginRequired": "로그인이 필요합니다."
+      "loginRequired": "로그인이 필요합니다.",
+      "changePassword": "비밀번호 변경"
     },
     "memo": {
       "placeholder": "새로운 아이디어를 적어보세요...",

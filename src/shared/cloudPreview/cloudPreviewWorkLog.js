@@ -9,7 +9,7 @@ export const cloudPreviewProject = {
   sessionNo: 5,
   sessionPhase: '로딩스켈레톤 및 에러복구 UX',
   branch: 'cursor/visitor-growth-1f90',
-  previewPath: '/korea',
+  previewPath: '/',
   qaShareSlug: 'visitor-growth',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-visitor-growth-5-change-password',
+    session: '방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX',
+    title: '로그인 후 비밀번호 변경 경로',
+    detail:
+      '로고 패널·로그북 프로필·모바일 로그북 헤더에 「비밀번호 변경」을 넣었습니다. /auth/update-password는 로그인 세션에서 확인 입력 후 바로 바꾸고, 메일 재설정 링크는 기존처럼 로그인 화면으로 돌아갑니다. Preview /qa/visitor-growth — 로그인 후 로고 패널 경로 확인.',
+    at: '2026-09-14T21:50:00.000Z',
+  },
   {
     id: '2026-09-14-visitor-growth-5-loading-error-ux',
     session: '방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX',
