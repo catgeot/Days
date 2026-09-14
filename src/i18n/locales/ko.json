@@ -12,7 +12,8 @@
       "labelKo": "KO"
     },
     "search": {
-      "placeholder": "지금 기분, 느낌으로 검색해 보세요"
+      "placeholder": "3D 지구본과 AI로 여행지 탐색...",
+      "placeholderMobile": "3D 지구본으로 여행지 검색..."
     },
     "siteNotice": {
       "refreshHeader": "업데이트 안내",
@@ -1986,9 +1987,9 @@
     },
     "lines": {
       "intro": [
-        "안녕! MOONi예요.",
-        "반가워요, MOONi예요.",
-        "오늘도 여행 기분, MOONi예요."
+        "지구본을 돌리거나 제게 여행을 물어보세요! ✨",
+        "안녕! 3D 지구본과 AI로 여행지를 찾아봐요.",
+        "반가워요! 가고 싶은 곳을 말씀해 주세요."
       ],
       "peek": {
         "invite": [

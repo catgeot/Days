@@ -271,6 +271,12 @@ const normalizeLngDelta = (a, b) => {
   return diff > 180 ? 360 - diff : diff;
 };
 
+const GLOBE_MAX_PIXEL_RATIO = 2;
+const resolveGlobePixelRatio = () => {
+  if (typeof window === 'undefined') return 1;
+  return Math.min(window.devicePixelRatio || 1, GLOBE_MAX_PIXEL_RATIO);
+};
+
 const safeMapResize = (map) => {
   if (!map || map._removed) return;
   try {
@@ -2774,6 +2780,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         projection="globe"
         mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle={mapStyle}
+        pixelRatio={resolveGlobePixelRatio()}
         onClick={handleGlobeClickInternal}
         onError={(evt) => {
           const err = evt?.error || new Error('Mapbox render error');
