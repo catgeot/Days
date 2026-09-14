@@ -2,6 +2,16 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #5 — 로그인 후 비밀번호 변경 경로 (Cloud)
+
+- **세션** `방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `f3c5ddbf` · PR [#253](https://github.com/catgeot/Days/pull/253)
+- **원인**: 비밀번호 재설정은 메일 링크(`/auth/forgot-password`)만 있고, 로그인 후 변경 경로가 없음.
+- **완료**: 로고 패널·로그북 프로필·모바일 로그북 헤더에 「비밀번호 변경」. 로그인 세션은 확인 입력 후 유지, 메일 재설정은 로그인 화면으로.
+- **VERIFY**: `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` 로고 패널 · `/blog` · `/auth/update-password`
+- **QA**: 로그인 후 로고 패널에서 비밀번호 변경 · 성공 후 세션 유지 · 메일 재설정 흐름 회귀.
+
 ## 방문자 개선 #5 — 로딩스켈레톤 및 에러복구 UX (Cloud)
 
 - **세션** `방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX`
