@@ -199,6 +199,7 @@ export default function EventTnaStrip({
     if (fetchedKeyRef.current === fetchKey) return undefined;
 
     let cancelled = false;
+    setItems(null);
     setStatus('loading');
 
     (async () => {

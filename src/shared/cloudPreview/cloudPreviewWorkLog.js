@@ -24,12 +24,44 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-14-palgyeong-use-42-jindo-jodo-thumb',
+    session: '팔경 활용 #42, 진도 QA 조도 썸네일',
+    title: '진도 검색 조도(조도6군도) 빈 썸네일',
+    detail:
+      '진도 검색 관광지 행 조도(조도6군도)는 TourAPI contentId 553447인데 DB first_image가 없어 플레이스홀더가 떴습니다. JSON contentId 기입 없이 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID에 진도군 조도 다도해 공식 사진을 연결했습니다. 속초 조도·남해 조도와 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「진도」조도(조도6군도) 행.',
+    at: '2026-09-14T12:50:00.000Z',
+  },
+  {
     id: '2026-09-14-visitor-growth-3-crawler-body',
     session: '방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링',
     title: '봇 전수화·274 여행지 메타·시맨틱 본문',
     detail:
       '카카오·다음·슬랙 봇을 감지하고, 여행지 274곳 전수 크롤러 메타를 생성합니다. 봇에게는 장소별 h1·설명·갤러리/플래너/AI 도슨트 nav를 #root에 넣습니다. Preview /qa/visitor-growth — /place/tokyo?crawler=1 · /place/santorini?crawler=1 본문이 홈 소개글이 아닌지 확인.',
     at: '2026-09-14T09:40:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-42-jindo-overlays',
+    session: '팔경 활용 #42, 진도 결손 오버레이',
+    title: '진도10경 결손 4건 오버레이',
+    detail:
+      '문경8경 4건은 사진·개요가 이미 채워져 있어 건너뛰고, JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 진도10경 결손 4건(조도관음도·의장대·돈대산·하조대)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 조도관음도는 진도군 가사도·조도 다도해 사진, 의장대는 조도 전망 데크 사진, 돈대산은 조도 다도해 조망 사진, 하조대는 하조도등대 사진입니다. 양양 하조대·울릉 관음도와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jindo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T09:10:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-41-yeongdeok-qa-fix',
+    session: '팔경 활용 #41, 영덕 QA 수정',
+    title: '영덕 썸네일·투어 오탐 수정',
+    detail:
+      '영덕 검색 하저·경정 해수욕장·삼사해상공원 빈 썸네일을 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID(127160·1621219·126143)로 보강했습니다. 명승 상세 투어에 잔지바르·나이로비 사파리가 뜨던 원인은 인근 키워드「영양」이 투어 제목 일반어(영양)와 부분일치한 오탐이었습니다 — 해외·동형어 필터·EventTnaStrip 로딩 시 이전 목록 제거로 수정. Preview /qa/palgyeong-use — 영덕 검색·하저 상세 투어.',
+    at: '2026-09-13T22:05:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-41-yeongdeok-overlays',
+    session: '팔경 활용 #41, 영덕 결손 오버레이',
+    title: '영덕9경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영덕9경 결손 4건(영덕 도천숲·영덕 팔각산·영덕 사월의 복사꽃·영덕 나옹왕사 사적비)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 도천숲은 정책브리핑 국가유산청 사진, 팔각산은 한국관광공사 옥계계곡·명승 침수정 사진, 사월의 복사꽃은 한국관광공사 영덕 복사꽃마을 사진, 나옹왕사 사적비는 한국관광공사 장육사 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongdeok 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T12:58:00.000Z',
   },
   {
     id: '2026-09-13-visitor-growth-1-clear-mobile',
