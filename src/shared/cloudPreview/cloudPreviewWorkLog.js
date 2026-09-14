@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-14-visitor-growth-4-mooni-ask-top',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: 'MOONi 카드 상단·기존 목적지 중첩 해제',
+    detail:
+      '탐색 드롭다운의 MOONi 추천 카드를 항상 맨 위에 둡니다. 카드를 누르면 이전 여행지 대화를 이어받지 않고 일반 MOONi 세션을 엽니다. Preview /qa/visitor-growth — 김포 검색 카드가 맨 위인지, 코타키나발루가 채팅에 안 남는지.',
+    at: '2026-09-14T19:55:00.000Z',
+  },
+  {
     id: '2026-09-14-visitor-growth-4-mood-bridge',
     session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
     title: '무드 결합 지오코딩 스킵·MOONi 추천 카드',

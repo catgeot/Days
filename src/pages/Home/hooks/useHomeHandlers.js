@@ -554,6 +554,7 @@ export function useHomeHandlers({
 
     const isMooniRequest = String(dest ?? '').trim() === 'MOONi';
     const boundSpot = initPayload?.boundSpot ?? null;
+    const freshSession = initPayload?.freshSession === true;
     const boundPlaceLabel =
       String(boundSpot?.displayLabel || boundSpot?.name || '').trim() || null;
     logCurationHandoff('chat.start', {
@@ -570,6 +571,21 @@ export function useHomeHandlers({
     if (isMooniRequest) {
       setMooniChatEntry?.(true);
       setMooniPlaceContext?.(boundSpot ?? null);
+
+      if (freshSession) {
+        setChatDraft({
+          destination: 'MOONi',
+          lat: 0,
+          lng: 0,
+          persona,
+          category,
+        });
+        setActiveChatId(null);
+        setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+        logCurationHandoff('chat.open.fresh', { destination: 'MOONi' });
+        setIsChatOpen(true);
+        return;
+      }
 
       if (!existingId && boundPlaceLabel) {
         let placeTrip = savedTrips.find(

@@ -18,8 +18,6 @@ import {
   getLocalizedPlaceName,
   getPlaceTitleLinesForLocale,
 } from '../../../../components/PlaceCard/common/locationDisplay';
-import { shouldSkipGeocodeForMood } from '../../lib/moodSearchIntent';
-
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
 
@@ -218,7 +216,6 @@ export function SearchSuggestionList({
 
   const isPopover = variant === 'popover';
   const showMooni = Boolean(onAskMooni);
-  const moodFirst = showMooni && shouldSkipGeocodeForMood(query);
   const shellClass = isPopover
     ? 'w-full overflow-hidden'
     : 'w-full mb-6 rounded-2xl border border-white/20 bg-white/[0.08] overflow-hidden';
@@ -247,8 +244,14 @@ export function SearchSuggestionList({
         )}
       </div>
 
-      {moodFirst ? (
-        <div className={items.length || loading ? 'border-b border-white/10' : ''}>{mooniRow}</div>
+      {showMooni ? (
+        <div
+          className={`${items.length || loading ? 'border-b border-white/10' : ''} ${
+            isPopover ? 'sticky top-0 z-[1] bg-[#261d16]' : ''
+          }`}
+        >
+          {mooniRow}
+        </div>
       ) : null}
 
       {items.length === 0 && !loading && !showMooni ? (
@@ -327,10 +330,6 @@ export function SearchSuggestionList({
             );
           })}
         </ul>
-      ) : null}
-
-      {!moodFirst && showMooni ? (
-        <div className={items.length || loading ? 'border-t border-white/10' : ''}>{mooniRow}</div>
       ) : null}
     </div>
   );

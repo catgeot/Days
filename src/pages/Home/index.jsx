@@ -1736,6 +1736,7 @@ function Home() {
             handleStartChat('MOONi', {
               text: `${q} 여행지 추천해줘`,
               persona: PERSONA_TYPES.INSPIRER,
+              freshSession: true,
             });
             navigate('/');
           }}
