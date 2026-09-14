@@ -92,7 +92,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#42** tip `aac4eaf2` · PR [#245](https://github.com/catgeot/Days/pull/245) · 진도10경 4 · **#43 함평 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#42 QA** tip `8b3aa5ed` · PR [#245](https://github.com/catgeot/Days/pull/245) · 진도10경 4 + 검색 조도 썸네일 · **#43 함평 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -143,7 +143,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 39 | `팔경 활용 #39, 담양 결손 오버레이` | A | **완료** · tip `1c2fa1c2` · PR [#245](https://github.com/catgeot/Days/pull/244) · 담양10경 4 |
 | 40 | `팔경 활용 #40, 밀양 결손 오버레이` | A | **완료** · tip `bd5827d2` · PR [#245](https://github.com/catgeot/Days/pull/245) · 밀양8경 4 |
 | 41 | `팔경 활용 #41, 영덕 결손 오버레이` | A | **완료** · tip `1a2f148b` · PR [#245](https://github.com/catgeot/Days/pull/245) · 영덕9경 4 |
-| 42 | `팔경 활용 #42, 진도 결손 오버레이` | A | **완료** · tip `aac4eaf2` · PR [#245](https://github.com/catgeot/Days/pull/245) · 진도10경 4 · 문경8경은 사진·개요 기완료로 건너뜀 |
+| 42 | `팔경 활용 #42, 진도 결손 오버레이` | A | **완료** · tip `8b3aa5ed` · PR [#245](https://github.com/catgeot/Days/pull/245) · 진도10경 4 · QA 검색 조도(조도6군도) 553447 썸네일 |
 | 43 | `팔경 활용 #43, 함평 결손 오버레이` | A | **열기 가능** · 함평8경 4 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
