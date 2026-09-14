@@ -2,6 +2,16 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #5 — 로그인 후 비밀번호 변경 경로 (Cloud)
+
+- **세션** `방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `f3c5ddbf` · PR [#253](https://github.com/catgeot/Days/pull/253)
+- **원인**: 비밀번호 재설정은 메일 링크(`/auth/forgot-password`)만 있고, 로그인 후 변경 경로가 없음.
+- **완료**: 로고 패널·로그북 프로필·모바일 로그북 헤더에 「비밀번호 변경」. 로그인 세션은 확인 입력 후 유지, 메일 재설정은 로그인 화면으로.
+- **VERIFY**: `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` 로고 패널 · `/blog` · `/auth/update-password`
+- **QA**: 로그인 후 로고 패널에서 비밀번호 변경 · 성공 후 세션 유지 · 메일 재설정 흐름 회귀.
+
 ## 방문자 개선 #5 — 로딩스켈레톤 및 에러복구 UX (Cloud)
 
 - **세션** `방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX`
@@ -109,6 +119,15 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hongseong`
 - **잔여**: 사진/개요 순수 누락 **94**/876. 다음 허브 **화순11경 4**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #45 QA — 홍성 검색·11경 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #45, 홍성 검색·11경 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `995baff2` · PR [#252](https://github.com/catgeot/Days/pull/252)
+- **완료**: Preview QA 빈 썸네일 4건(검색 오서산·죽도(홍성)·용봉산, 12경 홍주의사총)을 홍성군 문화관광 공식 사진 overlay로 채움. TourAPI first_image 없음. CID 126746·126721·125821·125993. 용봉산 ≠ 용봉산자연휴양림.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hongseong` · 검색「홍성」
+- **잔여**: 사진/개요 순수 누락 **94**/876. 다음 허브 **화순11경 4**
 
 ## 팔경 활용 #46 다음 — 화순 결손 오버레이
 
