@@ -11,6 +11,8 @@ import {
   Map,
   ChevronDown,
   ChevronUp,
+  User,
+  LogOut,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
