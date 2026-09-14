@@ -61,6 +61,16 @@
 - **잔여**: 사진/개요 순수 누락 **102**/876. 다음 허브 **해남8경 4** (그다음 홍성12경·화순11경)
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #43 QA — 함평 1경·2경 중복 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #43, 함평 엑스포 중복 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `5d812d09` · PR [#250](https://github.com/catgeot/Days/pull/250)
+- **원인**: GATEO 선정 `hampyeong-expo-park` fill 폴백이 생태공원 contentId `129235`라 1경·2경이 같은 한국관광공사 사진 `3536105`를 씀.
+- **완료**: 엑스포는 TourAPI `130864` firstimage `4065063`(함평나비대축제)와 생태관·온실 갤러리. fill 관련 매핑 제거. JSON contentId 기입·scenic 승격 없음.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=hampyeong`
+- **다음**: **#44 해남 결손 오버레이** (동일 브랜치)
+
 ## 팔경 활용 #44 다음 — 해남 결손 오버레이
 
 ```
