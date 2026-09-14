@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '방문자 개선',
-  sessionNo: 1,
-  sessionPhase: '404 복구 및 AI채팅 초기화',
+  sessionNo: 3,
+  sessionPhase: '크롤러 SEO 및 본문 프리렌더링',
   branch: 'cursor/visitor-growth-1f90',
   previewPath: '/',
   qaShareSlug: 'visitor-growth',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-visitor-growth-3-crawler-body',
+    session: '방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링',
+    title: '봇 전수화·274 여행지 메타·시맨틱 본문',
+    detail:
+      '카카오·다음·슬랙 봇을 감지하고, 여행지 274곳 전수 크롤러 메타를 생성합니다. 봇에게는 장소별 h1·설명·갤러리/플래너/AI 도슨트 nav를 #root에 넣습니다. Preview /qa/visitor-growth — /place/tokyo?crawler=1 · /place/santorini?crawler=1 본문이 홈 소개글이 아닌지 확인.',
+    at: '2026-09-14T09:40:00.000Z',
+  },
   {
     id: '2026-09-13-visitor-growth-1-clear-mobile',
     session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
