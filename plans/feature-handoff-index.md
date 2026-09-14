@@ -34,12 +34,12 @@
 
 | | |
 |--|--|
-| **상태** | **#5 push** · tip `5cf98ba1` · PR [#253](https://github.com/catgeot/Days/pull/253) · **사람 Preview**
+| **상태** | **#5 push** · tip `f3c5ddbf` · PR [#253](https://github.com/catgeot/Days/pull/253) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-14-project-log.md`](./2026-09-14-project-log.md) |
-| **Preview** | `/qa/visitor-growth` → git Preview `/korea` · `/blog/curation` · `/place/paris/gallery` |
-| **소유** | `Korea/index.jsx` · `useLogbookAI.js` · `CurationHub.jsx` · `usePlaceGallery.js` |
+| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/korea` · `/blog` · `/auth/update-password` |
+| **소유** | `Korea/index.jsx` · `CurationHub.jsx` · `usePlaceGallery.js` · `LogoPanel.jsx` · `UpdatePassword.jsx` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run build` PASS |
 
