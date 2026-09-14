@@ -493,15 +493,15 @@ flowchart TD
 
 다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
 
-**#3 완료** (`dd317cf9` · PR [#248](https://github.com/catgeot/Days/pull/248)) — 세션 #4(무드검색) 제시어:
+**#4 완료** (`7a938802` · PR [#249](https://github.com/catgeot/Days/pull/249)) — 세션 #5(로딩/에러 UX) 제시어:
 
 ```
-방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지
+방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX
 @plans/feature-handoff-index.md
 @plans/2026-09-14-project-log.md
 @plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · PR #248 · Preview /qa/visitor-growth
+브랜치 cursor/visitor-growth-1f90 · PR #249 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: MOOD_HINT 결합 패턴 · shouldSkipGeocodeForMood · 검색 드롭다운 MOONi 추천 카드
+작업: /korea 축제 행 onError·스켈레톤·필터 초기화 · /blog/curation alert 제거·인라인 재시도 · 갤러리 네트워크 안내
 검증: npm run build PASS
 ```
