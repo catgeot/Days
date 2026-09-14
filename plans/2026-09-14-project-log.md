@@ -2,6 +2,16 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #4 QA — MOONi 카드 상단·목적지 중첩 해제 (Cloud)
+
+- **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `f708581d` · PR [#249](https://github.com/catgeot/Days/pull/249)
+- **원인**: 지명 검색(김포)에서 MOONi 카드가 드롭다운 맨 아래. 탭하면 `freshSession` 없이 마지막 장소 대화(코타키나발루)를 이어받아 질의와 목적지가 겹침.
+- **완료**: MOONi 카드를 드롭다운 맨 위(sticky)로. `freshSession: true`로 일반 MOONi 세션을 열고 이전 여행지 resume을 건너뜀.
+- **VERIFY**: `npm run smoke:mood-search-intent` PASS · `npm run smoke:mooni-ask-bridge` PASS · `npm run smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` · `/explore`
+- **QA**: 김포 드롭다운 카드가 맨 위인지 · 탭 후 헤더가 코타키나발루가 아닌지 · 파리/도쿄/제주 지명 회귀.
+
 ## 방문자 개선 #4 — 무드검색 분리 및 AI추천 브릿지 (Cloud)
 
 - **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`

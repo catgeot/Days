@@ -301,9 +301,9 @@ flowchart TD
   2. **지오코딩 오탐 필터링**:
      - Mapbox 지오코딩 결과가 도로명(`address`, `street`) 또는 단순 상호명(`poi`)인 경우, 질의어가 지명 형식이 아니면 단독 핀 이동을 차단하고 테마/AI 추천 후보로 안전 폴백.
   3. **검색 드롭다운 내 "MOONi에게 물어보기" 추천 카드 신설 (`SearchSuggestionList.jsx`)**:
-     - 사용자가 검색어를 입력하면 드롭다운 최상단 또는 하단에 항상 다음과 같은 인터랙티브 AI 카드 노출:
+     - 사용자가 검색어를 입력하면 드롭다운 **맨 위**(장소 행보다 위, 스크롤 시 sticky)에 AI 카드 노출:
        - `[ ✨ MOONi에게 "${query}" 여행지 추천받기 ]`
-     - 클릭 시 `handleStartChat('MOONi', { text: `${query} 여행지 추천해줘` })`로 연결하여 검색에서 대화형 탐색으로의 매끄러운 전환 유도.
+     - 클릭 시 `handleStartChat('MOONi', { text: `${query} 여행지 추천해줘`, freshSession: true })` — 이전 목적지 대화를 이어받지 않음.
 
 - **안전 가드 및 주의사항**:
   - 기존의 도시 허브(`cityAttractionHubs.json`) 및 정착지(`mapboxSettlementPlaces.json`)의 exact 일치 우선순위는 그대로 보존. 지명 검색에는 영향이 없어야 함.
@@ -493,7 +493,7 @@ flowchart TD
 
 다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
 
-**#4 완료** (`7a938802` · PR [#249](https://github.com/catgeot/Days/pull/249)) — 세션 #5(로딩/에러 UX) 제시어:
+**#4 QA** (`f708581d` · PR [#249](https://github.com/catgeot/Days/pull/249)) — MOONi 카드 상단·기존 목적지 중첩 해제. 세션 #5(로딩/에러 UX) 제시어:
 
 ```
 방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX
