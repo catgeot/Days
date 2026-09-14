@@ -15,6 +15,11 @@ import {
   nextUnloadedNearbyKeyword,
   resolveMrtTnaQuery,
 } from '../src/utils/mrtTnaQuery.js';
+import {
+  filterRelevantMrtTnas,
+  scoreMrtTnaRelevance,
+  stripUnsafeMrtTnaItems,
+} from '../src/utils/mrtTnaRelevance.js';
 
 function loadEnvLocal() {
   const path = resolve(process.cwd(), '.env.local');
@@ -433,8 +438,44 @@ function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
 
+function assertRelevanceSmoke() {
+  assert(
+    scoreMrtTnaRelevance('[나이로비] 마사이 마라 + 영양 대이주', '영양') === 0,
+    '영양 homonym blocks safari nutrition match',
+  );
+  assert(
+    scoreMrtTnaRelevance('[경북/영양] 벌건공방 솟대 만들기', '영양') > 0,
+    '영양 county bracket match',
+  );
+  assert(
+    scoreMrtTnaRelevance('[경북영양] 음식디미방 1박2일', '영양') > 0,
+    '영양 경북영양 prefix match',
+  );
+  const stripped = stripUnsafeMrtTnaItems([
+    { itemName: '[잔지바르] 응두투 3일 사파리 :: 새끼 영양' },
+    { itemName: '[경북/영양] 벌건공방 솟대 만들기' },
+    { itemName: '[포항] 요트투어' },
+  ]);
+  assert(stripped.length === 2, `stripUnsafe keeps domestic only (${stripped.length})`);
+  const yeongyangOnly = filterRelevantMrtTnas(
+    [
+      { itemName: '[나이로비] 마사이 마라 + 영양 대이주' },
+      { itemName: '[경북/영양] 벌건공방 솟대 만들기' },
+    ],
+    '영양',
+  );
+  assert(yeongyangOnly.length === 1, 'filterRelevantMrtTnas 영양');
+  console.log('OK  relevance  영양 homonym · safari noise');
+}
+
 async function main() {
   let failed = 0;
+  try {
+    assertRelevanceSmoke();
+  } catch (err) {
+    failed += 1;
+    console.error('FAIL relevance:', err.message);
+  }
   for (const c of CASES) {
     try {
       const domestic = isMrtDomesticLocation(c.location);

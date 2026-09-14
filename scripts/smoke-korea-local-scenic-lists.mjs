@@ -1760,6 +1760,22 @@ assert.equal(
   3,
   '논산 Tour 빈 썸네일 3건 서로 다름',
 );
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127160')?.imageUrl?.includes('3590496'),
+  '영덕 하저해수욕장 Tour 빈 썸네일 overlay',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('2599737')?.imageUrl?.includes('4059797'),
+  '문경석탄박물관 Tour 빈 썸네일 overlay',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('553447')?.imageUrl?.includes('201611080750465200'),
+  '진도 조도(조도6군도) Tour 빈 썸네일 overlay',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('553447')?.imageUrl?.includes('jindo.go.kr'),
+  '진도 조도 Tour 썸네일은 진도군 공식 사진',
+);
 assert.notEqual(
   nsHistoryThumb?.imageUrl,
   nsGang?.imageUrl,
@@ -1848,6 +1864,89 @@ assert.ok(
     .find((s) => s.attractionName === '봉선홍경사갈기비')
     ?.overview?.includes('갈기비'),
   '천안 검색 팔경 갈기비 개요',
+);
+
+const jindoMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jindo');
+const jindoTen = jindoMerged.filter((s) => s.localScenicListId === 'jindo-other');
+assert.equal(jindoTen.length, 10, '진도10경 10명');
+assert.equal(jindoTen[0]?.groupTitle, '진도 10경');
+const jindoDeficitNames = ['조도관음도', '의장대', '돈대산', '하조대'];
+const jindoDeficit = jindoTen.filter((s) => jindoDeficitNames.includes(s.attractionName));
+assert.equal(jindoDeficit.length, 4, '진도10경 결손 4명');
+assert.ok(
+  jindoDeficit.every((s) => s.overview && s.imageUrl),
+  '진도 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  jindoDeficit.every((s) => !s.contentId),
+  '진도 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jindoDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '진도 결손 4명 썸네일 서로 다름',
+);
+assert.ok(
+  jindoDeficit.every((s) => String(s.imageUrl).includes('jindo.go.kr')),
+  '진도 결손 썸네일은 진도군 공식 사진',
+);
+
+const jdGwaneum = resolveLocalScenicListSpotById('local-scenic:jindo-other:조도관음도');
+assert.ok(jdGwaneum?.overview?.includes('조도 6군도'), '진도 조도관음도 overlay overview');
+assert.ok(jdGwaneum?.overview?.includes('가사도'), '진도 조도관음도 가사도');
+assert.ok(
+  jdGwaneum?.imageUrl?.includes('201611080739579140'),
+  '진도 조도관음도 군 공식 사진',
+);
+
+const jdUijang = resolveLocalScenicListSpotById('local-scenic:jindo-other:의장대');
+assert.ok(jdUijang?.overview?.includes('도리산'), '진도 의장대 overlay overview');
+assert.ok(jdUijang?.overview?.includes('전망 데크'), '진도 의장대 전망 데크');
+assert.ok(jdUijang?.imageUrl?.includes('201611080750470042'), '진도 의장대 군 공식 사진');
+
+const jdDondae = resolveLocalScenicListSpotById('local-scenic:jindo-other:돈대산');
+assert.ok(jdDondae?.overview?.includes('231m'), '진도 돈대산 overlay overview');
+assert.ok(jdDondae?.overview?.includes('봉수대'), '진도 돈대산 봉수대');
+assert.ok(jdDondae?.imageUrl?.includes('201611080750465200'), '진도 돈대산 군 공식 사진');
+
+const jdHajo = resolveLocalScenicListSpotById('local-scenic:jindo-other:하조대');
+assert.ok(jdHajo?.overview?.includes('하조도등대'), '진도 하조대 overlay overview');
+assert.ok(jdHajo?.overview?.includes('1909'), '진도 하조대 1909');
+assert.ok(jdHajo?.overview?.includes('조도등대길 429'), '진도 하조대 등대 주소');
+assert.ok(!jdHajo?.overview?.includes('양양'), '진도 하조대 개요에 양양 없음');
+assert.ok(!jdHajo?.overview?.includes('하륜'), '진도 하조대 개요에 양양 설화 없음');
+assert.ok(jdHajo?.imageUrl?.includes('201612230215081201'), '진도 하조대 군 공식 사진');
+assert.ok(
+  jdHajo?.imageUrl?.includes('jindo.go.kr'),
+  '진도 하조대 썸네일은 진도군 하조도등대',
+);
+assert.notEqual(jdGwaneum?.imageUrl, jdUijang?.imageUrl, '조도관음도·의장대 썸네일 다름');
+assert.notEqual(jdDondae?.imageUrl, jdHajo?.imageUrl, '돈대산·하조대 썸네일 다름');
+
+const yangyangHajoBeach = listKoreaScenicSpots().find((s) => s.id === 'hajodae-beach');
+assert.ok(yangyangHajoBeach?.imageUrl, '양양 하조대해수욕장 GATEO 선정 썸네일');
+assert.notEqual(
+  jdHajo?.imageUrl,
+  yangyangHajoBeach?.imageUrl,
+  '진도 하조대 썸네일 ≠ 양양 하조대해수욕장',
+);
+
+const jindoGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '진도', {
+  injectLocalScenic: true,
+});
+const jindoGlobeTen = jindoGlobe.filter((s) => s.localScenicListId === 'jindo-other');
+assert.equal(jindoGlobeTen.length, 10, '진도 검색 진도10경 10행');
+assert.ok(
+  jindoGlobeTen.every((s) => s.groupTitle === '진도 10경'),
+  '진도 검색 그룹명 진도 10경',
+);
+assert.ok(
+  jindoGlobe.find((s) => s.attractionName === '하조대')?.imageUrl?.includes('jindo.go.kr'),
+  '진도 검색 팔경 하조대 진도군 썸네일',
+);
+assert.ok(
+  jindoGlobe.find((s) => s.attractionName === '조도관음도')?.overview?.includes('조도 6군도'),
+  '진도 검색 팔경 조도관음도 개요',
 );
 
 const extra = process.argv.slice(2);

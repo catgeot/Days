@@ -82,7 +82,10 @@ function uniqueKeywords(list: string[]) {
 
 /** 키워드 부분일치 오탐(연·회·구) + 해외 동명 억제 */
 const OVERSEAS_NOISE_RE =
-  /중국|칭다오|상하이|오사카|도쿄|교토|간사이|유니버설|디즈니|만리장성|심천|대련|홍콩|타이베이|LA\b|노산\s*풍경|라오산|연세대학교|연남점|Douro|Yarra|Hidden\s*Valley|Valley\s*of\s*Fire|와인\s*투어/;
+  /중국|칭다오|상하이|오사카|도쿄|교토|간사이|유니버설|디즈니|만리장성|심천|대련|홍콩|타이베이|LA\b|노산\s*풍경|라오산|연세대학교|연남점|Douro|Yarra|Hidden\s*Valley|Valley\s*of\s*Fire|와인\s*투어|잔지바르|Zanzibar|나이로비|Nairobi|사파리|마사이|Masai|세렝게티|Serengeti|케냐|Kenya|탄자니아|Tanzania|응두투|Ndutu/;
+
+/** 시군명이 일반어와 동형 — 약한 부분일치(score≤3)만으로는 지명 매칭 불가 */
+const AMBIGUOUS_KO_PLACE_NAMES = new Set(["영양", "동해", "남해"]);
 
 /** 영문 일반명 — 단독 매칭 금지 (Dutayeon Valley → Valley 와인투어) */
 const GENERIC_EN_TOKEN_RE =
@@ -130,6 +133,19 @@ function scoreTnaRelevance(itemName: string, keyword: string): number {
   if (best > 0 && OVERSEAS_NOISE_RE.test(name)) {
     return 0;
   }
+
+  if (best > 0 && best <= 3) {
+    for (const token of tokens) {
+      if (!AMBIGUOUS_KO_PLACE_NAMES.has(token)) continue;
+      const esc = escapeRegExp(token);
+      const strongGeo = new RegExp(
+        `\\[(?:경북\\/|경남\\/|전북\\/|전남\\/|충북\\/|충남\\/|강원\\/|제주\\/)?${esc}\\]|\\[(?:경북|경남|전북|전남|충북|충남|강원|제주)${esc}\\]|${esc}(?:군|시|읍|면)|(?:^|[\\s\\[/])${esc}(?:$|[\\s\\]/,·])`,
+        "i",
+      ).test(name);
+      if (!strongGeo) return 0;
+    }
+  }
+
   return best;
 }
 
