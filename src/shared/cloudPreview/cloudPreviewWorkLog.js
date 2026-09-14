@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 43,
-  sessionPhase: '함평 결손 오버레이',
+  sessionPhase: '함평 엑스포 중복 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=hampyeong',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-palgyeong-use-43-hampyeong-expo-thumb',
+    session: '팔경 활용 #43, 함평 엑스포 중복 썸네일',
+    title: '함평 1경·2경 동일 썸네일 분리',
+    detail:
+      '함평8경 1경 함평자연생태공원과 2경 함평엑스포공원이 GATEO 선정 이미지 폴백 때문에 같은 한국관광공사 생태공원 사진(3536105)을 쓰고 있었습니다. fill 스크립트가 엑스포를 생태공원 contentId 129235로 폴백하던 매핑을 제거하고, 엑스포는 TourAPI 130864 firstimage(4065063 함평나비대축제)와 생태관·온실 갤러리로 바꿨습니다. JSON contentId 기입·scenic 승격 없음. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hampyeong 1경·2경 썸네일이 다른지.',
+    at: '2026-09-14T20:10:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-43-hampyeong-overlays',
     session: '팔경 활용 #43, 함평 결손 오버레이',

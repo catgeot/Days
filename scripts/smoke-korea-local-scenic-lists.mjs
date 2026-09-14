@@ -2041,6 +2041,25 @@ assert.ok(
   hampyeongGlobe.find((s) => s.attractionName === '모악산')?.overview?.includes('348m'),
   '함평 검색 팔경 모악산 개요',
 );
+const hpEco = hampyeongEight.find((s) => s.attractionName === '함평자연생태공원');
+const hpExpo = hampyeongEight.find((s) => s.attractionName === '함평엑스포공원');
+assert.ok(hpEco?.imageUrl?.includes('3536105'), '함평 1경 자연생태공원 TourAPI 사진');
+assert.ok(hpExpo?.imageUrl?.includes('4065063'), '함평 2경 엑스포공원 나비축제 사진');
+assert.notEqual(hpEco?.imageUrl, hpExpo?.imageUrl, '함평 1경·2경 썸네일 다름');
+assert.equal(
+  new Set(hampyeongEight.map((s) => s.imageUrl).filter(Boolean)).size,
+  8,
+  '함평8경 썸네일 8장 서로 다름',
+);
+assert.ok(
+  hampyeongGlobe.find((s) => s.attractionName === '함평엑스포공원')?.imageUrl?.includes('4065063'),
+  '함평 검색 팔경 엑스포공원 나비축제 썸네일',
+);
+assert.notEqual(
+  hampyeongGlobe.find((s) => s.attractionName === '함평자연생태공원')?.imageUrl,
+  hampyeongGlobe.find((s) => s.attractionName === '함평엑스포공원')?.imageUrl,
+  '함평 검색 1경·2경 썸네일 다름',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

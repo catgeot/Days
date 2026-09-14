@@ -174,6 +174,25 @@ assert(
     guryeArboretum.galleryUrls.length >= 4,
   `gurye-arboretum galleryUrls ≥4 (got ${guryeArboretum?.galleryUrls?.length || 0})`,
 );
+const hampyeongExpo = byId.get('hampyeong-expo-park');
+const hampyeongEco = byId.get('hampyeong-eco-park');
+assert(Boolean(hampyeongExpo), 'hampyeong-expo-park present');
+assert(
+  String(hampyeongExpo?.imageUrl || '').includes('4065063'),
+  'hampyeong-expo-park uses TourAPI 함평나비대축제 사진',
+);
+assert(
+  String(hampyeongEco?.imageUrl || '').includes('3536105'),
+  'hampyeong-eco-park keeps TourAPI 생태공원 사진',
+);
+assert(
+  String(hampyeongExpo?.imageUrl || '') !== String(hampyeongEco?.imageUrl || ''),
+  '함평엑스포공원 썸네일 ≠ 함평자연생태공원',
+);
+assert(
+  Array.isArray(hampyeongExpo?.galleryUrls) && hampyeongExpo.galleryUrls.length >= 4,
+  `hampyeong-expo-park galleryUrls ≥4 (got ${hampyeongExpo?.galleryUrls?.length || 0})`,
+);
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);
