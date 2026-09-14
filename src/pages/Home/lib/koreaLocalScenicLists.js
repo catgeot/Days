@@ -1177,6 +1177,18 @@ const HP_SAMHO_2 = 'https://tong.visitkorea.or.kr/cms/resource/00/3081700_image2
 const HP_SAMHO_3 = 'https://tong.visitkorea.or.kr/cms/resource/01/3081701_image2_1.jpg';
 const HP_CHEONG = 'https://tong.visitkorea.or.kr/cms/resource/21/3061121_image2_1.jpg';
 const HP_CHEONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/13/3061113_image2_1.jpg';
+const HN_LIGHT = 'https://tong.visitkorea.or.kr/cms/resource/84/3563584_image2_1.jpg';
+const HN_LIGHT_2 = 'https://tong.visitkorea.or.kr/cms/resource/81/3563581_image2_1.jpg';
+const HN_LIGHT_3 = 'https://tong.visitkorea.or.kr/cms/resource/83/3563583_image2_1.jpg';
+const HN_NOK = 'https://tong.visitkorea.or.kr/cms/resource/20/689220_image2_1.jpg';
+const HN_NOK_2 = 'https://tong.visitkorea.or.kr/cms/resource/09/689209_image2_1.jpg';
+const HN_NOK_3 = 'https://tong.visitkorea.or.kr/cms/resource/91/219391_image2_1.jpg';
+const HN_DOSOL = 'https://tong.visitkorea.or.kr/cms/resource/06/3591506_image2_1.jpg';
+const HN_DOSOL_2 = 'https://tong.visitkorea.or.kr/cms/resource/07/3591507_image2_1.jpg';
+const HN_MIHWANG = 'https://tong.visitkorea.or.kr/cms/resource/61/3563061_image2_1.jpg';
+const HN_ULDOL = 'https://tong.visitkorea.or.kr/cms/resource/09/3007809_image2_1.jpg';
+const HN_ULDOL_2 = 'https://tong.visitkorea.or.kr/cms/resource/00/3007800_image2_1.jpg';
+const HN_ULDOL_3 = 'https://tong.visitkorea.or.kr/cms2/website/82/1832682.jpg';
 const YD_GYEONGJEONG = 'https://tong.visitkorea.or.kr/cms/resource/85/3400985_image2_1.jpg';
 const YD_GYEONGJEONG_2 =
   'https://tong.visitkorea.or.kr/cms/resource/55/2917755_image2_1.jpg';
@@ -2477,6 +2489,30 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 함평군 신광면 함정리 청계 일원 (군유산·손불면 양재리 자락)',
     HP_CHEONG,
     [HP_CHEONG_2],
+  ),
+  'local-scenic:haenam-palgyeong:해남구목포구등대낙조전망대': localScenicPhotoOverlay(
+    '해남8경 주광낙조는 화원면 매월리 구 목포구등대와 낙조 전망대입니다. 목포지방해양수산청은 주소를 화원면 매봉길 582로 두고, 1908년 1월 무인등대로 점등한 뒤 1964년 유인등대, 2003년 높이 36m 백색 원형 콘크리트 신등대, 2023년 다시 무인등대로 전환했다고 적습니다. 대한제국 때 지은 구 등대는 2008년 국가등록문화재 제379호입니다. 해남 화원반도와 목포 달리도 사이 목포항 입구에 있으나 행정구역은 해남군이며, 등대 옆에 낙조전망대가 있습니다. 사진은 한국관광공사 해남 목포구 등대 공식 사진입니다.',
+    '전라남도 해남군 화원면 매봉길 582 (매월리 구 목포구등대·낙조 전망대)',
+    HN_LIGHT,
+    [HN_LIGHT_2, HN_LIGHT_3],
+  ),
+  'local-scenic:haenam-palgyeong:해남윤씨옥우당': localScenicPhotoOverlay(
+    '해남8경 연봉녹우는 해남윤씨 종택 경관입니다. 해남군 공공데이터는 관광지명을 해남윤씨 옥우당 일원으로 적었고, 국가유산청 사적은 해남윤씨 녹우당 일원입니다. 해남읍 녹우당길 135, 고산 윤선도의 4대 조 윤효정이 15세기 중엽 연동리에 자리를 잡은 종택이며 사랑채는 현종 9년(1668) 수원 집을 옮겨 왔습니다. 국보 윤두서 자화상과 천연기념물 비자나무숲이 있습니다. 사진은 한국관광공사 해남윤씨 녹우당 일원 공식 사진입니다.',
+    '전라남도 해남군 해남읍 녹우당길 135 (해남윤씨 녹우당 일원)',
+    HN_NOK,
+    [HN_NOK_2, HN_NOK_3],
+  ),
+  'local-scenic:haenam-palgyeong:미황사및도솔암': localScenicPhotoOverlay(
+    '해남8경 달마도솔은 송지면 달마산 미황사와 도솔암입니다. 한국관광공사는 미황사를 송지면 미황사길 164, 도솔암을 마봉송종길 355-300으로 안내합니다. 디지털해남문화대전은 미황사를 749년(경덕왕 8) 창건한 육지 최남단 사찰이라 적고, 도솔암은 달마산 도솔봉 암자로 정유재란 때 소실된 뒤 2002년 중건했다고 적습니다. 국가유산청 명승 해남 달마산 미황사 일원은 바위병풍·석양·불상의 삼황 경관입니다. 사진은 한국관광공사 도솔암(해남) 공식 사진이며, 같은 공사 미황사 사진을 보탰습니다.',
+    '전라남도 해남군 송지면 마봉송종길 355-300 · 미황사길 164 (달마산 도솔암·미황사)',
+    HN_DOSOL,
+    [HN_DOSOL_2, HN_MIHWANG],
+  ),
+  'local-scenic:haenam-palgyeong:울돌목': localScenicPhotoOverlay(
+    '해남8경 명량노도는 문내면 울돌목(명량해협)입니다. 한국관광공사는 우수영관광지를 문내면 관광레저로 12, 울돌목 스카이워크를 학동리 1467-10으로 안내합니다. 해협 가장 좁은 곳은 약 294m이며 물살이 울어 울돌목, 한자로 명량(鳴梁)이라 부릅니다. 1597년 이순신 장군의 명량대첩 격전지이고, 2021년 해남 쪽에 길이 111m 울돌목 스카이워크가 들어섰습니다. 사진은 한국관광공사 울돌목 스카이워크 공식 사진입니다.',
+    '전라남도 해남군 문내면 학동리 1467-10 (울돌목 스카이워크·우수영관광지)',
+    HN_ULDOL,
+    [HN_ULDOL_2, HN_ULDOL_3],
   ),
 };
 
