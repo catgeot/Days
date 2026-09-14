@@ -32,6 +32,30 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-14T22:30:00.000Z',
   },
   {
+    id: '2026-09-14-visitor-growth-4-mooni-ask-chips',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: '추천받기 채팅에도 하단 주제 칩 유지',
+    detail:
+      '검색 드롭다운에서 MOONi 추천받기를 누르면 첫 메시지가 바로 들어가 범용 디스커버리 칩이 사라졌습니다. 추천받기·이후 대화에도 기존 MOONi처럼 궁금해/가는 방법/출발 준비/즐길 주제 칩을 하단에 둡니다. Preview /qa/visitor-growth — 문경 추천받기 후 하단 칩이 보이는지, 도쿄 장소 바인딩 칩과 같은지.',
+    at: '2026-09-14T20:40:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-4-mooni-ask-top',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: 'MOONi 카드 상단·기존 목적지 중첩 해제',
+    detail:
+      '탐색 드롭다운의 MOONi 추천 카드를 항상 맨 위에 둡니다. 카드를 누르면 이전 여행지 대화를 이어받지 않고 일반 MOONi 세션을 엽니다. Preview /qa/visitor-growth — 김포 검색 카드가 맨 위인지, 코타키나발루가 채팅에 안 남는지.',
+    at: '2026-09-14T19:55:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-4-mood-bridge',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: '무드 결합 지오코딩 스킵·MOONi 추천 카드',
+    detail:
+      'quiet beaches·따뜻한 휴양지·조용한 바다처럼 분위기+여행명사 결합은 Mapbox 지오코딩을 건너뛰고 AI 무드 큐레이션으로 갑니다. 도로명·상호 POI 오탐은 버리고, 탐색 드롭다운에 MOONi에게 물어보기 카드를 붙입니다. Preview /qa/visitor-growth — 검색창에 위 질의 후 엉뚱한 핀이 아닌지, AI 카드가 열리는지.',
+    at: '2026-09-14T13:20:00.000Z',
+  },
+  {
     id: '2026-09-14-palgyeong-use-44-haenam-overlays',
     session: '팔경 활용 #44, 해남 결손 오버레이',
     title: '해남8경 결손 4건 오버레이',

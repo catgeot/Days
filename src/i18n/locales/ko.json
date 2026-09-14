@@ -217,6 +217,8 @@
       "suggestionsDefault": "'{{query}}' 제안",
       "suggestionsLoading": "불러오는 중",
       "suggestionsEmpty": "제안이 없습니다. Enter로 지도 검색을 이어갈 수 있어요.",
+      "askMooni": "MOONi에게 \"{{query}}\" 여행지 추천받기",
+      "askMooniBadge": "AI",
       "disambiguationTitle": "원하는 장소를 선택하세요",
       "disambiguationBody": "위치가 여러 곳일 수 있어요. 카드를 누르면 해당 장소로 이동합니다.",
       "more": "더 찾아보기",

@@ -626,6 +626,8 @@ export const getCoordinatesFromAddress = async (query) => {
       country_en: countryEn || countryKo,
       display_name: topResult.display_name,
       source: 'nominatim',
+      osm_class: topResult.class || '',
+      osm_type: topResult.type || '',
       ...(stayAdmin ? { stayAdmin } : {}),
     };
   } catch (error) {

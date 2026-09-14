@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Landmark, Building2, Compass, Loader2, ChevronRight } from 'lucide-react';
+import { MapPin, Landmark, Building2, Compass, Loader2, ChevronRight, Sparkles } from 'lucide-react';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
@@ -18,7 +18,6 @@ import {
   getLocalizedPlaceName,
   getPlaceTitleLinesForLocale,
 } from '../../../../components/PlaceCard/common/locationDisplay';
-
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
 
@@ -88,6 +87,39 @@ function resolveCardDesc(item, locationLine) {
 
   if (d === normalizeCompare(name)) return '';
   return desc;
+}
+
+function MooniAskRow({ query, isPopover, onAsk }) {
+  const { t } = useTranslation();
+  return (
+    <button
+      type="button"
+      onClick={() => onAsk?.(query)}
+      className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
+        isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
+      }`}
+    >
+      <div
+        className={`flex shrink-0 items-center justify-center rounded-xl bg-sky-500/20 ${
+          isPopover ? 'h-10 w-10' : 'h-12 w-12'
+        }`}
+        aria-hidden="true"
+      >
+        <Sparkles size={isPopover ? 16 : 18} className="text-sky-200" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-semibold text-white break-keep">
+            {t('home.explore.askMooni', { query })}
+          </span>
+          <span className="shrink-0 rounded-full border border-sky-400/40 bg-sky-500/25 px-2 py-0.5 text-[10px] font-medium text-sky-100">
+            {t('home.explore.askMooniBadge')}
+          </span>
+        </div>
+      </div>
+      <ChevronRight size={16} className="shrink-0 text-white/40" />
+    </button>
+  );
 }
 
 function SuggestionIcon({ kind, size = 16 }) {
@@ -174,6 +206,7 @@ export function SearchSuggestionList({
   loading = false,
   query = '',
   onSelect,
+  onAskMooni,
   title,
   variant = 'panel',
 }) {
@@ -182,9 +215,14 @@ export function SearchSuggestionList({
   if (!query.trim()) return null;
 
   const isPopover = variant === 'popover';
+  const showMooni = Boolean(onAskMooni);
   const shellClass = isPopover
     ? 'w-full overflow-hidden'
     : 'w-full mb-6 rounded-2xl border border-white/20 bg-white/[0.08] overflow-hidden';
+
+  const mooniRow = showMooni ? (
+    <MooniAskRow query={query.trim()} isPopover={isPopover} onAsk={onAskMooni} />
+  ) : null;
 
   return (
     <div className={shellClass}>
@@ -206,11 +244,21 @@ export function SearchSuggestionList({
         )}
       </div>
 
-      {items.length === 0 && !loading ? (
+      {showMooni ? (
+        <div
+          className={`${items.length || loading ? 'border-b border-white/10' : ''} ${
+            isPopover ? 'sticky top-0 z-[1] bg-[#261d16]' : ''
+          }`}
+        >
+          {mooniRow}
+        </div>
+      ) : null}
+
+      {items.length === 0 && !loading && !showMooni ? (
         <p className={`text-sm text-white/70 text-center break-keep ${isPopover ? 'px-3 py-4' : 'px-4 py-6'}`}>
           {t('home.explore.suggestionsEmpty')}
         </p>
-      ) : (
+      ) : items.length > 0 || loading ? (
         <ul
           className={`divide-y divide-white/10 ${
             isPopover ? '' : 'max-h-[min(52vh,420px)] overflow-y-auto'
@@ -282,7 +330,7 @@ export function SearchSuggestionList({
             );
           })}
         </ul>
-      )}
+      ) : null}
     </div>
   );
 }
