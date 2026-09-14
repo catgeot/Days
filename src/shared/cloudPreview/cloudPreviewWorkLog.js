@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 43,
-  sessionPhase: '함평 엑스포 중복 썸네일',
+  sessionNo: 44,
+  sessionPhase: '해남 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=hampyeong',
+  previewPath: '/korea/theme/scenic?hub=haenam',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-14-palgyeong-use-44-haenam-overlays',
+    session: '팔경 활용 #44, 해남 결손 오버레이',
+    title: '해남8경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 해남8경 결손 4건(해남 구 목포구등대 낙조 전망대·해남윤씨 옥우당·미황사 및 도솔암·울돌목)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 등대는 화원면 매봉길 구 목포구등대·낙조전망대, 옥우당은 사적 해남윤씨 녹우당 일원, 미황사·도솔암은 달마산 명승, 울돌목은 문내면 스카이워크입니다. 목포 고하도등대·완도 보길도 원림·고창 선운산 도솔암·진도 군내면과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=haenam 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T21:00:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-43-hampyeong-expo-thumb',
     session: '팔경 활용 #43, 함평 엑스포 중복 썸네일',

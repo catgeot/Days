@@ -2061,6 +2061,96 @@ assert.notEqual(
   '함평 검색 1경·2경 썸네일 다름',
 );
 
+const haenamMerged = mergeLocalScenicMembersIntoScenicSpots([], 'haenam');
+const haenamEight = haenamMerged.filter((s) => s.localScenicListId === 'haenam-palgyeong');
+assert.equal(haenamEight.length, 8, '해남8경 8명');
+assert.equal(haenamEight[0]?.groupTitle, '해남 팔경');
+const haenamDeficitNames = [
+  '해남 구 목포구등대 낙조 전망대',
+  '해남윤씨 옥우당',
+  '미황사 및 도솔암',
+  '울돌목',
+];
+const haenamDeficit = haenamEight.filter((s) =>
+  haenamDeficitNames.includes(s.attractionName),
+);
+assert.equal(haenamDeficit.length, 4, '해남8경 결손 4명');
+assert.ok(
+  haenamDeficit.every((s) => s.overview && s.imageUrl),
+  '해남 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  haenamDeficit.every((s) => !s.contentId),
+  '해남 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(haenamDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '해남 결손 4명 썸네일 서로 다름',
+);
+assert.ok(
+  haenamDeficit.every((s) => String(s.imageUrl).includes('tong.visitkorea.or.kr')),
+  '해남 결손 썸네일은 한국관광공사 공식 사진',
+);
+
+const hnLight = resolveLocalScenicListSpotById(
+  'local-scenic:haenam-palgyeong:해남구목포구등대낙조전망대',
+);
+assert.ok(hnLight?.overview?.includes('주광낙조'), '해남 구 목포구등대 overlay overview');
+assert.ok(hnLight?.overview?.includes('화원면'), '해남 구 목포구등대 화원면');
+assert.ok(hnLight?.overview?.includes('매봉길 582'), '해남 구 목포구등대 주소');
+assert.ok(hnLight?.overview?.includes('379호'), '해남 구 목포구등대 등록문화재');
+assert.ok(!hnLight?.overview?.includes('고하도'), '해남 구 목포구등대 개요에 고하도 없음');
+assert.ok(hnLight?.imageUrl?.includes('3563584'), '해남 구 목포구등대 한국관광공사 사진');
+
+const hnOkudang = resolveLocalScenicListSpotById('local-scenic:haenam-palgyeong:해남윤씨옥우당');
+assert.ok(hnOkudang?.overview?.includes('연봉녹우'), '해남 옥우당 overlay overview');
+assert.ok(hnOkudang?.overview?.includes('녹우당'), '해남 옥우당 녹우당');
+assert.ok(hnOkudang?.overview?.includes('녹우당길 135'), '해남 옥우당 주소');
+assert.ok(!hnOkudang?.overview?.includes('보길도'), '해남 옥우당 개요에 보길도 없음');
+assert.ok(hnOkudang?.imageUrl?.includes('689220'), '해남 옥우당 녹우당 공식 사진');
+
+const hnMihwang = resolveLocalScenicListSpotById('local-scenic:haenam-palgyeong:미황사및도솔암');
+assert.ok(hnMihwang?.overview?.includes('달마도솔'), '해남 미황사·도솔암 overlay overview');
+assert.ok(hnMihwang?.overview?.includes('도솔암'), '해남 미황사·도솔암 도솔암');
+assert.ok(hnMihwang?.overview?.includes('미황사길 164'), '해남 미황사 주소');
+assert.ok(!hnMihwang?.overview?.includes('선운산'), '해남 도솔암 개요에 선운산 없음');
+assert.ok(!hnMihwang?.overview?.includes('두륜산'), '해남 도솔암 개요에 두륜산 없음');
+assert.ok(hnMihwang?.imageUrl?.includes('3591506'), '해남 도솔암 한국관광공사 사진');
+
+const hnUldol = resolveLocalScenicListSpotById('local-scenic:haenam-palgyeong:울돌목');
+assert.ok(hnUldol?.overview?.includes('명량노도'), '해남 울돌목 overlay overview');
+assert.ok(hnUldol?.overview?.includes('문내면'), '해남 울돌목 문내면');
+assert.ok(hnUldol?.overview?.includes('스카이워크'), '해남 울돌목 스카이워크');
+assert.ok(!hnUldol?.overview?.includes('군내면'), '해남 울돌목 개요에 진도 군내면 없음');
+assert.ok(hnUldol?.imageUrl?.includes('3007809'), '해남 울돌목 스카이워크 공식 사진');
+assert.notEqual(hnLight?.imageUrl, hnOkudang?.imageUrl, '등대·옥우당 썸네일 다름');
+assert.notEqual(hnMihwang?.imageUrl, hnUldol?.imageUrl, '도솔암·울돌목 썸네일 다름');
+
+const daeheungsa = listKoreaScenicSpots().find((s) => s.id === 'daeheungsa');
+assert.ok(daeheungsa?.imageUrl, '해남 대흥사 GATEO 선정 썸네일');
+assert.notEqual(hnMihwang?.imageUrl, daeheungsa?.imageUrl, '미황사·도솔암 썸네일 ≠ 대흥사');
+
+const haenamGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '해남', {
+  injectLocalScenic: true,
+});
+const haenamGlobeEight = haenamGlobe.filter((s) => s.localScenicListId === 'haenam-palgyeong');
+assert.equal(haenamGlobeEight.length, 8, '해남 검색 해남8경 8행');
+assert.ok(
+  haenamGlobeEight.every((s) => s.groupTitle === '해남 팔경'),
+  '해남 검색 그룹명 해남 팔경',
+);
+assert.ok(
+  haenamGlobe.find((s) => s.attractionName === '해남 구 목포구등대 낙조 전망대')?.imageUrl?.includes(
+    '3563584',
+  ),
+  '해남 검색 팔경 구 목포구등대 한국관광공사 썸네일',
+);
+assert.ok(
+  haenamGlobe.find((s) => s.attractionName === '울돌목')?.overview?.includes('문내면'),
+  '해남 검색 팔경 울돌목 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
