@@ -2,6 +2,15 @@
 
 직전: [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)
 
+## 방문자 개선 #4 — 무드검색 분리 및 AI추천 브릿지 (Cloud)
+
+- **세션** `방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `7a938802` · PR [#249](https://github.com/catgeot/Days/pull/249)
+- **완료**: `quiet beaches`·`따뜻한 휴양지`·`조용한 바다` 결합은 지오코딩 스킵 → AI 무드 큐레이션. 도로명·상호 POI 오탐 버림. 탐색 드롭다운 MOONi 추천 카드.
+- **VERIFY**: `npm run smoke:mood-search-intent` PASS · `npm run smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` · `/explore`
+- **QA**: 무드 질의 엉뚱한 핀 여부 · MOONi 카드 탭 시 채팅 · 파리/도쿄/제주 지명 회귀.
+
 ## 방문자 개선 #3 — 크롤러 SEO 및 본문 프리렌더링 (Cloud)
 
 - **세션** `방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링`

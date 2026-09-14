@@ -34,25 +34,25 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `dd317cf9` · PR [#248](https://github.com/catgeot/Days/pull/248) · **사람 Preview** |
+| **상태** | **#4 push** · tip `7a938802` · PR [#249](https://github.com/catgeot/Days/pull/249) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-14-project-log.md`](./2026-09-14-project-log.md) |
-| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/place/tokyo?crawler=1` |
-| **소유** | `botDetect.js` · `injectCrawlerMeta.js` · `generate-crawler-place-meta.mjs` · `crawlerPlaceMeta.generated.js` · `middleware.js` |
+| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/explore` |
+| **소유** | `moodSearchIntent.js` · `useHomeHandlers.js` · `searchSuggestions.js` · `SearchSuggestionList.jsx` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run generate:crawler-place-meta` · `npm run smoke:crawler-place-meta` · `npm run build` PASS |
+| **VERIFY** | `npm run smoke:mood-search-intent` · `npm run smoke:explore-search-aliases` · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지
+방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX
 @plans/feature-handoff-index.md
 @plans/2026-09-14-project-log.md
 @plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · PR #248 · Preview /qa/visitor-growth
+브랜치 cursor/visitor-growth-1f90 · PR #249 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: MOOD_HINT 결합 패턴 · shouldSkipGeocodeForMood · 검색 드롭다운 MOONi 추천 카드
+작업: /korea 축제 행 onError·스켈레톤·필터 초기화 · /blog/curation alert 제거·인라인 재시도 · 갤러리 네트워크 안내
 검증: npm run build PASS
 ```
 
