@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 49,
-  sessionPhase: '영광 검색 썸네일',
+  sessionNo: 50,
+  sessionPhase: '고흥 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-50-goheung-overlays',
+    session: '팔경 활용 #50, 고흥 결손 오버레이',
+    title: '고흥10경 쑥섬·금산 해안경관·고흥만 수변노을공원 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 고흥10경 결손 3건(쑥섬·금산 해안경관·고흥만 수변노을공원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 쑥섬은 봉래면 애도(나로도항길 120-7) 전남 1호 민간정원이며 소록도·연홍도·나로우주센터와 다른 섬입니다. 금산 해안경관은 충남 금산군·남해 금산 보리암이 아니라 금산면 거금도 해안도로(거금일주로 1234·소원동산)입니다. 고흥만 수변노을공원은 도덕면 고흥만로 1132-14이며 남열 해돋이·영광 백수해안도로와 다른 노을입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goheung 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T13:20:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-49-yeonggwang-detailimage',
     session: '팔경 활용 #49, 영광 검색 썸네일',

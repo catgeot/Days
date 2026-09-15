@@ -2899,6 +2899,79 @@ assert.ok(
   '불갑산도립공원 썸네일은 불갑사 GATEO 사진이 아님',
 );
 
+const goheungMerged = mergeLocalScenicMembersIntoScenicSpots([], 'goheung');
+const goheungTen = goheungMerged.filter((s) => s.localScenicListId === 'goheung-other');
+assert.equal(goheungTen.length, 10, '고흥10경 10명');
+assert.equal(goheungTen[0]?.groupTitle, '고흥 10경');
+const goheungDeficitNames = ['쑥섬', '금산 해안경관', '고흥만 수변노을공원'];
+const goheungDeficit = goheungTen.filter((s) =>
+  goheungDeficitNames.includes(s.attractionName),
+);
+assert.equal(goheungDeficit.length, 3, '고흥10경 결손 3명');
+assert.ok(
+  goheungDeficit.every((s) => s.overview && s.imageUrl),
+  '고흥 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  goheungDeficit.every((s) => !s.contentId),
+  '고흥 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(goheungDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '고흥 결손 3명 썸네일 서로 다름',
+);
+
+const ghSsuk = resolveLocalScenicListSpotById('local-scenic:goheung-other:쑥섬');
+assert.ok(ghSsuk?.overview?.includes('애도'), '고흥 쑥섬 overlay 애도');
+assert.ok(ghSsuk?.overview?.includes('나로도항길 120-7'), '고흥 쑥섬 주소');
+assert.ok(ghSsuk?.overview?.includes('소록도'), '고흥 쑥섬≠소록도 구분');
+assert.ok(ghSsuk?.overview?.includes('나로우주센터'), '고흥 쑥섬≠나로우주센터 구분');
+assert.ok(ghSsuk?.imageUrl?.includes('3502479'), '고흥 쑥섬 한국관광공사 수국정원 사진');
+
+const ghGeum = resolveLocalScenicListSpotById('local-scenic:goheung-other:금산해안경관');
+assert.ok(ghGeum?.overview?.includes('거금도'), '고흥 금산 해안경관 overlay 거금도');
+assert.ok(ghGeum?.overview?.includes('거금일주로 1234'), '고흥 금산 해안경관 주소');
+assert.ok(ghGeum?.overview?.includes('충남 금산'), '고흥 금산≠충남 금산군 구분');
+assert.ok(ghGeum?.overview?.includes('남해 금산'), '고흥 금산≠남해 금산 보리암 구분');
+assert.ok(ghGeum?.imageUrl?.includes('1155388928'), '고흥 금산 해안경관 소원동산 공식 사진');
+
+const ghSunset = resolveLocalScenicListSpotById(
+  'local-scenic:goheung-other:고흥만수변노을공원',
+);
+assert.ok(ghSunset?.overview?.includes('도덕면'), '고흥만 수변노을공원 overlay 도덕면');
+assert.ok(ghSunset?.overview?.includes('고흥만로 1132-14'), '고흥만 수변노을공원 주소');
+assert.ok(ghSunset?.overview?.includes('남열'), '고흥만 수변노을공원≠남열 해돋이 구분');
+assert.ok(ghSunset?.overview?.includes('백수해안도로'), '고흥만 수변노을공원≠영광 백수 구분');
+assert.ok(ghSunset?.imageUrl?.includes('1602298624'), '고흥만 수변노을공원 노을 공식 사진');
+assert.notEqual(ghSsuk?.imageUrl, ghGeum?.imageUrl, '쑥섬·금산 해안경관 썸네일 다름');
+assert.notEqual(ghSsuk?.imageUrl, ghSunset?.imageUrl, '쑥섬·수변노을공원 썸네일 다름');
+assert.notEqual(ghGeum?.imageUrl, ghSunset?.imageUrl, '금산 해안경관·수변노을공원 썸네일 다름');
+
+const goheungGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '고흥', {
+  injectLocalScenic: true,
+});
+const goheungGlobeTen = goheungGlobe.filter((s) => s.localScenicListId === 'goheung-other');
+assert.equal(goheungGlobeTen.length, 10, '고흥 검색 고흥10경 10행');
+assert.ok(
+  goheungGlobeTen.every((s) => s.groupTitle === '고흥 10경'),
+  '고흥 검색 팔경 groupTitle 고흥 10경',
+);
+assert.ok(
+  goheungGlobe.find((s) => s.attractionName === '쑥섬')?.imageUrl?.includes('3502479'),
+  '고흥 검색 팔경 쑥섬 썸네일',
+);
+assert.ok(
+  goheungGlobe.find((s) => s.attractionName === '금산 해안경관')?.overview?.includes('거금도'),
+  '고흥 검색 팔경 금산 해안경관 개요',
+);
+assert.ok(
+  goheungGlobe
+    .find((s) => s.attractionName === '고흥만 수변노을공원')
+    ?.overview?.includes('도덕면'),
+  '고흥 검색 팔경 고흥만 수변노을공원 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

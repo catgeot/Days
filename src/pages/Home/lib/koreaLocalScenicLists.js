@@ -1359,6 +1359,23 @@ const YG_MULMU_3 = 'https://tong.visitkorea.or.kr/cms/resource/86/2825886_image2
 const YG_BULGAP = 'https://tong.visitkorea.or.kr/cms/resource/92/2831192_image2_1.jpg';
 const YG_BULGAP_2 = 'https://tong.visitkorea.or.kr/cms/resource/50/2996250_image2_1.jpg';
 const YG_BULGAP_3 = 'https://tong.visitkorea.or.kr/cms/resource/53/2996253_image2_1.JPG';
+const GH_SSUK = 'https://tong.visitkorea.or.kr/cms/resource/79/3502479_image2_1.jpg';
+const GH_SSUK_2 =
+  'https://tour.goheung.go.kr/ajax/image.do?file=/upload/302//20241125104902_322452096.jpg&size=1180x1180';
+const GH_SSUK_3 =
+  'https://tour.goheung.go.kr/ajax/image.do?file=/upload/302//20241125104902_1242149056.jpg&size=1180x1180';
+const GH_GEUM =
+  'https://tour.goheung.go.kr/ajax/image.do?file=/upload/271//20241018144623_1155388928.jpg&size=1180x1180';
+const GH_GEUM_2 =
+  'https://tour.goheung.go.kr/ajax/image.do?file=/upload/271//20241018144623_117692224.jpg&size=1180x1180';
+const GH_GEUM_3 =
+  'https://tour.goheung.go.kr/ajax/image.do?file=/upload/271//20241018144623_1506270848.jpg&size=1180x1180';
+const GH_SUNSET =
+  'https://tour.goheung.go.kr/ajax/image.do?file=/upload/307//20241219151255_1602298624.jpg&size=1180x1180';
+const GH_SUNSET_2 =
+  'https://tour.goheung.go.kr/ajax/image.do?file=/upload/307//20241219151255_160332832.jpg&size=1180x1180';
+const GH_SUNSET_3 =
+  'https://tour.goheung.go.kr/ajax/image.do?file=/upload/308//20241219152116_1305081728.jpg&size=1180x1180';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2848,6 +2865,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 영광군 영광읍 물무로 219 (물무산 행복숲·백학리)',
     YG_MULMU,
     [YG_MULMU_2, YG_MULMU_3],
+  ),
+  'local-scenic:goheung-other:쑥섬': localScenicPhotoOverlay(
+    '고흥10경 쑥섬은 봉래면 애도(艾島)입니다. 고흥군 관광은 외나로항에서 500m·배로 약 3분이며, 질 좋은 쑥이 나 쑥섬·한자 애도라 부른다고 적습니다. 전남 1호 민간정원 힐링파크 쑥섬쑥섬은 김상현·고채훈 부부가 가꾼 별정원·달정원·태양정원·치유정원·수국정원·동백정원이 있는 해상 꽃정원입니다. 2017년 산림청 아름다운 숲으로 선정된 400년 난대원시림이 있고, 행정안전부 휴가철 찾아가고 싶은 33섬·2021~2022 한국관광 100선입니다. 고양이가 많아 고양이 섬이라 부릅니다. 주소는 봉래면 나로도항길 120-7(나로도연안여객선터미널)이며 정원 들머리는 애도길 41입니다. 같은 리스트 소록도·연홍도·나로우주센터와 다른 섬입니다. 사진은 한국관광공사 쑥섬 수국정원 공식 사진과 고흥군 관광 고양이 조형·꽃정원 공식 사진입니다.',
+    '전라남도 고흥군 봉래면 나로도항길 120-7 (쑥섬·애도)',
+    GH_SSUK,
+    [GH_SSUK_2, GH_SSUK_3],
+  ),
+  'local-scenic:goheung-other:금산해안경관': localScenicPhotoOverlay(
+    '고흥10경 금산 해안경관은 금산면 거금도의 해안 경관입니다. 충남 금산군 10경·남해 금산 보리암과 다른 자리입니다. 군 공식 10경 이름은 금산 해안경관과 거금생태숲입니다. 고흥군 관광은 소록도·나로도와 함께 고흥을 대표하는 섬 거금도의 해안도로이며 국토부 남해안 해안 경관도로 15선이라고 적습니다. 주소는 금산면 거금일주로 1234입니다. 소원동산에서 다도해를 내려다보고, 금의시비공원·몽돌해변·익금해수욕장이 이어지며 해안 일주도로가 자전거 코스이기도 합니다. 녹동항·소록도·거금대교 드라이브와 다른 금산면 본섬 해안입니다. 사진은 고흥군 관광 소원동산·거금 해안도로 공식 사진입니다.',
+    '전라남도 고흥군 금산면 거금일주로 1234 (금산 해안경관·소원동산)',
+    GH_GEUM,
+    [GH_GEUM_2, GH_GEUM_3],
+  ),
+  'local-scenic:goheung-other:고흥만수변노을공원': localScenicPhotoOverlay(
+    '고흥10경 고흥만 수변노을공원은 도덕면 용동리입니다. 고흥군 관광은 썬밸리리조트 인접 26만㎡이며 해변캠핑장·물놀이장·야외공연장·미로공원·오감 체험숲이 있는 복합문화공간이라고 적습니다. 주소는 도덕면 고흥만로 1132-14입니다. 해변 쪽 저녁노을이 이름이며, 봄에는 고흥만 유채와 약 4km 벚꽃터널이 있고 학꽁치 낚시로도 찾습니다. 같은 리스트 남열 해돋이해수욕장(일출)과 다른 자리이며, 영광 백수해안도로 노을과도 다른 고흥만 간척 수변입니다. 사진은 고흥군 관광 수변노을공원 노을·벚꽃터널 공식 사진입니다.',
+    '전라남도 고흥군 도덕면 고흥만로 1132-14 (고흥만 수변노을공원)',
+    GH_SUNSET,
+    [GH_SUNSET_2, GH_SUNSET_3],
   ),
 };
 
