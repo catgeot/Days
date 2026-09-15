@@ -257,15 +257,25 @@
 - **잔여**: 사진/개요 순수 누락 **78**/876. 다음 허브 **김해9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #51 다음 — 김해 결손 오버레이
+## 팔경 활용 #51 — 김해9경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #51, 김해 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `cbd44917` · PR [#265](https://github.com/catgeot/Days/pull/265)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 김해9경 결손 3건(화포천습지 생태공원·경전철에서 바라본 가야유적·분산(천문대)전경 및 운무). 화포천은 창녕 우포늪·창원 주남이 아니라 한림면 한림로 183-300 하천형 배후습지, 경전철 가야유적은 3경 수로왕릉·GATEO 가야테마파크가 아니라 박물관역·수로왕릉역의 대성동고분군·국립김해박물관, 분산 천문대는 증평 좌구산이 아니라 어방동 가야테마길 254 분성산 정상. 김해 순수 누락 3→0 · CID 6/9 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gimhae`
+- **잔여**: 사진/개요 순수 누락 **75**/876. 다음 허브 **대구12경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #52 다음 — 대구 결손 오버레이
 
 ```
-팔경 활용 #51, 김해 결손 오버레이
+팔경 활용 #52, 대구 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 김해9경 사진·개요 없는 3건(화포천습지 생태공원·경전철에서 바라본 가야유적·분산(천문대)전경 및 운무)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gimhae
+작업: 대구12경 사진·개요 없는 3건(대구 국채보상운동 기념공원·대구 달성토성·대구 경상감영과 옛골목)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=daegu
 ```
 
