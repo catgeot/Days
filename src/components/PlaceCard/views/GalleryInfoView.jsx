@@ -7,11 +7,17 @@ import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
+import { getLocalizedPlaceKeywords, isPlaceDescKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { locale } = useLocale();
+    const overviewKeywords = useMemo(
+        () => getLocalizedPlaceKeywords(selectedPlace, locale),
+        [selectedPlace, locale],
+    );
+    const showKoreanGuideNotice = locale === 'en' && isPlaceDescKoreanOnly(selectedPlace);
     const isPhotoMode = !!selectedImg;
     const summaryScrollRef = useRef(null);
     const showRelatedDock = !isPhotoMode && relatedPlaces.length > 0;
@@ -105,13 +111,18 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                 ) : (
                     <div className="animate-fade-in space-y-5">
                         <div className="space-y-4">
+                            {showKoreanGuideNotice ? (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
+                                    ℹ️ {t('place.localeNotice.koreanGuide')}
+                                </span>
+                            ) : null}
                             {(overviewQuery || curationOverview) && (
                                 <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3.5 py-3.5">
                                     {overviewQuery && (
                                         <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-semibold text-violet-200/90 tracking-wide">
                                             <Sparkles size={12} className="shrink-0 text-violet-300" aria-hidden />
                                             <span className="min-w-0 line-clamp-2 break-keep">
-                                                「{overviewQuery}」에서 이 여행지로
+                                                {t('place.overview.fromQuery', { query: overviewQuery })}
                                             </span>
                                         </p>
                                     )}
@@ -124,16 +135,16 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                                 <PlaceOverviewProse
                                     text={fixedOverview}
                                     variant="body"
-                                    fallback="이 장소에 대한 정보가 업데이트 중입니다."
+                                    fallback={t('place.fallback.infoUpdating')}
                                 />
                             )}
                         </div>
 
                         <PlaceScenicGateway location={selectedPlace} variant="dark" />
 
-                        {selectedPlace?.keywords && (
+                        {overviewKeywords.length > 0 && (
                             <div className="flex flex-wrap gap-2 border-t border-white/5 pt-4">
-                                {selectedPlace.keywords.map((tag, idx) => (
+                                {overviewKeywords.map((tag, idx) => (
                                     <span
                                         key={`tag-${idx}`}
                                         className="px-2 py-0.5 rounded border transition-all duration-300 cursor-default font-medium text-[11px] bg-white/5 border-white/10 text-gray-400 hover:text-blue-400 hover:border-blue-400/30 hover:bg-blue-400/5"

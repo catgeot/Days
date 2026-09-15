@@ -190,7 +190,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
         </div>
 
         <div className="p-5 border-t border-white/10 bg-black">
-          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[9px] text-gray-500 uppercase tracking-widest font-bold">
+          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[9px] text-gray-300 uppercase tracking-widest font-bold">
             <button onClick={() => handleOpenFooter('about')} className="hover:text-white transition-colors">{t('home.footerModal.tab.about')}</button>
             <span className="text-gray-800">|</span>
             <button onClick={() => handleOpenFooter('updates')} className="hover:text-white transition-colors">{t('home.footerModal.tab.updates')}</button>
