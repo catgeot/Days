@@ -17,6 +17,19 @@ import {
   resolveMrtStayQuery,
   stationNameMatchesQuery,
 } from '../src/utils/mrtStayQuery.js';
+import {
+  attachMrtStayDistances,
+  buildNaverNearbyStayMapUrl,
+  formatStayDistanceFromPlace,
+  formatStayDistanceLabel,
+  haversineKm,
+  isLodgingOsmValue,
+  parseStayCoordPair,
+  simplifyStayGeocodeQuery,
+  stayDistanceRank,
+  stayGeocodeQueries,
+  stayNameCompatible,
+} from '../src/utils/mrtStayDistance.js';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -530,6 +543,104 @@ async function main() {
     `jonggak merge cityHints include 서울 (got ${jonggakMerge.cityHints.join(',')})`,
   );
 
+  const JONGGAK = { lat: 37.5701, lng: 126.9829 };
+  const same = haversineKm(JONGGAK.lat, JONGGAK.lng, JONGGAK.lat, JONGGAK.lng);
+  assert(same === 0, `haversine same point (got ${same})`);
+  const north350mLat = JONGGAK.lat + 350 / 111_320;
+  const d350 = haversineKm(JONGGAK.lat, JONGGAK.lng, north350mLat, JONGGAK.lng);
+  assert(d350 > 0.32 && d350 < 0.38, `haversine ~350m (got ${d350})`);
+  assert(formatStayDistanceLabel(0.35) === '350m', `350m label (got ${formatStayDistanceLabel(0.35)})`);
+  assert(formatStayDistanceLabel(1.14) === '1.1km', `1.1km label (got ${formatStayDistanceLabel(1.14)})`);
+  assert(formatStayDistanceLabel(2) === '2km', `2km label (got ${formatStayDistanceLabel(2)})`);
+  assert(
+    formatStayDistanceFromPlace('종각역', 0.35) === '종각역 350m',
+    `badge 종각역 350m (got ${formatStayDistanceFromPlace('종각역', 0.35)})`,
+  );
+  assert(
+    parseStayCoordPair({ lat: 37.5718, lng: 126.9769 })?.lat === 37.5718,
+    'parseStayCoordPair lat/lng',
+  );
+  assert(
+    parseStayCoordPair({ location: { latitude: 37.57, longitude: 126.98 } })?.lng === 126.98,
+    'parseStayCoordPair nested location',
+  );
+  assert(parseStayCoordPair({ lat: 0, lng: 0 }) == null, 'parseStayCoordPair rejects 0,0');
+  const ranked = attachMrtStayDistances(
+    [
+      { itemId: 1, lat: 37.4979, lng: 127.0276 },
+      { itemId: 2, latitude: north350mLat, longitude: JONGGAK.lng },
+      { itemId: 3, itemName: 'no-coords' },
+    ],
+    { ...JONGGAK, label: '종각역' },
+  );
+  assert(ranked[1].distanceLabel === '종각역 350m' || ranked[1].distanceLabel?.startsWith('종각역 '), `near badge (got ${ranked[1].distanceLabel})`);
+  assert(ranked[1].distanceKm < ranked[0].distanceKm, 'gangnam farther than 350m hotel');
+  assert(ranked[2].distanceKm == null, 'missing coords stay unranked');
+  const byDist = ranked.slice().sort((a, b) => stayDistanceRank(a) - stayDistanceRank(b));
+  assert(byDist[0].itemId === 2 && byDist[2].itemId === 3, `distance rank order (${byDist.map((x) => x.itemId)})`);
+  const naver = buildNaverNearbyStayMapUrl({ ...JONGGAK, query: '종각역' });
+  assert(naver?.includes('map.naver.com/p/search/'), `naver host (got ${naver})`);
+  assert(naver.includes(encodeURIComponent('종각역 숙소')), `naver query (got ${naver})`);
+  assert(naver.includes(String(JONGGAK.lng)) && naver.includes(String(JONGGAK.lat)), `naver coords (got ${naver})`);
+  assert(buildNaverNearbyStayMapUrl({ query: '' }) == null, 'naver empty query');
+  const stripSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/components/GlobeStayStrip.jsx'),
+    'utf8',
+  );
+  assert(
+    stripSrc.includes('attachMrtStayDistances') &&
+      stripSrc.includes('buildNaverNearbyStayMapUrl') &&
+      stripSrc.includes('naverNearbyStays') &&
+      stripSrc.includes('distance_asc'),
+    'GlobeStayStrip wires distance + naver chip',
+  );
+  const edgeSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../supabase/functions/fetch-mrt-stays/index.ts'),
+    'utf8',
+  );
+  assert(
+    edgeSrc.includes('pickStayCoords') && edgeSrc.includes('lat: coords.lat'),
+    'Edge fetch-mrt-stays maps hotel lat/lng',
+  );
+  assert(
+    edgeSrc.includes('photonGeocodeStay') &&
+      edgeSrc.includes('attachGeocodedStayCoords') &&
+      edgeSrc.includes('originLat') &&
+      edgeSrc.includes('stayNameCompatible'),
+    'Edge Photon geocode + origin + name guard',
+  );
+  assert(
+    simplifyStayGeocodeQuery('나인트리 바이 파르나스 서울 인사동') === '나인트리 서울 인사동',
+    'simplify strips 바이 브랜드',
+  );
+  assert(
+    stayGeocodeQueries('오라카이 대학로 호텔, BW 시그니처 컬렉션')[1] === '오라카이 대학로 호텔',
+    'simplify strips BW 시그니처',
+  );
+  assert(isLodgingOsmValue('hotel') && !isLodgingOsmValue('museum'), 'lodging osm filter');
+  assert(
+    stayNameCompatible('신라스테이 광화문', '신라스테이 광화문'),
+    'name compatible exact',
+  );
+  assert(
+    stayNameCompatible('나인트리 서울 인사동', '나인트리 프리미어 호텔 인사동'),
+    'name compatible nine tree insadong',
+  );
+  assert(
+    !stayNameCompatible('오라카이 대학로 호텔', '오라카이 인사동 스위츠'),
+    'reject same-brand other neighbourhood',
+  );
+  assert(
+    !stayNameCompatible('오라카이 대학로 호텔', '4월 25일 호텔'),
+    'reject unrelated photon hotel',
+  );
+  const fetchSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/utils/fetchMrtStays.js'),
+    'utf8',
+  );
+  assert(fetchSrc.includes('originLat') && fetchSrc.includes('originLng'), 'client sends origin to Edge');
+  console.log('OK  stay distance + naver map');
+
   const emptyAltsKeepQuery = mergeMrtStayFetchQuery(
     {
       slug: 'ongjin',
@@ -576,6 +687,37 @@ async function main() {
         const n = (data.items || []).length;
         const status = n > 0 ? 'LIVE_OK' : data.region ? 'LIVE_EMPTY' : 'LIVE_NO_REGION';
         console.log(`${status} ${c.slug} total=${data.totalCount} n=${n} region=${data.region?.subName || '-'}`);
+      }
+      const jres = await fetch(`${url}/functions/v1/fetch-mrt-stays`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${anon}`,
+          apikey: anon,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keyword: '종로',
+          isDomestic: true,
+          countryHint: '대한민국',
+          cityHints: ['서울'],
+          size: 20,
+          originLat: 37.5701,
+          originLng: 126.9829,
+        }),
+      });
+      const jdata = await jres.json();
+      const jn = (jdata.items || []).length;
+      const withCoords = Number(
+        jdata.withCoords ??
+          (jdata.items || []).filter((it) => it?.lat != null && it?.lng != null).length,
+      );
+      const jstatus = jn > 0 ? 'LIVE_OK' : jdata.region ? 'LIVE_EMPTY' : 'LIVE_NO_REGION';
+      console.log(
+        `${jstatus} jonggak-distance n=${jn} withCoords=${withCoords} region=${jdata.region?.name || '-'}`,
+      );
+      if (jn > 0 && withCoords < 1) {
+        console.error('LIVE_JONGGAK expected withCoords>0 after Photon geocode');
+        failed += 1;
       }
     }
   }

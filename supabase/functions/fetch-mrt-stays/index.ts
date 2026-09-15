@@ -29,9 +29,218 @@ type StayItem = {
   reviewCount: number | null;
   imageUrl: string | null;
   productUrl: string;
+  lat?: number;
+  lng?: number;
 };
 
+function finiteCoord(v: unknown): number | null {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function isPlausibleWgs84(lat: number | null, lng: number | null): boolean {
+  if (lat == null || lng == null) return false;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
+  if (lat === 0 && lng === 0) return false;
+  return true;
+}
+
+/** 파트너 search item 위·경도 — 중첩 객체까지 */
+function pickStayCoords(
+  it: Record<string, unknown> | null | undefined,
+  depth = 0,
+): { lat: number; lng: number } | null {
+  if (!it || typeof it !== "object" || depth > 4) return null;
+  const pairs: Array<[unknown, unknown]> = [
+    [it.lat, it.lng],
+    [it.latitude, it.longitude],
+    [it.lat, it.lon],
+    [it.hotelLatitude, it.hotelLongitude],
+    [it.geoLat, it.geoLng],
+    [it.locationLat, it.locationLng],
+    [it.gpsLat, it.gpsLng],
+    [it.wgsLat, it.wgsLng],
+    [it.mapY, it.mapX],
+    [it.mapy, it.mapx],
+    [it.y, it.x],
+    [it.yCoord, it.xCoord],
+  ];
+  for (const [la, ln] of pairs) {
+    const lat = finiteCoord(la);
+    const lng = finiteCoord(ln);
+    if (lat != null && lng != null && isPlausibleWgs84(lat, lng)) return { lat, lng };
+  }
+  for (const v of Object.values(it)) {
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      const nested = pickStayCoords(v as Record<string, unknown>, depth + 1);
+      if (nested) return nested;
+    }
+  }
+  return null;
+}
+
+function summarizeRawItem(it: Record<string, unknown>) {
+  const types: Record<string, string> = {};
+  const nested: Record<string, string[]> = {};
+  const geoish: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(it)) {
+    const t = Array.isArray(v) ? `array(${v.length})` : v == null ? "null" : typeof v;
+    types[k] = t;
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      nested[k] = Object.keys(v as object);
+    }
+    if (/lat|lng|lon|coord|geo|gps|mapx|mapy|xCoord|yCoord/i.test(k)) {
+      geoish[k] = typeof v === "object" ? `[${t}]` : v;
+    }
+  }
+  return { keys: Object.keys(it), types, nested, geoish };
+}
+
+const STAY_GEOCODE_MAX_KM = 8;
+const PHOTON_CONCURRENCY = 8;
+const GEOCODE_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+const GEOCODE_BUDGET_MS = 12_000;
 type CacheEntry<T> = { expires: number; value: T };
+const geocodeCache = new Map<string, CacheEntry<{ lat: number; lng: number } | null>>();
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function simplifyStayGeocodeQuery(name: string) {
+  let s = String(name || "").replace(/\s+/g, " ").trim();
+  s = s.replace(/,\s*BW\b.*/i, "");
+  s = s.replace(/\s*시그니처\s*컬렉션/g, "");
+  s = s.replace(/\s*(바이|by)\s+\S+/gi, "");
+  s = s.replace(/\s*[&＆]\s*스파/g, "");
+  return s.replace(/\s+/g, " ").trim();
+}
+
+function stayGeocodeQueries(name: string) {
+  const full = String(name || "").replace(/\s+/g, " ").trim();
+  const simple = simplifyStayGeocodeQuery(full);
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const q of [full, simple]) {
+    if (!q || q.length < 2 || seen.has(q)) continue;
+    seen.add(q);
+    out.push(q);
+  }
+  return out;
+}
+
+function isLodgingOsmValue(value: unknown) {
+  return /^(hotel|hostel|motel|guest_house|apartment|chalet)$/i.test(String(value || "").trim());
+}
+
+const STAY_NAME_GENERIC_RE =
+  /호텔|호스텔|모텔|리조트|스테이|스위츠|스위트|서울|부산|인천|호텔스|hotel|hostel|motel|resort|stay|suites|suite|premier|프리미어|collection|컬렉션|시그니처|&|＆|스파|by|바이/gi;
+
+function compactStayName(s: string) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(STAY_NAME_GENERIC_RE, "")
+    .replace(/[\s,.\-_'"]+/g, "");
+}
+
+function stayNameCompatible(query: string, hitName: unknown) {
+  const q = compactStayName(query);
+  const h = compactStayName(String(hitName || ""));
+  if (q.length >= 4 && h.length >= 2 && (h.includes(q) || q.includes(h))) return true;
+  const qTok = String(query || "")
+    .replace(STAY_NAME_GENERIC_RE, " ")
+    .split(/\s+/)
+    .map((t) => t.replace(/[^\p{L}\p{N}]+/gu, ""))
+    .filter((t) => t.length >= 2);
+  if (!qTok.length || !h) return false;
+  return qTok.every((t) => h.includes(t.toLowerCase()));
+}
+
+async function photonGeocodeStay(
+  query: string,
+  origin: { lat: number; lng: number },
+): Promise<{ lat: number; lng: number } | null> {
+  const url =
+    `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}` +
+    `&lat=${origin.lat}&lon=${origin.lng}&limit=3`;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 4000);
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "gateo.kr stay-distance/1.0 (https://www.gateo.kr)" },
+      signal: ctrl.signal,
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const features = Array.isArray(data?.features) ? data.features : [];
+    for (const f of features) {
+      const coords = f?.geometry?.coordinates;
+      if (!Array.isArray(coords) || coords.length < 2) continue;
+      const lng = finiteCoord(coords[0]);
+      const lat = finiteCoord(coords[1]);
+      if (lat == null || lng == null || !isPlausibleWgs84(lat, lng)) continue;
+      if (!isLodgingOsmValue(f?.properties?.osm_value)) continue;
+      if (haversineKm(origin.lat, origin.lng, lat, lng) > STAY_GEOCODE_MAX_KM) continue;
+      if (!stayNameCompatible(query, f?.properties?.name)) continue;
+      return { lat, lng };
+    }
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+  return null;
+}
+
+async function geocodeStayName(
+  name: string,
+  origin: { lat: number; lng: number },
+): Promise<{ lat: number; lng: number } | null> {
+  const key = `geo:${name}|${origin.lat.toFixed(3)},${origin.lng.toFixed(3)}`;
+  const hit = getCached(geocodeCache, key);
+  if (hit !== undefined) return hit;
+  let found: { lat: number; lng: number } | null = null;
+  for (const q of stayGeocodeQueries(name)) {
+    found = await photonGeocodeStay(q, origin);
+    if (found) break;
+  }
+  setCached(geocodeCache, key, found, GEOCODE_CACHE_TTL_MS);
+  return found;
+}
+
+async function mapPool<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let i = 0;
+  async function worker() {
+    while (i < items.length) {
+      const idx = i++;
+      out[idx] = await fn(items[idx]);
+    }
+  }
+  const n = Math.max(1, Math.min(limit, items.length || 1));
+  await Promise.all(Array.from({ length: items.length ? n : 0 }, () => worker()));
+  return out;
+}
+
+async function attachGeocodedStayCoords(
+  items: StayItem[],
+  origin: { lat: number; lng: number } | null,
+): Promise<StayItem[]> {
+  if (!origin || !items.length) return items;
+  const deadline = Date.now() + GEOCODE_BUDGET_MS;
+  return mapPool(items, PHOTON_CONCURRENCY, async (item) => {
+    if (item.lat != null && item.lng != null) return item;
+    if (Date.now() > deadline) return item;
+    const pt = await geocodeStayName(item.itemName, origin);
+    return pt ? { ...item, lat: pt.lat, lng: pt.lng } : item;
+  });
+}
 
 const regionListCache = new Map<string, CacheEntry<Region[]>>();
 const searchCache = new Map<string, CacheEntry<{ items: StayItem[]; totalCount: number }>>();
@@ -322,7 +531,10 @@ async function searchStays(
     page: number;
     size: number;
   },
-): Promise<{ ok: true; items: StayItem[]; totalCount: number } | { ok: false; detail: string }> {
+): Promise<
+  | { ok: true; items: StayItem[]; totalCount: number; rawShape: ReturnType<typeof summarizeRawItem> | null }
+  | { ok: false; detail: string }
+> {
   const {
     regionId,
     checkIn,
@@ -333,13 +545,13 @@ async function searchStays(
     size,
   } = params;
   const cacheKey =
-    `search:${regionId}|${checkIn}|${checkOut}|${adultCount}|${childCount}|${size}|${page}`;
+    `search:v2:${regionId}|${checkIn}|${checkOut}|${adultCount}|${childCount}|${size}|${page}`;
   const hit = getCached(searchCache, cacheKey);
-  if (hit) return { ok: true, ...hit };
+  if (hit) return { ok: true, ...hit, rawShape: null };
 
   return withDedupe(cacheKey, async () => {
     const cached = getCached(searchCache, cacheKey);
-    if (cached) return { ok: true, ...cached };
+    if (cached) return { ok: true, ...cached, rawShape: null };
 
     const search = await mrtPost("/v1/products/accommodation/search", apiKey, {
       regionId,
@@ -367,6 +579,15 @@ async function searchStays(
       search.data?.items ||
       []
     ) as Array<Record<string, unknown>>;
+    const rawShape = rawItems[0] && typeof rawItems[0] === "object"
+      ? summarizeRawItem(rawItems[0])
+      : null;
+    if (rawShape) {
+      console.warn("[fetch-mrt-stays] raw item shape", {
+        dataKeys: Object.keys(dataNode),
+        ...rawShape,
+      });
+    }
     // 가격 있는(해당 일정 예약 가능) 숙소 우선 · 가격 없는 숙소도 유지
     // (오지·박재고 지역에서 「취급 없음」 오해 방지 — 일정 조정 후 예약 유도)
     // productUrl 누락 시 itemId로 소비자 URL 합성 — 일부 지역 totalCount>0·items 필드만 다른 응답 대비
@@ -379,6 +600,7 @@ async function searchStays(
       ).trim();
       const productUrl = rawUrl ||
         `https://accommodation.myrealtrip.com/union/products/${itemId}`;
+      const coords = pickStayCoords(it);
       mapped.push({
         itemId,
         itemName: String(it.itemName || it.name || ""),
@@ -389,6 +611,7 @@ async function searchStays(
         reviewCount: it.reviewCount != null ? Number(it.reviewCount) : null,
         imageUrl: it.imageUrl ? String(it.imageUrl) : (it.thumbnailUrl ? String(it.thumbnailUrl) : null),
         productUrl,
+        ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
       });
     }
     const items = mapped.sort((a, b) => {
@@ -413,7 +636,7 @@ async function searchStays(
       totalCount,
     };
     setCached(searchCache, cacheKey, payload, SEARCH_CACHE_TTL_MS);
-    return { ok: true as const, ...payload };
+    return { ok: true as const, ...payload, rawShape };
   });
 }
 
@@ -469,9 +692,16 @@ serve(async (req) => {
     /** 파트너 API size 상한 50 · 클라는 fetch 50 후 UI에서 20씩 더보기 */
     const size = Math.max(1, Math.min(50, Number(body?.size) || 20));
     const page = Math.max(0, Number(body?.page) || 0);
+    const originLat = finiteCoord(body?.originLat);
+    const originLng = finiteCoord(body?.originLng);
+    const origin =
+      originLat != null && originLng != null && isPlausibleWgs84(originLat, originLng)
+        ? { lat: originLat, lng: originLng }
+        : null;
 
     // region 매칭은 됐지만 해당 CITY 재고 0인 경우(버뮤다→세인트조지스 등)
     // 다음 키워드·다른 regionId로 최대 수회 재시도
+    const wantDebug = body?.debug === true;
     const skipRegionIds = new Set<number>();
     const maxRegionAttempts = Math.min(6, Math.max(1, keywords.length + 2));
     let lastRegion: Region | null = null;
@@ -519,6 +749,8 @@ serve(async (req) => {
 
       lastSearch = { items: search.items, totalCount: search.totalCount };
       if (search.items.length > 0 || search.totalCount > 0) {
+        const items = await attachGeocodedStayCoords(search.items, origin);
+        const withCoords = items.filter((it) => it.lat != null && it.lng != null).length;
         return jsonResponse({
           ok: true,
           region: {
@@ -527,13 +759,15 @@ serve(async (req) => {
             subName: region.subName ?? null,
             type: region.type ?? null,
           },
-          items: search.items,
+          items,
           checkIn,
           checkOut,
           adultCount,
           childCount,
           totalCount: search.totalCount,
           usedKeyword,
+          withCoords,
+          ...(wantDebug && search.ok ? { rawShape: search.rawShape } : {}),
         });
       }
 
