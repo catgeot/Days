@@ -9,9 +9,17 @@ import {
   expandMrtCountryHintAlts,
   isMrtStayPointLabel,
   mergeMrtStayFetchQuery,
+  mrtNeighborhoodKeyword,
+  nominatimSquarePenalty,
+  nominatimStationScoreDelta,
   queryLooksLikeStayPoint,
+  resolveKoStationAlias,
   resolveMrtStayQuery,
+  stationNameMatchesQuery,
 } from '../src/utils/mrtStayQuery.js';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const CASES = [
   {
@@ -307,8 +315,8 @@ const CASES = [
     rejectPrimaryKeyword: /대화리|^대화$/,
   },
   /**
-   * 지구본 검색「종각역」— 역·길 POI를 1차로 두면 MRT CITY 미매칭·빈 목록.
-   * Nominatim city「서울특별시」도 축약「서울」선두. 역명은 alt.
+   * 지구본 검색「종각역」— 1차 종로 NEIGHBORHOOD, 서울 CITY는 래더 뒤.
+   * 역명을 1차로 두면 MRT CITY 미매칭·빈 목록.
    */
   {
     slug: 'jonggak-station',
@@ -326,9 +334,9 @@ const CASES = [
         state: '서울특별시',
       },
     },
-    expectPrimaryKeyword: /^서울$/,
-    expectKeyword: /종각역/,
-    rejectPrimaryKeyword: /종각역|Jonggak/i,
+    expectPrimaryKeyword: /^종로$/,
+    expectKeyword: /서울/,
+    rejectPrimaryKeyword: /종각역|Jonggak|서울특별시|^서울$/,
     rejectCityHint: /종각역|Jonggak/i,
   },
   {
@@ -346,10 +354,30 @@ const CASES = [
         state: '서울특별시',
       },
     },
-    expectPrimaryKeyword: /^서울$/,
-    expectKeyword: /종각역/,
-    rejectPrimaryKeyword: /종각역|서울특별시/,
+    expectPrimaryKeyword: /^종로$/,
+    expectKeyword: /서울/,
+    rejectPrimaryKeyword: /종각역|서울특별시|^서울$/,
     rejectCityHint: /종각역/,
+  },
+  {
+    slug: 'jonggak-abbrev-jongno',
+    location: {
+      name: '종각',
+      name_ko: '종각',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '종각',
+      stayAdmin: {
+        neighbourhood: '종로1가',
+        city: '서울',
+        district: '종로구',
+        state: '서울특별시',
+      },
+    },
+    expectPrimaryKeyword: /^종로$/,
+    expectKeyword: /서울/,
+    rejectPrimaryKeyword: /종각역|^서울$|대구/,
   },
   {
     slug: 'seoul-station',
@@ -378,11 +406,40 @@ async function main() {
   let failed = 0;
   try {
     assert(isMrtStayPointLabel('종각역'), '종각역 is stay point');
+    assert(isMrtStayPointLabel('종각'), '종각 alias is stay point');
     assert(isMrtStayPointLabel('서울역'), '서울역 is stay point');
     assert(!isMrtStayPointLabel('영역'), '영역 is not stay point');
+    assert(!isMrtStayPointLabel('종로'), '종로 is neighborhood not stay point');
     assert(queryLooksLikeStayPoint('종각역'), 'queryLooksLikeStayPoint 종각역');
+    assert(queryLooksLikeStayPoint('종각'), 'queryLooksLikeStayPoint 종각');
     assert(queryLooksLikeStayPoint('종각역, 대한민국'), 'queryLooksLikeStayPoint 종각역, 대한민국');
+    assert(queryLooksLikeStayPoint('종각, 대한민국'), 'queryLooksLikeStayPoint 종각, 대한민국');
     assert(!queryLooksLikeStayPoint('서울'), '서울 is not stay point query');
+    const jonggakAlias = resolveKoStationAlias('종각');
+    assert(jonggakAlias?.station === '종각역', `종각 alias station (got ${jonggakAlias?.station})`);
+    assert(jonggakAlias?.district === '종로', `종각 alias district (got ${jonggakAlias?.district})`);
+    assert(resolveKoStationAlias('종각역')?.district === '종로', '종각역 alias district 종로');
+    assert(stationNameMatchesQuery('종각', '종각역'), '종각 matches 종각역 name');
+    assert(
+      nominatimStationScoreDelta('종각', { class: 'railway', type: 'station', name: '종각역' }) === 80,
+      '종각 railway score',
+    );
+    assert(
+      nominatimSquarePenalty('종각', { class: 'place', type: 'square', name: '종각' }) === -60,
+      '종각 square penalty',
+    );
+    assert(
+      mrtNeighborhoodKeyword({ neighbourhood: '종로1가', city: '서울' }, { name: '종각역' }) === '종로',
+      '종로1가 / 종각역 → 종로',
+    );
+    const jonggakAliases = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/lib/geocoding.js'),
+      'utf8',
+    );
+    assert(
+      jonggakAliases.includes('resolveKoStationAlias') && jonggakAliases.includes('add(stationAlias.station)'),
+      'geocoding expands station alias to 종각역',
+    );
     console.log('OK  stay-point labels');
   } catch (err) {
     failed += 1;
@@ -463,7 +520,7 @@ async function main() {
       state: '서울특별시',
     },
   });
-  assert(jonggakMerge.keyword === '서울', `jonggak merge keyword (got ${jonggakMerge.keyword})`);
+  assert(jonggakMerge.keyword === '종로', `jonggak merge keyword (got ${jonggakMerge.keyword})`);
   assert(
     !jonggakMerge.cityHints.some((h) => /종각역|Jonggak/i.test(String(h))),
     `jonggak merge cityHints must not include station label (got ${jonggakMerge.cityHints.join(',')})`,
