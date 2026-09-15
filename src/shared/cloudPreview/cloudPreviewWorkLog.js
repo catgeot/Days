@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 47,
-  sessionPhase: '거제 빈 썸네일',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=geoje',
-  qaShareSlug: 'palgyeong-use',
+  title: '방문자 개선',
+  sessionNo: 7,
+  sessionPhase: '플래너 3단계 점진적 노출',
+  branch: 'cursor/visitor-growth-1f90',
+  previewPath: '/place/bora-bora/planner',
+  qaShareSlug: 'visitor-growth',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,12 +24,28 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-visitor-growth-7-stage-footer-next',
+    session: '방문자 개선 #7, 플래너 3단계 점진적 노출',
+    title: '단계 하단에서 다음 단계 선택',
+    detail:
+      '필수 단계를 끝까지 내린 뒤 상단 탭으로 다시 올라가지 않아도 됩니다. 각 단계 하단에 「확인하셨다면 다음 단계를 선택해 주세요」안내와 나머지 단계 버튼을 둡니다. Preview /qa/visitor-growth — /place/bora-bora/planner 필수 단계 맨 아래.',
+    at: '2026-09-15T03:45:00.000Z',
+  },
+  {
     id: '2026-09-15-palgyeong-use-47-geoje-empty-thumbs',
     session: '팔경 활용 #47, 거제 빈 썸네일',
     title: '거제 식물원·매미성·구조라·지심도터미널 빈 썸네일',
     detail:
       'Preview QA에서 거제 식물원(5경)·매미성(9경)·구조라해수욕장·탐색 검색 동백섬 지심도터미널(2756617)이 플레이스홀더였습니다. 학동·포로수용소·공곶이·내도는 이미 사진이 있습니다. GATEO 선정 행이 없고 탐색홈은 Tour firstimage를 쓰지 않습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 한국관광공사 공식 사진을 넣었습니다. 외도보타니아·매미면가 식당·학동몽돌·지심도 본섬과 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「거제」식물원·매미성·구조라, /korea/theme/scenic 검색「거제」동백섬 지심도터미널.',
     at: '2026-09-15T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-7-planner-stages',
+    session: '방문자 개선 #7, 플래너 3단계 점진적 노출',
+    title: '플래너 필수→이동·통신→즐기기 단계 노출',
+    detail:
+      '툴킷이 한 화면에 쏟아지던 플래너를 3단계로 나눕니다. 1단계는 비자·체크리스트·항공/숙소 예약 카드, 2단계는 픽업·페리·유심(Airalo/Holafly 택1), 3단계는 투어·교통 패스·앱·치안입니다. 상단 항공 배너와 체크리스트·툴킷의 중복 CTA를 모았고, 복잡도 90/100 대신 「상세 안내 포함」뱃지를 둡니다. Preview /qa/visitor-growth — /place/bora-bora/planner · /place/paris/planner.',
+    at: '2026-09-15T03:30:00.000Z',
   },
   {
     id: '2026-09-15-palgyeong-use-47-geoje-overlays',
