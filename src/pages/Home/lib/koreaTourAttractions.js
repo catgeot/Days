@@ -532,6 +532,19 @@ export function peekKoreaTourAttractionFirstImagesByIds(contentIds) {
 }
 
 /**
+ * TourAPI live firstimage → 세션 캐시. DB first_image 공란 행이 매 검색마다 live를 다시 치지 않게 한다.
+ * @param {string | number | null | undefined} contentId
+ * @param {string | null | undefined} url
+ */
+export function rememberKoreaTourAttractionFirstImage(contentId, url) {
+  const id = String(contentId || '').trim();
+  const image = String(url || '').trim();
+  if (!/^\d{1,32}$/.test(id) || !image) return;
+  firstImageCache.set(id, image);
+  firstImageMiss.delete(id);
+}
+
+/**
  * @param {string[]} ids
  * @returns {Promise<void>}
  */

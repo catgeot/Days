@@ -141,14 +141,18 @@ export async function fetchTourApiAttractionDetail(opts) {
 }
 
 /**
- * 리스트 썸네일용 — detailCommon firstimage만. JSON contentId 기입 아님.
+ * 리스트 썸네일용 — firstimage가 비면 detailImage 갤러리. JSON contentId 기입 아님.
+ * DB·searchKeyword·detailCommon firstimage가 공란이어도 TourAPI 사진은 detailImage에 있는 경우가 많다.
  * @param {string | number | null | undefined} contentId
  * @returns {Promise<string | null>}
  */
 export async function fetchTourApiFirstImage(contentId) {
   const id = String(contentId ?? '').trim();
   if (!/^\d{1,32}$/.test(id)) return null;
-  const common = await invokeTourApi('detailCommon', { contentId: id });
+  const [common, images] = await Promise.all([
+    invokeTourApi('detailCommon', { contentId: id }),
+    invokeTourApi('detailImage', { contentId: id, numOfRows: 8, pageNo: 1 }),
+  ]);
   const item = common?.items?.[0] || null;
   const directImage = pickImageUrl(
     item?.imageUrl,
@@ -156,6 +160,15 @@ export async function fetchTourApiFirstImage(contentId) {
     item?.firstimage2,
   );
   if (directImage) return directImage;
+  for (const it of images?.items || []) {
+    const fromGallery = pickImageUrl(
+      it?.imageUrl,
+      it?.originimgurl,
+      it?.smallimageurl,
+      it?.firstimage,
+    );
+    if (fromGallery) return fromGallery;
+  }
   const title = String(item?.title || '').replace(/\(.*?\)/g, '').trim();
   if (!title) return null;
   try {
