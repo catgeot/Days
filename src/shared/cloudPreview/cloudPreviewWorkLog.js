@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-visitor-growth-7-stage-footer-next',
+    session: '방문자 개선 #7, 플래너 3단계 점진적 노출',
+    title: '단계 하단에서 다음 단계 선택',
+    detail:
+      '필수 단계를 끝까지 내린 뒤 상단 탭으로 다시 올라가지 않아도 됩니다. 각 단계 하단에 「확인하셨다면 다음 단계를 선택해 주세요」안내와 나머지 단계 버튼을 둡니다. Preview /qa/visitor-growth — /place/bora-bora/planner 필수 단계 맨 아래.',
+    at: '2026-09-15T03:45:00.000Z',
+  },
+  {
     id: '2026-09-15-visitor-growth-7-planner-stages',
     session: '방문자 개선 #7, 플래너 3단계 점진적 노출',
     title: '플래너 필수→이동·통신→즐기기 단계 노출',

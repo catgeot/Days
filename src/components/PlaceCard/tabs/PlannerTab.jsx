@@ -637,6 +637,12 @@ const PlannerTab = ({
                         </div>
                     ) : null}
 
+                    <PlannerStageNav
+                        variant="footer"
+                        value={plannerStage}
+                        onChange={handlePlannerStageChange}
+                    />
+
                 {/* 관리자/테스트: AI 툴킷 강제 재실행 (평소 흐릿 · hover 시 확인 가능) */}
                 <div
                     id="planner-admin-force-update"

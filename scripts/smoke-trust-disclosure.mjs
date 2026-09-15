@@ -69,11 +69,14 @@ assert.match(planner, /omitDuplicateStayCta/, '숙소 툴킷 중복 CTA 생략')
 assert.match(planner, /flightBooking/, '체크리스트에 항공 배너 통합');
 assert.match(planner, /PlannerPickupCta/, '픽업 CTA는 이동 단계');
 assert.match(planner, /place\.planner\.esim\.choose/, '유심 1종 선택');
+assert.match(planner, /variant="footer"/, '단계 하단 다음 선택');
 
 const stageNav = read('src/components/PlaceCard/tabs/planner/components/PlannerStageNav.jsx');
 assert.match(stageNav, /place\.planner\.stages\.essential/, '단계 라벨 필수');
 assert.match(stageNav, /place\.planner\.stages\.transfer/, '단계 라벨 이동·통신');
 assert.match(stageNav, /place\.planner\.stages\.enjoy/, '단계 라벨 즐기기');
+assert.match(stageNav, /nextHintEssential/, '필수 단계 하단 안내');
+assert.match(stageNav, /variant === 'footer'/, '하단 다음 단계 네비');
 
 const focus = read('src/utils/placePlannerFocus.js');
 assert.match(focus, /export const PLANNER_STAGE/, '단계 SSOT');
@@ -101,5 +104,7 @@ assert.equal(ko.place.planner.stages.essential, '필수');
 assert.equal(en.place.planner.stages.essential, 'Essentials');
 assert.ok(ko.place.planner.complexityBadge);
 assert.ok(en.place.planner.complexityHint);
+assert.match(ko.place.planner.stages.nextHintEssential, /다음 단계/);
+assert.ok(en.place.planner.stages.nextHintEssential);
 
 console.log('smoke:trust-disclosure PASS');

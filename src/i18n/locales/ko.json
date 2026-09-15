@@ -633,7 +633,11 @@
         "essential": "필수",
         "transfer": "이동·통신",
         "enjoy": "즐기기",
-        "navAria": "플래너 단계"
+        "navAria": "플래너 단계",
+        "nextNavAria": "다음 플래너 단계",
+        "nextHintEssential": "필수 단계를 확인하셨다면, 다음 단계를 선택해 주세요.",
+        "nextHintTransfer": "이동·통신을 확인하셨다면, 다음 단계를 선택해 주세요.",
+        "nextHintEnjoy": "다른 단계도 보시려면 아래에서 선택해 주세요."
       },
       "esim": {
         "choose": "유심 1종 선택",

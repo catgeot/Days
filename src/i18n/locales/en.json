@@ -863,7 +863,11 @@
         "essential": "Essentials",
         "transfer": "Transit & eSIM",
         "enjoy": "Enjoy",
-        "navAria": "Planner steps"
+        "navAria": "Planner steps",
+        "nextNavAria": "Next planner step",
+        "nextHintEssential": "If you have reviewed the essentials, please choose the next step.",
+        "nextHintTransfer": "If you have reviewed transit and eSIM, please choose the next step.",
+        "nextHintEnjoy": "To see another step, choose one below."
       },
       "esim": {
         "choose": "Choose one eSIM",
