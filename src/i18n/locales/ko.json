@@ -312,6 +312,7 @@
     "stayStrip": {
       "sort": {
         "recommended": "추천순",
+        "distanceAsc": "가까운순",
         "priceAsc": "낮은 가격순",
         "priceDesc": "높은 가격순",
         "ratingDesc": "평점 높은순"
@@ -344,6 +345,8 @@
       "gridZoom": "확대해서 보기",
       "countPlaces": "{{count}}곳",
       "viewOnMrt": "마이리얼트립에서 보기",
+      "naverNearbyStays": "네이버 지도에서 주변 숙소 보기",
+      "naverNearbyStaysAria": "네이버 지도에서 주변 숙소 보기",
       "sortAria": "숙소 정렬",
       "officialGuide": "공식·인가 안내",
       "sparseInfoNote": "이 지역은 온라인 정보가 적어요. 공식 관광 안내도 함께 확인해 보세요",

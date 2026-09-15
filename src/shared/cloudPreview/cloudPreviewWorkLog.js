@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '종각역 숙소',
-  sessionNo: 4,
-  sessionPhase: '종각 약칭 지오코딩 및 종로 권역 매핑',
+  sessionNo: 5,
+  sessionPhase: '거리 정렬 및 지도 딥링크',
   branch: 'cursor/jonggak-stay-5f4f',
   previewPath: '/',
   qaShareSlug: '',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-jonggak-stay-distance-naver',
+    session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',
+    title: '종각역 거리 표기 · 네이버 지도 인근 숙소',
+    detail:
+      '숙소 카드에 종각역 좌표 기준 거리(종각역 350m)를 붙이고, 추천순·가까운순은 가까운 숙소를 앞에 둡니다. 툴바에 「네이버 지도에서 주변 숙소 보기」칩이 있습니다. 거리는 마이리얼트립 숙소 위·경도가 있을 때만 나옵니다. Edge fetch-mrt-stays를 이 브랜치로 배포해야 Preview에 좌표가 전달됩니다. Preview 홈「종각」→ 숙소 찾기 → 종로·광화문 호텔에 거리 · 네이버 칩.',
+    at: '2026-09-15T19:50:00.000Z',
+  },
   {
     id: '2026-09-15-jonggak-stay-jongno-alias',
     session: '종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑',

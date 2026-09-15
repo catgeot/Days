@@ -26,8 +26,8 @@ export {
   stripKoAdminSuffix,
 };
 
-/** countryHint·keyword override 변경 시 무효화 · v18: fetch 50 · UI 더보기로 20씩 */
-const CACHE_PREFIX = 'gateo:mrt-stays:v18:';
+/** countryHint·keyword override 변경 시 무효화 · v19: item lat/lng · UI 더보기로 20씩 */
+const CACHE_PREFIX = 'gateo:mrt-stays:v19:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
 const MAX_ADULTS = 8;

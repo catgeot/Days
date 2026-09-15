@@ -29,7 +29,50 @@ type StayItem = {
   reviewCount: number | null;
   imageUrl: string | null;
   productUrl: string;
+  lat?: number;
+  lng?: number;
 };
+
+function finiteCoord(v: unknown): number | null {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function isPlausibleWgs84(lat: number | null, lng: number | null): boolean {
+  if (lat == null || lng == null) return false;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
+  if (lat === 0 && lng === 0) return false;
+  return true;
+}
+
+/** 파트너 search item 위·경도 — 클라 Haversine용 */
+function pickStayCoords(it: Record<string, unknown>): { lat: number; lng: number } | null {
+  const nested = [it.location, it.geo, it.coordinate, it.coordinates, it.gps, it.position]
+    .filter((v) => v && typeof v === "object") as Record<string, unknown>[];
+  const pairs: Array<[unknown, unknown]> = [
+    [it.lat, it.lng],
+    [it.latitude, it.longitude],
+    [it.lat, it.lon],
+    [it.hotelLatitude, it.hotelLongitude],
+    [it.geoLat, it.geoLng],
+    [it.locationLat, it.locationLng],
+    [it.y, it.x],
+  ];
+  for (const obj of nested) {
+    pairs.push(
+      [obj.lat, obj.lng],
+      [obj.latitude, obj.longitude],
+      [obj.lat, obj.lon],
+      [obj.y, obj.x],
+    );
+  }
+  for (const [la, ln] of pairs) {
+    const lat = finiteCoord(la);
+    const lng = finiteCoord(ln);
+    if (lat != null && lng != null && isPlausibleWgs84(lat, lng)) return { lat, lng };
+  }
+  return null;
+}
 
 type CacheEntry<T> = { expires: number; value: T };
 
@@ -379,6 +422,7 @@ async function searchStays(
       ).trim();
       const productUrl = rawUrl ||
         `https://accommodation.myrealtrip.com/union/products/${itemId}`;
+      const coords = pickStayCoords(it);
       mapped.push({
         itemId,
         itemName: String(it.itemName || it.name || ""),
@@ -389,6 +433,7 @@ async function searchStays(
         reviewCount: it.reviewCount != null ? Number(it.reviewCount) : null,
         imageUrl: it.imageUrl ? String(it.imageUrl) : (it.thumbnailUrl ? String(it.thumbnailUrl) : null),
         productUrl,
+        ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
       });
     }
     const items = mapped.sort((a, b) => {

@@ -541,6 +541,7 @@
     "stayStrip": {
       "sort": {
         "recommended": "Recommended",
+        "distanceAsc": "Closest",
         "priceAsc": "Price: low to high",
         "priceDesc": "Price: high to low",
         "ratingDesc": "Top rated"
@@ -574,6 +575,8 @@
       "gridZoom": "Zoom in",
       "countPlaces": "{{count}} places",
       "viewOnMrt": "View on MyRealTrip",
+      "naverNearbyStays": "Nearby stays on Naver Map",
+      "naverNearbyStaysAria": "Open nearby stays on Naver Map",
       "sortAria": "Sort stays",
       "officialGuide": "Official & licensed info",
       "sparseInfoNote": "Limited online info for this area. Check official tourism guides too.",

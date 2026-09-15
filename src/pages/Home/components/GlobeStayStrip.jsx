@@ -69,6 +69,11 @@ import { resolveFlightDepartureIataForTrip } from '../lib/flightOriginPreference
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
+  attachMrtStayDistances,
+  buildNaverNearbyStayMapUrl,
+  stayDistanceRank,
+} from '../../../utils/mrtStayDistance';
+import {
   MRT_HOME_MYLINK_ID,
   MRT_PACKAGE_SHORT_URLS,
 } from '../data/mrtPackageThemeLinks';
@@ -87,6 +92,7 @@ const MRT_AFFILIATE_HOME_URL = MRT_PACKAGE_SHORT_URLS.home;
 function getStaySortOptions(t) {
   return [
     { id: 'recommended', label: t('home.stayStrip.sort.recommended') },
+    { id: 'distance_asc', label: t('home.stayStrip.sort.distanceAsc') },
     { id: 'price_asc', label: t('home.stayStrip.sort.priceAsc') },
     { id: 'price_desc', label: t('home.stayStrip.sort.priceDesc') },
     { id: 'rating_desc', label: t('home.stayStrip.sort.ratingDesc') },
@@ -139,6 +145,9 @@ function sortStayGroup(list, sortMode) {
   }
   if (sortMode === 'rating_desc') {
     return arr.sort((a, b) => reviewScoreNum(b) - reviewScoreNum(a));
+  }
+  if (sortMode === 'distance_asc' || sortMode === 'recommended') {
+    return arr.sort((a, b) => stayDistanceRank(a) - stayDistanceRank(b));
   }
   return arr;
 }
@@ -555,6 +564,8 @@ function StayCard({
   imageClassName = 'h-[72px] lg:h-[96px]',
   /** PC 확장 목록용 — 이미지·타이포 한 단계 확대 */
   size = 'md',
+  /** 검색 중심점 거리 — 「종각역 350m」 */
+  distanceText = '',
 }) {
   const { t, i18n } = useTranslation();
   const large = size === 'lg';
@@ -601,6 +612,15 @@ function StayCard({
         >
           {item.itemName}
         </p>
+        {distanceText ? (
+          <p
+            className={`truncate font-semibold text-amber-100/75 ${
+              large ? 'text-[11px]' : 'text-[10px]'
+            }`}
+          >
+            {distanceText}
+          </p>
+        ) : null}
         <div className="flex min-w-0 items-center justify-between gap-1">
           {item.reviewScore ? (
             <span
@@ -680,6 +700,7 @@ function StayListToolbar({
   flightCheckOut,
   flightAdultCount,
   flightChildCount,
+  naverMapUrl = null,
 }) {
   const { t } = useTranslation();
   const href = listUrl || MRT_AFFILIATE_HOME_URL;
@@ -719,6 +740,19 @@ function StayListToolbar({
             </a>
           </>
         )}
+        {naverMapUrl ? (
+          <a
+            href={naverMapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t('home.stayStrip.naverNearbyStaysAria')}
+            onClick={(e) => e.stopPropagation()}
+            className={`inline-flex min-w-0 shrink-0 items-center gap-1 px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
+          >
+            <MapPin size={11} className="shrink-0 opacity-80" aria-hidden="true" />
+            <span className="break-keep">{t('home.stayStrip.naverNearbyStays')}</span>
+          </a>
+        ) : null}
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-1.5">
         <StayGridDensityToggle
@@ -1093,6 +1127,7 @@ function StayCardsGrid({
             className={cardClassName}
             imageClassName={imageClassName}
             size={cardSize}
+            distanceText={item.distanceLabel || ''}
           />
         </Fragment>
       ))}
@@ -1398,6 +1433,24 @@ export default function GlobeStayStrip({
     setExpanded(false);
   }, []);
 
+  const rankedItems = useMemo(
+    () =>
+      attachMrtStayDistances(items, {
+        lat: location?.lat,
+        lng: location?.lng,
+        label: name,
+      }),
+    [items, location?.lat, location?.lng, name],
+  );
+
+  const naverNearbyStayUrl = useMemo(() => {
+    if (!isMrtDomesticLocation(location)) return null;
+    const lat = Number(location?.lat);
+    const lng = Number(location?.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+    return buildNaverNearbyStayMapUrl({ lat, lng, query: name });
+  }, [location, name]);
+
   if (!eligible) {
     if (typeof children === 'function') {
       return children({
@@ -1631,6 +1684,7 @@ export default function GlobeStayStrip({
           densityVariant="desktop"
           densityValue={desktopGridDensity}
           onDensityChange={setDesktopGridDensity}
+          naverMapUrl={naverNearbyStayUrl}
         />
         <div
           className={`grid gap-3 ${
@@ -1638,7 +1692,7 @@ export default function GlobeStayStrip({
           }`}
         >
           <StayCardsGrid
-            items={items}
+            items={rankedItems}
             sortMode={sortMode}
             visibleCount={visibleCount}
             cardSize="lg"
@@ -1842,6 +1896,7 @@ export default function GlobeStayStrip({
                     flightCheckOut={stayDates.checkOut}
                     flightAdultCount={guests.adultCount}
                     flightChildCount={guests.childCount}
+                    naverMapUrl={naverNearbyStayUrl}
                   />
                   <div
                     className={`grid gap-2.5 ${
@@ -1849,7 +1904,7 @@ export default function GlobeStayStrip({
                     }`}
                   >
                     <StayCardsGrid
-                      items={items}
+                      items={rankedItems}
                       sortMode={sortMode}
                       visibleCount={visibleCount}
                       cardClassName="w-full"
