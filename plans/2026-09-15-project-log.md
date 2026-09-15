@@ -2,6 +2,15 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #8 — 언어일관성 및 가입혜택/접근성 (Cloud)
+
+- **세션** `방문자 개선 #8, 언어일관성 및 가입혜택/접근성`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `b296a29c` · PR [#259](https://github.com/catgeot/Days/pull/259)
+- **완료**: PlaceCard 개요·태그 locale 연동 · EN 한글 본문 안내 칩 · 가입 4대 혜택 · 아이콘 aria-label · 로고 키보드 · 지구본 reduced-motion/일시정지.
+- **VERIFY**: `npm run smoke:visitor-locale` PASS · `npm run audit:i18n` PASS · `npm run smoke:trust-disclosure` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` · `/auth/signup` · `/place/paris/gallery`
+- **QA**: EN 전환 후 파리 개요가 영어인지 · 회원가입 4대 혜택 · 지구본 일시정지 · Tab으로 로고.
+
 ## 방문자 개선 #7 QA — 단계 하단 다음 선택 (Cloud)
 
 - **세션** `방문자 개선 #7, 플래너 3단계 점진적 노출`
