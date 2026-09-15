@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '종각역 숙소',
-  sessionNo: 4,
-  sessionPhase: '종각 약칭 지오코딩 및 종로 권역 매핑',
-  branch: 'cursor/jonggak-stay-5f4f',
-  previewPath: '/',
-  qaShareSlug: '',
+  title: '팔경 활용',
+  sessionNo: 50,
+  sessionPhase: '고흥 빈 썸네일',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-palgyeong-use-50-goheung-empty-thumbs',
+    session: '팔경 활용 #50, 고흥 빈 썸네일',
+    title: '팔영산 자연휴양림·영남용바위 빈 썸네일',
+    detail:
+      'Preview QA에서 고흥10경 1경 팔영산 자연휴양림과 검색「고흥」영남용바위·팔영산자연휴양림이 Landmark였습니다. Tour 125426·2782706 firstimage가 비어 있습니다. JSON contentId 기입 없이 멤버 오버레이·TOUR_THUMB에 한국관광공사 휴양림 산림문화휴양관(2380877)·영남용바위 해안절벽(2788863) 사진을 넣었습니다. 능가사·편백치유의 숲·남열 해수욕장·소록도와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goheung 1경, 검색「고흥」팔영산자연휴양림·영남용바위.',
+    at: '2026-09-15T19:50:00.000Z',
+  },
+  {
     id: '2026-09-15-jonggak-stay-jongno-alias',
     session: '종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑',
     title: '종각 약칭은 서울 종각역, 숙소는 종로',
@@ -32,12 +40,12 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-15T13:30:00.000Z',
   },
   {
-    id: '2026-09-15-jonggak-stay-seoul-not-wonju',
-    session: '종각역 숙소 #2, 서울 좌표·서울 CITY',
-    title: '종각역 숙소가 원주로 나오던 문제',
+    id: '2026-09-15-palgyeong-use-50-goheung-overlays',
+    session: '팔경 활용 #50, 고흥 결손 오버레이',
+    title: '고흥10경 쑥섬·금산 해안경관·고흥만 수변노을공원 오버레이',
     detail:
-      '써머리 숙소 찾기가 오크밸리·원주 브라운도트처럼 원주 숙소를 보여 줬습니다. 종각역 Nominatim(철도역)을 버려서 검색이 search_dictionary 원주 좌표로 갔고, 시·군 선두가 원주를 키워드로 썼습니다. 역 검색은 서울 종각역 좌표를 쓰고, 마이리얼트립은 CITY「서울」로 찾습니다. 「서울 종각역」단독 CITY는 없습니다. Preview 홈에서 종각역 → 숙소 찾기 → 서울 호텔인지(원주 오크밸리 아님).',
-    at: '2026-09-15T08:40:00.000Z',
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 고흥10경 결손 3건(쑥섬·금산 해안경관·고흥만 수변노을공원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 쑥섬은 봉래면 애도(나로도항길 120-7) 전남 1호 민간정원이며 소록도·연홍도·나로우주센터와 다른 섬입니다. 금산 해안경관은 충남 금산군·남해 금산 보리암이 아니라 금산면 거금도 해안도로(거금일주로 1234·소원동산)입니다. 고흥만 수변노을공원은 도덕면 고흥만로 1132-14이며 남열 해돋이·영광 백수해안도로와 다른 노을입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goheung 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T13:20:00.000Z',
   },
   {
     id: '2026-09-15-palgyeong-use-49-yeonggwang-detailimage',
@@ -70,6 +78,14 @@ export const cloudPreviewWorkLog = [
     detail:
       'Preview QA에서 오버레이를 넣었는데도 용추폭포(2경)와 무릉반석(3경)이 같은 무릉계곡 Tour 125673 폭포 사진을 썼고, 망상(4경)은 Tour 글자 간판이었습니다. ScenicPage가 contentId로 Tour firstimage를 나중에 덮습니다. JSON contentId 기입 없이 멤버 오버레이가 Tour 맵보다 우선하게 했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=donghae 2경·3경·4경 사진이 서로 다름.',
     at: '2026-09-15T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-seoul-not-wonju',
+    session: '종각역 숙소 #2, 서울 좌표·서울 CITY',
+    title: '종각역 숙소가 원주로 나오던 문제',
+    detail:
+      '써머리 숙소 찾기가 오크밸리·원주 브라운도트처럼 원주 숙소를 보여 줬습니다. 종각역 Nominatim(철도역)을 버려서 검색이 search_dictionary 원주 좌표로 갔고, 시·군 선두가 원주를 키워드로 썼습니다. 역 검색은 서울 종각역 좌표를 쓰고, 마이리얼트립은 CITY「서울」로 찾습니다. 「서울 종각역」단독 CITY는 없습니다. Preview 홈에서 종각역 → 숙소 찾기 → 서울 호텔인지(원주 오크밸리 아님).',
+    at: '2026-09-15T08:40:00.000Z',
   },
   {
     id: '2026-09-15-palgyeong-use-48-donghae-empty-thumbs',
