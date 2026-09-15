@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '방문자 개선',
-  sessionNo: 6,
-  sessionPhase: '신뢰요소 및 제휴투명성 강화',
-  branch: 'cursor/visitor-growth-1f90',
-  previewPath: '/',
-  qaShareSlug: 'visitor-growth',
+  title: '팔경 활용',
+  sessionNo: 47,
+  sessionPhase: '거제 빈 썸네일',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=geoje',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,6 +24,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-palgyeong-use-47-geoje-empty-thumbs',
+    session: '팔경 활용 #47, 거제 빈 썸네일',
+    title: '거제 식물원·매미성·구조라·지심도터미널 빈 썸네일',
+    detail:
+      'Preview QA에서 거제 식물원(5경)·매미성(9경)·구조라해수욕장·탐색 검색 동백섬 지심도터미널(2756617)이 플레이스홀더였습니다. 학동·포로수용소·공곶이·내도는 이미 사진이 있습니다. GATEO 선정 행이 없고 탐색홈은 Tour firstimage를 쓰지 않습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 한국관광공사 공식 사진을 넣었습니다. 외도보타니아·매미면가 식당·학동몽돌·지심도 본섬과 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「거제」식물원·매미성·구조라, /korea/theme/scenic 검색「거제」동백섬 지심도터미널.',
+    at: '2026-09-15T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-47-geoje-overlays',
+    session: '팔경 활용 #47, 거제 결손 오버레이',
+    title: '거제9경 결손 3건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 거제9경 결손 3건(학동몽돌해수욕장·거제포로수용소유적공원·공곶이·내도)의 공공 공식 팩트 개요·주소·한국관광공사 공식 사진을 보강했습니다. 학동은 동부면 학동 흑진주 몽돌해변, 포로수용소는 고현동 계룡로 61, 공곶이·내도는 일운면 와현리 94-2입니다. 고성 학동마을·외도보타니아와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geoje 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T03:20:00.000Z',
+  },
+  {
     id: '2026-09-15-visitor-growth-6-trust-bar-clearance',
     session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
     title: '모바일 홈 신뢰 바·테마 칩 겹침 해제',
@@ -32,20 +48,20 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-15T03:10:00.000Z',
   },
   {
-    id: '2026-09-15-visitor-growth-6-trust-disclosure',
-    session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
-    title: '신뢰 링크 바·Credits 출처·제휴 고지',
-    detail:
-      '홈·서브페이지 하단 슬림 바에 About·약관·개인정보·출처·문의를 두고 FooterModal 탭을 엽니다. Credits에 TourAPI·Open-Meteo·Unsplash·Pexels와 트립닷컴·클룩·겟유어가이드·마이리얼트립을 적습니다. 플래너 체크리스트 항공·숙소·픽업 CTA에 제휴광고 표기, hybridNotice는 헤더 아래로 올립니다. Preview /qa/visitor-growth — / · /about · /place/paris/planner.',
-    at: '2026-09-15T01:50:00.000Z',
-  },
-  {
     id: '2026-09-15-palgyeong-use-46-hwasun-yeondunri-thumb',
     session: '팔경 활용 #46, 화순 연둔리 썸네일',
     title: '화순 7경 연둔리 숲정이 빈 썸네일',
     detail:
       'Preview QA에서 화순11경 7경 연둔리 숲정이와 탐색 검색 Tour 행 화순동복연둔리숲정이(3014431)가 플레이스홀더였습니다. GATEO 선정 행이 없고 탐색홈은 Tour DB first_image 동기화에 의존하는데 비어 있습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 화순군 문화관광 제7경 공식 사진(동복면 둔동1길 38·동복천 수양버들)을 넣었습니다. 만연산 치유숲과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwasun 7경, 검색「화순」연둔리 숲정이·화순동복연둔리숲정이 행.',
     at: '2026-09-15T01:55:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-6-trust-disclosure',
+    session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
+    title: '신뢰 링크 바·Credits 출처·제휴 고지',
+    detail:
+      '홈·서브페이지 하단 슬림 바에 About·약관·개인정보·출처·문의를 두고 FooterModal 탭을 엽니다. Credits에 TourAPI·Open-Meteo·Unsplash·Pexels와 트립닷컴·클룩·겟유어가이드·마이리얼트립을 적습니다. 플래너 체크리스트 항공·숙소·픽업 CTA에 제휴광고 표기, hybridNotice는 헤더 아래로 올립니다. Preview /qa/visitor-growth — / · /about · /place/paris/planner.',
+    at: '2026-09-15T01:50:00.000Z',
   },
   {
     id: '2026-09-14-palgyeong-use-46-hwasun-overlays',
