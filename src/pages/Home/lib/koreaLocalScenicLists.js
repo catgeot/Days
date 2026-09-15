@@ -1347,6 +1347,15 @@ const DH_MANGSANG_2 = 'https://www.dh.go.kr/DATA/tour/4/20250120043232576_hTQo.j
 const DH_EODAL = 'https://www.dh.go.kr/DATA/tour/4/20230103020936597_ZL0E.jpg';
 const DH_EODAL_2 = 'https://www.dh.go.kr/DATA/tour/4/20230103020936600_ihHv.jpg';
 const DH_EODAL_3 = 'https://www.dh.go.kr/DATA/tour/4/20230103020936571_nh03.jpg';
+const YG_BAEKSU = 'https://tong.visitkorea.or.kr/cms2/website/00/1672400.jpg';
+const YG_SALT = 'https://tong.visitkorea.or.kr/cms2/website/85/3401885.jpg';
+const YG_SALT_2 = 'https://tong.visitkorea.or.kr/cms2/website/00/3401900.jpg';
+const YG_SUPJAENG = 'https://tong.visitkorea.or.kr/cms/resource/38/3057538_image2_1.jpg';
+const YG_SUPJAENG_2 = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629029.jpg';
+const YG_SUPJAENG_3 = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629030.jpg';
+const YG_MULMU = 'https://tong.visitkorea.or.kr/cms/resource/88/2676388_image2_1.JPG';
+const YG_MULMU_2 = 'https://tong.visitkorea.or.kr/cms/resource/89/2676389_image2_1.JPG';
+const YG_MULMU_3 = 'https://tong.visitkorea.or.kr/cms/resource/86/2825886_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2818,6 +2827,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '강원특별자치도 동해시 천곡동 (초록봉)',
     DH_CHOROK,
     [DH_CHOROK_2, DH_CHOROK_3],
+  ),
+  'local-scenic:yeonggwang-gugyeong:황금산': localScenicPhotoOverlay(
+    'SSOT 행 이름은 황금산입니다. 영광군에는 산 이름 황금산이 없고, 충남 서산 9경 황금산·거제 학동 몽돌해변 황금산과 다른 자리입니다. 영광군 문화관광 공식 9경 제1경은 백수해안도로입니다. 군·한국관광공사 열린관광 안내는 백수읍 길용리에서 백암리 석구미 마을까지 16.8km 해안도로이며 기암괴석·갯벌·석양이 만난다고 적습니다. 주소는 백수읍 해안로 957 일원(노을전시관)입니다. 해안 아래 목재 데크 3.5km 해안 노을길이 있고, 2006년 국토해양부 한국의 아름다운 길 100선, 2011년 대한민국 자연경관대상 최우수상을 받았습니다. 칠산정에서 칠산 앞바다와 구불구불한 도로를 내려다봅니다. 한빛원전 단지와 다른 경승입니다. 사진은 한국관광공사 백수해안도로(칠산정 해안로) 공식 사진과 같은 군 백수·염산 인근 천일염전 공식 사진입니다.',
+    '전라남도 영광군 백수읍 해안로 957 (백수해안도로·노을전시관)',
+    YG_BAEKSU,
+    [YG_SALT, YG_SALT_2],
+  ),
+  'local-scenic:yeonggwang-gugyeong:왕글공원': localScenicPhotoOverlay(
+    'SSOT 행 이름은 왕글공원입니다. 영광군에 왕글공원이라는 공원 지명은 없고, 같은 리스트 법성포(포구) 행과 다른 자리입니다. 영광군 문화관광 공식 9경 제7경은 숲쟁이공원입니다. 국가유산 명승 제22호 영광 법성진 숲쟁이이며, 주소는 법성면 법성리 821-1·백제문화로 67입니다. 국가유산청은 법성포 포구와 마을을 보호하는 법성진성의 방풍림이며 「쟁이」는 숲으로 된 성(재)이라고 적습니다. 느티나무 숲과 법성진 석축이 어우러지고, 법성포 단오제 등 민속행사가 이어집니다. 사진은 한국관광공사 숲쟁이 느티나무 숲·국가유산청 법성진 석축 공식 사진입니다.',
+    '전라남도 영광군 법성면 백제문화로 67 (숲쟁이공원)',
+    YG_SUPJAENG,
+    [YG_SUPJAENG_2, YG_SUPJAENG_3],
+  ),
+  'local-scenic:yeonggwang-gugyeong:백학촌': localScenicPhotoOverlay(
+    'SSOT 행 이름은 백학촌입니다. 경기도 연천군 백학면·장성 백학봉과 다른 자리입니다. 영광읍 백학리는 실존 법정동으로, 한국학중앙연구원 민족문화대백과는 원각사·영광읍성을 백학리로 적습니다. 군 산림 안내는 물무산 행복숲 들머리 물무-1 코스가 백학이며, 주소는 영광읍 물무로 219입니다. 군 문화관광은 숲속 둘레길 10km, 맨발 황톳길 2km(질퍽 0.6km·마른 1.4km), 유아숲체험원·편백명상원·하늘공원이 있는 종합 산림복지숲이며 2018년 3월 개장, 한국관광공사 2020 가을 비대면 관광지 100선이라고 안내합니다. 황톳길 일부는 묘량면 덕흥리 615입니다. 사진은 한국관광공사 물무산 행복숲 황톳길·숲길 공식 사진입니다.',
+    '전라남도 영광군 영광읍 물무로 219 (물무산 행복숲·백학리)',
+    YG_MULMU,
+    [YG_MULMU_2, YG_MULMU_3],
   ),
 };
 

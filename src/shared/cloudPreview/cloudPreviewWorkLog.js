@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 48,
-  sessionPhase: '동해 썸네일 분리',
+  sessionNo: 49,
+  sessionPhase: '영광 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=donghae',
+  previewPath: '/korea/theme/scenic?hub=yeonggwang',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-overlays',
+    session: '팔경 활용 #49, 영광 결손 오버레이',
+    title: '영광9경 황금산·왕글공원·백학촌 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영광9경 결손 3건(황금산·왕글공원·백학촌)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 황금산은 서산·거제 황금산이 아니라 공식 1경 백수해안도로(해안로 957·칠산정), 왕글공원은 없는 지명이라 공식 7경 숲쟁이공원(명승 22호·백제문화로 67), 백학촌은 연천 백학면이 아니라 영광읍 백학리·물무산 행복숲(물무로 219)입니다. 한빛원전·법성포 포구 사진과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeonggwang 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T09:50:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-48-donghae-tour-overwrite',
     session: '팔경 활용 #48, 동해 썸네일 분리',

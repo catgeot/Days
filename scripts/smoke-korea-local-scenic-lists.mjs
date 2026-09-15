@@ -2795,6 +2795,78 @@ assert.notEqual(
   '망상·어달 Tour 썸네일 다름',
 );
 
+const yeonggwangMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeonggwang');
+const yeonggwangNine = yeonggwangMerged.filter(
+  (s) => s.localScenicListId === 'yeonggwang-gugyeong',
+);
+assert.equal(yeonggwangNine.length, 9, '영광9경 9명');
+assert.equal(yeonggwangNine[0]?.groupTitle, '영광 구경');
+const yeonggwangDeficitNames = ['황금산', '왕글공원', '백학촌'];
+const yeonggwangDeficit = yeonggwangNine.filter((s) =>
+  yeonggwangDeficitNames.includes(s.attractionName),
+);
+assert.equal(yeonggwangDeficit.length, 3, '영광9경 결손 3명');
+assert.ok(
+  yeonggwangDeficit.every((s) => s.overview && s.imageUrl),
+  '영광 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  yeonggwangDeficit.every((s) => !s.contentId),
+  '영광 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yeonggwangDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '영광 결손 3명 썸네일 서로 다름',
+);
+
+const ygHwang = resolveLocalScenicListSpotById('local-scenic:yeonggwang-gugyeong:황금산');
+assert.ok(ygHwang?.overview?.includes('백수해안도로'), '영광 황금산 overlay 백수해안도로');
+assert.ok(ygHwang?.overview?.includes('해안로 957'), '영광 황금산 주소');
+assert.ok(ygHwang?.overview?.includes('서산'), '영광 황금산≠서산 황금산 구분');
+assert.ok(ygHwang?.overview?.includes('한빛원전'), '영광 황금산≠한빛원전 구분');
+assert.ok(ygHwang?.imageUrl?.includes('1672400'), '영광 황금산 백수해안도로 공식 사진');
+
+const ygWang = resolveLocalScenicListSpotById('local-scenic:yeonggwang-gugyeong:왕글공원');
+assert.ok(ygWang?.overview?.includes('숲쟁이'), '영광 왕글공원 overlay 숲쟁이');
+assert.ok(ygWang?.overview?.includes('명승'), '영광 왕글공원 명승');
+assert.ok(ygWang?.overview?.includes('백제문화로'), '영광 왕글공원 주소');
+assert.ok(ygWang?.overview?.includes('법성포'), '영광 왕글공원≠법성포 포구 구분');
+assert.ok(ygWang?.imageUrl?.includes('3057538'), '영광 왕글공원 숲쟁이 공식 사진');
+
+const ygHak = resolveLocalScenicListSpotById('local-scenic:yeonggwang-gugyeong:백학촌');
+assert.ok(ygHak?.overview?.includes('백학리'), '영광 백학촌 overlay 백학리');
+assert.ok(ygHak?.overview?.includes('물무산'), '영광 백학촌 물무산');
+assert.ok(ygHak?.overview?.includes('연천'), '영광 백학촌≠연천 백학 구분');
+assert.ok(ygHak?.imageUrl?.includes('2676388'), '영광 백학촌 물무산 황톳길 공식 사진');
+assert.notEqual(ygHwang?.imageUrl, ygWang?.imageUrl, '황금산·왕글공원 썸네일 다름');
+assert.notEqual(ygHwang?.imageUrl, ygHak?.imageUrl, '황금산·백학촌 썸네일 다름');
+assert.notEqual(ygWang?.imageUrl, ygHak?.imageUrl, '왕글공원·백학촌 썸네일 다름');
+
+const yeonggwangGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '영광', {
+  injectLocalScenic: true,
+});
+const yeonggwangGlobeNine = yeonggwangGlobe.filter(
+  (s) => s.localScenicListId === 'yeonggwang-gugyeong',
+);
+assert.equal(yeonggwangGlobeNine.length, 9, '영광 검색 영광9경 9행');
+assert.ok(
+  yeonggwangGlobeNine.every((s) => s.groupTitle === '영광 구경'),
+  '영광 검색 팔경 groupTitle 영광 구경',
+);
+assert.ok(
+  yeonggwangGlobe.find((s) => s.attractionName === '황금산')?.imageUrl?.includes('1672400'),
+  '영광 검색 팔경 황금산 썸네일',
+);
+assert.ok(
+  yeonggwangGlobe.find((s) => s.attractionName === '왕글공원')?.overview?.includes('숲쟁이'),
+  '영광 검색 팔경 왕글공원 개요',
+);
+assert.ok(
+  yeonggwangGlobe.find((s) => s.attractionName === '백학촌')?.overview?.includes('물무산'),
+  '영광 검색 팔경 백학촌 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
