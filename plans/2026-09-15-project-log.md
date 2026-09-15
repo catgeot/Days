@@ -179,6 +179,17 @@
 - **잔여**: 사진/개요 순수 누락 **81**/876. 다음 허브 **고흥10경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #49 — 영광 검색 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #49, 영광 검색 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `84cb0a9e` · PR [#261](https://github.com/catgeot/Days/pull/261)
+- **원인**: 관광지 목록은 `tourapi_attraction.first_image`만 사용. GATEO 선정은 DB 공란이면 `fetchTourApiFirstImage`(detailCommon)로 채우는데 목록은 그 경로가 없음. 불갑산도립공원 `126248`은 TourAPI 등재인데 DB 썸네일이 비어 Landmark 플레이스홀더.
+- **조치**: 빈 행만 live 채움 · 세션 캐시 `rememberKoreaTourAttractionFirstImage` · 멤버·contentId 오버레이는 덮지 않음. JSON contentId 기입 없음.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic` 검색「영광」불갑산도립공원
+- **잔여**: 사진/개요 순수 누락 **81**/876. 다음 허브 **고흥10경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #50 다음 — 고흥 결손 오버레이
 
 ```
