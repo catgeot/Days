@@ -34,6 +34,7 @@
     "smoke:mrt-package": "node scripts/smoke-mrt-package-links.mjs",
     "smoke:travel-agencies": "node scripts/smoke-travel-agencies.mjs",
     "smoke:planner-empty-scroll": "node scripts/smoke-planner-empty-scroll.mjs",
+    "smoke:trust-disclosure": "node scripts/smoke-trust-disclosure.mjs",
     "probe:mrt-korea-packages": "node scripts/probe-mrt-korea-package-destinations.mjs",
     "smoke:ko-homonym-ri-search": "node scripts/smoke-ko-homonym-ri-search.mjs",
     "generate:korea-area-codes": "node scripts/generate-korea-area-codes.mjs",

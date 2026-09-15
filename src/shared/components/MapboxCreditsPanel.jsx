@@ -40,6 +40,51 @@ const MapboxCreditsPanel = () => {
 
       <section>
         <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
+          {t('home.footerModal.dataSourceTitle')}
+        </h3>
+        <ul className="space-y-2">
+          {credits.dataSources.map((item) => (
+            <li key={item.name} className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={linkClass}
+              >
+                {item.name}
+                <ExternalLink size={12} className="shrink-0 opacity-70" aria-hidden />
+              </a>
+              {item.detail ? (
+                <span className="text-[11px] text-gray-500">({item.detail})</span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
+          {t('home.footerModal.partnersTitle')}
+        </h3>
+        <ul className="space-y-2">
+          {credits.partners.map((item) => (
+            <li key={item.name}>
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={linkClass}
+              >
+                {item.name}
+                <ExternalLink size={12} className="shrink-0 opacity-70" aria-hidden />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
           {t('home.footerModal.telemetryTitle')}
         </h3>
         <p className="text-gray-400 text-xs leading-relaxed mb-2">{credits.telemetry.description}</p>

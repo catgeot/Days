@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Search, Plane } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
     buildTripcomPlannerNavigationUrl,
     getPartnerLinkTarget,
@@ -35,6 +36,7 @@ const WhiteLabelWidget = ({
     customTrigger,
 }) => {
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
+    const { t } = useTranslation();
     const departureIata = useMemo(() => {
         if (departureOverride) return resolveFlightDepartureIataForTrip(departureOverride);
         return TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
@@ -75,6 +77,9 @@ const WhiteLabelWidget = ({
         >
             <Plane size={14} />
             <span>Trip.com 항공권 검색</span>
+            <span className="text-[10px] font-bold opacity-75">
+                {t('place.planner.banners.affiliateBadge')}
+            </span>
             <Search size={12} className="ml-0.5 opacity-80" />
         </button>
     );
