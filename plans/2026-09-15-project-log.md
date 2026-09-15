@@ -2,6 +2,16 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #5 — 거리 정렬 및 지도 딥링크 (Cloud)
+
+- **세션** `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
+- **브랜치** `cursor/jonggak-stay-5f4f` · tip `17f0fd5a` · PR [#264](https://github.com/catgeot/Days/pull/264)
+- **완료**: 종각역 좌표 Haversine 거리 뱃지 · 추천순/가까운순 · 네이버 지도 인근 숙소 칩. Edge `fetch-mrt-stays` 호텔 lat/lng 패스스루(배포 대기).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
+- **QA**: 홈「종각」→ 숙소 찾기 → 카드 거리 · 네이버 칩(종각역 근처). 거리 없으면 `npx supabase functions deploy fetch-mrt-stays`
+- **다음**: `종각역 숙소 #6, Preview OK면 PR 병합`
+
 ## 종각역 숙소 #4 — PR 병합 · PROD (Cloud)
 
 - **병합** PR [#263](https://github.com/catgeot/Days/pull/263) · main `76909fc9`
