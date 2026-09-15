@@ -493,7 +493,7 @@ flowchart TD
 
 다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
 
-**#7 push** (`e1dbd731` · 작업 `ad873fc3` · PR [#257](https://github.com/catgeot/Days/pull/257)) — 플래너 3단계·항공/숙소 CTA 통합·복잡도 문구 완화. 세션 #8 제시어:
+**#7 push** (`7e55fc04` · PR [#257](https://github.com/catgeot/Days/pull/257)) — 플래너 3단계·CTA 통합·복잡도 완화·단계 하단 다음 선택. 세션 #8 제시어:
 
 ```
 방문자 개선 #8, 언어일관성 및 가입혜택/접근성

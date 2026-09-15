@@ -34,7 +34,7 @@
 
 | | |
 |--|--|
-| **상태** | **#7 push** · tip `e1dbd731` · PR [#257](https://github.com/catgeot/Days/pull/257) · **사람 Preview** |
+| **상태** | **#7 push** · tip `7e55fc04` · PR [#257](https://github.com/catgeot/Days/pull/257) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
