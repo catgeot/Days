@@ -842,6 +842,8 @@
       "title": "Smart travel toolkit",
       "subtitle": "Essential survival info and curated picks for {{name}}",
       "complexity": "Complexity",
+      "complexityBadge": "Detailed guide included",
+      "complexityHint": "Transfers, domestic flights, or local transport mean this trip needs a bit more prep",
       "refreshSaved": "Reload saved data",
       "refreshSavedTitle": "Reload toolkit from database only (no AI)",
       "lastUpdated": "Last updated: {{date}}",
@@ -857,6 +859,17 @@
       "sectionPrep": "🛫 Before you depart",
       "sectionArrival": "🛬 Arrival & getting around",
       "sectionEnjoy": "🌴 Enjoy locally",
+      "stages": {
+        "essential": "Essentials",
+        "transfer": "Transit & eSIM",
+        "enjoy": "Enjoy",
+        "navAria": "Planner steps"
+      },
+      "esim": {
+        "choose": "Choose one eSIM",
+        "airalo": "Airalo",
+        "holafly": "Holafly"
+      },
       "toolkit": {
         "visa": "Visa & documents",
         "flight": "Flights",

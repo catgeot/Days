@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '방문자 개선',
-  sessionNo: 6,
-  sessionPhase: '신뢰요소 및 제휴투명성 강화',
+  sessionNo: 7,
+  sessionPhase: '플래너 3단계 점진적 노출',
   branch: 'cursor/visitor-growth-1f90',
-  previewPath: '/',
+  previewPath: '/place/bora-bora/planner',
   qaShareSlug: 'visitor-growth',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-visitor-growth-7-planner-stages',
+    session: '방문자 개선 #7, 플래너 3단계 점진적 노출',
+    title: '플래너 필수→이동·통신→즐기기 단계 노출',
+    detail:
+      '툴킷이 한 화면에 쏟아지던 플래너를 3단계로 나눕니다. 1단계는 비자·체크리스트·항공/숙소 예약 카드, 2단계는 픽업·페리·유심(Airalo/Holafly 택1), 3단계는 투어·교통 패스·앱·치안입니다. 상단 항공 배너와 체크리스트·툴킷의 중복 CTA를 모았고, 복잡도 90/100 대신 「상세 안내 포함」뱃지를 둡니다. Preview /qa/visitor-growth — /place/bora-bora/planner · /place/paris/planner.',
+    at: '2026-09-15T03:30:00.000Z',
+  },
   {
     id: '2026-09-15-visitor-growth-6-trust-bar-clearance',
     session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',

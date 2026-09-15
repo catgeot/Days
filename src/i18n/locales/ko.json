@@ -612,6 +612,8 @@
       "title": "스마트 트래블 툴킷",
       "subtitle": "{{name}} 여행을 위한 생존 정보 및 핵심 큐레이션",
       "complexity": "복잡도",
+      "complexityBadge": "상세 안내 포함",
+      "complexityHint": "환승·국내선·현지 이동이 있어 꼼꼼한 준비가 필요해요",
       "refreshSaved": "저장된 데이터 새로고침",
       "refreshSavedTitle": "DB에 저장된 툴킷만 다시 불러옵니다 (AI 미호출)",
       "lastUpdated": "마지막 업데이트: {{date}}",
@@ -627,6 +629,17 @@
       "sectionPrep": "🛫 출발 전 필수 준비",
       "sectionArrival": "🛬 현지 도착 및 이동",
       "sectionEnjoy": "🌴 현지 100% 즐기기",
+      "stages": {
+        "essential": "필수",
+        "transfer": "이동·통신",
+        "enjoy": "즐기기",
+        "navAria": "플래너 단계"
+      },
+      "esim": {
+        "choose": "유심 1종 선택",
+        "airalo": "Airalo",
+        "holafly": "Holafly"
+      },
       "toolkit": {
         "visa": "비자 및 서류",
         "flight": "항공권",
