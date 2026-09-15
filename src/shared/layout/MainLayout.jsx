@@ -8,6 +8,8 @@ const MainLayout = () => {
   const location = useLocation();
   const [isFooterOpen, setIsFooterOpen] = useState(false);
   const [footerTab, setFooterTab] = useState('about');
+  const isHomeGlobe =
+    location.pathname === '/' || location.pathname.startsWith('/explore');
   const hideTrustBar = location.pathname.startsWith('/place/');
 
   useEffect(() => {
@@ -23,7 +25,9 @@ const MainLayout = () => {
   return (
     <div className="w-full h-screen relative bg-black overflow-hidden flex flex-col">
       <Outlet />
-      {hideTrustBar ? null : <TrustLinkBar />}
+      {hideTrustBar ? null : (
+        <TrustLinkBar className={isHomeGlobe ? 'max-md:hidden' : undefined} />
+      )}
       <FooterModal
         isOpen={isFooterOpen}
         onClose={() => setIsFooterOpen(false)}

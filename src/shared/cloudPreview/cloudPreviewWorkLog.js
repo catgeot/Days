@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-visitor-growth-6-trust-bar-clearance',
+    session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
+    title: '모바일 홈 신뢰 바·테마 칩 겹침 해제',
+    detail:
+      '모바일 홈에서는 하단 고정 신뢰 바를 숨기고, 테마 카테고리 스택 바로 위에 둡니다. 나라 칩이 펼쳐져도 출처 링크가 휴양·자연 칩을 덮지 않습니다. Preview /qa/visitor-growth — 홈 하단 테마 칩과 About·출처가 겹치지 않는지.',
+    at: '2026-09-15T03:10:00.000Z',
+  },
+  {
     id: '2026-09-15-visitor-growth-6-trust-disclosure',
     session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
     title: '신뢰 링크 바·Credits 출처·제휴 고지',

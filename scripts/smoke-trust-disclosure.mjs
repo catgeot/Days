@@ -33,8 +33,12 @@ assert.match(creditsEn.dataSources[0].name, /Korea Tourism Organization/);
 
 const layout = read('src/shared/layout/MainLayout.jsx');
 assert.match(layout, /TrustLinkBar/, 'MainLayout 신뢰 링크 바');
+assert.match(layout, /max-md:hidden/, '홈 모바일은 고정 바 숨김(카테고리 스택으로)');
 assert.match(layout, /FooterModal/, 'MainLayout FooterModal 호스트');
 assert.match(layout, /FOOTER_MODAL_OPEN_EVENT/, '전역 푸터 이벤트');
+
+const homeUi = read('src/pages/Home/components/HomeUI.jsx');
+assert.match(homeUi, /TrustLinkBar variant="stack"/, '모바일 홈 카테고리 스택 위에 신뢰 바');
 
 const bar = read('src/shared/layout/TrustLinkBar.jsx');
 assert.match(bar, /openFooterModal\('credits'\)|tab: 'credits'/, '출처 탭 링크');
