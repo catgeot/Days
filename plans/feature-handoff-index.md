@@ -34,26 +34,26 @@
 
 | | |
 |--|--|
-| **상태** | **#5 push** · tip `f3c5ddbf` · PR [#253](https://github.com/catgeot/Days/pull/253) · **사람 Preview** |
+| **상태** | **#6 push** · tip `f1da6f4a` · PR [#255](https://github.com/catgeot/Days/pull/255) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
-| **일지** | [`2026-09-14-project-log.md`](./2026-09-14-project-log.md) |
-| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/korea` · `/blog` · `/auth/update-password` |
-| **소유** | `Korea/index.jsx` · `CurationHub.jsx` · `usePlaceGallery.js` · `LogoPanel.jsx` · `UpdatePassword.jsx` |
+| **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
+| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/about` · `/place/paris/planner` |
+| **소유** | `MainLayout.jsx` · `TrustLinkBar.jsx` · `mapboxAttribution.js` · `PreTravelChecklist.jsx` · `PlannerTab.jsx` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run build` PASS |
+| **VERIFY** | `npm run smoke:trust-disclosure` · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-방문자 개선 #6, 신뢰요소 및 제휴투명성 강화
+방문자 개선 #7, 플래너 3단계 점진적 노출
 @plans/feature-handoff-index.md
-@plans/2026-09-14-project-log.md
+@plans/2026-09-15-project-log.md
 @plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · PR #253 · Preview /qa/visitor-growth
+브랜치 cursor/visitor-growth-1f90 · PR #255 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: MainLayout 신뢰 링크 바 · Credits 출처 보강 · 체크리스트 CTA 제휴 고지 · 플래너 hybridNotice 상단
-검증: npm run build PASS
+작업: 플래너 3단계(필수→이동·통신→즐기기) · 중복 항공/숙소 CTA 통합 · 복잡도 90/100 문구 완화
+검증: npm run smoke:trust-disclosure · npm run build PASS
 ```
 
 ---

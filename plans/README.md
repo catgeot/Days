@@ -27,7 +27,7 @@
 - **방문자 활성화 및 사이트 체질 개선 종합 계획 (P0~P2 4단계 8세션 로드맵)**: [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) · 그록봇 12대 개선점 + 크롤러 SEO 실사 및 세션별 실행 가이드
 - **한·영 검색 노출 (외부 SEO)**: [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) · 세션 `검색노출 #{N}` · [`feature-handoff-index.md`](./feature-handoff-index.md)
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md) · 직전 [`2026-09-13-project-log.md`](./2026-09-13-project-log.md)  
+  - 최신: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) · 직전 [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)  
 - **해안·해양 탐색 칩 (플랜+SSOT)**: [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) · Phase 1–2 ✅ · `audit:sea-basins` · 일지 `2026-08-16`
 
 
