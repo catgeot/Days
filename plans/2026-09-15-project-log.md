@@ -2,6 +2,15 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #7 QA — 단계 하단 다음 선택 (Cloud)
+
+- **세션** `방문자 개선 #7, 플래너 3단계 점진적 노출`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `7e55fc04` · PR [#257](https://github.com/catgeot/Days/pull/257)
+- **완료**: 각 단계 하단에 「확인하셨다면 다음 단계를 선택해 주세요」와 나머지 단계 버튼. 상단으로 다시 올라가지 않아도 됨.
+- **VERIFY**: `npm run smoke:trust-disclosure` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/place/bora-bora/planner`
+- **QA**: 필수 단계를 끝까지 내린 뒤 하단 `2 이동·통신`으로 넘어가는지.
+
 ## 방문자 개선 #7 — 플래너 3단계 점진적 노출 (Cloud)
 
 - **세션** `방문자 개선 #7, 플래너 3단계 점진적 노출`
@@ -55,6 +64,17 @@
 - **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 거제9경 결손 3건(학동몽돌해수욕장·거제포로수용소유적공원·공곶이·내도) 공공 공식 팩트·한국관광공사 사진. 공곶이 Tour `2536196` 빈 썸네일만 `TOUR_THUMB`. 고성 학동마을·외도보타니아와 구분.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=geoje`
+- **잔여**: 사진/개요 순수 누락 **87**/876. 다음 허브 **동해비경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #47 QA — 거제 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #47, 거제 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `fb232667` · PR [#256](https://github.com/catgeot/Days/pull/256)
+- **원인**: Preview 검색「거제」거제 식물원(5경)·매미성(9경)·구조라해수욕장, 명소 검색 동백섬 지심도터미널(`2756617`)이 플레이스홀더. 학동·포로수용소·공곶이·내도는 이미 사진 있음. GATEO 선정 행 없음 · 탐색홈은 Tour `firstimage`를 쓰지 않음 · 터미널 Tour `first_image` 공란.
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`·`TOUR_THUMB`에 한국관광공사 공식 사진. 식물원 `2648073`·매미성 `2536133` JSON id 유지. 구조라 `583071`·지심도터미널 `2756617`만 검색 행. 외도보타니아·매미면가 식당·학동몽돌·지심도 본섬과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → 검색「거제」식물원·매미성·구조라 · `/korea/theme/scenic` 검색「거제」동백섬 지심도터미널
 - **잔여**: 사진/개요 순수 누락 **87**/876. 다음 허브 **동해비경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
