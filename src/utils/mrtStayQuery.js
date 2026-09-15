@@ -218,6 +218,14 @@ const KO_ADMIN_SUFFIX_RE =
 const KO_FINE_ADMIN_RE = /[동읍면리]$/;
 /** 국내 읍·면·리 — OSM town/village→city 시 MRT CITY 선두 금지(대화면→일산 대화 · 이평리→리 단독) */
 const KO_TOWNSHIP_RE = /[읍면리]$/;
+/**
+ * 역·길·터미널 등 MRT CITY가 아닌 지점 라벨.
+ * 「종각역」을 1차 키워드로 두면 autocomplete POI·빈 목록이 되고 서울 CITY에 못 닿음.
+ * 무역·번역 등 역으로 끝나는 일반 명사는 제외.
+ */
+const KO_STAY_POINT_RE = /(지하철역|기차역|고속터미널|터미널|정류장|역|길)$/;
+const KO_STAY_POINT_FALSE_RE = /(무역|검역|방역|용역|영역|번역|이력|내역|현역|대역)$/;
+const EN_STAY_POINT_RE = /\b(station|subway|metro|terminal)\b|-gil\b/i;
 
 function isKoFineAdminName(name) {
   return KO_FINE_ADMIN_RE.test(String(name || '').trim());
@@ -225,6 +233,33 @@ function isKoFineAdminName(name) {
 
 function isKoTownshipName(name) {
   return KO_TOWNSHIP_RE.test(String(name || '').trim());
+}
+
+/** 역·길·터미널·station — 숙소 검색은 시·군을 선두 */
+export function isMrtStayPointLabel(raw) {
+  const s = String(raw || '').trim();
+  if (!s || s.length < 2) return false;
+  if (EN_STAY_POINT_RE.test(s)) return true;
+  if (KO_STAY_POINT_FALSE_RE.test(s)) return false;
+  return KO_STAY_POINT_RE.test(s);
+}
+
+/** 「종각역, 대한민국」처럼 국가가 붙은 forward도 역·터미널로 본다 */
+export function queryLooksLikeStayPoint(query) {
+  const s = String(query || '').trim();
+  if (!s) return false;
+  if (isMrtStayPointLabel(s)) return true;
+  const head = s.split(/[,/]/)[0].trim();
+  return Boolean(head) && head !== s && isMrtStayPointLabel(head);
+}
+
+function isMrtStayPointLocation(location) {
+  return (
+    isMrtStayPointLabel(location?.originalQuery) ||
+    isMrtStayPointLabel(location?.name) ||
+    isMrtStayPointLabel(location?.name_ko) ||
+    isMrtStayPointLabel(location?.name_en)
+  );
 }
 
 /**
@@ -425,10 +460,11 @@ export function resolveMrtStayQuery(location) {
   pushLodgingStayKeywords(ladder, seen, location);
 
   // uiPlace: 검색어(originalQuery)를 선두 — Mapbox name이 시·군만일 때 「홍천 대명 콘도」 숙소 오탐 방지
-  // 국내 동·리·읍·면 단독 검색어는 시·군 래더 뒤 — 「대화리」→천안/일산 동명 MRT 선두 방지
+  // 국내 동·리·읍·면·역·길은 시·군 래더 뒤 — 「대화리」동명 · 「종각역」MRT CITY 미매칭 방지
+  const stayPoint = isDomestic && isMrtStayPointLocation(location);
   if (location?.uiPlace) {
     const oq = String(location.originalQuery || '').trim();
-    if (!(isDomestic && isKoFineAdminName(oq))) {
+    if (!(isDomestic && (isKoFineAdminName(oq) || isMrtStayPointLabel(oq)))) {
       pushUnique(ladder, seen, oq);
     }
   }
@@ -491,9 +527,15 @@ export function resolveMrtStayQuery(location) {
     pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
   }
 
-  // 국내 동·리·읍·면: 시·군 우선 — 「퇴계동」안동 · 「대화리」평창(≠일산 대화)
+  // 국내 동·리·읍·면·역·길: 시·군 우선 — 「퇴계동」안동 · 「종각역」서울
+  // 역·터미널은 축약 시명(서울)을 서울특별시보다 앞 — MRT CITY「서울」·「서울 종각역」단독은 CITY 없음
   // 해외·비세밀: 세밀 키워드 우선
-  if (fineGrain && isDomestic) {
+  if ((fineGrain || stayPoint) && isDomestic) {
+    if (stayPoint) {
+      pushUnique(ladder, seen, stripKoAdminSuffix(admin.city));
+      pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
+      pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
+    }
     pushCityLadder();
     pushFineLadder();
   } else if (fineGrain) {
@@ -554,6 +596,7 @@ export function mergeMrtStayFetchQuery(location, opts = {}) {
   const cityHints = [];
   const citySeen = new Set();
   for (const raw of [keyword, ...extraAlts, ...(query.cityHints || [])]) {
+    if (isMrtStayPointLabel(raw)) continue;
     pushUnique(cityHints, citySeen, raw);
     pushUnique(cityHints, citySeen, stripKoAdminSuffix(raw));
   }

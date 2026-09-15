@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 49,
-  sessionPhase: '영광 검색 썸네일',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'palgyeong-use',
+  title: '종각역 숙소',
+  sessionNo: 3,
+  sessionPhase: 'Preview OK면 PR 병합',
+  branch: 'cursor/jonggak-stay-5f4f',
+  previewPath: '/',
+  qaShareSlug: '',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-jonggak-stay-seoul-not-wonju',
+    session: '종각역 숙소 #2, 서울 좌표·서울 CITY',
+    title: '종각역 숙소가 원주로 나오던 문제',
+    detail:
+      '써머리 숙소 찾기가 오크밸리·원주 브라운도트처럼 원주 숙소를 보여 줬습니다. 종각역 Nominatim(철도역)을 버려서 검색이 search_dictionary 원주 좌표로 갔고, 시·군 선두가 원주를 키워드로 썼습니다. 역 검색은 서울 종각역 좌표를 쓰고, 마이리얼트립은 CITY「서울」로 찾습니다. 「서울 종각역」단독 CITY는 없습니다. Preview 홈에서 종각역 → 숙소 찾기 → 서울 호텔인지(원주 오크밸리 아님).',
+    at: '2026-09-15T08:40:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-49-yeonggwang-detailimage',
     session: '팔경 활용 #49, 영광 검색 썸네일',
@@ -70,6 +78,14 @@ export const cloudPreviewWorkLog = [
     detail:
       '드래그·이동하면 자전이 이미 멈춥니다. 모바일에는 버튼이 보이지도 않아 상단 일시정지 토글을 빼었습니다. prefers-reduced-motion이면 기본 자전은 그대로 막습니다. Preview /qa/visitor-growth — 홈에서 드래그 후 자전 정지.',
     at: '2026-09-15T08:35:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-station-city',
+    session: '종각역 숙소 #1, 역 POI 시·군 선두',
+    title: '종각역 숙소 찾기 빈 목록',
+    detail:
+      '지구본에서 종각역을 열고 숙소 찾기를 누르면 마이리얼트립이 역 이름을 CITY로 찾아 빈 목록이 됐습니다. 국내 역·길·터미널은 서울 같은 시·군을 먼저 보내고, 동네만 있는 stayAdmin은 역지오로 시를 채웁니다. Preview 홈에서 종각역 검색 → 숙소 찾기 → 서울 숙소가 보이는지.',
+    at: '2026-09-15T04:10:00.000Z',
   },
   {
     id: '2026-09-15-visitor-growth-8-locale-a11y',
