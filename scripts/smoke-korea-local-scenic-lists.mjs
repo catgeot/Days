@@ -32,6 +32,7 @@ import {
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
   lookupLocalScenicPhotoByContentId,
+  resolveSearchScenicMedia,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import { pickTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
 import {
@@ -2307,6 +2308,157 @@ assert.ok(
     'TUCN_202011200614597037',
   ),
   '홍성12경 리스트 홍주의사총 썸네일',
+);
+
+const hwasunMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hwasun');
+const hwasunEleven = hwasunMerged.filter((s) => s.localScenicListId === 'hwasun-other');
+assert.equal(hwasunEleven.length, 11, '화순11경 11명');
+assert.equal(hwasunEleven[0]?.groupTitle, '화순 11경');
+const hwasunDeficitNames = [
+  '백아산 하늘다리',
+  '고인돌 유적지',
+  '수만리 철쭉공원',
+  '화순 꽃강길 음악분수',
+];
+const hwasunDeficit = hwasunEleven.filter((s) =>
+  hwasunDeficitNames.includes(s.attractionName),
+);
+assert.equal(hwasunDeficit.length, 4, '화순11경 결손 4명');
+assert.ok(
+  hwasunDeficit.every((s) => s.overview && s.imageUrl),
+  '화순 결손 4명 overlay 사진·개요',
+);
+assert.ok(
+  hwasunDeficit.every((s) => !s.contentId),
+  '화순 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(hwasunDeficit.map((s) => s.imageUrl)).size,
+  4,
+  '화순 결손 4명 썸네일 서로 다름',
+);
+assert.ok(
+  hwasunDeficit.every((s) => String(s.imageUrl).includes('hwasun.go.kr')),
+  '화순 결손 썸네일은 화순군 공식 사진',
+);
+
+const hwSky = resolveLocalScenicListSpotById('local-scenic:hwasun-other:백아산하늘다리');
+assert.ok(hwSky?.overview?.includes('제3경'), '화순 백아산 overlay overview');
+assert.ok(hwSky?.overview?.includes('백아면'), '화순 백아산 백아면');
+assert.ok(hwSky?.overview?.includes('백아로 1310-56'), '화순 백아산 주소');
+assert.ok(hwSky?.overview?.includes('66m'), '화순 백아산 현수교 길이');
+assert.ok(hwSky?.imageUrl?.includes('sub_010103_sdimg01'), '화순 백아산 군 공식 사진');
+
+const hwDolmen = resolveLocalScenicListSpotById('local-scenic:hwasun-other:고인돌유적지');
+assert.ok(hwDolmen?.overview?.includes('제4경'), '화순 고인돌 overlay overview');
+assert.ok(hwDolmen?.overview?.includes('효산리'), '화순 고인돌 효산리');
+assert.ok(hwDolmen?.overview?.includes('대신리'), '화순 고인돌 대신리');
+assert.ok(hwDolmen?.overview?.includes('세계문화유산'), '화순 고인돌 유네스코');
+assert.ok(!hwDolmen?.overview?.includes('고창'), '화순 고인돌 개요에 고창 없음');
+assert.ok(hwDolmen?.imageUrl?.includes('sub_010104_sdimg01'), '화순 고인돌 군 공식 사진');
+
+const hwAzalea = resolveLocalScenicListSpotById('local-scenic:hwasun-other:수만리철쭉공원');
+assert.ok(hwAzalea?.overview?.includes('제5경'), '화순 수만리 overlay overview');
+assert.ok(hwAzalea?.overview?.includes('안양산로 258'), '화순 수만리 주소');
+assert.ok(hwAzalea?.overview?.includes('한국의 알프스'), '화순 수만리 알프스');
+assert.ok(hwAzalea?.overview?.includes('치유숲'), '화순 수만리≠만연산 치유숲 구분');
+assert.ok(hwAzalea?.imageUrl?.includes('sub_010105_sdimg01'), '화순 수만리 군 공식 사진');
+
+const hwFountain = resolveLocalScenicListSpotById(
+  'local-scenic:hwasun-other:화순꽃강길음악분수',
+);
+assert.ok(hwFountain?.overview?.includes('제10경'), '화순 꽃강길 overlay overview');
+assert.ok(hwFountain?.overview?.includes('대리 481'), '화순 꽃강길 주소');
+assert.ok(hwFountain?.overview?.includes('2023년 10월'), '화순 꽃강길 개장');
+assert.ok(hwFountain?.overview?.includes('개미산'), '화순 꽃강길 개미산 전망대');
+assert.ok(hwFountain?.imageUrl?.includes('sub_010111_sdimg01'), '화순 꽃강길 군 공식 사진');
+assert.notEqual(hwSky?.imageUrl, hwDolmen?.imageUrl, '백아산·고인돌 썸네일 다름');
+assert.notEqual(hwAzalea?.imageUrl, hwFountain?.imageUrl, '수만리·꽃강길 썸네일 다름');
+
+const manyeonsanForest = listKoreaScenicSpots().find((s) => s.id === 'manyeonsan-healing-forest');
+assert.ok(manyeonsanForest?.imageUrl, '만연산 치유숲 GATEO 선정 썸네일');
+assert.notEqual(
+  hwAzalea?.imageUrl,
+  manyeonsanForest?.imageUrl,
+  '화순 수만리 철쭉공원 썸네일 ≠ 만연산 치유숲',
+);
+
+const gochangDolmen = listKoreaScenicSpots().find((s) => s.id === 'gochang-dolmen-sites');
+assert.ok(gochangDolmen?.imageUrl, '고창 고인돌 GATEO 선정 썸네일');
+assert.notEqual(
+  hwDolmen?.imageUrl,
+  gochangDolmen?.imageUrl,
+  '화순 고인돌 썸네일 ≠ 고창 고인돌',
+);
+
+const hwasunGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '화순', {
+  injectLocalScenic: true,
+});
+const hwasunGlobeEleven = hwasunGlobe.filter((s) => s.localScenicListId === 'hwasun-other');
+assert.equal(hwasunGlobeEleven.length, 11, '화순 검색 화순11경 11행');
+assert.ok(
+  hwasunGlobeEleven.every((s) => s.groupTitle === '화순 11경'),
+  '화순 검색 그룹명 화순 11경',
+);
+assert.ok(
+  hwasunGlobe.find((s) => s.attractionName === '백아산 하늘다리')?.imageUrl?.includes(
+    'sub_010103_sdimg01',
+  ),
+  '화순 검색 팔경 백아산 군 공식 썸네일',
+);
+assert.ok(
+  hwasunGlobe.find((s) => s.attractionName === '화순 꽃강길 음악분수')?.overview?.includes(
+    '대리 481',
+  ),
+  '화순 검색 팔경 꽃강길 개요',
+);
+
+const hwForest = resolveLocalScenicListSpotById('local-scenic:hwasun-other:연둔리숲정이');
+assert.ok(hwForest?.overview?.includes('제7경'), '화순 연둔리 overlay overview');
+assert.ok(hwForest?.overview?.includes('동복면'), '화순 연둔리 동복면');
+assert.ok(hwForest?.overview?.includes('둔동1길 38'), '화순 연둔리 주소');
+assert.ok(hwForest?.overview?.includes('아름다운 마을 숲'), '화순 연둔리 마을 숲');
+assert.ok(hwForest?.overview?.includes('수양버들'), '화순 연둔리 수양버들');
+assert.ok(!hwForest?.overview?.includes('만연산 치유숲은'), '화순 연둔리 개요에 만연산 본문 없음');
+assert.ok(hwForest?.imageUrl?.includes('sub_010107_sdimg01'), '화순 연둔리 군 공식 사진');
+assert.equal(hwForest?.contentId, '3014431', '화순 연둔리 JSON contentId 유지');
+assert.notEqual(hwForest?.imageUrl, hwAzalea?.imageUrl, '연둔리 썸네일 ≠ 수만리 철쭉');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('3014431')?.imageUrl?.includes('sub_010107_sdimg01'),
+  '화순 연둔리 Tour 빈 썸네일 overlay 3014431',
+);
+assert.ok(
+  hwasunGlobe.find((s) => s.attractionName === '연둔리 숲정이')?.imageUrl?.includes(
+    'sub_010107_sdimg01',
+  ),
+  '화순 검색 팔경 연둔리 군 공식 썸네일',
+);
+assert.ok(
+  hwasunEleven.find((s) => s.attractionName === '연둔리 숲정이')?.imageUrl?.includes(
+    'sub_010107_sdimg01',
+  ),
+  '화순11경 리스트 연둔리 썸네일',
+);
+const hwForestSearch = resolveSearchScenicMedia({
+  hubId: 'hwasun',
+  name: '화순동복연둔리숲정이',
+  contentId: '3014431',
+});
+assert.ok(
+  hwForestSearch.imageUrl?.includes('sub_010107_sdimg01'),
+  '탐색 검색 Tour 행 화순동복연둔리숲정이 썸네일',
+);
+assert.equal(hwForestSearch.contentId, '3014431', '탐색 검색 연둔리 contentId');
+const hwForestSuggest = localScenicMemberToSuggestion(
+  lists.find((l) => l.listId === 'hwasun-other'),
+  resolveCityAttractionHub('hwasun'),
+  lists
+    .find((l) => l.listId === 'hwasun-other')
+    ?.members?.find((m) => m.attractionName === '연둔리 숲정이'),
+);
+assert.ok(
+  hwForestSuggest?.imageUrl?.includes('sub_010107_sdimg01'),
+  '탐색 드롭다운 연둔리 숲정이 썸네일',
 );
 
 const extra = process.argv.slice(2);

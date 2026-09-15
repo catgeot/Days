@@ -493,7 +493,7 @@ flowchart TD
 
 다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
 
-**#6** (`f1da6f4a` · PR [#255](https://github.com/catgeot/Days/pull/255)) — 신뢰 링크 바·Credits 출처·체크리스트 제휴 고지·hybridNotice 상단. 세션 #7(플래너 3단계) 제시어:
+**#6** (`fca5bf22` · PR [#255](https://github.com/catgeot/Days/pull/255)) — 신뢰 링크 바·Credits·제휴 고지. 모바일 홈은 테마 칩 스택 위에 배치. 세션 #7(플래너 3단계) 제시어:
 
 ```
 방문자 개선 #7, 플래너 3단계 점진적 노출
