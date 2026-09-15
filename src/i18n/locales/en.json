@@ -681,8 +681,18 @@
       "businessTitle": "Business & partnership inquiries",
       "emailCopied": "Copied!",
       "mapSourceTitle": "Map data sources",
+      "dataSourceTitle": "Data & media sources",
+      "partnersTitle": "Travel partners",
       "telemetryTitle": "Mapbox Telemetry",
-      "techStackTitle": "Technology & services"
+      "techStackTitle": "Technology & services",
+      "trustBar": {
+        "aria": "GATEO terms and credits",
+        "about": "About",
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "credits": "Credits",
+        "contact": "Contact"
+      }
     },
     "releaseNotes": {
       "empty": "No updates to show yet.",

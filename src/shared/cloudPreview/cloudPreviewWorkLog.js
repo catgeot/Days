@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '방문자 개선',
-  sessionNo: 5,
-  sessionPhase: '로딩스켈레톤 및 에러복구 UX',
+  sessionNo: 6,
+  sessionPhase: '신뢰요소 및 제휴투명성 강화',
   branch: 'cursor/visitor-growth-1f90',
   previewPath: '/',
   qaShareSlug: 'visitor-growth',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-visitor-growth-6-trust-disclosure',
+    session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
+    title: '신뢰 링크 바·Credits 출처·제휴 고지',
+    detail:
+      '홈·서브페이지 하단 슬림 바에 About·약관·개인정보·출처·문의를 두고 FooterModal 탭을 엽니다. Credits에 TourAPI·Open-Meteo·Unsplash·Pexels와 트립닷컴·클룩·겟유어가이드·마이리얼트립을 적습니다. 플래너 체크리스트 항공·숙소·픽업 CTA에 제휴광고 표기, hybridNotice는 헤더 아래로 올립니다. Preview /qa/visitor-growth — / · /about · /place/paris/planner.',
+    at: '2026-09-15T01:50:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-45-hongseong-overlays',
     session: '팔경 활용 #45, 홍성 결손 오버레이',

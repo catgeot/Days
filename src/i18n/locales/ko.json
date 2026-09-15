@@ -451,8 +451,18 @@
       "businessTitle": "비즈니스 및 제휴 문의",
       "emailCopied": "복사 완료!",
       "mapSourceTitle": "지도 데이터 출처",
+      "dataSourceTitle": "데이터·미디어 출처",
+      "partnersTitle": "여행 제휴 파트너",
       "telemetryTitle": "Mapbox Telemetry",
-      "techStackTitle": "기술 및 서비스"
+      "techStackTitle": "기술 및 서비스",
+      "trustBar": {
+        "aria": "GATEO 약관 및 출처",
+        "about": "About",
+        "terms": "이용약관",
+        "privacy": "개인정보처리방침",
+        "credits": "출처",
+        "contact": "문의"
+      }
     },
     "releaseNotes": {
       "empty": "표시할 업데이트가 없습니다.",

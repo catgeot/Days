@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import Logo from './Logo';
 import { useReport } from '../../../context/ReportContext';
 import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGallery';
 import { hydrateLocationFromSavedTrip, getSavedTripDisplayName } from '../lib/placeRouteHydrate';
-import FooterModal from './FooterModal';
+import { openFooterModal } from '../../../shared/lib/footerModalEvents';
 import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
 
 const DEFAULT_THUMB =
@@ -58,12 +58,8 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
   const { t } = useTranslation();
   const { openReport } = useReport();
 
-  const [isFooterOpen, setIsFooterOpen] = useState(false);
-  const [activeFooterTab, setActiveFooterTab] = useState('about');
-
   const handleOpenFooter = (tab) => {
-    setActiveFooterTab(tab);
-    setIsFooterOpen(true);
+    openFooterModal(tab);
   };
 
   return (
@@ -210,12 +206,6 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
           <p className="text-center text-[8px] text-gray-700 mt-3 tracking-widest">© 2026 GATEO</p>
         </div>
       </div>
-
-      <FooterModal
-        isOpen={isFooterOpen}
-        onClose={() => setIsFooterOpen(false)}
-        initialTab={activeFooterTab}
-      />
     </>
   );
 };
