@@ -92,7 +92,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#49 push** tip `2657725a` · PR [#261](https://github.com/catgeot/Days/pull/261) · 영광9경 3 · **#50 고흥 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#49 push** tip `8ba7192a` · PR [#261](https://github.com/catgeot/Days/pull/261) · 영광9경 3 · 불갑산 `detailImage` · **#50 고흥 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -150,7 +150,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 46 | `팔경 활용 #46, 화순 결손 오버레이` | A | **완료** · tip `8b2c0a65` · PR [#254](https://github.com/catgeot/Days/pull/254) · 화순11경 4 · QA 연둔리 숲정이 3014431 썸네일 |
 | 47 | `팔경 활용 #47, 거제 결손 오버레이` | A | **완료** · tip `fb232667` · PR [#256](https://github.com/catgeot/Days/pull/256) · 거제9경 3 · QA 식물원·매미성·구조라·지심도터미널 2756617 썸네일 |
 | 48 | `팔경 활용 #48, 동해 결손 오버레이` | A | **완료** · tip `3aeb5664` · PR [#258](https://github.com/catgeot/Days/pull/258) · 동해비경 3 · QA 용추·반석 Tour 125673 덮어쓰기 수정·망상 125713·어달 125708 |
-| 49 | `팔경 활용 #49, 영광 결손 오버레이` | A | **완료** · tip `2657725a` · PR [#261](https://github.com/catgeot/Days/pull/261) · 영광9경 3 |
+| 49 | `팔경 활용 #49, 영광 결손 오버레이` | A | **완료** · tip `8ba7192a` · PR [#261](https://github.com/catgeot/Days/pull/261) · 영광9경 3 · QA 불갑산 `detailImage` |
 | 50 | `팔경 활용 #50, 고흥 결손 오버레이` | A | **열기 가능** · 고흥10경 3 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |

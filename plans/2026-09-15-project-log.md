@@ -2,6 +2,15 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #3 — 1단계 완료(PR #260 ready) 및 역 숙소 종합 계획 수립 (Cloud)
+
+- **세션** `종각역 숙소 #3, Preview OK면 PR 병합`
+- **브랜치** `cursor/jonggak-stay-5f4f` · PR [#260](https://github.com/catgeot/Days/pull/260) ready for review · 1단계(서울 CITY 매칭) 완료
+- **계획**: 사용자 피드백(서울 광역 노출 한계, '종각' 대구 공원 오탐) 반영 종합 실행 계획서 작성 ([`korea-station-stay-plan.md`](./korea-station-stay-plan.md))
+- **로드맵**: Phase 1('종각' 약칭 지오코딩 보정) + Phase 2(종로구 등 NEIGHBORHOOD 래더 연계) + Phase 3(거리 계산) + Phase 4(지도 딥링크)
+- **다음**: `종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑`
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npm run build` PASS
+
 ## 방문자 개선 #9 — PR 병합 · 8세션 주제 종료 (Cloud)
 
 - **세션** `방문자 개선 #9, Preview OK면 PR 병합`
@@ -176,6 +185,28 @@
 - **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 영광9경 결손 3건(황금산·왕글공원·백학촌). 황금산은 서산·거제 황금산이 아니라 공식 1경 백수해안도로(해안로 957), 왕글공원은 없는 지명이라 공식 7경 숲쟁이공원(명승 22호), 백학촌은 연천 백학면이 아니라 영광읍 백학리·물무산 행복숲(물무로 219). 한빛원전·법성포 포구 사진과 구분. 영광 순수 누락 3→0 · CID 5/9 유지.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=yeonggwang`
+- **잔여**: 사진/개요 순수 누락 **81**/876. 다음 허브 **고흥10경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #49 — 영광 검색 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #49, 영광 검색 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `84cb0a9e` · PR [#261](https://github.com/catgeot/Days/pull/261)
+- **원인**: 관광지 목록은 `tourapi_attraction.first_image`만 사용. GATEO 선정은 DB 공란이면 `fetchTourApiFirstImage`(detailCommon)로 채우는데 목록은 그 경로가 없음. 불갑산도립공원 `126248`은 TourAPI 등재인데 DB 썸네일이 비어 Landmark 플레이스홀더.
+- **조치**: 빈 행만 live 채움 · 세션 캐시 `rememberKoreaTourAttractionFirstImage` · 멤버·contentId 오버레이는 덮지 않음. JSON contentId 기입 없음.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic` 검색「영광」불갑산도립공원
+- **잔여**: 사진/개요 순수 누락 **81**/876. 다음 허브 **고흥10경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #49 — 불갑산 detailImage (Cloud)
+
+- **세션** `팔경 활용 #49, 영광 검색 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `8ba7192a` · PR [#261](https://github.com/catgeot/Days/pull/261)
+- **재현**: 사람 Preview에서 검색「영광」불갑산도립공원이 그대로 Landmark. LIVE 조회 결과 DB·detailCommon·searchKeyword firstimage null · searchPhoto 0건 · detailImage 3장(상사화 군락 `2831192` 등).
+- **조치**: `fetchTourApiFirstImage`가 `detailImage`를 탐. TOUR_THUMB `126248`에 같은 CMS URL(첫 페인트). 불갑사 `126349`와 구분. JSON contentId 기입 없음.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic` 검색「영광」불갑산도립공원
 - **잔여**: 사진/개요 순수 누락 **81**/876. 다음 허브 **고흥10경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
