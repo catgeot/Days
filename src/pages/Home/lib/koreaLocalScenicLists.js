@@ -1268,6 +1268,18 @@ const GJ_GONGGOJI_2 = 'https://tong.visitkorea.or.kr/cms/resource/62/3495062_ima
 const GJ_GONGGOJI_3 = 'https://tong.visitkorea.or.kr/cms2/website/26/2761526.jpg';
 const GJ_NAEDO = 'https://tong.visitkorea.or.kr/cms/resource/42/3576042_image2_1.jpg';
 const GJ_NAEDO_2 = 'https://tong.visitkorea.or.kr/cms/resource/40/3576040_image2_1.jpg';
+const GJ_GARDEN = 'https://tong.visitkorea.or.kr/cms/resource/17/3521017_image2_1.jpg';
+const GJ_GARDEN_2 = 'https://tong.visitkorea.or.kr/cms2/website/71/3590471.jpg';
+const GJ_GARDEN_3 = 'https://tong.visitkorea.or.kr/cms2/website/82/3590482.jpg';
+const GJ_MAEMI = 'https://tong.visitkorea.or.kr/cms2/website/92/3092092.jpg';
+const GJ_MAEMI_2 = 'https://tong.visitkorea.or.kr/cms2/website/94/3092094.jpg';
+const GJ_MAEMI_3 = 'https://tong.visitkorea.or.kr/cms2/website/95/3092095.jpg';
+const GJ_GUJORA = 'https://tong.visitkorea.or.kr/cms/resource/10/3519210_image2_1.jpg';
+const GJ_GUJORA_2 = 'https://tong.visitkorea.or.kr/cms2/website/47/1047447.jpg';
+const GJ_GUJORA_3 = 'https://tong.visitkorea.or.kr/cms2/website/54/1047454.jpg';
+const GJ_TERMINAL = 'https://tong.visitkorea.or.kr/cms2/website/82/1250082.jpg';
+const GJ_TERMINAL_2 = 'https://tong.visitkorea.or.kr/cms2/website/92/1250092.jpg';
+const GJ_TERMINAL_3 = 'https://tong.visitkorea.or.kr/cms2/website/95/1250095.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2686,6 +2698,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     GJ_GONGGOJI,
     [GJ_GONGGOJI_2, GJ_GONGGOJI_3, GJ_NAEDO, GJ_NAEDO_2],
   ),
+  'local-scenic:geoje-gugyeong:거제식물원': localScenicPhotoOverlay(
+    '거제9경 제5경 거제 식물원은 거제시 공식명 거제식물원(정글돔)입니다. 거제시 문화관광은 위치를 거제면 거제남서로 3595로 두고, 거제정글돔(열대온실)·야외생태정원·수생정원·석부작정원으로 구성된다고 적습니다. 한국관광공사는 면적 4,468㎡·최고 높이 30m·유리 7,472장, 열대수목 300여 종 1만 주라고 안내합니다. 외도보타니아와 다른 자리입니다. 사진은 한국관광공사 거제식물원 공식 사진입니다.',
+    '경상남도 거제시 거제면 거제남서로 3595 (거제식물원 정글돔)',
+    GJ_GARDEN,
+    [GJ_GARDEN_2, GJ_GARDEN_3],
+  ),
+  'local-scenic:geoje-gugyeong:매미성': localScenicPhotoOverlay(
+    '거제9경 제9경 매미성은 장목면 복항길 29입니다. 거제시 문화관광에 따르면 2003년 태풍 매미로 경작지를 잃은 백순삼 씨가 자연재해로부터 작물을 지키려고 설계도 없이 홀로 쌓아 올린 돌벽입니다. 바닷가에 네모반듯한 돌을 쌓고 시멘트로 메운 것이 유럽 중세 성을 연상하게 되었습니다. 매미면가 식당·횟집과 다른 자리입니다. 사진은 한국관광공사 매미성 공식 사진입니다.',
+    '경상남도 거제시 장목면 복항길 29 (매미성)',
+    GJ_MAEMI,
+    [GJ_MAEMI_2, GJ_MAEMI_3],
+  ),
+  'local-scenic:geoje-gugyeong:구조라해수욕장': localScenicPhotoOverlay(
+    '구조라해수욕장은 일운면 구조라리의 내륙형 백사장입니다. 거제시 문화관광은 구조라 반도 서해안 약 1km 백사장으로 모래가 부드럽고 수심이 완만하며 호수처럼 잔잔하다고 적습니다. 서쪽 해안에 윤돌섬이 있고, 구조라항에서 내도·외도·해금강 유람선을 탑니다. 거제9경 학동 흑진주 몽돌해변과 다른 자리입니다. 사진은 한국관광공사 구조라해수욕장 공식 사진입니다.',
+    '경상남도 거제시 일운면 구조라리 (구조라해수욕장)',
+    GJ_GUJORA,
+    [GJ_GUJORA_2, GJ_GUJORA_3],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -2721,6 +2751,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   3014431: localScenicThumbOverlay(HW_FOREST, [HW_FOREST_2, HW_FOREST_3]),
   // 거제 검색 공곶이 — TourAPI first_image 없음. JSON contentId 기입 아님.
   2536196: localScenicThumbOverlay(GJ_GONGGOJI, [GJ_GONGGOJI_2, GJ_GONGGOJI_3, GJ_NAEDO]),
+  // 거제 검색 구조라해수욕장 — hub 명소(9경 아님). JSON contentId 기입 아님.
+  583071: localScenicThumbOverlay(GJ_GUJORA, [GJ_GUJORA_2, GJ_GUJORA_3]),
+  // 거제 검색 동백섬 지심도터미널 — TourAPI first_image 없음. 장승포 선착장. JSON contentId 기입 아님.
+  2756617: localScenicThumbOverlay(GJ_TERMINAL, [GJ_TERMINAL_2, GJ_TERMINAL_3]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

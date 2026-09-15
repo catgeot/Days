@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 47,
-  sessionPhase: '거제 결손 오버레이',
+  sessionPhase: '거제 빈 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=geoje',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-47-geoje-empty-thumbs',
+    session: '팔경 활용 #47, 거제 빈 썸네일',
+    title: '거제 식물원·매미성·구조라·지심도터미널 빈 썸네일',
+    detail:
+      'Preview QA에서 거제 식물원(5경)·매미성(9경)·구조라해수욕장·탐색 검색 동백섬 지심도터미널(2756617)이 플레이스홀더였습니다. 학동·포로수용소·공곶이·내도는 이미 사진이 있습니다. GATEO 선정 행이 없고 탐색홈은 Tour firstimage를 쓰지 않습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 한국관광공사 공식 사진을 넣었습니다. 외도보타니아·매미면가 식당·학동몽돌·지심도 본섬과 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「거제」식물원·매미성·구조라, /korea/theme/scenic 검색「거제」동백섬 지심도터미널.',
+    at: '2026-09-15T03:40:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-47-geoje-overlays',
     session: '팔경 활용 #47, 거제 결손 오버레이',

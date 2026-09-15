@@ -2551,6 +2551,80 @@ assert.ok(
 );
 assert.equal(gjGonggojiSearch.contentId, '2536196', '탐색 검색 공곶이 contentId');
 
+const gjGarden = resolveLocalScenicListSpotById(
+  'local-scenic:geoje-gugyeong:거제식물원',
+);
+assert.equal(gjGarden?.contentId, '2648073', '거제 식물원 JSON contentId 유지');
+assert.ok(gjGarden?.overview?.includes('제5경'), '거제 식물원 overlay overview');
+assert.ok(gjGarden?.overview?.includes('정글돔'), '거제 식물원 정글돔');
+assert.ok(gjGarden?.overview?.includes('거제남서로 3595'), '거제 식물원 주소');
+assert.ok(gjGarden?.overview?.includes('외도보타니아'), '거제 식물원≠외도 구분');
+assert.ok(gjGarden?.imageUrl?.includes('3521017'), '거제 식물원 공사 공식 사진');
+
+const gjMaemi = resolveLocalScenicListSpotById(
+  'local-scenic:geoje-gugyeong:매미성',
+);
+assert.equal(gjMaemi?.contentId, '2536133', '거제 매미성 JSON contentId 유지');
+assert.ok(gjMaemi?.overview?.includes('제9경'), '거제 매미성 overlay overview');
+assert.ok(gjMaemi?.overview?.includes('복항길 29'), '거제 매미성 주소');
+assert.ok(gjMaemi?.overview?.includes('백순삼'), '거제 매미성 조성');
+assert.ok(gjMaemi?.overview?.includes('매미면가'), '거제 매미성≠식당 구분');
+assert.ok(gjMaemi?.imageUrl?.includes('3092092'), '거제 매미성 공사 공식 사진');
+assert.notEqual(gjGarden?.imageUrl, gjMaemi?.imageUrl, '식물원·매미성 썸네일 다름');
+assert.notEqual(gjGarden?.imageUrl, gjHakdong?.imageUrl, '식물원·학동 썸네일 다름');
+assert.notEqual(gjMaemi?.imageUrl, gjGonggoji?.imageUrl, '매미성·공곶이 썸네일 다름');
+
+const gjGardenSearch = resolveSearchScenicMedia({
+  hubId: 'geoje',
+  name: '거제 식물원',
+  contentId: '2648073',
+});
+assert.ok(
+  gjGardenSearch.imageUrl?.includes('3521017'),
+  '탐색 드롭다운 거제 식물원 썸네일',
+);
+assert.equal(gjGardenSearch.contentId, '2648073', '탐색 거제 식물원 contentId');
+
+const gjMaemiSearch = resolveSearchScenicMedia({
+  hubId: 'geoje',
+  name: '매미성',
+  contentId: '2536133',
+});
+assert.ok(
+  gjMaemiSearch.imageUrl?.includes('3092092'),
+  '탐색 드롭다운 매미성 썸네일',
+);
+assert.equal(gjMaemiSearch.contentId, '2536133', '탐색 매미성 contentId');
+
+const gjGujoraSearch = resolveSearchScenicMedia({
+  hubId: 'geoje',
+  name: '구조라해수욕장',
+});
+assert.ok(
+  gjGujoraSearch.imageUrl?.includes('3519210'),
+  '탐색 드롭다운 구조라해수욕장 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('583071')?.imageUrl?.includes('3519210'),
+  '거제 검색 Tour 행 구조라해수욕장 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('2756617')?.imageUrl?.includes('1250082'),
+  '거제 검색 Tour 행 동백섬 지심도터미널 썸네일',
+);
+assert.ok(
+  geojeGlobe.find((s) => s.attractionName === '거제 식물원')?.imageUrl?.includes(
+    '3521017',
+  ),
+  '거제 검색 팔경 식물원 공사 썸네일',
+);
+assert.ok(
+  geojeGlobe.find((s) => s.attractionName === '매미성')?.imageUrl?.includes(
+    '3092092',
+  ),
+  '거제 검색 팔경 매미성 공사 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
