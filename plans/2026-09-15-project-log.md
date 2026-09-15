@@ -117,6 +117,17 @@
 - **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #48 QA — 동해 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #48, 동해 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `9a95d38a` · PR [#258](https://github.com/catgeot/Days/pull/258)
+- **원인**: Preview 용추폭포(2경)·무릉반석(3경)이 같은 무릉계곡 Tour `125673` 사진. 탐색 검색 동해 망상해수욕장(4경)·명승 검색 어달해변은 플레이스홀더. 탐색홈은 Tour `firstimage`를 쓰지 않음 · 어달 Tour `first_image` 공란.
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 용추·반석·망상 동해시 관광 공식 사진. `TOUR_THUMB` 망상 `125713`·어달 `125708`. 문경 용추계곡·쌍폭포·대진·노봉과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → 검색「동해」용추·반석·망상 · `/korea/theme/scenic` 검색「동해」어달해변
+- **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #49 다음 — 영광 결손 오버레이
 
 ```
