@@ -32,6 +32,7 @@ import {
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
   lookupLocalScenicPhotoByContentId,
+  resolveSearchScenicMedia,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import { pickTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
 import {
@@ -2410,6 +2411,54 @@ assert.ok(
     '대리 481',
   ),
   '화순 검색 팔경 꽃강길 개요',
+);
+
+const hwForest = resolveLocalScenicListSpotById('local-scenic:hwasun-other:연둔리숲정이');
+assert.ok(hwForest?.overview?.includes('제7경'), '화순 연둔리 overlay overview');
+assert.ok(hwForest?.overview?.includes('동복면'), '화순 연둔리 동복면');
+assert.ok(hwForest?.overview?.includes('둔동1길 38'), '화순 연둔리 주소');
+assert.ok(hwForest?.overview?.includes('아름다운 마을 숲'), '화순 연둔리 마을 숲');
+assert.ok(hwForest?.overview?.includes('수양버들'), '화순 연둔리 수양버들');
+assert.ok(!hwForest?.overview?.includes('만연산 치유숲은'), '화순 연둔리 개요에 만연산 본문 없음');
+assert.ok(hwForest?.imageUrl?.includes('sub_010107_sdimg01'), '화순 연둔리 군 공식 사진');
+assert.equal(hwForest?.contentId, '3014431', '화순 연둔리 JSON contentId 유지');
+assert.notEqual(hwForest?.imageUrl, hwAzalea?.imageUrl, '연둔리 썸네일 ≠ 수만리 철쭉');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('3014431')?.imageUrl?.includes('sub_010107_sdimg01'),
+  '화순 연둔리 Tour 빈 썸네일 overlay 3014431',
+);
+assert.ok(
+  hwasunGlobe.find((s) => s.attractionName === '연둔리 숲정이')?.imageUrl?.includes(
+    'sub_010107_sdimg01',
+  ),
+  '화순 검색 팔경 연둔리 군 공식 썸네일',
+);
+assert.ok(
+  hwasunEleven.find((s) => s.attractionName === '연둔리 숲정이')?.imageUrl?.includes(
+    'sub_010107_sdimg01',
+  ),
+  '화순11경 리스트 연둔리 썸네일',
+);
+const hwForestSearch = resolveSearchScenicMedia({
+  hubId: 'hwasun',
+  name: '화순동복연둔리숲정이',
+  contentId: '3014431',
+});
+assert.ok(
+  hwForestSearch.imageUrl?.includes('sub_010107_sdimg01'),
+  '탐색 검색 Tour 행 화순동복연둔리숲정이 썸네일',
+);
+assert.equal(hwForestSearch.contentId, '3014431', '탐색 검색 연둔리 contentId');
+const hwForestSuggest = localScenicMemberToSuggestion(
+  lists.find((l) => l.listId === 'hwasun-other'),
+  resolveCityAttractionHub('hwasun'),
+  lists
+    .find((l) => l.listId === 'hwasun-other')
+    ?.members?.find((m) => m.attractionName === '연둔리 숲정이'),
+);
+assert.ok(
+  hwForestSuggest?.imageUrl?.includes('sub_010107_sdimg01'),
+  '탐색 드롭다운 연둔리 숲정이 썸네일',
 );
 
 const extra = process.argv.slice(2);

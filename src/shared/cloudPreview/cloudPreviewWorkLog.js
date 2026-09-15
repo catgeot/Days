@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 46,
-  sessionPhase: '화순 결손 오버레이',
+  sessionPhase: '화순 연둔리 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=hwasun',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-46-hwasun-yeondunri-thumb',
+    session: '팔경 활용 #46, 화순 연둔리 썸네일',
+    title: '화순 7경 연둔리 숲정이 빈 썸네일',
+    detail:
+      'Preview QA에서 화순11경 7경 연둔리 숲정이와 탐색 검색 Tour 행 화순동복연둔리숲정이(3014431)가 플레이스홀더였습니다. GATEO 선정 행이 없고 탐색홈은 Tour DB first_image 동기화에 의존하는데 비어 있습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 화순군 문화관광 제7경 공식 사진(동복면 둔동1길 38·동복천 수양버들)을 넣었습니다. 만연산 치유숲과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwasun 7경, 검색「화순」연둔리 숲정이·화순동복연둔리숲정이 행.',
+    at: '2026-09-15T01:55:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-46-hwasun-overlays',
     session: '팔경 활용 #46, 화순 결손 오버레이',

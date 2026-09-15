@@ -1254,6 +1254,9 @@ const HW_AZALEA_3 = 'https://www.hwasun.go.kr/culture/img/sub_010105_sdimg03.jpg
 const HW_FOUNTAIN = 'https://www.hwasun.go.kr/culture/img/sub_010111_sdimg01.png';
 const HW_FOUNTAIN_2 = 'https://www.hwasun.go.kr/culture/img/sub_010111_sdimg02.png';
 const HW_FOUNTAIN_3 = 'https://www.hwasun.go.kr/culture/img/sub_010111_sdimg03.png';
+const HW_FOREST = 'https://www.hwasun.go.kr/culture/img/sub_010107_sdimg01.jpg';
+const HW_FOREST_2 = 'https://www.hwasun.go.kr/culture/img/sub_010107_sdimg02.jpg';
+const HW_FOREST_3 = 'https://www.hwasun.go.kr/culture/img/sub_010107_sdimg03.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2648,6 +2651,12 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     HW_FOUNTAIN,
     [HW_FOUNTAIN_2, HW_FOUNTAIN_3],
   ),
+  'local-scenic:hwasun-other:연둔리숲정이': localScenicPhotoOverlay(
+    '화순11경 제7경 연둔리 숲정이는 동복면 연둔리 동복천의 버드나무 마을 숲입니다. 화순군 문화관광은 동복천을 따라 심은 아름드리 수양버들이 동복호와 어우러지며 2002년 아름다운 마을 숲에 선정됐다고 적습니다. 한국관광공사 주소는 동복면 둔동1길 38입니다. 주변에는 화순 적벽과 김삿갓 문학동산이 있습니다. GATEO 선정 만연산 치유숲·고창 고인돌과 다른 자리입니다. 사진은 화순군 문화관광 연둔리 숲정이 공식 사진입니다.',
+    '전라남도 화순군 동복면 둔동1길 38 (연둔리 숲정이)',
+    HW_FOREST,
+    [HW_FOREST_2, HW_FOREST_3],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -2679,6 +2688,8 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   126746: localScenicThumbOverlay(HS_OSEO, [HS_OSEO_2, HS_OSEO_3]),
   126721: localScenicThumbOverlay(HS_JUK, [HS_JUK_2, HS_JUK_3]),
   125993: localScenicThumbOverlay(HS_UISA, [HS_UISA_2, HS_UISA_3]),
+  // 화순 검색 화순동복연둔리숲정이 — DB first_image 미동기화. JSON contentId 기입 아님.
+  3014431: localScenicThumbOverlay(HW_FOREST, [HW_FOREST_2, HW_FOREST_3]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
