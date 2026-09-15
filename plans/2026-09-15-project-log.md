@@ -2,6 +2,16 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #5 — 거리 정렬 및 지도 딥링크 (Cloud)
+
+- **세션** `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
+- **브랜치** `cursor/jonggak-stay-5f4f` · tip `17f0fd5a` · PR [#264](https://github.com/catgeot/Days/pull/264)
+- **완료**: 종각역 좌표 Haversine 거리 뱃지 · 추천순/가까운순 · 네이버 지도 인근 숙소 칩. Edge `fetch-mrt-stays` 호텔 lat/lng 패스스루(배포 대기).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
+- **QA**: 홈「종각」→ 숙소 찾기 → 카드 거리 · 네이버 칩(종각역 근처). 거리 없으면 `npx supabase functions deploy fetch-mrt-stays`
+- **다음**: `종각역 숙소 #6, Preview OK면 PR 병합`
+
 ## 종각역 숙소 #4 — PR 병합 · PROD (Cloud)
 
 - **병합** PR [#263](https://github.com/catgeot/Days/pull/263) · main `76909fc9`
@@ -233,6 +243,17 @@
 - **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 고흥10경 결손 3건(쑥섬·금산 해안경관·고흥만 수변노을공원). 쑥섬은 소록도·연홍도가 아니라 봉래면 애도(나로도항길 120-7) 전남 1호 민간정원, 금산 해안경관은 충남 금산군·남해 금산 보리암이 아니라 금산면 거금도 해안도로(거금일주로 1234·소원동산), 고흥만 수변노을공원은 남열 해돋이·영광 백수가 아니라 도덕면 고흥만로 1132-14. 고흥 순수 누락 3→0 · CID 7/10 유지.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=goheung`
+- **잔여**: 사진/개요 순수 누락 **78**/876. 다음 허브 **김해9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #50 — 고흥 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #50, 고흥 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `c9a0c603` · PR [#262](https://github.com/catgeot/Days/pull/262)
+- **재현**: 사람 Preview에서 고흥10경 1경 팔영산 자연휴양림·검색「고흥」영남용바위·팔영산자연휴양림이 Landmark. Tour `125426`·`2782706` firstimage 공란.
+- **조치**: JSON contentId 기입 없이 멤버 오버레이·TOUR_THUMB. 휴양림은 한국관광공사 산림문화휴양관 `2380877`, 영남용바위는 해안절벽 `2788863`. 능가사·편백치유의 숲·남열·소록도와 구분. 영남용바위는 10경 멤버 아님.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=goheung` 1경 · 검색「고흥」팔영산자연휴양림·영남용바위
 - **잔여**: 사진/개요 순수 누락 **78**/876. 다음 허브 **김해9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
