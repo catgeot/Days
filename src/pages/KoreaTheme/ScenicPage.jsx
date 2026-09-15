@@ -96,6 +96,7 @@ import {
   fetchKoreaTourAttractionsNear,
   lookupKoreaTourAttractionByTitle,
   peekKoreaTourAttractionFirstImagesByIds,
+  rememberKoreaTourAttractionFirstImage,
   fetchScenicFilterChipCounts,
   labelScenicAreaCode,
   listScenicRegionAreas,
@@ -521,6 +522,21 @@ function applyLocalScenicContentIdThumb(spot) {
     imageUrl: url,
     galleryUrls: overlay.galleryUrls || spot.galleryUrls,
   };
+}
+
+/** 관광지 목록 — 오버레이·DB 썸네일이 없는 contentId만 live TourAPI 대상. */
+function tourListMissingContentIds(spots) {
+  return [
+    ...new Set(
+      (Array.isArray(spots) ? spots : [])
+        .filter((spot) => {
+          const withOverlay = applyLocalScenicContentIdThumb(spot);
+          return !String(withOverlay.firstImage || withOverlay.imageUrl || '').trim();
+        })
+        .map((spot) => String(spot.contentId || spot.id || '').trim())
+        .filter((id) => /^\d{1,32}$/.test(id)),
+    ),
+  ];
 }
 
 function spotListThumbCandidates(spot) {
@@ -1041,91 +1057,6 @@ export default function KoreaThemeScenicPage() {
     () => new Map(),
   );
 
-  useEffect(() => {
-    let cancelled = false;
-    const jobs = hubId ? listLocalScenicMemberJobs(hubId) : [];
-    const curatedIds = curatedSpots
-      .map((s) => String(s.contentId || '').trim())
-      .filter((id) => /^\d{1,32}$/.test(id));
-
-    const applyImageEntries = (entries) => {
-      if (!entries.length) return;
-      setCuratedImageByContentId((prev) => mergeContentIdImageMap(prev, entries));
-    };
-
-    (async () => {
-      const resolved = new Map();
-      const missing = jobs.filter((job) => !job.contentId);
-      if (missing.length) {
-        const lookups = await Promise.all(
-          missing.map(async (job) => {
-            const row = await lookupKoreaTourAttractionByTitle({
-              title: job.name,
-              hubId: job.hubId || hubId,
-            });
-            return { job, row };
-          }),
-        );
-        if (cancelled) return;
-        for (const { job, row } of lookups) {
-          const contentId = String(row?.contentId || '').trim();
-          if (!/^\d{1,32}$/.test(contentId)) continue;
-          resolved.set(job.spotId, {
-            contentId,
-            firstImage: row.firstImage || row.imageUrl || null,
-            cat1: row.cat1 || null,
-            cat2: row.cat2 || null,
-            cat3: row.cat3 || null,
-          });
-        }
-        if (resolved.size) {
-          setLocalScenicTourBySpotId((prev) => {
-            const next = new Map(prev);
-            for (const [key, value] of resolved) next.set(key, value);
-            return next;
-          });
-        }
-      }
-
-      const palgyeongIds = [
-        ...jobs.map((job) => job.contentId).filter(Boolean),
-        ...[...resolved.values()].map((row) => row.contentId),
-      ];
-      const uniqueIds = [...new Set([...curatedIds, ...palgyeongIds])];
-      if (!uniqueIds.length) return;
-
-      const peeked = peekKoreaTourAttractionFirstImagesByIds(uniqueIds);
-      applyImageEntries([...peeked.entries()]);
-      applyImageEntries(
-        [...resolved.values()]
-          .filter((row) => row.contentId && row.firstImage)
-          .map((row) => [row.contentId, row.firstImage]),
-      );
-
-      const dbMap = await fetchKoreaTourAttractionFirstImagesByIds(uniqueIds);
-      if (cancelled) return;
-      applyImageEntries([...dbMap.entries()]);
-
-      const liveTargets = uniqueIds.filter((id) => {
-        const key = String(id || '').trim();
-        return key && !peeked.get(key) && !dbMap.get(key);
-      });
-      if (!liveTargets.length) return;
-      const liveHits = await Promise.all(
-        liveTargets.map(async (id) => {
-          const url = await fetchTourApiFirstImage(id);
-          return [id, url];
-        }),
-      );
-      if (cancelled) return;
-      applyImageEntries(liveHits);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [curatedSpots, hubId]);
-
   const curatedSpotsWithThumbs = useMemo(() => {
     const peeked = peekKoreaTourAttractionFirstImagesByIds(
       curatedSpots.map((s) => s.contentId),
@@ -1551,10 +1482,123 @@ export default function KoreaThemeScenicPage() {
   ]);
 
   const [dbSpots, setDbSpots] = useState([]);
-  const dbSpotsWithThumbs = useMemo(
-    () => dbSpots.map((spot) => applyLocalScenicContentIdThumb(spot)),
-    [dbSpots],
-  );
+  const dbSpotsWithThumbs = useMemo(() => {
+    const peeked = peekKoreaTourAttractionFirstImagesByIds(
+      dbSpots.map((s) => s.contentId || s.id),
+    );
+    return dbSpots.map((spot) => {
+      const withOverlay = applyLocalScenicContentIdThumb(spot);
+      if (String(withOverlay.firstImage || withOverlay.imageUrl || '').trim()) {
+        return withOverlay;
+      }
+      const firstImage = resolveLocalScenicRowFirstImage(
+        withOverlay,
+        curatedImageByContentId,
+        peeked,
+      );
+      if (!firstImage) return withOverlay;
+      return {
+        ...withOverlay,
+        firstImage,
+        imageUrl: firstImage,
+      };
+    });
+  }, [dbSpots, curatedImageByContentId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const jobs = hubId ? listLocalScenicMemberJobs(hubId) : [];
+    const curatedIds = curatedSpots
+      .map((s) => String(s.contentId || '').trim())
+      .filter((id) => /^\d{1,32}$/.test(id));
+
+    const applyImageEntries = (entries) => {
+      if (!entries.length) return;
+      setCuratedImageByContentId((prev) => mergeContentIdImageMap(prev, entries));
+    };
+
+    (async () => {
+      const resolved = new Map();
+      const missing = jobs.filter((job) => !job.contentId);
+      if (missing.length) {
+        const lookups = await Promise.all(
+          missing.map(async (job) => {
+            const row = await lookupKoreaTourAttractionByTitle({
+              title: job.name,
+              hubId: job.hubId || hubId,
+            });
+            return { job, row };
+          }),
+        );
+        if (cancelled) return;
+        for (const { job, row } of lookups) {
+          const contentId = String(row?.contentId || '').trim();
+          if (!/^\d{1,32}$/.test(contentId)) continue;
+          resolved.set(job.spotId, {
+            contentId,
+            firstImage: row.firstImage || row.imageUrl || null,
+            cat1: row.cat1 || null,
+            cat2: row.cat2 || null,
+            cat3: row.cat3 || null,
+          });
+        }
+        if (resolved.size) {
+          setLocalScenicTourBySpotId((prev) => {
+            const next = new Map(prev);
+            for (const [key, value] of resolved) next.set(key, value);
+            return next;
+          });
+        }
+      }
+
+      const palgyeongIds = [
+        ...jobs.map((job) => job.contentId).filter(Boolean),
+        ...[...resolved.values()].map((row) => row.contentId),
+      ];
+      const uniqueIds = [
+        ...new Set([
+          ...curatedIds,
+          ...palgyeongIds,
+          ...tourListMissingContentIds(dbSpots),
+        ]),
+      ];
+      if (!uniqueIds.length) return;
+
+      const peeked = peekKoreaTourAttractionFirstImagesByIds(uniqueIds);
+      applyImageEntries([...peeked.entries()]);
+      applyImageEntries(
+        [...resolved.values()]
+          .filter((row) => row.contentId && row.firstImage)
+          .map((row) => [row.contentId, row.firstImage]),
+      );
+
+      const dbMap = await fetchKoreaTourAttractionFirstImagesByIds(uniqueIds);
+      if (cancelled) return;
+      applyImageEntries([...dbMap.entries()]);
+
+      const liveTargets = uniqueIds.filter((id) => {
+        const key = String(id || '').trim();
+        return key && !peeked.get(key) && !dbMap.get(key);
+      });
+      if (!liveTargets.length) return;
+      const liveHits = await Promise.all(
+        liveTargets.map(async (id) => {
+          const url = await fetchTourApiFirstImage(id);
+          return [id, url];
+        }),
+      );
+      if (cancelled) return;
+      for (const [id, url] of liveHits) {
+        rememberKoreaTourAttractionFirstImage(id, url);
+      }
+      applyImageEntries(liveHits);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [curatedSpots, hubId, dbSpots]);
+
   const [dbCount, setDbCount] = useState(0);
   const [scopeCount, setScopeCount] = useState(0);
   const [dbStatus, setDbStatus] = useState('loading');

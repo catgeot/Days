@@ -32,6 +32,30 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-15T08:40:00.000Z',
   },
   {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-detailimage',
+    session: '팔경 활용 #49, 영광 검색 썸네일',
+    title: '불갑산도립공원 detailImage 썸네일',
+    detail:
+      'Preview QA에서 검색「영광」불갑산도립공원(126248)이 그대로 Landmark였습니다. DB·detailCommon·searchKeyword firstimage와 searchPhoto는 비고, TourAPI 사진은 detailImage 3장(상사화 군락 2831192 등)에만 있습니다. 리스트 live가 firstimage만 봐서 빈 채로 끝났습니다. fetchTourApiFirstImage가 detailImage를 타게 하고, 같은 CMS URL을 TOUR_THUMB 126248에 넣었습니다. 불갑사 126349·3379065와 다른 id입니다. Preview /qa/palgyeong-use — 검색「영광」불갑산도립공원 썸네일.',
+    at: '2026-09-15T12:35:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-tour-thumbs',
+    session: '팔경 활용 #49, 영광 검색 썸네일',
+    title: '관광지 검색 빈 썸네일 TourAPI live 채움',
+    detail:
+      '명승 검색「영광」불갑산도립공원(126248)처럼 tourapi_attraction.first_image가 비면 플레이스홀더만 나왔습니다. GATEO 선정은 detailCommon live를 타는데 관광지 목록은 DB만 봤습니다. 빈 행만 fetchTourApiFirstImage로 채우고, 멤버·contentId 오버레이는 덮지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「영광」불갑산도립공원 썸네일.',
+    at: '2026-09-15T12:05:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-overlays',
+    session: '팔경 활용 #49, 영광 결손 오버레이',
+    title: '영광9경 황금산·왕글공원·백학촌 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영광9경 결손 3건(황금산·왕글공원·백학촌)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 황금산은 서산·거제 황금산이 아니라 공식 1경 백수해안도로(해안로 957·칠산정), 왕글공원은 없는 지명이라 공식 7경 숲쟁이공원(명승 22호·백제문화로 67), 백학촌은 연천 백학면이 아니라 영광읍 백학리·물무산 행복숲(물무로 219)입니다. 한빛원전·법성포 포구 사진과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeonggwang 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T09:50:00.000Z',
+  },
+  {
     id: '2026-09-15-palgyeong-use-48-donghae-tour-overwrite',
     session: '팔경 활용 #48, 동해 썸네일 분리',
     title: '용추·무릉반석 Tour firstimage 덮어쓰기',
