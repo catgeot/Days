@@ -246,6 +246,17 @@
 - **잔여**: 사진/개요 순수 누락 **78**/876. 다음 허브 **김해9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #50 — 고흥 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #50, 고흥 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `c9a0c603` · PR [#262](https://github.com/catgeot/Days/pull/262)
+- **재현**: 사람 Preview에서 고흥10경 1경 팔영산 자연휴양림·검색「고흥」영남용바위·팔영산자연휴양림이 Landmark. Tour `125426`·`2782706` firstimage 공란.
+- **조치**: JSON contentId 기입 없이 멤버 오버레이·TOUR_THUMB. 휴양림은 한국관광공사 산림문화휴양관 `2380877`, 영남용바위는 해안절벽 `2788863`. 능가사·편백치유의 숲·남열·소록도와 구분. 영남용바위는 10경 멤버 아님.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=goheung` 1경 · 검색「고흥」팔영산자연휴양림·영남용바위
+- **잔여**: 사진/개요 순수 누락 **78**/876. 다음 허브 **김해9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #51 다음 — 김해 결손 오버레이
 
 ```
