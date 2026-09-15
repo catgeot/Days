@@ -2,6 +2,16 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #5 — Edge Photon 좌표 배포 (Cloud)
+
+- **세션** `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
+- **브랜치** `cursor/jonggak-stay-5f4f` · tip `8365a7b6` · PR [#264](https://github.com/catgeot/Days/pull/264)
+- **완료**: MRT search에 좌표 없음 → Edge Photon lodging·8km·이름 가드로 호텔 lat/lng. `fetch-mrt-stays` 배포 `phdjnbfitvmrguqzverm`. LIVE 종로 20건 `withCoords=7` (서머셋 561m·신라스테이 광화문 330m·나인트리 487m).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS · LIVE withCoords>0
+- **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
+- **QA**: 홈「종각」→ 숙소 찾기 → **하드 새로고침** → 카드 거리 · 네이버 칩. 오라카이 대학로 등 OSM 없음은 거리 없음이 정상.
+- **다음**: `종각역 숙소 #6, Preview OK면 PR 병합`
+
 ## 종각역 숙소 #5 — 거리 정렬 및 지도 딥링크 (Cloud)
 
 - **세션** `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
@@ -246,15 +256,36 @@
 - **잔여**: 사진/개요 순수 누락 **78**/876. 다음 허브 **김해9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #51 다음 — 김해 결손 오버레이
+## 팔경 활용 #50 — 고흥 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #50, 고흥 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `c9a0c603` · PR [#262](https://github.com/catgeot/Days/pull/262)
+- **재현**: 사람 Preview에서 고흥10경 1경 팔영산 자연휴양림·검색「고흥」영남용바위·팔영산자연휴양림이 Landmark. Tour `125426`·`2782706` firstimage 공란.
+- **조치**: JSON contentId 기입 없이 멤버 오버레이·TOUR_THUMB. 휴양림은 한국관광공사 산림문화휴양관 `2380877`, 영남용바위는 해안절벽 `2788863`. 능가사·편백치유의 숲·남열·소록도와 구분. 영남용바위는 10경 멤버 아님.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=goheung` 1경 · 검색「고흥」팔영산자연휴양림·영남용바위
+- **잔여**: 사진/개요 순수 누락 **78**/876. 다음 허브 **김해9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #51 — 김해9경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #51, 김해 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `cbd44917` · PR [#265](https://github.com/catgeot/Days/pull/265)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 김해9경 결손 3건(화포천습지 생태공원·경전철에서 바라본 가야유적·분산(천문대)전경 및 운무). 화포천은 창녕 우포늪·창원 주남이 아니라 한림면 한림로 183-300 하천형 배후습지, 경전철 가야유적은 3경 수로왕릉·GATEO 가야테마파크가 아니라 박물관역·수로왕릉역의 대성동고분군·국립김해박물관, 분산 천문대는 증평 좌구산이 아니라 어방동 가야테마길 254 분성산 정상. 김해 순수 누락 3→0 · CID 6/9 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gimhae`
+- **잔여**: 사진/개요 순수 누락 **75**/876. 다음 허브 **대구12경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #52 다음 — 대구 결손 오버레이
 
 ```
-팔경 활용 #51, 김해 결손 오버레이
+팔경 활용 #52, 대구 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 김해9경 사진·개요 없는 3건(화포천습지 생태공원·경전철에서 바라본 가야유적·분산(천문대)전경 및 운무)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gimhae
+작업: 대구12경 사진·개요 없는 3건(대구 국채보상운동 기념공원·대구 달성토성·대구 경상감영과 옛골목)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=daegu
 ```
 
