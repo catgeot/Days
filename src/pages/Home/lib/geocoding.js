@@ -34,7 +34,7 @@ export const LANDMARK_QUERY_RE =
 
 /** 도로·거리명으로 유명한 명소가 가로채지는 패턴 (Eiffel Tower Street 등) */
 const STREETISH_LABEL_RE =
-  /\b(street|st\.|road|rd\.|avenue|ave\.|lane|ln\.|drive|dr\.|blvd|boulevard|highway|way)\b|(?:거리|도로|로)$/i;
+  /\b(street|st\.|road|rd\.|avenue|ave\.|lane|ln\.|drive|dr\.|blvd|boulevard|highway|way)\b|-gil\b|(?:길|거리|도로|로)$/i;
 
 /**
  * 유명 명소 → 본명·국가 고정 쿼리.
@@ -294,6 +294,9 @@ const scoreMapboxFeature = (feature, searchQuery, facilityQ, landmarkPlan = null
     const compactText = text.replace(/\s+/g, '');
     if (compactText === stationAlias.station || compactText === `${String(searchQuery || '').trim()}역`) {
       score += 80;
+    }
+    if (STREETISH_LABEL_RE.test(text) || STREETISH_LABEL_RE.test(placeName)) {
+      score -= 80;
     }
     if (stationAlias.district && label.includes(stationAlias.district)) score += 40;
     if (/서울|종로/.test(label)) score += 30;

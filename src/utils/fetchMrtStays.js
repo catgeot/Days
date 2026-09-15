@@ -14,6 +14,7 @@ import {
   resolveMrtStayQuery,
   stripKoAdminSuffix,
 } from './mrtStayQuery.js';
+import { resolveMrtStayOrigin } from './mrtStayDistance.js';
 
 export {
   canShowMrtStayStrip,
@@ -26,8 +27,8 @@ export {
   stripKoAdminSuffix,
 };
 
-/** countryHint·keyword override 변경 시 무효화 · v21: Edge Photon 숙소 좌표 */
-const CACHE_PREFIX = 'gateo:mrt-stays:v21:';
+/** countryHint·keyword override 변경 시 무효화 · v22: 역 원점 캐시 분리 */
+const CACHE_PREFIX = 'gateo:mrt-stays:v22:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
 const MAX_ADULTS = 8;
@@ -192,6 +193,8 @@ function cacheKey(
   checkOut,
   adultCount,
   childCount,
+  originLat,
+  originLng,
 ) {
   const cityKey = Array.isArray(cityHints) && cityHints.length
     ? cityHints.join(',')
@@ -200,7 +203,11 @@ function cacheKey(
     .map((c) => String(c || '').trim())
     .filter(Boolean)
     .join('|') || '-';
-  return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:a${adultCount}c${childCount}:${keyword}`;
+  const originKey =
+    Number.isFinite(Number(originLat)) && Number.isFinite(Number(originLng))
+      ? `${Number(originLat).toFixed(3)},${Number(originLng).toFixed(3)}`
+      : '-';
+  return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:a${adultCount}c${childCount}:${originKey}:${keyword}`;
 }
 
 /**
@@ -286,6 +293,8 @@ export async function fetchMrtStays(params) {
     checkOut,
     adultCount,
     childCount,
+    params?.originLat,
+    params?.originLng,
   );
 
   const hit = readCache(key);
@@ -357,8 +366,7 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
   const isDomestic = isMrtDomesticLocation(location);
   const normalized = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
   const guests = normalizeMrtGuestCounts(opts.adultCount, opts.childCount);
-  const originLat = Number(location?.lat);
-  const originLng = Number(location?.lng);
+  const origin = resolveMrtStayOrigin(location);
   return fetchMrtStays({
     ...query,
     keyword,
@@ -367,8 +375,6 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
     ...normalized,
     ...guests,
     size: MRT_STAY_FETCH_SIZE,
-    ...(Number.isFinite(originLat) && Number.isFinite(originLng)
-      ? { originLat, originLng }
-      : {}),
+    ...(origin ? { originLat: origin.lat, originLng: origin.lng } : {}),
   });
 }

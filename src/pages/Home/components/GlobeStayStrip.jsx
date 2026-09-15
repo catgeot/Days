@@ -71,6 +71,7 @@ import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
   attachMrtStayDistances,
   buildNaverNearbyStayMapUrl,
+  resolveMrtStayOrigin,
   stayDistanceRank,
 } from '../../../utils/mrtStayDistance';
 import {
@@ -1433,23 +1434,25 @@ export default function GlobeStayStrip({
     setExpanded(false);
   }, []);
 
+  const stayOrigin = useMemo(
+    () => resolveMrtStayOrigin(location, name),
+    [location, name],
+  );
+
   const rankedItems = useMemo(
-    () =>
-      attachMrtStayDistances(items, {
-        lat: location?.lat,
-        lng: location?.lng,
-        label: name,
-      }),
-    [items, location?.lat, location?.lng, name],
+    () => attachMrtStayDistances(items, stayOrigin),
+    [items, stayOrigin],
   );
 
   const naverNearbyStayUrl = useMemo(() => {
     if (!isMrtDomesticLocation(location)) return null;
-    const lat = Number(location?.lat);
-    const lng = Number(location?.lng);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-    return buildNaverNearbyStayMapUrl({ lat, lng, query: name });
-  }, [location, name]);
+    if (!stayOrigin) return null;
+    return buildNaverNearbyStayMapUrl({
+      lat: stayOrigin.lat,
+      lng: stayOrigin.lng,
+      query: name,
+    });
+  }, [location, name, stayOrigin]);
 
   if (!eligible) {
     if (typeof children === 'function') {

@@ -6,9 +6,9 @@
 export const cloudPreviewProject = {
   active: true,
   title: '종각역 숙소',
-  sessionNo: 5,
-  sessionPhase: '거리 정렬 및 지도 딥링크',
-  branch: 'cursor/jonggak-stay-5f4f',
+  sessionNo: 6,
+  sessionPhase: '첫 카드 거리 원점',
+  branch: 'cursor/jonggak-first-card-3096',
   previewPath: '/',
   qaShareSlug: '',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-jonggak-stay-first-card-origin',
+    session: '종각역 숙소 #6, 첫 카드 거리 원점',
+    title: '첫 종각역 카드도 거리 표시',
+    detail:
+      '검색 리스트 첫 카드(Jonggak-gil)로 숙소 찾기를 하면 거리가 비고, 다른 종각역 카드는 거리가 나오던 구멍을 막았습니다. 좌표가 없거나 종각역에서 8km 밖이면 역 좌표(37.5701, 126.9829)를 Photon·거리 뱃지·네이버 칩 원점으로 씁니다. 길·동 카드는 선택 목록에서 뒤로 갑니다. Preview 홈「종각역」첫 카드 → 숙소 찾기 → 신라스테이 광화문 330m 등.',
+    at: '2026-09-15T22:00:00.000Z',
+  },
   {
     id: '2026-09-15-jonggak-stay-edge-photon',
     session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',

@@ -8,11 +8,13 @@ import {
   canShowMrtStayStrip,
   expandMrtCountryHintAlts,
   isMrtStayPointLabel,
+  isStreetishStayLabel,
   mergeMrtStayFetchQuery,
   mrtNeighborhoodKeyword,
   nominatimSquarePenalty,
   nominatimStationScoreDelta,
   queryLooksLikeStayPoint,
+  rankStayPointDisambiguationCandidates,
   resolveKoStationAlias,
   resolveMrtStayQuery,
   stationNameMatchesQuery,
@@ -25,6 +27,7 @@ import {
   haversineKm,
   isLodgingOsmValue,
   parseStayCoordPair,
+  resolveMrtStayOrigin,
   simplifyStayGeocodeQuery,
   stayDistanceRank,
   stayGeocodeQueries,
@@ -431,7 +434,23 @@ async function main() {
     const jonggakAlias = resolveKoStationAlias('종각');
     assert(jonggakAlias?.station === '종각역', `종각 alias station (got ${jonggakAlias?.station})`);
     assert(jonggakAlias?.district === '종로', `종각 alias district (got ${jonggakAlias?.district})`);
+    assert(jonggakAlias?.lat === 37.5701 && jonggakAlias?.lng === 126.9829, '종각 alias station coords');
     assert(resolveKoStationAlias('종각역')?.district === '종로', '종각역 alias district 종로');
+    assert(isStreetishStayLabel('Jonggak-gil'), 'Jonggak-gil is streetish');
+    assert(!isStreetishStayLabel('종각역'), '종각역 is not streetish');
+    const rankedCards = rankStayPointDisambiguationCandidates('종각역', [
+      { name: '종각역', name_en: 'Jonggak-gil', kind: 'city' },
+      { name: '종각역', name_en: 'Seoul', kind: 'poi' },
+      { name: '종각역', name_en: 'Jonggak Station', kind: 'poi' },
+    ]);
+    assert(
+      rankedCards[0]?.name_en === 'Jonggak Station',
+      `station card first (got ${rankedCards[0]?.name_en})`,
+    );
+    assert(
+      rankedCards[rankedCards.length - 1]?.name_en === 'Jonggak-gil',
+      `gil card last (got ${rankedCards[rankedCards.length - 1]?.name_en})`,
+    );
     assert(stationNameMatchesQuery('종각', '종각역'), '종각 matches 종각역 name');
     assert(
       nominatimStationScoreDelta('종각', { class: 'railway', type: 'station', name: '종각역' }) === 80,
@@ -565,6 +584,46 @@ async function main() {
     'parseStayCoordPair nested location',
   );
   assert(parseStayCoordPair({ lat: 0, lng: 0 }) == null, 'parseStayCoordPair rejects 0,0');
+  assert(
+    parseStayCoordPair({ center: [126.9829, 37.5701] })?.lat === 37.5701,
+    'parseStayCoordPair Mapbox center [lng,lat]',
+  );
+  assert(
+    parseStayCoordPair({ lat: 126.9829, lng: 37.5701 })?.lat === 37.5701,
+    'parseStayCoordPair swaps inverted lat/lng',
+  );
+  const gilNoCoord = resolveMrtStayOrigin({
+    name: '종각역',
+    name_en: 'Jonggak-gil',
+    originalQuery: '종각역',
+    uiPlace: true,
+  });
+  assert(
+    gilNoCoord?.lat === 37.5701 && gilNoCoord?.lng === 126.9829,
+    `gil card without coords uses station origin (got ${gilNoCoord?.lat},${gilNoCoord?.lng})`,
+  );
+  const farGil = resolveMrtStayOrigin({
+    name: '종각역',
+    name_en: 'Jonggak-gil',
+    lat: 35.87,
+    lng: 128.6,
+    originalQuery: '종각역',
+  });
+  assert(
+    farGil?.lat === 37.5701,
+    `far gil card snaps to station (got ${farGil?.lat})`,
+  );
+  const nearStreet = resolveMrtStayOrigin({
+    name: '종각역',
+    name_en: 'Jonggak-gil',
+    lat: 37.5704,
+    lng: 126.9831,
+    originalQuery: '종각역',
+  });
+  assert(
+    Math.abs(nearStreet?.lat - 37.5704) < 1e-6,
+    `near street keeps own coords (got ${nearStreet?.lat})`,
+  );
   const ranked = attachMrtStayDistances(
     [
       { itemId: 1, lat: 37.4979, lng: 127.0276 },
@@ -589,6 +648,7 @@ async function main() {
   );
   assert(
     stripSrc.includes('attachMrtStayDistances') &&
+      stripSrc.includes('resolveMrtStayOrigin') &&
       stripSrc.includes('buildNaverNearbyStayMapUrl') &&
       stripSrc.includes('naverNearbyStays') &&
       stripSrc.includes('distance_asc'),
@@ -639,6 +699,7 @@ async function main() {
     'utf8',
   );
   assert(fetchSrc.includes('originLat') && fetchSrc.includes('originLng'), 'client sends origin to Edge');
+  assert(fetchSrc.includes('resolveMrtStayOrigin'), 'client stay origin helper');
   console.log('OK  stay distance + naver map');
 
   const emptyAltsKeepQuery = mergeMrtStayFetchQuery(
