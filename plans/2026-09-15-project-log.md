@@ -2,6 +2,16 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #5 — Edge Photon 좌표 배포 (Cloud)
+
+- **세션** `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
+- **브랜치** `cursor/jonggak-stay-5f4f` · tip `8365a7b6` · PR [#264](https://github.com/catgeot/Days/pull/264)
+- **완료**: MRT search에 좌표 없음 → Edge Photon lodging·8km·이름 가드로 호텔 lat/lng. `fetch-mrt-stays` 배포 `phdjnbfitvmrguqzverm`. LIVE 종로 20건 `withCoords=7` (서머셋 561m·신라스테이 광화문 330m·나인트리 487m).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS · LIVE withCoords>0
+- **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
+- **QA**: 홈「종각」→ 숙소 찾기 → **하드 새로고침** → 카드 거리 · 네이버 칩. 오라카이 대학로 등 OSM 없음은 거리 없음이 정상.
+- **다음**: `종각역 숙소 #6, Preview OK면 PR 병합`
+
 ## 종각역 숙소 #5 — 거리 정렬 및 지도 딥링크 (Cloud)
 
 - **세션** `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
