@@ -2,6 +2,12 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #4 — PR 병합 · PROD (Cloud)
+
+- **병합** PR [#263](https://github.com/catgeot/Days/pull/263) · main `76909fc9`
+- **PROD** `https://www.gateo.kr/` — `종각`→서울 종각역 · 숙소 1차 `종로`
+- **다음**: `종각역 숙소 #5, 거리 정렬 및 지도 딥링크` · 같은 브랜치 `cursor/jonggak-stay-5f4f`
+
 ## 종각역 숙소 #4 — 종각 약칭 지오코딩 · 종로 NEIGHBORHOOD (Cloud)
 
 - **세션** `종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑`
