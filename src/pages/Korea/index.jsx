@@ -554,6 +554,43 @@ function RelatedChipFlap({
   );
 }
 
+function FestivalThumbFallback({ large = false }) {
+  return (
+    <div
+      className="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-amber-800/50"
+      aria-hidden="true"
+    >
+      <MapPin size={large ? 22 : 16} strokeWidth={1.75} />
+    </div>
+  );
+}
+
+function FestivalRowSkeleton({ large = false }) {
+  return (
+    <div
+      className={`w-full flex items-center rounded-2xl border border-stone-200 bg-white ${
+        large ? 'gap-3 p-3.5' : 'gap-2 p-2.5'
+      }`}
+      aria-hidden="true"
+    >
+      <div
+        className={`animate-pulse rounded-xl shrink-0 bg-stone-200 ${
+          large ? 'h-24 w-24 sm:h-28 sm:w-28' : 'h-14 w-14'
+        }`}
+      />
+      <div className={`min-w-0 flex-1 ${large ? 'space-y-2' : 'space-y-1.5'}`}>
+        <div
+          className={`animate-pulse rounded bg-stone-200 ${
+            large ? 'h-4 w-3/4' : 'h-3.5 w-2/3'
+          }`}
+        />
+        <div className="h-3 w-1/3 animate-pulse rounded bg-amber-100" />
+        <div className="h-3 w-1/2 animate-pulse rounded bg-stone-100" />
+      </div>
+    </div>
+  );
+}
+
 function FestivalRow({
   item,
   active,
@@ -567,10 +604,15 @@ function FestivalRow({
   const { isEnglish } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const img = festivalImage(item);
+  const [imgFailed, setImgFailed] = useState(false);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
   const range = start && end ? `${start} – ${end}` : start || end;
   const distanceLabel = formatDistanceKm(distanceKm);
+
+  useEffect(() => {
+    setImgFailed(false);
+  }, [img]);
 
   return (
     <div
@@ -594,16 +636,17 @@ function FestivalRow({
             large ? 'h-24 w-24 sm:h-28 sm:w-28' : 'h-14 w-14'
           }`}
         >
-          {img ? (
+          {img && !imgFailed ? (
             <img
               src={img}
               alt={item.title || ''}
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={() => setImgFailed(true)}
               {...koText}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-amber-100 to-stone-200" />
+            <FestivalThumbFallback large={large} />
           )}
         </div>
         <div className={`min-w-0 flex-1 ${large ? 'space-y-1' : 'space-y-0.5'}`}>
@@ -1417,6 +1460,19 @@ export default function KoreaFestivalHub() {
     t,
     locale,
   ]);
+
+  const resetListFilters = () => {
+    userRegionOverrideRef.current = true;
+    setTimeTab('thisMonth');
+    setTasteId('all');
+    setAreaCode(DEFAULT_AREA_CODE);
+    setCityName('all');
+    setChipPanel('region');
+    clearSearchFilter();
+    clearNear();
+    setSelected(null);
+    setPersonalTab(null);
+  };
 
   const selectTime = (id) => {
     setTimeTab(id);
@@ -2372,13 +2428,32 @@ export default function KoreaFestivalHub() {
                   ))
                 )
               ) : panelItems.length === 0 ? (
-                <p className="px-1 py-4 text-sm text-stone-500">
-                  {loading
-                    ? t('korea.common.loading')
-                    : searchActive
-                      ? t('korea.festival.emptySearch')
-                      : t('korea.festival.emptyFilter')}
-                </p>
+                loading ? (
+                  <div
+                    className={listLarge ? 'space-y-3' : 'space-y-2'}
+                    aria-busy="true"
+                    aria-label={t('korea.festival.loadingSchedule')}
+                  >
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <FestivalRowSkeleton key={`sk-${i}`} large={listLarge} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-1 py-4">
+                    <p className="text-sm text-stone-500">
+                      {searchActive
+                        ? t('korea.festival.emptySearch')
+                        : t('korea.festival.emptyFilter')}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={resetListFilters}
+                      className="mt-3 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+                    >
+                      {t('korea.festival.resetFilters')}
+                    </button>
+                  </div>
+                )
               ) : (
                 localizedPanelGroups.map((group) => (
                   <div key={group.id} className="space-y-2">

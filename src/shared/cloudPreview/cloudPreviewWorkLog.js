@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 45,
-  sessionPhase: '홍성 검색·11경 빈 썸네일',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=hongseong',
-  qaShareSlug: 'palgyeong-use',
+  title: '방문자 개선',
+  sessionNo: 5,
+  sessionPhase: '로딩스켈레톤 및 에러복구 UX',
+  branch: 'cursor/visitor-growth-1f90',
+  previewPath: '/',
+  qaShareSlug: 'visitor-growth',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,20 +24,36 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-09-14-palgyeong-use-45-hongseong-empty-thumbs',
-    session: '팔경 활용 #45, 홍성 검색·11경 빈 썸네일',
-    title: '홍성 검색 오서산·죽도·용봉산·11경 홍주의사총 빈 썸네일',
-    detail:
-      'Preview QA에서 홍성 검색 관광지 오서산·죽도(홍성)·용봉산과 홍성12경 11경 홍주의사총이 플레이스홀더였습니다. TourAPI first_image가 비어 있어 JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 홍성군 문화관광 공식 사진을 넣었습니다. 용봉산은 용봉산자연휴양림과 다른 사진, 죽도는 영덕·포항 죽도와 다른 사진입니다. Preview /qa/palgyeong-use — 검색「홍성」오서산·죽도(홍성)·용봉산, /korea/theme/scenic?hub=hongseong 홍주의사총.',
-    at: '2026-09-14T21:15:00.000Z',
-  },
-  {
     id: '2026-09-14-palgyeong-use-45-hongseong-overlays',
     session: '팔경 활용 #45, 홍성 결손 오버레이',
     title: '홍성12경 결손 4건 오버레이',
     detail:
       'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 홍성12경 결손 4건(만해한용운생가지·선상문선생 유허지·고암이응노 생가 기념관·그림같은수목원)의 공공 공식 팩트 개요·주소·홍성군 문화관광 공식 사진을 보강했습니다. 만해는 결성면 성곡리 생가(기념물 제75호), 선상문은 군 공식명 성삼문선생유허지(홍북읍 노은리·기념물 제5호), 고암은 홍북읍 이응노의 집, 그림같은수목원은 광천읍 사립 수목원입니다. 인제 만해마을·대전 이응노미술관·구례 수목원과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongseong 팔경 행 썸네일·상세 개요.',
     at: '2026-09-14T22:30:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-5-change-password',
+    session: '방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX',
+    title: '로그인 후 비밀번호 변경 경로',
+    detail:
+      '로고 패널·로그북 프로필·모바일 로그북 헤더에 「비밀번호 변경」을 넣었습니다. /auth/update-password는 로그인 세션에서 확인 입력 후 바로 바꾸고, 메일 재설정 링크는 기존처럼 로그인 화면으로 돌아갑니다. Preview /qa/visitor-growth — 로그인 후 로고 패널 경로 확인.',
+    at: '2026-09-14T21:50:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-5-loading-error-ux',
+    session: '방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX',
+    title: '축제 스켈레톤·큐레이션 재시도·갤러리 네트워크 안내',
+    detail:
+      '/korea 축제 행은 깨진 이미지에 그라데이션 폴백, 로딩 중 5행 스켈레톤, 빈 필터에 초기화 버튼을 둡니다. /blog/curation은 실패 시 alert 대신 인라인 재시도·결과 카드형 스켈레톤입니다. 갤러리는 모든 소스 실패 시 네트워크 재시도 안내를 보여 줍니다. Preview /qa/visitor-growth — /korea · /blog/curation · /place/paris/gallery.',
+    at: '2026-09-14T21:30:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-45-hongseong-empty-thumbs',
+    session: '팔경 활용 #45, 홍성 검색·11경 빈 썸네일',
+    title: '홍성 검색 오서산·죽도·용봉산·11경 홍주의사총 빈 썸네일',
+    detail:
+      'Preview QA에서 홍성 검색 관광지 오서산·죽도(홍성)·용봉산과 홍성12경 11경 홍주의사총이 플레이스홀더였습니다. TourAPI first_image가 비어 있어 JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 홍성군 문화관광 공식 사진을 넣었습니다. 용봉산은 용봉산자연휴양림과 다른 사진, 죽도는 영덕·포항 죽도와 다른 사진입니다. Preview /qa/palgyeong-use — 검색「홍성」오서산·죽도(홍성)·용봉산, /korea/theme/scenic?hub=hongseong 홍주의사총.',
+    at: '2026-09-14T21:15:00.000Z',
   },
   {
     id: '2026-09-14-visitor-growth-4-mooni-ask-chips',

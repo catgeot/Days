@@ -10,7 +10,11 @@ const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from || '/';
+  const from =
+    location.state?.from && location.state.from !== '/auth/update-password'
+      ? location.state.from
+      : '/';
+  const passwordUpdated = Boolean(location.state?.passwordUpdated);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -91,6 +95,11 @@ const Login = () => {
           </div>
           <h2 className="text-xl font-bold tracking-tight text-gray-900">{t('authPage.login.title')}</h2>
           <p className="text-xs text-gray-500 mt-1">{t('authPage.login.subtitle')}</p>
+          {passwordUpdated ? (
+            <p className="text-xs text-emerald-600 font-medium mt-2 break-keep">
+              {t('authPage.updatePassword.successAlert')}
+            </p>
+          ) : null}
         </div>
 
         <form onSubmit={handleLogin} className="space-y-3">

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PenNameProvider } from '../context/PenNameContext';
 
@@ -53,6 +53,12 @@ const DailyLayout = () => {
             <span className="text-xs text-gray-500 truncate max-w-[120px]">
               {user?.email?.split('@')[0]}
             </span>
+            <Link
+              to="/auth/update-password"
+              className="text-[11px] font-bold text-blue-600 hover:text-blue-500"
+            >
+              {t('logbook.profile.changePassword')}
+            </Link>
             <button
               onClick={handleLogout}
               className="text-gray-500 hover:text-red-500 transition-colors p-1"

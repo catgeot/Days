@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LogOut, Image as ImageIcon, UserRoundPen } from 'lucide-react';
+import { LogOut, Image as ImageIcon, UserRoundPen, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePenNameContext } from '../context/PenNameContext';
 import {
@@ -86,9 +86,18 @@ const UserProfile = ({ user, onLogout, onOpenSlide }) => {
               <p className="text-gray-800 text-sm font-bold truncate" title={previewName}>{previewName}</p>
               <p className="text-xs text-gray-500 truncate">{user.email}</p>
             </div>
-            <button onClick={onLogout} className="text-gray-500 hover:text-red-500 p-1.5 hover:bg-gray-200 rounded-lg transition-colors shrink-0">
-              <LogOut size={16} />
-            </button>
+            <div className="flex items-center gap-1 shrink-0">
+              <Link
+                to="/auth/update-password"
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-500 px-1.5 py-1 rounded-lg hover:bg-blue-50"
+              >
+                <Lock size={12} aria-hidden="true" />
+                {t('logbook.profile.changePassword')}
+              </Link>
+              <button onClick={onLogout} className="text-gray-500 hover:text-red-500 p-1.5 hover:bg-gray-200 rounded-lg transition-colors">
+                <LogOut size={16} />
+              </button>
+            </div>
           </div>
         </div>
       ) : (
