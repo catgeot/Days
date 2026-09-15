@@ -2,6 +2,25 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #1 — 역 POI 시·군 선두 (Cloud)
+
+- **세션** `종각역 숙소 #1, 역 POI 시·군 선두`
+- **브랜치** `cursor/jonggak-stay-5f4f` · tip `b2e7c5c9` · PR [#260](https://github.com/catgeot/Days/pull/260)
+- **원인**: 지구본 종각역 숙소 찾기가 `종각역`을 MRT 1차 키워드로 보냄. autocomplete CITY 없음 → 빈 목록·트립닷컴 폴백.
+- **완료**: 국내 역·길·터미널은 시·군 선두. cityHints에서 역 이름 제외. 동네만 있는 stayAdmin은 역지오로 시 채움.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · LIVE `종각역` 0건 · `서울` CITY total 4507
+- **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
+- **QA**: 홈 검색「종각역」→ 숙소 찾기 → 서울 숙소 카드(빈 목록 아님)
+
+## 방문자 개선 #8 — 언어일관성 및 가입혜택/접근성 (Cloud)
+
+- **세션** `방문자 개선 #8, 언어일관성 및 가입혜택/접근성`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `b296a29c` · PR [#259](https://github.com/catgeot/Days/pull/259)
+- **완료**: PlaceCard 개요·태그 locale 연동 · EN 한글 본문 안내 칩 · 가입 4대 혜택 · 아이콘 aria-label · 로고 키보드 · 지구본 reduced-motion/일시정지.
+- **VERIFY**: `npm run smoke:visitor-locale` PASS · `npm run audit:i18n` PASS · `npm run smoke:trust-disclosure` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` · `/auth/signup` · `/place/paris/gallery`
+- **QA**: EN 전환 후 파리 개요가 영어인지 · 회원가입 4대 혜택 · 지구본 일시정지 · Tab으로 로고.
+
 ## 방문자 개선 #7 QA — 단계 하단 다음 선택 (Cloud)
 
 - **세션** `방문자 개선 #7, 플래너 3단계 점진적 노출`
