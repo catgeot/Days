@@ -23,6 +23,46 @@ export const MAPBOX_TELEMETRY = {
     'The map SDK may send anonymized location and usage data to Mapbox. See the Mapbox privacy policy for opt-out and details.',
 };
 
+/** 여행 정보·미디어 출처 — Credits 탭 */
+export const GATEO_DATA_SOURCES = [
+  {
+    name: '한국관광공사 TourAPI 4.0',
+    nameEn: 'Korea Tourism Organization TourAPI 4.0',
+    detail: '공공누리 제1유형',
+    detailEn: 'Korea Open Government License Type 1',
+    href: 'https://www.visitkorea.or.kr/',
+  },
+  {
+    name: 'Open-Meteo',
+    nameEn: 'Open-Meteo',
+    detail: '실시간 기상 데이터',
+    detailEn: 'Live weather data',
+    href: 'https://open-meteo.com/',
+  },
+  {
+    name: 'Unsplash',
+    nameEn: 'Unsplash',
+    detail: '고해상도 라이선스 사진',
+    detailEn: 'Licensed high-resolution photos',
+    href: 'https://unsplash.com/',
+  },
+  {
+    name: 'Pexels',
+    nameEn: 'Pexels',
+    detail: '고해상도 라이선스 사진',
+    detailEn: 'Licensed high-resolution photos',
+    href: 'https://www.pexels.com/',
+  },
+];
+
+/** 플래너·배너 제휴 파트너 — Credits 탭 (예약·결제는 각 사) */
+export const GATEO_TRAVEL_PARTNERS = [
+  { name: 'Trip.com', href: 'https://www.trip.com/' },
+  { name: 'Klook', href: 'https://www.klook.com/' },
+  { name: 'GetYourGuide', href: 'https://www.getyourguide.com/' },
+  { name: 'MyRealTrip', href: 'https://www.myrealtrip.com/' },
+];
+
 /** gateo.kr 기술·서비스 스택 — Credits 탭 요약 */
 export const GATEO_TECH_STACK = [
   { name: 'React', detail: 'UI · SPA', detailEn: 'UI · SPA' },
@@ -57,6 +97,15 @@ export function resolveMapboxAttribution(locale) {
           : MAPBOX_TELEMETRY.description,
       href: MAPBOX_TELEMETRY.href,
     },
+    dataSources: GATEO_DATA_SOURCES.map((item) => ({
+      name: useEn && item.nameEn ? item.nameEn : item.name,
+      detail: useEn && item.detailEn ? item.detailEn : item.detail,
+      href: item.href,
+    })),
+    partners: GATEO_TRAVEL_PARTNERS.map((item) => ({
+      name: item.name,
+      href: item.href,
+    })),
     techStack: GATEO_TECH_STACK.map((item) => ({
       name: item.name,
       detail: useEn && item.detailEn ? item.detailEn : item.detail,

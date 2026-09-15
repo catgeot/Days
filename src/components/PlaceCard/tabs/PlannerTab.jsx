@@ -461,6 +461,13 @@ const PlannerTab = ({
                         </div>
                     </div>
 
+                    <div className="mb-6 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
+                        <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" />
+                        <p className={`${plannerCaption} md:text-sm text-gray-600`}>
+                            {t('place.planner.hybridNotice')}
+                        </p>
+                    </div>
+
                     {location && (
                         <div className="w-full mb-6 shrink-0">
                             <TripcomFlightBannerWidget
@@ -578,13 +585,6 @@ const PlannerTab = ({
                         </div>
                         <ToolkitCard icon={Smartphone} title={t('place.planner.toolkit.apps')} type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
                     </div>
-                </div>
-
-                <div className="mt-8 mb-4 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
-                    <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" />
-                    <p className={`${plannerCaption} md:text-sm text-gray-600`}>
-                        {t('place.planner.hybridNotice')}
-                    </p>
                 </div>
 
                 {/* 관리자/테스트: AI 툴킷 강제 재실행 (평소 흐릿 · hover 시 확인 가능) */}

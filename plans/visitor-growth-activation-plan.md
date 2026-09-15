@@ -493,14 +493,14 @@ flowchart TD
 
 다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
 
-**#6** (`f1da6f4a` · PR [#255](https://github.com/catgeot/Days/pull/255)) — 신뢰 링크 바·Credits 출처·체크리스트 제휴 고지·hybridNotice 상단. 세션 #7(플래너 3단계) 제시어:
+**#6 merge ✅** (main `4a84e979` · PR [#255](https://github.com/catgeot/Days/pull/255)) — 신뢰 링크 바·Credits·제휴 고지. 모바일 홈은 테마 칩 스택 위. 세션 #7(플래너 3단계) 제시어:
 
 ```
 방문자 개선 #7, 플래너 3단계 점진적 노출
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · PR #255 · Preview /qa/visitor-growth
+브랜치 cursor/visitor-growth-1f90 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
 작업: 플래너 3단계(필수→이동·통신→즐기기) · 중복 항공/숙소 CTA 통합 · 복잡도 90/100 문구 완화
 검증: npm run smoke:trust-disclosure · npm run build PASS

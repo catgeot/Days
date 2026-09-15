@@ -30,6 +30,7 @@ import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListH
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
+import TrustLinkBar from '../../../shared/layout/TrustLinkBar';
 
 const MOBILE_QUICK_LINK_DEFS = [
   {
@@ -455,6 +456,7 @@ const HomeUI = React.memo(({
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
+        <TrustLinkBar variant="stack" />
         {!hideExploreChrome && faceRegionsOpen && selectedCategory && (
           <div
             className="flex flex-col items-start gap-1.5 animate-fade-in-right"

@@ -32,12 +32,28 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-15T03:20:00.000Z',
   },
   {
+    id: '2026-09-15-visitor-growth-6-trust-bar-clearance',
+    session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
+    title: '모바일 홈 신뢰 바·테마 칩 겹침 해제',
+    detail:
+      '모바일 홈에서는 하단 고정 신뢰 바를 숨기고, 테마 카테고리 스택 바로 위에 둡니다. 나라 칩이 펼쳐져도 출처 링크가 휴양·자연 칩을 덮지 않습니다. Preview /qa/visitor-growth — 홈 하단 테마 칩과 About·출처가 겹치지 않는지.',
+    at: '2026-09-15T03:10:00.000Z',
+  },
+  {
     id: '2026-09-15-palgyeong-use-46-hwasun-yeondunri-thumb',
     session: '팔경 활용 #46, 화순 연둔리 썸네일',
     title: '화순 7경 연둔리 숲정이 빈 썸네일',
     detail:
       'Preview QA에서 화순11경 7경 연둔리 숲정이와 탐색 검색 Tour 행 화순동복연둔리숲정이(3014431)가 플레이스홀더였습니다. GATEO 선정 행이 없고 탐색홈은 Tour DB first_image 동기화에 의존하는데 비어 있습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 화순군 문화관광 제7경 공식 사진(동복면 둔동1길 38·동복천 수양버들)을 넣었습니다. 만연산 치유숲과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwasun 7경, 검색「화순」연둔리 숲정이·화순동복연둔리숲정이 행.',
     at: '2026-09-15T01:55:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-6-trust-disclosure',
+    session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
+    title: '신뢰 링크 바·Credits 출처·제휴 고지',
+    detail:
+      '홈·서브페이지 하단 슬림 바에 About·약관·개인정보·출처·문의를 두고 FooterModal 탭을 엽니다. Credits에 TourAPI·Open-Meteo·Unsplash·Pexels와 트립닷컴·클룩·겟유어가이드·마이리얼트립을 적습니다. 플래너 체크리스트 항공·숙소·픽업 CTA에 제휴광고 표기, hybridNotice는 헤더 아래로 올립니다. Preview /qa/visitor-growth — / · /about · /place/paris/planner.',
+    at: '2026-09-15T01:50:00.000Z',
   },
   {
     id: '2026-09-14-palgyeong-use-46-hwasun-overlays',
