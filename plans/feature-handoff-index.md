@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 종각역 숙소
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `b2e7c5c9` · PR [#260](https://github.com/catgeot/Days/pull/260) · **사람 Preview** |
+| **브랜치** | `cursor/jonggak-stay-5f4f` |
+| **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
+| **Preview** | git Preview `/` — 홈 검색「종각역」→ 숙소 찾기 |
+| **소유** | `mrtStayQuery.js` · `GlobeStayStrip.jsx` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `npm run smoke:mrt-stay` PASS · LIVE `종각역` 0건 → `서울` CITY 4507 |
+
+**다음 제시어**:
+
+```
+종각역 숙소 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-15-project-log.md
+브랜치 cursor/jonggak-stay-5f4f · PR #260
+금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: Preview 홈에서 종각역 숙소 찾기에 서울 숙소가 보이면 PR #260 병합. 안 보이면 빈 목록 재현 메모
+검증: npm run smoke:mrt-stay PASS
+```
+
+---
+
 ### 탐색홈 검색 — main 병합 완료 ✅
 
 | | |
