@@ -60,7 +60,7 @@
 
 | | |
 |--|--|
-| **상태** | **#8 push** · tip `b296a29c` · PR [#259](https://github.com/catgeot/Days/pull/259) · **사람 Preview** |
+| **상태** | **#8 QA push** · tip `0faa423e` · PR [#259](https://github.com/catgeot/Days/pull/259) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
@@ -79,7 +79,7 @@
 @plans/visitor-growth-activation-plan.md
 브랜치 cursor/visitor-growth-1f90 · PR #259 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: EN 장소 카드 개요·가입 혜택·지구본 일시정지가 OK면 PR #259 병합
+작업: EN 장소 카드 개요·가입 혜택이 OK면 PR #259 병합
 ```
 
 ---
