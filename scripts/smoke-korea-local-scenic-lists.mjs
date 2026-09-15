@@ -2695,6 +2695,56 @@ assert.ok(
   '동해 검색 팔경 초록봉 개요',
 );
 
+const dhYongchu = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:용추폭포');
+const dhBanseok = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:무릉반석');
+const dhMangsang = resolveLocalScenicListSpotById(
+  'local-scenic:donghae-bijing:동해망상해수욕장',
+);
+assert.ok(dhYongchu?.imageUrl?.includes('kzKl'), '동해 용추폭포 시 공식 사진');
+assert.ok(dhYongchu?.overview?.includes('무릉계곡'), '동해 용추폭포 무릉계곡 명승');
+assert.ok(dhYongchu?.overview?.includes('문경 용추계곡'), '동해 용추폭포≠문경 용추 구분');
+assert.ok(dhBanseok?.imageUrl?.includes('NxfT'), '동해 무릉반석 시 공식 사진');
+assert.ok(dhBanseok?.overview?.includes('무릉선원'), '동해 무릉반석 석각');
+assert.ok(dhBanseok?.overview?.includes('용추폭포'), '동해 무릉반석≠용추폭포 구분');
+assert.notEqual(dhYongchu?.imageUrl, dhBanseok?.imageUrl, '용추폭포·무릉반석 썸네일 다름');
+assert.ok(dhMangsang?.imageUrl?.includes('U7Rc'), '동해 망상해변 시 공식 사진');
+assert.ok(dhMangsang?.overview?.includes('동해대로 6270-10'), '동해 망상 주소');
+assert.ok(dhMangsang?.overview?.includes('어달해변'), '동해 망상≠어달 구분');
+assert.notEqual(dhMangsang?.imageUrl, dhYongchu?.imageUrl, '망상·용추 썸네일 다름');
+
+const donghaeWithThumbs = donghaeNine.filter((s) => s.imageUrl);
+assert.ok(
+  donghaeWithThumbs.length >= 8,
+  '동해비경 썸네일 8명 이상(만경대는 Tour 런타임)',
+);
+assert.equal(
+  new Set(donghaeWithThumbs.map((s) => s.imageUrl)).size,
+  donghaeWithThumbs.length,
+  '동해비경 있는 썸네일은 서로 다름',
+);
+
+const dhMangsangSearch = resolveSearchScenicMedia({
+  hubId: 'donghae',
+  name: '동해 망상해수욕장',
+});
+assert.ok(
+  dhMangsangSearch.imageUrl?.includes('U7Rc'),
+  '탐색 드롭다운 동해 망상해수욕장 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125713')?.imageUrl?.includes('U7Rc'),
+  '동해 검색 Tour 행 망상해수욕장 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125708')?.imageUrl?.includes('ZL0E'),
+  '동해 명승 검색 Tour 행 어달해변 썸네일',
+);
+assert.notEqual(
+  lookupLocalScenicPhotoByContentId('125713')?.imageUrl,
+  lookupLocalScenicPhotoByContentId('125708')?.imageUrl,
+  '망상·어달 Tour 썸네일 다름',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

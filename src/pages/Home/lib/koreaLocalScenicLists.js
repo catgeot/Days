@@ -1289,6 +1289,17 @@ const DH_HALMI_3 = 'https://www.dh.go.kr/DATA/tour/5/20230103024451061_KTwk.jpg'
 const DH_CHOROK = 'https://www.dh.go.kr/DATA/tour/5/20230103023227431_f3xe.jpg';
 const DH_CHOROK_2 = 'https://www.dh.go.kr/DATA/tour/5/20230103023227447_yFNP.jpg';
 const DH_CHOROK_3 = 'https://www.dh.go.kr/site/tour/images/contents/cts1564_img08.png';
+const DH_YONGCHU = 'https://www.dh.go.kr/DATA/tour/5/20230103124007904_kzKl.jpg';
+const DH_YONGCHU_2 = 'https://www.dh.go.kr/DATA/tour/5/20230103124007912_8ic8.jpg';
+const DH_YONGCHU_3 = 'https://www.dh.go.kr/DATA/tour/5/20230103124007915_XCDN.jpg';
+const DH_BANSEOK = 'https://www.dh.go.kr/DATA/tour/5/20230103123643831_NxfT.jpg';
+const DH_BANSEOK_2 = 'https://www.dh.go.kr/DATA/tour/5/20230103123643840_b4fX.jpg';
+const DH_BANSEOK_3 = 'https://www.dh.go.kr/DATA/tour/5/20230103123643846_2ldi.jpg';
+const DH_MANGSANG = 'https://www.dh.go.kr/DATA/tour/4/20250120043232553_U7Rc.jpg';
+const DH_MANGSANG_2 = 'https://www.dh.go.kr/DATA/tour/4/20250120043232576_hTQo.jpg';
+const DH_EODAL = 'https://www.dh.go.kr/DATA/tour/4/20230103020936597_ZL0E.jpg';
+const DH_EODAL_2 = 'https://www.dh.go.kr/DATA/tour/4/20230103020936600_ihHv.jpg';
+const DH_EODAL_3 = 'https://www.dh.go.kr/DATA/tour/4/20230103020936571_nh03.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2725,6 +2736,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     GJ_GUJORA,
     [GJ_GUJORA_2, GJ_GUJORA_3],
   ),
+  'local-scenic:donghae-bijing:용추폭포': localScenicPhotoOverlay(
+    '동해비경 용추폭포는 무릉계곡 명승 안쪽 삼화로 538의 폭포입니다. 동해시 관광은 낙수가 바위를 기묘하게 깎아 용이 승천하는 듯하며, 상탕·중탕은 옹기 항아리 같고 하탕은 진옥색 큰 용소를 이룬다고 적습니다. 비경 안내는 곧게 내려쏟는 폭포 옆에 서면 현기증이 날 정도라고 합니다. 무릉권역 안내는 높이 100자도 넘어 금강산 구룡폭포에 비긴다고 적고, 쌍폭포와는 다른 자리입니다. 문경 용추계곡·계룡 숫용추·무릉반석·GATEO 선정 동해 무릉계곡(계곡 전체)과 다른 경승입니다. 사진은 동해시 관광 용추폭포 공식 사진입니다.',
+    '강원특별자치도 동해시 삼화로 538 (용추폭포)',
+    DH_YONGCHU,
+    [DH_YONGCHU_2, DH_YONGCHU_3],
+  ),
+  'local-scenic:donghae-bijing:무릉반석': localScenicPhotoOverlay(
+    '동해비경 무릉반석은 무릉계곡 명승 입구 삼화로 538의 넓은 화강암 반석입니다. 동해시 관광은 금란정 위쪽에서 삼화사 입구까지 약 1,500평이며 옛 풍월객의 석각이 새겨져 있다고 적습니다. 「무릉선원 중대천석 두타동천」 12자 석각이 있고, 시는 마모를 막으려고 1995년 모형 석각을 세워 보존합니다. 용추폭포·쌍폭포·GATEO 선정 동해 무릉계곡(계곡 전체)과 다른 자리입니다. 사진은 동해시 관광 무릉반석 공식 사진입니다.',
+    '강원특별자치도 동해시 삼화로 538 (무릉반석)',
+    DH_BANSEOK,
+    [DH_BANSEOK_2, DH_BANSEOK_3],
+  ),
+  'local-scenic:donghae-bijing:동해망상해수욕장': localScenicPhotoOverlay(
+    '동해비경 망상해변은 동해시 공식명 망상해변이며 주소는 동해대로 6270-10(망상동)입니다. 동해시 관광은 울창한 송림 뒤로 해안선을 따라 펼쳐진 백사장과 얕은 수심의 동해안 제1 해변이며, 매년 600만~700만 명이 찾는다고 적습니다. 비경 안내는 숙박·편의시설을 갖춘 사계절 관광지라고 합니다. 어달해변·대진해변·노봉해변·추암해수욕장과 다른 자리입니다. 사진은 동해시 관광 망상해변 공식 사진입니다.',
+    '강원특별자치도 동해시 동해대로 6270-10 (망상해변)',
+    DH_MANGSANG,
+    [DH_MANGSANG_2],
+  ),
   'local-scenic:donghae-bijing:호해정': localScenicPhotoOverlay(
     '동해비경 호해정은 동해시 구미동 산2의 정자입니다. 동해시 문화유산 안내는 조국의 광복을 기념하여 창건됐다고 적고, 1945년 일헌 최덕규 등 40명의 주춘계원이 세웠으며 추사 김정희의 현액 「천하괴석」과 만제 홍낙섭의 「풍속영귀」가 걸려 있다고 합니다. 앞으로는 전천이 갯목과 함께 흐르고 뒤로는 동해 해안 기암이 펼쳐지며, 서산낙조를 바라보는 구조입니다. 동해시 비경 페이지는 호해정·할미바위를 한 항목으로 안내합니다. 강릉 경포 호해정(유형문화유산)·동해 추암 해암정·인근 만경대와 다른 자리입니다. 사진은 동해시 관광 호해정 공식 사진입니다.',
     '강원특별자치도 동해시 구미동 산2 (호해정)',
@@ -2782,6 +2811,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   583071: localScenicThumbOverlay(GJ_GUJORA, [GJ_GUJORA_2, GJ_GUJORA_3]),
   // 거제 검색 동백섬 지심도터미널 — TourAPI first_image 없음. 장승포 선착장. JSON contentId 기입 아님.
   2756617: localScenicThumbOverlay(GJ_TERMINAL, [GJ_TERMINAL_2, GJ_TERMINAL_3]),
+  // 동해 검색 망상해수욕장 — GATEO 선정 imageUrl 공란·탐색홈은 Tour firstimage를 쓰지 않음.
+  125713: localScenicThumbOverlay(DH_MANGSANG, [DH_MANGSANG_2]),
+  // 동해 명승 검색 어달해변 — TourAPI first_image 없음. 망상·대진·노봉과 다른 해변.
+  125708: localScenicThumbOverlay(DH_EODAL, [DH_EODAL_2, DH_EODAL_3]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

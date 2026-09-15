@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 48,
-  sessionPhase: '동해 결손 오버레이',
+  sessionPhase: '동해 빈 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=donghae',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-48-donghae-empty-thumbs',
+    session: '팔경 활용 #48, 동해 빈 썸네일',
+    title: '용추·무릉반석 사진 분리 · 망상·어달 빈 썸네일',
+    detail:
+      'Preview QA에서 용추폭포(2경)와 무릉반석(3경)이 같은 무릉계곡 Tour 125673 사진을 썼고, 탐색 검색 동해 망상해수욕장(4경)·명승 검색 어달해변은 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 용추·반석·망상 동해시 관광 공식 사진을 넣고, TOUR_THUMB 125713·125708에 망상·어달 해변 사진을 넣었습니다. 문경 용추·쌍폭포·대진·노봉과 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「동해」용추·반석·망상, /korea/theme/scenic 검색「동해」어달해변.',
+    at: '2026-09-15T08:35:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-48-donghae-overlays',
     session: '팔경 활용 #48, 동해 결손 오버레이',
