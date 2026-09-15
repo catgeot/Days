@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '방문자 개선',
-  sessionNo: 5,
-  sessionPhase: '로딩스켈레톤 및 에러복구 UX',
-  branch: 'cursor/visitor-growth-1f90',
-  previewPath: '/',
-  qaShareSlug: 'visitor-growth',
+  title: '팔경 활용',
+  sessionNo: 46,
+  sessionPhase: '화순 연둔리 썸네일',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=hwasun',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-46-hwasun-yeondunri-thumb',
+    session: '팔경 활용 #46, 화순 연둔리 썸네일',
+    title: '화순 7경 연둔리 숲정이 빈 썸네일',
+    detail:
+      'Preview QA에서 화순11경 7경 연둔리 숲정이와 탐색 검색 Tour 행 화순동복연둔리숲정이(3014431)가 플레이스홀더였습니다. GATEO 선정 행이 없고 탐색홈은 Tour DB first_image 동기화에 의존하는데 비어 있습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 화순군 문화관광 제7경 공식 사진(동복면 둔동1길 38·동복천 수양버들)을 넣었습니다. 만연산 치유숲과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwasun 7경, 검색「화순」연둔리 숲정이·화순동복연둔리숲정이 행.',
+    at: '2026-09-15T01:55:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-46-hwasun-overlays',
+    session: '팔경 활용 #46, 화순 결손 오버레이',
+    title: '화순11경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 화순11경 결손 4건(백아산 하늘다리·고인돌 유적지·수만리 철쭉공원·화순 꽃강길 음악분수)의 공공 공식 팩트 개요·주소·화순군 문화관광 공식 사진을 보강했습니다. 하늘다리는 백아면 백아로 1310-56 66m 산악현수교, 고인돌은 도곡 효산리·춘양 대신리 세계유산 지석묘군, 수만리는 화순읍 안양산로 258, 꽃강길은 화순읍 대리 481·개미산 전망대입니다. 고창 고인돌·GATEO 선정 만연산 치유숲과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwasun 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T23:30:00.000Z',
+  },
   {
     id: '2026-09-14-palgyeong-use-45-hongseong-overlays',
     session: '팔경 활용 #45, 홍성 결손 오버레이',
