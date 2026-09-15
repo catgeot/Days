@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 46,
-  sessionPhase: '화순 연둔리 썸네일',
+  sessionNo: 47,
+  sessionPhase: '거제 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=hwasun',
+  previewPath: '/korea/theme/scenic?hub=geoje',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-47-geoje-overlays',
+    session: '팔경 활용 #47, 거제 결손 오버레이',
+    title: '거제9경 결손 3건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 거제9경 결손 3건(학동몽돌해수욕장·거제포로수용소유적공원·공곶이·내도)의 공공 공식 팩트 개요·주소·한국관광공사 공식 사진을 보강했습니다. 학동은 동부면 학동 흑진주 몽돌해변, 포로수용소는 고현동 계룡로 61, 공곶이·내도는 일운면 와현리 94-2입니다. 고성 학동마을·외도보타니아와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geoje 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T03:20:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-46-hwasun-yeondunri-thumb',
     session: '팔경 활용 #46, 화순 연둔리 썸네일',

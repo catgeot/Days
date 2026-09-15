@@ -2461,6 +2461,96 @@ assert.ok(
   '탐색 드롭다운 연둔리 숲정이 썸네일',
 );
 
+const geojeMerged = mergeLocalScenicMembersIntoScenicSpots([], 'geoje');
+const geojeNine = geojeMerged.filter((s) => s.localScenicListId === 'geoje-gugyeong');
+assert.equal(geojeNine.length, 9, '거제9경 9명');
+assert.equal(geojeNine[0]?.groupTitle, '거제 구경');
+const geojeDeficitNames = ['학동몽돌해수욕장', '거제포로수용소유적공원', '공곶이·내도'];
+const geojeDeficit = geojeNine.filter((s) => geojeDeficitNames.includes(s.attractionName));
+assert.equal(geojeDeficit.length, 3, '거제9경 결손 3명');
+assert.ok(
+  geojeDeficit.every((s) => s.overview && s.imageUrl),
+  '거제 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  geojeDeficit.every((s) => !s.contentId),
+  '거제 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(geojeDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '거제 결손 3명 썸네일 서로 다름',
+);
+
+const gjHakdong = resolveLocalScenicListSpotById(
+  'local-scenic:geoje-gugyeong:학동몽돌해수욕장',
+);
+assert.ok(gjHakdong?.overview?.includes('제4경'), '거제 학동 overlay overview');
+assert.ok(gjHakdong?.overview?.includes('학동 흑진주 몽돌해변'), '거제 학동 공식명');
+assert.ok(gjHakdong?.overview?.includes('학동6길 18-1'), '거제 학동 주소');
+assert.ok(gjHakdong?.overview?.includes('자연의 소리 100선'), '거제 학동 소리 100선');
+assert.ok(gjHakdong?.overview?.includes('고성 학동마을'), '거제 학동≠고성 학동마을 구분');
+assert.ok(gjHakdong?.imageUrl?.includes('1047555'), '거제 학동 공사 공식 사진');
+
+const gjPow = resolveLocalScenicListSpotById(
+  'local-scenic:geoje-gugyeong:거제포로수용소유적공원',
+);
+assert.ok(gjPow?.overview?.includes('제6경'), '거제 포로수용소 overlay overview');
+assert.ok(gjPow?.overview?.includes('계룡로 61'), '거제 포로수용소 주소');
+assert.ok(gjPow?.overview?.includes('문화재자료 제99호'), '거제 포로수용소 문화재');
+assert.ok(gjPow?.overview?.includes('17만 3천'), '거제 포로수용소 수용 규모');
+assert.ok(gjPow?.imageUrl?.includes('2440885'), '거제 포로수용소 공사 공식 사진');
+assert.notEqual(gjHakdong?.imageUrl, gjPow?.imageUrl, '학동·포로수용소 썸네일 다름');
+
+const gjGonggoji = resolveLocalScenicListSpotById(
+  'local-scenic:geoje-gugyeong:공곶이·내도',
+);
+assert.ok(gjGonggoji?.overview?.includes('제7경'), '거제 공곶이 overlay overview');
+assert.ok(gjGonggoji?.overview?.includes('와현리 94-2'), '거제 공곶이 주소');
+assert.ok(gjGonggoji?.overview?.includes('강명식'), '거제 공곶이 조성');
+assert.ok(gjGonggoji?.overview?.includes('구조라선착장'), '거제 내도 선착장');
+assert.ok(gjGonggoji?.overview?.includes('외도보타니아'), '거제 공곶이≠외도 구분');
+assert.ok(gjGonggoji?.imageUrl?.includes('3495061'), '거제 공곶이 공사 공식 사진');
+assert.ok(
+  (gjGonggoji?.galleryUrls || []).some((u) => String(u).includes('3576042')),
+  '거제 공곶이 갤러리에 내도 사진',
+);
+assert.notEqual(gjGonggoji?.imageUrl, gjHakdong?.imageUrl, '공곶이·학동 썸네일 다름');
+assert.notEqual(gjGonggoji?.imageUrl, gjPow?.imageUrl, '공곶이·포로수용소 썸네일 다름');
+
+const geojeGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '거제', {
+  injectLocalScenic: true,
+});
+const geojeGlobeNine = geojeGlobe.filter((s) => s.localScenicListId === 'geoje-gugyeong');
+assert.equal(geojeGlobeNine.length, 9, '거제 검색 거제9경 9행');
+assert.ok(
+  geojeGlobeNine.every((s) => s.groupTitle === '거제 구경'),
+  '거제 검색 팔경 groupTitle 거제 구경',
+);
+assert.ok(
+  geojeGlobe.find((s) => s.attractionName === '학동몽돌해수욕장')?.imageUrl?.includes(
+    '1047555',
+  ),
+  '거제 검색 팔경 학동 공사 썸네일',
+);
+assert.ok(
+  geojeGlobe.find((s) => s.attractionName === '공곶이·내도')?.overview?.includes(
+    '와현리 94-2',
+  ),
+  '거제 검색 팔경 공곶이 개요',
+);
+
+const gjGonggojiSearch = resolveSearchScenicMedia({
+  hubId: 'geoje',
+  name: '공곶이',
+  contentId: '2536196',
+});
+assert.ok(
+  gjGonggojiSearch.imageUrl?.includes('3495061'),
+  '탐색 검색 Tour 행 공곶이 썸네일',
+);
+assert.equal(gjGonggojiSearch.contentId, '2536196', '탐색 검색 공곶이 contentId');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
