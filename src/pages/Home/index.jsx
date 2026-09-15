@@ -1580,8 +1580,6 @@ function Home() {
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}
           isZenMode={isZenMode} onToggleZenMode={toggleZenMode}
-          globeRotatePaused={globeRotatePaused}
-          onToggleGlobeRotate={() => setGlobeRotatePaused((prev) => !prev)}
           isTourCinema={isTourCinema}
           isFlightCinema={flightCinemaActive}
           isPlaceCardVisible={isPlaceCardSummaryVisible}

@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-visitor-growth-8-drop-rotate-toggle',
+    session: '방문자 개선 #8, 언어일관성 및 가입혜택/접근성',
+    title: '지구본 일시정지 버튼 제거',
+    detail:
+      '드래그·이동하면 자전이 이미 멈춥니다. 모바일에는 버튼이 보이지도 않아 상단 일시정지 토글을 빼었습니다. prefers-reduced-motion이면 기본 자전은 그대로 막습니다. Preview /qa/visitor-growth — 홈에서 드래그 후 자전 정지.',
+    at: '2026-09-15T08:35:00.000Z',
+  },
+  {
     id: '2026-09-15-visitor-growth-8-locale-a11y',
     session: '방문자 개선 #8, 언어일관성 및 가입혜택/접근성',
     title: 'PlaceCard 로컬라이징·가입 혜택·지구본 자전 제어',

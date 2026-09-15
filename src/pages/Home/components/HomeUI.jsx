@@ -13,8 +13,6 @@ import {
   ChevronUp,
   User,
   LogOut,
-  Pause,
-  Play,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -126,8 +124,6 @@ const HomeUI = React.memo(({
   onThemeToggle,
   isZenMode,
   onToggleZenMode,
-  globeRotatePaused = false,
-  onToggleGlobeRotate,
   user,
   onLogout,
   isTourCinema = false,
@@ -433,18 +429,6 @@ const HomeUI = React.memo(({
              aria-label={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
            >
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
-           </button>
-           <button
-             type="button"
-             onClick={() => onToggleGlobeRotate?.()}
-             className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${globeRotatePaused ? 'text-amber-300 border-amber-400/30' : 'text-sky-300'}`}
-             title={globeRotatePaused ? t('home.globe.rotatePlay') : t('home.globe.rotatePause')}
-             aria-label={globeRotatePaused ? t('home.globe.rotatePlay') : t('home.globe.rotatePause')}
-             aria-pressed={!globeRotatePaused}
-           >
-              {globeRotatePaused
-                ? <Play size={16} className="group-hover:scale-110 transition-transform" />
-                : <Pause size={16} className="group-hover:scale-110 transition-transform" />}
            </button>
            <button
              type="button"

@@ -61,7 +61,7 @@ assert.match(homeUi, /layout\.nav\.logbook/, 'LOGBOOK i18n');
 assert.match(homeUi, /aria-label=\{t\('home\.globe\.themeToggle'\)\}/, '테마 토글 aria-label');
 assert.match(homeUi, /aria-label=\{t\('home\.globe\.zenMode'\)\}/, 'Zen aria-label');
 assert.match(homeUi, /aria-label=\{t\('home\.globe\.clearScouts'\)\}/, 'Trash aria-label');
-assert.match(homeUi, /home\.globe\.rotatePause/, '지구본 일시정지');
+assert.doesNotMatch(homeUi, /home\.globe\.rotatePause/, '자전 일시정지 버튼 없음');
 assert.match(homeUi, /role="button"/, '로고 키보드 역할');
 assert.match(homeUi, /tabIndex=\{0\}/, '로고 탭 포커스');
 assert.doesNotMatch(homeUi, />LOGIN</, 'LOGIN 하드코딩 금지');
@@ -75,7 +75,7 @@ assert.match(globe, /userPausedRotateRef/, '자전 루프 가드');
 
 const home = read('src/pages/Home/index.jsx');
 assert.match(home, /prefers-reduced-motion: reduce/, 'reduced-motion 기본 정지');
-assert.match(home, /onToggleGlobeRotate/, '자전 토글 연결');
+assert.doesNotMatch(home, /onToggleGlobeRotate/, '자전 토글 버튼 연결 없음');
 
 const ko = JSON.parse(read('src/i18n/locales/ko.json'));
 const en = JSON.parse(read('src/i18n/locales/en.json'));
@@ -84,6 +84,6 @@ assert.ok(ko.authPage.signup.subtitle.includes('여행 스케치'));
 assert.ok(ko.authPage.benefits.bucket.title);
 assert.ok(en.authPage.benefits.planner.body);
 assert.ok(ko.layout.nav.login);
-assert.ok(en.home.globe.rotatePlay);
+assert.equal(en.home.globe.rotatePlay, undefined);
 
 console.log('OK smoke:visitor-locale');
