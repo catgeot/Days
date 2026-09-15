@@ -78,15 +78,25 @@
 - **잔여**: 사진/개요 순수 누락 **87**/876. 다음 허브 **동해비경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #48 다음 — 동해 결손 오버레이
+## 팔경 활용 #48 — 동해비경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #48, 동해 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `a92c127f` · PR [#258](https://github.com/catgeot/Days/pull/258)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 동해비경 결손 3건(호해정·할미바위·초록봉) 동해 시 관광 공식 팩트·사진. 강릉 호해정·추암 해암정·삼척/고성 할미바위·두타산·청옥산과 구분. 동해 순수 누락 3→0 · CID 6/9 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=donghae`
+- **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #49 다음 — 영광 결손 오버레이
 
 ```
-팔경 활용 #48, 동해 결손 오버레이
+팔경 활용 #49, 영광 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 동해비경 사진·개요 없는 3건(호해정·할미바위·초록봉)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=donghae
+작업: 영광9경 사진·개요 없는 3건(황금산·왕글공원·백학촌)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeonggwang
 ```
 
