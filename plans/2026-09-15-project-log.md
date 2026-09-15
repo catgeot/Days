@@ -2,6 +2,13 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #6 — PR 병합 (Cloud)
+
+- **세션** `방문자 개선 #6, 신뢰요소 및 제휴투명성 강화`
+- **병합** PR [#255](https://github.com/catgeot/Days/pull/255) · main `4a84e979`
+- **PROD** `https://www.gateo.kr/` — 신뢰 바·Credits·플래너 제휴 고지. 모바일 홈은 테마 칩 위에 출처 링크.
+- **다음** #7 플래너 3단계 점진적 노출 · 같은 브랜치 `cursor/visitor-growth-1f90`
+
 ## 방문자 개선 #6 QA — 모바일 홈 신뢰 바·테마 칩 겹침 (Cloud)
 
 - **세션** `방문자 개선 #6, 신뢰요소 및 제휴투명성 강화`
