@@ -26,8 +26,8 @@ export {
   stripKoAdminSuffix,
 };
 
-/** countryHint·keyword override 변경 시 무효화 · v19: item lat/lng · UI 더보기로 20씩 */
-const CACHE_PREFIX = 'gateo:mrt-stays:v19:';
+/** countryHint·keyword override 변경 시 무효화 · v21: Edge Photon 숙소 좌표 */
+const CACHE_PREFIX = 'gateo:mrt-stays:v21:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
 const MAX_ADULTS = 8;
@@ -250,7 +250,7 @@ function writeCache(key, payload) {
 }
 
 /**
- * @param {{ keyword: string, isDomestic: boolean, countryHint?: string, countryHintAlts?: string[], nameEn?: string, altKeywords?: string[], cityHints?: string[], checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, size?: number }} params
+ * @param {{ keyword: string, isDomestic: boolean, countryHint?: string, countryHintAlts?: string[], nameEn?: string, altKeywords?: string[], cityHints?: string[], checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, size?: number, originLat?: number, originLng?: number }} params
  */
 export async function fetchMrtStays(params) {
   const keyword = String(params?.keyword || '').trim();
@@ -306,6 +306,9 @@ export async function fetchMrtStays(params) {
         ...(nameEn ? { nameEn } : {}),
         ...(altKeywords.length ? { altKeywords } : {}),
         ...(cityHints.length ? { cityHints } : {}),
+        ...(Number.isFinite(Number(params?.originLat)) && Number.isFinite(Number(params?.originLng))
+          ? { originLat: Number(params.originLat), originLng: Number(params.originLng) }
+          : {}),
       },
     });
 
@@ -354,6 +357,8 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
   const isDomestic = isMrtDomesticLocation(location);
   const normalized = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
   const guests = normalizeMrtGuestCounts(opts.adultCount, opts.childCount);
+  const originLat = Number(location?.lat);
+  const originLng = Number(location?.lng);
   return fetchMrtStays({
     ...query,
     keyword,
@@ -362,5 +367,8 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
     ...normalized,
     ...guests,
     size: MRT_STAY_FETCH_SIZE,
+    ...(Number.isFinite(originLat) && Number.isFinite(originLng)
+      ? { originLat, originLng }
+      : {}),
   });
 }

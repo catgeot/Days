@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-jonggak-stay-edge-photon',
+    session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',
+    title: 'Edge Photon 좌표 · 거리 뱃지',
+    detail:
+      'MRT search에 호텔 좌표가 없어 Edge가 Photon(숙소 OSM·8km·이름 가드)으로 종각역 근처 위·경도를 붙입니다. 카드에 「종각역 350m」. Preview 홈「종각」→ 숙소 찾기 → 하드 새로고침. 오라카이 대학로처럼 OSM에 없는 호텔은 거리 없음이 정상.',
+    at: '2026-09-15T20:40:00.000Z',
+  },
+  {
     id: '2026-09-15-jonggak-stay-distance-naver',
     session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',
     title: '종각역 거리 표기 · 네이버 지도 인근 숙소',

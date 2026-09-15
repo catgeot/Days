@@ -23,8 +23,12 @@ import {
   formatStayDistanceFromPlace,
   formatStayDistanceLabel,
   haversineKm,
+  isLodgingOsmValue,
   parseStayCoordPair,
+  simplifyStayGeocodeQuery,
   stayDistanceRank,
+  stayGeocodeQueries,
+  stayNameCompatible,
 } from '../src/utils/mrtStayDistance.js';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -598,6 +602,43 @@ async function main() {
     edgeSrc.includes('pickStayCoords') && edgeSrc.includes('lat: coords.lat'),
     'Edge fetch-mrt-stays maps hotel lat/lng',
   );
+  assert(
+    edgeSrc.includes('photonGeocodeStay') &&
+      edgeSrc.includes('attachGeocodedStayCoords') &&
+      edgeSrc.includes('originLat') &&
+      edgeSrc.includes('stayNameCompatible'),
+    'Edge Photon geocode + origin + name guard',
+  );
+  assert(
+    simplifyStayGeocodeQuery('나인트리 바이 파르나스 서울 인사동') === '나인트리 서울 인사동',
+    'simplify strips 바이 브랜드',
+  );
+  assert(
+    stayGeocodeQueries('오라카이 대학로 호텔, BW 시그니처 컬렉션')[1] === '오라카이 대학로 호텔',
+    'simplify strips BW 시그니처',
+  );
+  assert(isLodgingOsmValue('hotel') && !isLodgingOsmValue('museum'), 'lodging osm filter');
+  assert(
+    stayNameCompatible('신라스테이 광화문', '신라스테이 광화문'),
+    'name compatible exact',
+  );
+  assert(
+    stayNameCompatible('나인트리 서울 인사동', '나인트리 프리미어 호텔 인사동'),
+    'name compatible nine tree insadong',
+  );
+  assert(
+    !stayNameCompatible('오라카이 대학로 호텔', '오라카이 인사동 스위츠'),
+    'reject same-brand other neighbourhood',
+  );
+  assert(
+    !stayNameCompatible('오라카이 대학로 호텔', '4월 25일 호텔'),
+    'reject unrelated photon hotel',
+  );
+  const fetchSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/utils/fetchMrtStays.js'),
+    'utf8',
+  );
+  assert(fetchSrc.includes('originLat') && fetchSrc.includes('originLng'), 'client sends origin to Edge');
   console.log('OK  stay distance + naver map');
 
   const emptyAltsKeepQuery = mergeMrtStayFetchQuery(
@@ -646,6 +687,37 @@ async function main() {
         const n = (data.items || []).length;
         const status = n > 0 ? 'LIVE_OK' : data.region ? 'LIVE_EMPTY' : 'LIVE_NO_REGION';
         console.log(`${status} ${c.slug} total=${data.totalCount} n=${n} region=${data.region?.subName || '-'}`);
+      }
+      const jres = await fetch(`${url}/functions/v1/fetch-mrt-stays`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${anon}`,
+          apikey: anon,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keyword: '종로',
+          isDomestic: true,
+          countryHint: '대한민국',
+          cityHints: ['서울'],
+          size: 20,
+          originLat: 37.5701,
+          originLng: 126.9829,
+        }),
+      });
+      const jdata = await jres.json();
+      const jn = (jdata.items || []).length;
+      const withCoords = Number(
+        jdata.withCoords ??
+          (jdata.items || []).filter((it) => it?.lat != null && it?.lng != null).length,
+      );
+      const jstatus = jn > 0 ? 'LIVE_OK' : jdata.region ? 'LIVE_EMPTY' : 'LIVE_NO_REGION';
+      console.log(
+        `${jstatus} jonggak-distance n=${jn} withCoords=${withCoords} region=${jdata.region?.name || '-'}`,
+      );
+      if (jn > 0 && withCoords < 1) {
+        console.error('LIVE_JONGGAK expected withCoords>0 after Photon geocode');
+        failed += 1;
       }
     }
   }

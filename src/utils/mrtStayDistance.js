@@ -3,6 +3,58 @@
  * GlobeStayStrip 카드 뱃지·추천순 거리 가중 · 순수 함수(스모크 가능).
  */
 
+export const STAY_GEOCODE_MAX_KM = 8;
+
+export function simplifyStayGeocodeQuery(name) {
+  let s = String(name || '').replace(/\s+/g, ' ').trim();
+  s = s.replace(/,\s*BW\b.*/i, '');
+  s = s.replace(/\s*시그니처\s*컬렉션/g, '');
+  s = s.replace(/\s*(바이|by)\s+\S+/gi, '');
+  s = s.replace(/\s*[&＆]\s*스파/g, '');
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+export function stayGeocodeQueries(name) {
+  const full = String(name || '').replace(/\s+/g, ' ').trim();
+  const simple = simplifyStayGeocodeQuery(full);
+  const seen = new Set();
+  const out = [];
+  for (const q of [full, simple]) {
+    if (!q || q.length < 2 || seen.has(q)) continue;
+    seen.add(q);
+    out.push(q);
+  }
+  return out;
+}
+
+export function isLodgingOsmValue(value) {
+  return /^(hotel|hostel|motel|guest_house|apartment|chalet)$/i.test(String(value || '').trim());
+}
+
+const STAY_NAME_GENERIC_RE =
+  /호텔|호스텔|모텔|리조트|스테이|스위츠|스위트|서울|부산|인천|호텔스|hotel|hostel|motel|resort|stay|suites|suite|premier|프리미어|collection|컬렉션|시그니처|&|＆|스파|by|바이/gi;
+
+export function compactStayName(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(STAY_NAME_GENERIC_RE, '')
+    .replace(/[\s,.\-_'"]+/g, '');
+}
+
+/** Photon 히트와 숙소명이 같은 건물인지 — 브랜드만 같고 동이 다르면 거부 */
+export function stayNameCompatible(query, hitName) {
+  const q = compactStayName(query);
+  const h = compactStayName(hitName);
+  if (q.length >= 4 && h.length >= 2 && (h.includes(q) || q.includes(h))) return true;
+  const qTok = String(query || '')
+    .replace(STAY_NAME_GENERIC_RE, ' ')
+    .split(/\s+/)
+    .map((t) => t.replace(/[^\p{L}\p{N}]/gu, ''))
+    .filter((t) => t.length >= 2);
+  if (!qTok.length || !h) return false;
+  return qTok.every((t) => h.includes(t.toLowerCase()));
+}
+
 const EARTH_KM = 6371;
 
 function toRad(d) {
