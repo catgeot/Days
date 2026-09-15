@@ -146,6 +146,17 @@
 - **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #48 QA — 동해 썸네일 분리 (Cloud)
+
+- **세션** `팔경 활용 #48, 동해 썸네일 분리`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `3aeb5664` · PR [#258](https://github.com/catgeot/Days/pull/258)
+- **원인**: 오버레이를 넣었는데도 ScenicPage가 Tour `firstimage`를 contentId로 나중에 덮음. 용추·반석이 같은 `125673` 폭포, 망상(4경)은 Tour 글자 간판.
+- **완료**: JSON contentId 기입 없이 `resolveLocalScenicRowFirstImage`가 멤버 오버레이를 Tour 맵보다 앞에 둠. 상세 fetch도 오버레이를 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=donghae` 2경·3경·4경 사진이 서로 다름
+- **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #49 다음 — 영광 결손 오버레이
 
 ```
