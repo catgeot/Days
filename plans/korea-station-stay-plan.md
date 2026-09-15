@@ -78,7 +78,7 @@
 | **#2** | `종각역 숙소 #2` | 서울 좌표·서울 CITY | `cursor/jonggak-stay-5f4f` | 원주 오탐 수정, 철도역 허용 (완료 ✅) |
 | **#3** | `종각역 숙소 #3` | Preview OK면 PR 병합 | `cursor/jonggak-stay-5f4f` | 1단계 PR [#260](https://github.com/catgeot/Days/pull/260) 병합 및 종합 계획 수립 (완료 ✅) |
 | **#4** | `종각역 숙소 #4` | 종각 약칭 지오코딩 및 종로 권역 매핑 | `cursor/jonggak-stay-5f4f` | [Phase 1 + 2] `종각`→종각역 · 래더 `종로` 선두 · PR [#263](https://github.com/catgeot/Days/pull/263) merge `76909fc9` ✅ |
-| **#5** | `종각역 숙소 #5` | 거리 정렬 및 지도 딥링크 | `cursor/jonggak-stay-5f4f` | [Phase 3 + 4] Haversine 거리 표기 + 네이버 지도 칩 · PR [#264](https://github.com/catgeot/Days/pull/264) (사람 Preview) |
+| **#5** | `종각역 숙소 #5` | 거리 정렬 및 지도 딥링크 | `cursor/jonggak-stay-5f4f` | [Phase 3 + 4] Haversine + 네이버 칩 · Edge Photon 좌표 배포 · PR [#264](https://github.com/catgeot/Days/pull/264) (사람 Preview) |
 | **#6** | `종각역 숙소 #6` | Preview OK면 PR 병합 | `cursor/jonggak-stay-5f4f` | Preview 거리·네이버 칩 확인 후 PR [#264](https://github.com/catgeot/Days/pull/264) 병합 |
 
 ---
@@ -94,6 +94,6 @@
 @plans/korea-station-stay-plan.md
 브랜치 cursor/jonggak-stay-5f4f · PR #264 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview에서 종각역 숙소 카드에 거리(종각역 350m 등)·네이버 지도 칩이 보이면 PR #264 병합. 거리 없으면 npx supabase functions deploy fetch-mrt-stays 후 재확인
+작업: Preview 하드 새로고침 후 종각역 숙소 카드에 거리(신라스테이 광화문 330m 등)·네이버 지도 칩이 보이면 PR #264 병합. Edge `fetch-mrt-stays` Photon 지오코딩은 이미 배포됨. 오라카이 대학로 등 OSM 미매칭은 거리 없음이 정상.
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```

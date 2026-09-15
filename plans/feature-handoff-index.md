@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **#5 push** · tip `17f0fd5a` · PR [#264](https://github.com/catgeot/Days/pull/264) · **사람 Preview** |
+| **상태** | **#5 Edge Photon 배포** · tip `8365a7b6` · PR [#264](https://github.com/catgeot/Days/pull/264) · **사람 Preview (하드 새로고침)** |
 | **브랜치** | `cursor/jonggak-stay-5f4f` |
 | **플랜** | [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) **§9** |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
-| **Preview** | git Preview `/` — 홈「종각」→ 숙소 찾기 → 거리 뱃지 · 네이버 지도 칩 |
+| **Preview** | git Preview `/` — 홈「종각」→ 숙소 찾기 → **하드 새로고침** → 거리 뱃지 · 네이버 지도 칩 |
 | **소유** | `mrtStayDistance.js` · `GlobeStayStrip.jsx` · `fetch-mrt-stays` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:mrt-stay` PASS · `npx vite build` PASS |
@@ -36,7 +36,7 @@
 @plans/korea-station-stay-plan.md
 브랜치 cursor/jonggak-stay-5f4f · PR #264 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview에서 종각역 숙소 카드에 거리(종각역 350m 등)·네이버 지도 칩이 보이면 PR #264 병합. 거리 없으면 npx supabase functions deploy fetch-mrt-stays 후 재확인
+작업: Preview 하드 새로고침 후 종각역 숙소 카드에 거리(신라스테이 광화문 330m 등)·네이버 지도 칩이 보이면 PR #264 병합. Edge `fetch-mrt-stays` Photon 지오코딩은 이미 배포됨. 오라카이 대학로 등 OSM 미매칭은 거리 없음이 정상.
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```
 

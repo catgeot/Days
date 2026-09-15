@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-jonggak-stay-edge-photon',
+    session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',
+    title: 'Edge Photon 좌표 · 거리 뱃지',
+    detail:
+      'MRT search에 호텔 좌표가 없어 Edge가 Photon(숙소 OSM·8km·이름 가드)으로 종각역 근처 위·경도를 붙입니다. 카드에 「종각역 350m」. Preview 홈「종각」→ 숙소 찾기 → 하드 새로고침. 오라카이 대학로처럼 OSM에 없는 호텔은 거리 없음이 정상.',
+    at: '2026-09-15T20:40:00.000Z',
+  },
+  {
     id: '2026-09-15-palgyeong-use-51-gimhae-overlays',
     session: '팔경 활용 #51, 김해 결손 오버레이',
     title: '김해9경 화포천·경전철 가야유적·분산 천문대 결손 오버레이',
@@ -37,6 +45,14 @@ export const cloudPreviewWorkLog = [
     title: '팔영산 자연휴양림·영남용바위 빈 썸네일',
     detail:
       'Preview QA에서 고흥10경 1경 팔영산 자연휴양림과 검색「고흥」영남용바위·팔영산자연휴양림이 Landmark였습니다. Tour 125426·2782706 firstimage가 비어 있습니다. JSON contentId 기입 없이 멤버 오버레이·TOUR_THUMB에 한국관광공사 휴양림 산림문화휴양관(2380877)·영남용바위 해안절벽(2788863) 사진을 넣었습니다. 능가사·편백치유의 숲·남열 해수욕장·소록도와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goheung 1경, 검색「고흥」팔영산자연휴양림·영남용바위.',
+    at: '2026-09-15T19:50:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-distance-naver',
+    session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',
+    title: '종각역 거리 표기 · 네이버 지도 인근 숙소',
+    detail:
+      '숙소 카드에 종각역 좌표 기준 거리(종각역 350m)를 붙이고, 추천순·가까운순은 가까운 숙소를 앞에 둡니다. 툴바에 「네이버 지도에서 주변 숙소 보기」칩이 있습니다. 거리는 마이리얼트립 숙소 위·경도가 있을 때만 나옵니다. Edge fetch-mrt-stays를 이 브랜치로 배포해야 Preview에 좌표가 전달됩니다. Preview 홈「종각」→ 숙소 찾기 → 종로·광화문 호텔에 거리 · 네이버 칩.',
     at: '2026-09-15T19:50:00.000Z',
   },
   {
