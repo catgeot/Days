@@ -11,7 +11,12 @@ import { TRIPLINK_PACKAGES_ENABLED } from '../../../pages/Home/data/tripLinkPack
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import { resetIosZoomAfterInput } from '../../../shared/lib/mobileViewport';
 import TripLinkModal from '../modals/TripLinkModal';
-import { getLocalizedPlaceName } from '../common/locationDisplay';
+import { getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
+import {
+  getLocalizedPlaceDesc,
+  getLocalizedPlaceKeywords,
+  isPlaceDescKoreanOnly,
+} from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
@@ -112,14 +117,20 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         };
     }
 
+    const localizedDesc = getLocalizedPlaceDesc(location, locale).trim();
     return {
         mode: 'LOCATION',
         title: displayName,
-        summary: location.desc || location.description || t('place.fallback.reviewEmpty'),
-        tags: ['Travel', location.country || 'Unknown', ...(location.keywords || [])],
+        summary: localizedDesc || t('place.fallback.reviewEmpty'),
+        tags: [
+            t('place.fallback.travelTag'),
+            getLocalizedCountryName(location, locale) || t('place.fallback.unknownCountry'),
+            ...getLocalizedPlaceKeywords(location, locale),
+        ],
+        koreanGuideNotice: locale === 'en' && isPlaceDescKoreanOnly(location),
         ai_context: null
     };
-  }, [mediaMode, galleryData.selectedImg, isVideoLoading, spotVideos.length, activeVideoData, videoError, googleFormUrl, location, displayName, t]);
+  }, [mediaMode, galleryData.selectedImg, isVideoLoading, spotVideos.length, activeVideoData, videoError, googleFormUrl, location, displayName, locale, t]);
 
   const handleSeekTime = useCallback((timeValue) => {
     if (!playerRef.current) return;

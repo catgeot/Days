@@ -32,12 +32,28 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-15T08:40:00.000Z',
   },
   {
+    id: '2026-09-15-visitor-growth-8-drop-rotate-toggle',
+    session: '방문자 개선 #8, 언어일관성 및 가입혜택/접근성',
+    title: '지구본 일시정지 버튼 제거',
+    detail:
+      '드래그·이동하면 자전이 이미 멈춥니다. 모바일에는 버튼이 보이지도 않아 상단 일시정지 토글을 빼었습니다. prefers-reduced-motion이면 기본 자전은 그대로 막습니다. Preview /qa/visitor-growth — 홈에서 드래그 후 자전 정지.',
+    at: '2026-09-15T08:35:00.000Z',
+  },
+  {
     id: '2026-09-15-jonggak-stay-station-city',
     session: '종각역 숙소 #1, 역 POI 시·군 선두',
     title: '종각역 숙소 찾기 빈 목록',
     detail:
       '지구본에서 종각역을 열고 숙소 찾기를 누르면 마이리얼트립이 역 이름을 CITY로 찾아 빈 목록이 됐습니다. 국내 역·길·터미널은 서울 같은 시·군을 먼저 보내고, 동네만 있는 stayAdmin은 역지오로 시를 채웁니다. Preview 홈에서 종각역 검색 → 숙소 찾기 → 서울 숙소가 보이는지.',
     at: '2026-09-15T04:10:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-8-locale-a11y',
+    session: '방문자 개선 #8, 언어일관성 및 가입혜택/접근성',
+    title: 'PlaceCard 로컬라이징·가입 혜택·지구본 자전 제어',
+    detail:
+      'EN에서 장소 개요는 getLocalizedPlaceDesc를 쓰고, 한글 본문만 있으면 영문 안내 칩을 둡니다. 로그인·회원가입에 버킷·로그북·AI·플래너 4대 혜택을 붙였습니다. 홈 아이콘에 aria-label, 로고 키보드 포커스, 로고 패널 푸터 대비, 지구본 prefers-reduced-motion 기본 정지와 일시정지 버튼을 넣었습니다. Preview /qa/visitor-growth — 홈 EN 전환, /auth/signup, 지구본 일시정지.',
+    at: '2026-09-15T04:20:00.000Z',
   },
   {
     id: '2026-09-15-visitor-growth-7-stage-footer-next',

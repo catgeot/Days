@@ -443,6 +443,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   highlightCategory = null,
   categoryFaceEpoch = 0,
   onReturnToSpace = null,
+  autoRotatePaused = false,
 }, ref) => {
   const { locale } = useLocale();
   const { t } = useTranslation();
@@ -450,6 +451,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
   const autoRotateRef = useRef(false);
+  const userPausedRotateRef = useRef(autoRotatePaused);
+  userPausedRotateRef.current = autoRotatePaused;
   const rotationFrameRef = useRef(null);
   const rotationTimer = useRef(null);
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
@@ -2343,6 +2346,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
     },
     resumeRotation: () => {
+      if (userPausedRotateRef.current) return;
       if (pauseRender || isTourMode(globeMode) || flightCinemaActiveRef.current || immerseActiveRef.current) return;
       if (shouldHoldGlobeAutoRotate({ pauseRender, labelsSettled: globeLabelsSettledRef.current })) return;
       autoRotateRef.current = true;
@@ -2569,6 +2573,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       }
 
       const shouldRotate = autoRotateRef.current
+        && !userPausedRotateRef.current
         && !interactionRef.current
         && !tourActiveRef.current
         && !immerseActiveRef.current

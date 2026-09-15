@@ -26,6 +26,12 @@
       "signIn": "로그인",
       "signUp": "회원가입",
       "back": "뒤로"
+    },
+    "nav": {
+      "login": "로그인",
+      "logout": "로그아웃",
+      "logbook": "로그북",
+      "logoOpen": "메뉴 열기"
     }
   },
   "authPage": {
@@ -47,7 +53,7 @@
     "signup": {
       "backTitle": "메인으로 돌아가기",
       "title": "📝 회원가입",
-      "subtitle": "나만의 일보 작성을 시작해보세요.",
+      "subtitle": "나만의 여행 스케치와 로그북을 시작해보세요.",
       "email": "이메일",
       "password": "비밀번호",
       "passwordPlaceholder": "6자리 이상 입력해주세요",
@@ -55,6 +61,25 @@
       "hasAccount": "이미 계정이 있으신가요?",
       "loginLink": "로그인 하러 가기",
       "confirmEmailAlert": "회원가입 확인 메일을 보냈습니다! 📧\n\n이메일 함을 확인하여 링크를 클릭하면 가입이 완료됩니다."
+    },
+    "benefits": {
+      "title": "가입하면",
+      "bucket": {
+        "title": "나만의 버킷리스트",
+        "body": "전 세계 숨은 명소 50곳 실시간 동기화"
+      },
+      "logbook": {
+        "title": "작가 필명 & 여행 스케치",
+        "body": "사진과 위치를 남기는 3D 로그북"
+      },
+      "ai": {
+        "title": "AI 맞춤 도슨트",
+        "body": "취향 분석 기반 1:1 파라다이스 추천"
+      },
+      "planner": {
+        "title": "스마트 플래너",
+        "body": "비자·항공·숙소·교통 원클릭 보관함"
+      }
     },
     "forgot": {
       "title": "Reset Password",
@@ -107,6 +132,7 @@
       "zenMode": "Zen Mode (전체화면 힐링)",
       "pinsHide": "마커·지명 숨기기",
       "pinsShow": "마커·지명 보이기",
+      "clearScouts": "임시 핀 모두 삭제",
       "menuExpanded": "세부 메뉴",
       "menuCollapsed": "메뉴 숨김",
       "menuHide": "세부 메뉴 숨기기",
@@ -516,7 +542,15 @@
       "infoUpdating": "이 장소에 대한 정보가 업데이트 중입니다.",
       "reviewEmpty": "장소에 대한 리뷰 정보가 없습니다.",
       "videoMissing": "영상 정보 없음",
-      "galleryDetail": "갤러리 상세보기"
+      "galleryDetail": "갤러리 상세보기",
+      "travelTag": "여행",
+      "unknownCountry": "미상"
+    },
+    "localeNotice": {
+      "koreanGuide": "Detailed guide is currently provided in Korean."
+    },
+    "overview": {
+      "fromQuery": "「{{query}}」에서 이 여행지로"
     },
     "nav": {
       "back": "뒤로가기",

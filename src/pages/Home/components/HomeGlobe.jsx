@@ -34,7 +34,8 @@ const HomeGlobe = React.memo(forwardRef(({
   globeTheme = 'deep',
   isZenMode = false,
   highlightCategory = null,
-  categoryFaceEpoch = 0
+  categoryFaceEpoch = 0,
+  autoRotatePaused = false,
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
@@ -273,15 +274,15 @@ const HomeGlobe = React.memo(forwardRef(({
 
   useEffect(() => {
     if (globeEl.current) {
-      globeEl.current.controls().autoRotate = !pauseRender;
+      globeEl.current.controls().autoRotate = !pauseRender && !autoRotatePaused;
       globeEl.current.controls().autoRotateSpeed = isZenMode ? 0.3 : GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED;
       if (pauseRender && rotationTimer.current) clearTimeout(rotationTimer.current);
     }
-  }, [pauseRender, isZenMode]);
+  }, [pauseRender, isZenMode, autoRotatePaused]);
 
   useEffect(() => {
     if (globeEl.current) {
-      globeEl.current.controls().autoRotate = !pauseRender;
+      globeEl.current.controls().autoRotate = !pauseRender && !autoRotatePaused;
       globeEl.current.controls().autoRotateSpeed = GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED;
       globeEl.current.pointOfView({ altitude: GLOBE_CAMERA_CONFIG.DEFAULT_ALT });
     }
