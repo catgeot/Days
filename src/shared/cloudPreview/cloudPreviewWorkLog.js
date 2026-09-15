@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '방문자 개선',
-  sessionNo: 7,
-  sessionPhase: '플래너 3단계 점진적 노출',
-  branch: 'cursor/visitor-growth-1f90',
-  previewPath: '/place/bora-bora/planner',
-  qaShareSlug: 'visitor-growth',
+  title: '종각역 숙소',
+  sessionNo: 1,
+  sessionPhase: '역 POI 시·군 선두',
+  branch: 'cursor/jonggak-stay-5f4f',
+  previewPath: '/',
+  qaShareSlug: '',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-jonggak-stay-station-city',
+    session: '종각역 숙소 #1, 역 POI 시·군 선두',
+    title: '종각역 숙소 찾기 빈 목록',
+    detail:
+      '지구본에서 종각역을 열고 숙소 찾기를 누르면 마이리얼트립이 역 이름을 CITY로 찾아 빈 목록이 됐습니다. 국내 역·길·터미널은 서울 같은 시·군을 먼저 보내고, 동네만 있는 stayAdmin은 역지오로 시를 채웁니다. Preview 홈에서 종각역 검색 → 숙소 찾기 → 서울 숙소가 보이는지.',
+    at: '2026-09-15T04:10:00.000Z',
+  },
   {
     id: '2026-09-15-visitor-growth-7-stage-footer-next',
     session: '방문자 개선 #7, 플래너 3단계 점진적 노출',
