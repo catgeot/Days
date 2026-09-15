@@ -2,6 +2,14 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #9 — PR 병합 · 8세션 주제 종료 (Cloud)
+
+- **세션** `방문자 개선 #9, Preview OK면 PR 병합`
+- **병합** PR [#259](https://github.com/catgeot/Days/pull/259) · main `e2e8ad20` · 사람 Preview OK 후 이전 세션에서 병합됨. 추가 코드 없음.
+- **로드맵** Phase 1–4 · 세션 #1–#8 전부 main. 핸드오프 행 종료. 다음 제시어 없음.
+- **PROD** `https://www.gateo.kr/`
+- **VERIFY** `npm run smoke:visitor-locale` PASS · `npm run smoke:trust-disclosure` PASS · `npm run smoke:mood-search-intent` PASS · `npm run smoke:crawler-place-meta` PASS · `npm run audit:i18n` PASS
+
 ## 종각역 숙소 #2 — 원주 오탐 → 서울 CITY (Cloud)
 
 - **세션** `종각역 숙소 #2, Preview OK면 PR 병합`
@@ -135,6 +143,17 @@
 - **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 용추·반석·망상 동해시 관광 공식 사진. `TOUR_THUMB` 망상 `125713`·어달 `125708`. 문경 용추계곡·쌍폭포·대진·노봉과 구분.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → 검색「동해」용추·반석·망상 · `/korea/theme/scenic` 검색「동해」어달해변
+- **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #48 QA — 동해 썸네일 분리 (Cloud)
+
+- **세션** `팔경 활용 #48, 동해 썸네일 분리`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `3aeb5664` · PR [#258](https://github.com/catgeot/Days/pull/258)
+- **원인**: 오버레이를 넣었는데도 ScenicPage가 Tour `firstimage`를 contentId로 나중에 덮음. 용추·반석이 같은 `125673` 폭포, 망상(4경)은 Tour 글자 간판.
+- **완료**: JSON contentId 기입 없이 `resolveLocalScenicRowFirstImage`가 멤버 오버레이를 Tour 맵보다 앞에 둠. 상세 fetch도 오버레이를 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=donghae` 2경·3경·4경 사진이 서로 다름
 - **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
