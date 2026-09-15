@@ -8,6 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
+import { queryLooksLikeStayPoint } from '../../../utils/mrtStayQuery.js';
 import {
   isLikelyMoodQuery,
   shouldSkipGeocodeForMood as shouldSkipGeocodeForMoodIntent,
@@ -1211,7 +1212,7 @@ export function useHomeHandlers({
         }
       }
 
-      const displayName = coords.name || query;
+      const displayName = queryLooksLikeStayPoint(query) ? query : (coords.name || query);
       const normalizedLoc = finalizeUiPlacePin({
         id: `search-${coords.lat}-${coords.lng}`,
         slug: formatUrlName(coords.name_en || coords.name || query),
@@ -1267,7 +1268,12 @@ export function useHomeHandlers({
           );
         }
 
-        if (cachedDict && cachedDict.location_data && !cacheLooksLikeAdminCollapse) {
+        if (
+          cachedDict &&
+          cachedDict.location_data &&
+          !cacheLooksLikeAdminCollapse &&
+          !queryLooksLikeStayPoint(query)
+        ) {
           console.log(`[Smart Search DB Cache] "${query}" -> "${cachedDict.corrected_query}" (캐시 적중)`);
           const parsedData = cachedDict.location_data;
           const isMoodCache = parsedData?.intent_type === 'mood' && Array.isArray(parsedData?.variants);

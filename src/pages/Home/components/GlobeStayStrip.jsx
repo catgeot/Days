@@ -1128,14 +1128,7 @@ function StayListLoadMore({ remaining, onLoadMore, compact = false }) {
 
 function hasStayAdminLadder(admin) {
   if (!admin || typeof admin !== 'object') return false;
-  return Boolean(
-    admin.neighbourhood ||
-      admin.district ||
-      admin.city ||
-      admin.cityEn ||
-      admin.county ||
-      admin.state
-  );
+  return Boolean(admin.city || admin.cityEn || admin.county || admin.state);
 }
 
 async function withStayAdmin(location) {
