@@ -18,25 +18,25 @@
 
 | | |
 |--|--|
-| **상태** | **#4 merge ✅** · main `76909fc9` · PR [#263](https://github.com/catgeot/Days/pull/263) · **다음 #5** |
+| **상태** | **#5 push** · tip `17f0fd5a` · PR [#264](https://github.com/catgeot/Days/pull/264) · **사람 Preview** |
 | **브랜치** | `cursor/jonggak-stay-5f4f` |
 | **플랜** | [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) **§9** |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
-| **Preview** | PROD `/` — 홈 검색「종각」→ 종각역 · 숙소 찾기 → 종로 |
-| **소유** | `mrtStayQuery.js` · `geocoding.js` · `fetch-mrt-stays` |
+| **Preview** | git Preview `/` — 홈「종각」→ 숙소 찾기 → 거리 뱃지 · 네이버 지도 칩 |
+| **소유** | `mrtStayDistance.js` · `GlobeStayStrip.jsx` · `fetch-mrt-stays` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:mrt-stay` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-종각역 숙소 #5, 거리 정렬 및 지도 딥링크
+종각역 숙소 #6, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/korea-station-stay-plan.md
-브랜치 cursor/jonggak-stay-5f4f · Preview /
+브랜치 cursor/jonggak-stay-5f4f · PR #264 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: origin/main 머지 후 Phase 3+4 — 종각역 좌표 거리 표기 + 네이버 지도 인근 숙소 칩. Edge fetch-mrt-stays 미배포면 배포 후 종로 NEIGHBORHOOD 재확인
+작업: Preview에서 종각역 숙소 카드에 거리(종각역 350m 등)·네이버 지도 칩이 보이면 PR #264 병합. 거리 없으면 npx supabase functions deploy fetch-mrt-stays 후 재확인
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```
 
