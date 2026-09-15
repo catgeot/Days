@@ -143,6 +143,14 @@ assert.ok(
   'ScenicPage fills empty Tour thumbs from palgyeong overlay contentId',
 );
 assert.ok(
+  scenicPageSrc.includes('tourListMissingContentIds'),
+  'ScenicPage fills empty Tour list thumbs via live TourAPI firstimage',
+);
+assert.ok(
+  scenicPageSrc.includes('rememberKoreaTourAttractionFirstImage'),
+  'ScenicPage caches live TourAPI firstimage for Tour list thumbs',
+);
+assert.ok(
   !scenicPageSrc.includes('hasTourContentId(spot.contentId) ? openSpot'),
   'ScenicPage does not block palgyeong rows without Tour id',
 );

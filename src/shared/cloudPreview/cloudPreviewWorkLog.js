@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 49,
-  sessionPhase: '영광 결손 오버레이',
+  sessionPhase: '영광 검색 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=yeonggwang',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-tour-thumbs',
+    session: '팔경 활용 #49, 영광 검색 썸네일',
+    title: '관광지 검색 빈 썸네일 TourAPI live 채움',
+    detail:
+      '명승 검색「영광」불갑산도립공원(126248)처럼 tourapi_attraction.first_image가 비면 플레이스홀더만 나왔습니다. GATEO 선정은 detailCommon live를 타는데 관광지 목록은 DB만 봤습니다. 빈 행만 fetchTourApiFirstImage로 채우고, 멤버·contentId 오버레이는 덮지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「영광」불갑산도립공원 썸네일.',
+    at: '2026-09-15T12:05:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-49-yeonggwang-overlays',
     session: '팔경 활용 #49, 영광 결손 오버레이',

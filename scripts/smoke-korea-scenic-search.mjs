@@ -406,6 +406,14 @@ assert.ok(
   'ScenicPage clears zero-count tour cats during search',
 );
 assert.ok(
+  pageSrc.includes('tourListMissingContentIds(dbSpots)'),
+  'ScenicPage live-fills Tour search rows missing first_image',
+);
+assert.ok(
+  pageSrc.includes('rememberKoreaTourAttractionFirstImage'),
+  'ScenicPage caches live TourAPI firstimage after Tour list fill',
+);
+assert.ok(
   pageSrc.includes('tourCat1ChipsVisible.length > 0'),
   'search empty copy hidden when tour chips have hits',
 );
