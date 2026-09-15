@@ -76,6 +76,14 @@ export function getLocalizedPlaceDesc(location, locale = 'ko') {
   return `Discover ${name}${country ? `, ${country}` : ''} — a ${categoryLabel} with photos, videos, and trip planning on GATEO.`;
 }
 
+export function isPlaceDescKoreanOnly(location) {
+  const slug = String(location?.slug || '').trim();
+  const koDesc = String(location?.desc || location?.description || '').trim();
+  if (!koDesc || !hasHangul(koDesc)) return false;
+  const override = slug ? PLACE_SEO_EN_OVERRIDES[slug] : null;
+  return !override?.desc_en;
+}
+
 export function getLocalizedPlaceKeywords(location, locale = 'ko') {
   const slug = String(location?.slug || '').trim();
   const koKeywords = Array.isArray(location?.keywords) ? location.keywords.filter(Boolean) : [];

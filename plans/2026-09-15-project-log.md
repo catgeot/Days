@@ -12,14 +12,24 @@
 - **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
 - **QA**: 홈 검색「종각역」→ 숙소 찾기 → 서울 숙소 카드(빈 목록 아님)
 
+## 방문자 개선 #8 QA — 지구본 일시정지 버튼 제거 (Cloud)
+
+- **세션** `방문자 개선 #8, 언어일관성 및 가입혜택/접근성`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `0faa423e` · PR [#259](https://github.com/catgeot/Days/pull/259)
+- **원인**: 모바일 홈에 일시정지 버튼이 없고, 드래그하면 자전이 이미 멈춤.
+- **완료**: 상단 자전 토글 제거. `prefers-reduced-motion` 기본 정지는 유지.
+- **VERIFY**: `npm run smoke:visitor-locale` PASS · `npm run audit:i18n` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/`
+- **QA**: 홈에서 지구본을 드래그하면 자전이 멈추는지 · 일시정지 버튼이 없는지.
+
 ## 방문자 개선 #8 — 언어일관성 및 가입혜택/접근성 (Cloud)
 
 - **세션** `방문자 개선 #8, 언어일관성 및 가입혜택/접근성`
 - **브랜치** `cursor/visitor-growth-1f90` · tip `b296a29c` · PR [#259](https://github.com/catgeot/Days/pull/259)
-- **완료**: PlaceCard 개요·태그 locale 연동 · EN 한글 본문 안내 칩 · 가입 4대 혜택 · 아이콘 aria-label · 로고 키보드 · 지구본 reduced-motion/일시정지.
+- **완료**: PlaceCard 개요·태그 locale 연동 · EN 한글 본문 안내 칩 · 가입 4대 혜택 · 아이콘 aria-label · 로고 키보드 · 지구본 reduced-motion 기본 정지.
 - **VERIFY**: `npm run smoke:visitor-locale` PASS · `npm run audit:i18n` PASS · `npm run smoke:trust-disclosure` PASS · `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/` · `/auth/signup` · `/place/paris/gallery`
-- **QA**: EN 전환 후 파리 개요가 영어인지 · 회원가입 4대 혜택 · 지구본 일시정지 · Tab으로 로고.
+- **QA**: EN 전환 후 파리 개요가 영어인지 · 회원가입 4대 혜택 · Tab으로 로고.
 
 ## 방문자 개선 #7 QA — 단계 하단 다음 선택 (Cloud)
 
@@ -104,6 +114,17 @@
 - **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 동해비경 결손 3건(호해정·할미바위·초록봉) 동해 시 관광 공식 팩트·사진. 강릉 호해정·추암 해암정·삼척/고성 할미바위·두타산·청옥산과 구분. 동해 순수 누락 3→0 · CID 6/9 유지.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=donghae`
+- **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #48 QA — 동해 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #48, 동해 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `9a95d38a` · PR [#258](https://github.com/catgeot/Days/pull/258)
+- **원인**: Preview 용추폭포(2경)·무릉반석(3경)이 같은 무릉계곡 Tour `125673` 사진. 탐색 검색 동해 망상해수욕장(4경)·명승 검색 어달해변은 플레이스홀더. 탐색홈은 Tour `firstimage`를 쓰지 않음 · 어달 Tour `first_image` 공란.
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 용추·반석·망상 동해시 관광 공식 사진. `TOUR_THUMB` 망상 `125713`·어달 `125708`. 문경 용추계곡·쌍폭포·대진·노봉과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → 검색「동해」용추·반석·망상 · `/korea/theme/scenic` 검색「동해」어달해변
 - **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
