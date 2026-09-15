@@ -244,6 +244,15 @@ export function isMrtStayPointLabel(raw) {
   return KO_STAY_POINT_RE.test(s);
 }
 
+/** 「종각역, 대한민국」처럼 국가가 붙은 forward도 역·터미널로 본다 */
+export function queryLooksLikeStayPoint(query) {
+  const s = String(query || '').trim();
+  if (!s) return false;
+  if (isMrtStayPointLabel(s)) return true;
+  const head = s.split(/[,/]/)[0].trim();
+  return Boolean(head) && head !== s && isMrtStayPointLabel(head);
+}
+
 function isMrtStayPointLocation(location) {
   return (
     isMrtStayPointLabel(location?.originalQuery) ||
@@ -519,8 +528,14 @@ export function resolveMrtStayQuery(location) {
   }
 
   // 국내 동·리·읍·면·역·길: 시·군 우선 — 「퇴계동」안동 · 「종각역」서울
+  // 역·터미널은 축약 시명(서울)을 서울특별시보다 앞 — MRT CITY「서울」·「서울 종각역」단독은 CITY 없음
   // 해외·비세밀: 세밀 키워드 우선
   if ((fineGrain || stayPoint) && isDomestic) {
+    if (stayPoint) {
+      pushUnique(ladder, seen, stripKoAdminSuffix(admin.city));
+      pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
+      pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
+    }
     pushCityLadder();
     pushFineLadder();
   } else if (fineGrain) {

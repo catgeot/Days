@@ -9,6 +9,7 @@ import { KEYWORD_SYNONYMS } from '../data/keywordData';
 import { isIslandPlaceQuery, resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import { resolveTravelCountryFromAddresses } from './travelRegionCountry.js';
 import { isLatinPlaceName, mergeLatinPlaceFields } from './uiPlaceAssetQuery.js';
+import { queryLooksLikeStayPoint } from '../../../utils/mrtStayQuery.js';
 
 const RETRY_FILTERS = [
   "고원", "섬", "산", "해변", "폭포", "마을", "대륙", "반도", "시", "군", "구",
@@ -158,8 +159,11 @@ const isPlausibleForwardHit = (query, result) => {
   const cls = String(result.class || '');
   const type = String(result.type || '');
   const facilityQ = isFacilityQuery(query);
+  const stationQuery = queryLooksLikeStayPoint(query);
 
-  if (cls === 'office' || cls === 'railway') return false;
+  if (cls === 'office') return false;
+  // 역 검색을 railway에서 버리면 종각역이 search_dictionary 원주 좌표로 떨어진다
+  if (cls === 'railway' && !stationQuery) return false;
   // 고속도로 휴게소(OSM: highway=services|rest_area)는 시설 검색에서만 허용
   if (cls === 'highway') {
     const allowRest = facilityQ && /services|rest_area|fuel/.test(type);
@@ -212,7 +216,9 @@ const calculatePlaceScore = (place, query = '') => {
 
   // 단순 행정구역(특히 대도시의 구/동)이나 역 등은 점수를 낮춤
   if (address.suburb || address.borough || address.quarter || address.city_district) score -= 30;
-  if (type === "station" || category === "railway") score -= 40;
+  if (type === "station" || category === "railway" || cls === "railway") {
+    score += queryLooksLikeStayPoint(query) ? 80 : -40;
+  }
   if (type === "administrative" && address.borough) score -= 20;
   if (facilityQ && (cls === 'boundary' || type === 'administrative')) score -= 80;
   if (facilityQ && (type === 'townhall' || /시청|구청|도청|군청/.test(String(place.name || '')))) {

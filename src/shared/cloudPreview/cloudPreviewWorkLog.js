@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '종각역 숙소',
-  sessionNo: 1,
-  sessionPhase: '역 POI 시·군 선두',
+  sessionNo: 2,
+  sessionPhase: '서울 좌표·서울 CITY',
   branch: 'cursor/jonggak-stay-5f4f',
   previewPath: '/',
   qaShareSlug: '',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-jonggak-stay-seoul-not-wonju',
+    session: '종각역 숙소 #2, 서울 좌표·서울 CITY',
+    title: '종각역 숙소가 원주로 나오던 문제',
+    detail:
+      '써머리 숙소 찾기가 오크밸리·원주 브라운도트처럼 원주 숙소를 보여 줬습니다. 종각역 Nominatim(철도역)을 버려서 검색이 search_dictionary 원주 좌표로 갔고, 시·군 선두가 원주를 키워드로 썼습니다. 역 검색은 서울 종각역 좌표를 쓰고, 마이리얼트립은 CITY「서울」로 찾습니다. 「서울 종각역」단독 CITY는 없습니다. Preview 홈에서 종각역 → 숙소 찾기 → 서울 호텔인지(원주 오크밸리 아님).',
+    at: '2026-09-15T08:40:00.000Z',
+  },
   {
     id: '2026-09-15-jonggak-stay-station-city',
     session: '종각역 숙소 #1, 역 POI 시·군 선두',

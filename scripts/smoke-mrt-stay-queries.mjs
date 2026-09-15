@@ -7,7 +7,9 @@
 import {
   canShowMrtStayStrip,
   expandMrtCountryHintAlts,
+  isMrtStayPointLabel,
   mergeMrtStayFetchQuery,
+  queryLooksLikeStayPoint,
   resolveMrtStayQuery,
 } from '../src/utils/mrtStayQuery.js';
 
@@ -306,7 +308,7 @@ const CASES = [
   },
   /**
    * 지구본 검색「종각역」— 역·길 POI를 1차로 두면 MRT CITY 미매칭·빈 목록.
-   * stayAdmin 시(서울)가 선두, 역명은 alt.
+   * Nominatim city「서울특별시」도 축약「서울」선두. 역명은 alt.
    */
   {
     slug: 'jonggak-station',
@@ -328,6 +330,26 @@ const CASES = [
     expectKeyword: /종각역/,
     rejectPrimaryKeyword: /종각역|Jonggak/i,
     rejectCityHint: /종각역|Jonggak/i,
+  },
+  {
+    slug: 'jonggak-station-seoul-si',
+    location: {
+      name: '종각역',
+      name_ko: '종각역',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '종각역',
+      stayAdmin: {
+        neighbourhood: '종로1가',
+        city: '서울특별시',
+        state: '서울특별시',
+      },
+    },
+    expectPrimaryKeyword: /^서울$/,
+    expectKeyword: /종각역/,
+    rejectPrimaryKeyword: /종각역|서울특별시/,
+    rejectCityHint: /종각역/,
   },
   {
     slug: 'seoul-station',
@@ -354,6 +376,18 @@ function assert(cond, msg) {
 
 async function main() {
   let failed = 0;
+  try {
+    assert(isMrtStayPointLabel('종각역'), '종각역 is stay point');
+    assert(isMrtStayPointLabel('서울역'), '서울역 is stay point');
+    assert(!isMrtStayPointLabel('영역'), '영역 is not stay point');
+    assert(queryLooksLikeStayPoint('종각역'), 'queryLooksLikeStayPoint 종각역');
+    assert(queryLooksLikeStayPoint('종각역, 대한민국'), 'queryLooksLikeStayPoint 종각역, 대한민국');
+    assert(!queryLooksLikeStayPoint('서울'), '서울 is not stay point query');
+    console.log('OK  stay-point labels');
+  } catch (err) {
+    failed += 1;
+    console.error('FAIL stay-point labels:', err.message);
+  }
   for (const c of CASES) {
     try {
       assert(canShowMrtStayStrip(c.location), `${c.slug}: strip should show`);
