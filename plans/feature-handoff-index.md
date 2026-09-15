@@ -34,27 +34,27 @@
 
 | | |
 |--|--|
-| **상태** | **#6 merge ✅** · main `4a84e979` · PR [#255](https://github.com/catgeot/Days/pull/255) · 다음 **#7** |
+| **상태** | **#7 push** · tip `e1dbd731` · PR [#257](https://github.com/catgeot/Days/pull/257) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
-| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/about` · `/place/paris/planner` |
-| **PROD** | `https://www.gateo.kr/` — 신뢰 바·Credits·플래너 제휴 고지 |
-| **소유** | `MainLayout.jsx` · `TrustLinkBar.jsx` · `mapboxAttribution.js` · `PreTravelChecklist.jsx` · `PlannerTab.jsx` |
+| **Preview** | `/qa/visitor-growth` → git Preview `/place/bora-bora/planner` · `/place/paris/planner` |
+| **PROD** | `https://www.gateo.kr/` — 신뢰 바·Credits·플래너 제휴 고지 (#6) |
+| **소유** | `PlannerTab.jsx` · `PlannerStageNav.jsx` · `PreTravelChecklist.jsx` · `ToolkitCard.jsx` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:trust-disclosure` · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-방문자 개선 #7, 플래너 3단계 점진적 노출
+방문자 개선 #8, 언어일관성 및 가입혜택/접근성
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · Preview /qa/visitor-growth
+브랜치 cursor/visitor-growth-1f90 · PR #257 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: 플래너 3단계(필수→이동·통신→즐기기) · 중복 항공/숙소 CTA 통합 · 복잡도 90/100 문구 완화
-검증: npm run smoke:trust-disclosure · npm run build PASS
+작업: PlaceCard 설명 로컬라이징 · 가입 4대 혜택 · aria-label · 지구본 reduced-motion
+검증: npm run audit:i18n · npm run build PASS
 ```
 
 ---

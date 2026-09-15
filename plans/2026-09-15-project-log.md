@@ -2,6 +2,15 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #7 — 플래너 3단계 점진적 노출 (Cloud)
+
+- **세션** `방문자 개선 #7, 플래너 3단계 점진적 노출`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `e1dbd731` · 작업 `ad873fc3` · PR [#257](https://github.com/catgeot/Days/pull/257)
+- **완료**: 플래너 필수→이동·통신→즐기기 단계. 항공 배너·숙소 CTA를 체크리스트 예약 카드로 통합. 픽업은 2단계. 유심 Airalo/Holafly 택1. 복잡도 90/100 → 「상세 안내 포함」.
+- **VERIFY**: `npm run smoke:trust-disclosure` PASS · `npm run smoke:klook-affiliate` PASS · `npm run smoke:planner-empty-scroll` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/place/bora-bora/planner` · `/place/paris/planner`
+- **QA**: 단계 전환 · 항공/숙소가 한 카드인지 · 복잡도 90/100 없는지 · 유심이 한 번에 하나만인지.
+
 ## 방문자 개선 #6 — PR 병합 (Cloud)
 
 - **세션** `방문자 개선 #6, 신뢰요소 및 제휴투명성 강화`
