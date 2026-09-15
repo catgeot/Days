@@ -2,6 +2,16 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #4 — 종각 약칭 지오코딩 · 종로 NEIGHBORHOOD (Cloud)
+
+- **세션** `종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑`
+- **브랜치** `cursor/jonggak-stay-5f4f` · tip `c4892d8d` · PR [#263](https://github.com/catgeot/Days/pull/263)
+- **완료**: `종각` 약칭 → 서울 종각역. 숙소 래더 1차 `종로`(서울 CITY 뒤). Edge NEIGHBORHOOD 정확 일치 가산(배포 대기).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
+- **QA**: 홈「종각」→ 서울 종각역 · 숙소 찾기 → 종로·광화문 호텔(대구 봉덕·강남 광역 아님)
+- **다음**: `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
+
 ## 종각역 숙소 #3 — 1단계 완료(PR #260 ready) 및 역 숙소 종합 계획 수립 (Cloud)
 
 - **세션** `종각역 숙소 #3, Preview OK면 PR 병합`
@@ -210,15 +220,25 @@
 - **잔여**: 사진/개요 순수 누락 **81**/876. 다음 허브 **고흥10경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #50 다음 — 고흥 결손 오버레이
+## 팔경 활용 #50 — 고흥10경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #50, 고흥 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `09cd96f6` · PR [#262](https://github.com/catgeot/Days/pull/262)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 고흥10경 결손 3건(쑥섬·금산 해안경관·고흥만 수변노을공원). 쑥섬은 소록도·연홍도가 아니라 봉래면 애도(나로도항길 120-7) 전남 1호 민간정원, 금산 해안경관은 충남 금산군·남해 금산 보리암이 아니라 금산면 거금도 해안도로(거금일주로 1234·소원동산), 고흥만 수변노을공원은 남열 해돋이·영광 백수가 아니라 도덕면 고흥만로 1132-14. 고흥 순수 누락 3→0 · CID 7/10 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=goheung`
+- **잔여**: 사진/개요 순수 누락 **78**/876. 다음 허브 **김해9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #51 다음 — 김해 결손 오버레이
 
 ```
-팔경 활용 #50, 고흥 결손 오버레이
+팔경 활용 #51, 김해 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 고흥10경 사진·개요 없는 3건(쑥섬·금산 해안경관·고흥만 수변노을공원)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=goheung
+작업: 김해9경 사진·개요 없는 3건(화포천습지 생태공원·경전철에서 바라본 가야유적·분산(천문대)전경 및 운무)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gimhae
 ```
 

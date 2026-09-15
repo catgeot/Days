@@ -76,8 +76,8 @@
 |---|---|---|---|---|
 | **#1** | `종각역 숙소 #1` | 역 POI 시·군 선두 | `cursor/jonggak-stay-5f4f` | 0건 방지, 서울 CITY 매칭 (완료 ✅) |
 | **#2** | `종각역 숙소 #2` | 서울 좌표·서울 CITY | `cursor/jonggak-stay-5f4f` | 원주 오탐 수정, 철도역 허용 (완료 ✅) |
-| **#3** | `종각역 숙소 #3` | Preview OK면 PR 병합 | `cursor/jonggak-stay-5f4f` | 1단계 PR #260 병합 및 종합 계획 수립 (현재 세션) |
-| **#4** | `종각역 숙소 #4` | 종각 약칭 지오코딩 및 종로 권역 매핑 | `cursor/jonggak-stay-5f4f` | [Phase 1 + 2] `종각` 약칭 철도역 우선 + `district: 종로` NEIGHBORHOOD 래더 연계 |
+| **#3** | `종각역 숙소 #3` | Preview OK면 PR 병합 | `cursor/jonggak-stay-5f4f` | 1단계 PR [#260](https://github.com/catgeot/Days/pull/260) 병합 및 종합 계획 수립 (완료 ✅) |
+| **#4** | `종각역 숙소 #4` | 종각 약칭 지오코딩 및 종로 권역 매핑 | `cursor/jonggak-stay-5f4f` | [Phase 1 + 2] `종각`→종각역 · 래더 `종로` 선두 · PR [#263](https://github.com/catgeot/Days/pull/263) (사람 Preview) |
 | **#5** | `종각역 숙소 #5` | 거리 정렬 및 지도 딥링크 | `cursor/jonggak-stay-5f4f` | [Phase 3 + 4] Haversine 거리 표기 + 네이버 지도 인근 숙소 칩 |
 
 ---
@@ -87,12 +87,12 @@
 ### 다음 세션 제시어
 
 ```
-종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑
+종각역 숙소 #5, 거리 정렬 및 지도 딥링크
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/korea-station-stay-plan.md
-브랜치 cursor/jonggak-stay-5f4f · Preview /
+브랜치 cursor/jonggak-stay-5f4f · PR #263 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: 1) '종각' 단독 검색 시 대구 공원 대신 서울 종각역(철도역) 우선 매칭. 2) 종각역 숙소 찾기 시 서울 광역 대신 '종로' NEIGHBORHOOD(632건) 우선 래더 공급
+작업: Preview에서 종각이 서울 종각역이고 숙소가 종로·광화문이면 Phase 3+4 — 종각역 좌표 거리 표기 + 네이버 지도 인근 숙소 칩. 서울 광역이면 Edge fetch-mrt-stays 배포 후 재확인
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```
