@@ -2,6 +2,15 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #3 — 1단계 완료(PR #260 ready) 및 역 숙소 종합 계획 수립 (Cloud)
+
+- **세션** `종각역 숙소 #3, Preview OK면 PR 병합`
+- **브랜치** `cursor/jonggak-stay-5f4f` · PR [#260](https://github.com/catgeot/Days/pull/260) ready for review · 1단계(서울 CITY 매칭) 완료
+- **계획**: 사용자 피드백(서울 광역 노출 한계, '종각' 대구 공원 오탐) 반영 종합 실행 계획서 작성 ([`korea-station-stay-plan.md`](./korea-station-stay-plan.md))
+- **로드맵**: Phase 1('종각' 약칭 지오코딩 보정) + Phase 2(종로구 등 NEIGHBORHOOD 래더 연계) + Phase 3(거리 계산) + Phase 4(지도 딥링크)
+- **다음**: `종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑`
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npm run build` PASS
+
 ## 방문자 개선 #9 — PR 병합 · 8세션 주제 종료 (Cloud)
 
 - **세션** `방문자 개선 #9, Preview OK면 PR 병합`
