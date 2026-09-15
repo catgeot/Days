@@ -2,6 +2,22 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #4 — PR 병합 · PROD (Cloud)
+
+- **병합** PR [#263](https://github.com/catgeot/Days/pull/263) · main `76909fc9`
+- **PROD** `https://www.gateo.kr/` — `종각`→서울 종각역 · 숙소 1차 `종로`
+- **다음**: `종각역 숙소 #5, 거리 정렬 및 지도 딥링크` · 같은 브랜치 `cursor/jonggak-stay-5f4f`
+
+## 종각역 숙소 #4 — 종각 약칭 지오코딩 · 종로 NEIGHBORHOOD (Cloud)
+
+- **세션** `종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑`
+- **브랜치** `cursor/jonggak-stay-5f4f` · tip `c4892d8d` · PR [#263](https://github.com/catgeot/Days/pull/263)
+- **완료**: `종각` 약칭 → 서울 종각역. 숙소 래더 1차 `종로`(서울 CITY 뒤). Edge NEIGHBORHOOD 정확 일치 가산(배포 대기).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
+- **QA**: 홈「종각」→ 서울 종각역 · 숙소 찾기 → 종로·광화문 호텔(대구 봉덕·강남 광역 아님)
+- **다음**: `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
+
 ## 종각역 숙소 #3 — 1단계 완료(PR #260 ready) 및 역 숙소 종합 계획 수립 (Cloud)
 
 - **세션** `종각역 숙소 #3, Preview OK면 PR 병합`

@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-15-jonggak-stay-jongno-alias',
+    session: '종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑',
+    title: '종각 약칭은 서울 종각역, 숙소는 종로',
+    detail:
+      '검색「종각」이 대구 종각 광장으로 가던 문제를 고쳤습니다. 약칭은 서울 종각역(철도역)을 먼저 찾고, 숙소 찾기는 서울 전역 대신 종로 동네(마이리얼트립 약 632건)를 먼저 보냅니다. Preview 홈에서 「종각」검색이 서울 종각역인지, 숙소 찾기에 종로·광화문 호텔이 보이는지(대구 봉덕·강남 광역 아님).',
+    at: '2026-09-15T13:30:00.000Z',
+  },
+  {
     id: '2026-09-15-palgyeong-use-50-goheung-overlays',
     session: '팔경 활용 #50, 고흥 결손 오버레이',
     title: '고흥10경 쑥섬·금산 해안경관·고흥만 수변노을공원 오버레이',

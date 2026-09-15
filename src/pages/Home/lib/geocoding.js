@@ -9,7 +9,13 @@ import { KEYWORD_SYNONYMS } from '../data/keywordData';
 import { isIslandPlaceQuery, resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import { resolveTravelCountryFromAddresses } from './travelRegionCountry.js';
 import { isLatinPlaceName, mergeLatinPlaceFields } from './uiPlaceAssetQuery.js';
-import { queryLooksLikeStayPoint } from '../../../utils/mrtStayQuery.js';
+import {
+  queryLooksLikeStayPoint,
+  resolveKoStationAlias,
+  stationNameMatchesQuery,
+  nominatimStationScoreDelta,
+  nominatimSquarePenalty,
+} from '../../../utils/mrtStayQuery.js';
 
 const RETRY_FILTERS = [
   "고원", "섬", "산", "해변", "폭포", "마을", "대륙", "반도", "시", "군", "구",
@@ -125,6 +131,9 @@ export function expandForwardQueryAliases(query) {
     for (const preferred of landmarkPlan.queries) add(preferred);
   }
 
+  const stationAlias = resolveKoStationAlias(q);
+  if (stationAlias?.station) add(stationAlias.station);
+
   const explore = resolveExploreSearchAlias(q);
   if (explore?.canonical) add(explore.canonical);
   if (explore?.romanized) add(explore.romanized);
@@ -159,10 +168,11 @@ const isPlausibleForwardHit = (query, result) => {
   const cls = String(result.class || '');
   const type = String(result.type || '');
   const facilityQ = isFacilityQuery(query);
-  const stationQuery = queryLooksLikeStayPoint(query);
+  const stationQuery =
+    queryLooksLikeStayPoint(query) || stationNameMatchesQuery(query, name);
 
   if (cls === 'office') return false;
-  // 역 검색을 railway에서 버리면 종각역이 search_dictionary 원주 좌표로 떨어진다
+  // 역 검색·약칭(종각)을 railway에서 버리면 종각역이 대구 광장·원주 캐시로 떨어진다
   if (cls === 'railway' && !stationQuery) return false;
   // 고속도로 휴게소(OSM: highway=services|rest_area)는 시설 검색에서만 허용
   if (cls === 'highway') {
@@ -216,9 +226,8 @@ const calculatePlaceScore = (place, query = '') => {
 
   // 단순 행정구역(특히 대도시의 구/동)이나 역 등은 점수를 낮춤
   if (address.suburb || address.borough || address.quarter || address.city_district) score -= 30;
-  if (type === "station" || category === "railway" || cls === "railway") {
-    score += queryLooksLikeStayPoint(query) ? 80 : -40;
-  }
+  score += nominatimStationScoreDelta(query, place);
+  score += nominatimSquarePenalty(query, place);
   if (type === "administrative" && address.borough) score -= 20;
   if (facilityQ && (cls === 'boundary' || type === 'administrative')) score -= 80;
   if (facilityQ && (type === 'townhall' || /시청|구청|도청|군청/.test(String(place.name || '')))) {
@@ -280,6 +289,17 @@ const scoreMapboxFeature = (feature, searchQuery, facilityQ, landmarkPlan = null
     }
   }
 
+  const stationAlias = resolveKoStationAlias(searchQuery);
+  if (stationAlias) {
+    const compactText = text.replace(/\s+/g, '');
+    if (compactText === stationAlias.station || compactText === `${String(searchQuery || '').trim()}역`) {
+      score += 80;
+    }
+    if (stationAlias.district && label.includes(stationAlias.district)) score += 40;
+    if (/서울|종로/.test(label)) score += 30;
+    if (/대구|부산|대전|광주/.test(label) && !/서울|종로/.test(label)) score -= 120;
+  }
+
   return score;
 };
 
@@ -296,6 +316,23 @@ const countryFromMapboxFeature = (feature) => {
   };
   return resolveTravelCountryFromAddresses(addressLike, null);
 };
+
+function mapboxFitsStationAlias(parsed, alias) {
+  if (!alias) return true;
+  if (!parsed) return false;
+  const blob = [
+    parsed.name,
+    parsed.display_name,
+    parsed.stayAdmin?.city,
+    parsed.stayAdmin?.district,
+    parsed.stayAdmin?.neighbourhood,
+    parsed.stayAdmin?.state,
+  ].join(' ');
+  const compactName = String(parsed.name || '').replace(/\s+/g, '');
+  if (compactName === String(alias.station || '').replace(/\s+/g, '')) return true;
+  if (alias.district && blob.includes(alias.district)) return true;
+  return /서울/.test(blob);
+}
 
 const fetchMapboxGeocodeFeatures = async (
   searchQuery,
@@ -531,11 +568,28 @@ export const getCoordinatesFromAddress = async (query) => {
       }
     }
 
+    const stationAlias = resolveKoStationAlias(cleanQuery);
+    if (stationAlias?.station && stationAlias.station !== cleanQuery) {
+      const aliasMapbox = await tryMapboxBundle(stationAlias.station);
+      if (aliasMapbox && mapboxFitsStationAlias(aliasMapbox, stationAlias)) {
+        return aliasMapbox;
+      }
+    }
+
     const primaryMapbox = await tryMapboxBundle(cleanQuery);
-    if (primaryMapbox) return primaryMapbox;
+    if (primaryMapbox && mapboxFitsStationAlias(primaryMapbox, stationAlias)) {
+      return primaryMapbox;
+    }
 
     // 한글 지명: KR 우선 (횡성 저수지 → 폴란드 Holy Cross 오탐 방지). 실패 시 AI 폴백.
-    let data = await tryNominatimBundle(cleanQuery);
+    let data = await tryNominatimBundle(
+      stationAlias?.station && stationAlias.station !== cleanQuery
+        ? stationAlias.station
+        : cleanQuery,
+    );
+    if (!data && stationAlias?.station && stationAlias.station !== cleanQuery) {
+      data = await tryNominatimBundle(cleanQuery);
+    }
 
     // 1.5) 숙박·명소 별칭 (제주 신라호텔→호텔신라 제주, 에펠탑→Eiffel Tower)
     if (!data) {
