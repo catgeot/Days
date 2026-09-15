@@ -56,31 +56,20 @@
 
 ---
 
-### 방문자 개선 (체질 개선 13대 과제 및 크롤러 SEO)
+### 방문자 개선 — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | **#8 QA push** · tip `0faa423e` · PR [#259](https://github.com/catgeot/Days/pull/259) · **사람 Preview** |
-| **브랜치** | `cursor/visitor-growth-1f90` |
-| **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
+| **상태** | **#9 merge ✅ · 주제 종료** · main `e2e8ad20` · PR [#259](https://github.com/catgeot/Days/pull/259) |
+| **브랜치** | `cursor/visitor-growth-1f90` · merge `e2e8ad20` |
+| **PR** | [#259](https://github.com/catgeot/Days/pull/259) (MERGED) · [#257](https://github.com/catgeot/Days/pull/257) · [#255](https://github.com/catgeot/Days/pull/255) · [#253](https://github.com/catgeot/Days/pull/253) · [#249](https://github.com/catgeot/Days/pull/249) · [#248](https://github.com/catgeot/Days/pull/248) · [#247](https://github.com/catgeot/Days/pull/247) · [#244](https://github.com/catgeot/Days/pull/244) merge ✅ |
+| **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) **§9** |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
-| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/auth/signup` · `/place/paris/gallery` |
-| **PROD** | `https://www.gateo.kr/` — 신뢰 바·Credits·플래너 3단계 (#7 merge) |
-| **소유** | `PlaceCardExpanded.jsx` · `GalleryInfoView.jsx` · `Login.jsx` · `SignUp.jsx` · `HomeUI.jsx` · `HomeGlobeMapbox.jsx` |
-| **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:visitor-locale` · `npm run audit:i18n` · `npm run build` PASS |
+| **PROD** | `https://www.gateo.kr/` — 404·검색 넛지·크롤러 본문·무드검색·신뢰 바·플래너 3단계·EN 개요·가입 혜택 |
+| **VERIFY** | `smoke:visitor-locale` · `smoke:trust-disclosure` · `smoke:mood-search-intent` · `smoke:crawler-place-meta` · `audit:i18n` PASS |
+| **성과** | #1 404·MOONi. #2 검색+무니 가치제안·지구본 유지. #3 274곳 크롤러 본문. #4 무드/지오코딩 분리. #5 로딩·에러 UX. #6 신뢰·제휴. #7 플래너 3단계. #8 locale·가입·a11y. `/qa/visitor-growth`는 구 Preview |
 
-**다음 제시어**:
-
-```
-방문자 개선 #9, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-15-project-log.md
-@plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · PR #259 · Preview /qa/visitor-growth
-금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: EN 장소 카드 개요·가입 혜택이 OK면 PR #259 병합
-```
+**다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr`.
 
 ---
 

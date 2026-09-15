@@ -2,6 +2,14 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #9 — PR 병합 · 8세션 주제 종료 (Cloud)
+
+- **세션** `방문자 개선 #9, Preview OK면 PR 병합`
+- **병합** PR [#259](https://github.com/catgeot/Days/pull/259) · main `e2e8ad20` · 사람 Preview OK 후 이전 세션에서 병합됨. 추가 코드 없음.
+- **로드맵** Phase 1–4 · 세션 #1–#8 전부 main. 핸드오프 행 종료. 다음 제시어 없음.
+- **PROD** `https://www.gateo.kr/`
+- **VERIFY** `npm run smoke:visitor-locale` PASS · `npm run smoke:trust-disclosure` PASS · `npm run smoke:mood-search-intent` PASS · `npm run smoke:crawler-place-meta` PASS · `npm run audit:i18n` PASS
+
 ## 종각역 숙소 #2 — 원주 오탐 → 서울 CITY (Cloud)
 
 - **세션** `종각역 숙소 #2, Preview OK면 PR 병합`
