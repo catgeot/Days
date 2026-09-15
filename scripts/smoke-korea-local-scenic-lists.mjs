@@ -2625,6 +2625,76 @@ assert.ok(
   '거제 검색 팔경 매미성 공사 썸네일',
 );
 
+const donghaeMerged = mergeLocalScenicMembersIntoScenicSpots([], 'donghae');
+const donghaeNine = donghaeMerged.filter((s) => s.localScenicListId === 'donghae-bijing');
+assert.equal(donghaeNine.length, 9, '동해비경 9명');
+assert.equal(donghaeNine[0]?.groupTitle, '동해 명소');
+const donghaeDeficitNames = ['호해정', '할미바위', '초록봉'];
+const donghaeDeficit = donghaeNine.filter((s) =>
+  donghaeDeficitNames.includes(s.attractionName),
+);
+assert.equal(donghaeDeficit.length, 3, '동해비경 결손 3명');
+assert.ok(
+  donghaeDeficit.every((s) => s.overview && s.imageUrl),
+  '동해 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  donghaeDeficit.every((s) => !s.contentId),
+  '동해 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(donghaeDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '동해 결손 3명 썸네일 서로 다름',
+);
+assert.ok(
+  donghaeDeficit.every((s) => String(s.imageUrl).includes('dh.go.kr')),
+  '동해 결손 3명 동해시 공식 사진',
+);
+
+const dhHohae = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:호해정');
+assert.ok(dhHohae?.overview?.includes('구미동 산2'), '동해 호해정 주소');
+assert.ok(dhHohae?.overview?.includes('광복'), '동해 호해정 광복 기념');
+assert.ok(dhHohae?.overview?.includes('천하괴석'), '동해 호해정 추사 현액');
+assert.ok(dhHohae?.overview?.includes('강릉 경포 호해정'), '동해 호해정≠강릉 호해정 구분');
+assert.ok(dhHohae?.overview?.includes('해암정'), '동해 호해정≠추암 해암정 구분');
+assert.ok(dhHohae?.imageUrl?.includes('lC3E'), '동해 호해정 시 공식 사진');
+
+const dhHalmi = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:할미바위');
+assert.ok(dhHalmi?.overview?.includes('구미동 산1'), '동해 할미바위 주소');
+assert.ok(dhHalmi?.overview?.includes('2.5m'), '동해 할미바위 지름');
+assert.ok(dhHalmi?.overview?.includes('흔들바위'), '동해 할미바위 흔들바위');
+assert.ok(dhHalmi?.overview?.includes('삼척·고성 할미바위'), '동해 할미바위≠삼척 구분');
+assert.ok(dhHalmi?.imageUrl?.includes('24451037_RxXo'), '동해 할미바위 시 공식 사진');
+assert.notEqual(dhHohae?.imageUrl, dhHalmi?.imageUrl, '호해정·할미바위 썸네일 다름');
+
+const dhChorok = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:초록봉');
+assert.ok(dhChorok?.overview?.includes('8경 중 8경'), '동해 초록봉 overlay overview');
+assert.ok(dhChorok?.overview?.includes('종합경기장'), '동해 초록봉 등산 코스');
+assert.ok(dhChorok?.overview?.includes('천곡동'), '동해 초록봉 주소');
+assert.ok(dhChorok?.overview?.includes('두타산'), '동해 초록봉≠두타산 구분');
+assert.ok(dhChorok?.imageUrl?.includes('23227431_f3xe'), '동해 초록봉 시 공식 사진');
+assert.notEqual(dhChorok?.imageUrl, dhHohae?.imageUrl, '초록봉·호해정 썸네일 다름');
+assert.notEqual(dhChorok?.imageUrl, dhHalmi?.imageUrl, '초록봉·할미바위 썸네일 다름');
+
+const donghaeGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '동해', {
+  injectLocalScenic: true,
+});
+const donghaeGlobeNine = donghaeGlobe.filter((s) => s.localScenicListId === 'donghae-bijing');
+assert.equal(donghaeGlobeNine.length, 9, '동해 검색 동해비경 9행');
+assert.ok(
+  donghaeGlobeNine.every((s) => s.groupTitle === '동해 명소'),
+  '동해 검색 팔경 groupTitle 동해 명소',
+);
+assert.ok(
+  donghaeGlobe.find((s) => s.attractionName === '호해정')?.imageUrl?.includes('lC3E'),
+  '동해 검색 팔경 호해정 시 썸네일',
+);
+assert.ok(
+  donghaeGlobe.find((s) => s.attractionName === '초록봉')?.overview?.includes('종합경기장'),
+  '동해 검색 팔경 초록봉 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

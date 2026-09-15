@@ -1280,6 +1280,15 @@ const GJ_GUJORA_3 = 'https://tong.visitkorea.or.kr/cms2/website/54/1047454.jpg';
 const GJ_TERMINAL = 'https://tong.visitkorea.or.kr/cms2/website/82/1250082.jpg';
 const GJ_TERMINAL_2 = 'https://tong.visitkorea.or.kr/cms2/website/92/1250092.jpg';
 const GJ_TERMINAL_3 = 'https://tong.visitkorea.or.kr/cms2/website/95/1250095.jpg';
+const DH_HOHAE = 'https://www.dh.go.kr/DATA/tour/12/20230103025348668_lC3E.jpg';
+const DH_HOHAE_2 = 'https://www.dh.go.kr/DATA/tour/12/20230103025348704_Uzoq.jpg';
+const DH_HOHAE_3 = 'https://www.dh.go.kr/DATA/tour/12/20230103025348728_hS4t.jpg';
+const DH_HALMI = 'https://www.dh.go.kr/DATA/tour/5/20230103024451037_RxXo.jpg';
+const DH_HALMI_2 = 'https://www.dh.go.kr/site/tour/images/contents/cts1564_img07.png';
+const DH_HALMI_3 = 'https://www.dh.go.kr/DATA/tour/5/20230103024451061_KTwk.jpg';
+const DH_CHOROK = 'https://www.dh.go.kr/DATA/tour/5/20230103023227431_f3xe.jpg';
+const DH_CHOROK_2 = 'https://www.dh.go.kr/DATA/tour/5/20230103023227447_yFNP.jpg';
+const DH_CHOROK_3 = 'https://www.dh.go.kr/site/tour/images/contents/cts1564_img08.png';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2715,6 +2724,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 거제시 일운면 구조라리 (구조라해수욕장)',
     GJ_GUJORA,
     [GJ_GUJORA_2, GJ_GUJORA_3],
+  ),
+  'local-scenic:donghae-bijing:호해정': localScenicPhotoOverlay(
+    '동해비경 호해정은 동해시 구미동 산2의 정자입니다. 동해시 문화유산 안내는 조국의 광복을 기념하여 창건됐다고 적고, 1945년 일헌 최덕규 등 40명의 주춘계원이 세웠으며 추사 김정희의 현액 「천하괴석」과 만제 홍낙섭의 「풍속영귀」가 걸려 있다고 합니다. 앞으로는 전천이 갯목과 함께 흐르고 뒤로는 동해 해안 기암이 펼쳐지며, 서산낙조를 바라보는 구조입니다. 동해시 비경 페이지는 호해정·할미바위를 한 항목으로 안내합니다. 강릉 경포 호해정(유형문화유산)·동해 추암 해암정·인근 만경대와 다른 자리입니다. 사진은 동해시 관광 호해정 공식 사진입니다.',
+    '강원특별자치도 동해시 구미동 산2 (호해정)',
+    DH_HOHAE,
+    [DH_HOHAE_2, DH_HOHAE_3],
+  ),
+  'local-scenic:donghae-bijing:할미바위': localScenicPhotoOverlay(
+    '동해비경 할미바위는 동해시 구미동 산1 해안절벽의 흔들바위입니다. 동해시 관광은 앞으로는 전천이 흐르고 뒤로는 동해와 맞닿으며, 한두 사람이 흔들면 움직이지만 여럿이 밀면 꿈쩍하지 않는다고 적습니다. 호해정 안내는 해안절벽 위 지름 2.5m 흔들바위를 할미바위(마고암)라 부르고, 앞에 할머니 조형물과 마고암 전설 시가 있다고 합니다. 아기를 바라는 사람이 바위를 흔들며 소원을 빈다는 설화를 시가 안내합니다. 동해시 비경 페이지는 호해정과 묶어 「호해정·할미바위」로 소개합니다. 삼척·고성 할미바위와 다른 자리입니다. 사진은 동해시 관광 할미바위 공식 사진입니다.',
+    '강원특별자치도 동해시 구미동 산1 (할미바위)',
+    DH_HALMI,
+    [DH_HALMI_2, DH_HALMI_3],
+  ),
+  'local-scenic:donghae-bijing:초록봉': localScenicPhotoOverlay(
+    '동해비경 초록봉은 동해시 천곡동·비로동·이로동·승지동에 걸친 산입니다. 동해시 관광은 동해 8경 중 8경이며, 정상 능선에서 동쪽으로 동해, 서쪽으로 대관령 남쪽 백두대간·두타산·청옥산 능선을 본다고 적습니다. 이웃 봉우리에 MBC 송신중계소가 있고, 정상에는 시가 세운 초록봉 숲 탐방로 안내문과 돌탑이 있습니다. 비경 페이지는 백두대간 연봉 청오간의 한 봉우리로 수목이 울창한 등산로이자 시민 휴식공간이라고 안내합니다. 등산 1-1코스는 종합경기장~초록봉 2.4km(1시간), 1-2코스 2.6km, 2코스 묵호고~초록봉 3.6km, 3코스 북삼초교~초록봉 6.2km입니다. 두타산·청옥산과 다른 봉우리입니다. 사진은 동해시 관광 초록봉 정상석 공식 사진입니다.',
+    '강원특별자치도 동해시 천곡동 (초록봉)',
+    DH_CHOROK,
+    [DH_CHOROK_2, DH_CHOROK_3],
   ),
 };
 

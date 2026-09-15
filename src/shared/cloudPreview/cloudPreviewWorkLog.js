@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 47,
-  sessionPhase: '거제 빈 썸네일',
+  sessionNo: 48,
+  sessionPhase: '동해 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=geoje',
+  previewPath: '/korea/theme/scenic?hub=donghae',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-48-donghae-overlays',
+    session: '팔경 활용 #48, 동해 결손 오버레이',
+    title: '동해비경 결손 3건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 동해비경 결손 3건(호해정·할미바위·초록봉)의 공공 공식 팩트 개요·주소·동해시 관광 공식 사진을 보강했습니다. 호해정은 구미동 산2 광복 기념 정자, 할미바위는 구미동 산1 해안절벽 흔들바위, 초록봉은 천곡동 등 4개 동 등산로(동해 8경 중 8경)입니다. 강릉 호해정·추암 해암정·만경대·삼척 할미바위·두타산과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=donghae 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T03:55:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-47-geoje-empty-thumbs',
     session: '팔경 활용 #47, 거제 빈 썸네일',
