@@ -9,7 +9,7 @@ export const cloudPreviewProject = {
   sessionNo: 49,
   sessionPhase: '영광 검색 썸네일',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=yeonggwang',
+  previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-detailimage',
+    session: '팔경 활용 #49, 영광 검색 썸네일',
+    title: '불갑산도립공원 detailImage 썸네일',
+    detail:
+      'Preview QA에서 검색「영광」불갑산도립공원(126248)이 그대로 Landmark였습니다. DB·detailCommon·searchKeyword firstimage와 searchPhoto는 비고, TourAPI 사진은 detailImage 3장(상사화 군락 2831192 등)에만 있습니다. 리스트 live가 firstimage만 봐서 빈 채로 끝났습니다. fetchTourApiFirstImage가 detailImage를 타게 하고, 같은 CMS URL을 TOUR_THUMB 126248에 넣었습니다. 불갑사 126349·3379065와 다른 id입니다. Preview /qa/palgyeong-use — 검색「영광」불갑산도립공원 썸네일.',
+    at: '2026-09-15T12:35:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-49-yeonggwang-tour-thumbs',
     session: '팔경 활용 #49, 영광 검색 썸네일',

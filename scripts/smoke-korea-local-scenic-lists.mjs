@@ -150,6 +150,16 @@ assert.ok(
   scenicPageSrc.includes('rememberKoreaTourAttractionFirstImage'),
   'ScenicPage caches live TourAPI firstimage for Tour list thumbs',
 );
+const tourFirstImageSrc = readFileSync(
+  join(root, 'src/utils/fetchTourApiAttractionDetail.js'),
+  'utf8',
+);
+assert.ok(
+  /export async function fetchTourApiFirstImage[\s\S]*detailImage/.test(
+    tourFirstImageSrc,
+  ),
+  'fetchTourApiFirstImage uses detailImage when firstimage is empty',
+);
 assert.ok(
   !scenicPageSrc.includes('hasTourContentId(spot.contentId) ? openSpot'),
   'ScenicPage does not block palgyeong rows without Tour id',
@@ -2873,6 +2883,20 @@ assert.ok(
 assert.ok(
   yeonggwangGlobe.find((s) => s.attractionName === '백학촌')?.overview?.includes('물무산'),
   '영광 검색 팔경 백학촌 개요',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126248')?.imageUrl?.includes('2831192'),
+  '영광 검색 Tour 행 불갑산도립공원 detailImage 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126248')?.galleryUrls?.some((u) =>
+    String(u).includes('2996250'),
+  ),
+  '불갑산도립공원 갤러리에 축제 연등 사진',
+);
+assert.ok(
+  !lookupLocalScenicPhotoByContentId('126248')?.imageUrl?.includes('3379065'),
+  '불갑산도립공원 썸네일은 불갑사 GATEO 사진이 아님',
 );
 
 const extra = process.argv.slice(2);

@@ -1356,6 +1356,9 @@ const YG_SUPJAENG_3 = 'https://www.khs.go.kr/unisearch/images/scenic_site/162903
 const YG_MULMU = 'https://tong.visitkorea.or.kr/cms/resource/88/2676388_image2_1.JPG';
 const YG_MULMU_2 = 'https://tong.visitkorea.or.kr/cms/resource/89/2676389_image2_1.JPG';
 const YG_MULMU_3 = 'https://tong.visitkorea.or.kr/cms/resource/86/2825886_image2_1.jpg';
+const YG_BULGAP = 'https://tong.visitkorea.or.kr/cms/resource/92/2831192_image2_1.jpg';
+const YG_BULGAP_2 = 'https://tong.visitkorea.or.kr/cms/resource/50/2996250_image2_1.jpg';
+const YG_BULGAP_3 = 'https://tong.visitkorea.or.kr/cms/resource/53/2996253_image2_1.JPG';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2889,6 +2892,8 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   125713: localScenicThumbOverlay(DH_MANGSANG, [DH_MANGSANG_2]),
   // 동해 명승 검색 어달해변 — TourAPI first_image 없음. 망상·대진·노봉과 다른 해변.
   125708: localScenicThumbOverlay(DH_EODAL, [DH_EODAL_2, DH_EODAL_3]),
+  // 영광 검색 불갑산도립공원 — firstimage·searchPhoto 공란, 사진은 detailImage. 불갑사 126349와 다른 id.
+  126248: localScenicThumbOverlay(YG_BULGAP, [YG_BULGAP_2, YG_BULGAP_3]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
