@@ -32,6 +32,8 @@ import {
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
   lookupLocalScenicPhotoByContentId,
+  lookupLocalScenicMemberOverlayForSpot,
+  resolveLocalScenicRowFirstImage,
   resolveSearchScenicMedia,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import { pickTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
@@ -2623,6 +2625,174 @@ assert.ok(
     '3092092',
   ),
   '거제 검색 팔경 매미성 공사 썸네일',
+);
+
+const donghaeMerged = mergeLocalScenicMembersIntoScenicSpots([], 'donghae');
+const donghaeNine = donghaeMerged.filter((s) => s.localScenicListId === 'donghae-bijing');
+assert.equal(donghaeNine.length, 9, '동해비경 9명');
+assert.equal(donghaeNine[0]?.groupTitle, '동해 명소');
+const donghaeDeficitNames = ['호해정', '할미바위', '초록봉'];
+const donghaeDeficit = donghaeNine.filter((s) =>
+  donghaeDeficitNames.includes(s.attractionName),
+);
+assert.equal(donghaeDeficit.length, 3, '동해비경 결손 3명');
+assert.ok(
+  donghaeDeficit.every((s) => s.overview && s.imageUrl),
+  '동해 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  donghaeDeficit.every((s) => !s.contentId),
+  '동해 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(donghaeDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '동해 결손 3명 썸네일 서로 다름',
+);
+assert.ok(
+  donghaeDeficit.every((s) => String(s.imageUrl).includes('dh.go.kr')),
+  '동해 결손 3명 동해시 공식 사진',
+);
+
+const dhHohae = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:호해정');
+assert.ok(dhHohae?.overview?.includes('구미동 산2'), '동해 호해정 주소');
+assert.ok(dhHohae?.overview?.includes('광복'), '동해 호해정 광복 기념');
+assert.ok(dhHohae?.overview?.includes('천하괴석'), '동해 호해정 추사 현액');
+assert.ok(dhHohae?.overview?.includes('강릉 경포 호해정'), '동해 호해정≠강릉 호해정 구분');
+assert.ok(dhHohae?.overview?.includes('해암정'), '동해 호해정≠추암 해암정 구분');
+assert.ok(dhHohae?.imageUrl?.includes('lC3E'), '동해 호해정 시 공식 사진');
+
+const dhHalmi = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:할미바위');
+assert.ok(dhHalmi?.overview?.includes('구미동 산1'), '동해 할미바위 주소');
+assert.ok(dhHalmi?.overview?.includes('2.5m'), '동해 할미바위 지름');
+assert.ok(dhHalmi?.overview?.includes('흔들바위'), '동해 할미바위 흔들바위');
+assert.ok(dhHalmi?.overview?.includes('삼척·고성 할미바위'), '동해 할미바위≠삼척 구분');
+assert.ok(dhHalmi?.imageUrl?.includes('24451037_RxXo'), '동해 할미바위 시 공식 사진');
+assert.notEqual(dhHohae?.imageUrl, dhHalmi?.imageUrl, '호해정·할미바위 썸네일 다름');
+
+const dhChorok = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:초록봉');
+assert.ok(dhChorok?.overview?.includes('8경 중 8경'), '동해 초록봉 overlay overview');
+assert.ok(dhChorok?.overview?.includes('종합경기장'), '동해 초록봉 등산 코스');
+assert.ok(dhChorok?.overview?.includes('천곡동'), '동해 초록봉 주소');
+assert.ok(dhChorok?.overview?.includes('두타산'), '동해 초록봉≠두타산 구분');
+assert.ok(dhChorok?.imageUrl?.includes('23227431_f3xe'), '동해 초록봉 시 공식 사진');
+assert.notEqual(dhChorok?.imageUrl, dhHohae?.imageUrl, '초록봉·호해정 썸네일 다름');
+assert.notEqual(dhChorok?.imageUrl, dhHalmi?.imageUrl, '초록봉·할미바위 썸네일 다름');
+
+const donghaeGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '동해', {
+  injectLocalScenic: true,
+});
+const donghaeGlobeNine = donghaeGlobe.filter((s) => s.localScenicListId === 'donghae-bijing');
+assert.equal(donghaeGlobeNine.length, 9, '동해 검색 동해비경 9행');
+assert.ok(
+  donghaeGlobeNine.every((s) => s.groupTitle === '동해 명소'),
+  '동해 검색 팔경 groupTitle 동해 명소',
+);
+assert.ok(
+  donghaeGlobe.find((s) => s.attractionName === '호해정')?.imageUrl?.includes('lC3E'),
+  '동해 검색 팔경 호해정 시 썸네일',
+);
+assert.ok(
+  donghaeGlobe.find((s) => s.attractionName === '초록봉')?.overview?.includes('종합경기장'),
+  '동해 검색 팔경 초록봉 개요',
+);
+
+const dhYongchu = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:용추폭포');
+const dhBanseok = resolveLocalScenicListSpotById('local-scenic:donghae-bijing:무릉반석');
+const dhMangsang = resolveLocalScenicListSpotById(
+  'local-scenic:donghae-bijing:동해망상해수욕장',
+);
+assert.ok(dhYongchu?.imageUrl?.includes('kzKl'), '동해 용추폭포 시 공식 사진');
+assert.ok(dhYongchu?.overview?.includes('무릉계곡'), '동해 용추폭포 무릉계곡 명승');
+assert.ok(dhYongchu?.overview?.includes('문경 용추계곡'), '동해 용추폭포≠문경 용추 구분');
+assert.ok(dhBanseok?.imageUrl?.includes('NxfT'), '동해 무릉반석 시 공식 사진');
+assert.ok(dhBanseok?.overview?.includes('무릉선원'), '동해 무릉반석 석각');
+assert.ok(dhBanseok?.overview?.includes('용추폭포'), '동해 무릉반석≠용추폭포 구분');
+assert.notEqual(dhYongchu?.imageUrl, dhBanseok?.imageUrl, '용추폭포·무릉반석 썸네일 다름');
+assert.ok(dhMangsang?.imageUrl?.includes('U7Rc'), '동해 망상해변 시 공식 사진');
+assert.ok(dhMangsang?.overview?.includes('동해대로 6270-10'), '동해 망상 주소');
+assert.ok(dhMangsang?.overview?.includes('어달해변'), '동해 망상≠어달 구분');
+assert.notEqual(dhMangsang?.imageUrl, dhYongchu?.imageUrl, '망상·용추 썸네일 다름');
+
+const tourSameValley = new Map([
+  ['125673', 'https://example.invalid/mureung-valley.jpg'],
+]);
+assert.ok(
+  resolveLocalScenicRowFirstImage(dhYongchu, tourSameValley)?.includes('kzKl'),
+  '명승 리스트 용추 Tour 125673보다 오버레이 우선',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(dhBanseok, tourSameValley)?.includes('NxfT'),
+  '명승 리스트 무릉반석 Tour 125673보다 오버레이 우선',
+);
+assert.notEqual(
+  resolveLocalScenicRowFirstImage(dhYongchu, tourSameValley),
+  resolveLocalScenicRowFirstImage(dhBanseok, tourSameValley),
+  'Tour 같은 contentId여도 용추·반석 썸네일 다름',
+);
+assert.ok(
+  lookupLocalScenicMemberOverlayForSpot({
+    id: 'donghae-mangsang-beach',
+    hubId: 'donghae',
+    name: '동해 망상해수욕장',
+    attractionName: '동해 망상해수욕장',
+    localScenicListId: 'donghae-bijing',
+  })?.imageUrl?.includes('U7Rc'),
+  'GATEO 망상 행도 팔경 오버레이',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(
+    {
+      id: 'donghae-mangsang-beach',
+      hubId: 'donghae',
+      name: '동해 망상해수욕장',
+      contentId: '125713',
+      localScenicListId: 'donghae-bijing',
+    },
+    new Map([['125713', 'https://example.invalid/mangsang-letters.jpg']]),
+  )?.includes('U7Rc'),
+  '명승 리스트 망상 Tour firstimage보다 오버레이 우선',
+);
+
+const donghaeWithThumbs = donghaeNine.filter((s) => s.imageUrl);
+assert.ok(
+  donghaeWithThumbs.length >= 8,
+  '동해비경 썸네일 8명 이상(만경대는 Tour 런타임)',
+);
+assert.equal(
+  new Set(donghaeWithThumbs.map((s) => s.imageUrl)).size,
+  donghaeWithThumbs.length,
+  '동해비경 있는 썸네일은 서로 다름',
+);
+
+const dhMangsangSearch = resolveSearchScenicMedia({
+  hubId: 'donghae',
+  name: '동해 망상해수욕장',
+});
+assert.ok(
+  dhMangsangSearch.imageUrl?.includes('U7Rc'),
+  '탐색 드롭다운 동해 망상해수욕장 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'donghae',
+    name: '동해 망상해수욕장',
+    imageUrl: 'https://example.invalid/mangsang-letters.jpg',
+  }).imageUrl?.includes('U7Rc'),
+  '탐색 검색 망상 Tour 기존 썸네일보다 오버레이 우선',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125713')?.imageUrl?.includes('U7Rc'),
+  '동해 검색 Tour 행 망상해수욕장 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125708')?.imageUrl?.includes('ZL0E'),
+  '동해 명승 검색 Tour 행 어달해변 썸네일',
+);
+assert.notEqual(
+  lookupLocalScenicPhotoByContentId('125713')?.imageUrl,
+  lookupLocalScenicPhotoByContentId('125708')?.imageUrl,
+  '망상·어달 Tour 썸네일 다름',
 );
 
 const extra = process.argv.slice(2);
