@@ -165,8 +165,12 @@ function scoreRegion(
   const kw = norm(keyword);
   const name = norm(r.name || "");
 
-  if (r.type === "CITY") score += 30;
-  else if (r.type === "NEIGHBORHOOD") score += 15;
+    if (r.type === "CITY") score += 30;
+    else if (r.type === "NEIGHBORHOOD") {
+      score += 15;
+      // 키워드「종로」정확 일치 — CITY「서울」(+30)보다 NEIGHBORHOOD가 이기게
+      if (name === kw) score += 25;
+    }
   else if (r.type === "AIRPORT") score += 8;
   else if (r.type === "POINT_OF_INTEREST") score += 0;
 

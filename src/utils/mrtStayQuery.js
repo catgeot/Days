@@ -226,6 +226,17 @@ const KO_TOWNSHIP_RE = /[읍면리]$/;
 const KO_STAY_POINT_RE = /(지하철역|기차역|고속터미널|터미널|정류장|역|길)$/;
 const KO_STAY_POINT_FALSE_RE = /(무역|검역|방역|용역|영역|번역|이력|내역|현역|대역)$/;
 const EN_STAY_POINT_RE = /\b(station|subway|metro|terminal)\b|-gil\b/i;
+/**
+ * 역명 약칭. 「종각」단독이 대구 종각 광장으로 떨어지지 않게.
+ * district = MRT NEIGHBORHOOD 키워드 (종로 632건).
+ */
+const KO_STATION_ALIASES = {
+  종각: { station: '종각역', district: '종로' },
+};
+
+function compactKoPlaceKey(raw) {
+  return String(raw || '').trim().replace(/\s+/g, '');
+}
 
 function isKoFineAdminName(name) {
   return KO_FINE_ADMIN_RE.test(String(name || '').trim());
@@ -235,12 +246,78 @@ function isKoTownshipName(name) {
   return KO_TOWNSHIP_RE.test(String(name || '').trim());
 }
 
+/** 「종각」→ 종각역·종로. 「종각역」도 동일 district. */
+export function resolveKoStationAlias(raw) {
+  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
+  if (!s || s.length < 2) return null;
+  if (KO_STATION_ALIASES[s]) return KO_STATION_ALIASES[s];
+  const stripped = s.replace(/역$/, '');
+  if (stripped !== s && KO_STATION_ALIASES[stripped]) return KO_STATION_ALIASES[stripped];
+  return null;
+}
+
+export function stationNameMatchesQuery(query, resultName) {
+  const q = compactKoPlaceKey(query).split(/[,/]/)[0];
+  const n = compactKoPlaceKey(resultName);
+  if (!q || !n || q.length < 2) return false;
+  if (n === q || n === `${q}역`) return true;
+  const alias = resolveKoStationAlias(q);
+  return Boolean(alias?.station && n === compactKoPlaceKey(alias.station));
+}
+
+export function isNominatimRailwayHit(result) {
+  const type = String(result?.type || '');
+  const cls = String(result?.class || '');
+  const category = String(result?.category || '');
+  return (
+    type === 'station' ||
+    type === 'subway' ||
+    type === 'halt' ||
+    type === 'tram_stop' ||
+    cls === 'railway' ||
+    category === 'railway'
+  );
+}
+
+/** 약칭·역 검색은 철도역 가산. 아니면 railway 페널티(기존). */
+export function nominatimStationScoreDelta(query, result) {
+  if (!isNominatimRailwayHit(result)) return 0;
+  if (queryLooksLikeStayPoint(query) || stationNameMatchesQuery(query, result?.name)) return 80;
+  return -40;
+}
+
+export function nominatimSquarePenalty(query, result) {
+  const cls = String(result?.class || '');
+  const type = String(result?.type || '');
+  if (cls === 'place' && type === 'square' && queryLooksLikeStayPoint(query)) return -60;
+  return 0;
+}
+
+/** 종로구·종로1가·약칭 district → MRT NEIGHBORHOOD 키워드 */
+export function mrtNeighborhoodKeyword(admin = {}, location = {}) {
+  const alias =
+    resolveKoStationAlias(location?.originalQuery) ||
+    resolveKoStationAlias(location?.name) ||
+    resolveKoStationAlias(location?.name_ko);
+  if (alias?.district) return alias.district;
+  const strippedDistrict = stripKoAdminSuffix(admin?.district);
+  if (strippedDistrict) return strippedDistrict;
+  const rawDistrict = String(admin?.district || '').trim();
+  if (rawDistrict.length >= 2 && rawDistrict !== String(admin?.city || '').trim()) {
+    if (!/(특별시|광역시|특별자치시|특별자치도)$/.test(rawDistrict)) return rawDistrict;
+  }
+  const nb = String(admin?.neighbourhood || '').trim();
+  const m = nb.match(/^([가-힣]{2,})(?:\d+가|\d+동)$/u);
+  return m ? m[1] : '';
+}
+
 /** 역·길·터미널·station — 숙소 검색은 시·군을 선두 */
 export function isMrtStayPointLabel(raw) {
   const s = String(raw || '').trim();
   if (!s || s.length < 2) return false;
   if (EN_STAY_POINT_RE.test(s)) return true;
   if (KO_STAY_POINT_FALSE_RE.test(s)) return false;
+  if (KO_STATION_ALIASES[compactKoPlaceKey(s)]) return true;
   return KO_STAY_POINT_RE.test(s);
 }
 
@@ -528,10 +605,11 @@ export function resolveMrtStayQuery(location) {
   }
 
   // 국내 동·리·읍·면·역·길: 시·군 우선 — 「퇴계동」안동 · 「종각역」서울
-  // 역·터미널은 축약 시명(서울)을 서울특별시보다 앞 — MRT CITY「서울」·「서울 종각역」단독은 CITY 없음
-  // 해외·비세밀: 세밀 키워드 우선
+  // 역·터미널은 생활권(종로) → 축약 시명(서울) — MRT NEIGHBORHOOD「종로」·CITY「서울」
+  // 「서울 종각역」단독 CITY는 없음. 해외·비세밀: 세밀 키워드 우선
   if ((fineGrain || stayPoint) && isDomestic) {
     if (stayPoint) {
+      pushUnique(ladder, seen, mrtNeighborhoodKeyword(admin, location));
       pushUnique(ladder, seen, stripKoAdminSuffix(admin.city));
       pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
       pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
