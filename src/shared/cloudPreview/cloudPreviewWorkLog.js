@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 50,
-  sessionPhase: '고흥 결손 오버레이',
+  sessionPhase: '고흥 빈 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-50-goheung-empty-thumbs',
+    session: '팔경 활용 #50, 고흥 빈 썸네일',
+    title: '팔영산 자연휴양림·영남용바위 빈 썸네일',
+    detail:
+      'Preview QA에서 고흥10경 1경 팔영산 자연휴양림과 검색「고흥」영남용바위·팔영산자연휴양림이 Landmark였습니다. Tour 125426·2782706 firstimage가 비어 있습니다. JSON contentId 기입 없이 멤버 오버레이·TOUR_THUMB에 한국관광공사 휴양림 산림문화휴양관(2380877)·영남용바위 해안절벽(2788863) 사진을 넣었습니다. 능가사·편백치유의 숲·남열 해수욕장·소록도와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goheung 1경, 검색「고흥」팔영산자연휴양림·영남용바위.',
+    at: '2026-09-15T19:50:00.000Z',
+  },
   {
     id: '2026-09-15-jonggak-stay-jongno-alias',
     session: '종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑',

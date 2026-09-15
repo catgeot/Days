@@ -1376,6 +1376,12 @@ const GH_SUNSET_2 =
   'https://tour.goheung.go.kr/ajax/image.do?file=/upload/307//20241219151255_160332832.jpg&size=1180x1180';
 const GH_SUNSET_3 =
   'https://tour.goheung.go.kr/ajax/image.do?file=/upload/308//20241219152116_1305081728.jpg&size=1180x1180';
+const GH_FOREST = 'https://tong.visitkorea.or.kr/cms/resource/77/2380877_image2_1.JPG';
+const GH_FOREST_2 = 'https://tong.visitkorea.or.kr/cms/resource/81/2380881_image2_1.JPG';
+const GH_FOREST_3 = 'https://tong.visitkorea.or.kr/cms/resource/78/2380878_image2_1.jpg';
+const GH_YONG = 'https://tong.visitkorea.or.kr/cms/resource/63/2788863_image2_1.jpg';
+const GH_YONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/65/2788865_image2_1.jpg';
+const GH_YONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/62/2788862_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2884,6 +2890,12 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     GH_SUNSET,
     [GH_SUNSET_2, GH_SUNSET_3],
   ),
+  'local-scenic:goheung-other:팔영산자연휴양림': localScenicPhotoOverlay(
+    '고흥10경 1경 팔영산 자연휴양림은 영남면 우천리 팔영산 동쪽 계곡(해발 약 400m)입니다. 숲나들e는 참나무류 천연림이며 산림문화휴양관 1동과 숲속의 집 9동, 야영데크·파고라가 있다고 적습니다. 주소는 영남면 팔영로 1347-418입니다. 팔영산 8봉(유영봉~적취봉) 암릉과 다도해 조망이 휴양림의 배경이며, 1998년 7월 16일 개장했습니다. 점암면 능가사·팔영산 편백치유의 숲과 다른 숙박·야영 시설이며, 같은 영남면 남열 해돋이해수욕장·영남용바위(용바위길 22)와도 다른 자리입니다. 사진은 한국관광공사 휴양림 산림문화휴양관·숲길·팔영산 8봉 공식 사진입니다.',
+    '전라남도 고흥군 영남면 팔영로 1347-418 (팔영산 자연휴양림)',
+    GH_FOREST,
+    [GH_FOREST_2, GH_FOREST_3],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -2929,6 +2941,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   125708: localScenicThumbOverlay(DH_EODAL, [DH_EODAL_2, DH_EODAL_3]),
   // 영광 검색 불갑산도립공원 — firstimage·searchPhoto 공란, 사진은 detailImage. 불갑사 126349와 다른 id.
   126248: localScenicThumbOverlay(YG_BULGAP, [YG_BULGAP_2, YG_BULGAP_3]),
+  // 고흥 검색 팔영산자연휴양림 — TourAPI firstimage 없음. JSON contentId 기입 아님.
+  125426: localScenicThumbOverlay(GH_FOREST, [GH_FOREST_2, GH_FOREST_3]),
+  // 고흥 검색 영남용바위 — 10경 아님. TourAPI firstimage 없음. JSON contentId 기입 아님.
+  2782706: localScenicThumbOverlay(GH_YONG, [GH_YONG_2, GH_YONG_3]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

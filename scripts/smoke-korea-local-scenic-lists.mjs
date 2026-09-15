@@ -2972,6 +2972,46 @@ assert.ok(
   '고흥 검색 팔경 고흥만 수변노을공원 개요',
 );
 
+const ghForest = resolveLocalScenicListSpotById(
+  'local-scenic:goheung-other:팔영산자연휴양림',
+);
+assert.ok(ghForest?.overview?.includes('팔영로 1347-418'), '고흥 팔영산 휴양림 주소');
+assert.ok(ghForest?.overview?.includes('능가사'), '고흥 팔영산 휴양림≠능가사 구분');
+assert.ok(ghForest?.overview?.includes('편백치유의 숲'), '고흥 팔영산 휴양림≠편백치유숲 구분');
+assert.ok(ghForest?.overview?.includes('영남용바위'), '고흥 팔영산 휴양림≠영남용바위 구분');
+assert.ok(ghForest?.imageUrl?.includes('2380877'), '고흥 팔영산 휴양림 산림문화휴양관 사진');
+assert.equal(ghForest?.contentId, '125426', '고흥 팔영산 휴양림 JSON contentId 유지');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125426')?.imageUrl?.includes('2380877'),
+  '고흥 검색 Tour 행 팔영산자연휴양림 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('2782706')?.imageUrl?.includes('2788863'),
+  '고흥 검색 Tour 행 영남용바위 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('2782706')?.galleryUrls?.some((u) =>
+    String(u).includes('2788862'),
+  ),
+  '영남용바위 갤러리에 용두암 안내판 사진',
+);
+assert.notEqual(
+  lookupLocalScenicPhotoByContentId('125426')?.imageUrl,
+  lookupLocalScenicPhotoByContentId('2782706')?.imageUrl,
+  '팔영산 휴양림·영남용바위 썸네일 다름',
+);
+assert.notEqual(ghForest?.imageUrl, ghSsuk?.imageUrl, '팔영산 휴양림·쑥섬 썸네일 다름');
+assert.ok(
+  goheungTen.every((s) => s.attractionName !== '영남용바위'),
+  '영남용바위는 고흥10경 멤버 아님',
+);
+assert.ok(
+  goheungGlobe.find((s) => s.attractionName === '팔영산 자연휴양림')?.imageUrl?.includes(
+    '2380877',
+  ),
+  '고흥 검색 팔경 팔영산 자연휴양림 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
