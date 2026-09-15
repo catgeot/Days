@@ -18,24 +18,26 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `02587d54` · PR [#260](https://github.com/catgeot/Days/pull/260) · **사람 Preview** (원주 오탐 수정 · 병합 대기) |
+| **상태** | **#3 완료 (PR [#260](https://github.com/catgeot/Days/pull/260) 병합 대기)** · tip `6692beb2` · 1단계 서울 매칭 완료 · **#4 종각 약칭 지오코딩 및 종로 권역 매핑** |
 | **브랜치** | `cursor/jonggak-stay-5f4f` |
+| **플랜** | [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) **§9** |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
 | **Preview** | git Preview `/` — 홈 검색「종각역」→ 숙소 찾기 |
 | **소유** | `mrtStayQuery.js` · `geocoding.js` · `useHomeHandlers.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:mrt-stay` PASS · LIVE `서울` CITY 4563 · `원주`는 오크밸리(오탐 대조) |
+| **VERIFY** | `npm run smoke:mrt-stay` PASS · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-종각역 숙소 #3, Preview OK면 PR 병합
+종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
-브랜치 cursor/jonggak-stay-5f4f · PR #260
+@plans/korea-station-stay-plan.md
+브랜치 cursor/jonggak-stay-5f4f · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 홈에서 종각역 숙소 찾기에 서울 호텔이 보이면(원주 오크밸리 아님) PR #260 병합. 아니면 재현 메모
-검증: npm run smoke:mrt-stay PASS
+작업: 1) '종각' 단독 검색 시 대구 공원 대신 서울 종각역(철도역) 우선 매칭. 2) 종각역 숙소 찾기 시 서울 광역 대신 '종로' NEIGHBORHOOD(632건) 우선 래더 공급
+검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```
 
 ---

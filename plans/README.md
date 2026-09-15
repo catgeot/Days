@@ -26,6 +26,7 @@
 - **블로그 AI 큐레이션 인페이지 허브 (Phase B+C tip · Preview QA)**: [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) · 제시어 `큐레이션-이어하기` · 일지 `2026-07-31`
 - **방문자 활성화 및 사이트 체질 개선 종합 계획 (P0~P2 4단계 8세션 로드맵)**: [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) · 그록봇 12대 개선점 + 크롤러 SEO 실사 및 세션별 실행 가이드
 - **한·영 검색 노출 (외부 SEO)**: [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) · 세션 `검색노출 #{N}` · [`feature-handoff-index.md`](./feature-handoff-index.md)
+- **국내 역·랜드마크 숙소 매핑 및 인근 추천 (P0~P1 4단계 계획)**: [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) · 지하철역 약칭 지오코딩 및 NEIGHBORHOOD 래더 연계 · 세션 `종각역 숙소 #{N}`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
   - 최신: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) · 직전 [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)  
 - **해안·해양 탐색 칩 (플랜+SSOT)**: [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) · Phase 1–2 ✅ · `audit:sea-basins` · 일지 `2026-08-16`
