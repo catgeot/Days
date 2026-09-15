@@ -34,27 +34,26 @@
 
 | | |
 |--|--|
-| **상태** | **#7 push** · tip `7e55fc04` · PR [#257](https://github.com/catgeot/Days/pull/257) · **사람 Preview** |
+| **상태** | **#8 push** · tip `b296a29c` · PR [#259](https://github.com/catgeot/Days/pull/259) · **사람 Preview** |
 | **브랜치** | `cursor/visitor-growth-1f90` |
 | **플랜** | [`visitor-growth-activation-plan.md`](./visitor-growth-activation-plan.md) |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
-| **Preview** | `/qa/visitor-growth` → git Preview `/place/bora-bora/planner` · `/place/paris/planner` |
-| **PROD** | `https://www.gateo.kr/` — 신뢰 바·Credits·플래너 제휴 고지 (#6) |
-| **소유** | `PlannerTab.jsx` · `PlannerStageNav.jsx` · `PreTravelChecklist.jsx` · `ToolkitCard.jsx` |
+| **Preview** | `/qa/visitor-growth` → git Preview `/` · `/auth/signup` · `/place/paris/gallery` |
+| **PROD** | `https://www.gateo.kr/` — 신뢰 바·Credits·플래너 3단계 (#7 merge) |
+| **소유** | `PlaceCardExpanded.jsx` · `GalleryInfoView.jsx` · `Login.jsx` · `SignUp.jsx` · `HomeUI.jsx` · `HomeGlobeMapbox.jsx` |
 | **금지** | UI 임의 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:trust-disclosure` · `npm run build` PASS |
+| **VERIFY** | `npm run smoke:visitor-locale` · `npm run audit:i18n` · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-방문자 개선 #8, 언어일관성 및 가입혜택/접근성
+방문자 개선 #9, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · PR #257 · Preview /qa/visitor-growth
+브랜치 cursor/visitor-growth-1f90 · PR #259 · Preview /qa/visitor-growth
 금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: PlaceCard 설명 로컬라이징 · 가입 4대 혜택 · aria-label · 지구본 reduced-motion
-검증: npm run audit:i18n · npm run build PASS
+작업: EN 장소 카드 개요·가입 혜택·지구본 일시정지가 OK면 PR #259 병합
 ```
 
 ---
@@ -486,28 +485,28 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#47 push** tip `fb232667` · PR [#256](https://github.com/catgeot/Days/pull/256) · 거제9경 3 · QA 빈 썸네일 4 · **#48 동해 결손 오버레이** |
+| **상태** | **#48 push** tip `a92c127f` · PR [#258](https://github.com/catgeot/Days/pull/258) · 동해비경 3 · **#49 영광 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `fb232667` |
-| **PR** | [#256](https://github.com/catgeot/Days/pull/256) · [#254](https://github.com/catgeot/Days/pull/254) merge ✅ · [#252](https://github.com/catgeot/Days/pull/252) merge ✅ |
+| **tip** | `a92c127f` |
+| **PR** | [#258](https://github.com/catgeot/Days/pull/258) · [#256](https://github.com/catgeot/Days/pull/256) merge ✅ · [#254](https://github.com/catgeot/Days/pull/254) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-15-project-log.md`](./2026-09-15-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=geoje` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=donghae` |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). **#38** 천안8경 4(#243). **#39** 담양10경 4(#245). **#40** 밀양8경 4. **#41** 영덕9경 4 + QA 영덕 검색 썸네일 3·투어 오탐. **#42** 진도10경 4 + QA 검색 조도(조도6군도) 553447 썸네일(문경8경은 사진·개요 기완료로 건너뜀). **#43** 함평8경 4 + QA 1경·2경 썸네일 분리(엑스포 `4065063` ≠ 생태 `3536105`). **#44** 해남8경 4. **#45** 홍성12경 4 + QA 검색 오서산·죽도(홍성)·용봉산·11경 홍주의사총 썸네일. **#46** 화순11경 4 + QA 7경 연둔리 숲정이·검색 3014431 썸네일. **#47** 거제9경 3 + QA 검색 공곶이 2536196·식물원·매미성·구조라·지심도터미널 2756617 썸네일. 순수 사진/개요 누락 **87**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **동해비경 3** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). **#38** 천안8경 4(#243). **#39** 담양10경 4(#245). **#40** 밀양8경 4. **#41** 영덕9경 4 + QA 영덕 검색 썸네일 3·투어 오탐. **#42** 진도10경 4 + QA 검색 조도(조도6군도) 553447 썸네일(문경8경은 사진·개요 기완료로 건너뜀). **#43** 함평8경 4 + QA 1경·2경 썸네일 분리(엑스포 `4065063` ≠ 생태 `3536105`). **#44** 해남8경 4. **#45** 홍성12경 4 + QA 검색 오서산·죽도(홍성)·용봉산·11경 홍주의사총 썸네일. **#46** 화순11경 4 + QA 7경 연둔리 숲정이·검색 3014431 썸네일. **#47** 거제9경 3 + QA 검색 공곶이 2536196·식물원·매미성·구조라·지심도터미널 2756617 썸네일. **#48** 동해비경 3(호해정·할미바위·초록봉). 순수 사진/개요 누락 **84**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **영광9경 3** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #48, 동해 결손 오버레이
+팔경 활용 #49, 영광 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 동해비경 사진·개요 없는 3건(호해정·할미바위·초록봉)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=donghae
+작업: 영광9경 사진·개요 없는 3건(황금산·왕글공원·백학촌)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeonggwang
 ```
 
 ---
