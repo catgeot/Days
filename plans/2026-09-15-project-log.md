@@ -2,6 +2,15 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #7 QA — 단계 하단 다음 선택 (Cloud)
+
+- **세션** `방문자 개선 #7, 플래너 3단계 점진적 노출`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `7e55fc04` · PR [#257](https://github.com/catgeot/Days/pull/257)
+- **완료**: 각 단계 하단에 「확인하셨다면 다음 단계를 선택해 주세요」와 나머지 단계 버튼. 상단으로 다시 올라가지 않아도 됨.
+- **VERIFY**: `npm run smoke:trust-disclosure` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/place/bora-bora/planner`
+- **QA**: 필수 단계를 끝까지 내린 뒤 하단 `2 이동·통신`으로 넘어가는지.
+
 ## 방문자 개선 #7 — 플래너 3단계 점진적 노출 (Cloud)
 
 - **세션** `방문자 개선 #7, 플래너 3단계 점진적 노출`
