@@ -491,22 +491,12 @@ flowchart TD
 
 ## 5. 차기 세션을 위한 표준 제시어 블록 (Next Session Prompt)
 
-다음 작업 세션을 즉시 시작할 수 있도록 1단계 제시어를 제공합니다.
+**주제 종료** — PR [#259](https://github.com/catgeot/Days/pull/259) merge `e2e8ad20` (2026-09-15). Phase 1–4 · 세션 #1–#8 전부 `main`.
 
-**#8 QA push** (`0faa423e` · PR [#259](https://github.com/catgeot/Days/pull/259)) — 자전 토글 제거(드래그 정지만). 세션 #9 제시어:
-
-```
-방문자 개선 #9, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-15-project-log.md
-@plans/visitor-growth-activation-plan.md
-브랜치 cursor/visitor-growth-1f90 · PR #259 · Preview /qa/visitor-growth
-금지: UI 임의 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: EN 장소 카드 개요·가입 혜택이 OK면 PR #259 병합
-```
+**다음 제시어 없음**. 확인은 `https://www.gateo.kr/`. `/qa/visitor-growth`는 구 git Preview 호스트.
 
 ---
 
 ## 9. 핸드오프
 
-§5와 동일. 고정 브랜치 `cursor/visitor-growth-1f90` · Preview `/qa/visitor-growth`.
+§5와 동일. 브랜치 `cursor/visitor-growth-1f90` · merge `e2e8ad20`. 확인은 PROD `www.gateo.kr`.

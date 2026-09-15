@@ -2,6 +2,14 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #9 — PR 병합 · 8세션 주제 종료 (Cloud)
+
+- **세션** `방문자 개선 #9, Preview OK면 PR 병합`
+- **병합** PR [#259](https://github.com/catgeot/Days/pull/259) · main `e2e8ad20` · 사람 Preview OK 후 이전 세션에서 병합됨. 추가 코드 없음.
+- **로드맵** Phase 1–4 · 세션 #1–#8 전부 main. 핸드오프 행 종료. 다음 제시어 없음.
+- **PROD** `https://www.gateo.kr/`
+- **VERIFY** `npm run smoke:visitor-locale` PASS · `npm run smoke:trust-disclosure` PASS · `npm run smoke:mood-search-intent` PASS · `npm run smoke:crawler-place-meta` PASS · `npm run audit:i18n` PASS
+
 ## 종각역 숙소 #2 — 원주 오탐 → 서울 CITY (Cloud)
 
 - **세션** `종각역 숙소 #2, Preview OK면 PR 병합`
@@ -138,6 +146,17 @@
 - **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #48 QA — 동해 썸네일 분리 (Cloud)
+
+- **세션** `팔경 활용 #48, 동해 썸네일 분리`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `3aeb5664` · PR [#258](https://github.com/catgeot/Days/pull/258)
+- **원인**: 오버레이를 넣었는데도 ScenicPage가 Tour `firstimage`를 contentId로 나중에 덮음. 용추·반석이 같은 `125673` 폭포, 망상(4경)은 Tour 글자 간판.
+- **완료**: JSON contentId 기입 없이 `resolveLocalScenicRowFirstImage`가 멤버 오버레이를 Tour 맵보다 앞에 둠. 상세 fetch도 오버레이를 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=donghae` 2경·3경·4경 사진이 서로 다름
+- **잔여**: 사진/개요 순수 누락 **84**/876. 다음 허브 **영광9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #49 다음 — 영광 결손 오버레이
 
 ```
@@ -148,5 +167,27 @@
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 영광9경 사진·개요 없는 3건(황금산·왕글공원·백학촌)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeonggwang
+```
+
+## 팔경 활용 #49 — 영광9경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #49, 영광 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `2657725a` · PR [#261](https://github.com/catgeot/Days/pull/261)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 영광9경 결손 3건(황금산·왕글공원·백학촌). 황금산은 서산·거제 황금산이 아니라 공식 1경 백수해안도로(해안로 957), 왕글공원은 없는 지명이라 공식 7경 숲쟁이공원(명승 22호), 백학촌은 연천 백학면이 아니라 영광읍 백학리·물무산 행복숲(물무로 219). 한빛원전·법성포 포구 사진과 구분. 영광 순수 누락 3→0 · CID 5/9 유지.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=yeonggwang`
+- **잔여**: 사진/개요 순수 누락 **81**/876. 다음 허브 **고흥10경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #50 다음 — 고흥 결손 오버레이
+
+```
+팔경 활용 #50, 고흥 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-15-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 고흥10경 사진·개요 없는 3건(쑥섬·금산 해안경관·고흥만 수변노을공원)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=goheung
 ```
 

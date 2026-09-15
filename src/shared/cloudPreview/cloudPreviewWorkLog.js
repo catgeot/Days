@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '종각역 숙소',
-  sessionNo: 2,
-  sessionPhase: '서울 좌표·서울 CITY',
+  sessionNo: 3,
+  sessionPhase: 'Preview OK면 PR 병합',
   branch: 'cursor/jonggak-stay-5f4f',
   previewPath: '/',
   qaShareSlug: '',
@@ -32,6 +32,22 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-15T08:40:00.000Z',
   },
   {
+    id: '2026-09-15-palgyeong-use-48-donghae-tour-overwrite',
+    session: '팔경 활용 #48, 동해 썸네일 분리',
+    title: '용추·무릉반석 Tour firstimage 덮어쓰기',
+    detail:
+      'Preview QA에서 오버레이를 넣었는데도 용추폭포(2경)와 무릉반석(3경)이 같은 무릉계곡 Tour 125673 폭포 사진을 썼고, 망상(4경)은 Tour 글자 간판이었습니다. ScenicPage가 contentId로 Tour firstimage를 나중에 덮습니다. JSON contentId 기입 없이 멤버 오버레이가 Tour 맵보다 우선하게 했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=donghae 2경·3경·4경 사진이 서로 다름.',
+    at: '2026-09-15T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-48-donghae-empty-thumbs',
+    session: '팔경 활용 #48, 동해 빈 썸네일',
+    title: '용추·무릉반석 사진 분리 · 망상·어달 빈 썸네일',
+    detail:
+      'Preview QA에서 용추폭포(2경)와 무릉반석(3경)이 같은 무릉계곡 Tour 125673 사진을 썼고, 탐색 검색 동해 망상해수욕장(4경)·명승 검색 어달해변은 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 용추·반석·망상 동해시 관광 공식 사진을 넣고, TOUR_THUMB 125713·125708에 망상·어달 해변 사진을 넣었습니다. 문경 용추·쌍폭포·대진·노봉과 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「동해」용추·반석·망상, /korea/theme/scenic 검색「동해」어달해변.',
+    at: '2026-09-15T08:35:00.000Z',
+  },
+  {
     id: '2026-09-15-visitor-growth-8-drop-rotate-toggle',
     session: '방문자 개선 #8, 언어일관성 및 가입혜택/접근성',
     title: '지구본 일시정지 버튼 제거',
@@ -54,6 +70,14 @@ export const cloudPreviewWorkLog = [
     detail:
       'EN에서 장소 개요는 getLocalizedPlaceDesc를 쓰고, 한글 본문만 있으면 영문 안내 칩을 둡니다. 로그인·회원가입에 버킷·로그북·AI·플래너 4대 혜택을 붙였습니다. 홈 아이콘에 aria-label, 로고 키보드 포커스, 로고 패널 푸터 대비, 지구본 prefers-reduced-motion 기본 정지와 일시정지 버튼을 넣었습니다. Preview /qa/visitor-growth — 홈 EN 전환, /auth/signup, 지구본 일시정지.',
     at: '2026-09-15T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-48-donghae-overlays',
+    session: '팔경 활용 #48, 동해 결손 오버레이',
+    title: '동해비경 결손 3건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 동해비경 결손 3건(호해정·할미바위·초록봉)의 공공 공식 팩트 개요·주소·동해시 관광 공식 사진을 보강했습니다. 호해정은 구미동 산2 광복 기념 정자, 할미바위는 구미동 산1 해안절벽 흔들바위, 초록봉은 천곡동 등 4개 동 등산로(동해 8경 중 8경)입니다. 강릉 호해정·추암 해암정·만경대·삼척 할미바위·두타산과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=donghae 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T03:55:00.000Z',
   },
   {
     id: '2026-09-15-visitor-growth-7-stage-footer-next',
