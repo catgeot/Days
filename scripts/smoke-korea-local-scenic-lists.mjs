@@ -32,6 +32,8 @@ import {
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
   lookupLocalScenicPhotoByContentId,
+  lookupLocalScenicMemberOverlayForSpot,
+  resolveLocalScenicRowFirstImage,
   resolveSearchScenicMedia,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import { pickTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
@@ -2712,6 +2714,46 @@ assert.ok(dhMangsang?.overview?.includes('동해대로 6270-10'), '동해 망상
 assert.ok(dhMangsang?.overview?.includes('어달해변'), '동해 망상≠어달 구분');
 assert.notEqual(dhMangsang?.imageUrl, dhYongchu?.imageUrl, '망상·용추 썸네일 다름');
 
+const tourSameValley = new Map([
+  ['125673', 'https://example.invalid/mureung-valley.jpg'],
+]);
+assert.ok(
+  resolveLocalScenicRowFirstImage(dhYongchu, tourSameValley)?.includes('kzKl'),
+  '명승 리스트 용추 Tour 125673보다 오버레이 우선',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(dhBanseok, tourSameValley)?.includes('NxfT'),
+  '명승 리스트 무릉반석 Tour 125673보다 오버레이 우선',
+);
+assert.notEqual(
+  resolveLocalScenicRowFirstImage(dhYongchu, tourSameValley),
+  resolveLocalScenicRowFirstImage(dhBanseok, tourSameValley),
+  'Tour 같은 contentId여도 용추·반석 썸네일 다름',
+);
+assert.ok(
+  lookupLocalScenicMemberOverlayForSpot({
+    id: 'donghae-mangsang-beach',
+    hubId: 'donghae',
+    name: '동해 망상해수욕장',
+    attractionName: '동해 망상해수욕장',
+    localScenicListId: 'donghae-bijing',
+  })?.imageUrl?.includes('U7Rc'),
+  'GATEO 망상 행도 팔경 오버레이',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(
+    {
+      id: 'donghae-mangsang-beach',
+      hubId: 'donghae',
+      name: '동해 망상해수욕장',
+      contentId: '125713',
+      localScenicListId: 'donghae-bijing',
+    },
+    new Map([['125713', 'https://example.invalid/mangsang-letters.jpg']]),
+  )?.includes('U7Rc'),
+  '명승 리스트 망상 Tour firstimage보다 오버레이 우선',
+);
+
 const donghaeWithThumbs = donghaeNine.filter((s) => s.imageUrl);
 assert.ok(
   donghaeWithThumbs.length >= 8,
@@ -2730,6 +2772,14 @@ const dhMangsangSearch = resolveSearchScenicMedia({
 assert.ok(
   dhMangsangSearch.imageUrl?.includes('U7Rc'),
   '탐색 드롭다운 동해 망상해수욕장 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'donghae',
+    name: '동해 망상해수욕장',
+    imageUrl: 'https://example.invalid/mangsang-letters.jpg',
+  }).imageUrl?.includes('U7Rc'),
+  '탐색 검색 망상 Tour 기존 썸네일보다 오버레이 우선',
 );
 assert.ok(
   lookupLocalScenicPhotoByContentId('125713')?.imageUrl?.includes('U7Rc'),

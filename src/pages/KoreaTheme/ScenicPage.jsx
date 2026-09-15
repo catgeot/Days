@@ -108,7 +108,9 @@ import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
   listKoreaLocalScenicLists,
   listLocalScenicMemberJobs,
+  lookupLocalScenicMemberOverlayForSpot,
   lookupLocalScenicPhotoByContentId,
+  resolveLocalScenicRowFirstImage,
   memberToScenicListSpot,
   mergeLocalScenicMembersIntoScenicSpots,
   resolveLocalScenicListSpotById,
@@ -473,26 +475,40 @@ function mergeContentIdImageMap(prev, entries) {
 }
 
 function overlayLocalScenicTourMeta(spot, extra) {
-  if (!spot || !extra) return spot;
-  const contentId = String(spot.contentId || extra.contentId || '').trim();
+  if (!spot) return spot;
+  const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+  if (!extra && !overlayThumb) return spot;
+  const contentId = String(spot.contentId || extra?.contentId || '').trim();
   const firstImage =
-    spot.firstImage || extra.firstImage || extra.imageUrl || null;
+    overlayThumb ||
+    spot.firstImage ||
+    extra?.firstImage ||
+    extra?.imageUrl ||
+    null;
   return {
     ...spot,
     contentId: /^\d{1,32}$/.test(contentId) ? contentId : spot.contentId,
-    cat1: spot.cat1 || extra.cat1 || null,
-    cat2: spot.cat2 || extra.cat2 || null,
-    cat3: spot.cat3 || extra.cat3 || null,
+    cat1: spot.cat1 || extra?.cat1 || null,
+    cat2: spot.cat2 || extra?.cat2 || null,
+    cat3: spot.cat3 || extra?.cat3 || null,
     firstImage: firstImage || spot.firstImage || null,
-    imageUrl: spot.imageUrl || firstImage || null,
-    galleryUrls: spot.galleryUrls || extra.galleryUrls || null,
-    overview: spot.overview || extra.overview || null,
-    addr1: spot.addr1 || extra.addr1 || null,
+    imageUrl: overlayThumb || spot.imageUrl || firstImage || null,
+    galleryUrls: spot.galleryUrls || extra?.galleryUrls || null,
+    overview: spot.overview || extra?.overview || null,
+    addr1: spot.addr1 || extra?.addr1 || null,
   };
 }
 
 function applyLocalScenicContentIdThumb(spot) {
   if (!spot) return spot;
+  const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+  if (overlayThumb) {
+    return {
+      ...spot,
+      firstImage: overlayThumb,
+      imageUrl: overlayThumb,
+    };
+  }
   const hasThumb = String(spot.firstImage || spot.imageUrl || '').trim();
   if (hasThumb) return spot;
   const contentId = String(spot.contentId || spot.id || '').trim();
@@ -1115,15 +1131,18 @@ export default function KoreaThemeScenicPage() {
       curatedSpots.map((s) => s.contentId),
     );
     return curatedSpots.map((spot) => {
-      const contentId = String(spot.contentId || '').trim();
-      const firstImage =
-        curatedImageByContentId.get(contentId) ||
-        peeked.get(contentId) ||
-        spot.firstImage ||
-        spot.imageUrl ||
-        null;
+      const firstImage = resolveLocalScenicRowFirstImage(
+        spot,
+        curatedImageByContentId,
+        peeked,
+      );
       if (!firstImage) return spot;
-      return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
+      const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+      return {
+        ...spot,
+        firstImage,
+        imageUrl: overlayThumb || spot.imageUrl || firstImage,
+      };
     });
   }, [curatedSpots, curatedImageByContentId]);
 
@@ -1139,7 +1158,6 @@ export default function KoreaThemeScenicPage() {
           locale,
         )
       : curatedSpotsWithThumbs;
-    if (!localScenicTourBySpotId.size) return merged;
     return merged.map((spot) =>
       overlayLocalScenicTourMeta(
         spot,
@@ -1160,17 +1178,20 @@ export default function KoreaThemeScenicPage() {
       curatedSpotsWithLocalScenic.map((s) => s.contentId),
     );
     return curatedSpotsWithLocalScenic.map((spot) => {
-      const contentId = String(spot.contentId || '').trim();
       const extra = localScenicTourBySpotId.get(String(spot.id || ''));
-      const firstImage =
-        curatedImageByContentId.get(contentId) ||
-        peeked.get(contentId) ||
-        extra?.firstImage ||
-        spot.firstImage ||
-        spot.imageUrl ||
-        null;
+      const firstImage = resolveLocalScenicRowFirstImage(
+        spot,
+        curatedImageByContentId,
+        peeked,
+        extra,
+      );
       if (!firstImage) return spot;
-      return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
+      const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+      return {
+        ...spot,
+        firstImage,
+        imageUrl: overlayThumb || spot.imageUrl || firstImage,
+      };
     });
   }, [
     curatedSpotsWithLocalScenic,
@@ -2571,15 +2592,18 @@ export default function KoreaThemeScenicPage() {
     }
     const curated = CURATED_ALL.find((s) => s.id === selectedId);
     if (curated) {
-      const contentId = String(curated.contentId || '').trim();
-      const firstImage =
-        curatedImageByContentId.get(contentId) ||
-        curated.firstImage ||
-        curated.imageUrl ||
-        null;
+      const firstImage = resolveLocalScenicRowFirstImage(
+        curated,
+        curatedImageByContentId,
+      );
+      const overlayThumb = lookupLocalScenicMemberOverlayForSpot(curated)?.imageUrl;
       setSelectedSpot(
         firstImage
-          ? { ...curated, firstImage, imageUrl: firstImage }
+          ? {
+              ...curated,
+              firstImage,
+              imageUrl: overlayThumb || curated.imageUrl || firstImage,
+            }
           : curated,
       );
       return undefined;
@@ -2604,23 +2628,27 @@ export default function KoreaThemeScenicPage() {
     );
     if (localScenic) {
       const contentId = String(localScenic.contentId || '').trim();
-      const firstImage =
-        curatedImageByContentId.get(contentId) ||
-        localScenic.firstImage ||
-        localScenic.imageUrl ||
-        null;
+      const overlayThumb = lookupLocalScenicMemberOverlayForSpot(localScenic)?.imageUrl;
+      const firstImage = resolveLocalScenicRowFirstImage(
+        localScenic,
+        curatedImageByContentId,
+      );
       const base = firstImage
-        ? { ...localScenic, firstImage, imageUrl: firstImage }
+        ? {
+            ...localScenic,
+            firstImage,
+            imageUrl: overlayThumb || localScenic.imageUrl || firstImage,
+          }
         : localScenic;
       setSelectedSpot(base);
       if (!/^\d{1,32}$/.test(contentId)) return undefined;
       fetchKoreaTourAttractionById(contentId).then((spot) => {
         if (cancelled || !spot) return;
-        const tourImage = spot.firstImage || spot.imageUrl || null;
+        const tourImage = overlayThumb || spot.firstImage || spot.imageUrl || null;
         setSelectedSpot({
           ...base,
-          firstImage: tourImage || base.firstImage || null,
-          imageUrl: tourImage || base.imageUrl || null,
+          firstImage: overlayThumb || tourImage || base.firstImage || null,
+          imageUrl: overlayThumb || tourImage || base.imageUrl || null,
           contentId: base.contentId || spot.contentId,
           cat1: base.cat1 || spot.cat1 || null,
           cat2: base.cat2 || spot.cat2 || null,

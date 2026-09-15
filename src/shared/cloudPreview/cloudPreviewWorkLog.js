@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 48,
-  sessionPhase: '동해 빈 썸네일',
+  sessionPhase: '동해 썸네일 분리',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=donghae',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-palgyeong-use-48-donghae-tour-overwrite',
+    session: '팔경 활용 #48, 동해 썸네일 분리',
+    title: '용추·무릉반석 Tour firstimage 덮어쓰기',
+    detail:
+      'Preview QA에서 오버레이를 넣었는데도 용추폭포(2경)와 무릉반석(3경)이 같은 무릉계곡 Tour 125673 폭포 사진을 썼고, 망상(4경)은 Tour 글자 간판이었습니다. ScenicPage가 contentId로 Tour firstimage를 나중에 덮습니다. JSON contentId 기입 없이 멤버 오버레이가 Tour 맵보다 우선하게 했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=donghae 2경·3경·4경 사진이 서로 다름.',
+    at: '2026-09-15T08:50:00.000Z',
+  },
   {
     id: '2026-09-15-palgyeong-use-48-donghae-empty-thumbs',
     session: '팔경 활용 #48, 동해 빈 썸네일',

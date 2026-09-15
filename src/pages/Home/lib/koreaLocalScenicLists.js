@@ -182,6 +182,53 @@ function overlayForHubMemberName(hubId, attractionName) {
 }
 
 /**
+ * 명승 리스트 행 — 합성 id 또는 hub+이름 오버레이.
+ * Tour contentId 썸네일보다 멤버 오버레이가 우선 (같은 id를 쓰는 2경·3경 분리).
+ * @param {object} [spot]
+ */
+export function lookupLocalScenicMemberOverlayForSpot(spot) {
+  if (!spot || typeof spot !== 'object') return null;
+  const byId = lookupLocalScenicMemberOverlay(String(spot.id || '').trim());
+  if (byId?.imageUrl) return byId;
+  const name = spot.attractionName || spot.name;
+  const listId = String(spot.localScenicListId || '').trim();
+  if (listId && name) {
+    const byList = lookupLocalScenicMemberOverlay(
+      localScenicMemberSpotId(listId, name),
+    );
+    if (byList?.imageUrl) return byList;
+  }
+  return overlayForHubMemberName(spot.hubId, name);
+}
+
+/**
+ * 명승 행 썸네일 — 멤버 오버레이가 Tour contentId firstimage보다 우선.
+ * 같은 contentId를 쓰는 2경·3경이 Tour 사진으로 덮이지 않게 한다.
+ * @param {object} [spot]
+ * @param {Map<string, string>} [tourByContentId]
+ * @param {Map<string, string>} [peeked]
+ * @param {{ firstImage?: string | null }} [extra]
+ */
+export function resolveLocalScenicRowFirstImage(
+  spot,
+  tourByContentId,
+  peeked,
+  extra,
+) {
+  const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+  if (overlayThumb) return overlayThumb;
+  const contentId = String(spot?.contentId || '').trim();
+  return (
+    (contentId && tourByContentId?.get(contentId)) ||
+    (contentId && peeked?.get(contentId)) ||
+    extra?.firstImage ||
+    spot?.firstImage ||
+    spot?.imageUrl ||
+    null
+  );
+}
+
+/**
  * 탐색 검색 행 썸네일·contentId — 명승 팔경 오버레이 → contentId 오버레이 → GATEO 선정.
  * JSON 쓰기 아님.
  * @param {object} [item]
@@ -205,8 +252,8 @@ export function resolveSearchScenicMedia(item) {
   const contentId = /^\d{1,32}$/.test(rawId) ? rawId : null;
   const byContentId = lookupLocalScenicPhotoByContentId(contentId);
   const imageUrl =
-    existing ||
     overlay?.imageUrl ||
+    existing ||
     byContentId?.imageUrl ||
     fromCurated.imageUrl ||
     null;
