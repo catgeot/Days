@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '방문자 개선',
-  sessionNo: 7,
-  sessionPhase: '플래너 3단계 점진적 노출',
+  sessionNo: 8,
+  sessionPhase: '언어일관성 및 가입혜택/접근성',
   branch: 'cursor/visitor-growth-1f90',
-  previewPath: '/place/bora-bora/planner',
+  previewPath: '/',
   qaShareSlug: 'visitor-growth',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-15-visitor-growth-8-locale-a11y',
+    session: '방문자 개선 #8, 언어일관성 및 가입혜택/접근성',
+    title: 'PlaceCard 로컬라이징·가입 혜택·지구본 자전 제어',
+    detail:
+      'EN에서 장소 개요는 getLocalizedPlaceDesc를 쓰고, 한글 본문만 있으면 영문 안내 칩을 둡니다. 로그인·회원가입에 버킷·로그북·AI·플래너 4대 혜택을 붙였습니다. 홈 아이콘에 aria-label, 로고 키보드 포커스, 로고 패널 푸터 대비, 지구본 prefers-reduced-motion 기본 정지와 일시정지 버튼을 넣었습니다. Preview /qa/visitor-growth — 홈 EN 전환, /auth/signup, 지구본 일시정지.',
+    at: '2026-09-15T04:20:00.000Z',
+  },
   {
     id: '2026-09-15-visitor-growth-7-stage-footer-next',
     session: '방문자 개선 #7, 플래너 3단계 점진적 노출',

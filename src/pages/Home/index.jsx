@@ -248,6 +248,19 @@ function Home() {
   const [isTickerExpanded, setIsTickerExpanded] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
+  const [globeRotatePaused, setGlobeRotatePaused] = useState(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return undefined;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => {
+      if (mq.matches) setGlobeRotatePaused(true);
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
   const [isMobileViewport, setIsMobileViewport] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -1529,6 +1542,7 @@ function Home() {
           globeTheme={globeTheme}
           isZenMode={isZenMode}
           isPinVisible={isPinVisible}
+          autoRotatePaused={globeRotatePaused}
           onGlobeModeChange={handleGlobeModeChange}
           hideTourControls={isTourCinema}
           highlightCategory={category}
@@ -1566,6 +1580,8 @@ function Home() {
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}
           isZenMode={isZenMode} onToggleZenMode={toggleZenMode}
+          globeRotatePaused={globeRotatePaused}
+          onToggleGlobeRotate={() => setGlobeRotatePaused((prev) => !prev)}
           isTourCinema={isTourCinema}
           isFlightCinema={flightCinemaActive}
           isPlaceCardVisible={isPlaceCardSummaryVisible}

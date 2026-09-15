@@ -26,6 +26,12 @@
       "signIn": "Sign in",
       "signUp": "Sign up",
       "back": "Back"
+    },
+    "nav": {
+      "login": "LOGIN",
+      "logout": "LOGOUT",
+      "logbook": "LOGBOOK",
+      "logoOpen": "Open menu"
     }
   },
   "authPage": {
@@ -47,7 +53,7 @@
     "signup": {
       "backTitle": "Back to main",
       "title": "Sign up",
-      "subtitle": "Start writing your travel log.",
+      "subtitle": "Start your travel sketch and logbook.",
       "email": "Email",
       "password": "Password",
       "passwordPlaceholder": "At least 6 characters",
@@ -55,6 +61,25 @@
       "hasAccount": "Already have an account?",
       "loginLink": "Sign in",
       "confirmEmailAlert": "Confirmation email sent! 📧\n\nCheck your inbox and click the link to complete signup."
+    },
+    "benefits": {
+      "title": "With a GATEO account",
+      "bucket": {
+        "title": "Your bucket list",
+        "body": "Sync up to 50 hidden spots worldwide"
+      },
+      "logbook": {
+        "title": "Pen name & travel sketch",
+        "body": "A 3D logbook for photos and places"
+      },
+      "ai": {
+        "title": "AI docent",
+        "body": "One-to-one paradise picks from your taste"
+      },
+      "planner": {
+        "title": "Smart planner",
+        "body": "Visa, flights, stays, and transit in one place"
+      }
     },
     "forgot": {
       "title": "Reset Password",
@@ -107,6 +132,9 @@
       "zenMode": "Zen mode (fullscreen)",
       "pinsHide": "Hide markers & labels",
       "pinsShow": "Show markers & labels",
+      "clearScouts": "Clear temporary pins",
+      "rotatePause": "Pause globe rotation",
+      "rotatePlay": "Resume globe rotation",
       "menuExpanded": "Detail menu",
       "menuCollapsed": "Menu hidden",
       "menuHide": "Hide detail menu",
@@ -746,7 +774,15 @@
       "infoUpdating": "Information for this place is being updated.",
       "reviewEmpty": "No review information for this place yet.",
       "videoMissing": "No video information",
-      "galleryDetail": "Gallery details"
+      "galleryDetail": "Gallery details",
+      "travelTag": "Travel",
+      "unknownCountry": "Unknown"
+    },
+    "localeNotice": {
+      "koreanGuide": "Detailed guide is currently provided in Korean."
+    },
+    "overview": {
+      "fromQuery": "From \"{{query}}\" to this place"
     },
     "nav": {
       "back": "Back",

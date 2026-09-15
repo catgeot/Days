@@ -13,6 +13,8 @@ import {
   ChevronUp,
   User,
   LogOut,
+  Pause,
+  Play,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -124,6 +126,8 @@ const HomeUI = React.memo(({
   onThemeToggle,
   isZenMode,
   onToggleZenMode,
+  globeRotatePaused = false,
+  onToggleGlobeRotate,
   user,
   onLogout,
   isTourCinema = false,
@@ -151,6 +155,12 @@ const HomeUI = React.memo(({
   const categoryLabel = (id) => t(`home.category.${id}`, { defaultValue: CATEGORY_LABELS[id] || id });
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
+  const handleLogoActivate = useCallback((e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onLogoClick?.();
+    }
+  }, [onLogoClick]);
   const hideExploreChrome =
     (isPlaceCardVisible && !isFlightCinema) || isFlightCinema;
   /** 모바일 나라 메뉴 — 펼침일 때만 목록 노출 · 숨김 시 지도 탐색 */
@@ -327,7 +337,11 @@ const HomeUI = React.memo(({
               />
               <div className="relative z-10 flex items-center gap-1">
                 <div
+                  role="button"
+                  tabIndex={0}
                   onClick={onLogoClick}
+                  onKeyDown={handleLogoActivate}
+                  aria-label={t('layout.nav.logoOpen')}
                   className="cursor-pointer group touch-manipulation"
                 >
                   <h1 className="group-hover:opacity-90 transition-opacity origin-left">
@@ -369,7 +383,11 @@ const HomeUI = React.memo(({
           <div className="relative z-10 flex flex-col items-start gap-2">
             <div className="flex items-center gap-1">
               <div
+                role="button"
+                tabIndex={0}
                 onClick={onLogoClick}
+                onKeyDown={handleLogoActivate}
+                aria-label={t('layout.nav.logoOpen')}
                 className="cursor-pointer group touch-manipulation"
               >
                 <h1 className="group-hover:opacity-90 transition-opacity origin-left">
@@ -388,29 +406,55 @@ const HomeUI = React.memo(({
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
            <button
+             type="button"
              onClick={onThemeToggle}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
              title={t('home.globe.themeToggle')}
+             aria-label={t('home.globe.themeToggle')}
            >
               <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
            </button>
 
            <button
+             type="button"
              onClick={onToggleZenMode}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
              title={t('home.globe.zenMode')}
+             aria-label={t('home.globe.zenMode')}
            >
               <Leaf size={16} className="group-hover:scale-110 transition-transform" />
            </button>
 
            <button
+             type="button"
              onClick={onTogglePinVisibility}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}
              title={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
+             aria-label={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
            >
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
            </button>
-           <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
+           <button
+             type="button"
+             onClick={() => onToggleGlobeRotate?.()}
+             className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${globeRotatePaused ? 'text-amber-300 border-amber-400/30' : 'text-sky-300'}`}
+             title={globeRotatePaused ? t('home.globe.rotatePlay') : t('home.globe.rotatePause')}
+             aria-label={globeRotatePaused ? t('home.globe.rotatePlay') : t('home.globe.rotatePause')}
+             aria-pressed={!globeRotatePaused}
+           >
+              {globeRotatePaused
+                ? <Play size={16} className="group-hover:scale-110 transition-transform" />
+                : <Pause size={16} className="group-hover:scale-110 transition-transform" />}
+           </button>
+           <button
+             type="button"
+             onClick={onClearScouts}
+             className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"
+             title={t('home.globe.clearScouts')}
+             aria-label={t('home.globe.clearScouts')}
+           >
+             <Trash2 size={16} className="group-hover:scale-110 transition-transform" />
+           </button>
         </div>
 
         {isTourCinema && tourLocation ? (
@@ -631,26 +675,40 @@ const HomeUI = React.memo(({
       <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-[60] pointer-events-none">
         <div className="hidden md:flex absolute bottom-6 left-[8.75rem] items-end gap-4 pointer-events-auto">
           {user ? (
-            <button onClick={onLogout} className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none">
+            <button
+              type="button"
+              onClick={onLogout}
+              className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none"
+              aria-label={t('layout.nav.logout')}
+            >
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-red-400/50 transition-all shadow-lg">
                     <LogOut size={18} className="text-gray-200 group-hover:text-red-400 transition-colors" />
                 </div>
-                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGOUT</span>
+                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">{t('layout.nav.logout')}</span>
             </button>
           ) : (
-            <Link to="/auth/login" state={{ from: window.location.pathname + window.location.search }} className="group flex items-center gap-2 pb-2 cursor-pointer">
+            <Link
+              to="/auth/login"
+              state={{ from: window.location.pathname + window.location.search }}
+              className="group flex items-center gap-2 pb-2 cursor-pointer"
+              aria-label={t('layout.nav.login')}
+            >
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg">
                     <User size={18} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
                 </div>
-                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
+                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">{t('layout.nav.login')}</span>
             </Link>
           )}
 
-          <Link to="/blog" className="group flex items-center gap-2 pb-2 cursor-pointer">
+          <Link
+            to="/blog"
+            className="group flex items-center gap-2 pb-2 cursor-pointer"
+            aria-label={t('layout.nav.logbook')}
+          >
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
                   <PenTool size={18} className="text-gray-200 group-hover:text-emerald-400 transition-colors" />
               </div>
-              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGBOOK</span>
+              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">{t('layout.nav.logbook')}</span>
           </Link>
         </div>
 

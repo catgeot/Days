@@ -5,6 +5,7 @@ import { supabase } from '../api/supabase';
 import { UserPlus, Mail, Lock, X, Loader2 } from 'lucide-react';
 import { MOBILE_INPUT_TEXT_CLASS } from '../hooks/useMobileInputViewport';
 import { resetIosZoomAfterInput } from '../lib/mobileViewport';
+import AuthBenefits from './AuthBenefits';
 
 const Signup = () => {
   const { t } = useTranslation();
@@ -69,7 +70,9 @@ const Signup = () => {
       <div className="absolute top-[-20%] left-[-10%] w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <div className="w-full max-w-sm bg-white/95 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-2xl relative z-10">
+      <div className="w-full max-w-4xl flex flex-col lg:flex-row items-center lg:items-stretch gap-5 relative z-10">
+        <AuthBenefits />
+      <div className="w-full max-w-sm bg-white/95 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-2xl relative">
 
         <button
           onClick={handleGoHome}
@@ -171,7 +174,7 @@ const Signup = () => {
             {t('authPage.signup.loginLink')}
           </Link>
         </div>
-
+      </div>
       </div>
     </div>
   );

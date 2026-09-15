@@ -4,6 +4,7 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Lock, Loader2, ArrowRight, Check, X } from 'lucide-react';
 import Logo from '../../pages/Home/components/Logo';
+import AuthBenefits from './AuthBenefits';
 import { resetIosZoomAfterInput } from '../lib/mobileViewport';
 
 const Login = () => {
@@ -79,7 +80,9 @@ const Login = () => {
       <div className="absolute top-[-20%] left-[-10%] w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <div className="w-full max-w-sm bg-white/95 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-2xl relative z-10">
+      <div className="w-full max-w-4xl flex flex-col lg:flex-row items-center lg:items-stretch gap-5 relative z-10">
+        <AuthBenefits />
+      <div className="w-full max-w-sm bg-white/95 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-2xl relative">
 
         <button
           onClick={() => navigate(from)}
@@ -204,7 +207,7 @@ const Login = () => {
             {t('authPage.login.signUpLink')}
           </Link>
         </div>
-
+      </div>
       </div>
     </div>
   );
