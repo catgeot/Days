@@ -2,6 +2,15 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 방문자 개선 #7 — 플래너 3단계 점진적 노출 (Cloud)
+
+- **세션** `방문자 개선 #7, 플래너 3단계 점진적 노출`
+- **브랜치** `cursor/visitor-growth-1f90` · tip `e1dbd731` · 작업 `ad873fc3` · PR [#257](https://github.com/catgeot/Days/pull/257)
+- **완료**: 플래너 필수→이동·통신→즐기기 단계. 항공 배너·숙소 CTA를 체크리스트 예약 카드로 통합. 픽업은 2단계. 유심 Airalo/Holafly 택1. 복잡도 90/100 → 「상세 안내 포함」.
+- **VERIFY**: `npm run smoke:trust-disclosure` PASS · `npm run smoke:klook-affiliate` PASS · `npm run smoke:planner-empty-scroll` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/visitor-growth → git Preview `/place/bora-bora/planner` · `/place/paris/planner`
+- **QA**: 단계 전환 · 항공/숙소가 한 카드인지 · 복잡도 90/100 없는지 · 유심이 한 번에 하나만인지.
+
 ## 방문자 개선 #6 — PR 병합 (Cloud)
 
 - **세션** `방문자 개선 #6, 신뢰요소 및 제휴투명성 강화`
@@ -46,6 +55,17 @@
 - **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 거제9경 결손 3건(학동몽돌해수욕장·거제포로수용소유적공원·공곶이·내도) 공공 공식 팩트·한국관광공사 사진. 공곶이 Tour `2536196` 빈 썸네일만 `TOUR_THUMB`. 고성 학동마을·외도보타니아와 구분.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=geoje`
+- **잔여**: 사진/개요 순수 누락 **87**/876. 다음 허브 **동해비경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #47 QA — 거제 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #47, 거제 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `fb232667` · PR [#256](https://github.com/catgeot/Days/pull/256)
+- **원인**: Preview 검색「거제」거제 식물원(5경)·매미성(9경)·구조라해수욕장, 명소 검색 동백섬 지심도터미널(`2756617`)이 플레이스홀더. 학동·포로수용소·공곶이·내도는 이미 사진 있음. GATEO 선정 행 없음 · 탐색홈은 Tour `firstimage`를 쓰지 않음 · 터미널 Tour `first_image` 공란.
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`·`TOUR_THUMB`에 한국관광공사 공식 사진. 식물원 `2648073`·매미성 `2536133` JSON id 유지. 구조라 `583071`·지심도터미널 `2756617`만 검색 행. 외도보타니아·매미면가 식당·학동몽돌·지심도 본섬과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → 검색「거제」식물원·매미성·구조라 · `/korea/theme/scenic` 검색「거제」동백섬 지심도터미널
 - **잔여**: 사진/개요 순수 누락 **87**/876. 다음 허브 **동해비경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
