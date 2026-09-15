@@ -68,6 +68,8 @@ const PlaceMediaPanel = React.memo(({
                 galleryAtMax={galleryData.galleryAtMax}
                 handleRemoveImage={galleryData.handleRemoveImage}
                 handleDropBrokenImage={galleryData.handleDropBrokenImage}
+                loadFailed={galleryData.loadFailed}
+                handleRetryLoad={galleryData.handleRetryLoad}
                 mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>

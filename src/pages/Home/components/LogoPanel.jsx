@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react';
+import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Logo from './Logo';
@@ -120,6 +120,21 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                   <span className="text-sm font-bold text-white tracking-wide">{t('home.logoPanel.myTravelLog')}</span>
                 </div>
                 <ChevronRight size={16} className="text-blue-500 group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  navigate('/auth/update-password');
+                }}
+                className="w-full group flex items-center justify-between py-3 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300"
+              >
+                <div className="flex items-center gap-3">
+                  <Lock size={18} className="text-gray-400" />
+                  <span className="text-sm font-bold text-white tracking-wide">{t('home.logoPanel.changePassword')}</span>
+                </div>
+                <ChevronRight size={16} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
               </button>
 
               <div>

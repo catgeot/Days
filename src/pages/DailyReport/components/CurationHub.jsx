@@ -67,6 +67,52 @@ function curationSecondaryLocation(item, locale) {
   return en && en !== ko ? en : '';
 }
 
+function CurationLoadingSkeleton({ loadingText }) {
+  const { t } = useTranslation();
+  return (
+    <div
+      className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col md:flex-row min-h-[280px] md:min-h-[340px] relative overflow-hidden"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div className="w-full md:w-5/12 h-44 md:min-h-[340px] animate-pulse bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100" />
+      <div className="w-full md:w-7/12 py-4 pr-4 pl-6 md:py-5 md:pr-5 md:pl-8 flex flex-col gap-3">
+        <div className="h-3 w-24 animate-pulse rounded bg-gray-200" />
+        <div className="h-6 w-3/4 animate-pulse rounded bg-gray-200" />
+        <div className="h-3 w-full animate-pulse rounded bg-gray-100" />
+        <div className="h-3 w-5/6 animate-pulse rounded bg-gray-100" />
+        <div className="h-3 w-2/3 animate-pulse rounded bg-gray-100" />
+        <p className="mt-auto pt-4 text-xs text-gray-500 font-light">{loadingText}</p>
+        <p className="text-[11px] text-gray-400">{t('logbook.curationHub.loadingSub')}</p>
+      </div>
+    </div>
+  );
+}
+
+function CurationErrorCard({ message, onRetry }) {
+  const { t } = useTranslation();
+  return (
+    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col min-h-[280px] relative overflow-hidden">
+      <div className="p-8 flex flex-col items-center justify-center w-full text-center">
+        <div className="w-14 h-14 bg-blue-50/80 rounded-full flex items-center justify-center mb-5 border border-blue-100">
+          <Compass size={24} className="text-blue-500" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">{t('logbook.curationHub.idleTitle')}</h3>
+        <p className="text-sm text-gray-500 mb-6 max-w-sm font-light break-keep">
+          {message || t('logbook.curationHub.fail')}
+        </p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full transition-all shadow-md hover:shadow-lg active:scale-95"
+        >
+          <Sparkles size={16} /> {t('logbook.curationHub.retry')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function CurationRichBlocks({ data }) {
   const { t, i18n } = useTranslation();
   const tips = Array.isArray(data?.tips) ? data.tips.filter(Boolean) : [];
@@ -576,7 +622,7 @@ function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip,
 const CurationHub = ({ compact = false } = {}) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { status, curationData, history, generateCuration, dismissFromHistory } = useCurationAI();
+  const { status, curationData, history, errorMessage, generateCuration, retryCuration, dismissFromHistory } = useCurationAI();
 
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -774,9 +820,9 @@ const CurationHub = ({ compact = false } = {}) => {
     </div>
   ) : null;
 
-  const idleOrLoading = (status === 'idle' || status === 'loading') && (
-    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col min-h-[280px] relative overflow-hidden">
-      {status === 'idle' && (
+  const idleOrLoading =
+    status === 'idle' ? (
+      <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col min-h-[280px] relative overflow-hidden">
         <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
           <div className="w-14 h-14 bg-blue-50/80 rounded-full flex items-center justify-center mb-5 border border-blue-100">
             <Compass size={24} className="text-blue-500" />
@@ -793,16 +839,12 @@ const CurationHub = ({ compact = false } = {}) => {
             <Sparkles size={16} /> {t('logbook.curationHub.startExplore')}
           </button>
         </div>
-      )}
-      {status === 'loading' && (
-        <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
-          <Loader2 size={32} className="text-blue-500 animate-spin mb-4" />
-          <h3 className="text-lg font-bold text-gray-900 mb-1 animate-pulse">{loadingText}</h3>
-          <p className="text-xs text-gray-500">{t('logbook.curationHub.loadingSub')}</p>
-        </div>
-      )}
-    </div>
-  );
+      </div>
+    ) : status === 'loading' ? (
+      <CurationLoadingSkeleton loadingText={loadingText} />
+    ) : status === 'error' ? (
+      <CurationErrorCard message={errorMessage} onRetry={() => void retryCuration()} />
+    ) : null;
 
   if (compact) {
     return (
@@ -839,7 +881,7 @@ const CurationHub = ({ compact = false } = {}) => {
 
   const hasHistory = Boolean(history?.length);
   const showResultBody = status === 'result' && Boolean(curationData);
-  const showExecutionMain = !showResultBody && (status === 'idle' || status === 'loading');
+  const showExecutionMain = !showResultBody && (status === 'idle' || status === 'loading' || status === 'error');
 
   return (
     <>

@@ -171,7 +171,9 @@ export const useCurationAI = () => {
   const [status, setStatus] = useState(() => (boot.panel ? 'result' : 'idle'));
   const [curationData, setCurationData] = useState(() => boot.panel);
   const [history, setHistory] = useState(() => boot.history);
+  const [errorMessage, setErrorMessage] = useState('');
   const imageHealKeyRef = useRef('');
+  const lastGenerateArgsRef = useRef({ reports: [], saved: [], tasteTags: undefined });
 
   const persistResult = useCallback((finalData) => {
     const panel = writeCurationData(finalData) || curationEntryToPanelData(finalData);
@@ -252,6 +254,12 @@ export const useCurationAI = () => {
   }, [curationData, healMissingImage]);
 
   const generateCuration = async (validReports = [], validSaved = [], { tasteTags } = {}) => {
+    lastGenerateArgsRef.current = {
+      reports: validReports,
+      saved: validSaved,
+      tasteTags,
+    };
+    setErrorMessage('');
     setStatus('loading');
 
     try {
@@ -323,16 +331,14 @@ export const useCurationAI = () => {
 
     } catch (error) {
       console.warn("큐레이션 에러:", error);
-      alert(i18n.t('logbook.curationHub.fail'));
-      const { panel } = resolveActiveCurationPanel();
-      if (panel?.location) {
-        setCurationData(panel);
-        setHistory(readCurationHistory());
-        setStatus('result');
-        return;
-      }
-      setStatus('idle');
+      setErrorMessage(i18n.t('logbook.curationHub.fail'));
+      setStatus('error');
     }
+  };
+
+  const retryCuration = () => {
+    const { reports, saved, tasteTags } = lastGenerateArgsRef.current;
+    return generateCuration(reports, saved, { tasteTags });
   };
 
   return {
@@ -340,7 +346,9 @@ export const useCurationAI = () => {
     setStatus,
     curationData,
     history,
+    errorMessage,
     generateCuration,
+    retryCuration,
     selectFromHistory,
     dismissFromHistory,
   };
