@@ -2,6 +2,16 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #2 — 원주 오탐 → 서울 CITY (Cloud)
+
+- **세션** `종각역 숙소 #2, Preview OK면 PR 병합`
+- **브랜치** `cursor/jonggak-stay-5f4f` · tip `02587d54` · PR [#260](https://github.com/catgeot/Days/pull/260)
+- **원인**: Nominatim 종각역(railway)을 버려 지오코딩 실패 → `search_dictionary` 원주 좌표. #1 시 선두가 원주 숙소(오크밸리)를 부름. `서울 종각역` 단독은 MRT CITY 없음.
+- **완료**: 역 검색은 철도역 허용·typo 캐시 스킵. stayAdmin `서울특별시`도 키워드 `서울`. **병합 안 함** (Preview 재확인 전).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · LIVE `서울` CITY 4563 · `원주` 오크밸리(대조)
+- **Preview** https://days-git-cursor-jonggak-stay-5f4f-catgeots-projects.vercel.app/
+- **QA**: 하드 리프레시 후 종각역 → 숙소 찾기 → 서울 호텔(원주 오크밸리 아님)
+
 ## 종각역 숙소 #1 — 역 POI 시·군 선두 (Cloud)
 
 - **세션** `종각역 숙소 #1, 역 POI 시·군 선두`
