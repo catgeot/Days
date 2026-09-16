@@ -3182,6 +3182,164 @@ assert.ok(
   '대구 검색 팔경 경상감영 개요',
 );
 
+const yeosuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeosu');
+const yeosuTen = yeosuMerged.filter((s) => s.localScenicListId === 'yeosu-other');
+assert.equal(yeosuTen.length, 10, '여수10경 10명');
+assert.equal(yeosuTen[0]?.groupTitle, '여수 10경');
+const yeosuDeficitNames = [
+  '여수세계박람회장',
+  '여수 밤바다와 산단 야경',
+  '여수해상케이블카',
+];
+const yeosuDeficit = yeosuTen.filter((s) => yeosuDeficitNames.includes(s.attractionName));
+assert.equal(yeosuDeficit.length, 3, '여수10경 결손 3명');
+assert.ok(
+  yeosuDeficit.every((s) => s.overview && s.imageUrl),
+  '여수 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  yeosuDeficit.every((s) => !s.contentId),
+  '여수 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yeosuDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '여수 결손 3명 썸네일 서로 다름',
+);
+
+const ysExpo = resolveLocalScenicListSpotById('local-scenic:yeosu-other:여수세계박람회장');
+assert.ok(ysExpo?.overview?.includes('박람회길 1'), '여수 박람회장 주소');
+assert.ok(ysExpo?.overview?.includes('빅오'), '여수 박람회장 overlay 빅오');
+assert.ok(ysExpo?.overview?.includes('섬박람회'), '여수 박람회장≠2026 섬박람회 구분');
+assert.ok(ysExpo?.overview?.includes('함평'), '여수 박람회장≠함평엑스포 구분');
+assert.ok(ysExpo?.imageUrl?.includes('17439999170773_2'), '여수 박람회장 엑스포장 항공 사진');
+
+const ysNight = resolveLocalScenicListSpotById('local-scenic:yeosu-other:여수밤바다와산단야경');
+assert.ok(ysNight?.overview?.includes('종화동'), '여수 밤바다 주소 종화동');
+assert.ok(ysNight?.overview?.includes('화치동'), '여수 산단 전망대 화치동');
+assert.ok(ysNight?.overview?.includes('광양만'), '여수 밤바다≠광양만 야경 구분');
+assert.ok(ysNight?.overview?.includes('이순신대교'), '여수 밤바다≠10경 이순신대교 구분');
+assert.ok(ysNight?.imageUrl?.includes('17439998378816'), '여수 밤바다 남산공원 야경 사진');
+
+const ysCable = resolveLocalScenicListSpotById('local-scenic:yeosu-other:여수해상케이블카');
+assert.ok(ysCable?.overview?.includes('돌산로 3600-1'), '여수 케이블카 돌산 주소');
+assert.ok(ysCable?.overview?.includes('오동도로 116'), '여수 케이블카 자산 주소');
+assert.ok(ysCable?.overview?.includes('목포'), '여수 케이블카≠목포해상케이블카 구분');
+assert.ok(ysCable?.overview?.includes('사천'), '여수 케이블카≠사천바다케이블카 구분');
+assert.ok(ysCable?.imageUrl?.includes('1682640297'), '여수 케이블카 캐빈 사진');
+assert.notEqual(ysExpo?.imageUrl, ysNight?.imageUrl, '박람회장·밤바다 썸네일 다름');
+assert.notEqual(ysExpo?.imageUrl, ysCable?.imageUrl, '박람회장·케이블카 썸네일 다름');
+assert.notEqual(ysNight?.imageUrl, ysCable?.imageUrl, '밤바다·케이블카 썸네일 다름');
+
+const yeosuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '여수', {
+  injectLocalScenic: true,
+});
+const yeosuGlobeTen = yeosuGlobe.filter((s) => s.localScenicListId === 'yeosu-other');
+assert.equal(yeosuGlobeTen.length, 10, '여수 검색 여수10경 10행');
+assert.ok(
+  yeosuGlobeTen.every((s) => s.groupTitle === '여수 10경'),
+  '여수 검색 팔경 groupTitle 여수 10경',
+);
+assert.ok(
+  yeosuGlobe.find((s) => s.attractionName === '여수세계박람회장')?.imageUrl?.includes(
+    '17439999170773_2',
+  ),
+  '여수 검색 팔경 박람회장 썸네일',
+);
+assert.ok(
+  yeosuGlobe.find((s) => s.attractionName === '여수 밤바다와 산단 야경')?.overview?.includes(
+    '화치동',
+  ),
+  '여수 검색 팔경 밤바다 개요',
+);
+assert.ok(
+  yeosuGlobe.find((s) => s.attractionName === '여수해상케이블카')?.overview?.includes('돌산공원'),
+  '여수 검색 팔경 케이블카 개요',
+);
+
+const ysJinnam = resolveLocalScenicListSpotById('local-scenic:yeosu-other:진남관');
+assert.equal(ysJinnam?.contentId, '126386', '여수 진남관 JSON contentId 유지');
+assert.ok(ysJinnam?.overview?.includes('동문로 11'), '여수 진남관 주소 동문로');
+assert.ok(ysJinnam?.overview?.includes('국보'), '여수 진남관 국보');
+assert.ok(ysJinnam?.overview?.includes('이순신광장'), '여수 진남관≠이순신광장 구분');
+assert.ok(ysJinnam?.imageUrl?.includes('jinnam_2'), '여수 진남관 10경 전경 사진');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126386')?.imageUrl?.includes('jinnam_2'),
+  '여수 진남관 Tour 빈 썸네일 overlay 126386',
+);
+const ysJinnamSearch = resolveSearchScenicMedia({
+  hubId: 'yeosu',
+  name: '진남관',
+  contentId: '126386',
+});
+assert.ok(ysJinnamSearch.imageUrl?.includes('jinnam_2'), '탐색홈 여수10경 진남관 썸네일');
+assert.ok(
+  resolveSearchScenicMedia({
+    name: '여수 진남관',
+    contentId: '126386',
+  }).imageUrl?.includes('jinnam_2'),
+  '탐색 검색 Tour 행 여수 진남관 썸네일',
+);
+const ysJinnamSuggest = localScenicMemberToSuggestion(
+  lists.find((l) => l.listId === 'yeosu-other'),
+  resolveCityAttractionHub('yeosu'),
+  lists
+    .find((l) => l.listId === 'yeosu-other')
+    ?.members?.find((m) => m.attractionName === '진남관'),
+);
+assert.ok(ysJinnamSuggest?.imageUrl?.includes('jinnam_2'), '탐색 드롭다운 진남관 썸네일');
+
+const ysBridge = resolveLocalScenicListSpotById('local-scenic:yeosu-other:여수이순신대교');
+assert.equal(ysBridge?.contentId, '2778041', '여수 이순신대교 JSON contentId 유지');
+assert.ok(ysBridge?.overview?.includes('묘도동'), '여수 이순신대교 주소 묘도동');
+assert.ok(ysBridge?.overview?.includes('광양이순신대교'), '여수 이순신대교≠광양9경 구분');
+assert.ok(ysBridge?.overview?.includes('홍보관'), '여수 이순신대교≠홍보관 구분');
+assert.ok(ysBridge?.imageUrl?.includes('yisunsin2'), '여수 이순신대교 10경 항공 사진');
+assert.ok(!ysBridge?.imageUrl?.includes('scenic04'), '여수 이순신대교 사진 ≠ 광양 scenic04');
+const gyBridge = resolveLocalScenicListSpotById('local-scenic:gwangyang-gugyeong:광양이순신대교');
+assert.notEqual(ysBridge?.imageUrl, gyBridge?.imageUrl, '여수·광양 이순신대교 썸네일 다름');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('2778041')?.imageUrl?.includes('yisunsin2'),
+  '여수 이순신대교 Tour 빈 썸네일 overlay 2778041',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'yeosu',
+    name: '여수 이순신대교',
+    contentId: '2778041',
+  }).imageUrl?.includes('yisunsin2'),
+  '탐색홈 여수10경 이순신대교 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    name: '이순신대교홍보관',
+    contentId: '2778041',
+  }).imageUrl?.includes('yisunsin2'),
+  '탐색 검색 Tour 행 이순신대교홍보관 썸네일',
+);
+const ysBridgeSuggest = localScenicMemberToSuggestion(
+  lists.find((l) => l.listId === 'yeosu-other'),
+  resolveCityAttractionHub('yeosu'),
+  lists
+    .find((l) => l.listId === 'yeosu-other')
+    ?.members?.find((m) => m.attractionName === '여수 이순신대교'),
+);
+assert.ok(ysBridgeSuggest?.imageUrl?.includes('yisunsin2'), '탐색 드롭다운 여수 이순신대교 썸네일');
+assert.ok(
+  yeosuGlobe.find((s) => s.attractionName === '진남관')?.imageUrl?.includes('jinnam_2'),
+  '여수 검색 팔경 진남관 썸네일',
+);
+assert.ok(
+  yeosuGlobe.find((s) => s.attractionName === '여수 이순신대교')?.imageUrl?.includes('yisunsin2'),
+  '여수 검색 팔경 이순신대교 썸네일',
+);
+assert.ok(
+  yeosuTen
+    .filter((s) => ['진남관', '여수 이순신대교'].includes(s.attractionName))
+    .every((s) => s.imageUrl),
+  '여수10경 리스트 진남관·이순신대교 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
