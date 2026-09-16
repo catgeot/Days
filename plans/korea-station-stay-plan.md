@@ -84,6 +84,7 @@
 | **#8** | `종각역 숙소 #8` | 최초 진입 거리 | `cursor/jonggak-yeonsinnae-cacc` | 연신내역 내역 오탐 · Photon 첫 진입 반영 · PR [#269](https://github.com/catgeot/Days/pull/269) merge `4884e4aa` ✅ |
 | **#9** | `종각역 숙소 #9` | 검색 카드 검은 화면 | `cursor/jonggak-yeonsinnae-cacc` | `fetchKey` TDZ · PR [#269](https://github.com/catgeot/Days/pull/269) merge `4884e4aa` ✅ |
 | **#11** | `종각역 숙소 #11` | 강원대 춘천 숙소 | `cursor/kangwon-univ-stay-e48d` | 양양 동해수련원 오탐 → 춘천 본교 · PR [#271](https://github.com/catgeot/Days/pull/271) |
+| **#12** | `종각역 숙소 #12` | 강원대 장소카드 | `cursor/kangwon-univ-stay-e48d` | 숙소는 춘천·카드는 금강리 → 본교 영문명 · PR [#271](https://github.com/catgeot/Days/pull/271) |
 
 ---
 
@@ -92,12 +93,12 @@
 ### 다음 세션 제시어
 
 ```
-종각역 숙소 #12, Preview OK면 PR 병합
+종각역 숙소 #13, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-16-project-log.md
 @plans/korea-station-stay-plan.md
 브랜치 cursor/kangwon-univ-stay-e48d · PR #271 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 검색「강원대학교」→ 숙소 찾기. 춘천 쪽 호텔이면 PR #271 병합. 쏠비치 양양·낙산이 1.3km면 실패. 「강원대학교 동해수련원」은 양양 유지.
+작업: Preview 검색「강원대학교」장소카드 부제가 금강리/Geumgang-ri가 아니고 Kangwon National University·춘천인지. 숙소는 춘천. 둘 다 OK면 PR #271 병합. 「강원대학교 동해수련원」은 양양 유지.
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```
