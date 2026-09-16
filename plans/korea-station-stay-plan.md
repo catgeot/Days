@@ -81,7 +81,9 @@
 | **#5** | `종각역 숙소 #5` | 거리 정렬 및 지도 딥링크 | `cursor/jonggak-stay-5f4f` | [Phase 3 + 4] Haversine + 네이버 칩 · Edge Photon 좌표 배포 · PR [#264](https://github.com/catgeot/Days/pull/264) merge `8863d38e` ✅ |
 | **#6** | `종각역 숙소 #6` | 첫 카드 거리 원점 | `cursor/jonggak-first-card-3096` | Jonggak-gil 폴백 원점 · PR [#266](https://github.com/catgeot/Days/pull/266) merge `ce18ba0a` ✅ |
 | **#7** | `종각역 숙소 #7` | 거리 캐시 로딩 | `cursor/jonggak-first-card-3096` | 목록 먼저 · 좌표 localStorage · Edge `geocodeItems` · PR [#266](https://github.com/catgeot/Days/pull/266) merge `ce18ba0a` ✅ |
-| **#8** | `종각역 숙소 #8` | 최초 진입 거리 | `cursor/jonggak-yeonsinnae-cacc` | 연신내역 내역 오탐 · Photon 첫 진입 반영 · PR [#269](https://github.com/catgeot/Days/pull/269) |
+| **#8** | `종각역 숙소 #8` | 최초 진입 거리 | `cursor/jonggak-yeonsinnae-cacc` | 연신내역 내역 오탐 · Photon 첫 진입 반영 · PR [#269](https://github.com/catgeot/Days/pull/269) merge `4884e4aa` ✅ |
+| **#9** | `종각역 숙소 #9` | 검색 카드 검은 화면 | `cursor/jonggak-yeonsinnae-cacc` | `fetchKey` TDZ · PR [#269](https://github.com/catgeot/Days/pull/269) merge `4884e4aa` ✅ |
+| **#11** | `종각역 숙소 #11` | 강원대 춘천 숙소 | `cursor/kangwon-univ-stay-e48d` | 양양 동해수련원 오탐 → 춘천 본교 · PR [#271](https://github.com/catgeot/Days/pull/271) |
 
 ---
 
@@ -90,12 +92,12 @@
 ### 다음 세션 제시어
 
 ```
-종각역 숙소 #10, Preview OK면 PR 병합
+종각역 숙소 #12, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-16-project-log.md
 @plans/korea-station-stay-plan.md
-브랜치 cursor/jonggak-yeonsinnae-cacc · PR #269 · Preview /
+브랜치 cursor/kangwon-univ-stay-e48d · PR #271 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 검색「연신내역」카드 클릭 → 지구본·써머리(검은 화면 아님). 홈 첫 카드 숙소 찾기 → 첫 진입에도 은평 쪽 거리. 둘 다 OK면 PR #269 병합. 광화문 호텔이 330m처럼 보이면 실패.
+작업: Preview 검색「강원대학교」→ 숙소 찾기. 춘천 쪽 호텔이면 PR #271 병합. 쏠비치 양양·낙산이 1.3km면 실패. 「강원대학교 동해수련원」은 양양 유지.
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```

@@ -2,6 +2,27 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 종각역 숙소 #11 — 강원대 춘천 숙소 (Cloud)
+
+- **세션** `종각역 숙소 #11, 강원대 춘천 숙소`
+- **브랜치** `cursor/kangwon-univ-stay-e48d` · tip `cd65452d` · PR [#271](https://github.com/catgeot/Days/pull/271)
+- **원인**: 써머리는 춘천 본교인데 Mapbox가 양양 동해수련원(금강리)을 `강원대학교`로 반환. 숙소 원점이 양양이라 쏠비치·낙산이 1.3km로 나옴. `강원대학교`에서 `강원` cityHint도 해안 호텔로 샘.
+- **완료**: 본교 별칭(춘천) · 수련원/먼 핀 페널티 · Search Box proximity · 숙소 1차 `춘천` · 양양 핀은 본교로 스냅. 수련원·삼척 한정 검색은 별칭 없음.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-kangwon-univ-stay-e48d-catgeots-projects.vercel.app/
+- **QA**: 검색「강원대학교」숙소 찾기 → 춘천. 쏠비치 양양 1.3km면 실패.
+- **다음**: `종각역 숙소 #12, Preview OK면 PR 병합`
+
+## 팔경 활용 #54 — 예천 검색 신라식물원 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #54, 예천 검색 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `c90e020f` · PR [#270](https://github.com/catgeot/Days/pull/270)
+- **원인**: 명승홈 검색「예천」Tour 행 신라식물원(`1910438`, 감천면 충효로 1752)은 DB `first_image`·live `detailCommon`/`detailImage`/`searchPhoto`가 모두 공란. 「예천」Tour 빈 썸네일은 이 1건.
+- **완료**: JSON contentId 없이 `LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID`에 신라식물원 공식 홈페이지 정원·마당·입구 전경. 예천8경 곤충생태원 곤충식물원·거제식물원과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic` 검색「예천」신라식물원 행
+- **다음**: `팔경 활용 #55, 인천 결손 오버레이`
+
 ## 팔경 활용 #54 — 예천8경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #54, 예천 결손 오버레이`
