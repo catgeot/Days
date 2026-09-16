@@ -2,6 +2,16 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 팔경 활용 #54 — 예천 용궁시장 회룡포 사진 (Cloud)
+
+- **세션** `팔경 활용 #54, 예천 용궁시장 사진`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `38957cb4` · PR [#270](https://github.com/catgeot/Days/pull/270)
+- **원인**: GATEO 선정 용궁시장(`yonggung-market`)이 Tour type12 부재로 fill이 회룡포(`126734`) 내성천 물돌이 항공을 빌려 씀. 상세 1/5가 시장이 아니라 회룡포.
+- **완료**: JSON contentId 없이 예천군 문화관광 TV따라 여행 용궁시장·용궁순대축제 공식 사진. 같은 면 회룡포 전망대·뿅뿅다리와 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic` 검색「예천」용궁시장 상세
+- **다음**: `팔경 활용 #55, 인천 결손 오버레이`
+
 ## 종각역 숙소 #11 — 강원대 춘천 숙소 (Cloud)
 
 - **세션** `종각역 숙소 #11, 강원대 춘천 숙소`
