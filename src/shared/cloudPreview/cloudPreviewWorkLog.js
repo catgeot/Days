@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '종각역 숙소',
-  sessionNo: 6,
-  sessionPhase: '첫 카드 거리 원점',
+  sessionNo: 7,
+  sessionPhase: '거리 캐시 로딩',
   branch: 'cursor/jonggak-first-card-3096',
   previewPath: '/',
   qaShareSlug: '',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-jonggak-stay-distance-cache',
+    session: '종각역 숙소 #7, 거리 캐시 로딩',
+    title: '숙소 목록 먼저 · 거리는 캐시',
+    detail:
+      '거리 Photon(최대 12초) 때문에 숙소 찾기가 오래 걸렸습니다. 목록은 원점 없이 바로 받고, 호텔 좌표는 localStorage(14일)에서 붙입니다. 없는 좌표만 뒤에서 Photon합니다. 같은 일정 재진입은 30분 목록 캐시로 즉시 표시됩니다. Preview 홈「종각역」첫 카드 → 숙소 찾기 → 카드가 먼저 뜨고 신라스테이 광화문 330m 등이 붙는지.',
+    at: '2026-09-16T00:40:00.000Z',
+  },
   {
     id: '2026-09-15-jonggak-stay-first-card-origin',
     session: '종각역 숙소 #6, 첫 카드 거리 원점',

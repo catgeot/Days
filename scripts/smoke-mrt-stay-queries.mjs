@@ -33,6 +33,18 @@ import {
   stayGeocodeQueries,
   stayNameCompatible,
 } from '../src/utils/mrtStayDistance.js';
+import {
+  MRT_STAY_COORD_CACHE_KEY,
+  MRT_STAY_COORD_MISS_TTL_MS,
+  MRT_STAY_LISTING_CACHE_PREFIX,
+  hydrateMrtStayCoords,
+  itemsNeedingStayGeocode,
+  mergeMrtStayCoords,
+  mrtStayListingCacheKey,
+  persistMrtStayCoords,
+  readMrtStayListingCache,
+  writeMrtStayListingCache,
+} from '../src/utils/mrtStayCache.js';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -700,7 +712,102 @@ async function main() {
   );
   assert(fetchSrc.includes('originLat') && fetchSrc.includes('originLng'), 'client sends origin to Edge');
   assert(fetchSrc.includes('resolveMrtStayOrigin'), 'client stay origin helper');
+  assert(fetchSrc.includes('onPartialResult'), 'list paints before photon enrich');
+  assert(fetchSrc.includes('geocodeItems'), 'photon enrich uses geocodeItems');
+  assert(fetchSrc.includes('listingBody'), 'listing invoke omits origin');
+  assert(edgeSrc.includes('geocodeItems') && edgeSrc.includes('geocodeOnly'), 'Edge geocodeItems path');
+  assert(edgeSrc.includes('geo:id:'), 'Edge geocode cache by itemId');
+  assert(edgeSrc.includes('rememberSearchCoords'), 'Edge search cache keeps photon coords');
   console.log('OK  stay distance + naver map');
+
+  class MemoryStorage {
+    constructor() {
+      this.m = new Map();
+    }
+    getItem(k) {
+      return this.m.has(k) ? this.m.get(k) : null;
+    }
+    setItem(k, v) {
+      this.m.set(k, String(v));
+    }
+    removeItem(k) {
+      this.m.delete(k);
+    }
+    get length() {
+      return this.m.size;
+    }
+    key(i) {
+      return [...this.m.keys()][i] ?? null;
+    }
+  }
+
+  const listingKey = mrtStayListingCacheKey({
+    keyword: '종로',
+    isDomestic: true,
+    countryHint: '대한민국',
+    cityHints: ['서울'],
+    checkIn: '2026-10-01',
+    checkOut: '2026-10-04',
+    adultCount: 2,
+    childCount: 0,
+  });
+  assert(listingKey.startsWith(MRT_STAY_LISTING_CACHE_PREFIX), 'listing cache v23 prefix');
+  assert(!listingKey.includes('37.570'), 'listing cache key omits origin');
+  const mem = new MemoryStorage();
+  const listingPayload = {
+    ok: true,
+    items: [{ itemId: 101, itemName: '신라스테이 광화문', salePrice: 120000 }],
+  };
+  writeMrtStayListingCache(listingKey, listingPayload, { storage: mem, now: 1_000 });
+  const listingHit = readMrtStayListingCache(listingKey, { storage: mem, now: 1_000 });
+  assert(listingHit?.items?.[0]?.itemId === 101, 'listing cache hit');
+  assert(
+    readMrtStayListingCache(listingKey, { storage: mem, now: 1_000 + 31 * 60 * 1000 }) == null,
+    'listing cache expires at 30min',
+  );
+  persistMrtStayCoords(
+    [{ itemId: 101, itemName: '신라스테이 광화문', lat: 37.572, lng: 126.977 }],
+    { storage: mem, now: 2_000 },
+  );
+  const hydrated = hydrateMrtStayCoords(
+    [{ itemId: 101, itemName: '신라스테이 광화문' }],
+    { storage: mem, now: 2_000 },
+  );
+  assert(hydrated[0].lat === 37.572 && hydrated[0].lng === 126.977, 'coord cache hydrates itemId');
+  persistMrtStayCoords([], {
+    storage: mem,
+    now: 3_000,
+    misses: [{ itemId: 202, itemName: '오라카이 대학로' }],
+  });
+  const needing = itemsNeedingStayGeocode(
+    [
+      { itemId: 101, itemName: '신라스테이 광화문' },
+      { itemId: 202, itemName: '오라카이 대학로' },
+      { itemId: 303, itemName: '나인트리 인사동' },
+    ],
+    { storage: mem, now: 3_000 },
+  );
+  assert(
+    needing.map((it) => it.itemId).join(',') === '303',
+    `need geocode only uncached (${needing.map((it) => it.itemId)})`,
+  );
+  const stillNeedAfterMissTtl = itemsNeedingStayGeocode(
+    [{ itemId: 202, itemName: '오라카이 대학로' }],
+    { storage: mem, now: 3_000 + MRT_STAY_COORD_MISS_TTL_MS + 1 },
+  );
+  assert(stillNeedAfterMissTtl[0]?.itemId === 202, 'photon miss retries after 24h');
+  const merged = mergeMrtStayCoords(
+    [{ itemId: 303, itemName: '나인트리 인사동' }],
+    [{ itemId: 303, lat: 37.571, lng: 126.985 }],
+  );
+  assert(merged[0].lat === 37.571, 'merge coords by itemId');
+  assert(mem.getItem(MRT_STAY_COORD_CACHE_KEY), 'coord map persisted');
+  const stripSrcCache = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/components/GlobeStayStrip.jsx'),
+    'utf8',
+  );
+  assert(stripSrcCache.includes('onPartialResult'), 'GlobeStayStrip paints listing before photon');
+  console.log('OK  stay listing/coord cache');
 
   const emptyAltsKeepQuery = mergeMrtStayFetchQuery(
     {

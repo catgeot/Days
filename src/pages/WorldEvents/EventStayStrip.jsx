@@ -272,6 +272,20 @@ export default function EventStayStrip({
         ...fetchOpts,
         keywordOverride: stayKeyword || undefined,
         altKeywords: siblingAlts,
+        onPartialResult: (partial) => {
+          if (cancelled) return;
+          const listed = Array.isArray(partial?.items) ? partial.items : [];
+          const bookable = filterBookableMrtStays(listed);
+          if (bookable.length === 0) return;
+          fetchedKeyRef.current = fetchKey;
+          setItems(bookable.slice(0, MRT_STAY_PAGE_SIZE));
+          setMrtListMeta({
+            regionId: partial.region?.regionId ?? null,
+            keyword: partial.usedKeyword || stayKeyword || placeMeta.label,
+            isDomestic: isMrtDomesticLocation(location),
+          });
+          setStatus('ready');
+        },
       });
       if (cancelled) return;
       let listed = Array.isArray(result?.items) ? result.items : [];
@@ -281,6 +295,23 @@ export default function EventStayStrip({
           ...fetchOpts,
           keywordOverride: siblingAlts[0],
           altKeywords: [...siblingAlts.slice(1), stayKeyword].filter(Boolean),
+          onPartialResult: (partial) => {
+            if (cancelled) return;
+            const retryListed = Array.isArray(partial?.items) ? partial.items : [];
+            const retryBookable = filterBookableMrtStays(retryListed);
+            if (retryBookable.length === 0 && retryListed.length === 0) return;
+            fetchedKeyRef.current = fetchKey;
+            setItems((retryBookable.length > 0 ? retryBookable : retryListed).slice(
+              0,
+              MRT_STAY_PAGE_SIZE,
+            ));
+            setMrtListMeta({
+              regionId: partial.region?.regionId ?? null,
+              keyword: partial.usedKeyword || siblingAlts[0] || stayKeyword,
+              isDomestic: isMrtDomesticLocation(location),
+            });
+            setStatus(retryBookable.length > 0 ? 'ready' : 'empty');
+          },
         });
         if (cancelled) return;
         const retryListed = Array.isArray(retry?.items) ? retry.items : [];
