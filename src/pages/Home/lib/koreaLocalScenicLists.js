@@ -1382,6 +1382,15 @@ const GH_FOREST_3 = 'https://tong.visitkorea.or.kr/cms/resource/78/2380878_image
 const GH_YONG = 'https://tong.visitkorea.or.kr/cms/resource/63/2788863_image2_1.jpg';
 const GH_YONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/65/2788865_image2_1.jpg';
 const GH_YONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/62/2788862_image2_1.jpg';
+const GIM_HWAPO = 'https://tong.visitkorea.or.kr/cms2/website/07/2563907.jpg';
+const GIM_HWAPO_2 = 'https://tong.visitkorea.or.kr/cms/resource/78/3578778_image2_1.jpeg';
+const GIM_HWAPO_3 = 'https://tong.visitkorea.or.kr/cms/resource/79/3578779_image2_1.jpg';
+const GIM_GAYA = 'https://tong.visitkorea.or.kr/cms2/website/65/3392365.jpg';
+const GIM_GAYA_2 = 'https://tong.visitkorea.or.kr/cms2/website/66/3392366.jpg';
+const GIM_GAYA_3 = 'https://tong.visitkorea.or.kr/cms2/website/36/2649536.jpg';
+const GIM_ASTRO = 'https://tong.visitkorea.or.kr/cms2/website/20/3362120.jpg';
+const GIM_ASTRO_2 = 'https://tong.visitkorea.or.kr/cms2/website/24/3362124.jpg';
+const GIM_ASTRO_3 = 'https://tong.visitkorea.or.kr/cms2/website/69/3457369.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2895,6 +2904,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 고흥군 영남면 팔영로 1347-418 (팔영산 자연휴양림)',
     GH_FOREST,
     [GH_FOREST_2, GH_FOREST_3],
+  ),
+  'local-scenic:gimhae-gugyeong:화포천습지생태공원': localScenicPhotoOverlay(
+    '김해9경 5경 화포천습지 생태공원은 한림면입니다. 김해시 관광 9경은 우리나라 최대의 하천형 배후습지이며 노랑부리저어새와 큰기러기를 비롯한 희귀 동식물이 서식하고 계절에 따라 모습이 바뀐다고 적습니다. 주소는 한림면 한림로 183-300입니다. 시 습지 안내는 낙동강과 만나는 화포천 중·하류이며 창녕 우포늪·창원 주남저수지·낙동강 하구를 잇는 철새 이동 거점이라고 합니다. 길이 3.5km·면적 약 159만㎡의 생태공원이며 탐방 A~D 코스(1~3km)와 생태학습관이 있습니다. 같은 리스트 1경 봉하마을(진영읍)과 다른 한림면 습지입니다. 사진은 한국관광공사 화포천의 아침(한림면) 공식 사진과 화포천습지과학관 공식 사진입니다.',
+    '경상남도 김해시 한림면 한림로 183-300 (화포천습지 생태공원)',
+    GIM_HWAPO,
+    [GIM_HWAPO_2, GIM_HWAPO_3],
+  ),
+  'local-scenic:gimhae-gugyeong:경전철에서바라본가야유적': localScenicPhotoOverlay(
+    '김해9경 8경 경전철에서 바라본 가야유적은 부산김해경전철 박물관역·수로왕릉역입니다. 김해시 관광 9경은 박물관역에서 국립김해박물관·구지봉·수로왕비릉을, 수로왕릉역에서 대성동고분군·수릉원·수로왕릉을 둘러볼 수 있다고 적습니다. 대성동고분군은 유네스코 세계유산이며 주소는 가야의길 126입니다. 같은 리스트 3경 김해 수로왕릉(왕릉로 26)과 다른 항목이며, GATEO 선정 가야테마파크와도 다른 원도심 경전철 구간입니다. 부산 도시철도·부산김해경전철 공항역 구간만의 풍경과 혼동하지 않습니다. 사진은 한국관광공사 김해 대성동고분군·국립김해박물관 공식 사진입니다.',
+    '경상남도 김해시 가야의길 126 (대성동고분군·부산김해경전철 박물관역·수로왕릉역)',
+    GIM_GAYA,
+    [GIM_GAYA_2, GIM_GAYA_3],
+  ),
+  'local-scenic:gimhae-gugyeong:분산(천문대)전경및운무': localScenicPhotoOverlay(
+    '김해9경 9경 분산(천문대)전경 및 운무는 어방동 분성산(분산) 정상 김해천문대입니다. 김해시 관광 9경은 천문대에서 바라보는 가야고도 김해의 전경(야경)과, 안개 때 임호산 봉우리와 경운산 일부를 제외한 김해 전체를 덮는 운무가 장관이라고 적습니다. 주소는 가야테마길 254입니다. 영남 최초 시민천문대로 2002년 2월 1일 개관했으며 알 모양 건물은 수로왕 탄생 설화에서 왔습니다. 같은 산 사적 분산성·GATEO 선정 가야테마파크와 다른 정상 전망이며, 증평 좌구산 천문대와 다른 자리입니다. 사진은 한국관광공사 김해천문대·분산성 공식 사진입니다.',
+    '경상남도 김해시 가야테마길 254 (어방동 김해천문대·분성산)',
+    GIM_ASTRO,
+    [GIM_ASTRO_2, GIM_ASTRO_3],
   ),
 };
 

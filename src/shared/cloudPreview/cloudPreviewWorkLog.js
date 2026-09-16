@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '종각역 숙소',
-  sessionNo: 5,
-  sessionPhase: '거리 정렬 및 지도 딥링크',
-  branch: 'cursor/jonggak-stay-5f4f',
-  previewPath: '/',
-  qaShareSlug: '',
+  title: '팔경 활용',
+  sessionNo: 51,
+  sessionPhase: '김해 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -30,6 +30,14 @@ export const cloudPreviewWorkLog = [
     detail:
       'MRT search에 호텔 좌표가 없어 Edge가 Photon(숙소 OSM·8km·이름 가드)으로 종각역 근처 위·경도를 붙입니다. 카드에 「종각역 350m」. Preview 홈「종각」→ 숙소 찾기 → 하드 새로고침. 오라카이 대학로처럼 OSM에 없는 호텔은 거리 없음이 정상.',
     at: '2026-09-15T20:40:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-51-gimhae-overlays',
+    session: '팔경 활용 #51, 김해 결손 오버레이',
+    title: '김해9경 화포천·경전철 가야유적·분산 천문대 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 김해9경 결손 3건(화포천습지 생태공원·경전철에서 바라본 가야유적·분산(천문대)전경 및 운무)의 공공 공식 팩트 개요·주소·한국관광공사 공식 사진을 보강했습니다. 화포천은 한림면 한림로 183-300 하천형 배후습지, 경전철 가야유적은 박물관역·수로왕릉역의 대성동고분군·국립김해박물관, 분산 천문대는 어방동 가야테마길 254 분성산 정상입니다. 창녕 우포늪·3경 수로왕릉·GATEO 선정 가야테마파크·증평 좌구산 천문대와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gimhae 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T20:30:00.000Z',
   },
   {
     id: '2026-09-15-palgyeong-use-50-goheung-empty-thumbs',

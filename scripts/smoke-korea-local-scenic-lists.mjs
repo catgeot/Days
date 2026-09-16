@@ -3012,6 +3012,94 @@ assert.ok(
   '고흥 검색 팔경 팔영산 자연휴양림 썸네일',
 );
 
+const gimhaeMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gimhae');
+const gimhaeNine = gimhaeMerged.filter((s) => s.localScenicListId === 'gimhae-gugyeong');
+assert.equal(gimhaeNine.length, 9, '김해9경 9명');
+assert.equal(gimhaeNine[0]?.groupTitle, '김해 구경');
+const gimhaeDeficitNames = [
+  '화포천습지 생태공원',
+  '경전철에서 바라본 가야유적',
+  '분산(천문대)전경 및 운무',
+];
+const gimhaeDeficit = gimhaeNine.filter((s) =>
+  gimhaeDeficitNames.includes(s.attractionName),
+);
+assert.equal(gimhaeDeficit.length, 3, '김해9경 결손 3명');
+assert.ok(
+  gimhaeDeficit.every((s) => s.overview && s.imageUrl),
+  '김해 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  gimhaeDeficit.every((s) => !s.contentId),
+  '김해 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(gimhaeDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '김해 결손 3명 썸네일 서로 다름',
+);
+
+const gimHwapo = resolveLocalScenicListSpotById(
+  'local-scenic:gimhae-gugyeong:화포천습지생태공원',
+);
+assert.ok(gimHwapo?.overview?.includes('한림로 183-300'), '김해 화포천습지 주소');
+assert.ok(gimHwapo?.overview?.includes('하천형 배후습지'), '김해 화포천습지 overlay 배후습지');
+assert.ok(gimHwapo?.overview?.includes('우포늪'), '김해 화포천습지≠창녕 우포늪 구분');
+assert.ok(gimHwapo?.overview?.includes('주남저수지'), '김해 화포천습지≠창원 주남 구분');
+assert.ok(gimHwapo?.overview?.includes('봉하마을'), '김해 화포천습지≠봉하마을 구분');
+assert.ok(gimHwapo?.imageUrl?.includes('2563907'), '김해 화포천습지 한국관광공사 아침 사진');
+
+const gimGaya = resolveLocalScenicListSpotById(
+  'local-scenic:gimhae-gugyeong:경전철에서바라본가야유적',
+);
+assert.ok(gimGaya?.overview?.includes('박물관역'), '김해 경전철 가야유적 overlay 박물관역');
+assert.ok(gimGaya?.overview?.includes('수로왕릉역'), '김해 경전철 가야유적 수로왕릉역');
+assert.ok(gimGaya?.overview?.includes('대성동고분군'), '김해 경전철 가야유적 대성동고분군');
+assert.ok(gimGaya?.overview?.includes('왕릉로 26'), '김해 경전철 가야유적≠3경 수로왕릉 구분');
+assert.ok(gimGaya?.overview?.includes('가야테마파크'), '김해 경전철 가야유적≠가야테마파크 구분');
+assert.ok(gimGaya?.imageUrl?.includes('3392365'), '김해 경전철 가야유적 대성동고분군 사진');
+assert.ok(!gimGaya?.imageUrl?.includes('3510645'), '김해 경전철 가야유적≠수로왕릉 GATEO 사진');
+
+const gimAstro = resolveLocalScenicListSpotById(
+  'local-scenic:gimhae-gugyeong:분산(천문대)전경및운무',
+);
+assert.ok(gimAstro?.overview?.includes('가야테마길 254'), '김해 분산 천문대 주소');
+assert.ok(gimAstro?.overview?.includes('어방동'), '김해 분산 천문대 overlay 어방동');
+assert.ok(gimAstro?.overview?.includes('좌구산'), '김해 분산 천문대≠증평 좌구산 구분');
+assert.ok(gimAstro?.overview?.includes('가야테마파크'), '김해 분산 천문대≠가야테마파크 구분');
+assert.ok(gimAstro?.imageUrl?.includes('3362120'), '김해 분산 천문대 한국관광공사 사진');
+assert.notEqual(gimHwapo?.imageUrl, gimGaya?.imageUrl, '화포천·경전철 가야유적 썸네일 다름');
+assert.notEqual(gimHwapo?.imageUrl, gimAstro?.imageUrl, '화포천·분산 천문대 썸네일 다름');
+assert.notEqual(gimGaya?.imageUrl, gimAstro?.imageUrl, '경전철 가야유적·분산 천문대 썸네일 다름');
+
+const gimhaeGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '김해', {
+  injectLocalScenic: true,
+});
+const gimhaeGlobeNine = gimhaeGlobe.filter((s) => s.localScenicListId === 'gimhae-gugyeong');
+assert.equal(gimhaeGlobeNine.length, 9, '김해 검색 김해9경 9행');
+assert.ok(
+  gimhaeGlobeNine.every((s) => s.groupTitle === '김해 구경'),
+  '김해 검색 팔경 groupTitle 김해 구경',
+);
+assert.ok(
+  gimhaeGlobe.find((s) => s.attractionName === '화포천습지 생태공원')?.imageUrl?.includes(
+    '2563907',
+  ),
+  '김해 검색 팔경 화포천습지 썸네일',
+);
+assert.ok(
+  gimhaeGlobe
+    .find((s) => s.attractionName === '경전철에서 바라본 가야유적')
+    ?.overview?.includes('박물관역'),
+  '김해 검색 팔경 경전철 가야유적 개요',
+);
+assert.ok(
+  gimhaeGlobe
+    .find((s) => s.attractionName === '분산(천문대)전경 및 운무')
+    ?.overview?.includes('어방동'),
+  '김해 검색 팔경 분산 천문대 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
