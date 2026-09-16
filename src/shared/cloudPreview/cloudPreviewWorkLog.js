@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '종각역 숙소',
-  sessionNo: 9,
-  sessionPhase: '검색 카드 검은 화면',
-  branch: 'cursor/jonggak-yeonsinnae-cacc',
-  previewPath: '/',
-  qaShareSlug: '',
+  title: '팔경 활용',
+  sessionNo: 54,
+  sessionPhase: '예천 용궁시장 사진',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-palgyeong-use-54-yonggung-market-photo',
+    session: '팔경 활용 #54, 예천 용궁시장 사진',
+    title: '용궁시장 회룡포 사진 교체',
+    detail:
+      '명승 상세 용궁시장(yonggung-market)이 회룡포(Tour 126734) 내성천 물돌이 항공을 쓰고 있었습니다. JSON contentId 기입 없이 예천군 문화관광 TV따라 여행 용궁시장·용궁순대축제 공식 사진으로 바꿨습니다. 같은 면 회룡포 전망대·뿅뿅다리와 다른 읍부리 장터입니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「예천」용궁시장 상세.',
+    at: '2026-09-16T13:15:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-54-yecheon-silla-thumb',
+    session: '팔경 활용 #54, 예천 검색 빈 썸네일',
+    title: '예천 검색 신라식물원 빈 썸네일',
+    detail:
+      '명승홈 검색「예천」관광지 행 신라식물원(1910438, 감천면 충효로 1752)은 TourAPI firstimage·detailImage·searchPhoto가 모두 비어 랜드마크 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID에 신라식물원 공식 홈페이지 정원·마당·입구 간판 전경을 연결했습니다. 예천8경 곤충생태원 곤충식물원·거제식물원과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「예천」신라식물원 행.',
+    at: '2026-09-16T12:50:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-54-yecheon-overlays',
+    session: '팔경 활용 #54, 예천 결손 오버레이',
+    title: '예천8경 금당실·곤충생태원·석송령 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 예천8경 결손 3건(금당실 전통마을과 송림·예천곤충생태원·석송령)의 공공 공식 팩트 개요·주소·예천군 문화관광·국가유산청 공식 사진을 보강했습니다. 금당실은 용문면 금당실길 52-4 십승지 마을·천연기념물 469호 송림(3경), 곤충생태원은 효자면 은풍로 1045 곤충연구소·무당벌레 멀티체험관(6경), 석송령은 감천면 석송로 321-6 천연기념물 294호 부자나무(7경)입니다. 초간정·하회·선몽대 송림·함평엑스포·정이품송·금당실 송림과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yecheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T09:10:00.000Z',
+  },
   {
     id: '2026-09-16-jonggak-stay-search-card-black-screen',
     session: '종각역 숙소 #9, 검색 카드 검은 화면',

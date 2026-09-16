@@ -252,7 +252,6 @@ const RELATED_IMAGE_CONTENT_IDS = {
   geumseongsan: '2781613', // 산운마을 — 금성산 Tour type12 부재 시(의성 금성)
   'uiseong-garlic-theme-park': '126075', // 빙계계곡 — 마늘테마공원 Tour type12 부재 시
   'yecheon-museum': '128135', // 초간정 — 예천박물관 Tour type12 부재 시
-  'yonggung-market': '126734', // 회룡포 — 용궁시장 Tour type12 부재 시(용궁면)
   'starlight-theme-park-yeongcheon': '606248', // 보현산별빛테마마을 — 별빛테마공원 Tour 부재 시
   'bohyeonsan-observatory': '606248', // 보현산별빛테마마을 — 천문대 Tour type12 부재 시
   'museom-village': '2961095', // 선비세상 — 무섬마을 Tour type12 부재 시
