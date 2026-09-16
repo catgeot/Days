@@ -2,6 +2,17 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 종각역 숙소 #9 — 검색 카드 검은 화면 (Cloud)
+
+- **세션** `종각역 숙소 #9, 검색 카드 검은 화면`
+- **브랜치** `cursor/jonggak-yeonsinnae-cacc` · tip `bcf25dab` · PR [#269](https://github.com/catgeot/Days/pull/269)
+- **원인**: `GlobeStayStrip`이 `const fetchKey`보다 먼저 `useRef(fetchKey)`를 써서 장소 카드 오픈 즉시 TDZ `ReferenceError`. 홈이 언마운트되고 작업 로그만 남음.
+- **완료**: `fetchKeyRef`는 빈 문자열로 초기화하고 선언 뒤에 할당. 스모크가 같은 패턴을 막음.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-jonggak-yeonsinnae-cacc-catgeots-projects.vercel.app/
+- **QA**: 검색「연신내역」카드 → 지구본·써머리(검은 화면 아님) · 첫 카드 숙소 찾기 거리.
+- **다음**: `종각역 숙소 #10, Preview OK면 PR 병합`
+
 ## 종각역 숙소 #8 — 최초 진입 거리 (Cloud)
 
 - **세션** `종각역 숙소 #8, 최초 진입 거리`
