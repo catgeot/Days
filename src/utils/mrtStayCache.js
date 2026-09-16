@@ -231,3 +231,28 @@ export function itemsNeedingStayGeocode(items, { storage, now } = {}) {
     return true;
   });
 }
+
+export function isCurrentMrtStayFetch(activeKey, startedKey) {
+  return Boolean(startedKey) && activeKey === startedKey;
+}
+
+/** 화면에 먼저 보이는 요금有 숙소부터 Photon — 12초 예산이 뒷번호만 돌지 않게 */
+export function orderStayItemsForGeocode(items, missing) {
+  const need = new Set((Array.isArray(missing) ? missing : []).map(stayItemId).filter(Boolean));
+  const ordered = [];
+  const seen = new Set();
+  const push = (it) => {
+    const id = stayItemId(it);
+    if (!id || !need.has(id) || seen.has(id)) return;
+    seen.add(id);
+    ordered.push(it);
+  };
+  const pricedFirst = (Array.isArray(items) ? items.slice() : []).sort((a, b) => {
+    const ap = Number(a?.salePrice) > 0 ? 1 : 0;
+    const bp = Number(b?.salePrice) > 0 ? 1 : 0;
+    return bp - ap;
+  });
+  for (const it of pricedFirst) push(it);
+  for (const it of Array.isArray(missing) ? missing : []) push(it);
+  return ordered;
+}
