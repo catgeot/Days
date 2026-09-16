@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 52,
-  sessionPhase: '대구 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'palgyeong-use',
+  title: '종각역 숙소',
+  sessionNo: 8,
+  sessionPhase: '최초 진입 거리',
+  branch: 'cursor/jonggak-yeonsinnae-cacc',
+  previewPath: '/',
+  qaShareSlug: '',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-jonggak-stay-first-entry-distance',
+    session: '종각역 숙소 #8, 최초 진입 거리',
+    title: '첫 숙소 찾기에도 거리·가까운순',
+    detail:
+      '연신내역처럼 처음 열면 광화문 호텔이 거리 없이 뜨고, 다시 열면 거리·가까운순이 되던 문제를 고쳤습니다. Photon 결과가 location 리렌더에 취소되지 않고, 보이는 20곳부터 좌표를 붙입니다. 「연신내역」은 내역 오탐이 아니라 역으로 봅니다. Preview 홈「연신내역」첫 카드 → 숙소 찾기 → 첫 진입에도 은평 쪽 거리가 붙는지(재진입만 되는 것 아님).',
+    at: '2026-09-16T04:20:00.000Z',
+  },
   {
     id: '2026-09-16-palgyeong-use-52-daegu-overlays',
     session: '팔경 활용 #52, 대구 결손 오버레이',

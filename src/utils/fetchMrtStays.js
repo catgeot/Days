@@ -24,6 +24,7 @@ import {
   persistMrtStayCoords,
   readMrtStayListingCache,
   writeMrtStayListingCache,
+  orderStayItemsForGeocode,
 } from './mrtStayCache.js';
 
 export {
@@ -258,6 +259,21 @@ function originPair(params) {
   return { lat, lng };
 }
 
+async function invokeStayGeocodeItems(missing, origin) {
+  const { data } = await supabase.functions.invoke('fetch-mrt-stays', {
+    body: {
+      geocodeItems: missing.map((it) => ({
+        itemId: it.itemId,
+        itemName: it.itemName,
+      })),
+      originLat: origin.lat,
+      originLng: origin.lng,
+    },
+  });
+  if (data?.ok && Array.isArray(data.items) && data.items.length) return data.items;
+  return null;
+}
+
 function withHydratedCoords(payload) {
   if (!payload || typeof payload !== 'object') return payload;
   const items = hydrateMrtStayCoords(payload.items);
@@ -267,30 +283,40 @@ function withHydratedCoords(payload) {
 
 async function enrichMrtStayCoords(payload, params) {
   const origin = originPair(params);
-  const items = Array.isArray(payload?.items) ? payload.items : [];
+  let items = Array.isArray(payload?.items) ? payload.items : [];
   const missing = itemsNeedingStayGeocode(items);
   if (!origin || !missing.length) return payload;
 
-  let sourced = null;
+  const ordered = orderStayItemsForGeocode(items, missing);
+  const head = ordered.slice(0, MRT_STAY_PAGE_SIZE);
+  const tail = ordered.slice(MRT_STAY_PAGE_SIZE);
+  const onPartial = typeof params?.onPartialResult === 'function' ? params.onPartialResult : null;
+
+  const mergeSourced = (sourced) => {
+    if (!Array.isArray(sourced) || !sourced.length) return false;
+    items = mergeMrtStayCoords(items, sourced);
+    persistMrtStayCoords(items);
+    return true;
+  };
+
+  let got = false;
   try {
-    const { data } = await supabase.functions.invoke('fetch-mrt-stays', {
-      body: {
-        geocodeItems: missing.map((it) => ({
-          itemId: it.itemId,
-          itemName: it.itemName,
-        })),
-        originLat: origin.lat,
-        originLng: origin.lng,
-      },
-    });
-    if (data?.ok && Array.isArray(data.items) && data.items.length) {
-      sourced = data.items;
+    got = mergeSourced(await invokeStayGeocodeItems(head, origin)) || got;
+    if (got && onPartial) {
+      try {
+        onPartial(shapeMrtStayResult({ ...payload, items }));
+      } catch {
+        /* caller */
+      }
+    }
+    if (tail.length) {
+      got = mergeSourced(await invokeStayGeocodeItems(tail, origin)) || got;
     }
   } catch {
-    sourced = null;
+    /* keep coords already merged */
   }
 
-  if (!sourced) {
+  if (!got) {
     try {
       const { data, error } = await supabase.functions.invoke('fetch-mrt-stays', {
         body: {
@@ -300,20 +326,19 @@ async function enrichMrtStayCoords(payload, params) {
         },
       });
       if (!error && data?.ok && Array.isArray(data.items)) {
-        sourced = data.items;
+        got = mergeSourced(data.items) || got;
       }
     } catch {
-      sourced = null;
+      /* listing+origin fallback */
     }
   }
 
-  if (!sourced) return payload;
+  if (!got) return payload;
 
-  const merged = mergeMrtStayCoords(items, sourced);
-  persistMrtStayCoords(merged, {
-    misses: missing.filter((it) => !parseStayItemCoord(it, merged)),
+  persistMrtStayCoords(items, {
+    misses: missing.filter((it) => !parseStayItemCoord(it, items)),
   });
-  return { ...payload, items: merged };
+  return { ...payload, items };
 }
 
 function parseStayItemCoord(probe, merged) {
@@ -427,7 +452,10 @@ export async function fetchMrtStays(params) {
 
   if (params?.skipGeocode) return partial;
 
-  const enrichedPayload = await enrichMrtStayCoords(payload, invokeParams);
+  const enrichedPayload = await enrichMrtStayCoords(payload, {
+    ...invokeParams,
+    onPartialResult: params?.onPartialResult,
+  });
   if (enrichedPayload !== payload && Array.isArray(enrichedPayload.items)) {
     writeMrtStayListingCache(key, enrichedPayload);
   }

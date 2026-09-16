@@ -224,7 +224,19 @@ const KO_TOWNSHIP_RE = /[읍면리]$/;
  * 무역·번역 등 역으로 끝나는 일반 명사는 제외.
  */
 const KO_STAY_POINT_RE = /(지하철역|기차역|고속터미널|터미널|정류장|역|길)$/;
-const KO_STAY_POINT_FALSE_RE = /(무역|검역|방역|용역|영역|번역|이력|내역|현역|대역)$/;
+/** 역이 아닌 일반 명사 — 전체 일치만. 「연신내역」「신대방역」접미 오탐 금지 */
+const KO_STAY_POINT_FALSE_EXACT = new Set([
+  '무역',
+  '검역',
+  '방역',
+  '용역',
+  '영역',
+  '번역',
+  '이력',
+  '내역',
+  '현역',
+  '대역',
+]);
 const EN_STAY_POINT_RE = /\b(station|subway|metro|terminal)\b|-gil\b/i;
 /**
  * 역명 약칭. 「종각」단독이 대구 종각 광장으로 떨어지지 않게.
@@ -321,8 +333,9 @@ export function isMrtStayPointLabel(raw) {
   const s = String(raw || '').trim();
   if (!s || s.length < 2) return false;
   if (EN_STAY_POINT_RE.test(s)) return true;
-  if (KO_STAY_POINT_FALSE_RE.test(s)) return false;
-  if (KO_STATION_ALIASES[compactKoPlaceKey(s)]) return true;
+  const compact = compactKoPlaceKey(s);
+  if (KO_STAY_POINT_FALSE_EXACT.has(compact)) return false;
+  if (KO_STATION_ALIASES[compact]) return true;
   return KO_STAY_POINT_RE.test(s);
 }
 

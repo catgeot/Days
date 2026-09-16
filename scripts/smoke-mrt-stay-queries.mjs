@@ -38,9 +38,11 @@ import {
   MRT_STAY_COORD_MISS_TTL_MS,
   MRT_STAY_LISTING_CACHE_PREFIX,
   hydrateMrtStayCoords,
+  isCurrentMrtStayFetch,
   itemsNeedingStayGeocode,
   mergeMrtStayCoords,
   mrtStayListingCacheKey,
+  orderStayItemsForGeocode,
   persistMrtStayCoords,
   readMrtStayListingCache,
   writeMrtStayListingCache,
@@ -424,6 +426,28 @@ const CASES = [
     expectPrimaryKeyword: /^서울$/,
     rejectPrimaryKeyword: /서울역|Station/i,
   },
+  {
+    slug: 'yeonsinnae-eunpyeong',
+    location: {
+      name: '연신내역',
+      name_ko: '연신내역',
+      country: '한국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '연신내역',
+      lat: 37.6191,
+      lng: 126.921,
+      stayAdmin: {
+        neighbourhood: '갈현동',
+        city: '서울',
+        district: '은평구',
+        state: '서울특별시',
+      },
+    },
+    expectPrimaryKeyword: /^은평$/,
+    expectKeyword: /서울/,
+    rejectPrimaryKeyword: /연신내역|^서울$|종로/,
+  },
 ];
 
 function assert(cond, msg) {
@@ -436,10 +460,16 @@ async function main() {
     assert(isMrtStayPointLabel('종각역'), '종각역 is stay point');
     assert(isMrtStayPointLabel('종각'), '종각 alias is stay point');
     assert(isMrtStayPointLabel('서울역'), '서울역 is stay point');
+    assert(isMrtStayPointLabel('연신내역'), '연신내역 is stay point (not 내역 false positive)');
+    assert(isMrtStayPointLabel('신대방역'), '신대방역 is stay point (not 방역 false positive)');
     assert(!isMrtStayPointLabel('영역'), '영역 is not stay point');
+    assert(!isMrtStayPointLabel('내역'), '내역 is not stay point');
+    assert(!isMrtStayPointLabel('방역'), '방역 is not stay point');
     assert(!isMrtStayPointLabel('종로'), '종로 is neighborhood not stay point');
     assert(queryLooksLikeStayPoint('종각역'), 'queryLooksLikeStayPoint 종각역');
     assert(queryLooksLikeStayPoint('종각'), 'queryLooksLikeStayPoint 종각');
+    assert(queryLooksLikeStayPoint('연신내역'), 'queryLooksLikeStayPoint 연신내역');
+    assert(queryLooksLikeStayPoint('연신내역, 대한민국'), 'queryLooksLikeStayPoint 연신내역, 대한민국');
     assert(queryLooksLikeStayPoint('종각역, 대한민국'), 'queryLooksLikeStayPoint 종각역, 대한민국');
     assert(queryLooksLikeStayPoint('종각, 대한민국'), 'queryLooksLikeStayPoint 종각, 대한민국');
     assert(!queryLooksLikeStayPoint('서울'), '서울 is not stay point query');
@@ -467,6 +497,10 @@ async function main() {
     assert(
       nominatimStationScoreDelta('종각', { class: 'railway', type: 'station', name: '종각역' }) === 80,
       '종각 railway score',
+    );
+    assert(
+      nominatimStationScoreDelta('연신내역', { class: 'railway', type: 'station', name: '연신내역' }) === 80,
+      '연신내역 railway score',
     );
     assert(
       nominatimSquarePenalty('종각', { class: 'place', type: 'square', name: '종각' }) === -60,
@@ -636,6 +670,18 @@ async function main() {
     Math.abs(nearStreet?.lat - 37.5704) < 1e-6,
     `near street keeps own coords (got ${nearStreet?.lat})`,
   );
+  const yeonsinnaeOrigin = resolveMrtStayOrigin({
+    name: '연신내역',
+    originalQuery: '연신내역',
+    lat: 37.6191,
+    lng: 126.921,
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(yeonsinnaeOrigin?.lat - 37.6191) < 1e-6 &&
+      Math.abs(yeonsinnaeOrigin?.lng - 126.921) < 1e-6,
+    `연신내역 keeps station coords not 종각 (got ${yeonsinnaeOrigin?.lat},${yeonsinnaeOrigin?.lng})`,
+  );
   const ranked = attachMrtStayDistances(
     [
       { itemId: 1, lat: 37.4979, lng: 127.0276 },
@@ -665,6 +711,11 @@ async function main() {
       stripSrc.includes('naverNearbyStays') &&
       stripSrc.includes('distance_asc'),
     'GlobeStayStrip wires distance + naver chip',
+  );
+  assert(stripSrc.includes('isCurrentMrtStayFetch'), 'first-entry photon apply is not cancelled by location identity');
+  assert(
+    stripSrc.includes('inflightKeyRef') && stripSrc.includes('[eligible, expanded, fetchKey]'),
+    'stay fetch effect deps are fetchKey not location identity',
   );
   const edgeSrc = readFileSync(
     join(dirname(fileURLToPath(import.meta.url)), '../supabase/functions/fetch-mrt-stays/index.ts'),
@@ -715,6 +766,8 @@ async function main() {
   assert(fetchSrc.includes('onPartialResult'), 'list paints before photon enrich');
   assert(fetchSrc.includes('geocodeItems'), 'photon enrich uses geocodeItems');
   assert(fetchSrc.includes('listingBody'), 'listing invoke omits origin');
+  assert(fetchSrc.includes('orderStayItemsForGeocode'), 'photon first page follows priced list order');
+  assert(fetchSrc.includes('MRT_STAY_PAGE_SIZE'), 'first photon batch is visible page');
   assert(edgeSrc.includes('geocodeItems') && edgeSrc.includes('geocodeOnly'), 'Edge geocodeItems path');
   assert(edgeSrc.includes('geo:id:'), 'Edge geocode cache by itemId');
   assert(edgeSrc.includes('rememberSearchCoords'), 'Edge search cache keeps photon coords');
@@ -791,6 +844,25 @@ async function main() {
     needing.map((it) => it.itemId).join(',') === '303',
     `need geocode only uncached (${needing.map((it) => it.itemId)})`,
   );
+  const geoOrder = orderStayItemsForGeocode(
+    [
+      { itemId: 1, itemName: 'no-price', salePrice: null },
+      { itemId: 2, itemName: 'visible', salePrice: 120000 },
+      { itemId: 3, itemName: 'also-priced', salePrice: 90000 },
+    ],
+    [
+      { itemId: 1, itemName: 'no-price' },
+      { itemId: 2, itemName: 'visible' },
+      { itemId: 3, itemName: 'also-priced' },
+    ],
+  );
+  assert(
+    geoOrder.map((it) => it.itemId).join(',') === '2,3,1',
+    `geocode priced-first (${geoOrder.map((it) => it.itemId)})`,
+  );
+  assert(isCurrentMrtStayFetch('a|b', 'a|b'), 'same fetch key is current');
+  assert(!isCurrentMrtStayFetch('a|b', 'a|c'), 'stale fetch key ignored');
+  assert(!isCurrentMrtStayFetch('a|b', ''), 'empty started key ignored');
   const stillNeedAfterMissTtl = itemsNeedingStayGeocode(
     [{ itemId: 202, itemName: '오라카이 대학로' }],
     { storage: mem, now: 3_000 + MRT_STAY_COORD_MISS_TTL_MS + 1 },
@@ -807,6 +879,7 @@ async function main() {
     'utf8',
   );
   assert(stripSrcCache.includes('onPartialResult'), 'GlobeStayStrip paints listing before photon');
+  assert(stripSrcCache.includes('isCurrentMrtStayFetch'), 'enrich still applies after first paint');
   console.log('OK  stay listing/coord cache');
 
   const emptyAltsKeepQuery = mergeMrtStayFetchQuery(
