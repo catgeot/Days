@@ -1400,6 +1400,20 @@ const DG_DALSEONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/60/3565160_ima
 const DG_GAMYEONG = 'https://tong.visitkorea.or.kr/cms/resource/44/3310544_image2_1.jpg';
 const DG_GAMYEONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/41/3310541_image2_1.jpg';
 const DG_GAMYEONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/42/3310542_image2_1.jpg';
+const YS_TOUR = 'https://www.yeosu.go.kr/tour';
+const YS_EXPO =
+  `${YS_TOUR}/build/images/1743/17439999/17439999170773_2.jpg/740x1x70/740x1_17439999170773_2.jpg`;
+const YS_EXPO_2 = `${YS_TOUR}/contents/60/expo_2.jpg`;
+const YS_EXPO_3 =
+  `${YS_TOUR}/build/images/1743/17439999/17439999073042.jpg/740x1x70/740x1_17439999073042.jpg`;
+const YS_NIGHT =
+  `${YS_TOUR}/build/images/1743/17439998/17439998378816.jpg/740x1x70/740x1_17439998378816.jpg`;
+const YS_NIGHT_2 = `${YS_TOUR}/contents/41/sea_2.jpg`;
+const YS_NIGHT_3 = `${YS_TOUR}/contents/41/sea_1.jpg`;
+const YS_CABLE =
+  `${YS_TOUR}/build/images/1682/16826402/1682640297.jpg/740x1x70/740x1_1682640297.jpg`;
+const YS_CABLE_2 = `${YS_TOUR}/contents/50/cable_3.jpg`;
+const YS_CABLE_3 = `${YS_TOUR}/contents/50/cable_1.jpg`;
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2949,6 +2963,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '대구광역시 중구 경상감영길 99 (포정동 경상감영공원·근대골목 1코스)',
     DG_GAMYEONG,
     [DG_GAMYEONG_2, DG_GAMYEONG_3],
+  ),
+  'local-scenic:yeosu-other:여수세계박람회장': localScenicPhotoOverlay(
+    '여수10경 5경 여수세계박람회장은 덕충동입니다. 여수시 관광 10경은 2012년 여수세계박람회 개최지이며 빅오쇼·스카이타워·아쿠아플라넷과 수변공원이 있는 해양 복합공간이라고 적습니다. 주소는 박람회길 1입니다. 시 안내는 820만 관람객이 찾은 박람회 뒤 빅오(디오 The-O와 해상분수)·스카이타워·엑스포디지털갤러리를 핵심 시설로 소개합니다. 스카이타워는 시멘트 사일로를 살린 전망대이자 파이프오르간이며, 빅오는 분수·안개·화염·레이저 뉴미디어 쇼입니다. 2026 여수세계섬박람회(섬 주제 별도 행사)·함평엑스포공원·9경 해상케이블카와 다른 덕충동 박람회장입니다. 사진은 여수시 관광 엑스포장 항공(빅오·디지털갤러리)·10경 빅오쇼·스카이타워 야경 공식 사진입니다.',
+    '전라남도 여수시 박람회길 1 (덕충동 여수세계박람회장)',
+    YS_EXPO,
+    [YS_EXPO_2, YS_EXPO_3],
+  ),
+  'local-scenic:yeosu-other:여수밤바다와산단야경': localScenicPhotoOverlay(
+    '여수10경 7경 여수 밤바다와 산단 야경은 종화동 해양공원·돌산공원에서 보는 도심 밤바다와 화치동 여수국가산업단지 야경입니다. 여수시 관광 10경은 버스커버스커가 노래한 해안선 야경이며, 해양공원에서 돌산대교·거북선대교·장군도를, 돌산공원에서 돌산대교와 장군도 야경을 본다고 적습니다. 돌산대교는 밤마다 50여 가지 색 경관조명을 켭니다. 산단은 1967년 조성 정유·비료·석유화학 국내 최대 중화학단지이며, 화치동 산183-4 국가산단전망대(2009년 3월)가 조망 포인트입니다. 광양9경 광양만 야경(구봉산·포스코 광양제철)·9경 해상케이블카 야경·10경 이순신대교와 다른 여수 도심·여천 산단 야경입니다. 사진은 여수시 관광 밤바다 야경(남산공원)·10경 돌산대교·해양공원 공식 사진입니다.',
+    '전라남도 여수시 종화동 해양공원·돌산공원 및 화치동 여수국가산단전망대',
+    YS_NIGHT,
+    [YS_NIGHT_2, YS_NIGHT_3],
+  ),
+  'local-scenic:yeosu-other:여수해상케이블카': localScenicPhotoOverlay(
+    '여수10경 9경 여수해상케이블카는 돌산읍 돌산공원(놀아정류장)과 자산공원(해야정류장)을 잇는 1.5km 국내 첫 해상케이블카입니다. 여수시 관광 10경은 바닥이 투명한 크리스탈 캐빈 15대와 일반 캐빈 35대, 총 50대가 운행하며 박람회장·오동도·다도해와 밤바다를 본다고 적습니다. 주소는 돌산로 3600-1(돌산)·오동도로 116(자산, 소노캄 맞은편)입니다. 2014년 12월 개통, 아시아에서는 홍콩·싱가포르·베트남에 이은 네 번째 해상 노선입니다. 목포해상케이블카·사천바다케이블카·부산 송도해상케이블카와 다른 여수 돌산~자산 노선입니다. 사진은 여수시 관광 해상케이블카 캐빈(거북선대교)·10경 캐빈 내부·돌산 전망 공식 사진입니다.',
+    '전라남도 여수시 돌산읍 돌산로 3600-1 (돌산공원)·오동도로 116 (자산공원)',
+    YS_CABLE,
+    [YS_CABLE_2, YS_CABLE_3],
   ),
 };
 

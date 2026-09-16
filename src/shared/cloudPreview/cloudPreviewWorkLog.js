@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 52,
-  sessionPhase: '대구 결손 오버레이',
+  sessionNo: 53,
+  sessionPhase: '여수 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-palgyeong-use-53-yeosu-overlays',
+    session: '팔경 활용 #53, 여수 결손 오버레이',
+    title: '여수10경 박람회장·밤바다 산단 야경·해상케이블카 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 여수10경 결손 3건(여수세계박람회장·여수 밤바다와 산단 야경·여수해상케이블카)의 공공 공식 팩트 개요·주소·여수시 관광 공식 사진을 보강했습니다. 박람회장은 덕충동 박람회길 1 2012 엑스포장(빅오·스카이타워), 밤바다·산단은 종화동 해양공원·돌산공원과 화치동 국가산단전망대, 케이블카는 돌산로 3600-1~오동도로 116입니다. 2026 섬박람회·함평엑스포·광양만 야경·목포·사천 해상케이블카와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeosu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T03:40:00.000Z',
+  },
   {
     id: '2026-09-16-palgyeong-use-52-daegu-overlays',
     session: '팔경 활용 #52, 대구 결손 오버레이',

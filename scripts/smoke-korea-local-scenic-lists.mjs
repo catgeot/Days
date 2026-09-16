@@ -3182,6 +3182,81 @@ assert.ok(
   '대구 검색 팔경 경상감영 개요',
 );
 
+const yeosuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeosu');
+const yeosuTen = yeosuMerged.filter((s) => s.localScenicListId === 'yeosu-other');
+assert.equal(yeosuTen.length, 10, '여수10경 10명');
+assert.equal(yeosuTen[0]?.groupTitle, '여수 10경');
+const yeosuDeficitNames = [
+  '여수세계박람회장',
+  '여수 밤바다와 산단 야경',
+  '여수해상케이블카',
+];
+const yeosuDeficit = yeosuTen.filter((s) => yeosuDeficitNames.includes(s.attractionName));
+assert.equal(yeosuDeficit.length, 3, '여수10경 결손 3명');
+assert.ok(
+  yeosuDeficit.every((s) => s.overview && s.imageUrl),
+  '여수 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  yeosuDeficit.every((s) => !s.contentId),
+  '여수 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yeosuDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '여수 결손 3명 썸네일 서로 다름',
+);
+
+const ysExpo = resolveLocalScenicListSpotById('local-scenic:yeosu-other:여수세계박람회장');
+assert.ok(ysExpo?.overview?.includes('박람회길 1'), '여수 박람회장 주소');
+assert.ok(ysExpo?.overview?.includes('빅오'), '여수 박람회장 overlay 빅오');
+assert.ok(ysExpo?.overview?.includes('섬박람회'), '여수 박람회장≠2026 섬박람회 구분');
+assert.ok(ysExpo?.overview?.includes('함평'), '여수 박람회장≠함평엑스포 구분');
+assert.ok(ysExpo?.imageUrl?.includes('17439999170773_2'), '여수 박람회장 엑스포장 항공 사진');
+
+const ysNight = resolveLocalScenicListSpotById('local-scenic:yeosu-other:여수밤바다와산단야경');
+assert.ok(ysNight?.overview?.includes('종화동'), '여수 밤바다 주소 종화동');
+assert.ok(ysNight?.overview?.includes('화치동'), '여수 산단 전망대 화치동');
+assert.ok(ysNight?.overview?.includes('광양만'), '여수 밤바다≠광양만 야경 구분');
+assert.ok(ysNight?.overview?.includes('이순신대교'), '여수 밤바다≠10경 이순신대교 구분');
+assert.ok(ysNight?.imageUrl?.includes('17439998378816'), '여수 밤바다 남산공원 야경 사진');
+
+const ysCable = resolveLocalScenicListSpotById('local-scenic:yeosu-other:여수해상케이블카');
+assert.ok(ysCable?.overview?.includes('돌산로 3600-1'), '여수 케이블카 돌산 주소');
+assert.ok(ysCable?.overview?.includes('오동도로 116'), '여수 케이블카 자산 주소');
+assert.ok(ysCable?.overview?.includes('목포'), '여수 케이블카≠목포해상케이블카 구분');
+assert.ok(ysCable?.overview?.includes('사천'), '여수 케이블카≠사천바다케이블카 구분');
+assert.ok(ysCable?.imageUrl?.includes('1682640297'), '여수 케이블카 캐빈 사진');
+assert.notEqual(ysExpo?.imageUrl, ysNight?.imageUrl, '박람회장·밤바다 썸네일 다름');
+assert.notEqual(ysExpo?.imageUrl, ysCable?.imageUrl, '박람회장·케이블카 썸네일 다름');
+assert.notEqual(ysNight?.imageUrl, ysCable?.imageUrl, '밤바다·케이블카 썸네일 다름');
+
+const yeosuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '여수', {
+  injectLocalScenic: true,
+});
+const yeosuGlobeTen = yeosuGlobe.filter((s) => s.localScenicListId === 'yeosu-other');
+assert.equal(yeosuGlobeTen.length, 10, '여수 검색 여수10경 10행');
+assert.ok(
+  yeosuGlobeTen.every((s) => s.groupTitle === '여수 10경'),
+  '여수 검색 팔경 groupTitle 여수 10경',
+);
+assert.ok(
+  yeosuGlobe.find((s) => s.attractionName === '여수세계박람회장')?.imageUrl?.includes(
+    '17439999170773_2',
+  ),
+  '여수 검색 팔경 박람회장 썸네일',
+);
+assert.ok(
+  yeosuGlobe.find((s) => s.attractionName === '여수 밤바다와 산단 야경')?.overview?.includes(
+    '화치동',
+  ),
+  '여수 검색 팔경 밤바다 개요',
+);
+assert.ok(
+  yeosuGlobe.find((s) => s.attractionName === '여수해상케이블카')?.overview?.includes('돌산공원'),
+  '여수 검색 팔경 케이블카 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
