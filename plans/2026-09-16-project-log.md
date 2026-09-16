@@ -2,6 +2,16 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 팔경 활용 #54 — 예천 검색 신라식물원 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #54, 예천 검색 빈 썸네일`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `c90e020f` · PR [#270](https://github.com/catgeot/Days/pull/270)
+- **원인**: 명승홈 검색「예천」Tour 행 신라식물원(`1910438`, 감천면 충효로 1752)은 DB `first_image`·live `detailCommon`/`detailImage`/`searchPhoto`가 모두 공란. 「예천」Tour 빈 썸네일은 이 1건.
+- **완료**: JSON contentId 없이 `LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID`에 신라식물원 공식 홈페이지 정원·마당·입구 전경. 예천8경 곤충생태원 곤충식물원·거제식물원과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic` 검색「예천」신라식물원 행
+- **다음**: `팔경 활용 #55, 인천 결손 오버레이`
+
 ## 팔경 활용 #54 — 예천8경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #54, 예천 결손 오버레이`
