@@ -1451,6 +1451,17 @@ const YC_MARKET_3 =
   'https://www.ycg.kr/images/open.content/tour/festivals/sundae/photo4.png';
 const YC_MARKET_4 =
   'https://www.ycg.kr/images/open.content/tour/festivals/sundae/photo2.png';
+const IC_KWATER = 'https://www.kwater.or.kr';
+const IC_ARAON = `${IC_KWATER}/giwaterway/images/giwaterway/main/travel_infor_photo2.jpg`;
+const IC_ARAON_2 = `${IC_KWATER}/giwaterway/images/giwaterway/main/travel_infor_photo3.jpg`;
+const IC_ARAON_3 = `${IC_KWATER}/giwaterway/images/giwaterway/main/travel_infor_photo1.jpg`;
+const IC_SEASIDE = 'https://tong.visitkorea.or.kr/cms/resource/02/2609702_image2_1.JPG';
+const IC_SEASIDE_2 = 'https://www.insiseol.or.kr/park/seaside/img/contents/railbike01.jpg';
+const IC_SEASIDE_3 = 'https://www.insiseol.or.kr/park/seaside/img/contents/railbike02.jpg';
+const IC_GANGHWA_TOUR = 'https://www.ganghwa.go.kr/open_content/tour/images/contents';
+const IC_GANGHWA = `${IC_GANGHWA_TOUR}/photo/storywalk1.jpg`;
+const IC_GANGHWA_2 = `${IC_GANGHWA_TOUR}/photo/storywalk2.jpg`;
+const IC_GANGHWA_3 = `${IC_GANGHWA_TOUR}/historytour0804.jpg`;
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3054,6 +3065,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상북도 예천군 용궁면 용궁시장길 10-4 (읍부리 용궁시장)',
     YC_MARKET,
     [YC_MARKET_2, YC_MARKET_3, YC_MARKET_4],
+  ),
+  'local-scenic:incheon-gugyeong:인천계양아라온': localScenicPhotoOverlay(
+    '인천9경 4경 계양 아라온은 계양구 장기동 경인아라뱃길 황어광장~수향원 구간입니다. 인천광역시는 2024년 「야경 명소 계양 아라온에서 빛의 거리 구경하기」로 선정했으며, 계양대교 밑 뱃길을 따라 낮에는 꽃의 정원을 거닐고 해질 무렵 낙조를 본 뒤 저녁에는 빛의 거리·미디어아트 야경을 즐긴다고 적습니다. 계양구는 황어광장부터 수향원 일대를 「계양 아라뱃길 빛의 거리」로 조성했고 주소는 장기동 109-1(수향원 주차장)입니다. 아라뱃길 공영주차장은 장기동 55-3입니다. 서해구 아라인천여객터미널·정서진(수향1경)·아라폭포·송도센트럴파크와 다른 계양구 뱃길 구간입니다. 사진은 한국수자원공사 경인아라뱃길 공식 관광 사진입니다.',
+    '인천광역시 계양구 장기동 109-1 (황어광장~수향원 계양 아라온 빛의 거리)',
+    IC_ARAON,
+    [IC_ARAON_2, IC_ARAON_3],
+  ),
+  'local-scenic:incheon-gugyeong:인천영종씨사이드파크': localScenicPhotoOverlay(
+    '인천9경 6경 영종 씨사이드파크는 중구 영종도 해변공원입니다. 인천광역시는 「영종 씨사이드파크에서 바닷길 따라 레일바이크 타기」로 선정했으며, 레일바이크를 타고 인천 해안경관을 만끽하고 캠핑장·염전산책 등 자연 속 액티비티를 즐긴다고 적습니다. 영종씨사이드 레일바이크 주소는 구읍로 75이며 4인승 레일바이크 왕복 5.6km 해안 코스입니다. 한국관광공사는 월미도·인천대교까지 바다 전망과 인공폭포 등 부대시설을 안내합니다. 인천시설공단 씨사이드파크는 중산동 136-12입니다. 을왕리해수욕장·월미도·강화 섬과 다른 영종 해변공원입니다. 사진은 한국관광공사 영종씨사이드 레일바이크·인천시설공단 레일바이크 공식 사진입니다.',
+    '인천광역시 중구 구읍로 75 (영종씨사이드파크·레일바이크)',
+    IC_SEASIDE,
+    [IC_SEASIDE_2, IC_SEASIDE_3],
+  ),
+  'local-scenic:incheon-gugyeong:인천강화읍원도심': localScenicPhotoOverlay(
+    '인천9경 7경 강화읍 원도심은 강화군 강화읍 역사·문화 도보 탐방 구간입니다. 인천광역시는 「강화읍 원도심에서 도보 탐방하기」로 선정했으며, 숨겨진 역사와 문화를 걸으며 강화의 역사·산업·종교를 만나고 문화관광해설사 도보해설·원데이 클래스를 즐긴다고 적습니다. 강화군 도보해설 코스는 용흥궁→대한성공회강화성당→3·1독립만세 기념비→고려궁지→노동사목 표지석→이화견직 담장길→김상용 순절비·심도직물(약 1시간 20분)입니다. 네이버 예약 용흥궁 해설사 대기소. GATEO 선정 고려궁지(127184) 단일 명소가 아니라 읍성·성당·고택이 이어지는 원도심 일주이며, 강화 전등사·보문사(석모도)와 다른 강화읍 마을입니다. 사진은 강화군 문화관광 원도심 도보해설(스토리워크) 공식 사진입니다.',
+    '인천광역시 강화군 강화읍 강화대로 394 일원 (원도심 도보해설·용흥궁)',
+    IC_GANGHWA,
+    [IC_GANGHWA_2, IC_GANGHWA_3],
   ),
 };
 
