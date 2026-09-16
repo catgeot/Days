@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
-import { isStreetishStayLabel, queryLooksLikeStayPoint, resolveUniversitySearchHits } from '../../../utils/mrtStayQuery.js';
+import { isStreetishStayLabel, queryLooksLikeStayPoint, resolveKoUniversitySatelliteAlias, resolveUniversitySearchHits, syntheticUniversitySatellitePlace } from '../../../utils/mrtStayQuery.js';
 import {
   isLikelyMoodQuery,
   shouldSkipGeocodeForMood as shouldSkipGeocodeForMoodIntent,
@@ -752,6 +752,14 @@ export function useHomeHandlers({
       return ensureDisambiguation(query, [locationToChoiceCandidate(loc)], title);
     };
 
+    const satelliteAlias = resolveKoUniversitySatelliteAlias(query);
+    if (satelliteAlias) {
+      return commitLocation(
+        syntheticUniversitySatellitePlace(query, satelliteAlias),
+        `'${query}' → 원하는 장소를 선택하세요`,
+      );
+    }
+
     let koHomonymPlaceTried = false;
 
     if (requireChoice) {
@@ -1286,7 +1294,8 @@ export function useHomeHandlers({
           cachedDict &&
           cachedDict.location_data &&
           !cacheLooksLikeAdminCollapse &&
-          !queryLooksLikeStayPoint(query)
+          !queryLooksLikeStayPoint(query) &&
+          !resolveKoUniversitySatelliteAlias(query)
         ) {
           console.log(`[Smart Search DB Cache] "${query}" -> "${cachedDict.corrected_query}" (캐시 적중)`);
           const parsedData = cachedDict.location_data;

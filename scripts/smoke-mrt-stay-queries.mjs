@@ -17,6 +17,9 @@ import {
   rankStayPointDisambiguationCandidates,
   resolveKoStationAlias,
   resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
+  isUniversitySatelliteStayQuery,
+  syntheticUniversitySatellitePlace,
   resolveMrtStayQuery,
   stationNameMatchesQuery,
   universitySearchHitPenalty,
@@ -516,6 +519,31 @@ async function main() {
     assert(kangwonAlias?.lat === 37.8695, '강원대 alias Chuncheon lat');
     assert(!resolveKoUniversityAlias('강원대학교 동해수련원'), '수련원 keeps no campus alias');
     assert(!resolveKoUniversityAlias('강원대학교 삼척캠퍼스'), '삼척 keeps no Chuncheon alias');
+    const donghaeSatellite = resolveKoUniversitySatelliteAlias('강원대학교 동해수련원');
+    assert(donghaeSatellite?.city === '양양', `동해수련원 satellite city (got ${donghaeSatellite?.city})`);
+    assert(
+      Math.abs(donghaeSatellite?.lat - 38.0866) < 1e-6,
+      `동해수련원 satellite lat (got ${donghaeSatellite?.lat})`,
+    );
+    assert(isUniversitySatelliteStayQuery('강원대학교 동해수련원'), '동해수련원 is satellite query');
+    const syntheticTraining = syntheticUniversitySatellitePlace(
+      '강원대학교 동해수련원',
+      donghaeSatellite,
+    );
+    assert(
+      syntheticTraining.name === '강원대학교 동해수련원',
+      `synthetic training name (got ${syntheticTraining.name})`,
+    );
+    assert(
+      syntheticTraining.source === 'satellite-alias',
+      `synthetic training source (got ${syntheticTraining.source})`,
+    );
+    const resolvedTrainingEmpty = resolveUniversitySearchHits('강원대학교 동해수련원', []);
+    assert(resolvedTrainingEmpty.length === 1, `empty hits → synthetic (got ${resolvedTrainingEmpty.length})`);
+    assert(
+      Math.abs(resolvedTrainingEmpty[0]?.lat - 38.0866) < 1e-6,
+      `empty hits synthetic lat (got ${resolvedTrainingEmpty[0]?.lat})`,
+    );
     const yangyangHit = {
       name: '강원대학교',
       name_en: 'Geumgang-ri',
@@ -571,7 +599,10 @@ async function main() {
       'Chuncheon campus does not snap',
     );
     const trainingCards = resolveUniversitySearchHits('강원대학교 동해수련원', [yangyangHit]);
-    assert(trainingCards[0] === yangyangHit, '동해수련원 keeps Yangyang card');
+    assert(
+      Math.abs(trainingCards[0]?.lat - yangyangHit.lat) < 1e-6,
+      '동해수련원 keeps Yangyang card',
+    );
     const disambiguatedUni = rankStayPointDisambiguationCandidates('강원대학교', [
       yangyangHit,
       { ...yangyangHit, id: 'dup' },
@@ -630,6 +661,20 @@ async function main() {
         jonggakAliases.includes('universityAlias.campus') &&
         jonggakAliases.includes('applyUniversityCampusPlace'),
       'geocoding expands university alias to 춘천캠퍼스',
+    );
+    assert(
+      jonggakAliases.includes('resolveKoUniversitySatelliteAlias') &&
+        jonggakAliases.includes('satelliteAlias.name'),
+      'geocoding expands satellite alias to 동해수련원',
+    );
+    const handlersSrc = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/hooks/useHomeHandlers.js'),
+      'utf8',
+    );
+    assert(
+      handlersSrc.includes('resolveKoUniversitySatelliteAlias') &&
+        handlersSrc.includes('syntheticUniversitySatellitePlace'),
+      'smart search resolves satellite alias before AI fallback',
     );
     const searchBoxSrc = readFileSync(
       join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/lib/mapboxSearchBox.js'),

@@ -13,6 +13,7 @@ import {
   queryLooksLikeStayPoint,
   resolveKoStationAlias,
   resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
   stationNameMatchesQuery,
   nominatimStationScoreDelta,
   nominatimSquarePenalty,
@@ -31,7 +32,7 @@ const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_
 
 /** 세부 시설·명소 쿼리 — 행정구역(군/시)으로 축소·스냅하면 안 되는 입력 */
 export const FACILITY_QUERY_RE =
-  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크/i;
+  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크|수련원|연수원/i;
 
 /** 유명 랜드마크 — 도시 SSOT·country=kr 우선으로 묶이면 안 됨 */
 export const LANDMARK_QUERY_RE =
@@ -141,6 +142,9 @@ export function expandForwardQueryAliases(query) {
 
   const universityAlias = resolveKoUniversityAlias(q);
   if (universityAlias?.campus) add(universityAlias.campus);
+
+  const satelliteAlias = resolveKoUniversitySatelliteAlias(q);
+  if (satelliteAlias?.name) add(satelliteAlias.name);
 
   const explore = resolveExploreSearchAlias(q);
   if (explore?.canonical) add(explore.canonical);

@@ -274,6 +274,24 @@ const KO_UNIVERSITY_ALIASES = {
   },
 };
 
+/** 본교가 아닌 캠퍼스·수련원 — compactKoPlaceKey(query)로 조회 */
+const KO_UNIVERSITY_SATELLITE_ALIASES = {
+  강원대학교동해수련원: {
+    name: '강원대학교 동해수련원',
+    nameEn: 'Kangwon National University Donghae Training Center',
+    city: '양양',
+    lat: 38.0866,
+    lng: 128.6486,
+  },
+  강원대동해수련원: {
+    name: '강원대학교 동해수련원',
+    nameEn: 'Kangwon National University Donghae Training Center',
+    city: '양양',
+    lat: 38.0866,
+    lng: 128.6486,
+  },
+};
+
 const UNI_CAMPUS_QUALIFIER_RE = /삼척|도계|강릉|수련원|연수원|학술림|연습림|부속병원/;
 const UNI_SATELLITE_LABEL_RE = /수련원|연수원|학술림|연습림|부속병원/;
 
@@ -326,6 +344,21 @@ export function resolveKoUniversityAlias(raw) {
   const lower = s.toLowerCase();
   if (KO_UNIVERSITY_ALIASES[lower]) return KO_UNIVERSITY_ALIASES[lower];
   return null;
+}
+
+/** 「강원대학교 동해수련원」→ 양yang 금강리. 본교 alias와 별도. */
+export function resolveKoUniversitySatelliteAlias(raw) {
+  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
+  if (!s || s.length < 4) return null;
+  if (KO_UNIVERSITY_SATELLITE_ALIASES[s]) return KO_UNIVERSITY_SATELLITE_ALIASES[s];
+  for (const [key, alias] of Object.entries(KO_UNIVERSITY_SATELLITE_ALIASES)) {
+    if (s.includes(key)) return alias;
+  }
+  return null;
+}
+
+export function isUniversitySatelliteStayQuery(raw) {
+  return Boolean(resolveKoUniversitySatelliteAlias(raw));
 }
 
 function universityAliasFromLocation(location) {
@@ -489,9 +522,41 @@ function syntheticUniversityCampusPlace(query, alias) {
   };
 }
 
+/** 수련원·연수원 SSOT — Mapbox/AI 폴백 전에 바로 핀 */
+export function syntheticUniversitySatellitePlace(query, alias) {
+  const name = String(alias?.name || query || '').trim();
+  return {
+    id: `satellite-${alias.lat}-${alias.lng}`,
+    kind: 'poi',
+    badge: '장소',
+    name,
+    name_ko: name,
+    name_en: alias.nameEn || name,
+    country: '대한민국',
+    country_en: 'South Korea',
+    lat: alias.lat,
+    lng: alias.lng,
+    stayAdmin: { city: alias.city },
+    source: 'satellite-alias',
+    uiPlace: true,
+    originalQuery: query,
+  };
+}
+
 /** 검색 카드에서 양양 수련원 핀을 빼고 춘천 본교만 남긴다 */
 export function resolveUniversitySearchHits(query, hits) {
   const list = Array.isArray(hits) ? hits.filter(Boolean) : [];
+  const satelliteAlias = resolveKoUniversitySatelliteAlias(query);
+  if (satelliteAlias) {
+    const ranked = rankUniversitySearchHits(query, list);
+    const out = [];
+    for (const hit of ranked) {
+      if (out.some((row) => sameUniversityPlaceCenter(row, hit))) continue;
+      out.push({ ...hit, originalQuery: hit.originalQuery || query });
+    }
+    if (out.length) return out;
+    return [syntheticUniversitySatellitePlace(query, satelliteAlias)];
+  }
   const alias = resolveKoUniversityAlias(query);
   if (!alias) return rankUniversitySearchHits(query, list);
   const ranked = rankUniversitySearchHits(query, list);
