@@ -231,8 +231,13 @@ const EN_STAY_POINT_RE = /\b(station|subway|metro|terminal)\b|-gil\b/i;
  * district = MRT NEIGHBORHOOD 키워드 (종로 632건).
  */
 const KO_STATION_ALIASES = {
-  종각: { station: '종각역', district: '종로' },
+  종각: { station: '종각역', district: '종로', lat: 37.5701, lng: 126.9829 },
 };
+
+const STREETISH_STAY_LABEL_RE =
+  /-gil\b|(?:길|거리|도로|로)$/i;
+const STREETISH_STAY_EN_RE =
+  /\b(street|st\.|road|rd\.|avenue|ave\.|lane|ln\.|drive|dr\.|blvd|boulevard|highway|way)\b/i;
 
 function compactKoPlaceKey(raw) {
   return String(raw || '').trim().replace(/\s+/g, '');
@@ -319,6 +324,38 @@ export function isMrtStayPointLabel(raw) {
   if (KO_STAY_POINT_FALSE_RE.test(s)) return false;
   if (KO_STATION_ALIASES[compactKoPlaceKey(s)]) return true;
   return KO_STAY_POINT_RE.test(s);
+}
+
+export function isStreetishStayLabel(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return false;
+  return STREETISH_STAY_LABEL_RE.test(s) || STREETISH_STAY_EN_RE.test(s);
+}
+
+export function stayPointDisambiguationPenalty(query, item) {
+  const name = String(item?.name || '');
+  const nameEn = String(item?.name_en || '');
+  let penalty = 0;
+  if (isStreetishStayLabel(nameEn) || isStreetishStayLabel(name)) penalty += 80;
+  if (/(-dong\b|ga-dong|가동|neighbourhood|neighborhood)/i.test(nameEn)) penalty += 40;
+  if (/^(seoul|서울)$/i.test(nameEn.trim())) penalty += 15;
+  if (stationNameMatchesQuery(query, name) && penalty < 40) penalty -= 25;
+  const kind = String(item?.kind || '');
+  if (kind === 'attraction' || kind === 'poi') penalty -= 8;
+  return penalty;
+}
+
+export function rankStayPointDisambiguationCandidates(query, candidates) {
+  const list = Array.isArray(candidates) ? candidates.filter(Boolean) : [];
+  if (!queryLooksLikeStayPoint(query) || list.length < 2) return list;
+  return list
+    .map((item, index) => ({
+      item,
+      index,
+      penalty: stayPointDisambiguationPenalty(query, item),
+    }))
+    .sort((a, b) => a.penalty - b.penalty || a.index - b.index)
+    .map((row) => row.item);
 }
 
 /** 「종각역, 대한민국」처럼 국가가 붙은 forward도 역·터미널로 본다 */

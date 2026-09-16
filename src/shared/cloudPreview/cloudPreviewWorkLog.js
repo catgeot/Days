@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 51,
-  sessionPhase: '김해 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'palgyeong-use',
+  title: '종각역 숙소',
+  sessionNo: 7,
+  sessionPhase: '거리 캐시 로딩',
+  branch: 'cursor/jonggak-first-card-3096',
+  previewPath: '/',
+  qaShareSlug: '',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-jonggak-stay-distance-cache',
+    session: '종각역 숙소 #7, 거리 캐시 로딩',
+    title: '숙소 목록 먼저 · 거리는 캐시',
+    detail:
+      '거리 Photon(최대 12초) 때문에 숙소 찾기가 오래 걸렸습니다. 목록은 원점 없이 바로 받고, 호텔 좌표는 localStorage(14일)에서 붙입니다. 없는 좌표만 뒤에서 Photon합니다. 같은 일정 재진입은 30분 목록 캐시로 즉시 표시됩니다. Preview 홈「종각역」첫 카드 → 숙소 찾기 → 카드가 먼저 뜨고 신라스테이 광화문 330m 등이 붙는지.',
+    at: '2026-09-16T00:40:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-first-card-origin',
+    session: '종각역 숙소 #6, 첫 카드 거리 원점',
+    title: '첫 종각역 카드도 거리 표시',
+    detail:
+      '검색 리스트 첫 카드(Jonggak-gil)로 숙소 찾기를 하면 거리가 비고, 다른 종각역 카드는 거리가 나오던 구멍을 막았습니다. 좌표가 없거나 종각역에서 8km 밖이면 역 좌표(37.5701, 126.9829)를 Photon·거리 뱃지·네이버 칩 원점으로 씁니다. 길·동 카드는 선택 목록에서 뒤로 갑니다. Preview 홈「종각역」첫 카드 → 숙소 찾기 → 신라스테이 광화문 330m 등.',
+    at: '2026-09-15T22:00:00.000Z',
+  },
   {
     id: '2026-09-15-jonggak-stay-edge-photon',
     session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',

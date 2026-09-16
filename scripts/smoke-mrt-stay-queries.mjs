@@ -8,11 +8,13 @@ import {
   canShowMrtStayStrip,
   expandMrtCountryHintAlts,
   isMrtStayPointLabel,
+  isStreetishStayLabel,
   mergeMrtStayFetchQuery,
   mrtNeighborhoodKeyword,
   nominatimSquarePenalty,
   nominatimStationScoreDelta,
   queryLooksLikeStayPoint,
+  rankStayPointDisambiguationCandidates,
   resolveKoStationAlias,
   resolveMrtStayQuery,
   stationNameMatchesQuery,
@@ -25,11 +27,24 @@ import {
   haversineKm,
   isLodgingOsmValue,
   parseStayCoordPair,
+  resolveMrtStayOrigin,
   simplifyStayGeocodeQuery,
   stayDistanceRank,
   stayGeocodeQueries,
   stayNameCompatible,
 } from '../src/utils/mrtStayDistance.js';
+import {
+  MRT_STAY_COORD_CACHE_KEY,
+  MRT_STAY_COORD_MISS_TTL_MS,
+  MRT_STAY_LISTING_CACHE_PREFIX,
+  hydrateMrtStayCoords,
+  itemsNeedingStayGeocode,
+  mergeMrtStayCoords,
+  mrtStayListingCacheKey,
+  persistMrtStayCoords,
+  readMrtStayListingCache,
+  writeMrtStayListingCache,
+} from '../src/utils/mrtStayCache.js';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -431,7 +446,23 @@ async function main() {
     const jonggakAlias = resolveKoStationAlias('종각');
     assert(jonggakAlias?.station === '종각역', `종각 alias station (got ${jonggakAlias?.station})`);
     assert(jonggakAlias?.district === '종로', `종각 alias district (got ${jonggakAlias?.district})`);
+    assert(jonggakAlias?.lat === 37.5701 && jonggakAlias?.lng === 126.9829, '종각 alias station coords');
     assert(resolveKoStationAlias('종각역')?.district === '종로', '종각역 alias district 종로');
+    assert(isStreetishStayLabel('Jonggak-gil'), 'Jonggak-gil is streetish');
+    assert(!isStreetishStayLabel('종각역'), '종각역 is not streetish');
+    const rankedCards = rankStayPointDisambiguationCandidates('종각역', [
+      { name: '종각역', name_en: 'Jonggak-gil', kind: 'city' },
+      { name: '종각역', name_en: 'Seoul', kind: 'poi' },
+      { name: '종각역', name_en: 'Jonggak Station', kind: 'poi' },
+    ]);
+    assert(
+      rankedCards[0]?.name_en === 'Jonggak Station',
+      `station card first (got ${rankedCards[0]?.name_en})`,
+    );
+    assert(
+      rankedCards[rankedCards.length - 1]?.name_en === 'Jonggak-gil',
+      `gil card last (got ${rankedCards[rankedCards.length - 1]?.name_en})`,
+    );
     assert(stationNameMatchesQuery('종각', '종각역'), '종각 matches 종각역 name');
     assert(
       nominatimStationScoreDelta('종각', { class: 'railway', type: 'station', name: '종각역' }) === 80,
@@ -565,6 +596,46 @@ async function main() {
     'parseStayCoordPair nested location',
   );
   assert(parseStayCoordPair({ lat: 0, lng: 0 }) == null, 'parseStayCoordPair rejects 0,0');
+  assert(
+    parseStayCoordPair({ center: [126.9829, 37.5701] })?.lat === 37.5701,
+    'parseStayCoordPair Mapbox center [lng,lat]',
+  );
+  assert(
+    parseStayCoordPair({ lat: 126.9829, lng: 37.5701 })?.lat === 37.5701,
+    'parseStayCoordPair swaps inverted lat/lng',
+  );
+  const gilNoCoord = resolveMrtStayOrigin({
+    name: '종각역',
+    name_en: 'Jonggak-gil',
+    originalQuery: '종각역',
+    uiPlace: true,
+  });
+  assert(
+    gilNoCoord?.lat === 37.5701 && gilNoCoord?.lng === 126.9829,
+    `gil card without coords uses station origin (got ${gilNoCoord?.lat},${gilNoCoord?.lng})`,
+  );
+  const farGil = resolveMrtStayOrigin({
+    name: '종각역',
+    name_en: 'Jonggak-gil',
+    lat: 35.87,
+    lng: 128.6,
+    originalQuery: '종각역',
+  });
+  assert(
+    farGil?.lat === 37.5701,
+    `far gil card snaps to station (got ${farGil?.lat})`,
+  );
+  const nearStreet = resolveMrtStayOrigin({
+    name: '종각역',
+    name_en: 'Jonggak-gil',
+    lat: 37.5704,
+    lng: 126.9831,
+    originalQuery: '종각역',
+  });
+  assert(
+    Math.abs(nearStreet?.lat - 37.5704) < 1e-6,
+    `near street keeps own coords (got ${nearStreet?.lat})`,
+  );
   const ranked = attachMrtStayDistances(
     [
       { itemId: 1, lat: 37.4979, lng: 127.0276 },
@@ -589,6 +660,7 @@ async function main() {
   );
   assert(
     stripSrc.includes('attachMrtStayDistances') &&
+      stripSrc.includes('resolveMrtStayOrigin') &&
       stripSrc.includes('buildNaverNearbyStayMapUrl') &&
       stripSrc.includes('naverNearbyStays') &&
       stripSrc.includes('distance_asc'),
@@ -639,7 +711,103 @@ async function main() {
     'utf8',
   );
   assert(fetchSrc.includes('originLat') && fetchSrc.includes('originLng'), 'client sends origin to Edge');
+  assert(fetchSrc.includes('resolveMrtStayOrigin'), 'client stay origin helper');
+  assert(fetchSrc.includes('onPartialResult'), 'list paints before photon enrich');
+  assert(fetchSrc.includes('geocodeItems'), 'photon enrich uses geocodeItems');
+  assert(fetchSrc.includes('listingBody'), 'listing invoke omits origin');
+  assert(edgeSrc.includes('geocodeItems') && edgeSrc.includes('geocodeOnly'), 'Edge geocodeItems path');
+  assert(edgeSrc.includes('geo:id:'), 'Edge geocode cache by itemId');
+  assert(edgeSrc.includes('rememberSearchCoords'), 'Edge search cache keeps photon coords');
   console.log('OK  stay distance + naver map');
+
+  class MemoryStorage {
+    constructor() {
+      this.m = new Map();
+    }
+    getItem(k) {
+      return this.m.has(k) ? this.m.get(k) : null;
+    }
+    setItem(k, v) {
+      this.m.set(k, String(v));
+    }
+    removeItem(k) {
+      this.m.delete(k);
+    }
+    get length() {
+      return this.m.size;
+    }
+    key(i) {
+      return [...this.m.keys()][i] ?? null;
+    }
+  }
+
+  const listingKey = mrtStayListingCacheKey({
+    keyword: '종로',
+    isDomestic: true,
+    countryHint: '대한민국',
+    cityHints: ['서울'],
+    checkIn: '2026-10-01',
+    checkOut: '2026-10-04',
+    adultCount: 2,
+    childCount: 0,
+  });
+  assert(listingKey.startsWith(MRT_STAY_LISTING_CACHE_PREFIX), 'listing cache v23 prefix');
+  assert(!listingKey.includes('37.570'), 'listing cache key omits origin');
+  const mem = new MemoryStorage();
+  const listingPayload = {
+    ok: true,
+    items: [{ itemId: 101, itemName: '신라스테이 광화문', salePrice: 120000 }],
+  };
+  writeMrtStayListingCache(listingKey, listingPayload, { storage: mem, now: 1_000 });
+  const listingHit = readMrtStayListingCache(listingKey, { storage: mem, now: 1_000 });
+  assert(listingHit?.items?.[0]?.itemId === 101, 'listing cache hit');
+  assert(
+    readMrtStayListingCache(listingKey, { storage: mem, now: 1_000 + 31 * 60 * 1000 }) == null,
+    'listing cache expires at 30min',
+  );
+  persistMrtStayCoords(
+    [{ itemId: 101, itemName: '신라스테이 광화문', lat: 37.572, lng: 126.977 }],
+    { storage: mem, now: 2_000 },
+  );
+  const hydrated = hydrateMrtStayCoords(
+    [{ itemId: 101, itemName: '신라스테이 광화문' }],
+    { storage: mem, now: 2_000 },
+  );
+  assert(hydrated[0].lat === 37.572 && hydrated[0].lng === 126.977, 'coord cache hydrates itemId');
+  persistMrtStayCoords([], {
+    storage: mem,
+    now: 3_000,
+    misses: [{ itemId: 202, itemName: '오라카이 대학로' }],
+  });
+  const needing = itemsNeedingStayGeocode(
+    [
+      { itemId: 101, itemName: '신라스테이 광화문' },
+      { itemId: 202, itemName: '오라카이 대학로' },
+      { itemId: 303, itemName: '나인트리 인사동' },
+    ],
+    { storage: mem, now: 3_000 },
+  );
+  assert(
+    needing.map((it) => it.itemId).join(',') === '303',
+    `need geocode only uncached (${needing.map((it) => it.itemId)})`,
+  );
+  const stillNeedAfterMissTtl = itemsNeedingStayGeocode(
+    [{ itemId: 202, itemName: '오라카이 대학로' }],
+    { storage: mem, now: 3_000 + MRT_STAY_COORD_MISS_TTL_MS + 1 },
+  );
+  assert(stillNeedAfterMissTtl[0]?.itemId === 202, 'photon miss retries after 24h');
+  const merged = mergeMrtStayCoords(
+    [{ itemId: 303, itemName: '나인트리 인사동' }],
+    [{ itemId: 303, lat: 37.571, lng: 126.985 }],
+  );
+  assert(merged[0].lat === 37.571, 'merge coords by itemId');
+  assert(mem.getItem(MRT_STAY_COORD_CACHE_KEY), 'coord map persisted');
+  const stripSrcCache = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/components/GlobeStayStrip.jsx'),
+    'utf8',
+  );
+  assert(stripSrcCache.includes('onPartialResult'), 'GlobeStayStrip paints listing before photon');
+  console.log('OK  stay listing/coord cache');
 
   const emptyAltsKeepQuery = mergeMrtStayFetchQuery(
     {

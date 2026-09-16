@@ -14,6 +14,17 @@ import {
   resolveMrtStayQuery,
   stripKoAdminSuffix,
 } from './mrtStayQuery.js';
+import { resolveMrtStayOrigin } from './mrtStayDistance.js';
+import {
+  dropLegacyMrtStayListingCaches,
+  hydrateMrtStayCoords,
+  itemsNeedingStayGeocode,
+  mergeMrtStayCoords,
+  mrtStayListingCacheKey,
+  persistMrtStayCoords,
+  readMrtStayListingCache,
+  writeMrtStayListingCache,
+} from './mrtStayCache.js';
 
 export {
   canShowMrtStayStrip,
@@ -26,9 +37,7 @@ export {
   stripKoAdminSuffix,
 };
 
-/** countryHint·keyword override 변경 시 무효화 · v21: Edge Photon 숙소 좌표 */
-const CACHE_PREFIX = 'gateo:mrt-stays:v21:';
-const CACHE_TTL_MS = 30 * 60 * 1000;
+/** countryHint·keyword override 변경 시 무효화 · v23: 목록 캐시에서 원점 분리 */
 const MAX_STAY_NIGHTS = 30;
 const MAX_ADULTS = 8;
 const MAX_CHILDREN = 8;
@@ -182,7 +191,7 @@ export function mrtStayMinCheckOut(checkIn) {
   return ymdLocal(next);
 }
 
-function cacheKey(
+function listingCacheKeyFromParams({
   keyword,
   isDomestic,
   countryHint,
@@ -192,15 +201,18 @@ function cacheKey(
   checkOut,
   adultCount,
   childCount,
-) {
-  const cityKey = Array.isArray(cityHints) && cityHints.length
-    ? cityHints.join(',')
-    : '-';
-  const countryKey = [countryHint, ...(Array.isArray(countryHintAlts) ? countryHintAlts : [])]
-    .map((c) => String(c || '').trim())
-    .filter(Boolean)
-    .join('|') || '-';
-  return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:a${adultCount}c${childCount}:${keyword}`;
+}) {
+  return mrtStayListingCacheKey({
+    keyword,
+    isDomestic,
+    countryHint,
+    countryHintAlts,
+    cityHints,
+    checkIn,
+    checkOut,
+    adultCount,
+    childCount,
+  });
 }
 
 /**
@@ -222,35 +234,98 @@ function shapeMrtStayResult(payload) {
   };
 }
 
-function readCache(key) {
-  if (typeof sessionStorage === 'undefined') return null;
-  try {
-    const raw = sessionStorage.getItem(key);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed?.fetchedAt || Date.now() - parsed.fetchedAt > CACHE_TTL_MS) {
-      sessionStorage.removeItem(key);
-      return null;
-    }
-    const payload = parsed.payload ?? null;
-    if (!payload || typeof payload !== 'object') return payload;
-    return shapeMrtStayResult(payload);
-  } catch {
-    return null;
-  }
+function listingBody(params) {
+  return {
+    keyword: params.keyword,
+    isDomestic: params.isDomestic,
+    size: params.size,
+    checkIn: params.checkIn,
+    checkOut: params.checkOut,
+    adultCount: params.adultCount,
+    childCount: params.childCount,
+    ...(params.countryHint ? { countryHint: params.countryHint } : {}),
+    ...(params.countryHintAlts?.length ? { countryHintAlts: params.countryHintAlts } : {}),
+    ...(params.nameEn ? { nameEn: params.nameEn } : {}),
+    ...(params.altKeywords?.length ? { altKeywords: params.altKeywords } : {}),
+    ...(params.cityHints?.length ? { cityHints: params.cityHints } : {}),
+  };
 }
 
-function writeCache(key, payload) {
-  if (typeof sessionStorage === 'undefined') return;
+function originPair(params) {
+  const lat = Number(params?.originLat);
+  const lng = Number(params?.originLng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return { lat, lng };
+}
+
+function withHydratedCoords(payload) {
+  if (!payload || typeof payload !== 'object') return payload;
+  const items = hydrateMrtStayCoords(payload.items);
+  persistMrtStayCoords(items);
+  return { ...payload, items };
+}
+
+async function enrichMrtStayCoords(payload, params) {
+  const origin = originPair(params);
+  const items = Array.isArray(payload?.items) ? payload.items : [];
+  const missing = itemsNeedingStayGeocode(items);
+  if (!origin || !missing.length) return payload;
+
+  let sourced = null;
   try {
-    sessionStorage.setItem(key, JSON.stringify({ fetchedAt: Date.now(), payload }));
+    const { data } = await supabase.functions.invoke('fetch-mrt-stays', {
+      body: {
+        geocodeItems: missing.map((it) => ({
+          itemId: it.itemId,
+          itemName: it.itemName,
+        })),
+        originLat: origin.lat,
+        originLng: origin.lng,
+      },
+    });
+    if (data?.ok && Array.isArray(data.items) && data.items.length) {
+      sourced = data.items;
+    }
   } catch {
-    /* quota */
+    sourced = null;
   }
+
+  if (!sourced) {
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-mrt-stays', {
+        body: {
+          ...listingBody(params),
+          originLat: origin.lat,
+          originLng: origin.lng,
+        },
+      });
+      if (!error && data?.ok && Array.isArray(data.items)) {
+        sourced = data.items;
+      }
+    } catch {
+      sourced = null;
+    }
+  }
+
+  if (!sourced) return payload;
+
+  const merged = mergeMrtStayCoords(items, sourced);
+  persistMrtStayCoords(merged, {
+    misses: missing.filter((it) => !parseStayItemCoord(it, merged)),
+  });
+  return { ...payload, items: merged };
+}
+
+function parseStayItemCoord(probe, merged) {
+  const id = Number(probe?.itemId);
+  const hit = (Array.isArray(merged) ? merged : []).find((it) => Number(it?.itemId) === id);
+  const lat = Number(hit?.lat);
+  const lng = Number(hit?.lng);
+  return Number.isFinite(lat) && Number.isFinite(lng);
 }
 
 /**
- * @param {{ keyword: string, isDomestic: boolean, countryHint?: string, countryHintAlts?: string[], nameEn?: string, altKeywords?: string[], cityHints?: string[], checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, size?: number, originLat?: number, originLng?: number }} params
+ * @param {{ keyword: string, isDomestic: boolean, countryHint?: string, countryHintAlts?: string[], nameEn?: string, altKeywords?: string[], cityHints?: string[], checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, size?: number, originLat?: number, originLng?: number, skipGeocode?: boolean, onPartialResult?: function }} params
  */
 export async function fetchMrtStays(params) {
   const keyword = String(params?.keyword || '').trim();
@@ -276,8 +351,8 @@ export async function fetchMrtStays(params) {
     Math.min(MRT_STAY_FETCH_SIZE, Number(params?.size) || MRT_STAY_FETCH_SIZE),
   );
   const ladderKey = [keyword, ...altKeywords].join('|');
-  const key = cacheKey(
-    ladderKey,
+  const key = listingCacheKeyFromParams({
+    keyword: ladderKey,
     isDomestic,
     countryHint,
     countryHintAlts,
@@ -286,65 +361,83 @@ export async function fetchMrtStays(params) {
     checkOut,
     adultCount,
     childCount,
-  );
+  });
+  const invokeParams = {
+    keyword,
+    isDomestic,
+    size,
+    checkIn,
+    checkOut,
+    adultCount,
+    childCount,
+    countryHint,
+    countryHintAlts,
+    nameEn,
+    altKeywords,
+    cityHints,
+    originLat: params?.originLat,
+    originLng: params?.originLng,
+  };
 
-  const hit = readCache(key);
-  if (hit) return hit;
+  dropLegacyMrtStayListingCaches();
 
-  try {
-    const { data, error } = await supabase.functions.invoke('fetch-mrt-stays', {
-      body: {
-        keyword,
-        isDomestic,
-        size,
-        checkIn,
-        checkOut,
-        adultCount,
-        childCount,
-        ...(countryHint ? { countryHint } : {}),
-        ...(countryHintAlts.length ? { countryHintAlts } : {}),
-        ...(nameEn ? { nameEn } : {}),
-        ...(altKeywords.length ? { altKeywords } : {}),
-        ...(cityHints.length ? { cityHints } : {}),
-        ...(Number.isFinite(Number(params?.originLat)) && Number.isFinite(Number(params?.originLng))
-          ? { originLat: Number(params.originLat), originLng: Number(params.originLng) }
-          : {}),
-      },
-    });
+  const cached = readMrtStayListingCache(key);
+  let payload = cached ? withHydratedCoords(cached) : null;
 
-    if (error || !data?.ok) {
+  if (!payload) {
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-mrt-stays', {
+        body: listingBody(invokeParams),
+      });
+
+      if (error || !data?.ok) {
+        return null;
+      }
+
+      const listed = Array.isArray(data.items) ? data.items : [];
+      const apiTotalCount = Number(data.totalCount);
+      payload = withHydratedCoords({
+        ok: true,
+        region: data.region ?? null,
+        items: listed,
+        checkIn: data.checkIn,
+        checkOut: data.checkOut,
+        adultCount: data.adultCount ?? adultCount,
+        childCount: data.childCount ?? childCount,
+        usedKeyword: data.usedKeyword ?? keyword,
+        apiTotalCount: Number.isFinite(apiTotalCount) ? apiTotalCount : listed.length,
+      });
+
+      if (listed.length > 0) {
+        writeMrtStayListingCache(key, payload);
+      }
+    } catch {
       return null;
     }
-
-    const listed = Array.isArray(data.items) ? data.items : [];
-    const apiTotalCount = Number(data.totalCount);
-    /** 캐시: fetch 원본(최대 50) · 읽기/반환 시 요금 우선 · UI는 더보기 */
-    const cachePayload = {
-      ok: true,
-      region: data.region ?? null,
-      items: listed,
-      checkIn: data.checkIn,
-      checkOut: data.checkOut,
-      adultCount: data.adultCount ?? adultCount,
-      childCount: data.childCount ?? childCount,
-      usedKeyword: data.usedKeyword ?? keyword,
-      apiTotalCount: Number.isFinite(apiTotalCount) ? apiTotalCount : listed.length,
-    };
-
-    if (listed.length > 0) {
-      writeCache(key, cachePayload);
-    }
-
-    return shapeMrtStayResult(cachePayload);
-  } catch {
-    return null;
   }
+
+  const partial = shapeMrtStayResult(payload);
+  if (typeof params?.onPartialResult === 'function') {
+    try {
+      params.onPartialResult(partial);
+    } catch {
+      /* caller */
+    }
+  }
+
+  if (params?.skipGeocode) return partial;
+
+  const enrichedPayload = await enrichMrtStayCoords(payload, invokeParams);
+  if (enrichedPayload !== payload && Array.isArray(enrichedPayload.items)) {
+    writeMrtStayListingCache(key, enrichedPayload);
+  }
+  return shapeMrtStayResult(enrichedPayload);
 }
 
 /**
  * 홈 Summary 숙소 — SSOT slug + uiPlace. 실패·빈 결과는 호출측에서 empty 처리.
  * @param {object} location
- * @param {{ checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, keywordOverride?: string, altKeywords?: string[] }} [opts]
+ * @param {{ checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, keywordOverride?: string, altKeywords?: string[], skipGeocode?: boolean, onPartialResult?: function }} [opts]
  */
 export async function fetchMrtStaysForLocation(location, opts = {}) {
   if (!location || location.isScanning) return null;
@@ -357,8 +450,7 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
   const isDomestic = isMrtDomesticLocation(location);
   const normalized = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
   const guests = normalizeMrtGuestCounts(opts.adultCount, opts.childCount);
-  const originLat = Number(location?.lat);
-  const originLng = Number(location?.lng);
+  const origin = resolveMrtStayOrigin(location);
   return fetchMrtStays({
     ...query,
     keyword,
@@ -367,8 +459,10 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
     ...normalized,
     ...guests,
     size: MRT_STAY_FETCH_SIZE,
-    ...(Number.isFinite(originLat) && Number.isFinite(originLng)
-      ? { originLat, originLng }
+    skipGeocode: Boolean(opts.skipGeocode),
+    ...(typeof opts.onPartialResult === 'function'
+      ? { onPartialResult: opts.onPartialResult }
       : {}),
+    ...(origin ? { originLat: origin.lat, originLng: origin.lng } : {}),
   });
 }
