@@ -2,6 +2,16 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 팔경 활용 #54 — 예천8경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #54, 예천 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `b08572a2` · PR [#270](https://github.com/catgeot/Days/pull/270)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 예천8경 결손 3건(금당실 전통마을과 송림·예천곤충생태원·석송령). 금당실은 용문면 금당실길 52-4 십승지 마을·천연기념물 469호 송림(3경), 곤충생태원은 효자면 은풍로 1045 곤충연구소·무당벌레 멀티체험관(6경), 석송령은 감천면 석송로 321-6 천연기념물 294호 부자나무(7경). 초간정·하회·선몽대 송림·함평엑스포·정이품송·금당실 송림과 구분. 예천 순수 누락 3→0.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=yecheon`
+- **잔여**: 사진/개요 순수 누락 **66**/876. 다음 허브 **인천9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 종각역 숙소 #9 — 검색 카드 검은 화면 (Cloud)
 
 - **세션** `종각역 숙소 #9, 검색 카드 검은 화면`
