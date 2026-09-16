@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
-import { isStreetishStayLabel, queryLooksLikeStayPoint } from '../../../utils/mrtStayQuery.js';
+import { isStreetishStayLabel, queryLooksLikeStayPoint, resolveUniversitySearchHits } from '../../../utils/mrtStayQuery.js';
 import {
   isLikelyMoodQuery,
   shouldSkipGeocodeForMood as shouldSkipGeocodeForMoodIntent,
@@ -1114,7 +1114,10 @@ export function useHomeHandlers({
               // keep visited names
             }
           }
-          const readyVisited = mergedVisited.filter((spot) => !visitedSpotNeedsGeoCountry(spot));
+          const readyVisited = resolveUniversitySearchHits(
+            query,
+            mergedVisited.filter((spot) => !visitedSpotNeedsGeoCountry(spot)),
+          );
           if (readyVisited.length >= 1) {
             return requireChoice || readyVisited.length >= 2
               ? makeDisambiguationResult(query, readyVisited, {
@@ -1177,7 +1180,10 @@ export function useHomeHandlers({
             if (requireChoice || (distinct.length >= 2 && ambiguous)) {
               const geoName = String(coords.name || query).trim();
               const geoKey = geoName.toLowerCase().replace(/\s+/g, '');
-              const withLatin = overlayGeocodeLatinOnHits(distinct, coords);
+              const withLatin = resolveUniversitySearchHits(
+                query,
+                overlayGeocodeLatinOnHits(distinct, coords),
+              );
               const sameAsGeocode = withLatin.some(
                 (hit) =>
                   samePlaceCenter(hit, coords) ||

@@ -14,8 +14,10 @@ import {
   needsLatinPlaceName,
 } from './uiPlaceAssetQuery.js';
 import {
-  rankUniversitySearchHits,
+  applyUniversityCampusPlace,
   resolveKoUniversityAlias,
+  resolveUniversitySearchHits,
+  universityPlaceNeedsCampusSnap,
 } from '../../../utils/mrtStayQuery.js';
 
 const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MAPBOX_TOKEN : '';
@@ -198,6 +200,18 @@ async function searchBoxForwardRaw(query, opts = {}) {
   }
 }
 
+async function searchBoxForwardMerged(query, forwardOpts) {
+  const language = forwardOpts.language || 'ko';
+  const hits = await searchBoxForwardRaw(query, forwardOpts);
+  const koEmpty = !hits.length;
+  if (language === 'en') return hits.map(ensureLatinPlaceSlug);
+  if (!koEmpty && hits.every((h) => isLatinPlaceName(h.name_en))) {
+    return hits.map(ensureLatinPlaceSlug);
+  }
+  const enHits = await searchBoxForwardRaw(query, { ...forwardOpts, language: 'en' });
+  return mergeSearchBoxEnglishHits(hits, enHits);
+}
+
 export async function searchBoxForward(query, opts = {}) {
   const language = opts.language || 'ko';
   const uni = resolveKoUniversityAlias(query);
@@ -205,24 +219,17 @@ export async function searchBoxForward(query, opts = {}) {
     opts.proximity ||
     (uni ? [uni.lng, uni.lat] : undefined);
   const forwardOpts = { ...opts, proximity, language };
-  const hits = await searchBoxForwardRaw(query, forwardOpts);
-  // 빈 배열 .every()는 true라 ko 공백이면 en 병합을 건너뛰지 않는다
-  const koEmpty = !hits.length;
-  let merged;
-  if (language === 'en') {
-    merged = hits.map(ensureLatinPlaceSlug);
-  } else if (!koEmpty && hits.every((h) => isLatinPlaceName(h.name_en))) {
-    merged = hits.map(ensureLatinPlaceSlug);
-  } else {
-    const enHits = await searchBoxForwardRaw(query, { ...forwardOpts, language: 'en' });
-    merged = mergeSearchBoxEnglishHits(hits, enHits);
+  let merged = await searchBoxForwardMerged(query, forwardOpts);
+  if (uni?.campus && uni.campus !== String(query || '').trim()) {
+    const campusHits = await searchBoxForwardMerged(uni.campus, forwardOpts);
+    if (campusHits.length) merged = [...campusHits, ...merged];
   }
-  merged = rankUniversitySearchHits(query, merged);
+  merged = resolveUniversitySearchHits(query, merged);
   if (opts.skipGeocodeFallback) return merged;
   if (!shouldSupplementGeocodeHits(query, merged)) return merged;
   const geoHits = await geocodeForwardSuggestionHits(query, { limit: opts.limit ?? 6 });
   if (!geoHits.length) return merged;
-  return rankUniversitySearchHits(query, mergeSearchBoxWithGeocodeHits(merged, geoHits));
+  return resolveUniversitySearchHits(query, mergeSearchBoxWithGeocodeHits(merged, geoHits));
 }
 
 /**
@@ -232,22 +239,31 @@ export async function searchBoxForward(query, opts = {}) {
 export async function hydrateSearchBoxLatinName(place) {
   if (!place || typeof place !== 'object') return place;
   let next = place;
+  const query = String(place.originalQuery || place.name || place.name_ko || '').trim();
   if (needsLatinPlaceName(next) && next.mapboxId) {
     const retrieved = await searchBoxRetrieve(next.mapboxId, next.sessionToken);
     if (retrieved) {
       const lat = Number(next.lat);
       const lng = Number(next.lng);
-      next = mergeLatinPlaceFields(
-        {
+      if (resolveKoUniversityAlias(query) && universityPlaceNeedsCampusSnap(query, retrieved)) {
+        next = applyUniversityCampusPlace(query, {
           ...next,
-          lat: Number.isFinite(lat) ? next.lat : retrieved.lat,
-          lng: Number.isFinite(lng) ? next.lng : retrieved.lng,
           needsRetrieve: false,
-        },
-        retrieved,
-      );
+        });
+      } else {
+        next = mergeLatinPlaceFields(
+          {
+            ...next,
+            lat: Number.isFinite(lat) ? next.lat : retrieved.lat,
+            lng: Number.isFinite(lng) ? next.lng : retrieved.lng,
+            needsRetrieve: false,
+          },
+          retrieved,
+        );
+      }
     }
   }
+  next = applyUniversityCampusPlace(query, next);
   return ensureLatinPlaceSlug(next);
 }
 

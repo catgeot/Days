@@ -19,6 +19,7 @@ import {
   nominatimUniversityScoreDelta,
   universitySearchHitPenalty,
   universityAliasFitsPlace,
+  applyUniversityCampusPlace,
 } from '../../../utils/mrtStayQuery.js';
 
 const RETRY_FILTERS = [
@@ -477,14 +478,17 @@ const fetchMapboxForward = async (
 
     const parsed = parseMapboxForwardPlace(feature, searchQuery);
     if (!parsed) return null;
-    if (isLatinPlaceName(parsed.name_en)) return parsed;
-
-    const enMatch =
-      enFeatures.find((f) => f?.id && f.id === feature.id) ||
-      enFeatures.find((f) => sameMapboxCenter(f, feature));
-    if (!enMatch) return parsed;
-    const parsedEn = parseMapboxForwardPlace(enMatch, searchQuery);
-    return mergeLatinPlaceFields(parsed, parsedEn);
+    let resolved = parsed;
+    if (!isLatinPlaceName(parsed.name_en)) {
+      const enMatch =
+        enFeatures.find((f) => f?.id && f.id === feature.id) ||
+        enFeatures.find((f) => sameMapboxCenter(f, feature));
+      if (enMatch) {
+        const parsedEn = parseMapboxForwardPlace(enMatch, searchQuery);
+        resolved = mergeLatinPlaceFields(parsed, parsedEn);
+      }
+    }
+    return applyUniversityCampusPlace(searchQuery, resolved);
   } catch (error) {
     console.warn('Mapbox forward geocoding failed:', error);
     return null;
@@ -727,7 +731,7 @@ export const getCoordinatesFromAddress = async (query) => {
 
     const stayAdmin = buildStayAdminFromOsmAddress(address, address);
 
-    return {
+    return applyUniversityCampusPlace(cleanQuery, {
       lat: parseFloat(topResult.lat),
       lng: parseFloat(topResult.lon),
       name: placeName,
@@ -739,7 +743,7 @@ export const getCoordinatesFromAddress = async (query) => {
       osm_class: topResult.class || '',
       osm_type: topResult.type || '',
       ...(stayAdmin ? { stayAdmin } : {}),
-    };
+    });
   } catch (error) {
     console.error("Forward Geocoding error:", error);
     return null;

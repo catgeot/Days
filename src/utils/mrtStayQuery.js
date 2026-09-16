@@ -253,18 +253,21 @@ const KO_STATION_ALIASES = {
 const KO_UNIVERSITY_ALIASES = {
   강원대학교: {
     campus: '강원대학교 춘천캠퍼스',
+    nameEn: 'Kangwon National University',
     city: '춘천',
     lat: 37.8695,
     lng: 127.744,
   },
   강원대: {
     campus: '강원대학교 춘천캠퍼스',
+    nameEn: 'Kangwon National University',
     city: '춘천',
     lat: 37.8695,
     lng: 127.744,
   },
   kangwonnationaluniversity: {
     campus: '강원대학교 춘천캠퍼스',
+    nameEn: 'Kangwon National University',
     city: '춘천',
     lat: 37.8695,
     lng: 127.744,
@@ -404,6 +407,106 @@ export function rankUniversitySearchHits(query, hits) {
     .map((row) => row.item);
 }
 
+const UNI_TOWNSHIP_NAME_EN_RE = /(-ri|-eup|-myeon|-dong)\b|금강리|geumgang/i;
+
+function universityPlaceHasTownshipEnglish(item) {
+  const nameEn = String(item?.name_en || '').trim();
+  if (!nameEn) return false;
+  if (/university|kangwon|chuncheon/i.test(nameEn)) return false;
+  return UNI_TOWNSHIP_NAME_EN_RE.test(nameEn);
+}
+
+function sameUniversityPlaceCenter(a, b) {
+  const lat1 = Number(a?.lat);
+  const lng1 = Number(a?.lng);
+  const lat2 = Number(b?.lat);
+  const lng2 = Number(b?.lng);
+  if (![lat1, lng1, lat2, lng2].every(Number.isFinite)) return false;
+  return Math.abs(lat1 - lat2) <= 0.08 && Math.abs(lng1 - lng2) <= 0.08;
+}
+
+function universityQueryDisplayName(query, alias) {
+  const head = String(query || '').trim().split(/[,/]/)[0].trim();
+  if (head && !UNI_CAMPUS_QUALIFIER_RE.test(compactKoPlaceKey(head))) return head;
+  return alias?.campus || head;
+}
+
+/** 본교에서 멀거나 수련원·금강리 핀이면 장소카드 원점도 춘천으로 바꿔야 함 */
+export function universityPlaceNeedsCampusSnap(query, item) {
+  const alias = resolveKoUniversityAlias(query);
+  if (!alias || !item) return false;
+  if (universitySearchHitPenalty(query, item) >= 50) return true;
+  const lat = Number(item.lat);
+  const lng = Number(item.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    return haversineKmSimple(lat, lng, alias.lat, alias.lng) > UNIVERSITY_CAMPUS_MAX_KM;
+  }
+  return false;
+}
+
+/** 금강리 같은 리·읍·면 name_en을 본교 영문명으로. 좌표가 양양이면 본교로 스냅 */
+export function applyUniversityCampusPlace(query, place) {
+  const alias = resolveKoUniversityAlias(query);
+  if (!alias || !place) return place;
+  const needsSnap = universityPlaceNeedsCampusSnap(query, place);
+  const townshipEn = universityPlaceHasTownshipEnglish(place);
+  if (!needsSnap && !townshipEn) return place;
+  const next = {
+    ...place,
+    name_en: alias.nameEn || place.name_en,
+  };
+  const admin =
+    place.stayAdmin && typeof place.stayAdmin === 'object' ? { ...place.stayAdmin } : {};
+  admin.city = alias.city;
+  if (needsSnap) {
+    next.lat = alias.lat;
+    next.lng = alias.lng;
+    next.mapboxId = undefined;
+    next.id = `campus-${alias.lat}-${alias.lng}`;
+    admin.neighbourhood = '';
+  }
+  next.stayAdmin = admin;
+  return next;
+}
+
+function syntheticUniversityCampusPlace(query, alias) {
+  const name = universityQueryDisplayName(query, alias);
+  return {
+    id: `campus-${alias.lat}-${alias.lng}`,
+    kind: 'poi',
+    badge: '장소',
+    name,
+    name_ko: name,
+    name_en: alias.nameEn || name,
+    country: '대한민국',
+    country_en: 'South Korea',
+    lat: alias.lat,
+    lng: alias.lng,
+    stayAdmin: { city: alias.city },
+    source: 'campus-alias',
+    uiPlace: true,
+    originalQuery: query,
+  };
+}
+
+/** 검색 카드에서 양양 수련원 핀을 빼고 춘천 본교만 남긴다 */
+export function resolveUniversitySearchHits(query, hits) {
+  const list = Array.isArray(hits) ? hits.filter(Boolean) : [];
+  const alias = resolveKoUniversityAlias(query);
+  if (!alias) return rankUniversitySearchHits(query, list);
+  const ranked = rankUniversitySearchHits(query, list);
+  const out = [];
+  for (const hit of ranked) {
+    if (universityPlaceNeedsCampusSnap(query, hit)) continue;
+    const labeled = applyUniversityCampusPlace(query, hit);
+    if (!universityAliasFitsPlace(alias, labeled, query)) continue;
+    if (out.some((row) => sameUniversityPlaceCenter(row, labeled))) continue;
+    out.push({ ...labeled, originalQuery: labeled.originalQuery || query });
+  }
+  if (out.length) return out;
+  return [syntheticUniversityCampusPlace(query, alias)];
+}
+
 export function universityAliasFitsPlace(alias, item, query = '') {
   if (!alias) return true;
   if (!item) return false;
@@ -533,6 +636,9 @@ export function stayPointDisambiguationPenalty(query, item) {
 
 export function rankStayPointDisambiguationCandidates(query, candidates) {
   const list = Array.isArray(candidates) ? candidates.filter(Boolean) : [];
+  if (resolveKoUniversityAlias(query)) {
+    return resolveUniversitySearchHits(query, list);
+  }
   if ((!queryLooksLikeStayPoint(query) && !isUniversityStayQuery(query)) || list.length < 2) {
     return list;
   }

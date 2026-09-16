@@ -21,7 +21,10 @@ import {
   stationNameMatchesQuery,
   universitySearchHitPenalty,
   rankUniversitySearchHits,
+  resolveUniversitySearchHits,
   isUniversityStayQuery,
+  applyUniversityCampusPlace,
+  universityPlaceNeedsCampusSnap,
 } from '../src/utils/mrtStayQuery.js';
 import {
   attachMrtStayDistances,
@@ -534,6 +537,49 @@ async function main() {
     );
     const rankedUni = rankUniversitySearchHits('강원대학교', [yangyangHit, chuncheonHit]);
     assert(rankedUni[0] === chuncheonHit, 'rankUniversitySearchHits prefers Chuncheon');
+    const resolvedUni = resolveUniversitySearchHits('강원대학교', [yangyangHit, yangyangHit]);
+    assert(resolvedUni.length === 1, `campus-only cards (got ${resolvedUni.length})`);
+    assert(
+      resolvedUni[0]?.name_en === 'Kangwon National University',
+      `campus card English (got ${resolvedUni[0]?.name_en})`,
+    );
+    assert(
+      Math.abs(resolvedUni[0]?.lat - 37.8695) < 1e-6,
+      `campus card lat (got ${resolvedUni[0]?.lat})`,
+    );
+    assert(
+      !/geumgang|금강/i.test(String(resolvedUni[0]?.name_en || '')),
+      'campus card is not Geumgang-ri',
+    );
+    const labeledTownship = applyUniversityCampusPlace('강원대학교', {
+      name: '강원대학교',
+      name_en: 'Geumgang-ri',
+      lat: 37.8695,
+      lng: 127.744,
+    });
+    assert(
+      labeledTownship.name_en === 'Kangwon National University',
+      `township English rewritten (got ${labeledTownship.name_en})`,
+    );
+    assert(
+      !universityPlaceNeedsCampusSnap('강원대학교', {
+        name: '강원대학교 춘천캠퍼스',
+        name_en: 'Kangwon National University',
+        lat: 37.8695,
+        lng: 127.744,
+      }),
+      'Chuncheon campus does not snap',
+    );
+    const trainingCards = resolveUniversitySearchHits('강원대학교 동해수련원', [yangyangHit]);
+    assert(trainingCards[0] === yangyangHit, '동해수련원 keeps Yangyang card');
+    const disambiguatedUni = rankStayPointDisambiguationCandidates('강원대학교', [
+      yangyangHit,
+      { ...yangyangHit, id: 'dup' },
+    ]);
+    assert(
+      disambiguatedUni[0]?.name_en === 'Kangwon National University',
+      `choice overlay English (got ${disambiguatedUni[0]?.name_en})`,
+    );
     const jonggakAlias = resolveKoStationAlias('종각');
     assert(jonggakAlias?.station === '종각역', `종각 alias station (got ${jonggakAlias?.station})`);
     assert(jonggakAlias?.district === '종로', `종각 alias district (got ${jonggakAlias?.district})`);
@@ -581,8 +627,18 @@ async function main() {
     );
     assert(
       jonggakAliases.includes('resolveKoUniversityAlias') &&
-        jonggakAliases.includes('universityAlias.campus'),
+        jonggakAliases.includes('universityAlias.campus') &&
+        jonggakAliases.includes('applyUniversityCampusPlace'),
       'geocoding expands university alias to 춘천캠퍼스',
+    );
+    const searchBoxSrc = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/lib/mapboxSearchBox.js'),
+      'utf8',
+    );
+    assert(
+      searchBoxSrc.includes('resolveUniversitySearchHits') &&
+        searchBoxSrc.includes('applyUniversityCampusPlace'),
+      'Search Box rewrites campus cards off Geumgang-ri',
     );
     console.log('OK  stay-point labels');
   } catch (err) {
