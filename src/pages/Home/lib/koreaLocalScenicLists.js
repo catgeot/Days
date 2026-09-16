@@ -1391,6 +1391,15 @@ const GIM_GAYA_3 = 'https://tong.visitkorea.or.kr/cms2/website/36/2649536.jpg';
 const GIM_ASTRO = 'https://tong.visitkorea.or.kr/cms2/website/20/3362120.jpg';
 const GIM_ASTRO_2 = 'https://tong.visitkorea.or.kr/cms2/website/24/3362124.jpg';
 const GIM_ASTRO_3 = 'https://tong.visitkorea.or.kr/cms2/website/69/3457369.jpg';
+const DG_GUKCHAE = 'https://tong.visitkorea.or.kr/cms/resource/86/3515186_image2_1.jpg';
+const DG_GUKCHAE_2 = 'https://tong.visitkorea.or.kr/cms/resource/83/3515183_image2_1.jpg';
+const DG_GUKCHAE_3 = 'https://tong.visitkorea.or.kr/cms/resource/87/3515187_image2_1.jpg';
+const DG_DALSEONG = 'https://tong.visitkorea.or.kr/cms2/website/26/1018426.jpg';
+const DG_DALSEONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/58/3565158_image2_1.jpg';
+const DG_DALSEONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/60/3565160_image2_1.jpg';
+const DG_GAMYEONG = 'https://tong.visitkorea.or.kr/cms/resource/44/3310544_image2_1.jpg';
+const DG_GAMYEONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/41/3310541_image2_1.jpg';
+const DG_GAMYEONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/42/3310542_image2_1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2922,6 +2931,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 김해시 가야테마길 254 (어방동 김해천문대·분성산)',
     GIM_ASTRO,
     [GIM_ASTRO_2, GIM_ASTRO_3],
+  ),
+  'local-scenic:daegu-sipgyeong:대구국채보상운동기념공원': localScenicPhotoOverlay(
+    '대구12경 8경 국채보상운동 기념공원은 중구 동인동2가입니다. 대구관광안내는 1907년 대구에서 처음 시작된 국채보상운동의 정신이 깃든 도심 속 쉼터이며 총면적 42,509㎡에 잔디광장·오솔길·분수·정자가 있다고 적습니다. 주소는 국채보상로 670입니다. 한국관광공사는 달구벌 대종·종각과 독립지사 흉상, 국채보상운동 여성기념비, 공원 한쪽 국채보상운동기념관을 안내합니다. 달구벌대종은 22.5t이며 1998년 12월 22일 설치되어 제야의 종 타종식에 씁니다. 같은 리스트 9경 동성로·7경 경상감영공원 통일의 종(예전 제야의 종)과 다른 자리이며, 2·28기념중앙공원과도 다른 동인동 공원입니다. 사진은 한국관광공사 달구벌대종 종각·김광제·서상돈 흉상·국채보상운동 여성기념비 공식 사진입니다.',
+    '대구광역시 중구 국채보상로 670 (동인동2가 국채보상운동기념공원)',
+    DG_GUKCHAE,
+    [DG_GUKCHAE_2, DG_GUKCHAE_3],
+  ),
+  'local-scenic:daegu-sipgyeong:대구달성토성': localScenicPhotoOverlay(
+    '대구12경 6경 달성토성은 중구 달성동 달성공원입니다. 사적 제62호 대구 달성이며 대구관광안내는 달구벌의 토성에서 이름이 왔다고 적습니다. 주소는 달성공원로 35입니다. 한국관광공사는 우리나라 성곽 발달 사상 이른 시기의 토성이며 공원 둘레 오솔길이 있다고 합니다. 1601년 경상감영 정문이었던 관풍루는 1906년 이곳으로 옮겨 언덕 위에 있습니다. 달성군 화원읍 달성습지·비슬산 달성군립공원·목포 유달산 달성공원과 다른 중구 토성이며, 같은 리스트 7경 경상감영공원(관풍루 원래 자리)과도 다른 자리입니다. 사진은 한국관광공사 관풍루·달성공원 잔디와 누각 공식 사진입니다.',
+    '대구광역시 중구 달성공원로 35 (달성동 달성공원·사적 대구 달성)',
+    DG_DALSEONG,
+    [DG_DALSEONG_2, DG_DALSEONG_3],
+  ),
+  'local-scenic:daegu-sipgyeong:대구경상감영과옛골목': localScenicPhotoOverlay(
+    '대구12경 7경 경상감영과 옛골목은 중구 포정동 경상감영공원과 인근 근대골목입니다. 대구관광안내는 선조 34년(1601) 경상감영이 있던 곳이며 1970년 중앙공원으로 개장한 뒤 경상감영공원으로 불렀다고 적습니다. 주소는 경상감영길 99입니다. 사적 제538호 대구 경상감영지이며 관찰사 집무실 선화당과 처소 징청각이 원위치에 있습니다. 관풍루는 1906년 6경 달성토성으로 옮겨졌습니다. 인근 옛골목은 근대골목 1코스 경상감영달성길(향촌동·북성로·대구근대역사관)이며 한국관광 100선입니다. 상주 태평성대경상감영공원·공주 충청감영·원주 강원감영과 다른 대구 감영지이며, 계산예가·청라언덕 2코스와도 다른 1코스입니다. 사진은 대구광역시 중구 선화당·징청각 항공 공식 사진과 선화당 배롱나무 공식 사진입니다.',
+    '대구광역시 중구 경상감영길 99 (포정동 경상감영공원·근대골목 1코스)',
+    DG_GAMYEONG,
+    [DG_GAMYEONG_2, DG_GAMYEONG_3],
   ),
 };
 

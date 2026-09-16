@@ -3100,6 +3100,88 @@ assert.ok(
   '김해 검색 팔경 분산 천문대 개요',
 );
 
+const daeguMerged = mergeLocalScenicMembersIntoScenicSpots([], 'daegu');
+const daeguTwelve = daeguMerged.filter((s) => s.localScenicListId === 'daegu-sipgyeong');
+assert.equal(daeguTwelve.length, 12, '대구12경 12명');
+assert.equal(daeguTwelve[0]?.groupTitle, '대구 12경');
+const daeguDeficitNames = [
+  '대구 국채보상운동 기념공원',
+  '대구 달성토성',
+  '대구 경상감영과 옛골목',
+];
+const daeguDeficit = daeguTwelve.filter((s) => daeguDeficitNames.includes(s.attractionName));
+assert.equal(daeguDeficit.length, 3, '대구12경 결손 3명');
+assert.ok(
+  daeguDeficit.every((s) => s.overview && s.imageUrl),
+  '대구 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  daeguDeficit.every((s) => !s.contentId),
+  '대구 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(daeguDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '대구 결손 3명 썸네일 서로 다름',
+);
+
+const dgGukchae = resolveLocalScenicListSpotById(
+  'local-scenic:daegu-sipgyeong:대구국채보상운동기념공원',
+);
+assert.ok(dgGukchae?.overview?.includes('국채보상로 670'), '대구 국채보상공원 주소');
+assert.ok(dgGukchae?.overview?.includes('달구벌'), '대구 국채보상공원 overlay 달구벌대종');
+assert.ok(dgGukchae?.overview?.includes('동성로'), '대구 국채보상공원≠9경 동성로 구분');
+assert.ok(dgGukchae?.overview?.includes('2·28'), '대구 국채보상공원≠2·28공원 구분');
+assert.ok(dgGukchae?.imageUrl?.includes('3515186'), '대구 국채보상공원 달구벌대종 사진');
+
+const dgDalseong = resolveLocalScenicListSpotById('local-scenic:daegu-sipgyeong:대구달성토성');
+assert.ok(dgDalseong?.overview?.includes('달성공원로 35'), '대구 달성토성 주소');
+assert.ok(dgDalseong?.overview?.includes('사적 제62호'), '대구 달성토성 overlay 사적 62호');
+assert.ok(dgDalseong?.overview?.includes('관풍루'), '대구 달성토성 overlay 관풍루');
+assert.ok(dgDalseong?.overview?.includes('달성습지'), '대구 달성토성≠달성군 습지 구분');
+assert.ok(dgDalseong?.overview?.includes('유달산'), '대구 달성토성≠목포 유달산 달성공원 구분');
+assert.ok(dgDalseong?.imageUrl?.includes('1018426'), '대구 달성토성 관풍루 사진');
+
+const dgGamyeong = resolveLocalScenicListSpotById(
+  'local-scenic:daegu-sipgyeong:대구경상감영과옛골목',
+);
+assert.ok(dgGamyeong?.overview?.includes('경상감영길 99'), '대구 경상감영 주소');
+assert.ok(dgGamyeong?.overview?.includes('선화당'), '대구 경상감영 overlay 선화당');
+assert.ok(dgGamyeong?.overview?.includes('사적 제538호'), '대구 경상감영 overlay 사적 538호');
+assert.ok(dgGamyeong?.overview?.includes('상주'), '대구 경상감영≠상주 태평성대 구분');
+assert.ok(dgGamyeong?.overview?.includes('충청감영'), '대구 경상감영≠공주 충청감영 구분');
+assert.ok(dgGamyeong?.overview?.includes('계산예가'), '대구 경상감영≠계산예가 2코스 구분');
+assert.ok(dgGamyeong?.imageUrl?.includes('3310544'), '대구 경상감영 선화당 항공 사진');
+assert.notEqual(dgGukchae?.imageUrl, dgDalseong?.imageUrl, '국채보상·달성토성 썸네일 다름');
+assert.notEqual(dgGukchae?.imageUrl, dgGamyeong?.imageUrl, '국채보상·경상감영 썸네일 다름');
+assert.notEqual(dgDalseong?.imageUrl, dgGamyeong?.imageUrl, '달성토성·경상감영 썸네일 다름');
+
+const daeguGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '대구', {
+  injectLocalScenic: true,
+});
+const daeguGlobeTwelve = daeguGlobe.filter((s) => s.localScenicListId === 'daegu-sipgyeong');
+assert.equal(daeguGlobeTwelve.length, 12, '대구 검색 대구12경 12행');
+assert.ok(
+  daeguGlobeTwelve.every((s) => s.groupTitle === '대구 12경'),
+  '대구 검색 팔경 groupTitle 대구 12경',
+);
+assert.ok(
+  daeguGlobe.find((s) => s.attractionName === '대구 국채보상운동 기념공원')?.imageUrl?.includes(
+    '3515186',
+  ),
+  '대구 검색 팔경 국채보상공원 썸네일',
+);
+assert.ok(
+  daeguGlobe.find((s) => s.attractionName === '대구 달성토성')?.overview?.includes('관풍루'),
+  '대구 검색 팔경 달성토성 개요',
+);
+assert.ok(
+  daeguGlobe
+    .find((s) => s.attractionName === '대구 경상감영과 옛골목')
+    ?.overview?.includes('선화당'),
+  '대구 검색 팔경 경상감영 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
