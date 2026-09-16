@@ -3340,6 +3340,150 @@ assert.ok(
   '여수10경 리스트 진남관·이순신대교 썸네일',
 );
 
+const yecheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yecheon');
+const yecheonEight = yecheonMerged.filter((s) => s.localScenicListId === 'yecheon-palgyeong');
+assert.equal(yecheonEight.length, 8, '예천8경 8명');
+assert.equal(yecheonEight[0]?.groupTitle, '예천 팔경');
+const yecheonDeficitNames = ['금당실 전통마을과 송림', '예천곤충생태원', '석송령'];
+const yecheonDeficit = yecheonEight.filter((s) => yecheonDeficitNames.includes(s.attractionName));
+assert.equal(yecheonDeficit.length, 3, '예천8경 결손 3명');
+assert.ok(
+  yecheonDeficit.every((s) => s.overview && s.imageUrl),
+  '예천 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  yecheonDeficit.every((s) => !s.contentId),
+  '예천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yecheonDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '예천 결손 3명 썸네일 서로 다름',
+);
+
+const ycGeum = resolveLocalScenicListSpotById('local-scenic:yecheon-palgyeong:금당실전통마을과송림');
+assert.ok(ycGeum?.overview?.includes('금당실길 52-4'), '예천 금당실 주소');
+assert.ok(ycGeum?.overview?.includes('십승지'), '예천 금당실 overlay 십승지');
+assert.ok(ycGeum?.overview?.includes('469'), '예천 금당실 송림 천연기념물 469');
+assert.ok(ycGeum?.overview?.includes('초간정'), '예천 금당실≠초간정 구분');
+assert.ok(ycGeum?.overview?.includes('하회'), '예천 금당실≠안동 하회 구분');
+assert.ok(ycGeum?.imageUrl?.includes('geumdangsil'), '예천 금당실 8경 고택 사진');
+
+const ycInsect = resolveLocalScenicListSpotById('local-scenic:yecheon-palgyeong:예천곤충생태원');
+assert.ok(ycInsect?.overview?.includes('은풍로 1045'), '예천 곤충생태원 주소');
+assert.ok(ycInsect?.overview?.includes('효자면'), '예천 곤충생태원 효자면');
+assert.ok(ycInsect?.overview?.includes('바이오엑스포'), '예천 곤충생태원 overlay 엑스포');
+assert.ok(ycInsect?.overview?.includes('함평'), '예천 곤충생태원≠함평엑스포 구분');
+assert.ok(ycInsect?.overview?.includes('은풍면'), '예천 곤충생태원≠은풍면 구분');
+assert.ok(ycInsect?.imageUrl?.includes('/insect/img.png'), '예천 곤충생태원 8경 항공 사진');
+
+const ycSeok = resolveLocalScenicListSpotById('local-scenic:yecheon-palgyeong:석송령');
+assert.ok(ycSeok?.overview?.includes('천향리'), '예천 석송령 주소 천향리');
+assert.ok(ycSeok?.overview?.includes('294'), '예천 석송령 천연기념물 294');
+assert.ok(ycSeok?.overview?.includes('이수목'), '예천 석송령 overlay 이수목');
+assert.ok(ycSeok?.overview?.includes('정이품송'), '예천 석송령≠보은 정이품송 구분');
+assert.ok(ycSeok?.overview?.includes('금당실 송림'), '예천 석송령≠금당실 송림 구분');
+assert.ok(ycSeok?.imageUrl?.includes('seogsonglyeong'), '예천 석송령 8경 전경 사진');
+
+assert.notEqual(ycGeum?.imageUrl, ycInsect?.imageUrl, '금당실·곤충생태원 썸네일 다름');
+assert.notEqual(ycGeum?.imageUrl, ycSeok?.imageUrl, '금당실·석송령 썸네일 다름');
+assert.notEqual(ycInsect?.imageUrl, ycSeok?.imageUrl, '곤충생태원·석송령 썸네일 다름');
+
+const yecheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '예천', {
+  injectLocalScenic: true,
+});
+const yecheonGlobeEight = yecheonGlobe.filter((s) => s.localScenicListId === 'yecheon-palgyeong');
+assert.equal(yecheonGlobeEight.length, 8, '예천 검색 예천8경 8행');
+assert.ok(
+  yecheonGlobeEight.every((s) => s.groupTitle === '예천 팔경'),
+  '예천 검색 팔경 groupTitle 예천 팔경',
+);
+assert.ok(
+  yecheonGlobe.find((s) => s.attractionName === '금당실 전통마을과 송림')?.imageUrl?.includes(
+    'geumdangsil',
+  ),
+  '예천 검색 팔경 금당실 썸네일',
+);
+assert.ok(
+  yecheonGlobe.find((s) => s.attractionName === '예천곤충생태원')?.overview?.includes('무당벌레'),
+  '예천 검색 팔경 곤충생태원 개요',
+);
+assert.ok(
+  yecheonGlobe.find((s) => s.attractionName === '석송령')?.overview?.includes('석평마을'),
+  '예천 검색 팔경 석송령 개요',
+);
+
+const ycSillaThumb = lookupLocalScenicPhotoByContentId('1910438');
+assert.ok(
+  ycSillaThumb?.imageUrl?.includes('main_scroll_img3.jpg'),
+  '예천 신라식물원 Tour 빈 썸네일 overlay 1910438',
+);
+assert.ok(
+  ycSillaThumb?.imageUrl?.includes('web.archive.org'),
+  '예천 신라식물원 썸네일은 공식 홈페이지 전경 Wayback HTTPS',
+);
+assert.ok(
+  !ycSillaThumb?.imageUrl?.includes('/insect/'),
+  '예천 신라식물원 썸네일 ≠ 곤충생태원',
+);
+assert.notEqual(
+  ycSillaThumb?.imageUrl,
+  ycInsect?.imageUrl,
+  '신라식물원 썸네일 ≠ 예천곤충생태원',
+);
+const ycSillaSearch = resolveSearchScenicMedia({
+  name: '신라식물원',
+  contentId: '1910438',
+});
+assert.ok(
+  ycSillaSearch.imageUrl?.includes('main_scroll_img3.jpg'),
+  '명승홈 검색 Tour 행 신라식물원 썸네일',
+);
+assert.equal(ycSillaSearch.contentId, '1910438', '명승홈 검색 신라식물원 contentId');
+assert.ok(
+  ycSillaThumb.galleryUrls?.some((u) => String(u).includes('main_scroll_img2.jpg')),
+  '예천 신라식물원 갤러리 정원 전경',
+);
+assert.ok(
+  ycSillaThumb.galleryUrls?.some((u) => String(u).includes('main_scroll_img1.jpg')),
+  '예천 신라식물원 갤러리 입구 간판',
+);
+
+const ycMarket = listKoreaScenicSpots().find((s) => s.id === 'yonggung-market');
+assert.ok(ycMarket, '예천 용궁시장 GATEO 선정');
+assert.ok(
+  ycMarket.imageUrl?.includes('tv.trip/1n2d.trip08.png'),
+  '용궁시장 썸네일은 군 공식 시장 사진',
+);
+assert.ok(
+  !ycMarket.imageUrl?.includes('3542707'),
+  '용궁시장 썸네일 ≠ 회룡포 항공 3542707',
+);
+assert.ok(
+  ycMarket.galleryUrls?.every((u) => !String(u).includes('3542707')),
+  '용궁시장 갤러리 ≠ 회룡포',
+);
+const ycMarketOverlay = lookupLocalScenicMemberOverlayForSpot(ycMarket);
+assert.ok(
+  ycMarketOverlay?.imageUrl?.includes('1n2d.trip08.png'),
+  '용궁시장 overlay 군 공식 시장',
+);
+assert.ok(ycMarketOverlay?.overview?.includes('오일장'), '용궁시장 overlay 오일장');
+assert.ok(
+  ycMarketOverlay?.overview?.includes('읍부리 장터'),
+  '용궁시장 overlay는 회룡포가 아니라 읍부리 장터',
+);
+const ycMarketSearch = resolveSearchScenicMedia({
+  id: 'yonggung-market',
+  hubId: 'yecheon',
+  name: '용궁시장',
+  imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg',
+});
+assert.ok(
+  ycMarketSearch.imageUrl?.includes('1n2d.trip08.png'),
+  '명승홈 검색 용궁시장이 회룡포 사진을 덮음',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
