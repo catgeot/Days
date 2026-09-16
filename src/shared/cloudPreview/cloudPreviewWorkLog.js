@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '종각역 숙소',
-  sessionNo: 7,
-  sessionPhase: '거리 캐시 로딩',
-  branch: 'cursor/jonggak-first-card-3096',
-  previewPath: '/',
-  qaShareSlug: '',
+  title: '팔경 활용',
+  sessionNo: 52,
+  sessionPhase: '대구 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-palgyeong-use-52-daegu-overlays',
+    session: '팔경 활용 #52, 대구 결손 오버레이',
+    title: '대구12경 국채보상공원·달성토성·경상감영 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 대구12경 결손 3건(대구 국채보상운동 기념공원·대구 달성토성·대구 경상감영과 옛골목)의 공공 공식 팩트 개요·주소·한국관광공사·대구 중구 공식 사진을 보강했습니다. 국채보상공원은 중구 국채보상로 670 달구벌대종(8경), 달성토성은 중구 달성공원로 35 사적 62호·관풍루(6경), 경상감영과 옛골목은 중구 경상감영길 99 사적 538호 선화당·징청각과 근대골목 1코스(7경)입니다. 동성로·2·28공원·달성군 습지·목포 유달산 달성공원·상주 태평성대경상감영·공주 충청감영·계산예가 2코스와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=daegu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T00:40:00.000Z',
+  },
   {
     id: '2026-09-16-jonggak-stay-distance-cache',
     session: '종각역 숙소 #7, 거리 캐시 로딩',
