@@ -32,12 +32,28 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-16T08:50:00.000Z',
   },
   {
+    id: '2026-09-16-palgyeong-use-53-yeosu-explore-thumbs',
+    session: '팔경 활용 #53, 여수 탐색홈 빈 썸네일',
+    title: '여수10경 진남관·이순신대교 탐색홈 빈 썸네일',
+    detail:
+      '탐색홈 검색「여수」여수10경 행에서 진남관(6경, Tour 126386)·여수 이순신대교(10경, 2778041 이순신대교홍보관)가 Tour first_image 공란이라 랜드마크 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 여수시 관광 10경 진남관 전경·이순신대교 항공 공식 사진을 연결했습니다. 광양9경 광양이순신대교 사진·홍보관 실내와 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「여수」진남관·이순신대교 행.',
+    at: '2026-09-16T04:30:00.000Z',
+  },
+  {
     id: '2026-09-16-jonggak-stay-first-entry-distance',
     session: '종각역 숙소 #8, 최초 진입 거리',
     title: '첫 숙소 찾기에도 거리·가까운순',
     detail:
       '연신내역처럼 처음 열면 광화문 호텔이 거리 없이 뜨고, 다시 열면 거리·가까운순이 되던 문제를 고쳤습니다. Photon 결과가 location 리렌더에 취소되지 않고, 보이는 20곳부터 좌표를 붙입니다. 「연신내역」은 내역 오탐이 아니라 역으로 봅니다. Preview 홈「연신내역」첫 카드 → 숙소 찾기 → 첫 진입에도 은평 쪽 거리가 붙는지(재진입만 되는 것 아님).',
     at: '2026-09-16T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-53-yeosu-overlays',
+    session: '팔경 활용 #53, 여수 결손 오버레이',
+    title: '여수10경 박람회장·밤바다 산단 야경·해상케이블카 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 여수10경 결손 3건(여수세계박람회장·여수 밤바다와 산단 야경·여수해상케이블카)의 공공 공식 팩트 개요·주소·여수시 관광 공식 사진을 보강했습니다. 박람회장은 덕충동 박람회길 1 2012 엑스포장(빅오·스카이타워), 밤바다·산단은 종화동 해양공원·돌산공원과 화치동 국가산단전망대, 케이블카는 돌산로 3600-1~오동도로 116입니다. 2026 섬박람회·함평엑스포·광양만 야경·목포·사천 해상케이블카와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeosu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T03:40:00.000Z',
   },
   {
     id: '2026-09-16-palgyeong-use-52-daegu-overlays',

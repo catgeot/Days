@@ -90,12 +90,12 @@
 ### 다음 세션 제시어
 
 ```
-종각역 숙소 #9, Preview OK면 PR 병합
+종각역 숙소 #10, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-16-project-log.md
 @plans/korea-station-stay-plan.md
 브랜치 cursor/jonggak-yeonsinnae-cacc · PR #269 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 홈「연신내역」리스트 첫 카드로 숙소 찾기 → 첫 진입에도 거리 뱃지·가까운순이면 PR #269 병합. 광화문 호텔이 330m처럼 보이면 실패. 재진입만 되는 것 아님. 오라카이 대학로 OSM 미매칭은 거리 없음이 정상.
+작업: Preview 검색「연신내역」카드 클릭 → 지구본·써머리(검은 화면 아님). 홈 첫 카드 숙소 찾기 → 첫 진입에도 은평 쪽 거리. 둘 다 OK면 PR #269 병합. 광화문 호텔이 330m처럼 보이면 실패.
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```

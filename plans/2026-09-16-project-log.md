@@ -2,6 +2,17 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 종각역 숙소 #9 — 검색 카드 검은 화면 (Cloud)
+
+- **세션** `종각역 숙소 #9, 검색 카드 검은 화면`
+- **브랜치** `cursor/jonggak-yeonsinnae-cacc` · tip `bcf25dab` · PR [#269](https://github.com/catgeot/Days/pull/269)
+- **원인**: `GlobeStayStrip`이 `const fetchKey`보다 먼저 `useRef(fetchKey)`를 써서 장소 카드 오픈 즉시 TDZ `ReferenceError`. 홈이 언마운트되고 작업 로그만 남음.
+- **완료**: `fetchKeyRef`는 빈 문자열로 초기화하고 선언 뒤에 할당. 스모크가 같은 패턴을 막음.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-jonggak-yeonsinnae-cacc-catgeots-projects.vercel.app/
+- **QA**: 검색「연신내역」카드 → 지구본·써머리(검은 화면 아님) · 첫 카드 숙소 찾기 거리.
+- **다음**: `종각역 숙소 #10, Preview OK면 PR 병합`
+
 ## 종각역 숙소 #8 — 최초 진입 거리 (Cloud)
 
 - **세션** `종각역 숙소 #8, 최초 진입 거리`
@@ -15,11 +26,12 @@
 
 ## 팔경 활용 #53 — 여수10경 결손 오버레이 (Cloud)
 
-- **세션** `팔경 활용 #53, 여수 결손 오버레이`
-- **브랜치** `cursor/palgyeong-use-e744` · tip `e4c96650` · PR [#268](https://github.com/catgeot/Days/pull/268)
+- **세션** `팔경 활용 #53, 여수 결손 오버레이` → 탐색홈 빈 썸네일 후속
+- **브랜치** `cursor/palgyeong-use-e744` · tip `4b9c7468` · PR [#268](https://github.com/catgeot/Days/pull/268)
 - **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 여수10경 결손 3건(여수세계박람회장·여수 밤바다와 산단 야경·여수해상케이블카). 박람회장은 2026 섬박람회·함평엑스포가 아니라 덕충동 박람회길 1 2012 엑스포장(빅오·스카이타워), 밤바다·산단은 광양만 야경이 아니라 종화동 해양공원·돌산공원과 화치동 국가산단전망대(7경), 케이블카는 목포·사천·송도가 아니라 돌산로 3600-1~오동도로 116 돌산~자산 1.5km(9경). 여수 순수 누락 3→0.
+- **탐색홈 후속**: Preview 검색「여수」에서 진남관(6경, Tour `126386`)·여수 이순신대교(10경, `2778041` 이순신대교홍보관)가 first_image 공란이라 랜드마크 플레이스홀더. JSON contentId 유지한 채 여수시 관광 10경 진남관 전경·이순신대교 항공 공식 사진 오버레이. 광양9경 광양이순신대교 사진·홍보관 실내와 구분.
 - **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
-- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=yeosu`
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview 검색「여수」· `/korea/theme/scenic?hub=yeosu`
 - **잔여**: 사진/개요 순수 누락 **69**/876. 다음 허브 **예천8경 3**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
