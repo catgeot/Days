@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 53,
-  sessionPhase: '여수 결손 오버레이',
+  sessionPhase: '여수 탐색홈 빈 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-palgyeong-use-53-yeosu-explore-thumbs',
+    session: '팔경 활용 #53, 여수 탐색홈 빈 썸네일',
+    title: '여수10경 진남관·이순신대교 탐색홈 빈 썸네일',
+    detail:
+      '탐색홈 검색「여수」여수10경 행에서 진남관(6경, Tour 126386)·여수 이순신대교(10경, 2778041 이순신대교홍보관)가 Tour first_image 공란이라 랜드마크 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 여수시 관광 10경 진남관 전경·이순신대교 항공 공식 사진을 연결했습니다. 광양9경 광양이순신대교 사진·홍보관 실내와 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「여수」진남관·이순신대교 행.',
+    at: '2026-09-16T04:30:00.000Z',
+  },
   {
     id: '2026-09-16-palgyeong-use-53-yeosu-overlays',
     session: '팔경 활용 #53, 여수 결손 오버레이',
