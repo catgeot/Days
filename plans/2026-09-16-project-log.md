@@ -2,6 +2,17 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 종각역 숙소 #11 — 강원대 춘천 숙소 (Cloud)
+
+- **세션** `종각역 숙소 #11, 강원대 춘천 숙소`
+- **브랜치** `cursor/kangwon-univ-stay-e48d` · tip `cd65452d` · PR [#271](https://github.com/catgeot/Days/pull/271)
+- **원인**: 써머리는 춘천 본교인데 Mapbox가 양양 동해수련원(금강리)을 `강원대학교`로 반환. 숙소 원점이 양양이라 쏠비치·낙산이 1.3km로 나옴. `강원대학교`에서 `강원` cityHint도 해안 호텔로 샘.
+- **완료**: 본교 별칭(춘천) · 수련원/먼 핀 페널티 · Search Box proximity · 숙소 1차 `춘천` · 양양 핀은 본교로 스냅. 수련원·삼척 한정 검색은 별칭 없음.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-kangwon-univ-stay-e48d-catgeots-projects.vercel.app/
+- **QA**: 검색「강원대학교」숙소 찾기 → 춘천. 쏠비치 양양 1.3km면 실패.
+- **다음**: `종각역 숙소 #12, Preview OK면 PR 병합`
+
 ## 팔경 활용 #54 — 예천 검색 신라식물원 빈 썸네일 (Cloud)
 
 - **세션** `팔경 활용 #54, 예천 검색 빈 썸네일`
