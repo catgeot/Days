@@ -88,12 +88,12 @@
 ### 다음 세션 제시어
 
 ```
-종각역 숙소 #6, Preview OK면 PR 병합
+종각역 숙소 #7, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-15-project-log.md
 @plans/korea-station-stay-plan.md
-브랜치 cursor/jonggak-stay-5f4f · PR #264 · Preview /
+브랜치 cursor/jonggak-first-card-3096 · PR #266 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 하드 새로고침 후 종각역 숙소 카드에 거리(신라스테이 광화문 330m 등)·네이버 지도 칩이 보이면 PR #264 병합. Edge `fetch-mrt-stays` Photon 지오코딩은 이미 배포됨. 오라카이 대학로 등 OSM 미매칭은 거리 없음이 정상.
+작업: Preview 홈「종각역」리스트 **첫 카드**로 숙소 찾기 → 신라스테이 광화문 330m 등·네이버 칩이면 PR #266 병합. 오라카이 대학로 OSM 미매칭은 거리 없음이 정상. #264는 이미 main.
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```

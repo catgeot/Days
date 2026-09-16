@@ -2,6 +2,17 @@
 
 직전: [`2026-09-14-project-log.md`](./2026-09-14-project-log.md)
 
+## 종각역 숙소 #6 — 첫 카드 거리 원점 (Cloud)
+
+- **세션** `종각역 숙소 #6, Preview OK면 PR 병합`
+- **브랜치** `cursor/jonggak-first-card-3096` · tip `e74fbd0e` · PR [#266](https://github.com/catgeot/Days/pull/266)
+- **원인**: 종각역 리스트 첫 카드(Jonggak-gil)는 좌표가 없거나 역에서 멀어 Photon·거리 뱃지가 비고, 다른 종각역 카드는 거리가 나옴. PR #264는 이미 main `8863d38e`.
+- **완료**: `resolveMrtStayOrigin` — 약칭 역 좌표 폴백(8km). 길·동 카드는 선택 목록 뒤. 캐시 v22 원점 포함.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-jonggak-first-card-3096-catgeots-projects.vercel.app/
+- **QA**: 홈「종각역」→ **첫 카드** 숙소 찾기 → 신라스테이 광화문 330m 등 · 네이버 칩
+- **다음**: `종각역 숙소 #7, Preview OK면 PR 병합`
+
 ## 종각역 숙소 #5 — Edge Photon 좌표 배포 (Cloud)
 
 - **세션** `종각역 숙소 #5, 거리 정렬 및 지도 딥링크`
