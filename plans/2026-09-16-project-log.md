@@ -2,6 +2,17 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 종각역 숙소 #8 — 최초 진입 거리 (Cloud)
+
+- **세션** `종각역 숙소 #8, 최초 진입 거리`
+- **브랜치** `cursor/jonggak-yeonsinnae-cacc` · tip `584b35fd` · PR [#269](https://github.com/catgeot/Days/pull/269)
+- **원인**: 첫 진입은 목록만 그리고 Photon은 뒤에서 붙이는데, `location` 리렌더가 fetch를 취소해 거리가 안 붙음. 재진입은 좌표 캐시라 됨. `연신내역`은 `내역` 접미 오탐으로 역이 아니라고 나와 광화문 호텔이 뜸.
+- **완료**: 역 오탐을 전체 일치만 제외. Photon은 fetchKey가 같으면 첫 진입에도 반영. 보이는 20곳부터 지오코딩.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-jonggak-yeonsinnae-cacc-catgeots-projects.vercel.app/
+- **QA**: 홈「연신내역」→ **첫 카드** 숙소 찾기 → **첫 진입**에도 거리·가까운순. 광화문 330m처럼 보이면 실패.
+- **다음**: `종각역 숙소 #9, Preview OK면 PR 병합`
+
 ## 팔경 활용 #53 — 여수10경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #53, 여수 결손 오버레이`
