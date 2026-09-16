@@ -2,6 +2,28 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 종각역 숙소 #13 — 동해수련원 검색 오탐·로딩 (Cloud)
+
+- **세션** `종각역 숙소 #13, Preview OK면 PR 병합`
+- **브랜치** `cursor/kangwon-univ-stay-e48d` · tip `46118fbe` · PR [#271](https://github.com/catgeot/Days/pull/271)
+- **원인**: 「강원대학교 동해수련원」지오코딩 실패 → search_dictionary 무드 캐시·AI가 평창캠퍼스·망상해수욕장 제안. 재검색은 캐시 verify·AI confirm에 오래 걸려 스피너만 보임.
+- **완료**: `resolveKoUniversitySatelliteAlias`(양yang 38.0866) 즉시 핀 · smart search AI/캐시 스킵 · 수련원 시설 쿼리. **PR 미병합**.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npm run build` PASS
+- **Preview** https://days-git-cursor-kangwon-univ-stay-e48d-catgeots-projects.vercel.app/
+- **QA**: 검색「강원대학교 동해수련원」→ 동해수련원 1장(양yang)·재검색 스피너 없음 · 「강원대학교」춘천 유지.
+- **다음**: Preview OK면 PR #271 병합
+
+## 종각역 숙소 #12 — 강원대 장소카드 금강리 (Cloud)
+
+- **세션** `종각역 숙소 #12, Preview OK면 PR 병합`
+- **브랜치** `cursor/kangwon-univ-stay-e48d` · tip `428e9020` · PR [#271](https://github.com/catgeot/Days/pull/271)
+- **원인**: 숙소 원점만 춘천 스냅. 검색·장소카드 `name_en`은 Mapbox 금강리(양양 수련원) 그대로.
+- **완료**: `resolveUniversitySearchHits`가 양양·금강리 핀을 빼고 본교 영문명으로 바꿈. 동해수련원 검색은 양양 유지. **PR 미병합**.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-kangwon-univ-stay-e48d-catgeots-projects.vercel.app/
+- **QA**: 검색「강원대학교」카드 부제 금강리 아님 · 숙소 춘천.
+- **다음**: `종각역 숙소 #13, Preview OK면 PR 병합`
+
 ## 팔경 활용 #54 — 예천 용궁시장 회룡포 사진 (Cloud)
 
 - **세션** `팔경 활용 #54, 예천 용궁시장 사진`
