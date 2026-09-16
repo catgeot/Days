@@ -13,6 +13,10 @@ import {
   mergeSearchBoxWithGeocodeHits,
   needsLatinPlaceName,
 } from './uiPlaceAssetQuery.js';
+import {
+  rankUniversitySearchHits,
+  resolveKoUniversityAlias,
+} from '../../../utils/mrtStayQuery.js';
 
 const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MAPBOX_TOKEN : '';
 const SEARCHBOX_BASE = 'https://api.mapbox.com/search/searchbox/v1';
@@ -149,6 +153,7 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
     attractionKind: firstCat || undefined,
     source,
     uiPlace: true,
+    place_formatted: String(props.place_formatted || props.full_address || '').trim(),
     // 선택 카드: 제목·위치 줄과 겹치는 합성 desc 생략 (full_address는 suggest 경로에서만)
   };
 }
@@ -195,7 +200,12 @@ async function searchBoxForwardRaw(query, opts = {}) {
 
 export async function searchBoxForward(query, opts = {}) {
   const language = opts.language || 'ko';
-  const hits = await searchBoxForwardRaw(query, { ...opts, language });
+  const uni = resolveKoUniversityAlias(query);
+  const proximity =
+    opts.proximity ||
+    (uni ? [uni.lng, uni.lat] : undefined);
+  const forwardOpts = { ...opts, proximity, language };
+  const hits = await searchBoxForwardRaw(query, forwardOpts);
   // 빈 배열 .every()는 true라 ko 공백이면 en 병합을 건너뛰지 않는다
   const koEmpty = !hits.length;
   let merged;
@@ -204,14 +214,15 @@ export async function searchBoxForward(query, opts = {}) {
   } else if (!koEmpty && hits.every((h) => isLatinPlaceName(h.name_en))) {
     merged = hits.map(ensureLatinPlaceSlug);
   } else {
-    const enHits = await searchBoxForwardRaw(query, { ...opts, language: 'en' });
+    const enHits = await searchBoxForwardRaw(query, { ...forwardOpts, language: 'en' });
     merged = mergeSearchBoxEnglishHits(hits, enHits);
   }
+  merged = rankUniversitySearchHits(query, merged);
   if (opts.skipGeocodeFallback) return merged;
   if (!shouldSupplementGeocodeHits(query, merged)) return merged;
   const geoHits = await geocodeForwardSuggestionHits(query, { limit: opts.limit ?? 6 });
   if (!geoHits.length) return merged;
-  return mergeSearchBoxWithGeocodeHits(merged, geoHits);
+  return rankUniversitySearchHits(query, mergeSearchBoxWithGeocodeHits(merged, geoHits));
 }
 
 /**

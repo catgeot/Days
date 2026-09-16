@@ -16,8 +16,12 @@ import {
   queryLooksLikeStayPoint,
   rankStayPointDisambiguationCandidates,
   resolveKoStationAlias,
+  resolveKoUniversityAlias,
   resolveMrtStayQuery,
   stationNameMatchesQuery,
+  universitySearchHitPenalty,
+  rankUniversitySearchHits,
+  isUniversityStayQuery,
 } from '../src/utils/mrtStayQuery.js';
 import {
   attachMrtStayDistances,
@@ -345,6 +349,33 @@ const CASES = [
     rejectPrimaryKeyword: /대화리|^대화$/,
   },
   /**
+   * 검색「강원대학교」— Mapbox가 양양 동해수련원(금강리)을 잡아도 1차는 춘천 본교.
+   * 「강원대학교」에서 강원 토큰만 떼면 강원도 해안 호텔로 샌다.
+   */
+  {
+    slug: 'kangwon-national-university-chuncheon',
+    location: {
+      name: '강원대학교',
+      name_ko: '강원대학교',
+      name_en: 'Geumgang-ri',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '강원대학교',
+      lat: 38.0866,
+      lng: 128.6486,
+      stayAdmin: {
+        neighbourhood: '금강리',
+        city: '양양군',
+        state: '강원특별자치도',
+      },
+    },
+    expectPrimaryKeyword: /춘천/,
+    expectKeyword: /춘천/,
+    rejectPrimaryKeyword: /양양|금강|Geumgang|강원대학교/,
+    rejectCityHint: /양양|금강|Geumgang/,
+  },
+  /**
    * 지구본 검색「종각역」— 1차 종로 NEIGHBORHOOD, 서울 CITY는 래더 뒤.
    * 역명을 1차로 두면 MRT CITY 미매칭·빈 목록.
    */
@@ -473,6 +504,36 @@ async function main() {
     assert(queryLooksLikeStayPoint('종각역, 대한민국'), 'queryLooksLikeStayPoint 종각역, 대한민국');
     assert(queryLooksLikeStayPoint('종각, 대한민국'), 'queryLooksLikeStayPoint 종각, 대한민국');
     assert(!queryLooksLikeStayPoint('서울'), '서울 is not stay point query');
+    assert(isMrtStayPointLabel('강원대학교'), '강원대학교 is stay point');
+    assert(queryLooksLikeStayPoint('강원대학교'), 'queryLooksLikeStayPoint 강원대학교');
+    assert(isUniversityStayQuery('강원대학교'), 'isUniversityStayQuery 강원대학교');
+    assert(!isUniversityStayQuery('강원대학교 동해수련원'), '수련원 query is not campus alias');
+    const kangwonAlias = resolveKoUniversityAlias('강원대학교');
+    assert(kangwonAlias?.city === '춘천', `강원대 alias city (got ${kangwonAlias?.city})`);
+    assert(kangwonAlias?.lat === 37.8695, '강원대 alias Chuncheon lat');
+    assert(!resolveKoUniversityAlias('강원대학교 동해수련원'), '수련원 keeps no campus alias');
+    assert(!resolveKoUniversityAlias('강원대학교 삼척캠퍼스'), '삼척 keeps no Chuncheon alias');
+    const yangyangHit = {
+      name: '강원대학교',
+      name_en: 'Geumgang-ri',
+      lat: 38.0866,
+      lng: 128.6486,
+      stayAdmin: { neighbourhood: '금강리', city: '양양군' },
+    };
+    const chuncheonHit = {
+      name: '강원대학교 춘천캠퍼스',
+      name_en: 'Kangwon National University',
+      lat: 37.8695,
+      lng: 127.744,
+      stayAdmin: { city: '춘천시' },
+    };
+    assert(
+      universitySearchHitPenalty('강원대학교', yangyangHit) >
+        universitySearchHitPenalty('강원대학교', chuncheonHit),
+      'Yangyang training center ranks below Chuncheon campus',
+    );
+    const rankedUni = rankUniversitySearchHits('강원대학교', [yangyangHit, chuncheonHit]);
+    assert(rankedUni[0] === chuncheonHit, 'rankUniversitySearchHits prefers Chuncheon');
     const jonggakAlias = resolveKoStationAlias('종각');
     assert(jonggakAlias?.station === '종각역', `종각 alias station (got ${jonggakAlias?.station})`);
     assert(jonggakAlias?.district === '종로', `종각 alias district (got ${jonggakAlias?.district})`);
@@ -517,6 +578,11 @@ async function main() {
     assert(
       jonggakAliases.includes('resolveKoStationAlias') && jonggakAliases.includes('add(stationAlias.station)'),
       'geocoding expands station alias to 종각역',
+    );
+    assert(
+      jonggakAliases.includes('resolveKoUniversityAlias') &&
+        jonggakAliases.includes('universityAlias.campus'),
+      'geocoding expands university alias to 춘천캠퍼스',
     );
     console.log('OK  stay-point labels');
   } catch (err) {
@@ -681,6 +747,52 @@ async function main() {
     Math.abs(yeonsinnaeOrigin?.lat - 37.6191) < 1e-6 &&
       Math.abs(yeonsinnaeOrigin?.lng - 126.921) < 1e-6,
     `연신내역 keeps station coords not 종각 (got ${yeonsinnaeOrigin?.lat},${yeonsinnaeOrigin?.lng})`,
+  );
+  const kangwonYangyangOrigin = resolveMrtStayOrigin({
+    name: '강원대학교',
+    name_en: 'Geumgang-ri',
+    originalQuery: '강원대학교',
+    lat: 38.0866,
+    lng: 128.6486,
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(kangwonYangyangOrigin?.lat - 37.8695) < 1e-6 &&
+      Math.abs(kangwonYangyangOrigin?.lng - 127.744) < 1e-6,
+    `강원대학교 Yangyang pin snaps to Chuncheon (got ${kangwonYangyangOrigin?.lat},${kangwonYangyangOrigin?.lng})`,
+  );
+  const kangwonCampusOrigin = resolveMrtStayOrigin({
+    name: '강원대학교',
+    originalQuery: '강원대학교',
+    lat: 37.8701,
+    lng: 127.745,
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(kangwonCampusOrigin?.lat - 37.8701) < 1e-6,
+    `Chuncheon campus pin keeps own coords (got ${kangwonCampusOrigin?.lat})`,
+  );
+  const kangwonTrainingOrigin = resolveMrtStayOrigin({
+    name: '강원대학교 동해수련원',
+    originalQuery: '강원대학교 동해수련원',
+    lat: 38.0866,
+    lng: 128.6486,
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(kangwonTrainingOrigin?.lat - 38.0866) < 1e-6,
+    `동해수련원 query keeps Yangyang coords (got ${kangwonTrainingOrigin?.lat})`,
+  );
+  const kangwonTrainingNamedUniv = resolveMrtStayOrigin({
+    name: '강원대학교',
+    originalQuery: '강원대학교 동해수련원',
+    lat: 38.0866,
+    lng: 128.6486,
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(kangwonTrainingNamedUniv?.lat - 38.0866) < 1e-6,
+    `수련원 originalQuery does not snap even if name is 강원대학교 (got ${kangwonTrainingNamedUniv?.lat})`,
   );
   const ranked = attachMrtStayDistances(
     [
