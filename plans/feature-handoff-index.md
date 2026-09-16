@@ -18,12 +18,12 @@
 
 | | |
 |--|--|
-| **상태** | **#12 강원대 장소카드** · tip `428e9020` · PR [#271](https://github.com/catgeot/Days/pull/271) · **사람 Preview** |
+| **상태** | **#13 동해수련원 검색** · tip `46118fbe` · PR [#271](https://github.com/catgeot/Days/pull/271) · **사람 Preview** |
 | **브랜치** | `cursor/kangwon-univ-stay-e48d` |
 | **플랜** | [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) **§9** |
 | **일지** | [`2026-09-16-project-log.md`](./2026-09-16-project-log.md) |
-| **Preview** | git Preview `/` — 검색「강원대학교」카드 부제 금강리 아님 · 숙소 춘천 |
-| **소유** | `mrtStayQuery.js` `resolveUniversitySearchHits` · `mapboxSearchBox.js` · `geocoding.js` · `useHomeHandlers.js` |
+| **Preview** | git Preview `/` — 「강원대학교」춘천 · 「강원대학교 동해수련원」양yang 1장 |
+| **소유** | `mrtStayQuery.js` `resolveKoUniversitySatelliteAlias` · `useHomeHandlers.js` · `geocoding.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:mrt-stay` PASS · `npx vite build` PASS |
 
@@ -36,7 +36,7 @@
 @plans/korea-station-stay-plan.md
 브랜치 cursor/kangwon-univ-stay-e48d · PR #271 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 검색「강원대학교」장소카드 부제가 금강리/Geumgang-ri가 아니고 Kangwon National University·춘천인지. 숙소는 춘천. 둘 다 OK면 PR #271 병합. 「강원대학교 동해수련원」은 양양 유지.
+작업: Preview「강원대학교」춘천·카드 Kangwon National University 확인. 「강원대학교 동해수련원」→ 동해수련원 1장(양yang)·재검색 스피너 없음. 둘 다 OK면 PR #271 병합.
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```
 

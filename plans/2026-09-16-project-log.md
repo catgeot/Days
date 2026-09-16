@@ -2,6 +2,17 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 종각역 숙소 #13 — 동해수련원 검색 오탐·로딩 (Cloud)
+
+- **세션** `종각역 숙소 #13, Preview OK면 PR 병합`
+- **브랜치** `cursor/kangwon-univ-stay-e48d` · tip `46118fbe` · PR [#271](https://github.com/catgeot/Days/pull/271)
+- **원인**: 「강원대학교 동해수련원」지오코딩 실패 → search_dictionary 무드 캐시·AI가 평창캠퍼스·망상해수욕장 제안. 재검색은 캐시 verify·AI confirm에 오래 걸려 스피너만 보임.
+- **완료**: `resolveKoUniversitySatelliteAlias`(양yang 38.0866) 즉시 핀 · smart search AI/캐시 스킵 · 수련원 시설 쿼리. **PR 미병합**.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npm run build` PASS
+- **Preview** https://days-git-cursor-kangwon-univ-stay-e48d-catgeots-projects.vercel.app/
+- **QA**: 검색「강원대학교 동해수련원」→ 동해수련원 1장(양yang)·재검색 스피너 없음 · 「강원대학교」춘천 유지.
+- **다음**: Preview OK면 PR #271 병합
+
 ## 종각역 숙소 #12 — 강원대 장소카드 금강리 (Cloud)
 
 - **세션** `종각역 숙소 #12, Preview OK면 PR 병합`
