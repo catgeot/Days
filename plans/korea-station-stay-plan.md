@@ -100,6 +100,6 @@
 @plans/korea-station-stay-plan.md
 브랜치 cursor/kangwon-univ-stay-e48d · PR #271 · Preview /
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview「강원대학교」춘천·카드 Kangwon National University 확인. 「강원대학교 동해수련원」→ 동해수련원 1장(양yang)·재검색 스피너 없음. 둘 다 OK면 PR #271 병합.
+작업: Preview「강원대학교」춘천·카드 Kangwon National University 확인. 「강원대학교 동해수련원」→ 양양 동해수련원 바로 핀(평창·망상 리스트·재검색 스피너 없음). 둘 다 OK면 PR #271 병합.
 검증: npm run smoke:mrt-stay PASS · vite build PASS
 ```
