@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 53,
-  sessionPhase: '여수 탐색홈 빈 썸네일',
+  sessionNo: 54,
+  sessionPhase: '예천 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-palgyeong-use-54-yecheon-overlays',
+    session: '팔경 활용 #54, 예천 결손 오버레이',
+    title: '예천8경 금당실·곤충생태원·석송령 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 예천8경 결손 3건(금당실 전통마을과 송림·예천곤충생태원·석송령)의 공공 공식 팩트 개요·주소·예천군 문화관광·국가유산청 공식 사진을 보강했습니다. 금당실은 용문면 금당실길 52-4 십승지 마을·천연기념물 469호 송림(3경), 곤충생태원은 효자면 은풍로 1045 곤충연구소·무당벌레 멀티체험관(6경), 석송령은 감천면 석송로 321-6 천연기념물 294호 부자나무(7경)입니다. 초간정·하회·선몽대 송림·함평엑스포·정이품송·금당실 송림과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yecheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T09:10:00.000Z',
+  },
   {
     id: '2026-09-16-palgyeong-use-53-yeosu-explore-thumbs',
     session: '팔경 활용 #53, 여수 탐색홈 빈 썸네일',

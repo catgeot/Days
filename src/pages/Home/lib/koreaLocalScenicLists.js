@@ -1420,6 +1420,20 @@ const YS_JINNAM_3 = `${YS_TOUR}/contents/31/jinnam_5.jpg`;
 const YS_BRIDGE = `${YS_TOUR}/contents/112/yisunsin2.jpg`;
 const YS_BRIDGE_2 = `${YS_TOUR}/contents/112/yisunsin1.jpg`;
 const YS_BRIDGE_3 = `${YS_TOUR}/contents/112/yisunsin3.jpg`;
+const YC_TOUR = 'https://www.ycg.kr/images/open.content/tour/travel/yecheon';
+const YC_GEUM = `${YC_TOUR}/geumdangsil/img.png`;
+const YC_GEUM_2 =
+  'https://www.khs.go.kr/unisearch/images/natural_monument/2021041210543503.jpg';
+const YC_GEUM_3 =
+  'https://www.khs.go.kr/unisearch/images/natural_monument/2021041210543500.jpg';
+const YC_INSECT = `${YC_TOUR}/insect/img.png`;
+const YC_INSECT_2 = 'https://www.ycg.kr/images/open.content/insect/main/insect-visual.jpg';
+const YC_INSECT_3 = 'https://www.ycg.kr/images/open.content/insect/main/insect-visual01.jpg';
+const YC_SEOK = `${YC_TOUR}/seogsonglyeong/img.png`;
+const YC_SEOK_2 =
+  'https://www.khs.go.kr/unisearch/images/natural_monument/2021041210341002.jpg';
+const YC_SEOK_3 =
+  'https://www.khs.go.kr/unisearch/images/natural_monument/2021041210341001.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -2999,6 +3013,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 여수시 묘도동 (이순신대교·여수 전망대)',
     YS_BRIDGE,
     [YS_BRIDGE_2, YS_BRIDGE_3],
+  ),
+  'local-scenic:yecheon-palgyeong:금당실전통마을과송림': localScenicPhotoOverlay(
+    '예천8경 3경 금당실 전통마을과 송림은 용문면 상금곡리입니다. 예천군 문화관광 8경은 조선시대 전통가옥을 간직한 마을이며, 전쟁이나 천재지변에도 안심할 수 있는 땅으로 조선 태조가 도읍지로 정하려 했던 십승지 가운데 하나라고 적습니다. 주소는 금당실길 52-4입니다. 청동기 고인돌·금곡서원·추원재 및 사당·반송재 고택·사괴당 고택과 99칸 저택터가 있고, 마을 안길은 돌담길입니다. 마을 서북쪽 송림은 천연기념물 제469호 예천 금당실 송림으로, 오미봉 아래에서 용문초등학교 앞까지 약 800m 소나무 숲이며 수해·북서풍을 막기 위해 조성했습니다. 같은 면 죽림리 4경 초간정 및 원림·5경 용문사와 다른 상금곡리 마을이며, 7경 석송령(감천면 한 그루 반송)·8경 선몽대 송림(호명읍 백송리)·안동 하회마을·영주 무섬마을과 다른 자리입니다. 사진은 예천군 문화관광 8경 금당실 고택·국가유산청 금당실 송림 공식 사진입니다.',
+    '경상북도 예천군 용문면 금당실길 52-4 (상금곡리 금당실 마을)',
+    YC_GEUM,
+    [YC_GEUM_2, YC_GEUM_3],
+  ),
+  'local-scenic:yecheon-palgyeong:예천곤충생태원': localScenicPhotoOverlay(
+    '예천8경 6경 예천곤충생태원은 효자면 고항리입니다. 예천군 문화관광 8경은 국내외 곤충을 보고 만질 수 있는 생태체험관이며, 예천곤충바이오엑스포를 2007년(62만)·2012년(85만)·2016년(62만) 열어 전국 곤충생태체험 명소가 됐다고 적습니다. 주소는 은풍로 1045입니다. 예천군곤충연구소·곤충생태원이며 환경부 지정 생물다양성 관리기관입니다. 곤충생태체험관(3D영상관·학습관·생태관·자원관)과 무당벌레 모양 멀티체험관, 야외 나비 터널·동굴곤충체험관·전망대·모노레일이 있습니다. 함평엑스포공원·함평나비대축제·예천곤충축제(계절 행사)와 다른 효자면 상설 생태원이며, 도로명 은풍로는 은풍면이 아니라 효자면입니다. 사진은 예천군 문화관광 8경 생태원 항공·곤충연구소 야외 전경·무당벌레 멀티체험관 공식 사진입니다.',
+    '경상북도 예천군 효자면 은풍로 1045 (고항리 577 예천군곤충연구소·곤충생태원)',
+    YC_INSECT,
+    [YC_INSECT_2, YC_INSECT_3],
+  ),
+  'local-scenic:yecheon-palgyeong:석송령': localScenicPhotoOverlay(
+    '예천8경 7경 석송령은 감천면 천향리 석평마을입니다. 예천군 문화관광 8경은 천연기념물로 지정된 600년이 넘는 반송이며 부귀·장수·상록을 상징하고, 수고 10m·가슴높이 둘레 4.2m·그늘 약 1,000㎡라고 적습니다. 주소는 석송로 321-6(천향리 804)입니다. 천연기념물 제294호 예천 천향리 석송령입니다. 1930년경 마을 사람 이수목이 영험 있는 나무라는 뜻으로 이름을 짓고 토지 3,937㎡를 등기해 주어, 세금을 내고 관내 학생에게 장학금을 주는 부자나무가 됐습니다. 정월 대보름 동제를 지내는 동신목입니다. 3경 금당실 송림(용문면 마을숲)·예천 금남리 황목근·보은 속리 정이품송과 다른 감천면 한 그루입니다. 사진은 예천군 문화관광 8경 석송령 전경·국가유산청 석송령 공식 사진입니다.',
+    '경상북도 예천군 감천면 석송로 321-6 (천향리 804 석평마을 석송령)',
+    YC_SEOK,
+    [YC_SEOK_2, YC_SEOK_3],
   ),
 };
 
