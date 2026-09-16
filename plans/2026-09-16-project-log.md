@@ -2,6 +2,16 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 팔경 활용 #53 — 여수10경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #53, 여수 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `e4c96650` · PR [#268](https://github.com/catgeot/Days/pull/268)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 여수10경 결손 3건(여수세계박람회장·여수 밤바다와 산단 야경·여수해상케이블카). 박람회장은 2026 섬박람회·함평엑스포가 아니라 덕충동 박람회길 1 2012 엑스포장(빅오·스카이타워), 밤바다·산단은 광양만 야경이 아니라 종화동 해양공원·돌산공원과 화치동 국가산단전망대(7경), 케이블카는 목포·사천·송도가 아니라 돌산로 3600-1~오동도로 116 돌산~자산 1.5km(9경). 여수 순수 누락 3→0.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=yeosu`
+- **잔여**: 사진/개요 순수 누락 **69**/876. 다음 허브 **예천8경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #52 — 대구12경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #52, 대구 결손 오버레이`
