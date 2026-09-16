@@ -3,6 +3,7 @@
  * Mapbox Search Box 보강 전에 품질 앵커로 사용.
  */
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
+import { rankStayPointDisambiguationCandidates } from '../../../utils/mrtStayQuery.js';
 
 const KIND_LABELS = {
   beach: '해변',
@@ -323,6 +324,6 @@ export function makeDisambiguationResult(query, candidates, { title } = {}) {
     __disambiguation: true,
     query: String(query || '').trim(),
     title: title || `'${query}' 검색 결과 → 원하는 장소를 선택하세요`,
-    candidates: candidates.filter(Boolean),
+    candidates: rankStayPointDisambiguationCandidates(query, candidates),
   };
 }

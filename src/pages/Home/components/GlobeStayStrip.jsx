@@ -71,6 +71,7 @@ import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
   attachMrtStayDistances,
   buildNaverNearbyStayMapUrl,
+  resolveMrtStayOrigin,
   stayDistanceRank,
 } from '../../../utils/mrtStayDistance';
 import {
@@ -1358,41 +1359,47 @@ export default function GlobeStayStrip({
     (async () => {
       const locForFetch = await withStayAdmin(location);
       if (cancelled) return;
+      const applyResult = (result) => {
+        if (cancelled) return;
+        fetchedKeyRef.current = fetchKey;
+        if (result?.checkIn && result?.checkOut) {
+          const synced = normalizeMrtStayDates(result.checkIn, result.checkOut);
+          setStayDates((prev) =>
+            prev.checkIn === synced.checkIn && prev.checkOut === synced.checkOut
+              ? prev
+              : synced
+          );
+        }
+        if (result?.items?.length) {
+          setItems(result.items);
+          setVisibleCount(MRT_STAY_PAGE_SIZE);
+          setMrtListMeta({
+            regionId: result.region?.regionId ?? null,
+            keyword: result.usedKeyword || name || '',
+            isDomestic: isMrtDomesticLocation(locForFetch),
+            moreWithDateChange: Boolean(result.moreWithDateChange),
+            listedCount: Number(result.listedCount) || result.items.length,
+            bookableCount:
+              Number(result.bookableCount) >= 0
+                ? Number(result.bookableCount)
+                : result.items.length,
+          });
+          setStatus('ready');
+        } else {
+          setItems(null);
+          setMrtListMeta(null);
+          setVisibleCount(MRT_STAY_PAGE_SIZE);
+          setStatus(result == null ? 'error' : 'empty');
+        }
+      };
       const result = await fetchMrtStaysForLocation(locForFetch, {
         ...stayDates,
         ...guests,
+        onPartialResult: applyResult,
       });
       if (cancelled) return;
       fetchedKeyRef.current = fetchKey;
-      if (result?.checkIn && result?.checkOut) {
-        const synced = normalizeMrtStayDates(result.checkIn, result.checkOut);
-        setStayDates((prev) =>
-          prev.checkIn === synced.checkIn && prev.checkOut === synced.checkOut
-            ? prev
-            : synced
-        );
-      }
-      if (result?.items?.length) {
-        setItems(result.items);
-        setVisibleCount(MRT_STAY_PAGE_SIZE);
-        setMrtListMeta({
-          regionId: result.region?.regionId ?? null,
-          keyword: result.usedKeyword || name || '',
-          isDomestic: isMrtDomesticLocation(locForFetch),
-          moreWithDateChange: Boolean(result.moreWithDateChange),
-          listedCount: Number(result.listedCount) || result.items.length,
-          bookableCount:
-            Number(result.bookableCount) >= 0
-              ? Number(result.bookableCount)
-              : result.items.length,
-        });
-        setStatus('ready');
-      } else {
-        setItems(null);
-        setMrtListMeta(null);
-        setVisibleCount(MRT_STAY_PAGE_SIZE);
-        setStatus(result == null ? 'error' : 'empty');
-      }
+      applyResult(result);
     })();
 
     return () => {
@@ -1433,23 +1440,25 @@ export default function GlobeStayStrip({
     setExpanded(false);
   }, []);
 
+  const stayOrigin = useMemo(
+    () => resolveMrtStayOrigin(location, name),
+    [location, name],
+  );
+
   const rankedItems = useMemo(
-    () =>
-      attachMrtStayDistances(items, {
-        lat: location?.lat,
-        lng: location?.lng,
-        label: name,
-      }),
-    [items, location?.lat, location?.lng, name],
+    () => attachMrtStayDistances(items, stayOrigin),
+    [items, stayOrigin],
   );
 
   const naverNearbyStayUrl = useMemo(() => {
     if (!isMrtDomesticLocation(location)) return null;
-    const lat = Number(location?.lat);
-    const lng = Number(location?.lng);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-    return buildNaverNearbyStayMapUrl({ lat, lng, query: name });
-  }, [location, name]);
+    if (!stayOrigin) return null;
+    return buildNaverNearbyStayMapUrl({
+      lat: stayOrigin.lat,
+      lng: stayOrigin.lng,
+      query: name,
+    });
+  }, [location, name, stayOrigin]);
 
   if (!eligible) {
     if (typeof children === 'function') {

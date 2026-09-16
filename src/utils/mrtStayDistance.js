@@ -3,6 +3,8 @@
  * GlobeStayStrip 카드 뱃지·추천순 거리 가중 · 순수 함수(스모크 가능).
  */
 
+import { resolveKoStationAlias } from './mrtStayQuery.js';
+
 export const STAY_GEOCODE_MAX_KM = 8;
 
 export function simplifyStayGeocodeQuery(name) {
@@ -82,6 +84,23 @@ function isPlausibleWgs84(lat, lng) {
   return true;
 }
 
+function pairFromLatLng(la, ln) {
+  const lat = finiteCoord(la);
+  const lng = finiteCoord(ln);
+  if (isPlausibleWgs84(lat, lng)) return { lat, lng };
+  if (lat != null && lng != null && isPlausibleWgs84(lng, lat)) return { lat: lng, lng: lat };
+  return null;
+}
+
+function pushLngLatArray(pairs, coords) {
+  if (!Array.isArray(coords) || coords.length < 2) return;
+  if (Array.isArray(coords[0])) {
+    pushLngLatArray(pairs, coords[0]);
+    return;
+  }
+  pairs.push([coords[1], coords[0]]);
+}
+
 /**
  * MRT search item · Edge 매핑분에서 위·경도.
  * @param {Record<string, unknown> | null | undefined} item
@@ -90,7 +109,7 @@ function isPlausibleWgs84(lat, lng) {
 export function parseStayCoordPair(item) {
   if (!item || typeof item !== 'object') return null;
   const nested = [item.location, item.geo, item.coordinate, item.coordinates, item.gps, item.position]
-    .filter((v) => v && typeof v === 'object');
+    .filter((v) => v && typeof v === 'object' && !Array.isArray(v));
   const pairs = [
     [item.lat, item.lng],
     [item.latitude, item.longitude],
@@ -100,6 +119,12 @@ export function parseStayCoordPair(item) {
     [item.locationLat, item.locationLng],
     [item.y, item.x],
   ];
+  if (item.center && typeof item.center === 'object' && !Array.isArray(item.center)) {
+    pairs.push([item.center.lat, item.center.lng], [item.center.latitude, item.center.longitude]);
+  }
+  pushLngLatArray(pairs, item.center);
+  pushLngLatArray(pairs, item.coordinates);
+  pushLngLatArray(pairs, item.geometry?.coordinates);
   for (const obj of nested) {
     pairs.push(
       [obj.lat, obj.lng],
@@ -107,13 +132,40 @@ export function parseStayCoordPair(item) {
       [obj.lat, obj.lon],
       [obj.y, obj.x],
     );
+    pushLngLatArray(pairs, obj.coordinates);
   }
   for (const [la, ln] of pairs) {
-    const lat = finiteCoord(la);
-    const lng = finiteCoord(ln);
-    if (isPlausibleWgs84(lat, lng)) return { lat, lng };
+    const hit = pairFromLatLng(la, ln);
+    if (hit) return hit;
   }
   return null;
+}
+
+/**
+ * 숙소 거리·Photon 원점. 종각역 길·동 카드처럼 좌표가 없거나 역에서 8km 밖이면 역 SSOT.
+ * @param {object | null | undefined} location
+ * @param {string} [label]
+ * @returns {{ lat: number, lng: number, label: string } | null}
+ */
+export function resolveMrtStayOrigin(location, label = '') {
+  const alias =
+    resolveKoStationAlias(location?.originalQuery) ||
+    resolveKoStationAlias(location?.name) ||
+    resolveKoStationAlias(location?.name_ko);
+  const parsed = parseStayCoordPair(location);
+  const display = String(
+    label || location?.name || location?.name_ko || alias?.station || '',
+  ).trim();
+  const aliasLat = finiteCoord(alias?.lat);
+  const aliasLng = finiteCoord(alias?.lng);
+  if (isPlausibleWgs84(aliasLat, aliasLng)) {
+    if (!parsed) return { lat: aliasLat, lng: aliasLng, label: display || alias.station };
+    if (haversineKm(parsed.lat, parsed.lng, aliasLat, aliasLng) > STAY_GEOCODE_MAX_KM) {
+      return { lat: aliasLat, lng: aliasLng, label: display || alias.station };
+    }
+  }
+  if (!parsed) return null;
+  return { ...parsed, label: display };
 }
 
 /** 350m · 1.1km · 2km */

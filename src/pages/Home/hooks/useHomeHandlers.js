@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
-import { queryLooksLikeStayPoint } from '../../../utils/mrtStayQuery.js';
+import { isStreetishStayLabel, queryLooksLikeStayPoint } from '../../../utils/mrtStayQuery.js';
 import {
   isLikelyMoodQuery,
   shouldSkipGeocodeForMood as shouldSkipGeocodeForMoodIntent,
@@ -1187,7 +1187,7 @@ export function useHomeHandlers({
                     .replace(/\s+/g, '') === geoKey,
               );
               if (!sameAsGeocode && !seenNames.has(geoKey)) {
-                withLatin.unshift({
+                const geoCard = {
                   id: `geocode-${coords.lat}-${coords.lng}`,
                   kind: 'city',
                   badge: '도시',
@@ -1200,7 +1200,15 @@ export function useHomeHandlers({
                   source: 'geocode',
                   uiPlace: true,
                   desc: `${geoName} (${coords.country || 'Explore'})`,
-                });
+                };
+                if (
+                  queryLooksLikeStayPoint(query) &&
+                  isStreetishStayLabel(geoCard.name_en || geoCard.name)
+                ) {
+                  withLatin.push(geoCard);
+                } else {
+                  withLatin.unshift(geoCard);
+                }
               }
               return makeDisambiguationResult(query, withLatin.slice(0, 8), {
                 title: `'${query}' → 원하는 장소를 선택하세요`,
