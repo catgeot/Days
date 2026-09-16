@@ -1434,6 +1434,13 @@ const YC_SEOK_2 =
   'https://www.khs.go.kr/unisearch/images/natural_monument/2021041210341002.jpg';
 const YC_SEOK_3 =
   'https://www.khs.go.kr/unisearch/images/natural_monument/2021041210341001.jpg';
+// 예천 검색 신라식물원 — Tour firstimage·detailImage·searchPhoto 없음. 공식 홈페이지는 HTTP·자가서명 TLS라 Wayback HTTPS.
+const YC_SILLA =
+  'https://web.archive.org/web/20250714195611im_/http://sinrafarm.com/img/main_scroll_img3.jpg';
+const YC_SILLA_2 =
+  'https://web.archive.org/web/20250713195244im_/http://sinrafarm.com/img/main_scroll_img2.jpg';
+const YC_SILLA_3 =
+  'https://web.archive.org/web/20250714014653im_/http://sinrafarm.com/img/main_scroll_img1.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3081,6 +3088,8 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   125426: localScenicThumbOverlay(GH_FOREST, [GH_FOREST_2, GH_FOREST_3]),
   // 고흥 검색 영남용바위 — 10경 아님. TourAPI firstimage 없음. JSON contentId 기입 아님.
   2782706: localScenicThumbOverlay(GH_YONG, [GH_YONG_2, GH_YONG_3]),
+  // 예천 검색 신라식물원 — TourAPI firstimage·detailImage·searchPhoto 없음. JSON contentId 기입 아님.
+  1910438: localScenicThumbOverlay(YC_SILLA, [YC_SILLA_2, YC_SILLA_3]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

@@ -3413,6 +3413,42 @@ assert.ok(
   '예천 검색 팔경 석송령 개요',
 );
 
+const ycSillaThumb = lookupLocalScenicPhotoByContentId('1910438');
+assert.ok(
+  ycSillaThumb?.imageUrl?.includes('main_scroll_img3.jpg'),
+  '예천 신라식물원 Tour 빈 썸네일 overlay 1910438',
+);
+assert.ok(
+  ycSillaThumb?.imageUrl?.includes('web.archive.org'),
+  '예천 신라식물원 썸네일은 공식 홈페이지 전경 Wayback HTTPS',
+);
+assert.ok(
+  !ycSillaThumb?.imageUrl?.includes('/insect/'),
+  '예천 신라식물원 썸네일 ≠ 곤충생태원',
+);
+assert.notEqual(
+  ycSillaThumb?.imageUrl,
+  ycInsect?.imageUrl,
+  '신라식물원 썸네일 ≠ 예천곤충생태원',
+);
+const ycSillaSearch = resolveSearchScenicMedia({
+  name: '신라식물원',
+  contentId: '1910438',
+});
+assert.ok(
+  ycSillaSearch.imageUrl?.includes('main_scroll_img3.jpg'),
+  '명승홈 검색 Tour 행 신라식물원 썸네일',
+);
+assert.equal(ycSillaSearch.contentId, '1910438', '명승홈 검색 신라식물원 contentId');
+assert.ok(
+  ycSillaThumb.galleryUrls?.some((u) => String(u).includes('main_scroll_img2.jpg')),
+  '예천 신라식물원 갤러리 정원 전경',
+);
+assert.ok(
+  ycSillaThumb.galleryUrls?.some((u) => String(u).includes('main_scroll_img1.jpg')),
+  '예천 신라식물원 갤러리 입구 간판',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

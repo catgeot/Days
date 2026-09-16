@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 54,
-  sessionPhase: '예천 결손 오버레이',
+  sessionPhase: '예천 검색 빈 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-palgyeong-use-54-yecheon-silla-thumb',
+    session: '팔경 활용 #54, 예천 검색 빈 썸네일',
+    title: '예천 검색 신라식물원 빈 썸네일',
+    detail:
+      '명승홈 검색「예천」관광지 행 신라식물원(1910438, 감천면 충효로 1752)은 TourAPI firstimage·detailImage·searchPhoto가 모두 비어 랜드마크 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID에 신라식물원 공식 홈페이지 정원·마당·입구 간판 전경을 연결했습니다. 예천8경 곤충생태원 곤충식물원·거제식물원과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「예천」신라식물원 행.',
+    at: '2026-09-16T12:50:00.000Z',
+  },
   {
     id: '2026-09-16-palgyeong-use-54-yecheon-overlays',
     session: '팔경 활용 #54, 예천 결손 오버레이',
