@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 54,
-  sessionPhase: '예천 용궁시장 사진',
+  sessionNo: 55,
+  sessionPhase: '인천 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic',
+  previewPath: '/korea/theme/scenic?hub=incheon',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-palgyeong-use-55-incheon-overlays',
+    session: '팔경 활용 #55, 인천 결손 오버레이',
+    title: '인천9경 아라온·씨사이드파크·강화읍 원도심 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 인천9경 결손 3건(인천 계양 아라온·인천 영종 씨사이드파크·인천 강화읍 원도심)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 아라온은 계양구 장기동 109-1 황어광장~수향원 빛의 거리(4경), 씨사이드파크는 중구 구읍로 75 레일바이크 5.6km(6경), 강화읍 원도심은 용흥궁~고려궁지 도보해설 코스(7경)입니다. 아라폭포·을왕리·전등사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=incheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T19:15:00.000Z',
+  },
   {
     id: '2026-09-16-palgyeong-use-54-yonggung-market-photo',
     session: '팔경 활용 #54, 예천 용궁시장 사진',
