@@ -174,6 +174,16 @@ assert(
     guryeArboretum.galleryUrls.length >= 4,
   `gurye-arboretum galleryUrls ≥4 (got ${guryeArboretum?.galleryUrls?.length || 0})`,
 );
+const yonggungMarket = byId.get('yonggung-market');
+assert(Boolean(yonggungMarket), 'yonggung-market present');
+assert(
+  String(yonggungMarket?.imageUrl || '').includes('1n2d.trip08.png'),
+  'yonggung-market uses 예천군 용궁시장 공식 사진',
+);
+assert(
+  !String(yonggungMarket?.imageUrl || '').includes('3542707'),
+  'yonggung-market thumbnail ≠ 회룡포 3542707',
+);
 const hampyeongExpo = byId.get('hampyeong-expo-park');
 const hampyeongEco = byId.get('hampyeong-eco-park');
 assert(Boolean(hampyeongExpo), 'hampyeong-expo-park present');

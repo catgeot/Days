@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 54,
-  sessionPhase: '예천 검색 빈 썸네일',
+  sessionPhase: '예천 용궁시장 사진',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-palgyeong-use-54-yonggung-market-photo',
+    session: '팔경 활용 #54, 예천 용궁시장 사진',
+    title: '용궁시장 회룡포 사진 교체',
+    detail:
+      '명승 상세 용궁시장(yonggung-market)이 회룡포(Tour 126734) 내성천 물돌이 항공을 쓰고 있었습니다. JSON contentId 기입 없이 예천군 문화관광 TV따라 여행 용궁시장·용궁순대축제 공식 사진으로 바꿨습니다. 같은 면 회룡포 전망대·뿅뿅다리와 다른 읍부리 장터입니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「예천」용궁시장 상세.',
+    at: '2026-09-16T13:15:00.000Z',
+  },
   {
     id: '2026-09-16-palgyeong-use-54-yecheon-silla-thumb',
     session: '팔경 활용 #54, 예천 검색 빈 썸네일',

@@ -477,7 +477,8 @@ function mergeContentIdImageMap(prev, entries) {
 
 function overlayLocalScenicTourMeta(spot, extra) {
   if (!spot) return spot;
-  const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+  const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
+  const overlayThumb = overlay?.imageUrl;
   if (!extra && !overlayThumb) return spot;
   const contentId = String(spot.contentId || extra?.contentId || '').trim();
   const firstImage =
@@ -494,33 +495,35 @@ function overlayLocalScenicTourMeta(spot, extra) {
     cat3: spot.cat3 || extra?.cat3 || null,
     firstImage: firstImage || spot.firstImage || null,
     imageUrl: overlayThumb || spot.imageUrl || firstImage || null,
-    galleryUrls: spot.galleryUrls || extra?.galleryUrls || null,
-    overview: spot.overview || extra?.overview || null,
-    addr1: spot.addr1 || extra?.addr1 || null,
+    galleryUrls: overlay?.galleryUrls || spot.galleryUrls || extra?.galleryUrls || null,
+    overview: overlay?.overview || spot.overview || extra?.overview || null,
+    addr1: overlay?.addr1 || spot.addr1 || extra?.addr1 || null,
   };
 }
 
 function applyLocalScenicContentIdThumb(spot) {
   if (!spot) return spot;
-  const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+  const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
+  const overlayThumb = overlay?.imageUrl;
   if (overlayThumb) {
     return {
       ...spot,
       firstImage: overlayThumb,
       imageUrl: overlayThumb,
+      galleryUrls: overlay?.galleryUrls || spot.galleryUrls,
     };
   }
   const hasThumb = String(spot.firstImage || spot.imageUrl || '').trim();
   if (hasThumb) return spot;
   const contentId = String(spot.contentId || spot.id || '').trim();
-  const overlay = lookupLocalScenicPhotoByContentId(contentId);
-  const url = overlay?.imageUrl;
+  const byContentId = lookupLocalScenicPhotoByContentId(contentId);
+  const url = byContentId?.imageUrl;
   if (!url) return spot;
   return {
     ...spot,
     firstImage: url,
     imageUrl: url,
-    galleryUrls: overlay.galleryUrls || spot.galleryUrls,
+    galleryUrls: byContentId.galleryUrls || spot.galleryUrls,
   };
 }
 
@@ -1062,17 +1065,19 @@ export default function KoreaThemeScenicPage() {
       curatedSpots.map((s) => s.contentId),
     );
     return curatedSpots.map((spot) => {
+      const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
       const firstImage = resolveLocalScenicRowFirstImage(
         spot,
         curatedImageByContentId,
         peeked,
       );
-      if (!firstImage) return spot;
-      const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+      if (!firstImage && !overlay?.imageUrl) return spot;
+      const overlayThumb = overlay?.imageUrl;
       return {
         ...spot,
-        firstImage,
+        firstImage: overlayThumb || firstImage,
         imageUrl: overlayThumb || spot.imageUrl || firstImage,
+        galleryUrls: overlay?.galleryUrls || spot.galleryUrls,
       };
     });
   }, [curatedSpots, curatedImageByContentId]);
@@ -1110,18 +1115,20 @@ export default function KoreaThemeScenicPage() {
     );
     return curatedSpotsWithLocalScenic.map((spot) => {
       const extra = localScenicTourBySpotId.get(String(spot.id || ''));
+      const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
       const firstImage = resolveLocalScenicRowFirstImage(
         spot,
         curatedImageByContentId,
         peeked,
         extra,
       );
-      if (!firstImage) return spot;
-      const overlayThumb = lookupLocalScenicMemberOverlayForSpot(spot)?.imageUrl;
+      if (!firstImage && !overlay?.imageUrl) return spot;
+      const overlayThumb = overlay?.imageUrl;
       return {
         ...spot,
-        firstImage,
+        firstImage: overlayThumb || firstImage,
         imageUrl: overlayThumb || spot.imageUrl || firstImage,
+        galleryUrls: overlay?.galleryUrls || spot.galleryUrls,
       };
     });
   }, [
@@ -2636,17 +2643,21 @@ export default function KoreaThemeScenicPage() {
     }
     const curated = CURATED_ALL.find((s) => s.id === selectedId);
     if (curated) {
+      const overlay = lookupLocalScenicMemberOverlayForSpot(curated);
+      const overlayThumb = overlay?.imageUrl;
       const firstImage = resolveLocalScenicRowFirstImage(
         curated,
         curatedImageByContentId,
       );
-      const overlayThumb = lookupLocalScenicMemberOverlayForSpot(curated)?.imageUrl;
       setSelectedSpot(
-        firstImage
+        firstImage || overlayThumb
           ? {
               ...curated,
-              firstImage,
+              firstImage: overlayThumb || firstImage,
               imageUrl: overlayThumb || curated.imageUrl || firstImage,
+              galleryUrls: overlay?.galleryUrls || curated.galleryUrls,
+              overview: overlay?.overview || curated.overview,
+              addr1: overlay?.addr1 || curated.addr1,
             }
           : curated,
       );

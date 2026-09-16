@@ -3449,6 +3449,41 @@ assert.ok(
   '예천 신라식물원 갤러리 입구 간판',
 );
 
+const ycMarket = listKoreaScenicSpots().find((s) => s.id === 'yonggung-market');
+assert.ok(ycMarket, '예천 용궁시장 GATEO 선정');
+assert.ok(
+  ycMarket.imageUrl?.includes('tv.trip/1n2d.trip08.png'),
+  '용궁시장 썸네일은 군 공식 시장 사진',
+);
+assert.ok(
+  !ycMarket.imageUrl?.includes('3542707'),
+  '용궁시장 썸네일 ≠ 회룡포 항공 3542707',
+);
+assert.ok(
+  ycMarket.galleryUrls?.every((u) => !String(u).includes('3542707')),
+  '용궁시장 갤러리 ≠ 회룡포',
+);
+const ycMarketOverlay = lookupLocalScenicMemberOverlayForSpot(ycMarket);
+assert.ok(
+  ycMarketOverlay?.imageUrl?.includes('1n2d.trip08.png'),
+  '용궁시장 overlay 군 공식 시장',
+);
+assert.ok(ycMarketOverlay?.overview?.includes('오일장'), '용궁시장 overlay 오일장');
+assert.ok(
+  ycMarketOverlay?.overview?.includes('읍부리 장터'),
+  '용궁시장 overlay는 회룡포가 아니라 읍부리 장터',
+);
+const ycMarketSearch = resolveSearchScenicMedia({
+  id: 'yonggung-market',
+  hubId: 'yecheon',
+  name: '용궁시장',
+  imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg',
+});
+assert.ok(
+  ycMarketSearch.imageUrl?.includes('1n2d.trip08.png'),
+  '명승홈 검색 용궁시장이 회룡포 사진을 덮음',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

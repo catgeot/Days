@@ -244,7 +244,8 @@ export function resolveSearchScenicMedia(item) {
     String(
       item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '',
     ).trim() || null;
-  const overlay = overlayForHubMemberName(hubId, name);
+  const overlay =
+    overlayForHubMemberName(hubId, name) || lookupLocalScenicMemberOverlayForSpot(item);
   const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
   const rawId = String(
     overlay?.contentId || item.contentId || fromCurated.contentId || '',
@@ -1441,6 +1442,15 @@ const YC_SILLA_2 =
   'https://web.archive.org/web/20250713195244im_/http://sinrafarm.com/img/main_scroll_img2.jpg';
 const YC_SILLA_3 =
   'https://web.archive.org/web/20250714014653im_/http://sinrafarm.com/img/main_scroll_img1.jpg';
+// 예천 GATEO 선정 용궁시장 — fill이 회룡포(126734) 항공을 빌려 씀. 군 공식 시장·순대축제 사진.
+const YC_MARKET =
+  'https://www.ycg.kr/images/open.content/tour/theme/tv.trip/1n2d.trip08.png';
+const YC_MARKET_2 =
+  'https://www.ycg.kr/images/open.content/tour/festivals/sundae/sundae-img.png';
+const YC_MARKET_3 =
+  'https://www.ycg.kr/images/open.content/tour/festivals/sundae/photo4.png';
+const YC_MARKET_4 =
+  'https://www.ycg.kr/images/open.content/tour/festivals/sundae/photo2.png';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3038,6 +3048,12 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상북도 예천군 감천면 석송로 321-6 (천향리 804 석평마을 석송령)',
     YC_SEOK,
     [YC_SEOK_2, YC_SEOK_3],
+  ),
+  'yonggung-market': localScenicPhotoOverlay(
+    '용궁시장은 예천군 용궁면 읍부리 전통 오일장(4·9일)이자 상설 골목시장입니다. 예천군 문화관광은 순대국밥 맛집이 가득한 용궁시장으로 안내하며 주소는 용궁로 118·용궁시장길입니다. 별주부전 설화의 용왕·토끼 조형과 용궁순대 골목이 있고, 장터에서 회룡포·삼강주막으로 이어집니다. 명승 16호 회룡포(내성천이 휘감은 물돌이) 항공 사진이 아니며, 같은 면 회룡포 전망대·뿅뿅다리와 다른 읍부리 장터입니다. 사진은 예천군 문화관광 TV따라 여행 용궁시장·용궁순대축제 공식 사진입니다.',
+    '경상북도 예천군 용궁면 용궁시장길 10-4 (읍부리 용궁시장)',
+    YC_MARKET,
+    [YC_MARKET_2, YC_MARKET_3, YC_MARKET_4],
   ),
 };
 
