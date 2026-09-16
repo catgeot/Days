@@ -502,13 +502,13 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#54 QA push** tip `38957cb4` · PR [#270](https://github.com/catgeot/Days/pull/270) · 예천8경 3 + 검색 신라식물원 `1910438` + 용궁시장 회룡포 사진 교체 · **#55 인천 결손 오버레이** |
+| **상태** | **#55 QA push** tip `2652550e` · PR [#270](https://github.com/catgeot/Days/pull/270) · 인천9경 3 · **#56 양구 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `38957cb4` |
+| **tip** | `2652550e` |
 | **PR** | [#270](https://github.com/catgeot/Days/pull/270) · [#268](https://github.com/catgeot/Days/pull/268) merge ✅ · [#267](https://github.com/catgeot/Days/pull/267) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-16-project-log.md`](./2026-09-16-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic` 검색「예천」용궁시장 상세 · 신라식물원 · `?hub=yecheon` 팔경 행 |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=incheon` 인천9경 아라온·씨사이드파크·강화읍 원도심 |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
@@ -517,13 +517,13 @@ AI 모델 #3, Preview OK면 PR 병합
 **다음 제시어**:
 
 ```
-팔경 활용 #55, 인천 결손 오버레이
+팔경 활용 #56, 양구 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-16-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 인천9경 사진·개요 없는 3건(인천 계양 아라온·인천 영종 씨사이드파크·인천 강화읍 원도심)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=incheon
+작업: 양구9경 사진·개요 없는 3건(양구 수목원·양구 봉화산·양구 상무룡 출렁다리)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yanggu
 ```
 
 ---

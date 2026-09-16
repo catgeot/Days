@@ -2,6 +2,16 @@
 
 직전: [`2026-09-15-project-log.md`](./2026-09-15-project-log.md)
 
+## 팔경 활용 #55 — 인천9경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #55, 인천 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `2652550e` · PR [#270](https://github.com/catgeot/Days/pull/270)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 인천9경 결손 3건(인천 계양 아라온·인천 영종 씨사이드파크·인천 강화읍 원도심). 아라온은 계양구 장기동 109-1 황어광장~수향원 빛의 거리(4경), 씨사이드파크는 중구 구읍로 75 레일바이크 5.6km(6경), 강화읍 원도심은 용흥궁~고려궁지 도보해설 코스(7경). 아라폭포·을왕리·전등사와 구분. 인천 순수 누락 3→0.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=incheon`
+- **잔여**: 사진/개요 순수 누락 **63**/876. 다음 허브 **양구9경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 종각역 숙소 #13 — 동해수련원 검색 오탐·로딩 (Cloud)
 
 - **세션** `종각역 숙소 #13, Preview OK면 PR 병합`

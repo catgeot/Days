@@ -92,11 +92,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#54 QA push** tip `38957cb4` · PR [#270](https://github.com/catgeot/Days/pull/270) · 예천8경 3 + 검색 신라식물원 `1910438` + 용궁시장 회룡포 사진 교체 · **#55 인천 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#55 QA push** tip `2652550e` · PR [#270](https://github.com/catgeot/Days/pull/270) · 인천9경 3 · **#56 양구 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **인천9경 3**.
+**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **양구9경 3**.
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
@@ -156,7 +156,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 52 | `팔경 활용 #52, 대구 결손 오버레이` | A | **완료** · tip `9004dc15` · PR [#267](https://github.com/catgeot/Days/pull/267) merge ✅ · 대구12경 3 |
 | 53 | `팔경 활용 #53, 여수 결손 오버레이` | A | **완료** · tip `4b9c7468` · PR [#268](https://github.com/catgeot/Days/pull/268) merge ✅ · 여수10경 3 · QA 탐색홈 진남관·이순신대교 빈 썸네일 |
 | 54 | `팔경 활용 #54, 예천 결손 오버레이` | A | **완료** · tip `38957cb4` · PR [#270](https://github.com/catgeot/Days/pull/270) · 예천8경 3 · QA 검색 신라식물원 `1910438` · QA 용궁시장 회룡포 사진 교체 |
-| 55 | `팔경 활용 #55, 인천 결손 오버레이` | A | **열기 가능** · 인천9경 3 · Preview QA는 사람 병행(세션 생략) |
+| 55 | `팔경 활용 #55, 인천 결손 오버레이` | A | **완료** · tip `2652550e` · PR [#270](https://github.com/catgeot/Days/pull/270) · 인천9경 3 |
+| 56 | `팔경 활용 #56, 양구 결손 오버레이` | A | **열기 가능** · 양구9경 3 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -752,16 +753,16 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 예천8경 사진·개요 없는 3건(금당실 전통마을과 송림·예천곤충생태원·석송령)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yecheon
 ```
 
-### §1.2 A #55 인천 결손 오버레이 (다음)
+### §1.2 A #56 양구 결손 오버레이 (다음)
 
 ```
-팔경 활용 #55, 인천 결손 오버레이
+팔경 활용 #56, 양구 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-16-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 인천9경 사진·개요 없는 3건(인천 계양 아라온·인천 영종 씨사이드파크·인천 강화읍 원도심)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=incheon
+작업: 양구9경 사진·개요 없는 3건(양구 수목원·양구 봉화산·양구 상무룡 출렁다리)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yanggu
 ```
 
 
