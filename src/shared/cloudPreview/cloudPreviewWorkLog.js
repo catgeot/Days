@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '종각역 숙소',
-  sessionNo: 8,
-  sessionPhase: '최초 진입 거리',
+  sessionNo: 9,
+  sessionPhase: '검색 카드 검은 화면',
   branch: 'cursor/jonggak-yeonsinnae-cacc',
   previewPath: '/',
   qaShareSlug: '',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-16-jonggak-stay-search-card-black-screen',
+    session: '종각역 숙소 #9, 검색 카드 검은 화면',
+    title: '연신내역 검색 카드 클릭 시 검은 화면',
+    detail:
+      '검색에서 연신내역 카드를 누르면 홈이 통째로 내려가 검은 화면만 남던 문제를 고쳤습니다. 숙소 스트립이 fetchKey를 선언하기 전에 useRef(fetchKey)를 써서 크래시했습니다. Preview 홈 검색「연신내역」카드 → 지구본·써머리 카드가 보이는지(검은 화면 아님) · 숙소 찾기는 첫 진입에도 은평 쪽 거리.',
+    at: '2026-09-16T08:50:00.000Z',
+  },
   {
     id: '2026-09-16-jonggak-stay-first-entry-distance',
     session: '종각역 숙소 #8, 최초 진입 거리',

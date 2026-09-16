@@ -717,6 +717,18 @@ async function main() {
     stripSrc.includes('inflightKeyRef') && stripSrc.includes('[eligible, expanded, fetchKey]'),
     'stay fetch effect deps are fetchKey not location identity',
   );
+  const fetchKeyDeclAt = stripSrc.indexOf('const fetchKey =');
+  const fetchKeyRefAssignAt = stripSrc.indexOf('fetchKeyRef.current = fetchKey');
+  assert(
+    !/useRef\(\s*fetchKey\s*\)/.test(stripSrc),
+    'GlobeStayStrip fetchKeyRef must not TDZ-init with fetchKey',
+  );
+  assert(
+    fetchKeyDeclAt !== -1 &&
+      fetchKeyRefAssignAt !== -1 &&
+      fetchKeyDeclAt < fetchKeyRefAssignAt,
+    'GlobeStayStrip assigns fetchKey to ref after it is declared',
+  );
   const edgeSrc = readFileSync(
     join(dirname(fileURLToPath(import.meta.url)), '../supabase/functions/fetch-mrt-stays/index.ts'),
     'utf8',

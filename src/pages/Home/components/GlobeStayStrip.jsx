@@ -1231,8 +1231,7 @@ export default function GlobeStayStrip({
   const [showDesktopScrollTop, setShowDesktopScrollTop] = useState(false);
   const fetchedKeyRef = useRef('');
   const inflightKeyRef = useRef('');
-  const fetchKeyRef = useRef(fetchKey);
-  fetchKeyRef.current = fetchKey;
+  const fetchKeyRef = useRef('');
   const mobileListScrollRef = useRef(null);
   const desktopListScrollRef = useRef(null);
 
@@ -1244,6 +1243,7 @@ export default function GlobeStayStrip({
   const datesKey = `${stayDates.checkIn}|${stayDates.checkOut}`;
   const guestsKey = `a${guests.adultCount}c${guests.childCount}`;
   const fetchKey = `${placeKey}|${datesKey}|${guestsKey}`;
+  fetchKeyRef.current = fetchKey;
   const eligible = canShowMrtStayStrip(location, { hidden }) && !isScanning;
   const peerTourEligible = useMemo(() => {
     if (isScanning) return false;
