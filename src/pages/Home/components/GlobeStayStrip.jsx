@@ -33,6 +33,7 @@ import {
   normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
 import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
+import { isCurrentMrtStayFetch } from '../../../utils/mrtStayCache';
 import {
   canShowMrtPackageStrip,
   resolveMrtPackageDisplayKeyword,
@@ -1229,6 +1230,8 @@ export default function GlobeStayStrip({
   const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
   const [showDesktopScrollTop, setShowDesktopScrollTop] = useState(false);
   const fetchedKeyRef = useRef('');
+  const inflightKeyRef = useRef('');
+  const fetchKeyRef = useRef('');
   const mobileListScrollRef = useRef(null);
   const desktopListScrollRef = useRef(null);
 
@@ -1240,6 +1243,7 @@ export default function GlobeStayStrip({
   const datesKey = `${stayDates.checkIn}|${stayDates.checkOut}`;
   const guestsKey = `a${guests.adultCount}c${guests.childCount}`;
   const fetchKey = `${placeKey}|${datesKey}|${guestsKey}`;
+  fetchKeyRef.current = fetchKey;
   const eligible = canShowMrtStayStrip(location, { hidden }) && !isScanning;
   const peerTourEligible = useMemo(() => {
     if (isScanning) return false;
@@ -1280,6 +1284,7 @@ export default function GlobeStayStrip({
     setSortMode('recommended');
     setVisibleCount(MRT_STAY_PAGE_SIZE);
     fetchedKeyRef.current = '';
+    inflightKeyRef.current = '';
   }, [placeKey]);
 
   useEffect(() => {
@@ -1349,19 +1354,25 @@ export default function GlobeStayStrip({
     return () => el.removeEventListener('scroll', onScroll);
   }, [desktopOpen, status, items]);
 
+  // fetchKey already encodes place+dates+guests. location identity must not abort Photon.
   useEffect(() => {
     if (!eligible || !expanded) return undefined;
     if (fetchedKeyRef.current === fetchKey) return undefined;
+    if (inflightKeyRef.current === fetchKey) return undefined;
 
-    let cancelled = false;
+    const keyAtStart = fetchKey;
+    const loc = location;
+    const dates = stayDates;
+    const guestCounts = guests;
+    const placeName = name;
+    inflightKeyRef.current = keyAtStart;
     setStatus('loading');
 
     (async () => {
-      const locForFetch = await withStayAdmin(location);
-      if (cancelled) return;
+      const locForFetch = await withStayAdmin(loc);
+      let listed = false;
       const applyResult = (result) => {
-        if (cancelled) return;
-        fetchedKeyRef.current = fetchKey;
+        if (!isCurrentMrtStayFetch(fetchKeyRef.current, keyAtStart)) return;
         if (result?.checkIn && result?.checkOut) {
           const synced = normalizeMrtStayDates(result.checkIn, result.checkOut);
           setStayDates((prev) =>
@@ -1372,10 +1383,11 @@ export default function GlobeStayStrip({
         }
         if (result?.items?.length) {
           setItems(result.items);
-          setVisibleCount(MRT_STAY_PAGE_SIZE);
+          if (!listed) setVisibleCount(MRT_STAY_PAGE_SIZE);
+          listed = true;
           setMrtListMeta({
             regionId: result.region?.regionId ?? null,
-            keyword: result.usedKeyword || name || '',
+            keyword: result.usedKeyword || placeName || '',
             isDomestic: isMrtDomesticLocation(locForFetch),
             moreWithDateChange: Boolean(result.moreWithDateChange),
             listedCount: Number(result.listedCount) || result.items.length,
@@ -1393,19 +1405,18 @@ export default function GlobeStayStrip({
         }
       };
       const result = await fetchMrtStaysForLocation(locForFetch, {
-        ...stayDates,
-        ...guests,
+        ...dates,
+        ...guestCounts,
         onPartialResult: applyResult,
       });
-      if (cancelled) return;
-      fetchedKeyRef.current = fetchKey;
       applyResult(result);
+      if (isCurrentMrtStayFetch(fetchKeyRef.current, keyAtStart)) {
+        fetchedKeyRef.current = keyAtStart;
+        inflightKeyRef.current = '';
+      }
     })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [eligible, expanded, fetchKey, location, stayDates, guests]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchKey captures location+dates+guests
+  }, [eligible, expanded, fetchKey]);
 
   const applyStayFilters = useCallback((next) => {
     const dates = normalizeMrtStayDates(next?.checkIn, next?.checkOut);
@@ -1424,6 +1435,7 @@ export default function GlobeStayStrip({
       return nextGuests;
     });
     fetchedKeyRef.current = '';
+    inflightKeyRef.current = '';
   }, []);
 
   const loadMoreStays = useCallback(() => {
