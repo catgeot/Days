@@ -754,10 +754,9 @@ export function useHomeHandlers({
 
     const satelliteAlias = resolveKoUniversitySatelliteAlias(query);
     if (satelliteAlias) {
-      return commitLocation(
-        syntheticUniversitySatellitePlace(query, satelliteAlias),
-        `'${query}' → 원하는 장소를 선택하세요`,
-      );
+      const pin = syntheticUniversitySatellitePlace(query, satelliteAlias);
+      handleLocationSelect(pin);
+      return pin;
     }
 
     let koHomonymPlaceTried = false;

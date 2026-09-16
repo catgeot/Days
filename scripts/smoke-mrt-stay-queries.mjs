@@ -673,8 +673,9 @@ async function main() {
     );
     assert(
       handlersSrc.includes('resolveKoUniversitySatelliteAlias') &&
-        handlersSrc.includes('syntheticUniversitySatellitePlace'),
-      'smart search resolves satellite alias before AI fallback',
+        handlersSrc.includes('syntheticUniversitySatellitePlace') &&
+        handlersSrc.includes('handleLocationSelect(pin)'),
+      'smart search pins satellite alias before AI fallback',
     );
     const searchBoxSrc = readFileSync(
       join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/lib/mapboxSearchBox.js'),

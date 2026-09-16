@@ -346,7 +346,7 @@ export function resolveKoUniversityAlias(raw) {
   return null;
 }
 
-/** 「강원대학교 동해수련원」→ 양yang 금강리. 본교 alias와 별도. */
+/** 「강원대학교 동해수련원」→ 양양 금강리. 본교 alias와 별도. */
 export function resolveKoUniversitySatelliteAlias(raw) {
   const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
   if (!s || s.length < 4) return null;
