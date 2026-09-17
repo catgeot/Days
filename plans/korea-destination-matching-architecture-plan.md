@@ -44,7 +44,7 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | 세션 | 세션 채팅명 | 주요 작업 내용 | 검증 기준 및 게이트 | 브랜치 |
 |---|---|---|---|---|
-| **#1** | `여행지 매칭 #1, 갤러리 시설컷 정밀 필터` | `tourApiPhotoRank.js` 및 프록시 이미지 메타데이터(`imgname`) 기반 시설물/비풍경 제외 필터 고도화 및 스모크 테스트 구축 | `npm run smoke:tourapi` PASS, 화장실/휠체어 100% 차단 | `cursor/dest-match-arch` |
+| **#1** | `여행지 매칭 #1, 갤러리 시설컷 정밀 필터` | `tourApiPhotoRank.js` 및 프록시 이미지 메타데이터(`imgname`) 기반 시설물/비풍경 제외 필터 고도화 및 스모크 테스트 구축 | `npm run smoke:tourapi` PASS, 화장실/휠체어 100% 차단 · PR [#276](https://github.com/catgeot/Days/pull/276) · tip `854f0a43` | `cursor/dest-match-arch` |
 | **#2** | `여행지 매칭 #2, 숙소 거리 가드(Geo-Sanity)` | `mrtStayQuery.js` 및 Edge `fetch-mrt-stays`에서 검색 중심점 기준 30km 초과 타 시도 숙소 자동 배제 가드 구현 | `npm run smoke:mrt-stay` PASS, 평창/춘천 검색 시 광주/양양 숙소 0건 | `cursor/dest-match-arch` |
 | **#3** | `여행지 매칭 #3, 국내 지명 First-Pass 리졸버` | Mapbox 지오코딩 전 `tourapi_attraction` 및 `cityAttractionHubs.json` 통합 First-Pass 리졸버 모듈화 | `npm run smoke:explore-search-aliases` PASS, 주요 명소 1차 히트율 95%+ | `cursor/dest-match-arch` |
 | **#4** | `여행지 매칭 #4, 카테고리 맥락 파이프라인 전달` | 지오코딩 결과의 `placeCategory`(자연, 역사, 역, 대학)를 `mrtStay` 및 `usePlaceGallery`에 컨텍스트로 전달 | `npx vite build` PASS, 자연명소 검색 시 도심 호텔 래더 방지 | `cursor/dest-match-arch` |
@@ -102,15 +102,27 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 ## 6. 에이전트 핸드오프 및 다음 세션 제시어
 
-### 다음 세션 제시어 (세션 #1 시작용)
+### 다음 세션 제시어
 
 ```
-여행지 매칭 #1, 갤러리 시설컷 정밀 필터
+여행지 매칭 #2, 숙소 거리 가드(Geo-Sanity)
 @plans/feature-handoff-index.md
 @plans/2026-09-17-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
-브랜치 cursor/dest-match-arch · PR 신규 생성 · Preview /qa/dest-match
+브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: tourApiPhotoRank.js 내 화장실/휠체어 등 시설물 네거티브 정규식 강화 및 프록시 imgname 전달 로직 점검. TourAPI 갤러리 시설 사진 배제 스모크 테스트 구현.
-검증: npm run smoke:tourapi PASS · smoke:gallery-portrait-filter PASS · npx vite build PASS
+작업: mrtStayQuery.js 및 Edge fetch-mrt-stays에서 검색 중심점 기준 30km 초과 타 시도 숙소 자동 배제. 평창/춘천 검색 시 광주/양양 숙소 0건.
+검증: npm run smoke:mrt-stay PASS · smoke:tourapi PASS · npx vite build PASS
 ```
+
+---
+
+## 9. 에이전트 핸드오프
+
+| | |
+|--|--|
+| **세션** | **#1 완료** · 갤러리 시설컷 정밀 필터 · tip `854f0a43` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **브랜치** | `cursor/dest-match-arch` |
+| **Preview** | `/qa/dest-match` → git Preview `/` |
+| **다음** | `#2 숙소 거리 가드(Geo-Sanity)` |
+| **잔여** | Edge `tourapi-proxy` `imgname` 배포는 선택. 클라 caption 재검사로 미배포여도 컷은 동작. |
