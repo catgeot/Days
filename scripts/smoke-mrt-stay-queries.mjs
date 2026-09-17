@@ -18,8 +18,12 @@ import {
   resolveKoStationAlias,
   resolveKoUniversityAlias,
   resolveKoUniversitySatelliteAlias,
+  resolveKoScenicPoiAlias,
+  isCaveLikeStayQuery,
+  isCaveNeighbourhoodFalsePositive,
   isUniversitySatelliteStayQuery,
   syntheticUniversitySatellitePlace,
+  syntheticScenicPoiPlace,
   resolveMrtStayQuery,
   stationNameMatchesQuery,
   universitySearchHitPenalty,
@@ -243,6 +247,50 @@ const CASES = [
       uiPlace: true,
     },
     expectKeyword: /문경/,
+  },
+  /**
+   * 평창 광천선굴 — 「광천동굴」이 광주 광천동으로 새면 안 됨.
+   * hub 핀·별칭 모두 1차는 평창.
+   */
+  {
+    slug: 'gwangcheon-seongul-hub',
+    location: {
+      name: '광천선굴',
+      name_en: 'Gwangcheon Seongul',
+      country: '대한민국',
+      country_en: 'South Korea',
+      hubId: 'pyeongchang',
+      parentCity: '평창',
+      uiPlace: true,
+      lat: 37.518306,
+      lng: 128.451361,
+    },
+    expectPrimaryKeyword: /평창/,
+    expectKeyword: /평창/,
+    rejectCityHint: /광주/,
+  },
+  {
+    slug: 'gwangcheon-cave-gwangju-pin',
+    location: {
+      name: '광천동굴',
+      name_en: 'Gwangcheon Cave',
+      originalQuery: '광천성굴',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      lat: 35.1647499,
+      lng: 126.8810106,
+      stayAdmin: {
+        neighbourhood: '광천동',
+        district: '서구',
+        city: '광주',
+        county: '',
+        state: '전남광주통합특별시',
+      },
+    },
+    expectPrimaryKeyword: /평창/,
+    expectKeyword: /평창/,
+    rejectCityHint: /광주/,
   },
   /**
    * GPS 평창군 대화면 대화리 — 「대화」축약이 고양/일산 대화동으로 새면 안 됨.
@@ -538,6 +586,30 @@ async function main() {
       syntheticTraining.source === 'satellite-alias',
       `synthetic training source (got ${syntheticTraining.source})`,
     );
+    const seongulAlias = resolveKoScenicPoiAlias('광천성굴');
+    assert(seongulAlias?.city === '평창', `광천성굴 scenic city (got ${seongulAlias?.city})`);
+    assert(seongulAlias?.name === '광천선굴', `광천성굴 canonical (got ${seongulAlias?.name})`);
+    assert(resolveKoScenicPoiAlias('광천동굴')?.lat === 37.518306, '광천동굴 → 광천선굴 lat');
+    assert(resolveKoScenicPoiAlias('Gwangcheon Cave')?.city === '평창', 'Gwangcheon Cave alias');
+    assert(resolveKoScenicPoiAlias('평창 광천동굴')?.city === '평창', '평창 광천동굴 includes alias');
+    assert(!resolveKoScenicPoiAlias('광천동'), '광주 광천동 is not cave alias');
+    assert(!resolveKoScenicPoiAlias('광천'), 'bare 광천 is not cave alias');
+    assert(isCaveLikeStayQuery('광천동굴'), '광천동굴 is cave query');
+    assert(
+      isCaveNeighbourhoodFalsePositive('광천동굴', '광천동', 'quarter'),
+      '광천동굴 rejects 광천동 quarter',
+    );
+    assert(
+      isCaveNeighbourhoodFalsePositive('광천선굴', '광천동'),
+      '광천선굴 rejects 광천동 name',
+    );
+    assert(
+      !isCaveNeighbourhoodFalsePositive('광천동굴', '광천선굴'),
+      'cave name is not neighbourhood false positive',
+    );
+    const syntheticCave = syntheticScenicPoiPlace('광천성굴', seongulAlias);
+    assert(syntheticCave.source === 'scenic-poi-alias', `synthetic cave source (got ${syntheticCave.source})`);
+    assert(syntheticCave.parentCity === '평창', `synthetic cave parentCity (got ${syntheticCave.parentCity})`);
     const resolvedTrainingEmpty = resolveUniversitySearchHits('강원대학교 동해수련원', []);
     assert(resolvedTrainingEmpty.length === 1, `empty hits → synthetic (got ${resolvedTrainingEmpty.length})`);
     assert(
@@ -667,6 +739,12 @@ async function main() {
         jonggakAliases.includes('satelliteAlias.name'),
       'geocoding expands satellite alias to 동해수련원',
     );
+    assert(
+      jonggakAliases.includes('resolveKoScenicPoiAlias') &&
+        jonggakAliases.includes('isCaveNeighbourhoodFalsePositive') &&
+        jonggakAliases.includes('동굴|선굴|성굴'),
+      'geocoding treats 동굴 as facility and rejects 광천동',
+    );
     const handlersSrc = readFileSync(
       join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/hooks/useHomeHandlers.js'),
       'utf8',
@@ -674,8 +752,10 @@ async function main() {
     assert(
       handlersSrc.includes('resolveKoUniversitySatelliteAlias') &&
         handlersSrc.includes('syntheticUniversitySatellitePlace') &&
+        handlersSrc.includes('resolveKoScenicPoiAlias') &&
+        handlersSrc.includes('syntheticScenicPoiPlace') &&
         handlersSrc.includes('handleLocationSelect(pin)'),
-      'smart search pins satellite alias before AI fallback',
+      'smart search pins satellite·scenic alias before AI fallback',
     );
     const searchBoxSrc = readFileSync(
       join(dirname(fileURLToPath(import.meta.url)), '../src/pages/Home/lib/mapboxSearchBox.js'),
@@ -884,6 +964,33 @@ async function main() {
   assert(
     Math.abs(kangwonTrainingOrigin?.lat - 38.0866) < 1e-6,
     `동해수련원 query keeps Yangyang coords (got ${kangwonTrainingOrigin?.lat})`,
+  );
+  const gwangcheonGwangjuOrigin = resolveMrtStayOrigin({
+    name: '광천동굴',
+    originalQuery: '광천성굴',
+    lat: 35.1647499,
+    lng: 126.8810106,
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(gwangcheonGwangjuOrigin?.lat - 37.518306) < 1e-6 &&
+      Math.abs(gwangcheonGwangjuOrigin?.lng - 128.451361) < 1e-6,
+    `광천동굴 Gwangju pin snaps to 평창 광천선굴 (got ${gwangcheonGwangjuOrigin?.lat},${gwangcheonGwangjuOrigin?.lng})`,
+  );
+  assert(
+    gwangcheonGwangjuOrigin?.label === '광천선굴',
+    `snapped origin label is 광천선굴 (got ${gwangcheonGwangjuOrigin?.label})`,
+  );
+  const gwangcheonCaveOrigin = resolveMrtStayOrigin({
+    name: '광천선굴',
+    originalQuery: '광천선굴',
+    lat: 37.518306,
+    lng: 128.451361,
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(gwangcheonCaveOrigin?.lat - 37.518306) < 1e-6,
+    `광천선굴 pin keeps Pyeongchang coords (got ${gwangcheonCaveOrigin?.lat})`,
   );
   const kangwonTrainingNamedUniv = resolveMrtStayOrigin({
     name: '강원대학교',

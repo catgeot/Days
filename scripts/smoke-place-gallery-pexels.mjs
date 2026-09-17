@@ -23,7 +23,20 @@ assert.match(src, /GALLERY_PEXELS_BATCH_LIMIT/, 'pexels batch limit');
 assert.match(src, /capGalleryImages/, 'cap helper');
 assert.match(src, /신규 사진 없음/, 'no-op refresh logs warning');
 assert.match(src, /filterOutSinglePersonPortraits/, 'cached galleries drop single-person portraits');
-assert.match(src, /CACHE_VERSION = 'v1\.22'/, 'cache version after latin query + gallery SWR');
+assert.match(src, /CACHE_VERSION = 'v1\.23'/, 'cache version after Tour facility filter');
+assert.match(src, /gwangcheon-seongul/, 'gwangcheon cave stock override');
+assert.match(src, /isSparseTourApiGallery/, 'sparse Tour gallery continues to stock');
+
+const fetchSrc = readFileSync(join(root, 'src/utils/fetchTourApiGallery.js'), 'utf8');
+assert.match(fetchSrc, /keepTourDetailImage/, 'detailImage uses facility/firstimage filter');
+assert.doesNotMatch(
+  fetchSrc,
+  /toGalleryImage\(it, 'detailImage', i, 80\)/,
+  'detailImage no longer blanket-rank 80',
+);
+
+const proxySrc = readFileSync(join(root, 'supabase/functions/tourapi-proxy/index.ts'), 'utf8');
+assert.match(proxySrc, /imgname/, 'proxy forwards detailImage imgname');
 
 const apiSrc = readFileSync(join(root, 'src/pages/Home/lib/apiClient.js'), 'utf8');
 assert.match(apiSrc, /fetchPexelsImagesViaProxy/, 'pexels edge proxy fallback');

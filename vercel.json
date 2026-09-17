@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/gwangcheon-stay",
+      "destination": "https://days-git-cursor-gwangcheon-cave-stay-6560-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/visitor-growth",
       "destination": "https://days-git-cursor-visitor-growth-1f90-catgeots-projects.vercel.app/",
       "permanent": false

@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 57,
-  sessionPhase: '정읍 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jeongeup',
-  qaShareSlug: 'palgyeong-use',
+  title: '종각역 숙소',
+  sessionNo: 14,
+  sessionPhase: '광천선굴 갤러리',
+  branch: 'cursor/gwangcheon-cave-stay-6560',
+  previewPath: '/',
+  qaShareSlug: 'gwangcheon-stay',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-17-jonggak-stay-gwangcheon-photos',
+    session: '종각역 숙소 #14, Preview OK면 PR 병합',
+    title: '광천선굴 갤러리가 화장실·휠체어로 나오던 문제',
+    detail:
+      '배포본 「광천동굴」은 Tour contentId가 없어 Unsplash 종유석이 나왔고, Preview 광천선굴은 TourAPI 2987914 detailImage 4장이 전부 무장애 화장실·휠체어·개찰구라 질이 떨어졌습니다. 시설 컷·무제 CMS는 firstimage만 남기고, 장이 적으면 종유석 스톡을 이어 붙입니다. Preview 홈「광천선굴」갤러리에 화장실·휠체어가 없고 동굴 전경이 보이는지.',
+    at: '2026-09-17T13:20:00.000Z',
+  },
+  {
+    id: '2026-09-17-jonggak-stay-gwangcheon-seongul',
+    session: '종각역 숙소 #14, 광천선굴 광주 오탐',
+    title: '광천동굴 숙소가 광주 호텔로 나오던 문제',
+    detail:
+      '평창 광천선굴을 「광천성굴」「광천동굴」로 검색하면 OSM에 동굴이 없어 AI가 광천동굴로 고치고, 지오코더가 광주 서구 광천동을 잡아 광주역·신안동 호텔이 2km로 붙었습니다. 평창 허브 명소 SSOT(고대동길 119)로 바로 핀하고, 동굴 검색은 동·동네를 버리며 숙소 원점도 평창으로 스냅합니다. Preview 홈「광천성굴」「광천동굴」→ 광천선굴(평창) · 숙소 찾기가 광주 금호 피아노가 아닌지.',
+    at: '2026-09-17T12:20:00.000Z',
+  },
   {
     id: '2026-09-17-palgyeong-use-57-jeongeup-overlays',
     session: '팔경 활용 #57, 정읍 결손 오버레이',

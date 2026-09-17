@@ -3,7 +3,12 @@
  * GlobeStayStrip 카드 뱃지·추천순 거리 가중 · 순수 함수(스모크 가능).
  */
 
-import { resolveKoStationAlias, universityAliasFromLocation, UNIVERSITY_CAMPUS_MAX_KM } from './mrtStayQuery.js';
+import {
+  resolveKoStationAlias,
+  scenicPoiAliasFromLocation,
+  universityAliasFromLocation,
+  UNIVERSITY_CAMPUS_MAX_KM,
+} from './mrtStayQuery.js';
 
 export const STAY_GEOCODE_MAX_KM = 8;
 
@@ -153,6 +158,7 @@ export function resolveMrtStayOrigin(location, label = '') {
     resolveKoStationAlias(location?.name) ||
     resolveKoStationAlias(location?.name_ko);
   const universityAlias = universityAliasFromLocation(location);
+  const scenicAlias = scenicPoiAliasFromLocation(location);
   const parsed = parseStayCoordPair(location);
   const display = String(
     label || location?.name || location?.name_ko || stationAlias?.station || universityAlias?.campus || '',
@@ -171,7 +177,19 @@ export function resolveMrtStayOrigin(location, label = '') {
   if (stationSnap) return stationSnap;
   const campusSnap = snapAlias(universityAlias, UNIVERSITY_CAMPUS_MAX_KM);
   if (campusSnap) return campusSnap;
-  if (!parsed) return null;
+  const scenicSnap = snapAlias(scenicAlias, STAY_GEOCODE_MAX_KM);
+  if (scenicSnap) {
+    return {
+      ...scenicSnap,
+      label: scenicAlias.name || display,
+    };
+  }
+  if (!parsed) {
+    if (isPlausibleWgs84(scenicAlias?.lat, scenicAlias?.lng)) {
+      return { lat: scenicAlias.lat, lng: scenicAlias.lng, label: display || scenicAlias.name };
+    }
+    return null;
+  }
   return { ...parsed, label: display };
 }
 
