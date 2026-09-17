@@ -135,6 +135,76 @@ async function mappingGuards() {
     'airport ranks below scenic ilchulbong',
   );
 
+  const {
+    keepTourDetailImage,
+    isSparseTourApiGallery,
+    isTourApiFacilityPhotoTitle,
+  } = await import('../src/utils/tourApiPhotoRank.js');
+  assert(
+    isTourApiFacilityPhotoTitle('광천선굴 장애인화장실'),
+    'facility title: accessible toilet',
+  );
+  assert(
+    isTourApiFacilityPhotoTitle('휠체어 대여'),
+    'facility title: wheelchair',
+  );
+  assert(
+    !isTourApiFacilityPhotoTitle('광천선굴 종유석'),
+    'cave interior is not facility',
+  );
+  assert(
+    scoreTourPhotoTitle('장애인화장실', '광천선굴', '광천선굴') < 0,
+    'toilet title score < 0 even with place name',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '장애인화장실',
+      imageUrl: 'https://example.com/toilet.jpg',
+      firstimageUrl: 'https://example.com/toilet.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'detailImage toilet dropped even if firstimage',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imageUrl: 'http://tong.visitkorea.or.kr/cms/resource/75/3381075_image2_1.jpg',
+      firstimageUrl: 'http://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'untitled non-firstimage detail dropped',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imageUrl: 'http://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      firstimageUrl: 'https://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === true,
+    'untitled firstimage kept (http/https normalized)',
+  );
+  assert(
+    isSparseTourApiGallery([
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+    ]),
+    'untitled 4-cut Tour gallery is sparse',
+  );
+  assert(
+    !isSparseTourApiGallery([
+      { source: 'tourapi', alt_description: '경복궁 전경' },
+      { source: 'tourapi', alt_description: '근정전' },
+      { source: 'tourapi', alt_description: '경회루 야경' },
+      { source: 'tourapi', alt_description: '경복궁 가을' },
+    ]),
+    'titled scenic Tour gallery is not sparse',
+  );
+
   const byName = resolveTourApiPlace('경복궁');
   assert(byName?.slug === 'gyeongbokgung', 'resolve byName 경복궁');
 

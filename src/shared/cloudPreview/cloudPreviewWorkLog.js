@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '종각역 숙소',
   sessionNo: 14,
-  sessionPhase: '광천선굴 광주 오탐',
+  sessionPhase: '광천선굴 갤러리',
   branch: 'cursor/gwangcheon-cave-stay-6560',
   previewPath: '/',
   qaShareSlug: 'gwangcheon-stay',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-17-jonggak-stay-gwangcheon-photos',
+    session: '종각역 숙소 #14, Preview OK면 PR 병합',
+    title: '광천선굴 갤러리가 화장실·휠체어로 나오던 문제',
+    detail:
+      '배포본 「광천동굴」은 Tour contentId가 없어 Unsplash 종유석이 나왔고, Preview 광천선굴은 TourAPI 2987914 detailImage 4장이 전부 무장애 화장실·휠체어·개찰구라 질이 떨어졌습니다. 시설 컷·무제 CMS는 firstimage만 남기고, 장이 적으면 종유석 스톡을 이어 붙입니다. Preview 홈「광천선굴」갤러리에 화장실·휠체어가 없고 동굴 전경이 보이는지.',
+    at: '2026-09-17T13:20:00.000Z',
+  },
   {
     id: '2026-09-17-jonggak-stay-gwangcheon-seongul',
     session: '종각역 숙소 #14, 광천선굴 광주 오탐',
