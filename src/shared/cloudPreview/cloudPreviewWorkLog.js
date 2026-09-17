@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 54,
-  sessionPhase: '예천 용궁시장 사진',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'palgyeong-use',
+  title: '종각역 숙소',
+  sessionNo: 14,
+  sessionPhase: '광천선굴 광주 오탐',
+  branch: 'cursor/gwangcheon-cave-stay-6560',
+  previewPath: '/',
+  qaShareSlug: 'gwangcheon-stay',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-17-jonggak-stay-gwangcheon-seongul',
+    session: '종각역 숙소 #14, 광천선굴 광주 오탐',
+    title: '광천동굴 숙소가 광주 호텔로 나오던 문제',
+    detail:
+      '평창 광천선굴을 「광천성굴」「광천동굴」로 검색하면 OSM에 동굴이 없어 AI가 광천동굴로 고치고, 지오코더가 광주 서구 광천동을 잡아 광주역·신안동 호텔이 2km로 붙었습니다. 평창 허브 명소 SSOT(고대동길 119)로 바로 핀하고, 동굴 검색은 동·동네를 버리며 숙소 원점도 평창으로 스냅합니다. Preview 홈「광천성굴」「광천동굴」→ 광천선굴(평창) · 숙소 찾기가 광주 금호 피아노가 아닌지.',
+    at: '2026-09-17T12:20:00.000Z',
+  },
   {
     id: '2026-09-16-jonggak-stay-donghae-training-search',
     session: '종각역 숙소 #13, Preview OK면 PR 병합',

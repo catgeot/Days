@@ -46,6 +46,37 @@ const QUERY_ALIASES = new Map(
         also: ['Sabah, Malaysia'],
       },
     ],
+    [
+      '광천성굴',
+      {
+        canonical: '광천선굴',
+        romanized: 'Gwangcheon Seongul, Pyeongchang',
+        also: ['평창 광천선굴'],
+      },
+    ],
+    [
+      '광천동굴',
+      {
+        canonical: '광천선굴',
+        romanized: 'Gwangcheon Seongul, Pyeongchang',
+        also: ['평창 광천선굴'],
+      },
+    ],
+    [
+      '광천선굴',
+      {
+        canonical: '광천선굴',
+        romanized: 'Gwangcheon Seongul, Pyeongchang',
+        also: ['평창 광천선굴'],
+      },
+    ],
+    [
+      'gwangcheon cave',
+      {
+        canonical: '광천선굴',
+        romanized: 'Gwangcheon Seongul, Pyeongchang',
+      },
+    ],
   ].map(([key, value]) => [normalizeKey(key), value]),
 );
 

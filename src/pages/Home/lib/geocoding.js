@@ -14,6 +14,9 @@ import {
   resolveKoStationAlias,
   resolveKoUniversityAlias,
   resolveKoUniversitySatelliteAlias,
+  resolveKoScenicPoiAlias,
+  isCaveLikeStayQuery,
+  isCaveNeighbourhoodFalsePositive,
   stationNameMatchesQuery,
   nominatimStationScoreDelta,
   nominatimSquarePenalty,
@@ -32,7 +35,7 @@ const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_
 
 /** 세부 시설·명소 쿼리 — 행정구역(군/시)으로 축소·스냅하면 안 되는 입력 */
 export const FACILITY_QUERY_RE =
-  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크|수련원|연수원/i;
+  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크|수련원|연수원|동굴|선굴|성굴|\bcave\b/i;
 
 /** 유명 랜드마크 — 도시 SSOT·country=kr 우선으로 묶이면 안 됨 */
 export const LANDMARK_QUERY_RE =
@@ -146,6 +149,12 @@ export function expandForwardQueryAliases(query) {
   const satelliteAlias = resolveKoUniversitySatelliteAlias(q);
   if (satelliteAlias?.name) add(satelliteAlias.name);
 
+  const scenicAlias = resolveKoScenicPoiAlias(q);
+  if (scenicAlias?.name) {
+    add(scenicAlias.name);
+    if (scenicAlias.city) add(`${scenicAlias.city} ${scenicAlias.name}`);
+  }
+
   const explore = resolveExploreSearchAlias(q);
   if (explore?.canonical) add(explore.canonical);
   if (explore?.romanized) add(explore.romanized);
@@ -198,6 +207,7 @@ const isPlausibleForwardHit = (query, result) => {
     if (cc && cc !== 'kr') return false;
     if (!cc && !HAS_HANGUL_RE.test(display)) return false;
   }
+  if (isCaveNeighbourhoodFalsePositive(query, name, result.addresstype)) return false;
   return true;
 };
 
@@ -210,7 +220,7 @@ const isAdminOnlyHitForFacility = (query, result) => {
   const name = String(result.name || '');
   if (cls === 'boundary' || type === 'administrative') return true;
   if (type === 'townhall' || /시청|구청|도청|군청|청사/.test(name)) return true;
-  if (/^(county|state|region|municipality|city|town|village|suburb)$/.test(addresstype)) return true;
+  if (/^(county|state|region|municipality|city|town|village|suburb|quarter|neighbourhood|neighborhood)$/.test(addresstype)) return true;
   return false;
 };
 
@@ -325,6 +335,17 @@ const scoreMapboxFeature = (feature, searchQuery, facilityQ, landmarkPlan = null
       lat,
       lng,
     });
+  }
+
+  if (isCaveLikeStayQuery(searchQuery)) {
+    const types = Array.isArray(feature?.place_type) ? feature.place_type : [];
+    if (types.includes('neighborhood') || types.includes('locality')) score -= 160;
+    if (
+      isCaveNeighbourhoodFalsePositive(searchQuery, text) ||
+      isCaveNeighbourhoodFalsePositive(searchQuery, placeName)
+    ) {
+      score -= 200;
+    }
   }
 
   return score;

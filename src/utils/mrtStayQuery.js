@@ -274,6 +274,29 @@ const KO_UNIVERSITY_ALIASES = {
   },
 };
 
+/**
+ * OSM/Mapbox에 없는 국내 명소. 「광천동굴」이 광주 광천동으로 떨어지지 않게.
+ * 검색 핀 SSOT는 cityAttractionHubs 평창 광천선굴. 좌표는 위키·군 안내(고대동길 119).
+ */
+const GWANGCHEON_SEONGUL = {
+  name: '광천선굴',
+  nameEn: 'Gwangcheon Seongul',
+  city: '평창',
+  county: '평창군',
+  lat: 37.518306,
+  lng: 128.451361,
+};
+
+const KO_SCENIC_POI_ALIASES = {
+  광천선굴: GWANGCHEON_SEONGUL,
+  광천성굴: GWANGCHEON_SEONGUL,
+  광천동굴: GWANGCHEON_SEONGUL,
+  광천선굴어드벤처테마파크: GWANGCHEON_SEONGUL,
+  광천선굴어드벤처: GWANGCHEON_SEONGUL,
+  gwangcheonseongul: GWANGCHEON_SEONGUL,
+  gwangcheoncave: GWANGCHEON_SEONGUL,
+};
+
 /** 본교가 아닌 캠퍼스·수련원 — compactKoPlaceKey(query)로 조회 */
 const KO_UNIVERSITY_SATELLITE_ALIASES = {
   강원대학교동해수련원: {
@@ -346,6 +369,36 @@ export function resolveKoUniversityAlias(raw) {
   return null;
 }
 
+/** 「광천성굴」「광천동굴」→ 평창 광천선굴. 광주 광천동 exact는 매칭하지 않음. */
+export function resolveKoScenicPoiAlias(raw) {
+  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
+  if (!s || s.length < 3) return null;
+  if (KO_SCENIC_POI_ALIASES[s]) return KO_SCENIC_POI_ALIASES[s];
+  const lower = s.toLowerCase();
+  if (KO_SCENIC_POI_ALIASES[lower]) return KO_SCENIC_POI_ALIASES[lower];
+  for (const [key, alias] of Object.entries(KO_SCENIC_POI_ALIASES)) {
+    if (key.length >= 4 && s.includes(key)) return alias;
+  }
+  return null;
+}
+
+export function isCaveLikeStayQuery(raw) {
+  return /동굴|선굴|성굴|\bcave\b/i.test(String(raw || ''));
+}
+
+/** 「광천동굴」→ 광주 광천동(quarter) 오탐 */
+export function isCaveNeighbourhoodFalsePositive(query, resultName, addresstype = '') {
+  if (!isCaveLikeStayQuery(query)) return false;
+  const addr = String(addresstype || '').toLowerCase();
+  if (/^(quarter|suburb|neighbourhood|neighborhood|village|hamlet)$/.test(addr)) return true;
+  const q = compactKoPlaceKey(query).split(/[,/]/)[0];
+  const n = compactKoPlaceKey(resultName);
+  if (!n || /동굴$/.test(n)) return false;
+  if (!/동$/.test(n)) return false;
+  const stem = q.replace(/(동굴|선굴|성굴|cave)$/i, '');
+  return Boolean(stem && (n === stem || n === `${stem}동`));
+}
+
 /** 「강원대학교 동해수련원」→ 양양 금강리. 본교 alias와 별도. */
 export function resolveKoUniversitySatelliteAlias(raw) {
   const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
@@ -359,6 +412,39 @@ export function resolveKoUniversitySatelliteAlias(raw) {
 
 export function isUniversitySatelliteStayQuery(raw) {
   return Boolean(resolveKoUniversitySatelliteAlias(raw));
+}
+
+function scenicPoiAliasFromLocation(location) {
+  return (
+    resolveKoScenicPoiAlias(location?.originalQuery) ||
+    resolveKoScenicPoiAlias(location?.name) ||
+    resolveKoScenicPoiAlias(location?.name_ko) ||
+    resolveKoScenicPoiAlias(location?.name_en)
+  );
+}
+
+export { scenicPoiAliasFromLocation };
+
+/** OSM 미등록 명소 — Mapbox/AI가 동·동네로 떨어지기 전에 바로 핀 */
+export function syntheticScenicPoiPlace(query, alias) {
+  const name = String(alias?.name || query || '').trim();
+  return {
+    id: `scenic-poi-${alias.lat}-${alias.lng}`,
+    kind: 'poi',
+    badge: '장소',
+    name,
+    name_ko: name,
+    name_en: alias.nameEn || name,
+    country: '대한민국',
+    country_en: 'South Korea',
+    lat: alias.lat,
+    lng: alias.lng,
+    stayAdmin: { city: alias.city, county: alias.county || '' },
+    parentCity: alias.city,
+    source: 'scenic-poi-alias',
+    uiPlace: true,
+    originalQuery: query,
+  };
 }
 
 function universityAliasFromLocation(location) {
@@ -649,6 +735,8 @@ export function nominatimSquarePenalty(query, result) {
 
 /** 종로구·종로1가·약칭 district → MRT NEIGHBORHOOD 키워드 */
 export function mrtNeighborhoodKeyword(admin = {}, location = {}) {
+  const scenic = scenicPoiAliasFromLocation(location);
+  if (scenic?.city) return scenic.city;
   const uni = universityAliasFromLocation(location);
   if (uni?.city) return uni.city;
   const alias =
@@ -921,8 +1009,20 @@ export function resolveMrtStayQuery(location) {
       ? location.stayAdmin
       : {};
   const uniAlias = universityAliasFromLocation(location);
+  const scenicAlias = scenicPoiAliasFromLocation(location);
   /** 오지·외부영토 — 관문 도시(퍼스 등) stayAdmin이 퍼스 숙소로 새지 않게 */
   let admin = override?.ignoreStayAdmin ? {} : { ...rawAdmin };
+  if (scenicAlias?.city && !override?.ignoreStayAdmin) {
+    admin = {
+      ...admin,
+      city: scenicAlias.city,
+      cityEn: scenicAlias.cityEn || '',
+      county: scenicAlias.county || '',
+      neighbourhood: '',
+      district: '',
+      state: scenicAlias.state || '',
+    };
+  }
   if (uniAlias?.city && !override?.ignoreStayAdmin) {
     admin = {
       ...admin,
@@ -948,7 +1048,12 @@ export function resolveMrtStayQuery(location) {
   const stayPoint = isDomestic && isMrtStayPointLocation(location);
   if (location?.uiPlace) {
     const oq = String(location.originalQuery || '').trim();
-    if (!(isDomestic && (isKoFineAdminName(oq) || isMrtStayPointLabel(oq)))) {
+    if (
+      !(
+        isDomestic &&
+        (isKoFineAdminName(oq) || isMrtStayPointLabel(oq) || scenicAlias)
+      )
+    ) {
       pushUnique(ladder, seen, oq);
     }
   }
@@ -960,9 +1065,10 @@ export function resolveMrtStayQuery(location) {
     cityHintExtras.push(m[1]);
   }
   if (uniAlias?.city) cityHintExtras.push(uniAlias.city);
+  if (scenicAlias?.city) cityHintExtras.push(scenicAlias.city);
 
   /** hub 명소·정착지 — Nominatim stayAdmin 없이도 상위 도시로 CITY 매칭 (문경새재→문경) */
-  const parentCity = String(location?.parentCity || '').trim();
+  const parentCity = String(location?.parentCity || scenicAlias?.city || '').trim();
 
   // 리·읍·면 + OSM town(대화면)이 city인 경우 — 시·군 우선 래더
   const fineGrain =

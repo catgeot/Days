@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
-import { isStreetishStayLabel, queryLooksLikeStayPoint, resolveKoUniversitySatelliteAlias, resolveUniversitySearchHits, syntheticUniversitySatellitePlace } from '../../../utils/mrtStayQuery.js';
+import { isStreetishStayLabel, queryLooksLikeStayPoint, resolveKoUniversitySatelliteAlias, resolveKoScenicPoiAlias, resolveUniversitySearchHits, syntheticUniversitySatellitePlace, syntheticScenicPoiPlace } from '../../../utils/mrtStayQuery.js';
 import {
   isLikelyMoodQuery,
   shouldSkipGeocodeForMood as shouldSkipGeocodeForMoodIntent,
@@ -755,6 +755,16 @@ export function useHomeHandlers({
     const satelliteAlias = resolveKoUniversitySatelliteAlias(query);
     if (satelliteAlias) {
       const pin = syntheticUniversitySatellitePlace(query, satelliteAlias);
+      handleLocationSelect(pin);
+      return pin;
+    }
+
+    const scenicAlias = resolveKoScenicPoiAlias(query);
+    if (scenicAlias) {
+      const hubHit = resolveHubAttraction(query) || resolveHubAttraction(scenicAlias.name);
+      const pin = hubHit
+        ? { ...attractionToPlacePin(hubHit.hub, hubHit.attraction), originalQuery: query }
+        : syntheticScenicPoiPlace(query, scenicAlias);
       handleLocationSelect(pin);
       return pin;
     }
