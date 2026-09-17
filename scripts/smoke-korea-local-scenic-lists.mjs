@@ -3611,6 +3611,67 @@ assert.ok(
   '양구 검색 9경 상무룡 출렁다리 개요',
 );
 
+const jeongeupMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jeongeup');
+const jeongeupNine = jeongeupMerged.filter((s) => s.localScenicListId === 'jeongeup-gugyeong');
+assert.equal(jeongeupNine.length, 9, '정읍9경 9명');
+assert.equal(jeongeupNine[0]?.groupTitle, '정읍 구경');
+const jeongeupDeficitNames = ['동학농민혁명기념공원', '용산호', '월영습지와 솔티숲'];
+const jeongeupDeficit = jeongeupNine.filter((s) => jeongeupDeficitNames.includes(s.attractionName));
+assert.equal(jeongeupDeficit.length, 3, '정읍9경 결손 3명');
+assert.ok(
+  jeongeupDeficit.every((s) => s.overview && s.imageUrl),
+  '정읍 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  jeongeupDeficit.every((s) => !s.contentId),
+  '정읍 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jeongeupDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '정읍 결손 3명 썸네일 서로 다름',
+);
+
+const jeDh = resolveLocalScenicListSpotById('local-scenic:jeongeup-gugyeong:동학농민혁명기념공원');
+assert.ok(jeDh?.overview?.includes('동학로 742'), '정읍 동학농민혁명기념공원 주소');
+assert.ok(jeDh?.overview?.includes('황토현'), '정읍 동학 overlay 황토현');
+assert.ok(jeDh?.overview?.includes('전주 동학농민혁명기념관'), '정읍 동학≠전주 기념관 구분');
+assert.ok(jeDh?.imageUrl?.includes('175305752440905'), '정읍 동학 4경 공식 사진');
+
+const jeYs = resolveLocalScenicListSpotById('local-scenic:jeongeup-gugyeong:용산호');
+assert.ok(jeYs?.overview?.includes('신정동 132-11'), '정읍 용산호 주소');
+assert.ok(jeYs?.overview?.includes('642m'), '정읍 용산호 overlay 642m');
+assert.ok(jeYs?.overview?.includes('옥정호'), '정읍 용산호≠임실 옥정호 구분');
+assert.ok(jeYs?.imageUrl?.includes('175305752442925'), '정읍 용산호 6경 공식 사진');
+
+const jeWy = resolveLocalScenicListSpotById('local-scenic:jeongeup-gugyeong:월영습지와솔티숲');
+assert.ok(jeWy?.overview?.includes('쌍암동 1029'), '정읍 월영습지 주소');
+assert.ok(jeWy?.overview?.includes('습지보호지역'), '정읍 월영습지 overlay 습지보호지역');
+assert.ok(jeWy?.overview?.includes('월영교'), '정읍 월영습지≠안동 월영교 구분');
+assert.ok(jeWy?.imageUrl?.includes('175021230997132'), '정읍 월영습지 8경 공식 사진');
+
+assert.notEqual(jeDh?.imageUrl, jeYs?.imageUrl, '동학·용산호 썸네일 다름');
+assert.notEqual(jeDh?.imageUrl, jeWy?.imageUrl, '동학·월영습지 썸네일 다름');
+assert.notEqual(jeYs?.imageUrl, jeWy?.imageUrl, '용산호·월영습지 썸네일 다름');
+
+const jeongeupGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '정읍9경', {
+  injectLocalScenic: true,
+});
+const jeongeupGlobeNine = jeongeupGlobe.filter((s) => s.localScenicListId === 'jeongeup-gugyeong');
+assert.equal(jeongeupGlobeNine.length, 9, '정읍 검색 정읍9경 9행');
+assert.ok(
+  jeongeupGlobe.find((s) => s.attractionName === '동학농민혁명기념공원')?.overview?.includes('불멸'),
+  '정읍 검색 9경 동학 개요',
+);
+assert.ok(
+  jeongeupGlobe.find((s) => s.attractionName === '용산호')?.imageUrl?.includes('175305752442925'),
+  '정읍 검색 9경 용산호 썸네일',
+);
+assert.ok(
+  jeongeupGlobe.find((s) => s.attractionName === '월영습지와 솔티숲')?.overview?.includes('솔티숲'),
+  '정읍 검색 9경 월영습지 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

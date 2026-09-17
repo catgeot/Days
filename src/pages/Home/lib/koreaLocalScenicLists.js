@@ -1473,6 +1473,16 @@ const YG_BONG_3 = `${YG_DMZ}/7-4.jpg`;
 const YG_BRIDGE = `${YG_DMZ}/8-4.png`;
 const YG_BRIDGE_2 = `${YG_DMZ}/8-2.jpg`;
 const YG_BRIDGE_3 = `${YG_DMZ}/8-5.jpg`;
+const JE_9GYEONG = 'https://www.jeongeup.go.kr/upload_data/board_data/BBS_0000011';
+const JE_DH = `${JE_9GYEONG}/175305752440905.png`;
+const JE_DH_2 = 'https://www.1894.or.kr/main/img/sub/77/77_1_1.jpg';
+const JE_DH_3 = 'https://www.1894.or.kr/main/img/sub/77/77_1_2.jpg';
+const JE_YS = `${JE_9GYEONG}/175305752442925.png`;
+const JE_YS_2 = `${JE_9GYEONG}/173630232064639.jpg`;
+const JE_WY = `${JE_9GYEONG}/175021230997132.png`;
+const JE_ECO = 'https://www.ecotour.kr/upload_data/board_data/BBS_0000005';
+const JE_WY_2 = `${JE_ECO}/175012107890103.jpg`;
+const JE_WY_3 = `${JE_ECO}/175014798426947.jpg`;
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3112,6 +3122,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '강원특별자치도 양구군 양구읍 간척월명로 1719-21 (상무룡 출렁다리)',
     YG_BRIDGE,
     [YG_BRIDGE_2, YG_BRIDGE_3],
+  ),
+  'local-scenic:jeongeup-gugyeong:동학농민혁명기념공원': localScenicPhotoOverlay(
+    '정읍9경 4경 동학농민혁명기념공원은 덕천면 하학리입니다. 정읍시 문화관광은 1894년 반부패·반봉건·반외세의 기치를 들고 봉기한 동학농민군이 관군을 크게 이긴 최초 전승지 황토현 전적 안에 국가사업으로 들어선 공원이며, 전시관·추모관·기념관이 있다고 적습니다. 주소는 동학로 742입니다. 사적 제295호 정읍 황토현전적 일대이며, 동학농민혁명기념재단은 2022년 5월 11일(동학농민혁명기념일) 개원했다고 안내합니다. 면적 약 30만㎡이며 사발통문광장·울림의 기둥·기억의 들판·방문자센터511과 군상 「불멸, 바람길」이 있습니다. 2004년 개관한 동학농민혁명기념관(동학로 715) 단독 전시관이 아니라 2022년 연 공원이며, 고창 무장·전주 동학농민혁명기념관·내장산국립공원과 다른 덕천면 황토현입니다. 사진은 정읍시 문화관광 4경·동학농민혁명기념재단 공식 사진입니다.',
+    '전북특별자치도 정읍시 덕천면 동학로 742 (하학리 동학농민혁명기념공원)',
+    JE_DH,
+    [JE_DH_2, JE_DH_3],
+  ),
+  'local-scenic:jeongeup-gugyeong:용산호': localScenicPhotoOverlay(
+    '정읍9경 6경 용산호는 신정동 내장산리조트관광지입니다. 정읍시 문화관광은 호수를 가로지르는 데크에서 산책하고 미르샘분수를 보며, 주변 리조트와 낭만모래사장이 운치를 더한다고 적습니다. 주소는 신정동 132-11입니다. 2022년 개통한 미르샘다리는 길이 642m·폭 2m 수면 위 보행 데크이며, 중심부에 단풍·구절초·라벤더 구(毬)·정읍을 뜻하는 샘(井)·용(龍) 조형과 약 18m 조형 낙하 분수가 있습니다. 서울 용산·임실 옥정호(구 정읍 9경)·1경 내장산국립공원·GATEO 선정 단풍생태공원과 다른 신정동 호수입니다. 사진은 정읍시 문화관광 6경 용산호·미르샘 공식 사진입니다.',
+    '전북특별자치도 정읍시 신정동 132-11 (용산호·미르샘다리)',
+    JE_YS,
+    [JE_YS_2],
+  ),
+  'local-scenic:jeongeup-gugyeong:월영습지와솔티숲': localScenicPhotoOverlay(
+    '정읍9경 8경 월영습지와 솔티숲은 쌍암동·송산동 내장산 자락입니다. 정읍시 문화관광은 국가생태관광지로 선정될 만큼 생태계가 잘 보존되고, 나무와 덩굴이 엉클어진 원시 숲 형태를 간직한다고 적습니다. 9경 안내는 쌍암동 1029이며, 월영습지 탐방안내소는 송산동 산112, 솔티숲은 송죽길 25입니다. 2014년 환경부 습지보호지역으로, 낮은 산 정상부 곡저분지의 저층형 산지 내륙습지입니다. 화전 폐경지가 약 50년 방치되며 자연 천이한 네 곳 습지이며 깃대종 비단벌레·진노랑상사화가 있습니다. 안동 월영교·금산 월영산·군산 선유8경 월영단풍·3경 정읍사공원·단풍생태공원과 다른 송산 습지·솔티마을 숲입니다. 사진은 정읍시 문화관광 8경·월영습지와 솔티숲 생태관광 공식 사진입니다.',
+    '전북특별자치도 정읍시 쌍암동 1029 (월영습지 탐방안내소 송산동 산112·솔티숲 송죽길 25)',
+    JE_WY,
+    [JE_WY_2, JE_WY_3],
   ),
 };
 
