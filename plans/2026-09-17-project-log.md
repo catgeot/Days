@@ -2,6 +2,16 @@
 
 직전: [`2026-09-16-project-log.md`](./2026-09-16-project-log.md)
 
+## 팔경 활용 #57 — 정읍9경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #57, 정읍 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `4dd8d86a` · PR [#274](https://github.com/catgeot/Days/pull/274)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 정읍9경 결손 3건(동학농민혁명기념공원·용산호·월영습지와 솔티숲). 동학은 덕천면 동학로 742 황토현전적 2022년 개원 공원(4경), 용산호는 신정동 132-11 미르샘다리 642m(6경), 월영습지는 쌍암동 1029·송산동 산112 2014 습지보호지역(8경). 전주 기념관·임실 옥정호·안동 월영교와 구분. 정읍 순수 누락 3→0.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=jeongeup`
+- **잔여**: 사진/개요 순수 누락 **58**/876. 다음 허브 **정선 화암8경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 종각역 숙소 #14 — 광천선굴 광주 오탐 (Cloud)
 
 - **세션** `종각역 숙소 #14, 광천선굴 광주 오탐`

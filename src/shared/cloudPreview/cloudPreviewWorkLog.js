@@ -32,6 +32,22 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-17T12:20:00.000Z',
   },
   {
+    id: '2026-09-17-palgyeong-use-56-yanggu-overlays',
+    session: '팔경 활용 #56, 양구 결손 오버레이',
+    title: '양구9경 수목원·봉화산·상무룡 출렁다리 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 양구9경 결손 3건(양구 수목원·양구 봉화산·양구 상무룡 출렁다리)의 공공 공식 팩트 개요·주소·양구수목원 공식 홈·양구 DMZ 생태관광협회 공식 사진을 보강했습니다. 수목원은 동면 숨골로310번길 132 도내 6번째 공립 수목원(1경), 봉화산은 국토정중앙면 죽리 해발 875m 주말 산행(7경), 상무룡 출렁다리는 양구읍 간척월명로 1719-21 파로호 335m 현수교(8경)입니다. 구례 수목원·서울 중랑 봉화산·화순 백아산 하늘다리와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yanggu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-17T12:30:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-55-incheon-overlays',
+    session: '팔경 활용 #55, 인천 결손 오버레이',
+    title: '인천9경 아라온·씨사이드파크·강화읍 원도심 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 인천9경 결손 3건(인천 계양 아라온·인천 영종 씨사이드파크·인천 강화읍 원도심)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 아라온은 계양구 장기동 109-1 황어광장~수향원 빛의 거리(4경), 씨사이드파크는 중구 구읍로 75 레일바이크 5.6km(6경), 강화읍 원도심은 용흥궁~고려궁지 도보해설 코스(7경)입니다. 아라폭포·을왕리·전등사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=incheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T19:15:00.000Z',
+  },
+  {
     id: '2026-09-16-jonggak-stay-donghae-training-search',
     session: '종각역 숙소 #13, Preview OK면 PR 병합',
     title: '동해수련원 검색 AI 오탐·로딩',
