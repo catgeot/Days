@@ -3672,6 +3672,71 @@ assert.ok(
   '정읍 검색 9경 월영습지 개요',
 );
 
+const jeongseonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jeongseon');
+const jeongseonEight = jeongseonMerged.filter((s) => s.localScenicListId === 'jeongseon-palgyeong');
+assert.equal(jeongseonEight.length, 8, '화암8경 8명');
+assert.equal(jeongseonEight[0]?.groupTitle, '정선 팔경');
+const jeongseonDeficitNames = ['거북바위', '용마소', '화표주'];
+const jeongseonDeficit = jeongseonEight.filter((s) =>
+  jeongseonDeficitNames.includes(s.attractionName),
+);
+assert.equal(jeongseonDeficit.length, 3, '화암8경 결손 3명');
+assert.ok(
+  jeongseonDeficit.every((s) => s.overview && s.imageUrl),
+  '정선 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  jeongseonDeficit.every((s) => !s.contentId),
+  '정선 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jeongseonDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '정선 결손 3명 썸네일 서로 다름',
+);
+
+const jsGebuk = resolveLocalScenicListSpotById('local-scenic:jeongseon-palgyeong:거북바위');
+assert.ok(jsGebuk?.overview?.includes('화암리 336-1'), '정선 거북바위 주소');
+assert.ok(jsGebuk?.overview?.includes('둘레 6m'), '정선 거북바위 overlay 둘레 6m');
+assert.ok(jsGebuk?.overview?.includes('여수 거북바위'), '정선 거북바위≠여수 거북바위 구분');
+assert.ok(jsGebuk?.imageUrl?.includes('img-geobukbawi.jpg'), '정선 거북바위 공식 사진');
+
+const jsYongma = resolveLocalScenicListSpotById('local-scenic:jeongseon-palgyeong:용마소');
+assert.ok(jsYongma?.overview?.includes('화암리 1306-1'), '정선 용마소 주소');
+assert.ok(jsYongma?.overview?.includes('용사소'), '정선 용마소 overlay 용사소');
+assert.ok(jsYongma?.overview?.includes('용산호'), '정선 용마소≠정읍 용산호 구분');
+assert.ok(jsYongma?.imageUrl?.includes('img-yongmaso.jpg'), '정선 용마소 공식 사진');
+
+const jsHwapyo = resolveLocalScenicListSpotById('local-scenic:jeongseon-palgyeong:화표주');
+assert.ok(jsHwapyo?.overview?.includes('화암리 329-4'), '정선 화표주 주소');
+assert.ok(jsHwapyo?.overview?.includes('돌기둥 두 개'), '정선 화표주 overlay 돌기둥');
+assert.ok(jsHwapyo?.overview?.includes('도담삼봉'), '정선 화표주≠단양 도담삼봉 구분');
+assert.ok(jsHwapyo?.imageUrl?.includes('img-hwapyoju.jpg'), '정선 화표주 공식 사진');
+
+assert.notEqual(jsGebuk?.imageUrl, jsYongma?.imageUrl, '거북바위·용마소 썸네일 다름');
+assert.notEqual(jsGebuk?.imageUrl, jsHwapyo?.imageUrl, '거북바위·화표주 썸네일 다름');
+assert.notEqual(jsYongma?.imageUrl, jsHwapyo?.imageUrl, '용마소·화표주 썸네일 다름');
+
+const jeongseonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '화암8경', {
+  injectLocalScenic: true,
+});
+const jeongseonGlobeEight = jeongseonGlobe.filter(
+  (s) => s.localScenicListId === 'jeongseon-palgyeong',
+);
+assert.equal(jeongseonGlobeEight.length, 8, '정선 검색 화암8경 8행');
+assert.ok(
+  jeongseonGlobe.find((s) => s.attractionName === '거북바위')?.overview?.includes('수호'),
+  '정선 검색 8경 거북바위 개요',
+);
+assert.ok(
+  jeongseonGlobe.find((s) => s.attractionName === '용마소')?.imageUrl?.includes('img-yongmaso.jpg'),
+  '정선 검색 8경 용마소 썸네일',
+);
+assert.ok(
+  jeongseonGlobe.find((s) => s.attractionName === '화표주')?.overview?.includes('짚신'),
+  '정선 검색 8경 화표주 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

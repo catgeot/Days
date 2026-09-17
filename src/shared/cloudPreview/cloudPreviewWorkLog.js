@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 57,
-  sessionPhase: '정읍 결손 오버레이',
+  sessionNo: 58,
+  sessionPhase: '정선 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jeongeup',
+  previewPath: '/korea/theme/scenic?hub=jeongseon',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-17-palgyeong-use-58-jeongseon-overlays',
+    session: '팔경 활용 #58, 정선 결손 오버레이',
+    title: '화암8경 거북바위·용마소·화표주 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 화암8경 결손 3건(거북바위·용마소·화표주)의 공공 공식 팩트 개요·주소·정선군 공식 화암8경 사진을 보강했습니다. 거북바위는 화암리 336-1 약수 진입로 오른쪽 절벽 위 둘레 6m 수호 바위(2경), 용마소는 화암리 1306-1 그림바위 앞 반석 소·아기장수 전설 용사소(3경), 화표주는 화암리 329-4 화표동 삼거리 돌기둥 두 개(5경)입니다. 여수 거북바위·정읍 용산호·소금강 기암과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jeongseon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-17T12:50:00.000Z',
+  },
   {
     id: '2026-09-17-palgyeong-use-57-jeongeup-overlays',
     session: '팔경 활용 #57, 정읍 결손 오버레이',
