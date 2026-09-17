@@ -84,8 +84,9 @@
 | **#8** | `종각역 숙소 #8` | 최초 진입 거리 | `cursor/jonggak-yeonsinnae-cacc` | 연신내역 내역 오탐 · Photon 첫 진입 반영 · PR [#269](https://github.com/catgeot/Days/pull/269) merge `4884e4aa` ✅ |
 | **#9** | `종각역 숙소 #9` | 검색 카드 검은 화면 | `cursor/jonggak-yeonsinnae-cacc` | `fetchKey` TDZ · PR [#269](https://github.com/catgeot/Days/pull/269) merge `4884e4aa` ✅ |
 | **#11** | `종각역 숙소 #11` | 강원대 춘천 숙소 | `cursor/kangwon-univ-stay-e48d` | 양양 동해수련원 오탐 → 춘천 본교 · PR [#271](https://github.com/catgeot/Days/pull/271) |
-| **#13** | `종각역 숙소 #13` | 동해수련원 검색 | `cursor/kangwon-univ-stay-e48d` | AI 평창·망상 오탐 → 위성 SSOT · PR [#271](https://github.com/catgeot/Days/pull/271) |
 | **#12** | `종각역 숙소 #12` | 강원대 장소카드 | `cursor/kangwon-univ-stay-e48d` | 숙소는 춘천·카드는 금강리 → 본교 영문명 · PR [#271](https://github.com/catgeot/Days/pull/271) |
+| **#13** | `종각역 숙소 #13` | 동해수련원 검색 | `cursor/kangwon-univ-stay-e48d` | AI 평창·망상 오탐 → 위성 SSOT · PR [#271](https://github.com/catgeot/Days/pull/271) merge `02abc6b2` ✅ |
+| **#14** | `종각역 숙소 #14` | 광천선굴 광주 오탐 | `cursor/gwangcheon-cave-stay-6560` | 광천동굴→광주 광천동 · 평창 선굴 SSOT · PR [#273](https://github.com/catgeot/Days/pull/273) |
 
 ---
 
@@ -94,12 +95,12 @@
 ### 다음 세션 제시어
 
 ```
-종각역 숙소 #13, Preview OK면 PR 병합
+종각역 숙소 #14, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/2026-09-16-project-log.md
+@plans/2026-09-17-project-log.md
 @plans/korea-station-stay-plan.md
-브랜치 cursor/kangwon-univ-stay-e48d · PR #271 · Preview /
+브랜치 cursor/gwangcheon-cave-stay-6560 · PR #273 · Preview /qa/gwangcheon-stay
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview「강원대학교」춘천·카드 Kangwon National University 확인. 「강원대학교 동해수련원」→ 양양 동해수련원 바로 핀(평창·망상 리스트·재검색 스피너 없음). 둘 다 OK면 PR #271 병합.
-검증: npm run smoke:mrt-stay PASS · vite build PASS
+작업: Preview 홈「광천성굴」「광천동굴」→ 평창 광천선굴(광주 광천동 아님). 숙소 찾기 → 광주 금호 피아노·광주역 호텔이 아닌지. OK면 PR #273 병합.
+검증: npm run smoke:mrt-stay PASS · smoke:explore-search-aliases PASS · vite build PASS
 ```
