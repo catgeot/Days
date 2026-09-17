@@ -18,26 +18,26 @@
 
 | | |
 |--|--|
-| **상태** | **#13 동해수련원 검색** · tip `46118fbe` · PR [#271](https://github.com/catgeot/Days/pull/271) · **사람 Preview** |
-| **브랜치** | `cursor/kangwon-univ-stay-e48d` |
+| **상태** | **#14 광천선굴 광주 오탐** · tip `3c4724cf` · PR [#273](https://github.com/catgeot/Days/pull/273) · **사람 Preview** |
+| **브랜치** | `cursor/gwangcheon-cave-stay-6560` |
 | **플랜** | [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) **§9** |
-| **일지** | [`2026-09-16-project-log.md`](./2026-09-16-project-log.md) |
-| **Preview** | git Preview `/` — 「강원대학교」춘천 · 「강원대학교 동해수련원」양양 바로 핀 |
-| **소유** | `mrtStayQuery.js` `resolveKoUniversitySatelliteAlias` · `useHomeHandlers.js` · `geocoding.js` |
+| **일지** | [`2026-09-17-project-log.md`](./2026-09-17-project-log.md) |
+| **Preview** | `/qa/gwangcheon-stay` → git Preview `/` — 「광천성굴」「광천동굴」평창 광천선굴 · 숙소 광주 아님 |
+| **소유** | `mrtStayQuery.js` `resolveKoScenicPoiAlias` · `cityAttractionHubs.json` 평창 광천선굴 · `geocoding.js` · `useHomeHandlers.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:mrt-stay` PASS · `npx vite build` PASS |
+| **VERIFY** | `npm run smoke:mrt-stay` PASS · `npm run smoke:explore-search-aliases` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-종각역 숙소 #13, Preview OK면 PR 병합
+종각역 숙소 #14, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/2026-09-16-project-log.md
+@plans/2026-09-17-project-log.md
 @plans/korea-station-stay-plan.md
-브랜치 cursor/kangwon-univ-stay-e48d · PR #271 · Preview /
+브랜치 cursor/gwangcheon-cave-stay-6560 · PR #273 · Preview /qa/gwangcheon-stay
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview「강원대학교」춘천·카드 Kangwon National University 확인. 「강원대학교 동해수련원」→ 양양 동해수련원 바로 핀(평창·망상 리스트·재검색 스피너 없음). 둘 다 OK면 PR #271 병합.
-검증: npm run smoke:mrt-stay PASS · vite build PASS
+작업: Preview 홈「광천성굴」「광천동굴」→ 평창 광천선굴(광주 광천동 아님). 숙소 찾기 → 광주 금호 피아노·광주역 호텔이 아닌지. OK면 PR #273 병합.
+검증: npm run smoke:mrt-stay PASS · smoke:explore-search-aliases PASS · vite build PASS
 ```
 
 ---
