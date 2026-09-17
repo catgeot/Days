@@ -3484,6 +3484,133 @@ assert.ok(
   '명승홈 검색 용궁시장이 회룡포 사진을 덮음',
 );
 
+const incheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'incheon');
+const incheonNine = incheonMerged.filter((s) => s.localScenicListId === 'incheon-gugyeong');
+assert.equal(incheonNine.length, 9, '인천9경 9명');
+assert.equal(incheonNine[0]?.groupTitle, '인천 구경');
+const incheonDeficitNames = [
+  '인천 계양 아라온',
+  '인천 영종 씨사이드파크',
+  '인천 강화읍 원도심',
+];
+const incheonDeficit = incheonNine.filter((s) => incheonDeficitNames.includes(s.attractionName));
+assert.equal(incheonDeficit.length, 3, '인천9경 결손 3명');
+assert.ok(
+  incheonDeficit.every((s) => s.overview && s.imageUrl),
+  '인천 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  incheonDeficit.every((s) => !s.contentId),
+  '인천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(incheonDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '인천 결손 3명 썸네일 서로 다름',
+);
+
+const icAraon = resolveLocalScenicListSpotById('local-scenic:incheon-gugyeong:인천계양아라온');
+assert.ok(icAraon?.overview?.includes('장기동 109-1'), '인천 아라온 주소');
+assert.ok(icAraon?.overview?.includes('황어광장'), '인천 아라온 overlay 황어광장');
+assert.ok(icAraon?.overview?.includes('수향원'), '인천 아라온 overlay 수향원');
+assert.ok(icAraon?.overview?.includes('아라폭포'), '인천 아라온≠아라폭포 구분');
+assert.ok(icAraon?.imageUrl?.includes('giwaterway'), '인천 아라온 경인아라뱃길 사진');
+
+const icSeaside = resolveLocalScenicListSpotById('local-scenic:incheon-gugyeong:인천영종씨사이드파크');
+assert.ok(icSeaside?.overview?.includes('구읍로 75'), '인천 씨사이드파크 주소');
+assert.ok(icSeaside?.overview?.includes('5.6km'), '인천 씨사이드파크 overlay 5.6km');
+assert.ok(icSeaside?.overview?.includes('을왕리'), '인천 씨사이드파크≠을왕리 구분');
+assert.ok(icSeaside?.imageUrl?.includes('2609702'), '인천 씨사이드파크 Tour 사진');
+
+const icGanghwa = resolveLocalScenicListSpotById('local-scenic:incheon-gugyeong:인천강화읍원도심');
+assert.ok(icGanghwa?.overview?.includes('용흥궁'), '인천 강화읍 원도심 overlay 용흥궁');
+assert.ok(icGanghwa?.overview?.includes('고려궁지'), '인천 강화읍 원도심 overlay 고려궁지');
+assert.ok(icGanghwa?.overview?.includes('전등사'), '인천 강화읍 원도심≠전등사 구분');
+assert.ok(icGanghwa?.imageUrl?.includes('storywalk1'), '인천 강화읍 원도심 스토리워크 사진');
+
+assert.notEqual(icAraon?.imageUrl, icSeaside?.imageUrl, '아라온·씨사이드파크 썸네일 다름');
+assert.notEqual(icAraon?.imageUrl, icGanghwa?.imageUrl, '아라온·강화읍 원도심 썸네일 다름');
+assert.notEqual(icSeaside?.imageUrl, icGanghwa?.imageUrl, '씨사이드파크·강화읍 원도심 썸네일 다름');
+
+const incheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '인천9경', {
+  injectLocalScenic: true,
+});
+const incheonGlobeNine = incheonGlobe.filter((s) => s.localScenicListId === 'incheon-gugyeong');
+assert.equal(incheonGlobeNine.length, 9, '인천 검색 인천9경 9행');
+assert.ok(
+  incheonGlobe.find((s) => s.attractionName === '인천 계양 아라온')?.overview?.includes('빛의 거리'),
+  '인천 검색 9경 아라온 개요',
+);
+assert.ok(
+  incheonGlobe.find((s) => s.attractionName === '인천 영종 씨사이드파크')?.imageUrl?.includes('2609702'),
+  '인천 검색 9경 씨사이드파크 썸네일',
+);
+assert.ok(
+  incheonGlobe.find((s) => s.attractionName === '인천 강화읍 원도심')?.overview?.includes('도보해설'),
+  '인천 검색 9경 강화읍 원도심 개요',
+);
+
+const yangguMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yanggu');
+const yangguNine = yangguMerged.filter((s) => s.localScenicListId === 'yanggu-gugyeong');
+assert.equal(yangguNine.length, 9, '양구9경 9명');
+assert.equal(yangguNine[0]?.groupTitle, '양구 구경');
+const yangguDeficitNames = ['양구 수목원', '양구 봉화산', '양구 상무룡 출렁다리'];
+const yangguDeficit = yangguNine.filter((s) => yangguDeficitNames.includes(s.attractionName));
+assert.equal(yangguDeficit.length, 3, '양구9경 결손 3명');
+assert.ok(
+  yangguDeficit.every((s) => s.overview && s.imageUrl),
+  '양구 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  yangguDeficit.every((s) => !s.contentId),
+  '양구 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yangguDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '양구 결손 3명 썸네일 서로 다름',
+);
+
+const ygArb = resolveLocalScenicListSpotById('local-scenic:yanggu-gugyeong:양구수목원');
+assert.ok(ygArb?.overview?.includes('숨골로310번길 132'), '양구 수목원 주소');
+assert.ok(ygArb?.overview?.includes('도내 6번째 공립 수목원'), '양구 수목원 overlay 공립 수목원');
+assert.ok(ygArb?.overview?.includes('구례 수목원'), '양구 수목원≠구례 수목원 구분');
+assert.ok(ygArb?.imageUrl?.includes('img_introduce_01'), '양구 수목원 공식 홈 사진');
+
+const ygBong = resolveLocalScenicListSpotById('local-scenic:yanggu-gugyeong:양구봉화산');
+assert.ok(ygBong?.overview?.includes('국토정중앙면 죽리'), '양구 봉화산 주소');
+assert.ok(ygBong?.overview?.includes('875m'), '양구 봉화산 overlay 875m');
+assert.ok(ygBong?.overview?.includes('중랑 봉화산'), '양구 봉화산≠서울 중랑 봉화산 구분');
+assert.ok(ygBong?.imageUrl?.includes('7-2.jpg'), '양구 봉화산 협회 7경 사진');
+
+const ygBridge = resolveLocalScenicListSpotById('local-scenic:yanggu-gugyeong:양구상무룡출렁다리');
+assert.ok(ygBridge?.overview?.includes('간척월명로 1719-21'), '양구 상무룡 출렁다리 주소');
+assert.ok(ygBridge?.overview?.includes('335m'), '양구 상무룡 출렁다리 overlay 335m');
+assert.ok(ygBridge?.overview?.includes('백아산 하늘다리'), '양구 상무룡≠화순 하늘다리 구분');
+assert.ok(ygBridge?.imageUrl?.includes('8-4.png'), '양구 상무룡 출렁다리 협회 8경 사진');
+
+assert.notEqual(ygArb?.imageUrl, ygBong?.imageUrl, '수목원·봉화산 썸네일 다름');
+assert.notEqual(ygArb?.imageUrl, ygBridge?.imageUrl, '수목원·상무룡 썸네일 다름');
+assert.notEqual(ygBong?.imageUrl, ygBridge?.imageUrl, '봉화산·상무룡 썸네일 다름');
+
+const yangguGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '양구9경', {
+  injectLocalScenic: true,
+});
+const yangguGlobeNine = yangguGlobe.filter((s) => s.localScenicListId === 'yanggu-gugyeong');
+assert.equal(yangguGlobeNine.length, 9, '양구 검색 양구9경 9행');
+assert.ok(
+  yangguGlobe.find((s) => s.attractionName === '양구 수목원')?.overview?.includes('공립 수목원'),
+  '양구 검색 9경 수목원 개요',
+);
+assert.ok(
+  yangguGlobe.find((s) => s.attractionName === '양구 봉화산')?.imageUrl?.includes('7-2.jpg'),
+  '양구 검색 9경 봉화산 썸네일',
+);
+assert.ok(
+  yangguGlobe.find((s) => s.attractionName === '양구 상무룡 출렁다리')?.overview?.includes('파로호'),
+  '양구 검색 9경 상무룡 출렁다리 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
