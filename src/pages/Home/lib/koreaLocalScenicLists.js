@@ -1462,6 +1462,17 @@ const IC_GANGHWA_TOUR = 'https://www.ganghwa.go.kr/open_content/tour/images/cont
 const IC_GANGHWA = `${IC_GANGHWA_TOUR}/photo/storywalk1.jpg`;
 const IC_GANGHWA_2 = `${IC_GANGHWA_TOUR}/photo/storywalk2.jpg`;
 const IC_GANGHWA_3 = `${IC_GANGHWA_TOUR}/historytour0804.jpg`;
+const YG_ECO = 'https://www.yg-eco.kr/images/sub';
+const YG_ARB = `${YG_ECO}/img_introduce_01.png`;
+const YG_ARB_2 = `${YG_ECO}/img_introduce_02.png`;
+const YG_DMZ = 'https://www.ygdmz.co.kr/common/img';
+const YG_ARB_3 = `${YG_DMZ}/1-3.jpg`;
+const YG_BONG = `${YG_DMZ}/7-2.jpg`;
+const YG_BONG_2 = `${YG_DMZ}/7-3.jpg`;
+const YG_BONG_3 = `${YG_DMZ}/7-4.jpg`;
+const YG_BRIDGE = `${YG_DMZ}/8-4.png`;
+const YG_BRIDGE_2 = `${YG_DMZ}/8-2.jpg`;
+const YG_BRIDGE_3 = `${YG_DMZ}/8-5.jpg`;
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3083,6 +3094,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '인천광역시 강화군 강화읍 강화대로 394 일원 (원도심 도보해설·용흥궁)',
     IC_GANGHWA,
     [IC_GANGHWA_2, IC_GANGHWA_3],
+  ),
+  'local-scenic:yanggu-gugyeong:양구수목원': localScenicPhotoOverlay(
+    '양구9경 1경 양구 수목원은 동면 원당리 대암산 자락입니다. 양구군 문화관광은 도내 6번째 공립 수목원으로 등록되어 1,000여 종의 나무와 식물을 한곳에서 감상할 수 있다고 적습니다. 2004년 생태 식물원 조성을 시작으로 DMZ야생동물생태관·DMZ야생화분재원·목재문화체험관·DMZ무장애나눔길·생태 탐방로가 어우러진 자연 중심 수목원입니다. 해발 450m이며 주소는 숨골로310번길 132입니다. 숲 키움터(멸종위기 식물 보전원·유리온실)·숲 놀이터(우주 콘셉트 놀이터)·숲 배움터(야생화 정원)로 나뉩니다. 옛 이름 양구자연생태공원입니다. 구례 수목원·홍성 그림같은수목원·거제식물원·광릉 국립수목원과 다른 양구 동면 공립 수목원입니다. 사진은 양구수목원 공식 홈·양구 DMZ 생태관광협회 1경 공식 사진입니다.',
+    '강원특별자치도 양구군 동면 숨골로310번길 132 (양구수목원)',
+    YG_ARB,
+    [YG_ARB_2, YG_ARB_3],
+  ),
+  'local-scenic:yanggu-gugyeong:양구봉화산': localScenicPhotoOverlay(
+    '양구9경 7경 양구 봉화산은 국토정중앙면 죽리입니다. 양구군 문화관광은 도심 정남향 해발 875m 산이며, 정상에서 양구시가지와 사명산·대암산 자락을 조망한다고 적습니다. 이름은 조선 선조 37년(1604) 정상 봉화대에서 유래했습니다. 6·25 전 양남팔경의 봉화낙월(서산 일몰과 남쪽 봉화산의 달)입니다. 정상 서쪽 약 500m·북동쪽 약 200m 초원은 한라산 축소판처럼 시원하고 가을 억새 산행 코스입니다. 산자락 아래 소양호를 조망합니다. 6·25 이후 군부대 사격장이라 평일 등산 불가·주말(공휴일)만 이용합니다. 국토정중앙천문대(박수근로 21-17)·서울 중랑 봉화산·화천 용화산과 다른 양구 국토정중앙면 산입니다. 사진은 양구 DMZ 생태관광협회 7경 공식 사진입니다.',
+    '강원특별자치도 양구군 국토정중앙면 죽리 (양구 봉화산)',
+    YG_BONG,
+    [YG_BONG_2, YG_BONG_3],
+  ),
+  'local-scenic:yanggu-gugyeong:양구상무룡출렁다리': localScenicPhotoOverlay(
+    '양구9경 8경 양구 상무룡 출렁다리는 양구읍 월명리입니다. 양구 DMZ 생태관광협회는 2022년 개통해 월명리와 상무룡2리(서호마을)를 잇는 총 길이 335m 보도 전용 현수교이며, 일부 구간이 강화유리아라 발 아래 파로호를 본다고 적습니다. 주탑 높이 36m입니다. 입구 주소는 간척월명로 1719-21(월명리 산1-53)입니다. 입장·주차 무료입니다. 화순 백아산 하늘다리·금산 월영산 출렁다리·거제 매미성 인근 다리와 다른 파로호 현수교입니다. 사진은 양구 DMZ 생태관광협회 8경 공식 사진입니다.',
+    '강원특별자치도 양구군 양구읍 간척월명로 1719-21 (상무룡 출렁다리)',
+    YG_BRIDGE,
+    [YG_BRIDGE_2, YG_BRIDGE_3],
   ),
 };
 
