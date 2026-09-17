@@ -2,6 +2,16 @@
 
 직전: [`2026-09-16-project-log.md`](./2026-09-16-project-log.md)
 
+## 여행지 매칭 아키텍처 #0 — 다세션 로드맵 수립 및 원격 반영 (Cloud)
+
+- **세션** `여행지 매칭 #0, 다세션 실행 계획서 작성`
+- **배경**: Mapbox/OSM 지오코딩 및 파편화된 오버라이드로 인한 국내 명소 오탐(광천선굴→광주 광천동, 종각역→대구 종각네거리 등)과 TourAPI 갤러리 시설컷 노출 문제를 근본적으로 해소하기 위한 4단계 8세션 로드맵 기획.
+- **완료**:
+  - [`plans/korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) 신규 작성.
+  - Phase 1 (갤러리 시설컷 필터 + 숙소 Geo-Sanity 가드)부터 Phase 4 (SSOT 일원화 + 회귀 방지 E2E)까지 8세션 복붙표 및 기술 명세 확정.
+  - [`plans/feature-handoff-index.md`](./feature-handoff-index.md) 및 [`plans/README.md`](./plans/README.md)에 신규 활성 주제 등록.
+- **다음**: `여행지 매칭 #1, 갤러리 시설컷 정밀 필터` (브랜치 `cursor/dest-match-arch`)
+
 ## 종각역 숙소 #14 — 광천선굴 갤러리 (Cloud)
 
 - **세션** `종각역 숙소 #14, Preview OK면 PR 병합`

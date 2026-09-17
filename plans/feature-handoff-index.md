@@ -14,6 +14,34 @@
 
 ## 활성 목록
 
+### 여행지 매칭 아키텍처
+
+| | |
+|--|--|
+| **상태** | **#0 다세션 플랜 수립 완료** · 세션 #1 대기 |
+| **브랜치** | `cursor/dest-match-arch` (세션 #1에서 신규 생성) |
+| **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) |
+| **일지** | [`2026-09-17-project-log.md`](./2026-09-17-project-log.md) |
+| **Preview** | `/qa/dest-match` (세션 #1 이후) |
+| **소유** | `tourApiPhotoRank.js` · `mrtStayQuery.js` · `geocoding.js` · `usePlaceGallery.js` · `supabase/functions/tourapi-proxy` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `npm run smoke:tourapi` PASS · `smoke:mrt-stay` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
+
+**다음 제시어**:
+
+```
+여행지 매칭 #1, 갤러리 시설컷 정밀 필터
+@plans/feature-handoff-index.md
+@plans/2026-09-17-project-log.md
+@plans/korea-destination-matching-architecture-plan.md
+브랜치 cursor/dest-match-arch · PR 신규 생성 · Preview /qa/dest-match
+금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: tourApiPhotoRank.js 내 화장실/휠체어 등 시설물 네거티브 정규식 강화 및 프록시 imgname 전달 로직 점검. TourAPI 갤러리 시설 사진 배제 스모크 테스트 구현.
+검증: npm run smoke:tourapi PASS · smoke:gallery-portrait-filter PASS · npx vite build PASS
+```
+
+---
+
 ### 종각역 숙소
 
 | | |
