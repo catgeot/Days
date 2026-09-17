@@ -2,6 +2,16 @@
 
 직전: [`2026-09-16-project-log.md`](./2026-09-16-project-log.md)
 
+## 여행지 매칭 #1 — 갤러리 시설컷 정밀 필터 (Cloud)
+
+- **세션** `여행지 매칭 #1, 갤러리 시설컷 정밀 필터`
+- **브랜치** `cursor/dest-match-arch` · tip `854f0a43` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: `TOURAPI_FACILITY_TITLE_RE`에 화장실·세면대·변기·휠체어·점자·유도블록·주차구역·리프트·개찰구·소화기·승강기·피난안내도·복도. 프록시 `imgname` 전달. 무제 CMS는 firstimage만. 장이 적으면 스톡 이어 붙임. 캐시 `v1.23`.
+- **VERIFY**: `npm run smoke:tourapi` PASS · `smoke:gallery-portrait-filter` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 장소 갤러리에 화장실·휠체어·개찰구 없고 전경. Edge `tourapi-proxy` `imgname` 배포는 선택.
+- **다음**: `여행지 매칭 #2, 숙소 거리 가드(Geo-Sanity)`
+
 ## 여행지 매칭 아키텍처 #0 — 다세션 로드맵 수립 및 원격 반영 (Cloud)
 
 - **세션** `여행지 매칭 #0, 다세션 실행 계획서 작성`
