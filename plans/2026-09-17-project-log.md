@@ -2,6 +2,27 @@
 
 직전: [`2026-09-16-project-log.md`](./2026-09-16-project-log.md)
 
+## 종각역 숙소 #14 — 광천선굴 갤러리 (Cloud)
+
+- **세션** `종각역 숙소 #14, Preview OK면 PR 병합`
+- **브랜치** `cursor/gwangcheon-cave-stay-6560` · tip `cc707a2c` · PR [#273](https://github.com/catgeot/Days/pull/273)
+- **원인**: 배포본 「광천동굴」은 Tour contentId가 없어 Unsplash 종유석이 나왔고, Preview 광천선굴은 TourAPI `2987914` detailImage 4장이 무장애 화장실·휠체어·개찰구라 질이 떨어짐. 프록시가 `imgname`을 버려 전부 동일 점수.
+- **완료**: 시설 컷·무제 CMS는 firstimage만 유지, 장이 적으면 종유석 스톡을 이어 붙임. 캐시 `v1.23`. **PR 미병합**(갤러리 Preview 후).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `smoke:explore-search-aliases` PASS · `smoke:tourapi` PASS · `smoke:place-gallery-pexels` PASS · `smoke:gallery-portrait-filter` PASS · `smoke:gallery-cache-policy` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/gwangcheon-stay → git Preview `/`
+- **QA**: 홈「광천성굴」「광천동굴」→ 평창 광천선굴 · 숙소 광주 아님 · 갤러리에 화장실·휠체어 없고 동굴 전경.
+- **다음**: Preview OK면 PR #273 병합. Edge `tourapi-proxy` `imgname` 배포는 선택.
+
+## 팔경 활용 #58 — 정선 화암8경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #58, 정선 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `1de82ca5` · PR [#275](https://github.com/catgeot/Days/pull/275)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 화암8경 결손 3건(거북바위·용마소·화표주). 거북바위는 화암리 336-1 약수 진입로 오른쪽 절벽 위 둘레 6m 수호 바위(2경), 용마소는 화암리 1306-1 그림바위 앞 반석 소·아기장수 전설 용사소(3경), 화표주는 화암리 329-4 화표동 삼거리 돌기둥 두 개(5경). 여수 거북바위·정읍 용산호·소금강 기암과 구분. 정선 순수 누락 3→0.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=jeongseon`
+- **잔여**: 사진/개요 순수 누락 **55**/876. 다음 허브 **태백8경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #57 — 정읍9경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #57, 정읍 결손 오버레이`

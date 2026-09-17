@@ -40,6 +40,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-17T12:20:00.000Z',
   },
   {
+    id: '2026-09-17-palgyeong-use-57-jeongeup-overlays',
+    session: '팔경 활용 #57, 정읍 결손 오버레이',
+    title: '정읍9경 동학농민혁명기념공원·용산호·월영습지와 솔티숲 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 정읍9경 결손 3건(동학농민혁명기념공원·용산호·월영습지와 솔티숲)의 공공 공식 팩트 개요·주소·정읍시 문화관광·동학농민혁명기념재단·월영습지 생태관광 공식 사진을 보강했습니다. 동학은 덕천면 동학로 742 황토현전적 2022년 개원 공원(4경), 용산호는 신정동 132-11 미르샘다리 642m(6경), 월영습지는 쌍암동 1029·송산동 산112 2014 습지보호지역(8경)입니다. 전주 기념관·임실 옥정호·안동 월영교와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jeongeup 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-17T12:40:00.000Z',
+  },
+  {
     id: '2026-09-17-palgyeong-use-56-yanggu-overlays',
     session: '팔경 활용 #56, 양구 결손 오버레이',
     title: '양구9경 수목원·봉화산·상무룡 출렁다리 결손 오버레이',

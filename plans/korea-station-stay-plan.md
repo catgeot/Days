@@ -86,7 +86,7 @@
 | **#11** | `종각역 숙소 #11` | 강원대 춘천 숙소 | `cursor/kangwon-univ-stay-e48d` | 양양 동해수련원 오탐 → 춘천 본교 · PR [#271](https://github.com/catgeot/Days/pull/271) |
 | **#12** | `종각역 숙소 #12` | 강원대 장소카드 | `cursor/kangwon-univ-stay-e48d` | 숙소는 춘천·카드는 금강리 → 본교 영문명 · PR [#271](https://github.com/catgeot/Days/pull/271) |
 | **#13** | `종각역 숙소 #13` | 동해수련원 검색 | `cursor/kangwon-univ-stay-e48d` | AI 평창·망상 오탐 → 위성 SSOT · PR [#271](https://github.com/catgeot/Days/pull/271) merge `02abc6b2` ✅ |
-| **#14** | `종각역 숙소 #14` | 광천선굴 광주 오탐 | `cursor/gwangcheon-cave-stay-6560` | 광천동굴→광주 광천동 · 평창 선굴 SSOT · PR [#273](https://github.com/catgeot/Days/pull/273) |
+| **#14** | `종각역 숙소 #14` | 광천선굴 광주 오탐·갤러리 | `cursor/gwangcheon-cave-stay-6560` | 평창 선굴 SSOT · Tour 시설컷 제외 · PR [#273](https://github.com/catgeot/Days/pull/273) · tip `cc707a2c` · **미병합** |
 
 ---
 
@@ -101,6 +101,6 @@
 @plans/korea-station-stay-plan.md
 브랜치 cursor/gwangcheon-cave-stay-6560 · PR #273 · Preview /qa/gwangcheon-stay
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 홈「광천성굴」「광천동굴」→ 평창 광천선굴(광주 광천동 아님). 숙소 찾기 → 광주 금호 피아노·광주역 호텔이 아닌지. OK면 PR #273 병합.
-검증: npm run smoke:mrt-stay PASS · smoke:explore-search-aliases PASS · vite build PASS
+작업: Preview 홈「광천성굴」「광천동굴」→ 평창 광천선굴. 숙소 찾기 → 광주 호텔 아님. 장소 갤러리에 화장실·휠체어 없고 동굴 전경이 보이는지. OK면 PR #273 병합.
+검증: npm run smoke:mrt-stay PASS · smoke:explore-search-aliases PASS · smoke:tourapi PASS · vite build PASS
 ```
