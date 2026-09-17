@@ -2,6 +2,17 @@
 
 직전: [`2026-09-16-project-log.md`](./2026-09-16-project-log.md)
 
+## 종각역 숙소 #14 — 광천선굴 갤러리 (Cloud)
+
+- **세션** `종각역 숙소 #14, Preview OK면 PR 병합`
+- **브랜치** `cursor/gwangcheon-cave-stay-6560` · tip `cc707a2c` · PR [#273](https://github.com/catgeot/Days/pull/273)
+- **원인**: 배포본 「광천동굴」은 Tour contentId가 없어 Unsplash 종유석이 나왔고, Preview 광천선굴은 TourAPI `2987914` detailImage 4장이 무장애 화장실·휠체어·개찰구라 질이 떨어짐. 프록시가 `imgname`을 버려 전부 동일 점수.
+- **완료**: 시설 컷·무제 CMS는 firstimage만 유지, 장이 적으면 종유석 스톡을 이어 붙임. 캐시 `v1.23`. **PR 미병합**(갤러리 Preview 후).
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `smoke:explore-search-aliases` PASS · `smoke:tourapi` PASS · `smoke:place-gallery-pexels` PASS · `smoke:gallery-portrait-filter` PASS · `smoke:gallery-cache-policy` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/gwangcheon-stay → git Preview `/`
+- **QA**: 홈「광천성굴」「광천동굴」→ 평창 광천선굴 · 숙소 광주 아님 · 갤러리에 화장실·휠체어 없고 동굴 전경.
+- **다음**: Preview OK면 PR #273 병합. Edge `tourapi-proxy` `imgname` 배포는 선택.
+
 ## 팔경 활용 #58 — 정선 화암8경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #58, 정선 결손 오버레이`

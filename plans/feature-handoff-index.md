@@ -18,14 +18,14 @@
 
 | | |
 |--|--|
-| **상태** | **#14 광천선굴 광주 오탐** · tip `3c4724cf` · PR [#273](https://github.com/catgeot/Days/pull/273) · **사람 Preview** |
+| **상태** | **#14 광천선굴 갤러리** · tip `cc707a2c` · PR [#273](https://github.com/catgeot/Days/pull/273) · **사람 Preview** · **PR 미병합** |
 | **브랜치** | `cursor/gwangcheon-cave-stay-6560` |
 | **플랜** | [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) **§9** |
 | **일지** | [`2026-09-17-project-log.md`](./2026-09-17-project-log.md) |
-| **Preview** | `/qa/gwangcheon-stay` → git Preview `/` — 「광천성굴」「광천동굴」평창 광천선굴 · 숙소 광주 아님 |
-| **소유** | `mrtStayQuery.js` `resolveKoScenicPoiAlias` · `cityAttractionHubs.json` 평창 광천선굴 · `geocoding.js` · `useHomeHandlers.js` |
+| **Preview** | `/qa/gwangcheon-stay` → git Preview `/` — 평창 핀 · 갤러리 화장실·휠체어 아님 · 숙소 광주 아님 |
+| **소유** | `tourApiPhotoRank.js` `keepTourDetailImage` · `usePlaceGallery.js` · `fetchTourApiGallery.js` · `mrtStayQuery.js` · `cityAttractionHubs.json` 평창 광천선굴 |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:mrt-stay` PASS · `npm run smoke:explore-search-aliases` PASS · `npx vite build` PASS |
+| **VERIFY** | `npm run smoke:mrt-stay` PASS · `smoke:explore-search-aliases` PASS · `smoke:tourapi` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
@@ -36,8 +36,8 @@
 @plans/korea-station-stay-plan.md
 브랜치 cursor/gwangcheon-cave-stay-6560 · PR #273 · Preview /qa/gwangcheon-stay
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 홈「광천성굴」「광천동굴」→ 평창 광천선굴(광주 광천동 아님). 숙소 찾기 → 광주 금호 피아노·광주역 호텔이 아닌지. OK면 PR #273 병합.
-검증: npm run smoke:mrt-stay PASS · smoke:explore-search-aliases PASS · vite build PASS
+작업: Preview 홈「광천성굴」「광천동굴」→ 평창 광천선굴. 숙소 찾기 → 광주 호텔 아님. 장소 갤러리에 화장실·휠체어 없고 동굴 전경이 보이는지. OK면 PR #273 병합.
+검증: npm run smoke:mrt-stay PASS · smoke:explore-search-aliases PASS · smoke:tourapi PASS · vite build PASS
 ```
 
 ---
