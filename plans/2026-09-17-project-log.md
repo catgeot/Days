@@ -2,6 +2,17 @@
 
 직전: [`2026-09-16-project-log.md`](./2026-09-16-project-log.md)
 
+## 종각역 숙소 #14 — 광천선굴 광주 오탐 (Cloud)
+
+- **세션** `종각역 숙소 #14, 광천선굴 광주 오탐`
+- **브랜치** `cursor/gwangcheon-cave-stay-6560` · tip `3c4724cf` · PR [#273](https://github.com/catgeot/Days/pull/273)
+- **원인**: 평창 광천선굴(고대동길 119)은 OSM에 없음. 「광천성굴」을 AI가 「광천동굴」로 고친 뒤 지오코더가 광주 서구 광천동을 잡아 광주역·신안동 호텔이 2km로 붙음.
+- **완료**: 평창 허브 명소 SSOT·별칭 바로 핀 · 동굴 검색은 동·동네 거부 · 숙소 키워드·원점 평창 스냅. **PR 미병합**.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `npm run smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/gwangcheon-stay → git Preview `/`
+- **QA**: 홈「광천성굴」「광천동굴」→ 평창 광천선굴. 숙소 찾기 → 광주 금호 피아노 아님.
+- **다음**: Preview OK면 PR #273 병합
+
 ## 팔경 활용 #56 — 양구9경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #56, 양구 결손 오버레이`
