@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-16-jonggak-stay-donghae-training-search',
+    session: '종각역 숙소 #13, Preview OK면 PR 병합',
+    title: '동해수련원 검색 AI 오탐·로딩',
+    detail:
+      '「강원대학교 동해수련원」검색이 지오코딩 실패 후 AI·search_dictionary 무드 캐시로 평창캠퍼스·망상해수욕장을 제안하고, 재검색은 스피너만 돌았습니다. 양양 금강리 위성 별칭으로 바로 핀하고 AI 폴백을 건너뜁니다. Preview 홈 검색「강원대학교 동해수련원」→ 동해수련원 1곳(양양) · 재검색 스피너 없음 · 「강원대학교」는 춘천 유지.',
+    at: '2026-09-16T19:10:00.000Z',
+  },
+  {
     id: '2026-09-16-palgyeong-use-54-yonggung-market-photo',
     session: '팔경 활용 #54, 예천 용궁시장 사진',
     title: '용궁시장 회룡포 사진 교체',
