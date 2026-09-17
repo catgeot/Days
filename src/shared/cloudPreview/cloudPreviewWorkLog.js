@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 57,
-  sessionPhase: '정읍 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jeongeup',
-  qaShareSlug: 'palgyeong-use',
+  title: '여행지 매칭',
+  sessionNo: 1,
+  sessionPhase: '갤러리 시설컷 정밀 필터',
+  branch: 'cursor/dest-match-arch',
+  previewPath: '/',
+  qaShareSlug: 'dest-match',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-17-dest-match-1-facility-filter',
+    session: '여행지 매칭 #1, 갤러리 시설컷 정밀 필터',
+    title: 'TourAPI 화장실·휠체어·개찰구 시설컷 제외',
+    detail:
+      'TourAPI detailImage의 imgname·title에서 화장실·세면대·휠체어·점자·개찰구·리프트·승강기 등 시설 사진을 갤러리에서 뺍니다. 프록시는 imgname을 클라이언트로 넘기고, 장이 적으면 스톡을 이어 붙입니다. Preview /qa/dest-match — 장소 갤러리에 화장실·휠체어가 없고 전경이 보이는지.',
+    at: '2026-09-17T21:56:00.000Z',
+  },
   {
     id: '2026-09-17-palgyeong-use-57-jeongeup-overlays',
     session: '팔경 활용 #57, 정읍 결손 오버레이',

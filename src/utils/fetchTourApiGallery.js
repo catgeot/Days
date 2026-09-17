@@ -1,5 +1,11 @@
 import { supabase } from '../shared/api/supabase';
-import { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
+import {
+  isTourApiFacilityPhotoTitle,
+  keepTourDetailImage,
+  scoreTourPhotoTitle,
+  tourApiPhotoCaption,
+  TOURAPI_MIN_KEEP_SCORE,
+} from './tourApiPhotoRank';
 import { invokeTourApiProxy } from './tourApiProxy';
 
 export { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
@@ -74,7 +80,7 @@ function toGalleryImage(item, kind, index, rankScore = 0) {
   const photographer = String(
     item?.photographer || item?.galPhotographer || '한국관광공사',
   ).trim();
-  const title = String(item?.title || item?.galTitle || '').trim();
+  const title = tourApiPhotoCaption(item);
 
   return {
     id: `tourapi-${kind}-${idBase}-${index}`,
@@ -295,12 +301,14 @@ async function fetchTourApiGalleryInner(opts) {
 
   // 1) detailImage — thumbnailOnly면 이것만으로 충분하면 searchPhoto 생략
   let detailPromise = Promise.resolve(null);
+  let commonPromise = Promise.resolve(null);
   if (contentId && page === 1) {
     detailPromise = invokeTourApi('detailImage', {
       contentId,
       numOfRows: opts?.thumbnailOnly ? 3 : DETAIL_IMAGE_ROWS,
       pageNo: 1,
     });
+    commonPromise = invokeTourApi('detailCommon', { contentId });
   }
 
   // 2) searchPhoto 키워드 — 직렬 → 병렬 (체감 속도 핵심)
@@ -330,31 +338,51 @@ async function fetchTourApiGalleryInner(opts) {
           }).then((photo) => ({ kw, photo }));
         });
 
-  const [detail, ...photoResults] = await Promise.all([
+  const [detail, common, ...photoResults] = await Promise.all([
     detailPromise,
+    commonPromise,
     ...photoPromises,
   ]);
 
+  const firstCommon = common?.items?.[0] || null;
+  const firstimageUrl = String(
+    firstCommon?.firstimage || firstCommon?.imageUrl || '',
+  ).trim();
+
   if (detail?.items?.length) {
     detail.items.forEach((it, i) => {
-      const img = toGalleryImage(it, 'detailImage', i, 80);
+      const caption = tourApiPhotoCaption(it);
+      const imageUrl = String(
+        it?.imageUrl || it?.originimgurl || it?.firstimage || '',
+      ).trim();
+      const { keep, score } = keepTourDetailImage({
+        title: caption,
+        imgname: it?.imgname || it?.imgName,
+        imageUrl,
+        firstimageUrl,
+        placeTitle,
+        keyword,
+      });
+      if (!keep) return;
+      const img = toGalleryImage(
+        caption ? it : { ...it, title: placeTitle },
+        'detailImage',
+        i,
+        score,
+      );
       if (img) detailImages.push(img);
     });
   }
 
-  // detail 비었고 contentId 있으면 firstimage 1장만 (추가 왕복 최소화)
   if (
     contentId &&
     page === 1 &&
     detailImages.length === 0 &&
-    !opts?.thumbnailOnly
+    firstCommon &&
+    !isTourApiFacilityPhotoTitle(tourApiPhotoCaption(firstCommon))
   ) {
-    const common = await invokeTourApi('detailCommon', { contentId });
-    const first = common?.items?.[0];
-    if (first) {
-      const img = toGalleryImage(first, 'detailImage', 0, 70);
-      if (img) detailImages.push(img);
-    }
+    const img = toGalleryImage(firstCommon, 'detailImage', 0, 70);
+    if (img) detailImages.push(img);
   }
 
   // thumbnailOnly + contentId인데 detail 실패 → 기본 keyword 1회
@@ -366,7 +394,7 @@ async function fetchTourApiGalleryInner(opts) {
     });
     let photoIndex = 0;
     for (const it of photo?.items || []) {
-      const title = String(it?.title || it?.galTitle || '');
+      const title = tourApiPhotoCaption(it);
       const score = scoreTourPhotoTitle(title, placeTitle, keyword);
       if (score < TOURAPI_MIN_KEEP_SCORE) continue;
       const img = toGalleryImage(it, 'searchPhoto', photoIndex++, score);
@@ -379,7 +407,7 @@ async function fetchTourApiGalleryInner(opts) {
     if (!result?.photo?.items?.length) continue;
     const { kw, photo } = result;
     for (const it of photo.items) {
-      const title = String(it?.title || it?.galTitle || '');
+      const title = tourApiPhotoCaption(it);
       const score = scoreTourPhotoTitle(title, placeTitle, kw);
       if (score < TOURAPI_MIN_KEEP_SCORE) continue;
       const img = toGalleryImage(it, 'searchPhoto', photoIndex++, score);
