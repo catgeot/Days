@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
-import { isStreetishStayLabel, queryLooksLikeStayPoint } from '../../../utils/mrtStayQuery.js';
+import { isStreetishStayLabel, queryLooksLikeStayPoint, resolveKoUniversitySatelliteAlias, resolveUniversitySearchHits, syntheticUniversitySatellitePlace } from '../../../utils/mrtStayQuery.js';
 import {
   isLikelyMoodQuery,
   shouldSkipGeocodeForMood as shouldSkipGeocodeForMoodIntent,
@@ -752,6 +752,13 @@ export function useHomeHandlers({
       return ensureDisambiguation(query, [locationToChoiceCandidate(loc)], title);
     };
 
+    const satelliteAlias = resolveKoUniversitySatelliteAlias(query);
+    if (satelliteAlias) {
+      const pin = syntheticUniversitySatellitePlace(query, satelliteAlias);
+      handleLocationSelect(pin);
+      return pin;
+    }
+
     let koHomonymPlaceTried = false;
 
     if (requireChoice) {
@@ -1114,7 +1121,10 @@ export function useHomeHandlers({
               // keep visited names
             }
           }
-          const readyVisited = mergedVisited.filter((spot) => !visitedSpotNeedsGeoCountry(spot));
+          const readyVisited = resolveUniversitySearchHits(
+            query,
+            mergedVisited.filter((spot) => !visitedSpotNeedsGeoCountry(spot)),
+          );
           if (readyVisited.length >= 1) {
             return requireChoice || readyVisited.length >= 2
               ? makeDisambiguationResult(query, readyVisited, {
@@ -1177,7 +1187,10 @@ export function useHomeHandlers({
             if (requireChoice || (distinct.length >= 2 && ambiguous)) {
               const geoName = String(coords.name || query).trim();
               const geoKey = geoName.toLowerCase().replace(/\s+/g, '');
-              const withLatin = overlayGeocodeLatinOnHits(distinct, coords);
+              const withLatin = resolveUniversitySearchHits(
+                query,
+                overlayGeocodeLatinOnHits(distinct, coords),
+              );
               const sameAsGeocode = withLatin.some(
                 (hit) =>
                   samePlaceCenter(hit, coords) ||
@@ -1280,7 +1293,8 @@ export function useHomeHandlers({
           cachedDict &&
           cachedDict.location_data &&
           !cacheLooksLikeAdminCollapse &&
-          !queryLooksLikeStayPoint(query)
+          !queryLooksLikeStayPoint(query) &&
+          !resolveKoUniversitySatelliteAlias(query)
         ) {
           console.log(`[Smart Search DB Cache] "${query}" -> "${cachedDict.corrected_query}" (캐시 적중)`);
           const parsedData = cachedDict.location_data;

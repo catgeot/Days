@@ -3,7 +3,7 @@
  * GlobeStayStrip 카드 뱃지·추천순 거리 가중 · 순수 함수(스모크 가능).
  */
 
-import { resolveKoStationAlias } from './mrtStayQuery.js';
+import { resolveKoStationAlias, universityAliasFromLocation, UNIVERSITY_CAMPUS_MAX_KM } from './mrtStayQuery.js';
 
 export const STAY_GEOCODE_MAX_KM = 8;
 
@@ -148,22 +148,29 @@ export function parseStayCoordPair(item) {
  * @returns {{ lat: number, lng: number, label: string } | null}
  */
 export function resolveMrtStayOrigin(location, label = '') {
-  const alias =
+  const stationAlias =
     resolveKoStationAlias(location?.originalQuery) ||
     resolveKoStationAlias(location?.name) ||
     resolveKoStationAlias(location?.name_ko);
+  const universityAlias = universityAliasFromLocation(location);
   const parsed = parseStayCoordPair(location);
   const display = String(
-    label || location?.name || location?.name_ko || alias?.station || '',
+    label || location?.name || location?.name_ko || stationAlias?.station || universityAlias?.campus || '',
   ).trim();
-  const aliasLat = finiteCoord(alias?.lat);
-  const aliasLng = finiteCoord(alias?.lng);
-  if (isPlausibleWgs84(aliasLat, aliasLng)) {
-    if (!parsed) return { lat: aliasLat, lng: aliasLng, label: display || alias.station };
-    if (haversineKm(parsed.lat, parsed.lng, aliasLat, aliasLng) > STAY_GEOCODE_MAX_KM) {
-      return { lat: aliasLat, lng: aliasLng, label: display || alias.station };
+  const snapAlias = (alias, maxKm) => {
+    const aliasLat = finiteCoord(alias?.lat);
+    const aliasLng = finiteCoord(alias?.lng);
+    if (!isPlausibleWgs84(aliasLat, aliasLng)) return null;
+    if (!parsed) return { lat: aliasLat, lng: aliasLng, label: display || alias.campus || alias.station };
+    if (haversineKm(parsed.lat, parsed.lng, aliasLat, aliasLng) > maxKm) {
+      return { lat: aliasLat, lng: aliasLng, label: display || alias.campus || alias.station };
     }
-  }
+    return null;
+  };
+  const stationSnap = snapAlias(stationAlias, STAY_GEOCODE_MAX_KM);
+  if (stationSnap) return stationSnap;
+  const campusSnap = snapAlias(universityAlias, UNIVERSITY_CAMPUS_MAX_KM);
+  if (campusSnap) return campusSnap;
   if (!parsed) return null;
   return { ...parsed, label: display };
 }

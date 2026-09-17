@@ -12,9 +12,15 @@ import { isLatinPlaceName, mergeLatinPlaceFields } from './uiPlaceAssetQuery.js'
 import {
   queryLooksLikeStayPoint,
   resolveKoStationAlias,
+  resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
   stationNameMatchesQuery,
   nominatimStationScoreDelta,
   nominatimSquarePenalty,
+  nominatimUniversityScoreDelta,
+  universitySearchHitPenalty,
+  universityAliasFitsPlace,
+  applyUniversityCampusPlace,
 } from '../../../utils/mrtStayQuery.js';
 
 const RETRY_FILTERS = [
@@ -26,7 +32,7 @@ const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_
 
 /** 세부 시설·명소 쿼리 — 행정구역(군/시)으로 축소·스냅하면 안 되는 입력 */
 export const FACILITY_QUERY_RE =
-  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크/i;
+  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크|수련원|연수원/i;
 
 /** 유명 랜드마크 — 도시 SSOT·country=kr 우선으로 묶이면 안 됨 */
 export const LANDMARK_QUERY_RE =
@@ -134,6 +140,12 @@ export function expandForwardQueryAliases(query) {
   const stationAlias = resolveKoStationAlias(q);
   if (stationAlias?.station) add(stationAlias.station);
 
+  const universityAlias = resolveKoUniversityAlias(q);
+  if (universityAlias?.campus) add(universityAlias.campus);
+
+  const satelliteAlias = resolveKoUniversitySatelliteAlias(q);
+  if (satelliteAlias?.name) add(satelliteAlias.name);
+
   const explore = resolveExploreSearchAlias(q);
   if (explore?.canonical) add(explore.canonical);
   if (explore?.romanized) add(explore.romanized);
@@ -228,6 +240,7 @@ const calculatePlaceScore = (place, query = '') => {
   if (address.suburb || address.borough || address.quarter || address.city_district) score -= 30;
   score += nominatimStationScoreDelta(query, place);
   score += nominatimSquarePenalty(query, place);
+  score += nominatimUniversityScoreDelta(query, place);
   if (type === "administrative" && address.borough) score -= 20;
   if (facilityQ && (cls === 'boundary' || type === 'administrative')) score -= 80;
   if (facilityQ && (type === 'townhall' || /시청|구청|도청|군청/.test(String(place.name || '')))) {
@@ -303,6 +316,17 @@ const scoreMapboxFeature = (feature, searchQuery, facilityQ, landmarkPlan = null
     if (/대구|부산|대전|광주/.test(label) && !/서울|종로/.test(label)) score -= 120;
   }
 
+  const universityAlias = resolveKoUniversityAlias(searchQuery);
+  if (universityAlias) {
+    const [lng, lat] = Array.isArray(feature?.center) ? feature.center : [];
+    score -= universitySearchHitPenalty(searchQuery, {
+      name: text,
+      name_en: placeName,
+      lat,
+      lng,
+    });
+  }
+
   return score;
 };
 
@@ -337,9 +361,13 @@ function mapboxFitsStationAlias(parsed, alias) {
   return /서울/.test(blob);
 }
 
+function mapboxFitsUniversityAlias(parsed, alias, query = '') {
+  return universityAliasFitsPlace(alias, parsed, query);
+}
+
 const fetchMapboxGeocodeFeatures = async (
   searchQuery,
-  { countrycodes = '', landmarkPlan = null, language = 'ko' } = {},
+  { countrycodes = '', landmarkPlan = null, language = 'ko', proximity = '' } = {},
 ) => {
   const encoded = encodeURIComponent(searchQuery);
   const params = new URLSearchParams({
@@ -350,6 +378,7 @@ const fetchMapboxGeocodeFeatures = async (
   });
   if (countrycodes) params.set('country', countrycodes);
   if (landmarkPlan) params.set('types', 'poi');
+  if (proximity) params.set('proximity', proximity);
 
   const response = await fetch(
     `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?${params}`,
@@ -432,11 +461,11 @@ const sameMapboxCenter = (a, b, maxDeg = 0.08) => {
 /** Mapbox Geocoding — 지구본 라벨·POI와 같은 인덱스. ko+en으로 name_en 라틴 확보 */
 const fetchMapboxForward = async (
   searchQuery,
-  { countrycodes = '', landmarkPlan = null } = {},
+  { countrycodes = '', landmarkPlan = null, proximity = '' } = {},
 ) => {
   if (!MAPBOX_TOKEN || !searchQuery) return null;
   try {
-    const opts = { countrycodes, landmarkPlan };
+    const opts = { countrycodes, landmarkPlan, proximity };
     const [koFeatures, enFeatures] = await Promise.all([
       fetchMapboxGeocodeFeatures(searchQuery, { ...opts, language: 'ko' }),
       fetchMapboxGeocodeFeatures(searchQuery, { ...opts, language: 'en' }),
@@ -453,14 +482,17 @@ const fetchMapboxForward = async (
 
     const parsed = parseMapboxForwardPlace(feature, searchQuery);
     if (!parsed) return null;
-    if (isLatinPlaceName(parsed.name_en)) return parsed;
-
-    const enMatch =
-      enFeatures.find((f) => f?.id && f.id === feature.id) ||
-      enFeatures.find((f) => sameMapboxCenter(f, feature));
-    if (!enMatch) return parsed;
-    const parsedEn = parseMapboxForwardPlace(enMatch, searchQuery);
-    return mergeLatinPlaceFields(parsed, parsedEn);
+    let resolved = parsed;
+    if (!isLatinPlaceName(parsed.name_en)) {
+      const enMatch =
+        enFeatures.find((f) => f?.id && f.id === feature.id) ||
+        enFeatures.find((f) => sameMapboxCenter(f, feature));
+      if (enMatch) {
+        const parsedEn = parseMapboxForwardPlace(enMatch, searchQuery);
+        resolved = mergeLatinPlaceFields(parsed, parsedEn);
+      }
+    }
+    return applyUniversityCampusPlace(searchQuery, resolved);
   } catch (error) {
     console.warn('Mapbox forward geocoding failed:', error);
     return null;
@@ -524,16 +556,21 @@ export const getCoordinatesFromAddress = async (query) => {
     const cleanQuery = standardizeName(query);
     const landmarkQ = LANDMARK_QUERY_RE.test(cleanQuery);
 
+    const universityAlias = resolveKoUniversityAlias(cleanQuery);
+    const campusProximity =
+      universityAlias ? `${universityAlias.lng},${universityAlias.lat}` : '';
+
     const tryMapboxBundle = async (q) => {
       if (!MAPBOX_TOKEN) return null;
       let mapboxHit = null;
       const skipKrFirst = LANDMARK_QUERY_RE.test(q) || isIslandPlaceQuery(q);
+      const forwardOpts = campusProximity ? { proximity: campusProximity } : {};
       // 한글 국내 지명은 KR 우선. 해외 섬·랜드마크는 글로벌만 (사바섬→사바 사헤브 방지)
       if (HAS_HANGUL_RE.test(q) && !skipKrFirst) {
-        mapboxHit = await fetchMapboxForward(q, { countrycodes: 'kr' });
+        mapboxHit = await fetchMapboxForward(q, { countrycodes: 'kr', ...forwardOpts });
       }
       if (!mapboxHit) {
-        mapboxHit = await fetchMapboxForward(q);
+        mapboxHit = await fetchMapboxForward(q, forwardOpts);
       }
       return mapboxHit;
     };
@@ -579,18 +616,31 @@ export const getCoordinatesFromAddress = async (query) => {
       }
     }
 
+    if (universityAlias?.campus && universityAlias.campus !== cleanQuery) {
+      const campusMapbox = await tryMapboxBundle(universityAlias.campus);
+      if (campusMapbox && mapboxFitsUniversityAlias(campusMapbox, universityAlias, cleanQuery)) {
+        return campusMapbox;
+      }
+    }
+
     const primaryMapbox = await tryMapboxBundle(cleanQuery);
-    if (primaryMapbox && mapboxFitsStationAlias(primaryMapbox, stationAlias)) {
+    if (
+      primaryMapbox &&
+      mapboxFitsStationAlias(primaryMapbox, stationAlias) &&
+      mapboxFitsUniversityAlias(primaryMapbox, universityAlias, cleanQuery)
+    ) {
       return primaryMapbox;
     }
 
     // 한글 지명: KR 우선 (횡성 저수지 → 폴란드 Holy Cross 오탐 방지). 실패 시 AI 폴백.
-    let data = await tryNominatimBundle(
-      stationAlias?.station && stationAlias.station !== cleanQuery
-        ? stationAlias.station
-        : cleanQuery,
-    );
-    if (!data && stationAlias?.station && stationAlias.station !== cleanQuery) {
+    const nominatimQuery =
+      universityAlias?.campus && universityAlias.campus !== cleanQuery
+        ? universityAlias.campus
+        : stationAlias?.station && stationAlias.station !== cleanQuery
+          ? stationAlias.station
+          : cleanQuery;
+    let data = await tryNominatimBundle(nominatimQuery);
+    if (!data && nominatimQuery !== cleanQuery) {
       data = await tryNominatimBundle(cleanQuery);
     }
 
@@ -598,7 +648,12 @@ export const getCoordinatesFromAddress = async (query) => {
     if (!data) {
       for (const alt of expandForwardQueryAliases(cleanQuery)) {
         const altMapbox = await tryMapboxBundle(alt);
-        if (altMapbox) return altMapbox;
+        if (
+          altMapbox &&
+          mapboxFitsUniversityAlias(altMapbox, universityAlias, cleanQuery)
+        ) {
+          return altMapbox;
+        }
         data = await tryNominatimBundle(alt);
         if (data) {
           console.log(`🔄 Alias geocode: "${cleanQuery}" → "${alt}"`);
@@ -680,7 +735,7 @@ export const getCoordinatesFromAddress = async (query) => {
 
     const stayAdmin = buildStayAdminFromOsmAddress(address, address);
 
-    return {
+    return applyUniversityCampusPlace(cleanQuery, {
       lat: parseFloat(topResult.lat),
       lng: parseFloat(topResult.lon),
       name: placeName,
@@ -692,7 +747,7 @@ export const getCoordinatesFromAddress = async (query) => {
       osm_class: topResult.class || '',
       osm_type: topResult.type || '',
       ...(stayAdmin ? { stayAdmin } : {}),
-    };
+    });
   } catch (error) {
     console.error("Forward Geocoding error:", error);
     return null;
