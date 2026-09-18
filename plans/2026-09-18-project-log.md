@@ -5,11 +5,11 @@
 ## 여행지 매칭 #6 — 동음이의어 다후보 리스트업 (Cloud)
 
 - **세션** `여행지 매칭 #6, 동음이의어 다후보 리스트업`
-- **브랜치** `cursor/dest-match-arch` · tip `0eecf896` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **브랜치** `cursor/dest-match-arch` · tip `51fb8518` · 로직 `0eecf896` · PR [#276](https://github.com/catgeot/Days/pull/276)
 - **완료**: `koreaHomonymDictionary` + `detectHomonymLocation`. 종각·광천·강원대·봉화산·대포·대화는 `disambiguationCandidates`로 나열, unique resolve는 null. 종각역·광천선굴은 First-Pass 유지. 용산 hub exact는 도시 클러스터 유지. **PR 미병합**.
 - **VERIFY**: `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS
-- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/` · PROD `/qa` 목록 1행
-- **QA**: 홈「종각」엔터 → 서울 종각역·대구 종각네거리. 「광천」엔터 → 평창 선굴·광주 광천동·홍성 광천읍. 대구·광주 단독 진입 아님.
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/` · PROD `/qa` 목록 1행 (`1090816e` 배포, 307 → git Preview). 스크린샷 시점에는 dest-match 행이 PROD에 없어 `/qa`로 떨어졌음. 하드 리프레시 후 맨 위 「여행지 매칭 — 동음 지명 다후보」.
+- **QA**: 홈「종각」엔터 → 서울 종각역·대구 종각네거리. 「광천」엔터 → 평창 선굴·광주 광천동·홍성 광천읍. 대구·광주 단독 진입 아님. Preview 홈은 PROD와 같아 보이며, 검색 엔터에 다후보 카드가 뜸.
 - **다음**: `여행지 매칭 #7, 동음이의어 사용자 선택 UI`
 
 ## 팔경 활용 #60 — 의정부8경 결손 오버레이 (Cloud)
