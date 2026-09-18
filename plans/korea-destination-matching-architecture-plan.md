@@ -123,8 +123,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | | |
 |--|--|
-| **세션** | **#7 완료** · 광천·대구 종각 매칭 수정 · tip `b1bf56e8` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **세션** | **#8 완료** · 송암 동음 다후보 · tip `5ef7970a` · PR [#276](https://github.com/catgeot/Days/pull/276) |
 | **브랜치** | `cursor/dest-match-arch` |
 | **Preview** | `/qa/dest-match` → git Preview `/` |
-| **다음** | `#8 동음이의어 사용자 선택 UI` (원 로드맵 #6) |
+| **다음** | `#9 동음이의어 사용자 선택 UI` (원 로드맵 #6) |
 | **잔여** | 선택 칩 UI. 기존 카드 톤 유지. Edge `fetch-mrt-stays` Geo-Sanity 배포는 선택. |
