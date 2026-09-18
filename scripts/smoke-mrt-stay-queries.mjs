@@ -6,7 +6,10 @@
  */
 import {
   canShowMrtStayStrip,
+  collectMrtStayGeoSanityKeys,
   expandMrtCountryHintAlts,
+  filterMrtStaysByGeoSanity,
+  MRT_STAY_GEO_SANITY_MAX_KM,
   isMrtStayPointLabel,
   isStreetishStayLabel,
   mergeMrtStayFetchQuery,
@@ -896,6 +899,90 @@ async function main() {
     Math.abs(kangwonTrainingNamedUniv?.lat - 38.0866) < 1e-6,
     `수련원 originalQuery does not snap even if name is 강원대학교 (got ${kangwonTrainingNamedUniv?.lat})`,
   );
+
+  const PYEONGCHANG = { lat: 37.3704, lng: 128.3901, label: '평창' };
+  const CHUNCHEON = { lat: 37.8695, lng: 127.744, label: '춘천' };
+  const pyeongchangLoc = {
+    name: '평창',
+    country: '대한민국',
+    stayAdmin: { city: '평창군', county: '평창군', state: '강원특별자치도' },
+  };
+  const chuncheonLoc = {
+    name: '강원대학교',
+    originalQuery: '강원대학교',
+    country: '대한민국',
+    lat: 37.8695,
+    lng: 127.744,
+    stayAdmin: { city: '춘천시', state: '강원특별자치도' },
+  };
+  const pyeongchangKeys = collectMrtStayGeoSanityKeys(pyeongchangLoc);
+  assert(
+    pyeongchangKeys.includes('평창') && !pyeongchangKeys.includes('강원') && !pyeongchangKeys.some((k) => k === '대화'),
+    `평창 geo keys (got ${pyeongchangKeys.join(',')})`,
+  );
+  const chuncheonKeys = collectMrtStayGeoSanityKeys(chuncheonLoc);
+  assert(
+    chuncheonKeys.includes('춘천') && !chuncheonKeys.includes('양양') && !chuncheonKeys.includes('강원'),
+    `춘천 geo keys (got ${chuncheonKeys.join(',')})`,
+  );
+  assert(MRT_STAY_GEO_SANITY_MAX_KM === 30, `geo-sanity cap (got ${MRT_STAY_GEO_SANITY_MAX_KM})`);
+  const geoMixPyeongchang = filterMrtStaysByGeoSanity(
+    [
+      { itemId: 1, itemName: '라한호텔 광주', lat: 35.1595, lng: 126.8526 },
+      { itemId: 2, itemName: '쏠비치 양양', lat: 38.0866, lng: 128.6486 },
+      { itemId: 3, itemName: '용평리조트 평창', lat: 37.645, lng: 128.68 },
+      { itemId: 4, itemName: '평창 대화 펜션', lat: 37.3708, lng: 128.391 },
+      { itemId: 5, itemName: '라한셀렉트 광주' },
+    ],
+    PYEONGCHANG,
+    { isDomestic: true, originKeys: pyeongchangKeys },
+  );
+  assert(
+    geoMixPyeongchang.every((it) => ![1, 2, 5].includes(it.itemId)),
+    `평창 검색 광주/양양 0건 (got ${geoMixPyeongchang.map((it) => it.itemId)})`,
+  );
+  assert(
+    geoMixPyeongchang.some((it) => it.itemId === 4),
+    `평창 인근 숙소 유지 (got ${geoMixPyeongchang.map((it) => it.itemId)})`,
+  );
+  assert(
+    geoMixPyeongchang.some((it) => it.itemId === 3),
+    `평창 시군 숙소 30km 밖이어도 유지 (got ${geoMixPyeongchang.map((it) => it.itemId)})`,
+  );
+  const geoMixChuncheon = filterMrtStaysByGeoSanity(
+    [
+      { itemId: 11, itemName: '유스퀘어 광주', lat: 35.16, lng: 126.85 },
+      { itemId: 12, itemName: '낙산 호텔 양양', lat: 38.116, lng: 128.635 },
+      { itemId: 13, itemName: '춘천 세종호텔', lat: 37.881, lng: 127.73 },
+      { itemId: 14, itemName: '양양 하조대 펜션' },
+    ],
+    CHUNCHEON,
+    { isDomestic: true, originKeys: chuncheonKeys },
+  );
+  assert(
+    geoMixChuncheon.every((it) => ![11, 12, 14].includes(it.itemId)),
+    `춘천 검색 광주/양양 0건 (got ${geoMixChuncheon.map((it) => it.itemId)})`,
+  );
+  assert(
+    geoMixChuncheon.some((it) => it.itemId === 13),
+    `춘천 인근 숙소 유지 (got ${geoMixChuncheon.map((it) => it.itemId)})`,
+  );
+  const overseasKept = filterMrtStaysByGeoSanity(
+    [{ itemId: 99, itemName: 'Waikiki Hotel', lat: 21.27, lng: -157.82 }],
+    CHUNCHEON,
+    { isDomestic: false, originKeys: chuncheonKeys },
+  );
+  assert(overseasKept.length === 1, 'overseas stays skip geo-sanity');
+  const daehwaKeys = collectMrtStayGeoSanityKeys({
+    name: '대화리',
+    country: '한국',
+    stayAdmin: { city: '대화면', county: '평창군', state: '강원특별자치도' },
+  });
+  assert(
+    daehwaKeys.includes('평창') && !daehwaKeys.includes('대화'),
+    `대화면 keep 키는 평창 (got ${daehwaKeys.join(',')})`,
+  );
+
   const ranked = attachMrtStayDistances(
     [
       { itemId: 1, lat: 37.4979, lng: 127.0276 },
@@ -992,11 +1079,19 @@ async function main() {
   assert(fetchSrc.includes('onPartialResult'), 'list paints before photon enrich');
   assert(fetchSrc.includes('geocodeItems'), 'photon enrich uses geocodeItems');
   assert(fetchSrc.includes('listingBody'), 'listing invoke omits origin');
+  assert(fetchSrc.includes('originAdminKeys'), 'listing sends geo-sanity admin keys');
+  assert(fetchSrc.includes('filterMrtStaysByGeoSanity'), 'client listing applies geo-sanity');
   assert(fetchSrc.includes('orderStayItemsForGeocode'), 'photon first page follows priced list order');
   assert(fetchSrc.includes('MRT_STAY_PAGE_SIZE'), 'first photon batch is visible page');
   assert(edgeSrc.includes('geocodeItems') && edgeSrc.includes('geocodeOnly'), 'Edge geocodeItems path');
   assert(edgeSrc.includes('geo:id:'), 'Edge geocode cache by itemId');
   assert(edgeSrc.includes('rememberSearchCoords'), 'Edge search cache keeps photon coords');
+  assert(edgeSrc.includes('MRT_STAY_GEO_SANITY_MAX_KM'), 'Edge geo-sanity distance cap');
+  assert(edgeSrc.includes('filterMrtStaysByGeoSanity'), 'Edge listing applies geo-sanity');
+  assert(
+    stripSrc.includes('filterMrtStaysByGeoSanity') && stripSrc.includes('collectMrtStayGeoSanityKeys'),
+    'GlobeStayStrip wires geo-sanity',
+  );
   console.log('OK  stay distance + naver map');
 
   class MemoryStorage {

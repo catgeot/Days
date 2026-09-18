@@ -6,7 +6,9 @@
 import { supabase } from '../shared/api/supabase';
 import {
   canShowMrtStayStrip,
+  collectMrtStayGeoSanityKeys,
   expandMrtCountryHintAlts,
+  filterMrtStaysByGeoSanity,
   isMrtDomesticLocation,
   mergeMrtStayFetchQuery,
   normalizeMrtCountryHint,
@@ -29,7 +31,9 @@ import {
 
 export {
   canShowMrtStayStrip,
+  collectMrtStayGeoSanityKeys,
   expandMrtCountryHintAlts,
+  filterMrtStaysByGeoSanity,
   isMrtDomesticLocation,
   mergeMrtStayFetchQuery,
   normalizeMrtCountryHint,
@@ -249,7 +253,22 @@ function listingBody(params) {
     ...(params.nameEn ? { nameEn: params.nameEn } : {}),
     ...(params.altKeywords?.length ? { altKeywords: params.altKeywords } : {}),
     ...(params.cityHints?.length ? { cityHints: params.cityHints } : {}),
+    ...(params.originAdminKeys?.length ? { originAdminKeys: params.originAdminKeys } : {}),
   };
+}
+
+function applyStayGeoSanity(payload, params) {
+  if (!payload || params?.isDomestic !== true) return payload;
+  const origin = originPair(params);
+  const keys = Array.isArray(params?.originAdminKeys)
+    ? params.originAdminKeys.map((k) => String(k || '').trim()).filter(Boolean)
+    : [];
+  if (!origin && !keys.length) return payload;
+  const items = filterMrtStaysByGeoSanity(payload.items, origin, {
+    isDomestic: true,
+    originKeys: keys,
+  });
+  return { ...payload, items };
 }
 
 function originPair(params) {
@@ -304,7 +323,7 @@ async function enrichMrtStayCoords(payload, params) {
     got = mergeSourced(await invokeStayGeocodeItems(head, origin)) || got;
     if (got && onPartial) {
       try {
-        onPartial(shapeMrtStayResult({ ...payload, items }));
+        onPartial(shapeMrtStayResult(applyStayGeoSanity({ ...payload, items }, params)));
       } catch {
         /* caller */
       }
@@ -402,12 +421,15 @@ export async function fetchMrtStays(params) {
     cityHints,
     originLat: params?.originLat,
     originLng: params?.originLng,
+    originAdminKeys: Array.isArray(params?.originAdminKeys)
+      ? params.originAdminKeys.map((k) => String(k || '').trim()).filter(Boolean).slice(0, 8)
+      : [],
   };
 
   dropLegacyMrtStayListingCaches();
 
   const cached = readMrtStayListingCache(key);
-  let payload = cached ? withHydratedCoords(cached) : null;
+  let payload = cached ? applyStayGeoSanity(withHydratedCoords(cached), invokeParams) : null;
 
   if (!payload) {
     try {
@@ -421,17 +443,20 @@ export async function fetchMrtStays(params) {
 
       const listed = Array.isArray(data.items) ? data.items : [];
       const apiTotalCount = Number(data.totalCount);
-      payload = withHydratedCoords({
-        ok: true,
-        region: data.region ?? null,
-        items: listed,
-        checkIn: data.checkIn,
-        checkOut: data.checkOut,
-        adultCount: data.adultCount ?? adultCount,
-        childCount: data.childCount ?? childCount,
-        usedKeyword: data.usedKeyword ?? keyword,
-        apiTotalCount: Number.isFinite(apiTotalCount) ? apiTotalCount : listed.length,
-      });
+      payload = applyStayGeoSanity(
+        withHydratedCoords({
+          ok: true,
+          region: data.region ?? null,
+          items: listed,
+          checkIn: data.checkIn,
+          checkOut: data.checkOut,
+          adultCount: data.adultCount ?? adultCount,
+          childCount: data.childCount ?? childCount,
+          usedKeyword: data.usedKeyword ?? keyword,
+          apiTotalCount: Number.isFinite(apiTotalCount) ? apiTotalCount : listed.length,
+        }),
+        invokeParams,
+      );
 
       if (listed.length > 0) {
         writeMrtStayListingCache(key, payload);
@@ -452,10 +477,13 @@ export async function fetchMrtStays(params) {
 
   if (params?.skipGeocode) return partial;
 
-  const enrichedPayload = await enrichMrtStayCoords(payload, {
-    ...invokeParams,
-    onPartialResult: params?.onPartialResult,
-  });
+  const enrichedPayload = applyStayGeoSanity(
+    await enrichMrtStayCoords(payload, {
+      ...invokeParams,
+      onPartialResult: params?.onPartialResult,
+    }),
+    invokeParams,
+  );
   if (enrichedPayload !== payload && Array.isArray(enrichedPayload.items)) {
     writeMrtStayListingCache(key, enrichedPayload);
   }
@@ -479,6 +507,7 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
   const normalized = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
   const guests = normalizeMrtGuestCounts(opts.adultCount, opts.childCount);
   const origin = resolveMrtStayOrigin(location);
+  const originAdminKeys = collectMrtStayGeoSanityKeys(location, query.cityHints);
   return fetchMrtStays({
     ...query,
     keyword,
@@ -488,6 +517,7 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
     ...guests,
     size: MRT_STAY_FETCH_SIZE,
     skipGeocode: Boolean(opts.skipGeocode),
+    originAdminKeys,
     ...(typeof opts.onPartialResult === 'function'
       ? { onPartialResult: opts.onPartialResult }
       : {}),

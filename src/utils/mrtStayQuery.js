@@ -1095,6 +1095,177 @@ export function mergeMrtStayFetchQuery(location, opts = {}) {
   };
 }
 
+/** 검색 중심에서 이 거리 밖이고 시·군이 다르면 숙소 배제. 도(강원)는 keep 키가 아님 — 춘천↔양양 */
+export const MRT_STAY_GEO_SANITY_MAX_KM = 30;
+
+const KO_SIDO_LEVEL_EXACT = new Set([
+  '강원',
+  '경기',
+  '충북',
+  '충남',
+  '전북',
+  '전남',
+  '경북',
+  '경남',
+  '강원도',
+  '경기도',
+  '충청북도',
+  '충청남도',
+  '전라북도',
+  '전라남도',
+  '경상북도',
+  '경상남도',
+  '강원특별자치도',
+  '전북특별자치도',
+  '제주특별자치도',
+  '충청북',
+  '충청남',
+  '전라북',
+  '전라남',
+  '경상북',
+  '경상남',
+]);
+
+const KO_GEO_SANITY_CITY_RE =
+  /광주|양양|대구|부산|인천|대전|울산|서울|제주|수원|고양|용인|성남|청주|전주|천안|창원|포항|경주|강릉|속초|원주|춘천|평창|정선|홍천|삼척|동해|태백|인제|고성|철원|화천|양구|영월|횡성|여수|순천|목포|군산|익산|김해|진주|구미|안동|세종|울릉|서귀포/;
+
+function isKoSidoLevelName(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return false;
+  if (KO_SIDO_LEVEL_EXACT.has(s)) return true;
+  return KO_SIDO_LEVEL_EXACT.has(stripKoAdminSuffix(s) || s);
+}
+
+function stayItemCoordPair(item) {
+  if (!item || typeof item !== 'object') return null;
+  const lat = Number(item.lat ?? item.latitude);
+  const lng = Number(item.lng ?? item.longitude ?? item.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (lat === 0 && lng === 0) return null;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+  return { lat, lng };
+}
+
+function stayItemGeoBlob(item) {
+  if (!item || typeof item !== 'object') return '';
+  return [
+    item.itemName,
+    item.name,
+    item.name_ko,
+    item.address,
+    item.regionName,
+    item.subName,
+  ]
+    .map((v) => String(v || ''))
+    .join(' ');
+}
+
+function blobHasAnyToken(blob, tokens) {
+  const s = String(blob || '');
+  if (!s) return false;
+  for (const raw of tokens || []) {
+    const t = String(raw || '').trim();
+    if (t.length >= 2 && s.includes(t)) return true;
+  }
+  return false;
+}
+
+function blobHasForeignCity(blob, originKeys) {
+  const s = String(blob || '');
+  if (!s) return false;
+  const origin = new Set(
+    (originKeys || []).map((k) => String(k || '').trim()).filter((k) => k.length >= 2),
+  );
+  for (const m of s.matchAll(new RegExp(KO_GEO_SANITY_CITY_RE.source, 'g'))) {
+    const city = m[0];
+    if (city && !origin.has(city)) return true;
+  }
+  return false;
+}
+
+/**
+ * 시·군 keep 키. 도·읍면리는 넣지 않음(강원→양양 유지, 대화→고양 오탐).
+ * @param {object} [location]
+ * @param {string[]} [extra]
+ * @returns {string[]}
+ */
+export function collectMrtStayGeoSanityKeys(location = {}, extra = []) {
+  const admin =
+    location?.stayAdmin && typeof location.stayAdmin === 'object' ? location.stayAdmin : {};
+  const uni = universityAliasFromLocation(location);
+  const station =
+    resolveKoStationAlias(location?.originalQuery) ||
+    resolveKoStationAlias(location?.name) ||
+    resolveKoStationAlias(location?.name_ko);
+  const raw = [
+    uni?.city,
+    station?.district,
+    admin.city,
+    admin.county,
+    admin.district,
+    location?.parentCity,
+    ...(Array.isArray(extra) ? extra : []),
+  ];
+  const keys = [];
+  const seen = new Set();
+  for (const value of raw) {
+    const s = String(value || '').trim();
+    if (!s || s.length < 2) continue;
+    if (isKoTownshipName(s) || isKoFineAdminName(s)) continue;
+    const stripped = stripKoAdminSuffix(s) || s;
+    if (!stripped || stripped.length < 2) continue;
+    if (isKoTownshipName(stripped) || isKoFineAdminName(stripped)) continue;
+    if (isKoSidoLevelName(s) || isKoSidoLevelName(stripped)) continue;
+    pushUnique(keys, seen, stripped);
+  }
+  return keys;
+}
+
+/**
+ * @param {object} item
+ * @param {{ lat?: unknown, lng?: unknown } | null | undefined} origin
+ * @param {string[]} [originKeys]
+ * @returns {boolean}
+ */
+export function mrtStayPassesGeoSanity(item, origin, originKeys = []) {
+  const keys = Array.isArray(originKeys) ? originKeys : [];
+  const blob = stayItemGeoBlob(item);
+  const originLat = Number(origin?.lat);
+  const originLng = Number(origin?.lng);
+  const hasOrigin =
+    Number.isFinite(originLat) &&
+    Number.isFinite(originLng) &&
+    !(originLat === 0 && originLng === 0);
+  const pt = stayItemCoordPair(item);
+
+  if (hasOrigin && pt) {
+    const km = haversineKmSimple(originLat, originLng, pt.lat, pt.lng);
+    if (km <= MRT_STAY_GEO_SANITY_MAX_KM) return true;
+    if (blobHasAnyToken(blob, keys)) return true;
+    return false;
+  }
+
+  if (blobHasAnyToken(blob, keys)) return true;
+  if (blobHasForeignCity(blob, keys)) return false;
+  return true;
+}
+
+/**
+ * @param {object[] | null | undefined} items
+ * @param {{ lat?: unknown, lng?: unknown } | null | undefined} origin
+ * @param {{ isDomestic?: boolean, originKeys?: string[] }} [opts]
+ */
+export function filterMrtStaysByGeoSanity(items, origin, opts = {}) {
+  const list = Array.isArray(items) ? items : [];
+  if (opts.isDomestic === false) return list;
+  const keys = Array.isArray(opts.originKeys) ? opts.originKeys : [];
+  const originLat = Number(origin?.lat);
+  const originLng = Number(origin?.lng);
+  const hasOrigin = Number.isFinite(originLat) && Number.isFinite(originLng);
+  if (!hasOrigin && !keys.length) return list;
+  return list.filter((item) => mrtStayPassesGeoSanity(item, origin, keys));
+}
+
 /**
  * 숙소 토글 노출 — slug SSOT + uiPlace(국가·키워드 있을 때).
  * @param {object} location

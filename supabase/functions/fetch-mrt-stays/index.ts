@@ -113,6 +113,107 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+const MRT_STAY_GEO_SANITY_MAX_KM = 30;
+const KO_SIDO_LEVEL_EXACT = new Set([
+  "강원",
+  "경기",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "강원도",
+  "경기도",
+  "충청북도",
+  "충청남도",
+  "전라북도",
+  "전라남도",
+  "경상북도",
+  "경상남도",
+  "강원특별자치도",
+  "전북특별자치도",
+  "제주특별자치도",
+  "충청북",
+  "충청남",
+  "전라북",
+  "전라남",
+  "경상북",
+  "경상남",
+]);
+const KO_GEO_SANITY_CITY_RE =
+  /광주|양양|대구|부산|인천|대전|울산|서울|제주|수원|고양|용인|성남|청주|전주|천안|창원|포항|경주|강릉|속초|원주|춘천|평창|정선|홍천|삼척|동해|태백|인제|고성|철원|화천|양구|영월|횡성|여수|순천|목포|군산|익산|김해|진주|구미|안동|세종|울릉|서귀포/;
+
+function isKoSidoLevelName(raw: string) {
+  const s = String(raw || "").trim();
+  if (!s) return false;
+  if (KO_SIDO_LEVEL_EXACT.has(s)) return true;
+  const stripped = s.replace(
+    /(특별자치시|특별자치도|광역시|특별시|자치시|자치군|시|군|구|읍|면|동)$/,
+    "",
+  );
+  return KO_SIDO_LEVEL_EXACT.has(stripped || s);
+}
+
+function stayItemGeoBlob(item: StayItem) {
+  return [item.itemName].map((v) => String(v || "")).join(" ");
+}
+
+function blobHasAnyToken(blob: string, tokens: string[]) {
+  const s = String(blob || "");
+  if (!s) return false;
+  for (const raw of tokens || []) {
+    const t = String(raw || "").trim();
+    if (t.length >= 2 && s.includes(t)) return true;
+  }
+  return false;
+}
+
+function blobHasForeignCity(blob: string, originKeys: string[]) {
+  const s = String(blob || "");
+  if (!s) return false;
+  const origin = new Set(
+    (originKeys || []).map((k) => String(k || "").trim()).filter((k) => k.length >= 2),
+  );
+  for (const m of s.matchAll(new RegExp(KO_GEO_SANITY_CITY_RE.source, "g"))) {
+    const city = m[0];
+    if (city && !origin.has(city)) return true;
+  }
+  return false;
+}
+
+function mrtStayPassesGeoSanity(
+  item: StayItem,
+  origin: { lat: number; lng: number } | null,
+  originKeys: string[],
+) {
+  const keys = Array.isArray(originKeys) ? originKeys : [];
+  const blob = stayItemGeoBlob(item);
+  const hasOrigin = Boolean(origin);
+  const hasCoords = item.lat != null && item.lng != null;
+
+  if (hasOrigin && hasCoords) {
+    const km = haversineKm(origin!.lat, origin!.lng, item.lat as number, item.lng as number);
+    if (km <= MRT_STAY_GEO_SANITY_MAX_KM) return true;
+    if (blobHasAnyToken(blob, keys)) return true;
+    return false;
+  }
+
+  if (blobHasAnyToken(blob, keys)) return true;
+  if (blobHasForeignCity(blob, keys)) return false;
+  return true;
+}
+
+function filterMrtStaysByGeoSanity(
+  items: StayItem[],
+  origin: { lat: number; lng: number } | null,
+  originKeys: string[],
+) {
+  const list = Array.isArray(items) ? items : [];
+  if (!origin && !originKeys.length) return list;
+  return list.filter((item) => mrtStayPassesGeoSanity(item, origin, originKeys));
+}
+
 function simplifyStayGeocodeQuery(name: string) {
   let s = String(name || "").replace(/\s+/g, " ").trim();
   s = s.replace(/,\s*BW\b.*/i, "");
@@ -757,6 +858,11 @@ serve(async (req) => {
         ? body.cityHints.map((k: unknown) => String(k ?? "").trim())
         : [],
     ).slice(0, 8);
+    const originAdminKeys = uniqueKeywords(
+      Array.isArray(body?.originAdminKeys)
+        ? body.originAdminKeys.map((k: unknown) => String(k ?? "").trim())
+        : cityHints.filter((h) => !isKoSidoLevelName(h)),
+    ).slice(0, 8);
 
     // countryHint·cityHints는 scoreRegion 필터 전용 — 검색 키워드에 넣지 않음
     const keywords = uniqueKeywords([
@@ -825,6 +931,14 @@ serve(async (req) => {
       lastSearch = { items: search.items, totalCount: search.totalCount };
       if (search.items.length > 0 || search.totalCount > 0) {
         const items = await attachGeocodedStayCoords(search.items, origin);
+        const sane = isDomestic
+          ? filterMrtStaysByGeoSanity(items, origin, originAdminKeys)
+          : items;
+        lastSearch = { items: sane, totalCount: sane.length };
+        if (sane.length === 0 && items.length > 0) {
+          skipRegionIds.add(Number(region.regionId));
+          continue;
+        }
         rememberSearchCoords(
           region.regionId,
           checkIn,
@@ -833,9 +947,9 @@ serve(async (req) => {
           childCount,
           size,
           page,
-          items,
+          sane,
         );
-        const withCoords = items.filter((it) => it.lat != null && it.lng != null).length;
+        const withCoords = sane.filter((it) => it.lat != null && it.lng != null).length;
         return jsonResponse({
           ok: true,
           region: {
@@ -844,12 +958,12 @@ serve(async (req) => {
             subName: region.subName ?? null,
             type: region.type ?? null,
           },
-          items,
+          items: sane,
           checkIn,
           checkOut,
           adultCount,
           childCount,
-          totalCount: search.totalCount,
+          totalCount: sane.length,
           usedKeyword,
           withCoords,
           ...(wantDebug && search.ok ? { rawShape: search.rawShape } : {}),

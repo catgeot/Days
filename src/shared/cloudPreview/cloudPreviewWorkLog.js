@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 2,
-  sessionPhase: '검색 Enter 제안 불일치',
+  sessionNo: 3,
+  sessionPhase: '숙소 거리 가드(Geo-Sanity)',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-dest-match-3-geo-sanity',
+    session: '여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)',
+    title: '검색 중심 30km 밖 타 시·군 숙소 배제',
+    detail:
+      'MRT 숙소 목록에서 검색 중심점 기준 30km를 넘고 시·군이 다른 숙소(광주·양양 등)를 빼 둡니다. 같은 시·군 숙소는 군이 넓어도 유지합니다. Preview /qa/dest-match 홈「평창」「춘천」숙소 찾기 → 광주·양양 호텔 0건.',
+    at: '2026-09-18T03:40:00.000Z',
+  },
   {
     id: '2026-09-18-dest-match-2-search-enter',
     session: '여행지 매칭 #2, 검색 Enter 제안 불일치',
