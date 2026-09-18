@@ -107,13 +107,13 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 ### 다음 세션 제시어
 
 ```
-여행지 매칭 #6, 동음이의어 다후보 리스트업
+여행지 매칭 #7, 동음이의어 사용자 선택 UI
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: 전국 동음 지명(리/읍/면/자연명소/역) 매핑 사전 및 다후보 구조화 (disambiguationCandidates). 시스템이 임의 단정하지 않음.
+작업: 모바일/데스크톱 검색창 및 장소 시트에서 "어느 지역의 [지명]을 찾으시나요?" 다후보 선택 칩 UI 연동. 기존 선택 카드 톤 유지.
 검증: npm run smoke:ko-homonym-ri-search PASS · npx vite build PASS
 ```
 
@@ -123,8 +123,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | | |
 |--|--|
-| **세션** | **#5 완료** · 카테고리 맥락 파이프라인 전달 · tip `1f625d10` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **세션** | **#6 완료** · 동음이의어 다후보 리스트업 · tip `0eecf896` · PR [#276](https://github.com/catgeot/Days/pull/276) |
 | **브랜치** | `cursor/dest-match-arch` |
 | **Preview** | `/qa/dest-match` → git Preview `/` |
-| **다음** | `#6 동음이의어 다후보 리스트업` (원 로드맵 #5) |
-| **잔여** | 동음 지명 다후보 구조화. Edge `fetch-mrt-stays` Geo-Sanity 배포는 선택. |
+| **다음** | `#7 동음이의어 사용자 선택 UI` (원 로드맵 #6) |
+| **잔여** | 선택 칩 UI. 기존 카드 톤 유지. Edge `fetch-mrt-stays` Geo-Sanity 배포는 선택. |
