@@ -256,6 +256,7 @@ function assertDictHomonym(query, mustInclude, mustExclude = []) {
 
 assertDictHomonym('종각', ['종각역', '서울 종로', '종각네거리', '대구']);
 assertDictHomonym('광천', ['광천선굴', '평창군', '광천동', '광주', '광천읍', '홍성']);
+assertDictHomonym('송암', ['송암스페이스센터', '고양', '송암스포츠타운', '춘천', '송암동', '광주']);
 assertDictHomonym('강원대', ['춘천', '삼척']);
 assertDictHomonym('강원대학교', ['춘천', '삼척']);
 assertDictHomonym('봉화산', ['중랑', '양구']);
@@ -265,6 +266,8 @@ assertDictHomonym('용산', ['용산역', '서울 용산', '용산호', '정읍'
 
 assert(detectHomonymLocation('종각역') === null, '종각역 is unique — not a homonym list');
 assert(detectHomonymLocation('광천선굴') === null, '광천선굴 is unique');
+assert(detectHomonymLocation('송암스페이스센터') === null, '송암스페이스센터 is unique');
+assert(detectHomonymLocation('송암스포츠타운') === null, '송암스포츠타운 is unique');
 assert(detectHomonymLocation('광천성굴') === null, '광천성굴 alias stays First-Pass unique');
 assert(detectHomonymLocation('강원대학교 동해수련원') === null, '동해수련원 is unique satellite');
 assert(detectHomonymLocation('대화리') === null, '대화리 stays Nominatim ri path');
@@ -272,6 +275,7 @@ assert(detectHomonymLocation('제주') === null, 'hub bare 제주 not in dict');
 
 assert(shouldOfferKoreaHomonymDisambiguation('종각'), '종각 offers dict disambiguation');
 assert(shouldOfferKoreaHomonymDisambiguation('광천'), '광천 offers dict disambiguation');
+assert(shouldOfferKoreaHomonymDisambiguation('송암'), '송암 offers dict disambiguation');
 assert(shouldOfferKoreaHomonymDisambiguation('대포'), '대포 offers dict disambiguation');
 assert(
   !shouldOfferKoreaHomonymDisambiguation('용산'),
@@ -317,6 +321,14 @@ assert(
     dictInCurated < attractionInCurated &&
     attractionInCurated < settlementInCurated,
   'buildCuratedEnterDisambiguation: dict homonym before attraction/settlement reverse-expand',
+);
+assert(
+  suggestionSrc.includes('uniqueHubFromAttractionHits(attractions, q)'),
+  'single-hub attraction reverse-expand requires exact query',
+);
+assert(
+  suggestionSrc.includes('attractionHitIsExactQuery'),
+  'substring attraction hits (송암) do not dump sibling 일산 attractions',
 );
 
 assert(

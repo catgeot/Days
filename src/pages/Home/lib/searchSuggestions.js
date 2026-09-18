@@ -192,9 +192,18 @@ function buildSettlementHubCluster(hub, preferSettlement) {
 
 /**
  * 명소 히트가 한 hub로만 모이면 역펼침 (다중 hub면 나열만).
+ * 부분일치(송암→송암스페이스센터)는 형제 명소(일산호수공원)를 펼치지 않음.
  * @param {{ hub: object, attraction: object }[]} attractionHits
+ * @param {string} [query]
  */
-function uniqueHubFromAttractionHits(attractionHits) {
+function attractionHitIsExactQuery(query, attraction) {
+  const key = normalizeKey(query);
+  if (!key) return false;
+  const names = [attraction?.name, attraction?.name_en, ...(attraction?.aliases || [])];
+  return names.some((n) => normalizeKey(n) === key);
+}
+
+function uniqueHubFromAttractionHits(attractionHits, query) {
   if (!attractionHits?.length) return null;
   const byId = new Map();
   for (const { hub, attraction } of attractionHits) {
@@ -203,7 +212,9 @@ function uniqueHubFromAttractionHits(attractionHits) {
     byId.get(hub.hubId).prefers.push(attraction);
   }
   if (byId.size !== 1) return null;
-  return [...byId.values()][0];
+  const single = [...byId.values()][0];
+  if (query && !single.prefers.some((a) => attractionHitIsExactQuery(query, a))) return null;
+  return single;
 }
 
 /**
@@ -328,7 +339,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
       );
     }
   } else {
-    const singleHubHit = uniqueHubFromAttractionHits(attractions);
+    const singleHubHit = uniqueHubFromAttractionHits(attractions, q);
     if (singleHubHit && hubs.length === 0) {
       pushHubAttractionCluster(singleHubHit.hub, out, seen, {
         preferAttraction: singleHubHit.prefers[0],

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 7,
-  sessionPhase: '광천·대구 종각 매칭 수정',
+  sessionNo: 8,
+  sessionPhase: '송암 동음 다후보',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-dest-match-8-songam-homonym',
+    session: '여행지 매칭 #8, 송암 동음 다후보',
+    title: '송암이 고양·일산 허브로만 펼쳐지던 문제',
+    detail:
+      '홈「송암」엔터가 송암스페이스센터 부분일치로 고양 허브(일산호수공원·킨텍스)를 역펼침했습니다. 동음 사전에 고양 송암스페이스센터·춘천 송암스포츠타운·광주 송암동을 넣고, 명소 부분일치는 형제 명소를 펼치지 않습니다. Preview /qa/dest-match 홈「송암」엔터 → 세 곳 선택 카드 · 일산호수공원만 가득한 목록 아님.',
+    at: '2026-09-18T10:20:00.000Z',
+  },
   {
     id: '2026-09-18-dest-match-7-gwangcheon-daegu-jonggak',
     session: '여행지 매칭 #7, 광천·대구 종각 매칭 수정',
