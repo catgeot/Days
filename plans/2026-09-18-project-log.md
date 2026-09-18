@@ -2,6 +2,26 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 팔경 활용 #61 QA — 연화도 용머리 공식 홈 U투어 (Cloud)
+
+- **세션** `팔경 활용 #61, 통영 결손 오버레이` (같은 턴 Preview 피드백)
+- **브랜치** `cursor/palgyeong-use-e744` · tip `df628a5d` · PR [#279](https://github.com/catgeot/Days/pull/279)
+- **완료**: 사람 Preview에서 1경 연화도 용머리 공식 홈이 `www.badaland.com`으로 열려 인증서 오류(ERR_CERT_COMMON_NAME_INVALID). Tour `127103` 홈이 구 통영 관광 호스트이고, 그 도메인은 `utour.go.kr`과 같은 IP(27.101.75.57)인데 인증서가 `*.utour.go.kr`. JSON contentId 없이 오버레이 홈을 통영U투어 연화도 공식 페이지(`idx=1660`)로 교체. 상세 모달은 overlay 홈을 Tour 홈보다 앞세움.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=tongyeong`
+- **잔여**: 사진/개요 순수 누락 **46**/876. 다음 허브 **광주8경 2**(경기 광주)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #61 QA — 연화도 용머리 U투어 공식 사진 (Cloud)
+
+- **세션** `팔경 활용 #61, 통영 결손 오버레이` (같은 턴 Preview 피드백)
+- **브랜치** `cursor/palgyeong-use-e744` · tip `ff38062f` · PR [#279](https://github.com/catgeot/Days/pull/279)
+- **완료**: 사람 Preview에서 1경 연화도 용머리 목록은 랜드마크, 상세 「사진 2장」은 물음표였다. 오버레이는 적용됐으나 네이버 `postfiles.pstatic.net`이 Preview Referer에 403. JSON contentId 없이 통영U투어 연화도 CMS로 교체(메인 idx=16550 용머리 능선·16548 해식절벽·16549 출렁다리·2803861 능선). 연화사 법당·해수관음·수국길은 넣지 않음. 이순신공원 공사 동상은 유지. 삼덕항 `2782775`는 공식 사진 없어 건너뜀. Tour `127103` 상세 infoItems(등산로)는 CID 경로라 이번 턴에 안 바꿈.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=tongyeong`
+- **잔여**: 사진/개요 순수 누락 **46**/876. 다음 허브 **광주8경 2**(경기 광주)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 여행지 매칭 #8 — 송암 동음 다후보 (Cloud)
 
 - **세션** `여행지 매칭 #8, 송암 동음 다후보`
