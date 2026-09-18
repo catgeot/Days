@@ -18,28 +18,28 @@
 
 | | |
 |--|--|
-| **상태** | **#8 push** · tip `5ef7970a` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#9 push** · tip `dcc9e6a9` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `5ef7970a` |
+| **tip** | `dcc9e6a9` |
 | **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
 | **일지** | [`2026-09-18-project-log.md`](./2026-09-18-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 송암 다후보(고양·춘천·광주) |
-| **소유** | `koreaHomonymDictionary.js` · `detectHomonymLocation.js` · `searchSuggestions.js` · `mrtStayQuery.js` |
+| **Preview** | `/qa/dest-match` → git Preview `/` — 동음 칩「어느 지역의 [지명]을 찾으시나요?」 |
+| **소유** | `HomonymChoiceChips.jsx` · `SearchSuggestionList.jsx` · `detectHomonymLocation.js` · `searchEnterMatch.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
+| **VERIFY** | `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-choice-overlay` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-여행지 매칭 #9, 동음이의어 사용자 선택 UI
+여행지 매칭 #10, 하드코딩 사전 정리 및 SSOT 일원화
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: 모바일/데스크톱 검색창 및 장소 시트에서 "어느 지역의 [지명]을 찾으시나요?" 다후보 선택 칩 UI 연동. 기존 선택 카드 톤 유지.
-검증: npm run smoke:ko-homonym-ri-search PASS · npx vite build PASS
+작업: 분산된 *_ALIASES, *_OVERRIDES를 koreaPlaceMatchDictionary.js 단일 SSOT로 통합. 기존 회귀 0건.
+검증: npm run smoke:ko-homonym-ri-search PASS · npm run smoke:explore-search-aliases PASS · npx vite build PASS
 ```
 
 ---

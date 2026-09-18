@@ -2,6 +2,16 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 여행지 매칭 #9 — 동음이의어 사용자 선택 UI (Cloud)
+
+- **세션** `여행지 매칭 #9, 동음이의어 사용자 선택 UI`
+- **브랜치** `cursor/dest-match-arch` · tip `dcc9e6a9` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: 모바일·데스크톱 검색창과 장소 시트에서 동음 지명은 「어느 지역의 [지명]을 찾으시나요?」와 지역 칩으로 고른다. 기존 선택 카드 톤 유지. Enter는 한 칩으로 스냅하지 않음. **PR 미병합**.
+- **VERIFY**: `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-choice-overlay` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「종각」입력·엔터 → 서울 종로 종각역·대구 중구 종각네거리 칩 + 기존 카드. 「광천」「송암」도 지역 칩. 단독 스냅 아님.
+- **다음**: `여행지 매칭 #10, 하드코딩 사전 정리 및 SSOT 일원화`
+
 ## 팔경 활용 #61 QA — 연화도 용머리 공식 홈 U투어 (Cloud)
 
 - **세션** `팔경 활용 #61, 통영 결손 오버레이` (같은 턴 Preview 피드백)
