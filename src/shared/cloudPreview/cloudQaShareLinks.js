@@ -9,7 +9,7 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'dest-match',
-    label: '여행지 매칭 — 갤러리 시설컷',
+    label: '여행지 매칭 — 검색 Enter·광천선굴',
     branch: 'cursor/dest-match-arch',
     destination:
       'https://days-git-cursor-dest-match-arch-catgeots-projects.vercel.app/',

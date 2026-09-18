@@ -52,11 +52,13 @@ import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js'
 import {
   buildHubCandidatesForEnter,
   buildCuratedEnterDisambiguation,
+  buildHybridSearchSuggestions,
   buildLocalSearchSuggestions,
   ensureDisambiguation,
   locationToChoiceCandidate,
   prependLocalScenicToHubCandidates,
 } from '../lib/searchSuggestions.js';
+import { preferEnterSuggestion, placeNameMatchesSearchQuery } from '../lib/searchEnterMatch.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   overlayGeocodeLatinOnHits,
@@ -1153,6 +1155,18 @@ export function useHomeHandlers({
         return commitLocation(hintedSpot);
       }
 
+      // 타이핑 제안(Search Box)에 같은 이름이 있으면 행정동·오탐 geocode보다 우선
+      if (!placeNameMatchesSearchQuery(query, coords) && !shouldSkipGeocodeForMood(query)) {
+        try {
+          const namedHit = preferEnterSuggestion(query, await buildHybridSearchSuggestions(query));
+          if (namedHit) {
+            return commitLocation(namedHit, `'${query}' → 원하는 장소를 선택하세요`);
+          }
+        } catch {
+          // Search Box 실패 시 기존 geocode 경로
+        }
+      }
+
       // 시설·유명 명소 단건이 아니면, 동명·다국가 등 모호할 때만 선택 카드
       // requireChoice면 Mapbox 후보가 있으면 항상 선택 카드
       if (!isFacilityQuery(query)) {
@@ -1253,6 +1267,18 @@ export function useHomeHandlers({
       }, coords.lat, coords.lng);
       return commitLocation(normalizedLoc);
     } else {
+      // 지오코딩 실패여도 타이핑과 같은 Search Box 히트가 있으면 AI 교정(화암동굴)보다 우선
+      if (!shouldSkipGeocodeForMood(query)) {
+        try {
+          const namedHit = preferEnterSuggestion(query, await buildHybridSearchSuggestions(query));
+          if (namedHit) {
+            return commitLocation(namedHit, `'${query}' → 원하는 장소를 선택하세요`);
+          }
+        } catch {
+          // 로컬·Search Box 없으면 테마·AI
+        }
+      }
+
       // 지오코딩 실패 시에만 테마 큐레이션 (반딧불·빙하 문장 등).
       // 무드 결합(따뜻한 휴양지)은 테마 스냅 없이 AI 큐레이션으로.
       if (!shouldSkipGeocodeForMood(query)) {
@@ -1368,6 +1394,15 @@ export function useHomeHandlers({
               }
             }
           } else {
+            const cachedPlace = {
+              name: cachedDict.corrected_query || parsedData?.name,
+              name_en: parsedData?.name_en,
+            };
+            if (cachedPlace.name && !placeNameMatchesSearchQuery(query, cachedPlace)) {
+              console.warn(
+                `[Smart Search] 이름 불일치 교정 캐시 무시: "${query}" → "${cachedPlace.name}"`,
+              );
+            } else {
             const verifiedCachedLoc = await verifyAndNormalizeCandidate(parsedData, query, "Cache");
             if (verifiedCachedLoc) {
               verifiedCachedLoc.desc = `"${query}" 검색에 실패하여 "${verifiedCachedLoc.name}"(으)로 교정하여 탐색합니다. (캐시 기반)`;
@@ -1380,6 +1415,7 @@ export function useHomeHandlers({
                 verifiedCachedLoc,
                 `'${query}' → 원하는 장소를 선택하세요`,
               );
+            }
             }
           }
         }

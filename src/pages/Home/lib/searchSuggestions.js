@@ -538,8 +538,8 @@ export async function buildCuratedEnterDisambiguation(query) {
     const others = rest.filter((c) => normalizeKey(c.name) !== preferKey);
     return ensureDisambiguation(
       q,
-      [hubCard, prefer, ...others],
-      `'${hub.name}' → 도시와 명소를 골라주세요`,
+      [prefer, hubCard, ...others],
+      `'${attraction.name}' → 원하는 장소를 선택하세요`,
     );
   }
 

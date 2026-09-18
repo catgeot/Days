@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 1,
-  sessionPhase: '갤러리 시설컷 정밀 필터',
+  sessionNo: 2,
+  sessionPhase: '검색 Enter 제안 불일치',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-dest-match-2-search-enter',
+    session: '여행지 매칭 #2, 검색 Enter 제안 불일치',
+    title: '광천선굴 타이핑 제안과 Enter가 화암동굴로 갈라지던 문제',
+    detail:
+      '홈 검색「광천선굴」「광천성굴」타이핑 목록에는 평창 광천선굴이 보이는데 엔터는 지오코딩 실패 캐시·AI가 정선 화암동굴로 교정했습니다. 평창 허브 명소 SSOT·별칭으로 바로 잡고, 엔터는 보이는 제안·Search Box 이름 일치를 AI보다 앞세웁니다. Preview /qa/dest-match 홈 검색「광천성굴」엔터 → 광천선굴(평창) · 화암동굴 교정 카드 아님.',
+    at: '2026-09-18T03:20:00.000Z',
+  },
   {
     id: '2026-09-17-dest-match-1-facility-filter',
     session: '여행지 매칭 #1, 갤러리 시설컷 정밀 필터',

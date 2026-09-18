@@ -96,4 +96,20 @@ assert.equal(searchBoxTypesForQuery('자킨토스'), SEARCH_BOX_PLACE_TYPES);
 assert.equal(isIslandPlaceQuery('사바섬'), true);
 assert.doesNotMatch(SEARCH_BOX_ISLAND_TYPES, /\bpoi\b/, 'island search box excludes poi');
 
-console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types)');
+for (const q of ['광천선굴', '광천성굴', '광천동굴', 'Gwangcheon Cave']) {
+  const hit = resolveHubAttraction(q);
+  assert.ok(hit, `${q} → 광천선굴 hub attraction`);
+  assert.equal(hit.hub.hubId, 'pyeongchang', `${q} hub is 평창`);
+  assert.equal(hit.attraction.name, '광천선굴', `${q} canonical name`);
+}
+
+const seongulAlias = resolveExploreSearchAlias('광천성굴');
+assert.equal(seongulAlias?.canonical, '광천선굴', '광천성굴 explore alias');
+const caveQueries = buildMapboxSearchQueries('광천동굴');
+assert.ok(caveQueries.includes('광천선굴'), '광천동굴 mapbox queries include 광천선굴');
+assert.ok(
+  caveQueries.some((q) => /Pyeongchang|평창/i.test(q)),
+  '광천동굴 mapbox queries include Pyeongchang',
+);
+
+console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴)');
