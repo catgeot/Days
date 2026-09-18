@@ -3737,6 +3737,72 @@ assert.ok(
   '정선 검색 8경 화표주 개요',
 );
 
+const taebaekMerged = mergeLocalScenicMembersIntoScenicSpots([], 'taebaek');
+const taebaekEight = taebaekMerged.filter((s) => s.localScenicListId === 'taebaek-palgyeong');
+assert.equal(taebaekEight.length, 8, '태백8경 8명');
+assert.equal(taebaekEight[0]?.groupTitle, '태백 팔경');
+const taebaekDeficitNames = ['장성하부고생대화석산지', '용연굴', '절골마을관리휴양지'];
+const taebaekDeficit = taebaekEight.filter((s) =>
+  taebaekDeficitNames.includes(s.attractionName),
+);
+assert.equal(taebaekDeficit.length, 3, '태백8경 결손 3명');
+assert.ok(
+  taebaekDeficit.every((s) => s.overview && s.imageUrl),
+  '태백 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  taebaekDeficit.every((s) => !s.contentId),
+  '태백 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(taebaekDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '태백 결손 3명 썸네일 서로 다름',
+);
+
+const tbFossil = resolveLocalScenicListSpotById(
+  'local-scenic:taebaek-palgyeong:장성하부고생대화석산지',
+);
+assert.ok(tbFossil?.overview?.includes('장성동 산42-2'), '태백 화석산지 주소');
+assert.ok(tbFossil?.overview?.includes('천연기념물'), '태백 화석산지 overlay 천연기념물');
+assert.ok(tbFossil?.overview?.includes('직운산층'), '태백 화석산지 overlay 직운산층');
+assert.ok(tbFossil?.overview?.includes('전남 장성'), '태백 화석산지≠전남 장성 구분');
+assert.ok(tbFossil?.imageUrl?.includes('1630197.jpg'), '태백 화석산지 국가유산청 사진');
+
+const tbCave = resolveLocalScenicListSpotById('local-scenic:taebaek-palgyeong:용연굴');
+assert.ok(tbCave?.overview?.includes('태백로 283-29'), '태백 용연굴 주소');
+assert.ok(tbCave?.overview?.includes('해발 920m'), '태백 용연굴 overlay 920m');
+assert.ok(tbCave?.overview?.includes('화암동굴'), '태백 용연굴≠정선 화암동굴 구분');
+assert.ok(tbCave?.imageUrl?.includes('geoplace--10-03.jpg'), '태백 용연굴 지질공원 사진');
+
+const tbJeol = resolveLocalScenicListSpotById('local-scenic:taebaek-palgyeong:절골마을관리휴양지');
+assert.ok(tbJeol?.overview?.includes('오투로 116'), '태백 절골 주소');
+assert.ok(tbJeol?.overview?.includes('절골힐링캠핑장'), '태백 절골 overlay 캠핑장');
+assert.ok(tbJeol?.overview?.includes('고원자연휴양림'), '태백 절골≠고원휴양림 구분');
+assert.ok(tbJeol?.imageUrl?.includes('sub_3_9_img4.jpg'), '태백 절골 공단 사진');
+
+assert.notEqual(tbFossil?.imageUrl, tbCave?.imageUrl, '화석산지·용연굴 썸네일 다름');
+assert.notEqual(tbFossil?.imageUrl, tbJeol?.imageUrl, '화석산지·절골 썸네일 다름');
+assert.notEqual(tbCave?.imageUrl, tbJeol?.imageUrl, '용연굴·절골 썸네일 다름');
+
+const taebaekGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '태백8경', {
+  injectLocalScenic: true,
+});
+const taebaekGlobeEight = taebaekGlobe.filter((s) => s.localScenicListId === 'taebaek-palgyeong');
+assert.equal(taebaekGlobeEight.length, 8, '태백 검색 태백8경 8행');
+assert.ok(
+  taebaekGlobe.find((s) => s.attractionName === '장성하부고생대화석산지')?.overview?.includes('삼엽충'),
+  '태백 검색 8경 화석산지 개요',
+);
+assert.ok(
+  taebaekGlobe.find((s) => s.attractionName === '용연굴')?.imageUrl?.includes('geoplace--10-03.jpg'),
+  '태백 검색 8경 용연굴 썸네일',
+);
+assert.ok(
+  taebaekGlobe.find((s) => s.attractionName === '절골마을관리휴양지')?.overview?.includes('본적사지'),
+  '태백 검색 8경 절골 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

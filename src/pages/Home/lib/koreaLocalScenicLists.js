@@ -1487,6 +1487,20 @@ const JS_HWAAM = 'https://www.jeongseon.go.kr/page/language/images/sub';
 const JS_GEBUK = `${JS_HWAAM}/img-geobukbawi.jpg`;
 const JS_YONGMA = `${JS_HWAAM}/img-yongmaso.jpg`;
 const JS_HWAPYO = `${JS_HWAAM}/img-hwapyoju.jpg`;
+const TB_KHS = 'https://www.khs.go.kr/unisearch/images/natural_monument';
+const TB_FOSSIL = `${TB_KHS}/1630197.jpg`;
+const TB_PALEO = 'https://www.paleozoicgp.com/images';
+const TB_FOSSIL_2 = `${TB_PALEO}/geoplace--05-01.jpg`;
+const TB_TOUR = 'https://tour.taebaek.go.kr/upload/smartdb';
+const TB_FOSSIL_3 = `${TB_TOUR}/common/main/common_main_20210104_1.jpg`;
+const TB_CAVE = `${TB_PALEO}/geoplace--10-03.jpg`;
+const TB_CAVE_2 = `${TB_PALEO}/geoplace--10-01.jpg`;
+const TB_CAVE_3 = `${TB_PALEO}/geoplace--10-02.jpg`;
+const TB_CAVE_4 = `${TB_TOUR}/2016/01/11/AN0012_I_05.JPG`;
+const TB_FMC = 'https://www.tfmc.or.kr/resource/taebaek/images/contents';
+const TB_JEOL = `${TB_FMC}/sub_3_9_img4.jpg`;
+const TB_JEOL_2 = `${TB_FMC}/sub_3_9_img2.jpg`;
+const TB_JEOL_3 = `${TB_FMC}/sub_3_9_img8.jpg`;
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3159,6 +3173,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '화암8경 5경 화표주는 화암면 화암리입니다. 정선군 공식 관광은 주소 화암리 329-4이며, 절벽 옆 긴 돌기둥 두 개라고 적습니다. 화암리에서 화표동(몰운대 방면) 삼거리 오른쪽 약 30m입니다. 신선들이 이 기둥에 신틀을 걸고 짚신(집신)을 삼았다는 전설이 있습니다. 화암면은 겸재 정선의 작품으로도 알려진다고 안내합니다. 소금강(설암)·몰운대·광대곡·단양 도담삼봉과 다른 화표동 입구 두 기둥입니다. 사진은 정선군 공식 화암8경 화표주 사진입니다.',
     '강원특별자치도 정선군 화암면 화암리 329-4 (화표주)',
     JS_HWAPYO,
+  ),
+  'local-scenic:taebaek-palgyeong:장성하부고생대화석산지': localScenicPhotoOverlay(
+    '태백8경 3경 장성하부고생대화석산지는 장성동입니다. 태백시 문화관광은 천연기념물 「태백 장성 오르도비스기 화석산지」로, 고생대 생물이 화석으로 잘 보존되어 삼엽충·완족류·두족류·복족류가 대표적이라고 적습니다. 주소는 장성동 산42-2번지 일원입니다. 국가유산청은 2000년 4월 28일 지정·면적 186,831㎡이며 관리자는 태백시입니다. 강원고생대국가지질공원은 전기 고생대 조선누층군 직운산층, 오르도비스기 깊은 바다의 세립질 퇴적암이며 삼엽충·두족류·필석·극피동물·코노돈트가 보고된다고 적습니다. 태백시는 삼엽충 5속 15종·1cm 이하~22cm, 한반도에서는 주로 이곳에서 발견된다고 안내합니다. 1986년 강원도 기념물 제57호에서 승격했습니다. 현장은 보호 펜스로 출입이 제한됩니다. 전남 장성군·2경 구문소·태백고생대자연사박물관·나팔고개 삼엽충 산지와 다른 장성동 직운산층 노두입니다. 사진은 국가유산청·강원고생대국가지질공원·태백시 문화관광 공식 사진입니다.',
+    '강원특별자치도 태백시 장성동 산42-2 (태백 장성 오르도비스기 화석산지)',
+    TB_FOSSIL,
+    [TB_FOSSIL_2, TB_FOSSIL_3],
+  ),
+  'local-scenic:taebaek-palgyeong:용연굴': localScenicPhotoOverlay(
+    '태백8경 7경 용연굴은 화전동 용연동굴입니다. 태백시 관광은 「태백 용연굴(자연유산)」로, 용의 연못 속 용이 계곡을 따라 하늘로 승천했다는 이름이며 금대봉 하부능선 해발 920m, 약 1억5천~3억 년 전, 길이 약 843m, 4개 광장과 순환형 수평굴이라고 적습니다. 주소는 태백로 283-29입니다. 강원고생대국가지질공원은 개방 동굴 가운데 가장 높은 고도의 자연 석회동굴이며 중간부 광장은 폭·높이 약 30m·길이 약 150m, 강원특별자치도 기념물 제39호라고 적습니다. 한국관광공사·태백시는 내부 평균 9~12℃, 긴다리장님좀먼지벌레 등 동굴생물, 매표소에서 열차 또는 도보, 월요일 휴관·09:00~18:00을 안내합니다. 1997년 11월 1일부터 관광 개방입니다. 영동 한천 용연대·정선 화암동굴·삼척 환선굴·단양 고수동굴·울진 성류굴과 다른 화전동 고지대 건식 석회동굴입니다. 사진은 강원고생대국가지질공원·태백시 관광 공식 사진입니다.',
+    '강원특별자치도 태백시 태백로 283-29 (화전동 용연동굴)',
+    TB_CAVE,
+    [TB_CAVE_2, TB_CAVE_3, TB_CAVE_4],
+  ),
+  'local-scenic:taebaek-palgyeong:절골마을관리휴양지': localScenicPhotoOverlay(
+    '태백8경 8경 절골마을관리휴양지는 황지동 함백산 동쪽 절골입니다. 한국관광공사는 본적사지3층석탑 안내에서 함백산(1,573m) 동쪽 산기슭, 절골 유원지 입구 다리를 지나 민가가 들어선 일대가 절터이며 절이 많아 절골이라 한다고 적습니다. 본적사지는 번적사지라고도 하며 주소는 절골1길 90(황지동 467-10)입니다. 태백시시설관리공단은 같은 골 황지동 466-36에 절골힐링캠핑장을 두고, 대지면적 9,896㎡·자동차야영 14면·야영노지 16면이며 주소는 오투로 116입니다. 국가유산청은 태백 본적사지 삼층석탑재(강원도 문화재자료)를 황지동 467-10으로 적습니다. 철암 머리골 태백고원자연휴양림·고원힐링캠핑장·정선 고한과 다른 황지동 절골 계곡입니다. 사진은 태백시시설관리공단 절골힐링캠핑장 공식 사진입니다.',
+    '강원특별자치도 태백시 오투로 116 (황지동 466-36 절골힐링캠핑장·절골1길 90 본적사지)',
+    TB_JEOL,
+    [TB_JEOL_2, TB_JEOL_3],
   ),
 };
 
