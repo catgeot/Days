@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'dest-match',
+    label: '여행지 매칭 — 동음 지명 다후보',
+    branch: 'cursor/dest-match-arch',
+    destination:
+      'https://days-git-cursor-dest-match-arch-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'visitor-growth',
     label: '방문자 개선 — 404 복구·MOONi 초기화',
     branch: 'cursor/visitor-growth-1f90',
