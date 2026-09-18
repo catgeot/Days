@@ -1501,6 +1501,19 @@ const TB_FMC = 'https://www.tfmc.or.kr/resource/taebaek/images/contents';
 const TB_JEOL = `${TB_FMC}/sub_3_9_img4.jpg`;
 const TB_JEOL_2 = `${TB_FMC}/sub_3_9_img2.jpg`;
 const TB_JEOL_3 = `${TB_FMC}/sub_3_9_img8.jpg`;
+const UJ_TOUR = 'https://www.ui4u.go.kr/tour/img/content/sub02';
+const UJ_DOJEONG = `${UJ_TOUR}/img_view03.png`;
+const UJ_DOJEONG_2 = `${UJ_TOUR}/img_view03_01.png`;
+const UJ_LRT = `${UJ_TOUR}/img_view05_01.png`;
+const UJ_LRT_2 = `${UJ_TOUR}/img_view05_02.png`;
+const UJ_LRT_3 = `${UJ_TOUR}/img_view05_03.png`;
+const UJ_LRT_4 = `${UJ_TOUR}/img_view05_04.png`;
+const UJ_MARKET = `${UJ_TOUR}/img_view07.png`;
+const UJ_MARKET_2 = `${UJ_TOUR}/img_view07_01.png`;
+const UJ_MARKET_VK = 'https://tong.visitkorea.or.kr/cms2/website/34/3051534.JPG';
+const UJ_MARKET_VK_2 = 'https://tong.visitkorea.or.kr/cms2/website/38/3051538.JPG';
+const UJ_MARKET_VK_3 = 'https://tong.visitkorea.or.kr/cms2/website/40/3051540.JPG';
+const UJ_MARKET_VK_4 = 'https://tong.visitkorea.or.kr/cms2/website/68/3051568.JPG';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3191,6 +3204,24 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '강원특별자치도 태백시 오투로 116 (황지동 466-36 절골힐링캠핑장·절골1길 90 본적사지)',
     TB_JEOL,
     [TB_JEOL_2, TB_JEOL_3],
+  ),
+  'local-scenic:uijeongbu-palgyeong:수락산도정봉': localScenicPhotoOverlay(
+    '의정부8경 3경 수락산 도정봉은 장암동 수락산입니다. 의정부시 문화관광 8경은 화강암 능선이 펼쳐진 경관으로, 해발 526m이며 수락산 주봉으로 올라가는 코스라고 적습니다. 추천 만가대 코스는 4.5km·약 1시간 50분(만가대 화기물 보관 초소→도정봉→기차바위→정상), 동막골 코스는 5.3km·약 2시간 10분(동막골 장암주공삼거리→도정봉→기차바위→정상)입니다. 도정봉을 지나 기차바위·철모바위 등 기암을 보며 산행 내내 탁 트인 전망이 열린다고 안내합니다. 수락산(638m)은 서울시·의정부시·남양주시 별내면 경계이며 금류·은류·옥류 폭포와 흥국사·내원사·석림사·궤산정이 산재합니다. 남쪽은 불암산, 서쪽은 도봉산입니다. 지하철 4호선 당고개역·학림사·용굴암은 서울 쪽 선호 코스이며 노원 수락산 주봉·도봉산·논산 대둔산 수락계곡과 다른 장암동 도정봉입니다. 사진은 의정부시 문화관광 8경 수락산 도정봉 공식 사진입니다.',
+    '경기도 의정부시 장암동 (동막골 장암주공삼거리·만가대 코스 수락산 도정봉)',
+    UJ_DOJEONG,
+    [UJ_DOJEONG_2],
+  ),
+  'local-scenic:uijeongbu-palgyeong:의정부경전철': localScenicPhotoOverlay(
+    '의정부8경 5경 의정부경전철은 의정부 일대입니다. 의정부시 문화관광 8경은 2012년에 개통한 경기도 최초의 경전철이며, 전 구간에서 도시와 자연을 잇는 풍경을 감상할 수 있어 이동 자체가 여행이 된다고 적습니다. 소재지는 의정부 일대, 대표번호는 031-820-1004입니다. 공식 노선 안내는 발곡~회룡·범골·경전철의정부·의정부시청·흥선·의정부중앙·동오·새말·경기도청북부청사·효자·곤제·어룡·송산·탑석~차량기지 임시승강장입니다. 친환경 교통으로 문화 공간과 관광 명소를 연결한다고 안내합니다. 부산김해경전철·용인 에버라인·인천 월미바다열차·김해9경 「경전철에서 바라본 가야유적」과 다른 의정부 U라인입니다. 사진은 의정부시 문화관광 8경 의정부 경전철 전경 공식 사진입니다.',
+    '경기도 의정부시 일대 (발곡역~탑석역·차량기지 임시승강장, 의정부경전철 중앙역)',
+    UJ_LRT,
+    [UJ_LRT_2, UJ_LRT_3, UJ_LRT_4],
+  ),
+  'local-scenic:uijeongbu-palgyeong:의정부제일시장': localScenicPhotoOverlay(
+    '의정부8경 7경 의정부제일시장은 의정부동입니다. 의정부시 문화관광 8경은 전통과 현대가 어우러진 우수 재래시장으로, 주소 시민로121번길 43-2, 대표번호 031-846-2617, 의정부역 하차 후 도보 2분이라고 적습니다. 1978년 설립, 점포 600개가 넘는 대형 전통시장이며 가·나·다·라동으로 나뉩니다. 가동은 의류, 나동은 잡화·커튼, 다동은 식품·방앗간, 라동은 한복 등 일반 의류입니다. 중심 십자마당은 공연문화 커뮤니티입니다. 행복로를 따라 부대찌개거리·녹색거리·로데오거리와 이어지나 번화가 끝의 재래시장입니다. 경기북부에서 규모가 큰 시장이며 2008년 전통시장 활성화 평가에서 도내 1위·전국 3위였다고 안내합니다. GATEO 선정 의정부 부대찌개거리·행복로·다른 도시 제일시장과 구분합니다. 사진은 의정부시 문화관광 8경·한국관광공사 의정부 제일시장 공식 사진입니다.',
+    '경기도 의정부시 시민로121번길 43-2 (의정부동 의정부제일시장)',
+    UJ_MARKET,
+    [UJ_MARKET_2, UJ_MARKET_VK, UJ_MARKET_VK_2, UJ_MARKET_VK_3, UJ_MARKET_VK_4],
   ),
 };
 

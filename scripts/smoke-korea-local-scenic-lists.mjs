@@ -3803,6 +3803,75 @@ assert.ok(
   '태백 검색 8경 절골 개요',
 );
 
+const uijeongbuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'uijeongbu');
+const uijeongbuEight = uijeongbuMerged.filter((s) => s.localScenicListId === 'uijeongbu-palgyeong');
+assert.equal(uijeongbuEight.length, 8, '의정부8경 8명');
+assert.equal(uijeongbuEight[0]?.groupTitle, '의정부 팔경');
+const uijeongbuDeficitNames = ['수락산 도정봉', '의정부경전철', '의정부제일시장'];
+const uijeongbuDeficit = uijeongbuEight.filter((s) =>
+  uijeongbuDeficitNames.includes(s.attractionName),
+);
+assert.equal(uijeongbuDeficit.length, 3, '의정부8경 결손 3명');
+assert.ok(
+  uijeongbuDeficit.every((s) => s.overview && s.imageUrl),
+  '의정부 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  uijeongbuDeficit.every((s) => !s.contentId),
+  '의정부 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(uijeongbuDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '의정부 결손 3명 썸네일 서로 다름',
+);
+
+const ujPeak = resolveLocalScenicListSpotById('local-scenic:uijeongbu-palgyeong:수락산도정봉');
+assert.ok(ujPeak?.overview?.includes('장암동'), '의정부 도정봉 주소');
+assert.ok(ujPeak?.overview?.includes('해발 526m'), '의정부 도정봉 overlay 526m');
+assert.ok(ujPeak?.overview?.includes('기차바위'), '의정부 도정봉 overlay 기차바위');
+assert.ok(ujPeak?.overview?.includes('당고개'), '의정부 도정봉≠노원 당고개 구분');
+assert.ok(ujPeak?.overview?.includes('수락계곡'), '의정부 도정봉≠논산 수락계곡 구분');
+assert.ok(ujPeak?.imageUrl?.includes('img_view03.png'), '의정부 도정봉 시 공식 사진');
+
+const ujLrt = resolveLocalScenicListSpotById('local-scenic:uijeongbu-palgyeong:의정부경전철');
+assert.ok(ujLrt?.overview?.includes('발곡'), '의정부 경전철 overlay 발곡');
+assert.ok(ujLrt?.overview?.includes('2012'), '의정부 경전철 overlay 2012');
+assert.ok(ujLrt?.overview?.includes('부산김해경전철'), '의정부 경전철≠김해 경전철 구분');
+assert.ok(ujLrt?.overview?.includes('가야유적'), '의정부 경전철≠김해9경 가야유적 구분');
+assert.ok(ujLrt?.imageUrl?.includes('img_view05_01.png'), '의정부 경전철 시 공식 사진');
+
+const ujMarket = resolveLocalScenicListSpotById('local-scenic:uijeongbu-palgyeong:의정부제일시장');
+assert.ok(ujMarket?.overview?.includes('시민로121번길 43-2'), '의정부 제일시장 주소');
+assert.ok(ujMarket?.overview?.includes('1978'), '의정부 제일시장 overlay 1978');
+assert.ok(ujMarket?.overview?.includes('부대찌개거리'), '의정부 제일시장≠부대찌개거리 구분');
+assert.ok(ujMarket?.imageUrl?.includes('img_view07.png'), '의정부 제일시장 시 공식 사진');
+assert.ok(!ujMarket?.imageUrl?.includes('3083097'), '의정부 제일시장≠부대찌개거리 GATEO 사진');
+
+assert.notEqual(ujPeak?.imageUrl, ujLrt?.imageUrl, '도정봉·경전철 썸네일 다름');
+assert.notEqual(ujPeak?.imageUrl, ujMarket?.imageUrl, '도정봉·제일시장 썸네일 다름');
+assert.notEqual(ujLrt?.imageUrl, ujMarket?.imageUrl, '경전철·제일시장 썸네일 다름');
+
+const uijeongbuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '의정부8경', {
+  injectLocalScenic: true,
+});
+const uijeongbuGlobeEight = uijeongbuGlobe.filter(
+  (s) => s.localScenicListId === 'uijeongbu-palgyeong',
+);
+assert.equal(uijeongbuGlobeEight.length, 8, '의정부 검색 의정부8경 8행');
+assert.ok(
+  uijeongbuGlobe.find((s) => s.attractionName === '수락산 도정봉')?.overview?.includes('526m'),
+  '의정부 검색 8경 도정봉 개요',
+);
+assert.ok(
+  uijeongbuGlobe.find((s) => s.attractionName === '의정부경전철')?.imageUrl?.includes('img_view05_01.png'),
+  '의정부 검색 8경 경전철 썸네일',
+);
+assert.ok(
+  uijeongbuGlobe.find((s) => s.attractionName === '의정부제일시장')?.overview?.includes('십자마당'),
+  '의정부 검색 8경 제일시장 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
