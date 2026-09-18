@@ -12,6 +12,16 @@ import {
   isKoHomonymPlaceSearchQuery,
   isKoHomonymRiSearchQuery,
 } from '../src/pages/Home/lib/koHomonymRiSearch.js';
+import {
+  collectKoreaHomonymDisambiguationCandidates,
+  detectHomonymLocation,
+  resolveUniqueKoreaHomonym,
+  shouldOfferKoreaHomonymDisambiguation,
+} from '../src/pages/Home/lib/detectHomonymLocation.js';
+import { resolveKoreaDestinationFirstPassSync } from '../src/pages/Home/lib/resolveKoreaDestinationFirstPass.js';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 let failed = 0;
 
@@ -215,6 +225,86 @@ assert(
 assert(
   sinchonNames.some((n) => n.includes('영광')),
   `신촌 has 영광: ${sinchonNames.join(' | ')}`,
+);
+
+function assertDictHomonym(query, mustInclude, mustExclude = []) {
+  const detected = detectHomonymLocation(query);
+  assert(detected, `${query} is detected as homonym`);
+  const cards = detected.disambiguationCandidates;
+  assert(cards.length >= 2, `${query} disambiguationCandidates ≥2 (got ${cards.length})`);
+  assert(
+    Array.isArray(detected.disambiguationCandidates),
+    `${query} exposes disambiguationCandidates array`,
+  );
+  const names = cards.map((c) => c.name).join(' | ');
+  for (const needle of mustInclude) {
+    assert(names.includes(needle), `${query} includes ${needle}: ${names}`);
+  }
+  for (const needle of mustExclude) {
+    assert(!names.includes(needle), `${query} excludes ${needle}: ${names}`);
+  }
+  assert(resolveUniqueKoreaHomonym(query) === null, `${query} unique resolve is null (no snap)`);
+  assert(
+    cards.every((c) => c.source === 'korea-homonym-dict' && c.uiPlace === true && c.originalQuery === query),
+    `${query} cards carry dict source + originalQuery`,
+  );
+  assert(
+    cards.every((c) => Number.isFinite(c.lat) && Number.isFinite(c.lng) && c.stayAdmin && c.parentCity),
+    `${query} cards have coords + stayAdmin + region`,
+  );
+}
+
+assertDictHomonym('종각', ['종각역', '서울 종로', '종각네거리', '대구']);
+assertDictHomonym('광천', ['광천선굴', '평창군', '광천동', '광주', '광천읍', '홍성']);
+assertDictHomonym('강원대', ['춘천', '삼척']);
+assertDictHomonym('강원대학교', ['춘천', '삼척']);
+assertDictHomonym('봉화산', ['중랑', '양구']);
+assertDictHomonym('대포', ['대포항', '속초', '대포동', '서귀포']);
+assertDictHomonym('대화', ['대화역', '고양', '대화면', '평창', '대화동', '대전']);
+assertDictHomonym('용산', ['용산역', '서울 용산', '용산호', '정읍']);
+
+assert(detectHomonymLocation('종각역') === null, '종각역 is unique — not a homonym list');
+assert(detectHomonymLocation('광천선굴') === null, '광천선굴 is unique');
+assert(detectHomonymLocation('광천성굴') === null, '광천성굴 alias stays First-Pass unique');
+assert(detectHomonymLocation('강원대학교 동해수련원') === null, '동해수련원 is unique satellite');
+assert(detectHomonymLocation('대화리') === null, '대화리 stays Nominatim ri path');
+assert(detectHomonymLocation('제주') === null, 'hub bare 제주 not in dict');
+
+assert(shouldOfferKoreaHomonymDisambiguation('종각'), '종각 offers dict disambiguation');
+assert(shouldOfferKoreaHomonymDisambiguation('광천'), '광천 offers dict disambiguation');
+assert(shouldOfferKoreaHomonymDisambiguation('대포'), '대포 offers dict disambiguation');
+assert(
+  !shouldOfferKoreaHomonymDisambiguation('용산'),
+  '용산 hub exact keeps hub cluster (dict listed but not offered)',
+);
+assert(!shouldOfferKoreaHomonymDisambiguation('종각역'), '종각역 not offered as homonym');
+assert(collectKoreaHomonymDisambiguationCandidates('용산').length >= 2, '용산 dict still lists ≥2');
+
+const scriptsDir = dirname(fileURLToPath(import.meta.url));
+const handlerSrc = readFileSync(join(scriptsDir, '../src/pages/Home/hooks/useHomeHandlers.js'), 'utf8');
+const suggestionSrc = readFileSync(
+  join(scriptsDir, '../src/pages/Home/lib/searchSuggestions.js'),
+  'utf8',
+);
+assert(handlerSrc.includes('dictHomonymResult'), 'handler intercepts dict homonyms before First-Pass');
+assert(
+  /dictChoice = dictHomonymResult\(\);\s*if \(dictChoice\) return dictChoice;\s*\n\s*\/\/ 국내 First-Pass/.test(
+    handlerSrc,
+  ),
+  'dict homonym runs immediately before First-Pass snap',
+);
+assert(
+  suggestionSrc.includes('shouldOfferKoreaHomonymDisambiguation'),
+  'typing suggestions short-circuit to dict candidates',
+);
+
+assert(
+  resolveKoreaDestinationFirstPassSync('종각역')?.name === '종각역',
+  '종각역 First-Pass unique station still holds',
+);
+assert(
+  resolveKoreaDestinationFirstPassSync('광천선굴')?.name === '광천선굴',
+  '광천선굴 First-Pass unique hub still holds',
 );
 
 if (process.env.KO_HOMONYM_RI_LIVE === '1') {

@@ -18,6 +18,10 @@ import {
   collectKoHomonymPlaceCandidates,
   isKoHomonymPlaceSearchQuery,
 } from '../lib/koHomonymRiSearch';
+import {
+  collectKoreaHomonymDisambiguationCandidates,
+  shouldOfferKoreaHomonymDisambiguation,
+} from '../lib/detectHomonymLocation.js';
 import { formatUrlName, pickUrlSafeEnglishName, isUrlSafeEnglishLabel, isEphemeralSlug } from '../lib/formatUrlName';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
 import { supabase } from '../../../shared/api/supabase';
@@ -767,9 +771,21 @@ export function useHomeHandlers({
 
     let koHomonymPlaceTried = false;
 
+    const dictHomonymResult = () => {
+      if (isFacilityQuery(query) || !shouldOfferKoreaHomonymDisambiguation(query)) return null;
+      const dictCandidates = collectKoreaHomonymDisambiguationCandidates(query);
+      if (dictCandidates.length < 2) return null;
+      return makeDisambiguationResult(query, dictCandidates, {
+        title: `'${query}' → 지역을 선택하세요`,
+      });
+    };
+
     if (requireChoice) {
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;
+
+      const dictChoice = dictHomonymResult();
+      if (dictChoice) return dictChoice;
 
       // 동명 리/읍/면/동·bare 화이트리스트 — prefix 스냅(남양→남양주)보다 우선
       if (!isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {
@@ -818,6 +834,9 @@ export function useHomeHandlers({
         handleLocationSelect(seaSpot);
         return seaSpot;
       }
+
+      const dictChoice = dictHomonymResult();
+      if (dictChoice) return dictChoice;
 
       // 국내 First-Pass (광천선굴·종각역) — Mapbox 전 hub·역 좌표
       const koreaFirst = resolveKoreaDestinationFirstPassSync(query);

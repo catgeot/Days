@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 5,
-  sessionPhase: '카테고리 맥락 파이프라인 전달',
+  sessionNo: 6,
+  sessionPhase: '동음이의어 다후보 리스트업',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-dest-match-6-homonym-list',
+    session: '여행지 매칭 #6, 동음이의어 다후보 리스트업',
+    title: '전국 동음 지명 다후보 사전 — 임의 단정 없음',
+    detail:
+      '종각·광천·강원대·봉화산·대포·대화처럼 전국에 두 곳 이상인 지명은 한곳으로 찍지 않고 지역이 적힌 후보를 나열합니다. 「종각」은 서울 종각역과 대구 종각네거리, 「광천」은 평창 광천선굴·광주 광천동·홍성 광천읍입니다. 「종각역」「광천선굴」처럼 한곳인 이름은 기존 First-Pass를 씁니다. Preview /qa/dest-match 홈「종각」「광천」엔터 → 선택 카드 · 대구·광주 단독 진입 아님.',
+    at: '2026-09-18T08:40:00.000Z',
+  },
   {
     id: '2026-09-18-dest-match-5-place-category',
     session: '여행지 매칭 #5, 카테고리 맥락 파이프라인 전달',

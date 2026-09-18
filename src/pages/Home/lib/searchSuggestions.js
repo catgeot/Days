@@ -49,6 +49,10 @@ import {
   relabelHomonymDisplay,
 } from './travelSearchHomonyms';
 import { shouldSkipGeocodeForMood } from './moodSearchIntent';
+import {
+  collectKoreaHomonymDisambiguationCandidates,
+  shouldOfferKoreaHomonymDisambiguation,
+} from './detectHomonymLocation.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -234,6 +238,13 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const out = [];
   const seen = new Set();
 
+  if (shouldOfferKoreaHomonymDisambiguation(q)) {
+    for (const item of collectKoreaHomonymDisambiguationCandidates(q)) {
+      pushUnique(out, seen, item);
+    }
+    return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
+  }
+
   const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
@@ -365,7 +376,8 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     exactListHit ||
     exactAttraction ||
     exactSettlement ||
-    shouldSkipGeocodeForMood(q)
+    shouldSkipGeocodeForMood(q) ||
+    shouldOfferKoreaHomonymDisambiguation(q)
   ) {
     return local;
   }
