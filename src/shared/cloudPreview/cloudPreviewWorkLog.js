@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 58,
-  sessionPhase: '정선 결손 오버레이',
+  sessionNo: 59,
+  sessionPhase: '태백 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jeongseon',
+  previewPath: '/korea/theme/scenic?hub=taebaek',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-palgyeong-use-59-taebaek-overlays',
+    session: '팔경 활용 #59, 태백 결손 오버레이',
+    title: '태백8경 장성하부고생대화석산지·용연굴·절골마을관리휴양지 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 태백8경 결손 3건(장성하부고생대화석산지·용연굴·절골마을관리휴양지)의 공공 공식 팩트 개요·주소·국가유산청·강원고생대국가지질공원·태백시 관광·태백시시설관리공단 공식 사진을 보강했습니다. 화석산지는 장성동 산42-2 천연기념물 416호 직운산층 노두(3경), 용연굴은 태백로 283-29 해발 920m 건식 석회동굴(7경), 절골은 오투로 116 황지동 절골힐링캠핑장·본적사지(8경)입니다. 전남 장성·구문소·영동 용연대·정선 화암동굴·철암 고원휴양림과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=taebaek 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T05:30:00.000Z',
+  },
   {
     id: '2026-09-17-palgyeong-use-58-jeongseon-overlays',
     session: '팔경 활용 #58, 정선 결손 오버레이',
