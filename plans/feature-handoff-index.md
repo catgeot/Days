@@ -18,9 +18,9 @@
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `0eecf896` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#6 push** · tip `51fb8518` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** · PROD `/qa` 1행 반영 |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `0eecf896` |
+| **tip** | `51fb8518` |
 | **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
 | **일지** | [`2026-09-18-project-log.md`](./2026-09-18-project-log.md) |
