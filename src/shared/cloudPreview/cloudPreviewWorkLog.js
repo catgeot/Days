@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 59,
-  sessionPhase: '태백 결손 오버레이',
+  sessionNo: 60,
+  sessionPhase: '의정부 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=taebaek',
+  previewPath: '/korea/theme/scenic?hub=uijeongbu',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-palgyeong-use-60-uijeongbu-overlays',
+    session: '팔경 활용 #60, 의정부 결손 오버레이',
+    title: '의정부8경 수락산 도정봉·의정부경전철·의정부제일시장 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의정부8경 결손 3건(수락산 도정봉·의정부경전철·의정부제일시장)의 공공 공식 팩트 개요·주소·의정부시 문화관광 8경·한국관광공사 공식 사진을 보강했습니다. 도정봉은 장암동 해발 526m 화강암 능선(3경, 만가대·동막골), 경전철은 2012년 경기도 최초 발곡~탑석(5경), 제일시장은 시민로121번길 43-2 1978년 600여 점포(7경)입니다. 노원 수락산·당고개·논산 수락계곡·김해경전철·부대찌개거리와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uijeongbu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T08:20:00.000Z',
+  },
   {
     id: '2026-09-18-palgyeong-use-59-taebaek-overlays',
     session: '팔경 활용 #59, 태백 결손 오버레이',
