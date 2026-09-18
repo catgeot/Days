@@ -2,6 +2,16 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 팔경 활용 #61 — 통영팔경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #61, 통영 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `13ae3ad7` · PR [#279](https://github.com/catgeot/Days/pull/279)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 통영팔경 결손 3건(남망산공원·한산도제승당·통영운하 야경). 남망산공원은 동호동 남망공원길 29 1997년 조각공원(3경), 제승당은 한산일주로 70 사적 113호 운주당 터(4경), 운하는 당동~미수동 1932년 3중 교통로(7경). 동피랑·디피랑·세병관·아산 현충사·여수 밤바다·광양만 야경과 구분. 통영 사진·개요 결손 3→0.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=tongyeong`
+- **잔여**: 사진/개요 순수 누락 **46**/876. 다음 허브 **광주8경 2**(경기 광주)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 여행지 매칭 #6 — 동음이의어 다후보 리스트업 (Cloud)
 
 - **세션** `여행지 매칭 #6, 동음이의어 다후보 리스트업`
