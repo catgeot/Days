@@ -479,7 +479,7 @@ function overlayLocalScenicTourMeta(spot, extra) {
   if (!spot) return spot;
   const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
   const overlayThumb = overlay?.imageUrl;
-  if (!extra && !overlayThumb) return spot;
+  if (!extra && !overlayThumb && !overlay?.homepage) return spot;
   const contentId = String(spot.contentId || extra?.contentId || '').trim();
   const firstImage =
     overlayThumb ||
@@ -498,6 +498,7 @@ function overlayLocalScenicTourMeta(spot, extra) {
     galleryUrls: overlay?.galleryUrls || spot.galleryUrls || extra?.galleryUrls || null,
     overview: overlay?.overview || spot.overview || extra?.overview || null,
     addr1: overlay?.addr1 || spot.addr1 || extra?.addr1 || null,
+    homepage: overlay?.homepage || spot.homepage || extra?.homepage || null,
   };
 }
 
@@ -505,12 +506,13 @@ function applyLocalScenicContentIdThumb(spot) {
   if (!spot) return spot;
   const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
   const overlayThumb = overlay?.imageUrl;
-  if (overlayThumb) {
+  if (overlayThumb || overlay?.homepage) {
     return {
       ...spot,
-      firstImage: overlayThumb,
-      imageUrl: overlayThumb,
+      firstImage: overlayThumb || spot.firstImage,
+      imageUrl: overlayThumb || spot.imageUrl,
       galleryUrls: overlay?.galleryUrls || spot.galleryUrls,
+      homepage: overlay?.homepage || spot.homepage,
     };
   }
   const hasThumb = String(spot.firstImage || spot.imageUrl || '').trim();
@@ -524,6 +526,7 @@ function applyLocalScenicContentIdThumb(spot) {
     firstImage: url,
     imageUrl: url,
     galleryUrls: byContentId.galleryUrls || spot.galleryUrls,
+    homepage: byContentId.homepage || spot.homepage,
   };
 }
 
@@ -1078,6 +1081,7 @@ export default function KoreaThemeScenicPage() {
         firstImage: overlayThumb || firstImage,
         imageUrl: overlayThumb || spot.imageUrl || firstImage,
         galleryUrls: overlay?.galleryUrls || spot.galleryUrls,
+        homepage: overlay?.homepage || spot.homepage,
       };
     });
   }, [curatedSpots, curatedImageByContentId]);
@@ -1129,6 +1133,7 @@ export default function KoreaThemeScenicPage() {
         firstImage: overlayThumb || firstImage,
         imageUrl: overlayThumb || spot.imageUrl || firstImage,
         galleryUrls: overlay?.galleryUrls || spot.galleryUrls,
+        homepage: overlay?.homepage || spot.homepage,
       };
     });
   }, [
@@ -2658,6 +2663,7 @@ export default function KoreaThemeScenicPage() {
               galleryUrls: overlay?.galleryUrls || curated.galleryUrls,
               overview: overlay?.overview || curated.overview,
               addr1: overlay?.addr1 || curated.addr1,
+              homepage: overlay?.homepage || curated.homepage,
             }
           : curated,
       );

@@ -1514,8 +1514,33 @@ const UJ_MARKET_VK = 'https://tong.visitkorea.or.kr/cms2/website/34/3051534.JPG'
 const UJ_MARKET_VK_2 = 'https://tong.visitkorea.or.kr/cms2/website/38/3051538.JPG';
 const UJ_MARKET_VK_3 = 'https://tong.visitkorea.or.kr/cms2/website/40/3051540.JPG';
 const UJ_MARKET_VK_4 = 'https://tong.visitkorea.or.kr/cms2/website/68/3051568.JPG';
+const TY_VK = 'https://tong.visitkorea.or.kr/cms/resource';
+const TY_NAM = `${TY_VK}/27/3349727_image2_1.jpg`;
+const TY_NAM_2 = `${TY_VK}/28/3349728_image2_1.jpg`;
+const TY_NAM_3 = `${TY_VK}/29/3349729_image2_1.jpg`;
+const TY_JE = `${TY_VK}/14/3558314_image2_1.jpg`;
+const TY_JE_2 = `${TY_VK}/15/3558315_image2_1.jpg`;
+const TY_JE_SURU = `${TY_VK}/13/3558313_image2_1.jpg`;
+const TY_KHS = 'https://www.khs.go.kr/unisearch/images/history_site';
+const TY_JE_AIR = `${TY_KHS}/1628218.jpg`;
+const TY_CANAL = `${TY_VK}/88/3534988_image2_1.jpg`;
+const TY_CANAL_2 = `${TY_VK}/89/3534989_image2_1.jpg`;
+const TY_CANAL_3 = `${TY_VK}/90/3534990_image2_1.jpg`;
+const TY_UTOUR = 'https://www.utour.go.kr/CmsMultiFile/view.do?multifileId=MF90100028';
+const TY_YONG = `${TY_UTOUR}&idx=16550`;
+const TY_YONG_2 = `${TY_UTOUR}&idx=16548`;
+const TY_YONG_3 = `${TY_UTOUR}&idx=16549`;
+const TY_YONG_4 = `${TY_UTOUR}&idx=2803861`;
+// Tour 127103 homepage는 badaland.com(구 통영 관광 호스트). utour.go.kr과 같은 IP인데 인증서가 *.utour.go.kr이라 HTTPS가 ERR_CERT_COMMON_NAME_INVALID.
+const TY_YONG_HOME =
+  'https://www.utour.go.kr/00001/00007/00011.web?amode=view&idx=1660';
+const TY_YI_PHOTO = 'https://tong.visitkorea.or.kr/cms/resource_photo';
+const TY_YI = `${TY_YI_PHOTO}/92/3479192_image2_1.jpg`;
+const TY_YI_2 = `${TY_YI_PHOTO}/93/3479193_image2_1.jpg`;
+const TY_YI_3 = `${TY_YI_PHOTO}/94/3479194_image2_1.jpg`;
+const TY_YI_4 = `${TY_YI_PHOTO}/99/3479199_image2_1.jpg`;
 
-function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
+function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
   return {
     overview,
@@ -1523,6 +1548,7 @@ function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
     imageUrl,
     firstImage: imageUrl,
     galleryUrls,
+    ...(homepage ? { homepage } : {}),
   };
 }
 
@@ -3223,6 +3249,37 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     UJ_MARKET,
     [UJ_MARKET_2, UJ_MARKET_VK, UJ_MARKET_VK_2, UJ_MARKET_VK_3, UJ_MARKET_VK_4],
   ),
+  'local-scenic:tongyeong-palgyeong:연화도용머리': localScenicPhotoOverlay(
+    '통영팔경 1경 연화도 용머리는 욕지면 연화리입니다. 통영시 공식 팔경은 주소 욕지면 연화리, 문의 055-650-0580·055-650-2570이라고 적습니다. 섬 동남쪽 끝의 해안 절벽과 네 개 바위섬이 용이 바다를 향해 헤엄치는 머리처럼 보여 용머리라 부릅니다. 둘레 약 12km 연화도의 대표 경승이며 동두항에서 전망대로 오릅니다. 제주 용머리해안·연화사 법당·용머리민박과 다른 욕지면 연화리 해식절벽입니다. 사진은 통영U투어 연화도 용머리 해안 공식 사진입니다.',
+    '경상남도 통영시 욕지면 연화리 (연화도 용머리)',
+    TY_YONG,
+    [TY_YONG_2, TY_YONG_3, TY_YONG_4],
+    TY_YONG_HOME,
+  ),
+  'local-scenic:tongyeong-palgyeong:남망산공원': localScenicPhotoOverlay(
+    '통영팔경 3경 남망산공원은 동호동입니다. 한국관광공사는 남망산 조각공원으로, 주소 남망공원길 29, 문의 055-650-4560, 연중무휴이며 세계 10개국 조각가 15명의 작품으로 1997년 조성된 5,000여 평 조각공원이라고 적습니다. 통영시 시민문화회관도 같은 남망공원길 29입니다. 남망산은 해발 약 80m이며 정상에는 1953년 6월 세운 이충무공 동상이 있고 통영항·한산도를 조망합니다. 공원 구분 문화공원, 면적 152,311㎡, 지번 동호동 230-1입니다. 같은 산 야간 미디어 산책 디피랑(DPIRANG)은 남망산공원 안에 있으나 별도 매표·수요일 휴장이며, 동피랑벽화마을·서피랑·이순신공원·서울 남산과 다른 동호동 조각공원입니다. 사진은 한국관광공사 남망산 조각공원 공식 사진입니다.',
+    '경상남도 통영시 남망공원길 29 (동호동 230-1 남망산공원·남망산 조각공원)',
+    TY_NAM,
+    [TY_NAM_2, TY_NAM_3],
+  ),
+  'local-scenic:tongyeong-palgyeong:한산도제승당': localScenicPhotoOverlay(
+    '통영팔경 4경 한산도제승당은 한산면 두억리입니다. 국가유산청은 사적 「통영 한산도 이충무공 유적」(1963년 1월 21일 지정, 2011년 명칭 변경)으로, 주소 한산일주로 70입니다. 제승당은 승리를 만드는 집이며, 임진왜란 중 이순신이 참모와 작전한 운주당 터입니다. 선조 26년(1593)부터 30년(1597)까지 약 3년 8개월 삼도수군 본영이었습니다. 선조 30년 군영이 불탔고, 영조 15년(1739) 통제사 조경이 제승당과 유허비를 세웠습니다. 현재 건물은 1976년 정화사업 때 중건한 정면 5칸·측면 3칸입니다. 경내에는 충무사·한산정·수루·한산대첩비·거북등대가 있습니다. 하절기 09:00~18:00·동절기 09:00~17:00, 입장 무료이며 통영항에서 배로 약 25분입니다. 시내 세병관(통제영)·아산 현충사·여수 진남관·충렬사와 다른 한산도 두억리 사령부입니다. 사진은 한국관광공사 제승당·국가유산청 사적 공식 사진입니다.',
+    '경상남도 통영시 한산면 한산일주로 70 (두억리 한산도제승당)',
+    TY_JE,
+    [TY_JE_2, TY_JE_SURU, TY_JE_AIR],
+  ),
+  'local-scenic:tongyeong-palgyeong:통영운하야경': localScenicPhotoOverlay(
+    '통영팔경 7경 통영운하 야경은 당동~미수동입니다. 한국관광공사는 「충무교와 통영운하」로, 당동과 미수동(진남초교 입구)을 잇고 물때 영향 없이 배가 오가며 야경이 아름다워 예부터 동양의 나폴리라 불린다고 적습니다. 운하 위 배, 바다 밑 해저터널 보행, 육지(시내)와 미륵도를 잇는 충무교 자동차가 함께 있어 하늘·바다·바닷속이 이어진 한국 유일 3중 교통로입니다. 한산대첩 때 왜선이 좁은 목을 파고 달아났다 하여 판데목·송장목이라 불렀고, 1927년 5월 착공해 5년 6개월 만인 1932년 12월 운하와 해저터널이 개통했습니다. 운하는 길이 약 1,420m·너비 55m이며, 해저터널은 등록문화재 제201호(길이 483m)입니다. 통영대교 조명 야경·강구안·여수 밤바다·광양만 야경·인천 운하와 다른 당동 운하입니다. 사진은 한국관광공사 충무교와 통영운하 공식 사진입니다.',
+    '경상남도 통영시 당동 (충무교·통영운하, 미수동 진남초교 입구)',
+    TY_CANAL,
+    [TY_CANAL_2, TY_CANAL_3],
+  ),
+  'local-scenic:tongyeong-palgyeong:이순신공원': localScenicPhotoOverlay(
+    '이순신공원은 정량동입니다. 한국관광공사는 구 한산대첩기념공원으로, 주소 정량동 688-1, 문의 055-650-1411~5, 상시 개방·연중무휴라고 적습니다. 도로명 멘데해안길 205이며 동호항 방파제 인근입니다. 1592년 8월 14일 한산대첩 승첩지를 기념하며, 공원 중앙 청동 이순신 장군 동상(높이 17.3m)이 한산도 앞바다를 바라봅니다. 해안 수변데크길·수국 산책로·무장애나눔길·통영해상순직장병 위령탑이 있습니다. 남망산공원·동피랑·제승당·여수 이순신공원·남해 이순신공원과 다른 정량동 공원입니다. 사진은 한국관광공사 통영 이순신공원 공식 사진입니다.',
+    '경상남도 통영시 멘데해안길 205 (정량동 688-1 이순신공원)',
+    TY_YI,
+    [TY_YI_2, TY_YI_3, TY_YI_4],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -3274,6 +3331,8 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   2782706: localScenicThumbOverlay(GH_YONG, [GH_YONG_2, GH_YONG_3]),
   // 예천 검색 신라식물원 — TourAPI firstimage·detailImage·searchPhoto 없음. JSON contentId 기입 아님.
   1910438: localScenicThumbOverlay(YC_SILLA, [YC_SILLA_2, YC_SILLA_3]),
+  // 통영 탐색홈 이순신공원 — hub 명소(팔경 아님). Tour 584970 firstimage는 LIVE CMS, DB 미동기화.
+  584970: localScenicThumbOverlay(TY_YI, [TY_YI_2, TY_YI_3, TY_YI_4]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
@@ -3350,6 +3409,7 @@ export function memberToScenicListSpot(list, member, hub, locale = 'ko') {
     galleryUrls: overlay?.galleryUrls || null,
     overview: overlay?.overview || null,
     addr1: overlay?.addr1 || null,
+    homepage: overlay?.homepage || null,
     source: 'localScenicList',
     groupTitle: title,
     localScenicListId: list.listId,
@@ -3398,6 +3458,7 @@ export function mergeLocalScenicMembersIntoScenicSpots(spots, hubId, locale = 'k
           galleryUrls: overlay?.galleryUrls || hit.galleryUrls,
           overview: overlay?.overview || hit.overview,
           addr1: overlay?.addr1 || hit.addr1,
+          homepage: overlay?.homepage || hit.homepage,
         });
       } else {
         front.push(memberToScenicListSpot(list, member, hub, locale));

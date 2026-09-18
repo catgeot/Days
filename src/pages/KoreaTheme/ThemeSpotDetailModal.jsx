@@ -1309,6 +1309,7 @@ export default function ThemeSpotDetailModal({
         galleryUrls: mergedGallery,
         overview: data.overview || spot.overview || null,
         addr1: data.addr1 || spot.addr1 || null,
+        homepage: spot.homepage || data.homepage || null,
       });
     })();
 

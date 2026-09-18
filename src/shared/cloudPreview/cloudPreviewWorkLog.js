@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 60,
-  sessionPhase: '의정부 결손 오버레이',
+  sessionNo: 61,
+  sessionPhase: '통영 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=uijeongbu',
+  previewPath: '/korea/theme/scenic?hub=tongyeong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,38 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-palgyeong-use-61-yeonhwado-homepage',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '연화도 용머리 공식 홈 badaland → 통영U투어',
+    detail:
+      '사람 Preview에서 1경 연화도 용머리 공식 홈이 www.badaland.com으로 열려 인증서 오류(ERR_CERT_COMMON_NAME_INVALID)가 났습니다. Tour 127103 홈이 구 통영 관광 호스트이고, 그 도메인은 utour.go.kr과 같은 IP인데 인증서가 *.utour.go.kr입니다. JSON contentId 기입 없이 멤버 오버레이 홈을 통영U투어 연화도 공식 페이지(idx=1660)로 바꿨습니다. Preview /qa/palgyeong-use — 1경 상세 공식 홈이 utour.go.kr 연화도인지.',
+    at: '2026-09-18T23:35:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-61-yeonhwado-utour-photos',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '연화도 용머리 네이버 핫링크 → 통영U투어 공식 사진',
+    detail:
+      '사람 Preview에서 1경 연화도 용머리 목록은 랜드마크, 상세 갤러리 2장은 물음표였습니다. 네이버 postfiles는 Preview Referer에 403입니다. JSON contentId 기입 없이 통영U투어 연화도 공식 CMS(용머리 능선 idx=16550·해식절벽 16548·출렁다리 16549·능선 2803861)로 바꿨습니다. 연화사 법당·해수관음·수국길은 갤러리에 넣지 않습니다. Preview /qa/palgyeong-use — 1경·홈「통영」연화도 용머리 썸네일·상세 사진.',
+    at: '2026-09-18T19:50:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-61-tongyeong-empty-thumbs',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '통영 1경 연화도 용머리·이순신공원 빈 썸네일',
+    detail:
+      '사람 Preview에서 통영팔경 1경 연화도 용머리와 탐색홈 이순신공원·명승 검색 연화도(통영)가 랜드마크 플레이스홀더였습니다. Tour 127103 firstimage가 없고, 이순신공원 hub는 contentId가 없습니다. JSON contentId 기입 없이 멤버 오버레이에 통영시 공식 블로그 용머리해안(IMG_0364·IMG_4892)과 한국관광공사 이순신공원 동상(3479192)을 넣었습니다. 127103은 멤버 overlay로 검색 행 연화도(통영)도 채우고, TOUR_THUMB 584970은 탐색홈 이순신공원입니다. 제주 용머리해안·연화사 법당·용머리민박·여수·남해 이순신공원·남망산과 구분합니다. 삼덕항 2782775는 공식 사진이 없어 건너뜁니다. Preview /qa/palgyeong-use — 1경·검색「통영」연화도(통영)·홈 이순신공원.',
+    at: '2026-09-18T09:45:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-61-tongyeong-overlays',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '통영팔경 남망산공원·한산도제승당·통영운하 야경 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 통영팔경 결손 3건(남망산공원·한산도제승당·통영운하 야경)의 공공 공식 팩트 개요·주소·한국관광공사·국가유산청 공식 사진을 보강했습니다. 남망산공원은 동호동 남망공원길 29 1997년 조각공원(3경), 제승당은 한산일주로 70 사적 113호 운주당 터(4경), 운하는 당동~미수동 1932년 3중 교통로(7경)입니다. 동피랑·디피랑·세병관·아산 현충사·여수 밤바다·광양만 야경과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=tongyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T09:10:00.000Z',
+  },
   {
     id: '2026-09-18-palgyeong-use-60-uijeongbu-overlays',
     session: '팔경 활용 #60, 의정부 결손 오버레이',
