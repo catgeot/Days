@@ -3,7 +3,11 @@
  * GlobeStayStrip 카드 뱃지·추천순 거리 가중 · 순수 함수(스모크 가능).
  */
 
-import { resolveKoStationAlias, universityAliasFromLocation, UNIVERSITY_CAMPUS_MAX_KM } from './mrtStayQuery.js';
+import {
+  resolveKoStationAliasForLocation,
+  universityAliasFromLocation,
+  UNIVERSITY_CAMPUS_MAX_KM,
+} from './mrtStayQuery.js';
 
 export const STAY_GEOCODE_MAX_KM = 8;
 
@@ -148,10 +152,7 @@ export function parseStayCoordPair(item) {
  * @returns {{ lat: number, lng: number, label: string } | null}
  */
 export function resolveMrtStayOrigin(location, label = '') {
-  const stationAlias =
-    resolveKoStationAlias(location?.originalQuery) ||
-    resolveKoStationAlias(location?.name) ||
-    resolveKoStationAlias(location?.name_ko);
+  const stationAlias = resolveKoStationAliasForLocation(location);
   const universityAlias = universityAliasFromLocation(location);
   const parsed = parseStayCoordPair(location);
   const display = String(

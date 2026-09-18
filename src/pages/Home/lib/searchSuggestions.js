@@ -539,6 +539,13 @@ export async function buildCuratedEnterDisambiguation(query) {
     return ensureDisambiguation(q, candidates, `'${titleName}' → 도시와 명소를 골라주세요`);
   }
 
+  if (shouldOfferKoreaHomonymDisambiguation(q)) {
+    const dictCandidates = collectKoreaHomonymDisambiguationCandidates(q);
+    if (dictCandidates.length >= 2) {
+      return ensureDisambiguation(q, dictCandidates, `'${q}' → 지역을 선택하세요`);
+    }
+  }
+
   const attractionHit = resolveHubAttraction(q);
   if (attractionHit) {
     const { hub, attraction } = attractionHit;

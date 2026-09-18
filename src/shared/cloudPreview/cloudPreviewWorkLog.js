@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 6,
-  sessionPhase: '동음이의어 다후보 리스트업',
+  sessionNo: 7,
+  sessionPhase: '광천·대구 종각 매칭 수정',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-dest-match-7-gwangcheon-daegu-jonggak',
+    session: '여행지 매칭 #7, 광천·대구 종각 매칭 수정',
+    title: '광천 선굴 다후보 · 대구 종각 숙소가 서울로 가던 문제',
+    detail:
+      '홈「광천」엔터가 홍성 광천읍 정착지 별칭으로 역펼침되어 평창 광천선굴이 빠졌습니다. 동음 사전이 정착지 역펼침보다 앞입니다. 대구 종각네거리를 골라도 검색어「종각」약칭이 서울 종각역·종로 숙소로 스냅하던 구멍을 막았습니다. Preview /qa/dest-match 홈「광천」엔터 → 선굴·광천동·광천읍. 「종각」→ 대구 종각네거리 → 숙소 찾기 → 대구(서울 인사동·종로 아님).',
+    at: '2026-09-18T09:50:00.000Z',
+  },
   {
     id: '2026-09-18-dest-match-6-homonym-list',
     session: '여행지 매칭 #6, 동음이의어 다후보 리스트업',

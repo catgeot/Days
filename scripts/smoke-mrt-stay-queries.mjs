@@ -19,6 +19,7 @@ import {
   queryLooksLikeStayPoint,
   rankStayPointDisambiguationCandidates,
   resolveKoStationAlias,
+  resolveKoStationAliasForLocation,
   resolveKoUniversityAlias,
   resolveKoUniversitySatelliteAlias,
   isUniversitySatelliteStayQuery,
@@ -537,6 +538,33 @@ const CASES = [
     expectKeyword: /서울/,
     rejectPrimaryKeyword: /연신내역|^서울$|종로/,
   },
+  {
+    slug: 'daegu-jonggak-intersection',
+    location: {
+      name: '종각네거리 · 대구 중구',
+      name_ko: '종각네거리',
+      name_en: 'Jonggak Intersection',
+      country: '한국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '종각',
+      lat: 35.8664,
+      lng: 128.5936,
+      parentCity: '대구 중구',
+      stayAdmin: {
+        neighbourhood: '',
+        district: '중구',
+        city: '대구',
+        cityEn: 'Daegu',
+        county: '',
+        state: '대구광역시',
+      },
+      placeCategory: 'LANDMARK',
+    },
+    expectKeyword: /대구/,
+    rejectPrimaryKeyword: /종로|종각역|^서울$/,
+    rejectCityHint: /종로|^서울$/,
+  },
 ];
 
 function assert(cond, msg) {
@@ -668,6 +696,30 @@ async function main() {
     assert(jonggakAlias?.district === '종로', `종각 alias district (got ${jonggakAlias?.district})`);
     assert(jonggakAlias?.lat === 37.5701 && jonggakAlias?.lng === 126.9829, '종각 alias station coords');
     assert(resolveKoStationAlias('종각역')?.district === '종로', '종각역 alias district 종로');
+    assert(
+      !resolveKoStationAliasForLocation({
+        name: '종각네거리 · 대구 중구',
+        name_ko: '종각네거리',
+        originalQuery: '종각',
+        lat: 35.8664,
+        lng: 128.5936,
+        parentCity: '대구 중구',
+        stayAdmin: { city: '대구', district: '중구', state: '대구광역시' },
+      }),
+      '대구 종각네거리 does not use Seoul 종각 alias',
+    );
+    assert(
+      resolveKoStationAliasForLocation({
+        name: '종각역',
+        name_ko: '종각역',
+        originalQuery: '종각',
+        lat: 37.5701,
+        lng: 126.9829,
+        parentCity: '서울 종로',
+        stayAdmin: { city: '서울', district: '종로', state: '서울특별시' },
+      })?.district === '종로',
+      '서울 종각역 still uses station alias',
+    );
     assert(isStreetishStayLabel('Jonggak-gil'), 'Jonggak-gil is streetish');
     assert(!isStreetishStayLabel('종각역'), '종각역 is not streetish');
     const rankedCards = rankStayPointDisambiguationCandidates('종각역', [
@@ -879,6 +931,21 @@ async function main() {
     farGil?.lat === 37.5701,
     `far gil card snaps to station (got ${farGil?.lat})`,
   );
+  const daeguJonggakOrigin = resolveMrtStayOrigin({
+    name: '종각네거리 · 대구 중구',
+    name_ko: '종각네거리',
+    originalQuery: '종각',
+    lat: 35.8664,
+    lng: 128.5936,
+    parentCity: '대구 중구',
+    stayAdmin: { city: '대구', district: '중구', state: '대구광역시' },
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(daeguJonggakOrigin?.lat - 35.8664) < 1e-6 &&
+      Math.abs(daeguJonggakOrigin?.lng - 128.5936) < 1e-6,
+    `대구 종각네거리 keeps Daegu origin (got ${daeguJonggakOrigin?.lat},${daeguJonggakOrigin?.lng})`,
+  );
   const nearStreet = resolveMrtStayOrigin({
     name: '종각역',
     name_en: 'Jonggak-gil',
@@ -973,6 +1040,34 @@ async function main() {
   assert(
     chuncheonKeys.includes('춘천') && !chuncheonKeys.includes('양양') && !chuncheonKeys.includes('강원'),
     `춘천 geo keys (got ${chuncheonKeys.join(',')})`,
+  );
+  const daeguJonggakLoc = {
+    name: '종각네거리 · 대구 중구',
+    name_ko: '종각네거리',
+    originalQuery: '종각',
+    lat: 35.8664,
+    lng: 128.5936,
+    parentCity: '대구 중구',
+    country: '대한민국',
+    stayAdmin: { city: '대구', district: '중구', state: '대구광역시' },
+  };
+  const daeguJonggakKeys = collectMrtStayGeoSanityKeys(daeguJonggakLoc);
+  assert(
+    daeguJonggakKeys.includes('대구') && !daeguJonggakKeys.includes('종로') && !daeguJonggakKeys.includes('중구'),
+    `대구 종각 geo keys (got ${daeguJonggakKeys.join(',')})`,
+  );
+  const geoMixDaeguJonggak = filterMrtStaysByGeoSanity(
+    [
+      { itemId: 21, itemName: '나인트리 바이 파르나스 서울 인사동', lat: 37.573, lng: 126.985 },
+      { itemId: 22, itemName: '호텔 더 디자이너스 종로', lat: 37.5708, lng: 126.983 },
+      { itemId: 23, itemName: '대구 중구 호텔', lat: 35.868, lng: 128.595 },
+    ],
+    { lat: 35.8664, lng: 128.5936, label: '종각네거리 · 대구 중구' },
+    { isDomestic: true, originKeys: daeguJonggakKeys },
+  );
+  assert(
+    geoMixDaeguJonggak.every((it) => it.itemId === 23) && geoMixDaeguJonggak.length === 1,
+    `대구 종각 숙소는 서울 종각 호텔 아님 (got ${geoMixDaeguJonggak.map((it) => it.itemId)})`,
   );
   assert(MRT_STAY_GEO_SANITY_MAX_KM === 30, `geo-sanity cap (got ${MRT_STAY_GEO_SANITY_MAX_KM})`);
   const geoMixPyeongchang = filterMrtStaysByGeoSanity(

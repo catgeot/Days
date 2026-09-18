@@ -344,6 +344,49 @@ export function resolveKoStationAlias(raw) {
   return null;
 }
 
+/** 선택 핀이 역 약칭과 다른 동음이면 서울 종각으로 스냅하지 않음 */
+export const STATION_ALIAS_MAX_KM = 8;
+
+function compactHomonymBaseName(raw) {
+  return compactKoPlaceKey(String(raw || '').split(/[·,]/)[0]);
+}
+
+function locationLooksLikeStationAlias(alias, location) {
+  const base =
+    compactHomonymBaseName(location?.name_ko) || compactHomonymBaseName(location?.name);
+  const station = compactKoPlaceKey(alias?.station);
+  if (!base || !station) return false;
+  const short = station.replace(/역$/, '');
+  return base === station || base === short;
+}
+
+function locationConflictsSeoulStationAlias(location) {
+  const admin = location?.stayAdmin && typeof location.stayAdmin === 'object' ? location.stayAdmin : {};
+  const city = stripKoAdminSuffix(admin.city) || String(admin.city || '').trim();
+  if (city && city !== '서울' && city !== '종로') return true;
+  const parent = String(location?.parentCity || '').trim();
+  if (parent && !/서울|종로/.test(parent)) return true;
+  return false;
+}
+
+export function resolveKoStationAliasForLocation(location) {
+  if (!location || typeof location !== 'object') return null;
+  const fromName =
+    resolveKoStationAlias(compactHomonymBaseName(location.name_ko)) ||
+    resolveKoStationAlias(compactHomonymBaseName(location.name));
+  const fromQuery = resolveKoStationAlias(location.originalQuery);
+  const alias = fromName || fromQuery;
+  if (!alias) return null;
+  if (locationConflictsSeoulStationAlias(location)) return null;
+  const lat = Number(location.lat);
+  const lng = Number(location.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(alias.lat) && Number.isFinite(alias.lng)) {
+    const km = haversineKmSimple(lat, lng, alias.lat, alias.lng);
+    if (km > STATION_ALIAS_MAX_KM && !locationLooksLikeStationAlias(alias, location)) return null;
+  }
+  return alias;
+}
+
 /** 「강원대학교」→ 춘천 본교. 「강원대학교 동해수련원」은 null. */
 export function resolveKoUniversityAlias(raw) {
   const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
@@ -664,10 +707,7 @@ export function nominatimSquarePenalty(query, result) {
 export function mrtNeighborhoodKeyword(admin = {}, location = {}) {
   const uni = universityAliasFromLocation(location);
   if (uni?.city) return uni.city;
-  const alias =
-    resolveKoStationAlias(location?.originalQuery) ||
-    resolveKoStationAlias(location?.name) ||
-    resolveKoStationAlias(location?.name_ko);
+  const alias = resolveKoStationAliasForLocation(location);
   if (alias?.district) return alias.district;
   const strippedDistrict = stripKoAdminSuffix(admin?.district);
   if (strippedDistrict) return strippedDistrict;
@@ -740,12 +780,14 @@ export function queryLooksLikeStayPoint(query) {
 }
 
 function isMrtStayPointLocation(location) {
-  return (
-    isMrtStayPointLabel(location?.originalQuery) ||
-    isMrtStayPointLabel(location?.name) ||
+  if (
     isMrtStayPointLabel(location?.name_ko) ||
+    isMrtStayPointLabel(location?.name) ||
     isMrtStayPointLabel(location?.name_en)
-  );
+  ) {
+    return true;
+  }
+  return Boolean(resolveKoStationAliasForLocation(location));
 }
 
 /**
@@ -1234,10 +1276,7 @@ export function collectMrtStayGeoSanityKeys(location = {}, extra = []) {
   const admin =
     location?.stayAdmin && typeof location.stayAdmin === 'object' ? location.stayAdmin : {};
   const uni = universityAliasFromLocation(location);
-  const station =
-    resolveKoStationAlias(location?.originalQuery) ||
-    resolveKoStationAlias(location?.name) ||
-    resolveKoStationAlias(location?.name_ko);
+  const station = resolveKoStationAliasForLocation(location);
   const raw = [
     uni?.city,
     station?.district,
@@ -1253,6 +1292,7 @@ export function collectMrtStayGeoSanityKeys(location = {}, extra = []) {
     const s = String(value || '').trim();
     if (!s || s.length < 2) continue;
     if (isKoTownshipName(s) || isKoFineAdminName(s)) continue;
+    if (/^(중|동|서|남|북)구$/.test(s)) continue;
     const stripped = stripKoAdminSuffix(s) || s;
     if (!stripped || stripped.length < 2) continue;
     if (isKoTownshipName(stripped) || isKoFineAdminName(stripped)) continue;

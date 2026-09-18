@@ -781,11 +781,11 @@ export function useHomeHandlers({
     };
 
     if (requireChoice) {
-      const curated = await buildCuratedEnterDisambiguation(query);
-      if (curated) return curated;
-
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
+
+      const curated = await buildCuratedEnterDisambiguation(query);
+      if (curated) return curated;
 
       // 동명 리/읍/면/동·bare 화이트리스트 — prefix 스냅(남양→남양주)보다 우선
       if (!isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {

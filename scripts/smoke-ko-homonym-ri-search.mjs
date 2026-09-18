@@ -288,6 +288,12 @@ const suggestionSrc = readFileSync(
 );
 assert(handlerSrc.includes('dictHomonymResult'), 'handler intercepts dict homonyms before First-Pass');
 assert(
+  /const dictChoice = dictHomonymResult\(\);\s*if \(dictChoice\) return dictChoice;\s*\n\s*const curated = await buildCuratedEnterDisambiguation/.test(
+    handlerSrc,
+  ),
+  'requireChoice dict homonym runs before curated settlement reverse-expand',
+);
+assert(
   /dictChoice = dictHomonymResult\(\);\s*if \(dictChoice\) return dictChoice;\s*\n\s*\/\/ 국내 First-Pass/.test(
     handlerSrc,
   ),
@@ -296,6 +302,21 @@ assert(
 assert(
   suggestionSrc.includes('shouldOfferKoreaHomonymDisambiguation'),
   'typing suggestions short-circuit to dict candidates',
+);
+assert(
+  suggestionSrc.includes("'${q}' → 지역을 선택하세요"),
+  'curated Enter offers dict homonyms before settlement reverse-expand',
+);
+const curatedStart = suggestionSrc.indexOf('export async function buildCuratedEnterDisambiguation');
+const dictInCurated = suggestionSrc.indexOf('shouldOfferKoreaHomonymDisambiguation(q)', curatedStart);
+const attractionInCurated = suggestionSrc.indexOf('const attractionHit = resolveHubAttraction(q)', curatedStart);
+const settlementInCurated = suggestionSrc.indexOf('const settlementHit = resolveSettlement(q)', curatedStart);
+assert(
+  curatedStart >= 0 &&
+    dictInCurated > curatedStart &&
+    dictInCurated < attractionInCurated &&
+    attractionInCurated < settlementInCurated,
+  'buildCuratedEnterDisambiguation: dict homonym before attraction/settlement reverse-expand',
 );
 
 assert(
