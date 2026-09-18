@@ -2,6 +2,16 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 팔경 활용 #62 — 경기 광주 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #62, 경기 광주 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `52b5126e` · PR [#280](https://github.com/catgeot/Days/pull/280)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 광주8경 결손 무갑산. 초월읍·퇴촌면 해발 578m(5경, 실촌읍=현 곤지암읍 지맥·팔당호 조망). 광주시 문화관광 8경 공식 사진(`img_mugabsan3.png`)·홈 `mId=0101050000`. 광주광역시 무등산·6경 태화산·4경 앵자봉·관산·무갑사 법당과 구분. 송정사는 현 공식 8경(중대물빛공원)에 없고 Tour 미등재·공식 사진 없어 건너뜀(영암 송정사·광주송정역과 구분). 광주 순수 누락 2→1.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gwangju_gi`
+- **잔여**: 사진/개요 순수 누락 **45**/876. 다음 허브 **목포9경 2**(목포진·다도해 전경)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 여행지 매칭 #9 — 동음이의어 사용자 선택 UI (Cloud)
 
 - **세션** `여행지 매칭 #9, 동음이의어 사용자 선택 UI`
