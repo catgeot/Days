@@ -3955,6 +3955,13 @@ assert.ok(tyYong?.overview?.includes('연화사'), '통영 연화도 용머리�
 assert.ok(tyYong?.imageUrl?.includes('utour.go.kr'), '통영 연화도 용머리 U투어 공식 사진');
 assert.ok(tyYong?.imageUrl?.includes('idx=16550'), '통영 연화도 용머리 용머리 능선 사진');
 assert.ok(!tyYong?.imageUrl?.includes('pstatic.net'), '통영 연화도 용머리≠네이버 핫링크');
+assert.ok(tyYong?.homepage?.includes('utour.go.kr'), '통영 연화도 용머리 공식 홈 U투어');
+assert.ok(tyYong?.homepage?.includes('idx=1660'), '통영 연화도 용머리 공식 홈 연화도 페이지');
+assert.ok(!/badaland/i.test(String(tyYong?.homepage || '')), '통영 연화도 용머리≠badaland.com');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127103')?.homepage?.includes('idx=1660'),
+  '통영 검색 Tour 행 연화도(통영) 127103 공식 홈',
+);
 assert.ok(
   tongyeongEight.find((s) => s.attractionName === '연화도 용머리')?.imageUrl?.includes(
     'idx=16550',

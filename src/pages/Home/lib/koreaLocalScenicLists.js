@@ -1531,13 +1531,16 @@ const TY_YONG = `${TY_UTOUR}&idx=16550`;
 const TY_YONG_2 = `${TY_UTOUR}&idx=16548`;
 const TY_YONG_3 = `${TY_UTOUR}&idx=16549`;
 const TY_YONG_4 = `${TY_UTOUR}&idx=2803861`;
+// Tour 127103 homepage는 badaland.com(구 통영 관광 호스트). utour.go.kr과 같은 IP인데 인증서가 *.utour.go.kr이라 HTTPS가 ERR_CERT_COMMON_NAME_INVALID.
+const TY_YONG_HOME =
+  'https://www.utour.go.kr/00001/00007/00011.web?amode=view&idx=1660';
 const TY_YI_PHOTO = 'https://tong.visitkorea.or.kr/cms/resource_photo';
 const TY_YI = `${TY_YI_PHOTO}/92/3479192_image2_1.jpg`;
 const TY_YI_2 = `${TY_YI_PHOTO}/93/3479193_image2_1.jpg`;
 const TY_YI_3 = `${TY_YI_PHOTO}/94/3479194_image2_1.jpg`;
 const TY_YI_4 = `${TY_YI_PHOTO}/99/3479199_image2_1.jpg`;
 
-function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
+function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
   return {
     overview,
@@ -1545,6 +1548,7 @@ function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
     imageUrl,
     firstImage: imageUrl,
     galleryUrls,
+    ...(homepage ? { homepage } : {}),
   };
 }
 
@@ -3250,6 +3254,7 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 통영시 욕지면 연화리 (연화도 용머리)',
     TY_YONG,
     [TY_YONG_2, TY_YONG_3, TY_YONG_4],
+    TY_YONG_HOME,
   ),
   'local-scenic:tongyeong-palgyeong:남망산공원': localScenicPhotoOverlay(
     '통영팔경 3경 남망산공원은 동호동입니다. 한국관광공사는 남망산 조각공원으로, 주소 남망공원길 29, 문의 055-650-4560, 연중무휴이며 세계 10개국 조각가 15명의 작품으로 1997년 조성된 5,000여 평 조각공원이라고 적습니다. 통영시 시민문화회관도 같은 남망공원길 29입니다. 남망산은 해발 약 80m이며 정상에는 1953년 6월 세운 이충무공 동상이 있고 통영항·한산도를 조망합니다. 공원 구분 문화공원, 면적 152,311㎡, 지번 동호동 230-1입니다. 같은 산 야간 미디어 산책 디피랑(DPIRANG)은 남망산공원 안에 있으나 별도 매표·수요일 휴장이며, 동피랑벽화마을·서피랑·이순신공원·서울 남산과 다른 동호동 조각공원입니다. 사진은 한국관광공사 남망산 조각공원 공식 사진입니다.',
@@ -3404,6 +3409,7 @@ export function memberToScenicListSpot(list, member, hub, locale = 'ko') {
     galleryUrls: overlay?.galleryUrls || null,
     overview: overlay?.overview || null,
     addr1: overlay?.addr1 || null,
+    homepage: overlay?.homepage || null,
     source: 'localScenicList',
     groupTitle: title,
     localScenicListId: list.listId,
@@ -3452,6 +3458,7 @@ export function mergeLocalScenicMembersIntoScenicSpots(spots, hubId, locale = 'k
           galleryUrls: overlay?.galleryUrls || hit.galleryUrls,
           overview: overlay?.overview || hit.overview,
           addr1: overlay?.addr1 || hit.addr1,
+          homepage: overlay?.homepage || hit.homepage,
         });
       } else {
         front.push(memberToScenicListSpot(list, member, hub, locale));

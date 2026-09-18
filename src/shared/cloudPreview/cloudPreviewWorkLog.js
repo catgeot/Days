@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-18-palgyeong-use-61-yeonhwado-homepage',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '연화도 용머리 공식 홈 badaland → 통영U투어',
+    detail:
+      '사람 Preview에서 1경 연화도 용머리 공식 홈이 www.badaland.com으로 열려 인증서 오류(ERR_CERT_COMMON_NAME_INVALID)가 났습니다. Tour 127103 홈이 구 통영 관광 호스트이고, 그 도메인은 utour.go.kr과 같은 IP인데 인증서가 *.utour.go.kr입니다. JSON contentId 기입 없이 멤버 오버레이 홈을 통영U투어 연화도 공식 페이지(idx=1660)로 바꿨습니다. Preview /qa/palgyeong-use — 1경 상세 공식 홈이 utour.go.kr 연화도인지.',
+    at: '2026-09-18T23:35:00.000Z',
+  },
+  {
     id: '2026-09-18-palgyeong-use-61-yeonhwado-utour-photos',
     session: '팔경 활용 #61, 통영 결손 오버레이',
     title: '연화도 용머리 네이버 핫링크 → 통영U투어 공식 사진',
