@@ -2,6 +2,26 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 팔경 활용 #61 QA — 통영 1경·이순신공원 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #61, 통영 결손 오버레이` (같은 턴 Preview 피드백)
+- **브랜치** `cursor/palgyeong-use-e744` · tip `97f0490d` · PR [#279](https://github.com/catgeot/Days/pull/279)
+- **완료**: 사람 Preview에서 1경 연화도 용머리·검색 연화도(통영)·홈 이순신공원이 빈 썸네일이었다. JSON contentId 없이 멤버 오버레이에 통영시 공식 블로그 용머리해안(IMG_0364·IMG_4892)과 한국관광공사 이순신공원 동상(3479192)을 넣음. Tour `127103`은 멤버 overlay로 검색 행도 채움. TOUR_THUMB `584970`. 제주 용머리해안·연화사·여수·남해 이순신공원·남망산과 구분. 삼덕항 `2782775`는 공식 사진 없어 건너뜀.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=tongyeong`
+- **잔여**: 사진/개요 순수 누락 **46**/876. 다음 허브 **광주8경 2**(경기 광주)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 여행지 매칭 #7 — 광천·대구 종각 매칭 수정 (Cloud)
+
+- **세션** `여행지 매칭 #7, 광천·대구 종각 매칭 수정`
+- **브랜치** `cursor/dest-match-arch` · tip `b1bf56e8` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: 「광천」엔터가 홍성 광천읍 정착지 별칭 역펼침으로 가서 평창 광천선굴이 빠지던 문제를 고침. 동음 사전이 큐레이션 정착지보다 앞. 대구 종각네거리는 검색어「종각」약칭으로 서울 종로 숙소·거리 원점에 붙지 않음. **PR 미병합**.
+- **VERIFY**: `npm run smoke:ko-homonym-ri-search` PASS · `smoke:mrt-stay` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「광천」엔터 → 평창 선굴·광주 광천동·홍성 광천읍(홍성 클러스터만 아님). 「종각」→ 대구 종각네거리 → 숙소 찾기 → 대구(서울 인사동·종로 아님).
+- **다음**: `여행지 매칭 #8, 동음이의어 사용자 선택 UI`
+
 ## 팔경 활용 #61 — 통영팔경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #61, 통영 결손 오버레이`
