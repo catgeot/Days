@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/dest-match",
+      "destination": "https://days-git-cursor-dest-match-arch-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/visitor-growth",
       "destination": "https://days-git-cursor-visitor-growth-1f90-catgeots-projects.vercel.app/",
       "permanent": false
