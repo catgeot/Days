@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-18-palgyeong-use-61-tongyeong-empty-thumbs',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '통영 1경 연화도 용머리·이순신공원 빈 썸네일',
+    detail:
+      '사람 Preview에서 통영팔경 1경 연화도 용머리와 탐색홈 이순신공원·명승 검색 연화도(통영)가 랜드마크 플레이스홀더였습니다. Tour 127103 firstimage가 없고, 이순신공원 hub는 contentId가 없습니다. JSON contentId 기입 없이 멤버 오버레이에 통영시 공식 블로그 용머리해안(IMG_0364·IMG_4892)과 한국관광공사 이순신공원 동상(3479192)을 넣었습니다. 127103은 멤버 overlay로 검색 행 연화도(통영)도 채우고, TOUR_THUMB 584970은 탐색홈 이순신공원입니다. 제주 용머리해안·연화사 법당·용머리민박·여수·남해 이순신공원·남망산과 구분합니다. 삼덕항 2782775는 공식 사진이 없어 건너뜁니다. Preview /qa/palgyeong-use — 1경·검색「통영」연화도(통영)·홈 이순신공원.',
+    at: '2026-09-18T09:45:00.000Z',
+  },
+  {
     id: '2026-09-18-palgyeong-use-61-tongyeong-overlays',
     session: '팔경 활용 #61, 통영 결손 오버레이',
     title: '통영팔경 남망산공원·한산도제승당·통영운하 야경 결손 오버레이',

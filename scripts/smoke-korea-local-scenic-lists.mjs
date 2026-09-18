@@ -3944,6 +3944,66 @@ assert.ok(
   '통영 검색 8경 운하 개요',
 );
 
+const tyYong = resolveLocalScenicListSpotById(
+  'local-scenic:tongyeong-palgyeong:연화도용머리',
+);
+assert.equal(tyYong?.contentId, '127103', '통영 연화도 용머리 JSON contentId 유지');
+assert.ok(tyYong?.overview?.includes('욕지면 연화리'), '통영 연화도 용머리 주소');
+assert.ok(tyYong?.overview?.includes('네 개 바위섬'), '통영 연화도 용머리 overlay 바위섬');
+assert.ok(tyYong?.overview?.includes('제주 용머리해안'), '통영 연화도 용머리≠제주 용머리해안');
+assert.ok(tyYong?.overview?.includes('연화사'), '통영 연화도 용머리≠연화사 법당');
+assert.ok(tyYong?.imageUrl?.includes('IMG_0364.JPG'), '통영 연화도 용머리 시 공식 블로그 사진');
+assert.ok(
+  tongyeongEight.find((s) => s.attractionName === '연화도 용머리')?.imageUrl?.includes(
+    'IMG_0364.JPG',
+  ),
+  '통영팔경 1경 연화도 용머리 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127103')?.imageUrl?.includes('IMG_0364.JPG'),
+  '통영 검색 Tour 행 연화도(통영) 127103 썸네일',
+);
+const tyYongSearch = resolveSearchScenicMedia({
+  hubId: 'tongyeong',
+  name: '연화도(통영)',
+  contentId: '127103',
+});
+assert.ok(
+  tyYongSearch.imageUrl?.includes('IMG_0364.JPG'),
+  '명승 검색 연화도(통영) 썸네일',
+);
+assert.equal(tyYongSearch.contentId, '127103', '명승 검색 연화도(통영) contentId');
+
+const tyYi = lookupLocalScenicMemberOverlayForSpot({
+  hubId: 'tongyeong',
+  attractionName: '이순신공원',
+});
+assert.ok(tyYi?.overview?.includes('정량동 688-1'), '통영 이순신공원 주소');
+assert.ok(tyYi?.overview?.includes('17.3m'), '통영 이순신공원 overlay 동상');
+assert.ok(tyYi?.overview?.includes('남망산공원'), '통영 이순신공원≠남망산공원');
+assert.ok(tyYi?.overview?.includes('여수 이순신공원'), '통영 이순신공원≠여수 이순신공원');
+assert.ok(tyYi?.imageUrl?.includes('3479192_image2_1.jpg'), '통영 이순신공원 공사 공식 사진');
+assert.ok(!tyYi?.imageUrl?.includes('3072989'), '통영 이순신공원≠화장실 사진');
+const tyYiSearch = resolveSearchScenicMedia({
+  hubId: 'tongyeong',
+  name: '이순신공원',
+});
+assert.ok(
+  tyYiSearch.imageUrl?.includes('3479192_image2_1.jpg'),
+  '탐색홈 이순신공원 썸네일',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('584970')?.imageUrl?.includes('3479192_image2_1.jpg'),
+  '통영 검색 Tour 행 이순신공원 584970 썸네일',
+);
+assert.ok(
+  !lookupLocalScenicPhotoByContentId('2782775')?.imageUrl,
+  '통영 검색 삼덕항 2782775 공식 사진 없음 유지',
+);
+assert.notEqual(tyYong?.imageUrl, tyYi?.imageUrl, '연화도 용머리·이순신공원 썸네일 다름');
+assert.notEqual(tyYong?.imageUrl, tyPark?.imageUrl, '연화도 용머리·남망산 썸네일 다름');
+assert.notEqual(tyYi?.imageUrl, tyPark?.imageUrl, '이순신공원·남망산 썸네일 다름');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
