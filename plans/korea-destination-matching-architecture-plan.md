@@ -107,14 +107,14 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 ### 다음 세션 제시어
 
 ```
-여행지 매칭 #7, 동음이의어 사용자 선택 UI
+여행지 매칭 #10, 하드코딩 사전 정리 및 SSOT 일원화
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: 모바일/데스크톱 검색창 및 장소 시트에서 "어느 지역의 [지명]을 찾으시나요?" 다후보 선택 칩 UI 연동. 기존 선택 카드 톤 유지.
-검증: npm run smoke:ko-homonym-ri-search PASS · npx vite build PASS
+작업: 분산된 *_ALIASES, *_OVERRIDES를 koreaPlaceMatchDictionary.js 단일 SSOT로 통합. 기존 회귀 0건.
+검증: npm run smoke:ko-homonym-ri-search PASS · npm run smoke:explore-search-aliases PASS · npx vite build PASS
 ```
 
 ---
@@ -123,8 +123,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | | |
 |--|--|
-| **세션** | **#8 완료** · 송암 동음 다후보 · tip `5ef7970a` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **세션** | **#9 완료** · 동음이의어 사용자 선택 UI · tip `dcc9e6a9` · PR [#276](https://github.com/catgeot/Days/pull/276) |
 | **브랜치** | `cursor/dest-match-arch` |
 | **Preview** | `/qa/dest-match` → git Preview `/` |
-| **다음** | `#9 동음이의어 사용자 선택 UI` (원 로드맵 #6) |
-| **잔여** | 선택 칩 UI. 기존 카드 톤 유지. Edge `fetch-mrt-stays` Geo-Sanity 배포는 선택. |
+| **다음** | `#10 하드코딩 사전 정리 및 SSOT 일원화` (원 로드맵 #7) |
+| **잔여** | `koreaPlaceMatchDictionary.js` 통합. Edge `fetch-mrt-stays` Geo-Sanity 배포는 선택. |

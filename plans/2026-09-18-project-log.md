@@ -2,6 +2,26 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 팔경 활용 #62 — 경기 광주 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #62, 경기 광주 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `52b5126e` · PR [#280](https://github.com/catgeot/Days/pull/280)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 광주8경 결손 무갑산. 초월읍·퇴촌면 해발 578m(5경, 실촌읍=현 곤지암읍 지맥·팔당호 조망). 광주시 문화관광 8경 공식 사진(`img_mugabsan3.png`)·홈 `mId=0101050000`. 광주광역시 무등산·6경 태화산·4경 앵자봉·관산·무갑사 법당과 구분. 송정사는 현 공식 8경(중대물빛공원)에 없고 Tour 미등재·공식 사진 없어 건너뜀(영암 송정사·광주송정역과 구분). 광주 순수 누락 2→1.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gwangju_gi`
+- **잔여**: 사진/개요 순수 누락 **45**/876. 다음 허브 **목포9경 2**(목포진·다도해 전경)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 여행지 매칭 #9 — 동음이의어 사용자 선택 UI (Cloud)
+
+- **세션** `여행지 매칭 #9, 동음이의어 사용자 선택 UI`
+- **브랜치** `cursor/dest-match-arch` · tip `dcc9e6a9` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: 모바일·데스크톱 검색창과 장소 시트에서 동음 지명은 「어느 지역의 [지명]을 찾으시나요?」와 지역 칩으로 고른다. 기존 선택 카드 톤 유지. Enter는 한 칩으로 스냅하지 않음. **PR 미병합**.
+- **VERIFY**: `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-choice-overlay` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「종각」입력·엔터 → 서울 종로 종각역·대구 중구 종각네거리 칩 + 기존 카드. 「광천」「송암」도 지역 칩. 단독 스냅 아님.
+- **다음**: `여행지 매칭 #10, 하드코딩 사전 정리 및 SSOT 일원화`
+
 ## 팔경 활용 #61 QA — 연화도 용머리 공식 홈 U투어 (Cloud)
 
 - **세션** `팔경 활용 #61, 통영 결손 오버레이` (같은 턴 Preview 피드백)
