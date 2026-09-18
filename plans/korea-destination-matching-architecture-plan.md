@@ -107,14 +107,14 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 ### 다음 세션 제시어
 
 ```
-여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)
+여행지 매칭 #4, 국내 지명 First-Pass 리졸버
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: mrtStayQuery.js 및 Edge fetch-mrt-stays에서 검색 중심점 기준 30km 초과 타 시도 숙소 자동 배제. 평창/춘천 검색 시 광주/양양 숙소 0건.
-검증: npm run smoke:mrt-stay PASS · smoke:tourapi PASS · npx vite build PASS
+작업: Mapbox 지오코딩 전 tourapi_attraction·cityAttractionHubs.json First-Pass 리졸버 모듈화. 광천선굴·종각역 등 주요 명소 1차 히트.
+검증: npm run smoke:explore-search-aliases PASS · smoke:mrt-stay PASS · npx vite build PASS
 ```
 
 ---
@@ -123,8 +123,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | | |
 |--|--|
-| **세션** | **#2 완료** · 검색 Enter 제안 불일치 · tip `7e5fc984` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **세션** | **#3 완료** · 숙소 거리 가드(Geo-Sanity) · tip `3cd8b196` · PR [#276](https://github.com/catgeot/Days/pull/276) |
 | **브랜치** | `cursor/dest-match-arch` |
 | **Preview** | `/qa/dest-match` → git Preview `/` |
-| **다음** | `#3 숙소 거리 가드(Geo-Sanity)` (원 로드맵 #2) |
-| **잔여** | Edge `tourapi-proxy` `imgname` 배포는 선택. 클라 caption 재검사로 미배포여도 컷은 동작. |
+| **다음** | `#4 국내 지명 First-Pass 리졸버` (원 로드맵 #3) |
+| **잔여** | Edge `fetch-mrt-stays` Geo-Sanity는 배포 후 listing에서도 배제. 미배포여도 클라 가드가 동작. `tourapi-proxy` `imgname` 배포는 선택. |
