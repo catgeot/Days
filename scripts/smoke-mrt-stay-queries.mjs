@@ -248,6 +248,55 @@ const CASES = [
     expectKeyword: /문경/,
   },
   /**
+   * 자연명소 광천선굴 — 명소명을 1차로 두면 MRT가 광주 광천동 호텔로 승격.
+   * placeCategory NATURE_SCENIC → 시·군(평창) 선두, 광주·광천 제외.
+   */
+  {
+    slug: 'gwangcheon-seongul-nature',
+    location: {
+      name: '광천선굴',
+      name_ko: '광천선굴',
+      name_en: 'Gwangcheon Seongul',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '광천선굴',
+      hubId: 'pyeongchang',
+      parentCity: '평창',
+      placeCategory: 'NATURE_SCENIC',
+      tourCategory: 'NATURE_SCENIC',
+      contentId: '2987914',
+      stayAdmin: {
+        city: '평창',
+        cityEn: 'Pyeongchang',
+        county: '평창',
+        state: '',
+      },
+    },
+    expectPrimaryKeyword: /평창/,
+    expectKeyword: /평창/,
+    rejectPrimaryKeyword: /광천|광주|Gwangcheon/,
+    rejectCityHint: /광천선굴|광주|Gwangcheon/i,
+  },
+  {
+    slug: 'woljeongsa-history',
+    location: {
+      name: '월정사',
+      name_ko: '월정사',
+      name_en: 'Woljeongsa',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '월정사',
+      hubId: 'pyeongchang',
+      parentCity: '평창',
+      placeCategory: 'HISTORY',
+      stayAdmin: { city: '평창', cityEn: 'Pyeongchang', county: '평창' },
+    },
+    expectPrimaryKeyword: /평창/,
+    rejectPrimaryKeyword: /월정사|광주|대구/,
+  },
+  /**
    * GPS 평창군 대화면 대화리 — 「대화」축약이 고양/일산 대화동으로 새면 안 됨.
    * 1차 키워드·cityHints는 시·군(평창) 우선.
    */

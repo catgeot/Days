@@ -399,12 +399,16 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     let koreanName = '';
 
     if (typeof targetSpot === 'object') {
+        const locCat = typeof locationSource === 'object' ? locationSource : null;
         const resolved = resolveGalleryStockQuery(
           {
             ...targetSpot,
             galleryRegionSpot:
-              targetSpot.galleryRegionSpot ||
-              (typeof locationSource === 'object' ? locationSource.galleryRegionSpot : null),
+              targetSpot.galleryRegionSpot || locCat?.galleryRegionSpot || null,
+            placeCategory: targetSpot.placeCategory || locCat?.placeCategory,
+            tourCategory: targetSpot.tourCategory || locCat?.tourCategory,
+            parentCity: targetSpot.parentCity || locCat?.parentCity,
+            stayAdmin: targetSpot.stayAdmin || locCat?.stayAdmin,
           },
           FALLBACK_DICTIONARY,
         );
@@ -500,8 +504,24 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         : typeof locationSource === 'object' && locationSource
           ? locationSource
           : { name: koreanName, slug: stablePlaceKey };
+    const tourPlaceWithCategory =
+      typeof tourPlaceCandidate === 'object' && tourPlaceCandidate
+        ? {
+            ...tourPlaceCandidate,
+            ...(typeof locationSource === 'object' && locationSource?.placeCategory
+              ? {
+                  placeCategory:
+                    tourPlaceCandidate.placeCategory || locationSource.placeCategory,
+                  tourCategory: tourPlaceCandidate.tourCategory || locationSource.tourCategory,
+                  contentId: tourPlaceCandidate.contentId || locationSource.contentId,
+                  parentCity: tourPlaceCandidate.parentCity || locationSource.parentCity,
+                  stayAdmin: tourPlaceCandidate.stayAdmin || locationSource.stayAdmin,
+                }
+              : {}),
+          }
+        : tourPlaceCandidate;
     const resolvedTourMapping =
-      resolveTourApiPlace(tourPlaceCandidate) ||
+      resolveTourApiPlace(tourPlaceWithCategory) ||
       (typeof locationSource === 'object' ? resolveTourApiPlace(locationSource) : null) ||
       (koreanName ? resolveTourApiPlace(koreanName) : null);
     /** 해외는 TourAPI 제외 · SSOT curated(국내 시드) 또는 country=한국만 허용 */

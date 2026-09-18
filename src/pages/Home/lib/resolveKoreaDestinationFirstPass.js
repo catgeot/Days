@@ -17,6 +17,7 @@ import {
   formatTourAttractionLocality,
 } from './koreaTourAttractionLocality.js';
 import { resolveKoStationAlias } from '../../../utils/mrtStayQuery.js';
+import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 const LODGING_OR_SA_RE = /호텔|콘도|펜션|리조트|휴게소/;
@@ -24,18 +25,6 @@ const BARE_ADMIN_RE =
   /^(?:서울|부산|대구|인천|광주|대전|울산|세종|제주|경기|강원|충북|충남|전북|전남|경북|경남)(?:특별시|광역시|특별자치시|특별자치도|도|시)?$/;
 const SIDO_RE =
   /서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시|세종시|경기도|강원특별자치도|강원도|충청북도|충북|충청남도|충남|전북특별자치도|전라북도|전북|전라남도|전남|경상북도|경북|경상남도|경남|제주특별자치도|제주도/;
-
-const HUB_KIND_TO_CATEGORY = {
-  beach: 'NATURE_SCENIC',
-  park: 'NATURE_SCENIC',
-  viewpoint: 'NATURE_SCENIC',
-  temple: 'HISTORY',
-  shrine: 'HISTORY',
-  museum: 'HISTORY',
-  landmark: 'LANDMARK',
-  market: 'LANDMARK',
-  neighborhood: 'LANDMARK',
-};
 
 function compactKey(s) {
   return String(s ?? '')
@@ -88,19 +77,6 @@ function stayAdminFromKoreanAddress(addr1, addr2) {
   };
 }
 
-function tourCategoryFromHubKind(kind) {
-  return HUB_KIND_TO_CATEGORY[String(kind || '')] || 'LANDMARK';
-}
-
-function tourCategoryFromTourCats(cat1, cat2) {
-  const major = String(cat1 || '').trim().toUpperCase();
-  const mid = String(cat2 || '').trim().toUpperCase();
-  if (major === 'A01') return 'NATURE_SCENIC';
-  if (mid === 'A0201') return 'HISTORY';
-  if (major === 'A02') return 'LANDMARK';
-  return 'LANDMARK';
-}
-
 function bindCategory(hit, tourCategory) {
   hit.tourCategory = tourCategory;
   hit.placeCategory = tourCategory;
@@ -143,7 +119,12 @@ function resolveKoreaHubAttractionMatch(query) {
 function hitFromHub(match) {
   const pin = attractionToPlacePin(match.hub, match.attraction);
   const stayAdmin = stayAdminFromHub(match.hub);
-  const tourCategory = tourCategoryFromHubKind(match.attraction.kind);
+  const tourCategory =
+    inferPlaceMatchCategory({
+      kind: match.attraction.kind,
+      name: match.attraction.name,
+      name_ko: match.attraction.name,
+    }) || 'LANDMARK';
   return bindCategory(
     {
       source: 'hub',
@@ -202,7 +183,13 @@ function hitFromTourRow(row) {
   const name = String(row?.name || row?.title || '').trim();
   if (!name) return null;
   const stayAdmin = stayAdminFromKoreanAddress(row.addr1, row.addr2);
-  const tourCategory = tourCategoryFromTourCats(row.cat1, row.cat2);
+  const tourCategory =
+    inferPlaceMatchCategory({
+      name: name,
+      name_ko: name,
+      cat1: row.cat1,
+      cat2: row.cat2,
+    }) || 'LANDMARK';
   return bindCategory(
     {
       source: 'tourapi',

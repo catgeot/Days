@@ -3,6 +3,15 @@
  * supabase 클라이언트 의존 없음 → Node 스모크·단위 테스트 가능.
  */
 import { isPlaceholderCountry } from './travelSpotResolve.js';
+import {
+  collectStayRegionAnchors,
+  inferPlaceMatchCategory,
+  isPlacePoiStayLabel,
+  isUnanchoredMetroStayToken,
+  placeCategoryUsesCountyStay,
+  placeCategoryUsesStayPoint,
+  PLACE_MATCH_CATEGORY,
+} from '../pages/Home/lib/placeMatchCategory.js';
 
 /**
  * 동명·오탐·미매칭 slug — 1차 키워드·대안·(선택) 국가 힌트 덮어쓰기.
@@ -499,6 +508,8 @@ export function applyUniversityCampusPlace(query, place) {
     admin.neighbourhood = '';
   }
   next.stayAdmin = admin;
+  next.placeCategory = PLACE_MATCH_CATEGORY.UNIVERSITY;
+  next.tourCategory = PLACE_MATCH_CATEGORY.UNIVERSITY;
   return next;
 }
 
@@ -519,6 +530,8 @@ function syntheticUniversityCampusPlace(query, alias) {
     source: 'campus-alias',
     uiPlace: true,
     originalQuery: query,
+    placeCategory: PLACE_MATCH_CATEGORY.UNIVERSITY,
+    tourCategory: PLACE_MATCH_CATEGORY.UNIVERSITY,
   };
 }
 
@@ -911,6 +924,8 @@ export function resolveMrtStayQuery(location) {
   const nameEn = String(location?.name_en || '').trim();
   const nameKo = String(location?.name_ko || '').trim();
   const isDomestic = isMrtDomesticLocation(location);
+  const placeCategory = inferPlaceMatchCategory(location);
+  const countyStay = isDomestic && placeCategoryUsesCountyStay(placeCategory);
   const countryHint = normalizeMrtCountryHint(
     override?.countryHint || location?.country,
     isDomestic,
@@ -943,13 +958,26 @@ export function resolveMrtStayQuery(location) {
   // 숙박 브랜드 키워드 선두 (비발디→홍천, 호텔신라→중문/장충)
   pushLodgingStayKeywords(ladder, seen, location);
 
+  /** hub 명소·정착지 — Nominatim stayAdmin 없이도 상위 도시로 CITY 매칭 (문경새재→문경) */
+  const parentCity = String(location?.parentCity || '').trim();
+  const scenicAnchors = collectStayRegionAnchors(admin, parentCity);
+  const hasScenicAnchor = scenicAnchors.size > 0;
+  const pushLadder = (raw) => {
+    if (countyStay && isUnanchoredMetroStayToken(raw, scenicAnchors)) return;
+    if (countyStay && hasScenicAnchor && isPlacePoiStayLabel(raw, location)) return;
+    pushUnique(ladder, seen, raw);
+  };
+
   // uiPlace: 검색어(originalQuery)를 선두 — Mapbox name이 시·군만일 때 「홍천 대명 콘도」 숙소 오탐 방지
   // 국내 동·리·읍·면·역·길은 시·군 래더 뒤 — 「대화리」동명 · 「종각역」MRT CITY 미매칭 방지
-  const stayPoint = isDomestic && isMrtStayPointLocation(location);
-  if (location?.uiPlace) {
+  // 자연·역사 명소는 시·군 선두 — 「광천선굴」이 광주 광천동 호텔로 승격되지 않게
+  const stayPoint =
+    isDomestic &&
+    (isMrtStayPointLocation(location) || placeCategoryUsesStayPoint(placeCategory));
+  if (location?.uiPlace && !(countyStay && hasScenicAnchor)) {
     const oq = String(location.originalQuery || '').trim();
     if (!(isDomestic && (isKoFineAdminName(oq) || isMrtStayPointLabel(oq)))) {
-      pushUnique(ladder, seen, oq);
+      pushLadder(oq);
     }
   }
 
@@ -960,9 +988,6 @@ export function resolveMrtStayQuery(location) {
     cityHintExtras.push(m[1]);
   }
   if (uniAlias?.city) cityHintExtras.push(uniAlias.city);
-
-  /** hub 명소·정착지 — Nominatim stayAdmin 없이도 상위 도시로 CITY 매칭 (문경새재→문경) */
-  const parentCity = String(location?.parentCity || '').trim();
 
   // 리·읍·면 + OSM town(대화면)이 city인 경우 — 시·군 우선 래더
   const fineGrain =
@@ -975,70 +1000,76 @@ export function resolveMrtStayQuery(location) {
     const cityIsTownship = isDomestic && isKoTownshipName(admin.city);
     if (cityIsTownship && admin.county) {
       // 평창군 대화면·보은군 이평리 — 군·시 먼저, 면 축약「대화」는 일산 대화동 오탐이라 제외
-      pushUnique(ladder, seen, admin.county);
-      pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
-      pushUnique(ladder, seen, parentCity);
-      pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
-      pushUnique(ladder, seen, admin.city);
-      pushUnique(ladder, seen, admin.cityEn);
+      pushLadder(admin.county);
+      pushLadder(stripKoAdminSuffix(admin.county));
+      pushLadder(parentCity);
+      pushLadder(stripKoAdminSuffix(parentCity));
+      pushLadder(admin.city);
+      pushLadder(admin.cityEn);
       return;
     }
-    pushUnique(ladder, seen, admin.city);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.city));
-    pushUnique(ladder, seen, admin.cityEn);
-    pushUnique(ladder, seen, admin.county);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
-    pushUnique(ladder, seen, parentCity);
-    pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
+    pushLadder(admin.city);
+    pushLadder(stripKoAdminSuffix(admin.city));
+    pushLadder(admin.cityEn);
+    pushLadder(admin.county);
+    pushLadder(stripKoAdminSuffix(admin.county));
+    pushLadder(parentCity);
+    pushLadder(stripKoAdminSuffix(parentCity));
   };
 
   const pushFineLadder = () => {
-    pushUnique(ladder, seen, name);
-    pushUnique(ladder, seen, nameKo);
-    pushUnique(ladder, seen, admin.neighbourhood);
+    pushLadder(name);
+    pushLadder(nameKo);
+    pushLadder(admin.neighbourhood);
     // 읍·면 축약은 county 있을 때 스킵(대화면→대화→고양)
     const fineBase = admin.neighbourhood || name || nameKo;
     if (!(isDomestic && admin.county && isKoTownshipName(fineBase))) {
-      pushUnique(ladder, seen, stripKoAdminSuffix(fineBase));
+      pushLadder(stripKoAdminSuffix(fineBase));
     }
-    pushUnique(ladder, seen, admin.district);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.district));
+    pushLadder(admin.district);
+    pushLadder(stripKoAdminSuffix(admin.district));
   };
 
-  // 국내 hub 명소(동·읍·면·리 아님): 상위 도시를 랜드마크보다 앞 — 「문경새재」단독 MRT CITY 미매칭 방지
-  // (숙박 브랜드·originalQuery가 이미 선두면 그 다음 alt로만 들어감)
-  if (parentCity && isDomestic && !fineGrain) {
-    pushUnique(ladder, seen, parentCity);
-    pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
-  }
-
-  // 국내 동·리·읍·면·역·길: 시·군 우선 — 「퇴계동」안동 · 「종각역」서울
-  // 역·터미널은 생활권(종로) → 축약 시명(서울) — MRT NEIGHBORHOOD「종로」·CITY「서울」
-  // 「서울 종각역」단독 CITY는 없음. 해외·비세밀: 세밀 키워드 우선
-  if ((fineGrain || stayPoint) && isDomestic) {
-    if (stayPoint) {
-      pushUnique(ladder, seen, uniAlias?.city);
-      pushUnique(ladder, seen, mrtNeighborhoodKeyword(admin, location));
-      pushUnique(ladder, seen, stripKoAdminSuffix(admin.city));
-      pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
-      pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
-    }
-    pushCityLadder();
-    pushFineLadder();
-  } else if (fineGrain) {
-    pushFineLadder();
+  if (countyStay && hasScenicAnchor) {
     pushCityLadder();
   } else {
-    pushFineLadder();
-    pushUnique(ladder, seen, admin.district);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.district));
-    pushCityLadder();
+    // 국내 hub 명소(동·읍·면·리 아님): 상위 도시를 랜드마크보다 앞 — 「문경새재」단독 MRT CITY 미매칭 방지
+    // (숙박 브랜드·originalQuery가 이미 선두면 그 다음 alt로만 들어감)
+    if (parentCity && isDomestic && !fineGrain) {
+      pushLadder(parentCity);
+      pushLadder(stripKoAdminSuffix(parentCity));
+    }
+
+    // 국내 동·리·읍·면·역·길: 시·군 우선 — 「퇴계동」안동 · 「종각역」서울
+    // 역·터미널은 생활권(종로) → 축약 시명(서울) — MRT NEIGHBORHOOD「종로」·CITY「서울」
+    // 「서울 종각역」단독 CITY는 없음. 해외·비세밀: 세밀 키워드 우선
+    if ((fineGrain || stayPoint) && isDomestic) {
+      if (stayPoint) {
+        pushLadder(uniAlias?.city);
+        pushLadder(mrtNeighborhoodKeyword(admin, location));
+        pushLadder(stripKoAdminSuffix(admin.city));
+        pushLadder(stripKoAdminSuffix(admin.county));
+        pushLadder(stripKoAdminSuffix(parentCity));
+      }
+      pushCityLadder();
+      pushFineLadder();
+    } else if (fineGrain) {
+      pushFineLadder();
+      pushCityLadder();
+    } else {
+      pushFineLadder();
+      pushLadder(admin.district);
+      pushLadder(stripKoAdminSuffix(admin.district));
+      pushCityLadder();
+    }
   }
 
-  pushUnique(ladder, seen, nameEn);
-  if (isDomestic) {
-    pushUnique(ladder, seen, admin.state);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.state));
+  if (!(countyStay && hasScenicAnchor && isPlacePoiStayLabel(nameEn, location))) {
+    pushLadder(nameEn);
+  }
+  if (isDomestic && !(countyStay && hasScenicAnchor)) {
+    pushLadder(admin.state);
+    pushLadder(stripKoAdminSuffix(admin.state));
   }
 
   const keyword = String(ladder[0] || '').trim();
@@ -1050,6 +1081,16 @@ export function resolveMrtStayQuery(location) {
   }
   pushUnique(cityHints, citySeen, parentCity);
   pushUnique(cityHints, citySeen, stripKoAdminSuffix(parentCity));
+  if (countyStay) {
+    const filtered = cityHints.filter(
+      (h) =>
+        !isUnanchoredMetroStayToken(h, scenicAnchors) &&
+        !isPlacePoiStayLabel(h, location) &&
+        !(hasScenicAnchor && /특별자치도|광역시|특별시/.test(String(h))),
+    );
+    cityHints.length = 0;
+    cityHints.push(...filtered);
+  }
 
   /** MRT subName 한·영·공백·영토 별칭 — Edge countryMatches(compact·세그먼트) */
   const countryHintAlts = expandMrtCountryHintAlts(

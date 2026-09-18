@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 4,
-  sessionPhase: '국내 지명 First-Pass 리졸버',
+  sessionNo: 5,
+  sessionPhase: '카테고리 맥락 파이프라인 전달',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-dest-match-5-place-category',
+    session: '여행지 매칭 #5, 카테고리 맥락 파이프라인 전달',
+    title: '자연·역사·역·대학 카테고리를 숙소·갤러리에 전달',
+    detail:
+      'First-Pass placeCategory를 MRT 숙소 래더와 장소 갤러리가 씁니다. 광천선굴·문경새재 같은 자연명소는 시·군(평창·문경) 숙소가 1차고, 광주 광천동 호텔로 올라가지 않습니다. 갤러리는 contentId와 전경·landscape 키워드를 씁니다. Preview /qa/dest-match 홈「광천선굴」숙소 찾기 → 평창 · 광주 호텔 아님.',
+    at: '2026-09-18T08:20:00.000Z',
+  },
   {
     id: '2026-09-18-dest-match-4-first-pass',
     session: '여행지 매칭 #4, 국내 지명 First-Pass 리졸버',

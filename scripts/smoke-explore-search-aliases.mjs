@@ -28,6 +28,9 @@ import {
   resolveKoreaDestinationFirstPassSync,
 } from '../src/pages/Home/lib/resolveKoreaDestinationFirstPass.js';
 import { pickUniqueTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
+import { resolveGalleryStockQuery } from '../src/pages/Home/lib/uiPlaceAssetQuery.js';
+import { resolveMrtStayQuery } from '../src/utils/mrtStayQuery.js';
+import { resolveTourApiPlace } from '../src/utils/tourApiMatch.js';
 
 const langCo = resolveHubAttraction('람코');
 assert.ok(langCo, '람코 → 랑코 해변 attraction');
@@ -130,6 +133,8 @@ assert.equal(seongulFirst?.lng, 128.451361);
 assert.equal(seongulFirst?.contentId, '2987914');
 assert.equal(seongulFirst?.parentCity, '평창');
 assert.equal(seongulFirst?.stayAdmin?.city, '평창');
+assert.equal(seongulFirst?.placeCategory, 'NATURE_SCENIC', '광천선굴 kind=landmark여도 선굴→자연');
+assert.equal(seongulFirst?.tourCategory, 'NATURE_SCENIC');
 
 const seongulTypo = resolveKoreaDestinationFirstPassSync('광천성굴');
 assert.equal(seongulTypo?.name, '광천선굴', '광천성굴 First-Pass → 광천선굴');
@@ -142,17 +147,44 @@ assert.equal(jonggakFirst?.lat, 37.5701);
 assert.equal(jonggakFirst?.lng, 126.9829);
 assert.equal(jonggakFirst?.stayAdmin?.district, '종로');
 assert.equal(jonggakFirst?.tourCategory, 'STATION');
+assert.equal(jonggakFirst?.placeCategory, 'STATION');
 assert.equal(resolveKoreaDestinationFirstPassSync('종각')?.name, '종각역');
 
 const jonggakPin = firstPassHitToUiPlace(jonggakFirst, '종각역');
 assert.equal(jonggakPin?.uiPlace, true);
 assert.equal(jonggakPin?.stayAdmin?.city, '서울');
+assert.equal(jonggakPin?.placeCategory, 'STATION');
 assert.notEqual(jonggakPin?.lat, 35.87, '종각역 is not Daegu');
+const jonggakStay = resolveMrtStayQuery(jonggakPin);
+assert.match(jonggakStay.keyword, /종로|서울/, `종각역 stay ${jonggakStay.keyword}`);
+assert.doesNotMatch(jonggakStay.keyword, /대구/);
 
 const seongulGeo = firstPassHitToGeocodeResult(seongulFirst);
 assert.equal(seongulGeo?.source, 'korea-first-pass');
 assert.ok(seongulGeo?.lat > 37.4 && seongulGeo?.lat < 37.7, '평창 위도');
 assert.ok(seongulGeo?.lng > 128.3 && seongulGeo?.lng < 128.6, '평창 경도');
+assert.equal(seongulGeo?.placeCategory, 'NATURE_SCENIC');
+
+const seongulPin = firstPassHitToUiPlace(seongulFirst, '광천선굴');
+const seongulStay = resolveMrtStayQuery(seongulPin);
+assert.match(seongulStay.keyword, /평창/, `광천선굴 stay primary ${seongulStay.keyword}`);
+assert.doesNotMatch(seongulStay.keyword, /광천|광주/);
+assert.ok(
+  !seongulStay.altKeywords.some((k) => /광주/.test(k)),
+  `광천선굴 alts must not include 광주 (${seongulStay.altKeywords.join(',')})`,
+);
+const seongulTour = resolveTourApiPlace(seongulPin);
+assert.equal(seongulTour?.contentId, '2987914');
+assert.ok(
+  seongulTour.photoKeywords.every((k) => !/야경/.test(k)),
+  '자연명소 Tour 키워드에 야경(도심) 없음',
+);
+const seongulGallery = resolveGalleryStockQuery(seongulPin);
+assert.match(seongulGallery.backupQuery, /landscape|Pyeongchang/i);
+
+const saejaeFirst = resolveKoreaDestinationFirstPassSync('문경새재');
+assert.equal(saejaeFirst?.placeCategory, 'NATURE_SCENIC');
+assert.match(resolveMrtStayQuery(firstPassHitToUiPlace(saejaeFirst, '문경새재')).keyword, /문경/);
 
 assert.equal(resolveKoreaDestinationFirstPassSync('람코'), null, '해외 랑코는 국내 First-Pass 아님');
 assert.equal(resolveKoreaDestinationFirstPassSync('다카마스'), null, '다카마스 hub는 First-Pass attraction 아님');

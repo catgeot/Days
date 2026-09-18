@@ -26,6 +26,7 @@ import {
   firstPassHitToGeocodeResult,
   resolveKoreaDestinationFirstPass,
 } from './resolveKoreaDestinationFirstPass.js';
+import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 
 const RETRY_FILTERS = [
   "고원", "섬", "산", "해변", "폭포", "마을", "대륙", "반도", "시", "군", "구",
@@ -439,6 +440,10 @@ const parseMapboxForwardPlace = (feature, searchQuery) => {
   const preferred = feature.properties?.name_preferred || feature.text || placeName;
   const placeNameEn = isLatinPlaceName(preferred) ? preferred : (isLatinPlaceName(placeName) ? placeName : '');
   const stayAdmin = buildStayAdminFromMapboxFeature(feature);
+  const placeCategory = inferPlaceMatchCategory({
+    name: placeName,
+    originalQuery: searchQuery,
+  });
 
   return {
     lat,
@@ -452,6 +457,7 @@ const parseMapboxForwardPlace = (feature, searchQuery) => {
     place_types: feature.place_type || [],
     mapboxId: feature.id || '',
     ...(stayAdmin ? { stayAdmin } : {}),
+    ...(placeCategory ? { tourCategory: placeCategory, placeCategory } : {}),
   };
 };
 
@@ -747,6 +753,17 @@ export const getCoordinatesFromAddress = async (query) => {
       countryEn;
 
     const stayAdmin = buildStayAdminFromOsmAddress(address, address);
+    const osmKind =
+      topResult.class === 'natural' || /cave|peak|waterfall|spring|beach|wood|park/i.test(String(topResult.type || ''))
+        ? 'park'
+        : topResult.class === 'historic' || topResult.type === 'museum'
+          ? 'museum'
+          : '';
+    const placeCategory = inferPlaceMatchCategory({
+      name: placeName,
+      originalQuery: cleanQuery,
+      kind: osmKind,
+    });
 
     return applyUniversityCampusPlace(cleanQuery, {
       lat: parseFloat(topResult.lat),
@@ -760,6 +777,7 @@ export const getCoordinatesFromAddress = async (query) => {
       osm_class: topResult.class || '',
       osm_type: topResult.type || '',
       ...(stayAdmin ? { stayAdmin } : {}),
+      ...(placeCategory ? { tourCategory: placeCategory, placeCategory } : {}),
     });
   } catch (error) {
     console.error("Forward Geocoding error:", error);
