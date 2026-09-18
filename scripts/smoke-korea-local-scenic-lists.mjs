@@ -3872,6 +3872,78 @@ assert.ok(
   '의정부 검색 8경 제일시장 개요',
 );
 
+const tongyeongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'tongyeong');
+const tongyeongEight = tongyeongMerged.filter((s) => s.localScenicListId === 'tongyeong-palgyeong');
+assert.equal(tongyeongEight.length, 8, '통영팔경 8명');
+assert.equal(tongyeongEight[0]?.groupTitle, '통영 팔경');
+const tongyeongDeficitNames = ['남망산공원', '한산도제승당', '통영운하 야경'];
+const tongyeongDeficit = tongyeongEight.filter((s) =>
+  tongyeongDeficitNames.includes(s.attractionName),
+);
+assert.equal(tongyeongDeficit.length, 3, '통영팔경 결손 3명');
+assert.ok(
+  tongyeongDeficit.every((s) => s.overview && s.imageUrl),
+  '통영 결손 3명 overlay 사진·개요',
+);
+assert.ok(
+  tongyeongDeficit.every((s) => !s.contentId),
+  '통영 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(tongyeongDeficit.map((s) => s.imageUrl)).size,
+  3,
+  '통영 결손 3명 썸네일 서로 다름',
+);
+
+const tyPark = resolveLocalScenicListSpotById('local-scenic:tongyeong-palgyeong:남망산공원');
+assert.ok(tyPark?.overview?.includes('남망공원길 29'), '통영 남망산공원 주소');
+assert.ok(tyPark?.overview?.includes('1997'), '통영 남망산공원 overlay 1997');
+assert.ok(tyPark?.overview?.includes('조각공원'), '통영 남망산공원 overlay 조각공원');
+assert.ok(tyPark?.overview?.includes('동피랑'), '통영 남망산공원≠동피랑 구분');
+assert.ok(tyPark?.overview?.includes('디피랑'), '통영 남망산공원≠디피랑 매표 구분');
+assert.ok(tyPark?.imageUrl?.includes('3349727_image2_1.jpg'), '통영 남망산공원 공사 공식 사진');
+
+const tyJe = resolveLocalScenicListSpotById('local-scenic:tongyeong-palgyeong:한산도제승당');
+assert.ok(tyJe?.overview?.includes('한산일주로 70'), '통영 제승당 주소');
+assert.ok(tyJe?.overview?.includes('사적'), '통영 제승당 overlay 사적');
+assert.ok(tyJe?.overview?.includes('운주당'), '통영 제승당 overlay 운주당');
+assert.ok(tyJe?.overview?.includes('세병관'), '통영 제승당≠세병관 구분');
+assert.ok(tyJe?.overview?.includes('현충사'), '통영 제승당≠아산 현충사 구분');
+assert.ok(tyJe?.imageUrl?.includes('3558314_image2_1.jpg'), '통영 제승당 공사 공식 사진');
+
+const tyCanal = resolveLocalScenicListSpotById('local-scenic:tongyeong-palgyeong:통영운하야경');
+assert.ok(tyCanal?.overview?.includes('당동'), '통영 운하 주소');
+assert.ok(tyCanal?.overview?.includes('1932'), '통영 운하 overlay 1932');
+assert.ok(tyCanal?.overview?.includes('3중 교통'), '통영 운하 overlay 3중 교통');
+assert.ok(tyCanal?.overview?.includes('여수 밤바다'), '통영 운하≠여수 밤바다 구분');
+assert.ok(tyCanal?.overview?.includes('광양만'), '통영 운하≠광양만 야경 구분');
+assert.ok(tyCanal?.imageUrl?.includes('3534988_image2_1.jpg'), '통영 운하 공사 공식 사진');
+assert.ok(!tyCanal?.imageUrl?.includes('3534987'), '통영 운하≠축제 인물 사진');
+
+assert.notEqual(tyPark?.imageUrl, tyJe?.imageUrl, '남망산·제승당 썸네일 다름');
+assert.notEqual(tyPark?.imageUrl, tyCanal?.imageUrl, '남망산·운하 썸네일 다름');
+assert.notEqual(tyJe?.imageUrl, tyCanal?.imageUrl, '제승당·운하 썸네일 다름');
+
+const tongyeongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '통영팔경', {
+  injectLocalScenic: true,
+});
+const tongyeongGlobeEight = tongyeongGlobe.filter(
+  (s) => s.localScenicListId === 'tongyeong-palgyeong',
+);
+assert.equal(tongyeongGlobeEight.length, 8, '통영 검색 통영팔경 8행');
+assert.ok(
+  tongyeongGlobe.find((s) => s.attractionName === '남망산공원')?.overview?.includes('1997'),
+  '통영 검색 8경 남망산공원 개요',
+);
+assert.ok(
+  tongyeongGlobe.find((s) => s.attractionName === '한산도제승당')?.imageUrl?.includes('3558314_image2_1.jpg'),
+  '통영 검색 8경 제승당 썸네일',
+);
+assert.ok(
+  tongyeongGlobe.find((s) => s.attractionName === '통영운하 야경')?.overview?.includes('판데목'),
+  '통영 검색 8경 운하 개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

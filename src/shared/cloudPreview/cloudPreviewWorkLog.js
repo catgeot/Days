@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 60,
-  sessionPhase: '의정부 결손 오버레이',
+  sessionNo: 61,
+  sessionPhase: '통영 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=uijeongbu',
+  previewPath: '/korea/theme/scenic?hub=tongyeong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-palgyeong-use-61-tongyeong-overlays',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '통영팔경 남망산공원·한산도제승당·통영운하 야경 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 통영팔경 결손 3건(남망산공원·한산도제승당·통영운하 야경)의 공공 공식 팩트 개요·주소·한국관광공사·국가유산청 공식 사진을 보강했습니다. 남망산공원은 동호동 남망공원길 29 1997년 조각공원(3경), 제승당은 한산일주로 70 사적 113호 운주당 터(4경), 운하는 당동~미수동 1932년 3중 교통로(7경)입니다. 동피랑·디피랑·세병관·아산 현충사·여수 밤바다·광양만 야경과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=tongyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T09:10:00.000Z',
+  },
   {
     id: '2026-09-18-palgyeong-use-60-uijeongbu-overlays',
     session: '팔경 활용 #60, 의정부 결손 오버레이',
