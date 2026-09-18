@@ -3952,15 +3952,17 @@ assert.ok(tyYong?.overview?.includes('욕지면 연화리'), '통영 연화도 �
 assert.ok(tyYong?.overview?.includes('네 개 바위섬'), '통영 연화도 용머리 overlay 바위섬');
 assert.ok(tyYong?.overview?.includes('제주 용머리해안'), '통영 연화도 용머리≠제주 용머리해안');
 assert.ok(tyYong?.overview?.includes('연화사'), '통영 연화도 용머리≠연화사 법당');
-assert.ok(tyYong?.imageUrl?.includes('IMG_0364.JPG'), '통영 연화도 용머리 시 공식 블로그 사진');
+assert.ok(tyYong?.imageUrl?.includes('utour.go.kr'), '통영 연화도 용머리 U투어 공식 사진');
+assert.ok(tyYong?.imageUrl?.includes('idx=16550'), '통영 연화도 용머리 용머리 능선 사진');
+assert.ok(!tyYong?.imageUrl?.includes('pstatic.net'), '통영 연화도 용머리≠네이버 핫링크');
 assert.ok(
   tongyeongEight.find((s) => s.attractionName === '연화도 용머리')?.imageUrl?.includes(
-    'IMG_0364.JPG',
+    'idx=16550',
   ),
   '통영팔경 1경 연화도 용머리 썸네일',
 );
 assert.ok(
-  lookupLocalScenicPhotoByContentId('127103')?.imageUrl?.includes('IMG_0364.JPG'),
+  lookupLocalScenicPhotoByContentId('127103')?.imageUrl?.includes('idx=16550'),
   '통영 검색 Tour 행 연화도(통영) 127103 썸네일',
 );
 const tyYongSearch = resolveSearchScenicMedia({
@@ -3969,7 +3971,7 @@ const tyYongSearch = resolveSearchScenicMedia({
   contentId: '127103',
 });
 assert.ok(
-  tyYongSearch.imageUrl?.includes('IMG_0364.JPG'),
+  tyYongSearch.imageUrl?.includes('idx=16550'),
   '명승 검색 연화도(통영) 썸네일',
 );
 assert.equal(tyYongSearch.contentId, '127103', '명승 검색 연화도(통영) contentId');

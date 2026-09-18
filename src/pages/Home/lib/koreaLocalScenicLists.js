@@ -1526,9 +1526,11 @@ const TY_JE_AIR = `${TY_KHS}/1628218.jpg`;
 const TY_CANAL = `${TY_VK}/88/3534988_image2_1.jpg`;
 const TY_CANAL_2 = `${TY_VK}/89/3534989_image2_1.jpg`;
 const TY_CANAL_3 = `${TY_VK}/90/3534990_image2_1.jpg`;
-const TY_BLOG = 'https://postfiles.pstatic.net';
-const TY_YONG = `${TY_BLOG}/MjAyMjA4MjVfMTQz/MDAxNjYxNDM1MDc3NzQ3.vLfDzPLlOtAltx1wYVDkxkpvMQa65LehX7IYXdRI9Jcg.GvYScMtlRJv6YoSm9HyHJcTcThUhas6-qDMsIb2CtiIg.JPEG.tongyeongsi/IMG_0364.JPG?type=w966`;
-const TY_YONG_2 = `${TY_BLOG}/MjAyMjA4MjVfMzIg/MDAxNjYxNDM1MTIyMjA2.vVuP6sf-caucm3BWPsLJY53fZ0gjsyLFRLjRY3D-lg4g._OEUvRyax7GZAd84JBLtpPx5DGK5LB7NeXcubFWqZm4g.JPEG.tongyeongsi/IMG_4892.JPG?type=w966`;
+const TY_UTOUR = 'https://www.utour.go.kr/CmsMultiFile/view.do?multifileId=MF90100028';
+const TY_YONG = `${TY_UTOUR}&idx=16550`;
+const TY_YONG_2 = `${TY_UTOUR}&idx=16548`;
+const TY_YONG_3 = `${TY_UTOUR}&idx=16549`;
+const TY_YONG_4 = `${TY_UTOUR}&idx=2803861`;
 const TY_YI_PHOTO = 'https://tong.visitkorea.or.kr/cms/resource_photo';
 const TY_YI = `${TY_YI_PHOTO}/92/3479192_image2_1.jpg`;
 const TY_YI_2 = `${TY_YI_PHOTO}/93/3479193_image2_1.jpg`;
@@ -3244,10 +3246,10 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [UJ_MARKET_2, UJ_MARKET_VK, UJ_MARKET_VK_2, UJ_MARKET_VK_3, UJ_MARKET_VK_4],
   ),
   'local-scenic:tongyeong-palgyeong:연화도용머리': localScenicPhotoOverlay(
-    '통영팔경 1경 연화도 용머리는 욕지면 연화리입니다. 통영시 공식 팔경은 주소 욕지면 연화리, 문의 055-650-0580·055-650-2570이라고 적습니다. 섬 동남쪽 끝의 해안 절벽과 네 개 바위섬이 용이 바다를 향해 헤엄치는 머리처럼 보여 용머리라 부릅니다. 둘레 약 12km 연화도의 대표 경승이며 동두항에서 전망대로 오릅니다. 제주 용머리해안·연화사 법당·용머리민박과 다른 욕지면 연화리 해식절벽입니다. 사진은 통영시 공식 블로그 용머리해안 사진입니다.',
+    '통영팔경 1경 연화도 용머리는 욕지면 연화리입니다. 통영시 공식 팔경은 주소 욕지면 연화리, 문의 055-650-0580·055-650-2570이라고 적습니다. 섬 동남쪽 끝의 해안 절벽과 네 개 바위섬이 용이 바다를 향해 헤엄치는 머리처럼 보여 용머리라 부릅니다. 둘레 약 12km 연화도의 대표 경승이며 동두항에서 전망대로 오릅니다. 제주 용머리해안·연화사 법당·용머리민박과 다른 욕지면 연화리 해식절벽입니다. 사진은 통영U투어 연화도 용머리 해안 공식 사진입니다.',
     '경상남도 통영시 욕지면 연화리 (연화도 용머리)',
     TY_YONG,
-    [TY_YONG_2],
+    [TY_YONG_2, TY_YONG_3, TY_YONG_4],
   ),
   'local-scenic:tongyeong-palgyeong:남망산공원': localScenicPhotoOverlay(
     '통영팔경 3경 남망산공원은 동호동입니다. 한국관광공사는 남망산 조각공원으로, 주소 남망공원길 29, 문의 055-650-4560, 연중무휴이며 세계 10개국 조각가 15명의 작품으로 1997년 조성된 5,000여 평 조각공원이라고 적습니다. 통영시 시민문화회관도 같은 남망공원길 29입니다. 남망산은 해발 약 80m이며 정상에는 1953년 6월 세운 이충무공 동상이 있고 통영항·한산도를 조망합니다. 공원 구분 문화공원, 면적 152,311㎡, 지번 동호동 230-1입니다. 같은 산 야간 미디어 산책 디피랑(DPIRANG)은 남망산공원 안에 있으나 별도 매표·수요일 휴장이며, 동피랑벽화마을·서피랑·이순신공원·서울 남산과 다른 동호동 조각공원입니다. 사진은 한국관광공사 남망산 조각공원 공식 사진입니다.',

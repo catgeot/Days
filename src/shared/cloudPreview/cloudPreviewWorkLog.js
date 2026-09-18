@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-18-palgyeong-use-61-yeonhwado-utour-photos',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '연화도 용머리 네이버 핫링크 → 통영U투어 공식 사진',
+    detail:
+      '사람 Preview에서 1경 연화도 용머리 목록은 랜드마크, 상세 갤러리 2장은 물음표였습니다. 네이버 postfiles는 Preview Referer에 403입니다. JSON contentId 기입 없이 통영U투어 연화도 공식 CMS(용머리 능선 idx=16550·해식절벽 16548·출렁다리 16549·능선 2803861)로 바꿨습니다. 연화사 법당·해수관음·수국길은 갤러리에 넣지 않습니다. Preview /qa/palgyeong-use — 1경·홈「통영」연화도 용머리 썸네일·상세 사진.',
+    at: '2026-09-18T19:50:00.000Z',
+  },
+  {
     id: '2026-09-18-palgyeong-use-61-tongyeong-empty-thumbs',
     session: '팔경 활용 #61, 통영 결손 오버레이',
     title: '통영 1경 연화도 용머리·이순신공원 빈 썸네일',
