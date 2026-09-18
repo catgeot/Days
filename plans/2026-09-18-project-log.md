@@ -2,6 +2,26 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 팔경 활용 #60 — 의정부8경 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #60, 의정부 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `3f6ce41b` · PR [#278](https://github.com/catgeot/Days/pull/278)
+- **완료**: JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 의정부8경 결손 3건(수락산 도정봉·의정부경전철·의정부제일시장). 도정봉은 장암동 해발 526m 화강암 능선(3경, 만가대 4.5km·동막골 5.3km·기차바위·철모바위), 경전철은 2012년 경기도 최초 발곡~탑석(5경), 제일시장은 시민로121번길 43-2 1978년 600여 점포 가나다라동(7경). 노원 수락산·당고개·논산 수락계곡·김해경전철·부대찌개거리와 구분. 의정부 사진·개요 결손 3→0.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=uijeongbu`
+- **잔여**: 사진/개요 순수 누락 **49**/876. 다음 허브 **통영팔경 3**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 여행지 매칭 #5 — 카테고리 맥락 파이프라인 전달 (Cloud)
+
+- **세션** `여행지 매칭 #5, 카테고리 맥락 파이프라인 전달`
+- **브랜치** `cursor/dest-match-arch` · tip `1f625d10` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: `placeCategory`(자연·역사·역·대학)를 MRT 래더·갤러리에 전달. 광천선굴 1차 키워드 평창, 광주 광천동 호텔 승격 차단. 갤러리는 contentId·전경·landscape. **PR 미병합**.
+- **VERIFY**: `npm run smoke:explore-search-aliases` PASS · `smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「광천선굴」숙소 찾기 → 평창(광주 호텔 아님). 갤러리 동굴 전경.
+- **다음**: `여행지 매칭 #6, 동음이의어 다후보 리스트업`
+
 ## 팔경 활용 #59 — 태백8경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #59, 태백 결손 오버레이`
