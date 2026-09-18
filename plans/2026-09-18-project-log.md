@@ -2,6 +2,16 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 여행지 매칭 #5 — 카테고리 맥락 파이프라인 전달 (Cloud)
+
+- **세션** `여행지 매칭 #5, 카테고리 맥락 파이프라인 전달`
+- **브랜치** `cursor/dest-match-arch` · tip `1f625d10` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: `placeCategory`(자연·역사·역·대학)를 MRT 래더·갤러리에 전달. 광천선굴 1차 키워드 평창, 광주 광천동 호텔 승격 차단. 갤러리는 contentId·전경·landscape. **PR 미병합**.
+- **VERIFY**: `npm run smoke:explore-search-aliases` PASS · `smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「광천선굴」숙소 찾기 → 평창(광주 호텔 아님). 갤러리 동굴 전경.
+- **다음**: `여행지 매칭 #6, 동음이의어 다후보 리스트업`
+
 ## 팔경 활용 #59 — 태백8경 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #59, 태백 결손 오버레이`
