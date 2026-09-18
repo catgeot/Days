@@ -1539,6 +1539,11 @@ const TY_YI = `${TY_YI_PHOTO}/92/3479192_image2_1.jpg`;
 const TY_YI_2 = `${TY_YI_PHOTO}/93/3479193_image2_1.jpg`;
 const TY_YI_3 = `${TY_YI_PHOTO}/94/3479194_image2_1.jpg`;
 const TY_YI_4 = `${TY_YI_PHOTO}/99/3479199_image2_1.jpg`;
+const GJ_GI_TOUR = 'https://www.gjcity.go.kr/tour/img/sub01';
+const GJ_GI_MUGAP = `${GJ_GI_TOUR}/img_mugabsan3.png`;
+const GJ_GI_MUGAP_2 = `${GJ_GI_TOUR}/img_mugabsan2.png`;
+const GJ_GI_MUGAP_3 = `${GJ_GI_TOUR}/img_mugabsan1.png`;
+const GJ_GI_MUGAP_HOME = 'https://www.gjcity.go.kr/tour/contents.do?mId=0101050000';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3279,6 +3284,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 통영시 멘데해안길 205 (정량동 688-1 이순신공원)',
     TY_YI,
     [TY_YI_2, TY_YI_3, TY_YI_4],
+  ),
+  'local-scenic:gwangju-gi-palgyeong:무갑산': localScenicPhotoOverlay(
+    '광주8경 5경 무갑산은 초월읍·퇴촌면입니다. 광주시 문화관광 8경은 높이 578m로 가족들과 산행하기 좋은 산이며 소재지는 초월읍, 퇴촌면이라고 적습니다. 초월읍에 위치한 무갑산은 실촌읍(현 곤지암읍)과 퇴촌면으로 지맥을 뻗칩니다. 임진왜란 때 항복을 거부한 무인들이 은둔했다는 설과, 산의 형태가 갑옷을 두른 듯해서 붙인 이름이라는 설이 있습니다. 정상에 오르면 팔당호를 비롯한 주변 풍광이 시원하게 펼쳐집니다. 산행지로 잘 알려지지 않아 호젓하고, 봄 진달래·산나물, 여름 녹음, 가을 단풍, 겨울 눈꽃은 한라의 그것과 견줄 만큼 아름답다고 안내합니다. 문의는 문화관광과 031-760-2634입니다. 들머리는 무갑리 버스 종점이며 초월역(경강선)에서 광주시 축협 환승 후 무갑리 하차입니다. 같은 골 무갑리계곡(무갑리 822)은 관산과 무갑산 사이 약 1km 계곡입니다. 광주광역시 무등산·6경 태화산·4경 앵자봉·관산·무갑사 법당과 다른 초월읍 무갑리 산입니다. 사진은 광주시 문화관광 8경 무갑산 전경 공식 사진입니다.',
+    '경기도 광주시 초월읍 무갑리 (퇴촌면 지맥, 무갑리 버스 종점)',
+    GJ_GI_MUGAP,
+    [GJ_GI_MUGAP_2, GJ_GI_MUGAP_3],
+    GJ_GI_MUGAP_HOME,
   ),
 };
 

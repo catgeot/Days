@@ -4013,6 +4013,47 @@ assert.notEqual(tyYong?.imageUrl, tyYi?.imageUrl, '연화도 용머리·이순�
 assert.notEqual(tyYong?.imageUrl, tyPark?.imageUrl, '연화도 용머리·남망산 썸네일 다름');
 assert.notEqual(tyYi?.imageUrl, tyPark?.imageUrl, '이순신공원·남망산 썸네일 다름');
 
+const gwangjuGiMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gwangju_gi');
+const gwangjuGiEight = gwangjuGiMerged.filter((s) => s.localScenicListId === 'gwangju-gi-palgyeong');
+assert.equal(gwangjuGiEight.length, 8, '광주8경 8명');
+assert.equal(gwangjuGiEight[0]?.groupTitle, '경기 광주 팔경');
+const gjMugap = resolveLocalScenicListSpotById('local-scenic:gwangju-gi-palgyeong:무갑산');
+assert.ok(gjMugap?.overview && gjMugap?.imageUrl, '광주 무갑산 overlay 사진·개요');
+assert.ok(!gjMugap?.contentId, '광주 무갑산 JSON contentId 없음 유지');
+assert.ok(gjMugap?.overview?.includes('초월읍'), '광주 무갑산 주소 초월읍');
+assert.ok(gjMugap?.overview?.includes('578m'), '광주 무갑산 overlay 578m');
+assert.ok(gjMugap?.overview?.includes('팔당호'), '광주 무갑산 overlay 팔당호');
+assert.ok(gjMugap?.overview?.includes('무등산'), '광주 무갑산≠광주광역시 무등산');
+assert.ok(gjMugap?.overview?.includes('태화산'), '광주 무갑산≠6경 태화산');
+assert.ok(gjMugap?.overview?.includes('무갑사'), '광주 무갑산≠무갑사 법당');
+assert.ok(gjMugap?.imageUrl?.includes('img_mugabsan3.png'), '광주 무갑산 시 공식 사진');
+assert.ok(gjMugap?.homepage?.includes('mId=0101050000'), '광주 무갑산 공식 홈 5경');
+assert.ok(!gjMugap?.imageUrl?.includes('img_taehwasan'), '광주 무갑산≠태화산 공식 사진');
+const gjSongjeong = resolveLocalScenicListSpotById('local-scenic:gwangju-gi-palgyeong:송정사');
+assert.ok(gjSongjeong, '광주 송정사 멤버 유지');
+assert.ok(!gjSongjeong?.contentId, '광주 송정사 JSON contentId 없음 유지');
+assert.ok(!gjSongjeong?.imageUrl, '광주 송정사 공식 사진 없음 유지');
+assert.ok(!gjSongjeong?.overview, '광주 송정사 공식 개요 없음 유지');
+const gwangjuGiGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '광주8경', {
+  injectLocalScenic: true,
+});
+const gwangjuGiGlobeEight = gwangjuGiGlobe.filter(
+  (s) => s.localScenicListId === 'gwangju-gi-palgyeong',
+);
+assert.equal(gwangjuGiGlobeEight.length, 8, '광주 검색 광주8경 8행');
+assert.ok(
+  gwangjuGiGlobe.find((s) => s.attractionName === '무갑산')?.overview?.includes('578m'),
+  '광주 검색 8경 무갑산 개요',
+);
+assert.ok(
+  gwangjuGiGlobe.find((s) => s.attractionName === '무갑산')?.imageUrl?.includes('img_mugabsan3.png'),
+  '광주 검색 8경 무갑산 썸네일',
+);
+assert.ok(
+  !gwangjuGiGlobe.find((s) => s.attractionName === '송정사')?.imageUrl,
+  '광주 검색 8경 송정사 공식 사진 없음 유지',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

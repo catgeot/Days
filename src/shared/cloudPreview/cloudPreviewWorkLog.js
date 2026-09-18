@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 61,
-  sessionPhase: '통영 결손 오버레이',
+  sessionNo: 62,
+  sessionPhase: '경기 광주 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=tongyeong',
+  previewPath: '/korea/theme/scenic?hub=gwangju_gi',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-palgyeong-use-62-gwangju-gi-overlays',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이',
+    title: '광주8경 무갑산 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 광주8경 결손 무갑산의 공공 공식 팩트 개요·주소·광주시 문화관광 8경 공식 사진을 보강했습니다. 무갑산은 초월읍·퇴촌면 해발 578m(5경, 실촌읍=현 곤지암읍 지맥·팔당호 조망)입니다. 광주광역시 무등산·6경 태화산·4경 앵자봉·관산·무갑사 법당과 구분합니다. 송정사는 현 공식 8경(중대물빛공원)에 없고 Tour 미등재·공식 사진이 없어 건너뜁니다. 영암 송정사·광주송정역과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangju_gi 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T23:50:00.000Z',
+  },
   {
     id: '2026-09-18-palgyeong-use-61-yeonhwado-homepage',
     session: '팔경 활용 #61, 통영 결손 오버레이',
