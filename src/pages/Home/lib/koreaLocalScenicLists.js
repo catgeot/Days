@@ -1483,6 +1483,10 @@ const JE_WY = `${JE_9GYEONG}/175021230997132.png`;
 const JE_ECO = 'https://www.ecotour.kr/upload_data/board_data/BBS_0000005';
 const JE_WY_2 = `${JE_ECO}/175012107890103.jpg`;
 const JE_WY_3 = `${JE_ECO}/175014798426947.jpg`;
+const JS_HWAAM = 'https://www.jeongseon.go.kr/page/language/images/sub';
+const JS_GEBUK = `${JS_HWAAM}/img-geobukbawi.jpg`;
+const JS_YONGMA = `${JS_HWAAM}/img-yongmaso.jpg`;
+const JS_HWAPYO = `${JS_HWAAM}/img-hwapyoju.jpg`;
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3140,6 +3144,21 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전북특별자치도 정읍시 쌍암동 1029 (월영습지 탐방안내소 송산동 산112·솔티숲 송죽길 25)',
     JE_WY,
     [JE_WY_2, JE_WY_3],
+  ),
+  'local-scenic:jeongseon-palgyeong:거북바위': localScenicPhotoOverlay(
+    '화암8경 2경 거북바위는 화암면 화암리입니다. 정선군 공식 관광(화암8경)은 화암약수 진입로 오른쪽 절벽 위 둘레 6m 거북 모양 기암이며 머리·네 다리·꼬리가 갖춰져 능선을 오르는 듯하다고 적습니다. 주소는 화암리 336-1입니다. 마을 수호 바위로, 정성 들여 찾으면 건강·마음 평화·장수를 얻는다고 전합니다. 맞은편에서 신선바위를 본다고 안내합니다. 1977년 국민관광지 화암관광지(약수길 1328 일원) 8경 중 2경입니다. 여수 거북바위·거제 학동·남해 물건리 거북바위와 다른 화암리 절벽 위 바위입니다. 사진은 정선군 공식 화암8경 거북바위 사진입니다.',
+    '강원특별자치도 정선군 화암면 화암리 336-1 (거북바위)',
+    JS_GEBUK,
+  ),
+  'local-scenic:jeongseon-palgyeong:용마소': localScenicPhotoOverlay(
+    '화암8경 3경 용마소는 화암면 화암리입니다. 정선군 공식 관광은 주소 화암리 1306-1이며, 그림바위 앞 넓은 반석 아래로 맑은 물이 흐르는 소(沼)라고 적습니다. 화암약수 진입로에서 약 500m 아래 하천변입니다. 조선 중기 그림바위 마을 아기장수 전설이 있으며, 용마가 주인을 찾아 울다 이 소에 빠져 죽었다 하여 일명 용사소(龍死沼)라고도 합니다. 화암면은 깊은 소와 폭포가 어우러진다고 안내합니다. 입장 무료입니다. 다른 고을 용소·용마공원·정읍 용산호와 다른 화암리 소입니다. 사진은 정선군 공식 화암8경 용마소 사진입니다.',
+    '강원특별자치도 정선군 화암면 화암리 1306-1 (용마소)',
+    JS_YONGMA,
+  ),
+  'local-scenic:jeongseon-palgyeong:화표주': localScenicPhotoOverlay(
+    '화암8경 5경 화표주는 화암면 화암리입니다. 정선군 공식 관광은 주소 화암리 329-4이며, 절벽 옆 긴 돌기둥 두 개라고 적습니다. 화암리에서 화표동(몰운대 방면) 삼거리 오른쪽 약 30m입니다. 신선들이 이 기둥에 신틀을 걸고 짚신(집신)을 삼았다는 전설이 있습니다. 화암면은 겸재 정선의 작품으로도 알려진다고 안내합니다. 소금강(설암)·몰운대·광대곡·단양 도담삼봉과 다른 화표동 입구 두 기둥입니다. 사진은 정선군 공식 화암8경 화표주 사진입니다.',
+    '강원특별자치도 정선군 화암면 화암리 329-4 (화표주)',
+    JS_HWAPYO,
   ),
 };
 

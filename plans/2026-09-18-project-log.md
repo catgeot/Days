@@ -2,6 +2,16 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 여행지 매칭 #4 — 국내 지명 First-Pass 리졸버 (Cloud)
+
+- **세션** `여행지 매칭 #4, 국내 지명 First-Pass 리졸버`
+- **브랜치** `cursor/dest-match-arch` · tip `b3e7ac31` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: Mapbox 전 `resolveKoreaDestinationFirstPass`. 광천선굴·광천성굴 → 평창. 종각·종각역 → 서울 종각역. TourAPI 유일 제목만 1차 히트. **PR 미병합**.
+- **VERIFY**: `npm run smoke:explore-search-aliases` PASS · `smoke:mrt-stay` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「광천선굴」「광천성굴」→ 평창(광주 광천동 아님). 「종각」「종각역」→ 서울 종각역(대구 아님).
+- **다음**: `여행지 매칭 #5, 카테고리 맥락 파이프라인 전달`
+
 ## 여행지 매칭 #3 — 숙소 거리 가드(Geo-Sanity) (Cloud)
 
 - **세션** `여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)`

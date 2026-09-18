@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-    sessionNo: 4,
-    sessionPhase: '국내 지명 First-Pass 리졸버',
+  sessionNo: 4,
+  sessionPhase: '국내 지명 First-Pass 리졸버',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -54,6 +54,14 @@ export const cloudPreviewWorkLog = [
     detail:
       'TourAPI detailImage의 imgname·title에서 화장실·세면대·휠체어·점자·개찰구·리프트·승강기 등 시설 사진을 갤러리에서 뺍니다. 프록시는 imgname을 클라이언트로 넘기고, 장이 적으면 스톡을 이어 붙입니다. Preview /qa/dest-match — 장소 갤러리에 화장실·휠체어가 없고 전경이 보이는지.',
     at: '2026-09-17T21:56:00.000Z',
+  },
+  {
+    id: '2026-09-17-palgyeong-use-58-jeongseon-overlays',
+    session: '팔경 활용 #58, 정선 결손 오버레이',
+    title: '화암8경 거북바위·용마소·화표주 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 화암8경 결손 3건(거북바위·용마소·화표주)의 공공 공식 팩트 개요·주소·정선군 공식 화암8경 사진을 보강했습니다. 거북바위는 화암리 336-1 약수 진입로 오른쪽 절벽 위 둘레 6m 수호 바위(2경), 용마소는 화암리 1306-1 그림바위 앞 반석 소·아기장수 전설 용사소(3경), 화표주는 화암리 329-4 화표동 삼거리 돌기둥 두 개(5경)입니다. 여수 거북바위·정읍 용산호·소금강 기암과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jeongseon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-17T12:50:00.000Z',
   },
   {
     id: '2026-09-17-palgyeong-use-57-jeongeup-overlays',
