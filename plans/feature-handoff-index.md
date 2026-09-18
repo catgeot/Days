@@ -18,28 +18,28 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `7e5fc984` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#3 push** · tip `3cd8b196` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `7e5fc984` |
+| **tip** | `3cd8b196` |
 | **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
 | **일지** | [`2026-09-18-project-log.md`](./2026-09-18-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 「광천성굴」엔터 → 평창 광천선굴 · 화암동굴 아님 |
-| **소유** | `searchEnterMatch.js` · `SearchDiscoveryModal.jsx` · `useHomeHandlers.js` · `cityAttractionHubs.json` 평창 광천선굴 |
+| **Preview** | `/qa/dest-match` → git Preview `/` — 평창/춘천 숙소 찾기 → 광주·양양 0건 |
+| **소유** | `mrtStayQuery.js` · `fetchMrtStays.js` · `GlobeStayStrip.jsx` · `supabase/functions/fetch-mrt-stays` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:search-enter-match` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
+| **VERIFY** | `npm run smoke:mrt-stay` PASS · `smoke:tourapi` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)
+여행지 매칭 #4, 국내 지명 First-Pass 리졸버
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: mrtStayQuery.js 및 Edge fetch-mrt-stays에서 검색 중심점 기준 30km 초과 타 시도 숙소 자동 배제. 평창/춘천 검색 시 광주/양양 숙소 0건.
-검증: npm run smoke:mrt-stay PASS · smoke:tourapi PASS · npx vite build PASS
+작업: Mapbox 지오코딩 전 tourapi_attraction·cityAttractionHubs.json First-Pass 리졸버 모듈화. 광천선굴·종각역 등 주요 명소 1차 히트.
+검증: npm run smoke:explore-search-aliases PASS · smoke:mrt-stay PASS · npx vite build PASS
 ```
 
 ---

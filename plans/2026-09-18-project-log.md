@@ -2,6 +2,16 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 여행지 매칭 #3 — 숙소 거리 가드(Geo-Sanity) (Cloud)
+
+- **세션** `여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)`
+- **브랜치** `cursor/dest-match-arch` · tip `3cd8b196` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: 검색 중심 30km 초과 타 시·군 숙소 배제. 평창/춘천 → 광주/양양 0건. 같은 시·군은 유지. 클라·Edge. **PR 미병합**.
+- **VERIFY**: `npm run smoke:mrt-stay` PASS · `smoke:tourapi` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「평창」「춘천」숙소 찾기 → 광주·양양 호텔 아님. Edge `fetch-mrt-stays` 배포는 선택(클라 가드 동작).
+- **다음**: `여행지 매칭 #4, 국내 지명 First-Pass 리졸버`
+
 ## 여행지 매칭 #2 — 검색 Enter 제안 불일치 (Cloud)
 
 - **세션** `여행지 매칭 #2, 검색 Enter 제안 불일치`
