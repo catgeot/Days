@@ -107,14 +107,14 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 ### 다음 세션 제시어
 
 ```
-여행지 매칭 #4, 국내 지명 First-Pass 리졸버
+여행지 매칭 #5, 카테고리 맥락 파이프라인 전달
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Mapbox 지오코딩 전 tourapi_attraction·cityAttractionHubs.json First-Pass 리졸버 모듈화. 광천선굴·종각역 등 주요 명소 1차 히트.
-검증: npm run smoke:explore-search-aliases PASS · smoke:mrt-stay PASS · npx vite build PASS
+작업: 지오코딩 결과의 placeCategory(자연, 역사, 역, 대학)를 mrtStay 및 usePlaceGallery에 컨텍스트로 전달. 자연명소 검색 시 도심 호텔 래더 방지.
+검증: npm run smoke:mrt-stay PASS · npx vite build PASS
 ```
 
 ---
@@ -123,8 +123,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | | |
 |--|--|
-| **세션** | **#3 완료** · 숙소 거리 가드(Geo-Sanity) · tip `3cd8b196` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **세션** | **#4 완료** · 국내 지명 First-Pass 리졸버 · tip `b3e7ac31` · PR [#276](https://github.com/catgeot/Days/pull/276) |
 | **브랜치** | `cursor/dest-match-arch` |
 | **Preview** | `/qa/dest-match` → git Preview `/` |
-| **다음** | `#4 국내 지명 First-Pass 리졸버` (원 로드맵 #3) |
-| **잔여** | Edge `fetch-mrt-stays` Geo-Sanity는 배포 후 listing에서도 배제. 미배포여도 클라 가드가 동작. `tourapi-proxy` `imgname` 배포는 선택. |
+| **다음** | `#5 카테고리 맥락 파이프라인 전달` (원 로드맵 #4) |
+| **잔여** | First-Pass가 붙인 `placeCategory`를 MRT 래더·갤러리가 아직 소비하지 않음. Edge `fetch-mrt-stays` Geo-Sanity 배포는 선택. |
