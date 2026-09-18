@@ -3,6 +3,9 @@
  * 탐색창 검색 — 랑코(람코)·다카마스 SSOT·별칭 스모크
  */
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   resolveCityAttractionHub,
   resolveHubAttraction,
@@ -18,6 +21,13 @@ import {
   SEARCH_BOX_ISLAND_TYPES,
   SEARCH_BOX_PLACE_TYPES,
 } from '../src/pages/Home/lib/mapboxSearchBox.js';
+import {
+  firstPassHitToGeocodeResult,
+  firstPassHitToUiPlace,
+  resolveKoreaDestinationFirstPass,
+  resolveKoreaDestinationFirstPassSync,
+} from '../src/pages/Home/lib/resolveKoreaDestinationFirstPass.js';
+import { pickUniqueTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
 
 const langCo = resolveHubAttraction('람코');
 assert.ok(langCo, '람코 → 랑코 해변 attraction');
@@ -112,4 +122,90 @@ assert.ok(
   '광천동굴 mapbox queries include Pyeongchang',
 );
 
-console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴)');
+const seongulFirst = resolveKoreaDestinationFirstPassSync('광천선굴');
+assert.equal(seongulFirst?.source, 'hub', '광천선굴 First-Pass hub');
+assert.equal(seongulFirst?.hubId, 'pyeongchang');
+assert.equal(seongulFirst?.lat, 37.518306);
+assert.equal(seongulFirst?.lng, 128.451361);
+assert.equal(seongulFirst?.contentId, '2987914');
+assert.equal(seongulFirst?.parentCity, '평창');
+assert.equal(seongulFirst?.stayAdmin?.city, '평창');
+
+const seongulTypo = resolveKoreaDestinationFirstPassSync('광천성굴');
+assert.equal(seongulTypo?.name, '광천선굴', '광천성굴 First-Pass → 광천선굴');
+assert.equal(seongulTypo?.hubId, 'pyeongchang');
+
+const jonggakFirst = resolveKoreaDestinationFirstPassSync('종각역');
+assert.equal(jonggakFirst?.source, 'station', '종각역 First-Pass station');
+assert.equal(jonggakFirst?.name, '종각역');
+assert.equal(jonggakFirst?.lat, 37.5701);
+assert.equal(jonggakFirst?.lng, 126.9829);
+assert.equal(jonggakFirst?.stayAdmin?.district, '종로');
+assert.equal(jonggakFirst?.tourCategory, 'STATION');
+assert.equal(resolveKoreaDestinationFirstPassSync('종각')?.name, '종각역');
+
+const jonggakPin = firstPassHitToUiPlace(jonggakFirst, '종각역');
+assert.equal(jonggakPin?.uiPlace, true);
+assert.equal(jonggakPin?.stayAdmin?.city, '서울');
+assert.notEqual(jonggakPin?.lat, 35.87, '종각역 is not Daegu');
+
+const seongulGeo = firstPassHitToGeocodeResult(seongulFirst);
+assert.equal(seongulGeo?.source, 'korea-first-pass');
+assert.ok(seongulGeo?.lat > 37.4 && seongulGeo?.lat < 37.7, '평창 위도');
+assert.ok(seongulGeo?.lng > 128.3 && seongulGeo?.lng < 128.6, '평창 경도');
+
+assert.equal(resolveKoreaDestinationFirstPassSync('람코'), null, '해외 랑코는 국내 First-Pass 아님');
+assert.equal(resolveKoreaDestinationFirstPassSync('다카마스'), null, '다카마스 hub는 First-Pass attraction 아님');
+assert.equal(resolveKoreaDestinationFirstPassSync('평창'), null, '도시 hub exact는 First-Pass 스킵');
+
+const uniqueCave = pickUniqueTourAttractionRowForTitle(
+  [
+    {
+      title: '광천선굴',
+      contentId: '2987914',
+      addr1: '강원특별자치도 평창군 대관령면',
+      lat: 37.518306,
+      lng: 128.451361,
+    },
+  ],
+  '광천선굴',
+);
+assert.equal(uniqueCave?.contentId, '2987914');
+
+const tiedCaves = pickUniqueTourAttractionRowForTitle(
+  [
+    { title: '광천선굴', contentId: '1', addr1: '평창군' },
+    { title: '광천선굴', contentId: '2', addr1: '홍성군' },
+  ],
+  '광천선굴',
+);
+assert.equal(tiedCaves, null, '동점 TourAPI 제목은 First-Pass 미확정');
+
+const mockedTour = await resolveKoreaDestinationFirstPass('테스트유일관광지', {
+  lookupTourAttraction: async () => ({
+    name: '테스트유일관광지',
+    title: '테스트유일관광지',
+    contentId: '125831',
+    lat: 37.7319,
+    lng: 128.592,
+    addr1: '강원특별자치도 평창군 진부면 오대산로 374-8',
+    cat1: 'A02',
+    cat2: 'A0201',
+  }),
+});
+assert.equal(mockedTour?.source, 'tourapi');
+assert.equal(mockedTour?.contentId, '125831');
+assert.equal(mockedTour?.tourCategory, 'HISTORY');
+assert.match(String(mockedTour?.stayAdmin?.city || ''), /평창/);
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const geocodingSrc = readFileSync(join(root, 'src/pages/Home/lib/geocoding.js'), 'utf8');
+assert.match(geocodingSrc, /resolveKoreaDestinationFirstPass/);
+const firstPassIdx = geocodingSrc.indexOf('resolveKoreaDestinationFirstPass');
+const mapboxIdx = geocodingSrc.indexOf('tryMapboxBundle(cleanQuery)');
+assert.ok(firstPassIdx > 0 && firstPassIdx < mapboxIdx, 'First-Pass is before primary Mapbox');
+
+const handlerSrc = readFileSync(join(root, 'src/pages/Home/hooks/useHomeHandlers.js'), 'utf8');
+assert.match(handlerSrc, /resolveKoreaDestinationFirstPassSync/);
+
+console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass)');

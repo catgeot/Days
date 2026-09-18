@@ -22,6 +22,10 @@ import {
   universityAliasFitsPlace,
   applyUniversityCampusPlace,
 } from '../../../utils/mrtStayQuery.js';
+import {
+  firstPassHitToGeocodeResult,
+  resolveKoreaDestinationFirstPass,
+} from './resolveKoreaDestinationFirstPass.js';
 
 const RETRY_FILTERS = [
   "고원", "섬", "산", "해변", "폭포", "마을", "대륙", "반도", "시", "군", "구",
@@ -606,6 +610,15 @@ export const getCoordinatesFromAddress = async (query) => {
         const globalHit = await fetchMapboxForward(preferred, { landmarkPlan });
         if (globalHit) return globalHit;
       }
+    }
+
+    // 국내 지명 First-Pass — hub·역·TourAPI. Mapbox 동음 오탐(광천동·종각네거리)보다 앞.
+    const koreaHit =
+      (await resolveKoreaDestinationFirstPass(query)) ||
+      (cleanQuery !== query ? await resolveKoreaDestinationFirstPass(cleanQuery) : null);
+    if (koreaHit) {
+      const firstPass = firstPassHitToGeocodeResult(koreaHit);
+      if (firstPass) return firstPass;
     }
 
     const stationAlias = resolveKoStationAlias(cleanQuery);

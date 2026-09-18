@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 3,
-  sessionPhase: '숙소 거리 가드(Geo-Sanity)',
+    sessionNo: 4,
+    sessionPhase: '국내 지명 First-Pass 리졸버',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-18-dest-match-4-first-pass',
+    session: '여행지 매칭 #4, 국내 지명 First-Pass 리졸버',
+    title: 'Mapbox 전 국내 명소 First-Pass',
+    detail:
+      '홈 검색 지오코딩 전에 tourapi_attraction·cityAttractionHubs·역 별칭으로 좌표를 먼저 잡습니다. 「광천선굴」「광천성굴」은 평창 광천선굴, 「종각」「종각역」은 서울 종각역입니다. Preview /qa/dest-match 홈 검색 → 광주 광천동·대구 종각네거리 아님.',
+    at: '2026-09-18T05:20:00.000Z',
+  },
   {
     id: '2026-09-18-dest-match-3-geo-sanity',
     session: '여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)',

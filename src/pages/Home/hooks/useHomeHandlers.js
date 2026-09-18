@@ -46,6 +46,10 @@ import {
   attractionToPlacePin,
   makeDisambiguationResult,
 } from '../lib/cityAttractionHubs.js';
+import {
+  firstPassHitToUiPlace,
+  resolveKoreaDestinationFirstPassSync,
+} from '../lib/resolveKoreaDestinationFirstPass.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
 import { pickSeaBasinCurationSpot } from '../lib/seaBasinResolve.js';
 import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js';
@@ -815,6 +819,14 @@ export function useHomeHandlers({
         return seaSpot;
       }
 
+      // 국내 First-Pass (광천선굴·종각역) — Mapbox 전 hub·역 좌표
+      const koreaFirst = resolveKoreaDestinationFirstPassSync(query);
+      if (koreaFirst) {
+        const pin = firstPassHitToUiPlace(koreaFirst, query);
+        handleLocationSelect(pin);
+        return pin;
+      }
+
       // 큐레이션 명소 exact (낙산사·에펠탑) → 바로 핀
       const hubAttractionHit = resolveHubAttraction(query);
       if (hubAttractionHit) {
@@ -1264,6 +1276,12 @@ export function useHomeHandlers({
         country: coords.country || "Explore",
         country_en: coords.country_en || "Explore",
         ...(coords.stayAdmin ? { stayAdmin: coords.stayAdmin } : {}),
+        ...(coords.contentId ? { contentId: coords.contentId } : {}),
+        ...(coords.tourCategory
+          ? { tourCategory: coords.tourCategory, placeCategory: coords.placeCategory || coords.tourCategory }
+          : {}),
+        ...(coords.hubId ? { hubId: coords.hubId } : {}),
+        ...(coords.parentCity ? { parentCity: coords.parentCity } : {}),
       }, coords.lat, coords.lng);
       return commitLocation(normalizedLoc);
     } else {
