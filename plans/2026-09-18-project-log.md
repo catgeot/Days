@@ -2,6 +2,16 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 여행지 매칭 #8 — 송암 동음 다후보 (Cloud)
+
+- **세션** `여행지 매칭 #8, 송암 동음 다후보`
+- **브랜치** `cursor/dest-match-arch` · tip `5ef7970a` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: 「송암」엔터가 송암스페이스센터 부분일치로 고양 허브(일산호수공원·킨텍스)만 펼치던 문제를 고침. 동음 사전에 고양 송암스페이스센터·춘천 송암스포츠타운·광주 송암동. 명소 부분일치는 형제 명소 역펼침 안 함. **PR 미병합**.
+- **VERIFY**: `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「송암」엔터 → 스페이스센터·스포츠타운·광주 송암동. 일산호수공원·킨텍스만 가득한 목록 아님.
+- **다음**: `여행지 매칭 #9, 동음이의어 사용자 선택 UI`
+
 ## 팔경 활용 #61 QA — 통영 1경·이순신공원 빈 썸네일 (Cloud)
 
 - **세션** `팔경 활용 #61, 통영 결손 오버레이` (같은 턴 Preview 피드백)

@@ -18,21 +18,21 @@
 
 | | |
 |--|--|
-| **상태** | **#7 push** · tip `b1bf56e8` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#8 push** · tip `5ef7970a` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `b1bf56e8` |
+| **tip** | `5ef7970a` |
 | **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
 | **일지** | [`2026-09-18-project-log.md`](./2026-09-18-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 광천 선굴 다후보 · 대구 종각 숙소 |
+| **Preview** | `/qa/dest-match` → git Preview `/` — 송암 다후보(고양·춘천·광주) |
 | **소유** | `koreaHomonymDictionary.js` · `detectHomonymLocation.js` · `searchSuggestions.js` · `mrtStayQuery.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:ko-homonym-ri-search` PASS · `smoke:mrt-stay` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
+| **VERIFY** | `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-여행지 매칭 #8, 동음이의어 사용자 선택 UI
+여행지 매칭 #9, 동음이의어 사용자 선택 UI
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
