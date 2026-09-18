@@ -18,27 +18,27 @@
 
 | | |
 |--|--|
-| **상태** | **#5 push** · tip `1f625d10` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#6 push** · tip `0eecf896` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `1f625d10` |
+| **tip** | `0eecf896` |
 | **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
 | **일지** | [`2026-09-18-project-log.md`](./2026-09-18-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 광천선굴 숙소 평창 · 광주 호텔 아님 |
-| **소유** | `placeMatchCategory.js` · `mrtStayQuery.js` · `usePlaceGallery.js` · `resolveKoreaDestinationFirstPass.js` |
+| **Preview** | `/qa/dest-match` → git Preview `/` — 종각·광천 다후보 선택 카드 |
+| **소유** | `koreaHomonymDictionary.js` · `detectHomonymLocation.js` · `koHomonymRiSearch.js` · `useHomeHandlers.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:explore-search-aliases` PASS · `smoke:mrt-stay` PASS · `npx vite build` PASS |
+| **VERIFY** | `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-여행지 매칭 #6, 동음이의어 다후보 리스트업
+여행지 매칭 #7, 동음이의어 사용자 선택 UI
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: 전국 동음 지명(리/읍/면/자연명소/역) 매핑 사전 및 다후보 구조화 (disambiguationCandidates). 시스템이 임의 단정하지 않음.
+작업: 모바일/데스크톱 검색창 및 장소 시트에서 "어느 지역의 [지명]을 찾으시나요?" 다후보 선택 칩 UI 연동. 기존 선택 카드 톤 유지.
 검증: npm run smoke:ko-homonym-ri-search PASS · npx vite build PASS
 ```
 
