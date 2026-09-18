@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 8,
-  sessionPhase: '송암 동음 다후보',
+  sessionNo: 9,
+  sessionPhase: '동음이의어 사용자 선택 UI',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -24,6 +24,13 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-18-dest-match-9-homonym-choice-chips',
+    session: '여행지 매칭 #9, 동음이의어 사용자 선택 UI',
+    title: '어느 지역의 지명을 찾으시나요 — 다후보 선택 칩',
+    detail:
+      '모바일·데스크톱 검색창과 장소 시트에서 동음 지명은 「어느 지역의 [지명]을 찾으시나요?」와 지역 칩으로 고릅니다. 기존 선택 카드 톤(테두리·배경·호버)은 그대로입니다. Preview /qa/dest-match 홈「종각」「광천」「송암」입력·엔터 → 서울 종로 종각역·대구 중구 종각네거리 칩 · 카드도 같이 보임.',
+    at: '2026-09-18T23:50:00.000Z',
+  },  {
     id: '2026-09-18-dest-match-8-songam-homonym',
     session: '여행지 매칭 #8, 송암 동음 다후보',
     title: '송암이 고양·일산 허브로만 펼쳐지던 문제',

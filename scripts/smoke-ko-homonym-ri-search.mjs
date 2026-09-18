@@ -15,9 +15,13 @@ import {
 import {
   collectKoreaHomonymDisambiguationCandidates,
   detectHomonymLocation,
+  isKoreaHomonymChoiceSet,
+  koreaHomonymChipLabel,
+  koreaHomonymChoiceQuery,
   resolveUniqueKoreaHomonym,
   shouldOfferKoreaHomonymDisambiguation,
 } from '../src/pages/Home/lib/detectHomonymLocation.js';
+import { preferEnterSuggestion } from '../src/pages/Home/lib/searchEnterMatch.js';
 import { resolveKoreaDestinationFirstPassSync } from '../src/pages/Home/lib/resolveKoreaDestinationFirstPass.js';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -339,6 +343,38 @@ assert(
   resolveKoreaDestinationFirstPassSync('광천선굴')?.name === '광천선굴',
   '광천선굴 First-Pass unique hub still holds',
 );
+
+const jonggakCards = collectKoreaHomonymDisambiguationCandidates('종각');
+assert(isKoreaHomonymChoiceSet(jonggakCards), '종각 is a homonym choice set');
+assert(koreaHomonymChoiceQuery(jonggakCards) === '종각', 'choice query stays 종각');
+const jonggakLabels = jonggakCards.map(koreaHomonymChipLabel).join(' | ');
+assert(jonggakLabels.includes('서울 종로 종각역'), `chip 서울 종로 종각역: ${jonggakLabels}`);
+assert(jonggakLabels.includes('대구 중구 종각네거리'), `chip 대구 중구 종각네거리: ${jonggakLabels}`);
+assert(preferEnterSuggestion('종각', jonggakCards) === null, 'Enter does not snap 종각 to one chip');
+assert(
+  preferEnterSuggestion('광천', collectKoreaHomonymDisambiguationCandidates('광천')) === null,
+  'Enter does not snap 광천',
+);
+
+const suggestionListSrc = readFileSync(
+  join(scriptsDir, '../src/pages/Home/components/SearchDiscovery/SearchSuggestionList.jsx'),
+  'utf8',
+);
+const chipSrc = readFileSync(
+  join(scriptsDir, '../src/pages/Home/components/SearchDiscovery/HomonymChoiceChips.jsx'),
+  'utf8',
+);
+const modalSrc = readFileSync(
+  join(scriptsDir, '../src/pages/Home/components/SearchDiscoveryModal.jsx'),
+  'utf8',
+);
+const koI18n = readFileSync(join(scriptsDir, '../src/i18n/locales/ko.json'), 'utf8');
+assert(chipSrc.includes('homonymChoiceTitle'), 'chip prompt uses homonymChoiceTitle');
+assert(chipSrc.includes('data-homonym-choice-chips'), 'chip row is marked for search/place sheet');
+assert(suggestionListSrc.includes('HomonymChoiceChips'), 'typing dropdown wires homonym chips');
+assert(suggestionListSrc.includes('homonymChoiceTitle'), 'Enter cards use 어느 지역의 [지명] copy');
+assert(modalSrc.includes('query={disambiguation.query}'), 'place sheet / search modal passes query to cards');
+assert(koI18n.includes('어느 지역의 {{query}}을 찾으시나요?'), 'ko copy is 어느 지역의 [지명]을 찾으시나요?');
 
 if (process.env.KO_HOMONYM_RI_LIVE === '1') {
   console.log('LIVE: Nominatim collectKoHomonymRiCandidates(대화리)…');

@@ -4,6 +4,10 @@
  */
 import { resolveHubAttraction } from './cityAttractionHubs.js';
 import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
+import {
+  isKoreaHomonymChoiceSet,
+  shouldOfferKoreaHomonymDisambiguation,
+} from './detectHomonymLocation.js';
 
 export const normalizeSearchName = (s) =>
   String(s ?? '')
@@ -96,6 +100,9 @@ export function pickEnterSuggestionMatches(query, suggestions) {
  * @param {object[]} suggestions
  */
 export function preferEnterSuggestion(query, suggestions) {
+  if (shouldOfferKoreaHomonymDisambiguation(query) || isKoreaHomonymChoiceSet(suggestions)) {
+    return null;
+  }
   const matches = pickEnterSuggestionMatches(query, suggestions);
   if (!matches.length) return null;
   const canonical = normalizeSearchName(resolveEnterSearchCanonical(query));

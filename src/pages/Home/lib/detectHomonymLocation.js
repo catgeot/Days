@@ -78,6 +78,33 @@ export function collectKoreaHomonymDisambiguationCandidates(query) {
   return detectHomonymLocation(query)?.disambiguationCandidates || [];
 }
 
+export const KOREA_HOMONYM_SOURCES = new Set(['korea-homonym-dict', 'nominatim-homonym']);
+
+export function isKoreaHomonymCandidate(item) {
+  return KOREA_HOMONYM_SOURCES.has(String(item?.source || ''));
+}
+
+export function isKoreaHomonymChoiceSet(candidates) {
+  const list = Array.isArray(candidates) ? candidates : [];
+  return list.filter(isKoreaHomonymCandidate).length >= 2;
+}
+
+export function koreaHomonymChoiceQuery(candidates, fallback = '') {
+  const list = Array.isArray(candidates) ? candidates : [];
+  const fromItem = String(list.find((item) => item?.originalQuery)?.originalQuery || '').trim();
+  return fromItem || String(fallback || '').trim();
+}
+
+export function koreaHomonymChipLabel(item) {
+  const region = String(item?.parentCity || '').trim();
+  const rawName = String(item?.name_ko || item?.name || '').trim();
+  const base = rawName.split('·')[0].trim() || rawName;
+  if (region && base && !base.includes(region) && !region.includes(base)) {
+    return `${region} ${base}`;
+  }
+  return base || region;
+}
+
 /**
  * hub exact(용산·고성)는 도시+명소 카드가 이미 있음 — 사전으로 덮지 않음.
  */

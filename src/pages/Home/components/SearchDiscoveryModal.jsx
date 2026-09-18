@@ -696,6 +696,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       return (
         <SearchDisambiguationCards
           title={disambiguation.title}
+          query={disambiguation.query}
           candidates={disambiguation.candidates}
           onSelect={handleSuggestionSelect}
           onCancel={() => setDisambiguation(null)}
