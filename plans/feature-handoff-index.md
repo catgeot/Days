@@ -18,23 +18,23 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `854f0a43` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#2 push** · tip `7e5fc984` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `854f0a43` |
+| **tip** | `7e5fc984` |
 | **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
-| **일지** | [`2026-09-17-project-log.md`](./2026-09-17-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 갤러리 화장실·휠체어·개찰구 아님 |
-| **소유** | `tourApiPhotoRank.js` · `fetchTourApiGallery.js` · `usePlaceGallery.js` · `supabase/functions/tourapi-proxy` |
+| **일지** | [`2026-09-18-project-log.md`](./2026-09-18-project-log.md) |
+| **Preview** | `/qa/dest-match` → git Preview `/` — 「광천성굴」엔터 → 평창 광천선굴 · 화암동굴 아님 |
+| **소유** | `searchEnterMatch.js` · `SearchDiscoveryModal.jsx` · `useHomeHandlers.js` · `cityAttractionHubs.json` 평창 광천선굴 |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:tourapi` PASS · `smoke:gallery-portrait-filter` PASS · `npx vite build` PASS |
+| **VERIFY** | `npm run smoke:search-enter-match` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-여행지 매칭 #2, 숙소 거리 가드(Geo-Sanity)
+여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)
 @plans/feature-handoff-index.md
-@plans/2026-09-17-project-log.md
+@plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push

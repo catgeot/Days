@@ -53,6 +53,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 | **#7** | `여행지 매칭 #7, 하드코딩 사전 정리 및 SSOT 일원화` | 5개로 분산된 `*_ALIASES`, `*_OVERRIDES`를 `koreaPlaceMatchDictionary.js` 단일 SSOT로 통합 리팩토링 | 통합 audit 스크립트 PASS, 기존 회귀 0건 | `cursor/dest-match-arch` |
 | **#8** | `여행지 매칭 #8, 종합 QA 및 메인 병합 준비` | 전국 20개 대표 지명·자연명소·대학·역 스모크 테스트 및 성능/빌드 최종 점검 | 전체 smoke PASS, `npm run build` PASS, PR 최종 생성 | `cursor/dest-match-arch` |
 
+\*2026-09-18 Preview: 원 로드맵 #2(Geo-Sanity) 앞에 **검색 Enter 제안 불일치**를 #2로 삽입. Geo-Sanity는 **#3**.
+
 ---
 
 ## 4. 세부 기술 구현 내역
@@ -105,9 +107,9 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 ### 다음 세션 제시어
 
 ```
-여행지 매칭 #2, 숙소 거리 가드(Geo-Sanity)
+여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)
 @plans/feature-handoff-index.md
-@plans/2026-09-17-project-log.md
+@plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
@@ -121,8 +123,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | | |
 |--|--|
-| **세션** | **#1 완료** · 갤러리 시설컷 정밀 필터 · tip `854f0a43` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **세션** | **#2 완료** · 검색 Enter 제안 불일치 · tip `7e5fc984` · PR [#276](https://github.com/catgeot/Days/pull/276) |
 | **브랜치** | `cursor/dest-match-arch` |
 | **Preview** | `/qa/dest-match` → git Preview `/` |
-| **다음** | `#2 숙소 거리 가드(Geo-Sanity)` |
+| **다음** | `#3 숙소 거리 가드(Geo-Sanity)` (원 로드맵 #2) |
 | **잔여** | Edge `tourapi-proxy` `imgname` 배포는 선택. 클라 caption 재검사로 미배포여도 컷은 동작. |
