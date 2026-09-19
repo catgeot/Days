@@ -46,13 +46,13 @@ MOONi 일정 페이스메이커 #2, 사용자 피드백 반영 및 실전 응답
 
 | | |
 |--|--|
-| **상태** | **#12 push** · tip `04b69655` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#13 완료 (PR [#276](https://github.com/catgeot/Days/pull/276) Ready for Review)** · tip `cf1eb018` · 종합 QA 통과 · **사람 PR 검토 및 병합 대기** |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `04b69655` |
-| **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
+| **tip** | `cf1eb018` |
+| **PR** | [#276](https://github.com/catgeot/Days/pull/276) (Ready for Review) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 하드코딩 사전 SSOT 일원화 완료 |
+| **Preview** | `/qa/dest-match` → git Preview `/` — 종합 QA 완료 및 메인 병합 준비 완료 |
 | **소유** | `koreaPlaceMatchDictionary.js` · `mrtStayQuery.js` · `HomonymChoiceChips.jsx` · `SearchSuggestionList.jsx` · `detectHomonymLocation.js` · `searchEnterMatch.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:mrt-stay` PASS · `smoke:ko-homonym-ri-search` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
@@ -60,13 +60,13 @@ MOONi 일정 페이스메이커 #2, 사용자 피드백 반영 및 실전 응답
 **다음 제시어**:
 
 ```
-여행지 매칭 #13, 종합 QA 및 메인 병합 준비
+여행지 매칭, PR #276 메인 병합 및 배포
 @plans/feature-handoff-index.md
 @plans/2026-09-19-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview에서 주요 지명(종각, 광천, 송암, 강원대 등) 검색 및 숙소·갤러리 확인 후 이상 없으면 PR #276 병합 준비
+작업: PR #276 메인 병합 및 배포 확인 후 feature-handoff-index에서 active: false 또는 종료 처리
 검증: npm run smoke:ko-homonym-ri-search PASS · npm run smoke:explore-search-aliases PASS · npm run smoke:mrt-stay PASS · npx vite build PASS
 ```
 
