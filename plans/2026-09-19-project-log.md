@@ -2,6 +2,18 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 향교 검색 #2 — 목록 8개 페이지 (Cloud)
+
+- **세션** `향교 검색 #2, Preview OK면 PR 병합`
+- **브랜치** `cursor/hyanggyo-search-f9b8` · tip `74c1f31d` · PR [#285](https://github.com/catgeot/Days/pull/285)
+- **원인**: 「향교」엔터 전국 목록이 한 화면에 다 나와 스크롤하다 포기하게 됨.
+- **완료**: 기존 선택 카드 유지. 9장 이상이면 8개씩 이전·다음. 춘천 향교·목포처럼 짧은 목록은 페이지 버튼 없음. PR은 Preview 후 병합.
+- **VERIFY**: `npm run smoke:korea-poi-type-search` PASS · `smoke:explore-search-aliases` PASS · `smoke:search-enter-match` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/hyanggyo → git Preview `/`
+- **QA**: 「향교」엔터 → 한 장 8개·다음. 「춘천 향교」엔터 → 춘천향교 · 도시 카드 아님. 「목포」엔터 리스트 유지.
+- **다음**: Preview OK면 PR #285 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #65 — 보성9경 일림산 용추계곡·주암호 서재필기념관 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #65, 보성 결손 오버레이`
