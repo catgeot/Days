@@ -5,6 +5,7 @@
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import { rankStayPointDisambiguationCandidates } from '../../../utils/mrtStayQuery.js';
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
+import { hubNameMatchesPrefixQuery } from './koreaPoiTypeQuery.js';
 
 const KIND_LABELS = {
   beach: '해변',
@@ -149,7 +150,7 @@ export function matchCityAttractionHubsPrefix(query, { limit = 8 } = {}) {
     const hit = keys.some((k) => {
       const nk = normalizeKey(k);
       if (!nk) return false;
-      return nk.startsWith(key) || (key.length >= 2 && key.startsWith(nk));
+      return hubNameMatchesPrefixQuery(nk, key);
     });
     if (hit && !seenHub.has(hub.hubId)) {
       seenHub.add(hub.hubId);

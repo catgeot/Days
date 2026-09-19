@@ -66,7 +66,9 @@ import {
   locationToChoiceCandidate,
   prependLocalScenicToHubCandidates,
 } from '../lib/searchSuggestions.js';
-import { preferEnterSuggestion, placeNameMatchesSearchQuery } from '../lib/searchEnterMatch.js';
+import {
+  collectKoreaPoiTypeSearchCandidates,
+} from '../lib/koreaPoiTypeSearch.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   overlayGeocodeLatinOnHits,
@@ -786,6 +788,15 @@ export function useHomeHandlers({
 
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;
+
+      const poiTypeChoices = await collectKoreaPoiTypeSearchCandidates(query);
+      if (poiTypeChoices.length >= 1) {
+        return ensureDisambiguation(
+          query,
+          poiTypeChoices,
+          `'${query}' → 원하는 장소를 선택하세요`,
+        );
+      }
 
       // 동명 리/읍/면/동·bare 화이트리스트 — prefix 스냅(남양→남양주)보다 우선
       if (!isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {

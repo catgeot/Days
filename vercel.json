@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/hyanggyo",
+      "destination": "https://days-git-cursor-hyanggyo-search-f9b8-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/search-enter-hub",
       "destination": "https://days-git-cursor-search-enter-hub-2018-catgeots-projects.vercel.app/explore",
       "permanent": false
