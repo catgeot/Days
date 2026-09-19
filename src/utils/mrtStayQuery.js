@@ -12,7 +12,28 @@ import {
   placeCategoryUsesStayPoint,
   PLACE_MATCH_CATEGORY,
 } from '../pages/Home/lib/placeMatchCategory.js';
-import { KOREA_HOMONYM_GROUPS } from '../pages/Home/lib/koreaHomonymDictionary.js';
+import {
+  KOREA_HOMONYM_GROUPS,
+  KO_STATION_ALIASES,
+  KO_UNIVERSITY_ALIASES,
+  KO_UNIVERSITY_SATELLITE_ALIASES,
+  KO_MRT_STAY_KEYWORD_OVERRIDES,
+  resolveKoStationAlias,
+  resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
+  isUniversitySatelliteStayQuery,
+  UNI_CAMPUS_QUALIFIER_RE,
+} from '../pages/Home/lib/koreaPlaceMatchDictionary.js';
+
+export {
+  KO_STATION_ALIASES,
+  KO_UNIVERSITY_ALIASES,
+  KO_UNIVERSITY_SATELLITE_ALIASES,
+  resolveKoStationAlias,
+  resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
+  isUniversitySatelliteStayQuery,
+};
 
 /**
  * 동명·오탐·미매칭 slug — 1차 키워드·대안·(선택) 국가 힌트 덮어쓰기.
@@ -248,61 +269,6 @@ const KO_STAY_POINT_FALSE_EXACT = new Set([
   '대역',
 ]);
 const EN_STAY_POINT_RE = /\b(station|subway|metro|terminal)\b|-gil\b/i;
-/**
- * 역명 약칭. 「종각」단독이 대구 종각 광장으로 떨어지지 않게.
- * district = MRT NEIGHBORHOOD 키워드 (종로 632건).
- */
-const KO_STATION_ALIASES = {
-  종각: { station: '종각역', district: '종로', lat: 37.5701, lng: 126.9829 },
-};
-
-/**
- * 본교 좌표. Mapbox가 수련원·연수원을 대학 본명으로 주면 양양 호텔이 붙는다.
- * 삼척·도계·수련원 등 한정 검색은 별칭을 쓰지 않는다.
- */
-const KO_UNIVERSITY_ALIASES = {
-  강원대학교: {
-    campus: '강원대학교 춘천캠퍼스',
-    nameEn: 'Kangwon National University',
-    city: '춘천',
-    lat: 37.8695,
-    lng: 127.744,
-  },
-  강원대: {
-    campus: '강원대학교 춘천캠퍼스',
-    nameEn: 'Kangwon National University',
-    city: '춘천',
-    lat: 37.8695,
-    lng: 127.744,
-  },
-  kangwonnationaluniversity: {
-    campus: '강원대학교 춘천캠퍼스',
-    nameEn: 'Kangwon National University',
-    city: '춘천',
-    lat: 37.8695,
-    lng: 127.744,
-  },
-};
-
-/** 본교가 아닌 캠퍼스·수련원 — compactKoPlaceKey(query)로 조회 */
-const KO_UNIVERSITY_SATELLITE_ALIASES = {
-  강원대학교동해수련원: {
-    name: '강원대학교 동해수련원',
-    nameEn: 'Kangwon National University Donghae Training Center',
-    city: '양양',
-    lat: 38.0866,
-    lng: 128.6486,
-  },
-  강원대동해수련원: {
-    name: '강원대학교 동해수련원',
-    nameEn: 'Kangwon National University Donghae Training Center',
-    city: '양양',
-    lat: 38.0866,
-    lng: 128.6486,
-  },
-};
-
-const UNI_CAMPUS_QUALIFIER_RE = /삼척|도계|강릉|수련원|연수원|학술림|연습림|부속병원/;
 const UNI_SATELLITE_LABEL_RE = /수련원|연수원|학술림|연습림|부속병원/;
 
 /** 본교에서 이 거리 밖이면 수련원 오탐으로 본다 */
@@ -358,16 +324,6 @@ function isKoTownshipName(name) {
   return KO_TOWNSHIP_RE.test(String(name || '').trim());
 }
 
-/** 「종각」→ 종각역·종로. 「종각역」도 동일 district. */
-export function resolveKoStationAlias(raw) {
-  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
-  if (!s || s.length < 2) return null;
-  if (KO_STATION_ALIASES[s]) return KO_STATION_ALIASES[s];
-  const stripped = s.replace(/역$/, '');
-  if (stripped !== s && KO_STATION_ALIASES[stripped]) return KO_STATION_ALIASES[stripped];
-  return null;
-}
-
 /** 선택 핀이 역 약칭과 다른 동음이면 서울 종각으로 스냅하지 않음 */
 export const STATION_ALIAS_MAX_KM = 8;
 
@@ -409,32 +365,6 @@ export function resolveKoStationAliasForLocation(location) {
     if (km > STATION_ALIAS_MAX_KM && !locationLooksLikeStationAlias(alias, location)) return null;
   }
   return alias;
-}
-
-/** 「강원대학교」→ 춘천 본교. 「강원대학교 동해수련원」은 null. */
-export function resolveKoUniversityAlias(raw) {
-  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
-  if (!s || s.length < 2) return null;
-  if (UNI_CAMPUS_QUALIFIER_RE.test(s)) return null;
-  if (KO_UNIVERSITY_ALIASES[s]) return KO_UNIVERSITY_ALIASES[s];
-  const lower = s.toLowerCase();
-  if (KO_UNIVERSITY_ALIASES[lower]) return KO_UNIVERSITY_ALIASES[lower];
-  return null;
-}
-
-/** 「강원대학교 동해수련원」→ 양양 금강리. 본교 alias와 별도. */
-export function resolveKoUniversitySatelliteAlias(raw) {
-  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
-  if (!s || s.length < 4) return null;
-  if (KO_UNIVERSITY_SATELLITE_ALIASES[s]) return KO_UNIVERSITY_SATELLITE_ALIASES[s];
-  for (const [key, alias] of Object.entries(KO_UNIVERSITY_SATELLITE_ALIASES)) {
-    if (s.includes(key)) return alias;
-  }
-  return null;
-}
-
-export function isUniversitySatelliteStayQuery(raw) {
-  return Boolean(resolveKoUniversitySatelliteAlias(raw));
 }
 
 function universityAliasFromLocation(location) {
@@ -985,7 +915,7 @@ export function resolveMrtCityHints(admin, opts = {}) {
  */
 export function resolveMrtStayQuery(location) {
   const slug = String(location?.slug || '').trim().toLowerCase();
-  const override = MRT_STAY_KEYWORD_OVERRIDES[slug];
+  const override = KO_MRT_STAY_KEYWORD_OVERRIDES[slug] || MRT_STAY_KEYWORD_OVERRIDES[slug];
   const name = String(location?.name || '').trim();
   const nameEn = String(location?.name_en || '').trim();
   const nameKo = String(location?.name_ko || '').trim();

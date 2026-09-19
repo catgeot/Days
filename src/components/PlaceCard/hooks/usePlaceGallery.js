@@ -18,6 +18,7 @@ import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
+import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
   GALLERY_SWR_TTL_MS,
   filterHiddenGalleryIncoming,
@@ -79,11 +80,7 @@ const GALLERY_QUERY_OVERRIDES = {
     primary: 'Federated States of Micronesia',
     backup: 'Micronesia island tropical ocean landscape',
   },
-  /** TourAPI searchPhoto가 404·오매칭(춘천 벚꽃)만 줌 → Unsplash 쿼리 보강 */
-  gongjicheon: {
-    primary: 'Gongjicheon Chuncheon',
-    backup: 'Chuncheon cherry blossom riverside park Korea',
-  },
+  ...KO_GALLERY_QUERY_OVERRIDES,
 };
 
 /** 쿼리 오버라이드가 있어도 place_stats를 쓰는 slug — 오버라이드만으로 DB 생략 금지 */

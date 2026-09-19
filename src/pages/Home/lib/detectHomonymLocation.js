@@ -2,7 +2,7 @@
  * 국내 동음 지명 감지기 — 사전 후보를 disambiguationCandidates로 구조화.
  * 2곳 이상이면 unique resolve는 null (임의 단정 금지).
  */
-import { KOREA_HOMONYM_GROUPS } from './koreaHomonymDictionary.js';
+import { KOREA_HOMONYM_GROUPS } from './koreaPlaceMatchDictionary.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 
 function compactKey(query) {

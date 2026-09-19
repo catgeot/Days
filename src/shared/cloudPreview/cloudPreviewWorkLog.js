@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 11,
-  sessionPhase: '송암스포츠타운 숙소 양주 오탐',
+  sessionNo: 12,
+  sessionPhase: '하드코딩 사전 정리 및 SSOT 일원화',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-dest-match-12-dictionary-ssot',
+    session: '여행지 매칭 #12, 하드코딩 사전 정리 및 SSOT 일원화',
+    title: '분산된 하드코딩 사전을 koreaPlaceMatchDictionary.js 단일 SSOT로 일원화',
+    detail:
+      'mrtStayQuery·exploreSearchAliases·usePlaceGallery·koreaHomonymDictionary에 파편화되어 있던 KO_STATION_ALIASES, KO_UNIVERSITY_ALIASES, KO_UNIVERSITY_SATELLITE_ALIASES, KO_EXPLORE_SEARCH_ALIASES, KO_GALLERY_QUERY_OVERRIDES, KOREA_HOMONYM_GROUPS를 koreaPlaceMatchDictionary.js 단일 SSOT로 일원화했습니다. 기존 스모크 및 빌드 회귀 0건입니다.',
+    at: '2026-09-19T02:00:00.000Z',
+  },
   {
     id: '2026-09-19-dest-match-11-songam-stay-yangju',
     session: '여행지 매칭 #11, 송암스포츠타운 숙소 양주 오탐',

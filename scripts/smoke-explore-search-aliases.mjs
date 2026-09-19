@@ -31,6 +31,17 @@ import { pickUniqueTourAttractionRowForTitle } from '../src/pages/Home/lib/korea
 import { resolveGalleryStockQuery } from '../src/pages/Home/lib/uiPlaceAssetQuery.js';
 import { resolveMrtStayQuery } from '../src/utils/mrtStayQuery.js';
 import { resolveTourApiPlace } from '../src/utils/tourApiMatch.js';
+import {
+  resolveKoStationAlias,
+  resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
+  resolveKoExploreSearchAlias,
+  resolveKoGalleryQueryOverride,
+  resolveKoreaPlaceMatch,
+  KO_EXPLORE_SEARCH_ALIASES,
+  KO_GALLERY_QUERY_OVERRIDES,
+  KOREA_HOMONYM_GROUPS,
+} from '../src/pages/Home/lib/koreaPlaceMatchDictionary.js';
 
 const langCo = resolveHubAttraction('람코');
 assert.ok(langCo, '람코 → 랑코 해변 attraction');
@@ -240,4 +251,23 @@ assert.ok(firstPassIdx > 0 && firstPassIdx < mapboxIdx, 'First-Pass is before pr
 const handlerSrc = readFileSync(join(root, 'src/pages/Home/hooks/useHomeHandlers.js'), 'utf8');
 assert.match(handlerSrc, /resolveKoreaDestinationFirstPassSync/);
 
-console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass)');
+// SSOT: koreaPlaceMatchDictionary 통합 검증
+assert.equal(resolveKoStationAlias('종각')?.station, '종각역', 'SSOT resolveKoStationAlias 종각');
+assert.equal(resolveKoUniversityAlias('강원대')?.campus, '강원대학교 춘천캠퍼스', 'SSOT resolveKoUniversityAlias 강원대');
+assert.equal(resolveKoUniversitySatelliteAlias('강원대 동해수련원')?.city, '양양', 'SSOT satellite 양양');
+assert.equal(resolveKoExploreSearchAlias('광천성굴')?.canonical, '광천선굴', 'SSOT explore alias 광천성굴');
+assert.equal(resolveKoGalleryQueryOverride('gongjicheon')?.primary, 'Gongjicheon Chuncheon', 'SSOT gallery override 공지천');
+assert.ok(Array.isArray(KO_EXPLORE_SEARCH_ALIASES), 'SSOT KO_EXPLORE_SEARCH_ALIASES is array');
+assert.ok(typeof KO_GALLERY_QUERY_OVERRIDES === 'object', 'SSOT KO_GALLERY_QUERY_OVERRIDES is object');
+assert.ok(Array.isArray(KOREA_HOMONYM_GROUPS) && KOREA_HOMONYM_GROUPS.length >= 6, 'SSOT KOREA_HOMONYM_GROUPS length');
+
+const matchStation = resolveKoreaPlaceMatch('종각');
+assert.equal(matchStation?.type, 'station', 'resolveKoreaPlaceMatch station');
+const matchUni = resolveKoreaPlaceMatch('강원대');
+assert.equal(matchUni?.type, 'university', 'resolveKoreaPlaceMatch university');
+const matchSat = resolveKoreaPlaceMatch('강원대학교동해수련원');
+assert.equal(matchSat?.type, 'university_satellite', 'resolveKoreaPlaceMatch satellite');
+const matchHomonym = resolveKoreaPlaceMatch('광천');
+assert.equal(matchHomonym?.type, 'homonym_group', 'resolveKoreaPlaceMatch homonym_group');
+
+console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT)');

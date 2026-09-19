@@ -16,7 +16,7 @@ import {
   extractTourAttractionSigungu,
   formatTourAttractionLocality,
 } from './koreaTourAttractionLocality.js';
-import { resolveKoStationAlias } from '../../../utils/mrtStayQuery.js';
+import { resolveKoStationAlias } from './koreaPlaceMatchDictionary.js';
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
