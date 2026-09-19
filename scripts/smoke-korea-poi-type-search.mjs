@@ -19,6 +19,11 @@ import {
   collectKoreaPoiTypeSearchCandidates,
   tourAttractionToPoiSuggestion,
 } from '../src/pages/Home/lib/koreaPoiTypeSearch.js';
+import {
+  SEARCH_DISAMBIGUATION_PAGE_SIZE,
+  searchDisambiguationPageCount,
+  sliceSearchDisambiguationPage,
+} from '../src/pages/Home/lib/searchDisambiguationPaging.js';
 
 const chuncheon = parseKoreaPoiTypeQuery('춘천 향교');
 assert.equal(chuncheon?.type, '향교');
@@ -129,4 +134,31 @@ const suggestionsSrc = readFileSync(join(root, 'src/pages/Home/lib/searchSuggest
 assert.match(suggestionsSrc, /if \(!poiType\) \{\s*for \(const hub of hubs\)/);
 assert.match(suggestionsSrc, /shouldExpandKoreaPoiTypeSearch/);
 
-console.log('PASS smoke-korea-poi-type-search (춘천 향교 ≠ 춘천 · 향교 다후보)');
+assert.equal(SEARCH_DISAMBIGUATION_PAGE_SIZE, 8);
+assert.equal(searchDisambiguationPageCount(1), 1);
+assert.equal(searchDisambiguationPageCount(8), 1);
+assert.equal(searchDisambiguationPageCount(9), 2);
+assert.equal(searchDisambiguationPageCount(168), 21);
+const paged = sliceSearchDisambiguationPage(
+  Array.from({ length: 20 }, (_, i) => ({ name: `향교${i + 1}` })),
+  3,
+);
+assert.equal(paged.totalPages, 3);
+assert.equal(paged.page, 3);
+assert.equal(paged.items.length, 4);
+assert.equal(paged.items[0].name, '향교17');
+assert.equal(sliceSearchDisambiguationPage(mocked, 1).totalPages, 1);
+
+const cardsSrc = readFileSync(
+  join(root, 'src/pages/Home/components/SearchDiscovery/SearchSuggestionList.jsx'),
+  'utf8',
+);
+assert.match(cardsSrc, /sliceSearchDisambiguationPage/);
+assert.match(cardsSrc, /DisambiguationPager/);
+const modalSrc = readFileSync(
+  join(root, 'src/pages/Home/components/SearchDiscoveryModal.jsx'),
+  'utf8',
+);
+assert.match(modalSrc, /onPageChange/);
+
+console.log('PASS smoke-korea-poi-type-search (춘천 향교 ≠ 춘천 · 향교 다후보 · 8개 페이지)');

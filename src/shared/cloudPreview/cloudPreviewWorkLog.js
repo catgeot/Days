@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '향교 검색',
-  sessionNo: 1,
-  sessionPhase: 'TourAPI 다후보',
+  sessionNo: 2,
+  sessionPhase: '목록 페이지',
   branch: 'cursor/hyanggyo-search-f9b8',
   previewPath: '/',
   qaShareSlug: 'hyanggyo',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-hyanggyo-search-2-list-pages',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 선택 카드를 8개씩 넘겨 보게',
+    detail:
+      '「향교」엔터 전국 목록이 한 화면에 다 나와 스크롤하다 포기하게 됐습니다. 기존 선택 카드는 그대로 두고 8개씩 이전·다음으로 넘깁니다. 춘천 향교처럼 짧은 목록과 목포 도시 리스트는 페이지 버튼이 없습니다. Preview /qa/hyanggyo 홈「향교」엔터 → 1페이지 8장·다음. 「춘천 향교」엔터 → 춘천향교. 「목포」엔터 → 리스트 유지.',
+    at: '2026-09-19T07:20:00.000Z',
+  },
   {
     id: '2026-09-19-hyanggyo-search-1-tour-disambiguation',
     session: '향교 검색 #1, TourAPI 다후보',
