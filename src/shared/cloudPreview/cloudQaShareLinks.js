@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'festival-ui',
+    label: '축제 페이지 — 푸터·무니 겹침',
+    branch: 'cursor/festival-sheet-ui-ec8b',
+    destination:
+      'https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
     slug: 'hyanggyo',
     label: '향교 검색 — 도시별 다후보',
     branch: 'cursor/hyanggyo-search-f9b8',

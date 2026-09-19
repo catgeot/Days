@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '향교 검색',
-  sessionNo: 2,
-  sessionPhase: '목록 페이지',
-  branch: 'cursor/hyanggyo-search-f9b8',
-  previewPath: '/',
-  qaShareSlug: 'hyanggyo',
+  title: '축제 페이지',
+  sessionNo: 5,
+  sessionPhase: '푸터·무니 겹침',
+  branch: 'cursor/festival-sheet-ui-ec8b',
+  previewPath: '/korea',
+  qaShareSlug: 'festival-ui',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-festival-ui-5-footer-mooni',
+    session: '축제 페이지 #5, 푸터·무니 겹침',
+    title: '본문 하단 여유·무니/위로 분리·밝은 무니',
+    detail:
+      '축제 상세 본문 하단 패딩을 늘려 Trust 푸터와 닫기 버튼이 겹치지 않게 했습니다. 우측 무니는 위로 버튼이 보일 때 그 위로 올라가고, FAB·채팅은 하늘·민트 톤으로 바꿨습니다. Preview /qa/festival-ui — /korea 축제 카드 본문 끝까지 스크롤 → 닫기·푸터·무니·위로.',
+    at: '2026-09-19T07:40:00.000Z',
+  },
   {
     id: '2026-09-19-hyanggyo-search-2-page-size-10',
     session: '향교 검색 #2, 목록 페이지',

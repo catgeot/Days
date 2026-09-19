@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/festival-ui",
+      "destination": "https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea",
+      "permanent": false
+    },
+    {
       "source": "/qa/hyanggyo",
       "destination": "https://days-git-cursor-hyanggyo-search-f9b8-catgeots-projects.vercel.app/",
       "permanent": false
