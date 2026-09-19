@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 팔경 활용 #65 — 보성9경 일림산 용추계곡·주암호 서재필기념관 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #65, 보성 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `9d09f967` · PR [#286](https://github.com/catgeot/Days/pull/286)
+- **완료**: JSON contentId 없이 LOCAL_SCENIC_MEMBER_OVERLAYS로 보성9경 결손 2건 보강. 일림산 용추계곡(7경)은 웅치면 용반리 일림산 664m·보성강 시원·용추폭포(선녀탕·용바위). 주암호 서재필기념관(9경)은 문덕면 용암길 8 기념관·가내길 18-35 생가(1864 가내마을·1992 조성·개화문). 보성군 문화관광 9경 공식 사진. 문경 용추계곡·가평·동해 용추폭포·제암산자연휴양림·서울 독립문·순천 주암댐·주암호생태습지·대원사와 구분. 순수 누락 **38**/876.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=boseong`
+- **잔여**: 사진/개요 순수 누락 **38**/876. 다음 허브 **산청9경 2**(황매산 철쭉·남명조식유적지)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #64 QA — 무안 검색 승달산·초의 빈 썸네일 (Cloud)
 
 - **세션** `팔경 활용 #64, 무안 결손 오버레이` (같은 턴 Preview 피드백)
