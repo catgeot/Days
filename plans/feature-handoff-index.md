@@ -14,6 +14,34 @@
 
 ## 활성 목록
 
+### MOONi 일정 페이스메이커
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `ac868a8a` · PR [#281](https://github.com/catgeot/Days/pull/281) · **사람 Preview** |
+| **브랜치** | `cursor/mooni-itinerary-concierge-76f0` |
+| **tip** | `ac868a8a` |
+| **PR** | [#281](https://github.com/catgeot/Days/pull/281) |
+| **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
+| **Preview** | https://www.gateo.kr/place/paris → 파리 페이지 내 MOONi 대화 |
+| **소유** | `mooniPromptBundles.js` · `bookingIntentResolver.js` · `mooniChipPrompts.js` · `mooniQuickReplies.js` · `locales/*.json` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `node scripts/smoke-mooni-ask-bridge.mjs` PASS · `npm run build` PASS |
+
+**다음 제시어**:
+
+```
+MOONi 일정 페이스메이커 #2, 사용자 피드백 반영 및 실전 응답 튜닝
+@plans/feature-handoff-index.md
+@plans/2026-09-19-project-log.md
+브랜치 cursor/mooni-itinerary-concierge-76f0 · PR #281 · Preview https://www.gateo.kr/place/paris
+금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: 파리 장소 페이지에서 MOONi에게 체류 일수/첫날 동선/공항/컨디션 발화 테스트 후 필요 시 추가 응답 프롬프트 튜닝
+검증: node scripts/smoke-mooni-ask-bridge.mjs PASS · npm run build PASS
+```
+
+---
+
 ### 여행지 매칭 아키텍처
 
 | | |
