@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 팔경 활용 #62 QA — 경기 광주 8경 공식 목록 재정비 (Cloud)
+
+- **세션** `팔경 활용 #62, 경기 광주 결손 오버레이 QA`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `293a5c1a` · PR [#280](https://github.com/catgeot/Days/pull/280)
+- **완료**: 사람 Preview에서 팔경 목록에 없는 곳이 팔경에 들어가 있었다. 광주시 문화관광 공식 8경으로 멤버를 맞춤(1 남한산성·2 분원도요지&팔당물안개공원·3 경안천습지생태공원·4 앵자봉&천진암·5 무갑산·6 태화산·7 경기도자박물관·8 중대물빛공원). 화담숲·곤지암도자공원은 GATEO 선정만 유지. 송정사 제외. JSON contentId 없이 2·4·6·7경 시 공식 사진·개요 오버레이. 광주 순수 누락 0. 전체 **44**/876.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gwangju_gi`
+- **잔여**: 사진/개요 순수 누락 **44**/876. 다음 허브 **목포9경 2**(목포진·다도해 전경)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 여행지 매칭 #11 — 송암스포츠타운 숙소 양주 오탐 (Cloud)
 
 - **세션** `여행지 매칭 #11, 송암스포츠타운 숙소 양주 오탐`
