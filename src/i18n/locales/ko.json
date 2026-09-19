@@ -800,8 +800,6 @@
           "nativeTripType": "여정 유형",
           "nativeRoundTrip": "왕복",
           "nativeOneWay": "편도",
-          "nativePassengers": "인원",
-          "nativeAdultCount": "성인 {{count}}명",
           "nativeSwap": "출발·도착 바꾸기",
           "nativeAirportSearch": "공항 이름 또는 코드",
           "nativeDateRange": "일정",

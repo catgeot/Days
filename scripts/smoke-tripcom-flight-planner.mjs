@@ -64,7 +64,8 @@ const native = read(
 );
 assert.match(native, /nativeRoundTrip/, 'round-trip control');
 assert.match(native, /nativeOneWay/, 'one-way control');
-assert.match(native, /adultCount/, 'passenger count passed to Trip.com');
+assert.doesNotMatch(native, /adultCount/, 'passenger stepper removed');
+assert.doesNotMatch(native, /nativePassengers/, 'passenger label removed');
 assert.match(native, /arrivalIata/, 'arrival override passed to Trip.com');
 assert.match(native, /AirportSlot/, 'combined origin-destination picker');
 assert.match(native, /TripcomFlightDateRangeCalendar/, 'single date-range calendar');

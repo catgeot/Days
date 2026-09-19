@@ -1030,8 +1030,6 @@
           "nativeTripType": "Trip type",
           "nativeRoundTrip": "Round trip",
           "nativeOneWay": "One way",
-          "nativePassengers": "Travelers",
-          "nativeAdultCount": "{{count}} adults",
           "nativeSwap": "Swap airports",
           "nativeAirportSearch": "Airport name or code",
           "nativeDateRange": "Dates",

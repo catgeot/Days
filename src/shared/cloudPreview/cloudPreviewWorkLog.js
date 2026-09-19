@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 8,
-  sessionPhase: '한 달력 일정 선택',
+  sessionNo: 9,
+  sessionPhase: '인원 설정 제거',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-9-remove-passengers',
+    session: '항공권 검색 #9, 인원 설정 제거',
+    title: '모바일 항공권 폼에서 인원 설정 제거',
+    detail:
+      'Trip.com 결과가 1인으로만 열려 인원 스테퍼가 오해를 만들었습니다. 왕복/편도·출도착·한 달력 일정은 유지하고, 검색은 기본 1인으로 연결합니다.',
+    at: '2026-09-19T21:20:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-8-date-range-calendar',
     session: '항공권 검색 #8, 한 달력 일정 선택',

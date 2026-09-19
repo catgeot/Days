@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeftRight, ArrowRight, Minus, Plane, Plus, Search, Users } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, Plane, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
     TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
@@ -116,7 +116,6 @@ const TripcomFlightNativeSearch = ({
     );
     const [arrive, setArrive] = useState(() => defaultArrival || '');
     const [tripType, setTripType] = useState('RT');
-    const [adults, setAdults] = useState(1);
     const [ddate, setDdate] = useState(departDate || addDaysYmd(todayYmd(), 14));
     const [rdate, setRdate] = useState(returnDate || addDaysYmd(todayYmd(), 21));
     const linkTarget = getPartnerLinkTarget();
@@ -145,7 +144,6 @@ const TripcomFlightNativeSearch = ({
             arrivalIata: arrive || undefined,
             tracking,
             tripType,
-            adultCount: adults,
             departDate: outbound,
             ...(isRoundTrip && inbound ? { returnDate: inbound } : {}),
         });
@@ -246,36 +244,6 @@ const TripcomFlightNativeSearch = ({
                         setRdate(nextReturn);
                     }}
                 />
-
-                <div className="flex min-h-[44px] items-center justify-between rounded-xl border border-gray-200/90 bg-gray-50/60 px-3 py-2">
-                    <div className="flex items-center gap-1.5 text-sm font-bold text-gray-700">
-                        <Users size={14} className="text-sky-500" />
-                        {t('place.planner.banners.tripcomFlight.nativePassengers')}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <button
-                            type="button"
-                            className="flex h-8 w-8 items-center justify-center rounded-full border border-sky-200 bg-white text-sky-700 disabled:opacity-40"
-                            aria-label="-"
-                            disabled={adults <= 1}
-                            onClick={() => setAdults((n) => Math.max(1, n - 1))}
-                        >
-                            <Minus size={14} />
-                        </button>
-                        <span className="min-w-[2.5rem] text-center text-sm font-bold text-gray-900">
-                            {t('place.planner.banners.tripcomFlight.nativeAdultCount', { count: adults })}
-                        </span>
-                        <button
-                            type="button"
-                            className="flex h-8 w-8 items-center justify-center rounded-full border border-sky-200 bg-white text-sky-700 disabled:opacity-40"
-                            aria-label="+"
-                            disabled={adults >= 8}
-                            onClick={() => setAdults((n) => Math.min(8, n + 1))}
-                        >
-                            <Plus size={14} />
-                        </button>
-                    </div>
-                </div>
 
                 <button
                     type="submit"
