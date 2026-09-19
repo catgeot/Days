@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **#9 push** · tip `131c1830` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
+| **상태** | **#10 push** · tip `54a5f002` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
 | **브랜치** | `cursor/tripcom-flight-widget-3ec3` |
 | **PR** | [#288](https://github.com/catgeot/Days/pull/288) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 인원 스테퍼 제거 · 한 달력 일정 |
+| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 검색바 → tickets 항공 결과 |
 | **소유** | `PlannerTab` · `TripcomFlightBannerWidget` · `TripcomFlightNativeSearch` · `TripcomFlightDateRangeCalendar` · `tripcomFlightResultsUrl` · `PreTravelChecklist` · `ToolkitCard` · `partnerNavigation` · `FlightDebugPanel` |
 | **금지** | feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS |
@@ -30,11 +30,11 @@
 **다음 제시어**:
 
 ```
-항공권 검색 #10, Preview OK면 PR 병합
+항공권 검색 #11, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-19-project-log.md
 브랜치 cursor/tripcom-flight-widget-3ec3 · PR #288 · Preview /qa/flight
-작업: https://www.gateo.kr/qa/flight 모바일에서 인원 줄이 없는지 확인. 일정을 눌러 한 달력으로 가는 날·오는 날을 고른 뒤 검색 → Trip.com에 같은 날짜·1인. OK면 PR #288 병합.
+작업: https://www.gateo.kr/qa/flight 모바일에서 항공권 검색바를 눌러 Trip.com이 항공+호텔 홈이 아니라 ICN→도착 항공 목록(/tickets-)인지. 일정 폼에서 날짜를 고른 뒤 검색해도 같은 날짜인지. OK면 PR #288 병합.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · npx vite build PASS
 ```
 
