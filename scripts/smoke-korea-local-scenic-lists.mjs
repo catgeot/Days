@@ -4017,6 +4017,65 @@ const gwangjuGiMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gwangju_gi')
 const gwangjuGiEight = gwangjuGiMerged.filter((s) => s.localScenicListId === 'gwangju-gi-palgyeong');
 assert.equal(gwangjuGiEight.length, 8, '광주8경 8명');
 assert.equal(gwangjuGiEight[0]?.groupTitle, '경기 광주 팔경');
+assert.deepEqual(
+  gwangjuGiEight.map((s) => s.attractionName),
+  [
+    '경기광주 남한산성',
+    '분원도요지 & 팔당물안개공원',
+    '경안천습지생태공원',
+    '앵자봉 & 천진암',
+    '무갑산',
+    '태화산',
+    '경기도자박물관',
+    '중대물빛공원',
+  ],
+  '광주8경 시 공식 8명 순서',
+);
+assert.ok(
+  !gwangjuGiEight.some((s) => s.attractionName === '송정사'),
+  '광주8경≠송정사',
+);
+assert.ok(
+  !gwangjuGiEight.some((s) => s.attractionName === '화담숲'),
+  '광주8경≠화담숲',
+);
+assert.ok(
+  !gwangjuGiEight.some((s) => s.attractionName === '곤지암도자공원'),
+  '광주8경≠곤지암도자공원',
+);
+assert.ok(
+  listKoreaScenicSpots().some(
+    (s) => s.hubId === 'gwangju_gi' && s.attractionName === '화담숲',
+  ),
+  '화담숲 GATEO 선정 유지',
+);
+assert.ok(
+  listKoreaScenicSpots().some(
+    (s) => s.hubId === 'gwangju_gi' && s.attractionName === '곤지암도자공원',
+  ),
+  '곤지암도자공원 GATEO 선정 유지',
+);
+const gjBunwon = resolveLocalScenicListSpotById(
+  'local-scenic:gwangju-gi-palgyeong:분원도요지&팔당물안개공원',
+);
+assert.ok(gjBunwon?.overview && gjBunwon?.imageUrl, '광주 분원도요지 overlay 사진·개요');
+assert.ok(!gjBunwon?.contentId, '광주 분원도요지 JSON contentId 없음 유지');
+assert.ok(gjBunwon?.overview?.includes('남종면'), '광주 분원도요지 주소 남종면');
+assert.ok(gjBunwon?.overview?.includes('분원리 116'), '광주 분원도요지 분원리');
+assert.ok(gjBunwon?.overview?.includes('귀여리 596'), '광주 분원도요지 팔당물안개공원');
+assert.ok(gjBunwon?.overview?.includes('경기도자박물관'), '광주 분원도요지≠7경 박물관');
+assert.ok(gjBunwon?.overview?.includes('화담숲'), '광주 분원도요지≠화담숲');
+assert.ok(gjBunwon?.imageUrl?.includes('img_pardang2.png'), '광주 분원도요지 시 공식 사진');
+assert.ok(gjBunwon?.homepage?.includes('mId=0101020000'), '광주 분원도요지 공식 홈 2경');
+const gjAengja = resolveLocalScenicListSpotById('local-scenic:gwangju-gi-palgyeong:앵자봉&천진암');
+assert.ok(gjAengja?.overview && gjAengja?.imageUrl, '광주 앵자봉 overlay 사진·개요');
+assert.ok(!gjAengja?.contentId, '광주 앵자봉 JSON contentId 없음 유지');
+assert.ok(gjAengja?.overview?.includes('퇴촌면'), '광주 앵자봉 주소 퇴촌면');
+assert.ok(gjAengja?.overview?.includes('667m'), '광주 앵자봉 overlay 667m');
+assert.ok(gjAengja?.overview?.includes('천진암'), '광주 앵자봉 overlay 천진암');
+assert.ok(gjAengja?.overview?.includes('무등산'), '광주 앵자봉≠광주광역시 무등산');
+assert.ok(gjAengja?.imageUrl?.includes('img_aengjabong1.png'), '광주 앵자봉 시 공식 사진');
+assert.ok(gjAengja?.homepage?.includes('mId=0101040000'), '광주 앵자봉 공식 홈 4경');
 const gjMugap = resolveLocalScenicListSpotById('local-scenic:gwangju-gi-palgyeong:무갑산');
 assert.ok(gjMugap?.overview && gjMugap?.imageUrl, '광주 무갑산 overlay 사진·개요');
 assert.ok(!gjMugap?.contentId, '광주 무갑산 JSON contentId 없음 유지');
@@ -4029,11 +4088,24 @@ assert.ok(gjMugap?.overview?.includes('무갑사'), '광주 무갑산≠무갑�
 assert.ok(gjMugap?.imageUrl?.includes('img_mugabsan3.png'), '광주 무갑산 시 공식 사진');
 assert.ok(gjMugap?.homepage?.includes('mId=0101050000'), '광주 무갑산 공식 홈 5경');
 assert.ok(!gjMugap?.imageUrl?.includes('img_taehwasan'), '광주 무갑산≠태화산 공식 사진');
-const gjSongjeong = resolveLocalScenicListSpotById('local-scenic:gwangju-gi-palgyeong:송정사');
-assert.ok(gjSongjeong, '광주 송정사 멤버 유지');
-assert.ok(!gjSongjeong?.contentId, '광주 송정사 JSON contentId 없음 유지');
-assert.ok(!gjSongjeong?.imageUrl, '광주 송정사 공식 사진 없음 유지');
-assert.ok(!gjSongjeong?.overview, '광주 송정사 공식 개요 없음 유지');
+const gjTaehwa = resolveLocalScenicListSpotById('local-scenic:gwangju-gi-palgyeong:태화산');
+assert.ok(gjTaehwa?.overview && gjTaehwa?.imageUrl, '광주 태화산 overlay 사진·개요');
+assert.ok(!gjTaehwa?.contentId, '광주 태화산 JSON contentId 없음 유지');
+assert.ok(gjTaehwa?.overview?.includes('도척면'), '광주 태화산 주소 도척면');
+assert.ok(gjTaehwa?.overview?.includes('664m'), '광주 태화산 overlay 664m');
+assert.ok(gjTaehwa?.overview?.includes('마곡사'), '광주 태화산≠공주 마곡사');
+assert.ok(gjTaehwa?.imageUrl?.includes('img_taehwasan1.png'), '광주 태화산 시 공식 사진');
+assert.ok(gjTaehwa?.homepage?.includes('mId=0101060000'), '광주 태화산 공식 홈 6경');
+assert.notEqual(gjMugap?.imageUrl, gjTaehwa?.imageUrl, '무갑산·태화산 썸네일 다름');
+const gjDoja = resolveLocalScenicListSpotById('local-scenic:gwangju-gi-palgyeong:경기도자박물관');
+assert.ok(gjDoja?.overview && gjDoja?.imageUrl, '광주 경기도자박물관 overlay 사진·개요');
+assert.ok(!gjDoja?.contentId, '광주 경기도자박물관 JSON contentId 없음 유지');
+assert.ok(gjDoja?.overview?.includes('경충대로 727'), '광주 경기도자박물관 주소');
+assert.ok(gjDoja?.overview?.includes('곤지암도자공원'), '광주 경기도자박물관≠곤지암도자공원');
+assert.ok(gjDoja?.overview?.includes('화담숲'), '광주 경기도자박물관≠화담숲');
+assert.ok(gjDoja?.imageUrl?.includes('img_ggdoja1.png'), '광주 경기도자박물관 시 공식 사진');
+assert.ok(gjDoja?.homepage?.includes('mId=0101070000'), '광주 경기도자박물관 공식 홈 7경');
+assert.ok(!resolveLocalScenicListSpotById('local-scenic:gwangju-gi-palgyeong:송정사'), '광주 송정사 팔경 제외');
 const gwangjuGiGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '광주8경', {
   injectLocalScenic: true,
 });
@@ -4050,8 +4122,20 @@ assert.ok(
   '광주 검색 8경 무갑산 썸네일',
 );
 assert.ok(
-  !gwangjuGiGlobe.find((s) => s.attractionName === '송정사')?.imageUrl,
-  '광주 검색 8경 송정사 공식 사진 없음 유지',
+  gwangjuGiGlobeEight.some((s) => s.attractionName === '분원도요지 & 팔당물안개공원'),
+  '광주 검색 8경 2경 분원도요지',
+);
+assert.ok(
+  gwangjuGiGlobeEight.some((s) => s.attractionName === '경기도자박물관'),
+  '광주 검색 8경 7경 경기도자박물관',
+);
+assert.ok(
+  !gwangjuGiGlobeEight.some((s) => s.attractionName === '송정사'),
+  '광주 검색 8경≠송정사',
+);
+assert.ok(
+  !gwangjuGiGlobeEight.some((s) => s.attractionName === '화담숲'),
+  '광주 검색 8경≠화담숲',
 );
 
 const extra = process.argv.slice(2);

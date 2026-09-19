@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 62,
-  sessionPhase: '경기 광주 결손 오버레이',
+  sessionPhase: '경기 광주 목록 재정비·오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=gwangju_gi',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-palgyeong-use-62-gwangju-gi-official-list',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
+    title: '광주8경 시 공식 목록 재정비',
+    detail:
+      '사람 Preview에서 팔경 목록에 없는 곳이 팔경에 들어가 있었습니다. 광주시 문화관광 공식 8경(gjcity.go.kr/tour)으로 멤버를 맞췄습니다. 1경 남한산성·2경 분원도요지 & 팔당물안개공원·3경 경안천습지생태공원·4경 앵자봉 & 천진암·5경 무갑산·6경 태화산·7경 경기도자박물관·8경 중대물빛공원. 화담숲·곤지암도자공원은 시가 8경에서 뺀 민간·별도 시설이라 GATEO 선정만 유지하고 팔경에서 뺐습니다. 송정사도 현 8경에 없어 뺐습니다. JSON contentId·scenic 승격 없이 2·4·6·7경은 시 공식 사진·개요 오버레이입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangju_gi 팔경 8행이 시 공식과 같은지.',
+    at: '2026-09-19T02:10:00.000Z',
+  },
   {
     id: '2026-09-18-palgyeong-use-62-gwangju-gi-overlays',
     session: '팔경 활용 #62, 경기 광주 결손 오버레이',
