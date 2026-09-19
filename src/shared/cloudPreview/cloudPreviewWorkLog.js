@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 62,
-  sessionPhase: '경기 광주 관광공사 검색 수정',
+  sessionNo: 63,
+  sessionPhase: '목포 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gwangju_gi',
+  previewPath: '/korea/theme/scenic?hub=mokpo',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-palgyeong-use-63-mokpo-overlays',
+    session: '팔경 활용 #63, 목포 결손 오버레이',
+    title: '목포9경 목포진·다도해 전경 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 목포9경 결손 2건(목포진·다도해 전경)의 공공 공식 팩트 개요·주소·목포시 문화관광 9경 공식 사진을 보강했습니다. 목포진은 만호동 목포진길 11번길 1-5 수군진 역사공원(6경, 세종 21년 설치·2014 객사 복원·문화재자료 137호), 다도해 전경은 유달산에서 고하도·외달도를 보는 조망(8경)입니다. 해남 구 목포구등대·목포대교 일몰·유달산 산봉·외달도 섬·진도 다도해해상국립공원과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mokpo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T05:10:00.000Z',
+  },
   {
     id: '2026-09-19-palgyeong-use-62-gwangju-gi-tour-search',
     session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
