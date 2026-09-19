@@ -2,6 +2,17 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #3 — 플래너 3단 분리 이전 단일 스크롤 복귀 (Cloud)
+
+- **세션** `항공권 검색 #3, 3단 분리 이전 복귀`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `c95d2b43` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 3단 점진적 노출(필수·이동·즐기기) 탭 구조 도입 이후 모바일 배너 iframe 표시 문제 및 내비게이션 복잡도가 누적되어 롤백 결정.
+- **완료**: 플래너 구조를 3단 분리 이전의 단일 스크롤(출발 전 필수 준비·현지 도착 및 이동·현지 100% 즐기기)로 복귀. 상단 Trip.com 항공 배너 위젯 및 체크리스트 기존 규격 복원. `PlannerStageNav` 제거.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 파리 플래너가 단일 스크롤로 모든 섹션(출발 전 준비·도착 및 이동·즐기기)이 한 번에 펼쳐지는지 · 상단 항공 위젯 및 체크리스트 정상 동작 확인.
+- **다음**: Preview OK면 PR #288 병합
+
 ## 항공권 검색 #2 — Preview 단축 `/qa/flight` (Cloud)
 
 - **세션** `항공권 검색 #2, 로컬 위젯 진단`
