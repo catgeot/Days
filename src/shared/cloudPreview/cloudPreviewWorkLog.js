@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 12,
-  sessionPhase: '하드코딩 사전 정리 및 SSOT 일원화',
+  sessionNo: 13,
+  sessionPhase: '종합 QA 및 메인 병합 준비',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-dest-match-13-comprehensive-qa',
+    session: '여행지 매칭 #13, 종합 QA 및 메인 병합 준비',
+    title: '주요 지명(종각·광천·송암·강원대) 매칭 및 숙소·갤러리 종합 QA 검증 완료',
+    detail:
+      '동음이의어 다후보 분기(종각·광천·송암·강원대), First-Pass 고유 매칭, 숙소 래더 및 Geo-Sanity 가드(양주/광주/대구 오탐 배제), 갤러리 시설 컷 필터링 및 프로덕션 빌드 등 전체 아키텍처 파이프라인 검증을 통과하고 PR #276 메인 병합 준비를 마쳤습니다.',
+    at: '2026-09-19T03:00:00.000Z',
+  },
   {
     id: '2026-09-19-dest-match-12-dictionary-ssot',
     session: '여행지 매칭 #12, 하드코딩 사전 정리 및 SSOT 일원화',
