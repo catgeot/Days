@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-19-tripcom-flight-6-premium-ticket-design',
+    session: '항공권 검색 #6, 모바일 검색 폼 프리미엄 카드 디자인',
+    title: '모바일 항공권 검색 폼 프리미엄 티켓 카드 디자인',
+    detail:
+      '모바일 항공권 검색 폼을 브랜드 일관성과 심미성을 갖춘 항공 티켓 스타일 카드로 개편했습니다. 상단 Trip.com 공식 브랜드 헤더 및 제휴 뱃지, ICN ✈ 도착지 항공권 보딩 패스형 경로 블록, 부드러운 배경/포커스 링의 날짜 입력창, 블루 그라데이션 검색 버튼을 적용했습니다.',
+    at: '2026-09-19T12:35:00.000Z',
+  },
+  {
     id: '2026-09-19-tripcom-flight-6-native-form',
     session: '항공권 검색 #6, 모바일 네이티브 검색 폼 복원',
     title: '모바일 단순 링크 버튼 대신 네이티브 검색 폼 복원',
