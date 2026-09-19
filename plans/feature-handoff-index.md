@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 향교 검색
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `c873bce1` · PR [#285](https://github.com/catgeot/Days/pull/285) · **사람 Preview** |
+| **브랜치** | `cursor/hyanggyo-search-f9b8` |
+| **PR** | [#285](https://github.com/catgeot/Days/pull/285) |
+| **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
+| **Preview** | `/qa/hyanggyo` → git Preview `/` — 「향교」다후보 · 「춘천 향교」≠ 춘천 도시 |
+| **소유** | `koreaPoiTypeQuery.js` · `koreaPoiTypeSearch.js` · `cityAttractionHubs.js` `matchCityAttractionHubsPrefix` · `useHomeHandlers.js` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `npm run smoke:korea-poi-type-search` PASS · `smoke:explore-search-aliases` PASS · `smoke:search-enter-match` PASS · `npx vite build` PASS |
+
+**다음 제시어**:
+
+```
+향교 검색 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-19-project-log.md
+브랜치 cursor/hyanggyo-search-f9b8 · PR #285 · Preview /qa/hyanggyo
+금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: Preview 홈「향교」엔터 → 춘천·나주 등 여러 장. 「춘천 향교」엔터 → 춘천향교 · 춘천 도시 카드 아님. 「목포」엔터 → 리스트 유지. OK면 PR #285 병합.
+검증: npm run smoke:korea-poi-type-search PASS · smoke:explore-search-aliases PASS · smoke:search-enter-match PASS · vite build PASS
+```
+
+---
+
 ### 탐색 Enter
 
 | | |

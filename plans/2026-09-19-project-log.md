@@ -2,6 +2,18 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 향교 검색 #1 — TourAPI 다후보 (Cloud)
+
+- **세션** `향교 검색 #1, TourAPI 다후보`
+- **브랜치** `cursor/hyanggyo-search-f9b8` · tip `c873bce1` · PR [#285](https://github.com/catgeot/Days/pull/285)
+- **원인**: 허브 prefix가 「춘천향교」를 춘천 도시로 스냅. 허브 SSOT 향교는 4곳뿐. TourAPI에는 춘천향교(125780)·향교 제목 168건.
+- **완료**: 도시명 뒤 나머지가 시·군이 아니면 허브 히트 아님. 향교·서원은 TourAPI 제목 다후보. 시설 쿼리에 향교·서원.
+- **VERIFY**: `npm run smoke:korea-poi-type-search` PASS · `smoke:explore-search-aliases` PASS · `smoke:search-enter-match` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/hyanggyo → git Preview `/`
+- **QA**: 「향교」엔터 → 춘천·나주 등 여러 장. 「춘천 향교」엔터 → 춘천향교 · 춘천 도시 아님. 「목포」엔터 리스트 유지.
+- **다음**: Preview OK면 PR #285 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 팔경 활용 #64 — 무안9경 식영정·느러지·톱머리·홀통 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #64, 무안 결손 오버레이`
