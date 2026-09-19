@@ -36,6 +36,16 @@
 - **QA**: 홈「송암」→ 송암스포츠타운 → 숙소 찾기 → 춘천. 양주 비타민펜션·장흥유원지면 실패.
 - **다음**: `여행지 매칭 #12, 하드코딩 사전 정리 및 SSOT 일원화`
 
+## 여행지 매칭 #13 — 종합 QA 및 메인 병합 준비 (Cloud)
+
+- **세션** `여행지 매칭 #13, 종합 QA 및 메인 병합 준비`
+- **브랜치** `cursor/dest-match-arch` · tip `cf1eb018` · PR [#276](https://github.com/catgeot/Days/pull/276) (Ready for Review)
+- **완료**: 서브에이전트(컴포져) 및 전체 스모크 기반으로 종각·광천·송암·강원대 등 주요 지명의 동음이의어 분기, First-Pass 고유 매칭, 숙소 래더(Geo-Sanity 가드 포함), 갤러리 시설 컷 필터링에 대한 심층 QA를 완료. 모든 시나리오 PASS 확인 후 PR #276을 Draft 해제(Ready for Review)하여 메인 병합 준비를 완료.
+- **VERIFY**: `npm run smoke:ko-homonym-ri-search` PASS · `npm run smoke:explore-search-aliases` PASS · `npm run smoke:mrt-stay` PASS (33개 케이스) · `npx vite build` PASS (빌드 에러 0건)
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 종각(서울/대구 분기), 광천(평창/광주/홍성 분기, 광천선굴 숙소 평창), 송암(고양/춘천/광주 분기, 송암스포츠타운 숙소 춘천), 강원대(춘천/삼척 분기) 정상 동작 확인.
+- **다음**: `여행지 매칭, PR #276 메인 병합 및 배포` (사람 승인 및 병합)
+
 ## 여행지 매칭 #12 — 하드코딩 사전 정리 및 SSOT 일원화 (Cloud)
 
 - **세션** `여행지 매칭 #12, 하드코딩 사전 정리 및 SSOT 일원화`
