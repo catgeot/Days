@@ -92,11 +92,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#63 push** tip `593fdee0` · PR [#282](https://github.com/catgeot/Days/pull/282) · 목포9경 2 · **#64 무안 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#64 push** tip `5eb2785b` · PR [#284](https://github.com/catgeot/Days/pull/284) · 무안9경 2 · **#65 보성 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **무안9경 2**.
+**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **보성9경 2**.
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
@@ -165,7 +165,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 61 | `팔경 활용 #61, 통영 결손 오버레이` | A | **완료** · tip `df628a5d` · PR [#279](https://github.com/catgeot/Days/pull/279) · 통영팔경 3 + QA 1경 연화도 용머리 U투어 사진 idx=16550·홈 idx=1660(pstatic 403·badaland 인증서)·이순신공원 |
 | 62 | `팔경 활용 #62, 경기 광주 결손 오버레이` | A | **완료** · tip `0979bf47` · PR [#280](https://github.com/catgeot/Days/pull/280) · 광주8경 시 공식 8명 재정비 · QA 관광공사 검색 `경기도 광주`(40건) · 화담숲·곤지암도자공원은 GATEO 선정 · 송정사 제외 |
 | 63 | `팔경 활용 #63, 목포 결손 오버레이` | A | **완료** · tip `593fdee0` · PR [#282](https://github.com/catgeot/Days/pull/282) · 목포9경 2 |
-| 64 | `팔경 활용 #64, 무안 결손 오버레이` | A | **열기 가능** · 무안9경 2 · Preview QA는 사람 병행(세션 생략) |
+| 64 | `팔경 활용 #64, 무안 결손 오버레이` | A | **완료** · tip `5eb2785b` · PR [#284](https://github.com/catgeot/Days/pull/284) · 무안9경 2 |
+| 65 | `팔경 활용 #65, 보성 결손 오버레이` | A | **열기 가능** · 보성9경 2 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -857,7 +858,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 목포9경 사진·개요 없는 2건(목포진·다도해 전경)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=mokpo
 ```
 
-### §1.2 A #64 무안 결손 오버레이 (다음)
+### §1.2 A #64 무안 결손 오버레이 (실행됨)
 
 ```
 팔경 활용 #64, 무안 결손 오버레이
@@ -867,6 +868,18 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 무안9경 사진·개요 없는 2건(영산강 식영정과 느러지·톱머리·홀통 해수욕장)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=muan
+```
+
+### §1.2 A #65 보성 결손 오버레이 (다음)
+
+```
+팔경 활용 #65, 보성 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-19-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 보성9경 사진·개요 없는 2건(일림산 용추계곡·주암호 서재필기념관)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=boseong
 ```
 
 
