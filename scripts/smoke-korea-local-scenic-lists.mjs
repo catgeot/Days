@@ -4200,6 +4200,135 @@ assert.ok(
   '목포 검색 9경 다도해 전경 썸네일',
 );
 
+const muanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'muan');
+const muanNine = muanMerged.filter((s) => s.localScenicListId === 'muan-gugyeong');
+assert.equal(muanNine.length, 9, '무안9경 9명');
+assert.equal(muanNine[0]?.groupTitle, '무안 구경');
+const muanDeficitNames = ['영산강 식영정과 느러지', '톱머리·홀통 해수욕장'];
+const muanDeficit = muanNine.filter((s) => muanDeficitNames.includes(s.attractionName));
+assert.equal(muanDeficit.length, 2, '무안9경 결손 2명');
+assert.ok(
+  muanDeficit.every((s) => s.overview && s.imageUrl),
+  '무안 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  muanDeficit.every((s) => !s.contentId),
+  '무안 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(muanDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '식영정·톱머리홀통 썸네일 다름',
+);
+const maSik = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:영산강식영정과느러지');
+assert.ok(maSik?.overview && maSik?.imageUrl, '무안 식영정과 느러지 overlay 사진·개요');
+assert.ok(!maSik?.contentId, '무안 식영정과 느러지 JSON contentId 없음 유지');
+assert.ok(maSik?.overview?.includes('몽탄면'), '무안 식영정 overlay 몽탄면');
+assert.ok(maSik?.overview?.includes('1630'), '무안 식영정 overlay 1630');
+assert.ok(maSik?.overview?.includes('237호'), '무안 식영정 overlay 문화재자료 237호');
+assert.ok(maSik?.overview?.includes('息營亭'), '무안 식영정 overlay 息營亭');
+assert.ok(maSik?.overview?.includes('息影亭'), '무안 식영정≠담양 息影亭');
+assert.ok(maSik?.overview?.includes('느러지전망대'), '무안 식영정≠나주 느러지전망대');
+assert.ok(maSik?.overview?.includes('한반도지형'), '무안 느러지≠영월 한반도지형');
+assert.ok(maSik?.imageUrl?.includes('spring_5_2_200401.jpg'), '무안 식영정 군 공식 항공 사진');
+assert.ok(maSik?.homepage?.includes('idx=247'), '무안 식영정 공식 홈');
+const maBeach = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:톱머리·홀통해수욕장');
+assert.ok(maBeach?.overview && maBeach?.imageUrl, '무안 톱머리·홀통 overlay 사진·개요');
+assert.ok(!maBeach?.contentId, '무안 톱머리·홀통 JSON contentId 없음 유지');
+assert.ok(maBeach?.overview?.includes('톱머리길 66'), '무안 톱머리 overlay 주소');
+assert.ok(maBeach?.overview?.includes('홀통길 198-1'), '무안 홀통 overlay 주소');
+assert.ok(maBeach?.overview?.includes('2km'), '무안 톱머리 overlay 백사장 2km');
+assert.ok(maBeach?.overview?.includes('윈드서핑'), '무안 홀통 overlay 윈드서핑');
+assert.ok(maBeach?.overview?.includes('도리포'), '무안 톱머리·홀통≠7경 도리포');
+assert.ok(maBeach?.overview?.includes('조금나루'), '무안 톱머리·홀통≠조금나루');
+assert.ok(maBeach?.imageUrl?.includes('tommeori_2.jpg'), '무안 톱머리 군 공식 사진');
+assert.ok(maBeach?.galleryUrls?.some((u) => u.includes('summer_4_200401.jpg')), '무안 홀통 군 공식 사진');
+assert.ok(maBeach?.homepage?.includes('tommeori_beach'), '무안 톱머리 공식 홈');
+assert.notEqual(maSik?.imageUrl, maBeach?.imageUrl, '식영정·톱머리홀통 썸네일 다름');
+assert.ok(!maBeach?.imageUrl?.includes('spring_5'), '톱머리·홀통≠식영정 공식 사진');
+const muanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '무안9경', {
+  injectLocalScenic: true,
+});
+const muanGlobeNine = muanGlobe.filter((s) => s.localScenicListId === 'muan-gugyeong');
+assert.equal(muanGlobeNine.length, 9, '무안 검색 무안9경 9행');
+assert.ok(
+  muanGlobe.find((s) => s.attractionName === '영산강 식영정과 느러지')?.overview?.includes('1630'),
+  '무안 검색 9경 식영정 개요',
+);
+assert.ok(
+  muanGlobe
+    .find((s) => s.attractionName === '영산강 식영정과 느러지')
+    ?.imageUrl?.includes('spring_5_2_200401.jpg'),
+  '무안 검색 9경 식영정 썸네일',
+);
+assert.ok(
+  muanGlobe
+    .find((s) => s.attractionName === '톱머리·홀통 해수욕장')
+    ?.imageUrl?.includes('tommeori_2.jpg'),
+  '무안 검색 9경 톱머리·홀통 썸네일',
+);
+const maSeung = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:승달산');
+assert.equal(maSeung?.contentId, '126614', '무안 승달산 JSON contentId 유지');
+assert.ok(maSeung?.overview?.includes('333m'), '무안 승달산 overlay 해발 333m');
+assert.ok(maSeung?.overview?.includes('청계면'), '무안 승달산 overlay 청계면');
+assert.ok(maSeung?.overview?.includes('법천사 무안'), '무안 승달산≠법천사 무안');
+assert.ok(maSeung?.overview?.includes('목포대'), '무안 승달산 overlay 목포대');
+assert.ok(maSeung?.imageUrl?.includes('seungdalsan_8.jpg'), '무안 승달산 군 공식 산나리 조망');
+assert.ok(maSeung?.homepage?.includes('seungdalsan'), '무안 승달산 공식 홈');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126614')?.imageUrl?.includes('seungdalsan_8.jpg'),
+  '무안 검색 Tour 행 승달산 126614 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'muan',
+    name: '승달산',
+    contentId: '126614',
+  }).imageUrl?.includes('seungdalsan_8.jpg'),
+  '탐색홈 무안9경 승달산 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    name: '승달산',
+    contentId: '126614',
+  }).imageUrl?.includes('seungdalsan_8.jpg'),
+  '탐색 검색 Tour 행 승달산 썸네일',
+);
+const maChoeui = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:초의선사탄생지');
+assert.equal(maChoeui?.contentId, '127177', '무안 초의선사탄생지 JSON contentId 유지');
+assert.ok(maChoeui?.overview?.includes('초의길 30'), '무안 초의 overlay 초의길 30');
+assert.ok(maChoeui?.overview?.includes('1786'), '무안 초의 overlay 1786');
+assert.ok(maChoeui?.overview?.includes('왕산리'), '무안 초의 overlay 왕산리');
+assert.ok(maChoeui?.overview?.includes('일지암'), '무안 초의≠해남 대흥사 일지암');
+assert.ok(maChoeui?.overview?.includes('법천사 무안'), '무안 초의≠법천사 무안');
+assert.ok(maChoeui?.imageUrl?.includes('/9/01.jpg'), '무안 초의 군 공식 전경');
+assert.ok(maChoeui?.homepage?.includes('historic_site'), '무안 초의 공식 홈');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127177')?.imageUrl?.includes('/9/01.jpg'),
+  '무안 검색 Tour 행 초의선사탄생지 127177 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'muan',
+    name: '초의선사탄생지',
+    contentId: '127177',
+  }).imageUrl?.includes('/9/01.jpg'),
+  '탐색홈 무안9경 초의선사탄생지 썸네일',
+);
+assert.notEqual(maSeung?.imageUrl, maChoeui?.imageUrl, '승달산·초의 썸네일 다름');
+assert.ok(!maSeung?.imageUrl?.includes('/9/01.jpg'), '승달산≠초의 공식 사진');
+assert.ok(!maChoeui?.imageUrl?.includes('seungdalsan'), '초의≠승달산 공식 사진');
+assert.ok(
+  muanGlobe.find((s) => s.attractionName === '승달산')?.imageUrl?.includes('seungdalsan_8.jpg'),
+  '무안 검색 9경 승달산 썸네일',
+);
+assert.ok(
+  muanGlobe
+    .find((s) => s.attractionName === '초의선사탄생지')
+    ?.imageUrl?.includes('/9/01.jpg'),
+  '무안 검색 9경 초의선사탄생지 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

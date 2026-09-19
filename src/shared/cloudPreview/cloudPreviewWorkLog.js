@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 63,
-  sessionPhase: '목포 결손 오버레이',
+  sessionNo: 64,
+  sessionPhase: '무안 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=mokpo',
+  previewPath: '/korea/theme/scenic?hub=muan',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-palgyeong-use-64-muan-search-thumbs',
+    session: '팔경 활용 #64, 무안 결손 오버레이',
+    title: '무안 검색 승달산·초의선사탄생지 빈 썸네일',
+    detail:
+      '사람 Preview 「무안」검색에서 무안 8경 승달산이 랜드마크 아이콘만 나왔습니다. Tour DB 126614 first_image가 공란입니다. 같은 검색 4경 초의선사탄생지 127177은 tourapi_attraction에 없어 라이브 채움도 안 됩니다. JSON contentId 기입 없이 무안군 문화관광 공식 사진(승달산 산나리 조망·초의길 30 전경)을 LOCAL_SCENIC_MEMBER_OVERLAYS에 보강했습니다. 도리포·낙지공원·백로 번식지는 Tour first_image가 있어 그대로 둡니다. 법천사 무안(GATEO 선정)과 구분합니다. Preview /qa/palgyeong-use — 「무안」검색 8경·4경 썸네일.',
+    at: '2026-09-19T07:05:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-64-muan-overlays',
+    session: '팔경 활용 #64, 무안 결손 오버레이',
+    title: '무안9경 식영정·느러지·톱머리·홀통 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 무안9경 결손 2건(영산강 식영정과 느러지·톱머리·홀통 해수욕장)의 공공 공식 팩트 개요·주소·무안군 문화관광 공식 사진을 보강했습니다. 식영정은 몽탄면 호반로 562-15 息營亭(3경, 1630 한호 임연·문화재자료 237호)와 영산강 느러지 곡강이며, 톱머리·홀통은 망운면 톱머리길 66·현경면 홀통길 198-1 백사장·해송입니다. 담양 息影亭·나주 느러지전망대·영월 한반도지형·도리포·조금나루와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=muan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T06:45:00.000Z',
+  },
   {
     id: '2026-09-19-search-enter-hub-1-mokpo-list',
     session: '탐색 Enter #1, 도시 허브 리스트',

@@ -1569,6 +1569,23 @@ const MP_DADO = `${MP_TOUR}/17316/archipelago1.jpg`;
 const MP_DADO_2 = `${MP_TOUR}/17316/archipelago2.jpg`;
 const MP_DADO_3 = `${MP_TOUR}/17316/archipelago.jpg`;
 const MP_DADO_HOME = 'https://www.mokpo.go.kr/tour/attraction/nineplace/archipelago';
+const MA_TOUR = 'https://tour.muan.go.kr/contents';
+const MA_SIK = `${MA_TOUR}/18/spring_5_2_200401.jpg`;
+const MA_SIK_2 = `${MA_TOUR}/18/spring_5_200401.jpg`;
+const MA_SIK_HOME =
+  'https://tour.muan.go.kr/tour/culture/cultural/treasure?mode=view&idx=247';
+const MA_TOP = `${MA_TOUR}/11/tommeori_2.jpg`;
+const MA_TOP_2 = `${MA_TOUR}/11/tommeori_3.jpg`;
+const MA_HOL = `${MA_TOUR}/66/summer_4_200401.jpg`;
+const MA_BEACH_HOME = 'https://www.muan.go.kr/tour/travel/tommeori_beach';
+const MA_SEUNG = `${MA_TOUR}/1/seungdalsan_8.jpg`;
+const MA_SEUNG_2 = `${MA_TOUR}/1/seungdalsan_4.jpg`;
+const MA_SEUNG_3 = `${MA_TOUR}/1/seungdalsan_10.jpg`;
+const MA_SEUNG_HOME = 'https://tour.muan.go.kr/tour/travel/seungdalsan';
+const MA_CHO = `${MA_TOUR}/9/01.jpg`;
+const MA_CHO_2 = `${MA_TOUR}/9/02.jpg`;
+const MA_CHO_3 = `${MA_TOUR}/9/historic_img01.jpg`;
+const MA_CHO_HOME = 'https://tour.muan.go.kr/tour/travel/historic_site';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3358,6 +3375,34 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     MP_DADO,
     [MP_DADO_2, MP_DADO_3],
     MP_DADO_HOME,
+  ),
+  'local-scenic:muan-gugyeong:영산강식영정과느러지': localScenicPhotoOverlay(
+    '무안9경 3경 영산강 식영정과 느러지는 몽탄면 이산리입니다. 무안군 문화관광 9경은 한호 임연 선생이 1630년 무안으로 입향한 이후 강학소요처로 지은 정자이며 영산강과 주변 경관이 어울린다고 적습니다. 주소는 호반로 562-15이며 지번은 이산리 612입니다. 전라남도 문화재자료 제237호(2002년 4월 20일) 무안 식영정(息營亭)입니다. 현재 건물은 1900년대 초반 중건한 정면 3칸·측면 3칸 팔작지붕입니다. 문의 061-450-5498입니다. 느러지는 영산강이 나주 동강면과 무안 몽탄면 사이에서 한반도처럼 늘어진 물돌이로, 영산강 8경 2경 몽탄노적이며 영월 동강보다 강폭이 넓습니다. 담양 식영정(息影亭·명승)·광주 환벽당·나주 동강면 느러지전망대·영월 한반도지형과 다른 몽탄 이산리 정자와 곡강입니다. 사진은 무안군 문화관광 봄 여행 식영정 항공·정자 공식 사진입니다.',
+    '전라남도 무안군 몽탄면 호반로 562-15 (이산리 612, 식영정)',
+    MA_SIK,
+    [MA_SIK_2],
+    MA_SIK_HOME,
+  ),
+  'local-scenic:muan-gugyeong:톱머리·홀통해수욕장': localScenicPhotoOverlay(
+    '무안9경 5경 톱머리·홀통 해수욕장은 망운면 톱머리와 현경면 홀통입니다. 무안군 문화관광은 톱머리를 무안읍에서 서쪽 8km 망운면 피서리이며 조수간만의 차가 커서 간조 때 길이 2km·폭 100m 백사장과 보호림 해송이 어우러진다고 적습니다. 주소는 톱머리길 66이며 문의 061-450-5628입니다. 홀통은 현경면 홀통길 198-1, 무안국제공항에서 북쪽 약 15km의 자연발생 해변으로 울창한 해송과 긴 백사장, 수심이 낮고 파도가 잔잔해 윈드서핑 적지입니다. 7경 도리포해수욕장·조금나루·신안 증도 해수욕장·목포 외달도와 다른 망운·현경 해변입니다. 사진은 무안군 문화관광 톱머리해수욕장 백사장·방조제, 여름 여행 홀통 해송 반도 공식 사진입니다.',
+    '전라남도 무안군 망운면 톱머리길 66 · 현경면 홀통길 198-1',
+    MA_TOP,
+    [MA_TOP_2, MA_HOL],
+    MA_BEACH_HOME,
+  ),
+  'local-scenic:muan-gugyeong:승달산': localScenicPhotoOverlay(
+    '무안9경 8경 승달산은 청계면 월선리·몽탄면입니다. 무안군 문화관광은 해발 333m로 높지 않으나 남도 바닷가에 있어 조망이 뛰어나고, 토양·기후가 야생난 자생에 맞아 난(蘭) 자생지로 이름났다고 적습니다. 산 이름은 고려 인종 때 원나라 승려 원명이 이 산에서 교세를 떨치고 제자 500여 명이 한꺼번에 깨달음을 얻었다는 전설에서 왔으며, 풍수지리로는 호남 4패 명혈의 첫째 혈처로 적힙니다. 산행은 목포대학교 정문에서 매봉·깃봉·하루재·천치골을 도는 원점회귀가 많고, 깃대봉이 정상입니다. 같은 산 법천사(GATEO 선정 법천사 무안, 몽탄면 법천길)·목포대 캠퍼스·목우암과 다른 청계·몽탄 산봉입니다. 사진은 무안군 문화관광 승달산 산나리 조망·암릉·설경 공식 사진입니다.',
+    '전라남도 무안군 청계면 월선리 (승달산, 목포대 정문·깃대봉)',
+    MA_SEUNG,
+    [MA_SEUNG_2, MA_SEUNG_3],
+    MA_SEUNG_HOME,
+  ),
+  'local-scenic:muan-gugyeong:초의선사탄생지': localScenicPhotoOverlay(
+    '무안9경 4경 초의선사탄생지는 삼향읍 왕산리입니다. 무안군 문화관광은 주소를 초의길 30으로 두고, 초의 대선사가 1786년(정조 10년) 4월 5일 삼향읍 왕산리에서 태어났으며 속성은 흥성장씨·이름은 의순(意恂), 호 초의(艸衣)는 스승 완호 윤우에게서 받았다고 적습니다. 15세 나주 운흥사 출가, 19세 해남 대둔사에서 구족계를 받았고 다성(茶聖)으로 한국의 다도를 중흥했습니다. 1997년 무안군 문화인물 선정 뒤 생가·추모각·기념전시관·차문화관을 복원·건립했고, 음력 4월 5일 전후로 초의선사탄생문화제를 엽니다. 해남 대흥사 일지암·강진 다산초당·몽탄 법천사 무안과 다른 삼향 왕산리 생가·다도 성지입니다. 사진은 무안군 문화관광 초의선사 탄생지 전경·설경·경내 공식 사진입니다.',
+    '전라남도 무안군 삼향읍 초의길 30 (왕산리 초의선사 탄생지)',
+    MA_CHO,
+    [MA_CHO_2, MA_CHO_3],
+    MA_CHO_HOME,
   ),
 };
 
