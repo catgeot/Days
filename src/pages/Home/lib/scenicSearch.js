@@ -48,6 +48,52 @@ export function canonicalScenicSearchQuery(query) {
   return raw;
 }
 
+const TOUR_ADDR_PROVINCE_PREFIX = {
+  서울: '서울특별시',
+  부산: '부산광역시',
+  대구: '대구광역시',
+  인천: '인천광역시',
+  광주: '광주광역시',
+  대전: '대전광역시',
+  울산: '울산광역시',
+  세종: '세종특별자치시',
+  경기: '경기도',
+  강원: '강원',
+  충북: '충청북도',
+  충남: '충청남도',
+  전북: '전북',
+  전남: '전라남도',
+  경북: '경상북도',
+  경남: '경상남도',
+  제주: '제주',
+};
+
+/**
+ * 허브 표기 「경기 광주」는 Tour addr 「경기도 광주시」부분일치가 안 됨.
+ * @param {string} hubName
+ */
+export function scenicTourAddrNeedle(hubName) {
+  const raw = String(hubName || '').trim();
+  if (!raw) return raw;
+  const parts = raw.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return raw;
+  const prefix = TOUR_ADDR_PROVINCE_PREFIX[parts[0]];
+  if (!prefix) return raw;
+  return `${prefix} ${parts.slice(1).join(' ')}`;
+}
+
+/**
+ * TourAPI title/addr1 ilike용. 허브 공식명(경기 광주)이 아니라 주소 표기(경기도 광주).
+ * @param {string} query
+ */
+export function scenicTourSearchQuery(query) {
+  const canonical = canonicalScenicSearchQuery(query);
+  const hub =
+    resolveCityAttractionHub(canonical) || resolveCityAttractionHub(query);
+  const needle = hub?.name ? scenicTourAddrNeedle(hub.name) : canonical;
+  return sanitizeScenicDbSearchQuery(needle);
+}
+
 /**
  * 짧은 쿼리 오탐 완화용 본명 코어.
  * 「창원 주남저수지」→ 주남저수지 (허브·선두 토큰 제거).

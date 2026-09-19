@@ -17,6 +17,8 @@ import {
   sanitizeScenicDbSearchQuery,
   shouldMergeHubLocalScenic,
   canonicalScenicSearchQuery,
+  scenicTourSearchQuery,
+  scenicTourAddrNeedle,
 } from '../src/pages/Home/lib/scenicSearch.js';
 import { nextTourCatsWhenCountsZero } from '../src/pages/KoreaTheme/scenicDefaultChips.js';
 import { SCENIC_REGION_ORDER } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
@@ -367,8 +369,65 @@ assert.equal(
   '창령 검색 = 창녕 국가유산 명승 2',
 );
 assert.ok(
-  pageSrc.includes('canonicalScenicSearchQuery(searchFilter)'),
-  '관광지 DB 검색도 허브 공식명 사용',
+  pageSrc.includes('scenicTourSearchQuery(searchFilter)'),
+  '관광지 DB 검색은 허브 주소 표기(경기도 광주) 사용',
+);
+assert.equal(
+  canonicalScenicSearchQuery('경기 광주'),
+  '경기 광주',
+  '경기 광주 허브 공식명 유지',
+);
+assert.equal(
+  scenicTourAddrNeedle('경기 광주'),
+  '경기도 광주',
+  '경기 광주 → Tour addr 경기도 광주',
+);
+assert.equal(
+  scenicTourSearchQuery('경기 광주'),
+  '경기도 광주',
+  '경기 광주 Tour 검색어는 경기도 광주',
+);
+assert.equal(
+  scenicTourSearchQuery('경기광주'),
+  '경기도 광주',
+  '경기광주 별칭 Tour 검색어도 경기도 광주',
+);
+assert.equal(
+  scenicTourSearchQuery('경기도 광주'),
+  '경기도 광주',
+  '경기도 광주 입력도 Tour 주소 표기',
+);
+assert.equal(
+  scenicTourSearchQuery('경남 고성'),
+  '경상남도 고성',
+  '경남 고성 → 경상남도 고성 (강원 고성과 구분)',
+);
+assert.equal(
+  scenicTourSearchQuery('창녕'),
+  '창녕',
+  '단일 시군명은 Tour 검색어 그대로',
+);
+assert.equal(
+  scenicTourSearchQuery('창령'),
+  '창녕',
+  '창령 Tour 검색어도 창녕',
+);
+assert.equal(
+  scenicTourSearchQuery('경복궁'),
+  '경복궁',
+  '명소명은 Tour 검색어 그대로',
+);
+const gwangjuGiCurated = filterScenicSpotsByQuery(curated, '경기 광주', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  gwangjuGiCurated.some((s) => s.localScenicListId === 'gwangju-gi-palgyeong'),
+  '경기 광주 검색은 광주8경 주입',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '경기 광주').length,
+  0,
+  '경기 광주 국가유산 명승 0 (남한산성은 사적)',
 );
 assert.equal(
   shouldMergeHubLocalScenic({
