@@ -178,21 +178,35 @@ export const useTravelData = (user) => {
     }
   }, [user]);
 
-  const updateMessages = useCallback(async (id, messages) => {
+  const updateMessages = useCallback(async (id, messages, extras = {}) => {
     const trip = savedTrips.find(t => t.id === id);
     
     if (messages.length === 1 && trip && trip.destination && trip.destination !== "New Session" && trip.destination !== "Scanning...") {
         recordInteraction(trip.destination, 'chat');
     }
 
+    const sessionPatch = extras?.mooniSession;
+    const hasSession = sessionPatch && typeof sessionPatch === 'object';
+
     setSavedTrips(prev => {
-      const updated = prev.map(t => String(t.id) === String(id) ? { ...t, messages } : t);
+      const updated = prev.map(t => {
+        if (String(t.id) !== String(id)) return t;
+        const next = { ...t, messages };
+        if (hasSession) {
+          next.curation_data = { ...(t.curation_data || {}), mooniSession: sessionPatch };
+        }
+        return next;
+      });
       if (!user) syncLocalStorage(updated); 
       return updated;
     });
     
     if (user) {
-      const { error } = await supabase.from('saved_trips').update({ messages }).eq('id', id);
+      const dbPatch = { messages };
+      if (hasSession) {
+        dbPatch.curation_data = { ...(trip?.curation_data || {}), mooniSession: sessionPatch };
+      }
+      const { error } = await supabase.from('saved_trips').update(dbPatch).eq('id', id);
       if (error) console.warn("🚨 [DB Error] updateMessages:", error);
     }
   }, [savedTrips, user]);

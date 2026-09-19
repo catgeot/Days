@@ -27,6 +27,31 @@ const BOOKING_KEYWORDS = [
   'reserve',
 ];
 
+const ITINERARY_KEYWORDS = [
+  '일정',
+  '코스',
+  '루트',
+  '동선',
+  '스케줄',
+  '첫날',
+  '일정 짜',
+  '일정 추천',
+  '코스 추천',
+  '동선 추천',
+  '루트 추천',
+  '여행 계획',
+  '당일치기',
+  'itinerary',
+  'route',
+  'schedule',
+  'trip plan',
+  'plan a trip',
+  'day plan',
+  'first day',
+];
+
+const ITINERARY_PATTERN = /\d+\s*(?:박|일|days?)|일정|루트|동선|코스|itinerary/i;
+
 const TRANSPORT_TYPE_KEYWORDS = {
   ferry: ['페리', 'ferry', '쾌속선', '스피드보트', 'speedboat', '보트', 'boat'],
   bus: ['버스', 'bus', '미니버스', 'minivan', 'van'],
@@ -267,6 +292,20 @@ export function resolveBookingActions({
  * @param {string} text
  * @param {Array<{ text?: string }>} [chatHistory]
  */
+export function detectItineraryIntent(text, chatHistory = []) {
+  const recent = chatHistory.slice(-4).map((m) => m.text ?? '').filter(Boolean);
+  const combined = [text, ...recent].join(' ');
+  const lower = combined.toLowerCase();
+
+  if (ITINERARY_KEYWORDS.some((k) => lower.includes(k.toLowerCase()))) return true;
+  if (ITINERARY_PATTERN.test(combined)) return true;
+  return false;
+}
+
+/**
+ * @param {string} text
+ * @param {Array<{ text?: string }>} [chatHistory]
+ */
 export function shouldUsePlannerPersona(text, chatHistory = []) {
-  return detectBookingIntent(text, chatHistory);
+  return detectBookingIntent(text, chatHistory) || detectItineraryIntent(text, chatHistory);
 }

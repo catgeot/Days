@@ -24,6 +24,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-19-mooni-itinerary-3-main-merge',
+    session: 'MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합',
+    title: '체류·공항·항공시각 전제 유지 QA 후 PR #281 메인 병합',
+    detail:
+      '파리 MOONi에 오를리 3박 4일·KE901 CDG 오후 2시를 말한 뒤 「둘째 날은?」이 같은 전제를 쓰는지 상황극·스모크로 확인했습니다. 도시명 파리 오탐 없음. 턴당 추출 ~1.4ms. PR #281을 main에 병합합니다. 확인은 www.gateo.kr/place/paris',
+    at: '2026-09-19T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-mooni-itinerary-2-session-memory',
+    session: 'MOONi 일정 페이스메이커 #2, 사용자 피드백 반영 및 실전 응답 튜닝',
+    title: '여행지 세션에 체류·항공편·동선 사실을 저장하고 무니가 이어 씀',
+    detail:
+      '파리 장소 페이지 MOONi에게 체류 일수·도착 공항·항공 시각·현재 동선을 말하면 그 여행지 세션에 남고, 다음 질문에서도 전제로 씁니다. Preview https://www.gateo.kr/place/paris 에서 「오를리 3박 4일」 후 「둘째 날은?」이 같은 체류·공항을 기억하는지 확인합니다.',
+    at: '2026-09-19T04:20:00.000Z',
+  },
+  {
     id: '2026-09-19-palgyeong-use-62-gwangju-gi-tour-search',
     session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
     title: '경기 광주 관광공사 검색 0건 수정',

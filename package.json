@@ -165,6 +165,7 @@
     "smoke:search-enter-match": "node scripts/smoke-search-enter-match.mjs",
     "smoke:mood-search-intent": "node scripts/smoke-mood-search-intent.mjs",
     "smoke:mooni-ask-bridge": "node scripts/smoke-mooni-ask-bridge.mjs",
+    "smoke:mooni-trip-session": "node scripts/smoke-mooni-trip-session.mjs",
     "smoke:explore-choice-overlay": "node scripts/smoke-explore-choice-overlay.mjs",
     "smoke:zakynthos-search": "node scripts/smoke-zakynthos-search.mjs",
     "smoke:unseen-place-search": "node scripts/smoke-unseen-place-search.mjs",

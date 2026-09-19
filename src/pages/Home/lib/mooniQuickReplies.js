@@ -89,7 +89,10 @@ const L2_PREP = [
 const L2_ENJOY = [
   { id: 'activities' },
   { id: 'food' },
-  { id: 'itinerary' },
+  {
+    id: 'itinerary',
+    mobileLabel: true,
+  },
   { id: 'companion' },
 ];
 
