@@ -49,6 +49,10 @@ import {
   relabelHomonymDisplay,
 } from './travelSearchHomonyms';
 import { shouldSkipGeocodeForMood } from './moodSearchIntent';
+import {
+  collectKoreaHomonymDisambiguationCandidates,
+  shouldOfferKoreaHomonymDisambiguation,
+} from './detectHomonymLocation.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -188,9 +192,18 @@ function buildSettlementHubCluster(hub, preferSettlement) {
 
 /**
  * 명소 히트가 한 hub로만 모이면 역펼침 (다중 hub면 나열만).
+ * 부분일치(송암→송암스페이스센터)는 형제 명소(일산호수공원)를 펼치지 않음.
  * @param {{ hub: object, attraction: object }[]} attractionHits
+ * @param {string} [query]
  */
-function uniqueHubFromAttractionHits(attractionHits) {
+function attractionHitIsExactQuery(query, attraction) {
+  const key = normalizeKey(query);
+  if (!key) return false;
+  const names = [attraction?.name, attraction?.name_en, ...(attraction?.aliases || [])];
+  return names.some((n) => normalizeKey(n) === key);
+}
+
+function uniqueHubFromAttractionHits(attractionHits, query) {
   if (!attractionHits?.length) return null;
   const byId = new Map();
   for (const { hub, attraction } of attractionHits) {
@@ -199,7 +212,9 @@ function uniqueHubFromAttractionHits(attractionHits) {
     byId.get(hub.hubId).prefers.push(attraction);
   }
   if (byId.size !== 1) return null;
-  return [...byId.values()][0];
+  const single = [...byId.values()][0];
+  if (query && !single.prefers.some((a) => attractionHitIsExactQuery(query, a))) return null;
+  return single;
 }
 
 /**
@@ -233,6 +248,13 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const key = normalizeKey(q);
   const out = [];
   const seen = new Set();
+
+  if (shouldOfferKoreaHomonymDisambiguation(q)) {
+    for (const item of collectKoreaHomonymDisambiguationCandidates(q)) {
+      pushUnique(out, seen, item);
+    }
+    return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
+  }
 
   const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
@@ -317,7 +339,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
       );
     }
   } else {
-    const singleHubHit = uniqueHubFromAttractionHits(attractions);
+    const singleHubHit = uniqueHubFromAttractionHits(attractions, q);
     if (singleHubHit && hubs.length === 0) {
       pushHubAttractionCluster(singleHubHit.hub, out, seen, {
         preferAttraction: singleHubHit.prefers[0],
@@ -365,7 +387,8 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     exactListHit ||
     exactAttraction ||
     exactSettlement ||
-    shouldSkipGeocodeForMood(q)
+    shouldSkipGeocodeForMood(q) ||
+    shouldOfferKoreaHomonymDisambiguation(q)
   ) {
     return local;
   }
@@ -527,6 +550,13 @@ export async function buildCuratedEnterDisambiguation(query) {
     return ensureDisambiguation(q, candidates, `'${titleName}' → 도시와 명소를 골라주세요`);
   }
 
+  if (shouldOfferKoreaHomonymDisambiguation(q)) {
+    const dictCandidates = collectKoreaHomonymDisambiguationCandidates(q);
+    if (dictCandidates.length >= 2) {
+      return ensureDisambiguation(q, dictCandidates, `'${q}' → 지역을 선택하세요`);
+    }
+  }
+
   const attractionHit = resolveHubAttraction(q);
   if (attractionHit) {
     const { hub, attraction } = attractionHit;
@@ -538,8 +568,8 @@ export async function buildCuratedEnterDisambiguation(query) {
     const others = rest.filter((c) => normalizeKey(c.name) !== preferKey);
     return ensureDisambiguation(
       q,
-      [hubCard, prefer, ...others],
-      `'${hub.name}' → 도시와 명소를 골라주세요`,
+      [prefer, hubCard, ...others],
+      `'${attraction.name}' → 원하는 장소를 선택하세요`,
     );
   }
 

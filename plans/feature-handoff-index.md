@@ -14,33 +14,48 @@
 
 ## 활성 목록
 
-### 여행지 매칭 아키텍처
+### MOONi 일정 페이스메이커
 
 | | |
 |--|--|
-| **상태** | **#12 push** · tip `04b69655` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
-| **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `04b69655` |
-| **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
-| **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
+| **상태** | **#2 push** · tip `7c2c083d` · PR [#281](https://github.com/catgeot/Days/pull/281) · **사람 Preview** |
+| **브랜치** | `cursor/mooni-itinerary-concierge-76f0` |
+| **tip** | `7c2c083d` |
+| **PR** | [#281](https://github.com/catgeot/Days/pull/281) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 하드코딩 사전 SSOT 일원화 완료 |
-| **소유** | `koreaPlaceMatchDictionary.js` · `mrtStayQuery.js` · `HomonymChoiceChips.jsx` · `SearchSuggestionList.jsx` · `detectHomonymLocation.js` · `searchEnterMatch.js` |
+| **Preview** | https://www.gateo.kr/place/paris → 파리 페이지 내 MOONi 대화 |
+| **소유** | `mooniTripSession.js` · `ChatModal.jsx` · `mooniPromptBundles.js` · `bookingIntentResolver.js` · `mooniChipPrompts.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:mrt-stay` PASS · `smoke:ko-homonym-ri-search` PASS · `smoke:explore-search-aliases` PASS · `npx vite build` PASS |
+| **VERIFY** | `node scripts/smoke-mooni-ask-bridge.mjs` PASS · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-여행지 매칭 #13, 종합 QA 및 메인 병합 준비
+MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-19-project-log.md
-@plans/korea-destination-matching-architecture-plan.md
-브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
+브랜치 cursor/mooni-itinerary-concierge-76f0 · PR #281 · Preview https://www.gateo.kr/place/paris
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview에서 주요 지명(종각, 광천, 송암, 강원대 등) 검색 및 숙소·갤러리 확인 후 이상 없으면 PR #276 병합 준비
-검증: npm run smoke:ko-homonym-ri-search PASS · npm run smoke:explore-search-aliases PASS · npm run smoke:mrt-stay PASS · npx vite build PASS
+작업: 파리 MOONi에 체류·공항·항공시각을 말한 뒤 후속 질문이 같은 전제를 쓰는지 확인. OK면 PR #281 병합
+검증: node scripts/smoke-mooni-ask-bridge.mjs PASS · npm run build PASS
 ```
+
+---
+
+### 여행지 매칭 아키텍처 — main 병합 완료 ✅
+
+| | |
+|--|--|
+| **상태** | **#14 merge ✅ · 주제 종료** · main `e89de918` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **브랜치** | `cursor/dest-match-arch` · merge `e89de918` |
+| **PR** | [#276](https://github.com/catgeot/Days/pull/276) (MERGED) |
+| **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
+| **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` — 동음 지명 다후보 · First-Pass · Geo-Sanity · 갤러리 시설컷 · `koreaPlaceMatchDictionary` SSOT |
+| **VERIFY** | `smoke:ko-homonym-ri-search` · `smoke:explore-search-aliases` · `smoke:mrt-stay` · `vite build` PASS |
+| **성과** | #1 갤러리 시설컷. #2 Enter 광천선굴. #3 Geo-Sanity. #4 First-Pass. #5 카테고리 파이프. #6~10 동음 다후보·칩. #11 송암 숙소 춘천. #12 사전 SSOT. #14 `/qa/dest-match` → PROD |
+
+**다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr`. `/qa/dest-match` → PROD `/`.
 
 ---
 
@@ -532,17 +547,17 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#62 QA push** tip `293a5c1a` · PR [#280](https://github.com/catgeot/Days/pull/280) · 광주8경 시 공식 8명 재정비 · **#63 목포 결손 오버레이** |
+| **상태** | **#62 QA push** tip `0979bf47` · PR [#280](https://github.com/catgeot/Days/pull/280) · 광주8경 재정비 + 관광공사 검색 「경기도 광주」 · **#63 목포 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `293a5c1a` |
+| **tip** | `0979bf47` |
 | **PR** | [#280](https://github.com/catgeot/Days/pull/280) · [#279](https://github.com/catgeot/Days/pull/279) merge ✅ · [#278](https://github.com/catgeot/Days/pull/278) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gwangju_gi` 광주8경 시 공식 8명 · 화담숲·곤지암도자공원은 GATEO 선정 |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gwangju_gi` · 검색 「경기 광주」관광공사 목록 |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). **#38** 천안8경 4(#243). **#39** 담양10경 4(#245). **#40** 밀양8경 4. **#41** 영덕9경 4 + QA 영덕 검색 썸네일 3·투어 오탐. **#42** 진도10경 4 + QA 검색 조도(조도6군도) 553447 썸네일(문경8경은 사진·개요 기완료로 건너뜀). **#43** 함평8경 4 + QA 1경·2경 썸네일 분리(엑스포 `4065063` ≠ 생태 `3536105`). **#44** 해남8경 4. **#45** 홍성12경 4 + QA 검색 오서산·죽도(홍성)·용봉산·11경 홍주의사총 썸네일. **#46** 화순11경 4 + QA 7경 연둔리 숲정이·검색 3014431 썸네일. **#47** 거제9경 3 + QA 검색 공곶이 2536196·식물원·매미성·구조라·지심도터미널 2756617 썸네일. **#48** 동해비경 3(호해정·할미바위·초록봉) + QA 용추·반석 오버레이가 Tour `125673` firstimage를 덮지 않게 함·망상 `125713`·어달 `125708`. **#49** 영광9경 3 + QA 불갑산도립공원 `126248`은 firstimage 공란·사진은 detailImage. **#50** 고흥10경 3 + QA 팔영산 `125426`·영남용바위 `2782706`. **#51** 김해9경 3(#265 merge). **#52** 대구12경 3(#267 merge). **#53** 여수10경 3(#268 merge). **#54** 예천8경 3(금당실→용문면 십승지·469호 송림·곤충생태원→효자면 연구소·무당벌레관·석송령→감천면 294호 부자나무) + QA 검색「예천」신라식물원 `1910438` 빈 썸네일 + QA 용궁시장 회룡포(126734) 항공을 군 공식 시장 사진으로 교체. **#55** 인천9경 3(아라온→계양 장기동 109-1 빛의 거리·씨사이드파크→구읍로 75 레일바이크·강화읍 원도심→용흥궁 도보해설). **#56** 양구9경 3(수목원→동면 숨골로310번길 132 도내 6번째 공립·봉화산→국토정중앙면 죽리 875m 주말 산행·상무룡 출렁다리→간척월명로 1719-21 파로호 335m). **#57** 정읍9경 3(동학→덕천면 동학로 742 황토현 2022 공원·용산호→신정동 132-11 미르샘 642m·월영습지→쌍암동 1029·송산동 산112 2014 습지보호). **#58** 화암8경 3(거북바위→화암리 336-1 약수 진입 절벽 둘레 6m·용마소→화암리 1306-1 그림바위 앞 반석 용사소·화표주→화암리 329-4 화표동 삼거리 돌기둥). **#59** 태백8경 3(화석산지→장성동 산42-2 천연기념물 416호 직운산층·용연굴→태백로 283-29 해발 920m 건식 석회동굴·절골→오투로 116 황지동 캠핑장·본적사지). **#60** 의정부8경 3(도정봉→장암동 526m 만가대·동막골·기차바위·철모바위·경전철→2012 발곡~탑석·시장→시민로121번길 43-2 1978 가나다라동). **#61** 통영팔경 3(남망산공원→동호동 남망공원길 29 1997 조각공원·제승당→한산일주로 70 사적 113호 운주당 터·운하→당동~미수동 1932 3중 교통) + QA 1경 연화도 용머리(`127103` U투어 사진 idx=16550·홈 idx=1660, pstatic 403·badaland 인증서 오류)·이순신공원(`584970` 공사 동상, 팔경 아님). 삼덕항 `2782775`는 공식 사진 없어 건너뜀. 순수 사진/개요 누락 **46**/876. 사람 Preview는 같은 턴 병행. **#62** 광주8경 시 공식 8명 재정비(남한산성·분원도요지&팔당물안개공원·경안천·앵자봉&천진암·무갑산·태화산·경기도자박물관·중대물빛공원). 화담숲·곤지암도자공원은 GATEO 선정만. 송정사 제외. 2·4·6·7경 시 공식 사진. 순수 사진/개요 누락 **44**/876. 다음 허브 **목포9경 2**(목포진·다도해 전경) |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). **#28** 강진 5(#226 merge) · 12경 제목·청자단지(#228). **#29** 선유8경 5(#229). **#30** 금산10경 5(#231). **#31** 요광리 은행나무 사진·서대산·진악산 빈 썸네일(#231 merge). **#32** 남해12경 5 · 검색 그룹명 「남해 12경」(#232 merge). **#33** 포항12경 5(#235 merge). **#34** 안양9경 4(#236 merge). **#35** 증평구경 4(#237 merge). **#36** 계룡9경 4(#238 merge). **#37** 논산11경 4 + 관광지 검색 빈 썸네일 3(#240). **#38** 천안8경 4(#243). **#39** 담양10경 4(#245). **#40** 밀양8경 4. **#41** 영덕9경 4 + QA 영덕 검색 썸네일 3·투어 오탐. **#42** 진도10경 4 + QA 검색 조도(조도6군도) 553447 썸네일(문경8경은 사진·개요 기완료로 건너뜀). **#43** 함평8경 4 + QA 1경·2경 썸네일 분리(엑스포 `4065063` ≠ 생태 `3536105`). **#44** 해남8경 4. **#45** 홍성12경 4 + QA 검색 오서산·죽도(홍성)·용봉산·11경 홍주의사총 썸네일. **#46** 화순11경 4 + QA 7경 연둔리 숲정이·검색 3014431 썸네일. **#47** 거제9경 3 + QA 검색 공곶이 2536196·식물원·매미성·구조라·지심도터미널 2756617 썸네일. **#48** 동해비경 3(호해정·할미바위·초록봉) + QA 용추·반석 오버레이가 Tour `125673` firstimage를 덮지 않게 함·망상 `125713`·어달 `125708`. **#49** 영광9경 3 + QA 불갑산도립공원 `126248`은 firstimage 공란·사진은 detailImage. **#50** 고흥10경 3 + QA 팔영산 `125426`·영남용바위 `2782706`. **#51** 김해9경 3(#265 merge). **#52** 대구12경 3(#267 merge). **#53** 여수10경 3(#268 merge). **#54** 예천8경 3(금당실→용문면 십승지·469호 송림·곤충생태원→효자면 연구소·무당벌레관·석송령→감천면 294호 부자나무) + QA 검색「예천」신라식물원 `1910438` 빈 썸네일 + QA 용궁시장 회룡포(126734) 항공을 군 공식 시장 사진으로 교체. **#55** 인천9경 3(아라온→계양 장기동 109-1 빛의 거리·씨사이드파크→구읍로 75 레일바이크·강화읍 원도심→용흥궁 도보해설). **#56** 양구9경 3(수목원→동면 숨골로310번길 132 도내 6번째 공립·봉화산→국토정중앙면 죽리 875m 주말 산행·상무룡 출렁다리→간척월명로 1719-21 파로호 335m). **#57** 정읍9경 3(동학→덕천면 동학로 742 황토현 2022 공원·용산호→신정동 132-11 미르샘 642m·월영습지→쌍암동 1029·송산동 산112 2014 습지보호). **#58** 화암8경 3(거북바위→화암리 336-1 약수 진입 절벽 둘레 6m·용마소→화암리 1306-1 그림바위 앞 반석 용사소·화표주→화암리 329-4 화표동 삼거리 돌기둥). **#59** 태백8경 3(화석산지→장성동 산42-2 천연기념물 416호 직운산층·용연굴→태백로 283-29 해발 920m 건식 석회동굴·절골→오투로 116 황지동 캠핑장·본적사지). **#60** 의정부8경 3(도정봉→장암동 526m 만가대·동막골·기차바위·철모바위·경전철→2012 발곡~탑석·시장→시민로121번길 43-2 1978 가나다라동). **#61** 통영팔경 3(남망산공원→동호동 남망공원길 29 1997 조각공원·제승당→한산일주로 70 사적 113호 운주당 터·운하→당동~미수동 1932 3중 교통) + QA 1경 연화도 용머리(`127103` U투어 사진 idx=16550·홈 idx=1660, pstatic 403·badaland 인증서 오류)·이순신공원(`584970` 공사 동상, 팔경 아님). 삼덕항 `2782775`는 공식 사진 없어 건너뜀. 순수 사진/개요 누락 **46**/876. 사람 Preview는 같은 턴 병행. **#62** 광주8경 시 공식 8명 재정비 + QA 관광공사 검색 0건 수정(`경기 광주`→Tour addr `경기도 광주`, type12 40건). 화담숲·곤지암도자공원은 GATEO 선정만. 송정사 제외. 명승 0은 사실(남한산성은 사적). 순수 사진/개요 누락 **44**/876. 다음 허브 **목포9경 2**(목포진·다도해 전경) |
 
 **다음 제시어**:
 

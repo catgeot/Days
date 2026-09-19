@@ -3,49 +3,56 @@
  * 큐레이션 exact는 cityAttractionHubs aliases가 우선; 여기는 Mapbox 보조 쿼리용.
  */
 
+import { KO_EXPLORE_SEARCH_ALIASES } from './koreaPlaceMatchDictionary.js';
+
 const normalizeKey = (s) =>
   String(s ?? '')
     .trim()
     .toLowerCase()
     .replace(/\s+/g, '');
 
+const OVERSEAS_QUERY_ALIASES = [
+  ['람코', { canonical: '랑코 해변', romanized: 'Lang Co Beach, Vietnam' }],
+  ['랑코', { canonical: '랑코 해변', romanized: 'Lang Co Beach, Vietnam' }],
+  ['랑코해변', { canonical: '랑코 해변', romanized: 'Lang Co Beach, Vietnam' }],
+  ['langco', { canonical: 'lang co beach', romanized: 'Lang Co Beach, Vietnam' }],
+  ['langcobeach', { canonical: 'lang co beach', romanized: 'Lang Co Beach, Vietnam' }],
+  ['다카마스', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
+  ['다카맀', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
+  ['타카마스', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
+  ['타카마츠', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
+  ['다카마츠', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
+  [
+    '사바섬',
+    {
+      canonical: '사바',
+      romanized: 'Sabah, Malaysia',
+      also: ['Saba, Caribbean Netherlands'],
+    },
+  ],
+  [
+    '사바 섬',
+    {
+      canonical: '사바',
+      romanized: 'Sabah, Malaysia',
+      also: ['Saba, Caribbean Netherlands'],
+    },
+  ],
+  [
+    'saba island',
+    {
+      canonical: 'Saba',
+      romanized: 'Saba, Caribbean Netherlands',
+      also: ['Sabah, Malaysia'],
+    },
+  ],
+];
+
 /** @type {Map<string, { canonical: string, romanized?: string, also?: string[] }>} */
 const QUERY_ALIASES = new Map(
   [
-    ['람코', { canonical: '랑코 해변', romanized: 'Lang Co Beach, Vietnam' }],
-    ['랑코', { canonical: '랑코 해변', romanized: 'Lang Co Beach, Vietnam' }],
-    ['랑코해변', { canonical: '랑코 해변', romanized: 'Lang Co Beach, Vietnam' }],
-    ['langco', { canonical: 'lang co beach', romanized: 'Lang Co Beach, Vietnam' }],
-    ['langcobeach', { canonical: 'lang co beach', romanized: 'Lang Co Beach, Vietnam' }],
-    ['다카마스', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
-    ['다카맀', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
-    ['타카마스', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
-    ['타카마츠', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
-    ['다카마츠', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
-    [
-      '사바섬',
-      {
-        canonical: '사바',
-        romanized: 'Sabah, Malaysia',
-        also: ['Saba, Caribbean Netherlands'],
-      },
-    ],
-    [
-      '사바 섬',
-      {
-        canonical: '사바',
-        romanized: 'Sabah, Malaysia',
-        also: ['Saba, Caribbean Netherlands'],
-      },
-    ],
-    [
-      'saba island',
-      {
-        canonical: 'Saba',
-        romanized: 'Saba, Caribbean Netherlands',
-        also: ['Sabah, Malaysia'],
-      },
-    ],
+    ...OVERSEAS_QUERY_ALIASES,
+    ...KO_EXPLORE_SEARCH_ALIASES,
   ].map(([key, value]) => [normalizeKey(key), value]),
 );
 

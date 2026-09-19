@@ -4,6 +4,7 @@
  */
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import { rankStayPointDisambiguationCandidates } from '../../../utils/mrtStayQuery.js';
+import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 
 const KIND_LABELS = {
   beach: '해변',
@@ -241,6 +242,11 @@ export function hubToPlacePin(hub) {
 export function attractionToPlacePin(hub, attraction) {
   const kindLabel = getKindLabel(attraction.kind);
   const contentId = attractionTourContentId(attraction);
+  const placeCategory = inferPlaceMatchCategory({
+    kind: attraction.kind,
+    name: attraction.name,
+    name_ko: attraction.name,
+  });
   return {
     id: `hub-attr-${hub.hubId}-${normalizeKey(attraction.name)}`,
     slug: placeUrlSlug(attraction.name_en, attraction.name),
@@ -258,6 +264,9 @@ export function attractionToPlacePin(hub, attraction) {
     parentCity: hub.name,
     desc: `${hub.name}의 ${kindLabel} · ${attraction.name}`,
     ...(contentId ? { contentId } : {}),
+    ...(placeCategory
+      ? { tourCategory: placeCategory, placeCategory }
+      : {}),
   };
 }
 

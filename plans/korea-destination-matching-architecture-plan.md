@@ -106,16 +106,7 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 ### 다음 세션 제시어
 
-```
-여행지 매칭 #13, 종합 QA 및 메인 병합 준비
-@plans/feature-handoff-index.md
-@plans/2026-09-19-project-log.md
-@plans/korea-destination-matching-architecture-plan.md
-브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
-금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview에서 주요 지명(종각, 광천, 송암, 강원대 등) 검색 및 숙소·갤러리 확인 후 이상 없으면 PR #276 병합 준비
-검증: npm run smoke:ko-homonym-ri-search PASS · npm run smoke:explore-search-aliases PASS · npm run smoke:mrt-stay PASS · npx vite build PASS
-```
+없음 (주제 종료). 확인은 `https://www.gateo.kr/`. `/qa/dest-match` → PROD `/`.
 
 ---
 
@@ -123,8 +114,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | | |
 |--|--|
-| **세션** | **#12 완료** · 하드코딩 사전 정리 및 SSOT 일원화 · tip `04b69655` · PR [#276](https://github.com/catgeot/Days/pull/276) |
-| **브랜치** | `cursor/dest-match-arch` |
-| **Preview** | `/qa/dest-match` → git Preview `/` |
-| **다음** | `#13 종합 QA 및 메인 병합 준비` |
-| **잔여** | Preview 사람 QA 확인 후 PR #276 메인 병합. Edge `fetch-mrt-stays` 배포는 선택. |
+| **세션** | **#14 merge ✅ · 주제 종료** · main `e89de918` · PR [#276](https://github.com/catgeot/Days/pull/276) (MERGED) |
+| **브랜치** | `cursor/dest-match-arch` · merge `e89de918` |
+| **PROD** | `https://www.gateo.kr/` · `/qa/dest-match` → PROD `/` |
+| **다음** | 없음 (주제 종료) |
+| **잔여** | Edge `fetch-mrt-stays` 배포는 선택. |

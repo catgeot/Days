@@ -92,7 +92,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#62 QA push** tip `293a5c1a` · PR [#280](https://github.com/catgeot/Days/pull/280) · 광주8경 시 공식 8명 재정비 · **#63 목포 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#62 QA push** tip `0979bf47` · PR [#280](https://github.com/catgeot/Days/pull/280) · 광주8경 재정비 + 관광공사 검색 「경기도 광주」 · **#63 목포 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -163,7 +163,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 59 | `팔경 활용 #59, 태백 결손 오버레이` | A | **완료** · tip `a0f0d93b` · PR [#277](https://github.com/catgeot/Days/pull/277) · 태백8경 3 |
 | 60 | `팔경 활용 #60, 의정부 결손 오버레이` | A | **완료** · tip `3f6ce41b` · PR [#278](https://github.com/catgeot/Days/pull/278) · 의정부8경 3 |
 | 61 | `팔경 활용 #61, 통영 결손 오버레이` | A | **완료** · tip `df628a5d` · PR [#279](https://github.com/catgeot/Days/pull/279) · 통영팔경 3 + QA 1경 연화도 용머리 U투어 사진 idx=16550·홈 idx=1660(pstatic 403·badaland 인증서)·이순신공원 |
-| 62 | `팔경 활용 #62, 경기 광주 결손 오버레이` | A | **완료** · tip `293a5c1a` · PR [#280](https://github.com/catgeot/Days/pull/280) · 광주8경 시 공식 8명 재정비 · 화담숲·곤지암도자공원은 GATEO 선정 · 송정사 제외 |
+| 62 | `팔경 활용 #62, 경기 광주 결손 오버레이` | A | **완료** · tip `0979bf47` · PR [#280](https://github.com/catgeot/Days/pull/280) · 광주8경 시 공식 8명 재정비 · QA 관광공사 검색 `경기도 광주`(40건) · 화담숲·곤지암도자공원은 GATEO 선정 · 송정사 제외 |
 | 63 | `팔경 활용 #63, 목포 결손 오버레이` | A | **열기 가능** · 목포9경 2 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |

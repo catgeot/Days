@@ -230,6 +230,7 @@ function normalizeItem(
 ): Record<string, unknown> {
   const contentId = pickStr(item, "contentid", "contentId");
   const title = pickStr(item, "title", "galTitle");
+  const imgname = pickStr(item, "imgname", "imgName");
   const firstimage = pickStr(item, "firstimage", "firstImage", "firstimage2");
   const originimgurl = pickStr(item, "originimgurl", "originImgUrl");
   const smallimageurl = pickStr(item, "smallimageurl", "smallImageUrl");
@@ -355,6 +356,10 @@ function normalizeItem(
   if (contentId) out.contentId = contentId;
   if (title) out.title = title;
   if (galTitle && !title) out.title = galTitle;
+  if (imgname) {
+    out.imgname = imgname;
+    if (action === "detailImage" && !out.title) out.title = imgname;
+  }
   if (firstimage) out.firstimage = firstimage;
   if (originimgurl) out.originimgurl = originimgurl;
   if (smallimageurl) out.smallimageurl = smallimageurl;

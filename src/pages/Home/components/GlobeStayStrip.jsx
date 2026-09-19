@@ -70,6 +70,10 @@ import { resolveFlightDepartureIataForTrip } from '../lib/flightOriginPreference
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
+  collectMrtStayGeoSanityKeys,
+  filterMrtStaysByGeoSanity,
+} from '../../../utils/mrtStayQuery';
+import {
   attachMrtStayDistances,
   buildNaverNearbyStayMapUrl,
   resolveMrtStayOrigin,
@@ -1457,10 +1461,14 @@ export default function GlobeStayStrip({
     [location, name],
   );
 
-  const rankedItems = useMemo(
-    () => attachMrtStayDistances(items, stayOrigin),
-    [items, stayOrigin],
-  );
+  const rankedItems = useMemo(() => {
+    const ranked = attachMrtStayDistances(items, stayOrigin);
+    if (!isMrtDomesticLocation(location)) return ranked;
+    return filterMrtStaysByGeoSanity(ranked, stayOrigin, {
+      isDomestic: true,
+      originKeys: collectMrtStayGeoSanityKeys(location),
+    });
+  }, [items, stayOrigin, location]);
 
   const naverNearbyStayUrl = useMemo(() => {
     if (!isMrtDomesticLocation(location)) return null;

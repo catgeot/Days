@@ -15,8 +15,10 @@ import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '..
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
+import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
+import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
   GALLERY_SWR_TTL_MS,
   filterHiddenGalleryIncoming,
@@ -32,8 +34,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.22 — 라틴 지명 스톡 · 단일 인물 제외 · DB 즉시 + 스톡 SWR */
-const CACHE_VERSION = 'v1.22';
+/** v1.23 — Tour 시설 컷 후 스톡 보강 · 라틴 지명 스톡 · 단일 인물 제외 */
+const CACHE_VERSION = 'v1.23';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -78,11 +80,7 @@ const GALLERY_QUERY_OVERRIDES = {
     primary: 'Federated States of Micronesia',
     backup: 'Micronesia island tropical ocean landscape',
   },
-  /** TourAPI searchPhoto가 404·오매칭(춘천 벚꽃)만 줌 → Unsplash 쿼리 보강 */
-  gongjicheon: {
-    primary: 'Gongjicheon Chuncheon',
-    backup: 'Chuncheon cherry blossom riverside park Korea',
-  },
+  ...KO_GALLERY_QUERY_OVERRIDES,
 };
 
 /** 쿼리 오버라이드가 있어도 place_stats를 쓰는 slug — 오버라이드만으로 DB 생략 금지 */
@@ -398,12 +396,16 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     let koreanName = '';
 
     if (typeof targetSpot === 'object') {
+        const locCat = typeof locationSource === 'object' ? locationSource : null;
         const resolved = resolveGalleryStockQuery(
           {
             ...targetSpot,
             galleryRegionSpot:
-              targetSpot.galleryRegionSpot ||
-              (typeof locationSource === 'object' ? locationSource.galleryRegionSpot : null),
+              targetSpot.galleryRegionSpot || locCat?.galleryRegionSpot || null,
+            placeCategory: targetSpot.placeCategory || locCat?.placeCategory,
+            tourCategory: targetSpot.tourCategory || locCat?.tourCategory,
+            parentCity: targetSpot.parentCity || locCat?.parentCity,
+            stayAdmin: targetSpot.stayAdmin || locCat?.stayAdmin,
           },
           FALLBACK_DICTIONARY,
         );
@@ -499,8 +501,24 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         : typeof locationSource === 'object' && locationSource
           ? locationSource
           : { name: koreanName, slug: stablePlaceKey };
+    const tourPlaceWithCategory =
+      typeof tourPlaceCandidate === 'object' && tourPlaceCandidate
+        ? {
+            ...tourPlaceCandidate,
+            ...(typeof locationSource === 'object' && locationSource?.placeCategory
+              ? {
+                  placeCategory:
+                    tourPlaceCandidate.placeCategory || locationSource.placeCategory,
+                  tourCategory: tourPlaceCandidate.tourCategory || locationSource.tourCategory,
+                  contentId: tourPlaceCandidate.contentId || locationSource.contentId,
+                  parentCity: tourPlaceCandidate.parentCity || locationSource.parentCity,
+                  stayAdmin: tourPlaceCandidate.stayAdmin || locationSource.stayAdmin,
+                }
+              : {}),
+          }
+        : tourPlaceCandidate;
     const resolvedTourMapping =
-      resolveTourApiPlace(tourPlaceCandidate) ||
+      resolveTourApiPlace(tourPlaceWithCategory) ||
       (typeof locationSource === 'object' ? resolveTourApiPlace(locationSource) : null) ||
       (koreanName ? resolveTourApiPlace(koreanName) : null);
     /** 해외는 TourAPI 제외 · SSOT curated(국내 시드) 또는 country=한국만 허용 */
@@ -677,11 +695,18 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       startSwr();
     };
 
+    let tourSeed = [];
+
     if (!forceRefresh) {
       unsplashPageRef.current = 1;
       pexelsPageRef.current = 0;
       const validCache = loadFromSmartCache(CACHE_KEY);
-      if (validCache && validCache.length > 0 && !isThinStockGallery(validCache)) {
+      if (
+        validCache &&
+        validCache.length > 0 &&
+        !isThinStockGallery(validCache) &&
+        !isSparseTourApiGallery(validCache)
+      ) {
         if (isStale()) return;
         processAndSetImages(validCache);
         if (allImagesRef.current.length === 0) {
@@ -758,6 +783,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 console.warn(
                   '⚠️ place_stats thin stock-only gallery — live Unsplash/Pexels refetch',
                 );
+              } else if (isSparseTourApiGallery(gallerySlice)) {
+                console.warn(
+                  '⚠️ place_stats sparse Tour facility gallery — live refetch',
+                );
               } else {
                 processAndSetImages(gallerySlice);
                 if (allImagesRef.current.length === 0) {
@@ -799,44 +828,48 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           });
           if (isStale()) return;
           if (tourImages.length > 0) {
+            const skipStock = thumbnailOnly || !isSparseTourApiGallery(tourImages);
             processAndSetImages(tourImages);
             saveToSmartCache(CACHE_KEY, allImagesRef.current);
-            markFetchDone();
-            if (dbStatsId || koreanName) {
-              const thumbnailToSave =
-                allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
-              const statsPlaceId = dbStatsId || koreanName;
-              if (thumbnailOnly) {
-                if (thumbnailToSave) {
+            if (skipStock) {
+              markFetchDone();
+              if (dbStatsId || koreanName) {
+                const thumbnailToSave =
+                  allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
+                const statsPlaceId = dbStatsId || koreanName;
+                if (thumbnailOnly) {
+                  if (thumbnailToSave) {
+                    supabase
+                      .from('place_stats')
+                      .upsert(
+                        { place_id: statsPlaceId, image_url: thumbnailToSave },
+                        { onConflict: 'place_id' },
+                      )
+                      .then(({ error }) => {
+                        if (error) console.error('⚠️ Supabase Thumbnail Update Error:', error);
+                      });
+                  }
+                } else {
                   supabase
                     .from('place_stats')
                     .upsert(
-                      { place_id: statsPlaceId, image_url: thumbnailToSave },
+                      {
+                        place_id: statsPlaceId,
+                        gallery_urls: allImagesRef.current,
+                        image_url: thumbnailToSave,
+                      },
                       { onConflict: 'place_id' },
                     )
                     .then(({ error }) => {
-                      if (error) console.error('⚠️ Supabase Thumbnail Update Error:', error);
+                      if (error) console.error('⚠️ Supabase Update Error:', error);
                     });
                 }
-              } else {
-                supabase
-                  .from('place_stats')
-                  .upsert(
-                    {
-                      place_id: statsPlaceId,
-                      gallery_urls: allImagesRef.current,
-                      image_url: thumbnailToSave,
-                    },
-                    { onConflict: 'place_id' },
-                  )
-                  .then(({ error }) => {
-                    if (error) console.error('⚠️ Supabase Update Error:', error);
-                  });
               }
+              finishLoading();
+              writeGallerySwrAt(stablePlaceKey);
+              return;
             }
-            finishLoading();
-            writeGallerySwrAt(stablePlaceKey);
-            return;
+            tourSeed = tourImages;
           }
         } catch (tourErr) {
           console.warn('⚠️ TourAPI gallery miss — fallback Unsplash/Pexels', tourErr);
@@ -949,6 +982,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           unsplashPageRef.current = Math.max(1, unsplashPageRef.current - 1);
           pexelsPageRef.current = Math.max(0, pexelsPageRef.current - 1);
           restorePreservedImages();
+        } else if (tourSeed.length > 0) {
+          /* Tour 선드롭 유지 */
         } else if (!isStale()) {
           processAndSetImages([]);
         }
@@ -959,8 +994,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (thumbnailOnly) {
           results = [results[0]];
         }
-        // 새로고침(Refresh) 시 페이지네이션처럼 기존 데이터를 유지하며 병합 (Append)
         let finalResults = capGalleryImages(results);
+        if (!thumbnailOnly && tourSeed.length > 0 && !forceRefresh) {
+          finalResults = mergeGalleryAppend(tourSeed, results).merged;
+        }
         if (!thumbnailOnly && forceRefresh && allImagesRef.current && allImagesRef.current.length > 0) {
           const { merged, added } = mergeGalleryAppend(allImagesRef.current, results);
           if (added === 0) {
@@ -1008,6 +1045,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           }
         }
         if (!forceRefresh) writeGallerySwrAt(stablePlaceKey);
+      } else if (tourSeed.length > 0 && !forceRefresh) {
+        console.warn('⚠️ 스톡 0 — Tour 선드롭 유지');
       } else {
         console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
         if (!isStale()) {
