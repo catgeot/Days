@@ -535,7 +535,7 @@ const PlannerTab = ({
                                         <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
                                     </div>
                                     <div id="planner-prep-flight" className="scroll-mt-24">
-                                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" omitFlightSearchCta />
+                                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
                                     </div>
                                     <div id="planner-prep-accommodation" className="scroll-mt-24">
                                         <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" omitDuplicateStayCta />

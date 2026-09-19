@@ -64,7 +64,7 @@ assert.match(planner, /PLANNER_STAGE\.TRANSFER/, '2단계 이동·통신');
 assert.match(planner, /PLANNER_STAGE\.ENJOY/, '3단계 즐기기');
 assert.match(planner, /place\.planner\.complexityBadge/, '복잡도 문구 완화');
 assert.doesNotMatch(planner, /\/100\)/, '복잡도 90/100 직결 표기 금지');
-assert.match(planner, /omitFlightSearchCta/, '항공 툴킷 중복 CTA 생략');
+assert.doesNotMatch(planner, /omitFlightSearchCta/, '항공권 검색 배너는 툴킷에 유지');
 assert.match(planner, /omitDuplicateStayCta/, '숙소 툴킷 중복 CTA 생략');
 assert.match(planner, /flightBooking/, '체크리스트에 항공 배너 통합');
 assert.match(planner, /PlannerPickupCta/, '픽업 CTA는 이동 단계');

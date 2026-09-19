@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 65,
-  sessionPhase: '보성 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=boseong',
-  qaShareSlug: 'palgyeong-use',
+  title: '항공권 검색',
+  sessionNo: 1,
+  sessionPhase: '위젯·배너 복구',
+  branch: 'cursor/tripcom-flight-widget-3ec3',
+  previewPath: '/place/paris/planner',
+  qaShareSlug: 'tripcom-flight',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-1-widget-banner',
+    session: '항공권 검색 #1, 위젯·배너 복구',
+    title: '플래너 트립닷컴 항공권 검색 복구',
+    detail:
+      '파리·이비사 플래너에서 트립닷컴 partners/ad iframe이 빈 흰 박스로만 보이고, 항공권 카드의 검색 배너가 빠져 있었습니다. 3rd-party iframe은 쓰지 않고 필수 툴킷은 IATA CTA로 열고, 항공권 카드 배너를 다시 넣었습니다. 탭하면 Trip.com 검색으로 이동합니다. Preview /qa/tripcom-flight — /place/paris/planner · /place/ibiza/planner.',
+    at: '2026-09-19T08:15:00.000Z',
+  },
   {
     id: '2026-09-19-festival-ui-5-footer-mooni',
     session: '축제 페이지 #5, 푸터·무니 겹침',

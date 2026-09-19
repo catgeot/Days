@@ -15,6 +15,9 @@ function hasTripcomFlightSchedulePrefill(value) {
  * @param {{ departDate?: string, forceModal?: boolean }} [options]
  */
 export function shouldUseTripcomFlightSearchModal(options = {}) {
+    if (TRIPCOM_FLIGHT_AD.iframeEmbedUsable !== true) {
+        return false;
+    }
     if (options.forceModal === true) {
         return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
     }

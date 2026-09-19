@@ -13,17 +13,18 @@ import {
     shouldUseTripcomFlightSearchModal,
 } from '../../../common/partnerNavigation';
 import { useTryOpenTripcomFlightSearch } from '../TripcomFlightSearchContext';
+import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import { computeKlookBannerLayout } from './klookBannerLayout';
 import { useTripcomPlannerBannerDimensions } from './useTripcomPlannerBannerDimensions';
 import { plannerCaption } from '../readableText';
 import PlannerAffiliateLinkBadge from './PlannerAffiliateLinkBadge';
+import FlightSearchCta from './FlightSearchCta';
 
 const MIN_DISPLAY_HEIGHT = 120;
 
 /**
- * Trip.com 제휴 항공 검색 배너 — iframe `aAirportCode` / `dAirportCode` 자동 주입.
- * 모바일(≤767px) 320×480, 데스크톱 900×200.
- * 배너 iframe에서 출발·도착·일자 등을 직접 수정할 수 있도록 클릭을 iframe에 전달합니다.
+ * Trip.com 제휴 항공 검색 — iframe이 3rd-party에서 비면 CTA로 상위 이동.
+ * iframeEmbedUsable일 때만 partners/ad iframe (모바일 320×480 · 데스크톱 900×200).
  */
 const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, returnDate, className = 'mt-3' }) => {
     const { t } = useTranslation();
@@ -116,6 +117,26 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
     const fullScreenLinkProps = shouldUseTripcomFlightSearchModal(fullScreenModalOpts)
         ? { href: '#', onClick: handleFullScreenClick, role: 'button' }
         : { href: clickUrl, target: linkTarget, rel: linkRel };
+
+    if (TRIPCOM_FLIGHT_AD.iframeEmbedUsable !== true) {
+        return (
+            <div
+                className={className}
+                data-tripcom-arrival-iata={arrivalIata || ''}
+                data-tripcom-flight-banner="cta"
+            >
+                <WhiteLabelWidget
+                    location={location}
+                    essentialGuide={essentialGuide}
+                    departDate={departDate}
+                    returnDate={returnDate}
+                    customTrigger={
+                        <FlightSearchCta location={location} essentialGuide={essentialGuide} />
+                    }
+                />
+            </div>
+        );
+    }
 
     return (
         <div className={className}>
