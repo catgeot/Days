@@ -53,23 +53,13 @@ assert.doesNotMatch(
   /omitFlightSearchCta/,
   '항공권 카드 검색 배너 생략 금지',
 );
-assert.match(planner, /<TripcomFlightBannerWidget/, '필수 툴킷 항공 검색 유지');
+assert.match(planner, /<TripcomFlightBannerWidget/, '플래너 상단 항공 검색 위젯 유지');
 assert.doesNotMatch(planner, /flightBooking=\{/, '항공 위젯을 2열 체크리스트에 넣지 않음');
-assert.match(
-  planner,
-  /id="planner-prep-flight-booking"[\s\S]*<TripcomFlightBannerWidget/,
-  '항공 위젯이 필수 단계 전체 폭',
-);
-assert.match(
-  planner,
-  /<TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" \/>\s*<PlannerStageNav/,
-  '방문 여행사가 단계 네비 위',
-);
+assert.doesNotMatch(planner, /PlannerStageNav/, '3단계 탭 분리 이전 단일 스크롤');
 
 const toolkit = read(
   'src/components/PlaceCard/tabs/planner/components/ToolkitCard.jsx',
 );
-assert.match(toolkit, /omitFlightSearchCta = false/, 'toolkit CTA default on');
 assert.match(toolkit, /<FlightSearchCta /, 'toolkit FlightSearchCta');
 
 const vercel = read('vercel.json');

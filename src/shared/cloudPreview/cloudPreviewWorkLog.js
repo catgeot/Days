@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 2,
-  sessionPhase: '3단계 이후 플래너 수정',
+  sessionNo: 3,
+  sessionPhase: '3단 분리 이전 플래너 복귀',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-3-revert-split',
+    session: '항공권 검색 #3, 3단 분리 이전 복귀',
+    title: '플래너 3단 분리 이전 단일 스크롤 복귀',
+    detail:
+      '플래너 3단(단계별 탭) 분리 이후 발생한 모바일 위젯 및 내비게이션 문제를 해소하기 위해 플래너 구조를 3단 분리 이전의 안정적인 단일 스크롤(출발 전 준비·도착 및 이동·즐기기) 상태로 롤백했습니다. 상단 트립닷컴 항공 위젯 및 체크리스트가 기존 규격으로 복구되었습니다.',
+    at: '2026-09-19T10:15:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-2-planner-fixes',
     session: '항공권 검색 #2, Preview OK면 PR 병합',
