@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #4 — 모바일 위젯 공식 발급 태그 1:1 일치 (Cloud)
+
+- **세션** `항공권 검색 #4, 모바일 위젯 태그 일치`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `98cf2a72` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 사용자가 Trip.com에서 직접 재발급받은 iframe 태그의 파라미터(`Allianceid`, `SID`, `trip_sub1`)와 게이트오 내부 URL 생성 로직 간 차이(추가 전달되던 `aAirportCode` 등)를 확인하여 공식 규격으로 동기화.
+- **완료**: `buildTripcomPlannerFlightUrl` ad 모드에서 공식 파라미터만 전달하도록 정비. iframe id(`S17158794`) 및 인라인 스타일 동기화.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 재발급된 Trip.com 태그 규격으로 위젯이 정상 로드되어 표시되는지 확인.
+
 ## 항공권 검색 #4 — 모바일 위젯 진단 패널 및 로그 복사 (Cloud)
 
 - **세션** `항공권 검색 #4, 모바일 진단 로그`
