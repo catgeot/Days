@@ -2,6 +2,18 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 축제 페이지 #5 — 푸터·무니 겹침 (Cloud)
+
+- **세션** `축제 페이지 #5, 푸터·무니 겹침`
+- **브랜치** `cursor/festival-sheet-ui-ec8b` · tip `89d7049a` · PR [#287](https://github.com/catgeot/Days/pull/287)
+- **원인**: 본문 하단 닫기가 Trust 푸터와 겹침. 우측 무니와 「위로」가 겹침. 무니 채팅이 어두움.
+- **완료**: 상세·목록 하단 패딩. 「위로」를 푸터 위로, 무니는 「위로」 위로. 무니 FAB·채팅을 하늘·민트 톤으로.
+- **VERIFY**: `npm run smoke:korea-festival-personal` PASS · `smoke:korea-festival-nearby` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/festival-ui → git Preview `/korea`
+- **QA**: 본문 끝 닫기·푸터 · 무니/위로 분리 · 밝은 무니 채팅
+- **다음**: Preview OK면 PR #287 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 향교 검색 #2 QA — 목록 10개 (Cloud)
 
 - **세션** `향교 검색 #2, 목록 페이지`
