@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `8bdcaaf4` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** (기존 위젯 복구) |
+| **상태** | **#2 push** · tip `ec937298` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** (필수 단계 전체 폭 위젯) |
 | **브랜치** | `cursor/tripcom-flight-widget-3ec3` |
 | **PR** | [#288](https://github.com/catgeot/Days/pull/288) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/tripcom-flight` → git Preview `/place/paris/planner` — iframe 배너 · 모바일 모달 ICN→도착 |
+| **Preview** | `/qa/tripcom-flight` → git Preview `/place/paris/planner` — 필수 단계 전체 폭 iframe · 모바일 검색 폼 |
 | **소유** | `TripcomFlightBannerWidget` · `TripcomFlightSearchModal` · `partnerNavigation` · `WhiteLabelWidget` |
-| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **금지** | UI 리디자인 · 3단계 탭 제거 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-항공권 검색 #1, Preview OK면 PR 병합
+항공권 검색 #2, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-19-project-log.md
 브랜치 cursor/tripcom-flight-widget-3ec3 · PR #288 · Preview /qa/tripcom-flight
-금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 파리 필수 단계 Trip.com 위젯(ICN→CDG). 탭하면 앱 안 검색 모달(도착 CDG, kr.trip.com 빈 화면·LPB 아님). 항공권 카드 배너. 이비사 동일. OK면 PR #288 병합.
+금지: UI 리디자인 · 3단계 탭 제거 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: Preview 파리 필수 단계 Trip.com 위젯이 체크리스트 칸이 아니라 전체 폭. PC에서 공항·날짜가 읽히는지. 모바일에서 빈 화면이 아니라 검색 폼인지. ICN→CDG. OK면 PR #288 병합.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · vite build PASS
 ```
 

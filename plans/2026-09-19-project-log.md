@@ -2,6 +2,18 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #2 — 필수 단계 전체 폭 위젯 (Cloud)
+
+- **세션** `항공권 검색 #2, 로컬 위젯 진단`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `ec937298` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 방문자 개선 #7이 900×200 iframe을 체크리스트 2열 칸에 넣어 PC 스케일 ~0.4. 모바일 320×480은 카드 안에서 빈 박스.
+- **완료**: 3단계 탭 유지. 위젯만 필수 단계 전체 폭. 체크리스트 항공 CTA 중복 생략.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/tripcom-flight → git Preview `/place/paris/planner`
+- **QA**: 파리 필수 단계 위젯이 전체 폭 · PC 공항·날짜 읽힘 · 모바일 검색 폼(빈 화면 아님) · ICN→CDG
+- **다음**: Preview OK면 PR #288 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 항공권 검색 #1 — 기존 iframe 배너·모바일 모달 복구 (Cloud)
 
 - **세션** `항공권 검색 #1, 기존 위젯 복구`
