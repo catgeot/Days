@@ -8,7 +8,7 @@
 const normalizeSearchKey = (s) => String(s || '').replace(/\s+/g, '').toLowerCase();
 
 const FACILITY_OR_LANDMARK_RE =
-  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크|수련원|연수원|에펠\s*탑|타임\s*스퀘어|콜로세움|콜로세오|피라미드|eiffel|times\s*square|colosseum|coliseum|pyramid/i;
+  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|향교|서원|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크|수련원|연수원|에펠\s*탑|타임\s*스퀘어|콜로세움|콜로세오|피라미드|eiffel|times\s*square|colosseum|coliseum|pyramid/i;
 
 function looksLikeFacilityQuery(text) {
   return FACILITY_OR_LANDMARK_RE.test(String(text || ''));

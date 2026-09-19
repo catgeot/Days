@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 64,
-  sessionPhase: '무안 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=muan',
-  qaShareSlug: 'palgyeong-use',
+  title: '향교 검색',
+  sessionNo: 2,
+  sessionPhase: '목록 페이지',
+  branch: 'cursor/hyanggyo-search-f9b8',
+  previewPath: '/',
+  qaShareSlug: 'hyanggyo',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-hyanggyo-search-2-page-size-10',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 목록을 검색 표준 10개씩 넘기게',
+    detail:
+      '사람 Preview에서 8개가 적어 보였습니다. 검색 결과 페이지 표준(구글·네이버 10건)에 맞춰 한 장 10개로 늘립니다. Preview git 홈「향교」엔터 → 1페이지 10장·다음.',
+    at: '2026-09-19T07:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-2-list-pages',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 선택 카드를 8개씩 넘겨 보게',
+    detail:
+      '「향교」엔터 전국 목록이 한 화면에 다 나와 스크롤하다 포기하게 됐습니다. 기존 선택 카드는 그대로 두고 8개씩 이전·다음으로 넘깁니다. 춘천 향교처럼 짧은 목록과 목포 도시 리스트는 페이지 버튼이 없습니다. Preview /qa/hyanggyo 홈「향교」엔터 → 1페이지 8장·다음. 「춘천 향교」엔터 → 춘천향교. 「목포」엔터 → 리스트 유지.',
+    at: '2026-09-19T07:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-1-tour-disambiguation',
+    session: '향교 검색 #1, TourAPI 다후보',
+    title: '향교 검색이 도시로 떨어지지 않고 전국 향교를 고르게',
+    detail:
+      '허브 prefix가 「춘천향교」를 춘천 도시로 스냅해서 실제 춘천향교가 안 나왔습니다. 도시명 뒤 나머지가 시·군이 아니면 허브로 안 보고, 향교·서원은 TourAPI 제목으로 다후보 카드를 붙입니다. Preview /qa/hyanggyo 홈「향교」엔터 → 춘천·나주 등 여러 장. 「춘천 향교」엔터 → 춘천향교 · 춘천 도시 카드 아님.',
+    at: '2026-09-19T07:10:00.000Z',
+  },
   {
     id: '2026-09-19-palgyeong-use-64-muan-search-thumbs',
     session: '팔경 활용 #64, 무안 결손 오버레이',

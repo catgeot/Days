@@ -701,6 +701,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
           candidates={disambiguation.candidates}
           onSelect={handleSuggestionSelect}
           onCancel={() => setDisambiguation(null)}
+          onPageChange={() => scrollContainerRef.current?.scrollTo({ top: 0 })}
         />
       );
     }
