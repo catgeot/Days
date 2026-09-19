@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
-  title: '팔경 활용',
-  sessionNo: 61,
-  sessionPhase: '통영 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=tongyeong',
-  qaShareSlug: 'palgyeong-use',
+  active: false,
+  title: '여행지 매칭',
+  sessionNo: 14,
+  sessionPhase: 'PR #276 메인 병합 및 배포',
+  branch: 'cursor/dest-match-arch',
+  previewPath: '/',
+  qaShareSlug: 'dest-match',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,78 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-dest-match-14-main-merge',
+    session: '여행지 매칭 #14, PR #276 메인 병합 및 배포',
+    title: 'PR #276 메인 병합 — 동음 지명·숙소·갤러리 매칭 PROD',
+    detail:
+      '검증 게이트 통과 후 PR #276을 main에 병합합니다. /qa/dest-match는 PROD 홈으로 돌립니다. 홈 검색에서 종각·광천·송암·강원대 동음 분기와 광천선굴·송암스포츠타운 숙소 시·군을 www.gateo.kr에서 확인합니다.',
+    at: '2026-09-19T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-13-comprehensive-qa',
+    session: '여행지 매칭 #13, 종합 QA 및 메인 병합 준비',
+    title: '주요 지명(종각·광천·송암·강원대) 매칭 및 숙소·갤러리 종합 QA 검증 완료',
+    detail:
+      '동음이의어 다후보 분기(종각·광천·송암·강원대), First-Pass 고유 매칭, 숙소 래더 및 Geo-Sanity 가드(양주/광주/대구 오탐 배제), 갤러리 시설 컷 필터링 및 프로덕션 빌드 등 전체 아키텍처 파이프라인 검증을 통과하고 PR #276 메인 병합 준비를 마쳤습니다.',
+    at: '2026-09-19T03:00:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-12-dictionary-ssot',
+    session: '여행지 매칭 #12, 하드코딩 사전 정리 및 SSOT 일원화',
+    title: '분산된 하드코딩 사전을 koreaPlaceMatchDictionary.js 단일 SSOT로 일원화',
+    detail:
+      'mrtStayQuery·exploreSearchAliases·usePlaceGallery·koreaHomonymDictionary에 파편화되어 있던 KO_STATION_ALIASES, KO_UNIVERSITY_ALIASES, KO_UNIVERSITY_SATELLITE_ALIASES, KO_EXPLORE_SEARCH_ALIASES, KO_GALLERY_QUERY_OVERRIDES, KOREA_HOMONYM_GROUPS를 koreaPlaceMatchDictionary.js 단일 SSOT로 일원화했습니다. 기존 스모크 및 빌드 회귀 0건입니다.',
+    at: '2026-09-19T02:00:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-11-songam-stay-yangju',
+    session: '여행지 매칭 #11, 송암스포츠타운 숙소 양주 오탐',
+    title: '춘천 송암스포츠타운 숙소가 양주 펜션으로 열리던 문제',
+    detail:
+      '홈「송암」→ 춘천 송암스포츠타운 → 숙소 찾기가 검색어「송암」을 1차 키워드로 써서 양주 장흥 펜션이 나왔습니다. 짧은 동음 검색어는 시·군(춘천) 뒤로 두고, 좌표 없는 양주 숙소는 Geo-Sanity에서 뺍니다. Preview /qa/dest-match 홈「송암」→ 송암스포츠타운 → 숙소 찾기 → 춘천 · 양주 비타민펜션·장흥유원지 아님.',
+    at: '2026-09-19T01:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-10-chip-card-dedupe',
+    session: '여행지 매칭 #10, 칩·카드 중복 제거',
+    title: '동음 선택에서 칩과 카드를 동시에 띄우지 않음',
+    detail:
+      '사람 Preview에서 「송암」엔터 화면에 지역 칩과 선택 카드가 같은 후보를 두 번 보여 중복이었습니다. 타이핑 드롭다운은 칩만, 엔터 화면은 질문+기존 선택 카드만 둡니다. Preview /qa/dest-match 홈「송암」엔터 → 어느 지역의 송암을 찾으시나요?와 카드 3장 · 칩 줄은 없음.',
+    at: '2026-09-19T01:20:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-9-homonym-choice-chips',
+    session: '여행지 매칭 #9, 동음이의어 사용자 선택 UI',
+    title: '어느 지역의 지명을 찾으시나요 — 다후보 선택 칩',
+    detail:
+      '모바일·데스크톱 검색창과 장소 시트에서 동음 지명은 「어느 지역의 [지명]을 찾으시나요?」와 지역 칩으로 고릅니다. 기존 선택 카드 톤(테두리·배경·호버)은 그대로입니다. Preview /qa/dest-match 홈「종각」「광천」「송암」입력·엔터 → 서울 종로 종각역·대구 중구 종각네거리 칩 · 카드도 같이 보임.',
+    at: '2026-09-18T23:50:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-8-songam-homonym',
+    session: '여행지 매칭 #8, 송암 동음 다후보',
+    title: '송암이 고양·일산 허브로만 펼쳐지던 문제',
+    detail:
+      '홈「송암」엔터가 송암스페이스센터 부분일치로 고양 허브(일산호수공원·킨텍스)를 역펼침했습니다. 동음 사전에 고양 송암스페이스센터·춘천 송암스포츠타운·광주 송암동을 넣고, 명소 부분일치는 형제 명소를 펼치지 않습니다. Preview /qa/dest-match 홈「송암」엔터 → 세 곳 선택 카드 · 일산호수공원만 가득한 목록 아님.',
+    at: '2026-09-18T10:20:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-7-gwangcheon-daegu-jonggak',
+    session: '여행지 매칭 #7, 광천·대구 종각 매칭 수정',
+    title: '광천 선굴 다후보 · 대구 종각 숙소가 서울로 가던 문제',
+    detail:
+      '홈「광천」엔터가 홍성 광천읍 정착지 별칭으로 역펼침되어 평창 광천선굴이 빠졌습니다. 동음 사전이 정착지 역펼침보다 앞입니다. 대구 종각네거리를 골라도 검색어「종각」약칭이 서울 종각역·종로 숙소로 스냅하던 구멍을 막았습니다. Preview /qa/dest-match 홈「광천」엔터 → 선굴·광천동·광천읍. 「종각」→ 대구 종각네거리 → 숙소 찾기 → 대구(서울 인사동·종로 아님).',
+    at: '2026-09-18T09:50:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-6-homonym-list',
+    session: '여행지 매칭 #6, 동음이의어 다후보 리스트업',
+    title: '전국 동음 지명 다후보 사전 — 임의 단정 없음',
+    detail:
+      '종각·광천·강원대·봉화산·대포·대화처럼 전국에 두 곳 이상인 지명은 한곳으로 찍지 않고 지역이 적힌 후보를 나열합니다. 「종각」은 서울 종각역과 대구 종각네거리, 「광천」은 평창 광천선굴·광주 광천동·홍성 광천읍입니다. 「종각역」「광천선굴」처럼 한곳인 이름은 기존 First-Pass를 씁니다. Preview /qa/dest-match 홈「종각」「광천」엔터 → 선택 카드 · 대구·광주 단독 진입 아님.',
+    at: '2026-09-18T08:40:00.000Z',
+  },
   {
     id: '2026-09-18-palgyeong-use-61-yeonhwado-homepage',
     session: '팔경 활용 #61, 통영 결손 오버레이',
@@ -64,12 +136,52 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-18T08:20:00.000Z',
   },
   {
+    id: '2026-09-18-dest-match-5-place-category',
+    session: '여행지 매칭 #5, 카테고리 맥락 파이프라인 전달',
+    title: '자연·역사·역·대학 카테고리를 숙소·갤러리에 전달',
+    detail:
+      'First-Pass placeCategory를 MRT 숙소 래더와 장소 갤러리가 씁니다. 광천선굴·문경새재 같은 자연명소는 시·군(평창·문경) 숙소가 1차고, 광주 광천동 호텔로 올라가지 않습니다. 갤러리는 contentId와 전경·landscape 키워드를 씁니다. Preview /qa/dest-match 홈「광천선굴」숙소 찾기 → 평창 · 광주 호텔 아님.',
+    at: '2026-09-18T08:20:00.000Z',
+  },
+  {
     id: '2026-09-18-palgyeong-use-59-taebaek-overlays',
     session: '팔경 활용 #59, 태백 결손 오버레이',
     title: '태백8경 장성하부고생대화석산지·용연굴·절골마을관리휴양지 결손 오버레이',
     detail:
       'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 태백8경 결손 3건(장성하부고생대화석산지·용연굴·절골마을관리휴양지)의 공공 공식 팩트 개요·주소·국가유산청·강원고생대국가지질공원·태백시 관광·태백시시설관리공단 공식 사진을 보강했습니다. 화석산지는 장성동 산42-2 천연기념물 416호 직운산층 노두(3경), 용연굴은 태백로 283-29 해발 920m 건식 석회동굴(7경), 절골은 오투로 116 황지동 절골힐링캠핑장·본적사지(8경)입니다. 전남 장성·구문소·영동 용연대·정선 화암동굴·철암 고원휴양림과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=taebaek 팔경 행 썸네일·상세 개요.',
     at: '2026-09-18T05:30:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-4-first-pass',
+    session: '여행지 매칭 #4, 국내 지명 First-Pass 리졸버',
+    title: 'Mapbox 전 국내 명소 First-Pass',
+    detail:
+      '홈 검색 지오코딩 전에 tourapi_attraction·cityAttractionHubs·역 별칭으로 좌표를 먼저 잡습니다. 「광천선굴」「광천성굴」은 평창 광천선굴, 「종각」「종각역」은 서울 종각역입니다. Preview /qa/dest-match 홈 검색 → 광주 광천동·대구 종각네거리 아님.',
+    at: '2026-09-18T05:20:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-3-geo-sanity',
+    session: '여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)',
+    title: '검색 중심 30km 밖 타 시·군 숙소 배제',
+    detail:
+      'MRT 숙소 목록에서 검색 중심점 기준 30km를 넘고 시·군이 다른 숙소(광주·양양 등)를 빼 둡니다. 같은 시·군 숙소는 군이 넓어도 유지합니다. Preview /qa/dest-match 홈「평창」「춘천」숙소 찾기 → 광주·양양 호텔 0건.',
+    at: '2026-09-18T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-2-search-enter',
+    session: '여행지 매칭 #2, 검색 Enter 제안 불일치',
+    title: '광천선굴 타이핑 제안과 Enter가 화암동굴로 갈라지던 문제',
+    detail:
+      '홈 검색「광천선굴」「광천성굴」타이핑 목록에는 평창 광천선굴이 보이는데 엔터는 지오코딩 실패 캐시·AI가 정선 화암동굴로 교정했습니다. 평창 허브 명소 SSOT·별칭으로 바로 잡고, 엔터는 보이는 제안·Search Box 이름 일치를 AI보다 앞세웁니다. Preview /qa/dest-match 홈 검색「광천성굴」엔터 → 광천선굴(평창) · 화암동굴 교정 카드 아님.',
+    at: '2026-09-18T03:20:00.000Z',
+  },
+  {
+    id: '2026-09-17-dest-match-1-facility-filter',
+    session: '여행지 매칭 #1, 갤러리 시설컷 정밀 필터',
+    title: 'TourAPI 화장실·휠체어·개찰구 시설컷 제외',
+    detail:
+      'TourAPI detailImage의 imgname·title에서 화장실·세면대·휠체어·점자·개찰구·리프트·승강기 등 시설 사진을 갤러리에서 뺍니다. 프록시는 imgname을 클라이언트로 넘기고, 장이 적으면 스톡을 이어 붙입니다. Preview /qa/dest-match — 장소 갤러리에 화장실·휠체어가 없고 전경이 보이는지.',
+    at: '2026-09-17T21:56:00.000Z',
   },
   {
     id: '2026-09-17-palgyeong-use-58-jeongseon-overlays',

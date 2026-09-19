@@ -10,10 +10,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'dest-match',
     label: '여행지 매칭 — 동음 지명 다후보',
-    branch: 'cursor/dest-match-arch',
-    destination:
-      'https://days-git-cursor-dest-match-arch-catgeots-projects.vercel.app/',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
   },
   {
     slug: 'visitor-growth',

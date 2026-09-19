@@ -3,6 +3,37 @@
  * supabase 클라이언트 의존 없음 → Node 스모크·단위 테스트 가능.
  */
 import { isPlaceholderCountry } from './travelSpotResolve.js';
+import {
+  collectStayRegionAnchors,
+  inferPlaceMatchCategory,
+  isPlacePoiStayLabel,
+  isUnanchoredMetroStayToken,
+  placeCategoryUsesCountyStay,
+  placeCategoryUsesStayPoint,
+  PLACE_MATCH_CATEGORY,
+} from '../pages/Home/lib/placeMatchCategory.js';
+import {
+  KOREA_HOMONYM_GROUPS,
+  KO_STATION_ALIASES,
+  KO_UNIVERSITY_ALIASES,
+  KO_UNIVERSITY_SATELLITE_ALIASES,
+  KO_MRT_STAY_KEYWORD_OVERRIDES,
+  resolveKoStationAlias,
+  resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
+  isUniversitySatelliteStayQuery,
+  UNI_CAMPUS_QUALIFIER_RE,
+} from '../pages/Home/lib/koreaPlaceMatchDictionary.js';
+
+export {
+  KO_STATION_ALIASES,
+  KO_UNIVERSITY_ALIASES,
+  KO_UNIVERSITY_SATELLITE_ALIASES,
+  resolveKoStationAlias,
+  resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
+  isUniversitySatelliteStayQuery,
+};
 
 /**
  * 동명·오탐·미매칭 slug — 1차 키워드·대안·(선택) 국가 힌트 덮어쓰기.
@@ -238,61 +269,6 @@ const KO_STAY_POINT_FALSE_EXACT = new Set([
   '대역',
 ]);
 const EN_STAY_POINT_RE = /\b(station|subway|metro|terminal)\b|-gil\b/i;
-/**
- * 역명 약칭. 「종각」단독이 대구 종각 광장으로 떨어지지 않게.
- * district = MRT NEIGHBORHOOD 키워드 (종로 632건).
- */
-const KO_STATION_ALIASES = {
-  종각: { station: '종각역', district: '종로', lat: 37.5701, lng: 126.9829 },
-};
-
-/**
- * 본교 좌표. Mapbox가 수련원·연수원을 대학 본명으로 주면 양양 호텔이 붙는다.
- * 삼척·도계·수련원 등 한정 검색은 별칭을 쓰지 않는다.
- */
-const KO_UNIVERSITY_ALIASES = {
-  강원대학교: {
-    campus: '강원대학교 춘천캠퍼스',
-    nameEn: 'Kangwon National University',
-    city: '춘천',
-    lat: 37.8695,
-    lng: 127.744,
-  },
-  강원대: {
-    campus: '강원대학교 춘천캠퍼스',
-    nameEn: 'Kangwon National University',
-    city: '춘천',
-    lat: 37.8695,
-    lng: 127.744,
-  },
-  kangwonnationaluniversity: {
-    campus: '강원대학교 춘천캠퍼스',
-    nameEn: 'Kangwon National University',
-    city: '춘천',
-    lat: 37.8695,
-    lng: 127.744,
-  },
-};
-
-/** 본교가 아닌 캠퍼스·수련원 — compactKoPlaceKey(query)로 조회 */
-const KO_UNIVERSITY_SATELLITE_ALIASES = {
-  강원대학교동해수련원: {
-    name: '강원대학교 동해수련원',
-    nameEn: 'Kangwon National University Donghae Training Center',
-    city: '양양',
-    lat: 38.0866,
-    lng: 128.6486,
-  },
-  강원대동해수련원: {
-    name: '강원대학교 동해수련원',
-    nameEn: 'Kangwon National University Donghae Training Center',
-    city: '양양',
-    lat: 38.0866,
-    lng: 128.6486,
-  },
-};
-
-const UNI_CAMPUS_QUALIFIER_RE = /삼척|도계|강릉|수련원|연수원|학술림|연습림|부속병원/;
 const UNI_SATELLITE_LABEL_RE = /수련원|연수원|학술림|연습림|부속병원/;
 
 /** 본교에서 이 거리 밖이면 수련원 오탐으로 본다 */
@@ -317,6 +293,29 @@ function compactKoPlaceKey(raw) {
   return String(raw || '').trim().replace(/\s+/g, '');
 }
 
+const KO_HOMONYM_STAY_KEYS = new Set(
+  KOREA_HOMONYM_GROUPS.flatMap((g) =>
+    (g.keys || []).map((k) => compactKoPlaceKey(k)).filter((k) => k.length >= 2),
+  ),
+);
+
+/**
+ * 「송암」검색 → 송암스포츠타운 선택 후에도 짧은 검색어·동 축약이 1차 키워드면
+ * MRT가 다른 시 송암(양주 장흥 펜션 등)으로 간다. detectHomonymLocation 비임포트(순환).
+ */
+function isAmbiguousKoStayFragment(token, location) {
+  const oq = compactKoPlaceKey(token);
+  if (!oq || oq.length < 2) return false;
+  const names = [location?.name_ko, location?.name].map(compactKoPlaceKey).filter(Boolean);
+  if (names.some((n) => n === oq)) return false;
+  if (names.some((n) => n.includes(oq) && n.length > oq.length)) return true;
+  return KO_HOMONYM_STAY_KEYS.has(oq);
+}
+
+function originalQueryIsAmbiguousStayToken(location) {
+  return isAmbiguousKoStayFragment(location?.originalQuery, location);
+}
+
 function isKoFineAdminName(name) {
   return KO_FINE_ADMIN_RE.test(String(name || '').trim());
 }
@@ -325,40 +324,47 @@ function isKoTownshipName(name) {
   return KO_TOWNSHIP_RE.test(String(name || '').trim());
 }
 
-/** 「종각」→ 종각역·종로. 「종각역」도 동일 district. */
-export function resolveKoStationAlias(raw) {
-  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
-  if (!s || s.length < 2) return null;
-  if (KO_STATION_ALIASES[s]) return KO_STATION_ALIASES[s];
-  const stripped = s.replace(/역$/, '');
-  if (stripped !== s && KO_STATION_ALIASES[stripped]) return KO_STATION_ALIASES[stripped];
-  return null;
+/** 선택 핀이 역 약칭과 다른 동음이면 서울 종각으로 스냅하지 않음 */
+export const STATION_ALIAS_MAX_KM = 8;
+
+function compactHomonymBaseName(raw) {
+  return compactKoPlaceKey(String(raw || '').split(/[·,]/)[0]);
 }
 
-/** 「강원대학교」→ 춘천 본교. 「강원대학교 동해수련원」은 null. */
-export function resolveKoUniversityAlias(raw) {
-  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
-  if (!s || s.length < 2) return null;
-  if (UNI_CAMPUS_QUALIFIER_RE.test(s)) return null;
-  if (KO_UNIVERSITY_ALIASES[s]) return KO_UNIVERSITY_ALIASES[s];
-  const lower = s.toLowerCase();
-  if (KO_UNIVERSITY_ALIASES[lower]) return KO_UNIVERSITY_ALIASES[lower];
-  return null;
+function locationLooksLikeStationAlias(alias, location) {
+  const base =
+    compactHomonymBaseName(location?.name_ko) || compactHomonymBaseName(location?.name);
+  const station = compactKoPlaceKey(alias?.station);
+  if (!base || !station) return false;
+  const short = station.replace(/역$/, '');
+  return base === station || base === short;
 }
 
-/** 「강원대학교 동해수련원」→ 양양 금강리. 본교 alias와 별도. */
-export function resolveKoUniversitySatelliteAlias(raw) {
-  const s = compactKoPlaceKey(raw).split(/[,/]/)[0];
-  if (!s || s.length < 4) return null;
-  if (KO_UNIVERSITY_SATELLITE_ALIASES[s]) return KO_UNIVERSITY_SATELLITE_ALIASES[s];
-  for (const [key, alias] of Object.entries(KO_UNIVERSITY_SATELLITE_ALIASES)) {
-    if (s.includes(key)) return alias;
+function locationConflictsSeoulStationAlias(location) {
+  const admin = location?.stayAdmin && typeof location.stayAdmin === 'object' ? location.stayAdmin : {};
+  const city = stripKoAdminSuffix(admin.city) || String(admin.city || '').trim();
+  if (city && city !== '서울' && city !== '종로') return true;
+  const parent = String(location?.parentCity || '').trim();
+  if (parent && !/서울|종로/.test(parent)) return true;
+  return false;
+}
+
+export function resolveKoStationAliasForLocation(location) {
+  if (!location || typeof location !== 'object') return null;
+  const fromName =
+    resolveKoStationAlias(compactHomonymBaseName(location.name_ko)) ||
+    resolveKoStationAlias(compactHomonymBaseName(location.name));
+  const fromQuery = resolveKoStationAlias(location.originalQuery);
+  const alias = fromName || fromQuery;
+  if (!alias) return null;
+  if (locationConflictsSeoulStationAlias(location)) return null;
+  const lat = Number(location.lat);
+  const lng = Number(location.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(alias.lat) && Number.isFinite(alias.lng)) {
+    const km = haversineKmSimple(lat, lng, alias.lat, alias.lng);
+    if (km > STATION_ALIAS_MAX_KM && !locationLooksLikeStationAlias(alias, location)) return null;
   }
-  return null;
-}
-
-export function isUniversitySatelliteStayQuery(raw) {
-  return Boolean(resolveKoUniversitySatelliteAlias(raw));
+  return alias;
 }
 
 function universityAliasFromLocation(location) {
@@ -499,6 +505,8 @@ export function applyUniversityCampusPlace(query, place) {
     admin.neighbourhood = '';
   }
   next.stayAdmin = admin;
+  next.placeCategory = PLACE_MATCH_CATEGORY.UNIVERSITY;
+  next.tourCategory = PLACE_MATCH_CATEGORY.UNIVERSITY;
   return next;
 }
 
@@ -519,6 +527,8 @@ function syntheticUniversityCampusPlace(query, alias) {
     source: 'campus-alias',
     uiPlace: true,
     originalQuery: query,
+    placeCategory: PLACE_MATCH_CATEGORY.UNIVERSITY,
+    tourCategory: PLACE_MATCH_CATEGORY.UNIVERSITY,
   };
 }
 
@@ -651,10 +661,7 @@ export function nominatimSquarePenalty(query, result) {
 export function mrtNeighborhoodKeyword(admin = {}, location = {}) {
   const uni = universityAliasFromLocation(location);
   if (uni?.city) return uni.city;
-  const alias =
-    resolveKoStationAlias(location?.originalQuery) ||
-    resolveKoStationAlias(location?.name) ||
-    resolveKoStationAlias(location?.name_ko);
+  const alias = resolveKoStationAliasForLocation(location);
   if (alias?.district) return alias.district;
   const strippedDistrict = stripKoAdminSuffix(admin?.district);
   if (strippedDistrict) return strippedDistrict;
@@ -727,12 +734,14 @@ export function queryLooksLikeStayPoint(query) {
 }
 
 function isMrtStayPointLocation(location) {
-  return (
-    isMrtStayPointLabel(location?.originalQuery) ||
-    isMrtStayPointLabel(location?.name) ||
+  if (
     isMrtStayPointLabel(location?.name_ko) ||
+    isMrtStayPointLabel(location?.name) ||
     isMrtStayPointLabel(location?.name_en)
-  );
+  ) {
+    return true;
+  }
+  return Boolean(resolveKoStationAliasForLocation(location));
 }
 
 /**
@@ -906,11 +915,13 @@ export function resolveMrtCityHints(admin, opts = {}) {
  */
 export function resolveMrtStayQuery(location) {
   const slug = String(location?.slug || '').trim().toLowerCase();
-  const override = MRT_STAY_KEYWORD_OVERRIDES[slug];
+  const override = KO_MRT_STAY_KEYWORD_OVERRIDES[slug] || MRT_STAY_KEYWORD_OVERRIDES[slug];
   const name = String(location?.name || '').trim();
   const nameEn = String(location?.name_en || '').trim();
   const nameKo = String(location?.name_ko || '').trim();
   const isDomestic = isMrtDomesticLocation(location);
+  const placeCategory = inferPlaceMatchCategory(location);
+  const countyStay = isDomestic && placeCategoryUsesCountyStay(placeCategory);
   const countryHint = normalizeMrtCountryHint(
     override?.countryHint || location?.country,
     isDomestic,
@@ -943,13 +954,29 @@ export function resolveMrtStayQuery(location) {
   // 숙박 브랜드 키워드 선두 (비발디→홍천, 호텔신라→중문/장충)
   pushLodgingStayKeywords(ladder, seen, location);
 
+  /** hub 명소·정착지 — Nominatim stayAdmin 없이도 상위 도시로 CITY 매칭 (문경새재→문경) */
+  const parentCity = String(location?.parentCity || '').trim();
+  const scenicAnchors = collectStayRegionAnchors(admin, parentCity);
+  const hasScenicAnchor = scenicAnchors.size > 0;
+  const pushLadder = (raw) => {
+    if (countyStay && isUnanchoredMetroStayToken(raw, scenicAnchors)) return;
+    if (countyStay && hasScenicAnchor && isPlacePoiStayLabel(raw, location)) return;
+    pushUnique(ladder, seen, raw);
+  };
+
   // uiPlace: 검색어(originalQuery)를 선두 — Mapbox name이 시·군만일 때 「홍천 대명 콘도」 숙소 오탐 방지
   // 국내 동·리·읍·면·역·길은 시·군 래더 뒤 — 「대화리」동명 · 「종각역」MRT CITY 미매칭 방지
-  const stayPoint = isDomestic && isMrtStayPointLocation(location);
-  if (location?.uiPlace) {
+  // 자연·역사 명소는 시·군 선두 — 「광천선굴」이 광주 광천동 호텔로 승격되지 않게
+  const stayPoint =
+    isDomestic &&
+    (isMrtStayPointLocation(location) || placeCategoryUsesStayPoint(placeCategory));
+  if (location?.uiPlace && !(countyStay && hasScenicAnchor)) {
     const oq = String(location.originalQuery || '').trim();
-    if (!(isDomestic && (isKoFineAdminName(oq) || isMrtStayPointLabel(oq)))) {
-      pushUnique(ladder, seen, oq);
+    if (
+      !(isDomestic && (isKoFineAdminName(oq) || isMrtStayPointLabel(oq))) &&
+      !originalQueryIsAmbiguousStayToken(location)
+    ) {
+      pushLadder(oq);
     }
   }
 
@@ -960,9 +987,6 @@ export function resolveMrtStayQuery(location) {
     cityHintExtras.push(m[1]);
   }
   if (uniAlias?.city) cityHintExtras.push(uniAlias.city);
-
-  /** hub 명소·정착지 — Nominatim stayAdmin 없이도 상위 도시로 CITY 매칭 (문경새재→문경) */
-  const parentCity = String(location?.parentCity || '').trim();
 
   // 리·읍·면 + OSM town(대화면)이 city인 경우 — 시·군 우선 래더
   const fineGrain =
@@ -975,70 +999,79 @@ export function resolveMrtStayQuery(location) {
     const cityIsTownship = isDomestic && isKoTownshipName(admin.city);
     if (cityIsTownship && admin.county) {
       // 평창군 대화면·보은군 이평리 — 군·시 먼저, 면 축약「대화」는 일산 대화동 오탐이라 제외
-      pushUnique(ladder, seen, admin.county);
-      pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
-      pushUnique(ladder, seen, parentCity);
-      pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
-      pushUnique(ladder, seen, admin.city);
-      pushUnique(ladder, seen, admin.cityEn);
+      pushLadder(admin.county);
+      pushLadder(stripKoAdminSuffix(admin.county));
+      pushLadder(parentCity);
+      pushLadder(stripKoAdminSuffix(parentCity));
+      pushLadder(admin.city);
+      pushLadder(admin.cityEn);
       return;
     }
-    pushUnique(ladder, seen, admin.city);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.city));
-    pushUnique(ladder, seen, admin.cityEn);
-    pushUnique(ladder, seen, admin.county);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
-    pushUnique(ladder, seen, parentCity);
-    pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
+    pushLadder(admin.city);
+    pushLadder(stripKoAdminSuffix(admin.city));
+    pushLadder(admin.cityEn);
+    pushLadder(admin.county);
+    pushLadder(stripKoAdminSuffix(admin.county));
+    pushLadder(parentCity);
+    pushLadder(stripKoAdminSuffix(parentCity));
   };
 
   const pushFineLadder = () => {
-    pushUnique(ladder, seen, name);
-    pushUnique(ladder, seen, nameKo);
-    pushUnique(ladder, seen, admin.neighbourhood);
+    pushLadder(name);
+    pushLadder(nameKo);
+    pushLadder(admin.neighbourhood);
     // 읍·면 축약은 county 있을 때 스킵(대화면→대화→고양)
     const fineBase = admin.neighbourhood || name || nameKo;
     if (!(isDomestic && admin.county && isKoTownshipName(fineBase))) {
-      pushUnique(ladder, seen, stripKoAdminSuffix(fineBase));
+      const strippedFine = stripKoAdminSuffix(fineBase);
+      if (!isAmbiguousKoStayFragment(strippedFine, location)) {
+        pushLadder(strippedFine);
+      }
     }
-    pushUnique(ladder, seen, admin.district);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.district));
+    pushLadder(admin.district);
+    pushLadder(stripKoAdminSuffix(admin.district));
   };
 
-  // 국내 hub 명소(동·읍·면·리 아님): 상위 도시를 랜드마크보다 앞 — 「문경새재」단독 MRT CITY 미매칭 방지
-  // (숙박 브랜드·originalQuery가 이미 선두면 그 다음 alt로만 들어감)
-  if (parentCity && isDomestic && !fineGrain) {
-    pushUnique(ladder, seen, parentCity);
-    pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
-  }
-
-  // 국내 동·리·읍·면·역·길: 시·군 우선 — 「퇴계동」안동 · 「종각역」서울
-  // 역·터미널은 생활권(종로) → 축약 시명(서울) — MRT NEIGHBORHOOD「종로」·CITY「서울」
-  // 「서울 종각역」단독 CITY는 없음. 해외·비세밀: 세밀 키워드 우선
-  if ((fineGrain || stayPoint) && isDomestic) {
-    if (stayPoint) {
-      pushUnique(ladder, seen, uniAlias?.city);
-      pushUnique(ladder, seen, mrtNeighborhoodKeyword(admin, location));
-      pushUnique(ladder, seen, stripKoAdminSuffix(admin.city));
-      pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
-      pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
-    }
-    pushCityLadder();
-    pushFineLadder();
-  } else if (fineGrain) {
-    pushFineLadder();
+  if (countyStay && hasScenicAnchor) {
     pushCityLadder();
   } else {
-    pushFineLadder();
-    pushUnique(ladder, seen, admin.district);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.district));
-    pushCityLadder();
+    // 국내 hub 명소(동·읍·면·리 아님): 상위 도시를 랜드마크보다 앞 — 「문경새재」단독 MRT CITY 미매칭 방지
+    // (숙박 브랜드·originalQuery가 이미 선두면 그 다음 alt로만 들어감)
+    if (parentCity && isDomestic && !fineGrain) {
+      pushLadder(parentCity);
+      pushLadder(stripKoAdminSuffix(parentCity));
+    }
+
+    // 국내 동·리·읍·면·역·길: 시·군 우선 — 「퇴계동」안동 · 「종각역」서울
+    // 역·터미널은 생활권(종로) → 축약 시명(서울) — MRT NEIGHBORHOOD「종로」·CITY「서울」
+    // 「서울 종각역」단독 CITY는 없음. 해외·비세밀: 세밀 키워드 우선
+    if ((fineGrain || stayPoint) && isDomestic) {
+      if (stayPoint) {
+        pushLadder(uniAlias?.city);
+        pushLadder(mrtNeighborhoodKeyword(admin, location));
+        pushLadder(stripKoAdminSuffix(admin.city));
+        pushLadder(stripKoAdminSuffix(admin.county));
+        pushLadder(stripKoAdminSuffix(parentCity));
+      }
+      pushCityLadder();
+      pushFineLadder();
+    } else if (fineGrain) {
+      pushFineLadder();
+      pushCityLadder();
+    } else {
+      pushFineLadder();
+      pushLadder(admin.district);
+      pushLadder(stripKoAdminSuffix(admin.district));
+      pushCityLadder();
+    }
   }
 
-  pushUnique(ladder, seen, nameEn);
-  if (isDomestic) {
-    pushUnique(ladder, seen, admin.state);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.state));
+  if (!(countyStay && hasScenicAnchor && isPlacePoiStayLabel(nameEn, location))) {
+    pushLadder(nameEn);
+  }
+  if (isDomestic && !(countyStay && hasScenicAnchor)) {
+    pushLadder(admin.state);
+    pushLadder(stripKoAdminSuffix(admin.state));
   }
 
   const keyword = String(ladder[0] || '').trim();
@@ -1050,6 +1083,16 @@ export function resolveMrtStayQuery(location) {
   }
   pushUnique(cityHints, citySeen, parentCity);
   pushUnique(cityHints, citySeen, stripKoAdminSuffix(parentCity));
+  if (countyStay) {
+    const filtered = cityHints.filter(
+      (h) =>
+        !isUnanchoredMetroStayToken(h, scenicAnchors) &&
+        !isPlacePoiStayLabel(h, location) &&
+        !(hasScenicAnchor && /특별자치도|광역시|특별시/.test(String(h))),
+    );
+    cityHints.length = 0;
+    cityHints.push(...filtered);
+  }
 
   /** MRT subName 한·영·공백·영토 별칭 — Edge countryMatches(compact·세그먼트) */
   const countryHintAlts = expandMrtCountryHintAlts(
@@ -1093,6 +1136,175 @@ export function mergeMrtStayFetchQuery(location, opts = {}) {
     altKeywords: altKeywords.slice(0, 12),
     cityHints: cityHints.slice(0, 8),
   };
+}
+
+/** 검색 중심에서 이 거리 밖이고 시·군이 다르면 숙소 배제. 도(강원)는 keep 키가 아님 — 춘천↔양양 */
+export const MRT_STAY_GEO_SANITY_MAX_KM = 30;
+
+const KO_SIDO_LEVEL_EXACT = new Set([
+  '강원',
+  '경기',
+  '충북',
+  '충남',
+  '전북',
+  '전남',
+  '경북',
+  '경남',
+  '강원도',
+  '경기도',
+  '충청북도',
+  '충청남도',
+  '전라북도',
+  '전라남도',
+  '경상북도',
+  '경상남도',
+  '강원특별자치도',
+  '전북특별자치도',
+  '제주특별자치도',
+  '충청북',
+  '충청남',
+  '전라북',
+  '전라남',
+  '경상북',
+  '경상남',
+]);
+
+const KO_GEO_SANITY_CITY_RE =
+  /광주|양양|양주|대구|부산|인천|대전|울산|서울|제주|수원|고양|용인|성남|청주|전주|천안|창원|포항|경주|강릉|속초|원주|춘천|평창|정선|홍천|삼척|동해|태백|인제|고성|철원|화천|양구|영월|횡성|여수|순천|목포|군산|익산|김해|진주|구미|안동|세종|울릉|서귀포/;
+
+function isKoSidoLevelName(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return false;
+  if (KO_SIDO_LEVEL_EXACT.has(s)) return true;
+  return KO_SIDO_LEVEL_EXACT.has(stripKoAdminSuffix(s) || s);
+}
+
+function stayItemCoordPair(item) {
+  if (!item || typeof item !== 'object') return null;
+  const lat = Number(item.lat ?? item.latitude);
+  const lng = Number(item.lng ?? item.longitude ?? item.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (lat === 0 && lng === 0) return null;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+  return { lat, lng };
+}
+
+function stayItemGeoBlob(item) {
+  if (!item || typeof item !== 'object') return '';
+  return [
+    item.itemName,
+    item.name,
+    item.name_ko,
+    item.address,
+    item.regionName,
+    item.subName,
+  ]
+    .map((v) => String(v || ''))
+    .join(' ');
+}
+
+function blobHasAnyToken(blob, tokens) {
+  const s = String(blob || '');
+  if (!s) return false;
+  for (const raw of tokens || []) {
+    const t = String(raw || '').trim();
+    if (t.length >= 2 && s.includes(t)) return true;
+  }
+  return false;
+}
+
+function blobHasForeignCity(blob, originKeys) {
+  const s = String(blob || '');
+  if (!s) return false;
+  const origin = new Set(
+    (originKeys || []).map((k) => String(k || '').trim()).filter((k) => k.length >= 2),
+  );
+  for (const m of s.matchAll(new RegExp(KO_GEO_SANITY_CITY_RE.source, 'g'))) {
+    const city = m[0];
+    if (city && !origin.has(city)) return true;
+  }
+  return false;
+}
+
+/**
+ * 시·군 keep 키. 도·읍면리는 넣지 않음(강원→양양 유지, 대화→고양 오탐).
+ * @param {object} [location]
+ * @param {string[]} [extra]
+ * @returns {string[]}
+ */
+export function collectMrtStayGeoSanityKeys(location = {}, extra = []) {
+  const admin =
+    location?.stayAdmin && typeof location.stayAdmin === 'object' ? location.stayAdmin : {};
+  const uni = universityAliasFromLocation(location);
+  const station = resolveKoStationAliasForLocation(location);
+  const raw = [
+    uni?.city,
+    station?.district,
+    admin.city,
+    admin.county,
+    admin.district,
+    location?.parentCity,
+    ...(Array.isArray(extra) ? extra : []),
+  ];
+  const keys = [];
+  const seen = new Set();
+  for (const value of raw) {
+    const s = String(value || '').trim();
+    if (!s || s.length < 2) continue;
+    if (isKoTownshipName(s) || isKoFineAdminName(s)) continue;
+    if (/^(중|동|서|남|북)구$/.test(s)) continue;
+    const stripped = stripKoAdminSuffix(s) || s;
+    if (!stripped || stripped.length < 2) continue;
+    if (isKoTownshipName(stripped) || isKoFineAdminName(stripped)) continue;
+    if (isKoSidoLevelName(s) || isKoSidoLevelName(stripped)) continue;
+    pushUnique(keys, seen, stripped);
+  }
+  return keys;
+}
+
+/**
+ * @param {object} item
+ * @param {{ lat?: unknown, lng?: unknown } | null | undefined} origin
+ * @param {string[]} [originKeys]
+ * @returns {boolean}
+ */
+export function mrtStayPassesGeoSanity(item, origin, originKeys = []) {
+  const keys = Array.isArray(originKeys) ? originKeys : [];
+  const blob = stayItemGeoBlob(item);
+  const originLat = Number(origin?.lat);
+  const originLng = Number(origin?.lng);
+  const hasOrigin =
+    Number.isFinite(originLat) &&
+    Number.isFinite(originLng) &&
+    !(originLat === 0 && originLng === 0);
+  const pt = stayItemCoordPair(item);
+
+  if (hasOrigin && pt) {
+    const km = haversineKmSimple(originLat, originLng, pt.lat, pt.lng);
+    if (km <= MRT_STAY_GEO_SANITY_MAX_KM) return true;
+    if (blobHasAnyToken(blob, keys)) return true;
+    return false;
+  }
+
+  if (blobHasAnyToken(blob, keys)) return true;
+  if (blobHasForeignCity(blob, keys)) return false;
+  return true;
+}
+
+/**
+ * @param {object[] | null | undefined} items
+ * @param {{ lat?: unknown, lng?: unknown } | null | undefined} origin
+ * @param {{ isDomestic?: boolean, originKeys?: string[] }} [opts]
+ */
+export function filterMrtStaysByGeoSanity(items, origin, opts = {}) {
+  const list = Array.isArray(items) ? items : [];
+  if (opts.isDomestic === false) return list;
+  const keys = Array.isArray(opts.originKeys) ? opts.originKeys : [];
+  const originLat = Number(origin?.lat);
+  const originLng = Number(origin?.lng);
+  const hasOrigin = Number.isFinite(originLat) && Number.isFinite(originLng);
+  if (!hasOrigin && !keys.length) return list;
+  return list.filter((item) => mrtStayPassesGeoSanity(item, origin, keys));
 }
 
 /**

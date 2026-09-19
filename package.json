@@ -162,6 +162,7 @@
     "audit:sea-basins": "node scripts/audit-sea-basins.mjs",
     "smoke:sea-basin-search": "node scripts/smoke-sea-basin-search.mjs",
     "smoke:explore-search-aliases": "node scripts/smoke-explore-search-aliases.mjs",
+    "smoke:search-enter-match": "node scripts/smoke-search-enter-match.mjs",
     "smoke:mood-search-intent": "node scripts/smoke-mood-search-intent.mjs",
     "smoke:mooni-ask-bridge": "node scripts/smoke-mooni-ask-bridge.mjs",
     "smoke:explore-choice-overlay": "node scripts/smoke-explore-choice-overlay.mjs",
