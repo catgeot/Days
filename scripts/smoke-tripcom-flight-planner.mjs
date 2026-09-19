@@ -53,6 +53,21 @@ const toolkit = read(
 );
 assert.match(toolkit, /<FlightSearchCta /, 'toolkit FlightSearchCta');
 
+assert.match(
+  affiliate,
+  /buildTripcomFlightTicketsHref/,
+  'dated search uses Trip.com results path',
+);
+
+const native = read(
+  'src/components/PlaceCard/tabs/planner/components/TripcomFlightNativeSearch.jsx',
+);
+assert.match(native, /nativeRoundTrip/, 'round-trip control');
+assert.match(native, /nativeOneWay/, 'one-way control');
+assert.match(native, /adultCount/, 'passenger count passed to Trip.com');
+assert.match(native, /arrivalIata/, 'arrival override passed to Trip.com');
+assert.match(native, /AirportSlot/, 'combined origin-destination picker');
+
 const vercel = read('vercel.json');
 assert.match(vercel, /\/qa\/flight"/, 'vercel.json /qa/flight');
 assert.match(vercel, /\/qa\/tripcom-flight/, 'vercel.json /qa/tripcom-flight alias');
@@ -66,6 +81,37 @@ const qa = read('src/shared/cloudPreview/cloudQaShareLinks.js');
 assert.match(qa, /slug: 'flight'/, 'qa share slug /qa/flight');
 assert.match(qa, /slug: 'tripcom-flight'/, 'old slug kept as alias');
 assert.match(qa, /branch:\s*'cursor\/tripcom-flight-widget-3ec3'/, 'qa share branch');
+
+assert.match(affiliate, /params\.set\('dcity'/, 'results dcity');
+assert.match(affiliate, /params\.set\('acity'/, 'results acity');
+assert.match(affiliate, /params\.set\('triptype'/, 'results triptype');
+assert.match(affiliate, /params\.set\('quantity'/, 'results quantity');
+assert.match(affiliate, /arrivalIata/, 'arrival override option');
+assert.match(affiliate, /resolveTripcomFlightTripType/, 'OW/RT resolver');
+
+const { buildTripcomFlightTicketsHref } = await import('../src/utils/tripcomFlightResultsUrl.js');
+const resultsHref = buildTripcomFlightTicketsHref(
+  'https://kr.trip.com',
+  'ICN',
+  'CDG',
+  new URLSearchParams({
+    ddate: '2026-10-15',
+    rdate: '2026-10-22',
+    triptype: 'rt',
+    quantity: '2',
+    dcity: 'icn',
+    acity: 'cdg',
+  }),
+);
+assert.equal(
+  resultsHref.startsWith('https://kr.trip.com/flights/icn-to-cdg/tickets-icn-cdg?'),
+  true,
+  'tickets results path',
+);
+assert.match(resultsHref, /ddate=2026-10-15/, 'depart date query');
+assert.match(resultsHref, /rdate=2026-10-22/, 'return date query');
+assert.match(resultsHref, /triptype=rt/, 'round-trip query');
+assert.match(resultsHref, /quantity=2/, 'adult quantity query');
 
 console.log('OK: tripcom-flight-planner — iframe banner · mobile modal · toolkit CTA');
 console.log('SMOKE OK');

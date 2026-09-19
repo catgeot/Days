@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 5,
-  sessionPhase: '모바일 네이티브 항공 검색 카드 적용',
+  sessionNo: 7,
+  sessionPhase: '모바일 검색 결과 연동',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-7-results-form',
+    session: '항공권 검색 #7, 모바일 검색 결과 연동',
+    title: '왕복·인원·출도착을 Trip.com 검색 결과에 연동',
+    detail:
+      '모바일 티켓 카드에서 출발·도착을 한 줄에서 고르고 왕복/편도·인원을 선택한 뒤 검색하면, 빈 /flights/ 홈이 아니라 ICN→CDG 같은 결과 페이지(/tickets-)로 날짜·인원·여정 유형이 채워져 이동합니다.',
+    at: '2026-09-19T20:10:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-6-premium-ticket-design',
     session: '항공권 검색 #6, 모바일 검색 폼 프리미엄 카드 디자인',

@@ -30,7 +30,7 @@ export function shouldUseTripcomFlightSearchModal(options = {}) {
 
 /**
  * 플래너에서 Trip.com으로 **페이지 이동**할 때 쓰는 URL.
- * 일정 prefill 시에는 `/flights/?ddate=…` 직링크.
+ * 일정 prefill 시에는 `/flights/{d}-to-{a}/tickets-…` 결과 페이지.
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{ essentialGuide?: Record<string, unknown> | null, tracking?: string, departDate?: string }} [options]
