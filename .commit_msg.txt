@@ -1,5 +1,4 @@
-항공권 검색: 모바일 위젯 진단 패널 및 로그 복사 기능 추가
+항공권 검색: 모바일 위젯을 제공받은 공식 iframe 링크 규격과 1:1 일치
 
-- 모바일에서 위젯 비노출 원인 규명을 위한 FlightDebugPanel 도입
-- 뷰포트 크기, DPR, 배너 컨테이너/iframe 실측 치수, iframe onload/onerror 이벤트 기록
-- 화면 좌하단 플로팅 패널 및 배너 하단에서 원클릭으로 로그를 복사할 수 있는 기능 제공
+- ad 모드 iframe URL 생성 시 추가 쿼리를 배제하고 발급된 3대 파라미터(Allianceid, SID, trip_sub1)만 정확히 전달
+- iframe 속성에 id="S17158794", frameborder="0", scrolling="no", style="width:320px;height:480px;border:none" 동기화

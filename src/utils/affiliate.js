@@ -965,7 +965,13 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
   }
 
   if (mode === 'ad') {
-    return `${origin}/partners/ad/${adId}?${params.toString()}`;
+    // Trip.com 제휴 ad iframe은 allianceId/SID/trip_sub1 등 공식 발급 파라미터만 전달
+    const adParams = new URLSearchParams({
+      Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+      SID: TRIPCOM_KR_PARTNER.sid,
+      trip_sub1: sub1,
+    });
+    return `${origin}/partners/ad/${adId}?${adParams.toString()}`;
   }
 
   if (mode === 'packages') {

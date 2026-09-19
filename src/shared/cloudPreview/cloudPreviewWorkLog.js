@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 3,
-  sessionPhase: '3단 분리 이전 플래너 복귀',
+  sessionNo: 4,
+  sessionPhase: '모바일 위젯 파라미터 정밀 일치',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-4-exact-ad-params',
+    session: '항공권 검색 #4, 모바일 위젯 파라미터 정밀 일치',
+    title: '모바일 배너 공식 발급 파라미터 정합성 조정',
+    detail:
+      '사용자가 제공한 Trip.com 공식 발급 태그와 정확히 일치하도록 ad iframe URL 생성 시 불필요한 쿼리를 배제하고 Allianceid, SID, trip_sub1만 전달하도록 정비했습니다. iframe id 및 인라인 스타일(width:320px;height:480px;border:none)도 공식 태그 규격으로 동기화했습니다.',
+    at: '2026-09-19T10:45:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-3-revert-split',
     session: '항공권 검색 #3, 3단 분리 이전 복귀',

@@ -162,12 +162,14 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
                         }}
                     >
                         <iframe
+                            id={flightAdId}
                             key={`${iframeSrc}-${nativeW}x${nativeH}`}
                             src={iframeSrc}
                             title={t('place.planner.banners.tripcomFlight.iframeTitle')}
                             width={nativeW}
                             height={nativeH}
-                            className="block border-0"
+                            style={{ width: `${nativeW}px`, height: `${nativeH}px`, border: 'none' }}
+                            frameBorder="0"
                             scrolling="no"
                             loading="lazy"
                             onLoad={() => {
