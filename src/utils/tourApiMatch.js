@@ -1,4 +1,5 @@
 import travelSpotTourApi from '../pages/Home/data/travelSpotTourApi.json' with { type: 'json' };
+import { inferPlaceMatchCategory, PLACE_MATCH_CATEGORY } from '../pages/Home/lib/placeMatchCategory.js';
 
 /**
  * @typedef {{
@@ -134,12 +135,16 @@ export function resolveTourApiPlace(locationOrSlug) {
   // 국내 미등록: 장소 contentId가 있으면 Tour 갤러리·분류에 쓰고, 없으면 searchPhoto soft
   if (isDomesticKoreaLocation(locationOrSlug) && (name || hasExplicitId)) {
     const label = name || explicitId;
+    const category = inferPlaceMatchCategory(locationOrSlug);
+    const photoKeywords = name
+      ? category === PLACE_MATCH_CATEGORY.NATURE_SCENIC
+        ? [`${name} 전경`.slice(0, 80)]
+        : [`${name} 전경`.slice(0, 80), `${name} 야경`.slice(0, 80)]
+      : [];
     return {
       slug: slugKey || null,
       photoKeyword: label.slice(0, 80),
-      photoKeywords: name
-        ? [`${name} 전경`.slice(0, 80), `${name} 야경`.slice(0, 80)]
-        : [],
+      photoKeywords,
       contentId: hasExplicitId ? explicitId : null,
       title: label,
       curated: false,

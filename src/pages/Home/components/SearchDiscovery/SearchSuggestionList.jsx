@@ -18,6 +18,11 @@ import {
   getLocalizedPlaceName,
   getPlaceTitleLinesForLocale,
 } from '../../../../components/PlaceCard/common/locationDisplay';
+import {
+  isKoreaHomonymChoiceSet,
+  koreaHomonymChoiceQuery,
+} from '../../lib/detectHomonymLocation';
+import { HomonymChoiceChips } from './HomonymChoiceChips';
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
 
@@ -216,6 +221,11 @@ export function SearchSuggestionList({
 
   const isPopover = variant === 'popover';
   const showMooni = Boolean(onAskMooni);
+  const homonymChoice = isKoreaHomonymChoiceSet(items);
+  const homonymQuery = koreaHomonymChoiceQuery(items, query);
+  const headerTitle = homonymChoice
+    ? t('home.explore.homonymChoiceTitle', { query: homonymQuery || query })
+    : title || t('home.explore.suggestionsDefault', { query });
   const shellClass = isPopover
     ? 'w-full overflow-hidden'
     : 'w-full mb-6 rounded-2xl border border-white/20 bg-white/[0.08] overflow-hidden';
@@ -233,8 +243,8 @@ export function SearchSuggestionList({
             : 'px-4 py-2.5 border-b border-white/12'
         }`}
       >
-        <span className="text-[11px] text-white/75">
-          {title || t('home.explore.suggestionsDefault', { query })}
+        <span className={`break-keep ${homonymChoice ? 'text-[13px] font-bold text-white' : 'text-[11px] text-white/75'}`}>
+          {headerTitle}
         </span>
         {loading && (
           <span className="inline-flex items-center gap-1.5 text-[11px] text-sky-200">
@@ -244,9 +254,19 @@ export function SearchSuggestionList({
         )}
       </div>
 
+      {homonymChoice ? (
+        <HomonymChoiceChips
+          query={homonymQuery || query}
+          candidates={items}
+          onSelect={onSelect}
+          compact={isPopover}
+          showPrompt={false}
+        />
+      ) : null}
+
       {showMooni ? (
         <div
-          className={`${items.length || loading ? 'border-b border-white/10' : ''} ${
+          className={`${!homonymChoice && (items.length || loading) ? 'border-b border-white/10' : ''} ${
             isPopover ? 'sticky top-0 z-[1] bg-[#261d16]' : ''
           }`}
         >
@@ -254,11 +274,11 @@ export function SearchSuggestionList({
         </div>
       ) : null}
 
-      {items.length === 0 && !loading && !showMooni ? (
+      {!homonymChoice && items.length === 0 && !loading && !showMooni ? (
         <p className={`text-sm text-white/70 text-center break-keep ${isPopover ? 'px-3 py-4' : 'px-4 py-6'}`}>
           {t('home.explore.suggestionsEmpty')}
         </p>
-      ) : items.length > 0 || loading ? (
+      ) : !homonymChoice && (items.length > 0 || loading) ? (
         <ul
           className={`divide-y divide-white/10 ${
             isPopover ? '' : 'max-h-[min(52vh,420px)] overflow-y-auto'
@@ -341,6 +361,7 @@ export function SearchSuggestionList({
  */
 export function SearchDisambiguationCards({
   title,
+  query = '',
   candidates = [],
   onSelect,
   onCancel,
@@ -348,6 +369,15 @@ export function SearchDisambiguationCards({
   const { t, i18n } = useTranslation();
   const [introByKey, setIntroByKey] = useState({});
   const thumbByIndex = useMissingTourAttractionThumbs(candidates);
+  const homonymChoice = isKoreaHomonymChoiceSet(candidates);
+  const homonymQuery = koreaHomonymChoiceQuery(candidates, query);
+  const heading =
+    homonymChoice && homonymQuery
+      ? t('home.explore.homonymChoiceTitle', { query: homonymQuery })
+      : title || t('home.explore.disambiguationTitle');
+  const body = homonymChoice
+    ? t('home.explore.homonymChoiceBody')
+    : t('home.explore.disambiguationBody');
 
   const candidateKey = useMemo(
     () =>
@@ -387,10 +417,10 @@ export function SearchDisambiguationCards({
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
           <h3 className="text-base md:text-lg font-bold text-white break-keep">
-            {title || t('home.explore.disambiguationTitle')}
+            {heading}
           </h3>
           <p className="mt-1 text-xs text-white/70 break-keep">
-            {t('home.explore.disambiguationBody')}
+            {body}
           </p>
         </div>
         {onCancel && (

@@ -1,4 +1,5 @@
 import { formatUrlName, isEphemeralSlug, isUrlSafeEnglishLabel } from './formatUrlName.js';
+import { inferPlaceMatchCategory, PLACE_MATCH_CATEGORY } from './placeMatchCategory.js';
 
 const PLACEHOLDER_COUNTRY = new Set([
   'Explore',
@@ -166,12 +167,26 @@ export function resolveGalleryStockQuery(targetSpot, fallbackDictionary = {}) {
 
   let backupQuery = '';
   if (typeof targetSpot === 'object' && primaryQuery) {
+    const category = inferPlaceMatchCategory(targetSpot);
     const regionEn = pickLatinPlaceName(targetSpot.galleryRegionSpot);
+    const parentEn = pickLatinPlaceName({
+      name_en: targetSpot.parentCity,
+      name: targetSpot.stayAdmin?.cityEn,
+    });
     const country = pickLatinPlaceName({
       name_en: targetSpot.country_en,
       name: targetSpot.country,
     }) || String(targetSpot.country_en || targetSpot.country || '').trim();
-    if (regionEn && regionEn.toLowerCase() !== primaryQuery.toLowerCase()) {
+    if (category === PLACE_MATCH_CATEGORY.NATURE_SCENIC) {
+      const region = regionEn || parentEn;
+      backupQuery = region
+        ? `${primaryQuery} ${region} landscape`
+        : `${primaryQuery} landscape nature`;
+    } else if (category === PLACE_MATCH_CATEGORY.HISTORY) {
+      backupQuery = `${primaryQuery} heritage historic`;
+    } else if (category === PLACE_MATCH_CATEGORY.STATION) {
+      backupQuery = `${primaryQuery} railway station`;
+    } else if (regionEn && regionEn.toLowerCase() !== primaryQuery.toLowerCase()) {
       backupQuery = `${primaryQuery} ${regionEn}`;
     } else if (country && country !== primaryQuery && !PLACEHOLDER_COUNTRY.has(country)) {
       backupQuery = `${primaryQuery} ${country}`;

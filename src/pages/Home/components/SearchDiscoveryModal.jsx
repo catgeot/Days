@@ -34,6 +34,7 @@ import {
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import { preferEnterSuggestion } from '../lib/searchEnterMatch';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
 import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
@@ -402,6 +403,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const handleSearchSubmit = async (submitQuery) => {
     const finalQuery = (submitQuery ?? query).trim();
     if (finalQuery === '' || !onSearch) return;
+    const visiblePick = preferEnterSuggestion(finalQuery, hybridSuggestions);
+    if (visiblePick) {
+      await handleSuggestionSelect(visiblePick);
+      return;
+    }
     dismissSearchKeyboard();
     setQuery(finalQuery);
     setRecentSearches(pushRecentSearch(finalQuery));
@@ -690,6 +696,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       return (
         <SearchDisambiguationCards
           title={disambiguation.title}
+          query={disambiguation.query}
           candidates={disambiguation.candidates}
           onSelect={handleSuggestionSelect}
           onCancel={() => setDisambiguation(null)}

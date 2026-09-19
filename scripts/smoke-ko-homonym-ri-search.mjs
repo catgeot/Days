@@ -12,6 +12,20 @@ import {
   isKoHomonymPlaceSearchQuery,
   isKoHomonymRiSearchQuery,
 } from '../src/pages/Home/lib/koHomonymRiSearch.js';
+import {
+  collectKoreaHomonymDisambiguationCandidates,
+  detectHomonymLocation,
+  isKoreaHomonymChoiceSet,
+  koreaHomonymChipLabel,
+  koreaHomonymChoiceQuery,
+  resolveUniqueKoreaHomonym,
+  shouldOfferKoreaHomonymDisambiguation,
+} from '../src/pages/Home/lib/detectHomonymLocation.js';
+import { preferEnterSuggestion } from '../src/pages/Home/lib/searchEnterMatch.js';
+import { resolveKoreaDestinationFirstPassSync } from '../src/pages/Home/lib/resolveKoreaDestinationFirstPass.js';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 let failed = 0;
 
@@ -216,6 +230,166 @@ assert(
   sinchonNames.some((n) => n.includes('영광')),
   `신촌 has 영광: ${sinchonNames.join(' | ')}`,
 );
+
+function assertDictHomonym(query, mustInclude, mustExclude = []) {
+  const detected = detectHomonymLocation(query);
+  assert(detected, `${query} is detected as homonym`);
+  const cards = detected.disambiguationCandidates;
+  assert(cards.length >= 2, `${query} disambiguationCandidates ≥2 (got ${cards.length})`);
+  assert(
+    Array.isArray(detected.disambiguationCandidates),
+    `${query} exposes disambiguationCandidates array`,
+  );
+  const names = cards.map((c) => c.name).join(' | ');
+  for (const needle of mustInclude) {
+    assert(names.includes(needle), `${query} includes ${needle}: ${names}`);
+  }
+  for (const needle of mustExclude) {
+    assert(!names.includes(needle), `${query} excludes ${needle}: ${names}`);
+  }
+  assert(resolveUniqueKoreaHomonym(query) === null, `${query} unique resolve is null (no snap)`);
+  assert(
+    cards.every((c) => c.source === 'korea-homonym-dict' && c.uiPlace === true && c.originalQuery === query),
+    `${query} cards carry dict source + originalQuery`,
+  );
+  assert(
+    cards.every((c) => Number.isFinite(c.lat) && Number.isFinite(c.lng) && c.stayAdmin && c.parentCity),
+    `${query} cards have coords + stayAdmin + region`,
+  );
+}
+
+assertDictHomonym('종각', ['종각역', '서울 종로', '종각네거리', '대구']);
+assertDictHomonym('광천', ['광천선굴', '평창군', '광천동', '광주', '광천읍', '홍성']);
+assertDictHomonym('송암', ['송암스페이스센터', '고양', '송암스포츠타운', '춘천', '송암동', '광주']);
+assertDictHomonym('강원대', ['춘천', '삼척']);
+assertDictHomonym('강원대학교', ['춘천', '삼척']);
+assertDictHomonym('봉화산', ['중랑', '양구']);
+assertDictHomonym('대포', ['대포항', '속초', '대포동', '서귀포']);
+assertDictHomonym('대화', ['대화역', '고양', '대화면', '평창', '대화동', '대전']);
+assertDictHomonym('용산', ['용산역', '서울 용산', '용산호', '정읍']);
+
+assert(detectHomonymLocation('종각역') === null, '종각역 is unique — not a homonym list');
+assert(detectHomonymLocation('광천선굴') === null, '광천선굴 is unique');
+assert(detectHomonymLocation('송암스페이스센터') === null, '송암스페이스센터 is unique');
+assert(detectHomonymLocation('송암스포츠타운') === null, '송암스포츠타운 is unique');
+assert(detectHomonymLocation('광천성굴') === null, '광천성굴 alias stays First-Pass unique');
+assert(detectHomonymLocation('강원대학교 동해수련원') === null, '동해수련원 is unique satellite');
+assert(detectHomonymLocation('대화리') === null, '대화리 stays Nominatim ri path');
+assert(detectHomonymLocation('제주') === null, 'hub bare 제주 not in dict');
+
+assert(shouldOfferKoreaHomonymDisambiguation('종각'), '종각 offers dict disambiguation');
+assert(shouldOfferKoreaHomonymDisambiguation('광천'), '광천 offers dict disambiguation');
+assert(shouldOfferKoreaHomonymDisambiguation('송암'), '송암 offers dict disambiguation');
+assert(shouldOfferKoreaHomonymDisambiguation('대포'), '대포 offers dict disambiguation');
+assert(
+  !shouldOfferKoreaHomonymDisambiguation('용산'),
+  '용산 hub exact keeps hub cluster (dict listed but not offered)',
+);
+assert(!shouldOfferKoreaHomonymDisambiguation('종각역'), '종각역 not offered as homonym');
+assert(collectKoreaHomonymDisambiguationCandidates('용산').length >= 2, '용산 dict still lists ≥2');
+
+const scriptsDir = dirname(fileURLToPath(import.meta.url));
+const handlerSrc = readFileSync(join(scriptsDir, '../src/pages/Home/hooks/useHomeHandlers.js'), 'utf8');
+const suggestionSrc = readFileSync(
+  join(scriptsDir, '../src/pages/Home/lib/searchSuggestions.js'),
+  'utf8',
+);
+assert(handlerSrc.includes('dictHomonymResult'), 'handler intercepts dict homonyms before First-Pass');
+assert(
+  /const dictChoice = dictHomonymResult\(\);\s*if \(dictChoice\) return dictChoice;\s*\n\s*const curated = await buildCuratedEnterDisambiguation/.test(
+    handlerSrc,
+  ),
+  'requireChoice dict homonym runs before curated settlement reverse-expand',
+);
+assert(
+  /dictChoice = dictHomonymResult\(\);\s*if \(dictChoice\) return dictChoice;\s*\n\s*\/\/ 국내 First-Pass/.test(
+    handlerSrc,
+  ),
+  'dict homonym runs immediately before First-Pass snap',
+);
+assert(
+  suggestionSrc.includes('shouldOfferKoreaHomonymDisambiguation'),
+  'typing suggestions short-circuit to dict candidates',
+);
+assert(
+  suggestionSrc.includes("'${q}' → 지역을 선택하세요"),
+  'curated Enter offers dict homonyms before settlement reverse-expand',
+);
+const curatedStart = suggestionSrc.indexOf('export async function buildCuratedEnterDisambiguation');
+const dictInCurated = suggestionSrc.indexOf('shouldOfferKoreaHomonymDisambiguation(q)', curatedStart);
+const attractionInCurated = suggestionSrc.indexOf('const attractionHit = resolveHubAttraction(q)', curatedStart);
+const settlementInCurated = suggestionSrc.indexOf('const settlementHit = resolveSettlement(q)', curatedStart);
+assert(
+  curatedStart >= 0 &&
+    dictInCurated > curatedStart &&
+    dictInCurated < attractionInCurated &&
+    attractionInCurated < settlementInCurated,
+  'buildCuratedEnterDisambiguation: dict homonym before attraction/settlement reverse-expand',
+);
+assert(
+  suggestionSrc.includes('uniqueHubFromAttractionHits(attractions, q)'),
+  'single-hub attraction reverse-expand requires exact query',
+);
+assert(
+  suggestionSrc.includes('attractionHitIsExactQuery'),
+  'substring attraction hits (송암) do not dump sibling 일산 attractions',
+);
+
+assert(
+  resolveKoreaDestinationFirstPassSync('종각역')?.name === '종각역',
+  '종각역 First-Pass unique station still holds',
+);
+assert(
+  resolveKoreaDestinationFirstPassSync('광천선굴')?.name === '광천선굴',
+  '광천선굴 First-Pass unique hub still holds',
+);
+
+const jonggakCards = collectKoreaHomonymDisambiguationCandidates('종각');
+assert(isKoreaHomonymChoiceSet(jonggakCards), '종각 is a homonym choice set');
+assert(koreaHomonymChoiceQuery(jonggakCards) === '종각', 'choice query stays 종각');
+const jonggakLabels = jonggakCards.map(koreaHomonymChipLabel).join(' | ');
+assert(jonggakLabels.includes('서울 종로 종각역'), `chip 서울 종로 종각역: ${jonggakLabels}`);
+assert(jonggakLabels.includes('대구 중구 종각네거리'), `chip 대구 중구 종각네거리: ${jonggakLabels}`);
+assert(preferEnterSuggestion('종각', jonggakCards) === null, 'Enter does not snap 종각 to one chip');
+assert(
+  preferEnterSuggestion('광천', collectKoreaHomonymDisambiguationCandidates('광천')) === null,
+  'Enter does not snap 광천',
+);
+
+const suggestionListSrc = readFileSync(
+  join(scriptsDir, '../src/pages/Home/components/SearchDiscovery/SearchSuggestionList.jsx'),
+  'utf8',
+);
+const chipSrc = readFileSync(
+  join(scriptsDir, '../src/pages/Home/components/SearchDiscovery/HomonymChoiceChips.jsx'),
+  'utf8',
+);
+const modalSrc = readFileSync(
+  join(scriptsDir, '../src/pages/Home/components/SearchDiscoveryModal.jsx'),
+  'utf8',
+);
+const koI18n = readFileSync(join(scriptsDir, '../src/i18n/locales/ko.json'), 'utf8');
+assert(chipSrc.includes('homonymChoiceTitle'), 'chip prompt uses homonymChoiceTitle');
+assert(chipSrc.includes('data-homonym-choice-chips'), 'chip row is marked for search/place sheet');
+assert(suggestionListSrc.includes('HomonymChoiceChips'), 'typing dropdown wires homonym chips');
+assert(suggestionListSrc.includes('homonymChoiceTitle'), 'Enter cards use 어느 지역의 [지명] copy');
+const cardsFnStart = suggestionListSrc.indexOf('export function SearchDisambiguationCards');
+assert(cardsFnStart > 0, 'SearchDisambiguationCards exists');
+assert(
+  suggestionListSrc.indexOf('<HomonymChoiceChips') < cardsFnStart,
+  'chips live in typing dropdown only',
+);
+assert(
+  !suggestionListSrc.slice(cardsFnStart).includes('HomonymChoiceChips'),
+  'Enter cards do not stack chips on the same candidates',
+);
+assert(
+  suggestionListSrc.includes('!homonymChoice && (items.length > 0 || loading)'),
+  'dropdown hides list rows when homonym chips show',
+);
+assert(modalSrc.includes('query={disambiguation.query}'), 'place sheet / search modal passes query to cards');
+assert(koI18n.includes('어느 지역의 {{query}}을 찾으시나요?'), 'ko copy is 어느 지역의 [지명]을 찾으시나요?');
+assert(!koI18n.includes('지역 칩이나 아래 카드'), 'copy no longer tells user to use both chips and cards');
 
 if (process.env.KO_HOMONYM_RI_LIVE === '1') {
   console.log('LIVE: Nominatim collectKoHomonymRiCandidates(대화리)…');

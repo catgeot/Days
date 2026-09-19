@@ -20,7 +20,10 @@ import {
 import { sanitizeScenicDbSearchQuery } from './scenicSearch';
 import { resolveTourAreaForHub } from './koreaSigunguByHub';
 import { resolveCityAttractionHub } from './cityAttractionHubs';
-import { pickTourAttractionRowForTitle } from './koreaTourAttractionTitleMatch';
+import {
+  pickTourAttractionRowForTitle,
+  pickUniqueTourAttractionRowForTitle,
+} from './koreaTourAttractionTitleMatch';
 
 export { pickTourAttractionRowForTitle } from './koreaTourAttractionTitleMatch';
 
@@ -658,4 +661,26 @@ export async function lookupKoreaTourAttractionByTitle(opts = {}) {
   let rows = await run(true);
   if (!rows.length) rows = await run(false);
   return pickTourAttractionRowForTitle(rows, title, hints);
+}
+
+/**
+ * Mapbox 전 First-Pass — 전국 title 조회, 동점 다후보는 null.
+ * @param {string} title
+ */
+export async function lookupKoreaTourAttractionFirstPass(title) {
+  const q = sanitizeScenicDbSearchQuery(title);
+  if (q.length < 3) return null;
+  const { data, error } = await supabase
+    .from('tourapi_attraction')
+    .select(LIST_SELECT)
+    .eq('active', true)
+    .eq('content_type_id', '12')
+    .ilike('title', `%${q}%`)
+    .limit(24);
+  if (error) {
+    console.warn('[koreaTourAttractions] firstPass', error.message || error);
+    return null;
+  }
+  const rows = (data || []).map(mapTourAttractionRow).filter(Boolean);
+  return pickUniqueTourAttractionRowForTitle(rows, q, [], 88);
 }

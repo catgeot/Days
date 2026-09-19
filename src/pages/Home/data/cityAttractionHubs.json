@@ -2455,6 +2455,22 @@
         "kind": "museum",
         "lat": 37.6122245,
         "lng": 128.3682825
+      },
+      {
+        "name": "광천선굴",
+        "name_en": "Gwangcheon Seongul",
+        "kind": "landmark",
+        "lat": 37.518306,
+        "lng": 128.451361,
+        "contentId": "2987914",
+        "aliases": [
+          "광천성굴",
+          "광천동굴",
+          "광천선굴어드벤처테마파크",
+          "광천선굴어드벤처",
+          "Gwangcheon Cave",
+          "Gwangcheon Seongul Adventure Theme Park"
+        ]
       }
     ]
   },

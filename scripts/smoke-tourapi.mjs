@@ -8,6 +8,9 @@
  * 키 값·serviceKey는 로그하지 않음.
  */
 import { loadEnvFile } from './lib/load-env-file.mjs';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 loadEnvFile();
 
@@ -134,6 +137,169 @@ async function mappingGuards() {
       scoreTourPhotoTitle('성산일출봉 전경', '제주', '제주'),
     'airport ranks below scenic ilchulbong',
   );
+
+  const {
+    keepTourDetailImage,
+    isSparseTourApiGallery,
+    isTourApiFacilityPhotoTitle,
+    tourApiPhotoCaption,
+  } = await import('../src/utils/tourApiPhotoRank.js');
+
+  const facilityTitles = [
+    '광천선굴 장애인화장실',
+    '세면대',
+    '변기',
+    '소변기',
+    '휠체어 대여',
+    '점자블록',
+    '유도블록',
+    '주차구역',
+    '휠체어리프트',
+    '개찰구',
+    '소화기',
+    '엘리베이터',
+    '승강기',
+    '피난안내도',
+    '내부복도',
+    '무장애 출입',
+  ];
+  for (const title of facilityTitles) {
+    assert(isTourApiFacilityPhotoTitle(title), `facility title drops: ${title}`);
+  }
+  assert(
+    !isTourApiFacilityPhotoTitle('광천선굴 종유석'),
+    'cave interior is not facility',
+  );
+  assert(
+    !isTourApiFacilityPhotoTitle('경복궁 전경'),
+    'palace scenery is not facility',
+  );
+  assert(
+    !isTourApiFacilityPhotoTitle('케이블카 전경'),
+    'cable car scenery is not facility',
+  );
+  assert(
+    !isTourApiFacilityPhotoTitle('스키장 전경'),
+    'ski resort scenery is not facility',
+  );
+  assert(
+    scoreTourPhotoTitle('장애인화장실', '광천선굴', '광천선굴') < 0,
+    'toilet title score < 0 even with place name',
+  );
+  assert(
+    scoreTourPhotoTitle('개찰구', '광천선굴', '광천선굴') < 0,
+    'ticket gate score < 0',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '장애인화장실',
+      imageUrl: 'https://example.com/toilet.jpg',
+      firstimageUrl: 'https://example.com/toilet.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'detailImage toilet dropped even if firstimage',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imgname: '휠체어 리프트',
+      imageUrl: 'https://example.com/lift.jpg',
+      firstimageUrl: 'https://example.com/hero.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'imgname-only wheelchair lift dropped',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imgname: '개찰구',
+      imageUrl: 'https://example.com/gate.jpg',
+      firstimageUrl: 'https://example.com/hero.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'imgname-only ticket gate dropped',
+  );
+  assert(
+    tourApiPhotoCaption({ title: '', imgname: '화장실' }) === '화장실',
+    'caption falls back to imgname',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imageUrl: 'http://tong.visitkorea.or.kr/cms/resource/75/3381075_image2_1.jpg',
+      firstimageUrl: 'http://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'untitled non-firstimage detail dropped',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imageUrl: 'http://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      firstimageUrl: 'https://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === true,
+    'untitled firstimage kept (http/https normalized)',
+  );
+  assert(
+    isSparseTourApiGallery([
+      { source: 'tourapi', alt_description: '화장실' },
+      { source: 'tourapi', alt_description: '휠체어' },
+      { source: 'tourapi', alt_description: '개찰구' },
+      { source: 'tourapi', alt_description: '' },
+    ]),
+    'facility-only Tour gallery is sparse',
+  );
+  assert(
+    isSparseTourApiGallery([
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+    ]),
+    'untitled 4-cut Tour gallery is sparse',
+  );
+  assert(
+    !isSparseTourApiGallery([
+      { source: 'tourapi', alt_description: '경복궁 전경' },
+      { source: 'tourapi', alt_description: '근정전' },
+      { source: 'tourapi', alt_description: '경회루 야경' },
+      { source: 'tourapi', alt_description: '경복궁 가을' },
+    ]),
+    'titled scenic Tour gallery is not sparse',
+  );
+
+  const proxySrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../supabase/functions/tourapi-proxy/index.ts'),
+    'utf8',
+  );
+  assert(
+    proxySrc.includes('pickStr(item, "imgname", "imgName")'),
+    'proxy reads imgname from TourAPI detailImage',
+  );
+  assert(proxySrc.includes('out.imgname = imgname'), 'proxy forwards imgname');
+  assert(
+    /if \(action === "detailImage" && !out\.title\) out\.title = imgname/.test(proxySrc),
+    'proxy fills empty detailImage title from imgname',
+  );
+
+  const gallerySrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/utils/fetchTourApiGallery.js'),
+    'utf8',
+  );
+  assert(gallerySrc.includes('tourApiPhotoCaption'), 'gallery uses imgname caption');
+  assert(gallerySrc.includes('keepTourDetailImage'), 'gallery applies facility keep');
+
+  const vercelSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../vercel.json'),
+    'utf8',
+  );
+  assert(vercelSrc.includes('/qa/dest-match'), 'vercel.json has /qa/dest-match');
 
   const byName = resolveTourApiPlace('경복궁');
   assert(byName?.slug === 'gyeongbokgung', 'resolve byName 경복궁');

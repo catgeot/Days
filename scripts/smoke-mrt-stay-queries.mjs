@@ -6,7 +6,10 @@
  */
 import {
   canShowMrtStayStrip,
+  collectMrtStayGeoSanityKeys,
   expandMrtCountryHintAlts,
+  filterMrtStaysByGeoSanity,
+  MRT_STAY_GEO_SANITY_MAX_KM,
   isMrtStayPointLabel,
   isStreetishStayLabel,
   mergeMrtStayFetchQuery,
@@ -16,6 +19,7 @@ import {
   queryLooksLikeStayPoint,
   rankStayPointDisambiguationCandidates,
   resolveKoStationAlias,
+  resolveKoStationAliasForLocation,
   resolveKoUniversityAlias,
   resolveKoUniversitySatelliteAlias,
   isUniversitySatelliteStayQuery,
@@ -243,6 +247,55 @@ const CASES = [
       uiPlace: true,
     },
     expectKeyword: /문경/,
+  },
+  /**
+   * 자연명소 광천선굴 — 명소명을 1차로 두면 MRT가 광주 광천동 호텔로 승격.
+   * placeCategory NATURE_SCENIC → 시·군(평창) 선두, 광주·광천 제외.
+   */
+  {
+    slug: 'gwangcheon-seongul-nature',
+    location: {
+      name: '광천선굴',
+      name_ko: '광천선굴',
+      name_en: 'Gwangcheon Seongul',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '광천선굴',
+      hubId: 'pyeongchang',
+      parentCity: '평창',
+      placeCategory: 'NATURE_SCENIC',
+      tourCategory: 'NATURE_SCENIC',
+      contentId: '2987914',
+      stayAdmin: {
+        city: '평창',
+        cityEn: 'Pyeongchang',
+        county: '평창',
+        state: '',
+      },
+    },
+    expectPrimaryKeyword: /평창/,
+    expectKeyword: /평창/,
+    rejectPrimaryKeyword: /광천|광주|Gwangcheon/,
+    rejectCityHint: /광천선굴|광주|Gwangcheon/i,
+  },
+  {
+    slug: 'woljeongsa-history',
+    location: {
+      name: '월정사',
+      name_ko: '월정사',
+      name_en: 'Woljeongsa',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '월정사',
+      hubId: 'pyeongchang',
+      parentCity: '평창',
+      placeCategory: 'HISTORY',
+      stayAdmin: { city: '평창', cityEn: 'Pyeongchang', county: '평창' },
+    },
+    expectPrimaryKeyword: /평창/,
+    rejectPrimaryKeyword: /월정사|광주|대구/,
   },
   /**
    * GPS 평창군 대화면 대화리 — 「대화」축약이 고양/일산 대화동으로 새면 안 됨.
@@ -485,6 +538,60 @@ const CASES = [
     expectKeyword: /서울/,
     rejectPrimaryKeyword: /연신내역|^서울$|종로/,
   },
+  {
+    slug: 'daegu-jonggak-intersection',
+    location: {
+      name: '종각네거리 · 대구 중구',
+      name_ko: '종각네거리',
+      name_en: 'Jonggak Intersection',
+      country: '한국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '종각',
+      lat: 35.8664,
+      lng: 128.5936,
+      parentCity: '대구 중구',
+      stayAdmin: {
+        neighbourhood: '',
+        district: '중구',
+        city: '대구',
+        cityEn: 'Daegu',
+        county: '',
+        state: '대구광역시',
+      },
+      placeCategory: 'LANDMARK',
+    },
+    expectKeyword: /대구/,
+    rejectPrimaryKeyword: /종로|종각역|^서울$/,
+    rejectCityHint: /종로|^서울$/,
+  },
+  {
+    slug: 'chuncheon-songam-sports-town',
+    location: {
+      name: '송암스포츠타운 · 춘천시',
+      name_ko: '송암스포츠타운',
+      name_en: 'Songam Sports Town',
+      country: '한국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '송암',
+      lat: 37.85578,
+      lng: 127.68863,
+      parentCity: '춘천시',
+      stayAdmin: {
+        neighbourhood: '송암동',
+        district: '',
+        city: '춘천',
+        cityEn: 'Chuncheon',
+        county: '',
+        state: '강원특별자치도',
+      },
+      placeCategory: 'LANDMARK',
+    },
+    expectPrimaryKeyword: /춘천/,
+    expectKeyword: /춘천/,
+    rejectPrimaryKeyword: /^송암$|양주|장흥|광주/,
+  },
 ];
 
 function assert(cond, msg) {
@@ -616,6 +723,30 @@ async function main() {
     assert(jonggakAlias?.district === '종로', `종각 alias district (got ${jonggakAlias?.district})`);
     assert(jonggakAlias?.lat === 37.5701 && jonggakAlias?.lng === 126.9829, '종각 alias station coords');
     assert(resolveKoStationAlias('종각역')?.district === '종로', '종각역 alias district 종로');
+    assert(
+      !resolveKoStationAliasForLocation({
+        name: '종각네거리 · 대구 중구',
+        name_ko: '종각네거리',
+        originalQuery: '종각',
+        lat: 35.8664,
+        lng: 128.5936,
+        parentCity: '대구 중구',
+        stayAdmin: { city: '대구', district: '중구', state: '대구광역시' },
+      }),
+      '대구 종각네거리 does not use Seoul 종각 alias',
+    );
+    assert(
+      resolveKoStationAliasForLocation({
+        name: '종각역',
+        name_ko: '종각역',
+        originalQuery: '종각',
+        lat: 37.5701,
+        lng: 126.9829,
+        parentCity: '서울 종로',
+        stayAdmin: { city: '서울', district: '종로', state: '서울특별시' },
+      })?.district === '종로',
+      '서울 종각역 still uses station alias',
+    );
     assert(isStreetishStayLabel('Jonggak-gil'), 'Jonggak-gil is streetish');
     assert(!isStreetishStayLabel('종각역'), '종각역 is not streetish');
     const rankedCards = rankStayPointDisambiguationCandidates('종각역', [
@@ -827,6 +958,21 @@ async function main() {
     farGil?.lat === 37.5701,
     `far gil card snaps to station (got ${farGil?.lat})`,
   );
+  const daeguJonggakOrigin = resolveMrtStayOrigin({
+    name: '종각네거리 · 대구 중구',
+    name_ko: '종각네거리',
+    originalQuery: '종각',
+    lat: 35.8664,
+    lng: 128.5936,
+    parentCity: '대구 중구',
+    stayAdmin: { city: '대구', district: '중구', state: '대구광역시' },
+    uiPlace: true,
+  });
+  assert(
+    Math.abs(daeguJonggakOrigin?.lat - 35.8664) < 1e-6 &&
+      Math.abs(daeguJonggakOrigin?.lng - 128.5936) < 1e-6,
+    `대구 종각네거리 keeps Daegu origin (got ${daeguJonggakOrigin?.lat},${daeguJonggakOrigin?.lng})`,
+  );
   const nearStreet = resolveMrtStayOrigin({
     name: '종각역',
     name_en: 'Jonggak-gil',
@@ -896,6 +1042,148 @@ async function main() {
     Math.abs(kangwonTrainingNamedUniv?.lat - 38.0866) < 1e-6,
     `수련원 originalQuery does not snap even if name is 강원대학교 (got ${kangwonTrainingNamedUniv?.lat})`,
   );
+
+  const PYEONGCHANG = { lat: 37.3704, lng: 128.3901, label: '평창' };
+  const CHUNCHEON = { lat: 37.8695, lng: 127.744, label: '춘천' };
+  const pyeongchangLoc = {
+    name: '평창',
+    country: '대한민국',
+    stayAdmin: { city: '평창군', county: '평창군', state: '강원특별자치도' },
+  };
+  const chuncheonLoc = {
+    name: '강원대학교',
+    originalQuery: '강원대학교',
+    country: '대한민국',
+    lat: 37.8695,
+    lng: 127.744,
+    stayAdmin: { city: '춘천시', state: '강원특별자치도' },
+  };
+  const pyeongchangKeys = collectMrtStayGeoSanityKeys(pyeongchangLoc);
+  assert(
+    pyeongchangKeys.includes('평창') && !pyeongchangKeys.includes('강원') && !pyeongchangKeys.some((k) => k === '대화'),
+    `평창 geo keys (got ${pyeongchangKeys.join(',')})`,
+  );
+  const chuncheonKeys = collectMrtStayGeoSanityKeys(chuncheonLoc);
+  assert(
+    chuncheonKeys.includes('춘천') && !chuncheonKeys.includes('양양') && !chuncheonKeys.includes('강원'),
+    `춘천 geo keys (got ${chuncheonKeys.join(',')})`,
+  );
+  const daeguJonggakLoc = {
+    name: '종각네거리 · 대구 중구',
+    name_ko: '종각네거리',
+    originalQuery: '종각',
+    lat: 35.8664,
+    lng: 128.5936,
+    parentCity: '대구 중구',
+    country: '대한민국',
+    stayAdmin: { city: '대구', district: '중구', state: '대구광역시' },
+  };
+  const daeguJonggakKeys = collectMrtStayGeoSanityKeys(daeguJonggakLoc);
+  assert(
+    daeguJonggakKeys.includes('대구') && !daeguJonggakKeys.includes('종로') && !daeguJonggakKeys.includes('중구'),
+    `대구 종각 geo keys (got ${daeguJonggakKeys.join(',')})`,
+  );
+  const geoMixDaeguJonggak = filterMrtStaysByGeoSanity(
+    [
+      { itemId: 21, itemName: '나인트리 바이 파르나스 서울 인사동', lat: 37.573, lng: 126.985 },
+      { itemId: 22, itemName: '호텔 더 디자이너스 종로', lat: 37.5708, lng: 126.983 },
+      { itemId: 23, itemName: '대구 중구 호텔', lat: 35.868, lng: 128.595 },
+    ],
+    { lat: 35.8664, lng: 128.5936, label: '종각네거리 · 대구 중구' },
+    { isDomestic: true, originKeys: daeguJonggakKeys },
+  );
+  assert(
+    geoMixDaeguJonggak.every((it) => it.itemId === 23) && geoMixDaeguJonggak.length === 1,
+    `대구 종각 숙소는 서울 종각 호텔 아님 (got ${geoMixDaeguJonggak.map((it) => it.itemId)})`,
+  );
+  assert(MRT_STAY_GEO_SANITY_MAX_KM === 30, `geo-sanity cap (got ${MRT_STAY_GEO_SANITY_MAX_KM})`);
+  const geoMixPyeongchang = filterMrtStaysByGeoSanity(
+    [
+      { itemId: 1, itemName: '라한호텔 광주', lat: 35.1595, lng: 126.8526 },
+      { itemId: 2, itemName: '쏠비치 양양', lat: 38.0866, lng: 128.6486 },
+      { itemId: 3, itemName: '용평리조트 평창', lat: 37.645, lng: 128.68 },
+      { itemId: 4, itemName: '평창 대화 펜션', lat: 37.3708, lng: 128.391 },
+      { itemId: 5, itemName: '라한셀렉트 광주' },
+    ],
+    PYEONGCHANG,
+    { isDomestic: true, originKeys: pyeongchangKeys },
+  );
+  assert(
+    geoMixPyeongchang.every((it) => ![1, 2, 5].includes(it.itemId)),
+    `평창 검색 광주/양양 0건 (got ${geoMixPyeongchang.map((it) => it.itemId)})`,
+  );
+  assert(
+    geoMixPyeongchang.some((it) => it.itemId === 4),
+    `평창 인근 숙소 유지 (got ${geoMixPyeongchang.map((it) => it.itemId)})`,
+  );
+  assert(
+    geoMixPyeongchang.some((it) => it.itemId === 3),
+    `평창 시군 숙소 30km 밖이어도 유지 (got ${geoMixPyeongchang.map((it) => it.itemId)})`,
+  );
+  const geoMixChuncheon = filterMrtStaysByGeoSanity(
+    [
+      { itemId: 11, itemName: '유스퀘어 광주', lat: 35.16, lng: 126.85 },
+      { itemId: 12, itemName: '낙산 호텔 양양', lat: 38.116, lng: 128.635 },
+      { itemId: 13, itemName: '춘천 세종호텔', lat: 37.881, lng: 127.73 },
+      { itemId: 14, itemName: '양양 하조대 펜션' },
+    ],
+    CHUNCHEON,
+    { isDomestic: true, originKeys: chuncheonKeys },
+  );
+  assert(
+    geoMixChuncheon.every((it) => ![11, 12, 14].includes(it.itemId)),
+    `춘천 검색 광주/양양 0건 (got ${geoMixChuncheon.map((it) => it.itemId)})`,
+  );
+  assert(
+    geoMixChuncheon.some((it) => it.itemId === 13),
+    `춘천 인근 숙소 유지 (got ${geoMixChuncheon.map((it) => it.itemId)})`,
+  );
+  const songamSportsLoc = {
+    name: '송암스포츠타운 · 춘천시',
+    name_ko: '송암스포츠타운',
+    originalQuery: '송암',
+    lat: 37.85578,
+    lng: 127.68863,
+    parentCity: '춘천시',
+    country: '한국',
+    stayAdmin: { neighbourhood: '송암동', city: '춘천', cityEn: 'Chuncheon', state: '강원특별자치도' },
+    placeCategory: 'LANDMARK',
+    uiPlace: true,
+  };
+  const songamSportsKeys = collectMrtStayGeoSanityKeys(songamSportsLoc);
+  assert(
+    songamSportsKeys.includes('춘천') && !songamSportsKeys.includes('양주'),
+    `송암스포츠타운 geo keys (got ${songamSportsKeys.join(',')})`,
+  );
+  const geoMixSongamSports = filterMrtStaysByGeoSanity(
+    [
+      { itemId: 41, itemName: '양주 비타민펜션&캠핑장', lat: 37.725, lng: 126.948 },
+      { itemId: 42, itemName: '양주 아트시티펜션 (장흥유원지)' },
+      { itemId: 43, itemName: '춘천 세종호텔', lat: 37.881, lng: 127.73 },
+    ],
+    { lat: 37.85578, lng: 127.68863, label: '송암스포츠타운 · 춘천시' },
+    { isDomestic: true, originKeys: songamSportsKeys },
+  );
+  assert(
+    geoMixSongamSports.every((it) => it.itemId === 43) && geoMixSongamSports.length === 1,
+    `춘천 송암스포츠타운 숙소는 양주 펜션 아님 (got ${geoMixSongamSports.map((it) => it.itemId)})`,
+  );
+  const overseasKept = filterMrtStaysByGeoSanity(
+    [{ itemId: 99, itemName: 'Waikiki Hotel', lat: 21.27, lng: -157.82 }],
+    CHUNCHEON,
+    { isDomestic: false, originKeys: chuncheonKeys },
+  );
+  assert(overseasKept.length === 1, 'overseas stays skip geo-sanity');
+  const daehwaKeys = collectMrtStayGeoSanityKeys({
+    name: '대화리',
+    country: '한국',
+    stayAdmin: { city: '대화면', county: '평창군', state: '강원특별자치도' },
+  });
+  assert(
+    daehwaKeys.includes('평창') && !daehwaKeys.includes('대화'),
+    `대화면 keep 키는 평창 (got ${daehwaKeys.join(',')})`,
+  );
+
   const ranked = attachMrtStayDistances(
     [
       { itemId: 1, lat: 37.4979, lng: 127.0276 },
@@ -992,11 +1280,19 @@ async function main() {
   assert(fetchSrc.includes('onPartialResult'), 'list paints before photon enrich');
   assert(fetchSrc.includes('geocodeItems'), 'photon enrich uses geocodeItems');
   assert(fetchSrc.includes('listingBody'), 'listing invoke omits origin');
+  assert(fetchSrc.includes('originAdminKeys'), 'listing sends geo-sanity admin keys');
+  assert(fetchSrc.includes('filterMrtStaysByGeoSanity'), 'client listing applies geo-sanity');
   assert(fetchSrc.includes('orderStayItemsForGeocode'), 'photon first page follows priced list order');
   assert(fetchSrc.includes('MRT_STAY_PAGE_SIZE'), 'first photon batch is visible page');
   assert(edgeSrc.includes('geocodeItems') && edgeSrc.includes('geocodeOnly'), 'Edge geocodeItems path');
   assert(edgeSrc.includes('geo:id:'), 'Edge geocode cache by itemId');
   assert(edgeSrc.includes('rememberSearchCoords'), 'Edge search cache keeps photon coords');
+  assert(edgeSrc.includes('MRT_STAY_GEO_SANITY_MAX_KM'), 'Edge geo-sanity distance cap');
+  assert(edgeSrc.includes('filterMrtStaysByGeoSanity'), 'Edge listing applies geo-sanity');
+  assert(
+    stripSrc.includes('filterMrtStaysByGeoSanity') && stripSrc.includes('collectMrtStayGeoSanityKeys'),
+    'GlobeStayStrip wires geo-sanity',
+  );
   console.log('OK  stay distance + naver map');
 
   class MemoryStorage {
