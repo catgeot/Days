@@ -682,7 +682,7 @@
         "nextHintEnjoy": "다른 단계도 보시려면 아래에서 선택해 주세요."
       },
       "esim": {
-        "choose": "유심 1종 선택",
+        "choose": "유심 · eSIM",
         "airalo": "Airalo",
         "holafly": "Holafly"
       },
@@ -796,6 +796,8 @@
           "routeArrive": "도착",
           "routeEditable": "자동 반영 · 배너에서 수정 가능",
           "fullScreenSearch": "전체 화면 검색",
+          "nativeDepartDate": "가는 날",
+          "nativeReturnDate": "오는 날",
           "noArrivalFallback": "도착 공항을 찾지 못해 일반 검색으로 열립니다.",
           "tripcomFlights": "Trip.com 항공권"
         },

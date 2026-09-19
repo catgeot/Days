@@ -17,6 +17,7 @@ import { computeKlookBannerLayout } from './klookBannerLayout';
 import { useTripcomPlannerBannerDimensions } from './useTripcomPlannerBannerDimensions';
 import { plannerCaption } from '../readableText';
 import PlannerAffiliateLinkBadge from './PlannerAffiliateLinkBadge';
+import TripcomFlightNativeSearch from './TripcomFlightNativeSearch';
 
 const MIN_DISPLAY_HEIGHT = 120;
 
@@ -128,33 +129,42 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
                 data-tripcom-banner-size={`${nativeW}x${nativeH}`}
             >
                 <PlannerAffiliateLinkBadge />
-                <div
-                    className="flex w-full justify-center overflow-hidden"
-                    style={{ height: `${layout.clipH}px` }}
-                >
+                {isMobileBanner ? (
+                    <TripcomFlightNativeSearch
+                        location={location}
+                        essentialGuide={essentialGuide}
+                        departDate={departDate}
+                        returnDate={returnDate}
+                    />
+                ) : (
                     <div
-                        style={{
-                            width: `${nativeW}px`,
-                            height: `${nativeH}px`,
-                            transform: `scale(${layout.scale})`,
-                            transformOrigin: 'top center',
-                        }}
+                        className="flex w-full justify-center overflow-hidden"
+                        style={{ height: `${layout.clipH}px` }}
                     >
-                        <iframe
-                            key={`${iframeSrc}-${nativeW}x${nativeH}`}
-                            src={iframeSrc}
-                            title={t('place.planner.banners.tripcomFlight.iframeTitle')}
-                            width={nativeW}
-                            height={nativeH}
-                            className="block border-0"
-                            scrolling="no"
-                            loading="lazy"
-                            {...(iframeReferrerPolicy
-                                ? { referrerPolicy: iframeReferrerPolicy }
-                                : {})}
-                        />
+                        <div
+                            style={{
+                                width: `${nativeW}px`,
+                                height: `${nativeH}px`,
+                                transform: `scale(${layout.scale})`,
+                                transformOrigin: 'top center',
+                            }}
+                        >
+                            <iframe
+                                key={`${iframeSrc}-${nativeW}x${nativeH}`}
+                                src={iframeSrc}
+                                title={t('place.planner.banners.tripcomFlight.iframeTitle')}
+                                width={nativeW}
+                                height={nativeH}
+                                className="block border-0"
+                                scrolling="no"
+                                loading="lazy"
+                                {...(iframeReferrerPolicy
+                                    ? { referrerPolicy: iframeReferrerPolicy }
+                                    : {})}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
                 <p className="sr-only">
                     {arrivalIata
                         ? t('place.planner.banners.tripcomFlight.srWithArrival', { iata: arrivalIata })

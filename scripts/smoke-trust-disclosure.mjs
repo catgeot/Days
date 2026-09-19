@@ -70,7 +70,10 @@ assert.doesNotMatch(planner, /flightBooking=\{/, '항공 위젯을 체크리스�
 assert.match(planner, /id="planner-prep-flight-booking"/, '항공 위젯 전체 폭 앵커');
 assert.match(planner, /omitFlightBooking/, '체크리스트 항공 CTA 중복 생략');
 assert.match(planner, /PlannerPickupCta/, '픽업 CTA는 이동 단계');
-assert.match(planner, /place\.planner\.esim\.choose/, '유심 1종 선택');
+assert.match(planner, /place\.planner\.esim\.choose/, '유심 · eSIM');
+assert.match(planner, /<AiraloBannerWidget compact/, 'Airalo 한 화면');
+assert.match(planner, /<HolaflyBannerWidget compact/, 'Holafly 한 화면');
+assert.doesNotMatch(planner, /esimProvider/, '유심 1종 탭 없음');
 assert.match(planner, /variant="footer"/, '단계 하단 다음 선택');
 
 const stageNav = read('src/components/PlaceCard/tabs/planner/components/PlannerStageNav.jsx');

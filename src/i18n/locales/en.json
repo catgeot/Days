@@ -912,7 +912,7 @@
         "nextHintEnjoy": "To see another step, choose one below."
       },
       "esim": {
-        "choose": "Choose one eSIM",
+        "choose": "eSIM",
         "airalo": "Airalo",
         "holafly": "Holafly"
       },
@@ -1026,6 +1026,8 @@
           "routeArrive": "Arrive",
           "routeEditable": "auto-filled · editable in banner",
           "fullScreenSearch": "Full-screen search",
+          "nativeDepartDate": "Depart date",
+          "nativeReturnDate": "Return date",
           "noArrivalFallback": "No arrival airport found — opens generic search.",
           "tripcomFlights": "Trip.com flights"
         },

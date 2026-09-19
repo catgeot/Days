@@ -86,7 +86,6 @@ const PlannerTab = ({
     }, [eventPlannerEntry]);
     const [cinemaNoticeDismissed, setCinemaNoticeDismissed] = useState(false);
     const [plannerStage, setPlannerStage] = useState(PLANNER_STAGE.ESSENTIAL);
-    const [esimProvider, setEsimProvider] = useState('airalo');
     const plannerFocusId = parsePlannerFocusFromHash(routeLocation.hash);
     const lastScrolledFocusRef = useRef(null);
 
@@ -169,7 +168,6 @@ const PlannerTab = ({
         } else {
             setPlannerStage(PLANNER_STAGE.ESSENTIAL);
         }
-        setEsimProvider('airalo');
     }, [location?.slug, plannerFocusId]);
 
     const dismissFlightCinemaNotice = useCallback(() => {
@@ -370,7 +368,11 @@ const PlannerTab = ({
                         {mobileSecondaryNav}
                     </div>
                 )}
-                <div className="w-full max-w-lg mx-auto flex flex-col items-center text-center pt-6 md:pt-0">
+                <div className="w-full max-w-lg mx-auto flex flex-col pt-6 md:pt-0">
+                <div className="mb-8 w-full text-left">
+                    <TravelAgencyDirectory variant="planner" />
+                </div>
+                <div className="flex flex-col items-center text-center">
                 <Briefcase size={48} className="text-gray-300 mb-4" />
                 <h3 className="text-lg font-bold text-gray-800 mb-2">{t('place.planner.emptyTitle')}</h3>
                 <p className="text-sm text-gray-500 mb-2 max-w-sm">
@@ -409,8 +411,6 @@ const PlannerTab = ({
                         {t('place.planner.refreshSaved')}
                     </button>
                 ) : null}
-                <div className="mt-8 w-full text-left">
-                    <TravelAgencyDirectory variant="planner" />
                 </div>
                 </div>
                 </div>
@@ -488,6 +488,8 @@ const PlannerTab = ({
                         </p>
                     </div>
 
+                    <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
+
                     <PlannerStageNav value={plannerStage} onChange={handlePlannerStageChange} />
 
                     {plannerStage === PLANNER_STAGE.ESSENTIAL ? (
@@ -548,7 +550,6 @@ const PlannerTab = ({
                             </div>
 
                             <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
-                            <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
                         </>
                     ) : null}
 
@@ -587,35 +588,10 @@ const PlannerTab = ({
                                         <p className={`${plannerCaption} mb-2 font-bold text-gray-700`}>
                                             {t('place.planner.esim.choose')}
                                         </p>
-                                        <div role="tablist" aria-label={t('place.planner.esim.choose')} className="mb-3 flex flex-wrap gap-2">
-                                            <button
-                                                type="button"
-                                                role="tab"
-                                                aria-selected={esimProvider === 'airalo'}
-                                                onClick={() => setEsimProvider('airalo')}
-                                                className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-bold shadow-sm ${
-                                                    esimProvider === 'airalo'
-                                                        ? 'border border-blue-600 bg-blue-600 text-white'
-                                                        : 'border border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                {t('place.planner.esim.airalo')}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                role="tab"
-                                                aria-selected={esimProvider === 'holafly'}
-                                                onClick={() => setEsimProvider('holafly')}
-                                                className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-bold shadow-sm ${
-                                                    esimProvider === 'holafly'
-                                                        ? 'border border-blue-600 bg-blue-600 text-white'
-                                                        : 'border border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                {t('place.planner.esim.holafly')}
-                                            </button>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <AiraloBannerWidget compact />
+                                            <HolaflyBannerWidget compact />
                                         </div>
-                                        {esimProvider === 'airalo' ? <AiraloBannerWidget /> : <HolaflyBannerWidget />}
                                     </div>
                                 </div>
                             </div>
