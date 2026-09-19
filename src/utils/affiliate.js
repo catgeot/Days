@@ -26,7 +26,10 @@ export {
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
 import { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveTripcomCurrency } from './tripcomPartnerLocale.js';
-import { buildTripcomFlightTicketsHref } from './tripcomFlightResultsUrl.js';
+import {
+  buildTripcomFlightTicketsHref,
+  resolveTripcomFlightTicketsDates,
+} from './tripcomFlightResultsUrl.js';
 import { resolveGygLocale, resolveGygCurrency } from './gygPartnerLocale.js';
 import {
   GYG_PARTNER_ID,
@@ -1034,10 +1037,26 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     return `${packagesOrigin}/packages/list?${params.toString()}`;
   }
 
-  // /flights/?dAirportCode= 홈은 검색 폼이 비어 있음 — 일정·공항이 있으면 결과 페이지로.
-  if (departDate && depart && arriveCode) {
+  // /flights/ 홈은 항공+호텔 검색박스라 출도착이 비거나 이전 검색이 남음.
+  if (depart && arriveCode) {
+    const ticketsDates = resolveTripcomFlightTicketsDates({
+      tripType: options.tripType ?? options.tripWay,
+      departDate,
+      returnDate,
+    });
+    params.set('ddate', ticketsDates.ddate);
+    params.set('tripType', ticketsDates.tripType);
+    params.set('triptype', ticketsDates.tripType.toLowerCase());
+    if (ticketsDates.rdate) {
+      params.set('rdate', ticketsDates.rdate);
+    } else {
+      params.delete('rdate');
+    }
+    if (!params.get('quantity')) {
+      params.set('adult', '1');
+      params.set('quantity', '1');
+    }
     params.set('class', 'y');
-    params.set('searchboxarg', 't');
     return buildTripcomFlightTicketsHref(origin, depart, arriveCode, params);
   }
 

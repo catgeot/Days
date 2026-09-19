@@ -9,8 +9,8 @@ function hasTripcomFlightSchedulePrefill(value) {
 }
 
 /**
- * 일정·인원 prefill이 있으면 모바일 ad iframe 대신 `/flights/` 직링크.
- * ad 위젯은 공항은 반영되나 ddate/rdate·adult가 불안정함.
+ * 모바일 ad iframe 대신 `/flights/{d}-to-{a}/tickets-…` 항공 검색 결과 직링크.
+ * `/flights/` 홈은 항공+호텔 검색박스라 출도착 자동입력이 안 됨.
  *
  * @param {{ departDate?: string, forceModal?: boolean }} [options]
  */
@@ -30,7 +30,7 @@ export function shouldUseTripcomFlightSearchModal(options = {}) {
 
 /**
  * 플래너에서 Trip.com으로 **페이지 이동**할 때 쓰는 URL.
- * 일정 prefill 시에는 `/flights/{d}-to-{a}/tickets-…` 결과 페이지.
+ * 출도착 IATA가 있으면 `/flights/{d}-to-{a}/tickets-…` 항공 검색 결과(일정 없으면 +14/+21).
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{ essentialGuide?: Record<string, unknown> | null, tracking?: string, departDate?: string }} [options]

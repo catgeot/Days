@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 9,
-  sessionPhase: '인원 설정 제거',
+  sessionNo: 10,
+  sessionPhase: '항공 검색 결과로 직행',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-10-tickets-landing',
+    session: '항공권 검색 #10, 항공 검색 결과로 직행',
+    title: '검색바 클릭 시 항공+호텔 홈이 아니라 tickets 검색 결과로',
+    detail:
+      '항공권 파트의 검색바는 일정이 없어 /flights/ 홈(항공+호텔 검색박스)으로 열렸고 출도착이 이전 검색으로 남았습니다. 출도착 IATA가 있으면 /tickets- 항공 검색 결과로 직행하고, 일정이 없으면 +14/+21을 넣습니다.',
+    at: '2026-09-19T21:35:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-9-remove-passengers',
     session: '항공권 검색 #9, 인원 설정 제거',

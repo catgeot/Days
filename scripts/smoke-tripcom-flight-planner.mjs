@@ -58,6 +58,16 @@ assert.match(
   /buildTripcomFlightTicketsHref/,
   'dated search uses Trip.com results path',
 );
+assert.match(
+  affiliate,
+  /resolveTripcomFlightTicketsDates/,
+  'missing dates still land on tickets search',
+);
+assert.doesNotMatch(
+  affiliate,
+  /searchboxarg/,
+  'tickets URL is results, not search-box home',
+);
 
 const native = read(
   'src/components/PlaceCard/tabs/planner/components/TripcomFlightNativeSearch.jsx',
@@ -97,7 +107,10 @@ assert.match(affiliate, /params\.set\('quantity'/, 'results quantity');
 assert.match(affiliate, /arrivalIata/, 'arrival override option');
 assert.match(affiliate, /resolveTripcomFlightTripType/, 'OW/RT resolver');
 
-const { buildTripcomFlightTicketsHref } = await import('../src/utils/tripcomFlightResultsUrl.js');
+const {
+  buildTripcomFlightTicketsHref,
+  resolveTripcomFlightTicketsDates,
+} = await import('../src/utils/tripcomFlightResultsUrl.js');
 const resultsHref = buildTripcomFlightTicketsHref(
   'https://kr.trip.com',
   'ICN',
@@ -120,6 +133,20 @@ assert.match(resultsHref, /ddate=2026-10-15/, 'depart date query');
 assert.match(resultsHref, /rdate=2026-10-22/, 'return date query');
 assert.match(resultsHref, /triptype=rt/, 'round-trip query');
 assert.match(resultsHref, /quantity=2/, 'adult quantity query');
+
+const defaultDates = resolveTripcomFlightTicketsDates({ today: '2026-09-19' });
+assert.equal(defaultDates.ddate, '2026-10-03', 'no schedule → +14 depart');
+assert.equal(defaultDates.rdate, '2026-10-10', 'no schedule → +21 return');
+assert.equal(defaultDates.tripType, 'RT', 'no schedule → round trip');
+
+const oneWayDates = resolveTripcomFlightTicketsDates({
+  tripType: 'OW',
+  departDate: '2026-11-01',
+  today: '2026-09-19',
+});
+assert.equal(oneWayDates.ddate, '2026-11-01', 'one-way keeps depart');
+assert.equal(oneWayDates.rdate, '', 'one-way has no return');
+assert.equal(oneWayDates.tripType, 'OW', 'one-way type');
 
 const { applyFlightDatePick } = await import('../src/utils/tripcomFlightDateRange.js');
 const start = applyFlightDatePick({
