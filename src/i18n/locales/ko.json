@@ -254,7 +254,7 @@
       "disambiguationTitle": "원하는 장소를 선택하세요",
       "disambiguationBody": "위치가 여러 곳일 수 있어요. 카드를 누르면 해당 장소로 이동합니다.",
       "homonymChoiceTitle": "어느 지역의 {{query}}을 찾으시나요?",
-      "homonymChoiceBody": "지역 칩이나 아래 카드를 누르면 해당 장소로 이동합니다.",
+      "homonymChoiceBody": "카드를 누르면 해당 장소로 이동합니다.",
       "more": "더 찾아보기",
       "categoryOther": "기타",
       "affiliate": "제휴광고 · {{source}}",

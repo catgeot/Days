@@ -373,8 +373,23 @@ assert(chipSrc.includes('homonymChoiceTitle'), 'chip prompt uses homonymChoiceTi
 assert(chipSrc.includes('data-homonym-choice-chips'), 'chip row is marked for search/place sheet');
 assert(suggestionListSrc.includes('HomonymChoiceChips'), 'typing dropdown wires homonym chips');
 assert(suggestionListSrc.includes('homonymChoiceTitle'), 'Enter cards use 어느 지역의 [지명] copy');
+const cardsFnStart = suggestionListSrc.indexOf('export function SearchDisambiguationCards');
+assert(cardsFnStart > 0, 'SearchDisambiguationCards exists');
+assert(
+  suggestionListSrc.indexOf('<HomonymChoiceChips') < cardsFnStart,
+  'chips live in typing dropdown only',
+);
+assert(
+  !suggestionListSrc.slice(cardsFnStart).includes('HomonymChoiceChips'),
+  'Enter cards do not stack chips on the same candidates',
+);
+assert(
+  suggestionListSrc.includes('!homonymChoice && (items.length > 0 || loading)'),
+  'dropdown hides list rows when homonym chips show',
+);
 assert(modalSrc.includes('query={disambiguation.query}'), 'place sheet / search modal passes query to cards');
 assert(koI18n.includes('어느 지역의 {{query}}을 찾으시나요?'), 'ko copy is 어느 지역의 [지명]을 찾으시나요?');
+assert(!koI18n.includes('지역 칩이나 아래 카드'), 'copy no longer tells user to use both chips and cards');
 
 if (process.env.KO_HOMONYM_RI_LIVE === '1') {
   console.log('LIVE: Nominatim collectKoHomonymRiCandidates(대화리)…');

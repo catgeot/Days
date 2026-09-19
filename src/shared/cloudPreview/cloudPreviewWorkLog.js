@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 9,
-  sessionPhase: '동음이의어 사용자 선택 UI',
+  sessionNo: 10,
+  sessionPhase: '칩·카드 중복 제거',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -24,13 +24,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-19-dest-match-10-chip-card-dedupe',
+    session: '여행지 매칭 #10, 칩·카드 중복 제거',
+    title: '동음 선택에서 칩과 카드를 동시에 띄우지 않음',
+    detail:
+      '사람 Preview에서 「송암」엔터 화면에 지역 칩과 선택 카드가 같은 후보를 두 번 보여 중복이었습니다. 타이핑 드롭다운은 칩만, 엔터 화면은 질문+기존 선택 카드만 둡니다. Preview /qa/dest-match 홈「송암」엔터 → 어느 지역의 송암을 찾으시나요?와 카드 3장 · 칩 줄은 없음.',
+    at: '2026-09-19T01:20:00.000Z',
+  },
+  {
     id: '2026-09-18-dest-match-9-homonym-choice-chips',
     session: '여행지 매칭 #9, 동음이의어 사용자 선택 UI',
     title: '어느 지역의 지명을 찾으시나요 — 다후보 선택 칩',
     detail:
       '모바일·데스크톱 검색창과 장소 시트에서 동음 지명은 「어느 지역의 [지명]을 찾으시나요?」와 지역 칩으로 고릅니다. 기존 선택 카드 톤(테두리·배경·호버)은 그대로입니다. Preview /qa/dest-match 홈「종각」「광천」「송암」입력·엔터 → 서울 종로 종각역·대구 중구 종각네거리 칩 · 카드도 같이 보임.',
     at: '2026-09-18T23:50:00.000Z',
-  },  {
+  },
+  {
     id: '2026-09-18-dest-match-8-songam-homonym',
     session: '여행지 매칭 #8, 송암 동음 다후보',
     title: '송암이 고양·일산 허브로만 펼쳐지던 문제',

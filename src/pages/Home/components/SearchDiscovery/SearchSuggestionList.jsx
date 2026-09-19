@@ -266,7 +266,7 @@ export function SearchSuggestionList({
 
       {showMooni ? (
         <div
-          className={`${items.length || loading ? 'border-b border-white/10' : ''} ${
+          className={`${!homonymChoice && (items.length || loading) ? 'border-b border-white/10' : ''} ${
             isPopover ? 'sticky top-0 z-[1] bg-[#261d16]' : ''
           }`}
         >
@@ -274,11 +274,11 @@ export function SearchSuggestionList({
         </div>
       ) : null}
 
-      {items.length === 0 && !loading && !showMooni ? (
+      {!homonymChoice && items.length === 0 && !loading && !showMooni ? (
         <p className={`text-sm text-white/70 text-center break-keep ${isPopover ? 'px-3 py-4' : 'px-4 py-6'}`}>
           {t('home.explore.suggestionsEmpty')}
         </p>
-      ) : items.length > 0 || loading ? (
+      ) : !homonymChoice && (items.length > 0 || loading) ? (
         <ul
           className={`divide-y divide-white/10 ${
             isPopover ? '' : 'max-h-[min(52vh,420px)] overflow-y-auto'
@@ -433,15 +433,6 @@ export function SearchDisambiguationCards({
           </button>
         )}
       </div>
-
-      {homonymChoice ? (
-        <HomonymChoiceChips
-          query={homonymQuery}
-          candidates={candidates}
-          onSelect={onSelect}
-          showPrompt={false}
-        />
-      ) : null}
 
       <div className="flex flex-col gap-2">
         {candidates.map((item, index) => {

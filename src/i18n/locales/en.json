@@ -475,7 +475,7 @@
       "disambiguationTitle": "Choose a place",
       "disambiguationBody": "This name may match several places. Tap a card to open it.",
       "homonymChoiceTitle": "Which {{query}} are you looking for?",
-      "homonymChoiceBody": "Tap a region chip or a card to open that place.",
+      "homonymChoiceBody": "Tap a card to open that place.",
       "more": "See more",
       "categoryOther": "Other",
       "affiliate": "Sponsored · {{source}}",
