@@ -408,6 +408,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       await handleSuggestionSelect(visiblePick);
       return;
     }
+    // 도시 허브 exact(목포)는 visiblePick 없음 → onSearch 선택 카드
     dismissSearchKeyboard();
     setQuery(finalQuery);
     setRecentSearches(pushRecentSearch(finalQuery));

@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 탐색 Enter
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `b8ef3e66` · PR [#283](https://github.com/catgeot/Days/pull/283) · **사람 Preview** |
+| **브랜치** | `cursor/search-enter-hub-2018` |
+| **PR** | [#283](https://github.com/catgeot/Days/pull/283) |
+| **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
+| **Preview** | `/qa/search-enter-hub` → git Preview `/explore` — 목포 Enter → 선택 카드 |
+| **소유** | `searchEnterMatch.js` `preferEnterSuggestion` · `SearchDiscoveryModal.jsx` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `npm run smoke:search-enter-match` PASS · `smoke:explore-choice-overlay` PASS · `npx vite build` PASS |
+
+**다음 제시어**:
+
+```
+탐색 Enter #1, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-19-project-log.md
+브랜치 cursor/search-enter-hub-2018 · PR #283 · Preview /qa/search-enter-hub
+금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: Preview /explore 「목포」엔터 → 써머리 아님, 목포·유달산 등 리스트 카드. 「유달산」엔터 → 유달산. 「광천선굴」엔터 → 평창 광천선굴. OK면 PR #283 병합.
+검증: npm run smoke:search-enter-match PASS · smoke:explore-choice-overlay PASS · vite build PASS
+```
+
+---
+
 ### MOONi 일정 페이스메이커 — main 병합 완료 ✅
 
 | | |

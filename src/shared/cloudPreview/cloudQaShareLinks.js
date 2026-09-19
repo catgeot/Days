@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'search-enter-hub',
+    label: '탐색 Enter — 도시 허브 리스트',
+    branch: 'cursor/search-enter-hub-2018',
+    destination:
+      'https://days-git-cursor-search-enter-hub-2018-catgeots-projects.vercel.app/explore',
+    active: true,
+  },
+  {
     slug: 'dest-match',
     label: '여행지 매칭 — 동음 지명 다후보',
     branch: 'main',

@@ -10,6 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 import {
   resolveHubAttraction,
+  resolveCityAttractionHub,
+  hubToSuggestion,
   attractionToSuggestion,
 } from '../src/pages/Home/lib/cityAttractionHubs.js';
 import {
@@ -71,6 +73,28 @@ assert.equal(
 );
 assert.equal(preferEnterSuggestion('광천선굴', [hwaam, gwangjuDong]), null);
 
+const mokpoHub = resolveCityAttractionHub('목포');
+assert.ok(mokpoHub, '목포 hub exact');
+const mokpoCluster = [
+  hubToSuggestion(mokpoHub),
+  ...mokpoHub.attractions.map((attraction) => attractionToSuggestion(mokpoHub, attraction)),
+];
+assert.equal(
+  preferEnterSuggestion('목포', mokpoCluster),
+  null,
+  '목포 Enter는 도시 카드 점프 없이 선택 리스트',
+);
+assert.equal(
+  preferEnterSuggestion('목포시', mokpoCluster),
+  null,
+  '목포시 alias Enter도 선택 리스트',
+);
+assert.equal(
+  preferEnterSuggestion('유달산', mokpoCluster)?.name,
+  '유달산',
+  '명소 exact Enter는 해당 카드',
+);
+
 const suggestionsSrc = readFileSync(
   join(root, 'src/pages/Home/lib/searchSuggestions.js'),
   'utf8',
@@ -92,4 +116,4 @@ const handlerSrc = readFileSync(join(root, 'src/pages/Home/hooks/useHomeHandlers
 assert.match(handlerSrc, /이름 불일치 교정 캐시 무시/);
 assert.match(handlerSrc, /preferEnterSuggestion\(query, await buildHybridSearchSuggestions/);
 
-console.log('PASS smoke-search-enter-match (광천선굴 Enter ≠ 화암동굴)');
+console.log('PASS smoke-search-enter-match (광천선굴 Enter ≠ 화암동굴 · 목포 hub Enter = 리스트)');

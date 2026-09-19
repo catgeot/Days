@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-19-search-enter-hub-1-mokpo-list',
+    session: '탐색 Enter #1, 도시 허브 리스트',
+    title: '목포처럼 도시 허브 Enter는 써머리 점프 없이 선택 카드',
+    detail:
+      '여행지 매칭 #2가 타이핑 제안 이름 일치를 Enter에서 바로 고르게 해서, 목포 드롭다운의 도시 카드가 써머리 장소 카드로 열렸습니다. 도시 허브 exact는 제안 점프를 건너뛰고 도시+명소 선택 카드로 갑니다. 유달산·광천선굴처럼 명소 exact는 그대로 해당 카드입니다. Preview /qa/search-enter-hub — /explore 에서 목포 타이핑 후 Enter.',
+    at: '2026-09-19T06:30:00.000Z',
+  },
+  {
     id: '2026-09-19-palgyeong-use-63-mokpo-overlays',
     session: '팔경 활용 #63, 목포 결손 오버레이',
     title: '목포9경 목포진·다도해 전경 결손 오버레이',

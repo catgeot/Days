@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/search-enter-hub",
+      "destination": "https://days-git-cursor-search-enter-hub-2018-catgeots-projects.vercel.app/explore",
+      "permanent": false
+    },
+    {
       "source": "/qa/dest-match",
       "destination": "https://www.gateo.kr/",
       "permanent": false
