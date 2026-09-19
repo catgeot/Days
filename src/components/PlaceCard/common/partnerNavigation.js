@@ -29,28 +29,13 @@ export function shouldUseTripcomFlightSearchModal(options = {}) {
 
 /**
  * 플래너에서 Trip.com으로 **페이지 이동**할 때 쓰는 URL.
- * 모바일 `/flights/` 직링크는 aAirportCode 자동입력이 무시되는 경우가 있어
- * 배너 iframe과 동일한 partners/ad 위젯 URL을 사용한다.
- * 일정 prefill 시에는 `/flights/?ddate=…` 직링크.
+ * partners/ad 는 iframe 전용 — 전체 페이지로 열면 kr.trip.com 빈 화면만 남는다.
+ * 상위 이동은 항상 `/flights/` 직링크.
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{ essentialGuide?: Record<string, unknown> | null, tracking?: string, departDate?: string }} [options]
  */
 export function buildTripcomPlannerNavigationUrl(location, options = {}) {
-    const useAdWidget =
-        isMobileDevice() &&
-        TRIPCOM_FLIGHT_AD.mobileAdId &&
-        !hasTripcomFlightSchedulePrefill(options.departDate);
-
-    if (useAdWidget) {
-        return buildTripcomPlannerFlightUrl(location, {
-            ...options,
-            mode: 'ad',
-            adId: TRIPCOM_FLIGHT_AD.mobileAdId,
-            tracking: options.tracking ?? 'planner-flight-mobile',
-        });
-    }
-
     return buildTripcomPlannerFlightUrl(location, {
         ...options,
         mode: 'flights',

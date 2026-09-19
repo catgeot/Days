@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
   sessionNo: 1,
-  sessionPhase: '위젯·배너 복구',
+  sessionPhase: '클릭 직링크',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'tripcom-flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-1-click-flights',
+    session: '항공권 검색 #1, 클릭 직링크',
+    title: '항공권 CTA가 Trip.com /flights/로 열리게',
+    detail:
+      '사람 Preview에서 「항공권 실시간 검색」을 탭하면 kr.trip.com 빈 화면이 떴습니다. 모바일 클릭이 iframe용 partners/ad URL을 전체 페이지로 열고 있었습니다. CTA는 /flights/ 직링크(네이티브 a)로 바꿨습니다. Preview /qa/tripcom-flight — 파리·이비사 필수 단계 배너 탭 → Trip.com 항공 검색(빈 화면 아님).',
+    at: '2026-09-19T08:30:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-1-widget-banner',
     session: '항공권 검색 #1, 위젯·배너 복구',

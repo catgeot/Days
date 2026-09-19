@@ -26,6 +26,23 @@ assert.match(
   /iframeEmbedUsable !== true[\s\S]*return false/,
   'modal off while iframe unusable',
 );
+const navFn = nav.slice(
+  nav.indexOf('export function buildTripcomPlannerNavigationUrl'),
+  nav.indexOf('export function getTripcomFlightAdForModal'),
+);
+assert.match(navFn, /mode:\s*'flights'/, 'navigation URL is /flights/');
+assert.doesNotMatch(navFn, /mode:\s*'ad'/, 'navigation URL is not partners/ad');
+assert.doesNotMatch(navFn, /partners\/ad/, 'navigation helper has no ad path');
+
+const whiteLabel = read('src/components/PlaceCard/common/WhiteLabelWidget.jsx');
+assert.match(whiteLabel, /href:\s*flightUrl/, 'CTA href is /flights/ URL');
+assert.match(whiteLabel, /HTMLAnchorElement/, 'native <a> navigation');
+assert.match(whiteLabel, /isNativeButtonTrigger/, 'Bar button triggers stay JS');
+
+const cta = read(
+  'src/components/PlaceCard/tabs/planner/components/FlightSearchCta.jsx',
+);
+assert.match(cta, /isLink \? 'a' : 'button'/, 'CTA becomes <a> when href exists');
 
 const widget = read(
   'src/components/PlaceCard/tabs/planner/components/TripcomFlightBannerWidget.jsx',
@@ -61,5 +78,11 @@ const qa = read('src/shared/cloudPreview/cloudQaShareLinks.js');
 assert.match(qa, /slug: 'tripcom-flight'/, 'qa share slug');
 assert.match(qa, /branch:\s*'cursor\/tripcom-flight-widget-3ec3'/, 'qa share branch');
 
-console.log('OK: tripcom-flight-planner — CTA fallback · toolkit banner · /qa/tripcom-flight');
+assert.match(
+  affiliate,
+  /return `\$\{origin\}\/flights\/\?\$\{params\.toString\(\)\}`/,
+  'flight builder default path is /flights/',
+);
+
+console.log('OK: tripcom-flight-planner — CTA fallback · /flights/ click · /qa/tripcom-flight');
 console.log('SMOKE OK');
