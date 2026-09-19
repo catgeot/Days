@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #6 — 모바일 검색 폼 프리미엄 티켓 카드 디자인 (Cloud)
+
+- **세션** `항공권 검색 #6, 모바일 검색 폼 프리미엄 티켓 카드 디자인`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `f047e95b` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 복원된 모바일 검색 폼의 투박한 기본 박스 디자인을 개선하여 플래너 무드와 어울리는 세련된 카드 UI 요청(사용자 1번 옵션 선택).
+- **완료**: Trip.com 공식 브랜드 헤더 및 제휴 뱃지 추가, `ICN ✈ ARR` 보딩 패스 티켓형 경로 블록, 부드러운 배경과 포커스 링의 날짜 선택 인풋, 블루 그라데이션 검색 제출 버튼, 라운드/링 테두리(`rounded-2xl border-sky-300/80 ring-sky-900/10`)를 적용.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 파리 플래너 접속 시 티켓 스타일의 세련된 출도착 정보 바, 일자 선택창, 그라데이션 검색 버튼이 깔끔하게 표시되고 탭 시 Trip.com으로 정상 연결되는지 확인.
+
 ## 항공권 검색 #6 — 모바일 네이티브 항공권 입력 폼 복원 (Cloud)
 
 - **세션** `항공권 검색 #6, 모바일 항공권 입력 폼 복원`
