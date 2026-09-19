@@ -14,31 +14,19 @@
 
 ## 활성 목록
 
-### MOONi 일정 페이스메이커
+### MOONi 일정 페이스메이커 — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `7c2c083d` · PR [#281](https://github.com/catgeot/Days/pull/281) · **사람 Preview** |
-| **브랜치** | `cursor/mooni-itinerary-concierge-76f0` |
-| **tip** | `7c2c083d` |
-| **PR** | [#281](https://github.com/catgeot/Days/pull/281) |
+| **상태** | **#3 merge ✅ · 주제 종료** · main `16c8be14` · PR [#281](https://github.com/catgeot/Days/pull/281) |
+| **브랜치** | `cursor/mooni-itinerary-concierge-76f0` · merge `16c8be14` |
+| **PR** | [#281](https://github.com/catgeot/Days/pull/281) (MERGED) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | https://www.gateo.kr/place/paris → 파리 페이지 내 MOONi 대화 |
-| **소유** | `mooniTripSession.js` · `ChatModal.jsx` · `mooniPromptBundles.js` · `bookingIntentResolver.js` · `mooniChipPrompts.js` |
-| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `node scripts/smoke-mooni-ask-bridge.mjs` PASS · `npm run build` PASS |
+| **PROD** | `https://www.gateo.kr/place/paris` — 체류·공항·항공시각을 말한 뒤 후속 질문이 같은 전제를 씀 |
+| **VERIFY** | `smoke-mooni-ask-bridge` · `smoke-mooni-trip-session` · `vite build` PASS |
+| **성과** | #1 페이스메이커·컨시어지 프롬프트. #2 `mooniTripSession` 저장·주입. #3 상황극 QA 후 병합 |
 
-**다음 제시어**:
-
-```
-MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합
-@plans/feature-handoff-index.md
-@plans/2026-09-19-project-log.md
-브랜치 cursor/mooni-itinerary-concierge-76f0 · PR #281 · Preview https://www.gateo.kr/place/paris
-금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: 파리 MOONi에 체류·공항·항공시각을 말한 뒤 후속 질문이 같은 전제를 쓰는지 확인. OK면 PR #281 병합
-검증: node scripts/smoke-mooni-ask-bridge.mjs PASS · npm run build PASS
-```
+**다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr/place/paris`.
 
 ---
 

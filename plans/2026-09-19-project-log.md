@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## MOONi 일정 페이스메이커 #3 — PR #281 메인 병합 (Cloud)
+
+- **세션** `MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합`
+- **브랜치** `cursor/mooni-itinerary-concierge-76f0` · merge `16c8be14` · PR [#281](https://github.com/catgeot/Days/pull/281) (MERGED)
+- **완료**: 컴포저 상황극 QA(체류·공항·항공시각 전제 유지 · 턴당 ~1.4ms)와 `smoke-mooni-ask-bridge`/`build` PASS 후 PR #281을 main에 병합. 인덱스 주제 종료. Preview 작업 로그는 팔경 활용을 활성으로 유지.
+- **VERIFY**: `node scripts/smoke-mooni-ask-bridge.mjs` PASS · `npm run build` PASS
+- **PROD** https://www.gateo.kr/place/paris
+- **QA**: 「오를리 공항 도착 3박 4일」 후 「둘째 날은?」이 3박·ORY를 유지하는지. 「KE901 오후 2시 CDG」 후 일정 질문이 CDG·14:00을 쓰는지. 도시명 「파리」만으로는 공항을 안 잡는지.
+- **다음**: 없음 (주제 종료)
+
 ## 팔경 활용 #62 QA — 경기 광주 관광공사 검색 0건 (Cloud)
 
 - **세션** `팔경 활용 #62, 경기 광주 결손 오버레이 QA`
@@ -31,7 +41,7 @@
 - **VERIFY**: `node scripts/smoke-mooni-ask-bridge.mjs` PASS · `npm run build` PASS
 - **Preview** https://www.gateo.kr/place/paris
 - **QA**: 「오를리 공항 도착 3박 4일」 후 「둘째 날은?」이 체류·오를리를 다시 묻지 않는지. 「KE901 오후 2시 CDG 도착」 후 일정이 그 시각·공항을 쓰는지.
-- **다음**: `MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합`
+- **다음**: `MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합` (완료 · merge `16c8be14`)
 
 ## MOONi 일정 페이스메이커 #1 — 기행문 묘사 기반 맞춤 일정 및 컨시어지 기능 강화 (Cloud)
 
