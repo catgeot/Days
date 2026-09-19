@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #5 — 모바일 네이티브 항공 검색 카드 적용 (Cloud)
+
+- **세션** `항공권 검색 #5, 모바일 네이티브 항공 검색 카드 적용`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `067a276a` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: Trip.com 제휴 광고 서버 자체의 `Authentication failed` 오류로 인해 모바일에서 iframe이 빈 박스로 남아 작동하지 않음.
+- **완료**: 모바일 환경(≤767px)에서는 빈 iframe 대신 출발지·도착지 IATA가 명시된 네이티브 검색 배너 카드(`FlightSearchCta`)로 즉시 전환. 탭 시 Trip.com 항공 검색 페이지로 직결(모달 해제). PC 환경은 기존 900x200 가로형 iframe 배너 유지.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 파리·로포텐 플래너 접속 시 빈 박스 없이 깔끔한 항공권 검색 카드가 보이고, 탭 시 Trip.com으로 정상 연결되는지 확인.
+
 ## 항공권 검색 #4 — 모바일 위젯 공식 발급 태그 1:1 일치 (Cloud)
 
 - **세션** `항공권 검색 #4, 모바일 위젯 태그 일치`
