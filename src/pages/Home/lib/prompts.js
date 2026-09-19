@@ -47,14 +47,17 @@ export const getSystemPrompt = (personaType, locationName = '', options = {}) =>
     : '';
   const ctaHint = String(options.chatCtaHint ?? '').trim();
   const chipHint = String(options.chipPromptHint ?? '').trim();
+  const tripSessionHint = String(options.tripSessionHint ?? '').trim();
   const ctaContext = ctaHint ? `\n${ctaHint}` : '';
   const chipContext = chipHint ? `\n${chipHint}` : '';
+  const tripSessionContext = tripSessionHint ? `\n${tripSessionHint}` : '';
 
   return (
     buildPersonaSystem(personaType, bundle) +
     mooniContext +
     locationContext +
     boundPlaceRules +
+    tripSessionContext +
     chipContext +
     ctaContext
   );

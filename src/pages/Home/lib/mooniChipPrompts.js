@@ -9,6 +9,7 @@ import { resolveDepartureFromChat } from '../../../utils/resolveDepartureIataFro
 import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 import { i18n } from '../../../i18n/config';
 import { getMooniPromptBundle, fillMooniPromptTemplate } from '../../../i18n/mooniPromptBundles';
+import { hasMooniTripSessionFacts } from './mooniTripSession.js';
 
 /** MOONi L2 칩 id — mooniQuickReplies.js SSOT와 동기화 */
 export const MOONI_CHIP_IDS = {
@@ -113,12 +114,16 @@ function summarizeJourneyTimeline(essentialGuide) {
   return lines.length ? lines.join('\n') : null;
 }
 
-function buildFlightSsotContext(location, essentialGuide, chatHistory, userText, ssot) {
+function buildFlightSsotContext(location, essentialGuide, chatHistory, userText, ssot, tripSession = null) {
   if (!location) return [];
 
   const lines = [];
   const banner = resolveRentalPickupBannerInfo(location, { essentialGuide });
-  const arrivalIata = getPlannerFlightArrivalIata(location, { essentialGuide });
+  const sessionArrival = tripSession?.arrivalIata
+    ? String(tripSession.arrivalIata).trim().toUpperCase()
+    : '';
+  const arrivalIata =
+    sessionArrival || getPlannerFlightArrivalIata(location, { essentialGuide });
   const searchHint = getFlightDestinationSearchHint(location, { essentialGuide });
   const plannerIatas = extractArrivalIataCodesFromEssentialGuide(essentialGuide);
   const departure = resolveDepartureFromChat(userText, chatHistory ?? []);
@@ -159,11 +164,16 @@ function buildFlightSsotContext(location, essentialGuide, chatHistory, userText,
     );
   }
 
-  if (departure?.iata) {
+  const sessionDeparture = tripSession?.departureIata
+    ? String(tripSession.departureIata).trim().toUpperCase()
+    : '';
+  if (sessionDeparture || departure?.iata) {
+    const depIata = sessionDeparture || departure.iata;
+    const depLabel = tripSession?.departureAirportLabel || departure?.label || '';
     lines.push(
       fillMooniPromptTemplate(ssot.departureKnown, {
-        label: hubLabel(departure.iata) ?? departure.iata,
-        extra: departure.label ? ` (${departure.label})` : '',
+        label: hubLabel(depIata) ?? depIata,
+        extra: depLabel ? ` (${depLabel})` : '',
       }),
     );
   } else {
@@ -227,6 +237,7 @@ export function resolveMooniChipId({ chipId = null, userText = '' }) {
  *   chatHistory?: Array<{ role?: string, text?: string }>,
  *   essentialGuide?: Record<string, unknown> | null,
  *   locale?: string,
+ *   tripSession?: Record<string, unknown> | null,
  * }} params
  * @returns {string}
  */
@@ -238,6 +249,7 @@ export function getMooniChipPromptHint({
   chatHistory = [],
   essentialGuide = null,
   locale,
+  tripSession = null,
 }) {
   const bundle = getMooniPromptBundle(locale);
   const resolvedChipId = resolveMooniChipId({ chipId, userText });
@@ -264,7 +276,7 @@ export function getMooniChipPromptHint({
     resolvedChipId === MOONI_CHIP_IDS.FROM_INCHEON ||
     resolvedChipId === MOONI_CHIP_IDS.FERRY
   ) {
-    ssotLines.push(...buildFlightSsotContext(location, essentialGuide, chatHistory, userText, ssot));
+    ssotLines.push(...buildFlightSsotContext(location, essentialGuide, chatHistory, userText, ssot, tripSession));
     ssotLines.push(...buildProfileContext(slug, essentialGuide, ssot));
   } else if (
     resolvedChipId === MOONI_CHIP_IDS.PREP_TRANSPORT ||
@@ -273,11 +285,18 @@ export function getMooniChipPromptHint({
   ) {
     ssotLines.push(...buildProfileContext(slug, essentialGuide, ssot));
     if (resolvedChipId === MOONI_CHIP_IDS.PREP_TRANSPORT && location) {
-      const arrivalIata = getPlannerFlightArrivalIata(location, { essentialGuide });
+      const sessionArrival = tripSession?.arrivalIata
+        ? String(tripSession.arrivalIata).trim().toUpperCase()
+        : '';
+      const arrivalIata =
+        sessionArrival || getPlannerFlightArrivalIata(location, { essentialGuide });
       if (arrivalIata) {
         ssotLines.push(
           fillMooniPromptTemplate(ssot.arrivalAirport, {
-            label: hubLabel(arrivalIata) ?? arrivalIata,
+            label:
+              (hasMooniTripSessionFacts(tripSession) && tripSession.arrivalAirportLabel) ||
+              hubLabel(arrivalIata) ||
+              arrivalIata,
           }),
         );
       }

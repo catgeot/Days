@@ -57,6 +57,7 @@ import {
 import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { getMooniChipPromptHint, MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
+import { getMooniPromptBundle } from '../../../i18n/mooniPromptBundles';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
@@ -64,6 +65,14 @@ import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIata,
 } from '../lib/flightOriginPreference';
+import {
+  extractMooniTripFacts,
+  formatMooniTripSessionHint,
+  hasMooniTripSessionFacts,
+  hydrateMooniTripSession,
+  mergeMooniTripSession,
+  persistMooniTripSession,
+} from '../lib/mooniTripSession';
 
 const ChatModal = ({
   isOpen,
@@ -109,6 +118,7 @@ const ChatModal = ({
   const hasSentInitialRef = useRef(false);
   const lastInitialQueryTextRef = useRef('');
   const mobileDockBlurTimerRef = useRef(null);
+  const tripSessionRef = useRef(null);
 
   const collapseMobileDockInput = useCallback(() => {
     if (mobileDockBlurTimerRef.current) {
@@ -536,6 +546,7 @@ const ChatModal = ({
   useEffect(() => {
     if (!isOpen) {
       setMessages([]);
+      tripSessionRef.current = null;
       return;
     }
     if (activeChatId) {
@@ -545,12 +556,24 @@ const ChatModal = ({
       if (targetTrip) {
         setMessages(targetTrip.messages || []);
         if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
+        tripSessionRef.current = hydrateMooniTripSession({
+          messages: targetTrip.messages || [],
+          stored: targetTrip.curation_data?.mooniSession ?? null,
+          slug: targetTrip.curation_data?.slug || '',
+          destinationName: targetTrip.destination || '',
+        });
       }
       return;
     }
     if (chatDraft) {
       setMessages([]);
       if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
+      tripSessionRef.current = hydrateMooniTripSession({
+        messages: [],
+        stored: null,
+        slug: '',
+        destinationName: chatDraft.destination || '',
+      });
     }
   }, [activeChatId, isOpen, chatHistory, chatDraft]);
 
@@ -802,6 +825,26 @@ const ChatModal = ({
           : destForPrompt);
       const essentialGuide = await ensureChatEssentialGuide(slug, destName);
 
+      const nextSession = mergeMooniTripSession(
+        tripSessionRef.current,
+        extractMooniTripFacts(cleanText, {
+          destinationName: destName,
+          slug,
+        }),
+      );
+      nextSession.destinationName = destName || nextSession.destinationName;
+      nextSession.slug = slug || nextSession.slug;
+      tripSessionRef.current = nextSession;
+      persistMooniTripSession(nextSession, { slug, destinationName: destName });
+      if (nextSession.departureIata) persistFlightOriginIata(nextSession.departureIata);
+      const tripSessionHint = formatMooniTripSessionHint(
+        nextSession,
+        getMooniPromptBundle(i18n.language),
+      );
+      const sessionExtras = hasMooniTripSessionFacts(nextSession)
+        ? { mooniSession: nextSession }
+        : undefined;
+
       const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
 
       const chatCtaHint = getChatCtaPromptHint({
@@ -819,6 +862,7 @@ const ChatModal = ({
         destinationName: destName,
         chatHistory: priorTurns,
         essentialGuide,
+        tripSession: nextSession,
       });
 
       const systemInstruction = getSystemPrompt(personaToUse, destForPrompt, {
@@ -826,6 +870,7 @@ const ChatModal = ({
         boundPlaceName: placeBound?.name ?? null,
         chipPromptHint,
         chatCtaHint,
+        tripSessionHint,
       });
       const chatModelId = resolveMooniChatModel({
         userText: cleanText,
@@ -893,7 +938,7 @@ const ChatModal = ({
       ];
       setMessages(finalMessages);
 
-      onUpdateChat(effectiveChatId, finalMessages);
+      onUpdateChat(effectiveChatId, finalMessages, sessionExtras);
     } catch (error) {
       const text = getGeminiProxyErrorMessage(error);
       setMessages((prev) => [...prev, { role: 'error', text }]);

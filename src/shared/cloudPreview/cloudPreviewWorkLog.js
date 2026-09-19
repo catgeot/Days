@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '여행지 매칭',
-  sessionNo: 14,
-  sessionPhase: 'PR #276 메인 병합 및 배포',
-  branch: 'cursor/dest-match-arch',
-  previewPath: '/',
-  qaShareSlug: 'dest-match',
+  active: true,
+  title: 'MOONi 일정 페이스메이커',
+  sessionNo: 2,
+  sessionPhase: '사용자 피드백 반영 및 실전 응답 튜닝',
+  branch: 'cursor/mooni-itinerary-concierge-76f0',
+  previewPath: '/place/paris',
+  qaShareSlug: null,
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-mooni-itinerary-2-session-memory',
+    session: 'MOONi 일정 페이스메이커 #2, 사용자 피드백 반영 및 실전 응답 튜닝',
+    title: '여행지 세션에 체류·항공편·동선 사실을 저장하고 무니가 이어 씀',
+    detail:
+      '파리 장소 페이지 MOONi에게 체류 일수·도착 공항·항공 시각·현재 동선을 말하면 그 여행지 세션에 남고, 다음 질문에서도 전제로 씁니다. Preview https://www.gateo.kr/place/paris 에서 「오를리 3박 4일」 후 「둘째 날은?」이 같은 체류·공항을 기억하는지 확인합니다.',
+    at: '2026-09-19T04:20:00.000Z',
+  },
   {
     id: '2026-09-19-dest-match-14-main-merge',
     session: '여행지 매칭 #14, PR #276 메인 병합 및 배포',
