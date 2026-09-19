@@ -12,6 +12,17 @@
 - **QA**: 홈「종각」「광천」「송암」「강원대」동음 분기 · 광천선굴 숙소 평창 · 송암스포츠타운 숙소 춘천(양주 아님)
 - **다음**: 없음 (주제 종료)
 
+## MOONi 일정 페이스메이커 #2 — 여행지 세션 맥락 저장 및 실전 응답 튜닝 (Cloud)
+
+- **세션** `MOONi 일정 페이스메이커 #2, 사용자 피드백 반영 및 실전 응답 튜닝`
+- **브랜치** `cursor/mooni-itinerary-concierge-76f0` · tip `7c2c083d` · PR [#281](https://github.com/catgeot/Days/pull/281)
+- **점검**: 대화 기록(`saved_trips.messages`)은 여행지별로 남지만, 체류·항공편·현재 동선은 구조화되어 있지 않아 후속 질문이 카탈로그 기본값으로 덮일 수 있었음.
+- **완료**: `mooniTripSession.js`로 체류 일수·도착/출발 공항·항공편 번호·도착 시각·컨디션·현재 권역을 추출해 해당 여행지 세션(`curation_data.mooniSession` + localStorage)에 저장. 매 턴 system prompt `[이번 여행 세션]`으로 주입. 사용자 도착 공항이 GATEO 카탈로그보다 우선.
+- **VERIFY**: `node scripts/smoke-mooni-ask-bridge.mjs` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/place/paris
+- **QA**: 「오를리 공항 도착 3박 4일」 후 「둘째 날은?」이 체류·오를리를 다시 묻지 않는지. 「KE901 오후 2시 CDG 도착」 후 일정이 그 시각·공항을 쓰는지.
+- **다음**: `MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합`
+
 ## MOONi 일정 페이스메이커 #1 — 기행문 묘사 기반 맞춤 일정 및 컨시어지 기능 강화 (Cloud)
 
 - **세션** `MOONi 일정 페이스메이커 #1, 기행문 묘사 기반 맞춤 일정 및 컨시어지 기능 강화`
