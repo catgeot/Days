@@ -51,7 +51,31 @@ assert.doesNotMatch(planner, /PlannerStageNav/, '3단계 탭 분리 이전 단�
 const toolkit = read(
   'src/components/PlaceCard/tabs/planner/components/ToolkitCard.jsx',
 );
-assert.match(toolkit, /<FlightSearchCta /, 'toolkit FlightSearchCta');
+assert.match(toolkit, /<FlightSearchCta[\s>]/, 'toolkit FlightSearchCta');
+assert.match(toolkit, /scrollToSearchForm/, 'toolkit CTA scrolls to search form');
+assert.match(toolkit, /scrollPlannerFlightSearchForm/, 'toolkit uses flight-search scroll helper');
+assert.doesNotMatch(toolkit, /WhiteLabelWidget/, 'toolkit CTA does not open Trip.com directly');
+
+const preTravel = read(
+  'src/components/PlaceCard/tabs/planner/components/PreTravelChecklist.jsx',
+);
+assert.match(preTravel, /scrollPlannerFlightSearchForm/, 'pre-travel scrolls to search form');
+assert.doesNotMatch(
+  preTravel,
+  /buildTripcomPlannerNavigationUrl/,
+  'pre-travel flight CTA does not open Trip.com directly',
+);
+
+const focus = read('src/utils/placePlannerFocus.js');
+assert.match(focus, /FLIGHT_SEARCH:\s*'planner-flight-search'/, 'flight search form focus id');
+assert.match(focus, /export function scrollPlannerFlightSearchForm/, 'scroll helper exported');
+
+assert.match(widget, /id="planner-flight-search"/, 'banner is the flight search form anchor');
+
+const cta = read(
+  'src/components/PlaceCard/tabs/planner/components/FlightSearchCta.jsx',
+);
+assert.match(cta, /chooseDates/, 'scroll CTA copy key');
 
 assert.match(
   affiliate,
@@ -180,5 +204,5 @@ const oneWay = applyFlightDatePick({
 assert.equal(oneWay.ddate, '2026-11-03', 'one-way sets depart');
 assert.equal(oneWay.done, true, 'one-way completes on first tap');
 
-console.log('OK: tripcom-flight-planner — iframe banner · mobile modal · toolkit CTA');
+console.log('OK: tripcom-flight-planner — iframe banner · form scroll CTA · tickets URL');
 console.log('SMOKE OK');

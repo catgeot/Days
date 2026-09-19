@@ -816,8 +816,11 @@
           "title": "항공권 실시간 검색",
           "search": "검색",
           "autoFill": "Trip.com에서 출발·도착 공항이 자동 입력됩니다",
+          "chooseDates": "상단 검색폼에서 가는 날·오는 날을 고른 뒤 검색합니다",
           "ariaWithRoute": "Trip.com 항공권 검색 — {{depart}}에서 {{arrive}}까지",
-          "ariaGeneric": "Trip.com 항공권 실시간 검색"
+          "ariaGeneric": "Trip.com 항공권 실시간 검색",
+          "ariaScrollWithRoute": "상단 항공권 검색폼으로 이동 — {{depart}}에서 {{arrive}}까지",
+          "ariaScrollGeneric": "상단 항공권 검색폼으로 이동"
         },
         "twelveGo": {
           "routeLabel": "페리·교통 검색",

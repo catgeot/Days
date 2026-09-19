@@ -1,56 +1,33 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
 import MrtTimelineAction from './MrtTimelineAction';
 import { getKlookAirportTransferUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
 import {
-    buildTripcomPlannerNavigationUrl,
     getPartnerLinkTarget,
     getTripcomLinkRel,
-    shouldUseTripcomFlightSearchModal,
 } from '../../../common/partnerNavigation';
-import { useTryOpenTripcomFlightSearch } from '../TripcomFlightSearchContext';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerMicroLabel } from '../readableText';
+import { scrollPlannerFlightSearchForm } from '../../../../../utils/placePlannerFocus.js';
 
-const PreTravelChecklist = ({ items, locationName, location, essentialGuide, eventTripWindow }) => {
+const PreTravelChecklist = ({
+    items,
+    locationName,
+    location,
+    essentialGuide,
+    eventTripWindow,
+    scrollContainerRef = null,
+}) => {
     const { t } = useTranslation();
-    const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = t('place.planner.mrtQuery.stayWithPlace', { place: locationName || '' });
     const linkTarget = getPartnerLinkTarget();
     const tripcomLinkRel = getTripcomLinkRel(linkTarget);
 
-    const preTravelFlightUrl = useMemo(
-        () =>
-            buildTripcomPlannerNavigationUrl(location, {
-                essentialGuide,
-                tracking: 'planner-pre-travel',
-                ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
-                ...(eventTripWindow?.returnDate ? { returnDate: eventTripWindow.returnDate } : {}),
-            }),
-        [location, essentialGuide, eventTripWindow?.departDate, eventTripWindow?.returnDate],
-    );
-
-    const handlePreTravelFlightClick = (event) => {
-        if (
-            tryOpenFlightSearch(location, {
-                essentialGuide,
-                tracking: 'planner-pre-travel',
-                ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
-                ...(eventTripWindow?.returnDate ? { returnDate: eventTripWindow.returnDate } : {}),
-            })
-        ) {
-            event.preventDefault();
-        }
+    const handlePreTravelFlightClick = () => {
+        scrollPlannerFlightSearchForm(scrollContainerRef?.current ?? null);
     };
-
-    const preTravelFlightModalOpts = {
-        ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
-    };
-    const preTravelFlightLinkProps = shouldUseTripcomFlightSearchModal(preTravelFlightModalOpts)
-        ? { href: '#', onClick: handlePreTravelFlightClick, role: 'button' }
-        : { href: preTravelFlightUrl, target: linkTarget, rel: tripcomLinkRel };
 
     return (
         <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 mb-5 shadow-sm flex flex-col">
@@ -93,8 +70,9 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide, eve
                 </div>
 
                 <div className="mb-3">
-                    <a
-                        {...preTravelFlightLinkProps}
+                    <button
+                        type="button"
+                        onClick={handlePreTravelFlightClick}
                         className="bg-white border-2 border-indigo-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full"
                     >
                         <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">
@@ -111,7 +89,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide, eve
                                 {getFlightDestinationSearchHint(location, { essentialGuide })}
                             </div>
                         </div>
-                    </a>
+                    </button>
                 </div>
 
                 <div className="mb-3">

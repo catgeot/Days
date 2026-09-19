@@ -143,7 +143,8 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
     if (isMobileBanner) {
         return (
             <div
-                className={className}
+                id="planner-flight-search"
+                className={`${className} scroll-mt-24`.trim()}
                 data-tripcom-arrival-iata={arrivalIata || ''}
                 data-tripcom-flight-banner="native"
             >
@@ -160,7 +161,7 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
     }
 
     return (
-        <div className={className}>
+        <div id="planner-flight-search" className={`${className} scroll-mt-24`.trim()}>
             <div
                 ref={containerRef}
                 className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"

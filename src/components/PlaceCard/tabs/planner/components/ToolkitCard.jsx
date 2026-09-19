@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
-import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import FlightSearchCta from './FlightSearchCta';
+import { scrollPlannerFlightSearchForm } from '../../../../../utils/placePlannerFocus.js';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
 import {
     GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
@@ -36,7 +36,8 @@ const ToolkitCard = ({
     essentialGuide,
     eventTripWindow,
     themeColor = 'gray',
-    className = ''
+    className = '',
+    scrollContainerRef = null,
 }) => {
     const { t } = useTranslation();
     const Icon = icon;
@@ -154,14 +155,13 @@ const ToolkitCard = ({
             {type === 'flight' && (
                 <div id="planner-prep-flight-booking" className="scroll-mt-24">
                     <FlightOfficialBookingWidget location={location} />
-                    <WhiteLabelWidget
+                    <FlightSearchCta
                         location={location}
                         essentialGuide={essentialGuide}
-                        departDate={eventTripWindow?.departDate}
-                        returnDate={eventTripWindow?.returnDate}
-                        customTrigger={
-                            <FlightSearchCta location={location} essentialGuide={essentialGuide} />
-                        }
+                        scrollToSearchForm
+                        onClick={() => {
+                            scrollPlannerFlightSearchForm(scrollContainerRef?.current ?? null);
+                        }}
                     />
                 </div>
             )}

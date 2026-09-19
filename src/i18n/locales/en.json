@@ -1046,8 +1046,11 @@
           "title": "Search live flights",
           "search": "Search",
           "autoFill": "Trip.com pre-fills departure and arrival airports",
+          "chooseDates": "Choose dates in the search form at the top, then search",
           "ariaWithRoute": "Trip.com flight search — {{depart}} to {{arrive}}",
-          "ariaGeneric": "Trip.com live flight search"
+          "ariaGeneric": "Trip.com live flight search",
+          "ariaScrollWithRoute": "Go to the flight search form — {{depart}} to {{arrive}}",
+          "ariaScrollGeneric": "Go to the flight search form at the top"
         },
         "twelveGo": {
           "routeLabel": "Ferry & transport search",

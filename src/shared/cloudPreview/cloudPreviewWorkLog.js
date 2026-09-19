@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 10,
-  sessionPhase: '항공 검색 결과로 직행',
+  sessionNo: 11,
+  sessionPhase: '상단 검색폼으로 스크롤',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-11-scroll-to-form',
+    session: '항공권 검색 #11, 상단 검색폼으로 스크롤',
+    title: '항공권 카드·필수준비는 Trip.com 직행 대신 상단 검색폼으로',
+    detail:
+      '항공권 파트와 필수준비 검색을 누르면 일정을 확인하지 않은 채 Trip.com /tickets- 결과로 갔습니다. 이제 플래너 상단 항공권 검색폼으로 스크롤하고, 일정은 달력에서 고른 뒤 검색합니다.',
+    at: '2026-09-19T23:55:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-10-tickets-landing',
     session: '항공권 검색 #10, 항공 검색 결과로 직행',
