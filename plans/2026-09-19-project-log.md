@@ -2,6 +2,15 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #2 — Preview 단축 `/qa/flight` (Cloud)
+
+- **세션** `항공권 검색 #2, 로컬 위젯 진단`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `4e53af1f` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: `/qa/tripcom-flight`가 feature에만 있어 www.gateo.kr에서 Preview로 안 넘어감(PROD 200 SPA).
+- **완료**: PROD 단축을 `/qa/flight`로 등록. 옛 `/qa/tripcom-flight`는 같은 Preview alias.
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **다음**: Preview OK면 PR #288 병합
+
 ## 항공권 검색 #2 — 필수 단계 전체 폭 위젯 (Cloud)
 
 - **세션** `항공권 검색 #2, 로컬 위젯 진단`
