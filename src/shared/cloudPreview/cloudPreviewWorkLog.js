@@ -4,10 +4,10 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: 'MOONi 일정 페이스메이커',
-  sessionNo: 2,
-  sessionPhase: '사용자 피드백 반영 및 실전 응답 튜닝',
+  sessionNo: 3,
+  sessionPhase: 'Preview OK면 PR 병합',
   branch: 'cursor/mooni-itinerary-concierge-76f0',
   previewPath: '/place/paris',
   qaShareSlug: null,
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-mooni-itinerary-3-main-merge',
+    session: 'MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합',
+    title: '체류·공항·항공시각 전제 유지 QA 후 PR #281 메인 병합',
+    detail:
+      '파리 MOONi에 오를리 3박 4일·KE901 CDG 오후 2시를 말한 뒤 「둘째 날은?」이 같은 전제를 쓰는지 상황극·스모크로 확인했습니다. 도시명 파리 오탐 없음. 턴당 추출 ~1.4ms. PR #281을 main에 병합합니다. 확인은 www.gateo.kr/place/paris',
+    at: '2026-09-19T04:30:00.000Z',
+  },
   {
     id: '2026-09-19-mooni-itinerary-2-session-memory',
     session: 'MOONi 일정 페이스메이커 #2, 사용자 피드백 반영 및 실전 응답 튜닝',
