@@ -18,28 +18,28 @@
 
 | | |
 |--|--|
-| **상태** | **#10 push** · tip `a3b0f14c` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#11 push** · tip `954338a3` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `a3b0f14c` |
+| **tip** | `954338a3` |
 | **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
-| **일지** | [`2026-09-18-project-log.md`](./2026-09-18-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 엔터는 카드만 · 타이핑은 칩만 |
-| **소유** | `HomonymChoiceChips.jsx` · `SearchSuggestionList.jsx` · `detectHomonymLocation.js` · `searchEnterMatch.js` |
+| **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
+| **Preview** | `/qa/dest-match` → git Preview `/` — 송암스포츠타운 숙소는 춘천 · 양주 아님 |
+| **소유** | `mrtStayQuery.js` · `HomonymChoiceChips.jsx` · `SearchSuggestionList.jsx` · `detectHomonymLocation.js` · `searchEnterMatch.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-choice-overlay` PASS · `npx vite build` PASS |
+| **VERIFY** | `npm run smoke:mrt-stay` PASS · `smoke:ko-homonym-ri-search` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-여행지 매칭 #11, 하드코딩 사전 정리 및 SSOT 일원화
+여행지 매칭 #12, 하드코딩 사전 정리 및 SSOT 일원화
 @plans/feature-handoff-index.md
-@plans/2026-09-18-project-log.md
+@plans/2026-09-19-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
 브랜치 cursor/dest-match-arch · PR #276 · Preview /qa/dest-match
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
 작업: 분산된 *_ALIASES, *_OVERRIDES를 koreaPlaceMatchDictionary.js 단일 SSOT로 통합. 기존 회귀 0건.
-검증: npm run smoke:ko-homonym-ri-search PASS · npm run smoke:explore-search-aliases PASS · npx vite build PASS
+검증: npm run smoke:ko-homonym-ri-search PASS · npm run smoke:explore-search-aliases PASS · npm run smoke:mrt-stay PASS · npx vite build PASS
 ```
 
 ---
