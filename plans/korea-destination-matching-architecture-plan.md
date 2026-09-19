@@ -107,7 +107,7 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 ### 다음 세션 제시어
 
 ```
-여행지 매칭 #10, 하드코딩 사전 정리 및 SSOT 일원화
+여행지 매칭 #11, 하드코딩 사전 정리 및 SSOT 일원화
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
@@ -123,8 +123,8 @@ gateo.kr은 "여행지 중심 정보 제공" 사이트로서 사용자가 여행
 
 | | |
 |--|--|
-| **세션** | **#9 완료** · 동음이의어 사용자 선택 UI · tip `dcc9e6a9` · PR [#276](https://github.com/catgeot/Days/pull/276) |
+| **세션** | **#10 완료** · 칩·카드 중복 제거 · tip `a3b0f14c` · PR [#276](https://github.com/catgeot/Days/pull/276) |
 | **브랜치** | `cursor/dest-match-arch` |
 | **Preview** | `/qa/dest-match` → git Preview `/` |
-| **다음** | `#10 하드코딩 사전 정리 및 SSOT 일원화` (원 로드맵 #7) |
+| **다음** | `#11 하드코딩 사전 정리 및 SSOT 일원화` (원 로드맵 #7) |
 | **잔여** | `koreaPlaceMatchDictionary.js` 통합. Edge `fetch-mrt-stays` Geo-Sanity 배포는 선택. |
