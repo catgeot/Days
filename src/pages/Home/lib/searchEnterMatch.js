@@ -2,7 +2,7 @@
  * 탐색창 Enter — 타이핑 제안에 이미 보이는 장소를 AI 교정(화암동굴 등)보다 우선.
  * 지오코딩 실패 캐시·무드 폴백은 제안 이름과 쿼리가 맞을 때만.
  */
-import { resolveHubAttraction } from './cityAttractionHubs.js';
+import { resolveCityAttractionHub, resolveHubAttraction } from './cityAttractionHubs.js';
 import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import {
   isKoreaHomonymChoiceSet,
@@ -101,6 +101,10 @@ export function pickEnterSuggestionMatches(query, suggestions) {
  */
 export function preferEnterSuggestion(query, suggestions) {
   if (shouldOfferKoreaHomonymDisambiguation(query) || isKoreaHomonymChoiceSet(suggestions)) {
+    return null;
+  }
+  // 도시 허브 exact(목포·속초) — 드롭다운에 도시 카드가 있어도 Enter는 선택 리스트
+  if (resolveCityAttractionHub(query)) {
     return null;
   }
   const matches = pickEnterSuggestionMatches(query, suggestions);

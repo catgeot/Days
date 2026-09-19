@@ -131,6 +131,17 @@ const cards = makeDisambiguationResult('옹진', candidates, {
 assert.equal(isSearchDisambiguation(cards), true);
 assert.match(String(cards.title || ''), /도시와 명소를 골라주세요/);
 
+const mokpoHub = resolveCityAttractionHub('목포');
+assert.ok(mokpoHub, '목포 hub');
+const mokpoCards = makeDisambiguationResult(
+  '목포',
+  buildHubDisambiguationCandidates(mokpoHub),
+  { title: `'${mokpoHub.name}' → 도시와 명소를 골라주세요` },
+);
+assert.ok(mokpoCards.candidates.length >= 2, '목포 Enter 선택 카드는 도시+명소');
+assert.ok(mokpoCards.candidates.some((c) => c.name === '목포'));
+assert.ok(mokpoCards.candidates.some((c) => c.name === '유달산'));
+
 const suggestionListSrc = readFileSync(
   join(root, 'src/pages/Home/components/SearchDiscovery/SearchSuggestionList.jsx'),
   'utf8',
@@ -144,9 +155,13 @@ assert.match(suggestionListSrc, /resolveSearchScenicMedia/);
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'explore-search'/);
 assert.match(qa, /cursor\/explore-search-d14b/);
+assert.match(qa, /slug:\s*'search-enter-hub'/);
+assert.match(qa, /cursor\/search-enter-hub-2018/);
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(vercel, /\/qa\/explore-search/);
 assert.match(vercel, /days-git-cursor-explore-search-d14b/);
+assert.match(vercel, /\/qa\/search-enter-hub/);
+assert.match(vercel, /days-git-cursor-search-enter-hub-2018/);
 
 console.log(
   `PASS explore-choice-overlay (옹진 hub + ${candidates.length} choice cards, dropdown gated)`,
