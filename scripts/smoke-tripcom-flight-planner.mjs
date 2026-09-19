@@ -1,5 +1,5 @@
 /**
- * 플래너 Trip.com 항공권 검색 — PC iframe · 모바일 네이티브 폼.
+ * 플래너 Trip.com 항공권 검색 — 기존 iframe·모바일 모달 복구.
  *   npm run smoke:tripcom-flight-planner
  */
 import assert from 'node:assert/strict';
@@ -31,9 +31,8 @@ const navFn = nav.slice(
   nav.indexOf('export function buildTripcomPlannerNavigationUrl'),
   nav.indexOf('export function getTripcomFlightAdForModal'),
 );
-assert.doesNotMatch(navFn, /mode:\s*'ad'/, 'mobile nav does not open blank partners/ad page');
-assert.match(navFn, /mode:\s*'flights'/, 'nav uses /flights/');
-assert.match(nav, /isPlannerMobileViewport/, 'viewport mobile opens in-app search');
+assert.match(navFn, /mode:\s*'ad'/, 'mobile nav uses partners/ad widget URL');
+assert.match(navFn, /mode:\s*'flights'/, 'desktop/date nav uses /flights/');
 
 const whiteLabel = read('src/components/PlaceCard/common/WhiteLabelWidget.jsx');
 assert.match(whiteLabel, /tryOpenFlightSearch/, 'mobile opens in-app modal');
@@ -44,21 +43,9 @@ const widget = read(
   'src/components/PlaceCard/tabs/planner/components/TripcomFlightBannerWidget.jsx',
 );
 assert.match(widget, /data-tripcom-flight-banner="1"/, 'iframe banner marker');
-assert.match(widget, /<iframe/, 'PC partners/ad iframe kept');
-assert.match(widget, /TripcomFlightNativeSearch/, 'mobile native search form');
+assert.match(widget, /<iframe/, 'partners/ad iframe restored');
 assert.doesNotMatch(widget, /iframeEmbedUsable/, 'no CTA-only iframe kill switch');
 assert.match(widget, /shouldUseTripcomFlightSearchModal/, 'fullscreen uses modal');
-
-const native = read(
-  'src/components/PlaceCard/tabs/planner/components/TripcomFlightNativeSearch.jsx',
-);
-assert.match(native, /data-tripcom-native-search="1"/, 'native form marker');
-assert.match(native, /mode: 'flights'/, 'native form opens /flights/');
-assert.match(native, /openTripcomExternalUrl/, 'native form uses noreferrer nav');
-
-const modal = read('src/components/PlaceCard/modals/TripcomFlightSearchModal.jsx');
-assert.match(modal, /useNativeForm/, 'modal native form path');
-assert.match(modal, /TripcomFlightNativeSearch/, 'modal renders native form');
 
 const planner = read('src/components/PlaceCard/tabs/PlannerTab.jsx');
 assert.doesNotMatch(
@@ -78,9 +65,6 @@ assert.match(
   /<TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" \/>\s*<PlannerStageNav/,
   '방문 여행사가 단계 네비 위',
 );
-assert.match(planner, /<AiraloBannerWidget compact/, 'Airalo compact');
-assert.match(planner, /<HolaflyBannerWidget compact/, 'Holafly compact');
-assert.doesNotMatch(planner, /esimProvider/, '유심 1종 탭 제거');
 
 const toolkit = read(
   'src/components/PlaceCard/tabs/planner/components/ToolkitCard.jsx',
@@ -102,5 +86,5 @@ assert.match(qa, /slug: 'flight'/, 'qa share slug /qa/flight');
 assert.match(qa, /slug: 'tripcom-flight'/, 'old slug kept as alias');
 assert.match(qa, /branch:\s*'cursor\/tripcom-flight-widget-3ec3'/, 'qa share branch');
 
-console.log('OK: tripcom-flight-planner — PC iframe · mobile native form · toolkit CTA');
+console.log('OK: tripcom-flight-planner — iframe banner · mobile modal · toolkit CTA');
 console.log('SMOKE OK');

@@ -1,7 +1,11 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { getPlannerFlightArrivalIata } from '../../../../utils/affiliate';
 import TripcomFlightSearchModal from '../../modals/TripcomFlightSearchModal';
-import { shouldUseTripcomFlightSearchModal } from '../../common/partnerNavigation';
+import {
+    buildTripcomPlannerFlightModalSrc,
+    getTripcomFlightAdForModal,
+    shouldUseTripcomFlightSearchModal,
+} from '../../common/partnerNavigation';
 
 const TripcomFlightSearchContext = createContext(null);
 
@@ -15,18 +19,16 @@ export function TripcomFlightSearchProvider({ children }) {
     const tryOpenFlightSearch = useCallback((location, options = {}) => {
         if (!shouldUseTripcomFlightSearchModal(options)) return false;
 
+        const iframeSrc = buildTripcomPlannerFlightModalSrc(location, options);
+        if (!iframeSrc) return false;
+
         const arrivalIata = getPlannerFlightArrivalIata(location, {
             essentialGuide: options.essentialGuide,
         });
         const departureIata = options.departureIata ?? null;
+        const { width: bannerWidth, height: bannerHeight } = getTripcomFlightAdForModal();
 
-        setModalState({
-            useNativeForm: true,
-            location,
-            searchOptions: options,
-            arrivalIata,
-            departureIata,
-        });
+        setModalState({ iframeSrc, arrivalIata, departureIata, bannerWidth, bannerHeight });
         return true;
     }, []);
 
@@ -43,11 +45,11 @@ export function TripcomFlightSearchProvider({ children }) {
             {children}
             {modalState ? (
                 <TripcomFlightSearchModal
+                    iframeSrc={modalState.iframeSrc}
                     arrivalIata={modalState.arrivalIata}
                     departureIata={modalState.departureIata}
-                    useNativeForm
-                    location={modalState.location}
-                    searchOptions={modalState.searchOptions}
+                    bannerWidth={modalState.bannerWidth}
+                    bannerHeight={modalState.bannerHeight}
                     onClose={closeFlightSearch}
                 />
             ) : null}

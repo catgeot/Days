@@ -12,12 +12,6 @@ export const KLOOK_CAR_BANNER_MOBILE_HEIGHT = 250;
 /** Tailwind `md`(768px) 미만을 플래너 카드 기준 모바일으로 본다 */
 export const KLOOK_PLANNER_MOBILE_MAX_BREAKPOINT = 767;
 
-/** 플래너 카드 폭 기준 모바일 — UA와 무관(DevTools 뷰포트 포함) */
-export function isPlannerMobileViewport() {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia(`(max-width: ${KLOOK_PLANNER_MOBILE_MAX_BREAKPOINT}px)`).matches;
-}
-
 /** Play(투어) 배너 — 클룩 대시보드에서 발급한 크기별 광고 단위(data-adid) */
 export const KLOOK_TOUR_AD_ID_DESKTOP = '1272015';
 export const KLOOK_TOUR_AD_ID_MOBILE = '1273972';

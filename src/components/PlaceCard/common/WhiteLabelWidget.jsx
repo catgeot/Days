@@ -12,7 +12,7 @@ import { resolveFlightDepartureIataForTrip } from '../../../pages/Home/lib/fligh
 
 /**
  * 플래너 Trip.com 항공권 제휴 링크.
- * 모바일: 앱 내 검색 폼(빈 partners/ad iframe 대신).
+ * 모바일: 앱 내 전체 화면 모달(iframe 중앙 정렬·도착지 자동입력).
  * 데스크톱: /flights/ 직링크 + 새 탭 + Referer(gateo 복귀 링크).
  * @param {Record<string, unknown> | null | undefined} [location]
  * @param {Record<string, unknown> | null | undefined} [essentialGuide]

@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
   sessionNo: 2,
-  sessionPhase: '플래너 여행사·유심·모바일검색',
+  sessionPhase: '3단계 이후 플래너 수정',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -26,9 +26,9 @@ export const cloudPreviewWorkLog = [
   {
     id: '2026-09-19-tripcom-flight-2-planner-fixes',
     session: '항공권 검색 #2, Preview OK면 PR 병합',
-    title: '여행사 상단·유심 2열·모바일 검색 폼',
+    title: '여행사 상단·유심 2열',
     detail:
-      '방문한 여행사를 플래너 상단으로 올렸고, Airalo·Holafly를 한 화면 2열로 나란히 둡니다. 모바일 partners/ad iframe·모달은 빈 화면이라 출발·도착·날짜 폼으로 바꾸고 Trip.com /flights/로 엽니다. Preview /qa/flight — 파리 플래너 상단 여행사, 이동 단계 유심 2열, 모바일 검색 폼·전체 화면 검색.',
+      '방문한 여행사를 플래너 상단으로 올렸고, Airalo·Holafly를 한 화면 2열로 나란히 둡니다. 모바일 항공 위젯은 기존 Trip.com 320×480 iframe(전체 화면 검색=같은 위젯 모달)을 유지합니다. Preview /qa/flight — 파리 플래너 상단 여행사, 이동 단계 유심 2열, 모바일 320×480 위젯.',
     at: '2026-09-19T09:45:00.000Z',
   },
   {
