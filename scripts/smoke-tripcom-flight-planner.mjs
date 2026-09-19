@@ -26,26 +26,17 @@ assert.match(
   /export function shouldUseTripcomFlightSearchModal/,
   'mobile search modal helper',
 );
-assert.doesNotMatch(nav, /iframeEmbedUsable/, 'modal not gated off');
-const navFn = nav.slice(
-  nav.indexOf('export function buildTripcomPlannerNavigationUrl'),
-  nav.indexOf('export function getTripcomFlightAdForModal'),
-);
-assert.match(navFn, /mode:\s*'ad'/, 'mobile nav uses partners/ad widget URL');
-assert.match(navFn, /mode:\s*'flights'/, 'desktop/date nav uses /flights/');
 
 const whiteLabel = read('src/components/PlaceCard/common/WhiteLabelWidget.jsx');
-assert.match(whiteLabel, /tryOpenFlightSearch/, 'mobile opens in-app modal');
-assert.match(whiteLabel, /openTripcomExternalUrl/, 'desktop/external fallback');
+assert.match(whiteLabel, /openTripcomExternalUrl/, 'external fallback');
 assert.match(whiteLabel, /type="button"/, 'default trigger is button');
 
 const widget = read(
   'src/components/PlaceCard/tabs/planner/components/TripcomFlightBannerWidget.jsx',
 );
 assert.match(widget, /data-tripcom-flight-banner="1"/, 'iframe banner marker');
-assert.match(widget, /<iframe/, 'partners/ad iframe restored');
-assert.doesNotMatch(widget, /iframeEmbedUsable/, 'no CTA-only iframe kill switch');
-assert.match(widget, /shouldUseTripcomFlightSearchModal/, 'fullscreen uses modal');
+assert.match(widget, /<iframe/, 'partners/ad iframe for desktop');
+assert.match(widget, /<FlightSearchCta/, 'mobile uses FlightSearchCta');
 
 const planner = read('src/components/PlaceCard/tabs/PlannerTab.jsx');
 assert.doesNotMatch(

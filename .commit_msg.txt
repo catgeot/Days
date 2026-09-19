@@ -1,4 +1,6 @@
-항공권 검색: 모바일 위젯을 제공받은 공식 iframe 링크 규격과 1:1 일치
+항공권 검색: 모바일 빈 iframe 대신 네이티브 항공 검색 카드 적용
 
-- ad 모드 iframe URL 생성 시 추가 쿼리를 배제하고 발급된 3대 파라미터(Allianceid, SID, trip_sub1)만 정확히 전달
-- iframe 속성에 id="S17158794", frameborder="0", scrolling="no", style="width:320px;height:480px;border:none" 동기화
+- Trip.com 제휴 광고 서버 인증 오류로 인한 모바일 iframe 빈 화면 문제 해결
+- 모바일(≤767px)에서는 Trip.com 직결 FlightSearchCta 카드 표시
+- PC(데스크톱)에서는 기존 900x200 가로형 iframe 배너 유지
+- 모바일 모달 팝업 대신 직링크(flights/)로 바로 연결되도록 전환

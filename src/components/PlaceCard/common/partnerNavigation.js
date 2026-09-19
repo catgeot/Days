@@ -15,6 +15,10 @@ function hasTripcomFlightSchedulePrefill(value) {
  * @param {{ departDate?: string, forceModal?: boolean }} [options]
  */
 export function shouldUseTripcomFlightSearchModal(options = {}) {
+    // 모바일 partners/ad iframe이 Trip.com 측 인증 오류로 빈 화면이 되므로 모달을 띄우지 않고 직링크 사용
+    if (TRIPCOM_FLIGHT_AD.mobileIframeUsable === false) {
+        return false;
+    }
     if (options.forceModal === true) {
         return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
     }
@@ -26,8 +30,6 @@ export function shouldUseTripcomFlightSearchModal(options = {}) {
 
 /**
  * 플래너에서 Trip.com으로 **페이지 이동**할 때 쓰는 URL.
- * 모바일 `/flights/` 직링크는 aAirportCode 자동입력이 무시되는 경우가 있어
- * 배너 iframe과 동일한 partners/ad 위젯 URL을 사용한다.
  * 일정 prefill 시에는 `/flights/?ddate=…` 직링크.
  *
  * @param {Record<string, unknown> | null | undefined} location
@@ -35,6 +37,7 @@ export function shouldUseTripcomFlightSearchModal(options = {}) {
  */
 export function buildTripcomPlannerNavigationUrl(location, options = {}) {
     const useAdWidget =
+        TRIPCOM_FLIGHT_AD.mobileIframeUsable !== false &&
         isMobileDevice() &&
         TRIPCOM_FLIGHT_AD.mobileAdId &&
         !hasTripcomFlightSchedulePrefill(options.departDate);

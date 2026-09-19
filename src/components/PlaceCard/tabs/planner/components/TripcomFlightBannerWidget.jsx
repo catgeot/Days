@@ -17,6 +17,8 @@ import { computeKlookBannerLayout } from './klookBannerLayout';
 import { useTripcomPlannerBannerDimensions } from './useTripcomPlannerBannerDimensions';
 import { plannerCaption } from '../readableText';
 import PlannerAffiliateLinkBadge from './PlannerAffiliateLinkBadge';
+import FlightSearchCta from './FlightSearchCta';
+import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import { logFlightDebug, copyFlightDebugLines } from '../../../../../shared/cloudPreview/flightDebug';
 
 const MIN_DISPLAY_HEIGHT = 120;
@@ -137,6 +139,27 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
     const fullScreenLinkProps = shouldUseTripcomFlightSearchModal(fullScreenModalOpts)
         ? { href: '#', onClick: handleFullScreenClick, role: 'button' }
         : { href: clickUrl, target: linkTarget, rel: linkRel };
+
+    // 모바일(≤767px): Trip.com partners/ad iframe이 3rd-party 인증 오류로 빈 박스가 되므로 네이티브 검색 카드로 전환
+    if (isMobileBanner) {
+        return (
+            <div
+                className={className}
+                data-tripcom-arrival-iata={arrivalIata || ''}
+                data-tripcom-flight-banner="cta"
+            >
+                <WhiteLabelWidget
+                    location={location}
+                    essentialGuide={essentialGuide}
+                    departDate={departDate}
+                    returnDate={returnDate}
+                    customTrigger={
+                        <FlightSearchCta location={location} essentialGuide={essentialGuide} />
+                    }
+                />
+            </div>
+        );
+    }
 
     return (
         <div className={className}>

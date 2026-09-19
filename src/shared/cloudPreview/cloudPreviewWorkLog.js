@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 4,
-  sessionPhase: '모바일 위젯 파라미터 정밀 일치',
+  sessionNo: 5,
+  sessionPhase: '모바일 네이티브 항공 검색 카드 적용',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-5-native-cta',
+    session: '항공권 검색 #5, 모바일 네이티브 항공 검색 카드 적용',
+    title: '모바일 빈 iframe 대신 네이티브 항공 검색 카드 적용',
+    detail:
+      'Trip.com 제휴 광고 서버의 인증 오류로 인해 모바일에서 빈 박스로 남는 iframe 대신, 목적지(ICN → 도착IATA)가 명시된 네이티브 항공 검색 배너 카드(FlightSearchCta)를 표시합니다. 탭 시 Trip.com 항공 검색 페이지로 직결됩니다. PC 환경에서는 기존 900x200 가로형 iframe 배너를 유지합니다.',
+    at: '2026-09-19T10:55:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-4-exact-ad-params',
     session: '항공권 검색 #4, 모바일 위젯 파라미터 정밀 일치',

@@ -806,6 +806,8 @@ export const TRIPCOM_FLIGHT_AD = {
   height: 200,
   mobileWidth: 320,
   mobileHeight: 480,
+  // Trip.com 모바일 partners/ad iframe이 3rd-party 인증 오류(Authentication failed)로 빈 박스가 됨 → 네이티브 CTA 전환
+  mobileIframeUsable: false,
 };
 
 /** 제휴 호텔 검색 배너 (iframe) — 데스크톱 900×200 / 모바일 320×480 */
