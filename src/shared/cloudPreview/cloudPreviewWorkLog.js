@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-19-tripcom-flight-6-native-form',
+    session: '항공권 검색 #6, 모바일 네이티브 검색 폼 복원',
+    title: '모바일 단순 링크 버튼 대신 네이티브 검색 폼 복원',
+    detail:
+      '모바일에서 단순 링크 버튼(FlightSearchCta) 대신 출발·도착 공항 및 가는 날·오는 날 일자를 직접 선택하고 검색할 수 있는 네이티브 입력 폼(TripcomFlightNativeSearch)을 복원했습니다. PC는 900x200 iframe 배너를 유지합니다.',
+    at: '2026-09-19T11:20:00.000Z',
+  },
+  {
     id: '2026-09-19-tripcom-flight-5-native-cta',
     session: '항공권 검색 #5, 모바일 네이티브 항공 검색 카드 적용',
     title: '모바일 빈 iframe 대신 네이티브 항공 검색 카드 적용',

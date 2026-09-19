@@ -36,7 +36,7 @@ const widget = read(
 );
 assert.match(widget, /data-tripcom-flight-banner="1"/, 'iframe banner marker');
 assert.match(widget, /<iframe/, 'partners/ad iframe for desktop');
-assert.match(widget, /<FlightSearchCta/, 'mobile uses FlightSearchCta');
+assert.match(widget, /TripcomFlightNativeSearch/, 'mobile uses TripcomFlightNativeSearch');
 
 const planner = read('src/components/PlaceCard/tabs/PlannerTab.jsx');
 assert.doesNotMatch(

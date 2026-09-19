@@ -1025,6 +1025,8 @@
           "routeDepart": "Depart",
           "routeArrive": "Arrive",
           "routeEditable": "auto-filled · editable in banner",
+          "nativeDepartDate": "Depart",
+          "nativeReturnDate": "Return",
           "fullScreenSearch": "Full-screen search",
           "noArrivalFallback": "No arrival airport found — opens generic search.",
           "tripcomFlights": "Trip.com flights"
