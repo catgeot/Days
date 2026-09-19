@@ -2,6 +2,18 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #1 — 플래너 트립닷컴 위젯·배너 복구 (Cloud)
+
+- **세션** `항공권 검색 #1, 위젯·배너 복구`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `40213e5a` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: Trip.com `partners/ad` iframe이 3rd-party에서 `queryToolDetail` 실패 → 빈 흰 박스. #7에서 항공권 카드 `FlightSearchCta` 생략.
+- **완료**: iframe 끄고 필수 툴킷 CTA. 항공권 카드 배너 복구. 탭하면 Trip.com 검색(빈 모달 아님).
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/tripcom-flight → git Preview `/place/paris/planner`
+- **QA**: 파리·이비사 필수 단계 흰 박스 없음 · ICN→도착 CTA · 항공권 카드 배너 · 탭 시 Trip.com
+- **다음**: Preview OK면 PR #288 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 축제 페이지 #5 — 푸터·무니 겹침 (Cloud)
 
 - **세션** `축제 페이지 #5, 푸터·무니 겹침`
