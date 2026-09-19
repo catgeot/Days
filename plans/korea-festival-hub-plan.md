@@ -271,3 +271,26 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 - 축제 → hub → `/place/...`
 - `smoke:tourapi` festival/area PASS · 키 미노출
 - `git log` / 일지만으로 S0→현재 세션 추적 가능
+
+---
+
+## 9. Cloud 핸드오프 (축제 페이지 UI)
+
+| | |
+|--|--|
+| **상태** | **#5 push** · tip `89d7049a` · PR [#287](https://github.com/catgeot/Days/pull/287) |
+| **브랜치** | `cursor/festival-sheet-ui-ec8b` |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` |
+| **VERIFY** | `smoke:korea-festival-personal` · `smoke:korea-festival-nearby` · `vite build` |
+
+**다음 제시어**:
+
+```
+축제 페이지 #6, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-19-project-log.md
+@plans/korea-festival-hub-plan.md
+브랜치 cursor/festival-sheet-ui-ec8b · PR #287 · Preview /qa/festival-ui
+금지: 축제 시트 리팩터 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: Preview /korea 축제 본문 끝까지 스크롤 → 닫기가 푸터에 안 가리는지 · 무니와 위로가 겹치지 않는지 · 무니 채팅이 밝은지. OK면 PR #287 병합.
+```
