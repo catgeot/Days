@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #9 — 인원 설정 제거 (Cloud)
+
+- **세션** `항공권 검색 #9, Preview OK면 PR 병합`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `131c1830` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: Preview에서 인원을 바꿔도 Trip.com 결과가 1인으로만 열림. 인원 설정 제거 요청.
+- **완료**: 모바일 폼 인원 스테퍼 제거. 왕복/편도·출도착·한 달력 일정 유지. 검색은 기본 1인. **병합 보류** — 인원 제거 Preview 후.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 인원 줄이 없는지 · 일정 선택 후 검색 → Trip.com에 같은 날짜·1인인지. OK면 PR #288 병합.
+
 ## 항공권 검색 #8 — 출발·도착일을 한 달력에서 선택 (Cloud)
 
 - **세션** `항공권 검색 #8, 한 달력 일정 선택`
