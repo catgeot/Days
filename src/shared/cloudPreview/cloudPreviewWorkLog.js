@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-19-palgyeong-use-64-muan-search-thumbs',
+    session: '팔경 활용 #64, 무안 결손 오버레이',
+    title: '무안 검색 승달산·초의선사탄생지 빈 썸네일',
+    detail:
+      '사람 Preview 「무안」검색에서 무안 8경 승달산이 랜드마크 아이콘만 나왔습니다. Tour DB 126614 first_image가 공란입니다. 같은 검색 4경 초의선사탄생지 127177은 tourapi_attraction에 없어 라이브 채움도 안 됩니다. JSON contentId 기입 없이 무안군 문화관광 공식 사진(승달산 산나리 조망·초의길 30 전경)을 LOCAL_SCENIC_MEMBER_OVERLAYS에 보강했습니다. 도리포·낙지공원·백로 번식지는 Tour first_image가 있어 그대로 둡니다. 법천사 무안(GATEO 선정)과 구분합니다. Preview /qa/palgyeong-use — 「무안」검색 8경·4경 썸네일.',
+    at: '2026-09-19T07:05:00.000Z',
+  },
+  {
     id: '2026-09-19-palgyeong-use-64-muan-overlays',
     session: '팔경 활용 #64, 무안 결손 오버레이',
     title: '무안9경 식영정·느러지·톱머리·홀통 결손 오버레이',

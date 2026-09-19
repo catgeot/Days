@@ -1578,6 +1578,14 @@ const MA_TOP = `${MA_TOUR}/11/tommeori_2.jpg`;
 const MA_TOP_2 = `${MA_TOUR}/11/tommeori_3.jpg`;
 const MA_HOL = `${MA_TOUR}/66/summer_4_200401.jpg`;
 const MA_BEACH_HOME = 'https://www.muan.go.kr/tour/travel/tommeori_beach';
+const MA_SEUNG = `${MA_TOUR}/1/seungdalsan_8.jpg`;
+const MA_SEUNG_2 = `${MA_TOUR}/1/seungdalsan_4.jpg`;
+const MA_SEUNG_3 = `${MA_TOUR}/1/seungdalsan_10.jpg`;
+const MA_SEUNG_HOME = 'https://tour.muan.go.kr/tour/travel/seungdalsan';
+const MA_CHO = `${MA_TOUR}/9/01.jpg`;
+const MA_CHO_2 = `${MA_TOUR}/9/02.jpg`;
+const MA_CHO_3 = `${MA_TOUR}/9/historic_img01.jpg`;
+const MA_CHO_HOME = 'https://tour.muan.go.kr/tour/travel/historic_site';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3381,6 +3389,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     MA_TOP,
     [MA_TOP_2, MA_HOL],
     MA_BEACH_HOME,
+  ),
+  'local-scenic:muan-gugyeong:승달산': localScenicPhotoOverlay(
+    '무안9경 8경 승달산은 청계면 월선리·몽탄면입니다. 무안군 문화관광은 해발 333m로 높지 않으나 남도 바닷가에 있어 조망이 뛰어나고, 토양·기후가 야생난 자생에 맞아 난(蘭) 자생지로 이름났다고 적습니다. 산 이름은 고려 인종 때 원나라 승려 원명이 이 산에서 교세를 떨치고 제자 500여 명이 한꺼번에 깨달음을 얻었다는 전설에서 왔으며, 풍수지리로는 호남 4패 명혈의 첫째 혈처로 적힙니다. 산행은 목포대학교 정문에서 매봉·깃봉·하루재·천치골을 도는 원점회귀가 많고, 깃대봉이 정상입니다. 같은 산 법천사(GATEO 선정 법천사 무안, 몽탄면 법천길)·목포대 캠퍼스·목우암과 다른 청계·몽탄 산봉입니다. 사진은 무안군 문화관광 승달산 산나리 조망·암릉·설경 공식 사진입니다.',
+    '전라남도 무안군 청계면 월선리 (승달산, 목포대 정문·깃대봉)',
+    MA_SEUNG,
+    [MA_SEUNG_2, MA_SEUNG_3],
+    MA_SEUNG_HOME,
+  ),
+  'local-scenic:muan-gugyeong:초의선사탄생지': localScenicPhotoOverlay(
+    '무안9경 4경 초의선사탄생지는 삼향읍 왕산리입니다. 무안군 문화관광은 주소를 초의길 30으로 두고, 초의 대선사가 1786년(정조 10년) 4월 5일 삼향읍 왕산리에서 태어났으며 속성은 흥성장씨·이름은 의순(意恂), 호 초의(艸衣)는 스승 완호 윤우에게서 받았다고 적습니다. 15세 나주 운흥사 출가, 19세 해남 대둔사에서 구족계를 받았고 다성(茶聖)으로 한국의 다도를 중흥했습니다. 1997년 무안군 문화인물 선정 뒤 생가·추모각·기념전시관·차문화관을 복원·건립했고, 음력 4월 5일 전후로 초의선사탄생문화제를 엽니다. 해남 대흥사 일지암·강진 다산초당·몽탄 법천사 무안과 다른 삼향 왕산리 생가·다도 성지입니다. 사진은 무안군 문화관광 초의선사 탄생지 전경·설경·경내 공식 사진입니다.',
+    '전라남도 무안군 삼향읍 초의길 30 (왕산리 초의선사 탄생지)',
+    MA_CHO,
+    [MA_CHO_2, MA_CHO_3],
+    MA_CHO_HOME,
   ),
 };
 

@@ -4267,6 +4267,67 @@ assert.ok(
     ?.imageUrl?.includes('tommeori_2.jpg'),
   '무안 검색 9경 톱머리·홀통 썸네일',
 );
+const maSeung = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:승달산');
+assert.equal(maSeung?.contentId, '126614', '무안 승달산 JSON contentId 유지');
+assert.ok(maSeung?.overview?.includes('333m'), '무안 승달산 overlay 해발 333m');
+assert.ok(maSeung?.overview?.includes('청계면'), '무안 승달산 overlay 청계면');
+assert.ok(maSeung?.overview?.includes('법천사 무안'), '무안 승달산≠법천사 무안');
+assert.ok(maSeung?.overview?.includes('목포대'), '무안 승달산 overlay 목포대');
+assert.ok(maSeung?.imageUrl?.includes('seungdalsan_8.jpg'), '무안 승달산 군 공식 산나리 조망');
+assert.ok(maSeung?.homepage?.includes('seungdalsan'), '무안 승달산 공식 홈');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126614')?.imageUrl?.includes('seungdalsan_8.jpg'),
+  '무안 검색 Tour 행 승달산 126614 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'muan',
+    name: '승달산',
+    contentId: '126614',
+  }).imageUrl?.includes('seungdalsan_8.jpg'),
+  '탐색홈 무안9경 승달산 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    name: '승달산',
+    contentId: '126614',
+  }).imageUrl?.includes('seungdalsan_8.jpg'),
+  '탐색 검색 Tour 행 승달산 썸네일',
+);
+const maChoeui = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:초의선사탄생지');
+assert.equal(maChoeui?.contentId, '127177', '무안 초의선사탄생지 JSON contentId 유지');
+assert.ok(maChoeui?.overview?.includes('초의길 30'), '무안 초의 overlay 초의길 30');
+assert.ok(maChoeui?.overview?.includes('1786'), '무안 초의 overlay 1786');
+assert.ok(maChoeui?.overview?.includes('왕산리'), '무안 초의 overlay 왕산리');
+assert.ok(maChoeui?.overview?.includes('일지암'), '무안 초의≠해남 대흥사 일지암');
+assert.ok(maChoeui?.overview?.includes('법천사 무안'), '무안 초의≠법천사 무안');
+assert.ok(maChoeui?.imageUrl?.includes('/9/01.jpg'), '무안 초의 군 공식 전경');
+assert.ok(maChoeui?.homepage?.includes('historic_site'), '무안 초의 공식 홈');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127177')?.imageUrl?.includes('/9/01.jpg'),
+  '무안 검색 Tour 행 초의선사탄생지 127177 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'muan',
+    name: '초의선사탄생지',
+    contentId: '127177',
+  }).imageUrl?.includes('/9/01.jpg'),
+  '탐색홈 무안9경 초의선사탄생지 썸네일',
+);
+assert.notEqual(maSeung?.imageUrl, maChoeui?.imageUrl, '승달산·초의 썸네일 다름');
+assert.ok(!maSeung?.imageUrl?.includes('/9/01.jpg'), '승달산≠초의 공식 사진');
+assert.ok(!maChoeui?.imageUrl?.includes('seungdalsan'), '초의≠승달산 공식 사진');
+assert.ok(
+  muanGlobe.find((s) => s.attractionName === '승달산')?.imageUrl?.includes('seungdalsan_8.jpg'),
+  '무안 검색 9경 승달산 썸네일',
+);
+assert.ok(
+  muanGlobe
+    .find((s) => s.attractionName === '초의선사탄생지')
+    ?.imageUrl?.includes('/9/01.jpg'),
+  '무안 검색 9경 초의선사탄생지 썸네일',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {
