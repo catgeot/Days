@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 팔경 활용 #63 — 목포9경 목포진·다도해 전경 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #63, 목포 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `593fdee0` · PR [#282](https://github.com/catgeot/Days/pull/282)
+- **완료**: JSON contentId 없이 LOCAL_SCENIC_MEMBER_OVERLAYS로 목포9경 결손 2건 보강. 목포진(6경)은 만호동 목포진길 11번길 1-5 수군진 역사공원(세종 21년 설치·2014 객사 복원·문화재자료 137호). 다도해 전경(8경)은 유달산에서 고하도·외달도 조망. 목포시 문화관광 9경 공식 사진. 해남 구 목포구등대·목포대교 일몰·유달산 산봉·외달도 섬·진도 다도해해상국립공원과 구분. 순수 누락 **42**/876.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=mokpo`
+- **잔여**: 사진/개요 순수 누락 **42**/876. 다음 허브 **무안9경 2**(영산강 식영정과 느러지·톱머리·홀통 해수욕장)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## MOONi 일정 페이스메이커 #3 — PR #281 메인 병합 (Cloud)
 
 - **세션** `MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합`
