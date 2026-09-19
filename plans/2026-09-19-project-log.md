@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 팔경 활용 #62 QA — 경기 광주 관광공사 검색 0건 (Cloud)
+
+- **세션** `팔경 활용 #62, 경기 광주 결손 오버레이 QA`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `0979bf47` · PR [#280](https://github.com/catgeot/Days/pull/280)
+- **완료**: 「경기 광주」관광공사 전무는 사실이 아님. TourAPI type12 `경기도 광주시` 40건. 허브명「경기 광주」ilike가「경기도 광주시」와 안 맞아 0건. Tour DB 검색만 `scenicTourSearchQuery`→「경기도 광주」. 명승 0은 사실(남한산성은 사적).
+- **VERIFY**: `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-local-scenic-lists` PASS · `npx vite build` PASS · DB `경기 광주`=0 · `경기도 광주`=40
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview 검색 「경기 광주」
+- **잔여**: 다음 허브 **목포9경 2**(목포진·다도해 전경)
+- **QA**: 검색 「경기 광주」한국관광공사 목록이 비어 있지 않은지(개원사·한옥마을·경안천). 명승 0은 정상.
+
 ## 여행지 매칭 #14 — PR #276 메인 병합 및 배포 (Cloud)
 
 - **세션** `여행지 매칭, PR #276 메인 병합 및 배포`
