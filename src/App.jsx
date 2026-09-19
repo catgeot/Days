@@ -34,6 +34,7 @@ import UpdatePassword from './shared/Auth/UpdatePassword';
 import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
 import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
 import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
+import FlightDebugPanel from './shared/cloudPreview/FlightDebugPanel.jsx';
 import TravelAgencyVisitCapture from './components/travelAgencies/TravelAgencyVisitCapture.jsx';
 import { LocaleProvider } from './i18n/LocaleProvider';
 
@@ -79,6 +80,7 @@ function App() {
           <CloudPreviewWorkLog />
           <SeaExploreDebugPanel />
           <CurationHandoffDebugPanel />
+          <FlightDebugPanel />
           <TravelAgencyVisitCapture />
           <Routes>
             <Route element={<MainLayout />}>
