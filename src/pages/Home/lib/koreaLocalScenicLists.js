@@ -1560,6 +1560,15 @@ const GJ_GI_DOJA = `${GJ_GI_TOUR}/img_ggdoja1.png`;
 const GJ_GI_DOJA_2 = `${GJ_GI_TOUR}/img_ggdoja2.png`;
 const GJ_GI_DOJA_3 = `${GJ_GI_TOUR}/img_ggdoja3.png`;
 const GJ_GI_DOJA_HOME = 'https://www.gjcity.go.kr/tour/contents.do?mId=0101070000';
+const MP_TOUR = 'https://www.mokpo.go.kr/contents';
+const MP_JIN = `${MP_TOUR}/17315/mokpojin_intro.jpg`;
+const MP_JIN_2 = `${MP_TOUR}/17315/mokpojin_info2.jpg`;
+const MP_JIN_3 = `${MP_TOUR}/17315/mokpojin_legend1.jpg`;
+const MP_JIN_HOME = 'https://www.mokpo.go.kr/tour/attraction/nineplace/mokpojin';
+const MP_DADO = `${MP_TOUR}/17316/archipelago1.jpg`;
+const MP_DADO_2 = `${MP_TOUR}/17316/archipelago2.jpg`;
+const MP_DADO_3 = `${MP_TOUR}/17316/archipelago.jpg`;
+const MP_DADO_HOME = 'https://www.mokpo.go.kr/tour/attraction/nineplace/archipelago';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3335,6 +3344,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     GJ_GI_DOJA,
     [GJ_GI_DOJA_2, GJ_GI_DOJA_3],
     GJ_GI_DOJA_HOME,
+  ),
+  'local-scenic:mokpo-gugyeong:목포진': localScenicPhotoOverlay(
+    '목포9경 6경 목포진은 만호동 목포진 역사공원입니다. 목포시 문화관광 9경은 조선시대 수군 진영이며 목포영·목포대·만호진이라고도 불렀고, 세종 21년(1439) 설치, 연산군 8년(1502) 진성, 1895년 7월 15일 고종 칙령 제141호로 폐진했다고 적습니다. 주소는 목포진길 11번길 1-5이며 지번은 만호동 1-56입니다. 전라남도 문화재자료 제137호 목포진지(1987년 1월 15일)입니다. 2014년 객사 등을 역사공원으로 일부 복원했습니다. 문의 061-270-8291, 상시 개방·무료입니다. 해남 구 목포구등대·2경 목포대교·7경 삼학도·유달산 달성공원·대구 달성토성과 다른 만호동 수군진입니다. 사진은 목포시 문화관광 9경 목포진 역사공원 객사 설경·홍살문 공식 사진입니다.',
+    '전라남도 목포시 목포진길 11번길 1-5 (만호동 1-56 목포진 역사공원)',
+    MP_JIN,
+    [MP_JIN_2, MP_JIN_3],
+    MP_JIN_HOME,
+  ),
+  'local-scenic:mokpo-gugyeong:다도해전경': localScenicPhotoOverlay(
+    '목포9경 8경 다도해 전경은 유달산에서 내려다보는 목포 인근 섬바다입니다. 목포시 문화관광 9경은 유달산 바로 앞 반달 모양 고하도와 외달도 등 다도해가 소박한 운치를 더한다고 적습니다. 조망은 유달산 정상·일주도로이며 고하도·외달도·목포대교 너머 서남해 섬들이 한눈에 들어옵니다. 1경 유달산 산봉·2경 목포대교 일몰·9경 외달도 섬 자체·진도·완도 다도해해상국립공원·목포해상케이블카와 다른 유달산 조망입니다. 사진은 목포시 문화관광 9경 유달산에서 바라본 다도해·하늘에서 바라본 다도해 공식 사진입니다.',
+    '전라남도 목포시 유달산 (죽교동 유달산 정상·일주도로, 고하도·외달도 조망)',
+    MP_DADO,
+    [MP_DADO_2, MP_DADO_3],
+    MP_DADO_HOME,
   ),
 };
 

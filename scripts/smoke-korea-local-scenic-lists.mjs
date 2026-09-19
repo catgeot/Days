@@ -4138,6 +4138,68 @@ assert.ok(
   '광주 검색 8경≠화담숲',
 );
 
+const mokpoMerged = mergeLocalScenicMembersIntoScenicSpots([], 'mokpo');
+const mokpoNine = mokpoMerged.filter((s) => s.localScenicListId === 'mokpo-gugyeong');
+assert.equal(mokpoNine.length, 9, '목포9경 9명');
+assert.equal(mokpoNine[0]?.groupTitle, '목포 구경');
+const mokpoDeficitNames = ['목포진', '다도해 전경'];
+const mokpoDeficit = mokpoNine.filter((s) => mokpoDeficitNames.includes(s.attractionName));
+assert.equal(mokpoDeficit.length, 2, '목포9경 결손 2명');
+assert.ok(
+  mokpoDeficit.every((s) => s.overview && s.imageUrl),
+  '목포 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  mokpoDeficit.every((s) => !s.contentId),
+  '목포 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(mokpoDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '목포진·다도해 전경 썸네일 다름',
+);
+const mpJin = resolveLocalScenicListSpotById('local-scenic:mokpo-gugyeong:목포진');
+assert.ok(mpJin?.overview && mpJin?.imageUrl, '목포 목포진 overlay 사진·개요');
+assert.ok(!mpJin?.contentId, '목포 목포진 JSON contentId 없음 유지');
+assert.ok(mpJin?.overview?.includes('만호동'), '목포 목포진 주소 만호동');
+assert.ok(mpJin?.overview?.includes('1439'), '목포 목포진 overlay 세종 21년');
+assert.ok(mpJin?.overview?.includes('2014'), '목포 목포진 overlay 2014 복원');
+assert.ok(mpJin?.overview?.includes('137호'), '목포 목포진 overlay 문화재자료 137호');
+assert.ok(mpJin?.overview?.includes('목포구등대'), '목포 목포진≠해남 구 목포구등대');
+assert.ok(mpJin?.overview?.includes('달성토성'), '목포 목포진≠대구 달성토성');
+assert.ok(mpJin?.imageUrl?.includes('mokpojin_intro.jpg'), '목포 목포진 시 공식 사진');
+assert.ok(mpJin?.homepage?.includes('/nineplace/mokpojin'), '목포 목포진 공식 홈');
+const mpDado = resolveLocalScenicListSpotById('local-scenic:mokpo-gugyeong:다도해전경');
+assert.ok(mpDado?.overview && mpDado?.imageUrl, '목포 다도해 전경 overlay 사진·개요');
+assert.ok(!mpDado?.contentId, '목포 다도해 전경 JSON contentId 없음 유지');
+assert.ok(mpDado?.overview?.includes('고하도'), '목포 다도해 전경 overlay 고하도');
+assert.ok(mpDado?.overview?.includes('외달도'), '목포 다도해 전경 overlay 외달도');
+assert.ok(mpDado?.overview?.includes('유달산'), '목포 다도해 전경 overlay 유달산 조망');
+assert.ok(mpDado?.overview?.includes('목포대교'), '목포 다도해 전경≠2경 목포대교');
+assert.ok(mpDado?.overview?.includes('해상국립공원'), '목포 다도해 전경≠진도 다도해해상국립공원');
+assert.ok(mpDado?.overview?.includes('해상케이블카'), '목포 다도해 전경≠목포해상케이블카');
+assert.ok(mpDado?.imageUrl?.includes('archipelago1.jpg'), '목포 다도해 전경 시 공식 사진');
+assert.ok(mpDado?.homepage?.includes('/nineplace/archipelago'), '목포 다도해 전경 공식 홈');
+assert.notEqual(mpJin?.imageUrl, mpDado?.imageUrl, '목포진·다도해 전경 썸네일 다름');
+assert.ok(!mpDado?.imageUrl?.includes('mokpojin'), '다도해 전경≠목포진 공식 사진');
+const mokpoGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '목포9경', {
+  injectLocalScenic: true,
+});
+const mokpoGlobeNine = mokpoGlobe.filter((s) => s.localScenicListId === 'mokpo-gugyeong');
+assert.equal(mokpoGlobeNine.length, 9, '목포 검색 목포9경 9행');
+assert.ok(
+  mokpoGlobe.find((s) => s.attractionName === '목포진')?.overview?.includes('1439'),
+  '목포 검색 9경 목포진 개요',
+);
+assert.ok(
+  mokpoGlobe.find((s) => s.attractionName === '목포진')?.imageUrl?.includes('mokpojin_intro.jpg'),
+  '목포 검색 9경 목포진 썸네일',
+);
+assert.ok(
+  mokpoGlobe.find((s) => s.attractionName === '다도해 전경')?.imageUrl?.includes('archipelago1.jpg'),
+  '목포 검색 9경 다도해 전경 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

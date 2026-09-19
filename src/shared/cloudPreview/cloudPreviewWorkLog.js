@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '탐색 Enter',
-  sessionNo: 1,
-  sessionPhase: '도시 허브 리스트',
-  branch: 'cursor/search-enter-hub-2018',
-  previewPath: '/explore',
-  qaShareSlug: 'search-enter-hub',
+  title: '팔경 활용',
+  sessionNo: 63,
+  sessionPhase: '목포 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=mokpo',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -30,6 +30,14 @@ export const cloudPreviewWorkLog = [
     detail:
       '여행지 매칭 #2가 타이핑 제안 이름 일치를 Enter에서 바로 고르게 해서, 목포 드롭다운의 도시 카드가 써머리 장소 카드로 열렸습니다. 도시 허브 exact는 제안 점프를 건너뛰고 도시+명소 선택 카드로 갑니다. 유달산·광천선굴처럼 명소 exact는 그대로 해당 카드입니다. Preview /qa/search-enter-hub — /explore 에서 목포 타이핑 후 Enter.',
     at: '2026-09-19T06:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-63-mokpo-overlays',
+    session: '팔경 활용 #63, 목포 결손 오버레이',
+    title: '목포9경 목포진·다도해 전경 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 목포9경 결손 2건(목포진·다도해 전경)의 공공 공식 팩트 개요·주소·목포시 문화관광 9경 공식 사진을 보강했습니다. 목포진은 만호동 목포진길 11번길 1-5 수군진 역사공원(6경, 세종 21년 설치·2014 객사 복원·문화재자료 137호), 다도해 전경은 유달산에서 고하도·외달도를 보는 조망(8경)입니다. 해남 구 목포구등대·목포대교 일몰·유달산 산봉·외달도 섬·진도 다도해해상국립공원과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mokpo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T05:10:00.000Z',
   },
   {
     id: '2026-09-19-mooni-itinerary-3-main-merge',
