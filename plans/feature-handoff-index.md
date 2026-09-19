@@ -18,13 +18,13 @@
 
 | | |
 |--|--|
-| **상태** | **#9 push** · tip `dcc9e6a9` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
+| **상태** | **#10 push** · tip `a3b0f14c` · PR [#276](https://github.com/catgeot/Days/pull/276) · **사람 Preview** |
 | **브랜치** | `cursor/dest-match-arch` |
-| **tip** | `dcc9e6a9` |
+| **tip** | `a3b0f14c` |
 | **PR** | [#276](https://github.com/catgeot/Days/pull/276) |
 | **플랜** | [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) **§9** |
 | **일지** | [`2026-09-18-project-log.md`](./2026-09-18-project-log.md) |
-| **Preview** | `/qa/dest-match` → git Preview `/` — 동음 칩「어느 지역의 [지명]을 찾으시나요?」 |
+| **Preview** | `/qa/dest-match` → git Preview `/` — 엔터는 카드만 · 타이핑은 칩만 |
 | **소유** | `HomonymChoiceChips.jsx` · `SearchSuggestionList.jsx` · `detectHomonymLocation.js` · `searchEnterMatch.js` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-choice-overlay` PASS · `npx vite build` PASS |
@@ -32,7 +32,7 @@
 **다음 제시어**:
 
 ```
-여행지 매칭 #10, 하드코딩 사전 정리 및 SSOT 일원화
+여행지 매칭 #11, 하드코딩 사전 정리 및 SSOT 일원화
 @plans/feature-handoff-index.md
 @plans/2026-09-18-project-log.md
 @plans/korea-destination-matching-architecture-plan.md
