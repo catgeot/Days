@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 64,
-  sessionPhase: '무안 결손 오버레이',
+  sessionNo: 65,
+  sessionPhase: '보성 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=muan',
+  previewPath: '/korea/theme/scenic?hub=boseong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-palgyeong-use-65-boseong-overlays',
+    session: '팔경 활용 #65, 보성 결손 오버레이',
+    title: '보성9경 일림산 용추계곡·주암호 서재필기념관 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 보성9경 결손 2건(일림산 용추계곡·주암호 서재필기념관)의 공공 공식 팩트 개요·주소·보성군 문화관광 9경 공식 사진을 보강했습니다. 용추계곡은 웅치면 용반리 일림산 664m 보성강 시원·용추폭포(7경), 서재필기념관은 문덕면 용암길 8 주암호 호반·개화문·생가(9경, 1864 가내마을·1992 조성)입니다. 문경 용추계곡·가평·동해 용추폭포·제암산자연휴양림·서울 독립문·순천 주암댐·주암호생태습지·대원사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=boseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T07:20:00.000Z',
+  },
   {
     id: '2026-09-19-palgyeong-use-64-muan-search-thumbs',
     session: '팔경 활용 #64, 무안 결손 오버레이',
