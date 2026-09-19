@@ -10,7 +10,7 @@ export const cloudPreviewProject = {
   sessionPhase: '로컬 위젯 전체 폭',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
-  qaShareSlug: 'tripcom-flight',
+  qaShareSlug: 'flight',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-2-qa-flight',
+    session: '항공권 검색 #2, 로컬 위젯 진단',
+    title: 'PROD 단축 주소를 /qa/flight로',
+    detail:
+      'www.gateo.kr/qa/tripcom-flight는 PR이 main에 없어 PROD에서 Preview로 안 넘어갔습니다. 짧은 /qa/flight를 PROD 리다이렉트에 올립니다. Preview /qa/flight — 파리 플래너 필수 단계 위젯.',
+    at: '2026-09-19T09:25:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-2-full-width',
     session: '항공권 검색 #2, 로컬 위젯 진단',

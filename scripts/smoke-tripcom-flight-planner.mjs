@@ -68,15 +68,17 @@ assert.match(toolkit, /omitFlightSearchCta = false/, 'toolkit CTA default on');
 assert.match(toolkit, /<FlightSearchCta /, 'toolkit FlightSearchCta');
 
 const vercel = read('vercel.json');
-assert.match(vercel, /\/qa\/tripcom-flight/, 'vercel.json /qa/tripcom-flight');
+assert.match(vercel, /\/qa\/flight"/, 'vercel.json /qa/flight');
+assert.match(vercel, /\/qa\/tripcom-flight/, 'vercel.json /qa/tripcom-flight alias');
 assert.match(
   vercel,
   /days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects\.vercel\.app\/place\/paris\/planner/,
-  'qa/tripcom-flight git Preview',
+  'qa/flight git Preview',
 );
 
 const qa = read('src/shared/cloudPreview/cloudQaShareLinks.js');
-assert.match(qa, /slug: 'tripcom-flight'/, 'qa share slug');
+assert.match(qa, /slug: 'flight'/, 'qa share slug /qa/flight');
+assert.match(qa, /slug: 'tripcom-flight'/, 'old slug kept as alias');
 assert.match(qa, /branch:\s*'cursor\/tripcom-flight-widget-3ec3'/, 'qa share branch');
 
 console.log('OK: tripcom-flight-planner — iframe banner · mobile modal · toolkit CTA');
