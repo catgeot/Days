@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **#4 push** · tip `98cf2a72` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
+| **상태** | **#5 push** · tip `067a276a` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
 | **브랜치** | `cursor/tripcom-flight-widget-3ec3` |
 | **PR** | [#288](https://github.com/catgeot/Days/pull/288) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 모바일 위젯 공식 발급 태그 동기화 |
+| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 모바일 네이티브 항공 검색 카드 적용 |
 | **소유** | `PlannerTab` · `TripcomFlightBannerWidget` · `PreTravelChecklist` · `ToolkitCard` · `partnerNavigation` · `FlightDebugPanel` |
 | **금지** | feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npm run build` PASS |
@@ -30,11 +30,11 @@
 **다음 제시어**:
 
 ```
-항공권 검색 #4, 모바일 위젯 확인
+항공권 검색 #5, 모바일 항공 검색 카드 확인
 @plans/feature-handoff-index.md
 @plans/2026-09-19-project-log.md
 브랜치 cursor/tripcom-flight-widget-3ec3 · PR #288 · Preview /qa/flight
-작업: https://www.gateo.kr/qa/flight 모바일에서 재발급 태그 규격으로 위젯이 정상 로드되어 표시되는지 확인.
+작업: https://www.gateo.kr/qa/flight 모바일에서 빈 박스 없이 출발-도착 항공 검색 카드가 정상 표시되고 탭 시 정상 이동하는지 확인.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · npm run build PASS
 ```
 
