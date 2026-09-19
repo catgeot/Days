@@ -8,6 +8,22 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'flight',
+    label: '플래너 항공권 검색 위젯',
+    branch: 'cursor/tripcom-flight-widget-3ec3',
+    destination:
+      'https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner',
+    active: true,
+  },
+  {
+    slug: 'tripcom-flight',
+    label: '플래너 항공권 검색 위젯·배너',
+    branch: 'cursor/tripcom-flight-widget-3ec3',
+    destination:
+      'https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner',
+    active: false,
+  },
+  {
     slug: 'festival-ui',
     label: '축제 페이지 — 푸터·무니 겹침',
     branch: 'cursor/festival-sheet-ui-ec8b',
