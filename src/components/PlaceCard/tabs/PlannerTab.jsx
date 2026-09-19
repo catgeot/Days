@@ -492,6 +492,20 @@ const PlannerTab = ({
 
                     {plannerStage === PLANNER_STAGE.ESSENTIAL ? (
                         <>
+                            {location ? (
+                                <div
+                                    id="planner-prep-flight-booking"
+                                    className="mb-5 w-full shrink-0 scroll-mt-24"
+                                >
+                                    <TripcomFlightBannerWidget
+                                        location={location}
+                                        essentialGuide={guideData}
+                                        departDate={eventTripWindow?.departDate}
+                                        returnDate={eventTripWindow?.returnDate}
+                                        className="mb-0"
+                                    />
+                                </div>
+                            ) : null}
                             <div
                                 id="planner-pre-travel-checklist"
                                 className={`grid grid-cols-1 gap-5 mb-5 scroll-mt-24 ${
@@ -504,17 +518,7 @@ const PlannerTab = ({
                                     location={location}
                                     essentialGuide={guideData}
                                     eventTripWindow={eventTripWindow}
-                                    flightBooking={
-                                        location ? (
-                                            <TripcomFlightBannerWidget
-                                                location={location}
-                                                essentialGuide={guideData}
-                                                departDate={eventTripWindow?.departDate}
-                                                returnDate={eventTripWindow?.returnDate}
-                                                className="mb-0"
-                                            />
-                                        ) : null
-                                    }
+                                    omitFlightBooking={Boolean(location)}
                                 />
                                 {(guideData?.journey_timeline?.length ?? 0) > 0 ? (
                                     <JourneyTimeline

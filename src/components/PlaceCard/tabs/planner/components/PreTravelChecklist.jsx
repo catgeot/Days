@@ -49,6 +49,7 @@ const PreTravelChecklist = ({
     essentialGuide,
     eventTripWindow,
     flightBooking = null,
+    omitFlightBooking = false,
     showPickup = false,
 }) => {
     const { t } = useTranslation();
@@ -129,6 +130,7 @@ const PreTravelChecklist = ({
                     <div className="h-px flex-1 bg-amber-300/50"></div>
                 </div>
 
+                {omitFlightBooking ? null : (
                 <div className="mb-3" id="planner-prep-flight-booking">
                     {flightBooking || (
                         <a
@@ -152,6 +154,7 @@ const PreTravelChecklist = ({
                         </a>
                     )}
                 </div>
+                )}
 
                 <div className="mb-3">
                     {tripcomHotelOverride ? (

@@ -66,7 +66,9 @@ assert.match(planner, /place\.planner\.complexityBadge/, '복잡도 문구 완�
 assert.doesNotMatch(planner, /\/100\)/, '복잡도 90/100 직결 표기 금지');
 assert.doesNotMatch(planner, /omitFlightSearchCta/, '항공권 검색 배너는 툴킷에 유지');
 assert.match(planner, /omitDuplicateStayCta/, '숙소 툴킷 중복 CTA 생략');
-assert.match(planner, /flightBooking/, '체크리스트에 항공 배너 통합');
+assert.doesNotMatch(planner, /flightBooking=\{/, '항공 위젯을 체크리스트 칸에 넣지 않음');
+assert.match(planner, /id="planner-prep-flight-booking"/, '항공 위젯 전체 폭 앵커');
+assert.match(planner, /omitFlightBooking/, '체크리스트 항공 CTA 중복 생략');
 assert.match(planner, /PlannerPickupCta/, '픽업 CTA는 이동 단계');
 assert.match(planner, /place\.planner\.esim\.choose/, '유심 1종 선택');
 assert.match(planner, /variant="footer"/, '단계 하단 다음 선택');

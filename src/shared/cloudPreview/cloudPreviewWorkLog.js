@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 1,
-  sessionPhase: '기존 위젯 복구',
+  sessionNo: 2,
+  sessionPhase: '로컬 위젯 전체 폭',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'tripcom-flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-2-full-width',
+    session: '항공권 검색 #2, 로컬 위젯 진단',
+    title: '항공 위젯을 필수 단계 전체 폭으로',
+    detail:
+      '방문자 개선 #7에서 900×200 iframe을 체크리스트 2열 칸에 넣어 PC가 40% 스케일로 줄고, 모바일 320×480은 카드 안에서 빈 박스가 됐습니다. 3단계 탭은 유지하고 위젯만 필수 단계 전체 폭으로 뺐습니다. Preview /qa/tripcom-flight — 파리 필수 단계 위젯이 읽히는지, 모바일에서 검색 폼이 보이는지.',
+    at: '2026-09-19T09:11:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-1-restore-iframe',
     session: '항공권 검색 #1, 기존 위젯 복구',

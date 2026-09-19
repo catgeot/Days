@@ -54,6 +54,12 @@ assert.doesNotMatch(
   '항공권 카드 검색 배너 생략 금지',
 );
 assert.match(planner, /<TripcomFlightBannerWidget/, '필수 툴킷 항공 검색 유지');
+assert.doesNotMatch(planner, /flightBooking=\{/, '항공 위젯을 2열 체크리스트에 넣지 않음');
+assert.match(
+  planner,
+  /id="planner-prep-flight-booking"[\s\S]*<TripcomFlightBannerWidget/,
+  '항공 위젯이 필수 단계 전체 폭',
+);
 
 const toolkit = read(
   'src/components/PlaceCard/tabs/planner/components/ToolkitCard.jsx',
