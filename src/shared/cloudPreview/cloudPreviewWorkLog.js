@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-19-hyanggyo-search-2-page-size-10',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 목록을 검색 표준 10개씩 넘기게',
+    detail:
+      '사람 Preview에서 8개가 적어 보였습니다. 검색 결과 페이지 표준(구글·네이버 10건)에 맞춰 한 장 10개로 늘립니다. Preview git 홈「향교」엔터 → 1페이지 10장·다음.',
+    at: '2026-09-19T07:30:00.000Z',
+  },
+  {
     id: '2026-09-19-hyanggyo-search-2-list-pages',
     session: '향교 검색 #2, 목록 페이지',
     title: '향교 선택 카드를 8개씩 넘겨 보게',

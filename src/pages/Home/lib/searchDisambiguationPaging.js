@@ -1,5 +1,5 @@
-/** 선택 카드가 길 때(향교 전국 목록) 한 화면에 맞는 묶음 */
-export const SEARCH_DISAMBIGUATION_PAGE_SIZE = 8;
+/** 검색 결과 페이지 표준(구글·네이버 10건) */
+export const SEARCH_DISAMBIGUATION_PAGE_SIZE = 10;
 
 export function searchDisambiguationPageCount(
   length,

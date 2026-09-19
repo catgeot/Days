@@ -134,19 +134,19 @@ const suggestionsSrc = readFileSync(join(root, 'src/pages/Home/lib/searchSuggest
 assert.match(suggestionsSrc, /if \(!poiType\) \{\s*for \(const hub of hubs\)/);
 assert.match(suggestionsSrc, /shouldExpandKoreaPoiTypeSearch/);
 
-assert.equal(SEARCH_DISAMBIGUATION_PAGE_SIZE, 8);
+assert.equal(SEARCH_DISAMBIGUATION_PAGE_SIZE, 10);
 assert.equal(searchDisambiguationPageCount(1), 1);
-assert.equal(searchDisambiguationPageCount(8), 1);
-assert.equal(searchDisambiguationPageCount(9), 2);
-assert.equal(searchDisambiguationPageCount(168), 21);
+assert.equal(searchDisambiguationPageCount(10), 1);
+assert.equal(searchDisambiguationPageCount(11), 2);
+assert.equal(searchDisambiguationPageCount(168), 17);
 const paged = sliceSearchDisambiguationPage(
-  Array.from({ length: 20 }, (_, i) => ({ name: `향교${i + 1}` })),
+  Array.from({ length: 25 }, (_, i) => ({ name: `향교${i + 1}` })),
   3,
 );
 assert.equal(paged.totalPages, 3);
 assert.equal(paged.page, 3);
-assert.equal(paged.items.length, 4);
-assert.equal(paged.items[0].name, '향교17');
+assert.equal(paged.items.length, 5);
+assert.equal(paged.items[0].name, '향교21');
 assert.equal(sliceSearchDisambiguationPage(mocked, 1).totalPages, 1);
 
 const cardsSrc = readFileSync(
@@ -161,4 +161,4 @@ const modalSrc = readFileSync(
 );
 assert.match(modalSrc, /onPageChange/);
 
-console.log('PASS smoke-korea-poi-type-search (춘천 향교 ≠ 춘천 · 향교 다후보 · 8개 페이지)');
+console.log('PASS smoke-korea-poi-type-search (춘천 향교 ≠ 춘천 · 향교 다후보 · 10개 페이지)');
