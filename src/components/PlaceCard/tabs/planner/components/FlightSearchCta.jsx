@@ -12,23 +12,13 @@ import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirpo
  * 플래너 항공권 Trip.com 검색 CTA — 고대비·클릭 유도형 배너.
  * WhiteLabelWidget customTrigger 또는 단독 버튼으로 사용.
  */
-const FlightSearchCta = ({
-    location,
-    essentialGuide,
-    className = '',
-    href,
-    target,
-    rel,
-    ...rest
-}) => {
+const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonProps }) => {
     const { t } = useTranslation();
     const arrivalIata = useMemo(
         () => getPlannerFlightArrivalIata(location, { essentialGuide }),
         [location, essentialGuide],
     );
     const departure = TRIPCOM_DEFAULT_DEPARTURE_AIRPORT || 'ICN';
-    const isLink = typeof href === 'string' && href.length > 0;
-    const Comp = isLink ? 'a' : 'button';
 
     const subtitle = useMemo(() => {
         const tierDisclaimer = getFlightTripDisclaimer(location, { arrivalIata });
@@ -40,11 +30,9 @@ const FlightSearchCta = ({
     }, [location, essentialGuide, arrivalIata, t]);
 
     return (
-        <Comp
-            {...(isLink
-                ? { href, ...(target ? { target } : {}), ...(rel ? { rel } : {}) }
-                : { type: 'button' })}
-            className={`group relative mt-3 block w-full overflow-hidden rounded-2xl text-left no-underline transition-all duration-200 hover:scale-[1.01] hover:shadow-xl active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 ${className}`.trim()}
+        <button
+            type="button"
+            className={`group relative mt-3 w-full overflow-hidden rounded-2xl text-left transition-all duration-200 hover:scale-[1.01] hover:shadow-xl active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 ${className}`.trim()}
             aria-label={
                 arrivalIata
                     ? t('place.planner.banners.flightSearchCta.ariaWithRoute', {
@@ -53,7 +41,7 @@ const FlightSearchCta = ({
                       })
                     : t('place.planner.banners.flightSearchCta.ariaGeneric')
             }
-            {...rest}
+            {...buttonProps}
         >
             <div className="absolute inset-0 bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700" aria-hidden="true" />
             <div className="absolute -right-8 -top-10 h-36 w-36 rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
@@ -96,7 +84,7 @@ const FlightSearchCta = ({
                     aria-hidden="true"
                 />
             </div>
-        </Comp>
+        </button>
     );
 };
 

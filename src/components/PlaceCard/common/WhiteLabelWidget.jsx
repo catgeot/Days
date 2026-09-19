@@ -4,22 +4,16 @@ import { useTranslation } from 'react-i18next';
 import {
     buildTripcomPlannerNavigationUrl,
     getPartnerLinkTarget,
-    getTripcomLinkRel,
     openTripcomExternalUrl,
 } from './partnerNavigation';
 import { useTryOpenTripcomFlightSearch } from '../tabs/planner/TripcomFlightSearchContext';
 import { TRIPCOM_DEFAULT_DEPARTURE_AIRPORT } from '../../../utils/affiliate';
 import { resolveFlightDepartureIataForTrip } from '../../../pages/Home/lib/flightOriginPreference.js';
-import { recordTravelAgencyVisit } from '../../../utils/travelAgencyVisits.js';
-
-function isNativeButtonTrigger(element) {
-    return React.isValidElement(element) && element.type === 'button';
-}
 
 /**
  * 플래너 Trip.com 항공권 제휴 링크.
- * iframe 모달이 꺼져 있으면 `/flights/` 직링크. 네이티브 `<a>`면 브라우저가 이동하고,
- * Bar·숙소 스트립의 `<button>` 트리거만 JS 이동.
+ * 모바일: 앱 내 전체 화면 모달(iframe 중앙 정렬·도착지 자동입력).
+ * 데스크톱: /flights/ 직링크 + 새 탭 + Referer(gateo 복귀 링크).
  * @param {Record<string, unknown> | null | undefined} [location]
  * @param {Record<string, unknown> | null | undefined} [essentialGuide]
  * @param {string | null | undefined} [departureIata] - 시네마 Bar 등 명시 시에만 전달. 미지정(플래너)은 ICN 고정.
@@ -64,40 +58,21 @@ const WhiteLabelWidget = ({
         [location, flightSearchOpts],
     );
     const linkTarget = getPartnerLinkTarget();
-    const linkRel = getTripcomLinkRel(linkTarget);
-    const nativeLinkProps = {
-        href: flightUrl,
-        target: linkTarget,
-        ...(linkRel ? { rel: linkRel } : {}),
-    };
 
-    const handleOpen = (event) => {
-        if (tryOpenFlightSearch(location, flightSearchOpts)) {
-            event.preventDefault();
-            return;
-        }
-        if (event.currentTarget instanceof HTMLAnchorElement && event.currentTarget.href) {
-            recordTravelAgencyVisit({ href: flightUrl });
-            return;
-        }
+    const handleOpen = () => {
+        if (tryOpenFlightSearch(location, flightSearchOpts)) return;
         openTripcomExternalUrl(flightUrl, { target: linkTarget });
     };
 
     if (customTrigger) {
-        if (isNativeButtonTrigger(customTrigger)) {
-            return React.cloneElement(customTrigger, { onClick: handleOpen });
-        }
-        return React.cloneElement(customTrigger, {
-            ...nativeLinkProps,
-            onClick: handleOpen,
-        });
+        return React.cloneElement(customTrigger, { onClick: handleOpen });
     }
 
     return (
-        <a
-            {...nativeLinkProps}
+        <button
+            type="button"
             onClick={handleOpen}
-            className="flex items-center justify-center gap-1.5 w-full mt-3 py-3 min-h-[44px] rounded-xl text-xs font-semibold no-underline transition-colors border bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200"
+            className="flex items-center justify-center gap-1.5 w-full mt-3 py-3 min-h-[44px] rounded-xl text-xs font-semibold transition-colors border bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200"
             aria-label="Trip.com 항공권 검색"
         >
             <Plane size={14} />
@@ -106,7 +81,7 @@ const WhiteLabelWidget = ({
                 {t('place.planner.banners.affiliateBadge')}
             </span>
             <Search size={12} className="ml-0.5 opacity-80" />
-        </a>
+        </button>
     );
 };
 

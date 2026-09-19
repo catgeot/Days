@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
   sessionNo: 1,
-  sessionPhase: '클릭 직링크',
+  sessionPhase: '기존 위젯 복구',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'tripcom-flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-1-restore-iframe',
+    session: '항공권 검색 #1, 기존 위젯 복구',
+    title: 'iframe 배너·모바일 모달(ICN→도착)로 되돌림',
+    detail:
+      'CTA·/flights/ 직링크는 새 착지라 도착이 LPB처럼 이전 검색으로 남았습니다. 5-22부터 쓰던 partners/ad iframe 배너와 모바일 전체화면 모달(도착 자동입력)을 다시 켭니다. 방문자 개선 #7에서 빼 둔 항공권 카드 배너만 유지합니다. Preview /qa/tripcom-flight — 파리 필수 단계 위젯에서 ICN→CDG, 탭하면 빈 화면이 아니라 검색 위젯.',
+    at: '2026-09-19T08:45:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-1-click-flights',
     session: '항공권 검색 #1, 클릭 직링크',

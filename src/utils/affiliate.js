@@ -806,8 +806,6 @@ export const TRIPCOM_FLIGHT_AD = {
   height: 200,
   mobileWidth: 320,
   mobileHeight: 480,
-  // partners/ad SPA는 queryToolDetail이 3rd-party iframe에서 비어 흰 박스만 남음 → 상위 이동 CTA 사용
-  iframeEmbedUsable: false,
 };
 
 /** 제휴 호텔 검색 배너 (iframe) — 데스크톱 900×200 / 모바일 320×480 */
