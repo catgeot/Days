@@ -24,12 +24,44 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-19-festival-ui-5-footer-mooni',
+    session: '축제 페이지 #5, 푸터·무니 겹침',
+    title: '본문 하단 여유·무니/위로 분리·밝은 무니',
+    detail:
+      '축제 상세 본문 하단 패딩을 늘려 Trust 푸터와 닫기 버튼이 겹치지 않게 했습니다. 우측 무니는 위로 버튼이 보일 때 그 위로 올라가고, FAB·채팅은 하늘·민트 톤으로 바꿨습니다. Preview /qa/festival-ui — /korea 축제 카드 본문 끝까지 스크롤 → 닫기·푸터·무니·위로.',
+    at: '2026-09-19T07:40:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-2-page-size-10',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 목록을 검색 표준 10개씩 넘기게',
+    detail:
+      '사람 Preview에서 8개가 적어 보였습니다. 검색 결과 페이지 표준(구글·네이버 10건)에 맞춰 한 장 10개로 늘립니다. Preview git 홈「향교」엔터 → 1페이지 10장·다음.',
+    at: '2026-09-19T07:30:00.000Z',
+  },
+  {
     id: '2026-09-19-palgyeong-use-65-boseong-overlays',
     session: '팔경 활용 #65, 보성 결손 오버레이',
     title: '보성9경 일림산 용추계곡·주암호 서재필기념관 결손 오버레이',
     detail:
       'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 보성9경 결손 2건(일림산 용추계곡·주암호 서재필기념관)의 공공 공식 팩트 개요·주소·보성군 문화관광 9경 공식 사진을 보강했습니다. 용추계곡은 웅치면 용반리 일림산 664m 보성강 시원·용추폭포(7경), 서재필기념관은 문덕면 용암길 8 주암호 호반·개화문·생가(9경, 1864 가내마을·1992 조성)입니다. 문경 용추계곡·가평·동해 용추폭포·제암산자연휴양림·서울 독립문·순천 주암댐·주암호생태습지·대원사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=boseong 팔경 행 썸네일·상세 개요.',
     at: '2026-09-19T07:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-2-list-pages',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 선택 카드를 8개씩 넘겨 보게',
+    detail:
+      '「향교」엔터 전국 목록이 한 화면에 다 나와 스크롤하다 포기하게 됐습니다. 기존 선택 카드는 그대로 두고 8개씩 이전·다음으로 넘깁니다. 춘천 향교처럼 짧은 목록과 목포 도시 리스트는 페이지 버튼이 없습니다. Preview /qa/hyanggyo 홈「향교」엔터 → 1페이지 8장·다음. 「춘천 향교」엔터 → 춘천향교. 「목포」엔터 → 리스트 유지.',
+    at: '2026-09-19T07:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-1-tour-disambiguation',
+    session: '향교 검색 #1, TourAPI 다후보',
+    title: '향교 검색이 도시로 떨어지지 않고 전국 향교를 고르게',
+    detail:
+      '허브 prefix가 「춘천향교」를 춘천 도시로 스냅해서 실제 춘천향교가 안 나왔습니다. 도시명 뒤 나머지가 시·군이 아니면 허브로 안 보고, 향교·서원은 TourAPI 제목으로 다후보 카드를 붙입니다. Preview /qa/hyanggyo 홈「향교」엔터 → 춘천·나주 등 여러 장. 「춘천 향교」엔터 → 춘천향교 · 춘천 도시 카드 아님.',
+    at: '2026-09-19T07:10:00.000Z',
   },
   {
     id: '2026-09-19-palgyeong-use-64-muan-search-thumbs',

@@ -8,10 +8,11 @@ import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
  * @param {{
  *   item: Record<string, unknown>,
  *   location?: Record<string, unknown> | null,
+ *   raised?: boolean,
  *   onOpenChange?: (open: boolean) => void,
  * }} props
  */
-export default function FestivalMooniFab({ item, location, onOpenChange }) {
+export default function FestivalMooniFab({ item, location, raised = false, onOpenChange }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [boundSpot, setBoundSpot] = useState(null);
@@ -49,7 +50,11 @@ export default function FestivalMooniFab({ item, location, onOpenChange }) {
       <button
         type="button"
         onClick={openMooni}
-        className="pointer-events-auto fixed bottom-[4.75rem] right-3 z-[55] flex h-14 w-14 items-center justify-center rounded-full border border-cyan-400/50 bg-cyan-500/90 shadow-lg ring-2 ring-cyan-300/40 backdrop-blur-sm transition-transform hover:scale-105 active:scale-95 sm:bottom-24 sm:right-4"
+        className={`pointer-events-auto fixed right-3 z-[55] flex h-14 w-14 items-center justify-center rounded-full border border-cyan-200 bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-300 shadow-[0_8px_24px_rgba(34,211,238,0.35)] ring-2 ring-white/80 transition-[transform,bottom] duration-300 hover:scale-105 active:scale-95 sm:right-4 ${
+          raised
+            ? 'bottom-[max(7.35rem,calc(env(safe-area-inset-bottom)+6.6rem))] sm:bottom-[8.5rem]'
+            : 'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] sm:bottom-24'
+        }`}
         aria-label={t('worldEventDetail.askMooni')}
         title={t('worldEventDetail.askMooni')}
       >

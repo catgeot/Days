@@ -74,6 +74,8 @@ import {
   persistMooniTripSession,
 } from '../lib/mooniTripSession';
 
+const tone = (fresh, dark, light) => (fresh ? light : dark);
+
 const ChatModal = ({
   isOpen,
   overlaySuppressed = false,
@@ -158,6 +160,7 @@ const ChatModal = ({
 
   const isMooniSession = introDestinationRaw === 'MOONi';
   const isMooniUi = mooniEntry || isMooniSession;
+  const fresh = isMooniUi;
 
   /** Place-bound session: SSOT slug when catalogued; uiPlace uses name/country seed. */
   const activeSessionPlace = useMemo(() => {
@@ -998,6 +1001,7 @@ const ChatModal = ({
       prompt: topicDockPrompt,
       showPrompt: showTopicDockPrompt,
       dock: true,
+      tone: isMooniUi ? 'fresh' : 'default',
     }),
     [
       effectiveQuickReplySlug,
@@ -1010,6 +1014,7 @@ const ChatModal = ({
       chatDraft,
       topicDockPrompt,
       showTopicDockPrompt,
+      isMooniUi,
     ]
   );
 
@@ -1045,14 +1050,14 @@ const ChatModal = ({
 
   return (
     <TripcomFlightSearchProvider>
-    <div className={`fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in ${overlaySuppressed ? 'invisible pointer-events-none' : ''}`}>
-      <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none border border-gray-700 max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all">
+    <div className={`fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in ${overlaySuppressed ? 'invisible pointer-events-none' : ''} ${tone(fresh, 'bg-black/80', 'bg-cyan-950/20')}`}>
+      <div className={`w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all ${tone(fresh, 'bg-gray-900 border border-gray-700', 'bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 border border-cyan-200/80')}`}>
 
-        <div className="hidden md:flex w-72 bg-gray-900 border-r border-gray-700 flex-col">
-          <div className="p-5 border-b border-gray-800 flex items-center justify-between">
+        <div className={`hidden md:flex w-72 flex-col ${tone(fresh, 'bg-gray-900 border-r border-gray-700', 'bg-white/70 border-r border-cyan-100')}`}>
+          <div className={`p-5 flex items-center justify-between ${tone(fresh, 'border-b border-gray-800', 'border-b border-cyan-100')}`}>
             <div className="flex items-center gap-2">
-              <MessageSquare size={18} className="text-blue-400" />
-              <span className="font-bold text-gray-200 text-sm">{t('mooni.chat.history')}</span>
+              <MessageSquare size={18} className={tone(fresh, 'text-blue-400', 'text-cyan-500')} />
+              <span className={`font-bold text-sm ${tone(fresh, 'text-gray-200', 'text-slate-700')}`}>{t('mooni.chat.history')}</span>
             </div>
           </div>
 
@@ -1060,9 +1065,9 @@ const ChatModal = ({
             {chatHistory
               .filter((item) => !item.is_hidden && tripHasPersistedDialogue(item))
               .map((item) => (
-              <div key={item.id} onClick={() => handleSidebarClick(item.id)} className={`p-3 rounded-xl border cursor-pointer transition-all ${activeChatId === item.id ? 'bg-gray-800 border-blue-500/50' : 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800'}`}>
+              <div key={item.id} onClick={() => handleSidebarClick(item.id)} className={`p-3 rounded-xl border cursor-pointer transition-all ${activeChatId === item.id ? tone(fresh, 'bg-gray-800 border-blue-500/50', 'bg-cyan-50 border-cyan-300') : tone(fresh, 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800', 'bg-white/80 border-cyan-100 hover:bg-sky-50')}`}>
                 <div className="flex justify-between items-start mb-1">
-                  <span className="font-bold text-gray-300 text-sm truncate max-w-[140px]">{item.destination}</span>
+                  <span className={`font-bold text-sm truncate max-w-[140px] ${tone(fresh, 'text-gray-300', 'text-slate-700')}`}>{item.destination}</span>
                   <div className="flex gap-1">
                       <button
                         onClick={(e) => {
@@ -1085,9 +1090,9 @@ const ChatModal = ({
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col bg-black/50 relative min-w-0">
+        <div className={`flex-1 flex flex-col relative min-w-0 ${tone(fresh, 'bg-black/50', 'bg-white/55')}`}>
             <div
-              className="bg-gray-800/50 p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 border-b border-gray-700 backdrop-blur-md"
+              className={`p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 backdrop-blur-md ${tone(fresh, 'bg-gray-800/50 border-b border-gray-700', 'bg-white/80 border-b border-cyan-100')}`}
               onPointerDown={() => {
                 if (mobileDockInputFocused && !input.trim()) {
                   collapseMobileDockInput();
@@ -1099,15 +1104,19 @@ const ChatModal = ({
                  onClick={handleClose}
                  aria-label={t('mooni.chat.closeAria')}
                  title={t('mooni.chat.close')}
-                 className="flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
+                 className={tone(
+                   fresh,
+                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation',
+                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-cyan-200 bg-white text-slate-600 shadow-sm transition-colors hover:border-cyan-300 hover:bg-cyan-50 hover:text-slate-800 touch-manipulation',
+                 )}
                >
                  <X size={16} className="pointer-events-none max-md:h-4 max-md:w-4" />
                </button>
                <div className="flex flex-col min-w-0 flex-1 justify-center">
-                 <span className="font-bold text-white tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug truncate">
+                 <span className={`font-bold tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug truncate ${tone(fresh, 'text-white', 'text-slate-800')}`}>
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
-                 <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium leading-tight truncate">
+                 <span className={`hidden md:block text-[11px] font-medium leading-tight truncate ${tone(fresh, 'text-cyan-300/80', 'text-cyan-600')}`}>
                    {isMooniUi
                      ? boundDestinationSlug
                        ? `${t('mooni.chat.travelChat', {
@@ -1118,7 +1127,7 @@ const ChatModal = ({
                        : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
                      : `${t('mooni.chat.travelChat', { destination: introDestinationRaw || t('place.fallback.destination') })} · ${currentPersona}`}
                  </span>
-                 <span className="md:hidden text-[10px] text-gray-400 font-medium leading-none mt-0.5 truncate">
+                 <span className={`md:hidden text-[10px] font-medium leading-none mt-0.5 truncate ${tone(fresh, 'text-gray-400', 'text-slate-500')}`}>
                    {isMooniUi ? t('mooni.chat.mooniSessionTitle') : t('mooni.chat.travelSessionTitle')}
                  </span>
                </div>
@@ -1128,7 +1137,11 @@ const ChatModal = ({
                      <button
                        type="button"
                        onClick={onClearPlaceBinding}
-                       className="md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/45 bg-cyan-500/20 text-cyan-100 touch-manipulation hover:bg-cyan-500/30"
+                       className={tone(
+                         fresh,
+                         'md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/45 bg-cyan-500/20 text-cyan-100 touch-manipulation hover:bg-cyan-500/30',
+                         'md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300 bg-cyan-100 text-cyan-700 touch-manipulation hover:bg-cyan-200',
+                       )}
                        title={t('mooni.chat.clearPlaceBindingAria')}
                        aria-label={t('mooni.chat.clearPlaceBindingAria')}
                      >
@@ -1137,7 +1150,11 @@ const ChatModal = ({
                      <button
                        type="button"
                        onClick={onClearPlaceBinding}
-                       className="hidden md:inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-gray-200 hover:border-white/35 hover:bg-white/10 transition-colors touch-manipulation"
+                       className={tone(
+                         fresh,
+                         'hidden md:inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-gray-200 hover:border-white/35 hover:bg-white/10 transition-colors touch-manipulation',
+                         'hidden md:inline-flex items-center gap-1 rounded-full border border-cyan-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-600 hover:border-cyan-300 hover:bg-cyan-50 transition-colors touch-manipulation',
+                       )}
                        title={t('mooni.chat.clearPlaceBindingAria')}
                        aria-label={t('mooni.chat.clearPlaceBindingAria')}
                      >
@@ -1149,7 +1166,11 @@ const ChatModal = ({
                    <button
                      type="button"
                      onClick={() => handlePlannerNavigate(`/place/${effectiveQuickReplySlug}/planner`)}
-                     className="inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation"
+                     className={tone(
+                       fresh,
+                       'inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation',
+                       'inline-flex items-center gap-1 rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(34,211,238,0.28)] hover:from-cyan-300 hover:to-teal-300 transition-colors touch-manipulation',
+                     )}
                      title={t('mooni.chat.openPlanner')}
                    >
                      {t('mooni.chips.l1.planner.label')}
@@ -1210,10 +1231,10 @@ const ChatModal = ({
               )}
               {isMooniUi && messages.length === 0 && !isLoading && placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
-                  <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
-                  <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
                     {placeIntroLoading && !placeIntro && (
-                      <div className="flex items-center gap-2 text-gray-400 text-sm">
+                      <div className={`flex items-center gap-2 text-sm ${tone(fresh, 'text-gray-400', 'text-slate-500')}`}>
                         <Loader2 className="animate-spin shrink-0" size={18} />
                         <span>{t('mooni.chat.placeIntroLoading')}</span>
                       </div>
@@ -1234,8 +1255,8 @@ const ChatModal = ({
               )}
               {isMooniUi && messages.length === 0 && !isLoading && !placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
-                  <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
-                  <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
                     {buildMooniIntroWithHint('', null)}
                   </div>
                 </div>
@@ -1284,16 +1305,20 @@ const ChatModal = ({
                   className={`flex flex-col w-full ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
                   <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${
-                    msg.role === 'user' ? 'text-blue-400' : msg.role === 'error' ? 'text-red-400' : 'text-cyan-400'
+                    msg.role === 'user'
+                      ? tone(fresh, 'text-blue-400', 'text-sky-600')
+                      : msg.role === 'error'
+                        ? 'text-red-400'
+                        : tone(fresh, 'text-cyan-400', 'text-cyan-600')
                   }`}>
                     {msg.role === 'user' ? 'Me' : 'MOONi'}
                   </span>
                   <div className={`p-4 rounded-2xl text-base shadow-md w-full ${
                     msg.role === 'user'
-                      ? 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm'
+                      ? tone(fresh, 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm', 'max-w-full md:max-w-[80%] bg-gradient-to-br from-sky-500 to-cyan-500 text-white rounded-tr-sm')
                       : msg.role === 'error'
                         ? 'bg-red-950/50 text-red-200 rounded-tl-sm'
-                        : 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed'
+                        : tone(fresh, 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed', 'bg-white/90 border border-cyan-100 text-slate-700 rounded-tl-sm leading-relaxed')
                   }`}>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
                     {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
@@ -1359,27 +1384,31 @@ const ChatModal = ({
               })}
               {isLoading && (
                 <div className="flex gap-4 items-center">
-                  <Loader2 size={20} className="text-blue-400 animate-spin" />
-                  <span className="text-sm text-blue-300 animate-pulse font-medium">{loadingStatus}</span>
+                  <Loader2 size={20} className={`animate-spin ${tone(fresh, 'text-blue-400', 'text-cyan-500')}`} />
+                  <span className={`text-sm animate-pulse font-medium ${tone(fresh, 'text-blue-300', 'text-cyan-600')}`}>{loadingStatus}</span>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="shrink-0 min-w-0 overflow-hidden bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+            <div className={`shrink-0 min-w-0 overflow-hidden pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] ${tone(fresh, 'bg-gray-900 border-t border-gray-800', 'bg-white/85 border-t border-cyan-100')}`}>
               {showAccessOriginDock ? (
-                <div className="px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 border-b border-gray-800/80">
+                <div className={`px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 ${tone(fresh, 'border-b border-gray-800/80', 'border-b border-cyan-100')}`}>
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
                     <button
                       type="button"
                       disabled={isLoading}
                       onClick={() => setTopicDockParent(null)}
-                      className="inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                      className={tone(
+                        fresh,
+                        'inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none',
+                        'inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-cyan-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 touch-manipulation hover:border-cyan-300 hover:bg-cyan-50 transition-colors disabled:opacity-50 disabled:pointer-events-none',
+                      )}
                     >
                       <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
                       {t('mooni.chat.backTopic')}
                     </button>
-                    <span className="text-[11px] text-cyan-400/75 font-medium break-keep min-w-0">
+                    <span className={`text-[11px] font-medium break-keep min-w-0 ${tone(fresh, 'text-cyan-400/75', 'text-cyan-600')}`}>
                       {getMooniL1ChipLabel('access', { mobile: true })}
                     </span>
                   </div>
@@ -1410,7 +1439,11 @@ const ChatModal = ({
                         type="button"
                         disabled={isLoading}
                         onClick={handleAskWithAccessOrigin}
-                        className="shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/25 px-3 py-2 text-[12px] font-semibold text-cyan-50 touch-manipulation hover:bg-cyan-500/35 disabled:opacity-50"
+                        className={tone(
+                          fresh,
+                          'shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/25 px-3 py-2 text-[12px] font-semibold text-cyan-50 touch-manipulation hover:bg-cyan-500/35 disabled:opacity-50',
+                          'shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-3 py-2 text-[12px] font-semibold text-white touch-manipulation hover:from-cyan-300 hover:to-teal-300 disabled:opacity-50',
+                        )}
                       >
                         {t('mooni.chat.askButton')}
                       </button>
@@ -1433,7 +1466,11 @@ const ChatModal = ({
                       <button
                         type="button"
                         onClick={onClearPlaceBinding}
-                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-cyan-400/45 bg-cyan-500/15 px-3 py-2 text-[12px] font-semibold text-cyan-100 touch-manipulation hover:bg-cyan-500/25"
+                        className={tone(
+                          fresh,
+                          'inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-cyan-400/45 bg-cyan-500/15 px-3 py-2 text-[12px] font-semibold text-cyan-100 touch-manipulation hover:bg-cyan-500/25',
+                          'inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-2 text-[12px] font-semibold text-cyan-700 touch-manipulation hover:bg-cyan-100',
+                        )}
                         aria-label={t('mooni.chat.clearPlaceBindingAria')}
                       >
                         <Compass size={14} className="shrink-0" />
@@ -1480,8 +1517,16 @@ const ChatModal = ({
                         title={chatInputPlaceholder}
                         className={
                           mobileDockInputExpanded
-                            ? 'w-full bg-gray-800 text-white text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 transition-[padding] duration-150'
-                            : 'w-full h-8 bg-gray-800/80 text-white text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 placeholder:text-[12px] transition-[padding] duration-150'
+                            ? tone(
+                                fresh,
+                                'w-full bg-gray-800 text-white text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 transition-[padding] duration-150',
+                                'w-full bg-white text-slate-800 text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 placeholder:text-slate-400 transition-[padding] duration-150',
+                              )
+                            : tone(
+                                fresh,
+                                'w-full h-8 bg-gray-800/80 text-white text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 placeholder:text-[12px] transition-[padding] duration-150',
+                                'w-full h-8 bg-white text-slate-800 text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 placeholder:text-slate-400 placeholder:text-[12px] transition-[padding] duration-150',
+                              )
                         }
                         disabled={isLoading}
                         aria-expanded={mobileDockInputExpanded}
@@ -1492,8 +1537,16 @@ const ChatModal = ({
                         onMouseDown={(e) => e.preventDefault()}
                         className={
                           mobileDockInputExpanded
-                            ? 'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40 touch-manipulation'
-                            : 'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-blue-600/80 rounded-full text-white disabled:opacity-40 touch-manipulation'
+                            ? tone(
+                                fresh,
+                                'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                                'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                              )
+                            : tone(
+                                fresh,
+                                'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-blue-600/80 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                                'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                              )
                         }
                         aria-label={t('mooni.chat.send')}
                       >
@@ -1521,13 +1574,21 @@ const ChatModal = ({
                         onChange={(e) => setInput(e.target.value)}
                         placeholder={t('mooni.chat.placeholderDirect')}
                         title={chatInputPlaceholder}
-                        className="w-full min-h-[36px] bg-gray-700/95 text-white text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-400/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-cyan-300/80 focus:ring-1 focus:ring-cyan-400/35 placeholder:text-gray-300/90"
+                        className={tone(
+                          fresh,
+                          'w-full min-h-[36px] bg-gray-700/95 text-white text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-400/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-cyan-300/80 focus:ring-1 focus:ring-cyan-400/35 placeholder:text-gray-300/90',
+                          'w-full min-h-[36px] bg-white text-slate-800 text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-300 shadow-[0_0_0_1px_rgba(34,211,238,0.12)] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-300 placeholder:text-slate-400',
+                        )}
                         disabled={isLoading}
                       />
                       <button
                         type="submit"
                         disabled={isLoading || !input.trim()}
-                        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/90 hover:bg-cyan-400 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70"
+                        className={tone(
+                          fresh,
+                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/90 hover:bg-cyan-400 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70',
+                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 rounded-full text-white disabled:opacity-40',
+                        )}
                         aria-label={t('mooni.chat.send')}
                       >
                         <Send size={16} />
@@ -1558,14 +1619,22 @@ const ChatModal = ({
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={chatInputPlaceholder}
-                    className="w-full bg-gray-800 md:bg-gray-700/95 text-white text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-gray-600 md:border-cyan-400/45 md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-blue-500 md:focus:border-cyan-300/80 md:focus:ring-1 md:focus:ring-cyan-400/35 placeholder:text-gray-500 md:placeholder:text-gray-300/90"
+                    className={tone(
+                      fresh,
+                      'w-full bg-gray-800 md:bg-gray-700/95 text-white text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-gray-600 md:border-cyan-400/45 md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-blue-500 md:focus:border-cyan-300/80 md:focus:ring-1 md:focus:ring-cyan-400/35 placeholder:text-gray-500 md:placeholder:text-gray-300/90',
+                      'w-full bg-white text-slate-800 text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-300 placeholder:text-slate-400',
+                    )}
                     disabled={isLoading}
                     autoFocus={!effectiveQuickReplySlug}
                   />
                   <button
                     type="submit"
                     disabled={isLoading || !input.trim()}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-blue-600 rounded-full text-white"
+                    className={tone(
+                      fresh,
+                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-blue-600 rounded-full text-white',
+                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white',
+                    )}
                   >
                     <Send size={18} />
                   </button>
