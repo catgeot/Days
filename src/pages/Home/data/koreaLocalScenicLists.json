@@ -7166,9 +7166,9 @@
       "경기광주8경",
       "광주 팔경"
     ],
-    "sourceUrl": "https://www.gjcity.go.kr/oldTour/contents.do?mId=0101010100",
+    "sourceUrl": "https://www.gjcity.go.kr/tour/main.do",
     "sourceOrg": "광주시",
-    "sourceFetchedAt": "2026-09-04",
+    "sourceFetchedAt": "2026-09-19",
     "status": "verified",
     "members": [
       {
@@ -7179,6 +7179,12 @@
         "contentId": "125449"
       },
       {
+        "attractionName": "분원도요지 & 팔당물안개공원",
+        "name_en": "Bunwon Kiln Site & Paldang Mist Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
         "attractionName": "경안천습지생태공원",
         "name_en": "Gyeongancheon Wetland Ecological Park",
         "kind": "park",
@@ -7186,25 +7192,10 @@
         "contentId": "630741"
       },
       {
-        "attractionName": "곤지암도자공원",
-        "name_en": "Gonjiam Pottery Park",
-        "kind": "museum",
-        "linkStatus": "linked",
-        "contentId": "1903260"
-      },
-      {
-        "attractionName": "화담숲",
-        "name_en": "Hwadam Forest",
-        "kind": "park",
-        "linkStatus": "linked",
-        "contentId": "2436233"
-      },
-      {
-        "attractionName": "중대물빛공원",
-        "name_en": "Jungdae Water Light Park",
-        "kind": "park",
-        "linkStatus": "linked",
-        "contentId": "2615479"
+        "attractionName": "앵자봉 & 천진암",
+        "name_en": "Aengjabong Peak & Cheonjinam",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
       },
       {
         "attractionName": "무갑산",
@@ -7216,14 +7207,20 @@
         "attractionName": "태화산",
         "name_en": "Taehwasan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord",
-        "contentId": "125456"
+        "linkStatus": "pending_coord"
       },
       {
-        "attractionName": "송정사",
-        "name_en": "Songjeongsa Shrine",
-        "kind": "shrine",
+        "attractionName": "경기도자박물관",
+        "name_en": "Gyeonggi Ceramic Museum",
+        "kind": "museum",
         "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "중대물빛공원",
+        "name_en": "Jungdae Water Light Park",
+        "kind": "park",
+        "linkStatus": "linked",
+        "contentId": "2615479"
       }
     ]
   },

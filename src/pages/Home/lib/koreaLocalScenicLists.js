@@ -1539,6 +1539,27 @@ const TY_YI = `${TY_YI_PHOTO}/92/3479192_image2_1.jpg`;
 const TY_YI_2 = `${TY_YI_PHOTO}/93/3479193_image2_1.jpg`;
 const TY_YI_3 = `${TY_YI_PHOTO}/94/3479194_image2_1.jpg`;
 const TY_YI_4 = `${TY_YI_PHOTO}/99/3479199_image2_1.jpg`;
+const GJ_GI_TOUR = 'https://www.gjcity.go.kr/tour/img/sub01';
+const GJ_GI_BUNWON = `${GJ_GI_TOUR}/img_pardang2.png`;
+const GJ_GI_BUNWON_2 = `${GJ_GI_TOUR}/img_pardang1.png`;
+const GJ_GI_BUNWON_3 = `${GJ_GI_TOUR}/img_pardang3.png`;
+const GJ_GI_BUNWON_HOME = 'https://www.gjcity.go.kr/tour/contents.do?mId=0101020000';
+const GJ_GI_AENGJA = `${GJ_GI_TOUR}/img_aengjabong1.png`;
+const GJ_GI_AENGJA_2 = `${GJ_GI_TOUR}/img_aengjabong2.png`;
+const GJ_GI_AENGJA_3 = `${GJ_GI_TOUR}/img_aengjabong3.png`;
+const GJ_GI_AENGJA_HOME = 'https://www.gjcity.go.kr/tour/contents.do?mId=0101040000';
+const GJ_GI_MUGAP = `${GJ_GI_TOUR}/img_mugabsan3.png`;
+const GJ_GI_MUGAP_2 = `${GJ_GI_TOUR}/img_mugabsan2.png`;
+const GJ_GI_MUGAP_3 = `${GJ_GI_TOUR}/img_mugabsan1.png`;
+const GJ_GI_MUGAP_HOME = 'https://www.gjcity.go.kr/tour/contents.do?mId=0101050000';
+const GJ_GI_TAEHWA = `${GJ_GI_TOUR}/img_taehwasan1.png`;
+const GJ_GI_TAEHWA_2 = `${GJ_GI_TOUR}/img_taehwasan2.png`;
+const GJ_GI_TAEHWA_3 = `${GJ_GI_TOUR}/img_taehwasan3.png`;
+const GJ_GI_TAEHWA_HOME = 'https://www.gjcity.go.kr/tour/contents.do?mId=0101060000';
+const GJ_GI_DOJA = `${GJ_GI_TOUR}/img_ggdoja1.png`;
+const GJ_GI_DOJA_2 = `${GJ_GI_TOUR}/img_ggdoja2.png`;
+const GJ_GI_DOJA_3 = `${GJ_GI_TOUR}/img_ggdoja3.png`;
+const GJ_GI_DOJA_HOME = 'https://www.gjcity.go.kr/tour/contents.do?mId=0101070000';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3279,6 +3300,41 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 통영시 멘데해안길 205 (정량동 688-1 이순신공원)',
     TY_YI,
     [TY_YI_2, TY_YI_3, TY_YI_4],
+  ),
+  'local-scenic:gwangju-gi-palgyeong:분원도요지&팔당물안개공원': localScenicPhotoOverlay(
+    '광주8경 2경 분원도요지 & 팔당물안개공원은 남종면입니다. 광주시 문화관광 8경은 조선도자연구의 기반이라고 적습니다. 분원도요지는 남종면 분원리 116입니다. 조선시대 광주 일대는 왕실 도자기를 생산하는 관요가 산재했고, 사옹원 분원이 분원리에 있어 백자가 생산되었습니다. 2003년 개관한 분원백자관은 구 분원초등학교 폐교를 리모델링한 사교육장입니다. 팔당물안개공원은 남종면 귀여리 596이며 원래 명칭은 귀여섬이었고 시민 명칭공모로 바뀌었습니다. 다목적광장·시민의 숲·희망의 숲·코스모스길이 있고 자전거 대여가 있습니다. 문의는 문화관광과 031-760-2634입니다. 7경 경기도자박물관(경충대로 727)·곤지암도자공원·화담숲·남양주 팔당과 다른 남종면 분원리·귀여리입니다. 사진은 광주시 문화관광 8경 분원도요지·팔당물안개공원 공식 사진입니다.',
+    '경기도 광주시 남종면 분원리 116 (분원도요지), 남종면 귀여리 596 (팔당물안개공원)',
+    GJ_GI_BUNWON,
+    [GJ_GI_BUNWON_2, GJ_GI_BUNWON_3],
+    GJ_GI_BUNWON_HOME,
+  ),
+  'local-scenic:gwangju-gi-palgyeong:앵자봉&천진암': localScenicPhotoOverlay(
+    '광주8경 4경 앵자봉 & 천진암은 퇴촌면 우산리입니다. 광주시 문화관광 8경은 꾀꼬리가 알을 품고 있는 산세 앵자봉이라고 적습니다. 해발 667m이며 정상에서 동쪽으로 양자산, 서쪽으로 무갑산이 보입니다. 신유박해 때 가톨릭교도들이 숨어들 만큼 심산유곡입니다. 한국천주교회 발상지 천진암이 자리하며 창립선조 5위 묘·강학기념비·한국천주교 창립연구원·성모경당·광암성당·한국천주교박물관이 있고 100년 계획 천진암 대성당 공사가 진행 중입니다. 문의는 문화관광과 031-760-2634입니다. 5경 무갑산·광주광역시 무등산·절 무갑사와 다른 퇴촌면 우산리 산·성지입니다. 사진은 광주시 문화관광 8경 앵자봉·천진암 공식 사진입니다.',
+    '경기도 광주시 퇴촌면 우산리 (앵자봉·천진암)',
+    GJ_GI_AENGJA,
+    [GJ_GI_AENGJA_2, GJ_GI_AENGJA_3],
+    GJ_GI_AENGJA_HOME,
+  ),
+  'local-scenic:gwangju-gi-palgyeong:무갑산': localScenicPhotoOverlay(
+    '광주8경 5경 무갑산은 초월읍·퇴촌면입니다. 광주시 문화관광 8경은 높이 578m로 가족들과 산행하기 좋은 산이며 소재지는 초월읍, 퇴촌면이라고 적습니다. 초월읍에 위치한 무갑산은 실촌읍(현 곤지암읍)과 퇴촌면으로 지맥을 뻗칩니다. 임진왜란 때 항복을 거부한 무인들이 은둔했다는 설과, 산의 형태가 갑옷을 두른 듯해서 붙인 이름이라는 설이 있습니다. 정상에 오르면 팔당호를 비롯한 주변 풍광이 시원하게 펼쳐집니다. 산행지로 잘 알려지지 않아 호젓하고, 봄 진달래·산나물, 여름 녹음, 가을 단풍, 겨울 눈꽃은 한라의 그것과 견줄 만큼 아름답다고 안내합니다. 문의는 문화관광과 031-760-2634입니다. 들머리는 무갑리 버스 종점이며 초월역(경강선)에서 광주시 축협 환승 후 무갑리 하차입니다. 같은 골 무갑리계곡(무갑리 822)은 관산과 무갑산 사이 약 1km 계곡입니다. 광주광역시 무등산·6경 태화산·4경 앵자봉·관산·무갑사 법당과 다른 초월읍 무갑리 산입니다. 사진은 광주시 문화관광 8경 무갑산 전경 공식 사진입니다.',
+    '경기도 광주시 초월읍 무갑리 (퇴촌면 지맥, 무갑리 버스 종점)',
+    GJ_GI_MUGAP,
+    [GJ_GI_MUGAP_2, GJ_GI_MUGAP_3],
+    GJ_GI_MUGAP_HOME,
+  ),
+  'local-scenic:gwangju-gi-palgyeong:태화산': localScenicPhotoOverlay(
+    '광주8경 6경 태화산은 도척면 추곡리입니다. 광주시 문화관광 8경은 뾰족한 봉우리를 가진 아담한 태화산이며 해발 664m라고 적습니다. 인근에 곤지암 소머리국밥촌과 낚시터 저수지가 있습니다. 정상 남쪽 산자락에 고려 충숙왕 12년 일연선사가 창건했다는 백련암이 있고, 대웅전 아래 전설의 장군수가 등산 식수입니다. 능선 오솔길 바위 전망대에서 계곡과 백마봉 능선이 보입니다. 어느 코스든 약 3시간이면 오를 수 있습니다. 문의는 문화관광과 031-760-2634입니다. 공주 태화산 마곡사·5경 무갑산·4경 앵자봉·광주광역시와 다른 도척면 추곡리 산입니다. 사진은 광주시 문화관광 8경 태화산 전경 공식 사진입니다.',
+    '경기도 광주시 도척면 추곡리 (태화산 664m)',
+    GJ_GI_TAEHWA,
+    [GJ_GI_TAEHWA_2, GJ_GI_TAEHWA_3],
+    GJ_GI_TAEHWA_HOME,
+  ),
+  'local-scenic:gwangju-gi-palgyeong:경기도자박물관': localScenicPhotoOverlay(
+    '광주8경 7경 경기도자박물관은 경충대로 727입니다. 광주시 문화관광 8경은 한국전통도자를 연구하는 전문도자박물관이라고 적습니다. 조선백자 연구·관요 유적 발굴·전통 도자문화교육을 하며, 「아름다운 우리 도자기전」을 격년 개최합니다. 대형 전시실 2곳·기획전시실·다목적실, 야외 조각공원·장작가마·한국정원·다례시연장·도자쇼핑몰이 있습니다. 옛 명칭 광주 조선관요박물관으로 순백자·청화백자·분청사기와 현대작가 작품을 상설 전시합니다. 입장 10:00~17:00, 운영 종료 18:00, 매주 월요일·1월 1일 휴관입니다. 한국도자재단이 운영합니다. 문의는 문화관광과 031-760-2634입니다. 2경 분원도요지·곤지암도자공원·화담숲·영은미술관과 다른 경충대로 박물관입니다. 사진은 광주시 문화관광 8경 경기도자박물관 공식 사진입니다.',
+    '경기도 광주시 경충대로 727 (경기도자박물관)',
+    GJ_GI_DOJA,
+    [GJ_GI_DOJA_2, GJ_GI_DOJA_3],
+    GJ_GI_DOJA_HOME,
   ),
 };
 

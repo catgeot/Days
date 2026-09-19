@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: 'MOONi 일정 페이스메이커',
-  sessionNo: 3,
-  sessionPhase: 'Preview OK면 PR 병합',
-  branch: 'cursor/mooni-itinerary-concierge-76f0',
-  previewPath: '/place/paris',
-  qaShareSlug: null,
+  active: true,
+  title: '팔경 활용',
+  sessionNo: 62,
+  sessionPhase: '경기 광주 관광공사 검색 수정',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=gwangju_gi',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -37,6 +37,14 @@ export const cloudPreviewWorkLog = [
     title: '여행지 세션에 체류·항공편·동선 사실을 저장하고 무니가 이어 씀',
     detail:
       '파리 장소 페이지 MOONi에게 체류 일수·도착 공항·항공 시각·현재 동선을 말하면 그 여행지 세션에 남고, 다음 질문에서도 전제로 씁니다. Preview https://www.gateo.kr/place/paris 에서 「오를리 3박 4일」 후 「둘째 날은?」이 같은 체류·공항을 기억하는지 확인합니다.',
+    at: '2026-09-19T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-62-gwangju-gi-tour-search',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
+    title: '경기 광주 관광공사 검색 0건 수정',
+    detail:
+      '사람 Preview에서 「경기 광주」검색 시 한국관광공사 관광지가 전무로 나왔습니다. TourAPI에는 경기도 광주시 type12가 40건 있습니다. 허브 공식명「경기 광주」를 addr1 ilike에 그대로 써서「경기도 광주시」와 부분일치가 안 됐습니다. Tour DB 검색만 경기도 광주 주소 표기로 바꿨습니다. 국가유산 명승 0은 사실입니다(남한산성은 사적). Preview /qa/palgyeong-use — 「경기 광주」검색 관광공사 목록.',
     at: '2026-09-19T04:20:00.000Z',
   },
   {
@@ -110,6 +118,22 @@ export const cloudPreviewWorkLog = [
     detail:
       '종각·광천·강원대·봉화산·대포·대화처럼 전국에 두 곳 이상인 지명은 한곳으로 찍지 않고 지역이 적힌 후보를 나열합니다. 「종각」은 서울 종각역과 대구 종각네거리, 「광천」은 평창 광천선굴·광주 광천동·홍성 광천읍입니다. 「종각역」「광천선굴」처럼 한곳인 이름은 기존 First-Pass를 씁니다. Preview /qa/dest-match 홈「종각」「광천」엔터 → 선택 카드 · 대구·광주 단독 진입 아님.',
     at: '2026-09-18T08:40:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-62-gwangju-gi-official-list',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
+    title: '광주8경 시 공식 목록 재정비',
+    detail:
+      '사람 Preview에서 팔경 목록에 없는 곳이 팔경에 들어가 있었습니다. 광주시 문화관광 공식 8경(gjcity.go.kr/tour)으로 멤버를 맞췄습니다. 1경 남한산성·2경 분원도요지 & 팔당물안개공원·3경 경안천습지생태공원·4경 앵자봉 & 천진암·5경 무갑산·6경 태화산·7경 경기도자박물관·8경 중대물빛공원. 화담숲·곤지암도자공원은 시가 8경에서 뺀 민간·별도 시설이라 GATEO 선정만 유지하고 팔경에서 뺐습니다. 송정사도 현 8경에 없어 뺐습니다. JSON contentId·scenic 승격 없이 2·4·6·7경은 시 공식 사진·개요 오버레이입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangju_gi 팔경 8행이 시 공식과 같은지.',
+    at: '2026-09-19T02:10:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-62-gwangju-gi-overlays',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이',
+    title: '광주8경 무갑산 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 광주8경 결손 무갑산의 공공 공식 팩트 개요·주소·광주시 문화관광 8경 공식 사진을 보강했습니다. 무갑산은 초월읍·퇴촌면 해발 578m(5경, 실촌읍=현 곤지암읍 지맥·팔당호 조망)입니다. 광주광역시 무등산·6경 태화산·4경 앵자봉·관산·무갑사 법당과 구분합니다. 송정사는 현 공식 8경(중대물빛공원)에 없고 Tour 미등재·공식 사진이 없어 건너뜁니다. 영암 송정사·광주송정역과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangju_gi 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T23:50:00.000Z',
   },
   {
     id: '2026-09-18-palgyeong-use-61-yeonhwado-homepage',
