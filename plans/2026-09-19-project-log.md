@@ -2,6 +2,18 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #1 — 클릭을 /flights/ 직링크로 (Cloud)
+
+- **세션** `항공권 검색 #1, Preview OK면 PR 병합`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `5780a341` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 사람 Preview에서 「항공권 실시간 검색」탭 시 `kr.trip.com` 빈 화면. 모바일 클릭이 iframe용 `partners/ad`를 전체 페이지로 염.
+- **완료**: 상위 이동은 항상 `/flights/`. 플래너 배너는 네이티브 `<a>`. PR은 Preview 재확인 후 병합.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/tripcom-flight → git Preview `/place/paris/planner`
+- **QA**: 파리·이비사 배너 탭 → Trip.com 항공 검색 폼 (`kr.trip.com` 빈 화면 아님)
+- **다음**: Preview OK면 PR #288 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 항공권 검색 #1 — 플래너 트립닷컴 위젯·배너 복구 (Cloud)
 
 - **세션** `항공권 검색 #1, 위젯·배너 복구`
