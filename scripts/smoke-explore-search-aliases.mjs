@@ -270,4 +270,34 @@ assert.equal(matchSat?.type, 'university_satellite', 'resolveKoreaPlaceMatch sat
 const matchHomonym = resolveKoreaPlaceMatch('광천');
 assert.equal(matchHomonym?.type, 'homonym_group', 'resolveKoreaPlaceMatch homonym_group');
 
-console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT)');
+const { hubs: chuncheonHyanggyoHubs, attractions: chuncheonHyanggyoAttrs } =
+  matchCityAttractionHubsPrefix('춘천 향교', { limit: 8 });
+assert.equal(
+  chuncheonHyanggyoHubs.some((h) => h.hubId === 'chuncheon'),
+  false,
+  '춘천 향교 ≠ 춘천 hub prefix',
+);
+assert.equal(
+  chuncheonHyanggyoAttrs.some((a) => a.hub.hubId === 'chuncheon' && a.attraction.name === '남이섬'),
+  false,
+  '춘천 향교 ≠ 남이섬 leftover snap',
+);
+assert.ok(
+  matchCityAttractionHubsPrefix('춘천', { limit: 4 }).hubs.some((h) => h.hubId === 'chuncheon'),
+  '춘천 exact prefix still hub',
+);
+assert.ok(
+  matchCityAttractionHubsPrefix('춘천시', { limit: 4 }).hubs.some((h) => h.hubId === 'chuncheon'),
+  '춘천시 admin remainder still hub',
+);
+const { attractions: hyanggyoAttrs } = matchCityAttractionHubsPrefix('향교', { limit: 20 });
+assert.ok(
+  hyanggyoAttrs.some((a) => a.attraction.name === '나주향교'),
+  '향교 includes 나주향교',
+);
+assert.ok(
+  hyanggyoAttrs.some((a) => a.attraction.name === '김포향교'),
+  '향교 includes 김포향교',
+);
+
+console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT + 춘천 향교 hub)');

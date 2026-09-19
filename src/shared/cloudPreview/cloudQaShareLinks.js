@@ -16,6 +16,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'hyanggyo',
+    label: '향교 검색 — 도시별 다후보',
+    branch: 'cursor/hyanggyo-search-f9b8',
+    destination:
+      'https://days-git-cursor-hyanggyo-search-f9b8-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'search-enter-hub',
     label: '탐색 Enter — 도시 허브 리스트',
     branch: 'cursor/search-enter-hub-2018',
