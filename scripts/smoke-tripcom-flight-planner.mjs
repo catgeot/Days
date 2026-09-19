@@ -67,6 +67,13 @@ assert.match(native, /nativeOneWay/, 'one-way control');
 assert.match(native, /adultCount/, 'passenger count passed to Trip.com');
 assert.match(native, /arrivalIata/, 'arrival override passed to Trip.com');
 assert.match(native, /AirportSlot/, 'combined origin-destination picker');
+assert.match(native, /TripcomFlightDateRangeCalendar/, 'single date-range calendar');
+
+const calendar = read(
+  'src/components/PlaceCard/tabs/planner/components/TripcomFlightDateRangeCalendar.jsx',
+);
+assert.match(calendar, /data-tripcom-date-range/, 'range calendar marker');
+assert.match(calendar, /applyFlightDatePick/, 'shared date-pick helper');
 
 const vercel = read('vercel.json');
 assert.match(vercel, /\/qa\/flight"/, 'vercel.json /qa/flight');
@@ -112,6 +119,38 @@ assert.match(resultsHref, /ddate=2026-10-15/, 'depart date query');
 assert.match(resultsHref, /rdate=2026-10-22/, 'return date query');
 assert.match(resultsHref, /triptype=rt/, 'round-trip query');
 assert.match(resultsHref, /quantity=2/, 'adult quantity query');
+
+const { applyFlightDatePick } = await import('../src/utils/tripcomFlightDateRange.js');
+const start = applyFlightDatePick({
+  tripType: 'RT',
+  ddate: '2026-10-15',
+  rdate: '2026-10-22',
+  picking: 'start',
+  ymd: '2026-11-01',
+  today: '2026-09-19',
+});
+assert.equal(start.ddate, '2026-11-01', 'first tap sets depart');
+assert.equal(start.rdate, '', 'first tap clears return');
+assert.equal(start.picking, 'end', 'next tap is return');
+assert.equal(start.done, false, 'range not complete');
+
+const end = applyFlightDatePick({
+  ...start,
+  ymd: '2026-11-08',
+});
+assert.equal(end.rdate, '2026-11-08', 'second tap sets return');
+assert.equal(end.done, true, 'range complete');
+
+const oneWay = applyFlightDatePick({
+  tripType: 'OW',
+  ddate: '2026-10-15',
+  rdate: '',
+  picking: 'start',
+  ymd: '2026-11-03',
+  today: '2026-09-19',
+});
+assert.equal(oneWay.ddate, '2026-11-03', 'one-way sets depart');
+assert.equal(oneWay.done, true, 'one-way completes on first tap');
 
 console.log('OK: tripcom-flight-planner — iframe banner · mobile modal · toolkit CTA');
 console.log('SMOKE OK');

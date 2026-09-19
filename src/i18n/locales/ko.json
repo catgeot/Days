@@ -804,6 +804,12 @@
           "nativeAdultCount": "성인 {{count}}명",
           "nativeSwap": "출발·도착 바꾸기",
           "nativeAirportSearch": "공항 이름 또는 코드",
+          "nativeDateRange": "일정",
+          "nativeDateRangeOpen": "달력에서 가는 날과 오는 날 선택",
+          "nativePickDepart": "가는 날을 고르세요",
+          "nativePickReturn": "오는 날을 고르세요",
+          "nativeCalendarPrev": "이전 달",
+          "nativeCalendarNext": "다음 달",
           "fullScreenSearch": "전체 화면 검색",
           "noArrivalFallback": "도착 공항을 찾지 못해 일반 검색으로 열립니다.",
           "tripcomFlights": "Trip.com 항공권"

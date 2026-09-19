@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 7,
-  sessionPhase: '모바일 검색 결과 연동',
+  sessionNo: 8,
+  sessionPhase: '한 달력 일정 선택',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-tripcom-flight-8-date-range-calendar',
+    session: '항공권 검색 #8, 한 달력 일정 선택',
+    title: '출발·도착일을 하나의 달력에서 선택',
+    detail:
+      '모바일 항공권 카드의 가는 날·오는 날 입력칸을 없애고, 일정 한 줄을 누르면 같은 달력에서 왕복은 가는 날 다음 오는 날, 편도는 하루만 고르게 했습니다.',
+    at: '2026-09-19T20:30:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-7-results-form',
     session: '항공권 검색 #7, 모바일 검색 결과 연동',

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeftRight, ArrowRight, Calendar, Minus, Plane, Plus, Search, Users } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, Minus, Plane, Plus, Search, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
     TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
@@ -16,29 +16,8 @@ import {
     listFlightCinemaOriginPickerOptions,
 } from '../../../../../pages/Home/lib/flightCinemaOriginOptions';
 import { searchFlightOriginHubs } from '../../../../../pages/Home/lib/flightCinemaOriginSearch';
-
-function pad2(n) {
-    return String(n).padStart(2, '0');
-}
-
-function formatYmd(date) {
-    return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
-}
-
-function todayPlus(days) {
-    const d = new Date();
-    d.setHours(12, 0, 0, 0);
-    d.setDate(d.getDate() + days);
-    return formatYmd(d);
-}
-
-function addDaysYmd(ymd, days) {
-    const [y, m, d] = String(ymd || '').split('-').map(Number);
-    if (!y || !m || !d) return todayPlus(days);
-    const dt = new Date(y, m - 1, d, 12);
-    dt.setDate(dt.getDate() + days);
-    return formatYmd(dt);
-}
+import { addDaysYmd, todayYmd } from '../../../../../utils/tripcomFlightDateRange';
+import TripcomFlightDateRangeCalendar from './TripcomFlightDateRangeCalendar';
 
 function AirportSlot({
     label,
@@ -138,8 +117,8 @@ const TripcomFlightNativeSearch = ({
     const [arrive, setArrive] = useState(() => defaultArrival || '');
     const [tripType, setTripType] = useState('RT');
     const [adults, setAdults] = useState(1);
-    const [ddate, setDdate] = useState(departDate || todayPlus(14));
-    const [rdate, setRdate] = useState(returnDate || todayPlus(21));
+    const [ddate, setDdate] = useState(departDate || addDaysYmd(todayYmd(), 14));
+    const [rdate, setRdate] = useState(returnDate || addDaysYmd(todayYmd(), 21));
     const linkTarget = getPartnerLinkTarget();
     const isRoundTrip = tripType === 'RT';
 
@@ -155,16 +134,9 @@ const TripcomFlightNativeSearch = ({
         setArrive(depart);
     };
 
-    const handleDepartDate = (value) => {
-        setDdate(value);
-        if (isRoundTrip && rdate && value && rdate <= value) {
-            setRdate(addDaysYmd(value, 7));
-        }
-    };
-
     const handleSubmit = (event) => {
         event.preventDefault();
-        const outbound = ddate || todayPlus(14);
+        const outbound = ddate || addDaysYmd(todayYmd(), 14);
         const inbound = isRoundTrip ? (rdate && rdate > outbound ? rdate : addDaysYmd(outbound, 7)) : '';
         const url = buildTripcomPlannerFlightUrl(location, {
             essentialGuide,
@@ -263,36 +235,17 @@ const TripcomFlightNativeSearch = ({
                     />
                 </div>
 
-                <div className={isRoundTrip ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1'}>
-                    <label className="flex flex-col gap-1 rounded-xl border border-gray-200/90 bg-gray-50/60 p-2.5 transition-colors focus-within:border-sky-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-sky-100">
-                        <div className="flex items-center gap-1 text-[11px] font-bold text-gray-600">
-                            <Calendar size={12} className="text-sky-500" />
-                            <span>{t('place.planner.banners.tripcomFlight.nativeDepartDate')}</span>
-                        </div>
-                        <input
-                            type="date"
-                            value={ddate}
-                            min={todayPlus(0)}
-                            onChange={(event) => handleDepartDate(event.target.value)}
-                            className={`w-full rounded-lg border-0 bg-transparent p-0 text-sm font-semibold text-gray-900 focus:outline-none focus:ring-0 ${MOBILE_INPUT_TEXT_CLASS}`}
-                        />
-                    </label>
-                    {isRoundTrip ? (
-                        <label className="flex flex-col gap-1 rounded-xl border border-gray-200/90 bg-gray-50/60 p-2.5 transition-colors focus-within:border-sky-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-sky-100">
-                            <div className="flex items-center gap-1 text-[11px] font-bold text-gray-600">
-                                <Calendar size={12} className="text-sky-500" />
-                                <span>{t('place.planner.banners.tripcomFlight.nativeReturnDate')}</span>
-                            </div>
-                            <input
-                                type="date"
-                                value={rdate}
-                                min={ddate || todayPlus(0)}
-                                onChange={(event) => setRdate(event.target.value)}
-                                className={`w-full rounded-lg border-0 bg-transparent p-0 text-sm font-semibold text-gray-900 focus:outline-none focus:ring-0 ${MOBILE_INPUT_TEXT_CLASS}`}
-                            />
-                        </label>
-                    ) : null}
-                </div>
+                <TripcomFlightDateRangeCalendar
+                    tripType={tripType}
+                    ddate={ddate}
+                    rdate={rdate}
+                    locale={i18n.language}
+                    t={t}
+                    onChange={({ ddate: nextDepart, rdate: nextReturn }) => {
+                        setDdate(nextDepart);
+                        setRdate(nextReturn);
+                    }}
+                />
 
                 <div className="flex min-h-[44px] items-center justify-between rounded-xl border border-gray-200/90 bg-gray-50/60 px-3 py-2">
                     <div className="flex items-center gap-1.5 text-sm font-bold text-gray-700">

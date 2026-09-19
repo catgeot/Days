@@ -1034,6 +1034,12 @@
           "nativeAdultCount": "{{count}} adults",
           "nativeSwap": "Swap airports",
           "nativeAirportSearch": "Airport name or code",
+          "nativeDateRange": "Dates",
+          "nativeDateRangeOpen": "Pick departure and return on one calendar",
+          "nativePickDepart": "Select departure date",
+          "nativePickReturn": "Select return date",
+          "nativeCalendarPrev": "Previous month",
+          "nativeCalendarNext": "Next month",
           "fullScreenSearch": "Full-screen search",
           "noArrivalFallback": "No arrival airport found — opens generic search.",
           "tripcomFlights": "Trip.com flights"
