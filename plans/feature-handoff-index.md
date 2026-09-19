@@ -18,25 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `4e53af1f` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
+| **상태** | **#3 push** · tip `c95d2b43` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
 | **브랜치** | `cursor/tripcom-flight-widget-3ec3` |
 | **PR** | [#288](https://github.com/catgeot/Days/pull/288) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 필수 단계 전체 폭 iframe · 모바일 검색 폼 |
-| **소유** | `TripcomFlightBannerWidget` · `TripcomFlightSearchModal` · `partnerNavigation` · `WhiteLabelWidget` |
-| **금지** | UI 리디자인 · 3단계 탭 제거 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS |
+| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 3단 분리 이전 단일 스크롤 복구 |
+| **소유** | `PlannerTab` · `TripcomFlightBannerWidget` · `PreTravelChecklist` · `ToolkitCard` · `partnerNavigation` |
+| **금지** | feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-항공권 검색 #2, Preview OK면 PR 병합
+항공권 검색 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-19-project-log.md
 브랜치 cursor/tripcom-flight-widget-3ec3 · PR #288 · Preview /qa/flight
-금지: UI 리디자인 · 3단계 탭 제거 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: https://www.gateo.kr/qa/flight 파리 필수 단계 Trip.com 위젯이 전체 폭. PC에서 공항·날짜가 읽히는지. 모바일에서 빈 화면이 아니라 검색 폼인지. ICN→CDG. OK면 PR #288 병합.
-검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · vite build PASS
+작업: https://www.gateo.kr/qa/flight 파리 플래너가 3단 탭 없이 이전처럼 단일 스크롤로 모든 섹션이 정상 표시되는지, 상단 항공 위젯 및 체크리스트 동작 확인 후 PR #288 병합.
+검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · npm run build PASS
 ```
 
 ---
