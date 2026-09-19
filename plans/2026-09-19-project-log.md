@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #4 — 모바일 위젯 진단 패널 및 로그 복사 (Cloud)
+
+- **세션** `항공권 검색 #4, 모바일 진단 로그`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `99a41ed1` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 롤백 후에도 모바일에서 위젯이 보이지 않는 증상의 원인(실제 DOM 크기, iframe 이벤트, 뷰포트 등)을 모바일 기기에서 직접 추출·확인하기 위함.
+- **완료**: `FlightDebugPanel` 및 `flightDebug.js` 추가. 화면 좌하단 플로팅 버튼 및 배너 캡션 하단에 [로그 복사] 버튼을 두어 원클릭으로 모바일 상태를 클립보드로 복사할 수 있게 지원.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 화면 접속 시 좌하단 [모바일 위젯 로그] 버튼 클릭 → [📋 로그 복사] 터치로 진단 로그 복사 가능 확인.
+
 ## 항공권 검색 #3 — 플래너 3단 분리 이전 단일 스크롤 복귀 (Cloud)
 
 - **세션** `항공권 검색 #3, 3단 분리 이전 복귀`
