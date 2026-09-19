@@ -2,6 +2,17 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 팔경 활용 #64 QA — 무안 검색 승달산·초의 빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #64, 무안 결손 오버레이` (같은 턴 Preview 피드백)
+- **브랜치** `cursor/palgyeong-use-e744` · tip `83dc35a4` · PR [#284](https://github.com/catgeot/Days/pull/284)
+- **원인**: 「무안」검색 8경 승달산 랜드마크 아이콘. Tour `126614` first_image 공란. 4경 초의선사탄생지 `127177`은 tourapi_attraction 미동기화.
+- **완료**: JSON contentId 없이 무안군 문화관광 공식 사진 오버레이. 승달산 산나리 조망(`seungdalsan_8.jpg`)·초의길 30 전경(`/9/01.jpg`). 도리포·낙지공원·백로 번식지는 Tour first_image 있어 유지. 법천사 무안과 구분.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview 「무안」검색 8경·4경 썸네일
+- **잔여**: 사진/개요 순수 누락 **40**/876. 다음 허브 **보성9경 2**(일림산 용추계곡·주암호 서재필기념관)
+- **QA**: 「무안」검색 승달산·초의선사탄생지 사진인지. 도리포·낙지공원·법천사 무안 기존 썸네일 유지인지.
+
 ## 향교 검색 #1 — TourAPI 다후보 (Cloud)
 
 - **세션** `향교 검색 #1, TourAPI 다후보`
