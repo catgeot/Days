@@ -2,6 +2,18 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 탐색 Enter #1 — 도시 허브 리스트 (Cloud)
+
+- **세션** `탐색 Enter #1, 도시 허브 리스트`
+- **브랜치** `cursor/search-enter-hub-2018` · tip `b8ef3e66` · PR [#283](https://github.com/catgeot/Days/pull/283)
+- **원인**: 여행지 매칭 #2가 타이핑 제안 이름 일치를 Enter에서 바로 고름. 「목포」드롭다운의 도시 카드가 써머리 장소 카드로 열림.
+- **완료**: `preferEnterSuggestion`이 도시 허브 exact면 null. Enter는 도시+명소 선택 카드. 유달산·광천선굴 명소 exact는 유지.
+- **VERIFY**: `npm run smoke:search-enter-match` PASS · `smoke:explore-choice-overlay` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/search-enter-hub → git Preview `/explore`
+- **QA**: 「목포」엔터 → 리스트 카드. 「유달산」엔터 → 유달산. 「광천선굴」엔터 → 평창 광천선굴.
+- **다음**: Preview OK면 PR #283 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA.
+
 ## 팔경 활용 #63 — 목포9경 목포진·다도해 전경 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #63, 목포 결손 오버레이`
