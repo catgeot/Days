@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #7 — 모바일 폼을 Trip.com 검색 결과에 연동 (Cloud)
+
+- **세션** `항공권 검색 #7, 모바일 검색 결과 연동`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `4730aa9a` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 네이티브 폼이 `/flights/?dAirportCode=` 홈으로 열려 출도착·날짜·인원이 Trip.com에 안 들어감. 출도착 입력창이 나뉘어 있고 왕복/편도·인원 선택이 없었음.
+- **완료**: 한 줄에서 출발·도착 검색·교체. 왕복/편도·성인 인원. 검색 시 `/flights/{d}-to-{a}/tickets-…` 결과 URL로 ddate·rdate·triptype·quantity 전달.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 왕복·편도·인원·출발·도착·날짜를 고른 뒤 검색 → Trip.com 결과 페이지에 같은 값이 보이는지.
+
 ## 항공권 검색 #6 — 모바일 검색 폼 프리미엄 티켓 카드 디자인 (Cloud)
 
 - **세션** `항공권 검색 #6, 모바일 검색 폼 프리미엄 티켓 카드 디자인`
