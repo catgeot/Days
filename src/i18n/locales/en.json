@@ -2528,8 +2528,9 @@
             "sendText": "Recommend restaurants"
           },
           "itinerary": {
-            "label": "2–3 day plan",
-            "sendText": "Plan a 2–3 day itinerary"
+            "label": "Suggested itinerary",
+            "mobileLabel": "Itinerary",
+            "sendText": "Plan a realistic and flexible itinerary"
           },
           "companion": {
             "label": "By travel style",

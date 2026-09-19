@@ -2291,8 +2291,9 @@
             "sendText": "맛집 추천해줘"
           },
           "itinerary": {
-            "label": "2~3일 일정",
-            "sendText": "2~3일 일정 짜줘"
+            "label": "추천 일정·동선",
+            "mobileLabel": "추천 일정",
+            "sendText": "무리 없는 추천 일정과 동선 짜줘"
           },
           "companion": {
             "label": "동행별 추천",
