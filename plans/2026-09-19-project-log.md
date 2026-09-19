@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #8 — 출발·도착일을 한 달력에서 선택 (Cloud)
+
+- **세션** `항공권 검색 #8, 한 달력 일정 선택`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `25bb00ed` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 가는 날·오는 날이 입력칸 두 개로 나뉘어 한 화면에서 구간을 고르기 어려움.
+- **완료**: 일정 한 줄을 누르면 같은 달력에서 왕복은 가는 날→오는 날, 편도는 하루만 선택. 검색 URL의 ddate/rdate 연동은 유지.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 일정을 눌러 한 달력으로 가는 날·오는 날을 고른 뒤 검색 → Trip.com 결과에 같은 날짜인지.
+
 ## 항공권 검색 #7 — 모바일 폼을 Trip.com 검색 결과에 연동 (Cloud)
 
 - **세션** `항공권 검색 #7, 모바일 검색 결과 연동`

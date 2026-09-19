@@ -18,23 +18,23 @@
 
 | | |
 |--|--|
-| **상태** | **#7 push** · tip `4730aa9a` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
+| **상태** | **#8 push** · tip `25bb00ed` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
 | **브랜치** | `cursor/tripcom-flight-widget-3ec3` |
 | **PR** | [#288](https://github.com/catgeot/Days/pull/288) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 왕복·편도·인원·출도착 → Trip.com 검색 결과 |
-| **소유** | `PlannerTab` · `TripcomFlightBannerWidget` · `TripcomFlightNativeSearch` · `tripcomFlightResultsUrl` · `PreTravelChecklist` · `ToolkitCard` · `partnerNavigation` · `FlightDebugPanel` |
+| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 한 달력에서 가는 날·오는 날 |
+| **소유** | `PlannerTab` · `TripcomFlightBannerWidget` · `TripcomFlightNativeSearch` · `TripcomFlightDateRangeCalendar` · `tripcomFlightResultsUrl` · `PreTravelChecklist` · `ToolkitCard` · `partnerNavigation` · `FlightDebugPanel` |
 | **금지** | feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-항공권 검색 #8, Preview OK면 PR 병합
+항공권 검색 #9, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-19-project-log.md
 브랜치 cursor/tripcom-flight-widget-3ec3 · PR #288 · Preview /qa/flight
-작업: https://www.gateo.kr/qa/flight 모바일에서 왕복·편도·인원·출발·도착·날짜를 고른 뒤 검색 → Trip.com 결과 페이지에 같은 값이 보이는지. OK면 PR #288 병합.
+작업: https://www.gateo.kr/qa/flight 모바일에서 일정을 눌러 한 달력으로 가는 날·오는 날을 고른 뒤 검색 → Trip.com 결과에 같은 날짜인지. OK면 PR #288 병합.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · npx vite build PASS
 ```
 
