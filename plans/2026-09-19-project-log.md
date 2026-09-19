@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 팔경 활용 #64 — 무안9경 식영정·느러지·톱머리·홀통 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #64, 무안 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `5eb2785b` · PR [#284](https://github.com/catgeot/Days/pull/284)
+- **완료**: JSON contentId 없이 LOCAL_SCENIC_MEMBER_OVERLAYS로 무안9경 결손 2건 보강. 식영정(3경)은 몽탄면 호반로 562-15 息營亭(1630 한호 임연·문화재자료 237호)와 영산강 느러지 곡강. 톱머리·홀통(5경)은 망운면 톱머리길 66·현경면 홀통길 198-1 백사장·해송. 무안군 문화관광 공식 사진. 담양 息影亭·나주 느러지전망대·영월 한반도지형·도리포·조금나루와 구분. 순수 누락 **40**/876.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=muan`
+- **잔여**: 사진/개요 순수 누락 **40**/876. 다음 허브 **보성9경 2**(일림산 용추계곡·주암호 서재필기념관)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 탐색 Enter #1 — 도시 허브 리스트 (Cloud)
 
 - **세션** `탐색 Enter #1, 도시 허브 리스트`
