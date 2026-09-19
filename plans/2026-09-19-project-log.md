@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 향교 검색 #2 QA — 목록 10개 (Cloud)
+
+- **세션** `향교 검색 #2, 목록 페이지`
+- **브랜치** `cursor/hyanggyo-search-f9b8` · tip `24326693` · PR [#285](https://github.com/catgeot/Days/pull/285)
+- **완료**: 사람 피드백으로 한 장 8개 → 검색 표준 10개. 카드 UI 유지. PROD `/qa`에는 아직 향교 행 없음 → git Preview URL.
+- **VERIFY**: `npm run smoke:korea-poi-type-search` PASS · `smoke:explore-search-aliases` PASS · `smoke:search-enter-match` PASS · `npx vite build` PASS
+- **Preview** https://days-git-cursor-hyanggyo-search-f9b8-catgeots-projects.vercel.app/
+- **QA**: 「향교」엔터 → 한 장 10개·다음. 「춘천 향교」엔터 → 춘천향교. 「목포」엔터 리스트 유지.
+- **다음**: Preview OK면 PR #285 병합
+
 ## 향교 검색 #2 — 목록 8개 페이지 (Cloud)
 
 - **세션** `향교 검색 #2, Preview OK면 PR 병합`
