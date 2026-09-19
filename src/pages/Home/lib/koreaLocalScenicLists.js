@@ -1569,6 +1569,15 @@ const MP_DADO = `${MP_TOUR}/17316/archipelago1.jpg`;
 const MP_DADO_2 = `${MP_TOUR}/17316/archipelago2.jpg`;
 const MP_DADO_3 = `${MP_TOUR}/17316/archipelago.jpg`;
 const MP_DADO_HOME = 'https://www.mokpo.go.kr/tour/attraction/nineplace/archipelago';
+const MA_TOUR = 'https://tour.muan.go.kr/contents';
+const MA_SIK = `${MA_TOUR}/18/spring_5_2_200401.jpg`;
+const MA_SIK_2 = `${MA_TOUR}/18/spring_5_200401.jpg`;
+const MA_SIK_HOME =
+  'https://tour.muan.go.kr/tour/culture/cultural/treasure?mode=view&idx=247';
+const MA_TOP = `${MA_TOUR}/11/tommeori_2.jpg`;
+const MA_TOP_2 = `${MA_TOUR}/11/tommeori_3.jpg`;
+const MA_HOL = `${MA_TOUR}/66/summer_4_200401.jpg`;
+const MA_BEACH_HOME = 'https://www.muan.go.kr/tour/travel/tommeori_beach';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3358,6 +3367,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     MP_DADO,
     [MP_DADO_2, MP_DADO_3],
     MP_DADO_HOME,
+  ),
+  'local-scenic:muan-gugyeong:영산강식영정과느러지': localScenicPhotoOverlay(
+    '무안9경 3경 영산강 식영정과 느러지는 몽탄면 이산리입니다. 무안군 문화관광 9경은 한호 임연 선생이 1630년 무안으로 입향한 이후 강학소요처로 지은 정자이며 영산강과 주변 경관이 어울린다고 적습니다. 주소는 호반로 562-15이며 지번은 이산리 612입니다. 전라남도 문화재자료 제237호(2002년 4월 20일) 무안 식영정(息營亭)입니다. 현재 건물은 1900년대 초반 중건한 정면 3칸·측면 3칸 팔작지붕입니다. 문의 061-450-5498입니다. 느러지는 영산강이 나주 동강면과 무안 몽탄면 사이에서 한반도처럼 늘어진 물돌이로, 영산강 8경 2경 몽탄노적이며 영월 동강보다 강폭이 넓습니다. 담양 식영정(息影亭·명승)·광주 환벽당·나주 동강면 느러지전망대·영월 한반도지형과 다른 몽탄 이산리 정자와 곡강입니다. 사진은 무안군 문화관광 봄 여행 식영정 항공·정자 공식 사진입니다.',
+    '전라남도 무안군 몽탄면 호반로 562-15 (이산리 612, 식영정)',
+    MA_SIK,
+    [MA_SIK_2],
+    MA_SIK_HOME,
+  ),
+  'local-scenic:muan-gugyeong:톱머리·홀통해수욕장': localScenicPhotoOverlay(
+    '무안9경 5경 톱머리·홀통 해수욕장은 망운면 톱머리와 현경면 홀통입니다. 무안군 문화관광은 톱머리를 무안읍에서 서쪽 8km 망운면 피서리이며 조수간만의 차가 커서 간조 때 길이 2km·폭 100m 백사장과 보호림 해송이 어우러진다고 적습니다. 주소는 톱머리길 66이며 문의 061-450-5628입니다. 홀통은 현경면 홀통길 198-1, 무안국제공항에서 북쪽 약 15km의 자연발생 해변으로 울창한 해송과 긴 백사장, 수심이 낮고 파도가 잔잔해 윈드서핑 적지입니다. 7경 도리포해수욕장·조금나루·신안 증도 해수욕장·목포 외달도와 다른 망운·현경 해변입니다. 사진은 무안군 문화관광 톱머리해수욕장 백사장·방조제, 여름 여행 홀통 해송 반도 공식 사진입니다.',
+    '전라남도 무안군 망운면 톱머리길 66 · 현경면 홀통길 198-1',
+    MA_TOP,
+    [MA_TOP_2, MA_HOL],
+    MA_BEACH_HOME,
   ),
 };
 
