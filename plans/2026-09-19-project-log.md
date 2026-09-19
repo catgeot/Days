@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #10 — 검색바를 tickets 항공 결과로 직행 (Cloud)
+
+- **세션** `항공권 검색 #10, 항공 검색 결과로 직행`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `54a5f002` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 일정 없는 검색바가 `/flights/` 홈(항공+호텔 검색박스)으로 열려 출도착이 이전 검색으로 남음.
+- **완료**: 출도착 IATA가 있으면 `/tickets-` 항공 검색 결과로 직행. 일정 없으면 +14/+21. **병합 보류**.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 검색바 탭 → 항공+호텔 홈이 아니라 ICN→도착 항공 목록인지 · URL에 `/tickets-` 인지.
+
 ## 항공권 검색 #9 — 인원 설정 제거 (Cloud)
 
 - **세션** `항공권 검색 #9, Preview OK면 PR 병합`
