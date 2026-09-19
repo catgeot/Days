@@ -12,6 +12,7 @@ import {
   placeCategoryUsesStayPoint,
   PLACE_MATCH_CATEGORY,
 } from '../pages/Home/lib/placeMatchCategory.js';
+import { KOREA_HOMONYM_GROUPS } from '../pages/Home/lib/koreaHomonymDictionary.js';
 
 /**
  * 동명·오탐·미매칭 slug — 1차 키워드·대안·(선택) 국가 힌트 덮어쓰기.
@@ -324,6 +325,29 @@ const STREETISH_STAY_EN_RE =
 
 function compactKoPlaceKey(raw) {
   return String(raw || '').trim().replace(/\s+/g, '');
+}
+
+const KO_HOMONYM_STAY_KEYS = new Set(
+  KOREA_HOMONYM_GROUPS.flatMap((g) =>
+    (g.keys || []).map((k) => compactKoPlaceKey(k)).filter((k) => k.length >= 2),
+  ),
+);
+
+/**
+ * 「송암」검색 → 송암스포츠타운 선택 후에도 짧은 검색어·동 축약이 1차 키워드면
+ * MRT가 다른 시 송암(양주 장흥 펜션 등)으로 간다. detectHomonymLocation 비임포트(순환).
+ */
+function isAmbiguousKoStayFragment(token, location) {
+  const oq = compactKoPlaceKey(token);
+  if (!oq || oq.length < 2) return false;
+  const names = [location?.name_ko, location?.name].map(compactKoPlaceKey).filter(Boolean);
+  if (names.some((n) => n === oq)) return false;
+  if (names.some((n) => n.includes(oq) && n.length > oq.length)) return true;
+  return KO_HOMONYM_STAY_KEYS.has(oq);
+}
+
+function originalQueryIsAmbiguousStayToken(location) {
+  return isAmbiguousKoStayFragment(location?.originalQuery, location);
 }
 
 function isKoFineAdminName(name) {
@@ -1018,7 +1042,10 @@ export function resolveMrtStayQuery(location) {
     (isMrtStayPointLocation(location) || placeCategoryUsesStayPoint(placeCategory));
   if (location?.uiPlace && !(countyStay && hasScenicAnchor)) {
     const oq = String(location.originalQuery || '').trim();
-    if (!(isDomestic && (isKoFineAdminName(oq) || isMrtStayPointLabel(oq)))) {
+    if (
+      !(isDomestic && (isKoFineAdminName(oq) || isMrtStayPointLabel(oq))) &&
+      !originalQueryIsAmbiguousStayToken(location)
+    ) {
       pushLadder(oq);
     }
   }
@@ -1066,7 +1093,10 @@ export function resolveMrtStayQuery(location) {
     // 읍·면 축약은 county 있을 때 스킵(대화면→대화→고양)
     const fineBase = admin.neighbourhood || name || nameKo;
     if (!(isDomestic && admin.county && isKoTownshipName(fineBase))) {
-      pushLadder(stripKoAdminSuffix(fineBase));
+      const strippedFine = stripKoAdminSuffix(fineBase);
+      if (!isAmbiguousKoStayFragment(strippedFine, location)) {
+        pushLadder(strippedFine);
+      }
     }
     pushLadder(admin.district);
     pushLadder(stripKoAdminSuffix(admin.district));
@@ -1210,7 +1240,7 @@ const KO_SIDO_LEVEL_EXACT = new Set([
 ]);
 
 const KO_GEO_SANITY_CITY_RE =
-  /광주|양양|대구|부산|인천|대전|울산|서울|제주|수원|고양|용인|성남|청주|전주|천안|창원|포항|경주|강릉|속초|원주|춘천|평창|정선|홍천|삼척|동해|태백|인제|고성|철원|화천|양구|영월|횡성|여수|순천|목포|군산|익산|김해|진주|구미|안동|세종|울릉|서귀포/;
+  /광주|양양|양주|대구|부산|인천|대전|울산|서울|제주|수원|고양|용인|성남|청주|전주|천안|창원|포항|경주|강릉|속초|원주|춘천|평창|정선|홍천|삼척|동해|태백|인제|고성|철원|화천|양구|영월|횡성|여수|순천|목포|군산|익산|김해|진주|구미|안동|세종|울릉|서귀포/;
 
 function isKoSidoLevelName(raw) {
   const s = String(raw || '').trim();

@@ -565,6 +565,33 @@ const CASES = [
     rejectPrimaryKeyword: /종로|종각역|^서울$/,
     rejectCityHint: /종로|^서울$/,
   },
+  {
+    slug: 'chuncheon-songam-sports-town',
+    location: {
+      name: '송암스포츠타운 · 춘천시',
+      name_ko: '송암스포츠타운',
+      name_en: 'Songam Sports Town',
+      country: '한국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '송암',
+      lat: 37.85578,
+      lng: 127.68863,
+      parentCity: '춘천시',
+      stayAdmin: {
+        neighbourhood: '송암동',
+        district: '',
+        city: '춘천',
+        cityEn: 'Chuncheon',
+        county: '',
+        state: '강원특별자치도',
+      },
+      placeCategory: 'LANDMARK',
+    },
+    expectPrimaryKeyword: /춘천/,
+    expectKeyword: /춘천/,
+    rejectPrimaryKeyword: /^송암$|양주|장흥|광주/,
+  },
 ];
 
 function assert(cond, msg) {
@@ -1110,6 +1137,36 @@ async function main() {
   assert(
     geoMixChuncheon.some((it) => it.itemId === 13),
     `춘천 인근 숙소 유지 (got ${geoMixChuncheon.map((it) => it.itemId)})`,
+  );
+  const songamSportsLoc = {
+    name: '송암스포츠타운 · 춘천시',
+    name_ko: '송암스포츠타운',
+    originalQuery: '송암',
+    lat: 37.85578,
+    lng: 127.68863,
+    parentCity: '춘천시',
+    country: '한국',
+    stayAdmin: { neighbourhood: '송암동', city: '춘천', cityEn: 'Chuncheon', state: '강원특별자치도' },
+    placeCategory: 'LANDMARK',
+    uiPlace: true,
+  };
+  const songamSportsKeys = collectMrtStayGeoSanityKeys(songamSportsLoc);
+  assert(
+    songamSportsKeys.includes('춘천') && !songamSportsKeys.includes('양주'),
+    `송암스포츠타운 geo keys (got ${songamSportsKeys.join(',')})`,
+  );
+  const geoMixSongamSports = filterMrtStaysByGeoSanity(
+    [
+      { itemId: 41, itemName: '양주 비타민펜션&캠핑장', lat: 37.725, lng: 126.948 },
+      { itemId: 42, itemName: '양주 아트시티펜션 (장흥유원지)' },
+      { itemId: 43, itemName: '춘천 세종호텔', lat: 37.881, lng: 127.73 },
+    ],
+    { lat: 37.85578, lng: 127.68863, label: '송암스포츠타운 · 춘천시' },
+    { isDomestic: true, originKeys: songamSportsKeys },
+  );
+  assert(
+    geoMixSongamSports.every((it) => it.itemId === 43) && geoMixSongamSports.length === 1,
+    `춘천 송암스포츠타운 숙소는 양주 펜션 아님 (got ${geoMixSongamSports.map((it) => it.itemId)})`,
   );
   const overseasKept = filterMrtStaysByGeoSanity(
     [{ itemId: 99, itemName: 'Waikiki Hotel', lat: 21.27, lng: -157.82 }],

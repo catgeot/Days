@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행지 매칭',
-  sessionNo: 10,
-  sessionPhase: '칩·카드 중복 제거',
+  sessionNo: 11,
+  sessionPhase: '송암스포츠타운 숙소 양주 오탐',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-dest-match-11-songam-stay-yangju',
+    session: '여행지 매칭 #11, 송암스포츠타운 숙소 양주 오탐',
+    title: '춘천 송암스포츠타운 숙소가 양주 펜션으로 열리던 문제',
+    detail:
+      '홈「송암」→ 춘천 송암스포츠타운 → 숙소 찾기가 검색어「송암」을 1차 키워드로 써서 양주 장흥 펜션이 나왔습니다. 짧은 동음 검색어는 시·군(춘천) 뒤로 두고, 좌표 없는 양주 숙소는 Geo-Sanity에서 뺍니다. Preview /qa/dest-match 홈「송암」→ 송암스포츠타운 → 숙소 찾기 → 춘천 · 양주 비타민펜션·장흥유원지 아님.',
+    at: '2026-09-19T01:30:00.000Z',
+  },
   {
     id: '2026-09-19-dest-match-10-chip-card-dedupe',
     session: '여행지 매칭 #10, 칩·카드 중복 제거',
