@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 62,
-  sessionPhase: '경기 광주 관광공사 검색 수정',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gwangju_gi',
-  qaShareSlug: 'palgyeong-use',
+  title: '탐색 Enter',
+  sessionNo: 1,
+  sessionPhase: '도시 허브 리스트',
+  branch: 'cursor/search-enter-hub-2018',
+  previewPath: '/explore',
+  qaShareSlug: 'search-enter-hub',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-search-enter-hub-1-mokpo-list',
+    session: '탐색 Enter #1, 도시 허브 리스트',
+    title: '목포처럼 도시 허브 Enter는 써머리 점프 없이 선택 카드',
+    detail:
+      '여행지 매칭 #2가 타이핑 제안 이름 일치를 Enter에서 바로 고르게 해서, 목포 드롭다운의 도시 카드가 써머리 장소 카드로 열렸습니다. 도시 허브 exact는 제안 점프를 건너뛰고 도시+명소 선택 카드로 갑니다. 유달산·광천선굴처럼 명소 exact는 그대로 해당 카드입니다. Preview /qa/search-enter-hub — /explore 에서 목포 타이핑 후 Enter.',
+    at: '2026-09-19T06:30:00.000Z',
+  },
   {
     id: '2026-09-19-mooni-itinerary-3-main-merge',
     session: 'MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합',
