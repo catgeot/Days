@@ -2,6 +2,26 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 팔경 활용 #63 — 목포9경 목포진·다도해 전경 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #63, 목포 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `593fdee0` · PR [#282](https://github.com/catgeot/Days/pull/282)
+- **완료**: JSON contentId 없이 LOCAL_SCENIC_MEMBER_OVERLAYS로 목포9경 결손 2건 보강. 목포진(6경)은 만호동 목포진길 11번길 1-5 수군진 역사공원(세종 21년 설치·2014 객사 복원·문화재자료 137호). 다도해 전경(8경)은 유달산에서 고하도·외달도 조망. 목포시 문화관광 9경 공식 사진. 해남 구 목포구등대·목포대교 일몰·유달산 산봉·외달도 섬·진도 다도해해상국립공원과 구분. 순수 누락 **42**/876.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=mokpo`
+- **잔여**: 사진/개요 순수 누락 **42**/876. 다음 허브 **무안9경 2**(영산강 식영정과 느러지·톱머리·홀통 해수욕장)
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## MOONi 일정 페이스메이커 #3 — PR #281 메인 병합 (Cloud)
+
+- **세션** `MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합`
+- **브랜치** `cursor/mooni-itinerary-concierge-76f0` · merge `16c8be14` · PR [#281](https://github.com/catgeot/Days/pull/281) (MERGED)
+- **완료**: 컴포저 상황극 QA(체류·공항·항공시각 전제 유지 · 턴당 ~1.4ms)와 `smoke-mooni-ask-bridge`/`build` PASS 후 PR #281을 main에 병합. 인덱스 주제 종료. Preview 작업 로그는 팔경 활용을 활성으로 유지.
+- **VERIFY**: `node scripts/smoke-mooni-ask-bridge.mjs` PASS · `npm run build` PASS
+- **PROD** https://www.gateo.kr/place/paris
+- **QA**: 「오를리 공항 도착 3박 4일」 후 「둘째 날은?」이 3박·ORY를 유지하는지. 「KE901 오후 2시 CDG」 후 일정 질문이 CDG·14:00을 쓰는지. 도시명 「파리」만으로는 공항을 안 잡는지.
+- **다음**: 없음 (주제 종료)
+
 ## 팔경 활용 #62 QA — 경기 광주 관광공사 검색 0건 (Cloud)
 
 - **세션** `팔경 활용 #62, 경기 광주 결손 오버레이 QA`
@@ -31,7 +51,7 @@
 - **VERIFY**: `node scripts/smoke-mooni-ask-bridge.mjs` PASS · `npm run build` PASS
 - **Preview** https://www.gateo.kr/place/paris
 - **QA**: 「오를리 공항 도착 3박 4일」 후 「둘째 날은?」이 체류·오를리를 다시 묻지 않는지. 「KE901 오후 2시 CDG 도착」 후 일정이 그 시각·공항을 쓰는지.
-- **다음**: `MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합`
+- **다음**: `MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합` (완료 · merge `16c8be14`)
 
 ## MOONi 일정 페이스메이커 #1 — 기행문 묘사 기반 맞춤 일정 및 컨시어지 기능 강화 (Cloud)
 

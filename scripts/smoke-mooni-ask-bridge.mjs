@@ -4,6 +4,7 @@
  * 추천받기(첫 메시지) 이후에도 기존 MOONi 주제 칩 독 유지
  */
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -87,3 +88,10 @@ assert.equal(
 );
 
 console.log('smoke-mooni-ask-bridge: PASS');
+
+const tripSession = spawnSync(process.execPath, [join(root, 'scripts/smoke-mooni-trip-session.mjs')], {
+  stdio: 'inherit',
+});
+if (tripSession.status !== 0) {
+  process.exit(tripSession.status ?? 1);
+}
