@@ -2,6 +2,18 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #1 — 기존 iframe 배너·모바일 모달 복구 (Cloud)
+
+- **세션** `항공권 검색 #1, 기존 위젯 복구`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `8bdcaaf4` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: `/flights/` 직링크는 도착이 이전 검색(LPB)으로 남음. 5-22 모바일 SSOT는 partners/ad iframe 모달(ICN→도착).
+- **완료**: 새 CTA 착지 제거. iframe 배너·모바일 모달 복구. #7에서 뺀 항공권 카드 배너만 유지. PR 미병합.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/tripcom-flight → git Preview `/place/paris/planner`
+- **QA**: 파리 위젯 ICN→CDG · 탭 시 앱 안 검색(CDG, 빈 화면·LPB 아님) · 항공권 카드 배너
+- **다음**: Preview OK면 PR #288 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 항공권 검색 #1 — 클릭을 /flights/ 직링크로 (Cloud)
 
 - **세션** `항공권 검색 #1, Preview OK면 PR 병합`

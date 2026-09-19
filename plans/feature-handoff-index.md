@@ -18,12 +18,12 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `5780a341` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** (클릭 직링크) |
+| **상태** | **#1 push** · tip `8bdcaaf4` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** (기존 위젯 복구) |
 | **브랜치** | `cursor/tripcom-flight-widget-3ec3` |
 | **PR** | [#288](https://github.com/catgeot/Days/pull/288) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/tripcom-flight` → git Preview `/place/paris/planner` — CTA 탭 → Trip.com `/flights/` |
-| **소유** | `buildTripcomPlannerNavigationUrl` · `WhiteLabelWidget` · `FlightSearchCta` · `TRIPCOM_FLIGHT_AD.iframeEmbedUsable` |
+| **Preview** | `/qa/tripcom-flight` → git Preview `/place/paris/planner` — iframe 배너 · 모바일 모달 ICN→도착 |
+| **소유** | `TripcomFlightBannerWidget` · `TripcomFlightSearchModal` · `partnerNavigation` · `WhiteLabelWidget` |
 | **금지** | UI 리디자인 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS |
 
@@ -35,7 +35,7 @@
 @plans/2026-09-19-project-log.md
 브랜치 cursor/tripcom-flight-widget-3ec3 · PR #288 · Preview /qa/tripcom-flight
 금지: UI 리디자인 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview 파리·이비사 「항공권 실시간 검색」탭 → Trip.com /flights/ 검색 폼(kr.trip.com 빈 화면 아님). 항공권 카드 배너도 동일. OK면 PR #288 병합.
+작업: Preview 파리 필수 단계 Trip.com 위젯(ICN→CDG). 탭하면 앱 안 검색 모달(도착 CDG, kr.trip.com 빈 화면·LPB 아님). 항공권 카드 배너. 이비사 동일. OK면 PR #288 병합.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · vite build PASS
 ```
 
