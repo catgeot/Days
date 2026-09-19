@@ -18,23 +18,23 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `c95d2b43` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
+| **상태** | **#4 push** · tip `99a41ed1` · PR [#288](https://github.com/catgeot/Days/pull/288) · **사람 Preview** · 단축 **`/qa/flight`** |
 | **브랜치** | `cursor/tripcom-flight-widget-3ec3` |
 | **PR** | [#288](https://github.com/catgeot/Days/pull/288) |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 3단 분리 이전 단일 스크롤 복구 |
-| **소유** | `PlannerTab` · `TripcomFlightBannerWidget` · `PreTravelChecklist` · `ToolkitCard` · `partnerNavigation` |
+| **Preview** | `/qa/flight` → git Preview `/place/paris/planner` — 모바일 위젯 진단 로그 패널 |
+| **소유** | `PlannerTab` · `TripcomFlightBannerWidget` · `PreTravelChecklist` · `ToolkitCard` · `partnerNavigation` · `FlightDebugPanel` |
 | **금지** | feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-항공권 검색 #3, Preview OK면 PR 병합
+항공권 검색 #4, 모바일 진단 로그 확인
 @plans/feature-handoff-index.md
 @plans/2026-09-19-project-log.md
 브랜치 cursor/tripcom-flight-widget-3ec3 · PR #288 · Preview /qa/flight
-작업: https://www.gateo.kr/qa/flight 파리 플래너가 3단 탭 없이 이전처럼 단일 스크롤로 모든 섹션이 정상 표시되는지, 상단 항공 위젯 및 체크리스트 동작 확인 후 PR #288 병합.
+작업: https://www.gateo.kr/qa/flight 모바일에서 좌하단 [모바일 위젯 로그] 버튼 클릭 후 [로그 복사]를 눌러 로그 확인 및 위젯 비노출 원인 진단.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · npm run build PASS
 ```
 
