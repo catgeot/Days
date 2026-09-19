@@ -4,10 +4,10 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '여행지 매칭',
-  sessionNo: 13,
-  sessionPhase: '종합 QA 및 메인 병합 준비',
+  sessionNo: 14,
+  sessionPhase: 'PR #276 메인 병합 및 배포',
   branch: 'cursor/dest-match-arch',
   previewPath: '/',
   qaShareSlug: 'dest-match',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-dest-match-14-main-merge',
+    session: '여행지 매칭 #14, PR #276 메인 병합 및 배포',
+    title: 'PR #276 메인 병합 — 동음 지명·숙소·갤러리 매칭 PROD',
+    detail:
+      '검증 게이트 통과 후 PR #276을 main에 병합합니다. /qa/dest-match는 PROD 홈으로 돌립니다. 홈 검색에서 종각·광천·송암·강원대 동음 분기와 광천선굴·송암스포츠타운 숙소 시·군을 www.gateo.kr에서 확인합니다.',
+    at: '2026-09-19T03:40:00.000Z',
+  },
   {
     id: '2026-09-19-dest-match-13-comprehensive-qa',
     session: '여행지 매칭 #13, 종합 QA 및 메인 병합 준비',

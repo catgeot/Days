@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/qa/dest-match",
-      "destination": "https://days-git-cursor-dest-match-arch-catgeots-projects.vercel.app/",
+      "destination": "https://www.gateo.kr/",
       "permanent": false
     },
     {
