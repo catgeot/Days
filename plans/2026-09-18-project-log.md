@@ -2,6 +2,16 @@
 
 직전: [`2026-09-17-project-log.md`](./2026-09-17-project-log.md)
 
+## 여행지 매칭 #10 — 칩·카드 중복 제거 (Cloud)
+
+- **세션** `여행지 매칭 #10, 칩·카드 중복 제거`
+- **브랜치** `cursor/dest-match-arch` · tip `a3b0f14c` · PR [#276](https://github.com/catgeot/Days/pull/276)
+- **완료**: 사람 Preview에서 「송암」엔터에 지역 칩과 선택 카드가 같은 후보를 두 번 보여 중복이었다. 타이핑 드롭다운은 칩만, 엔터는 질문+기존 카드만. **PR 미병합**.
+- **VERIFY**: `npm run smoke:ko-homonym-ri-search` PASS · `smoke:explore-choice-overlay` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/dest-match → git Preview `/`
+- **QA**: 홈「송암」엔터 → 어느 지역의 송암을 찾으시나요?와 카드 3장. 칩 줄이 카드 위에 다시 있으면 실패. 타이핑 중 드롭다운은 칩만.
+- **다음**: `여행지 매칭 #11, 하드코딩 사전 정리 및 SSOT 일원화`
+
 ## 팔경 활용 #62 — 경기 광주 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #62, 경기 광주 결손 오버레이`
