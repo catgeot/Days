@@ -912,7 +912,7 @@
         "nextHintEnjoy": "To see another step, choose one below."
       },
       "esim": {
-        "choose": "Choose one eSIM",
+        "choose": "eSIM",
         "airalo": "Airalo",
         "holafly": "Holafly"
       },
@@ -1025,6 +1025,15 @@
           "routeDepart": "Depart",
           "routeArrive": "Arrive",
           "routeEditable": "auto-filled · editable in banner",
+          "nativeDepartDate": "Depart",
+          "nativeReturnDate": "Return",
+          "nativeTripType": "Trip type",
+          "nativeRoundTrip": "Round trip",
+          "nativeOneWay": "One way",
+          "nativePassengers": "Travelers",
+          "nativeAdultCount": "{{count}} adults",
+          "nativeSwap": "Swap airports",
+          "nativeAirportSearch": "Airport name or code",
           "fullScreenSearch": "Full-screen search",
           "noArrivalFallback": "No arrival airport found — opens generic search.",
           "tripcomFlights": "Trip.com flights"
