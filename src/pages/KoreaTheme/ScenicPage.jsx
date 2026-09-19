@@ -163,7 +163,7 @@ import {
   filterScenicSpotsByQuery,
   pickBestRegionByCounts,
   shouldMergeHubLocalScenic,
-  canonicalScenicSearchQuery,
+  scenicTourSearchQuery,
 } from '../Home/lib/scenicSearch';
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
@@ -889,7 +889,7 @@ export default function KoreaThemeScenicPage() {
       return undefined;
     }
     const t = setTimeout(
-      () => setDbSearchFilter(canonicalScenicSearchQuery(searchFilter)),
+      () => setDbSearchFilter(scenicTourSearchQuery(searchFilter)),
       280,
     );
     return () => clearTimeout(t);
@@ -1939,7 +1939,7 @@ export default function KoreaThemeScenicPage() {
           SCENIC_REGION_ORDER.map(async (r) => {
             const { count } = await countKoreaTourAttractions({
               region: r,
-              searchQuery: canonicalScenicSearchQuery(q),
+              searchQuery: scenicTourSearchQuery(q),
             });
             return { r, count: count || 0 };
           }),

@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 62,
-  sessionPhase: '경기 광주 목록 재정비·오버레이',
+    sessionPhase: '경기 광주 관광공사 검색 수정',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=gwangju_gi',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-19-palgyeong-use-62-gwangju-gi-tour-search',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
+    title: '경기 광주 관광공사 검색 0건 수정',
+    detail:
+      '사람 Preview에서 「경기 광주」검색 시 한국관광공사 관광지가 전무로 나왔습니다. TourAPI에는 경기도 광주시 type12가 40건 있습니다. 허브 공식명「경기 광주」를 addr1 ilike에 그대로 써서「경기도 광주시」와 부분일치가 안 됐습니다. Tour DB 검색만 경기도 광주 주소 표기로 바꿨습니다. 국가유산 명승 0은 사실입니다(남한산성은 사적). Preview /qa/palgyeong-use — 「경기 광주」검색 관광공사 목록.',
+    at: '2026-09-19T04:20:00.000Z',
+  },
   {
     id: '2026-09-19-palgyeong-use-62-gwangju-gi-official-list',
     session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
