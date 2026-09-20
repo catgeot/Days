@@ -7,6 +7,7 @@
 - **브랜치** `cursor/paris-navigo-links-7027` · tip `0f8d71ee` · PR [#290](https://github.com/catgeot/Days/pull/290)
 - **확인**: Navigo Semaine는 **제휴 온라인 SKU 없음**(역 매표소·Découverte 카드). Klook **Paris Visite**만 제휴 연결(나비고와 별도).
 - **완료**: 교통·패스 카드에 공식 구매 안내 + Klook Paris Visite 버튼 · 툴킷 프롬프트 파리 Navigo 규칙 · `smoke:paris-transit-planner-links`
+- **피드백**: 전용 CTA 버튼 제거 → 본문 `나비고 주간권(Navigo Semaine)` **클릭→구글 검색** 스마트 링크
 - **VERIFY**: smoke + `npm run build` PASS · **병합 보류**
 - **QA**: `/place/paris/planner` 교통·패스 — 나비고 공식 · Klook 파리 비지트 링크
 
