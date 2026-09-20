@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
+import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
@@ -50,8 +50,6 @@ const PlannerTab = ({
     location,
     plannerData,
     isPlannerLoading,
-    refetchPlannerFromDb,
-    isPlannerRefreshing = false,
     isActive,
     matchedPackage,
     mobileSecondaryNav = null,
@@ -396,17 +394,6 @@ const PlannerTab = ({
                     <Sparkles size={16} />
                     <span>{t('place.planner.runToolkit')}</span>
                 </button>
-                {plannerData?.toolkit_updated_at && refetchPlannerFromDb ? (
-                    <button
-                        type="button"
-                        onClick={() => refetchPlannerFromDb()}
-                        disabled={isPlannerRefreshing}
-                        className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-blue-600 disabled:opacity-50"
-                    >
-                        <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin' : ''} />
-                        {t('place.planner.refreshSaved')}
-                    </button>
-                ) : null}
                 <div className="mt-8 w-full text-left">
                     <TravelAgencyDirectory variant="planner" />
                 </div>
@@ -459,25 +446,13 @@ const PlannerTab = ({
                             </p>
                         </div>
 
-                        <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
-                            <div className="flex flex-wrap items-center justify-end gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => refetchPlannerFromDb?.()}
-                                    disabled={isPlannerRefreshing || !refetchPlannerFromDb}
-                                    className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:pointer-events-none"
-                                    title={t('place.planner.refreshSavedTitle')}
-                                >
-                                    <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin text-blue-600' : 'text-gray-500'} />
-                                    {t('place.planner.refreshSaved')}
-                                </button>
-                                {lastUpdated && (
-                                    <span className={`${plannerMeta} px-1`}>
-                                        {t('place.planner.lastUpdated', { date: lastUpdated })}
-                                    </span>
-                                )}
+                        {lastUpdated ? (
+                            <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
+                                <span className={`${plannerMeta} px-1`}>
+                                    {t('place.planner.lastUpdated', { date: lastUpdated })}
+                                </span>
                             </div>
-                        </div>
+                        ) : null}
                     </div>
 
                     <div className="mb-6 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
@@ -486,18 +461,6 @@ const PlannerTab = ({
                             {t('place.planner.hybridNotice')}
                         </p>
                     </div>
-
-                    {location && (
-                        <div className="w-full mb-6 shrink-0">
-                            <TripcomFlightBannerWidget
-                                location={location}
-                                essentialGuide={guideData}
-                                departDate={eventTripWindow?.departDate}
-                                returnDate={eventTripWindow?.returnDate}
-                                className="mb-0"
-                            />
-                        </div>
-                    )}
 
                     <div id="planner-rental-pickup" className="mb-5 w-full shrink-0 scroll-mt-24">
                         {rentalPickupBanner}
@@ -549,6 +512,15 @@ const PlannerTab = ({
                         </div>
                         <div id="planner-prep-flight" className="scroll-mt-24">
                         <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" scrollContainerRef={scrollContainerRef} />
+                        {location ? (
+                            <TripcomFlightBannerWidget
+                                location={location}
+                                essentialGuide={guideData}
+                                departDate={eventTripWindow?.departDate}
+                                returnDate={eventTripWindow?.returnDate}
+                                className="mt-3"
+                            />
+                        ) : null}
                         </div>
                         <div id="planner-prep-accommodation" className="scroll-mt-24">
                         <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />

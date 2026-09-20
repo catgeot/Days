@@ -44,7 +44,7 @@ assert.doesNotMatch(
   /omitFlightSearchCta/,
   '항공권 카드 검색 배너 생략 금지',
 );
-assert.match(planner, /<TripcomFlightBannerWidget/, '플래너 상단 항공 검색 위젯 유지');
+assert.match(planner, /<TripcomFlightBannerWidget/, '항공권 파트 검색 위젯');
 assert.doesNotMatch(planner, /flightBooking=\{/, '항공 위젯을 2열 체크리스트에 넣지 않음');
 assert.match(planner, /PlannerStageNav/, '기존 섹션을 3단계로 나눠 봄');
 assert.match(planner, /PLANNER_STAGE\.ESSENTIAL/, '1단계 필수');
@@ -55,9 +55,14 @@ assert.match(planner, /<AiraloBannerWidget /, 'Airalo 배너 유지');
 assert.match(planner, /<HolaflyBannerWidget /, 'Holafly 배너 유지');
 assert.match(planner, /complexity_score/, '복잡도 점수 표기 유지');
 assert.doesNotMatch(planner, /complexityBadge/, '복잡도 뱃지 교체 금지');
+assert.doesNotMatch(planner, /refreshSaved/, '저장된 데이터 새로고침 버튼 제거');
 assert.ok(
-  planner.indexOf('<TripcomFlightBannerWidget') < planner.indexOf('<PlannerStageNav'),
-  '항공 배너가 단계 탭보다 위(항상 표시)',
+  planner.indexOf('id="planner-prep-flight"') < planner.indexOf('<TripcomFlightBannerWidget'),
+  '항공 검색 폼은 항공권 파트 안',
+);
+assert.ok(
+  planner.indexOf('<PlannerStageNav') < planner.indexOf('<TripcomFlightBannerWidget'),
+  '항공 검색 폼은 단계 탭 다음(1단계만)',
 );
 assert.ok(
   planner.indexOf('id="planner-rental-pickup"') < planner.indexOf('<PlannerStageNav'),
@@ -277,5 +282,5 @@ assert.equal(
   'one-way complete with depart only',
 );
 
-console.log('OK: tripcom-flight-planner — iframe banner · form scroll CTA · tickets URL');
+console.log('OK: tripcom-flight-planner — flight-part form · form scroll CTA · tickets URL');
 console.log('SMOKE OK');

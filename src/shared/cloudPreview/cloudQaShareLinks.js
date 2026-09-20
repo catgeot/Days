@@ -9,7 +9,7 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'planner-stages',
-    label: '플래너 3단계 — 배너 유지 분리',
+    label: '플래너 3단계 — 항공 폼을 항공권 파트로',
     branch: 'cursor/planner-stages-7ee0',
     destination:
       'https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner',

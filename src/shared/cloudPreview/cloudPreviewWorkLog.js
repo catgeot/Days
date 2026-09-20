@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '플래너 3단계',
-  sessionNo: 1,
-  sessionPhase: '배너 유지 분리',
+  sessionNo: 2,
+  sessionPhase: '항공 폼을 항공권 파트로',
   branch: 'cursor/planner-stages-7ee0',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'planner-stages',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-20-planner-stages-2-flight-form-in-flight-part',
+    session: '플래너 3단계 #2, 항공 폼을 항공권 파트로',
+    title: '상단 항공 검색 폼을 1단계 항공권 파트로 옮기고 새로고침 버튼 제거',
+    detail:
+      '항공권 검색 폼이 1·2·3단계마다 상단에 있어 매 화면이 무거웠습니다. 이제 1단계 항공권 카드 아래에서만 검색하고, 저장된 데이터 새로고침 버튼은 뺐습니다. 픽업 배너·유심 2열·복잡도 n/100은 그대로입니다. Preview /qa/planner-stages — /place/paris/planner.',
+    at: '2026-09-20T03:50:00.000Z',
+  },
   {
     id: '2026-09-20-planner-stages-1-keep-banners',
     session: '플래너 3단계 #1, 배너 유지 분리',

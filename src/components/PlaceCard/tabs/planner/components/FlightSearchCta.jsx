@@ -10,7 +10,7 @@ import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirpo
 
 /**
  * 플래너 항공권 검색 CTA — 고대비·클릭 유도형 배너.
- * 플래너 항공권 카드는 상단 검색폼으로 스크롤. 지구본 등에서는 WhiteLabelWidget customTrigger.
+ * 플래너 항공권 카드는 항공권 파트 검색폼으로 스크롤. 지구본 등에서는 WhiteLabelWidget customTrigger.
  */
 const FlightSearchCta = ({
     location,

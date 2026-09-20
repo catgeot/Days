@@ -318,7 +318,7 @@ export function scrollPlannerFocusIntoView(scrollRoot, focusId, options = {}) {
 }
 
 /**
- * 항공권 카드·필수준비 CTA — Trip.com 직행 대신 상단 검색폼으로 스크롤.
+ * 항공권 카드·필수준비 CTA — Trip.com 직행 대신 항공권 파트 검색폼으로 스크롤.
  * 모바일 네이티브 폼이면 일정 버튼에 포커스해 날짜를 고를 수 있게 함.
  * @param {HTMLElement | null} scrollRoot
  * @param {{ headerOffset?: number }} [options]
