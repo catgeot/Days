@@ -29,7 +29,7 @@
 - **국내 역·랜드마크 숙소 매핑 및 인근 추천 (P0~P1 4단계 계획)**: [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) · 지하철역 약칭 지오코딩 및 NEIGHBORHOOD 래더 연계 · 세션 `종각역 숙소 #{N}`
 - **국내 여행지·숙소·갤러리 매칭 아키텍처 혁신 (4단계 8세션 계획)**: [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) · First-Pass 지명 리졸버, 숙소 Geo-Sanity 가드, 갤러리 시설컷 정밀 필터, 동음이의어 다후보 UI
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) · 직전 [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)  
+  - 최신: [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) · 직전 [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)  
 - **해안·해양 탐색 칩 (플랜+SSOT)**: [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) · Phase 1–2 ✅ · `audit:sea-basins` · 일지 `2026-08-16`
 
 
