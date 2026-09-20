@@ -19,6 +19,39 @@ export const PLANNER_FOCUS_ID = {
   CONNECTED_AGENCIES: 'planner-connected-agencies',
 };
 
+/** 플래너 3단계 — 기존 섹션 표시만 전환 */
+export const PLANNER_STAGE = {
+  ESSENTIAL: 'essential',
+  TRANSFER: 'transfer',
+  ENJOY: 'enjoy',
+};
+
+const FOCUS_TO_STAGE = {
+  [PLANNER_FOCUS_ID.PREP_SECTION]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_VISA]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_FLIGHT]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_FLIGHT_BOOKING]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.FLIGHT_SEARCH]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_ACCOMMODATION]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_SAFETY]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.CONNECTED_AGENCIES]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.RENTAL_PICKUP]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.ARRIVAL]: PLANNER_STAGE.TRANSFER,
+  [PLANNER_FOCUS_ID.ARRIVAL_TRANSFER]: PLANNER_STAGE.TRANSFER,
+  [PLANNER_FOCUS_ID.LOCAL_TRANSPORT]: PLANNER_STAGE.ENJOY,
+};
+
+/**
+ * MOONi/hash 앵커 → 열려야 할 플래너 단계.
+ * @param {string | null | undefined} focusId
+ * @returns {typeof PLANNER_STAGE[keyof typeof PLANNER_STAGE]}
+ */
+export function resolvePlannerStageFromFocusId(focusId) {
+  const id = String(focusId ?? '').trim();
+  return FOCUS_TO_STAGE[id] || PLANNER_STAGE.ESSENTIAL;
+}
+
 /**
  * @param {string | null | undefined} hash
  * @returns {string | null}
@@ -285,7 +318,7 @@ export function scrollPlannerFocusIntoView(scrollRoot, focusId, options = {}) {
 }
 
 /**
- * 항공권 카드·필수준비 CTA — Trip.com 직행 대신 상단 검색폼으로 스크롤.
+ * 항공권 카드·필수준비 CTA — Trip.com 직행 대신 항공권 파트 검색폼으로 스크롤.
  * 모바일 네이티브 폼이면 일정 버튼에 포커스해 날짜를 고를 수 있게 함.
  * @param {HTMLElement | null} scrollRoot
  * @param {{ headerOffset?: number }} [options]

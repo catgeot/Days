@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/planner-stages",
+      "destination": "https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
       "source": "/qa/flight",
       "destination": "https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner",
       "permanent": false

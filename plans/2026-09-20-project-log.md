@@ -2,11 +2,29 @@
 
 직전: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)
 
+## 파리 플래너 — 나비고 주간권 구매·제휴 (Cloud)
+
+- **브랜치** `cursor/paris-navigo-links-7027` · tip `0f8d71ee` · PR [#290](https://github.com/catgeot/Days/pull/290)
+- **확인**: Navigo Semaine는 **제휴 온라인 SKU 없음**(역 매표소·Découverte 카드). Klook **Paris Visite**만 제휴 연결(나비고와 별도).
+- **완료**: 교통·패스 카드에 공식 구매 안내 + Klook Paris Visite 버튼 · 툴킷 프롬프트 파리 Navigo 규칙 · `smoke:paris-transit-planner-links`
+- **VERIFY**: smoke + `npm run build` PASS · **병합 보류**
+- **QA**: `/place/paris/planner` 교통·패스 — 나비고 공식 · Klook 파리 비지트 링크
+
+## 플래너 3단계 #4 — 렌터카·픽업·항공권 기준 위치 (Cloud)
+
+- **세션** `플래너 3단계 #4, Preview QA`
+- **브랜치** `cursor/planner-stages-7ee0` · tip `977568aa` · PR [#289](https://github.com/catgeot/Days/pull/289)
+- **완료**: 「렌터카 · 픽업 · 항공권 기준」을 1단계 **출발 전 필수 준비** 섹션 상단으로 이동. 2·3단계·탭 위 공통 영역에서는 제거. `#planner-rental-pickup` → 필수 단계. **병합 보류**.
+- **VERIFY**: `smoke:tripcom-flight-planner` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/planner-stages → `/place/paris/planner`
+- **QA**: 1단계 상단 슬림(하이브리드·여행사만) · 출발 전 준비 아래 배너 · 2·3단계 배너 없음
+
 ## 플래너 3단계 #3 — 상단 공지·여행사·하이브리드 고지 (Cloud)
 
 - **세션** `플래너 3단계 #3, Preview QA`
-- **브랜치** `cursor/planner-stages-7ee0` · tip `5b7a6cc1` · PR [#289](https://github.com/catgeot/Days/pull/289)
-- **완료**: 1단계만 하이브리드 고지(제목 아래)·방문한 여행사·연관 여행지. 2·3단계는 렌터카·픽업 배너+탭만 상단, 하이브리드 고지는 단계 하단 1회. 배너 sticky·고지 문구 간결화. **병합 보류**.
+- **브랜치** `cursor/planner-stages-7ee0` · tip `3402d5ae` · PR [#289](https://github.com/catgeot/Days/pull/289)
+- **완료**: 1단계만 하이브리드 고지(제목 아래)·방문한 여행사·연관 여행지. 2·3단계는 렌터카·픽업 배너+탭만 상단, 하이브리드 고지는 단계 하단 1회. **병합 보류**.
+- **피드백**: 렌터카 배너 sticky 제거 · 하이브리드 고지 i18n 원문 복원.
 - **VERIFY**: `smoke:tripcom-flight-planner` · `smoke:trust-disclosure` · `smoke:planner-empty-scroll` · `vite build` PASS
 - **Preview** https://www.gateo.kr/qa/planner-stages → `/place/paris/planner`
 - **QA**: 1단계 여행사·하이브리드 상단 · 2·3단계 상단 슬림·하이브리드 하단

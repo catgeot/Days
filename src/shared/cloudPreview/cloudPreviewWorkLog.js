@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '항공권 검색',
-  sessionNo: 12,
-  sessionPhase: '써머리 검색폼',
-  branch: 'cursor/tripcom-flight-widget-3ec3',
+  title: '플래너 3단계',
+  sessionNo: 2,
+  sessionPhase: '네이티브 검색 폼',
+  branch: 'cursor/planner-stages-7ee0',
   previewPath: '/place/paris/planner',
-  qaShareSlug: 'flight',
+  qaShareSlug: 'planner-stages',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-20-planner-stages-2-native-form-not-iframe',
+    session: '플래너 3단계 #2, 네이티브 검색 폼',
+    title: '트립닷컴 모바일 위젯 대신 입력 폼 · 실시간 검색 버튼 제거',
+    detail:
+      '항공권 카드에 트립닷컴 모바일 iframe이 빈 공간으로 남고, 하단 「항공권 실시간 검색」링크 버튼만 보였습니다. 이제 1단계 항공권 카드에 우리가 만든 출발·도착·일정 입력 폼만 두고, 그 링크 버튼은 뺐습니다. Preview /qa/planner-stages — /place/paris/planner.',
+    at: '2026-09-20T06:20:00.000Z',
+  },
+  {
+    id: '2026-09-20-planner-stages-2-flight-form-in-flight-part',
+    session: '플래너 3단계 #2, 항공 폼을 항공권 파트로',
+    title: '상단 항공 검색 폼을 1단계 항공권 파트로 옮기고 새로고침 버튼 제거',
+    detail:
+      '항공권 검색 폼이 1·2·3단계마다 상단에 있어 매 화면이 무거웠습니다. 이제 1단계 항공권 카드 아래에서만 검색하고, 저장된 데이터 새로고침 버튼은 뺐습니다. 픽업 배너·유심 2열·복잡도 n/100은 그대로입니다. Preview /qa/planner-stages — /place/paris/planner.',
+    at: '2026-09-20T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-20-planner-stages-1-keep-banners',
+    session: '플래너 3단계 #1, 배너 유지 분리',
+    title: '현재 배너·배치를 유지한 채 플래너를 3단계로 나눠 봄',
+    detail:
+      '항공권 검색 위젯 문제는 트립닷컴 쪽이었고, 3단계 로직 자체는 아니었습니다. 상단 항공 검색·픽업 배너·유심 2열·복잡도 점수는 그대로 두고, 기존 세 섹션(필수 준비·도착 이동·즐기기)만 탭으로 나눠 한 단계씩 봅니다. Preview /qa/planner-stages — /place/paris/planner.',
+    at: '2026-09-20T03:40:00.000Z',
+  },
   {
     id: '2026-09-20-tripcom-flight-12-summary-search-form',
     session: '항공권 검색 #12, 써머리 검색폼',

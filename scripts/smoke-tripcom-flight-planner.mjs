@@ -34,9 +34,9 @@ assert.match(whiteLabel, /type="button"/, 'default trigger is button');
 const widget = read(
   'src/components/PlaceCard/tabs/planner/components/TripcomFlightBannerWidget.jsx',
 );
-assert.match(widget, /data-tripcom-flight-banner="1"/, 'iframe banner marker');
-assert.match(widget, /<iframe/, 'partners/ad iframe for desktop');
-assert.match(widget, /TripcomFlightNativeSearch/, 'mobile uses TripcomFlightNativeSearch');
+assert.doesNotMatch(widget, /<iframe/, '트립닷컴 partners/ad iframe 사용 금지');
+assert.match(widget, /data-tripcom-flight-banner="native"/, 'native form marker');
+assert.match(widget, /TripcomFlightNativeSearch/, '플래너 검색은 네이티브 입력 폼');
 
 const planner = read('src/components/PlaceCard/tabs/PlannerTab.jsx');
 assert.doesNotMatch(
@@ -44,16 +44,33 @@ assert.doesNotMatch(
   /omitFlightSearchCta/,
   '항공권 카드 검색 배너 생략 금지',
 );
-assert.match(planner, /<TripcomFlightBannerWidget/, '플래너 상단 항공 검색 위젯 유지');
+assert.doesNotMatch(planner, /<TripcomFlightBannerWidget/, '상단·형제 위젯 제거');
 assert.doesNotMatch(planner, /flightBooking=\{/, '항공 위젯을 2열 체크리스트에 넣지 않음');
-assert.doesNotMatch(planner, /PlannerStageNav/, '3단계 탭 분리 이전 단일 스크롤');
+assert.match(planner, /PlannerStageNav/, '기존 섹션을 3단계로 나눠 봄');
+assert.match(planner, /PLANNER_STAGE\.ESSENTIAL/, '1단계 필수');
+assert.match(planner, /PLANNER_STAGE\.TRANSFER/, '2단계 이동');
+assert.match(planner, /PLANNER_STAGE\.ENJOY/, '3단계 즐기기');
+assert.doesNotMatch(planner, /esimProvider/, '유심 Airalo/Holafly 탭 재도입 금지');
+assert.match(planner, /<AiraloBannerWidget /, 'Airalo 배너 유지');
+assert.match(planner, /<HolaflyBannerWidget /, 'Holafly 배너 유지');
+assert.match(planner, /complexity_score/, '복잡도 점수 표기 유지');
+assert.doesNotMatch(planner, /complexityBadge/, '복잡도 뱃지 교체 금지');
+assert.doesNotMatch(planner, /refreshSaved/, '저장된 데이터 새로고침 버튼 제거');
+assert.match(planner, /id="planner-prep-flight"/, '항공권 파트');
+assert.ok(
+  planner.indexOf('id="planner-rental-pickup"') > planner.indexOf('id="planner-prep"'),
+  '렌터카·픽업·항공권 기준은 필수 단계 출발 전 준비 섹션 상단',
+);
+assert.ok(
+  planner.indexOf('id="planner-rental-pickup"') < planner.indexOf('id="planner-prep-visa"'),
+  '렌터카 배너는 비자 카드보다 위',
+);
 
 const toolkit = read(
   'src/components/PlaceCard/tabs/planner/components/ToolkitCard.jsx',
 );
-assert.match(toolkit, /<FlightSearchCta[\s>]/, 'toolkit FlightSearchCta');
-assert.match(toolkit, /scrollToSearchForm/, 'toolkit CTA scrolls to search form');
-assert.match(toolkit, /scrollPlannerFlightSearchForm/, 'toolkit uses flight-search scroll helper');
+assert.match(toolkit, /<TripcomFlightBannerWidget/, '항공권 카드에 네이티브 검색 폼');
+assert.doesNotMatch(toolkit, /FlightSearchCta/, '실시간 검색 링크 버튼 제거');
 assert.doesNotMatch(toolkit, /WhiteLabelWidget/, 'toolkit CTA does not open Trip.com directly');
 
 const preTravel = read(
@@ -69,6 +86,18 @@ assert.doesNotMatch(
 const focus = read('src/utils/placePlannerFocus.js');
 assert.match(focus, /FLIGHT_SEARCH:\s*'planner-flight-search'/, 'flight search form focus id');
 assert.match(focus, /export function scrollPlannerFlightSearchForm/, 'scroll helper exported');
+assert.match(focus, /export const PLANNER_STAGE/, 'planner stage SSOT');
+assert.match(focus, /export function resolvePlannerStageFromFocusId/, 'hash → stage');
+assert.match(
+  focus,
+  /PREP_SAFETY\]: PLANNER_STAGE\.ESSENTIAL/,
+  '안전 카드는 필수 단계에 유지',
+);
+assert.match(
+  focus,
+  /RENTAL_PICKUP\]: PLANNER_STAGE\.ESSENTIAL/,
+  '렌터카·픽업 배너는 필수 단계',
+);
 
 assert.match(widget, /id="planner-flight-search"/, 'banner is the flight search form anchor');
 
@@ -135,6 +164,12 @@ assert.match(whiteLabel, /tryOpenFlightSearch/, 'globe CTA tries in-app form fir
 const vercel = read('vercel.json');
 assert.match(vercel, /\/qa\/flight"/, 'vercel.json /qa/flight');
 assert.match(vercel, /\/qa\/tripcom-flight/, 'vercel.json /qa/tripcom-flight alias');
+assert.match(vercel, /\/qa\/planner-stages/, 'vercel.json /qa/planner-stages');
+assert.match(
+  vercel,
+  /days-git-cursor-planner-stages-7ee0-catgeots-projects\.vercel\.app\/place\/paris\/planner/,
+  'qa/planner-stages git Preview',
+);
 assert.match(
   vercel,
   /days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects\.vercel\.app\/place\/paris\/planner/,
@@ -144,7 +179,8 @@ assert.match(
 const qa = read('src/shared/cloudPreview/cloudQaShareLinks.js');
 assert.match(qa, /slug: 'flight'/, 'qa share slug /qa/flight');
 assert.match(qa, /slug: 'tripcom-flight'/, 'old slug kept as alias');
-assert.match(qa, /branch:\s*'cursor\/tripcom-flight-widget-3ec3'/, 'qa share branch');
+assert.match(qa, /slug: 'planner-stages'/, 'qa share slug /qa/planner-stages');
+assert.match(qa, /branch:\s*'cursor\/planner-stages-7ee0'/, 'planner-stages qa branch');
 
 assert.match(affiliate, /params\.set\('dcity'/, 'results dcity');
 assert.match(affiliate, /params\.set\('acity'/, 'results acity');
@@ -247,5 +283,5 @@ assert.equal(
   'one-way complete with depart only',
 );
 
-console.log('OK: tripcom-flight-planner — iframe banner · form scroll CTA · tickets URL');
+console.log('OK: tripcom-flight-planner — native form in flight card · tickets URL');
 console.log('SMOKE OK');
