@@ -1,6 +1,6 @@
 # 축제·명승·여행지 → 숙소·투어·주변 정보 1차 매칭 플랜
 
-**상태**: P1–P2 적용 (2026-09-20) · `cursor/korea-theme` tip `16c0d166` · Preview `/qa/korea-theme`  
+**상태**: P0 ✅ · P1–P2 ✅ (`cursor/korea-theme` tip `bbef2b3d`~`011f75ff`) · **다음 P3** · Preview `/qa/korea-theme`  
 **제품 목표 (사용자 확인)**: 축제·명소·여행지를 고르면 **2차 검색·권역 칩 선택 없이** 숙소·투어·갤러리·주변(Tour)·코스가 **같은 여행지 앵커**로 맞물려야 한다. 행사별·지역별 **MRT 오버라이드 나열은 목표가 아님**.
 
 **관련 SSOT**: [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) **§2.5** · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 코드 `koreaThemeCrossLinks.js` · `nearbyFestivalHubs.js` · `koreaTourAttractionLocality.js`
@@ -68,32 +68,16 @@ flowchart TB
 
 **케이스**: 2026 섬진강국제실험예술제 — `전남광주통합특별시 곡성군 죽곡면 …`
 
-| 단계 | 기대 | 실제 |
-|------|------|------|
+| 단계 | 기대 | 실제 (수정 전) |
+|------|------|----------------|
 | `extractTourAttractionSigungu` | `곡성군` | `전남광주통합특별시` (오류) |
 | `hubFromFestivalAddr` | `gokseong` | 실패 |
 | geo 최근접 시드 (35.275,127.295) | `gokseong` (~0.8km) | 순위상 1위이나… |
 | `finalizeNearby` | addr 일치 또는 geo 1위 유지 | 시·군 불일치 → **시도 시드 1번 `yeosu` 승격** |
-| `resolveStayTnaHubId` + area `38` | `gokseong` | **`yeosu`** (`hubIdsForArea('38')[0]`) |
+| `resolveStayTnaHubId` + area `38` | `gokseong` | **`yeosu`** |
 | UI | 곡성 숙소 기본 | **여수** 기본 · 칩으로만 곡성 |
 
-**같은 addr 형식 영향 (전남, 스모크 미등록)**  
-`전남광주통합특별시` + `{구례|담양|여수|곡성}군/시` → sigungu가 통합시로 잡히면 **전부 yeosu 1차** (여수시 주소만 우연히 맞음).
-
-**근본 원인 (3층)**
-
-1. **주소 정규화 SSOT 분열**  
-   - `scripts/lib/tourapi-attraction-infer.mjs` 는 `전남광주` 인지.  
-   - **`koreaTourAttractionLocality.js`** 의 `SIDO_PREFIX_RE` 는 `전남`만 매칭 → `광주통합특별시 …` 잔재 → **통합특별시를 시·군으로 오인**.  
-   - `resolveKoreaDestinationFirstPass` · Mapbox first-pass도 동일 locality 의존.
-
-2. **매처 정책: “시도 대표 hub 우선”이 파싱 실패와 결합**  
-   - `nearbyFestivalHubs.finalizeNearby`: addr hub 없고 1위 geo hub가 sigungu와 이름 불일치 → **`hubIdsForArea(sido)[0]`** 승격 (전남=여수).  
-   - `resolveStayTnaHubId`: non-seeded·불일치 시 **`hubIdsForArea(areaCode)[0]`** (역시 여수).
-
-3. **검증 공백**  
-   - `smoke:korea-theme-cross-links` 에 **전남광주통합 addr**·**곡성 축제** fixture 없음.  
-   - `smoke:korea-festival-stay-url` 은 UI 배선·일정만, **hub 정확도 미검**.
+**#1 세션(P1–P2)** 으로 addr·매처·SIEAF 스모크 반영 — Preview QA 기준 곡성 1차.
 
 ---
 
@@ -109,33 +93,40 @@ flowchart TB
 
 ## 5. 작업 단계 (권장 순서)
 
-### P0 — 앵커 규칙 문서화 (§2 보완)
+**세션 `#N` = 채팅 순번** · **Px = 단계 코드** · **Px 건너뛰기 금지** (단, 초안 §8처럼 **P1–P2를 한 세션에 묶는 것**은 허용 — 그때 다음은 **P3**).
 
-- [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) §2.5.3에 **축제 1차 hub 우선순위** 1문단 추가 (아래 초안).  
-- “칩 = 대안, default = 행사지 hub” 명시.
+| 단계 | 내용 | 상태 (2026-09-20) | 다음 제시어 (미완일 때) |
+|------|------|-------------------|-------------------------|
+| **P0** | §2.5.3 축제 default hub 규칙 문서 | ✅ main | — |
+| **P1** | 주소 SSOT (`전남광주통합특별시` 등) | ✅ `#1` `16c0d166` | — |
+| **P2** | 매처 · 패키지 CTA 가드 | ✅ `#1` `bbef2b3d` 등 | — |
+| **P3** | 회귀 fixture 정리 · (선택) audit · **사람 Preview 재확인** | ⏳ | `#3, P3` (아래 §8) |
+| **P4** | UX (칩 순서·default) | ⏳ | `#4, P4` |
 
-**초안 우선순위 (축제)**  
-1) `addr1` 시·군·구 ↔ `cityAttractionHub` exact / alias  
-2) 동일 시도 내 **geo 최근접 seeded hub** (120km)  
-3) 시도 **대표 hub** — **sigungu 파싱 성공·명시적 불일치**(횡성↔평창 패턴)일 때만  
-4) `stayAreas`·altKeywords — 인접 시드만
+### P0는 언제?
 
-### P1 — 주소 정규화 SSOT 통합 (로직, 소범위)
+**코드 PR 전** · **main docs-only** · Preview 불필요. 분석 직후 또는 P1과 같은 날 가능. §2.5.3 불릿 반영 = **P0 완료** (9/20). P1 세션 **전에** 안 했어도, 문서만이면 지금 완료로 보면 됨.
 
-- **단일 모듈** (예: `koreaTourAddrNormalize.js` 또는 infer 스크립트 공유 패키지)  
-  - 접두: `전남광주통합특별시`, (향후) 기타 통합·개편 표기  
-  - `전남` 단독 매칭은 **통합 접두 뒤에만** 적용  
-- 소비처: `koreaTourAttractionLocality.js` · 필요 시 `festivalRegionTags` · `resolveKoreaDestinationFirstPass`  
-- **VERIFY**: unit-style assert in `smoke:korea-festival-nearby` or `smoke:korea-theme-cross-links`
+### P1만 했다고 생각했는데 P3 제시어가 나온 이유
 
-### P2 — `nearbyHubsForFestival` / `resolveStayTnaHubId` 정합
+- 일지·핸드오ff **채팅 제목**은 `P1 주소 SSOT`인데, **실제 커밋**은 P1(`16c0d166`) + **P2**(`bbef2b3d` cross-links·패키지 가드) + SIEAF 스모크까지 포함.
+- 초안 §8 `@ §5 P1–P2` 가 **한 세션에 P2까지 하라**는 뜻이었고, 그래서 **다음은 P3가 맞음** (P2를 안 했다면 `#2, P2`가 맞음).
 
-- **파싱 실패 휴리스틱**: sigungu가 `통합특별시|광역시` 단독·시도명만이면 **geo 1위 seeded hub** 사용, 시도 1번 승격 금지.  
-- **`finalizeNearby`**: 승격 조건에 “sigungu 추출 신뢰도” 게이트.  
-- **`resolveFestivalThemeCrossLinks`**: `nearestHubId` = addr hub ?? geo 1위 (same sido) — theme cross에 명시 전달.  
-- **패키지**: `cross.stay.location.hubId` ≠ `packageCta` hub면 CTA 숨김 (여수 패키지 오노출).
+**P1만 끝난 경우 판정**: feature에 `16c0d166`만 있고 `finalizeNearby`/패키지 CTA 가드 없으면 → **다음 P2**.
 
-### P3 — 회귀 fixture · 관측
+### P0 — 앵커 규칙 문서화 ✅
+
+§2.5.3 **축제 default hub** 4단 + 칩=대안 — [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md).
+
+### P1 — 주소 정규화 ✅
+
+`koreaTourAddrNormalize` · `koreaTourAttractionLocality` — commit `16c0d166`.
+
+### P2 — 매처 · 패키지 ✅
+
+`nearbyFestivalHubs` · `resolveFestivalThemeCrossLinks` — `bbef2b3d` 등.
+
+### P3 — 회귀 fixture · 관측 ⏳
 
 | fixture | assert |
 |---------|--------|
@@ -144,22 +135,19 @@ flowchart TB
 | 기존 인천·옹진·횡성 계열 | 스모크 유지 |
 | `전라남도 곡성군` | 곡성 (레거시 addr) |
 
-- (선택) `audit:festival-stay-anchor`: 캐시/롤링12 축제 샘플 N건 — addr sigungu vs cross hub 불일치율 리포트 (CI 비필수).
+- (선택) `audit:festival-stay-anchor`: 롤링12 샘플 불일치율
 
-### P4 — UX (매처 PASS 후)
+### P4 — UX (매cher PASS 후)
 
-- `FestivalStayStrip` / `EventStayStrip`: 1차 placeLabel = cross (수정 후 자동).  
-- 칩 순서: **primary hub 첫 칩·기본 선택** — 인접만 뒤.follow  
-- 명승 모달·축제 동일 `resolveFestivalThemeCrossLinks` 경로 재확인 (로직 복제 금지).
+칩 순서·primary default · strip 자동 정합.
 
 ---
 
 ## 6. 성공 기준 (이 트랙 완료)
 
-- [ ] SIEAF(및 전남광주통합 addr) Preview: **오픈 즉시 곡성 숙소·투어**, 여수 패키지 없음.  
-- [ ] 주변 관광 API는 기존처럼 행사 좌표 기준 (회귀 없음).  
-- [ ] `npm run smoke:korea-theme-cross-links` · `smoke:korea-festival-nearby` PASS + 신규 fixture.  
-- [ ] `/korea` 지도·칩·캐시 **리팩터 없음** (§2.5.6).
+- [x] SIEAF Preview: 곡성 숙소·투어 1차 (#1 QA)
+- [ ] P3: 스모크·audit 정리 · main merge 후 PROD
+- [ ] `/korea` 지도·칩·캐시 **리팩터 없음**
 
 ---
 
@@ -167,18 +155,22 @@ flowchart TB
 
 - 축제별 curated JSON · MRT per-event override  
 - `FestivalDetailSheet` 지도/지역 칩 코어 변경  
-- `hubIdsForArea('38')` 순서만 바꿔 여수↔곡성 **순서 땜질** (다른 군·시 동일 문제 잔존)
+- `hubIdsForArea('38')` 순서만 바꿔 **순서 땜질**
 
 ---
 
 ## 8. 다음 세션 제시어
 
+**현재 첫 ⏳ = P3** (P1–P2 feature tip 반영됨).
+
 ```
-축제-여행지매칭 #2, P3 회귀·Preview SIEAF
+축제-여행지매칭 #3, P3 회귀·Preview SIEAF
 @plans/feature-handoff-index.md
 @plans/festival-destination-matching-plan.md §5 P3
-브랜치 cursor/korea-theme · smoke:korea-theme-cross-links · Preview /korea 에서 섬진강국제실험예술제 숙소·투어 곡성 1차
+브랜치 cursor/korea-theme · smoke:korea-theme-cross-links · Preview /korea 섬진강국제실험예술제
 ```
+
+(P2만 미완이면 `#2, P2 매처` · P1만 미완이면 `#1, P1 주소 SSOT`.)
 
 ---
 
@@ -186,5 +178,6 @@ flowchart TB
 
 | 날짜 | 내용 |
 |------|------|
-| 2026-09-20 | SIEAF·여수 오매칭 조사, as-built·3층 원인·P0–P4 로드맵 (분석 세션) |
-| 2026-09-20 | **#1** P1 `koreaTourAddrNormalize` · P2 `nearbyFestivalHubs`·`resolveFestivalThemeCrossLinks` · SIEAF 스모크 · tip `16c0d166` |
+| 2026-09-20 | SIEAF 분석·P0–P4 로드맵 |
+| 2026-09-20 | **#1** P1 `16c0d166` · P2 `bbef2b3d` · SIEAF 스모크 |
+| 2026-09-20 | P0 §2.5.3 · §5 진행표 · P1–P2→P3 제시어 정정 |
