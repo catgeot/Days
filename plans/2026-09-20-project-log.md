@@ -2,6 +2,14 @@
 
 직전: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)
 
+## 파리 플래너 — 나비고 주간권 구매·제휴 (Cloud)
+
+- **브랜치** `cursor/paris-navigo-links-7027` · tip `0f8d71ee` · PR [#290](https://github.com/catgeot/Days/pull/290)
+- **확인**: Navigo Semaine는 **제휴 온라인 SKU 없음**(역 매표소·Découverte 카드). Klook **Paris Visite**만 제휴 연결(나비고와 별도).
+- **완료**: 교통·패스 카드에 공식 구매 안내 + Klook Paris Visite 버튼 · 툴킷 프롬프트 파리 Navigo 규칙 · `smoke:paris-transit-planner-links`
+- **VERIFY**: smoke + `npm run build` PASS · **병합 보류**
+- **QA**: `/place/paris/planner` 교통·패스 — 나비고 공식 · Klook 파리 비지트 링크
+
 ## 플래너 3단계 #4 — 렌터카·픽업·항공권 기준 위치 (Cloud)
 
 - **세션** `플래너 3단계 #4, Preview QA`
