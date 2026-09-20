@@ -341,7 +341,8 @@ flowchart LR
 1. **멤버십**: generate JSON을 복제하지 않음. 런타임 `buildThemeMembershipIndex()`가 top10+scenic+regions를 `placeSlug`로 합친다 → `inTop10` / `inScenic` / `inRegions`.
 2. **sameHub**: 동일 `hubId`의 다른 placeSlug (자기 제외 · 기본 4).
 3. **nearbyHubs**: spot lat/lng(+area) → `nearbyHubsForFestival` 재사용 · 자기 hub 제외 · 기본 4 · maxKm 120.
-4. **숙소·투어**: `buildThemeSpotLocation(spot)` → 기존 `resolveMrtStayQuery` / `resolveMrtTnaQuery` (PlaceCard와 동일 키워드 래더). 테마 전용 키워드 SSOT **신규 금지**(필요 시 기존 override만). **축제 1차 hub 오매칭**(TourAPI `전남광주통합특별시` addr 등) → [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) (행사지 hub·2차 칩 없이 정합).
+4. **숙소·투어**: `buildThemeSpotLocation(spot)` → 기존 `resolveMrtStayQuery` / `resolveMrtTnaQuery` (PlaceCard와 동일 키워드 래더). 테마 전용 키워드 SSOT **신규 금지**(필요 시 기존 override만). **축제 1차 hub 오매칭**(TourAPI `전남광주통합특별시` addr 등) 구현·회귀 → [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md).
+   - **축제 default hub** (권역 칩 = **2차 대안** · 1차는 칩 없이): (1) `addr1` 시·군·구 ↔ `cityAttractionHub` (2) 동일 시도 **geo 최근접 seeded hub** (3) 시도 **대표 hub** — sigungu 파싱이 **신뢰**되고 행사지와 **명시적 불일치**(횡성↔평창 등)일 때만 (4) `stayAreas`·altKeywords — 인접 시드만.
 5. **패키지**: hub `jeju`/`seogwipo`→`koreaJeju` · `gyeongju`→`koreaGyeongju` · 그 외 **CTA 숨김**(`q=부산`류 오탐 방지 · 홈 CTA는 패키지 페이지에만).
 6. **deep-link**:  
    - 축제 `/korea?from=theme&area={areaCode}`  

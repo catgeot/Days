@@ -84,4 +84,9 @@
 - **질문**: 섬진강국제실험예술제(곡성) 숙소·투어가 여수로 연결되는지.
 - **결론**: **오매칭**. 주변 Tour API는 좌표 기준이나 `resolveFestivalThemeCrossLinks` 는 `전남광주통합특별시` addr 파싱 실패 → 전남 시드 1번(여수) 승격.
 - **산출**: [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) · `main` docs `0e8e26c3`
-- **다음**: P1 addr SSOT + P2 matcher + 스모크 fixture (제시어 플랜 §8)
+- **다음**: P1 addr SSOT → **P2 매처** → P3 스모크 (Px 건너뛰기 금지 · [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) §5 표)
+
+## 축제·여행지 매칭 — P0·제시어 순서 (docs)
+
+- **P0**: §2.5.3 축제 default hub 규칙 — **main docs만** · Preview 불필요 · 2026-09-20 반영 ✅
+- **제시어**: P1 완료 후 **P2** (`#2, P2 매처`). P3는 P2 후. 초안 §8 `P1–P2` 묶음·P3 건너뛰기 혼선 정정 — 플랜 §5·§8
