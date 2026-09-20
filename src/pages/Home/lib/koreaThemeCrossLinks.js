@@ -625,13 +625,6 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
   );
 
   const nearestHubId = nearby[0]?.hubId || null;
-  let packageHubId = null;
-  for (const h of nearby) {
-    if (resolveThemePackageKey({ hubId: h.hubId })) {
-      packageHubId = h.hubId;
-      break;
-    }
-  }
 
   const cross = resolveThemeCrossLinks(
     {
@@ -644,6 +637,8 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
       mapx: item.mapx,
       mapy: item.mapy,
       contentId: item.contentId,
+      addr1: item.addr1,
+      addr2: item.addr2,
     },
     {
       hubList,
@@ -651,15 +646,12 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
     },
   );
 
-  if (!cross.packageCta && packageHubId && packageHubId !== nearestHubId) {
-    const pkgOnly = resolveThemeCrossLinks(
-      { hubId: packageHubId, areaCode, region: opts.region },
-      {
-        hubList,
-        utmContentPrefix: opts.utmContentPrefix || 'korea-festival-cross',
-      },
-    );
-    if (pkgOnly.packageCta) cross.packageCta = pkgOnly.packageCta;
+  const stayHubId = normId(cross.stay?.location?.hubId || nearestHubId);
+  if (
+    cross.packageCta &&
+    resolveThemePackageKey({ hubId: stayHubId }) !== cross.packageCta.key
+  ) {
+    cross.packageCta = null;
   }
 
   if (opts.region) {

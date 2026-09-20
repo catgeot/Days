@@ -236,6 +236,38 @@ assert(
   'sigungu from addr1 → 춘천시',
 );
 
+const sieafAddr = '전남광주통합특별시 곡성군 죽곡면 섬진강둔치';
+assert(
+  extractTourAttractionSigungu(sieafAddr) === '곡성군',
+  'SIEAF addr → 곡성군 (전남광주통합)',
+);
+assert(
+  extractTourAttractionSigungu('전남광주통합특별시 담양군 수북면') === '담양군',
+  '전남광주통합 담양군 sigungu',
+);
+assert(
+  extractTourAttractionSigungu('전라남도 곡성군 죽곡면') === '곡성군',
+  'legacy 전라남도 곡성군 sigungu',
+);
+
+const sieafFest = resolveFestivalThemeCrossLinks(
+  {
+    title: '2026 섬진강국제실험예술제',
+    areaCode: '38',
+    addr1: sieafAddr,
+    mapx: 127.295,
+    mapy: 35.275,
+    contentId: 'fixture-sieaf',
+  },
+  { region: '전라' },
+);
+assert(sieafFest.stay?.location?.hubId === 'gokseong', `SIEAF stay hub gokseong (got ${sieafFest.stay?.location?.hubId})`);
+assert(
+  String(sieafFest.stay?.keyword || '').includes('곡성'),
+  `SIEAF stay keyword 곡성 (got ${sieafFest.stay?.keyword})`,
+);
+assert(sieafFest.packageCta == null, 'SIEAF no yeosu package CTA');
+
 const poiNoHub = {
   name: '생명건강 과학원',
   hubId: null,
