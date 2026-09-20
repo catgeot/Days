@@ -1,23 +1,71 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  User, Search, Ticket, MessageSquare, X, Trash2,
+  Search, Ticket, MessageSquare, X, Trash2,
   Palmtree, Mountain, Building2, Landmark, Compass,
   Eye, EyeOff, Droplet, Sun, Moon,
   PenTool,
   Leaf,
-  LogOut,
   Sparkles,
   CalendarDays,
+  Globe2,
   Map,
+  ChevronDown,
+  ChevronUp,
+  User,
+  LogOut,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
+import LocaleToggle from '../../../i18n/LocaleToggle';
 import TourMobileBar from './TourMobileBar';
-import GlobeFaceRegionRail, { GlobeFaceSubregionBar } from './GlobeFaceRegionRail';
+import GlobeFaceRegionRail, {
+  GlobeFaceSubregionBar,
+  MobileRegionsMenuSwitch,
+} from './GlobeFaceRegionRail';
 import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
+import { shouldShowFaceSeaOceanChips } from '../lib/faceSeaOceans.js';
+import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListHeight';
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
+import TrustLinkBar from '../../../shared/layout/TrustLinkBar';
+
+const MOBILE_QUICK_LINK_DEFS = [
+  {
+    key: 'festival',
+    to: '/korea',
+    icon: CalendarDays,
+    chipClass:
+      'border-amber-400/45 bg-[#14110c] shadow-[0_0_18px_rgba(245,158,11,0.22)] hover:border-amber-300/70 hover:bg-[#1c1710]',
+    iconWrapClass: 'border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25',
+  },
+  {
+    key: 'worldEvents',
+    to: '/world-events',
+    icon: Globe2,
+    chipClass:
+      'border-orange-400/45 bg-[#14120c] shadow-[0_0_18px_rgba(251,146,60,0.22)] hover:border-orange-300/70 hover:bg-[#1c1710]',
+    iconWrapClass: 'border-orange-400/35 bg-orange-500/15 text-orange-300 group-hover:bg-orange-500/25',
+  },
+  {
+    key: 'scenic',
+    to: '/korea/theme/scenic',
+    icon: Map,
+    chipClass:
+      'border-emerald-400/40 bg-[#0f1412] shadow-[0_0_18px_rgba(52,211,153,0.18)] hover:border-emerald-300/65 hover:bg-[#121a16]',
+    iconWrapClass: 'border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25',
+  },
+  {
+    key: 'curation',
+    to: '/blog/curation',
+    icon: Sparkles,
+    chipClass:
+      'border-sky-400/45 bg-[#0c1218] shadow-[0_0_18px_rgba(56,189,248,0.2)] hover:border-sky-300/70 hover:bg-[#101820]',
+    iconWrapClass: 'border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25',
+  },
+];
 
 /** 모바일 활성 카테고리 — 테마색 글로우 (배포본과 동일) */
 const CATEGORY_ACTIVE_MOBILE = {
@@ -28,15 +76,46 @@ const CATEGORY_ACTIVE_MOBILE = {
   adventure: 'bg-red-500/25 border-red-400/50 shadow-[0_0_14px_rgba(248,113,113,0.35)]',
 };
 
+const QUICK_LINKS_TWINKLE_CYCLE_S = 5.6;
+
+function QuickLinksCollapsedLabel({ items = [] }) {
+  const step = QUICK_LINKS_TWINKLE_CYCLE_S / Math.max(items.length, 1);
+
+  return (
+    <span className="truncate text-[11px] md:text-[12px] font-bold tracking-tight text-white/95 break-keep">
+      {items.map((item, index) => {
+        const itemKeyClass = `quick-links-collapsed-item-${item.key}`;
+        return (
+          <React.Fragment key={item.key || index}>
+            {index > 0 ? <span className="text-white/35 font-normal"> · </span> : null}
+            <span
+              className={itemKeyClass}
+              style={{ animationDelay: `${index * step}s` }}
+            >
+              {item.shortLabel}
+            </span>
+          </React.Fragment>
+        );
+      })}
+    </span>
+  );
+}
+
 const HomeUI = React.memo(({
   onSearch: _onSearch, onTickerClick, externalInput, savedTrips: _savedTrips, onTripClick: _onTripClick, onTripDelete: _onTripDelete, onOpenChat, onLogoClick,
   relatedPlaces = [], isTagLoading = false, onRelatedPlaceClick,
   selectedCategory, onCategorySelect,
   faceRegionsOpen = false,
+  onFaceRegionsDismiss,
   selectedFaceRegionId = null,
   onFaceRegionSelect,
   selectedFaceSubregionId = null,
   onFaceSubregionSelect,
+  selectedTopOceanId = null,
+  onTopOceanSelect,
+  seaBasinHierarchy = null,
+  selectedSeaBasinId = null,
+  onSeaBasinSelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
   isPinVisible,
@@ -50,6 +129,7 @@ const HomeUI = React.memo(({
   isTourCinema = false,
   isFlightCinema = false,
   isPlaceCardVisible = false,
+  homeChromeEpoch = 0,
   tourLocation = null,
   tourPivoted = false,
   globeMode = null,
@@ -58,10 +138,56 @@ const HomeUI = React.memo(({
   onTourBarClose,
   onTourBarStartTour,
 }) => {
+  const { t, i18n } = useTranslation();
+  const mobileQuickLinks = React.useMemo(
+    () =>
+      MOBILE_QUICK_LINK_DEFS.map((item) => ({
+        ...item,
+        shortLabel: t(`home.quickLinks.${item.key}.short`),
+        label: t(`home.quickLinks.${item.key}.label`),
+      })),
+    [t],
+  );
+  const categoryLabel = (id) => t(`home.category.${id}`, { defaultValue: CATEGORY_LABELS[id] || id });
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
+  const handleLogoActivate = useCallback((e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onLogoClick?.();
+    }
+  }, [onLogoClick]);
+  const hideExploreChrome =
+    (isPlaceCardVisible && !isFlightCinema) || isFlightCinema;
   /** 모바일 나라 메뉴 — 펼침일 때만 목록 노출 · 숨김 시 지도 탐색 */
   const [mobileRegionsExpanded, setMobileRegionsExpanded] = useState(true);
+  /** 좌상단 바로가기 — 기본 접힘 · 탭으로 펼침 (모바일·PC) */
+  const [mobileQuickLinksExpanded, setMobileQuickLinksExpanded] = useState(false);
+  const mobileCategoryBarRef = useRef(null);
+  const mobileRegionsAuxRef = useRef(null);
+  const showMobileSubregionBar = Boolean(
+    selectedCategory
+    && (shouldShowFaceSubregionChips(selectedCategory) || shouldShowFaceSeaOceanChips(selectedCategory))
+    && mobileRegionsExpanded,
+  );
+  const mobileShowRegionList = mobileRegionsExpanded;
+  const mobileRegionListHeight = useMobileFaceRegionListHeight({
+    enabled: Boolean(
+      !hideExploreChrome
+      && faceRegionsOpen
+      && selectedCategory
+      && mobileShowRegionList,
+    ),
+    hasSubregionBar: showMobileSubregionBar,
+    chromeEpoch: homeChromeEpoch,
+    faceRegionsOpen: Boolean(faceRegionsOpen && selectedCategory),
+    bottomAuxRef: mobileRegionsAuxRef,
+    categoryBarRef: mobileCategoryBarRef,
+  });
+
+  const handleMobileRegionsExpandedChange = useCallback((expanded) => {
+    setMobileRegionsExpanded(expanded);
+  }, []);
 
   const trendingData = useTrendingData();
 
@@ -70,6 +196,12 @@ const HomeUI = React.memo(({
       queueMicrotask(() => setInputValue(externalInput));
     }
   }, [externalInput]);
+
+  useEffect(() => {
+    if (hideExploreChrome || (faceRegionsOpen && mobileRegionsExpanded)) {
+      setMobileQuickLinksExpanded(false);
+    }
+  }, [hideExploreChrome, faceRegionsOpen, mobileRegionsExpanded]);
 
   const CATEGORIES = [
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },
@@ -88,99 +220,231 @@ const HomeUI = React.memo(({
     }
   };
   const ThemeIcon = getThemeConfig().icon;
+  // 장소 카드(hideExploreChrome)와 분리 — 묶으면 접힌 축제 칩이 목록으로 펼쳐짐
+  const showMobileQuickLinksCollapsed = !mobileQuickLinksExpanded;
 
-  const hideExploreChrome =
-    (isPlaceCardVisible && !isFlightCinema) || isFlightCinema;
+  const renderMobileQuickLink = (item, linkClassName = '') => {
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.to}
+        to={item.to}
+        onClick={() => setMobileQuickLinksExpanded(false)}
+        className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass} ${linkClassName}`}
+        aria-label={t('home.quickLinks.navigateTo', { label: item.label })}
+      >
+        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${item.iconWrapClass}`}>
+          <Icon size={15} aria-hidden="true" />
+        </span>
+        <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+          {item.label}
+        </span>
+      </Link>
+    );
+  };
+
+  const [mobileQuickLinkFirst, ...mobileQuickLinkRest] = mobileQuickLinks;
+
+  const renderSearchPill = () => (
+    <>
+      <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => navigate('/explore')}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            navigate('/explore');
+          }
+        }}
+        className="relative flex w-full min-w-0 items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50 md:max-w-md touch-manipulation"
+      >
+        <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400">
+          <Search size={16} className="md:w-[18px] md:h-[18px]" />
+        </div>
+        <span className="min-w-0 flex-1 bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate">
+          <span className="md:hidden">{t('layout.search.placeholderMobile')}</span>
+          <span className="hidden md:inline">{t('layout.search.placeholder')}</span>
+        </span>
+      </div>
+    </>
+  );
+
+  const renderQuickLinks = () => (
+    showMobileQuickLinksCollapsed ? (
+      <button
+        type="button"
+        onClick={() => {
+          onFaceRegionsDismiss?.();
+          setMobileQuickLinksExpanded(true);
+        }}
+        className="quick-links-banner-breathe group relative flex w-auto max-w-[15.5rem] md:w-max md:max-w-none items-center gap-1.5 rounded-xl border border-white/20 bg-[#101010]/95 px-2.5 py-1.5 backdrop-blur-sm transition-all hover:border-amber-400/60 hover:bg-[#161616] touch-manipulation active:scale-[0.98]"
+        aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
+        title={t('home.quickLinks.expandMenu')}
+      >
+        <QuickLinksCollapsedLabel items={mobileQuickLinks} />
+        <ChevronDown
+          size={13}
+          className="shrink-0 text-white/40 transition-transform duration-200 group-hover:translate-y-0.5 group-hover:text-white/75"
+          aria-hidden="true"
+        />
+      </button>
+    ) : (
+      <div className="flex flex-col items-start gap-2">
+        <div className="flex max-w-[17.5rem] items-stretch gap-1.5">
+          {renderMobileQuickLink(mobileQuickLinkFirst, 'min-w-0 flex-1 max-w-none')}
+          <button
+            type="button"
+            onClick={() => setMobileQuickLinksExpanded(false)}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/35 bg-black/70 text-white shadow-[0_0_14px_rgba(255,255,255,0.14)] touch-manipulation transition-colors hover:border-white/50 hover:bg-black/85 active:scale-[0.97]"
+            aria-label={t('home.quickLinks.collapseMenu')}
+            title={t('home.quickLinks.collapseTitle')}
+          >
+            <ChevronUp size={20} strokeWidth={2.5} aria-hidden="true" />
+          </button>
+        </div>
+        {mobileQuickLinkRest.map((item) => renderMobileQuickLink(item))}
+      </div>
+    )
+  );
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
+      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip">
         <div
           data-site-notice-anchor-mobile
           className="md:hidden absolute inset-x-0 bottom-0 h-px pointer-events-none"
           aria-hidden="true"
         />
 
-        <div className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-[60]">
-          <div
-            onClick={onLogoClick}
-            className="cursor-pointer group"
-          >
-            <h1 className="group-hover:scale-105 transition-transform origin-left">
-              <Logo />
-            </h1>
+        {!isTourCinema ? (
+          <div className="flex md:hidden w-full items-center gap-2 min-w-0 pointer-events-auto">
+            <div
+              key={`${homeChromeEpoch}-mobile`}
+              className="relative shrink-0 z-[110]"
+              data-home-chrome-hit
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-auto absolute -inset-y-2 -left-2 right-0 z-0 rounded-2xl bg-[#070707]/92"
+              />
+              <div className="relative z-10 flex items-center gap-1">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={onLogoClick}
+                  onKeyDown={handleLogoActivate}
+                  aria-label={t('layout.nav.logoOpen')}
+                  className="cursor-pointer group touch-manipulation"
+                >
+                  <h1 className="group-hover:opacity-90 transition-opacity origin-left">
+                    <Logo />
+                  </h1>
+                </div>
+                <LocaleToggle compact />
+              </div>
+            </div>
+            <div className="group relative flex-1 min-w-0">
+              {renderSearchPill()}
+            </div>
           </div>
-          {!isTourCinema && (
-            <>
-              <Link
-                to="/korea"
-                className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-amber-400/45 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/75"
-                aria-label="한국의 축제로 이동"
+        ) : null}
+
+        {!isTourCinema ? (
+          <div className="md:hidden pointer-events-auto">
+            {renderQuickLinks()}
+          </div>
+        ) : null}
+
+        <div
+          key={`${homeChromeEpoch}-desktop`}
+          className="hidden md:block md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto pt-2 md:pl-2 animate-fade-in-down"
+          data-home-chrome-hit
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/*
+            Chrome+WebGL: 반투명/blur만으로는 지도로 클릭이 뚫림 → 불투명 실드·칩 BG.
+            translate3d/isolate 레이어 승격은 쓰지 않음 — URL바·resize 후 paint/hit 어긋남(명승→큐레이션) 유발.
+          */}
+          <div
+            aria-hidden="true"
+            className={`pointer-events-auto absolute -inset-x-2 -inset-y-2 z-0 rounded-2xl bg-[#070707]/92 ${
+              faceRegionsOpen && !isTourCinema ? 'max-md:-bottom-14' : ''
+            }`}
+          />
+          <div className="relative z-10 flex flex-col items-start gap-2">
+            <div className="flex items-center gap-1">
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={onLogoClick}
+                onKeyDown={handleLogoActivate}
+                aria-label={t('layout.nav.logoOpen')}
+                className="cursor-pointer group touch-manipulation"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
-                  <CalendarDays size={16} aria-hidden="true" />
-                </span>
-                <span className="min-w-0 flex flex-col leading-tight">
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 축제
-                  </span>
-                  <span className="truncate text-[10px] text-amber-100/85">
-                    지금 · 지도에서 찾기
-                  </span>
-                </span>
-              </Link>
-              <Link
-                to="/korea/theme/scenic"
-                className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-emerald-400/40 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(52,211,153,0.18)] backdrop-blur-md transition-all hover:border-emerald-300/65 hover:bg-black/75"
-                aria-label="한국의 명승으로 이동"
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
-                  <Map size={16} aria-hidden="true" />
-                </span>
-                <span className="min-w-0 flex flex-col leading-tight">
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 명승
-                  </span>
-                  <span className="truncate text-[10px] text-emerald-100/85">
-                    선정 · 명승 · 관광지
-                  </span>
-                </span>
-              </Link>
-            </>
-          )}
+                <h1 className="group-hover:opacity-90 transition-opacity origin-left">
+                  <Logo />
+                </h1>
+              </div>
+              {!isTourCinema ? <LocaleToggle compact /> : null}
+            </div>
+            {!isTourCinema ? (
+              <div className="flex flex-col items-start gap-2 pb-1">
+                {renderQuickLinks()}
+              </div>
+            ) : null}
+          </div>
         </div>
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
            <button
+             type="button"
              onClick={onThemeToggle}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
-             title="지구본 무드 변경"
+             title={t('home.globe.themeToggle')}
+             aria-label={t('home.globe.themeToggle')}
            >
               <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
            </button>
 
            <button
+             type="button"
              onClick={onToggleZenMode}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
-             title="Zen Mode (전체화면 힐링)"
+             title={t('home.globe.zenMode')}
+             aria-label={t('home.globe.zenMode')}
            >
               <Leaf size={16} className="group-hover:scale-110 transition-transform" />
            </button>
 
            <button
+             type="button"
              onClick={onTogglePinVisibility}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}
-             title={isPinVisible ? '마커·지명 숨기기' : '마커·지명 보이기'}
+             title={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
+             aria-label={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
            >
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
            </button>
-           <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
+           <button
+             type="button"
+             onClick={onClearScouts}
+             className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"
+             title={t('home.globe.clearScouts')}
+             aria-label={t('home.globe.clearScouts')}
+           >
+             <Trash2 size={16} className="group-hover:scale-110 transition-transform" />
+           </button>
         </div>
 
-        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto z-50 min-w-0 md:relative">
-          {isTourCinema && tourLocation ? (
+        {isTourCinema && tourLocation ? (
+          <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-none z-50 min-w-0 md:relative">
             <TourMobileBar
-              className="w-full md:hidden"
+              className="w-full md:hidden pointer-events-auto"
               location={tourLocation}
               globeMode={globeMode}
               tourPivoted={tourPivoted}
@@ -189,23 +453,15 @@ const HomeUI = React.memo(({
               onStartTour={onTourBarStartTour}
               onClose={onTourBarClose}
             />
-          ) : (
-           <div data-site-notice-anchor className="group w-[min(12.5rem,calc(100vw-5.5rem))] sm:max-w-xs md:max-w-md md:w-full absolute right-3 top-[1.35rem] md:relative md:right-auto md:top-auto md:self-end">
-            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            <div
-              onClick={() => navigate('/explore')}
-              className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50"
-            >
-              <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400"><Search size={16} className="md:w-[18px] md:h-[18px]" /></div>
-              <span
-                className="w-full bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate"
-              >
-                지금 기분, 느낌으로 검색해 보세요
-              </span>
-            </div>
           </div>
-          )}
-        </div>
+        ) : !isTourCinema ? (
+          <div
+            data-site-notice-anchor
+            className="group pointer-events-auto min-w-0 hidden md:flex md:col-span-5 md:relative md:z-50 md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100"
+          >
+            {renderSearchPill()}
+          </div>
+        ) : null}
 
         <div className="hidden md:block md:col-span-1" />
 
@@ -228,9 +484,15 @@ const HomeUI = React.memo(({
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
+        <TrustLinkBar variant="stack" />
         {!hideExploreChrome && faceRegionsOpen && selectedCategory && (
-          <div className="flex flex-col items-start gap-1.5 animate-fade-in-right">
-            {mobileRegionsExpanded ? (
+          <div
+            className="flex flex-col items-start gap-1.5 animate-fade-in-right"
+            onPointerDown={(event) => event.stopPropagation()}
+            onTouchStart={(event) => event.stopPropagation()}
+            onTouchMove={(event) => event.stopPropagation()}
+          >
+            {mobileShowRegionList ? (
               <GlobeFaceRegionRail
                 category={selectedCategory}
                 selectedRegionId={selectedFaceRegionId}
@@ -239,63 +501,37 @@ const HomeUI = React.memo(({
                 subregionPlacement="none"
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
+                listHeightStyle={mobileRegionListHeight?.listHeightStyle ?? null}
+                seaBasinHierarchy={seaBasinHierarchy}
+                selectedSeaBasinId={selectedSeaBasinId}
+                onSelectSeaBasin={onSeaBasinSelect}
+                selectedTopOceanId={selectedTopOceanId}
+                onSelectTopOcean={onTopOceanSelect}
                 className="mb-0.5"
               />
             ) : null}
-            <div
-              className={`pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border px-2 py-1.5 backdrop-blur-md transition-all ${
-                mobileRegionsExpanded
-                  ? 'border-white/20 bg-black/70 shadow-lg'
-                  : 'border-amber-400/60 bg-black/85 shadow-[0_0_16px_rgba(245,158,11,0.4)]'
-              }`}
-            >
-              <span
-                className={`text-[10px] font-bold leading-none tracking-tight break-keep ${
-                  mobileRegionsExpanded ? 'text-gray-200/90' : 'text-amber-100'
-                }`}
-              >
-                {mobileRegionsExpanded ? '세부 메뉴' : '메뉴 숨김'}
-              </span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={mobileRegionsExpanded}
-                aria-label={mobileRegionsExpanded ? '세부 메뉴 숨기기' : '세부 메뉴 펼치기'}
-                title={mobileRegionsExpanded ? '숨기고 지도 보기' : '나라·세부 칩 보기'}
-                onClick={() => setMobileRegionsExpanded((open) => !open)}
-                className="flex w-full items-center justify-center active:scale-[0.97]"
-              >
-                <span
-                  aria-hidden="true"
-                  className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
-                    mobileRegionsExpanded
-                      ? 'border-cyan-400/50 bg-cyan-500/40'
-                      : 'border-amber-300/80 bg-amber-500/40 shadow-[0_0_10px_rgba(251,191,36,0.55)]'
-                  }`}
-                >
-                  <span
-                    className={`absolute top-0.5 h-3.5 w-3.5 rounded-full shadow transition-[left] duration-200 ${
-                      mobileRegionsExpanded
-                        ? 'left-5 bg-white'
-                        : 'left-0.5 bg-amber-100'
-                    }`}
-                  />
-                </span>
-              </button>
-            </div>
-            {mobileRegionsExpanded && shouldShowFaceSubregionChips(selectedCategory) ? (
+            <div ref={mobileRegionsAuxRef} className="flex flex-col items-start gap-1">
+              <MobileRegionsMenuSwitch
+                expanded={mobileRegionsExpanded}
+                onChange={handleMobileRegionsExpandedChange}
+              />
+            {mobileRegionsExpanded && showMobileSubregionBar ? (
               <GlobeFaceSubregionBar
                 key={`subregion-bar-${selectedCategory}`}
                 category={selectedCategory}
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
+                selectedTopOceanId={selectedTopOceanId}
+                onSelectTopOcean={onTopOceanSelect}
+                skipAutoSync={Boolean(selectedTopOceanId)}
                 className="w-[calc(100vw-0.5rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px))] min-w-0 animate-fade-in-up"
               />
             ) : null}
+            </div>
           </div>
         )}
 
-        <div className="pointer-events-auto relative max-md:home-category-bar-shell animate-fade-in-left">
+        <div ref={mobileCategoryBarRef} className="pointer-events-auto relative max-md:home-category-bar-shell animate-fade-in-left">
           <div className="home-category-bar-halo md:hidden" aria-hidden="true" />
           <div className="home-category-bar-card relative z-[1] flex items-end gap-0.5 sm:gap-1
              max-md:bg-black/80 max-md:border-white/20 max-md:backdrop-blur-xl max-md:p-2 max-md:rounded-2xl max-md:border
@@ -309,7 +545,7 @@ const HomeUI = React.memo(({
                    key={cat.id}
                    type="button"
                    onClick={() => onCategorySelect(cat.id)}
-                   aria-label={CATEGORY_LABELS[cat.id] || cat.label}
+                   aria-label={categoryLabel(cat.id) || cat.label}
                    aria-pressed={isActive && faceRegionsOpen}
                    className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
                      w-[3.25rem] py-1.5 md:w-14 md:py-2 max-md:border
@@ -320,7 +556,7 @@ const HomeUI = React.memo(({
                  >
                    <Icon size={18} className={`md:w-5 md:h-5 transition-colors duration-300 ${isActive ? cat.color : 'max-md:text-gray-100 text-gray-500 group-hover:text-gray-300'}`} />
                    <span className={`text-[9px] md:text-[10px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-200/90 md:text-gray-400 md:group-hover:text-gray-300'}`}>
-                     {CATEGORY_LABELS[cat.id]}
+                     {categoryLabel(cat.id)}
                    </span>
                  </button>
                )
@@ -330,8 +566,8 @@ const HomeUI = React.memo(({
       </div>
       )}
 
-      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 (투톱 아래 상단 고정 · 하위칩은 아래로만 확장) */}
-      <div className="hidden md:flex fixed left-6 top-[14.5rem] bottom-28 z-[55] flex-col justify-start gap-3 overflow-y-auto overscroll-contain pointer-events-none animate-fade-in-right">
+      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 (투톱 아래 상단 고정 · 하위칩은 아래로만 확장 · 스크롤바 없음) */}
+      <div className="hidden md:flex fixed left-6 top-[17rem] z-[55] flex-col justify-start gap-3 pointer-events-none animate-fade-in-right">
         {!isTourCinema && (
           <div
             className={`pointer-events-auto flex flex-row items-start gap-2 ${
@@ -347,7 +583,7 @@ const HomeUI = React.memo(({
                     key={cat.id}
                     type="button"
                     onClick={() => onCategorySelect(cat.id)}
-                    aria-label={CATEGORY_LABELS[cat.id] || cat.label}
+                    aria-label={categoryLabel(cat.id) || cat.label}
                     aria-pressed={isActive && faceRegionsOpen}
                     className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
                       w-14 py-2 border
@@ -358,7 +594,7 @@ const HomeUI = React.memo(({
                   >
                     <Icon size={20} className={`transition-colors duration-300 ${isActive ? cat.color : 'text-gray-500 group-hover:text-gray-300'}`} />
                     <span className={`text-[10px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-400 group-hover:text-gray-300'}`}>
-                      {CATEGORY_LABELS[cat.id]}
+                      {categoryLabel(cat.id)}
                     </span>
                   </button>
                 );
@@ -372,6 +608,11 @@ const HomeUI = React.memo(({
                 showSubregions
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
+                seaBasinHierarchy={seaBasinHierarchy}
+                selectedSeaBasinId={selectedSeaBasinId}
+                onSelectSeaBasin={onSeaBasinSelect}
+                selectedTopOceanId={selectedTopOceanId}
+                onSelectTopOcean={onTopOceanSelect}
                 className="pt-0.5"
               />
             ) : null}
@@ -384,9 +625,12 @@ const HomeUI = React.memo(({
       {(isTagLoading || relatedPlaces.length > 0) && !isTickerExpanded && (
         <div className="hidden md:flex fixed right-6 top-1/2 -translate-y-[calc(50%+6.125rem)] z-[55] flex-col gap-2 md:gap-3 pointer-events-none animate-fade-in-left">
           <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto items-end">
-            {!isTagLoading && relatedPlaces.map((place, idx) => (
+            {!isTagLoading && relatedPlaces.map((place, idx) => {
+              const displayName =
+                getLocalizedPlaceName(place.data, i18n.language) || place.name;
+              return (
               <button
-                key={`${place.name}-${idx}`}
+                key={`${displayName}-${idx}`}
                 type="button"
                 onClick={() => onRelatedPlaceClick(place.data, place.isBridge)}
                 className={`group relative flex items-center justify-between w-28 p-2 md:w-40 md:p-3 backdrop-blur-md border rounded-xl md:hover:w-44 transition-all duration-300 shadow-lg ${
@@ -403,37 +647,52 @@ const HomeUI = React.memo(({
                   )}
                   <span className={`text-[10px] md:text-sm font-medium truncate ${
                     place.isBridge ? 'text-fuchsia-200 group-hover:text-white' : 'text-gray-200 group-hover:text-white'
-                  }`}>{place.name}</span>
+                  }`}>{displayName}</span>
                 </div>
               </button>
-            ))}
+            );
+            })}
           </div>
         </div>
       )}
 
-      <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-50 pointer-events-none">
+      <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-[60] pointer-events-none">
         <div className="hidden md:flex absolute bottom-6 left-[8.75rem] items-end gap-4 pointer-events-auto">
           {user ? (
-            <button onClick={onLogout} className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none">
+            <button
+              type="button"
+              onClick={onLogout}
+              className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none"
+              aria-label={t('layout.nav.logout')}
+            >
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-red-400/50 transition-all shadow-lg">
                     <LogOut size={18} className="text-gray-200 group-hover:text-red-400 transition-colors" />
                 </div>
-                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGOUT</span>
+                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">{t('layout.nav.logout')}</span>
             </button>
           ) : (
-            <Link to="/auth/login" state={{ from: window.location.pathname + window.location.search }} className="group flex items-center gap-2 pb-2 cursor-pointer">
+            <Link
+              to="/auth/login"
+              state={{ from: window.location.pathname + window.location.search }}
+              className="group flex items-center gap-2 pb-2 cursor-pointer"
+              aria-label={t('layout.nav.login')}
+            >
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg">
                     <User size={18} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
                 </div>
-                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
+                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">{t('layout.nav.login')}</span>
             </Link>
           )}
 
-          <Link to="/blog" className="group flex items-center gap-2 pb-2 cursor-pointer">
+          <Link
+            to="/blog"
+            className="group flex items-center gap-2 pb-2 cursor-pointer"
+            aria-label={t('layout.nav.logbook')}
+          >
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
                   <PenTool size={18} className="text-gray-200 group-hover:text-emerald-400 transition-colors" />
               </div>
-              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGBOOK</span>
+              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">{t('layout.nav.logbook')}</span>
           </Link>
         </div>
 
@@ -442,7 +701,7 @@ const HomeUI = React.memo(({
             onClick={() => onOpenChat()}
             className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 font-bold text-xs border border-white/10 hover:scale-105 transition-transform"
           >
-            <MessageSquare size={16} /> <span>AI와 대화하기</span>
+            <MessageSquare size={16} /> <span>{t('home.chatWithAi')}</span>
           </button>
         </div>
       </footer>
