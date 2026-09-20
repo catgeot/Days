@@ -5,6 +5,7 @@
  */
 
 import koreaAreaCodes from '../Home/data/koreaAreaCodes.json' with { type: 'json' };
+import { areaCodeFromJeonnamGwangjuIntegratedAddr } from '../Home/lib/koreaTourAddrNormalize.js';
 import { matchSido, matchSigungu, SIDO_ADDR_HINTS } from './koreaAreaFilter.js';
 const MIN_COUNT = 2;
 /** 시·군·구 칩 — 시도로 이미 좁힌 뒤라 1건도 노출 */
@@ -36,6 +37,8 @@ export function isMetroArea(areaCode) {
 export function detectSidoCode(addr) {
   const a = String(addr || '');
   if (!a) return null;
+  const integrated = areaCodeFromJeonnamGwangjuIntegratedAddr(a);
+  if (integrated) return integrated;
   for (const { id } of SIDO_ORDER) {
     if (matchSido(a, id)) return id;
   }

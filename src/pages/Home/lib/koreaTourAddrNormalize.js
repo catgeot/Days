@@ -60,3 +60,24 @@ export function isLowConfidenceTourSigungu(sigungu) {
   if (/광주통합/u.test(s)) return true;
   return false;
 }
+
+const JEONNAM_GWANGJU_INTEGRATED_PREFIX = '전남광주통합특별시';
+
+/**
+ * TourAPI `전남광주통합특별시` addr — 광주 광역(구) vs 전남 시·군 areaCode.
+ * 구(동구·서구…) → 5(광주) · 군·시(곡성군·여수시…) → 38(전남).
+ *
+ * @param {string | null | undefined} addr1
+ * @returns {'5' | '38' | null}
+ */
+export function areaCodeFromJeonnamGwangjuIntegratedAddr(addr1) {
+  const raw = String(addr1 || '').trim().replace(/\s+/g, ' ');
+  if (!raw.startsWith(JEONNAM_GWANGJU_INTEGRATED_PREFIX)) return null;
+  const rest = raw.slice(JEONNAM_GWANGJU_INTEGRATED_PREFIX.length).trim();
+  const first = rest.split(/\s+/).find(Boolean) || '';
+  if (!first) return null;
+  if (/군$/u.test(first)) return '38';
+  if (/시$/u.test(first)) return '38';
+  if (/구$/u.test(first)) return '5';
+  return null;
+}

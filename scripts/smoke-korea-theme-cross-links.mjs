@@ -23,6 +23,7 @@ import {
   THEME_REGION_LABEL_TO_AREA,
 } from '../src/pages/Home/lib/koreaThemeCrossLinks.js';
 import { themeNavBackEntryForSpot } from '../src/pages/Home/lib/koreaThemeNavBack.js';
+import { areaCodeFromJeonnamGwangjuIntegratedAddr } from '../src/pages/Home/lib/koreaTourAddrNormalize.js';
 import { extractTourAttractionSigungu } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -319,6 +320,32 @@ assert(
   `SIEAF stay keyword 곡성 (got ${sieafFest.stay?.keyword})`,
 );
 assert(sieafFest.packageCta == null, 'SIEAF no yeosu package CTA');
+
+const chungjangAddr = '전남광주통합특별시 동구 금남로3가';
+assert(
+  areaCodeFromJeonnamGwangjuIntegratedAddr(chungjangAddr) === '5',
+  'integrated addr 동구 → area 5',
+);
+const chungjangFest = resolveFestivalThemeCrossLinks(
+  {
+    title: '광주 추억의 충장축제',
+    areaCode: '38',
+    addr1: chungjangAddr,
+    mapx: 126.915,
+    mapy: 35.148,
+    contentId: 'fixture-chungjang',
+  },
+  { region: '전라' },
+);
+assert(
+  chungjangFest.stay?.location?.hubId === 'gwangju',
+  `충장축제 stay hub gwangju (got ${chungjangFest.stay?.location?.hubId})`,
+);
+assert(
+  String(chungjangFest.stay?.keyword || '').includes('광주'),
+  `충장축제 stay keyword 광주 (got ${chungjangFest.stay?.keyword})`,
+);
+assert(chungjangFest.packageCta?.key !== 'koreaYeosu', '충장축제 no yeosu package');
 
 const poiNoHub = {
   name: '생명건강 과학원',

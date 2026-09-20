@@ -2,7 +2,10 @@ import { festivalLngLat } from './koreaFestivalCorridors.js';
 import { detectSidoCode } from './festivalRegionTags.js';
 import { areaCodeForHubId, hubIdsForArea } from './koreaHubSeeds.js';
 import koreaAreaCodes from '../Home/data/koreaAreaCodes.json' with { type: 'json' };
-import { isLowConfidenceTourSigungu } from '../Home/lib/koreaTourAddrNormalize.js';
+import {
+  areaCodeFromJeonnamGwangjuIntegratedAddr,
+  isLowConfidenceTourSigungu,
+} from '../Home/lib/koreaTourAddrNormalize.js';
 import { extractTourAttractionSigungu } from '../Home/lib/koreaTourAttractionLocality.js';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
 import { stripKoAdminSuffix } from '../../utils/mrtStayQuery.js';
@@ -143,7 +146,9 @@ export function nearbyHubsForFestival(item, hubList, opts = {}) {
   if (!item || !hubs.length) return [];
 
   const rawArea = item?.areaCode;
+  const sidoFromIntegrated = areaCodeFromJeonnamGwangjuIntegratedAddr(item?.addr1);
   const sido =
+    sidoFromIntegrated ||
     (rawArea != null && String(rawArea).trim() !== '' && String(rawArea).trim()) ||
     detectSidoCode(item?.addr1) ||
     null;

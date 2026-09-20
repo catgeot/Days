@@ -3,6 +3,7 @@ import { listKoreaScenicSpots } from './koreaScenicSpots.js';
 import { listKoreaThemeRegionAttractions } from './koreaThemeRegions.js';
 import { areaCodeForHubId, hubIdsForArea } from '../../Korea/koreaHubSeeds.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { areaCodeFromJeonnamGwangjuIntegratedAddr } from './koreaTourAddrNormalize.js';
 import { extractTourAttractionSigungu } from './koreaTourAttractionLocality.js';
 import {
   SCENIC_REGION_ORDER,
@@ -833,22 +834,28 @@ function hubListForArea(areaCode) {
  * @param {Record<string, unknown> | null | undefined} item TourAPI festival item
  * @param {{ region?: string, areaCode?: string | number, utmContentPrefix?: string }} [opts]
  */
+function resolveFestivalItemAreaCode(item, opts = {}) {
+  const fromIntegrated = areaCodeFromJeonnamGwangjuIntegratedAddr(item?.addr1);
+  if (fromIntegrated) return fromIntegrated;
+  if (opts.areaCode != null && String(opts.areaCode).trim() !== '') {
+    return String(opts.areaCode).trim();
+  }
+  return resolveThemeSpotAreaCode({
+    areaCode: item?.areaCode ?? item?.areacode,
+    region: opts.region,
+  });
+}
+
 export function resolveFestivalThemeCrossLinks(item, opts = {}) {
   if (!item) return resolveThemeCrossLinks(null);
 
-  const areaCode =
-    opts.areaCode != null && String(opts.areaCode).trim() !== ''
-      ? String(opts.areaCode).trim()
-      : resolveThemeSpotAreaCode({
-          areaCode: item.areaCode ?? item.areacode,
-          region: opts.region,
-        });
+  const areaCode = resolveFestivalItemAreaCode(item, opts);
 
   let hubList = hubListForArea(areaCode);
   if (!hubList.length) hubList = hubListForArea(null);
 
   const nearby = nearbyHubsForFestival(
-    { ...item, areaCode: areaCode || item.areaCode || item.areacode },
+    { ...item, areaCode },
     hubList,
     { limit: 12 },
   );
