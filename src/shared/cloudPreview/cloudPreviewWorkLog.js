@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '항공권 검색',
-  sessionNo: 11,
-  sessionPhase: '상단 검색폼으로 스크롤',
+  sessionNo: 12,
+  sessionPhase: '써머리 검색폼',
   branch: 'cursor/tripcom-flight-widget-3ec3',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'flight',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-20-tripcom-flight-12-summary-search-form',
+    session: '항공권 검색 #12, 써머리 검색폼',
+    title: '써머리 항공권 검색은 일정 폼을 연 뒤에만 Trip.com 결과로',
+    detail:
+      '써머리 카드에서 항공권 검색을 누르면 위젯이 막힌 뒤 일정 없이 Trip.com /tickets- 결과로 갔습니다. 이제 같은 네이티브 검색 폼이 모달로 열리고, 가는 날·오는 날을 고른 뒤에만 검색됩니다.',
+    at: '2026-09-20T00:30:00.000Z',
+  },
   {
     id: '2026-09-19-tripcom-flight-11-scroll-to-form',
     session: '항공권 검색 #11, 상단 검색폼으로 스크롤',

@@ -103,12 +103,34 @@ assert.doesNotMatch(native, /nativePassengers/, 'passenger label removed');
 assert.match(native, /arrivalIata/, 'arrival override passed to Trip.com');
 assert.match(native, /AirportSlot/, 'combined origin-destination picker');
 assert.match(native, /TripcomFlightDateRangeCalendar/, 'single date-range calendar');
+assert.match(native, /hasCompleteFlightDates/, 'search waits for picked dates');
+assert.match(native, /data-tripcom-schedule-complete/, 'incomplete schedule marker');
+assert.doesNotMatch(native, /addDaysYmd\(todayYmd\(\), 14\)/, 'form does not auto-fill +14');
 
 const calendar = read(
   'src/components/PlaceCard/tabs/planner/components/TripcomFlightDateRangeCalendar.jsx',
 );
 assert.match(calendar, /data-tripcom-date-range/, 'range calendar marker');
 assert.match(calendar, /applyFlightDatePick/, 'shared date-pick helper');
+assert.match(calendar, /openSignal/, 'search without dates reopens calendar');
+assert.match(calendar, /nativePickDepart/, 'empty dates show pick-depart copy');
+
+const modal = read('src/components/PlaceCard/modals/TripcomFlightSearchModal.jsx');
+assert.match(modal, /data-tripcom-flight-modal="native"/, 'native date-form modal');
+assert.match(modal, /TripcomFlightNativeSearch/, 'modal reuses planner search form');
+assert.match(modal, /calendarInitialOpen/, 'modal calendar opens for date pick');
+
+const context = read(
+  'src/components/PlaceCard/tabs/planner/TripcomFlightSearchContext.jsx',
+);
+assert.match(context, /mode: 'native'/, 'widget-down fallback is native form');
+assert.match(context, /tickets 직행 금지/, 'no tickets skip from summary/cinema CTA');
+
+const cinemaBar = read('src/pages/Home/components/FlightCinemaBar.jsx');
+assert.match(cinemaBar, /WhiteLabelWidget/, 'summary cinema search uses WhiteLabelWidget');
+assert.match(cinemaBar, /searchFlights/, 'summary cinema has 항공권 검색');
+
+assert.match(whiteLabel, /tryOpenFlightSearch/, 'globe CTA tries in-app form first');
 
 const vercel = read('vercel.json');
 assert.match(vercel, /\/qa\/flight"/, 'vercel.json /qa/flight');
@@ -172,7 +194,7 @@ assert.equal(oneWayDates.ddate, '2026-11-01', 'one-way keeps depart');
 assert.equal(oneWayDates.rdate, '', 'one-way has no return');
 assert.equal(oneWayDates.tripType, 'OW', 'one-way type');
 
-const { applyFlightDatePick } = await import('../src/utils/tripcomFlightDateRange.js');
+const { applyFlightDatePick, hasCompleteFlightDates } = await import('../src/utils/tripcomFlightDateRange.js');
 const start = applyFlightDatePick({
   tripType: 'RT',
   ddate: '2026-10-15',
@@ -203,6 +225,27 @@ const oneWay = applyFlightDatePick({
 });
 assert.equal(oneWay.ddate, '2026-11-03', 'one-way sets depart');
 assert.equal(oneWay.done, true, 'one-way completes on first tap');
+
+assert.equal(
+  hasCompleteFlightDates({ tripType: 'RT', ddate: '', rdate: '' }),
+  false,
+  'empty range is incomplete',
+);
+assert.equal(
+  hasCompleteFlightDates({ tripType: 'RT', ddate: '2026-11-01', rdate: '' }),
+  false,
+  'round-trip needs return',
+);
+assert.equal(
+  hasCompleteFlightDates({ tripType: 'RT', ddate: '2026-11-01', rdate: '2026-11-08' }),
+  true,
+  'round-trip complete',
+);
+assert.equal(
+  hasCompleteFlightDates({ tripType: 'OW', ddate: '2026-11-01', rdate: '' }),
+  true,
+  'one-way complete with depart only',
+);
 
 console.log('OK: tripcom-flight-planner — iframe banner · form scroll CTA · tickets URL');
 console.log('SMOKE OK');

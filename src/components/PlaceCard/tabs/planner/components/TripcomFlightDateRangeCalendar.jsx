@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
     applyFlightDatePick,
@@ -28,9 +28,12 @@ const TripcomFlightDateRangeCalendar = ({
     onChange,
     t,
     locale,
+    initialOpen = false,
+    openSignal = 0,
 }) => {
     const isRoundTrip = tripType === 'RT';
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(() => Boolean(initialOpen));
+    const lastOpenSignal = useRef(openSignal);
     const [picking, setPicking] = useState('start');
     const [view, setView] = useState(() => parseYmd(ddate) || new Date());
     const today = todayYmd();
@@ -45,9 +48,20 @@ const TripcomFlightDateRangeCalendar = ({
         setPicking('start');
     }, [tripType, ddate, rdate]);
 
-    const summary = isRoundTrip
-        ? `${formatDayLabel(ddate, locale)}${rdate ? ` – ${formatDayLabel(rdate, locale)}` : ` – ${t('place.planner.banners.tripcomFlight.nativePickReturn')}`}`
-        : formatDayLabel(ddate, locale);
+    useEffect(() => {
+        if (openSignal === lastOpenSignal.current) return;
+        lastOpenSignal.current = openSignal;
+        if (!openSignal) return;
+        setOpen(true);
+        const nextView = parseYmd(ddate);
+        if (nextView) setView(nextView);
+    }, [openSignal, ddate]);
+
+    const summary = !ddate
+        ? t('place.planner.banners.tripcomFlight.nativePickDepart')
+        : isRoundTrip
+            ? `${formatDayLabel(ddate, locale)}${rdate ? ` – ${formatDayLabel(rdate, locale)}` : ` – ${t('place.planner.banners.tripcomFlight.nativePickReturn')}`}`
+            : formatDayLabel(ddate, locale);
 
     const hint = !isRoundTrip
         ? t('place.planner.banners.tripcomFlight.nativePickDepart')

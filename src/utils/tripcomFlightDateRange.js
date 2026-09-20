@@ -117,3 +117,10 @@ export function formatDayLabel(ymd, locale) {
     weekday: 'short',
   }).format(dt);
 }
+
+/** 사용자가 달력에서 고른 일정인지 — 기본 +14/+21 채움과 구분 */
+export function hasCompleteFlightDates({ tripType, ddate, rdate } = {}) {
+  if (!parseYmd(ddate)) return false;
+  if (String(tripType || 'RT').toUpperCase() === 'OW') return true;
+  return Boolean(parseYmd(rdate) && rdate > ddate);
+}

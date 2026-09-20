@@ -16,7 +16,7 @@ import {
     listFlightCinemaOriginPickerOptions,
 } from '../../../../../pages/Home/lib/flightCinemaOriginOptions';
 import { searchFlightOriginHubs } from '../../../../../pages/Home/lib/flightCinemaOriginSearch';
-import { addDaysYmd, todayYmd } from '../../../../../utils/tripcomFlightDateRange';
+import { hasCompleteFlightDates } from '../../../../../utils/tripcomFlightDateRange';
 import TripcomFlightDateRangeCalendar from './TripcomFlightDateRangeCalendar';
 
 function AirportSlot({
@@ -103,6 +103,8 @@ const TripcomFlightNativeSearch = ({
     tracking,
     departDate,
     returnDate,
+    calendarInitialOpen = false,
+    closeSlot = false,
     onAfterSearch,
 }) => {
     const { t, i18n } = useTranslation();
@@ -116,10 +118,12 @@ const TripcomFlightNativeSearch = ({
     );
     const [arrive, setArrive] = useState(() => defaultArrival || '');
     const [tripType, setTripType] = useState('RT');
-    const [ddate, setDdate] = useState(departDate || addDaysYmd(todayYmd(), 14));
-    const [rdate, setRdate] = useState(returnDate || addDaysYmd(todayYmd(), 21));
+    const [ddate, setDdate] = useState(departDate || '');
+    const [rdate, setRdate] = useState(returnDate || '');
+    const [calendarOpenSignal, setCalendarOpenSignal] = useState(0);
     const linkTarget = getPartnerLinkTarget();
     const isRoundTrip = tripType === 'RT';
+    const datesReady = hasCompleteFlightDates({ tripType, ddate, rdate });
 
     useEffect(() => {
         if (defaultArrival) {
@@ -135,8 +139,12 @@ const TripcomFlightNativeSearch = ({
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const outbound = ddate || addDaysYmd(todayYmd(), 14);
-        const inbound = isRoundTrip ? (rdate && rdate > outbound ? rdate : addDaysYmd(outbound, 7)) : '';
+        if (!hasCompleteFlightDates({ tripType, ddate, rdate })) {
+            setCalendarOpenSignal((current) => current + 1);
+            return;
+        }
+        const outbound = ddate;
+        const inbound = isRoundTrip ? rdate : '';
         const url = buildTripcomPlannerFlightUrl(location, {
             essentialGuide,
             mode: 'flights',
@@ -160,8 +168,9 @@ const TripcomFlightNativeSearch = ({
             className="relative flex flex-col overflow-hidden bg-gradient-to-b from-sky-50/50 via-white to-white"
             data-tripcom-native-search="1"
             data-tripcom-trip-type={tripType}
+            data-tripcom-schedule-complete={datesReady ? '1' : '0'}
         >
-            <div className="flex items-center justify-between border-b border-sky-100/90 bg-gradient-to-r from-sky-50 to-white px-3.5 py-2.5">
+            <div className={`flex items-center justify-between border-b border-sky-100/90 bg-gradient-to-r from-sky-50 to-white px-3.5 py-2.5 ${closeSlot ? 'pr-12' : ''}`.trim()}>
                 <div className="flex items-center gap-2">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600">
                         <Plane size={15} />
@@ -239,6 +248,8 @@ const TripcomFlightNativeSearch = ({
                     rdate={rdate}
                     locale={i18n.language}
                     t={t}
+                    initialOpen={calendarInitialOpen}
+                    openSignal={calendarOpenSignal}
                     onChange={({ ddate: nextDepart, rdate: nextReturn }) => {
                         setDdate(nextDepart);
                         setRdate(nextReturn);
