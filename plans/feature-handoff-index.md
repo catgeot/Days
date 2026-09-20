@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `c04252b9` · PR [#289](https://github.com/catgeot/Days/pull/289) · **사람 Preview** · 단축 **`/qa/planner-stages`** |
+| **상태** | **#3 push** · tip `5b7a6cc1` · PR [#289](https://github.com/catgeot/Days/pull/289) · **사람 Preview** · 단축 **`/qa/planner-stages`** |
 | **브랜치** | `cursor/planner-stages-7ee0` |
 | **PR** | [#289](https://github.com/catgeot/Days/pull/289) |
 | **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
@@ -30,12 +30,12 @@
 **다음 제시어**:
 
 ```
-플래너 3단계 #3, Preview OK면 PR 병합
+플래너 3단계 #4, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-20-project-log.md
 브랜치 cursor/planner-stages-7ee0 · PR #289 · Preview /qa/planner-stages
 금지: 트립닷컴 모바일 iframe 재도입 · 위젯을 체크리스트 2열에 넣기 · 픽업·여행사 재배치 · feature에 plans/** 커밋
-작업: 파리 플래너 1단계 항공권 카드에 출발·도착·일정 입력 폼이 있는지(트립닷컴 빈 박스 아님). 「항공권 실시간 검색」버튼이 없는지. 2·3단계 상단에 항공 검색이 없는지. 픽업·유심 2열·복잡도 n/100 유지인지. OK면 PR #289 병합.
+작업: 1단계 — 하이브리드 고지(제목 아래)·방문한 여행사·렌터카 배너. 2·3단계 — 상단 여행사 없음·배너 sticky·하단 하이브리드 고지 1회. 항공 네이티브 폼·픽업·유심 2열·복잡도 유지. OK면 PR #289 병합.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · smoke:planner-empty-scroll PASS · vite build PASS
 ```
 

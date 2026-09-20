@@ -2,6 +2,15 @@
 
 직전: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)
 
+## 플래너 3단계 #3 — 상단 공지·여행사·하이브리드 고지 (Cloud)
+
+- **세션** `플래너 3단계 #3, Preview QA`
+- **브랜치** `cursor/planner-stages-7ee0` · tip `5b7a6cc1` · PR [#289](https://github.com/catgeot/Days/pull/289)
+- **완료**: 1단계만 하이브리드 고지(제목 아래)·방문한 여행사·연관 여행지. 2·3단계는 렌터카·픽업 배너+탭만 상단, 하이브리드 고지는 단계 하단 1회. 배너 sticky·고지 문구 간결화. **병합 보류**.
+- **VERIFY**: `smoke:tripcom-flight-planner` · `smoke:trust-disclosure` · `smoke:planner-empty-scroll` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/planner-stages → `/place/paris/planner`
+- **QA**: 1단계 여행사·하이브리드 상단 · 2·3단계 상단 슬림·하이브리드 하단
+
 ## 플래너 3단계 #2 — 네이티브 검색 폼 (Cloud)
 
 - **세션** `플래너 3단계 #2, Preview QA`
