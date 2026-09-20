@@ -17,6 +17,8 @@ import { computeKlookBannerLayout } from './klookBannerLayout';
 import { useTripcomPlannerBannerDimensions } from './useTripcomPlannerBannerDimensions';
 import { plannerCaption } from '../readableText';
 import PlannerAffiliateLinkBadge from './PlannerAffiliateLinkBadge';
+import TripcomFlightNativeSearch from './TripcomFlightNativeSearch';
+import { logFlightDebug, copyFlightDebugLines } from '../../../../../shared/cloudPreview/flightDebug';
 
 const MIN_DISPLAY_HEIGHT = 120;
 
@@ -71,10 +73,23 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
     );
 
     useEffect(() => {
+        logFlightDebug('banner.mount', {
+            slug: location?.slug,
+            arrivalIata,
+            flightAdId,
+            nativeW,
+            nativeH,
+            isMobileBanner,
+            iframeSrc: iframeSrc?.slice(0, 90),
+        });
+    }, [location?.slug, arrivalIata, flightAdId, nativeW, nativeH, isMobileBanner, iframeSrc]);
+
+    useEffect(() => {
         const updateScale = () => {
             if (!containerRef.current) return;
+            const containerW = containerRef.current.clientWidth;
             let { scale, clipH } = computeKlookBannerLayout(
-                containerRef.current.clientWidth,
+                containerW,
                 8,
                 nativeW,
                 nativeH,
@@ -84,6 +99,13 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
                 clipH = nativeH;
             }
             setLayout({ scale, clipH: Math.max(clipH, MIN_DISPLAY_HEIGHT) });
+            logFlightDebug('banner.scale', {
+                containerW,
+                nativeW,
+                nativeH,
+                scale: Number(scale.toFixed(3)),
+                clipH,
+            });
         };
 
         updateScale();
@@ -117,8 +139,29 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
         ? { href: '#', onClick: handleFullScreenClick, role: 'button' }
         : { href: clickUrl, target: linkTarget, rel: linkRel };
 
+    // 모바일(≤767px): 단순 링크 버튼 대신 네이티브 출발·도착·일자 입력 폼 제공
+    if (isMobileBanner) {
+        return (
+            <div
+                id="planner-flight-search"
+                className={`${className} scroll-mt-24`.trim()}
+                data-tripcom-arrival-iata={arrivalIata || ''}
+                data-tripcom-flight-banner="native"
+            >
+                <div className="overflow-hidden rounded-2xl border border-sky-300/80 bg-white shadow-sm ring-1 ring-sky-900/10">
+                    <TripcomFlightNativeSearch
+                        location={location}
+                        essentialGuide={essentialGuide}
+                        departDate={departDate}
+                        returnDate={returnDate}
+                    />
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className={className}>
+        <div id="planner-flight-search" className={`${className} scroll-mt-24`.trim()}>
             <div
                 ref={containerRef}
                 className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
@@ -141,14 +184,29 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
                         }}
                     >
                         <iframe
+                            id={flightAdId}
                             key={`${iframeSrc}-${nativeW}x${nativeH}`}
                             src={iframeSrc}
                             title={t('place.planner.banners.tripcomFlight.iframeTitle')}
                             width={nativeW}
                             height={nativeH}
-                            className="block border-0"
+                            style={{ width: `${nativeW}px`, height: `${nativeH}px`, border: 'none' }}
+                            frameBorder="0"
                             scrolling="no"
                             loading="lazy"
+                            onLoad={() => {
+                                logFlightDebug('iframe.onload', {
+                                    src: iframeSrc?.slice(0, 80),
+                                    w: nativeW,
+                                    h: nativeH,
+                                });
+                            }}
+                            onError={(e) => {
+                                logFlightDebug('iframe.onerror', {
+                                    message: e?.message || 'iframe_load_error',
+                                    src: iframeSrc?.slice(0, 80),
+                                });
+                            }}
                             {...(iframeReferrerPolicy
                                 ? { referrerPolicy: iframeReferrerPolicy }
                                 : {})}
@@ -177,6 +235,17 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
                         >
                             {t('place.planner.banners.tripcomFlight.fullScreenSearch')}
                         </a>
+                        {' · '}
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                const res = await copyFlightDebugLines();
+                                alert(res.ok ? '진단 로그가 클립보드에 복사되었습니다! 채팅에 붙여넣어 주세요.' : '복사 실패: 화면 좌하단의 [모바일 위젯 로그] 버튼을 눌러주세요.');
+                            }}
+                            className="text-gray-400 hover:text-gray-600 underline-offset-2 hover:underline text-[11px]"
+                        >
+                            [진단 로그 복사]
+                        </button>
                     </>
                 ) : (
                     <>
@@ -187,6 +256,17 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
                         >
                             {t('place.planner.banners.tripcomFlight.tripcomFlights')}
                         </a>
+                        {' · '}
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                const res = await copyFlightDebugLines();
+                                alert(res.ok ? '진단 로그가 클립보드에 복사되었습니다! 채팅에 붙여넣어 주세요.' : '복사 실패: 화면 좌하단의 [모바일 위젯 로그] 버튼을 눌러주세요.');
+                            }}
+                            className="text-gray-400 hover:text-gray-600 underline-offset-2 hover:underline text-[11px]"
+                        >
+                            [진단 로그 복사]
+                        </button>
                     </>
                 )}
             </p>

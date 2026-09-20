@@ -9,7 +9,7 @@ import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constan
 import { getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { mobilePlaceHeaderScrollPadding, mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
-import PreTravelChecklist, { PlannerPickupCta } from './planner/components/PreTravelChecklist';
+import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
@@ -17,7 +17,6 @@ import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
 import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
 import FlightCinemaPlannerNotice from './planner/components/FlightCinemaPlannerNotice';
-import PlannerStageNav from './planner/components/PlannerStageNav';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
@@ -34,8 +33,6 @@ import { resetIosZoomAfterInput } from '../../../shared/lib/mobileViewport';
 import {
   parsePlannerFocusFromHash,
   scrollPlannerFocusIntoView,
-  PLANNER_STAGE,
-  resolvePlannerStageFromFocusId,
 } from '../../../utils/placePlannerFocus';
 import {
   clearFlightCinemaPlannerEntryParams,
@@ -85,8 +82,6 @@ const PlannerTab = ({
         };
     }, [eventPlannerEntry]);
     const [cinemaNoticeDismissed, setCinemaNoticeDismissed] = useState(false);
-    const [plannerStage, setPlannerStage] = useState(PLANNER_STAGE.ESSENTIAL);
-    const [esimProvider, setEsimProvider] = useState('airalo');
     const plannerFocusId = parsePlannerFocusFromHash(routeLocation.hash);
     const lastScrolledFocusRef = useRef(null);
 
@@ -153,7 +148,7 @@ const PlannerTab = ({
             window.clearTimeout(retry);
             window.clearTimeout(retryLate);
         };
-    }, [isActive, isLoading, plannerFocusId, guideData, plannerStage]);
+    }, [isActive, isLoading, plannerFocusId, guideData]);
 
     useEffect(() => {
         if (!plannerFocusId) lastScrolledFocusRef.current = null;
@@ -163,28 +158,12 @@ const PlannerTab = ({
         setCinemaNoticeDismissed(false);
     }, [location?.slug, flightCinemaEntry?.cinemaOriginIata]);
 
-    useEffect(() => {
-        if (plannerFocusId) {
-            setPlannerStage(resolvePlannerStageFromFocusId(plannerFocusId));
-        } else {
-            setPlannerStage(PLANNER_STAGE.ESSENTIAL);
-        }
-        setEsimProvider('airalo');
-    }, [location?.slug, plannerFocusId]);
-
     const dismissFlightCinemaNotice = useCallback(() => {
         setCinemaNoticeDismissed(true);
         if (!flightCinemaEntry) return;
         const next = clearFlightCinemaPlannerEntryParams(searchParams);
         setSearchParams(next, { replace: true });
     }, [flightCinemaEntry, searchParams, setSearchParams]);
-
-    const handlePlannerStageChange = useCallback((stage) => {
-        setPlannerStage(stage);
-        if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = 0;
-        }
-    }, []);
 
     const showFlightCinemaNotice = Boolean(flightCinemaEntry) && !cinemaNoticeDismissed;
 
@@ -447,11 +426,12 @@ const PlannerTab = ({
                                     {t('place.planner.title')}
                                 </span>
                                 {guideData?.is_complex ? (
-                                    <span
-                                        className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-900 md:text-sm"
-                                        title={t('place.planner.complexityHint')}
-                                    >
-                                        {t('place.planner.complexityBadge')}
+                                    <span className="text-base font-bold tabular-nums text-amber-800/90 md:text-lg md:font-black">
+                                        ({t('place.planner.complexity')}{' '}
+                                        {Number.isFinite(Number(guideData.complexity_score))
+                                            ? Number(guideData.complexity_score)
+                                            : 80}
+                                        /100)
                                     </span>
                                 ) : null}
                             </h2>
@@ -488,160 +468,125 @@ const PlannerTab = ({
                         </p>
                     </div>
 
-                    <PlannerStageNav value={plannerStage} onChange={handlePlannerStageChange} />
+                    {location && (
+                        <div className="w-full mb-6 shrink-0">
+                            <TripcomFlightBannerWidget
+                                location={location}
+                                essentialGuide={guideData}
+                                departDate={eventTripWindow?.departDate}
+                                returnDate={eventTripWindow?.returnDate}
+                                className="mb-0"
+                            />
+                        </div>
+                    )}
 
-                    {plannerStage === PLANNER_STAGE.ESSENTIAL ? (
-                        <>
-                            <div
-                                id="planner-pre-travel-checklist"
-                                className={`grid grid-cols-1 gap-5 mb-5 scroll-mt-24 ${
-                                    (guideData?.journey_timeline?.length ?? 0) > 0 ? 'md:grid-cols-2' : ''
-                                }`}
-                            >
-                                <PreTravelChecklist
-                                    items={guideData?.categories?.pre_travel || []}
-                                    locationName={localizedPlaceName}
-                                    location={location}
-                                    essentialGuide={guideData}
-                                    eventTripWindow={eventTripWindow}
-                                    flightBooking={
-                                        location ? (
-                                            <TripcomFlightBannerWidget
-                                                location={location}
-                                                essentialGuide={guideData}
-                                                departDate={eventTripWindow?.departDate}
-                                                returnDate={eventTripWindow?.returnDate}
-                                                className="mb-0"
-                                            />
-                                        ) : null
-                                    }
-                                />
-                                {(guideData?.journey_timeline?.length ?? 0) > 0 ? (
-                                    <JourneyTimeline
-                                        timeline={guideData.journey_timeline}
-                                        location={location}
-                                        essentialGuide={guideData}
-                                    />
-                                ) : null}
+                    <div id="planner-rental-pickup" className="mb-5 w-full shrink-0 scroll-mt-24">
+                        {rentalPickupBanner}
+                    </div>
+
+                    <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
+
+                    <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
+
+                {/* 체크리스트(항공·숙소·픽업) — 툴킷 있으면 상시 · 타임라인은 있을 때만 */}
+                {guideData && (
+                    <div
+                        id="planner-pre-travel-checklist"
+                        className={`grid grid-cols-1 gap-5 mb-5 scroll-mt-24 ${
+                            (guideData?.journey_timeline?.length ?? 0) > 0 ? 'md:grid-cols-2' : ''
+                        }`}
+                    >
+                        <PreTravelChecklist
+                            items={guideData?.categories?.pre_travel || []}
+                            locationName={localizedPlaceName}
+                            location={location}
+                            essentialGuide={guideData}
+                            eventTripWindow={eventTripWindow}
+                            scrollContainerRef={scrollContainerRef}
+                        />
+                        {(guideData?.journey_timeline?.length ?? 0) > 0 ? (
+                            <JourneyTimeline
+                                timeline={guideData.journey_timeline}
+                                location={location}
+                                essentialGuide={guideData}
+                            />
+                        ) : null}
+                    </div>
+                )}
+
+                {/* 3단계 시각적 그룹화(섹션화) 레이아웃 적용 */}
+
+                {/* 섹션 1: 출발 전 필수 준비 */}
+                <div id="planner-prep" className="mb-8 scroll-mt-24">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
+                        <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionPrep')}</h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-5">
+                        <div id="planner-prep-visa" className="scroll-mt-24">
+                        <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
+                        </div>
+                        <div id="planner-prep-flight" className="scroll-mt-24">
+                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" scrollContainerRef={scrollContainerRef} />
+                        </div>
+                        <div id="planner-prep-accommodation" className="scroll-mt-24">
+                        <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
+                        </div>
+                        <div id="planner-prep-safety" className="scroll-mt-24">
+                        <ToolkitCard icon={ShieldAlert} title={t('place.planner.toolkit.safety')} type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 섹션 2: 현지 도착 및 이동 */}
+                <div id="planner-arrival" className="mb-8 scroll-mt-24">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1.5 h-5 bg-teal-500 rounded-full"></div>
+                        <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionArrival')}</h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-5">
+                        {(guideData?.categories?.airport_transfer) && (
+                            <div id="planner-arrival-transfer" className="scroll-mt-24">
+                            <ToolkitCard icon={Car} title={t('place.planner.toolkit.airportTransfer')} type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                             </div>
-
-                            <div id="planner-prep" className="mb-8 scroll-mt-24">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
-                                    <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionPrep')}</h3>
-                                </div>
-                                <div className="grid grid-cols-1 gap-5">
-                                    <div id="planner-prep-visa" className="scroll-mt-24">
-                                        <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
-                                    </div>
-                                    <div id="planner-prep-flight" className="scroll-mt-24">
-                                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" omitFlightSearchCta />
-                                    </div>
-                                    <div id="planner-prep-accommodation" className="scroll-mt-24">
-                                        <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" omitDuplicateStayCta />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
-                            <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
-                        </>
-                    ) : null}
-
-                    {plannerStage === PLANNER_STAGE.TRANSFER ? (
-                        <div id="planner-arrival" className="mb-8 scroll-mt-24">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="w-1.5 h-5 bg-teal-500 rounded-full"></div>
-                                <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionArrival')}</h3>
-                            </div>
-                            <div className="grid grid-cols-1 gap-5">
-                                <div id="planner-rental-pickup" className="scroll-mt-24">
-                                    {rentalPickupBanner}
-                                </div>
-                                <PlannerPickupCta />
-                                {(guideData?.categories?.airport_transfer) && (
-                                    <div id="planner-arrival-transfer" className="scroll-mt-24">
-                                        <ToolkitCard icon={Car} title={t('place.planner.toolkit.airportTransfer')} type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
-                                    </div>
-                                )}
-                                {showFerryCard && (
-                                    <ToolkitCard icon={Ship} title={t('place.planner.toolkit.ferry')} type="ferry_booking" data={guideData?.categories?.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
-                                )}
-                                <div className="rounded-2xl border border-blue-200/90 bg-gradient-to-b from-blue-50/45 via-white to-white p-3 shadow-sm ring-1 ring-blue-900/[0.06] md:p-4 flex flex-col gap-4">
-                                    <ToolkitCard
-                                        icon={Wifi}
-                                        title={t('place.planner.toolkit.connectivity')}
-                                        type="connectivity"
-                                        data={guideData?.categories?.connectivity || guideData?.connectivity}
-                                        isSponsored
-                                        location={location}
-                                        essentialGuide={guideData}
-                                        themeColor="default"
-                                        className="!border-0 shadow-none bg-transparent hover:!shadow-none hover:!border-transparent"
-                                    />
-                                    <div className="border-t border-blue-100/90 pt-4">
-                                        <p className={`${plannerCaption} mb-2 font-bold text-gray-700`}>
-                                            {t('place.planner.esim.choose')}
-                                        </p>
-                                        <div role="tablist" aria-label={t('place.planner.esim.choose')} className="mb-3 flex flex-wrap gap-2">
-                                            <button
-                                                type="button"
-                                                role="tab"
-                                                aria-selected={esimProvider === 'airalo'}
-                                                onClick={() => setEsimProvider('airalo')}
-                                                className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-bold shadow-sm ${
-                                                    esimProvider === 'airalo'
-                                                        ? 'border border-blue-600 bg-blue-600 text-white'
-                                                        : 'border border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                {t('place.planner.esim.airalo')}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                role="tab"
-                                                aria-selected={esimProvider === 'holafly'}
-                                                onClick={() => setEsimProvider('holafly')}
-                                                className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-bold shadow-sm ${
-                                                    esimProvider === 'holafly'
-                                                        ? 'border border-blue-600 bg-blue-600 text-white'
-                                                        : 'border border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                {t('place.planner.esim.holafly')}
-                                            </button>
-                                        </div>
-                                        {esimProvider === 'airalo' ? <AiraloBannerWidget /> : <HolaflyBannerWidget />}
-                                    </div>
-                                </div>
+                        )}
+                        {showFerryCard && (
+                            <ToolkitCard icon={Ship} title={t('place.planner.toolkit.ferry')} type="ferry_booking" data={guideData?.categories?.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        )}
+                        <div className="rounded-2xl border border-blue-200/90 bg-gradient-to-b from-blue-50/45 via-white to-white p-3 shadow-sm ring-1 ring-blue-900/[0.06] md:p-4 flex flex-col gap-4">
+                            <ToolkitCard
+                                icon={Wifi}
+                                title={t('place.planner.toolkit.connectivity')}
+                                type="connectivity"
+                                data={guideData?.categories?.connectivity || guideData?.connectivity}
+                                isSponsored
+                                location={location}
+                                essentialGuide={guideData}
+                                themeColor="default"
+                                className="!border-0 shadow-none bg-transparent hover:!shadow-none hover:!border-transparent"
+                            />
+                            <div className="grid grid-cols-1 gap-3 border-t border-blue-100/90 pt-4 md:grid-cols-2 md:gap-3">
+                                <AiraloBannerWidget />
+                                <HolaflyBannerWidget />
                             </div>
                         </div>
-                    ) : null}
+                    </div>
+                </div>
 
-                    {plannerStage === PLANNER_STAGE.ENJOY ? (
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="w-1.5 h-5 bg-orange-500 rounded-full"></div>
-                                <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionEnjoy')}</h3>
-                            </div>
-                            <div className="grid grid-cols-1 gap-5">
-                                <ToolkitCard icon={MapPin} title={t('place.planner.toolkit.mapPoi')} type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} essentialGuide={guideData} themeColor="default" />
-                                <div id="planner-local-transport" className="scroll-mt-24">
-                                    <ToolkitCard icon={Train} title={t('place.planner.toolkit.transport')} type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
-                                </div>
-                                <ToolkitCard icon={Smartphone} title={t('place.planner.toolkit.apps')} type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
-                                <div id="planner-prep-safety" className="scroll-mt-24">
-                                    <ToolkitCard icon={ShieldAlert} title={t('place.planner.toolkit.safety')} type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
-                                </div>
-                            </div>
+                {/* 섹션 3: 현지 100% 즐기기 */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1.5 h-5 bg-orange-500 rounded-full"></div>
+                        <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionEnjoy')}</h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-5">
+                        <ToolkitCard icon={MapPin} title={t('place.planner.toolkit.mapPoi')} type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} essentialGuide={guideData} themeColor="default" />
+                        <div id="planner-local-transport" className="scroll-mt-24">
+                        <ToolkitCard icon={Train} title={t('place.planner.toolkit.transport')} type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         </div>
-                    ) : null}
-
-                    <PlannerStageNav
-                        variant="footer"
-                        value={plannerStage}
-                        onChange={handlePlannerStageChange}
-                    />
+                        <ToolkitCard icon={Smartphone} title={t('place.planner.toolkit.apps')} type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
+                    </div>
+                </div>
 
                 {/* 관리자/테스트: AI 툴킷 강제 재실행 (평소 흐릿 · hover 시 확인 가능) */}
                 <div

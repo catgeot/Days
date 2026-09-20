@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
-import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import FlightSearchCta from './FlightSearchCta';
+import { scrollPlannerFlightSearchForm } from '../../../../../utils/placePlannerFocus.js';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
 import {
     GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
@@ -37,20 +37,13 @@ const ToolkitCard = ({
     eventTripWindow,
     themeColor = 'gray',
     className = '',
-    omitFlightSearchCta = false,
-    omitDuplicateStayCta = false,
+    scrollContainerRef = null,
 }) => {
     const { t } = useTranslation();
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
-    const links = getMultiLinks({
-        type,
-        data,
-        location,
-        essentialGuide,
-        skipGenericStaySearch: omitDuplicateStayCta,
-    });
+    const links = getMultiLinks({ type, data, location, essentialGuide });
     const ferryAdviceText = cleanAdviceText(getAdviceText(data));
     const ferryHasSsot = type === 'ferry_booking' && shouldShowFerryCard(location?.slug);
     const showFerryAdviceBlock = ferryAdviceText || !ferryHasSsot;
@@ -160,22 +153,17 @@ const ToolkitCard = ({
 
             {/* Trip.com 제휴 + OTA 미지원 지역 공식 예약 링크 */}
             {type === 'flight' && (
-                omitFlightSearchCta ? (
+                <div id="planner-prep-flight-booking" className="scroll-mt-24">
                     <FlightOfficialBookingWidget location={location} />
-                ) : (
-                    <div id="planner-prep-flight-booking" className="scroll-mt-24">
-                        <FlightOfficialBookingWidget location={location} />
-                        <WhiteLabelWidget
-                            location={location}
-                            essentialGuide={essentialGuide}
-                            departDate={eventTripWindow?.departDate}
-                            returnDate={eventTripWindow?.returnDate}
-                            customTrigger={
-                                <FlightSearchCta location={location} essentialGuide={essentialGuide} />
-                            }
-                        />
-                    </div>
-                )
+                    <FlightSearchCta
+                        location={location}
+                        essentialGuide={essentialGuide}
+                        scrollToSearchForm
+                        onClick={() => {
+                            scrollPlannerFlightSearchForm(scrollContainerRef?.current ?? null);
+                        }}
+                    />
+                </div>
             )}
             {/* 🆕 [Phase 8-8] Direct Ferries 페리 예약 위젯 (2026.04.21) */}
             {type === 'ferry_booking' && (

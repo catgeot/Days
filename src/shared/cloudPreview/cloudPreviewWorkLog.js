@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 65,
-  sessionPhase: '보성 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=boseong',
-  qaShareSlug: 'palgyeong-use',
+  title: '항공권 검색',
+  sessionNo: 12,
+  sessionPhase: '써머리 검색폼',
+  branch: 'cursor/tripcom-flight-widget-3ec3',
+  previewPath: '/place/paris/planner',
+  qaShareSlug: 'flight',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,142 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-20-tripcom-flight-12-summary-search-form',
+    session: '항공권 검색 #12, 써머리 검색폼',
+    title: '써머리 항공권 검색은 일정 폼을 연 뒤에만 Trip.com 결과로',
+    detail:
+      '써머리 카드에서 항공권 검색을 누르면 위젯이 막힌 뒤 일정 없이 Trip.com /tickets- 결과로 갔습니다. 이제 같은 네이티브 검색 폼이 모달로 열리고, 가는 날·오는 날을 고른 뒤에만 검색됩니다.',
+    at: '2026-09-20T00:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-11-scroll-to-form',
+    session: '항공권 검색 #11, 상단 검색폼으로 스크롤',
+    title: '항공권 카드·필수준비는 Trip.com 직행 대신 상단 검색폼으로',
+    detail:
+      '항공권 파트와 필수준비 검색을 누르면 일정을 확인하지 않은 채 Trip.com /tickets- 결과로 갔습니다. 이제 플래너 상단 항공권 검색폼으로 스크롤하고, 일정은 달력에서 고른 뒤 검색합니다.',
+    at: '2026-09-19T23:55:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-10-tickets-landing',
+    session: '항공권 검색 #10, 항공 검색 결과로 직행',
+    title: '검색바 클릭 시 항공+호텔 홈이 아니라 tickets 검색 결과로',
+    detail:
+      '항공권 파트의 검색바는 일정이 없어 /flights/ 홈(항공+호텔 검색박스)으로 열렸고 출도착이 이전 검색으로 남았습니다. 출도착 IATA가 있으면 /tickets- 항공 검색 결과로 직행하고, 일정이 없으면 +14/+21을 넣습니다.',
+    at: '2026-09-19T21:35:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-9-remove-passengers',
+    session: '항공권 검색 #9, 인원 설정 제거',
+    title: '모바일 항공권 폼에서 인원 설정 제거',
+    detail:
+      'Trip.com 결과가 1인으로만 열려 인원 스테퍼가 오해를 만들었습니다. 왕복/편도·출도착·한 달력 일정은 유지하고, 검색은 기본 1인으로 연결합니다.',
+    at: '2026-09-19T21:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-8-date-range-calendar',
+    session: '항공권 검색 #8, 한 달력 일정 선택',
+    title: '출발·도착일을 하나의 달력에서 선택',
+    detail:
+      '모바일 항공권 카드의 가는 날·오는 날 입력칸을 없애고, 일정 한 줄을 누르면 같은 달력에서 왕복은 가는 날 다음 오는 날, 편도는 하루만 고르게 했습니다.',
+    at: '2026-09-19T20:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-7-results-form',
+    session: '항공권 검색 #7, 모바일 검색 결과 연동',
+    title: '왕복·인원·출도착을 Trip.com 검색 결과에 연동',
+    detail:
+      '모바일 티켓 카드에서 출발·도착을 한 줄에서 고르고 왕복/편도·인원을 선택한 뒤 검색하면, 빈 /flights/ 홈이 아니라 ICN→CDG 같은 결과 페이지(/tickets-)로 날짜·인원·여정 유형이 채워져 이동합니다.',
+    at: '2026-09-19T20:10:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-6-premium-ticket-design',
+    session: '항공권 검색 #6, 모바일 검색 폼 프리미엄 카드 디자인',
+    title: '모바일 항공권 검색 폼 프리미엄 티켓 카드 디자인',
+    detail:
+      '모바일 항공권 검색 폼을 브랜드 일관성과 심미성을 갖춘 항공 티켓 스타일 카드로 개편했습니다. 상단 Trip.com 공식 브랜드 헤더 및 제휴 뱃지, ICN ✈ 도착지 항공권 보딩 패스형 경로 블록, 부드러운 배경/포커스 링의 날짜 입력창, 블루 그라데이션 검색 버튼을 적용했습니다.',
+    at: '2026-09-19T12:35:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-6-native-form',
+    session: '항공권 검색 #6, 모바일 네이티브 검색 폼 복원',
+    title: '모바일 단순 링크 버튼 대신 네이티브 검색 폼 복원',
+    detail:
+      '모바일에서 단순 링크 버튼(FlightSearchCta) 대신 출발·도착 공항 및 가는 날·오는 날 일자를 직접 선택하고 검색할 수 있는 네이티브 입력 폼(TripcomFlightNativeSearch)을 복원했습니다. PC는 900x200 iframe 배너를 유지합니다.',
+    at: '2026-09-19T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-5-native-cta',
+    session: '항공권 검색 #5, 모바일 네이티브 항공 검색 카드 적용',
+    title: '모바일 빈 iframe 대신 네이티브 항공 검색 카드 적용',
+    detail:
+      'Trip.com 제휴 광고 서버의 인증 오류로 인해 모바일에서 빈 박스로 남는 iframe 대신, 목적지(ICN → 도착IATA)가 명시된 네이티브 항공 검색 배너 카드(FlightSearchCta)를 표시합니다. 탭 시 Trip.com 항공 검색 페이지로 직결됩니다. PC 환경에서는 기존 900x200 가로형 iframe 배너를 유지합니다.',
+    at: '2026-09-19T10:55:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-4-exact-ad-params',
+    session: '항공권 검색 #4, 모바일 위젯 파라미터 정밀 일치',
+    title: '모바일 배너 공식 발급 파라미터 정합성 조정',
+    detail:
+      '사용자가 제공한 Trip.com 공식 발급 태그와 정확히 일치하도록 ad iframe URL 생성 시 불필요한 쿼리를 배제하고 Allianceid, SID, trip_sub1만 전달하도록 정비했습니다. iframe id 및 인라인 스타일(width:320px;height:480px;border:none)도 공식 태그 규격으로 동기화했습니다.',
+    at: '2026-09-19T10:45:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-3-revert-split',
+    session: '항공권 검색 #3, 3단 분리 이전 복귀',
+    title: '플래너 3단 분리 이전 단일 스크롤 복귀',
+    detail:
+      '플래너 3단(단계별 탭) 분리 이후 발생한 모바일 위젯 및 내비게이션 문제를 해소하기 위해 플래너 구조를 3단 분리 이전의 안정적인 단일 스크롤(출발 전 준비·도착 및 이동·즐기기) 상태로 롤백했습니다. 상단 트립닷컴 항공 위젯 및 체크리스트가 기존 규격으로 복구되었습니다.',
+    at: '2026-09-19T10:15:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-2-planner-fixes',
+    session: '항공권 검색 #2, Preview OK면 PR 병합',
+    title: '여행사 상단·유심 2열',
+    detail:
+      '방문한 여행사를 플래너 상단으로 올렸고, Airalo·Holafly를 한 화면 2열로 나란히 둡니다. 모바일 항공 위젯은 기존 Trip.com 320×480 iframe(전체 화면 검색=같은 위젯 모달)을 유지합니다. Preview /qa/flight — 파리 플래너 상단 여행사, 이동 단계 유심 2열, 모바일 320×480 위젯.',
+    at: '2026-09-19T09:45:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-2-qa-flight',
+    session: '항공권 검색 #2, 로컬 위젯 진단',
+    title: 'PROD 단축 주소를 /qa/flight로',
+    detail:
+      'www.gateo.kr/qa/tripcom-flight는 PR이 main에 없어 PROD에서 Preview로 안 넘어갔습니다. 짧은 /qa/flight를 PROD 리다이렉트에 올립니다. Preview /qa/flight — 파리 플래너 필수 단계 위젯.',
+    at: '2026-09-19T09:25:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-2-full-width',
+    session: '항공권 검색 #2, 로컬 위젯 진단',
+    title: '항공 위젯을 필수 단계 전체 폭으로',
+    detail:
+      '방문자 개선 #7에서 900×200 iframe을 체크리스트 2열 칸에 넣어 PC가 40% 스케일로 줄고, 모바일 320×480은 카드 안에서 빈 박스가 됐습니다. 3단계 탭은 유지하고 위젯만 필수 단계 전체 폭으로 뺐습니다. Preview /qa/tripcom-flight — 파리 필수 단계 위젯이 읽히는지, 모바일에서 검색 폼이 보이는지.',
+    at: '2026-09-19T09:11:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-1-restore-iframe',
+    session: '항공권 검색 #1, 기존 위젯 복구',
+    title: 'iframe 배너·모바일 모달(ICN→도착)로 되돌림',
+    detail:
+      'CTA·/flights/ 직링크는 새 착지라 도착이 LPB처럼 이전 검색으로 남았습니다. 5-22부터 쓰던 partners/ad iframe 배너와 모바일 전체화면 모달(도착 자동입력)을 다시 켭니다. 방문자 개선 #7에서 빼 둔 항공권 카드 배너만 유지합니다. Preview /qa/tripcom-flight — 파리 필수 단계 위젯에서 ICN→CDG, 탭하면 빈 화면이 아니라 검색 위젯.',
+    at: '2026-09-19T08:45:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-1-click-flights',
+    session: '항공권 검색 #1, 클릭 직링크',
+    title: '항공권 CTA가 Trip.com /flights/로 열리게',
+    detail:
+      '사람 Preview에서 「항공권 실시간 검색」을 탭하면 kr.trip.com 빈 화면이 떴습니다. 모바일 클릭이 iframe용 partners/ad URL을 전체 페이지로 열고 있었습니다. CTA는 /flights/ 직링크(네이티브 a)로 바꿨습니다. Preview /qa/tripcom-flight — 파리·이비사 필수 단계 배너 탭 → Trip.com 항공 검색(빈 화면 아님).',
+    at: '2026-09-19T08:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-tripcom-flight-1-widget-banner',
+    session: '항공권 검색 #1, 위젯·배너 복구',
+    title: '플래너 트립닷컴 항공권 검색 복구',
+    detail:
+      '파리·이비사 플래너에서 트립닷컴 partners/ad iframe이 빈 흰 박스로만 보이고, 항공권 카드의 검색 배너가 빠져 있었습니다. 3rd-party iframe은 쓰지 않고 필수 툴킷은 IATA CTA로 열고, 항공권 카드 배너를 다시 넣었습니다. 탭하면 Trip.com 검색으로 이동합니다. Preview /qa/tripcom-flight — /place/paris/planner · /place/ibiza/planner.',
+    at: '2026-09-19T08:15:00.000Z',
+  },
   {
     id: '2026-09-19-festival-ui-5-footer-mooni',
     session: '축제 페이지 #5, 푸터·무니 겹침',

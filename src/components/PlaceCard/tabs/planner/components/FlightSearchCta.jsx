@@ -9,10 +9,16 @@ import { getFlightTripDisclaimer } from '../../../../../utils/flightBookingMatch
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 
 /**
- * 플래너 항공권 Trip.com 검색 CTA — 고대비·클릭 유도형 배너.
- * WhiteLabelWidget customTrigger 또는 단독 버튼으로 사용.
+ * 플래너 항공권 검색 CTA — 고대비·클릭 유도형 배너.
+ * 플래너 항공권 카드는 상단 검색폼으로 스크롤. 지구본 등에서는 WhiteLabelWidget customTrigger.
  */
-const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonProps }) => {
+const FlightSearchCta = ({
+    location,
+    essentialGuide,
+    className = '',
+    scrollToSearchForm = false,
+    ...buttonProps
+}) => {
     const { t } = useTranslation();
     const arrivalIata = useMemo(
         () => getPlannerFlightArrivalIata(location, { essentialGuide }),
@@ -23,23 +29,33 @@ const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonPr
     const subtitle = useMemo(() => {
         const tierDisclaimer = getFlightTripDisclaimer(location, { arrivalIata });
         if (tierDisclaimer) return tierDisclaimer;
+        if (scrollToSearchForm) {
+            return t('place.planner.banners.flightSearchCta.chooseDates');
+        }
         if (arrivalIata) {
             return t('place.planner.banners.flightSearchCta.autoFill');
         }
         return getFlightDestinationSearchHint(location, { essentialGuide });
-    }, [location, essentialGuide, arrivalIata, t]);
+    }, [location, essentialGuide, arrivalIata, scrollToSearchForm, t]);
 
     return (
         <button
             type="button"
             className={`group relative mt-3 w-full overflow-hidden rounded-2xl text-left transition-all duration-200 hover:scale-[1.01] hover:shadow-xl active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 ${className}`.trim()}
             aria-label={
-                arrivalIata
-                    ? t('place.planner.banners.flightSearchCta.ariaWithRoute', {
-                          depart: departure,
-                          arrive: arrivalIata,
-                      })
-                    : t('place.planner.banners.flightSearchCta.ariaGeneric')
+                scrollToSearchForm
+                    ? arrivalIata
+                        ? t('place.planner.banners.flightSearchCta.ariaScrollWithRoute', {
+                              depart: departure,
+                              arrive: arrivalIata,
+                          })
+                        : t('place.planner.banners.flightSearchCta.ariaScrollGeneric')
+                    : arrivalIata
+                        ? t('place.planner.banners.flightSearchCta.ariaWithRoute', {
+                              depart: departure,
+                              arrive: arrivalIata,
+                          })
+                        : t('place.planner.banners.flightSearchCta.ariaGeneric')
             }
             {...buttonProps}
         >
