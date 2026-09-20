@@ -117,6 +117,7 @@
     "smoke:globe-page-zoom-lock": "node scripts/smoke-globe-page-zoom-lock.mjs",
     "smoke:release-notes-footer": "node scripts/smoke-release-notes-footer.mjs",
     "smoke:klook-affiliate": "node scripts/smoke-klook-affiliate.mjs",
+    "smoke:paris-transit-planner-links": "node scripts/smoke-paris-transit-planner-links.mjs",
     "smoke:rss-canonical": "node scripts/smoke-rss-canonical.mjs",
     "smoke:gsc-baseline": "node scripts/smoke-gsc-baseline.mjs",
     "smoke:gsc-baseline-prod": "node scripts/smoke-gsc-baseline-prod.mjs",

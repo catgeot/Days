@@ -142,3 +142,13 @@ export const isKlookDiningPriorityLocation = (searchTarget) =>
 
 export const isKlookDiningUnsupportedLocation = (location) =>
     matchesLocationKeys(location, DINING_KLOOK_UNSUPPORTED_KEYS);
+
+/** Île-de-France Mobilités — Navigo 주간권·Découverte 카드 구매처(역 매표소 등) */
+export const PARIS_NAVIGO_PURCHASE_OFFICIAL_URL =
+    'https://www.iledefrance-mobilites.fr/en/aide-et-contacts/passe-navigo-decouverte/ou-acheter-le-passe-navigo-decouverte';
+
+/** Klook — Paris Visite(온라인 교통패스). Navigo Semaine과 별도 상품 */
+export const KLOOK_PARIS_VISITE_ACTIVITY_SLUG = '13722-paris-visite-travelcard-paris';
+
+export const isParisTransportPassLocation = (location) =>
+    matchesLocationKeys(location, ['paris', '파리']);
