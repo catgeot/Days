@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `ce1e1e45` · PR [#289](https://github.com/catgeot/Days/pull/289) · **사람 Preview** · 단축 **`/qa/planner-stages`** |
+| **상태** | **#2 push** · tip `53248157` · PR [#289](https://github.com/catgeot/Days/pull/289) · **사람 Preview** · 단축 **`/qa/planner-stages`** |
 | **브랜치** | `cursor/planner-stages-7ee0` |
 | **PR** | [#289](https://github.com/catgeot/Days/pull/289) |
 | **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
 | **Preview** | `/qa/planner-stages` → git Preview `/place/paris/planner` |
-| **소유** | `PlannerTab` · `PlannerStageNav` · `placePlannerFocus` |
-| **금지** | 배너·카드 재배치 · 위젯을 체크리스트 2열에 넣기 · 유심 탭화 · 복잡도 뱃지 교체 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **소유** | `PlannerTab` · `PlannerStageNav` · `placePlannerFocus` · `TripcomFlightBannerWidget` |
+| **금지** | 위젯을 체크리스트 2열에 넣기 · 유심 탭화 · 복잡도 뱃지 교체 · 픽업·여행사 재배치 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `smoke:planner-empty-scroll` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-플래너 3단계 #2, Preview OK면 PR 병합
+플래너 3단계 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-20-project-log.md
 브랜치 cursor/planner-stages-7ee0 · PR #289 · Preview /qa/planner-stages
-금지: 배너·카드 재배치 · 위젯을 체크리스트 2열에 넣기 · feature에 plans/** 커밋
-작업: 파리 플래너에서 상단 항공 검색·픽업 배너가 1·2·3단계 모두 그대로인지. 단계 탭만으로 필수·이동·즐기기가 나뉘는지. 유심 2열·복잡도 n/100 유지인지. OK면 PR #289 병합.
+금지: 위젯을 체크리스트 2열에 넣기 · 픽업·여행사 재배치 · feature에 plans/** 커밋
+작업: 파리 플래너 1단계 항공권 카드 아래에 검색 폼이 있는지. 2·3단계 상단에 항공 검색 폼이 없는지. 새로고침 버튼이 없는지. 픽업 배너·유심 2열·복잡도 n/100 유지인지. OK면 PR #289 병합.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · smoke:planner-empty-scroll PASS · vite build PASS
 ```
 
