@@ -15,7 +15,6 @@ import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
-import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
 import FlightCinemaPlannerNotice from './planner/components/FlightCinemaPlannerNotice';
 import PlannerStageNav from './planner/components/PlannerStageNav';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
@@ -511,16 +510,7 @@ const PlannerTab = ({
                         <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
                         </div>
                         <div id="planner-prep-flight" className="scroll-mt-24">
-                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" scrollContainerRef={scrollContainerRef} />
-                        {location ? (
-                            <TripcomFlightBannerWidget
-                                location={location}
-                                essentialGuide={guideData}
-                                departDate={eventTripWindow?.departDate}
-                                returnDate={eventTripWindow?.returnDate}
-                                className="mt-3"
-                            />
-                        ) : null}
+                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
                         </div>
                         <div id="planner-prep-accommodation" className="scroll-mt-24">
                         <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />

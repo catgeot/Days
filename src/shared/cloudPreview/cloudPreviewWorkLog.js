@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '플래너 3단계',
   sessionNo: 2,
-  sessionPhase: '항공 폼을 항공권 파트로',
+  sessionPhase: '네이티브 검색 폼',
   branch: 'cursor/planner-stages-7ee0',
   previewPath: '/place/paris/planner',
   qaShareSlug: 'planner-stages',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-20-planner-stages-2-native-form-not-iframe',
+    session: '플래너 3단계 #2, 네이티브 검색 폼',
+    title: '트립닷컴 모바일 위젯 대신 입력 폼 · 실시간 검색 버튼 제거',
+    detail:
+      '항공권 카드에 트립닷컴 모바일 iframe이 빈 공간으로 남고, 하단 「항공권 실시간 검색」링크 버튼만 보였습니다. 이제 1단계 항공권 카드에 우리가 만든 출발·도착·일정 입력 폼만 두고, 그 링크 버튼은 뺐습니다. Preview /qa/planner-stages — /place/paris/planner.',
+    at: '2026-09-20T06:20:00.000Z',
+  },
   {
     id: '2026-09-20-planner-stages-2-flight-form-in-flight-part',
     session: '플래너 3단계 #2, 항공 폼을 항공권 파트로',
