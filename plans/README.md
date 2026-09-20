@@ -17,6 +17,7 @@
 - **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `d32894e`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
 - **세계 행사·축제 일정 연동 (P2 MVP · main 병합 PR #150)** : [`world-events-plan.md`](./world-events-plan.md) · 상세 UX **Wave 1.5** [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) Phase F-0.5 · Q&A [`world-events-qa-index.md`](./world-events-qa-index.md) · 운영 [`world-events-management.md`](./world-events-management.md) · **#23 D1** 대기
 - **한국의 명승 · 축제 투톱 ✅ main** (`/korea` + `/korea/theme/scenic` · PR [#58](https://github.com/catgeot/Days/pull/58) MERGED): [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) · 일지 `2026-08-07` #63 · 다음 폴리시·릴리스
+- **축제·여행지 → 숙소·투어 1차 매칭** (분석·로드맵): [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) · SIEAF/전남광주 addr 회귀
 - **명소 세권(중분류) 칩 방안**: [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) · **경기=동서남북 4세권 합의** · 타 시도·UI 대기 · 일지 `2026-08-09` #111
 - **해안·해양 탐색 (플랜+SSOT Phase 1–2 ✅)**: [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) · `seaBasins`/`travelSpotCoast` · `audit:sea-basins` · 일지 `2026-08-16`  
 - **국내 MRT 읍·면 감사·city=리 군선두 ✅**: [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1–§5.2 · `npm run audit:mrt-stay-admin-gaps` · RISK **0** · keyword 군 선두
