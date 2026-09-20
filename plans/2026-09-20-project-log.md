@@ -69,3 +69,10 @@
 - **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
 - **Preview** https://www.gateo.kr/qa/flight → git Preview 홈 써머리·`/place/paris/planner`
 - **QA**: 써머리 항공권 검색 → 일정 폼 · 날짜 선택 후 `/tickets-` · 날짜 없이 검색하면 달력
+
+## 축제·여행지 숙소 매칭 — 분석 (로직 미수정)
+
+- **질문**: 섬진강국제실험예술제(곡성) 숙소·투어가 여수로 연결되는지.
+- **결론**: **오매칭**. 주변 Tour API는 좌표 기준이나 `resolveFestivalThemeCrossLinks` 는 `전남광주통합특별시` addr 파싱 실패 → 전남 시드 1번(여수) 승격.
+- **산출**: [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) · `main` docs `0e8e26c3`
+- **다음**: P1 addr SSOT + P2 matcher + 스모크 fixture (제시어 플랜 §8)
