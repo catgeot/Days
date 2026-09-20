@@ -303,6 +303,27 @@ assert(
   'legacy 전라남도 곡성군 sigungu',
 );
 
+const damyangFest = resolveFestivalThemeCrossLinks(
+  {
+    title: '담양 대나무축제',
+    areaCode: '38',
+    addr1: '전남광주통합특별시 담양군 수북면',
+    mapx: 126.991,
+    mapy: 35.321,
+    contentId: 'fixture-damyang',
+  },
+  { region: '전라' },
+);
+assert(
+  damyangFest.stay?.location?.hubId === 'damyang',
+  `담양군 addr stay hub damyang (got ${damyangFest.stay?.location?.hubId})`,
+);
+assert(
+  String(damyangFest.stay?.keyword || '').includes('담양'),
+  `담양 stay keyword 담양 (got ${damyangFest.stay?.keyword})`,
+);
+assert(damyangFest.packageCta?.key !== 'koreaYeosu', '담양 no yeosu package');
+
 const sieafFest = resolveFestivalThemeCrossLinks(
   {
     title: '2026 섬진강국제실험예술제',
