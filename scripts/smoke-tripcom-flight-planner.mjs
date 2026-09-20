@@ -58,8 +58,12 @@ assert.doesNotMatch(planner, /complexityBadge/, '복잡도 뱃지 교체 금지'
 assert.doesNotMatch(planner, /refreshSaved/, '저장된 데이터 새로고침 버튼 제거');
 assert.match(planner, /id="planner-prep-flight"/, '항공권 파트');
 assert.ok(
-  planner.indexOf('id="planner-rental-pickup"') < planner.indexOf('<PlannerStageNav'),
-  '픽업 배너가 단계 탭보다 위(항상 표시)',
+  planner.indexOf('id="planner-rental-pickup"') > planner.indexOf('id="planner-prep"'),
+  '렌터카·픽업·항공권 기준은 필수 단계 출발 전 준비 섹션 상단',
+);
+assert.ok(
+  planner.indexOf('id="planner-rental-pickup"') < planner.indexOf('id="planner-prep-visa"'),
+  '렌터카 배너는 비자 카드보다 위',
 );
 
 const toolkit = read(
@@ -88,6 +92,11 @@ assert.match(
   focus,
   /PREP_SAFETY\]: PLANNER_STAGE\.ESSENTIAL/,
   '안전 카드는 필수 단계에 유지',
+);
+assert.match(
+  focus,
+  /RENTAL_PICKUP\]: PLANNER_STAGE\.ESSENTIAL/,
+  '렌터카·픽업 배너는 필수 단계',
 );
 
 assert.match(widget, /id="planner-flight-search"/, 'banner is the flight search form anchor');

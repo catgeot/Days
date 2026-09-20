@@ -469,10 +469,6 @@ const PlannerTab = ({
 
                     {isEssentialStage ? renderHybridNotice() : null}
 
-                    <div id="planner-rental-pickup" className="mb-5 w-full shrink-0 scroll-mt-24">
-                        {rentalPickupBanner}
-                    </div>
-
                     {isEssentialStage ? (
                         <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
                     ) : null}
@@ -516,6 +512,9 @@ const PlannerTab = ({
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
                         <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionPrep')}</h3>
+                    </div>
+                    <div id="planner-rental-pickup" className="mb-5 w-full shrink-0 scroll-mt-24">
+                        {rentalPickupBanner}
                     </div>
                     <div className="grid grid-cols-1 gap-5">
                         <div id="planner-prep-visa" className="scroll-mt-24">
