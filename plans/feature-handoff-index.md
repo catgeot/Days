@@ -18,24 +18,25 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `16c0d166` · PR (draft) · **사람 Preview** SIEAF |
+| **상태** | **#2 push** · tip `5dc7a8cb` · PR [#291](https://github.com/catgeot/Days/pull/291) (draft) · **사람 Preview** SIEAF 재확인 |
 | **브랜치** | `cursor/korea-theme` |
-| **플랜** | [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) **§5 P3** |
+| **플랜** | [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) **§5 P3** ✅ · merge 대기 |
 | **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
 | **Preview** | `/qa/korea-theme` → git Preview `/korea` |
 | **금지** | 축제별 MRT override · `hubIdsForArea('38')` 순서 땜질 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-theme-cross-links` · `npm run build` PASS |
+| **VERIFY** | `smoke:korea-theme-cross-links` · `smoke:korea-festival-nearby` · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-축제-여행지매칭 #2, P3 회귀·Preview SIEAF
+축제-여행지매칭 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/festival-destination-matching-plan.md §5 P3
-브랜치 cursor/korea-theme · Preview /korea 섬진강국제실험예술제 숙소·투어 곡성 1차
+@plans/2026-09-20-project-log.md
+@plans/festival-destination-matching-plan.md
+브랜치 cursor/korea-theme · PR #291 · Preview /qa/korea-theme
 금지: 축제별 MRT override · hubIdsForArea 순서 땜질 · feature에 plans/** 커밋
-작업: Preview SIEAF 1건 확인 후 담양·전남광주통합 addr 스모크·P3 체크리스트
-검증: npm run smoke:korea-theme-cross-links PASS · vite build PASS
+작업: Preview 섬진강국제실험예술제 숙소·투어 곡성·여수 패키지 없음 확인 → OK면 PR #291 병합
+검증: smoke:korea-theme-cross-links · smoke:korea-festival-nearby · vite build PASS
 ```
 
 ---

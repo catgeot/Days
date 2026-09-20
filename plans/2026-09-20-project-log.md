@@ -2,6 +2,15 @@
 
 직전: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)
 
+## 축제-여행지매칭 #2, P3 회귀·Preview SIEAF (Cloud)
+
+- **세션** `축제-여행지매칭 #2, P3 회귀·Preview SIEAF`
+- **브랜치** `cursor/korea-theme` · tip `5dc7a8cb` · PR [#291](https://github.com/catgeot/Days/pull/291)
+- **완료**: `origin/main` merge · P3 스모크(SIEAF·담양군·충장·레거시 곡성) · 담양 `damyang` hub 회귀 fixture 추가
+- **VERIFY**: `smoke:korea-theme-cross-links` · `smoke:korea-festival-nearby` · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/korea-theme → `/korea` · git `days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
+- **QA (사람)**: `/korea` **섬진강국제실험예술제** 상세 — 숙소·투어 1차 **곡성** · 여수 패키지 없음 · OK면 PR 병합
+
 ## 축제-여행지매칭 #1, P1 주소 SSOT (Cloud)
 
 - **세션** `축제-여행지매칭 #1, P1 주소 SSOT`

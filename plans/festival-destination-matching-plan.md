@@ -146,8 +146,9 @@ flowchart TB
 ## 6. 성공 기준 (이 트랙 완료)
 
 - [x] SIEAF Preview: 곡성 숙소·투어 1차 (#1 QA)
-- [ ] P3: 스모크·audit 정리 · main merge 후 PROD
-- [ ] `/korea` 지도·칩·캐시 **리팩터 없음**
+- [x] P3: SIEAF·담양·전남광주통합 addr 스모크 (#2 tip `5dc7a8cb`)
+- [ ] PR #291 병합 후 PROD
+- [x] `/korea` 지도·칩·캐시 **리팩터 없음** (본 트랙)
 
 ---
 
@@ -161,16 +162,15 @@ flowchart TB
 
 ## 8. 다음 세션 제시어
 
-**현재 첫 ⏳ = P3** (P1–P2 feature tip 반영됨).
+**현재 첫 ⏳ = PR 병합** (P3 스모크 완료 · 사람 Preview SIEAF).
 
 ```
-축제-여행지매칭 #3, P3 회귀·Preview SIEAF
+축제-여행지매칭 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/festival-destination-matching-plan.md §5 P3
-브랜치 cursor/korea-theme · smoke:korea-theme-cross-links · Preview /korea 섬진강국제실험예술제
+@plans/2026-09-20-project-log.md
+@plans/festival-destination-matching-plan.md
+브랜치 cursor/korea-theme · PR #291 · Preview /qa/korea-theme
 ```
-
-(P2만 미완이면 `#2, P2 매처` · P1만 미완이면 `#1, P1 주소 SSOT`.)
 
 ---
 
@@ -181,3 +181,4 @@ flowchart TB
 | 2026-09-20 | SIEAF 분석·P0–P4 로드맵 |
 | 2026-09-20 | **#1** P1 `16c0d166` · P2 `bbef2b3d` · SIEAF 스모크 |
 | 2026-09-20 | P0 §2.5.3 · §5 진행표 · P1–P2→P3 제시어 정정 |
+| 2026-09-20 | **#2** P3 회귀(SIEAF·담양 fixture) · tip `5dc7a8cb` · merge 대기 |
