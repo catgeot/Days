@@ -933,7 +933,7 @@
         "forceUpdateShort": "Force Update Toolkit",
         "forceUpdating": "Updating..."
       },
-      "hybridNotice": "Hybrid info notice: Public info (visas, safety, etc.) and partner links (stays, eSIM, etc.) appear together. Partner links support the site. AI tips may change over time.",
+      "hybridNotice": "Hybrid info notice: This toolkit mixes objective public info (visas, safety, etc.) with partner links (stays, eSIM, etc.) to help you prepare. Using partner links supports the site. Tips are AI-generated and may change over time.",
       "preTravel": {
         "title": "Must-do before departure",
         "goLink": "Open",
