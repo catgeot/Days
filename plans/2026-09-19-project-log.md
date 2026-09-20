@@ -2,6 +2,16 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #11 — 카드·필수준비를 상단 검색폼으로 스크롤 (Cloud)
+
+- **세션** `항공권 검색 #11, Preview QA`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `cbc4eb37` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 항공권 파트·필수준비가 일정 확인 없이 Trip.com 검색 결과로 떨어짐.
+- **완료**: CTA는 상단 검색폼으로 스크롤. 날짜는 달력에서 고른 뒤 검색. **병합 보류**.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 항공권 파트·필수준비 검색 → 상단 폼 스크롤 · 일정 선택 후 `/tickets-`
+
 ## 항공권 검색 #10 — 검색바를 tickets 항공 결과로 직행 (Cloud)
 
 - **세션** `항공권 검색 #10, 항공 검색 결과로 직행`
