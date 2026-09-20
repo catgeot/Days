@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '항공권 검색',
-  sessionNo: 12,
-  sessionPhase: '써머리 검색폼',
-  branch: 'cursor/tripcom-flight-widget-3ec3',
+  title: '플래너 3단계',
+  sessionNo: 1,
+  sessionPhase: '배너 유지 분리',
+  branch: 'cursor/planner-stages-7ee0',
   previewPath: '/place/paris/planner',
-  qaShareSlug: 'flight',
+  qaShareSlug: 'planner-stages',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-20-planner-stages-1-keep-banners',
+    session: '플래너 3단계 #1, 배너 유지 분리',
+    title: '현재 배너·배치를 유지한 채 플래너를 3단계로 나눠 봄',
+    detail:
+      '항공권 검색 위젯 문제는 트립닷컴 쪽이었고, 3단계 로직 자체는 아니었습니다. 상단 항공 검색·픽업 배너·유심 2열·복잡도 점수는 그대로 두고, 기존 세 섹션(필수 준비·도착 이동·즐기기)만 탭으로 나눠 한 단계씩 봅니다. Preview /qa/planner-stages — /place/paris/planner.',
+    at: '2026-09-20T03:40:00.000Z',
+  },
   {
     id: '2026-09-20-tripcom-flight-12-summary-search-form',
     session: '항공권 검색 #12, 써머리 검색폼',

@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'planner-stages',
+    label: '플래너 3단계 — 배너 유지 분리',
+    branch: 'cursor/planner-stages-7ee0',
+    destination:
+      'https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner',
+    active: true,
+  },
+  {
     slug: 'flight',
     label: '플래너 항공권 검색 위젯',
     branch: 'cursor/tripcom-flight-widget-3ec3',

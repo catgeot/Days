@@ -17,6 +17,7 @@ import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
 import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
 import FlightCinemaPlannerNotice from './planner/components/FlightCinemaPlannerNotice';
+import PlannerStageNav from './planner/components/PlannerStageNav';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
@@ -33,6 +34,8 @@ import { resetIosZoomAfterInput } from '../../../shared/lib/mobileViewport';
 import {
   parsePlannerFocusFromHash,
   scrollPlannerFocusIntoView,
+  PLANNER_STAGE,
+  resolvePlannerStageFromFocusId,
 } from '../../../utils/placePlannerFocus';
 import {
   clearFlightCinemaPlannerEntryParams,
@@ -82,6 +85,7 @@ const PlannerTab = ({
         };
     }, [eventPlannerEntry]);
     const [cinemaNoticeDismissed, setCinemaNoticeDismissed] = useState(false);
+    const [plannerStage, setPlannerStage] = useState(PLANNER_STAGE.ESSENTIAL);
     const plannerFocusId = parsePlannerFocusFromHash(routeLocation.hash);
     const lastScrolledFocusRef = useRef(null);
 
@@ -148,7 +152,7 @@ const PlannerTab = ({
             window.clearTimeout(retry);
             window.clearTimeout(retryLate);
         };
-    }, [isActive, isLoading, plannerFocusId, guideData]);
+    }, [isActive, isLoading, plannerFocusId, guideData, plannerStage]);
 
     useEffect(() => {
         if (!plannerFocusId) lastScrolledFocusRef.current = null;
@@ -157,6 +161,21 @@ const PlannerTab = ({
     useEffect(() => {
         setCinemaNoticeDismissed(false);
     }, [location?.slug, flightCinemaEntry?.cinemaOriginIata]);
+
+    useEffect(() => {
+        if (plannerFocusId) {
+            setPlannerStage(resolvePlannerStageFromFocusId(plannerFocusId));
+        } else {
+            setPlannerStage(PLANNER_STAGE.ESSENTIAL);
+        }
+    }, [location?.slug, plannerFocusId]);
+
+    const handlePlannerStageChange = useCallback((stage) => {
+        setPlannerStage(stage);
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0;
+        }
+    }, []);
 
     const dismissFlightCinemaNotice = useCallback(() => {
         setCinemaNoticeDismissed(true);
@@ -488,6 +507,10 @@ const PlannerTab = ({
 
                     <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
 
+                    <PlannerStageNav value={plannerStage} onChange={handlePlannerStageChange} />
+
+                {plannerStage === PLANNER_STAGE.ESSENTIAL ? (
+                <>
                 {/* 체크리스트(항공·숙소·픽업) — 툴킷 있으면 상시 · 타임라인은 있을 때만 */}
                 {guideData && (
                     <div
@@ -514,8 +537,6 @@ const PlannerTab = ({
                     </div>
                 )}
 
-                {/* 3단계 시각적 그룹화(섹션화) 레이아웃 적용 */}
-
                 {/* 섹션 1: 출발 전 필수 준비 */}
                 <div id="planner-prep" className="mb-8 scroll-mt-24">
                     <div className="flex items-center gap-2 mb-4">
@@ -537,8 +558,10 @@ const PlannerTab = ({
                         </div>
                     </div>
                 </div>
+                </>
+                ) : null}
 
-                {/* 섹션 2: 현지 도착 및 이동 */}
+                {plannerStage === PLANNER_STAGE.TRANSFER ? (
                 <div id="planner-arrival" className="mb-8 scroll-mt-24">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-teal-500 rounded-full"></div>
@@ -572,8 +595,9 @@ const PlannerTab = ({
                         </div>
                     </div>
                 </div>
+                ) : null}
 
-                {/* 섹션 3: 현지 100% 즐기기 */}
+                {plannerStage === PLANNER_STAGE.ENJOY ? (
                 <div className="mb-8">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-orange-500 rounded-full"></div>
@@ -587,6 +611,13 @@ const PlannerTab = ({
                         <ToolkitCard icon={Smartphone} title={t('place.planner.toolkit.apps')} type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
                     </div>
                 </div>
+                ) : null}
+
+                    <PlannerStageNav
+                        variant="footer"
+                        value={plannerStage}
+                        onChange={handlePlannerStageChange}
+                    />
 
                 {/* 관리자/테스트: AI 툴킷 강제 재실행 (평소 흐릿 · hover 시 확인 가능) */}
                 <div
