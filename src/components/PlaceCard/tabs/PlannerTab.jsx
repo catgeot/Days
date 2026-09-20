@@ -311,6 +311,19 @@ const PlannerTab = ({
         />
     );
 
+    const renderHybridNotice = (className = 'mb-5') => (
+        <div
+            className={`flex items-start gap-2 bg-blue-50/50 p-3 rounded-xl border border-blue-100 shrink-0 ${className}`}
+        >
+            <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" aria-hidden />
+            <p className={`${plannerCaption} md:text-sm text-gray-600`}>
+                {t('place.planner.hybridNotice')}
+            </p>
+        </div>
+    );
+
+    const isEssentialStage = plannerStage === PLANNER_STAGE.ESSENTIAL;
+
     if (isLoading) {
         return (
             <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
@@ -454,20 +467,22 @@ const PlannerTab = ({
                         ) : null}
                     </div>
 
-                    <div className="mb-6 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
-                        <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" />
-                        <p className={`${plannerCaption} md:text-sm text-gray-600`}>
-                            {t('place.planner.hybridNotice')}
-                        </p>
-                    </div>
+                    {isEssentialStage ? renderHybridNotice() : null}
 
-                    <div id="planner-rental-pickup" className="mb-5 w-full shrink-0 scroll-mt-24">
+                    <div
+                        id="planner-rental-pickup"
+                        className="mb-5 w-full shrink-0 scroll-mt-24 sticky top-0 z-[5] -mx-3 sm:-mx-4 px-3 sm:px-4 py-1 bg-[#f8f9fa]/95 backdrop-blur-sm border-b border-transparent [&:not(:empty)]:border-gray-200/60"
+                    >
                         {rentalPickupBanner}
                     </div>
 
-                    <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
+                    {isEssentialStage ? (
+                        <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
+                    ) : null}
 
-                    <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
+                    {isEssentialStage ? (
+                        <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
+                    ) : null}
 
                     <PlannerStageNav value={plannerStage} onChange={handlePlannerStageChange} />
 
@@ -574,6 +589,8 @@ const PlannerTab = ({
                     </div>
                 </div>
                 ) : null}
+
+                    {!isEssentialStage ? renderHybridNotice('mt-2 mb-4') : null}
 
                     <PlannerStageNav
                         variant="footer"

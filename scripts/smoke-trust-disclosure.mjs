@@ -51,12 +51,15 @@ assert.doesNotMatch(logo, /from '\.\/FooterModal'/, '로고 패널 FooterModal �
 const planner = read('src/components/PlaceCard/tabs/PlannerTab.jsx');
 const noticeIdx = planner.indexOf("t('place.planner.hybridNotice')");
 const titleIdx = planner.indexOf("t('place.planner.title')");
+const essentialHybridIdx = planner.indexOf('isEssentialStage ? renderHybridNotice()');
 const checklistIdx = planner.indexOf('planner-pre-travel-checklist');
 const adminIdx = planner.indexOf('planner-admin-force-update');
 assert.ok(noticeIdx >= 0, 'hybridNotice 존재');
-assert.ok(titleIdx >= 0 && noticeIdx > titleIdx, 'hybridNotice가 플래너 제목 아래');
-assert.ok(checklistIdx >= 0 && noticeIdx < checklistIdx, 'hybridNotice가 체크리스트보다 위');
-assert.ok(adminIdx >= 0 && noticeIdx < adminIdx, 'hybridNotice가 하단 관리 버튼보다 위');
+assert.ok(essentialHybridIdx >= 0, '1단계 상단 hybridNotice');
+assert.ok(titleIdx >= 0 && essentialHybridIdx > titleIdx, '1단계 hybridNotice가 플래너 제목 아래');
+assert.ok(checklistIdx >= 0 && essentialHybridIdx < checklistIdx, '1단계 hybridNotice가 체크리스트보다 위');
+assert.match(planner, /!isEssentialStage \? renderHybridNotice/, '2·3단계 하단 hybridNotice');
+assert.ok(adminIdx >= 0 && noticeIdx < adminIdx, 'hybridNotice 정의가 관리 버튼보다 위');
 assert.equal(planner.split("t('place.planner.hybridNotice')").length - 1, 1, 'hybridNotice 1회만');
 
 const checklist = read('src/components/PlaceCard/tabs/planner/components/PreTravelChecklist.jsx');
