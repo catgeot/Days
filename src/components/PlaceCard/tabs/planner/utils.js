@@ -20,10 +20,7 @@ import {
     isMapPoiGygOnlyLocation,
     isMapPoiDiningHiddenLocation,
     isKlookDiningPriorityLocation,
-    isKlookDiningUnsupportedLocation,
-    isParisTransportPassLocation,
-    PARIS_NAVIGO_PURCHASE_OFFICIAL_URL,
-    KLOOK_PARIS_VISITE_ACTIVITY_SLUG,
+    isKlookDiningUnsupportedLocation
 } from './locationRules';
 
 export { isMapPoiGygOnlyLocation } from './locationRules';
@@ -173,23 +170,8 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
         case 'connectivity':
             // 유심 카드의 제휴 버튼은 별도 Airalo 배너로 대체
             break;
-        case 'transport': {
-            if (isParisTransportPassLocation(location)) {
-                links.push({
-                    url: PARIS_NAVIGO_PURCHASE_OFFICIAL_URL,
-                    text: linkLabel('place.planner.links.navigoPurchase'),
-                    subtext: linkLabel('place.planner.links.navigoPurchaseSub'),
-                    colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200',
-                });
-                const parisVisiteUrl = `https://www.klook.com/${klookLocalePath()}/activity/${KLOOK_PARIS_VISITE_ACTIVITY_SLUG}`;
-                links.push({
-                    url: getKlookAffiliateUrl(parisVisiteUrl),
-                    text: linkLabel('place.planner.links.klookParisVisite'),
-                    subtext: linkLabel('place.planner.links.klookParisVisiteSub'),
-                    colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200',
-                });
-            }
-
+        case 'transport':
+            // 1. 클룩 교통/레일 패스
             const klookPassTargetUrl = `https://www.klook.com/${klookLocalePath()}/search/result/?query=${encodedQuery}%20${encodeURIComponent(mrtQuerySuffix('transitPass'))}`;
             links.push({
                 url: getKlookAffiliateUrl(klookPassTargetUrl),
@@ -214,7 +196,6 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 bannerSrcMobile: bouncePlannerBannerMobile,
             });
             break;
-        }
         case 'airport_transfer': {
             const klookPickupHomeLink = getKlookAirportTransferUrl();
             const klookCarRentalHomeLink = getKlookRentalHomeUrl();
