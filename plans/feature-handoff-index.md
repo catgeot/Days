@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `5b7a6cc1` · PR [#289](https://github.com/catgeot/Days/pull/289) · **사람 Preview** · 단축 **`/qa/planner-stages`** |
+| **상태** | **#3 push** · tip `3402d5ae` · PR [#289](https://github.com/catgeot/Days/pull/289) · **사람 Preview** · 단축 **`/qa/planner-stages`** |
 | **브랜치** | `cursor/planner-stages-7ee0` |
 | **PR** | [#289](https://github.com/catgeot/Days/pull/289) |
 | **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
