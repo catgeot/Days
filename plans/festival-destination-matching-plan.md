@@ -1,6 +1,6 @@
 # 축제·명승·여행지 → 숙소·투어·주변 정보 1차 매칭 플랜
 
-**상태**: 문제 정리·로드맵 (2026-09-20) · **코드 미적용**  
+**상태**: P1–P2 적용 (2026-09-20) · `cursor/korea-theme` tip `16c0d166` · Preview `/qa/korea-theme`  
 **제품 목표 (사용자 확인)**: 축제·명소·여행지를 고르면 **2차 검색·권역 칩 선택 없이** 숙소·투어·갤러리·주변(Tour)·코스가 **같은 여행지 앵커**로 맞물려야 한다. 행사별·지역별 **MRT 오버라이드 나열은 목표가 아님**.
 
 **관련 SSOT**: [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) **§2.5** · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 코드 `koreaThemeCrossLinks.js` · `nearbyFestivalHubs.js` · `koreaTourAttractionLocality.js`
@@ -174,9 +174,10 @@ flowchart TB
 ## 8. 다음 세션 제시어
 
 ```
-축제-여행지매칭 #1, P1 주소 SSOT
-@plans/festival-destination-matching-plan.md §5 P1–P2
-브랜치 cursor/korea-theme (또는 짧은 fix 브랜치). smoke:korea-theme-cross-links fixture 추가. Preview /korea 축제 SIEAF 1건.
+축제-여행지매칭 #2, P3 회귀·Preview SIEAF
+@plans/feature-handoff-index.md
+@plans/festival-destination-matching-plan.md §5 P3
+브랜치 cursor/korea-theme · smoke:korea-theme-cross-links · Preview /korea 에서 섬진강국제실험예술제 숙소·투어 곡성 1차
 ```
 
 ---
@@ -186,3 +187,4 @@ flowchart TB
 | 날짜 | 내용 |
 |------|------|
 | 2026-09-20 | SIEAF·여수 오매칭 조사, as-built·3층 원인·P0–P4 로드맵 (분석 세션) |
+| 2026-09-20 | **#1** P1 `koreaTourAddrNormalize` · P2 `nearbyFestivalHubs`·`resolveFestivalThemeCrossLinks` · SIEAF 스모크 · tip `16c0d166` |

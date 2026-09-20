@@ -2,6 +2,15 @@
 
 직전: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)
 
+## 축제-여행지매칭 #1, P1 주소 SSOT (Cloud)
+
+- **세션** `축제-여행지매칭 #1, P1 주소 SSOT`
+- **브랜치** `cursor/korea-theme` · tip `16c0d166`
+- **완료**: `koreaTourAddrNormalize`(전남광주통합특별시) · locality sigungu · 축제 addr→곡성 hub · 여수 패키지 CTA 가드 · `smoke:korea-theme-cross-links` SIEAF fixture
+- **VERIFY**: `smoke:korea-theme-cross-links` · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/korea-theme → `/korea` · git Preview `days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
+- **QA (사람)**: `/korea` 축제 **섬진강국제실험예술제** 상세 — 숙소·투어 기본 **곡성** · 여수 패키지 없음
+
 ## 파리 플래너 — 나비고 주간권 구매·제휴 (Cloud)
 
 - **브랜치** `cursor/paris-navigo-links-7027` · tip `0f8d71ee` · PR [#290](https://github.com/catgeot/Days/pull/290)
