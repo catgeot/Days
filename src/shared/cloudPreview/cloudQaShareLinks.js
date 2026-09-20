@@ -8,11 +8,450 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'planner-stages',
+    label: '플래너 3단계 — 네이티브 검색 폼',
+    branch: 'cursor/planner-stages-7ee0',
+    destination:
+      'https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner',
+    active: true,
+  },
+  {
+    slug: 'flight',
+    label: '플래너 항공권 검색 위젯',
+    branch: 'cursor/tripcom-flight-widget-3ec3',
+    destination:
+      'https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner',
+    active: true,
+  },
+  {
+    slug: 'tripcom-flight',
+    label: '플래너 항공권 검색 위젯·배너',
+    branch: 'cursor/tripcom-flight-widget-3ec3',
+    destination:
+      'https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner',
+    active: false,
+  },
+  {
+    slug: 'festival-ui',
+    label: '축제 페이지 — 푸터·무니 겹침',
+    branch: 'cursor/festival-sheet-ui-ec8b',
+    destination:
+      'https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
+    slug: 'hyanggyo',
+    label: '향교 검색 — 도시별 다후보',
+    branch: 'cursor/hyanggyo-search-f9b8',
+    destination:
+      'https://days-git-cursor-hyanggyo-search-f9b8-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'search-enter-hub',
+    label: '탐색 Enter — 도시 허브 리스트',
+    branch: 'cursor/search-enter-hub-2018',
+    destination:
+      'https://days-git-cursor-search-enter-hub-2018-catgeots-projects.vercel.app/explore',
+    active: true,
+  },
+  {
+    slug: 'dest-match',
+    label: '여행지 매칭 — 동음 지명 다후보',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
+  },
+  {
+    slug: 'visitor-growth',
+    label: '방문자 개선 — 404 복구·MOONi 초기화',
+    branch: 'cursor/visitor-growth-1f90',
+    destination:
+      'https://days-git-cursor-visitor-growth-1f90-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'explore-search',
+    label: '탐색홈 검색 선택 카드',
+    branch: 'cursor/explore-search-d14b',
+    destination:
+      'https://days-git-cursor-explore-search-d14b-catgeots-projects.vercel.app/explore',
+    active: true,
+  },
+  {
+    slug: 'gallery-fresh',
+    label: '갤러리 DB 캐시 + 최신 사진',
+    branch: 'cursor/gallery-swr-6b36',
+    destination:
+      'https://days-git-cursor-gallery-swr-6b36-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
+    slug: 'gemini',
+    label: 'Gemini 2.5 종료 교체 · 무니 채팅',
+    branch: 'cursor/gemini-models-df4c',
+    destination:
+      'https://days-git-cursor-gemini-models-df4c-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'korea-tna-strip',
+    label: '축제·명승 본문 투어·티켓 카드 섹션',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung',
+    active: false,
+  },
+  {
+    slug: 'scenic-stay',
+    label: '명승 본문 숙소 섹션',
+    branch: 'cursor/scenic-stay-692c',
+    destination:
+      'https://days-git-cursor-scenic-stay-692c-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
+    slug: 'planner-empty',
+    label: '플래너 실행 전 하단 여유·여행사 펼침',
+    branch: 'cursor/planner-empty-pad-6089',
+    destination:
+      'https://days-git-cursor-planner-empty-pad-6089-catgeots-projects.vercel.app/place/yanggu-arboretum/planner',
+    active: true,
+  },
+  {
+    slug: 'palgyeong-use',
+    label: '팔경 활용 검색·리스트',
+    branch: 'cursor/palgyeong-use-e744',
+    destination:
+      'https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'globe-frame-zoom',
+    label: '홈 지구본 페이지 줌 복귀',
+    branch: 'cursor/globe-frame-zoom-7106',
+    destination:
+      'https://days-git-cursor-globe-frame-zoom-7106-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'summary-close',
+    label: '써머리 닫기 X · Android Chrome',
+    branch: 'cursor/summary-close-1030',
+    destination:
+      'https://days-git-cursor-summary-close-1030-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'gallery-panel',
+    label: '갤러리 좌측 패널 공간',
+    branch: 'cursor/gallery-panel-032e',
+    destination:
+      'https://days-git-cursor-gallery-panel-032e-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
+    slug: 'zakynthos',
+    label: '자킨토스·사바섬 검색',
+    branch: 'cursor/zakynthos-search-e84a',
+    destination:
+      'https://days-git-cursor-zakynthos-search-e84a-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'pickup',
+    label: '공항픽업 링크',
+    branch: 'cursor/klook-pickup-d5a5',
+    destination:
+      'https://days-git-cursor-klook-pickup-d5a5-catgeots-projects.vercel.app/place/fukuoka/planner',
+    active: true,
+  },
+  {
+    slug: 'gallery-portrait',
+    label: '갤러리 단일 인물 제외',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: true,
+  },
+  {
+    slug: 'agencies',
+    label: '여행사 목록·방문 기록',
+    branch: 'cursor/agencies-85ab',
+    destination:
+      'https://days-git-cursor-agencies-85ab-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'updates',
+    label: '릴리스 노트 푸터',
+    branch: 'cursor/updates-0e16',
+    destination:
+      'https://days-git-cursor-updates-0e16-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'gallery-related',
+    label: '갤러리 연관 여행지 스크롤',
+    branch: 'cursor/gallery-scroll-76a6',
+    destination:
+      'https://days-git-cursor-gallery-scroll-76a6-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
+    slug: 'gallery',
+    label: '갤러리 사진 관리',
+    branch: 'cursor/gallery-manage-173f',
+    destination:
+      'https://days-git-cursor-gallery-manage-173f-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
+    slug: 'globe-labels',
+    label: '홈 지구본 첫 로딩 지명',
+    branch: 'cursor/globe-labels-ddce',
+    destination:
+      'https://days-git-cursor-globe-labels-ddce-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'home-chip',
+    label: '홈 축제칩 접힘',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
+  },
+  {
+    slug: 'chrome-hit',
+    label: '지구본 홈 Chrome 칩 히트',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: true,
+  },
+  {
+    slug: 'logbook-curation',
+    label: '로그북 큐레이션 페이지',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/blog/curation',
+    active: false,
+  },
+  {
+    slug: 'korea-recent-search',
+    label: '축제·명승 최근 검색어',
+    branch: 'cursor/korea-recent-search-972e',
+    destination:
+      'https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
+    slug: 'scenic-hwaeomsa',
+    label: '명승 검색 화엄사',
+    branch: 'cursor/scenic-hwaeomsa-search-8838',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: false,
+  },
+  {
+    slug: 'logbook-cta',
+    label: '로그북 공개피드 CTA',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/blog',
+    active: false,
+  },
+  {
+    slug: 'aitutaki-tour',
+    label: '아이투타키 투어 오탐',
+    branch: 'cursor/aitutaki-gyg-tour-b09e',
+    destination:
+      'https://days-git-cursor-aitutaki-gyg-tour-b09e-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'curation',
+    label: 'AI 큐레이션',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/blog/curation?debug=curation',
+    active: true,
+  },
+
+  {
+    slug: 'summary-bottom',
+    label: '모바일 써머리 하단',
+    branch: 'cursor/summary-mobile-bottom-f024',
+    destination:
+      'https://days-git-cursor-summary-mobile-bottom-f024-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'zermatt-flight',
+    label: '체르마트 항로·플래너',
+    branch: 'cursor/flight-cinema-zermatt-f4d1',
+    destination:
+      'https://days-git-cursor-flight-cinema-zermatt-f4d1-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'summary-planner',
+    label: '써머리 플래너 보기',
+    branch: 'cursor/summary-planner-bd48',
+    destination:
+      'https://days-git-cursor-summary-planner-bd48-catgeots-projects.vercel.app/',
+    active: false,
+  },
+  {
+    slug: 'festival-samehub',
+    label: '축제→같은 도시 명소 중첩',
+    branch: 'cursor/festival-samehub-8585',
+    destination:
+      'https://days-git-cursor-festival-samehub-8585-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
+    slug: 'page-end-pad',
+    label: '페이지 스크롤 끝 하단 여백',
+    branch: 'cursor/page-end-pad-1e22',
+    destination:
+      'https://days-git-cursor-page-end-pad-1e22-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'korea-seo',
+    label: '축제·명승 SEO 허브',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea',
+    active: true,
+  },
+  {
+    slug: 'scenic-list',
+    label: '명승 홈 리스트 크게',
+    branch: 'cursor/scenic-list-large-a55c',
+    destination:
+      'https://days-git-cursor-scenic-list-large-a55c-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'brand',
+    label: '브랜드 SEO Days→GATEO',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: true,
+  },
+  {
+    slug: 'scenic-map',
+    label: '명승 홈 지도 내 위치',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-favorites',
+    label: '명승 홈 즐겨찾기',
+    branch: 'cursor/scenic-favorites-492c',
+    destination:
+      'https://days-git-cursor-scenic-favorites-492c-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-search-focus',
+    label: '검색 아이콘 즉시 포커스',
+    branch: 'cursor/scenic-search-focus-9792',
+    destination:
+      'https://days-git-cursor-scenic-search-focus-9792-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-food-naver',
+    label: '맛집 상세 네이버 링크',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-hub-fill',
+    label: '소량 hub 명소 보강',
+    branch: 'cursor/scenic-thin-hubs-beea',
+    destination:
+      'https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-yangyang',
+    label: '양양 GATEO 선정 명소',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic?hub=yangyang',
+    active: true,
+  },
+  {
+    slug: 'scenic-detail-overflow',
+    label: '관광지 상세 가로 스크롤',
+    branch: 'cursor/scenic-detail-overflow-3f84',
+    destination:
+      'https://days-git-cursor-scenic-detail-overflow-3f84-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-empty-chips',
+    label: '빈 hub 선정 칩·제목 아이콘',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-search-clear',
+    label: '인근 여행지→검색 잔존 해제',
+    branch: 'cursor/scenic-search-clear-f5a5',
+    destination:
+      'https://days-git-cursor-scenic-search-clear-f5a5-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-home-scroll',
+    label: '인근 여행지→명승 홈 스크롤',
+    branch: 'cursor/scenic-home-scroll-8482',
+    destination:
+      'https://days-git-cursor-scenic-home-scroll-8482-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-mid-cluster',
+    label: '명소 세권(동서남북) 칩',
+    branch: 'cursor/scenic-mid-cluster-67a8',
+    destination:
+      'https://days-git-cursor-scenic-mid-cluster-67a8-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-default-chip',
+    label: '명승 분류칩 기본 중·소분류',
+    branch: 'cursor/scenic-default-chip-6098',
+    destination:
+      'https://days-git-cursor-scenic-default-chip-6098-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-chip',
+    label: '명승 분류칩 스크롤 고정',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-nearby',
+    label: '명승 내주변 관내 관광지(양구)',
+    branch: 'cursor/scenic-nearby-yanggu-7658',
+    destination:
+      'https://days-git-cursor-scenic-nearby-yanggu-7658-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'home-korea',
+    label: '홈·축제 헤더 간소화',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea',
+    active: true,
+  },
+  {
     slug: 'korea-theme',
     label: '한국의 명승',
-    branch: 'cursor/korea-theme',
-    destination:
-      'https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
     active: true,
   },
   {
@@ -53,6 +492,36 @@ export const CLOUD_QA_SHARE_LINKS = [
     branch: 'cursor/geography-puzzle-plan-62e0',
     destination:
       'https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo',
+    active: true,
+  },
+  {
+    slug: 'en-seo',
+    label: '검색노출 크롤러 HTML MVP',
+    branch: 'cursor/en-seo',
+    destination:
+      'https://days-git-cursor-en-seo-catgeots-projects.vercel.app/place/tokyo/gallery?crawler=1',
+    active: true,
+  },
+  {
+    slug: 'en',
+    label: '영문화 PROD QA',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/?lang=en',
+    active: true,
+  },
+  {
+    slug: 'search-hit',
+    label: '홈 검색바·locale 히트',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
+  },
+  {
+    slug: 'world-events',
+    label: '세계 행사 일정 허브',
+    branch: 'cursor/world-events-wave3',
+    destination:
+      'https://days-git-cursor-world-events-wave3-catgeots-projects.vercel.app/world-events',
     active: true,
   },
 ];

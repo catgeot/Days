@@ -12,6 +12,7 @@ import {
   TRAVEL_SPOT_AIRPORT_OVERRIDES,
   TRAVEL_SPOT_PLACE_ID_OVERRIDES
 } from './data/travel-spot-airport-overrides.mjs';
+import { BANNER_NOTE_EN_BY_SLUG } from './data/banner-note-en-by-slug.mjs';
 import { normalizePlaceKey, placeIdVariants } from './lib/travel-spot-place-resolve.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -100,13 +101,48 @@ function flightRouteHubIatasFromOverride(override) {
   return {};
 }
 
-function rowFromOverride(override) {
+function flightRouteAlternativeHubsFromOverride(override) {
+  if (!Array.isArray(override?.flightRouteAlternativeHubs) || !override.flightRouteAlternativeHubs.length) {
+    return {};
+  }
+  const seen = new Set();
+  const flightRouteAlternativeHubs = [];
+  for (const hubs of override.flightRouteAlternativeHubs) {
+    if (!Array.isArray(hubs)) continue;
+    const normalized = filterRegisteredIatas(hubs).slice(0, 3);
+    const key = normalized.join('>');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    flightRouteAlternativeHubs.push(normalized);
+  }
+  return flightRouteAlternativeHubs.length ? { flightRouteAlternativeHubs } : {};
+}
+
+function resolveBannerNoteEn(override, lookupKey) {
+  const inline = String(override?.bannerNoteEn ?? '').trim();
+  if (inline) return inline;
+  const keys = [
+    lookupKey,
+    override?.linkedSlug,
+    ...(Array.isArray(override?.aliases) ? override.aliases : []),
+  ]
+    .map((k) => String(k ?? '').trim())
+    .filter(Boolean);
+  for (const key of keys) {
+    const fromMap = BANNER_NOTE_EN_BY_SLUG[key];
+    if (fromMap) return String(fromMap).trim();
+  }
+  return '';
+}
+
+function rowFromOverride(override, lookupKey) {
   const iatas = filterRegisteredIatas(override.primaryIatas);
   if (!iatas.length) return null;
   const link =
     override.preferredLinkIata && iatas.includes(override.preferredLinkIata)
       ? override.preferredLinkIata
       : iatas[0];
+  const bannerNoteEn = resolveBannerNoteEn(override, lookupKey);
   return {
     primaryIatas: iatas,
     preferredLinkIata: link,
@@ -114,6 +150,7 @@ function rowFromOverride(override) {
     source: 'curated-override',
     confidence: override.confidence ?? 'high',
     ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
+    ...(bannerNoteEn ? { bannerNoteEn } : {}),
     ...(override.rationale ? { rationale: override.rationale } : {}),
     ...(Array.isArray(override.searchHintIatas) && override.searchHintIatas.length
       ? { searchHintIatas: filterRegisteredIatas(override.searchHintIatas) }
@@ -130,6 +167,7 @@ function rowFromOverride(override) {
       : {}),
     ...flightRouteWaypointsFromOverride(override),
     ...flightRouteHubIatasFromOverride(override),
+    ...flightRouteAlternativeHubsFromOverride(override),
   };
 }
 
@@ -186,7 +224,7 @@ for (const [slug, row] of Object.entries(existingSpots)) {
 }
 const preservedPlaceIds = existingAirportMap.placeIds ?? {};
 
-function rowFromPlaceIdOverride(override) {
+function rowFromPlaceIdOverride(override, placeId) {
   const iatas = (override.primaryIatas ?? []).filter((c) => hubByIata.has(c));
   if (!iatas.length) return null;
   const preferred =
@@ -196,6 +234,7 @@ function rowFromPlaceIdOverride(override) {
   const hints = Array.isArray(override.searchHintIatas)
     ? override.searchHintIatas.filter((c) => hubByIata.has(c))
     : [];
+  const bannerNoteEn = resolveBannerNoteEn(override, placeId);
   return {
     primaryIatas: iatas,
     preferredLinkIata: preferred,
@@ -203,6 +242,7 @@ function rowFromPlaceIdOverride(override) {
     source: 'curated-override',
     confidence: override.confidence ?? 'high',
     ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
+    ...(bannerNoteEn ? { bannerNoteEn } : {}),
     ...(override.rationale ? { rationale: override.rationale } : {}),
     ...(hints.length ? { searchHintIatas: hints } : {}),
     ...(override.tripFlightArrivalIata
@@ -211,13 +251,14 @@ function rowFromPlaceIdOverride(override) {
     ...(override.linkedSlug ? { linkedSlug: String(override.linkedSlug).trim() } : {}),
     ...flightRouteWaypointsFromOverride(override),
     ...flightRouteHubIatasFromOverride(override),
+    ...flightRouteAlternativeHubsFromOverride(override),
   };
 }
 
 function mergePlaceIdOverrides(placeIds) {
   const merged = { ...placeIds };
   for (const [placeId, override] of Object.entries(TRAVEL_SPOT_PLACE_ID_OVERRIDES)) {
-    const row = rowFromPlaceIdOverride(override);
+    const row = rowFromPlaceIdOverride(override, placeId);
     if (!row) continue;
     const base = { ...row, placeId };
     for (const v of placeIdVariants(placeId)) {
@@ -294,7 +335,7 @@ for (const spot of TRAVEL_SPOTS) {
     for (const code of override.primaryIatas) {
       if (!hubByIata.has(code)) unregisteredIatas.add(code);
     }
-    row = rowFromOverride(override);
+    row = rowFromOverride(override, slug);
     if (row) {
       row = mergeSearchHintFromExisting(row, existingRow);
       stats.override += 1;

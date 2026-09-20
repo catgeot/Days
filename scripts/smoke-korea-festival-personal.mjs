@@ -12,6 +12,8 @@ import {
 } from '../src/pages/Korea/festivalRegionTags.js';
 import { nearbyHubsForFestival } from '../src/pages/Korea/nearbyFestivalHubs.js';
 import { DEFAULT_AREA_CODE } from '../src/pages/Korea/koreaFestivalDefaults.js';
+import { hubIdsForArea } from '../src/pages/Korea/koreaHubSeeds.js';
+import { resolveCityAttractionHub } from '../src/pages/Home/lib/cityAttractionHubs.js';
 
 assert.equal(DEFAULT_AREA_CODE, 'all');
 assert.equal(sidoLabel(DEFAULT_AREA_CODE), '');
@@ -204,14 +206,101 @@ assert.ok(
   ),
 );
 
+const gangwonHubs = [
+  { hubId: 'pyeongchang', name: '평창', lat: 37.3705, lng: 128.3901 },
+  { hubId: 'hoengseong', name: '횡성', lat: 37.4917, lng: 128.0019 },
+  { hubId: 'wonju', name: '원주', lat: 37.342, lng: 127.92 },
+];
+const hoengseongFest = {
+  title: '횡성한우축제',
+  addr1: '강원특별자치도 횡성군 횡성읍',
+  mapx: '128.3901',
+  mapy: '37.3705',
+  areaCode: '32',
+};
+const nearHoengseong = nearbyHubsForFestival(hoengseongFest, gangwonHubs, { limit: 3 });
+assert.equal(nearHoengseong[0]?.hubId, 'hoengseong', 'addr 횡성군 → hoengseong hub 우선');
+
+const incheonHubs = hubIdsForArea('2')
+  .map((id) => {
+    const hub = resolveCityAttractionHub(id);
+    if (!hub) return null;
+    return {
+      hubId: String(hub.hubId || id).toLowerCase(),
+      name: String(hub.name || id),
+      lat: Number(hub.lat),
+      lng: Number(hub.lng),
+    };
+  })
+  .filter(Boolean);
+const haksanFest = {
+  title: '시민창작예술축제 학산마당극놀래',
+  addr1: '인천광역시 미추홀구 경인로 216-1 (도화동)',
+  mapx: 126.6505,
+  mapy: 37.4636,
+  areaCode: '2',
+};
+const nearHaksan = nearbyHubsForFestival(haksanFest, incheonHubs, { limit: 3 });
+assert.equal(
+  nearHaksan[0]?.hubId,
+  'michuhol',
+  `미추홀구 축제 → michuhol (not ongjin geo office, got ${nearHaksan[0]?.hubId})`,
+);
+assert.ok(
+  nearHaksan[0]?.hubId !== 'ongjin',
+  '미추홀구 축제는 옹진군청 좌표 오탐 금지',
+);
+const dongguFest = {
+  title: '인천 동구 축제',
+  addr1: '인천광역시 동구 금곡로 1',
+  mapx: 126.632,
+  mapy: 37.474,
+  areaCode: '2',
+};
+const nearDonggu = nearbyHubsForFestival(dongguFest, incheonHubs, { limit: 3 });
+assert.equal(
+  nearDonggu[0]?.hubId,
+  'incheon',
+  `동구 축제(구 hub 없음) → 인천 시도 대표 (not ongjin, got ${nearDonggu[0]?.hubId})`,
+);
+const royalWalkFest = {
+  title: '왕가의 산책',
+  addr1: '인천광역시 중구 공항로 272 (운서동)',
+  mapx: 126.4407,
+  mapy: 37.4602,
+  areaCode: '2',
+};
+const nearRoyalWalk = nearbyHubsForFestival(royalWalkFest, incheonHubs, { limit: 3 });
+assert.equal(
+  nearRoyalWalk[0]?.hubId,
+  'incheon',
+  `인천공항 왕가의 산책 → incheon (not ongjin, got ${nearRoyalWalk[0]?.hubId})`,
+);
+assert.ok(
+  nearRoyalWalk[0]?.hubId !== 'ongjin',
+  '인천 중구 공항 축제는 옹진 금지',
+);
+const ongjinFest = {
+  title: '옹진 섬 축제',
+  addr1: '인천광역시 옹진군 덕적면',
+  mapx: 126.15,
+  mapy: 37.23,
+  areaCode: '2',
+};
+const nearOngjin = nearbyHubsForFestival(ongjinFest, incheonHubs, { limit: 3 });
+assert.equal(nearOngjin[0]?.hubId, 'ongjin', '옹진군 주소 축제는 ongjin 유지');
+
 assert.equal(mem.get(FAVORITES_KEY) != null, true);
 assert.equal(mem.get(VIEWED_KEY) != null, true);
 
 const {
   buildFestivalTimeTabs,
+  compareFestivalsByOpenDate,
   currentSeasonIndex,
   filterByTimeTab,
+  rolling30DayRangeYmd,
   seasonRangeById,
+  sortFestivalGroupsByOpenDate,
 } = await import('../src/pages/Korea/festivalTimeFilter.js');
 const july = new Date(2026, 6, 29);
 assert.equal(currentSeasonIndex(july), 1);
@@ -231,5 +320,133 @@ const seasonItems = [
 ];
 assert.equal(filterByTimeTab('summer', seasonItems, july).length, 1);
 assert.equal(filterByTimeTab('winter', seasonItems, july)[0].title, '겨울');
+
+const aug31 = new Date(2026, 7, 31);
+const rolling30 = rolling30DayRangeYmd(aug31);
+assert.equal(rolling30.eventStartDate, '20260831');
+assert.equal(rolling30.eventEndDate, '20260930');
+const septFest = {
+  title: '9월축제',
+  eventStartDate: '20260915',
+  eventEndDate: '20260917',
+};
+const octFest = {
+  title: '10월축제',
+  eventStartDate: '20261005',
+  eventEndDate: '20261007',
+};
+assert.equal(filterByTimeTab('thisMonth', [septFest, octFest], aug31).length, 1);
+assert.equal(
+  filterByTimeTab('thisMonth', [septFest, octFest], aug31)[0].title,
+  '9월축제',
+);
+
+const aug20 = new Date(2026, 7, 20);
+const soonOpening = {
+  contentId: '301',
+  title: '개막임박축제',
+  eventStartDate: '20260905',
+};
+const laterOpening = {
+  contentId: '302',
+  title: '다음달축제',
+  eventStartDate: '20261010',
+};
+const shortOngoing = {
+  contentId: '303',
+  title: '단기축제',
+  eventStartDate: '20260814',
+  eventEndDate: '20260830',
+};
+const longOngoing = {
+  contentId: '304',
+  title: '장기상설',
+  eventStartDate: '20260418',
+  eventEndDate: '20261215',
+};
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, shortOngoing, aug20) < 0,
+  'upcoming before short ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, longOngoing, aug20) < 0,
+  'upcoming before long ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(shortOngoing, longOngoing, aug20) < 0,
+  'short ongoing before long ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, laterOpening, aug20) < 0,
+  'earlier upcoming first',
+);
+const suwonSorted = [
+  longOngoing,
+  {
+    contentId: '305',
+    title: '화성행궁야간',
+    eventStartDate: '20260501',
+    eventEndDate: '20261101',
+  },
+  shortOngoing,
+].sort((a, b) => compareFestivalsByOpenDate(a, b, aug20));
+assert.equal(suwonSorted[0].contentId, '303', 'short ongoing above long-term');
+const openGroups = sortFestivalGroupsByOpenDate(
+  [
+    { id: 'b', label: '부산', items: [laterOpening] },
+    { id: 'a', label: '강원', items: [soonOpening] },
+  ],
+  aug20,
+);
+assert.equal(openGroups[0].id, 'a', 'group with sooner festival first');
+
+const {
+  inferFestivalTasteIds,
+  buildTasteTags,
+  filterByTaste,
+  tasteLabel,
+  FESTIVAL_TASTE_THEMES,
+} = await import('../src/pages/Korea/festivalTasteTags.js');
+
+assert.ok(FESTIVAL_TASTE_THEMES.length >= 18, 'theme taxonomy breadth');
+assert.ok(
+  inferFestivalTasteIds({ title: '춘천 술 페스타' }).has('drink'),
+  '술 페스타 → drink',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '제38회 춘천인형극제' }).has('performance'),
+  '인형극제 → performance',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '한강수계 걷기행사' }).has('sports'),
+  '걷기행사 → sports',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '2026 창작 실경뮤지컬' }).has('performance'),
+  '뮤지컬 → performance',
+);
+assert.ok(
+  inferFestivalTasteIds({
+    title: '일반 축제',
+    cat3: 'A02070100',
+  }).has('culture'),
+  'TourAPI 문화관광축제 cat3',
+);
+const tastePool = [
+  { title: '춘천 술 페스타' },
+  { title: '제38회 춘천인형극제' },
+  { title: '한강수계 걷기행사' },
+  { title: '2026 창작 실경뮤지컬' },
+];
+const tasteChips = buildTasteTags(tastePool);
+assert.ok(tasteChips.some((t) => t.id === 'drink'), 'pool shows drink chip');
+assert.ok(tasteChips.some((t) => t.id === 'performance'), 'pool shows performance chip');
+assert.ok(tasteChips.some((t) => t.id === 'sports'), 'pool shows sports chip');
+assert.equal(
+  filterByTaste(tastePool, 'performance').length,
+  2,
+  'performance filter count',
+);
+assert.equal(tasteLabel('music'), '음악');
 
 console.log('smoke-korea-festival-personal: PASS');

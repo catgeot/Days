@@ -1,5 +1,6 @@
 import { buildPlacePlannerPath } from './placePlannerPath.js';
 import { getPreTravelItemsFromGuide } from './chatPrepBookingLinks.js';
+import { i18n } from '../i18n/config';
 
 /** PlannerTab DOM id — hash와 1:1 */
 export const PLANNER_FOCUS_ID = {
@@ -7,6 +8,7 @@ export const PLANNER_FOCUS_ID = {
   PREP_VISA: 'planner-prep-visa',
   PREP_FLIGHT: 'planner-prep-flight',
   PREP_FLIGHT_BOOKING: 'planner-prep-flight-booking',
+  FLIGHT_SEARCH: 'planner-flight-search',
   PREP_ACCOMMODATION: 'planner-prep-accommodation',
   PREP_SAFETY: 'planner-prep-safety',
   PRE_TRAVEL_CHECKLIST: 'planner-pre-travel-checklist',
@@ -14,7 +16,41 @@ export const PLANNER_FOCUS_ID = {
   ARRIVAL: 'planner-arrival',
   ARRIVAL_TRANSFER: 'planner-arrival-transfer',
   LOCAL_TRANSPORT: 'planner-local-transport',
+  CONNECTED_AGENCIES: 'planner-connected-agencies',
 };
+
+/** 플래너 3단계 — 기존 섹션 표시만 전환 */
+export const PLANNER_STAGE = {
+  ESSENTIAL: 'essential',
+  TRANSFER: 'transfer',
+  ENJOY: 'enjoy',
+};
+
+const FOCUS_TO_STAGE = {
+  [PLANNER_FOCUS_ID.PREP_SECTION]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_VISA]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_FLIGHT]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_FLIGHT_BOOKING]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.FLIGHT_SEARCH]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_ACCOMMODATION]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PREP_SAFETY]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.CONNECTED_AGENCIES]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.RENTAL_PICKUP]: PLANNER_STAGE.ESSENTIAL,
+  [PLANNER_FOCUS_ID.ARRIVAL]: PLANNER_STAGE.TRANSFER,
+  [PLANNER_FOCUS_ID.ARRIVAL_TRANSFER]: PLANNER_STAGE.TRANSFER,
+  [PLANNER_FOCUS_ID.LOCAL_TRANSPORT]: PLANNER_STAGE.ENJOY,
+};
+
+/**
+ * MOONi/hash 앵커 → 열려야 할 플래너 단계.
+ * @param {string | null | undefined} focusId
+ * @returns {typeof PLANNER_STAGE[keyof typeof PLANNER_STAGE]}
+ */
+export function resolvePlannerStageFromFocusId(focusId) {
+  const id = String(focusId ?? '').trim();
+  return FOCUS_TO_STAGE[id] || PLANNER_STAGE.ESSENTIAL;
+}
 
 /**
  * @param {string | null | undefined} hash
@@ -105,7 +141,9 @@ export function getMooniPlannerCtaLabel({
   chipId = null,
   userText = '',
 } = {}) {
-  const place = String(destinationName ?? '').trim() || '여행지';
+  const place =
+    String(destinationName ?? '').trim() ||
+    i18n.t('mooni.planner.destinationFallback');
   const focus =
     plannerFocus ||
     resolvePlannerFocusFromPrepChipId(chipId) ||
@@ -114,27 +152,29 @@ export function getMooniPlannerCtaLabel({
   switch (focus) {
     case PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST:
     case PLANNER_FOCUS_ID.PREP_FLIGHT:
-      return `${place} 항공권 예약 정보`;
+      return i18n.t('mooni.planner.flightBooking', { place });
     case PLANNER_FOCUS_ID.PREP_ACCOMMODATION:
-      return `${place} 숙소 예약`;
+      return i18n.t('mooni.planner.stayBooking', { place });
     case PLANNER_FOCUS_ID.ARRIVAL_TRANSFER:
     case PLANNER_FOCUS_ID.LOCAL_TRANSPORT:
     case PLANNER_FOCUS_ID.RENTAL_PICKUP:
     case PLANNER_FOCUS_ID.ARRIVAL:
-      return `${place} 현지 교통 안내`;
+      return i18n.t('mooni.planner.localTransport', { place });
     case PLANNER_FOCUS_ID.PREP_VISA:
     case PLANNER_FOCUS_ID.PREP_SAFETY:
     case PLANNER_FOCUS_ID.PREP_SECTION:
-      return `${place} 비자·입국 정보`;
+      return i18n.t('mooni.planner.visaInfo', { place });
     default:
-      return `${place} 여행 정보`;
+      return i18n.t('mooni.planner.travelInfo', { place });
   }
 }
 
 /** MOONi 「교통 · 티켓」 항공 CTA 아래 — 플래너 항공권 카드(경로·팁 요약) 연결 */
 export function getMooniPlannerFlightGuideLabel(destinationName = '') {
-  const place = String(destinationName ?? '').trim() || '여행지';
-  return `플래너에서 ${place} 항공권 안내 보기`;
+  const place =
+    String(destinationName ?? '').trim() ||
+    i18n.t('mooni.planner.destinationFallback');
+  return i18n.t('mooni.planner.flightGuide', { place });
 }
 
 /**
@@ -148,7 +188,9 @@ export function resolveMooniTransportPlannerLinks(
   essentialGuide = null,
   destinationName = ''
 ) {
-  const place = String(destinationName ?? '').trim() || '여행지';
+  const place =
+    String(destinationName ?? '').trim() ||
+    i18n.t('mooni.planner.destinationFallback');
   const cats = /** @type {{ airport_transfer?: unknown }} */ (
     essentialGuide?.categories ?? {}
   );
@@ -158,18 +200,18 @@ export function resolveMooniTransportPlannerLinks(
   if (cats?.airport_transfer) {
     links.push({
       focusId: PLANNER_FOCUS_ID.ARRIVAL_TRANSFER,
-      label: `플래너에서 ${place} 공항→목적지 이동 보기`,
+      label: i18n.t('mooni.planner.airportTransfer', { place }),
     });
   } else {
     links.push({
       focusId: PLANNER_FOCUS_ID.RENTAL_PICKUP,
-      label: `플래너에서 ${place} 렌터카·픽업 기준 보기`,
+      label: i18n.t('mooni.planner.rentalPickup', { place }),
     });
   }
 
   links.push({
     focusId: PLANNER_FOCUS_ID.LOCAL_TRANSPORT,
-    label: `플래너에서 ${place} 교통·패스 안내 보기`,
+    label: i18n.t('mooni.planner.transportPass', { place }),
   });
 
   return links;
@@ -272,5 +314,48 @@ export function scrollPlannerFocusIntoView(scrollRoot, focusId, options = {}) {
   }
 
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  return true;
+}
+
+/**
+ * 항공권 카드·필수준비 CTA — Trip.com 직행 대신 항공권 파트 검색폼으로 스크롤.
+ * 모바일 네이티브 폼이면 일정 버튼에 포커스해 날짜를 고를 수 있게 함.
+ * @param {HTMLElement | null} scrollRoot
+ * @param {{ headerOffset?: number }} [options]
+ */
+export function scrollPlannerFlightSearchForm(scrollRoot, options = {}) {
+  const ok = scrollPlannerFocusIntoView(scrollRoot, PLANNER_FOCUS_ID.FLIGHT_SEARCH, {
+    headerOffset: options.headerOffset ?? 96,
+  });
+  if (!ok) return false;
+
+  const form = document.getElementById(PLANNER_FOCUS_ID.FLIGHT_SEARCH);
+  const dateButton = form?.querySelector('[data-tripcom-date-range] button');
+  if (dateButton && typeof dateButton.focus === 'function') {
+    window.setTimeout(() => dateButton.focus(), 350);
+  }
+  return true;
+}
+
+/**
+ * 플래너 「연결된 여행사」 details 펼침 → 스크롤 컨테이너 상단으로 이동.
+ * @param {Event & { currentTarget?: HTMLDetailsElement }} event
+ */
+export function handlePlannerConnectedAgenciesToggle(event) {
+  const details = event?.currentTarget;
+  if (!details?.open) return false;
+  if (typeof document === 'undefined') return false;
+  const root = details.closest('[data-planner-scroll-root]');
+  const run = () =>
+    scrollPlannerFocusIntoView(root, PLANNER_FOCUS_ID.CONNECTED_AGENCIES, {
+      headerOffset: 16,
+    });
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
+  } else {
+    run();
+  }
   return true;
 }

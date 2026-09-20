@@ -1,0 +1,30 @@
+---
+description: 커밋·푸시 판단표(§1.5.3) — 허가 요청 금지·코드 vs docs main push
+alwaysApply: true
+---
+
+# 커밋·푸시 (§1.5.3)
+
+**SSOT**: [`.ai-context.md`](.ai-context.md) **§1.5.1~1.5.4** · [`gateo-docs-on-main.mdc`](gateo-docs-on-main.mdc) · [`AGENTS.md`](AGENTS.md)
+
+**배경**: 검증 없이 `origin/main` → Vercel PROD에 깨진 빌드가 올라감. 게이트 = **검증 PASS**. 「커밋/푸시해도 될까요?」 **폐기**.
+
+**한 줄**: **코드 = feature push** · **핸드오프 문서 = `main` push 필수** · **코드 `origin/main`만 PR/사람 요청**.
+
+| 상황 | 로컬 commit | `git push` | 사람에게 묻기 | 사람 QA |
+|------|-------------|------------|---------------|---------|
+| 로직·SSOT·버그픽스 | 검증 PASS → **즉시** | feature **즉시** | **금지** | 기능 변경 시만 |
+| 문서·핸드오프 (§1.5.4) | **즉시** on `main` | **`origin/main` docs-only — 세션 종료 즉시** | **금지** | **불필요** |
+| Cloud UI·Preview | 매 턴 on feature | **매 턴 feature** (필수) | **금지** | **같은 세션** Preview 1~3줄 (복잡·토큰 과다만 별도 QA 세션) |
+| main 코드 → PROD | — | **PR merge 또는 사람 요청** | 선택 | 병합 전 |
+| 로컬 UI 색·폰트 | 사람 OK 후 1회 | — | 조율 시작 시만 | 확정 전 |
+
+**에이전트 금지**
+
+- docs-only에 「main push 허가」·Preview QA
+- Cloud feature 세션 종료 시 **main 문서 동기화 생략** · **`merge origin/main` 생략**
+- **feature 브랜치에 `plans/**` 커밋** (핸드오프는 `main`에서만)
+- `main`에서 feature 코드 수정 (§1.5.2 짧은 예외 제외)
+- FAIL push · 코드를 `origin/main`에 임의 push · force-push to main
+
+**Cloud**: [`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md) · 고정 `cursor/…` · `/qa/<slug>` · 매 턴 feature push.

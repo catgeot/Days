@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Map, {
   Layer,
   NavigationControl,
@@ -8,7 +9,10 @@ import Map, {
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { Maximize2, Minimize2 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
+import { festivalMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
+import { mapboxLanguageForLocale } from '../../i18n/koreaRegionLabels';
 import { festivalLngLat } from './koreaFestivalCorridors';
+import { koreaMapPinLabelLayout } from './koreaMapPinLabelLayout';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -67,16 +71,17 @@ const activePaint = {
   'circle-stroke-color': '#fff7ed',
 };
 
-function LanguageControl() {
-  useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
+function LanguageControl({ locale = 'ko' }) {
+  const mapLanguage = mapboxLanguageForLocale(locale);
+  useControl(() => new MapboxLanguage({ defaultLanguage: mapLanguage }));
   return null;
 }
 
 /** @param {import('mapbox-gl').Map | null | undefined} map */
-function applyKoreanPlaceLabels(map) {
+function applyMapPlaceLabels(map, locale = 'ko') {
   if (!map || typeof map.setLanguage !== 'function') return;
   try {
-    map.setLanguage('ko');
+    map.setLanguage(mapboxLanguageForLocale(locale));
   } catch {
     /* ignore */
   }
@@ -133,8 +138,9 @@ function shortTitle(title) {
 
 /**
  * @param {object[]} items
+ * @param {string} [locale]
  */
-function buildGeoJson(items) {
+function buildGeoJson(items, locale = 'ko') {
   /** @type {GeoJSON.Feature[]} */
   const features = [];
   for (const item of items || []) {
@@ -142,7 +148,7 @@ function buildGeoJson(items) {
     if (!pt) continue;
     const contentId = String(item?.contentId || '');
     if (!contentId) continue;
-    const title = String(item?.title || '');
+    const title = festivalMapTitle(item, locale);
     features.push({
       type: 'Feature',
       properties: {
@@ -159,10 +165,12 @@ function buildGeoJson(items) {
   return { type: 'FeatureCollection', features };
 }
 
-function MapCaption({ pointCount }) {
+function MapCaption({ pointCount, countLabel }) {
   return (
     <div className="pointer-events-none absolute bottom-2 left-2 right-14 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-white/80">
-      <span className="text-white/70">좌표 {pointCount}</span>
+      <span className="text-white/70">
+        {countLabel} {pointCount}
+      </span>
       <span className="text-white/40">·</span>
       {CAPTION_LINKS.map((item, idx) => (
         <React.Fragment key={item.label}>
@@ -277,6 +285,7 @@ function applyFocusCamera(map, focusView, opts = {}) {
  *   fullscreen?: boolean,
  *   onToggleFullscreen?: () => void,
  *   className?: string,
+ *   locale?: string,
  * }} props
  */
 export default function KoreaFestivalMap({
@@ -291,12 +300,14 @@ export default function KoreaFestivalMap({
   fullscreen = false,
   onToggleFullscreen,
   className = '',
+  locale = 'ko',
 }) {
+  const { t } = useTranslation();
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
   const focusViewRef = useRef(focusView);
   focusViewRef.current = focusView;
-  const geojson = useMemo(() => buildGeoJson(items), [items]);
+  const geojson = useMemo(() => buildGeoJson(items, locale), [items, locale]);
   const pointCount = geojson.features.length;
   const focusKey = focusView
     ? isBoundsFocus(focusView)
@@ -388,9 +399,14 @@ export default function KoreaFestivalMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusKey]);
 
+  useEffect(() => {
+    const map = resolveMapInstance(mapRef.current);
+    applyMapPlaceLabels(map, locale);
+  }, [locale]);
+
   const handleMapLoad = (e) => {
     const map = e?.target;
-    applyKoreanPlaceLabels(map);
+    applyMapPlaceLabels(map, locale);
     const focus = focusViewRef.current;
     if (isValidFocusView(focus)) {
       applyFocusCamera(map, focus, { pushHistory: false });
@@ -497,7 +513,7 @@ export default function KoreaFestivalMap({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <LanguageControl />
+        <LanguageControl locale={locale} />
         <NavigationControl position="bottom-right" showCompass={false} />
         <Source
           id={SOURCE_ID}
@@ -534,14 +550,7 @@ export default function KoreaFestivalMap({
             id={POINT_LABEL_LAYER}
             type="symbol"
             filter={['!', ['has', 'point_count']]}
-            layout={{
-              'text-field': ['get', 'titleShort'],
-              'text-size': 11,
-              'text-offset': [0, 1.35],
-              'text-anchor': 'top',
-              'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-              'text-max-width': 8,
-            }}
+            layout={koreaMapPinLabelLayout}
             paint={{
               'text-color': '#1b1410',
               'text-halo-color': '#f59e0b',
@@ -577,7 +586,10 @@ export default function KoreaFestivalMap({
           {fullscreen ? '축소' : '전체'}
         </button>
       ) : null}
-      <MapCaption pointCount={pointCount} />
+      <MapCaption
+        pointCount={pointCount}
+        countLabel={t('korea.festival.mapPointCount', { defaultValue: 'Points' })}
+      />
     </div>
   );
 }

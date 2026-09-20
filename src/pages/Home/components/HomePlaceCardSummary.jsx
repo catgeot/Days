@@ -7,6 +7,7 @@ import {
   estimateFlightHoursChain,
   estimateFlightLegHours,
   getAirportHubCoords,
+  normalizeFlightRouteIataChain,
   resolveSummaryFlightCinemaOd,
 } from '../lib/globeFlightCinema.js';
 import {
@@ -21,8 +22,10 @@ import {
   nextImmerseZoom,
   resolveImmerseCamera,
 } from '../lib/globeImmerseZoom.js';
+import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
 import GlobeStayStrip from './GlobeStayStrip.jsx';
 import GlobeTourStrip from './GlobeTourStrip.jsx';
+import PlaceWorldEventsSection from '../../../components/PlaceCard/common/PlaceWorldEventsSection.jsx';
 
 /** 연속 not-ready 폴링 횟수 — 250ms×4 ≈ 1s (일시적 레이어 공백·style idle 깜박임 흡수) */
 const FLIGHT_ROUTE_NOT_READY_STREAK = 4;
@@ -44,6 +47,8 @@ export default function HomePlaceCardSummary({
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : null;
   const essentialGuide = useChatEssentialGuide(slug, location?.name ?? '');
+  /** place_toolkit essential_guide가 있을 때만 써머리 「플래너 보기」링크 */
+  const plannerUrl = essentialGuide ? buildPlacePlannerPath(slug) : null;
 
   const [selectedOriginIata, setSelectedOriginIata] = useState(() => resolveDefaultFlightOriginIata());
   const [isImmersed, setIsImmersed] = useState(false);
@@ -168,7 +173,11 @@ export default function HomePlaceCardSummary({
       .trim()
       .toUpperCase();
     const dest = getAirportHubCoords(destIata) || syncFlightPreview.dest;
-    const routeIatas = [syncFlightPreview.originIata, ...hubIatas, destIata];
+    const routeIatas = normalizeFlightRouteIataChain(
+      syncFlightPreview.originIata,
+      hubIatas,
+      destIata
+    );
     const chainPoints = [
       syncFlightPreview.origin,
       ...hubIatas.map((iata) => getAirportHubCoords(iata)).filter(Boolean),
@@ -296,6 +305,10 @@ export default function HomePlaceCardSummary({
       destIata: flightPreview.destIata,
       origin: flightPreview.origin,
       dest: flightPreview.dest,
+      hubIatas: flightPreview.edgePending ? undefined : flightPreview.hubIatas,
+      skipEdgeHubResolve:
+        !needsEdgeFlightHubs ||
+        (Boolean(edgeFlightHubs) && !flightPreview?.edgePending),
     });
   };
 
@@ -368,6 +381,7 @@ export default function HomePlaceCardSummary({
                       }
                     : undefined
                 }
+                plannerUrl={plannerUrl}
                 canToggleImmerse={canToggleImmerse}
                 isImmersed={isImmersed}
                 onToggleImmerse={() => {
@@ -394,6 +408,9 @@ export default function HomePlaceCardSummary({
                 stayExpanded={stayExpanded}
                 tourTab={tourTab}
                 tourExpanded={tourExpanded}
+                eventsSection={
+                  <PlaceWorldEventsSection location={location} variant="summary" />
+                }
                 belowCard={mobilePanel}
               />
             );

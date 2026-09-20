@@ -89,12 +89,19 @@ export const useTravelData = (user) => {
       if (data) existingTrip = data;
     }
 
+    const nextLat = Number(curationData.lat);
+    const nextLng = Number(curationData.lng);
+    const hasCoords =
+      Number.isFinite(nextLat) &&
+      Number.isFinite(nextLng) &&
+      !(nextLat === 0 && nextLng === 0);
+
     if (existingTrip) {
       const { data, error } = await supabase
         .from('saved_trips')
         .update({ 
-          lat: curationData.lat || existingTrip.lat || 0,
-          lng: curationData.lng || existingTrip.lng || 0,
+          lat: hasCoords ? nextLat : (Number.isFinite(Number(existingTrip.lat)) ? Number(existingTrip.lat) : null),
+          lng: hasCoords ? nextLng : (Number.isFinite(Number(existingTrip.lng)) ? Number(existingTrip.lng) : null),
           curation_data: curationData,
           is_ai_curation: true,
           is_bookmarked: true,
@@ -117,8 +124,8 @@ export const useTravelData = (user) => {
       const newTrip = {
         user_id: targetUser.id,
         destination: targetDest,
-        lat: curationData.lat || 0,
-        lng: curationData.lng || 0,
+        lat: hasCoords ? nextLat : null,
+        lng: hasCoords ? nextLng : null,
         is_bookmarked: true,
         curation_data: curationData,
         is_ai_curation: true,
@@ -171,21 +178,35 @@ export const useTravelData = (user) => {
     }
   }, [user]);
 
-  const updateMessages = useCallback(async (id, messages) => {
+  const updateMessages = useCallback(async (id, messages, extras = {}) => {
     const trip = savedTrips.find(t => t.id === id);
     
     if (messages.length === 1 && trip && trip.destination && trip.destination !== "New Session" && trip.destination !== "Scanning...") {
         recordInteraction(trip.destination, 'chat');
     }
 
+    const sessionPatch = extras?.mooniSession;
+    const hasSession = sessionPatch && typeof sessionPatch === 'object';
+
     setSavedTrips(prev => {
-      const updated = prev.map(t => String(t.id) === String(id) ? { ...t, messages } : t);
+      const updated = prev.map(t => {
+        if (String(t.id) !== String(id)) return t;
+        const next = { ...t, messages };
+        if (hasSession) {
+          next.curation_data = { ...(t.curation_data || {}), mooniSession: sessionPatch };
+        }
+        return next;
+      });
       if (!user) syncLocalStorage(updated); 
       return updated;
     });
     
     if (user) {
-      const { error } = await supabase.from('saved_trips').update({ messages }).eq('id', id);
+      const dbPatch = { messages };
+      if (hasSession) {
+        dbPatch.curation_data = { ...(trip?.curation_data || {}), mooniSession: sessionPatch };
+      }
+      const { error } = await supabase.from('saved_trips').update(dbPatch).eq('id', id);
       if (error) console.warn("🚨 [DB Error] updateMessages:", error);
     }
   }, [savedTrips, user]);

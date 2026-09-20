@@ -10,6 +10,7 @@ alwaysApply: true
 1. **루트 [`.ai-context.md`](.ai-context.md)를 Read 도구로 읽는다** (사용자가 `@`로 붙이지 않아도 필수).
 2. **1절 유지 규약**을 따른다 — 완료 로그는 `plans/YYYY-MM-DD-project-log.md`에만, `.ai-context` 5절에 이력 누적 금지.
 3. 작업 주제가 맞으면 **6절·운영 가이드**를 추가로 읽는다:
+   - **로직=feature · 문서=main**: [`plans/docs-on-main-workflow.md`](plans/docs-on-main-workflow.md) (Cloud feature **필수**)
    - 여행지·공항: [`plans/travel-spots-management.md`](plans/travel-spots-management.md)
    - 클룩 렌터카 검색어: [`plans/klook-rental-search-data.md`](plans/klook-rental-search-data.md)
    - 페리 SSOT: [`plans/ferry-ssot-validation.md`](plans/ferry-ssot-validation.md)
@@ -17,13 +18,14 @@ alwaysApply: true
 
 ## 오케스트레이터 (다배치 SSOT · 토큰 절약)
 
-사용자 메시지에 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** 가 있거나 `@plans/orchestrator-method.md` 연결 시:
+사용자 메시지에 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** · **`지자체팔경`** · **`팔경contentId`** 가 있거나 `@plans/orchestrator-method.md` 연결 시:
 
-1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) §1·**§3.0**·**§3.3**·**§3.4**·§4 (+ 주제면 §5 / 정착지 §5.3)를 읽는다.
-2. **당신 = 오케스트레이터** — 배치표 **2개** · **워커 정확히 2** · 감사 · tip **직렬** append(A→B) · VERIFY · **§3.4 커밋**(Cloud는 push·PR) · 세대 후 **§4.2 Task로 후임에 지휘권 이양**(사람 제시어 대기 금지).
-3. **후임 메인** = 현 메인이 Task로 기동 → 워커 2 재기동 → 직렬 머지 → VERIFY → §3.4 커밋 → 재이관 (기본 본인 런·솔로 계주 금지). 워커는 초안만 · tip 병렬 머지 금지.
-4. 명소: `npm run audit:city-attraction-hubs` · **해외 우선** · 일지 핸드오프(다음 배치표 2개).
+1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) §1·**§1.3**·**§3.0**·**§3.3**·**§3.4**·**§3.5**·**§3.6**·§4 (+ 주제면 §5 / 정착지 §5.3 / 팔경 수집 **§5.6** / contentId **§5.7**)를 읽는다.
+2. **당신 = 지휘자** — 다음 R만 워커 N 기동(기본 2) · 워커는 파일+요약 · **당신이 직렬 머지·커밋** · 컨텍스트가 찰 때까지 재기동. 워커 커밋 금지 · 남은 R 전부 기동 금지 · Cloud 중첩 후임 금지.
+3. **후임**은 메인 컨텍스트·런이 끝났을 때만(새 Cloud 런 / Desktop 컨트롤러의 다음 L1).
+4. 명소: `npm run audit:city-attraction-hubs` · **해외 우선** · 일지 핸드오프(다음 배치표).
 5. 정착지: `npm run audit:mapbox-settlement-places` + smoke · 큐 [`mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) · POI 금지 · 목표3/최대5/최소2.
+6. 지자체 팔경 **수집**: 종료 · F 재개 금지. **contentId**: 플랜 [`korea-local-scenic-use-plan.md`](plans/korea-local-scenic-use-plan.md) · 큐 [`korea-local-scenic-contentid-queue.md`](plans/korea-local-scenic-contentid-queue.md) · method **§5.7** · DB 우선 · 429 정지.
 
 상세 Rule: [`.cursor/rules/gateo-orchestrator.mdc`](gateo-orchestrator.mdc).
 
@@ -43,14 +45,30 @@ alwaysApply: true
 
 **수정 절차 SSOT**: `overrides.mjs` → `npm run generate:airports` → `npm run audit:airports` (`none: 0`). JSON spots 직접 편집·`RENTAL_MULTI`만 단독 수정 금지.
 
+## Cloud feature — 이어하기 (토큰 절약)
+
+사용자 첫 메시지에 **세션 표기**(`{주제} #{N}, {단계}`) · **`@plans/feature-handoff-index.md`** · **`@plans/…-project-log.md`**(주제 일지) 중 하나라도 있으면 **전반 파악 생략**:
+
+1. [`.ai-context.md`](.ai-context.md) — **1절 유지 규약·3절 금지**만.
+2. [`plans/feature-handoff-index.md`](plans/feature-handoff-index.md) — **해당 주제 행** + 표의 **다음 제시어** 블록.
+3. 핀된 **일지 핸드오프 절** + 주제 플랜 **§9만** (전문 Read 금지).
+4. **즉시** 표의 **고정 브랜치** checkout (`main`·detached면 필수).
+
+**이때 Read 금지**: 코드베이스 광역 grep · `travelSpots.js` 전체 · 주제 무관 플랜·닫힌 일지 · `.ai-context` 5절 이력.
+
+**세션 종료**: 플랜 §9 + 일지 + `feature-handoff-index` 행 갱신 + **§1.2 다음 제시어** + **[§6 main docs push 필수](plans/docs-on-main-workflow.md)** · [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) §6. **다음 제시어 = 다음 작업**(복잡 로직·토큰 과다만 `{주제} #N, 사람 Preview QA` 세션).
+
 ## 빠른 금지 사항 (상세는 .ai-context 3~4절)
 
 - `src/pages/Home/data/travelSpots.js` 전체 스캔 금지 → `travelSpots-list.json` 사용
 - `travelSpotAirports.json` / `travelSpotFerries.json` **spots 직접 수정 금지** → overrides → `generate:*`
 - API 키 브라우저 노출·사용자 승인 없는 「완료」 단정 금지
 - **UI 임의 변경 금지** (`.ai-context` **§4.1 5**): 승인 없이 기존 버튼·레이아웃·톤·카피 교체 금지. **기능 추가 시에도 기존 비주얼 유지**(연결·동작만). 「커밋 보류」≠ 리디자인 허가
+- **브라우저/`computerUse` QA 금지** (`.ai-context` **§4.1 13** · **1.6**): `Task(computerUse)`·`RecordScreen`·화면 클릭 QA **기본 금지**. **사람 명시 요청 시에만**. 채팅명·일지 `… QA` = **사람 Preview** 단계(에이전트 실행 지시 아님). 에이전트 검증 = audit/smoke/`build` → push → `/qa/…`·Preview + 사람 체크 1~3줄. **같은 세션 QA**: 복잡 로직·토큰 과다 외에는 작업 세션에서 마무리 · 다음 제시어는 다음 작업 (`AGENTS.md` Cloud)
+
 - 사용자 명시 없이 `plans/`에 새 완료보고/대형 기획서 생성 금지
-- Git commit/push: **검증 게이트** (`.ai-context` **1.5.1**/**1.5.2** · `AGENTS.md` Cloud) — 로직·SSOT는 audit/스모크 PASS 시 커밋 OK · **로컬** 합의 UI는 조율 중 커밋 보류(색·폰트 난발 방지)→사람 QA 후 · **Cloud feature**는 Preview용 **매 턴 커밋·push**+PR(없으면 생성)·push 전 최소 검증(도메인 smoke 또는 `npm run build`) · Cloud 짧은 SSOT는 `main` 커밋·push는 사람 요청 · **이어하기는 열린 고정 브랜치·동일 git Preview URL 재사용**(세션마다 새 `cursor/…-xxxx` 금지 · 세션 표기 `{주제} #{N}, {단계}` · **다음 채팅명 한 줄 펜스 제안**(제시어 1행=채팅명 · `cloud-preview-continuity` §1.1) · 테스터 공유 `www.gateo.kr/qa/<slug>` · Preview 우측 작업 로그 · 턴 종료 공유/Preview 링크 · Mapbox는 git Preview URL 1회) · 짧은 수정 **`main` 직행** · 대형/Cloud UI는 feature·PR · 사람 승인 없는 `main` push·force-push 금지 · 메시지 **한글**
+- Git commit/push: **[`gateo-commit-push.mdc`](gateo-commit-push.mdc)** · **[`gateo-docs-on-main.mdc`](gateo-docs-on-main.mdc)** · **§1.5.3~4** — 로직=**feature** · 핸드오프=**`main` push 필수** · 코드 `origin/main`=PR/요청 · force-push 금지
+- **허가 요청 금지** (§4.1 14): 게이트 통과 시 「커밋/푸시해도 될까요」 **묻지 않음** — 유일 예외 `git push origin main`
 
 
 - **PowerShell `Set-Content`/`-replace`로 한글 `.jsx` 등 소스 일괄 수정 금지** — UTF-8·JSX 파손 (`.ai-context` 3절)
@@ -60,12 +78,13 @@ alwaysApply: true
 
 - **폐기**(부활 금지): 논리적 구조 제안 → 승인 대기 → 전체 코드 채팅 출력. 클로드/Roo 전용 절 재도입 금지.
 - 주석 **필수 아님**(§4.2). 에이전트 인수인계·가드만. 나레이션 금지.
-- 사람에게: **바꾼 동작 + QA** 짧게. 워크스페이스 직접 수정.
+- 사람에게: **바꾼 동작 + (사람) QA 체크** 짧게. 워크스페이스 직접 수정. **브라우저/`computerUse` 대행 금지**(§4.1 13).
 - **오류 루프**: 동일 증상/FAIL **2회** 후 중단·보고 · 요청 밖 확장 금지 (§4.1).
-- 커밋: 로직·SSOT는 **검증 게이트 우선** · 로컬 UI는 **사람 QA 후**(§1.5.1 · 난발 방지) · Cloud feature는 Preview용 **매 턴 커밋·push**(AGENTS Cloud) · push≠완료. 미승인 UI 교체와 혼동 금지.
+- 커밋: **§1.5.3** — 검증 게이트 · **허가 요청 금지** · 로컬 UI 조율만 보류 · Cloud feature **매 턴 push** · push≠완료
 
 
 ## 세션 종료
 
-- **1.5.1**에 따라 커밋(해당하면 push) → 일지 2~5줄 → `.ai-context`는 **필요할 때만** 5~6절 최소 갱신
-- 릴리스 노트: **새 기능·중대 업데이트만** 초안 제안 → 합의 후 `releaseNotes.js` (`.ai-context` **1.7**). 버그픽스·미세 UI·SSOT 채움은 **묻지 않음**
+- **§1.5.3~4**에 따라 커밋(해당하면 push) → Cloud feature면 **main docs push** 포함 → 일지 2~5줄
+- **Cloud feature**: [`feature-handoff-index.md`](plans/feature-handoff-index.md) 행 + 플랜 §9 + **§1.2 다음 제시어**(핀 3개 · **기본 = 다음 작업**) · [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) §6 main 문서 동기화 검토
+- 릴리스 노트: **새 기능·중대 업데이트만** 초안 제안 → 합의 후 `releaseNotes.js` **푸터 Updates** (`.ai-context` **1.7**). **자동 팝업 금지**. 버그픽스·미세 UI·SSOT 채움은 **묻지 않음**

@@ -2,9 +2,14 @@
  * 사용자-facing 업데이트 공지 SSOT.
  *
  * 추가 기준 (`.ai-context` §1.7): **새 기능·중대한 기능/UX 업데이트·제휴/공지**만.
- * 버그픽스·미세 UI·내부 SSOT·리팩터·작은 후속은 **항목 추가하지 않음**(잦은 팝업 방지).
+ * 버그픽스·미세 UI·내부 SSOT·리팩터·작은 후속은 **항목 추가하지 않음**.
  * 반영은 사용자 합의 후 · 최신 항목을 RELEASE_NOTES 배열 **맨 앞**.
+ * 자동 팝업 없음 — LogoPanel FooterModal **Updates** 탭에서만 표시.
  * id는 YYYY-MM-DD (같은 날 여러 건이면 -2, -3) — 남발 금지.
+ *
+ * **EN (?lang=en)**:
+ * - Updates 탭: `resolveReleaseNote` → `RELEASE_NOTES_EN_BY_ID[id]` 있으면 EN, 없으면 KO 폴백.
+ * - 신규 추가 시 **동일 id**로 `RELEASE_NOTES_EN_BY_ID`에 title·items EN도 함께 넣을 것.
  *
  * @typedef {'feature' | 'partner' | 'fix' | 'notice'} ReleaseCategory
  * @typedef {{ id: string, title: string, items: string[], category?: ReleaseCategory, date?: string }} ReleaseNote
@@ -12,6 +17,36 @@
 
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
+  {
+    id: '2026-09-12',
+    category: 'feature',
+    title: '축제·명승 본문에서 투어·티켓을 바로 볼 수 있어요',
+    items: [
+      '축제·명승 상세에 마이리얼트립 투어·티켓 카드가 숙소 아래에 나와요.',
+      '「크게」를 누르면 카드만 커지고, 목록은 좌우로 넘길 수 있어요.',
+    ],
+  },
+  {
+    id: '2026-08-18',
+    category: 'feature',
+    title: '영어로 홈·장소·한국 투톱을 볼 수 있어요',
+    items: [
+      '헤더 EN/한 토글 또는 주소에 ?lang=en 을 붙이면 UI를 영어로 전환할 수 있어요.',
+      '홈·장소 카드·한국의 축제·명승 등 주요 화면 카피가 영어로 표시돼요.',
+      '선택한 언어는 브라우저에 기억돼 다음 방문에도 유지돼요.',
+    ],
+  },
+  {
+    id: '2026-08-07',
+    category: 'feature',
+    title: '한국의 명소를 축제와 함께 둘러볼 수 있어요',
+    items: [
+      '홈에서 「한국의 축제」와 「한국의 명승」으로 바로 들어갈 수 있어요.',
+      '명승에서는 GATEO가 고른 명소·국가유산 명승·전국 관광지를 지역·종류별로 살펴볼 수 있어요.',
+      '이름으로 검색하거나, 내 주변 가까운 곳부터 볼 수 있어요.',
+      '장소를 누르면 사진·안내를 보고, 근처 축제·맛집·숙소·투어로도 이어갈 수 있어요.',
+    ],
+  },
   {
     id: '2026-07-30',
     category: 'feature',
@@ -343,6 +378,138 @@ export const RELEASE_CATEGORY_LABELS = {
   fix: '개선',
   notice: '공지',
 };
+
+export const RELEASE_CATEGORY_LABELS_EN = {
+  feature: 'New feature',
+  partner: 'Partner',
+  fix: 'Improvement',
+  notice: 'Notice',
+};
+
+/** EN overlay — id → { title, items } */
+const RELEASE_NOTES_EN_BY_ID = {
+  '2026-09-12': {
+    title: 'See tours and tickets in Korea festival and scenic spot details',
+    items: [
+      'Festival and scenic spot pages now show MyRealTrip tour and ticket cards under stays.',
+      'Tap Large to enlarge the cards only; swipe the row left and right.',
+    ],
+  },
+  '2026-08-18': {
+    title: 'Browse home, places, and Korea hubs in English',
+    items: [
+      'Switch the UI to English with the header EN/KO toggle or ?lang=en in the URL.',
+      'Main copy on home, place cards, Korea festivals, and scenic spots appears in English.',
+      'Your language choice is saved in the browser for future visits.',
+    ],
+  },
+  '2026-08-07': {
+    title: 'Explore Korea scenic spots alongside festivals',
+    items: [
+      'Jump to Korea festivals and scenic spots from home quick links.',
+      'Browse GATEO picks, heritage scenic sites, and nationwide attractions by region and type.',
+      'Search by name or start from places near you.',
+      'Open a spot for photos and guides, then continue to nearby festivals, dining, stays, or tours.',
+    ],
+  },
+  '2026-07-30': {
+    title: 'Browse Korea festivals in one place',
+    items: [
+      'From home, open Korea to see current festivals on the map and in a list.',
+      'Filter by region or theme, search, or check festivals near you.',
+      'Tap a festival for schedule, venue, programs, and reading — then nearby destinations.',
+      'Star favorites to revisit later.',
+    ],
+  },
+  '2026-07-24': {
+    title: 'Find and book tours from home and the planner',
+    items: [
+      'Use Find tours on a place card to browse local activities.',
+      'See recommended tours in the planner and continue to GetYourGuide to book.',
+    ],
+  },
+  '2026-07-23': {
+    title: 'See more stays with clearer availability',
+    items: [
+      'Load up to 50 stays with Show more in stay search.',
+      'Bookable stays vs. stays needing date changes are shown more clearly.',
+    ],
+  },
+  '2026-07-21-3': {
+    title: 'More accurate landmark search and stay list view',
+    items: [
+      'Searching for landmarks like the Eiffel Tower opens the landmark, not a same-named street or city.',
+      'Enlarge stay cards with the grid button in stay search.',
+    ],
+  },
+  '2026-07-21-2': {
+    title: 'Zoom the globe from a place card',
+    items: [
+      'View this region zooms the globe to the pinned area.',
+      'Zoom out returns to a wider view without auto-zooming every time you open a card.',
+    ],
+  },
+  '2026-07-21': {
+    title: 'Search specific places and find nearby stays',
+    items: [
+      'Home search opens place cards for cities, landmarks, hotels, and resorts.',
+      'Examples: Seongsan Ilchulbong, hotels, condos — the map focuses on that point.',
+      'From the card, Find stays searches and books near that place.',
+    ],
+  },
+  '2026-07-20-3': {
+    title: 'Easier stay search',
+    items: [
+      'Set adults, children, and dates, then Apply to search again in one step.',
+      'See stays that match your dates first, with alternatives that need changes.',
+      'Sort by recommended, price, or rating.',
+    ],
+  },
+  '2026-07-20-2': {
+    title: 'Find and book stays near you and your destination',
+    items: [
+      'Find stays on a place card searches near you and the destination.',
+      'Pick check-in/out for matching inventory and book on MyRealTrip.',
+      'Full-screen on mobile, wider list on desktop.',
+    ],
+  },
+  '2026-07-20': {
+    title: 'Explore sub-regions on the globe',
+    items: [
+      'Zoom in to see and tap cities, landmarks, and local place names.',
+      'Unlisted points still open a place card with photos and AI.',
+      'Keep the globe clean when zoomed out; details appear when you zoom in.',
+    ],
+  },
+  '2026-07-11': {
+    title: 'MOONi “How to get there” shares origin search',
+    items: [
+      'Pick your departure the same way as on place cards and the flight bar.',
+      'On mobile, topic chips scroll in one row with the input below for more chat space.',
+      'On desktop, topics and input sit on one row with a wider conversation area.',
+      'Subtopics include Back to topics.',
+    ],
+  },
+};
+
+export function resolveReleaseCategoryLabel(category, locale = 'ko') {
+  if (locale === 'en' && category && RELEASE_CATEGORY_LABELS_EN[category]) {
+    return RELEASE_CATEGORY_LABELS_EN[category];
+  }
+  return RELEASE_CATEGORY_LABELS[category] || category || '';
+}
+
+export function resolveReleaseNote(release, locale = 'ko') {
+  if (!release) return { title: '', items: [] };
+  if (locale !== 'en') {
+    return { title: release.title, items: release.items || [] };
+  }
+  const en = RELEASE_NOTES_EN_BY_ID[release.id];
+  return {
+    title: en?.title || release.title,
+    items: en?.items || release.items || [],
+  };
+}
 
 export function getLatestRelease() {
   return RELEASE_NOTES[0] ?? null;

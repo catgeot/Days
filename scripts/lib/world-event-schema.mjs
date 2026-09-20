@@ -1,0 +1,679 @@
+/** @typedef {'festival'|'opera'|'concert'|'season'|'heritage'} WorldEventType */
+/** @typedef {'annual'|'fixed'|'tbd'} WorldEventRecurrence */
+/** @typedef {'tourapi'|'curated'|'official_url'} WorldEventSource */
+
+/**
+ * @typedef {{
+ *   name: string,
+ *   lat?: number,
+ *   lng?: number,
+ * }} WorldEventVenue
+ */
+
+/**
+ * @typedef {{
+ *   name: string,
+ *   nameEn?: string,
+ *   mrtKeyword?: string,
+ *   note?: string,
+ *   noteEn?: string,
+ * }} WorldEventStayArea
+ */
+
+/**
+ * @typedef {'official' | 'map' | 'search' | 'rental' | 'tour' | 'shop'} WorldEventActionChipKind
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   labelKo: string,
+ *   labelEn?: string,
+ *   href: string,
+ *   kind?: WorldEventActionChipKind,
+ * }} WorldEventActionChip
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   promptKo: string,
+ *   promptEn?: string,
+ * }} WorldEventMooniChip
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   titleKo?: string,
+ *   titleEn?: string,
+ * }} WorldEventYoutubeVideo
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   termKo: string,
+ *   termEn?: string,
+ *   promptKo: string,
+ *   promptEn?: string,
+ *   searchQueryKo: string,
+ *   searchQueryEn?: string,
+ *   referenceUrl?: string,
+ *   referenceUrlKo?: string,
+ * }} WorldEventGlossaryTerm
+ */
+
+/**
+ * @typedef {{
+ *   url: string,
+ *   captionKo?: string,
+ *   captionEn?: string,
+ * }} WorldEventHeroImage
+ */
+
+/**
+ * @typedef {'rental' | 'tour' | 'shop'} WorldEventContextLinkKind
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   labelKo: string,
+ *   labelEn?: string,
+ *   kind: WorldEventContextLinkKind,
+ *   href?: string,
+ *   searchQueryKo?: string,
+ *   searchQueryEn?: string,
+ *   searchTarget?: 'google' | 'klook' | 'maps',
+ * }} WorldEventContextLink
+ */
+
+/**
+ * @typedef {{
+ *   highlightIndex: number,
+ *   links: WorldEventContextLink[],
+ * }} WorldEventHighlightContextLinks
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   slug: string,
+ *   hubId?: string,
+ *   type: WorldEventType,
+ *   title: string,
+ *   titleEn?: string,
+ *   startDate: string,
+ *   endDate: string,
+ *   recurrence: WorldEventRecurrence,
+ *   recurrenceNote?: string,
+ *   recurrenceNoteEn?: string,
+ *   venue?: WorldEventVenue,
+ *   source: WorldEventSource,
+ *   sourceUrl?: string,
+ *   bookingHints?: string,
+ *   detailOverview?: string,
+ *   detailOverviewEn?: string,
+ *   highlights?: string[],
+ *   highlightsEn?: string[],
+ *   stayAreas?: WorldEventStayArea[],
+ *   recommendedNights?: number,
+ *   heroImage?: string,
+ *   heroImages?: WorldEventHeroImage[],
+ *   glossaryTerms?: WorldEventGlossaryTerm[],
+ *   highlightContextLinks?: WorldEventHighlightContextLinks[],
+ *   youtubeVideos?: WorldEventYoutubeVideo[],
+ *   youtubeSearchQueryKo?: string,
+ *   youtubeSearchQueryEn?: string,
+ *   heroGallerySearchQueryEn?: string,
+ *   actionChips?: WorldEventActionChip[],
+ *   mooniChips?: WorldEventMooniChip[],
+ *   priority?: number,
+ * }} WorldEventOverride
+ */
+
+export const WORLD_EVENT_TYPES = new Set([
+  'festival',
+  'opera',
+  'concert',
+  'season',
+  'heritage',
+]);
+
+export const WORLD_EVENT_RECURRENCES = new Set(['annual', 'fixed', 'tbd']);
+
+export const WORLD_EVENT_SOURCES = new Set(['tourapi', 'curated', 'official_url']);
+
+/** i18n-1 pilot — En body fields required in audit */
+export const WORLD_EVENT_I18N_PILOT_EVENT_IDS = [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'bali-galungan-season-2026',
+];
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * @param {unknown} raw
+ * @param {{ index?: number, slugSet?: Set<string>, hubIdSet?: Set<string> }} ctx
+ * @returns {WorldEventOverride}
+ */
+export function normalizeWorldEventOverride(raw, ctx = {}) {
+  const label = ctx.index != null ? `override[${ctx.index}]` : 'override';
+
+  if (!raw || typeof raw !== 'object') {
+    throw new Error(`[world-events] ${label}: entry must be object`);
+  }
+
+  const id = String(raw.id || '').trim();
+  if (!id || !/^[a-z0-9][a-z0-9-]*$/.test(id)) {
+    throw new Error(`[world-events] ${label}: id required (lowercase slug-like)`);
+  }
+
+  const slug = String(raw.slug || '').trim();
+  if (!slug) {
+    throw new Error(`[world-events] ${id}: slug required`);
+  }
+  if (ctx.slugSet && !ctx.slugSet.has(slug)) {
+    throw new Error(`[world-events] ${id}: slug not in travelSpots: ${slug}`);
+  }
+
+  const hubId = raw.hubId != null ? String(raw.hubId).trim() : undefined;
+  if (hubId && ctx.hubIdSet && !ctx.hubIdSet.has(hubId)) {
+    throw new Error(`[world-events] ${id}: hubId not in cityAttractionHubs: ${hubId}`);
+  }
+
+  const type = String(raw.type || '').trim();
+  if (!WORLD_EVENT_TYPES.has(type)) {
+    throw new Error(`[world-events] ${id}: invalid type ${raw.type}`);
+  }
+
+  const title = String(raw.title || '').trim();
+  if (!title) {
+    throw new Error(`[world-events] ${id}: title required`);
+  }
+
+  const titleEn = raw.titleEn != null ? String(raw.titleEn).trim() : undefined;
+
+  const startDate = String(raw.startDate || '').trim();
+  const endDate = String(raw.endDate || '').trim();
+  if (!ISO_DATE.test(startDate)) {
+    throw new Error(`[world-events] ${id}: startDate must be YYYY-MM-DD`);
+  }
+  if (!ISO_DATE.test(endDate)) {
+    throw new Error(`[world-events] ${id}: endDate must be YYYY-MM-DD`);
+  }
+  if (startDate > endDate) {
+    throw new Error(`[world-events] ${id}: startDate must be <= endDate`);
+  }
+
+  const recurrence = String(raw.recurrence || '').trim();
+  if (!WORLD_EVENT_RECURRENCES.has(recurrence)) {
+    throw new Error(`[world-events] ${id}: invalid recurrence ${raw.recurrence}`);
+  }
+
+  const recurrenceNote =
+    raw.recurrenceNote != null ? String(raw.recurrenceNote).trim() : undefined;
+
+  const recurrenceNoteEn =
+    raw.recurrenceNoteEn != null ? String(raw.recurrenceNoteEn).trim() : undefined;
+  if (recurrenceNoteEn && !recurrenceNote) {
+    throw new Error(`[world-events] ${id}: recurrenceNoteEn requires recurrenceNote`);
+  }
+
+  const source = String(raw.source || '').trim();
+  if (!WORLD_EVENT_SOURCES.has(source)) {
+    throw new Error(`[world-events] ${id}: invalid source ${raw.source}`);
+  }
+
+  const sourceUrl = raw.sourceUrl != null ? String(raw.sourceUrl).trim() : undefined;
+  if (recurrence === 'tbd' && !sourceUrl) {
+    throw new Error(`[world-events] ${id}: recurrence tbd requires sourceUrl`);
+  }
+
+  let venue;
+  if (raw.venue != null) {
+    if (typeof raw.venue !== 'object') {
+      throw new Error(`[world-events] ${id}: venue must be object`);
+    }
+    const name = String(raw.venue.name || '').trim();
+    if (!name) {
+      throw new Error(`[world-events] ${id}: venue.name required when venue set`);
+    }
+    venue = { name };
+    if (raw.venue.lat != null) venue.lat = Number(raw.venue.lat);
+    if (raw.venue.lng != null) venue.lng = Number(raw.venue.lng);
+    if (
+      (venue.lat != null && !Number.isFinite(venue.lat)) ||
+      (venue.lng != null && !Number.isFinite(venue.lng))
+    ) {
+      throw new Error(`[world-events] ${id}: venue lat/lng must be finite numbers`);
+    }
+  }
+
+  const bookingHints =
+    raw.bookingHints != null ? String(raw.bookingHints).trim() : undefined;
+
+  const detailOverview =
+    raw.detailOverview != null ? String(raw.detailOverview).trim() : undefined;
+
+  const detailOverviewEn =
+    raw.detailOverviewEn != null ? String(raw.detailOverviewEn).trim() : undefined;
+  if (detailOverviewEn && !detailOverview) {
+    throw new Error(`[world-events] ${id}: detailOverviewEn requires detailOverview`);
+  }
+
+  let highlights;
+  if (raw.highlights != null) {
+    if (!Array.isArray(raw.highlights)) {
+      throw new Error(`[world-events] ${id}: highlights must be array`);
+    }
+    highlights = raw.highlights
+      .map((item) => String(item || '').trim())
+      .filter(Boolean);
+    if (!highlights.length) {
+      throw new Error(`[world-events] ${id}: highlights must not be empty when set`);
+    }
+  }
+
+  let highlightsEn;
+  if (raw.highlightsEn != null) {
+    if (!Array.isArray(raw.highlightsEn)) {
+      throw new Error(`[world-events] ${id}: highlightsEn must be array`);
+    }
+    highlightsEn = raw.highlightsEn
+      .map((item) => String(item || '').trim())
+      .filter(Boolean);
+    if (!highlightsEn.length) {
+      throw new Error(`[world-events] ${id}: highlightsEn must not be empty when set`);
+    }
+    if (!highlights) {
+      throw new Error(`[world-events] ${id}: highlightsEn requires highlights`);
+    }
+    if (highlightsEn.length !== highlights.length) {
+      throw new Error(
+        `[world-events] ${id}: highlightsEn length (${highlightsEn.length}) must match highlights (${highlights.length})`,
+      );
+    }
+  }
+
+  let stayAreas;
+  if (raw.stayAreas != null) {
+    if (!Array.isArray(raw.stayAreas)) {
+      throw new Error(`[world-events] ${id}: stayAreas must be array`);
+    }
+    stayAreas = raw.stayAreas.map((area, areaIndex) => {
+      if (!area || typeof area !== 'object') {
+        throw new Error(`[world-events] ${id}: stayAreas[${areaIndex}] must be object`);
+      }
+      const name = String(area.name || '').trim();
+      if (!name) {
+        throw new Error(`[world-events] ${id}: stayAreas[${areaIndex}].name required`);
+      }
+      /** @type {WorldEventStayArea} */
+      const normalizedArea = { name };
+      const nameEn = area.nameEn != null ? String(area.nameEn).trim() : undefined;
+      if (nameEn) normalizedArea.nameEn = nameEn;
+      if (area.mrtKeyword != null) {
+        normalizedArea.mrtKeyword = String(area.mrtKeyword).trim();
+      }
+      if (area.note != null) {
+        normalizedArea.note = String(area.note).trim();
+      }
+      const noteEn = area.noteEn != null ? String(area.noteEn).trim() : undefined;
+      if (noteEn) normalizedArea.noteEn = noteEn;
+      return normalizedArea;
+    });
+    if (!stayAreas.length) {
+      throw new Error(`[world-events] ${id}: stayAreas must not be empty when set`);
+    }
+  }
+
+  let recommendedNights;
+  if (raw.recommendedNights != null) {
+    recommendedNights = Number(raw.recommendedNights);
+    if (
+      !Number.isFinite(recommendedNights) ||
+      !Number.isInteger(recommendedNights) ||
+      recommendedNights < 1 ||
+      recommendedNights > 30
+    ) {
+      throw new Error(`[world-events] ${id}: recommendedNights must be integer 1..30`);
+    }
+  }
+
+  const heroImage = raw.heroImage != null ? String(raw.heroImage).trim() : undefined;
+  if (heroImage && !/^https?:\/\//i.test(heroImage)) {
+    throw new Error(`[world-events] ${id}: heroImage must be http(s) URL`);
+  }
+
+  let heroImages;
+  if (raw.heroImages != null) {
+    if (!Array.isArray(raw.heroImages)) {
+      throw new Error(`[world-events] ${id}: heroImages must be array`);
+    }
+    heroImages = raw.heroImages.map((image, imageIndex) => {
+      if (!image || typeof image !== 'object') {
+        throw new Error(`[world-events] ${id}: heroImages[${imageIndex}] must be object`);
+      }
+      const url = String(image.url || '').trim();
+      if (!url || !/^https?:\/\//i.test(url)) {
+        throw new Error(`[world-events] ${id}: heroImages[${imageIndex}].url must be http(s) URL`);
+      }
+      /** @type {WorldEventHeroImage} */
+      const normalizedImage = { url };
+      const captionKo = image.captionKo != null ? String(image.captionKo).trim() : undefined;
+      const captionEn = image.captionEn != null ? String(image.captionEn).trim() : undefined;
+      if (captionKo) normalizedImage.captionKo = captionKo;
+      if (captionEn) normalizedImage.captionEn = captionEn;
+      return normalizedImage;
+    });
+    if (!heroImages.length) {
+      throw new Error(`[world-events] ${id}: heroImages must not be empty when set`);
+    }
+  }
+
+  let glossaryTerms;
+  if (raw.glossaryTerms != null) {
+    if (!Array.isArray(raw.glossaryTerms)) {
+      throw new Error(`[world-events] ${id}: glossaryTerms must be array`);
+    }
+    glossaryTerms = raw.glossaryTerms.map((term, termIndex) => {
+      if (!term || typeof term !== 'object') {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}] must be object`);
+      }
+      const termId = String(term.id || '').trim();
+      const termKo = String(term.termKo || '').trim();
+      const promptKo = String(term.promptKo || '').trim();
+      const searchQueryKo = String(term.searchQueryKo || '').trim();
+      if (!termId) {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].id required`);
+      }
+      if (!termKo) {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].termKo required`);
+      }
+      if (!promptKo) {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].promptKo required`);
+      }
+      if (!searchQueryKo) {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].searchQueryKo required`);
+      }
+      /** @type {WorldEventGlossaryTerm} */
+      const normalizedTerm = { id: termId, termKo, promptKo, searchQueryKo };
+      const termEn = term.termEn != null ? String(term.termEn).trim() : undefined;
+      const promptEn = term.promptEn != null ? String(term.promptEn).trim() : undefined;
+      const searchQueryEn =
+        term.searchQueryEn != null ? String(term.searchQueryEn).trim() : undefined;
+      const referenceUrl =
+        term.referenceUrl != null ? String(term.referenceUrl).trim() : undefined;
+      const referenceUrlKo =
+        term.referenceUrlKo != null ? String(term.referenceUrlKo).trim() : undefined;
+      if (termEn) normalizedTerm.termEn = termEn;
+      if (promptEn) normalizedTerm.promptEn = promptEn;
+      if (searchQueryEn) normalizedTerm.searchQueryEn = searchQueryEn;
+      if (referenceUrl) {
+        if (!/^https?:\/\//i.test(referenceUrl)) {
+          throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].referenceUrl must be http(s) URL`);
+        }
+        normalizedTerm.referenceUrl = referenceUrl;
+      }
+      if (referenceUrlKo) {
+        if (!/^https?:\/\//i.test(referenceUrlKo)) {
+          throw new Error(
+            `[world-events] ${id}: glossaryTerms[${termIndex}].referenceUrlKo must be http(s) URL`,
+          );
+        }
+        normalizedTerm.referenceUrlKo = referenceUrlKo;
+      }
+      return normalizedTerm;
+    });
+    if (!glossaryTerms.length) {
+      throw new Error(`[world-events] ${id}: glossaryTerms must not be empty when set`);
+    }
+  }
+
+  let highlightContextLinks;
+  if (raw.highlightContextLinks != null) {
+    if (!Array.isArray(raw.highlightContextLinks)) {
+      throw new Error(`[world-events] ${id}: highlightContextLinks must be array`);
+    }
+    highlightContextLinks = raw.highlightContextLinks.map((group, groupIndex) => {
+      if (!group || typeof group !== 'object') {
+        throw new Error(`[world-events] ${id}: highlightContextLinks[${groupIndex}] must be object`);
+      }
+      const highlightIndex = Number(group.highlightIndex);
+      if (!Number.isInteger(highlightIndex) || highlightIndex < 0) {
+        throw new Error(`[world-events] ${id}: highlightContextLinks[${groupIndex}].highlightIndex must be >= 0`);
+      }
+      if (!Array.isArray(group.links) || !group.links.length) {
+        throw new Error(`[world-events] ${id}: highlightContextLinks[${groupIndex}].links required`);
+      }
+      const links = group.links.map((link, linkIndex) => {
+        if (!link || typeof link !== 'object') {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}] must be object`,
+          );
+        }
+        const linkId = String(link.id || '').trim();
+        const labelKo = String(link.labelKo || '').trim();
+        const kind = String(link.kind || '').trim();
+        if (!linkId) {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].id required`,
+          );
+        }
+        if (!labelKo) {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].labelKo required`,
+          );
+        }
+        if (!['rental', 'tour', 'shop'].includes(kind)) {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].kind invalid`,
+          );
+        }
+        /** @type {WorldEventContextLink} */
+        const normalizedLink = {
+          id: linkId,
+          labelKo,
+          kind: /** @type {WorldEventContextLinkKind} */ (kind),
+        };
+        const labelEn = link.labelEn != null ? String(link.labelEn).trim() : undefined;
+        const href = link.href != null ? String(link.href).trim() : undefined;
+        const searchQueryKo =
+          link.searchQueryKo != null ? String(link.searchQueryKo).trim() : undefined;
+        const searchQueryEn =
+          link.searchQueryEn != null ? String(link.searchQueryEn).trim() : undefined;
+        const searchTarget =
+          link.searchTarget != null ? String(link.searchTarget).trim() : undefined;
+        if (labelEn) normalizedLink.labelEn = labelEn;
+        if (searchQueryKo) normalizedLink.searchQueryKo = searchQueryKo;
+        if (searchQueryEn) normalizedLink.searchQueryEn = searchQueryEn;
+        if (searchTarget) {
+          if (!['google', 'klook', 'maps'].includes(searchTarget)) {
+            throw new Error(
+              `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].searchTarget invalid`,
+            );
+          }
+          normalizedLink.searchTarget = /** @type {'google' | 'klook' | 'maps'} */ (searchTarget);
+        }
+        if (searchTarget && !searchQueryKo) {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].searchQueryKo required when searchTarget is set`,
+          );
+        }
+        if (href) {
+          if (!/^https?:\/\//i.test(href)) {
+            throw new Error(
+              `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].href must be http(s) URL`,
+            );
+          }
+          normalizedLink.href = href;
+        }
+        return normalizedLink;
+      });
+      return { highlightIndex, links };
+    });
+  }
+
+  let youtubeVideos;
+  if (raw.youtubeVideos != null) {
+    if (!Array.isArray(raw.youtubeVideos)) {
+      throw new Error(`[world-events] ${id}: youtubeVideos must be array`);
+    }
+    youtubeVideos = raw.youtubeVideos.map((video, videoIndex) => {
+      if (!video || typeof video !== 'object') {
+        throw new Error(`[world-events] ${id}: youtubeVideos[${videoIndex}] must be object`);
+      }
+      const videoId = String(video.id || '').trim();
+      if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
+        throw new Error(`[world-events] ${id}: youtubeVideos[${videoIndex}].id must be 11-char YouTube id`);
+      }
+      /** @type {WorldEventYoutubeVideo} */
+      const normalizedVideo = { id: videoId };
+      const titleKo = video.titleKo != null ? String(video.titleKo).trim() : undefined;
+      const titleEn = video.titleEn != null ? String(video.titleEn).trim() : undefined;
+      if (titleKo) normalizedVideo.titleKo = titleKo;
+      if (titleEn) normalizedVideo.titleEn = titleEn;
+      return normalizedVideo;
+    });
+    if (!youtubeVideos.length) {
+      throw new Error(`[world-events] ${id}: youtubeVideos must not be empty when set`);
+    }
+  }
+
+  let actionChips;
+  if (raw.actionChips != null) {
+    if (!Array.isArray(raw.actionChips)) {
+      throw new Error(`[world-events] ${id}: actionChips must be array`);
+    }
+    actionChips = raw.actionChips.map((chip, chipIndex) => {
+      if (!chip || typeof chip !== 'object') {
+        throw new Error(`[world-events] ${id}: actionChips[${chipIndex}] must be object`);
+      }
+      const chipId = String(chip.id || '').trim();
+      const labelKo = String(chip.labelKo || '').trim();
+      const href = String(chip.href || '').trim();
+      if (!chipId) {
+        throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].id required`);
+      }
+      if (!labelKo) {
+        throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].labelKo required`);
+      }
+      if (!href || !/^https?:\/\//i.test(href)) {
+        throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].href must be http(s) URL`);
+      }
+      /** @type {WorldEventActionChip} */
+      const normalizedChip = { id: chipId, labelKo, href };
+      const labelEn = chip.labelEn != null ? String(chip.labelEn).trim() : undefined;
+      if (labelEn) normalizedChip.labelEn = labelEn;
+      const kind = chip.kind != null ? String(chip.kind).trim() : undefined;
+      if (kind) {
+        if (!['official', 'map', 'search', 'rental', 'tour', 'shop'].includes(kind)) {
+          throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].kind invalid`);
+        }
+        normalizedChip.kind = /** @type {WorldEventActionChipKind} */ (kind);
+      }
+      return normalizedChip;
+    });
+    if (!actionChips.length) {
+      throw new Error(`[world-events] ${id}: actionChips must not be empty when set`);
+    }
+  }
+
+  let mooniChips;
+  if (raw.mooniChips != null) {
+    if (!Array.isArray(raw.mooniChips)) {
+      throw new Error(`[world-events] ${id}: mooniChips must be array`);
+    }
+    mooniChips = raw.mooniChips.map((chip, chipIndex) => {
+      if (!chip || typeof chip !== 'object') {
+        throw new Error(`[world-events] ${id}: mooniChips[${chipIndex}] must be object`);
+      }
+      const chipId = String(chip.id || '').trim();
+      const promptKo = String(chip.promptKo || '').trim();
+      if (!chipId) {
+        throw new Error(`[world-events] ${id}: mooniChips[${chipIndex}].id required`);
+      }
+      if (!promptKo) {
+        throw new Error(`[world-events] ${id}: mooniChips[${chipIndex}].promptKo required`);
+      }
+      /** @type {WorldEventMooniChip} */
+      const normalizedChip = { id: chipId, promptKo };
+      const promptEn = chip.promptEn != null ? String(chip.promptEn).trim() : undefined;
+      if (promptEn) normalizedChip.promptEn = promptEn;
+      return normalizedChip;
+    });
+    if (!mooniChips.length) {
+      throw new Error(`[world-events] ${id}: mooniChips must not be empty when set`);
+    }
+  }
+
+  let priority;
+  if (raw.priority != null) {
+    priority = Number(raw.priority);
+    if (!Number.isFinite(priority) || !Number.isInteger(priority) || priority < 0) {
+      throw new Error(`[world-events] ${id}: priority must be non-negative integer`);
+    }
+  }
+
+  /** @type {WorldEventOverride} */
+  const event = {
+    id,
+    slug,
+    type,
+    title,
+    startDate,
+    endDate,
+    recurrence,
+    source,
+  };
+
+  if (hubId) event.hubId = hubId;
+  if (titleEn) event.titleEn = titleEn;
+  if (recurrenceNote) event.recurrenceNote = recurrenceNote;
+  if (recurrenceNoteEn) event.recurrenceNoteEn = recurrenceNoteEn;
+  if (venue) event.venue = venue;
+  if (sourceUrl) event.sourceUrl = sourceUrl;
+  if (bookingHints) event.bookingHints = bookingHints;
+  if (detailOverview) event.detailOverview = detailOverview;
+  if (detailOverviewEn) event.detailOverviewEn = detailOverviewEn;
+  if (highlights) event.highlights = highlights;
+  if (highlightsEn) event.highlightsEn = highlightsEn;
+  if (stayAreas) event.stayAreas = stayAreas;
+  if (recommendedNights != null) event.recommendedNights = recommendedNights;
+  if (heroImage) event.heroImage = heroImage;
+  if (heroImages) event.heroImages = heroImages;
+  if (glossaryTerms) event.glossaryTerms = glossaryTerms;
+  if (highlightContextLinks) event.highlightContextLinks = highlightContextLinks;
+  if (youtubeVideos) event.youtubeVideos = youtubeVideos;
+  const youtubeSearchQueryKo =
+    raw.youtubeSearchQueryKo != null ? String(raw.youtubeSearchQueryKo).trim() : undefined;
+  const youtubeSearchQueryEn =
+    raw.youtubeSearchQueryEn != null ? String(raw.youtubeSearchQueryEn).trim() : undefined;
+  if (youtubeSearchQueryKo) event.youtubeSearchQueryKo = youtubeSearchQueryKo;
+  if (youtubeSearchQueryEn) event.youtubeSearchQueryEn = youtubeSearchQueryEn;
+  const heroGallerySearchQueryEn =
+    raw.heroGallerySearchQueryEn != null ? String(raw.heroGallerySearchQueryEn).trim() : undefined;
+  if (heroGallerySearchQueryEn) {
+    if (/[\uAC00-\uD7A3]/.test(heroGallerySearchQueryEn)) {
+      throw new Error(`[world-events] ${id}: heroGallerySearchQueryEn must be English`);
+    }
+    event.heroGallerySearchQueryEn = heroGallerySearchQueryEn;
+  }
+  if (actionChips) event.actionChips = actionChips;
+  if (mooniChips) event.mooniChips = mooniChips;
+  if (priority != null) event.priority = priority;
+
+  return event;
+}
+
+import { compareWorldEventsForList } from '../../src/shared/worldEventTimeline.js';
+
+/**
+ * @param {WorldEventOverride[]} events
+ */
+export function sortWorldEvents(events) {
+  return [...events].sort(compareWorldEventsForList);
+}

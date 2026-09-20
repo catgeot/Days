@@ -27,7 +27,16 @@ export function isSyntheticOrEmptyPlaceDesc(location) {
   if (name && /지역을 탐색합니다\.?\s*$/.test(d)) return true;
   if (name && d === `${name}의 명소·명물을 둘러보세요.`) return true;
 
+  // EN hub/suggestion placeholders
+  if (name && /(?:explore|discover)\s+(?:the\s+)?region/i.test(d)) return true;
+  if (name && /browse\s+(?:attractions|highlights|local\s+specialties)/i.test(d)) return true;
+  if (name && new RegExp(`^Explore\\s+${escapeRegExp(name)}`, 'i').test(d)) return true;
+
   return false;
+}
+
+function escapeRegExp(str) {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**

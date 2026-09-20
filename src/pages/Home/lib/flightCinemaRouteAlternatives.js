@@ -1,8 +1,13 @@
 import {
+  DEFAULT_FLIGHT_ORIGIN_IATA,
   estimateFlightHoursChain,
   estimateFlightLegHours,
   getAirportHubCoords,
 } from './globeFlightCinema.js';
+import {
+  getCuratedFlightRouteAlternativeHubSets,
+  resolveCinemaDestIata,
+} from '../../../utils/rentalAirportMatch.js';
 
 /**
  * @param {string} originIata
@@ -104,4 +109,30 @@ export function normalizeFlightRouteAlternatives(originIata, destIata, alternati
   }
 
   return out;
+}
+
+/**
+ * overrides `flightRouteAlternativeHubs` — ICN 출발 Bar 경유 칩 (Edge graph 대신).
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ originIata?: string, destIata?: string, essentialGuide?: Record<string, unknown> | null }} [options]
+ */
+export function resolveCuratedFlightRouteAlternativesForCinema(location, options = {}) {
+  const originIata = String(options.originIata ?? DEFAULT_FLIGHT_ORIGIN_IATA).trim().toUpperCase();
+  if (originIata !== DEFAULT_FLIGHT_ORIGIN_IATA) return [];
+
+  const destIata = String(
+    options.destIata ?? resolveCinemaDestIata(location, options) ?? ''
+  )
+    .trim()
+    .toUpperCase();
+  if (destIata.length !== 3) return [];
+
+  const hubSets = getCuratedFlightRouteAlternativeHubSets(location);
+  if (!hubSets?.length) return [];
+
+  const alternatives = hubSets.map((hubIatas) => ({
+    hubIatas,
+    source: 'curated-alternative',
+  }));
+  return normalizeFlightRouteAlternatives(originIata, destIata, alternatives, hubSets.length);
 }

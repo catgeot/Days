@@ -2,6 +2,7 @@ import {
   buildFlightRouteLineWithLegs,
   buildFlightArcDrawSchedule,
   computeRouteCameraView,
+  DEFAULT_FLIGHT_ORIGIN_IATA,
   getAirportHubCoords,
   resolveArcDrawAtTime,
   FLIGHT_CINEMA_DURATION_MS,
@@ -9,6 +10,12 @@ import {
   FLIGHT_CINEMA_LEG_PAUSE_MS,
 } from './globeFlightCinema.js';
 import { normalizeLngNear } from './globeLngUtils.js';
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+import {
+  flightCinemaDebugLocationTag,
+  logFlightCinemaDebug,
+  warnFlightCinemaDebug,
+} from './flightCinemaDebug.js';
 
 export const FLIGHT_CINEMA_ARC_SOURCE_ID = 'gateo-flight-cinema-arc';
 export const FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID = 'gateo-flight-cinema-endpoints';
@@ -21,11 +28,14 @@ export const FLIGHT_CINEMA_ORIGIN_LAYER_ID = 'gateo-flight-cinema-origin';
 /** @deprecated legacy layer ids for label-policy compat */
 export const FLIGHT_CINEMA_DEST_LAYER_ID = 'gateo-flight-cinema-dest';
 
-export const FLIGHT_CINEMA_LAYER_IDS = [
+export const FLIGHT_CINEMA_ARC_LAYER_IDS = [
   FLIGHT_CINEMA_ARC_GLOW_LAYER_ID,
   FLIGHT_CINEMA_ARC_LAYER_ID,
+];
+
+export const FLIGHT_CINEMA_LAYER_IDS = [
+  ...FLIGHT_CINEMA_ARC_LAYER_IDS,
   FLIGHT_CINEMA_AIRPORT_LAYER_ID,
-  FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID,
 ];
 
 const EMPTY_FC = { type: 'FeatureCollection', features: [] };
@@ -43,8 +53,19 @@ const ARC_LINE_GLOW = {
   'line-blur': 1.2,
 };
 
+function setArcLineCoords(map, coords) {
+  if (!map || map._removed) return;
+  try {
+    map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(coords));
+  } catch {
+    // Style may be mid-transition — render hook retries.
+  }
+}
+
 function safeMapUpdate(map, fn) {
-  if (!map?.getStyle?.() || map._removed) return;
+  if (!map || map._removed) return;
+  const styleReady = Boolean(map.isStyleLoaded?.() || map.loaded?.());
+  if (!styleReady) return;
   try {
     fn();
   } catch {
@@ -99,37 +120,11 @@ const AIRPORT_DOT_PAINT = {
   'circle-stroke-color': '#ffffff',
 };
 
-const AIRPORT_LABEL_LAYOUT = {
-  'text-field': ['get', 'iata'],
-  'text-size': ['interpolate', ['linear'], ['zoom'], 1, 15, 4, 19, 8, 24],
-  'text-offset': [
-    'interpolate',
-    ['linear'],
-    ['zoom'],
-    1,
-    ['literal', [0.75, 0]],
-    4,
-    ['literal', [0.9, 0]],
-    8,
-    ['literal', [1.1, 0]],
-  ],
-  'text-anchor': 'left',
-  'text-max-width': 8,
-  'text-allow-overlap': true,
-  'text-ignore-placement': true,
-  'text-letter-spacing': 0.08,
-};
-
-const AIRPORT_LABEL_PAINT = {
-  'text-color': '#ffffff',
-  'text-halo-color': 'rgba(2,6,23,0.95)',
-  'text-halo-width': 1.5,
-};
-
 function routeAirportsFeature(originIata, destIata, hubIatas = []) {
   /** @type {import('geojson').Feature[]} */
   const features = [];
   const seen = new Set();
+  const normalizedOrigin = String(originIata || DEFAULT_FLIGHT_ORIGIN_IATA).trim().toUpperCase();
 
   const pushAirport = (iata, role) => {
     const code = String(iata || '').trim().toUpperCase();
@@ -144,7 +139,7 @@ function routeAirportsFeature(originIata, destIata, hubIatas = []) {
     });
   };
 
-  pushAirport(originIata, 'origin');
+  pushAirport(normalizedOrigin, 'origin');
   for (const hubIata of hubIatas) pushAirport(hubIata, 'hub');
   pushAirport(destIata, 'dest');
 
@@ -152,7 +147,11 @@ function routeAirportsFeature(originIata, destIata, hubIatas = []) {
 }
 
 function removeLegacyAirportLayers(map) {
-  for (const legacyId of [FLIGHT_CINEMA_ORIGIN_LAYER_ID, FLIGHT_CINEMA_DEST_LAYER_ID]) {
+  for (const legacyId of [
+    FLIGHT_CINEMA_ORIGIN_LAYER_ID,
+    FLIGHT_CINEMA_DEST_LAYER_ID,
+    FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID,
+  ]) {
     if (map.getLayer(legacyId)) {
       try {
         map.removeLayer(legacyId);
@@ -174,26 +173,16 @@ function applyLayerPaint(map, layerId, paint) {
   }
 }
 
-function applyLayerLayout(map, layerId, layout) {
-  if (!map.getLayer(layerId)) return;
-  for (const [key, value] of Object.entries(layout)) {
-    try {
-      map.setLayoutProperty(layerId, key, value);
-    } catch {
-      // Style may be mid-transition.
-    }
-  }
-}
-
 export function isFlightCinemaLayer(layerId = '') {
   const id = String(layerId);
   return FLIGHT_CINEMA_LAYER_IDS.includes(id)
     || id === FLIGHT_CINEMA_ORIGIN_LAYER_ID
-    || id === FLIGHT_CINEMA_DEST_LAYER_ID;
+    || id === FLIGHT_CINEMA_DEST_LAYER_ID
+    || id === FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID;
 }
 
-export function setupFlightCinemaLayers(map, { visible = true } = {}) {
-  if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
+export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = false } = {}) {
+  if (!isGlobeMapStyleReady(map)) return false;
 
   try {
     if (!map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)) {
@@ -236,20 +225,7 @@ export function setupFlightCinemaLayers(map, { visible = true } = {}) {
       applyLayerPaint(map, FLIGHT_CINEMA_AIRPORT_LAYER_ID, AIRPORT_DOT_PAINT);
     }
 
-    if (!map.getLayer(FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID)) {
-      map.addLayer({
-        id: FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID,
-        type: 'symbol',
-        source: FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID,
-        layout: AIRPORT_LABEL_LAYOUT,
-        paint: AIRPORT_LABEL_PAINT,
-      });
-    } else {
-      applyLayerLayout(map, FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID, AIRPORT_LABEL_LAYOUT);
-      applyLayerPaint(map, FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID, AIRPORT_LABEL_PAINT);
-    }
-
-    for (const layerId of FLIGHT_CINEMA_LAYER_IDS) {
+    for (const layerId of FLIGHT_CINEMA_ARC_LAYER_IDS) {
       if (!map.getLayer(layerId)) continue;
       try {
         if (visible) {
@@ -258,7 +234,18 @@ export function setupFlightCinemaLayers(map, { visible = true } = {}) {
         } else {
           map.setLayoutProperty(layerId, 'visibility', 'none');
         }
-        map.moveLayer(layerId);
+        if (promoteZIndex) {
+          map.moveLayer(layerId);
+        }
+      } catch {
+        // Style may be mid-transition.
+      }
+    }
+
+    // IATA 코드는 HTML Marker만 — Mapbox circle 점은 Safari 등에서 과하게 보임
+    if (map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)) {
+      try {
+        map.setLayoutProperty(FLIGHT_CINEMA_AIRPORT_LAYER_ID, 'visibility', 'none');
       } catch {
         // Style may be mid-transition.
       }
@@ -271,7 +258,7 @@ export function setupFlightCinemaLayers(map, { visible = true } = {}) {
 }
 
 export function clearFlightCinemaLayers(map) {
-  if (!map?.getStyle?.()) return;
+  if (!isGlobeMapStyleReady(map)) return;
   safeMapUpdate(map, () => {
     map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(EMPTY_FC);
     map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(EMPTY_FC);
@@ -285,8 +272,13 @@ export function clearFlightCinemaLayers(map) {
 
 /** 읽기 전용 — 항공 시네마 레이어 존재 여부 (map 부수 효과 없음) */
 export function isFlightCinemaGlobeReady(map) {
+  if (!isGlobeMapStyleReady(map)) return false;
+  return hasFlightCinemaLayersAttached(map);
+}
+
+/** styleLoaded와 무관 — relaunch 중 isStyleLoaded flicker 대비 */
+export function hasFlightCinemaLayersAttached(map) {
   if (!map || map._removed) return false;
-  if (!map.getStyle?.()) return false;
   try {
     return Boolean(
       map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)
@@ -295,16 +287,32 @@ export function isFlightCinemaGlobeReady(map) {
       && map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)
     );
   } catch {
-    // getLayer/getSource throw while style is mid-load.
+    return false;
+  }
+}
+
+function refreshFlightCinemaLayersForRelaunch(map) {
+  if (!hasFlightCinemaLayersAttached(map)) return false;
+  try {
+    for (const layerId of FLIGHT_CINEMA_ARC_LAYER_IDS) {
+      if (!map.getLayer(layerId)) continue;
+      map.setLayerZoomRange(layerId, 0, 24);
+      map.setLayoutProperty(layerId, 'visibility', 'visible');
+      map.moveLayer(layerId);
+    }
+    if (map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)) {
+      map.setLayoutProperty(FLIGHT_CINEMA_AIRPORT_LAYER_ID, 'visibility', 'none');
+    }
+    return true;
+  } catch {
     return false;
   }
 }
 
 /** 레이어 선등록 후 준비 여부 (시작·대기 시에만 호출) */
 export function ensureFlightCinemaGlobeReady(map) {
-  if (!map || map._removed) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
   if (isFlightCinemaGlobeReady(map)) return true;
-  if (!map.getStyle?.() || !map.isStyleLoaded?.()) return false;
   return setupFlightCinemaLayers(map, { visible: false });
 }
 
@@ -380,17 +388,35 @@ export function createFlightCinemaEngine(map, options = {}) {
   let animating = false;
   let cancelled = false;
   let rafId = null;
+  let renderArcHandler = null;
+  let completeTimer = null;
   let runGen = 0;
   let onCompleteRef = null;
   let fullArcRef = null;
   let arcScheduleRef = null;
   let animationStartAt = 0;
 
-  const cleanupTimers = () => {
+  const clearArcAnimationHooks = () => {
     if (rafId != null) {
       cancelAnimationFrame(rafId);
       rafId = null;
     }
+    if (renderArcHandler) {
+      try {
+        map.off('render', renderArcHandler);
+      } catch {
+        // ignore
+      }
+      renderArcHandler = null;
+    }
+    if (completeTimer != null) {
+      clearTimeout(completeTimer);
+      completeTimer = null;
+    }
+  };
+
+  const cleanupTimers = () => {
+    clearArcAnimationHooks();
   };
 
   /** Stale active/timers without invoking a previous onComplete (re-entry guard). */
@@ -438,9 +464,7 @@ export function createFlightCinemaEngine(map, options = {}) {
     cleanupTimers();
     animating = false;
     if (fullArcRef) {
-      safeMapUpdate(map, () => {
-        map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(fullArcRef));
-      });
+      setArcLineCoords(map, fullArcRef);
     }
   };
 
@@ -467,9 +491,59 @@ export function createFlightCinemaEngine(map, options = {}) {
    * }} params
    */
   const start = (params) => {
-    if (!map?.getStyle?.()) return false;
+    const debugBase = {
+      slug: flightCinemaDebugLocationTag(params?.location),
+      originIata: params?.originIata,
+      destIata: params?.destIata,
+      hubIatas: params?.hubIatas,
+      relaunch: params?.relaunch === true,
+      engineActiveBefore: active,
+    };
 
-    const relaunch = params.relaunch === true && active;
+    const wantsRelaunch = params.relaunch === true;
+    const relaunchWithAttachedLayers =
+      wantsRelaunch && (active || hasFlightCinemaLayersAttached(map));
+
+    if (!relaunchWithAttachedLayers && !isGlobeMapStyleReady(map)) {
+      warnFlightCinemaDebug('engine.abort', {
+        ...debugBase,
+        reason: 'map-style-not-ready',
+        styleLoaded: Boolean(map.isStyleLoaded?.()),
+        layersAttached: hasFlightCinemaLayersAttached(map),
+      });
+      return false;
+    }
+
+    let originLat = Number(params?.origin?.lat);
+    let originLng = Number(params?.origin?.lng);
+    let destLat = Number(params?.dest?.lat);
+    let destLng = Number(params?.dest?.lng);
+    if (!Number.isFinite(originLat) || !Number.isFinite(originLng)) {
+      const resolved = getAirportHubCoords(params?.originIata);
+      originLat = Number(resolved?.lat);
+      originLng = Number(resolved?.lng);
+    }
+    if (!Number.isFinite(destLat) || !Number.isFinite(destLng)) {
+      const resolved = getAirportHubCoords(params?.destIata);
+      destLat = Number(resolved?.lat);
+      destLng = Number(resolved?.lng);
+    }
+    if (
+      !Number.isFinite(originLat) ||
+      !Number.isFinite(originLng) ||
+      !Number.isFinite(destLat) ||
+      !Number.isFinite(destLng)
+    ) {
+      warnFlightCinemaDebug('engine.abort', {
+        ...debugBase,
+        reason: 'invalid-coords',
+        originLat,
+        originLng,
+        destLat,
+        destLng,
+      });
+      return false;
+    }
 
     try {
       map.stop();
@@ -477,39 +551,75 @@ export function createFlightCinemaEngine(map, options = {}) {
       // ignore
     }
 
-    if (relaunch) {
+    if (wantsRelaunch) {
       cleanupTimers();
       runGen += 1;
       cancelled = false;
       animating = false;
+      fullArcRef = null;
     } else if (active) {
       forceReset();
     } else {
       cleanupTimers();
     }
 
-    const originLngLat = [params.origin.lng, params.origin.lat];
-    const destLngLat = [params.dest.lng, params.dest.lat];
-    const { coords: fullArc, legEndIndices } = buildFlightRouteLineWithLegs(originLngLat, destLngLat, {
-      location: params.location ?? null,
-      originIata: params.originIata,
-      destIata: params.destIata,
-      hubIatas: params.hubIatas,
-      essentialGuide: params.essentialGuide ?? null,
-    });
+    const normalizedOriginIata = String(params.originIata || DEFAULT_FLIGHT_ORIGIN_IATA)
+      .trim()
+      .toUpperCase();
+    const normalizedDestIata = String(params.destIata || '').trim().toUpperCase();
+
+    const originLngLat = [originLng, originLat];
+    const destLngLat = [destLng, destLat];
+    let fullArc;
+    let legEndIndices;
+    try {
+      ({ coords: fullArc, legEndIndices } = buildFlightRouteLineWithLegs(originLngLat, destLngLat, {
+        location: params.location ?? null,
+        originIata: normalizedOriginIata,
+        destIata: normalizedDestIata,
+        hubIatas: params.hubIatas,
+        essentialGuide: params.essentialGuide ?? null,
+      }));
+    } catch (err) {
+      warnFlightCinemaDebug('engine.abort', {
+        ...debugBase,
+        reason: 'build-arc-threw',
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return false;
+    }
     fullArcRef = fullArc;
-    const durationMs = params.durationMs ?? (relaunch ? Math.round(FLIGHT_CINEMA_DURATION_MS * 0.45) : FLIGHT_CINEMA_DURATION_MS);
+    logFlightCinemaDebug('engine.arc-built', {
+      ...debugBase,
+      coordCount: fullArc?.length ?? 0,
+      legCount: legEndIndices?.length ?? 0,
+      wantsRelaunch,
+    });
+    const durationMs = params.durationMs ?? (wantsRelaunch ? Math.round(FLIGHT_CINEMA_DURATION_MS * 0.45) : FLIGHT_CINEMA_DURATION_MS);
     arcScheduleRef = buildFlightArcDrawSchedule(legEndIndices, {
       drawMs: Math.round(durationMs * 0.68),
-      legPauseMs: relaunch ? Math.max(80, Math.round(FLIGHT_CINEMA_LEG_PAUSE_MS * 0.35)) : FLIGHT_CINEMA_LEG_PAUSE_MS,
-      initialDelayMs: relaunch ? 0 : FLIGHT_CINEMA_INITIAL_DELAY_MS,
+      legPauseMs: wantsRelaunch ? Math.max(80, Math.round(FLIGHT_CINEMA_LEG_PAUSE_MS * 0.35)) : FLIGHT_CINEMA_LEG_PAUSE_MS,
+      initialDelayMs: wantsRelaunch ? 0 : FLIGHT_CINEMA_INITIAL_DELAY_MS,
     });
-    const cameraMs = relaunch ? Math.min(420, Math.round(durationMs * 0.35)) : Math.round(durationMs * 0.5);
+    const cameraMs = wantsRelaunch ? Math.min(420, Math.round(durationMs * 0.35)) : Math.round(durationMs * 0.5);
     const cameraView = computeRouteCameraView(fullArc, params.origin, params.dest, flyZoom);
 
     if (isFlightCinemaGlobeReady(map)) {
-      setupFlightCinemaLayers(map, { visible: true });
-    } else if (!setupFlightCinemaLayers(map, { visible: true })) {
+      setupFlightCinemaLayers(map, { visible: true, promoteZIndex: true });
+    } else if (relaunchWithAttachedLayers && refreshFlightCinemaLayersForRelaunch(map)) {
+      logFlightCinemaDebug('engine.relaunch-layers', {
+        ...debugBase,
+        styleLoaded: Boolean(map.isStyleLoaded?.()),
+        layersAttached: true,
+      });
+    } else if (!setupFlightCinemaLayers(map, { visible: true, promoteZIndex: true })) {
+      warnFlightCinemaDebug('engine.abort', {
+        ...debugBase,
+        reason: 'setup-layers-failed',
+        styleLoaded: Boolean(map.isStyleLoaded?.()),
+        layersAttached: hasFlightCinemaLayersAttached(map),
+        relaunchWithAttachedLayers,
+      });
       return false;
     }
 
@@ -520,11 +630,15 @@ export function createFlightCinemaEngine(map, options = {}) {
     cancelled = false;
     if (params.onComplete) onCompleteRef = params.onComplete;
 
+    const endpointFc = routeAirportsFeature(
+      normalizedOriginIata,
+      normalizedDestIata,
+      params.hubIatas
+    );
+
     safeMapUpdate(map, () => {
-      map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(
-        routeAirportsFeature(params.originIata, params.destIata, params.hubIatas)
-      );
-      map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature([originLngLat]));
+      map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(endpointFc);
+      setArcLineCoords(map, [originLngLat]);
     });
 
     autoRotateOff(map);
@@ -549,23 +663,46 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     animationStartAt = performance.now();
 
+    const syncArcAtElapsed = (elapsed) => {
+      const partial = resolveArcDrawAtTime(fullArc, arcScheduleRef, elapsed);
+      setArcLineCoords(map, partial);
+      return elapsed;
+    };
+
+    const finishArcAnimation = () => {
+      if (!active || cancelled || gen !== runGen) return;
+      revealFullRoute();
+    };
+
     const tick = (now) => {
       if (!active || cancelled || gen !== runGen) return;
       const schedule = arcScheduleRef;
-      const elapsed = now - animationStartAt;
-      const partial = resolveArcDrawAtTime(fullArc, schedule, elapsed);
-      safeMapUpdate(map, () => {
-        map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(partial));
-      });
+      const elapsed = syncArcAtElapsed(now - animationStartAt);
       if (elapsed < (schedule?.totalMs ?? 0)) {
         rafId = requestAnimationFrame(tick);
         return;
       }
-      animating = false;
-      rafId = null;
+      finishArcAnimation();
     };
 
+    renderArcHandler = () => {
+      if (!active || cancelled || gen !== runGen) return;
+      syncArcAtElapsed(performance.now() - animationStartAt);
+    };
+    map.on('render', renderArcHandler);
+
+    completeTimer = setTimeout(() => {
+      finishArcAnimation();
+    }, (arcScheduleRef?.totalMs ?? 0) + 300);
+
     rafId = requestAnimationFrame(tick);
+
+    logFlightCinemaDebug('engine.started', {
+      ...debugBase,
+      wantsRelaunch,
+      runGen: gen,
+      scheduleMs: arcScheduleRef?.totalMs ?? null,
+    });
 
     return true;
   };

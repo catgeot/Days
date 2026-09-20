@@ -18,6 +18,14 @@ import {
   scenicRegionForAreaCode,
 } from './koreaTourAttractionMap';
 import { sanitizeScenicDbSearchQuery } from './scenicSearch';
+import { resolveTourAreaForHub } from './koreaSigunguByHub';
+import { resolveCityAttractionHub } from './cityAttractionHubs';
+import {
+  pickTourAttractionRowForTitle,
+  pickUniqueTourAttractionRowForTitle,
+} from './koreaTourAttractionTitleMatch';
+
+export { pickTourAttractionRowForTitle } from './koreaTourAttractionTitleMatch';
 
 export {
   labelScenicAreaCode,
@@ -31,7 +39,7 @@ export {
 };
 
 const LIST_SELECT =
-  'content_id, title, addr1, addr2, area_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
+  'content_id, title, addr1, addr2, area_code, sigungu_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
 
 /**
  * hub 시·군명 → addr1 ilike 패턴 (보령 / 보령시 / 보령군).
@@ -141,6 +149,21 @@ function applyHasImageFilter(q) {
 /** 대표 이미지 없음 */
 function applyNoImageFilter(q) {
   return q.or('first_image.is.null,first_image.eq.');
+}
+
+function tourTitleSearchNeedles(title) {
+  const q = sanitizeScenicDbSearchQuery(title);
+  const compact = q.replace(/\s+/g, '');
+  const needles = [];
+  if (q.length >= 2) needles.push(q);
+  if (compact.length >= 2 && compact !== q) needles.push(compact);
+  return needles;
+}
+
+function applyTitleIlikeNeedles(q, needles) {
+  if (!needles.length) return q;
+  if (needles.length === 1) return q.ilike('title', `%${needles[0]}%`);
+  return q.or(needles.map((n) => `title.ilike.%${n}%`).join(','));
 }
 
 /**
@@ -376,6 +399,100 @@ export async function fetchKoreaTourAttractions(opts = {}) {
 }
 
 /**
+ * 내 주변 bbox 페이지·상한.
+ * 단일 limit(구 500)이면 서울·화천·양구처럼 bbox 후보가 많을 때
+ * DB 앞쪽만 가져와 관내 최근접이 샘플에서 빠진다 → range 페이지네이션.
+ */
+const NEAR_BBOX_PAGE = 1000;
+const NEAR_BBOX_FETCH_CAP = 3000;
+
+/**
+ * 좌표 기준 주변 type12 (bbox 전수 → 거리순).
+ * 권역 목록 샘플 후 거리 필터하면 화천처럼 관내·최근접이 빠질 수 있어 별도 경로.
+ *
+ * @param {{
+ *   lat: number,
+ *   lng: number,
+ *   radiusKm?: number,
+ *   limit?: number,
+ *   cat1?: string | null,
+ *   cat2?: string | null,
+ *   cat3?: string | null,
+ * }} opts
+ * @returns {Promise<{ spots: object[], count: number, error: string | null }>}
+ */
+export async function fetchKoreaTourAttractionsNear(opts = {}) {
+  const lat = Number(opts.lat);
+  const lng = Number(opts.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return { spots: [], count: 0, error: 'lat/lng required' };
+  }
+  const radiusKm = Math.min(Math.max(Number(opts.radiusKm) || 80, 1), 120);
+  const limit = Math.min(Math.max(Number(opts.limit) || 100, 1), 200);
+  const cat1 = normalizeTourAttractionCat1(opts.cat1);
+  const cat2 = normalizeTourAttractionCat2(cat1, opts.cat2);
+  const cat3 = normalizeTourAttractionCat3(cat1, cat2, opts.cat3);
+
+  const dLat = radiusKm / 111;
+  const cos = Math.cos((lat * Math.PI) / 180);
+  const dLng = radiusKm / (111 * Math.max(Math.abs(cos), 0.2));
+
+  /** @type {Record<string, unknown>[]} */
+  const rows = [];
+  for (let from = 0; from < NEAR_BBOX_FETCH_CAP; from += NEAR_BBOX_PAGE) {
+    const to = Math.min(from + NEAR_BBOX_PAGE, NEAR_BBOX_FETCH_CAP) - 1;
+    let q = supabase
+      .from('tourapi_attraction')
+      .select(LIST_SELECT)
+      .eq('active', true)
+      .eq('content_type_id', '12')
+      .gte('mapy', lat - dLat)
+      .lte('mapy', lat + dLat)
+      .gte('mapx', lng - dLng)
+      .lte('mapx', lng + dLng)
+      .range(from, to);
+
+    if (cat3) q = q.eq('cat3', cat3);
+    else if (cat2) q = q.eq('cat2', cat2);
+    else if (cat1) q = q.eq('cat1', cat1);
+
+    const { data, error } = await q;
+    if (error) {
+      console.warn('[koreaTourAttractions] near', error.message || error);
+      return { spots: [], count: 0, error: error.message || String(error) };
+    }
+    const batch = data || [];
+    rows.push(...batch);
+    if (batch.length < NEAR_BBOX_PAGE) break;
+  }
+
+  const r2 = radiusKm * radiusKm;
+  /** @type {{ spot: object, distKm: number }[]} */
+  const scored = [];
+  for (const row of rows) {
+    const spot = mapTourAttractionRow(row);
+    if (!spot || spot.lat == null || spot.lng == null) continue;
+    const dy = (spot.lat - lat) * 111;
+    const dx = (spot.lng - lng) * 111 * cos;
+    const dist2 = dy * dy + dx * dx;
+    if (dist2 > r2) continue;
+    scored.push({ spot, distKm: Math.sqrt(dist2) });
+  }
+  scored.sort(
+    (a, b) =>
+      a.distKm - b.distKm ||
+      String(a.spot?.name || '').localeCompare(String(b.spot?.name || ''), 'ko'),
+  );
+
+  const sliced = scored.slice(0, limit);
+  return {
+    spots: sliced.map((s) => ({ ...s.spot, distKm: s.distKm })),
+    count: sliced.length,
+    error: null,
+  };
+}
+
+/**
  * @param {string} contentId
  */
 export async function fetchKoreaTourAttractionById(contentId) {
@@ -430,6 +547,19 @@ export function peekKoreaTourAttractionFirstImagesByIds(contentIds) {
     if (url) out.set(id, url);
   }
   return out;
+}
+
+/**
+ * TourAPI live firstimage → 세션 캐시. DB first_image 공란 행이 매 검색마다 live를 다시 치지 않게 한다.
+ * @param {string | number | null | undefined} contentId
+ * @param {string | null | undefined} url
+ */
+export function rememberKoreaTourAttractionFirstImage(contentId, url) {
+  const id = String(contentId || '').trim();
+  const image = String(url || '').trim();
+  if (!/^\d{1,32}$/.test(id) || !image) return;
+  firstImageCache.set(id, image);
+  firstImageMiss.delete(id);
 }
 
 /**
@@ -503,4 +633,96 @@ export async function fetchKoreaTourAttractionFirstImagesByIds(contentIds) {
   if (!ids.length) return new Map();
   await loadMissingTourAttractionFirstImages(ids);
   return peekKoreaTourAttractionFirstImagesByIds(ids);
+}
+
+function hubNameHints(hubId) {
+  const hub = resolveCityAttractionHub(hubId);
+  const out = [];
+  const raw = String(hub?.name || '').trim();
+  const bare = raw.replace(/(특별자치시|광역시|특별시|자치시|시|군|구)$/u, '').trim();
+  if (bare.length >= 2) out.push(bare);
+  if (raw.length >= 2 && raw !== bare) out.push(raw);
+  return out;
+}
+
+/**
+ * 팔경 멤버명 → tourapi_attraction 1건 (area/sigungu 우선). JSON contentId 기입 아님.
+ * @param {{ title?: string, hubId?: string }} opts
+ */
+export async function lookupKoreaTourAttractionByTitle(opts = {}) {
+  const title = sanitizeScenicDbSearchQuery(opts.title);
+  if (title.length < 2) return null;
+  const hubId = String(opts.hubId || '').trim();
+  const area = resolveTourAreaForHub(hubId);
+  const hints = hubNameHints(hubId);
+
+  const run = async (useSigungu) => {
+    let q = supabase
+      .from('tourapi_attraction')
+      .select(LIST_SELECT)
+      .eq('active', true)
+      .ilike('title', `%${title}%`)
+      .limit(24);
+    if (area?.areaCode) q = q.eq('area_code', area.areaCode);
+    if (useSigungu && area?.sigunguCode) q = q.eq('sigungu_code', area.sigunguCode);
+    const { data, error } = await q;
+    if (error) {
+      console.warn('[koreaTourAttractions] lookupByTitle', error.message || error);
+      return [];
+    }
+    return (data || []).map(mapTourAttractionRow).filter(Boolean);
+  };
+
+  let rows = await run(true);
+  if (!rows.length) rows = await run(false);
+  return pickTourAttractionRowForTitle(rows, title, hints);
+}
+
+/**
+ * Mapbox 전 First-Pass — 전국 title 조회, 동점 다후보는 null.
+ * @param {string} title
+ */
+export async function lookupKoreaTourAttractionFirstPass(title) {
+  const needles = tourTitleSearchNeedles(title);
+  const compact = String(title || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+  if (compact.length < 3 || !needles.length) return null;
+  let q = supabase
+    .from('tourapi_attraction')
+    .select(LIST_SELECT)
+    .eq('active', true)
+    .eq('content_type_id', '12');
+  q = applyTitleIlikeNeedles(q, needles);
+  const { data, error } = await q.limit(24);
+  if (error) {
+    console.warn('[koreaTourAttractions] firstPass', error.message || error);
+    return null;
+  }
+  const rows = (data || []).map(mapTourAttractionRow).filter(Boolean);
+  return pickUniqueTourAttractionRowForTitle(rows, compact || needles[0], [], 88);
+}
+
+/**
+ * title ilike 다건 — 향교처럼 유형 검색. 공백 없는 표기(춘천향교)도 찾는다.
+ * @param {string} title
+ * @param {{ limit?: number }} [opts]
+ */
+export async function lookupKoreaTourAttractionsMatchingTitle(title, { limit = 80 } = {}) {
+  const needles = tourTitleSearchNeedles(title);
+  if (!needles.length) return [];
+  const take = Math.min(Math.max(Number(limit) || 80, 1), 400);
+  let q = supabase
+    .from('tourapi_attraction')
+    .select(LIST_SELECT)
+    .eq('active', true)
+    .eq('content_type_id', '12');
+  q = applyTitleIlikeNeedles(q, needles);
+  const { data, error } = await q.order('title', { ascending: true }).limit(take);
+  if (error) {
+    console.warn('[koreaTourAttractions] matchingTitle', error.message || error);
+    return [];
+  }
+  return (data || []).map(mapTourAttractionRow).filter(Boolean);
 }

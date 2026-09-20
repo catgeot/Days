@@ -2,6 +2,14 @@
 
 **SSOT 요약**: [`AGENTS.md`](../AGENTS.md) Cloud 절. 사람 QA 경로 = **고정 feature 브랜치의 Vercel git Preview URL**.
 
+### 0. 브라우저 QA — 사람만 (기본)
+
+에이전트는 `computerUse` / `RecordScreen` / 화면 클릭으로 Preview를 **대행 테스트하지 않음** (사람 **명시 요청**만 예외).  
+검증 = audit/smoke/`build` → 커밋·push → **`/qa/…`·git Preview + 사람 체크 1~3줄**.  
+채팅명·일지 `… QA` = **사람이 볼 단계**. 상세 [`.ai-context.md`](../.ai-context.md) **§4.1 13** · **1.6**.
+
+**같은 세션 QA (기본)**: 로직이 복잡하거나 토큰 소비가 큰 작업 **외에는** 작업 세션에서 QA를 마무리한다. 사람은 **같은 턴**에 Preview 링크로 확인. 다음 에이전트 채팅은 **다음 작업** — `{주제} #N, 사람 Preview QA`를 넘기지 않음. **예외**(복잡 로직·토큰 과다): 별도 사람 Preview QA 세션 허용. 사람 피드백 → 수정 세션. [`AGENTS.md`](../AGENTS.md) Cloud 절.
+
 ## 왜
 
 세션마다 새 브랜치·새 Preview 호스트·임의 채팅명이 생기면, 사람이 「지금 무슨 작업인지 · 어디까지인지 · 어디를 열어 볼지」를 추적할 수 없다. (국내축제 Cloud 중단 원인의 일부.)
@@ -34,6 +42,79 @@ Cloud/Cursor에서 **새 채팅을 만들 때** 사람이 제목·첫 프롬프�
 | **순번** | 같은 주제에서 세션마다 `#1`로 리셋 **금지**. 일지·플랜표의 다음 `#N`을 쓴다. |
 | **금지** | `국내축제-S2-UI` 같은 옛 슬러그만 채팅명으로 제안 · 채팅명과 제시어 1행이 서로 다름 · 긴 문단을 채팅명으로 제안 |
 
+### 1.2 제시어 표준 블록 — 채팅명 + 핀 3개 (필수)
+
+다세션 Cloud feature는 **턴/세션 종료마다** 아래 **전체 블록**을 제안한다. 사람은 새 채팅 **제목·첫 메시지**에 통째로 붙여넣는다.
+
+| 줄 | 내용 | 규칙 |
+|----|------|------|
+| **1** | `{주제} #{N}, {단계}` | 채팅명과 **문자 단위 동일** |
+| **2** | `@plans/feature-handoff-index.md` | **고정** — main에서도 브랜치·PR·제시어 SSOT |
+| **3** | `@plans/YYYY-MM-DD-project-log.md` | **최신 일지 1개** (해당 주제 핸드오프 절) |
+| **4** | `@plans/{주제}-plan.md` | 주제 플랜 (없으면 일지 핸드오프 절만) |
+| **5** | `브랜치 … · PR #… · Preview …` | 고정 브랜치 · PR · QA 경로 한 줄 |
+| **6** | `금지: …` | **3개 이내** (브랜치 난발·SSOT 직편집·미합의 UI 등) |
+
+**에이전트 (새 세션 시작)** — 1행이 세션 표기 형식이거나 2행에 `@plans/feature-handoff-index.md`가 있으면:
+
+1. [`.ai-context.md`](../.ai-context.md) — **1절 유지 규약·3절 금지**만 (전문 Read 생략 가능).
+2. **`feature-handoff-index.md` 해당 주제 행** + 핀된 일지·플랜 **§9(핸드오프)만**.
+3. **`git checkout` 고정 브랜치** (워킹 트리가 `main`이면 즉시).
+4. **Read 금지**: 코드베이스 광역 grep · `travelSpots.js` 전체 · 주제 무관 플랜 · 닫힌 일지.
+
+**에이전트 (세션 종료)** — feature 작업이면 **3곳 동시 갱신**:
+
+1. 주제 플랜 **§9 핸드오프** (다음 제시어 블록 포함)
+2. `plans/YYYY-MM-DD-project-log.md` 2~5줄
+3. [`feature-handoff-index.md`](./feature-handoff-index.md) 해당 행 (tip·Preview·**다음 제시어**)
+
+**main 핸드오프 동기화** (§6 · **필수**): 문서 3종은 feature에만 두지 말고 **`main` + `origin/main`** — [`docs-on-main-workflow.md`](./docs-on-main-workflow.md). **docs-only push = 세션 종료 시 즉시**(허가·QA 없음). **코드** `origin/main` = PR·사람 요청.
+
+### 1.3 다세션 플랜 작성 · Plan 아티팩트 (필수)
+
+**문제**: Cursor Plan 아티팩트만 갱신하고 `plans/`·`origin/main`에 안 올리면, 다음 세션이 **구 `plans/*-plan.md`**로 작업함.
+
+| 시점 | 에이전트 |
+|------|----------|
+| **플랜 확정·방향 전환** | 계획 본문 말미에 **표준 제시어 #N~** + **docs-on-main** 절 포함 (선례: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) Phase F-0.5) |
+| **같은 턴 또는 직후** | `checkout main` → 플랜·index·일지 갱신 → **`push origin main`** (코드 없어도 필수) |
+| **구현 착수** | index **다음 제시어**·플랜 §9가 `origin/main`에 있는지 확인 → feature checkout → `merge origin/main` → `audit:docs-handoff-sync` |
+
+**다세션 Cloud feature 플랜 필수 절** (말미 체크리스트):
+
+1. 로직=feature · 문서=main (세션 시작/종료)
+2. 맥락 고정 (Read 순서 · 고정 브랜치)
+3. 공통 Preview · VERIFY
+4. **표준 제시어** — 세션마다 **7행** (`작업:` 포함 · §1.2 핀 3개)
+5. 세션 종료 갱신 (index · 일지 · 플랜 §9 · main push)
+
+**7행 형식** (세계행사형 · 다른 주제도 동일 골격):
+
+```
+{주제} #{N}, {단계}
+@plans/feature-handoff-index.md
+@plans/YYYY-MM-DD-project-log.md
+@plans/{주제}-plan.md
+브랜치 cursor/… · PR #… · Preview/QA
+금지: …
+작업: …
+```
+
+**금지**: Plan 아티팩트만 읽고 repo `plans/` 미동기화 상태로 구현 · 플랜 세션만 끝내고 **main docs push 생략**.
+
+**복붙용 예 (해안해양)**
+
+````markdown
+```
+해안 해양 탐색 #7, (다음 단계)
+@plans/feature-handoff-index.md
+@plans/2026-08-16-project-log.md
+@plans/coast-sea-explore-plan.md
+브랜치 cursor/coast-sea-plan-8c05 · PR #118 · Preview QA
+금지: main 새 브랜치 · seaBasins.json 직접 편집 · UI 리디자인
+```
+````
+
 **채팅명만 제안할 때 (복붙용)**
 
 ````markdown
@@ -44,7 +125,20 @@ Cloud/Cursor에서 **새 채팅을 만들 때** 사람이 제목·첫 프롬프�
 ```
 ````
 
-**새 세션 제시어 블록 (채팅명 = 1행)**
+**새 세션 제시어 블록 (채팅명 = 1행)** — 상세는 **§1.2**
+
+````markdown
+```
+테마여행 #2, 셸 라우트
+@plans/feature-handoff-index.md
+@plans/2026-08-07-project-log.md
+@plans/korea-theme-travel-plan.md
+브랜치 cursor/korea-theme · PR #… · Preview /korea/theme
+금지: main 새 브랜치 · …
+```
+````
+
+**구형 (핀 1개만 — 신규 제안 금지)**
 
 ````markdown
 ```
@@ -105,14 +199,45 @@ Preview: https://…-git-…vercel.app/play/geo
 
 짧은 `/qa/…`가 있으면 **공유 링크를 먼저**. 둘 다 없이 「로컬에서만 확인」으로 끝내지 않는다.
 
-이 주제의 **다음 Cloud 세션**이 있으면, 같은 요약에 **다음 채팅명**을 §1.1 형식(코드펜스 한 줄)으로 붙인다.
+이 주제의 **다음 Cloud 세션**이 있으면, 같은 요약에 **다음 채팅명**을 §1.1 형식(코드펜스 한 줄)으로 붙인다. **기본 다음 채팅 = 다음 작업**(아래 §5). `{주제} #N, 사람 Preview QA`를 기본으로 두지 않음.
 
 ### 5. 세션 종료 · 다음 채팅명 핸드오프
 
 일지·채팅 말미에 최소 포함:
 
-1. **다음 채팅명** — §1.1처럼 코드펜스 **한 줄만** (사람이 새 채팅 제목/런칭에 복붙)
-2. **다음 제시어** — 그 채팅명을 1행으로 하는 제시어 블록(또는 플랜 해당 절 링크)
-3. 고정 브랜치 · `/qa/…` · git Preview · 남은 일
+1. **다음 제시어 블록** — **§1.2 전체**(채팅명 1행 + 핀 3개 + 브랜치·PR + 금지). 코드펜스로 통째로 제안.
+2. [`feature-handoff-index.md`](./feature-handoff-index.md) 해당 행 갱신 (열린 feature).
+3. 고정 브랜치 · `/qa/…` · git Preview · 남은 일 · **main 문서 동기화** 여부(§6).
 
-플랜에 복붙표가 있으면 표의 다음 `#N`과 **일치**시킨다. 표가 없으면 일지 최신 `#N`+1과 단계 한 줄로 새로 제안하고 일지·플랜에 기록한다.
+플랜에 복붙표가 있으면 표의 다음 `#N`과 **일치**시킨다. 표가 없으면 일지 최신 `#N`+1과 단계 한 줄로 새로 제안하고 일지·플랜·인덱스에 기록한다.
+
+**다음 제시어 내용 (기본 vs 예외)**
+
+| | |
+|--|--|
+| **기본** | 작업 세션에서 QA 마무리. 요약에 Preview 링크 + 사람 체크 1~3줄. **다음 제시어 = 다음 작업**. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 **넘기지 않음**. |
+| **예외** | 로직이 복잡하거나 토큰 소비가 큰 세션 — QA를 그 세션에 얹지 않고, 다음 채팅을 사람 Preview QA로 둘 수 있다. 에이전트 `computerUse`는 여전히 기본 금지. |
+| **피드백** | 사람이 Preview에서 이슈를 말하면 그때만 **수정** 세션. 빈 QA 세션을 에이전트 작업으로 열지 않음. |
+
+### 6. main 핸드오프 동기화 (브랜치 작업 시 · **필수**)
+
+**규칙 한 줄**: **로직 = feature** · **문서 = `main` SSOT** — 상세·체크리스트: [`docs-on-main-workflow.md`](./docs-on-main-workflow.md).
+
+feature 코드는 브랜치에만 있어도 되지만, **맥락 문서가 `origin/main`에 없으면** `main` 부팅 Cloud 세션이 브랜치·제시어를 찾지 못한다.
+
+| 문서 | 갱신 시점 | `main` 반영 |
+|------|-----------|-------------|
+| [`feature-handoff-index.md`](./feature-handoff-index.md) | feature 세션 **종료마다** | **필수** — docs-only 커밋 또는 cherry-pick |
+| 주제 플랜 **§9** | 동일 | **필수** |
+| `plans/YYYY-MM-DD-project-log.md` | 동일 | **필수** |
+
+**절차 (에이전트 — 허가 요청 없이 · 생략 금지)**
+
+1. **feature**: 검증 PASS → **코드만** 커밋 → **`git push origin <feature>`** — **`plans/**` 커밋 금지**
+2. **`git checkout main && git pull origin main`**
+3. 인덱스·§9·일지 갱신 후 **docs-only 커밋** — **코드 파일을 `main`에 넣지 않음**
+4. **`git push origin main`** — **docs-only** · Preview QA·허가 **불필요**
+5. **`git checkout <feature> && git merge origin/main`**
+6. **`npm run audit:docs-handoff-sync`** PASS — FAIL이면 5번부터
+
+**주제 병합 후**: 인덱스에서 행 제거 · `cloudPreviewWorkLog` `active: false` · `/qa/…` 비활성(해당 시).

@@ -17,6 +17,15 @@ export function resolveMrtPackageSearchKeyword(location) {
   return en.slice(0, 80);
 }
 
+/** UI CTA용 — en일 때 name_en 우선 · /pkc 검색 q는 {@link resolveMrtPackageSearchKeyword} 유지 */
+export function resolveMrtPackageDisplayKeyword(location, locale = 'ko') {
+  if (String(locale || '').startsWith('en')) {
+    const en = String(location?.name_en || location?.curation_data?.locationEn || '').trim();
+    if (en) return en.slice(0, 80);
+  }
+  return resolveMrtPackageSearchKeyword(location);
+}
+
 /**
  * 국가·지명 힌트로 테마 키 (family|japan|longhaul|resort|null).
  * @param {object|null|undefined} location

@@ -44,7 +44,7 @@ const DETAIL_SLEEP_MS = 70;
 const CONTENT_MAX = 3200;
 const GALLERY_MAX = 10;
 
-/** CHA 시도코드 → gateo 권역 (51=강원특별자치 · 52=전북특별자치 포함) */
+/** CHA 시도코드 → gateo 권역 (51=강원특별자치 · 52=전남광주 포함) */
 const CHA_CTCD_REGION = {
   11: '수도권',
   23: '수도권',
@@ -82,8 +82,8 @@ const CHA_CTCD_LABEL = {
   33: '충북',
   34: '충남',
   35: '전북',
-  52: '전북',
   36: '전남',
+  52: '전남',
   37: '경북',
   38: '경남',
   50: '제주',

@@ -13,8 +13,15 @@ import { listKoreaHeritageScenic } from '../src/pages/Home/lib/koreaHeritageScen
 import {
   filterScenicSpotsByQuery,
   normalizeScenicQuery,
+  pickBestRegionByCounts,
   sanitizeScenicDbSearchQuery,
+  shouldMergeHubLocalScenic,
+  canonicalScenicSearchQuery,
+  scenicTourSearchQuery,
+  scenicTourAddrNeedle,
 } from '../src/pages/Home/lib/scenicSearch.js';
+import { nextTourCatsWhenCountsZero } from '../src/pages/KoreaTheme/scenicDefaultChips.js';
+import { SCENIC_REGION_ORDER } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PAGE = join(__dirname, '../src/pages/KoreaTheme/ScenicPage.jsx');
@@ -36,6 +43,39 @@ assert.ok(
   gyeongpo.some((s) => String(s.name || '').includes('경포')),
   '국가유산 명승 경포 검색',
 );
+const hwaeomsaCurated = filterScenicSpotsByQuery(curated, '화엄사');
+const hwaeomsaHeritage = filterScenicSpotsByQuery(heritage, '화엄사');
+assert.ok(
+  hwaeomsaCurated.some((s) => s.id === 'hwaeomsa' || String(s.name || '').includes('화엄사')),
+  '선정 명소 화엄사 검색',
+);
+assert.ok(
+  hwaeomsaHeritage.some((s) => String(s.name || '').includes('화엄사')),
+  '국가유산 명승 화엄사 검색',
+);
+const hwaeomsaJeonnam = listKoreaHeritageScenic({
+  region: '전라',
+  areaCode: '38',
+}).filter((s) => String(s.name || '').includes('화엄사'));
+assert.ok(
+  hwaeomsaJeonnam.length >= 1,
+  '화엄사 ctcd52 → 전남(38) 칩에 포함',
+);
+assert.equal(
+  listKoreaHeritageScenic({ region: '전라', areaCode: '37' }).filter((s) =>
+    String(s.name || '').includes('화엄사'),
+  ).length,
+  0,
+  '화엄사 전북(37) 칩에 없음',
+);
+assert.ok(
+  pageSrc.includes('const searchFilter = searchApplied.trim()'),
+  '검색 필터는 확정어(searchApplied)만',
+);
+assert.ok(
+  pageSrc.includes('검색 중에는 권역만'),
+  '검색 중 권역 칩이 시도·hub를 재시드하지 않음',
+);
 assert.equal(filterScenicSpotsByQuery(curated, '').length, curated.length);
 assert.equal(
   filterScenicSpotsByQuery(curated, 'zzzz-no-match-xxxx').length,
@@ -44,7 +84,10 @@ assert.equal(
 
 assert.ok(pageSrc.includes('filterScenicSpotsByQuery'), 'ScenicPage uses filter');
 assert.ok(pageSrc.includes('korea-scenic-search'), 'ScenicPage search input');
-assert.ok(pageSrc.includes('명소·지역 검색'), 'ScenicPage search placeholder');
+assert.ok(
+  pageSrc.includes('scenicSearchPlaceholder') || pageSrc.includes('명소·지역 검색'),
+  'ScenicPage search placeholder',
+);
 assert.ok(pageSrc.includes('searchQuery'), 'ScenicPage DB searchQuery');
 assert.ok(pageSrc.includes('commitSearch'), 'ScenicPage commitSearch');
 assert.ok(pageSrc.includes('closeSearch'), 'ScenicPage closeSearch');
@@ -52,7 +95,10 @@ assert.ok(
   pageSrc.includes('korea-scenic-search-modal-title'),
   'search results render as modal',
 );
-assert.ok(pageSrc.includes('aria-label="맨 위로"'), 'scroll-to-top FAB');
+assert.ok(
+  pageSrc.includes('scrollToTop') || pageSrc.includes('aria-label="맨 위로"'),
+  'scroll-to-top FAB',
+);
 assert.ok(pageSrc.includes('mainScrollRef'), 'scroll container ref');
 assert.ok(
   pageSrc.includes('bg-amber-500 shadow-sm') &&
@@ -69,9 +115,16 @@ assert.ok(
 );
 assert.ok(pageSrc.includes('curatedSearchPool'), 'search pool for curated');
 assert.ok(pageSrc.includes('heritageSearchPool'), 'search pool for heritage');
-assert.ok(pageSrc.includes('pickRegionForSearchMatches'), 'commit picks region');
+assert.ok(pageSrc.includes('pickRegionFromSpotMatches'), 'commit picks per-pod region');
 assert.ok(
-  pageSrc.includes('한국관광공사 선정 관광지입니다.'),
+  pageSrc.includes('setCuratedRegion') &&
+    pageSrc.includes('setHeritageRegion') &&
+    pageSrc.includes('setTourRegion'),
+  'curated/heritage/tour region chips are independent',
+);
+assert.ok(
+  pageSrc.includes('scenicTourAttribution') ||
+    pageSrc.includes('한국관광공사 선정 관광지입니다.'),
   'tour catalog blurb is short',
 );
 assert.ok(
@@ -79,10 +132,29 @@ assert.ok(
   'search keeps category chips',
 );
 assert.ok(
-  pageSrc.includes('분류 칩으로 결과 분해'),
+  pageSrc.includes('분류 칩으로 결과 분해') ||
+    pageSrc.includes('showCuratedFilterChips'),
   'search comment mentions chip breakdown',
 );
 assert.ok(pageSrc.includes('showCuratedFilterChips'), 'hide curated chips if empty');
+assert.ok(
+  pageSrc.includes('Boolean(hubId) && curatedSpots.length === 0 && !searchActive'),
+  'hub with 0 curated spots hides region/hub chips',
+);
+assert.ok(
+  (pageSrc.includes('scenicEmptyCuratedHub') ||
+    pageSrc.includes('에는 아직 GATEO 선정 명소가 없습니다')) &&
+    pageSrc.includes('curatedSpots.length > 0 ? ('),
+  'empty hub copy skips “골랐습니다” blurb',
+);
+assert.ok(
+  pageSrc.includes('Landmark') &&
+    pageSrc.includes('Mountain') &&
+    pageSrc.includes('MapPin') &&
+    pageSrc.includes('text-emerald-800') &&
+    pageSrc.includes('text-sky-800'),
+  'three section titles use distinct icons',
+);
 assert.ok(pageSrc.includes('showHeritageFilterChips'), 'hide heritage chips if empty');
 assert.ok(
   pageSrc.includes('해당 섹션 매칭이 있는 권역만'),
@@ -92,24 +164,145 @@ assert.ok(
   pageSrc.includes('결과 있는 첫 종목으로 전환'),
   'search auto-picks cat1 with matches',
 );
+assert.ok(
+  pageSrc.includes('관광지도 명소·명승 매칭 권역 우선') ||
+    (pageSrc.includes('nextCurated ||') &&
+      pageSrc.includes('nextHeritage ||') &&
+      pageSrc.includes("searchParams.get('tregion')")),
+  'commitSearch tour region prefers curated/heritage match over stale tregion',
+);
+assert.ok(
+  pageSrc.includes('현 관광지 권역 0건이면') ||
+    pageSrc.includes('수도권+화엄사'),
+  'search auto-switches tour region when curated hits but tour region has 0',
+);
+assert.ok(
+  pageSrc.includes('pickRegionFromTourCounts'),
+  'search can pick region from TourAPI counts',
+);
+assert.ok(
+  pageSrc.includes('pickBestRegionByCounts'),
+  'search uses max-count region pick',
+);
+assert.ok(
+  pageSrc.includes('화천') && pageSrc.includes('TourAPI'),
+  'search auto-picks tour region when curated/heritage empty (화천→강원)',
+);
+assert.ok(
+  filterScenicSpotsByQuery(curated, '화천').some((s) => s.hubId === 'hwacheon'),
+  '화천 curated includes hwacheon hub (붕어섬 등)',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '화천').length,
+  0,
+  '화천 heritage 0',
+);
+
+// 국내 hub 감사에서 드러난 오탐: 첫 권역이 아니라 최다 권역
+assert.equal(
+  pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    { 수도권: 0, 강원: 0, 충청: 7, 전라: 0, 경상: 26, 제주: 0 },
+    '수도권',
+  ),
+  '경상',
+  '성주형: 보령 성주면(7)보다 성주군(26)',
+);
+assert.equal(
+  pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    { 수도권: 0, 강원: 0, 충청: 0, 전라: 1, 경상: 26, 제주: 0 },
+    '수도권',
+  ),
+  '경상',
+  '함안형: 함안로(1)보다 함안군(26)',
+);
+assert.equal(
+  pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    { 수도권: 0, 강원: 1, 충청: 0, 전라: 0, 경상: 20, 제주: 0 },
+    '수도권',
+  ),
+  '경상',
+  '독도형: 체험관(1)보다 울릉·독도(20)',
+);
+assert.equal(
+  pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    { 수도권: 0, 강원: 35, 충청: 0, 전라: 0, 경상: 1, 제주: 0 },
+    '수도권',
+  ),
+  '강원',
+  '화천형: 강원 35',
+);
+assert.equal(
+  pickBestRegionByCounts(SCENIC_REGION_ORDER, { 수도권: 0, 강원: 0 }, '수도권'),
+  '수도권',
+  '전부 0이면 fallback',
+);
+const goseongCurated = filterScenicSpotsByQuery(curated, '고성');
 const goseongHeritage = filterScenicSpotsByQuery(heritage, '고성');
-assert.equal(filterScenicSpotsByQuery(curated, '고성').length, 0, '고성 curated 0');
-assert.ok(goseongHeritage.length >= 2, '고성 heritage ≥2');
+assert.ok(goseongCurated.length >= 1, '고성 curated ≥1 (강원·경상 hub)');
+assert.ok(
+  goseongHeritage.length >= 1,
+  '고성 heritage ≥1 (고성군 주소 · blurb 오탐 제외)',
+);
 assert.ok(
   new Set(goseongHeritage.map((s) => s.region)).size === 1,
   '고성 heritage single region → no region chip row',
 );
-const setRegionBlock = pageSrc.slice(
-  pageSrc.indexOf('const setRegion = useCallback'),
-  pageSrc.indexOf('const setArea = useCallback'),
+const setCuratedRegionBlock = pageSrc.slice(
+  pageSrc.indexOf('const setCuratedRegion = useCallback'),
+  pageSrc.indexOf('const setCuratedArea = useCallback'),
 );
 assert.ok(
-  setRegionBlock.length > 0 && !setRegionBlock.includes('clearSearchFilter'),
+  setCuratedRegionBlock.length > 0 &&
+    !setCuratedRegionBlock.includes('clearSearchFilter'),
   'region chip must not clear search',
+);
+assert.ok(
+  pageSrc.includes("next.set('cregion'") &&
+  pageSrc.includes("next.set('hregion'") &&
+  pageSrc.includes("next.set('tregion'"),
+  'pod chip writes use cregion/hregion/tregion',
+);
+assert(
+  pageSrc.includes("next.set('ccluster'") ||
+    pageSrc.includes('ccluster'),
+  '명소 파드 has ccluster 세권 param',
 );
 assert.ok(
   filterScenicSpotsByQuery(curated, '경복궁').some((s) => s.region === '수도권'),
   '경복궁 matches include 수도권',
+);
+
+// 주남: 2글자 본명 선두 일치 · 제주남쪽/광주남한 오탐 제외
+const junamHits = filterScenicSpotsByQuery(curated, '주남');
+assert.ok(
+  junamHits.some((s) => s.id === 'changwon-junam-reservoir'),
+  '주남 → 창원 주남저수지',
+);
+assert.ok(
+  !junamHits.some((s) => String(s.name || '').includes('천지연')),
+  '주남 ≠ 천지연(제주남쪽 blurb 오탐)',
+);
+assert.ok(
+  !junamHits.some((s) => String(s.name || '').includes('남한산성')),
+  '주남 ≠ 남한산성(광주남한 오탐)',
+);
+assert.ok(
+  filterScenicSpotsByQuery(curated, '주남 저수지').some(
+    (s) => s.id === 'changwon-junam-reservoir',
+  ),
+  '주남 저수지 → 창원 주남저수지',
+);
+assert.ok(
+  pageSrc.includes('pickBestRegionByCounts'),
+  'spot region pick uses max-count helper',
+);
+assert.ok(
+  pageSrc.includes('최다 권역'),
+  'pickRegionFromSpotMatches comment mentions max-count',
 );
 
 const libSrc = readFileSync(
@@ -130,5 +323,180 @@ assert.ok(
   chipCountFn.includes('searchQuery,'),
   'region/cat chip counts pass searchQuery',
 );
+
+const changnyeongCurated = filterScenicSpotsByQuery(curated, '창녕', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  changnyeongCurated.some((s) => s.localScenicListId === 'changnyeong-gugyeong'),
+  '창녕 검색은 창녕구경 팔경 주입',
+);
+assert.ok(
+  changnyeongCurated.some((s) => s.id === 'upo-wetland-changnyeong'),
+  '창녕 검색은 GATEO 선정 우포늪 유지',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '창녕').length,
+  2,
+  '창녕 국가유산 명승 2',
+);
+assert.equal(
+  canonicalScenicSearchQuery('창령'),
+  '창녕',
+  '창령 발음 별칭 → 창녕',
+);
+assert.equal(
+  canonicalScenicSearchQuery('창령군'),
+  '창녕',
+  '창령군 별칭 → 창녕',
+);
+assert.equal(
+  canonicalScenicSearchQuery('창녕구경'),
+  '창녕구경',
+  '팔경 리스트 제목은 공식명으로 바꾸지 않음',
+);
+const changnyeongAliasCurated = filterScenicSpotsByQuery(curated, '창령', {
+  injectLocalScenic: true,
+});
+assert.equal(
+  changnyeongAliasCurated.length,
+  changnyeongCurated.length,
+  '창령 검색 = 창녕 명소·팔경',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '창령').length,
+  2,
+  '창령 검색 = 창녕 국가유산 명승 2',
+);
+assert.ok(
+  pageSrc.includes('scenicTourSearchQuery(searchFilter)'),
+  '관광지 DB 검색은 허브 주소 표기(경기도 광주) 사용',
+);
+assert.equal(
+  canonicalScenicSearchQuery('경기 광주'),
+  '경기 광주',
+  '경기 광주 허브 공식명 유지',
+);
+assert.equal(
+  scenicTourAddrNeedle('경기 광주'),
+  '경기도 광주',
+  '경기 광주 → Tour addr 경기도 광주',
+);
+assert.equal(
+  scenicTourSearchQuery('경기 광주'),
+  '경기도 광주',
+  '경기 광주 Tour 검색어는 경기도 광주',
+);
+assert.equal(
+  scenicTourSearchQuery('경기광주'),
+  '경기도 광주',
+  '경기광주 별칭 Tour 검색어도 경기도 광주',
+);
+assert.equal(
+  scenicTourSearchQuery('경기도 광주'),
+  '경기도 광주',
+  '경기도 광주 입력도 Tour 주소 표기',
+);
+assert.equal(
+  scenicTourSearchQuery('경남 고성'),
+  '경상남도 고성',
+  '경남 고성 → 경상남도 고성 (강원 고성과 구분)',
+);
+assert.equal(
+  scenicTourSearchQuery('창녕'),
+  '창녕',
+  '단일 시군명은 Tour 검색어 그대로',
+);
+assert.equal(
+  scenicTourSearchQuery('창령'),
+  '창녕',
+  '창령 Tour 검색어도 창녕',
+);
+assert.equal(
+  scenicTourSearchQuery('경복궁'),
+  '경복궁',
+  '명소명은 Tour 검색어 그대로',
+);
+const gwangjuGiCurated = filterScenicSpotsByQuery(curated, '경기 광주', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  gwangjuGiCurated.some((s) => s.localScenicListId === 'gwangju-gi-palgyeong'),
+  '경기 광주 검색은 광주8경 주입',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '경기 광주').length,
+  0,
+  '경기 광주 국가유산 명승 0 (남한산성은 사적)',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: true,
+    searchPoolCount: 0,
+  }),
+  false,
+  '검색 0건이면 hub URL 팔경 주입 금지',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: false,
+    searchPoolCount: 0,
+  }),
+  true,
+  '검색 아니면 hub 팔경 주입',
+);
+assert.equal(
+  shouldMergeHubLocalScenic({
+    hubId: 'changnyeong',
+    searchActive: true,
+    searchPoolCount: 13,
+  }),
+  true,
+  '창녕 검색 풀이 있으면 hub 병합 허용',
+);
+assert.ok(
+  pageSrc.includes('shouldMergeHubLocalScenic'),
+  'ScenicPage gates hub palgyeong merge',
+);
+assert.ok(
+  pageSrc.includes('nextTourCatsWhenCountsZero'),
+  'ScenicPage clears zero-count tour cats during search',
+);
+assert.ok(
+  pageSrc.includes('tourListMissingContentIds(dbSpots)'),
+  'ScenicPage live-fills Tour search rows missing first_image',
+);
+assert.ok(
+  pageSrc.includes('rememberKoreaTourAttractionFirstImage'),
+  'ScenicPage caches live TourAPI firstimage after Tour list fill',
+);
+assert.ok(
+  pageSrc.includes('tourCat1ChipsVisible.length > 0'),
+  'search empty copy hidden when tour chips have hits',
+);
+
+const zeroCat3 = nextTourCatsWhenCountsZero('A02', 'A0201', 'A02010100', {
+  cat2Counts: { A0201: 12, A0202: 3 },
+  cat3Counts: { A02010100: 0, A02010700: 8, A02010800: 3 },
+});
+assert.equal(zeroCat3.changed, true, '0건 소분류 해제');
+assert.equal(zeroCat3.cat2, 'A0201', '소분류만 해제하면 중분류 유지');
+assert.equal(zeroCat3.cat3, null, '0건 소분류 null');
+
+const zeroCat2 = nextTourCatsWhenCountsZero('A01', 'A0101', null, {
+  cat2Counts: { A0101: 0, A0102: 2 },
+  cat3Counts: {},
+});
+assert.equal(zeroCat2.changed, true, '0건 중분류 해제');
+assert.equal(zeroCat2.cat2, null);
+assert.equal(zeroCat2.cat3, null);
+
+const keepCats = nextTourCatsWhenCountsZero('A02', 'A0201', null, {
+  cat2Counts: { A0201: 12, A0202: 3 },
+  cat3Counts: {},
+});
+assert.equal(keepCats.changed, false, '건수 있는 중분류는 유지');
 
 console.log('smoke-korea-scenic-search: PASS');

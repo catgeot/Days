@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -23,6 +24,7 @@ export default function MooniTransportPlannerLinks({
   showHeading = true,
   className = '',
 }) {
+  const { t } = useTranslation();
   if (!slug) return null;
 
   const links = resolveMooniTransportPlannerLinks(essentialGuide, destinationName);
@@ -32,7 +34,7 @@ export default function MooniTransportPlannerLinks({
     <div className={`space-y-2 w-full ${className}`}>
       {showHeading ? (
         <p className="text-[10px] font-bold uppercase tracking-wide text-cyan-400/90 break-keep">
-          플래너에서 확인
+          {t('mooni.planner.heading')}
         </p>
       ) : null}
       <div className="flex flex-col gap-2">

@@ -1,58 +1,15 @@
-import { supabase } from '../shared/api/supabase';
+import { invokeTourApiProxy, TOUR_API_BODY_LOCALE } from './tourApiProxy';
 
-const INVOKE_TIMEOUT_MS = 12_000;
 const ATTRACTION_CONTENT_TYPE_ID = '12';
 const RESTAURANT_CONTENT_TYPE_ID = '39';
 const INTRO_TYPE_CANDIDATES = ['12', '14', '28', '38', '39'];
-
-/**
- * @template T
- * @param {Promise<T>} promise
- * @param {number} ms
- * @param {string} label
- * @returns {Promise<T>}
- */
-function withTimeout(promise, ms, label) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
-    }),
-  ]).finally(() => {
-    if (timer) clearTimeout(timer);
-  });
-}
 
 /**
  * @param {string} action
  * @param {Record<string, unknown>} payload
  */
 async function invokeTourApi(action, payload) {
-  try {
-    const { data, error } = await withTimeout(
-      supabase.functions.invoke('tourapi-proxy', {
-        body: { action, ...payload },
-      }),
-      INVOKE_TIMEOUT_MS,
-      `tourapi:${action}`,
-    );
-    if (error) {
-      console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
-      return null;
-    }
-    if (!data?.ok) {
-      console.warn(
-        `[tourapi] ${action} not ok:`,
-        data?.message || data?.error || 'unknown',
-      );
-      return null;
-    }
-    return data;
-  } catch (err) {
-    console.warn(`[tourapi] ${action} failed:`, err?.message || err);
-    return null;
-  }
+  return invokeTourApiProxy(action, payload, { locale: TOUR_API_BODY_LOCALE });
 }
 
 function toHttps(url) {
@@ -72,7 +29,7 @@ function pickImageUrl(...candidates) {
 }
 
 /**
- * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진.
+ * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진 (KorService2 SSOT).
  * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
  */
 export async function fetchTourApiAttractionDetail(opts) {
@@ -147,6 +104,27 @@ export async function fetchTourApiAttractionDetail(opts) {
     );
   }
 
+  if (!imageUrl && galleryUrls.length === 0) {
+    const rawTitle = commonItem?.title || introItem?.title || '';
+    const cleanTitle = String(rawTitle).replace(/\(.*?\)/g, '').trim();
+    if (cleanTitle) {
+      try {
+        const photoRes = await invokeTourApi('searchPhoto', {
+          keyword: cleanTitle,
+          numOfRows: 8,
+          pageNo: 1,
+        });
+        for (const item of photoRes?.items || []) {
+          pushGallery(item?.imageUrl || item?.galWebImageUrl);
+        }
+      } catch {
+        /* ignore fallback photo error */
+      }
+    }
+  }
+
+  const finalImageUrl = imageUrl || galleryUrls[0] || null;
+
   return {
     contentId,
     title: commonItem?.title || introItem?.title || null,
@@ -155,11 +133,55 @@ export async function fetchTourApiAttractionDetail(opts) {
     addr2: commonItem?.addr2 || null,
     tel: commonItem?.tel || null,
     homepage: commonItem?.homepage || null,
-    imageUrl,
+    imageUrl: finalImageUrl,
     galleryUrls,
     intro: introItem,
     infoItems,
   };
+}
+
+/**
+ * 리스트 썸네일용 — firstimage가 비면 detailImage 갤러리. JSON contentId 기입 아님.
+ * DB·searchKeyword·detailCommon firstimage가 공란이어도 TourAPI 사진은 detailImage에 있는 경우가 많다.
+ * @param {string | number | null | undefined} contentId
+ * @returns {Promise<string | null>}
+ */
+export async function fetchTourApiFirstImage(contentId) {
+  const id = String(contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(id)) return null;
+  const [common, images] = await Promise.all([
+    invokeTourApi('detailCommon', { contentId: id }),
+    invokeTourApi('detailImage', { contentId: id, numOfRows: 8, pageNo: 1 }),
+  ]);
+  const item = common?.items?.[0] || null;
+  const directImage = pickImageUrl(
+    item?.imageUrl,
+    item?.firstimage,
+    item?.firstimage2,
+  );
+  if (directImage) return directImage;
+  for (const it of images?.items || []) {
+    const fromGallery = pickImageUrl(
+      it?.imageUrl,
+      it?.originimgurl,
+      it?.smallimageurl,
+      it?.firstimage,
+    );
+    if (fromGallery) return fromGallery;
+  }
+  const title = String(item?.title || '').replace(/\(.*?\)/g, '').trim();
+  if (!title) return null;
+  try {
+    const photo = await invokeTourApi('searchPhoto', {
+      keyword: title,
+      numOfRows: 1,
+      pageNo: 1,
+    });
+    const photoItem = photo?.items?.[0];
+    return pickImageUrl(photoItem?.imageUrl, photoItem?.galWebImageUrl);
+  } catch {
+    return null;
+  }
 }
 
 export { ATTRACTION_CONTENT_TYPE_ID, RESTAURANT_CONTENT_TYPE_ID };

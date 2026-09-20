@@ -1,16 +1,19 @@
+import { useTranslation } from 'react-i18next';
 import {
-  RELEASE_CATEGORY_LABELS,
   formatReleaseDate,
   getAllReleases,
+  resolveReleaseCategoryLabel,
+  resolveReleaseNote,
 } from '../../data/releaseNotes';
 
 function ReleaseNotesList({ compact = false }) {
+  const { t, i18n } = useTranslation();
   const releases = getAllReleases();
 
   if (releases.length === 0) {
     return (
       <p className="text-sm text-gray-500 break-keep">
-        아직 등록된 업데이트 내역이 없습니다.
+        {t('home.releaseNotes.empty')}
       </p>
     );
   }
@@ -18,8 +21,9 @@ function ReleaseNotesList({ compact = false }) {
   return (
     <ul className={compact ? 'space-y-4' : 'space-y-5'}>
       {releases.map((release, index) => {
+        const { title, items } = resolveReleaseNote(release, i18n.language);
         const categoryLabel = release.category
-          ? RELEASE_CATEGORY_LABELS[release.category]
+          ? resolveReleaseCategoryLabel(release.category, i18n.language)
           : null;
 
         return (
@@ -43,18 +47,18 @@ function ReleaseNotesList({ compact = false }) {
               ) : null}
               {index === 0 ? (
                 <span className="rounded-md bg-emerald-500/15 border border-emerald-400/20 px-2 py-0.5 text-[10px] font-bold tracking-wide text-emerald-300">
-                  최신
+                  {t('home.releaseNotes.latest')}
                 </span>
               ) : null}
             </div>
 
             <p className={`font-bold text-white break-keep ${compact ? 'text-sm' : 'text-base'}`}>
-              {release.title}
+              {title}
             </p>
 
-            {release.items?.length > 0 ? (
+            {items?.length > 0 ? (
               <ul className="mt-2 space-y-1.5 text-sm text-gray-300 break-keep leading-relaxed">
-                {release.items.map((item) => (
+                {items.map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="text-blue-400 font-bold shrink-0">·</span>
                     <span>{item}</span>

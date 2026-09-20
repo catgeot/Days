@@ -127,7 +127,7 @@ flowchart TB
 |----|------|------|------|-----------|
 | P0-1 | **Site HTML** | `GET ${SMOKE_SITE_URL}/` | status 200, `<title>` 또는 `#root` 존재 | 네트워크·5xx |
 | P0-2 | **Supabase REST** | `GET ${SUPABASE_URL}/rest/v1/` + anon headers | 200 또는 401 (서버 alive) | timeout·5xx |
-| P0-3 | **gemini-proxy** | `POST .../functions/v1/gemini-proxy` body `{ modelId, parts:[{text:"ping"}] }` | `success:true` **또는** body에 `429`/`RESOURCE_EXHAUSTED` → **경고(warn)** 로 분류 | 401 JWT·500 기타·timeout |
+| P0-3 | **gemini-proxy** | `POST` FAST+QUALITY (`geminiModels` SSOT) `{ modelId, parts:[{text:"ping"}] }` | 둘 다 `success:true` **또는** `429`/`RESOURCE_EXHAUSTED` → **경고(warn)** | 401 JWT·500 기타·timeout · QUALITY 404 |
 | P0-4 | **fetch-mrt-stays** | 발리 `size:3` · **3회 재시도** | `ok` + items≥1 | JWT·키 없음 → fail · MRT 502/빈결과(재시도 후) → **warn**(CI exit 0) |
 | P0-5 | **tourapi-proxy** | 경복궁 `searchKeyword` · **3회 재시도** | `ok` + items≥1 | JWT·키 없음 → fail · upstream 열화(재시도 후) → **warn**(CI exit 0) |
 | P1-1 | **PlaceCard SSR shell** | `GET /place/bali` (또는 고정 slug) | 200 | 404·5xx |
@@ -337,7 +337,7 @@ Phase 0: Google AI Studio Budget 알림 · UptimeRobot gateo.kr + /place/bali
 
 | Probe | Gemini 비용 | 권장 빈도 |
 |-------|-------------|-----------|
-| P0-3 gemini-proxy | ~1 flash-lite call | 6시간 × 4회/일 |
+| P0-3 gemini-proxy | FAST + QUALITY ping (flash-lite · 3.5-flash) | 6시간 × 4회/일 |
 | E2E-3 MOONi | ~1 full chat turn | 1~2회/일 |
 | UptimeRobot M1 | 없음 | 5분 |
 

@@ -1,8 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { resolveAffiliateHomeFromBrandText } from '../../../utils/affiliateBrandMatch';
+import { openPartnerExternalUrl } from './partnerNavigation';
 import { isMobileDevice } from './device';
+import { normalizePlannerSmartLinkPhrases } from '../tabs/planner/plannerSmartLinkPhrases';
 
 export const CopyableWord = ({ word, koreanName, locationName, type }) => {
+    const { t } = useTranslation();
     const affiliateHomeUrl = resolveAffiliateHomeFromBrandText(word, koreanName, {
         locationName,
         campaign: 'copyable-smart-link',
@@ -13,7 +17,7 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
         e.stopPropagation();
 
         if (affiliateHomeUrl) {
-            window.open(affiliateHomeUrl, isMobileDevice() ? '_self' : '_blank');
+            openPartnerExternalUrl(affiliateHomeUrl, { placeLabel: locationName });
             return;
         }
 
@@ -46,7 +50,7 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
             <button
                 onClick={handleSmartLink}
                 className={`inline-flex items-center gap-0.5 font-bold ${type === 'wiki' ? 'text-amber-400 hover:text-amber-300' : 'text-blue-500 hover:text-blue-700'} transition-colors focus:outline-none bg-black/5 hover:bg-black/10 px-1 rounded-md whitespace-nowrap`}
-                title={affiliateHomeUrl ? '제휴 사이트로 이동' : '구글에서 검색하기'}
+                title={affiliateHomeUrl ? t('place.common.affiliateSite') : t('place.common.searchGoogle')}
             >
                 {word}
             </button>
@@ -58,7 +62,8 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
 const parseSmartLinks = (text, locationName, type) => {
     if (typeof text !== 'string') return text;
 
-    let normalizedText = text.replace(/['"‘’“”]([가-힣a-zA-Z0-9\s]+?)\((.+?)\)['"‘’“”]/g, "$1('$2')");
+    let normalizedText = normalizePlannerSmartLinkPhrases(text, type);
+    normalizedText = normalizedText.replace(/['"‘’“”]([가-힣a-zA-Z0-9\s]+?)\((.+?)\)['"‘’“”]/g, "$1('$2')");
     normalizedText = normalizedText.replace(/([가-힣a-zA-Z0-9\s]+?)\(['"‘’“”](.+?)['"‘’“”]\)/g, "$1('$2')");
 
     const regex = /([가-힣a-zA-Z0-9]+(?:\s[가-힣a-zA-Z0-9]+){0,2})?(?:\[@([^@\]]+)@\]|\('([^']+)'\))/g;
@@ -95,7 +100,8 @@ const parseSmartLinks = (text, locationName, type) => {
 };
 
 const CopyableText = ({ text, locationName, type }) => {
-    if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
+    const { t } = useTranslation();
+    if (!text) return <span>{t('place.common.loadInfoFailed')}</span>;
 
     // 전체 텍스트를 줄바꿈 기준으로 먼저 분리하고, 각 줄에서 볼드체 파싱 -> 그 안에서 스마트 링크 파싱 수행
     return (

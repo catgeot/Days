@@ -1,3 +1,122 @@
+export const PAGE_ZOOM_SCALE_EPSILON = 0.02;
+export const VIEWPORT_PAGE_ZOOM_LOCK_SUFFIX = 'maximum-scale=1.0, user-scalable=no';
+
+let viewportPageZoomLockActive = false;
+let unlockedViewportContentSnapshot = null;
+
+function isIosWebKitBrowser() {
+  if (typeof navigator === 'undefined') return false;
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+export function isVisualViewportPageZoomed(scale, epsilon = PAGE_ZOOM_SCALE_EPSILON) {
+  const value = Number(scale);
+  return Number.isFinite(value) && Math.abs(value - 1) > epsilon;
+}
+
+export function stripViewportPageZoomLock(content) {
+  return String(content || '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => {
+      if (!part) return false;
+      const eq = part.indexOf('=');
+      const key = (eq === -1 ? part : part.slice(0, eq)).trim().toLowerCase();
+      const val = (eq === -1 ? '' : part.slice(eq + 1)).trim().toLowerCase();
+      if (key === 'maximum-scale') return false;
+      if (key === 'user-scalable' && (val === 'no' || val === '0')) return false;
+      return true;
+    })
+    .join(', ');
+}
+
+export function withViewportPageZoomLock(content) {
+  const base = stripViewportPageZoomLock(content);
+  return base ? `${base}, ${VIEWPORT_PAGE_ZOOM_LOCK_SUFFIX}` : VIEWPORT_PAGE_ZOOM_LOCK_SUFFIX;
+}
+
+export function isViewportPageZoomLocked() {
+  return viewportPageZoomLockActive;
+}
+
+export function applyViewportPageZoomLock() {
+  if (typeof document === 'undefined') return;
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (!meta) return;
+  const current = meta.getAttribute('content') || '';
+  if (!unlockedViewportContentSnapshot) {
+    unlockedViewportContentSnapshot = stripViewportPageZoomLock(current);
+  }
+  viewportPageZoomLockActive = true;
+  meta.setAttribute('content', withViewportPageZoomLock(unlockedViewportContentSnapshot));
+}
+
+export function releaseViewportPageZoomLock() {
+  if (typeof document === 'undefined') return;
+  viewportPageZoomLockActive = false;
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (!meta) return;
+  const unlocked = unlockedViewportContentSnapshot
+    || stripViewportPageZoomLock(meta.getAttribute('content') || '');
+  unlockedViewportContentSnapshot = null;
+  meta.setAttribute('content', unlocked);
+}
+
+/** 브라우저 페이지 줌(visualViewport.scale)을 1로 되돌린다. */
+export function resetVisualViewportPageZoom({ keepLock = isViewportPageZoomLocked() } = {}) {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
+  window.scrollTo(0, 0);
+
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (!meta) return;
+
+  const unlocked = stripViewportPageZoomLock(meta.getAttribute('content') || '');
+  const locked = withViewportPageZoomLock(unlocked);
+
+  if (keepLock) {
+    meta.setAttribute('content', unlocked);
+    requestAnimationFrame(() => {
+      meta.setAttribute('content', locked);
+      window.dispatchEvent(new Event('resize'));
+    });
+    return;
+  }
+
+  meta.setAttribute('content', locked);
+  requestAnimationFrame(() => {
+    meta.setAttribute('content', unlocked);
+    window.dispatchEvent(new Event('resize'));
+  });
+}
+
+/** 입력 포커스·페이지 줌·iOS Safari — full viewport meta 리셋이 필요할 때 */
+export function needsHomeViewportInputSync() {
+  if (typeof document === 'undefined') return false;
+  const active = document.activeElement;
+  if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) {
+    return true;
+  }
+  const vv = window.visualViewport;
+  if (vv && isVisualViewportPageZoomed(vv.scale)) return true;
+  return isIosWebKitBrowser();
+}
+
+/** Chrome+WebGL: resize·viewport sync 후 fixed chrome paint/hit 어긋남 완화 */
+export function scheduleRecalibrateFixedChromeHits() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
+  const run = () => {
+    document
+      .querySelectorAll('[data-home-chrome-hit], [data-place-chrome-hit], [data-summary-chrome]')
+      .forEach((el) => {
+        void el.getBoundingClientRect();
+      });
+  };
+
+  requestAnimationFrame(() => requestAnimationFrame(run));
+}
+
 /** iOS Safari 등 — visualViewport 우선, 키보드·페이지 줌 후 지도·UI 크기 SSOT */
 export function readViewportSize() {
   if (typeof window === 'undefined') {
@@ -62,17 +181,10 @@ export function resetIosZoomAfterInput() {
 
   window.scrollTo(0, 0);
 
-  const meta = document.querySelector('meta[name="viewport"]');
-  if (!meta) return;
+  const zoomed = isVisualViewportPageZoomed(window.visualViewport?.scale);
+  if (!isIosWebKitBrowser() && !zoomed) return;
 
-  const original = meta.getAttribute('content');
-  if (!original || original.includes('maximum-scale')) return;
-
-  meta.setAttribute('content', `${original}, maximum-scale=1.0`);
-  requestAnimationFrame(() => {
-    meta.setAttribute('content', original);
-    window.dispatchEvent(new Event('resize'));
-  });
+  resetVisualViewportPageZoom();
 }
 
 let homeViewportSyncTimer = null;
@@ -82,7 +194,11 @@ let homeViewportSyncTimer = null;
  * 로그인 후 sessionStorage 플래그, MOONi 채팅·탐색 모달 닫기 등에서 공통 사용.
  */
 export function syncHomeViewportAfterInput() {
-  resetIosZoomAfterInput();
+  if (needsHomeViewportInputSync()) {
+    resetIosZoomAfterInput();
+  } else if (typeof window !== 'undefined') {
+    window.scrollTo(0, 0);
+  }
 
   if (typeof window === 'undefined') return;
 
@@ -95,6 +211,15 @@ export function syncHomeViewportAfterInput() {
     window.dispatchEvent(new Event('resize'));
     window.requestAnimationFrame(() => {
       window.dispatchEvent(new Event('resize'));
+      scheduleRecalibrateFixedChromeHits();
     });
   }, 120);
+}
+
+/** 홈·/place 왕복 — 입력 없을 때 meta 줌·window resize 생략(Chrome WebGL hit 누적 어긋남 방지) */
+export function syncHomeChromeAfterNavigation() {
+  if (typeof window === 'undefined') return;
+
+  window.scrollTo(0, 0);
+  scheduleRecalibrateFixedChromeHits();
 }

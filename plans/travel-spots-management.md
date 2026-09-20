@@ -417,6 +417,8 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 
 **Smart Search 자유 탐색** ([`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) · [`geocoding.js`](../src/pages/Home/lib/geocoding.js)): 지구본 POI와 같이 **세부 장소도 검색·탐색**. Mapbox Geocoding 우선 · 시설 쿼리(`휴게소` 등, `isFacilityQuery`)는 행정구역-only 히트·수식어 strip·`search_dictionary`의 시·군 교정 캐시 **거부**. AI 폴백은 시설을 군/시로 축소하지 않음 · Nominatim 미매칭(횡성호 등)은 AI 좌표+역지오 uiPlace · `maybeSingle`.
 
+**uiPlace 라틴 `name_en` (자킨토스 사례, 2026-09-06)**: Mapbox `language=ko`만 쓰면 `name_en`이 한글이 되어 카드 부제가 사라지고 Unsplash/YouTube가 인물 결과를 냄. **금지**: 미등록 지명마다 `travelSpots` SSOT 추가. **유지**: Search Box·Geocoding **ko+en** 병합 [`uiPlaceAssetQuery.js`](../src/pages/Home/lib/uiPlaceAssetQuery.js) · 갤러리·영상은 라틴 지명만 · 캐시된 한글 `name_en`은 역지오 치유 (`scheduleUiPlaceHeal`).
+
 **유명 명소(에펠탑 등)** ([`geocoding.js`](../src/pages/Home/lib/geocoding.js) `LANDMARK_QUERY_RE` · `resolveLandmarkGeocodePlan`): `KEYWORD_SYNONYMS`로 **도시 리다이렉트 금지**(에펠탑→파리 회귀). 본명+도시·국가 쿼리(`Tour Eiffel, Paris` + `country=fr`) · Mapbox `types=poi` · Street/Road 라벨 페널티(필리핀 `Eiffel Tower Street` 등) · uiPlace로 연다(도시 SSOT 스냅 아님).
 
 **Explore 최근 기록** ([`exploreRecentHistory.js`](../src/pages/Home/lib/exploreRecentHistory.js) · [`SearchDiscoveryModal.jsx`](../src/pages/Home/components/SearchDiscoveryModal.jsx)):

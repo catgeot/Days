@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowUpDown, ExternalLink, LayoutGrid, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   buildMrtTnaProductUrl,
   buildMrtTnaSearchMoreUrl,
@@ -15,11 +16,11 @@ import {
 
 const LG_MQ = '(min-width: 1024px)';
 
-const TOUR_SORT_OPTIONS = [
-  { id: 'recommended', label: '추천순' },
-  { id: 'price_asc', label: '낮은 가격순' },
-  { id: 'price_desc', label: '높은 가격순' },
-  { id: 'rating_desc', label: '평점 높은순' },
+const TOUR_SORT_OPTION_IDS = [
+  { id: 'recommended', key: 'sortRecommended' },
+  { id: 'price_asc', key: 'sortPriceAsc' },
+  { id: 'price_desc', key: 'sortPriceDesc' },
+  { id: 'rating_desc', key: 'sortRatingDesc' },
 ];
 
 function useIsLg() {
@@ -77,18 +78,25 @@ function sortTourItems(list, sortMode) {
   return arr;
 }
 
-function formatPrice(item) {
+function formatPrice(item, locale = 'ko') {
   if (item?.priceDisplay) return String(item.priceDisplay);
   const n = Number(item?.salePrice);
   if (!Number.isFinite(n) || n <= 0) return null;
+  if (String(locale).startsWith('en')) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'KRW',
+      maximumFractionDigits: 0,
+    }).format(n);
+  }
   return `${n.toLocaleString('ko-KR')}원`;
 }
 
-function TnaCard({ item, size = 'md', theme = 'dark', imageClassName }) {
+function TnaCard({ item, size = 'md', theme = 'dark', imageClassName, locale = 'ko' }) {
   const large = size === 'lg';
   const light = theme === 'light';
   const href = buildMrtTnaProductUrl(item);
-  const price = formatPrice(item);
+  const price = formatPrice(item, locale);
   const imgBox = imageClassName || 'aspect-square';
 
   return (
@@ -182,6 +190,7 @@ function OpenTourToolbar({
   densityZoomed,
   onDensityToggle,
 }) {
+  const { t } = useTranslation();
   const ctrl =
     'rounded-lg border border-orange-200/55 bg-orange-500/15 text-orange-50/95 transition-colors hover:border-orange-100/75 hover:bg-orange-500/28 hover:text-orange-50';
   const ctrlOn =
@@ -192,7 +201,7 @@ function OpenTourToolbar({
       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
         {count ? (
           <p className="shrink-0 text-xs font-semibold tabular-nums text-orange-100/80">
-            {count}개
+            {t('place.planner.banners.mrtTna.itemCount', { count })}
           </p>
         ) : null}
         <a
@@ -202,15 +211,15 @@ function OpenTourToolbar({
           onClick={(e) => e.stopPropagation()}
           className={`inline-flex shrink-0 items-center px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
         >
-          마이리얼트립에서 보기
+          {t('place.planner.banners.mrtTna.openOnMrt')}
         </a>
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
         <button
           type="button"
           aria-pressed={densityZoomed}
-          aria-label={densityZoomed ? '기본 그리드로' : '확대해서 보기'}
-          title={densityZoomed ? '기본 그리드로' : '확대해서 보기'}
+          aria-label={densityZoomed ? t('place.planner.banners.mrtTna.gridDefault') : t('place.planner.banners.mrtTna.gridZoomIn')}
+          title={densityZoomed ? t('place.planner.banners.mrtTna.gridDefault') : t('place.planner.banners.mrtTna.gridZoomIn')}
           onClick={(e) => {
             e.stopPropagation();
             onDensityToggle?.();
@@ -222,7 +231,7 @@ function OpenTourToolbar({
           <LayoutGrid size={14} strokeWidth={2.25} aria-hidden="true" />
         </button>
         <label className="relative flex shrink-0 items-center">
-          <span className="sr-only">투어 정렬</span>
+          <span className="sr-only">{t('place.planner.banners.mrtTna.sortTour')}</span>
           <ArrowUpDown
             size={11}
             className="pointer-events-none absolute left-1.5 text-orange-100/75"
@@ -237,9 +246,9 @@ function OpenTourToolbar({
             }}
             className={`appearance-none py-1 pl-5 pr-5 text-[11px] font-semibold outline-none focus:border-orange-100/80 ${ctrl}`}
           >
-            {TOUR_SORT_OPTIONS.map((opt) => (
+            {TOUR_SORT_OPTION_IDS.map((opt) => (
               <option key={opt.id} value={opt.id} className="bg-zinc-900 text-white">
-                {opt.label}
+                {t(`place.planner.banners.mrtTna.${opt.key}`)}
               </option>
             ))}
           </select>
@@ -260,6 +269,7 @@ export default function MrtTnaActivitiesWidget({
   showMoreLink = true,
   linkSponsoredLabel = false,
 }) {
+  const { t, i18n } = useTranslation();
   const planner = variant === 'planner';
   const theme = planner ? 'light' : 'dark';
   const isLg = useIsLg();
@@ -446,7 +456,7 @@ export default function MrtTnaActivitiesWidget({
       {showChips && pendingNearbyKws.length > 0 ? (
         <div
           role="group"
-          aria-label="주변 지역 더보기"
+          aria-label={t('place.planner.banners.mrtTna.nearbyMoreAria')}
           className="mt-2 flex flex-col items-center gap-3 pt-3"
         >
           <p
@@ -454,7 +464,7 @@ export default function MrtTnaActivitiesWidget({
               planner ? 'text-orange-900' : 'text-orange-50'
             }`}
           >
-            주변 지역 더보기
+            {t('place.planner.banners.mrtTna.nearbyExploreTitle')}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2">
             {nearbyMoreLoading ? (
@@ -464,7 +474,7 @@ export default function MrtTnaActivitiesWidget({
                 }`}
               >
                 <Loader2 size={15} className="animate-spin shrink-0" aria-hidden="true" />
-                불러오는 중…
+                {t('place.planner.banners.mrtTna.loadingMore')}
               </span>
             ) : (
               pendingNearbyKws.map((kw) => (
@@ -506,10 +516,10 @@ export default function MrtTnaActivitiesWidget({
             {nearbyMoreLoading ? (
               <>
                 <Loader2 size={14} className="animate-spin shrink-0" aria-hidden="true" />
-                불러오는 중…
+                {t('place.planner.banners.mrtTna.loadingMore')}
               </>
             ) : (
-              '인근지역 더보기'
+              t('place.planner.banners.mrtTna.nearbyMore')
             )}
           </button>
         </div>
@@ -527,7 +537,7 @@ export default function MrtTnaActivitiesWidget({
           }`}
         >
           <Loader2 size={18} className="animate-spin shrink-0" aria-hidden="true" />
-          <span className="break-keep">투어·티켓을 불러오는 중입니다…</span>
+          <span className="break-keep">{t('place.planner.banners.mrtTna.loadingTours')}</span>
         </div>
       </div>
     );
@@ -548,8 +558,8 @@ export default function MrtTnaActivitiesWidget({
             }`}
           >
             {status === 'error'
-              ? '투어 목록을 불러오지 못했습니다.'
-              : '이 지역에 맞는 투어·티켓을 찾지 못했습니다.'}
+              ? t('place.planner.banners.mrtTna.loadError')
+              : t('place.planner.banners.mrtTna.empty')}
           </p>
           <a
             href={moreHref}
@@ -561,7 +571,7 @@ export default function MrtTnaActivitiesWidget({
                 : 'inline-flex items-center gap-1.5 rounded-xl border border-orange-300/40 bg-orange-500/25 px-3 py-2 text-sm font-semibold text-orange-50 hover:bg-orange-500/35'
             }
           >
-            마이리얼트립에서 검색
+            {t('place.planner.banners.mrtTna.searchOnMrt')}
             <ExternalLink size={14} className="shrink-0" aria-hidden="true" />
           </a>
           {linkSponsoredLabel ? (
@@ -626,15 +636,15 @@ export default function MrtTnaActivitiesWidget({
                       }`}
                     >
                       {isFirstNearby
-                        ? '가까운 여행지 투어를 안내합니다'
-                        : '인근 여행지'}
+                        ? t('place.planner.banners.mrtTna.nearbyToursHint')
+                        : t('place.planner.banners.mrtTna.nearbyRegion')}
                     </p>
                     <h3
                       className={`mt-0.5 text-[18px] font-extrabold leading-snug break-keep ${
                         planner ? 'text-orange-950' : 'text-white'
                       }`}
                     >
-                      {sec.keyword}의 즐길거리
+                      {t('place.planner.banners.mrtTna.sectionThingsToDo', { keyword: sec.keyword })}
                     </h3>
                   </div>
                 </div>
@@ -651,6 +661,7 @@ export default function MrtTnaActivitiesWidget({
                     size={planner ? 'md' : 'lg'}
                     theme={theme}
                     imageClassName={planner ? undefined : openImageClass}
+                    locale={i18n.language}
                   />
                 ))}
               </div>
@@ -677,7 +688,7 @@ export default function MrtTnaActivitiesWidget({
                 : 'inline-flex items-center gap-1.5 text-sm font-semibold text-orange-100/90 hover:text-orange-50 underline-offset-2 hover:underline'
             }
           >
-            마이리얼트립에서 더보기
+            {t('place.planner.banners.mrtTna.moreOnMrt')}
             <ExternalLink size={14} className="shrink-0" aria-hidden="true" />
           </a>
           {linkSponsoredLabel ? (

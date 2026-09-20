@@ -2,6 +2,132 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #70, 검색 화천 권역 · 전수검증
+
+**상태**: feature `cursor/scenic-nearby-a8ec` · PR [#64](https://github.com/catgeot/Days/pull/64) · Preview QA 대기
+
+- **증상**: 「화천」검색 → 선정 명소·명승 0(정상) · **관광지도 0**(비정상 · DB 35건)
+- **원인**: 권역 자동선택이 명소·명승만 보고 수도권 유지 → TourAPI가 수도권으로 조회
+- **한 일**: 명소·명승 0이면 TourAPI 권역 전환 · **국내 hub 208 전수** → 동일 버그 **35곳**(철원·산청·청주·익산 등) · 최다 건수 권역으로 승격(성주·함안·독도 오탐 5건 보정) · smoke
+- **VERIFY**: `npm run smoke:korea-scenic-search` · `smoke:korea-scenic-nearby` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-nearby`
+- **Preview**: `https://days-git-cursor-scenic-nearby-a8ec-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「검색 권역 — hub 전수·최다 건수」
+- **QA**: 「화천」「철원」「산청」「성주」「독도」검색 → 본 권역 관광지 · 명소/명승 0이면 그 문구 유지
+
+### 테마여행 · 에이전트 핸드오프 → `#71`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #71, Preview QA 반영` |
+| **브랜치** | `cursor/scenic-nearby-a8ec` (고정) |
+| **PR** | [#64](https://github.com/catgeot/Days/pull/64) |
+| **읽을 것 3** | ① 본 절 ② #69 내주변 ③ pickRegionFromTourCounts |
+| **금지 3** | 축제 지도 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
+| **후보** | Preview QA · main 병합 |
+| **공유/Preview** | `https://www.gateo.kr/qa/scenic-nearby` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #71, Preview QA 반영
+```
+
+## 테마여행 #69, 내주변 관내 관광지
+
+**상태**: feature `cursor/scenic-nearby-a8ec` · PR [#64](https://github.com/catgeot/Days/pull/64) · tip `17b66374` · Preview QA 대기
+
+- **증상**: 화천 「내 주변」에 양구·속초만 보이고 화천 관내(붕어섬 등) 관광지 누락
+- **원인**: 권역 TourAPI 목록 앞부분만 가져온 뒤 80km 거리 필터 → 주소 정렬상 화천이 샘플 밖
+- **한 일**: `fetchKoreaTourAttractionsNear` bbox→거리순 · ScenicPage 내 주변 경로 교체 · smoke LIVE 화천 관내 · `/qa/scenic-nearby`
+- **VERIFY**: `npm run smoke:korea-scenic-nearby` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-nearby`
+- **Preview**: `https://days-git-cursor-scenic-nearby-a8ec-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「내 주변 관광지 — 좌표 bbox 거리순」
+- **QA**: 화천(또는 해당 GPS) 내 주변 → 관광지 최근접이 화천 관내(낭천산림욕장·붕어섬 등)
+
+### 테마여행 · 에이전트 핸드오프 → `#70`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #70, Preview QA 반영` |
+| **브랜치** | `cursor/scenic-nearby-a8ec` (고정) |
+| **PR** | [#64](https://github.com/catgeot/Days/pull/64) |
+| **읽을 것 3** | ① 본 절 ② ScenicPage near fetch ③ smoke LIVE 화천 |
+| **금지 3** | 축제 지도 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
+| **후보** | Preview QA · main 병합 |
+| **공유/Preview** | `https://www.gateo.kr/qa/scenic-nearby` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #70, Preview QA 반영
+```
+
+## 테마여행 #67, 홈·축제 헤더 간소화
+
+**상태**: ✅ PR [#62](https://github.com/catgeot/Days/pull/62)·[#63](https://github.com/catgeot/Days/pull/63) → `main` · `/qa/home-korea` → PROD `/korea`
+
+- **요청**: 지구본 홈 투톱 부제 제거 · 축제 홈 헤더 명승 링크 버튼 제거
+- **한 일**: `HomeUI` 부제 제거(#62) · `/korea` 헤더 「명승」칩 제거(#63) · QA 링크 PROD
+- **VERIFY**: `npm run build` · Vercel checks PASS
+- **공유/PROD**: `https://www.gateo.kr/qa/home-korea` · `https://www.gateo.kr/` · `https://www.gateo.kr/korea`
+- **QA**: 홈 투톱 제목만 · `/korea` 헤더에 명승 칩 없음
+
+### 테마여행 · 에이전트 핸드오프 → `#68`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #68, PROD QA` |
+| **브랜치** | `main` |
+| **PR** | [#62](https://github.com/catgeot/Days/pull/62)·[#63](https://github.com/catgeot/Days/pull/63) MERGED |
+| **읽을 것 3** | ① 본 절 ② PROD 홈 ③ PROD `/korea` |
+| **금지 3** | 축제 지도 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
+| **후보** | 사람 PROD QA |
+| **공유/PROD** | `https://www.gateo.kr/qa/home-korea` · `https://www.gateo.kr/korea` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #68, PROD QA
+```
+
+## 릴리스 노트 — 한국의 명승 (사용자 문구)
+
+**상태**: `main` `5d4df41f` · `releaseNotes.js` 반영
+
+- 제목: 「한국의 명소를 축제와 함께 둘러볼 수 있어요」
+- 홈 투톱·명승 목록·검색·상세 연결을 일반 사용자 말투로 안내
+
+## 테마여행 #63, 메인 머지·테스트
+
+**상태**: ✅ PR [#58](https://github.com/catgeot/Days/pull/58) MERGED → `main` `a572eed7` · PROD 배포·로컬 QA PASS
+
+- **한 일**: `cursor/korea-theme` ← main 충돌 해소(독도·축제 스와이프·QA redirect) · 스와이프/핀치 이식 · PR ready → merge · `/qa/korea-theme` → PROD scenic
+- **VERIFY**: `smoke:korea-theme-nav-back` · `smoke:korea-scenic-search` · `smoke:korea-scenic-nearby` · `npm run build`
+- **로컬 QA**: 홈 투톱 · `/korea/theme`→scenic · `/korea` 축제 목록 PASS (HTTPS Vite)
+- **PROD**: 번들에 `한국의 명승`·`/korea/theme/scenic` 확인 · `/qa/korea-theme` 307
+- **공유**: `https://www.gateo.kr/qa/korea-theme` → `/korea/theme/scenic`
+- **PROD**: `https://www.gateo.kr/` · `/korea` · `/korea/theme/scenic`
+
+### 테마여행 · 에이전트 핸드오프 → `#67` (후속 폴리시·릴리스)
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #67, 폴리시·릴리스` |
+| **브랜치** | `main` (feature 병합 완료 · 후속은 main 또는 새 짧은 feature) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) MERGED |
+| **읽을 것 3** | ① 본 절 ② 플랜 S9 ③ PROD `/korea/theme/scenic` |
+| **금지 3** | 축제 지도·칩 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
+| **후보** | 사람 PROD QA · releaseNotes 초안 합의 |
+| **공유/PROD** | `https://www.gateo.kr/qa/korea-theme` · `https://www.gateo.kr/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #67, 폴리시·릴리스
+```
+
 ## 테마여행 #66, 명승 메인 · 홈 투톱
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `28106ba5` · Preview QA 대기

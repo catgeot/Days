@@ -1,4 +1,5 @@
 import stayAgencyLinksData from '../pages/Home/data/travelSpotStayAgencyLinks.json' with { type: 'json' };
+import { i18n } from '../i18n/config.js';
 
 /** @typedef {'tourism-board'|'local-dmc'|'kr-specialist'} StayAgencyLinkKind */
 
@@ -23,13 +24,10 @@ import stayAgencyLinksData from '../pages/Home/data/travelSpotStayAgencyLinks.js
  */
 
 const KIND_LABEL = {
-  'tourism-board': '공식 관광',
-  'local-dmc': '인가·전문',
-  'kr-specialist': '국내 전문',
+  'tourism-board': 'home.stayAgency.kind.tourism-board',
+  'local-dmc': 'home.stayAgency.kind.local-dmc',
+  'kr-specialist': 'home.stayAgency.kind.kr-specialist',
 };
-
-const DISCLAIMER =
-  '게이트오는 해당 여행사와 예약 대행 관계가 아닙니다. 공식 안내를 참고해 주세요.';
 
 /**
  * @param {{ slug?: string } | string | null | undefined} locationOrSlug
@@ -86,7 +84,12 @@ export function hasStayAgencyLinks(locationOrSlug) {
  * @returns {string}
  */
 export function getStayAgencyKindLabel(kind) {
-  return KIND_LABEL[kind] || '안내';
+  const key = KIND_LABEL[kind];
+  return key ? i18n.t(key) : i18n.t('home.stayAgency.defaultKind');
+}
+
+export function getStayAgencyDisclaimer() {
+  return i18n.t('home.stayAgency.disclaimer');
 }
 
 /**
@@ -119,5 +122,3 @@ export function withStayAgencyReferral(href) {
     return raw;
   }
 }
-
-export const STAY_AGENCY_DISCLAIMER = DISCLAIMER;

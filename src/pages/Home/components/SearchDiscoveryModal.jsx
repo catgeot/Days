@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree, Waves, Landmark } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { TRIPLINK_PACKAGES, TRIPLINK_PACKAGES_ENABLED } from '../data/tripLinkPackages';
@@ -33,9 +34,28 @@ import {
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import { preferEnterSuggestion } from '../lib/searchEnterMatch';
+import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
-import { searchBoxRetrieve } from '../lib/mapboxSearchBox';
+import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
+import { needsLatinPlaceName } from '../lib/uiPlaceAssetQuery';
 import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
+import {
+  localizedExploreContinentLabel,
+  localizedExploreThemeLabel,
+  localizedLeadingExplorePackage,
+  localizedPackageCtaLabel,
+} from '../../../i18n/exploreUi';
+import {
+  CURATION_FAMILY_TARGETS,
+  CURATION_ISLAND_TARGETS,
+  CURATION_JAPAN_TARGETS,
+  CURATION_LONGHAUL_TARGETS,
+  CURATION_POPULAR_ISLAND_SLUGS,
+  CURATION_RESORT_TARGETS,
+} from './SearchDiscovery/curationTargets';
+import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
+import { useTravelAgencyVisits } from '../../../hooks/useTravelAgencyVisits';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -47,7 +67,7 @@ const pickVisibleElementRect = (...refs) => {
   return null;
 };
 
-const HistoryPopoverHeader = ({ title, onClearAll }) => (
+const HistoryPopoverHeader = ({ title, onClearAll, clearAllLabel }) => (
   <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/[0.08] px-3 py-2">
     <span className="text-[11px] text-gray-400">{title}</span>
     <button
@@ -55,12 +75,13 @@ const HistoryPopoverHeader = ({ title, onClearAll }) => (
       onClick={onClearAll}
       className="shrink-0 text-[11px] text-gray-400 transition-colors hover:text-red-300"
     >
-      전체 삭제
+      {clearAllLabel}
     </button>
   </div>
 );
 
-const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '', isFromPlaceCard = false }) => {
+const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni, initialQuery = '', isFromPlaceCard = false }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -76,6 +97,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const [recentVisitedDestinations, setRecentVisitedDestinations] = useState([]);
   const [keywordVisitHistory, setKeywordVisitHistory] = useState([]);
   const [activeQuickSection, setActiveQuickSection] = useState(null);
+  const { visits: agencyVisits } = useTravelAgencyVisits();
   const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(false);
   /** fixed 오버레이 위치 (페이지 레이아웃을 밀지 않음) */
   const [popoverLayout, setPopoverLayout] = useState(null);
@@ -145,16 +167,29 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const isSearching = query.trim().length > 0;
   const isCurationMode = !isSearching && selectedContinent === 'all' && selectedTheme === 'all';
   const trimmedQuery = query.trim();
+  const hasChoiceCards = Boolean(disambiguation?.candidates?.length);
 
   const searchGuideText = useMemo(() => {
     if (!trimmedQuery) {
-      return '여행지를 몰라도 괜찮아요. 지금 감정, 분위기, 떠오르는 단어를 입력하면 AI가 어울리는 목적지를 찾아드립니다.';
+      return t('home.explore.guideEmpty');
     }
     if (trimmedQuery.length <= 2) {
-      return '도시·명소 이름이 뜨면 바로 고르거나, 조금 더 적어 Enter로 검색하세요.';
+      return t('home.explore.guideTyping');
     }
-    return `제안 목록에서 고르거나 Enter로 "${trimmedQuery}"를 검색합니다. 모호하면 선택 카드가 열립니다.`;
-  }, [trimmedQuery]);
+    return t('home.explore.guideQuery', { query: trimmedQuery });
+  }, [trimmedQuery, t]);
+
+  const packageCta = useMemo(
+    () => ({
+      family: localizedPackageCtaLabel(t, 'family', MRT_PACKAGE_THEME_TARGETS.family.ctaLabel),
+      japan: localizedPackageCtaLabel(t, 'japan', MRT_PACKAGE_THEME_TARGETS.japan.ctaLabel),
+      longhaul: localizedPackageCtaLabel(t, 'longhaul', MRT_PACKAGE_THEME_TARGETS.longhaul.ctaLabel),
+      resort: localizedPackageCtaLabel(t, 'resort', MRT_PACKAGE_THEME_TARGETS.resort.ctaLabel),
+    }),
+    [t]
+  );
+
+  const leadingPackageCopy = useMemo(() => localizedLeadingExplorePackage(t), [t]);
 
   useEffect(() => {
     if (isOpen) {
@@ -221,13 +256,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
   /** 선택 카드·Enter 검색 후 키보드가 남아 리스트를 가리지 않게 */
   useEffect(() => {
-    if (!disambiguation?.candidates?.length) return undefined;
+    if (!hasChoiceCards) return undefined;
     dismissSearchKeyboard();
+    scrollContainerRef.current?.scrollTo({ top: 0 });
     const t = window.setTimeout(() => dismissSearchKeyboard(), 50);
     return () => window.clearTimeout(t);
     // dismissSearchKeyboard는 inputRef 기반 — 매 렌더 동일 동작
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [disambiguation]);
+  }, [hasChoiceCards, disambiguation]);
 
   /** 검색/섹션 확장 패널 바깥 클릭 시 닫기 (앵커·패널 내부는 유지) */
   useEffect(() => {
@@ -250,8 +286,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     };
   }, [isOpen, isSearchHistoryOpen, activeQuickSection]);
 
+  // 선택 카드와 타이핑 드롭다운을 동시에 띄우면 같은 후보가 두 겹으로 중첩됨 (옹진 등).
   const showSearchDropdown =
     isSearchHistoryOpen &&
+    !hasChoiceCards &&
     (trimmedQuery.length > 0 || recentSearches.length > 0);
 
   useLayoutEffect(() => {
@@ -365,6 +403,12 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const handleSearchSubmit = async (submitQuery) => {
     const finalQuery = (submitQuery ?? query).trim();
     if (finalQuery === '' || !onSearch) return;
+    const visiblePick = preferEnterSuggestion(finalQuery, hybridSuggestions);
+    if (visiblePick) {
+      await handleSuggestionSelect(visiblePick);
+      return;
+    }
+    // 도시 허브 exact(목포)는 visiblePick 없음 → onSearch 선택 카드
     dismissSearchKeyboard();
     setQuery(finalQuery);
     setRecentSearches(pushRecentSearch(finalQuery));
@@ -375,7 +419,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       const result = await onSearch(finalQuery);
       if (isSearchDisambiguation(result)) {
         setDisambiguation(result);
-        // 선택 카드가 열린 뒤에도 키보드가 남아 있으면 한 번 더
         dismissSearchKeyboard();
         return;
       }
@@ -402,14 +445,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
 
     let place = item;
-    if (item.needsRetrieve && item.mapboxId) {
-      setIsAILoading(true);
-      try {
-        const retrieved = await searchBoxRetrieve(item.mapboxId, item.sessionToken);
-        if (retrieved) place = { ...item, ...retrieved, needsRetrieve: false };
-      } finally {
-        setIsAILoading(false);
-      }
+    const needsLatinHydrate = Boolean(
+      item.mapboxId && (item.needsRetrieve || needsLatinPlaceName(item)),
+    );
+    if (needsLatinHydrate) setIsAILoading(true);
+    try {
+      place = await hydrateSearchBoxLatinName(item);
+    } finally {
+      if (needsLatinHydrate) setIsAILoading(false);
     }
 
     const lat = Number(place?.lat);
@@ -507,6 +550,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
   }, [query, filterMode, selectedContinent, selectedTheme, isSearching]);
 
+  const visitedGridSpots = useMemo(
+    () =>
+      hybridSuggestions.filter(
+        (item) => item?.source === 'visited' && hasUsableVisitedCoords(item.lat, item.lng),
+      ),
+    [hybridSuggestions],
+  );
+  const searchGridSpots =
+    isSearching && filteredSpots.length === 0 ? visitedGridSpots : filteredSpots;
+
   // 일일 무작위 셔플이 적용된 큐레이션 데이터
   const curationData = useMemo(() => {
     if (!isCurationMode) return null;
@@ -526,50 +579,20 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
     // 테마별 우선 노출 여행지 목록 (2026-04-22: 신규 25개 여행지 반영하여 대폭 확장)
     // 가족/효도 테마: 아시아 단거리(일본 제외) — 일본은 japanTargets로 분리
-    const familyTargets = [
-      '제주', '서귀포', '다낭', '나트랑', '하노이', '푸꾸옥', '호이안',
-      '방콕', '푸켓', '치앙마이', '타이베이', '가오슝', '싱가포르', '마닐라', '세부', '보라카이',
-      '쿠알라룸푸르', '코타키나발루', '랑카위', '홍콩', '마카오', '상하이', '장가계', '칭다오', '청도', '베이징'
-    ];
+    const familyTargets = CURATION_FAMILY_TARGETS;
 
     // 일본 테마: 본토·오키나와·대마도 (MRT 일본 특가 CTA)
-    const japanTargets = [
-      '오사카', '교토', '도쿄', '후쿠오카', '삿포로', '나라', '고베', '나가사키',
-      '요코하마', '가나자와', '대마도', '오키나와', '미야코지마', '이시가키', '나고야', '히로시마'
-    ];
+    const japanTargets = CURATION_JAPAN_TARGETS;
 
     // 장거리 테마: 유럽, 북미, 오세아니아 등 장거리 여행 (42개)
-    const longhaulTargets = [
-      '파리', '로마', '바르셀로나', '마드리드', '런던', '암스테르담', '베니스', '피렌체', '밀라노',
-      '프라하', '부다페스트', '빈', '베를린', '뮌헨', '더블린', '에딘버러', '리스본', '포르투',
-      '헬싱키', '스톡홀름', '코펜하겐', '레이캬비크', '아이슬란드', '오슬로', '바르샤바', '자그레브',
-      '아테네', '산토리니', '두브로브니크', '이스탄불', '두바이', '예루살렘',
-      '뉴욕', '로스앤젤레스', '샌프란시스코', '라스베가스', '시애틀', '시카고', '필라델피아', '샌디에이고',
-      '시드니', '멜버른', '브리즈번', '오클랜드', '퀸스타운'
-    ];
+    const longhaulTargets = CURATION_LONGHAUL_TARGETS;
 
     // 휴양 테마: 해변, 리조트, 휴양지 중심 (35개)
-    const resortTargets = [
-      '괌', '사이판', '하와이', '호놀룰루', '마우이', '발리', '길리 메노', '롬복', '팔라완', '엘니도',
-      '보라카이', '세부', '코타키나발루', '쿠알라룸푸르', '랑카위', '푸켓', '피피 섬', '코사무이', '크라비',
-      '다낭', '나트랑', '푸꾸옥', '몰디브', '세이셸', '모리셔스', '잔지바르', '칸쿤', '보라보라', '피지',
-      '라로통가', '사모아', '팔라우', '뉴칼레도니아', '골드코스트', '그레이트 배리어 리프'
-    ];
+    const resortTargets = CURATION_RESORT_TARGETS;
 
     // 섬여행 에디터스 픽: 숨겨진·생소한 섬 위주 (인기 휴양지 제외)
-    const islandTargets = [
-      '라로통가', '아이투타키', '길리 메노', '야프', '추크', '코스라에', '폰페이', '나우루', '키리바시',
-      '팔라우', '사모아', '통가', '바누아투', '뉴칼레도니아', '레위니옹', '흐바르',
-      '로포텐', '페로', '아조레스', '마데이라', '이스터', '미드웨이', '핏케언',
-      '케르겔렌', '디에고 가르시아', '세인트 헬레나', '페르난두지노로냐', '시미란',
-      '코모도', '안다만', '미야코지마', '이시가키', '대마도', '카보베르데'
-    ];
-    const popularIslandSlugs = new Set([
-      'jeju', 'seogwipo', 'maldives', 'boracay', 'bali', 'santorini', 'guam', 'saipan',
-      'phuket', 'phi-phi-islands', 'bora-bora', 'hawaii', 'honolulu', 'cebu', 'iceland',
-      'sicily', 'crete', 'ibiza', 'koh-samui', 'lombok', 'palawan', 'fiji', 'mauritius',
-      'seychelles', 'zanzibar', 'tahiti',
-    ]);
+    const islandTargets = CURATION_ISLAND_TARGETS;
+    const popularIslandSlugs = CURATION_POPULAR_ISLAND_SLUGS;
     const isHiddenIslandExploreSpot = (s) =>
       isIslandExploreSpot(s) && !popularIslandSlugs.has((s.slug || '').toLowerCase());
 
@@ -616,25 +639,25 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     if (isSearching || isCurationMode) return null;
 
     if (filterMode === 'continent' && selectedContinent !== 'all') {
-      return THEMES.filter(t => t.id !== 'all').map(t => ({
-        id: t.id,
-        label: t.label,
-        icon: t.icon,
+      return THEMES.filter(tItem => tItem.id !== 'all').map(tItem => ({
+        id: tItem.id,
+        label: localizedExploreThemeLabel(t, tItem.id, tItem.label),
+        icon: tItem.icon,
         spots: filteredSpots.filter(s =>
-          t.id === 'island' ? isIslandExploreSpot(s) : s.primaryCategory === t.id
+          tItem.id === 'island' ? isIslandExploreSpot(s) : s.primaryCategory === tItem.id
         )
       })).filter(g => g.spots.length > 0);
     }
     if (filterMode === 'theme' && selectedTheme !== 'all') {
       return CONTINENTS.filter(c => c.id !== 'all').map(c => ({
         id: c.id,
-        label: c.label,
+        label: localizedExploreContinentLabel(t, c.id, c.label),
         icon: c.icon,
         spots: filteredSpots.filter(s => s.continent === c.id)
       })).filter(g => g.spots.length > 0);
     }
     return null;
-  }, [isSearching, isCurationMode, filterMode, selectedContinent, selectedTheme, filteredSpots]);
+  }, [isSearching, isCurationMode, filterMode, selectedContinent, selectedTheme, filteredSpots, t]);
 
   // 서브그룹 자동 선택 (전체보기 제거로 인한 로직)
   useEffect(() => {
@@ -674,9 +697,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       return (
         <SearchDisambiguationCards
           title={disambiguation.title}
+          query={disambiguation.query}
           candidates={disambiguation.candidates}
           onSelect={handleSuggestionSelect}
           onCancel={() => setDisambiguation(null)}
+          onPageChange={() => scrollContainerRef.current?.scrollTo({ top: 0 })}
         />
       );
     }
@@ -684,14 +709,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     if (isSearching) {
       return (
         <div className="w-full pb-20 pt-2">
-          {filteredSpots.length > 0 ? (
+          {searchGridSpots.length > 0 ? (
             <>
               <div className="mb-4 text-sm font-medium text-gray-300 flex items-center gap-2">
                 <Search size={16} />
-                <span>컬렉션 여행지 {filteredSpots.length}건</span>
+                <span>{t('home.explore.collectionCount', { count: searchGridSpots.length })}</span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 lg:gap-8">
-                {filteredSpots.map((spot) => (
+                {searchGridSpots.map((spot) => (
                   <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
                 ))}
               </div>
@@ -705,12 +730,17 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                 </div>
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
-                <span className="text-blue-400">'{query}'</span> AI 전 세계 탐색
+                <Trans
+                  i18nKey="home.explore.aiExploreTitle"
+                  values={{ query }}
+                  components={{ query: <span className="text-blue-400" /> }}
+                />
               </h3>
               <p className="text-gray-400 break-keep max-w-md mx-auto text-sm md:text-base leading-relaxed">
-                검색바 아래 제안에서 고르거나,
-                <br />
-                <strong className="text-gray-200">엔터(Enter)</strong>로 AI·지도 검색을 이어갈 수 있어요.
+                <Trans
+                  i18nKey="home.explore.aiExploreHint"
+                  components={{ strong: <strong className="text-gray-200" /> }}
+                />
               </p>
             </div>
           )}
@@ -723,8 +753,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       return (
         <div className="space-y-12 pb-10 w-full pt-4">
           <CurationSection
-            title="섬으로 떠나는 여행"
-            subtitle="라로통가·야프·길리 메노처럼, 아직 덜 알려진 섬·군도"
+            title={t('home.explore.curation.islandTitle')}
+            subtitle={t('home.explore.curation.islandSubtitle')}
             icon={<div className="p-2 bg-sky-500/10 rounded-xl border border-sky-500/20"><Waves className="text-sky-400" size={24} /></div>}
             spots={curationData.island}
             delayClass=""
@@ -732,49 +762,50 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             onMoreClick={() => handleThemeSelect('island')}
           />
           <CurationSection
-            title="가볍고 가까운, 완벽한 가족 여행"
-            subtitle={`4시간 이내 단거리 ${MRT_PACKAGE_THEME_TARGETS.family.ctaLabel}`}
+            title={t('home.explore.curation.familyTitle')}
+            subtitle={t('home.explore.curation.familySubtitle', { cta: packageCta.family })}
             icon={<div className="p-2 bg-yellow-500/10 rounded-xl border border-yellow-500/20"><Users className="text-yellow-400" size={24} /></div>}
             spots={curationData.trending}
             leadingPackage={{
               ...MRT_EXPLORE_LEADING_PACKAGE,
+              ...leadingPackageCopy,
               url: buildMrtPkcHomeUrl({ utmContent: 'explore-leading-pkc' }),
             }}
             packageLinkUrl={resolveMrtPackageThemeHref('family', { utmContent: 'explore-family' })?.url}
-            packageCtaLabel={MRT_PACKAGE_THEME_TARGETS.family.ctaLabel}
+            packageCtaLabel={packageCta.family}
             delayClass="animation-delay-100"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
           />
           <CurationSection
-            title="가까운 일본, 패키지"
-            subtitle={`항공·호텔 묶음 ${MRT_PACKAGE_THEME_TARGETS.japan.ctaLabel}`}
+            title={t('home.explore.curation.japanTitle')}
+            subtitle={t('home.explore.curation.japanSubtitle', { cta: packageCta.japan })}
             icon={<div className="p-2 bg-rose-500/10 rounded-xl border border-rose-500/20"><Landmark className="text-rose-400" size={24} /></div>}
             spots={curationData.japan}
             packageLinkUrl={resolveMrtPackageThemeHref('japan', { utmContent: 'explore-japan' })?.url}
-            packageCtaLabel={MRT_PACKAGE_THEME_TARGETS.japan.ctaLabel}
+            packageCtaLabel={packageCta.japan}
             delayClass="animation-delay-150"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
           />
           <CurationSection
-            title="유럽 & 장거리 일주"
-            subtitle={`교통·언어 걱정 없는 ${MRT_PACKAGE_THEME_TARGETS.longhaul.ctaLabel} 여행`}
+            title={t('home.explore.curation.longhaulTitle')}
+            subtitle={t('home.explore.curation.longhaulSubtitle', { cta: packageCta.longhaul })}
             icon={<div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20"><Globe2 className="text-blue-400" size={24} /></div>}
             spots={curationData.city}
             packageLinkUrl={resolveMrtPackageThemeHref('longhaul', { utmContent: 'explore-europe' })?.url}
-            packageCtaLabel={MRT_PACKAGE_THEME_TARGETS.longhaul.ctaLabel}
+            packageCtaLabel={packageCta.longhaul}
             delayClass="animation-delay-200"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('urban')}
           />
           <CurationSection
-            title="일상의 탈출, 에어텔/올인클루시브"
-            subtitle={`비행·숙소·픽업 포함 ${MRT_PACKAGE_THEME_TARGETS.resort.ctaLabel}`}
+            title={t('home.explore.curation.resortTitle')}
+            subtitle={t('home.explore.curation.resortSubtitle', { cta: packageCta.resort })}
             icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Palmtree className="text-cyan-400" size={24} /></div>}
             spots={curationData.healing}
             packageLinkUrl={resolveMrtPackageThemeHref('resort', { utmContent: 'explore-resort' })?.url}
-            packageCtaLabel={MRT_PACKAGE_THEME_TARGETS.resort.ctaLabel}
+            packageCtaLabel={packageCta.resort}
             delayClass="animation-delay-300"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('paradise')}
@@ -797,7 +828,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             {/* Result Stats */}
             <div className="mb-6 text-sm font-medium text-gray-500 flex items-center gap-2">
               <Globe2 size={16} />
-              <span>{displaySpots.length}개의 여행지</span>
+              <span>{t('home.explore.spotCount', { count: displaySpots.length })}</span>
               <span className="text-gray-700">|</span>
               <span className="text-blue-400 font-bold">{currentLabel}</span>
             </div>
@@ -829,7 +860,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             <X size={24} className="md:hidden" />
             <X size={18} className="hidden md:block" />
           </div>
-          <span className="font-bold hidden md:block text-base">홈으로</span>
+          <span className="font-bold hidden md:block text-base">{t('home.explore.backHome')}</span>
         </button>
 
         {/* 모바일 전용: 필터 토글 탭 */}
@@ -841,7 +872,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                 filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500'
               }`}
             >
-              <Layers size={14} /> 테마
+              <Layers size={14} /> {t('home.explore.filterTheme')}
             </button>
             <button
               onClick={() => handleFilterModeChange('continent')}
@@ -849,7 +880,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                 filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500'
               }`}
             >
-              <Map size={14} /> 대륙
+              <Map size={14} /> {t('home.explore.filterContinent')}
             </button>
           </div>
         )}
@@ -864,7 +895,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
-            <Layers size={14} /> 테마별
+            <Layers size={14} /> {t('home.explore.filterThemePc')}
           </button>
           <button
             onClick={() => handleFilterModeChange('continent')}
@@ -872,7 +903,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
-            <Map size={14} /> 대륙별
+            <Map size={14} /> {t('home.explore.filterContinentPc')}
           </button>
         </div>
       )}
@@ -895,6 +926,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               if (e.button !== 0) return;
               if (e.target instanceof Element && e.target.closest('[data-search-clear]')) return;
               setActiveQuickSection(null);
+              if (hasChoiceCards) return;
               setIsSearchHistoryOpen((prev) => !prev);
             }}
             className="relative flex h-12 items-center overflow-hidden rounded-2xl border border-white/[0.25] bg-white/[0.12] focus-within:bg-white/[0.15] md:h-10"
@@ -908,6 +940,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               value={query}
               onFocus={() => {
                 setActiveQuickSection(null);
+                if (hasChoiceCards) return;
                 setIsSearchHistoryOpen(true);
               }}
               onChange={(e) => {
@@ -917,7 +950,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                 // 타이핑 중에는 드롭다운에 제안 리스트를 유지
                 setIsSearchHistoryOpen(true);
               }}
-              placeholder="예: 속초, 파리, 에펠탑, 번아웃"
+              placeholder={t('home.explore.searchPlaceholder')}
               className="h-full w-full bg-transparent px-4 text-[16px] font-medium text-white outline-none placeholder-gray-500 md:px-3 md:text-base"
             />
             {query && (
@@ -938,21 +971,36 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             )}
           </form>
         </div>
-        {/* 드롭다운·섹션 패널 열림 시 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
-        {!showSearchDropdown && !activeQuickSection && (
+        {/* 드롭다운·선택 카드가 열린 동안 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
+        {!showSearchDropdown && !activeQuickSection && !hasChoiceCards && (
           <p className="text-xs md:text-sm text-blue-200/80 px-1 pt-1.5 leading-relaxed">
             {searchGuideText}
           </p>
         )}
 
         {/* 검색바 클릭 후에도 칩 버튼은 그대로 노출 (popover는 칩 행 아래로 anchor) */}
-        {(recentSearches.length > 0 || recentVisitedDestinations.length > 0 || keywordVisitHistory.length > 0) && (
-          <div
+        <div
             data-quick-menu-root="true"
             ref={isMobileView ? quickMenuRowRefMobile : quickMenuRowRefPc}
             className="relative mt-2 px-1"
           >
             <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSearchHistoryOpen(false);
+                  setActiveQuickSection((prev) => (prev === 'agencies' ? null : 'agencies'));
+                }}
+                className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+                  activeQuickSection === 'agencies'
+                    ? 'border-emerald-400/40 bg-emerald-500/20 text-emerald-100'
+                    : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20'
+                }`}
+              >
+                {agencyVisits.length > 0
+                  ? t('home.explore.agenciesVisitedCount', { count: agencyVisits.length })
+                  : t('home.agencies.title')}
+              </button>
               {recentSearches.length > 0 && (
                 <button
                   type="button"
@@ -966,7 +1014,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                       : 'border-white/[0.12] bg-white/[0.06] text-gray-200 hover:bg-white/[0.12]'
                   }`}
                 >
-                  최근 검색어 {recentSearches.length}
+                  {t('home.explore.recentSearchesCount', { count: recentSearches.length })}
                 </button>
               )}
               {recentVisitedDestinations.length > 0 && (
@@ -982,7 +1030,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                       : 'border-blue-500/30 bg-blue-500/10 text-blue-200 hover:bg-blue-500/20'
                   }`}
                 >
-                  최근 방문지 {recentVisitedDestinations.length}
+                  {t('home.explore.recentVisitedCount', { count: recentVisitedDestinations.length })}
                 </button>
               )}
               {keywordVisitHistory.length > 0 && (
@@ -998,12 +1046,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                       : 'border-purple-500/30 bg-purple-500/10 text-purple-200 hover:bg-purple-500/20'
                   }`}
                 >
-                  키워드 방문 기록 {keywordVisitHistory.length}
+                  {t('home.explore.keywordVisitsCount', { count: keywordVisitHistory.length })}
                 </button>
               )}
             </div>
           </div>
-        )}
       </div>
     </div>
   );
@@ -1039,7 +1086,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/[0.08] rounded-3xl h-full flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
               <div className="p-6 overflow-y-auto custom-scrollbar h-full pb-10">
                  <h3 className="text-gray-400 font-bold text-xs mb-5 pl-1 uppercase tracking-widest flex items-center gap-2">
-                   <Layers size={14} className="text-blue-400"/> 세부 탐색
+                   <Layers size={14} className="text-blue-400"/> {t('home.explore.sidebarTitle')}
                  </h3>
                  <div className="space-y-2">
                    {filterGroups.map((g) => {
@@ -1101,7 +1148,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                           }`}
                         >
                           <Icon size={14} className={selectedContinent === cont.id ? 'text-white' : 'text-gray-400'} />
-                          {cont.label}
+                          {localizedExploreContinentLabel(t, cont.id, cont.label)}
                         </button>
                       )
                     })
@@ -1127,7 +1174,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                           }`}
                         >
                           <Icon size={14} className={isSelected && themeColors ? '' : isSelected ? 'text-white' : 'text-gray-400'} />
-                          {theme.label}
+                          {localizedExploreThemeLabel(t, theme.id, theme.label)}
                         </button>
                       )
                     })
@@ -1168,7 +1215,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           <button
             onClick={() => scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
             className={`fixed bottom-6 right-6 md:bottom-10 md:right-10 w-12 h-12 md:w-14 md:h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)] text-white transition-all duration-300 hover:-translate-y-1 z-50 ${showTopBtn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
-            aria-label="최상단으로 이동"
+            aria-label={t('home.explore.scrollTop')}
           >
             <ArrowUp size={24} />
           </button>
@@ -1201,12 +1248,27 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                   setIsSearchHistoryOpen(false);
                   handleSuggestionSelect(item);
                 }}
-                title={`'${trimmedQuery}' 도시·명소·여행지`}
+                onAskMooni={
+                  onAskMooni
+                    ? (askQuery) => {
+                        dismissSearchKeyboard();
+                        setIsSearchHistoryOpen(false);
+                        setActiveQuickSection(null);
+                        onAskMooni(askQuery);
+                        onClose?.();
+                      }
+                    : undefined
+                }
+                title={t('home.explore.suggestionsTitle', { query: trimmedQuery })}
               />
             </div>
           ) : (
             <>
-              <HistoryPopoverHeader title="최근 검색" onClearAll={handleClearRecentSearches} />
+              <HistoryPopoverHeader
+                title={t('home.explore.recentSearch')}
+                onClearAll={handleClearRecentSearches}
+                clearAllLabel={t('home.explore.clearAll')}
+              />
               <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-2 py-2">
                 <div className="space-y-1">
                   {recentSearches.map((keyword) => (
@@ -1225,7 +1287,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                           handleRemoveRecentSearch(keyword);
                         }}
                         className="shrink-0 text-gray-400 transition-colors hover:text-red-300"
-                        aria-label={`${keyword} 삭제`}
+                        aria-label={t('home.explore.removeItem', { item: keyword })}
                       >
                         <X size={13} />
                       </button>
@@ -1250,13 +1312,25 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           }}
         >
           {activeQuickSection === 'searches' && (
-            <HistoryPopoverHeader title="최근 검색어" onClearAll={handleClearRecentSearches} />
+            <HistoryPopoverHeader
+              title={t('home.explore.recentSearches')}
+              onClearAll={handleClearRecentSearches}
+              clearAllLabel={t('home.explore.clearAll')}
+            />
           )}
           {activeQuickSection === 'visited' && (
-            <HistoryPopoverHeader title="최근 방문지" onClearAll={handleClearRecentVisited} />
+            <HistoryPopoverHeader
+              title={t('home.explore.recentVisited')}
+              onClearAll={handleClearRecentVisited}
+              clearAllLabel={t('home.explore.clearAll')}
+            />
           )}
           {activeQuickSection === 'keywordVisits' && (
-            <HistoryPopoverHeader title="키워드 방문 기록" onClearAll={handleClearKeywordVisits} />
+            <HistoryPopoverHeader
+              title={t('home.explore.keywordVisits')}
+              onClearAll={handleClearKeywordVisits}
+              clearAllLabel={t('home.explore.clearAll')}
+            />
           )}
           <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-3">
             {activeQuickSection === 'searches' && (
@@ -1273,7 +1347,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                         handleRemoveRecentSearch(keyword);
                       }}
                       className="text-gray-400 transition-colors hover:text-red-300"
-                      aria-label={`${keyword} 삭제`}
+                      aria-label={t('home.explore.removeItem', { item: keyword })}
                     >
                       <X size={12} />
                     </button>
@@ -1298,7 +1372,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                           handleRemoveRecentVisited(destination);
                         }}
                         className="text-blue-200/80 transition-colors hover:text-red-200"
-                        aria-label={`${label} 삭제`}
+                        aria-label={t('home.explore.removeItem', { item: label })}
                       >
                         <X size={12} />
                       </button>
@@ -1323,7 +1397,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                           handleRemoveKeywordVisit(entry.keyword);
                         }}
                         className="text-purple-200/80 transition-colors hover:text-red-200"
-                        aria-label={`${entry.keyword} 기록 삭제`}
+                        aria-label={t('home.explore.removeRecord', { keyword: entry.keyword })}
                       >
                         <X size={12} />
                       </button>
@@ -1342,7 +1416,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                               handleRemoveKeywordVisit(entry.keyword, destination);
                             }}
                             className="text-gray-400 transition-colors hover:text-red-300"
-                            aria-label={`${label} 삭제`}
+                            aria-label={t('home.explore.removeItem', { item: label })}
                           >
                             <X size={11} />
                           </button>
@@ -1353,6 +1427,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                 ))}
               </div>
             )}
+
+            {activeQuickSection === 'agencies' && (
+              <TravelAgencyDirectory variant="explore" />
+            )}
           </div>
         </div>
       )}
@@ -1362,8 +1440,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         <div className="absolute inset-0 z-[300] bg-[#1b1410]/80 backdrop-blur-sm flex items-center justify-center animate-fade-in">
            <div className="flex flex-col items-center">
              <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-             <h3 className="text-xl font-bold text-white mb-2">AI가 목적지를 탐색하고 있습니다</h3>
-             <p className="text-gray-400 text-sm">유사 지명 및 오타를 검증 중입니다...</p>
+             <h3 className="text-xl font-bold text-white mb-2">{t('home.explore.aiLoadingTitle')}</h3>
+             <p className="text-gray-400 text-sm">{t('home.explore.aiLoadingBody')}</p>
            </div>
         </div>
       )}

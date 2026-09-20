@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Compass, ChevronRight, Hash } from 'lucide-react';
+import { MapPin, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const PublicNav = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const currentLoc = searchParams.get('location');
@@ -73,7 +75,7 @@ const PublicNav = () => {
         >
           <div className="flex items-center gap-3">
             {/* <Hash size={15} className={!currentLoc ? 'text-blue-500' : 'text-gray-400'} /> */}
-            <span className="text-xs">전체 기록 보기</span>
+            <span className="text-xs">{t('logbook.publicNav.viewAll')}</span>
           </div>
           {!currentLoc && <ChevronRight size={16} className="text-blue-500" />}
         </button>
@@ -119,7 +121,7 @@ const PublicNav = () => {
           })
         ) : (
           <div className="px-3 py-4 text-sm text-gray-400 text-center">
-            공개된 장소가 없습니다.
+            {t('logbook.publicNav.noPlaces')}
           </div>
         )}
       </div>

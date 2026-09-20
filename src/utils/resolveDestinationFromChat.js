@@ -48,8 +48,16 @@ const DEPARTURE_HUB_SLUGS = new Set([
 const DEPARTURE_ONLY_FRAGMENT =
   /^[\p{L}\p{N}\s.'-]{1,40}$/u;
 
-const ALREADY_ACCESS_SHAPED =
-  /(?:에서\s*어떻게|어떻게\s*가|가는\s*(?:길|방법)|how\s*to\s*get|from\s+[\p{L}])/iu;
+const EN_DEST_QUERY_PATTERNS = [
+  /(?:want to|wanna|plan(?:ning)? to|going to|travel(?:ing)? to|trip to|visit(?:ing)?)\s+(.+)/i,
+  /(?:destination(?: is|:)?|where(?: should I| to)? go(?: for a trip)?)\s+(.+)/i,
+];
+
+const ALREADY_ACCESS_SHAPED_KO =
+  /(?:에서\s*어떻게|어떻게\s*가|가는\s*(?:길|방법))/iu;
+
+const ALREADY_ACCESS_SHAPED_EN =
+  /(?:how\s*to\s*get|getting\s*to|from\s+[\p{L}])/iu;
 
 const SCORE_GAP_FOR_SINGLE_WINNER = 8;
 
@@ -152,16 +160,22 @@ export function isAccessRouteQuery(text) {
  * bound + 「가는 방법」출발 직접입력: 「마닐라」→「마닐라에서 어떻게 가?」 (목적지 오인 방지)
  *
  * @param {string} text
- * @param {{ accessDockActive?: boolean }} [options]
+ * @param {{ accessDockActive?: boolean, locale?: string }} [options]
  */
-export function normalizeAccessDepartureUserText(text, { accessDockActive = false } = {}) {
+export function normalizeAccessDepartureUserText(
+  text,
+  { accessDockActive = false, locale = 'ko' } = {},
+) {
   const trimmed = String(text ?? '').trim();
   if (!accessDockActive || !trimmed) return trimmed;
   if (isAccessRouteQuery(trimmed) || isFerryRouteQuery(trimmed)) return trimmed;
-  if (ALREADY_ACCESS_SHAPED.test(trimmed)) return trimmed;
+  const isEn = String(locale).slice(0, 2).toLowerCase() === 'en';
+  if (isEn ? ALREADY_ACCESS_SHAPED_EN.test(trimmed) : ALREADY_ACCESS_SHAPED_KO.test(trimmed)) {
+    return trimmed;
+  }
   if (trimmed.length > 48 || trimmed.includes('?')) return trimmed;
   if (!DEPARTURE_ONLY_FRAGMENT.test(trimmed)) return trimmed;
-  return `${trimmed}에서 어떻게 가?`;
+  return isEn ? `how to get from ${trimmed}?` : `${trimmed}에서 어떻게 가?`;
 }
 
 /** 페리·배 출발지 질문 — 「롬복에서 배」 등은 bound slug 유지 */
@@ -337,6 +351,7 @@ function extractLookupQueries(text) {
     /(.+?)\s*(?:가고\s*싶|여행|가(?:려|고)|갈\s*거|추천|어때)/,
     /(.+?)가고?\s*싶/,
     /(?:가고\s*싶은\s*(?:곳|여행지)(?:은|가)?|목적지(?:는)?|어디(?:로|가)?)\s*(.+)/,
+    ...EN_DEST_QUERY_PATTERNS,
   ];
   for (const re of patterns) {
     const match = trimmed.match(re);

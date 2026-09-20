@@ -1,3 +1,5 @@
+import { localizedMarkerPinLabel } from '../../../i18n/globeUi.js';
+
 /** Mapbox GeoJSON layers for gateo globe markers (GPU-attached, no DOM jitter) */
 
 export const GATEO_SOURCE_ID = 'gateo-spots';
@@ -36,11 +38,12 @@ const truncate = (str, length = 12) => {
   return str.length > length ? `${str.substring(0, length)}..` : str;
 };
 
-export function markerToFeature(marker, index = 0) {
+export function markerToFeature(marker, index = 0, locale = 'ko') {
   const lat = Number(marker.lat) + (Number(marker._offsetLat) || 0);
   const lng = Number(marker.lng) + (Number(marker._offsetLng) || 0);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
 
+  const displayName = localizedMarkerPinLabel(marker, locale);
   const type = marker.type || 'major';
   const category = marker.category || 'default';
   const color = type === 'temp-base'
@@ -55,8 +58,8 @@ export function markerToFeature(marker, index = 0) {
     geometry: { type: 'Point', coordinates: [lng, lat] },
     properties: {
       markerId: String(marker.id || marker.tripId || marker.slug || `spot-${index}`),
-      name: truncate(marker.name || marker.destination || '?', type === 'major' ? 12 : 10),
-      fullName: marker.name || marker.destination || '',
+      name: truncate(displayName, type === 'major' ? 12 : 10),
+      fullName: displayName,
       slug: marker.slug || '',
       country: marker.country || '',
       country_en: marker.country_en || '',
@@ -74,20 +77,22 @@ export function markerToFeature(marker, index = 0) {
   };
 }
 
-export function markersToGeoJSON(markers = []) {
+export function markersToGeoJSON(markers = [], locale = 'ko') {
   const features = markers
-    .map((marker, index) => markerToFeature(marker, index))
+    .map((marker, index) => markerToFeature(marker, index, locale))
     .filter(Boolean);
   return { type: 'FeatureCollection', features };
 }
+
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
 
 export function isGateoLayer(layerId = '') {
   return GATEO_LAYER_IDS.some((id) => layerId === id || layerId.startsWith('gateo-spots'));
 }
 
 function safeMapUpdate(map, fn) {
+  if (!isGlobeMapStyleReady(map)) return;
   try {
-    if (!map?.getStyle?.()?.layers) return;
     fn();
   } catch {
     // Style may be reloading after theme changes.
@@ -95,7 +100,7 @@ function safeMapUpdate(map, fn) {
 }
 
 export function gateoMarkerLayersReady(map) {
-  if (!map?.getStyle?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
   try {
     // getLayer throws "Style is not done loading" while the style is mid-load
     // (e.g. 2s reveal fallback before idle/styledata).
@@ -118,16 +123,27 @@ export function areGateoMarkerLayersVisible(map) {
 
 /** Hide gateo spot layers until GeoJSON source is synced (avoids label flash on base reveal). */
 export function setGateoMarkerLayerVisibility(map, visible) {
-  if (!map?.getStyle?.()) return;
+  if (!isGlobeMapStyleReady(map)) return;
   const visibility = visible ? 'visible' : 'none';
   GATEO_LAYER_IDS.forEach((layerId) => {
-    if (!map.getLayer(layerId)) return;
     try {
+      if (!map.getLayer(layerId)) return;
       map.setLayoutProperty(layerId, 'visibility', visibility);
     } catch {
       // Style may be mid-transition.
     }
   });
+}
+
+/** Symbol placement races flyTo during flight cinema — hide text labels only. */
+export function setGateoMarkerLabelVisibility(map, visible) {
+  if (!isGlobeMapStyleReady(map)) return;
+  try {
+    if (!map.getLayer(GATEO_LABEL_LAYER_ID)) return;
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'visibility', visible ? 'visible' : 'none');
+  } catch {
+    // Style may be mid-transition.
+  }
 }
 
 /** 레이어가 이미 있을 때 스타일·필터 동기화 (테마 전환·핫리로드) */
@@ -138,6 +154,7 @@ export function syncGateoMarkerLayerStyle(map) {
     map.setFilter(GATEO_DOT_LAYER_ID, SHOW_DOT);
 
     map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-size', LABEL_TEXT_SIZE);
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-font', ['DIN Pro Medium', 'Arial Unicode MS Regular']);
     map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-offset', [
       'case',
       IS_MAJOR,
@@ -168,9 +185,7 @@ export function syncGateoMarkerLayerStyle(map) {
 }
 
 export function setupGateoMarkerLayers(map) {
-  if (!map?.getStyle?.()) return false;
-  // addLayer requires style fully loaded — loaded() alone throws on mobile Safari.
-  if (!map.isStyleLoaded?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
 
   try {
     if (!map.getSource(GATEO_SOURCE_ID)) {
@@ -223,6 +238,7 @@ export function setupGateoMarkerLayers(map) {
       source: GATEO_SOURCE_ID,
       layout: {
         'text-field': ['get', 'name'],
+        'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
         'text-size': LABEL_TEXT_SIZE,
         'text-offset': [
           'case',
@@ -265,11 +281,87 @@ export function setupGateoMarkerLayers(map) {
   }
 }
 
+/** @type {WeakMap<object, { busy: boolean, safetyTimer: ReturnType<typeof setTimeout> | null }>} */
+const globeCameraBusyState = new WeakMap();
+
+export function markGlobeCameraBusy(map) {
+  if (!map) return;
+  let state = globeCameraBusyState.get(map);
+  if (!state) {
+    state = { busy: false, safetyTimer: null };
+    globeCameraBusyState.set(map, state);
+  }
+  state.busy = true;
+  if (state.safetyTimer) clearTimeout(state.safetyTimer);
+  state.safetyTimer = setTimeout(() => {
+    state.busy = false;
+    state.safetyTimer = null;
+    runPendingGateoMarkerFlush(map);
+  }, 5000);
+}
+
+export function clearGlobeCameraBusy(map) {
+  if (!map) return;
+  const state = globeCameraBusyState.get(map);
+  if (!state) return;
+  state.busy = false;
+  if (state.safetyTimer) {
+    clearTimeout(state.safetyTimer);
+    state.safetyTimer = null;
+  }
+}
+
+export function isGlobeCameraBusy(map) {
+  return Boolean(globeCameraBusyState.get(map)?.busy);
+}
+
 export function updateGateoMarkerSource(map, geojson) {
   safeMapUpdate(map, () => {
     const source = map.getSource(GATEO_SOURCE_ID);
     if (source) source.setData(geojson || { type: 'FeatureCollection', features: [] });
   });
+}
+
+/** @type {WeakMap<object, { pending: object | null }>} */
+const scheduledMarkerUpdates = new WeakMap();
+
+function runPendingGateoMarkerFlush(map) {
+  if (!map) return false;
+  const state = scheduledMarkerUpdates.get(map);
+  const data = state?.pending;
+  if (!data) return false;
+
+  if (typeof map.isMoving === 'function' && map.isMoving()) return false;
+  if (isGlobeCameraBusy(map)) return false;
+
+  if (state) state.pending = null;
+  updateGateoMarkerSource(map, data);
+  return true;
+}
+
+/** flyTo/easeTo 종료·idle 후 호출 — 대기 중인 GeoJSON flush */
+export function flushPendingGateoMarkerSource(map) {
+  return runPendingGateoMarkerFlush(map);
+}
+
+/**
+ * flyTo/easeTo 중 symbol continuePlacement 크래시 방지 — camera idle 전 setData 금지.
+ */
+export function scheduleUpdateGateoMarkerSource(map, geojson) {
+  if (!map) return;
+
+  let state = scheduledMarkerUpdates.get(map);
+  if (!state) {
+    state = { pending: null };
+    scheduledMarkerUpdates.set(map, state);
+  }
+  state.pending = geojson || { type: 'FeatureCollection', features: [] };
+
+  if (isGlobeCameraBusy(map) || (typeof map.isMoving === 'function' && map.isMoving())) {
+    return;
+  }
+
+  requestAnimationFrame(() => requestAnimationFrame(() => runPendingGateoMarkerFlush(map)));
 }
 
 const LAYER_HIT_PRIORITY = {

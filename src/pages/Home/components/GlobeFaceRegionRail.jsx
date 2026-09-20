@@ -1,10 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { placeScrollPanYClass } from '../../../components/PlaceCard/common/placeScrollSurface.js';
 import {
   getDefaultFaceSubregionId,
   getFaceRegionsForSubregion,
   getFaceSubregions,
   shouldShowFaceSubregionChips,
 } from '../lib/globeFaceSubregions.js';
+import { getFaceSeaOceans } from '../lib/faceSeaOceans.js';
+import {
+  localizedGlobeCountryLabel,
+  localizedGlobeSubregionLabel,
+  localizedSeaBasinChipLabel,
+  localizedSeaOceanLabel,
+} from '../../../i18n/globeUi.js';
 
 const CATEGORY_CHIP = {
   paradise: {
@@ -32,11 +41,99 @@ const CATEGORY_CHIP = {
 const GLASS_SCROLL_CLASS = 'globe-face-region-scroll';
 /** 나라·세부칩 — 네이티브 바 숨김 · 커스텀 스크롤바 항시 표시 */
 const CUSTOM_SCROLL_CLASS = 'globe-face-custom-scroll';
-/** PC 소권역 전환 시 패널 높이 고정 — max-h 대신 h (내용만 교체) */
-const RAIL_LIST_HEIGHT_DESKTOP = 'h-[min(68vh,34rem)]';
+/** 모바일 나라 리스트 — 지도 pan·스크롤 체이닝 차단 */
+const MOBILE_LIST_SCROLL_CLASS = `${placeScrollPanYClass} ${CUSTOM_SCROLL_CLASS}`;
+const isolateMapTouchProps = {
+  onPointerDown: (event) => event.stopPropagation(),
+  onTouchStart: (event) => event.stopPropagation(),
+  onTouchMove: (event) => event.stopPropagation(),
+};
+/** PC — 투톱~LOGIN/LOGBOOK 사이 가용 높이 사용(여유 6.5rem만 하단 확보, 상한으로 과도 축소하지 않음) */
+const RAIL_LIST_HEIGHT_DESKTOP = 'h-[calc(100dvh-17rem-6.5rem)]';
 /** 모바일 — 하단 카테고리·세부칩 위를 남기고도 스크롤이 답답하지 않게 */
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
+
+const SEA_OCEAN_CHIP = {
+  idle: 'border-white/25 text-gray-200/90 bg-black/45 hover:bg-white/10',
+  active:
+    'bg-cyan-500/40 border-cyan-200/80 text-white shadow-[0_0_16px_rgba(34,211,238,0.42)] ring-2 ring-cyan-300/35',
+};
+
+function renderSeaOceanChip(
+  ocean,
+  { isActive, onClick, compact = false, side = false, label, ariaLabel },
+) {
+  const tone = isActive ? SEA_OCEAN_CHIP.active : SEA_OCEAN_CHIP.idle;
+  return (
+    <button
+      key={`ocean-${ocean.id}`}
+      type="button"
+      role="option"
+      aria-selected={isActive}
+      aria-pressed={isActive}
+      aria-label={ariaLabel}
+      onClick={() => onClick?.(ocean)}
+      className={`${side ? 'w-[4.5rem] shrink-0' : 'shrink-0'} rounded-lg border px-2.5 py-1.5 text-left backdrop-blur-md transition-all active:scale-[0.97] ${
+        compact ? 'px-1.5 text-[10px]' : 'text-[11px]'
+      } ${tone}`}
+    >
+      <span className="block whitespace-nowrap font-bold leading-tight tracking-tight break-keep">
+        {label}
+      </span>
+    </button>
+  );
+}
+
+/** 모바일 — 세부 메뉴 펼침 스위치 */
+export function MobileRegionsMenuSwitch({ expanded, onChange }) {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={`pointer-events-auto flex w-[4.25rem] flex-col gap-0.5 rounded-lg border px-1.5 py-1 backdrop-blur-md transition-all ${
+        expanded
+          ? 'border-white/20 bg-black/70 shadow-lg'
+          : 'border-amber-400/60 bg-black/85 shadow-[0_0_12px_rgba(245,158,11,0.35)]'
+      }`}
+      {...isolateMapTouchProps}
+    >
+      <span
+        className={`text-center text-[9px] font-bold leading-none tracking-tight ${
+          expanded ? 'text-gray-200/90' : 'text-amber-100'
+        }`}
+      >
+        {expanded ? t('home.globe.menuExpanded') : t('home.globe.menuCollapsed')}
+      </span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={expanded}
+        aria-label={expanded ? t('home.globe.menuHide') : t('home.globe.menuShow')}
+        title={expanded ? t('home.globe.menuHideMap') : t('home.globe.menuShowChips')}
+        onClick={(event) => {
+          event.stopPropagation();
+          onChange?.(!expanded);
+        }}
+        className="flex w-full items-center justify-center active:scale-[0.97]"
+      >
+        <span
+          aria-hidden="true"
+          className={`relative h-4 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
+            expanded
+              ? 'border-cyan-400/50 bg-cyan-500/40'
+              : 'border-amber-300/80 bg-amber-500/40 shadow-[0_0_8px_rgba(251,191,36,0.45)]'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 h-3 w-3 rounded-full shadow transition-[left] duration-200 ${
+              expanded ? 'left-[calc(100%-0.75rem-2px)] bg-white' : 'left-0.5 bg-amber-100'
+            }`}
+          />
+        </span>
+      </button>
+    </div>
+  );
+}
 
 function useActiveSubregionId(category, showSubregionChips, selectedSubregionId, subregions) {
   return useMemo(() => {
@@ -101,11 +198,23 @@ export function GlobeFaceSubregionBar({
   category,
   selectedSubregionId = null,
   onSelectSubregion,
+  selectedTopOceanId = null,
+  onSelectTopOcean = null,
+  skipAutoSync = false,
   className = '',
 }) {
+  const { t } = useTranslation();
   const subregions = useMemo(() => getFaceSubregions(category), [category]);
-  const show = shouldShowFaceSubregionChips(category) && subregions.length > 0;
-  const activeSubregionId = useActiveSubregionId(category, show, selectedSubregionId, subregions);
+  const faceSeaOceans = useMemo(() => getFaceSeaOceans(category), [category]);
+  const showSubregions = shouldShowFaceSubregionChips(category) && subregions.length > 0;
+  const showOceans = faceSeaOceans.length > 0;
+  const show = showSubregions || showOceans;
+  const activeSubregionId = useActiveSubregionId(
+    category,
+    showSubregions && !selectedTopOceanId,
+    selectedSubregionId,
+    subregions,
+  );
   const barRef = useRef(null);
   const [scrollUi, setScrollUi] = useState({
     scrollable: false,
@@ -132,14 +241,14 @@ export function GlobeFaceSubregionBar({
   }, []);
 
   useEffect(() => {
-    if (!show || !activeSubregionId) return;
+    if (skipAutoSync || selectedTopOceanId || !showSubregions || !activeSubregionId) return;
     if (selectedSubregionId === activeSubregionId) return;
     onSelectSubregion?.(activeSubregionId);
-  }, [show, activeSubregionId, selectedSubregionId, onSelectSubregion]);
+  }, [skipAutoSync, selectedTopOceanId, showSubregions, activeSubregionId, selectedSubregionId, onSelectSubregion]);
 
   useEffect(() => {
     updateScrollUi();
-  }, [category, subregions.length, updateScrollUi]);
+  }, [category, subregions.length, faceSeaOceans.length, updateScrollUi]);
 
   useEffect(() => {
     const el = barRef.current;
@@ -165,11 +274,12 @@ export function GlobeFaceSubregionBar({
           ref={barRef}
           className={`flex w-full min-w-0 gap-1.5 overflow-x-auto overscroll-x-contain touch-pan-x ${CUSTOM_SCROLL_CLASS}`}
           role="listbox"
-          aria-label="소권역"
+          aria-label={t('home.globe.subregionGroup')}
           onScroll={updateScrollUi}
         >
           {subregions.map((sub) => {
-            const isActive = activeSubregionId === sub.id;
+            const isActive = !selectedTopOceanId && activeSubregionId === sub.id;
+            const subLabel = localizedGlobeSubregionLabel(t, category, sub);
             return (
               <button
                 key={sub.id}
@@ -182,10 +292,19 @@ export function GlobeFaceSubregionBar({
                 }`}
               >
                 <span className="block whitespace-nowrap text-[11px] font-bold leading-tight tracking-tight break-keep">
-                  {sub.labelKo}
+                  {subLabel}
                 </span>
               </button>
             );
+          })}
+          {faceSeaOceans.map((ocean) => {
+            const oceanLabel = localizedSeaOceanLabel(t, ocean);
+            return renderSeaOceanChip(ocean, {
+              isActive: selectedTopOceanId === ocean.id,
+              onClick: onSelectTopOcean,
+              label: oceanLabel,
+              ariaLabel: t('home.globe.oceanChipAria', { name: oceanLabel }),
+            });
           })}
         </div>
         {scrollUi.scrollable ? (
@@ -222,25 +341,35 @@ export default function GlobeFaceRegionRail({
   /** 'side' = PC 세로 칩 · 'none' = 칩 UI 없음(필터만 · 하단 바 등과 조합) */
   subregionPlacement = 'side',
   listHeightClass,
+  listHeightStyle = null,
   className = '',
+  seaBasinHierarchy = null,
+  selectedSeaBasinId = null,
+  onSelectSeaBasin,
+  selectedTopOceanId = null,
+  onSelectTopOcean = null,
 }) {
+  const { t, i18n } = useTranslation();
+  const isSeaRail = Boolean(seaBasinHierarchy);
   const subregions = useMemo(
     () => (showSubregions ? getFaceSubregions(category) : []),
     [category, showSubregions],
   );
   const showSubregionChips = showSubregions && shouldShowFaceSubregionChips(category) && subregions.length > 0;
-  const renderSideChips = showSubregionChips && subregionPlacement === 'side';
+  const faceSeaOceans = useMemo(() => getFaceSeaOceans(category), [category]);
+  const showOceanChips = faceSeaOceans.length > 0;
+  const renderSideChips = (showSubregionChips || showOceanChips) && subregionPlacement === 'side';
 
   const activeSubregionId = useActiveSubregionId(
     category,
-    showSubregionChips,
+    showSubregionChips && !selectedTopOceanId,
     selectedSubregionId,
     subregions,
   );
 
   const regions = useMemo(
-    () => getFaceRegionsForSubregion(category, showSubregionChips ? activeSubregionId : null),
-    [category, showSubregionChips, activeSubregionId],
+    () => (isSeaRail ? [] : getFaceRegionsForSubregion(category, showSubregionChips ? activeSubregionId : null)),
+    [category, showSubregionChips, activeSubregionId, isSeaRail],
   );
 
   const resolvedListHeight =
@@ -248,6 +377,18 @@ export default function GlobeFaceRegionRail({
     || (subregionPlacement === 'none'
       ? (showSubregionChips ? RAIL_LIST_HEIGHT_MOBILE : RAIL_LIST_HEIGHT_MOBILE_FLAT)
       : RAIL_LIST_HEIGHT_DESKTOP);
+
+  const seaListScrollKey = useMemo(() => {
+    if (!seaBasinHierarchy) return null;
+    const { midRegions, smallSeas, labelSeas, showSmallSeas, activeTopOceanId } = seaBasinHierarchy;
+    return [
+      activeTopOceanId || '',
+      showSmallSeas ? 1 : 0,
+      midRegions.map((b) => b.id).join(','),
+      showSmallSeas ? smallSeas.map((b) => b.id).join(',') : '',
+      showSmallSeas ? labelSeas.map((b) => b.id).join(',') : '',
+    ].join('|');
+  }, [seaBasinHierarchy]);
 
   const listRef = useRef(null);
   const [scrollUi, setScrollUi] = useState({
@@ -259,6 +400,11 @@ export default function GlobeFaceRegionRail({
   });
   /** 모바일: 짧은 목록은 하단 고정 배치 유지 · 스크롤은 항상 상단에서 시작 */
   const anchorListToBottom = subregionPlacement === 'none';
+  const usesDynamicMaxHeight = Boolean(
+    listHeightStyle?.maxHeight && !listHeightStyle?.height,
+  );
+  /** 해역·동적 maxHeight — 내용 높이 우선, 하단 justify-end·빈 스크롤 영역 방지 */
+  const anchorItemsToBottom = anchorListToBottom && !isSeaRail && !usesDynamicMaxHeight;
 
   const updateScrollHint = useCallback(() => {
     const el = listRef.current;
@@ -296,7 +442,7 @@ export default function GlobeFaceRegionRail({
       el.scrollTop = 0;
     }
     updateScrollHint();
-  }, [category, regions.length, activeSubregionId, updateScrollHint]);
+  }, [category, regions.length, seaListScrollKey, isSeaRail, activeSubregionId, updateScrollHint]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -307,101 +453,213 @@ export default function GlobeFaceRegionRail({
   }, [updateScrollHint]);
 
   useEffect(() => {
-    if (!showSubregionChips || !activeSubregionId) return;
+    if (selectedTopOceanId || isSeaRail || !showSubregionChips || !activeSubregionId) return;
+    if (subregionPlacement === 'none') return;
     if (selectedSubregionId === activeSubregionId) return;
     onSelectSubregion?.(activeSubregionId);
-  }, [showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion]);
+  }, [selectedTopOceanId, isSeaRail, showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion, subregionPlacement]);
 
-  if (!category || (regions.length === 0 && !showSubregionChips)) return null;
+  if (!category || (!isSeaRail && regions.length === 0 && !renderSideChips)) return null;
 
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
 
-  const moreHintClass =
-    'inline-flex h-5 shrink-0 items-center whitespace-nowrap rounded-full border border-amber-300/70 bg-amber-500/90 px-2 text-[9px] font-bold leading-none tracking-tight text-black shadow-[0_0_12px_rgba(245,158,11,0.55)]';
+  const listShellClass = listHeightStyle ? 'relative w-full' : `relative w-full ${resolvedListHeight}`;
+  const listShellStyle = listHeightStyle || undefined;
 
-  const countryList = (
-    <div className="flex flex-col items-center overflow-visible">
-      {scrollUi.scrollable ? (
-        <div className="flex h-5 w-full shrink-0 items-center justify-center" aria-hidden="true">
-          {scrollUi.moreAbove ? <span className={moreHintClass}>↑ 더보기</span> : null}
-        </div>
-      ) : null}
-      <div className={`relative w-full ${resolvedListHeight}`}>
+  const renderScrollHints = () => (scrollUi.scrollable ? (
+    <>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-1 bottom-1 w-[5px] rounded-full bg-white/15 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
+      >
         <div
-          ref={listRef}
-          className={`h-full overflow-y-scroll ${CUSTOM_SCROLL_CLASS} pl-2.5`}
-          role="listbox"
-          aria-label="나라·지역 탐색"
-          onScroll={updateScrollHint}
-        >
+          className="absolute inset-x-0 rounded-full bg-gradient-to-b from-white/65 to-white/30 shadow-[0_0_6px_rgba(255,255,255,0.2)]"
+          style={{
+            top: `${scrollUi.thumbTop}%`,
+            height: `${scrollUi.thumbHeight}%`,
+          }}
+        />
+      </div>
+      {scrollUi.moreAbove ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-7 rounded-t-xl bg-gradient-to-b from-black/55 via-black/20 to-transparent"
+        />
+      ) : null}
+      {scrollUi.moreBelow ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-7 rounded-b-xl bg-gradient-to-t from-black/55 via-black/20 to-transparent"
+        />
+      ) : null}
+    </>
+  ) : null);
+
+  const renderModeList = (ariaLabel, items) => (
+    <div
+      className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
+      {...(anchorListToBottom ? isolateMapTouchProps : {})}
+    >
+      {usesDynamicMaxHeight ? (
+        <div className="relative w-full">
           <div
-            className={`flex min-h-full flex-col gap-1.5 ${
-              anchorListToBottom ? 'justify-end' : ''
-            }`}
+            ref={listRef}
+            className={`overflow-y-auto ${anchorListToBottom ? MOBILE_LIST_SCROLL_CLASS : GLASS_SCROLL_CLASS} pl-2.5`}
+            style={listHeightStyle}
+            role="listbox"
+            aria-label={ariaLabel}
+            onScroll={updateScrollHint}
+            {...(anchorListToBottom ? isolateMapTouchProps : {})}
           >
-            {regions.map((region) => {
-              const isActive = selectedRegionId === region.id;
-              return (
-                <button
-                  key={region.id}
-                  type="button"
-                  role="option"
-                  aria-selected={isActive}
-                  onClick={() => onSelectRegion?.(region)}
-                  className={`w-[4.75rem] md:w-[5.5rem] shrink-0 rounded-xl border bg-black/55 px-2 py-2 text-left backdrop-blur-md shadow-lg transition-all active:scale-[0.97] ${
-                    isActive ? tone.active : tone.idle
-                  }`}
-                >
-                  <span className="block text-[11px] md:text-xs font-bold leading-tight tracking-tight break-keep">
-                    {region.labelKo}
-                  </span>
-                </button>
-              );
+            <div className="flex flex-col gap-1.5">
+              {items}
+            </div>
+          </div>
+          {renderScrollHints()}
+        </div>
+      ) : (
+        <div className={listShellClass} style={listShellStyle}>
+          <div
+            ref={listRef}
+            className={`h-full overflow-y-auto ${anchorListToBottom ? MOBILE_LIST_SCROLL_CLASS : GLASS_SCROLL_CLASS} pl-2.5`}
+            role="listbox"
+            aria-label={ariaLabel}
+            onScroll={updateScrollHint}
+            {...(anchorListToBottom ? isolateMapTouchProps : {})}
+          >
+            <div
+              className={`flex min-h-full flex-col gap-1.5 ${
+                anchorItemsToBottom ? 'justify-end' : ''
+              }`}
+            >
+              {items}
+            </div>
+          </div>
+          {renderScrollHints()}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderSeaBasinChip = (basin, { compact = false, isActive = false } = {}) => {
+    const basinLabel = localizedSeaBasinChipLabel(i18n.language, basin);
+    return (
+      <button
+        key={basin.id}
+        type="button"
+        role="option"
+        aria-selected={isActive}
+        onClick={() => onSelectSeaBasin?.(basin)}
+        className={`${compact ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]' : 'w-[4.75rem] md:w-[5.5rem] rounded-xl px-2 py-2 text-[11px] md:text-xs'} shrink-0 border bg-black/55 text-left backdrop-blur-md shadow-lg transition-all active:scale-[0.97] ${
+          isActive ? tone.active : tone.idle
+        }`}
+      >
+        <span className="block font-bold leading-tight tracking-tight break-keep">
+          {basinLabel}
+        </span>
+      </button>
+    );
+  };
+
+  const renderSeaBasinHierarchy = () => {
+    if (!seaBasinHierarchy) return null;
+    const {
+      topOceans,
+      midRegions,
+      smallSeas,
+      labelSeas,
+      showSmallSeas,
+      omitTopOceans,
+      activeTopOceanId,
+    } = seaBasinHierarchy;
+
+    const showTopOceansInList = !omitTopOceans || subregionPlacement !== 'side';
+
+    return (
+      <>
+        {showTopOceansInList && topOceans.length > 0 ? (
+          <div
+            className="flex flex-wrap gap-1"
+            role="group"
+            aria-label={t('home.globe.oceanGroup')}
+          >
+            {topOceans.map((ocean) => {
+              const isActive = activeTopOceanId === ocean.id;
+              const oceanLabel = localizedSeaOceanLabel(t, ocean);
+              return renderSeaOceanChip(ocean, {
+                isActive,
+                onClick: onSelectTopOcean,
+                compact: true,
+                label: oceanLabel,
+                ariaLabel: t('home.globe.oceanChipAria', { name: oceanLabel }),
+              });
             })}
           </div>
-        </div>
-        {scrollUi.scrollable ? (
-          <>
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute left-0 top-1 bottom-1 w-[5px] rounded-full bg-white/15 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
-            >
-              <div
-                className="absolute inset-x-0 rounded-full bg-gradient-to-b from-white/65 to-white/30 shadow-[0_0_6px_rgba(255,255,255,0.2)]"
-                style={{
-                  top: `${scrollUi.thumbTop}%`,
-                  height: `${scrollUi.thumbHeight}%`,
-                }}
-              />
-            </div>
-            {scrollUi.moreAbove ? (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-0 h-7 rounded-t-xl bg-gradient-to-b from-black/55 via-black/20 to-transparent"
-              />
-            ) : null}
-            {scrollUi.moreBelow ? (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-7 rounded-b-xl bg-gradient-to-t from-black/55 via-black/20 to-transparent"
-              />
-            ) : null}
-          </>
         ) : null}
-      </div>
-      {scrollUi.scrollable ? (
-        <div className="flex h-5 w-full shrink-0 items-center justify-center" aria-hidden="true">
-          {scrollUi.moreBelow ? <span className={moreHintClass}>↓ 더보기</span> : null}
-        </div>
-      ) : null}
-    </div>
+        {midRegions.length > 0 ? (
+          <div className={`flex flex-col gap-1 ${showTopOceansInList && topOceans.length > 0 ? 'mt-1' : ''}`} role="group" aria-label={t('home.globe.midSeaGroup')}>
+            {midRegions.map((basin) => renderSeaBasinChip(basin, {
+              isActive: selectedSeaBasinId === basin.id,
+            }))}
+          </div>
+        ) : null}
+        {showSmallSeas && smallSeas.length > 0 ? (
+          <div className="mt-1 flex flex-col gap-1" role="group" aria-label={t('home.globe.smallSeaGroup')}>
+            {smallSeas.map((basin) => renderSeaBasinChip(basin, {
+              compact: true,
+              isActive: selectedSeaBasinId === basin.id,
+            }))}
+          </div>
+        ) : null}
+        {showSmallSeas && labelSeas.length > 0 ? (
+          <div className="mt-1 flex flex-col gap-1" role="group" aria-label={t('home.globe.wideSeaGroup')}>
+            {labelSeas.map((basin) => renderSeaBasinChip(basin, {
+              compact: true,
+              isActive: selectedSeaBasinId === basin.id,
+            }))}
+          </div>
+        ) : null}
+      </>
+    );
+  };
+
+  const seaList = renderModeList(
+    t('home.globe.seaExplore'),
+    renderSeaBasinHierarchy(),
+  );
+
+  const countryList = renderModeList(
+    t('home.globe.countryExplore'),
+    regions.map((region) => {
+      const isActive = selectedRegionId === region.id;
+      const countryLabel = localizedGlobeCountryLabel(t, region);
+      return (
+        <button
+          key={region.id}
+          type="button"
+          role="option"
+          aria-selected={isActive}
+          onClick={() => onSelectRegion?.(region)}
+          className={`w-[4.75rem] md:w-[5.5rem] shrink-0 rounded-xl border bg-black/55 px-2 py-2 text-left backdrop-blur-md shadow-lg transition-all active:scale-[0.97] ${
+            isActive ? tone.active : tone.idle
+          }`}
+        >
+          <span className="block text-[11px] md:text-xs font-bold leading-tight tracking-tight break-keep">
+            {countryLabel}
+          </span>
+        </button>
+      );
+    }),
   );
 
   if (!renderSideChips) {
     return (
-      <div className={`pointer-events-auto relative ${className}`}>
+      <div
+        className={`pointer-events-auto relative ${className}`}
+        {...(anchorListToBottom ? isolateMapTouchProps : {})}
+      >
         <GlassScrollStyles />
-        {countryList}
+        {isSeaRail ? seaList : countryList}
       </div>
     );
   }
@@ -412,10 +670,11 @@ export default function GlobeFaceRegionRail({
       <div
         className={`flex ${resolvedListHeight} flex-col gap-1 overflow-y-auto ${GLASS_SCROLL_CLASS} pr-1`}
         role="listbox"
-        aria-label="소권역"
+        aria-label={t('home.globe.subregionGroup')}
       >
         {subregions.map((sub) => {
-          const isActive = activeSubregionId === sub.id;
+          const isActive = !selectedTopOceanId && activeSubregionId === sub.id;
+          const subLabel = localizedGlobeSubregionLabel(t, category, sub);
           return (
             <button
               key={sub.id}
@@ -428,13 +687,24 @@ export default function GlobeFaceRegionRail({
               }`}
             >
               <span className="block text-[10px] font-bold leading-tight tracking-tight break-keep">
-                {sub.labelKo}
+                {subLabel}
               </span>
             </button>
           );
         })}
+        {faceSeaOceans.map((ocean) => {
+          const oceanLabel = localizedSeaOceanLabel(t, ocean);
+          return renderSeaOceanChip(ocean, {
+            isActive: selectedTopOceanId === ocean.id,
+            onClick: onSelectTopOcean,
+            compact: true,
+            side: true,
+            label: oceanLabel,
+            ariaLabel: t('home.globe.oceanChipAria', { name: oceanLabel }),
+          });
+        })}
       </div>
-      {countryList}
+      {isSeaRail ? seaList : countryList}
     </div>
   );
 }

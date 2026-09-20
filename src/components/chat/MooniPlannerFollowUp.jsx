@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import { normalizePlacePlannerPath, buildPlacePlannerPath } from '../../utils/placePlannerPath';
 import {
@@ -31,6 +32,7 @@ export default function MooniPlannerFollowUp({
   onPlannerNavigate = null,
   className = '',
 }) {
+  const { t } = useTranslation();
   const focusedPath = normalizePlacePlannerPath(plannerUrl);
   const slugFromPath = focusedPath?.match(/\/place\/([^/?#]+)/)?.[1];
   const basePlannerPath = slugFromPath ? buildPlacePlannerPath(slugFromPath) : focusedPath;
@@ -55,7 +57,7 @@ export default function MooniPlannerFollowUp({
             className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-600/50 bg-gray-800/40 px-3 py-2.5 text-xs font-bold text-gray-200 hover:border-gray-500/60 hover:bg-gray-800/70 transition-colors break-keep pointer-events-auto text-left"
           >
             <MapPin size={14} className="shrink-0 opacity-70" />
-            <span className="flex-1">GATEO 플래너에서 여행 계획 보기</span>
+            <span className="flex-1">{t('mooni.planner.openFull')}</span>
           </button>
         ) : null}
       </div>
@@ -75,7 +77,7 @@ export default function MooniPlannerFollowUp({
   return (
     <div className={`mt-3 space-y-2 w-full ${className}`}>
       <p className="text-[10px] font-bold uppercase tracking-wide text-cyan-400/90 break-keep">
-        플래너에서 확인
+        {t('mooni.planner.heading')}
       </p>
       <div className="flex flex-col gap-2">
         <button
@@ -93,7 +95,7 @@ export default function MooniPlannerFollowUp({
             className={`${baseClass} border-gray-600/50 bg-gray-800/40 text-gray-200 hover:border-gray-500/60 hover:bg-gray-800/70`}
           >
             <MapPin size={14} className="shrink-0 opacity-70" />
-            <span className="flex-1">GATEO 플래너에서 여행 계획 보기</span>
+            <span className="flex-1">{t('mooni.planner.openFull')}</span>
           </button>
         ) : null}
       </div>

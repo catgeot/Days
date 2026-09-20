@@ -1,13 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getLatestRelease } from '../../data/releaseNotes';
-import {
-  setSeenReleaseId,
-  setSessionSnoozedReleaseId,
-  shouldShowRelease,
-} from '../lib/siteUpdateStorage';
 
 const POLL_MS = 10 * 60 * 1000;
-const latestRelease = getLatestRelease();
 
 async function fetchBuildId() {
   const res = await fetch(`/version.json?ts=${Date.now()}`, { cache: 'no-store' });
@@ -16,10 +9,8 @@ async function fetchBuildId() {
   return data?.buildId ?? null;
 }
 
+/** PROD 배포 감지 전용. 릴리스 노트 자동 팝업은 쓰지 않음(FooterModal Updates). */
 export function useSiteUpdateBanner() {
-  const [releaseVisible, setReleaseVisible] = useState(() =>
-    shouldShowRelease(latestRelease?.id),
-  );
   const [refreshVisible, setRefreshVisible] = useState(false);
   const pageLoadBuildId = useRef(null);
 
@@ -39,7 +30,6 @@ export function useSiteUpdateBanner() {
 
       if (buildId !== pageLoadBuildId.current) {
         setRefreshVisible(true);
-        setReleaseVisible(false);
       }
     }
 
@@ -52,27 +42,17 @@ export function useSiteUpdateBanner() {
     };
   }, []);
 
-  const closeRelease = useCallback(() => {
-    if (latestRelease?.id) setSessionSnoozedReleaseId(latestRelease.id);
-    setReleaseVisible(false);
-  }, []);
-
-  const dismissPermanent = useCallback(() => {
-    if (latestRelease?.id) setSeenReleaseId(latestRelease.id);
-    setReleaseVisible(false);
+  const closeRefresh = useCallback(() => {
+    setRefreshVisible(false);
   }, []);
 
   const reload = useCallback(() => {
     window.location.reload();
   }, []);
 
-  const mode = refreshVisible ? 'refresh' : releaseVisible ? 'release' : null;
-
   return {
-    mode,
-    release: latestRelease,
-    closeRelease,
-    dismissPermanent,
+    refreshVisible,
+    closeRefresh,
     reload,
   };
 }

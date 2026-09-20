@@ -3,6 +3,8 @@
  * event.point · map.project 와 동일한 CSS 픽셀 좌표계.
  */
 
+import { isMultiTouchMapEvent } from './homeGlobePageZoomLock';
+
 function getGlobeRadiusPx(map) {
   const tr = map?.transform;
   if (tr && typeof tr.getGlobeRadius === 'function') {
@@ -79,6 +81,15 @@ export function bindGlobeSpaceDragGuard(map) {
   let dragBlocked = false;
 
   const onPointerDown = (event) => {
+    if (isMultiTouchMapEvent(event)) {
+      dragBlocked = false;
+      try {
+        map.dragPan.enable();
+      } catch {
+        // ignore
+      }
+      return;
+    }
     const point = pickEventPoint(event);
     if (!point) return;
     if (isScreenPointOnGlobe(map, point)) {
@@ -105,6 +116,7 @@ export function bindGlobeSpaceDragGuard(map) {
   };
 
   const onDragStart = (event) => {
+    if (isMultiTouchMapEvent(event)) return;
     const point = pickEventPoint(event);
     if (!point || isScreenPointOnGlobe(map, point)) return;
     try {

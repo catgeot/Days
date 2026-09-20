@@ -73,6 +73,44 @@ export const GLOBE_FACE_REGION_DEFAULT_ZOOM = 4.2;
 export const GLOBE_FACE_REGION_FLY_MS = 1800;
 export const GLOBE_FACE_REGION_MAX_ZOOM = 6.4;
 
+/** fitBounds 전 bbox 확장 — 국가 전체 윤곽이 화면 안에 들어오도록 */
+export const GLOBE_FACE_REGION_SILHOUETTE_MARGIN = 0.18;
+
+/** estimateZoomForBbox 대비 추가 pullback (실루엣 가독) */
+export const GLOBE_FACE_REGION_SILHOUETTE_ZOOM_PULLBACK = 0.5;
+
+/** cameraForBounds padding — maxZoom 산출 시 동일 값으로 유효 뷰포트를 맞춘다 */
+export const GLOBE_FACE_REGION_CAMERA_PADDING_MOBILE = {
+  top: 80,
+  bottom: 200,
+  left: 100,
+  right: 40,
+};
+
+export const GLOBE_FACE_REGION_CAMERA_PADDING_DESKTOP = {
+  top: 80,
+  bottom: 80,
+  left: 220,
+  right: 64,
+};
+
+/**
+ * fitBounds padding을 반영한 실루엣 줌 계산용 뷰포트.
+ * @param {{ width?: number, height?: number }} viewport
+ * @param {{ top?: number, bottom?: number, left?: number, right?: number }} padding
+ */
+export function resolveSilhouetteViewport(viewport = {}, padding = {}) {
+  const width = Math.max(
+    (Number(viewport.width) || 0) - (Number(padding.left) || 0) - (Number(padding.right) || 0),
+    200,
+  );
+  const height = Math.max(
+    (Number(viewport.height) || 0) - (Number(padding.top) || 0) - (Number(padding.bottom) || 0),
+    200,
+  );
+  return { width, height };
+}
+
 /** @type {Map<string, { globe: number, count: number, maxPop: number }> | null} */
 let spotCountryStatsCache = null;
 
@@ -207,20 +245,70 @@ export function estimateZoomForBbox(bbox, viewport = {}) {
   return Math.min(zoomX, zoomY) - 0.35;
 }
 
-export function resolveFaceRegionCameraBounds(region, viewport = {}) {
+/**
+ * @param {[number, number, number, number]} bbox
+ * @param {number} [margin]
+ */
+export function expandBboxForSilhouette(bbox, margin = GLOBE_FACE_REGION_SILHOUETTE_MARGIN) {
+  if (!Array.isArray(bbox) || bbox.length !== 4) return bbox;
+  const [west, south, east, north] = bbox;
+  if (![west, south, east, north].every((n) => Number.isFinite(n))) return bbox;
+  const lngSpan = Math.max(Math.abs(east - west), 0.05);
+  const latSpan = Math.max(Math.abs(north - south), 0.05);
+  return [
+    west - lngSpan * margin,
+    south - latSpan * margin,
+    east + lngSpan * margin,
+    north + latSpan * margin,
+  ];
+}
+
+/**
+ * bbox 크기에 따라 실루엣(전체 윤곽)용 maxZoom — tight fit으로 화면 밖으로 잘리는 것 방지.
+ * @param {[number, number, number, number]} bbox
+ */
+export function resolveSilhouetteMaxZoom(bbox, viewport = {}) {
+  if (!Array.isArray(bbox) || bbox.length !== 4) return GLOBE_FACE_REGION_MAX_ZOOM;
+  const [west, south, east, north] = bbox;
+  if (![west, south, east, north].every((n) => Number.isFinite(n))) {
+    return GLOBE_FACE_REGION_MAX_ZOOM;
+  }
+
+  const lngSpan = Math.max(Math.abs(east - west), 0.05);
+  const latSpan = Math.max(Math.abs(north - south), 0.05);
+  const area = lngSpan * latSpan;
+  const estimated = estimateZoomForBbox(bbox, viewport) - GLOBE_FACE_REGION_SILHOUETTE_ZOOM_PULLBACK;
+
+  if (lngSpan > 40 || latSpan > 35 || area > 800) return Math.min(3.8, estimated);
+  if (lngSpan > 18 || latSpan > 15 || area > 200) return Math.min(4.8, estimated);
+  if (lngSpan > 8 || latSpan > 8 || area > 60) return Math.min(5.4, estimated);
+  if (lngSpan > 3 || latSpan > 3 || area > 12) return Math.min(5.8, estimated);
+  return Math.min(GLOBE_FACE_REGION_MAX_ZOOM, estimated);
+}
+
+export function resolveFaceRegionCameraBounds(region, viewport = {}, padding = null) {
   const countryBbox = region?.bbox;
   const hubBbox = region?.hubBbox;
-  const maxZoom = GLOBE_FACE_REGION_MAX_ZOOM;
 
-  if (Array.isArray(hubBbox) && hubBbox.length === 4) {
-    return { bounds: hubBbox, maxZoom, usedHub: true };
+  const rawBounds = Array.isArray(hubBbox) && hubBbox.length === 4
+    ? hubBbox
+    : Array.isArray(countryBbox) && countryBbox.length === 4
+      ? countryBbox
+      : null;
+
+  if (!rawBounds) {
+    return { bounds: null, maxZoom: GLOBE_FACE_REGION_MAX_ZOOM, usedHub: false };
   }
 
-  if (Array.isArray(countryBbox) && countryBbox.length === 4) {
-    return { bounds: countryBbox, maxZoom, usedHub: false };
-  }
+  const silhouetteViewport = padding
+    ? resolveSilhouetteViewport(viewport, padding)
+    : viewport;
 
-  return { bounds: null, maxZoom, usedHub: false };
+  return {
+    bounds: expandBboxForSilhouette(rawBounds),
+    maxZoom: resolveSilhouetteMaxZoom(rawBounds, silhouetteViewport),
+    usedHub: rawBounds === hubBbox,
+  };
 }
 
 /**

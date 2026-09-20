@@ -1,8 +1,11 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { citiesData } from '../data/citiesData.js';
 import { formatUrlName } from './formatUrlName.js';
-import { resolveHubPlaceFromSlug } from './cityAttractionHubs.js';
-import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces.js';
+import { resolveHubPlaceFromSlug, resolveCityAttractionHub, resolveHubAttraction } from './cityAttractionHubs.js';
+import { resolveSettlementPlaceFromSlug, resolveSettlement } from './mapboxSettlementPlaces.js';
+import { resolveGlobeCountryIdFromLabel } from './globeCountryCatalog.js';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay.js';
+import { localizedGlobeCountryLabel } from '../../../i18n/globeUi.js';
 import {
   buildSpotLookup,
   resolveTravelSpotFromPlaceId,
@@ -255,4 +258,34 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
   }
 
   return null;
+}
+
+const HANGUL_RE = /[\u3131-\u318e\uac00-\ud7a3]/;
+
+/** LogoPanel 버킷 카드 — locale별 destination 표시 (SSOT·정착지·나라 칩 폴백) */
+export function getSavedTripDisplayName(trip, locale, t) {
+  if (!trip) return '';
+  const location = hydrateLocationFromSavedTrip(trip);
+  let label = getLocalizedPlaceName(location, locale);
+  if (locale !== 'en') return label || trip.destination || '';
+  if (label && !HANGUL_RE.test(label)) return label;
+
+  const dest = String(trip.destination || '').trim();
+  if (!dest) return label;
+
+  const settlementEn = resolveSettlement(dest)?.settlement?.name_en;
+  if (settlementEn) return settlementEn;
+
+  const attractionEn = resolveHubAttraction(dest)?.attraction?.name_en;
+  if (attractionEn) return attractionEn;
+
+  const hubEn = resolveCityAttractionHub(dest)?.name_en;
+  if (hubEn) return hubEn;
+
+  const countryId = resolveGlobeCountryIdFromLabel(dest);
+  if (countryId && t) {
+    return localizedGlobeCountryLabel(t, { id: countryId, labelKo: dest });
+  }
+
+  return label || dest;
 }

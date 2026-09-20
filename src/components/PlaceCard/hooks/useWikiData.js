@@ -4,7 +4,9 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '../../../shared/api/supabase';
-import { buildPlaceWikiIdCandidates, getPlaceStableKey } from '../../../utils/travelSpotResolve';
+import { getPlaceStableKey } from '../../../utils/travelSpotResolve';
+import { normalizeAppLocale } from '../../../i18n/constants';
+import { buildPlaceWikiLocaleCandidates, mergePlaceWikiRows } from '../common/magazineLocale';
 
 const isDev = import.meta.env.DEV;
 
@@ -13,17 +15,7 @@ function isWikiRowGenerating(row) {
   return row?.ai_practical_info === '[[LOADING]]' || row?.summary === '[[LOADING]]';
 }
 
-function magazineScore(row) {
-  if (!row) return -1;
-  let score = 0;
-  const summary = row.summary;
-  if (summary && summary !== '[[LOADING]]' && String(summary).trim()) score += 4;
-  if (Array.isArray(row.sections) && row.sections.length > 0) score += 4;
-  if (row.ai_practical_info && row.ai_practical_info !== '[[LOADING]]') score += 1;
-  return score;
-}
-
-/** place_wiki 후보 중 완성도·순위 최선 행 (상위 도시 스케치 존재 확인에도 재사용) */
+/** place_wiki 후보 중 매거진·왓슨 병합 최선 행 */
 export async function fetchPlaceWikiBestRow(candidates) {
   if (!candidates?.length) return null;
   const { data, error } = await supabase
@@ -31,44 +23,24 @@ export async function fetchPlaceWikiBestRow(candidates) {
     .select('*')
     .in('place_id', candidates);
   if (error) throw error;
-  if (!data?.length) return null;
-
-  // 후보가 여러 행에 매칭될 때 빈 slug 껍데기보다 매거진 완성 행 우선
-  // (예: barcelona 빈 행 vs 레거시 한글 행)
-  let best = data[0];
-  let bestScore = magazineScore(best);
-  let bestRank = candidates.indexOf(best.place_id);
-  for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    const score = magazineScore(row);
-    const rank = candidates.indexOf(row.place_id);
-    const rankSafe = rank < 0 ? 999 : rank;
-    const bestRankSafe = bestRank < 0 ? 999 : bestRank;
-    if (score > bestScore || (score === bestScore && rankSafe < bestRankSafe)) {
-      best = row;
-      bestScore = score;
-      bestRank = rank;
-    }
-  }
-  return best;
+  return mergePlaceWikiRows(data, candidates);
 }
 
 async function fetchWikiRow(candidates) {
   return fetchPlaceWikiBestRow(candidates);
 }
 
-export const useWikiData = (location, mediaMode) => {
+export const useWikiData = (location, mediaMode, locale = 'ko') => {
   const [wikiData, setWikiData] = useState(null);
   const [isWikiLoading, setIsWikiLoading] = useState(false);
   const wikiDataRef = useRef(null);
   const prevPlaceKeyRef = useRef('');
 
   const placeKey = useMemo(() => getPlaceStableKey(location), [location]);
-  // location 객체 참조 변경만으로 후보 배열이 바뀌지 않게 placeKey에 고정
   const dbCandidates = useMemo(
-    () => buildPlaceWikiIdCandidates(location),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- placeKey가 같으면 동일 장소
-    [placeKey],
+    () => buildPlaceWikiLocaleCandidates(location, locale),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- placeKey·locale가 같으면 동일 장소
+    [placeKey, normalizeAppLocale(locale)],
   );
   const candidatesKey = useMemo(() => dbCandidates.join('\0'), [dbCandidates]);
 
@@ -129,7 +101,6 @@ export const useWikiData = (location, mediaMode) => {
     };
 
     const fetchWikiData = async () => {
-      // 이미 같은 장소 데이터가 있으면 스켈레톤으로 비우지 않음 (복귀 깜박임 방지)
       const keepVisible = Boolean(wikiDataRef.current) && !placeChanged;
       if (!keepVisible) {
         setIsWikiLoading(true);
@@ -211,7 +182,6 @@ export const useWikiData = (location, mediaMode) => {
     };
   }, [wikiData?.ai_practical_info, wikiData?.summary, candidatesKey, mediaMode, dbCandidates]);
 
-  // Edge 매거진 생성 완료 직후 즉시 재조회 (폴링 대기 단축)
   useEffect(() => {
     if (mediaMode !== 'WIKI' || !placeKey) return undefined;
 
@@ -230,6 +200,26 @@ export const useWikiData = (location, mediaMode) => {
 
     window.addEventListener('magazine-updated', onMagazineUpdated);
     return () => window.removeEventListener('magazine-updated', onMagazineUpdated);
+  }, [mediaMode, placeKey, candidatesKey, dbCandidates]);
+
+  useEffect(() => {
+    if (mediaMode !== 'WIKI' || !placeKey) return undefined;
+
+    const onWatsonUpdated = async (e) => {
+      const updatedId = String(e.detail?.placeId ?? '').trim();
+      if (updatedId && !dbCandidates.includes(updatedId) && updatedId !== placeKey) {
+        return;
+      }
+      try {
+        const data = await fetchWikiRow(dbCandidates);
+        if (data) setWikiData(data);
+      } catch (err) {
+        console.error('[useWikiData] watson-updated 재조회 실패:', err);
+      }
+    };
+
+    window.addEventListener('watson-updated', onWatsonUpdated);
+    return () => window.removeEventListener('watson-updated', onWatsonUpdated);
   }, [mediaMode, placeKey, candidatesKey, dbCandidates]);
 
   return { wikiData, isWikiLoading };

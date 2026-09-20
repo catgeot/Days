@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExternalLink, MapPin, Plane } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import TwelveGoSearchWidget from '../PlaceCard/tabs/planner/components/TwelveGoSearchWidget';
 import {
   getPartnerLinkRel,
@@ -68,6 +69,7 @@ const BookingActionCards = ({
   onPlannerNavigate = null,
   className = '',
 }) => {
+  const { t } = useTranslation();
   const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
 
   if (!actions.length) return null;
@@ -157,7 +159,7 @@ const BookingActionCards = ({
     return (
       <div className="space-y-2">
         <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-400/90 break-keep">
-          교통 · 티켓
+          {t('mooni.booking.transportSection')}
         </p>
 
         {tripActions.map((action, idx) => (
@@ -240,7 +242,7 @@ const BookingActionCards = ({
     return (
       <div className="space-y-2 rounded-lg border border-amber-500/15 bg-amber-950/20 p-2.5">
         <p className="text-[10px] font-bold uppercase tracking-wide text-amber-400/90 break-keep">
-          출발 전 준비
+          {t('mooni.booking.prepSection')}
         </p>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {prepActions.map((action, idx) => (
@@ -295,12 +297,12 @@ const BookingActionCards = ({
             className={`${plannerLinkClass} bg-transparent border-0 p-0 cursor-pointer text-left`}
           >
             <MapPin size={12} className="shrink-0" />
-            플래너에서 더 많은 예약 옵션 보기
+            {t('mooni.booking.morePlannerOptions')}
           </button>
         ) : (
           <Link to={plannerPath} className={plannerLinkClass}>
             <MapPin size={12} className="shrink-0" />
-            플래너에서 더 많은 예약 옵션 보기
+            {t('mooni.booking.morePlannerOptions')}
           </Link>
         )
       )}

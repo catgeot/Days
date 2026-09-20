@@ -2,6 +2,8 @@ User-agent: *
 Allow: /
 Allow: /place/
 Allow: /explore/
+Allow: /korea
+Allow: /korea/
 Allow: /logbook
 Allow: /p/
 Disallow: /auth/

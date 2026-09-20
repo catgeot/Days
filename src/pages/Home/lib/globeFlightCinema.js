@@ -23,7 +23,35 @@ const FLIGHT_SPEED_KMH = 850;
 /** Bar·graph hub 후보 — 단일 leg haversine 상한(일반 장거리 직항 ~14–15h + 여유). */
 export const MAX_FLIGHT_LEG_HOURS = 16;
 /** SSOT: `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` in affiliate.js */
-const DEFAULT_ORIGIN_IATA = 'ICN';
+export const DEFAULT_FLIGHT_ORIGIN_IATA = 'ICN';
+const DEFAULT_ORIGIN_IATA = DEFAULT_FLIGHT_ORIGIN_IATA;
+
+/**
+ * routeIatas SSOT — origin IATA가 비어 있으면 fallback(기본 ICN)으로 기점을 보장.
+ * @param {string} [originIata]
+ * @param {string[]} [hubIatas]
+ * @param {string} [destIata]
+ * @param {string} [fallbackOrigin]
+ */
+export function normalizeFlightRouteIataChain(
+  originIata,
+  hubIatas = [],
+  destIata,
+  fallbackOrigin = DEFAULT_FLIGHT_ORIGIN_IATA
+) {
+  const fallback = String(fallbackOrigin || DEFAULT_FLIGHT_ORIGIN_IATA).trim().toUpperCase();
+  const origin = String(originIata || fallback).trim().toUpperCase();
+  const dest = String(destIata || '').trim().toUpperCase();
+  const hubs = (hubIatas ?? [])
+    .map((code) => String(code || '').trim().toUpperCase())
+    .filter((code) => code.length === 3 && code !== origin && code !== dest);
+  if (origin.length !== 3) {
+    if (dest.length !== 3) return [];
+    return [fallback, ...hubs, dest];
+  }
+  if (dest.length !== 3) return [origin, ...hubs];
+  return [origin, ...hubs, dest];
+}
 const ROUTE_FLY_ZOOM_MAX = 2.35;
 /** Short-arc |lat| above this → prefer long arc or override waypoints (ICN→LPB Arctic loop). */
 const POLAR_AVOID_ABS_LAT = 58;
@@ -38,6 +66,31 @@ export function getAirportHubCoords(iata) {
   const hub = RENTAL_AIRPORT_HUBS.find((h) => h.iata === code);
   if (hub) return { iata: hub.iata, lng: hub.lng, lat: hub.lat };
   return getAirportsIndexCoords(code);
+}
+
+/**
+ * 항공 시네마 HTML Marker용 — routeIatas → 좌표·역할.
+ * Mapbox symbol 레이어는 i18n setLanguage 후 continuePlacement 크래시 → Marker 사용.
+ * @param {string[]} routeIatas
+ * @returns {{ iata: string, lng: number, lat: number, role: 'origin' | 'hub' | 'dest' }[]}
+ */
+export function buildFlightCinemaAirportMarkers(routeIatas = []) {
+  const codes = (routeIatas ?? [])
+    .map((code) => String(code || '').trim().toUpperCase())
+    .filter((code) => code.length === 3);
+  if (!codes.length) return [];
+
+  const origin = codes[0];
+  const dest = codes[codes.length - 1];
+
+  return codes
+    .map((iata) => {
+      const hub = getAirportHubCoords(iata);
+      if (!hub) return null;
+      const role = iata === origin ? 'origin' : iata === dest ? 'dest' : 'hub';
+      return { iata, lng: hub.lng, lat: hub.lat, role };
+    })
+    .filter(Boolean);
 }
 
 /** @param {{ lat: number, lng: number }} a @param {{ lat: number, lng: number }} b */
@@ -56,7 +109,7 @@ export function haversineKm(a, b) {
 /** @param {{ lat: number, lng: number }} origin @param {{ lat: number, lng: number }} dest */
 export function estimateFlightHours(origin, dest) {
   const km = haversineKm(origin, dest);
-  return Math.max(1, Math.round(km / FLIGHT_SPEED_KMH));
+  return Math.max(1, Math.ceil(km / FLIGHT_SPEED_KMH));
 }
 
 /** @param {{ lat: number, lng: number }[]} chain origin → hubs → dest */
@@ -66,7 +119,7 @@ export function estimateFlightHoursChain(chain) {
   for (let i = 0; i < chain.length - 1; i += 1) {
     totalKm += haversineKm(chain[i], chain[i + 1]);
   }
-  return Math.max(1, Math.round(totalKm / FLIGHT_SPEED_KMH));
+  return Math.max(1, Math.ceil(totalKm / FLIGHT_SPEED_KMH));
 }
 
 /**
@@ -382,7 +435,7 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
   const originIata = options.originIata ?? DEFAULT_ORIGIN_IATA;
   const normalizedOrigin = String(originIata).trim().toUpperCase();
   const destIata = options.destIata;
-  const explicitHubsFromOptions = Array.isArray(options.hubIatas) && options.hubIatas.length > 0;
+  const explicitHubsFromOptions = Array.isArray(options.hubIatas);
 
   const manualHubIatas = explicitHubsFromOptions
     ? options.hubIatas
@@ -399,9 +452,11 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
   // explicitDirect(예: paris ICN↔CDG)는 ICN 출발만 — BDA 등 Edge hub chain과 충돌 방지
   const explicitDirect =
     hasExplicitDirectFlightRoute(location) && normalizedOrigin === DEFAULT_ORIGIN_IATA;
-  const hasManualOverride = explicitDirect
-    || hasManualFlightRouteHubOverride(location)
-    || manualHubIatas.length > 0;
+  const hasManualOverride =
+    explicitHubsFromOptions ||
+    explicitDirect ||
+    hasManualFlightRouteHubOverride(location) ||
+    manualHubIatas.length > 0;
   let routeSource = hasManualOverride ? 'override' : null;
 
   if (explicitDirect && !explicitHubsFromOptions) {
@@ -542,15 +597,18 @@ export function buildRouteLegEndIndices(anchors, hubIatas, pointsPerSegment, arc
  */
 export function buildFlightRouteLineWithLegs(originLngLat, destLngLat, options = {}) {
   const points = options.points ?? 80;
+  const explicitHubsFromOptions = Array.isArray(options.hubIatas);
   const plan = resolveFlightRoutePlan(originLngLat, destLngLat, options.location, {
     originIata: options.originIata,
     destIata: options.destIata,
-    hubIatas: options.hubIatas,
+    ...(explicitHubsFromOptions ? { hubIatas: options.hubIatas } : {}),
     essentialGuide: options.essentialGuide,
   });
   const { anchors } = plan;
-  const hubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
+  const hubIatas = explicitHubsFromOptions
     ? options.hubIatas
+        .map((c) => String(c ?? '').trim().toUpperCase())
+        .filter((c) => c.length === 3)
     : plan.hubIatas;
   const pps = Math.max(24, Math.round(points / Math.max(1, anchors.length - 1)));
   const gcLine = buildGreatCircleChain(anchors, pps);

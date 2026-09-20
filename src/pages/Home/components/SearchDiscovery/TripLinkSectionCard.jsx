@@ -21,8 +21,8 @@ const TripLinkSectionCard = ({ pkg, onClick }) => {
     // 필요시 다른 fallback 속성
   };
 
-  const { images, isImgLoading } = usePlaceGallery(dummySpot);
-  const bgImgUrl = images && images.length > 0 ? (images[0].urls?.regular || images[0].url) : null;
+  const { images, isImgLoading } = usePlaceGallery(dummySpot, { thumbnailOnly: true });
+  const bgImgUrl = images && images.length > 0 ? (images[0].urls?.regular || images[0].urls?.small || images[0].url) : null;
 
   useEffect(() => {
     const observer = new IntersectionObserver(

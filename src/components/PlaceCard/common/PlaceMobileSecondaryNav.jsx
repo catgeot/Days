@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ImageIcon, Play, PenTool, BookOpen, Briefcase } from 'lucide-react';
 
 /**
@@ -12,6 +13,8 @@ const PlaceMobileSecondaryNav = ({
   onOpenPackage,
   placement = 'scroll'
 }) => {
+  const { t } = useTranslation();
+
   if (mediaMode === 'PLANNER') {
     if (placement === 'header') return null;
     if (!matchedPackage) return null;
@@ -23,7 +26,7 @@ const PlaceMobileSecondaryNav = ({
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:from-purple-500 hover:to-blue-500 transition-colors"
         >
           <Briefcase size={14} />
-          패키지 여행 둘러보기
+          {t('place.nav.packageBrowse')}
         </button>
       </div>
     );
@@ -62,7 +65,9 @@ const PlaceMobileSecondaryNav = ({
             className={`w-4 h-4 group-hover:scale-110 transition-transform ${isLightScrollChrome ? 'text-emerald-600' : 'text-emerald-400'}`}
           />
         )}
-        <span className="text-xs font-bold whitespace-nowrap">{mediaMode === 'WIKI' ? '갤러리 복귀' : '여행 스케치'}</span>
+        <span className="text-xs font-bold whitespace-nowrap">
+          {mediaMode === 'WIKI' ? t('place.nav.galleryBack') : t('place.nav.travelSketch')}
+        </span>
       </button>
       <button
         type="button"
@@ -76,7 +81,9 @@ const PlaceMobileSecondaryNav = ({
         ) : (
           <Play fill="currentColor" className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
         )}
-        <span className="text-xs font-bold whitespace-nowrap">{mediaMode === 'VIDEO' ? '갤러리 복귀' : '유튜브 영상'}</span>
+        <span className="text-xs font-bold whitespace-nowrap">
+          {mediaMode === 'VIDEO' ? t('place.nav.galleryBack') : t('place.nav.youtube')}
+        </span>
       </button>
       <button
         type="button"
@@ -92,7 +99,9 @@ const PlaceMobileSecondaryNav = ({
             className={`w-4 h-4 group-hover:scale-110 transition-transform ${isLightScrollChrome ? 'text-purple-600' : 'text-purple-400'}`}
           />
         )}
-        <span className="text-xs font-bold whitespace-nowrap">{mediaMode === 'REVIEWS' ? '갤러리 복귀' : '리뷰'}</span>
+        <span className="text-xs font-bold whitespace-nowrap">
+          {mediaMode === 'REVIEWS' ? t('place.nav.galleryBack') : t('place.nav.reviews')}
+        </span>
       </button>
     </div>
   );

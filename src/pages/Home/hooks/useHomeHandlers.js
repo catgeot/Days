@@ -8,17 +8,28 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
+import { isStreetishStayLabel, queryLooksLikeStayPoint, resolveKoUniversitySatelliteAlias, resolveUniversitySearchHits, syntheticUniversitySatellitePlace } from '../../../utils/mrtStayQuery.js';
+import {
+  isLikelyMoodQuery,
+  shouldSkipGeocodeForMood as shouldSkipGeocodeForMoodIntent,
+  isWeakGeocodeHitForMood,
+} from '../lib/moodSearchIntent';
 import {
   collectKoHomonymPlaceCandidates,
   isKoHomonymPlaceSearchQuery,
 } from '../lib/koHomonymRiSearch';
-import { formatUrlName, pickUrlSafeEnglishName } from '../lib/formatUrlName';
+import {
+  collectKoreaHomonymDisambiguationCandidates,
+  shouldOfferKoreaHomonymDisambiguation,
+} from '../lib/detectHomonymLocation.js';
+import { formatUrlName, pickUrlSafeEnglishName, isUrlSafeEnglishLabel, isEphemeralSlug } from '../lib/formatUrlName';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
+import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
 import {
   mergeCanonicalTravelSpot,
@@ -32,26 +43,46 @@ import {
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
+import { logCurationHandoff } from '../../../shared/cloudPreview/curationHandoffDebug';
 import {
   resolveCityAttractionHub,
   resolveHubAttraction,
   attractionToPlacePin,
   makeDisambiguationResult,
 } from '../lib/cityAttractionHubs.js';
+import {
+  firstPassHitToUiPlace,
+  resolveKoreaDestinationFirstPassSync,
+} from '../lib/resolveKoreaDestinationFirstPass.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
+import { pickSeaBasinCurationSpot } from '../lib/seaBasinResolve.js';
 import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js';
 import {
   buildHubCandidatesForEnter,
   buildCuratedEnterDisambiguation,
+  buildHybridSearchSuggestions,
   buildLocalSearchSuggestions,
   ensureDisambiguation,
   locationToChoiceCandidate,
+  prependLocalScenicToHubCandidates,
 } from '../lib/searchSuggestions.js';
-import { searchBoxForward } from '../lib/mapboxSearchBox.js';
+import {
+  collectKoreaPoiTypeSearchCandidates,
+} from '../lib/koreaPoiTypeSearch.js';
+import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
+import {
+  overlayGeocodeLatinOnHits,
+  samePlaceCenter,
+} from '../lib/uiPlaceAssetQuery.js';
 import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
+import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
+import {
+  overlayGeoFieldsOnVisitedSpots,
+  visitedSpotNeedsGeoCountry,
+} from '../lib/visitedPlaceSearch.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -140,21 +171,6 @@ const isAdminRegionName = (name) => {
   return /(?:gun|si|gu|-gun|-si|city\s*hall|town\s*hall)$/i.test(n);
 };
 const MOOD_VARIANT_RECENT_COOLDOWN_HOURS = 24;
-const MOOD_HINT_KEYWORDS = [
-  '감정', '기분', '마음', '분위기', '무드',
-  '우울', '우울해', '울적', '침울', '슬픔', '슬퍼', '눈물',
-  '외로', '쓸쓸', '적적', '공허', '허무', '허전',
-  '번아웃', '지침', '지쳤', '피곤', '피폐', '무기력', '탈진', '현타', '현실자각',
-  '스트레스', '압박', '불안', '초조', '답답', '갑갑', '멘붕', '멘탈',
-  '화남', '화나', '짜증', '분노', '빡침',
-  '설렘', '설레', '두근', '흥분', '떨림', '신남', '행복',
-  '그리움', '향수', '추억', '보고싶', '회상',
-  '힐링', '위로', '치유', '회복', '휴식', '쉼', '충전', '리프레시',
-  '도망가고 싶다', '떠나고 싶다', '어디론가 가고 싶다', '바람 쐬고 싶다', '잠깐 쉬고 싶다',
-  '놀고 싶다', '재밌는 데', '감성', '센치', '낭만', '로맨틱',
-  'burnout', 'lonely', 'sad', 'angry', 'anxious', 'stressed', 'overwhelmed', 'tired',
-  'excited', 'nostalgic', 'healing', 'rest', 'calm', 'refresh', 'escape'
-];
 
 const normalizeSearchKey = (s) => String(s || '').replace(/\s+/g, '').toLowerCase();
 
@@ -209,6 +225,9 @@ function findThemeKeywordHits(query) {
 }
 
 function pickThemeCurationSpot(query, category) {
+  const seaSpot = pickSeaBasinCurationSpot(query, category);
+  if (seaSpot) return seaSpot;
+
   const hits = findThemeKeywordHits(query);
   if (!hits.length) return null;
 
@@ -419,7 +438,8 @@ export function useHomeHandlers({
     if (!loc) return;
 
     // 지구본은 과거 onMarkerClick(loc, 'globe') 호출 — 문자열이면 옵션 무시
-    const { refreshRelated = true } = typeof options === 'object' && options ? options : {};
+    const { refreshRelated = true, deferGlobeFocus = false } =
+      typeof options === 'object' && options ? options : {};
 
     const name = loc.name || "Selected";
     const finalLoc = prepareResolvedLocation({
@@ -430,29 +450,43 @@ export function useHomeHandlers({
       category: loc.category || category
     });
 
-    /** SSOT 미등록(살타 등) + 구즐겨찾기 Explore — 역지오코딩으로 국가 자가치유 */
-    const scheduleCountryHeal = (pin) => {
-      if (!isPlaceholderCountry(pin?.country) && !isPlaceholderCountry(pin?.country_en)) return;
+    /** SSOT 미등록(살타·자킨토스 등) — 역지오로 국가·라틴 name_en 자가치유 */
+    const scheduleUiPlaceHeal = (pin) => {
+      const needsCountry =
+        isPlaceholderCountry(pin?.country) || isPlaceholderCountry(pin?.country_en);
+      const needsLatinName = !isUrlSafeEnglishLabel(pin?.name_en) && !isUrlSafeEnglishLabel(pin?.name);
+      if (!needsCountry && !needsLatinName) return;
       const lat = Number(pin?.lat);
       const lng = Number(pin?.lng);
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
       getAddressFromCoordinates(lat, lng).then((address) => {
-        if (!address?.country || isPlaceholderCountry(address.country)) return;
+        if (!address) return;
+        const healedCountry = address.country && !isPlaceholderCountry(address.country);
+        const healedNameEn = isUrlSafeEnglishLabel(address.name_en) ? String(address.name_en).trim() : '';
+        if (!healedCountry && !healedNameEn) return;
         setSelectedLocation((prev) => {
           if (!prev) return prev;
           const samePlace =
             isSameCanonicalPlace(prev, pin) ||
             (Number(prev.lat) === lat && Number(prev.lng) === lng);
           if (!samePlace) return prev;
-          if (!isPlaceholderCountry(prev.country) && !isPlaceholderCountry(prev.country_en)) {
-            return prev;
+          const stillNeedsCountry =
+            isPlaceholderCountry(prev.country) || isPlaceholderCountry(prev.country_en);
+          const stillNeedsName = !isUrlSafeEnglishLabel(prev.name_en);
+          if (!stillNeedsCountry && !stillNeedsName) return prev;
+          const next = { ...prev };
+          if (stillNeedsCountry && healedCountry) {
+            next.country = address.country;
+            next.country_en = address.country_en || address.country;
           }
-          const healed = prepareResolvedLocation({
-            ...prev,
-            country: address.country,
-            country_en: address.country_en || address.country,
-          });
+          if (stillNeedsName && healedNameEn) {
+            next.name_en = healedNameEn;
+            if (!next.slug || isEphemeralSlug(next.slug)) {
+              next.slug = formatUrlName(healedNameEn) || next.slug;
+            }
+          }
+          const healed = prepareResolvedLocation(next);
           addScoutPin(healed);
           return healed;
         });
@@ -503,12 +537,14 @@ export function useHomeHandlers({
       setSelectedLocation(unified);
       setIsPlaceCardOpen(true);
       setIsCardExpanded(false);
-      scheduleCountryHeal(unified);
+      scheduleUiPlaceHeal(unified);
       scheduleIntroHydrate(unified);
       return;
     }
 
-    moveToLocation(loc.lat, loc.lng, name, loc.category || category, { location: finalLoc });
+    if (!deferGlobeFocus) {
+      moveToLocation(loc.lat, loc.lng, name, loc.category || category, { location: finalLoc });
+    }
     addScoutPin(finalLoc);
     if (refreshRelated) {
       processSearchKeywords(finalLoc);
@@ -517,7 +553,7 @@ export function useHomeHandlers({
     setSelectedLocation(finalLoc);
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false);
-    scheduleCountryHeal(finalLoc);
+    scheduleUiPlaceHeal(finalLoc);
     scheduleIntroHydrate(finalLoc);
   }, [selectedLocation, category, moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded]);
 
@@ -531,8 +567,15 @@ export function useHomeHandlers({
 
     const isMooniRequest = String(dest ?? '').trim() === 'MOONi';
     const boundSpot = initPayload?.boundSpot ?? null;
+    const freshSession = initPayload?.freshSession === true;
     const boundPlaceLabel =
       String(boundSpot?.displayLabel || boundSpot?.name || '').trim() || null;
+    logCurationHandoff('chat.start', {
+      dest,
+      isMooniRequest,
+      boundPlaceLabel,
+      existingId,
+    });
     const locationName = isMooniRequest
       ? (boundPlaceLabel || 'MOONi')
       : (dest || selectedLocation?.name || 'New Session');
@@ -541,6 +584,21 @@ export function useHomeHandlers({
     if (isMooniRequest) {
       setMooniChatEntry?.(true);
       setMooniPlaceContext?.(boundSpot ?? null);
+
+      if (freshSession) {
+        setChatDraft({
+          destination: 'MOONi',
+          lat: 0,
+          lng: 0,
+          persona,
+          category,
+        });
+        setActiveChatId(null);
+        setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+        logCurationHandoff('chat.open.fresh', { destination: 'MOONi' });
+        setIsChatOpen(true);
+        return;
+      }
 
       if (!existingId && boundPlaceLabel) {
         let placeTrip = savedTrips.find(
@@ -555,6 +613,7 @@ export function useHomeHandlers({
           setSavedTrips((prev) => prev.map((t) => (t.id === placeTrip.id ? placeTrip : t)));
         }
         if (placeTrip) {
+          logCurationHandoff('chat.resume.placeTrip', { id: placeTrip.id });
           setChatDraft(null);
           setActiveChatId(placeTrip.id);
           setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
@@ -570,6 +629,7 @@ export function useHomeHandlers({
           userId: user?.id ?? null,
         });
         if (resumedTrip) {
+          logCurationHandoff('chat.resume.mooniTrip', { id: resumedTrip.id });
           if (!savedTrips.some((t) => String(t.id) === String(resumedTrip.id))) {
             setSavedTrips((prev) => [resumedTrip, ...prev]);
           }
@@ -628,6 +688,7 @@ export function useHomeHandlers({
 
     // 🚨 3. 찾았거나 부활시켰다면 해당 방으로 입장
     if (targetTrip) {
+      logCurationHandoff('chat.open.trip', { id: targetTrip.id, destination: targetTrip.destination });
       setChatDraft(null);
       setActiveChatId(targetTrip.id);
       setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
@@ -662,6 +723,7 @@ export function useHomeHandlers({
     });
     setActiveChatId(null);
     setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+    logCurationHandoff('chat.open.draft', { destination: locationName, isMooniRequest });
     setIsChatOpen(true);
   }, [globeRef, savedTrips, selectedLocation, category, user, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft, setMooniChatEntry, setMooniPlaceContext]);
 
@@ -702,11 +764,39 @@ export function useHomeHandlers({
       return ensureDisambiguation(query, [locationToChoiceCandidate(loc)], title);
     };
 
+    const satelliteAlias = resolveKoUniversitySatelliteAlias(query);
+    if (satelliteAlias) {
+      const pin = syntheticUniversitySatellitePlace(query, satelliteAlias);
+      handleLocationSelect(pin);
+      return pin;
+    }
+
     let koHomonymPlaceTried = false;
 
+    const dictHomonymResult = () => {
+      if (isFacilityQuery(query) || !shouldOfferKoreaHomonymDisambiguation(query)) return null;
+      const dictCandidates = collectKoreaHomonymDisambiguationCandidates(query);
+      if (dictCandidates.length < 2) return null;
+      return makeDisambiguationResult(query, dictCandidates, {
+        title: `'${query}' → 지역을 선택하세요`,
+      });
+    };
+
     if (requireChoice) {
+      const dictChoice = dictHomonymResult();
+      if (dictChoice) return dictChoice;
+
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;
+
+      const poiTypeChoices = await collectKoreaPoiTypeSearchCandidates(query);
+      if (poiTypeChoices.length >= 1) {
+        return ensureDisambiguation(
+          query,
+          poiTypeChoices,
+          `'${query}' → 원하는 장소를 선택하세요`,
+        );
+      }
 
       // 동명 리/읍/면/동·bare 화이트리스트 — prefix 스냅(남양→남양주)보다 우선
       if (!isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {
@@ -750,6 +840,23 @@ export function useHomeHandlers({
         return querySpot;
       }
 
+      const seaSpot = pickSeaBasinCurationSpot(query, category);
+      if (seaSpot) {
+        handleLocationSelect(seaSpot);
+        return seaSpot;
+      }
+
+      const dictChoice = dictHomonymResult();
+      if (dictChoice) return dictChoice;
+
+      // 국내 First-Pass (광천선굴·종각역) — Mapbox 전 hub·역 좌표
+      const koreaFirst = resolveKoreaDestinationFirstPassSync(query);
+      if (koreaFirst) {
+        const pin = firstPassHitToUiPlace(koreaFirst, query);
+        handleLocationSelect(pin);
+        return pin;
+      }
+
       // 큐레이션 명소 exact (낙산사·에펠탑) → 바로 핀
       const hubAttractionHit = resolveHubAttraction(query);
       if (hubAttractionHit) {
@@ -777,6 +884,7 @@ export function useHomeHandlers({
         if (spotDesc && candidates[0]) {
           candidates = [{ ...candidates[0], desc: spotDesc, badge: '여행지', kind: 'spot', slug: spot.slug || candidates[0].slug }, ...candidates.slice(1)];
         }
+        candidates = prependLocalScenicToHubCandidates(hubHit, candidates);
         return makeDisambiguationResult(query, candidates, {
           title: `'${hubHit.name}' → 도시와 명소를 골라주세요`,
         });
@@ -814,24 +922,10 @@ export function useHomeHandlers({
 
     // 테마 키워드(반딧불·빙하 등)는 지오코딩 실패 후에만 — 성산일출봉 등 명소가 제주 SSOT로 먼저 묶이지 않게.
 
-    const isLikelyMoodQuery = (text) => {
-      const compact = normalizeSearchKey(text);
-      if (!compact) return false;
-      if (compact.length >= 8) return true;
-      if (/[?!.]/.test(text || '')) return true;
-      return MOOD_HINT_KEYWORDS.some((keyword) => compact.includes(normalizeSearchKey(keyword)));
-    };
-
-    /** 감정 키워드·문장부호 — Mapbox가 임의 지명으로 가로채기 전에 AI 무드 큐레이션으로 보냄 */
-    const shouldSkipGeocodeForMood = (text) => {
-      if (isFacilityQuery(text)) return false;
-      // 테마 키워드가 있으면 지오코딩·테마 경로 우선 (「빙하를 보고 싶어」≠ 순수 감정)
-      if (findThemeKeywordHits(text).length > 0) return false;
-      const compact = normalizeSearchKey(text);
-      if (!compact) return false;
-      if (/[?!.]/.test(text || '')) return true;
-      return MOOD_HINT_KEYWORDS.some((keyword) => compact.includes(normalizeSearchKey(keyword)));
-    };
+    const shouldSkipGeocodeForMood = (text) =>
+      shouldSkipGeocodeForMoodIntent(text, {
+        hasThemeHits: findThemeKeywordHits(text).length > 0,
+      });
 
     const pickMoodVariant = (variants = []) => {
       if (!Array.isArray(variants) || variants.length === 0) return null;
@@ -1042,9 +1136,58 @@ export function useHomeHandlers({
 
     // 감정 키워드(번아웃·설렘 등)·문장부호는 지오코딩 스킵 → AI 무드 큐레이션 유지
     // (Mapbox가 "힐링" 등을 임의 POI로 잡는 회귀 방지). 시설·일반 지명은 기존처럼 geocode.
-    const coords = shouldSkipGeocodeForMood(query)
+    const seaSpotBeforeGeocode = pickSeaBasinCurationSpot(query, category);
+    if (seaSpotBeforeGeocode) {
+      return commitLocation(seaSpotBeforeGeocode);
+    }
+
+    if (!shouldSkipGeocodeForMood(query)) {
+      try {
+        const visitedHits = await lookupVisitedPlacesForSearch(query);
+        if (visitedHits.length >= 1) {
+          let mergedVisited = visitedHits;
+          try {
+            const remoteHits = await searchBoxForward(query, {
+              limit: 5,
+              types: searchBoxTypesForQuery(query),
+            });
+            mergedVisited = overlayGeoFieldsOnVisitedSpots(visitedHits, remoteHits);
+          } catch {
+            mergedVisited = visitedHits;
+          }
+          if (mergedVisited.some(visitedSpotNeedsGeoCountry)) {
+            try {
+              const coords = await getCoordinatesFromAddress(query);
+              if (coords) {
+                mergedVisited = overlayGeoFieldsOnVisitedSpots(mergedVisited, [coords]);
+              }
+            } catch {
+              // keep visited names
+            }
+          }
+          const readyVisited = resolveUniversitySearchHits(
+            query,
+            mergedVisited.filter((spot) => !visitedSpotNeedsGeoCountry(spot)),
+          );
+          if (readyVisited.length >= 1) {
+            return requireChoice || readyVisited.length >= 2
+              ? makeDisambiguationResult(query, readyVisited, {
+                  title: `'${query}' → 원하는 장소를 선택하세요`,
+                })
+              : commitLocation(readyVisited[0]);
+          }
+        }
+      } catch {
+        // 방문 DB 실패 시 지오코딩으로 진행
+      }
+    }
+
+    let coords = shouldSkipGeocodeForMood(query)
       ? null
       : await getCoordinatesFromAddress(query);
+    if (isWeakGeocodeHitForMood(query, coords)) {
+      coords = null;
+    }
 
     if (coords) {
       // 검색어가 SSOT 공식명·별칭과 일치할 때만 큐레이션 여행지로 연결.
@@ -1054,13 +1197,25 @@ export function useHomeHandlers({
         return commitLocation(hintedSpot);
       }
 
+      // 타이핑 제안(Search Box)에 같은 이름이 있으면 행정동·오탐 geocode보다 우선
+      if (!placeNameMatchesSearchQuery(query, coords) && !shouldSkipGeocodeForMood(query)) {
+        try {
+          const namedHit = preferEnterSuggestion(query, await buildHybridSearchSuggestions(query));
+          if (namedHit) {
+            return commitLocation(namedHit, `'${query}' → 원하는 장소를 선택하세요`);
+          }
+        } catch {
+          // Search Box 실패 시 기존 geocode 경로
+        }
+      }
+
       // 시설·유명 명소 단건이 아니면, 동명·다국가 등 모호할 때만 선택 카드
       // requireChoice면 Mapbox 후보가 있으면 항상 선택 카드
       if (!isFacilityQuery(query)) {
         try {
           const remoteHits = await searchBoxForward(query, {
             limit: 5,
-            types: 'place,city,poi',
+            types: searchBoxTypesForQuery(query),
           });
           const seenNames = new Set();
           const distinct = [];
@@ -1088,8 +1243,20 @@ export function useHomeHandlers({
             if (requireChoice || (distinct.length >= 2 && ambiguous)) {
               const geoName = String(coords.name || query).trim();
               const geoKey = geoName.toLowerCase().replace(/\s+/g, '');
-              if (!seenNames.has(geoKey)) {
-                distinct.unshift({
+              const withLatin = resolveUniversitySearchHits(
+                query,
+                overlayGeocodeLatinOnHits(distinct, coords),
+              );
+              const sameAsGeocode = withLatin.some(
+                (hit) =>
+                  samePlaceCenter(hit, coords) ||
+                  String(hit?.name || '')
+                    .trim()
+                    .toLowerCase()
+                    .replace(/\s+/g, '') === geoKey,
+              );
+              if (!sameAsGeocode && !seenNames.has(geoKey)) {
+                const geoCard = {
                   id: `geocode-${coords.lat}-${coords.lng}`,
                   kind: 'city',
                   badge: '도시',
@@ -1102,9 +1269,17 @@ export function useHomeHandlers({
                   source: 'geocode',
                   uiPlace: true,
                   desc: `${geoName} (${coords.country || 'Explore'})`,
-                });
+                };
+                if (
+                  queryLooksLikeStayPoint(query) &&
+                  isStreetishStayLabel(geoCard.name_en || geoCard.name)
+                ) {
+                  withLatin.push(geoCard);
+                } else {
+                  withLatin.unshift(geoCard);
+                }
               }
-              return makeDisambiguationResult(query, distinct.slice(0, 8), {
+              return makeDisambiguationResult(query, withLatin.slice(0, 8), {
                 title: `'${query}' → 원하는 장소를 선택하세요`,
               });
             }
@@ -1114,7 +1289,7 @@ export function useHomeHandlers({
         }
       }
 
-      const displayName = coords.name || query;
+      const displayName = queryLooksLikeStayPoint(query) ? query : (coords.name || query);
       const normalizedLoc = finalizeUiPlacePin({
         id: `search-${coords.lat}-${coords.lng}`,
         slug: formatUrlName(coords.name_en || coords.name || query),
@@ -1131,17 +1306,38 @@ export function useHomeHandlers({
         country: coords.country || "Explore",
         country_en: coords.country_en || "Explore",
         ...(coords.stayAdmin ? { stayAdmin: coords.stayAdmin } : {}),
+        ...(coords.contentId ? { contentId: coords.contentId } : {}),
+        ...(coords.tourCategory
+          ? { tourCategory: coords.tourCategory, placeCategory: coords.placeCategory || coords.tourCategory }
+          : {}),
+        ...(coords.hubId ? { hubId: coords.hubId } : {}),
+        ...(coords.parentCity ? { parentCity: coords.parentCity } : {}),
       }, coords.lat, coords.lng);
       return commitLocation(normalizedLoc);
     } else {
-      // 지오코딩 실패 시에만 테마 큐레이션 (반딧불·빙하 문장 등)
-      const themeSpot = pickThemeCurationSpot(query, category);
-      if (themeSpot) {
-        if (!requireChoice) {
-          setDraftInput(themeSpot.name);
-          processSearchKeywords(themeSpot);
+      // 지오코딩 실패여도 타이핑과 같은 Search Box 히트가 있으면 AI 교정(화암동굴)보다 우선
+      if (!shouldSkipGeocodeForMood(query)) {
+        try {
+          const namedHit = preferEnterSuggestion(query, await buildHybridSearchSuggestions(query));
+          if (namedHit) {
+            return commitLocation(namedHit, `'${query}' → 원하는 장소를 선택하세요`);
+          }
+        } catch {
+          // 로컬·Search Box 없으면 테마·AI
         }
-        return commitLocation(themeSpot);
+      }
+
+      // 지오코딩 실패 시에만 테마 큐레이션 (반딧불·빙하 문장 등).
+      // 무드 결합(따뜻한 휴양지)은 테마 스냅 없이 AI 큐레이션으로.
+      if (!shouldSkipGeocodeForMood(query)) {
+        const themeSpot = pickThemeCurationSpot(query, category);
+        if (themeSpot) {
+          if (!requireChoice) {
+            setDraftInput(themeSpot.name);
+            processSearchKeywords(themeSpot);
+          }
+          return commitLocation(themeSpot);
+        }
       }
 
       // 🚨 [New] Smart Search Fallback (AI 자동 교정 엔진)
@@ -1167,7 +1363,13 @@ export function useHomeHandlers({
           );
         }
 
-        if (cachedDict && cachedDict.location_data && !cacheLooksLikeAdminCollapse) {
+        if (
+          cachedDict &&
+          cachedDict.location_data &&
+          !cacheLooksLikeAdminCollapse &&
+          !queryLooksLikeStayPoint(query) &&
+          !resolveKoUniversitySatelliteAlias(query)
+        ) {
           console.log(`[Smart Search DB Cache] "${query}" -> "${cachedDict.corrected_query}" (캐시 적중)`);
           const parsedData = cachedDict.location_data;
           const isMoodCache = parsedData?.intent_type === 'mood' && Array.isArray(parsedData?.variants);
@@ -1240,6 +1442,15 @@ export function useHomeHandlers({
               }
             }
           } else {
+            const cachedPlace = {
+              name: cachedDict.corrected_query || parsedData?.name,
+              name_en: parsedData?.name_en,
+            };
+            if (cachedPlace.name && !placeNameMatchesSearchQuery(query, cachedPlace)) {
+              console.warn(
+                `[Smart Search] 이름 불일치 교정 캐시 무시: "${query}" → "${cachedPlace.name}"`,
+              );
+            } else {
             const verifiedCachedLoc = await verifyAndNormalizeCandidate(parsedData, query, "Cache");
             if (verifiedCachedLoc) {
               verifiedCachedLoc.desc = `"${query}" 검색에 실패하여 "${verifiedCachedLoc.name}"(으)로 교정하여 탐색합니다. (캐시 기반)`;
@@ -1252,6 +1463,7 @@ export function useHomeHandlers({
                 verifiedCachedLoc,
                 `'${query}' → 원하는 장소를 선택하세요`,
               );
+            }
             }
           }
         }
@@ -1325,7 +1537,7 @@ export function useHomeHandlers({
               "당신은 감정 기반 여행지 매칭 전문가입니다. 실재 지명만 사용하고 오직 유효한 JSON만 출력해야 합니다.",
               aiPrompt,
               [],
-              "gemini-3.1-flash-lite"
+              GEMINI_MODELS.FAST
             );
 
             const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();

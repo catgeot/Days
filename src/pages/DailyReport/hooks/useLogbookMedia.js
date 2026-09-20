@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import imageCompression from 'browser-image-compression';
+import { i18n } from '../../../i18n/config';
 
 export const convertToBase64 = (file) => {
   return new Promise((resolve, reject) => {
@@ -44,7 +45,7 @@ export const useLogbookMedia = () => {
     const totalCount = existingImages.length + imageFiles.length + files.length;
     // 🚨 [Fix] 블로그 최적화 밀도를 위해 한도를 10장으로 상향
     if (totalCount > 10) { 
-      alert("사진은 최대 10장까지만 업로드 가능합니다."); 
+      alert(i18n.t('logbook.media.maxPhotos')); 
       return; 
     }
     
@@ -68,7 +69,7 @@ export const useLogbookMedia = () => {
       setPreviewUrls(prev => [...prev, ...newPreviews]);
     } catch (error) { 
       console.error("이미지 압축 실패:", error); 
-      alert("이미지 처리 중 오류가 발생했습니다.");
+      alert(i18n.t('logbook.media.compressFail'));
     } finally {
       setIsCompressing(false);
     }

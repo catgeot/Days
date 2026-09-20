@@ -4,6 +4,7 @@
  */
 import { supabase } from '../shared/api/supabase';
 import { buildMrtMylinkUrl, getMrtSearchUrl } from './affiliate';
+import { stripUnsafeMrtTnaItems } from './mrtTnaRelevance.js';
 import {
   canShowMrtTnaStrip,
   canShowNearbyChips,
@@ -132,7 +133,8 @@ export async function fetchMrtTnas(params) {
       return null;
     }
 
-    const listed = Array.isArray(data.items) ? data.items : [];
+    const rawListed = Array.isArray(data.items) ? data.items : [];
+    const listed = stripUnsafeMrtTnaItems(rawListed);
     const payload = {
       ok: true,
       items: listed,

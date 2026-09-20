@@ -97,6 +97,78 @@ assert(
   capitalAreas.every((a) => a.code && a.label),
   '수도권 시도 chips code+label',
 );
+
+{
+  const {
+    DEFAULT_LIST_SOFT_MAX,
+    resolveDefaultCuratedChips,
+    resolveDefaultHeritageChips,
+    resolveDefaultTourAreaCode,
+    resolveDefaultTourCatChips,
+  } = await import('../src/pages/KoreaTheme/scenicDefaultChips.js');
+  assert(DEFAULT_LIST_SOFT_MAX === 12, 'default list soft max =12 (~10)');
+  const curatedCap = resolveDefaultCuratedChips('수도권');
+  assert(curatedCap.areaCode === '1', `명소 기본 시도=서울 (got ${curatedCap.areaCode})`);
+  assert(
+    curatedCap.hubId == null,
+    `서울(≤soft max)이면 hub 기본 없음 (got ${curatedCap.hubId})`,
+  );
+  const curatedGangwon = resolveDefaultCuratedChips('강원');
+  assert(
+    curatedGangwon.areaCode == null,
+    '강원 시도 1개 → area 기본 없음',
+  );
+  assert(
+    curatedGangwon.clusterId === 'gw-yeongseo',
+    `강원 세권 기본=영서 (got ${curatedGangwon.clusterId})`,
+  );
+  assert(
+    curatedGangwon.hubId === 'hongcheon',
+    `강원 영서 긴 목록 → 첫 hub 홍천 (got ${curatedGangwon.hubId})`,
+  );
+  const {
+    listKoreaScenicClusterChips,
+  } = await import('../src/pages/Home/lib/koreaScenicSpots.js');
+  const ggClusters = listKoreaScenicClusterChips('수도권', '31');
+  assert(ggClusters.length === 4, `경기 세권=4 (got ${ggClusters.length})`);
+  assert(
+    ggClusters.map((c) => c.id).join(',') ===
+      'gg-north,gg-east,gg-west,gg-south',
+    '경기 세권 순서 북·동·서·남',
+  );
+  assert(
+    !ggClusters.some((c) => c.count > 50),
+    '경기 세권 단건 과다(<50) 방지',
+  );
+  const heritageCap = resolveDefaultHeritageChips('수도권');
+  assert(
+    heritageCap.areaCode === '1',
+    `명승 기본 시도=서울 (got ${heritageCap.areaCode})`,
+  );
+  assert(
+    heritageCap.category == null,
+    `서울 명승 ≤soft max → hcat 없음 (got ${heritageCap.category})`,
+  );
+  const tourArea = resolveDefaultTourAreaCode(
+    '수도권',
+    Object.fromEntries(capitalAreas.map((a) => [a.code, 1])),
+  );
+  assert(tourArea === '1', `관광지 기본 시도=서울 (got ${tourArea})`);
+  const tourCats = resolveDefaultTourCatChips('A01', null, null, {
+    cat2Counts: { A0101: 80, A0102: 5 },
+    cat3Counts: {},
+  });
+  assert(tourCats.changed, '관광지 cat2 기본 시드 changed');
+  assert(tourCats.cat2 === 'A0101', `관광지 첫 중분류=자연관광지 (got ${tourCats.cat2})`);
+  const tourCatsDeep = resolveDefaultTourCatChips('A01', 'A0101', null, {
+    cat2Counts: { A0101: 80, A0102: 5 },
+    cat3Counts: { A01010100: 3, A01010400: 40 },
+  });
+  assert(
+    tourCatsDeep.cat3 === 'A01010100',
+    `긴 중분류 → ~10 안팎 소분류 국립공원 (got ${tourCatsDeep.cat3})`,
+  );
+}
 assert(normalizeScenicAreaCode('수도권', '1') === '1', 'normalize area under region');
 assert(
   normalizeScenicAreaCode('수도권', '32') === null,
@@ -107,6 +179,10 @@ assert(labelScenicAreaCode('1') === '서울', 'label area 서울');
 assert(labelScenicAreaCode('8') === '세종', 'label area 세종 fallback');
 assert(scenicAreaCodeForHubId('seoul') === '1', 'hub→area seoul');
 assert(scenicAreaCodeForHubId('suwon') === '31', 'hub→area suwon');
+assert(scenicAreaCodeForHubId('gimpo') === '31', 'hub→area gimpo');
+assert(scenicAreaCodeForHubId('anyang') === '31', 'hub→area anyang');
+assert(scenicAreaCodeForHubId('ganghwa') === '2', 'hub→area ganghwa');
+assert(scenicAreaCodeForHubId('seogwipo') === '39', 'hub→area seogwipo');
 
 assert(
   scenicDbCatalogHeading('강원', null) === '강원도 관광지',

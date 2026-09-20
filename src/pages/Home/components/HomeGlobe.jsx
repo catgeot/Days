@@ -3,6 +3,7 @@ import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceLegacyAltitude } from '../lib/globeCategoryFocus';
+import { OVERLAY_CLICK_GUARD_MS, isGlobeClickSuppressed, nextOverlayClickGuardUntil } from '../lib/globeOverlayClickGuard';
 
 const GLOBE_CAMERA_CONFIG = {
   DEFAULT_ALT: 2.5,
@@ -33,12 +34,14 @@ const HomeGlobe = React.memo(forwardRef(({
   globeTheme = 'deep',
   isZenMode = false,
   highlightCategory = null,
-  categoryFaceEpoch = 0
+  categoryFaceEpoch = 0,
+  autoRotatePaused = false,
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
   const immerseActiveRef = useRef(false);
+  const suppressClickUntilRef = useRef(0);
   const prevHighlightCategoryRef = useRef(null);
   const prevCategoryFaceEpochRef = useRef(categoryFaceEpoch);
   const categoryFaceFlyGenRef = useRef(0);
@@ -94,6 +97,9 @@ const HomeGlobe = React.memo(forwardRef(({
     },
     wakeAfterOverlay: () => {
       // Legacy three.js globe — no Mapbox resize; keep API parity with Adapter.
+    },
+    suppressOverlayClick: (ms = OVERLAY_CLICK_GUARD_MS) => {
+      suppressClickUntilRef.current = nextOverlayClickGuardUntil(Date.now(), ms);
     },
     flyToAndPin: (lat, lng, _name, _category, _options) => {
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
@@ -268,15 +274,15 @@ const HomeGlobe = React.memo(forwardRef(({
 
   useEffect(() => {
     if (globeEl.current) {
-      globeEl.current.controls().autoRotate = !pauseRender;
+      globeEl.current.controls().autoRotate = !pauseRender && !autoRotatePaused;
       globeEl.current.controls().autoRotateSpeed = isZenMode ? 0.3 : GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED;
       if (pauseRender && rotationTimer.current) clearTimeout(rotationTimer.current);
     }
-  }, [pauseRender, isZenMode]);
+  }, [pauseRender, isZenMode, autoRotatePaused]);
 
   useEffect(() => {
     if (globeEl.current) {
-      globeEl.current.controls().autoRotate = !pauseRender;
+      globeEl.current.controls().autoRotate = !pauseRender && !autoRotatePaused;
       globeEl.current.controls().autoRotateSpeed = GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED;
       globeEl.current.pointOfView({ altitude: GLOBE_CAMERA_CONFIG.DEFAULT_ALT });
     }
@@ -285,6 +291,7 @@ const HomeGlobe = React.memo(forwardRef(({
 
   const handleGlobeClickInternal = ({ lat, lng }) => {
     isHoveringMarker.current = false;
+    if (isGlobeClickSuppressed(Date.now(), suppressClickUntilRef.current)) return;
     if (isZenMode) return;
     if (pauseRender) return;
     if (onGlobeClick) onGlobeClick({ lat, lng });

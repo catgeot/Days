@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PenNameProvider } from '../context/PenNameContext';
 
 const DailyLayout = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
+  const hideMobileBlogChrome = location.pathname.startsWith('/blog/curation');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -18,7 +22,7 @@ const DailyLayout = () => {
   }, []);
 
   const handleLogout = async () => {
-    if (window.confirm("로그아웃 하시겠습니까?")) {
+    if (window.confirm(t('logbook.common.logoutConfirm'))) {
       await supabase.auth.signOut();
       navigate('/');
     }
@@ -31,7 +35,11 @@ const DailyLayout = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 text-gray-900 overflow-hidden">
 
-      <div className="md:hidden w-full h-14 bg-white flex items-center justify-between px-4 shrink-0 border-b border-gray-200 z-50">
+      <div
+        className={`md:hidden w-full min-h-14 shrink-0 border-b border-gray-200 z-50 bg-white flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] ${
+          hideMobileBlogChrome ? 'hidden' : ''
+        }`}
+      >
         <button
           onClick={handleGoHome}
           className="text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors"
@@ -45,6 +53,12 @@ const DailyLayout = () => {
             <span className="text-xs text-gray-500 truncate max-w-[120px]">
               {user?.email?.split('@')[0]}
             </span>
+            <Link
+              to="/auth/update-password"
+              className="text-[11px] font-bold text-blue-600 hover:text-blue-500"
+            >
+              {t('logbook.profile.changePassword')}
+            </Link>
             <button
               onClick={handleLogout}
               className="text-gray-500 hover:text-red-500 transition-colors p-1"

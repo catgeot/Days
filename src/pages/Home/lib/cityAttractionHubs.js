@@ -3,6 +3,9 @@
  * Mapbox Search Box 보강 전에 품질 앵커로 사용.
  */
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
+import { rankStayPointDisambiguationCandidates } from '../../../utils/mrtStayQuery.js';
+import { inferPlaceMatchCategory } from './placeMatchCategory.js';
+import { hubNameMatchesPrefixQuery } from './koreaPoiTypeQuery.js';
 
 const KIND_LABELS = {
   beach: '해변',
@@ -14,6 +17,18 @@ const KIND_LABELS = {
   museum: '박물관',
   neighborhood: '동네',
   park: '공원',
+};
+
+const KIND_LABELS_EN = {
+  beach: 'Beach',
+  market: 'Market',
+  temple: 'Temple',
+  shrine: 'Shrine',
+  viewpoint: 'Viewpoint',
+  landmark: 'Sight',
+  museum: 'Museum',
+  neighborhood: 'Neighborhood',
+  park: 'Park',
 };
 
 const normalizeKey = (s) =>
@@ -76,7 +91,7 @@ for (const hub of HUBS) {
     if (sk && !hubByPlaceSlug.has(sk)) hubByPlaceSlug.set(sk, hub);
   }
   for (const attraction of hub.attractions || []) {
-    for (const k of [attraction.name, attraction.name_en]) {
+    for (const k of [attraction.name, attraction.name_en, ...(attraction.aliases || [])]) {
       const nk = normalizeKey(k);
       if (nk && !attractionByKey.has(nk)) {
         attractionByKey.set(nk, { hub, attraction });
@@ -90,7 +105,8 @@ for (const hub of HUBS) {
   }
 }
 
-export function getKindLabel(kind) {
+export function getKindLabel(kind, locale = 'ko') {
+  if (locale === 'en') return KIND_LABELS_EN[kind] || 'Sight';
   return KIND_LABELS[kind] || '명소';
 }
 
@@ -131,7 +147,11 @@ export function matchCityAttractionHubsPrefix(query, { limit = 8 } = {}) {
   const seenHub = new Set();
   for (const hub of HUBS) {
     const keys = [hub.name, hub.name_en, hub.hubId, ...(hub.aliases || [])];
-    const hit = keys.some((k) => normalizeKey(k).startsWith(key));
+    const hit = keys.some((k) => {
+      const nk = normalizeKey(k);
+      if (!nk) return false;
+      return hubNameMatchesPrefixQuery(nk, key);
+    });
     if (hit && !seenHub.has(hub.hubId)) {
       seenHub.add(hub.hubId);
       hubHits.push(hub);
@@ -141,8 +161,11 @@ export function matchCityAttractionHubsPrefix(query, { limit = 8 } = {}) {
   const attractionHits = [];
   for (const hub of HUBS) {
     for (const attraction of hub.attractions || []) {
-      const names = [attraction.name, attraction.name_en].filter(Boolean);
-      if (names.some((n) => normalizeKey(n).startsWith(key) || normalizeKey(n).includes(key))) {
+      const names = [attraction.name, attraction.name_en, ...(attraction.aliases || [])].filter(Boolean);
+      if (names.some((n) => {
+        const nk = normalizeKey(n);
+        return nk.startsWith(key) || (key.length >= 2 && nk.includes(key)) || (key.length >= 2 && key.startsWith(nk));
+      })) {
         attractionHits.push({ hub, attraction });
       }
     }
@@ -170,8 +193,14 @@ export function hubToSuggestion(hub) {
   };
 }
 
+function attractionTourContentId(attraction) {
+  const id = String(attraction?.contentId || '').trim();
+  return /^\d{1,32}$/.test(id) ? id : null;
+}
+
 export function attractionToSuggestion(hub, attraction) {
   const kindLabel = getKindLabel(attraction.kind);
+  const contentId = attractionTourContentId(attraction);
   return {
     id: `hub-attr-${hub.hubId}-${normalizeKey(attraction.name)}`,
     kind: 'attraction',
@@ -189,7 +218,7 @@ export function attractionToSuggestion(hub, attraction) {
     source: 'hub',
     uiPlace: true,
     parentCity: hub.name,
-    // 선택 카드: 위치 줄·뱃지로 충분 — 합성「도시 · 종류」desc는 중복이라 생략
+    ...(contentId ? { contentId } : {}),
   };
 }
 
@@ -213,6 +242,12 @@ export function hubToPlacePin(hub) {
 
 export function attractionToPlacePin(hub, attraction) {
   const kindLabel = getKindLabel(attraction.kind);
+  const contentId = attractionTourContentId(attraction);
+  const placeCategory = inferPlaceMatchCategory({
+    kind: attraction.kind,
+    name: attraction.name,
+    name_ko: attraction.name,
+  });
   return {
     id: `hub-attr-${hub.hubId}-${normalizeKey(attraction.name)}`,
     slug: placeUrlSlug(attraction.name_en, attraction.name),
@@ -229,6 +264,10 @@ export function attractionToPlacePin(hub, attraction) {
     hubId: hub.hubId,
     parentCity: hub.name,
     desc: `${hub.name}의 ${kindLabel} · ${attraction.name}`,
+    ...(contentId ? { contentId } : {}),
+    ...(placeCategory
+      ? { tourCategory: placeCategory, placeCategory }
+      : {}),
   };
 }
 
@@ -295,6 +334,6 @@ export function makeDisambiguationResult(query, candidates, { title } = {}) {
     __disambiguation: true,
     query: String(query || '').trim(),
     title: title || `'${query}' 검색 결과 → 원하는 장소를 선택하세요`,
-    candidates: candidates.filter(Boolean),
+    candidates: rankStayPointDisambiguationCandidates(query, candidates),
   };
 }

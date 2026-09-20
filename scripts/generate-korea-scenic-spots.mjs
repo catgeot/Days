@@ -31,7 +31,6 @@ function toHttps(url) {
 }
 
 const MIN_COUNT = 12;
-const MAX_COUNT = 100;
 const ALLOWED_REGIONS = new Set(['제주', '강원', '전라', '경상', '수도권', '충청']);
 
 function toUrlSlug(nameEn) {
@@ -72,9 +71,9 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
     throw new Error('[korea-scenic-spots] overrides must be object');
   }
   const list = src.spots;
-  if (!Array.isArray(list) || list.length < MIN_COUNT || list.length > MAX_COUNT) {
+  if (!Array.isArray(list) || list.length < MIN_COUNT) {
     throw new Error(
-      `[korea-scenic-spots] spots must be ${MIN_COUNT}–${MAX_COUNT} (got ${list?.length})`,
+      `[korea-scenic-spots] spots must be ≥${MIN_COUNT} (got ${list?.length})`,
     );
   }
 
@@ -150,7 +149,25 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
       }
     }
 
+    let overview = null;
+    if (raw.overview != null && String(raw.overview).trim()) {
+      overview = String(raw.overview).trim();
+      if (overview.length > 600) {
+        throw new Error(`[korea-scenic-spots] ${id}: overview max 600`);
+      }
+    }
+
     const imageUrl = toHttps(imageUrlById[id] || raw.imageUrl);
+
+    const addr1 = raw.addr1 != null && String(raw.addr1).trim()
+      ? String(raw.addr1).trim()
+      : null;
+    const homepage = raw.homepage != null && String(raw.homepage).trim()
+      ? String(raw.homepage).trim()
+      : null;
+    const galleryUrls = Array.isArray(raw.galleryUrls)
+      ? raw.galleryUrls.map(toHttps).filter(Boolean)
+      : null;
 
     spots.push({
       order,
@@ -165,7 +182,11 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
       lat,
       lng,
       contentId,
+      overview,
       imageUrl,
+      ...(addr1 ? { addr1 } : {}),
+      ...(homepage ? { homepage } : {}),
+      ...(galleryUrls && galleryUrls.length > 0 ? { galleryUrls } : {}),
     });
   }
 

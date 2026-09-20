@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -10,13 +10,17 @@ import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
 import Home from './pages/Home';
 import PlaceCard from './components/PlaceCard/index';
 import KoreaFestivalHub from './pages/Korea';
+import WorldEventsHub from './pages/WorldEvents';
+import EventDetailPage from './pages/WorldEvents/EventDetailPage';
 import KoreaThemeModulePage from './pages/KoreaTheme/ModulePage';
 import KoreaThemeScenicPage from './pages/KoreaTheme/ScenicPage';
 import KoreaThemeCoursesPage from './pages/KoreaTheme/CoursesPage';
 import QaShareIndex from './pages/QaShare';
 import QaShareRedirect from './pages/QaShare/QaShareRedirect';
+import AboutPage from './pages/AboutPage';
 
 import Dashboard from './pages/DailyReport/Dashboard';
+import Curation from './pages/DailyReport/Curation';
 import Write from './pages/DailyReport/Write';
 import Detail from './pages/DailyReport/Detail';
 import PublicViewer from './pages/DailyReport/PublicViewer';
@@ -27,7 +31,12 @@ import Login from './shared/Auth/Login';
 import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
-import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog';
+import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
+import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
+import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
+import FlightDebugPanel from './shared/cloudPreview/FlightDebugPanel.jsx';
+import TravelAgencyVisitCapture from './components/travelAgencies/TravelAgencyVisitCapture.jsx';
+import { LocaleProvider } from './i18n/LocaleProvider';
 
 function RouteTracker() {
   const location = useLocation();
@@ -41,6 +50,13 @@ function RouteTracker() {
   }, [location]);
 
   return null;
+}
+
+function EnWorldEventDetailRedirect() {
+  const { eventId } = useParams();
+  return (
+    <Navigate to={`/world-events/${encodeURIComponent(String(eventId || ''))}?lang=en`} replace />
+  );
 }
 
 function App() {
@@ -57,10 +73,15 @@ function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
+        <LocaleProvider>
         <RouteTracker />
         <ReportProvider>
           <Analytics />
           <CloudPreviewWorkLog />
+          <SeaExploreDebugPanel />
+          <CurationHandoffDebugPanel />
+          <FlightDebugPanel />
+          <TravelAgencyVisitCapture />
           <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />}>
@@ -91,12 +112,20 @@ function App() {
                 element={<Navigate to="/korea/theme/scenic" replace />}
               />
               <Route path="/korea" element={<KoreaFestivalHub />} />
+              <Route path="/world-events" element={<WorldEventsHub />} />
+              <Route path="/world-events/:eventId" element={<EventDetailPage />} />
+              <Route path="/en/world-events" element={<Navigate to="/world-events?lang=en" replace />} />
+              <Route path="/en/world-events/:eventId" element={<EnWorldEventDetailRedirect />} />
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/pricing" element={<Navigate to="/about" replace />} />
+              <Route path="/product" element={<Navigate to="/explore" replace />} />
             </Route>
 
             <Route path="/blog" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
+              <Route path="curation" element={<Curation />} />
               <Route path="write" element={<Write />} />
               <Route path="write/:id" element={<Write />} />
               <Route path=":id" element={<Detail />} />
@@ -108,8 +137,10 @@ function App() {
             <Route path="/auth/signup" element={<Signup />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/update-password" element={<UpdatePassword />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ReportProvider>
+        </LocaleProvider>
       </BrowserRouter>
     </HelmetProvider>
   );

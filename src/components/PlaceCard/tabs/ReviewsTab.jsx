@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye, BookOpen } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
@@ -12,6 +13,7 @@ import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
 const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
+  const { t, i18n } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasViewed, setHasViewed] = useState(false);
 
@@ -26,7 +28,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('ko-KR', options);
+    return new Date(dateString).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ko-KR', options);
   };
 
   const renderStars = (rating) => {
@@ -43,7 +45,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
       if (onRequireLogin) {
         onRequireLogin();
       } else {
-        alert('로그인 하고 리뷰에 참여하고 경험을 공유하세요.');
+        alert(t('place.reviews.loginPrompt'));
       }
       return;
     }
@@ -66,9 +68,9 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
           </div>
           <div>
             <div className="font-medium text-gray-900 text-sm flex items-center gap-2">
-              {review.user?.display_name || '익명 사용자'}
+              {review.user?.display_name || t('place.reviews.anonymous')}
               {!review.is_public && (
-                <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">비공개</span>
+                <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{t('place.reviews.private')}</span>
               )}
             </div>
             <div className="text-xs text-gray-400 mt-0.5">{formatDate(review.created_at)}</div>
@@ -82,10 +84,10 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 
           {user && user.id === review.user_id && (
             <div className="flex items-center gap-2 mt-2">
-              <button onClick={() => onEdit(review)} className="text-gray-400 hover:text-blue-600 transition-colors" title="수정">
+              <button onClick={() => onEdit(review)} className="text-gray-400 hover:text-blue-600 transition-colors" title={t('place.reviews.edit')}>
                 <Edit className="w-4 h-4" />
               </button>
-              <button onClick={() => onDelete(review.id)} className="text-gray-400 hover:text-red-600 transition-colors" title="삭제">
+              <button onClick={() => onDelete(review.id)} className="text-gray-400 hover:text-red-600 transition-colors" title={t('place.reviews.delete')}>
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
@@ -104,7 +106,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-blue-500 font-medium text-xs mt-1 hover:underline"
           >
-            {isExpanded ? '접기' : '더보기'}
+            {isExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}
           </button>
         )}
       </div>
@@ -149,7 +151,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         </button>
         <div className="flex items-center gap-1 text-gray-400">
           <Eye className="w-4 h-4" />
-          <span className="text-[10px] font-medium">{review.views_count || 0} 읽음</span>
+          <span className="text-[10px] font-medium">{t('place.reviews.reads', { count: review.views_count || 0 })}</span>
         </div>
       </div>
     </div>
@@ -158,6 +160,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 // --------------------------------------------------------------------------
 
 const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollContainerRef = useRef(null);
   usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, true);
@@ -226,7 +229,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
   };
 
   const handleRequireLogin = () => {
-    if (window.confirm('로그인이 필요한 기능입니다.\n로그인 페이지로 이동하시겠습니까?')) {
+    if (window.confirm(t('place.reviews.loginRequiredConfirm'))) {
       navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } });
     }
   };
@@ -246,12 +249,12 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
   };
 
   const handleDeleteClick = async (reviewId) => {
-    if (window.confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+    if (window.confirm(t('place.reviews.deleteConfirm'))) {
       const { error } = await deleteReview(reviewId);
       if (error) {
-        alert('삭제 중 오류가 발생했습니다: ' + error);
+        alert(t('place.reviews.deleteError', { error: String(error) }));
       } else {
-        alert('리뷰가 삭제되었습니다.');
+        alert(t('place.reviews.deleteSuccess'));
       }
     }
   };
@@ -264,10 +267,10 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
           <div>
             <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-blue-500" />
-              장소 리뷰
+              {t('place.reviews.title')}
             </h3>
             <p className="text-sm text-gray-500 mt-1">
-              이 장소를 다녀온 여행자들의 생생한 경험담
+              {t('place.reviews.subtitle')}
             </p>
           </div>
 
@@ -276,7 +279,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
               <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
               <span className="font-bold text-lg text-gray-800">{stats.averageRating}</span>
             </div>
-            <p className="text-xs text-gray-500">리뷰 {stats.totalReviews}개</p>
+            <p className="text-xs text-gray-500">{t('place.reviews.count', { count: stats.totalReviews })}</p>
           </div>
         </div>
 
@@ -289,7 +292,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                 filter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              전체 보기
+              {t('place.reviews.filterAll')}
             </button>
             <button
               onClick={() => setFilter('mine')}
@@ -297,7 +300,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                 filter === 'mine' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              내 리뷰
+              {t('place.reviews.filterMine')}
             </button>
           </div>
 
@@ -306,7 +309,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
             className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
           >
             <PenSquare className="w-4 h-4" />
-            작성하기
+            {t('place.reviews.writeAction')}
           </button>
         </div>
       </div>
@@ -317,7 +320,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
         className={`md:hidden fixed bottom-6 right-4 z-50 flex items-center justify-center gap-1.5 px-4 py-3 bg-blue-600 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] hover:bg-blue-700 active:scale-95 transition-all ${mobileLandscapeChromeHidden}`}
       >
         <PenSquare className="w-4 h-4" />
-        <span className="font-bold text-sm">작성</span>
+        <span className="font-bold text-sm">{t('place.reviews.write')}</span>
       </button>
 
       {/* 모바일: 미디어 탭 + 리뷰 헤더 + 본문 단일 스크롤 / 데스크톱: 본문만 스크롤 */}
@@ -344,7 +347,8 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
               <div className="flex items-center gap-1.5 min-w-0">
                 <MessageSquare className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                 <h3 className="font-bold text-gray-900 text-sm truncate">
-                  리뷰 <span className="text-gray-400 text-xs font-normal">({stats.totalReviews})</span>
+                  {t('place.reviews.headerShort')}{' '}
+                  <span className="text-gray-400 text-xs font-normal">({stats.totalReviews})</span>
                 </h3>
                 <div className="flex items-center gap-0.5 ml-1 bg-yellow-50 px-1.5 py-0.5 rounded shrink-0">
                   <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
@@ -361,7 +365,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                   filter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
                 }`}
               >
-                전체
+                {t('place.reviews.filterAllShort')}
               </button>
               <button
                 type="button"
@@ -370,7 +374,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                   filter === 'mine' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
                 }`}
               >
-                내 리뷰
+                {t('place.reviews.filterMine')}
               </button>
             </div>
           </div>
@@ -385,8 +389,12 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                   <MessageSquare className="w-5 h-5 text-blue-500" />
                 </div>
                 <p className="text-sm text-gray-700">
-                  <span className="font-bold text-blue-700">로그인</span>하고 첫 리뷰를 남겨보세요!<br />
-                  <span className="text-xs text-gray-500">다른 여행자들에게 큰 도움이 됩니다.</span>
+                  <Trans
+                    i18nKey="place.reviews.loginBanner"
+                    components={{ bold: <span className="font-bold text-blue-700" /> }}
+                  />
+                  <br />
+                  <span className="text-xs text-gray-500">{t('place.reviews.loginHint')}</span>
                 </p>
               </div>
               <button
@@ -398,7 +406,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                 }
                 className="shrink-0 w-full sm:w-auto px-5 py-2 bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 text-sm font-bold rounded-lg transition-colors shadow-sm"
               >
-                로그인 하기
+                {t('place.reviews.loginAction')}
               </button>
             </div>
           )}
@@ -408,9 +416,9 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
             <div className="mb-6 border border-gray-100 rounded-xl bg-gray-50/50 p-4">
               <div className="flex items-center gap-2 mb-4">
                 <BookOpen className="w-4 h-4 text-emerald-500" />
-                <h4 className="font-bold text-gray-800">이 장소의 여행기</h4>
+                <h4 className="font-bold text-gray-800">{t('place.reviews.sectionTitle')}</h4>
                 <span className="text-[10px] text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
-                  블로그
+                  {t('place.reviews.blogBadge')}
                 </span>
               </div>
               <div className="flex gap-3 overflow-x-auto pb-2 snap-x custom-scrollbar">
@@ -451,7 +459,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12 text-gray-500">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4" />
-              리뷰를 불러오는 중입니다...
+              {t('place.reviews.loading')}
             </div>
           ) : reviews.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -459,16 +467,16 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                 <MessageSquare className="w-8 h-8 text-gray-300" />
               </div>
               <p className="text-gray-600 font-medium mb-1">
-                {filter === 'mine' ? '작성한 리뷰가 없습니다.' : '아직 작성된 리뷰가 없습니다.'}
+                {filter === 'mine' ? t('place.reviews.emptyMine') : t('place.reviews.emptyAll')}
               </p>
-              <p className="text-sm text-gray-400 mb-6">첫 번째 리뷰를 남겨보세요!</p>
+              <p className="text-sm text-gray-400 mb-6">{t('place.reviews.empty')}</p>
               {filter !== 'mine' && (
                 <button
                   type="button"
                   onClick={handleWriteClick}
                   className="text-blue-600 text-sm font-medium hover:underline"
                 >
-                  리뷰 작성하기
+                  {t('place.reviews.writeFirst')}
                 </button>
               )}
             </div>
@@ -534,7 +542,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
             <img
               key={viewerIndex} // 키를 변경하여 재렌더링 유도
               src={viewerImages[viewerIndex]?.url || viewerImages[viewerIndex]?.publicUrl || viewerImages[viewerIndex]}
-              alt="갤러리 뷰어 이미지"
+              alt={t('place.reviews.galleryViewerAlt')}
               className="max-w-full max-h-full object-contain select-none"
               loading="lazy"
               onError={(e) => {

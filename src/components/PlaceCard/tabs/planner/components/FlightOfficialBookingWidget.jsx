@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import { ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { isMobileDevice } from '../../../common/device';
 import { plannerLinkHint } from '../readableText';
 import {
   resolveFlightBookingProfile,
+  resolveLocalizedBookingNote,
   resolveOfficialFlightLinks,
   shouldShowOfficialFlightBooking,
 } from '../../../../../utils/flightBookingMatch';
@@ -17,12 +19,13 @@ const PROVIDER_BUTTON_STYLES = {
  * OTA 미지원·분할 예약 — 공식 항공 링크 + bookingNote (Trip CTA와 병렬).
  */
 const FlightOfficialBookingWidget = ({ location }) => {
+  const { i18n } = useTranslation();
   const profile = resolveFlightBookingProfile(location);
   const officialLinks = useMemo(() => resolveOfficialFlightLinks(location), [location]);
 
   if (!shouldShowOfficialFlightBooking(location) || !profile) return null;
 
-  const note = profile.bookingNote?.trim();
+  const note = resolveLocalizedBookingNote(profile, i18n.language);
   const hasLinks = officialLinks.length > 0;
 
   if (!note && !hasLinks) return null;
@@ -45,7 +48,11 @@ const FlightOfficialBookingWidget = ({ location }) => {
                 PROVIDER_BUTTON_STYLES[link.provider] ?? PROVIDER_BUTTON_STYLES.direct
               } ${officialLinks.length === 1 ? 'col-span-2' : ''}`}
               aria-label={
-                link.subtext ? `${link.name}. ${link.subtext}` : `${link.name}에서 검색하기`
+                link.subtext
+                  ? `${link.name}. ${link.subtext}`
+                  : String(i18n.language || '').toLowerCase().startsWith('en')
+                    ? `Search on ${link.name}`
+                    : `${link.name}에서 검색하기`
               }
             >
               <span className="flex items-center justify-center gap-1 min-w-0 text-[11px] md:text-xs font-semibold">

@@ -4,6 +4,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { getPlaceStatsId } from '../../utils/travelSpotResolve';
+import { buildPlaceStatsIdentityPayload } from '../../pages/Home/lib/visitedPlaceSearch.js';
 
 // 1. 비밀 금고(.env)에서 열쇠 꺼내기
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -39,9 +40,22 @@ export const recordInteraction = async (placeIdOrLocation, type) => {
   const storageKey = `Days_Score_${type}_${placeId}`; 
   const lastActionDate = storage.getItem(storageKey);
 
+  const persistIdentity = () => {
+    if (typeof placeIdOrLocation !== 'object' || !placeIdOrLocation) return;
+    const identity = buildPlaceStatsIdentityPayload(placeIdOrLocation);
+    if (!identity) return;
+    supabase
+      .from('place_stats')
+      .upsert(identity, { onConflict: 'place_id' })
+      .then(({ error: metaError }) => {
+        if (metaError) console.warn('🚨 [Rank] place_stats identity upsert failed:', metaError);
+      });
+  };
+
   // 영수증 날짜가 오늘과 같다면 DB 쿼리를 생략하고 조용히 함수 종료 (Subtraction)
   if (lastActionDate === today) {
       console.log(`🛡️ [Abuse Guard] Blocked duplicate '${type}' for ${placeId} in this session/day.`);
+      persistIdentity();
       return; 
   }
 
@@ -61,6 +75,8 @@ export const recordInteraction = async (placeIdOrLocation, type) => {
   } else {
       console.log(`📊 [Rank] Successfully added '${type}' score for ${placeId}.`);
   }
+
+  persistIdentity();
 };
 
 // 🚨 [New] 유저 프로필 조회 함수 (Schema First: profiles 테이블 연동)

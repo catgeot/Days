@@ -1,8 +1,10 @@
 import React from 'react';
 import { Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const HomeButton = () => {
+  const { t } = useTranslation();
   return (
     <div className="px-6 pt-5 pb-0 flex justify-between items-center">
       <Link
@@ -11,7 +13,7 @@ const HomeButton = () => {
         title="Go Home (Return to Globe)"
       >
         <Home size={20} className="group-hover:-translate-y-1 transition-transform duration-300 ease-in-out"/>
-        <span className="text-sm font-bold tracking-tight">홈으로</span>
+        <span className="text-sm font-bold tracking-tight">{t('logbook.common.home')}</span>
       </Link>
     </div>
   );

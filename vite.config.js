@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import Sitemap from 'vite-plugin-sitemap';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import { writeFileSync } from 'fs';
 import { execSync } from 'child_process';
@@ -42,6 +41,7 @@ const koreaRoutes = [
   '/korea/theme/courses',
   '/korea/theme/regions',
   '/korea/theme/packages',
+  '/world-events',
 ];
 
 const dynamicRoutes = [...placeRoutes, ...exploreRoutes, ...koreaRoutes];
@@ -75,11 +75,6 @@ export default defineConfig({
     react(),
     ...(devSsl ? [basicSsl()] : []),
     gateoEmitVersionJson(),
-    Sitemap({
-      hostname: 'https://www.gateo.kr',
-      dynamicRoutes,
-      generateRobotsTxt: false, // 별도로 생성할 예정
-    }),
   ],
   server: {
     // 모바일·다른 기기에서 LAN IP(예: 192.168.219.106)로 접속할 때 사용

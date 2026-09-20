@@ -1,8 +1,299 @@
 {
   "redirects": [
     {
+      "source": "/qa/planner-stages",
+      "destination": "https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/flight",
+      "destination": "https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/tripcom-flight",
+      "destination": "https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/festival-ui",
+      "destination": "https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea",
+      "permanent": false
+    },
+    {
+      "source": "/qa/hyanggyo",
+      "destination": "https://days-git-cursor-hyanggyo-search-f9b8-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/search-enter-hub",
+      "destination": "https://days-git-cursor-search-enter-hub-2018-catgeots-projects.vercel.app/explore",
+      "permanent": false
+    },
+    {
+      "source": "/qa/dest-match",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/visitor-growth",
+      "destination": "https://days-git-cursor-visitor-growth-1f90-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/explore-search",
+      "destination": "https://days-git-cursor-explore-search-d14b-catgeots-projects.vercel.app/explore",
+      "permanent": false
+    },
+    {
+      "source": "/qa/gemini",
+      "destination": "https://days-git-cursor-gemini-models-df4c-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/korea-tna-strip",
+      "destination": "https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-stay",
+      "destination": "https://days-git-cursor-scenic-stay-692c-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
+      "source": "/qa/planner-empty",
+      "destination": "https://days-git-cursor-planner-empty-pad-6089-catgeots-projects.vercel.app/place/yanggu-arboretum/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/globe-frame-zoom",
+      "destination": "https://days-git-cursor-globe-frame-zoom-7106-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/summary-close",
+      "destination": "https://days-git-cursor-summary-close-1030-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/gallery-panel",
+      "destination": "https://days-git-cursor-gallery-panel-032e-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
+      "source": "/qa/zakynthos",
+      "destination": "https://days-git-cursor-zakynthos-search-e84a-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/gallery-portrait",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/agencies",
+      "destination": "https://days-git-cursor-agencies-85ab-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/logbook",
+      "destination": "https://www.gateo.kr/blog",
+      "permanent": true
+    },
+    {
+      "source": "/qa/gallery-fresh",
+      "destination": "https://days-git-cursor-gallery-swr-6b36-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
+      "source": "/qa/palgyeong-use",
+      "destination": "https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/pickup",
+      "destination": "https://days-git-cursor-klook-pickup-d5a5-catgeots-projects.vercel.app/place/fukuoka/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/updates",
+      "destination": "https://days-git-cursor-updates-0e16-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/gallery-related",
+      "destination": "https://days-git-cursor-gallery-scroll-76a6-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
+      "source": "/qa/gallery",
+      "destination": "https://days-git-cursor-gallery-manage-173f-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
+      "source": "/qa/globe-labels",
+      "destination": "https://days-git-cursor-globe-labels-ddce-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/home-chip",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/chrome-hit",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/logbook-curation",
+      "destination": "https://www.gateo.kr/blog/curation",
+      "permanent": false
+    },
+    {
+      "source": "/qa/korea-recent-search",
+      "destination": "https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-hwaeomsa",
+      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/logbook-cta",
+      "destination": "https://www.gateo.kr/blog",
+      "permanent": false
+    },
+    {
+      "source": "/qa/aitutaki-tour",
+      "destination": "https://days-git-cursor-aitutaki-gyg-tour-b09e-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/curation",
+      "destination": "https://www.gateo.kr/blog/curation?debug=curation",
+      "permanent": false
+    },
+
+    {
+      "source": "/qa/summary-bottom",
+      "destination": "https://days-git-cursor-summary-mobile-bottom-f024-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/zermatt-flight",
+      "destination": "https://days-git-cursor-flight-cinema-zermatt-f4d1-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/summary-planner",
+      "destination": "https://days-git-cursor-summary-planner-bd48-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/festival-samehub",
+      "destination": "https://days-git-cursor-festival-samehub-8585-catgeots-projects.vercel.app/korea",
+      "permanent": false
+    },
+    {
+      "source": "/qa/page-end-pad",
+      "destination": "https://days-git-cursor-page-end-pad-1e22-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/korea-seo",
+      "destination": "https://www.gateo.kr/korea",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-list",
+      "destination": "https://days-git-cursor-scenic-list-large-a55c-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/brand",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-map",
+      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-favorites",
+      "destination": "https://days-git-cursor-scenic-favorites-492c-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-search-focus",
+      "destination": "https://days-git-cursor-scenic-search-focus-9792-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-food-naver",
+      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-hub-fill",
+      "destination": "https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-yangyang",
+      "destination": "https://www.gateo.kr/korea/theme/scenic?hub=yangyang",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-detail-overflow",
+      "destination": "https://days-git-cursor-scenic-detail-overflow-3f84-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-empty-chips",
+      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-search-clear",
+      "destination": "https://days-git-cursor-scenic-search-clear-f5a5-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-home-scroll",
+      "destination": "https://days-git-cursor-scenic-home-scroll-8482-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-mid-cluster",
+      "destination": "https://days-git-cursor-scenic-mid-cluster-67a8-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-default-chip",
+      "destination": "https://days-git-cursor-scenic-default-chip-6098-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-chip",
+      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-nearby",
+      "destination": "https://days-git-cursor-scenic-nearby-yanggu-7658-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/home-korea",
+      "destination": "https://www.gateo.kr/korea",
+      "permanent": false
+    },
+    {
       "source": "/qa/korea-theme",
-      "destination": "https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic",
+      "destination": "https://www.gateo.kr/korea/theme/scenic",
       "permanent": false
     },
     {
@@ -28,6 +319,36 @@
     {
       "source": "/qa/puzzle",
       "destination": "https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo",
+      "permanent": false
+    },
+    {
+      "source": "/qa/en-seo",
+      "destination": "https://days-git-cursor-en-seo-catgeots-projects.vercel.app/place/tokyo/gallery?crawler=1",
+      "permanent": false
+    },
+    {
+      "source": "/qa/en",
+      "destination": "https://www.gateo.kr/?lang=en",
+      "permanent": false
+    },
+    {
+      "source": "/qa/search-hit",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/world-events",
+      "destination": "https://days-git-cursor-world-events-wave3-catgeots-projects.vercel.app/world-events",
+      "permanent": false
+    },
+    {
+      "source": "/en/world-events",
+      "destination": "https://www.gateo.kr/world-events?lang=en",
+      "permanent": false
+    },
+    {
+      "source": "/en/world-events/:eventId",
+      "destination": "https://www.gateo.kr/world-events/:eventId?lang=en",
       "permanent": false
     }
   ],

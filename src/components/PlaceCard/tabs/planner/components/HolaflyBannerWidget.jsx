@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { getHolaflyHomeUrl } from '../../../../../utils/affiliate';
 import holaflyBannerImg from '../../../../../assets/Holafly.png';
 
@@ -8,13 +9,15 @@ const HOLAFLY_URL = getHolaflyHomeUrl({
 });
 
 const HolaflyBannerWidget = ({ className = '' }) => {
+    const { t } = useTranslation();
+
     return (
         <a
             href={HOLAFLY_URL}
             target="_blank"
             rel="noopener noreferrer sponsored"
             className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-rose-300/90 bg-white shadow-sm ring-1 ring-rose-900/10 transition-all hover:border-rose-400 hover:shadow-md hover:ring-rose-900/15 ${className}`}
-            aria-label="Holafly eSIM 제휴 배너: 무제한 데이터 중심"
+            aria-label={t('place.planner.banners.holafly.aria')}
         >
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-rose-100/90 bg-gradient-to-r from-rose-50/90 to-white px-2.5 py-1.5 md:px-3">
                 <div className="flex min-w-0 flex-1 items-baseline gap-1.5">
@@ -24,7 +27,7 @@ const HolaflyBannerWidget = ({ className = '' }) => {
                     </span>
                 </div>
                 <span className="shrink-0 rounded-full bg-gray-800/90 px-2 py-0.5 text-[10px] font-bold text-white">
-                    제휴광고
+                    {t('place.planner.banners.affiliateBadge')}
                 </span>
             </div>
             <div className="relative overflow-hidden">
@@ -38,11 +41,11 @@ const HolaflyBannerWidget = ({ className = '' }) => {
             </div>
             <div className="border-t border-rose-100/90 bg-gradient-to-b from-rose-50/70 to-white px-2.5 py-2 md:px-3">
                 <p className="break-keep text-xs leading-snug text-gray-700 md:text-sm">
-                    <span className="font-bold text-rose-800">무제한 중심</span>
+                    <span className="font-bold text-rose-800">{t('place.planner.banners.holafly.subtitleBold')}</span>
                     <span className="mx-0.5 text-rose-700/70" aria-hidden="true">
                         ·
                     </span>
-                    데이터 걱정 줄이고, 장기·단순 플랜에 유리
+                    {t('place.planner.banners.holafly.subtitleRest')}
                 </p>
             </div>
         </a>

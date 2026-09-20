@@ -22,16 +22,16 @@ export const TOUR_AREA_TO_CHA_CTCD = {
   39: '50',
 };
 
-/** 강원·전북 특별자치 코드도 같은 권역 칩에 합침 */
+/** 강원·전남광주 통합 코드도 같은 권역 칩에 합침 (51=강원 · 52=전남광주) */
 const CHA_CTCD_ALIASES = {
   32: ['32', '51'],
   51: ['32', '51'],
-  35: ['35', '52'],
-  52: ['35', '52'],
+  36: ['36', '52'],
+  52: ['36', '52'],
 };
 
 /** CHA ctcd → TourAPI areaCode (칩·필터 정합) */
-const CHA_CTCD_TO_TOUR_AREA = {
+export const CHA_CTCD_TO_TOUR_AREA = {
   11: '1',
   23: '2',
   25: '3',
@@ -48,8 +48,8 @@ const CHA_CTCD_TO_TOUR_AREA = {
   37: '35',
   38: '36',
   35: '37',
-  52: '37',
   36: '38',
+  52: '38',
   50: '39',
 };
 
@@ -154,6 +154,15 @@ export function getKoreaHeritageScenicById(id) {
   if (!key) return null;
   const spots = Array.isArray(data?.spots) ? data.spots : [];
   return spots.find((s) => s.id === key) || null;
+}
+
+/**
+ * @param {object | null | undefined} spot
+ * @returns {string | null}
+ */
+export function heritageTourAreaCodeForSpot(spot) {
+  const tourCode = CHA_CTCD_TO_TOUR_AREA[String(spot?.ctcd || '')];
+  return tourCode || null;
 }
 
 /**

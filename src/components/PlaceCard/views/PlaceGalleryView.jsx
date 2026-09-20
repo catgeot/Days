@@ -1,14 +1,20 @@
-import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp, Trash2 } from 'lucide-react';
+import { i18n } from '../../../i18n/config';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
-import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
+import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
+import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
+import PlaceScenicGateway from '../common/PlaceScenicGateway';
+import { useLocale } from '../../../i18n/LocaleProvider';
+import { useGalleryLongPress } from '../common/galleryLongPress';
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
@@ -32,6 +38,8 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   eager = false,
   onOpen,
   onRemove,
+  onManage,
+  enableLongPress = false,
   onBroken,
   onPainted,
 }) {
@@ -47,6 +55,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
 
   const src = img?.urls?.small || img?.urls?.regular;
   const hasAspect = Boolean(img?.width && img?.height);
+  const longPress = useGalleryLongPress(enableLongPress && Boolean(onManage), () => onManage?.(img));
 
   const markPainted = useCallback(() => {
     if (paintedRef.current) return;
@@ -106,6 +115,11 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   return (
     <div
       onClick={(e) => {
+        if (longPress.consumeClickSuppression()) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         if (e.ctrlKey || e.metaKey) return;
         e.stopPropagation();
         onOpen?.(e);
@@ -116,8 +130,16 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
           if (onRemove) onRemove(img);
         }
       }}
-      className="break-inside-avoid bg-white/[0.06] rounded-2xl border border-white/10 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
-      style={hasAspect ? { aspectRatio: `${img.width} / ${img.height}` } : undefined}
+      onTouchStart={longPress.onTouchStart}
+      onTouchMove={longPress.onTouchMove}
+      onTouchEnd={longPress.onTouchEnd}
+      onTouchCancel={longPress.onTouchCancel}
+      onContextMenu={longPress.onContextMenu}
+      className="break-inside-avoid bg-white/[0.06] rounded-2xl border border-white/10 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden touch-manipulation select-none"
+      style={{
+        ...(hasAspect ? { aspectRatio: `${img.width} / ${img.height}` } : {}),
+        WebkitTouchCallout: enableLongPress ? 'none' : undefined,
+      }}
     >
       {!loaded && (
         <div
@@ -135,6 +157,8 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
         referrerPolicy="no-referrer"
+        draggable={false}
+        style={enableLongPress ? { WebkitTouchCallout: 'none' } : undefined}
         width={img.width || undefined}
         height={img.height || undefined}
         onLoad={settleLoaded}
@@ -152,12 +176,12 @@ const GalleryLoadingChrome = () => (
     role="status"
     aria-live="polite"
     aria-busy="true"
-    aria-label="사진을 불러오는 중"
+    aria-label={i18n.t('place.gallery.loading')}
   >
     <div className="h-10 w-10 rounded-full border-[3px] border-blue-300/35 border-t-blue-300 animate-spin" />
-    <p className="text-sm font-semibold text-white/85">사진을 불러오는 중...</p>
+    <p className="text-sm font-semibold text-white/85">{i18n.t('place.gallery.loadingBody')}</p>
     <p className="text-center text-[11px] leading-relaxed text-white/45">
-      저장된 사진을 불러오는 중이에요
+      {i18n.t('place.gallery.loadingSaved')}
     </p>
   </div>
 );
@@ -166,6 +190,58 @@ const mobileNavButtonClass = (enabled) =>
   `flex shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/80 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 ${
     enabled ? 'hover:bg-blue-600/90 hover:border-blue-300/60' : 'opacity-45'
   }`;
+
+const GalleryManageSheet = ({ img, onConfirm, onCancel, t }) => {
+  if (!img) return null;
+  const thumb = img.urls?.small || img.urls?.regular;
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10050] flex items-end justify-center bg-black/70 p-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="gallery-manage-title"
+      onClick={onCancel}
+    >
+      <div
+        className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0b1018] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.55)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {thumb && (
+          <img
+            src={thumb}
+            alt=""
+            className="mb-3 h-28 w-full rounded-xl object-cover"
+            referrerPolicy="no-referrer"
+          />
+        )}
+        <h2 id="gallery-manage-title" className="text-base font-semibold text-white">
+          {t('place.gallery.manageTitle')}
+        </h2>
+        <p className="mt-1.5 text-sm leading-relaxed text-white/65">
+          {t('place.gallery.manageBody')}
+        </p>
+        <div className="mt-4 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="flex h-12 items-center justify-center gap-2 rounded-full border border-red-400/40 bg-red-500/90 text-sm font-semibold text-white shadow-[0_4px_24px_rgba(0,0,0,0.35)] transition-all touch-manipulation active:scale-95 hover:bg-red-500"
+          >
+            <Trash2 size={16} strokeWidth={2.25} />
+            {t('place.gallery.manageRemove')}
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex h-12 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-sm font-semibold text-white/85 transition-all touch-manipulation active:scale-95 hover:bg-white/10"
+          >
+            {t('place.gallery.manageCancel')}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+};
 
 const PlaceGalleryView = React.memo(({
   location,
@@ -182,10 +258,15 @@ const PlaceGalleryView = React.memo(({
   handleRefresh,
   getRefreshCooldownRemaining,
   refreshCooldownSec = 30,
+  galleryAtMax = false,
   handleRemoveImage,
   handleDropBrokenImage,
+  loadFailed = false,
+  handleRetryLoad,
   mobileSecondaryNav = null
 }) => {
+  const { t } = useTranslation();
+  const { locale } = useLocale();
   const fullScreenContainerRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const mobileSwipeStartRef = useRef(null);
@@ -193,6 +274,7 @@ const PlaceGalleryView = React.memo(({
   /** 그리드 클릭 직후 라이트박스에 같은 클릭이 전달되어 즉시 닫히는 것 방지 */
   const suppressOpenClickRef = useRef(false);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const pendingPlaceScrollResetRef = useRef(false);
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -221,6 +303,7 @@ const PlaceGalleryView = React.memo(({
   const [isTouchDevice, setIsTouchDevice] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(TOUCH_DEVICE_QUERY).matches
   );
+  const [manageTarget, setManageTarget] = useState(null);
   const [refreshCooldownLeft, setRefreshCooldownLeft] = useState(0);
   /** 최초 진입 decode 전용 — 더보기로 목록이 늘어도 다시 스켈레톤/크롬을 띄우지 않음 */
   const [paintedCount, setPaintedCount] = useState(0);
@@ -241,12 +324,29 @@ const PlaceGalleryView = React.memo(({
       paintedCount < paintTarget,
   );
   const showLoadingChrome = Boolean(showInitialSkeleton || isPaintPending);
-  const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton);
+  const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton && !galleryAtMax);
 
   useEffect(() => {
     setPaintedCount(0);
     setGalleryVisuallyReady(false);
   }, [galleryPlaceKey]);
+
+  useLayoutEffect(() => {
+    pendingPlaceScrollResetRef.current = true;
+    resetPlaceMediaScrollInstant(scrollContainerRef.current);
+    setShowScrollToTop(false);
+    const raf = window.requestAnimationFrame(() => {
+      resetPlaceMediaScrollInstant(scrollContainerRef.current);
+    });
+    return () => window.cancelAnimationFrame(raf);
+  }, [galleryPlaceKey]);
+
+  useLayoutEffect(() => {
+    if (!pendingPlaceScrollResetRef.current || isImgLoading || isRefreshing) return;
+    resetPlaceMediaScrollInstant(scrollContainerRef.current);
+    pendingPlaceScrollResetRef.current = false;
+    setShowScrollToTop(false);
+  }, [isImgLoading, isRefreshing, galleryPlaceKey]);
 
   useEffect(() => {
     if (paintedCount >= paintTarget && paintTarget > 0) {
@@ -295,6 +395,29 @@ const PlaceGalleryView = React.memo(({
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
   }, []);
+
+  const closeManageSheet = useCallback(() => setManageTarget(null), []);
+  const confirmManageRemove = useCallback(() => {
+    if (!manageTarget || !handleRemoveImage) return;
+    handleRemoveImage(manageTarget);
+    if (selectedImg?.id === manageTarget.id) setSelectedImg(null);
+    setManageTarget(null);
+  }, [manageTarget, handleRemoveImage, selectedImg, setSelectedImg]);
+
+  const {
+    onTouchStart: onLightboxLongPressStart,
+    onTouchMove: onLightboxLongPressMove,
+    onTouchEnd: onLightboxLongPressEnd,
+    onTouchCancel: onLightboxLongPressCancel,
+    onContextMenu: onLightboxLongPressContextMenu,
+    consumeClickSuppression: consumeLightboxClickSuppression,
+  } = useGalleryLongPress(
+    Boolean(isTouchDevice && selectedImg && handleRemoveImage && !isZoomed()),
+    () => {
+      suppressMobileTapRef.current = true;
+      setManageTarget(selectedImg);
+    },
+  );
 
   useEffect(() => {
     if (!shouldUseMobilePortal) return undefined;
@@ -357,7 +480,7 @@ const PlaceGalleryView = React.memo(({
     el.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => el.removeEventListener('scroll', onScroll);
-  }, [selectedImg, images.length, isImgLoading]);
+  }, [selectedImg, images.length, isImgLoading, galleryPlaceKey]);
 
   const handlePrev = useCallback((e) => {
     e?.stopPropagation();
@@ -371,13 +494,20 @@ const PlaceGalleryView = React.memo(({
 
   const onMobilePhotoTouchStart = useCallback((e) => {
     onPinchTouchStart(e);
+    onLightboxLongPressStart(e);
     if (!showNavControls || e.touches.length !== 1 || isZoomed()) return;
     const t = e.touches[0];
     mobileSwipeStartRef.current = { x: t.clientX, y: t.clientY };
     suppressMobileTapRef.current = false;
-  }, [showNavControls, isZoomed, onPinchTouchStart]);
+  }, [showNavControls, isZoomed, onPinchTouchStart, onLightboxLongPressStart]);
+
+  const onMobilePhotoTouchMove = useCallback((e) => {
+    onLightboxLongPressMove(e);
+    onPinchTouchMove(e);
+  }, [onLightboxLongPressMove, onPinchTouchMove]);
 
   const onMobilePhotoTouchEnd = useCallback((e) => {
+    onLightboxLongPressEnd(e);
     onPinchTouchEnd(e);
     const start = mobileSwipeStartRef.current;
     mobileSwipeStartRef.current = null;
@@ -392,15 +522,20 @@ const PlaceGalleryView = React.memo(({
     suppressMobileTapRef.current = true;
     if (dx > 0) handlePrev();
     else handleNext();
-  }, [showNavControls, handlePrev, handleNext, isZoomed, onPinchTouchEnd]);
+  }, [showNavControls, handlePrev, handleNext, isZoomed, onPinchTouchEnd, onLightboxLongPressEnd]);
 
   const onMobilePhotoTouchCancel = useCallback(() => {
+    onLightboxLongPressCancel();
     onPinchTouchCancel();
     mobileSwipeStartRef.current = null;
-  }, [onPinchTouchCancel]);
+  }, [onPinchTouchCancel, onLightboxLongPressCancel]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && manageTarget) {
+        setManageTarget(null);
+        return;
+      }
       if (!selectedImg) return;
       if (e.key === 'Escape') setSelectedImg(null);
       if (e.key === 'ArrowLeft') handlePrev();
@@ -408,12 +543,12 @@ const PlaceGalleryView = React.memo(({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedImg, handlePrev, handleNext, setSelectedImg]);
+  }, [selectedImg, manageTarget, handlePrev, handleNext, setSelectedImg]);
 
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden || isMobileLandscapeImmersive;
 
   const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
-    useMemo(() => splitPlaceOverview(location), [location]);
+    useMemo(() => splitPlaceOverview(location, locale), [location, locale]);
   const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
 
   const photoCaption = useMemo(() => {
@@ -463,7 +598,7 @@ const PlaceGalleryView = React.memo(({
           className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen overflow-hidden bg-black animate-fade-in"
           role="dialog"
           aria-modal="true"
-          aria-label="갤러리 사진 확대 보기"
+          aria-label={t('place.gallery.zoomView')}
         >
           <div className="relative h-full w-full portrait:flex portrait:flex-col">
           <div
@@ -474,7 +609,7 @@ const PlaceGalleryView = React.memo(({
               <div className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/55 px-3 py-2.5 backdrop-blur-md shadow-lg landscape:rounded-xl landscape:border-white/10 landscape:bg-black/45 landscape:px-2.5 landscape:py-1.5">
                 <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-blue-300/90 landscape:sr-only">
                   <ImageIcon size={11} className="shrink-0 opacity-90" aria-hidden />
-                  사진 노트
+                  {t('place.gallery.photoNote')}
                 </p>
                 <p className="max-h-[2.75rem] overflow-y-auto text-sm leading-snug text-gray-100/95 whitespace-pre-line landscape:max-h-none landscape:overflow-hidden landscape:text-xs landscape:truncate">
                   {photoCaption}
@@ -485,7 +620,7 @@ const PlaceGalleryView = React.memo(({
             )}
             <button
               onClick={() => setSelectedImg(null)}
-              aria-label="닫기"
+              aria-label={t('place.gallery.close')}
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/70 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 hover:border-red-300/60 hover:bg-red-500/90 hover:ring-red-300/40 landscape:h-10 landscape:w-10"
             >
               <X size={26} strokeWidth={2.5} className="landscape:h-6 landscape:w-6" />
@@ -495,11 +630,13 @@ const PlaceGalleryView = React.memo(({
           <div
             className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-4 portrait:flex-1 landscape:absolute landscape:inset-0 landscape:z-0 landscape:px-14 landscape:py-1 touch-none"
             onTouchStart={onMobilePhotoTouchStart}
-            onTouchMove={onPinchTouchMove}
+            onTouchMove={onMobilePhotoTouchMove}
             onTouchEnd={onMobilePhotoTouchEnd}
             onTouchCancel={onMobilePhotoTouchCancel}
+            onContextMenu={onLightboxLongPressContextMenu}
             onClick={(e) => {
               e.stopPropagation();
+              if (consumeLightboxClickSuppression()) return;
               if (suppressOpenClickRef.current) return;
               if (suppressMobileTapRef.current) {
                 suppressMobileTapRef.current = false;
@@ -523,9 +660,10 @@ const PlaceGalleryView = React.memo(({
             <img
               src={selectedImg.urls.regular}
               className="max-h-full max-w-full select-none rounded-lg object-contain shadow-2xl animate-fade-in landscape:h-full landscape:w-full landscape:max-h-[100dvh] landscape:max-w-[100vw] landscape:rounded-none landscape:shadow-none"
-              style={transformStyle}
+              style={{ ...transformStyle, WebkitTouchCallout: 'none' }}
               alt="full-view"
               referrerPolicy="no-referrer"
+              draggable={false}
               onError={() => handleDropBrokenImage?.(selectedImg)}
             />
           </div>
@@ -536,7 +674,7 @@ const PlaceGalleryView = React.memo(({
                 type="button"
                 onClick={handlePrev}
                 disabled={!canGoPrev}
-                aria-label="이전 사진"
+                aria-label={t('place.gallery.prevPhoto')}
                 className={`${mobileNavButtonClass(canGoPrev)} portrait:hidden landscape:absolute landscape:left-[max(0.5rem,env(safe-area-inset-left,0px))] landscape:top-1/2 landscape:z-[220] landscape:h-11 landscape:w-11 landscape:-translate-y-1/2 ${isUIHidden ? 'opacity-0 pointer-events-none' : ''}`}
               >
                 <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
@@ -545,7 +683,7 @@ const PlaceGalleryView = React.memo(({
                 type="button"
                 onClick={handleNext}
                 disabled={!canGoNext}
-                aria-label="다음 사진"
+                aria-label={t('place.gallery.nextPhoto')}
                 className={`${mobileNavButtonClass(canGoNext)} portrait:hidden landscape:absolute landscape:right-[max(0.5rem,env(safe-area-inset-right,0px))] landscape:top-1/2 landscape:z-[220] landscape:h-11 landscape:w-11 landscape:-translate-y-1/2 ${isUIHidden ? 'opacity-0 pointer-events-none' : ''}`}
               >
                 <ChevronRight className="h-6 w-6" strokeWidth={2.5} />
@@ -571,7 +709,7 @@ const PlaceGalleryView = React.memo(({
                   type="button"
                   onClick={handlePrev}
                   disabled={!canGoPrev}
-                  aria-label="이전 사진"
+                  aria-label={t('place.gallery.prevPhoto')}
                   className={`${mobileNavButtonClass(canGoPrev)} h-12 w-12 portrait:flex landscape:hidden`}
                 >
                   <ChevronLeft className="h-7 w-7" strokeWidth={2.5} />
@@ -595,8 +733,8 @@ const PlaceGalleryView = React.memo(({
                   type="button"
                   onClick={() => handleDownload && handleDownload(selectedImg)}
                   className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white/90 backdrop-blur-md transition-all hover:bg-blue-600 hover:text-white landscape:h-10 landscape:w-10"
-                  title="이미지 다운로드"
-                  aria-label="이미지 다운로드"
+                  title={t('place.gallery.download')}
+                  aria-label={t('place.gallery.download')}
                 >
                   <Download size={20} />
                 </button>
@@ -607,7 +745,7 @@ const PlaceGalleryView = React.memo(({
                   type="button"
                   onClick={handleNext}
                   disabled={!canGoNext}
-                  aria-label="다음 사진"
+                  aria-label={t('place.gallery.nextPhoto')}
                   className={`${mobileNavButtonClass(canGoNext)} h-12 w-12 portrait:flex landscape:hidden`}
                 >
                   <ChevronRight className="h-7 w-7" strokeWidth={2.5} />
@@ -661,7 +799,7 @@ const PlaceGalleryView = React.memo(({
             type="button"
             onClick={handlePrev}
             disabled={!canGoPrev}
-            aria-label="이전 사진"
+            aria-label={t('place.gallery.prevPhoto')}
             className={`${mobileNavButtonClass(canGoPrev)} h-12 w-12 md:h-11 md:w-11`}
           >
             <ChevronLeft className="h-7 w-7 md:h-6 md:w-6" strokeWidth={2.5} />
@@ -681,8 +819,8 @@ const PlaceGalleryView = React.memo(({
               type="button"
               onClick={() => handleDownload && handleDownload(selectedImg)}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white/90 backdrop-blur-md transition-all hover:bg-blue-600 hover:text-white"
-              title="이미지 다운로드"
-              aria-label="이미지 다운로드"
+              title={t('place.gallery.download')}
+              aria-label={t('place.gallery.download')}
             >
               <Download size={20} />
             </button>
@@ -692,7 +830,7 @@ const PlaceGalleryView = React.memo(({
             type="button"
             onClick={handleNext}
             disabled={!canGoNext}
-            aria-label="다음 사진"
+            aria-label={t('place.gallery.nextPhoto')}
             className={`${mobileNavButtonClass(canGoNext)} h-12 w-12 md:h-11 md:w-11`}
           >
             <ChevronRight className="h-7 w-7 md:h-6 md:w-6" strokeWidth={2.5} />
@@ -732,7 +870,7 @@ const PlaceGalleryView = React.memo(({
         <button
           type="button"
           onClick={() => toggleFullScreen(fullScreenContainerRef)}
-          aria-label={isFullScreen ? '전체화면 종료' : '전체화면'}
+          aria-label={isFullScreen ? t('place.gallery.exitFullscreen') : t('place.gallery.fullscreen')}
           className="hidden md:flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-blue-300/60 hover:bg-blue-600/90 hover:ring-blue-300/40"
         >
           {isFullScreen ? <Minimize2 size={22} strokeWidth={2.25} /> : <Maximize2 size={22} strokeWidth={2.25} />}
@@ -740,7 +878,7 @@ const PlaceGalleryView = React.memo(({
         <button
           type="button"
           onClick={isFullScreen ? closeImageKeepFullscreen : () => setSelectedImg(null)}
-          aria-label="닫기"
+          aria-label={t('place.gallery.close')}
           className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-red-300/60 hover:bg-red-500/90 hover:ring-red-300/40 md:h-11 md:w-11"
         >
           <X size={22} strokeWidth={2.5} />
@@ -756,7 +894,7 @@ const PlaceGalleryView = React.memo(({
           <div className="max-h-[30vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-300/90 mb-1.5 flex items-center gap-1.5">
               <ImageIcon size={12} className="shrink-0 opacity-90" aria-hidden />
-              사진 노트
+              {t('place.gallery.photoNote')}
             </p>
             <p className="text-sm text-gray-100/95 leading-relaxed whitespace-pre-line">{photoCaption}</p>
           </div>
@@ -768,10 +906,10 @@ const PlaceGalleryView = React.memo(({
         <button
           onClick={() => handleDownload && handleDownload(selectedImg)}
           className="flex items-center gap-2 p-3 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl"
-          title="이미지 다운로드"
+          title={t('place.gallery.download')}
         >
           <Download size={20} />
-          <span className="hidden md:block text-sm font-medium pr-1">다운로드</span>
+          <span className="hidden md:block text-sm font-medium pr-1">{t('place.gallery.download')}</span>
         </button>
       </div>
       )}
@@ -830,6 +968,18 @@ const PlaceGalleryView = React.memo(({
               </div>
             )}
 
+            <PlaceScenicGateway
+              location={location}
+              variant="dark"
+              className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+            />
+
+            <PlaceWorldEventsSection
+              location={location}
+              variant="dark"
+              className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+            />
+
             <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} max-md:landscape:mt-0 md:mt-0`}>
               {showLoadingChrome && <GalleryLoadingChrome />}
 
@@ -860,6 +1010,8 @@ const PlaceGalleryView = React.memo(({
                         });
                       }}
                       onRemove={handleRemoveImage}
+                      onManage={handleRemoveImage ? (photo) => setManageTarget(photo) : undefined}
+                      enableLongPress={Boolean(isTouchDevice && handleRemoveImage)}
                       onBroken={handleDropBrokenImage}
                     />
                   ))}
@@ -875,10 +1027,10 @@ const PlaceGalleryView = React.memo(({
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/45 hover:bg-blue-500/10 hover:text-blue-300/90 hover:border-blue-500/30 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium"
                     title={
                       isRefreshing
-                        ? '추가 사진을 불러오는 중'
+                        ? t('place.gallery.refreshLoadingTitle')
                         : refreshCooldownLeft > 0
-                          ? `${refreshCooldownLeft}초 후 다시 시도 가능`
-                          : 'Unsplash·Pexels에서 추가 사진 불러오기'
+                          ? t('place.gallery.refreshCooldownTitle', { seconds: refreshCooldownLeft })
+                          : t('place.gallery.refreshTitle')
                     }
                   >
                     <RefreshCw
@@ -892,19 +1044,31 @@ const PlaceGalleryView = React.memo(({
                       }
                     />
                     {isRefreshing
-                      ? '추가 사진을 불러오는 중...'
+                      ? t('place.gallery.refreshLoading')
                       : refreshCooldownLeft > 0
-                        ? `${refreshCooldownLeft}초 후 다시 불러올 수 있어요`
-                        : '더 많은 사진 불러오기'}
+                        ? t('place.gallery.refreshCooldown', { seconds: refreshCooldownLeft })
+                        : t('place.gallery.refreshMore')}
                   </button>
-                  <p className="text-[10px] text-white/25">Unsplash · Pexels · {refreshCooldownSec}초에 한 번</p>
+                  <p className="text-[10px] text-white/25">{t('place.gallery.sourcesRateLimit', { seconds: refreshCooldownSec })}</p>
                 </div>
               )}
 
               {!showInitialSkeleton && !isPaintPending && images.length === 0 && (
                 <div className="w-full h-[300px] flex flex-col items-center justify-center text-white/20 gap-4">
                   <ImageIcon size={48} />
-                  <p className="text-sm">등록된 이미지가 없습니다.</p>
+                  <p className="text-sm text-center px-6">
+                    {loadFailed ? t('place.gallery.networkError') : t('place.gallery.empty')}
+                  </p>
+                  {loadFailed && handleRetryLoad ? (
+                    <button
+                      type="button"
+                      onClick={handleRetryLoad}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/70 hover:bg-blue-500/10 hover:text-blue-300/90 hover:border-blue-500/30 transition-all duration-300 text-xs font-medium"
+                    >
+                      <RefreshCw size={14} />
+                      {t('place.gallery.retry')}
+                    </button>
+                  ) : null}
                 </div>
               )}
             </div>
@@ -912,15 +1076,23 @@ const PlaceGalleryView = React.memo(({
         </div>
         </div>
       )}
+      {manageTarget && (
+        <GalleryManageSheet
+          img={manageTarget}
+          t={t}
+          onConfirm={confirmManageRemove}
+          onCancel={closeManageSheet}
+        />
+      )}
       {showScrollToTop && !selectedImg && createPortal(
         <button
           type="button"
           onClick={scrollGalleryToTop}
           className={`fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-24 right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5 touch-manipulation ${mobileLandscapeChromeHidden}`}
-          aria-label="갤러리 맨 위로"
+          aria-label={t('place.gallery.scrollTop')}
         >
           <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />
-          <span className="hidden md:inline text-sm font-bold">맨 위</span>
+          <span className="hidden md:inline text-sm font-bold">{t('place.gallery.scrollTopShort')}</span>
         </button>,
         document.body
       )}

@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import {
   fetchPlaceChatIntroSummary,
   generatePlaceChatIntroWithAi,
   persistPlaceChatIntroSummary,
   formatPlaceChatLabel,
+  localizeMooniPlaceLabel,
   stripPlaceChatIntroForSummary,
 } from '../lib/placeChatIntro';
 import { resolveCatalogPlaceSlug } from '../lib/formatUrlName';
@@ -47,12 +50,14 @@ import {
 import {
   buildMooniIntroWithHint,
   getMooniQuickReplies,
+  getMooniGeneralDiscoveryChips,
   getMooniL1ChipLabel,
-  ACCESS_DEPARTURE_INPUT_PLACEHOLDER,
   buildAccessRouteAskText,
 } from '../lib/mooniQuickReplies';
+import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { getMooniChipPromptHint, MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
+import { getMooniPromptBundle } from '../../../i18n/mooniPromptBundles';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
@@ -60,6 +65,16 @@ import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIata,
 } from '../lib/flightOriginPreference';
+import {
+  extractMooniTripFacts,
+  formatMooniTripSessionHint,
+  hasMooniTripSessionFacts,
+  hydrateMooniTripSession,
+  mergeMooniTripSession,
+  persistMooniTripSession,
+} from '../lib/mooniTripSession';
+
+const tone = (fresh, dark, light) => (fresh ? light : dark);
 
 const ChatModal = ({
   isOpen,
@@ -79,12 +94,14 @@ const ChatModal = ({
   onDeleteChat,
   /** 무니 인트로 본문 준비 시 장소카드 desc hydrate (DB 캐시·신규 생성 공통) */
   onPlaceIntroReady = null,
+  onClearPlaceBinding = null,
 }) => {
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentPersona, setCurrentPersona] = useState(PERSONA_TYPES.GENERAL);
-  const [loadingStatus, setLoadingStatus] = useState("AI가 답변을 준비 중입니다...");
+  const [loadingStatus, setLoadingStatus] = useState(() => t('mooni.chat.loadingDefault'));
   const [placeIntro, setPlaceIntro] = useState(null);
   const [placeIntroLoading, setPlaceIntroLoading] = useState(false);
   const [placeIntroError, setPlaceIntroError] = useState(null);
@@ -101,7 +118,9 @@ const ChatModal = ({
   const chatInputRef = useRef(null);
   const mobileDockInputRef = useRef(null);
   const hasSentInitialRef = useRef(false);
+  const lastInitialQueryTextRef = useRef('');
   const mobileDockBlurTimerRef = useRef(null);
+  const tripSessionRef = useRef(null);
 
   const collapseMobileDockInput = useCallback(() => {
     if (mobileDockBlurTimerRef.current) {
@@ -141,6 +160,7 @@ const ChatModal = ({
 
   const isMooniSession = introDestinationRaw === 'MOONi';
   const isMooniUi = mooniEntry || isMooniSession;
+  const fresh = isMooniUi;
 
   /** Place-bound session: SSOT slug when catalogued; uiPlace uses name/country seed. */
   const activeSessionPlace = useMemo(() => {
@@ -253,29 +273,53 @@ const ChatModal = ({
     }
 
     return entrySeed;
-  }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext]);
+  }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext, i18n.language]);
 
   const boundDestinationSlug = resolveCatalogPlaceSlug(activeSessionPlace?.slug) || null;
   /** 지명만 있는 uiPlace도 주제 칩 허용 (플래너·카탈로그 연동은 slug 있을 때만) */
   const hasPlaceBoundName = Boolean(String(activeSessionPlace?.name || '').trim());
-  const allowNameBoundChips = hasPlaceBoundName && !boundDestinationSlug;
+  const hasAskSeed = Boolean(
+    String(
+      typeof initialQuery === 'string'
+        ? initialQuery
+        : initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
+    ).trim(),
+  );
+  const chipDockMode = resolveMooniChipDockMode({
+    isMooniUi,
+    hasPlaceBoundName,
+    messageCount: messages.length,
+    hasInitialQuery: hasAskSeed,
+  });
+  const allowNameBoundChips =
+    chipDockMode === 'topic' && !boundDestinationSlug;
 
   const mooniHeaderLabel = useMemo(() => {
     if (!isMooniUi) return introDestinationRaw || 'MOONi';
-    const placeName = activeSessionPlace?.name ?? null;
-    return placeName ? `${placeName} · MOONi` : 'MOONi';
-  }, [isMooniUi, activeSessionPlace?.name, introDestinationRaw]);
+    const label = localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
+    return label ? `${label} · MOONi` : 'MOONi';
+  }, [isMooniUi, activeSessionPlace, introDestinationRaw, i18n.language]);
 
   const placeIntroTarget = useMemo(() => {
     if (!isOpen) return '';
-    if (activeSessionPlace?.name) return activeSessionPlace.name.trim();
+    if (activeSessionPlace) {
+      return localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
+    }
     if (isMooniUi) return '';
-    return introDestinationRaw;
-  }, [isOpen, activeSessionPlace?.name, isMooniUi, introDestinationRaw]);
+    const raw = introDestinationRaw.trim();
+    const lower = raw.toLowerCase();
+    if (!raw || lower === 'new session' || lower === 'scanning...' || lower === 'searching...' || lower === 'mooni') {
+      return '';
+    }
+    return raw;
+  }, [isOpen, activeSessionPlace, isMooniUi, introDestinationRaw, i18n.language]);
 
   const effectiveQuickReplySlug = boundDestinationSlug;
 
-  const topicDockDestName = activeSessionPlace?.name ?? '';
+  const topicDockDestName =
+    localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
+    activeSessionPlace?.name ||
+    '';
 
   const topicEssentialGuide = useChatEssentialGuide(
     effectiveQuickReplySlug,
@@ -300,30 +344,49 @@ const ChatModal = ({
       topicEssentialGuide,
       boundDestinationSlug,
       allowNameBoundChips,
+      i18n.language,
     ]
   );
 
+  const discoveryChips = useMemo(
+    () => (isMooniUi && !hasPlaceBoundName ? getMooniGeneralDiscoveryChips() : []),
+    [isMooniUi, hasPlaceBoundName, i18n.language],
+  );
+
+  const dockChips = chipDockMode === 'discovery' ? discoveryChips : quickReplies;
+
   const showBoundTopicDock =
-    isMooniUi && hasPlaceBoundName && quickReplies.length > 0;
+    chipDockMode === 'topic' && hasPlaceBoundName && quickReplies.length > 0;
+
+  const showDiscoveryDock =
+    chipDockMode === 'discovery' && discoveryChips.length > 0;
+
+  const showUnboundTopicDock =
+    chipDockMode === 'topic' && !hasPlaceBoundName && quickReplies.length > 0;
+
+  const showMooniChipDock =
+    showBoundTopicDock || showDiscoveryDock || showUnboundTopicDock;
+
+  const showClearPlaceBinding = hasPlaceBoundName && Boolean(onClearPlaceBinding);
 
   const showAccessOriginDock =
-    isMooniUi && topicDockParent === 'access' && hasPlaceBoundName;
+    isMooniUi && topicDockParent === 'access' && chipDockMode === 'topic';
 
   const mobileDockInputExpanded =
-    showBoundTopicDock &&
+    showMooniChipDock &&
     !showAccessOriginDock &&
     (mobileDockInputFocused || Boolean(input.trim()));
 
   const topicDockPrompt =
-    !topicDockParent && messages.length === 0 ? '무엇부터 도와드릴까요?' : null;
+    !topicDockParent && messages.length === 0 ? t('mooni.chat.topicPrompt') : null;
 
   const showTopicDockPrompt = Boolean(topicDockPrompt);
 
   const chatInputPlaceholder = useMemo(() => {
-    if (topicDockParent === 'access') return ACCESS_DEPARTURE_INPUT_PLACEHOLDER;
-    if (effectiveQuickReplySlug) return '또는 직접 입력…';
-    return '메시지 입력...';
-  }, [topicDockParent, effectiveQuickReplySlug]);
+    if (topicDockParent === 'access') return t('mooni.chat.accessDeparturePlaceholder');
+    if (effectiveQuickReplySlug) return t('mooni.chat.placeholderOrType');
+    return t('mooni.chat.placeholder');
+  }, [topicDockParent, effectiveQuickReplySlug, t, i18n.language]);
 
   useEffect(() => {
     setTopicDockParent(null);
@@ -418,21 +481,21 @@ const ChatModal = ({
 
     (async () => {
       try {
-        let text = await fetchPlaceChatIntroSummary(placeIntroTarget);
+        let text = await fetchPlaceChatIntroSummary(placeIntroTarget, i18n.language);
         if (cancelled) return;
         if (text) {
           setPlaceIntro(text);
           notifyPlaceCard(text);
           return;
         }
-        text = await generatePlaceChatIntroWithAi(placeIntroTarget);
+        text = await generatePlaceChatIntroWithAi(placeIntroTarget, i18n.language);
         if (cancelled) return;
         setPlaceIntro(text);
-        await persistPlaceChatIntroSummary(placeIntroTarget, text);
+        await persistPlaceChatIntroSummary(placeIntroTarget, text, i18n.language);
         notifyPlaceCard(text);
       } catch (e) {
         if (!cancelled) {
-          setPlaceIntroError(e?.message || '여행지 요약을 불러오지 못했습니다.');
+          setPlaceIntroError(e?.message || t('mooni.chat.introError'));
         }
       } finally {
         if (!cancelled) setPlaceIntroLoading(false);
@@ -442,7 +505,7 @@ const ChatModal = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, placeIntroTarget, onPlaceIntroReady, mooniPlaceContext?.name]);
+  }, [isOpen, placeIntroTarget, onPlaceIntroReady, mooniPlaceContext?.name, i18n.language]);
 
   // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
   // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -450,21 +513,18 @@ const ChatModal = ({
   useEffect(() => {
     let interval;
     if (isLoading) {
-      const statuses = [
-        "새로운 여행지 정보를 스캔하고 있습니다...",
-        "숨겨진 로컬 맛집과 명소를 찾는 중...",
-        "🗺️ 여행 계획을 정리하고 있습니다...",
-        "✈️ 답변을 생성 중입니다..."
-      ];
+      const statuses = /** @type {string[]} */ (
+        t('mooni.chat.loadingStatuses', { returnObjects: true })
+      );
       let i = 0;
-      setLoadingStatus(statuses[0]);
+      setLoadingStatus(statuses[0] || t('mooni.chat.loadingDefault'));
       interval = setInterval(() => {
         i = (i + 1) % statuses.length;
-        setLoadingStatus(statuses[i]);
+        setLoadingStatus(statuses[i] || t('mooni.chat.loadingDefault'));
       }, 2500);
     }
     return () => clearInterval(interval);
-  }, [isLoading]);
+  }, [isLoading, t, i18n.language]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -489,6 +549,7 @@ const ChatModal = ({
   useEffect(() => {
     if (!isOpen) {
       setMessages([]);
+      tripSessionRef.current = null;
       return;
     }
     if (activeChatId) {
@@ -498,12 +559,24 @@ const ChatModal = ({
       if (targetTrip) {
         setMessages(targetTrip.messages || []);
         if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
+        tripSessionRef.current = hydrateMooniTripSession({
+          messages: targetTrip.messages || [],
+          stored: targetTrip.curation_data?.mooniSession ?? null,
+          slug: targetTrip.curation_data?.slug || '',
+          destinationName: targetTrip.destination || '',
+        });
       }
       return;
     }
     if (chatDraft) {
       setMessages([]);
       if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
+      tripSessionRef.current = hydrateMooniTripSession({
+        messages: [],
+        stored: null,
+        slug: '',
+        destinationName: chatDraft.destination || '',
+      });
     }
   }, [activeChatId, isOpen, chatHistory, chatDraft]);
 
@@ -526,28 +599,31 @@ const ChatModal = ({
 
     await applyDestinationBinding(activeChatId, chatDraft, candidate);
 
-    let introText = await fetchPlaceChatIntroSummary(candidate.name);
+    const boundSpot = TRAVEL_SPOTS.find((s) => s.slug === candidate.slug) || candidate;
+    const introLabel = formatPlaceChatLabel(boundSpot, i18n.language) || candidate.name;
+
+    let introText = await fetchPlaceChatIntroSummary(introLabel, i18n.language);
     if (!introText) {
       try {
-        introText = await generatePlaceChatIntroWithAi(candidate.name);
-        await persistPlaceChatIntroSummary(candidate.name, introText);
+        introText = await generatePlaceChatIntroWithAi(introLabel, i18n.language);
+        await persistPlaceChatIntroSummary(introLabel, introText, i18n.language);
       } catch {
         introText = '';
       }
     }
     if (introText && onPlaceIntroReady) {
-      const summary = stripPlaceChatIntroForSummary(introText, candidate.name);
+      const summary = stripPlaceChatIntroForSummary(introText, introLabel);
       if (summary) {
         onPlaceIntroReady({
           summary,
-          destinationKey: candidate.name,
-          placeName: candidate.name,
+          destinationKey: introLabel,
+          placeName: introLabel,
         });
       }
     }
 
     const confirmed = { slug: candidate.slug, name: candidate.name };
-    const modelText = buildMooniIntroWithHint(introText, candidate.name);
+    const modelText = buildMooniIntroWithHint(introText, introLabel);
 
     const baseMessages = messages.map((m, i) =>
       i === messageIndex
@@ -593,12 +669,14 @@ const ChatModal = ({
     applyDestinationBinding,
     onUpdateChat,
     onCreateTripOnFirstUserMessage,
+    onPlaceIntroReady,
+    i18n.language,
   ]);
 
   const handleSend = useCallback(async (text, personaOverride = null, sendOptions = null) => {
     if (!text?.trim() || isLoading) return;
 
-    const rawText = typeof text === 'object' ? (text.text || '질문 내용 확인 불가') : text;
+    const rawText = typeof text === 'object' ? (text.text || t('mooni.chat.questionUnreadable')) : text;
     const sessionBoundEarly = activeSessionPlace?.name
       ? {
           slug: boundDestinationSlug,
@@ -607,7 +685,10 @@ const ChatModal = ({
       : null;
     const accessDockActive =
       Boolean(sessionBoundEarly?.slug) && topicDockParent === 'access';
-    const cleanText = normalizeAccessDepartureUserText(rawText, { accessDockActive });
+    const cleanText = normalizeAccessDepartureUserText(rawText, {
+      accessDockActive,
+      locale: i18n.language,
+    });
     const personaToUse =
       personaOverride ||
       (shouldUsePlannerPersona(cleanText, messages) ? PERSONA_TYPES.PLANNER : currentPersona);
@@ -747,6 +828,26 @@ const ChatModal = ({
           : destForPrompt);
       const essentialGuide = await ensureChatEssentialGuide(slug, destName);
 
+      const nextSession = mergeMooniTripSession(
+        tripSessionRef.current,
+        extractMooniTripFacts(cleanText, {
+          destinationName: destName,
+          slug,
+        }),
+      );
+      nextSession.destinationName = destName || nextSession.destinationName;
+      nextSession.slug = slug || nextSession.slug;
+      tripSessionRef.current = nextSession;
+      persistMooniTripSession(nextSession, { slug, destinationName: destName });
+      if (nextSession.departureIata) persistFlightOriginIata(nextSession.departureIata);
+      const tripSessionHint = formatMooniTripSessionHint(
+        nextSession,
+        getMooniPromptBundle(i18n.language),
+      );
+      const sessionExtras = hasMooniTripSessionFacts(nextSession)
+        ? { mooniSession: nextSession }
+        : undefined;
+
       const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
 
       const chatCtaHint = getChatCtaPromptHint({
@@ -764,6 +865,7 @@ const ChatModal = ({
         destinationName: destName,
         chatHistory: priorTurns,
         essentialGuide,
+        tripSession: nextSession,
       });
 
       const systemInstruction = getSystemPrompt(personaToUse, destForPrompt, {
@@ -771,6 +873,7 @@ const ChatModal = ({
         boundPlaceName: placeBound?.name ?? null,
         chipPromptHint,
         chatCtaHint,
+        tripSessionHint,
       });
       const chatModelId = resolveMooniChatModel({
         userText: cleanText,
@@ -838,7 +941,7 @@ const ChatModal = ({
       ];
       setMessages(finalMessages);
 
-      onUpdateChat(effectiveChatId, finalMessages);
+      onUpdateChat(effectiveChatId, finalMessages, sessionExtras);
     } catch (error) {
       const text = getGeminiProxyErrorMessage(error);
       setMessages((prev) => [...prev, { role: 'error', text }]);
@@ -885,7 +988,7 @@ const ChatModal = ({
   const topicDockChipsProps = useMemo(
     () => ({
       slug: effectiveQuickReplySlug,
-      chips: quickReplies,
+      chips: dockChips,
       onSelect: (text, persona, chip) =>
         handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
       onDrillDown: (parentId) => setTopicDockParent(parentId),
@@ -894,45 +997,50 @@ const ChatModal = ({
         ? getMooniL1ChipLabel(topicDockParent, { mobile: true })
         : null,
       onOpenPlanner: handlePlannerNavigate,
-      disabled: isLoading,
+      disabled: isLoading || (!activeChatId && !chatDraft),
       prompt: topicDockPrompt,
       showPrompt: showTopicDockPrompt,
       dock: true,
+      tone: isMooniUi ? 'fresh' : 'default',
     }),
     [
       effectiveQuickReplySlug,
-      quickReplies,
+      dockChips,
       handleSend,
       topicDockParent,
       handlePlannerNavigate,
       isLoading,
+      activeChatId,
+      chatDraft,
       topicDockPrompt,
       showTopicDockPrompt,
+      isMooniUi,
     ]
   );
 
   useEffect(() => {
-    if (isOpen && initialQuery && !hasSentInitialRef.current) {
-      hasSentInitialRef.current = true;
+    const queryText =
+      typeof initialQuery === 'string'
+        ? initialQuery.trim()
+        : String(initialQuery?.text || initialQuery?.display || initialQuery?.query || '').trim();
 
-      let queryText = "";
-      if (typeof initialQuery === 'string') {
-        queryText = initialQuery;
-      } else if (typeof initialQuery === 'object') {
-        queryText = initialQuery?.text || initialQuery?.display || initialQuery?.query || "";
-      }
-
-      const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
-      setCurrentPersona(queryPersona);
-
-      if (queryText.trim().length > 0) {
-        handleSend(queryText, queryPersona);
-      }
-
-    } else if (!isOpen) {
+    if (!isOpen) {
       hasSentInitialRef.current = false;
+      lastInitialQueryTextRef.current = '';
+      return;
     }
-  }, [isOpen, initialQuery, handleSend]);
+
+    if (!queryText) return;
+    if (!activeChatId && !chatDraft) return;
+    if (lastInitialQueryTextRef.current === queryText) return;
+
+    lastInitialQueryTextRef.current = queryText;
+    hasSentInitialRef.current = true;
+
+    const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
+    setCurrentPersona(queryPersona);
+    handleSend(queryText, queryPersona);
+  }, [isOpen, initialQuery, handleSend, activeChatId, chatDraft]);
 
   const handleSidebarClick = (id) => { if (onSwitchChat) onSwitchChat(id); };
 
@@ -942,14 +1050,14 @@ const ChatModal = ({
 
   return (
     <TripcomFlightSearchProvider>
-    <div className={`fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in ${overlaySuppressed ? 'invisible pointer-events-none' : ''}`}>
-      <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none border border-gray-700 max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all">
+    <div className={`fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in ${overlaySuppressed ? 'invisible pointer-events-none' : ''} ${tone(fresh, 'bg-black/80', 'bg-cyan-950/20')}`}>
+      <div className={`w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all ${tone(fresh, 'bg-gray-900 border border-gray-700', 'bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 border border-cyan-200/80')}`}>
 
-        <div className="hidden md:flex w-72 bg-gray-900 border-r border-gray-700 flex-col">
-          <div className="p-5 border-b border-gray-800 flex items-center justify-between">
+        <div className={`hidden md:flex w-72 flex-col ${tone(fresh, 'bg-gray-900 border-r border-gray-700', 'bg-white/70 border-r border-cyan-100')}`}>
+          <div className={`p-5 flex items-center justify-between ${tone(fresh, 'border-b border-gray-800', 'border-b border-cyan-100')}`}>
             <div className="flex items-center gap-2">
-              <MessageSquare size={18} className="text-blue-400" />
-              <span className="font-bold text-gray-200 text-sm">채팅 기록</span>
+              <MessageSquare size={18} className={tone(fresh, 'text-blue-400', 'text-cyan-500')} />
+              <span className={`font-bold text-sm ${tone(fresh, 'text-gray-200', 'text-slate-700')}`}>{t('mooni.chat.history')}</span>
             </div>
           </div>
 
@@ -957,9 +1065,9 @@ const ChatModal = ({
             {chatHistory
               .filter((item) => !item.is_hidden && tripHasPersistedDialogue(item))
               .map((item) => (
-              <div key={item.id} onClick={() => handleSidebarClick(item.id)} className={`p-3 rounded-xl border cursor-pointer transition-all ${activeChatId === item.id ? 'bg-gray-800 border-blue-500/50' : 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800'}`}>
+              <div key={item.id} onClick={() => handleSidebarClick(item.id)} className={`p-3 rounded-xl border cursor-pointer transition-all ${activeChatId === item.id ? tone(fresh, 'bg-gray-800 border-blue-500/50', 'bg-cyan-50 border-cyan-300') : tone(fresh, 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800', 'bg-white/80 border-cyan-100 hover:bg-sky-50')}`}>
                 <div className="flex justify-between items-start mb-1">
-                  <span className="font-bold text-gray-300 text-sm truncate max-w-[140px]">{item.destination}</span>
+                  <span className={`font-bold text-sm truncate max-w-[140px] ${tone(fresh, 'text-gray-300', 'text-slate-700')}`}>{item.destination}</span>
                   <div className="flex gap-1">
                       <button
                         onClick={(e) => {
@@ -967,7 +1075,7 @@ const ChatModal = ({
                             onDeleteChat(item.id);
                         }}
                         className="text-gray-600 hover:text-red-400"
-                        title="채팅방 삭제"
+                        title={t('mooni.chat.deleteChat')}
                       >
                         <Trash2 size={14} />
                       </button>
@@ -982,9 +1090,9 @@ const ChatModal = ({
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col bg-black/50 relative">
+        <div className={`flex-1 flex flex-col relative min-w-0 ${tone(fresh, 'bg-black/50', 'bg-white/55')}`}>
             <div
-              className="bg-gray-800/50 p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 border-b border-gray-700 backdrop-blur-md"
+              className={`p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 backdrop-blur-md ${tone(fresh, 'bg-gray-800/50 border-b border-gray-700', 'bg-white/80 border-b border-cyan-100')}`}
               onPointerDown={() => {
                 if (mobileDockInputFocused && !input.trim()) {
                   collapseMobileDockInput();
@@ -994,36 +1102,78 @@ const ChatModal = ({
                <button
                  type="button"
                  onClick={handleClose}
-                 aria-label="채팅 닫기"
-                 title="닫기"
-                 className="flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
+                 aria-label={t('mooni.chat.closeAria')}
+                 title={t('mooni.chat.close')}
+                 className={tone(
+                   fresh,
+                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation',
+                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-cyan-200 bg-white text-slate-600 shadow-sm transition-colors hover:border-cyan-300 hover:bg-cyan-50 hover:text-slate-800 touch-manipulation',
+                 )}
                >
                  <X size={16} className="pointer-events-none max-md:h-4 max-md:w-4" />
                </button>
                <div className="flex flex-col min-w-0 flex-1 justify-center">
-                 <span className="font-bold text-white tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug truncate">
+                 <span className={`font-bold tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug truncate ${tone(fresh, 'text-white', 'text-slate-800')}`}>
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
-                 <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium leading-tight truncate">
+                 <span className={`hidden md:block text-[11px] font-medium leading-tight truncate ${tone(fresh, 'text-cyan-300/80', 'text-cyan-600')}`}>
                    {isMooniUi
                      ? boundDestinationSlug
-                       ? `${activeSessionPlace?.name ?? introDestinationRaw} 여행 대화 · ${currentPersona}`
-                       : `여행 AI 도우미 · ${currentPersona}`
-                     : `${introDestinationRaw || '여행'} 대화 · ${currentPersona}`}
+                       ? `${t('mooni.chat.travelChat', {
+                           destination:
+                             localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
+                             introDestinationRaw,
+                         })} · ${currentPersona}`
+                       : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
+                     : `${t('mooni.chat.travelChat', { destination: introDestinationRaw || t('place.fallback.destination') })} · ${currentPersona}`}
                  </span>
-                 <span className="md:hidden text-[10px] text-gray-400 font-medium leading-none mt-0.5 truncate">
-                   {isMooniUi ? 'MOONi 여행 대화' : '여행 대화'}
+                 <span className={`md:hidden text-[10px] font-medium leading-none mt-0.5 truncate ${tone(fresh, 'text-gray-400', 'text-slate-500')}`}>
+                   {isMooniUi ? t('mooni.chat.mooniSessionTitle') : t('mooni.chat.travelSessionTitle')}
                  </span>
                </div>
-               <div className="flex items-center gap-2 shrink-0">
+               <div className="flex items-center gap-1.5 shrink-0 max-w-[46%] md:max-w-none">
+                 {showClearPlaceBinding ? (
+                   <>
+                     <button
+                       type="button"
+                       onClick={onClearPlaceBinding}
+                       className={tone(
+                         fresh,
+                         'md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/45 bg-cyan-500/20 text-cyan-100 touch-manipulation hover:bg-cyan-500/30',
+                         'md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300 bg-cyan-100 text-cyan-700 touch-manipulation hover:bg-cyan-200',
+                       )}
+                       title={t('mooni.chat.clearPlaceBindingAria')}
+                       aria-label={t('mooni.chat.clearPlaceBindingAria')}
+                     >
+                       <Compass size={15} />
+                     </button>
+                     <button
+                       type="button"
+                       onClick={onClearPlaceBinding}
+                       className={tone(
+                         fresh,
+                         'hidden md:inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-gray-200 hover:border-white/35 hover:bg-white/10 transition-colors touch-manipulation',
+                         'hidden md:inline-flex items-center gap-1 rounded-full border border-cyan-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-600 hover:border-cyan-300 hover:bg-cyan-50 transition-colors touch-manipulation',
+                       )}
+                       title={t('mooni.chat.clearPlaceBindingAria')}
+                       aria-label={t('mooni.chat.clearPlaceBindingAria')}
+                     >
+                       {t('mooni.chat.clearPlaceBinding')}
+                     </button>
+                   </>
+                 ) : null}
                  {effectiveQuickReplySlug ? (
                    <button
                      type="button"
                      onClick={() => handlePlannerNavigate(`/place/${effectiveQuickReplySlug}/planner`)}
-                     className="inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation"
-                     title="여행 플래너 열기"
+                     className={tone(
+                       fresh,
+                       'inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation',
+                       'inline-flex items-center gap-1 rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(34,211,238,0.28)] hover:from-cyan-300 hover:to-teal-300 transition-colors touch-manipulation',
+                     )}
+                     title={t('mooni.chat.openPlanner')}
                    >
-                     📋 플래너 보기
+                     {t('mooni.chips.l1.planner.label')}
                    </button>
                  ) : null}
                </div>
@@ -1041,12 +1191,14 @@ const ChatModal = ({
                 <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 to-gray-900/60 p-4 shadow-lg">
                   <div className="flex items-center gap-2 mb-2 text-emerald-300/90">
                     <Sparkles size={16} className="shrink-0" />
-                    <span className="text-xs font-bold uppercase tracking-wide">이 장소 한눈에 보기</span>
+                    <span className="text-xs font-bold uppercase tracking-wide">
+                      {t('mooni.chat.spotOverviewTitle')}
+                    </span>
                   </div>
                   {placeIntroLoading && !placeIntro && (
                     <div className="flex items-center gap-2 text-gray-400 text-sm">
                       <Loader2 className="animate-spin shrink-0" size={18} />
-                      <span>여행지 요약을 준비하고 있어요...</span>
+                      <span>{t('mooni.chat.placeSummaryLoading')}</span>
                     </div>
                   )}
                   {placeIntroError && (
@@ -1057,14 +1209,34 @@ const ChatModal = ({
                   )}
                 </div>
               )}
+              {isMooniUi &&
+                messages.length === 0 &&
+                !isLoading &&
+                mooniPlaceContext?.eventContext?.seedText &&
+                !(
+                  typeof initialQuery === 'string'
+                    ? initialQuery.trim()
+                    : String(
+                        initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
+                      ).trim()
+                ) && (
+                <div className="flex flex-col items-start w-full mb-3">
+                  <span className="text-[10px] font-bold mb-1 px-1 text-amber-400 uppercase tracking-wider">
+                    {t('worldEventDetail.mooniSeed.label')}
+                  </span>
+                  <div className="w-full p-3 rounded-2xl text-sm shadow-md bg-amber-950/40 border border-amber-500/20 text-amber-50 rounded-tl-sm leading-relaxed whitespace-pre-wrap">
+                    {mooniPlaceContext.eventContext.seedText}
+                  </div>
+                </div>
+              )}
               {isMooniUi && messages.length === 0 && !isLoading && placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
-                  <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
-                  <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
                     {placeIntroLoading && !placeIntro && (
-                      <div className="flex items-center gap-2 text-gray-400 text-sm">
+                      <div className={`flex items-center gap-2 text-sm ${tone(fresh, 'text-gray-400', 'text-slate-500')}`}>
                         <Loader2 className="animate-spin shrink-0" size={18} />
-                        <span>여행지 소개를 준비하고 있어요...</span>
+                        <span>{t('mooni.chat.placeIntroLoading')}</span>
                       </div>
                     )}
                     {placeIntroError && (
@@ -1083,26 +1255,29 @@ const ChatModal = ({
               )}
               {isMooniUi && messages.length === 0 && !isLoading && !placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
-                  <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
-                  <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
                     {buildMooniIntroWithHint('', null)}
                   </div>
                 </div>
               )}
               {messages.map((msg, idx) => {
                 const rawMsgText =
-                  typeof msg.text === 'object' ? msg.text?.text ?? '내용 없음' : msg.text ?? '';
+                  typeof msg.text === 'object' ? msg.text?.text ?? t('mooni.chat.noContent') : msg.text ?? '';
                 const isModelMsg = msg.role === 'model';
                 const { text: displayMsgText, hadBracketLinks } = isModelMsg
                   ? sanitizeMooniModelReply(rawMsgText)
                   : { text: rawMsgText, hadBracketLinks: false };
                 const msgSlug = msg.bookingMeta?.slug ?? boundDestinationSlug;
                 const msgDestinationName = isMooniUi
-                  ? activeSessionPlace?.name ??
-                    messages
-                      .slice(0, idx)
-                      .reverse()
-                      .find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name ??
+                  ? localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
+                    localizeMooniPlaceLabel(
+                      messages
+                        .slice(0, idx)
+                        .reverse()
+                        .find((m) => m.confirmedDestination?.name)?.confirmedDestination,
+                      i18n.language,
+                    ) ||
                     (introDestinationRaw !== 'MOONi' ? introDestinationRaw : '')
                   : introDestinationRaw;
                 const priorUserText =
@@ -1130,16 +1305,20 @@ const ChatModal = ({
                   className={`flex flex-col w-full ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
                   <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${
-                    msg.role === 'user' ? 'text-blue-400' : msg.role === 'error' ? 'text-red-400' : 'text-cyan-400'
+                    msg.role === 'user'
+                      ? tone(fresh, 'text-blue-400', 'text-sky-600')
+                      : msg.role === 'error'
+                        ? 'text-red-400'
+                        : tone(fresh, 'text-cyan-400', 'text-cyan-600')
                   }`}>
                     {msg.role === 'user' ? 'Me' : 'MOONi'}
                   </span>
                   <div className={`p-4 rounded-2xl text-base shadow-md w-full ${
                     msg.role === 'user'
-                      ? 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm'
+                      ? tone(fresh, 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm', 'max-w-full md:max-w-[80%] bg-gradient-to-br from-sky-500 to-cyan-500 text-white rounded-tr-sm')
                       : msg.role === 'error'
                         ? 'bg-red-950/50 text-red-200 rounded-tl-sm'
-                        : 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed'
+                        : tone(fresh, 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed', 'bg-white/90 border border-cyan-100 text-slate-700 rounded-tl-sm leading-relaxed')
                   }`}>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
                     {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
@@ -1154,11 +1333,7 @@ const ChatModal = ({
                       <BookingActionCards
                         actions={refreshStoredBookingActionLabels(msg.bookingActions, {
                           slug: msg.bookingMeta?.slug ?? boundDestinationSlug,
-                          destinationName: isMooniUi
-                            ? (activeSessionPlace?.name
-                              ?? messages.slice(0, idx).reverse().find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name
-                              ?? (introDestinationRaw !== 'MOONi' ? introDestinationRaw : ''))
-                            : introDestinationRaw,
+                          destinationName: msgDestinationName,
                           chatHistory: messages
                             .slice(0, idx)
                             .filter((m) => m.role === 'user')
@@ -1209,27 +1384,31 @@ const ChatModal = ({
               })}
               {isLoading && (
                 <div className="flex gap-4 items-center">
-                  <Loader2 size={20} className="text-blue-400 animate-spin" />
-                  <span className="text-sm text-blue-300 animate-pulse font-medium">{loadingStatus}</span>
+                  <Loader2 size={20} className={`animate-spin ${tone(fresh, 'text-blue-400', 'text-cyan-500')}`} />
+                  <span className={`text-sm animate-pulse font-medium ${tone(fresh, 'text-blue-300', 'text-cyan-600')}`}>{loadingStatus}</span>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="shrink-0 bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+            <div className={`shrink-0 min-w-0 overflow-hidden pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] ${tone(fresh, 'bg-gray-900 border-t border-gray-800', 'bg-white/85 border-t border-cyan-100')}`}>
               {showAccessOriginDock ? (
-                <div className="px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 border-b border-gray-800/80">
+                <div className={`px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 ${tone(fresh, 'border-b border-gray-800/80', 'border-b border-cyan-100')}`}>
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
                     <button
                       type="button"
                       disabled={isLoading}
                       onClick={() => setTopicDockParent(null)}
-                      className="inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                      className={tone(
+                        fresh,
+                        'inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none',
+                        'inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-cyan-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 touch-manipulation hover:border-cyan-300 hover:bg-cyan-50 transition-colors disabled:opacity-50 disabled:pointer-events-none',
+                      )}
                     >
                       <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
-                      다른 주제
+                      {t('mooni.chat.backTopic')}
                     </button>
-                    <span className="text-[11px] text-cyan-400/75 font-medium break-keep min-w-0">
+                    <span className={`text-[11px] font-medium break-keep min-w-0 ${tone(fresh, 'text-cyan-400/75', 'text-cyan-600')}`}>
                       {getMooniL1ChipLabel('access', { mobile: true })}
                     </span>
                   </div>
@@ -1260,9 +1439,13 @@ const ChatModal = ({
                         type="button"
                         disabled={isLoading}
                         onClick={handleAskWithAccessOrigin}
-                        className="shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/25 px-3 py-2 text-[12px] font-semibold text-cyan-50 touch-manipulation hover:bg-cyan-500/35 disabled:opacity-50"
+                        className={tone(
+                          fresh,
+                          'shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/25 px-3 py-2 text-[12px] font-semibold text-cyan-50 touch-manipulation hover:bg-cyan-500/35 disabled:opacity-50',
+                          'shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-3 py-2 text-[12px] font-semibold text-white touch-manipulation hover:from-cyan-300 hover:to-teal-300 disabled:opacity-50',
+                        )}
                       >
-                        물어보기
+                        {t('mooni.chat.askButton')}
                       </button>
                     </div>
                   )}
@@ -1276,9 +1459,24 @@ const ChatModal = ({
                     />
                   ) : null}
                 </div>
-              ) : showBoundTopicDock ? (
+              ) : showMooniChipDock ? (
                 <>
                   <div className="md:hidden px-3 pt-2 pb-1 flex flex-col gap-1.5">
+                    {showClearPlaceBinding && !mobileDockInputExpanded ? (
+                      <button
+                        type="button"
+                        onClick={onClearPlaceBinding}
+                        className={tone(
+                          fresh,
+                          'inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-cyan-400/45 bg-cyan-500/15 px-3 py-2 text-[12px] font-semibold text-cyan-100 touch-manipulation hover:bg-cyan-500/25',
+                          'inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-2 text-[12px] font-semibold text-cyan-700 touch-manipulation hover:bg-cyan-100',
+                        )}
+                        aria-label={t('mooni.chat.clearPlaceBindingAria')}
+                      >
+                        <Compass size={14} className="shrink-0" />
+                        {t('mooni.chat.clearPlaceBinding')}
+                      </button>
+                    ) : null}
                     {!mobileDockInputExpanded ? (
                       <div className="min-w-0 w-full">
                         <MooniQuickReplyChips {...topicDockChipsProps} />
@@ -1314,13 +1512,21 @@ const ChatModal = ({
                         placeholder={
                           mobileDockInputExpanded
                             ? chatInputPlaceholder
-                            : '직접 입력…'
+                            : t('mooni.chat.placeholderDirect')
                         }
                         title={chatInputPlaceholder}
                         className={
                           mobileDockInputExpanded
-                            ? 'w-full bg-gray-800 text-white text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 transition-[padding] duration-150'
-                            : 'w-full h-8 bg-gray-800/80 text-white text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 placeholder:text-[12px] transition-[padding] duration-150'
+                            ? tone(
+                                fresh,
+                                'w-full bg-gray-800 text-white text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 transition-[padding] duration-150',
+                                'w-full bg-white text-slate-800 text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 placeholder:text-slate-400 transition-[padding] duration-150',
+                              )
+                            : tone(
+                                fresh,
+                                'w-full h-8 bg-gray-800/80 text-white text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 placeholder:text-[12px] transition-[padding] duration-150',
+                                'w-full h-8 bg-white text-slate-800 text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 placeholder:text-slate-400 placeholder:text-[12px] transition-[padding] duration-150',
+                              )
                         }
                         disabled={isLoading}
                         aria-expanded={mobileDockInputExpanded}
@@ -1331,17 +1537,25 @@ const ChatModal = ({
                         onMouseDown={(e) => e.preventDefault()}
                         className={
                           mobileDockInputExpanded
-                            ? 'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40 touch-manipulation'
-                            : 'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-blue-600/80 rounded-full text-white disabled:opacity-40 touch-manipulation'
+                            ? tone(
+                                fresh,
+                                'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                                'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                              )
+                            : tone(
+                                fresh,
+                                'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-blue-600/80 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                                'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                              )
                         }
-                        aria-label="전송"
+                        aria-label={t('mooni.chat.send')}
                       >
                         <Send size={mobileDockInputExpanded ? 17 : 13} />
                       </button>
                     </form>
                   </div>
-                  <div className="hidden md:flex items-end gap-3 px-4 pt-2 pb-2">
-                    <div className="min-w-0 flex-1">
+                  <div className="hidden md:flex items-end gap-3 px-4 pt-2 pb-2 min-w-0 overflow-hidden">
+                    <div className="min-w-0 flex-1 overflow-hidden">
                       <MooniQuickReplyChips {...topicDockChipsProps} />
                     </div>
                     <form
@@ -1358,16 +1572,24 @@ const ChatModal = ({
                         enterKeyHint="send"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="직접 입력…"
+                        placeholder={t('mooni.chat.placeholderDirect')}
                         title={chatInputPlaceholder}
-                        className="w-full min-h-[36px] bg-gray-700/95 text-white text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-400/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-cyan-300/80 focus:ring-1 focus:ring-cyan-400/35 placeholder:text-gray-300/90"
+                        className={tone(
+                          fresh,
+                          'w-full min-h-[36px] bg-gray-700/95 text-white text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-400/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-cyan-300/80 focus:ring-1 focus:ring-cyan-400/35 placeholder:text-gray-300/90',
+                          'w-full min-h-[36px] bg-white text-slate-800 text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-300 shadow-[0_0_0_1px_rgba(34,211,238,0.12)] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-300 placeholder:text-slate-400',
+                        )}
                         disabled={isLoading}
                       />
                       <button
                         type="submit"
                         disabled={isLoading || !input.trim()}
-                        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/90 hover:bg-cyan-400 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70"
-                        aria-label="전송"
+                        className={tone(
+                          fresh,
+                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/90 hover:bg-cyan-400 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70',
+                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 rounded-full text-white disabled:opacity-40',
+                        )}
+                        aria-label={t('mooni.chat.send')}
                       >
                         <Send size={16} />
                       </button>
@@ -1377,7 +1599,7 @@ const ChatModal = ({
               ) : null}
               <div
                 className={`px-3 pt-3 md:px-4 md:pt-2.5 md:pb-3 ${
-                  showAccessOriginDock || showBoundTopicDock
+                  showAccessOriginDock || showMooniChipDock
                     ? 'hidden'
                     : 'pb-0'
                 }`}
@@ -1390,21 +1612,29 @@ const ChatModal = ({
                   className="relative"
                 >
                   <input
-                    ref={!showBoundTopicDock ? chatInputRef : undefined}
+                    ref={!showMooniChipDock ? chatInputRef : undefined}
                     type="text"
                     inputMode="text"
                     enterKeyHint="send"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={chatInputPlaceholder}
-                    className="w-full bg-gray-800 md:bg-gray-700/95 text-white text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-gray-600 md:border-cyan-400/45 md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-blue-500 md:focus:border-cyan-300/80 md:focus:ring-1 md:focus:ring-cyan-400/35 placeholder:text-gray-500 md:placeholder:text-gray-300/90"
+                    className={tone(
+                      fresh,
+                      'w-full bg-gray-800 md:bg-gray-700/95 text-white text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-gray-600 md:border-cyan-400/45 md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-blue-500 md:focus:border-cyan-300/80 md:focus:ring-1 md:focus:ring-cyan-400/35 placeholder:text-gray-500 md:placeholder:text-gray-300/90',
+                      'w-full bg-white text-slate-800 text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-300 placeholder:text-slate-400',
+                    )}
                     disabled={isLoading}
                     autoFocus={!effectiveQuickReplySlug}
                   />
                   <button
                     type="submit"
                     disabled={isLoading || !input.trim()}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-blue-600 rounded-full text-white"
+                    className={tone(
+                      fresh,
+                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-blue-600 rounded-full text-white',
+                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white',
+                    )}
                   >
                     <Send size={18} />
                   </button>

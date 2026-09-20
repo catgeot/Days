@@ -25,6 +25,7 @@ const PlaceMediaPanel = React.memo(({
     refetchPlannerFromDb,
     isPlannerRefreshing,
     location,
+    displayPlaceName,
     isVideoLoading,
     videoError: _videoError,
     googleFormUrl,
@@ -64,8 +65,11 @@ const PlaceMediaPanel = React.memo(({
                 handleRefresh={galleryData.handleRefresh}
                 getRefreshCooldownRemaining={galleryData.getRefreshCooldownRemaining}
                 refreshCooldownSec={galleryData.refreshCooldownSec}
+                galleryAtMax={galleryData.galleryAtMax}
                 handleRemoveImage={galleryData.handleRemoveImage}
                 handleDropBrokenImage={galleryData.handleDropBrokenImage}
+                loadFailed={galleryData.loadFailed}
+                handleRetryLoad={galleryData.handleRetryLoad}
                 mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>
@@ -89,7 +93,7 @@ const PlaceMediaPanel = React.memo(({
             <PlaceWikiDetailsView
                 wikiData={wikiData}
                 isWikiLoading={isWikiLoading}
-                placeName={location?.name}
+                placeName={displayPlaceName || location?.name}
                 countryName={location?.country}
                 location={location}
                 galleryData={galleryData}

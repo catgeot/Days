@@ -1,19 +1,25 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Logo from './Logo';
 
 import { useReport } from '../../../context/ReportContext';
 import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGallery';
-import { hydrateLocationFromSavedTrip } from '../lib/placeRouteHydrate';
-import FooterModal from './FooterModal';
-import { OPEN_UPDATES_LIST_EVENT } from '../../../shared/lib/siteNoticeEvents';
+import { hydrateLocationFromSavedTrip, getSavedTripDisplayName } from '../lib/placeRouteHydrate';
+import { openFooterModal } from '../../../shared/lib/footerModalEvents';
+import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
 
 const DEFAULT_THUMB =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
 
 const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
+  const { t, i18n } = useTranslation();
   const location = useMemo(() => hydrateLocationFromSavedTrip(trip), [trip]);
+  const displayName = useMemo(
+    () => getSavedTripDisplayName(trip, i18n.language, t),
+    [trip, i18n.language, t],
+  );
   const { images, isImgLoading } = usePlaceGallery(location, { thumbnailOnly: true });
 
   const thumbUrl = images[0]?.urls?.small || images[0]?.urls?.regular || '';
@@ -27,7 +33,7 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
     >
       <img
         src={finalImgSrc}
-        alt={trip.destination}
+        alt={displayName}
         className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-100 ${isLoaded ? 'blur-0' : 'blur-sm grayscale'}`}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
@@ -40,7 +46,7 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
       </button>
 
       <div className="absolute bottom-3 left-3 right-3">
-        <p className="text-xs font-bold text-white leading-tight mb-1 truncate">{trip.destination}</p>
+        <p className="text-xs font-bold text-white leading-tight mb-1 truncate">{displayName}</p>
         <p className="text-[9px] text-blue-400 tracking-wider font-mono uppercase">{trip.code}</p>
       </div>
     </div>
@@ -49,21 +55,12 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
 
 const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookmark, onTripSelect }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { openReport } = useReport();
 
-  const [isFooterOpen, setIsFooterOpen] = useState(false);
-  const [activeFooterTab, setActiveFooterTab] = useState('about');
-
   const handleOpenFooter = (tab) => {
-    setActiveFooterTab(tab);
-    setIsFooterOpen(true);
+    openFooterModal(tab);
   };
-
-  useEffect(() => {
-    const handleOpenUpdates = () => handleOpenFooter('updates');
-    window.addEventListener(OPEN_UPDATES_LIST_EVENT, handleOpenUpdates);
-    return () => window.removeEventListener(OPEN_UPDATES_LIST_EVENT, handleOpenUpdates);
-  }, []);
 
   return (
     <>
@@ -88,7 +85,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                 </div>
                 <button
                   onClick={onLogout}
-                  title="Sign Out"
+                  title={t('home.logoPanel.signOut')}
                   className="text-gray-400 hover:text-red-400 transition-colors ml-1"
                 >
                   <LogOut size={15} />
@@ -105,6 +102,8 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
 
           {user ? (
             <div className="space-y-8 animate-fade-in">
+              <TravelAgencyDirectory variant="panel" />
+
               <button
                 onClick={() => {
                   openReport('dashboard');
@@ -114,16 +113,31 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
               >
                 <div className="flex items-center gap-3">
                   <BookOpen size={18} className="text-blue-400" />
-                  <span className="text-sm font-bold text-white tracking-wide">My Travel Log</span>
+                  <span className="text-sm font-bold text-white tracking-wide">{t('home.logoPanel.myTravelLog')}</span>
                 </div>
                 <ChevronRight size={16} className="text-blue-500 group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  navigate('/auth/update-password');
+                }}
+                className="w-full group flex items-center justify-between py-3 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300"
+              >
+                <div className="flex items-center gap-3">
+                  <Lock size={18} className="text-gray-400" />
+                  <span className="text-sm font-bold text-white tracking-wide">{t('home.logoPanel.changePassword')}</span>
+                </div>
+                <ChevronRight size={16} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
               </button>
 
               <div>
                 <div className="flex justify-between items-end mb-4 px-1">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <Star size={16} className="text-yellow-400 fill-yellow-400" />
-                    My Bucket List
+                    {t('home.logoPanel.myBucketList')}
                   </h3>
                   <span className="text-xs text-gray-500 font-mono">{bucketList.length} / 50</span>
                 </div>
@@ -142,60 +156,56 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                 ) : bucketList.length > 0 ? null : (
                   <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl bg-white/5">
                     <Plane size={32} className="mx-auto text-gray-600 mb-3" />
-                    <p className="text-sm text-gray-400">아직 저장한 여행지가 없습니다.</p>
-                    <p className="text-[10px] text-gray-600 mt-1">지구본에서 도시를 클릭하고 담아보세요.</p>
+                    <p className="text-sm text-gray-400">{t('home.logoPanel.bucketEmpty')}</p>
+                    <p className="text-[10px] text-gray-600 mt-1">{t('home.logoPanel.bucketEmptyHint')}</p>
                   </div>
                 )}
               </div>
             </div>
           ) : (
-            <div className="h-full flex flex-col justify-center items-center text-center space-y-8 animate-fade-in pb-10">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-2 border border-white/10">
-                <BookOpen size={28} className="text-gray-600" />
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-xl font-bold text-white tracking-tight">당신의 여행을 기록하세요</h3>
-                <p className="text-gray-500 text-xs leading-relaxed max-w-[240px]">
-                  로그인하고 나만의 버킷리스트를 만들고<br/>
-                  지구본의 모든 기능을 제한 없이<br/>
-                  이용할 수 있습니다.
-                </p>
-              </div>
+            <div className="space-y-8 animate-fade-in pb-10">
+              <TravelAgencyDirectory variant="panel" />
 
-              <button
-                onClick={() => navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } })}
-                className="w-full max-w-[180px] py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/30 transition-all flex items-center justify-center gap-2 group text-sm"
-              >
-                <LogIn size={16} className="group-hover:-translate-x-1 transition-transform" />
-                SIGN IN
-              </button>
+              <div className="flex flex-col items-center text-center space-y-8">
+                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-2 border border-white/10">
+                  <BookOpen size={28} className="text-gray-600" />
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-white tracking-tight">{t('home.logoPanel.signInTitle')}</h3>
+                  <p className="text-gray-500 text-xs leading-relaxed max-w-[240px]">
+                    {t('home.logoPanel.signInBody')}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } })}
+                  className="w-full max-w-[180px] py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/30 transition-all flex items-center justify-center gap-2 group text-sm"
+                >
+                  <LogIn size={16} className="group-hover:-translate-x-1 transition-transform" />
+                  {t('home.logoPanel.signIn')}
+                </button>
+              </div>
             </div>
           )}
         </div>
 
         <div className="p-5 border-t border-white/10 bg-black">
-          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[9px] text-gray-500 uppercase tracking-widest font-bold">
-            <button onClick={() => handleOpenFooter('about')} className="hover:text-white transition-colors">About Us</button>
+          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[9px] text-gray-300 uppercase tracking-widest font-bold">
+            <button onClick={() => handleOpenFooter('about')} className="hover:text-white transition-colors">{t('home.footerModal.tab.about')}</button>
             <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('updates')} className="hover:text-white transition-colors">Updates</button>
+            <button onClick={() => handleOpenFooter('updates')} className="hover:text-white transition-colors">{t('home.footerModal.tab.updates')}</button>
             <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('credits')} className="hover:text-white transition-colors">Credits</button>
+            <button onClick={() => handleOpenFooter('credits')} className="hover:text-white transition-colors">{t('home.footerModal.tab.credits')}</button>
             <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('terms')} className="hover:text-white transition-colors">Terms</button>
+            <button onClick={() => handleOpenFooter('terms')} className="hover:text-white transition-colors">{t('home.footerModal.tab.terms')}</button>
             <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+            <button onClick={() => handleOpenFooter('privacy')} className="hover:text-white transition-colors">{t('home.footerModal.tab.privacy')}</button>
             <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('contact')} className="hover:text-white transition-colors">Contact</button>
+            <button onClick={() => handleOpenFooter('contact')} className="hover:text-white transition-colors">{t('home.footerModal.tab.contact')}</button>
           </div>
-          <p className="text-center text-[8px] text-gray-700 mt-3 tracking-widest">© 2026 GATEO · Project Days</p>
+          <p className="text-center text-[8px] text-gray-700 mt-3 tracking-widest">© 2026 GATEO</p>
         </div>
       </div>
-
-      <FooterModal
-        isOpen={isFooterOpen}
-        onClose={() => setIsFooterOpen(false)}
-        initialTab={activeFooterTab}
-      />
     </>
   );
 };

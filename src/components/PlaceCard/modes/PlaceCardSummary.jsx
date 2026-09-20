@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye, LayoutList } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
-import { getPlaceTitleLines } from '../common/locationDisplay';
+import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
+import { getPlaceTitleLinesForLocale, getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
+import { useLocale } from '../../../i18n/LocaleProvider';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
 import FlightOriginSelector from '../../../pages/Home/components/FlightOriginSelector.jsx';
 import {
@@ -10,6 +14,7 @@ import {
   useVisualViewportBottomAnchor,
 } from '../../../shared/hooks/useMobileInputViewport.js';
 import { isSyntheticOrEmptyPlaceDesc } from '../../../pages/Home/lib/placeDescText.js';
+import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
 
 const PlaceCardSummary = ({
   location,
@@ -23,6 +28,7 @@ const PlaceCardSummary = ({
   onImmerseZoomStep,
   isImmersed = false,
   canToggleImmerse = true,
+  plannerUrl = null,
   onPreviewFlightRoute,
   canPreviewFlightRoute = false,
   isFlightRouteReady = false,
@@ -36,11 +42,14 @@ const PlaceCardSummary = ({
   initialOriginExpanded = false,
   isCompact = false,
   belowCard = null,
+  eventsSection = null,
   stayToggle = null,
   stayExpanded = false,
   tourTab = null,
   tourExpanded = false,
 }) => {
+  const { t } = useTranslation();
+  const { locale } = useLocale();
   const [isLoading, setIsLoading] = useState(true);
   const [glowPhase, setGlowPhase] = useState('enter');
   const [originExpanded, setOriginExpanded] = useState(initialOriginExpanded);
@@ -72,26 +81,32 @@ const PlaceCardSummary = ({
   }, [isImmersed, location?.id]);
 
   const isScanning = location?.isScanning;
-  const isEnterGlow = glowPhase === 'enter';
-  const { primaryName, secondaryName } = getPlaceTitleLines(location);
+  const allowSummaryExpandTap = !isMobileCoarse;
+  const allowSummaryIntroExpandTap = !isScanning && !isCompact;
+  const isEnterGlow = !isMobileCoarse && glowPhase === 'enter';
+  const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
+  const rawCountry = getLocalizedCountryName(location, locale);
+  const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
   const canStartTour = canStartGlobeTour(location);
   const flightRouteInteractive = isFlightRouteReady && !isFlightRoutePending;
   const flightRouteBusy = canPreviewFlightRoute && !flightRouteInteractive && !isFlightRoutePending;
   const flightRouteButtonLabel = isFlightRoutePending
-    ? '조회 중…'
+    ? t('place.summary.flightLoading')
     : flightRouteBusy
-      ? '갱신 중…'
+      ? t('place.summary.flightRefreshing')
       : isFlightRouteReady
-        ? '항공 경로'
-        : '준비 중…';
+        ? t('place.summary.flightRoute')
+        : t('place.summary.preparing');
 
-  const placeIntro = String(location?.desc || '').trim();
+  const placeIntro = getLocalizedPlaceDesc(location, locale).trim();
   const hasPlaceIntro =
-    Boolean(placeIntro) && !isSyntheticOrEmptyPlaceDesc(location);
+    Boolean(placeIntro) && !isSyntheticOrEmptyPlaceDesc({ ...location, desc: placeIntro });
 
   const blurbText = hasPlaceIntro
     ? placeIntro
-    : `${location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.`;
+    : t('place.summary.blurbFallback', {
+        name: getLocalizedPlaceName(location, locale) || location?.name || '',
+      });
   /** 항공 경로 카드는 공간 절약 — 2줄+더보기 / 그 외(국내·명소)는 3줄 */
   const introClampClass = canPreviewFlightRoute ? 'line-clamp-2' : 'line-clamp-3';
   const showIntroMore = hasPlaceIntro
@@ -121,8 +136,11 @@ const PlaceCardSummary = ({
     setOriginExpanded(initialOriginExpanded);
   }, [location?.id, location?.slug, initialOriginExpanded]);
 
+  const showPlannerLink = Boolean(plannerUrl) && !isScanning && !isImmersed;
+  const showImmerseControls = !isScanning && canToggleImmerse && (!plannerUrl || isImmersed);
+
   const actionButtonCount =
-    (!isScanning && canToggleImmerse ? 1 : 0) +
+    (showPlannerLink || showImmerseControls ? 1 : 0) +
     (canPreviewFlightRoute ? 1 : 0) +
     (canStartTour ? 1 : 0) +
     (stayToggle ? 1 : 0);
@@ -132,7 +150,7 @@ const PlaceCardSummary = ({
 
   if (isImmerseCompact) {
     return (
-      <div className="z-[60] absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-2.5rem)] max-w-[400px] animate-fade-in-up">
+      <div className="z-[60] fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-0 right-0 mx-auto w-[calc(100vw-2.5rem)] max-w-[400px] max-md:animate-none lg:absolute lg:bottom-6 lg:left-auto lg:right-auto lg:mx-0 lg:w-[calc(100vw-2.5rem)]">
         <div className="tour-mobile-bar-shell relative">
           <div className="tour-mobile-bar-halo" aria-hidden="true" />
           <div className="tour-mobile-bar-card relative z-[1] flex items-center gap-3 rounded-2xl border border-white/15 bg-black/80 px-3 py-1.5 backdrop-blur-xl">
@@ -145,7 +163,7 @@ const PlaceCardSummary = ({
               className="min-w-0 flex-1 self-stretch py-1 leading-none text-left"
             >
               <p className="text-[9px] font-bold tracking-widest uppercase text-emerald-300/90 truncate leading-none">
-                {location?.country || 'Global'}
+                {countryLabel}
               </p>
               <p className="mt-0.5 text-sm font-bold text-white truncate leading-none">
                 {primaryName || location?.name}
@@ -159,7 +177,7 @@ const PlaceCardSummary = ({
                   onImmerseZoomStep?.('x2');
                 }}
                 className={`flex h-10 min-w-[2.75rem] items-center justify-center rounded-xl border px-3 text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
-                title="현재 배율에서 ×2 확대"
+                title={t('place.summary.zoom2x')}
               >
                 ×2
               </button>
@@ -170,7 +188,7 @@ const PlaceCardSummary = ({
                   onImmerseZoomStep?.('x4');
                 }}
                 className={`flex h-10 min-w-[2.75rem] items-center justify-center rounded-xl border px-3 text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
-                title="현재 배율에서 ×4 확대"
+                title={t('place.summary.zoom4x')}
               >
                 ×4
               </button>
@@ -183,8 +201,8 @@ const PlaceCardSummary = ({
                 setImmerseBarOpen(false);
               }}
               className="tour-mobile-bar-close shrink-0 flex h-10 w-10 items-center justify-center rounded-xl border border-white/25 bg-white/10 text-white transition-all hover:bg-white/15 active:scale-[0.96]"
-              aria-label="장소 카드로 돌아가기"
-              title="장소 카드로 돌아가기"
+              aria-label={t('place.summary.backToCard')}
+              title={t('place.summary.backToCard')}
             >
               <X size={17} strokeWidth={2.5} aria-hidden="true" />
             </button>
@@ -198,12 +216,12 @@ const PlaceCardSummary = ({
     <div
       className={`${
         tourExpanded || stayExpanded ? 'z-[62]' : 'z-[60]'
-      } animate-fade-in-up transition-all duration-200 ${
+      } max-md:animate-none transition-all duration-200 ${
         isOriginCompact
-          ? 'fixed left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px]'
-          : `absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
-              tourTab ? ' ml-[1.1rem] lg:ml-0' : ''
-            }`
+          ? 'fixed left-0 right-0 mx-auto w-[calc(100vw-3rem)] max-w-[360px]'
+          : tourTab
+            ? 'fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-[max(2.2rem,env(safe-area-inset-left,0px))] right-[1.5rem] mx-0 w-auto max-w-[360px] lg:absolute lg:bottom-6 lg:left-auto lg:right-8 lg:mx-0 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]'
+            : 'fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-0 right-0 mx-auto w-[calc(100vw-3rem)] max-w-[360px] lg:absolute lg:bottom-6 lg:left-auto lg:right-8 lg:mx-0 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]'
       }`}
       style={keyboardAnchorStyle}
     >
@@ -215,33 +233,33 @@ const PlaceCardSummary = ({
             <div className="place-summary-orbit-ring" aria-hidden="true" />
             {!isScanning && (
               <div className="place-summary-open-hint absolute -top-9 left-1/2 -translate-x-1/2 z-20 pointer-events-none whitespace-nowrap lg:hidden">
-                클릭하여 탐색 시작
+                {t('place.summary.tapToExplore')}
               </div>
             )}
           </>
         )}
 
         <div
-          className={`place-summary-card relative z-[1] bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl group ${
+          className={`place-summary-card relative z-[1] border border-white/10 rounded-3xl shadow-2xl group max-md:bg-[#0a0a0a] max-md:backdrop-blur-none md:bg-black/80 md:backdrop-blur-xl ${
             isOriginCompact || stayExpanded || tourTab ? 'overflow-visible' : 'overflow-hidden'
           } ${isOriginCompact ? 'p-2.5' : 'p-4'} ${isEnterGlow ? 'place-summary-card-enter' : glowPhase === 'idle' ? 'place-summary-card-idle' : ''}`}
         >
           <div
-            className="place-summary-top-shine absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent group-hover:via-blue-400 transition-all duration-500 cursor-pointer"
-            onClick={!isScanning ? onExpand : undefined}
+            className="place-summary-top-shine absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent group-hover:via-blue-400 transition-all duration-500 max-md:pointer-events-none md:cursor-pointer"
+            onClick={allowSummaryExpandTap && !isScanning ? onExpand : undefined}
           />
 
           <div
             className={`flex items-start justify-between gap-2 mb-3 ${isOriginCompact ? 'hidden' : ''}`}
           >
             <div
-              className={`flex min-w-0 flex-1 flex-col ${!isScanning ? 'cursor-pointer' : ''}`}
-              onClick={!isScanning ? onExpand : undefined}
+              className={`flex min-w-0 flex-1 flex-col ${allowSummaryExpandTap && !isScanning ? 'cursor-pointer' : ''}`}
+              onClick={allowSummaryExpandTap && !isScanning ? onExpand : undefined}
             >
               <div className="flex items-center gap-1.5 mb-1 min-w-0">
                 <Sparkles size={12} className={`shrink-0 ${isScanning ? 'text-blue-400 animate-pulse' : 'text-yellow-400'}`} />
                 <span className="min-w-0 truncate text-[10px] text-blue-300 font-bold tracking-widest uppercase">
-                  {isScanning ? 'SEARCHING...' : (location?.country || 'Global')}
+                  {isScanning ? 'SEARCHING...' : countryLabel}
                 </span>
               </div>
               <div className="flex items-center gap-2 min-w-0">
@@ -263,23 +281,38 @@ const PlaceCardSummary = ({
               )}
             </div>
 
-            <div className="flex shrink-0 items-center gap-1 -mr-2 -mt-2 z-10">
+            <div
+              className="flex shrink-0 items-center gap-1 -mr-1 -mt-1 z-20 relative pointer-events-auto"
+              data-summary-chrome
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               {!isScanning && <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />}
               <button
+                type="button"
+                aria-label={t('place.summary.closeSummary')}
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
-                  onClose();
+                  e.nativeEvent?.stopImmediatePropagation?.();
+                  onClose?.();
                 }}
-                className="p-1.5 rounded-full hover:bg-white/10 text-gray-500 hover:text-white transition-colors"
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.nativeEvent?.stopImmediatePropagation?.();
+                  onClose?.();
+                }}
+                className="relative z-20 inline-flex items-center justify-center min-h-11 min-w-11 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors touch-manipulation"
               >
-                <X size={18} />
+                <X size={18} aria-hidden="true" />
               </button>
             </div>
           </div>
 
           <div
-            className={`${isOriginCompact ? 'hidden' : ''} ${!isScanning && !isCompact ? `cursor-pointer ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
-            onClick={!isScanning && !isCompact ? onExpand : undefined}
+            className={`${isOriginCompact ? 'hidden' : ''} ${allowSummaryIntroExpandTap ? `cursor-pointer touch-manipulation ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
+            onClick={allowSummaryIntroExpandTap ? onExpand : undefined}
           >
             {!isCompact && (isLoading || isScanning ? (
               <div className="w-full animate-pulse space-y-3 mt-1 px-1">
@@ -308,7 +341,7 @@ const PlaceCardSummary = ({
                       }}
                       className="absolute bottom-0 right-0 inline-flex items-center gap-0.5 bg-gradient-to-l from-black/85 via-black/70 to-transparent pl-3 text-[12px] font-semibold leading-[1.55] text-sky-300/95 hover:text-sky-200 transition-colors"
                     >
-                      더보기
+                      {t('place.summary.readMore')}
                       <ChevronRight size={14} className="shrink-0 opacity-80" aria-hidden="true" />
                     </button>
                   ) : null}
@@ -344,7 +377,7 @@ const PlaceCardSummary = ({
                       <p className="min-w-0 flex-1 truncate text-right text-xs font-semibold text-sky-200/90 break-keep tabular-nums">
                         {flightRouteLabel}
                         {typeof flightRouteHours === 'number' ? (
-                          <span className="ml-1 font-medium text-sky-300/75">· 약 {flightRouteHours}h</span>
+                          <span className="ml-1 font-medium text-sky-300/75">· {t('place.summary.flightHoursApprox', { hours: flightRouteHours })}</span>
                         ) : null}
                       </p>
                     ) : null}
@@ -397,12 +430,12 @@ const PlaceCardSummary = ({
                     }`}
                     title={
                       isFlightRoutePending
-                        ? '항공 경로 조회 중…'
+                        ? t('place.summary.flightRouteLoading')
                         : flightRouteBusy
-                          ? '경로 갱신 중…'
+                          ? t('place.summary.flightRouteRefreshing')
                           : isFlightRouteReady
-                            ? (flightRouteLabel || '항공 경로 미리보기')
-                            : '지구본 준비 중…'
+                            ? (flightRouteLabel || t('place.summary.flightRoutePreview'))
+                            : t('place.summary.globePreparing')
                     }
                   >
                     {isFlightRoutePending || flightRouteBusy ? (
@@ -423,7 +456,21 @@ const PlaceCardSummary = ({
                   </button>
                 )}
 
-                {!isScanning && canToggleImmerse && (
+                {showPlannerLink ? (
+                  <Link
+                    to={plannerUrl}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-cyan-300/50 bg-cyan-500/20 px-2 py-2 transition-all duration-300 hover:border-cyan-200/60 hover:bg-cyan-500/28 lg:min-h-[36px]"
+                    title={t('place.summary.openPlanner')}
+                  >
+                    <LayoutList size={16} className="shrink-0 text-cyan-200" aria-hidden="true" />
+                    <span className="min-w-0 truncate text-xs font-bold text-cyan-50">{t('place.nav.planner')}</span>
+                  </Link>
+                ) : null}
+
+                {showImmerseControls && (
                   isImmersed ? (
                     isMobileCoarse ? (
                       <button
@@ -433,10 +480,10 @@ const PlaceCardSummary = ({
                           onToggleImmerse?.();
                         }}
                         className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
-                        title="지구본을 멀리서 보기"
+                        title={t('place.summary.globeFar')}
                       >
                         <ScanEye size={16} className="shrink-0 text-emerald-300" />
-                        <span className="min-w-0 truncate text-xs font-bold text-emerald-100">멀리서 보기</span>
+                        <span className="min-w-0 truncate text-xs font-bold text-emerald-100">{t('place.summary.globeFar')}</span>
                       </button>
                     ) : (
                       <div className="col-span-2 relative z-10 flex min-h-[40px] min-w-0 items-center gap-1.5 lg:min-h-[36px]">
@@ -447,7 +494,7 @@ const PlaceCardSummary = ({
                             onImmerseZoomStep?.('x2');
                           }}
                           className={`flex min-h-[40px] flex-1 items-center justify-center rounded-xl border px-2 py-2 text-xs font-bold tabular-nums transition-all lg:min-h-[36px] ${immerseStepChipClass}`}
-                          title="현재 배율에서 ×2 확대"
+                          title={t('place.summary.zoom2x')}
                         >
                           ×2
                         </button>
@@ -458,7 +505,7 @@ const PlaceCardSummary = ({
                             onImmerseZoomStep?.('x4');
                           }}
                           className={`flex min-h-[40px] flex-1 items-center justify-center rounded-xl border px-2 py-2 text-xs font-bold tabular-nums transition-all lg:min-h-[36px] ${immerseStepChipClass}`}
-                          title="현재 배율에서 ×4 확대"
+                          title={t('place.summary.zoom4x')}
                         >
                           ×4
                         </button>
@@ -469,10 +516,10 @@ const PlaceCardSummary = ({
                             onToggleImmerse?.();
                           }}
                           className="relative z-10 flex min-h-[40px] min-w-0 flex-[1.35] items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
-                          title="지구본을 멀리서 보기"
+                          title={t('place.summary.globeFar')}
                         >
                           <ScanEye size={16} className="shrink-0 text-emerald-300" />
-                          <span className="min-w-0 truncate text-xs font-bold text-emerald-100">멀리서 보기</span>
+                          <span className="min-w-0 truncate text-xs font-bold text-emerald-100">{t('place.summary.globeFar')}</span>
                         </button>
                       </div>
                     )
@@ -484,10 +531,10 @@ const PlaceCardSummary = ({
                         onToggleImmerse?.();
                       }}
                       className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-teal-400/40 bg-teal-500/20 px-2 py-2 transition-all duration-300 hover:border-teal-300/50 hover:bg-teal-500/28 lg:min-h-[36px]"
-                      title="이 지역을 가까이서 보기"
+                      title={t('place.summary.regionNear')}
                     >
                       <ScanSearch size={16} className="shrink-0 text-teal-300" />
-                      <span className="min-w-0 truncate text-xs font-bold text-teal-50">가까이 보기</span>
+                      <span className="min-w-0 truncate text-xs font-bold text-teal-50">{t('place.summary.regionNear')}</span>
                     </button>
                   )
                 )}
@@ -500,12 +547,12 @@ const PlaceCardSummary = ({
                       if (onStartTour) onStartTour(location);
                     }}
                     className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-violet-300/55 bg-violet-500/22 px-2 py-2 transition-all duration-300 hover:border-violet-200/65 hover:bg-violet-500/30 lg:min-h-[36px]"
-                    title="이 지역 3D 투어"
+                    title={t('place.summary.region3dTour')}
                   >
                     <Cuboid size={16} className="shrink-0 text-violet-200" strokeWidth={2.25} aria-hidden="true" />
                     <span className="min-w-0 truncate text-xs font-bold text-violet-50">
                       <span className="tracking-tight text-violet-100">3D</span>
-                      <span className="text-violet-50/90"> 투어</span>
+                      <span className="text-violet-50/90"> {t('place.summary.tour3dLabel')}</span>
                     </span>
                   </button>
                 )}
@@ -513,6 +560,12 @@ const PlaceCardSummary = ({
             ) : null}
           </div>
         </div>
+
+        {!isScanning && !isOriginCompact && eventsSection ? (
+          <div className="relative z-[1] mt-2 px-3 pb-1 lg:px-4" onClick={(e) => e.stopPropagation()}>
+            {eventsSection}
+          </div>
+        ) : null}
 
         {!isScanning && !isOriginCompact && belowCard ? (
           <div className="relative z-[1] mt-0 lg:contents">{belowCard}</div>

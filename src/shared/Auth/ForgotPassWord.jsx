@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../api/supabase';
 import { Link } from 'react-router-dom';
 import { Mail, Loader2, ArrowLeft, Send } from 'lucide-react';
@@ -6,6 +7,7 @@ import Logo from '../../pages/Home/components/Logo';
 import { MOBILE_INPUT_TEXT_CLASS } from '../hooks/useMobileInputViewport';
 
 const ForgotPassword = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
@@ -17,14 +19,13 @@ const ForgotPassword = () => {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        // 🚨 [Fix] localhost 하드코딩 제거 (실서버 배포 시 치명적 버그 방지)
         redirectTo: `${window.location.origin}/auth/update-password`,
       });
 
       if (error) throw error;
-      setMessage({ type: 'success', text: '재설정 링크를 이메일로 보냈습니다! 메일함을 확인해주세요.' });
+      setMessage({ type: 'success', text: t('authPage.forgot.success') });
     } catch (error) {
-      setMessage({ type: 'error', text: '오류가 발생했습니다: ' + error.message });
+      setMessage({ type: 'error', text: t('authPage.forgot.error', { message: error.message }) });
     } finally {
       setLoading(false);
     }
@@ -38,8 +39,8 @@ const ForgotPassword = () => {
 
         <div className="text-center mb-5">
           <div className="flex justify-center mb-2 scale-110"><Logo /></div>
-          <h2 className="text-xl font-bold text-gray-900">Reset Password</h2>
-          <p className="text-xs text-gray-500 mt-1">가입하신 이메일로 재설정 링크를 보내드립니다.</p>
+          <h2 className="text-xl font-bold text-gray-900">{t('authPage.forgot.title')}</h2>
+          <p className="text-xs text-gray-500 mt-1">{t('authPage.forgot.subtitle')}</p>
         </div>
 
         {message && (
@@ -50,7 +51,7 @@ const ForgotPassword = () => {
 
         <form onSubmit={handleResetPassword} className="space-y-4">
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-gray-500 ml-1">EMAIL</label>
+            <label className="text-[10px] font-bold text-gray-500 ml-1">{t('authPage.common.email')}</label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail size={16} className="text-gray-400 group-focus-within:text-blue-500 transition-colors" />
@@ -66,18 +67,18 @@ const ForgotPassword = () => {
             </div>
           </div>
 
-					<button
-						type="submit"
-						disabled={loading}
-						className="w-full bg-blue-600 border border-transparent text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:bg-blue-500 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed group"
-						>
-						{loading ? <Loader2 size={16} className="animate-spin" /> : <>링크 보내기 <Send size={14} className="group-hover:translate-x-1 transition-transform" /></>}
-					</button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 border border-transparent text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:bg-blue-500 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed group"
+          >
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <>{t('authPage.forgot.submit')} <Send size={14} className="group-hover:translate-x-1 transition-transform" /></>}
+          </button>
         </form>
 
         <div className="mt-6 text-center">
           <Link to="/auth/login" className="text-gray-500 hover:text-gray-900 text-xs flex items-center justify-center gap-1.5 transition-colors font-medium">
-            <ArrowLeft size={14} /> 로그인으로 돌아가기
+            <ArrowLeft size={14} /> {t('authPage.forgot.backToLogin')}
           </Link>
         </div>
       </div>

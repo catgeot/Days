@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import mooniChar from '../../../assets/MOONI_transparent.png';
 import mooniText from '../../../assets/MONNI_text.png';
@@ -101,6 +102,7 @@ export default function MooniAgentFab({
   /** 모바일 숙소 패널 펼침 — FAB 숨김(가독성) */
   hideForStayPanel = false,
 }) {
+  const { t } = useTranslation();
   const rootRef = useRef(null);
   const dragRef = useRef(null);
   const hintTimerRef = useRef(null);
@@ -394,7 +396,7 @@ export default function MooniAgentFab({
       ref={rootRef}
       style={{ right: pos.right, bottom: pos.bottom }}
       className="fixed z-[58] pointer-events-auto touch-none select-none"
-      aria-label="MOONi AI 여행 도우미"
+      aria-label={t('mooni.fab.ariaHelper')}
     >
       <div className="relative flex flex-col items-center">
         {hintVisible && (
@@ -411,7 +413,7 @@ export default function MooniAgentFab({
                   type="button"
                   onClick={dismissHint}
                   className="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors"
-                  aria-label="말풍선 닫기"
+                  aria-label={t('mooni.fab.ariaCloseHint')}
                 >
                   <X size={14} />
                 </button>
@@ -450,12 +452,12 @@ export default function MooniAgentFab({
           className={`group relative flex flex-col items-center gap-1 rounded-2xl p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${
             isDragging ? 'cursor-grabbing scale-[1.02]' : 'cursor-grab hover:scale-105'
           } transition-transform duration-200`}
-          aria-label="MOONi와 대화하기. 드래그하면 위치를 옮길 수 있어요. 모바일에서는 누르고 있으면 말풍선이 나와요."
+          aria-label={t('mooni.fab.ariaChat')}
         >
           <span className={`pointer-events-none ${isDragging ? '' : 'mooni-float'}`}>
             <img
               src={mooniChar}
-              alt="MOONi 캐릭터"
+              alt={t('mooni.fab.ariaCharacter')}
               className="h-[72px] w-[72px] sm:h-[88px] sm:w-[88px] object-contain drop-shadow-[0_8px_24px_rgba(34,211,238,0.35)]"
               draggable={false}
             />

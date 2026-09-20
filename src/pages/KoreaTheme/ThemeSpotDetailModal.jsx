@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowUp,
   Bike,
   Building2,
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Expand,
@@ -15,6 +17,7 @@ import {
   Phone,
   Route,
   Sparkles,
+  Star,
   Utensils,
   X,
   Youtube,
@@ -22,12 +25,13 @@ import {
 import {
   getThemeMembership,
   resolveThemeCrossLinks,
+  resolveThemeSpotAreaCode,
   scenicHomePathForHubId,
 } from '../Home/lib/koreaThemeCrossLinks';
 import {
   buildThemeModulePath,
   pushThemeNavBack,
-  themeModuleLabelForPath,
+  themeNavBackEntryForSpot,
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
@@ -35,6 +39,15 @@ import { useLightboxPinchTransform } from '../../components/PlaceCard/common/use
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
+import {
+  groupNearbySpotsWithLocalScenic,
+  hasTourContentId,
+  missingNearbyThumbContentIds,
+} from '../Home/lib/koreaLocalScenicLists';
+import {
+  fetchKoreaTourAttractionFirstImagesByIds,
+  peekKoreaTourAttractionFirstImagesByIds,
+} from '../Home/lib/koreaTourAttractions';
 import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
@@ -52,11 +65,48 @@ import {
 } from '../../utils/fetchScenicSpotVideos';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
+import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
+import { koreanApiTextProps } from '../../i18n/koreanApiText';
+import { useLocale } from '../../i18n/LocaleProvider';
+import {
+  formatScenicSpotPlaceLabel,
+  scenicSpotMapTitle,
+} from '../Home/lib/scenicSpotPlaceLabel.js';
+import { localizedHubLabel, localizedScenicMajorRegion } from '../../i18n/koreaRegionLabels';
+import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
+import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
+import { detectSidoCode } from '../Korea/festivalRegionTags';
+import ScenicStayStrip from './ScenicStayStrip';
+import ScenicTnaStrip from './ScenicTnaStrip';
+
+function localizedSpotModalSubtitle(spot, locale) {
+  const place = formatScenicSpotPlaceLabel(spot, locale);
+  if (place) return place;
+  const raw = String(spot?.subtitle || '').trim();
+  if (!raw) return '';
+  return localizedScenicMajorRegion(locale, raw) || raw;
+}
 
 /** 본문·확대보기 — 가로 스와이프 vs 세로 스크롤·탭 */
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 
+function formatYmdLabel(ymd) {
+  const s = String(ymd || '');
+  if (!/^\d{8}$/.test(s)) return '';
+  return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
+}
+
+function appendLocaleQuery(path, locale) {
+  const raw = String(path || '').trim();
+  if (!raw || !String(locale || '').startsWith('en')) return raw;
+  const qIdx = raw.indexOf('?');
+  const pathname = qIdx >= 0 ? raw.slice(0, qIdx) : raw;
+  const params = new URLSearchParams(qIdx >= 0 ? raw.slice(qIdx + 1) : '');
+  if (!params.has('lang')) params.set('lang', 'en');
+  const q = params.toString();
+  return q ? `${pathname}?${q}` : pathname;
+}
 function youtubeThumb(videoId) {
   const id = String(videoId || '').trim();
   if (!id) return '';
@@ -64,7 +114,7 @@ function youtubeThumb(videoId) {
 }
 
 const MODULE_CHIP = {
-  scenic: { label: '명승지', path: '/korea/theme/scenic' },
+  scenic: { path: '/korea/theme/scenic' },
 };
 
 const ACTIVE_MODULE_CHIPS = new Set(['scenic']);
@@ -115,8 +165,36 @@ function CrossTextButton({ onClick, children }) {
   );
 }
 
+function themeSpotCrossInput(spot, detail) {
+  if (!spot) return null;
+  const fromDetailLat = Number(detail?.mapy);
+  const fromDetailLng = Number(detail?.mapx);
+  const lat = Number(spot.lat);
+  const lng = Number(spot.lng);
+  const addr1 = String(detail?.addr1 || spot.addr1 || '').trim();
+  const addr2 = String(detail?.addr2 || spot.addr2 || '').trim();
+  return {
+    hubId: spot.hubId,
+    placeSlug: spot.placeSlug,
+    name: spot.name,
+    nameEn: spot.nameEn,
+    region: spot.region,
+    areaCode: spot.areaCode,
+    areaLabel: spot.areaLabel,
+    locality: spot.locality,
+    addr1: addr1 || undefined,
+    addr2: addr2 || undefined,
+    lat: Number.isFinite(lat) ? lat : fromDetailLat,
+    lng: Number.isFinite(lng) ? lng : fromDetailLng,
+    mapx: detail?.mapx,
+    mapy: detail?.mapy,
+    contentId: spot.contentId,
+  };
+}
+
 /**
  * §2.5.4 모달 하단 크로스 레일 — 매처는 koreaThemeCrossLinks만 사용.
+ * 숙소 스트립은 본문(개요·주소 다음, 주변 맛집 위)에서 렌더.
  * 맛집·레포츠·문화 본문에서는 hub「인근 여행지」대신 DB 주변 관광지로 크로스.
  */
 function ThemeSpotCrossRail({
@@ -126,35 +204,17 @@ function ThemeSpotCrossRail({
   onClose,
   onOpenSameHub,
   hideNearbyHubs = false,
+  hideStayStrip = false,
+  hideTnaStrip = false,
 }) {
+  const { t } = useTranslation();
+  const { locale } = useLocale();
   const navigate = useNavigate();
 
-  const crossSpot = useMemo(() => {
-    if (!spot) return null;
-    const fromDetailLat = Number(detail?.mapy);
-    const fromDetailLng = Number(detail?.mapx);
-    const lat = Number(spot.lat);
-    const lng = Number(spot.lng);
-    const addr1 = String(detail?.addr1 || spot.addr1 || '').trim();
-    const addr2 = String(detail?.addr2 || spot.addr2 || '').trim();
-    return {
-      hubId: spot.hubId,
-      placeSlug: spot.placeSlug,
-      name: spot.name,
-      nameEn: spot.nameEn,
-      region: spot.region,
-      areaCode: spot.areaCode,
-      areaLabel: spot.areaLabel,
-      locality: spot.locality,
-      addr1: addr1 || undefined,
-      addr2: addr2 || undefined,
-      lat: Number.isFinite(lat) ? lat : fromDetailLat,
-      lng: Number.isFinite(lng) ? lng : fromDetailLng,
-      mapx: detail?.mapx,
-      mapy: detail?.mapy,
-      contentId: spot.contentId,
-    };
-  }, [spot, detail]);
+  const crossSpot = useMemo(
+    () => themeSpotCrossInput(spot, detail),
+    [spot, detail],
+  );
 
   const cross = useMemo(
     () => resolveThemeCrossLinks(crossSpot),
@@ -166,28 +226,36 @@ function ThemeSpotCrossRail({
     [spot?.placeSlug],
   );
 
-  const backEntry = useMemo(() => {
-    if (!spot || !returnTo) return null;
-    const path = buildThemeModulePath(returnTo, {
-      spotId: spot.id,
-      areaCode: spot.areaCode,
-    });
-    return {
-      path,
-      label: spot.name,
-      moduleLabel: themeModuleLabelForPath(returnTo),
-    };
-  }, [spot, returnTo]);
+  const backEntry = useMemo(
+    () => themeNavBackEntryForSpot(spot, returnTo),
+    [spot, returnTo],
+  );
 
   const goThemePath = (to) => {
     if (!to) return;
+    const dest = appendLocaleQuery(to, locale);
+    // 축제 오버레이(`/korea`)에서 테마 모듈로 나갈 때만 시트 닫기.
+    // 명승 홈에서는 closeModal이 spot query를 지워 deep-link와 경합할 수 있음.
+    const leavingFestivalOverlay =
+      String(returnTo || '').split('?')[0] === '/korea';
     if (backEntry) {
       pushThemeNavBack(backEntry);
-      navigate(to, { state: { themeBack: backEntry } });
+      if (leavingFestivalOverlay) onClose?.();
+      navigate(dest, { state: { themeBack: backEntry } });
       return;
     }
-    navigate(to);
+    if (leavingFestivalOverlay) onClose?.();
+    navigate(dest);
   };
+
+  const stayDisplayKeyword =
+    localizedHubLabel(locale, { hubId: crossSpot?.hubId, name: cross.stay?.keyword }) ||
+    cross.stay?.keyword ||
+    '';
+  const tnaDisplayKeyword =
+    localizedHubLabel(locale, { hubId: crossSpot?.hubId, name: cross.tna?.keyword }) ||
+    cross.tna?.keyword ||
+    '';
 
   if (!spot || !cross) return null;
 
@@ -198,32 +266,38 @@ function ThemeSpotCrossRail({
       if (!chip) return null;
       return {
         id,
-        label: chip.label,
+        label: t('korea.theme.spotDetail.moduleScenic'),
         path: membershipDeepPath(id, membership),
       };
     })
     .filter(Boolean);
 
-  const stayHref = cross.stay?.keyword
-    ? getMrtAccommodationSearchUrl(cross.stay.keyword, { isDomestic: true })
-    : '';
-  const tnaHref = cross.tna?.keyword
-    ? buildMrtTnaSearchMoreUrl(cross.tna.keyword)
-    : '';
+  const showStayStrip = !hideStayStrip && Boolean(cross.stay?.location);
+  const stayHref =
+    !showStayStrip && cross.stay?.keyword
+      ? getMrtAccommodationSearchUrl(cross.stay.keyword, { isDomestic: true })
+      : '';
+  const showTnaStrip = !hideTnaStrip && Boolean(cross.tna?.location);
+  const tnaHref =
+    !showTnaStrip && cross.tna?.keyword
+      ? buildMrtTnaSearchMoreUrl(cross.tna.keyword)
+      : '';
 
   const openNearbyScenicHome = (hub) => {
     const path =
       String(hub?.scenicPath || '').trim() ||
       scenicHomePathForHubId(hub?.hubId);
     if (!path) return;
+    // 검색 모달이 열린 채 hub만 바뀌면 이전 검색어로 빈 결과가 남음
+    const navState = { clearScenicSearch: true };
     if (backEntry) {
       pushThemeNavBack(backEntry);
       onClose?.();
-      navigate(path, { state: { themeBack: backEntry } });
+      navigate(path, { state: { ...navState, themeBack: backEntry } });
       return;
     }
     onClose?.();
-    navigate(path);
+    navigate(path, { state: navState });
   };
 
   const showNearbyHubs = !hideNearbyHubs && cross.nearbyHubs.length > 0;
@@ -241,9 +315,9 @@ function ThemeSpotCrossRail({
   if (!hasAny) return null;
 
   return (
-    <div className="space-y-4" aria-label="관련 테마·여행 연결">
+    <div className="space-y-4" aria-label={t('korea.theme.spotDetail.crossRailAria')}>
       {moduleChips.length > 0 ? (
-        <CrossRailSection title="이 장소가 속한 테마">
+        <CrossRailSection title={t('korea.theme.spotDetail.crossThemeTitle')}>
           <div className="flex flex-wrap gap-1.5">
             {moduleChips.map((m) => (
               <CrossChipButton
@@ -258,20 +332,25 @@ function ThemeSpotCrossRail({
       ) : null}
 
       {cross.sameHub.length > 0 ? (
-        <CrossRailSection title="같은 도시 명소">
+        <CrossRailSection title={t('korea.theme.spotDetail.crossSameHub')}>
           <ul className="space-y-1.5">
             {cross.sameHub.map((row) => (
               <li key={row.placeSlug}>
                 <CrossTextButton
                   onClick={() => {
+                    // 중첩 모달 우선 — 축제→명소 상세에서 deepPath로 명소홈 튕김 방지
+                    if (row.modalSpot && onOpenSameHub) {
+                      onOpenSameHub(row.modalSpot);
+                      return;
+                    }
                     if (row.deepPath) {
                       goThemePath(row.deepPath);
                       return;
                     }
-                    if (row.modalSpot) onOpenSameHub?.(row.modalSpot);
                   }}
                 >
-                  {row.name}
+                  {scenicSpotMapTitle(row.modalSpot || { name: row.name }, locale) ||
+                    row.name}
                 </CrossTextButton>
               </li>
             ))}
@@ -280,16 +359,17 @@ function ThemeSpotCrossRail({
       ) : null}
 
       {showNearbyHubs ? (
-        <CrossRailSection title="인근 여행지">
+        <CrossRailSection title={t('korea.theme.spotDetail.crossNearbyHubs')}>
           <ul className="space-y-1.5">
             {cross.nearbyHubs.map((h) => (
               <li key={h.hubId}>
                 <CrossTextButton onClick={() => openNearbyScenicHome(h)}>
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin size={14} className="text-amber-700" aria-hidden="true" />
-                    {h.name}
+                    {localizedHubLabel(locale, { hubId: h.hubId, name: h.name }) ||
+                      h.name}
                     <span className="text-[11px] font-medium text-stone-500">
-                      명승지
+                      {t('korea.theme.spotDetail.scenicChip')}
                     </span>
                   </span>
                 </CrossTextButton>
@@ -300,16 +380,18 @@ function ThemeSpotCrossRail({
       ) : null}
 
       {stayHref || tnaHref ? (
-        <CrossRailSection title="숙소 · 투어">
+        <CrossRailSection title={t('korea.theme.spotDetail.crossStayTour')}>
           <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
             {stayHref ? (
               <a
                 href={stayHref}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100"
+                className="inline-flex max-w-full min-w-0 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100 break-keep break-words"
               >
-                숙소 · {cross.stay.keyword}
+                {t('korea.theme.spotDetail.stayKeyword', {
+                  keyword: stayDisplayKeyword,
+                })}
                 <ExternalLink size={12} aria-hidden="true" />
               </a>
             ) : null}
@@ -318,9 +400,11 @@ function ThemeSpotCrossRail({
                 href={tnaHref}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+                className="inline-flex max-w-full min-w-0 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100 break-keep break-words"
               >
-                투어 · {cross.tna.keyword}
+                {t('korea.theme.spotDetail.tourKeyword', {
+                  keyword: tnaDisplayKeyword,
+                })}
                 <ExternalLink size={12} aria-hidden="true" />
               </a>
             ) : null}
@@ -328,7 +412,7 @@ function ThemeSpotCrossRail({
         </CrossRailSection>
       ) : null}
 
-      <CrossRailSection title="축제 · 여행코스">
+      <CrossRailSection title={t('korea.theme.spotDetail.crossFestivalsCourses')}>
         <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
           <button
             type="button"
@@ -336,7 +420,7 @@ function ThemeSpotCrossRail({
             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50"
           >
             <Sparkles size={13} className="text-amber-700" aria-hidden="true" />
-            이 지역 축제
+            {t('korea.theme.spotDetail.festivalsInArea')}
           </button>
           <button
             type="button"
@@ -344,20 +428,24 @@ function ThemeSpotCrossRail({
             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50"
           >
             <Route size={13} className="text-amber-700" aria-hidden="true" />
-            이 지역 여행코스
+            {t('korea.theme.spotDetail.coursesInArea')}
           </button>
         </div>
       </CrossRailSection>
 
       {cross.packageCta?.url ? (
-        <CrossRailSection title="패키지">
+        <CrossRailSection title={t('korea.theme.spotDetail.crossPackages')}>
           <a
             href={cross.packageCta.url}
             target="_blank"
             rel="noopener noreferrer sponsored"
             className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
           >
-            {cross.packageCta.ctaLabel || '패키지 보기'}
+            {localizedPackageCtaLabel(
+              t,
+              cross.packageCta.key,
+              cross.packageCta.ctaLabel,
+            ) || t('korea.theme.spotDetail.packageCtaFallback')}
             <ExternalLink size={14} aria-hidden="true" />
           </a>
         </CrossRailSection>
@@ -381,12 +469,58 @@ function stripHtml(raw) {
     .trim();
 }
 
+/** SSOT curated overview — TourAPI 부재 안내 문장은 사용자 본문에서 제거 */
+function stripCuratedOverviewMeta(raw) {
+  return String(raw || '')
+    .replace(/[^.]*TourAPI[^.]*\./g, '')
+    .replace(/[^.]*Tour\s*관광지[^.]*\./g, '')
+    .replace(/[^.]*한국관광공사[^.]*상세가 없어[^.]*\./g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 function toHttps(url) {
   const s = String(url || '').trim();
   if (!s) return '';
   if (s.startsWith('//')) return `https:${s}`;
   if (s.startsWith('http://')) return `https://${s.slice('http://'.length)}`;
   return s;
+}
+
+function nearbyThumbUrls(spot, extraThumb) {
+  const out = [];
+  const seen = new Set();
+  for (const raw of [spot?.firstImage, spot?.imageUrl, extraThumb]) {
+    const url = toHttps(raw);
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push(url);
+  }
+  return out;
+}
+
+function NearbyPoiRowThumb({ spot, extraThumb }) {
+  const urls = nearbyThumbUrls(spot, extraThumb);
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const thumb = urls[thumbIndex] || '';
+  if (!thumb) {
+    return (
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+        <Landmark size={18} aria-hidden="true" />
+      </div>
+    );
+  }
+  return (
+    <img
+      key={thumb}
+      src={thumb}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      onError={() => setThumbIndex((i) => i + 1)}
+      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+    />
+  );
 }
 
 function cleanUrlCandidate(raw) {
@@ -421,12 +555,12 @@ function normalizeHomepage(raw) {
 }
 
 /**
- * 클릭용 짧은 라벨 — 긴 query URL을 그대로 노출하지 않음.
  * @param {string} href
+ * @param {import('i18next').TFunction} t
  */
-function homepageDisplayLabel(href) {
+function homepageDisplayLabel(href, t) {
   const raw = String(href || '').trim();
-  if (!raw) return '공식 홈페이지';
+  if (!raw) return t('korea.theme.spotDetail.officialSite');
   let host = '';
   try {
     host = new URL(raw).hostname.replace(/^www\./i, '').toLowerCase();
@@ -437,14 +571,16 @@ function homepageDisplayLabel(href) {
       .replace(/^www\./i, '')
       .toLowerCase();
   }
-  if (!host) return '공식 홈페이지';
+  if (!host) return t('korea.theme.spotDetail.officialSite');
   if (host.endsWith('heritage.go.kr') || host.endsWith('cha.go.kr')) {
-    return '국가유산청';
+    return t('korea.theme.spotDetail.officialHeritage');
   }
-  if (host.endsWith('visitkorea.or.kr')) return '대한민국 구석구석';
-  if (host.endsWith('mcst.go.kr')) return '문화체육관광부';
-  if (host.endsWith('korea.kr')) return '대한민국 정책브리핑';
-  if (host.length > 40) return '공식 홈페이지';
+  if (host.endsWith('visitkorea.or.kr')) {
+    return t('korea.theme.spotDetail.officialVisitKorea');
+  }
+  if (host.endsWith('mcst.go.kr')) return t('korea.theme.spotDetail.officialMcst');
+  if (host.endsWith('korea.kr')) return t('korea.theme.spotDetail.officialKoreaKr');
+  if (host.length > 40) return t('korea.theme.spotDetail.officialSite');
   return host;
 }
 
@@ -464,59 +600,61 @@ function textsSimilarOrEqual(a, b) {
   return false;
 }
 
+/** TourAPI 본문 — keep-all + 긴 URL·공백 없는 구간은 break-words로 가로 넘침 방지 */
+const DETAIL_BODY_TEXT_CLASS =
+  'min-w-0 max-w-full whitespace-pre-line leading-relaxed text-stone-700 break-keep break-words';
+
 function DetailRow({ label, children }) {
   if (!children) return null;
   return (
-    <div className="space-y-1 text-sm">
+    <div className="min-w-0 space-y-1 text-sm">
       <dt className="text-[11px] font-bold tracking-wide text-stone-500">
         {label}
       </dt>
-      <dd className="min-w-0 whitespace-pre-line leading-relaxed text-stone-700 break-keep">
-        {children}
-      </dd>
+      <dd className={DETAIL_BODY_TEXT_CLASS}>{children}</dd>
     </div>
   );
 }
 
-const INTRO_FIELDS = [
-  ['infocenter', '문의'],
-  ['infocenterfood', '문의'],
-  ['infocenterculture', '문의'],
-  ['infocenterleports', '문의'],
-  ['usetime', '이용 시간'],
-  ['opentimefood', '영업 시간'],
-  ['usetimeculture', '이용 시간'],
-  ['usetimeleports', '이용 시간'],
-  ['restdate', '휴무일'],
-  ['restdatefood', '휴무일'],
-  ['restdateculture', '휴무일'],
-  ['restdateleports', '휴무일'],
-  ['parking', '주차'],
-  ['parkingfood', '주차'],
-  ['parkingculture', '주차'],
-  ['parkingleports', '주차'],
-  ['usefee', '이용 요금'],
-  ['usefeeleports', '이용 요금'],
-  ['openperiod', '개장 기간'],
-  ['reservation', '예약'],
-  ['firstmenu', '대표 메뉴'],
-  ['treatmenu', '취급 메뉴'],
-  ['reservationfood', '예약'],
-  ['packing', '포장'],
-  ['scalefood', '규모'],
-  ['seatingtype', '좌석'],
-  ['smoking', '흡연'],
-  ['kidsfacility', '놀이시설'],
-  ['discountinfofood', '할인'],
-  ['chkcreditcardfood', '신용카드'],
-  ['useseason', '이용 시기'],
-  ['opendate', '개장'],
-  ['expguide', '체험 안내'],
-  ['expagerange', '체험 연령'],
-  ['accomcount', '수용'],
-  ['chkbabycarriage', '유모차'],
-  ['chkpet', '반려동물'],
-  ['chkcreditcard', '신용카드'],
+const INTRO_FIELD_KEYS = [
+  'infocenter',
+  'infocenterfood',
+  'infocenterculture',
+  'infocenterleports',
+  'usetime',
+  'opentimefood',
+  'usetimeculture',
+  'usetimeleports',
+  'restdate',
+  'restdatefood',
+  'restdateculture',
+  'restdateleports',
+  'parking',
+  'parkingfood',
+  'parkingculture',
+  'parkingleports',
+  'usefee',
+  'usefeeleports',
+  'openperiod',
+  'reservation',
+  'firstmenu',
+  'treatmenu',
+  'reservationfood',
+  'packing',
+  'scalefood',
+  'seatingtype',
+  'smoking',
+  'kidsfacility',
+  'discountinfofood',
+  'chkcreditcardfood',
+  'useseason',
+  'opendate',
+  'expguide',
+  'expagerange',
+  'accomcount',
+  'chkbabycarriage',
+  'chkpet',
+  'chkcreditcard',
 ];
 
 function formatDistKm(km) {
@@ -527,6 +665,148 @@ function formatDistKm(km) {
 
 function foodPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
+}
+
+function NearbyPoiAttractionRow({ spot, extraThumb, onSelect }) {
+  const dist = formatDistKm(spot.distKm);
+  const place = foodPlaceLabel(spot);
+  const rankBlurb = String(spot?.rankBlurb || '').trim();
+  const clickable = hasTourContentId(spot.contentId);
+  const Inner = clickable ? 'button' : 'div';
+  const innerProps = clickable
+    ? { type: 'button', onClick: () => onSelect?.(spot) }
+    : {};
+  return (
+    <li>
+      <Inner
+        {...innerProps}
+        className={`flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left ${
+          clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
+        }`}
+      >
+        <NearbyPoiRowThumb spot={spot} extraThumb={extraThumb} />
+        <span className="min-w-0 flex-1">
+          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+              {spot.name}
+            </span>
+            {rankBlurb ? (
+              <span className="text-[11px] font-semibold text-stone-500 break-keep">
+                {rankBlurb}
+              </span>
+            ) : null}
+          </span>
+          <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+            {[rankBlurb ? null : place, dist].filter(Boolean).join(' · ')}
+          </span>
+        </span>
+      </Inner>
+    </li>
+  );
+}
+
+/**
+ * 외부 검색 쿼리.
+ * 맛집(동명 많음)만 지역+상호 · 관광지·명소·명승·레포츠·문화는 고유명만
+ * (지역을 붙이면 본문/플레이스 직행이 깨지기 쉬움).
+ * @param {{
+ *   name?: string,
+ *   locality?: string,
+ *   region?: string,
+ *   areaLabel?: string,
+ *   contentTypeId?: string | null,
+ * } | null} spot
+ * @param {{ addr1?: string, addr2?: string } | null} [detail]
+ */
+function spotOutboundSearchQuery(spot, detail) {
+  const name = String(spot?.name || '').trim();
+  if (!name) return '';
+  const isFood =
+    String(spot?.contentTypeId || '') === RESTAURANT_CONTENT_TYPE_ID;
+  if (!isFood) return name;
+  const locality = String(spot?.locality || '').trim();
+  const areaLabel = String(spot?.areaLabel || '').trim();
+  const region = String(spot?.region || '').trim();
+  const addrHint = String(detail?.addr1 || '')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .join(' ');
+  const place = locality || areaLabel || addrHint || region;
+  return [place, name].filter(Boolean).join(' ');
+}
+
+function spotNaverSearchUrl(spot, detail) {
+  const q = spotOutboundSearchQuery(spot, detail);
+  if (!q) return '';
+  return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
+}
+
+function spotGoogleSearchUrl(spot, detail, locale = 'ko') {
+  const q = spotOutboundSearchQuery(spot, detail);
+  if (!q) return '';
+  const hl = String(locale || '').startsWith('en') ? 'en' : 'ko';
+  return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=${hl}`;
+}
+
+function NaverOutboundButton({ href }) {
+  const { t } = useTranslation();
+  const url = String(href || '').trim();
+  if (!url) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={t('korea.theme.spotDetail.naverSearchAria')}
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#03C75A]/50 bg-[#E8F9EF] px-2.5 py-1.5 text-xs font-bold text-[#027A38] transition-colors hover:border-[#03C75A]/75 hover:bg-[#D9F5E5]"
+    >
+      <span
+        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-[#03C75A] text-[9px] font-black leading-none text-white"
+        aria-hidden="true"
+      >
+        N
+      </span>
+      {t('korea.theme.spotDetail.naverSearch')}
+      <ExternalLink size={12} aria-hidden="true" />
+    </a>
+  );
+}
+
+function GoogleOutboundButton({ href }) {
+  const { t } = useTranslation();
+  const url = String(href || '').trim();
+  if (!url) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={t('korea.theme.spotDetail.googleSearchAria')}
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#4285F4]/40 bg-[#E8F0FE] px-2.5 py-1.5 text-xs font-bold text-[#174EA6] transition-colors hover:border-[#4285F4]/70 hover:bg-[#D2E3FC]"
+    >
+      <span
+        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-[#4285F4] text-[9px] font-black leading-none text-white"
+        aria-hidden="true"
+      >
+        G
+      </span>
+      {t('korea.theme.spotDetail.googleSearch')}
+      <ExternalLink size={12} aria-hidden="true" />
+    </a>
+  );
+}
+
+function SpotOutboundSearchButtons({ naverHref, googleHref }) {
+  const naver = String(naverHref || '').trim();
+  const google = String(googleHref || '').trim();
+  if (!naver && !google) return null;
+  return (
+    <div className="flex min-w-0 flex-wrap gap-1.5">
+      {naver ? <NaverOutboundButton href={naver} /> : null}
+      {google ? <GoogleOutboundButton href={google} /> : null}
+    </div>
+  );
 }
 
 function toTypedModalSpot(spot, contentTypeId) {
@@ -590,15 +870,23 @@ function toCultureModalSpot(spot) {
  *   returnTo: string,
  *   onClose: () => void,
  *   overlayZClass?: string,
+ *   favorited?: boolean,
+ *   onToggleFavorite?: (spot: Record<string, unknown>) => void,
  * }} props
  */
 export default function ThemeSpotDetailModal({
   spot,
-  eyebrow = '테마 상세',
+  eyebrow,
   returnTo,
   onClose,
   overlayZClass = 'z-40',
+  favorited = false,
+  onToggleFavorite,
 }) {
+  const { t } = useTranslation();
+  const { locale } = useLocale();
+  const isEnglish = String(locale || '').startsWith('en');
+  const koText = koreanApiTextProps(isEnglish);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [detail, setDetail] = useState(null);
@@ -612,6 +900,9 @@ export default function ThemeSpotDetailModal({
   const [nearbyCultureStatus, setNearbyCultureStatus] = useState('idle');
   const [nearbyAttractions, setNearbyAttractions] = useState([]);
   const [nearbyAttractionsStatus, setNearbyAttractionsStatus] = useState('idle');
+  const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
+  const [nearbyFestivals, setNearbyFestivals] = useState([]);
+  const [nearbyFestivalsStatus, setNearbyFestivalsStatus] = useState('idle');
   const [selectedFood, setSelectedFood] = useState(null);
   const [selectedLeports, setSelectedLeports] = useState(null);
   const [selectedCulture, setSelectedCulture] = useState(null);
@@ -636,6 +927,48 @@ export default function ThemeSpotDetailModal({
   const isLeports = spotType === LEPORTS_CONTENT_TYPE_ID;
   const isCulture = spotType === CULTURE_CONTENT_TYPE_ID;
   const isApiPoiCross = isRestaurant || isLeports || isCulture;
+  const nearbyAttractionsGrouped = useMemo(() => {
+    const lat = Number(spot?.lat);
+    const lng = Number(spot?.lng);
+    return groupNearbySpotsWithLocalScenic(nearbyAttractions, {
+      hubId: spot?.hubId,
+      lat: Number.isFinite(lat) ? lat : undefined,
+      lng: Number.isFinite(lng) ? lng : undefined,
+      locale,
+    });
+  }, [nearbyAttractions, spot?.hubId, spot?.lat, spot?.lng, locale]);
+  const nearbyAttractionsHasLocalScenic = nearbyAttractionsGrouped.groups.some(
+    (g) => g.items.length,
+  );
+  const nearbyMissingThumbIds = useMemo(
+    () => missingNearbyThumbContentIds(nearbyAttractionsGrouped),
+    [nearbyAttractionsGrouped],
+  );
+
+  useEffect(() => {
+    const ids = nearbyMissingThumbIds;
+    if (!ids.length) return undefined;
+    let cancelled = false;
+    const peeked = peekKoreaTourAttractionFirstImagesByIds(ids);
+    if (peeked.size) {
+      setNearbyThumbById((prev) => {
+        const next = new Map(prev);
+        for (const [key, url] of peeked) next.set(key, url);
+        return next;
+      });
+    }
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
+      if (cancelled || !dbMap?.size) return;
+      setNearbyThumbById((prev) => {
+        const next = new Map(prev);
+        for (const [key, url] of dbMap) next.set(key, url);
+        return next;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [nearbyMissingThumbIds]);
   const nestedChildZ =
     overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
       ? 'z-[55]'
@@ -853,23 +1186,34 @@ export default function ThemeSpotDetailModal({
       const homepage = String(spot.homepage || '').trim() || null;
       const heritageMeta = [
         spot.designationNo
-          ? { label: '지정번호', text: `명승 제${spot.designationNo}호` }
+          ? {
+              labelKey: 'heritageDesignationNo',
+              text: t('korea.theme.spotDetail.heritageDesignationNoValue', {
+                no: spot.designationNo,
+              }),
+            }
           : null,
-        spot.nameHanja ? { label: '한자명', text: String(spot.nameHanja) } : null,
+        spot.nameHanja
+          ? { labelKey: 'heritageHanja', text: String(spot.nameHanja) }
+          : null,
         spot.designatedAt
-          ? { label: '지정일', text: String(spot.designatedAt) }
+          ? { labelKey: 'heritageDesignatedAt', text: String(spot.designatedAt) }
           : null,
         spot.heritageType || spot.heritageKind || spot.category
           ? {
-              label: '분류',
+              labelKey: 'heritageCategory',
               text: [spot.heritageType, spot.heritageKind, spot.category, spot.subCategory]
                 .filter(Boolean)
                 .join(' · '),
             }
           : null,
-        spot.quantity ? { label: '면적', text: String(spot.quantity) } : null,
-        spot.owner ? { label: '소유', text: String(spot.owner) } : null,
-        spot.manager ? { label: '관리', text: String(spot.manager) } : null,
+        spot.quantity
+          ? { labelKey: 'heritageArea', text: String(spot.quantity) }
+          : null,
+        spot.owner ? { labelKey: 'heritageOwner', text: String(spot.owner) } : null,
+        spot.manager
+          ? { labelKey: 'heritageManager', text: String(spot.manager) }
+          : null,
       ].filter(Boolean);
       setDetail({
         title: spot.name,
@@ -891,7 +1235,36 @@ export default function ThemeSpotDetailModal({
 
     const contentId = String(spot.contentId || '').trim();
     if (!/^\d{1,32}$/.test(contentId)) {
-      setDetail(null);
+      // Tour contentId 부재 — SSOT overview가 있으면 LIVE 대신 GATEO 안내 본문
+      const curatedOverview = stripCuratedOverviewMeta(spot.overview);
+      if (curatedOverview) {
+        const imageUrl = String(spot.imageUrl || '').trim() || null;
+        const galleryFromSpot = Array.isArray(spot.galleryUrls)
+          ? spot.galleryUrls.map((u) => String(u || '').trim()).filter(Boolean)
+          : [];
+        const galleryUrls = [...galleryFromSpot];
+        if (imageUrl && !galleryUrls.includes(imageUrl)) {
+          galleryUrls.unshift(imageUrl);
+        }
+        setDetail({
+          title: spot.name,
+          overview: curatedOverview,
+          imageUrl: imageUrl || galleryUrls[0] || null,
+          galleryUrls,
+          addr1: spot.addr1 || null,
+          addr2: null,
+          homepage: spot.homepage || null,
+          tel: null,
+          mapx: Number.isFinite(Number(spot.lng)) ? Number(spot.lng) : null,
+          mapy: Number.isFinite(Number(spot.lat)) ? Number(spot.lat) : null,
+          heritageMeta: null,
+          intro: null,
+          infoItems: [],
+          curated: true,
+        });
+      } else {
+        setDetail(null);
+      }
       setDetailLoading(false);
       setDetailError('');
       return undefined;
@@ -911,10 +1284,33 @@ export default function ThemeSpotDetailModal({
       setDetailLoading(false);
       if (!data) {
         setDetail(null);
-        setDetailError('Tour 상세 없음');
+        setDetailError(t('korea.theme.spotDetail.detailLoadError'));
         return;
       }
-      setDetail(data);
+      const spotGallery = Array.isArray(spot.galleryUrls)
+        ? spot.galleryUrls.map((u) => String(u || '').trim()).filter(Boolean)
+        : [];
+      const mergedGallery = [...(data.galleryUrls || [])];
+      for (const u of spotGallery) {
+        if (!mergedGallery.includes(u)) mergedGallery.push(u);
+      }
+      const finalImage =
+        data.imageUrl ||
+        mergedGallery[0] ||
+        spot.imageUrl ||
+        spot.firstImage ||
+        null;
+      if (finalImage && !mergedGallery.includes(finalImage)) {
+        mergedGallery.unshift(finalImage);
+      }
+      setDetail({
+        ...data,
+        imageUrl: finalImage,
+        galleryUrls: mergedGallery,
+        overview: data.overview || spot.overview || null,
+        addr1: data.addr1 || spot.addr1 || null,
+        homepage: spot.homepage || data.homepage || null,
+      });
     })();
 
     return () => {
@@ -927,6 +1323,7 @@ export default function ThemeSpotDetailModal({
     spot?.source,
     spot?.content,
     spot?.blurb,
+    spot?.overview,
     spot?.imageUrl,
     spot?.galleryUrls,
     spot?.addr1,
@@ -944,6 +1341,7 @@ export default function ThemeSpotDetailModal({
     spot?.subCategory,
     spot?.owner,
     spot?.manager,
+    t,
   ]);
 
   useEffect(() => {
@@ -961,6 +1359,8 @@ export default function ThemeSpotDetailModal({
       setNearbyCultureStatus('idle');
       setNearbyAttractions([]);
       setNearbyAttractionsStatus('idle');
+      setNearbyFestivals([]);
+      setNearbyFestivalsStatus('idle');
       return undefined;
     }
 
@@ -1015,6 +1415,10 @@ export default function ThemeSpotDetailModal({
       return undefined;
     }
 
+    const tourArea = resolveTourAreaForHub(spot.hubId);
+    const areaCode = tourArea?.areaCode || null;
+    const sigunguCode = tourArea?.sigunguCode || null;
+
     let cancelled = false;
     setNearbyFoodStatus('loading');
     setNearbyLeportsStatus('loading');
@@ -1024,6 +1428,8 @@ export default function ThemeSpotDetailModal({
       lng: useLng,
       radiusKm: 3,
       limit: 6,
+      areaCode,
+      sigunguCode,
     }).then((res) => {
       if (cancelled) return;
       const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -1037,6 +1443,8 @@ export default function ThemeSpotDetailModal({
       lng: useLng,
       radiusKm: 5,
       limit: 5,
+      areaCode,
+      sigunguCode,
     }).then((res) => {
       if (cancelled) return;
       const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -1050,6 +1458,8 @@ export default function ThemeSpotDetailModal({
       lng: useLng,
       radiusKm: 5,
       limit: 5,
+      areaCode,
+      sigunguCode,
     }).then((res) => {
       if (cancelled) return;
       const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -1066,11 +1476,74 @@ export default function ThemeSpotDetailModal({
     spot?.id,
     spot?.lat,
     spot?.lng,
+    spot?.hubId,
     spot?.contentTypeId,
     isApiPoiCross,
     detail?.mapx,
     detail?.mapy,
     detailLoading,
+  ]);
+
+  useEffect(() => {
+    if (!spot || isApiPoiCross) {
+      setNearbyFestivals([]);
+      setNearbyFestivalsStatus('idle');
+      return undefined;
+    }
+
+    const fromDetailLat = Number(detail?.mapy);
+    const fromDetailLng = Number(detail?.mapx);
+    const lat = Number(spot.lat);
+    const lng = Number(spot.lng);
+    const useLat = Number.isFinite(lat) ? lat : fromDetailLat;
+    const useLng = Number.isFinite(lng) ? lng : fromDetailLng;
+    const areaCode = String(
+      spot.areaCode || resolveThemeSpotAreaCode(spot) || detectSidoCode(spot.addr1) || '',
+    ).trim();
+    const hasCoords =
+      Number.isFinite(useLat) &&
+      Number.isFinite(useLng) &&
+      !(useLat === 0 && useLng === 0);
+
+    if (!areaCode && !hasCoords) {
+      setNearbyFestivals([]);
+      setNearbyFestivalsStatus(detailLoading ? 'idle' : 'nocoords');
+      return undefined;
+    }
+
+    let cancelled = false;
+    setNearbyFestivalsStatus('loading');
+    fetchNearbyFestivals({
+      lat: hasCoords ? useLat : undefined,
+      lng: hasCoords ? useLng : undefined,
+      areaCode: areaCode || undefined,
+      radiusKm: 50,
+      limit: 6,
+      locale,
+    }).then((res) => {
+      if (cancelled) return;
+      const list = Array.isArray(res?.festivals) ? res.festivals : [];
+      setNearbyFestivals(list);
+      if (res?.error) setNearbyFestivalsStatus('error');
+      else if (!list.length) setNearbyFestivalsStatus('empty');
+      else setNearbyFestivalsStatus('ok');
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    spot?.id,
+    spot?.lat,
+    spot?.lng,
+    spot?.areaCode,
+    spot?.addr1,
+    spot?.hubId,
+    isApiPoiCross,
+    detail?.mapx,
+    detail?.mapy,
+    detailLoading,
+    locale,
   ]);
 
   const overview = useMemo(
@@ -1089,17 +1562,38 @@ export default function ThemeSpotDetailModal({
     return [a1, a2].filter(Boolean).join(' ');
   }, [detail?.addr1, detail?.addr2]);
 
+  const naverSearchUrl = useMemo(
+    () => spotNaverSearchUrl(spot, detail),
+    [spot, detail],
+  );
+
+  const googleSearchUrl = useMemo(
+    () => spotGoogleSearchUrl(spot, detail, locale),
+    [spot, detail, locale],
+  );
+
+  const stayCrossInput = useMemo(
+    () => (isApiPoiCross ? null : themeSpotCrossInput(spot, detail)),
+    [isApiPoiCross, spot, detail],
+  );
+  const stayCross = useMemo(
+    () => (stayCrossInput ? resolveThemeCrossLinks(stayCrossInput) : null),
+    [stayCrossInput],
+  );
+  const showStayStrip = Boolean(stayCross?.stay?.location);
+  const showTnaStrip = Boolean(stayCross?.tna?.location && stayCross?.tna?.keyword);
+
   const tel = String(detail?.tel || '').trim();
 
   const introRows = useMemo(() => {
     const intro = detail?.intro;
     if (!intro) return [];
-    return INTRO_FIELDS.map(([key, label]) => ({
+    return INTRO_FIELD_KEYS.map((key) => ({
       key,
-      label,
+      label: t(`korea.theme.spotDetail.introFields.${key}`),
       text: stripHtml(intro[key] || ''),
     })).filter((row) => row.text);
-  }, [detail?.intro]);
+  }, [detail?.intro, t]);
 
   const infoSections = useMemo(() => {
     const rows = (detail?.infoItems || [])
@@ -1148,7 +1642,7 @@ export default function ThemeSpotDetailModal({
       setVideosExpanded(false);
       if (!result.ok) {
         setVideos([]);
-        setVideosError('관련 영상을 찾지 못했습니다.');
+        setVideosError(t('korea.theme.spotDetail.videosNotFound'));
         return;
       }
       const list = Array.isArray(result.videos)
@@ -1156,7 +1650,7 @@ export default function ThemeSpotDetailModal({
         : [];
       setVideos(list);
       if (!list.length) {
-        setVideosError('관련 영상을 찾지 못했습니다.');
+        setVideosError(t('korea.theme.spotDetail.videosNotFound'));
       }
     })();
 
@@ -1172,13 +1666,37 @@ export default function ThemeSpotDetailModal({
     spot?.hubId,
     spot?.id,
     videosLoadedFor,
+    t,
   ]);
 
   if (!spot) return null;
 
+  const modalEyebrow =
+    eyebrow || t('korea.theme.spotDetail.eyebrowDefault');
+  const displayTitle =
+    scenicSpotMapTitle(spot, locale) ||
+    t('korea.theme.spotDetail.fallbackTitle');
+  const displaySubtitle = localizedSpotModalSubtitle(spot, locale);
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
   const galleryList = imageUrls;
+
+  const openFestival = (fest) => {
+    const festId = String(fest?.contentId || '').trim();
+    if (!festId) return;
+    const areaCode = String(
+      spot.areaCode || resolveThemeSpotAreaCode(spot) || '',
+    ).trim();
+    const params = new URLSearchParams();
+    params.set('from', 'theme');
+    if (areaCode) params.set('area', areaCode);
+    params.set('festival', festId);
+    if (isEnglish) params.set('lang', 'en');
+    const backEntry = themeNavBackEntryForSpot(spot, returnTo);
+    if (backEntry) pushThemeNavBack(backEntry);
+    onClose?.();
+    navigate(`/korea?${params.toString()}`);
+  };
 
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1221,7 +1739,7 @@ export default function ThemeSpotDetailModal({
 
   return (
     <div
-      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
+      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(3.75rem,calc(env(safe-area-inset-bottom)+3rem))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
       onClick={(e) => {
         e.stopPropagation();
         if (mooniOpen || videosOpen || lightboxOpen) return;
@@ -1239,33 +1757,59 @@ export default function ThemeSpotDetailModal({
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-              {eyebrow}
+              {modalEyebrow}
             </p>
             <h2
               id="korea-theme-spot-modal-title"
               className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
+              {...koText}
             >
-              {spot.name}
+              {displayTitle}
             </h2>
-            {spot.subtitle ? (
-              <p className="mt-1 text-xs text-stone-500 break-keep">
-                {spot.subtitle}
+            {displaySubtitle ? (
+              <p className="mt-1 text-xs text-stone-500 break-keep" {...koText}>
+                {displaySubtitle}
               </p>
             ) : null}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="닫기"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
-          >
-            <X size={18} aria-hidden="true" />
-          </button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {onToggleFavorite ? (
+              <button
+                type="button"
+                onClick={() => onToggleFavorite(spot)}
+                aria-label={
+                  favorited
+                    ? t('korea.common.favoriteRemove')
+                    : t('korea.common.favoriteAdd')
+                }
+                aria-pressed={favorited}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-600 hover:border-amber-300 hover:bg-amber-50"
+              >
+                <Star
+                  size={16}
+                  className={
+                    favorited
+                      ? 'fill-amber-400 text-amber-500'
+                      : 'text-stone-400'
+                  }
+                  aria-hidden="true"
+                />
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={t('korea.common.close')}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
+            >
+              <X size={18} aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain custom-scrollbar"
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar"
         >
           {hero ? (
             <button
@@ -1283,8 +1827,8 @@ export default function ThemeSpotDetailModal({
               className="group relative block w-full touch-pan-y text-left"
               aria-label={
                 imageUrls.length > 1
-                  ? '사진 확대보기 · 좌우로 쓸어 넘기기'
-                  : '사진 확대보기'
+                  ? t('korea.theme.spotDetail.heroExpandSwipe')
+                  : t('korea.theme.spotDetail.heroExpand')
               }
             >
               <img
@@ -1295,7 +1839,7 @@ export default function ThemeSpotDetailModal({
               />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
                 <Expand size={13} aria-hidden="true" />
-                확대보기
+                {t('korea.theme.spotDetail.expandView')}
               </span>
               {imageUrls.length > 1 ? (
                 <span className="absolute bottom-3 right-3 rounded-full bg-stone-900/55 px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
@@ -1319,40 +1863,65 @@ export default function ThemeSpotDetailModal({
             </div>
           )}
 
-          <div className="space-y-4 px-4 py-4 sm:px-5">
+          <div className="min-w-0 space-y-4 px-4 py-4 sm:px-5">
             {spot.source !== 'cha' && spot.blurb ? (
-              <p className="text-sm font-semibold leading-relaxed text-amber-950/90 break-keep">
+              <p
+                className="text-sm font-semibold leading-relaxed text-amber-950/90 break-keep break-words"
+                {...koText}
+              >
                 {spot.blurb}
               </p>
             ) : null}
 
             {detailLoading ? (
-              <p className="text-xs text-stone-500">상세를 불러오는 중…</p>
+              <p className="text-xs text-stone-500">
+                {t('korea.theme.spotDetail.loadingDetail')}
+              </p>
             ) : null}
 
             {!detailLoading && hasContentId && detailError ? (
               <p className="text-xs text-stone-500 break-keep">{detailError}</p>
             ) : null}
 
-            {!detailLoading && !hasContentId && spot.source !== 'cha' ? (
+            {!detailLoading &&
+            !hasContentId &&
+            !detail &&
+            spot.source !== 'cha' ? (
               <p className="text-xs text-stone-500 break-keep">
-                Tour 상세 없음 — GATEO 안내와 아래 무니·영상으로 이어갈 수 있습니다.
+                {t('korea.theme.spotDetail.noTourDetailHint')}
               </p>
             ) : null}
 
             {!detailLoading && detail ? (
-              <dl className="space-y-4">
-                {overview ? <DetailRow label="개요">{overview}</DetailRow> : null}
+              <dl className="min-w-0 space-y-4">
+                {overview ? (
+                  <DetailRow label={t('korea.theme.spotDetail.labelOverview')}>
+                    <span {...koText}>{overview}</span>
+                  </DetailRow>
+                ) : null}
+                {naverSearchUrl || googleSearchUrl ? (
+                  <SpotOutboundSearchButtons
+                    naverHref={naverSearchUrl}
+                    googleHref={googleSearchUrl}
+                  />
+                ) : null}
                 {Array.isArray(detail.heritageMeta)
                   ? detail.heritageMeta.map((row) => (
-                      <DetailRow key={row.label} label={row.label}>
-                        {row.text}
+                      <DetailRow
+                        key={row.labelKey}
+                        label={t(`korea.theme.spotDetail.${row.labelKey}`)}
+                      >
+                        <span {...koText}>{row.text}</span>
                       </DetailRow>
                     ))
                   : null}
-                {address ? <DetailRow label="주소">{address}</DetailRow> : null}
+                {address ? (
+                  <DetailRow label={t('korea.theme.spotDetail.labelAddress')}>
+                    <span {...koText}>{address}</span>
+                  </DetailRow>
+                ) : null}
                 {tel ? (
-                  <DetailRow label="전화">
+                  <DetailRow label={t('korea.theme.spotDetail.labelPhone')}>
                     <a
                       href={`tel:${tel.replace(/\s+/g, '')}`}
                       className="inline-flex items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline"
@@ -1363,39 +1932,48 @@ export default function ThemeSpotDetailModal({
                   </DetailRow>
                 ) : null}
                 {homepage ? (
-                  <DetailRow label="홈페이지">
+                  <DetailRow label={t('korea.theme.spotDetail.labelHomepage')}>
                     <a
                       href={homepage}
                       target="_blank"
                       rel="noopener noreferrer"
                       title={homepage}
-                      className="inline-flex items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep"
+                      className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
                     >
-                      {homepageDisplayLabel(homepage)}
+                      {homepageDisplayLabel(homepage, t)}
                       <ExternalLink size={13} aria-hidden="true" />
                     </a>
                   </DetailRow>
                 ) : null}
                 {introRows.map((row) => (
                   <DetailRow key={row.key} label={row.label}>
-                    {row.text}
+                    <span {...koText}>{row.text}</span>
                   </DetailRow>
                 ))}
                 {infoSections.map((row, idx) => (
                   <DetailRow
                     key={`${row.name || 'info'}-${idx}`}
-                    label={row.name || '안내'}
+                    label={row.name || t('korea.theme.spotDetail.labelInfoFallback')}
                   >
-                    {row.text}
+                    <span {...koText}>{row.text}</span>
                   </DetailRow>
                 ))}
               </dl>
             ) : null}
 
+            {(detailLoading || !detail) && (naverSearchUrl || googleSearchUrl) ? (
+              <SpotOutboundSearchButtons
+                naverHref={naverSearchUrl}
+                googleHref={googleSearchUrl}
+              />
+            ) : null}
+
             {galleryList.length > 0 ? (
-              <div className="space-y-2" aria-label="명소 사진">
+              <div className="space-y-2" aria-label={t('korea.theme.spotDetail.photosAria')}>
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                  사진 {galleryList.length}장
+                  {t('korea.theme.spotDetail.photosCount', {
+                    count: galleryList.length,
+                  })}
                 </p>
                 <div className="grid grid-cols-3 gap-2">
                   {galleryList.map((url, index) => (
@@ -1404,7 +1982,9 @@ export default function ThemeSpotDetailModal({
                       type="button"
                       onClick={() => openLightboxAt(index)}
                       className="relative aspect-square overflow-hidden rounded-xl border border-stone-200 bg-stone-100"
-                      aria-label={`사진 ${index + 1} 확대보기`}
+                      aria-label={t('korea.theme.spotDetail.photoExpandAria', {
+                        index: index + 1,
+                      })}
                     >
                       <img
                         src={url}
@@ -1418,9 +1998,30 @@ export default function ThemeSpotDetailModal({
               </div>
             ) : null}
 
+            {showStayStrip ? (
+              <div className="border-t border-stone-200/80 pt-4">
+                <ScenicStayStrip
+                  spot={stayCrossInput}
+                  stay={stayCross.stay}
+                  stayAreas={stayCross.stayAreas}
+                  locale={locale}
+                />
+              </div>
+            ) : null}
+
+            {showTnaStrip ? (
+              <div className="border-t border-stone-200/80 pt-4">
+                <ScenicTnaStrip
+                  spot={stayCrossInput}
+                  tna={stayCross.tna}
+                  locale={locale}
+                />
+              </div>
+            ) : null}
+
             <section className="space-y-2 border-t border-stone-200/80 pt-4">
               <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                더 알아보기
+                {t('korea.theme.spotDetail.readMore')}
               </h3>
               <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
                 <button
@@ -1429,7 +2030,7 @@ export default function ThemeSpotDetailModal({
                   className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                 >
                   <MessageCircle size={15} aria-hidden="true" />
-                  무니에게 묻기
+                  {t('korea.theme.spotDetail.askMooni')}
                 </button>
                 <button
                   type="button"
@@ -1437,7 +2038,7 @@ export default function ThemeSpotDetailModal({
                   className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm font-bold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50"
                 >
                   <Youtube size={15} className="text-red-600" aria-hidden="true" />
-                  유튜브 영상
+                  {t('korea.theme.spotDetail.youtubeVideos')}
                 </button>
               </div>
             </section>
@@ -1447,26 +2048,26 @@ export default function ThemeSpotDetailModal({
               nearbyFoodStatus !== 'nocoords' && (
                 <section className="space-y-2 border-t border-stone-200/80 pt-4">
                   <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    주변 맛집
+                    {t('korea.theme.spotDetail.nearFood')}
                   </h3>
                   {nearbyFoodStatus === 'loading' && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      주변 맛집 불러오는 중…
+                      {t('korea.theme.spotDetail.nearFoodLoading')}
                     </div>
                   )}
                   {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
                     <p className="text-xs text-stone-500">
-                      주변 맛집을 불러오지 못했습니다.
+                      {t('korea.theme.spotDetail.nearFoodError')}
                     </p>
                   )}
                   {nearbyFoodStatus === 'empty' && (
                     <p className="text-xs text-stone-500">
-                      반경 3km 안 TourAPI 맛집이 없습니다.
+                      {t('korea.theme.spotDetail.nearFoodEmpty')}
                     </p>
                   )}
                   {nearbyFood.length > 0 && (
-                    <ul className="space-y-2" aria-label="주변 맛집">
+                    <ul className="space-y-2" aria-label={t('korea.theme.spotDetail.nearFoodAria')}>
                       {nearbyFood.map((food) => {
                         const thumb = toHttps(food.firstImage);
                         const dist = formatDistKm(food.distKm);
@@ -1511,27 +2112,27 @@ export default function ThemeSpotDetailModal({
               nearbyLeportsStatus !== 'nocoords' && (
                 <section className="space-y-2 border-t border-stone-200/80 pt-4">
                   <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    주변 레포츠
+                    {t('korea.theme.spotDetail.nearLeports')}
                   </h3>
                   {nearbyLeportsStatus === 'loading' && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      주변 레포츠 불러오는 중…
+                      {t('korea.theme.spotDetail.nearLeportsLoading')}
                     </div>
                   )}
                   {nearbyLeportsStatus === 'error' &&
                     nearbyLeports.length === 0 && (
                       <p className="text-xs text-stone-500">
-                        주변 레포츠를 불러오지 못했습니다.
+                        {t('korea.theme.spotDetail.nearLeportsError')}
                       </p>
                     )}
                   {nearbyLeportsStatus === 'empty' && (
                     <p className="text-xs text-stone-500">
-                      반경 5km 안 TourAPI 레포츠가 없습니다.
+                      {t('korea.theme.spotDetail.nearLeportsEmpty')}
                     </p>
                   )}
                   {nearbyLeports.length > 0 && (
-                    <ul className="space-y-2" aria-label="주변 레포츠">
+                    <ul className="space-y-2" aria-label={t('korea.theme.spotDetail.nearLeportsAria')}>
                       {nearbyLeports.map((row) => {
                         const thumb = toHttps(row.firstImage);
                         const dist = formatDistKm(row.distKm);
@@ -1576,27 +2177,27 @@ export default function ThemeSpotDetailModal({
               nearbyCultureStatus !== 'nocoords' && (
                 <section className="space-y-2 border-t border-stone-200/80 pt-4">
                   <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    주변 문화
+                    {t('korea.theme.spotDetail.nearCulture')}
                   </h3>
                   {nearbyCultureStatus === 'loading' && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      주변 문화시설 불러오는 중…
+                      {t('korea.theme.spotDetail.nearCultureLoading')}
                     </div>
                   )}
                   {nearbyCultureStatus === 'error' &&
                     nearbyCulture.length === 0 && (
                       <p className="text-xs text-stone-500">
-                        주변 문화시설을 불러오지 못했습니다.
+                        {t('korea.theme.spotDetail.nearCultureError')}
                       </p>
                     )}
                   {nearbyCultureStatus === 'empty' && (
                     <p className="text-xs text-stone-500">
-                      반경 5km 안 TourAPI 문화시설이 없습니다.
+                      {t('korea.theme.spotDetail.nearCultureEmpty')}
                     </p>
                   )}
                   {nearbyCulture.length > 0 && (
-                    <ul className="space-y-2" aria-label="주변 문화">
+                    <ul className="space-y-2" aria-label={t('korea.theme.spotDetail.nearCultureAria')}>
                       {nearbyCulture.map((row) => {
                         const thumb = toHttps(row.firstImage);
                         const dist = formatDistKm(row.distKm);
@@ -1641,55 +2242,138 @@ export default function ThemeSpotDetailModal({
               nearbyAttractionsStatus !== 'nocoords' && (
                 <section className="space-y-2 border-t border-stone-200/80 pt-4">
                   <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    주변 관광지
+                    {t('korea.theme.spotDetail.nearAttractions')}
                   </h3>
                   {nearbyAttractionsStatus === 'loading' && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      주변 관광지 불러오는 중…
+                      {t('korea.theme.spotDetail.nearAttractionsLoading')}
                     </div>
                   )}
                   {nearbyAttractionsStatus === 'error' &&
                     nearbyAttractions.length === 0 && (
                       <p className="text-xs text-stone-500">
-                        주변 관광지를 불러오지 못했습니다.
+                        {t('korea.theme.spotDetail.nearAttractionsError')}
                       </p>
                     )}
-                  {nearbyAttractionsStatus === 'empty' && (
+                  {nearbyAttractionsStatus === 'empty' &&
+                    !nearbyAttractionsHasLocalScenic && (
                     <p className="text-xs text-stone-500">
-                      반경 8km 안 등록된 관광지가 없습니다.
+                      {t('korea.theme.spotDetail.nearAttractionsEmpty')}
                     </p>
                   )}
-                  {nearbyAttractions.length > 0 && (
-                    <ul className="space-y-2" aria-label="주변 관광지">
-                      {nearbyAttractions.map((attr) => {
-                        const thumb = toHttps(attr.firstImage);
-                        const dist = formatDistKm(attr.distKm);
-                        const place = foodPlaceLabel(attr);
+                  {(nearbyAttractions.length > 0 ||
+                    nearbyAttractionsHasLocalScenic) && (
+                    <ul
+                      className="space-y-2"
+                      aria-label={t('korea.theme.spotDetail.nearAttractionsAria')}
+                    >
+                      {nearbyAttractionsGrouped.groups.map((group) => (
+                        <React.Fragment key={group.listId}>
+                          <li className="list-none pt-0.5">
+                            <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
+                              {group.title}
+                            </p>
+                          </li>
+                          {group.items.map((attr) => (
+                            <NearbyPoiAttractionRow
+                              key={attr.contentId || attr.id}
+                              spot={attr}
+                              extraThumb={nearbyThumbById.get(
+                                String(attr.contentId || '').trim(),
+                              )}
+                              onSelect={setSelectedAttraction}
+                            />
+                          ))}
+                        </React.Fragment>
+                      ))}
+                      {nearbyAttractionsGrouped.rest.map((attr) => (
+                        <NearbyPoiAttractionRow
+                          key={attr.contentId || attr.id}
+                          spot={attr}
+                          extraThumb={nearbyThumbById.get(
+                            String(attr.contentId || '').trim(),
+                          )}
+                          onSelect={setSelectedAttraction}
+                        />
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              )}
+
+            {!isApiPoiCross &&
+              nearbyFestivalsStatus !== 'idle' &&
+              nearbyFestivalsStatus !== 'nocoords' && (
+                <section className="space-y-2 border-t border-stone-200/80 pt-4">
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
+                    {t('korea.theme.spotDetail.nearFestivals')}
+                  </h3>
+                  {nearbyFestivalsStatus === 'loading' && (
+                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                      {t('korea.theme.spotDetail.nearFestivalsLoading')}
+                    </div>
+                  )}
+                  {nearbyFestivalsStatus === 'error' && nearbyFestivals.length === 0 && (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.theme.spotDetail.nearFestivalsError')}
+                    </p>
+                  )}
+                  {nearbyFestivalsStatus === 'empty' && (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.theme.spotDetail.nearFestivalsEmpty')}
+                    </p>
+                  )}
+                  {nearbyFestivals.length > 0 && (
+                    <ul
+                      className="space-y-2"
+                      aria-label={t('korea.theme.spotDetail.nearFestivalsAria')}
+                    >
+                      {nearbyFestivals.map((fest) => {
+                        const thumbFest = toHttps(fest.firstImage);
+                        const dist = formatDistKm(fest.distKm);
+                        const when = [
+                          formatYmdLabel(fest.eventStartDate),
+                          formatYmdLabel(fest.eventEndDate),
+                        ]
+                          .filter(Boolean)
+                          .join('–');
+                        const place = String(fest.locality || fest.region || '').trim();
                         return (
-                          <li key={attr.contentId || attr.id}>
+                          <li key={fest.contentId}>
                             <button
                               type="button"
-                              onClick={() => setSelectedAttraction(attr)}
+                              onClick={() => openFestival(fest)}
                               className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
                             >
-                              {thumb ? (
+                              {thumbFest ? (
                                 <img
-                                  src={thumb}
+                                  src={thumbFest}
                                   alt=""
                                   className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
                                 />
                               ) : (
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-                                  <Landmark size={18} aria-hidden="true" />
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-800">
+                                  <CalendarDays size={18} aria-hidden="true" />
                                 </div>
                               )}
                               <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                  {attr.name}
+                                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                  <span
+                                    className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep"
+                                    {...koText}
+                                  >
+                                    {fest.title || fest.name}
+                                  </span>
+                                  {dist ? (
+                                    <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+                                      {dist}
+                                    </span>
+                                  ) : null}
                                 </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-                                  {[place, dist].filter(Boolean).join(' · ')}
+                                <span className="mt-0.5 block text-[11px] text-stone-500 break-keep" {...koText}>
+                                  {[place, when].filter(Boolean).join(' · ')}
                                 </span>
                               </span>
                             </button>
@@ -1708,6 +2392,8 @@ export default function ThemeSpotDetailModal({
               onClose={onClose}
               onOpenSameHub={setSelectedSameHub}
               hideNearbyHubs={isApiPoiCross}
+              hideStayStrip={isApiPoiCross}
+              hideTnaStrip={isApiPoiCross}
             />
           </div>
         </div>
@@ -1719,7 +2405,7 @@ export default function ThemeSpotDetailModal({
             className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm font-bold text-stone-700 hover:bg-stone-100"
           >
             <ArrowUp size={16} aria-hidden="true" />
-            위로
+            {t('korea.common.scrollToTop')}
           </button>
           <button
             type="button"
@@ -1727,7 +2413,7 @@ export default function ThemeSpotDetailModal({
             className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
           >
             <X size={16} aria-hidden="true" />
-            닫기
+            {t('korea.theme.spotDetail.close')}
           </button>
         </div>
       </div>
@@ -1735,7 +2421,7 @@ export default function ThemeSpotDetailModal({
       {selectedFood ? (
         <ThemeSpotDetailModal
           spot={toFoodModalSpot(selectedFood)}
-          eyebrow="주변 맛집"
+          eyebrow={t('korea.theme.spotDetail.nearEyebrowFood')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
           onClose={() => setSelectedFood(null)}
@@ -1744,7 +2430,7 @@ export default function ThemeSpotDetailModal({
       {selectedLeports ? (
         <ThemeSpotDetailModal
           spot={toLeportsModalSpot(selectedLeports)}
-          eyebrow="주변 레포츠"
+          eyebrow={t('korea.theme.spotDetail.nearEyebrowLeports')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
           onClose={() => setSelectedLeports(null)}
@@ -1753,7 +2439,7 @@ export default function ThemeSpotDetailModal({
       {selectedCulture ? (
         <ThemeSpotDetailModal
           spot={toCultureModalSpot(selectedCulture)}
-          eyebrow="주변 문화"
+          eyebrow={t('korea.theme.spotDetail.nearEyebrowCulture')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
           onClose={() => setSelectedCulture(null)}
@@ -1762,7 +2448,7 @@ export default function ThemeSpotDetailModal({
       {selectedAttraction ? (
         <ThemeSpotDetailModal
           spot={toAttractionModalSpot(selectedAttraction)}
-          eyebrow="주변 관광지"
+          eyebrow={t('korea.theme.spotDetail.nearEyebrowAttraction')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
           onClose={() => setSelectedAttraction(null)}
@@ -1771,7 +2457,7 @@ export default function ThemeSpotDetailModal({
       {selectedSameHub ? (
         <ThemeSpotDetailModal
           spot={selectedSameHub}
-          eyebrow="같은 도시 명소"
+          eyebrow={t('korea.theme.spotDetail.nearEyebrowSameHub')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
           onClose={() => setSelectedSameHub(null)}
@@ -1792,18 +2478,18 @@ export default function ThemeSpotDetailModal({
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-label="사진 확대보기"
+            aria-label={t('korea.theme.spotDetail.lightboxAria')}
           >
             <div className="flex shrink-0 items-center justify-between gap-3 pb-3">
               <p className="text-sm font-bold text-white/90 tabular-nums">
                 {imageUrls.length > 1
                   ? `${activeImage + 1} / ${imageUrls.length}`
-                  : '사진'}
+                  : t('korea.theme.spotDetail.lightboxPhoto')}
               </p>
               <button
                 type="button"
                 onClick={closeLightbox}
-                aria-label="확대보기 닫기"
+                aria-label={t('korea.theme.spotDetail.lightboxClose')}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
               >
                 <X size={20} aria-hidden="true" />
@@ -1830,7 +2516,7 @@ export default function ThemeSpotDetailModal({
                   <button
                     type="button"
                     onClick={() => stepLightbox(-1)}
-                    aria-label="이전 사진"
+                    aria-label={t('korea.theme.spotDetail.lightboxPrev')}
                     className="absolute left-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
                   >
                     <ChevronLeft size={22} aria-hidden="true" />
@@ -1838,7 +2524,7 @@ export default function ThemeSpotDetailModal({
                   <button
                     type="button"
                     onClick={() => stepLightbox(1)}
-                    aria-label="다음 사진"
+                    aria-label={t('korea.theme.spotDetail.lightboxNext')}
                     className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
                   >
                     <ChevronRight size={22} aria-hidden="true" />
@@ -1869,29 +2555,29 @@ export default function ThemeSpotDetailModal({
             <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-                  관련 영상
+                  {t('korea.theme.spotDetail.relatedVideos')}
                 </p>
                 <h2
                   id="korea-theme-spot-videos-title"
                   className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
                 >
-                  {spot.name}
+                  {displayTitle}
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={() => setVideosOpen(false)}
-                aria-label="닫기"
+                aria-label={t('korea.common.close')}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
               >
                 <X size={18} aria-hidden="true" />
               </button>
             </div>
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 custom-scrollbar">
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-4 sm:px-5 custom-scrollbar">
               {videosLoading && (
                 <div className="flex items-center gap-2 text-sm text-stone-500 py-2">
                   <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                  영상 불러오는 중…
+                  {t('korea.theme.spotDetail.videosLoading')}
                 </div>
               )}
               {!videosLoading && videosError && videos.length === 0 && (
@@ -1899,7 +2585,10 @@ export default function ThemeSpotDetailModal({
               )}
               {!videosLoading && videos.length > 0 && (
                 <>
-                  <ul className="space-y-2" aria-label="관련 유튜브 영상">
+                  <ul
+                    className="space-y-2"
+                    aria-label={t('korea.theme.spotDetail.relatedVideos')}
+                  >
                     {visibleVideos.map((video) => {
                       const id = String(video?.id || '').trim();
                       if (!id) return null;
@@ -1923,7 +2612,7 @@ export default function ThemeSpotDetailModal({
                               <div className="h-16 w-28 shrink-0 rounded-xl bg-stone-200" />
                             )}
                             <span className="min-w-0 flex-1 text-sm font-bold text-stone-800 leading-snug line-clamp-3 break-keep">
-                              {video.title || 'YouTube 영상'}
+                              {video.title || t('korea.theme.spotDetail.youtubeFallback')}
                             </span>
                           </a>
                         </li>
@@ -1936,7 +2625,7 @@ export default function ThemeSpotDetailModal({
                       onClick={() => setVideosExpanded(true)}
                       className="w-full py-2.5 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"
                     >
-                      동영상 더보기
+                      {t('korea.theme.spotDetail.videosMore')}
                     </button>
                   )}
                 </>

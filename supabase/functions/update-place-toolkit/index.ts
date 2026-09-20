@@ -6,6 +6,7 @@ import {
 } from "../_shared/resolveCanonicalPlaceId.ts";
 import { isRegionalGatewayIata, REGIONAL_GATEWAY_IATAS_BY_SLUG } from "../_shared/regionalGatewayIatas.ts";
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
+import { GEMINI_QUALITY, GEMINI_WRITE } from "../_shared/geminiModels.ts";
 import toolkitAirportCoords from "../_shared/toolkitAirportCoords.json" with { type: "json" };
 
 const corsHeaders = {
@@ -102,6 +103,143 @@ function validateEssentialGuideForLocation(
   return null;
 }
 
+function normalizeToolkitLocale(raw: unknown): 'ko' | 'en' {
+  const v = String(raw ?? '').trim().toLowerCase();
+  return v === 'en' ? 'en' : 'ko';
+}
+
+function buildCoordHint(
+  destLat: number | undefined,
+  destLng: number | undefined,
+  country: unknown,
+  locale: 'ko' | 'en'
+): string {
+  if (Number.isFinite(destLat) && Number.isFinite(destLng)) {
+    return locale === 'en'
+      ? ` (lat ${destLat}, lng ${destLng}${country ? `, ${country}` : ''})`
+      : ` (위도 ${destLat}, 경도 ${destLng}${country ? `, ${country}` : ''})`;
+  }
+  return country ? (locale === 'en' ? ` (${country})` : ` (${country})`) : '';
+}
+
+function buildToolkitPrompts(
+  locale: 'ko' | 'en',
+  locationName: string,
+  coordHint: string,
+  slug?: string | null
+): { systemPrompt: string; userPrompt: string } {
+  const slugHint = slug ? (locale === 'en' ? ` (slug: ${slug})` : ` (slug: ${slug})`) : '';
+
+  if (locale === 'en') {
+    const systemPrompt = `You are a veteran travel planner and local booking agent using strong web search. Provide structured JSON with every practical booking detail, transport option, visa requirement, and a step-by-step arrival timeline for travelers going **only to "${locationName}"${coordHint}**.
+
+🚨 **Hard rule**: Do not include other destinations, countries, or arrival airports unrelated to "${locationName}". primary_arrival_airports_iata and the final arrival codes in the timeline must match this place.${slugHint}
+
+**[Complexity]**
+1. Set "is_complex": true when there is no nonstop flight from Korea (ICN) and travelers need ferries or multi-leg transport (e.g. Gili Meno, Boracay).
+2. Raise complexity when e-visas, tourist taxes, or permits must be paid online before departure.
+
+**[Structure]**
+1. "is_complex" (boolean)
+2. "complexity_score" (number 0-100)
+3. "primary_arrival_airports_iata" (string[]): IATA codes where flights actually land in the destination region — not ICN/GMP. Match the timeline. Example: Swiss Alps → ["ZRH","GVA"], Bali → ["DPS"].
+4. "journey_timeline" (array): step, title, duration — show the big picture from Korea to the destination. Put airport codes in titles as (IATA), e.g. "Arrive Zurich (ZRH) or Geneva (GVA)".
+5. "categories" (object):
+   - "pre_travel" (array): online visas, taxes, permits — each needs title, url, cost. Official government URLs only; otherwise url null and explain in advice.
+   - "airport_transfer", "ferry_booking" (object or null)
+   - Other category "advice" fields: practical markdown checklists, not vague prose.
+   - Wrap searchable names in \`[@Name@]\` for smart links (e.g. \`- Book [@BlueWater Express@]\`).
+   - Include visa, flight, accommodation, connectivity, transport, apps, map_poi, safety as in the schema.
+
+Write all user-facing strings in **English**.`;
+
+    const userPrompt = `Provide a detailed toolkit JSON for "${locationName}".
+
+Example shape:
+{
+  "is_complex": true,
+  "complexity_score": 85,
+  "primary_arrival_airports_iata": ["DPS"],
+  "journey_timeline": [
+    { "step": 1, "title": "Depart ICN ✈️", "duration": "7h" },
+    { "step": 2, "title": "Arrive Bali (DPS) & rest 🏨", "duration": "6h" }
+  ],
+  "categories": {
+    "pre_travel": [{ "title": "Indonesia e-Visa", "url": "https://evisa.imigrasi.go.id/", "cost": "$35" }],
+    "visa": { "advice": "**Requirements**\\n- Passport valid 6+ months", "url": null },
+    "flight": { "advice": "**Booking tips**\\n- Nonstop: …", "url": null }
+  }
+}`;
+
+    return { systemPrompt, userPrompt };
+  }
+
+  const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 여행 플래너 및 로컬 예약 에이전트입니다. 여행자가 **오직 "${locationName}"${coordHint}** 한 곳에 가기 위해 필요한 모든 실용적인 예약 정보, 교통편, 비자, 그리고 도착까지의 상세 타임라인을 구조화된 JSON 데이터로 제공해야 합니다.
+
+🚨 **절대 규칙**: 요청 지명("${locationName}")과 무관한 다른 여행지·국가·도착 공항 내용을 넣지 마세요. primary_arrival_airports_iata·타임라인의 최종 도착 코드는 이 여행지에 맞아야 합니다.${slugHint}
+
+**[핵심 분석: 복잡도 평가]**
+1. 이 장소가 인천(한국)에서 출발했을 때, 직항이 없고 배를 타야 하거나, 다단계 교통수단(비행기->버스->페리 등)을 거쳐야 한다면 "is_complex": true로 설정하세요. (예: 길리 메노, 보라카이 등)
+2. 사전에 E-비자를 발급받아야 하거나, 관광세 등을 미리 온라인으로 납부해야 한다면 복잡도가 올라갑니다.
+
+**[구조 및 내용 지침]**
+1. "is_complex" (boolean): 다단계 이동이나 필수 사전 준비가 많은가?
+2. "complexity_score" (number 0-100): 높을수록 복잡함. 70 이상이면 고난도.
+3. "primary_arrival_airports_iata" (string[], 가능하면 필수): 이 여행("${locationName}")에 도달하기 위해 **한국이 아닌 목적지 권역으로 실제 비행기가 착륙하는 국제공항**의 IATA 3자 코드만 배열로 넣습니다. (한국 출발 ICN/GMP는 넣지 않음.) 예: 스위스 알프스·체르마트 동선이면 ["ZRH","GVA"], 발리 직항이면 ["DPS"]. 타임라인에 적은 도착 공항과 반드시 일치시키고, 현실적인 대안이 여러 개면 모두 포함합니다. 정말로 판단 불가할 때만 생략합니다.
+4. "journey_timeline" (array): 처음 여행을 떠나는 사람에게 막연함을 없애줄 수 있도록, 여행의 큰 그림(출발 공항, 경유지, 도착 공항 등)을 보여주는 핵심 정보입니다. 인천에서 목적지까지의 예상 경로를 작성해주세요. step(순서), title(행동), duration(소요시간/대기시간) 포함. **도착·경유 공항이 있으면 제목에 반드시 (IATA) 형식으로 코드를 넣어 주세요** (예: "취리히 (ZRH) 또는 제네바 (GVA) 공항 도착").
+5. "categories" (object):
+   - "pre_travel" (array): 출발 전 챙겨야 할 온라인 비자, 관광세 납부, 허가증 등. (각 객체에 title, url, cost 필수). 해당 없으면 빈 배열 [].
+     ⚠️ **중요: URL 생성 규칙** - "url" 필드는 반드시 해당 국가의 공식 정부/이민국 웹사이트만 사용해야 합니다. 입산 허가, 투어 패키지, 가이드 고용 등 현지 에이전시 대행이 필요한 항목은 "url"을 null로 설정하고, "advice"에 "현지 에이전시 대행 필수" 등의 설명만 작성하세요. 절대로 임의의 관광 웹사이트나 여행사 URL을 생성하지 마세요.
+   - "airport_transfer" (object): 생판 모르는 곳에 도착해 현지인과 대면하는 것은 낯설고 두려운 경험일 수 있습니다. 여행자를 목적지나 숙소까지 안전하게 인도해 줄 수 있도록, 어느 나라든 상관없이 공항 픽업 및 이동수단 예약 정보를 포함해 주세요.
+   - "ferry_booking" (object): 페리 등 해상 교통이 필수일 경우 추천 업체와 예약 링크. 해당 없으면 null.
+   - 기타 아래 항목들의 "advice"는 짧은 서술형을 피하고 **실용적이고 구체적인 마크다운 체크리스트 및 꿀팁 형태**로 작성하세요. 사용자가 읽고 즉시 예약/행동할 수 있어야 합니다.
+     - 🚨 **스마트 링크 필수 규칙**: 사용자가 검색하거나 예약해야 할 핵심 명소명, 업체명, 교통수단, 필수 앱 이름 등은 반드시 \`[@이름@]\` 형태로 감싸서 작성하세요. 프론트엔드에서 이를 감지하여 구글 검색 및 예약 버튼으로 자동 변환합니다. (예: \`- [@Eka Jaya@] 쾌속선을 이용하세요\`, \`- 핵심 명소: [@우붓 몽키 포레스트@]\`)
+     - "visa" (object): 비자 규정 요약
+     - "flight" (object): 항공권 예약시 도착 공항 정보는 여행의 시작점이자 복귀를 위한 최후의 보루로서 여행의 정체성을 보여주는 필수 정보입니다. 직항 여부, 소요 시간, 주요 취항사와 함께 도착 공항을 명시해 주세요. 최적의 예약 시기 및 비용 절감 팁도 포함하세요.
+     - "accommodation" (object): 타겟별 지역 추천 (예: '휴양/호캉스: A지역', '관광/이동편의: B지역', '가성비: C지역')
+     - "connectivity" (object): 현지 eSIM 사용 가능 여부, 대표 통신사 추천
+     - "transport" (object): 공항에서 시내 진입 시 선택 가능한 옵션(버스 vs 택시/픽업) 요금 및 소요시간 비교표 제공, 필수 교통 패스 안내
+       - **파리 Navigo Semaine**: 본문에 `나비고 주간권 [@Navigo Semaine@]` 또는 `[@나비고 주간권 Navigo Semaine@]` 형태로 작성(클릭→구글 검색). 역 매표소·Découverte 카드·증명사진 등 구매 요령은 advice에 서술.
+     - "apps" (object): 현지에서 유용한 필수 앱 (Uber, Grab 등)
+     - "map_poi" (object): 핵심 지역/맛집
+     - "safety" (object): 치안 상황 및 여행자 대상 주요 범죄 패턴, 긴급 연락처
+
+URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나 정보 링크를 제공하세요.`;
+
+  const userPrompt = `"${locationName}"에 대한 상세 툴킷 정보를 JSON 형식으로 제공해주세요.
+
+응답 형식 예시:
+{
+  "is_complex": true,
+  "complexity_score": 85,
+  "primary_arrival_airports_iata": ["DPS"],
+  "journey_timeline": [
+    { "step": 1, "title": "인천 출발 ✈️", "duration": "7시간" },
+    { "step": 2, "title": "발리 공항 도착 & 휴식 🏨", "duration": "6시간" },
+    { "step": 3, "title": "빠당 바이 항구 이동 🚕", "duration": "1.5시간" },
+    { "step": 4, "title": "페리 탑승 ⛴️", "duration": "2시간" },
+    { "step": 5, "title": "길리 메노 도착 🏝️", "duration": "도착" }
+  ],
+  "categories": {
+    "pre_travel": [
+      { "title": "인도네시아 E-비자 신청", "url": "https://evisa.imigrasi.go.id/", "cost": "$35" }
+    ],
+    "airport_transfer": { "advice": "[@Eka Jaya@] 공항 픽업 포함 추천", "url": "https://ekajayafastboat.com/" },
+    "ferry_booking": { "advice": "[@BlueWater Express@]", "url": "https://www.bluewaterexpress.com/" },
+    "visa": { "advice": "**필수 준비물**\\n- 6개월 이상 남은 여권\\n- 도착 비자 발급 비용($35)", "url": null },
+    "flight": { "advice": "**항공권 예약 팁**\\n- 직항 여부: X\\n- 소요 시간: 7시간\\n- 추천 항공사: [@대한항공@]...", "url": null },
+    "accommodation": { "advice": "**타겟별 숙박 지역 추천**\\n- 휴양/호캉스: [@누사두아@]\\n- 관광/이동편의: [@스미냑@]...", "url": null },
+    "connectivity": { "advice": "**통신 꿀팁**\\n- 현지 eSIM ([@Telkomsel@]) 추천...", "url": null },
+    "transport": { "advice": "**시내 교통**\\n- [@Grab@], [@Gojek@] 필수...", "url": null },
+    "apps": { "advice": "- [@Grab@]: 택시 및 배달\\n- [@Gojek@]: 현지 특화...", "url": null },
+    "map_poi": { "advice": "**핵심 명소**\\n- [@우붓 몽키 포레스트@]...", "url": null },
+    "safety": { "advice": "**치안 및 주의사항**\\n- 소매치기 주의...", "url": null }
+  }
+}`;
+
+  return { systemPrompt, userPrompt };
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -112,8 +250,9 @@ serve(async (req) => {
 
   try {
     reqBody = await req.json();
-    const { placeId, locationName, lat, lng, country, slug, canonicalPlaceId: canonicalPlaceIdHint } = reqBody;
+    const { placeId, locationName, lat, lng, country, slug, canonicalPlaceId: canonicalPlaceIdHint, locale: localeRaw } = reqBody;
     requestedPlaceId = placeId;
+    const toolkitLocale = normalizeToolkitLocale(localeRaw);
 
     if (!placeId || !locationName) {
         throw new Error('placeId and locationName are required');
@@ -141,12 +280,12 @@ serve(async (req) => {
 
     const destLat = typeof lat === 'number' ? lat : Number(lat);
     const destLng = typeof lng === 'number' ? lng : Number(lng);
-    const coordHint =
-      Number.isFinite(destLat) && Number.isFinite(destLng)
-        ? ` (위도 ${destLat}, 경도 ${destLng}${country ? `, ${country}` : ''})`
-        : country
-          ? ` (${country})`
-          : '';
+    const coordHint = buildCoordHint(
+      Number.isFinite(destLat) ? destLat : undefined,
+      Number.isFinite(destLng) ? destLng : undefined,
+      country,
+      toolkitLocale
+    );
 
     const supabaseAdmin = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
@@ -158,72 +297,17 @@ serve(async (req) => {
         throw new Error('GEMINI_API_KEY is not configured on server');
     }
 
-    const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 여행 플래너 및 로컬 예약 에이전트입니다. 여행자가 **오직 "${locationName}"${coordHint}** 한 곳에 가기 위해 필요한 모든 실용적인 예약 정보, 교통편, 비자, 그리고 도착까지의 상세 타임라인을 구조화된 JSON 데이터로 제공해야 합니다.
+    const { systemPrompt, userPrompt } = buildToolkitPrompts(
+      toolkitLocale,
+      String(locationName),
+      coordHint,
+      slugNorm || slug || null
+    );
 
-🚨 **절대 규칙**: 요청 지명("${locationName}")과 무관한 다른 여행지·국가·도착 공항 내용을 넣지 마세요. primary_arrival_airports_iata·타임라인의 최종 도착 코드는 이 여행지에 맞아야 합니다.${slug ? ` (slug: ${slug})` : ''}
-
-**[핵심 분석: 복잡도 평가]**
-1. 이 장소가 인천(한국)에서 출발했을 때, 직항이 없고 배를 타야 하거나, 다단계 교통수단(비행기->버스->페리 등)을 거쳐야 한다면 "is_complex": true로 설정하세요. (예: 길리 메노, 보라카이 등)
-2. 사전에 E-비자를 발급받아야 하거나, 관광세 등을 미리 온라인으로 납부해야 한다면 복잡도가 올라갑니다.
-
-**[구조 및 내용 지침]**
-1. "is_complex" (boolean): 다단계 이동이나 필수 사전 준비가 많은가?
-2. "complexity_score" (number 0-100): 높을수록 복잡함. 70 이상이면 고난도.
-3. "primary_arrival_airports_iata" (string[], 가능하면 필수): 이 여행("${locationName}")에 도달하기 위해 **한국이 아닌 목적지 권역으로 실제 비행기가 착륙하는 국제공항**의 IATA 3자 코드만 배열로 넣습니다. (한국 출발 ICN/GMP는 넣지 않음.) 예: 스위스 알프스·체르마트 동선이면 ["ZRH","GVA"], 발리 직항이면 ["DPS"]. 타임라인에 적은 도착 공항과 반드시 일치시키고, 현실적인 대안이 여러 개면 모두 포함합니다. 정말로 판단 불가할 때만 생략합니다.
-4. "journey_timeline" (array): 처음 여행을 떠나는 사람에게 막연함을 없애줄 수 있도록, 여행의 큰 그림(출발 공항, 경유지, 도착 공항 등)을 보여주는 핵심 정보입니다. 인천에서 목적지까지의 예상 경로를 작성해주세요. step(순서), title(행동), duration(소요시간/대기시간) 포함. **도착·경유 공항이 있으면 제목에 반드시 (IATA) 형식으로 코드를 넣어 주세요** (예: "취리히 (ZRH) 또는 제네바 (GVA) 공항 도착").
-5. "categories" (object):
-   - "pre_travel" (array): 출발 전 챙겨야 할 온라인 비자, 관광세 납부, 허가증 등. (각 객체에 title, url, cost 필수). 해당 없으면 빈 배열 [].
-     ⚠️ **중요: URL 생성 규칙** - "url" 필드는 반드시 해당 국가의 공식 정부/이민국 웹사이트만 사용해야 합니다. 입산 허가, 투어 패키지, 가이드 고용 등 현지 에이전시 대행이 필요한 항목은 "url"을 null로 설정하고, "advice"에 "현지 에이전시 대행 필수" 등의 설명만 작성하세요. 절대로 임의의 관광 웹사이트나 여행사 URL을 생성하지 마세요.
-   - "airport_transfer" (object): 생판 모르는 곳에 도착해 현지인과 대면하는 것은 낯설고 두려운 경험일 수 있습니다. 여행자를 목적지나 숙소까지 안전하게 인도해 줄 수 있도록, 어느 나라든 상관없이 공항 픽업 및 이동수단 예약 정보를 포함해 주세요.
-   - "ferry_booking" (object): 페리 등 해상 교통이 필수일 경우 추천 업체와 예약 링크. 해당 없으면 null.
-   - 기타 아래 항목들의 "advice"는 짧은 서술형을 피하고 **실용적이고 구체적인 마크다운 체크리스트 및 꿀팁 형태**로 작성하세요. 사용자가 읽고 즉시 예약/행동할 수 있어야 합니다.
-     - 🚨 **스마트 링크 필수 규칙**: 사용자가 검색하거나 예약해야 할 핵심 명소명, 업체명, 교통수단, 필수 앱 이름 등은 반드시 \`[@이름@]\` 형태로 감싸서 작성하세요. 프론트엔드에서 이를 감지하여 구글 검색 및 예약 버튼으로 자동 변환합니다. (예: \`- [@Eka Jaya@] 쾌속선을 이용하세요\`, \`- 핵심 명소: [@우붓 몽키 포레스트@]\`)
-     - "visa" (object): 비자 규정 요약
-     - "flight" (object): 항공권 예약시 도착 공항 정보는 여행의 시작점이자 복귀를 위한 최후의 보루로서 여행의 정체성을 보여주는 필수 정보입니다. 직항 여부, 소요 시간, 주요 취항사와 함께 도착 공항을 명시해 주세요. 최적의 예약 시기 및 비용 절감 팁도 포함하세요.
-     - "accommodation" (object): 타겟별 지역 추천 (예: '휴양/호캉스: A지역', '관광/이동편의: B지역', '가성비: C지역')
-     - "connectivity" (object): 현지 eSIM 사용 가능 여부, 대표 통신사 추천
-     - "transport" (object): 공항에서 시내 진입 시 선택 가능한 옵션(버스 vs 택시/픽업) 요금 및 소요시간 비교표 제공, 필수 교통 패스 안내
-     - "apps" (object): 현지에서 유용한 필수 앱 (Uber, Grab 등)
-     - "map_poi" (object): 핵심 지역/맛집
-     - "safety" (object): 치안 상황 및 여행자 대상 주요 범죄 패턴, 긴급 연락처
-
-URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나 정보 링크를 제공하세요.`;
-
-    const userPrompt = `"${locationName}"에 대한 상세 툴킷 정보를 JSON 형식으로 제공해주세요.
-
-응답 형식 예시:
-{
-  "is_complex": true,
-  "complexity_score": 85,
-  "primary_arrival_airports_iata": ["DPS"],
-  "journey_timeline": [
-    { "step": 1, "title": "인천 출발 ✈️", "duration": "7시간" },
-    { "step": 2, "title": "발리 공항 도착 & 휴식 🏨", "duration": "6시간" },
-    { "step": 3, "title": "빠당 바이 항구 이동 🚕", "duration": "1.5시간" },
-    { "step": 4, "title": "페리 탑승 ⛴️", "duration": "2시간" },
-    { "step": 5, "title": "길리 메노 도착 🏝️", "duration": "도착" }
-  ],
-  "categories": {
-    "pre_travel": [
-      { "title": "인도네시아 E-비자 신청", "url": "https://molina.imigrasi.go.id/", "cost": "$35" }
-    ],
-    "airport_transfer": { "advice": "[@Eka Jaya@] 공항 픽업 포함 추천", "url": "https://ekajayafastboat.com/" },
-    "ferry_booking": { "advice": "[@BlueWater Express@]", "url": "https://www.bluewaterexpress.com/" },
-    "visa": { "advice": "**필수 준비물**\\n- 6개월 이상 남은 여권\\n- 도착 비자 발급 비용($35)", "url": null },
-    "flight": { "advice": "**항공권 예약 팁**\\n- 직항 여부: X\\n- 소요 시간: 7시간\\n- 추천 항공사: [@대한항공@]...", "url": null },
-    "accommodation": { "advice": "**타겟별 숙박 지역 추천**\\n- 휴양/호캉스: [@누사두아@]\\n- 관광/이동편의: [@스미냑@]...", "url": null },
-    "connectivity": { "advice": "**통신 꿀팁**\\n- 현지 eSIM ([@Telkomsel@]) 추천...", "url": null },
-    "transport": { "advice": "**시내 교통**\\n- [@Grab@], [@Gojek@] 필수...", "url": null },
-    "apps": { "advice": "- [@Grab@]: 택시 및 배달\\n- [@Gojek@]: 현지 특화...", "url": null },
-    "map_poi": { "advice": "**핵심 명소**\\n- [@우붓 몽키 포레스트@]...", "url": null },
-    "safety": { "advice": "**치안 및 주의사항**\\n- 소매치기 주의...", "url": null }
-  }
-}`;
-
-    // 🆕 [Phase 8 Fix] Gemini 모델 폴백 로직 추가 (3.1 Pro → 2.5 Pro)
+    // Gemini 모델 폴백 (WRITE → QUALITY)
     const modelsToTry = [
-      'gemini-3.1-pro-preview',  // 최우선 시도
-      'gemini-2.5-pro'            // 폴백 모델
+      GEMINI_WRITE,
+      GEMINI_QUALITY,
     ];
 
     let response: Response | null = null;
@@ -346,12 +430,13 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
       );
     }
 
-    // Upsert essential_guide into place_toolkit table (canonical SSOT 한글명)
+    // Upsert locale column into place_toolkit (canonical SSOT place_id)
+    const guideColumn = toolkitLocale === 'en' ? 'essential_guide_en' : 'essential_guide';
     const { error: dbError } = await supabaseAdmin
       .from('place_toolkit')
       .upsert({
         place_id: canonicalPlaceId,
-        essential_guide: essentialGuideJson,
+        [guideColumn]: essentialGuideJson,
         toolkit_updated_at: new Date().toISOString()
       }, { onConflict: 'place_id' });
 
@@ -362,6 +447,7 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
 
     return new Response(JSON.stringify({
       success: true,
+      locale: toolkitLocale,
       essentialGuide: essentialGuideJson,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -1,9 +1,11 @@
 // src/pages/Home/lib/apiClient.js
 // 🚨 [Fix] Orientation 필터 제거 -> 웹 검색 결과와 동일한 풀(Pool) 확보
 // 🚨 [New] 멀티모달(Vision) 지원을 위해 images 매개변수 추가 및 parts 배열 동적 생성
-// 🚨 [Fix] 404 에러 해결 및 모델 티어 라우팅을 위해 엔드포인트를 gemini-2.5-flash로 전면 교체 (안정성 확보)
+// 모델 ID는 geminiModels.js SSOT · Edge gemini-proxy 경유
 
 import { supabase } from '../../../shared/api/supabase';
+import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFilter';
+import { GEMINI_MODELS, resolveGeminiModelId } from '../../../utils/geminiModels';
 import {
   classifyGeminiProxyFailure,
   GeminiProxyError,
@@ -11,7 +13,7 @@ import {
 
 export const apiClient = {
   // --- 1. 프록시 기반 Gemini 통신 (New) ---
-  fetchProxyGemini: async (apiKey, history, systemInstruction, userText, images = [], modelId = "gemini-2.5-flash") => {
+  fetchProxyGemini: async (apiKey, history, systemInstruction, userText, images = [], modelId = GEMINI_MODELS.QUALITY) => {
     try {
       // 1. parts 배열 생성 (기존과 동일)
       const parts = [{ text: `${systemInstruction}\n\n[이전 대화 내역]\n${JSON.stringify(history)}\n\n사용자 질문: ${userText}` }];
@@ -31,11 +33,7 @@ export const apiClient = {
         });
       }
 
-      // 제미나이 3.1 라우팅 지원 (modelId가 gemini-3.1-pro로 올 경우 gemini-3.1-pro-preview로 매핑)
-      let finalModelId = modelId;
-      if (modelId === "gemini-3.1-pro") {
-        finalModelId = "gemini-3.1-pro-preview";
-      }
+      const finalModelId = resolveGeminiModelId(modelId);
 
       // 2. Edge Function 프록시 호출
       console.log(`[API Proxy] Calling gemini-proxy with model: ${finalModelId}`);
@@ -59,7 +57,7 @@ export const apiClient = {
   },
 
   // --- 기존 클라이언트 직접 호출 (Fallback 용도로 유지) ---
-  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = [], modelId = "gemini-2.5-flash") => {
+  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = [], modelId = GEMINI_MODELS.QUALITY) => {
     // 🚨 보안 수정: 더 이상 클라이언트에서 직접 구글 API를 호출하지 않습니다.
     // 기존에 fetchGeminiResponse를 사용하던 모든 호출은 프록시를 통하도록 리다이렉트합니다.
     console.warn("[API Deprecated] fetchGeminiResponse is deprecated. Redirecting to fetchProxyGemini.");
@@ -73,7 +71,7 @@ export const apiClient = {
 
       const encodedQuery = encodeURIComponent(query);
 
-      // 'orientation=landscape' 제거 & 'order_by=relevant' 명시
+      // orientation=landscape 금지 — 세로 전경까지 잘림. 인물은 응답 메타로만 제외.
       const response = await fetch(
         `https://api.unsplash.com/search/photos?page=${page}&query=${encodedQuery}&per_page=30&order_by=relevant`,
         { headers: { Authorization: `Client-ID ${accessKey}` } }
@@ -85,52 +83,72 @@ export const apiClient = {
       }
 
       const data = await response.json();
-      return data.results || [];
+      return filterOutSinglePersonPortraits(data.results || []);
     } catch (error) {
       console.error("Unsplash Fetch Error:", error);
       return [];
     }
   },
 
-  // --- 3. Pexels 이미지 통신 (Fallback) ---
-  fetchPexelsImages: async (apiKey, query, page = 1) => {
+  mapPexelsPhotos: (photos) => (photos || []).map((photo) => ({
+    id: `pexels-${photo.id}`,
+    source: 'pexels',
+    width: photo.width,
+    height: photo.height,
+    alt: photo.alt,
+    alt_description: photo.alt,
+    urls: {
+      regular: photo.src?.large || photo.src?.large2x,
+      small: photo.src?.medium,
+      full: photo.src?.original,
+    },
+    user: {
+      name: photo.photographer || 'Pexels Contributor',
+    },
+    links: {
+      html: photo.url,
+    },
+  })),
+
+  fetchPexelsImagesViaProxy: async (query, page = 1) => {
     try {
-      if (!query || !apiKey) return [];
-
-      const encodedQuery = encodeURIComponent(query);
-
-      const response = await fetch(
-        `https://api.pexels.com/v1/search?query=${encodedQuery}&per_page=30&page=${page}`,
-        { headers: { Authorization: apiKey } }
-      );
-
-      if (!response.ok) {
-        console.error(`Pexels API Error: ${response.status}`);
-        return [];
-      }
-
-      const data = await response.json();
-
-      // Unsplash 응답 객체 포맷과 호환되도록 매핑
-      return (data.photos || []).map(photo => ({
-        id: `pexels-${photo.id}`,
-        source: 'pexels',
-        urls: {
-          regular: photo.src.large, // 일반 뷰용 (가로 최대 940px)
-          small: photo.src.medium,  // 썸네일용 (높이 350px)
-          full: photo.src.original  // 원본 다운로드/확대용
-        },
-        user: {
-          name: photo.photographer || 'Pexels Contributor'
-        },
-        links: {
-          html: photo.url
-          // Pexels는 Unsplash와 같은 별도의 download_location 트래킹 API를 강제하지 않으므로 생략
-        }
-      }));
+      if (!query) return [];
+      const { data, error } = await supabase.functions.invoke('pexels-proxy', {
+        body: { query, page },
+      });
+      if (error || !data?.success || !Array.isArray(data.images)) return [];
+      return filterOutSinglePersonPortraits(data.images);
     } catch (error) {
-      console.error("Pexels Fetch Error:", error);
+      console.error('Pexels Proxy Fetch Error:', error);
       return [];
     }
-  }
+  },
+
+  // --- 3. Pexels 이미지 통신 (Fallback) — VITE 키 없으면 Edge pexels-proxy ---
+  fetchPexelsImages: async (apiKey, query, page = 1) => {
+    try {
+      if (!query) return [];
+
+      if (apiKey) {
+        const encodedQuery = encodeURIComponent(query);
+        const response = await fetch(
+          `https://api.pexels.com/v1/search?query=${encodedQuery}&per_page=30&page=${page}`,
+          { headers: { Authorization: apiKey } },
+        );
+
+        if (!response.ok) {
+          console.error(`Pexels API Error: ${response.status}`);
+          return apiClient.fetchPexelsImagesViaProxy(query, page);
+        }
+
+        const data = await response.json();
+        return filterOutSinglePersonPortraits(apiClient.mapPexelsPhotos(data.photos || []));
+      }
+
+      return apiClient.fetchPexelsImagesViaProxy(query, page);
+    } catch (error) {
+      console.error('Pexels Fetch Error:', error);
+      return [];
+    }
+  },
 };

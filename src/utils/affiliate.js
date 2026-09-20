@@ -1,5 +1,6 @@
 // src/utils/affiliate.js
 
+import { i18n } from '../i18n/config.js';
 import {
   MRT_HOME_MYLINK_ID,
   MRT_PACKAGE_SHORT_URLS,
@@ -10,6 +11,11 @@ import {
   resolvePlannerFlightArrivalIata,
   resolveRentalPickupBannerInfo,
 } from './rentalAirportMatch.js';
+import {
+  KLOOK_AID,
+  KLOOK_DEFAULT_AD_ID,
+  buildKlookAffiliateUrl,
+} from './klookAffiliateUrl.js';
 
 export {
   buildMrtPkcHomeUrl,
@@ -19,10 +25,52 @@ export {
   resolveMrtPackageThemeHref,
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
+import { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveTripcomCurrency } from './tripcomPartnerLocale.js';
+import {
+  buildTripcomFlightTicketsHref,
+  resolveTripcomFlightTicketsDates,
+} from './tripcomFlightResultsUrl.js';
+import { resolveGygLocale, resolveGygCurrency } from './gygPartnerLocale.js';
+import {
+  GYG_PARTNER_ID,
+  GYG_DEFAULT_CMP,
+  GYG_CURRENCY,
+  GYG_ACTIVITIES_ITEM_COUNT,
+  GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
+  getGygHomeUrl as buildGygHomeUrlRaw,
+  buildGygSearchUrl as buildGygSearchUrlRaw,
+} from './gygAffiliateLinks.js';
 
-// Klook direct affiliate parameters (managed in one place)
-export const KLOOK_AID = '118544';
-export const KLOOK_DEFAULT_AD_ID = '1256120';
+export { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveTripcomCurrency, resolveGygLocale, resolveGygCurrency };
+export {
+  GYG_PARTNER_ID,
+  GYG_DEFAULT_CMP,
+  GYG_CURRENCY,
+  GYG_ACTIVITIES_ITEM_COUNT,
+  GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
+};
+
+/** app locale 기본 — Node smoke는 {@link ./gygAffiliateLinks.js} 직접 */
+export function getGygHomeUrl(options = {}) {
+  return buildGygHomeUrlRaw({
+    ...options,
+    locale: options.locale ?? i18n.language,
+  });
+}
+
+export function buildGygSearchUrl(query, options = {}) {
+  return buildGygSearchUrlRaw(query, {
+    ...options,
+    locale: options.locale ?? i18n.language,
+  });
+}
+
+/** @returns {'ko-KR' | 'en-US'} */
+export function getTripcomPartnerLocale() {
+  return resolveTripcomPartnerLocale(i18n.language);
+}
+
+export { KLOOK_AID, KLOOK_DEFAULT_AD_ID };
 /** 렌터카 랜딩 홈(`/ko/car-rentals/`) 전용 aff_adid. 투어·렌터카 검색어 등 일반 검색은 {@link KLOOK_DEFAULT_AD_ID}. */
 export const KLOOK_RENTAL_HOME_AD_ID = '1277252';
 // true면 /ko/car-rentals 경로, false면 /car-rentals 경로 사용
@@ -88,31 +136,12 @@ export const MRT_HOME_URL = 'https://www.myrealtrip.com';
 /** Klook 한국어 사이트 홈 (스마트 링크·일반 랜딩) */
 export const KLOOK_SITE_HOME_TARGET = 'https://www.klook.com/ko/';
 
-/** GetYourGuide 제휴 파트너 ID — 위젯·스마트 링크 홈 공통 */
-export const GYG_PARTNER_ID = 'LRKVVU4';
+/** @deprecated {@link resolveGygLocale} / {@link getGygLocale} — ko fallback only */
 export const GYG_LOCALE = 'ko-KR';
-/** 위젯·딥링크 표시 통화 — 미지정 시 GYG 기본(EUR). 한국 서비스는 KRW */
-export const GYG_CURRENCY = 'KRW';
-/** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) · 철자 planer는 기존 포털 캠페인과 동일 */
-export const GYG_DEFAULT_CMP = 'gateo_planer';
-/** Manual Activities — 스케치·홈 모달 등 넓은 표면 */
-export const GYG_ACTIVITIES_ITEM_COUNT = 12;
-/** 플래너 map_poi — 짧은 리스트 + 제휴 홈 링크로 이동 */
-export const GYG_PLANNER_ACTIVITIES_ITEM_COUNT = 3;
 
-/**
- * GetYourGuide 제휴 홈 (단축 URL 불필요 — partner_id 직접).
- * @param {{ cmp?: string, currency?: string }} [options]
- * @returns {string}
- */
-export function getGygHomeUrl(options = {}) {
-  const params = new URLSearchParams({
-    partner_id: GYG_PARTNER_ID,
-    utm_medium: 'online_publisher',
-    cmp: options.cmp || GYG_DEFAULT_CMP,
-    currency: options.currency || GYG_CURRENCY,
-  });
-  return `https://www.getyourguide.com/?${params.toString()}`;
+/** @returns {'ko-KR' | 'en-US'} */
+export function getGygLocale() {
+  return resolveGygLocale(i18n.language);
 }
 
 /**
@@ -239,15 +268,28 @@ export function getHolaflyHomeUrl(options = {}) {
 }
 
 /**
- * Klook 직접 제휴 딥링크 생성기
+ * Klook 직접 제휴 딥링크. klook.com 은 웹 직행({@link buildKlookAffiliateUrl}).
  *
  * @param {string} targetUrl - 클룩 내 최종 이동 URL
  * @param {string} adId - 클룩 광고 ID (기본값: KLOOK_DEFAULT_AD_ID)
  * @returns {string}
  */
-export const getKlookAffiliateUrl = (targetUrl, adId = KLOOK_DEFAULT_AD_ID) => {
-  if (!targetUrl) return '';
-  return `https://affiliate.klook.com/redirect?aid=${KLOOK_AID}&aff_adid=${adId}&k_site=${encodeURIComponent(targetUrl)}`;
+export const getKlookAffiliateUrl = (targetUrl, adId = KLOOK_DEFAULT_AD_ID) =>
+  buildKlookAffiliateUrl(targetUrl, adId);
+
+/**
+ * @param {string} query
+ * @param {string} [locale]
+ * @returns {string}
+ */
+export const getKlookSearchUrl = (query, locale = 'ko') => {
+  const q = String(query || '').trim();
+  if (!q) return '';
+  const lang = locale === 'en' ? 'en' : 'ko';
+  return getKlookAffiliateUrl(
+    `https://www.klook.com/${lang}/search/result/?query=${encodeURIComponent(q)}`,
+    KLOOK_DEFAULT_AD_ID,
+  );
 };
 
 /** Klook 페리 통합 페이지 제휴 URL */
@@ -420,12 +462,31 @@ export function getMrtSearchUrl(query) {
   return buildMrtMylinkUrl(`${MRT_HOME_URL}/search?q=${encodeURIComponent(q)}`);
 }
 
+/** 마이리얼트립 국내 렌터카 검색 홈 — 픽업 도시는 사이트에서 선택 */
+export const MRT_DOMESTIC_RENTAL_URL = `${MRT_HOME_URL}/rentalcars?category=domestic`;
+
+/**
+ * 국내 렌터카 제휴 URL.
+ * 클룩 `{지명} 렌터카` 검색은 국내 매칭이 거의 없어, 명승·축제 본문은 이 랜딩을 쓴다.
+ *
+ * @returns {string}
+ */
+export function getMrtDomesticRentalUrl() {
+  return buildMrtMylinkUrl(MRT_DOMESTIC_RENTAL_URL);
+}
+
 /**
  * 숙소 도메인 키워드 검색 제휴 URL (`accommodation…/union/products`).
  * 플래너 숙소 툴킷(지역별·한인민박) — 장소카드「숙소 찾기」목록과 동일 패턴.
  *
  * @param {string} query
- * @param {{ isDomestic?: boolean }} [options]
+ * @param {{
+ *   isDomestic?: boolean,
+ *   checkIn?: string,
+ *   checkOut?: string,
+ *   adultCount?: number,
+ *   childCount?: number,
+ * }} [options]
  * @returns {string}
  */
 export function getMrtAccommodationSearchUrl(query, options = {}) {
@@ -434,6 +495,10 @@ export function getMrtAccommodationSearchUrl(query, options = {}) {
   const url = buildMrtStayListUrl({
     keyword,
     isDomestic: Boolean(options.isDomestic),
+    checkIn: options.checkIn,
+    checkOut: options.checkOut,
+    adultCount: options.adultCount,
+    childCount: options.childCount,
     mylinkId: MRT_HOME_MYLINK_ID,
   });
   return url || getMrtHomeAffiliateUrl();
@@ -530,6 +595,8 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   malta: '1264',
   /** 롬복 — 섬 허브(마타람 단독 아님) */
   lombok: '1392',
+  /** 발리 — 섬 허브(DPS 관문 · packages/list htlProvinceId) */
+  bali: '723',
   /** 보라보라 */
   'bora-bora': '61019',
   /** 요세미티 — 요세미티 밸리(숙소 거점) */
@@ -624,24 +691,22 @@ export function getTripcomHotelEmptyCopy(location) {
   const slug = getLocationSlugKey(location);
   if (slug === 'persepolis') {
     return {
-      title: '보통 시라즈에 묵고 당일 투어로 다녀와요',
-      subtitle:
-        '다만 트립닷컴·마이리얼트립에서는 이란 숙소 예약이 거의 안 돼요. 이란 전문·현지 예약을 확인해 보세요',
-      cta: '트립닷컴에서 확인하기',
+      title: i18n.t('home.tripcomStay.empty.persepolis.title'),
+      subtitle: i18n.t('home.tripcomStay.empty.persepolis.subtitle'),
+      cta: i18n.t('home.tripcomStay.empty.persepolis.cta'),
     };
   }
   if (isTripcomHotelSparseInventoryLocation(location)) {
     return {
-      title: '이 지역은 온라인 숙소 예약이 거의 없어요',
-      subtitle:
-        '트립닷컴에도 재고가 없거나 예약이 어려울 수 있어요. 현지·전문 여행사를 확인해 보세요',
-      cta: '트립닷컴에서 확인하기',
+      title: i18n.t('home.tripcomStay.empty.sparse.title'),
+      subtitle: i18n.t('home.tripcomStay.empty.sparse.subtitle'),
+      cta: i18n.t('home.tripcomStay.empty.sparse.cta'),
     };
   }
   return {
-    title: '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요',
-    subtitle: '위쪽 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요',
-    cta: '트립닷컴에서 숙소 검색',
+    title: i18n.t('home.tripcomStay.empty.default.title'),
+    subtitle: i18n.t('home.tripcomStay.empty.default.subtitle'),
+    cta: i18n.t('home.tripcomStay.empty.default.cta'),
   };
 }
 
@@ -653,9 +718,9 @@ export function getTripcomHotelEmptyCopy(location) {
  */
 export function getTripcomHotelErrorCopy() {
   return {
-    title: '숙소 검색을 잠시 불러오지 못했어요',
-    subtitle: '잠시 후에 다시 시도해 주세요. 트립닷컴에서 바로 검색할 수도 있어요',
-    cta: '트립닷컴에서 숙소 검색',
+    title: i18n.t('home.tripcomStay.error.title'),
+    subtitle: i18n.t('home.tripcomStay.error.subtitle'),
+    cta: i18n.t('home.tripcomStay.error.cta'),
   };
 }
 
@@ -682,15 +747,38 @@ export const TRIPCOM_KR_PARTNER = {
  * @returns {string}
  */
 export function getTripcomHomeUrl(options = {}) {
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale);
   const params = new URLSearchParams({
-    locale: 'ko-KR',
-    curr: 'KRW',
+    locale: partnerLocale,
+    curr: resolveTripcomCurrency(partnerLocale),
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
   });
   if (options.campaign) params.set('trip_sub1', options.campaign);
   if (options.locationName) params.set('trip_sub2', options.locationName);
-  return `https://kr.trip.com/?${params.toString()}`;
+  return `${origin}/?${params.toString()}`;
+}
+
+/**
+ * Trip.com 기차표(KTX 등) 제휴 URL.
+ * 12Go는 동남아·KR Pass(외국인) 중심이라, 국내 명승·축제는 트립닷컴 기차 랜딩을 쓴다.
+ *
+ * @param {{ campaign?: string, locationName?: string, partnerLocale?: 'ko-KR' | 'en-US' }} [options]
+ * @returns {string}
+ */
+export function getTripcomTrainUrl(options = {}) {
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale);
+  const params = new URLSearchParams({
+    locale: partnerLocale,
+    curr: resolveTripcomCurrency(partnerLocale),
+    Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+    SID: TRIPCOM_KR_PARTNER.sid,
+  });
+  params.set('trip_sub1', options.campaign || '축제·명승 기차표');
+  if (options.locationName) params.set('trip_sub2', options.locationName);
+  return `${origin}/trains/?${params.toString()}`;
 }
 
 /** Klook 사이트 홈 제휴 URL */
@@ -705,7 +793,10 @@ export const TRIPCOM_FLIGHT_TRACKING = {
   sub1PlannerPreTravelFlight: '플래너 필수준비 항공권 검색 일반',
   sub1ChatFlight: '채팅 항공권',
   sub1GlobeFlightCinema: '홈 항공 시네마',
-  sub1StayModalFlight: '숙소모달 항공권',
+  sub1StayModalFlight: '홈 숙소 모달',
+  sub1EventDetailFlight: '행사상세 항공+숙소',
+  sub3StayModalFlightHotel: 'D18887227',
+  sub3EventDetailFlightHotel: 'D18887227',
   sub3PlannerFlight: 'D17104488',
   sub3PlannerPreTravelFlight: 'D17159522',
   sub3ChatFlight: 'D17104488',
@@ -719,6 +810,8 @@ export const TRIPCOM_FLIGHT_AD = {
   height: 200,
   mobileWidth: 320,
   mobileHeight: 480,
+  // Trip.com 모바일 partners/ad iframe이 3rd-party 인증 오류(Authentication failed)로 빈 박스가 됨 → 네이티브 CTA 전환
+  mobileIframeUsable: false,
 };
 
 /** 제휴 호텔 검색 배너 (iframe) — 데스크톱 900×200 / 모바일 320×480 */
@@ -791,7 +884,14 @@ function resolveTripcomFlightTracking(options = {}) {
   if (tracking === 'stay-modal-flight') {
     return {
       sub1: TRIPCOM_FLIGHT_TRACKING.sub1StayModalFlight,
-      sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3StayModalFlightHotel,
+    };
+  }
+
+  if (tracking === 'event-detail-flight') {
+    return {
+      sub1: TRIPCOM_FLIGHT_TRACKING.sub1EventDetailFlight,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3EventDetailFlightHotel,
     };
   }
 
@@ -807,70 +907,182 @@ function resolveTripcomFlightTracking(options = {}) {
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{
  *   essentialGuide?: Record<string, unknown> | null,
- *   mode?: 'flights' | 'ad',
+ *   mode?: 'flights' | 'ad' | 'packages',
  *   adId?: string,
  *   departureIata?: string,
- *   tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight',
+ *   arrivalIata?: string,
+ *   tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' | 'event-detail-flight',
  *   departDate?: string,
  *   returnDate?: string,
+ *   tripType?: 'RT' | 'OW' | 'rt' | 'ow' | 'roundtrip' | 'oneway',
  *   adultCount?: number,
  *   childCount?: number,
+ *   partnerLocale?: string,
  * }} [options]
  * @returns {string}
  */
 export function buildTripcomPlannerFlightUrl(location, options = {}) {
   const { mode = 'flights', adId = TRIPCOM_FLIGHT_AD.adId, departureIata } = options;
-  const arrival = getPlannerFlightArrivalIata(location, options);
+  const arrivalOverride = normalizeTripcomIata(options.arrivalIata);
+  const arrival = arrivalOverride || getPlannerFlightArrivalIata(location, options);
   const { sub1, sub3 } = resolveTripcomFlightTracking(options);
+  const partnerLocale =
+    options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale);
 
   const params = new URLSearchParams({
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
     trip_sub1: sub1,
-    locale: 'ko-KR',
-    curr: 'KRW',
+    locale: partnerLocale,
+    curr: resolveTripcomCurrency(partnerLocale),
     trip_sub3: sub3,
   });
 
-  let depart = String(departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT)
-    .trim()
-    .toUpperCase();
-  const arriveCode = arrival ? String(arrival).trim().toUpperCase() : null;
+  let depart = normalizeTripcomIata(departureIata) || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+  const arriveCode = arrival ? normalizeTripcomIata(arrival) : null;
   if (arriveCode && depart === arriveCode) {
     depart = TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
   }
   if (depart) {
     params.set('dAirportCode', depart);
+    params.set('dcity', depart.toLowerCase());
   }
   if (arriveCode) {
     params.set('aAirportCode', arriveCode);
+    params.set('acity', arriveCode.toLowerCase());
   }
 
   const departDate = normalizeTripcomFlightYmd(options.departDate);
   const returnDate = normalizeTripcomFlightYmd(options.returnDate);
+  const tripType = resolveTripcomFlightTripType(options, departDate, returnDate);
+  const isRoundTrip = tripType === 'RT';
   if (departDate) {
     params.set('ddate', departDate);
   }
-  if (returnDate && (!departDate || returnDate > departDate)) {
+  if (isRoundTrip && returnDate && (!departDate || returnDate > departDate)) {
     params.set('rdate', returnDate);
-    // rdate만으로는 편도 유지 — 왕복 라디오는 tripType=RT 필요
-    params.set('tripType', 'RT');
+  }
+  if (departDate) {
+    params.set('tripType', isRoundTrip ? 'RT' : 'OW');
+    params.set('triptype', isRoundTrip ? 'rt' : 'ow');
   }
 
   const adults = Number(options.adultCount);
+  const adultQty = Number.isFinite(adults) && adults > 0
+    ? Math.min(8, Math.max(1, Math.floor(adults)))
+    : 1;
   if (Number.isFinite(adults) && adults > 0) {
-    params.set('adult', String(Math.min(8, Math.max(1, Math.floor(adults)))));
+    params.set('adult', String(adultQty));
+    params.set('quantity', String(adultQty));
+  } else if (departDate) {
+    params.set('adult', '1');
+    params.set('quantity', '1');
   }
   const children = Number(options.childCount);
   if (Number.isFinite(children) && children >= 0) {
-    params.set('child', String(Math.min(8, Math.floor(children))));
+    const childQty = Math.min(8, Math.floor(children));
+    params.set('child', String(childQty));
+    params.set('childqty', String(childQty));
   }
 
   if (mode === 'ad') {
-    return `https://kr.trip.com/partners/ad/${adId}?${params.toString()}`;
+    // Trip.com 제휴 ad iframe은 allianceId/SID/trip_sub1 등 공식 발급 파라미터만 전달
+    const adParams = new URLSearchParams({
+      Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+      SID: TRIPCOM_KR_PARTNER.sid,
+      trip_sub1: sub1,
+    });
+    return `${origin}/partners/ad/${adId}?${adParams.toString()}`;
   }
 
-  return `https://kr.trip.com/flights/?${params.toString()}`;
+  if (mode === 'packages') {
+    const hotelCheckIn = normalizeTripcomFlightYmd(options.checkIn ?? options.departDate);
+    const hotelCheckOut = normalizeTripcomFlightYmd(options.checkOut ?? options.returnDate);
+    if (departDate) {
+      params.set('dDate', departDate);
+    } else if (hotelCheckIn) {
+      params.set('dDate', hotelCheckIn);
+    }
+    if (returnDate && (!departDate || returnDate > departDate)) {
+      params.set('rDate', returnDate);
+      params.set('tripWay', 'round-trip');
+    } else if (hotelCheckOut) {
+      params.set('rDate', hotelCheckOut);
+      params.set('tripWay', hotelCheckIn && hotelCheckOut > hotelCheckIn ? 'round-trip' : 'one-way');
+    } else {
+      params.set('tripWay', 'one-way');
+    }
+    if (hotelCheckIn) params.set('iDate', hotelCheckIn);
+    if (hotelCheckOut) params.set('oDate', hotelCheckOut);
+    if (depart) params.set('dportCode', depart);
+    if (arriveCode) params.set('aportCode', arriveCode);
+    params.set('room', '1');
+    params.set('infants', '0');
+    params.set('showPassenger', '1');
+    params.set('classType', 'Y');
+    params.set('needdirect', 'false');
+    params.set('isOversea', '1');
+    params.set('sourceFrom', 'IBUFlt_tickbox');
+
+    const hotelCityId = getTripcomHotelCityIdForLocation(location);
+    if (hotelCityId) params.set('htlProvinceId', hotelCityId);
+
+    const destinationName = String(
+      location?.name_en || location?.name || location?.name_ko || '',
+    ).trim();
+    if (destinationName) params.set('destinationName', destinationName);
+
+    const packagesOrigin = resolveTripcomSiteOrigin(partnerLocale, { surface: 'packages' });
+    return `${packagesOrigin}/packages/list?${params.toString()}`;
+  }
+
+  // /flights/ 홈은 항공+호텔 검색박스라 출도착이 비거나 이전 검색이 남음.
+  if (depart && arriveCode) {
+    const ticketsDates = resolveTripcomFlightTicketsDates({
+      tripType: options.tripType ?? options.tripWay,
+      departDate,
+      returnDate,
+    });
+    params.set('ddate', ticketsDates.ddate);
+    params.set('tripType', ticketsDates.tripType);
+    params.set('triptype', ticketsDates.tripType.toLowerCase());
+    if (ticketsDates.rdate) {
+      params.set('rdate', ticketsDates.rdate);
+    } else {
+      params.delete('rdate');
+    }
+    if (!params.get('quantity')) {
+      params.set('adult', '1');
+      params.set('quantity', '1');
+    }
+    params.set('class', 'y');
+    return buildTripcomFlightTicketsHref(origin, depart, arriveCode, params);
+  }
+
+  return `${origin}/flights/?${params.toString()}`;
+}
+
+/** @param {unknown} value @returns {string | null} */
+function normalizeTripcomIata(value) {
+  const code = String(value || '').trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(code) ? code : null;
+}
+
+/**
+ * @param {{ tripType?: unknown, tripWay?: unknown }} options
+ * @param {string | null} departDate
+ * @param {string | null} returnDate
+ * @returns {'RT' | 'OW'}
+ */
+function resolveTripcomFlightTripType(options, departDate, returnDate) {
+  const raw = String(options?.tripType ?? options?.tripWay ?? '')
+    .trim()
+    .toLowerCase();
+  if (['ow', 'oneway', 'one-way', 'oway'].includes(raw)) return 'OW';
+  if (['rt', 'roundtrip', 'round-trip', 'round'].includes(raw)) return 'RT';
+  if (returnDate && departDate && returnDate > departDate) return 'RT';
+  return 'OW';
 }
 
 /** @param {unknown} value @returns {string | null} YYYY-MM-DD */
@@ -927,16 +1139,22 @@ function getTripcomHotelFullOverrideUrl(location) {
  * @param {{ checkIn?: string, checkOut?: string, campaign?: string, adultCount?: number, childCount?: number }} options
  */
 function mergeTripcomHotelStayParams(baseUrl, options = {}) {
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
   try {
     const url = new URL(baseUrl);
+    url.hostname = new URL(
+      resolveTripcomSiteOrigin(partnerLocale, { surface: 'hotels' }),
+    ).hostname;
     if (!url.searchParams.has('Allianceid')) {
       url.searchParams.set('Allianceid', TRIPCOM_KR_PARTNER.allianceId);
     }
     if (!url.searchParams.has('SID')) {
       url.searchParams.set('SID', TRIPCOM_KR_PARTNER.sid);
     }
-    if (!url.searchParams.has('locale')) url.searchParams.set('locale', 'ko-KR');
-    if (!url.searchParams.has('curr')) url.searchParams.set('curr', 'KRW');
+    url.searchParams.set('locale', partnerLocale);
+    if (!url.searchParams.has('curr')) {
+      url.searchParams.set('curr', resolveTripcomCurrency(partnerLocale));
+    }
     if (options.campaign) url.searchParams.set('trip_sub1', options.campaign);
     if (options.checkIn) url.searchParams.set('checkIn', String(options.checkIn));
     if (options.checkOut) url.searchParams.set('checkOut', String(options.checkOut));
@@ -993,9 +1211,11 @@ export function buildTripcomHotelSearchUrl(location, options = {}) {
     location?.name_en || location?.name || location?.name_ko || '',
   ).trim();
   const cityId = getTripcomHotelCityIdForLocation(location);
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale, { surface: 'hotels' });
   const params = new URLSearchParams({
-    locale: 'ko-KR',
-    curr: 'KRW',
+    locale: partnerLocale,
+    curr: resolveTripcomCurrency(partnerLocale),
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
     trip_sub1: campaign,
@@ -1018,9 +1238,9 @@ export function buildTripcomHotelSearchUrl(location, options = {}) {
   if (mode === 'list') params.set('crn', '1');
 
   if (mode === 'ad') {
-    return `https://kr.trip.com/partners/ad/${adId}?${params.toString()}`;
+    return `${origin}/partners/ad/${adId}?${params.toString()}`;
   }
-  return `https://kr.trip.com/hotels/list?${params.toString()}`;
+  return `${origin}/hotels/list?${params.toString()}`;
 }
 
 /**

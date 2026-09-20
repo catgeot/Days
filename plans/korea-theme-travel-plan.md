@@ -48,6 +48,16 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 32 | (MRT) | `테마여행 #32, MRT 상품지` | ⏳ Preview QA |
 | 33 | (IA) | `테마여행 #33, 페이지 정리` | ✅ 본 절 · 투톱 잠금 |
 | 34 | (네비) | `테마여행 #34, 투톱 크로스 네비` | ✅ Preview QA |
+| 75 | (빈 hub) | `테마여행 #75, 빈 hub 선정 칩 숨김` | ✅ main |
+| 76 | (핫픽스) | `테마여행 #76, 상세 가로 스크롤` | ⏳ Preview QA |
+| 77 | (SSOT) | `테마여행 #77, 명소 보강` | ⏳ Preview QA · 상한 해제·보강 큐 |
+| 78 | (SSOT) | `테마여행 #78, 빈 hub 명소 보강` | ⏳ Preview QA · 평창·남해 |
+| 79 | (SSOT) | `테마여행 #79, 빈 hub 명소 보강` | ⏳ Preview QA · 전수 정책(양양·평창·남해·안산·강화) · 큐 잔여 117 |
+| 80 | (SSOT) | `테마여행 #80, 빈 hub 명소 보강` | ⏳ Preview QA · R01-A 김포·고양·광명·하남·안성 전수 · 큐 잔여 112 |
+| 118 | (즐겨찾기) | `테마여행 #118, 명승 홈 즐겨찾기` | ✅ main |
+| 119 | (지도) | `테마여행 #119, 명승 홈 지도` | ✅ → #120 |
+| 120 | (지도) | `테마여행 #120, 접이·파드별 지도` | ⏳ Preview QA · 파드 접이·파드별 지도 |
+| 127 | (리스트) | `테마여행 #127, 리스트 크게` | ⏳ Preview QA · 지도 옆 「크게」 |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -331,7 +341,7 @@ flowchart LR
 1. **멤버십**: generate JSON을 복제하지 않음. 런타임 `buildThemeMembershipIndex()`가 top10+scenic+regions를 `placeSlug`로 합친다 → `inTop10` / `inScenic` / `inRegions`.
 2. **sameHub**: 동일 `hubId`의 다른 placeSlug (자기 제외 · 기본 4).
 3. **nearbyHubs**: spot lat/lng(+area) → `nearbyHubsForFestival` 재사용 · 자기 hub 제외 · 기본 4 · maxKm 120.
-4. **숙소·투어**: `buildThemeSpotLocation(spot)` → 기존 `resolveMrtStayQuery` / `resolveMrtTnaQuery` (PlaceCard와 동일 키워드 래더). 테마 전용 키워드 SSOT **신규 금지**(필요 시 기존 override만).
+4. **숙소·투어**: `buildThemeSpotLocation(spot)` → 기존 `resolveMrtStayQuery` / `resolveMrtTnaQuery` (PlaceCard와 동일 키워드 래더). 테마 전용 키워드 SSOT **신규 금지**(필요 시 기존 override만). **축제 1차 hub 오매칭**(TourAPI `전남광주통합특별시` addr 등) → [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) (행사지 hub·2차 칩 없이 정합).
 5. **패키지**: hub `jeju`/`seogwipo`→`koreaJeju` · `gyeongju`→`koreaGyeongju` · 그 외 **CTA 숨김**(`q=부산`류 오탐 방지 · 홈 CTA는 패키지 페이지에만).
 6. **deep-link**:  
    - 축제 `/korea?from=theme&area={areaCode}`  
@@ -410,7 +420,7 @@ JSON **직접 편집 금지** → overrides → generate → audit.
 | 기존 | 용도 |
 |------|------|
 | KR hub (`country: 대한민국`) ≈210 | regions·scenic·top10 연결 |
-| `koreaAreaCodes` | 방방곡곡 |
+| `koreaAreaCodes` | 방방곡곡 · **명소 중·소분류 칩**(hubId→areaCode). 선정 hub 보강 시 [`korea-area-code-overrides.mjs`](../scripts/data/korea-area-code-overrides.mjs)에 hubId append → `generate:korea-area-codes` 필수([`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) 사용법 §3) |
 | `/korea` festival stack | 축제 |
 | `mrtPackageLinks` / `mrtPackageThemeLinks` | 패키지 mylink |
 | PlaceCard·gallery | 상세 |

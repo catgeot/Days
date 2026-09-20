@@ -1,10 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
-import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
-import FlightSearchCta from './FlightSearchCta';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
+import TripcomFlightBannerWidget from './TripcomFlightBannerWidget';
 import {
     GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
     getKlookAffiliateUrl,
@@ -33,9 +33,11 @@ const ToolkitCard = ({
     isOfficial,
     location,
     essentialGuide,
+    eventTripWindow,
     themeColor = 'gray',
-    className = ''
+    className = '',
 }) => {
+    const { t } = useTranslation();
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
@@ -63,8 +65,8 @@ const ToolkitCard = ({
                     </span>
                 )}
                 {isSponsored && (
-                    <span className="bg-fuchsia-50 text-fuchsia-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-fuchsia-100 tracking-wider group-hover:bg-fuchsia-100 transition-colors" title="파트너사 제휴광고 연결로, 사이트 운영에 도움이 됩니다.">
-                        제휴광고
+                    <span className="bg-fuchsia-50 text-fuchsia-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-fuchsia-100 tracking-wider group-hover:bg-fuchsia-100 transition-colors" title={t('place.planner.toolkit.sponsoredTitle')}>
+                        {t('place.planner.toolkit.sponsored')}
                     </span>
                 )}
             </div>
@@ -94,6 +96,12 @@ const ToolkitCard = ({
                                     text={link.text}
                                     colorClass={link.colorClass}
                                     isColSpan2={isColSpan2}
+                                    checkIn={eventTripWindow?.checkIn}
+                                    checkOut={eventTripWindow?.checkOut}
+                                    isDomestic={
+                                        location?.country === '대한민국' ||
+                                        location?.country_en === 'South Korea'
+                                    }
                                 />
                             );
                         }
@@ -124,7 +132,7 @@ const ToolkitCard = ({
                                 target={isMobileDevice() ? "_self" : "_blank"}
                                 rel="noopener noreferrer"
                                 className={`flex ${link.subtext ? 'flex-col gap-0.5 py-2' : 'flex-row items-center gap-1 py-3'} justify-center w-full px-1 min-h-[44px] rounded-xl transition-colors border overflow-hidden ${link.colorClass} ${isColSpan2 ? 'col-span-2' : ''}`}
-                                aria-label={link.subtext ? `${link.text}. ${link.subtext}` : `${link.text}에서 검색하기`}
+                                aria-label={link.subtext ? `${link.text}. ${link.subtext}` : t('place.planner.searchOn', { label: link.text })}
                             >
                                 <span className={`flex items-center justify-center gap-1 min-w-0 text-[11px] md:text-xs font-semibold ${link.subtext ? '' : 'w-full'}`}>
                                     <span className="truncate max-w-[85%]">{link.text}</span>
@@ -145,12 +153,12 @@ const ToolkitCard = ({
             {type === 'flight' && (
                 <div id="planner-prep-flight-booking" className="scroll-mt-24">
                     <FlightOfficialBookingWidget location={location} />
-                    <WhiteLabelWidget
+                    <TripcomFlightBannerWidget
                         location={location}
                         essentialGuide={essentialGuide}
-                        customTrigger={
-                            <FlightSearchCta location={location} essentialGuide={essentialGuide} />
-                        }
+                        departDate={eventTripWindow?.departDate}
+                        returnDate={eventTripWindow?.returnDate}
+                        className="mt-3"
                     />
                 </div>
             )}

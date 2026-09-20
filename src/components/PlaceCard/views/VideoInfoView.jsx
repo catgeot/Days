@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Play, Crown, AlertCircle, Sparkles } from 'lucide-react';
 
 const VideoInfoView = ({ videoData, onSeekTime }) => {
+    const { t } = useTranslation();
     const [selectedChapterIdx, setSelectedChapterIdx] = useState(null);
 
     useEffect(() => {
@@ -14,7 +16,7 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
         return (
             <div className="animate-pulse p-4 text-white/50 text-sm flex items-center gap-3">
                 <div className="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
-                영상 인사이트를 검색하는 중입니다...
+                {t('place.video.insightsLoading')}
             </div>
         );
     }
@@ -24,12 +26,10 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
             <div className="animate-fade-in space-y-4 p-5 border border-white/5 rounded-2xl bg-white/5">
                 <div className="flex items-center gap-2 mb-2">
                     <AlertCircle size={18} className="text-white/40" />
-                    <h3 className="text-sm font-bold text-white/80">영상 인사이트 없음</h3>
+                    <h3 className="text-sm font-bold text-white/80">{t('place.video.insightsEmpty')}</h3>
                 </div>
                 <p className="text-xs text-white/40 leading-relaxed mb-4">
-                    현재 이 장소에 등록된 영상 정보가 부족합니다.<br/>
-  									멋진 영상을 알고 계시다면 우측 플레이어 패널을 통해<br/>
-  									첫 번째 추천인이 되어주세요!
+                    {t('place.video.insightsEmptyBody')}
                 </p>
                 {videoData.googleFormUrl && (
                     <a 
@@ -39,7 +39,7 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
                         className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600/20 text-red-400 rounded-xl text-xs font-bold hover:bg-red-600 hover:text-white transition-all active:scale-95"
                     >
                         <Sparkles size={14} />
-                        영상 추천하기
+                        {t('place.video.recommend')}
                     </a>
                 )}
             </div>

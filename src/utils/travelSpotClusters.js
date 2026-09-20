@@ -26,7 +26,7 @@ export function getClusterIdForSlug(slug) {
 
 /**
  * @param {string | null | undefined} slug
- * @returns {{ clusterId: string, labelKo: string, labelEn: string, notes?: string } | null}
+ * @returns {{ clusterId: string, labelKo: string, labelEn: string, notes?: string, notesEn?: string } | null}
  */
 export function getClusterForSlug(slug) {
   const clusterId = getClusterIdForSlug(slug);
@@ -38,6 +38,7 @@ export function getClusterForSlug(slug) {
     labelKo: cluster.labelKo,
     labelEn: cluster.labelEn,
     notes: cluster.notes,
+    ...(cluster.notesEn ? { notesEn: cluster.notesEn } : {}),
   };
 }
 

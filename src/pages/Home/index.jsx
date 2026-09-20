@@ -10,8 +10,15 @@ import LogoPanel from './components/LogoPanel';
 import SiteUpdateBanner from '../../shared/components/SiteUpdateBanner';
 import HomePlaceCardSummary from './components/HomePlaceCardSummary';
 import SEO from '../../components/SEO';
+import { useLocale } from '../../i18n/LocaleProvider';
+import {
+  getExploreCategorySeoBundle,
+  parseExploreCategoryPath,
+} from './lib/exploreCategorySeo';
 
 import { supabase } from '../../shared/api/supabase';
+import { logSeaExplore } from '../../shared/cloudPreview/seaExploreDebug.js';
+import { logCurationHandoff } from '../../shared/cloudPreview/curationHandoffDebug';
 import { TRAVEL_SPOTS } from './data/travelSpots';
 import { citiesData } from './data/citiesData';
 
@@ -51,11 +58,33 @@ import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
-import { syncHomeViewportAfterInput } from '../../shared/lib/mobileViewport';
+import {
+  buildHierarchicalSeaBasinRail,
+  getSeaBasinById,
+  resolveTopOceanForBasin,
+  seaBasinToFlyRegion,
+  topOceanToFlyRegion,
+} from './lib/seaBasinRail.js';
+import { syncHomeViewportAfterInput, syncHomeChromeAfterNavigation } from '../../shared/lib/mobileViewport';
+import { shouldLockHomeGlobePageZoom } from './lib/homeGlobePageZoomLock';
+import { useHomeGlobePageZoomLock } from './hooks/useHomeGlobePageZoomLock';
 import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
 } from './lib/placeReturnTo';
+import {
+  claimCurationHomeHandoff,
+  clearCurationPendingHomeSession,
+  clearCurationGlobeSyncFlush,
+  hasValidCurationCoords,
+  isCurationHomeHandoffApplyScheduled,
+  reclaimCurationHomeHandoff,
+  releaseCurationHomeHandoffClaim,
+  resolveCurationHomeHandoff,
+  scheduleCurationHomeHandoffApply,
+  cancelCurationHomeHandoffApply,
+} from './lib/curationPlaceBridge';
+import { getGlobeApi, subscribeGlobeApi } from './lib/globeApiRegistry.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -114,6 +143,7 @@ function Home() {
 
   const navigate = useNavigate();
   const routeLocation = useLocation();
+  const { locale } = useLocale();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -160,6 +190,36 @@ function Home() {
   const [faceRegionsOpen, setFaceRegionsOpen] = useState(false);
   const [selectedFaceRegionId, setSelectedFaceRegionId] = useState(null);
   const [selectedFaceSubregionId, setSelectedFaceSubregionId] = useState(null);
+  const [selectedSeaBasinId, setSelectedSeaBasinId] = useState(null);
+  const [selectedTopOceanId, setSelectedTopOceanId] = useState(null);
+
+  const selectedFaceSubregionIdRef = useRef(selectedFaceSubregionId);
+  selectedFaceSubregionIdRef.current = selectedFaceSubregionId;
+  const selectedTopOceanIdRef = useRef(selectedTopOceanId);
+  selectedTopOceanIdRef.current = selectedTopOceanId;
+  const selectedSeaBasinIdRef = useRef(selectedSeaBasinId);
+  selectedSeaBasinIdRef.current = selectedSeaBasinId;
+  const pendingSeaBasinFlyRef = useRef(null);
+  const seaBasinFlyTimerRef = useRef(null);
+  const pendingTopOceanFlyRef = useRef(null);
+  const topOceanFlyTimerRef = useRef(null);
+
+  const clearPendingRegionFlies = useCallback(() => {
+    pendingSeaBasinFlyRef.current = null;
+    pendingTopOceanFlyRef.current = null;
+    if (seaBasinFlyTimerRef.current) {
+      window.clearTimeout(seaBasinFlyTimerRef.current);
+      seaBasinFlyTimerRef.current = null;
+    }
+    if (topOceanFlyTimerRef.current) {
+      window.clearTimeout(topOceanFlyTimerRef.current);
+      topOceanFlyTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => {
+    clearPendingRegionFlies();
+  }, [clearPendingRegionFlies]);
 
   const revealRandomGlobeFace = useCallback(() => {
     const next = pickRandomGlobeCategory();
@@ -168,21 +228,39 @@ function Home() {
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(next));
+    setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
 
   const closeFaceRegions = useCallback(() => {
+    clearPendingRegionFlies();
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(null);
+    setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
-  }, []);
+  }, [clearPendingRegionFlies]);
 
   const [isPinVisible, setIsPinVisible] = useState(true);
   const [globeTheme, setGlobeTheme] = useState(DEFAULT_GLOBE_THEME);
   const [isTickerExpanded, setIsTickerExpanded] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
+  const [globeRotatePaused, setGlobeRotatePaused] = useState(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return undefined;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => {
+      if (mq.matches) setGlobeRotatePaused(true);
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
   const [isMobileViewport, setIsMobileViewport] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -191,6 +269,17 @@ function Home() {
   /** 모바일 숙소 패널 펼침 — 스크림·회전 정지·MOONi 숨김 */
   const [isStayStripExpanded, setIsStayStripExpanded] = useState(false);
   const [isPlaceImmersed, setIsPlaceImmersed] = useState(false);
+  const [homeChromeEpoch, setHomeChromeEpoch] = useState(0);
+  const bumpHomeChromeEpoch = useCallback(() => {
+    setHomeChromeEpoch((n) => n + 1);
+  }, []);
+  const recalibrateHomeChromeAfterNav = useCallback(() => {
+    bumpHomeChromeEpoch();
+    syncHomeChromeAfterNavigation();
+    if (isMobileViewport) {
+      globeRef.current?.wakeAfterOverlay?.();
+    }
+  }, [bumpHomeChromeEpoch, isMobileViewport]);
   const prevChatOpenRef = useRef(false);
   const prevPathnameRef = useRef(routeLocation.pathname);
 
@@ -217,6 +306,7 @@ function Home() {
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
   const [tourPivoted, setTourPivoted] = useState(false);
   const [flightCinemaActive, setFlightCinemaActive] = useState(false);
+  const [flightCinemaLaunchPending, setFlightCinemaLaunchPending] = useState(false);
   const [tourLaunchPending, setTourLaunchPending] = useState(false);
   const isTourActive = isTourMode(globeMode);
   /** 모바일 투어 UI — TourMobileBar·써머리 숨김 (globeMode 동기화 전 launch pending 포함) */
@@ -247,6 +337,7 @@ function Home() {
   const tourReadyAnchorRef = useRef(null);
   const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
+  useHomeGlobePageZoomLock(shouldLockHomeGlobePageZoom(routeLocation.pathname));
   const shouldPauseGlobe =
     !flightCinemaActive
     && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
@@ -266,6 +357,34 @@ function Home() {
     toggleBookmark
   });
 
+  const handleClearMooniPlaceBinding = useCallback(() => {
+    if (activeChatId) {
+      persistMooniLastChatId(activeChatId, user?.id ?? null);
+    }
+    setMooniPlaceContext(null);
+    setSelectedLocation(null);
+    setActiveChatId(null);
+    setInitialQuery(null);
+    setMooniChatEntry(true);
+    setChatDraft({
+      destination: 'MOONi',
+      lat: 0,
+      lng: 0,
+      persona: PERSONA_TYPES.GENERAL,
+      category,
+    });
+  }, [
+    activeChatId,
+    user?.id,
+    category,
+    setMooniPlaceContext,
+    setSelectedLocation,
+    setActiveChatId,
+    setInitialQuery,
+    setMooniChatEntry,
+    setChatDraft,
+  ]);
+
   const handleCategorySelect = useCallback(async (nextCategory) => {
     if (flightCinemaActive) {
       globeRef.current?.closeFlightCinema?.();
@@ -279,9 +398,12 @@ function Home() {
     }
 
     if (nextCategory === category && faceRegionsOpen) {
+      clearPendingRegionFlies();
       setFaceRegionsOpen(false);
       setSelectedFaceRegionId(null);
       setSelectedFaceSubregionId(null);
+      setSelectedSeaBasinId(null);
+      setSelectedTopOceanId(null);
       globeRef.current?.clearRegionFocus?.();
       return;
     }
@@ -290,23 +412,33 @@ function Home() {
     setFaceRegionsOpen(true);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(nextCategory));
+    setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
     setCategoryFaceEpoch((epoch) => epoch + 1);
-  }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
-
-  const selectedFaceSubregionIdRef = useRef(selectedFaceSubregionId);
-  selectedFaceSubregionIdRef.current = selectedFaceSubregionId;
+  }, [category, faceRegionsOpen, clearPendingRegionFlies, flightCinemaActive, globeMode]);
 
   const handleFaceSubregionSelect = useCallback((subregionId) => {
     const next = subregionId || null;
-    // 모바일·PC 소권역 바가 둘 다 기본값을 sync할 때 동일 id로 clear되면
-    // 방금 고른 나라 fill이 바로 사라진다.
-    if (selectedFaceSubregionIdRef.current === next) return;
+    if (selectedFaceSubregionIdRef.current === next && !selectedTopOceanIdRef.current) return;
     selectedFaceSubregionIdRef.current = next;
+    selectedTopOceanIdRef.current = null;
+    setSelectedTopOceanId(null);
     setSelectedFaceSubregionId(next);
     setSelectedFaceRegionId(null);
+    setSelectedSeaBasinId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
+
+  const seaBasinHierarchy = useMemo(() => {
+    if (!selectedTopOceanId) return null;
+    return buildHierarchicalSeaBasinRail({
+      selectedTopOceanId,
+      selectedSeaBasinId,
+      category,
+      omitTopOceans: true,
+    });
+  }, [selectedTopOceanId, selectedSeaBasinId, category]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -363,12 +495,282 @@ function Home() {
   const lastGlobeFocusRef = useRef(null);
   /** 홈(지구본) 복귀 시 moveToLocation SSOT — navigateToPlace·goHomeFromPlace가 명시 설정 */
   const pendingGlobeHomeFocusRef = useRef(null);
+  /** /place X 닫기 등 — 홈 복귀 시 써머리 재오픈 생략(핀 flyTo는 유지) */
+  const skipHomeSummaryRestoreRef = useRef(false);
   const placeRouteSyncRef = useRef(0);
+  const dismissRotateResumeTimerRef = useRef(null);
+
+  const clearDismissRotateResumeTimer = useCallback(() => {
+    if (dismissRotateResumeTimerRef.current != null) {
+      window.clearTimeout(dismissRotateResumeTimerRef.current);
+      dismissRotateResumeTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => clearDismissRotateResumeTimer(), [clearDismissRotateResumeTimer]);
 
   const rememberGlobeFocus = useCallback((loc) => {
     if (!hasValidCoords(loc)) return;
     lastGlobeFocusRef.current = loc;
   }, []);
+
+  const curationHandoffClaimRef = useRef(null);
+  const curationHandoffSyncDoneRef = useRef(false);
+  const routeLocationRef = useRef(routeLocation);
+  routeLocationRef.current = routeLocation;
+  const handleStartChatRef = useRef(handleStartChat);
+  handleStartChatRef.current = handleStartChat;
+  const moveToLocationRef = useRef(moveToLocation);
+  moveToLocationRef.current = moveToLocation;
+  const isMobileViewportRef = useRef(isMobileViewport);
+  isMobileViewportRef.current = isMobileViewport;
+  const categoryRef = useRef(category);
+  categoryRef.current = category;
+  const handleLocationSelectRef = useRef(handleLocationSelect);
+  handleLocationSelectRef.current = handleLocationSelect;
+
+  useEffect(() => {
+    return () => {
+      cancelCurationHomeHandoffApply();
+      clearCurationGlobeSyncFlush();
+      if (curationHandoffClaimRef.current && !curationHandoffSyncDoneRef.current) {
+        releaseCurationHomeHandoffClaim(curationHandoffClaimRef.current);
+        curationHandoffClaimRef.current = null;
+      }
+    };
+  }, []);
+
+  // 블로그 AI 큐레이션 → 홈 써머리(±무니) 핸드오프
+  useEffect(() => {
+    const pending = resolveCurationHomeHandoff(routeLocation.state);
+    if (!pending?.location || !hasValidCurationCoords(pending.location)) return;
+
+    if (curationHandoffSyncDoneRef.current) {
+      logCurationHandoff('home.effect.skip', { reason: 'sync-done' });
+      return;
+    }
+
+    if (isCurationHomeHandoffApplyScheduled(pending.at)) {
+      logCurationHandoff('home.effect.skip', { reason: 'sync-scheduled', at: pending.at });
+      return;
+    }
+
+    if (!claimCurationHomeHandoff(pending.at)) {
+      if (!reclaimCurationHomeHandoff(pending.at)) {
+        logCurationHandoff('home.effect.skip', { reason: 'session-claim', at: pending.at });
+        return;
+      }
+      logCurationHandoff('home.effect.reclaim', { at: pending.at });
+    }
+    curationHandoffClaimRef.current = pending.at;
+
+    logCurationHandoff('home.effect.start', {
+      openMooni: pending.openMooni,
+      mobile: isMobileViewport,
+      source: pending.source,
+      at: pending.at,
+    });
+
+    const pin = healPlaceholderCountry(
+      mergeCanonicalTravelSpot({
+        ...pending.location,
+        type: pending.location.type || 'temp-base',
+        category: pending.location.category || category,
+      }),
+    );
+
+    pendingGlobeHomeFocusRef.current = pin;
+    rememberGlobeFocus(pin);
+    selectedLocationRef.current = pin;
+    handleLocationSelectRef.current(pin, { deferGlobeFocus: true, refreshRelated: false });
+    logCurationHandoff('home.select', { name: pin.name, openMooni: pending.openMooni });
+
+    const boundSpotForMooni = pending.openMooni
+      ? buildMooniBoundSpotFromLocation(pin)
+      : null;
+    logCurationHandoff('home.mooni.bound', {
+      requested: pending.openMooni,
+      hasBound: Boolean(boundSpotForMooni?.name),
+      label: boundSpotForMooni?.name || null,
+    });
+
+    const finalizeHandoff = (routeNow) => {
+      curationHandoffSyncDoneRef.current = true;
+      pendingGlobeHomeFocusRef.current = null;
+      clearCurationGlobeSyncFlush();
+      if (routeNow.state?.curationHandoff) {
+        navigate(`${routeNow.pathname}${routeNow.search}`, {
+          replace: true,
+          state: { fromSearch: true, fromCuration: true },
+        });
+      }
+      clearCurationPendingHomeSession();
+      releaseCurationHomeHandoffClaim(pending.at);
+      if (curationHandoffClaimRef.current === pending.at) {
+        curationHandoffClaimRef.current = null;
+      }
+    };
+
+    const openMooniChat = () => {
+      if (!boundSpotForMooni?.name) return;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          logCurationHandoff('home.mooni.open', { label: boundSpotForMooni.name });
+          handleStartChatRef.current('MOONi', {
+            boundSpot: boundSpotForMooni,
+            persona: PERSONA_TYPES.INSPIRER,
+          });
+        });
+      });
+    };
+
+    const resolveGlobeApi = () => getGlobeApi() || globeRef.current;
+    const syncLoopActiveRef = { current: false };
+
+    const runGlobeSync = (attempt = 0) => {
+      const routeNow = routeLocationRef.current;
+      if (routeNow.pathname !== '/') {
+        logCurationHandoff('home.sync.abort', { reason: 'left-home', at: pending.at, attempt });
+        releaseCurationHomeHandoffClaim(pending.at);
+        clearCurationGlobeSyncFlush();
+        syncLoopActiveRef.current = false;
+        return;
+      }
+
+      const globe = resolveGlobeApi();
+      if (!globe) {
+        if (attempt < 60) {
+          logCurationHandoff('home.sync.wait', { reason: 'no-globe-ref', attempt });
+          window.setTimeout(() => runGlobeSync(attempt + 1), 100);
+          return;
+        }
+        logCurationHandoff('home.sync.fail', { reason: 'no-globe-ref-timeout', attempt });
+        syncHomeViewportAfterInput();
+        if (pending.openMooni && boundSpotForMooni?.name) {
+          window.setTimeout(openMooniChat, 200);
+        }
+        const lateFlyTo = (api) => {
+          if (!hasValidCoords(pin)) return;
+          api.wakeAfterOverlay?.();
+          moveToLocationRef.current(
+            pin.lat,
+            pin.lng,
+            pin.name,
+            pin.category || categoryRef.current,
+            { location: pin },
+          );
+          logCurationHandoff('home.flyTo.late', { name: pin.name });
+        };
+        const unsub = subscribeGlobeApi((api) => {
+          unsub();
+          lateFlyTo(api);
+        });
+        syncLoopActiveRef.current = false;
+        finalizeHandoff(routeNow);
+        return;
+      }
+
+      logCurationHandoff('home.sync.run', { globeReady: true, attempt });
+      syncHomeViewportAfterInput();
+      bumpHomeChromeEpoch();
+      syncHomeChromeAfterNavigation();
+
+      void (async () => {
+        const mapReady = await globe.whenGlobeFocusReady?.({ timeoutMs: 3200, intervalMs: 80 });
+        logCurationHandoff('home.sync.ready', {
+          mapReady: Boolean(mapReady),
+          attempt,
+        });
+
+        globe.wakeAfterOverlay?.();
+        if (hasValidCoords(pin)) {
+          moveToLocationRef.current(
+            pin.lat,
+            pin.lng,
+            pin.name,
+            pin.category || categoryRef.current,
+            { location: pin },
+          );
+          logCurationHandoff('home.flyTo', { name: pin.name, mapReady: Boolean(mapReady) });
+        }
+
+        if (pending.openMooni && boundSpotForMooni?.name) {
+          if (mapReady) {
+            openMooniChat();
+          } else {
+            window.setTimeout(openMooniChat, 200);
+          }
+        } else if (pending.openMooni) {
+          logCurationHandoff('home.mooni.skip', { reason: 'no-bound-spot' });
+        }
+
+        finalizeHandoff(routeLocationRef.current);
+        syncLoopActiveRef.current = false;
+      })();
+    };
+
+    const startGlobeSyncOnce = () => {
+      if (curationHandoffSyncDoneRef.current || syncLoopActiveRef.current) return;
+      syncLoopActiveRef.current = true;
+      runGlobeSync(0);
+    };
+
+    const unsubGlobe = subscribeGlobeApi((api) => {
+      if (curationHandoffSyncDoneRef.current) return;
+      if (routeLocationRef.current.pathname !== '/') return;
+      logCurationHandoff('home.globe.registered', {
+        at: pending.at,
+        hasWhenReady: Boolean(api?.whenGlobeFocusReady),
+      });
+      startGlobeSyncOnce();
+    });
+
+    if (resolveGlobeApi()) {
+      logCurationHandoff('home.globe.present', { at: pending.at });
+    }
+
+    const syncDelayMs = 360;
+    logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
+    const scheduled = scheduleCurationHomeHandoffApply(pending.at, syncDelayMs, () => {
+      startGlobeSyncOnce();
+    });
+
+    if (!scheduled) {
+      logCurationHandoff('home.sync.schedule.skip', { at: pending.at });
+    }
+
+    return () => {
+      unsubGlobe();
+      const syncPending = isCurationHomeHandoffApplyScheduled(pending.at);
+      logCurationHandoff('home.effect.cleanup', {
+        reason: syncPending ? 'deps-change-sync-pending' : 'deps-change',
+        at: pending.at,
+      });
+      if (!curationHandoffSyncDoneRef.current && !syncPending) {
+        releaseCurationHomeHandoffClaim(pending.at);
+        if (curationHandoffClaimRef.current === pending.at) {
+          curationHandoffClaimRef.current = null;
+        }
+      }
+    };
+  }, [
+    category,
+    rememberGlobeFocus,
+    bumpHomeChromeEpoch,
+    navigate,
+    routeLocation.pathname,
+    routeLocation.search,
+    routeLocation.state,
+  ]);
+
+  useEffect(() => {
+    logCurationHandoff('home.ui', {
+      isChatOpen,
+      mooniChatEntry,
+      summary: selectedLocation?.name || null,
+      path: routeLocation.pathname,
+    });
+  }, [isChatOpen, mooniChatEntry, selectedLocation?.name, routeLocation.pathname]);
 
   useEffect(() => {
     if (!selectedLocation) {
@@ -440,10 +842,8 @@ function Home() {
       setSelectedLocation(target);
     }
     navigate('/');
-    if (isMobileViewport) {
-      syncHomeViewportAfterInput();
-    }
-  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport]);
+    recalibrateHomeChromeAfterNav();
+  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, recalibrateHomeChromeAfterNav]);
 
   const leavePlaceCard = useCallback(() => {
     const returnTo = peekPlaceReturnTo(routeLocation.state);
@@ -452,8 +852,15 @@ function Home() {
       navigate(returnTo);
       return;
     }
-    navigate('/explore');
-  }, [navigate, routeLocation.state]);
+    // 써머리→/place 오탭 후 X: explore 루프 대신 홈으로. 써머리 재오픈은 skipHomeSummaryRestoreRef.
+    clearPlaceReturnTo();
+    skipHomeSummaryRestoreRef.current = true;
+    pendingGlobeHomeFocusRef.current = null;
+    setIsCardExpanded(false);
+    setSelectedLocation(null);
+    navigate('/');
+    recalibrateHomeChromeAfterNav();
+  }, [navigate, routeLocation.state, setSelectedLocation, recalibrateHomeChromeAfterNav]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -733,6 +1140,9 @@ function Home() {
     prevPathRef.current = currentPath;
 
     if (currentPath === '/' && (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))) {
+      if (prevPath.startsWith('/place/')) {
+        recalibrateHomeChromeAfterNav();
+      }
       const fromSearch = Boolean(routeLocation.state?.fromSearch);
       const fromPrevPlacePath =
         !fromSearch && prevPath.startsWith('/place/')
@@ -752,11 +1162,14 @@ function Home() {
       if (focusForHome) {
         rememberGlobeFocus(focusForHome);
         selectedLocationRef.current = focusForHome;
-        if (!fromSearch) {
+        const skipSummary = skipHomeSummaryRestoreRef.current;
+        skipHomeSummaryRestoreRef.current = false;
+        if (!fromSearch && !skipSummary) {
           setSelectedLocation(focusForHome);
         }
         const { lat, lng, name } = focusForHome;
         const focusCategory = focusForHome.category || category;
+        globeRef.current?.markCameraBusy?.();
         // Explore pause 직후: resize·입력 복구 없이 flyTo가 씹히는 경우(hub·신규 지역) 방지
         window.setTimeout(() => {
           globeRef.current?.wakeAfterOverlay?.();
@@ -769,7 +1182,7 @@ function Home() {
         revealRandomGlobeFace();
       }
     }
-  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation]);
+  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation, recalibrateHomeChromeAfterNav]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -796,6 +1209,7 @@ function Home() {
 
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
   // Mapbox 지구본은 마커 겹침을 자연스럽게 처리하므로 카테고리와 무관하게 전체 여행지 노출
+  // 해역 선택 = 지도 fill·라벨 하이라이트만. 핀은 뷰 기준 전체 유지(플랜 §4.6 하이라이트).
   const globeSpots = useMemo(() => TRAVEL_SPOTS, []);
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
 
@@ -846,11 +1260,29 @@ function Home() {
 
   /** 써머리·투어 UI만 닫고 지구본 마지막 방문 핀은 유지 */
   const dismissPlaceSelectionKeepGlobePin = useCallback(() => {
+    const globeApi = globeRef.current || getGlobeApi();
+    // Android Chrome: summary X unmounts on pointerdown, then a ghost click hits Mapbox.
+    globeApi?.suppressOverlayClick?.();
     if (selectedLocation) {
-      // 모바일·PC 공통: 카드만 닫고 확대(줌) 유지 — 「넓게 보기」로만 원상복구
-      globeRef.current?.clearImmerseState?.();
+      const lat = Number(selectedLocation.lat);
+      const lng = Number(selectedLocation.lng);
+      const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+      const immersed = isPlaceImmersed || globeRef.current?.isImmersed?.();
+
+      if (immersed && hasCoords) {
+        globeRef.current?.exitImmerse?.(lat, lng);
+      } else {
+        globeRef.current?.clearImmerseState?.();
+      }
+
       addScoutPin(selectedLocation);
       rememberGlobeFocus(selectedLocation);
+
+      if (hasCoords) {
+        moveToLocation(lat, lng, selectedLocation.name, selectedLocation.category || category, {
+          location: selectedLocation,
+        });
+      }
     }
     setIsCardExpanded(false);
     setSelectedLocation(null);
@@ -860,11 +1292,24 @@ function Home() {
     if (globeRef.current?.getGlobeMode?.() !== GLOBE_MODE.GLOBE_2D) {
       globeRef.current?.endTour?.();
     }
-    globeRef.current?.resumeRotation?.();
-    if (isMobileViewport) {
-      syncHomeViewportAfterInput();
-    }
-  }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
+    globeRef.current?.pauseRotation?.();
+    clearDismissRotateResumeTimer();
+    dismissRotateResumeTimerRef.current = window.setTimeout(() => {
+      dismissRotateResumeTimerRef.current = null;
+      globeRef.current?.resumeRotation?.();
+    }, 3000);
+    recalibrateHomeChromeAfterNav();
+  }, [
+    addScoutPin,
+    category,
+    clearDismissRotateResumeTimer,
+    isPlaceImmersed,
+    moveToLocation,
+    rememberGlobeFocus,
+    recalibrateHomeChromeAfterNav,
+    selectedLocation,
+    setSelectedLocation,
+  ]);
 
   /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 fitBounds — PC는 카드와 메뉴 동시 표시 */
   const handleFaceRegionSelect = useCallback((region) => {
@@ -875,11 +1320,130 @@ function Home() {
     if (selectedLocation && routeLocation.pathname === '/') {
       dismissPlaceSelectionKeepGlobePin();
     }
+    setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     setSelectedFaceRegionId(region.id);
     globeRef.current?.flyToRegion?.(region);
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
+    routeLocation.pathname,
+    selectedLocation,
+  ]);
+
+  const handleTopOceanSelect = useCallback((ocean) => {
+    if (!ocean?.id) return;
+    if (selectedTopOceanIdRef.current === ocean.id && !selectedSeaBasinIdRef.current) return;
+    const flyRegion = topOceanToFlyRegion(ocean.id);
+    if (!flyRegion) return;
+    if (flightCinemaActive) {
+      globeRef.current?.closeFlightCinema?.();
+    }
+    if (selectedLocation && routeLocation.pathname === '/') {
+      dismissPlaceSelectionKeepGlobePin();
+    }
+    selectedFaceSubregionIdRef.current = null;
+    selectedTopOceanIdRef.current = ocean.id;
+    selectedSeaBasinIdRef.current = null;
+    setSelectedFaceRegionId(null);
+    setSelectedFaceSubregionId(null);
+    setSelectedTopOceanId(ocean.id);
+    setSelectedSeaBasinId(null);
+    const hadPendingSeaBasinFly = Boolean(seaBasinFlyTimerRef.current);
+    if (seaBasinFlyTimerRef.current) {
+      window.clearTimeout(seaBasinFlyTimerRef.current);
+      seaBasinFlyTimerRef.current = null;
+    }
+    pendingSeaBasinFlyRef.current = null;
+    const hadQueuedFly = Boolean(topOceanFlyTimerRef.current);
+    const useImmediate = isMobileViewport || hadQueuedFly || hadPendingSeaBasinFly;
+    logSeaExplore('ocean.tap', {
+      id: ocean.id,
+      immediate: useImmediate,
+      queued: hadQueuedFly,
+      mobile: isMobileViewport,
+    });
+    if (isMobileViewport && performance.memory) {
+      logSeaExplore('mem.mb', Math.round(performance.memory.usedJSHeapSize / 1048576));
+    }
+    pendingTopOceanFlyRef.current = { ...flyRegion, immediate: useImmediate };
+    if (topOceanFlyTimerRef.current) {
+      window.clearTimeout(topOceanFlyTimerRef.current);
+    }
+    const delayMs = isMobileViewport
+      ? (hadQueuedFly ? 32 : 72)
+      : (hadQueuedFly ? 50 : 160);
+    topOceanFlyTimerRef.current = window.setTimeout(() => {
+      topOceanFlyTimerRef.current = null;
+      const region = pendingTopOceanFlyRef.current;
+      pendingTopOceanFlyRef.current = null;
+      if (region) {
+        logSeaExplore('ocean.fly', { id: ocean.id, immediate: region.immediate });
+        globeRef.current?.flyToRegion?.(region);
+      }
+    }, delayMs);
+  }, [
+    dismissPlaceSelectionKeepGlobePin,
+    flightCinemaActive,
+    isMobileViewport,
+    routeLocation.pathname,
+    selectedLocation,
+  ]);
+
+  const handleSeaBasinSelect = useCallback((basin) => {
+    if (!basin?.id) return;
+    if (selectedSeaBasinIdRef.current === basin.id) return;
+    const flyRegion = seaBasinToFlyRegion(basin);
+    if (!flyRegion) return;
+    if (flightCinemaActive) {
+      globeRef.current?.closeFlightCinema?.();
+    }
+    if (selectedLocation && routeLocation.pathname === '/') {
+      dismissPlaceSelectionKeepGlobePin();
+    }
+    const topOcean = resolveTopOceanForBasin(basin);
+    selectedTopOceanIdRef.current = topOcean;
+    selectedSeaBasinIdRef.current = basin.id;
+    setSelectedFaceRegionId(null);
+    setSelectedTopOceanId(topOcean);
+    setSelectedSeaBasinId(basin.id);
+    const hadPendingOceanFly = Boolean(topOceanFlyTimerRef.current);
+    if (topOceanFlyTimerRef.current) {
+      window.clearTimeout(topOceanFlyTimerRef.current);
+      topOceanFlyTimerRef.current = null;
+    }
+    pendingTopOceanFlyRef.current = null;
+    const hadQueuedFly = Boolean(seaBasinFlyTimerRef.current);
+    const useImmediate = isMobileViewport || hadQueuedFly || hadPendingOceanFly;
+    logSeaExplore('basin.tap', {
+      id: basin.id,
+      immediate: useImmediate,
+      queued: hadQueuedFly,
+      mobile: isMobileViewport,
+    });
+    if (isMobileViewport && performance.memory) {
+      logSeaExplore('mem.mb', Math.round(performance.memory.usedJSHeapSize / 1048576));
+    }
+    pendingSeaBasinFlyRef.current = { ...flyRegion, immediate: useImmediate };
+    if (seaBasinFlyTimerRef.current) {
+      window.clearTimeout(seaBasinFlyTimerRef.current);
+    }
+    const delayMs = isMobileViewport
+      ? (hadQueuedFly ? 32 : 72)
+      : (hadQueuedFly ? 50 : 160);
+    seaBasinFlyTimerRef.current = window.setTimeout(() => {
+      seaBasinFlyTimerRef.current = null;
+      const region = pendingSeaBasinFlyRef.current;
+      pendingSeaBasinFlyRef.current = null;
+      if (region) {
+        logSeaExplore('basin.fly', { id: basin.id, immediate: region.immediate });
+        globeRef.current?.flyToRegion?.(region);
+      }
+    }, delayMs);
+  }, [
+    dismissPlaceSelectionKeepGlobePin,
+    flightCinemaActive,
+    isMobileViewport,
     routeLocation.pathname,
     selectedLocation,
   ]);
@@ -940,15 +1504,27 @@ function Home() {
     await globeRef.current?.endTour?.();
   }, []);
 
+  const exploreCategorySeo = useMemo(() => {
+    const parsed = parseExploreCategoryPath(routeLocation.pathname);
+    if (!parsed) return null;
+    return getExploreCategorySeoBundle(parsed.continent, parsed.category, locale);
+  }, [routeLocation.pathname, locale]);
+
   return (
     <FlightCinemaProvider
       globeRef={globeRef}
       isTourActive={isTourActive}
       endTourForCinema={endTourForFlightCinema}
       onActiveChange={setFlightCinemaActive}
+      onPendingChange={setFlightCinemaLaunchPending}
     >
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
-      <SEO />
+      <SEO
+        title={exploreCategorySeo?.title}
+        description={exploreCategorySeo?.description}
+        keywords={exploreCategorySeo?.keywords}
+        url={exploreCategorySeo?.path}
+      />
       <div className="w-full h-full">
         <HomeGlobe
           ref={globeRef}
@@ -962,9 +1538,11 @@ function Home() {
           activePinId={globeActivePinId}
           pauseRender={shouldPauseGlobe}
           isFlightCinemaActive={flightCinemaActive}
+          isFlightCinemaLaunchPending={flightCinemaLaunchPending}
           globeTheme={globeTheme}
           isZenMode={isZenMode}
           isPinVisible={isPinVisible}
+          autoRotatePaused={globeRotatePaused}
           onGlobeModeChange={handleGlobeModeChange}
           hideTourControls={isTourCinema}
           highlightCategory={category}
@@ -974,23 +1552,30 @@ function Home() {
         />
       </div>
 
-      <div className={`transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+      <div className={`relative z-10 transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <SiteUpdateBanner />
         <HomeUI
+          homeChromeEpoch={homeChromeEpoch}
           onSearch={handleSmartSearch} onTickerClick={handleSmartSearch}
           onRelatedPlaceClick={handleRelatedPlaceClickWithCinemaExit}
           externalInput={draftInput}
           savedTrips={filteredSavedTrips}
           onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
-          onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
+          onOpenChat={(p) => handleStartChat(selectedLocation?.name || 'MOONi', p)}
           onLogoClick={() => setIsLogoPanelOpen(true)}
           relatedPlaces={relatedPlaces} isTagLoading={isTagLoading}
           selectedCategory={category} onCategorySelect={handleCategorySelect}
           faceRegionsOpen={faceRegionsOpen}
+          onFaceRegionsDismiss={closeFaceRegions}
           selectedFaceRegionId={selectedFaceRegionId}
           onFaceRegionSelect={handleFaceRegionSelect}
           selectedFaceSubregionId={selectedFaceSubregionId}
           onFaceSubregionSelect={handleFaceSubregionSelect}
+          selectedTopOceanId={selectedTopOceanId}
+          onTopOceanSelect={handleTopOceanSelect}
+          seaBasinHierarchy={seaBasinHierarchy}
+          selectedSeaBasinId={selectedSeaBasinId}
+          onSeaBasinSelect={handleSeaBasinSelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}
@@ -1046,13 +1631,16 @@ function Home() {
 
         {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive && (
           <HomePlaceCardSummary
+            key={`summary-${homeChromeEpoch}-${selectedLocation.id ?? selectedLocation.slug ?? selectedLocation.name}`}
             globeRef={globeRef}
             location={selectedLocation}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
             onClose={dismissPlaceSelectionKeepGlobePin}
             onExpand={() => {
+              const param = getPlaceUrlParam(selectedLocation);
+              if (!param) return;
               setIsCardExpanded(true);
-              navigate(`/place/${getPlaceUrlParam(selectedLocation)}`);
+              navigate(`/place/${param}`);
             }}
             onChat={openMooniFromPlace}
             onToggleBookmark={handleToggleBookmark}
@@ -1068,6 +1656,7 @@ function Home() {
         <Outlet context={{
           location: selectedLocation,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
+          isMooniChatOpen: isChatOpen,
           onClose: leavePlaceCard,
           onOpenMooni: openMooniFromPlace,
           onNavigateToPlace: navigateToPlace,
@@ -1148,12 +1737,23 @@ function Home() {
             }
           }}
           onDeleteChat={deleteTrip}
+          onClearPlaceBinding={handleClearMooniPlaceBinding}
         />
 
         <SearchDiscoveryModal
           isOpen={routeLocation.pathname.startsWith('/explore')}
           isFromPlaceCard={isExploreFromPlace}
           onClose={() => navigate('/')}
+          onAskMooni={(askQuery) => {
+            const q = String(askQuery || '').trim();
+            if (!q) return;
+            handleStartChat('MOONi', {
+              text: `${q} 여행지 추천해줘`,
+              persona: PERSONA_TYPES.INSPIRER,
+              freshSession: true,
+            });
+            navigate('/');
+          }}
           onSelect={(spot) => {
             // 검색 선택(카탈로그 포함) → 홈 써머리 장소카드 (/place 직행 금지)
             const lat = Number(spot?.lat);
@@ -1164,7 +1764,8 @@ function Home() {
             pendingGlobeHomeFocusRef.current = pin;
             rememberGlobeFocus(pin);
             selectedLocationRef.current = pin;
-            handleLocationSelect(pin);
+            globeRef.current?.markCameraBusy?.();
+            handleLocationSelect(pin, { deferGlobeFocus: true });
             navigate('/', { state: { fromSearch: true } });
           }}
           onSearch={async (query) => {
@@ -1222,6 +1823,7 @@ function Home() {
 
         {/* 국내 축제·명승 투톱 */}
         <Link to="/korea">한국의 축제</Link>
+        <Link to="/world-events">세계의 행사</Link>
         <Link to="/korea/theme/scenic">한국의 명승</Link>
       </div>
     </div>

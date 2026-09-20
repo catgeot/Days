@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Maximize2, Minimize2, Play, Sparkles, List, X, ChevronLeft, ChevronRight, AlertCircle, ExternalLink } from 'lucide-react';
 import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 
@@ -13,6 +14,7 @@ const YouTubePlayerView = forwardRef(({
   googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7",
   mobileSecondaryNav = null
 }, ref) => {
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -140,16 +142,16 @@ const YouTubePlayerView = forwardRef(({
       {isLoading ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
            <div className="w-12 h-12 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
-           <p className="text-white/40 text-sm animate-pulse">관련 영상을 불러오는 중...</p>
+           <p className="text-white/40 text-sm animate-pulse">{t('place.video.loading')}</p>
         </div>
       ) : isEmpty ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
           <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
             <AlertCircle size={40} className="text-white/20" />
           </div>
-          <h3 className="text-white text-xl font-bold mb-2">아직 등록된 영상이 없습니다</h3>
+          <h3 className="text-white text-xl font-bold mb-2">{t('place.video.emptyTitle')}</h3>
           <p className="text-white/50 text-sm max-w-xs mb-8">
-            이 장소에 멋진 영상을 알고 계신가요? <br/> 직접 추천해주시면 서비스에 반영됩니다.
+            {t('place.video.emptyBody')}
           </p>
           <a
             href={googleFormUrl}
@@ -158,7 +160,7 @@ const YouTubePlayerView = forwardRef(({
             className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
           >
             <Sparkles size={18} />
-            영상 추천하기
+            {t('place.video.recommend')}
             <ExternalLink size={14} className="opacity-50" />
           </a>
         </div>
@@ -301,7 +303,7 @@ const YouTubePlayerView = forwardRef(({
                 <div className="flex items-center justify-between p-5 border-b border-white/10 shrink-0 bg-black/50">
                     <div className="flex items-center gap-2">
                         <List size={18} className="text-red-500" />
-                        <h3 className="text-white font-bold">재생 목록 ({videoList.length})</h3>
+                        <h3 className="text-white font-bold">{t('place.video.playlist', { count: videoList.length })}</h3>
                     </div>
                     <button onClick={() => setIsMobileListOpen(false)} className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors">
                         <X size={20} />

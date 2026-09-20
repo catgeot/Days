@@ -13,6 +13,7 @@ export { pickNearbyFestivals } from '../pages/Home/lib/nearbyFestivalsPick';
  *   radiusKm?: number,
  *   limit?: number,
  *   excludeContentId?: string,
+ *   locale?: string,
  * }} opts
  */
 export async function fetchNearbyFestivals(opts) {
@@ -27,7 +28,7 @@ export async function fetchNearbyFestivals(opts) {
   }
 
   try {
-    const res = await fetchKoreaFestivalsRolling12();
+    const res = await fetchKoreaFestivalsRolling12({ locale: opts?.locale });
     if (!res?.ok) {
       return {
         festivals: [],

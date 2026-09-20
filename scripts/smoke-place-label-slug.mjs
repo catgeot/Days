@@ -71,7 +71,7 @@ async function main() {
   const { getPlaceUrlParam, isEphemeralSlug } = await load(
     'src/pages/Home/lib/formatUrlName.js'
   );
-  const { resolveDestinationFromChat } = await load(
+  const { resolveDestinationFromChat, normalizeAccessDepartureUserText } = await load(
     'src/utils/resolveDestinationFromChat.js'
   );
 
@@ -130,6 +130,55 @@ async function main() {
   } catch (e) {
     fail += 1;
     console.error(`FAIL: mooni-history-l2 — ${e.message}`);
+  }
+
+  const {
+    getLocalizedCountryName,
+    getLocalizedPlaceName,
+  } = await load('src/components/PlaceCard/common/locationDisplay.js');
+
+  try {
+    const withEn = (key, lng) => {
+      const base = String(key ?? '').trim().replace(/\s+/g, ' ');
+      const suffix = String(lng).slice(0, 2) === 'en' ? '@en' : '';
+      return suffix && base ? `${base}${suffix}` : base;
+    };
+    assert(withEn('Japan Osaka', 'en') === 'Japan Osaka@en', 'en intro cache suffix missing');
+    assert(withEn('Japan Osaka', 'ko') === 'Japan Osaka', 'ko intro cache should not get @en suffix');
+
+    const loc = { name: '오사카', name_en: 'Osaka', country: '일본', country_en: 'Japan' };
+    const name = getLocalizedPlaceName(loc, 'en');
+    const country = getLocalizedCountryName(loc, 'en');
+    const enLabel = country && name && !name.includes(country) ? `${country} ${name}` : name;
+    assert(enLabel === 'Japan Osaka', `formatPlaceChatLabel en got ${enLabel}`);
+    console.log('OK: mooni-intro-cache — locale key @en + en label');
+  } catch (e) {
+    fail += 1;
+    console.error(`FAIL: mooni-intro-cache — ${e.message}`);
+  }
+
+  try {
+    const osaka = resolveDestinationFromChat('I want to go to Osaka', [], '');
+    assert(osaka.slug === 'osaka', `expected osaka slug, got ${osaka.slug}`);
+    console.log('OK: mooni-en-detect — I want to go to Osaka → osaka');
+  } catch (e) {
+    fail += 1;
+    console.error(`FAIL: mooni-en-detect — ${e.message}`);
+  }
+
+  try {
+    const shaped = normalizeAccessDepartureUserText('Manila', {
+      accessDockActive: true,
+      locale: 'en',
+    });
+    assert(
+      shaped === 'how to get from Manila?',
+      `en access departure got ${shaped}`
+    );
+    console.log('OK: mooni-en-access — departure fragment EN shaping');
+  } catch (e) {
+    fail += 1;
+    console.error(`FAIL: mooni-en-access — ${e.message}`);
   }
 
   if (fail) {

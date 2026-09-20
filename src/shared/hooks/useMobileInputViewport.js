@@ -102,3 +102,35 @@ export function useVisualViewportBottomAnchor(enabled, { pad = 8 } = {}) {
 
   return style;
 }
+
+/** Chrome 모바일 — layout vs visual viewport offsetTop에 맞춰 fixed 상단 chrome 정렬 */
+export function useVisualViewportTopInset(enabled, { pad = 0 } = {}) {
+  const [top, setTop] = useState(0);
+
+  useLayoutEffect(() => {
+    if (!enabled || typeof window === 'undefined') {
+      setTop(0);
+      return undefined;
+    }
+
+    const update = () => {
+      const offsetTop = Math.round(window.visualViewport?.offsetTop ?? 0);
+      setTop(offsetTop + pad);
+    };
+
+    update();
+    const raf = requestAnimationFrame(update);
+    window.addEventListener('resize', update);
+    window.visualViewport?.addEventListener('resize', update);
+    window.visualViewport?.addEventListener('scroll', update);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', update);
+      window.visualViewport?.removeEventListener('resize', update);
+      window.visualViewport?.removeEventListener('scroll', update);
+    };
+  }, [enabled, pad]);
+
+  return top;
+}

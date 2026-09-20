@@ -1,10 +1,29 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { MapPin, Landmark, Building2, Compass, Loader2, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { MapPin, Landmark, Building2, Compass, Loader2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
 } from '../../lib/placeChatIntro';
-
+import {
+  EXPLORE_BADGE_PLACE,
+  EXPLORE_BADGE_REGION,
+  localizedExploreBadgeLabel,
+} from '../../../../i18n/exploreUi';
+import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve.js';
+import { fetchKoreaTourAttractionFirstImagesByIds } from '../../lib/koreaTourAttractions';
+import { resolveSearchScenicMedia } from '../../lib/koreaLocalScenicLists';
+import {
+  getLocalizedCountryName,
+  getLocalizedPlaceName,
+  getPlaceTitleLinesForLocale,
+} from '../../../../components/PlaceCard/common/locationDisplay';
+import {
+  isKoreaHomonymChoiceSet,
+  koreaHomonymChoiceQuery,
+} from '../../lib/detectHomonymLocation';
+import { HomonymChoiceChips } from './HomonymChoiceChips';
+import { sliceSearchDisambiguationPage } from '../../lib/searchDisambiguationPaging.js';
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
 
@@ -30,15 +49,15 @@ const normalizeCompare = (s) =>
     .replace(/[·・.,]/g, '');
 
 /** 위치 줄: 이름에 이미 포함된 상위 도시는 생략 */
-function buildLocationLine(item) {
-  const name = String(item?.name || '').trim();
+function buildLocationLine(item, locale = 'ko') {
+  const name = getLocalizedPlaceName(item, locale) || String(item?.name || '').trim();
   const parent = String(item?.parentCity || '').trim();
-  const country = String(item?.country || '').trim();
+  const country = getLocalizedCountryName(item, locale) || String(item?.country || '').trim();
   const parts = [];
   if (parent && parent !== name && !name.includes(parent)) {
     parts.push(parent);
   }
-  if (country && country !== name && country !== parent) {
+  if (country && country !== name && country !== parent && !isPlaceholderCountry(country)) {
     parts.push(country);
   }
   return parts.join(' · ');
@@ -64,7 +83,7 @@ function resolveCardDesc(item, locationLine) {
     [parent, badge],
     [parent, name],
     [parent, country],
-    [parent, '지역'],
+    [parent, EXPLORE_BADGE_REGION],
     [name, country],
     [name, badge],
   ];
@@ -76,11 +95,112 @@ function resolveCardDesc(item, locationLine) {
   return desc;
 }
 
-function SuggestionIcon({ kind }) {
-  if (kind === 'spot') return <Compass size={16} className="text-emerald-300 shrink-0" />;
-  if (kind === 'city') return <Building2 size={16} className="text-blue-300 shrink-0" />;
-  if (kind === 'attraction') return <Landmark size={16} className="text-amber-300 shrink-0" />;
-  return <MapPin size={16} className="text-white/70 shrink-0" />;
+function MooniAskRow({ query, isPopover, onAsk }) {
+  const { t } = useTranslation();
+  return (
+    <button
+      type="button"
+      onClick={() => onAsk?.(query)}
+      className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
+        isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
+      }`}
+    >
+      <div
+        className={`flex shrink-0 items-center justify-center rounded-xl bg-sky-500/20 ${
+          isPopover ? 'h-10 w-10' : 'h-12 w-12'
+        }`}
+        aria-hidden="true"
+      >
+        <Sparkles size={isPopover ? 16 : 18} className="text-sky-200" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-semibold text-white break-keep">
+            {t('home.explore.askMooni', { query })}
+          </span>
+          <span className="shrink-0 rounded-full border border-sky-400/40 bg-sky-500/25 px-2 py-0.5 text-[10px] font-medium text-sky-100">
+            {t('home.explore.askMooniBadge')}
+          </span>
+        </div>
+      </div>
+      <ChevronRight size={16} className="shrink-0 text-white/40" />
+    </button>
+  );
+}
+
+function SuggestionIcon({ kind, size = 16 }) {
+  if (kind === 'spot') return <Compass size={size} className="text-emerald-300 shrink-0" />;
+  if (kind === 'city') return <Building2 size={size} className="text-blue-300 shrink-0" />;
+  if (kind === 'attraction') return <Landmark size={size} className="text-amber-300 shrink-0" />;
+  return <MapPin size={size} className="text-white/70 shrink-0" />;
+}
+
+function searchCandidateThumbUrl(item) {
+  return String(resolveSearchScenicMedia(item).imageUrl || '').trim();
+}
+
+function useMissingTourAttractionThumbs(items) {
+  const [thumbByIndex, setThumbByIndex] = useState({});
+  const candidateKey = useMemo(
+    () =>
+      (items || [])
+        .map((c) => `${c?.id || ''}|${c?.name || ''}|${c?.lat}|${c?.lng}|${c?.contentId || ''}`)
+        .join(';'),
+    [items],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    setThumbByIndex({});
+    const list = items || [];
+    const ids = list
+      .filter((item) => !searchCandidateThumbUrl(item))
+      .map((item) => item?.contentId)
+      .filter(Boolean);
+    if (!ids.length) return undefined;
+
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
+      if (cancelled) return;
+      const next = {};
+      list.forEach((item, index) => {
+        if (searchCandidateThumbUrl(item)) return;
+        const url = dbMap.get(String(item?.contentId || '').trim());
+        if (url) next[index] = url;
+      });
+      if (Object.keys(next).length) setThumbByIndex(next);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [candidateKey, items]);
+
+  return thumbByIndex;
+}
+
+function SearchResultThumb({ item, sizeClass, kind, iconSize = 16 }) {
+  const url = searchCandidateThumbUrl(item);
+  const [failed, setFailed] = useState(false);
+  if (!url || failed) {
+    return (
+      <div
+        className={`flex shrink-0 items-center justify-center rounded-xl bg-white/10 ${sizeClass}`}
+        aria-hidden="true"
+      >
+        <SuggestionIcon kind={kind} size={iconSize} />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={url}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className={`shrink-0 rounded-xl object-cover bg-white/10 ${sizeClass}`}
+    />
+  );
 }
 
 /**
@@ -92,15 +212,28 @@ export function SearchSuggestionList({
   loading = false,
   query = '',
   onSelect,
+  onAskMooni,
   title,
   variant = 'panel',
 }) {
+  const { t, i18n } = useTranslation();
+  const thumbByIndex = useMissingTourAttractionThumbs(items);
   if (!query.trim()) return null;
 
   const isPopover = variant === 'popover';
+  const showMooni = Boolean(onAskMooni);
+  const homonymChoice = isKoreaHomonymChoiceSet(items);
+  const homonymQuery = koreaHomonymChoiceQuery(items, query);
+  const headerTitle = homonymChoice
+    ? t('home.explore.homonymChoiceTitle', { query: homonymQuery || query })
+    : title || t('home.explore.suggestionsDefault', { query });
   const shellClass = isPopover
     ? 'w-full overflow-hidden'
     : 'w-full mb-6 rounded-2xl border border-white/20 bg-white/[0.08] overflow-hidden';
+
+  const mooniRow = showMooni ? (
+    <MooniAskRow query={query.trim()} isPopover={isPopover} onAsk={onAskMooni} />
+  ) : null;
 
   return (
     <div className={shellClass}>
@@ -111,53 +244,99 @@ export function SearchSuggestionList({
             : 'px-4 py-2.5 border-b border-white/12'
         }`}
       >
-        <span className="text-[11px] text-white/75">
-          {title || `'${query}' 제안`}
+        <span className={`break-keep ${homonymChoice ? 'text-[13px] font-bold text-white' : 'text-[11px] text-white/75'}`}>
+          {headerTitle}
         </span>
         {loading && (
           <span className="inline-flex items-center gap-1.5 text-[11px] text-sky-200">
             <Loader2 size={12} className="animate-spin" />
-            불러오는 중
+            {t('home.explore.suggestionsLoading')}
           </span>
         )}
       </div>
 
-      {items.length === 0 && !loading ? (
+      {homonymChoice ? (
+        <HomonymChoiceChips
+          query={homonymQuery || query}
+          candidates={items}
+          onSelect={onSelect}
+          compact={isPopover}
+          showPrompt={false}
+        />
+      ) : null}
+
+      {showMooni ? (
+        <div
+          className={`${!homonymChoice && (items.length || loading) ? 'border-b border-white/10' : ''} ${
+            isPopover ? 'sticky top-0 z-[1] bg-[#261d16]' : ''
+          }`}
+        >
+          {mooniRow}
+        </div>
+      ) : null}
+
+      {!homonymChoice && items.length === 0 && !loading && !showMooni ? (
         <p className={`text-sm text-white/70 text-center break-keep ${isPopover ? 'px-3 py-4' : 'px-4 py-6'}`}>
-          제안이 없습니다. Enter로 AI·지도 검색을 이어갈 수 있어요.
+          {t('home.explore.suggestionsEmpty')}
         </p>
-      ) : (
+      ) : !homonymChoice && (items.length > 0 || loading) ? (
         <ul
           className={`divide-y divide-white/10 ${
             isPopover ? '' : 'max-h-[min(52vh,420px)] overflow-y-auto'
           }`}
         >
-          {items.map((item) => {
-            const badge = item.badge || '장소';
-            const badgeClass = BADGE_STYLES[badge] || BADGE_STYLES['장소'];
-            const locationLine = buildLocationLine(item);
+          {items.map((item, index) => {
+            const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
+            const badge = localizedExploreBadgeLabel(t, badgeKey);
+            const badgeClass = BADGE_STYLES[badgeKey] || BADGE_STYLES[EXPLORE_BADGE_PLACE];
+            const displayName =
+              getLocalizedPlaceName(item, i18n.language) || String(item?.name || '').trim();
+            const locationLine = buildLocationLine(item, i18n.language);
             const desc = resolveCardDesc(item, locationLine);
             const subtitle = [locationLine, desc]
               .filter(Boolean)
               .filter((v, i, arr) => arr.indexOf(v) === i)
               .slice(0, 2)
               .join(' · ');
+            const groupTitle = String(item.groupTitle || '').trim();
+            const prevGroup = String(items[index - 1]?.groupTitle || '').trim();
+            const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
+            const rankBlurb = String(item.rankBlurb || '').trim();
+            const thumbItem = thumbByIndex[index]
+              ? { ...item, imageUrl: thumbByIndex[index] }
+              : item;
 
             return (
-              <li key={item.id || `${item.name}-${item.lat}`}>
+              <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
+                {showGroup ? (
+                  <li className={isPopover ? 'px-3 pt-2 pb-1' : 'px-4 pt-2.5 pb-1'}>
+                    <p className="text-[11px] font-semibold tracking-wide text-amber-200/90 break-keep">
+                      {groupTitle}
+                    </p>
+                  </li>
+                ) : null}
+                <li>
                 <button
                   type="button"
                   onClick={() => onSelect?.(item)}
-                  className={`w-full flex items-start gap-3 text-left hover:bg-white/[0.1] transition-colors ${
+                  className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
                     isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
                   }`}
                 >
-                  <div className="mt-0.5">
-                    <SuggestionIcon kind={item.kind} />
-                  </div>
+                  <SearchResultThumb
+                    item={thumbItem}
+                    kind={item.kind}
+                    iconSize={isPopover ? 16 : 18}
+                    sizeClass={isPopover ? 'h-10 w-10' : 'h-12 w-12'}
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-white truncate">{item.name}</span>
+                      <span className="text-sm font-semibold text-white truncate">{displayName}</span>
+                      {rankBlurb ? (
+                        <span className="shrink-0 rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
+                          {rankBlurb}
+                        </span>
+                      ) : null}
                       <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
                         {badge}
                       </span>
@@ -167,11 +346,42 @@ export function SearchSuggestionList({
                     ) : null}
                   </div>
                 </button>
-              </li>
+                </li>
+              </React.Fragment>
             );
           })}
         </ul>
-      )}
+      ) : null}
+    </div>
+  );
+}
+
+function DisambiguationPager({ page, totalPages, onPrev, onNext }) {
+  const { t } = useTranslation();
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <button
+        type="button"
+        disabled={page <= 1}
+        onClick={onPrev}
+        className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-40"
+      >
+        <ChevronLeft size={14} aria-hidden="true" />
+        {t('home.explore.paginationPrev')}
+      </button>
+      <span className="text-xs font-medium tabular-nums text-white/70">
+        {t('home.explore.paginationPage', { page, total: totalPages })}
+      </span>
+      <button
+        type="button"
+        disabled={page >= totalPages}
+        onClick={onNext}
+        className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-40"
+      >
+        {t('home.explore.paginationNext')}
+        <ChevronRight size={14} aria-hidden="true" />
+      </button>
     </div>
   );
 }
@@ -182,11 +392,24 @@ export function SearchSuggestionList({
  */
 export function SearchDisambiguationCards({
   title,
+  query = '',
   candidates = [],
   onSelect,
   onCancel,
+  onPageChange,
 }) {
+  const { t, i18n } = useTranslation();
+  const [page, setPage] = useState(1);
   const [introByKey, setIntroByKey] = useState({});
+  const homonymChoice = isKoreaHomonymChoiceSet(candidates);
+  const homonymQuery = koreaHomonymChoiceQuery(candidates, query);
+  const heading =
+    homonymChoice && homonymQuery
+      ? t('home.explore.homonymChoiceTitle', { query: homonymQuery })
+      : title || t('home.explore.disambiguationTitle');
+  const body = homonymChoice
+    ? t('home.explore.homonymChoiceBody')
+    : t('home.explore.disambiguationBody');
 
   const candidateKey = useMemo(
     () =>
@@ -197,14 +420,31 @@ export function SearchDisambiguationCards({
   );
 
   useEffect(() => {
+    setPage(1);
+  }, [candidateKey]);
+
+  const paging = useMemo(
+    () => sliceSearchDisambiguationPage(candidates, page),
+    [candidates, page],
+  );
+  const pageItems = paging.items;
+
+  useEffect(() => {
+    if (paging.page !== page) setPage(paging.page);
+  }, [paging.page, page]);
+
+  const thumbByIndex = useMissingTourAttractionThumbs(pageItems);
+
+  useEffect(() => {
     let cancelled = false;
     setIntroByKey({});
-    if (!candidates.length) return undefined;
+    const list = sliceSearchDisambiguationPage(candidates, page).items;
+    if (!list.length) return undefined;
 
     (async () => {
       const next = {};
       await Promise.all(
-        candidates.map(async (item, index) => {
+        list.map(async (item, index) => {
           if (!needsPlaceChatIntroHydration(item)) return;
           const summary = await fetchPlaceChatIntroSummaryForLocation(item);
           if (!summary) return;
@@ -217,7 +457,13 @@ export function SearchDisambiguationCards({
     return () => {
       cancelled = true;
     };
-  }, [candidateKey, candidates]);
+  }, [candidateKey, page, candidates]);
+
+  const goPage = (nextPage) => {
+    const next = sliceSearchDisambiguationPage(candidates, nextPage);
+    setPage(next.page);
+    onPageChange?.(next.page);
+  };
 
   if (!candidates.length) return null;
 
@@ -226,10 +472,10 @@ export function SearchDisambiguationCards({
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
           <h3 className="text-base md:text-lg font-bold text-white break-keep">
-            {title || '원하는 장소를 선택하세요'}
+            {heading}
           </h3>
           <p className="mt-1 text-xs text-white/70 break-keep">
-            위치가 여러 곳일 수 있어요. 카드를 누르면 해당 장소로 이동합니다.
+            {body}
           </p>
         </div>
         {onCancel && (
@@ -238,45 +484,86 @@ export function SearchDisambiguationCards({
             onClick={onCancel}
             className="shrink-0 text-xs text-white/75 hover:text-white transition-colors"
           >
-            닫기
+            {t('place.summary.closeShort')}
           </button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 items-stretch">
-        {candidates.map((item, index) => {
-          const badge = item.badge || '장소';
-          const badgeClass = BADGE_STYLES[badge] || BADGE_STYLES['장소'];
-          const locationLine = buildLocationLine(item);
+      {paging.totalPages > 1 ? (
+        <div className="mb-3">
+          <DisambiguationPager
+            page={paging.page}
+            totalPages={paging.totalPages}
+            onPrev={() => goPage(paging.page - 1)}
+            onNext={() => goPage(paging.page + 1)}
+          />
+        </div>
+      ) : null}
+
+      <div className="flex flex-col gap-2">
+        {pageItems.map((item, index) => {
+          const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
+          const badge = localizedExploreBadgeLabel(t, badgeKey);
+          const badgeClass = BADGE_STYLES[badgeKey] || BADGE_STYLES[EXPLORE_BADGE_PLACE];
+          const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(item, i18n.language);
+          const locationLine = buildLocationLine(item, i18n.language);
           const hydrated = introByKey[index]
             ? { ...item, desc: introByKey[index], placeChatIntroApplied: true }
             : item;
           const desc = resolveCardDesc(hydrated, locationLine);
           const showIntroMore = Boolean(desc) && desc.length >= SEARCH_INTRO_MORE_MIN_LEN;
+          const groupTitle = String(item.groupTitle || '').trim();
+          const prevGroup = String(pageItems[index - 1]?.groupTitle || '').trim();
+          const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
+          const rankBlurb = String(item.rankBlurb || '').trim();
+          const thumbItem = thumbByIndex[index]
+            ? { ...hydrated, imageUrl: thumbByIndex[index] }
+            : hydrated;
           return (
+            <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
+              {showGroup ? (
+                <div className="flex items-center gap-2 pt-1">
+                  <p className="inline-flex items-center rounded-md border border-amber-300/60 bg-amber-400/15 px-2 py-0.5 text-[11px] font-extrabold text-amber-100 break-keep">
+                    {groupTitle}
+                  </p>
+                  <span className="h-px flex-1 bg-white/15" />
+                </div>
+              ) : null}
             <button
-              key={item.id || `${item.name}-${item.lat}`}
               type="button"
               onClick={() => onSelect?.(hydrated)}
-              className="group flex h-full w-full flex-col rounded-2xl border border-white/25 bg-[#32281f]/95 p-4 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
+              className="group flex w-full items-stretch gap-3 rounded-2xl border border-white/25 bg-[#32281f]/95 p-3 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <SuggestionIcon kind={item.kind} />
+              <SearchResultThumb
+                item={thumbItem}
+                kind={item.kind}
+                iconSize={22}
+                sizeClass="h-20 w-20 sm:h-24 sm:w-24"
+              />
+              <div className="min-w-0 flex-1 py-0.5">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                {rankBlurb ? (
+                  <span className="rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
+                    {rankBlurb}
+                  </span>
+                ) : null}
                 <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
                   {badge}
                 </span>
               </div>
-              <div className="text-[15px] md:text-sm font-bold text-white break-keep leading-snug">{item.name}</div>
-              {item.name_en && item.name_en !== item.name ? (
-                <div className="mt-1 text-[13px] text-white/90 leading-snug">{item.name_en}</div>
+              <div className="text-[15px] md:text-sm font-bold text-white break-keep leading-snug">
+                {primaryName || item.name}
+              </div>
+              {secondaryName ? (
+                <div className="mt-0.5 text-[13px] text-white/90 leading-snug">{secondaryName}</div>
               ) : null}
               {locationLine ? (
-                <div className="mt-2 text-[13px] text-amber-50/80 break-keep">{locationLine}</div>
+                <div className="mt-1 text-[13px] text-amber-50/80 break-keep">{locationLine}</div>
               ) : null}
               {desc ? (
-                <div className="relative mt-2.5 min-h-[calc(1.55em*3)]">
+                <div className="relative mt-1.5 min-h-[calc(1.55em*2)]">
                   <p
-                    className={`line-clamp-3 break-keep text-[13px] md:text-sm leading-[1.55] text-amber-50/90 ${
+                    className={`line-clamp-2 break-keep text-[13px] md:text-sm leading-[1.55] text-amber-50/90 ${
                       showIntroMore ? 'pr-[3.5rem]' : ''
                     }`}
                   >
@@ -287,16 +574,29 @@ export function SearchDisambiguationCards({
                       className="pointer-events-none absolute bottom-0 right-0 inline-flex items-center gap-0.5 bg-gradient-to-l from-[#32281f] via-[#32281f]/95 to-transparent pl-4 text-[12px] font-semibold leading-[1.55] text-sky-300 group-hover:from-[#3a2f25] group-hover:via-[#3a2f25]/95 group-hover:text-sky-200"
                       aria-hidden="true"
                     >
-                      더보기
+                      {t('place.summary.readMore')}
                       <ChevronRight size={14} className="shrink-0 opacity-80" />
                     </span>
                   ) : null}
                 </div>
               ) : null}
+              </div>
             </button>
+            </React.Fragment>
           );
         })}
       </div>
+
+      {paging.totalPages > 1 ? (
+        <div className="mt-3">
+          <DisambiguationPager
+            page={paging.page}
+            totalPages={paging.totalPages}
+            onPrev={() => goPage(paging.page - 1)}
+            onNext={() => goPage(paging.page + 1)}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

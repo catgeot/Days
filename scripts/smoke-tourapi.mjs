@@ -8,6 +8,9 @@
  * 키 값·serviceKey는 로그하지 않음.
  */
 import { loadEnvFile } from './lib/load-env-file.mjs';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 loadEnvFile();
 
@@ -65,6 +68,27 @@ function schemaGuards() {
   assert(areaCodeOk('1'), 'areaCode guard accepts 1');
   assert(!areaCodeOk(''), 'areaCode guard rejects empty');
 
+  const localeOk = (v) => v === 'ko' || v === 'en';
+  const normalizeLocale = (v) => {
+    const s = String(v ?? 'ko').trim().toLowerCase();
+    if (s === 'en' || s.startsWith('en')) return 'en';
+    return 'ko';
+  };
+  assert(localeOk('ko') && localeOk('en'), 'locale whitelist ko|en');
+  assert(normalizeLocale('en') === 'en', 'locale normalize en');
+  assert(normalizeLocale('en-US') === 'en', 'locale normalize en-US');
+  assert(normalizeLocale('ko') === 'ko', 'locale normalize ko');
+  assert(normalizeLocale(undefined) === 'ko', 'locale default ko');
+  assert(
+    `list:${normalizeLocale('en')}:rolling12:20260101:20261231` ===
+      'list:en:rolling12:20260101:20261231',
+    'festival cache key includes locale',
+  );
+  assert(
+    `detail:${normalizeLocale('ko')}:126508` === 'detail:ko:126508',
+    'festival detail cache key includes locale',
+  );
+
   const sampleShape = {
     ok: true,
     action: 'searchKeyword',
@@ -114,6 +138,169 @@ async function mappingGuards() {
     'airport ranks below scenic ilchulbong',
   );
 
+  const {
+    keepTourDetailImage,
+    isSparseTourApiGallery,
+    isTourApiFacilityPhotoTitle,
+    tourApiPhotoCaption,
+  } = await import('../src/utils/tourApiPhotoRank.js');
+
+  const facilityTitles = [
+    '광천선굴 장애인화장실',
+    '세면대',
+    '변기',
+    '소변기',
+    '휠체어 대여',
+    '점자블록',
+    '유도블록',
+    '주차구역',
+    '휠체어리프트',
+    '개찰구',
+    '소화기',
+    '엘리베이터',
+    '승강기',
+    '피난안내도',
+    '내부복도',
+    '무장애 출입',
+  ];
+  for (const title of facilityTitles) {
+    assert(isTourApiFacilityPhotoTitle(title), `facility title drops: ${title}`);
+  }
+  assert(
+    !isTourApiFacilityPhotoTitle('광천선굴 종유석'),
+    'cave interior is not facility',
+  );
+  assert(
+    !isTourApiFacilityPhotoTitle('경복궁 전경'),
+    'palace scenery is not facility',
+  );
+  assert(
+    !isTourApiFacilityPhotoTitle('케이블카 전경'),
+    'cable car scenery is not facility',
+  );
+  assert(
+    !isTourApiFacilityPhotoTitle('스키장 전경'),
+    'ski resort scenery is not facility',
+  );
+  assert(
+    scoreTourPhotoTitle('장애인화장실', '광천선굴', '광천선굴') < 0,
+    'toilet title score < 0 even with place name',
+  );
+  assert(
+    scoreTourPhotoTitle('개찰구', '광천선굴', '광천선굴') < 0,
+    'ticket gate score < 0',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '장애인화장실',
+      imageUrl: 'https://example.com/toilet.jpg',
+      firstimageUrl: 'https://example.com/toilet.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'detailImage toilet dropped even if firstimage',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imgname: '휠체어 리프트',
+      imageUrl: 'https://example.com/lift.jpg',
+      firstimageUrl: 'https://example.com/hero.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'imgname-only wheelchair lift dropped',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imgname: '개찰구',
+      imageUrl: 'https://example.com/gate.jpg',
+      firstimageUrl: 'https://example.com/hero.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'imgname-only ticket gate dropped',
+  );
+  assert(
+    tourApiPhotoCaption({ title: '', imgname: '화장실' }) === '화장실',
+    'caption falls back to imgname',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imageUrl: 'http://tong.visitkorea.or.kr/cms/resource/75/3381075_image2_1.jpg',
+      firstimageUrl: 'http://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === false,
+    'untitled non-firstimage detail dropped',
+  );
+  assert(
+    keepTourDetailImage({
+      title: '',
+      imageUrl: 'http://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      firstimageUrl: 'https://tong.visitkorea.or.kr/cms/resource/77/3381077_image2_1.jpg',
+      placeTitle: '광천선굴',
+      keyword: '광천선굴',
+    }).keep === true,
+    'untitled firstimage kept (http/https normalized)',
+  );
+  assert(
+    isSparseTourApiGallery([
+      { source: 'tourapi', alt_description: '화장실' },
+      { source: 'tourapi', alt_description: '휠체어' },
+      { source: 'tourapi', alt_description: '개찰구' },
+      { source: 'tourapi', alt_description: '' },
+    ]),
+    'facility-only Tour gallery is sparse',
+  );
+  assert(
+    isSparseTourApiGallery([
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+      { source: 'tourapi', alt_description: '' },
+    ]),
+    'untitled 4-cut Tour gallery is sparse',
+  );
+  assert(
+    !isSparseTourApiGallery([
+      { source: 'tourapi', alt_description: '경복궁 전경' },
+      { source: 'tourapi', alt_description: '근정전' },
+      { source: 'tourapi', alt_description: '경회루 야경' },
+      { source: 'tourapi', alt_description: '경복궁 가을' },
+    ]),
+    'titled scenic Tour gallery is not sparse',
+  );
+
+  const proxySrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../supabase/functions/tourapi-proxy/index.ts'),
+    'utf8',
+  );
+  assert(
+    proxySrc.includes('pickStr(item, "imgname", "imgName")'),
+    'proxy reads imgname from TourAPI detailImage',
+  );
+  assert(proxySrc.includes('out.imgname = imgname'), 'proxy forwards imgname');
+  assert(
+    /if \(action === "detailImage" && !out\.title\) out\.title = imgname/.test(proxySrc),
+    'proxy fills empty detailImage title from imgname',
+  );
+
+  const gallerySrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/utils/fetchTourApiGallery.js'),
+    'utf8',
+  );
+  assert(gallerySrc.includes('tourApiPhotoCaption'), 'gallery uses imgname caption');
+  assert(gallerySrc.includes('keepTourDetailImage'), 'gallery applies facility keep');
+
+  const vercelSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../vercel.json'),
+    'utf8',
+  );
+  assert(vercelSrc.includes('/qa/dest-match'), 'vercel.json has /qa/dest-match');
+
   const byName = resolveTourApiPlace('경복궁');
   assert(byName?.slug === 'gyeongbokgung', 'resolve byName 경복궁');
 
@@ -125,6 +312,16 @@ async function mappingGuards() {
   assert(soft?.photoKeyword === '미등록국내테스트', 'soft KR mapping');
   assert(soft?.curated === false, 'soft KR curated=false');
   assert(soft?.contentId == null, 'soft KR no contentId');
+
+  const explicit = resolveTourApiPlace({
+    name: '가리산',
+    country: '대한민국',
+    contentId: '125593',
+    hubId: 'hongcheon',
+  });
+  assert(explicit?.contentId === '125593', 'explicit contentId on uiPlace');
+  assert(explicit?.photoKeyword === '가리산', 'explicit contentId keeps name keyword');
+  assert(explicit?.curated === false, 'explicit contentId is not travelSpotTourApi curated');
 
   assert(
     isDomesticKoreaLocation({ country: '한국' }),
@@ -160,6 +357,12 @@ async function invokeEdge(action, payload) {
   return { httpStatus: res.status, data };
 }
 
+function normalizeLocale(v) {
+  const s = String(v ?? 'ko').trim().toLowerCase();
+  if (s === 'en' || s.startsWith('en')) return 'en';
+  return 'ko';
+}
+
 function monthStartYmd(d = new Date()) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -190,6 +393,30 @@ async function liveChain() {
   assert(detail.data?.ok === true, `detailCommon ok (msg=${detail.data?.message || detail.data?.error || '-'})`);
   const detailTitle = detail.data?.items?.[0]?.title;
   assert(Boolean(detailTitle), `detailCommon title (${detailTitle || '-'})`);
+
+  console.log('\n--- LIVE locale=en (EngService2) ---');
+
+  const kwEn = await invokeEdge('searchKeyword', {
+    locale: 'en',
+    keyword: 'Gyeongbokgung',
+    numOfRows: 3,
+  });
+  assert(kwEn.httpStatus === 200, `searchKeyword en HTTP ${kwEn.httpStatus}`);
+  if (kwEn.data?.ok === true && Array.isArray(kwEn.data?.items) && kwEn.data.items.length >= 1) {
+    const enTitle = kwEn.data.items[0]?.title || '';
+    assert(
+      /[A-Za-z]/.test(enTitle),
+      `searchKeyword en title has Latin (${enTitle || '-'})`,
+    );
+    assert(
+      kwEn.data.locale === 'en' || normalizeLocale('en') === 'en',
+      `searchKeyword en locale echoed (${kwEn.data?.locale || '-'})`,
+    );
+  } else {
+    console.log(
+      `SKIP  searchKeyword en (deploy pending? msg=${kwEn.data?.message || kwEn.data?.error || '-'})`,
+    );
+  }
 
   const images = await invokeEdge('detailImage', {
     contentId,

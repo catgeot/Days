@@ -8,8 +8,14 @@ import {
   buildToolkitPlaceIdCandidates,
 } from '../../../utils/toolkitPlaceIdResolve';
 import { getPlaceStableKey, mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
+import { i18n } from '../../../i18n/config';
+import { normalizeAppLocale } from '../../../i18n/constants';
 
 const isDev = import.meta.env.DEV;
+
+function toolkitGuideFieldForLocale(locale = i18n.language) {
+  return normalizeAppLocale(locale) === 'en' ? 'essential_guide_en' : 'essential_guide';
+}
 
 export const usePlannerData = (location, mediaMode) => {
   const canonicalLocation = useMemo(
@@ -17,6 +23,7 @@ export const usePlannerData = (location, mediaMode) => {
     [location]
   );
   const placeKey = getPlaceStableKey(canonicalLocation);
+  const appLocale = normalizeAppLocale(i18n.language);
 
   const [plannerData, setToolkitData] = useState(null);
   const [isPlannerLoading, setIsToolkitLoading] = useState(Boolean(placeKey));
@@ -47,7 +54,7 @@ export const usePlannerData = (location, mediaMode) => {
     if (!placeKey) return;
     setIsPlannerRefreshing(true);
     try {
-      const data = await fetchToolkitRow(supabase, canonicalLocation);
+      const data = await fetchToolkitRow(supabase, canonicalLocation, appLocale);
       if (
         locationRef.current === location ||
         (typeof locationRef.current === 'object' &&
@@ -81,7 +88,7 @@ export const usePlannerData = (location, mediaMode) => {
     }
 
     // ✅ place_id만 맞고 essential_guide가 비어 있으면 캐시 무시 후 재조회
-    if (cacheMatchesPlace && !hasUsableToolkitForLocation(cached, canonicalLocation)) {
+    if (cacheMatchesPlace && !hasUsableToolkitForLocation(cached, canonicalLocation, appLocale)) {
       if (isDev) {
         console.log(`[usePlannerData] 빈/불일치 툴킷 무시 - placeKey: ${placeKey}, db place_id: ${cached?.place_id}`);
       }
@@ -89,7 +96,7 @@ export const usePlannerData = (location, mediaMode) => {
     }
 
     // ✅ 동일 장소 + 실제 가이드 내용·지리 일치 시에만 재조회 생략
-    if (cacheMatchesPlace && hasUsableToolkitForLocation(cached, canonicalLocation)) {
+    if (cacheMatchesPlace && hasUsableToolkitForLocation(cached, canonicalLocation, appLocale)) {
       if (isDev) {
         console.log(`[usePlannerData] 기존 툴킷 유지 - placeKey: ${placeKey}, db place_id: ${cached.place_id}`);
       }
@@ -108,7 +115,7 @@ export const usePlannerData = (location, mediaMode) => {
       }
 
       try {
-        const data = await fetchToolkitRow(supabase, canonicalLocation);
+        const data = await fetchToolkitRow(supabase, canonicalLocation, appLocale);
 
         if (isSubscribed) {
           setToolkitData(data || null);
@@ -116,7 +123,7 @@ export const usePlannerData = (location, mediaMode) => {
             if (data) {
               console.log('[usePlannerData] 데이터 로드 완료', {
                 place_id: data.place_id,
-                hasGuide: hasUsableToolkitForLocation(data, canonicalLocation),
+                hasGuide: hasUsableToolkitForLocation(data, canonicalLocation, appLocale),
               });
             } else {
               console.log('[usePlannerData] 매칭 행 없음');
@@ -136,12 +143,14 @@ export const usePlannerData = (location, mediaMode) => {
     return () => {
       isSubscribed = false;
     };
-  }, [placeKey, mediaMode, location, canonicalLocation]);
+  }, [placeKey, mediaMode, location, canonicalLocation, appLocale]);
 
   useEffect(() => {
     const handleToolkitUpdated = (event) => {
       const updatedPlaceId = event.detail?.placeId;
       const essentialGuide = event.detail?.essentialGuide;
+      const updateLocale = event.detail?.locale ?? appLocale;
+      const guideField = toolkitGuideFieldForLocale(updateLocale);
       const loc = mergeCanonicalTravelSpot(locationRef.current);
 
       if (!toolkitUpdateMatchesLocation(updatedPlaceId, loc)) return;
@@ -154,7 +163,7 @@ export const usePlannerData = (location, mediaMode) => {
           return {
             ...prev,
             place_id: updatedPlaceId,
-            essential_guide: essentialGuide,
+            [guideField]: essentialGuide,
             toolkit_updated_at: new Date().toISOString()
           };
         });
@@ -162,7 +171,7 @@ export const usePlannerData = (location, mediaMode) => {
 
       setTimeout(async () => {
         try {
-          const data = await fetchToolkitRow(supabase, loc);
+          const data = await fetchToolkitRow(supabase, loc, appLocale);
           if (data && toolkitUpdateMatchesLocation(data.place_id, loc)) {
             setToolkitData(data);
             console.log('[usePlannerData] 백그라운드 동기화 완료');
@@ -178,7 +187,7 @@ export const usePlannerData = (location, mediaMode) => {
     return () => {
       window.removeEventListener('toolkit-updated', handleToolkitUpdated);
     };
-  }, []);
+  }, [appLocale]);
 
   return { plannerData, isPlannerLoading, refetchPlannerFromDb, isPlannerRefreshing };
 };

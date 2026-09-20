@@ -5,9 +5,15 @@ import {
   getEssentialGuide,
 } from '../utils/toolkitPlaceIdResolve';
 import { mergeCanonicalTravelSpot } from '../utils/travelSpotResolve';
+import { i18n } from '../i18n/config';
+import { normalizeAppLocale } from '../i18n/constants';
 
-/** slug별 툴킷 essential_guide — 채팅 CTA용 (세션 내 캐시) */
+/** slug·locale별 툴킷 essential_guide — 채팅 CTA용 (세션 내 캐시) */
 const guideCache = new Map();
+
+function guideCacheKey(slug, locale = i18n.language) {
+  return `${String(slug).trim().toLowerCase()}:${normalizeAppLocale(locale)}`;
+}
 
 /**
  * @param {string | null | undefined} slug
@@ -15,9 +21,11 @@ const guideCache = new Map();
  * @returns {Record<string, unknown> | null}
  */
 export function useChatEssentialGuide(slug, destinationName = '') {
-  const [essentialGuide, setEssentialGuide] = useState(
-    () => (slug ? guideCache.get(String(slug).toLowerCase()) ?? null : null)
-  );
+  const appLocale = normalizeAppLocale(i18n.language);
+  const [essentialGuide, setEssentialGuide] = useState(() => {
+    const key = slug ? guideCacheKey(slug, appLocale) : '';
+    return key ? guideCache.get(key) ?? null : null;
+  });
 
   useEffect(() => {
     const key = slug ? String(slug).trim().toLowerCase() : '';
@@ -26,8 +34,9 @@ export function useChatEssentialGuide(slug, destinationName = '') {
       return;
     }
 
-    if (guideCache.has(key)) {
-      setEssentialGuide(guideCache.get(key));
+    const cacheKey = guideCacheKey(key, appLocale);
+    if (guideCache.has(cacheKey)) {
+      setEssentialGuide(guideCache.get(cacheKey));
       return;
     }
 
@@ -39,13 +48,13 @@ export function useChatEssentialGuide(slug, destinationName = '') {
 
     (async () => {
       try {
-        const row = await fetchToolkitRow(supabase, location);
-        const guide = getEssentialGuide(row, location);
-        guideCache.set(key, guide);
+        const row = await fetchToolkitRow(supabase, location, appLocale);
+        const guide = getEssentialGuide(row, location, appLocale);
+        guideCache.set(cacheKey, guide);
         if (!cancelled) setEssentialGuide(guide);
       } catch (err) {
         console.warn('[useChatEssentialGuide] fetch failed', key, err);
-        guideCache.set(key, null);
+        guideCache.set(cacheKey, null);
         if (!cancelled) setEssentialGuide(null);
       }
     })();
@@ -53,7 +62,7 @@ export function useChatEssentialGuide(slug, destinationName = '') {
     return () => {
       cancelled = true;
     };
-  }, [slug, destinationName]);
+  }, [slug, destinationName, appLocale]);
 
   return essentialGuide;
 }
@@ -63,10 +72,12 @@ export function useChatEssentialGuide(slug, destinationName = '') {
  * @param {string | null | undefined} slug
  * @param {string} [destinationName]
  */
-export async function ensureChatEssentialGuide(slug, destinationName = '') {
+export async function ensureChatEssentialGuide(slug, destinationName = '', locale = i18n.language) {
   const key = slug ? String(slug).trim().toLowerCase() : '';
   if (!key) return null;
-  if (guideCache.has(key)) return guideCache.get(key);
+  const appLocale = normalizeAppLocale(locale);
+  const cacheKey = guideCacheKey(key, appLocale);
+  if (guideCache.has(cacheKey)) return guideCache.get(cacheKey);
 
   const location = mergeCanonicalTravelSpot({
     slug: key,
@@ -74,13 +85,13 @@ export async function ensureChatEssentialGuide(slug, destinationName = '') {
   });
 
   try {
-    const row = await fetchToolkitRow(supabase, location);
-    const guide = getEssentialGuide(row, location);
-    guideCache.set(key, guide);
+    const row = await fetchToolkitRow(supabase, location, appLocale);
+    const guide = getEssentialGuide(row, location, appLocale);
+    guideCache.set(cacheKey, guide);
     return guide;
   } catch (err) {
     console.warn('[ensureChatEssentialGuide] fetch failed', key, err);
-    guideCache.set(key, null);
+    guideCache.set(cacheKey, null);
     return null;
   }
 }

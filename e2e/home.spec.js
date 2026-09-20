@@ -6,7 +6,7 @@ test.describe('Home', () => {
     await page.goto('/');
 
     await expect(page.locator('#root')).toBeVisible();
-    await expect(page).toHaveTitle(/Days|여행지/);
+    await expect(page).toHaveTitle(/GATEO/);
 
     const globeSurface = page.locator('.mapboxgl-canvas, .mapboxgl-map, canvas').first();
     await expect(globeSurface).toBeVisible({ timeout: 60_000 });

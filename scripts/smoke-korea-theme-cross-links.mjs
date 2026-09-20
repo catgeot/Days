@@ -13,6 +13,7 @@ import {
   getThemeMembership,
   listSameHubCrossSpots,
   resolveFestivalThemeCrossLinks,
+  resolveStayTnaHubId,
   resolveThemeCrossLinks,
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
@@ -21,6 +22,7 @@ import {
   scenicHomePathForHubId,
   THEME_REGION_LABEL_TO_AREA,
 } from '../src/pages/Home/lib/koreaThemeCrossLinks.js';
+import { themeNavBackEntryForSpot } from '../src/pages/Home/lib/koreaThemeNavBack.js';
 import { extractTourAttractionSigungu } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -71,16 +73,24 @@ assert(resolveThemePackageKey(hallasan) === 'koreaJeju', 'hallasan package korea
 assert(bundle.packageCta?.key === 'koreaJeju', 'bundle packageCta koreaJeju');
 assert(Array.isArray(bundle.nearbyHubs), 'nearbyHubs array');
 assert(
-  scenicHomePathForHubId('boryeong').includes('region='),
-  'boryeong scenic home has region',
+  scenicHomePathForHubId('boryeong').includes('cregion=') &&
+    scenicHomePathForHubId('boryeong').includes('hregion=') &&
+    scenicHomePathForHubId('boryeong').includes('tregion='),
+  'boryeong scenic home has per-pod regions',
 );
 assert(
-  scenicHomePathForHubId('boryeong').includes('area='),
-  'boryeong scenic home has area',
+  scenicHomePathForHubId('boryeong').includes('carea=') &&
+    scenicHomePathForHubId('boryeong').includes('harea=') &&
+    scenicHomePathForHubId('boryeong').includes('tarea='),
+  'boryeong scenic home has per-pod areas',
 );
 assert(
   scenicHomePathForHubId('boryeong').includes('hub=boryeong'),
   'boryeong scenic home has hub=boryeong',
+);
+assert(
+  scenicHomePathForHubId('boryeong').includes('ccluster=cn-west'),
+  'scenic home seeds ccluster for 보령',
 );
 assert(
   scenicHomePathForHubId('gongju').includes('hub=gongju'),
@@ -144,6 +154,26 @@ const hanbat = yuseongSame.find((r) => r.placeSlug === 'hanbat-arboretum');
 assert(
   hanbat?.deepPath === '/korea/theme/scenic?spot=hanbat-arboretum',
   `hanbat deepPath scenic spot (got ${hanbat?.deepPath})`,
+);
+assert(
+  hanbat?.modalSpot?.contentId && hanbat?.modalSpot?.name === '한밭수목원',
+  `hanbat also exposes modalSpot for nested open (got ${JSON.stringify(hanbat?.modalSpot)})`,
+);
+
+const hoengLake = listKoreaScenicSpots().find((s) => s.id === 'hoengseong-lake');
+assert(Boolean(hoengLake), 'scenic hoengseong-lake exists');
+const hoengSame = listSameHubCrossSpots(hoengLake.hubId, {
+  excludePlaceSlug: hoengLake.placeSlug,
+});
+const anheung = hoengSame.find(
+  (r) => r.placeSlug === 'anheung-steamed-bun-village',
+);
+assert(
+  anheung?.deepPath ===
+    '/korea/theme/scenic?spot=anheung-steamed-bun-village' &&
+    anheung?.modalSpot?.contentId === '128074' &&
+    anheung?.modalSpot?.name === '안흥찐빵마을',
+  `hoengseong sameHub 안흥 has deepPath+modalSpot (got ${JSON.stringify(anheung)})`,
 );
 const expo = yuseongSame.find((r) => r.placeSlug === 'expo-science-park');
 assert(
@@ -211,6 +241,28 @@ const seoulSpot = {
 const seoulBundle = resolveThemeCrossLinks(seoulSpot);
 assert(seoulBundle.areaCode === '1', 'seoul areaCode 1');
 assert(seoulBundle.packageCta == null, 'seoul has no city package CTA (avoid false busan-like)');
+
+const insadong = listKoreaScenicSpots().find((s) => s.id === 'insadong');
+assert(Boolean(insadong), 'insadong scenic exists');
+const insadongBundle = resolveThemeCrossLinks(insadong);
+assert(
+  insadongBundle.deepLinks.festivals === '/korea?from=theme&area=1',
+  `insadong 이 지역 축제 → 서울 목록 (got ${insadongBundle.deepLinks.festivals})`,
+);
+
+const insadongBack = themeNavBackEntryForSpot(
+  { id: 'insadong', name: '인사동', hubId: 'seoul' },
+  '/korea',
+);
+assert(
+  insadongBack?.path.includes('spot=insadong') &&
+    insadongBack.path.includes('hub=seoul'),
+  `insadong themeBack → hub+spot scenic (got ${insadongBack?.path})`,
+);
+assert(
+  insadongBack?.label === '인사동',
+  `insadong themeBack label (got ${insadongBack?.label})`,
+);
 
 const jejuFest = resolveFestivalThemeCrossLinks(
   {
@@ -290,6 +342,117 @@ assert(
 assert(
   poiBundle.tna?.keyword === '춘천' || poiBundle.tna?.keyword === '춘천시',
   `POI tna uses region not title (got ${poiBundle.tna?.keyword})`,
+);
+
+const haksanFest = resolveFestivalThemeCrossLinks({
+  title: '시민창작예술축제 학산마당극놀래',
+  addr1: '인천광역시 미추홀구 경인로 216-1 (도화동)',
+  mapx: 126.6505,
+  mapy: 37.4636,
+  areaCode: '2',
+  contentId: 'haksan-madang',
+});
+assert(
+  resolveStayTnaHubId('michuhol', '2', [{ hubId: 'ongjin' }, { hubId: 'incheon' }]) ===
+    'incheon',
+  'unseeded 미추홀 stay hub falls back to incheon not ongjin',
+);
+assert(
+  resolveStayTnaHubId('ongjin', '2', [{ hubId: 'incheon' }]) === 'ongjin',
+  'seeded 옹진 stay hub is kept',
+);
+assert(
+  haksanFest.stay?.keyword === '인천' && haksanFest.stay?.location?.hubId === 'incheon',
+  `haksan stay falls back to 인천 (got ${haksanFest.stay?.keyword} / ${haksanFest.stay?.location?.hubId})`,
+);
+assert(haksanFest.stay?.keyword !== '옹진', 'haksan stay keyword is not 옹진');
+assert(haksanFest.tna?.keyword === '인천', `haksan tna is 인천 (got ${haksanFest.tna?.keyword})`);
+assert(haksanFest.tna?.keyword !== '옹진', 'haksan tna keyword is not 옹진');
+assert(
+  (haksanFest.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `haksan stayAreas includes 인천 (got ${JSON.stringify(haksanFest.stayAreas)})`,
+);
+
+const royalWalk = resolveFestivalThemeCrossLinks({
+  title: '왕가의 산책',
+  addr1: '인천광역시 중구 공항로 272 (운서동)',
+  mapx: 126.4407,
+  mapy: 37.4602,
+  areaCode: '2',
+  contentId: 'royal-walk',
+});
+assert(
+  royalWalk.stay?.keyword === '인천' && royalWalk.stay?.location?.hubId === 'incheon',
+  `왕가의 산책 stay is 인천 not 옹진 (got ${royalWalk.stay?.keyword} / ${royalWalk.stay?.location?.hubId})`,
+);
+assert(royalWalk.stay?.keyword !== '옹진', '왕가의 산책 stay keyword is not 옹진');
+assert(
+  royalWalk.tna?.keyword === '인천',
+  `왕가의 산책 tna is 인천 not 행사명 (got ${royalWalk.tna?.keyword})`,
+);
+assert(royalWalk.tna?.keyword !== '왕가의 산책', '왕가의 산책 tna keyword is not event title');
+assert(
+  !(royalWalk.tna?.altKeywords || []).includes('왕가의 산책'),
+  `왕가의 산책 tna alts must not include event title (got ${royalWalk.tna?.altKeywords?.join(',')})`,
+);
+assert(
+  (royalWalk.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  '왕가의 산책 stayAreas includes parent city 인천',
+);
+assert(
+  (royalWalk.stayAreas || []).some((a) => a.mrtKeyword === '강화' || a.name === '강화'),
+  `왕가의 산책 stayAreas includes adjacent 강화 (got ${JSON.stringify(royalWalk.stayAreas)})`,
+);
+assert(
+  !(royalWalk.stayAreas || []).some((a) => a.hubId === 'ongjin' || a.mrtKeyword === '옹진'),
+  '왕가의 산책 stayAreas omits 옹진 unless address is 옹진군',
+);
+
+const daecheong = listKoreaScenicSpots().find(
+  (s) => s.id === 'daecheongdo-ongjin' || s.placeSlug === 'daecheongdo-ongjin',
+);
+assert(Boolean(daecheong), '대청도 scenic spot exists');
+const daecheongCross = resolveThemeCrossLinks(daecheong);
+assert(
+  daecheongCross.stay?.keyword === '옹진' || daecheongCross.stay?.location?.hubId === 'ongjin',
+  `대청도 stay hub stays 옹진 (got ${daecheongCross.stay?.keyword} / ${daecheongCross.stay?.location?.hubId})`,
+);
+assert(
+  (daecheongCross.stay?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `대청도 stay alts include 인천 (got ${daecheongCross.stay?.altKeywords?.join(',')})`,
+);
+assert(
+  (daecheongCross.tna?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `대청도 tna alts include 인천 (got ${daecheongCross.tna?.altKeywords?.join(',')})`,
+);
+assert(
+  (daecheongCross.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `대청도 stayAreas includes 인천 (got ${JSON.stringify(daecheongCross.stayAreas)})`,
+);
+assert(
+  (daecheongCross.stayAreas || []).some((a) => a.mrtKeyword === '강화' || a.name === '강화'),
+  `대청도 stayAreas includes 강화 (got ${JSON.stringify(daecheongCross.stayAreas)})`,
+);
+
+const ongjinIslandFest = resolveFestivalThemeCrossLinks({
+  title: '대청도 모래축제',
+  addr1: '인천광역시 옹진군 대청면 대청리',
+  mapx: 124.7,
+  mapy: 37.82,
+  areaCode: '2',
+  contentId: 'daecheong-sand',
+});
+assert(
+  ongjinIslandFest.stay?.location?.hubId === 'ongjin',
+  `옹진군 주소 축제 stay hub is ongjin (got ${ongjinIslandFest.stay?.location?.hubId})`,
+);
+assert(
+  (ongjinIslandFest.stayAreas || []).some((a) => a.mrtKeyword === '인천' || a.name === '인천'),
+  `옹진군 축제 stayAreas includes 인천 fallback (got ${JSON.stringify(ongjinIslandFest.stayAreas)})`,
+);
+assert(
+  (ongjinIslandFest.stay?.altKeywords || []).some((k) => k === '인천' || String(k).includes('인천')),
+  `옹진군 축제 stay alts include 인천 (got ${ongjinIslandFest.stay?.altKeywords?.join(',')})`,
 );
 
 const libSrc = readFileSync(

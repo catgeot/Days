@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Search, Plane } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
     buildTripcomPlannerNavigationUrl,
     getPartnerLinkTarget,
@@ -11,12 +12,11 @@ import { resolveFlightDepartureIataForTrip } from '../../../pages/Home/lib/fligh
 
 /**
  * 플래너 Trip.com 항공권 제휴 링크.
- * 모바일: 앱 내 전체 화면 모달(iframe 중앙 정렬·도착지 자동입력).
- * 데스크톱: /flights/ 직링크 + 새 탭 + Referer(gateo 복귀 링크).
+ * iframe 위젯이 되면 모달. 위젯이 막히면 일정 선택 네이티브 폼 모달.
  * @param {Record<string, unknown> | null | undefined} [location]
  * @param {Record<string, unknown> | null | undefined} [essentialGuide]
  * @param {string | null | undefined} [departureIata] - 시네마 Bar 등 명시 시에만 전달. 미지정(플래너)은 ICN 고정.
- * @param {'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' | null | undefined} [tracking]
+ * @param {'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' | 'event-detail-flight' | null | undefined} [tracking]
  * @param {string | null | undefined} [departDate] - YYYY-MM-DD → Trip `ddate`
  * @param {string | null | undefined} [returnDate] - YYYY-MM-DD → Trip `rdate` + `tripType=RT`
  * @param {number | null | undefined} [adultCount]
@@ -35,6 +35,7 @@ const WhiteLabelWidget = ({
     customTrigger,
 }) => {
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
+    const { t } = useTranslation();
     const departureIata = useMemo(() => {
         if (departureOverride) return resolveFlightDepartureIataForTrip(departureOverride);
         return TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
@@ -75,6 +76,9 @@ const WhiteLabelWidget = ({
         >
             <Plane size={14} />
             <span>Trip.com 항공권 검색</span>
+            <span className="text-[10px] font-bold opacity-75">
+                {t('place.planner.banners.affiliateBadge')}
+            </span>
             <Search size={12} className="ml-0.5 opacity-80" />
         </button>
     );

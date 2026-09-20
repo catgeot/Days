@@ -1,12 +1,13 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import {
   consumeThemeNavBack,
-  formatThemeNavBackLabel,
   peekThemeNavBack,
   resolveThemeNavBack,
 } from '../Home/lib/koreaThemeNavBack';
+import { formatLocalizedThemeNavBackLabel } from '../../i18n/koreaUi';
 
 const BTN_CLASS =
   'flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100';
@@ -14,18 +15,57 @@ const BTN_CLASS =
 function useThemeNavBackAction() {
   const navigate = useNavigate();
   const location = useLocation();
-  const back = resolveThemeNavBack(location.state);
+  const themeBack = resolveThemeNavBack(location.state);
+
+  const back = useMemo(() => {
+    if (themeBack?.path) return themeBack;
+
+    const searchParams = new URLSearchParams(location.search);
+    const returnToParam = searchParams.get('returnTo');
+    const returnToState =
+      location.state &&
+      typeof location.state === 'object' &&
+      'returnTo' in location.state &&
+      typeof location.state.returnTo === 'string'
+        ? location.state.returnTo
+        : null;
+    let storedReturnTo = null;
+    try {
+      storedReturnTo = sessionStorage.getItem('gateo:scenic-gateway-return-to');
+    } catch {
+      /* private mode */
+    }
+
+    const candidate = returnToParam || returnToState || storedReturnTo;
+    if (
+      typeof candidate === 'string' &&
+      candidate.startsWith('/') &&
+      !candidate.startsWith('//')
+    ) {
+      const isPlace = candidate.startsWith('/place/');
+      return {
+        path: candidate,
+        label: isPlace ? '장소카드' : '이전',
+        moduleLabel: '',
+      };
+    }
+    return null;
+  }, [themeBack, location.search, location.state]);
 
   const goBack = useCallback(() => {
-    const entry = resolveThemeNavBack(location.state);
-    if (!entry?.path) {
+    if (!back?.path) {
       navigate('/korea/theme/scenic');
       return;
     }
     const top = peekThemeNavBack();
-    if (top?.path === entry.path) consumeThemeNavBack();
-    navigate(entry.path);
-  }, [location.state, navigate]);
+    if (top?.path === back.path) consumeThemeNavBack();
+    try {
+      sessionStorage.removeItem('gateo:scenic-gateway-return-to');
+    } catch {
+      /* private mode */
+    }
+    navigate(back.path, { replace: true });
+  }, [back, navigate]);
 
   return { back, goBack };
 }
@@ -35,20 +75,25 @@ function useThemeNavBackAction() {
  * `onlyWhenBack`: 명승 홈처럼 기본 「명승」 자기 링크가 불필요할 때.
  */
 export default function ThemeModuleBackButton({ onlyWhenBack = false }) {
+  const { t } = useTranslation();
   const { back, goBack } = useThemeNavBackAction();
 
   if (back?.path) {
-    const label = formatThemeNavBackLabel(back);
+    const label = formatLocalizedThemeNavBackLabel(t, back);
     return (
       <button
         type="button"
         onClick={goBack}
-        aria-label={label ? `이전 · ${label}` : '이전'}
-        title={label || '이전'}
+        aria-label={
+          label
+            ? t('korea.theme.navBackAria', { label })
+            : t('korea.theme.navBack')
+        }
+        title={label || t('korea.theme.navBack')}
         className={BTN_CLASS}
       >
         <ArrowLeft size={14} aria-hidden="true" />
-        이전
+        {t('korea.theme.navBack')}
       </button>
     );
   }
@@ -58,21 +103,22 @@ export default function ThemeModuleBackButton({ onlyWhenBack = false }) {
   return (
     <Link
       to="/korea/theme/scenic"
-      aria-label="한국의 명승으로"
-      title="한국의 명승"
+      aria-label={t('korea.theme.navScenicAria')}
+      title={t('korea.theme.navScenic')}
       className={BTN_CLASS}
     >
       <ArrowLeft size={14} aria-hidden="true" />
-      명승
+      {t('korea.theme.navScenic')}
     </Link>
   );
 }
 
 /** 이전 상태 표기 (축제 from=theme 힌트와 동일 톤) */
 export function ThemeNavBackHint() {
+  const { t } = useTranslation();
   const { back, goBack } = useThemeNavBackAction();
   if (!back?.path) return null;
-  const label = formatThemeNavBackLabel(back);
+  const label = formatLocalizedThemeNavBackLabel(t, back);
   if (!label) return null;
 
   return (
@@ -85,15 +131,16 @@ export function ThemeNavBackHint() {
         ← {label}
       </button>
       <span className="text-stone-400"> · </span>
-      이전 탐색으로 돌아갑니다
+      {t('korea.theme.navBackHint')}
     </p>
   );
 }
 
 /** 축제 `/korea?from=theme` — 가능하면 직전 테마 상세로 복귀 */
 export function ThemeFestivalBackLink() {
+  const { t } = useTranslation();
   const { back, goBack } = useThemeNavBackAction();
-  const label = formatThemeNavBackLabel(back);
+  const label = formatLocalizedThemeNavBackLabel(t, back);
 
   if (back?.path) {
     return (
@@ -102,7 +149,7 @@ export function ThemeFestivalBackLink() {
         onClick={goBack}
         className="font-bold text-amber-800 hover:underline"
       >
-        ← {label || '이전 명승으로'}
+        ← {label || t('korea.theme.navPrevScenic')}
       </button>
     );
   }
@@ -112,7 +159,7 @@ export function ThemeFestivalBackLink() {
       to="/korea/theme/scenic"
       className="font-bold text-amber-800 hover:underline"
     >
-      ← 명승으로
+      ← {t('korea.theme.navScenicLink')}
     </Link>
   );
 }

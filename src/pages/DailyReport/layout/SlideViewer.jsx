@@ -2,9 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Image as ImageIcon, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../shared/api/supabase';
 
 const SlideViewer = ({ isOpen, onClose, slides, user }) => {
+  const { t } = useTranslation();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const fileInputRef = useRef(null);
@@ -46,9 +48,9 @@ const SlideViewer = ({ isOpen, onClose, slides, user }) => {
       if (error) throw error;
       const { data: { publicUrl } } = supabase.storage.from('profiles').getPublicUrl(fileName);
       await supabase.auth.updateUser({ data: { avatar_url: `${publicUrl}?t=${Date.now()}` } });
-      alert("프로필 사진이 업데이트 되었습니다.");
+      alert(t('logbook.slide.avatarUpdated'));
       window.location.reload();
-    } catch (error) { console.error(error); alert("업로드 실패"); }
+    } catch (error) { console.error(error); alert(t('logbook.slide.uploadFail')); }
   };
 
   if (!isOpen) return null;
@@ -74,17 +76,17 @@ const SlideViewer = ({ isOpen, onClose, slides, user }) => {
         {slides.length > 0 ? (
           <div className="relative pointer-events-auto shadow-2xl flex items-center justify-center max-h-[85vh] max-w-full">
             <img src={slides[currentSlideIndex]} alt="Slide" className="max-h-[85vh] w-auto h-auto object-contain transition-opacity duration-500 select-none"/>
-            <div className="absolute inset-0 z-10 cursor-pointer" onClick={togglePlay} title={isPlaying ? "일시정지" : "재생"}/>
+            <div className="absolute inset-0 z-10 cursor-pointer" onClick={togglePlay} title={isPlaying ? t('logbook.slide.pause') : t('logbook.slide.play')}/>
           </div>
         ) : (
-          <div className="text-gray-500 flex flex-col items-center"><ImageIcon size={64} /><p className="mt-4">표시할 사진이 없습니다.</p></div>
+          <div className="text-gray-500 flex flex-col items-center"><ImageIcon size={64} /><p className="mt-4">{t('logbook.slide.noPhotos')}</p></div>
         )}
       </div>
 
       <div className="absolute bottom-8 z-20 flex items-center gap-6 pointer-events-auto bg-black/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 hover:bg-black/60 transition-all">
         <span className="text-white/80 font-mono text-sm border-r border-white/20 pr-6 mr-0"> {currentSlideIndex + 1} / {slides.length || 0} </span>
         <span className="text-[10px] text-gray-400 uppercase tracking-widest"> {isPlaying ? "Playing" : "Paused"} </span>
-        <button onClick={() => fileInputRef.current.click()} className="flex items-center gap-2 text-white/80 hover:text-white text-xs font-bold transition-colors ml-4"> <Camera size={16} /> 프로필 변경</button>
+        <button onClick={() => fileInputRef.current.click()} className="flex items-center gap-2 text-white/80 hover:text-white text-xs font-bold transition-colors ml-4"> <Camera size={16} /> {t('logbook.slide.changeProfile')}</button>
       </div>
       <input type="file" ref={fileInputRef} onChange={handleAvatarUpload} accept="image/*" className="hidden" />
     </div>,

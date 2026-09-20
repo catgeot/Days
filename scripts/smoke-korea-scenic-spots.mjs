@@ -44,7 +44,7 @@ const data = JSON.parse(readFileSync(JSON_PATH, 'utf8'));
 const spots = data.spots || [];
 const byId = new Map(spots.map((s) => [s.id, s]));
 
-assert(spots.length >= 12 && spots.length <= 100, `count 12–100 (got ${spots.length})`);
+assert(spots.length >= 12, `count ≥12 (got ${spots.length})`);
 assert(data.meta?.curation === 'GATEO', 'GATEO curation label');
 assert(
   String(data.meta?.disclaimer || '').includes('인기 관광지'),
@@ -60,6 +60,23 @@ const NEW_SAMPLES = [
   'haeundae-beach',
   'hallasan-national-park',
   'n-seoul-tower',
+  'woljeongsa',
+  'daegwallyeong-sheep-farm',
+  'namhae-german-village',
+  'geumsan-boriam',
+  'daebudo',
+  'byeolmangseong-fortress',
+  'gapgot-dondae',
+  'manisan',
+  'jukdo-beach',
+  'ansan-reed-wetland-park',
+  'bomunsa-ganghwa',
+  'chojijin',
+  'aegibong-peace-eco-park',
+  'ilsan-lake-park',
+  'gwangmyeong-cave',
+  'geomdansan',
+  'anseong-matchum-land',
 ];
 for (const id of NEW_SAMPLES) {
   const spot = byId.get(id);
@@ -121,6 +138,15 @@ assert(
     gangwonHubs.some((h) => h.hubId === 'gangneung'),
   `강원 소분류(여행지)≥3 (got ${gangwonHubs.length})`,
 );
+assert(
+  gangwonHubs.some((h) => h.hubId === 'yangyang' && h.count >= 4),
+  `강원 소분류에 양양≥4 (got ${JSON.stringify(gangwonHubs.find((h) => h.hubId === 'yangyang'))})`,
+);
+for (const id of ['naksansa', 'surfyy-beach', 'hajodae-beach', 'naksan-beach', 'seorak-beach']) {
+  const spot = byId.get(id);
+  assert(Boolean(spot), `양양 선정 명소 present: ${id}`);
+  assert(spot?.hubId === 'yangyang', `${id} hubId === yangyang`);
+}
 const jejuHubs = listKoreaScenicHubChips('제주', null);
 assert(
   jejuHubs.some((h) => h.hubId === 'seogwipo') &&
@@ -137,6 +163,46 @@ for (const id of ['gyeongbokgung', 'nami-island', 'haeinsa', 'seongsan-ilchulbon
   const spot = byId.get(id);
   assert(Boolean(String(spot?.imageUrl || '').trim()), `${id} has imageUrl`);
 }
+const guryeArboretum = byId.get('gurye-arboretum');
+assert(Boolean(guryeArboretum), 'gurye-arboretum present');
+assert(
+  Boolean(String(guryeArboretum?.imageUrl || '').trim()),
+  'gurye-arboretum has imageUrl',
+);
+assert(
+  Array.isArray(guryeArboretum?.galleryUrls) &&
+    guryeArboretum.galleryUrls.length >= 4,
+  `gurye-arboretum galleryUrls ≥4 (got ${guryeArboretum?.galleryUrls?.length || 0})`,
+);
+const yonggungMarket = byId.get('yonggung-market');
+assert(Boolean(yonggungMarket), 'yonggung-market present');
+assert(
+  String(yonggungMarket?.imageUrl || '').includes('1n2d.trip08.png'),
+  'yonggung-market uses 예천군 용궁시장 공식 사진',
+);
+assert(
+  !String(yonggungMarket?.imageUrl || '').includes('3542707'),
+  'yonggung-market thumbnail ≠ 회룡포 3542707',
+);
+const hampyeongExpo = byId.get('hampyeong-expo-park');
+const hampyeongEco = byId.get('hampyeong-eco-park');
+assert(Boolean(hampyeongExpo), 'hampyeong-expo-park present');
+assert(
+  String(hampyeongExpo?.imageUrl || '').includes('4065063'),
+  'hampyeong-expo-park uses TourAPI 함평나비대축제 사진',
+);
+assert(
+  String(hampyeongEco?.imageUrl || '').includes('3536105'),
+  'hampyeong-eco-park keeps TourAPI 생태공원 사진',
+);
+assert(
+  String(hampyeongExpo?.imageUrl || '') !== String(hampyeongEco?.imageUrl || ''),
+  '함평엑스포공원 썸네일 ≠ 함평자연생태공원',
+);
+assert(
+  Array.isArray(hampyeongExpo?.galleryUrls) && hampyeongExpo.galleryUrls.length >= 4,
+  `hampyeong-expo-park galleryUrls ≥4 (got ${hampyeongExpo?.galleryUrls?.length || 0})`,
+);
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);

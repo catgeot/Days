@@ -45,8 +45,8 @@ export function getGalleryImageAttribution(image) {
   const baseHref =
     image?.user?.links?.html || image?.links?.html || 'https://unsplash.com';
   const separator = baseHref.includes('?') ? '&' : '?';
-  const photographerHref = `${baseHref}${separator}utm_source=Project_Days&utm_medium=referral`;
-  const providerHref = 'https://unsplash.com/?utm_source=Project_Days&utm_medium=referral';
+  const photographerHref = `${baseHref}${separator}utm_source=GATEO&utm_medium=referral`;
+  const providerHref = 'https://unsplash.com/?utm_source=GATEO&utm_medium=referral';
 
   return {
     source,

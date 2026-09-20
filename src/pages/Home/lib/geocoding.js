@@ -6,7 +6,27 @@
 // 4. [Free Explore] Mapbox Geocoding 우선 — 지구본 POI 라벨과 동일 소스. 휴게소·세부 장소 검색이 상위 행정구역으로 떨어지지 않게.
 
 import { KEYWORD_SYNONYMS } from '../data/keywordData';
+import { isIslandPlaceQuery, resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import { resolveTravelCountryFromAddresses } from './travelRegionCountry.js';
+import { isLatinPlaceName, mergeLatinPlaceFields } from './uiPlaceAssetQuery.js';
+import {
+  queryLooksLikeStayPoint,
+  resolveKoStationAlias,
+  resolveKoUniversityAlias,
+  resolveKoUniversitySatelliteAlias,
+  stationNameMatchesQuery,
+  nominatimStationScoreDelta,
+  nominatimSquarePenalty,
+  nominatimUniversityScoreDelta,
+  universitySearchHitPenalty,
+  universityAliasFitsPlace,
+  applyUniversityCampusPlace,
+} from '../../../utils/mrtStayQuery.js';
+import {
+  firstPassHitToGeocodeResult,
+  resolveKoreaDestinationFirstPass,
+} from './resolveKoreaDestinationFirstPass.js';
+import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 
 const RETRY_FILTERS = [
   "고원", "섬", "산", "해변", "폭포", "마을", "대륙", "반도", "시", "군", "구",
@@ -17,7 +37,7 @@ const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_
 
 /** 세부 시설·명소 쿼리 — 행정구역(군/시)으로 축소·스냅하면 안 되는 입력 */
 export const FACILITY_QUERY_RE =
-  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크/i;
+  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|향교|서원|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크|수련원|연수원/i;
 
 /** 유명 랜드마크 — 도시 SSOT·country=kr 우선으로 묶이면 안 됨 */
 export const LANDMARK_QUERY_RE =
@@ -25,7 +45,7 @@ export const LANDMARK_QUERY_RE =
 
 /** 도로·거리명으로 유명한 명소가 가로채지는 패턴 (Eiffel Tower Street 등) */
 const STREETISH_LABEL_RE =
-  /\b(street|st\.|road|rd\.|avenue|ave\.|lane|ln\.|drive|dr\.|blvd|boulevard|highway|way)\b|(?:거리|도로|로)$/i;
+  /\b(street|st\.|road|rd\.|avenue|ave\.|lane|ln\.|drive|dr\.|blvd|boulevard|highway|way)\b|-gil\b|(?:길|거리|도로|로)$/i;
 
 /**
  * 유명 명소 → 본명·국가 고정 쿼리.
@@ -122,6 +142,20 @@ export function expandForwardQueryAliases(query) {
     for (const preferred of landmarkPlan.queries) add(preferred);
   }
 
+  const stationAlias = resolveKoStationAlias(q);
+  if (stationAlias?.station) add(stationAlias.station);
+
+  const universityAlias = resolveKoUniversityAlias(q);
+  if (universityAlias?.campus) add(universityAlias.campus);
+
+  const satelliteAlias = resolveKoUniversitySatelliteAlias(q);
+  if (satelliteAlias?.name) add(satelliteAlias.name);
+
+  const explore = resolveExploreSearchAlias(q);
+  if (explore?.canonical) add(explore.canonical);
+  if (explore?.romanized) add(explore.romanized);
+  for (const extra of explore?.also || []) add(extra);
+
   return out;
 }
 
@@ -151,15 +185,19 @@ const isPlausibleForwardHit = (query, result) => {
   const cls = String(result.class || '');
   const type = String(result.type || '');
   const facilityQ = isFacilityQuery(query);
+  const stationQuery =
+    queryLooksLikeStayPoint(query) || stationNameMatchesQuery(query, name);
 
-  if (cls === 'office' || cls === 'railway') return false;
+  if (cls === 'office') return false;
+  // 역 검색·약칭(종각)을 railway에서 버리면 종각역이 대구 광장·원주 캐시로 떨어진다
+  if (cls === 'railway' && !stationQuery) return false;
   // 고속도로 휴게소(OSM: highway=services|rest_area)는 시설 검색에서만 허용
   if (cls === 'highway') {
     const allowRest = facilityQ && /services|rest_area|fuel/.test(type);
     if (!allowRest) return false;
   }
 
-  if (HAS_HANGUL_RE.test(query)) {
+  if (HAS_HANGUL_RE.test(query) && !isIslandPlaceQuery(query) && !LANDMARK_QUERY_RE.test(query)) {
     const cc = String(result.address?.country_code || '').toLowerCase();
     const display = String(result.display_name || '');
     if (cc && cc !== 'kr') return false;
@@ -205,7 +243,9 @@ const calculatePlaceScore = (place, query = '') => {
 
   // 단순 행정구역(특히 대도시의 구/동)이나 역 등은 점수를 낮춤
   if (address.suburb || address.borough || address.quarter || address.city_district) score -= 30;
-  if (type === "station" || category === "railway") score -= 40;
+  score += nominatimStationScoreDelta(query, place);
+  score += nominatimSquarePenalty(query, place);
+  score += nominatimUniversityScoreDelta(query, place);
   if (type === "administrative" && address.borough) score -= 20;
   if (facilityQ && (cls === 'boundary' || type === 'administrative')) score -= 80;
   if (facilityQ && (type === 'townhall' || /시청|구청|도청|군청/.test(String(place.name || '')))) {
@@ -242,6 +282,17 @@ const scoreMapboxFeature = (feature, searchQuery, facilityQ, landmarkPlan = null
     score -= 160;
   }
 
+  if (isIslandPlaceQuery(searchQuery)) {
+    const types = Array.isArray(feature?.place_type) ? feature.place_type : [];
+    if (types.includes('region')) score += 50;
+    if (types.includes('poi')) score -= 70;
+    const compactText = text.replace(/\s+/g, '');
+    const compactQuery = String(searchQuery).replace(/\s+/g, '');
+    if (compactText && compactQuery && (compactText === compactQuery || compactText.includes(compactQuery))) {
+      score += 24;
+    }
+  }
+
   if (landmarkPlan) {
     if (landmarkPlan.rejectLabel?.test(label)) score -= 200;
     if (landmarkPlan.acceptText?.test(text)) score += 160;
@@ -254,6 +305,31 @@ const scoreMapboxFeature = (feature, searchQuery, facilityQ, landmarkPlan = null
       if (short === landmarkPlan.country) score += 90;
       else if (short) score -= 40;
     }
+  }
+
+  const stationAlias = resolveKoStationAlias(searchQuery);
+  if (stationAlias) {
+    const compactText = text.replace(/\s+/g, '');
+    if (compactText === stationAlias.station || compactText === `${String(searchQuery || '').trim()}역`) {
+      score += 80;
+    }
+    if (STREETISH_LABEL_RE.test(text) || STREETISH_LABEL_RE.test(placeName)) {
+      score -= 80;
+    }
+    if (stationAlias.district && label.includes(stationAlias.district)) score += 40;
+    if (/서울|종로/.test(label)) score += 30;
+    if (/대구|부산|대전|광주/.test(label) && !/서울|종로/.test(label)) score -= 120;
+  }
+
+  const universityAlias = resolveKoUniversityAlias(searchQuery);
+  if (universityAlias) {
+    const [lng, lat] = Array.isArray(feature?.center) ? feature.center : [];
+    score -= universitySearchHitPenalty(searchQuery, {
+      name: text,
+      name_en: placeName,
+      lat,
+      lng,
+    });
   }
 
   return score;
@@ -273,100 +349,160 @@ const countryFromMapboxFeature = (feature) => {
   return resolveTravelCountryFromAddresses(addressLike, null);
 };
 
-/** Mapbox Geocoding — 지구본 라벨·POI와 같은 인덱스 */
+function mapboxFitsStationAlias(parsed, alias) {
+  if (!alias) return true;
+  if (!parsed) return false;
+  const blob = [
+    parsed.name,
+    parsed.display_name,
+    parsed.stayAdmin?.city,
+    parsed.stayAdmin?.district,
+    parsed.stayAdmin?.neighbourhood,
+    parsed.stayAdmin?.state,
+  ].join(' ');
+  const compactName = String(parsed.name || '').replace(/\s+/g, '');
+  if (compactName === String(alias.station || '').replace(/\s+/g, '')) return true;
+  if (alias.district && blob.includes(alias.district)) return true;
+  return /서울/.test(blob);
+}
+
+function mapboxFitsUniversityAlias(parsed, alias, query = '') {
+  return universityAliasFitsPlace(alias, parsed, query);
+}
+
+const fetchMapboxGeocodeFeatures = async (
+  searchQuery,
+  { countrycodes = '', landmarkPlan = null, language = 'ko', proximity = '' } = {},
+) => {
+  const encoded = encodeURIComponent(searchQuery);
+  const params = new URLSearchParams({
+    access_token: MAPBOX_TOKEN,
+    language,
+    limit: '6',
+    autocomplete: 'false',
+  });
+  if (countrycodes) params.set('country', countrycodes);
+  if (landmarkPlan) params.set('types', 'poi');
+  if (proximity) params.set('proximity', proximity);
+
+  const response = await fetch(
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?${params}`,
+  );
+  if (!response.ok) return [];
+  const data = await response.json();
+  return Array.isArray(data?.features) ? data.features : [];
+};
+
+const pickRankedMapboxFeature = (features, searchQuery, landmarkPlan) => {
+  if (!features.length) return null;
+  const facilityQ = isFacilityQuery(searchQuery) || Boolean(landmarkPlan);
+  const plan = landmarkPlan || resolveLandmarkGeocodePlan(searchQuery);
+  const ranked = [...features]
+    .map((f) => ({
+      feature: f,
+      score: scoreMapboxFeature(f, searchQuery, facilityQ, plan),
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  const best = ranked.find((row) => {
+    if (!row || row.score < 40) return false;
+    const text = String(row.feature?.text || '');
+    const placeName = String(row.feature?.place_name || '');
+    if (STREETISH_LABEL_RE.test(text) || STREETISH_LABEL_RE.test(placeName)) return false;
+    if (plan?.rejectLabel?.test(`${text} ${placeName}`)) return false;
+    if (plan?.acceptText && !plan.acceptText.test(text) && plan.country) {
+      const ctx = Array.isArray(row.feature?.context) ? row.feature.context : [];
+      const countryCtx = ctx.find((c) => String(c?.id || '').startsWith('country.'));
+      const short = String(countryCtx?.short_code || '')
+        .toLowerCase()
+        .replace(/^us-/, '');
+      if (short && short !== plan.country) return false;
+    }
+    return true;
+  });
+  if (!best) return null;
+  if (facilityQ && best.score < 40) return null;
+  return best.feature;
+};
+
+const parseMapboxForwardPlace = (feature, searchQuery) => {
+  const [lng, lat] = feature.center || [];
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  const travelCountry = countryFromMapboxFeature(feature);
+  const countryEn = travelCountry.country_en || travelCountry.country || '';
+  const countryKo =
+    KEYWORD_SYNONYMS[String(countryEn).toLowerCase()] ||
+    KEYWORD_SYNONYMS[String(travelCountry.country || '').toLowerCase()] ||
+    travelCountry.country ||
+    countryEn;
+  const placeName = feature.text || feature.place_name || searchQuery;
+  const preferred = feature.properties?.name_preferred || feature.text || placeName;
+  const placeNameEn = isLatinPlaceName(preferred) ? preferred : (isLatinPlaceName(placeName) ? placeName : '');
+  const stayAdmin = buildStayAdminFromMapboxFeature(feature);
+  const placeCategory = inferPlaceMatchCategory({
+    name: placeName,
+    originalQuery: searchQuery,
+  });
+
+  return {
+    lat,
+    lng,
+    name: placeName,
+    name_en: placeNameEn || placeName,
+    country: countryKo,
+    country_en: isLatinPlaceName(countryEn) ? countryEn : countryKo,
+    display_name: feature.place_name || placeName,
+    source: 'mapbox',
+    place_types: feature.place_type || [],
+    mapboxId: feature.id || '',
+    ...(stayAdmin ? { stayAdmin } : {}),
+    ...(placeCategory ? { tourCategory: placeCategory, placeCategory } : {}),
+  };
+};
+
+const sameMapboxCenter = (a, b, maxDeg = 0.08) => {
+  const [lngA, latA] = a?.center || [];
+  const [lngB, latB] = b?.center || [];
+  if (![latA, lngA, latB, lngB].every(Number.isFinite)) return false;
+  return Math.abs(latA - latB) <= maxDeg && Math.abs(lngA - lngB) <= maxDeg;
+};
+
+/** Mapbox Geocoding — 지구본 라벨·POI와 같은 인덱스. ko+en으로 name_en 라틴 확보 */
 const fetchMapboxForward = async (
   searchQuery,
-  { countrycodes = '', landmarkPlan = null } = {},
+  { countrycodes = '', landmarkPlan = null, proximity = '' } = {},
 ) => {
   if (!MAPBOX_TOKEN || !searchQuery) return null;
   try {
-    const encoded = encodeURIComponent(searchQuery);
-    const params = new URLSearchParams({
-      access_token: MAPBOX_TOKEN,
-      language: 'ko',
-      limit: '6',
-      autocomplete: 'false',
-    });
-    // place·poi·address 등 — 자유 탐색. types를 너무 좁히면 휴게소가 빠짐.
-    if (countrycodes) params.set('country', countrycodes);
-    // 유명 명소는 POI 우선 (도로·주소 히트 억제)
-    if (landmarkPlan) params.set('types', 'poi');
+    const opts = { countrycodes, landmarkPlan, proximity };
+    const [koFeatures, enFeatures] = await Promise.all([
+      fetchMapboxGeocodeFeatures(searchQuery, { ...opts, language: 'ko' }),
+      fetchMapboxGeocodeFeatures(searchQuery, { ...opts, language: 'en' }),
+    ]);
+    const feature = pickRankedMapboxFeature(koFeatures, searchQuery, landmarkPlan)
+      || pickRankedMapboxFeature(enFeatures, searchQuery, landmarkPlan);
+    if (!feature) return null;
 
-    const response = await fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?${params}`,
-    );
-    if (!response.ok) return null;
-    const data = await response.json();
-    const features = Array.isArray(data?.features) ? data.features : [];
-    if (!features.length) return null;
-
-    const facilityQ = isFacilityQuery(searchQuery) || Boolean(landmarkPlan);
-    const plan = landmarkPlan || resolveLandmarkGeocodePlan(searchQuery);
-    const ranked = [...features]
-      .map((f) => ({
-        feature: f,
-        score: scoreMapboxFeature(f, searchQuery, facilityQ, plan),
-      }))
-      .sort((a, b) => b.score - a.score);
-
-    // 도로명만 남으면 거부 → 다음 쿼리/Nominatim
-    const best = ranked.find((row) => {
-      if (!row || row.score < 40) return false;
-      const text = String(row.feature?.text || '');
-      const placeName = String(row.feature?.place_name || '');
-      if (STREETISH_LABEL_RE.test(text) || STREETISH_LABEL_RE.test(placeName)) return false;
-      if (plan?.rejectLabel?.test(`${text} ${placeName}`)) return false;
-      if (plan?.acceptText && !plan.acceptText.test(text) && plan.country) {
-        // 국가 고정 쿼리인데 본명도 아니면 스킵 (카피 시설 완화)
-        const ctx = Array.isArray(row.feature?.context) ? row.feature.context : [];
-        const countryCtx = ctx.find((c) => String(c?.id || '').startsWith('country.'));
-        const short = String(countryCtx?.short_code || '')
-          .toLowerCase()
-          .replace(/^us-/, '');
-        if (short && short !== plan.country) return false;
-      }
-      return true;
-    });
-    if (!best) return null;
-
-    // 시설 검색인데 POI/주소가 없고 행정구역만이면 거부 → Nominatim·AI로 이어감
-    if (facilityQ && best.score < 40) return null;
-
-    const feature = best.feature;
     const label = `${feature.text || ''} ${feature.place_name || ''}`;
+    const facilityQ = isFacilityQuery(searchQuery) || Boolean(landmarkPlan);
     if (facilityQ && /시청|구청|도청|군청|town\s*hall|city\s*hall/i.test(label)) {
       return null;
     }
 
-    const [lng, lat] = feature.center || [];
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-
-    const travelCountry = countryFromMapboxFeature(feature);
-    const countryEn = travelCountry.country_en || travelCountry.country || '';
-    const countryKo =
-      KEYWORD_SYNONYMS[String(countryEn).toLowerCase()] ||
-      KEYWORD_SYNONYMS[String(travelCountry.country || '').toLowerCase()] ||
-      travelCountry.country ||
-      countryEn;
-    const placeName = feature.text || feature.place_name || searchQuery;
-    const placeNameEn =
-      feature.properties?.name_preferred ||
-      feature.text ||
-      placeName;
-    const stayAdmin = buildStayAdminFromMapboxFeature(feature);
-
-    return {
-      lat,
-      lng,
-      name: placeName,
-      name_en: placeNameEn,
-      country: countryKo,
-      country_en: countryEn || countryKo,
-      display_name: feature.place_name || placeName,
-      source: 'mapbox',
-      place_types: feature.place_type || [],
-      ...(stayAdmin ? { stayAdmin } : {}),
-    };
+    const parsed = parseMapboxForwardPlace(feature, searchQuery);
+    if (!parsed) return null;
+    let resolved = parsed;
+    if (!isLatinPlaceName(parsed.name_en)) {
+      const enMatch =
+        enFeatures.find((f) => f?.id && f.id === feature.id) ||
+        enFeatures.find((f) => sameMapboxCenter(f, feature));
+      if (enMatch) {
+        const parsedEn = parseMapboxForwardPlace(enMatch, searchQuery);
+        resolved = mergeLatinPlaceFields(parsed, parsedEn);
+      }
+    }
+    return applyUniversityCampusPlace(searchQuery, resolved);
   } catch (error) {
     console.warn('Mapbox forward geocoding failed:', error);
     return null;
@@ -430,22 +566,29 @@ export const getCoordinatesFromAddress = async (query) => {
     const cleanQuery = standardizeName(query);
     const landmarkQ = LANDMARK_QUERY_RE.test(cleanQuery);
 
+    const universityAlias = resolveKoUniversityAlias(cleanQuery);
+    const campusProximity =
+      universityAlias ? `${universityAlias.lng},${universityAlias.lat}` : '';
+
     const tryMapboxBundle = async (q) => {
       if (!MAPBOX_TOKEN) return null;
       let mapboxHit = null;
-      // 해외 명소 한글명(에펠탑 등)은 KR 우선이 오탐·무응답을 낳음 → 글로벌만
-      if (HAS_HANGUL_RE.test(q) && !LANDMARK_QUERY_RE.test(q)) {
-        mapboxHit = await fetchMapboxForward(q, { countrycodes: 'kr' });
+      const skipKrFirst = LANDMARK_QUERY_RE.test(q) || isIslandPlaceQuery(q);
+      const forwardOpts = campusProximity ? { proximity: campusProximity } : {};
+      // 한글 국내 지명은 KR 우선. 해외 섬·랜드마크는 글로벌만 (사바섬→사바 사헤브 방지)
+      if (HAS_HANGUL_RE.test(q) && !skipKrFirst) {
+        mapboxHit = await fetchMapboxForward(q, { countrycodes: 'kr', ...forwardOpts });
       }
       if (!mapboxHit) {
-        mapboxHit = await fetchMapboxForward(q);
+        mapboxHit = await fetchMapboxForward(q, forwardOpts);
       }
       return mapboxHit;
     };
 
     const tryNominatimBundle = async (q) => {
       let rows = null;
-      if (HAS_HANGUL_RE.test(q) && !LANDMARK_QUERY_RE.test(q)) {
+      const skipKrFirst = LANDMARK_QUERY_RE.test(q) || isIslandPlaceQuery(q);
+      if (HAS_HANGUL_RE.test(q) && !skipKrFirst) {
         rows = await fetchCoords(q, 1, { acceptLanguage: 'ko,en', countrycodes: 'kr' });
         if (!rows) {
           rows = await fetchCoords(q, 1, { acceptLanguage: 'en', countrycodes: 'kr' });
@@ -475,17 +618,61 @@ export const getCoordinatesFromAddress = async (query) => {
       }
     }
 
+    // 국내 지명 First-Pass — hub·역·TourAPI. Mapbox 동음 오탐(광천동·종각네거리)보다 앞.
+    const koreaHit =
+      (await resolveKoreaDestinationFirstPass(query)) ||
+      (cleanQuery !== query ? await resolveKoreaDestinationFirstPass(cleanQuery) : null);
+    if (koreaHit) {
+      const firstPass = firstPassHitToGeocodeResult(koreaHit);
+      if (firstPass) return firstPass;
+    }
+
+    const stationAlias = resolveKoStationAlias(cleanQuery);
+    if (stationAlias?.station && stationAlias.station !== cleanQuery) {
+      const aliasMapbox = await tryMapboxBundle(stationAlias.station);
+      if (aliasMapbox && mapboxFitsStationAlias(aliasMapbox, stationAlias)) {
+        return aliasMapbox;
+      }
+    }
+
+    if (universityAlias?.campus && universityAlias.campus !== cleanQuery) {
+      const campusMapbox = await tryMapboxBundle(universityAlias.campus);
+      if (campusMapbox && mapboxFitsUniversityAlias(campusMapbox, universityAlias, cleanQuery)) {
+        return campusMapbox;
+      }
+    }
+
     const primaryMapbox = await tryMapboxBundle(cleanQuery);
-    if (primaryMapbox) return primaryMapbox;
+    if (
+      primaryMapbox &&
+      mapboxFitsStationAlias(primaryMapbox, stationAlias) &&
+      mapboxFitsUniversityAlias(primaryMapbox, universityAlias, cleanQuery)
+    ) {
+      return primaryMapbox;
+    }
 
     // 한글 지명: KR 우선 (횡성 저수지 → 폴란드 Holy Cross 오탐 방지). 실패 시 AI 폴백.
-    let data = await tryNominatimBundle(cleanQuery);
+    const nominatimQuery =
+      universityAlias?.campus && universityAlias.campus !== cleanQuery
+        ? universityAlias.campus
+        : stationAlias?.station && stationAlias.station !== cleanQuery
+          ? stationAlias.station
+          : cleanQuery;
+    let data = await tryNominatimBundle(nominatimQuery);
+    if (!data && nominatimQuery !== cleanQuery) {
+      data = await tryNominatimBundle(cleanQuery);
+    }
 
     // 1.5) 숙박·명소 별칭 (제주 신라호텔→호텔신라 제주, 에펠탑→Eiffel Tower)
     if (!data) {
       for (const alt of expandForwardQueryAliases(cleanQuery)) {
         const altMapbox = await tryMapboxBundle(alt);
-        if (altMapbox) return altMapbox;
+        if (
+          altMapbox &&
+          mapboxFitsUniversityAlias(altMapbox, universityAlias, cleanQuery)
+        ) {
+          return altMapbox;
+        }
         data = await tryNominatimBundle(alt);
         if (data) {
           console.log(`🔄 Alias geocode: "${cleanQuery}" → "${alt}"`);
@@ -498,6 +685,7 @@ export const getCoordinatesFromAddress = async (query) => {
     if (!data && !facilityQ) {
       let retryQuery = cleanQuery;
       RETRY_FILTERS.forEach(filter => {
+        if (filter === '섬' && isIslandPlaceQuery(cleanQuery)) return;
         if (retryQuery.endsWith(filter)) retryQuery = retryQuery.slice(0, -filter.length).trim();
       });
       if (retryQuery !== cleanQuery && retryQuery.length >= 2) {
@@ -550,6 +738,11 @@ export const getCoordinatesFromAddress = async (query) => {
         address.state ||
         address.country ||
         placeName;
+    const latinNameEn = isLatinPlaceName(englishName)
+      ? englishName
+      : isLatinPlaceName(placeName)
+        ? placeName
+        : '';
     const travelCountry = resolveTravelCountryFromAddresses(address, null);
     // Nominatim Accept-Language:en → country가 "Argentina" 등 영문만 올 수 있음 → 한글 표기 정규화
     const countryEn = travelCountry.country_en || travelCountry.country || '';
@@ -560,18 +753,32 @@ export const getCoordinatesFromAddress = async (query) => {
       countryEn;
 
     const stayAdmin = buildStayAdminFromOsmAddress(address, address);
+    const osmKind =
+      topResult.class === 'natural' || /cave|peak|waterfall|spring|beach|wood|park/i.test(String(topResult.type || ''))
+        ? 'park'
+        : topResult.class === 'historic' || topResult.type === 'museum'
+          ? 'museum'
+          : '';
+    const placeCategory = inferPlaceMatchCategory({
+      name: placeName,
+      originalQuery: cleanQuery,
+      kind: osmKind,
+    });
 
-    return {
+    return applyUniversityCampusPlace(cleanQuery, {
       lat: parseFloat(topResult.lat),
       lng: parseFloat(topResult.lon),
       name: placeName,
-      name_en: englishName || placeName,
+      name_en: latinNameEn || placeName,
       country: countryKo,
       country_en: countryEn || countryKo,
       display_name: topResult.display_name,
       source: 'nominatim',
+      osm_class: topResult.class || '',
+      osm_type: topResult.type || '',
       ...(stayAdmin ? { stayAdmin } : {}),
-    };
+      ...(placeCategory ? { tourCategory: placeCategory, placeCategory } : {}),
+    });
   } catch (error) {
     console.error("Forward Geocoding error:", error);
     return null;

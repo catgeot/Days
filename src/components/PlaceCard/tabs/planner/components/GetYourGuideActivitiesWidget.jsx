@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLink, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   GYG_ACTIVITIES_ITEM_COUNT,
-  GYG_CURRENCY,
-  GYG_LOCALE,
   GYG_PARTNER_ID,
   buildGygPlannerCmp,
   getGygHomeUrl,
+  resolveGygCurrency,
+  resolveGygLocale,
 } from '../../../../../utils/affiliate';
+import { recordTravelAgencyVisit } from '../../../../../utils/travelAgencyVisits.js';
 import { buildGygActivitiesSearchQuery } from '../locationRules';
 
 /** 파트너 프리뷰 공식 폭 — 740에서 Activities 2열 (560은 패딩 후 1열로 남는 경우 많음) */
@@ -24,13 +26,16 @@ const FRAME_APPEAR_SETTLE_MS = 900;
 export function GygHomeMoreLink({
   location,
   cmp: cmpProp,
-  label = '겟유어가이드에서 더보기',
+  label,
   compact = false,
   tone = 'dark',
   className = '',
 }) {
+  const { t, i18n } = useTranslation();
   const cmp = cmpProp || buildGygPlannerCmp(location);
-  const href = getGygHomeUrl({ cmp });
+  const href = getGygHomeUrl({ cmp, locale: i18n.language });
+  const placeLabel = location?.name || location?.name_ko || location?.name_en || '';
+  const linkLabel = label ?? t('place.planner.banners.gyg.moreLink');
   const toneClass =
     tone === 'light'
       ? compact
@@ -44,10 +49,14 @@ export function GygHomeMoreLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      onClick={(e) => e.stopPropagation()}
+      data-gateo-place={placeLabel}
+      onClick={(e) => {
+        e.stopPropagation();
+        recordTravelAgencyVisit({ href, placeLabel, kind: 'tour' });
+      }}
       className={className || toneClass}
     >
-      <span>{label}</span>
+      <span>{linkLabel}</span>
       <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
     </a>
   );
@@ -72,10 +81,13 @@ const GetYourGuideActivitiesWidget = ({
   linkSponsoredLabel = false,
   className = '',
 }) => {
+  const { t, i18n } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [frameReady, setFrameReady] = useState(() => frameWidth == null);
   const [widgetLoaded, setWidgetLoaded] = useState(false);
   const frameHostRef = useRef(null);
+  const gygLocale = resolveGygLocale(i18n.language);
+  const gygCurrency = resolveGygCurrency(i18n.language);
   const query = useMemo(
     () => (queryProp != null ? queryProp : buildGygActivitiesSearchQuery(location)),
     [
@@ -91,8 +103,11 @@ const GetYourGuideActivitiesWidget = ({
   const items = Math.max(1, Number(itemCount) || GYG_ACTIVITIES_ITEM_COUNT);
   const openFramePx =
     !isBoxed && frameWidth != null && Number(frameWidth) > 0 ? Number(frameWidth) : null;
-  const remountKey = `${location?.slug || query || 'gyg-activities'}|${items}|${openFramePx || 'fluid'}`;
-  const homeHref = useMemo(() => getGygHomeUrl({ cmp }), [cmp]);
+  const remountKey = `${location?.slug || query || 'gyg-activities'}|${items}|${openFramePx || 'fluid'}|${gygLocale}|${gygCurrency}`;
+  const homeHref = useMemo(
+    () => getGygHomeUrl({ cmp, locale: i18n.language }),
+    [cmp, i18n.language]
+  );
 
   // 패널 폭 전환 후 한 프레임 뒤 마운트 — 좁은 폭으로 iframe이 고정되는 것 방지
   useEffect(() => {
@@ -211,7 +226,11 @@ const GetYourGuideActivitiesWidget = ({
       href={homeHref}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      onClick={(e) => e.stopPropagation()}
+      data-gateo-place={query}
+      onClick={(e) => {
+        e.stopPropagation();
+        recordTravelAgencyVisit({ href: homeHref, placeLabel: query, kind: 'tour' });
+      }}
       className={`inline-flex items-center gap-1 underline-offset-2 hover:underline ${
         isBoxed ? 'hover:opacity-90' : 'hover:opacity-95'
       }`}
@@ -237,14 +256,14 @@ const GetYourGuideActivitiesWidget = ({
       <button
         type="button"
         onClick={copyQuery}
-        title="위젯 검색어 복사 (투어 카드 본문은 제휴 iframe이라 선택이 안 됩니다)"
+        title={t('place.planner.banners.gyg.copyQueryTitle')}
         className={`max-w-full truncate rounded-md border px-2 py-0.5 text-[10px] font-medium select-text ${
           isBoxed
             ? 'border-orange-200/80 bg-white/70 text-orange-800 hover:bg-white'
             : 'border-white/15 bg-white/10 text-orange-100/90 hover:bg-white/15'
         }`}
       >
-        {copied ? '복사됨' : `검색어 · ${query}`}
+        {copied ? t('place.planner.banners.gyg.copied') : t('place.planner.banners.gyg.queryLabel', { query })}
       </button>
     </div>
   );
@@ -267,14 +286,14 @@ const GetYourGuideActivitiesWidget = ({
           isBoxed ? 'text-orange-800/85' : 'text-white/75'
         }`}
       >
-        현지 투어를 불러오는 중이에요
+        {t('place.planner.banners.gyg.loadingPrimary')}
       </p>
       <p
         className={`break-keep text-center text-[11px] leading-relaxed ${
           isBoxed ? 'text-orange-700/60' : 'text-white/45'
         }`}
       >
-        GetYourGuide 목록이 곧 표시됩니다
+        {t('place.planner.banners.gyg.loadingSecondary')}
       </p>
     </div>
   ) : null;
@@ -287,8 +306,8 @@ const GetYourGuideActivitiesWidget = ({
         data-gyg-href="https://widget.getyourguide.com/default/activities.frame"
         data-gyg-widget="activities"
         data-gyg-partner-id={GYG_PARTNER_ID}
-        data-gyg-locale-code={GYG_LOCALE}
-        data-gyg-currency={GYG_CURRENCY}
+        data-gyg-locale-code={gygLocale}
+        data-gyg-currency={gygCurrency}
         data-gyg-number-of-items={String(items)}
         data-gyg-q={query}
         data-gyg-cmp={cmp}
@@ -315,7 +334,7 @@ const GetYourGuideActivitiesWidget = ({
       <p
         className={`text-[12px] ${isBoxed ? 'text-orange-800/80' : 'text-white/55'}`}
       >
-        현지 투어를 불러오는 중이에요
+        {t('place.planner.banners.gyg.loadingPrimary')}
       </p>
     </div>
   );

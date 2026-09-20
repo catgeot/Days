@@ -15,6 +15,7 @@ import {
 } from '../src/utils/mrtPackageLinks.js';
 import {
   canShowMrtPackageStrip,
+  resolveMrtPackageDisplayKeyword,
   resolveMrtPackageSearchKeyword,
   resolveMrtPackageThemeKey,
 } from '../src/utils/mrtPackageQuery.js';
@@ -58,6 +59,8 @@ const tokyo = {
 };
 assert.equal(resolveMrtPackageThemeKey(tokyo), 'japan');
 assert.equal(resolveMrtPackageSearchKeyword(tokyo), '도쿄');
+assert.equal(resolveMrtPackageDisplayKeyword(tokyo, 'en'), 'Tokyo');
+assert.equal(resolveMrtPackageDisplayKeyword(tokyo, 'ko'), '도쿄');
 assert.equal(canShowMrtPackageStrip(tokyo), true);
 const theme = resolveMrtPackageThemeForLocation(tokyo);
 assert.ok(theme?.url.includes('pkc'));
@@ -80,7 +83,21 @@ const unknownDomestic = {
 assert.equal(canShowMrtPackageStrip(unknownDomestic), false);
 
 assert.equal(formatMrtPackageProductCtaLabel('더블린'), '더블린 패키지 상품보기');
+assert.equal(
+  formatMrtPackageProductCtaLabel('팀북투', { displayKeyword: 'Timbuktu' }),
+  'Timbuktu 패키지 상품보기'
+);
 assert.equal(formatMrtPackageProductCtaLabel(''), '패키지 상품보기');
+
+const timbuktu = {
+  name: '팀북투',
+  name_en: 'Timbuktu',
+  country: '말리',
+  country_en: 'Mali',
+  slug: 'timbuktu',
+};
+assert.equal(resolveMrtPackageSearchKeyword(timbuktu), '팀북투');
+assert.equal(resolveMrtPackageDisplayKeyword(timbuktu, 'en'), 'Timbuktu');
 
 const koreaJeju = resolveMrtPackageThemeHref('koreaJeju');
 assert.ok(koreaJeju);

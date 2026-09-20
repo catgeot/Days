@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft } from 'lucide-react';
 
 /**
@@ -13,22 +14,28 @@ export default function MooniQuickReplyChips({
   onOpenPlanner,
   onFocusInput,
   disabled,
-  prompt = '무엇부터 도와드릴까요?',
+  prompt,
   showPrompt = true,
   dock = false,
-  backLabel = '다른 주제',
+  backLabel,
   parentL1Label = null,
+  tone = 'default',
 }) {
+  const { t } = useTranslation();
+  const resolvedPrompt = prompt ?? t('mooni.chat.topicPrompt');
+  const resolvedBackLabel = backLabel ?? t('mooni.chat.backTopic');
   const items = chips ?? [];
   if (!items.length) return null;
+  const fresh = tone === 'fresh';
 
-  const chipClass =
-    'inline-flex shrink-0 items-center justify-center gap-1 min-h-[36px] rounded-full border border-cyan-500/35 bg-cyan-950/30 px-3 py-1.5 text-xs font-medium text-cyan-100 touch-manipulation hover:border-cyan-400/60 hover:bg-cyan-900/40 transition-colors disabled:opacity-50 disabled:pointer-events-none';
+  const chipClass = fresh
+    ? 'inline-flex shrink-0 items-center justify-center gap-1 min-h-[36px] rounded-full border border-cyan-200 bg-white px-3 py-1.5 text-xs font-medium text-cyan-700 touch-manipulation hover:border-cyan-300 hover:bg-cyan-50 transition-colors disabled:opacity-50 disabled:pointer-events-none'
+    : 'inline-flex shrink-0 items-center justify-center gap-1 min-h-[36px] rounded-full border border-cyan-500/35 bg-cyan-950/30 px-3 py-1.5 text-xs font-medium text-cyan-100 touch-manipulation hover:border-cyan-400/60 hover:bg-cyan-900/40 transition-colors disabled:opacity-50 disabled:pointer-events-none';
 
-  const backLabelText = backLabel.replace(/^←\s*/, '');
+  const backLabelText = resolvedBackLabel.replace(/^←\s*/, '');
 
   const chipRowClass = dock
-    ? 'flex gap-2 flex-nowrap overflow-x-auto overscroll-x-contain touch-pan-x pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+    ? 'flex w-full max-w-full gap-2 flex-nowrap overflow-x-auto overscroll-x-contain touch-pan-x pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
     : 'flex flex-wrap gap-2';
 
   return (
@@ -39,22 +46,26 @@ export default function MooniQuickReplyChips({
             type="button"
             disabled={disabled}
             onClick={onBack}
-            className="inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+            className={
+              fresh
+                ? 'inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-cyan-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 touch-manipulation hover:border-cyan-300 hover:bg-cyan-50 transition-colors disabled:opacity-50 disabled:pointer-events-none'
+                : 'inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none'
+            }
           >
             <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
             {backLabelText}
           </button>
           {parentL1Label ? (
-            <span className="text-[11px] text-cyan-400/75 font-medium break-keep min-w-0">
+            <span className={`text-[11px] font-medium break-keep min-w-0 ${fresh ? 'text-cyan-600' : 'text-cyan-400/75'}`}>
               {parentL1Label}
             </span>
           ) : null}
         </div>
       ) : null}
-      {showPrompt && prompt ? (
-        <p className="text-xs text-gray-400 px-0.5">{prompt}</p>
+      {showPrompt && resolvedPrompt ? (
+        <p className={`text-xs px-0.5 ${fresh ? 'text-slate-500' : 'text-gray-400'}`}>{resolvedPrompt}</p>
       ) : null}
-      <div className={dock ? 'relative min-w-0' : undefined}>
+      <div className={dock ? 'relative min-w-0 w-full max-w-full overflow-hidden' : undefined}>
         <div className={chipRowClass}>
           {items.map((chip) => (
             <button
@@ -91,7 +102,7 @@ export default function MooniQuickReplyChips({
         </div>
         {dock ? (
           <div
-            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-900 to-transparent"
+            className={`pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l ${fresh ? 'from-white' : 'from-gray-900'} to-transparent`}
             aria-hidden
           />
         ) : null}

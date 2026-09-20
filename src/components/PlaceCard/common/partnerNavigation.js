@@ -1,16 +1,48 @@
 import { buildTripcomPlannerFlightUrl, TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
+import { recordTravelAgencyVisit } from '../../../utils/travelAgencyVisits.js';
 import { isMobileDevice } from './device';
+
+/** @param {unknown} value @returns {boolean} */
+function hasTripcomFlightSchedulePrefill(value) {
+    const s = String(value || '').trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(s);
+}
+
+/**
+ * 모바일 ad iframe 대신 `/flights/{d}-to-{a}/tickets-…` 항공 검색 결과 직링크.
+ * `/flights/` 홈은 항공+호텔 검색박스라 출도착 자동입력이 안 됨.
+ *
+ * @param {{ departDate?: string, forceModal?: boolean }} [options]
+ */
+export function shouldUseTripcomFlightSearchModal(options = {}) {
+    // 모바일 partners/ad iframe이 Trip.com 측 인증 오류로 빈 화면이 되므로 모달을 띄우지 않고 직링크 사용
+    if (TRIPCOM_FLIGHT_AD.mobileIframeUsable === false) {
+        return false;
+    }
+    if (options.forceModal === true) {
+        return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
+    }
+    if (hasTripcomFlightSchedulePrefill(options.departDate)) {
+        return false;
+    }
+    return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
+}
 
 /**
  * 플래너에서 Trip.com으로 **페이지 이동**할 때 쓰는 URL.
- * 모바일 `/flights/` 직링크는 aAirportCode 자동입력이 무시되는 경우가 있어
- * 배너 iframe과 동일한 partners/ad 위젯 URL을 사용한다.
+ * 출도착 IATA가 있으면 `/flights/{d}-to-{a}/tickets-…` 항공 검색 결과(일정 없으면 +14/+21).
  *
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ essentialGuide?: Record<string, unknown> | null, tracking?: string }} [options]
+ * @param {{ essentialGuide?: Record<string, unknown> | null, tracking?: string, departDate?: string }} [options]
  */
 export function buildTripcomPlannerNavigationUrl(location, options = {}) {
-    if (isMobileDevice() && TRIPCOM_FLIGHT_AD.mobileAdId) {
+    const useAdWidget =
+        TRIPCOM_FLIGHT_AD.mobileIframeUsable !== false &&
+        isMobileDevice() &&
+        TRIPCOM_FLIGHT_AD.mobileAdId &&
+        !hasTripcomFlightSchedulePrefill(options.departDate);
+
+    if (useAdWidget) {
         return buildTripcomPlannerFlightUrl(location, {
             ...options,
             mode: 'ad',
@@ -49,7 +81,7 @@ export function getTripcomFlightAdForModal() {
 
 /** 모바일 전체 화면 모달용 ad iframe src (외부 Trip.com 페이지 이동 대신 사용) */
 export function buildTripcomPlannerFlightModalSrc(location, options = {}) {
-    const useModal = options.forceModal === true || shouldUseTripcomFlightSearchModal();
+    const useModal = shouldUseTripcomFlightSearchModal(options);
     if (!useModal) return null;
 
     const { adId, tracking } = getTripcomFlightAdForModal();
@@ -60,10 +92,6 @@ export function buildTripcomPlannerFlightModalSrc(location, options = {}) {
         adId,
         tracking: options.tracking ?? tracking ?? undefined,
     });
-}
-
-export function shouldUseTripcomFlightSearchModal() {
-    return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
 }
 
 /**
@@ -102,8 +130,9 @@ export function getTripcomIframeReferrerPolicy() {
 }
 
 /** 프로그래밍 방식 — 일반 제휴 URL */
-export function openPartnerExternalUrl(url, { target = getPartnerLinkTarget() } = {}) {
+export function openPartnerExternalUrl(url, { target = getPartnerLinkTarget(), placeLabel } = {}) {
     if (!url) return;
+    recordTravelAgencyVisit({ href: url, placeLabel });
     if (target === '_self') {
         window.location.assign(url);
         return;
@@ -112,8 +141,9 @@ export function openPartnerExternalUrl(url, { target = getPartnerLinkTarget() } 
 }
 
 /** 프로그래밍 방식 — Trip.com (모바일 _self 시 noreferrer로 이동) */
-export function openTripcomExternalUrl(url, { target = getPartnerLinkTarget() } = {}) {
+export function openTripcomExternalUrl(url, { target = getPartnerLinkTarget(), placeLabel } = {}) {
     if (!url) return;
+    recordTravelAgencyVisit({ href: url, placeLabel });
     if (target === '_self') {
         const anchor = document.createElement('a');
         anchor.href = url;
@@ -125,4 +155,12 @@ export function openTripcomExternalUrl(url, { target = getPartnerLinkTarget() } 
         return;
     }
     window.open(url, '_blank', 'noopener');
+}
+
+/**
+ * 숙소 모달 항공+호텔(packages) — same-tab Trip 리다이렉트 체인이 gateo 탭에서
+ * 「닫혔다 다시 열림」처럼 보일 수 있어 새 탭 고정.
+ */
+export function getTripcomPackageLinkTarget() {
+    return '_blank';
 }

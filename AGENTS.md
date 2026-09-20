@@ -7,7 +7,7 @@
 1. [`.cursor/rules/gateo-project-context.mdc`](.cursor/rules/gateo-project-context.mdc) 규칙을 따른다.
 2. 루트 [`.ai-context.md`](.ai-context.md)를 **Read**한다 (사용자가 `@`로 안 붙여도).
 3. 작업 주제면 최신 일지(`plans/YYYY-MM-DD-project-log.md`)와 해당 운영 가이드만 추가로 읽는다.
-4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.3**(VERIFY PASS 후 §3.4 커밋 · Cloud는 push·PR · 후임 Task 이양) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
+4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4.1**(메인 장수 · 워커 N 기본 2 · 파일+요약 · 워커 커밋 금지 · Cloud **2회 하드캡 아님** · 중첩 후임 금지) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
 
 ## 금지 (요약)
 
@@ -16,21 +16,36 @@
 - 브라우저에 MRT/`VITE_` 비밀키 노출
 - **검증 없이** git commit/push · FAIL·미확인 상태로 커밋 · `main` 강제 push
 - 사용자 승인 없는 「완료」 단정 · **UI 임의 변경** (기능 작업 중 기존 버튼·레이아웃·톤 교체 포함 · `.ai-context` **§4.1 5**)
-- 릴리스 노트 잦은 제안 — **새 기능·중대 업데이트만** (`.ai-context` **1.7**)
-- 복붙 Core Rules 부활 금지(구조 제안→승인→전체 코드) · 주석 **희소**(`.ai-context` **4.0**/**4.2**) · 사람에게는 동작·QA
+- 릴리스 노트 잦은 제안 — **새 기능·중대 업데이트만** · 푸터 Updates · **자동 팝업 금지** (`.ai-context` **1.7**)
+- 복붙 Core Rules 부활 금지(구조 제안→승인→전체 코드) · 주석 **희소**(`.ai-context` **4.0**/**4.2**) · 사람에게는 동작·QA(**사람** Preview 체크 · 에이전트 대행 아님)
 - **오류 루프**: 동일 FAIL **2회** 후 추측 패치 중단·보고 · 요청 밖 확장 금지 (`.ai-context` **4.1**)
+- **브라우저/`computerUse` QA** — 사람 **명시 요청 시에만**. 기본은 `/qa/…`·Preview 핸드오프 + 사람 QA. 에이전트 검증은 audit/smoke/`build`만 (`.ai-context` **§4.1 13** · **1.6**)
+- **같은 세션 QA (기본)** — 로직이 복잡하거나 토큰 소비가 큰 작업 **외에는** 작업 세션에서 QA를 마무리한다. 요약에 Preview 링크 + 사람 체크 1~3줄. **다음 제시어 = 다음 작업**. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 **넘기지 않음**. 예외·상세는 Cloud 절.
 
 ## 커밋·푸시 (검증 게이트)
 
-의도(둘): (1) 스모크 없이 깨진 로직 커밋·푸시 방지 · (2) **로컬**에서 색·폰트 등 UI 미세 조율마다 커밋이 쌓이는 것 방지.  
-**요청 여부가 아니라 검증·이상 없음**이 게이트다 (`.ai-context` **1.5.1**). 「요청 시에만 commit」보다 **게이트 우선**(로직·SSOT).
+**SSOT 판단표**: [`.ai-context.md`](.ai-context.md) **§1.5.3** — 막히면 여기만 본다.
 
-- 관련 audit/스모크/테스트 **PASS** · 알려진 깨짐 없음 → **커밋 OK**(한글 메시지 · 사용자 요청 불필요) — **로직·SSOT·버그픽스** (**기존 비주얼 유지**한 채 연결·동작만)
-- **디자인·소소한 UI · 로컬**: 사람 조율 승인 후 working tree에서 이어감 · 조율 중 **커밋 보류** → 사람 QA 확정 후 **1회(또는 소수)** 커밋. 「커밋 보류」≠ 리디자인 허가 (`.ai-context` **§4.1 5** / **1.5.1**)
-- **디자인·소소한 UI · Cloud feature**: 아래 Cloud 절 — Preview 로드를 위해 **매 턴 커밋·push**(로컬 커밋 보류를 적용하지 않음)
-- **브랜치**: 짧은 수정은 **`main` 직행** · 대형/장기/충돌 위험·Cloud UI는 feature(+PR). 상세 `.ai-context` **1.5.2**
-- Cloud 오케스트레이터는 **§3.4**(커밋·push·PR)
-- **금지**: 검증 생략 · FAIL tip/코드 커밋·푸시 · **로컬** 미확정 UI 수시 커밋 · UI 임의 변경 · 사람 승인 없는 `main` 원격 push · force-push to main
+**원래 사고**: 검증 없이 **`origin/main` → PROD**에 깨진 빌드가 올라감.  
+**지금 규칙**: (1) **검증 PASS**면 커밋 OK — **사람 허가 요청 없음** · (2) **로컬** UI 미세 조율만 커밋 보류 · (3) **Cloud feature**는 Preview를 위해 **매 턴 feature push 필수** · (4) **핸드오프 문서 = `main`+`origin/main` 필수**(§1.5.4) · (5) **코드** `origin/main` = PR merge 또는 사람 요청.
+
+**로직 vs 문서**: [`plans/docs-on-main-workflow.md`](plans/docs-on-main-workflow.md)
+
+| | commit | push |
+|--|--------|------|
+| 로직·SSOT·버그픽스 | 검증 PASS → 즉시 | feature: 즉시 · main 코드: **PR/요청** |
+| 문서·핸드오프·일지 | 즉시 · **QA·허가 요청 없음** | **`origin/main` docs-only — feature 세션 종료 시 즉시** |
+| Cloud UI·Preview | 매 턴 | **매 턴 feature (필수)** |
+| `origin/main` 코드 → PROD | — | **PR merge 또는 사람 요청** |
+
+**에이전트 금지**: 「커밋/푸시해도 될까요?」·Cloud 턴을 push 없이 종료 · 문서-only에 사람 Preview QA 요청.
+
+- 관련 audit/스모크/테스트 **PASS** · 알려진 깨짐 없음 → **커밋 OK**(한글 · **요청 불필요**) — 로직·SSOT·버그픽스
+- **디자인·소소한 UI · 로컬**: 사람 조율 승인 후 · 조율 중 **커밋 보류** → QA 확정 후 1회. 「커밋 보류」≠ 리디자인 허가
+- **디자인·소소한 UI · Cloud feature**: **매 턴 커밋·push**(로컬 커밋 보류 **적용 안 함**)
+- **브랜치**: 짧은 수정 `main` 직행 · 대형/Cloud UI feature(+PR). **§1.5.2**
+- Cloud 오케스트레이터 **§3.4**(커밋·push·PR)
+- **금지**: 검증 생략 · FAIL push · 로컬 미확정 UI 수시 커밋 · UI 임의 변경 · **코드를 `origin/main`에 에이전트 push** · feature 세션 **docs-on-main 생략** · **feature에 `plans/**` 커밋** · `main` docs push 후 **merge origin/main 생략** · force-push to main
 
 
 ## 검증 커맨드 (자주 씀)
@@ -45,6 +60,7 @@ npm run audit:city-attraction-hubs   # 도시 명소 hub SSOT (오케스트레�
 npm run audit:mapbox-settlement-places  # 정착지 SSOT (맵박스정착지 오케스트레이터)
 npm run smoke:mapbox-settlement-places
 npm run smoke:place-label-slug   # 지구본 라벨 slug/name_en · 무니 역사 L2 오탐
+npm run audit:docs-handoff-sync   # Cloud feature — origin/main 핸드오프 merge 여부
 ```
 
 ## Cursor Cloud specific instructions
@@ -60,21 +76,24 @@ npm run smoke:place-label-slug   # 지구본 라벨 slug/name_en · 무니 역�
 | | 규칙 |
 |--|------|
 | **세션·채팅 표기** | 형식 **`{주제} #{N}, {단계}`** — 예: `축제 페이지 #1, mvp 제작` · `테마여행 #2, 셸 라우트`. 주제는 고정 · `#N`은 세션 순번 · 단계는 이번 목표. **첫 응답·턴 종료·일지·PR 제목**에 동일 표기. Cursor UI 채팅명을 못 바꾸면 본문에 반복하고, 런칭 시 사람도 같은 형식을 쓴다. |
-| **채팅명 제시어 (자동 반영)** | 다세션·플랜·세션 종료 시 **다음 채팅명**을 코드펜스 **한 줄만** 제안(복붙 → 새 채팅 제목/런칭). **제시어 블록 1행 = 채팅명과 동일**. 플랜에 채팅명 복붙표. `#N` 리셋 금지. 상세 [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.1·§5**. |
+| **채팅명 제시어 (자동 반영)** | 다세션·플랜·세션 종료 시 **§1.2 다음 제시어 블록**(채팅명 + 핀 3개)을 코드펜스로 제안. **1행 = 채팅명**. [`feature-handoff-index.md`](plans/feature-handoff-index.md) 갱신. `#N` 리셋 금지. 상세 [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.2·§5·§6**. |
 | **고정 브랜치** | 주제당 feature **한 번** 생성 → main 병합까지 **재사용**. 세션마다 새 `cursor/…-xxxx`·새 PR **금지**. **새 주제 브랜치명는 짧게** (`cursor/puzzle`, `cursor/korea`) — 길면 git Preview 호스트가 더 길어짐. Mapbox에 이미 등록된 고정 브랜치는 **이름 변경 금지**(사람이 도메인·토큰 이관할 때만). |
 | **동일 Preview URL** | 기술 QA·Mapbox = **git Preview URL** (`…-git-<branch-slug>-….vercel.app`). 배포 해시 URL **금지**. |
 | **짧은 공유 링크 (테스터)** | 사람에게는 **`https://www.gateo.kr/qa/<slug>`** 를 우선 안내 (예: `/qa/puzzle` → 퍼즐 Preview). SSOT [`cloudQaShareLinks.js`](src/shared/cloudPreview/cloudQaShareLinks.js) + [`vercel.json`](vercel.json) `redirects` 동기화. 목록 페이지 `/qa`. 주제 종료 시 항목 `active: false` 또는 destination을 PROD path로 변경. |
 | **Preview 작업 로그** | Preview/로컬 화면 **우측** 「작업 로그」패널. 세션마다 로그 append · `qaShareSlug` 있으면 공유 링크 표시. PROD에는 안 보임. |
 | **턴 종료 링크** | 요약에 **세션 표기 + 짧은 `/qa/…` 링크(있으면) + git Preview URL + 이번 적용 1줄** 필수. 다음 세션이 있으면 **다음 채팅명**(한 줄 펜스) 포함. Preview 링크 없이 「로컬만」으로 세션 종료 **금지**. |
+| **같은 세션 QA (기본)** | 로직이 복잡하거나 토큰 소비가 큰 작업 **외에는** 그 작업 세션에서 QA를 마무리한다. 사람은 **같은 턴**에 Preview 링크로 확인. **다음 제시어 = 다음 작업**. `{주제} #N, 사람 Preview QA`를 다음 Cloud 채팅으로 **두지 않음**. **예외**(복잡 로직·토큰 과다): 별도 사람 Preview QA 세션 허용. 사람 피드백 → **수정** 세션. 상세 [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§5**. |
 
 ### Feature 브랜치 · Vercel Preview (사람 QA 경로)
 
 사람이 Cloud 작업을 **확인하는 기본 경로**는 로컬 미리보기가 아니라 **해당 feature 브랜치의 Vercel Preview**(예: 축제 브랜치 git Preview → `/korea`)다.  
+에이전트 **브라우저/`computerUse` 대행 QA는 기본 금지** — 사람 명시 요청 시에만 (`.ai-context` **§4.1 13**). 에이전트는 audit/smoke/`build` 후 Preview 링크를 넘긴다.  
 **push가 없으면 Preview가 갱신되지 않아 테스트 페이지를 로드할 수 없다** → Cloud feature에서는 로컬의 「UI 커밋 보류」를 **적용하지 않음**.
 
 | | 규칙 |
 |--|------|
-| **매 턴** | 작업분 반영 후 **최소 검증**(아래) PASS · 오류 없음 → **한글 커밋 + `git push`**(사람 「커밋해」 대기 금지) → 위 **턴 종료 링크**. 턴을 커밋 없이 끝내지 않음 |
+| **매 턴** | 최소 검증 PASS → **한글 커밋 + `git push`** — **사람 「커밋해」·허가 대기 금지** · Preview 링크 필수 |
+| **같은 세션 QA** | 기본: push 직후 **같은 요약**에서 사람 QA(링크+체크 1~3줄)까지. 다음 에이전트 채팅은 **다음 작업**. 복잡 로직·토큰 과다만 다음 채팅을 `사람 Preview QA`로. |
 | **디자인·UI 조율** | 색·폰트·배치 조율이라도 **매 턴 커밋·push**. Preview에 올라가야 사람이 본다 |
 | **PR** | feature면 **PR 없으면 `gh pr create`** · 있으면 같은 PR에 push(오케 §3.4와 동일 · 비오케 Cloud UI도) |
 | **「완료」** | push ≠ PROD 완료. 사람 Preview QA OK 전 **완료 단정·main 병합 금지** |
@@ -103,14 +122,14 @@ Vercel은 **배포 해시 URL**(푸시마다 변경)과 **브랜치 git Preview 
 
 | 작업 종류 | 브랜치 · push |
 |-----------|----------------|
-| 짧은 SSOT·버그픽스·문서 | **`main` 커밋 OK** · `main` **원격 push는 사람 요청 시만** |
-| UI 조율 · Preview QA · 대형/장기 · Cloud 오케 tip | **feature** · **매 턴 커밋·push** · PR(없으면 생성) |
+| 짧은 SSOT·버그픽스 (`main` 직행) | **`main`** · 코드 `origin/main` = PR/사람 요청 |
+| UI · Preview QA · 대형/장기 · Cloud 오케 tip | **feature** · **매 턴 feature push** · **세션 종료 시 `main` docs push 필수** ([`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md)) |
 
 ### 브랜치·병합
 
 - **기본(로컬)**: 버그픽스·SSOT·소소한 UI는 **`main`에서 작업·커밋**. 사람 요청 시 `main` push OK (`.ai-context` **1.5.2**).
 - **브랜치·PR**: 새 페이지·대형 기능·장시간·충돌 위험·Cloud 오케·Cloud UI Preview·사람이 명시한 경우. **열린 feature가 있으면 그 브랜치를 재사용**(위 고정 브랜치).
-- **금지**: force-push to main · 사람 승인 없이 에이전트가 임의로 `main` push · **같은 주제로 세션마다 새 Preview 브랜치 남발**. feature는 Preview → 사람 QA → 병합.
+- **금지**: force-push to main · **코드**를 에이전트가 `origin/main`에 임의 push · feature 세션 **docs-on-main 생략** · 같은 주제로 세션마다 새 Preview 브랜치 남발
 
 - Edge(`supabase functions deploy …`)는 코드 수정과 별개. Secrets·로그인 없으면 **배포는 보류**하고 일지/핸드오프에 명령만 남긴다.
 
@@ -118,10 +137,10 @@ Vercel은 **배포 해시 URL**(푸시마다 변경)과 **브랜치 git Preview 
 
 다배치 SSOT 오케스트레이터([`orchestrator-method.md`](plans/orchestrator-method.md) **§3.4**):
 
-1. 워커2 → tip 직렬 머지 → VERIFY PASS  
+1. 워커 N(기본 2) → tip 직렬 머지 → VERIFY PASS  
 2. **커밋**(한글) — 로컬·Cloud 공통 · 턴/이관 전  
 3. **Cloud**: push → PR 생성(없으면) 또는 기존 PR에 push · 일지에 SHA·PR URL  
-4. 후임 Task 이관  
+4. **Cloud 이관**: 같은 지휘자가 워커 재기동(중첩 후임 금지). Desktop은 컨트롤러가 다음 지휘자 L1.  
 
 VERIFY FAIL tip은 커밋하지 않는다. 워커는 commit/PR 금지.
 
@@ -136,4 +155,8 @@ VERIFY FAIL tip은 커밋하지 않는다. 워커는 commit/PR 금지.
 
 ### 핸드오프
 
-작업이 Preview·QA로 끝나면 일지에 **세션 표기 · 브랜치 · SHA · PR · `/qa/…` 공유 링크 · git Preview URL · QA path** · **작업 로그 제목** · **남은 일** · (다음 세션 있으면) **다음 채팅명 한 줄**을 명시한다.
+작업이 Preview·QA로 끝나면 일지에 **세션 표기 · 브랜치 · SHA · PR · `/qa/…` 공유 링크 · git Preview URL · QA path** · **작업 로그 제목** · **남은 일**을 명시한다.
+
+**열린 feature**는 추가로 [`plans/feature-handoff-index.md`](plans/feature-handoff-index.md) 해당 행 갱신 + [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.2 다음 제시어** + **§6 [`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md) main docs push 필수**.
+
+**다음 제시어**: 기본 = **다음 작업**. `{주제} #N, 사람 Preview QA`는 복잡 로직·토큰 과다 세션의 예외만. 사람은 작업 세션 요약의 Preview 링크로 같은 턴에 확인한다.

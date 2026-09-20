@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Trash2, StickyNote } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../shared/api/supabase';
 import {
   MOBILE_TEXTAREA_CLASS,
@@ -7,6 +8,7 @@ import {
 } from '../../../shared/hooks/useMobileInputViewport';
 
 const QuickMemo = ({ user }) => {
+  const { t } = useTranslation();
   const [memos, setMemos] = useState(['']);
   const [currentMemoIndex, setCurrentMemoIndex] = useState(0);
   const [isMemoSaved, setIsMemoSaved] = useState(true);
@@ -55,7 +57,7 @@ const QuickMemo = ({ user }) => {
   };
 
   const deleteMemo = () => {
-    if (!window.confirm('삭제하시겠습니까?')) return;
+    if (!window.confirm(t('logbook.memo.deleteConfirm'))) return;
     const newMemos = memos.filter((_, i) => i !== currentMemoIndex);
     if (newMemos.length === 0) newMemos.push('');
     setMemos(newMemos);
@@ -80,7 +82,7 @@ const QuickMemo = ({ user }) => {
         <div className="flex-1 bg-gray-100 border border-gray-200 rounded-xl p-1 flex flex-col transition-all hover:border-blue-400">
           <textarea 
             className={`flex-1 w-full bg-transparent border-0 p-3 ${MOBILE_TEXTAREA_CLASS} text-gray-800 placeholder-gray-500 focus:outline-none resize-none custom-scrollbar leading-relaxed font-medium selection:bg-blue-500/30`}
-            placeholder="새로운 아이디어를 적어보세요..."
+            placeholder={t('logbook.memo.placeholder')}
             value={memos[currentMemoIndex]}
             onChange={handleChange}
             onBlur={handleMemoBlur}
@@ -91,7 +93,7 @@ const QuickMemo = ({ user }) => {
             <button 
               onClick={deleteMemo} 
               className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
-              title="메모 삭제"
+              title={t('logbook.memo.delete')}
             >
               <Trash2 size={16} />
             </button>
@@ -121,7 +123,7 @@ const QuickMemo = ({ user }) => {
             <button 
               onClick={addMemo} 
               className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-all shadow-[0_0_10px_rgba(59,130,246,0.2)] hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]"
-              title="새 메모 추가"
+              title={t('logbook.memo.add')}
             >
               <Plus size={18} />
             </button>

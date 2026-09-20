@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plane, CloudSun, Sun, CloudRain, Cloud, Wind, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 
 const WeatherIcon = ({ type, size = 14 }) => {
   switch (type) {
@@ -20,8 +22,18 @@ const RankChange = ({ type, size = 12 }) => {
 };
 
 export default function TravelTicker({ data = [], onCityClick, isExpanded: externalExpanded, onToggle }) {
+  const { t, i18n } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
+
+  const displayName = (city) =>
+    getLocalizedPlaceName(city, i18n.language) || city?.name || '';
+
+  const rankChangeLabel = (change) => {
+    if (change === 'up') return t('home.ticker.rising');
+    if (change === 'down') return t('home.ticker.down');
+    return t('home.ticker.same');
+  };
   
   const isControlled = externalExpanded !== undefined;
   const [internalExpanded, setInternalExpanded] = useState(false);
@@ -84,12 +96,12 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
       <div className="flex justify-between items-center mb-2 border-b border-white/5 pb-2" onClick={isExpanded ? handleToggle : undefined}>
         <div className="text-[9px] text-gray-400 font-bold flex items-center gap-1 uppercase tracking-wider">
           <Plane size={10} className="animate-pulse text-blue-400" />
-          {isExpanded ? 'Live Ranking' : 'Live Trending'}
+          {isExpanded ? t('home.ticker.liveRanking') : t('home.ticker.liveTrending')}
         </div>
         {isExpanded ? (
-          <span className="text-[8px] text-green-500 font-mono animate-pulse">● LIVE</span>
+          <span className="text-[8px] text-green-500 font-mono animate-pulse">{t('home.ticker.live')}</span>
         ) : (
-          <span className="text-[8px] text-gray-600 font-mono">UPDATED</span>
+          <span className="text-[8px] text-gray-600 font-mono">{t('home.ticker.updated')}</span>
         )}
       </div>
 
@@ -108,12 +120,12 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
 
                 <div className="flex flex-col">
                   <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors">
-                    {city.name}
+                    {displayName(city)}
                   </span>
                   <span className="flex items-center gap-1">
                     <RankChange type={city.change} size={10} />
                     <span className="text-[8px] text-gray-500 uppercase">
-                      {city.change === 'up' ? 'Rising' : city.change === 'down' ? 'Down' : '-'}
+                      {rankChangeLabel(city.change)}
                     </span>
                   </span>
                 </div>
@@ -140,8 +152,8 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
               </div>
 
               <div className="flex flex-col">
-                <span className="font-bold text-sm text-white/90 tracking-wide">{currentCity.name}</span>
-                <span className="text-[10px] text-gray-400">Popular Dest.</span>
+                <span className="font-bold text-sm text-white/90 tracking-wide">{displayName(currentCity)}</span>
+                <span className="text-[10px] text-gray-400">{t('home.ticker.popularDest')}</span>
               </div>
             </div>
 
@@ -165,7 +177,7 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
 
       {isExpanded && (
         <div className="text-[8px] text-center text-gray-600 font-mono tracking-[0.2em] border-t border-white/5 pt-2 mt-2">
-          GATE 0 SYSTEM
+          {t('home.ticker.gateSystem')}
         </div>
       )}
     </div>

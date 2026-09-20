@@ -209,18 +209,18 @@ QA 후 커밋.
 - 플랩 접기/애니메이션 · hub 연동 인근
 - **헤더 corridor 칩 부활 금지** (벨트는 아래 별도 트랙)
 
-#### 벨트 · 축제로드 (문서만 · C 이후 후보)
+#### 벨트 · 축제로드 → **축제 로드 킬러 맵** (활성 · 2026-09-01)
 
-사람 관찰(2026-07-27): 「지금」 지점이 **서울 중심 역C 벨트**, **동해안→내륙 C자 벨트**처럼 재미있는 형상을 이룸.
+**SSOT**: [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) — **로드 트랙 #0~#13** (#Na 이어하기) · 강원 시범 → 전국 → S5-D.
 
 | | |
 |--|--|
-| **제품** | 한쪽 **벨트 목록**(이름·짧은 설명) · 선택 시 해당 축제 **점·선 지도**(또는 실루엣 이미지) + 그 벨트 축제 리스트 |
-| **재미** | 단순 선 연결이 아니라 **패턴(형상)을 찾아 이름 붙임** — 비엔나식 축제 로드 / 여행 동선 후보 |
-| **데이터** | 시간탭 결과의 축제 좌표 그래프 → 군집·호(arc)·해안 정렬 등 **형상 후보 추출**(수동 시드 가능) |
-| **≠ corridor** | 헤더 고정 bbox 권역 칩 **아님**. 벨트는 **패턴 발견 UI**(목록+맵 오버레이). 행정 색인 칩과 병행 |
-| **D와 연결** | D의 출발/도착·즐겨찾기 **도로 루트**에 벨트 경유를 넣으면 「축제로드 1개 선택」으로 이어질 수 있음 |
-| **지금** | 구현 금지(C 우선). 알고리즘·카피·목록 UX 미합의 |
+| **제품** | 로드 선택 → **지도 동선** + **정류장 leg 타임라인**(지역→축제→다음 지역) · 일정 맞춤은 #12~#13 |
+| **≠ corridor** | [`koreaFestivalCorridors.json`](../src/pages/Korea/data/koreaFestivalCorridors.json) bbox · **헤더 corridor 칩 부활 금지** |
+| **브랜치** | `cursor/korea-festival-proxy` · 문서=`main` |
+| **다음 세션** | `축제 로드 #1, 검증·확장` — index·로드 플랜 §9·일지 참고 |
+
+구 플랜(2026-07): 「지금」 형상 패턴 · C 이후 후보 → **합의·장기 세션**으로 승격.
 
 **비전 단계 (합의 · 순서 강제)**
 
@@ -271,3 +271,26 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 - 축제 → hub → `/place/...`
 - `smoke:tourapi` festival/area PASS · 키 미노출
 - `git log` / 일지만으로 S0→현재 세션 추적 가능
+
+---
+
+## 9. Cloud 핸드오프 (축제 페이지 UI)
+
+| | |
+|--|--|
+| **상태** | **#5 push** · tip `89d7049a` · PR [#287](https://github.com/catgeot/Days/pull/287) |
+| **브랜치** | `cursor/festival-sheet-ui-ec8b` |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` |
+| **VERIFY** | `smoke:korea-festival-personal` · `smoke:korea-festival-nearby` · `vite build` |
+
+**다음 제시어**:
+
+```
+축제 페이지 #6, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-19-project-log.md
+@plans/korea-festival-hub-plan.md
+브랜치 cursor/festival-sheet-ui-ec8b · PR #287 · Preview /qa/festival-ui
+금지: 축제 시트 리팩터 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: Preview /korea 축제 본문 끝까지 스크롤 → 닫기가 푸터에 안 가리는지 · 무니와 위로가 겹치지 않는지 · 무니 채팅이 밝은지. OK면 PR #287 병합.
+```

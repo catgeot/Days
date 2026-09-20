@@ -66,3 +66,40 @@ export const getPlaceTitleLines = (location) => {
 
   return { primaryName, secondaryName: '' };
 };
+
+/** locale별 표시명 — en일 때 name_en·country_en 우선 */
+export function getLocalizedPlaceName(location, locale = 'ko') {
+  if (locale === 'en') {
+    const english = normalizeText(location?.name_en || location?.curation_data?.locationEn);
+    if (english) return english;
+  }
+  return normalizeText(location?.name) || '';
+}
+
+export function getLocalizedCountryName(location, locale = 'ko') {
+  if (locale === 'en') {
+    const english = normalizeText(location?.country_en);
+    if (english) return english;
+  }
+  return normalizeText(location?.country) || '';
+}
+
+export function getPlaceTitleLinesForLocale(location, locale = 'ko') {
+  if (locale === 'en') {
+    const englishName = normalizeText(location?.name_en || location?.curation_data?.locationEn);
+    const koreanName = normalizeText(
+      location?.name_ko || location?.curation_data?.location || location?.name,
+    );
+    const primaryName = englishName || normalizeText(location?.name) || '';
+    if (!primaryName) return { primaryName: '', secondaryName: '' };
+    if (
+      koreanName &&
+      hasHangul(koreanName) &&
+      !isRedundantSecondary(primaryName, koreanName)
+    ) {
+      return { primaryName, secondaryName: koreanName };
+    }
+    return { primaryName, secondaryName: '' };
+  }
+  return getPlaceTitleLines(location);
+}

@@ -2,7 +2,7 @@
  * 여행지 slug별 도착 공항 수동·검수 매핑 (배너 없음·오탐 보정).
  * IATA는 rentalAirportHubs.js에 등록되어 있어야 런타임·배너에 반영됩니다.
  *
- * @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, tripFlightArrivalIata?: string, kind?: 'single'|'multi', bannerNote?: string, confidence?: string, rationale?: string }>}
+ * @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, tripFlightArrivalIata?: string, kind?: 'single'|'multi', bannerNote?: string, bannerNoteEn?: string, confidence?: string, rationale?: string }>}
  */
 export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   hvar: {
@@ -204,6 +204,20 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: 'ICN↔SPN 직항(진에어 등) · graph 2hop FUK·PUS 경유 오탐 보정',
   },
+  zermatt: {
+    primaryIatas: ['ZRH', 'GVA'],
+    preferredLinkIata: 'ZRH',
+    kind: 'multi',
+    flightRouteHubIatas: [],
+    confidence: 'high',
+    rationale:
+      'ICN↔ZRH 직항(대한항공·스위스 등) · graph-2hop ICN→MUC→GVA→ZRH 오탐(GVA·ZRH는 체르마트 도착 관문, 상호 경유 아님)',
+    searchHintIatas: ['ZRH', 'GVA'],
+    bannerNote:
+      '체르마트는 공항이 없습니다. 보통 인천→취리히(ZRH) 직항 후 기차로 들어갑니다. 제네바(GVA)도 도착 관문이며 서로 환승 경유지가 아닙니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+    bannerNoteEn:
+      'Zermatt has no airport. Most travelers fly ICN→Zurich (ZRH) direct, then take the train. Geneva (GVA) is also an arrival gateway — they are not transfer hubs for each other. Confirm the final arrival code on your ticket.',
+  },
   'san-diego': {
     primaryIatas: ['SAN', 'LAX', 'SFO'],
     preferredLinkIata: 'SAN',
@@ -331,12 +345,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '호주령 크리스마스섬 직항은 크리스마스섬(XCH)입니다. 퍼스(PER) 등 호주 본토에서 정기편·경유로 이어지는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   bagan: {
-    primaryIatas: ['NYU'],
+    primaryIatas: ['NYU', 'MDL', 'RGN'],
     preferredLinkIata: 'NYU',
+    tripFlightArrivalIata: 'MDL',
+    flightRouteHubIatas: ['KMG', 'MDL'],
+    kind: 'multi',
+    searchHintIatas: ['MDL', 'RGN'],
     confidence: 'high',
-    rationale: '바간 관문 냥우(NYU) 공항',
+    rationale: '바간 최종 NYU(냥우) · 국제선 MDL·RGN 관문 후 국내선',
     bannerNote:
-      '국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.',
+      '바간 최종 도착은 냥우(NYU) 공항입니다. NYU는 국제선 검색이 어려우므로 Trip 항공 검색은 만달레이(MDL) 또는 양곤(RGN) 국제선 관문을 사용하세요. 입국 후 바간행 국내선(약 30분)으로 NYU에 도착하는 일정이 일반적입니다. 렌터카·픽업은 최종 도착 NYU 기준입니다.',
   },
   tikal: {
     primaryIatas: ['FRS', 'GUA'],
@@ -558,8 +576,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   phuket: {
     primaryIatas: ['HKT'],
     preferredLinkIata: 'HKT',
+    flightRouteHubIatas: [],
+    flightRouteAlternativeHubs: [[], ['BKK'], ['SIN'], ['KUL']],
     confidence: 'high',
-    rationale: '푸켓국제공항(HKT)'
+    rationale: '푸켓(HKT) ICN 직항 arc + Bar 경유 후보 BKK·SIN·KUL만 (graph 자동 후보 제외)',
   },
   reykjavik: {
     primaryIatas: ['KEF'],
@@ -956,6 +976,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: 'ICN→SGN→SAI · angkor-wat와 동일 관문',
     bannerNote:
       '앙코르 권역(SAI)은 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호치민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  sabah: {
+    primaryIatas: ['BKI'],
+    preferredLinkIata: 'BKI',
+    confidence: 'high',
+    rationale: '사바주 관문 코타키나발루(BKI)',
+    bannerNote:
+      '말레이시아 사바는 보통 코타키나발루공항(BKI)이 관문입니다. 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 카리브해 네덜란드령 사바(SAB)와 도착 공항이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   borneo: {
     primaryIatas: ['BKI', 'KCH', 'KUL'],

@@ -1,6 +1,11 @@
 import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 import {
+  hubMatchesScenicCluster,
+  listScenicClusterDefs,
+  resolveScenicClusterAreaCode,
+} from './koreaScenicClusters.js';
+import {
   scenicAreaCodeForHubId,
   SCENIC_REGION_ORDER,
 } from './koreaTourAttractionMap.js';
@@ -24,6 +29,7 @@ import {
  */
 
 /** @typedef {{ hubId: string, label: string, count: number }} KoreaScenicHubChip */
+/** @typedef {{ id: string, label: string, count: number }} KoreaScenicClusterChip */
 
 const REGION_ORDER = SCENIC_REGION_ORDER;
 
@@ -82,14 +88,63 @@ export function countKoreaScenicSpotsByTourArea(region) {
 }
 
 /**
- * 명소 여행지(소분류) 칩 — 권역·시도 안 hub.
+ * 명소 세권 칩 — 시도(또는 단일 시도 권역) 안.
  * @param {string | null | undefined} region
  * @param {string | null | undefined} areaCode
+ * @returns {KoreaScenicClusterChip[]}
+ */
+export function listKoreaScenicClusterChips(region, areaCode = null) {
+  const clusterArea = resolveScenicClusterAreaCode(region, areaCode);
+  const defs = listScenicClusterDefs(clusterArea);
+  if (!defs.length) return [];
+  const spots = listKoreaScenicSpots(region).filter((s) => {
+    if (!clusterArea) return true;
+    return scenicAreaCodeForHubId(s.hubId) === clusterArea;
+  });
+  /** @type {Map<string, number>} */
+  const counts = new Map();
+  for (const s of spots) {
+    const hubId = String(s.hubId || '')
+      .trim()
+      .toLowerCase();
+    if (!hubId) continue;
+    for (const def of defs) {
+      if (def.hubIds.includes(hubId)) {
+        counts.set(def.id, (counts.get(def.id) || 0) + 1);
+        break;
+      }
+    }
+  }
+  return defs
+    .map((def) => ({
+      id: def.id,
+      label: def.label,
+      count: counts.get(def.id) || 0,
+    }))
+    .filter((c) => c.count > 0);
+}
+
+/**
+ * 명소 여행지(소분류) 칩 — 권역·시도·세권 안 hub.
+ * @param {string | null | undefined} region
+ * @param {string | null | undefined} areaCode
+ * @param {string | null | undefined} clusterId
  * @returns {KoreaScenicHubChip[]}
  */
-export function listKoreaScenicHubChips(region, areaCode = null) {
+export function listKoreaScenicHubChips(
+  region,
+  areaCode = null,
+  clusterId = null,
+) {
   const area = String(areaCode || '').trim();
+  const cluster = String(clusterId || '').trim();
+  const clusterArea = cluster
+    ? resolveScenicClusterAreaCode(region, area || null)
+    : area;
   const spots = listKoreaScenicSpots(region).filter((s) => {
+    if (cluster) {
+      return hubMatchesScenicCluster(s.hubId, clusterArea, cluster);
+    }
     if (!area) return true;
     return scenicAreaCodeForHubId(s.hubId) === area;
   });

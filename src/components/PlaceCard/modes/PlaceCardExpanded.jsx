@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
 import { useWikiData } from '../hooks/useWikiData';
@@ -10,9 +11,19 @@ import { TRIPLINK_PACKAGES_ENABLED } from '../../../pages/Home/data/tripLinkPack
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import { resetIosZoomAfterInput } from '../../../shared/lib/mobileViewport';
 import TripLinkModal from '../modals/TripLinkModal';
+import { getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
+import {
+  getLocalizedPlaceDesc,
+  getLocalizedPlaceKeywords,
+  isPlaceDescKoreanOnly,
+} from '../../../pages/Home/lib/placeSeoText.js';
+import { useLocale } from '../../../i18n/LocaleProvider';
 
-const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
+const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { locale } = useLocale();
+  const displayName = getLocalizedPlaceName(location, locale) || location.name;
 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
@@ -69,7 +80,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = useMemo(() => spotVideos.find(v => v.id === activeVideoId) || (spotVideos.length > 0 ? spotVideos[0] : null), [spotVideos, activeVideoId]);
 
-  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(location, mediaMode);
+  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(location, mediaMode, locale);
   const {
     plannerData: currentPlannerData,
     isPlannerLoading,
@@ -83,8 +94,8 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
     if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
         return {
             mode: 'PHOTO',
-            title: '갤러리 상세보기',
-            summary: galleryData.selectedImg.alt_description || galleryData.selectedImg.description || "이 장소에 대한 정보가 업데이트 중입니다.",
+            title: t('place.fallback.galleryDetail'),
+            summary: galleryData.selectedImg.alt_description || galleryData.selectedImg.description || t('place.fallback.infoUpdating'),
             tags: galleryData.selectedImg.tags ? galleryData.selectedImg.tags.map(t => t.title) : ['Photo'],
             ai_context: null
         };
@@ -95,7 +106,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
 
         return {
             mode: 'VIDEO',
-            title: activeVideoData?.title || "영상 정보 없음",
+            title: activeVideoData?.title || t('place.fallback.videoMissing'),
             summary: activeVideoData?.ai_context?.summary || null,
             tags: activeVideoData?.ai_context?.tags || ['Travel', 'Video'],
             ai_context: activeVideoData?.ai_context || null,
@@ -106,14 +117,20 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         };
     }
 
+    const localizedDesc = getLocalizedPlaceDesc(location, locale).trim();
     return {
         mode: 'LOCATION',
-        title: location.name,
-        summary: location.desc || location.description || "장소에 대한 리뷰 정보가 없습니다.",
-        tags: ['Travel', location.country || 'Unknown', ...(location.keywords || [])],
+        title: displayName,
+        summary: localizedDesc || t('place.fallback.reviewEmpty'),
+        tags: [
+            t('place.fallback.travelTag'),
+            getLocalizedCountryName(location, locale) || t('place.fallback.unknownCountry'),
+            ...getLocalizedPlaceKeywords(location, locale),
+        ],
+        koreanGuideNotice: locale === 'en' && isPlaceDescKoreanOnly(location),
         ai_context: null
     };
-  }, [mediaMode, galleryData.selectedImg, isVideoLoading, spotVideos.length, activeVideoData, videoError, googleFormUrl, location]);
+  }, [mediaMode, galleryData.selectedImg, isVideoLoading, spotVideos.length, activeVideoData, videoError, googleFormUrl, location, displayName, locale, t]);
 
   const handleSeekTime = useCallback((timeValue) => {
     if (!playerRef.current) return;
@@ -177,6 +194,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         onOpenMooni={onOpenMooni}
         onNavigateToPlace={onNavigateToPlace}
         onGoHome={onGoHome}
+        isMooniChatOpen={isMooniChatOpen}
         activeInfo={activeInfo}
         isFullScreen={isFullScreen}
         mediaMode={mediaMode}
@@ -194,6 +212,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
       <div className={`flex-1 w-full min-w-0 h-full transition-all duration-500 z-10 ${isFullScreen ? 'fixed inset-0 z-[200]' : 'relative'}`}>
         <PlaceMediaPanel
             location={location}
+            displayPlaceName={displayName}
             galleryData={galleryData}
             isFullScreen={isFullScreen}
             toggleFullScreen={toggleFullScreen}

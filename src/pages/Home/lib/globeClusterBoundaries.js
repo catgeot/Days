@@ -1,4 +1,5 @@
 import { getClusterMembersWithCoords } from '../../../utils/travelSpotClusters.js';
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
 
 export const CLUSTER_HULL_SOURCE_ID = 'gateo-cluster-hull';
 export const CLUSTER_POI_SOURCE_ID = 'gateo-cluster-poi';
@@ -145,8 +146,8 @@ export function buildClusterOverlayGeoJSON(focusSlug) {
 }
 
 function safeMapUpdate(map, fn) {
+  if (!isGlobeMapStyleReady(map)) return;
   try {
-    if (!map?.getStyle?.()?.layers) return;
     fn();
   } catch {
     // Style may be reloading after theme changes.
@@ -154,7 +155,7 @@ function safeMapUpdate(map, fn) {
 }
 
 export function clusterBoundaryLayersReady(map) {
-  if (!map?.getStyle?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
   try {
     return CLUSTER_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
   } catch {
@@ -175,7 +176,7 @@ function raiseClusterBoundaryLayers(map) {
 }
 
 export function setupClusterBoundaryLayers(map) {
-  if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
 
   try {
     if (!map.getSource(CLUSTER_HULL_SOURCE_ID)) {
@@ -250,6 +251,7 @@ export function setupClusterBoundaryLayers(map) {
         source: CLUSTER_POI_SOURCE_ID,
         layout: {
           'text-field': ['get', 'name'],
+          'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
           'text-size': ['interpolate', ['linear'], ['zoom'], 4, 10, 8, 11, 12, 12],
           'text-offset': [0, 1.1],
           'text-anchor': 'top',
@@ -272,14 +274,14 @@ export function setupClusterBoundaryLayers(map) {
 }
 
 export function updateClusterHullSource(map, geojson) {
-  if (!map?.getStyle?.()) return;
+  if (!isGlobeMapStyleReady(map)) return;
   const source = map.getSource(CLUSTER_HULL_SOURCE_ID);
   if (!source) return;
   source.setData(geojson || EMPTY_FC);
 }
 
 export function updateClusterPoiSource(map, geojson) {
-  if (!map?.getStyle?.()) return;
+  if (!isGlobeMapStyleReady(map)) return;
   const source = map.getSource(CLUSTER_POI_SOURCE_ID);
   if (!source) return;
   source.setData(geojson || EMPTY_FC);
@@ -291,7 +293,7 @@ export function clearClusterBoundaries(map) {
 }
 
 export function setClusterBoundaryVisibility(map, visible) {
-  if (!map?.getStyle?.()) return;
+  if (!isGlobeMapStyleReady(map)) return;
   const visibility = visible ? 'visible' : 'none';
   safeMapUpdate(map, () => {
     for (const layerId of CLUSTER_LAYER_IDS) {
