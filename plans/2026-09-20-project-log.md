@@ -2,6 +2,15 @@
 
 직전: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)
 
+## 플래너 3단계 #4 — 렌터카·픽업·항공권 기준 위치 (Cloud)
+
+- **세션** `플래너 3단계 #4, Preview QA`
+- **브랜치** `cursor/planner-stages-7ee0` · tip `977568aa` · PR [#289](https://github.com/catgeot/Days/pull/289)
+- **완료**: 「렌터카 · 픽업 · 항공권 기준」을 1단계 **출발 전 필수 준비** 섹션 상단으로 이동. 2·3단계·탭 위 공통 영역에서는 제거. `#planner-rental-pickup` → 필수 단계. **병합 보류**.
+- **VERIFY**: `smoke:tripcom-flight-planner` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/planner-stages → `/place/paris/planner`
+- **QA**: 1단계 상단 슬림(하이브리드·여행사만) · 출발 전 준비 아래 배너 · 2·3단계 배너 없음
+
 ## 플래너 3단계 #3 — 상단 공지·여행사·하이브리드 고지 (Cloud)
 
 - **세션** `플래너 3단계 #3, Preview QA`
