@@ -2,6 +2,16 @@
 
 직전: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)
 
+## 플래너 3단계 #2 — 네이티브 검색 폼 (Cloud)
+
+- **세션** `플래너 3단계 #2, Preview QA`
+- **브랜치** `cursor/planner-stages-7ee0` · tip `c04252b9` · PR [#289](https://github.com/catgeot/Days/pull/289)
+- **원인**: 항공권 카드에 트립닷컴 모바일 iframe이 빈 공간으로 남고, 「항공권 실시간 검색」링크 버튼만 보임. 그 위젯은 작동하지 않음.
+- **완료**: 1단계 항공권 카드에 출발·도착·일정 입력 폼만 둠. iframe·실시간 검색 버튼 제거. **병합 보류**.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `smoke:planner-empty-scroll` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/planner-stages → git Preview `/place/paris/planner`
+- **QA**: 항공권 카드 입력 폼 · 빈 iframe 없음 · 실시간 검색 버튼 없음
+
 ## 플래너 3단계 #2 — 항공 검색 폼을 항공권 파트로 (Cloud)
 
 - **세션** `플래너 3단계 #2, Preview QA`
