@@ -293,7 +293,7 @@
     },
     {
       "source": "/qa/korea-theme",
-      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "destination": "https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea",
       "permanent": false
     },
     {
