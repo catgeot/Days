@@ -3,9 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
-import FlightSearchCta from './FlightSearchCta';
-import { scrollPlannerFlightSearchForm } from '../../../../../utils/placePlannerFocus.js';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
+import TripcomFlightBannerWidget from './TripcomFlightBannerWidget';
 import {
     GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
     getKlookAffiliateUrl,
@@ -37,7 +36,6 @@ const ToolkitCard = ({
     eventTripWindow,
     themeColor = 'gray',
     className = '',
-    scrollContainerRef = null,
 }) => {
     const { t } = useTranslation();
     const Icon = icon;
@@ -155,13 +153,12 @@ const ToolkitCard = ({
             {type === 'flight' && (
                 <div id="planner-prep-flight-booking" className="scroll-mt-24">
                     <FlightOfficialBookingWidget location={location} />
-                    <FlightSearchCta
+                    <TripcomFlightBannerWidget
                         location={location}
                         essentialGuide={essentialGuide}
-                        scrollToSearchForm
-                        onClick={() => {
-                            scrollPlannerFlightSearchForm(scrollContainerRef?.current ?? null);
-                        }}
+                        departDate={eventTripWindow?.departDate}
+                        returnDate={eventTripWindow?.returnDate}
+                        className="mt-3"
                     />
                 </div>
             )}

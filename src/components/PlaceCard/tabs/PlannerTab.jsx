@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
+import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
@@ -15,8 +15,8 @@ import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
-import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
 import FlightCinemaPlannerNotice from './planner/components/FlightCinemaPlannerNotice';
+import PlannerStageNav from './planner/components/PlannerStageNav';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
@@ -33,6 +33,8 @@ import { resetIosZoomAfterInput } from '../../../shared/lib/mobileViewport';
 import {
   parsePlannerFocusFromHash,
   scrollPlannerFocusIntoView,
+  PLANNER_STAGE,
+  resolvePlannerStageFromFocusId,
 } from '../../../utils/placePlannerFocus';
 import {
   clearFlightCinemaPlannerEntryParams,
@@ -47,8 +49,6 @@ const PlannerTab = ({
     location,
     plannerData,
     isPlannerLoading,
-    refetchPlannerFromDb,
-    isPlannerRefreshing = false,
     isActive,
     matchedPackage,
     mobileSecondaryNav = null,
@@ -82,6 +82,7 @@ const PlannerTab = ({
         };
     }, [eventPlannerEntry]);
     const [cinemaNoticeDismissed, setCinemaNoticeDismissed] = useState(false);
+    const [plannerStage, setPlannerStage] = useState(PLANNER_STAGE.ESSENTIAL);
     const plannerFocusId = parsePlannerFocusFromHash(routeLocation.hash);
     const lastScrolledFocusRef = useRef(null);
 
@@ -148,7 +149,7 @@ const PlannerTab = ({
             window.clearTimeout(retry);
             window.clearTimeout(retryLate);
         };
-    }, [isActive, isLoading, plannerFocusId, guideData]);
+    }, [isActive, isLoading, plannerFocusId, guideData, plannerStage]);
 
     useEffect(() => {
         if (!plannerFocusId) lastScrolledFocusRef.current = null;
@@ -157,6 +158,21 @@ const PlannerTab = ({
     useEffect(() => {
         setCinemaNoticeDismissed(false);
     }, [location?.slug, flightCinemaEntry?.cinemaOriginIata]);
+
+    useEffect(() => {
+        if (plannerFocusId) {
+            setPlannerStage(resolvePlannerStageFromFocusId(plannerFocusId));
+        } else {
+            setPlannerStage(PLANNER_STAGE.ESSENTIAL);
+        }
+    }, [location?.slug, plannerFocusId]);
+
+    const handlePlannerStageChange = useCallback((stage) => {
+        setPlannerStage(stage);
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0;
+        }
+    }, []);
 
     const dismissFlightCinemaNotice = useCallback(() => {
         setCinemaNoticeDismissed(true);
@@ -295,6 +311,19 @@ const PlannerTab = ({
         />
     );
 
+    const renderHybridNotice = (className = 'mb-5') => (
+        <div
+            className={`flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0 ${className}`}
+        >
+            <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" aria-hidden />
+            <p className={`${plannerCaption} md:text-sm text-gray-600`}>
+                {t('place.planner.hybridNotice')}
+            </p>
+        </div>
+    );
+
+    const isEssentialStage = plannerStage === PLANNER_STAGE.ESSENTIAL;
+
     if (isLoading) {
         return (
             <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
@@ -377,17 +406,6 @@ const PlannerTab = ({
                     <Sparkles size={16} />
                     <span>{t('place.planner.runToolkit')}</span>
                 </button>
-                {plannerData?.toolkit_updated_at && refetchPlannerFromDb ? (
-                    <button
-                        type="button"
-                        onClick={() => refetchPlannerFromDb()}
-                        disabled={isPlannerRefreshing}
-                        className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-blue-600 disabled:opacity-50"
-                    >
-                        <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin' : ''} />
-                        {t('place.planner.refreshSaved')}
-                    </button>
-                ) : null}
                 <div className="mt-8 w-full text-left">
                     <TravelAgencyDirectory variant="planner" />
                 </div>
@@ -440,54 +458,29 @@ const PlannerTab = ({
                             </p>
                         </div>
 
-                        <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
-                            <div className="flex flex-wrap items-center justify-end gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => refetchPlannerFromDb?.()}
-                                    disabled={isPlannerRefreshing || !refetchPlannerFromDb}
-                                    className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:pointer-events-none"
-                                    title={t('place.planner.refreshSavedTitle')}
-                                >
-                                    <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin text-blue-600' : 'text-gray-500'} />
-                                    {t('place.planner.refreshSaved')}
-                                </button>
-                                {lastUpdated && (
-                                    <span className={`${plannerMeta} px-1`}>
-                                        {t('place.planner.lastUpdated', { date: lastUpdated })}
-                                    </span>
-                                )}
+                        {lastUpdated ? (
+                            <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
+                                <span className={`${plannerMeta} px-1`}>
+                                    {t('place.planner.lastUpdated', { date: lastUpdated })}
+                                </span>
                             </div>
-                        </div>
+                        ) : null}
                     </div>
 
-                    <div className="mb-6 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
-                        <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" />
-                        <p className={`${plannerCaption} md:text-sm text-gray-600`}>
-                            {t('place.planner.hybridNotice')}
-                        </p>
-                    </div>
+                    {isEssentialStage ? renderHybridNotice() : null}
 
-                    {location && (
-                        <div className="w-full mb-6 shrink-0">
-                            <TripcomFlightBannerWidget
-                                location={location}
-                                essentialGuide={guideData}
-                                departDate={eventTripWindow?.departDate}
-                                returnDate={eventTripWindow?.returnDate}
-                                className="mb-0"
-                            />
-                        </div>
-                    )}
+                    {isEssentialStage ? (
+                        <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
+                    ) : null}
 
-                    <div id="planner-rental-pickup" className="mb-5 w-full shrink-0 scroll-mt-24">
-                        {rentalPickupBanner}
-                    </div>
+                    {isEssentialStage ? (
+                        <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
+                    ) : null}
 
-                    <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
+                    <PlannerStageNav value={plannerStage} onChange={handlePlannerStageChange} />
 
-                    <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
-
+                {plannerStage === PLANNER_STAGE.ESSENTIAL ? (
+                <>
                 {/* 체크리스트(항공·숙소·픽업) — 툴킷 있으면 상시 · 타임라인은 있을 때만 */}
                 {guideData && (
                     <div
@@ -514,20 +507,21 @@ const PlannerTab = ({
                     </div>
                 )}
 
-                {/* 3단계 시각적 그룹화(섹션화) 레이아웃 적용 */}
-
                 {/* 섹션 1: 출발 전 필수 준비 */}
                 <div id="planner-prep" className="mb-8 scroll-mt-24">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
                         <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionPrep')}</h3>
                     </div>
+                    <div id="planner-rental-pickup" className="mb-5 w-full shrink-0 scroll-mt-24">
+                        {rentalPickupBanner}
+                    </div>
                     <div className="grid grid-cols-1 gap-5">
                         <div id="planner-prep-visa" className="scroll-mt-24">
                         <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
                         </div>
                         <div id="planner-prep-flight" className="scroll-mt-24">
-                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" scrollContainerRef={scrollContainerRef} />
+                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
                         </div>
                         <div id="planner-prep-accommodation" className="scroll-mt-24">
                         <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
@@ -537,8 +531,10 @@ const PlannerTab = ({
                         </div>
                     </div>
                 </div>
+                </>
+                ) : null}
 
-                {/* 섹션 2: 현지 도착 및 이동 */}
+                {plannerStage === PLANNER_STAGE.TRANSFER ? (
                 <div id="planner-arrival" className="mb-8 scroll-mt-24">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-teal-500 rounded-full"></div>
@@ -572,8 +568,9 @@ const PlannerTab = ({
                         </div>
                     </div>
                 </div>
+                ) : null}
 
-                {/* 섹션 3: 현지 100% 즐기기 */}
+                {plannerStage === PLANNER_STAGE.ENJOY ? (
                 <div className="mb-8">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-orange-500 rounded-full"></div>
@@ -587,6 +584,15 @@ const PlannerTab = ({
                         <ToolkitCard icon={Smartphone} title={t('place.planner.toolkit.apps')} type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
                     </div>
                 </div>
+                ) : null}
+
+                    {!isEssentialStage ? renderHybridNotice('mt-2 mb-4') : null}
+
+                    <PlannerStageNav
+                        variant="footer"
+                        value={plannerStage}
+                        onChange={handlePlannerStageChange}
+                    />
 
                 {/* 관리자/테스트: AI 툴킷 강제 재실행 (평소 흐릿 · hover 시 확인 가능) */}
                 <div
