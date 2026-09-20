@@ -35,7 +35,7 @@
 @plans/2026-09-20-project-log.md
 브랜치 cursor/planner-stages-7ee0 · PR #289 · Preview /qa/planner-stages
 금지: 트립닷컴 모바일 iframe 재도입 · 위젯을 체크리스트 2열에 넣기 · 픽업·여행사 재배치 · feature에 plans/** 커밋
-작업: 1단계 — 하이브리드 고지(제목 아래)·방문한 여행사·렌터카 배너. 2·3단계 — 상단 여행사 없음·배너 sticky·하단 하이브리드 고지 1회. 항공 네이티브 폼·픽업·유심 2열·복잡도 유지. OK면 PR #289 병합.
+작업: 1단계 — 하이브리드 고지(제목 아래·원문)·방문한 여행사·렌터카 배너(스크롤 일반). 2·3단계 — 상단 여행사 없음·하단 하이브리드 고지 1회. 항공 네이티브 폼·픽업·유심 2열·복잡도 유지. OK면 PR #289 병합.
 검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · smoke:planner-empty-scroll PASS · vite build PASS
 ```
 
