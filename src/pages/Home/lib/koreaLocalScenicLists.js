@@ -642,10 +642,13 @@ export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, loca
     fromCurated.contentId;
   const name = member.attractionName;
   const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
+  const fromTourThumb = lookupLocalScenicPhotoByContentId(contentId);
   const thumb =
     nearbyHit?.firstImage ||
     overlay?.firstImage ||
     overlay?.imageUrl ||
+    fromTourThumb?.firstImage ||
+    fromTourThumb?.imageUrl ||
     fromCurated.imageUrl ||
     null;
   return {
@@ -1175,6 +1178,9 @@ const DY_GWANBANG_2 =
 const DY_GWANBANG_3 =
   'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128367';
 const DY_GWANBANG_4 = 'https://tong.visitkorea.or.kr/cms/resource/57/3533957_image2_1.jpg';
+const DY_CHUWOL = 'https://tong.visitkorea.or.kr/cms/resource/93/3581993_image2_1.jpg';
+const DY_GEUMSEONG = 'https://tong.visitkorea.or.kr/cms/resource/71/4110971_image2_1.jpg';
+const DY_BYEONGPUNG = 'https://tong.visitkorea.or.kr/cms/resource/57/3582057_image2_1.jpg';
 const MR_HOBAKSO = 'https://tong.visitkorea.or.kr/cms/resource/72/2660872_image2_1.jpg';
 const MR_HOBAKSO_2 = 'https://tong.visitkorea.or.kr/cms/resource/65/2589465_image2_1.jpg';
 const MR_HOBAKSO_3 = 'https://tong.visitkorea.or.kr/cms/resource/63/2589463_image2_1.jpg';
@@ -3470,6 +3476,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   125713: localScenicThumbOverlay(DH_MANGSANG, [DH_MANGSANG_2]),
   // 동해 명승 검색 어달해변 — TourAPI first_image 없음. 망상·대진·노봉과 다른 해변.
   125708: localScenicThumbOverlay(DH_EODAL, [DH_EODAL_2, DH_EODAL_3]),
+  // 담양10경 — tourapi_attraction 미동기화·firstimage 공란. JSON contentId만 있음.
+  126254: localScenicThumbOverlay(DY_CHUWOL),
+  126407: localScenicThumbOverlay(DY_GEUMSEONG),
+  126252: localScenicThumbOverlay(DY_BYEONGPUNG),
   // 영광 검색 불갑산도립공원 — firstimage·searchPhoto 공란, 사진은 detailImage. 불갑사 126349와 다른 id.
   126248: localScenicThumbOverlay(YG_BULGAP, [YG_BULGAP_2, YG_BULGAP_3]),
   // 고흥 검색 팔영산자연휴양림 — TourAPI firstimage 없음. JSON contentId 기입 아님.
@@ -3620,6 +3630,59 @@ export function mergeLocalScenicMembersIntoScenicSpots(spots, hubId, locale = 'k
 
 export function hasTourContentId(value) {
   return /^\d{1,32}$/.test(String(value || '').trim());
+}
+
+/**
+ * 축제·명승 상세 「주변 관광지」 팔경 행 — Tour contentId 또는 GATEO 멤버 오버레이 개요.
+ * @param {object} [spot]
+ */
+export function isNearbyAttractionRowClickable(spot) {
+  if (hasTourContentId(spot?.contentId)) return true;
+  const listId = String(spot?.localScenicListId || '').trim();
+  const name = String(spot?.attractionName || spot?.name || '').trim();
+  if (!listId || !name) return false;
+  const scenic = resolveLocalScenicListSpotById(
+    localScenicMemberSpotId(listId, name),
+  );
+  return Boolean(String(scenic?.overview || '').trim());
+}
+
+/**
+ * 팔경 주변 행 → ThemeSpotDetailModal spot (contentId 없을 때 오버레이 본문).
+ * @param {object} spot
+ */
+export function mergeNearbyRowWithLocalScenicDetail(spot) {
+  if (!spot || typeof spot !== 'object') return spot;
+  if (hasTourContentId(spot.contentId)) return spot;
+  const listId = String(spot.localScenicListId || '').trim();
+  const name = String(spot.attractionName || spot.name || '').trim();
+  if (!listId || !name) return spot;
+  const scenic = resolveLocalScenicListSpotById(
+    localScenicMemberSpotId(listId, name),
+  );
+  if (!scenic?.overview) return spot;
+  const thumb =
+    String(spot.firstImage || spot.imageUrl || '').trim() ||
+    scenic.firstImage ||
+    scenic.imageUrl ||
+    null;
+  return {
+    ...scenic,
+    ...spot,
+    id: scenic.id,
+    name: spot.name || scenic.name,
+    blurb: spot.rankBlurb || spot.blurb || scenic.blurb,
+    overview: scenic.overview,
+    galleryUrls: scenic.galleryUrls,
+    addr1: scenic.addr1 || spot.addr1,
+    homepage: scenic.homepage || spot.homepage,
+    imageUrl: thumb,
+    firstImage: thumb,
+    lat: spot.lat ?? scenic.lat,
+    lng: spot.lng ?? scenic.lng,
+    hubId: spot.hubId || scenic.hubId,
+    contentId: spot.contentId || scenic.contentId || null,
+  };
 }
 
 /**
