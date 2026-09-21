@@ -11,6 +11,15 @@
 - **Preview** https://www.gateo.kr/qa/korea-theme → `/korea/theme/scenic?spot=gyeongbokgung` · hub 관광지 카드 1건(긴 개요)
 - **QA**: 개요 연한 카드·문단 분리 · 짧은 주소·전화는 한 블록 · 긴 이용안내 항목만 문단
 
+## 명승·명소 상세 개요 가독성 보강 (Cloud)
+
+- **세션** `테마여행 #70, 개요 prose 타이포`
+- **브랜치** `cursor/korea-theme-7b3e` · PR [#295](https://github.com/catgeot/Days/pull/295)
+- **완료**: TourAPI 개요 `다.1392…` 형태 **공백 없는 마침표**도 문장 분리 · 2문장·240자 단위 문단 · `ReadableDetailProse` overview variant(15px·leading 1.92) · 스모크 `smoke-readable-detail-prose`
+- **VERIFY**: `smoke-readable-detail-prose` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-spots` · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/korea-theme → `/korea/theme/scenic?spot=gyeongbokgung` · DDP
+- **QA**: 개요가 **여러 `<p>` 문단**으로 보이는지 · 한 덩어리 wall-of-text 아닌지
+
 ## 축제 페이지 — 개요·프로그램 본문 가독성 (Cloud)
 
 - **세션** `축제 페이지 #6, 본문 가독성`

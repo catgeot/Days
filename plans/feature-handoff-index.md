@@ -41,38 +41,33 @@
 
 ---
 
-<<<<<<< HEAD
-=======
 ### 명승·명소 상세 본문 가독성
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `4590e0a1` · PR [#294](https://github.com/catgeot/Days/pull/294) · **사람 Preview** |
-| **브랜치** | `cursor/korea-theme` |
-| **플랜** | [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) **§9.1** ✅ 구현 |
+| **상태** | **#2 push** · PR [#295](https://github.com/catgeot/Days/pull/295) (draft) · **사람 Preview** |
+| **브랜치** | `cursor/korea-theme-7b3e` |
+| **플랜** | [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) **§9.1** · main 1차 prose 후 **문장 분리·타이포** |
 | **일지** | [`2026-09-21-project-log.md`](./2026-09-21-project-log.md) |
 | **참고** | 축제 본문 [#293](https://github.com/catgeot/Days/pull/293) · `src/shared/readableDetail/*` |
 | **소유** | `ThemeSpotDetailModal` · `ReadableDetailProse` · `splitTourApiDetailParagraphs` |
-| **Preview** | `/qa/korea-theme` → `/korea/theme/scenic?spot=gyeongbokgung` + hub 관광지 카드 1건 |
+| **Preview** | `/qa/korea-theme` → `/korea/theme/scenic?spot=gyeongbokgung` · DDP 등 긴 개요 |
 | **금지** | PlaceCard 갤러리 overview 변경 · 명승 홈 IA·칩 리팩터 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-theme-cross-links` · `smoke:korea-scenic-spots` · `npm run build` PASS |
+| **VERIFY** | `smoke-readable-detail-prose` · `smoke:korea-theme-cross-links` · `npm run build` PASS |
 
 **다음 제시어**:
 
 ```
-테마여행 #69, korea-theme prose PR 병합
+테마여행 #70, 개요 prose PR #295 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-21-project-log.md
-@plans/korea-theme-travel-plan.md §9.1
-브랜치 cursor/korea-theme · Preview /qa/korea-theme
+브랜치 cursor/korea-theme-7b3e · PR #295 · Preview /qa/korea-theme
 금지: PlaceCard 다크 overview · 명승 홈 리팩터 · feature에 plans/** 커밋
-작업: Preview 경복궁·긴 개요 관광지 QA OK → prose PR 병합(또는 main 반영 요청)
-검증: smoke:korea-theme-cross-links · smoke:korea-scenic-spots · vite build PASS
+작업: 경복궁·DDP 개요가 2문단 이상·행간 넓게 보이는지 확인 → OK면 PR #295 병합
+검증: node scripts/smoke-readable-detail-prose.mjs · smoke:korea-theme-cross-links · vite build PASS
 ```
 
 ---
-
->>>>>>> origin/main
 ### 플래너 3단계
 
 | | |
