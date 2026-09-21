@@ -340,6 +340,10 @@ assert.ok(
   String(gamagolModal?.overview || '').includes('가마골용소'),
   '담양10경 가마골용소 modal overview',
 );
+const chuwol = damyangGroup?.items?.find((i) => i.name === '추월산');
+assert.ok(chuwol?.imageUrl?.includes('visitkorea'), '담양10경 추월산 nearby Tour thumb');
+const geumseong = damyangGroup?.items?.find((i) => i.name === '금성산성');
+assert.ok(geumseong?.imageUrl?.includes('visitkorea'), '담양10경 금성산성 nearby Tour thumb');
 
 // curated 멤버 필터 (리스트 있을 때만)
 const curated = listKoreaScenicSpots();

@@ -642,10 +642,13 @@ export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, loca
     fromCurated.contentId;
   const name = member.attractionName;
   const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
+  const fromTourThumb = lookupLocalScenicPhotoByContentId(contentId);
   const thumb =
     nearbyHit?.firstImage ||
     overlay?.firstImage ||
     overlay?.imageUrl ||
+    fromTourThumb?.firstImage ||
+    fromTourThumb?.imageUrl ||
     fromCurated.imageUrl ||
     null;
   return {
@@ -1175,6 +1178,9 @@ const DY_GWANBANG_2 =
 const DY_GWANBANG_3 =
   'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128367';
 const DY_GWANBANG_4 = 'https://tong.visitkorea.or.kr/cms/resource/57/3533957_image2_1.jpg';
+const DY_CHUWOL = 'https://tong.visitkorea.or.kr/cms/resource/93/3581993_image2_1.jpg';
+const DY_GEUMSEONG = 'https://tong.visitkorea.or.kr/cms/resource/71/4110971_image2_1.jpg';
+const DY_BYEONGPUNG = 'https://tong.visitkorea.or.kr/cms/resource/57/3582057_image2_1.jpg';
 const MR_HOBAKSO = 'https://tong.visitkorea.or.kr/cms/resource/72/2660872_image2_1.jpg';
 const MR_HOBAKSO_2 = 'https://tong.visitkorea.or.kr/cms/resource/65/2589465_image2_1.jpg';
 const MR_HOBAKSO_3 = 'https://tong.visitkorea.or.kr/cms/resource/63/2589463_image2_1.jpg';
@@ -3470,6 +3476,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   125713: localScenicThumbOverlay(DH_MANGSANG, [DH_MANGSANG_2]),
   // 동해 명승 검색 어달해변 — TourAPI first_image 없음. 망상·대진·노봉과 다른 해변.
   125708: localScenicThumbOverlay(DH_EODAL, [DH_EODAL_2, DH_EODAL_3]),
+  // 담양10경 — tourapi_attraction 미동기화·firstimage 공란. JSON contentId만 있음.
+  126254: localScenicThumbOverlay(DY_CHUWOL),
+  126407: localScenicThumbOverlay(DY_GEUMSEONG),
+  126252: localScenicThumbOverlay(DY_BYEONGPUNG),
   // 영광 검색 불갑산도립공원 — firstimage·searchPhoto 공란, 사진은 detailImage. 불갑사 126349와 다른 id.
   126248: localScenicThumbOverlay(YG_BULGAP, [YG_BULGAP_2, YG_BULGAP_3]),
   // 고흥 검색 팔영산자연휴양림 — TourAPI firstimage 없음. JSON contentId 기입 아님.
