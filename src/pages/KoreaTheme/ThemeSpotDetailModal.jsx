@@ -614,16 +614,26 @@ function DetailRow({ label, children, prose = false, highlight = false, textProp
     <div
       className={
         highlight
-          ? 'min-w-0 space-y-2 rounded-2xl border border-stone-200/90 bg-gradient-to-b from-amber-50/50 to-stone-50/80 px-3.5 py-3 text-sm'
+          ? 'min-w-0 space-y-2.5 rounded-2xl border border-stone-200/90 bg-gradient-to-b from-amber-50/55 to-stone-50/85 px-3.5 py-3.5 text-sm'
           : 'min-w-0 space-y-1 text-sm'
       }
     >
-      <dt className="text-[11px] font-bold tracking-wide text-stone-500">
+      <dt
+        className={
+          highlight
+            ? 'text-[10px] font-bold uppercase tracking-widest text-stone-400'
+            : 'text-[11px] font-bold tracking-wide text-stone-500'
+        }
+      >
         {label}
       </dt>
       {proseText ? (
         <dd className="min-w-0 max-w-full">
-          <ReadableDetailProse text={proseText} textProps={textProps} />
+          <ReadableDetailProse
+            text={proseText}
+            textProps={textProps}
+            variant={highlight ? 'overview' : 'body'}
+          />
         </dd>
       ) : (
         <dd className={DETAIL_BODY_TEXT_CLASS}>{children}</dd>
@@ -1892,7 +1902,7 @@ export default function ThemeSpotDetailModal({
             </div>
           )}
 
-          <div className="min-w-0 space-y-4 px-4 py-4 sm:px-5">
+          <div className="min-w-0 space-y-4 px-4 py-4 pb-6 sm:px-5 sm:pb-7">
             {spot.source !== 'cha' && spot.blurb ? (
               <p
                 className="text-sm font-semibold leading-relaxed text-amber-950/90 break-keep break-words"
