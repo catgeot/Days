@@ -2,6 +2,15 @@
 
 직전: [`2026-09-19-project-log.md`](./2026-09-19-project-log.md)
 
+## 명승·명소 상세 본문 가독성 (Cloud)
+
+- **세션** `명승 본문 가독성 #1, ThemeSpotDetailModal 프로즈`
+- **브랜치** `cursor/korea-theme` · tip `4590e0a1` · `merge origin/main`(PR #291 반영) · draft PR (본문 prose)
+- **완료**: `src/shared/readableDetail/*` 공유화 · 축제 `FestivalDetailProse`/`festivalDetailText` re-export · `ThemeSpotDetailModal` 개요 `highlight`+`prose` · intro/info 긴 필드만 `prose`
+- **VERIFY**: `smoke:korea-theme-cross-links` · `smoke:korea-scenic-spots` · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/korea-theme → `/korea/theme/scenic?spot=gyeongbokgung` · hub 관광지 카드 1건(긴 개요)
+- **QA**: 개요 연한 카드·문단 분리 · 짧은 주소·전화는 한 블록 · 긴 이용안내 항목만 문단
+
 ## 축제 페이지 — 개요·프로그램 본문 가독성 (Cloud)
 
 - **세션** `축제 페이지 #6, 본문 가독성`

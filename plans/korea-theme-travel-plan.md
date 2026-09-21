@@ -1148,3 +1148,5 @@ npm run build
 ### 금지
 
 - 명승 홈 레이아웃·칩·지도 리팩터 · PlaceCard 다크 overview 스타일 변경 · feature에 `plans/**` 커밋.
+
+**#1 (2026-09-21 Cloud)**: `src/shared/readableDetail/` · `ThemeSpotDetailModal` prose/highlight — feature tip `4590e0a1` · VERIFY PASS · Preview `/qa/korea-theme`.
