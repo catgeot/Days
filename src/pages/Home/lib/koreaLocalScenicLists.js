@@ -3623,6 +3623,59 @@ export function hasTourContentId(value) {
 }
 
 /**
+ * 축제·명승 상세 「주변 관광지」 팔경 행 — Tour contentId 또는 GATEO 멤버 오버레이 개요.
+ * @param {object} [spot]
+ */
+export function isNearbyAttractionRowClickable(spot) {
+  if (hasTourContentId(spot?.contentId)) return true;
+  const listId = String(spot?.localScenicListId || '').trim();
+  const name = String(spot?.attractionName || spot?.name || '').trim();
+  if (!listId || !name) return false;
+  const scenic = resolveLocalScenicListSpotById(
+    localScenicMemberSpotId(listId, name),
+  );
+  return Boolean(String(scenic?.overview || '').trim());
+}
+
+/**
+ * 팔경 주변 행 → ThemeSpotDetailModal spot (contentId 없을 때 오버레이 본문).
+ * @param {object} spot
+ */
+export function mergeNearbyRowWithLocalScenicDetail(spot) {
+  if (!spot || typeof spot !== 'object') return spot;
+  if (hasTourContentId(spot.contentId)) return spot;
+  const listId = String(spot.localScenicListId || '').trim();
+  const name = String(spot.attractionName || spot.name || '').trim();
+  if (!listId || !name) return spot;
+  const scenic = resolveLocalScenicListSpotById(
+    localScenicMemberSpotId(listId, name),
+  );
+  if (!scenic?.overview) return spot;
+  const thumb =
+    String(spot.firstImage || spot.imageUrl || '').trim() ||
+    scenic.firstImage ||
+    scenic.imageUrl ||
+    null;
+  return {
+    ...scenic,
+    ...spot,
+    id: scenic.id,
+    name: spot.name || scenic.name,
+    blurb: spot.rankBlurb || spot.blurb || scenic.blurb,
+    overview: scenic.overview,
+    galleryUrls: scenic.galleryUrls,
+    addr1: scenic.addr1 || spot.addr1,
+    homepage: scenic.homepage || spot.homepage,
+    imageUrl: thumb,
+    firstImage: thumb,
+    lat: spot.lat ?? scenic.lat,
+    lng: spot.lng ?? scenic.lng,
+    hubId: spot.hubId || scenic.hubId,
+    contentId: spot.contentId || scenic.contentId || null,
+  };
+}
+
+/**
  * hub 팔경 멤버 contentId — JSON·GATEO 선정 명소·hub attraction.
  * @param {string} hubId
  */
