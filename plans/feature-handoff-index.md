@@ -88,12 +88,12 @@
 
 | | |
 |--|--|
-| **상태** | **#5 push** · tip `89d7049a` · PR [#287](https://github.com/catgeot/Days/pull/287) · **사람 Preview** |
+| **상태** | **#6 push** · tip `fcbac504` · PR [#287](https://github.com/catgeot/Days/pull/287) · **사람 Preview** |
 | **브랜치** | `cursor/festival-sheet-ui-ec8b` |
 | **PR** | [#287](https://github.com/catgeot/Days/pull/287) |
 | **플랜** | [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) **§9** |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 하단 닫기·푸터 · 무니/위로 분리 · 밝은 무니 |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 개요·프로그램 문단 가독성 · 하단 닫기·무니 |
 | **소유** | `FestivalDetailSheet` · `FestivalMooniFab` · `ChatModal` `isMooniUi` · `MooniQuickReplyChips` |
 | **금지** | 축제 시트 리팩터 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:korea-festival-personal` PASS · `smoke:korea-festival-nearby` PASS · `npx vite build` PASS |
@@ -103,11 +103,11 @@
 ```
 축제 페이지 #6, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/2026-09-19-project-log.md
+@plans/2026-09-21-project-log.md
 @plans/korea-festival-hub-plan.md
 브랜치 cursor/festival-sheet-ui-ec8b · PR #287 · Preview /qa/festival-ui
 금지: 축제 시트 리팩터 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview /korea 축제 본문 끝까지 스크롤 → 닫기가 푸터에 안 가리는지 · 무니와 위로가 겹치지 않는지 · 무니 채팅이 밝은지. OK면 PR #287 병합.
+작업: Preview에서 긴 개요 축제(예: 섬진강국제실험예술제) 안내·프로그램 탭 — 문단 나뉨·카드 배경 · 하단 닫기·무니. OK면 PR #287 병합.
 검증: npm run smoke:korea-festival-personal PASS · smoke:korea-festival-nearby PASS · vite build PASS
 ```
 
