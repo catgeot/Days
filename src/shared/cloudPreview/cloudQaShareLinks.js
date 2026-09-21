@@ -33,7 +33,7 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'festival-ui',
-    label: '축제 페이지 — 푸터·무니 겹침',
+    label: '축제 페이지 — 본문 가독성',
     branch: 'cursor/festival-sheet-ui-ec8b',
     destination:
       'https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea',

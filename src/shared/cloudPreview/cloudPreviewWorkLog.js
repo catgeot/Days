@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '테마여행',
-  sessionNo: 68,
-  sessionPhase: '카테고리 하위칩 겹침',
-  branch: 'cursor/korea-theme',
-  previewPath: '/',
-  qaShareSlug: 'korea-theme',
+  title: '축제 페이지',
+  sessionNo: 5,
+  sessionPhase: '푸터·무니 겹침',
+  branch: 'cursor/festival-sheet-ui-ec8b',
+  previewPath: '/korea',
+  qaShareSlug: 'festival-ui',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,20 +24,3033 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-09-korea-theme-home-category-chip-anchor',
-    session: '테마여행 #68, 카테고리 하위칩 겹침',
-    title: 'PC 카테고리 하위칩 펼침 시 상단 밀림 방지',
+    id: '2026-09-19-festival-ui-5-footer-mooni',
+    session: '축제 페이지 #5, 푸터·무니 겹침',
+    title: '본문 하단 여유·무니/위로 분리·밝은 무니',
     detail:
-      '테마 카테고리 클릭 후 나라/하위칩이 생기면 세로 중앙 정렬 때문에 레일이 위로 밀려 명승 버튼과 겹치던 문제를, 투톱 아래 상단 고정(`justify-start`)으로 바꿔 아래로만 확장되게 고쳤습니다. Preview 홈(PC)에서 카테고리 클릭 후에도 명승과 겹치지 않는지 확인해 주세요.',
+      '축제 상세 본문 하단 패딩을 늘려 Trust 푸터와 닫기 버튼이 겹치지 않게 했습니다. 우측 무니는 위로 버튼이 보일 때 그 위로 올라가고, FAB·채팅은 하늘·민트 톤으로 바꿨습니다. Preview /qa/festival-ui — /korea 축제 카드 본문 끝까지 스크롤 → 닫기·푸터·무니·위로.',
+    at: '2026-09-19T07:40:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-2-page-size-10',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 목록을 검색 표준 10개씩 넘기게',
+    detail:
+      '사람 Preview에서 8개가 적어 보였습니다. 검색 결과 페이지 표준(구글·네이버 10건)에 맞춰 한 장 10개로 늘립니다. Preview git 홈「향교」엔터 → 1페이지 10장·다음.',
+    at: '2026-09-19T07:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-2-list-pages',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 선택 카드를 8개씩 넘겨 보게',
+    detail:
+      '「향교」엔터 전국 목록이 한 화면에 다 나와 스크롤하다 포기하게 됐습니다. 기존 선택 카드는 그대로 두고 8개씩 이전·다음으로 넘깁니다. 춘천 향교처럼 짧은 목록과 목포 도시 리스트는 페이지 버튼이 없습니다. Preview /qa/hyanggyo 홈「향교」엔터 → 1페이지 8장·다음. 「춘천 향교」엔터 → 춘천향교. 「목포」엔터 → 리스트 유지.',
+    at: '2026-09-19T07:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-1-tour-disambiguation',
+    session: '향교 검색 #1, TourAPI 다후보',
+    title: '향교 검색이 도시로 떨어지지 않고 전국 향교를 고르게',
+    detail:
+      '허브 prefix가 「춘천향교」를 춘천 도시로 스냅해서 실제 춘천향교가 안 나왔습니다. 도시명 뒤 나머지가 시·군이 아니면 허브로 안 보고, 향교·서원은 TourAPI 제목으로 다후보 카드를 붙입니다. Preview /qa/hyanggyo 홈「향교」엔터 → 춘천·나주 등 여러 장. 「춘천 향교」엔터 → 춘천향교 · 춘천 도시 카드 아님.',
+    at: '2026-09-19T07:10:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-64-muan-search-thumbs',
+    session: '팔경 활용 #64, 무안 결손 오버레이',
+    title: '무안 검색 승달산·초의선사탄생지 빈 썸네일',
+    detail:
+      '사람 Preview 「무안」검색에서 무안 8경 승달산이 랜드마크 아이콘만 나왔습니다. Tour DB 126614 first_image가 공란입니다. 같은 검색 4경 초의선사탄생지 127177은 tourapi_attraction에 없어 라이브 채움도 안 됩니다. JSON contentId 기입 없이 무안군 문화관광 공식 사진(승달산 산나리 조망·초의길 30 전경)을 LOCAL_SCENIC_MEMBER_OVERLAYS에 보강했습니다. 도리포·낙지공원·백로 번식지는 Tour first_image가 있어 그대로 둡니다. 법천사 무안(GATEO 선정)과 구분합니다. Preview /qa/palgyeong-use — 「무안」검색 8경·4경 썸네일.',
+    at: '2026-09-19T07:05:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-64-muan-overlays',
+    session: '팔경 활용 #64, 무안 결손 오버레이',
+    title: '무안9경 식영정·느러지·톱머리·홀통 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 무안9경 결손 2건(영산강 식영정과 느러지·톱머리·홀통 해수욕장)의 공공 공식 팩트 개요·주소·무안군 문화관광 공식 사진을 보강했습니다. 식영정은 몽탄면 호반로 562-15 息營亭(3경, 1630 한호 임연·문화재자료 237호)와 영산강 느러지 곡강이며, 톱머리·홀통은 망운면 톱머리길 66·현경면 홀통길 198-1 백사장·해송입니다. 담양 息影亭·나주 느러지전망대·영월 한반도지형·도리포·조금나루와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=muan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T06:45:00.000Z',
+  },
+  {
+    id: '2026-09-19-search-enter-hub-1-mokpo-list',
+    session: '탐색 Enter #1, 도시 허브 리스트',
+    title: '목포처럼 도시 허브 Enter는 써머리 점프 없이 선택 카드',
+    detail:
+      '여행지 매칭 #2가 타이핑 제안 이름 일치를 Enter에서 바로 고르게 해서, 목포 드롭다운의 도시 카드가 써머리 장소 카드로 열렸습니다. 도시 허브 exact는 제안 점프를 건너뛰고 도시+명소 선택 카드로 갑니다. 유달산·광천선굴처럼 명소 exact는 그대로 해당 카드입니다. Preview /qa/search-enter-hub — /explore 에서 목포 타이핑 후 Enter.',
+    at: '2026-09-19T06:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-63-mokpo-overlays',
+    session: '팔경 활용 #63, 목포 결손 오버레이',
+    title: '목포9경 목포진·다도해 전경 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 목포9경 결손 2건(목포진·다도해 전경)의 공공 공식 팩트 개요·주소·목포시 문화관광 9경 공식 사진을 보강했습니다. 목포진은 만호동 목포진길 11번길 1-5 수군진 역사공원(6경, 세종 21년 설치·2014 객사 복원·문화재자료 137호), 다도해 전경은 유달산에서 고하도·외달도를 보는 조망(8경)입니다. 해남 구 목포구등대·목포대교 일몰·유달산 산봉·외달도 섬·진도 다도해해상국립공원과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mokpo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T05:10:00.000Z',
+  },
+  {
+    id: '2026-09-19-mooni-itinerary-3-main-merge',
+    session: 'MOONi 일정 페이스메이커 #3, Preview OK면 PR 병합',
+    title: '체류·공항·항공시각 전제 유지 QA 후 PR #281 메인 병합',
+    detail:
+      '파리 MOONi에 오를리 3박 4일·KE901 CDG 오후 2시를 말한 뒤 「둘째 날은?」이 같은 전제를 쓰는지 상황극·스모크로 확인했습니다. 도시명 파리 오탐 없음. 턴당 추출 ~1.4ms. PR #281을 main에 병합합니다. 확인은 www.gateo.kr/place/paris',
+    at: '2026-09-19T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-mooni-itinerary-2-session-memory',
+    session: 'MOONi 일정 페이스메이커 #2, 사용자 피드백 반영 및 실전 응답 튜닝',
+    title: '여행지 세션에 체류·항공편·동선 사실을 저장하고 무니가 이어 씀',
+    detail:
+      '파리 장소 페이지 MOONi에게 체류 일수·도착 공항·항공 시각·현재 동선을 말하면 그 여행지 세션에 남고, 다음 질문에서도 전제로 씁니다. Preview https://www.gateo.kr/place/paris 에서 「오를리 3박 4일」 후 「둘째 날은?」이 같은 체류·공항을 기억하는지 확인합니다.',
+    at: '2026-09-19T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-62-gwangju-gi-tour-search',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
+    title: '경기 광주 관광공사 검색 0건 수정',
+    detail:
+      '사람 Preview에서 「경기 광주」검색 시 한국관광공사 관광지가 전무로 나왔습니다. TourAPI에는 경기도 광주시 type12가 40건 있습니다. 허브 공식명「경기 광주」를 addr1 ilike에 그대로 써서「경기도 광주시」와 부분일치가 안 됐습니다. Tour DB 검색만 경기도 광주 주소 표기로 바꿨습니다. 국가유산 명승 0은 사실입니다(남한산성은 사적). Preview /qa/palgyeong-use — 「경기 광주」검색 관광공사 목록.',
+    at: '2026-09-19T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-14-main-merge',
+    session: '여행지 매칭 #14, PR #276 메인 병합 및 배포',
+    title: 'PR #276 메인 병합 — 동음 지명·숙소·갤러리 매칭 PROD',
+    detail:
+      '검증 게이트 통과 후 PR #276을 main에 병합합니다. /qa/dest-match는 PROD 홈으로 돌립니다. 홈 검색에서 종각·광천·송암·강원대 동음 분기와 광천선굴·송암스포츠타운 숙소 시·군을 www.gateo.kr에서 확인합니다.',
+    at: '2026-09-19T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-13-comprehensive-qa',
+    session: '여행지 매칭 #13, 종합 QA 및 메인 병합 준비',
+    title: '주요 지명(종각·광천·송암·강원대) 매칭 및 숙소·갤러리 종합 QA 검증 완료',
+    detail:
+      '동음이의어 다후보 분기(종각·광천·송암·강원대), First-Pass 고유 매칭, 숙소 래더 및 Geo-Sanity 가드(양주/광주/대구 오탐 배제), 갤러리 시설 컷 필터링 및 프로덕션 빌드 등 전체 아키텍처 파이프라인 검증을 통과하고 PR #276 메인 병합 준비를 마쳤습니다.',
+    at: '2026-09-19T03:00:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-12-dictionary-ssot',
+    session: '여행지 매칭 #12, 하드코딩 사전 정리 및 SSOT 일원화',
+    title: '분산된 하드코딩 사전을 koreaPlaceMatchDictionary.js 단일 SSOT로 일원화',
+    detail:
+      'mrtStayQuery·exploreSearchAliases·usePlaceGallery·koreaHomonymDictionary에 파편화되어 있던 KO_STATION_ALIASES, KO_UNIVERSITY_ALIASES, KO_UNIVERSITY_SATELLITE_ALIASES, KO_EXPLORE_SEARCH_ALIASES, KO_GALLERY_QUERY_OVERRIDES, KOREA_HOMONYM_GROUPS를 koreaPlaceMatchDictionary.js 단일 SSOT로 일원화했습니다. 기존 스모크 및 빌드 회귀 0건입니다.',
+    at: '2026-09-19T02:00:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-11-songam-stay-yangju',
+    session: '여행지 매칭 #11, 송암스포츠타운 숙소 양주 오탐',
+    title: '춘천 송암스포츠타운 숙소가 양주 펜션으로 열리던 문제',
+    detail:
+      '홈「송암」→ 춘천 송암스포츠타운 → 숙소 찾기가 검색어「송암」을 1차 키워드로 써서 양주 장흥 펜션이 나왔습니다. 짧은 동음 검색어는 시·군(춘천) 뒤로 두고, 좌표 없는 양주 숙소는 Geo-Sanity에서 뺍니다. Preview /qa/dest-match 홈「송암」→ 송암스포츠타운 → 숙소 찾기 → 춘천 · 양주 비타민펜션·장흥유원지 아님.',
+    at: '2026-09-19T01:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-dest-match-10-chip-card-dedupe',
+    session: '여행지 매칭 #10, 칩·카드 중복 제거',
+    title: '동음 선택에서 칩과 카드를 동시에 띄우지 않음',
+    detail:
+      '사람 Preview에서 「송암」엔터 화면에 지역 칩과 선택 카드가 같은 후보를 두 번 보여 중복이었습니다. 타이핑 드롭다운은 칩만, 엔터 화면은 질문+기존 선택 카드만 둡니다. Preview /qa/dest-match 홈「송암」엔터 → 어느 지역의 송암을 찾으시나요?와 카드 3장 · 칩 줄은 없음.',
+    at: '2026-09-19T01:20:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-9-homonym-choice-chips',
+    session: '여행지 매칭 #9, 동음이의어 사용자 선택 UI',
+    title: '어느 지역의 지명을 찾으시나요 — 다후보 선택 칩',
+    detail:
+      '모바일·데스크톱 검색창과 장소 시트에서 동음 지명은 「어느 지역의 [지명]을 찾으시나요?」와 지역 칩으로 고릅니다. 기존 선택 카드 톤(테두리·배경·호버)은 그대로입니다. Preview /qa/dest-match 홈「종각」「광천」「송암」입력·엔터 → 서울 종로 종각역·대구 중구 종각네거리 칩 · 카드도 같이 보임.',
+    at: '2026-09-18T23:50:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-8-songam-homonym',
+    session: '여행지 매칭 #8, 송암 동음 다후보',
+    title: '송암이 고양·일산 허브로만 펼쳐지던 문제',
+    detail:
+      '홈「송암」엔터가 송암스페이스센터 부분일치로 고양 허브(일산호수공원·킨텍스)를 역펼침했습니다. 동음 사전에 고양 송암스페이스센터·춘천 송암스포츠타운·광주 송암동을 넣고, 명소 부분일치는 형제 명소를 펼치지 않습니다. Preview /qa/dest-match 홈「송암」엔터 → 세 곳 선택 카드 · 일산호수공원만 가득한 목록 아님.',
+    at: '2026-09-18T10:20:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-7-gwangcheon-daegu-jonggak',
+    session: '여행지 매칭 #7, 광천·대구 종각 매칭 수정',
+    title: '광천 선굴 다후보 · 대구 종각 숙소가 서울로 가던 문제',
+    detail:
+      '홈「광천」엔터가 홍성 광천읍 정착지 별칭으로 역펼침되어 평창 광천선굴이 빠졌습니다. 동음 사전이 정착지 역펼침보다 앞입니다. 대구 종각네거리를 골라도 검색어「종각」약칭이 서울 종각역·종로 숙소로 스냅하던 구멍을 막았습니다. Preview /qa/dest-match 홈「광천」엔터 → 선굴·광천동·광천읍. 「종각」→ 대구 종각네거리 → 숙소 찾기 → 대구(서울 인사동·종로 아님).',
+    at: '2026-09-18T09:50:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-6-homonym-list',
+    session: '여행지 매칭 #6, 동음이의어 다후보 리스트업',
+    title: '전국 동음 지명 다후보 사전 — 임의 단정 없음',
+    detail:
+      '종각·광천·강원대·봉화산·대포·대화처럼 전국에 두 곳 이상인 지명은 한곳으로 찍지 않고 지역이 적힌 후보를 나열합니다. 「종각」은 서울 종각역과 대구 종각네거리, 「광천」은 평창 광천선굴·광주 광천동·홍성 광천읍입니다. 「종각역」「광천선굴」처럼 한곳인 이름은 기존 First-Pass를 씁니다. Preview /qa/dest-match 홈「종각」「광천」엔터 → 선택 카드 · 대구·광주 단독 진입 아님.',
+    at: '2026-09-18T08:40:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-62-gwangju-gi-official-list',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이 QA',
+    title: '광주8경 시 공식 목록 재정비',
+    detail:
+      '사람 Preview에서 팔경 목록에 없는 곳이 팔경에 들어가 있었습니다. 광주시 문화관광 공식 8경(gjcity.go.kr/tour)으로 멤버를 맞췄습니다. 1경 남한산성·2경 분원도요지 & 팔당물안개공원·3경 경안천습지생태공원·4경 앵자봉 & 천진암·5경 무갑산·6경 태화산·7경 경기도자박물관·8경 중대물빛공원. 화담숲·곤지암도자공원은 시가 8경에서 뺀 민간·별도 시설이라 GATEO 선정만 유지하고 팔경에서 뺐습니다. 송정사도 현 8경에 없어 뺐습니다. JSON contentId·scenic 승격 없이 2·4·6·7경은 시 공식 사진·개요 오버레이입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangju_gi 팔경 8행이 시 공식과 같은지.',
+    at: '2026-09-19T02:10:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-62-gwangju-gi-overlays',
+    session: '팔경 활용 #62, 경기 광주 결손 오버레이',
+    title: '광주8경 무갑산 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 광주8경 결손 무갑산의 공공 공식 팩트 개요·주소·광주시 문화관광 8경 공식 사진을 보강했습니다. 무갑산은 초월읍·퇴촌면 해발 578m(5경, 실촌읍=현 곤지암읍 지맥·팔당호 조망)입니다. 광주광역시 무등산·6경 태화산·4경 앵자봉·관산·무갑사 법당과 구분합니다. 송정사는 현 공식 8경(중대물빛공원)에 없고 Tour 미등재·공식 사진이 없어 건너뜁니다. 영암 송정사·광주송정역과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangju_gi 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T23:50:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-61-yeonhwado-homepage',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '연화도 용머리 공식 홈 badaland → 통영U투어',
+    detail:
+      '사람 Preview에서 1경 연화도 용머리 공식 홈이 www.badaland.com으로 열려 인증서 오류(ERR_CERT_COMMON_NAME_INVALID)가 났습니다. Tour 127103 홈이 구 통영 관광 호스트이고, 그 도메인은 utour.go.kr과 같은 IP인데 인증서가 *.utour.go.kr입니다. JSON contentId 기입 없이 멤버 오버레이 홈을 통영U투어 연화도 공식 페이지(idx=1660)로 바꿨습니다. Preview /qa/palgyeong-use — 1경 상세 공식 홈이 utour.go.kr 연화도인지.',
+    at: '2026-09-18T23:35:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-61-yeonhwado-utour-photos',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '연화도 용머리 네이버 핫링크 → 통영U투어 공식 사진',
+    detail:
+      '사람 Preview에서 1경 연화도 용머리 목록은 랜드마크, 상세 갤러리 2장은 물음표였습니다. 네이버 postfiles는 Preview Referer에 403입니다. JSON contentId 기입 없이 통영U투어 연화도 공식 CMS(용머리 능선 idx=16550·해식절벽 16548·출렁다리 16549·능선 2803861)로 바꿨습니다. 연화사 법당·해수관음·수국길은 갤러리에 넣지 않습니다. Preview /qa/palgyeong-use — 1경·홈「통영」연화도 용머리 썸네일·상세 사진.',
+    at: '2026-09-18T19:50:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-61-tongyeong-empty-thumbs',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '통영 1경 연화도 용머리·이순신공원 빈 썸네일',
+    detail:
+      '사람 Preview에서 통영팔경 1경 연화도 용머리와 탐색홈 이순신공원·명승 검색 연화도(통영)가 랜드마크 플레이스홀더였습니다. Tour 127103 firstimage가 없고, 이순신공원 hub는 contentId가 없습니다. JSON contentId 기입 없이 멤버 오버레이에 통영시 공식 블로그 용머리해안(IMG_0364·IMG_4892)과 한국관광공사 이순신공원 동상(3479192)을 넣었습니다. 127103은 멤버 overlay로 검색 행 연화도(통영)도 채우고, TOUR_THUMB 584970은 탐색홈 이순신공원입니다. 제주 용머리해안·연화사 법당·용머리민박·여수·남해 이순신공원·남망산과 구분합니다. 삼덕항 2782775는 공식 사진이 없어 건너뜁니다. Preview /qa/palgyeong-use — 1경·검색「통영」연화도(통영)·홈 이순신공원.',
+    at: '2026-09-18T09:45:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-61-tongyeong-overlays',
+    session: '팔경 활용 #61, 통영 결손 오버레이',
+    title: '통영팔경 남망산공원·한산도제승당·통영운하 야경 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 통영팔경 결손 3건(남망산공원·한산도제승당·통영운하 야경)의 공공 공식 팩트 개요·주소·한국관광공사·국가유산청 공식 사진을 보강했습니다. 남망산공원은 동호동 남망공원길 29 1997년 조각공원(3경), 제승당은 한산일주로 70 사적 113호 운주당 터(4경), 운하는 당동~미수동 1932년 3중 교통로(7경)입니다. 동피랑·디피랑·세병관·아산 현충사·여수 밤바다·광양만 야경과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=tongyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T09:10:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-60-uijeongbu-overlays',
+    session: '팔경 활용 #60, 의정부 결손 오버레이',
+    title: '의정부8경 수락산 도정봉·의정부경전철·의정부제일시장 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의정부8경 결손 3건(수락산 도정봉·의정부경전철·의정부제일시장)의 공공 공식 팩트 개요·주소·의정부시 문화관광 8경·한국관광공사 공식 사진을 보강했습니다. 도정봉은 장암동 해발 526m 화강암 능선(3경, 만가대·동막골), 경전철은 2012년 경기도 최초 발곡~탑석(5경), 제일시장은 시민로121번길 43-2 1978년 600여 점포(7경)입니다. 노원 수락산·당고개·논산 수락계곡·김해경전철·부대찌개거리와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uijeongbu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T08:20:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-5-place-category',
+    session: '여행지 매칭 #5, 카테고리 맥락 파이프라인 전달',
+    title: '자연·역사·역·대학 카테고리를 숙소·갤러리에 전달',
+    detail:
+      'First-Pass placeCategory를 MRT 숙소 래더와 장소 갤러리가 씁니다. 광천선굴·문경새재 같은 자연명소는 시·군(평창·문경) 숙소가 1차고, 광주 광천동 호텔로 올라가지 않습니다. 갤러리는 contentId와 전경·landscape 키워드를 씁니다. Preview /qa/dest-match 홈「광천선굴」숙소 찾기 → 평창 · 광주 호텔 아님.',
+    at: '2026-09-18T08:20:00.000Z',
+  },
+  {
+    id: '2026-09-18-palgyeong-use-59-taebaek-overlays',
+    session: '팔경 활용 #59, 태백 결손 오버레이',
+    title: '태백8경 장성하부고생대화석산지·용연굴·절골마을관리휴양지 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 태백8경 결손 3건(장성하부고생대화석산지·용연굴·절골마을관리휴양지)의 공공 공식 팩트 개요·주소·국가유산청·강원고생대국가지질공원·태백시 관광·태백시시설관리공단 공식 사진을 보강했습니다. 화석산지는 장성동 산42-2 천연기념물 416호 직운산층 노두(3경), 용연굴은 태백로 283-29 해발 920m 건식 석회동굴(7경), 절골은 오투로 116 황지동 절골힐링캠핑장·본적사지(8경)입니다. 전남 장성·구문소·영동 용연대·정선 화암동굴·철암 고원휴양림과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=taebaek 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-18T05:30:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-4-first-pass',
+    session: '여행지 매칭 #4, 국내 지명 First-Pass 리졸버',
+    title: 'Mapbox 전 국내 명소 First-Pass',
+    detail:
+      '홈 검색 지오코딩 전에 tourapi_attraction·cityAttractionHubs·역 별칭으로 좌표를 먼저 잡습니다. 「광천선굴」「광천성굴」은 평창 광천선굴, 「종각」「종각역」은 서울 종각역입니다. Preview /qa/dest-match 홈 검색 → 광주 광천동·대구 종각네거리 아님.',
+    at: '2026-09-18T05:20:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-3-geo-sanity',
+    session: '여행지 매칭 #3, 숙소 거리 가드(Geo-Sanity)',
+    title: '검색 중심 30km 밖 타 시·군 숙소 배제',
+    detail:
+      'MRT 숙소 목록에서 검색 중심점 기준 30km를 넘고 시·군이 다른 숙소(광주·양양 등)를 빼 둡니다. 같은 시·군 숙소는 군이 넓어도 유지합니다. Preview /qa/dest-match 홈「평창」「춘천」숙소 찾기 → 광주·양양 호텔 0건.',
+    at: '2026-09-18T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-18-dest-match-2-search-enter',
+    session: '여행지 매칭 #2, 검색 Enter 제안 불일치',
+    title: '광천선굴 타이핑 제안과 Enter가 화암동굴로 갈라지던 문제',
+    detail:
+      '홈 검색「광천선굴」「광천성굴」타이핑 목록에는 평창 광천선굴이 보이는데 엔터는 지오코딩 실패 캐시·AI가 정선 화암동굴로 교정했습니다. 평창 허브 명소 SSOT·별칭으로 바로 잡고, 엔터는 보이는 제안·Search Box 이름 일치를 AI보다 앞세웁니다. Preview /qa/dest-match 홈 검색「광천성굴」엔터 → 광천선굴(평창) · 화암동굴 교정 카드 아님.',
+    at: '2026-09-18T03:20:00.000Z',
+  },
+  {
+    id: '2026-09-17-dest-match-1-facility-filter',
+    session: '여행지 매칭 #1, 갤러리 시설컷 정밀 필터',
+    title: 'TourAPI 화장실·휠체어·개찰구 시설컷 제외',
+    detail:
+      'TourAPI detailImage의 imgname·title에서 화장실·세면대·휠체어·점자·개찰구·리프트·승강기 등 시설 사진을 갤러리에서 뺍니다. 프록시는 imgname을 클라이언트로 넘기고, 장이 적으면 스톡을 이어 붙입니다. Preview /qa/dest-match — 장소 갤러리에 화장실·휠체어가 없고 전경이 보이는지.',
+    at: '2026-09-17T21:56:00.000Z',
+  },
+  {
+    id: '2026-09-17-palgyeong-use-58-jeongseon-overlays',
+    session: '팔경 활용 #58, 정선 결손 오버레이',
+    title: '화암8경 거북바위·용마소·화표주 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 화암8경 결손 3건(거북바위·용마소·화표주)의 공공 공식 팩트 개요·주소·정선군 공식 화암8경 사진을 보강했습니다. 거북바위는 화암리 336-1 약수 진입로 오른쪽 절벽 위 둘레 6m 수호 바위(2경), 용마소는 화암리 1306-1 그림바위 앞 반석 소·아기장수 전설 용사소(3경), 화표주는 화암리 329-4 화표동 삼거리 돌기둥 두 개(5경)입니다. 여수 거북바위·정읍 용산호·소금강 기암과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jeongseon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-17T12:50:00.000Z',
+  },
+  {
+    id: '2026-09-17-palgyeong-use-57-jeongeup-overlays',
+    session: '팔경 활용 #57, 정읍 결손 오버레이',
+    title: '정읍9경 동학농민혁명기념공원·용산호·월영습지와 솔티숲 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 정읍9경 결손 3건(동학농민혁명기념공원·용산호·월영습지와 솔티숲)의 공공 공식 팩트 개요·주소·정읍시 문화관광·동학농민혁명기념재단·월영습지 생태관광 공식 사진을 보강했습니다. 동학은 덕천면 동학로 742 황토현전적 2022년 개원 공원(4경), 용산호는 신정동 132-11 미르샘다리 642m(6경), 월영습지는 쌍암동 1029·송산동 산112 2014 습지보호지역(8경)입니다. 전주 기념관·임실 옥정호·안동 월영교와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jeongeup 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-17T12:40:00.000Z',
+  },
+  {
+    id: '2026-09-17-palgyeong-use-56-yanggu-overlays',
+    session: '팔경 활용 #56, 양구 결손 오버레이',
+    title: '양구9경 수목원·봉화산·상무룡 출렁다리 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 양구9경 결손 3건(양구 수목원·양구 봉화산·양구 상무룡 출렁다리)의 공공 공식 팩트 개요·주소·양구수목원 공식 홈·양구 DMZ 생태관광협회 공식 사진을 보강했습니다. 수목원은 동면 숨골로310번길 132 도내 6번째 공립 수목원(1경), 봉화산은 국토정중앙면 죽리 해발 875m 주말 산행(7경), 상무룡 출렁다리는 양구읍 간척월명로 1719-21 파로호 335m 현수교(8경)입니다. 구례 수목원·서울 중랑 봉화산·화순 백아산 하늘다리와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yanggu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-17T12:30:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-55-incheon-overlays',
+    session: '팔경 활용 #55, 인천 결손 오버레이',
+    title: '인천9경 아라온·씨사이드파크·강화읍 원도심 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 인천9경 결손 3건(인천 계양 아라온·인천 영종 씨사이드파크·인천 강화읍 원도심)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 아라온은 계양구 장기동 109-1 황어광장~수향원 빛의 거리(4경), 씨사이드파크는 중구 구읍로 75 레일바이크 5.6km(6경), 강화읍 원도심은 용흥궁~고려궁지 도보해설 코스(7경)입니다. 아라폭포·을왕리·전등사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=incheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T19:15:00.000Z',
+  },
+  {
+    id: '2026-09-16-jonggak-stay-donghae-training-search',
+    session: '종각역 숙소 #13, Preview OK면 PR 병합',
+    title: '동해수련원 검색 AI 오탐·로딩',
+    detail:
+      '「강원대학교 동해수련원」검색이 지오코딩 실패 후 AI·search_dictionary 무드 캐시로 평창캠퍼스·망상해수욕장을 제안하고, 재검색은 스피너만 돌았습니다. 양양 금강리 위성 별칭으로 바로 핀하고 AI 폴백을 건너뜁니다. Preview 홈 검색「강원대학교 동해수련원」→ 동해수련원 1곳(양양) · 재검색 스피너 없음 · 「강원대학교」는 춘천 유지.',
+    at: '2026-09-16T19:10:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-54-yonggung-market-photo',
+    session: '팔경 활용 #54, 예천 용궁시장 사진',
+    title: '용궁시장 회룡포 사진 교체',
+    detail:
+      '명승 상세 용궁시장(yonggung-market)이 회룡포(Tour 126734) 내성천 물돌이 항공을 쓰고 있었습니다. JSON contentId 기입 없이 예천군 문화관광 TV따라 여행 용궁시장·용궁순대축제 공식 사진으로 바꿨습니다. 같은 면 회룡포 전망대·뿅뿅다리와 다른 읍부리 장터입니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「예천」용궁시장 상세.',
+    at: '2026-09-16T13:15:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-54-yecheon-silla-thumb',
+    session: '팔경 활용 #54, 예천 검색 빈 썸네일',
+    title: '예천 검색 신라식물원 빈 썸네일',
+    detail:
+      '명승홈 검색「예천」관광지 행 신라식물원(1910438, 감천면 충효로 1752)은 TourAPI firstimage·detailImage·searchPhoto가 모두 비어 랜드마크 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID에 신라식물원 공식 홈페이지 정원·마당·입구 간판 전경을 연결했습니다. 예천8경 곤충생태원 곤충식물원·거제식물원과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「예천」신라식물원 행.',
+    at: '2026-09-16T12:50:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-54-yecheon-overlays',
+    session: '팔경 활용 #54, 예천 결손 오버레이',
+    title: '예천8경 금당실·곤충생태원·석송령 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 예천8경 결손 3건(금당실 전통마을과 송림·예천곤충생태원·석송령)의 공공 공식 팩트 개요·주소·예천군 문화관광·국가유산청 공식 사진을 보강했습니다. 금당실은 용문면 금당실길 52-4 십승지 마을·천연기념물 469호 송림(3경), 곤충생태원은 효자면 은풍로 1045 곤충연구소·무당벌레 멀티체험관(6경), 석송령은 감천면 석송로 321-6 천연기념물 294호 부자나무(7경)입니다. 초간정·하회·선몽대 송림·함평엑스포·정이품송·금당실 송림과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yecheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T09:10:00.000Z',
+  },
+  {
+    id: '2026-09-16-jonggak-stay-search-card-black-screen',
+    session: '종각역 숙소 #9, 검색 카드 검은 화면',
+    title: '연신내역 검색 카드 클릭 시 검은 화면',
+    detail:
+      '검색에서 연신내역 카드를 누르면 홈이 통째로 내려가 검은 화면만 남던 문제를 고쳤습니다. 숙소 스트립이 fetchKey를 선언하기 전에 useRef(fetchKey)를 써서 크래시했습니다. Preview 홈 검색「연신내역」카드 → 지구본·써머리 카드가 보이는지(검은 화면 아님) · 숙소 찾기는 첫 진입에도 은평 쪽 거리.',
+    at: '2026-09-16T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-53-yeosu-explore-thumbs',
+    session: '팔경 활용 #53, 여수 탐색홈 빈 썸네일',
+    title: '여수10경 진남관·이순신대교 탐색홈 빈 썸네일',
+    detail:
+      '탐색홈 검색「여수」여수10경 행에서 진남관(6경, Tour 126386)·여수 이순신대교(10경, 2778041 이순신대교홍보관)가 Tour first_image 공란이라 랜드마크 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 여수시 관광 10경 진남관 전경·이순신대교 항공 공식 사진을 연결했습니다. 광양9경 광양이순신대교 사진·홍보관 실내와 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「여수」진남관·이순신대교 행.',
+    at: '2026-09-16T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-16-jonggak-stay-first-entry-distance',
+    session: '종각역 숙소 #8, 최초 진입 거리',
+    title: '첫 숙소 찾기에도 거리·가까운순',
+    detail:
+      '연신내역처럼 처음 열면 광화문 호텔이 거리 없이 뜨고, 다시 열면 거리·가까운순이 되던 문제를 고쳤습니다. Photon 결과가 location 리렌더에 취소되지 않고, 보이는 20곳부터 좌표를 붙입니다. 「연신내역」은 내역 오탐이 아니라 역으로 봅니다. Preview 홈「연신내역」첫 카드 → 숙소 찾기 → 첫 진입에도 은평 쪽 거리가 붙는지(재진입만 되는 것 아님).',
+    at: '2026-09-16T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-53-yeosu-overlays',
+    session: '팔경 활용 #53, 여수 결손 오버레이',
+    title: '여수10경 박람회장·밤바다 산단 야경·해상케이블카 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 여수10경 결손 3건(여수세계박람회장·여수 밤바다와 산단 야경·여수해상케이블카)의 공공 공식 팩트 개요·주소·여수시 관광 공식 사진을 보강했습니다. 박람회장은 덕충동 박람회길 1 2012 엑스포장(빅오·스카이타워), 밤바다·산단은 종화동 해양공원·돌산공원과 화치동 국가산단전망대, 케이블카는 돌산로 3600-1~오동도로 116입니다. 2026 섬박람회·함평엑스포·광양만 야경·목포·사천 해상케이블카와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeosu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-16-palgyeong-use-52-daegu-overlays',
+    session: '팔경 활용 #52, 대구 결손 오버레이',
+    title: '대구12경 국채보상공원·달성토성·경상감영 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 대구12경 결손 3건(대구 국채보상운동 기념공원·대구 달성토성·대구 경상감영과 옛골목)의 공공 공식 팩트 개요·주소·한국관광공사·대구 중구 공식 사진을 보강했습니다. 국채보상공원은 중구 국채보상로 670 달구벌대종(8경), 달성토성은 중구 달성공원로 35 사적 62호·관풍루(6경), 경상감영과 옛골목은 중구 경상감영길 99 사적 538호 선화당·징청각과 근대골목 1코스(7경)입니다. 동성로·2·28공원·달성군 습지·목포 유달산 달성공원·상주 태평성대경상감영·공주 충청감영·계산예가 2코스와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=daegu 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-16T00:40:00.000Z',
+  },
+  {
+    id: '2026-09-16-jonggak-stay-distance-cache',
+    session: '종각역 숙소 #7, 거리 캐시 로딩',
+    title: '숙소 목록 먼저 · 거리는 캐시',
+    detail:
+      '거리 Photon(최대 12초) 때문에 숙소 찾기가 오래 걸렸습니다. 목록은 원점 없이 바로 받고, 호텔 좌표는 localStorage(14일)에서 붙입니다. 없는 좌표만 뒤에서 Photon합니다. 같은 일정 재진입은 30분 목록 캐시로 즉시 표시됩니다. Preview 홈「종각역」첫 카드 → 숙소 찾기 → 카드가 먼저 뜨고 신라스테이 광화문 330m 등이 붙는지.',
+    at: '2026-09-16T00:40:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-first-card-origin',
+    session: '종각역 숙소 #6, 첫 카드 거리 원점',
+    title: '첫 종각역 카드도 거리 표시',
+    detail:
+      '검색 리스트 첫 카드(Jonggak-gil)로 숙소 찾기를 하면 거리가 비고, 다른 종각역 카드는 거리가 나오던 구멍을 막았습니다. 좌표가 없거나 종각역에서 8km 밖이면 역 좌표(37.5701, 126.9829)를 Photon·거리 뱃지·네이버 칩 원점으로 씁니다. 길·동 카드는 선택 목록에서 뒤로 갑니다. Preview 홈「종각역」첫 카드 → 숙소 찾기 → 신라스테이 광화문 330m 등.',
+    at: '2026-09-15T22:00:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-edge-photon',
+    session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',
+    title: 'Edge Photon 좌표 · 거리 뱃지',
+    detail:
+      'MRT search에 호텔 좌표가 없어 Edge가 Photon(숙소 OSM·8km·이름 가드)으로 종각역 근처 위·경도를 붙입니다. 카드에 「종각역 350m」. Preview 홈「종각」→ 숙소 찾기 → 하드 새로고침. 오라카이 대학로처럼 OSM에 없는 호텔은 거리 없음이 정상.',
+    at: '2026-09-15T20:40:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-51-gimhae-overlays',
+    session: '팔경 활용 #51, 김해 결손 오버레이',
+    title: '김해9경 화포천·경전철 가야유적·분산 천문대 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 김해9경 결손 3건(화포천습지 생태공원·경전철에서 바라본 가야유적·분산(천문대)전경 및 운무)의 공공 공식 팩트 개요·주소·한국관광공사 공식 사진을 보강했습니다. 화포천은 한림면 한림로 183-300 하천형 배후습지, 경전철 가야유적은 박물관역·수로왕릉역의 대성동고분군·국립김해박물관, 분산 천문대는 어방동 가야테마길 254 분성산 정상입니다. 창녕 우포늪·3경 수로왕릉·GATEO 선정 가야테마파크·증평 좌구산 천문대와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gimhae 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T20:30:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-50-goheung-empty-thumbs',
+    session: '팔경 활용 #50, 고흥 빈 썸네일',
+    title: '팔영산 자연휴양림·영남용바위 빈 썸네일',
+    detail:
+      'Preview QA에서 고흥10경 1경 팔영산 자연휴양림과 검색「고흥」영남용바위·팔영산자연휴양림이 Landmark였습니다. Tour 125426·2782706 firstimage가 비어 있습니다. JSON contentId 기입 없이 멤버 오버레이·TOUR_THUMB에 한국관광공사 휴양림 산림문화휴양관(2380877)·영남용바위 해안절벽(2788863) 사진을 넣었습니다. 능가사·편백치유의 숲·남열 해수욕장·소록도와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goheung 1경, 검색「고흥」팔영산자연휴양림·영남용바위.',
+    at: '2026-09-15T19:50:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-distance-naver',
+    session: '종각역 숙소 #5, 거리 정렬 및 지도 딥링크',
+    title: '종각역 거리 표기 · 네이버 지도 인근 숙소',
+    detail:
+      '숙소 카드에 종각역 좌표 기준 거리(종각역 350m)를 붙이고, 추천순·가까운순은 가까운 숙소를 앞에 둡니다. 툴바에 「네이버 지도에서 주변 숙소 보기」칩이 있습니다. 거리는 마이리얼트립 숙소 위·경도가 있을 때만 나옵니다. Edge fetch-mrt-stays를 이 브랜치로 배포해야 Preview에 좌표가 전달됩니다. Preview 홈「종각」→ 숙소 찾기 → 종로·광화문 호텔에 거리 · 네이버 칩.',
+    at: '2026-09-15T19:50:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-jongno-alias',
+    session: '종각역 숙소 #4, 종각 약칭 지오코딩 및 종로 권역 매핑',
+    title: '종각 약칭은 서울 종각역, 숙소는 종로',
+    detail:
+      '검색「종각」이 대구 종각 광장으로 가던 문제를 고쳤습니다. 약칭은 서울 종각역(철도역)을 먼저 찾고, 숙소 찾기는 서울 전역 대신 종로 동네(마이리얼트립 약 632건)를 먼저 보냅니다. Preview 홈에서 「종각」검색이 서울 종각역인지, 숙소 찾기에 종로·광화문 호텔이 보이는지(대구 봉덕·강남 광역 아님).',
+    at: '2026-09-15T13:30:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-50-goheung-overlays',
+    session: '팔경 활용 #50, 고흥 결손 오버레이',
+    title: '고흥10경 쑥섬·금산 해안경관·고흥만 수변노을공원 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 고흥10경 결손 3건(쑥섬·금산 해안경관·고흥만 수변노을공원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 쑥섬은 봉래면 애도(나로도항길 120-7) 전남 1호 민간정원이며 소록도·연홍도·나로우주센터와 다른 섬입니다. 금산 해안경관은 충남 금산군·남해 금산 보리암이 아니라 금산면 거금도 해안도로(거금일주로 1234·소원동산)입니다. 고흥만 수변노을공원은 도덕면 고흥만로 1132-14이며 남열 해돋이·영광 백수해안도로와 다른 노을입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goheung 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T13:20:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-detailimage',
+    session: '팔경 활용 #49, 영광 검색 썸네일',
+    title: '불갑산도립공원 detailImage 썸네일',
+    detail:
+      'Preview QA에서 검색「영광」불갑산도립공원(126248)이 그대로 Landmark였습니다. DB·detailCommon·searchKeyword firstimage와 searchPhoto는 비고, TourAPI 사진은 detailImage 3장(상사화 군락 2831192 등)에만 있습니다. 리스트 live가 firstimage만 봐서 빈 채로 끝났습니다. fetchTourApiFirstImage가 detailImage를 타게 하고, 같은 CMS URL을 TOUR_THUMB 126248에 넣었습니다. 불갑사 126349·3379065와 다른 id입니다. Preview /qa/palgyeong-use — 검색「영광」불갑산도립공원 썸네일.',
+    at: '2026-09-15T12:35:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-tour-thumbs',
+    session: '팔경 활용 #49, 영광 검색 썸네일',
+    title: '관광지 검색 빈 썸네일 TourAPI live 채움',
+    detail:
+      '명승 검색「영광」불갑산도립공원(126248)처럼 tourapi_attraction.first_image가 비면 플레이스홀더만 나왔습니다. GATEO 선정은 detailCommon live를 타는데 관광지 목록은 DB만 봤습니다. 빈 행만 fetchTourApiFirstImage로 채우고, 멤버·contentId 오버레이는 덮지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「영광」불갑산도립공원 썸네일.',
+    at: '2026-09-15T12:05:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-49-yeonggwang-overlays',
+    session: '팔경 활용 #49, 영광 결손 오버레이',
+    title: '영광9경 황금산·왕글공원·백학촌 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영광9경 결손 3건(황금산·왕글공원·백학촌)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 황금산은 서산·거제 황금산이 아니라 공식 1경 백수해안도로(해안로 957·칠산정), 왕글공원은 없는 지명이라 공식 7경 숲쟁이공원(명승 22호·백제문화로 67), 백학촌은 연천 백학면이 아니라 영광읍 백학리·물무산 행복숲(물무로 219)입니다. 한빛원전·법성포 포구 사진과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeonggwang 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T09:50:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-48-donghae-tour-overwrite',
+    session: '팔경 활용 #48, 동해 썸네일 분리',
+    title: '용추·무릉반석 Tour firstimage 덮어쓰기',
+    detail:
+      'Preview QA에서 오버레이를 넣었는데도 용추폭포(2경)와 무릉반석(3경)이 같은 무릉계곡 Tour 125673 폭포 사진을 썼고, 망상(4경)은 Tour 글자 간판이었습니다. ScenicPage가 contentId로 Tour firstimage를 나중에 덮습니다. JSON contentId 기입 없이 멤버 오버레이가 Tour 맵보다 우선하게 했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=donghae 2경·3경·4경 사진이 서로 다름.',
+    at: '2026-09-15T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-seoul-not-wonju',
+    session: '종각역 숙소 #2, 서울 좌표·서울 CITY',
+    title: '종각역 숙소가 원주로 나오던 문제',
+    detail:
+      '써머리 숙소 찾기가 오크밸리·원주 브라운도트처럼 원주 숙소를 보여 줬습니다. 종각역 Nominatim(철도역)을 버려서 검색이 search_dictionary 원주 좌표로 갔고, 시·군 선두가 원주를 키워드로 썼습니다. 역 검색은 서울 종각역 좌표를 쓰고, 마이리얼트립은 CITY「서울」로 찾습니다. 「서울 종각역」단독 CITY는 없습니다. Preview 홈에서 종각역 → 숙소 찾기 → 서울 호텔인지(원주 오크밸리 아님).',
+    at: '2026-09-15T08:40:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-48-donghae-empty-thumbs',
+    session: '팔경 활용 #48, 동해 빈 썸네일',
+    title: '용추·무릉반석 사진 분리 · 망상·어달 빈 썸네일',
+    detail:
+      'Preview QA에서 용추폭포(2경)와 무릉반석(3경)이 같은 무릉계곡 Tour 125673 사진을 썼고, 탐색 검색 동해 망상해수욕장(4경)·명승 검색 어달해변은 플레이스홀더였습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 용추·반석·망상 동해시 관광 공식 사진을 넣고, TOUR_THUMB 125713·125708에 망상·어달 해변 사진을 넣었습니다. 문경 용추·쌍폭포·대진·노봉과 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「동해」용추·반석·망상, /korea/theme/scenic 검색「동해」어달해변.',
+    at: '2026-09-15T08:35:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-8-drop-rotate-toggle',
+    session: '방문자 개선 #8, 언어일관성 및 가입혜택/접근성',
+    title: '지구본 일시정지 버튼 제거',
+    detail:
+      '드래그·이동하면 자전이 이미 멈춥니다. 모바일에는 버튼이 보이지도 않아 상단 일시정지 토글을 빼었습니다. prefers-reduced-motion이면 기본 자전은 그대로 막습니다. Preview /qa/visitor-growth — 홈에서 드래그 후 자전 정지.',
+    at: '2026-09-15T08:35:00.000Z',
+  },
+  {
+    id: '2026-09-15-jonggak-stay-station-city',
+    session: '종각역 숙소 #1, 역 POI 시·군 선두',
+    title: '종각역 숙소 찾기 빈 목록',
+    detail:
+      '지구본에서 종각역을 열고 숙소 찾기를 누르면 마이리얼트립이 역 이름을 CITY로 찾아 빈 목록이 됐습니다. 국내 역·길·터미널은 서울 같은 시·군을 먼저 보내고, 동네만 있는 stayAdmin은 역지오로 시를 채웁니다. Preview 홈에서 종각역 검색 → 숙소 찾기 → 서울 숙소가 보이는지.',
+    at: '2026-09-15T04:10:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-8-locale-a11y',
+    session: '방문자 개선 #8, 언어일관성 및 가입혜택/접근성',
+    title: 'PlaceCard 로컬라이징·가입 혜택·지구본 자전 제어',
+    detail:
+      'EN에서 장소 개요는 getLocalizedPlaceDesc를 쓰고, 한글 본문만 있으면 영문 안내 칩을 둡니다. 로그인·회원가입에 버킷·로그북·AI·플래너 4대 혜택을 붙였습니다. 홈 아이콘에 aria-label, 로고 키보드 포커스, 로고 패널 푸터 대비, 지구본 prefers-reduced-motion 기본 정지와 일시정지 버튼을 넣었습니다. Preview /qa/visitor-growth — 홈 EN 전환, /auth/signup, 지구본 일시정지.',
+    at: '2026-09-15T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-48-donghae-overlays',
+    session: '팔경 활용 #48, 동해 결손 오버레이',
+    title: '동해비경 결손 3건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 동해비경 결손 3건(호해정·할미바위·초록봉)의 공공 공식 팩트 개요·주소·동해시 관광 공식 사진을 보강했습니다. 호해정은 구미동 산2 광복 기념 정자, 할미바위는 구미동 산1 해안절벽 흔들바위, 초록봉은 천곡동 등 4개 동 등산로(동해 8경 중 8경)입니다. 강릉 호해정·추암 해암정·만경대·삼척 할미바위·두타산과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=donghae 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T03:55:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-7-stage-footer-next',
+    session: '방문자 개선 #7, 플래너 3단계 점진적 노출',
+    title: '단계 하단에서 다음 단계 선택',
+    detail:
+      '필수 단계를 끝까지 내린 뒤 상단 탭으로 다시 올라가지 않아도 됩니다. 각 단계 하단에 「확인하셨다면 다음 단계를 선택해 주세요」안내와 나머지 단계 버튼을 둡니다. Preview /qa/visitor-growth — /place/bora-bora/planner 필수 단계 맨 아래.',
+    at: '2026-09-15T03:45:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-47-geoje-empty-thumbs',
+    session: '팔경 활용 #47, 거제 빈 썸네일',
+    title: '거제 식물원·매미성·구조라·지심도터미널 빈 썸네일',
+    detail:
+      'Preview QA에서 거제 식물원(5경)·매미성(9경)·구조라해수욕장·탐색 검색 동백섬 지심도터미널(2756617)이 플레이스홀더였습니다. 학동·포로수용소·공곶이·내도는 이미 사진이 있습니다. GATEO 선정 행이 없고 탐색홈은 Tour firstimage를 쓰지 않습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 한국관광공사 공식 사진을 넣었습니다. 외도보타니아·매미면가 식당·학동몽돌·지심도 본섬과 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「거제」식물원·매미성·구조라, /korea/theme/scenic 검색「거제」동백섬 지심도터미널.',
+    at: '2026-09-15T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-7-planner-stages',
+    session: '방문자 개선 #7, 플래너 3단계 점진적 노출',
+    title: '플래너 필수→이동·통신→즐기기 단계 노출',
+    detail:
+      '툴킷이 한 화면에 쏟아지던 플래너를 3단계로 나눕니다. 1단계는 비자·체크리스트·항공/숙소 예약 카드, 2단계는 픽업·페리·유심(Airalo/Holafly 택1), 3단계는 투어·교통 패스·앱·치안입니다. 상단 항공 배너와 체크리스트·툴킷의 중복 CTA를 모았고, 복잡도 90/100 대신 「상세 안내 포함」뱃지를 둡니다. Preview /qa/visitor-growth — /place/bora-bora/planner · /place/paris/planner.',
+    at: '2026-09-15T03:30:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-47-geoje-overlays',
+    session: '팔경 활용 #47, 거제 결손 오버레이',
+    title: '거제9경 결손 3건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 거제9경 결손 3건(학동몽돌해수욕장·거제포로수용소유적공원·공곶이·내도)의 공공 공식 팩트 개요·주소·한국관광공사 공식 사진을 보강했습니다. 학동은 동부면 학동 흑진주 몽돌해변, 포로수용소는 고현동 계룡로 61, 공곶이·내도는 일운면 와현리 94-2입니다. 고성 학동마을·외도보타니아와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geoje 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-15T03:20:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-6-trust-bar-clearance',
+    session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
+    title: '모바일 홈 신뢰 바·테마 칩 겹침 해제',
+    detail:
+      '모바일 홈에서는 하단 고정 신뢰 바를 숨기고, 테마 카테고리 스택 바로 위에 둡니다. 나라 칩이 펼쳐져도 출처 링크가 휴양·자연 칩을 덮지 않습니다. Preview /qa/visitor-growth — 홈 하단 테마 칩과 About·출처가 겹치지 않는지.',
+    at: '2026-09-15T03:10:00.000Z',
+  },
+  {
+    id: '2026-09-15-palgyeong-use-46-hwasun-yeondunri-thumb',
+    session: '팔경 활용 #46, 화순 연둔리 썸네일',
+    title: '화순 7경 연둔리 숲정이 빈 썸네일',
+    detail:
+      'Preview QA에서 화순11경 7경 연둔리 숲정이와 탐색 검색 Tour 행 화순동복연둔리숲정이(3014431)가 플레이스홀더였습니다. GATEO 선정 행이 없고 탐색홈은 Tour DB first_image 동기화에 의존하는데 비어 있습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 화순군 문화관광 제7경 공식 사진(동복면 둔동1길 38·동복천 수양버들)을 넣었습니다. 만연산 치유숲과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwasun 7경, 검색「화순」연둔리 숲정이·화순동복연둔리숲정이 행.',
+    at: '2026-09-15T01:55:00.000Z',
+  },
+  {
+    id: '2026-09-15-visitor-growth-6-trust-disclosure',
+    session: '방문자 개선 #6, 신뢰요소 및 제휴투명성 강화',
+    title: '신뢰 링크 바·Credits 출처·제휴 고지',
+    detail:
+      '홈·서브페이지 하단 슬림 바에 About·약관·개인정보·출처·문의를 두고 FooterModal 탭을 엽니다. Credits에 TourAPI·Open-Meteo·Unsplash·Pexels와 트립닷컴·클룩·겟유어가이드·마이리얼트립을 적습니다. 플래너 체크리스트 항공·숙소·픽업 CTA에 제휴광고 표기, hybridNotice는 헤더 아래로 올립니다. Preview /qa/visitor-growth — / · /about · /place/paris/planner.',
+    at: '2026-09-15T01:50:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-46-hwasun-overlays',
+    session: '팔경 활용 #46, 화순 결손 오버레이',
+    title: '화순11경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 화순11경 결손 4건(백아산 하늘다리·고인돌 유적지·수만리 철쭉공원·화순 꽃강길 음악분수)의 공공 공식 팩트 개요·주소·화순군 문화관광 공식 사진을 보강했습니다. 하늘다리는 백아면 백아로 1310-56 66m 산악현수교, 고인돌은 도곡 효산리·춘양 대신리 세계유산 지석묘군, 수만리는 화순읍 안양산로 258, 꽃강길은 화순읍 대리 481·개미산 전망대입니다. 고창 고인돌·GATEO 선정 만연산 치유숲과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwasun 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T23:30:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-45-hongseong-overlays',
+    session: '팔경 활용 #45, 홍성 결손 오버레이',
+    title: '홍성12경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 홍성12경 결손 4건(만해한용운생가지·선상문선생 유허지·고암이응노 생가 기념관·그림같은수목원)의 공공 공식 팩트 개요·주소·홍성군 문화관광 공식 사진을 보강했습니다. 만해는 결성면 성곡리 생가(기념물 제75호), 선상문은 군 공식명 성삼문선생유허지(홍북읍 노은리·기념물 제5호), 고암은 홍북읍 이응노의 집, 그림같은수목원은 광천읍 사립 수목원입니다. 인제 만해마을·대전 이응노미술관·구례 수목원과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T22:30:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-5-change-password',
+    session: '방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX',
+    title: '로그인 후 비밀번호 변경 경로',
+    detail:
+      '로고 패널·로그북 프로필·모바일 로그북 헤더에 「비밀번호 변경」을 넣었습니다. /auth/update-password는 로그인 세션에서 확인 입력 후 바로 바꾸고, 메일 재설정 링크는 기존처럼 로그인 화면으로 돌아갑니다. Preview /qa/visitor-growth — 로그인 후 로고 패널 경로 확인.',
+    at: '2026-09-14T21:50:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-5-loading-error-ux',
+    session: '방문자 개선 #5, 로딩스켈레톤 및 에러복구 UX',
+    title: '축제 스켈레톤·큐레이션 재시도·갤러리 네트워크 안내',
+    detail:
+      '/korea 축제 행은 깨진 이미지에 그라데이션 폴백, 로딩 중 5행 스켈레톤, 빈 필터에 초기화 버튼을 둡니다. /blog/curation은 실패 시 alert 대신 인라인 재시도·결과 카드형 스켈레톤입니다. 갤러리는 모든 소스 실패 시 네트워크 재시도 안내를 보여 줍니다. Preview /qa/visitor-growth — /korea · /blog/curation · /place/paris/gallery.',
+    at: '2026-09-14T21:30:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-45-hongseong-empty-thumbs',
+    session: '팔경 활용 #45, 홍성 검색·11경 빈 썸네일',
+    title: '홍성 검색 오서산·죽도·용봉산·11경 홍주의사총 빈 썸네일',
+    detail:
+      'Preview QA에서 홍성 검색 관광지 오서산·죽도(홍성)·용봉산과 홍성12경 11경 홍주의사총이 플레이스홀더였습니다. TourAPI first_image가 비어 있어 JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS·TOUR_THUMB에 홍성군 문화관광 공식 사진을 넣었습니다. 용봉산은 용봉산자연휴양림과 다른 사진, 죽도는 영덕·포항 죽도와 다른 사진입니다. Preview /qa/palgyeong-use — 검색「홍성」오서산·죽도(홍성)·용봉산, /korea/theme/scenic?hub=hongseong 홍주의사총.',
+    at: '2026-09-14T21:15:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-4-mooni-ask-chips',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: '추천받기 채팅에도 하단 주제 칩 유지',
+    detail:
+      '검색 드롭다운에서 MOONi 추천받기를 누르면 첫 메시지가 바로 들어가 범용 디스커버리 칩이 사라졌습니다. 추천받기·이후 대화에도 기존 MOONi처럼 궁금해/가는 방법/출발 준비/즐길 주제 칩을 하단에 둡니다. Preview /qa/visitor-growth — 문경 추천받기 후 하단 칩이 보이는지, 도쿄 장소 바인딩 칩과 같은지.',
+    at: '2026-09-14T20:40:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-4-mooni-ask-top',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: 'MOONi 카드 상단·기존 목적지 중첩 해제',
+    detail:
+      '탐색 드롭다운의 MOONi 추천 카드를 항상 맨 위에 둡니다. 카드를 누르면 이전 여행지 대화를 이어받지 않고 일반 MOONi 세션을 엽니다. Preview /qa/visitor-growth — 김포 검색 카드가 맨 위인지, 코타키나발루가 채팅에 안 남는지.',
+    at: '2026-09-14T19:55:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-4-mood-bridge',
+    session: '방문자 개선 #4, 무드검색 분리 및 AI추천 브릿지',
+    title: '무드 결합 지오코딩 스킵·MOONi 추천 카드',
+    detail:
+      'quiet beaches·따뜻한 휴양지·조용한 바다처럼 분위기+여행명사 결합은 Mapbox 지오코딩을 건너뛰고 AI 무드 큐레이션으로 갑니다. 도로명·상호 POI 오탐은 버리고, 탐색 드롭다운에 MOONi에게 물어보기 카드를 붙입니다. Preview /qa/visitor-growth — 검색창에 위 질의 후 엉뚱한 핀이 아닌지, AI 카드가 열리는지.',
+    at: '2026-09-14T13:20:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-44-haenam-overlays',
+    session: '팔경 활용 #44, 해남 결손 오버레이',
+    title: '해남8경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 해남8경 결손 4건(해남 구 목포구등대 낙조 전망대·해남윤씨 옥우당·미황사 및 도솔암·울돌목)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 등대는 화원면 매봉길 구 목포구등대·낙조전망대, 옥우당은 사적 해남윤씨 녹우당 일원, 미황사·도솔암은 달마산 명승, 울돌목은 문내면 스카이워크입니다. 목포 고하도등대·완도 보길도 원림·고창 선운산 도솔암·진도 군내면과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=haenam 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T21:00:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-43-hampyeong-expo-thumb',
+    session: '팔경 활용 #43, 함평 엑스포 중복 썸네일',
+    title: '함평 1경·2경 동일 썸네일 분리',
+    detail:
+      '함평8경 1경 함평자연생태공원과 2경 함평엑스포공원이 GATEO 선정 이미지 폴백 때문에 같은 한국관광공사 생태공원 사진(3536105)을 쓰고 있었습니다. fill 스크립트가 엑스포를 생태공원 contentId 129235로 폴백하던 매핑을 제거하고, 엑스포는 TourAPI 130864 firstimage(4065063 함평나비대축제)와 생태관·온실 갤러리로 바꿨습니다. JSON contentId 기입·scenic 승격 없음. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hampyeong 1경·2경 썸네일이 다른지.',
+    at: '2026-09-14T20:10:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-43-hampyeong-overlays',
+    session: '팔경 활용 #43, 함평 결손 오버레이',
+    title: '함평8경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 함평8경 결손 4건(백제고도·모악산·삼호천·청계산)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 백제고도는 한국관광공사 함평예덕리고분군 사진, 모악산은 용천사 꽃무릇공원 사진(GATEO 선정 용천사 함평과 다른 URL), 삼호천은 함평천수변공원 사진, 청계산은 손불면 양재리 이팝나무(군유산 자락) 사진입니다. 부여 백제문화단지·전주 모악산도립공원·창원 삼호천·과천 청계산과 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hampyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T13:20:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-42-jindo-jodo-thumb',
+    session: '팔경 활용 #42, 진도 QA 조도 썸네일',
+    title: '진도 검색 조도(조도6군도) 빈 썸네일',
+    detail:
+      '진도 검색 관광지 행 조도(조도6군도)는 TourAPI contentId 553447인데 DB first_image가 없어 플레이스홀더가 떴습니다. JSON contentId 기입 없이 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID에 진도군 조도 다도해 공식 사진을 연결했습니다. 속초 조도·남해 조도와 혼동하지 않습니다. Preview /qa/palgyeong-use — 검색「진도」조도(조도6군도) 행.',
+    at: '2026-09-14T12:50:00.000Z',
+  },
+  {
+    id: '2026-09-14-visitor-growth-3-crawler-body',
+    session: '방문자 개선 #3, 크롤러 SEO 및 본문 프리렌더링',
+    title: '봇 전수화·274 여행지 메타·시맨틱 본문',
+    detail:
+      '카카오·다음·슬랙 봇을 감지하고, 여행지 274곳 전수 크롤러 메타를 생성합니다. 봇에게는 장소별 h1·설명·갤러리/플래너/AI 도슨트 nav를 #root에 넣습니다. Preview /qa/visitor-growth — /place/tokyo?crawler=1 · /place/santorini?crawler=1 본문이 홈 소개글이 아닌지 확인.',
+    at: '2026-09-14T09:40:00.000Z',
+  },
+  {
+    id: '2026-09-14-palgyeong-use-42-jindo-overlays',
+    session: '팔경 활용 #42, 진도 결손 오버레이',
+    title: '진도10경 결손 4건 오버레이',
+    detail:
+      '문경8경 4건은 사진·개요가 이미 채워져 있어 건너뛰고, JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 진도10경 결손 4건(조도관음도·의장대·돈대산·하조대)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 조도관음도는 진도군 가사도·조도 다도해 사진, 의장대는 조도 전망 데크 사진, 돈대산은 조도 다도해 조망 사진, 하조대는 하조도등대 사진입니다. 양양 하조대·울릉 관음도와 혼동하지 않습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jindo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-14T09:10:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-41-yeongdeok-qa-fix',
+    session: '팔경 활용 #41, 영덕 QA 수정',
+    title: '영덕 썸네일·투어 오탐 수정',
+    detail:
+      '영덕 검색 하저·경정 해수욕장·삼사해상공원 빈 썸네일을 LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID(127160·1621219·126143)로 보강했습니다. 명승 상세 투어에 잔지바르·나이로비 사파리가 뜨던 원인은 인근 키워드「영양」이 투어 제목 일반어(영양)와 부분일치한 오탐이었습니다 — 해외·동형어 필터·EventTnaStrip 로딩 시 이전 목록 제거로 수정. Preview /qa/palgyeong-use — 영덕 검색·하저 상세 투어.',
+    at: '2026-09-13T22:05:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-41-yeongdeok-overlays',
+    session: '팔경 활용 #41, 영덕 결손 오버레이',
+    title: '영덕9경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영덕9경 결손 4건(영덕 도천숲·영덕 팔각산·영덕 사월의 복사꽃·영덕 나옹왕사 사적비)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 도천숲은 정책브리핑 국가유산청 사진, 팔각산은 한국관광공사 옥계계곡·명승 침수정 사진, 사월의 복사꽃은 한국관광공사 영덕 복사꽃마을 사진, 나옹왕사 사적비는 한국관광공사 장육사 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongdeok 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T12:58:00.000Z',
+  },
+  {
+    id: '2026-09-13-visitor-growth-1-clear-mobile',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: '일반 탐색 버튼 모바일 노출',
+    detail:
+      '장소 선택 후 채팅 진입 시 onClearPlaceBinding이 빠지던 조건 수정. 모바일은 헤더 컴패스(🧭) 아이콘 + 칩 위 「일반 탐색」 바. Preview /qa/visitor-growth 재확인.',
+    at: '2026-09-13T12:25:00.000Z',
+  },
+  {
+    id: '2026-09-13-visitor-growth-1-general-explore',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: 'MOONi 일반 탐색(여행지 해제) 버튼',
+    detail:
+      '여행지 바인딩 후 채팅 헤더에 「일반 탐색」을 추가했습니다. 탭하면 MOONi 일반 세션·범용 칩 4종으로 돌아가고, 기존 trip은 사이드바에 남습니다. Preview /qa/visitor-growth — 장소 선택 후 헤더 버튼 확인.',
+    at: '2026-09-13T09:55:00.000Z',
+  },
+  {
+    id: '2026-09-13-visitor-growth-1-404-mooni',
+    session: '방문자 개선 #1, 404 복구 및 AI채팅 초기화',
+    title: '404 라우트 복구·MOONi 기본 바인딩·탐색 칩',
+    detail:
+      '/about 신설, /pricing→/about·/product→/explore 리다이렉트, 와일드카드 404→홈. 장소 미선택 AI 채팅은 MOONi로 열리고 범용 탐색 칩 4종 노출. Preview /qa/visitor-growth — /about·/pricing·하단 AI 버튼(장소 없음) 확인.',
+    at: '2026-09-13T09:45:00.000Z',
+  },
+  {
+    id: '2026-09-13-explore-search-6-merge',
+    session: '탐색홈 검색 #6, Preview OK면 PR 병합',
+    title: '문경 팔경·선정 썸네일 PROD 병합',
+    detail:
+      'Preview QA 후 PR #242를 main에 병합했습니다. #5 resolveSearchScenicMedia·드롭다운 TourAPI 썸네일과 함께, 쌍용계곡은 VisitKorea 1050806(실내 사진) 대신 문경시 문화관광 mg8_0401·0402 공식 사진을 씁니다. 선유동·용추·경천호는 TourAPI 또는 이후 팔경 오버레이. /qa/explore-search→PROD는 PR #241.',
+    at: '2026-09-13T09:10:00.000Z',
+  },
+  {
+    id: '2026-09-13-explore-search-5-mungyeong-thumbs',
+    session: '탐색홈 검색 #5, 문경 썸네일 경로 통일',
+    title: '탐색 검색 썸네일 = 명승·명소 SSOT',
+    detail:
+      '문경 검색에서 일부 행만 사진이 비던 이유는 경로가 달랐습니다. 탐색홈은 팔경 오버레이·GATEO 선정 imageUrl만 보고, 명소홈은 TourAPI first_image와 contentId 오버레이까지 보강합니다. 탐색 드롭다운·선택 행이 명승과 같은 오버레이·선정·contentId 사진을 쓰고, 남은 contentId는 TourAPI 캐시로 채웁니다. 팔경 결손 오버레이가 추가되면 탐색에도 같이 반영됩니다. Preview /qa/explore-search — /explore 문경 검색 행 사진.',
+    at: '2026-09-13T08:40:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-38-cheonan-overlays',
+    session: '팔경 활용 #38, 천안 결손 오버레이',
+    title: '천안8경 결손 4건 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 천안8경 결손 4건(유관순열사사적지·태조산 왕건길과 청동대좌불·아라리오조각광장·봉선홍경사갈기비)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 천안시 문화관광 유관순 추모각·각원사 청동대좌불·아라리오 조각·봉선홍경사갈기비 사진을 연결했고, 청동대좌불은 GATEO 선정 각원사와 다른 시 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=cheonan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T08:10:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-37-nonsan-tour-thumbs',
+    session: '팔경 활용 #37, 논산 검색 빈 썸네일',
+    title: '논산 관광지 검색 빈 썸네일 3건',
+    detail:
+      '「논산」 관광지 검색에서 TourAPI first_image가 없던 양촌자연휴양림·강경역사관·노강서원(논산)에 JSON contentId 기입 없이 런타임 썸네일 오버레이를 연결했습니다. 양촌·노강은 논산시 문화관광 공식 갤러리, 강경역사관은 한국관광공사 detailImage입니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색 「논산」 자연·인문 행.',
+    at: '2026-09-13T05:20:00.000Z',
+  },
+  {
+    id: '2026-09-13-explore-search-4-ongjin-no-palgyeong',
+    session: '탐색홈 검색 #4, 옹진은 팔경 없음',
+    title: '옹진 섬은 명소 그룹, N경 아님',
+    detail:
+      '옹진에는 지자체 팔경 리스트가 없습니다. 문경만 「문경 팔경」·「문경 1경」을 쓰고, 옹진 섬은 「옹진 명소」소제목만 붙입니다. 1경 번호는 없습니다. Preview /qa/explore-search — 옹진 Enter 옹진 명소, 문경 팔경 유지.',
+    at: '2026-09-13T05:20:00.000Z',
+  },
+  {
+    id: '2026-09-13-explore-search-3-palgyeong-list-cards',
+    session: '탐색홈 검색 #3, 팔경식 리스트·카드 썸네일',
+    title: '검색 결과에 N경 표기·썸네일 행',
+    detail:
+      '탐색홈 검색 결과를 명승 팔경 리스트처럼 한 줄 행으로 나열하고, 팔경 멤버에는 「문경 1경」 같은 행 부제를 붙였습니다. 선택 카드·드롭다운에 GATEO 선정 썸네일을 넣었고, 옹진 섬(덕적도 등)도 같은 사진이 보입니다. Enter 후 드롭다운은 닫힌 채 선택 행만 남습니다. Preview /qa/explore-search — 옹진 Enter 섬 사진, 문경 검색 문경 1경.',
+    at: '2026-09-13T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-37-nonsan-overlays',
+    session: '팔경 활용 #37, 논산 결손 오버레이',
+    title: '논산11경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 논산11경 결손 4건(대둔산 수락계곡·강경포구와 근대역사거리·노성산성과 명재고택·종학당과 한국유교문화진흥원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 논산시 문화관광 11경 수락계곡·강경포구·명재고택·종학당 사진을 연결했고, 수락계곡은 시 여름명소 선녀폭포·수락폭포 사진, 강경·고택·종학당은 한국관광공사 옥녀봉·강경역사관·명재고택·종학당 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=nonsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T04:05:00.000Z',
+  },
+  {
+    id: '2026-09-13-explore-search-1-choice-overlay',
+    session: '탐색홈 검색 #1, 선택 카드 중첩 정리',
+    title: '옹진 Enter 후 드롭다운·선택 카드 한 겹',
+    detail:
+      '탐색홈에서 옹진처럼 동명이 많은 검색어를 Enter하면 타이핑 드롭다운과 선택 카드가 같은 후보를 두 겹으로 띄웠습니다. Enter 이후에는 설명 있는 선택 카드만 남기고 드롭다운·안내문을 닫았습니다. 타이핑 중 제안 목록은 그대로입니다. Preview /qa/explore-search — /explore 에서 옹진 검색 후 Enter.',
+    at: '2026-09-13T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-36-gyeryong-overlays',
+    session: '팔경 활용 #36, 계룡 결손 오버레이',
+    title: '계룡9경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 계룡9경 결손 4건(향적산 국사봉·숫용추·암용추·계룡대 통일탑)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 계룡시 엄사면 향적산 국사봉 사진, 문화관광 숫용추·암용추 사진, 문화관광·신도안면 계룡대 통일탑 사진을 연결했고, 국사봉 갤러리는 같은 산 향적산 치유의 숲 공식 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gyeryong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-13-korea-tna-strip-9-sido-stay-fallback',
+    session: '한국 투어티켓 #9, Preview OK면 PR 병합',
+    title: '명승·축제 숙소·투어 시도 폴백',
+    detail:
+      '옹진 대청도처럼 시드 군·섬은 숙소 재고가 없어도 폴백이 안 됐습니다. 명승에도 축제와 같은 인천·강화 칩을 붙이고, 같은 시도 시드 키워드를 숙소·투어 알트에 넣었습니다. 빈 alt 배열이 지역 알트를 지우지 않게 했고, cityHints에 폴백 도시명을 넣어 인천 CITY가 옹진 힌트로 거절되지 않게 했습니다. Preview /qa/korea-tna-strip — 대청도 숙소·투어, 왕가의 산책 인천, 경복궁 렌터카·기차표.',
+    at: '2026-09-13T03:20:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-35-jeungpyeong-overlays',
+    session: '팔경 활용 #35, 증평 결손 오버레이',
+    title: '증평구경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 증평구경 결손 4건(좌구산 천문대·삼기저수지 등잔길·추성산성·연병호 항일역사공원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 증평군 문화관광 천문대 사진, 한국관광공사 삼기저수지 사진, 국가유산청·증평기록관 추성산성·연병호 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jeungpyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T02:50:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-34-anyang-overlays',
+    session: '팔경 활용 #34, 안양 결손 오버레이',
+    title: '안양9경 결손 4건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 안양9경 결손 4건(망해암일몰·수리산성지·평촌1번가 문화의거리·만안교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 안양시 문화관광 망해암·수리산성지·평촌1번가·만안교 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=anyang 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T02:20:00.000Z',
+  },
+  {
+    id: '2026-09-13-korea-tna-strip-8-ongjin-title-fallback',
+    session: '한국 투어티켓 #8, Preview OK면 PR 병합',
+    title: '왕가의 산책 인천 폴백 · 행사명 투어 제외',
+    detail:
+      '인천공항 「왕가의 산책」이 옹진 군청 최근접으로 숙소·투어가 붙고, 재고가 없으면 행사명으로 룩소르 「왕가의 계곡」이 나왔습니다. 주소가 옹진군이 아니면 시도 대표(인천)로 찾고, 숙소 칩은 인천·강화 같은 상위·인접 시드만 보여 줍니다. 투어 키워드·알트에서 행사명을 빼 클룩 칩도 지역명입니다. Preview /qa/korea-tna-strip — 왕가의 산책 본문 숙소·투어.',
+    at: '2026-09-13T02:10:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-33-pohang-overlays',
+    session: '팔경 활용 #33, 포항 결손 오버레이',
+    title: '포항12경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 포항12경 결손 5건(호미곶 일출·내연산 12폭포·운제산 오어사 사계·영일대 포스코 야경·철길숲 불의 정원)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 호미곶 해맞이광장·내연산 연산폭포·오어사·영일대 누각 사진을 연결했고, 철길숲은 포항시 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=pohang 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T01:40:00.000Z',
+  },
+  {
+    id: '2026-09-13-korea-tna-strip-7-rental-train',
+    session: '한국 투어티켓 #7, 국내 렌터카·기차표',
+    title: '렌터카 보기 · 마이리얼트립 · 기차표',
+    detail:
+      '투어 섹션 하단 렌터카 문구를 「{{지역}} 렌터카 보기」로 바꿨습니다(최저가 비교 없음). 국내 렌터카는 클룩 검색 대신 마이리얼트립 /rentalcars?category=domestic 로 연결합니다. 기차표는 트립닷컴 /trains/ 칩을 같은 줄에 넣었습니다. Preview /qa/korea-tna-strip — 경복궁 등 명승·축제 상세 투어 섹션 하단.',
+    at: '2026-09-13T01:30:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-32-namhae-12gyeong-title',
+    session: '팔경 활용 #32, 남해 결손 오버레이',
+    title: '남해12경 그룹 제목',
+    detail:
+      '남해12경이 listKind sipgyeong 때문에 검색·리스트 소제목이 「남해 십경」으로 나왔습니다. 공식명 「남해 12경」으로 맞췄습니다. 하동·금산 십경(실제 10경) 표시는 그대로입니다. Preview /qa/palgyeong-use — 「남해」검색 그룹명.',
+    at: '2026-09-13T01:10:00.000Z',
+  },
+  {
+    id: '2026-09-13-palgyeong-use-32-namhae-overlays',
+    session: '팔경 활용 #32, 남해 결손 오버레이',
+    title: '남해12경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 남해12경 결손 5건(남해 금산과 보리암·창선교와 남해지족해협 죽방렴·서포 김만중 선생 유허와 노도·남해 물건리 방조어부림과 물미해안·창선-삼천포대교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 보리암·죽방렴·창선교·노도·방조어부림·창선삼천포대교 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=namhae 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-13T00:55:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-31-geumsan-ginkgo-thumbs',
+    session: '팔경 활용 #31, 금산 은행나무·썸네일',
+    title: '요광리 은행나무 사진 · 서대산·진악산 빈 썸네일',
+    detail:
+      '태조태실 요광은행나무 상세 사진을 태실 석물에서 금산군·국가유산청 요광리 은행나무 공식 사진으로 바꿨습니다. TourAPI에 사진이 없던 서대산 산꽃세상(127518)·진악산(126811)은 금산군 산꽃축제·진악산·개삼터 공식 사진을 런타임 오버레이로 넣고, 관광지 검색 행도 같은 contentId면 그 썸네일을 쓰게 했습니다. JSON contentId는 넣지 않았습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geumsan 10경 카드·「금산」검색 진악산·서대산.',
+    at: '2026-09-12T23:40:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-30-geumsan-overlays',
+    session: '팔경 활용 #30, 금산 결손 오버레이',
+    title: '금산10경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 금산10경 결손 5건(산림문화 힐링명소·금산인삼 세계농업유산·인삼·약령시장·월영산 원골·태조태실 요광은행나무)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 금산산림문화타운·인삼약령시장·월영산 출렁다리·기러기공원·태조대왕 태실 사진을 연결했고, 세계농업유산은 같은 군 금산인삼관 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=geumsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T13:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-6-klook-chips',
+    session: '한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동',
+    title: '투어 카드 아래 클룩 즐길거리·렌터카 칩',
+    detail:
+      '마이리얼트립 투어·티켓 카드 규격은 그대로 두고, EventTnaStrip 하단에 클룩 즐길거리 검색(getKlookSearchUrl)과 렌터카 최저가 비교(getKlookRentalUrlByLocation) 아웃링크 칩을 넣었습니다. 상품이 없어도 칩은 보입니다. Preview /qa/korea-tna-strip — 경복궁 등 명승·축제 상세 투어 섹션 하단.',
+    at: '2026-09-12T13:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-29-gunsan-overlays',
+    session: '팔경 활용 #29, 군산 결손 오버레이',
+    title: '선유8경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 선유8경 결손 5건(선유낙조·명사십리·망주폭포·월영단풍·무산십이봉)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 선유도 낙조·선유도해수욕장·말도 사진과 국가유산 망주봉 폭포 사진을 연결했고, 월영단풍은 같은 섬 대각산 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gunsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T12:50:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-28-gangjin-title-village',
+    session: '팔경 활용 #28, 강진 12경 제목·청자단지',
+    title: '강진 12경 그룹명 · 청자단지 썸네일',
+    detail:
+      '강진 검색 시 지구본·명승 리스트 소제목이 「강진 명소」로 나오던 것을 공식명 「강진 12경」으로 맞췄습니다. listKind other인데 제목이 N경이면 띄어 씁니다. 청자단지는 contentId만 있고 사진이 없어 고려청자촌 공식 사진(가마터·공방 단지)을 런타임 오버레이로 보강했습니다. JSON contentId는 넣지 않았습니다. Preview /qa/palgyeong-use — 「강진」검색 그룹명 · 청자단지 썸네일.',
+    at: '2026-09-12T12:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-28-gangjin-overlays',
+    session: '팔경 활용 #28, 강진 결손 오버레이',
+    title: '강진12경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 강진12경 결손 5건(월출산·가학산·백야김좌진기념관·남도별미식문화박물관·강진청자박물관)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 금릉경포대·경포대지구·고려청자박물관 사진을 연결했고, 가학산은 같은 능선 흑석산자연휴양림, 남도별미식은 사의재 공식 사진으로 근사했으며, 백야김좌진기념관은 백야기념관 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gangjin 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T11:45:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-27-gurye-arboretum-photos',
+    session: '팔경 활용 #27, 구례 수목원 사진',
+    title: '구례 수목원 목록·본문 공식 사진',
+    detail:
+      'GATEO 선정 구례 수목원(gurye-arboretum)은 TourAPI contentId 3001143 개요만 있고 firstimage가 비어 목록·상세가 아이콘이었습니다. 한국관광공사 구석구석 공공 사진 6장을 대표 이미지·galleryUrls로 넣어 리스트 썸네일과 상세 본문 갤러리가 보이게 했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gurye 지역 대표 명소 구례 수목원.',
+    at: '2026-09-12T11:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-27-gurye-overlays',
+    session: '팔경 활용 #27, 구례 결손 오버레이',
+    title: '구례10경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 구례10경 결손 5건(노고단 운해·반야봉 낙조·피아골 단풍·산동 산수유꽃·노고단 설경)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 노고단 정상·운해·설화·반야봉 낙조·피아골 단풍·산동 산수유꽃 사진을 연결했고, 구례군청 피아골 출렁다리 단풍 사진을 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gurye 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-gemini-models-2-health-quality',
+    session: 'AI 모델 #2, Preview 피드백 수정',
+    title: '사이트 점검이 QUALITY 3.5 Flash도 ping',
+    detail:
+      '무니 일반 대화는 FAST라 그대로입니다. 워크스페이스 사이트 점검(smoke-health P0-3)이 3.1-flash-lite만 하드코딩하고 있어, geminiModels SSOT의 FAST·QUALITY를 같이 ping하게 바꿨습니다. 3.5-flash가 404면 헬스도 실패합니다. Preview /qa/gemini.',
+    at: '2026-09-12T10:25:00.000Z',
+  },
+  {
+    id: '2026-09-12-gemini-models-1-retire-2-5',
+    session: 'AI 모델 #1, 2.5 종료 교체',
+    title: 'Gemini 2.5 Flash/Pro를 3.5 Flash·3.1 Pro로 교체',
+    detail:
+      'Vertex 퇴직 2026-10-20인 gemini-2.5-flash/pro를 사이트에서 뺐습니다. 무니 일반 대화는 기존 3.1-flash-lite, 품질·인트로·리뷰는 3.5-flash, 위키·툴킷·매거진·일기는 3.1-pro-preview(폴백 3.5-flash)입니다. 옛 2.5 ID는 프록시에서 자동 매핑됩니다. Preview /qa/gemini — 홈 무니 한 턴.',
+    at: '2026-09-12T10:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-4-large-hscroll',
+    session: '한국 투어티켓 #4, 크게는 가로로 카드만',
+    title: '크게 보기 = 카드만 키우고 좌우 스크롤 유지',
+    detail:
+      '세로 그리드는 본문 스킵을 막아 뺐습니다. 「크게」는 숙소·투어 카드를 더 크게(220~252px) 만들고 가로 스크롤을 유지합니다. 아래로 스크롤하면 섹션을 바로 지나갈 수 있습니다. 5개씩 더보기는 MRT 더보기와 겹쳐 넣지 않았습니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-3-large-20',
+    session: '한국 투어티켓 #3, 20개·크게 보기',
+    title: '숙소·투어 기본 20개 · 크게 보기 세로 펼침',
+    detail:
+      '사람 Preview 피드백으로 숙소(EventStayStrip)와 투어(EventTnaStrip) 본문 카드를 기본 20개로 맞췄습니다. 「크게」를 누르면 가로 스크롤이 세로 그리드로 펼쳐져 본문을 아래로 스크롤하며 볼 수 있고, 「기본」으로 되돌립니다. 더보기는 마이리얼트립입니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-2-preview-qa',
+    session: '한국 투어티켓 #2, 사람 Preview QA',
+    title: '본문 투어 카드는 최대 10개',
+    detail:
+      '사람 Preview에서 경복궁 등 명승·축제 상세 투어·티켓 카드 노출을 확인했습니다. EventTnaStrip은 마이리얼트립에서 size 10을 요청하고 그 결과를 가로 스크롤로 나열합니다. 검색이 10개 미만이면 그만큼만 보이고, 더보기는 마이리얼트립 검색입니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:10:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-1-mvp',
+    session: '한국 투어티켓 #1, 본문 TNA 섹션',
+    title: '축제·명승 본문에 마이리얼트립 투어·티켓 카드 섹션 구현',
+    detail:
+      '축제 상세(FestivalDetailSheet)와 명승 상세(ThemeSpotDetailModal) 본문에 마이리얼트립 투어·티켓 카드 스트립(FestivalTnaStrip, ScenicTnaStrip, EventTnaStrip)을 신설했습니다. 숙소 카드와 조화로운 규격(148px~168px 가로 스크롤 카드, 썸네일, 카테고리, 평점, 가격, 딥링크)으로 주변 체험·액티비티를 노출하며, 우측 상단 더보기 링크를 함께 제공합니다. Preview /qa/korea-tna-strip — 경복궁 등 명승 상세 및 축제 상세 본문.',
+    at: '2026-09-12T10:00:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-26-jincheon-overlays',
+    session: '팔경 활용 #26, 상산(진천) 결손 오버레이',
+    title: '상산팔경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 상산팔경 결손 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 미호천 농다리·초평호 미르숲·진천 농교·보탑사·정송강사 사진을 연결했고, 금계완사는 같은 군 농교 물가, 상산모운은 만뢰산 보탑사, 우담제월·적대청람은 초평호·미르숲 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jincheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T10:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-25-jinju-overlays',
+    session: '팔경 활용 #25, 진주 결손 오버레이',
+    title: '진주8경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 진주8경 결손 6건(남강 의암·뒤벼리·새벼리·망진산 봉수대·비봉산의 봄·월아산 해돋이)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 의기사와 의암·망진산 봉수대 사진을 연결했고, 뒤벼리는 남가람공원·선학산전망대, 새벼리는 석류공원, 비봉산은 의곡사, 월아산은 청곡사 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jinju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T09:55:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-24-changnyeong-alias',
+    session: '팔경 활용 #24, 창령→창녕 별칭',
+    title: '창령·창령군을 창녕 발음 별칭으로 연결',
+    detail:
+      '한글 발음으로 구분이 어려운 창령을 창녕 허브 별칭(창령·창령군)으로 넣었습니다. 명승 홈 검색은 공식명 창녕으로 풀려 팔경·GATEO 선정·국가유산 명승·관광지(TourAPI 키워드)가 창녕과 같습니다. 창녕구경 리스트 제목은 그대로 둡니다. Preview /qa/palgyeong-use — 「창령」검색.',
+    at: '2026-09-12T09:40:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-23-changnyeong-search-fix',
+    session: '팔경 활용 #23, 창녕 검색 버그픽스',
+    title: '창령 팔경 오탐 · 창녕 관광지 빈 문구',
+    detail:
+      'hub=changnyeong에서 「창령」검색 시 URL hub가 남아 창녕구경이 주입되던 오탐을 막았습니다(검색 풀 0건이면 팔경 병합 안 함). 「창녕」관광지는 검색 전 종목 칩이 URL에 남아 목록 0건인데 분류칩만 보이던 빈 문구를, 0건 중·소분류 해제와 칩 건수 있을 때 빈 카피 숨김으로 고쳤습니다. Preview /qa/palgyeong-use — 창령은 팔경 없음, 창녕은 관광지 목록·칩 일치.',
+    at: '2026-09-12T09:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-22-changnyeong-overlays',
+    session: '팔경 활용 #22, 창녕 결손 오버레이',
+    title: '창녕구경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 창녕구경 결손 6건(우포늪과 따오기·화왕산 억새와 진달래·낙동강유채축제와 남지개비리·만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑·교동과 송현동고분군·3·1민속문화제와 영산만년교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 우포늪·화왕산군립공원·낙동강유채축제·남지개비리길·만옥정공원·술정리 동 삼층석탑·교동·송현동 고분군·영산 만년교 사진을 연결했고, 만년교 쥐불놀이 공식 사진으로 민속제를 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=changnyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-21-icheon-overlays',
+    session: '팔경 활용 #21, 이천 결손 오버레이',
+    title: '이천9경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 이천9경 결손 6건(노성산 말머리바위·도드람산 삼봉·반룡송·사기막골도예촌·설봉산 삼형제 바위·애련정)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 도드람산·반룡송·사기막골도예촌·설봉산·안흥유원지(애련정) 사진을 연결했고, 노성산 말머리바위는 같은 시 기암 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=icheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T06:40:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-19-haman-sacheon-overlays',
+    session: '팔경 활용 #19, 함안·사천 결손 오버레이',
+    title: '함안9경 7건·사천9경 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 함안9경 결손 7건(말이산고분군·악양의 꽃길과 노을·무진정의 사계·연꽃테마파크의 아라홍련·장춘사의 산사풍경·합강정과 반구정의 해돋이·대평늪의 늪지식물)과 사천9경 결손 6건(삼천포대교와 사천바다케이블카·남일대 코끼리바위·선진리성 벚꽃·봉명산 다솔사·비토섬 갯벌·용두공원과 청룡사 겹벚꽃)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 말이산·악양둑방·무진정·아라홍련·장춘사·사천바다케이블카·남일대·선진리성·다솔사 사진을 연결했고, 합강정·대평늪·비토섬은 같은 시군 수변·해안 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=haman · ?hub=sacheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-18-hancheon-rank-blurb',
+    session: '팔경 활용 #18, 한천 행 부제 공식명',
+    title: '한천팔경 행 부제를 한천 N경으로',
+    detail:
+      '그룹명은 한천팔경인데 행 부제가 영동 1경으로 남아 어긋났습니다. 같은 시군에 팔경이 둘이면 공식명 어간으로 번호를 붙입니다(한천 1경·양산 1경). Preview /qa/palgyeong-use — 명승 「한천」검색 행 부제.',
+    at: '2026-09-12T03:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-17-hancheon-name-globe',
+    session: '팔경 활용 #17, 한천 공식명·지구본 검색',
+    title: '한천팔경 공식명 · 지구본 검색 누락 보강',
+    detail:
+      '영동은 한천팔경·양산팔경이 같이 있어 그룹명이 「영동 팔경」으로 겹쳤습니다. 같은 시군에 팔경이 둘이면 공식 title(한천팔경·양산팔경)을 씁니다. 지구본 홈에서 「한천」이 영동 도시만 나오던 것은 includes 매칭을 검색에 연결해 한천팔경 8행이 먼저 나오게 했습니다. Preview /qa/palgyeong-use — 명승 「한천」그룹명 · 지구본 검색 한천.',
+    at: '2026-09-12T00:30:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-16-search-and-yangsan',
+    session: '팔경 활용 #16, 사람 Preview QA 피드백 반영',
+    title: '「한천」검색 8행 주입 · 양산 12경 내원사계곡·황산공원 오버레이',
+    detail:
+      '검색창에 「한천」입력 시 한천팔경 8행이 GATEO 명소에 주입되지 않던 문제를 고치고, 경남 양산 12경의 결손 멤버인 내원사 계곡(3경)과 황산공원(9경)에 한국관광공사 공식 사진·개요·갤러리를 보강했습니다. 영동 양산팔경 제2경 강선대도 실사진을 보강해 영동 16행 썸네일이 모두 고유하게 표시됩니다. Preview /qa/palgyeong-use 확인.',
+    at: '2026-09-11T09:15:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-15-yeongdong-overlays',
+    session: '팔경 활용 #15, 영동 결손 오버레이',
+    title: '영동 한천·양산 팔경 결손 13건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 한천팔경 결손 7건(화헌악·용연대·산양벽·청학굴·법존암·사군봉·냉천정)과 양산팔경 결손 6건(비봉산·봉황대·함벽정·여의정·자풍서당·용암)의 영동군 공식 팩트 개요·주소·한국관광공사 사진을 보강했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongdong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-11T08:15:00.000Z',
+  },
+  {
+    id: '2026-09-11-world-events-57-color-thumbs',
+    session: '세계행사 일정 #57, 리스트 썸네일 컬러 우선',
+    title: '허브 리스트 흑백 썸네일을 컬러로',
+    detail:
+      '이스탄불 마라톤·추수감사절 카드가 빈티지 흑백 Unsplash를 쓰고 있었습니다. 캡션·대표색이 회색인 컷은 건너뛰고 컬러 사진을 고릅니다. Preview /qa/world-events — 이스탄불·뉴욕 카드가 컬러인지.',
+    at: '2026-09-11T22:00:00.000Z',
+  },
+  {
+    id: '2026-09-11-world-events-56-atmosphere-gallery',
+    session: '세계행사 일정 #56, 상세 갤러리 축제 분위기 QA',
+    title: '상세 갤러리 — 분위기 검색·랭킹·시드 보강',
+    detail:
+      '사람 Preview에서 빈 오페라·두바이가 시드 3장(건물·스카이라인)만 남던 문제를 고쳤습니다. Edge 타임아웃 뒤에도 Unsplash를 이어 받고, 객석·마라톤·군중 컷을 건물·스카이라인보다 앞에 둡니다. Preview /qa/world-events — 옥토버페스트·빈 오페라·두바이 피트니스 상세 1~3번.',
+    at: '2026-09-11T20:00:00.000Z',
+  },
+  {
+    id: '2026-09-11-world-events-55-vibrant-gallery',
+    session: '세계행사 일정 #55, 상세 갤러리 Unsplash 우선 배치',
+    title: '상세 갤러리 Unsplash 우선 배치 및 시드 정비',
+    detail:
+      '상세 히어로 갤러리에서 생생한 축제 분위기의 Unsplash 사진을 최상단 슬롯에 우선 배치하도록 머지 로직을 개선했습니다. 옥토버페스트 시드의 지하철 비상레버 및 빈 오페라 중복 외관을 실제 축제 개막/텐트 내부/대극장 객석 사진으로 교체했습니다. Preview /qa/world-events — 옥토버페스트·빈 오페라 상세 진입 시 생생한 축제 사진이 첫 장으로 노출되는지 확인.',
+    at: '2026-09-11T10:00:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-14-hadong-group',
+    session: '팔경 활용 #14, 검색 그룹 묶기',
+    title: '하동 검색에서 십경과 대표 명소가 섞이지 않게',
+    detail:
+      '명승 검색 「하동」결과가 시·군·이름 정렬 때문에 하동 십경과 지역 대표 명소가 한 줄씩 엇갈리며 소제목이 반복됐습니다. 팔경 groupTitle은 한 덩어리로 모으고, 그룹 없는 대표 명소만 그 뒤에 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T07:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-13-hadong-search',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '하동 검색에 십경 멤버가 나오게',
+    detail:
+      '명승 페이지에서 하동을 검색하면 JSON에 없는 십경 멤버가 0건으로 떨어져 하동 십경 그룹이 안 보였습니다. 표시명(하동 십경) exact 매칭과 명소 검색 풀에 지자체 리스트 멤버 주입을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T06:10:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-13-gwangyang-hadong-overlays',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '광양9경 6건·하동10경 7건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 광양9경 결손 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)과 하동10경 결손 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 광양시 문화관광 9경 사진, 한국관광공사 동곡·옥룡사지·유당공원·십리벚꽃·쌍계사·삼성궁·하동송림 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangyang · ?hub=hadong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-11T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-11-scenic-stay-2-position-google',
+    session: '명승 숙소 #2, 숙소 위치·구글 링크',
+    title: '숙소를 개요·사진 다음으로 올리고 구글 상세 버튼을 추가',
+    detail:
+      '여행자가 장소를 확인한 뒤 바로 숙박을 고를 수 있게, 숙소 섹션을 본문 맨 아래(주변 맛집·축제 다음)에서 개요·주소·사진 다음·주변 맛집 위로 옮겼습니다. 추가 정보 확인용 네이버 버튼 옆에 같은 쿼리의 구글 상세정보 버튼을 넣었습니다. Preview /qa/scenic-stay — 경복궁 본문에서 사진 아래·맛집 위에 숙소 카드, 네이버·구글 칩이 나란히 있는지 확인.',
+    at: '2026-09-11T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-11-scenic-stay-1-modal-strip',
+    session: '명승 숙소 #1, 본문 숙소 섹션',
+    title: '명승 명소 본문에 축제와 같은 숙소 섹션',
+    detail:
+      '한국의 명승 홈에서 숙소를 보려면 지구본 장소 카드를 열어야 했던 문제를 고쳤습니다. 명소 본문(ThemeSpotDetailModal)에 축제 FestivalStayStrip과 같은 EventStayStrip을 넣었습니다. 행사 프리셋 없이 MRT 기본 일정(+14일·3박)으로 근처 숙소를 조회합니다. Preview /qa/scenic-stay — /korea/theme/scenic?spot=gyeongbokgung 본문 하단 숙소 카드·일정·MRT 목록.',
+    at: '2026-09-11T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-12-festival-nearby-thumbs-rank',
+    session: '팔경 활용 #12, 축제 인근 썸네일·번호',
+    title: '축제 인근 명소·팔경 행에 썸네일과 1경 번호',
+    detail:
+      '축제 상세 「인근 명소」에 GATEO 선정 썸네일을 붙이고, 「주변 관광지」 팔경 그룹 행은 명소 페이지와 같이 원주 1경 부제와 Tour/큐레이션 사진을 보여 줍니다. Preview /qa/palgyeong-use — /korea 원주 축제 상세에서 인근 명소 사진·원주 팔경 1경~8경을 확인해 주세요.',
+    at: '2026-09-11T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-10-member-rank-blurb',
+    session: '팔경 활용 #10, 팔경 번호',
+    title: '팔경 행 부제에 1경·2경 번호 — 그룹 칩은 N경 유지',
+    detail:
+      '명승 리스트에서 멤버 행 부제가 모두 같은 「의성 팔경」이던 문제를 고쳤습니다. 행 부제는 의성 1경~8경처럼 순번을 붙이고, 그룹 칩은 의성 팔경·문경 팔경을 그대로 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong 8행 부제가 서로 다른지 확인.',
+    at: '2026-09-11T02:20:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-8-binggye-distinct-photos',
+    session: '팔경 활용 #8, 빙계 팔경 사진 다양화',
+    title: '의성 빙계팔경 8행 썸네일·본문 갤러리를 경승별 다른 공식 사진으로 교체',
+    detail:
+      '같은 VisitKorea 계곡 항공 사진이 빙혈·풍혈·인암·의각·수대·불정·용추에 반복되던 문제를 고쳤습니다. 의성군 문화관광(빙혈 입구·절벽 계류·인암 각자·출렁다리·석탑 단풍)과 TourAPI 빙계계곡·빙계서원 갤러리에서 경승마다 다른 대표·본문 사진을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong 8행 썸네일·상세 갤러리가 서로 다른지 확인.',
+    at: '2026-09-11T00:30:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-6-uiseong-muju-overlays',
+    session: '팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강',
+    title: '의성 빙계팔경 8건·무주 구천동33경 결손 28건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의성 빙계팔경 8건(빙혈·풍혈·인암·의각·수대·빙산사지 오층석탑·불정·용추)과 무주 구천동33경 결손 28건의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 의성군 문화관광·국가유산청 보물 석탑 사진, 무주군 문화관광·디지털무주문화대전·명승 일사대·파회·수심대 일원 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong · ?hub=muju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-10T22:45:00.000Z',
+  },
+  {
+    id: '2026-09-10-planner-empty-1-scroll-pad',
+    session: '플래너 실행 전 여유 #1, 하단 여유·여행사 펼침 스크롤',
+    title: '실행 전 플래너 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤',
+    detail:
+      '양구 수목원처럼 툴킷 실행 전 기본 정보 페이지가 overflow에 막혀 하단이 잘리고, 「연결된 여행사」를 펼쳐도 스크롤되지 않던 문제를 고쳤습니다. 실행 전 화면도 툴킷 있는 플래너와 같은 세로 스크롤·하단 패딩을 쓰고, 목록을 펼치면 해당 섹션이 위로 올라갑니다. Preview /qa/planner-empty — /place/yanggu-arboretum/planner 하단 여유·펼침 스크롤.',
+    at: '2026-09-10T22:10:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-5-pr210-merged-and-overlay-plan',
+    session: '팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토',
+    title: 'PR #210 main 병합 완료 및 의성·무주 결손 허브 오버레이 확장 계획 수립',
+    detail:
+      'PR #210(문경·단양 팔경 런타임 오버레이 및 ScenicPage 팔경 그룹 분리)이 main(33776ccb)에 성공적으로 병합되었습니다. 후속 작업으로 지자체 팔경 결손 상위 허브인 의성 빙계팔경(8건 전수) 및 무주 구천동33경(28건 결손)에 대한 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강 계획을 수립했습니다.',
+    at: '2026-09-10T22:00:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-4-preview-qa-passed',
+    session: '팔경 활용 #4, 사람 Preview QA',
+    title: '문경·단양 리스트 팔경 그룹 분리 및 상세 모달 사람 Preview QA 통과',
+    detail:
+      '문경 및 단양 테마 명승 페이지에서 지자체 팔경 전용 앰버 배지·디바이더 분리 표시와 지역 대표 명소 구분선, 그리고 문경 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양 2건(하선암·옥순봉)의 상세 모달 사진·공식 개요 본문 노출에 대해 사람 Preview QA 검증을 최종 통과했습니다.',
+    at: '2026-09-10T21:40:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-3-mungyeong-danyang-overlays-and-group-ui',
+    session: '팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비',
+    title: '문경·단양 팔경 사진·개요 보강 및 리스트 전용 소제목 바 분리',
+    detail:
+      '94개 지자체 팔경(876명) 누락 현황을 분석하고, 문경(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양(옥순봉·하선암)의 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS)를 보강하여 상세 모달과 썸네일을 완전 연결했습니다. 또한 ScenicPage에서 지자체 팔경 그룹 헤더와 기존 GATEO 선정 명소(지역 대표 명소) 구분을 명확한 배지·디바이더 UI로 분리 렌더링했습니다.',
+    at: '2026-09-10T14:30:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-garisan-geumhaksan-photos-detail',
+    session: '팔경 활용 #2, 사람 Preview QA',
+    title: '홍천 가리산·금학산 사진 누락 및 본문 부재 해결',
+    detail:
+      '가리산(125593)은 TourAPI firstimage가 비어있던 문제를 searchPhoto 공식 사진 및 갤러리/개요 연동으로 해결했습니다. 금학산은 순수 지자체 팔경(홍천 4경, 수태극 조망)으로 런타임 오버레이를 통해 개요 본문과 홍천 남노일강변 공식 갤러리 및 썸네일을 제공하여 리스트·상세 모달·써머리 갤러리에서 정상 노출되도록 보강했습니다.',
+    at: '2026-09-10T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-tour-contentid-photos',
+    session: '팔경 활용 #2, 사람 Preview QA',
+    title: '팔경 멤버 contentId 런타임 할당 — 리스트·써머리 사진',
+    detail:
+      'JSON에 contentId를 쓰지 않고, 팔경 행은 기존 id·tourapi_attraction 제목 조회·Tour firstimage로 사진을 붙입니다. 가리산(125593)은 핀·써머리 갤러리에 id가 전달되고, 금학산처럼 JSON에 id가 없어도 DB에 있으면 같은 경로로 상세·썸네일을 엽니다. GATEO 선정 분류칩은 scenic 승격 없이 koreaScenicSpots만 셉니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 가리산·금학산 사진.',
+    at: '2026-09-10T12:10:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-empty-thumb-click',
+    session: '팔경 활용 #2, 사진 없는 행 클릭',
+    title: '팔경 멤버 클릭 — 합성 id 상세·무사진 행 열기',
+    detail:
+      '사진 없는 팔경 행을 누르면 local-scenic:… id가 제목으로 나오거나 클릭이 막히던 문제를 고쳤습니다. 합성 id를 멤버 이름·contentId로 풀고, Tour id가 없어도 GATEO 안내 본문으로 엽니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 가리산·금학산.',
+    at: '2026-09-10T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-2-thumbs',
+    session: '팔경 활용 #2, Preview QA',
+    title: '팔경 리스트 썸네일 — GATEO 선정·contentId 연동',
+    detail:
+      '팔경 멤버 행에 GATEO 선정 명소(koreaScenicSpots) imageUrl을 매칭하고, contentId가 있으면 tourapi_attraction 캐시로 썸네일을 보강합니다. 명승 ul·축제 인근 그룹·홈 검색 suggestion에 적용. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mungyeong 에서 진남교반 등 사진 확인.',
+    at: '2026-09-04T21:20:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-2-festival-crash',
+    session: '팔경 활용 #2, Preview QA',
+    title: '축제 리스트 클릭 크래시 — nearbyPlaceLabel 복원',
+    detail:
+      '팔경 활용 #1에서 nearbyAttractionRow 추가 시 nearbyPlaceLabel이 삭제되어 축제 상세 시트가 ReferenceError로 크래시하던 문제를 고쳤습니다. Preview /qa/palgyeong-use — /korea에서 축제 카드 클릭→상세 열림·인근 관광지 로드 확인.',
+    at: '2026-09-04T20:10:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-1-search-list',
+    session: '팔경 활용 #1, 검색·리스트',
+    title: '탐색창 문경 팔경 소제목 · 명소 ul 상단 N경 · 축제 인근 그룹',
+    detail:
+      '홈 검색 「문경」에 소제목 문경 팔경+멤버를 여행지·지명보다 앞에 붙였습니다. 명승 같은 ul 상단에 N경 멤버(contentId 없으면 이름만). 축제 상세 인근 관광지 목록 안에만 소제목 그룹. Tour LIVE·scenic 승격·축제 홈 파드 없음. Preview /qa/palgyeong-use — 홈 검색 문경 · /korea/theme/scenic?hub=mungyeong · 축제 상세 인근 목록.',
+    at: '2026-09-04T10:00:00.000Z',
+  },
+  {
+    id: '2026-09-09-world-events-54c-en-photos',
+    session: '세계행사 일정 #54c, 리스트 사진 확대 Prod QA',
+    title: '행사 사진 Unsplash 영문 검색',
+    detail:
+      '리스트·상세 사진 호출을 영문 행사명으로 바꿨습니다. 한글 Unsplash는 무관 사진이 나와 폴백이 안 됐습니다. 위키만 있는 갤러리 캐시는 다시 받고, 문서·같은 컷 연속은 걸러집니다. Preview /qa/world-events — 로즈 퍼레이드·빈 오페라 카드가 행사 장면인지.',
+    at: '2026-09-09T10:20:00.000Z',
+  },
+  {
+    id: '2026-09-09-world-events-54b-list-thumb-size',
+    session: '세계행사 일정 #54b, 리스트 썸네일 Preview QA',
+    title: '리스트 카드 사진 확대 · 이동 링크 제거',
+    detail:
+      '/world-events 카드에서 플래너·숙소·여행지·공식 링크 칩을 빼고 16:10 사진을 키웠습니다. 제목·사진 탭은 행사 상세로 갑니다. 첫 진입은 event_hero_gallery Unsplash를 먼저 그리고, 없는 건 Unsplash 검색입니다. Preview /qa/world-events — 큰 썸네일·칩 없음·지역 칩 전환 후 사진 유지.',
+    at: '2026-09-09T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-08-world-events-53-list-unsplash',
+    session: '세계행사 일정 #53, 리스트 Unsplash 사진',
+    title: '세계의 행사 리스트 썸네일 — Unsplash',
+    detail:
+      '/world-events 카드에 Unsplash 썸네일을 붙였습니다. 위키 시드는 쓰지 않고, 상세에서 쌓인 event_hero_gallery의 Unsplash 장을 읽고 없으면 검색합니다. Preview /qa/world-events — 리스트 사진이 행사 장면인지, 위키 옛 사진이 아닌지.',
+    at: '2026-09-08T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-07-globe-frame-zoom-1-page-lock',
+    session: '지구본 프레임 줌 #1, 페이지 줌 복귀',
+    title: '지구본 밖 프레임 확대 후 복귀 불가 차단',
+    detail:
+      '홈에서 지구본 밖 기본 프레임을 핀치하면 페이지가 확대되고 지구본이 화면을 채운 뒤 축소할 프레임이 사라져 복귀가 막혔습니다. 홈·탐색만 페이지 줌을 잠그고, 이미 확대된 배율은 되돌리며, 우주 버튼도 페이지 줌을 리셋합니다. /place 본문 핀치는 유지. Preview /qa/globe-frame-zoom — 프레임 핀치 후 지구본이 화면을 채워도 우주 버튼·핀치로 기본 화면 복귀.',
+    at: '2026-09-07T21:20:00.000Z',
+  },
+  {
+    id: '2026-09-07-summary-close-1-android-ghost',
+    session: '써머리 닫기 #1, Android Chrome 고스트 클릭',
+    title: '써머리 X 닫기 후 지구본 클릭 관통 차단',
+    detail:
+      'Android Chrome에서 써머리 X가 pointerdown으로 카드를 벗기면 남은 클릭이 Mapbox로 뚫려 다른 여행지 써머리가 열렸습니다. 닫기는 유지하고, 닫는 순간 500ms 지구본 클릭 가드를 겁니다. Preview /qa/summary-close — 장소카드 X → 닫힘 · 다른 써머리 안 열림.',
+    at: '2026-09-07T05:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-12-stale-visit-row',
+    session: '자킨토스 검색 #12, Preview QA',
+    title: '한글 방문 행(0,0·인물)은 검색에 안 씀',
+    detail:
+      '자킨토스만 place_stats에 한글 place_id·좌표 0,0·인물 갤러리가 남아 지도 검색을 가로챘다. 그 행은 방문 카드로 쓰지 않고, 갤러리는 라틴 zakynthos 해변 행을 고른다. Preview /qa/zakynthos — 재검색 시 그리스·해변 사진 · Explore 아님.',
+    at: '2026-09-06T20:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-11-greece-label',
+    session: '자킨토스 검색 #11, Preview QA',
+    title: '방문 카드 — GLOBAL 대신 그리스',
+    detail:
+      '#10이 Explore를 비우면서 헤더가 Global로 떨어짐. Search Box 객체 context에서 나라를 읽고, 방문 좌표를 역지오해서 그리스·Zakynthos를 카드에 붙인다. 인물 image_url은 그리드에 쓰지 않음. Preview /qa/zakynthos — 드롭다운·써머리·장소 헤더가 그리스 자킨토스인지.',
+    at: '2026-09-06T20:00:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-10-visited-country',
+    session: '자킨토스 검색 #10, 방문 요약 카드 QA',
+    title: '방문 카드 — 그리스 표기 · 사진 호출',
+    detail:
+      '방문 place_stats 카드가 국가 없이 Explore로 떨어지고 한글 name_en이라 사진을 안 불렀음. 지도 히트의 그리스·Zakynthos를 겹치고, 탐색 그리드는 저장 썸네일·한 장 조회를 쓴다. SSOT 사바는 방문 카드가 가리지 않음. Preview /qa/zakynthos — 자킨토스 재검색 요약에 그리스·해변 사진.',
+    at: '2026-09-06T15:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-9-visited-summary',
+    session: '자킨토스 검색 #9, Preview QA',
+    title: '검색은 지도 우선 · 방문한 지명은 요약 카드',
+    detail:
+      'Enter 로딩이 「AI 탐색」으로 보이던 것은 지오코딩 실패가 아님. 문구를 지도 검색으로 바꿨다. 장소카드를 열어 방문이 쌓이면 place_stats에 한글·영문·좌표를 남기고, 다음 검색부터 드롭다운·탐색 그리드·Enter 선택 카드에 그 지명 요약이 뜬다. AI는 지도를 못 찾았을 때만. Preview /qa/zakynthos — 자킨토스 방문 후 다시 검색.',
+    at: '2026-09-06T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-8-unseen-geocode',
+    session: '자킨토스 검색 #8, Preview QA',
+    title: '미등록 한글 지명은 Search Box 공백이면 Geocoding으로 보강',
+    detail:
+      '자킨토스·사바 별칭이 아니라 검색 성능. Search Box ko 공백이면 en을 건너뛰던 .every 구멍 수정. 한글 쿼리를 해외 지명이 못 덮으면 Mapbox Geocoding(ko+en)을 드롭다운 앞에 붙임. Preview /qa/zakynthos — 케팔로니아·시프노스·포르멘테라·파로스 등 미등록 지명.',
+    at: '2026-09-06T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-panel-1-info-dock',
+    session: '갤러리 좌측 패널 #1, 공간 조정',
+    title: 'PC 정보 패널 — 연관 검색어가 무니 위에 보이게',
+    detail:
+      '본문 써머리가 길어지면 400px 안쪽 스크롤에 연관 칩이 숨고, 무니 입력창 위 공간은 비어 있었음. 써머리만 남은 높이를 쓰고 연관 칩은 스크롤 밖(무니 바로 위)에 둠. Preview /qa/gallery-panel — 파리 갤러리 PC 좌측에서 스크롤 없이 하단 연관 칩이 보이는지.',
+    at: '2026-09-06T12:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-7-restore-dropdown',
+    session: '자킨토스 검색 #7, Preview QA',
+    title: '자킨토스 타이핑 드롭다운을 다시 연다',
+    detail:
+      '왼쪽 자킨토스 카드는 맞았고 드롭다운이 사라진 것은 과교정. #6이 Enter 뒤 선택 카드가 있으면 검색바 재오픈을 막아 자동완성이 안 됨. 포커스·클릭·타이핑은 다시 열고, Enter 선택 카드와 드롭다운은 같은 핀(Zakynthos)을 쓴다. Preview /qa/zakynthos — 자킨토스 타이핑 자동완성 · 좌측 카드 해변.',
+    at: '2026-09-06T12:05:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-3-collapsed',
+    session: '여행사 목록 #3, Preview QA',
+    title: '로고 패널 — 방문한 여행사 접힘 기본',
+    detail:
+      '로고 패널을 여행사 리스트가 가득 채우던 문제를 접힌 「방문한 여행사」로 바꿈. 탐색창 칩 명칭도 「방문한 여행사」(기록 있으면 개수). Preview /qa/agencies — 로고 열어 접힘 확인 후 펼침, 탐색 칩 명칭.',
+    at: '2026-09-06T11:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-6-dropdown-latin',
+    session: '자킨토스 검색 #6, 사바섬 Preview QA',
+    title: '자킨토스 드롭다운과 선택 카드를 같은 핀으로',
+    detail:
+      '타이핑 드롭다운은 Search Box 한글 도시, Enter 카드는 지오코딩 Zakynthos라 클릭 경로가 갈라짐. 한글 place_id로 열리면 인물 갤러리 고착. ko/en을 좌표로도 붙이고, 드롭다운 선택 전에 retrieve(en)로 라틴 name_en·slug를 넣음. Enter 후 선택 카드가 떠 있으면 검색바가 다른 키워드 드롭다운을 다시 열지 않음. Preview /qa/zakynthos — 자킨토스 드롭다운·좌측 카드 모두 (Zakynthos) 해변 · 사바섬 회귀.',
+    at: '2026-09-06T11:45:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-5-caribbean-saba',
+    session: '자킨토스 검색 #5, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 앞 · 카리브 Saba 둘째 고정',
+    detail:
+      'Preview QA에서 사바(말레이시아)만 나옴. Mapbox ko 표기「사바」가 SSOT와 이름 충돌해 카리브 카드가 사라짐. 네덜란드령 Saba를 고정 동명으로 Enter·제안 둘째에 유지. 한국 사원 아님. Preview /qa/zakynthos — 사바섬 → 사바(말레이시아) · 사바섬(Saba, 네덜란드).',
+    at: '2026-09-06T11:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-4-sabah-homonym',
+    session: '자킨토스 검색 #4, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 여행지 + 카리브 사바 동명',
+    detail:
+      '여행 프로「사바섬」은 말레이시아 사바주(코타키나발루·BKI). Mapbox만 쓰면 카리브 네덜란드 Saba 한 장만 나옴. SSOT 사바를 앞에 두고, 멀리 떨어진 카리브 사바는 선택 카드로 유지. 한국 시크 사원·사보섬은 1순위 아님. Preview /qa/zakynthos — 탐색창 사바섬 → 사바(말레이시아) 여행지 · (있으면) Saba 카리브.',
+    at: '2026-09-06T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-2-uiplace-en',
+    session: '자킨토스 검색 #2, Preview QA',
+    title: '검색 uiPlace — 맵박스 영문명으로 갤러리·영상 연결',
+    detail:
+      '자킨토스는 SSOT가 아님. Mapbox ko가 name_en에 한글을 넣던 구멍을 ko+en으로 메움. 라틴 지명으로 카드 부제·Unsplash·YouTube가 붙고, 캐시된 한글 name_en은 역지오로 치유. Preview /qa/zakynthos — 탐색창 자킨토스 → (Zakynthos) · 해변 갤러리 · 영상·플래너.',
+    at: '2026-09-06T10:10:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-1-ssot',
+    session: '자킨토스 검색 #1, SSOT 등록',
+    title: '자킨토스 — 영문명 있는 여행지 카드',
+    detail:
+      '배포본 탐색창「자킨토스」가 Mapbox 한글 도시(영문 없음·인물 갤러리)로 열림. SSOT 여행지 등록 + 자킨토시/잔테/Zante 별칭. Preview /qa/zakynthos — 탐색창 자킨토스·자킨토시 → (Zakynthos) 영문·여행지 뱃지·해변 갤러리.',
+    at: '2026-09-06T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-pickup-1-onelink-web',
+    session: '공항픽업 링크 #1, OneLink 우회',
+    title: '클룩 공항 픽업 — 웹 직행 (앱 열기 경고 없음)',
+    detail:
+      'affiliate.klook.com/redirect 가 klook.onelink.me + klook:// 로 가서 iOS가 「다른 애플리케이션을 열려고 합니다」를 띄움. Preview(vercel.app)에서 더 잘 드러남. klook.com?aid=118544 웹 직행. Preview /qa/pickup — 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · 앱 열기 경고 없는지.',
+    at: '2026-09-06T06:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-2-db-portrait-refetch',
+    session: '갤러리 인물 제외 #2, DB 고착 수정',
+    title: 'DB에 쌓인 단일 인물도 걸러 LIVE 재조회',
+    detail:
+      '자킨토스처럼 place_stats에 인물만 있으면 빈 갤러리 방지 가드가 원본을 그대로 보여 줌. 장소 태그 island/travel만으로는 전경으로 보지 않음. 필터 후 0장이면 DB를 건너뛰고 Unsplash/Pexels를 다시 받음. Preview /qa/gallery-portrait — 자킨토스 갤러리에서 셀카·얼굴 클로즈업이 빠지는지.',
+    at: '2026-09-06T06:31:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-2-gyg-iframe',
+    session: '여행사 목록 #2, Preview QA',
+    title: '겟유어가이드 위젯 방문도 기록',
+    detail:
+      'MRT·트립닷컴은 <a>라 방문이 남았는데, 겟유어가이드는 iframe 위젯이라 투어를 눌러도 기록이 안 남았음. 위젯 포커스 시 제휴 검색/홈 URL을 저장. Preview /qa/agencies — 파리 플래너·투어 찾기에서 겟유어가이드 투어를 연 뒤 로고 패널 방문 기록.',
+    at: '2026-09-06T05:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-1-reentry',
+    session: '여행사 목록 #1, 재접속 경로',
+    title: '로고패널·탐색·플래너에 여행사 목록',
+    detail:
+      'MRT 등 제휴 사이트를 북마크하지 않고 이탈해도, 로고 패널·탐색「여행사」칩·플래너에서 방문 기록(마지막 URL)과 연결된 여행사 홈으로 다시 들어갈 수 있음. 기록은 이 기기 localStorage. Preview /qa/agencies — 로고 열어 마이리얼트립 확인, 탐색 칩, /place/paris/planner 접힌 목록.',
+    at: '2026-09-06T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-updates-1-no-popup',
+    session: '릴리스 노트 푸터 #1, 자동 팝업 제거',
+    title: '홈 진입 시 릴리스 노트 모달 없음',
+    detail:
+      '신규·Preview 방문마다 뜨던 릴리스 노트 팝업을 제거. 내역은 로고 패널 푸터 Updates에만 둠. 배포 후 새로고침 안내는 유지. Preview /qa/updates — 홈에 공지 모달이 안 뜨고, 로고→Updates에 기존 목록이 있는지.',
+    at: '2026-09-06T04:15:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-related-1-scroll-top',
+    session: '갤러리 연관 스크롤 #1, 여행지 전환 상단',
+    title: '연관 여행지 탭 — 새 갤러리 상단부터',
+    detail:
+      '갤러리를 내려보다 하단 연관 여행지를 누르면 이전 스크롤 위치에서 다음 지역이 열려 중간부터 보임. 전환 시 중첩 스크롤을 즉시 맨 위로 맞추고 갤러리 탭을 유지. Preview /qa/gallery-related — 파리 갤러리 중간까지 스크롤 후 하단 칩 → 새 여행지 상단(소개·첫 사진)인지.',
+    at: '2026-09-06T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-manage-1-long-press',
+    session: '갤러리 사진 관리 #1, 모바일 길게 누르기',
+    title: '모바일 갤러리 — 길게 눌러 관련 없는 사진 제거',
+    detail:
+      'PC는 Ctrl(⌘)+더블클릭으로 DB에서 빼는 기능이 있었는데 모바일에는 없었음. 그리드·확대 사진을 길게 누르면 확인 시트가 뜨고, 제거 시 place_stats 갤러리에서 빠짐. Preview /qa/gallery — 모바일에서 사진 꾹 → 제거 → 목록에서 사라지는지.',
+    at: '2026-09-06T02:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-1-no-portrait',
+    session: '갤러리 인물 제외 #1, 단일 인물 필터',
+    title: '스톡 갤러리에서 단일 인물 사진 제외',
+    detail:
+      'Unsplash/Pexels에 인물 제외 파라미터가 없어 orientation=landscape는 쓰지 않음(세로 전경 유지). 설명·태그·비율로 셀카·헤드샷·세로 인물만 빼고, 전경 속 사람은 유지. Preview /qa/gallery — 파리 갤러리에 단일 인물 사진이 줄었는지, 거리·랜드마크 전경은 남는지.',
+    at: '2026-09-06T00:48:00.000Z',
+  },
+  {
+    id: '2026-09-03-globe-labels-3-safari-first-load',
+    session: '홈 지구본 지명 #3, 사파리 첫 진입 지명',
+    title: '사파리 첫 진입 — 자전 hold 중 지명 pump',
+    detail:
+      '증상: 사파리 홈 첫 진입 시 대륙·대양 지명이 간헐적으로 없음. EN 토글만 복구. 원인: locale 패치가 mapReady 전에 no-op, 320ms 후 jumpTo가 CJK continuePlacement를 끊음, Safari isMoving이 자전 없이도 남아 overlay가 return. 적용: mapReady 후 EN 토글과 같은 text-field 강제 적용, 페인트/1.6s까지 자전 hold·pump. Preview /qa/globe-labels — 사파리 첫 진입(EN 없이) 지명.',
+    at: '2026-09-03T10:30:00.000Z',
+  },
+  {
+    id: '2026-09-02-globe-labels-1-first-load',
+    session: '홈 지구본 지명 #1, 첫 로딩 지명',
+    title: '모바일 첫 로딩 — 자전 hold 후 지명 페인트',
+    detail:
+      '증상: 모바일 홈 첫 로딩 후 gateo 지명이 없음. EN 토글·재실행·새로고침만 복구. 원인: 마운트 즉시 jumpTo 자전이 Mapbox continuePlacement·idle을 끊어 overlay가 visibility:none에 고착. 첫 overlay 페인트+320ms 뒤에만 자전 재개·GeoJSON 직접 setData. Preview /qa/globe-labels — 모바일 첫 진입 시 지구본 여행지명이 EN 없이 보이는지.',
+    at: '2026-09-02T20:30:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-4-merge',
+    session: '홈 축제칩 #4, main 병합',
+    title: '사람 Preview QA PASS — PR #177 main 병합',
+    detail:
+      '모바일: 지명 탭 후 접힘 유지. PC: 접힌 칩 라벨 전부 보임 · 테마 카테고리와 겹침 없음. 작업 로그·/qa/home-chip 종료(PROD `/`).',
+    at: '2026-09-02T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-pc-width',
+    session: '홈 축제칩 #3, PC 접힘 너비',
+    title: 'PC 접힌 칩 너비 — 짧은 라벨 전부 표시',
+    detail:
+      'PC max-w-[14rem]+truncate로 「축제 · 행사 · 명승 · 추천」이 잘림. md:max-w-none · 말줄임 해제. 모바일 14rem 유지. Preview /qa/home-chip — PC 접힌 칩 문구가 잘리지 않는지.',
+    at: '2026-09-02T14:25:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-pc-collapse',
+    session: '홈 축제칩 #2, PC 접힘',
+    title: 'PC 좌상단 바로가기도 접힌 칩',
+    detail:
+      'PC는 축제·행사·명승·큐레이션이 항상 펼쳐져 테마 카테고리(top 17rem)와 겹침. 모바일과 같은 접힌 버튼·탭 펼침으로 통일. Preview /qa/home-chip — PC 홈에서 한 줄 접힘·카테고리와 겹침 없는지·펼침/접힘 확인.',
+    at: '2026-09-02T14:20:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-keep-collapsed',
+    session: '홈 축제칩 #1, 써머리 펼침 방지',
+    title: '써머리 장소 카드 열 때 축제 칩 접힘 유지',
+    detail:
+      '모바일 지구본 지명 클릭 → 써머리 카드가 hideExploreChrome을 켜며 좌상단 바로가기가 축제·행사 목록으로 펼쳐지던 문제. 접힘 표시를 장소 카드와 분리하고, 카드 열림 시 자동 접힘. Preview /qa/home-chip — 지명 클릭 후 좌측 칩이 한 줄 접힘인지 확인.',
+    at: '2026-09-02T14:10:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-3-merge',
+    session: '홈 검색바 히트 #3, main 병합',
+    title: '사람 Preview QA PASS — PR #175 main 병합',
+    detail:
+      '모바일: 검색→/explore · EN 토글 독립 클릭 · 바로가기 2행 OK. 작업 로그·/qa/search-hit 종료(PROD `/`).',
+    at: '2026-09-02T13:50:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-2-homeui-flex',
+    session: '홈 검색바 히트 #2, HomeUI flex',
+    title: '모바일 헤더 [로고+EN | 검색 flex-1] · 바로가기 2행',
+    detail:
+      '고정 left-[7.75rem] 검색바 제거. 모바일 1행 flex [로고+EN | 검색 flex-1] · 바로가기 칩 2행. chrome 실드가 검색 클릭을 가로채지 않음. HomeGlobeMapbox·LocaleProvider 미변경. Preview /qa/search-hit — EN 토글·검색 각각 클릭.',
+    at: '2026-09-02T13:45:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-1-prep',
+    session: '홈 검색바 히트 #1, 브랜치·핸드오프 준비',
+    title: '모바일 검색바·EN 토글 히트 겹침 — 세션 준비',
+    detail:
+      '증상: 모바일 검색바(left-[7.75rem])와 EN/KO chrome 실드(z-110) 겹침 → 검색 클릭 무력화. #173 flex는 Mapbox 연쇄와 함께 롤백됨 · #174 지구본 locale은 main. 다음: HomeUI만 flex [로고+EN | 검색 flex-1] · HomeGlobeMapbox 금지. Preview /qa/search-hit.',
+    at: '2026-09-02T13:15:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-locale-9-mobile-labels',
+    session: '홈 locale #9, 모바일 지구본 지명',
+    title: '모바일 EN 토글 — 지명 고착 수정',
+    detail:
+      '모바일: UI EN은 되나 Mapbox 지명·핀이 KO 유지. 원인: 레이어 ID 미갱신 no-op에도 echo suppress 120ms → styledata 실적용 차단·idle 적어 고착. refresh 후 갱신 수>0일 때만 suppress·재시도·자전 잠시 정지·핀 setData 강제. Preview 모바일 EN 토글 → 국가·대륙·핀 영문·KO 복귀.',
+    at: '2026-09-02T13:30:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-locale-6-double-flash',
+    session: '홈 locale #6, 사람 Preview QA',
+    title: 'EN 토글 이중 깜박임 — satellite setLanguage 제거',
+    detail:
+      '사람 QA: 검게→한글 지명→영문 2단 플래시. deep/neon에서 setLanguage+text-field 이중 적용이 원인. 위성은 coalesce만 1회·styledata 에코 120ms 무시. Preview /qa/en · EN 토글 시 지구본 지명이 한 번에 EN인지·KO 복귀 확인.',
+    at: '2026-09-02T13:00:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d4-opening-preset',
+    session: '세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀',
+    title: '개막 3박 프리셋·초기값·중복 API 방지',
+    detail:
+      '내 여행 일정: 개막 3박=행사 전날 체크인 · tripWindow↔opening 프리셋 SSOT · 활성 칩 ring+disabled · 동일 날짜 클릭 시 MRT 재호출 생략. Preview /qa/world-events → munich·bali 상세 「내 여행 일정」개막 3박 강조·재클릭 무API 확인.',
+    at: '2026-08-27T20:00:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d3-reqa-hotfix',
+    session: '세계행사 일정 #26, Wave1.5 D3 재QA',
+    title: '갈룽안 en위키·펜jor 검색·무니 칩 chatDraft',
+    detail:
+      'D3 재QA: ko위키 갈룽안(없음)→en.wikipedia/Galungan · 펜jor Google en 쿼리 · MOONi 대화칩 chatDraft 대기 후 전송·FAB 재오픈 최소화. Preview /qa/world-events → /world-events/bali-galungan-season-2026 — 갈룽안 안내·펜져 검색·무니 칩 3종·주제 칩 재확인.',
+    at: '2026-08-27T13:30:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d3-media-attractions',
+    session: '세계행사 일정 #26, Wave1.5 D3 미디어·명소',
+    title: 'heroImage·YouTube·검색·명소 허브 브릿지',
+    detail:
+      'D3 QA 피드백 반영: heroImage Wikimedia URL 수정 · 갈룽안 안내→위키백과 · 펜져 검색 한글 · Google 검색 쿼리 ko·무니 칩 재전송. Preview /qa/world-events → /world-events/bali-galungan-season-2026 재확인.',
+    at: '2026-08-27T12:30:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d2-qa-redirect',
+    session: '세계행사 일정 #25, Wave1.5 D2 무니 행사칩',
+    title: '/qa/world-events → wave2 Preview 고정',
+    detail:
+      '/qa/world-events·cloudQaShareLinks가 구 efa3 Preview를 가리키던 문제 수정 → cursor/world-events-wave2. Preview /qa/world-events → /world-events/edinburgh-fringe-2026 — 「행사 바로가기」3칩·무니 질문 칩·FAB 행사 맥락 시드 확인.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-27-world-events-festival-mooni-fab-fix',
+    session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',
+    title: '국내 축제 무니 FAB — 오버레이 닫힘 수정',
+    detail:
+      'FestivalMooniFab 클릭이 시트 onClose로 버블링되던 문제 — stopPropagation · mooniOpen 시 배경 닫기 차단. Preview /korea 축제 상세 — 무니 FAB 클릭 시 채팅 열리고 홈으로 안 돌아가는지 확인.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-27-world-events-korea-festival-stay-strip',
+    session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',
+    title: '국내 축제 FestivalStayStrip · Mooni FAB',
+    detail:
+      'FestivalDetailSheet 플래너·숙소 링크 → FestivalStayStrip(EventStayStrip 재사용·TripWindow 프리셋) · FestivalMooniFab. 투어·패키지 레일 유지. VERIFY smoke:world-events* · korea-festival-stay-url · build PASS. Preview /qa/world-events + /korea — 축제 상세 「내 여행 일정」·숙소 카드·항공+숙소·무니 FAB 확인 후 PR #153 merge.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-27-world-events-wave1-integration-qa',
+    session: '세계행사 일정 #19, Wave1 통합 QA',
+    title: 'Wave1 15건 통합 QA · PR #153 병합 준비',
+    detail:
+      'smoke:world-events · smoke:world-events-detail · smoke:event-travel-guide · audit:event-travel-guide · build PASS. management §6.1·§6.1.1 체크리스트 정리. Preview /qa/world-events — 허브·§6.1 회귀 후 15 상세 URL(§6.1.1 표) 각각 Tier0~2·프리셋·항공+숙소 prefill·무니 FAB 확인. PR #153 병합 준비(draft 해제) — 사람 QA OK 후 merge.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-27-world-events-sample13-15-mooni',
+    session: '세계행사 일정 #18, 샘플13~15 · 위젯 마감',
+    title: 'Wave1 15건 완료 · packages prefill · Mooni FAB',
+    detail:
+      'sample #13 prague·#14 marrakech·#15 hanoi Tier0.5. EventStayStrip 「항공+숙소」→ Trip packages/list(일정·ICN→도착·인원 prefill) · GuestStepper 가독성. EventMooniFab. smoke 15 URL PASS. Preview /qa/world-events → /world-events/hanoi-tet-2027 — 프리셋·인원·항공+숙소 Trip 일정·무니 FAB 확인.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-26-world-events-trip-prefill',
+    session: '세계행사 일정 #17, 항공+숙소 Trip prefill',
+    title: 'EventStayStrip Trip parity · packages/list prefill',
+    detail:
+      'EventStayStrip 「항공+숙소」— packages/list 직링크 제거 · WhiteLabelWidget(항공 검색 ad/flights + ICN→GIG·일정 prefill)만 사용. Trip 내 「항공+호텔」은 검색 화면에서 클릭. Preview /qa/world-events → /world-events/rio-carnival-2027 — 버튼 클릭 시 항공 검색에 공항·날짜 채워지는지 확인.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-phase-d-stay-strip',
+    session: '세계행사 일정 #16, 샘플9~12 · in-page 숙소항공',
+    title: 'Phase D EventStayStrip · 샘플9~12',
+    detail:
+      'EventStayStrip(StayRangeCalendar·visitPresets·MRT 숙소·Trip 항공+숙소) · CTA maxNights cap(에든버러 4박). sample #9~#12 rio·nyc·iceland·sydney Tier0.5. Preview /qa/world-events → /world-events/rio-carnival-2027 — 「내 여행 일정」프리셋·달력·숙소 카드·상단 플래너/숙소 CTA 날짜(전체 span 아님) 확인. /place/edinburgh GlobeStayStrip 회귀.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-tier05-tokyo-kyoto-bangkok-bali',
+    session: '세계행사 일정 #15, 샘플5~8 tokyo·kyoto·bangkok·bali',
+    title: 'Tier0.5 · tokyo·kyoto·bangkok·bali',
+    detail:
+      'sample #5~#8: world-event-overrides Tier0.5(detailOverview·highlights·stayAreas·recommendedNights). tokyo 4박(season·개화 변동)·kyoto 3박(요이야마 피크)·bangkok 3박(3일)·bali 4박(갈룽안 시즌). Preview /qa/world-events → 아시아 칩 → 도쿄 벚꽃·기온마츠리·송크란·갈룽안 「행사 상세」→ 개요·하이라이트·숙소 권역·권장 박수 확인.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-ai-guide-munich-vienna-amsterdam',
+    session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
+    title: 'Tier3 AI fixture · munich·vienna·amsterdam',
+    detail:
+      'sample #2~#4 EventTravelGuide fixture v0.1 추가 · Preview에서 fixture 자동 로드. /qa/world-events → 옥토버페스트·빈 오페라·킹스데이 상세 — 에든버러와 동일한 「행사 맞춤 여행 가이드」·trip presets·하단 raw JSON 확인.',
+    at: '2026-08-26',
+  },
+  {
+    session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
+    title: '상세 「권장 박수」섹션 분리',
+    detail:
+      'Tier0.5 recommendedNights를 Hero 인라인에서 독립 섹션(제목 「권장 박수」)으로 옮겼습니다. Preview /qa/world-events → 킹스데이 상세 — 하이라이트 아래 「권장 박수」2박 섹션이 보이는지 확인해 주세요.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-tier05-munich-vienna-amsterdam',
+    session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
+    title: 'Tier0.5 overrides · munich·vienna·amsterdam',
+    detail:
+      'sample #2~#4: world-event-overrides Tier0.5(detailOverview·highlights·stayAreas·recommendedNights). munich 3박·vienna 3박(season)·amsterdam 2박(단기). Preview /qa/world-events → 유럽 칩 → 옥토berfest·빈 오페라·킹스데이 「행사 상세」→ 개요·하이라이트·숙소 권역·권장 박수 확인.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-ai-guide-edinburgh',
+    session: '세계행사 일정 #13, AI 가이드 · 샘플1 edinburgh',
+    title: 'EventTravelGuide v0.1 · edinburgh Tier3',
+    detail:
+      'Phase C-0~1: EventTravelGuide 스키마·audit·Edge update-event-travel-guide·event_travel_guide 테이블·EventTravelGuidePanel(Preview raw JSON). edinburgh-fringe-2026 fixture 1건. Preview /qa/world-events → 에든버러 프린지 상세 — Tier3 AI 패널(있으면)·하단 QA raw JSON 확인. DB 미배포 시 정적 Tier0~2만 보임(정상).',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-detail-phase-b',
+    session: '세계행사 일정 #12, 상세 셸 · 샘플1 edinburgh',
+    title: 'EventDetailPage · Tier0~2 · 허브→상세',
+    detail:
+      'Phase B: /world-events/:eventId 라우트 · EventDetailStaticPanel · edinburgh Tier0.5 overrides · 허브·PlaceCard 「행사 상세」CTA. Preview /qa/world-events → 에든버러 프린지 「행사 상세」→ /world-events/edinburgh-fringe-2026 · 개요·하이라이트·숙소 권역·권장 4박·플래너/숙소 CTA 확인해 주세요.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-human-preview-qa',
+    session: '세계행사 일정 #10, 사람 Preview QA',
+    title: 'P0–P2 VERIFY PASS · 에든버러 상세 URL QA',
+    detail:
+      'smoke:world-events · smoke:trip-window-edinburgh · build PASS. Preview /qa/world-events → 유럽 칩 → 에든버러 프린지 「여행지 카드」가 /place/edinburgh?fromEvent=edinburgh-fringe-2026&checkIn&checkOut 형태인지 확인해 주세요. 플래너 CTA 날짜·Q12(/korea · /place/vienna)도 §6.1 체크리스트대로.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-tripwindow-presets',
+    session: '세계행사 일정 #10, TripWindow 프리셋',
+    title: '허브 「여행지 카드」→ 행사 맞춤 상세 URL',
+    detail:
+      'tripWindowPresetsFromEvent로 TripWindow·플래너·상세 URL을 SSOT화했습니다. /world-events 카드 「여행지 카드」가 /place/edinburgh?fromEvent=…&checkIn&checkOut 형태로 연결됩니다. Preview /qa/world-events → 에든버러 프린지 카드 CTA URL·플래너 날짜를 확인해 주세요.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-home-entry',
+    session: '세계행사 일정 #9, 홈 진입 링크',
+    title: '홈 「한국의 축제」 아래 「세계의 행사」',
+    detail:
+      '홈 좌상단 바로가기(모바일·PC)에 「세계의 행사」 칩을 「한국의 축제」 바로 아래에 추가했습니다. Preview 홈에서 칩을 눌러 /world-events 로 들어가는지 확인해 주세요.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-p2-mvp-smoke',
+    session: '세계행사 일정 #9, 통합 smoke·핸드오프',
+    title: 'P0–P2 통합 smoke · QA 체크리스트',
+    detail:
+      'smoke:world-events로 generate·audit·TripWindow·축제 CTA·허브/PlaceCard 검증을 한 번에 돌립니다. Preview /qa/world-events · /korea 축제 1건 · /place/vienna 에서 Q12 체크리스트(숙소·플래너 날짜, 도시 행사 섹션, 지역 칩)를 확인해 주세요.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-p2c-hub',
+    session: '세계행사 일정 #8, P2-c — /world-events 허브',
+    title: '/world-events 지역 칩 5 · 행사 카드 그리드',
+    detail:
+      '해외 행사 허브 페이지를 추가했습니다. 지역 칩(유럽·아시아·태평양·아메리카·오세아니아·니치)으로 Wave1 15건을 필터하고, 카드에서 여행지·행사 맞춤 플래너·숙소·공식 일정으로 이어갑니다. Preview /qa/world-events · /world-events 에서 칩 전환과 카드 CTA를 확인해 주세요.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-p2b-placecard',
+    session: '세계행사 일정 #7, P2-b — PlaceCard 행사',
+    title: 'PlaceCard 「이 도시의 행사」접이식 + TripWindow CTA',
+    detail:
+      'worldEvents.json slug별 행사를 PlaceCard에 표시합니다. /place/vienna 등 Wave1 도시에서 「이 도시의 행사」펼침 → 행사 맞춤 플래너·숙소·공식 일정 CTA를 확인해 주세요. 홈 지구본 써머리에도 동일 섹션이 보입니다.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-p2a-wave1-ssot',
+    session: '세계행사 일정 #6, P2-a — SSOT Wave1',
+    title: 'Wave1 해외 행사 overrides 15건',
+    detail:
+      'world-event-overrides.mjs에 Q3 확정 slug 15건(유럽·아시아·아메리카·오세아니아·니치) 대표 행사 SSOT 추가. generate·audit PASS. UI는 #7 PlaceCard부터.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-p1a-festival-stay',
+    session: '세계행사 일정 #4, P1-a — 축제→숙소',
+    title: '축제 상세 MRT 숙소 URL TripWindow',
+    detail:
+      '/korea 축제 상세 「숙소」 CTA가 tripWindowFromTourApiFestival checkIn/checkOut을 MRT union/products URL에 넘깁니다. Preview /korea → 축제 1건 → 숙소 링크 URL에 행사 맞춤 날짜를 확인해 주세요.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-20-i18n-browser-locale-prod-qa',
+    session: '영문화 #24, PROD QA — 브라우저 locale',
+    title: '브라우저 locale 자동·축제 Chrome 번역 PROD QA',
+    detail:
+      '시크릿 창·Chrome 언어 English 우선·gateo.locale 없음 → www.gateo.kr/ 방문 시 UI 자동 EN·?lang=en. /korea 축제 카드·상세 한글 TourAPI 텍스트에 lang=ko — Chrome 번역 제안(포스터 이미지 내 한글 제외). 헤더 KO 토글·재방문 유지 확인. Preview /qa/en · git URL.',
+    at: '2026-08-20',
+  },
+  {
+    id: '2026-08-20-i18n-browser-locale-auto',
+    session: '영문화 #23, 브라우저 locale 자동',
+    title: 'navigator.languages → locale · 축제 lang=ko',
+    detail:
+      '첫 방문: ?lang= → gateo.locale → navigator.languages(ko*→ko, 그 외→en). EN 자동 시 ?lang=en·storage persist. 축제 카드·상세 TourAPI 한글에 lang=ko·translate=yes. smoke:browser-locale-hint PASS.',
+    at: '2026-08-20',
+  },
+  {
+    id: '2026-08-20-i18n-planner-ai-body-en',
+    session: '영문화 #22, 플래너 AI 본문 EN',
+    title: 'essential_guide_en · Edge locale=en',
+    detail:
+      '?lang=en 플래너 탭 AI 본문(여정 타임라인·툴킷 카드 advice)이 essential_guide_en 컬럼을 사용합니다. 없으면 ko 폴백. 「Run AI toolkit」은 locale=en일 때 EN 생성·저장. Preview /qa/en · 장소 카드 → Planner → 본문 영문(또는 Run AI toolkit 후 EN) 확인.',
+    at: '2026-08-20',
+  },
+  {
+    id: '2026-08-19-i18n-mooni-flight-cta-en',
+    session: '영문화 #20, 무니 인트로·탐지',
+    title: 'MOONi 항공 CTA·검색 모달 EN',
+    detail:
+      '?lang=en MOONi 항공 CTA·Trip.com 검색 모달 — locale=en-US 쿼리로 iframe(왕복·편도·검색) 영문 표시 확인(PASS). 별도 EN ad ID 불필요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-mooni-intro-detect-en',
+    session: '영문화 #20, 무니 인트로·탐지',
+    title: 'place_chat_intro EN 캐시·목적지 탐지',
+    detail:
+      '?lang=en에서 place_chat_intro 조회·생성 키가 영문 라벨(Japan Osaka@en)로 분리됩니다. MOONi bound 장소 인트로·써머리 hydrate도 locale 연동. EN 발화 「I want to go to Osaka」 목적지 탐지·access 출발지 shaping 추가. Preview /qa/en · 홈 장소 핀 → MOONi FAB → 인트로·써머리가 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-mooni-prompts-en',
+    session: '영문화 #19, 무니 프롬프트·대화 EN',
+    title: 'MOONi system prompt·칩·CTA EN',
+    detail:
+      '?lang=en에서 무니 Gemini system prompt·주제 칩 지침·CTA 힌트·장소 인트로 생성 프롬프트가 영문으로 전달됩니다. place_chat_intro 캐시 키는 @en 접미사로 ko와 분리. Preview /qa/en · 홈 MOONi FAB → 칩(Flights/Visa 등) 탭 시 답변이 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-tourapi-body-en-rollback',
+    session: '영문화 #17, TourAPI EN 롤백(A)',
+    title: '축제·명승 본문 KorService2 SSOT',
+    detail:
+      '사람 합의로 #16·#17 TourAPI EngService2 본문 EN을 철회했습니다. ?lang=en에서도 축제·명승 상세 개요·이용안내·주변 맛집/레포츠/문화는 한글 TourAPI SSOT입니다. UI 버튼·섹션 카피만 영문. Preview /korea?lang=en · /korea/theme/scenic?lang=en 에서 본문 KO·UI EN 확인.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-scenic-tourapi-body-en-fix',
+    session: '영문화 #17, 명승 TourAPI 본문 EN',
+    title: '경복궁 EN id·주변 맛집 ko SSOT 보정',
+    detail:
+      'EngService2는 KorService2와 contentId가 다름(경복궁 126508→264337). EN 본문은 영문 alias searchKeyword로 Eng id를 찾고, 주변 맛집·레포츠·문화 locationBasedList는 locale=en이 빈 결과 → 항상 ko SSOT. Preview /korea/theme/scenic?lang=en 경복궁: 제목·개요 영문 + 주변 맛집 목록 표시 확인.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-scenic-tourapi-body-en',
+    session: '영문화 #17, 명승 TourAPI 본문 EN',
+    title: 'ThemeSpotDetailModal EN 본문 + KO 폴백',
+    detail:
+      'TourAPI contentId 있는 명승·지역 명소·TOP10·주변 맛집/레포츠/문화/관광지 상세 모달 — locale=en일 때 EngService2 overview·intro·info 우선, 빈 필드는 KorService2. CHA·선정(국가유산)·GATEO 큐레이션 overview는 KO 유지. Preview git URL /korea/theme/scenic?lang=en · /korea/theme/regions?lang=en 에서 카드→상세 개요·이용안내가 영문인지 확인해 주세요. (목록 카드 제목은 KO SSOT)',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-festival-body-en',
+    session: '영문화 #16, 축제 본문 EN',
+    title: '축제 목록 KO · 본문 EN+폴백',
+    detail:
+      '축제 목록은 KorService2 SSOT(건수·탭 동일). 상세는 locale=en일 때 EngService2 본문 + KorService2 폴백. Preview /qa/en · /korea?lang=en 에서 「지금」45건 유지·카드 열기 시 overview·program·info가 영문(없으면 한글)인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-tourapi-proxy-en',
+    session: '영문화 #15, TourAPI 프록시 EN',
+    title: 'TourAPI EngService2 · locale 캐시',
+    detail:
+      'Edge tourapi-proxy — ko=KorService2 · en=EngService2 · 축제/location 캐시 키 locale 분리. 클라이언트 invokeTourApiProxy가 i18n locale 전달. Edge deploy 후 /qa/en · ?lang=en 에서 한국 갤러리·축제 본문이 영문으로 오는지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-globe-place-labels',
+    session: '영문화 #14, 지구본 지명·맵',
+    title: '지구본 핀·Mapbox 지명 en',
+    detail:
+      'gateo 핀 label은 name_en 우선(localizedMarkerPinLabel). Mapbox는 map.setLanguage(en|ko) + label 클릭 시 영문 키 우선. 클러스터 범례는 labelEn·name_en 표시. Preview /qa/en · ?lang=en 홈에서 줌인 후 Bali·Paris 등 핀·Mapbox 지명·좌하단 클러스터가 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-globe-chips',
+    session: '영문화 #13, 지구본 칩·국가',
+    title: '지구본 나라·소권역·해양 칩 en',
+    detail:
+      'GlobeFaceRegionRail — 소권역·나라·대양·해역 칩 label을 globeUi + home.globe.country/subregion/ocean i18n으로 분기했습니다. Preview /qa/en · ?lang=en 홈에서 카테고리 칩·나라 목록·소권역 바가 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-prod-qa-ok',
+    session: '영문화 #12, PROD QA 확인',
+    title: '1차 UI PROD QA OK',
+    detail:
+      '사람 PROD QA 통과. 1차 영문 UI(#0~#11) 완료. 다음 #13 지구본 칩·국가·해양 EN — cursor/en · PR #135.',
+    at: '2026-08-19T03:30:00.000Z',
+  },
+  {
+    id: '2026-08-18-i18n-main-merge',
+    session: '영문화 #11, 병합·PROD QA',
+    title: 'PR #134 main 병합',
+    detail:
+      'main 충돌 해소(i18n logbook·auth) · build·smoke PASS · merge 47845093. PROD: /qa/en → ?lang=en · /blog?lang=en',
+    at: '2026-08-18T23:30:00.000Z',
+  },
+  {
+    id: '2026-08-18-i18n-blog-auth',
+    session: '영문화 #10, 잔여·Preview QA',
+    title: 'Auth·/blog 잔여 영문화',
+    detail:
+      '로그인·회원가입·비밀번호 재설정·변경 페이지를 authPage.* i18n으로 분기했습니다. Preview /qa/en · ?lang=en → /blog · /blog/write(로그인) · /blog/curation 에서 EN 토글 시 카피가 영문인지 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-logbook-dashboard',
+    session: '영문화 #9, 로그북·대시보드',
+    title: '로그북·대시보드 UI en',
+    detail:
+      '/blog 대시보드·작성·상세·큐레이션 허브·사이드바 카피를 logbook.* 키로 영문화했습니다. Preview ?lang=en → /blog · /blog/curation 에서 LogBook·Picks·취향 칩 영문을 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-main-merge',
+    session: '영문화 #5, PROD 병합·QA',
+    title: 'PR #132 main 병합',
+    detail:
+      'PR #132를 main에 병합했습니다(bc381852). PROD 배포 후 /qa/en·허브 영문을 확인해 주세요. 2차 세부 페이지 영문화는 #7 새 세션에서 cursor/en으로 이어갑니다.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-preview-qa-ok',
+    session: '영문화 #5, PROD 병합·QA',
+    title: 'Preview QA OK · PROD /qa/en은 merge 후',
+    detail:
+      '사람 Preview QA: git Preview ?lang=en 에서 EN 토글·홈·PlaceCard·/korea·명승·hreflang·릴리스 배너 OK. PROD /qa/en 은 PR #132 미병합으로 /qa 목록으로 폴백(정상). merge·배포 후 /qa/en → PROD ?lang=en 재확인.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-merge-prep',
+    session: '영문화 #5, PROD 병합·QA',
+    title: '병합 준비·PROD QA 체크리스트',
+    detail:
+      'build·smoke:place-label-slug PASS. PR #132 병합 준비(사람 승인 후 merge). 병합·배포 후 /qa/en → PROD ?lang=en. PROD에서 EN 토글·홈·PlaceCard·/korea·명승·hreflang·릴리스 배너를 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-seo-release',
+    session: '영문화 #4, SEO·릴리스',
+    title: 'hreflang·locale SEO·릴리스 노트',
+    detail:
+      'SEO Helmet에 ko/en/x-default alternate·canonical·og:locale을 추가했고, 홈·축제·명승 허브 sitemap에 xhtml alternate를 넣었습니다. 릴리스 노트(영문 UI)가 배포 후 배너에 표시됩니다. Preview /?lang=en 에서 페이지 소스의 hreflang·영문 title/description을 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-home-placecard',
+    session: '영문화 #2, 홈·PlaceCard',
+    title: '홈·PlaceCard 주요 카피 en',
+    detail:
+      '홈 카테고리·바로가기·지구본 메뉴와 PlaceCard 탭·플래너 툴킷·장소명(name_en) 표시를 ko/en JSON으로 분기했습니다. Preview /?lang=en 에서 EN 토글·홈 칩·장소 카드 헤더·플래너 섹션 제목이 영문인지 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-toggle-hit-race',
+    session: '영문화 #1, locale 기반',
+    title: 'EN 토글 클릭·locale 레이스 수정',
+    detail:
+      'LocaleProvider URL 동기화 effect가 locale 변경을 되돌리던 레이스를 제거했습니다. EN/한 토글을 로고 chrome 히트 영역(불투명 실드)으로 옮기고 pointer-events 보강. Preview에서 EN 클릭 시 버튼이 한·검색 placeholder 영문 전환을 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    session: '영문화 #1, locale 기반',
+    title: 'LocaleContext 누락 ReferenceError 수정',
+    detail:
+      'LocaleProvider 리팩터 중 createContext 선언이 빠져 Uncaught ReferenceError: LocaleContext is not defined 로 앱이 멈췄습니다. 선언 복구 후 build PASS. Preview 강력 새로고침으로 재확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    session: '영문화 #1, locale 기반',
+    title: '검은 화면 수정 — i18n 동기 초기화',
+    detail:
+      'react-i18next v17 기본 useSuspense + 비동기 init으로 Suspense 경계 없이 빈 화면이 났습니다. i18n을 main 진입 시 동기 init(react.useSuspense:false)하고 LocaleProvider를 맞췄습니다. Preview 새로고침 후 지구본·헤더가 보이는지 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    session: '영문화 #1, locale 기반',
+    title: 'i18next·LocaleProvider·헤더 토글',
+    detail:
+      'src/i18n SSOT(ko/en JSON)와 LocaleProvider를 추가했습니다. ?lang=en·localStorage로 locale이 유지되고, 홈 헤더 EN/한 토글·검색 placeholder·시스템 공지 배너가 영문으로 전환됩니다. Preview /?lang=en 에서 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-17-curation-globe-mooni-7',
+    session: 'AI 큐레이션 #7, 지도·무니 검은 화면 QA',
+    title: '큐레이션→홈 지도·무니 검은 화면 완화',
+    detail:
+      'Android/iPhone 큐레이션→홈 핸드오프 디버그 패널을 추가했습니다. Preview에서 「무니에게 묻기」클릭 시 우하단 curation log가 뜨며 로그 복사로 붙여넣기 가능합니다. ?debug=curation 또는 CTA 클릭 시 자동 활성.',
+    at: '2026-08-17',
+  },
+  {
+    id: '2026-08-13-chrome-hit-shift-13',
+    session: '지구본 홈 #13, Chrome 칩 히트 어긋남',
+    title: 'translate3d/isolate 제거 · 검색열 pointer-events 분리',
+    detail:
+      '1턴 후 「한국의 명승」이 /blog/curation 으로 가던 Chrome 히트 어긋남을 막기 위해, 칩 컬럼의 translate3d·isolate 레이어 승격을 제거하고 검색 absolute pill 열은 pointer-events-none으로 좁혔습니다. 불투명 실드·칩 BG는 유지합니다. Chrome에서 써머리/페이지 왕복 뒤 명승·큐레이션 칩을 확인해 주세요.',
+    at: '2026-08-13',
+  },
+  {
+    id: '2026-08-13-chrome-hit-shield-12b',
+    session: '지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘',
+    title: '홈 칩 불투명 히트 실드·blur 제거 (Chrome 전용)',
+    detail:
+      'Safari·네이버·구글앱은 정상·Chrome만 지도로 클릭이 뚫리는 증상을 위해, 로고·축제·명승·AI 큐레이션 영역에 불투명 히트 실드를 두고 backdrop-blur를 뺐습니다. Chrome에서 AI 큐레이션이 /blog/curation 으로만 가는지 확인해 주세요.',
+    at: '2026-08-13',
+  },
+  {
+    id: '2026-08-13-chrome-hit-curation-summary-12',
+    session: '지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘',
+    title: 'AI 큐레이션 클릭 관통·써머리 X·/place 갇힘 완화',
+    detail:
+      'Chrome에서 Mapbox 위 홈 칩 클릭이 지도로 뚫리던 문제를 레이어/불투명도로 보강하고, 써머리 닫기 타깃을 키웠습니다. /place X는 explore 루프 대신 홈으로 나가며 써머리 재오픈을 건너뜁니다. PROD Chrome에서 로고 아래 AI 큐레이션→써머리 X를 확인해 주세요.',
+    at: '2026-08-13',
+  },
+  {
+    id: '2026-08-13-logbook-curation-qa-prod-sso-11b',
+    session: '로그북 #11, Preview SSO·QA 경로',
+    title: '/qa/logbook-curation → PROD (Preview SSO 회피)',
+    detail:
+      'Vercel Preview에 Deployment Protection(SSO)이 걸려 미로그인 Chrome에서 Preview·/qa가 Vercel 로그인으로 튕겼습니다. /qa/logbook-curation 을 PROD /blog/curation 으로 복귀했습니다. sticky 실행 버튼은 feature에 남아 있습니다.',
+    at: '2026-08-13',
+  },
+  {
+    id: '2026-08-12-logbook-curation-explore-sticky-11',
+    session: '로그북 #11, 실행 버튼 sticky·하단',
+    title: '나의 큐레이션 · 실행 버튼 상단 고정·하단 복제',
+    detail:
+      '「새로운 낙원 찾기」가 목록을 스크롤해도 상단 sticky 바에 남고, 항목이 3개 이상이면 목록 맨 아래에도 같은 버튼을 둡니다. Preview에서 긴 목록을 스크롤해 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-remove-ai-badge-10',
+    session: '로그북 #10, 본문 제목행 AI 마크 제거',
+    title: '본문 상단 AI CURATION 마크 제거',
+    detail:
+      '큐레이션 본문 제목행에서 AI CURATION 배지를 빼 한국어·영문 지명이 더 넓게 보이도록 했습니다. Preview /blog/curation에서 긴 지명 본문을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-main-merge-9e',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '로그북 #9 main 반영 · QA → PROD',
+    detail:
+      '취향 재설정·헤더 뒤로가기·위로 버튼·설문 보강을 main에 반영했습니다. /qa/logbook-curation 은 PROD /blog/curation 으로 연결됩니다.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-scroll-top-9d',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '큐레이션 페이지 「위로」버튼',
+    detail:
+      '스크롤을 조금 내리면 우측 하단에 「위로」가 나타나고, 누르면 로그북 본문 스크롤을 맨 위로 올립니다. Preview /blog/curation에서 목록을 내린 뒤 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-body-taste-only-9c',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '본문 하단 · 취향 다시 설정만 · 시인성',
+    detail:
+      '본문 하단에서 「새로운 낙원 찾기」를 빼고 「취향 다시 설정」만 indigo 칩 버튼으로 남겼습니다. 재실행은 나의 큐레이션 옆 버튼을 씁니다. Preview에서 본문 하단을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-climate-special-9b',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '취향 설문 · 겨울·우기·백야·흑야',
+    detail:
+      '재취향 설문에 겨울·추위, 눈·설경, 우기·비·흐림과 백야·흑야·오로라(특별함) 칩을 추가했습니다. Preview에서 「취향 다시 설정」모달을 열어 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-taste-reset-header-9',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '본문 취향 재설정 · LogBook 뒤로가기 · 새로운 낙원 찾기',
+    detail:
+      '헤더 큰 LogBook 버튼을 제거하고 큐레이션 제목 앞에 로그북 뒤로가기를 두었습니다. 나의 큐레이션·본문 CTA를 「새로운 낙원 찾기」로 바꾸고, 본문 하단에 「취향 다시 설정」(기후·스타일·밀도·권역 상세 설문)을 추가했습니다. Preview /blog/curation에서 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-explore-focus-8',
+    session: '로그북 #8, 탐색 시 메인 포커스',
+    title: '다른 낙원 탐색 → 스피너·결과가 화면 주인공',
+    detail:
+      '목록·스택 본문에서 「다른 낙원 탐색」을 눌러도 클릭 위치에 머무르지 않고, 상단 로딩 스피너와 완료 본문으로 스크롤됩니다. Preview에서 하단 CTA로 탐색해 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-recent-explore-taste-7',
+    session: '로그북 #7, 취향에 최근 검색·방문',
+    title: '최근 검색·방문 목적지를 취향 프롬프트에',
+    detail:
+      '지구본 최근 검색어·최근 방문 목적지를 로그북·북마크와 함께 큐레이션 프롬프트에 실었습니다. 이 신호가 있으면 취향 설문을 건너뜁니다. Preview에서 홈 검색 후 /blog/curation 탐색을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-taste-reject-survey-6',
+    session: '로그북 #6, 취향 삭제·설문·본문 CTA',
+    title: '본문 탐색 CTA · 목록 삭제→거절 · 취향 설문',
+    detail:
+      '모든 본문 하단에 「다른 낙원 탐색」을 두었습니다. 목록 휴지로 지우면 거절 목록에 남아 다음 추천에서 유사 취향을 피합니다. 기록·북마크가 없으면 짧은 분위기 설문을 먼저 물어봅니다.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-close-on-photo-5',
+    session: '로그북 #5, 큐레이션 닫기 버튼 위치',
+    title: '닫기 버튼 → 사진 우측 상단',
+    detail:
+      '스택 본문의 × 닫기를 제목 옆에서 사진 우측 상단(반투명 원형)으로 옮겼습니다. 지명 생략이 줄고 시인성이 나아졌는지 Preview에서 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-stack-bodies-4',
+    session: '로그북 #4, 큐레이션 목록 본문 스택',
+    title: '목록 클릭 시 본문 쌓기',
+    detail:
+      '나의 큐레이션 항목을 누르면 메인을 바꾸지 않고 해당 본문이 목록 아래에 쌓입니다(다시 누르면 닫힘). 상단 메인과 같은 항목은 중복으로 안 엽니다. Preview /blog/curation에서 소코트라 등을 눌러 본문 스택을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-restore-history-3',
+    session: '로그북 #3, 큐레이션 페이지 QA',
+    title: '마지막 실행 본문 복원 · 없을 때만 실행 박스',
+    detail:
+      'session이 비어도 나의 큐레이션 최신(예: 라자암팟) 본문을 메인으로 복원합니다. 실행 이력이 없을 때만 「낙원 탐색 시작」박스가 메인입니다. Preview /blog/curation에서 본문→목록 순을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-main-then-list-2e',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '최근 실행 본문 메인 · 목록은 하단',
+    detail:
+      '마지막 실행한 큐레이션 본문이 상단 메인을 장식하고, 그 아래에 나의 큐레이션 세로 목록이 오도록 순서를 바꿨습니다. Preview /blog/curation에서 본문→목록 순을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-list-vertical-2d',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '나의 큐레이션 목록 세로 나열',
+    detail:
+      '나의 큐레이션 리스트를 좌우 스크롤에서 아래로 나열되는 세로 목록으로 바꿨습니다. Preview /blog/curation에서 목록이 세로로 쌓이는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-star-login-2c',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '즐겨찾기 별표 · 비로그인 안내',
+    detail:
+      '저장 버튼을 별표 즐겨찾기로 바꾸고, 비로그인에서 누르면 「즐겨찾기 저장을 위해 로그인 필요」안내와 「로그인 하러가기」·「확인」을 띄웁니다. Preview /blog/curation에서 비로그인으로 별표를 눌러 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-end-pad-2b',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '큐레이션 페이지 하단 스크롤 여유(~50vh)',
+    detail:
+      '본문 끝이 화면 하단에 붙지 않고 스크롤 시 중앙 부근까지 올라오도록 `.page-scroll-end-pad`를 적용했습니다. Preview /blog/curation에서 끝까지 스크롤해 본문 하단(팁·CTA) 위치를 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-layout-2',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '큐레이션 헤더 · 나의 큐레이션 상단 · 최근 본문',
+    detail:
+      '헤더를 로그북형 「큐레이션」헤더로 맞추고, 나의 큐레이션이 있으면 상단 목록·아래에 최근 실행 본문, 없으면 낙원 탐색 실행 박스가 상단에 오도록 바꿨습니다. Preview /blog/curation에서 목록·본문 순서를 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-toggle-fix-4',
+    session: '축제·명승 검색 #4, 닫기 버튼 수정',
+    title: '모바일 검색 닫기(X) 버튼 복구',
+    detail:
+      '바깥 클릭 dismiss가 닫기 버튼 pointerdown보다 먼저 실행되어 X가 다시 열리던 문제를 고쳤습니다. Preview 모바일에서 검색 열기 → X로 닫기 · 칩/바탕으로 스킵 닫기 둘 다 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-bar-dismiss-3',
+    session: '축제·명승 검색 #3, 검색바 스킵 닫기',
+    title: '모바일 검색바 · 칩·빈 영역으로 스킵 닫기',
+    detail:
+      '검색 아이콘을 연 뒤 닫기(X) 없이 분류 칩이나 빈 영역을 누르면 최근 목록뿐 아니라 검색바 자체도 닫힙니다(확정된 검색 결과는 유지). Preview 모바일 폭에서 검색 열기 → 칩/바탕 탭으로 스킵되는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-dismiss-2',
+    session: '축제·명승 검색 #2, 최근 검색어 닫기',
+    title: '최근 검색 목록 · 바깥 클릭·칩으로 닫기',
+    detail:
+      '최근 검색 목록이 닫기(X) 전까지 고정되던 문제를 고쳤습니다. 칩을 누르거나 검색창·목록 밖 빈 곳을 누르면 목록이 닫힙니다. Preview에서 검색창 포커스 → 목록 표시 → 지역 칩/빈 영역 클릭으로 닫히는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-1',
+    session: '축제·명승 검색 #1, 최근 검색어',
+    title: '축제홈·명승홈 최근 검색어',
+    detail:
+      '검색을 확정하면 localStorage에 저장되고, 검색창을 열거나 포커스하면 최근 검색어가 나열됩니다. 입력 중에는 부분 일치로 걸러집니다. Preview에서 /korea 와 /korea/theme/scenic 검색창을 열어 같은 단어를 다시 고를 수 있는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-scenic-hwaeomsa-tour-region-3',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '검색 시 관광지 권역이 수도권에 남는 문제',
+    detail:
+      '명소·명승은 「화엄사」→전라로 잡히는데 관광지만 기존 tregion(수도권)을 유지해 0건이었습니다. 검색 확정 시 매칭 권역을 우선하고, 명소가 있어도 관광지 현 권역 0건이면 TourAPI 최다 권역으로 바꿉니다. Preview에서 「화엄사」검색 → 관광지 파드에 화엄사·화엄사계곡이 나오는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-scenic-hwaeomsa-tourdb-2',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '관광지 DB에 화엄사(127923) 보강',
+    detail:
+      'TourAPI 인기 POI는 areacode/cat이 비어 areaBased sync에서 빠집니다. 화엄사를 전남·인문(사찰)로 upsert했고, 선정 contentId 백필·추론(sync --curated-only)을 넣었습니다. Preview에서 「화엄사」검색 → 관광지 파드(인문)에도 화엄사가 나오는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-scenic-hwaeomsa-search-1',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '「화엄사」검색 0건 보정',
+    detail:
+      '입력 중 draft로 검색이 켜지며 기본 수도권·시도·hub에 걸려 0건으로 보이던 문제를 고쳤습니다(확정 검색만 필터). 권역 칩이 검색 중 시도·hub를 다시 시드하지 않게 했고, CHA ctcd 52(지리산 화엄사 일원)를 전북→전남으로 바로잡았습니다. Preview에서 「화엄사」검색 → 선정·국가유산 명승이 나오는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-public-cta-home-1',
+    session: '로그북 #1, 공개피드 CTA',
+    title: '공개 피드 「나만의 기록 남기기」→ 로그북 홈',
+    detail:
+      '공개 피드(/p/:id) 본문 하단 CTA가 로그인으로 가던 것을 /blog(로그북 홈)로 바꿨습니다. Preview에서 공개 기록 하단 「나만의 기록 남기기」를 눌러 /blog로 가는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-aitutaki-gyg-ayutthaya-4',
+    session: '지구본 홈 #4, 아이투타키 투어 오탐',
+    title: '아이투타키 투어 찾기 → 아유타야 오탐 보정',
+    detail:
+      'GYG에 아이투타키 재고가 없어 bare「Aitutaki」검색이 아유타야로 붙던 문제를, 확정 쿡 제도 쿼리(Rarotonga, Cook Islands)·City id 2689로 바꿨습니다. Preview에서 아이투타키 써머리 → 투어 찾기에 태국 아유타야·일본 투어가 안 뜨는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-curation-photo-fallback-5',
+    session: 'AI 큐레이션 #5, 사진 place_stats 폴백',
+    title: '아이투타키 등 사진 준비 중 → place_stats 폴백',
+    detail:
+      'Unsplash/Pexels가 비거나 실패해도 place_stats(장소카드 갤러리) 썸네일로 채웁니다. 이미 「사진 준비 중」으로 저장된 아이투타키도 페이지 열면 자동 복구됩니다. Preview에서 낙원 탐색·나의 목록의 아이투타키 사진을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-11-curation-main-sync-4',
+    session: 'AI 큐레이션 #4, main 동기화·병합 QA',
+    title: 'main 동기화 후 Preview QA',
+    detail:
+      'main을 큐레이션 브랜치에 맞춰 머지했습니다. 홈 로고 아래 「AI 큐레이션」칩·/blog/curation 낙원 탐색·리치 팁·나의 목록·홈 복귀를 확인해 주세요.',
+    at: '2026-08-11',
+  },
+
+  {
+    id: '2026-08-02-curation-home-entry',
+    session: 'AI 큐레이션 #3, 홈 진입 연결',
+    title: '홈 → AI 큐레이션 바로가기',
+    detail:
+      '홈 로고 아래 「AI 큐레이션」칩으로 /blog/curation에 바로 들어갈 수 있습니다. 낙원 탐색·리치 팁·나의 목록·「전체 지도에서 보기」홈 복귀를 확인해 주세요.',
+    at: '2026-08-02',
+  },
+  {
+    id: '2026-07-31-curation-hub-bc',
+    session: 'AI 큐레이션 #2, 인페이지 허브',
+    title: '/blog/curation 인페이지 허브',
+    detail:
+      '전용 페이지에서 낙원 탐색·whyHidden/bestSeason/tips·나의 큐레이션 목록 복원을 담았습니다. 지구본·장소카드 CTA는 보조입니다.',
+    at: '2026-07-31',
+  },
+  {
+    id: '2026-07-31-curation-phase-a',
+    session: 'AI 큐레이션 #1, 연결·비로그인',
+    title: '지구본·장소카드·무니 연결',
+    detail:
+      '큐레이션 결과를 홈 써머리·장소카드·무니로 넘기고, 비로그인 탐색·이미지/좌표 로직을 고쳤습니다.',
+    at: '2026-07-31',
+  },
+  {
+    id: '2026-08-11-summary-mobile-bottom-3',
+    session: '지구본 홈 #3, 모바일 써머리 하단',
+    title: '써머리 카드 모바일 하단 고정',
+    detail:
+      '써머리·몰입 컴팩트 바의 모바일 bottom을 카테고리 바용 6.75rem에서 1rem+safe-area로 내리고 fixed로 뷰포트 하단에 붙였습니다. 카드가 뜰 때 카테고리 바는 숨겨지는데 예전 오프셋이 남아 중간에 떠 보이던 문제입니다. Preview 모바일에서 핀 탭 후 써머리가 화면 하단에 있는지 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-zermatt-flight-2',
+    session: '지구본 홈 #2, 항로 플래너·체르마트',
+    title: '항로 Bar 「여행 플래너」·체르마트 직항',
+    detail:
+      '항로 상태바 버튼을 「여행 플랜」→「여행 플래너」로 바꿨고, 체르마트는 ICN→ZRH 직항(MUC·GVA 경유 오탐 제거)입니다. Preview에서 체르마트→항공 경로→직항 표시와 버튼을 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-summary-planner-1b',
+    session: '지구본 홈 #1, 플래너 보기 버튼',
+    title: '써머리 CTA 문구 「여행 플래너」',
+    detail:
+      '써머리 링크 버튼 문구를 「플래너 보기」에서 「여행 플래너」로 바꿨습니다. Preview에서 플래너 있는 핀의 버튼 라벨을 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-summary-planner-1',
+    session: '지구본 홈 #1, 플래너 보기 버튼',
+    title: '써머리 「플래너 보기」링크',
+    detail:
+      '지구본 홈 써머리 장소카드의 「가까이 보기」를, place_toolkit 플래너가 있는 여행지에서는 「플래너 보기」링크로 바꿨습니다. 플래너가 없으면 기존 「가까이 보기」를 유지합니다. Preview에서 플래너 있는 핀(예: 주요 도시)과 없는 핀을 비교해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-festival-samehub-144',
+    session: '테마여행 #144, 축제 같은 도시 명소 튕김',
+    title: '축제→같은 도시 명소 중첩·이전 복귀',
+    detail:
+      '축제 상세→횡성호→안흥찐빵마을이 명소홈으로 튕기던 문제를 고쳤습니다. 같은 도시 명소는 중첩 모달로 열고, 축제 returnTo의 「이전」은 횡성호 명승 상세로 갑니다(축제홈 spot 오부착 제거). Preview에서 가을·강원·횡성한우축제→횡성호→안흥찐빵마을→닫기를 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-scenic-locate-pin-143-main',
+    session: '테마여행 #143, 내 위치 핀 main 병합',
+    title: '내 위치 붉은 깃발 핀 main 반영',
+    detail:
+      'PR #100(붉은 깃발 핀)을 main에 반영했습니다. `/qa/scenic-map`은 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 지도→내 위치(붉은 깃발)를 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-scenic-locate-pin-143',
+    session: '테마여행 #143, 내 위치 핀 시인성',
+    title: '내 위치 — 붉은 깃발 핀',
+    detail:
+      '지도 내 위치 마커를 하늘색 점에서 붉은 깃발 핀(테드롭+Flag)으로 바꿔 시인성을 높였습니다. 활성 「위치 해제」버튼도 붉은 톤으로 맞췄습니다. Preview에서 명소 지도→내 위치를 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-scenic-locate-near-142',
+    session: '테마여행 #142, 지도 내 위치 주변 칩',
+    title: '파드별 내 위치 주변 칩·목록 적응 반경',
+    detail:
+      '지도 내 위치는 파드별로 해당 파드만 가까운 칩(최대 12)·적응 반경(20→80km)으로 보여 줍니다. 분류 칩/크럼 클릭·위치 해제로 드릴로 복귀. 목록 내 주변도 동일 상한·더보기·반경 확대. Preview에서 명소 지도→내 위치→칩→분류 복귀를 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-scenic-locate-141',
+    session: '테마여행 #141, 지도 내 위치',
+    title: '명승 지도 — 내 위치 버튼',
+    detail:
+      '명승홈 지도에 「내 위치」버튼을 넣었습니다. 위치 허용 후 파란 점으로 표시하고 카메라가 이동합니다. 목록 「내 주변」필터·TourAPI는 건드리지 않습니다. Preview에서 명소/명승/관광지 지도 → 내 위치를 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-page-end-pad-140',
+    session: '테마여행 #140, 페이지 하단 여백',
+    title: '스크롤 끝 하단 여백(중앙 착지)',
+    detail:
+      '명승홈·테마·축제 목록에 `.page-scroll-end-pad`(약 50vh)를 적용해 끝까지 스크롤해도 마지막 접힘 버튼·본문이 화면 하단이 아니라 중앙 부근에 오도록 했습니다. Preview `/korea/theme/scenic`에서 명소 리스트 끝→국가유산 명승·지역 관광지 접힘 버튼을 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-10-yanggu-porcelain-139',
+    session: '테마여행 #139, 양구백자박물관 등록',
+    title: '양구백자박물관 hub·GATEO 선정 등록',
+    detail:
+      '양구백자박물관을 yanggu hub attractions와 koreaScenicSpots에 추가했습니다(870→871 · Tour contentId 731454 · detailImage 썸네일). Tour LIVE에는 있으나 tourapi_attraction DB sync에는 없던 사례입니다. Preview에서 검색「양구백자박물관」·`/korea/theme/scenic?hub=yanggu`를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-yanggu-arboretum-138',
+    session: '테마여행 #138, 양구수목원 등록',
+    title: '양구 수목원 hub·GATEO 선정 등록',
+    detail:
+      '검색·테마에 없던 양구 수목원(공식명·옛 양구자연생태공원)을 yanggu hub attractions와 koreaScenicSpots에 추가했습니다(869→870). TourAPI에 동일 관광지 contentId가 없어 null·GATEO overview입니다. Preview에서 검색「양구 수목원」·`/korea/theme/scenic?hub=yanggu`를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-thin-hubs-137',
+    session: '테마여행 #137, 소량 hub 보강',
+    title: '제천·진주·완도·진안 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 15곳을 append했습니다(854→869 · 제천·진주·완도 각 1→5 · 진안 1→4). attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=jecheon` · `jinju` · `wando` · `jinan` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-thin-hubs-136',
+    session: '테마여행 #136, 소량 hub 보강',
+    title: '보령·단양·군산·구례 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 15곳을 append했습니다(839→854 · 보령 1→4 · 단양·군산·구례 각 1→5). 보령 hub 중복명 「무창포해수욕장」(신비의바닷길)은 동일 한글명 중복이라 스킵. attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=boryeong` · `danyang` · `gunsan` · `gurye` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-thin-hubs-135',
+    session: '테마여행 #135, 소량 hub 보강',
+    title: '청주·광주·정읍·성남 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 20곳을 append했습니다(819→839 · 청주·광주·정읍·성남 각 1→6). attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=cheongju` · `gwangju` · `jeongeup` · `seongnam` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-thin-hubs-134',
+    session: '테마여행 #134, 소량 hub 보강',
+    title: '보성·부안·남원·하동 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 20곳을 append했습니다(799→819 · 보성·부안·남원·하동 각 1→6). attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=boseong` · `buan` · `namwon` · `hadong` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-thin-hubs-133',
+    session: '테마여행 #133, 소량 hub 보강',
+    title: '공주·합천·태안·부여 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 22곳을 append했습니다(777→799 · 공주 1→7 · 합천 1→7 · 태안 1→6 · 부여 1→6). attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=gongju` · `hapcheon` · `taean` · `buyeo` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-thin-hubs-132',
+    session: '테마여행 #132, 소량 hub 보강',
+    title: '포항·목포·울릉·가평 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 23곳을 append했습니다(754→777 · 포항 1→6 · 목포 1→7 · 울릉 1→7 · 가평 1→7). attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=pohang` · `mokpo` · `ulleung` · `gapyeong` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-thin-hubs-131',
+    session: '테마여행 #131, 소량 hub 보강',
+    title: '소량 hub 범위 교정 · 강릉 미등재 2곳만',
+    detail:
+      '소량 hub는 빈 hub 큐에서 제외된(이미 선정 있는) hub만입니다. 빈 hub 보강 졸업지(원주·횡성·화천) 재팽창과 명소 억지 추가는 되돌렸고, 강릉은 기존 attractions 미등재 오죽헌·주문진항만 넣었습니다. Preview에서 `/korea/theme/scenic?hub=gangneung` 을 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-thin-hubs-130',
+    session: '테마여행 #130, 소량 hub 보강',
+    title: '춘천·속초·동해·삼척 소량 hub 명소 보강',
+    detail:
+      '빈 hub 큐는 이미 소진된 상태에서, 소량만 남아 있던 강원 4개 hub에 cityAttractionHubs 명소 추가 + GATEO 선정 32곳을 append했습니다(춘천 2→11 · 속초 2→9 · 동해 1→8 · 삼척 1→10). Preview에서 `/korea/theme/scenic?hub=chuncheon` · `sokcho` · `donghae` · `samcheok` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-crumb-129-main',
+    session: '테마여행 #129, 상태바 main',
+    title: '상태바 세권 크럼 main 병합',
+    detail:
+      'PR #94를 main에 반영했습니다. `/qa/scenic-map`은 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 명소 지도 → 강원 → 세권 → 여행지 → 핀 경로 바에 세권이 남는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-crumb-129',
+    session: '테마여행 #129, 상태바 세권',
+    title: '지도 상태바 — 세권(4권역) 크럼',
+    detail:
+      '강원 등 세권 드릴 후 hub·핀 단계에서 상태바에 영서/영동 등 세권(4권역)이 빠지던 문제를 고쳤습니다. 단일 시도 권역의 「강원」중복도 제거했습니다. Preview에서 명소 지도 → 강원 → 세권 → 여행지 → 핀까지 경로 바를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-chip-spread-128',
+    session: '테마여행 #128, 지도 칩 분포',
+    title: '명승 지도 — 숫자 뭉치↓ · 윤곽 핀',
+    detail:
+      'hub·경관 리프(≤20곳)는 클러스터(숫자)를 끄고 개별 핀·라벨로 분포를 보여 줍니다. 넓은 뷰 클러스터도 반경·maxZoom을 완화했고, 근접 드릴 칩은 살짝 펼치며 좁은 스팬 과줌인을 줄였습니다. Preview에서 명소 지도 → hub까지 드릴 → 2~7곳이 숫자로 안 뭉치고 흩어지는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-brand-seo-2-main',
+    session: '브랜드 SEO #2, 축제·명승 main',
+    title: '축제·명승 SEO 허브 main 병합',
+    detail:
+      'PR #92를 main에 반영했습니다. `/qa/korea-seo`는 PROD 축제 경로로 연결됩니다. www.gateo.kr/korea · /korea/theme/scenic 탭 제목과 홈 소스의 축제·명승 링크를 확인해 주세요. Search Console 사이트맵 재제출을 권장합니다.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-brand-seo-2',
+    session: '브랜드 SEO #2, 축제·명승 허브',
+    title: '축제·명승 SEO 허브 보강',
+    detail:
+      '홈 크롤러 본문·nav에 한국의 축제/명승 링크를 넣고, Helmet 타이틀을 축제·랜딩·명승으로 구분했으며 sitemap(www)·robots Allow /korea를 맞췄습니다. Preview에서 / · /korea · /korea/theme · /korea/theme/scenic 탭 제목과 소스의 축제·명승 링크를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-list-127',
+    session: '테마여행 #127, 리스트 크게',
+    title: '명승 홈 리스트 「크게」·지도 옆',
+    detail:
+      '축제홈과 같이 명소·명승·관광지·즐겨찾기 파드 헤더의 지도 버튼 왼쪽에 「크게」토글을 두었습니다. Preview에서 크게→썸네일·행 확대, 기본→원복을 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-brand-seo-1',
+    session: '브랜드 SEO #1, Days→GATEO',
+    title: '검색·문서 타이틀 Days → GATEO',
+    detail:
+      'Helmet siteName이 「Days - 세상의 모든 여행지」로 남아 검색 결과에 Days가 노출되던 문제를 GATEO로 맞췄습니다. Preview 홈에서 브라우저 탭 제목·About/약관「Project Days」잔여·로고 패널 저작권 표기를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-126',
+    session: '테마여행 #126, 명승·관광지 지도 드릴다운',
+    title: '명승·관광지 지도 대→중→소 드릴다운',
+    detail:
+      '명승·관광지 「지도」도 명소처럼 목록에서 고른 칩 지역 핀이 아니라, 대분류(권역)부터 지도 위 칩으로 좁힙니다. 명승은 권역→시도→경관, 관광지는 권역→시도→종목 대·중·소 후 핀입니다. Preview에서 명승/관광지 지도 → 권역 칩 → 하위 → 핀을 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-125-main',
+    session: '테마여행 #125, 안내 문구 main',
+    title: '상태바 안내 문구 제거 main 병합',
+    detail:
+      'PR #88을 main에 반영했습니다. `/qa/scenic-map`은 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 상태바만 남았는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-125',
+    session: '테마여행 #125, 상태바 안내 문구 제거',
+    title: '상태바 하단 안내 문구 제거',
+    detail:
+      '지도 경로 바 아래 「칩을 눌러 좁히세요」안내 문구를 제거했습니다. Preview에서 상태바만 남았는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-124',
+    session: '테마여행 #124, 상태바 검정 텍스트',
+    title: '상태바 텍스트 검정',
+    detail:
+      '지도 상단 경로 바를 밝은 패널 + 검정(stone-900) 텍스트로 바꿨습니다. Preview에서 명소 지도 드릴다운 경로·「상위」가 읽히는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-123-main',
+    session: '테마여행 #123, 경로 바 main',
+    title: '경로 바 시인성·톤 main 병합',
+    detail:
+      'PR #86을 main에 반영했습니다. `/qa/scenic-map`은 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 지도 상위·경로 바 톤을 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-123',
+    session: '테마여행 #123, 경로 바 톤 맞춤',
+    title: '경로 바 — 지도 톤에 맞춤',
+    detail:
+      '상단 경로 바를 지도 글래스·칩 분위기에 맞게 완화했습니다. 「상위」는 연한 호박 글로우, 경로는 텍스트+현재만 살짝 강조로 시인성은 유지합니다. Preview에서 균형이 맞는지 봐 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-122',
+    session: '테마여행 #122, 경로 바 시인성',
+    title: '지도 상위·경로 바 시인성',
+    detail:
+      '드릴다운 상단 「상위」·경로 바 대비를 올렸습니다(불투명 배경·호박 테두리·큰 「상위」버튼·경로 칩). Preview에서 권역→중→소로 들어간 뒤 상위/경로가 잘 보이는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-121-main',
+    session: '테마여행 #121, 지도 드릴다운 main',
+    title: '지도 드릴다운 main 병합',
+    detail:
+      'PR #85를 main에 반영했습니다. `/qa/scenic-map`은 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 명소 지도 대→중→소 드릴다운을 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-121',
+    session: '테마여행 #121, 지도 드릴다운 칩',
+    title: '명소 지도 대→중→소 드릴다운',
+    detail:
+      '명소 「지도」는 짧은 목록 핀 확인이 아니라, 권역(대)→시도·세권(중)→여행지 hub(소) 칩을 지도 위에 펼쳐 좁히는 드릴다운입니다. hub까지 들어가면 그때 핀이 보입니다. Preview에서 명소 지도 → 권역 칩 → 중분류 → 소분류 → 핀·상세를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-120',
+    session: '테마여행 #120, 접이·파드별 지도',
+    title: '파드 접이 + 명소/명승/관광지 지도',
+    detail:
+      '명소·명승·관광지를 접이식 파드로 바꿨습니다(기본 명소만 펼침·다중 펼침 허용). 각 파드 「지도」는 그 목록 핀만 보여 줍니다. 전역 「지도」는 제거했습니다. Preview에서 명승/관광지 펼침 → 파드별 지도 → 헤더 닫기를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-119b',
+    session: '테마여행 #119, 명승 홈 지도',
+    title: '헤더 지도 버튼 제거',
+    detail:
+      '헤더의 「지도」토글은 빼고, 목록 상단(내 주변 옆) 「지도」만 남겼습니다. 지도가 열린 동안 헤더 「닫기」로 목록에 돌아갈 수 있습니다.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-119',
+    session: '테마여행 #119, 명승 홈 지도',
+    title: '목록↔지도 · 핀·클러스터',
+    detail:
+      '명승 홈에 축제와 같은 지도 전환을 넣었습니다. 목록 상단 「지도」→ 현재 목록(선정·명승·관광지) 핀·클러스터 · 핀 탭 시 상세 모달. 내 주변 GPS 연동은 다음 단계입니다. Preview에서 지도 → 핀 → 상세 → 목록 복귀를 확인해 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-09-scenic-favorites-118',
+    session: '테마여행 #118, 명승 홈 즐겨찾기',
+    title: '명승 홈 즐겨찾기·본 항목',
+    detail:
+      '축제와 같이 헤더 ★로 즐겨찾기·본 항목 패널을 열고, 목록 행·상세 모달에서도 ★로 추가/해제할 수 있습니다(기기 localStorage). Preview에서 ★ 토글 → 헤더 ★로 목록 확인 → 새로고침 후에도 유지되는지 봐 주세요.',
     at: '2026-08-09',
   },
   {
-    id: '2026-08-09-korea-theme-home-scenic-category-clear',
-    session: '테마여행 #67, 홈 명승·카테고리 겹침',
-    title: 'PC 홈 명승·테마 카테고리 겹침 해소',
+    id: '2026-08-09-scenic-search-focus-117b',
+    session: '테마여행 #117, 검색 아이콘 포커스',
+    title: '검색 포커스 — flushSync 수정',
     detail:
-      '지구본 홈 PC에서 로고 아래 축제/명승 투톱과 좌측 테마 카테고리가 겹치지 않도록, 카테고리 레일을 투톱 아래 밴드에만 세로 중앙 배치했습니다. Preview 홈(PC 폭)에서 명승 버튼과 Paradise 등이 겹치지 않는지 확인해 주세요.',
+      '아이콘 클릭 후 setTimeout focus는 모바일에서 제스처 밖이라 커서가 안 들어갔습니다. 클릭 핸들러에서 flushSync로 검색바를 연 뒤 바로 focus 하도록 고쳤습니다. Preview에서 검색 아이콘 → 커서/키보드가 바로 뜨는지 다시 확인해 주세요.',
     at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-search-focus-117',
+    session: '테마여행 #117, 검색 아이콘 포커스',
+    title: '검색 아이콘 → 입력창 즉시 포커스',
+    detail:
+      '모바일에서 검색 아이콘을 누르면 검색바가 열리며 입력창에 바로 커서가 들어가도록 했습니다(명승·축제 동일). Preview에서 좁은 폭으로 검색 아이콘 → 키보드/커서 바로 뜨는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-search-junam-116',
+    session: '테마여행 #116, 잔여 contentId 보강',
+    title: '「주남」검색 → 주남저수지',
+    detail:
+      '2글자 검색이 「제주남쪽」「광주남한」에 걸려 권역이 제주/수도권으로 가며 주남저수지가 안 보이던 문제를 고쳤습니다. 본명 선두·시군 주소 위주로 맞추고, Preview에서 「주남」검색 시 창원 주남저수지가 나오는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-contentid-116',
+    session: '테마여행 #116, 잔여 contentId 보강',
+    title: '잔여 contentId 18곳 추가 채움',
+    detail:
+      'alias·접미 비율·경남고성 주소 힌트·캠핑장/허브꼬리 오매칭 가드를 보강해 contentId 18곳 채움(627→645 · 잔여 null 75). 퍼플섬·주남저수지·제황산공원·고성공룡박물관·나로우주센터·칠곡보·부항댐·성밖숲 등. Preview에서 Tour LIVE 상세를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-contentid-114',
+    session: '테마여행 #114, 잔여 contentId 보강',
+    title: 'searchKeyword로 선정 contentId 88곳 채움',
+    detail:
+      'areaBased만으로는 Tour 본명이 안 잡혀 0건이었습니다. 주석·(지역)·국립공원 접미를 정규화하고 searchKeyword 잔여 패스를 추가해 contentId 88곳 채움(539→627 · 잔여 null 93). 진도 시군구 1→21 교정. Preview에서 부석사·선운사·고창읍성·우포늪·직지사 Tour LIVE 상세를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-nearby-yanggu-114',
+    session: '테마여행 #114, 내주변 양구 관내 누락',
+    title: '내 주변 관광지 — bbox 페이지네이션',
+    detail:
+      '양구 「내 주변」관광지에서 bbox 후보 806건 중 앞 500만 가져와 관내(0~수 km)가 빠지고 인제·춘천이 먼저 나오던 문제를 고쳤습니다. range 페이지네이션(최대 3000) 후 거리순. Preview에서 양구 GPS(또는 위치) → 관광지 최근접이 양구 관내인지 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-mid-cluster-113',
+    session: '테마여행 #113, 세권 칩 메인 반영 전 점검',
+    title: '세권 칩 VERIFY·UI QA GO',
+    detail:
+      'main 반영 전 점검: SSOT cover·audit/smoke/build PASS · 서울 기본(세권 없음)→경기 북부·hub7→동부→강원 영서·홍천 · 명승/관광지 세권 없음. 사람 Preview OK 후 PR #78 merge.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-mid-cluster-112',
+    session: '테마여행 #112, 세권 칩 SSOT·UI',
+    title: '명소 세권(경기 동서남북 등) 칩',
+    detail:
+      '경기·강원·충청·전라·경상에 세권 중분류를 넣었습니다. 경기 선택 시 북·동·서·남 4칩 → 시·군 hub. 강원은 영서·영동·접경·산간. Preview에서 수도권→경기→북부, 강원→영서 흐름을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-default-chip-110',
+    session: '테마여행 #110, 분류칩 기본 중소수',
+    title: '기본값=첫 중·소분류(~10건)',
+    detail:
+      '명승 홈 진입 시 권역 전체(예: 수도권 179) 대신 첫 시도 중분류(서울)를 기본으로 고릅니다. 목록이 길면 여행지·경관·종목 소분류를 ~10건 안팎으로 더 좁힙니다. 명소·명승·관광지 파드 모두 동일. Preview에서 /korea/theme/scenic 진입 시 서울 칩·짧은 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-merge-108',
+    session: '테마여행 #108, main 병합·전반 점검',
+    title: '빈 hub 보강 PR #75 → main',
+    detail:
+      '일일 Tour 쿼터로 잔여 contentId(~181)는 후속으로 두고, 시·군 빈 hub 큐 소진·선정 보강·주변 areaBased 폴백·overview 전달까지 반영한 PR #75를 main에 병합했습니다. PROD /korea/theme/scenic에서 권역·hub 선정 목록·상세·네이버 칩을 전반 점검해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-contentid-107',
+    session: '테마여행 #107, 잔여 contentId 보강',
+    title: 'areaBased·DB로 선정 contentId 10곳 채움',
+    detail:
+      'searchKeyword 429를 피해 areaBasedList(시·군)+DB 엄격 매칭으로 잔여 null 중 10곳에 Tour contentId를 채웠습니다(529→539). 창원 시군구 코드 수정(마산6→창원16)·연기/군위 색인 추가. fill:korea-scenic-spot-content-ids 스크립트 추가. Preview에서 평창올림픽기념관·의왕 레일파크·화순 적벽 등 Tour LIVE 상세를 확인해 주세요. 잔여 null≈181(Tour 본명 부재·한도).',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-preview-qa-106',
+    session: '테마여행 #106, Preview QA 반영',
+    title: '킨텍스 overview 모달 전달 수정',
+    detail:
+      'Preview QA에서 고양 킨텍스가 「Tour 상세 없음」만 보이던 원인을 고쳤습니다. toModalSpot이 SSOT overview를 모달에 넘기지 않아 curated 본문이 빠졌습니다. 이제 개요·썸네일이 표시되고 TourAPI 부재 안내 문장은 사용자 본문에서 숨깁니다. 아침고요수목원 주변 섹션은 #105 폴백으로 유지됩니다.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-contentid-105',
+    session: '테마여행 #105, 선정 contentId 보강',
+    title: '주변 areaBased 폴백 · Tour 부재 overview',
+    detail:
+      'TourAPI locationBasedList 일일 한도(429)로 주변 맛집·레포츠·문화가 실패하던 문제를 시·군 areaBasedList 폴백으로 보완했습니다(가평·고양 시군구 SSOT). 킨텍스 등 Tour type12 부재 191곳은 contentId 대신 GATEO overview 본문을 채웠습니다. Preview에서 아침고요수목원·고양 킨텍스 상세의 주변 섹션과 킨텍스 개요를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-104',
+    session: '테마여행 #104, 빈 hub 명소 보강',
+    title: '영덕·영양 GATEO 선정 전수 · 큐 소진',
+    detail:
+      '큐 잔여 영덕4·영양4 attractions 전수를 GATEO 선정에 넣었습니다(Tour contentId 2/8 · 썸네일 683/720). 경북 시도 색인에도 동시 등록했습니다. Tour LIVE 429 → DB·related 폴백 · 시·군 빈 hub 큐 0. Preview에서 /korea/theme/scenic?hub=yeongdeok · ?hub=yeongyang 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-103',
+    session: '테마여행 #103, 빈 hub 명소 보강',
+    title: '광양·경산·산청·성주·의령 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라·경상 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(광양4·경산4·산청4·성주4·의령4 · Tour contentId 3/20 · 썸네일 675/712). 전남·경북·경남 시도 색인에도 동시 등록했습니다. Tour LIVE 429 → DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=gwangyang · ?hub=gyeongsan · ?hub=sancheong · ?hub=seongju · ?hub=uiryeong 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-102',
+    session: '테마여행 #102, 빈 hub 명소 보강',
+    title: '청송·칠곡·독도·김천·고령 GATEO 선정 전수',
+    detail:
+      '큐 R01 경상 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(청송4·칠곡4·독도4·김천4·고령4 · Tour contentId 7/20 · 썸네일 655/692). 경북 시도 색인(독도 포함)에도 동시 등록했습니다. Tour LIVE searchKeyword 공백·429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=cheongsong · ?hub=chilgok · ?hub=dokdo · ?hub=gimcheon · ?hub=goryeong 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-101',
+    session: '테마여행 #101, 빈 hub 명소 보강',
+    title: '의성·예천·영천·영주·창녕 GATEO 선정 전수',
+    detail:
+      '큐 R01 경상 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(의성5·예천5·영천5·영주5·창녕4 · Tour contentId 9/24 · 썸네일 635/672). 경북·경남 시도 색인에도 동시 등록했습니다. Tour LIVE searchKeyword 429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=uiseong · ?hub=yecheon · ?hub=yeongcheon · ?hub=yeongju · ?hub=changnyeong 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-100',
+    session: '테마여행 #100, 빈 hub 명소 보강',
+    title: '고성·구미·함안·밀양·사천 GATEO 선정 전수',
+    detail:
+      '큐 R01 경상 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(고성5·구미5·함안5·밀양5·사천5 · Tour contentId 12/25 · 썸네일 611/648). 경남·경북 시도 색인에도 동시 등록했습니다. Tour LIVE searchKeyword 429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=goseongnam · ?hub=gumi · ?hub=haman · ?hub=miryang · ?hub=sacheon 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-99',
+    session: '테마여행 #99, 빈 hub 명소 보강',
+    title: '양산·창원·청도·달성·기장 GATEO 선정 전수',
+    detail:
+      '큐 R01 경상 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(양산6·창원5·청도5·달성5·기장5 · Tour contentId 12/26 · 썸네일 586/623). 경남·경북·대구·부산 시도 색인에도 동시 등록했습니다. Tour LIVE searchKeyword 429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=yangsan · ?hub=changwon · ?hub=cheongdo · ?hub=dalseong · ?hub=gijang 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-98',
+    session: '테마여행 #98, 빈 hub 명소 보강',
+    title: '영암·거창·울주·김해·군위 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라 잔여+경상 앞 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(영암4·거창7·울주7·김해6·군위6 · Tour contentId 9/30 · 썸네일 560/597). 전남·경남·경북·울산 시도 색인에도 동시 등록했습니다. Tour LIVE searchKeyword 429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=yeongam · ?hub=geochang · ?hub=ulju · ?hub=gimhae · ?hub=gunwi 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-97',
+    session: '테마여행 #97, 빈 hub 명소 보강',
+    title: '해남·함평·익산·무안·무주 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(해남4·함평4·익산4·무안4·무주4 · Tour contentId 13/20 · 썸네일 549/567). 전북·전남 시도 색인에도 동시 등록했습니다. Tour LIVE 429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=haenam · ?hub=hampyeong · ?hub=iksan · ?hub=muan · ?hub=muju 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-96',
+    session: '테마여행 #96, 빈 hub 명소 보강',
+    title: '나주·신안·순창·영광·김제 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(나주5·신안5·순창5·영광5·김제4 · Tour contentId 12/24 · 썸네일 529/547). 전북·전남 시도 색인에도 동시 등록했습니다. Tour LIVE 검색 공백으로 DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=naju · ?hub=sinan · ?hub=sunchang · ?hub=yeonggwang · ?hub=gimje 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-95',
+    session: '테마여행 #95, 빈 hub 명소 보강',
+    title: '화순·임실·장흥·장성·진도 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(화순5·임실5·장흥5·장성5·진도5 · Tour contentId 14/25 · 썸네일 505/523). 전북·전남 시도 색인에도 동시 등록했습니다. Tour LIVE 429로 DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=hwasun · ?hub=imsil · ?hub=jangheung · ?hub=jangseong · ?hub=jindo 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-94',
+    session: '테마여행 #94, 빈 hub 명소 보강',
+    title: '서천·강진·고창·고흥·함양 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(서천6·강진5·고창5·고흥5·함양5 · Tour contentId 11/26 · 썸네일 480/498). 충남·전북·전남·경남 시도 색인에도 동시 등록했습니다. Tour LIVE 429로 DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=seocheon · ?hub=gangjin · ?hub=gochang · ?hub=goheung · ?hub=hamyang 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-93',
+    session: '테마여행 #93, 빈 hub 명소 보강',
+    title: '연기·예산·완주·곡성·장수 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여(연기·예산)와 전라 R02 앞(완주·곡성·장수) 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(연기4·예산4·완주7·곡성6·장수6 · Tour contentId 19/27 · 썸네일 454/472). 세종·충남·전북·전남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=yeongi · ?hub=yesan · ?hub=wanju · ?hub=gokseong · ?hub=jangsu 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-92',
+    session: '테마여행 #92, 빈 hub 명소 보강',
+    title: '음성·금산·홍성·논산·옥천 GATEO 선정 전수',
+    detail:
+      '큐 R01 충청 잔여 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(음성4·금산4·홍성4·논산4·옥천4 · Tour contentId 12/20 · 썸네일 427/445). 충북·충남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=eumseong · ?hub=geumsan · ?hub=hongseong · ?hub=nonsan · ?hub=okcheon 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-91',
+    session: '테마여행 #91, 빈 hub 명소 보강',
+    title: '상주·계룡·문경·영동·봉화 GATEO 선정 전수',
+    detail:
+      '큐 R01 충청·경북 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(상주6·계룡5·문경5·영동5·봉화4 · Tour contentId 20/25 · 썸네일 415/425). 경북·충북·충남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=sangju · ?hub=gyeryong · ?hub=mungyeong · ?hub=yeongdong · ?hub=bonghwa 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-90',
+    session: '테마여행 #90, 빈 hub 명소 보강',
+    title: '서산·보은·청양·당진·괴산 GATEO 선정 전수',
+    detail:
+      '큐 R01 충청 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(서산6·보은5·청양5·당진5·괴산5 · Tour contentId 24/26 · 썸네일 395/400). 충북·충남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=seosan · ?hub=boeun · ?hub=cheongyang · ?hub=dangjin · ?hub=goesan 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-89',
+    session: '테마여행 #89, 빈 hub 명소 보강',
+    title: '횡성·화천·충주·증평·세종 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여(횡성·화천)와 R02 앞(충주·증평·세종) 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(횡성4·화천4·충주6·증평6·세종6 · Tour contentId 24/26 · 썸네일 371/374). 강원·충북·세종(area 8) 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=hoengseong · ?hub=hwacheon · ?hub=chungju · ?hub=jeungpyeong · ?hub=sejong 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-88',
+    session: '테마여행 #88, 빈 hub 명소 보강',
+    title: '홍천·양구·정선·태백·울진 GATEO 선정 전수',
+    detail:
+      '큐 R01 강원 잔여 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(홍천6·양구6·정선5·태백5·울진5 · Tour contentId 26/27 · 썸네일 347/348). 강원·경북(울진) 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=hongcheon · ?hub=yanggu · ?hub=jeongseon · ?hub=taebaek · ?hub=uljin 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-87',
+    session: '테마여행 #87, 빈 hub 명소 보강',
+    title: '원주·양주·인제·영월·고성 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여(원주·양주)와 R02 앞(인제·영월·고성) 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(원주4·양주4·인제7·영월7·고성6 · Tour contentId 28/28). 경기·강원 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=wonju · ?hub=yangju · ?hub=inje · ?hub=yeongwol · ?hub=goseong 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01a-86',
+    session: '테마여행 #86, 빈 hub 명소 보강',
+    title: '연천·철원·동두천·이천·평택 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(연천5·철원4·동두천4·이천4·평택4 · 전체 293·이미지 293 · Tour contentId 18/21). 경기·강원 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=yeoncheon · ?hub=cheorwon · ?hub=dongducheon · ?hub=icheon · ?hub=pyeongtaek 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01a-85',
+    session: '테마여행 #85, 빈 hub 명소 보강',
+    title: '진천·아산·천안·의정부·여주 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(진천7·아산5·천안5·의정부5·여주5 · 전체 272·이미지 272 · Tour contentId 25/27). 경기·충북·충남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=jincheon · ?hub=asan · ?hub=cheonan · ?hub=uijeongbu · ?hub=yeoju 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01b-84',
+    session: '테마여행 #84, 빈 hub 명소 보강',
+    title: '과천·경기광주·화성·옹진·오산 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(과천5·경기광주5·화성5·옹진5·오산5 · 전체 245·이미지 245 · Tour contentId 23/25). 경기·인천 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=gwacheon · ?hub=gwangju_gi · ?hub=hwaseong · ?hub=ongjin · ?hub=osan 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01a-83',
+    session: '테마여행 #83, 빈 hub 명소 보강',
+    title: '의왕·양평·용인·군포·구리 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(의왕6·양평6·용인6·군포5·구리5 · 전체 220·이미지 220). 경기 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=uiwang · ?hub=yangpyeong · ?hub=yongin · ?hub=gunpo · ?hub=guri 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-area-index-82',
+    session: '테마여행 #82, 선정 hub 시도 색인',
+    title: '보강 hub → 시도 색인 · 분류칩 복구',
+    detail:
+      '선정 명소가 있는데 koreaAreaCodes에 없던 hub 30곳을 시도 색인에 넣었습니다(경기·인천 강화·제주 서귀포 등). 수도권→경기 칩에서 김포·고양·안양 등 여행지 소분류가 보입니다. hub 보강 큐 사용법에 색인 필수 단계를 고정했습니다.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01b-81',
+    session: '테마여행 #81, 빈 hub 명소 보강',
+    title: '안양·부천·남양주·포천·시흥 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(안양6·부천6·남양주6·포천6·시흥6 · 전체 192·이미지 192). Preview에서 /korea/theme/scenic?hub=anyang · ?hub=bucheon · ?hub=namyangju · ?hub=pocheon · ?hub=siheung 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01a-80',
+    session: '테마여행 #80, 빈 hub 명소 보강',
+    title: '김포·고양·광명·하남·안성 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(김포7·고양7·광명7·하남7·안성6 · 전체 162·이미지 162). Preview에서 /korea/theme/scenic?hub=gimpo · ?hub=goyang · ?hub=gwangmyeong · ?hub=hanam · ?hub=anseong 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-full-79b',
+    session: '테마여행 #79, 빈 hub 명소 보강',
+    title: '선정=hub 명소 전수 · 보강 hub 채움',
+    detail:
+      'draft 기본 상한(per-hub=4)을 없애 hub attractions 전수로 바꿨습니다. 이미 보강한 양양·평창·남해·안산·강화도 남은 명소를 모두 넣어 각 hub 전수(양양7·평창7·남해4·안산7·강화7)입니다(전체 128·이미지 128). Preview에서 해당 hub 선정 건수를 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-79',
+    session: '테마여행 #79, 빈 hub 명소 보강',
+    title: '안산·강화 GATEO 선정 8곳',
+    detail:
+      '큐 R01 앞쪽 빈 hub 안산·강화에 GATEO 선정 명소를 각 4곳 넣었습니다(전체 117·이미지 117). 안산=대부도·별망성지·성호공원·시화호, 강화=갑곶돈대·평화전망대·고려궁지·마니산. Preview에서 /korea/theme/scenic?hub=ansan · ?hub=ganghwa 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-78',
+    session: '테마여행 #78, 빈 hub 명소 보강',
+    title: '평창·남해 GATEO 선정 8곳',
+    detail:
+      '빈 hub였던 평창·남해에 GATEO 선정 명소를 각 4곳 넣었습니다(전체 109·이미지 109). 평창=월정사·대관령 양떼목장·오대산 선재길·이효석문학관, 남해=독일마을·상주은모래비치·보리암·이순신순국공원. Preview에서 /korea/theme/scenic?hub=pyeongchang · ?hub=namhae 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-fill-tools-77b',
+    session: '테마여행 #77, 명소 보강',
+    title: '선정 상한 해제·권역 보강 큐',
+    detail:
+      'GATEO 선정 수량 상한을 없애고, 빈 hub 리포트·초안 배치·15라운드 큐를 넣었습니다. 다음 세션은 R01(평창·남해)부터 draft→generate→이미지 채움으로 이어가면 됩니다. Preview 양양 선정 5건은 그대로 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-yangyang-77',
+    session: '테마여행 #77, 명소 보강',
+    title: '양양 GATEO 선정 명소 5곳',
+    detail:
+      '양양 명승 홈에 GATEO 선정 명소가 0건이던 문제를 채웠습니다. 낙산사(속초→양양)·서피비치·하조대·낙산·설악 해수욕장을 선정 목록에 넣었습니다. Preview에서 /korea/theme/scenic?hub=yangyang 의 GATEO 선정에 5건이 보이는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-detail-overflow-76',
+    session: '테마여행 #76, 상세 가로 스크롤',
+    title: '관광지 상세 가로 롤링 방지',
+    detail:
+      '낙산도립공원 등 TourAPI 본문의 긴 URL·공백 없는 구간이 break-keep만으로 가로 넘침을 만들던 문제를 고쳤습니다. 상세·코스 모달에 break-words·overflow-x-hidden을 적용했습니다. Preview에서 낙산도립공원 본문 아래(입산통제 구간)를 세로 스크롤하며 좌우 롤링이 없는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-empty-chips-main-75',
+    session: '테마여행 #75, main 병합',
+    title: '빈 hub·제목 아이콘 main 반영',
+    detail:
+      '선정 명소 없는 시·군 분류칩 숨김·문구 정리(#70)와 명소·명승·관광지 제목 아이콘(#71)을 main에 반영했습니다. `/qa/scenic-empty-chips`는 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-section-icons-75c',
+    session: '테마여행 #75, 빈 hub 선정 칩 숨김',
+    title: '명소·명승·관광지 제목 아이콘',
+    detail:
+      '명승 홈 세 목록 제목에 아이콘을 맞춰 구분을 살짝 키웠습니다. GATEO 선정=랜드마크(호박), 국가유산 명승=산(초록), 관광지=핀(하늘). Preview에서 세 제목 시인성을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-empty-hub-copy-75b',
+    session: '테마여행 #75, 빈 hub 선정 칩 숨김',
+    title: '빈 hub GATEO 선정 문구 정리',
+    detail:
+      '선정 명소가 없을 때 「많이 찾는 인기 관광지를 골랐습니다」 소개가 빈 안내와 겹치던 부분을 없애고, 「양양에는 아직 GATEO 선정 명소가 없습니다…」처럼 안내 문구만 남겼습니다. Preview에서 양양 명승지 GATEO 선정 섹션 카피를 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-empty-hub-chips-75',
+    session: '테마여행 #75, 빈 hub 선정 칩 숨김',
+    title: '선정 명소 없는 시·군 — 분류칩 숨김',
+    detail:
+      '인근 여행지로 양양처럼 GATEO 선정 명소가 0건인 시·군 홈에 들어갔을 때, 「해당 명소가 없습니다」 안내 위에 수도권·강원·강릉 등 타지 수량 칩이 보이던 혼란을 없앴습니다. 선정 명소가 없으면 분류칩을 숨기고 아래 국가유산 명승으로 안내합니다. Preview에서 비와야 폭포→양양 명승지 → GATEO 선정에 칩이 없는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-nearby-search-clear-74',
+    session: '테마여행 #74, 인근여행지 검색 잔존',
+    title: '인근 여행지→검색 모달 잔존 해제',
+    detail:
+      '명승 홈에서 검색(예: 비와야)→본문→「인근 여행지 ○○ 명승지」로 이동할 때 이전 검색어·검색 모달이 남아 빈 결과가 나오던 문제를 고쳤습니다. 인근 hub 홈으로 갈 때 검색을 닫고 해당 시·군 목록이 보이게 합니다. Preview에서 비와야 검색→비와야 폭포→양양 명승지를 눌러 양양 목록이 뜨는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-nearby-home-scroll-73',
+    session: '테마여행 #73, 인근여행지 홈 스크롤',
+    title: '인근 여행지→명승 홈 상단 착지',
+    detail:
+      '관광지 본문 「인근 여행지」(예: 양양 명승지)로 다른 시·군 명승 홈에 들어가면 목록 중간으로 떨어지던 문제를 고쳤습니다. hub·권역·시도가 URL로 바뀔 때 본문을 맨 위로 올립니다(분류칩 클릭 위치 고정은 유지). Preview에서 비와야 폭포 등 상세→인근 양양 명승지를 눌러 홈 상단인지 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-chip-main-merge-72',
+    session: '테마여행 #72, main 병합',
+    title: '분류칩 스크롤 수정 main 반영',
+    detail:
+      '사람 QA 확인 후 PR #66·#67을 main에 반영했습니다. `/qa/scenic-chip`·`/qa/scenic-nearby`는 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 분류칩·짧은 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-chip-short-list-pad-72',
+    session: '테마여행 #72, 관광지 짧은목록 여백',
+    title: '관광지 1~2건일 때 칩 하단 고정',
+    detail:
+      '관광지 분류칩 결과기 1~2건이면 하단 스크롤 여백이 없어 칩이 화면 아래로 붙던 문제를 고쳤습니다. 짧은 목록일 때 본문 하단 패딩을 늘려 칩 위치를 유지합니다. Preview에서 종목 칩으로 목록을 아주 짧게 줄여 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-chip-scroll-pin-72',
+    session: '테마여행 #72, 분류칩 스크롤 고정',
+    title: '분류칩 클릭 시 스크롤 점프 방지',
+    detail:
+      '명소·명승·관광지 각 파트 분류칩을 누르면 위 목록 높이가 줄어 스크롤이 관광지 리스트 중간으로 튀던 문제를 고쳤습니다. 클릭한 칩 위치를 고정합니다. Preview `/korea/theme/scenic` → 수도권·서울 칩.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-nearby-category-chips-71',
+    session: '테마여행 #71, 내주변 분류칩',
+    title: '내 주변 — 분류칩으로 목록 분할',
+    detail:
+      '명승 「내 주변」에서 분류칩이 없어 긴 목록만 보이던 문제를 고쳤습니다. 선정 명소는 여행지 칩, 국가유산 명승은 경관 칩, 관광지는 종목(대·중·소) 칩으로 주변 풀을 나눠 짧게 탐색합니다. Preview `/korea/theme/scenic` → 내 주변 → 칩.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-search-region-audit-70',
+    session: '테마여행 #70, 검색 권역 전수검증',
+    title: '검색 권역 — hub 전수·최다 건수',
+    detail:
+      '국내 hub 208곳 감사: 화천형(명소·명승0·타권역 TourAPI) 35곳. 권역을 최다 건수로 골라 성주·함안·독도 오탐(보령 성주면·함안로 등)도 본 지역으로 갑니다. 「화천」「성주」「독도」검색을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-search-hwacheon-region-70',
+    session: '테마여행 #70, 검색 화천 권역',
+    title: '검색 — 관광지 전용 지명 권역 자동',
+    detail:
+      '「화천」처럼 선정 명소·명승 0건인 검색어가 수도권에 남아 관광지 0건이 되던 문제를 고쳤습니다. TourAPI 권역 건수로 강원 등으로 자동 전환됩니다. Preview에서 「화천」검색 → 관광지 목록 확인.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-07-scenic-nearby-hwacheon-69',
+    session: '테마여행 #69, 내주변 관내 관광지',
+    title: '내 주변 관광지 — 좌표 bbox 거리순',
+    detail:
+      '명승 「내 주변」관광지가 권역 목록 샘플을 거리로만 걸러 화천 관내(붕어섬 등)가 빠지던 문제를 고쳤습니다. GPS 좌표 bbox로 조회한 뒤 거리순으로 보여 주세요. Preview `/korea/theme/scenic` → 내 주변.',
+    at: '2026-08-07',
+  },
+  {
+    id: '2026-08-07-home-korea-links-main-67',
+    session: '테마여행 #67, 메인 반영',
+    title: '홈·축제 헤더 간소화 main 병합',
+    detail:
+      'PR #62·#63을 main에 반영했습니다. 홈 투톱 부제 제거·축제 헤더 「명승」칩 제거를 PROD에서 확인해 주세요. `/qa/home-korea` → PROD `/korea`.',
+    at: '2026-08-07',
+  },
+  {
+    id: '2026-08-07-korea-festival-header-scenic-chip-67',
+    session: '테마여행 #67, 축제 헤더 명승 버튼 제거',
+    title: '축제 홈 헤더 명승 링크 제거',
+    detail:
+      '축제 홈(`/korea`) 헤더 우측 「명승」칩 버튼을 제거했습니다. Preview `/korea`에서 헤더에 명승 링크가 없고 검색·홈으로만 남는지 확인해 주세요.',
+    at: '2026-08-07',
+  },
+  {
+    id: '2026-08-07-home-korea-links-subtitle-67',
+    session: '테마여행 #67, 홈 투톱 부제 제거',
+    title: '지구본 홈 축제·명승 버튼 부제 제거',
+    detail:
+      '홈 좌상단 「한국의 축제」「한국의 명승」진입 버튼에서 부제(지금 · 지도에서 찾기 / 선정 · 명승 · 관광지)를 빼고 제목만 남겼습니다. Preview 홈에서 두 버튼이 간소한지 확인해 주세요.',
+    at: '2026-08-07',
+  },
+  {
+    id: '2026-08-07-korea-theme-main-merge-63',
+    session: '테마여행 #63, 메인 머지·테스트',
+    title: '명승 투톱 main 병합 · PROD QA',
+    detail:
+      'PR #58을 main에 병합했습니다. 홈 투톱·`/korea`·`/korea/theme`→scenic·축제 상세를 로컬·PROD 번들에서 확인했습니다. `/qa/korea-theme`은 PROD 명승 경로로 연결됩니다.',
+    at: '2026-08-07',
   },
   {
     id: '2026-08-07-korea-theme-scenic-main-dual-entry',
@@ -807,4 +3820,61 @@ export const cloudPreviewWorkLog = [
       '중분류 나라 목록을 인기·시드 순이 아니라 좌표 기준 인접국 연쇄로 이어 보이게 바꿨습니다. 홈→권역→중분류에서 목록이 이웃 나라끼리 이어지는지 확인해 주세요.',
     at: '2026-08-02',
   },
+  {
+    id: '2026-08-09-scenic-naver-query-89',
+    session: '테마여행 #89, 네이버 검색 쿼리',
+    title: '명소는 고유명 · 맛집만 지역+상호',
+    detail:
+      '네이버 검색 쿼리를 나눴습니다. 관광지·명소·명승·레포츠·문화는 이름만, 맛집만 지역+상호로 검색해 플레이스/본문 직행이 잘 되게 했습니다. Preview에서 명소·맛집 각각 검색 결과를 비교해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-expand-88',
+    session: '테마여행 #88, 네이버 링크 확장',
+    title: '레포츠·관광지·문화에도 네이버 칩',
+    detail:
+      '명승·관광지·레포츠·문화·맛집 상세에 동일 위치(개요 아래·주소 위)로 「네이버 상세정보 보기」를 넣었습니다. Preview에서 주변 관광지·레포츠·문화 상세에도 칩이 보이는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-pos-87',
+    session: '테마여행 #87, 네이버 버튼 위치',
+    title: '개요 아래·주소 위로 이동',
+    detail:
+      '네이버 상세정보 보기 버튼을 개요 바로 아래·주소 위로 옮겨, 주소·문의·영업시간 흐름을 끊지 않게 했습니다. Preview에서 맛집 상세 순서를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-copy-86',
+    session: '테마여행 #86, 네이버 문구·위치',
+    title: '네이버 상세정보 보기 · 전화 아래',
+    detail:
+      '버튼 문구를 「네이버 상세정보 보기」로 바꾸고, 상세 본문에서 전화번호 바로 아래로 옮겼습니다. Preview에서 맛집 상세 전화→네이버 칩 순서를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-compact-85',
+    session: '테마여행 #85, 네이버 버튼 컴팩트',
+    title: '네이버로 이동 버튼 축소',
+    detail:
+      '네이버 이동 버튼을 한 줄 칩(N · 네이버로 이동 · 외부아이콘)으로 줄였습니다. Preview에서 맛집 상세 본문 버튼 크기를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-btn-84',
+    session: '테마여행 #84, 네이버 이동 버튼',
+    title: '네이버로 이동 CTA 버튼',
+    detail:
+      '맛집 상세의 네이버 링크를 텍스트 링크에서 「N · 네이버로 이동 · 새 탭에서 네이버 검색」 CTA 버튼으로 바꿨습니다. Preview에서 주변 맛집 상세의 초록 버튼을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-food-naver-83',
+    session: '테마여행 #83, 맛집 네이버 링크',
+    title: '맛집 상세 → 네이버에서 보기',
+    detail:
+      '명승·축제 연계 맛집 상세 본문에 지역+상호 네이버 검색 링크(「네이버에서 보기」)를 넣었습니다. Preview에서 명승 상세→주변 맛집→상세 본문의 네이버 링크를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+
 ];
