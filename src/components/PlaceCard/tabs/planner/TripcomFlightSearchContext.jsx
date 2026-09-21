@@ -17,18 +17,38 @@ export function TripcomFlightSearchProvider({ children }) {
     }, []);
 
     const tryOpenFlightSearch = useCallback((location, options = {}) => {
-        if (!shouldUseTripcomFlightSearchModal(options)) return false;
+        if (!location) return false;
 
         const iframeSrc = buildTripcomPlannerFlightModalSrc(location, options);
-        if (!iframeSrc) return false;
-
         const arrivalIata = getPlannerFlightArrivalIata(location, {
             essentialGuide: options.essentialGuide,
         });
         const departureIata = options.departureIata ?? null;
-        const { width: bannerWidth, height: bannerHeight } = getTripcomFlightAdForModal();
 
-        setModalState({ iframeSrc, arrivalIata, departureIata, bannerWidth, bannerHeight });
+        if (iframeSrc && shouldUseTripcomFlightSearchModal(options)) {
+            const { width: bannerWidth, height: bannerHeight } = getTripcomFlightAdForModal();
+            setModalState({
+                mode: 'iframe',
+                iframeSrc,
+                arrivalIata,
+                departureIata,
+                bannerWidth,
+                bannerHeight,
+            });
+            return true;
+        }
+
+        // iframe 위젯이 막히면 일정 선택 폼을 띄운다. tickets 직행 금지.
+        setModalState({
+            mode: 'native',
+            location,
+            essentialGuide: options.essentialGuide ?? null,
+            arrivalIata,
+            departureIata,
+            tracking: options.tracking ?? null,
+            departDate: options.departDate ?? null,
+            returnDate: options.returnDate ?? null,
+        });
         return true;
     }, []);
 
@@ -45,9 +65,15 @@ export function TripcomFlightSearchProvider({ children }) {
             {children}
             {modalState ? (
                 <TripcomFlightSearchModal
+                    mode={modalState.mode}
                     iframeSrc={modalState.iframeSrc}
+                    location={modalState.location}
+                    essentialGuide={modalState.essentialGuide}
                     arrivalIata={modalState.arrivalIata}
                     departureIata={modalState.departureIata}
+                    tracking={modalState.tracking}
+                    departDate={modalState.departDate}
+                    returnDate={modalState.returnDate}
                     bannerWidth={modalState.bannerWidth}
                     bannerHeight={modalState.bannerHeight}
                     onClose={closeFlightSearch}

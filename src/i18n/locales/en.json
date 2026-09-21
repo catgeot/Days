@@ -912,7 +912,7 @@
         "nextHintEnjoy": "To see another step, choose one below."
       },
       "esim": {
-        "choose": "Choose one eSIM",
+        "choose": "eSIM",
         "airalo": "Airalo",
         "holafly": "Holafly"
       },
@@ -1025,6 +1025,19 @@
           "routeDepart": "Depart",
           "routeArrive": "Arrive",
           "routeEditable": "auto-filled · editable in banner",
+          "nativeDepartDate": "Depart",
+          "nativeReturnDate": "Return",
+          "nativeTripType": "Trip type",
+          "nativeRoundTrip": "Round trip",
+          "nativeOneWay": "One way",
+          "nativeSwap": "Swap airports",
+          "nativeAirportSearch": "Airport name or code",
+          "nativeDateRange": "Dates",
+          "nativeDateRangeOpen": "Pick departure and return on one calendar",
+          "nativePickDepart": "Select departure date",
+          "nativePickReturn": "Select return date",
+          "nativeCalendarPrev": "Previous month",
+          "nativeCalendarNext": "Next month",
           "fullScreenSearch": "Full-screen search",
           "noArrivalFallback": "No arrival airport found — opens generic search.",
           "tripcomFlights": "Trip.com flights"
@@ -1033,8 +1046,11 @@
           "title": "Search live flights",
           "search": "Search",
           "autoFill": "Trip.com pre-fills departure and arrival airports",
+          "chooseDates": "Choose dates in the search form at the top, then search",
           "ariaWithRoute": "Trip.com flight search — {{depart}} to {{arrive}}",
-          "ariaGeneric": "Trip.com live flight search"
+          "ariaGeneric": "Trip.com live flight search",
+          "ariaScrollWithRoute": "Go to the flight search form — {{depart}} to {{arrive}}",
+          "ariaScrollGeneric": "Go to the flight search form at the top"
         },
         "twelveGo": {
           "routeLabel": "Ferry & transport search",

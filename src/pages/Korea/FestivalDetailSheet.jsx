@@ -51,7 +51,8 @@ import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import FestivalDetailProse from './FestivalDetailProse';
 import {
   groupNearbySpotsWithLocalScenic,
-  hasTourContentId,
+  isNearbyAttractionRowClickable,
+  mergeNearbyRowWithLocalScenicDetail,
   missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
 import {
@@ -296,10 +297,13 @@ function NearbyAttractionRow({ spot, extraThumb, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = nearbyPlaceLabel(spot);
   const rankBlurb = String(spot?.rankBlurb || '').trim();
-  const clickable = hasTourContentId(spot.contentId);
+  const clickable = isNearbyAttractionRowClickable(spot);
   const Inner = clickable ? 'button' : 'div';
   const innerProps = clickable
-    ? { type: 'button', onClick: () => onSelect?.(spot) }
+    ? {
+        type: 'button',
+        onClick: () => onSelect?.(mergeNearbyRowWithLocalScenicDetail(spot)),
+      }
     : {};
   return (
     <li>
@@ -384,21 +388,27 @@ function FestivalNearScenicRow({ spot, km, locale, onSelect }) {
 
 function toNearbyModalSpot(spot) {
   if (!spot) return null;
-  const place = nearbyPlaceLabel(spot);
+  const merged = mergeNearbyRowWithLocalScenicDetail(spot);
+  const place = nearbyPlaceLabel(merged);
   return {
-    id: spot.id || spot.contentId,
-    name: spot.name,
-    subtitle: [place, formatDistKm(spot.distKm)].filter(Boolean).join(' · '),
-    blurb: spot.blurb,
-    placeSlug: spot.placeSlug,
-    contentId: spot.contentId,
-    contentTypeId: spot.contentTypeId || null,
-    hubId: spot.hubId,
-    region: spot.region,
-    nameEn: spot.attractionNameEn || null,
-    lat: spot.lat,
-    lng: spot.lng,
-    areaCode: spot.areaCode,
+    id: merged.id || merged.contentId,
+    name: merged.name,
+    subtitle: [place, formatDistKm(merged.distKm)].filter(Boolean).join(' · '),
+    blurb: merged.blurb,
+    placeSlug: merged.placeSlug,
+    contentId: merged.contentId,
+    contentTypeId: merged.contentTypeId || null,
+    hubId: merged.hubId,
+    region: merged.region,
+    nameEn: merged.attractionNameEn || null,
+    lat: merged.lat,
+    lng: merged.lng,
+    areaCode: merged.areaCode,
+    overview: merged.overview,
+    galleryUrls: merged.galleryUrls,
+    imageUrl: merged.imageUrl || merged.firstImage,
+    addr1: merged.addr1,
+    homepage: merged.homepage,
   };
 }
 

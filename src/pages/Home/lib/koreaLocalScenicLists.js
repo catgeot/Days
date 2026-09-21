@@ -642,10 +642,13 @@ export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, loca
     fromCurated.contentId;
   const name = member.attractionName;
   const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
+  const fromTourThumb = lookupLocalScenicPhotoByContentId(contentId);
   const thumb =
     nearbyHit?.firstImage ||
     overlay?.firstImage ||
     overlay?.imageUrl ||
+    fromTourThumb?.firstImage ||
+    fromTourThumb?.imageUrl ||
     fromCurated.imageUrl ||
     null;
   return {
@@ -1175,6 +1178,9 @@ const DY_GWANBANG_2 =
 const DY_GWANBANG_3 =
   'https://www.damyang.go.kr/board/getFile?boardId=BBS_0000169&fileSid=128367';
 const DY_GWANBANG_4 = 'https://tong.visitkorea.or.kr/cms/resource/57/3533957_image2_1.jpg';
+const DY_CHUWOL = 'https://tong.visitkorea.or.kr/cms/resource/93/3581993_image2_1.jpg';
+const DY_GEUMSEONG = 'https://tong.visitkorea.or.kr/cms/resource/71/4110971_image2_1.jpg';
+const DY_BYEONGPUNG = 'https://tong.visitkorea.or.kr/cms/resource/57/3582057_image2_1.jpg';
 const MR_HOBAKSO = 'https://tong.visitkorea.or.kr/cms/resource/72/2660872_image2_1.jpg';
 const MR_HOBAKSO_2 = 'https://tong.visitkorea.or.kr/cms/resource/65/2589465_image2_1.jpg';
 const MR_HOBAKSO_3 = 'https://tong.visitkorea.or.kr/cms/resource/63/2589463_image2_1.jpg';
@@ -1586,6 +1592,15 @@ const MA_CHO = `${MA_TOUR}/9/01.jpg`;
 const MA_CHO_2 = `${MA_TOUR}/9/02.jpg`;
 const MA_CHO_3 = `${MA_TOUR}/9/historic_img01.jpg`;
 const MA_CHO_HOME = 'https://tour.muan.go.kr/tour/travel/historic_site';
+const BS_TOUR = 'https://www.boseong.go.kr/contents';
+const BS_ILRIM = `${BS_TOUR}/21495/ilrim10.jpg`;
+const BS_ILRIM_2 = `${BS_TOUR}/21495/ilrim12.jpg`;
+const BS_ILRIM_3 = `${BS_TOUR}/21495/ilrim6.jpg`;
+const BS_ILRIM_HOME = 'https://www.boseong.go.kr/tour/tourist/9tour/ilrim_yongchoo';
+const BS_SEO = `${BS_TOUR}/21492/seojp2.jpg`;
+const BS_SEO_2 = `${BS_TOUR}/21492/juam2.jpg`;
+const BS_SEO_3 = `${BS_TOUR}/21492/seojp11.jpg`;
+const BS_SEO_HOME = 'https://www.boseong.go.kr/tour/tourist/9tour/juam_seojp';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -3404,6 +3419,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [MA_CHO_2, MA_CHO_3],
     MA_CHO_HOME,
   ),
+  'local-scenic:boseong-gugyeong:일림산용추계곡': localScenicPhotoOverlay(
+    '보성9경 7경 일림산 용추계곡은 웅치면과 회천면 사이 일림산입니다. 보성군 문화관광 9경은 높이를 664m로 두고, 100만여평 철쭉군락과 보성강의 시원인 용추계곡이 있다고 적습니다. 산 정상 아래 습지에서 쏟아지는 물이 암반을 따라 용이 승천하듯 굽이쳐 내려오고, 계곡 사이 삼나무 향이 짙으며 매년 5월 초 일림산 철쭉제가 열립니다. 용추폭포 용소는 용이 승천했다는 전설이 있고 명주실 한 타래를 풀어도 끝이 닿지 않는다고 하며, 옆에 선녀탕·용바위가 있습니다. 주차는 웅치면 용반리 639-7 용추폭포 주차장입니다. 문의 061-850-5482입니다. 문경8경 용추계곡·가평 용추폭포·동해 용추폭포·계룡 숫용추·의성 빙계 용추·6경 제암산자연휴양림과 다른 웅치면 용반리 계곡입니다. 사진은 보성군 문화관광 9경 용추폭포·계곡·입구 공식 사진입니다.',
+    '전라남도 보성군 웅치면 용반리 (용추계곡·용추폭포, 용추폭포 주차장 용반리 639-7)',
+    BS_ILRIM,
+    [BS_ILRIM_2, BS_ILRIM_3],
+    BS_ILRIM_HOME,
+  ),
+  'local-scenic:boseong-gugyeong:주암호서재필기념관': localScenicPhotoOverlay(
+    '보성9경 9경 주암호 서재필기념관은 문덕면 용암리입니다. 보성군 문화관광 9경은 주암 다목적댐(1984년 10월 17일 착공, 1990년 4월 담수)으로 보성·순천·화순에 걸친 인공호수가 생겼고, 문덕면 용암리·덕치리·죽산리 호반과 철제 아치교 일대가 경관이 가장 수려하다고 적습니다. 서재필 기념관은 1992년 사업을 시작해 사당·송재로·개화문·독립문 실측모형·조각공원·유물전시관·생가를 갖췄고, 유품 800여 점을 전시합니다. 송재 서재필은 1864년 1월 7일 문덕면 용암리 가내마을에서 태어났습니다. 기념관 주소는 용암길 8이며 생가는 가내길 18-35입니다(6·25 소실, 2003년 복원). 문의 061-852-2815, 상시 개방·무료입니다. 서울 독립문·순천 주암댐 본체·화순 동복호·주암호생태습지·8경 대원사와 다른 문덕 용암리 기념공원입니다. 사진은 보성군 문화관광 9경 개화문·서재필 동상, 주암호 항공, 생가 공식 사진입니다.',
+    '전라남도 보성군 문덕면 용암길 8 (서재필기념관) · 가내길 18-35 (생가)',
+    BS_SEO,
+    [BS_SEO_2, BS_SEO_3],
+    BS_SEO_HOME,
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -3447,6 +3476,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   125713: localScenicThumbOverlay(DH_MANGSANG, [DH_MANGSANG_2]),
   // 동해 명승 검색 어달해변 — TourAPI first_image 없음. 망상·대진·노봉과 다른 해변.
   125708: localScenicThumbOverlay(DH_EODAL, [DH_EODAL_2, DH_EODAL_3]),
+  // 담양10경 — tourapi_attraction 미동기화·firstimage 공란. JSON contentId만 있음.
+  126254: localScenicThumbOverlay(DY_CHUWOL),
+  126407: localScenicThumbOverlay(DY_GEUMSEONG),
+  126252: localScenicThumbOverlay(DY_BYEONGPUNG),
   // 영광 검색 불갑산도립공원 — firstimage·searchPhoto 공란, 사진은 detailImage. 불갑사 126349와 다른 id.
   126248: localScenicThumbOverlay(YG_BULGAP, [YG_BULGAP_2, YG_BULGAP_3]),
   // 고흥 검색 팔영산자연휴양림 — TourAPI firstimage 없음. JSON contentId 기입 아님.
@@ -3597,6 +3630,59 @@ export function mergeLocalScenicMembersIntoScenicSpots(spots, hubId, locale = 'k
 
 export function hasTourContentId(value) {
   return /^\d{1,32}$/.test(String(value || '').trim());
+}
+
+/**
+ * 축제·명승 상세 「주변 관광지」 팔경 행 — Tour contentId 또는 GATEO 멤버 오버레이 개요.
+ * @param {object} [spot]
+ */
+export function isNearbyAttractionRowClickable(spot) {
+  if (hasTourContentId(spot?.contentId)) return true;
+  const listId = String(spot?.localScenicListId || '').trim();
+  const name = String(spot?.attractionName || spot?.name || '').trim();
+  if (!listId || !name) return false;
+  const scenic = resolveLocalScenicListSpotById(
+    localScenicMemberSpotId(listId, name),
+  );
+  return Boolean(String(scenic?.overview || '').trim());
+}
+
+/**
+ * 팔경 주변 행 → ThemeSpotDetailModal spot (contentId 없을 때 오버레이 본문).
+ * @param {object} spot
+ */
+export function mergeNearbyRowWithLocalScenicDetail(spot) {
+  if (!spot || typeof spot !== 'object') return spot;
+  if (hasTourContentId(spot.contentId)) return spot;
+  const listId = String(spot.localScenicListId || '').trim();
+  const name = String(spot.attractionName || spot.name || '').trim();
+  if (!listId || !name) return spot;
+  const scenic = resolveLocalScenicListSpotById(
+    localScenicMemberSpotId(listId, name),
+  );
+  if (!scenic?.overview) return spot;
+  const thumb =
+    String(spot.firstImage || spot.imageUrl || '').trim() ||
+    scenic.firstImage ||
+    scenic.imageUrl ||
+    null;
+  return {
+    ...scenic,
+    ...spot,
+    id: scenic.id,
+    name: spot.name || scenic.name,
+    blurb: spot.rankBlurb || spot.blurb || scenic.blurb,
+    overview: scenic.overview,
+    galleryUrls: scenic.galleryUrls,
+    addr1: scenic.addr1 || spot.addr1,
+    homepage: scenic.homepage || spot.homepage,
+    imageUrl: thumb,
+    firstImage: thumb,
+    lat: spot.lat ?? scenic.lat,
+    lng: spot.lng ?? scenic.lng,
+    hubId: spot.hubId || scenic.hubId,
+    contentId: spot.contentId || scenic.contentId || null,
+  };
 }
 
 /**

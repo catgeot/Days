@@ -86,7 +86,7 @@ export const getAdviceText = (data) => {
 };
 
 // 툴킷 카드 제휴 링크 생성 로직
-export const getMultiLinks = ({ type, data, location, essentialGuide, skipGenericStaySearch = false }) => {
+export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
     const searchQuery = location?.name || location?.country || '';
     const encodedQuery = encodeURIComponent(searchQuery);
     const searchTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
@@ -138,7 +138,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide, skipGeneri
             }
 
             // 2. 일반 숙소 검색 — 기본 마이리얼트립 / 등록 여행지만 트립닷컴 전체 URL (PLANNER_TRIPCOM_HOTEL_OVERRIDES)
-            if (regions.length === 0 && !skipGenericStaySearch) {
+            if (regions.length === 0) {
                 if (tripcomHotelOverride) {
                     links.push({
                         url: tripcomHotelOverride,

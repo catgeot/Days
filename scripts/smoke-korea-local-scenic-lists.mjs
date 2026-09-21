@@ -29,6 +29,8 @@ import {
   groupNearbySpotsWithLocalScenic,
   missingNearbyThumbContentIds,
   hasTourContentId,
+  isNearbyAttractionRowClickable,
+  mergeNearbyRowWithLocalScenicDetail,
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
   lookupLocalScenicPhotoByContentId,
@@ -324,6 +326,24 @@ assert.equal(
   true,
   'missing nearby thumbs are Tour ids',
 );
+
+const damyangNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'damyang' });
+const damyangGroup = damyangNearby.groups.find((g) => g.listId === 'damyang-other');
+const gamagol = damyangGroup?.items?.find((i) => i.name === '가마골용소');
+assert.ok(gamagol?.localScenicListId === 'damyang-other', '담양10경 가마골용소 nearby row');
+assert.ok(
+  isNearbyAttractionRowClickable(gamagol),
+  '담양10경 가마골용소 — contentId 없어도 오버레이로 클릭 가능',
+);
+const gamagolModal = mergeNearbyRowWithLocalScenicDetail(gamagol);
+assert.ok(
+  String(gamagolModal?.overview || '').includes('가마골용소'),
+  '담양10경 가마골용소 modal overview',
+);
+const chuwol = damyangGroup?.items?.find((i) => i.name === '추월산');
+assert.ok(chuwol?.imageUrl?.includes('visitkorea'), '담양10경 추월산 nearby Tour thumb');
+const geumseong = damyangGroup?.items?.find((i) => i.name === '금성산성');
+assert.ok(geumseong?.imageUrl?.includes('visitkorea'), '담양10경 금성산성 nearby Tour thumb');
 
 // curated 멤버 필터 (리스트 있을 때만)
 const curated = listKoreaScenicSpots();
@@ -4327,6 +4347,77 @@ assert.ok(
     .find((s) => s.attractionName === '초의선사탄생지')
     ?.imageUrl?.includes('/9/01.jpg'),
   '무안 검색 9경 초의선사탄생지 썸네일',
+);
+
+const boseongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'boseong');
+const boseongNine = boseongMerged.filter((s) => s.localScenicListId === 'boseong-gugyeong');
+assert.equal(boseongNine.length, 9, '보성9경 9명');
+assert.equal(boseongNine[0]?.groupTitle, '보성 구경');
+const boseongDeficitNames = ['일림산 용추계곡', '주암호 서재필기념관'];
+const boseongDeficit = boseongNine.filter((s) => boseongDeficitNames.includes(s.attractionName));
+assert.equal(boseongDeficit.length, 2, '보성9경 결손 2명');
+assert.ok(
+  boseongDeficit.every((s) => s.overview && s.imageUrl),
+  '보성 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  boseongDeficit.every((s) => !s.contentId),
+  '보성 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(boseongDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '용추계곡·서재필기념관 썸네일 다름',
+);
+const bsIlim = resolveLocalScenicListSpotById('local-scenic:boseong-gugyeong:일림산용추계곡');
+assert.ok(bsIlim?.overview && bsIlim?.imageUrl, '보성 일림산 용추계곡 overlay 사진·개요');
+assert.ok(!bsIlim?.contentId, '보성 일림산 용추계곡 JSON contentId 없음 유지');
+assert.ok(bsIlim?.overview?.includes('웅치면'), '보성 용추계곡 overlay 웅치면');
+assert.ok(bsIlim?.overview?.includes('664m'), '보성 용추계곡 overlay 664m');
+assert.ok(bsIlim?.overview?.includes('용추폭포'), '보성 용추계곡 overlay 용추폭포');
+assert.ok(bsIlim?.overview?.includes('선녀탕'), '보성 용추계곡 overlay 선녀탕');
+assert.ok(bsIlim?.overview?.includes('문경8경'), '보성 용추계곡≠문경8경 용추계곡');
+assert.ok(bsIlim?.overview?.includes('동해 용추폭포'), '보성 용추계곡≠동해 용추폭포');
+assert.ok(bsIlim?.overview?.includes('제암산자연휴양림'), '보성 용추계곡≠6경 제암산자연휴양림');
+assert.ok(bsIlim?.imageUrl?.includes('ilrim10.jpg'), '보성 용추계곡 군 공식 폭포 사진');
+assert.ok(bsIlim?.galleryUrls?.some((u) => u.includes('ilrim12.jpg')), '보성 용추계곡 군 공식 계곡 사진');
+assert.ok(bsIlim?.homepage?.includes('ilrim_yongchoo'), '보성 용추계곡 공식 홈');
+const bsSeo = resolveLocalScenicListSpotById('local-scenic:boseong-gugyeong:주암호서재필기념관');
+assert.ok(bsSeo?.overview && bsSeo?.imageUrl, '보성 주암호 서재필기념관 overlay 사진·개요');
+assert.ok(!bsSeo?.contentId, '보성 서재필기념관 JSON contentId 없음 유지');
+assert.ok(bsSeo?.overview?.includes('용암길 8'), '보성 서재필 overlay 용암길 8');
+assert.ok(bsSeo?.overview?.includes('1864'), '보성 서재필 overlay 1864');
+assert.ok(bsSeo?.overview?.includes('개화문'), '보성 서재필 overlay 개화문');
+assert.ok(bsSeo?.overview?.includes('가내길 18-35'), '보성 서재필 overlay 생가 주소');
+assert.ok(bsSeo?.overview?.includes('서울 독립문'), '보성 서재필≠서울 독립문');
+assert.ok(bsSeo?.overview?.includes('주암호생태습지'), '보성 서재필≠주암호생태습지');
+assert.ok(bsSeo?.overview?.includes('대원사'), '보성 서재필≠8경 대원사');
+assert.ok(bsSeo?.imageUrl?.includes('seojp2.jpg'), '보성 서재필 군 공식 개화문·동상 사진');
+assert.ok(bsSeo?.galleryUrls?.some((u) => u.includes('juam2.jpg')), '보성 서재필 군 공식 주암호 항공');
+assert.ok(bsSeo?.homepage?.includes('juam_seojp'), '보성 서재필 공식 홈');
+assert.notEqual(bsIlim?.imageUrl, bsSeo?.imageUrl, '용추계곡·서재필 썸네일 다름');
+assert.ok(!bsSeo?.imageUrl?.includes('ilrim'), '서재필≠용추계곡 공식 사진');
+assert.ok(!bsIlim?.imageUrl?.includes('seojp'), '용추계곡≠서재필 공식 사진');
+const boseongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '보성9경', {
+  injectLocalScenic: true,
+});
+const boseongGlobeNine = boseongGlobe.filter((s) => s.localScenicListId === 'boseong-gugyeong');
+assert.equal(boseongGlobeNine.length, 9, '보성 검색 보성9경 9행');
+assert.ok(
+  boseongGlobe.find((s) => s.attractionName === '일림산 용추계곡')?.overview?.includes('664m'),
+  '보성 검색 9경 일림산 용추계곡 개요',
+);
+assert.ok(
+  boseongGlobe
+    .find((s) => s.attractionName === '일림산 용추계곡')
+    ?.imageUrl?.includes('ilrim10.jpg'),
+  '보성 검색 9경 일림산 용추계곡 썸네일',
+);
+assert.ok(
+  boseongGlobe
+    .find((s) => s.attractionName === '주암호 서재필기념관')
+    ?.imageUrl?.includes('seojp2.jpg'),
+  '보성 검색 9경 서재필기념관 썸네일',
 );
 
 const extra = process.argv.slice(2);

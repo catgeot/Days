@@ -86,6 +86,11 @@ assert(
   extractTourAttractionSigungu('서울특별시 양천구 신정동 162-56') === '양천구',
   'sigungu seoul gu',
 );
+assert(
+  extractTourAttractionSigungu('전남광주통합특별시 곡성군 죽곡면 섬진강둔치') ===
+    '곡성군',
+  'sigungu gokseong under 전남광주통합 addr',
+);
 
 const sheetSrc = readFileSync(
   join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),

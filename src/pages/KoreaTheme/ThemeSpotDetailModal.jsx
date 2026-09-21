@@ -41,7 +41,8 @@ import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttraction
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
   groupNearbySpotsWithLocalScenic,
-  hasTourContentId,
+  isNearbyAttractionRowClickable,
+  mergeNearbyRowWithLocalScenicDetail,
   missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
 import {
@@ -671,10 +672,13 @@ function NearbyPoiAttractionRow({ spot, extraThumb, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = foodPlaceLabel(spot);
   const rankBlurb = String(spot?.rankBlurb || '').trim();
-  const clickable = hasTourContentId(spot.contentId);
+  const clickable = isNearbyAttractionRowClickable(spot);
   const Inner = clickable ? 'button' : 'div';
   const innerProps = clickable
-    ? { type: 'button', onClick: () => onSelect?.(spot) }
+    ? {
+        type: 'button',
+        onClick: () => onSelect?.(mergeNearbyRowWithLocalScenicDetail(spot)),
+      }
     : {};
   return (
     <li>
@@ -838,7 +842,17 @@ function toFoodModalSpot(spot) {
 }
 
 function toAttractionModalSpot(spot) {
-  return toTypedModalSpot(spot, '12');
+  const merged = mergeNearbyRowWithLocalScenicDetail(spot);
+  const base = toTypedModalSpot(merged, '12');
+  if (!base) return null;
+  return {
+    ...base,
+    overview: merged.overview,
+    galleryUrls: merged.galleryUrls,
+    imageUrl: merged.imageUrl || merged.firstImage,
+    addr1: merged.addr1,
+    homepage: merged.homepage,
+  };
 }
 
 function toLeportsModalSpot(spot) {

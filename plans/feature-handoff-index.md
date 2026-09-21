@@ -14,16 +14,86 @@
 
 ## 활성 목록
 
+### 축제-여행지매칭 (숙소·투어 1차 hub)
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `5dc7a8cb` · PR [#291](https://github.com/catgeot/Days/pull/291) (draft) · **사람 Preview** SIEAF 재확인 |
+| **브랜치** | `cursor/korea-theme` |
+| **플랜** | [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) **§5 P3** ✅ · merge 대기 |
+| **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
+| **Preview** | `/qa/korea-theme` → git Preview `/korea` |
+| **금지** | 축제별 MRT override · `hubIdsForArea('38')` 순서 땜질 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-theme-cross-links` · `smoke:korea-festival-nearby` · `npm run build` PASS |
+
+**다음 제시어**:
+
+```
+축제-여행지매칭 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-20-project-log.md
+@plans/festival-destination-matching-plan.md
+브랜치 cursor/korea-theme · PR #291 · Preview /qa/korea-theme
+금지: 축제별 MRT override · hubIdsForArea 순서 땜질 · feature에 plans/** 커밋
+작업: Preview 섬진강국제실험예술제 숙소·투어 곡성·여수 패키지 없음 확인 → OK면 PR #291 병합
+검증: smoke:korea-theme-cross-links · smoke:korea-festival-nearby · vite build PASS
+```
+
+---
+
+### 플래너 3단계
+
+| | |
+|--|--|
+| **상태** | **#4 push** · tip `977568aa` · PR [#289](https://github.com/catgeot/Days/pull/289) · **사람 Preview** · 단축 **`/qa/planner-stages`** |
+| **브랜치** | `cursor/planner-stages-7ee0` |
+| **PR** | [#289](https://github.com/catgeot/Days/pull/289) |
+| **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
+| **Preview** | `/qa/planner-stages` → git Preview `/place/paris/planner` |
+| **소유** | `PlannerTab` · `PlannerStageNav` · `placePlannerFocus` · `TripcomFlightBannerWidget` · `TripcomFlightNativeSearch` |
+| **금지** | 트립닷컴 모바일 iframe 재도입 · 위젯을 체크리스트 2열에 넣기 · 유심 탭화 · 복잡도 뱃지 교체 · 픽업·여행사 재배치 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `smoke:planner-empty-scroll` PASS · `npx vite build` PASS |
+
+**다음 제시어**:
+
+```
+플래너 3단계 #4, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-20-project-log.md
+브랜치 cursor/planner-stages-7ee0 · PR #289 · Preview /qa/planner-stages
+금지: 트립닷컴 모바일 iframe 재도입 · 위젯을 체크리스트 2열에 넣기 · 픽업·여행사 재배치 · feature에 plans/** 커밋
+작업: Preview — 1단계 상단 하이브리드·여행사만 · 「출발 전 필수 준비」 아래 렌터카·픽업·항공권 기준 · 2·3단계 배너 없음. OK면 PR #289 병합.
+검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · smoke:planner-empty-scroll PASS · vite build PASS
+```
+
+---
+
+### 항공권 검색 — main 병합 완료 ✅
+
+| | |
+|--|--|
+| **상태** | **#12 merge ✅ · 주제 종료** · main `fb61c9d9` · PR [#288](https://github.com/catgeot/Days/pull/288) |
+| **브랜치** | `cursor/tripcom-flight-widget-3ec3` · merge `fb61c9d9` |
+| **PR** | [#288](https://github.com/catgeot/Days/pull/288) (MERGED) |
+| **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
+| **PROD** | `https://www.gateo.kr/place/paris/planner` — 상단 네이티브 검색 폼 · 써머리 일정 모달 |
+| **VERIFY** | `smoke:tripcom-flight-planner` · `smoke:trust-disclosure` · `vite build` PASS |
+| **성과** | 트립닷컴 위젯 빈 화면을 네이티브 검색 폼으로 대체. 날짜를 고른 뒤에만 `/tickets-`. 3단계 분리는 후속 주제 `플래너 3단계` |
+
+**다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr/place/paris/planner`. 3단계 분리는 **플래너 3단계**.
+
+---
+
 ### 축제 페이지
 
 | | |
 |--|--|
-| **상태** | **#5 push** · tip `89d7049a` · PR [#287](https://github.com/catgeot/Days/pull/287) · **사람 Preview** |
+| **상태** | **#6 push** · tip `fcbac504` · PR [#287](https://github.com/catgeot/Days/pull/287) · **사람 Preview** |
 | **브랜치** | `cursor/festival-sheet-ui-ec8b` |
 | **PR** | [#287](https://github.com/catgeot/Days/pull/287) |
 | **플랜** | [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) **§9** |
 | **일지** | [`2026-09-19-project-log.md`](./2026-09-19-project-log.md) |
-| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 하단 닫기·푸터 · 무니/위로 분리 · 밝은 무니 |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 개요·프로그램 문단 가독성 · 하단 닫기·무니 |
 | **소유** | `FestivalDetailSheet` · `FestivalMooniFab` · `ChatModal` `isMooniUi` · `MooniQuickReplyChips` |
 | **금지** | 축제 시트 리팩터 · feature에 `plans/**` 커밋 · 검증 없이 main push |
 | **VERIFY** | `npm run smoke:korea-festival-personal` PASS · `smoke:korea-festival-nearby` PASS · `npx vite build` PASS |
@@ -33,11 +103,11 @@
 ```
 축제 페이지 #6, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/2026-09-19-project-log.md
+@plans/2026-09-21-project-log.md
 @plans/korea-festival-hub-plan.md
 브랜치 cursor/festival-sheet-ui-ec8b · PR #287 · Preview /qa/festival-ui
 금지: 축제 시트 리팩터 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview /korea 축제 본문 끝까지 스크롤 → 닫기가 푸터에 안 가리는지 · 무니와 위로가 겹치지 않는지 · 무니 채팅이 밝은지. OK면 PR #287 병합.
+작업: Preview에서 긴 개요 축제(예: 섬진강국제실험예술제) 안내·프로그램 탭 — 문단 나뉨·카드 배경 · 하단 닫기·무니. OK면 PR #287 병합.
 검증: npm run smoke:korea-festival-personal PASS · smoke:korea-festival-nearby PASS · vite build PASS
 ```
 

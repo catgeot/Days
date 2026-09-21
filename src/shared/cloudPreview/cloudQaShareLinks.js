@@ -8,8 +8,32 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'planner-stages',
+    label: '플래너 3단계 — 네이티브 검색 폼',
+    branch: 'cursor/planner-stages-7ee0',
+    destination:
+      'https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner',
+    active: true,
+  },
+  {
+    slug: 'flight',
+    label: '플래너 항공권 검색 위젯',
+    branch: 'cursor/tripcom-flight-widget-3ec3',
+    destination:
+      'https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner',
+    active: true,
+  },
+  {
+    slug: 'tripcom-flight',
+    label: '플래너 항공권 검색 위젯·배너',
+    branch: 'cursor/tripcom-flight-widget-3ec3',
+    destination:
+      'https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner',
+    active: false,
+  },
+  {
     slug: 'festival-ui',
-    label: '축제 페이지 — 푸터·무니 겹침',
+    label: '축제 페이지 — 본문 가독성',
     branch: 'cursor/festival-sheet-ui-ec8b',
     destination:
       'https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea',
@@ -425,9 +449,10 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'korea-theme',
-    label: '한국의 명승',
-    branch: 'main',
-    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    label: '축제·테마 — 숙소 hub 매칭',
+    branch: 'cursor/korea-theme',
+    destination:
+      'https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea',
     active: true,
   },
   {

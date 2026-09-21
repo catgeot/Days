@@ -1,46 +1,15 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
 import MrtTimelineAction from './MrtTimelineAction';
 import { getKlookAirportTransferUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
 import {
-    buildTripcomPlannerNavigationUrl,
     getPartnerLinkTarget,
     getTripcomLinkRel,
-    shouldUseTripcomFlightSearchModal,
 } from '../../../common/partnerNavigation';
-import { useTryOpenTripcomFlightSearch } from '../TripcomFlightSearchContext';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerMicroLabel } from '../readableText';
-
-export function PlannerPickupCta({ className = '' }) {
-    const { t } = useTranslation();
-    const linkTarget = getPartnerLinkTarget();
-
-    return (
-        <a
-            href={getKlookAirportTransferUrl()}
-            target={linkTarget}
-            rel="noopener noreferrer"
-            className={`bg-white border-2 border-amber-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full block ${className}`.trim()}
-        >
-            <div className="bg-amber-100 text-amber-600 p-2 rounded-lg shrink-0">
-                <Car size={16} />
-            </div>
-            <div className="flex-1 text-left">
-                <div className="font-bold text-sm text-gray-800">
-                    {t('place.planner.preTravel.pickup')}
-                    <span className="ml-1.5 text-[10px] font-bold text-gray-500 opacity-75">
-                        {t('place.planner.banners.affiliateBadge')}
-                    </span>
-                </div>
-                <div className="text-xs text-gray-600 leading-snug">
-                    {t('place.planner.preTravel.pickupNote')}
-                </div>
-            </div>
-        </a>
-    );
-}
+import { scrollPlannerFlightSearchForm } from '../../../../../utils/placePlannerFocus.js';
 
 const PreTravelChecklist = ({
     items,
@@ -48,46 +17,17 @@ const PreTravelChecklist = ({
     location,
     essentialGuide,
     eventTripWindow,
-    flightBooking = null,
-    showPickup = false,
+    scrollContainerRef = null,
 }) => {
     const { t } = useTranslation();
-    const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = t('place.planner.mrtQuery.stayWithPlace', { place: locationName || '' });
     const linkTarget = getPartnerLinkTarget();
     const tripcomLinkRel = getTripcomLinkRel(linkTarget);
 
-    const preTravelFlightUrl = useMemo(
-        () =>
-            buildTripcomPlannerNavigationUrl(location, {
-                essentialGuide,
-                tracking: 'planner-pre-travel',
-                ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
-                ...(eventTripWindow?.returnDate ? { returnDate: eventTripWindow.returnDate } : {}),
-            }),
-        [location, essentialGuide, eventTripWindow?.departDate, eventTripWindow?.returnDate],
-    );
-
-    const handlePreTravelFlightClick = (event) => {
-        if (
-            tryOpenFlightSearch(location, {
-                essentialGuide,
-                tracking: 'planner-pre-travel',
-                ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
-                ...(eventTripWindow?.returnDate ? { returnDate: eventTripWindow.returnDate } : {}),
-            })
-        ) {
-            event.preventDefault();
-        }
+    const handlePreTravelFlightClick = () => {
+        scrollPlannerFlightSearchForm(scrollContainerRef?.current ?? null);
     };
-
-    const preTravelFlightModalOpts = {
-        ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
-    };
-    const preTravelFlightLinkProps = shouldUseTripcomFlightSearchModal(preTravelFlightModalOpts)
-        ? { href: '#', onClick: handlePreTravelFlightClick, role: 'button' }
-        : { href: preTravelFlightUrl, target: linkTarget, rel: tripcomLinkRel };
 
     return (
         <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 mb-5 shadow-sm flex flex-col">
@@ -129,28 +69,27 @@ const PreTravelChecklist = ({
                     <div className="h-px flex-1 bg-amber-300/50"></div>
                 </div>
 
-                <div className="mb-3" id="planner-prep-flight-booking">
-                    {flightBooking || (
-                        <a
-                            {...preTravelFlightLinkProps}
-                            className="bg-white border-2 border-indigo-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full"
-                        >
-                            <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">
-                                <Plane size={16} />
+                <div className="mb-3">
+                    <button
+                        type="button"
+                        onClick={handlePreTravelFlightClick}
+                        className="bg-white border-2 border-indigo-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full"
+                    >
+                        <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">
+                            <Plane size={16} />
+                        </div>
+                        <div className="flex-1 text-left min-w-0">
+                            <div className="font-bold text-sm text-gray-800">
+                                {t('place.planner.preTravel.flightSearch')}
+                                <span className="ml-1.5 text-[10px] font-bold text-gray-500 opacity-75">
+                                    {t('place.planner.banners.affiliateBadge')}
+                                </span>
                             </div>
-                            <div className="flex-1 text-left min-w-0">
-                                <div className="font-bold text-sm text-gray-800">
-                                    {t('place.planner.preTravel.flightSearch')}
-                                    <span className="ml-1.5 text-[10px] font-bold text-gray-500 opacity-75">
-                                        {t('place.planner.banners.affiliateBadge')}
-                                    </span>
-                                </div>
-                                <div className={`${plannerCaption} text-gray-600 mt-0.5`}>
-                                    {getFlightDestinationSearchHint(location, { essentialGuide })}
-                                </div>
+                            <div className={`${plannerCaption} text-gray-600 mt-0.5`}>
+                                {getFlightDestinationSearchHint(location, { essentialGuide })}
                             </div>
-                        </a>
-                    )}
+                        </div>
+                    </button>
                 </div>
 
                 <div className="mb-3">
@@ -203,7 +142,27 @@ const PreTravelChecklist = ({
                     )}
                 </div>
 
-                {showPickup ? <PlannerPickupCta /> : null}
+                <a
+                    href={getKlookAirportTransferUrl()}
+                    target={linkTarget}
+                    rel="noopener noreferrer"
+                    className="bg-white border-2 border-amber-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full block"
+                >
+                    <div className="bg-amber-100 text-amber-600 p-2 rounded-lg shrink-0">
+                        <Car size={16} />
+                    </div>
+                    <div className="flex-1 text-left">
+                        <div className="font-bold text-sm text-gray-800">
+                            {t('place.planner.preTravel.pickup')}
+                            <span className="ml-1.5 text-[10px] font-bold text-gray-500 opacity-75">
+                                {t('place.planner.banners.affiliateBadge')}
+                            </span>
+                        </div>
+                        <div className="text-xs text-gray-600 leading-snug">
+                            {t('place.planner.preTravel.pickupNote')}
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
     );
