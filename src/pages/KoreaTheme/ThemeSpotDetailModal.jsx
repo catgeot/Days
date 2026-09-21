@@ -79,6 +79,8 @@ import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
 import ScenicStayStrip from './ScenicStayStrip';
 import ScenicTnaStrip from './ScenicTnaStrip';
+import ReadableDetailProse from '../../shared/readableDetail/ReadableDetailProse';
+import { shouldUseReadableDetailProse } from '../../shared/readableDetail/splitTourApiDetailParagraphs';
 
 function localizedSpotModalSubtitle(spot, locale) {
   const place = formatScenicSpotPlaceLabel(spot, locale);
@@ -605,14 +607,27 @@ function textsSimilarOrEqual(a, b) {
 const DETAIL_BODY_TEXT_CLASS =
   'min-w-0 max-w-full whitespace-pre-line leading-relaxed text-stone-700 break-keep break-words';
 
-function DetailRow({ label, children }) {
+function DetailRow({ label, children, prose = false, highlight = false, textProps = {} }) {
   if (!children) return null;
+  const proseText = prose && typeof children === 'string' ? children : null;
   return (
-    <div className="min-w-0 space-y-1 text-sm">
+    <div
+      className={
+        highlight
+          ? 'min-w-0 space-y-2 rounded-2xl border border-stone-200/90 bg-gradient-to-b from-amber-50/50 to-stone-50/80 px-3.5 py-3 text-sm'
+          : 'min-w-0 space-y-1 text-sm'
+      }
+    >
       <dt className="text-[11px] font-bold tracking-wide text-stone-500">
         {label}
       </dt>
-      <dd className={DETAIL_BODY_TEXT_CLASS}>{children}</dd>
+      {proseText ? (
+        <dd className="min-w-0 max-w-full">
+          <ReadableDetailProse text={proseText} textProps={textProps} />
+        </dd>
+      ) : (
+        <dd className={DETAIL_BODY_TEXT_CLASS}>{children}</dd>
+      )}
     </div>
   );
 }
@@ -1909,8 +1924,13 @@ export default function ThemeSpotDetailModal({
             {!detailLoading && detail ? (
               <dl className="min-w-0 space-y-4">
                 {overview ? (
-                  <DetailRow label={t('korea.theme.spotDetail.labelOverview')}>
-                    <span {...koText}>{overview}</span>
+                  <DetailRow
+                    label={t('korea.theme.spotDetail.labelOverview')}
+                    prose
+                    highlight
+                    textProps={koText}
+                  >
+                    {overview}
                   </DetailRow>
                 ) : null}
                 {naverSearchUrl || googleSearchUrl ? (
@@ -1924,13 +1944,17 @@ export default function ThemeSpotDetailModal({
                       <DetailRow
                         key={row.labelKey}
                         label={t(`korea.theme.spotDetail.${row.labelKey}`)}
+                        textProps={koText}
                       >
                         <span {...koText}>{row.text}</span>
                       </DetailRow>
                     ))
                   : null}
                 {address ? (
-                  <DetailRow label={t('korea.theme.spotDetail.labelAddress')}>
+                  <DetailRow
+                    label={t('korea.theme.spotDetail.labelAddress')}
+                    textProps={koText}
+                  >
                     <span {...koText}>{address}</span>
                   </DetailRow>
                 ) : null}
@@ -1960,16 +1984,27 @@ export default function ThemeSpotDetailModal({
                   </DetailRow>
                 ) : null}
                 {introRows.map((row) => (
-                  <DetailRow key={row.key} label={row.label}>
-                    <span {...koText}>{row.text}</span>
+                  <DetailRow
+                    key={row.key}
+                    label={row.label}
+                    prose={shouldUseReadableDetailProse(row.text)}
+                    textProps={koText}
+                  >
+                    {shouldUseReadableDetailProse(row.text)
+                      ? row.text
+                      : <span {...koText}>{row.text}</span>}
                   </DetailRow>
                 ))}
                 {infoSections.map((row, idx) => (
                   <DetailRow
                     key={`${row.name || 'info'}-${idx}`}
                     label={row.name || t('korea.theme.spotDetail.labelInfoFallback')}
+                    prose={shouldUseReadableDetailProse(row.text)}
+                    textProps={koText}
                   >
-                    <span {...koText}>{row.text}</span>
+                    {shouldUseReadableDetailProse(row.text)
+                      ? row.text
+                      : <span {...koText}>{row.text}</span>}
                   </DetailRow>
                 ))}
               </dl>

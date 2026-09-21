@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '축제 페이지',
-  sessionNo: 5,
-  sessionPhase: '푸터·무니 겹침',
-  branch: 'cursor/festival-sheet-ui-ec8b',
-  previewPath: '/korea',
-  qaShareSlug: 'festival-ui',
+  title: '명승 본문 가독성',
+  sessionNo: 1,
+  sessionPhase: 'ThemeSpotDetailModal 프로즈',
+  branch: 'cursor/korea-theme',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'korea-theme',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-21-korea-theme-scenic-detail-prose',
+    session: '명승 본문 가독성 #1, ThemeSpotDetailModal 프로즈',
+    title: '명승·관광지 상세 개요 문단·연한 카드',
+    detail:
+      '축제 상세와 같은 readableDetail 공유 모듈로 ThemeSpotDetailModal 개요(highlight+prose)·긴 이용안내/안내 항목만 prose 적용. Preview /qa/korea-theme → 경복궁·긴 개요 관광지 1건에서 개요 문단·카드 확인.',
+    at: '2026-09-21T08:50:00.000Z',
+  },
+  {
+    id: '2026-08-09-korea-theme-home-category-chip-anchor',
+    session: '테마여행 #68, 카테고리 하위칩 겹침',
+    title: 'PC 카테고리 하위칩 펼침 시 상단 밀림 방지',
+    detail:
+      '테마 카테고리 클릭 후 나라/하위칩이 생기면 세로 중앙 정렬 때문에 레일이 위로 밀려 명승 버튼과 겹치던 문제를, 투톱 아래 상단 고정(`justify-start`)으로 바꿔 아래로만 확장되게 고쳤습니다. Preview 홈(PC)에서 카테고리 클릭 후에도 명승과 겹치지 않는지 확인해 주세요.',
+    at: '2026-08-09T12:00:00.000Z',
+  },
   {
     id: '2026-09-19-festival-ui-5-footer-mooni',
     session: '축제 페이지 #5, 푸터·무니 겹침',

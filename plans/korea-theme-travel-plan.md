@@ -1106,6 +1106,8 @@ packages/top10/regions 탑레벨 진입 정리. 지도·칩 리팩터 금지.
 | 5 | 패키지·코스·숙소·투어 | **상세 매칭/크로스만** | ✅ 방향 · #34 정합 |
 | 6 | 브랜치 | `cursor/korea-theme` | ✅ |
 | — | (구 S0) 테마 모듈 디렉터리 | **폐기** — #25 보류안도 #33이 대체 | 폐기 |
+<<<<<<< HEAD
+=======
 
 ---
 
@@ -1150,3 +1152,4 @@ npm run build
 - 명승 홈 레이아웃·칩·지도 리팩터 · PlaceCard 다크 overview 스타일 변경 · feature에 `plans/**` 커밋.
 
 **#1 (2026-09-21 Cloud)**: `src/shared/readableDetail/` · `ThemeSpotDetailModal` prose/highlight — feature tip `4590e0a1` · VERIFY PASS · Preview `/qa/korea-theme`.
+>>>>>>> origin/main
