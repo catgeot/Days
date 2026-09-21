@@ -41,6 +41,36 @@
 
 ---
 
+### 명승·명소 상세 본문 가독성
+
+| | |
+|--|--|
+| **상태** | **준비** · 다음 Cloud 세션 · **선행** PR [#291](https://github.com/catgeot/Days/pull/291) 병합 권장 |
+| **브랜치** | `cursor/korea-theme` |
+| **플랜** | [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) **§9.1** |
+| **일지** | [`2026-09-21-project-log.md`](./2026-09-21-project-log.md) |
+| **참고** | 축제 본문 [#293](https://github.com/catgeot/Days/pull/293) · `FestivalDetailProse` · `festivalDetailText.js` |
+| **소유** | `ThemeSpotDetailModal` · (신규) `src/shared/readableDetail/*` |
+| **Preview** | `/qa/korea-theme` → `/korea/theme/scenic?spot=gyeongbokgung` + hub 관광지 카드 1건 |
+| **금지** | PlaceCard 갤러리 overview 변경 · 명승 홈 IA·칩 리팩터 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-theme-cross-links` · `smoke:korea-scenic-spots` · `npm run build` |
+
+**다음 제시어**:
+
+```
+명승 본문 가독성 #1, ThemeSpotDetailModal 프로즈
+@plans/feature-handoff-index.md
+@plans/2026-09-21-project-log.md
+@plans/korea-theme-travel-plan.md §9.1
+브랜치 cursor/korea-theme · Preview /qa/korea-theme
+선행: PR #291 병합 후 checkout → merge origin/main
+금지: PlaceCard 다크 overview · 명승 홈 리팩터 · feature에 plans/** 커밋
+작업: readableDetail 공유화(축제 import 갱신) → ThemeSpotDetailModal 개요 highlight+prose · intro/info 긴 필드 prose. Preview 경복궁·긴 개요 관광지 1건.
+검증: smoke:korea-theme-cross-links · smoke:korea-scenic-spots · vite build PASS
+```
+
+---
+
 ### 플래너 3단계
 
 | | |
