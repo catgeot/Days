@@ -204,7 +204,10 @@ function DetailRow({ label, children, prose = false, highlight = false }) {
   if (!children) return null;
   const body =
     prose && typeof children === 'string' ? (
-      <FestivalDetailProse text={children} />
+      <FestivalDetailProse
+        text={children}
+        variant={highlight ? 'overview' : 'body'}
+      />
     ) : (
       <div className="text-sm md:text-[15px] text-stone-700 leading-relaxed md:leading-relaxed whitespace-pre-wrap break-keep">
         {children}
