@@ -444,6 +444,18 @@ Phase 2b 후속 — FlightCinemaBar 디자인 · 항로 arc 최적화(audit·ove
 
 ---
 
+## 핸드오프 (§9) — 지구본 마커·flyTo 간헐 (2026-09-22)
+
+| | |
+|--|--|
+| **상태** | PR [#297](https://github.com/catgeot/Days/pull/297) main 병합 · **PROD 간헐 지속** |
+| **일지 SSOT** | [`2026-09-22-project-log.md`](./2026-09-22-project-log.md) 「지구본 마커·flyTo — 에이전트 핸드오프」 |
+| **인덱스** | [`feature-handoff-index.md`](./feature-handoff-index.md) 지구본 행 |
+| **브랜치** | `cursor/globe-marker-reveal-aced` |
+| **다음** | reveal·visible **단일 SSOT 함수** · fly 진입 `wakeAfterOverlay` 통일 · DEV 계측 후 모바일/PC 재현표 |
+
+---
+
 ## 폐기·참고만
 
 - urban **landmark POI + 3D buildings** — Mapbox fill-extrusion 한계로 **cityOrbit**으로 대체

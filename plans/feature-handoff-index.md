@@ -41,8 +41,34 @@
 
 ---
 
-<<<<<<< HEAD
-=======
+### 지구본 마커·flyTo (홈 첫 화면)
+
+| | |
+|--|--|
+| **상태** | **#1 병합** · main `9060e6df` · PR [#297](https://github.com/catgeot/Days/pull/297) · **PROD 배포 후 여전히 간헐** · 모바일 flyTo 불안정 · PC 미검증 |
+| **브랜치** | `cursor/globe-marker-reveal-aced` (재사용 — Mapbox Preview URL 고정) |
+| **플랜** | [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **§핸드오프** · [`globeLabelFirstReveal`](../src/pages/Home/lib/globeLabelFirstReveal.js) |
+| **일지** | [`2026-09-22-project-log.md`](./2026-09-22-project-log.md) — **「지구본 마커·flyTo — 에이전트 핸드오프」** |
+| **소유** | `HomeGlobeMapbox.jsx` · `globeMarkerLayers.js` · `index.jsx` `handleCategorySelect` · `useHomeHandlers` `handleLocationSelect` |
+| **Preview** | push 후 git Preview `…-git-cursor-globe-marker-reveal-aced-….vercel.app/` · PROD `https://www.gateo.kr/` |
+| **금지** | reveal retry·hold 타임아웃만 늘리기 · 카테고리별 마커 필터 재도입 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:globe-label-first-reveal` · `npm run build` |
+
+**다음 제시어**:
+
+```
+지구본 마커·flyTo #2, reveal·fly SSOT 계측
+@plans/feature-handoff-index.md
+@plans/2026-09-22-project-log.md
+@plans/2026-06-02-globe-enrichment-plan.md §핸드오프
+브랜치 cursor/globe-marker-reveal-aced · PR #297 병합됨(추가 PR) · Preview git 브랜치 URL
+금지: reveal retry만 추가 · travelSpots 직편집 · feature에 plans/** 커밋
+작업: DEV 계측→ensureGateoMarkersVisible SSOT→fly 진입 wakeAfterOverlay 통일→모바일 fly 재현표
+검증: smoke:globe-label-first-reveal · build · 일지 재현표 A~H
+```
+
+---
+
 ### 명승·명소 상세 본문 가독성
 
 | | |
@@ -72,7 +98,6 @@
 
 ---
 
->>>>>>> origin/main
 ### 플래너 3단계
 
 | | |
