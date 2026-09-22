@@ -284,6 +284,13 @@ export function setupGateoMarkerLayers(map) {
 /** @type {WeakMap<object, { busy: boolean, safetyTimer: ReturnType<typeof setTimeout> | null }>} */
 const globeCameraBusyState = new WeakMap();
 
+/** HomeGlobeMapbox registers ensureGateoMarkersVisible for orphan busy recovery. */
+let globeCameraBusySafetyRecovery = null;
+
+export function setGlobeCameraBusySafetyRecovery(fn) {
+  globeCameraBusySafetyRecovery = fn;
+}
+
 export function markGlobeCameraBusy(map) {
   if (!map) return;
   let state = globeCameraBusyState.get(map);
@@ -296,8 +303,12 @@ export function markGlobeCameraBusy(map) {
   state.safetyTimer = setTimeout(() => {
     state.busy = false;
     state.safetyTimer = null;
-    runPendingGateoMarkerFlush(map);
-    setGateoMarkerLayerVisibility(map, true);
+    if (typeof globeCameraBusySafetyRecovery === 'function') {
+      globeCameraBusySafetyRecovery(map, 'busy-timeout');
+    } else {
+      runPendingGateoMarkerFlush(map);
+      setGateoMarkerLayerVisibility(map, true);
+    }
   }, 5000);
 }
 

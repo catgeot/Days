@@ -539,6 +539,9 @@ export function useHomeHandlers({
       setIsCardExpanded(false);
       scheduleUiPlaceHeal(unified);
       scheduleIntroHydrate(unified);
+      if (import.meta.env.DEV) {
+        console.debug('[globe-fly-skip]', 'same-canonical', { name: unified.name });
+      }
       return;
     }
 
