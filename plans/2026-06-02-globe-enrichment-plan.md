@@ -448,11 +448,11 @@ Phase 2b 후속 — FlightCinemaBar 디자인 · 항로 arc 최적화(audit·ove
 
 | | |
 |--|--|
-| **상태** | PR [#297](https://github.com/catgeot/Days/pull/297) main 병합 · **PROD 간헐 지속** |
+| **상태** | PR [#297](https://github.com/catgeot/Days/pull/297) main · **#2** PR [#298](https://github.com/catgeot/Days/pull/298) draft · Preview A~H 대기 |
 | **일지 SSOT** | [`2026-09-22-project-log.md`](./2026-09-22-project-log.md) 「지구본 마커·flyTo — 에이전트 핸드오프」 |
 | **인덱스** | [`feature-handoff-index.md`](./feature-handoff-index.md) 지구본 행 |
-| **브랜치** | `cursor/globe-marker-reveal-aced` |
-| **다음** | reveal·visible **단일 SSOT 함수** · fly 진입 `wakeAfterOverlay` 통일 · DEV 계측 후 모바일/PC 재현표 |
+| **브랜치** | `cursor/globe-marker-reveal-aced` · tip `b8e14b7d` |
+| **다음** | Preview 재현표 A~H · 로그 상관 후 잔여 패치 |
 
 ---
 
