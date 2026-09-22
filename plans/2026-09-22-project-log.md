@@ -7,9 +7,34 @@
 ### 세션 표기
 
 - **#1** `지구본 마커·flyTo #1, reveal 원인·P0 패치` — 분석 + PR [#297](https://github.com/catgeot/Days/pull/297) → **main 병합** (`9060e6df`)
-- **#2 (다음)** `지구본 마커·flyTo #2, reveal·fly SSOT 계측` — 인덱스 제시어 복붙
+- **#2** `지구본 마커·flyTo #2, reveal·fly SSOT 계측` — feature tip `b8e14b7d` · PR [#298](https://github.com/catgeot/Days/pull/298) (draft)
 
-### 사람 QA (배포 후 · 2026-09-22)
+### #2에서 한 일 (2026-09-22 Cloud)
+
+- **`ensureGateoMarkersVisible(reason)`** SSOT — visible+flush+overlay reveal (`executeFocus` near/moveend/error · category face · `requestGateoMarkerReveal` · busy 5s · `tryRevealGlobe`)
+- **`wakeAfterOverlay`** — stale `globeCameraBusy` 정리(비이동·비애니) · DEV `[gateo-markers]` 한 줄
+- **`moveToLocation`** — fly 전 `wakeAfterOverlay` · DEV `[globe-fly-entry]`
+- **`handleLocationSelect`** — 동일 장소 early return · DEV `[globe-fly-skip]` (모바일 fly 무반응 vs 써머리만 분리용)
+- **VERIFY** `smoke:globe-label-first-reveal` · `build` PASS
+
+### 재현·계측 표 (Preview · A~H — 사람 PASS/FAIL)
+
+| ID | 시나리오 | 마커 | flyTo |
+|----|---------|------|-------|
+| A | 시크릿 홈 콜드 로드 ×5 | Preview 대기 | Preview 대기 |
+| B | A에서 눈 아이콘(핀) off→on | Preview 대기 | — |
+| C | 마커 없을 때 **현재 보라색 카테고리** 1~2탭 | Preview 대기 | — |
+| D | 마커 없을 때 **다른 카테고리** 1탭 | Preview 대기 | — |
+| E | 검색→장소 선택 | Preview 대기 | Preview 대기 (모바일) |
+| F | 티커 **펼친** 후 도시 행 (PC) | — | Preview 대기 |
+| G | 연관검색어 (PC, 장소 선택 후) | — | Preview 대기 |
+| H | MOONi/채팅 닫은 직후 검색·티커 | Preview 대기 | Preview 대기 |
+
+**DEV 콘솔** (Preview): `[gateo-markers] <reason>` · `[globe-fly-entry]` · `[globe-fly-skip] same-canonical` — E/H에서 fly-skip이면 **써머리만 열림** 케이스.
+
+**모바일 fly 재현 메모** (코드): `pendingFocusRef` · `pauseRender` · `TOUR_*` intercept · 동일 canonical early return — #3에서 표 결과와 로그 상관.
+
+### 재현·계측 표 (이전 초안 · #1 시점)
 
 | 항목 | 결과 |
 |------|------|
@@ -71,9 +96,9 @@
 | | |
 |--|--|
 | **고정 브랜치** | `cursor/globe-marker-reveal-aced` |
-| **main tip** | `9060e6df` (PR #297) |
-| **다음 push** | `main`에서 브랜치 checkout → 작업 → feature push → draft PR 갱신 |
-| **Preview** | `https://days-git-cursor-globe-marker-reveal-aced-catgeots-projects.vercel.app/` (push 후) · PROD `https://www.gateo.kr/` |
+| **feature tip** | `b8e14b7d` · PR [#298](https://github.com/catgeot/Days/pull/298) |
+| **main tip** | `9060e6df` (PR #297) + docs `de8b5e53` |
+| **Preview** | `https://days-git-cursor-globe-marker-reveal-aced-catgeots-projects.vercel.app/` · PROD `https://www.gateo.kr/` |
 
 ### docs-on-main
 

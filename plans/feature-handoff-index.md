@@ -45,26 +45,26 @@
 
 | | |
 |--|--|
-| **상태** | **#1 병합** · main `9060e6df` · PR [#297](https://github.com/catgeot/Days/pull/297) · **PROD 배포 후 여전히 간헐** · 모바일 flyTo 불안정 · PC 미검증 |
+| **상태** | **#2 push** · tip `b8e14b7d` · PR [#298](https://github.com/catgeot/Days/pull/298) (draft) · **사람 Preview** 재현표 A~H |
 | **브랜치** | `cursor/globe-marker-reveal-aced` (재사용 — Mapbox Preview URL 고정) |
 | **플랜** | [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **§핸드오프** · [`globeLabelFirstReveal`](../src/pages/Home/lib/globeLabelFirstReveal.js) |
 | **일지** | [`2026-09-22-project-log.md`](./2026-09-22-project-log.md) — **「지구본 마커·flyTo — 에이전트 핸드오프」** |
 | **소유** | `HomeGlobeMapbox.jsx` · `globeMarkerLayers.js` · `index.jsx` `handleCategorySelect` · `useHomeHandlers` `handleLocationSelect` |
-| **Preview** | push 후 git Preview `…-git-cursor-globe-marker-reveal-aced-….vercel.app/` · PROD `https://www.gateo.kr/` |
+| **Preview** | `https://days-git-cursor-globe-marker-reveal-aced-catgeots-projects.vercel.app/` · PROD `https://www.gateo.kr/` |
 | **금지** | reveal retry·hold 타임아웃만 늘리기 · 카테고리별 마커 필터 재도입 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `npm run smoke:globe-label-first-reveal` · `npm run build` |
+| **VERIFY** | `npm run smoke:globe-label-first-reveal` · `npm run build` PASS (#2) |
 
 **다음 제시어**:
 
 ```
-지구본 마커·flyTo #2, reveal·fly SSOT 계측
+지구본 마커·flyTo #3, Preview 재현표 A~H
 @plans/feature-handoff-index.md
 @plans/2026-09-22-project-log.md
 @plans/2026-06-02-globe-enrichment-plan.md §핸드오프
-브랜치 cursor/globe-marker-reveal-aced · PR #297 병합됨(추가 PR) · Preview git 브랜치 URL
+브랜치 cursor/globe-marker-reveal-aced · PR #298 · Preview git URL
 금지: reveal retry만 추가 · travelSpots 직편집 · feature에 plans/** 커밋
-작업: DEV 계측→ensureGateoMarkersVisible SSOT→fly 진입 wakeAfterOverlay 통일→모바일 fly 재현표
-검증: smoke:globe-label-first-reveal · build · 일지 재현표 A~H
+작업: Preview A~H PASS/FAIL 기록 · DEV `[gateo-markers]`·`[globe-fly-skip]` 상관 · 잔여 원인 패치
+검증: smoke:globe-label-first-reveal · build · 일지 표 갱신
 ```
 
 ---
