@@ -1602,6 +1602,18 @@ const BS_SEO_2 = `${BS_TOUR}/21492/juam2.jpg`;
 const BS_SEO_3 = `${BS_TOUR}/21492/seojp11.jpg`;
 const BS_SEO_HOME = 'https://www.boseong.go.kr/tour/tourist/9tour/juam_seojp';
 
+const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
+const INJE_DCB =
+  'https://injetour.co.kr/files/e794313a-a5bb-43f6-a90b-1b076d1fa45d.png';
+const INJE_NAERIN_VALLEY =
+  'https://injetour.co.kr/files/4f364a58-77fe-403d-8449-0dac77685ec1.jpg';
+const INJE_BANGDONG_SPRING =
+  'https://injetour.co.kr/files/e2d2d664-1f01-4066-a696-265eaed92197.jpg';
+const INJE_DAESEUNG_FALLS =
+  'https://injetour.co.kr/files/879b0b5b-14a9-44a6-b270-b16bee41eb90.jpg';
+const INJE_HAPGANG_PAVILION =
+  'https://injetour.co.kr/files/3c665dac-463b-43aa-a0c2-8f7ebb539e01.jpg';
+
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
   return {
@@ -2324,6 +2336,27 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 사천시 용강동 (용두공원) · 와룡산 자락 청룡사',
     SACHEON_YONGDU,
     [SACHEON_YONGDU_2, SACHEON_YONGDU_3],
+  ),
+  'local-scenic:inje-palgyeong:대청봉': localScenicPhotoOverlay(
+    '인제8경 제1경 대청봉은 설악산 최고봉으로 기암괴석과 대자연의 파노라마가 어우러진 명승입니다. 인제군 문화관광은 국립공원·유네스코 생물권 보존지역으로 지정된 설악산 정상 일대를 인제 8경의 첫 경으로 소개합니다. 양양 10경 「설악산 대청봉」과 동일 산정이나 인제군 팔경 명칭은 「대청봉」입니다.',
+    '강원특별자치도 인제군 북면·인제읍 일원 (설악산 대청봉)',
+    INJE_DCB,
+    [],
+    INJE_SCENICS_HOME,
+  ),
+  'local-scenic:inje-palgyeong:내린천계곡': localScenicPhotoOverlay(
+    '인제8경 제5경 내린천계곡은 푸른 물줄기와 기암괴석이 어우른 선경으로, 맑은 내린천 상류 계곡이 널리 알려진 곳입니다. 인제군은 우리나라에서 가장 아름답고 깨끗한 계곡을 꼽을 때 인제 내린천을 든다고 소개합니다.',
+    '강원특별자치도 인제군 기린면·상남면 내린천 일원',
+    INJE_NAERIN_VALLEY,
+    [],
+    INJE_SCENICS_HOME,
+  ),
+  'local-scenic:inje-palgyeong:방동약수': localScenicPhotoOverlay(
+    '인제8경 제6경 방동약수는 기린면 방동리에 있으며 약 300년 전 발견된 명품 약수로 소개됩니다. 인제군은 물맛과 강원도 정취를 함께 느낄 수 있는 명소로 안내합니다.',
+    '강원특별자치도 인제군 기린면 방동리 (방동약수)',
+    INJE_BANGDONG_SPRING,
+    [],
+    INJE_SCENICS_HOME,
   ),
   'local-scenic:icheon-gugyeong:노성산말머리바위': localScenicPhotoOverlay(
     '이천9경 제8경 노성산 말머리바위는 설성면·안성 일죽면에 걸친 노성산 7부 능선의 바위입니다. 이천시 문화관광에 따르면 노성·마국·설성 세 산 장수가 말을 나눠 가진 전설에서 노성산 장수가 머리를 차지했고, 말 머리 형상의 바위와 병풍바위·굴바위가 있습니다. 산행은 약 2시간이며 산 아래 노성산시민공원이 있습니다.',
@@ -3490,6 +3523,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   1910438: localScenicThumbOverlay(YC_SILLA, [YC_SILLA_2, YC_SILLA_3]),
   // 통영 탐색홈 이순신공원 — hub 명소(팔경 아님). Tour 584970 firstimage는 LIVE CMS, DB 미동기화.
   584970: localScenicThumbOverlay(TY_YI, [TY_YI_2, TY_YI_3, TY_YI_4]),
+  // 인제8경 — Tour DB first_image 공란·축제 주변 팔경 행. JSON contentId 기입 아님.
+  126643: localScenicThumbOverlay(INJE_DAESEUNG_FALLS),
+  125723: localScenicThumbOverlay(INJE_BANGDONG_SPRING),
+  1932458: localScenicThumbOverlay(INJE_HAPGANG_PAVILION),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
