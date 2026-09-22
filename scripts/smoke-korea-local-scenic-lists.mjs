@@ -327,6 +327,21 @@ assert.equal(
   'missing nearby thumbs are Tour ids',
 );
 
+const injeNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'inje' });
+const injeGroup = injeNearby.groups.find((g) => g.listId === 'inje-palgyeong');
+assert.ok(injeGroup?.title?.includes('인제'), 'inje nearby group title');
+for (const name of ['대청봉', '내린천계곡', '방동약수', '대승폭포', '합강정']) {
+  const row = injeGroup?.items?.find((i) => i.name === name);
+  assert.ok(
+    String(row?.firstImage || row?.imageUrl || '').includes('injetour.co.kr'),
+    `inje 팔경 ${name} overlay thumb`,
+  );
+}
+assert.ok(
+  !missingNearbyThumbContentIds(injeNearby).includes('125723'),
+  '방동약수 thumb from overlay not async-only',
+);
+
 const damyangNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'damyang' });
 const damyangGroup = damyangNearby.groups.find((g) => g.listId === 'damyang-other');
 const gamagol = damyangGroup?.items?.find((i) => i.name === '가마골용소');
