@@ -11,6 +11,50 @@ import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLan
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
+import { collectUniqueEditorialReviewImageCredits } from '../../../utils/editorialReviewImageCredit';
+
+const EditorialReviewImageCredits = ({ images }) => {
+  const credits = collectUniqueEditorialReviewImageCredits(images);
+  if (credits.length === 0) return null;
+
+  return (
+    <p className="mt-1.5 text-[10px] text-gray-400 leading-snug">
+      {credits.map((credit, index) => (
+        <React.Fragment key={`${credit.type}-${index}`}>
+          {index > 0 ? <span className="text-gray-300"> · </span> : null}
+          {credit.type === 'plain' ? (
+            credit.text
+          ) : (
+            <>
+              Photo by{' '}
+              {credit.photographerHref ? (
+                <a
+                  href={credit.photographerHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+                >
+                  {credit.photographerName}
+                </a>
+              ) : (
+                credit.photographerName
+              )}
+              {' on '}
+              <a
+                href={credit.unsplashHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+              >
+                Unsplash
+              </a>
+            </>
+          )}
+        </React.Fragment>
+      ))}
+    </p>
+  );
+};
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
 const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
@@ -128,30 +172,33 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 
       {/* 첨부 이미지 (있을 경우) */}
       {review.images && review.images.length > 0 && (
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {review.images.map((img, idx) => {
-            const imgSrc = img?.url || img?.publicUrl || img;
-            if (!imgSrc || typeof imgSrc !== 'string') return null;
+        <div className="mt-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {review.images.map((img, idx) => {
+              const imgSrc = img?.url || img?.publicUrl || img;
+              if (!imgSrc || typeof imgSrc !== 'string') return null;
 
-            return (
-              <div
-                key={idx}
-                onClick={() => onImageClick(review.images, idx)}
-                className="relative shrink-0 w-24 h-24 min-w-[6rem] rounded-lg overflow-hidden snap-start bg-gray-100 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-              >
-                <img
-                  src={imgSrc}
-                  alt={`review img ${idx}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://placehold.co/100x100?text=Error';
-                  }}
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={idx}
+                  onClick={() => onImageClick(review.images, idx)}
+                  className="relative shrink-0 w-24 h-24 min-w-[6rem] rounded-lg overflow-hidden snap-start bg-gray-100 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                >
+                  <img
+                    src={imgSrc}
+                    alt={`review img ${idx}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://placehold.co/100x100?text=Error';
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+          {review.is_editorial ? <EditorialReviewImageCredits images={review.images} /> : null}
         </div>
       )}
 
