@@ -8,9 +8,12 @@ import {
   reviewHasHiddenMediaWhenCollapsed,
 } from '../src/utils/placeReviewContentBlocks.js';
 import {
+  applyAiTextToContentBlocks,
+  applyAttachmentRemoval,
   buildReviewSavePayload,
   collapseBlocksToLegacyIfNoInlineImages,
   countTextCharsInBlocks,
+  ensureEditorHasTextBlocks,
   initEditorBlocksFromReview,
   insertImageAtCursorInContent,
   insertImageInTextBlock,
@@ -115,5 +118,36 @@ assert.ok(Array.isArray(blocksPayload.content_blocks));
 assert.equal(blocksPayload.content, 't');
 
 assert.deepEqual(initEditorBlocksFromReview({ content_blocks: blocks }).length, 4);
+
+assert.equal(collapseBlocksToLegacyIfNoInlineImages(null).content, null);
+
+const h1 = applyAttachmentRemoval(null, 'body text stays', 0);
+assert.equal(h1.content, 'body text stays');
+assert.equal(h1.contentBlocks, null);
+
+const emptyInsert = insertImageAtCursorInContent('', 0, 0);
+assert.deepEqual(
+  emptyInsert.map((b) => b.type),
+  ['text', 'image', 'text']
+);
+assert.ok(emptyInsert.every((b) => b.type !== 'text' || typeof b.text === 'string'));
+
+const withImg = [
+  { type: 'text', text: 'head' },
+  { type: 'image', image_index: 0 },
+  { type: 'text', text: 'tail' },
+];
+const afterAi = applyAiTextToContentBlocks(withImg, 'alpha\n\nbeta');
+assert.deepEqual(
+  afterAi.filter((b) => b.type === 'image').map((b) => b.image_index),
+  [0]
+);
+assert.equal(
+  afterAi
+    .filter((b) => b.type === 'text')
+    .map((b) => b.text)
+    .join('|'),
+  'alpha|beta'
+);
 
 console.log('smoke-place-review-content-blocks: OK');

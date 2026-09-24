@@ -13,6 +13,7 @@ import {
   useMobileOverlayViewport,
 } from '../../../shared/hooks/useMobileInputViewport';
 import {
+  applyAiTextToContentBlocks,
   buildReviewSavePayload,
   collapseBlocksToLegacyIfNoInlineImages,
   countTextCharsInBlocks,
@@ -20,6 +21,7 @@ import {
   insertImageAtCursorInContent,
   insertImageInTextBlock,
   isImageReferencedInBlocks,
+  blocksHaveInlineImages,
   repairBlocksAfterImageIndexSwap,
   repairBlocksAfterImageRemoved,
   removeInlineImageFromBlocks,
@@ -50,6 +52,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   const imageScrollRef = useRef(null);
   const contentRef = useRef(null);
   const blockTextRefs = useRef([]);
+  const focusedTextBlockIndexRef = useRef(-1);
 
   useMobileOverlayViewport(isOpen);
 
@@ -104,18 +107,18 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       return;
     }
 
-    let textBlockIndex = -1;
-    for (let i = contentBlocks.length - 1; i >= 0; i -= 1) {
-      if (contentBlocks[i].type === 'text') {
-        textBlockIndex = i;
-        break;
-      }
+    let textBlockIndex = focusedTextBlockIndexRef.current;
+    if (
+      textBlockIndex < 0 ||
+      contentBlocks[textBlockIndex]?.type !== 'text'
+    ) {
+      textBlockIndex = contentBlocks.findIndex((b) => b.type === 'text');
     }
+
     if (textBlockIndex < 0) {
-      setContentBlocks([
-        ...contentBlocks,
-        { type: 'image', image_index: imageIndex },
-      ]);
+      setContentBlocks(
+        insertImageAtCursorInContent('', 0, imageIndex)
+      );
       return;
     }
 
@@ -203,12 +206,15 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
 
   const removeImage = (indexToRemove) => {
     setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
-    setContentBlocks((prev) => {
-      const repaired = repairBlocksAfterImageRemoved(prev, indexToRemove);
-      const { contentBlocks: nextBlocks, content: legacyContent } =
+    setContentBlocks((prevBlocks) => {
+      if (!blocksHaveInlineImages(prevBlocks)) {
+        return prevBlocks;
+      }
+      const repaired = repairBlocksAfterImageRemoved(prevBlocks, indexToRemove);
+      const { contentBlocks: nextBlocks, content: nextContent } =
         collapseBlocksToLegacyIfNoInlineImages(repaired);
-      if (legacyContent !== null) {
-        setContent(legacyContent);
+      if (nextContent !== null) {
+        setContent(nextContent);
       }
       return nextBlocks;
     });
@@ -222,9 +228,11 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
         [newArr[swapWith], newArr[index]] = [newArr[index], newArr[swapWith]];
         return newArr;
       });
-      setContentBlocks((prev) =>
-        repairBlocksAfterImageIndexSwap(prev, swapWith, index)
-      );
+      if (blocksHaveInlineImages(contentBlocks)) {
+        setContentBlocks((prev) =>
+          repairBlocksAfterImageIndexSwap(prev, swapWith, index)
+        );
+      }
     } else if (direction === 'right' && index < images.length - 1) {
       const swapWith = index + 1;
       setImages((prev) => {
@@ -232,9 +240,11 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
         [newArr[swapWith], newArr[index]] = [newArr[index], newArr[swapWith]];
         return newArr;
       });
-      setContentBlocks((prev) =>
-        repairBlocksAfterImageIndexSwap(prev, index, swapWith)
-      );
+      if (blocksHaveInlineImages(contentBlocks)) {
+        setContentBlocks((prev) =>
+          repairBlocksAfterImageIndexSwap(prev, index, swapWith)
+        );
+      }
     }
   };
 
@@ -280,8 +290,13 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       );
 
       if (contentBlocks) {
-        setContentBlocks([{ type: 'text', text: resultText.slice(0, 1000) }]);
-        setContent('');
+        setContentBlocks(
+          applyAiTextToContentBlocks(
+            contentBlocks,
+            resultText,
+            focusedTextBlockIndexRef.current
+          )
+        );
       } else {
         setContent(resultText);
       }
@@ -294,8 +309,13 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   };
 
   const handleSubmit = async () => {
-    if (textCharCount === 0) {
+    const hasInlineImages = blocksHaveInlineImages(contentBlocks);
+    if (textCharCount === 0 && !(hasInlineImages && images.length > 0)) {
       alert('리뷰 내용을 작성해주세요.');
+      return;
+    }
+    if (textCharCount === 0 && hasInlineImages) {
+      alert('본문에 사진을 넣었다면 글도 함께 작성해주세요.');
       return;
     }
 
@@ -451,6 +471,9 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
                         blockTextRefs.current[blockIdx] = el;
                       }}
                       value={block.text}
+                      onFocus={() => {
+                        focusedTextBlockIndexRef.current = blockIdx;
+                      }}
                       onChange={(e) => updateTextBlock(blockIdx, e.target.value)}
                       placeholder="이 장소에서의 경험을 공유해주세요."
                       className={`w-full min-h-[72px] md:min-h-[100px] resize-y border border-gray-200 bg-gray-50/50 rounded-xl p-3 ${MOBILE_TEXTAREA_CLASS} text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors`}
@@ -582,7 +605,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
                       inBody ? removeImageFromBody(idx) : insertImageInBody(idx)
                     }
                     disabled={isSubmitting || uploadingImage}
-                    className="absolute bottom-0 left-0 right-0 text-[8px] font-semibold py-1 bg-black/55 text-white opacity-0 group-hover:opacity-100 hover:bg-blue-600/90 transition-all z-[15] disabled:opacity-40"
+                    className="absolute bottom-0 left-0 right-0 text-[8px] font-semibold py-1 bg-black/55 text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-blue-600/90 transition-all z-[15] disabled:opacity-40"
                   >
                     {inBody ? '본문에서 빼기' : '본문에 넣기'}
                   </button>
