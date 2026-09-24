@@ -8,6 +8,8 @@ import {
 } from '../../../shared/hooks/useMobileInputViewport';
 import { stripLogbookMarkdownSnippet } from '../utils/logbookMarkdownSnippet';
 
+const GATEO_PUBLIC_SOURCE_URL = 'https://www.gateo.kr/';
+
 const RecentList = ({ reports, loading, isPublicMode }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -167,6 +169,34 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                       </span>
                     )}
                   </div>
+
+                  {isPublicMode && (
+                    <div
+                      className={`flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
+                        viewMode === 'grid'
+                          ? isCompact
+                            ? 'mt-2 pt-2 border-t border-dashed border-gray-100'
+                            : 'mt-2 pt-2 border-t border-dashed border-gray-100'
+                          : isCompact
+                            ? 'mt-1.5'
+                            : 'mt-2'
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span className="shrink-0 rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-gray-500">
+                        출처 · GATEO
+                      </span>
+                      <a
+                        href={GATEO_PUBLIC_SOURCE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="min-w-0 max-w-full truncate text-[10px] text-blue-600 hover:text-blue-700 hover:underline sm:text-xs"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {GATEO_PUBLIC_SOURCE_URL}
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 {viewMode === 'list' && !isCompact && (
