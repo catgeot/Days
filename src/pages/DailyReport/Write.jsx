@@ -9,9 +9,9 @@ import { useLogbookAI } from './hooks/useLogbookAI';
 import { usePenNameContext } from './context/PenNameContext';
 import {
   MOBILE_INPUT_TEXT_CLASS,
-  MOBILE_TEXTAREA_CLASS,
   useDeferredViewportSyncOnBlur,
 } from '../../shared/hooks/useMobileInputViewport';
+import LogbookStoryEditor from './components/LogbookStoryEditor';
 
 const Write = () => {
   const { t } = useTranslation();
@@ -328,18 +328,7 @@ const Write = () => {
             </div>
 
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all relative min-h-[500px] flex flex-col">
-
-              <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Storytelling</label>
-                <div className="flex gap-2">
-                  <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 text-purple-600 rounded-full text-[10px] font-black hover:bg-purple-100 hover:text-purple-700 transition-all">
-                    <Sparkles size={12} className="group-hover:animate-spin" /> {t('logbook.write.aiEssay')}
-                  </button>
-                  <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-50 border border-pink-200 text-pink-600 rounded-full text-[10px] font-black hover:bg-pink-100 hover:text-pink-700 transition-all">
-                    <Sparkles size={12} className="group-hover:animate-pulse" /> {t('logbook.write.aiSns')}
-                  </button>
-                </div>
-              </div>
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Storytelling</label>
 
               {isAILoading && (
                 <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center text-purple-600 rounded-3xl">
@@ -348,13 +337,22 @@ const Write = () => {
                 </div>
               )}
 
-              <textarea
-                className={`w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-gray-800 placeholder-gray-400 flex-1 min-h-[400px] ${MOBILE_TEXTAREA_CLASS}`}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
+              <LogbookStoryEditor
+                content={content}
+                onChange={setContent}
                 onBlur={handleFieldBlur}
                 disabled={isAILoading || isCompressing}
-                placeholder={t('logbook.write.contentPlaceholder')}
+                galleryImages={[...existingImages, ...previewUrls]}
+                aiToolbar={(
+                  <div className="flex gap-2 shrink-0">
+                    <button type="button" onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 text-purple-600 rounded-full text-[10px] font-black hover:bg-purple-100 hover:text-purple-700 transition-all">
+                      <Sparkles size={12} className="group-hover:animate-spin" /> {t('logbook.write.aiEssay')}
+                    </button>
+                    <button type="button" onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-50 border border-pink-200 text-pink-600 rounded-full text-[10px] font-black hover:bg-pink-100 hover:text-pink-700 transition-all">
+                      <Sparkles size={12} className="group-hover:animate-pulse" /> {t('logbook.write.aiSns')}
+                    </button>
+                  </div>
+                )}
               />
             </div>
           </div>
