@@ -12,6 +12,18 @@ import {
   dismissMobileTextInput,
   useMobileOverlayViewport,
 } from '../../../shared/hooks/useMobileInputViewport';
+import {
+  buildReviewSavePayload,
+  collapseBlocksToLegacyIfNoInlineImages,
+  countTextCharsInBlocks,
+  initEditorBlocksFromReview,
+  insertImageAtCursorInContent,
+  insertImageInTextBlock,
+  isImageReferencedInBlocks,
+  repairBlocksAfterImageIndexSwap,
+  repairBlocksAfterImageRemoved,
+  removeInlineImageFromBlocks,
+} from '../../../utils/reviewEditorContentBlocks';
 
 const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSuccess }) => {
   const [user, setUser] = useState(null);
@@ -24,6 +36,9 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
 
   const [rating, setRating] = useState(existingReview?.rating || 5);
   const [content, setContent] = useState(existingReview?.content || '');
+  const [contentBlocks, setContentBlocks] = useState(() =>
+    initEditorBlocksFromReview(existingReview)
+  );
   const [images, setImages] = useState(existingReview?.images || []);
   const [isPublic, setIsPublic] = useState(existingReview?.is_public ?? true);
 
@@ -34,8 +49,90 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
 
   const imageScrollRef = useRef(null);
   const contentRef = useRef(null);
+  const blockTextRefs = useRef([]);
 
   useMobileOverlayViewport(isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setRating(existingReview?.rating || 5);
+    setImages(existingReview?.images || []);
+    setIsPublic(existingReview?.is_public ?? true);
+    const blocks = initEditorBlocksFromReview(existingReview);
+    if (blocks) {
+      setContentBlocks(blocks);
+      setContent('');
+    } else {
+      setContentBlocks(null);
+      setContent(existingReview?.content || '');
+    }
+  }, [isOpen, existingReview?.id]);
+
+  const textCharCount = contentBlocks
+    ? countTextCharsInBlocks(contentBlocks)
+    : content.length;
+
+  const applyBlocksCollapse = (blocks) => {
+    const { contentBlocks: nextBlocks, content: legacyContent } =
+      collapseBlocksToLegacyIfNoInlineImages(blocks);
+    if (legacyContent !== null) {
+      setContent(legacyContent);
+    }
+    setContentBlocks(nextBlocks);
+  };
+
+  const updateTextBlock = (blockIndex, text) => {
+    setContentBlocks((prev) => {
+      if (!prev || prev[blockIndex]?.type !== 'text') return prev;
+      const otherChars = countTextCharsInBlocks(prev) - (prev[blockIndex].text?.length || 0);
+      const maxForBlock = Math.max(0, 1000 - otherChars);
+      const trimmed = text.slice(0, maxForBlock);
+      const next = [...prev];
+      next[blockIndex] = { type: 'text', text: trimmed };
+      return next;
+    });
+  };
+
+  const insertImageInBody = (imageIndex) => {
+    if (isImageReferencedInBlocks(contentBlocks, imageIndex)) return;
+
+    if (!contentBlocks) {
+      const cursor = contentRef.current?.selectionStart ?? content.length;
+      const newBlocks = insertImageAtCursorInContent(content, cursor, imageIndex);
+      setContentBlocks(newBlocks);
+      setContent('');
+      return;
+    }
+
+    let textBlockIndex = -1;
+    for (let i = contentBlocks.length - 1; i >= 0; i -= 1) {
+      if (contentBlocks[i].type === 'text') {
+        textBlockIndex = i;
+        break;
+      }
+    }
+    if (textBlockIndex < 0) {
+      setContentBlocks([
+        ...contentBlocks,
+        { type: 'image', image_index: imageIndex },
+      ]);
+      return;
+    }
+
+    const textarea = blockTextRefs.current[textBlockIndex];
+    const cursor =
+      textarea?.selectionStart ??
+      (contentBlocks[textBlockIndex].text?.length || 0);
+    setContentBlocks(
+      insertImageInTextBlock(contentBlocks, textBlockIndex, cursor, imageIndex)
+    );
+  };
+
+  const removeImageFromBody = (imageIndex) => {
+    if (!contentBlocks) return;
+    const next = removeInlineImageFromBlocks(contentBlocks, imageIndex);
+    applyBlocksCollapse(next);
+  };
 
   const handleDismiss = useCallback(({ force = false } = {}) => {
     if (!force && isSubmitting) return;
@@ -105,22 +202,39 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   };
 
   const removeImage = (indexToRemove) => {
-    setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+    setContentBlocks((prev) => {
+      const repaired = repairBlocksAfterImageRemoved(prev, indexToRemove);
+      const { contentBlocks: nextBlocks, content: legacyContent } =
+        collapseBlocksToLegacyIfNoInlineImages(repaired);
+      if (legacyContent !== null) {
+        setContent(legacyContent);
+      }
+      return nextBlocks;
+    });
   };
 
   const moveImage = (index, direction) => {
     if (direction === 'left' && index > 0) {
-      setImages(prev => {
+      const swapWith = index - 1;
+      setImages((prev) => {
         const newArr = [...prev];
-        [newArr[index - 1], newArr[index]] = [newArr[index], newArr[index - 1]];
+        [newArr[swapWith], newArr[index]] = [newArr[index], newArr[swapWith]];
         return newArr;
       });
+      setContentBlocks((prev) =>
+        repairBlocksAfterImageIndexSwap(prev, swapWith, index)
+      );
     } else if (direction === 'right' && index < images.length - 1) {
-      setImages(prev => {
+      const swapWith = index + 1;
+      setImages((prev) => {
         const newArr = [...prev];
-        [newArr[index + 1], newArr[index]] = [newArr[index], newArr[index + 1]];
+        [newArr[swapWith], newArr[index]] = [newArr[index], newArr[swapWith]];
         return newArr;
       });
+      setContentBlocks((prev) =>
+        repairBlocksAfterImageIndexSwap(prev, index, swapWith)
+      );
     }
   };
 
@@ -138,6 +252,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   const handleClearContent = () => {
     if (window.confirm("작성 중인 내용을 모두 지우시겠습니까?")) {
       setContent('');
+      setContentBlocks(null);
     }
   };
 
@@ -147,7 +262,13 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       // 🚨 보안 수정: 클라이언트에서 API 키를 넘기지 않습니다.
 
       const placeName = location?.name || location?.name_en || '이 곳';
-      const prompt = getReviewPrompt(placeName, rating, content);
+      const draftText = contentBlocks
+        ? contentBlocks
+            .filter((b) => b.type === 'text')
+            .map((b) => b.text)
+            .join('\n\n')
+        : content;
+      const prompt = getReviewPrompt(placeName, rating, draftText);
 
       const resultText = await apiClient.fetchProxyGemini(
         null,
@@ -158,7 +279,12 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
         GEMINI_MODELS.QUALITY
       );
 
-      setContent(resultText);
+      if (contentBlocks) {
+        setContentBlocks([{ type: 'text', text: resultText.slice(0, 1000) }]);
+        setContent('');
+      } else {
+        setContent(resultText);
+      }
     } catch (error) {
       console.error(error);
       alert('AI 글 생성에 실패했습니다.');
@@ -168,20 +294,21 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   };
 
   const handleSubmit = async () => {
-    if (!content.trim()) {
+    if (textCharCount === 0) {
       alert('리뷰 내용을 작성해주세요.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const reviewData = {
+      const reviewData = buildReviewSavePayload({
         place_name: location?.name || 'Unknown Place',
-        content: content.trim(),
+        content,
+        contentBlocks,
         images,
         rating,
-        is_public: isPublic
-      };
+        is_public: isPublic,
+      });
 
       let result;
       if (existingReview) {
@@ -255,10 +382,13 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
           <div className="flex-1 flex flex-col gap-2 min-h-[150px] md:min-h-[300px]">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-gray-500">
-                내용 ({content.length}/1000자)
+                내용 ({textCharCount}/1000자)
+                {contentBlocks && (
+                  <span className="text-blue-600/80 ml-1">· 본문 사진 배치</span>
+                )}
               </span>
               <div className="flex items-center gap-2">
-                {content.trim().length > 0 && (
+                {textCharCount > 0 && (
                   <button
                     type="button"
                     onClick={handleClearContent}
@@ -284,15 +414,62 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
               </div>
             </div>
 
-            <textarea
-              ref={contentRef}
-              value={content}
-              maxLength={1000}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="이 장소에서의 경험을 공유해주세요. 어떤 점이 좋았나요?"
-              className={`w-full flex-1 min-h-[120px] md:min-h-[250px] resize-none border border-gray-200 bg-gray-50/50 rounded-xl p-3 ${MOBILE_TEXTAREA_CLASS} text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors`}
-              disabled={isSubmitting || isGenerating}
-            />
+            {contentBlocks ? (
+              <div className="flex flex-col gap-2 flex-1 min-h-[120px] md:min-h-[250px]">
+                {contentBlocks.map((block, blockIdx) => {
+                  if (block.type === 'image') {
+                    const imgSrc = images[block.image_index];
+                    if (!imgSrc) return null;
+                    return (
+                      <div
+                        key={`block-img-${blockIdx}-${block.image_index}`}
+                        className="flex items-center gap-2 p-2 rounded-xl border border-blue-100 bg-blue-50/40"
+                      >
+                        <img
+                          src={imgSrc}
+                          alt=""
+                          className="w-12 h-12 rounded-lg object-cover border border-white shadow-sm"
+                        />
+                        <span className="text-xs text-blue-800/80 flex-1 font-medium">
+                          본문에 표시되는 사진
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeImageFromBody(block.image_index)}
+                          disabled={isSubmitting}
+                          className="text-[10px] px-2 py-1 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                        >
+                          본문에서 빼기
+                        </button>
+                      </div>
+                    );
+                  }
+                  return (
+                    <textarea
+                      key={`block-text-${blockIdx}`}
+                      ref={(el) => {
+                        blockTextRefs.current[blockIdx] = el;
+                      }}
+                      value={block.text}
+                      onChange={(e) => updateTextBlock(blockIdx, e.target.value)}
+                      placeholder="이 장소에서의 경험을 공유해주세요."
+                      className={`w-full min-h-[72px] md:min-h-[100px] resize-y border border-gray-200 bg-gray-50/50 rounded-xl p-3 ${MOBILE_TEXTAREA_CLASS} text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors`}
+                      disabled={isSubmitting || isGenerating}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <textarea
+                ref={contentRef}
+                value={content}
+                maxLength={1000}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="이 장소에서의 경험을 공유해주세요. 어떤 점이 좋았나요?"
+                className={`w-full flex-1 min-h-[120px] md:min-h-[250px] resize-none border border-gray-200 bg-gray-50/50 rounded-xl p-3 ${MOBILE_TEXTAREA_CLASS} text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors`}
+                disabled={isSubmitting || isGenerating}
+              />
+            )}
           </div>
 
           {/* 사진 첨부 영역 */}
@@ -356,9 +533,16 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
                 </label>
               )}
 
-              {images.map((img, idx) => (
+              {images.map((img, idx) => {
+                const inBody = isImageReferencedInBlocks(contentBlocks, idx);
+                return (
                 <div key={idx} className="shrink-0 relative w-[72px] h-[72px] rounded-xl overflow-hidden snap-start group border border-gray-200">
                   <img src={img} alt={`uploaded ${idx}`} className="w-full h-full object-cover" />
+                  {inBody && (
+                    <span className="absolute bottom-0 inset-x-0 text-[8px] font-bold text-center text-white bg-blue-600/85 py-0.5 z-[5]">
+                      본문
+                    </span>
+                  )}
 
                   {/* 사진 순서 변경 오버레이 */}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between px-0.5 z-10">
@@ -391,8 +575,20 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
                   >
                     <X className="w-3 h-3" />
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      inBody ? removeImageFromBody(idx) : insertImageInBody(idx)
+                    }
+                    disabled={isSubmitting || uploadingImage}
+                    className="absolute bottom-0 left-0 right-0 text-[8px] font-semibold py-1 bg-black/55 text-white opacity-0 group-hover:opacity-100 hover:bg-blue-600/90 transition-all z-[15] disabled:opacity-40"
+                  >
+                    {inBody ? '본문에서 빼기' : '본문에 넣기'}
+                  </button>
                 </div>
-              ))}
+              );
+              })}
             </div>
           </div>
         </div>
@@ -427,7 +623,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
             </button>
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting || !content.trim()}
+              disabled={isSubmitting || textCharCount === 0}
               className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm font-bold rounded-xl shadow-sm transition-colors flex items-center justify-center min-w-[90px]"
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : (existingReview ? '수정 완료' : '등록하기')}
