@@ -10,6 +10,7 @@ import ReviewEditorModal from '../modals/ReviewEditorModal';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
 const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
@@ -67,10 +68,18 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
             )}
           </div>
           <div>
-            <div className="font-medium text-gray-900 text-sm flex items-center gap-2">
-              {review.user?.display_name || t('place.reviews.anonymous')}
-              {!review.is_public && (
-                <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{t('place.reviews.private')}</span>
+            <div className="font-medium text-gray-900 text-sm flex flex-wrap items-center gap-2">
+              {review.is_editorial ? (
+                <span className="text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
+                  {formatGateoReviewerBadge(review.persona_label)}
+                </span>
+              ) : (
+                <>
+                  {review.user?.display_name || t('place.reviews.anonymous')}
+                  {!review.is_public && (
+                    <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{t('place.reviews.private')}</span>
+                  )}
+                </>
               )}
             </div>
             <div className="text-xs text-gray-400 mt-0.5">{formatDate(review.created_at)}</div>
@@ -94,6 +103,12 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
           )}
         </div>
       </div>
+
+      {review.is_editorial && review.disclosure?.trim() && (
+        <p className="text-[11px] text-gray-500 bg-gray-50 border border-gray-100 rounded-md px-2.5 py-1.5 mt-1 leading-snug">
+          {review.disclosure.trim()}
+        </p>
+      )}
 
       {/* 본문 내용 (더보기 로직 적용) */}
       <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap mt-2 break-keep">

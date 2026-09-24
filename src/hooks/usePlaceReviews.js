@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../shared/api/supabase';
+import { isUserReviewForStats } from '../utils/placeReviewEditorial';
 
 export const usePlaceReviews = (placeSlug, user) => {
   const [reviews, setReviews] = useState([]);
@@ -255,13 +256,16 @@ export const usePlaceReviews = (placeSlug, user) => {
     }
   }, []);
 
-  // 장소의 평균 별점 및 리뷰 수 계산
-  const stats = {
-    averageRating: reviews.length > 0
-      ? (reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length).toFixed(1)
-      : 0,
-    totalReviews: reviews.length
-  };
+  const stats = useMemo(() => {
+    const userReviews = reviews.filter(isUserReviewForStats);
+    const count = userReviews.length;
+    return {
+      averageRating: count > 0
+        ? (userReviews.reduce((acc, r) => acc + (r.rating || 0), 0) / count).toFixed(1)
+        : 0,
+      totalReviews: count
+    };
+  }, [reviews]);
 
   return {
     reviews,
