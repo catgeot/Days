@@ -36,6 +36,8 @@
     "smoke:planner-empty-scroll": "node scripts/smoke-planner-empty-scroll.mjs",
     "smoke:trust-disclosure": "node scripts/smoke-trust-disclosure.mjs",
     "smoke:visitor-locale": "node scripts/smoke-visitor-locale.mjs",
+    "smoke:logbook-markdown": "node scripts/smoke-logbook-markdown.mjs",
+    "smoke:logbook-editor": "node scripts/smoke-logbook-editor.mjs",
     "probe:mrt-korea-packages": "node scripts/probe-mrt-korea-package-destinations.mjs",
     "smoke:ko-homonym-ri-search": "node scripts/smoke-ko-homonym-ri-search.mjs",
     "generate:korea-area-codes": "node scripts/generate-korea-area-codes.mjs",

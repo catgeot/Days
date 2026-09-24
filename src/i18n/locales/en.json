@@ -2254,7 +2254,26 @@
         "3": "Finalizing your draft..."
       },
       "defaultTitle": "Notes from {{place}}",
-      "defaultPlace": "a lovely place"
+      "defaultPlace": "a lovely place",
+      "editor": {
+        "modeEdit": "Edit",
+        "modePreview": "Preview",
+        "bold": "Bold",
+        "italic": "Italic",
+        "heading2": "Heading",
+        "heading3": "Subheading",
+        "link": "Link",
+        "linkUrlPrompt": "Enter link URL (https://…)",
+        "linkLabel": "link text",
+        "divider": "Divider",
+        "insertBodyImage": "Insert photo in body",
+        "insertMoment": "Insert gallery moment",
+        "momentSlot": "Moment {{n}}",
+        "bodyImageAlt": "Travel photo",
+        "bodyImageFail": "Could not upload body photo. Check login and network.",
+        "hint": "Use the toolbar for headings, bold, links, and inline photos. Gallery shots from “Captured moments” can be inserted via the gallery icon as [Photo N] placeholders. Body is stored as Markdown and rendered safely like Phase 1.",
+        "previewEmpty": "Nothing to preview yet."
+      }
     },
     "detail": {
       "deleteConfirm": "Delete this entry permanently? (Cannot be undone.)",

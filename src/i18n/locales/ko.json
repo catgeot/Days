@@ -2017,7 +2017,26 @@
         "3": "마무리 원고를 진행 중입니다..."
       },
       "defaultTitle": "{{place}}에서의 기록",
-      "defaultPlace": "어느 멋진 곳"
+      "defaultPlace": "어느 멋진 곳",
+      "editor": {
+        "modeEdit": "편집",
+        "modePreview": "미리보기",
+        "bold": "굵게",
+        "italic": "기울임",
+        "heading2": "제목(큰)",
+        "heading3": "제목(작은)",
+        "link": "링크",
+        "linkUrlPrompt": "링크 URL을 입력하세요 (https://…)",
+        "linkLabel": "링크 텍스트",
+        "divider": "구분선",
+        "insertBodyImage": "본문에 사진 삽입",
+        "insertMoment": "장면 갤러리 사진 삽입",
+        "momentSlot": "장면 {{n}}",
+        "bodyImageAlt": "여행 사진",
+        "bodyImageFail": "본문 사진 업로드에 실패했습니다. 로그인 상태와 네트워크를 확인해 주세요.",
+        "hint": "툴바로 제목·굵게·링크·본문 사진을 넣을 수 있습니다. 「장면의 포착」 사진은 갤러리 아이콘으로 [사진 N] 자리표시를 넣을 수 있습니다. 저장 형식은 마크다운이며, 공개 글은 Phase 1과 동일하게 안전하게 렌더됩니다.",
+        "previewEmpty": "미리볼 본문이 없습니다."
+      }
     },
     "detail": {
       "deleteConfirm": "이 기록을 영구적으로 삭제하시겠습니까? (삭제 후 복구할 수 없습니다)",
