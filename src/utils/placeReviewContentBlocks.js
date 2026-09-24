@@ -108,3 +108,26 @@ export function resolveReviewImageSrc(img) {
   const src = img?.url || img?.publicUrl || img;
   return typeof src === 'string' && src.trim() ? src : null;
 }
+
+/**
+ * @param {unknown} img
+ * @param {{ width?: number, height?: number }} [opts]
+ */
+export function resolveReviewThumbnailSrc(img, opts = {}) {
+  const src = resolveReviewImageSrc(img);
+  if (!src) return null;
+  const width = opts.width ?? 120;
+  const height = opts.height ?? 120;
+  if (!src.includes('images.unsplash.com')) return src;
+  try {
+    const parsed = new URL(src);
+    parsed.searchParams.set('w', String(width));
+    parsed.searchParams.set('h', String(height));
+    parsed.searchParams.set('fit', 'crop');
+    if (!parsed.searchParams.has('q')) parsed.searchParams.set('q', '80');
+    if (!parsed.searchParams.has('auto')) parsed.searchParams.set('auto', 'format');
+    return parsed.toString();
+  } catch {
+    return src;
+  }
+}

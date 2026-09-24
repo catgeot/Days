@@ -18,20 +18,51 @@ import {
   hasReviewContentBlocks,
   normalizeReviewContentBlocks,
   resolveReviewImageSrc,
+  resolveReviewThumbnailSrc,
   reviewHasHiddenMediaWhenCollapsed,
 } from '../../../utils/placeReviewContentBlocks';
+import { resolveEditorialReviewImageCredit } from '../../../utils/editorialReviewImageCredit';
 
-const EditorialReviewImageCredits = ({ images }) => {
+const EditorialReviewImageCredits = ({ images, compact = false }) => {
   const credits = collectUniqueEditorialReviewImageCredits(images);
   if (credits.length === 0) return null;
 
+  const className = compact
+    ? 'mt-0.5 text-[9px] text-gray-400 leading-tight text-right'
+    : 'mt-1.5 text-[10px] text-gray-400 leading-snug';
+
   return (
-    <p className="mt-1.5 text-[10px] text-gray-400 leading-snug">
+    <p className={className}>
       {credits.map((credit, index) => (
         <React.Fragment key={`${credit.type}-${index}`}>
           {index > 0 ? <span className="text-gray-300"> · </span> : null}
           {credit.type === 'plain' ? (
             credit.text
+          ) : compact ? (
+            <>
+              Photo:{' '}
+              {credit.photographerHref ? (
+                <a
+                  href={credit.photographerHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+                >
+                  {credit.photographerName}
+                </a>
+              ) : (
+                credit.photographerName
+              )}
+              {' / '}
+              <a
+                href={credit.unsplashHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+              >
+                Unsplash
+              </a>
+            </>
           ) : (
             <>
               Photo by{' '}
@@ -61,6 +92,79 @@ const EditorialReviewImageCredits = ({ images }) => {
         </React.Fragment>
       ))}
     </p>
+  );
+};
+
+const CollapsedReviewLeadThumbnail = ({ review, onImageClick }) => {
+  const images = review.images || [];
+  if (images.length === 0) return null;
+  const firstImg = images[0];
+  const thumbSrc = resolveReviewThumbnailSrc(firstImg);
+  if (!thumbSrc) return null;
+  const showCredit = Boolean(resolveEditorialReviewImageCredit(firstImg));
+
+  return (
+    <div className="shrink-0 w-[4.25rem] sm:w-[4.75rem] flex flex-col gap-0.5">
+      <button
+        type="button"
+        onClick={() => onImageClick(images, 0)}
+        className="block w-full aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-100 cursor-pointer hover:opacity-95 transition-opacity"
+        aria-label="review preview"
+      >
+        <img
+          src={thumbSrc}
+          alt=""
+          className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
+          width={76}
+          height={76}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://placehold.co/76x76?text=Error';
+          }}
+        />
+      </button>
+      {showCredit ? <EditorialReviewImageCredits images={[firstImg]} compact /> : null}
+    </div>
+  );
+};
+
+const ReviewStatsBlock = ({ stats, layout = 'desktop' }) => {
+  const { t } = useTranslation();
+  const countLine = t('place.reviews.countSplit', {
+    traveler: stats.travelerCount,
+    editorial: stats.editorialCount,
+  });
+
+  if (layout === 'mobile') {
+    return (
+      <div className="flex flex-col items-end gap-0.5 min-w-0 max-w-[55%]">
+        <p className="text-[10px] text-gray-500 leading-snug text-right truncate w-full">{countLine}</p>
+        {stats.averageRatingDisplay ? (
+          <div className="flex items-center gap-0.5 bg-yellow-50 px-1.5 py-0.5 rounded shrink-0">
+            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+            <span className="font-bold text-yellow-700 text-xs">{stats.averageRatingDisplay}</span>
+          </div>
+        ) : (
+          <p className="text-[10px] text-gray-400 text-right leading-snug">{t('place.reviews.noTravelerRating')}</p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-right flex flex-col items-end max-w-[14rem]">
+      {stats.averageRatingDisplay ? (
+        <div className="flex items-center gap-1 mb-1">
+          <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+          <span className="font-bold text-lg text-gray-800">{stats.averageRatingDisplay}</span>
+        </div>
+      ) : (
+        <p className="text-xs text-gray-500 mb-1 leading-snug">{t('place.reviews.noTravelerRating')}</p>
+      )}
+      <p className="text-xs text-gray-500 leading-snug">{countLine}</p>
+    </div>
   );
 };
 
@@ -202,43 +306,48 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
       )}
 
       {/* 본문 (content_blocks 인터리브 또는 기존 content + 하단 갤러리) */}
-      <div className="text-gray-700 text-sm leading-relaxed mt-2 break-keep">
-        {usesContentBlocks ? (
-          !isExpanded ? (
-            <div className="whitespace-pre-wrap line-clamp-3">
-              {collapsedPreviewText}
-            </div>
+      <div className="mt-2 flex gap-3 items-start">
+        <div className="flex-1 min-w-0 text-gray-700 text-sm leading-relaxed break-keep">
+          {usesContentBlocks ? (
+            !isExpanded ? (
+              <div className="whitespace-pre-wrap line-clamp-3">
+                {collapsedPreviewText}
+              </div>
+            ) : (
+              contentBlocks.map((block, blockIdx) => {
+                if (block.type === 'text') {
+                  return (
+                    <p key={`text-${blockIdx}`} className="whitespace-pre-wrap mt-3 first:mt-0">
+                      {block.text}
+                    </p>
+                  );
+                }
+                if (block.type === 'image') {
+                  const images = review.images || [];
+                  if (block.image_index >= images.length) return null;
+                  return renderInlineImage(block.image_index, `image-${blockIdx}`);
+                }
+                return null;
+              })
+            )
           ) : (
-            contentBlocks.map((block, blockIdx) => {
-              if (block.type === 'text') {
-                return (
-                  <p key={`text-${blockIdx}`} className="whitespace-pre-wrap mt-3 first:mt-0">
-                    {block.text}
-                  </p>
-                );
-              }
-              if (block.type === 'image') {
-                const images = review.images || [];
-                if (block.image_index >= images.length) return null;
-                return renderInlineImage(block.image_index, `image-${blockIdx}`);
-              }
-              return null;
-            })
-          )
-        ) : (
-          <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
-            {review.content}
-          </div>
-        )}
-        {showExpandToggle && (
-          <button
-            type="button"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-blue-500 font-medium text-xs mt-1 hover:underline"
-          >
-            {isExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}
-          </button>
-        )}
+            <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
+              {review.content}
+            </div>
+          )}
+          {showExpandToggle && (
+            <button
+              type="button"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-blue-500 font-medium text-xs mt-1 hover:underline"
+            >
+              {isExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}
+            </button>
+          )}
+        </div>
+        {!isExpanded && (review.images?.length ?? 0) >= 1 ? (
+          <CollapsedReviewLeadThumbnail review={review} onImageClick={onImageClick} />
+        ) : null}
       </div>
 
       {(!usesContentBlocks || isExpanded) && galleryEntries.length > 0 && (
@@ -409,11 +518,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
           </div>
 
           <div className="text-right flex flex-col items-end">
-            <div className="flex items-center gap-1 mb-1">
-              <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-              <span className="font-bold text-lg text-gray-800">{stats.averageRating}</span>
-            </div>
-            <p className="text-xs text-gray-500">{t('place.reviews.count', { count: stats.totalReviews })}</p>
+            <ReviewStatsBlock stats={stats} layout="desktop" />
           </div>
         </div>
 
@@ -469,8 +574,8 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
 
         {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
         <div className={`md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}>
-          <div className="flex items-center justify-between px-3 py-2.5">
-            <div className="flex items-center gap-2">
+          <div className="flex items-start justify-between px-3 pt-2.5 pb-1 gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <button
                 type="button"
                 onClick={() => setMediaMode?.('GALLERY')}
@@ -481,16 +586,14 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
               <div className="flex items-center gap-1.5 min-w-0">
                 <MessageSquare className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                 <h3 className="font-bold text-gray-900 text-sm truncate">
-                  {t('place.reviews.headerShort')}{' '}
-                  <span className="text-gray-400 text-xs font-normal">({stats.totalReviews})</span>
+                  {t('place.reviews.headerShort')}
                 </h3>
-                <div className="flex items-center gap-0.5 ml-1 bg-yellow-50 px-1.5 py-0.5 rounded shrink-0">
-                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                  <span className="font-bold text-yellow-700 text-xs">{stats.averageRating}</span>
-                </div>
               </div>
             </div>
 
+            <ReviewStatsBlock stats={stats} layout="mobile" />
+          </div>
+          <div className="flex items-center justify-end px-3 pb-2.5 gap-2">
             <div className="flex bg-gray-100 rounded p-0.5 shrink-0">
               <button
                 type="button"

@@ -1076,6 +1076,8 @@
       "reads": "{{count}} 읽음",
       "loginPrompt": "로그인 하고 리뷰에 참여하고 경험을 공유하세요.",
       "count": "리뷰 {{count}}개",
+      "countSplit": "여행자 리뷰 {{traveler}} · GATEO 에디터 리뷰 {{editorial}}",
+      "noTravelerRating": "아직 여행자 평점이 없어요",
       "write": "작성",
       "loginCta": "로그인하고 첫 리뷰를 남겨보세요!",
       "loginHint": "다른 여행자들에게 큰 도움이 됩니다.",

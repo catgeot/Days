@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../shared/api/supabase';
-import { isUserReviewForStats } from '../utils/placeReviewEditorial';
+import { computePlaceReviewStats } from '../utils/placeReviewStats';
 
 export const usePlaceReviews = (placeSlug, user) => {
   const [reviews, setReviews] = useState([]);
@@ -256,16 +256,7 @@ export const usePlaceReviews = (placeSlug, user) => {
     }
   }, []);
 
-  const stats = useMemo(() => {
-    const userReviews = reviews.filter(isUserReviewForStats);
-    const count = userReviews.length;
-    return {
-      averageRating: count > 0
-        ? (userReviews.reduce((acc, r) => acc + (r.rating || 0), 0) / count).toFixed(1)
-        : 0,
-      totalReviews: count
-    };
-  }, [reviews]);
+  const stats = useMemo(() => computePlaceReviewStats(reviews), [reviews]);
 
   return {
     reviews,
