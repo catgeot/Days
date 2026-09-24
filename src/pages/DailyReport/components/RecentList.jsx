@@ -6,6 +6,7 @@ import {
   MOBILE_INPUT_TEXT_CLASS,
   useDeferredViewportSyncOnBlur,
 } from '../../../shared/hooks/useMobileInputViewport';
+import { stripLogbookMarkdownSnippet } from '../utils/logbookMarkdownSnippet';
 
 const RecentList = ({ reports, loading, isPublicMode }) => {
   const { t } = useTranslation();
@@ -146,7 +147,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
 
                   {!(isCompact && viewMode === 'list') && (
                     <p className={`text-sm text-gray-500 leading-relaxed font-light ${viewMode === 'grid' ? (isCompact ? 'line-clamp-2 mb-3 text-xs flex-1' : 'line-clamp-3 mb-4 flex-1') : 'line-clamp-2 h-10'}`}>
-                      {report.content}
+                      {stripLogbookMarkdownSnippet(report.content)}
                     </p>
                   )}
 

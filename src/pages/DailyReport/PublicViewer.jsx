@@ -4,6 +4,8 @@ import { MapPin, Home, Compass, PenTool, ArrowLeft, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { reportAuthorLabel } from './utils/reportAuthor';
+import LogbookBody from './components/LogbookBody';
+import { LOGBOOK_PHOTO_PLACEHOLDER_RE } from './utils/logbookMarkdownSnippet';
 
 const PublicViewer = () => {
   const { t } = useTranslation();
@@ -49,31 +51,6 @@ const PublicViewer = () => {
     fetchPublicReport();
   }, [id, navigate]);
 
-  const renderBlogContent = (content, images) => {
-    if (!content) return null;
-    const regex = /(\[사진\s*\d+\])/g;
-    const parts = content.split(regex);
-
-    return parts.map((part, index) => {
-      const match = part.match(/\[사진\s*(\d+)\]/);
-      if (match) {
-        const imgIndex = parseInt(match[1], 10) - 1;
-        if (images[imgIndex]) {
-          return (
-            <div key={index} className="my-10 group relative rounded-2xl overflow-hidden shadow-sm border border-gray-200">
-              <img src={images[imgIndex]} alt={t('logbook.common.attachment', { n: imgIndex + 1 })} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700" />
-            </div>
-          );
-        }
-        return null;
-      }
-      if (part.trim() !== '') {
-        return <p key={index} className="text-lg leading-[1.8] text-gray-800 whitespace-pre-wrap font-medium mb-6">{part}</p>;
-      }
-      return null;
-    });
-  };
-
   if (errorMsg) {
     return (
       <div className="min-h-screen bg-white flex flex-col justify-center items-center text-gray-500">
@@ -90,7 +67,7 @@ const PublicViewer = () => {
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
-  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content);
+  const hasPlaceholders = LOGBOOK_PHOTO_PLACEHOLDER_RE.test(report.content);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -136,9 +113,13 @@ const PublicViewer = () => {
           )}
 
           <div className="mt-8">
-            {hasPlaceholders ? renderBlogContent(report.content, images) : (
-              <div className="text-lg leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">{report.content}</div>
-            )}
+            <LogbookBody
+              content={report.content}
+              images={images}
+              imageFrameClass="my-10 group relative rounded-2xl overflow-hidden shadow-sm border border-gray-200"
+              imageClass="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
+              showImageOverlay={false}
+            />
           </div>
 
           <div className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">

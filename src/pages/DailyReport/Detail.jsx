@@ -8,6 +8,8 @@ import { supabase } from '../../shared/api/supabase';
 import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import LogbookBody from './components/LogbookBody';
+import { LOGBOOK_PHOTO_PLACEHOLDER_RE } from './utils/logbookMarkdownSnippet';
 
 const Detail = () => {
   const { t } = useTranslation();
@@ -166,37 +168,11 @@ const Detail = () => {
     }
   };
 
-  const renderBlogContent = (content, images) => {
-    if (!content) return null;
-    const regex = /(\[사진\s*\d+\])/g;
-    const parts = content.split(regex);
-
-    return parts.map((part, index) => {
-      const match = part.match(/\[사진\s*(\d+)\]/);
-      if (match) {
-        const imgIndex = parseInt(match[1], 10) - 1;
-        if (images[imgIndex]) {
-          return (
-            <div key={index} className="my-10 group relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50">
-              <img src={images[imgIndex]} alt={t('logbook.common.attachment', { n: imgIndex + 1 })} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => window.open(images[imgIndex], '_blank')} />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
-            </div>
-          );
-        }
-        return null;
-      }
-      if (part.trim() !== '') {
-        return <p key={index} className="text-lg leading-[1.8] text-gray-800 whitespace-pre-wrap font-medium mb-6">{part}</p>;
-      }
-      return null;
-    });
-  };
-
   if (!report) return <div className="min-h-screen bg-white p-10 flex justify-center items-center text-gray-400 animate-pulse">{t('logbook.common.syncingMemory')}</div>;
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
-  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content);
+  const hasPlaceholders = LOGBOOK_PHOTO_PLACEHOLDER_RE.test(report.content);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -287,9 +263,7 @@ const Detail = () => {
           )}
 
           <div className="mt-8">
-            {hasPlaceholders ? renderBlogContent(report.content, images) : (
-              <div className="text-lg leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">{report.content}</div>
-            )}
+            <LogbookBody content={report.content} images={images} />
           </div>
         </div>
 
