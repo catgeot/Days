@@ -12,6 +12,14 @@ import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
 import { collectUniqueEditorialReviewImageCredits } from '../../../utils/editorialReviewImageCredit';
+import {
+  getCollapsedPreviewText,
+  getGalleryImageEntries,
+  hasReviewContentBlocks,
+  normalizeReviewContentBlocks,
+  resolveReviewImageSrc,
+  reviewHasHiddenMediaWhenCollapsed,
+} from '../../../utils/placeReviewContentBlocks';
 
 const EditorialReviewImageCredits = ({ images }) => {
   const credits = collectUniqueEditorialReviewImageCredits(images);
@@ -99,6 +107,45 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
     }
   };
 
+  const usesContentBlocks = hasReviewContentBlocks(review.content_blocks);
+  const contentBlocks = usesContentBlocks ? normalizeReviewContentBlocks(review.content_blocks) : [];
+  const collapsedPreviewText = getCollapsedPreviewText(review);
+  const galleryEntries = usesContentBlocks
+    ? getGalleryImageEntries(review.images, review.content_blocks)
+    : (review.images || []).map((img, index) => ({ img, index }));
+  const showExpandToggle = usesContentBlocks
+    ? collapsedPreviewText.length > 120 || reviewHasHiddenMediaWhenCollapsed(review)
+    : (review.content || '').length > 120;
+
+  const renderInlineImage = (imageIndex, blockKey) => {
+    const images = review.images || [];
+    const img = images[imageIndex];
+    const imgSrc = resolveReviewImageSrc(img);
+    if (!imgSrc) return null;
+
+    return (
+      <div key={blockKey} className="mt-3">
+        <button
+          type="button"
+          onClick={() => onImageClick(images, imageIndex)}
+          className="block w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-100 cursor-pointer hover:opacity-95 transition-opacity text-left"
+        >
+          <img
+            src={imgSrc}
+            alt={`review img ${imageIndex}`}
+            className="w-full max-h-80 object-cover"
+            loading="lazy"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://placehold.co/400x300?text=Error';
+            }}
+          />
+        </button>
+        {review.is_editorial ? <EditorialReviewImageCredits images={[img]} /> : null}
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
       {/* 작성자 및 별점 정보 */}
@@ -154,14 +201,38 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         </p>
       )}
 
-      {/* 본문 내용 (더보기 로직 적용) */}
-      <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap mt-2 break-keep">
-        <div className={`${isExpanded ? '' : 'line-clamp-3'}`}>
-          {review.content}
-        </div>
-        {/* 간단한 길이 체크 로직 - css line-clamp 활용. 더보기 버튼 렌더링. 줄바꿈이 많거나 글자가 길 때 */}
-        {review.content.length > 120 && (
+      {/* 본문 (content_blocks 인터리브 또는 기존 content + 하단 갤러리) */}
+      <div className="text-gray-700 text-sm leading-relaxed mt-2 break-keep">
+        {usesContentBlocks ? (
+          !isExpanded ? (
+            <div className="whitespace-pre-wrap line-clamp-3">
+              {collapsedPreviewText}
+            </div>
+          ) : (
+            contentBlocks.map((block, blockIdx) => {
+              if (block.type === 'text') {
+                return (
+                  <p key={`text-${blockIdx}`} className="whitespace-pre-wrap mt-3 first:mt-0">
+                    {block.text}
+                  </p>
+                );
+              }
+              if (block.type === 'image') {
+                const images = review.images || [];
+                if (block.image_index >= images.length) return null;
+                return renderInlineImage(block.image_index, `image-${blockIdx}`);
+              }
+              return null;
+            })
+          )
+        ) : (
+          <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
+            {review.content}
+          </div>
+        )}
+        {showExpandToggle && (
           <button
+            type="button"
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-blue-500 font-medium text-xs mt-1 hover:underline"
           >
@@ -170,13 +241,12 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         )}
       </div>
 
-      {/* 첨부 이미지 (있을 경우) */}
-      {review.images && review.images.length > 0 && (
+      {(!usesContentBlocks || isExpanded) && galleryEntries.length > 0 && (
         <div className="mt-4">
           <div className="flex gap-2 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {review.images.map((img, idx) => {
-              const imgSrc = img?.url || img?.publicUrl || img;
-              if (!imgSrc || typeof imgSrc !== 'string') return null;
+            {galleryEntries.map(({ img, index: idx }) => {
+              const imgSrc = resolveReviewImageSrc(img);
+              if (!imgSrc) return null;
 
               return (
                 <div
@@ -198,7 +268,9 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
               );
             })}
           </div>
-          {review.is_editorial ? <EditorialReviewImageCredits images={review.images} /> : null}
+          {review.is_editorial ? (
+            <EditorialReviewImageCredits images={galleryEntries.map((entry) => entry.img)} />
+          ) : null}
         </div>
       )}
 
