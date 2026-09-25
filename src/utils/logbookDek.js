@@ -6,6 +6,10 @@ export const LOGBOOK_DETAIL_TITLE_CLASS =
 export const LOGBOOK_DETAIL_DEK_CLASS =
   'text-base font-normal text-gray-600 leading-relaxed break-keep break-words mt-3 mb-8 sm:mb-10';
 
+/** Public reader layout — one step softer than body copy */
+export const LOGBOOK_READER_DEK_CLASS =
+  'text-[15px] sm:text-base font-normal text-gray-500 leading-[1.65] break-keep break-words mt-2.5 mb-7 sm:mb-9';
+
 function normalizePlain(text) {
   return String(text || '').replace(/\s+/g, ' ').trim();
 }

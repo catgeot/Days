@@ -1812,6 +1812,10 @@
       "traveler": "여행자",
       "attachment": "첨부 {{n}}"
     },
+    "editorial": {
+      "badge": "GATEO 에디터",
+      "secondaryNotice": "AI 보조 · 실제 방문기 아님"
+    },
     "sidebar": {
       "travelLogTitle": "나만의 여행 기록",
       "travelLogBody": "로그인하고 전 세계 명소 리뷰와 생생한 여행기를 작성해보세요."

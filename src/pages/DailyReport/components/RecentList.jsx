@@ -164,11 +164,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
 
                 <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-4 flex flex-col h-full' : 'p-5 flex flex-col h-full') : ''}`}>
                   {editorialPublicFeed ? (
-                    <div className="mb-2.5">
-                      <EditorialLogbookBadge
-                        report={report}
-                        className="text-[11px] sm:text-xs px-3 py-1 border-indigo-300 bg-indigo-100/95 shadow-sm ring-1 ring-indigo-200/70"
-                      />
+                    <div className="mb-2">
+                      <EditorialLogbookBadge report={report} />
                     </div>
                   ) : null}
                   <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
