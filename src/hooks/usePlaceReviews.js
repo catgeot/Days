@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '../shared/api/supabase';
 import { computePlaceReviewStats } from '../utils/placeReviewStats';
 
@@ -12,13 +12,16 @@ function mapReviewRows(data, user) {
 
 export const usePlaceReviews = (placeSlug, user) => {
   const [allReviews, setAllReviews] = useState([]);
+  const [loadedSlug, setLoadedSlug] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all' | 'mine'
+  const lastStatsRef = useRef(null);
 
   const fetchReviews = useCallback(async () => {
     if (!placeSlug) {
       setAllReviews([]);
+      setLoadedSlug(null);
       setIsLoading(false);
       return;
     }
@@ -43,6 +46,7 @@ export const usePlaceReviews = (placeSlug, user) => {
       if (fetchError) throw fetchError;
 
       setAllReviews(mapReviewRows(data, user));
+      setLoadedSlug(placeSlug);
     } catch (err) {
       console.error('Error fetching place reviews:', err);
       setError(err.message);
@@ -64,7 +68,16 @@ export const usePlaceReviews = (placeSlug, user) => {
     return allReviews;
   }, [allReviews, filter, user]);
 
-  const stats = useMemo(() => computePlaceReviewStats(allReviews), [allReviews]);
+  const stats = useMemo(() => {
+    if (isLoading && loadedSlug !== placeSlug && lastStatsRef.current) {
+      return lastStatsRef.current;
+    }
+    const next = computePlaceReviewStats(allReviews);
+    if (loadedSlug === placeSlug) {
+      lastStatsRef.current = next;
+    }
+    return next;
+  }, [allReviews, loadedSlug, placeSlug, isLoading]);
 
   const addReview = async (reviewData) => {
     if (!user) return { error: '로그인이 필요합니다.' };

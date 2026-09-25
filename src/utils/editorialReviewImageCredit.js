@@ -18,6 +18,15 @@ export function appendGateoReferralUtm(url) {
   }
 }
 
+/** Thumbnail caption: Unsplash photographer / photo page metadata only (not plain credit lines). */
+export function hasUnsplashReviewImageAttribution(img) {
+  if (!img || typeof img !== 'object') return false;
+  const photographer = String(img.photographer || img.photographer_name || '').trim();
+  const unsplash = String(img.unsplash_url || img.html_link || '').trim();
+  const photographerUrl = String(img.photographer_url || '').trim();
+  return Boolean(photographer || unsplash || photographerUrl);
+}
+
 /**
  * @param {string|Record<string, unknown>|null|undefined} img
  * @returns {{ type: 'plain', text: string } | { type: 'unsplash', photographerName: string, photographerHref: string|null, unsplashHref: string } | null}
@@ -38,28 +47,31 @@ export function resolveEditorialReviewImageCredit(img) {
     typeof unsplashHrefRaw === 'string' && unsplashHrefRaw.trim() ? unsplashHrefRaw : UNSPLASH_HOME,
   );
 
-  if (creditText) {
-    return { type: 'plain', text: creditText };
-  }
+  const hasUnsplashUrls =
+    (typeof photographerHrefRaw === 'string' && photographerHrefRaw.trim()) ||
+    (typeof unsplashHrefRaw === 'string' && unsplashHrefRaw.trim());
 
-  if (photographerName) {
+  if (photographerName || hasUnsplashUrls) {
     return {
       type: 'unsplash',
-      photographerName,
+      photographerName: photographerName || 'Photographer',
       photographerHref,
       unsplashHref: unsplashHref || appendGateoReferralUtm(UNSPLASH_HOME),
     };
   }
 
+  if (creditText) {
+    return { type: 'plain', text: creditText };
+  }
+
   return null;
 }
 
-/** Thumbnail caption: Unsplash photographer / photo page metadata only (not plain credit lines). */
-export function hasUnsplashReviewImageAttribution(img) {
-  if (!img || typeof img !== 'object') return false;
-  const photographer = String(img.photographer || img.photographer_name || '').trim();
-  const unsplash = String(img.unsplash_url || img.html_link || '').trim();
-  return Boolean(photographer || unsplash);
+/** Linked Unsplash caption for collapsed review thumbnails (skips plain-only credits). */
+export function resolveReviewThumbnailUnsplashCredit(img) {
+  if (!hasUnsplashReviewImageAttribution(img)) return null;
+  const credit = resolveEditorialReviewImageCredit(img);
+  return credit?.type === 'unsplash' ? credit : null;
 }
 
 export function collectUniqueEditorialReviewImageCredits(images) {

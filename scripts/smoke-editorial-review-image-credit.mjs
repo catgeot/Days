@@ -3,6 +3,7 @@ import {
   appendGateoReferralUtm,
   collectUniqueEditorialReviewImageCredits,
   resolveEditorialReviewImageCredit,
+  resolveReviewThumbnailUnsplashCredit,
 } from '../src/utils/editorialReviewImageCredit.js';
 
 assert.equal(
@@ -29,6 +30,27 @@ const plain = resolveEditorialReviewImageCredit({
   credit: 'Photo by Ada on Unsplash',
 });
 assert.deepEqual(plain, { type: 'plain', text: 'Photo by Ada on Unsplash' });
+
+const prodEditorialShape = {
+  url: 'https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&q=80',
+  credit: 'Photo by Jane Doe on Unsplash',
+  photographer: 'Jane Doe',
+  photographer_url: 'https://unsplash.com/@janedoe',
+  unsplash_url: 'https://unsplash.com/photos/abc123',
+};
+const prodResolved = resolveEditorialReviewImageCredit(prodEditorialShape);
+assert.equal(prodResolved?.type, 'unsplash');
+assert.equal(prodResolved?.photographerName, 'Jane Doe');
+assert.match(prodResolved?.photographerHref, /utm_source=gateo/);
+assert.match(prodResolved?.unsplashHref, /utm_source=gateo/);
+
+const prodThumb = resolveReviewThumbnailUnsplashCredit(prodEditorialShape);
+assert.equal(prodThumb?.type, 'unsplash');
+assert.equal(prodThumb?.photographerName, 'Jane Doe');
+assert.ok(prodThumb?.photographerHref && prodThumb?.unsplashHref);
+
+const userUpload = { url: 'https://cdn.example/user.jpg' };
+assert.equal(resolveReviewThumbnailUnsplashCredit(userUpload), null);
 
 const deduped = collectUniqueEditorialReviewImageCredits([
   { photographer: 'Ada', photographer_url: 'https://unsplash.com/@ada' },

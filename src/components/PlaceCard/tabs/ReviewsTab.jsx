@@ -11,7 +11,7 @@ import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLan
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
-import { collectUniqueEditorialReviewImageCredits, hasUnsplashReviewImageAttribution, resolveEditorialReviewImageCredit } from '../../../utils/editorialReviewImageCredit';
+import { collectUniqueEditorialReviewImageCredits, resolveReviewThumbnailUnsplashCredit } from '../../../utils/editorialReviewImageCredit';
 import {
   getCollapsedPreviewText,
   getGalleryImageEntries,
@@ -97,9 +97,8 @@ const EditorialReviewImageCredits = ({ images, compact = false }) => {
 };
 
 const ReviewThumbnailUnsplashCredit = ({ img }) => {
-  if (!hasUnsplashReviewImageAttribution(img)) return null;
-  const credit = resolveEditorialReviewImageCredit(img);
-  if (!credit || credit.type !== 'unsplash') return null;
+  const credit = resolveReviewThumbnailUnsplashCredit(img);
+  if (!credit) return null;
 
   return (
     <p className="mt-0.5 text-[9px] text-gray-400 leading-none text-right w-full min-w-0 truncate whitespace-nowrap overflow-hidden">
