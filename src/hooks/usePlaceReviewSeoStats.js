@@ -4,9 +4,10 @@ import { computePlaceReviewStats } from '../utils/placeReviewStats';
 
 /**
  * Lightweight rating/count fetch for SEO JSON-LD on /place/:slug/reviews.
+ * Returns null while slug is changing or loading (avoids flashing prior place stats).
  */
 export function usePlaceReviewSeoStats(placeSlug) {
-  const [stats, setStats] = useState(null);
+  const [snapshot, setSnapshot] = useState(() => ({ slug: null, stats: null }));
 
   useEffect(() => {
     if (!placeSlug) {
@@ -23,10 +24,10 @@ export function usePlaceReviewSeoStats(placeSlug) {
         if (cancelled) return;
         if (error) {
           console.error('[usePlaceReviewSeoStats]', error);
-          setStats(computePlaceReviewStats([]));
+          setSnapshot({ slug: placeSlug, stats: computePlaceReviewStats([]) });
           return;
         }
-        setStats(computePlaceReviewStats(data || []));
+        setSnapshot({ slug: placeSlug, stats: computePlaceReviewStats(data || []) });
       });
 
     return () => {
@@ -34,5 +35,8 @@ export function usePlaceReviewSeoStats(placeSlug) {
     };
   }, [placeSlug]);
 
-  return stats;
+  if (!placeSlug || snapshot.slug !== placeSlug) {
+    return null;
+  }
+  return snapshot.stats;
 }

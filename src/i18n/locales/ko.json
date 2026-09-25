@@ -1102,7 +1102,8 @@
       "emptyMine": "작성한 리뷰가 없습니다.",
       "emptyAll": "아직 작성된 리뷰가 없습니다.",
       "blogBadge": "블로그",
-      "galleryViewerAlt": "갤러리 뷰어 이미지"
+      "galleryViewerAlt": "갤러리 뷰어 이미지",
+      "thumbnailPreviewAria": "리뷰 사진 미리보기"
     },
     "common": {
       "bookmark": "즐겨찾기",

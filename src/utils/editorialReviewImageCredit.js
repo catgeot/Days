@@ -54,6 +54,14 @@ export function resolveEditorialReviewImageCredit(img) {
   return null;
 }
 
+/** Thumbnail caption: Unsplash photographer / photo page metadata only (not plain credit lines). */
+export function hasUnsplashReviewImageAttribution(img) {
+  if (!img || typeof img !== 'object') return false;
+  const photographer = String(img.photographer || img.photographer_name || '').trim();
+  const unsplash = String(img.unsplash_url || img.html_link || '').trim();
+  return Boolean(photographer || unsplash);
+}
+
 export function collectUniqueEditorialReviewImageCredits(images) {
   if (!Array.isArray(images) || images.length === 0) return [];
 

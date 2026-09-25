@@ -1332,7 +1332,8 @@
       "emptyMine": "You haven't written any reviews yet.",
       "emptyAll": "No reviews yet.",
       "blogBadge": "Blog",
-      "galleryViewerAlt": "Gallery viewer image"
+      "galleryViewerAlt": "Gallery viewer image",
+      "thumbnailPreviewAria": "Review photo preview"
     },
     "common": {
       "bookmark": "Bookmark",

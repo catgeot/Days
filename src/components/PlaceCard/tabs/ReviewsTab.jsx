@@ -11,24 +11,25 @@ import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLan
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
-import { collectUniqueEditorialReviewImageCredits } from '../../../utils/editorialReviewImageCredit';
+import { collectUniqueEditorialReviewImageCredits, hasUnsplashReviewImageAttribution, resolveEditorialReviewImageCredit } from '../../../utils/editorialReviewImageCredit';
 import {
   getCollapsedPreviewText,
   getGalleryImageEntries,
+  getReviewLeadThumbnailImageIndex,
   hasReviewContentBlocks,
   normalizeReviewContentBlocks,
   resolveReviewImageSrc,
   resolveReviewThumbnailSrc,
-  reviewHasHiddenMediaWhenCollapsed,
+  shouldShowReviewBottomGallery,
+  shouldShowReviewExpandToggle,
 } from '../../../utils/placeReviewContentBlocks';
-import { resolveEditorialReviewImageCredit } from '../../../utils/editorialReviewImageCredit';
 
 const EditorialReviewImageCredits = ({ images, compact = false }) => {
   const credits = collectUniqueEditorialReviewImageCredits(images);
   if (credits.length === 0) return null;
 
   const className = compact
-    ? 'mt-0.5 text-[9px] text-gray-400 leading-tight text-right'
+    ? 'mt-0.5 text-[9px] text-gray-400 leading-none text-right w-full min-w-0 truncate whitespace-nowrap overflow-hidden'
     : 'mt-1.5 text-[10px] text-gray-400 leading-snug';
 
   return (
@@ -95,21 +96,55 @@ const EditorialReviewImageCredits = ({ images, compact = false }) => {
   );
 };
 
-const CollapsedReviewLeadThumbnail = ({ review, onImageClick }) => {
-  const images = review.images || [];
-  if (images.length === 0) return null;
-  const firstImg = images[0];
-  const thumbSrc = resolveReviewThumbnailSrc(firstImg);
-  if (!thumbSrc) return null;
-  const showCredit = Boolean(resolveEditorialReviewImageCredit(firstImg));
+const ReviewThumbnailUnsplashCredit = ({ img }) => {
+  if (!hasUnsplashReviewImageAttribution(img)) return null;
+  const credit = resolveEditorialReviewImageCredit(img);
+  if (!credit || credit.type !== 'unsplash') return null;
 
   return (
-    <div className="shrink-0 w-[4.25rem] sm:w-[4.75rem] flex flex-col gap-0.5">
+    <p className="mt-0.5 text-[9px] text-gray-400 leading-none text-right w-full min-w-0 truncate whitespace-nowrap overflow-hidden">
+      Photo:{' '}
+      {credit.photographerHref ? (
+        <a
+          href={credit.photographerHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+        >
+          {credit.photographerName || 'Photographer'}
+        </a>
+      ) : (
+        credit.photographerName
+      )}
+      {' / '}
+      <a
+        href={credit.unsplashHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+      >
+        Unsplash
+      </a>
+    </p>
+  );
+};
+
+const CollapsedReviewLeadThumbnail = ({ review, onImageClick }) => {
+  const { t } = useTranslation();
+  const images = review.images || [];
+  const leadIndex = getReviewLeadThumbnailImageIndex(review);
+  if (leadIndex == null || leadIndex >= images.length) return null;
+  const leadImg = images[leadIndex];
+  const thumbSrc = resolveReviewThumbnailSrc(leadImg);
+  if (!thumbSrc) return null;
+
+  return (
+    <div className="shrink-0 w-[4.25rem] sm:w-[4.75rem] flex flex-col gap-0.5 min-w-0">
       <button
         type="button"
-        onClick={() => onImageClick(images, 0)}
+        onClick={() => onImageClick(images, leadIndex)}
         className="block w-full aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-100 cursor-pointer hover:opacity-95 transition-opacity"
-        aria-label="review preview"
+        aria-label={t('place.reviews.thumbnailPreviewAria')}
       >
         <img
           src={thumbSrc}
@@ -125,7 +160,7 @@ const CollapsedReviewLeadThumbnail = ({ review, onImageClick }) => {
           }}
         />
       </button>
-      {showCredit ? <EditorialReviewImageCredits images={[firstImg]} compact /> : null}
+      <ReviewThumbnailUnsplashCredit img={leadImg} />
     </div>
   );
 };
@@ -217,9 +252,9 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
   const galleryEntries = usesContentBlocks
     ? getGalleryImageEntries(review.images, review.content_blocks)
     : (review.images || []).map((img, index) => ({ img, index }));
-  const showExpandToggle = usesContentBlocks
-    ? collapsedPreviewText.length > 120 || reviewHasHiddenMediaWhenCollapsed(review)
-    : (review.content || '').length > 120;
+  const showExpandToggle = shouldShowReviewExpandToggle(review);
+  const showBottomGallery = shouldShowReviewBottomGallery(review, isExpanded);
+  const leadThumbnailIndex = getReviewLeadThumbnailImageIndex(review);
 
   const renderInlineImage = (imageIndex, blockKey) => {
     const images = review.images || [];
@@ -345,12 +380,12 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
             </button>
           )}
         </div>
-        {!isExpanded && (review.images?.length ?? 0) >= 1 ? (
+        {!isExpanded && leadThumbnailIndex != null ? (
           <CollapsedReviewLeadThumbnail review={review} onImageClick={onImageClick} />
         ) : null}
       </div>
 
-      {(!usesContentBlocks || isExpanded) && galleryEntries.length > 0 && (
+      {showBottomGallery && (
         <div className="mt-4">
           <div className="flex gap-2 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {galleryEntries.map(({ img, index: idx }) => {
