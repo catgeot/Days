@@ -101,7 +101,7 @@ export default function LogbookBody({
   imageClass = 'w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer',
   showImageOverlay = true,
   showEditorialImageCredits = false,
-  imageMaxWidth = 960,
+  imageMaxWidth = 1200,
 }) {
   const { t } = useTranslation();
   const parts = useMemo(() => splitLogbookPhotoPlaceholders(content), [content]);
@@ -116,15 +116,13 @@ export default function LogbookBody({
           const img = images[photoIndex];
           const url = resolveLogbookDisplaySrc(img, { maxWidth: imageMaxWidth });
           if (!url) return null;
-          const isFirstPhoto =
-            parts.slice(0, index).every((p) => parseLogbookPhotoIndex(p) === null);
           return (
             <div key={`photo-${index}`} className={imageFrameClass}>
               <img
                 src={url}
                 alt={t('logbook.common.attachment', { n: photoIndex + 1 })}
                 className={imageClass}
-                loading={isFirstPhoto ? 'eager' : 'lazy'}
+                loading="lazy"
                 decoding="async"
                 onClick={() => window.open(url, '_blank')}
               />

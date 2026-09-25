@@ -127,7 +127,7 @@ const PublicViewer = () => {
   if (!report) return <div className="min-h-screen bg-white flex justify-center items-center text-gray-400 animate-pulse">{t('logbook.common.loadingFragments')}</div>;
 
   const editorial = isEditorialLogbook(report);
-  const imageUrls = logbookImageUrlList(report.images, { maxWidth: editorial ? 800 : 960 });
+  const imageUrls = logbookImageUrlList(report.images);
   const heroImageUrl = logbookHeroImageUrl(report.images, { thumbnail: true });
   const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
   const displayDate = formatLogbookDisplayDate(report);
@@ -202,7 +202,7 @@ const PublicViewer = () => {
                   <img
                     src={imgUrl}
                     alt={t('logbook.common.attachment', { n: idx + 1 })}
-                    loading={idx === 0 ? 'eager' : 'lazy'}
+                    loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover border border-gray-200"
                   />
@@ -220,7 +220,7 @@ const PublicViewer = () => {
               images={report.images || []}
               imageFrameClass="my-10 group relative rounded-2xl overflow-hidden shadow-sm border border-gray-200"
               imageClass="w-full h-auto object-cover"
-              imageMaxWidth={800}
+              imageMaxWidth={1200}
               showImageOverlay={false}
               showEditorialImageCredits={editorial}
             />
