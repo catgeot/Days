@@ -10,6 +10,35 @@ function normalizePlain(text) {
   return String(text || '').replace(/\s+/g, ' ').trim();
 }
 
+const MARKDOWN_NUMBERED_HEADING_RE = /^#{1,6}\s*\d+\.\s/;
+const PLAIN_NUMBERED_HEADING_RE = /^\d+\.\s+\S/;
+
+function isNumberedSectionHeadingOnly(block) {
+  const trimmed = String(block || '').trim();
+  if (!trimmed) return false;
+  if (MARKDOWN_NUMBERED_HEADING_RE.test(trimmed)) {
+    const lines = trimmed.split('\n').map((line) => line.trim()).filter(Boolean);
+    return lines.every((line) => MARKDOWN_NUMBERED_HEADING_RE.test(line));
+  }
+
+  const stripped = stripLogbookMarkdownSnippet(trimmed, 0);
+  if (!PLAIN_NUMBERED_HEADING_RE.test(stripped)) return false;
+
+  const lines = trimmed.split('\n').map((line) => line.trim()).filter(Boolean);
+  const strippedLines = lines
+    .map((line) => stripLogbookMarkdownSnippet(line, 0))
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  return strippedLines.length > 0 && strippedLines.every((line) => PLAIN_NUMBERED_HEADING_RE.test(line));
+}
+
+function leadFromBlock(block) {
+  const lead = stripLogbookMarkdownSnippet(block, 0).trim();
+  if (!lead || isNumberedSectionHeadingOnly(block)) return '';
+  return lead;
+}
+
 export function extractLogbookLeadParagraph(raw) {
   if (!raw || typeof raw !== 'string') return '';
   const normalized = raw.replace(/\r\n/g, '\n').trim();
@@ -17,8 +46,19 @@ export function extractLogbookLeadParagraph(raw) {
     .split(/\n\s*\n/)
     .map((block) => block.trim())
     .filter(Boolean);
-  const first = blocks[0] || normalized.split('\n').find((line) => line.trim()) || '';
-  return stripLogbookMarkdownSnippet(first, 0);
+
+  for (const block of blocks) {
+    const lead = leadFromBlock(block);
+    if (lead) return lead;
+  }
+
+  const lines = normalized.split('\n').map((line) => line.trim()).filter(Boolean);
+  for (const line of lines) {
+    const lead = leadFromBlock(line);
+    if (lead) return lead;
+  }
+
+  return '';
 }
 
 /**

@@ -20,4 +20,16 @@ assert.equal(resolveLogbookDek({ title: longTitle, dek: longTitle, content: lead
 assert.equal(resolveLogbookDek({ title: '제목만', content: '' }), '');
 assert.ok(resolveLogbookFeedExcerpt(report).includes('석양'));
 
+const numberedSectionContent = '## 1. 여행지 선정 이유\n\nactual lead paragraph here.';
+const numberedLead = 'actual lead paragraph here.';
+assert.equal(extractLogbookLeadParagraph(numberedSectionContent), numberedLead);
+assert.equal(
+  resolveLogbookDek({ title: '짧은 제목', content: numberedSectionContent }),
+  numberedLead,
+);
+assert.equal(
+  resolveLogbookFeedExcerpt({ title: '짧은 제목', content: numberedSectionContent }),
+  numberedLead,
+);
+
 console.log('smoke-logbook-dek: OK');
