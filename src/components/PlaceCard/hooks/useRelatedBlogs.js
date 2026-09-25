@@ -25,7 +25,10 @@ export const useRelatedBlogs = (locationName) => {
             location,
             images,
             created_at,
-            user_id
+            user_id,
+            is_editorial,
+            slug,
+            status
           `)
           .eq('is_public', true)
           .eq('is_deleted', false)
@@ -34,7 +37,10 @@ export const useRelatedBlogs = (locationName) => {
           .limit(5);
 
         if (error) throw error;
-        const rows = await attachAuthorLabels(data || []);
+        const visible = (data || []).filter(
+          (row) => !row.is_editorial || String(row.status || '').toLowerCase() === 'published',
+        );
+        const rows = await attachAuthorLabels(visible);
         setBlogs(rows);
       } catch (error) {
         console.error('Error fetching related blogs:', error);

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '../../../shared/api/supabase';
 import { attachAuthorLabels } from '../utils/reportAuthor';
+import { sortLogbookFeedRows } from '../../../utils/logbookEditorial';
 
 export const useDashboardData = () => {
   const location = useLocation();
@@ -49,7 +50,7 @@ export const useDashboardData = () => {
     }
 
     if (!error && rows) {
-      setReports(rows);
+      setReports(sortLogbookFeedRows(rows));
       const dataYears = rows.map(r => new Date(r.date).getFullYear());
       const now = new Date();
       const baseYears = [now.getFullYear(), now.getFullYear() - 1];

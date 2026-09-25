@@ -7,6 +7,8 @@ import {
   parseLogbookPhotoIndex,
   splitLogbookPhotoPlaceholders,
 } from '../utils/logbookMarkdownSnippet.js';
+import { resolveLogbookImageSrc } from '../../../utils/logbookImageSrc.js';
+import EditorialLogbookImageCredits from './EditorialLogbookImageCredits.jsx';
 
 const sanitizeSchema = {
   ...defaultSchema,
@@ -98,6 +100,7 @@ export default function LogbookBody({
   imageFrameClass = 'my-10 group relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50',
   imageClass = 'w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer',
   showImageOverlay = true,
+  showEditorialImageCredits = false,
 }) {
   const { t } = useTranslation();
   const parts = useMemo(() => splitLogbookPhotoPlaceholders(content), [content]);
@@ -109,7 +112,8 @@ export default function LogbookBody({
       {parts.map((part, index) => {
         const photoIndex = parseLogbookPhotoIndex(part);
         if (photoIndex !== null) {
-          const url = images[photoIndex];
+          const img = images[photoIndex];
+          const url = resolveLogbookImageSrc(img);
           if (!url) return null;
           return (
             <div key={`photo-${index}`} className={imageFrameClass}>
@@ -122,6 +126,9 @@ export default function LogbookBody({
               {showImageOverlay && (
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
               )}
+              {showEditorialImageCredits ? (
+                <EditorialLogbookImageCredits images={[img]} className="mt-2 px-1" />
+              ) : null}
             </div>
           );
         }

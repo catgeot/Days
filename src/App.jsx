@@ -132,6 +132,7 @@ function App() {
             </Route>
 
             <Route path="/p/:id" element={<PublicViewer />} />
+            <Route path="/blog/e/:editorialSlug" element={<PublicViewer />} />
 
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/signup" element={<Signup />} />

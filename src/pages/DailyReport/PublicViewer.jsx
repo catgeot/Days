@@ -1,15 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { MapPin, Home, Compass, PenTool, ArrowLeft, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import { reportAuthorLabel } from './utils/reportAuthor';
 import LogbookBody from './components/LogbookBody';
+import EditorialLogbookBadge from './components/EditorialLogbookBadge';
+import EditorialLogbookImageCredits from './components/EditorialLogbookImageCredits';
 import { LOGBOOK_PHOTO_PLACEHOLDER_RE } from './utils/logbookMarkdownSnippet';
+import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
+import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
+import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
+import SEO from '../../components/SEO';
+
+const SCHEMA_TYPE = 'EditorialLogbookArticle';
+
+function upsertEditorialJsonLd(schema) {
+  const selector = `script[data-schema-type="${SCHEMA_TYPE}"]`;
+  document.querySelector(selector)?.remove();
+  if (!schema) return;
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.setAttribute('data-schema-type', SCHEMA_TYPE);
+  script.textContent = JSON.stringify(schema, null, 2);
+  document.head.appendChild(script);
+}
 
 const PublicViewer = () => {
   const { t } = useTranslation();
-  const { id } = useParams();
+  const { id, editorialSlug } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
@@ -17,39 +37,79 @@ const PublicViewer = () => {
 
   useEffect(() => {
     const fetchPublicReport = async () => {
-      if (!id) {
+      if (!id && !editorialSlug) {
         navigate('/', { replace: true });
         return;
       }
 
-      const { data, error } = await supabase
-        .from('reports')
-        .select('*')
-        .eq('id', id)
-        .eq('is_public', true)
-        .neq('is_deleted', true)
-        .single();
+      let query = supabase.from('reports').select('*').neq('is_deleted', true);
+
+      if (editorialSlug) {
+        query = query
+          .eq('is_editorial', true)
+          .eq('slug', editorialSlug)
+          .eq('status', 'published');
+      } else {
+        query = query.eq('id', id).eq('is_public', true);
+      }
+
+      const { data, error } = await query.single();
 
       if (error || !data) {
-        console.warn("[Safe Path] 비공개되었거나 존재하지 않는 기록 접근 차단");
+        console.warn('[Safe Path] 비공개되었거나 존재하지 않는 기록 접근 차단');
         setErrorMsg(t('logbook.public.notFound'));
         setAuthorLabel('');
-      } else {
-        setReport(data);
-        let displayName = '';
-        if (data.user_id) {
-          const { data: prof } = await supabase
-            .from('profiles')
-            .select('display_name')
-            .eq('id', data.user_id)
-            .maybeSingle();
-          displayName = prof?.display_name || '';
-        }
-        setAuthorLabel(reportAuthorLabel(data.user_id, displayName));
+        setReport(null);
+        return;
       }
+
+      if (isEditorialLogbook(data) && !isEditorialLogbookPublished(data)) {
+        setErrorMsg(t('logbook.public.notFound'));
+        setReport(null);
+        return;
+      }
+
+      setReport(data);
+      setErrorMsg('');
+
+      if (isEditorialLogbook(data)) {
+        setAuthorLabel('');
+        return;
+      }
+
+      let displayName = '';
+      if (data.user_id) {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('display_name')
+          .eq('id', data.user_id)
+          .maybeSingle();
+        displayName = prof?.display_name || '';
+      }
+      setAuthorLabel(reportAuthorLabel(data.user_id, displayName));
     };
-    fetchPublicReport();
-  }, [id, navigate]);
+    void fetchPublicReport();
+  }, [id, editorialSlug, navigate, t]);
+
+  const pageUrl = useMemo(() => {
+    if (!report) return '';
+    if (isEditorialLogbook(report) && report.slug) {
+      return `https://www.gateo.kr/blog/e/${report.slug}`;
+    }
+    return `${window.location.origin}/p/${report.id}`;
+  }, [report]);
+
+  const editorialJsonLd = useMemo(
+    () => (report && isEditorialLogbook(report) ? buildEditorialLogbookJsonLd(report, pageUrl) : null),
+    [report, pageUrl],
+  );
+
+  useEffect(() => {
+    upsertEditorialJsonLd(editorialJsonLd);
+    return () => {
+      document.querySelector(`script[data-schema-type="${SCHEMA_TYPE}"]`)?.remove();
+    };
+  }, [editorialJsonLd]);
 
   if (errorMsg) {
     return (
@@ -65,13 +125,28 @@ const PublicViewer = () => {
 
   if (!report) return <div className="min-h-screen bg-white flex justify-center items-center text-gray-400 animate-pulse">{t('logbook.common.loadingFragments')}</div>;
 
-  const images = report.images || [];
-  const heroImageUrl = images[0] || null;
+  const editorial = isEditorialLogbook(report);
+  const imageUrls = logbookImageUrlList(report.images);
+  const heroImageUrl = logbookHeroImageUrl(report.images);
   const hasPlaceholders = LOGBOOK_PHOTO_PLACEHOLDER_RE.test(report.content);
+  const displayDate = report.published_at || report.date;
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
-      {/* 탈출 버튼(좌측 상단 고정 플로팅) 추가 */}
+      {editorial ? (
+        <SEO
+          title={report.title}
+          description={report.disclosure_badge || undefined}
+          url={report.slug ? `/blog/e/${report.slug}` : `/p/${report.id}`}
+          image={heroImageUrl}
+          type="article"
+        />
+      ) : (
+        <Helmet>
+          <link rel="canonical" href={pageUrl} />
+        </Helmet>
+      )}
+
       <button
         onClick={() => navigate(-1)}
         className="fixed top-6 left-6 sm:top-8 sm:left-8 z-50 flex items-center justify-center w-12 h-12 bg-white/80 hover:bg-white text-gray-700 hover:text-gray-900 rounded-full shadow-md backdrop-blur-md transition-all hover:scale-105 border border-gray-200"
@@ -82,17 +157,27 @@ const PublicViewer = () => {
 
       {heroImageUrl && (
         <div className="absolute inset-0 z-0 opacity-10 transition-opacity duration-700 pointer-events-none">
-          <img src={heroImageUrl} alt="Hero" className="w-full h-full object-cover blur-3xl scale-110" />
+          <img src={heroImageUrl} alt="" className="w-full h-full object-cover blur-3xl scale-110" />
           <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/80 to-white"></div>
         </div>
       )}
 
       <div className="relative z-10 max-w-3xl mx-auto pt-12 px-4 sm:px-6">
-        <div className="bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm mt-8">
+        <div
+          className={`bg-white/60 backdrop-blur-xl border p-6 sm:p-10 rounded-3xl shadow-sm mt-8 ${
+            editorial ? 'border-indigo-200/80 ring-1 ring-indigo-100/60' : 'border-gray-200'
+          }`}
+        >
+          {editorial ? (
+            <div className="mb-5">
+              <EditorialLogbookBadge report={report} />
+            </div>
+          ) : null}
+
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{report.date}</span>
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{displayDate}</span>
             <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
-            {authorLabel && (
+            {!editorial && authorLabel && (
               <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
                 <User size={14} className="text-gray-400 shrink-0" />
                 <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
@@ -102,11 +187,14 @@ const PublicViewer = () => {
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-10 tracking-tight leading-tight">{report.title}</h1>
 
-          {!hasPlaceholders && images.length > 0 && (
-            <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden ${images.length === 1 ? 'grid-cols-1' : ''} ${images.length === 2 ? 'grid-cols-2' : ''} ${images.length === 3 ? 'grid-cols-3' : ''} ${images.length >= 4 ? 'grid-cols-2' : ''}`}>
-              {images.map((img, idx) => (
-                <div key={idx} className={`relative group ${images.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
-                  <img src={img} alt={t('logbook.common.attachment', { n: idx + 1 })} className="w-full h-full object-cover border border-gray-200" />
+          {!hasPlaceholders && imageUrls.length > 0 && (
+            <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden ${imageUrls.length === 1 ? 'grid-cols-1' : ''} ${imageUrls.length === 2 ? 'grid-cols-2' : ''} ${imageUrls.length === 3 ? 'grid-cols-3' : ''} ${imageUrls.length >= 4 ? 'grid-cols-2' : ''}`}>
+              {imageUrls.map((imgUrl, idx) => (
+                <div key={idx} className={`relative group ${imageUrls.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
+                  <img src={imgUrl} alt={t('logbook.common.attachment', { n: idx + 1 })} className="w-full h-full object-cover border border-gray-200" />
+                  {editorial && report.images?.[idx] ? (
+                    <EditorialLogbookImageCredits images={[report.images[idx]]} className="absolute bottom-0 left-0 right-0 bg-white/90 px-2 py-1" />
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -115,12 +203,17 @@ const PublicViewer = () => {
           <div className="mt-8">
             <LogbookBody
               content={report.content}
-              images={images}
+              images={report.images || []}
               imageFrameClass="my-10 group relative rounded-2xl overflow-hidden shadow-sm border border-gray-200"
               imageClass="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
               showImageOverlay={false}
+              showEditorialImageCredits={editorial}
             />
           </div>
+
+          {editorial && !hasPlaceholders && report.images?.length ? (
+            <EditorialLogbookImageCredits images={report.images} className="mt-6 border-t border-gray-100 pt-4" />
+          ) : null}
 
           <div className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
             <p className="text-gray-500 text-sm font-medium mb-6">{t('logbook.public.ctaBody')}</p>
