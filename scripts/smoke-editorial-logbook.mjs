@@ -5,8 +5,14 @@ import { fileURLToPath } from 'node:url';
 import { validateEditorialLogbookPayload } from './lib/validate-editorial-logbook-payload.mjs';
 import { buildEditorialLogbookJsonLd } from '../src/pages/DailyReport/lib/logbookEditorialJsonLd.js';
 import {
+  editorialLogbookBadgeLabel,
+  editorialLogbookBadgeLocale,
+  editorialLogbookSecondaryNotice,
   isEditorialLogbook,
+  LOGBOOK_EDITORIAL_BADGE_EN,
+  LOGBOOK_EDITORIAL_BADGE_KO,
   LOGBOOK_EDITORIAL_DISCLOSURE_KO,
+  LOGBOOK_EDITORIAL_SECONDARY_KO,
   publicLogbookDetailPath,
 } from '../src/utils/logbookEditorial.js';
 import { filterPublicLogbookFeedRows } from '../src/utils/logbookPublicFeed.js';
@@ -30,6 +36,29 @@ assert.equal(draft.ok, true);
 assert.equal(draft.data.is_editorial, true);
 assert.equal(draft.data.is_public, false);
 assert.equal(draft.data.disclosure_badge, LOGBOOK_EDITORIAL_DISCLOSURE_KO);
+
+assert.equal(editorialLogbookBadgeLocale({ locale: 'ko' }), 'ko');
+assert.equal(editorialLogbookBadgeLocale({ locale: null }), 'ko');
+assert.equal(editorialLogbookBadgeLocale({}), 'ko');
+assert.equal(editorialLogbookBadgeLocale({ locale: 'en-US' }), 'en-US');
+assert.equal(editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({})), LOGBOOK_EDITORIAL_BADGE_KO);
+assert.equal(
+  editorialLogbookSecondaryNotice(editorialLogbookBadgeLocale({})),
+  LOGBOOK_EDITORIAL_SECONDARY_KO,
+);
+assert.equal(editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({ locale: 'en' })), LOGBOOK_EDITORIAL_BADGE_EN);
+assert.equal(
+  editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({ locale: null })),
+  'GATEO 에디터',
+);
+assert.equal(
+  editorialLogbookSecondaryNotice(editorialLogbookBadgeLocale({ locale: undefined })),
+  'AI 보조 · 실제 방문기 아님',
+);
+assert.ok(
+  !editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({})).includes('·'),
+  'feed chip must be primary label only',
+);
 
 const published = validateEditorialLogbookPayload({
   title: 'Pub',

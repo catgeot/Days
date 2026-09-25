@@ -21,6 +21,12 @@ export function editorialLogbookDisclosure(report) {
   return custom || LOGBOOK_EDITORIAL_DISCLOSURE_KO;
 }
 
+/** Editorial chip copy follows report locale; default KO when unset (not UI i18n). */
+export function editorialLogbookBadgeLocale(report) {
+  const raw = String(report?.locale ?? '').trim();
+  return raw || 'ko';
+}
+
 export function editorialLogbookBadgeLabel(locale) {
   const lang = String(locale || 'ko').toLowerCase();
   return lang.startsWith('en') ? LOGBOOK_EDITORIAL_BADGE_EN : LOGBOOK_EDITORIAL_BADGE_KO;
