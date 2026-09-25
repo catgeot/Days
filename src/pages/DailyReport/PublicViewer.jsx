@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { MapPin, Home, Compass, PenTool, ArrowLeft, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
 import LogbookArticleHead from './components/LogbookArticleHead';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
+import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
 
 const SCHEMA_TYPE = 'EditorialLogbookArticle';
 
@@ -36,6 +37,10 @@ const PublicViewer = () => {
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  const handleBack = useCallback(() => {
+    navigateAppBack(navigate, { fallback: '/blog' });
+  }, [navigate]);
 
   useEffect(() => {
     const fetchPublicReport = async () => {
@@ -152,7 +157,7 @@ const PublicViewer = () => {
 
       <button
         type="button"
-        onClick={() => navigate(-1)}
+        onClick={handleBack}
         aria-label={t('logbook.public.backTitle')}
         title={t('logbook.public.backTitle')}
         className="fixed top-[max(1.25rem,env(safe-area-inset-top,0px))] right-[max(1.25rem,env(safe-area-inset-right,0px))] sm:top-8 sm:right-8 z-50 flex items-center justify-center min-w-11 min-h-11 w-11 h-11 sm:min-w-12 sm:min-h-12 sm:w-12 sm:h-12 rounded-full border-2 border-gray-600/55 bg-white/15 text-gray-800 hover:bg-white/35 hover:border-gray-700/70 backdrop-blur-[2px] shadow-sm transition-colors"
