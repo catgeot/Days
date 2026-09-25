@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowLeft } from 'lucide-react';
 
 const BASE_CLASS =
-  'fixed top-[max(1.25rem,env(safe-area-inset-top,0px))] right-[max(1.25rem,env(safe-area-inset-right,0px))] sm:top-8 sm:right-8 z-50 flex items-center justify-center min-w-11 min-h-11 w-11 h-11 sm:min-w-12 sm:min-h-12 sm:w-12 sm:h-12 rounded-full border-2 backdrop-blur-[2px] shadow-sm transition-colors';
+  'fixed top-[max(1.25rem,env(safe-area-inset-top,0px))] right-[max(1.25rem,env(safe-area-inset-right,0px))] sm:top-8 sm:right-8 z-[60] flex items-center justify-center min-w-11 min-h-11 w-11 h-11 sm:min-w-12 sm:min-h-12 sm:w-12 sm:h-12 rounded-full border-2 backdrop-blur-[2px] shadow-sm transition-colors touch-manipulation pointer-events-auto';
 
 const VARIANT_CLASS = {
   default:
@@ -13,6 +14,7 @@ const VARIANT_CLASS = {
 
 /**
  * Fixed top-right outline back/close — LogBook PublicViewer (#311) parity.
+ * Portaled to document.body so ancestor transform/filter does not break position:fixed.
  */
 export default function AppOutlineBackButton({
   onClick,
@@ -21,9 +23,15 @@ export default function AppOutlineBackButton({
   variant = 'default',
   className = '',
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const toneClass = VARIANT_CLASS[variant] || VARIANT_CLASS.default;
 
-  return (
+  const button = (
     <button
       type="button"
       onClick={onClick}
@@ -34,4 +42,8 @@ export default function AppOutlineBackButton({
       <ArrowLeft size={22} strokeWidth={2.5} aria-hidden="true" />
     </button>
   );
+
+  if (!mounted || typeof document === 'undefined') return null;
+
+  return createPortal(button, document.body);
 }
