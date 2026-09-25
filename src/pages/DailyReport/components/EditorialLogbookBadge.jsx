@@ -1,16 +1,31 @@
 import React from 'react';
-import { Lock } from 'lucide-react';
-import { editorialLogbookDisclosure } from '../../../utils/logbookEditorial';
+import { useTranslation } from 'react-i18next';
+import {
+  editorialLogbookBadgeLabel,
+  editorialLogbookSecondaryNotice,
+} from '../../../utils/logbookEditorial';
 
-export default function EditorialLogbookBadge({ report, className = '' }) {
-  const text = editorialLogbookDisclosure(report);
+const chipClassName =
+  'inline-flex items-center text-[11px] font-medium text-gray-600 bg-gray-50 border border-gray-200/90 px-2 py-0.5 rounded-full leading-snug';
 
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 text-[11px] font-semibold text-indigo-900 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-md leading-snug ${className}`}
-    >
-      <Lock size={12} className="shrink-0 text-indigo-700" aria-hidden />
-      <span>{text}</span>
-    </span>
-  );
+export default function EditorialLogbookBadge({ report, variant = 'feed', className = '' }) {
+  const { t, i18n } = useTranslation();
+  const locale = report?.locale || i18n.language;
+  const primary = t('logbook.editorial.badge', {
+    defaultValue: editorialLogbookBadgeLabel(locale),
+  });
+
+  if (variant === 'detail') {
+    const secondary = t('logbook.editorial.secondaryNotice', {
+      defaultValue: editorialLogbookSecondaryNotice(locale),
+    });
+    return (
+      <div className={`flex flex-col gap-1 ${className}`.trim()}>
+        <span className={chipClassName}>{primary}</span>
+        <p className="text-[11px] text-gray-500 leading-snug">{secondary}</p>
+      </div>
+    );
+  }
+
+  return <span className={`${chipClassName} ${className}`.trim()}>{primary}</span>;
 }

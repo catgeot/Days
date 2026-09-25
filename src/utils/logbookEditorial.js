@@ -1,5 +1,10 @@
-export const LOGBOOK_EDITORIAL_DISCLOSURE_KO =
-  'GATEO 에디터 · AI 보조 · 실제 방문기 아님';
+export const LOGBOOK_EDITORIAL_BADGE_KO = 'GATEO 에디터';
+export const LOGBOOK_EDITORIAL_SECONDARY_KO = 'AI 보조 · 실제 방문기 아님';
+
+export const LOGBOOK_EDITORIAL_BADGE_EN = 'GATEO Editor';
+export const LOGBOOK_EDITORIAL_SECONDARY_EN = 'AI-assisted · not a personal trip report';
+
+export const LOGBOOK_EDITORIAL_DISCLOSURE_KO = `${LOGBOOK_EDITORIAL_BADGE_KO} · ${LOGBOOK_EDITORIAL_SECONDARY_KO}`;
 
 export const LOGBOOK_EDITORIAL_PUBLISH_STATUSES = ['draft', 'published', 'archived'];
 
@@ -14,6 +19,16 @@ export function isEditorialLogbookPublished(report) {
 export function editorialLogbookDisclosure(report) {
   const custom = String(report?.disclosure_badge || '').trim();
   return custom || LOGBOOK_EDITORIAL_DISCLOSURE_KO;
+}
+
+export function editorialLogbookBadgeLabel(locale) {
+  const lang = String(locale || 'ko').toLowerCase();
+  return lang.startsWith('en') ? LOGBOOK_EDITORIAL_BADGE_EN : LOGBOOK_EDITORIAL_BADGE_KO;
+}
+
+export function editorialLogbookSecondaryNotice(locale) {
+  const lang = String(locale || 'ko').toLowerCase();
+  return lang.startsWith('en') ? LOGBOOK_EDITORIAL_SECONDARY_EN : LOGBOOK_EDITORIAL_SECONDARY_KO;
 }
 
 export function sortLogbookFeedRows(rows) {

@@ -178,8 +178,8 @@ const PublicViewer = () => {
           }`}
         >
           {editorial ? (
-            <div className="mb-5">
-              <EditorialLogbookBadge report={report} />
+            <div className="mb-3">
+              <EditorialLogbookBadge report={report} variant="detail" />
             </div>
           ) : null}
 

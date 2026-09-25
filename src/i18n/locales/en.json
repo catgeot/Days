@@ -2049,6 +2049,10 @@
       "traveler": "Traveler",
       "attachment": "Attachment {{n}}"
     },
+    "editorial": {
+      "badge": "GATEO Editor",
+      "secondaryNotice": "AI-assisted · not a personal trip report"
+    },
     "sidebar": {
       "travelLogTitle": "Your travel log",
       "travelLogBody": "Sign in to write reviews and vivid travel stories from around the world."
