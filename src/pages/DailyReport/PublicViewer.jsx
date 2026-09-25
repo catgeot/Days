@@ -151,11 +151,13 @@ const PublicViewer = () => {
       )}
 
       <button
+        type="button"
         onClick={() => navigate(-1)}
-        className="fixed top-6 left-6 sm:top-8 sm:left-8 z-50 flex items-center justify-center w-12 h-12 bg-white/80 hover:bg-white text-gray-700 hover:text-gray-900 rounded-full shadow-md backdrop-blur-md transition-all hover:scale-105 border border-gray-200"
+        aria-label={t('logbook.public.backTitle')}
         title={t('logbook.public.backTitle')}
+        className="fixed top-[max(1.25rem,env(safe-area-inset-top,0px))] right-[max(1.25rem,env(safe-area-inset-right,0px))] sm:top-8 sm:right-8 z-50 flex items-center justify-center min-w-11 min-h-11 w-11 h-11 sm:min-w-12 sm:min-h-12 sm:w-12 sm:h-12 rounded-full border-2 border-gray-600/55 bg-white/15 text-gray-800 hover:bg-white/35 hover:border-gray-700/70 backdrop-blur-[2px] shadow-sm transition-colors"
       >
-        <ArrowLeft size={24} strokeWidth={2.5} />
+        <ArrowLeft size={22} strokeWidth={2.5} aria-hidden="true" />
       </button>
 
       {showDecorativeHeroBlur && (
