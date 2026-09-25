@@ -11,6 +11,7 @@ import EditorialLogbookImageCredits from './components/EditorialLogbookImageCred
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
+import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
 
@@ -89,7 +90,7 @@ const PublicViewer = () => {
       setAuthorLabel(reportAuthorLabel(data.user_id, displayName));
     };
     void fetchPublicReport();
-  }, [id, editorialSlug, navigate, t]);
+  }, [id, editorialSlug, navigate]);
 
   const pageUrl = useMemo(() => {
     if (!report) return '';
@@ -127,9 +128,10 @@ const PublicViewer = () => {
 
   const editorial = isEditorialLogbook(report);
   const imageUrls = logbookImageUrlList(report.images);
-  const heroImageUrl = logbookHeroImageUrl(report.images);
+  const heroImageUrl = logbookHeroImageUrl(report.images, { thumbnail: true });
   const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
-  const displayDate = report.published_at || report.date;
+  const displayDate = formatLogbookDisplayDate(report);
+  const showDecorativeHeroBlur = Boolean(heroImageUrl && !editorial);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -155,9 +157,15 @@ const PublicViewer = () => {
         <ArrowLeft size={24} strokeWidth={2.5} />
       </button>
 
-      {heroImageUrl && (
-        <div className="absolute inset-0 z-0 opacity-10 transition-opacity duration-700 pointer-events-none">
-          <img src={heroImageUrl} alt="" className="w-full h-full object-cover blur-3xl scale-110" />
+      {showDecorativeHeroBlur && (
+        <div className="absolute inset-0 z-0 opacity-10 transition-opacity duration-700 pointer-events-none hidden md:block" aria-hidden>
+          <img
+            src={heroImageUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover blur-3xl scale-110"
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/80 to-white"></div>
         </div>
       )}
@@ -191,7 +199,13 @@ const PublicViewer = () => {
             <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden ${imageUrls.length === 1 ? 'grid-cols-1' : ''} ${imageUrls.length === 2 ? 'grid-cols-2' : ''} ${imageUrls.length === 3 ? 'grid-cols-3' : ''} ${imageUrls.length >= 4 ? 'grid-cols-2' : ''}`}>
               {imageUrls.map((imgUrl, idx) => (
                 <div key={idx} className={`relative group ${imageUrls.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
-                  <img src={imgUrl} alt={t('logbook.common.attachment', { n: idx + 1 })} className="w-full h-full object-cover border border-gray-200" />
+                  <img
+                    src={imgUrl}
+                    alt={t('logbook.common.attachment', { n: idx + 1 })}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover border border-gray-200"
+                  />
                   {editorial && report.images?.[idx] ? (
                     <EditorialLogbookImageCredits images={[report.images[idx]]} className="absolute bottom-0 left-0 right-0 bg-white/90 px-2 py-1" />
                   ) : null}
@@ -205,7 +219,8 @@ const PublicViewer = () => {
               content={report.content}
               images={report.images || []}
               imageFrameClass="my-10 group relative rounded-2xl overflow-hidden shadow-sm border border-gray-200"
-              imageClass="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
+              imageClass="w-full h-auto object-cover"
+              imageMaxWidth={1200}
               showImageOverlay={false}
               showEditorialImageCredits={editorial}
             />

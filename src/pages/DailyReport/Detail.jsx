@@ -9,6 +9,7 @@ import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } fro
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LogbookBody from './components/LogbookBody';
+import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 
 const Detail = () => {
@@ -240,7 +241,7 @@ const Detail = () => {
 
         <div className="bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm">
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{report.date}</span>
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{formatLogbookDisplayDate(report)}</span>
             <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
           </div>
 
