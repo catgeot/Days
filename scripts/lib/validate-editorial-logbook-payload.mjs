@@ -20,6 +20,9 @@ export function validateEditorialLogbookPayload(payload) {
     errors.push('slug is required (lowercase kebab-case)');
   }
   if (!content) errors.push('content is required');
+  if (/\[LOGBOOK_PHOTO:/i.test(content)) {
+    errors.push('content must use [사진 1] style placeholders, not [LOGBOOK_PHOTO:n]');
+  }
   if (!placeSlug) errors.push('place_slug is required');
   if (!LOGBOOK_EDITORIAL_PUBLISH_STATUSES.includes(status)) {
     errors.push(`status must be one of: ${LOGBOOK_EDITORIAL_PUBLISH_STATUSES.join(', ')}`);

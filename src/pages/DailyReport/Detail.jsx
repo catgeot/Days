@@ -9,7 +9,7 @@ import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } fro
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LogbookBody from './components/LogbookBody';
-import { LOGBOOK_PHOTO_PLACEHOLDER_RE } from './utils/logbookMarkdownSnippet';
+import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 
 const Detail = () => {
   const { t } = useTranslation();
@@ -172,7 +172,7 @@ const Detail = () => {
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
-  const hasPlaceholders = LOGBOOK_PHOTO_PLACEHOLDER_RE.test(report.content);
+  const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">

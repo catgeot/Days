@@ -8,7 +8,7 @@ import { reportAuthorLabel } from './utils/reportAuthor';
 import LogbookBody from './components/LogbookBody';
 import EditorialLogbookBadge from './components/EditorialLogbookBadge';
 import EditorialLogbookImageCredits from './components/EditorialLogbookImageCredits';
-import { LOGBOOK_PHOTO_PLACEHOLDER_RE } from './utils/logbookMarkdownSnippet';
+import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
@@ -128,7 +128,7 @@ const PublicViewer = () => {
   const editorial = isEditorialLogbook(report);
   const imageUrls = logbookImageUrlList(report.images);
   const heroImageUrl = logbookHeroImageUrl(report.images);
-  const hasPlaceholders = LOGBOOK_PHOTO_PLACEHOLDER_RE.test(report.content);
+  const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
   const displayDate = report.published_at || report.date;
 
   return (

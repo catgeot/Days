@@ -1,6 +1,55 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { attachAuthorLabels } from '../../../pages/DailyReport/utils/reportAuthor';
+import { isReportsMissingColumnError } from '../../../utils/reportsSchemaFallback';
+import { filterPublicLogbookFeedRows } from '../../../utils/logbookPublicFeed';
+
+const RELATED_BLOGS_SELECT_LEGACY = `
+  id,
+  title,
+  date,
+  location,
+  images,
+  created_at,
+  user_id
+`;
+
+const RELATED_BLOGS_SELECT_EDITORIAL = `
+  id,
+  title,
+  date,
+  location,
+  images,
+  created_at,
+  user_id,
+  is_editorial,
+  slug,
+  status
+`;
+
+function buildRelatedBlogsQuery(selectList, locationName) {
+  return supabase
+    .from('reports')
+    .select(selectList)
+    .eq('is_public', true)
+    .eq('is_deleted', false)
+    .ilike('location', `%${locationName}%`)
+    .order('date', { ascending: false })
+    .limit(5);
+}
+
+async function fetchRelatedBlogRows(locationName) {
+  let { data, error } = await buildRelatedBlogsQuery(RELATED_BLOGS_SELECT_EDITORIAL, locationName);
+
+  if (error && isReportsMissingColumnError(error)) {
+    const fallback = await buildRelatedBlogsQuery(RELATED_BLOGS_SELECT_LEGACY, locationName);
+    data = fallback.data;
+    error = fallback.error;
+  }
+
+  if (error) throw error;
+  return filterPublicLogbookFeedRows(data || []);
+}
 
 export const useRelatedBlogs = (locationName) => {
   const [blogs, setBlogs] = useState([]);
@@ -16,30 +65,7 @@ export const useRelatedBlogs = (locationName) => {
 
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('reports')
-          .select(`
-            id,
-            title,
-            date,
-            location,
-            images,
-            created_at,
-            user_id,
-            is_editorial,
-            slug,
-            status
-          `)
-          .eq('is_public', true)
-          .eq('is_deleted', false)
-          .ilike('location', `%${locationName}%`)
-          .order('date', { ascending: false })
-          .limit(5);
-
-        if (error) throw error;
-        const visible = (data || []).filter(
-          (row) => !row.is_editorial || String(row.status || '').toLowerCase() === 'published',
-        );
+        const visible = await fetchRelatedBlogRows(locationName);
         const rows = await attachAuthorLabels(visible);
         setBlogs(rows);
       } catch (error) {
@@ -50,7 +76,7 @@ export const useRelatedBlogs = (locationName) => {
       }
     };
 
-    fetchBlogs();
+    void fetchBlogs();
   }, [locationName]);
 
   return { blogs, isLoading };

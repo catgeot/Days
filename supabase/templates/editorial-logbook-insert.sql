@@ -26,7 +26,7 @@ INSERT INTO public.reports (
   'paris-guide-2026-01',
   'paris',
   '파리',
-  E'## 본문 (markdown)\n\n[LOGBOOK_PHOTO:0]',
+  E'## 본문 (markdown)\n\n[사진 1]',
   '[{"url":"https://example.com/hero.jpg","photographer":"Name","photographer_url":"https://unsplash.com/@name","unsplash_url":"https://unsplash.com/photos/xxx"}]'::jsonb,
   CURRENT_DATE,
   true,

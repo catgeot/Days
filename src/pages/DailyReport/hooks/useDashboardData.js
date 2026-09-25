@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { supabase } from '../../../shared/api/supabase';
 import { attachAuthorLabels } from '../utils/reportAuthor';
 import { sortLogbookFeedRows } from '../../../utils/logbookEditorial';
+import { filterPublicLogbookFeedRows } from '../../../utils/logbookPublicFeed';
 
 export const useDashboardData = () => {
   const location = useLocation();
@@ -45,8 +46,11 @@ export const useDashboardData = () => {
     const { data, error } = await query.order('date', { ascending: false });
 
     let rows = data || [];
-    if (!error && shouldBePublic && rows.length) {
-      rows = await attachAuthorLabels(rows);
+    if (!error && shouldBePublic) {
+      rows = filterPublicLogbookFeedRows(rows);
+      if (rows.length) {
+        rows = await attachAuthorLabels(rows);
+      }
     }
 
     if (!error && rows) {
