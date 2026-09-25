@@ -157,12 +157,12 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                   <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
                     <h4
                       title={report.title}
-                      className={`font-bold text-gray-900 transition-colors tracking-tight min-w-0 flex-1 break-words ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${
+                      className={`font-bold text-gray-900 transition-colors tracking-tight min-w-0 flex-1 break-keep break-words ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${
                         viewMode === 'grid'
-                          ? `line-clamp-2 leading-snug ${isCompact ? 'text-base' : 'text-lg sm:text-xl'}`
+                          ? `line-clamp-2 leading-snug ${isCompact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`
                           : viewMode === 'list' && isCompact
-                            ? 'line-clamp-1 text-base'
-                            : 'line-clamp-2 text-xl'
+                            ? 'line-clamp-1 text-sm sm:text-base'
+                            : 'line-clamp-2 text-lg sm:text-xl'
                       }`}
                     >
                       {report.title}
