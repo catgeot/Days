@@ -9,6 +9,7 @@ import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } fro
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LogbookBody from './components/LogbookBody';
+import LogbookArticleHead from './components/LogbookArticleHead';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 
@@ -245,7 +246,7 @@ const Detail = () => {
             <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-10 tracking-tight leading-tight">{report.title}</h1>
+          <LogbookArticleHead report={report} />
 
           {!hasPlaceholders && images.length > 0 && (
             <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden
