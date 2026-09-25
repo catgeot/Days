@@ -124,6 +124,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                 : `/blog/${report.id}`;
               const cardDate = formatLogbookDisplayDate(report);
               const cardExcerpt = resolveLogbookFeedExcerpt(report);
+              const editorialPublicFeed = isPublicMode && editorial;
 
               return (
               <div
@@ -137,7 +138,19 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
               >
                 <div className={`
                   bg-gray-100 flex-shrink-0 overflow-hidden relative
-                  ${viewMode === 'grid' ? 'w-full aspect-video border-b border-gray-200' : (isCompact ? 'w-16 h-16 rounded-xl border border-gray-200' : 'w-24 h-24 rounded-2xl border border-gray-200')}
+                  ${
+                    viewMode === 'grid'
+                      ? editorialPublicFeed
+                        ? 'w-full aspect-[16/10] min-h-[7.25rem] sm:min-h-[8.5rem] border-b border-indigo-100'
+                        : 'w-full aspect-video border-b border-gray-200'
+                      : editorialPublicFeed
+                        ? isCompact
+                          ? 'w-[4.25rem] h-[4.25rem] rounded-xl border border-indigo-100'
+                          : 'w-28 h-28 rounded-2xl border border-indigo-100'
+                        : isCompact
+                          ? 'w-16 h-16 rounded-xl border border-gray-200'
+                          : 'w-24 h-24 rounded-2xl border border-gray-200'
+                  }
                 `}>
                   {thumbUrl ? (
                     <img src={thumbUrl} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
@@ -150,9 +163,12 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                 </div>
 
                 <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-4 flex flex-col h-full' : 'p-5 flex flex-col h-full') : ''}`}>
-                  {editorial && isPublicMode ? (
-                    <div className="mb-2">
-                      <EditorialLogbookBadge report={report} className="text-[10px] px-2 py-0.5" />
+                  {editorialPublicFeed ? (
+                    <div className="mb-2.5">
+                      <EditorialLogbookBadge
+                        report={report}
+                        className="text-[11px] sm:text-xs px-3 py-1 border-indigo-300 bg-indigo-100/95 shadow-sm ring-1 ring-indigo-200/70"
+                      />
                     </div>
                   ) : null}
                   <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
@@ -177,14 +193,18 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
 
                   {cardExcerpt && (
                     <p
-                      className={`text-gray-500 leading-relaxed font-normal break-keep break-words ${
+                      className={`leading-relaxed break-keep break-words ${
+                        editorialPublicFeed
+                          ? 'text-indigo-950/85 font-medium text-sm sm:text-[15px] line-clamp-2'
+                          : 'text-gray-500 font-normal'
+                      } ${
                         viewMode === 'grid'
                           ? isCompact
-                            ? 'line-clamp-2 mb-3 text-xs flex-1'
-                            : 'line-clamp-2 mb-4 flex-1 text-xs sm:text-sm'
+                            ? `line-clamp-2 mb-3 flex-1 ${editorialPublicFeed ? '' : 'text-xs'}`
+                            : `line-clamp-2 mb-4 flex-1 ${editorialPublicFeed ? '' : 'text-xs sm:text-sm'}`
                           : isCompact
-                            ? 'line-clamp-1 text-xs mt-1'
-                            : 'line-clamp-2 text-xs sm:text-sm mt-1'
+                            ? `line-clamp-1 mt-1 ${editorialPublicFeed ? 'text-xs sm:text-sm' : 'text-xs'}`
+                            : `line-clamp-2 mt-1 ${editorialPublicFeed ? 'text-sm' : 'text-xs sm:text-sm'}`
                       }`}
                     >
                       {cardExcerpt}
@@ -193,8 +213,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
 
                   <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-gray-100' : 'mt-auto pt-4 border-t border-gray-100')}`}>
                     {isPublicMode && !editorial && report.author_label && (
-                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-500" title={t('logbook.common.author')}>
-                        <User size={12} className="text-gray-400 shrink-0" />
+                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-700 font-semibold" title={t('logbook.common.author')}>
+                        <User size={12} className="text-gray-500 shrink-0" />
                         <span className="truncate">{report.author_label}</span>
                       </span>
                     )}
