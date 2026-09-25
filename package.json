@@ -38,6 +38,7 @@
     "smoke:visitor-locale": "node scripts/smoke-visitor-locale.mjs",
     "smoke:logbook-markdown": "node scripts/smoke-logbook-markdown.mjs",
     "smoke:logbook-display-date": "node scripts/smoke-logbook-display-date.mjs",
+    "smoke:logbook-dek": "node scripts/smoke-logbook-dek.mjs",
     "smoke:logbook-editor": "node scripts/smoke-logbook-editor.mjs",
     "smoke:editorial-logbook": "node scripts/smoke-editorial-logbook.mjs",
     "upsert:editorial-logbook": "node scripts/upsert-editorial-logbook.mjs",
