@@ -7,6 +7,9 @@ import {
   useDeferredViewportSyncOnBlur,
 } from '../../../shared/hooks/useMobileInputViewport';
 import { stripLogbookMarkdownSnippet } from '../utils/logbookMarkdownSnippet';
+import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
+import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import EditorialLogbookBadge from './EditorialLogbookBadge';
 
 const GATEO_PUBLIC_SOURCE_URL = 'https://www.gateo.kr/';
 
@@ -112,12 +115,20 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
             : `flex flex-col ${isCompact ? 'gap-3' : 'gap-5'}`
           }>
 
-            {filteredReports.map((report) => (
+            {filteredReports.map((report) => {
+              const editorial = isEditorialLogbook(report);
+              const thumbUrl = logbookHeroImageUrl(report.images);
+              const detailPath = isPublicMode
+                ? publicLogbookDetailPath(report)
+                : `/blog/${report.id}`;
+
+              return (
               <div
                 key={report.id}
-                onClick={() => navigate(isPublicMode ? `/p/${report.id}` : `/blog/${report.id}`)}
+                onClick={() => navigate(detailPath)}
                 className={`
-                  group bg-white border border-gray-200 rounded-2xl hover:border-blue-400 hover:bg-blue-50/30 transition-all cursor-pointer overflow-hidden hover:shadow-md
+                  group bg-white border rounded-2xl transition-all cursor-pointer overflow-hidden hover:shadow-md
+                  ${editorial ? 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50/20' : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50/30'}
                   ${viewMode === 'grid' ? 'flex flex-col h-full' : (isCompact ? 'p-3 flex gap-4 items-center' : 'p-5 flex gap-5 items-start')}
                 `}
               >
@@ -125,8 +136,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                   bg-gray-100 flex-shrink-0 overflow-hidden relative
                   ${viewMode === 'grid' ? 'w-full aspect-video border-b border-gray-200' : (isCompact ? 'w-16 h-16 rounded-xl border border-gray-200' : 'w-24 h-24 rounded-2xl border border-gray-200')}
                 `}>
-                  {report.images && report.images.length > 0 ? (
-                    <img src={report.images[0]} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
+                  {thumbUrl ? (
+                    <img src={thumbUrl} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50">
                       <ImageIcon size={viewMode === 'grid' ? (isCompact ? 24 : 32) : (isCompact ? 16 : 24)} />
@@ -136,8 +147,13 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                 </div>
 
                 <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-4 flex flex-col h-full' : 'p-5 flex flex-col h-full') : ''}`}>
+                  {editorial && isPublicMode ? (
+                    <div className="mb-2">
+                      <EditorialLogbookBadge report={report} className="text-[10px] px-2 py-0.5" />
+                    </div>
+                  ) : null}
                   <div className={`flex justify-between ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
-                    <h4 className={`font-bold text-gray-900 truncate pr-3 group-hover:text-blue-600 transition-colors tracking-tight ${viewMode === 'grid' ? (isCompact ? 'text-base' : 'text-xl') : (isCompact ? 'text-base' : 'text-xl')}`}>
+                    <h4 className={`font-bold text-gray-900 truncate pr-3 transition-colors tracking-tight ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${viewMode === 'grid' ? (isCompact ? 'text-base' : 'text-xl') : (isCompact ? 'text-base' : 'text-xl')}`}>
                       {report.title}
                     </h4>
                     {viewMode === 'list' && (
@@ -154,7 +170,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                   )}
 
                   <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-gray-100' : 'mt-auto pt-4 border-t border-gray-100')}`}>
-                    {isPublicMode && report.author_label && (
+                    {isPublicMode && !editorial && report.author_label && (
                       <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-500" title={t('logbook.common.author')}>
                         <User size={12} className="text-gray-400 shrink-0" />
                         <span className="truncate">{report.author_label}</span>
@@ -170,7 +186,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                     )}
                   </div>
 
-                  {isPublicMode && (
+                  {isPublicMode && !editorial && (
                     <div
                       className={`flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
                         viewMode === 'grid'
@@ -205,7 +221,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                   </div>
                 )}
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>

@@ -11,6 +11,8 @@ import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLan
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
+import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
+import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { collectUniqueEditorialReviewImageCredits, resolveReviewThumbnailUnsplashCredit } from '../../../utils/editorialReviewImageCredit';
 import {
   getCollapsedPreviewText,
@@ -693,16 +695,19 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                 </span>
               </div>
               <div className="flex gap-3 overflow-x-auto pb-2 snap-x custom-scrollbar">
-                {blogs.map((blog) => (
+                {blogs.map((blog) => {
+                  const editorial = isEditorialLogbook(blog);
+                  const thumb = logbookHeroImageUrl(blog.images);
+                  return (
                   <div
                     key={blog.id}
-                    onClick={() => navigate(`/p/${blog.id}`)}
-                    className="shrink-0 w-56 bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group"
+                    onClick={() => navigate(publicLogbookDetailPath(blog))}
+                    className={`shrink-0 w-56 bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group ${editorial ? 'border-indigo-100' : 'border-gray-100'}`}
                   >
-                    {blog.images && blog.images.length > 0 ? (
+                    {thumb ? (
                       <div className="h-28 overflow-hidden bg-gray-100 relative">
                         <img
-                          src={blog.images[0]}
+                          src={thumb}
                           alt="thumbnail"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
@@ -717,12 +722,17 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                         {blog.title}
                       </h5>
                       <p className="text-[10px] text-gray-400 font-medium truncate">
-                        {blog.author_label && <span className="text-gray-500">{blog.author_label} · </span>}
+                        {editorial ? (
+                          <span className="text-indigo-700 font-semibold">GATEO 에디터 · </span>
+                        ) : blog.author_label ? (
+                          <span className="text-gray-500">{blog.author_label} · </span>
+                        ) : null}
                         {blog.date} · {blog.location}
                       </p>
                     </div>
                   </div>
-                ))}
+                );
+                })}
               </div>
             </div>
           )}

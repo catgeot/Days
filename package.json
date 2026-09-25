@@ -38,6 +38,8 @@
     "smoke:visitor-locale": "node scripts/smoke-visitor-locale.mjs",
     "smoke:logbook-markdown": "node scripts/smoke-logbook-markdown.mjs",
     "smoke:logbook-editor": "node scripts/smoke-logbook-editor.mjs",
+    "smoke:editorial-logbook": "node scripts/smoke-editorial-logbook.mjs",
+    "upsert:editorial-logbook": "node scripts/upsert-editorial-logbook.mjs",
     "probe:mrt-korea-packages": "node scripts/probe-mrt-korea-package-destinations.mjs",
     "smoke:ko-homonym-ri-search": "node scripts/smoke-ko-homonym-ri-search.mjs",
     "generate:korea-area-codes": "node scripts/generate-korea-area-codes.mjs",

@@ -1,5 +1,6 @@
 import { supabase } from '../../../shared/api/supabase';
 import { i18n } from '../../../i18n/config';
+import { isEditorialLogbook } from '../../../utils/logbookEditorial';
 
 /** 공개 글: 프로필 닉네임이 없으면 사용자 UUID 앞 8자 */
 export function reportAuthorLabel(userId, displayName) {
@@ -23,6 +24,8 @@ export async function attachAuthorLabels(rows) {
 
   return rows.map((r) => ({
     ...r,
-    author_label: reportAuthorLabel(r.user_id, byId.get(r.user_id)),
+    author_label: isEditorialLogbook(r)
+      ? null
+      : reportAuthorLabel(r.user_id, byId.get(r.user_id)),
   }));
 }
