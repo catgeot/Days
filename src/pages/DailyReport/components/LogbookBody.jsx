@@ -7,7 +7,7 @@ import {
   parseLogbookPhotoIndex,
   splitLogbookPhotoPlaceholders,
 } from '../utils/logbookMarkdownSnippet.js';
-import { resolveLogbookImageSrc } from '../../../utils/logbookImageSrc.js';
+import { resolveLogbookDisplaySrc } from '../../../utils/logbookImageSrc.js';
 import EditorialLogbookImageCredits from './EditorialLogbookImageCredits.jsx';
 
 const sanitizeSchema = {
@@ -101,6 +101,7 @@ export default function LogbookBody({
   imageClass = 'w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer',
   showImageOverlay = true,
   showEditorialImageCredits = false,
+  imageMaxWidth = 960,
 }) {
   const { t } = useTranslation();
   const parts = useMemo(() => splitLogbookPhotoPlaceholders(content), [content]);
@@ -113,14 +114,18 @@ export default function LogbookBody({
         const photoIndex = parseLogbookPhotoIndex(part);
         if (photoIndex !== null) {
           const img = images[photoIndex];
-          const url = resolveLogbookImageSrc(img);
+          const url = resolveLogbookDisplaySrc(img, { maxWidth: imageMaxWidth });
           if (!url) return null;
+          const isFirstPhoto =
+            parts.slice(0, index).every((p) => parseLogbookPhotoIndex(p) === null);
           return (
             <div key={`photo-${index}`} className={imageFrameClass}>
               <img
                 src={url}
                 alt={t('logbook.common.attachment', { n: photoIndex + 1 })}
                 className={imageClass}
+                loading={isFirstPhoto ? 'eager' : 'lazy'}
+                decoding="async"
                 onClick={() => window.open(url, '_blank')}
               />
               {showImageOverlay && (

@@ -9,6 +9,7 @@ import {
 import { stripLogbookMarkdownSnippet } from '../utils/logbookMarkdownSnippet';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import EditorialLogbookBadge from './EditorialLogbookBadge';
 
 const GATEO_PUBLIC_SOURCE_URL = 'https://www.gateo.kr/';
@@ -117,10 +118,11 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
 
             {filteredReports.map((report) => {
               const editorial = isEditorialLogbook(report);
-              const thumbUrl = logbookHeroImageUrl(report.images);
+              const thumbUrl = logbookHeroImageUrl(report.images, { thumbnail: true });
               const detailPath = isPublicMode
                 ? publicLogbookDetailPath(report)
                 : `/blog/${report.id}`;
+              const cardDate = formatLogbookDisplayDate(report);
 
               return (
               <div
@@ -143,7 +145,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                       <ImageIcon size={viewMode === 'grid' ? (isCompact ? 24 : 32) : (isCompact ? 16 : 24)} />
                     </div>
                   )}
-                  {viewMode === 'grid' && <div className={`absolute top-2 right-2 bg-white/90 backdrop-blur-md text-gray-700 px-2.5 py-1 rounded-md border border-gray-200/50 font-medium tracking-wide shadow-sm ${isCompact ? 'text-[10px]' : 'text-xs'}`}>{report.date}</div>}
+                  {viewMode === 'grid' && <div className={`absolute top-2 right-2 bg-white/90 backdrop-blur-md text-gray-700 px-2.5 py-1 rounded-md border border-gray-200/50 font-medium tracking-wide shadow-sm max-w-[85%] truncate ${isCompact ? 'text-[10px]' : 'text-xs'}`}>{cardDate}</div>}
                 </div>
 
                 <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-4 flex flex-col h-full' : 'p-5 flex flex-col h-full') : ''}`}>
@@ -152,13 +154,22 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                       <EditorialLogbookBadge report={report} className="text-[10px] px-2 py-0.5" />
                     </div>
                   ) : null}
-                  <div className={`flex justify-between ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
-                    <h4 className={`font-bold text-gray-900 truncate pr-3 transition-colors tracking-tight ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${viewMode === 'grid' ? (isCompact ? 'text-base' : 'text-xl') : (isCompact ? 'text-base' : 'text-xl')}`}>
+                  <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
+                    <h4
+                      title={report.title}
+                      className={`font-bold text-gray-900 transition-colors tracking-tight min-w-0 flex-1 break-words ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${
+                        viewMode === 'grid'
+                          ? `line-clamp-2 leading-snug ${isCompact ? 'text-base' : 'text-lg sm:text-xl'}`
+                          : viewMode === 'list' && isCompact
+                            ? 'line-clamp-1 text-base'
+                            : 'line-clamp-2 text-xl'
+                      }`}
+                    >
                       {report.title}
                     </h4>
                     {viewMode === 'list' && (
-                      <span className={`text-xs text-gray-500 whitespace-nowrap bg-gray-100 px-2.5 rounded-md border border-gray-200 font-medium tracking-wide ${isCompact ? 'py-1' : 'py-1.5'}`}>
-                        {report.date}
+                      <span className={`text-xs text-gray-500 whitespace-nowrap bg-gray-100 px-2.5 rounded-md border border-gray-200 font-medium tracking-wide shrink-0 ${isCompact ? 'py-1' : 'py-1.5'}`}>
+                        {cardDate}
                       </span>
                     )}
                   </div>
