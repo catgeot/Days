@@ -1,16 +1,27 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '../shared/api/supabase';
-import { isUserReviewForStats } from '../utils/placeReviewEditorial';
+import { computePlaceReviewStats } from '../utils/placeReviewStats';
+
+function mapReviewRows(data, user) {
+  return (data || []).map((review) => ({
+    ...review,
+    likes_count: review.likes ? review.likes.length : 0,
+    is_liked: user ? review.likes?.some((like) => like.user_id === user.id) : false,
+  }));
+}
 
 export const usePlaceReviews = (placeSlug, user) => {
-  const [reviews, setReviews] = useState([]);
+  const [allReviews, setAllReviews] = useState([]);
+  const [loadedSlug, setLoadedSlug] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all' | 'mine'
+  const lastStatsRef = useRef(null);
 
   const fetchReviews = useCallback(async () => {
     if (!placeSlug) {
-      setReviews([]);
+      setAllReviews([]);
+      setLoadedSlug(null);
       setIsLoading(false);
       return;
     }
@@ -18,7 +29,7 @@ export const usePlaceReviews = (placeSlug, user) => {
     setIsLoading(true);
     setError(null);
     try {
-      let query = supabase
+      const { data, error: fetchError } = await supabase
         .from('place_reviews')
         .select(`
           *,
@@ -32,39 +43,41 @@ export const usePlaceReviews = (placeSlug, user) => {
         .eq('place_slug', placeSlug)
         .order('created_at', { ascending: false });
 
-      const { data, error: fetchError } = await query;
-
       if (fetchError) throw fetchError;
 
-      let filteredData = (data || []).map(review => ({
-        ...review,
-        likes_count: review.likes ? review.likes.length : 0,
-        is_liked: user ? review.likes?.some(like => like.user_id === user.id) : false
-      }));
-
-      // 'mine' 필터 적용 시 내 글만 보기
-      if (filter === 'mine') {
-        if (user) {
-          filteredData = filteredData.filter(review => review.user_id === user.id);
-        } else {
-          filteredData = [];
-        }
-      }
-
-      setReviews(filteredData);
+      setAllReviews(mapReviewRows(data, user));
+      setLoadedSlug(placeSlug);
     } catch (err) {
       console.error('Error fetching place reviews:', err);
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
-  }, [placeSlug, user, filter]);
+  }, [placeSlug, user]);
 
   useEffect(() => {
-    // 장소가 변경될 때 즉시 이전 리뷰 초기화 (깜빡임 방지)
-    setReviews([]);
+    setAllReviews([]);
     fetchReviews();
   }, [fetchReviews]);
+
+  const reviews = useMemo(() => {
+    if (filter === 'mine') {
+      if (!user) return [];
+      return allReviews.filter((review) => review.user_id === user.id);
+    }
+    return allReviews;
+  }, [allReviews, filter, user]);
+
+  const stats = useMemo(() => {
+    if (isLoading && loadedSlug !== placeSlug && lastStatsRef.current) {
+      return lastStatsRef.current;
+    }
+    const next = computePlaceReviewStats(allReviews);
+    if (loadedSlug === placeSlug) {
+      lastStatsRef.current = next;
+    }
+    return next;
+  }, [allReviews, loadedSlug, placeSlug, isLoading]);
 
   const addReview = async (reviewData) => {
     if (!user) return { error: '로그인이 필요합니다.' };
@@ -96,10 +109,7 @@ export const usePlaceReviews = (placeSlug, user) => {
         is_liked: false
       };
 
-      // 새 리뷰를 목록 맨 앞에 추가
-      if (filter === 'all' || (filter === 'mine' && data.user_id === user.id)) {
-        setReviews(prev => [newReview, ...prev]);
-      }
+      setAllReviews((prev) => [newReview, ...prev]);
       return { data: newReview, error: null };
     } catch (err) {
       console.error('Error adding review:', err);
@@ -121,7 +131,7 @@ export const usePlaceReviews = (placeSlug, user) => {
           updated_at: new Date().toISOString()
         })
         .eq('id', reviewId)
-        .eq('user_id', user.id) // 본인 글만 수정 가능
+        .eq('user_id', user.id)
         .select(`
           *,
           user:profiles(
@@ -134,16 +144,18 @@ export const usePlaceReviews = (placeSlug, user) => {
 
       if (updateError) throw updateError;
 
-      setReviews(prev => prev.map(r => {
-        if (r.id === reviewId) {
-          return {
-            ...data,
-            likes_count: r.likes_count,
-            is_liked: r.is_liked
-          };
-        }
-        return r;
-      }));
+      setAllReviews((prev) =>
+        prev.map((r) => {
+          if (r.id === reviewId) {
+            return {
+              ...data,
+              likes_count: r.likes_count,
+              is_liked: r.is_liked
+            };
+          }
+          return r;
+        }),
+      );
       return { data, error: null };
     } catch (err) {
       console.error('Error updating review:', err);
@@ -162,11 +174,11 @@ export const usePlaceReviews = (placeSlug, user) => {
         .from('place_reviews')
         .delete()
         .eq('id', reviewId)
-        .eq('user_id', user.id); // 본인 글만 삭제 가능
+        .eq('user_id', user.id);
 
       if (deleteError) throw deleteError;
 
-      setReviews(prev => prev.filter(r => r.id !== reviewId));
+      setAllReviews((prev) => prev.filter((r) => r.id !== reviewId));
       return { error: null };
     } catch (err) {
       console.error('Error deleting review:', err);
@@ -179,21 +191,21 @@ export const usePlaceReviews = (placeSlug, user) => {
   const toggleLike = async (reviewId, isCurrentlyLiked) => {
     if (!user) return { error: '로그인이 필요합니다.' };
 
-    // Optimistic Update
-    setReviews(prev => prev.map(r => {
-      if (r.id === reviewId) {
-        return {
-          ...r,
-          is_liked: !isCurrentlyLiked,
-          likes_count: isCurrentlyLiked ? Math.max(0, r.likes_count - 1) : r.likes_count + 1
-        };
-      }
-      return r;
-    }));
+    setAllReviews((prev) =>
+      prev.map((r) => {
+        if (r.id === reviewId) {
+          return {
+            ...r,
+            is_liked: !isCurrentlyLiked,
+            likes_count: isCurrentlyLiked ? Math.max(0, r.likes_count - 1) : r.likes_count + 1
+          };
+        }
+        return r;
+      }),
+    );
 
     try {
       if (isCurrentlyLiked) {
-        // Unlike
         const { error } = await supabase
           .from('place_review_likes')
           .delete()
@@ -202,7 +214,6 @@ export const usePlaceReviews = (placeSlug, user) => {
 
         if (error) throw error;
       } else {
-        // Like
         const { error } = await supabase
           .from('place_review_likes')
           .insert([{ review_id: reviewId, user_id: user.id }]);
@@ -212,30 +223,29 @@ export const usePlaceReviews = (placeSlug, user) => {
       return { error: null };
     } catch (err) {
       console.error('Error toggling like:', err);
-      // Revert Optimistic Update on error
-      setReviews(prev => prev.map(r => {
-        if (r.id === reviewId) {
-          return {
-            ...r,
-            is_liked: isCurrentlyLiked,
-            likes_count: isCurrentlyLiked ? r.likes_count + 1 : Math.max(0, r.likes_count - 1)
-          };
-        }
-        return r;
-      }));
+      setAllReviews((prev) =>
+        prev.map((r) => {
+          if (r.id === reviewId) {
+            return {
+              ...r,
+              is_liked: isCurrentlyLiked,
+              likes_count: isCurrentlyLiked ? r.likes_count + 1 : Math.max(0, r.likes_count - 1)
+            };
+          }
+          return r;
+        }),
+      );
       return { error: err.message };
     }
   };
 
   const incrementView = useCallback(async (reviewId) => {
-    // sessionStorage를 활용하여 중복 조회수 증가 방지
     const viewedKey = `viewed_review_${reviewId}`;
     if (sessionStorage.getItem(viewedKey)) {
       return;
     }
 
     try {
-      // API 호출 전 즉시 세션스토리지에 기록하여 Strict Mode 이중 호출 방지
       sessionStorage.setItem(viewedKey, 'true');
 
       const { error } = await supabase.rpc('increment_review_view', {
@@ -243,29 +253,19 @@ export const usePlaceReviews = (placeSlug, user) => {
       });
       if (error) throw error;
 
-      // Update UI optimistically without re-fetching everything
-      setReviews(prev => prev.map(r => {
-        if (r.id === reviewId) {
-          return { ...r, views_count: (r.views_count || 0) + 1 };
-        }
-        return r;
-      }));
+      setAllReviews((prev) =>
+        prev.map((r) => {
+          if (r.id === reviewId) {
+            return { ...r, views_count: (r.views_count || 0) + 1 };
+          }
+          return r;
+        }),
+      );
     } catch (err) {
       console.error('Error incrementing view count:', err);
-      sessionStorage.removeItem(viewedKey); // 에러 시 롤백
+      sessionStorage.removeItem(viewedKey);
     }
   }, []);
-
-  const stats = useMemo(() => {
-    const userReviews = reviews.filter(isUserReviewForStats);
-    const count = userReviews.length;
-    return {
-      averageRating: count > 0
-        ? (userReviews.reduce((acc, r) => acc + (r.rating || 0), 0) / count).toFixed(1)
-        : 0,
-      totalReviews: count
-    };
-  }, [reviews]);
 
   return {
     reviews,

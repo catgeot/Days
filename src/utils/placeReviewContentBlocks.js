@@ -108,3 +108,82 @@ export function resolveReviewImageSrc(img) {
   const src = img?.url || img?.publicUrl || img;
   return typeof src === 'string' && src.trim() ? src : null;
 }
+
+/**
+ * @param {unknown} img
+ * @param {{ width?: number, height?: number }} [opts]
+ */
+export function resolveReviewThumbnailSrc(img, opts = {}) {
+  const src = resolveReviewImageSrc(img);
+  if (!src) return null;
+  const width = opts.width ?? 120;
+  const height = opts.height ?? 120;
+  if (!src.includes('images.unsplash.com')) return src;
+  try {
+    const parsed = new URL(src);
+    parsed.searchParams.set('w', String(width));
+    parsed.searchParams.set('h', String(height));
+    parsed.searchParams.set('fit', 'crop');
+    if (!parsed.searchParams.has('q')) parsed.searchParams.set('q', '80');
+    if (!parsed.searchParams.has('auto')) parsed.searchParams.set('auto', 'format');
+    return parsed.toString();
+  } catch {
+    return src;
+  }
+}
+
+/**
+ * First image index shown when the review card is expanded (inline block, else legacy gallery order).
+ * @param {{ images?: unknown[], content_blocks?: unknown }} review
+ * @returns {number|null}
+ */
+export function getReviewLeadThumbnailImageIndex(review) {
+  const images = review?.images;
+  if (!Array.isArray(images) || images.length === 0) return null;
+
+  if (hasReviewContentBlocks(review.content_blocks)) {
+    for (const block of normalizeReviewContentBlocks(review.content_blocks)) {
+      if (block.type === 'image' && block.image_index < images.length) {
+        if (resolveReviewImageSrc(images[block.image_index])) {
+          return block.image_index;
+        }
+      }
+    }
+    const gallery = getGalleryImageEntries(images, review.content_blocks);
+    if (gallery.length > 0 && resolveReviewImageSrc(gallery[0].img)) {
+      return gallery[0].index;
+    }
+    return null;
+  }
+
+  return resolveReviewImageSrc(images[0]) ? 0 : null;
+}
+
+/**
+ * @param {{ content?: string, content_blocks?: unknown, images?: unknown[] }} review
+ */
+export function shouldShowReviewExpandToggle(review) {
+  const imageCount = Array.isArray(review?.images) ? review.images.length : 0;
+  if (hasReviewContentBlocks(review?.content_blocks)) {
+    return (
+      getCollapsedPreviewText(review).length > 120 || reviewHasHiddenMediaWhenCollapsed(review)
+    );
+  }
+  return (review?.content || '').length > 120 || imageCount >= 1;
+}
+
+/**
+ * Legacy bottom strip + gallery-only images (never while collapsed).
+ * @param {{ content_blocks?: unknown, images?: unknown[] }} review
+ * @param {boolean} isExpanded
+ */
+export function shouldShowReviewBottomGallery(review, isExpanded) {
+  if (!isExpanded) return false;
+  const images = review?.images;
+  if (!Array.isArray(images) || images.length === 0) return false;
+
+  if (hasReviewContentBlocks(review.content_blocks)) {
+    return getGalleryImageEntries(images, review.content_blocks).length > 0;
+  }
+  return images.some((img) => resolveReviewImageSrc(img));
+}

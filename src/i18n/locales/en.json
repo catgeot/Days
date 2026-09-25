@@ -1306,6 +1306,8 @@
       "reads": "{{count}} views",
       "loginPrompt": "Sign in to join the conversation and share your experience.",
       "count": "{{count}} reviews",
+      "countSplit": "Traveler reviews {{traveler}} · GATEO editor reviews {{editorial}}",
+      "noTravelerRating": "No traveler ratings yet",
       "write": "Write",
       "loginCta": "Sign in to leave the first review!",
       "loginHint": "It helps other travelers a lot.",
@@ -1330,7 +1332,8 @@
       "emptyMine": "You haven't written any reviews yet.",
       "emptyAll": "No reviews yet.",
       "blogBadge": "Blog",
-      "galleryViewerAlt": "Gallery viewer image"
+      "galleryViewerAlt": "Gallery viewer image",
+      "thumbnailPreviewAria": "Review photo preview"
     },
     "common": {
       "bookmark": "Bookmark",

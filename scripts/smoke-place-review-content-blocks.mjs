@@ -6,6 +6,9 @@ import {
   hasReviewContentBlocks,
   normalizeReviewContentBlocks,
   reviewHasHiddenMediaWhenCollapsed,
+  shouldShowReviewBottomGallery,
+  shouldShowReviewExpandToggle,
+  getReviewLeadThumbnailImageIndex,
 } from '../src/utils/placeReviewContentBlocks.js';
 import {
   applyAiTextToContentBlocks,
@@ -49,6 +52,34 @@ assert.deepEqual(gallery.map((e) => e.index), [1, 3]);
 const review = { content: 'legacy', content_blocks: blocks, images };
 assert.equal(getCollapsedPreviewText(review), '첫 문단\n\n둘째 문단');
 assert.equal(reviewHasHiddenMediaWhenCollapsed(review), true);
+
+const legacyShortPhotos = {
+  content: '짧은 본문',
+  content_blocks: null,
+  images: [{ url: 'https://cdn.example/a.jpg' }, { url: 'https://cdn.example/b.jpg' }],
+};
+assert.equal(shouldShowReviewExpandToggle(legacyShortPhotos), true);
+assert.equal(shouldShowReviewBottomGallery(legacyShortPhotos, false), false);
+assert.equal(shouldShowReviewBottomGallery(legacyShortPhotos, true), true);
+assert.equal(getReviewLeadThumbnailImageIndex(legacyShortPhotos), 0);
+
+const legacyLongPhotos = {
+  content: 'x'.repeat(121),
+  content_blocks: null,
+  images: [{ url: 'https://cdn.example/a.jpg' }],
+};
+assert.equal(shouldShowReviewExpandToggle(legacyLongPhotos), true);
+assert.equal(shouldShowReviewBottomGallery(legacyLongPhotos, false), false);
+
+const blocksLead = {
+  content: 'flat',
+  content_blocks: [
+    { type: 'text', text: 'intro' },
+    { type: 'image', image_index: 2 },
+  ],
+  images: [{ url: 'a' }, { url: 'b' }, { url: 'c' }],
+};
+assert.equal(getReviewLeadThumbnailImageIndex(blocksLead), 2);
 
 assert.equal(getCollapsedPreviewText({ content: 'plain only' }), 'plain only');
 assert.equal(reviewHasHiddenMediaWhenCollapsed({ content_blocks: [{ type: 'text', text: 'x' }] }), false);
