@@ -14,7 +14,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Home,
   Landmark,
   Loader2,
   LocateFixed,
@@ -168,6 +167,8 @@ import {
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
 } from './ThemeModuleBackButton';
+import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { useKoreaModuleExit } from '../../shared/navigation/useKoreaModuleExit';
 import ThemeSpotDetailModal from './ThemeSpotDetailModal';
 import {
   groupScenicByRegion,
@@ -817,6 +818,7 @@ export default function KoreaThemeScenicPage() {
   const { t, i18n } = useTranslation();
   const { locale } = useLocale();
   const navigate = useNavigate();
+  const exitModule = useKoreaModuleExit('/');
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const hubId = normalizeScenicHubParam(searchParams.get('hub'));
@@ -4100,6 +4102,13 @@ export default function KoreaThemeScenicPage() {
         }
       `}</style>
 
+      <AppOutlineBackButton
+        onClick={exitModule}
+        ariaLabel={t('korea.common.home')}
+        title={t('korea.common.home')}
+        variant={mapOpen ? 'onDark' : 'default'}
+      />
+
       <header className="relative z-30 shrink-0 border-b border-stone-200/80 bg-stone-100/95 pt-[max(0.5rem,env(safe-area-inset-top,0px))] backdrop-blur-md">
         <div className="mx-auto w-full max-w-3xl px-3 pb-2.5 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
           <div className="min-w-0 rounded-2xl border border-stone-200/90 bg-white px-3 py-2.5 shadow-sm md:px-4">
@@ -4265,18 +4274,7 @@ export default function KoreaThemeScenicPage() {
                     <X size={14} aria-hidden="true" />
                     {t('korea.common.close')}
                   </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => navigate('/')}
-                    aria-label={t('korea.common.home')}
-                    title={t('korea.common.home')}
-                    className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
-                  >
-                    <Home size={14} aria-hidden="true" />
-                    {t('korea.common.home')}
-                  </button>
-                )}
+                ) : null}
               </div>
             </div>
             {searchOpen ? (
