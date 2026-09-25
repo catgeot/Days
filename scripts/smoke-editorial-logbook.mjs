@@ -47,6 +47,18 @@ assert.equal(
   LOGBOOK_EDITORIAL_SECONDARY_KO,
 );
 assert.equal(editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({ locale: 'en' })), LOGBOOK_EDITORIAL_BADGE_EN);
+assert.equal(
+  editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({ locale: null })),
+  'GATEO 에디터',
+);
+assert.equal(
+  editorialLogbookSecondaryNotice(editorialLogbookBadgeLocale({ locale: undefined })),
+  'AI 보조 · 실제 방문기 아님',
+);
+assert.ok(
+  !editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({})).includes('·'),
+  'feed chip must be primary label only',
+);
 
 const published = validateEditorialLogbookPayload({
   title: 'Pub',
