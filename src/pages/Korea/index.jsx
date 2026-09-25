@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
   CalendarDays,
+  Home,
   Loader2,
   LocateFixed,
   Map as MapIcon,
@@ -26,8 +27,7 @@ import {
 import SEO from '../../components/SEO';
 import { ThemeFestivalBackLink } from '../KoreaTheme/ThemeModuleBackButton';
 import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
-import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
-import { useKoreaModuleExit } from '../../shared/navigation/useKoreaModuleExit';
+import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import {
@@ -744,7 +744,15 @@ export default function KoreaFestivalHub() {
   const festivalFromQuery = String(searchParams.get('festival') || '').trim();
   const now = useMemo(() => new Date(), []);
 
-  const exitModule = useKoreaModuleExit('/');
+  const goHome = useCallback(() => {
+    try {
+      sessionStorage.setItem('gateo_reset_viewport', '1');
+    } catch {
+      /* ignore quota / private mode */
+    }
+    resetIosZoomAfterInput();
+    navigate('/');
+  }, [navigate]);
 
   useEffect(() => {
     return () => {
@@ -1719,13 +1727,6 @@ export default function KoreaFestivalHub() {
         url="/korea"
       />
 
-      <AppOutlineBackButton
-        onClick={exitModule}
-        ariaLabel={t('korea.common.home')}
-        title={t('korea.common.home')}
-        variant={mapImmersive ? 'onDark' : 'default'}
-      />
-
       <header
         className={`z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))] ${
           mapImmersive
@@ -1906,7 +1907,18 @@ export default function KoreaFestivalHub() {
                     <X size={14} aria-hidden="true" />
                     {t('korea.common.close')}
                   </button>
-                ) : null}
+                ) : (
+                  <button
+                    type="button"
+                    onClick={goHome}
+                    aria-label={t('korea.common.home')}
+                    title={t('korea.common.home')}
+                    className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
+                  >
+                    <Home size={14} aria-hidden="true" />
+                    {t('korea.common.home')}
+                  </button>
+                )}
               </div>
             </div>
 
