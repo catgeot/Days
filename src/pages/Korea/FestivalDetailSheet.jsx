@@ -23,6 +23,7 @@ import {
   fetchTourApiFestivalDetail,
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
+import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
@@ -1174,7 +1175,23 @@ export default function FestivalDetailSheet({
     !videosExpanded &&
     videos.length > FESTIVAL_VIDEOS_PAGE;
 
+  const showViewportClose =
+    !lightboxOpen &&
+    !mooniOpen &&
+    !selectedNearby &&
+    !selectedScenic &&
+    !selectedCourse;
+
   return (
+    <>
+      {showViewportClose ? (
+        <AppOutlineBackButton
+          icon="close"
+          onClick={onClose}
+          ariaLabel={t('korea.common.close')}
+          title={t('korea.common.close')}
+        />
+      ) : null}
     <div
       className="fixed inset-0 z-40 flex items-end md:items-stretch justify-center bg-stone-900/30 backdrop-blur-sm p-0 md:py-2 md:px-3 lg:px-4"
       onClick={() => {
@@ -1191,15 +1208,6 @@ export default function FestivalDetailSheet({
         aria-modal="true"
         aria-labelledby="korea-festival-sheet-title"
       >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={t('korea.common.close')}
-          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white/95 text-stone-700 shadow-sm hover:bg-stone-50"
-        >
-          <X size={18} aria-hidden="true" />
-        </button>
-
         {hero ? (
           <div className="relative flex shrink-0 flex-col md:w-[46%] lg:w-1/2 md:min-h-0 md:self-stretch bg-stone-100">
             <button
@@ -2220,6 +2228,7 @@ export default function FestivalDetailSheet({
         </div>
       )}
     </div>
+    </>
   );
 }
 

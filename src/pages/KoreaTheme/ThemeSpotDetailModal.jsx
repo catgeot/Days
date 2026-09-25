@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import {
   ArrowUp,
   Bike,
@@ -1776,7 +1777,26 @@ export default function ThemeSpotDetailModal({
     !videosExpanded &&
     videos.length > SCENIC_VIDEOS_PAGE;
 
+  const showViewportClose =
+    !lightboxOpen &&
+    !mooniOpen &&
+    !videosOpen &&
+    !selectedFood &&
+    !selectedLeports &&
+    !selectedCulture &&
+    !selectedAttraction &&
+    !selectedSameHub;
+
   return (
+    <>
+      {showViewportClose ? (
+        <AppOutlineBackButton
+          icon="close"
+          onClick={onClose}
+          ariaLabel={t('korea.common.close')}
+          title={t('korea.common.close')}
+        />
+      ) : null}
     <div
       className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(3.75rem,calc(env(safe-area-inset-bottom)+3rem))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
       onClick={(e) => {
@@ -1835,14 +1855,6 @@ export default function ThemeSpotDetailModal({
                 />
               </button>
             ) : null}
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label={t('korea.common.close')}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
-            >
-              <X size={18} aria-hidden="true" />
-            </button>
           </div>
         </div>
 
@@ -2703,5 +2715,6 @@ export default function ThemeSpotDetailModal({
         }}
       />
     </div>
+    </>
   );
 }
