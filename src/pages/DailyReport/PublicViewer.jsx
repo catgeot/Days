@@ -12,6 +12,7 @@ import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnipp
 import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
+import LogbookArticleHead from './components/LogbookArticleHead';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
 
@@ -193,15 +194,7 @@ const PublicViewer = () => {
             )}
           </div>
 
-          <h1
-            className={
-              editorial
-                ? 'text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-10 tracking-tight leading-snug break-keep break-words'
-                : 'text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-10 tracking-tight leading-tight break-keep break-words'
-            }
-          >
-            {report.title}
-          </h1>
+          <LogbookArticleHead report={report} />
 
           {!hasPlaceholders && imageUrls.length > 0 && (
             <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden ${imageUrls.length === 1 ? 'grid-cols-1' : ''} ${imageUrls.length === 2 ? 'grid-cols-2' : ''} ${imageUrls.length === 3 ? 'grid-cols-3' : ''} ${imageUrls.length >= 4 ? 'grid-cols-2' : ''}`}>

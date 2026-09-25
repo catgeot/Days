@@ -6,7 +6,7 @@ import {
   MOBILE_INPUT_TEXT_CLASS,
   useDeferredViewportSyncOnBlur,
 } from '../../../shared/hooks/useMobileInputViewport';
-import { stripLogbookMarkdownSnippet } from '../utils/logbookMarkdownSnippet';
+import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
@@ -123,6 +123,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                 ? publicLogbookDetailPath(report)
                 : `/blog/${report.id}`;
               const cardDate = formatLogbookDisplayDate(report);
+              const cardExcerpt = resolveLogbookFeedExcerpt(report);
 
               return (
               <div
@@ -157,12 +158,12 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                   <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
                     <h4
                       title={report.title}
-                      className={`font-bold text-gray-900 transition-colors tracking-tight min-w-0 flex-1 break-keep break-words ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${
+                      className={`font-semibold text-gray-900 transition-colors tracking-tight min-w-0 flex-1 break-keep break-words ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${
                         viewMode === 'grid'
-                          ? `line-clamp-2 leading-snug ${isCompact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`
+                          ? `line-clamp-2 leading-snug ${isCompact ? 'text-sm' : 'text-sm sm:text-base'}`
                           : viewMode === 'list' && isCompact
-                            ? 'line-clamp-1 text-sm sm:text-base'
-                            : 'line-clamp-2 text-lg sm:text-xl'
+                            ? 'line-clamp-1 text-sm'
+                            : 'line-clamp-2 text-sm sm:text-base'
                       }`}
                     >
                       {report.title}
@@ -174,9 +175,19 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                     )}
                   </div>
 
-                  {!(isCompact && viewMode === 'list') && (
-                    <p className={`text-sm text-gray-500 leading-relaxed font-light ${viewMode === 'grid' ? (isCompact ? 'line-clamp-2 mb-3 text-xs flex-1' : 'line-clamp-3 mb-4 flex-1') : 'line-clamp-2 h-10'}`}>
-                      {stripLogbookMarkdownSnippet(report.content)}
+                  {cardExcerpt && (
+                    <p
+                      className={`text-gray-500 leading-relaxed font-normal break-keep break-words ${
+                        viewMode === 'grid'
+                          ? isCompact
+                            ? 'line-clamp-2 mb-3 text-xs flex-1'
+                            : 'line-clamp-2 mb-4 flex-1 text-xs sm:text-sm'
+                          : isCompact
+                            ? 'line-clamp-1 text-xs mt-1'
+                            : 'line-clamp-2 text-xs sm:text-sm mt-1'
+                      }`}
+                    >
+                      {cardExcerpt}
                     </p>
                   )}
 

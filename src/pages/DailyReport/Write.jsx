@@ -32,6 +32,7 @@ const Write = () => {
 
   const [date, setDate] = useState(getLocalDate());
   const [title, setTitle] = useState('');
+  const [dek, setDek] = useState('');
   const [content, setContent] = useState('');
   const [mapLocation, setMapLocation] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -68,6 +69,7 @@ const Write = () => {
         const { data } = await supabase.from('reports').select('*').eq('id', id).eq('user_id', user.id).single();
         if (data) {
           setTitle(data.title);
+          setDek(data.dek || '');
           setContent(data.content);
           setMapLocation(data.location);
           setDate(data.date);
@@ -154,7 +156,17 @@ const Write = () => {
       const newUrls = await Promise.all(uploadPromises);
       finalImageUrls = [...finalImageUrls, ...newUrls];
 
-      const reportData = { title, content, location: mapLocation || t('logbook.common.locationUnknown'), date, images: finalImageUrls, weather: t('logbook.common.weatherSunny'), user_id: user.id };
+      const trimmedDek = dek.trim();
+      const reportData = {
+        title,
+        dek: trimmedDek || null,
+        content,
+        location: mapLocation || t('logbook.common.locationUnknown'),
+        date,
+        images: finalImageUrls,
+        weather: t('logbook.common.weatherSunny'),
+        user_id: user.id,
+      };
 
       if (isEditMode) {
         await supabase.from('reports').update(reportData).eq('id', id);
@@ -323,8 +335,42 @@ const Write = () => {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all">
-              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-gray-900 placeholder-gray-400 tracking-tight" placeholder={t('logbook.write.titlePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
+            <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all flex flex-col gap-4">
+              <div>
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">
+                  {t('logbook.write.titleFieldLabel')}
+                </label>
+                <input
+                  type="text"
+                  className={`w-full bg-transparent outline-none text-xl sm:text-2xl font-semibold text-gray-900 placeholder-gray-400 tracking-tight break-keep ${MOBILE_INPUT_TEXT_CLASS}`}
+                  placeholder={t('logbook.write.titlePlaceholder')}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onBlur={handleFieldBlur}
+                  disabled={isAILoading || isCompressing}
+                />
+                <p className="text-[11px] text-gray-500 mt-2 leading-relaxed break-keep">
+                  {t('logbook.write.titleHint')}
+                </p>
+              </div>
+              <div className="border-t border-gray-200/80 pt-4">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">
+                  {t('logbook.write.dekLabel')}
+                </label>
+                <textarea
+                  rows={2}
+                  maxLength={500}
+                  className={`w-full bg-transparent outline-none text-base font-normal text-gray-800 placeholder-gray-400 leading-relaxed resize-y min-h-[3.5rem] break-keep ${MOBILE_INPUT_TEXT_CLASS}`}
+                  placeholder={t('logbook.write.dekPlaceholder')}
+                  value={dek}
+                  onChange={(e) => setDek(e.target.value)}
+                  onBlur={handleFieldBlur}
+                  disabled={isAILoading || isCompressing}
+                />
+                <p className="text-[10px] text-gray-400 mt-1.5 leading-relaxed break-keep">
+                  {t('logbook.write.dekHint')}
+                </p>
+              </div>
             </div>
 
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all relative min-h-[500px] flex flex-col">

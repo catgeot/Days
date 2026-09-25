@@ -4,6 +4,7 @@
 
 INSERT INTO public.reports (
   title,
+  dek,
   slug,
   place_slug,
   location,
@@ -23,6 +24,7 @@ INSERT INTO public.reports (
   weather
 ) VALUES (
   '제목',
+  NULL,
   'paris-guide-2026-01',
   'paris',
   '파리',
