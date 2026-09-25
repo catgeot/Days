@@ -171,11 +171,17 @@ const PublicViewer = () => {
         </div>
       )}
 
-      <div className="relative z-10 max-w-3xl mx-auto pt-12 px-4 sm:px-6">
+      <div
+        className={`relative z-10 max-w-3xl mx-auto ${
+          editorial ? 'pt-6 sm:pt-12 px-5 sm:px-6' : 'pt-12 px-4 sm:px-6'
+        }`}
+      >
         <div
-          className={`bg-white/60 backdrop-blur-xl border p-6 sm:p-10 rounded-3xl shadow-sm mt-8 ${
-            editorial ? 'border-indigo-200/80 ring-1 ring-indigo-100/60' : 'border-gray-200'
-          }`}
+          className={
+            editorial
+              ? 'bg-white sm:bg-white/60 sm:backdrop-blur-xl border-0 sm:border sm:border-gray-200/90 p-0 sm:p-10 rounded-none sm:rounded-3xl shadow-none sm:shadow-sm mt-0 sm:mt-8'
+              : 'bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm mt-8'
+          }
         >
           {editorial ? (
             <div className="mb-3">
@@ -183,9 +189,19 @@ const PublicViewer = () => {
             </div>
           ) : null}
 
-          <div className="flex flex-wrap items-center gap-3 mb-6">
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{displayDate}</span>
-            <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
+          <div className={`flex flex-wrap items-center gap-x-3 gap-y-1.5 ${editorial ? 'mb-4 sm:mb-6' : 'mb-6'}`}>
+            <span
+              className={
+                editorial
+                  ? 'text-[11px] text-gray-500 font-medium tracking-wide'
+                  : 'text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider'
+              }
+            >
+              {displayDate}
+            </span>
+            <span className="text-gray-500 text-sm flex items-center gap-1 font-medium">
+              <MapPin size={14} className="text-gray-400" /> {report.location}
+            </span>
             {!editorial && authorLabel && (
               <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
                 <User size={14} className="text-gray-400 shrink-0" />
@@ -194,36 +210,60 @@ const PublicViewer = () => {
             )}
           </div>
 
-          <LogbookArticleHead report={report} />
+          <LogbookArticleHead report={report} readerDek={editorial} />
 
           {!hasPlaceholders && imageUrls.length > 0 && (
-            <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden ${imageUrls.length === 1 ? 'grid-cols-1' : ''} ${imageUrls.length === 2 ? 'grid-cols-2' : ''} ${imageUrls.length === 3 ? 'grid-cols-3' : ''} ${imageUrls.length >= 4 ? 'grid-cols-2' : ''}`}>
+            <div
+              className={`mb-8 sm:mb-10 grid gap-3 sm:gap-4 ${
+                editorial ? 'rounded-xl overflow-hidden' : 'rounded-2xl overflow-hidden'
+              } ${imageUrls.length === 1 ? 'grid-cols-1' : ''} ${imageUrls.length === 2 ? 'grid-cols-2' : ''} ${imageUrls.length === 3 ? 'grid-cols-3' : ''} ${imageUrls.length >= 4 ? 'grid-cols-2' : ''}`}
+            >
               {imageUrls.map((imgUrl, idx) => (
-                <div key={idx} className={`relative group ${imageUrls.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
-                  <img
-                    src={imgUrl}
-                    alt={t('logbook.common.attachment', { n: idx + 1 })}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover border border-gray-200"
-                  />
+                <div
+                  key={idx}
+                  className={`${editorial ? 'flex flex-col gap-1.5' : 'relative group'} ${
+                    imageUrls.length === 1 ? (editorial ? '' : 'aspect-video') : editorial ? '' : 'aspect-square'
+                  }`}
+                >
+                  <div
+                    className={
+                      editorial
+                        ? `overflow-hidden rounded-xl border border-gray-100 ${
+                            imageUrls.length === 1 ? 'aspect-video' : 'aspect-square'
+                          }`
+                        : 'relative w-full h-full'
+                    }
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={t('logbook.common.attachment', { n: idx + 1 })}
+                      loading="lazy"
+                      decoding="async"
+                      className={`w-full h-full object-cover ${editorial ? '' : 'border border-gray-200'}`}
+                    />
+                  </div>
                   {editorial && report.images?.[idx] ? (
-                    <EditorialLogbookImageCredits images={[report.images[idx]]} className="absolute bottom-0 left-0 right-0 bg-white/90 px-2 py-1" />
+                    <EditorialLogbookImageCredits images={[report.images[idx]]} className="px-0.5" />
                   ) : null}
                 </div>
               ))}
             </div>
           )}
 
-          <div className="mt-8">
+          <div className={editorial ? 'mt-2 sm:mt-8' : 'mt-8'}>
             <LogbookBody
               content={report.content}
               images={report.images || []}
-              imageFrameClass="my-10 group relative rounded-2xl overflow-hidden shadow-sm border border-gray-200"
-              imageClass="w-full h-auto object-cover"
+              imageFrameClass={
+                editorial
+                  ? 'my-8 group relative rounded-xl overflow-hidden border border-gray-100'
+                  : 'my-10 group relative rounded-2xl overflow-hidden shadow-sm border border-gray-200'
+              }
+              imageClass="w-full h-auto object-cover rounded-xl"
               imageMaxWidth={1200}
               showImageOverlay={false}
               showEditorialImageCredits={editorial}
+              readerTypography={editorial}
             />
           </div>
 
