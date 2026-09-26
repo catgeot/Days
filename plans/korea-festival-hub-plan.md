@@ -278,19 +278,19 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `a5562ba2` · PR [#322](https://github.com/catgeot/Days/pull/322) |
+| **상태** | **#8 push** · tip `44256af7` · PR [#322](https://github.com/catgeot/Days/pull/322) |
 | **브랜치** | `cursor/festival-sheet-ui-ec8b` |
-| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 지도에서 보기 |
-| **VERIFY** | `smoke:festival-naver-map` · `smoke:korea-festival-nearby` · `vite build` |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 주소 아래 네이버·구글 검색 |
+| **VERIFY** | `smoke:festival-surface-search` · `smoke:korea-festival-nearby` · `vite build` |
 
 **다음 제시어**:
 
 ```
-축제 페이지 #7, Preview OK면 PR 병합
+축제 페이지 #9, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-26-project-log.md
 @plans/korea-festival-hub-plan.md
 브랜치 cursor/festival-sheet-ui-ec8b · PR #322 · Preview /qa/festival-ui
-금지: 축제 시트 리팩터 · 지도 검색어에 축제명 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview /korea 축제 본문 — 주소 아래 지도에서 보기가 네이버 지도의 장소(또는 주소)로 열리는지. 본문 끝까지 스크롤 시 닫기·푸터·무니. OK면 PR #322 병합.
+금지: 축제 시트 리팩터 · 본문 네이버 지도 직링크 · 이 축제 위치로 복귀 · feature에 plans/** 커밋
+작업: Preview /korea 축제 카드 — 탭을 열지 않아도 주소 아래 네이버 검색·구글 검색이 보이는지. 읽을거리에는 영상만. OK면 PR #322 병합.
 ```

@@ -145,27 +145,27 @@
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `a5562ba2` · PR [#322](https://github.com/catgeot/Days/pull/322) · **사람 Preview** |
+| **상태** | **#8 push** · tip `44256af7` · PR [#322](https://github.com/catgeot/Days/pull/322) · **사람 Preview** |
 | **브랜치** | `cursor/festival-sheet-ui-ec8b` |
 | **PR** | [#322](https://github.com/catgeot/Days/pull/322) |
 | **플랜** | [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) **§9** |
 | **일지** | [`2026-09-26-project-log.md`](./2026-09-26-project-log.md) |
-| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 「지도에서 보기」→ 네이버 지도(장소·주소) |
-| **소유** | `FestivalDetailSheet` · `festivalNaverMap.js` · `FestivalMooniFab` |
-| **금지** | 축제 시트 리팩터 · 지도 검색어에 축제명 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:festival-naver-map` PASS · `smoke:korea-festival-nearby` PASS · `npx vite build` PASS. `smoke:korea-festival-personal`은 origin/main과 같이 인천공항→`junggu` FAIL(이 세션 밖) |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 주소 아래 네이버·구글 검색 |
+| **소유** | `FestivalDetailSheet` |
+| **금지** | 축제 시트 리팩터 · 본문 네이버 지도 직링크 · 이 축제 위치로 복귀 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:festival-surface-search` PASS · `smoke:korea-festival-nearby` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-축제 페이지 #7, Preview OK면 PR 병합
+축제 페이지 #9, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-26-project-log.md
 @plans/korea-festival-hub-plan.md
 브랜치 cursor/festival-sheet-ui-ec8b · PR #322 · Preview /qa/festival-ui
-금지: 축제 시트 리팩터 · 지도 검색어에 축제명 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview /korea 축제 본문 — 주소 아래 지도에서 보기가 네이버 지도의 장소(또는 주소)로 열리는지. 본문 끝까지 스크롤 시 닫기·푸터·무니. OK면 PR #322 병합.
-검증: npm run smoke:festival-naver-map PASS · smoke:korea-festival-nearby PASS · vite build PASS
+금지: 축제 시트 리팩터 · 본문 네이버 지도 직링크 · 이 축제 위치로 복귀 · feature에 plans/** 커밋
+작업: Preview /korea 축제 카드 — 탭을 열지 않아도 주소 아래 네이버 검색·구글 검색이 보이는지. 읽을거리에는 영상만. OK면 PR #322 병합.
+검증: npm run smoke:festival-surface-search PASS · smoke:korea-festival-nearby PASS · vite build PASS
 ```
 
 ---
