@@ -21,7 +21,7 @@
 
 ## 축제 페이지 #6 — 본문 네이버 지도
 
-- **세션** `축제 페이지 #6, 본문 네이버 지도` · feature `cursor/festival-sheet-ui-ec8b` · tip `a5562ba2` · PR [#287](https://github.com/catgeot/Days/pull/287)
+- **세션** `축제 페이지 #6, 본문 네이버 지도` · feature `cursor/festival-sheet-ui-ec8b` · tip `a5562ba2` · PR [#322](https://github.com/catgeot/Days/pull/322)
 - **조치** 축제 본문 주소 아래 「지도에서 보기」. 네이버 지도 검색어는 축제명이 아니라 행사 장소(예: 인천광역시 부평구 신트리공원). 장소가 일대·도로뿐이면 도로명 주소. 좌표가 있으면 지도 카메라만 맞춘다.
 - **VERIFY** `smoke:festival-naver-map` PASS · `smoke:korea-festival-nearby` PASS · `vite build` PASS. `smoke:korea-festival-personal`은 origin/main과 같이 인천공항→`junggu` FAIL(범위 밖).
 - **Preview** https://www.gateo.kr/qa/festival-ui → `/korea` · git `https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea`
