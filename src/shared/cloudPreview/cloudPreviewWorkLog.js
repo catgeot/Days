@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 66,
-  sessionPhase: '홍천 썸네일',
+  sessionNo: 67,
+  sessionPhase: '산청 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=hongcheon',
+  previewPath: '/korea/theme/scenic?hub=sancheong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-palgyeong-use-67-sancheong-overlay',
+    session: '팔경 활용 #67, 산청 결손 오버레이',
+    title: '산청9경 황매산 철쭉·남명조식유적지',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 산청9경 결손 2건(황매산 철쭉·남명조식유적지)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 황매산 철쭉은 차황면 법평리 1,113.1m 5월 철쭉 평전(3경, 한뫼산·삼무의 산·산청·합천 철쭉제), 남명조식유적지는 시천면 사리 384 사적 산천재·덕천서원(7경, 1561 산천재·1576 덕천서원·남명매)입니다. 합천8경 황매산·일림산 철쭉·도산서원·남사예담촌과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=sancheong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T10:20:00.000Z',
+  },
   {
     id: '2026-09-26-palgyeong-use-66-hongcheon-thumbs',
     session: '팔경 활용 #66, 홍천 썸네일',
