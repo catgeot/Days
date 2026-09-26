@@ -745,10 +745,10 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#69 push** tip `e45292e1` · PR [#321](https://github.com/catgeot/Days/pull/321) · 안산9경 2 · **#70 화성 결손 오버레이** |
+| **상태** | **#69 push** tip `e45292e1` · PR [#323](https://github.com/catgeot/Days/pull/323) · 안산9경 2 · **#70 화성 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
 | **tip** | `e45292e1` |
-| **PR** | [#321](https://github.com/catgeot/Days/pull/321) · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ · [#284](https://github.com/catgeot/Days/pull/284) merge ✅ |
+| **PR** | [#323](https://github.com/catgeot/Days/pull/323) · [#321](https://github.com/catgeot/Days/pull/321) merge ✅ · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-26-project-log.md`](./2026-09-26-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=ansan` 안산9경 1경 시화호조력발전소·8경 다문화거리 |
