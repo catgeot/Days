@@ -145,9 +145,9 @@
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `a5562ba2` · PR [#287](https://github.com/catgeot/Days/pull/287) · **사람 Preview** |
+| **상태** | **#6 push** · tip `a5562ba2` · PR [#322](https://github.com/catgeot/Days/pull/322) · **사람 Preview** |
 | **브랜치** | `cursor/festival-sheet-ui-ec8b` |
-| **PR** | [#287](https://github.com/catgeot/Days/pull/287) |
+| **PR** | [#322](https://github.com/catgeot/Days/pull/322) |
 | **플랜** | [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) **§9** |
 | **일지** | [`2026-09-26-project-log.md`](./2026-09-26-project-log.md) |
 | **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 「지도에서 보기」→ 네이버 지도(장소·주소) |
@@ -162,9 +162,9 @@
 @plans/feature-handoff-index.md
 @plans/2026-09-26-project-log.md
 @plans/korea-festival-hub-plan.md
-브랜치 cursor/festival-sheet-ui-ec8b · PR #287 · Preview /qa/festival-ui
+브랜치 cursor/festival-sheet-ui-ec8b · PR #322 · Preview /qa/festival-ui
 금지: 축제 시트 리팩터 · 지도 검색어에 축제명 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview /korea 축제 본문 — 주소 아래 지도에서 보기가 네이버 지도의 장소(또는 주소)로 열리는지. 본문 끝까지 스크롤 시 닫기·푸터·무니. OK면 PR #287 병합.
+작업: Preview /korea 축제 본문 — 주소 아래 지도에서 보기가 네이버 지도의 장소(또는 주소)로 열리는지. 본문 끝까지 스크롤 시 닫기·푸터·무니. OK면 PR #322 병합.
 검증: npm run smoke:festival-naver-map PASS · smoke:korea-festival-nearby PASS · vite build PASS
 ```
 
