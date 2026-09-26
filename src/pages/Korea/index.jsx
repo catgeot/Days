@@ -773,6 +773,8 @@ export default function KoreaFestivalHub() {
   /** @type {[string[] | null, function]} */
   const [nearIds, setNearIds] = useState(null);
   const [mapFocusView, setMapFocusView] = useState(null);
+  /** 본문 「이 축제 위치로」가 카메라를 잡은 contentId. 필터가 바뀌면 해제. */
+  const [mapPinId, setMapPinId] = useState('');
   /** @type {[{ lat: number, lng: number } | null, function]} */
   const [nearOrigin, setNearOrigin] = useState(null);
   const [mapOpen, setMapOpen] = useState(false);
@@ -1175,13 +1177,39 @@ export default function KoreaFestivalHub() {
   }, [searchActive, items, timedItems, tasteId, searchFilter]);
 
   const mapItems = useMemo(() => {
-    if (personalTab != null) return personalItems;
-    if (nearBaseItems) return nearBaseItems;
-    return mapScopeItems;
-  }, [personalTab, personalItems, nearBaseItems, mapScopeItems]);
+    const base =
+      personalTab != null
+        ? personalItems
+        : nearBaseItems
+          ? nearBaseItems
+          : mapScopeItems;
+    if (!mapPinId) return base;
+    if (base.some((row) => String(row?.contentId) === mapPinId)) return base;
+    const extra = byContentId.get(mapPinId);
+    return extra ? [extra, ...base] : base;
+  }, [
+    personalTab,
+    personalItems,
+    nearBaseItems,
+    mapScopeItems,
+    mapPinId,
+    byContentId,
+  ]);
+
+  useEffect(() => {
+    setMapPinId('');
+  }, [timeTab, tasteId, areaCode, cityName, searchFilter, personalTab, nearIds]);
 
   useEffect(() => {
     if (!mapOpen) return;
+    if (mapPinId) {
+      const pinned = byContentId.get(mapPinId);
+      const pt = pinned ? festivalLngLat(pinned.mapx, pinned.mapy) : null;
+      if (pt) {
+        setMapFocusView({ lng: pt.lng, lat: pt.lat, zoom: 13 });
+        return;
+      }
+    }
     if (personalTab != null) return;
 
     if (nearBaseItems) {
@@ -1213,6 +1241,8 @@ export default function KoreaFestivalHub() {
     if (view) setMapFocusView(view);
   }, [
     mapOpen,
+    mapPinId,
+    byContentId,
     personalTab,
     nearBaseItems,
     nearOrigin,
@@ -1591,9 +1621,25 @@ export default function KoreaFestivalHub() {
     });
   };
 
+  const showFestivalOnMap = (item) => {
+    const id = String(item?.contentId || '');
+    const pt = festivalLngLat(item?.mapx, item?.mapy);
+    if (!id || !pt) return;
+    setMapPinId(id);
+    setMapFocusView({ lng: pt.lng, lat: pt.lat, zoom: 13 });
+    resetIosZoomAfterInput();
+    setSelected(null);
+    if (!mapOpen) openMap();
+  };
+
+  const mapActiveContentId =
+    (selected?.contentId != null ? String(selected.contentId) : '') ||
+    mapPinId;
+
   const closeMap = () => {
     setMapFullscreen(false);
     setMapOpen(false);
+    setMapPinId('');
   };
 
   const toggleMapFullscreen = () => {
@@ -2492,11 +2538,7 @@ export default function KoreaFestivalHub() {
                     className="absolute inset-0 h-full w-full"
                     items={mapItems}
                     locale={locale}
-                    activeContentId={
-                      selected?.contentId != null
-                        ? String(selected.contentId)
-                        : ''
-                    }
+                    activeContentId={mapActiveContentId}
                     focusView={mapFocusView}
                     historyKey={`${mapSessionKey}:${timeTab}:${tasteId}:${personalTab || ''}:${searchFilter}`}
                     layoutKey={`split:${isMapSplit ? 'lg' : 'sm'}`}
@@ -2536,9 +2578,7 @@ export default function KoreaFestivalHub() {
             className="absolute inset-0 h-full w-full"
             items={mapItems}
             locale={locale}
-            activeContentId={
-              selected?.contentId != null ? String(selected.contentId) : ''
-            }
+            activeContentId={mapActiveContentId}
             focusView={mapFocusView}
             historyKey={`${mapSessionKey}:${timeTab}:${tasteId}:${personalTab || ''}:${searchFilter}`}
             layoutKey={`immersive:${mapFullscreen ? 'pc-full' : 'mobile'}`}
@@ -2582,6 +2622,7 @@ export default function KoreaFestivalHub() {
             resetIosZoomAfterInput();
             setSelected(null);
           }}
+          onShowOnMap={showFestivalOnMap}
           onOpenHub={(hubId) => {
             resetIosZoomAfterInput();
             setPlaceReturnTo('/korea');

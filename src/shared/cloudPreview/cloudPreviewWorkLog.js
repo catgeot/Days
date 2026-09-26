@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '축제 페이지',
-  sessionNo: 6,
-  sessionPhase: '본문 네이버 지도',
+  sessionNo: 7,
+  sessionPhase: '본문은 홈 지도',
   branch: 'cursor/festival-sheet-ui-ec8b',
   previewPath: '/korea',
   qaShareSlug: 'festival-ui',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-festival-ui-7-home-map',
+    session: '축제 페이지 #7, 본문은 홈 지도',
+    title: '본문 위치는 축제 홈 지도',
+    detail:
+      '본문 「이 축제 위치로」는 네이버 지도 대신 축제 홈 지도를 열고 그 핀으로 이동합니다. 장소 정보·길찾기는 읽을거리의 네이버 검색에 두었습니다. Preview /qa/festival-ui — /korea 축제 카드에서 버튼을 누르면 본문이 닫히고 홈 지도가 그 축제로 이동하는지.',
+    at: '2026-09-26T11:20:00.000Z',
+  },
   {
     id: '2026-09-26-festival-ui-6-naver-map',
     session: '축제 페이지 #6, 본문 네이버 지도',

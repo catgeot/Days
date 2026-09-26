@@ -72,7 +72,6 @@ import FestivalStayStrip from './FestivalStayStrip';
 import FestivalTnaStrip from './FestivalTnaStrip';
 import FestivalMooniFab from './FestivalMooniFab';
 import { festivalLngLat } from './koreaFestivalCorridors';
-import { festivalNaverMapUrl } from './festivalNaverMap';
 import { detectSidoCode } from './festivalRegionTags';
 import {
   formatDistanceKm,
@@ -469,6 +468,7 @@ function toScenicModalSpot(spot, locale = 'ko') {
  *   favorited?: boolean,
  *   onToggleFavorite?: (item: Record<string, unknown>) => void,
  *   onClose: () => void,
+ *   onShowOnMap?: (item: Record<string, unknown>) => void,
  * }} props
  */
 export default function FestivalDetailSheet({
@@ -477,6 +477,7 @@ export default function FestivalDetailSheet({
   onToggleFavorite,
   onClose,
   onOpenHub: _onOpenHub,
+  onShowOnMap,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -1160,13 +1161,9 @@ export default function FestivalDetailSheet({
   const eventplace = String(intro?.eventplace || '').trim();
   const showEventPlace =
     Boolean(eventplace) && eventplace !== String(item.addr1 || '').trim();
-  const naverMapHref = festivalNaverMapUrl({
-    addr1: item.addr1,
-    eventplace,
-    title: koTitle,
-    mapx: item.mapx,
-    mapy: item.mapy,
-  });
+  const canShowOnHomeMap = Boolean(
+    onShowOnMap && festivalLngLat(item?.mapx, item?.mapy),
+  );
   const sponsor1 = String(intro?.sponsor1 || '').trim();
   const sponsor2 = String(intro?.sponsor2 || '').trim();
   const showSponsor2 =
@@ -1364,17 +1361,16 @@ export default function FestivalDetailSheet({
             )}
           </div>
 
-          {naverMapHref ? (
-            <a
-              href={naverMapHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t('korea.festival.detail.viewOnMapAria')}
+          {canShowOnHomeMap ? (
+            <button
+              type="button"
+              onClick={() => onShowOnMap(item)}
+              aria-label={t('korea.festival.detail.showOnHomeMapAria')}
               className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-stone-200 bg-white px-4 py-3 text-sm font-bold text-stone-800 shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50"
             >
               <MapPin size={15} aria-hidden="true" />
-              {t('korea.festival.detail.viewOnMap')}
-            </a>
+              {t('korea.festival.detail.showOnHomeMap')}
+            </button>
           ) : null}
 
           {homepage && (
