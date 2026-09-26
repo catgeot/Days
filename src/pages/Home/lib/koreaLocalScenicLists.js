@@ -1616,6 +1616,46 @@ const SC_NAM_2 =
 const SC_NAM_3 =
   'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=0b1e0a04-4d9c-4f1e-b6a0-6bc591469e7b';
 const SC_NAM_HOME = 'https://sancheong.go.kr/tour/contents.do?key=1945';
+const SCH_BASE = 'https://www.seocheon.go.kr';
+const SCH_JANG = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=0`;
+const SCH_JANG_2 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=1`;
+const SCH_JANG_3 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=2`;
+const SCH_JANG_HOME = `${SCH_BASE}/prog/trspt/tour/sub01_01_08/view.do?trsptSn=8`;
+const SCH_YUBU = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=0`;
+const SCH_YUBU_2 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=1`;
+const SCH_YUBU_3 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=2`;
+const SCH_YUBU_HOME = `${SCH_BASE}/prog/trspt/tour/sub01_01_09/view.do?trsptSn=9`;
+const AS_BASE = 'https://www.ansan.go.kr';
+const AS_SIHWA = `${AS_BASE}/site/tourinfo/images/contents/1-1-1.jpg`;
+const AS_SIHWA_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767218065GXGH8LZP973A8Y31XRRX873U7.jpg`;
+const AS_SIHWA_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767218091ABS5PLFEK3QPAE1CC525TANTC.jpg`;
+const AS_SIHWA_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001969`;
+const AS_MULTI = `${AS_BASE}/site/tourinfo/images/contents/1-1-8.jpg`;
+const AS_MULTI_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753769297771CP8JKEZ30ROGXB5G2AS9UAWDU.jpg`;
+const AS_MULTI_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753769297810GFP862WZ2J21FJA339UIT0N72.jpg`;
+const AS_MULTI_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001976`;
+const AS_PUNG = `${AS_BASE}/site/tourinfo/images/contents/1-1-5.jpg`;
+const AS_PUNG_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/17537678283493TZ4HHLV6QRT29QG5PI8FIFBB.JPG`;
+const AS_PUNG_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767828374NF4XB9J8M4Y0BA6UG92AR2GHA.jpg`;
+const AS_PUNG_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001973`;
+const HS_BELL =
+  'https://www.khs.go.kr/unisearch/images/national_treasure/1612040.jpg';
+const HS_BELL_HOME =
+  'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaKdcd=11&ccbaAsno=0001200000000&ccbaCtcd=31&ccbaCpno=1113101200000';
+const HS_GEO = 'https://tour.hscity.go.kr/geopark/common/images/contents';
+const HS_HONG = `${HS_GEO}/j9_4.png`;
+const HS_HONG_2 = `${HS_GEO}/j9_0.png`;
+const HS_HONG_3 = `${HS_GEO}/j9_1.png`;
+const HS_HONG_HOME = 'https://tour.hscity.go.kr/geopark/geoInfo/j9.jsp';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3518,6 +3558,55 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     SC_NAM,
     [SC_NAM_2, SC_NAM_3],
     SC_NAM_HOME,
+  ),
+  'local-scenic:seocheon-gugyeong:장항송림산림욕장과장항스카이워크': localScenicPhotoOverlay(
+    '서천9경 제8경 장항송림산림욕장과 장항스카이워크는 장항읍 송림리입니다. 서천군 문화관광 9경 공식명은 장항송림자연휴양림과 스카이워크입니다. 바닷바람을 막는 방풍림으로 1954년 장항농고(현 장항공고) 학생들이 2년생 곰솔을 심었고, 곰솔(해송)이 1만2천여 그루 자랍니다. 면적 275,703㎡, 해안 산책로 1.5km이며 맥문동·해국·송엽국이 하층에 있습니다. 8~9월이면 맥문동이 핍니다. 2019년 산림청 국가산림문화자산으로, 2021년 자연휴양림으로 지정되었습니다. 스카이워크(기벌포 전망대)는 높이 15m·길이 236m로 해송 위와 서해·갯벌·일몰을 봅니다. 앞바다는 676년(문무왕 16) 기벌포해전이 있던 바다입니다. 주소는 장항읍 장항산단로34번길 122-16, 문의 041-956-5505입니다. 5경 춘장대해수욕장·7경 금강하굿둑 철새도래지·해남 울돌목 스카이워크와 다른 장항 송림입니다. 사진은 서천군 문화관광 9경 공식 사진입니다.',
+    '충청남도 서천군 장항읍 장항산단로34번길 122-16 (장항송림자연휴양림·스카이워크)',
+    SCH_JANG,
+    [SCH_JANG_2, SCH_JANG_3],
+    SCH_JANG_HOME,
+  ),
+  'local-scenic:seocheon-gugyeong:유부도와서천갯벌': localScenicPhotoOverlay(
+    '서천9경 제9경 유부도와 서천갯벌은 장항읍 유부도입니다. 서천군 문화관광 9경은 서천갯벌 면적을 약 68.09㎢로 두고, 금강하구에서 온 펄과 모래 갯벌이 함께 있다고 적습니다. 유부도는 철새 이동 경로의 중간기착지이자 바닷게 거점이며 100여 종의 희귀 철새가 쉽니다. 섬 이름은 임진왜란 때 아버지가 머문 섬을 유부도, 아들이 머문 섬을 유자도라 한 데서 왔다는 이야기가 있고, 고려 때부터 유배지로도 알려졌습니다. 검은머리물떼새는 천연기념물 제326호·멸종위기 야생생물 Ⅱ급이며 겨울에 2천5백여 마리가 모입니다. 서천군 해안선은 장항읍·마서면·종천면·비인면·서면 72.5km입니다. 2008년 2월 1일 서천 선언으로 서면 월호리, 비인면 다사리·장포리, 종천면 당정리와 유부도 연안습지 15.3㎢가 습지보호지역이 되었고 2009년 람사르 습지로 지정되었습니다. 서천갯벌은 2021년 유네스코 세계자연유산 「한국의 갯벌」에 등재된 구성 자산입니다. 주소는 장항읍 유부도길6번길 3입니다. 7경 금강하굿둑 철새도래지·5경 춘장대 모래갯벌·고창·신안·보성순천 갯벌과 다른 유부도 일대입니다. 사진은 서천군 문화관광 9경 공식 사진입니다.',
+    '충청남도 서천군 장항읍 유부도길6번길 3 (유부도·서천갯벌)',
+    SCH_YUBU,
+    [SCH_YUBU_2, SCH_YUBU_3],
+    SCH_YUBU_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:시화호조력발전소': localScenicPhotoOverlay(
+    '안산9경 제1경 시화호조력발전소는 단원구 대부황금로 1927입니다. 안산시 문화관광 안산12경 1경은 주소를 대부황금로 1927로 두고, 안산시 단원구와 시흥시 오이도를 잇는 시화방조제 한가운데의 세계 최대 규모 조력발전소라고 적습니다. 2011년 8월 준공되었고, 시화호와 서해를 연결하는 입·출수로로 조수간만의 차에 터빈을 돌려 전기를 생산합니다. 연간 발전량은 약 5억 5천만 kWh로, 50만 명이 1년 동안 쓸 전력량에 해당합니다. 발전소 건물에는 전망대와 문화관(홍보관)이 있어 조력발전 원리와 시화호의 역사·생태를 볼 수 있습니다. 달전망대에서는 시화호와 서해, 방아머리항, 대부도 전경과 석양·야경이 펼쳐집니다. 문의는 시화호조력발전소 032-890-6524, 조력문화관 032-885-7530이며 K-water 시화나래 안내 홈이 있습니다. 2경 대부도(대부해솔길)·7경 안산갈대습지공원·GATEO 선정 안산 시화호·시흥 오이도와 다른 방조제 발전소입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 대부황금로 1927 (시화호조력발전소·시화나래)',
+    AS_SIHWA,
+    [AS_SIHWA_2, AS_SIHWA_3],
+    AS_SIHWA_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:다문화거리': localScenicPhotoOverlay(
+    '안산9경 제8경 다문화거리는 단원구 원곡동 일대입니다. 안산시 문화관광 안산12경 8경은 주소를 다문화길 16 일대로 두고, 세계 속 작은 지구촌이며 다양한 국적의 사람이 모여 사는 문화 공간이라고 적습니다. 안산은 국내에서 외국인 주민이 가장 많이 거주하는 도시 중 하나이고, 이 거리는 2009년 다문화마을특구로 지정되었습니다. 중국·베트남·태국·러시아·우즈베키스탄 등 현지 음식점과 식자재 슈퍼마켓이 있고, 한글보다 외국어 간판이 많습니다. 외국인주민지원본부와 외국어 간판의 은행·휴대폰 매장이 있습니다. 문의는 안산시 외국인주민지원본부 1666-1234, 안내 홈은 global.iansan.net입니다. 7경 안산갈대습지공원·인천9경 인천차이나타운과 다른 단원구 다문화길입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 다문화길 16 일대 (다문화거리)',
+    AS_MULTI,
+    [AS_MULTI_2, AS_MULTI_3],
+    AS_MULTI_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:풍도': localScenicPhotoOverlay(
+    '안산9경 제5경 풍도는 단원구 풍도동입니다. 안산시 문화관광 안산12경 5경은 이름 풍(楓)이 가을 단풍에서 왔고, 대부도에서 약 24km·안산시에서 남쪽으로 약 45km 떨어진 서해의 섬이며 서해의 꽃섬이라고 적습니다. 3월이면 풍도바람꽃·풍도민들레·변산바람꽃이 피고, 섬 둘레는 약 6km로 걸어서 한 바퀴에 약 2시간입니다. 절벽과 기암, 해안 초원, 맑은 바다가 이어지고 맑은 날에는 대부도·제부도·인천 앞바다가 보입니다. 배편은 하루 1~2회라 운항 시각과 날씨를 확인해야 하며, 문의는 대부해운 032-886-7813, 편도요금은 대인 13,600원, 방아머리항을 거칩니다. 2경 대부도·화성8경 제부도와 다른 풍도동 섬입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 풍도동 (풍도)',
+    AS_PUNG,
+    [AS_PUNG_2, AS_PUNG_3],
+    AS_PUNG_HOME,
+  ),
+  'local-scenic:hwaseong-palgyeong:용주사범종': localScenicPhotoOverlay(
+    '화성8경 제2경 용주사 범종은 용주사 범종각의 동종입니다. 국가유산포털은 화성 용주사 동종을 국보로 두고 소재지를 화성시 용주로 136, 용주사(송산동)로 적습니다. 1964년 3월 30일 국보 제120호로 지정되었고 2021년 11월 19일 국보로 재지정되었습니다. 수량은 1구, 시대는 고려시대입니다. 디지털화성시문화대전은 높이를 145㎝, 지름을 87㎝, 재질을 구리로 두고, 대웅보전 서쪽 범종각에 걸려 있다고 적습니다. 종신 명문은 통일신라 문성왕 16년(854) 조성을 적지만 형태와 문양이 그 시대와 달라 고려 전기 제작으로 봅니다. 용뉴·용통과 연뢰 일부가 깨진 것 외에는 보존이 양호하고, 신라 범종 양식과 고려 전기 양식이 함께 있어 전환기 종으로 평가됩니다. 경기도뉴스는 정조가 사도세자 능을 화산으로 옮기고 원찰로 삼은 절이며, 낙성식 밤 용이 여의주를 물고 승천하는 꿈을 꾼 뒤 용주사라 이름했다고 적습니다. 주소는 용주로 136, 문의 031-234-0040, 절 홈은 yongjoosa.or.kr입니다. 1경 융건릉·대웅전 후불탱화·수원 화성·성덕대왕신종과 다른 범종각의 국보입니다. 사진은 국가유산청 국보 용주사 동종 공식 사진입니다.',
+    '경기도 화성시 용주로 136 (송산동 188, 용주사 범종각)',
+    HS_BELL,
+    [],
+    HS_BELL_HOME,
+  ),
+  'local-scenic:hwaseong-palgyeong:입파홍암': localScenicPhotoOverlay(
+    '화성8경 제6경 입파홍암은 우정읍 국화리 입파도 북쪽의 붉은 기암입니다. 화성국가지질공원은 주소를 우정읍 입파길 24-15로 두고, 국화도 북쪽이며 서신면 궁평항에서 뱃길로 약 50분이라고 적습니다. 입파도(立波島)는 서서 파도를 맞는 섬이라는 뜻입니다. 썰물 때 북쪽 홍암에서 남쪽 기암괴석까지 갯바위·모래·자갈사주 바닷길로 걸을 수 있습니다. 홍암은 입파도에서 가장 알려진 곳이며, 철산화물이 풍화되어 붉은색을 띤다고 지질공원은 적습니다. 경기도뉴스는 화성8경 제6경을 입파도로 소개하고 면적을 0.44㎢로 두며, 궁평항·전곡항 배 시간을 확인하라고 적습니다. 3경 제부도·4경 궁평낙조·국화도와 다른 우정읍 홍암입니다. 사진은 화성국가지질공원 입파도 홍암전경·해안 공식 사진입니다.',
+    '경기도 화성시 우정읍 입파길 24-15 (국화리 입파도 홍암)',
+    HS_HONG,
+    [HS_HONG_2, HS_HONG_3],
+    HS_HONG_HOME,
   ),
 };
 
