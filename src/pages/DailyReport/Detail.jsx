@@ -8,6 +8,10 @@ import { supabase } from '../../shared/api/supabase';
 import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import LogbookBody from './components/LogbookBody';
+import LogbookArticleHead from './components/LogbookArticleHead';
+import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
+import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 
 const Detail = () => {
   const { t } = useTranslation();
@@ -166,37 +170,11 @@ const Detail = () => {
     }
   };
 
-  const renderBlogContent = (content, images) => {
-    if (!content) return null;
-    const regex = /(\[사진\s*\d+\])/g;
-    const parts = content.split(regex);
-
-    return parts.map((part, index) => {
-      const match = part.match(/\[사진\s*(\d+)\]/);
-      if (match) {
-        const imgIndex = parseInt(match[1], 10) - 1;
-        if (images[imgIndex]) {
-          return (
-            <div key={index} className="my-10 group relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50">
-              <img src={images[imgIndex]} alt={t('logbook.common.attachment', { n: imgIndex + 1 })} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => window.open(images[imgIndex], '_blank')} />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
-            </div>
-          );
-        }
-        return null;
-      }
-      if (part.trim() !== '') {
-        return <p key={index} className="text-lg leading-[1.8] text-gray-800 whitespace-pre-wrap font-medium mb-6">{part}</p>;
-      }
-      return null;
-    });
-  };
-
   if (!report) return <div className="min-h-screen bg-white p-10 flex justify-center items-center text-gray-400 animate-pulse">{t('logbook.common.syncingMemory')}</div>;
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
-  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content);
+  const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -264,11 +242,11 @@ const Detail = () => {
 
         <div className="bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm">
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{report.date}</span>
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{formatLogbookDisplayDate(report)}</span>
             <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-10 tracking-tight leading-tight">{report.title}</h1>
+          <LogbookArticleHead report={report} />
 
           {!hasPlaceholders && images.length > 0 && (
             <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden
@@ -287,9 +265,7 @@ const Detail = () => {
           )}
 
           <div className="mt-8">
-            {hasPlaceholders ? renderBlogContent(report.content, images) : (
-              <div className="text-lg leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">{report.content}</div>
-            )}
+            <LogbookBody content={report.content} images={images} />
           </div>
         </div>
 

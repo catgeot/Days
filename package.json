@@ -36,6 +36,12 @@
     "smoke:planner-empty-scroll": "node scripts/smoke-planner-empty-scroll.mjs",
     "smoke:trust-disclosure": "node scripts/smoke-trust-disclosure.mjs",
     "smoke:visitor-locale": "node scripts/smoke-visitor-locale.mjs",
+    "smoke:logbook-markdown": "node scripts/smoke-logbook-markdown.mjs",
+    "smoke:logbook-display-date": "node scripts/smoke-logbook-display-date.mjs",
+    "smoke:logbook-dek": "node scripts/smoke-logbook-dek.mjs",
+    "smoke:logbook-editor": "node scripts/smoke-logbook-editor.mjs",
+    "smoke:editorial-logbook": "node scripts/smoke-editorial-logbook.mjs",
+    "upsert:editorial-logbook": "node scripts/upsert-editorial-logbook.mjs",
     "probe:mrt-korea-packages": "node scripts/probe-mrt-korea-package-destinations.mjs",
     "smoke:ko-homonym-ri-search": "node scripts/smoke-ko-homonym-ri-search.mjs",
     "generate:korea-area-codes": "node scripts/generate-korea-area-codes.mjs",
@@ -215,7 +221,10 @@
     "react-helmet-async": "^3.0.0",
     "react-i18next": "^17.0.11",
     "react-map-gl": "^8.1.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.12.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
     "three": "^0.182.0"
   },
   "devDependencies": {

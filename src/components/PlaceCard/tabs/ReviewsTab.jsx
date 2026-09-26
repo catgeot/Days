@@ -10,6 +10,199 @@ import ReviewEditorModal from '../modals/ReviewEditorModal';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
+import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
+import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import { collectUniqueEditorialReviewImageCredits, resolveReviewThumbnailUnsplashCredit } from '../../../utils/editorialReviewImageCredit';
+import {
+  getCollapsedPreviewText,
+  getGalleryImageEntries,
+  getReviewLeadThumbnailImageIndex,
+  hasReviewContentBlocks,
+  normalizeReviewContentBlocks,
+  resolveReviewImageSrc,
+  resolveReviewThumbnailSrc,
+  shouldShowReviewBottomGallery,
+  shouldShowReviewExpandToggle,
+} from '../../../utils/placeReviewContentBlocks';
+
+const EditorialReviewImageCredits = ({ images, compact = false }) => {
+  const credits = collectUniqueEditorialReviewImageCredits(images);
+  if (credits.length === 0) return null;
+
+  const className = compact
+    ? 'mt-0.5 text-[9px] text-gray-400 leading-none text-right w-full min-w-0 truncate whitespace-nowrap overflow-hidden'
+    : 'mt-1.5 text-[10px] text-gray-400 leading-snug';
+
+  return (
+    <p className={className}>
+      {credits.map((credit, index) => (
+        <React.Fragment key={`${credit.type}-${index}`}>
+          {index > 0 ? <span className="text-gray-300"> · </span> : null}
+          {credit.type === 'plain' ? (
+            credit.text
+          ) : compact ? (
+            <>
+              Photo:{' '}
+              {credit.photographerHref ? (
+                <a
+                  href={credit.photographerHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+                >
+                  {credit.photographerName}
+                </a>
+              ) : (
+                credit.photographerName
+              )}
+              {' / '}
+              <a
+                href={credit.unsplashHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+              >
+                Unsplash
+              </a>
+            </>
+          ) : (
+            <>
+              Photo by{' '}
+              {credit.photographerHref ? (
+                <a
+                  href={credit.photographerHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+                >
+                  {credit.photographerName}
+                </a>
+              ) : (
+                credit.photographerName
+              )}
+              {' on '}
+              <a
+                href={credit.unsplashHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+              >
+                Unsplash
+              </a>
+            </>
+          )}
+        </React.Fragment>
+      ))}
+    </p>
+  );
+};
+
+const ReviewThumbnailUnsplashCredit = ({ img }) => {
+  const credit = resolveReviewThumbnailUnsplashCredit(img);
+  if (!credit) return null;
+
+  return (
+    <p className="mt-0.5 text-[9px] text-gray-400 leading-none text-right w-full min-w-0 truncate whitespace-nowrap overflow-hidden">
+      Photo:{' '}
+      {credit.photographerHref ? (
+        <a
+          href={credit.photographerHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+        >
+          {credit.photographerName || 'Photographer'}
+        </a>
+      ) : (
+        credit.photographerName
+      )}
+      {' / '}
+      <a
+        href={credit.unsplashHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
+      >
+        Unsplash
+      </a>
+    </p>
+  );
+};
+
+const CollapsedReviewLeadThumbnail = ({ review, onImageClick }) => {
+  const { t } = useTranslation();
+  const images = review.images || [];
+  const leadIndex = getReviewLeadThumbnailImageIndex(review);
+  if (leadIndex == null || leadIndex >= images.length) return null;
+  const leadImg = images[leadIndex];
+  const thumbSrc = resolveReviewThumbnailSrc(leadImg);
+  if (!thumbSrc) return null;
+
+  return (
+    <div className="shrink-0 w-[4.25rem] sm:w-[4.75rem] flex flex-col gap-0.5 min-w-0">
+      <button
+        type="button"
+        onClick={() => onImageClick(images, leadIndex)}
+        className="block w-full aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-100 cursor-pointer hover:opacity-95 transition-opacity"
+        aria-label={t('place.reviews.thumbnailPreviewAria')}
+      >
+        <img
+          src={thumbSrc}
+          alt=""
+          className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
+          width={76}
+          height={76}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://placehold.co/76x76?text=Error';
+          }}
+        />
+      </button>
+      <ReviewThumbnailUnsplashCredit img={leadImg} />
+    </div>
+  );
+};
+
+const ReviewStatsBlock = ({ stats, layout = 'desktop' }) => {
+  const { t } = useTranslation();
+  const countLine = t('place.reviews.countSplit', {
+    traveler: stats.travelerCount,
+    editorial: stats.editorialCount,
+  });
+
+  if (layout === 'mobile') {
+    return (
+      <div className="flex flex-col items-end gap-0.5 min-w-0 max-w-[55%]">
+        <p className="text-[10px] text-gray-500 leading-snug text-right truncate w-full">{countLine}</p>
+        {stats.averageRatingDisplay ? (
+          <div className="flex items-center gap-0.5 bg-yellow-50 px-1.5 py-0.5 rounded shrink-0">
+            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+            <span className="font-bold text-yellow-700 text-xs">{stats.averageRatingDisplay}</span>
+          </div>
+        ) : (
+          <p className="text-[10px] text-gray-400 text-right leading-snug">{t('place.reviews.noTravelerRating')}</p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-right flex flex-col items-end max-w-[14rem]">
+      {stats.averageRatingDisplay ? (
+        <div className="flex items-center gap-1 mb-1">
+          <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+          <span className="font-bold text-lg text-gray-800">{stats.averageRatingDisplay}</span>
+        </div>
+      ) : (
+        <p className="text-xs text-gray-500 mb-1 leading-snug">{t('place.reviews.noTravelerRating')}</p>
+      )}
+      <p className="text-xs text-gray-500 leading-snug">{countLine}</p>
+    </div>
+  );
+};
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
 const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
@@ -54,6 +247,45 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
     }
   };
 
+  const usesContentBlocks = hasReviewContentBlocks(review.content_blocks);
+  const contentBlocks = usesContentBlocks ? normalizeReviewContentBlocks(review.content_blocks) : [];
+  const collapsedPreviewText = getCollapsedPreviewText(review);
+  const galleryEntries = usesContentBlocks
+    ? getGalleryImageEntries(review.images, review.content_blocks)
+    : (review.images || []).map((img, index) => ({ img, index }));
+  const showExpandToggle = shouldShowReviewExpandToggle(review);
+  const showBottomGallery = shouldShowReviewBottomGallery(review, isExpanded);
+  const leadThumbnailIndex = getReviewLeadThumbnailImageIndex(review);
+
+  const renderInlineImage = (imageIndex, blockKey) => {
+    const images = review.images || [];
+    const img = images[imageIndex];
+    const imgSrc = resolveReviewImageSrc(img);
+    if (!imgSrc) return null;
+
+    return (
+      <div key={blockKey} className="mt-3">
+        <button
+          type="button"
+          onClick={() => onImageClick(images, imageIndex)}
+          className="block w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-100 cursor-pointer hover:opacity-95 transition-opacity text-left"
+        >
+          <img
+            src={imgSrc}
+            alt={`review img ${imageIndex}`}
+            className="w-full max-h-80 object-cover"
+            loading="lazy"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://placehold.co/400x300?text=Error';
+            }}
+          />
+        </button>
+        {review.is_editorial ? <EditorialReviewImageCredits images={[img]} /> : null}
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
       {/* 작성자 및 별점 정보 */}
@@ -67,10 +299,18 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
             )}
           </div>
           <div>
-            <div className="font-medium text-gray-900 text-sm flex items-center gap-2">
-              {review.user?.display_name || t('place.reviews.anonymous')}
-              {!review.is_public && (
-                <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{t('place.reviews.private')}</span>
+            <div className="font-medium text-gray-900 text-sm flex flex-wrap items-center gap-2">
+              {review.is_editorial ? (
+                <span className="text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
+                  {formatGateoReviewerBadge(review.persona_label)}
+                </span>
+              ) : (
+                <>
+                  {review.user?.display_name || t('place.reviews.anonymous')}
+                  {!review.is_public && (
+                    <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{t('place.reviews.private')}</span>
+                  )}
+                </>
               )}
             </div>
             <div className="text-xs text-gray-400 mt-0.5">{formatDate(review.created_at)}</div>
@@ -95,48 +335,87 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         </div>
       </div>
 
-      {/* 본문 내용 (더보기 로직 적용) */}
-      <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap mt-2 break-keep">
-        <div className={`${isExpanded ? '' : 'line-clamp-3'}`}>
-          {review.content}
+      {review.is_editorial && review.disclosure?.trim() && (
+        <p className="text-[11px] text-gray-500 bg-gray-50 border border-gray-100 rounded-md px-2.5 py-1.5 mt-1 leading-snug">
+          {review.disclosure.trim()}
+        </p>
+      )}
+
+      {/* 본문 (content_blocks 인터리브 또는 기존 content + 하단 갤러리) */}
+      <div className="mt-2 flex gap-3 items-start">
+        <div className="flex-1 min-w-0 text-gray-700 text-sm leading-relaxed break-keep">
+          {usesContentBlocks ? (
+            !isExpanded ? (
+              <div className="whitespace-pre-wrap line-clamp-3">
+                {collapsedPreviewText}
+              </div>
+            ) : (
+              contentBlocks.map((block, blockIdx) => {
+                if (block.type === 'text') {
+                  return (
+                    <p key={`text-${blockIdx}`} className="whitespace-pre-wrap mt-3 first:mt-0">
+                      {block.text}
+                    </p>
+                  );
+                }
+                if (block.type === 'image') {
+                  const images = review.images || [];
+                  if (block.image_index >= images.length) return null;
+                  return renderInlineImage(block.image_index, `image-${blockIdx}`);
+                }
+                return null;
+              })
+            )
+          ) : (
+            <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
+              {review.content}
+            </div>
+          )}
+          {showExpandToggle && (
+            <button
+              type="button"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-blue-500 font-medium text-xs mt-1 hover:underline"
+            >
+              {isExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}
+            </button>
+          )}
         </div>
-        {/* 간단한 길이 체크 로직 - css line-clamp 활용. 더보기 버튼 렌더링. 줄바꿈이 많거나 글자가 길 때 */}
-        {review.content.length > 120 && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-blue-500 font-medium text-xs mt-1 hover:underline"
-          >
-            {isExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}
-          </button>
-        )}
+        {!isExpanded && leadThumbnailIndex != null ? (
+          <CollapsedReviewLeadThumbnail review={review} onImageClick={onImageClick} />
+        ) : null}
       </div>
 
-      {/* 첨부 이미지 (있을 경우) */}
-      {review.images && review.images.length > 0 && (
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {review.images.map((img, idx) => {
-            const imgSrc = img?.url || img?.publicUrl || img;
-            if (!imgSrc || typeof imgSrc !== 'string') return null;
+      {showBottomGallery && (
+        <div className="mt-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {galleryEntries.map(({ img, index: idx }) => {
+              const imgSrc = resolveReviewImageSrc(img);
+              if (!imgSrc) return null;
 
-            return (
-              <div
-                key={idx}
-                onClick={() => onImageClick(review.images, idx)}
-                className="relative shrink-0 w-24 h-24 min-w-[6rem] rounded-lg overflow-hidden snap-start bg-gray-100 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-              >
-                <img
-                  src={imgSrc}
-                  alt={`review img ${idx}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://placehold.co/100x100?text=Error';
-                  }}
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={idx}
+                  onClick={() => onImageClick(review.images, idx)}
+                  className="relative shrink-0 w-24 h-24 min-w-[6rem] rounded-lg overflow-hidden snap-start bg-gray-100 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                >
+                  <img
+                    src={imgSrc}
+                    alt={`review img ${idx}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://placehold.co/100x100?text=Error';
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+          {review.is_editorial ? (
+            <EditorialReviewImageCredits images={galleryEntries.map((entry) => entry.img)} />
+          ) : null}
         </div>
       )}
 
@@ -275,11 +554,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
           </div>
 
           <div className="text-right flex flex-col items-end">
-            <div className="flex items-center gap-1 mb-1">
-              <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-              <span className="font-bold text-lg text-gray-800">{stats.averageRating}</span>
-            </div>
-            <p className="text-xs text-gray-500">{t('place.reviews.count', { count: stats.totalReviews })}</p>
+            <ReviewStatsBlock stats={stats} layout="desktop" />
           </div>
         </div>
 
@@ -335,8 +610,8 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
 
         {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
         <div className={`md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}>
-          <div className="flex items-center justify-between px-3 py-2.5">
-            <div className="flex items-center gap-2">
+          <div className="flex items-start justify-between px-3 pt-2.5 pb-1 gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <button
                 type="button"
                 onClick={() => setMediaMode?.('GALLERY')}
@@ -347,16 +622,14 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
               <div className="flex items-center gap-1.5 min-w-0">
                 <MessageSquare className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                 <h3 className="font-bold text-gray-900 text-sm truncate">
-                  {t('place.reviews.headerShort')}{' '}
-                  <span className="text-gray-400 text-xs font-normal">({stats.totalReviews})</span>
+                  {t('place.reviews.headerShort')}
                 </h3>
-                <div className="flex items-center gap-0.5 ml-1 bg-yellow-50 px-1.5 py-0.5 rounded shrink-0">
-                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                  <span className="font-bold text-yellow-700 text-xs">{stats.averageRating}</span>
-                </div>
               </div>
             </div>
 
+            <ReviewStatsBlock stats={stats} layout="mobile" />
+          </div>
+          <div className="flex items-center justify-end px-3 pb-2.5 gap-2">
             <div className="flex bg-gray-100 rounded p-0.5 shrink-0">
               <button
                 type="button"
@@ -422,16 +695,19 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                 </span>
               </div>
               <div className="flex gap-3 overflow-x-auto pb-2 snap-x custom-scrollbar">
-                {blogs.map((blog) => (
+                {blogs.map((blog) => {
+                  const editorial = isEditorialLogbook(blog);
+                  const thumb = logbookHeroImageUrl(blog.images);
+                  return (
                   <div
                     key={blog.id}
-                    onClick={() => navigate(`/p/${blog.id}`)}
-                    className="shrink-0 w-56 bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group"
+                    onClick={() => navigate(publicLogbookDetailPath(blog))}
+                    className={`shrink-0 w-56 bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group ${editorial ? 'border-indigo-100' : 'border-gray-100'}`}
                   >
-                    {blog.images && blog.images.length > 0 ? (
+                    {thumb ? (
                       <div className="h-28 overflow-hidden bg-gray-100 relative">
                         <img
-                          src={blog.images[0]}
+                          src={thumb}
                           alt="thumbnail"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
@@ -446,12 +722,17 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                         {blog.title}
                       </h5>
                       <p className="text-[10px] text-gray-400 font-medium truncate">
-                        {blog.author_label && <span className="text-gray-500">{blog.author_label} · </span>}
+                        {editorial ? (
+                          <span className="text-indigo-700 font-semibold">GATEO 에디터 · </span>
+                        ) : blog.author_label ? (
+                          <span className="text-gray-500">{blog.author_label} · </span>
+                        ) : null}
                         {blog.date} · {blog.location}
                       </p>
                     </div>
                   </div>
-                ))}
+                );
+                })}
               </div>
             </div>
           )}

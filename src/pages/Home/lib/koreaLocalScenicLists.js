@@ -1601,6 +1601,43 @@ const BS_SEO = `${BS_TOUR}/21492/seojp2.jpg`;
 const BS_SEO_2 = `${BS_TOUR}/21492/juam2.jpg`;
 const BS_SEO_3 = `${BS_TOUR}/21492/seojp11.jpg`;
 const BS_SEO_HOME = 'https://www.boseong.go.kr/tour/tourist/9tour/juam_seojp';
+const SC_HWANG =
+  'https://tong.visitkorea.or.kr/cms/resource/00/2658500_image2_1.jpg';
+const SC_HWANG_2 =
+  'https://tong.visitkorea.or.kr/cms/resource/50/2653250_image2_1.jpg';
+const SC_HWANG_3 =
+  'https://tong.visitkorea.or.kr/cms/resource/99/2658499_image2_1.jpg';
+const SC_HWANG_4 =
+  'https://tong.visitkorea.or.kr/cms/resource/51/2653251_image2_1.jpg';
+const SC_HWANG_HOME = 'https://sancheong.go.kr/tour/contents.do?key=1941';
+const SC_NAM = 'https://www.khs.go.kr/unisearch/images/history_site/1628317.jpg';
+const SC_NAM_2 =
+  'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=6e9586a4-e8a9-4c5e-bb33-bdbd20dbe3af';
+const SC_NAM_3 =
+  'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=0b1e0a04-4d9c-4f1e-b6a0-6bc591469e7b';
+const SC_NAM_HOME = 'https://sancheong.go.kr/tour/contents.do?key=1945';
+
+const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
+const INJE_DCB =
+  'https://injetour.co.kr/files/e794313a-a5bb-43f6-a90b-1b076d1fa45d.png';
+const INJE_NAERIN_VALLEY =
+  'https://injetour.co.kr/files/4f364a58-77fe-403d-8449-0dac77685ec1.jpg';
+const INJE_BANGDONG_SPRING =
+  'https://injetour.co.kr/files/e2d2d664-1f01-4066-a696-265eaed92197.jpg';
+const INJE_DAESEUNG_FALLS =
+  'https://injetour.co.kr/files/879b0b5b-14a9-44a6-b270-b16bee41eb90.jpg';
+const INJE_HAPGANG_PAVILION =
+  'https://injetour.co.kr/files/3c665dac-463b-43aa-a0c2-8f7ebb539e01.jpg';
+
+const HC_TOUR = 'https://www.hongcheon.go.kr';
+const HC_MIYAK = `${HC_TOUR}/DATA/tour/2016/thumb/p_20210208082101687jnf379.jpg`;
+const HC_MIYAK_HOME =
+  `${HC_TOUR}/tour/selectTourCntntsWebView.do?ctgry=6&key=2035&tourNo=2016`;
+const HC_GARYEONG = `${HC_TOUR}/DATA/tour/2018/thumb/p_202102180508378213s06jQ.jpg`;
+const HC_GARYEONG_2 = `${HC_TOUR}/DATA/tour/2018/thumb/p_20210218051022475PfUGRo.jpg`;
+const HC_GARYEONG_3 = `${HC_TOUR}/DATA/tour/2018/thumb/p_20210218051022496eh1vfS.jpg`;
+const HC_GARYEONG_HOME =
+  `${HC_TOUR}/tour/selectTourCntntsWebView.do?ctgry=6&key=2035&tourNo=2018`;
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1705,6 +1742,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
       'https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg',
     ],
   },
+  'local-scenic:hongcheon-palgyeong:미약골': localScenicPhotoOverlay(
+    '홍천9경 3경 미약골은 서석면 구룡령로 3748-8입니다. 홍천군 문화관광은 높은 산과 깊은 계곡으로 둘러싸인 곳이며, 풍수가가 삼정승 6판서가 날 명당이라 보고 학이 울고 촛대바위가 치솟았으며 선녀가 목욕했다는 암석폭포가 있어 미암동 또는 미약골이라 했다고 적습니다. 원시림과 용천수가 있고, 그 물이 400리를 흘러 북한강 청평댐으로 드는 홍천강 발원지입니다. 산불조심기간(봄 2월 1일~5월 15일, 가을 11월 1일~12월 15일)에는 입산이 금지됩니다. 주차는 서석면 생곡리 11(구룡령로 3748-8)이며 화장실이 있습니다. 문의 033-430-4451. 7경 용소계곡·8경 살둔계곡·2경 가리산과 다른 서석 생곡 계곡입니다. 사진은 홍천군 문화관광 9경 공식 사진입니다.',
+    '강원특별자치도 홍천군 서석면 구룡령로 3748-8',
+    HC_MIYAK,
+    [],
+    HC_MIYAK_HOME,
+  ),
+  'local-scenic:hongcheon-palgyeong:가령폭포': localScenicPhotoOverlay(
+    '홍천9경 5경 가령폭포는 내촌면 와야리 산12-1입니다. 홍천군 문화관광은 백암산(1,099m) 서남쪽 기슭의 폭포로 개령폭포라고도 하며, 약 50m 낭떠러지로 떨어진다고 적습니다. 해발 950m 어사리덕 산골샘에서 나온 물이 비레올 계곡을 지나 400리 홍천강으로 이어집니다. 숲에 가려 잘 드러나지 않는 폭포로 알려져 있고, 주차는 내촌면 와야리 38-3입니다. 문의 033-430-2544. 문경 용추계곡·동해 무릉 용추폭포·인제 대승폭포·포항 내연산 12폭포와 다른 내촌 백암산 폭포입니다. 사진은 홍천군 문화관광 9경 공식 사진 3장입니다.',
+    '강원특별자치도 홍천군 내촌면 와야리 산12-1',
+    HC_GARYEONG,
+    [HC_GARYEONG_2, HC_GARYEONG_3],
+    HC_GARYEONG_HOME,
+  ),
   'local-scenic:danyang-palgyeong:하선암': {
     contentId: '126654',
     overview:
@@ -2324,6 +2375,27 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '경상남도 사천시 용강동 (용두공원) · 와룡산 자락 청룡사',
     SACHEON_YONGDU,
     [SACHEON_YONGDU_2, SACHEON_YONGDU_3],
+  ),
+  'local-scenic:inje-palgyeong:대청봉': localScenicPhotoOverlay(
+    '인제8경 제1경 대청봉은 설악산 최고봉으로 기암괴석과 대자연의 파노라마가 어우러진 명승입니다. 인제군 문화관광은 국립공원·유네스코 생물권 보존지역으로 지정된 설악산 정상 일대를 인제 8경의 첫 경으로 소개합니다. 양양 10경 「설악산 대청봉」과 동일 산정이나 인제군 팔경 명칭은 「대청봉」입니다.',
+    '강원특별자치도 인제군 북면·인제읍 일원 (설악산 대청봉)',
+    INJE_DCB,
+    [],
+    INJE_SCENICS_HOME,
+  ),
+  'local-scenic:inje-palgyeong:내린천계곡': localScenicPhotoOverlay(
+    '인제8경 제5경 내린천계곡은 푸른 물줄기와 기암괴석이 어우른 선경으로, 맑은 내린천 상류 계곡이 널리 알려진 곳입니다. 인제군은 우리나라에서 가장 아름답고 깨끗한 계곡을 꼽을 때 인제 내린천을 든다고 소개합니다.',
+    '강원특별자치도 인제군 기린면·상남면 내린천 일원',
+    INJE_NAERIN_VALLEY,
+    [],
+    INJE_SCENICS_HOME,
+  ),
+  'local-scenic:inje-palgyeong:방동약수': localScenicPhotoOverlay(
+    '인제8경 제6경 방동약수는 기린면 방동리에 있으며 약 300년 전 발견된 명품 약수로 소개됩니다. 인제군은 물맛과 강원도 정취를 함께 느낄 수 있는 명소로 안내합니다.',
+    '강원특별자치도 인제군 기린면 방동리 (방동약수)',
+    INJE_BANGDONG_SPRING,
+    [],
+    INJE_SCENICS_HOME,
   ),
   'local-scenic:icheon-gugyeong:노성산말머리바위': localScenicPhotoOverlay(
     '이천9경 제8경 노성산 말머리바위는 설성면·안성 일죽면에 걸친 노성산 7부 능선의 바위입니다. 이천시 문화관광에 따르면 노성·마국·설성 세 산 장수가 말을 나눠 가진 전설에서 노성산 장수가 머리를 차지했고, 말 머리 형상의 바위와 병풍바위·굴바위가 있습니다. 산행은 약 2시간이며 산 아래 노성산시민공원이 있습니다.',
@@ -3433,6 +3505,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [BS_SEO_2, BS_SEO_3],
     BS_SEO_HOME,
   ),
+  'local-scenic:sancheong-gugyeong:황매산철쭉': localScenicPhotoOverlay(
+    '산청9경 제3경 황매산 철쭉은 차황면 법평리 황매산입니다. 산청군 문화관광 9경은 높이를 1,113.1m로 두고, 한뫼산(큰 산)이 한자로 바뀌어 황매산이 되었다고 적습니다. 태백산맥 마지막 준봉이며 고려 무학대사가 수도한 곳으로, 칡넝쿨·땅가시·뱀이 없다는 삼무(三無)의 산으로도 불립니다. 5월이면 정상 부근 평전이 철쭉으로 덮이고 산청 황매산 철쭉제가 열리며, 산청·합천이 함께 개막 퍼포먼스를 합니다. 네비 주소는 차황면 법평리 1-1이고, 한국관광공사는 황매산로1202번길·법평리로 안내합니다. 문의 055-970-7204(관광진흥과)·055-970-6901(산림녹지과)입니다. 합천8경 황매산·보성9경 일림산 철쭉·화순 수만리 철쭉·하동 형제봉 철쭉과 다른 차황면 법평리 철쭉 평전입니다. 사진은 한국관광공사 황매산(산청) 철쭉군락·황매산성·모원재 공식 사진입니다.',
+    '경상남도 산청군 차황면 법평리 (황매산로1202번길, 법평리 1-1)',
+    SC_HWANG,
+    [SC_HWANG_2, SC_HWANG_3, SC_HWANG_4],
+    SC_HWANG_HOME,
+  ),
+  'local-scenic:sancheong-gugyeong:남명조식유적지': localScenicPhotoOverlay(
+    '산청9경 제7경 남명조식유적지는 시천면 사리·원리입니다. 산청군 문화관광 9경은 조선 실천유학의 대가 남명 조식(1501~1572)이 을묘 단성소를 올린 선비의 고장 유적이며, 시천면 덕천강변에 산천재·덕천서원·남명기념관·세심정·묘소·여재실이 있다고 적습니다. 국가유산청 사적(1984.1.26., 구 사적 제305호) 소재지는 시천면 사리 384번지 일원입니다. 사리에는 산천재·별묘·신도비·묘비, 원리에는 덕천서원·세심정이 있습니다. 산천재는 명종 16년(1561)에 짓고 순조 18년(1818)에 고친 앞면 2칸·옆면 2칸 서실이며, 뜰의 남명매는 선생이 손수 심었다고 전합니다. 덕천서원은 선조 9년(1576)에 세웠고 광해군 원년(1608) 사액 뒤 서원철폐로 훼철되었다가 1926년에 고쳐 지었습니다. 세심정은 선조 15년(1582) 덕천강가에 세웠습니다. 산천재·남명기념관 주소는 남명로 311, 덕천서원은 남명로 137입니다. 문의 055-973-9781입니다. 안동 도산서원·하동 회남재·단속사지 정당매·6경 남사예담촌과 다른 시천면 사리 유적입니다. 사진은 국가유산청 사적 산청 조식 유적·한국관광공사 산천재 남명매·덕천서원 공식 사진입니다.',
+    '경상남도 산청군 시천면 사리 384번지 일원 (산천재 남명로 311 · 덕천서원 남명로 137)',
+    SC_NAM,
+    [SC_NAM_2, SC_NAM_3],
+    SC_NAM_HOME,
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -3490,6 +3576,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   1910438: localScenicThumbOverlay(YC_SILLA, [YC_SILLA_2, YC_SILLA_3]),
   // 통영 탐색홈 이순신공원 — hub 명소(팔경 아님). Tour 584970 firstimage는 LIVE CMS, DB 미동기화.
   584970: localScenicThumbOverlay(TY_YI, [TY_YI_2, TY_YI_3, TY_YI_4]),
+  // 인제8경 — Tour DB first_image 공란·축제 주변 팔경 행. JSON contentId 기입 아님.
+  126643: localScenicThumbOverlay(INJE_DAESEUNG_FALLS),
+  125723: localScenicThumbOverlay(INJE_BANGDONG_SPRING),
+  1932458: localScenicThumbOverlay(INJE_HAPGANG_PAVILION),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

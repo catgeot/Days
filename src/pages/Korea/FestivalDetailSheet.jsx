@@ -23,6 +23,7 @@ import {
   fetchTourApiFestivalDetail,
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
+import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
@@ -77,6 +78,10 @@ import {
   rankSpotsByDistance,
 } from '../KoreaTheme/nearbyScenicRank';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
+import {
+  loadScenicFavorites,
+  toggleScenicFavorite,
+} from '../KoreaTheme/scenicPersonalStore';
 import CourseDetailModal from '../KoreaTheme/CourseDetailModal';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
@@ -204,7 +209,10 @@ function DetailRow({ label, children, prose = false, highlight = false }) {
   if (!children) return null;
   const body =
     prose && typeof children === 'string' ? (
-      <FestivalDetailProse text={children} />
+      <FestivalDetailProse
+        text={children}
+        variant={highlight ? 'overview' : 'body'}
+      />
     ) : (
       <div className="text-sm md:text-[15px] text-stone-700 leading-relaxed md:leading-relaxed whitespace-pre-wrap break-keep">
         {children}
@@ -386,6 +394,11 @@ function FestivalNearScenicRow({ spot, km, locale, onSelect }) {
   );
 }
 
+function scenicSpotFavoriteKey(spot) {
+  if (!spot) return '';
+  return String(spot.id || spot.contentId || '').trim();
+}
+
 function toNearbyModalSpot(spot) {
   if (!spot) return null;
   const merged = mergeNearbyRowWithLocalScenicDetail(spot);
@@ -507,6 +520,15 @@ export default function FestivalDetailSheet({
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
+  const [scenicFavoriteVersion, setScenicFavoriteVersion] = useState(0);
+  const scenicFavoriteIds = useMemo(
+    () => new Set(loadScenicFavorites().map((r) => String(r.id))),
+    [scenicFavoriteVersion],
+  );
+  const handleScenicSpotFavorite = useCallback((spot) => {
+    toggleScenicFavorite(spot);
+    setScenicFavoriteVersion((v) => v + 1);
+  }, []);
   const [nearbyFood, setNearbyFood] = useState([]);
   const [nearbyFoodStatus, setNearbyFoodStatus] = useState('idle');
   const [nearbyLeports, setNearbyLeports] = useState([]);
@@ -518,9 +540,6 @@ export default function FestivalDetailSheet({
   const [selectedNearby, setSelectedNearby] = useState(null);
   const [selectedScenic, setSelectedScenic] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const childSpotSheetOpen = Boolean(
-    selectedNearby || selectedScenic || selectedCourse,
-  );
   const [courseDetail, setCourseDetail] = useState(null);
   const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const sheetScrollRef = useRef(null);
@@ -1174,7 +1193,27 @@ export default function FestivalDetailSheet({
     !videosExpanded &&
     videos.length > FESTIVAL_VIDEOS_PAGE;
 
+  const showViewportClose =
+    !lightboxOpen &&
+    !mooniOpen &&
+    !selectedNearby &&
+    !selectedScenic &&
+    !selectedCourse;
+
+  const nestedSpotModalOpen = Boolean(
+    selectedNearby || selectedScenic || selectedCourse,
+  );
+
   return (
+    <>
+      {showViewportClose ? (
+        <AppOutlineBackButton
+          icon="close"
+          onClick={onClose}
+          ariaLabel={t('korea.common.close')}
+          title={t('korea.common.close')}
+        />
+      ) : null}
     <div
       className="fixed inset-0 z-40 flex items-end md:items-stretch justify-center bg-stone-900/30 backdrop-blur-sm p-0 md:py-2 md:px-3 lg:px-4"
       onClick={() => {
@@ -1191,15 +1230,6 @@ export default function FestivalDetailSheet({
         aria-modal="true"
         aria-labelledby="korea-festival-sheet-title"
       >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={t('korea.common.close')}
-          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white/95 text-stone-700 shadow-sm hover:bg-stone-50"
-        >
-          <X size={18} aria-hidden="true" />
-        </button>
-
         {hero ? (
           <div className="relative flex shrink-0 flex-col md:w-[46%] lg:w-1/2 md:min-h-0 md:self-stretch bg-stone-100">
             <button
@@ -2093,7 +2123,7 @@ export default function FestivalDetailSheet({
           sheetScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-[45] flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
-          showScrollTop && !lightboxOpen && !mooniOpen && !childSpotSheetOpen
+          showScrollTop && !lightboxOpen && !mooniOpen && !nestedSpotModalOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-3 opacity-0'
         }`}
@@ -2102,7 +2132,7 @@ export default function FestivalDetailSheet({
         <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
 
-      {!childSpotSheetOpen ? (
+      {!nestedSpotModalOpen ? (
         <FestivalMooniFab
           item={item}
           location={festivalCross?.stay?.location}
@@ -2116,8 +2146,10 @@ export default function FestivalDetailSheet({
           spot={toNearbyModalSpot(selectedNearby)}
           eyebrow={nearbyEyebrow(selectedNearby)}
           returnTo="/korea"
-          overlayZClass="z-50"
-          showFloatingMooni
+          overlayZClass="z-[55]"
+          favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedNearby))}
+          onToggleFavorite={handleScenicSpotFavorite}
+          mooniFab
           onClose={() => setSelectedNearby(null)}
         />
       )}
@@ -2127,8 +2159,10 @@ export default function FestivalDetailSheet({
           spot={toScenicModalSpot(selectedScenic, locale)}
           eyebrow={t('korea.festival.detail.nearScenic')}
           returnTo="/korea"
-          overlayZClass="z-50"
-          showFloatingMooni
+          overlayZClass="z-[55]"
+          favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedScenic))}
+          onToggleFavorite={handleScenicSpotFavorite}
+          mooniFab
           onClose={() => setSelectedScenic(null)}
         />
       )}
@@ -2142,7 +2176,7 @@ export default function FestivalDetailSheet({
           }}
           detail={courseDetail}
           detailLoading={courseDetailLoading}
-          overlayZClass="z-50"
+          overlayZClass="z-[55]"
           onClose={() => {
             setSelectedCourse(null);
             setCourseDetail(null);
@@ -2224,6 +2258,7 @@ export default function FestivalDetailSheet({
         </div>
       )}
     </div>
+    </>
   );
 }
 

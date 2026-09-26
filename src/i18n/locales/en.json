@@ -1306,6 +1306,8 @@
       "reads": "{{count}} views",
       "loginPrompt": "Sign in to join the conversation and share your experience.",
       "count": "{{count}} reviews",
+      "countSplit": "Traveler reviews {{traveler}} · GATEO editor reviews {{editorial}}",
+      "noTravelerRating": "No traveler ratings yet",
       "write": "Write",
       "loginCta": "Sign in to leave the first review!",
       "loginHint": "It helps other travelers a lot.",
@@ -1330,7 +1332,8 @@
       "emptyMine": "You haven't written any reviews yet.",
       "emptyAll": "No reviews yet.",
       "blogBadge": "Blog",
-      "galleryViewerAlt": "Gallery viewer image"
+      "galleryViewerAlt": "Gallery viewer image",
+      "thumbnailPreviewAria": "Review photo preview"
     },
     "common": {
       "bookmark": "Bookmark",
@@ -2046,6 +2049,10 @@
       "traveler": "Traveler",
       "attachment": "Attachment {{n}}"
     },
+    "editorial": {
+      "badge": "GATEO Editor",
+      "secondaryNotice": "AI-assisted · not a personal trip report"
+    },
     "sidebar": {
       "travelLogTitle": "Your travel log",
       "travelLogBody": "Sign in to write reviews and vivid travel stories from around the world."
@@ -2236,6 +2243,11 @@
       "penNameSaved": "Pen name saved.",
       "compressing": "Optimizing file size...",
       "progress": "Progress: {{current}} / {{total}}",
+      "titleFieldLabel": "Title",
+      "titleHint": "Keep it short. Put longer lines in the body lead.",
+      "dekLabel": "Subtitle · one-line summary",
+      "dekPlaceholder": "Lead sentence or intro line (optional)",
+      "dekHint": "If empty, the first body paragraph is used as the subtitle on public views.",
       "titlePlaceholder": "Sum up this journey in one line?",
       "aiEssay": "AI essay",
       "aiSns": "AI social post",
@@ -2254,7 +2266,26 @@
         "3": "Finalizing your draft..."
       },
       "defaultTitle": "Notes from {{place}}",
-      "defaultPlace": "a lovely place"
+      "defaultPlace": "a lovely place",
+      "editor": {
+        "modeEdit": "Edit",
+        "modePreview": "Preview",
+        "bold": "Bold",
+        "italic": "Italic",
+        "heading2": "Heading",
+        "heading3": "Subheading",
+        "link": "Link",
+        "linkUrlPrompt": "Enter link URL (https://…)",
+        "linkLabel": "link text",
+        "divider": "Divider",
+        "insertBodyImage": "Insert photo in body",
+        "insertMoment": "Insert gallery moment",
+        "momentSlot": "Moment {{n}}",
+        "bodyImageAlt": "Travel photo",
+        "bodyImageFail": "Could not upload body photo. Check login and network.",
+        "hint": "Use the toolbar for headings, bold, links, and inline photos. Gallery shots from “Captured moments” can be inserted via the gallery icon as [Photo N] placeholders. Body is stored as Markdown and rendered safely like Phase 1.",
+        "previewEmpty": "Nothing to preview yet."
+      }
     },
     "detail": {
       "deleteConfirm": "Delete this entry permanently? (Cannot be undone.)",

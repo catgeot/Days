@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass } from 'lucide-react';
@@ -1048,7 +1049,7 @@ const ChatModal = ({
 
   if (!isOpen) return null;
 
-  return (
+  const modalTree = (
     <TripcomFlightSearchProvider>
     <div className={`fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in ${overlaySuppressed ? 'invisible pointer-events-none' : ''} ${tone(fresh, 'bg-black/80', 'bg-cyan-950/20')}`}>
       <div className={`w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all ${tone(fresh, 'bg-gray-900 border border-gray-700', 'bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 border border-cyan-200/80')}`}>
@@ -1646,6 +1647,9 @@ const ChatModal = ({
     </div>
     </TripcomFlightSearchProvider>
   );
+
+  if (typeof document === 'undefined') return modalTree;
+  return createPortal(modalTree, document.body);
 };
 
 export default ChatModal;
