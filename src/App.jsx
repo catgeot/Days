@@ -34,8 +34,10 @@ import UpdatePassword from './shared/Auth/UpdatePassword';
 import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
 import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
 import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
+import FlightDebugPanel from './shared/cloudPreview/FlightDebugPanel.jsx';
 import TravelAgencyVisitCapture from './components/travelAgencies/TravelAgencyVisitCapture.jsx';
 import { LocaleProvider } from './i18n/LocaleProvider';
+import AppHistoryRecorder from './shared/navigation/AppHistoryRecorder';
 
 function RouteTracker() {
   const location = useLocation();
@@ -74,11 +76,13 @@ function App() {
       <BrowserRouter>
         <LocaleProvider>
         <RouteTracker />
+        <AppHistoryRecorder />
         <ReportProvider>
           <Analytics />
           <CloudPreviewWorkLog />
           <SeaExploreDebugPanel />
           <CurationHandoffDebugPanel />
+          <FlightDebugPanel />
           <TravelAgencyVisitCapture />
           <Routes>
             <Route element={<MainLayout />}>
@@ -130,6 +134,7 @@ function App() {
             </Route>
 
             <Route path="/p/:id" element={<PublicViewer />} />
+            <Route path="/blog/e/:editorialSlug" element={<PublicViewer />} />
 
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/signup" element={<Signup />} />

@@ -29,6 +29,8 @@ import {
   groupNearbySpotsWithLocalScenic,
   missingNearbyThumbContentIds,
   hasTourContentId,
+  isNearbyAttractionRowClickable,
+  mergeNearbyRowWithLocalScenicDetail,
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
   lookupLocalScenicPhotoByContentId,
@@ -324,6 +326,39 @@ assert.equal(
   true,
   'missing nearby thumbs are Tour ids',
 );
+
+const injeNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'inje' });
+const injeGroup = injeNearby.groups.find((g) => g.listId === 'inje-palgyeong');
+assert.ok(injeGroup?.title?.includes('인제'), 'inje nearby group title');
+for (const name of ['대청봉', '내린천계곡', '방동약수', '대승폭포', '합강정']) {
+  const row = injeGroup?.items?.find((i) => i.name === name);
+  assert.ok(
+    String(row?.firstImage || row?.imageUrl || '').includes('injetour.co.kr'),
+    `inje 팔경 ${name} overlay thumb`,
+  );
+}
+assert.ok(
+  !missingNearbyThumbContentIds(injeNearby).includes('125723'),
+  '방동약수 thumb from overlay not async-only',
+);
+
+const damyangNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'damyang' });
+const damyangGroup = damyangNearby.groups.find((g) => g.listId === 'damyang-other');
+const gamagol = damyangGroup?.items?.find((i) => i.name === '가마골용소');
+assert.ok(gamagol?.localScenicListId === 'damyang-other', '담양10경 가마골용소 nearby row');
+assert.ok(
+  isNearbyAttractionRowClickable(gamagol),
+  '담양10경 가마골용소 — contentId 없어도 오버레이로 클릭 가능',
+);
+const gamagolModal = mergeNearbyRowWithLocalScenicDetail(gamagol);
+assert.ok(
+  String(gamagolModal?.overview || '').includes('가마골용소'),
+  '담양10경 가마골용소 modal overview',
+);
+const chuwol = damyangGroup?.items?.find((i) => i.name === '추월산');
+assert.ok(chuwol?.imageUrl?.includes('visitkorea'), '담양10경 추월산 nearby Tour thumb');
+const geumseong = damyangGroup?.items?.find((i) => i.name === '금성산성');
+assert.ok(geumseong?.imageUrl?.includes('visitkorea'), '담양10경 금성산성 nearby Tour thumb');
 
 // curated 멤버 필터 (리스트 있을 때만)
 const curated = listKoreaScenicSpots();

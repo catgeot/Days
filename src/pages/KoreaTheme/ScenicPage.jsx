@@ -3119,9 +3119,9 @@ export default function KoreaThemeScenicPage() {
   ]);
 
   /**
-   * 검색 중 관광지 권역 자동 전환.
-   * - 명소·명승 매칭 있음: 현 관광지 권역 0건이면 TourAPI 최다 권역 (수도권+화엄사)
-   * - 명소·명승 0: 최다 권역으로 승격 (화천·성주 오탐 소수보다 본 지역)
+   * 검색 중 관광지 권역 자동 전환 — 현 URL 권역에 Tour 0건일 때만.
+   * 칩은 건수>0 권역만 노출 → 사용자가 고른 권역(curN>0)은 최다 권역으로 덮어쓰지 않음.
+   * (동굴 등 명소·명승 0·관광만 매칭 시 강원→충청 칩이 안 먹는 회귀 방지)
    */
   useEffect(() => {
     if (!searchActive || !dbSearchActive) return;
@@ -3130,25 +3130,16 @@ export default function KoreaThemeScenicPage() {
       Number.isFinite(Number(counts[r])),
     );
     if (!loaded) return;
+    const curN = Number(counts[tourRegion]) || 0;
+    if (curN > 0) return;
     const next = pickRegionFromTourCounts(counts, tourRegion);
     if (!next || next === tourRegion) return;
-    const curN = Number(counts[tourRegion]) || 0;
     const nextN = Number(counts[next]) || 0;
     if (nextN <= 0) return;
-    const curatedN = curatedSearchPool?.length || 0;
-    const heritageN = heritageSearchPool?.length || 0;
-    if (curatedN > 0 || heritageN > 0) {
-      if (curN > 0) return;
-      setTourRegion(next);
-      return;
-    }
-    if (nextN <= curN) return;
     setTourRegion(next);
   }, [
     searchActive,
     dbSearchActive,
-    curatedSearchPool,
-    heritageSearchPool,
     chipCounts.regionCounts,
     tourRegion,
     setTourRegion,
@@ -5615,7 +5606,7 @@ export default function KoreaThemeScenicPage() {
           returnTo={listReturnTo}
           onClose={closeModal}
           overlayZClass={
-            searchActive || mapOpen ? 'z-50' : 'z-40'
+            searchActive || mapOpen ? 'z-[60]' : 'z-[55]'
           }
           favorited={
             modalSpot?.id != null && favoriteIds.has(String(modalSpot.id))

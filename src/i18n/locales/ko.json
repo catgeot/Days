@@ -682,7 +682,7 @@
         "nextHintEnjoy": "다른 단계도 보시려면 아래에서 선택해 주세요."
       },
       "esim": {
-        "choose": "유심 1종 선택",
+        "choose": "유심 · eSIM",
         "airalo": "Airalo",
         "holafly": "Holafly"
       },
@@ -795,6 +795,19 @@
           "routeDepart": "출발",
           "routeArrive": "도착",
           "routeEditable": "자동 반영 · 배너에서 수정 가능",
+          "nativeDepartDate": "가는 날",
+          "nativeReturnDate": "오는 날",
+          "nativeTripType": "여정 유형",
+          "nativeRoundTrip": "왕복",
+          "nativeOneWay": "편도",
+          "nativeSwap": "출발·도착 바꾸기",
+          "nativeAirportSearch": "공항 이름 또는 코드",
+          "nativeDateRange": "일정",
+          "nativeDateRangeOpen": "달력에서 가는 날과 오는 날 선택",
+          "nativePickDepart": "가는 날을 고르세요",
+          "nativePickReturn": "오는 날을 고르세요",
+          "nativeCalendarPrev": "이전 달",
+          "nativeCalendarNext": "다음 달",
           "fullScreenSearch": "전체 화면 검색",
           "noArrivalFallback": "도착 공항을 찾지 못해 일반 검색으로 열립니다.",
           "tripcomFlights": "Trip.com 항공권"
@@ -803,8 +816,11 @@
           "title": "항공권 실시간 검색",
           "search": "검색",
           "autoFill": "Trip.com에서 출발·도착 공항이 자동 입력됩니다",
+          "chooseDates": "상단 검색폼에서 가는 날·오는 날을 고른 뒤 검색합니다",
           "ariaWithRoute": "Trip.com 항공권 검색 — {{depart}}에서 {{arrive}}까지",
-          "ariaGeneric": "Trip.com 항공권 실시간 검색"
+          "ariaGeneric": "Trip.com 항공권 실시간 검색",
+          "ariaScrollWithRoute": "상단 항공권 검색폼으로 이동 — {{depart}}에서 {{arrive}}까지",
+          "ariaScrollGeneric": "상단 항공권 검색폼으로 이동"
         },
         "twelveGo": {
           "routeLabel": "페리·교통 검색",
@@ -1060,6 +1076,8 @@
       "reads": "{{count}} 읽음",
       "loginPrompt": "로그인 하고 리뷰에 참여하고 경험을 공유하세요.",
       "count": "리뷰 {{count}}개",
+      "countSplit": "여행자 리뷰 {{traveler}} · GATEO 에디터 리뷰 {{editorial}}",
+      "noTravelerRating": "아직 여행자 평점이 없어요",
       "write": "작성",
       "loginCta": "로그인하고 첫 리뷰를 남겨보세요!",
       "loginHint": "다른 여행자들에게 큰 도움이 됩니다.",
@@ -1084,7 +1102,8 @@
       "emptyMine": "작성한 리뷰가 없습니다.",
       "emptyAll": "아직 작성된 리뷰가 없습니다.",
       "blogBadge": "블로그",
-      "galleryViewerAlt": "갤러리 뷰어 이미지"
+      "galleryViewerAlt": "갤러리 뷰어 이미지",
+      "thumbnailPreviewAria": "리뷰 사진 미리보기"
     },
     "common": {
       "bookmark": "즐겨찾기",
@@ -1793,6 +1812,10 @@
       "traveler": "여행자",
       "attachment": "첨부 {{n}}"
     },
+    "editorial": {
+      "badge": "GATEO 에디터",
+      "secondaryNotice": "AI 보조 · 실제 방문기 아님"
+    },
     "sidebar": {
       "travelLogTitle": "나만의 여행 기록",
       "travelLogBody": "로그인하고 전 세계 명소 리뷰와 생생한 여행기를 작성해보세요."
@@ -1983,6 +2006,11 @@
       "penNameSaved": "필명이 저장되었습니다.",
       "compressing": "기록의 용량을 최적화 중...",
       "progress": "Progress: {{current}} / {{total}}",
+      "titleFieldLabel": "제목",
+      "titleHint": "짧게. 긴 문장은 본문 리드로",
+      "dekLabel": "부제 · 한 줄 요약",
+      "dekPlaceholder": "리드 문장이나 여정을 소개하는 한 줄 (선택)",
+      "dekHint": "비우면 공개 화면에서 본문 첫 문단을 부제로 씁니다.",
       "titlePlaceholder": "이번 여정을 한 문장으로 정의한다면?",
       "aiEssay": "AI 에세이 작성",
       "aiSns": "AI SNS 인플루언서",
@@ -2001,7 +2029,26 @@
         "3": "마무리 원고를 진행 중입니다..."
       },
       "defaultTitle": "{{place}}에서의 기록",
-      "defaultPlace": "어느 멋진 곳"
+      "defaultPlace": "어느 멋진 곳",
+      "editor": {
+        "modeEdit": "편집",
+        "modePreview": "미리보기",
+        "bold": "굵게",
+        "italic": "기울임",
+        "heading2": "제목(큰)",
+        "heading3": "제목(작은)",
+        "link": "링크",
+        "linkUrlPrompt": "링크 URL을 입력하세요 (https://…)",
+        "linkLabel": "링크 텍스트",
+        "divider": "구분선",
+        "insertBodyImage": "본문에 사진 삽입",
+        "insertMoment": "장면 갤러리 사진 삽입",
+        "momentSlot": "장면 {{n}}",
+        "bodyImageAlt": "여행 사진",
+        "bodyImageFail": "본문 사진 업로드에 실패했습니다. 로그인 상태와 네트워크를 확인해 주세요.",
+        "hint": "툴바로 제목·굵게·링크·본문 사진을 넣을 수 있습니다. 「장면의 포착」 사진은 갤러리 아이콘으로 [사진 N] 자리표시를 넣을 수 있습니다. 저장 형식은 마크다운이며, 공개 글은 Phase 1과 동일하게 안전하게 렌더됩니다.",
+        "previewEmpty": "미리볼 본문이 없습니다."
+      }
     },
     "detail": {
       "deleteConfirm": "이 기록을 영구적으로 삭제하시겠습니까? (삭제 후 복구할 수 없습니다)",

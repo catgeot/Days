@@ -6,6 +6,13 @@ import {
   MOBILE_INPUT_TEXT_CLASS,
   useDeferredViewportSyncOnBlur,
 } from '../../../shared/hooks/useMobileInputViewport';
+import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
+import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
+import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
+import EditorialLogbookBadge from './EditorialLogbookBadge';
+
+const GATEO_PUBLIC_SOURCE_URL = 'https://www.gateo.kr/';
 
 const RecentList = ({ reports, loading, isPublicMode }) => {
   const { t } = useTranslation();
@@ -109,51 +116,102 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
             : `flex flex-col ${isCompact ? 'gap-3' : 'gap-5'}`
           }>
 
-            {filteredReports.map((report) => (
+            {filteredReports.map((report) => {
+              const editorial = isEditorialLogbook(report);
+              const thumbUrl = logbookHeroImageUrl(report.images, { thumbnail: true });
+              const detailPath = isPublicMode
+                ? publicLogbookDetailPath(report)
+                : `/blog/${report.id}`;
+              const cardDate = formatLogbookDisplayDate(report);
+              const cardExcerpt = resolveLogbookFeedExcerpt(report);
+              const editorialPublicFeed = isPublicMode && editorial;
+
+              return (
               <div
                 key={report.id}
-                onClick={() => navigate(isPublicMode ? `/p/${report.id}` : `/blog/${report.id}`)}
+                onClick={() => navigate(detailPath)}
                 className={`
-                  group bg-white border border-gray-200 rounded-2xl hover:border-blue-400 hover:bg-blue-50/30 transition-all cursor-pointer overflow-hidden hover:shadow-md
+                  group bg-white border rounded-2xl transition-all cursor-pointer overflow-hidden hover:shadow-md
+                  ${editorial ? 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50/20' : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50/30'}
                   ${viewMode === 'grid' ? 'flex flex-col h-full' : (isCompact ? 'p-3 flex gap-4 items-center' : 'p-5 flex gap-5 items-start')}
                 `}
               >
                 <div className={`
                   bg-gray-100 flex-shrink-0 overflow-hidden relative
-                  ${viewMode === 'grid' ? 'w-full aspect-video border-b border-gray-200' : (isCompact ? 'w-16 h-16 rounded-xl border border-gray-200' : 'w-24 h-24 rounded-2xl border border-gray-200')}
+                  ${
+                    viewMode === 'grid'
+                      ? editorialPublicFeed
+                        ? 'w-full aspect-[16/10] min-h-[7.25rem] sm:min-h-[8.5rem] border-b border-indigo-100'
+                        : 'w-full aspect-video border-b border-gray-200'
+                      : editorialPublicFeed
+                        ? isCompact
+                          ? 'w-[4.25rem] h-[4.25rem] rounded-xl border border-indigo-100'
+                          : 'w-28 h-28 rounded-2xl border border-indigo-100'
+                        : isCompact
+                          ? 'w-16 h-16 rounded-xl border border-gray-200'
+                          : 'w-24 h-24 rounded-2xl border border-gray-200'
+                  }
                 `}>
-                  {report.images && report.images.length > 0 ? (
-                    <img src={report.images[0]} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
+                  {thumbUrl ? (
+                    <img src={thumbUrl} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50">
                       <ImageIcon size={viewMode === 'grid' ? (isCompact ? 24 : 32) : (isCompact ? 16 : 24)} />
                     </div>
                   )}
-                  {viewMode === 'grid' && <div className={`absolute top-2 right-2 bg-white/90 backdrop-blur-md text-gray-700 px-2.5 py-1 rounded-md border border-gray-200/50 font-medium tracking-wide shadow-sm ${isCompact ? 'text-[10px]' : 'text-xs'}`}>{report.date}</div>}
+                  {viewMode === 'grid' && <div className={`absolute top-2 right-2 bg-white/90 backdrop-blur-md text-gray-700 px-2.5 py-1 rounded-md border border-gray-200/50 font-medium tracking-wide shadow-sm max-w-[85%] truncate ${isCompact ? 'text-[10px]' : 'text-xs'}`}>{cardDate}</div>}
                 </div>
 
                 <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-4 flex flex-col h-full' : 'p-5 flex flex-col h-full') : ''}`}>
-                  <div className={`flex justify-between ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
-                    <h4 className={`font-bold text-gray-900 truncate pr-3 group-hover:text-blue-600 transition-colors tracking-tight ${viewMode === 'grid' ? (isCompact ? 'text-base' : 'text-xl') : (isCompact ? 'text-base' : 'text-xl')}`}>
+                  {editorialPublicFeed ? (
+                    <div className="mb-2">
+                      <EditorialLogbookBadge report={report} />
+                    </div>
+                  ) : null}
+                  <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
+                    <h4
+                      title={report.title}
+                      className={`font-semibold text-gray-900 transition-colors tracking-tight min-w-0 flex-1 break-keep break-words ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${
+                        viewMode === 'grid'
+                          ? `line-clamp-2 leading-snug ${isCompact ? 'text-sm' : 'text-sm sm:text-base'}`
+                          : viewMode === 'list' && isCompact
+                            ? 'line-clamp-1 text-sm'
+                            : 'line-clamp-2 text-sm sm:text-base'
+                      }`}
+                    >
                       {report.title}
                     </h4>
                     {viewMode === 'list' && (
-                      <span className={`text-xs text-gray-500 whitespace-nowrap bg-gray-100 px-2.5 rounded-md border border-gray-200 font-medium tracking-wide ${isCompact ? 'py-1' : 'py-1.5'}`}>
-                        {report.date}
+                      <span className={`text-xs text-gray-500 whitespace-nowrap bg-gray-100 px-2.5 rounded-md border border-gray-200 font-medium tracking-wide shrink-0 ${isCompact ? 'py-1' : 'py-1.5'}`}>
+                        {cardDate}
                       </span>
                     )}
                   </div>
 
-                  {!(isCompact && viewMode === 'list') && (
-                    <p className={`text-sm text-gray-500 leading-relaxed font-light ${viewMode === 'grid' ? (isCompact ? 'line-clamp-2 mb-3 text-xs flex-1' : 'line-clamp-3 mb-4 flex-1') : 'line-clamp-2 h-10'}`}>
-                      {report.content}
+                  {cardExcerpt && (
+                    <p
+                      className={`leading-relaxed break-keep break-words ${
+                        editorialPublicFeed
+                          ? 'text-indigo-950/85 font-medium text-sm sm:text-[15px] line-clamp-2'
+                          : 'text-gray-500 font-normal'
+                      } ${
+                        viewMode === 'grid'
+                          ? isCompact
+                            ? `line-clamp-2 mb-3 flex-1 ${editorialPublicFeed ? '' : 'text-xs'}`
+                            : `line-clamp-2 mb-4 flex-1 ${editorialPublicFeed ? '' : 'text-xs sm:text-sm'}`
+                          : isCompact
+                            ? `line-clamp-1 mt-1 ${editorialPublicFeed ? 'text-xs sm:text-sm' : 'text-xs'}`
+                            : `line-clamp-2 mt-1 ${editorialPublicFeed ? 'text-sm' : 'text-xs sm:text-sm'}`
+                      }`}
+                    >
+                      {cardExcerpt}
                     </p>
                   )}
 
                   <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-gray-100' : 'mt-auto pt-4 border-t border-gray-100')}`}>
-                    {isPublicMode && report.author_label && (
-                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-500" title={t('logbook.common.author')}>
-                        <User size={12} className="text-gray-400 shrink-0" />
+                    {isPublicMode && !editorial && report.author_label && (
+                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-700 font-semibold" title={t('logbook.common.author')}>
+                        <User size={12} className="text-gray-500 shrink-0" />
                         <span className="truncate">{report.author_label}</span>
                       </span>
                     )}
@@ -166,6 +224,34 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                       </span>
                     )}
                   </div>
+
+                  {isPublicMode && !editorial && (
+                    <div
+                      className={`flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
+                        viewMode === 'grid'
+                          ? isCompact
+                            ? 'mt-2 pt-2 border-t border-dashed border-gray-100'
+                            : 'mt-2 pt-2 border-t border-dashed border-gray-100'
+                          : isCompact
+                            ? 'mt-1.5'
+                            : 'mt-2'
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span className="shrink-0 rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-gray-500">
+                        출처 · GATEO
+                      </span>
+                      <a
+                        href={GATEO_PUBLIC_SOURCE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="min-w-0 max-w-full truncate text-[10px] text-blue-600 hover:text-blue-700 hover:underline sm:text-xs"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {GATEO_PUBLIC_SOURCE_URL}
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 {viewMode === 'list' && !isCompact && (
@@ -174,7 +260,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                   </div>
                 )}
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>

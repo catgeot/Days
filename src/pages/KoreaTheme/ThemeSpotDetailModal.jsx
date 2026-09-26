@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import {
   ArrowUp,
   Bike,
@@ -35,13 +36,15 @@ import {
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
+import mooniChar from '../../assets/MOONI_transparent.png';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
   groupNearbySpotsWithLocalScenic,
-  hasTourContentId,
+  isNearbyAttractionRowClickable,
+  mergeNearbyRowWithLocalScenicDetail,
   missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
 import {
@@ -78,6 +81,8 @@ import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
 import ScenicStayStrip from './ScenicStayStrip';
 import ScenicTnaStrip from './ScenicTnaStrip';
+import ReadableDetailProse from '../../shared/readableDetail/ReadableDetailProse';
+import { shouldUseReadableDetailProse } from '../../shared/readableDetail/splitTourApiDetailParagraphs';
 
 function localizedSpotModalSubtitle(spot, locale) {
   const place = formatScenicSpotPlaceLabel(spot, locale);
@@ -604,14 +609,37 @@ function textsSimilarOrEqual(a, b) {
 const DETAIL_BODY_TEXT_CLASS =
   'min-w-0 max-w-full whitespace-pre-line leading-relaxed text-stone-700 break-keep break-words';
 
-function DetailRow({ label, children }) {
+function DetailRow({ label, children, prose = false, highlight = false, textProps = {} }) {
   if (!children) return null;
+  const proseText = prose && typeof children === 'string' ? children : null;
   return (
-    <div className="min-w-0 space-y-1 text-sm">
-      <dt className="text-[11px] font-bold tracking-wide text-stone-500">
+    <div
+      className={
+        highlight
+          ? 'min-w-0 space-y-2.5 rounded-2xl border border-stone-200/90 bg-gradient-to-b from-amber-50/55 to-stone-50/85 px-3.5 py-3.5 text-sm'
+          : 'min-w-0 space-y-1 text-sm'
+      }
+    >
+      <dt
+        className={
+          highlight
+            ? 'text-[10px] font-bold uppercase tracking-widest text-stone-400'
+            : 'text-[11px] font-bold tracking-wide text-stone-500'
+        }
+      >
         {label}
       </dt>
-      <dd className={DETAIL_BODY_TEXT_CLASS}>{children}</dd>
+      {proseText ? (
+        <dd className="min-w-0 max-w-full">
+          <ReadableDetailProse
+            text={proseText}
+            textProps={textProps}
+            variant={highlight ? 'overview' : 'body'}
+          />
+        </dd>
+      ) : (
+        <dd className={DETAIL_BODY_TEXT_CLASS}>{children}</dd>
+      )}
     </div>
   );
 }
@@ -671,10 +699,13 @@ function NearbyPoiAttractionRow({ spot, extraThumb, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = foodPlaceLabel(spot);
   const rankBlurb = String(spot?.rankBlurb || '').trim();
-  const clickable = hasTourContentId(spot.contentId);
+  const clickable = isNearbyAttractionRowClickable(spot);
   const Inner = clickable ? 'button' : 'div';
   const innerProps = clickable
-    ? { type: 'button', onClick: () => onSelect?.(spot) }
+    ? {
+        type: 'button',
+        onClick: () => onSelect?.(mergeNearbyRowWithLocalScenicDetail(spot)),
+      }
     : {};
   return (
     <li>
@@ -838,7 +869,17 @@ function toFoodModalSpot(spot) {
 }
 
 function toAttractionModalSpot(spot) {
-  return toTypedModalSpot(spot, '12');
+  const merged = mergeNearbyRowWithLocalScenicDetail(spot);
+  const base = toTypedModalSpot(merged, '12');
+  if (!base) return null;
+  return {
+    ...base,
+    overview: merged.overview,
+    galleryUrls: merged.galleryUrls,
+    imageUrl: merged.imageUrl || merged.firstImage,
+    addr1: merged.addr1,
+    homepage: merged.homepage,
+  };
 }
 
 function toLeportsModalSpot(spot) {
@@ -872,6 +913,7 @@ function toCultureModalSpot(spot) {
  *   overlayZClass?: string,
  *   favorited?: boolean,
  *   onToggleFavorite?: (spot: Record<string, unknown>) => void,
+ *   mooniFab?: boolean,
  * }} props
  */
 export default function ThemeSpotDetailModal({
@@ -879,14 +921,16 @@ export default function ThemeSpotDetailModal({
   eyebrow,
   returnTo,
   onClose,
-  overlayZClass = 'z-40',
+  overlayZClass = 'z-[55]',
   favorited = false,
   onToggleFavorite,
+  mooniFab = false,
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const isEnglish = String(locale || '').startsWith('en');
   const koText = koreanApiTextProps(isEnglish);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [detail, setDetail] = useState(null);
@@ -969,14 +1013,13 @@ export default function ThemeSpotDetailModal({
       cancelled = true;
     };
   }, [nearbyMissingThumbIds]);
-  const nestedChildZ =
-    overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
-      ? 'z-[55]'
-      : 'z-50';
-  const lightboxZ =
-    overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
-      ? 'z-[60]'
-      : 'z-[55]';
+  const overlayElevated =
+    overlayZClass === 'z-50' ||
+    overlayZClass === 'z-[50]' ||
+    overlayZClass === 'z-[55]' ||
+    overlayZClass === 'z-55';
+  const nestedChildZ = overlayElevated ? 'z-[60]' : 'z-[55]';
+  const lightboxZ = overlayElevated ? 'z-[65]' : 'z-[60]';
 
   const imageUrls = useMemo(() => {
     const heroUrl = toHttps(detail?.imageUrl);
@@ -1159,6 +1202,19 @@ export default function ThemeSpotDetailModal({
     setLightboxOpen(false);
     resetLightboxPinch();
   }, [spot?.id, resetLightboxPinch]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) {
+      setShowScrollTop(false);
+      return undefined;
+    }
+    setShowScrollTop(false);
+    const onScroll = () => setShowScrollTop(el.scrollTop > 160);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [spot?.id]);
 
   useEffect(() => {
     if (activeImage >= imageUrls.length) {
@@ -1737,9 +1793,29 @@ export default function ThemeSpotDetailModal({
     !videosExpanded &&
     videos.length > SCENIC_VIDEOS_PAGE;
 
+  const showViewportClose =
+    !lightboxOpen &&
+    !mooniOpen &&
+    !videosOpen &&
+    !selectedFood &&
+    !selectedLeports &&
+    !selectedCulture &&
+    !selectedAttraction &&
+    !selectedSameHub;
+
   return (
+    <>
+      {showViewportClose ? (
+        <AppOutlineBackButton
+          icon="close"
+          onClick={onClose}
+          ariaLabel={t('korea.common.close')}
+          title={t('korea.common.close')}
+          className="!hidden md:!flex"
+        />
+      ) : null}
     <div
-      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(3.75rem,calc(env(safe-area-inset-bottom)+3rem))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
+      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
       onClick={(e) => {
         e.stopPropagation();
         if (mooniOpen || videosOpen || lightboxOpen) return;
@@ -1754,23 +1830,31 @@ export default function ThemeSpotDetailModal({
         aria-modal="true"
         aria-labelledby="korea-theme-spot-modal-title"
       >
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-              {modalEyebrow}
+        <div className="flex shrink-0 items-start justify-between gap-2 border-b border-stone-200/80 px-4 py-2.5 sm:gap-3 sm:px-5 sm:py-3">
+          <div className="min-w-0 pr-1">
+            <p className="text-[10px] font-bold leading-snug text-amber-700 break-keep">
+              <span className="uppercase tracking-[0.16em]">{modalEyebrow}</span>
+              {displaySubtitle ? (
+                <>
+                  <span className="mx-1.5 font-normal text-stone-300" aria-hidden="true">
+                    ·
+                  </span>
+                  <span
+                    className="font-semibold normal-case tracking-normal text-stone-500"
+                    {...koText}
+                  >
+                    {displaySubtitle}
+                  </span>
+                </>
+              ) : null}
             </p>
             <h2
               id="korea-theme-spot-modal-title"
-              className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
+              className="mt-0.5 text-base font-extrabold leading-tight tracking-tight text-stone-900 break-keep sm:text-lg"
               {...koText}
             >
               {displayTitle}
             </h2>
-            {displaySubtitle ? (
-              <p className="mt-1 text-xs text-stone-500 break-keep" {...koText}>
-                {displaySubtitle}
-              </p>
-            ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
             {onToggleFavorite ? (
@@ -1796,20 +1880,26 @@ export default function ThemeSpotDetailModal({
                 />
               </button>
             ) : null}
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label={t('korea.common.close')}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
-            >
-              <X size={18} aria-hidden="true" />
-            </button>
+            {showViewportClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label={t('korea.common.close')}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 md:hidden"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            ) : null}
           </div>
         </div>
 
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar"
+          className={`min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar ${
+            mooniFab
+              ? 'max-md:pb-[max(7.25rem,calc(env(safe-area-inset-bottom)+5.75rem))]'
+              : 'max-md:pb-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))]'
+          }`}
         >
           {hero ? (
             <button
@@ -1863,7 +1953,7 @@ export default function ThemeSpotDetailModal({
             </div>
           )}
 
-          <div className="min-w-0 space-y-4 px-4 py-4 sm:px-5">
+          <div className="min-w-0 space-y-4 px-4 py-4 pb-6 sm:px-5 sm:pb-7">
             {spot.source !== 'cha' && spot.blurb ? (
               <p
                 className="text-sm font-semibold leading-relaxed text-amber-950/90 break-keep break-words"
@@ -1895,8 +1985,13 @@ export default function ThemeSpotDetailModal({
             {!detailLoading && detail ? (
               <dl className="min-w-0 space-y-4">
                 {overview ? (
-                  <DetailRow label={t('korea.theme.spotDetail.labelOverview')}>
-                    <span {...koText}>{overview}</span>
+                  <DetailRow
+                    label={t('korea.theme.spotDetail.labelOverview')}
+                    prose
+                    highlight
+                    textProps={koText}
+                  >
+                    {overview}
                   </DetailRow>
                 ) : null}
                 {naverSearchUrl || googleSearchUrl ? (
@@ -1910,13 +2005,17 @@ export default function ThemeSpotDetailModal({
                       <DetailRow
                         key={row.labelKey}
                         label={t(`korea.theme.spotDetail.${row.labelKey}`)}
+                        textProps={koText}
                       >
                         <span {...koText}>{row.text}</span>
                       </DetailRow>
                     ))
                   : null}
                 {address ? (
-                  <DetailRow label={t('korea.theme.spotDetail.labelAddress')}>
+                  <DetailRow
+                    label={t('korea.theme.spotDetail.labelAddress')}
+                    textProps={koText}
+                  >
                     <span {...koText}>{address}</span>
                   </DetailRow>
                 ) : null}
@@ -1946,16 +2045,27 @@ export default function ThemeSpotDetailModal({
                   </DetailRow>
                 ) : null}
                 {introRows.map((row) => (
-                  <DetailRow key={row.key} label={row.label}>
-                    <span {...koText}>{row.text}</span>
+                  <DetailRow
+                    key={row.key}
+                    label={row.label}
+                    prose={shouldUseReadableDetailProse(row.text)}
+                    textProps={koText}
+                  >
+                    {shouldUseReadableDetailProse(row.text)
+                      ? row.text
+                      : <span {...koText}>{row.text}</span>}
                   </DetailRow>
                 ))}
                 {infoSections.map((row, idx) => (
                   <DetailRow
                     key={`${row.name || 'info'}-${idx}`}
                     label={row.name || t('korea.theme.spotDetail.labelInfoFallback')}
+                    prose={shouldUseReadableDetailProse(row.text)}
+                    textProps={koText}
                   >
-                    <span {...koText}>{row.text}</span>
+                    {shouldUseReadableDetailProse(row.text)
+                      ? row.text
+                      : <span {...koText}>{row.text}</span>}
                   </DetailRow>
                 ))}
               </dl>
@@ -2398,7 +2508,7 @@ export default function ThemeSpotDetailModal({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 border-t border-stone-200/80 bg-white px-3 py-2.5 sm:px-4">
+        <div className="hidden md:flex shrink-0 items-center gap-2 border-t border-stone-200/80 bg-white px-3 py-2.5 sm:px-4">
           <button
             type="button"
             onClick={scrollToTop}
@@ -2417,6 +2527,58 @@ export default function ThemeSpotDetailModal({
           </button>
         </div>
       </div>
+
+      <button
+        type="button"
+        aria-label={t('korea.common.scrollToTop')}
+        onClick={(e) => {
+          e.stopPropagation();
+          scrollToTop();
+        }}
+        className={`md:hidden fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-20 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 ${
+          showScrollTop &&
+          !lightboxOpen &&
+          !mooniOpen &&
+          !videosOpen &&
+          !selectedFood &&
+          !selectedLeports &&
+          !selectedCulture &&
+          !selectedAttraction &&
+          !selectedSameHub
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
+      >
+        <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+        <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
+      </button>
+
+      {mooniFab &&
+      !mooniOpen &&
+      !lightboxOpen &&
+      !videosOpen &&
+      !selectedFood &&
+      !selectedLeports &&
+      !selectedCulture &&
+      !selectedAttraction &&
+      !selectedSameHub ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            openMooni();
+          }}
+          className={`md:hidden pointer-events-auto fixed right-3 z-20 flex h-14 w-14 items-center justify-center rounded-full border border-cyan-200 bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-300 shadow-[0_8px_24px_rgba(34,211,238,0.35)] ring-2 ring-white/80 transition-[transform,bottom] duration-300 hover:scale-105 active:scale-95 ${
+            showScrollTop
+              ? 'bottom-[max(7.35rem,calc(env(safe-area-inset-bottom)+6.6rem))]'
+              : 'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))]'
+          }`}
+          aria-label={t('worldEventDetail.askMooni')}
+          title={t('worldEventDetail.askMooni')}
+        >
+          <img src={mooniChar} alt="" className="h-10 w-10 object-contain" draggable={false} />
+        </button>
+      ) : null}
 
       {selectedFood ? (
         <ThemeSpotDetailModal
@@ -2644,5 +2806,6 @@ export default function ThemeSpotDetailModal({
         }}
       />
     </div>
+    </>
   );
 }

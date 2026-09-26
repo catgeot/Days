@@ -341,7 +341,8 @@ flowchart LR
 1. **멤버십**: generate JSON을 복제하지 않음. 런타임 `buildThemeMembershipIndex()`가 top10+scenic+regions를 `placeSlug`로 합친다 → `inTop10` / `inScenic` / `inRegions`.
 2. **sameHub**: 동일 `hubId`의 다른 placeSlug (자기 제외 · 기본 4).
 3. **nearbyHubs**: spot lat/lng(+area) → `nearbyHubsForFestival` 재사용 · 자기 hub 제외 · 기본 4 · maxKm 120.
-4. **숙소·투어**: `buildThemeSpotLocation(spot)` → 기존 `resolveMrtStayQuery` / `resolveMrtTnaQuery` (PlaceCard와 동일 키워드 래더). 테마 전용 키워드 SSOT **신규 금지**(필요 시 기존 override만).
+4. **숙소·투어**: `buildThemeSpotLocation(spot)` → 기존 `resolveMrtStayQuery` / `resolveMrtTnaQuery` (PlaceCard와 동일 키워드 래더). 테마 전용 키워드 SSOT **신규 금지**(필요 시 기존 override만). **축제 1차 hub 오매칭**(TourAPI `전남광주통합특별시` addr 등) 구현·회귀 → [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md).
+   - **축제 default hub** (권역 칩 = **2차 대안** · 1차는 칩 없이): (1) `addr1` 시·군·구 ↔ `cityAttractionHub` (2) 동일 시도 **geo 최근접 seeded hub** (3) 시도 **대표 hub** — sigungu 파싱이 **신뢰**되고 행사지와 **명시적 불일치**(횡성↔평창 등)일 때만 (4) `stayAreas`·altKeywords — 인접 시드만.
 5. **패키지**: hub `jeju`/`seogwipo`→`koreaJeju` · `gyeongju`→`koreaGyeongju` · 그 외 **CTA 숨김**(`q=부산`류 오탐 방지 · 홈 CTA는 패키지 페이지에만).
 6. **deep-link**:  
    - 축제 `/korea?from=theme&area={areaCode}`  
@@ -1105,3 +1106,50 @@ packages/top10/regions 탑레벨 진입 정리. 지도·칩 리팩터 금지.
 | 5 | 패키지·코스·숙소·투어 | **상세 매칭/크로스만** | ✅ 방향 · #34 정합 |
 | 6 | 브랜치 | `cursor/korea-theme` | ✅ |
 | — | (구 S0) 테마 모듈 디렉터리 | **폐기** — #25 보류안도 #33이 대체 | 폐기 |
+<<<<<<< HEAD
+=======
+
+---
+
+## 9.1 명승·명소·관광지 상세 본문 가독성 (핸드오프 · 2026-09-21)
+
+**목표**: 축제 상세(`FestivalDetailSheet` #6)와 **동일한 TourAPI 본문 UX** — 문장 단위 문단·넓은 행간·개요(긴 블록) 연한 카드.
+
+**선행**: `cursor/korea-theme`에서 **축제-여행지매칭 PR [#291](https://github.com/catgeot/Days/pull/291) 병합 후** 이어하기 권장 (`ThemeSpotDetailModal` 동시 수정 충돌 방지). 축제 가독성 참고 구현: feature `cursor/festival-sheet-ui-ec8b` · PR [#293](https://github.com/catgeot/Days/pull/293).
+
+### SSOT·참고 코드 (축제 #6)
+
+| 파일 | 역할 |
+|------|------|
+| `src/pages/Korea/FestivalDetailProse.jsx` | 문단 `<p>` 렌더 |
+| `src/pages/Korea/festivalDetailText.js` | `splitFestivalDetailParagraphs` (= `splitOverviewParagraphs` + 긴 덩어리 2차 분리) |
+| `src/pages/Korea/FestivalDetailSheet.jsx` | `DetailRow` `prose` · `highlight` (개요·프로그램 카드) |
+
+**1단계 (공유화)**: 위 분리·프로즈를 `src/shared/readableDetail/`(가칭)로 이동 · 축제 시트 import만 갱신 · 이름 예: `splitTourApiDetailParagraphs`, `ReadableDetailProse`. **PlaceCard** `PlaceOverviewProse`(다크 갤러리)는 **건드리지 않음**.
+
+### 적용 대상 (명승 홈·목록 → 상세 모달)
+
+| 파일 | 적용 |
+|------|------|
+| `src/pages/KoreaTheme/ThemeSpotDetailModal.jsx` | `DetailRow`(dt/dd)에 `prose`·`highlight` 옵션 추가 후 **개요** `highlight` · `introRows`·`infoSections` 중 **긴 텍스트만** `prose` |
+| 동일 모달 | 주소·전화·홈페이지·CHA 메타 등 **짧은 필드** — 기존 한 블록 유지 |
+
+**범위**: GATEO 명승·curated·TourAPI type12 **관광지**·명소 카드가 여는 **동일 모달** (`ThemeSpotDetailModal`). `CourseDetailModal`·PlaceCard 지구본 갤러리 overview는 **이번 범위 밖**.
+
+### 검증
+
+```bash
+npm run smoke:korea-theme-cross-links
+npm run smoke:korea-scenic-spots   # 있으면
+npm run smoke:korea-scenic-search  # 선택
+npm run build
+```
+
+**Preview**: `/qa/korea-theme` → `/korea/theme/scenic?spot=gyeongbokgung` · hub 관광지 카드 1건 · 긴 개요 curated 1건 — 개요 문단·카드 · 이용안내 긴 항목 문단.
+
+### 금지
+
+- 명승 홈 레이아웃·칩·지도 리팩터 · PlaceCard 다크 overview 스타일 변경 · feature에 `plans/**` 커밋.
+
+**#1 (2026-09-21 Cloud)**: `src/shared/readableDetail/` · `ThemeSpotDetailModal` prose/highlight — feature tip `4590e0a1` · VERIFY PASS · Preview `/qa/korea-theme`.
+>>>>>>> origin/main

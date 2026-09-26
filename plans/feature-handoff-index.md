@@ -14,6 +14,133 @@
 
 ## 활성 목록
 
+### 축제-여행지매칭 (숙소·투어 1차 hub)
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `5dc7a8cb` · PR [#291](https://github.com/catgeot/Days/pull/291) (draft) · **사람 Preview** SIEAF 재확인 |
+| **브랜치** | `cursor/korea-theme` |
+| **플랜** | [`festival-destination-matching-plan.md`](./festival-destination-matching-plan.md) **§5 P3** ✅ · merge 대기 |
+| **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
+| **Preview** | `/qa/korea-theme` → git Preview `/korea` |
+| **금지** | 축제별 MRT override · `hubIdsForArea('38')` 순서 땜질 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-theme-cross-links` · `smoke:korea-festival-nearby` · `npm run build` PASS |
+
+**다음 제시어**:
+
+```
+축제-여행지매칭 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-20-project-log.md
+@plans/festival-destination-matching-plan.md
+브랜치 cursor/korea-theme · PR #291 · Preview /qa/korea-theme
+금지: 축제별 MRT override · hubIdsForArea 순서 땜질 · feature에 plans/** 커밋
+작업: Preview 섬진강국제실험예술제 숙소·투어 곡성·여수 패키지 없음 확인 → OK면 PR #291 병합
+검증: smoke:korea-theme-cross-links · smoke:korea-festival-nearby · vite build PASS
+```
+
+---
+
+### 지구본 마커·flyTo (홈 첫 화면)
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `b8e14b7d` · PR [#298](https://github.com/catgeot/Days/pull/298) (draft) · **사람 Preview** 재현표 A~H |
+| **브랜치** | `cursor/globe-marker-reveal-aced` (재사용 — Mapbox Preview URL 고정) |
+| **플랜** | [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **§핸드오프** · [`globeLabelFirstReveal`](../src/pages/Home/lib/globeLabelFirstReveal.js) |
+| **일지** | [`2026-09-22-project-log.md`](./2026-09-22-project-log.md) — **「지구본 마커·flyTo — 에이전트 핸드오프」** |
+| **소유** | `HomeGlobeMapbox.jsx` · `globeMarkerLayers.js` · `index.jsx` `handleCategorySelect` · `useHomeHandlers` `handleLocationSelect` |
+| **Preview** | `https://days-git-cursor-globe-marker-reveal-aced-catgeots-projects.vercel.app/` · PROD `https://www.gateo.kr/` |
+| **금지** | reveal retry·hold 타임아웃만 늘리기 · 카테고리별 마커 필터 재도입 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:globe-label-first-reveal` · `npm run build` PASS (#2) |
+
+**다음 제시어**:
+
+```
+지구본 마커·flyTo #3, Preview 재현표 A~H
+@plans/feature-handoff-index.md
+@plans/2026-09-22-project-log.md
+@plans/2026-06-02-globe-enrichment-plan.md §핸드오프
+브랜치 cursor/globe-marker-reveal-aced · PR #298 · Preview git URL
+금지: reveal retry만 추가 · travelSpots 직편집 · feature에 plans/** 커밋
+작업: Preview A~H PASS/FAIL 기록 · DEV `[gateo-markers]`·`[globe-fly-skip]` 상관 · 잔여 원인 패치
+검증: smoke:globe-label-first-reveal · build · 일지 표 갱신
+```
+
+---
+
+### 명승·명소 상세 본문 가독성
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `4590e0a1` · draft PR · **사람 Preview** |
+| **브랜치** | `cursor/korea-theme` |
+| **플랜** | [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) **§9.1** ✅ 구현 |
+| **일지** | [`2026-09-21-project-log.md`](./2026-09-21-project-log.md) |
+| **참고** | 축제 본문 [#293](https://github.com/catgeot/Days/pull/293) · `src/shared/readableDetail/*` |
+| **소유** | `ThemeSpotDetailModal` · `ReadableDetailProse` · `splitTourApiDetailParagraphs` |
+| **Preview** | `/qa/korea-theme` → `/korea/theme/scenic?spot=gyeongbokgung` + hub 관광지 카드 1건 |
+| **금지** | PlaceCard 갤러리 overview 변경 · 명승 홈 IA·칩 리팩터 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-theme-cross-links` · `smoke:korea-scenic-spots` · `npm run build` PASS |
+
+**다음 제시어**:
+
+```
+테마여행 #69, korea-theme prose PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-21-project-log.md
+@plans/korea-theme-travel-plan.md §9.1
+브랜치 cursor/korea-theme · Preview /qa/korea-theme
+금지: PlaceCard 다크 overview · 명승 홈 리팩터 · feature에 plans/** 커밋
+작업: Preview 경복궁·긴 개요 관광지 QA OK → prose PR 병합(또는 main 반영 요청)
+검증: smoke:korea-theme-cross-links · smoke:korea-scenic-spots · vite build PASS
+```
+
+---
+
+### 플래너 3단계
+
+| | |
+|--|--|
+| **상태** | **#4 push** · tip `977568aa` · PR [#289](https://github.com/catgeot/Days/pull/289) · **사람 Preview** · 단축 **`/qa/planner-stages`** |
+| **브랜치** | `cursor/planner-stages-7ee0` |
+| **PR** | [#289](https://github.com/catgeot/Days/pull/289) |
+| **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
+| **Preview** | `/qa/planner-stages` → git Preview `/place/paris/planner` |
+| **소유** | `PlannerTab` · `PlannerStageNav` · `placePlannerFocus` · `TripcomFlightBannerWidget` · `TripcomFlightNativeSearch` |
+| **금지** | 트립닷컴 모바일 iframe 재도입 · 위젯을 체크리스트 2열에 넣기 · 유심 탭화 · 복잡도 뱃지 교체 · 픽업·여행사 재배치 · feature에 `plans/**` 커밋 · 검증 없이 main push |
+| **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `smoke:planner-empty-scroll` PASS · `npx vite build` PASS |
+
+**다음 제시어**:
+
+```
+플래너 3단계 #4, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-20-project-log.md
+브랜치 cursor/planner-stages-7ee0 · PR #289 · Preview /qa/planner-stages
+금지: 트립닷컴 모바일 iframe 재도입 · 위젯을 체크리스트 2열에 넣기 · 픽업·여행사 재배치 · feature에 plans/** 커밋
+작업: Preview — 1단계 상단 하이브리드·여행사만 · 「출발 전 필수 준비」 아래 렌터카·픽업·항공권 기준 · 2·3단계 배너 없음. OK면 PR #289 병합.
+검증: npm run smoke:tripcom-flight-planner PASS · smoke:trust-disclosure PASS · smoke:planner-empty-scroll PASS · vite build PASS
+```
+
+---
+
+### 항공권 검색 — main 병합 완료 ✅
+
+| | |
+|--|--|
+| **상태** | **#12 merge ✅ · 주제 종료** · main `fb61c9d9` · PR [#288](https://github.com/catgeot/Days/pull/288) |
+| **브랜치** | `cursor/tripcom-flight-widget-3ec3` · merge `fb61c9d9` |
+| **PR** | [#288](https://github.com/catgeot/Days/pull/288) (MERGED) |
+| **일지** | [`2026-09-20-project-log.md`](./2026-09-20-project-log.md) |
+| **PROD** | `https://www.gateo.kr/place/paris/planner` — 상단 네이티브 검색 폼 · 써머리 일정 모달 |
+| **VERIFY** | `smoke:tripcom-flight-planner` · `smoke:trust-disclosure` · `vite build` PASS |
+| **성과** | 트립닷컴 위젯 빈 화면을 네이티브 검색 폼으로 대체. 날짜를 고른 뒤에만 `/tickets-`. 3단계 분리는 후속 주제 `플래너 3단계` |
+
+**다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr/place/paris/planner`. 3단계 분리는 **플래너 3단계**.
+
+---
+
 ### 축제 페이지
 
 | | |

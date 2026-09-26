@@ -1,6 +1,21 @@
 {
   "redirects": [
     {
+      "source": "/qa/planner-stages",
+      "destination": "https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/flight",
+      "destination": "https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/tripcom-flight",
+      "destination": "https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
       "source": "/qa/festival-ui",
       "destination": "https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea",
       "permanent": false
@@ -278,7 +293,7 @@
     },
     {
       "source": "/qa/korea-theme",
-      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "destination": "https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea",
       "permanent": false
     },
     {

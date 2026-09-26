@@ -2,6 +2,174 @@
 
 직전: [`2026-09-18-project-log.md`](./2026-09-18-project-log.md)
 
+## 항공권 검색 #11 — 카드·필수준비를 상단 검색폼으로 스크롤 (Cloud)
+
+- **세션** `항공권 검색 #11, Preview QA`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `cbc4eb37` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 항공권 파트·필수준비가 일정 확인 없이 Trip.com 검색 결과로 떨어짐.
+- **완료**: CTA는 상단 검색폼으로 스크롤. 날짜는 달력에서 고른 뒤 검색. **병합 보류**.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 항공권 파트·필수준비 검색 → 상단 폼 스크롤 · 일정 선택 후 `/tickets-`
+
+## 항공권 검색 #10 — 검색바를 tickets 항공 결과로 직행 (Cloud)
+
+- **세션** `항공권 검색 #10, 항공 검색 결과로 직행`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `54a5f002` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 일정 없는 검색바가 `/flights/` 홈(항공+호텔 검색박스)으로 열려 출도착이 이전 검색으로 남음.
+- **완료**: 출도착 IATA가 있으면 `/tickets-` 항공 검색 결과로 직행. 일정 없으면 +14/+21. **병합 보류**.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 검색바 탭 → 항공+호텔 홈이 아니라 ICN→도착 항공 목록인지 · URL에 `/tickets-` 인지.
+
+## 항공권 검색 #9 — 인원 설정 제거 (Cloud)
+
+- **세션** `항공권 검색 #9, Preview OK면 PR 병합`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `131c1830` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: Preview에서 인원을 바꿔도 Trip.com 결과가 1인으로만 열림. 인원 설정 제거 요청.
+- **완료**: 모바일 폼 인원 스테퍼 제거. 왕복/편도·출도착·한 달력 일정 유지. 검색은 기본 1인. **병합 보류** — 인원 제거 Preview 후.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 인원 줄이 없는지 · 일정 선택 후 검색 → Trip.com에 같은 날짜·1인인지. OK면 PR #288 병합.
+
+## 항공권 검색 #8 — 출발·도착일을 한 달력에서 선택 (Cloud)
+
+- **세션** `항공권 검색 #8, 한 달력 일정 선택`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `25bb00ed` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 가는 날·오는 날이 입력칸 두 개로 나뉘어 한 화면에서 구간을 고르기 어려움.
+- **완료**: 일정 한 줄을 누르면 같은 달력에서 왕복은 가는 날→오는 날, 편도는 하루만 선택. 검색 URL의 ddate/rdate 연동은 유지.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 일정을 눌러 한 달력으로 가는 날·오는 날을 고른 뒤 검색 → Trip.com 결과에 같은 날짜인지.
+
+## 항공권 검색 #7 — 모바일 폼을 Trip.com 검색 결과에 연동 (Cloud)
+
+- **세션** `항공권 검색 #7, 모바일 검색 결과 연동`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `4730aa9a` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 네이티브 폼이 `/flights/?dAirportCode=` 홈으로 열려 출도착·날짜·인원이 Trip.com에 안 들어감. 출도착 입력창이 나뉘어 있고 왕복/편도·인원 선택이 없었음.
+- **완료**: 한 줄에서 출발·도착 검색·교체. 왕복/편도·성인 인원. 검색 시 `/flights/{d}-to-{a}/tickets-…` 결과 URL로 ddate·rdate·triptype·quantity 전달.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 왕복·편도·인원·출발·도착·날짜를 고른 뒤 검색 → Trip.com 결과 페이지에 같은 값이 보이는지.
+
+## 항공권 검색 #6 — 모바일 검색 폼 프리미엄 티켓 카드 디자인 (Cloud)
+
+- **세션** `항공권 검색 #6, 모바일 검색 폼 프리미엄 티켓 카드 디자인`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `f047e95b` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 복원된 모바일 검색 폼의 투박한 기본 박스 디자인을 개선하여 플래너 무드와 어울리는 세련된 카드 UI 요청(사용자 1번 옵션 선택).
+- **완료**: Trip.com 공식 브랜드 헤더 및 제휴 뱃지 추가, `ICN ✈ ARR` 보딩 패스 티켓형 경로 블록, 부드러운 배경과 포커스 링의 날짜 선택 인풋, 블루 그라데이션 검색 제출 버튼, 라운드/링 테두리(`rounded-2xl border-sky-300/80 ring-sky-900/10`)를 적용.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 파리 플래너 접속 시 티켓 스타일의 세련된 출도착 정보 바, 일자 선택창, 그라데이션 검색 버튼이 깔끔하게 표시되고 탭 시 Trip.com으로 정상 연결되는지 확인.
+
+## 항공권 검색 #6 — 모바일 네이티브 항공권 입력 폼 복원 (Cloud)
+
+- **세션** `항공권 검색 #6, 모바일 항공권 입력 폼 복원`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `b72f2bcf` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 직전 커밋(067a276a)에서 모바일 배너가 단순 링크 버튼(FlightSearchCta)으로 전환되어 있었음. 사용자의 요청에 따라 이전 브랜치(39e44fef)의 네이티브 검색 폼(`TripcomFlightNativeSearch`)으로 복원.
+- **완료**: 모바일 환경(≤767px)에서 단순 링크 버튼 대신 출발·도착 공항 및 가는 날·오는 날 일자 입력창이 포함된 네이티브 폼을 제공. 폼 제출 시 선택한 일정 및 공항 정보와 함께 Trip.com 항공 검색 페이지로 직결. 데스크톱 900x200 iframe 배너 유지.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 파리 플래너 접속 시 단순 버튼이 아닌 출발(ICN)·도착(CDG) 및 날짜 선택 입력 폼이 보이고, 검색 탭 시 선택된 날짜와 함께 Trip.com 검색 페이지가 열리는지 확인.
+
+## 항공권 검색 #5 — 모바일 네이티브 항공 검색 카드 적용 (Cloud)
+
+- **세션** `항공권 검색 #5, 모바일 네이티브 항공 검색 카드 적용`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `067a276a` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: Trip.com 제휴 광고 서버 자체의 `Authentication failed` 오류로 인해 모바일에서 iframe이 빈 박스로 남아 작동하지 않음.
+- **완료**: 모바일 환경(≤767px)에서는 빈 iframe 대신 출발지·도착지 IATA가 명시된 네이티브 검색 배너 카드(`FlightSearchCta`)로 즉시 전환. 탭 시 Trip.com 항공 검색 페이지로 직결(모달 해제). PC 환경은 기존 900x200 가로형 iframe 배너 유지.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 파리·로포텐 플래너 접속 시 빈 박스 없이 깔끔한 항공권 검색 카드가 보이고, 탭 시 Trip.com으로 정상 연결되는지 확인.
+
+## 항공권 검색 #4 — 모바일 위젯 공식 발급 태그 1:1 일치 (Cloud)
+
+- **세션** `항공권 검색 #4, 모바일 위젯 태그 일치`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `98cf2a72` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 사용자가 Trip.com에서 직접 재발급받은 iframe 태그의 파라미터(`Allianceid`, `SID`, `trip_sub1`)와 게이트오 내부 URL 생성 로직 간 차이(추가 전달되던 `aAirportCode` 등)를 확인하여 공식 규격으로 동기화.
+- **완료**: `buildTripcomPlannerFlightUrl` ad 모드에서 공식 파라미터만 전달하도록 정비. iframe id(`S17158794`) 및 인라인 스타일 동기화.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 재발급된 Trip.com 태그 규격으로 위젯이 정상 로드되어 표시되는지 확인.
+
+## 항공권 검색 #4 — 모바일 위젯 진단 패널 및 로그 복사 (Cloud)
+
+- **세션** `항공권 검색 #4, 모바일 진단 로그`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `99a41ed1` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 롤백 후에도 모바일에서 위젯이 보이지 않는 증상의 원인(실제 DOM 크기, iframe 이벤트, 뷰포트 등)을 모바일 기기에서 직접 추출·확인하기 위함.
+- **완료**: `FlightDebugPanel` 및 `flightDebug.js` 추가. 화면 좌하단 플로팅 버튼 및 배너 캡션 하단에 [로그 복사] 버튼을 두어 원클릭으로 모바일 상태를 클립보드로 복사할 수 있게 지원.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 모바일에서 화면 접속 시 좌하단 [모바일 위젯 로그] 버튼 클릭 → [📋 로그 복사] 터치로 진단 로그 복사 가능 확인.
+
+## 항공권 검색 #3 — 플래너 3단 분리 이전 단일 스크롤 복귀 (Cloud)
+
+- **세션** `항공권 검색 #3, 3단 분리 이전 복귀`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `c95d2b43` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 3단 점진적 노출(필수·이동·즐기기) 탭 구조 도입 이후 모바일 배너 iframe 표시 문제 및 내비게이션 복잡도가 누적되어 롤백 결정.
+- **완료**: 플래너 구조를 3단 분리 이전의 단일 스크롤(출발 전 필수 준비·현지 도착 및 이동·현지 100% 즐기기)로 복귀. 상단 Trip.com 항공 배너 위젯 및 체크리스트 기존 규격 복원. `PlannerStageNav` 제거.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **QA**: 파리 플래너가 단일 스크롤로 모든 섹션(출발 전 준비·도착 및 이동·즐기기)이 한 번에 펼쳐지는지 · 상단 항공 위젯 및 체크리스트 정상 동작 확인.
+- **다음**: Preview OK면 PR #288 병합
+
+## 항공권 검색 #2 — Preview 단축 `/qa/flight` (Cloud)
+
+- **세션** `항공권 검색 #2, 로컬 위젯 진단`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `4e53af1f` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: `/qa/tripcom-flight`가 feature에만 있어 www.gateo.kr에서 Preview로 안 넘어감(PROD 200 SPA).
+- **완료**: PROD 단축을 `/qa/flight`로 등록. 옛 `/qa/tripcom-flight`는 같은 Preview alias.
+- **Preview** https://www.gateo.kr/qa/flight → git Preview `/place/paris/planner`
+- **다음**: Preview OK면 PR #288 병합
+
+## 항공권 검색 #2 — 필수 단계 전체 폭 위젯 (Cloud)
+
+- **세션** `항공권 검색 #2, 로컬 위젯 진단`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `ec937298` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 방문자 개선 #7이 900×200 iframe을 체크리스트 2열 칸에 넣어 PC 스케일 ~0.4. 모바일 320×480은 카드 안에서 빈 박스.
+- **완료**: 3단계 탭 유지. 위젯만 필수 단계 전체 폭. 체크리스트 항공 CTA 중복 생략.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/tripcom-flight → git Preview `/place/paris/planner`
+- **QA**: 파리 필수 단계 위젯이 전체 폭 · PC 공항·날짜 읽힘 · 모바일 검색 폼(빈 화면 아님) · ICN→CDG
+- **다음**: Preview OK면 PR #288 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 항공권 검색 #1 — 기존 iframe 배너·모바일 모달 복구 (Cloud)
+
+- **세션** `항공권 검색 #1, 기존 위젯 복구`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `8bdcaaf4` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: `/flights/` 직링크는 도착이 이전 검색(LPB)으로 남음. 5-22 모바일 SSOT는 partners/ad iframe 모달(ICN→도착).
+- **완료**: 새 CTA 착지 제거. iframe 배너·모바일 모달 복구. #7에서 뺀 항공권 카드 배너만 유지. PR 미병합.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/tripcom-flight → git Preview `/place/paris/planner`
+- **QA**: 파리 위젯 ICN→CDG · 탭 시 앱 안 검색(CDG, 빈 화면·LPB 아님) · 항공권 카드 배너
+- **다음**: Preview OK면 PR #288 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 항공권 검색 #1 — 클릭을 /flights/ 직링크로 (Cloud)
+
+- **세션** `항공권 검색 #1, Preview OK면 PR 병합`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `5780a341` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: 사람 Preview에서 「항공권 실시간 검색」탭 시 `kr.trip.com` 빈 화면. 모바일 클릭이 iframe용 `partners/ad`를 전체 페이지로 염.
+- **완료**: 상위 이동은 항상 `/flights/`. 플래너 배너는 네이티브 `<a>`. PR은 Preview 재확인 후 병합.
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/tripcom-flight → git Preview `/place/paris/planner`
+- **QA**: 파리·이비사 배너 탭 → Trip.com 항공 검색 폼 (`kr.trip.com` 빈 화면 아님)
+- **다음**: Preview OK면 PR #288 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 항공권 검색 #1 — 플래너 트립닷컴 위젯·배너 복구 (Cloud)
+
+- **세션** `항공권 검색 #1, 위젯·배너 복구`
+- **브랜치** `cursor/tripcom-flight-widget-3ec3` · tip `40213e5a` · PR [#288](https://github.com/catgeot/Days/pull/288)
+- **원인**: Trip.com `partners/ad` iframe이 3rd-party에서 `queryToolDetail` 실패 → 빈 흰 박스. #7에서 항공권 카드 `FlightSearchCta` 생략.
+- **완료**: iframe 끄고 필수 툴킷 CTA. 항공권 카드 배너 복구. 탭하면 Trip.com 검색(빈 모달 아님).
+- **VERIFY**: `npm run smoke:tripcom-flight-planner` PASS · `smoke:trust-disclosure` PASS · `npx vite build` PASS
+- **Preview** https://www.gateo.kr/qa/tripcom-flight → git Preview `/place/paris/planner`
+- **QA**: 파리·이비사 필수 단계 흰 박스 없음 · ICN→도착 CTA · 항공권 카드 배너 · 탭 시 Trip.com
+- **다음**: Preview OK면 PR #288 병합
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
 ## 축제 페이지 #5 — 푸터·무니 겹침 (Cloud)
 
 - **세션** `축제 페이지 #5, 푸터·무니 겹침`

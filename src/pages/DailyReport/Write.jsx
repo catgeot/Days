@@ -9,9 +9,9 @@ import { useLogbookAI } from './hooks/useLogbookAI';
 import { usePenNameContext } from './context/PenNameContext';
 import {
   MOBILE_INPUT_TEXT_CLASS,
-  MOBILE_TEXTAREA_CLASS,
   useDeferredViewportSyncOnBlur,
 } from '../../shared/hooks/useMobileInputViewport';
+import LogbookStoryEditor from './components/LogbookStoryEditor';
 
 const Write = () => {
   const { t } = useTranslation();
@@ -32,6 +32,7 @@ const Write = () => {
 
   const [date, setDate] = useState(getLocalDate());
   const [title, setTitle] = useState('');
+  const [dek, setDek] = useState('');
   const [content, setContent] = useState('');
   const [mapLocation, setMapLocation] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -68,6 +69,7 @@ const Write = () => {
         const { data } = await supabase.from('reports').select('*').eq('id', id).eq('user_id', user.id).single();
         if (data) {
           setTitle(data.title);
+          setDek(data.dek || '');
           setContent(data.content);
           setMapLocation(data.location);
           setDate(data.date);
@@ -154,7 +156,17 @@ const Write = () => {
       const newUrls = await Promise.all(uploadPromises);
       finalImageUrls = [...finalImageUrls, ...newUrls];
 
-      const reportData = { title, content, location: mapLocation || t('logbook.common.locationUnknown'), date, images: finalImageUrls, weather: t('logbook.common.weatherSunny'), user_id: user.id };
+      const trimmedDek = dek.trim();
+      const reportData = {
+        title,
+        dek: trimmedDek || null,
+        content,
+        location: mapLocation || t('logbook.common.locationUnknown'),
+        date,
+        images: finalImageUrls,
+        weather: t('logbook.common.weatherSunny'),
+        user_id: user.id,
+      };
 
       if (isEditMode) {
         await supabase.from('reports').update(reportData).eq('id', id);
@@ -323,23 +335,46 @@ const Write = () => {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all">
-              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-gray-900 placeholder-gray-400 tracking-tight" placeholder={t('logbook.write.titlePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
+            <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all flex flex-col gap-4">
+              <div>
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">
+                  {t('logbook.write.titleFieldLabel')}
+                </label>
+                <input
+                  type="text"
+                  className={`w-full bg-transparent outline-none text-xl sm:text-2xl font-semibold text-gray-900 placeholder-gray-400 tracking-tight break-keep ${MOBILE_INPUT_TEXT_CLASS}`}
+                  placeholder={t('logbook.write.titlePlaceholder')}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onBlur={handleFieldBlur}
+                  disabled={isAILoading || isCompressing}
+                />
+                <p className="text-[11px] text-gray-500 mt-2 leading-relaxed break-keep">
+                  {t('logbook.write.titleHint')}
+                </p>
+              </div>
+              <div className="border-t border-gray-200/80 pt-4">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">
+                  {t('logbook.write.dekLabel')}
+                </label>
+                <textarea
+                  rows={2}
+                  maxLength={500}
+                  className={`w-full bg-transparent outline-none text-base font-normal text-gray-800 placeholder-gray-400 leading-relaxed resize-y min-h-[3.5rem] break-keep ${MOBILE_INPUT_TEXT_CLASS}`}
+                  placeholder={t('logbook.write.dekPlaceholder')}
+                  value={dek}
+                  onChange={(e) => setDek(e.target.value)}
+                  onBlur={handleFieldBlur}
+                  disabled={isAILoading || isCompressing}
+                />
+                <p className="text-[10px] text-gray-400 mt-1.5 leading-relaxed break-keep">
+                  {t('logbook.write.dekHint')}
+                </p>
+              </div>
             </div>
 
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all relative min-h-[500px] flex flex-col">
-
-              <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Storytelling</label>
-                <div className="flex gap-2">
-                  <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 text-purple-600 rounded-full text-[10px] font-black hover:bg-purple-100 hover:text-purple-700 transition-all">
-                    <Sparkles size={12} className="group-hover:animate-spin" /> {t('logbook.write.aiEssay')}
-                  </button>
-                  <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-50 border border-pink-200 text-pink-600 rounded-full text-[10px] font-black hover:bg-pink-100 hover:text-pink-700 transition-all">
-                    <Sparkles size={12} className="group-hover:animate-pulse" /> {t('logbook.write.aiSns')}
-                  </button>
-                </div>
-              </div>
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Storytelling</label>
 
               {isAILoading && (
                 <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center text-purple-600 rounded-3xl">
@@ -348,13 +383,22 @@ const Write = () => {
                 </div>
               )}
 
-              <textarea
-                className={`w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-gray-800 placeholder-gray-400 flex-1 min-h-[400px] ${MOBILE_TEXTAREA_CLASS}`}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
+              <LogbookStoryEditor
+                content={content}
+                onChange={setContent}
                 onBlur={handleFieldBlur}
                 disabled={isAILoading || isCompressing}
-                placeholder={t('logbook.write.contentPlaceholder')}
+                galleryImages={[...existingImages, ...previewUrls]}
+                aiToolbar={(
+                  <div className="flex gap-2 shrink-0">
+                    <button type="button" onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 text-purple-600 rounded-full text-[10px] font-black hover:bg-purple-100 hover:text-purple-700 transition-all">
+                      <Sparkles size={12} className="group-hover:animate-spin" /> {t('logbook.write.aiEssay')}
+                    </button>
+                    <button type="button" onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-50 border border-pink-200 text-pink-600 rounded-full text-[10px] font-black hover:bg-pink-100 hover:text-pink-700 transition-all">
+                      <Sparkles size={12} className="group-hover:animate-pulse" /> {t('logbook.write.aiSns')}
+                    </button>
+                  </div>
+                )}
               />
             </div>
           </div>

@@ -199,6 +199,7 @@ Example shape:
      - "accommodation" (object): 타겟별 지역 추천 (예: '휴양/호캉스: A지역', '관광/이동편의: B지역', '가성비: C지역')
      - "connectivity" (object): 현지 eSIM 사용 가능 여부, 대표 통신사 추천
      - "transport" (object): 공항에서 시내 진입 시 선택 가능한 옵션(버스 vs 택시/픽업) 요금 및 소요시간 비교표 제공, 필수 교통 패스 안내
+       - **파리 Navigo Semaine**: 본문에 `나비고 주간권 [@Navigo Semaine@]` 또는 `[@나비고 주간권 Navigo Semaine@]` 형태로 작성(클릭→구글 검색). 역 매표소·Découverte 카드·증명사진 등 구매 요령은 advice에 서술.
      - "apps" (object): 현지에서 유용한 필수 앱 (Uber, Grab 등)
      - "map_poi" (object): 핵심 지역/맛집
      - "safety" (object): 치안 상황 및 여행자 대상 주요 범죄 패턴, 긴급 연락처

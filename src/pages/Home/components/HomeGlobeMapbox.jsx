@@ -1432,7 +1432,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return;
     }
 
-    if (cameraAnimatingRef.current || isGlobeCameraBusy(map)) return;
+    if (cameraAnimatingRef.current) {
+      if (!globeOverlaysRevealedRef.current) {
+        requestAnimationFrame(() => tryRevealGlobeOverlays());
+      }
+      return;
+    }
+    if (isGlobeCameraBusy(map)) {
+      if (!globeOverlaysRevealedRef.current) {
+        clearGlobeCameraBusy(map);
+      } else {
+        return;
+      }
+    }
 
     if (map.isStyleLoaded?.()) {
       syncGateoMarkerLayers();
@@ -1536,6 +1548,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const flyDuration = GLOBE_VIEW.orientFlyDuration;
 
     if (isAlreadyNearTarget && !forceFlyZoom && Math.abs(currentZoom - targetZoom) < 0.05) {
+      setGateoMarkerLayerVisibility(map, true);
+      clearGlobeCameraBusy(map);
+      flushPendingGateoMarkerSource(map);
       scheduleOrientRotateResume(map, 0);
       return true;
     }
@@ -2360,6 +2375,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         flightCinemaLayersLatchedRef.current = true;
       }
     },
+    requestGateoMarkerReveal: () => {
+      autoRotateRef.current = false;
+      tryRevealGlobeOverlays();
+    },
     markCameraBusy: () => {
       markGlobeCameraBusy(mapRef.current?.getMap());
     },
@@ -2432,7 +2451,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     whenGlobeFocusReady,
     getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode,
     suppressOverlayClick,
-  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, whenGlobeFocusReady]);
+  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -2468,15 +2487,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       bearing: GLOBE_VIEW.default.bearing
     };
 
+    const onCategoryFaceMoveEnd = () => {
+      map.off('moveend', onCategoryFaceMoveEnd);
+      tryRevealGlobeOverlays();
+    };
+
     try {
       map.stop();
+      map.once('moveend', onCategoryFaceMoveEnd);
       map.flyTo({
         ...faceCamera,
         duration: flyMs,
         essential: true
       });
     } catch {
+      map.off('moveend', onCategoryFaceMoveEnd);
       map.jumpTo(faceCamera);
+      tryRevealGlobeOverlays();
     }
 
     rotationTimer.current = setTimeout(() => {
@@ -2491,7 +2518,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }, flyMs + 400);
 
     return true;
-  }, [globeMode, pauseRender]);
+  }, [globeMode, pauseRender, tryRevealGlobeOverlays]);
 
   useEffect(() => {
     if (!mapReady || pauseRender || isZenMode || !highlightCategory) return;
