@@ -4553,6 +4553,82 @@ assert.ok(
   '산청 검색 9경 남명조식유적지 썸네일',
 );
 
+const seocheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'seocheon');
+const seocheonNine = seocheonMerged.filter((s) => s.localScenicListId === 'seocheon-gugyeong');
+assert.equal(seocheonNine.length, 9, '서천9경 9명');
+assert.equal(seocheonNine[0]?.groupTitle, '서천 구경');
+const seocheonDeficitNames = ['장항송림산림욕장과 장항스카이워크', '유부도와 서천갯벌'];
+const seocheonDeficit = seocheonNine.filter((s) =>
+  seocheonDeficitNames.includes(s.attractionName),
+);
+assert.equal(seocheonDeficit.length, 2, '서천9경 결손 2명');
+assert.ok(
+  seocheonDeficit.every((s) => s.overview && s.imageUrl),
+  '서천 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  seocheonDeficit.every((s) => !s.contentId),
+  '서천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(seocheonDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '장항송림·유부도 썸네일 다름',
+);
+const schJang = resolveLocalScenicListSpotById(
+  'local-scenic:seocheon-gugyeong:장항송림산림욕장과장항스카이워크',
+);
+assert.ok(schJang?.overview && schJang?.imageUrl, '서천 장항송림 overlay 사진·개요');
+assert.ok(!schJang?.contentId, '서천 장항송림 JSON contentId 없음 유지');
+assert.ok(schJang?.overview?.includes('장항산단로34번길'), '서천 장항송림 overlay 주소');
+assert.ok(schJang?.overview?.includes('236m'), '서천 장항송림 overlay 236m');
+assert.ok(schJang?.overview?.includes('275,703'), '서천 장항송림 overlay 면적');
+assert.ok(schJang?.overview?.includes('춘장대'), '서천 장항송림≠춘장대');
+assert.ok(schJang?.overview?.includes('울돌목'), '서천 장항송림≠해남 울돌목');
+assert.ok(schJang?.imageUrl?.includes('FILE_00000004924Gw2i'), '서천 장항송림 군 공식 사진');
+assert.ok(
+  schJang?.galleryUrls?.some((u) => u.includes('fileSn=2')),
+  '서천 장항송림 스카이워크 사진',
+);
+assert.ok(schJang?.homepage?.includes('trsptSn=8'), '서천 장항송림 공식 홈');
+const schYubu = resolveLocalScenicListSpotById(
+  'local-scenic:seocheon-gugyeong:유부도와서천갯벌',
+);
+assert.ok(schYubu?.overview && schYubu?.imageUrl, '서천 유부도 overlay 사진·개요');
+assert.ok(!schYubu?.contentId, '서천 유부도 JSON contentId 없음 유지');
+assert.ok(schYubu?.overview?.includes('유부도길6번길'), '서천 유부도 overlay 주소');
+assert.ok(schYubu?.overview?.includes('68.09'), '서천 유부도 overlay 68.09㎢');
+assert.ok(schYubu?.overview?.includes('326호'), '서천 유부도 overlay 천연기념물 326호');
+assert.ok(schYubu?.overview?.includes('람사르'), '서천 유부도 overlay 람사르');
+assert.ok(schYubu?.overview?.includes('금강하굿둑'), '서천 유부도≠7경 금강하굿둑');
+assert.ok(schYubu?.overview?.includes('보성순천'), '서천갯벌≠보성순천 갯벌');
+assert.ok(schYubu?.imageUrl?.includes('FILE_00000004926Ey2h'), '서천 유부도 군 공식 사진');
+assert.ok(schYubu?.homepage?.includes('trsptSn=9'), '서천 유부도 공식 홈');
+assert.notEqual(schJang?.imageUrl, schYubu?.imageUrl, '장항송림·유부도 썸네일 다름');
+assert.ok(!schYubu?.imageUrl?.includes('FILE_00000004924Gw2i'), '유부도≠장항송림 사진');
+assert.ok(!schJang?.imageUrl?.includes('FILE_00000004926Ey2h'), '장항송림≠유부도 사진');
+const seocheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '서천9경', {
+  injectLocalScenic: true,
+});
+const seocheonGlobeNine = seocheonGlobe.filter((s) => s.localScenicListId === 'seocheon-gugyeong');
+assert.equal(seocheonGlobeNine.length, 9, '서천 검색 서천9경 9행');
+assert.ok(
+  seocheonGlobe.find((s) => s.attractionName === '장항송림산림욕장과 장항스카이워크')?.overview?.includes('236m'),
+  '서천 검색 9경 장항송림 개요',
+);
+assert.ok(
+  seocheonGlobe
+    .find((s) => s.attractionName === '장항송림산림욕장과 장항스카이워크')
+    ?.imageUrl?.includes('FILE_00000004924Gw2i'),
+  '서천 검색 9경 장항송림 썸네일',
+);
+assert.ok(
+  seocheonGlobe
+    .find((s) => s.attractionName === '유부도와 서천갯벌')
+    ?.imageUrl?.includes('FILE_00000004926Ey2h'),
+  '서천 검색 9경 유부도 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

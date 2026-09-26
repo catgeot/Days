@@ -1616,6 +1616,15 @@ const SC_NAM_2 =
 const SC_NAM_3 =
   'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=0b1e0a04-4d9c-4f1e-b6a0-6bc591469e7b';
 const SC_NAM_HOME = 'https://sancheong.go.kr/tour/contents.do?key=1945';
+const SCH_BASE = 'https://www.seocheon.go.kr';
+const SCH_JANG = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=0`;
+const SCH_JANG_2 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=1`;
+const SCH_JANG_3 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=2`;
+const SCH_JANG_HOME = `${SCH_BASE}/prog/trspt/tour/sub01_01_08/view.do?trsptSn=8`;
+const SCH_YUBU = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=0`;
+const SCH_YUBU_2 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=1`;
+const SCH_YUBU_3 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=2`;
+const SCH_YUBU_HOME = `${SCH_BASE}/prog/trspt/tour/sub01_01_09/view.do?trsptSn=9`;
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3518,6 +3527,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     SC_NAM,
     [SC_NAM_2, SC_NAM_3],
     SC_NAM_HOME,
+  ),
+  'local-scenic:seocheon-gugyeong:장항송림산림욕장과장항스카이워크': localScenicPhotoOverlay(
+    '서천9경 제8경 장항송림산림욕장과 장항스카이워크는 장항읍 송림리입니다. 서천군 문화관광 9경 공식명은 장항송림자연휴양림과 스카이워크입니다. 바닷바람을 막는 방풍림으로 1954년 장항농고(현 장항공고) 학생들이 2년생 곰솔을 심었고, 곰솔(해송)이 1만2천여 그루 자랍니다. 면적 275,703㎡, 해안 산책로 1.5km이며 맥문동·해국·송엽국이 하층에 있습니다. 8~9월이면 맥문동이 핍니다. 2019년 산림청 국가산림문화자산으로, 2021년 자연휴양림으로 지정되었습니다. 스카이워크(기벌포 전망대)는 높이 15m·길이 236m로 해송 위와 서해·갯벌·일몰을 봅니다. 앞바다는 676년(문무왕 16) 기벌포해전이 있던 바다입니다. 주소는 장항읍 장항산단로34번길 122-16, 문의 041-956-5505입니다. 5경 춘장대해수욕장·7경 금강하굿둑 철새도래지·해남 울돌목 스카이워크와 다른 장항 송림입니다. 사진은 서천군 문화관광 9경 공식 사진입니다.',
+    '충청남도 서천군 장항읍 장항산단로34번길 122-16 (장항송림자연휴양림·스카이워크)',
+    SCH_JANG,
+    [SCH_JANG_2, SCH_JANG_3],
+    SCH_JANG_HOME,
+  ),
+  'local-scenic:seocheon-gugyeong:유부도와서천갯벌': localScenicPhotoOverlay(
+    '서천9경 제9경 유부도와 서천갯벌은 장항읍 유부도입니다. 서천군 문화관광 9경은 서천갯벌 면적을 약 68.09㎢로 두고, 금강하구에서 온 펄과 모래 갯벌이 함께 있다고 적습니다. 유부도는 철새 이동 경로의 중간기착지이자 바닷게 거점이며 100여 종의 희귀 철새가 쉽니다. 섬 이름은 임진왜란 때 아버지가 머문 섬을 유부도, 아들이 머문 섬을 유자도라 한 데서 왔다는 이야기가 있고, 고려 때부터 유배지로도 알려졌습니다. 검은머리물떼새는 천연기념물 제326호·멸종위기 야생생물 Ⅱ급이며 겨울에 2천5백여 마리가 모입니다. 서천군 해안선은 장항읍·마서면·종천면·비인면·서면 72.5km입니다. 2008년 2월 1일 서천 선언으로 서면 월호리, 비인면 다사리·장포리, 종천면 당정리와 유부도 연안습지 15.3㎢가 습지보호지역이 되었고 2009년 람사르 습지로 지정되었습니다. 서천갯벌은 2021년 유네스코 세계자연유산 「한국의 갯벌」에 등재된 구성 자산입니다. 주소는 장항읍 유부도길6번길 3입니다. 7경 금강하굿둑 철새도래지·5경 춘장대 모래갯벌·고창·신안·보성순천 갯벌과 다른 유부도 일대입니다. 사진은 서천군 문화관광 9경 공식 사진입니다.',
+    '충청남도 서천군 장항읍 유부도길6번길 3 (유부도·서천갯벌)',
+    SCH_YUBU,
+    [SCH_YUBU_2, SCH_YUBU_3],
+    SCH_YUBU_HOME,
   ),
 };
 

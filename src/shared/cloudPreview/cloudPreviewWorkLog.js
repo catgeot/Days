@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 67,
-  sessionPhase: '산청 결손 오버레이',
+  sessionNo: 68,
+  sessionPhase: '서천 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=sancheong',
+  previewPath: '/korea/theme/scenic?hub=seocheon',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-palgyeong-use-68-seocheon-overlay',
+    session: '팔경 활용 #68, 서천 결손 오버레이',
+    title: '서천9경 장항송림·유부도',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 서천9경 결손 2건(장항송림산림욕장과 장항스카이워크·유부도와 서천갯벌)의 공공 공식 팩트 개요·주소·서천군 문화관광 9경 공식 사진을 보강했습니다. 장항송림은 장항읍 장항산단로34번길 122-16 1954년 곰솔 방풍림·스카이워크 15m·236m(8경), 유부도는 유부도길6번길 3 서천갯벌 68.09㎢·2021 유네스코·2009 람사르(9경)입니다. 춘장대·금강하굿둑·울돌목 스카이워크·고창·신안·보성순천 갯벌과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=seocheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T10:50:00.000Z',
+  },
   {
     id: '2026-09-26-palgyeong-use-67-sancheong-overlay',
     session: '팔경 활용 #67, 산청 결손 오버레이',
