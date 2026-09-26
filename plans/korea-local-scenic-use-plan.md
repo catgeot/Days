@@ -92,7 +92,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#69 push** tip `e45292e1` · PR [#323](https://github.com/catgeot/Days/pull/323) · 안산9경 2 · **#70 화성 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#69 push** tip `30bcb7d4` · PR [#323](https://github.com/catgeot/Days/pull/323) · 안산9경 2 + QA 풍도 · **#70 화성 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -170,7 +170,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 66 | `팔경 활용 #66, 홍천 썸네일` | A | **완료** · tip `0ac3dc04` · PR [#320](https://github.com/catgeot/Days/pull/320) · 미약골·가령폭포 공식 사진 |
 | 67 | `팔경 활용 #67, 산청 결손 오버레이` | A | **완료** · tip `60cb6fcb` · PR [#321](https://github.com/catgeot/Days/pull/321) · 산청9경 2 |
 | 68 | `팔경 활용 #68, 서천 결손 오버레이` | A | **완료** · tip `fdfc3ff2` · PR [#321](https://github.com/catgeot/Days/pull/321) · 서천9경 2 |
-| 69 | `팔경 활용 #69, 안산 결손 오버레이` | A | **완료** · tip `e45292e1` · PR [#323](https://github.com/catgeot/Days/pull/323) · 안산9경 2 |
+| 69 | `팔경 활용 #69, 안산 결손 오버레이` | A | **완료** · tip `30bcb7d4` · PR [#323](https://github.com/catgeot/Days/pull/323) · 안산9경 2 · QA 풍도 썸네일 |
 | 70 | `팔경 활용 #70, 화성 결손 오버레이` | A | **열기 가능** · 화성8경 2 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |

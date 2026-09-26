@@ -43,6 +43,15 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=ansan` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan`
 - **다음** `팔경 활용 #70, 화성 결손 오버레이` — 용주사 범종·입파홍암
 
+## 팔경 활용 #69 — 안산 5경 풍도 썸네일
+
+- **세션** QA 피드백 · feature `cursor/palgyeong-use-e744` · tip `30bcb7d4` · PR [#323](https://github.com/catgeot/Days/pull/323)
+- **증상** Preview 안산 팔경 목록·검색에서 5경 풍도만 랜드마크 아이콘. contentId `126720`은 있으나 Tour firstimage가 비어 있다.
+- **조치** JSON contentId는 유지하고 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 안산시 문화관광 12경 공식 사진. 풍도동, 대부도에서 약 24km, 3월 풍도바람꽃. 2경 대부도·화성 제부도와 구분. 순수 누락은 contentId가 있어 **30**/876 유지.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=ansan` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan`
+- **다음** `팔경 활용 #70, 화성 결손 오버레이` — 용주사 범종·입파홍암
+
 ## 축제 페이지 #7 — 본문은 홈 지도
 
 - **세션** `축제 페이지 #7, 본문은 홈 지도` · feature `cursor/festival-sheet-ui-ec8b` · tip `481d4b61` · PR [#322](https://github.com/catgeot/Days/pull/322)
