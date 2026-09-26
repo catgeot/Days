@@ -2,6 +2,14 @@
 
 직전: [`2026-09-22-project-log.md`](./2026-09-22-project-log.md)
 
+## 팔경 활용 #70 — 화성8경 용주사 범종·입파홍암
+
+- **세션** `팔경 활용 #70, 화성 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `08046b49` · PR [#323](https://github.com/catgeot/Days/pull/323)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 화성8경 결손 2건. 2경 용주사 범종은 용주로 136 국보 동종(높이 145㎝·지름 87㎝·1964년 국보 제120호·2021년 재지정·문의 031-234-0040). 6경 입파홍암은 우정읍 입파길 24-15 북쪽 붉은 기암(궁평항 뱃길 약 50분·0.44㎢). 융건릉·제부도·궁평낙조·국화도와 구분. 사진은 국가유산청 동종·화성국가지질공원 홍암전경.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **28**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hwaseong` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hwaseong`
+- **다음** `팔경 활용 #71, 용인 결손 오버레이` — 조비산·어비낙조
+
 ## 팔경 활용 #66 — 홍천9경 미약골·가령폭포 썸네일
 
 - **세션** `팔경 활용 #66, 홍천 썸네일` · feature `cursor/palgyeong-use-e744` · tip `0ac3dc04` · PR [#320](https://github.com/catgeot/Days/pull/320) (#286은 #65에서 병합됨)
