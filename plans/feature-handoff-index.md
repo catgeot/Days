@@ -145,27 +145,27 @@
 
 | | |
 |--|--|
-| **상태** | **#7 push** · tip `481d4b61` · PR [#322](https://github.com/catgeot/Days/pull/322) · **사람 Preview** |
+| **상태** | **#8 push** · tip `44256af7` · PR [#322](https://github.com/catgeot/Days/pull/322) · **사람 Preview** |
 | **브랜치** | `cursor/festival-sheet-ui-ec8b` |
 | **PR** | [#322](https://github.com/catgeot/Days/pull/322) |
 | **플랜** | [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) **§9** |
 | **일지** | [`2026-09-26-project-log.md`](./2026-09-26-project-log.md) |
-| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 「이 축제 위치로」→ 홈 지도 핀 |
-| **소유** | `FestivalDetailSheet` · `Korea/index.jsx` `showFestivalOnMap` · `KoreaFestivalMap` |
-| **금지** | 축제 시트 리팩터 · 본문에서 네이버 지도 직링크 · feature에 `plans/**` 커밋 · 검증 없이 main push |
-| **VERIFY** | `npm run smoke:festival-home-map` PASS · `smoke:korea-festival-nearby` PASS · `npx vite build` PASS |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 주소 아래 네이버·구글 검색 |
+| **소유** | `FestivalDetailSheet` |
+| **금지** | 축제 시트 리팩터 · 본문 네이버 지도 직링크 · 이 축제 위치로 복귀 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:festival-surface-search` PASS · `smoke:korea-festival-nearby` PASS · `npx vite build` PASS |
 
 **다음 제시어**:
 
 ```
-축제 페이지 #8, Preview OK면 PR 병합
+축제 페이지 #9, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-26-project-log.md
 @plans/korea-festival-hub-plan.md
 브랜치 cursor/festival-sheet-ui-ec8b · PR #322 · Preview /qa/festival-ui
-금지: 축제 시트 리팩터 · 본문에서 네이버 지도 직링크 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview /korea 축제 본문 — 이 축제 위치로를 누르면 본문이 닫히고 홈 지도가 그 핀으로 이동하는지. 장소 정보는 읽을거리 네이버 검색. OK면 PR #322 병합.
-검증: npm run smoke:festival-home-map PASS · smoke:korea-festival-nearby PASS · vite build PASS
+금지: 축제 시트 리팩터 · 본문 네이버 지도 직링크 · 이 축제 위치로 복귀 · feature에 plans/** 커밋
+작업: Preview /korea 축제 카드 — 탭을 열지 않아도 주소 아래 네이버 검색·구글 검색이 보이는지. 읽을거리에는 영상만. OK면 PR #322 병합.
+검증: npm run smoke:festival-surface-search PASS · smoke:korea-festival-nearby PASS · vite build PASS
 ```
 
 ---

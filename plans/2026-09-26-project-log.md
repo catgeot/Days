@@ -50,3 +50,11 @@
 - **VERIFY** `smoke:festival-home-map` PASS · `smoke:korea-festival-nearby` PASS · `vite build` PASS
 - **Preview** https://www.gateo.kr/qa/festival-ui → `/korea` · git `https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea`
 - **다음** `축제 페이지 #8, Preview OK면 PR 병합`
+
+## 축제 페이지 #8 — 검색 링크 표면
+
+- **세션** `축제 페이지 #8, 검색 링크 표면` · feature `cursor/festival-sheet-ui-ec8b` · tip `44256af7` · PR [#322](https://github.com/catgeot/Days/pull/322)
+- **조치** 읽을거리의 네이버 검색·구글 검색을 주소 아래 표면으로 이동. 칩 모양은 그대로. 「이 축제 위치로」와 홈 지도 핀 고정은 제거. 읽을거리는 관련 영상만.
+- **VERIFY** `smoke:festival-surface-search` PASS · `smoke:korea-festival-nearby` PASS · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/festival-ui → `/korea` · git `https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea`
+- **다음** `축제 페이지 #9, Preview OK면 PR 병합`
