@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 65,
-  sessionPhase: '보성 결손 오버레이',
+  sessionNo: 66,
+  sessionPhase: '홍천 썸네일',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=boseong',
+  previewPath: '/korea/theme/scenic?hub=hongcheon',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-palgyeong-use-66-hongcheon-thumbs',
+    session: '팔경 활용 #66, 홍천 썸네일',
+    title: '홍천9경 미약골·가령폭포 썸네일',
+    detail:
+      '사람 Preview에서 홍천 팔경 3경 미약골·5경 가령폭포가 랜드마크 아이콘이었습니다. #2 오버레이는 가리산·금학산·살둔계곡·삼봉약수뿐이고, 미약골(2613261)·가령폭포(125658)는 JSON contentId만 있어 Tour firstimage가 비면 목록 사진이 없습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 홍천군 문화관광 9경 공식 사진(미약골 1장·가령폭포 3장)과 주소·개요를 넣었습니다. 용소계곡·살둔·가리산·문경 용추·동해 용추와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 3경·5경 썸네일.',
+    at: '2026-09-26T09:50:00.000Z',
+  },
   {
     id: '2026-09-21-korea-theme-scenic-detail-prose',
     session: '명승 본문 가독성 #1, ThemeSpotDetailModal 프로즈',
