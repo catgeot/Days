@@ -14,6 +14,16 @@ export const useGlobeLogic = (globeRef, _userId) => {
 
   const moveToLocation = useCallback((lat, lng, name, category = 'scout', options = {}) => {
     if (globeRef.current) {
+      globeRef.current.wakeAfterOverlay?.();
+      if (import.meta.env.DEV && options?.focus !== false) {
+        console.debug('[globe-fly-entry]', {
+          name,
+          lat,
+          lng,
+          category,
+          deferGlobeFocus: options?.deferGlobeFocus,
+        });
+      }
       globeRef.current.flyToAndPin(lat, lng, name, category, options);
     }
   }, [globeRef]);

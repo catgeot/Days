@@ -60,6 +60,7 @@ import {
   markGlobeCameraBusy,
   clearGlobeCameraBusy,
   isGlobeCameraBusy,
+  setGlobeCameraBusySafetyRecovery,
 } from '../lib/globeMarkerLayers';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
@@ -1469,10 +1470,57 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     applyPlaceLabelVisibility({ force: true });
   }, [applyPlaceLabelVisibility, beginFirstLabelSettle, pauseRender, syncGateoMarkerLayers]);
 
+  const logGateoMarkerEnsure = useCallback((reason) => {
+    if (!import.meta.env.DEV) return;
+    const map = mapRef.current?.getMap();
+    console.debug('[gateo-markers]', reason, {
+      overlaysRevealed: globeOverlaysRevealedRef.current,
+      layersVisible: map ? areGateoMarkerLayersVisible(map) : null,
+      cameraBusy: map ? isGlobeCameraBusy(map) : null,
+      isMoving: typeof map?.isMoving === 'function' ? map.isMoving() : null,
+      pauseRender,
+      globeMode,
+      tourActive: tourActiveRef.current,
+      cameraAnimating: cameraAnimatingRef.current,
+    });
+  }, [globeMode, pauseRender]);
+
+  /** SSOT: visible layers + GeoJSON flush + overlay reveal (no extra retry pumps). */
+  const ensureGateoMarkersVisible = useCallback((reason = 'unknown') => {
+    if (pauseRender) return;
+    logGateoMarkerEnsure(reason);
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    if (isGlobeCameraBusy(map) && !globeOverlaysRevealedRef.current) {
+      clearGlobeCameraBusy(map);
+    }
+
+    if (gateoMarkerLayersReady(map)) {
+      if (!areGateoMarkerLayersVisible(map)) {
+        setGateoMarkerLayerVisibility(map, true);
+      }
+      flushPendingGateoMarkerSource(map);
+      updateGateoMarkerSource(map, markerGeoJSONRef.current);
+    }
+
+    tryRevealGlobeOverlays();
+  }, [logGateoMarkerEnsure, pauseRender, tryRevealGlobeOverlays]);
+
+  const ensureGateoMarkersVisibleRef = useRef(ensureGateoMarkersVisible);
+  ensureGateoMarkersVisibleRef.current = ensureGateoMarkersVisible;
+
+  useEffect(() => {
+    setGlobeCameraBusySafetyRecovery((_map, reason) => {
+      ensureGateoMarkersVisibleRef.current(reason);
+    });
+    return () => setGlobeCameraBusySafetyRecovery(null);
+  }, []);
+
   const tryRevealGlobe = useCallback(() => {
     tryRevealGlobeBase();
-    tryRevealGlobeOverlays();
-  }, [tryRevealGlobeBase, tryRevealGlobeOverlays]);
+    ensureGateoMarkersVisible('tryRevealGlobe');
+  }, [tryRevealGlobeBase, ensureGateoMarkersVisible]);
 
   useEffect(() => {
     if (pauseRender) return undefined;
@@ -1548,9 +1596,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const flyDuration = GLOBE_VIEW.orientFlyDuration;
 
     if (isAlreadyNearTarget && !forceFlyZoom && Math.abs(currentZoom - targetZoom) < 0.05) {
-      setGateoMarkerLayerVisibility(map, true);
-      clearGlobeCameraBusy(map);
-      flushPendingGateoMarkerSource(map);
+      ensureGateoMarkersVisible('executeFocus:near');
       scheduleOrientRotateResume(map, 0);
       return true;
     }
@@ -1569,22 +1615,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       map.once('moveend', () => {
         cameraAnimatingRef.current = false;
         map.once('idle', () => {
-          flushPendingGateoMarkerSource(map);
-          setGateoMarkerLayerVisibility(map, true);
-          clearGlobeCameraBusy(map);
+          ensureGateoMarkersVisible('executeFocus:moveend');
           applyPlaceLabelVisibility();
         });
       });
     } catch {
       clearGlobeCameraBusy(map);
       cameraAnimatingRef.current = false;
-      setGateoMarkerLayerVisibility(map, true);
+      ensureGateoMarkersVisible('executeFocus:error');
       return false;
     }
 
     scheduleOrientRotateResume(map, flyDuration);
     return true;
-  }, [pauseRender, scheduleOrientRotateResume]);
+  }, [ensureGateoMarkersVisible, pauseRender, scheduleOrientRotateResume]);
 
   /** TOUR_READY pivot — ease center only; pitch/zoom/bearing unchanged (no flyTo). */
   const pivotTourExplore = useCallback((location) => {
@@ -2374,10 +2418,21 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (map && !map._removed && isFlightCinemaGlobeReady(map)) {
         flightCinemaLayersLatchedRef.current = true;
       }
+      if (
+        map
+        && isGlobeCameraBusy(map)
+        && !cameraAnimatingRef.current
+        && !(typeof map.isMoving === 'function' && map.isMoving())
+      ) {
+        clearGlobeCameraBusy(map);
+      }
+      if (import.meta.env.DEV) {
+        logGateoMarkerEnsure('wakeAfterOverlay');
+      }
     },
     requestGateoMarkerReveal: () => {
       autoRotateRef.current = false;
-      tryRevealGlobeOverlays();
+      ensureGateoMarkersVisible('request');
     },
     markCameraBusy: () => {
       markGlobeCameraBusy(mapRef.current?.getMap());
@@ -2451,7 +2506,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     whenGlobeFocusReady,
     getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode,
     suppressOverlayClick,
-  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
+  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureGateoMarkersVisible, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, logGateoMarkerEnsure, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -2489,7 +2544,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const onCategoryFaceMoveEnd = () => {
       map.off('moveend', onCategoryFaceMoveEnd);
-      tryRevealGlobeOverlays();
+      ensureGateoMarkersVisible('categoryFace');
     };
 
     try {
@@ -2503,7 +2558,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     } catch {
       map.off('moveend', onCategoryFaceMoveEnd);
       map.jumpTo(faceCamera);
-      tryRevealGlobeOverlays();
+      ensureGateoMarkersVisible('categoryFace');
     }
 
     rotationTimer.current = setTimeout(() => {
@@ -2518,7 +2573,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }, flyMs + 400);
 
     return true;
-  }, [globeMode, pauseRender, tryRevealGlobeOverlays]);
+  }, [ensureGateoMarkersVisible, globeMode, pauseRender]);
 
   useEffect(() => {
     if (!mapReady || pauseRender || isZenMode || !highlightCategory) return;
