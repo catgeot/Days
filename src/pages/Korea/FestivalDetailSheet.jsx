@@ -1159,6 +1159,8 @@ export default function FestivalDetailSheet({
   const eventplace = String(intro?.eventplace || '').trim();
   const showEventPlace =
     Boolean(eventplace) && eventplace !== String(item.addr1 || '').trim();
+  const naverHref = naverSearchUrl(item.title);
+  const googleHref = googleSearchUrl(item.title);
   const sponsor1 = String(intro?.sponsor1 || '').trim();
   const sponsor2 = String(intro?.sponsor2 || '').trim();
   const showSponsor2 =
@@ -1355,6 +1357,33 @@ export default function FestivalDetailSheet({
               </p>
             )}
           </div>
+
+          {(naverHref || googleHref) && (
+            <div className="flex flex-wrap gap-2">
+              {naverHref ? (
+                <a
+                  href={naverHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                >
+                  <ExternalLink size={12} aria-hidden="true" />
+                  {t('korea.festival.detail.naverSearch')}
+                </a>
+              ) : null}
+              {googleHref ? (
+                <a
+                  href={googleHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                >
+                  <ExternalLink size={12} aria-hidden="true" />
+                  {t('korea.festival.detail.googleSearch')}
+                </a>
+              ) : null}
+            </div>
+          )}
 
           {homepage && (
             <a
@@ -2013,36 +2042,6 @@ export default function FestivalDetailSheet({
 
           {!detailLoading && activeTab === TAB_READING && (
             <div className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                  {t('korea.festival.detail.readMore')}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {naverSearchUrl(item.title) && (
-                    <a
-                      href={naverSearchUrl(item.title)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                    >
-                      <ExternalLink size={12} aria-hidden="true" />
-                      {t('korea.festival.detail.naverSearch')}
-                    </a>
-                  )}
-                  {googleSearchUrl(item.title) && (
-                    <a
-                      href={googleSearchUrl(item.title)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                    >
-                      <ExternalLink size={12} aria-hidden="true" />
-                      {t('korea.festival.detail.googleSearch')}
-                    </a>
-                  )}
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                   {t('korea.festival.detail.relatedVideos')}
