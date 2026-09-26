@@ -1826,23 +1826,31 @@ export default function ThemeSpotDetailModal({
         aria-modal="true"
         aria-labelledby="korea-theme-spot-modal-title"
       >
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-              {modalEyebrow}
+        <div className="flex shrink-0 items-start justify-between gap-2 border-b border-stone-200/80 px-4 py-2.5 sm:gap-3 sm:px-5 sm:py-3">
+          <div className="min-w-0 pr-1">
+            <p className="text-[10px] font-bold leading-snug text-amber-700 break-keep">
+              <span className="uppercase tracking-[0.16em]">{modalEyebrow}</span>
+              {displaySubtitle ? (
+                <>
+                  <span className="mx-1.5 font-normal text-stone-300" aria-hidden="true">
+                    ·
+                  </span>
+                  <span
+                    className="font-semibold normal-case tracking-normal text-stone-500"
+                    {...koText}
+                  >
+                    {displaySubtitle}
+                  </span>
+                </>
+              ) : null}
             </p>
             <h2
               id="korea-theme-spot-modal-title"
-              className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
+              className="mt-0.5 text-base font-extrabold leading-tight tracking-tight text-stone-900 break-keep sm:text-lg"
               {...koText}
             >
               {displayTitle}
             </h2>
-            {displaySubtitle ? (
-              <p className="mt-1 text-xs text-stone-500 break-keep" {...koText}>
-                {displaySubtitle}
-              </p>
-            ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
             {onToggleFavorite ? (
