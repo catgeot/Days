@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '명승 본문 가독성',
-  sessionNo: 1,
-  sessionPhase: 'ThemeSpotDetailModal 프로즈',
-  branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'korea-theme',
+  title: '팔경 활용',
+  sessionNo: 66,
+  sessionPhase: '홍천 썸네일',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=hongcheon',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-palgyeong-use-66-hongcheon-thumbs',
+    session: '팔경 활용 #66, 홍천 썸네일',
+    title: '홍천9경 미약골·가령폭포 썸네일',
+    detail:
+      '사람 Preview에서 홍천 팔경 3경 미약골·5경 가령폭포가 랜드마크 아이콘이었습니다. #2 오버레이는 가리산·금학산·살둔계곡·삼봉약수뿐이고, 미약골(2613261)·가령폭포(125658)는 JSON contentId만 있어 Tour firstimage가 비면 목록 사진이 없습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 홍천군 문화관광 9경 공식 사진(미약골 1장·가령폭포 3장)과 주소·개요를 넣었습니다. 용소계곡·살둔·가리산·문경 용추·동해 용추와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 3경·5경 썸네일.',
+    at: '2026-09-26T09:50:00.000Z',
+  },
   {
     id: '2026-09-21-korea-theme-scenic-detail-prose',
     session: '명승 본문 가독성 #1, ThemeSpotDetailModal 프로즈',
@@ -54,6 +62,14 @@ export const cloudPreviewWorkLog = [
     detail:
       '사람 Preview에서 8개가 적어 보였습니다. 검색 결과 페이지 표준(구글·네이버 10건)에 맞춰 한 장 10개로 늘립니다. Preview git 홈「향교」엔터 → 1페이지 10장·다음.',
     at: '2026-09-19T07:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-65-boseong-overlays',
+    session: '팔경 활용 #65, 보성 결손 오버레이',
+    title: '보성9경 일림산 용추계곡·주암호 서재필기념관 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 보성9경 결손 2건(일림산 용추계곡·주암호 서재필기념관)의 공공 공식 팩트 개요·주소·보성군 문화관광 9경 공식 사진을 보강했습니다. 용추계곡은 웅치면 용반리 일림산 664m 보성강 시원·용추폭포(7경), 서재필기념관은 문덕면 용암길 8 주암호 호반·개화문·생가(9경, 1864 가내마을·1992 조성)입니다. 문경 용추계곡·가평·동해 용추폭포·제암산자연휴양림·서울 독립문·순천 주암댐·주암호생태습지·대원사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=boseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T07:20:00.000Z',
   },
   {
     id: '2026-09-19-hyanggyo-search-2-list-pages',

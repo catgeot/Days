@@ -1614,6 +1614,16 @@ const INJE_DAESEUNG_FALLS =
 const INJE_HAPGANG_PAVILION =
   'https://injetour.co.kr/files/3c665dac-463b-43aa-a0c2-8f7ebb539e01.jpg';
 
+const HC_TOUR = 'https://www.hongcheon.go.kr';
+const HC_MIYAK = `${HC_TOUR}/DATA/tour/2016/thumb/p_20210208082101687jnf379.jpg`;
+const HC_MIYAK_HOME =
+  `${HC_TOUR}/tour/selectTourCntntsWebView.do?ctgry=6&key=2035&tourNo=2016`;
+const HC_GARYEONG = `${HC_TOUR}/DATA/tour/2018/thumb/p_202102180508378213s06jQ.jpg`;
+const HC_GARYEONG_2 = `${HC_TOUR}/DATA/tour/2018/thumb/p_20210218051022475PfUGRo.jpg`;
+const HC_GARYEONG_3 = `${HC_TOUR}/DATA/tour/2018/thumb/p_20210218051022496eh1vfS.jpg`;
+const HC_GARYEONG_HOME =
+  `${HC_TOUR}/tour/selectTourCntntsWebView.do?ctgry=6&key=2035&tourNo=2018`;
+
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = [], homepage = null) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
   return {
@@ -1717,6 +1727,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
       'https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg',
     ],
   },
+  'local-scenic:hongcheon-palgyeong:미약골': localScenicPhotoOverlay(
+    '홍천9경 3경 미약골은 서석면 구룡령로 3748-8입니다. 홍천군 문화관광은 높은 산과 깊은 계곡으로 둘러싸인 곳이며, 풍수가가 삼정승 6판서가 날 명당이라 보고 학이 울고 촛대바위가 치솟았으며 선녀가 목욕했다는 암석폭포가 있어 미암동 또는 미약골이라 했다고 적습니다. 원시림과 용천수가 있고, 그 물이 400리를 흘러 북한강 청평댐으로 드는 홍천강 발원지입니다. 산불조심기간(봄 2월 1일~5월 15일, 가을 11월 1일~12월 15일)에는 입산이 금지됩니다. 주차는 서석면 생곡리 11(구룡령로 3748-8)이며 화장실이 있습니다. 문의 033-430-4451. 7경 용소계곡·8경 살둔계곡·2경 가리산과 다른 서석 생곡 계곡입니다. 사진은 홍천군 문화관광 9경 공식 사진입니다.',
+    '강원특별자치도 홍천군 서석면 구룡령로 3748-8',
+    HC_MIYAK,
+    [],
+    HC_MIYAK_HOME,
+  ),
+  'local-scenic:hongcheon-palgyeong:가령폭포': localScenicPhotoOverlay(
+    '홍천9경 5경 가령폭포는 내촌면 와야리 산12-1입니다. 홍천군 문화관광은 백암산(1,099m) 서남쪽 기슭의 폭포로 개령폭포라고도 하며, 약 50m 낭떠러지로 떨어진다고 적습니다. 해발 950m 어사리덕 산골샘에서 나온 물이 비레올 계곡을 지나 400리 홍천강으로 이어집니다. 숲에 가려 잘 드러나지 않는 폭포로 알려져 있고, 주차는 내촌면 와야리 38-3입니다. 문의 033-430-2544. 문경 용추계곡·동해 무릉 용추폭포·인제 대승폭포·포항 내연산 12폭포와 다른 내촌 백암산 폭포입니다. 사진은 홍천군 문화관광 9경 공식 사진 3장입니다.',
+    '강원특별자치도 홍천군 내촌면 와야리 산12-1',
+    HC_GARYEONG,
+    [HC_GARYEONG_2, HC_GARYEONG_3],
+    HC_GARYEONG_HOME,
+  ),
   'local-scenic:danyang-palgyeong:하선암': {
     contentId: '126654',
     overview:

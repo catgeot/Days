@@ -277,6 +277,49 @@ const geumhakJob = hongcheonJobs.find((j) => j.name === '금학산');
 assert.ok(garisanJob?.contentId === '125593', '가리산 job contentId');
 assert.ok(!geumhakJob?.contentId, '금학산 job has no SSOT contentId');
 
+const miyak = resolveLocalScenicListSpotById('local-scenic:hongcheon-palgyeong:미약골');
+assert.equal(miyak?.contentId, '2613261', '미약골 JSON contentId 유지');
+assert.ok(miyak?.imageUrl?.includes('p_20210208082101687jnf379'), '미약골 홍천군 공식 사진');
+assert.ok(miyak?.overview?.includes('구룡령로 3748-8'), '미약골 주소');
+assert.ok(miyak?.overview?.includes('용소계곡'), '미약골≠용소계곡');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('2613261')?.imageUrl?.includes('p_20210208082101687jnf379'),
+  '미약골 Tour 빈 썸네일 overlay 2613261',
+);
+assert.ok(
+  resolveSearchScenicMedia({ hubId: 'hongcheon', name: '미약골', contentId: '2613261' })
+    .imageUrl?.includes('p_20210208082101687jnf379'),
+  '홍천 팔경 미약골 검색 썸네일',
+);
+const garyeong = resolveLocalScenicListSpotById('local-scenic:hongcheon-palgyeong:가령폭포');
+assert.equal(garyeong?.contentId, '125658', '가령폭포 JSON contentId 유지');
+assert.ok(garyeong?.imageUrl?.includes('p_202102180508378213s06jQ'), '가령폭포 홍천군 공식 사진');
+assert.equal(garyeong?.galleryUrls?.length, 3, '가령폭포 공식 사진 3장');
+assert.ok(garyeong?.overview?.includes('와야리 산12-1'), '가령폭포 주소');
+assert.ok(garyeong?.overview?.includes('동해'), '가령폭포≠동해 용추');
+assert.notEqual(miyak?.imageUrl, garyeong?.imageUrl, '미약골·가령폭포 썸네일 다름');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125658')?.imageUrl?.includes('p_202102180508378213s06jQ'),
+  '가령폭포 Tour 빈 썸네일 overlay 125658',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(
+    { id: 'local-scenic:hongcheon-palgyeong:가령폭포', contentId: '125658', hubId: 'hongcheon' },
+    new Map([['125658', 'https://tong.visitkorea.or.kr/cms/resource/other.jpg']]),
+  )?.includes('p_202102180508378213s06jQ'),
+  '가령폭포 오버레이가 Tour firstimage보다 우선',
+);
+const hongcheonList = lists.find((l) => l.listId === 'hongcheon-palgyeong');
+const garyeongSuggest = localScenicMemberToSuggestion(
+  hongcheonList,
+  resolveCityAttractionHub('hongcheon'),
+  hongcheonList?.members?.find((m) => m.attractionName === '가령폭포'),
+);
+assert.ok(
+  garyeongSuggest?.imageUrl?.includes('p_202102180508378213s06jQ'),
+  '홍천 팔경 드롭다운 가령폭포 썸네일',
+);
+
 const pickedGarisan = pickTourAttractionRowForTitle(
   [
     { name: '가리산자연휴양림', contentId: '126905', addr1: '강원특별자치도 홍천군' },
