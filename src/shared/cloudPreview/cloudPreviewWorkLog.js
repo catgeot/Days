@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '축제 페이지',
-  sessionNo: 7,
-  sessionPhase: '본문은 홈 지도',
+  sessionNo: 8,
+  sessionPhase: '검색 링크 표면',
   branch: 'cursor/festival-sheet-ui-ec8b',
   previewPath: '/korea',
   qaShareSlug: 'festival-ui',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-festival-ui-8-surface-search',
+    session: '축제 페이지 #8, 검색 링크 표면',
+    title: '네이버·구글 검색을 본문 표면으로',
+    detail:
+      '읽을거리 안의 네이버 검색·구글 검색을 주소 아래 표면으로 옮겼습니다. 이 축제 위치로와 홈 지도 핀 이동은 뺐습니다. Preview /qa/festival-ui — /korea 축제 카드에서 탭을 열지 않아도 네이버·구글이 보이는지.',
+    at: '2026-09-26T14:50:00.000Z',
+  },
   {
     id: '2026-09-26-festival-ui-7-home-map',
     session: '축제 페이지 #7, 본문은 홈 지도',
