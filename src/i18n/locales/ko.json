@@ -1329,6 +1329,8 @@
         "photoExpandAria": "사진 {{index}} 확대보기",
         "readMore": "더 찾아보기",
         "naverSearch": "네이버 검색",
+        "viewOnMap": "지도에서 보기",
+        "viewOnMapAria": "네이버 지도에서 이 장소 보기",
         "googleSearch": "구글 검색",
         "relatedVideos": "관련 영상",
         "videosLoading": "영상 불러오는 중…",
