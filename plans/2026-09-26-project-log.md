@@ -18,3 +18,11 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS. 순수 사진/개요 누락 **34**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=sancheong` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=sancheong`
 - **다음** `팔경 활용 #68, 서천 결손 오버레이` — 장항송림산림욕장과 장항스카이워크·유부도와 서천갯벌
+
+## 축제 페이지 #6 — 본문 네이버 지도
+
+- **세션** `축제 페이지 #6, 본문 네이버 지도` · feature `cursor/festival-sheet-ui-ec8b` · tip `a5562ba2` · PR [#287](https://github.com/catgeot/Days/pull/287)
+- **조치** 축제 본문 주소 아래 「지도에서 보기」. 네이버 지도 검색어는 축제명이 아니라 행사 장소(예: 인천광역시 부평구 신트리공원). 장소가 일대·도로뿐이면 도로명 주소. 좌표가 있으면 지도 카메라만 맞춘다.
+- **VERIFY** `smoke:festival-naver-map` PASS · `smoke:korea-festival-nearby` PASS · `vite build` PASS. `smoke:korea-festival-personal`은 origin/main과 같이 인천공항→`junggu` FAIL(범위 밖).
+- **Preview** https://www.gateo.kr/qa/festival-ui → `/korea` · git `https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea`
+- **다음** `축제 페이지 #7, Preview OK면 PR 병합`
