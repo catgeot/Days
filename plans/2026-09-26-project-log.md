@@ -26,3 +26,19 @@
 - **VERIFY** `smoke:festival-naver-map` PASS · `smoke:korea-festival-nearby` PASS · `vite build` PASS. `smoke:korea-festival-personal`은 origin/main과 같이 인천공항→`junggu` FAIL(범위 밖).
 - **Preview** https://www.gateo.kr/qa/festival-ui → `/korea` · git `https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea`
 - **다음** `축제 페이지 #7, Preview OK면 PR 병합`
+
+## 팔경 활용 #68 — 서천9경 장항송림·유부도
+
+- **세션** `팔경 활용 #68, 서천 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `fdfc3ff2` · PR [#321](https://github.com/catgeot/Days/pull/321)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 서천9경 결손 2건. 8경 장항송림산림욕장과 장항스카이워크는 장항읍 장항산단로34번길 122-16(공식명 장항송림자연휴양림, 1954년 곰솔 방풍림·면적 275,703㎡·스카이워크 높이 15m·길이 236m·문의 041-956-5505). 9경 유부도와 서천갯벌은 장항읍 유부도길6번길 3(서천갯벌 약 68.09㎢·2021 유네스코 한국의 갯벌·2009 람사르·검은머리물떼새 천연기념물 326호). 춘장대·금강하굿둑·울돌목 스카이워크·고창·신안·보성순천 갯벌과 구분.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS. 순수 사진/개요 누락 **32**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=seocheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=seocheon`
+- **다음** `팔경 활용 #69, 안산 결손 오버레이` — 시화호조력발전소·다문화거리
+
+## 팔경 활용 #69 — 안산9경 시화호조력·다문화거리
+
+- **세션** `팔경 활용 #69, 안산 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `e45292e1` · PR [#323](https://github.com/catgeot/Days/pull/323) (#321은 #67에서 병합됨)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 안산9경 결손 2건. 1경 시화호조력발전소는 단원구 대부황금로 1927(2011년 8월 준공·연 약 5억 5천만 kWh·달전망대·문의 032-890-6524). 8경 다문화거리는 단원구 다문화길 16 일대(2009년 다문화마을특구·외국인주민지원본부 1666-1234). 대부도·안산갈대습지·안산 시화호·시흥 오이도·인천차이나타운과 구분. 사진은 안산시 문화관광 12경 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS. 순수 사진/개요 누락 **30**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=ansan` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan`
+- **다음** `팔경 활용 #70, 화성 결손 오버레이` — 용주사 범종·입파홍암
