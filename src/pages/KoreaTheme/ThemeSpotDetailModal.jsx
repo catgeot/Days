@@ -35,6 +35,7 @@ import {
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
+import mooniChar from '../../assets/MOONI_transparent.png';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
@@ -884,6 +885,7 @@ function toCultureModalSpot(spot) {
  *   returnTo: string,
  *   onClose: () => void,
  *   overlayZClass?: string,
+ *   showFloatingMooni?: boolean,
  *   favorited?: boolean,
  *   onToggleFavorite?: (spot: Record<string, unknown>) => void,
  * }} props
@@ -894,6 +896,7 @@ export default function ThemeSpotDetailModal({
   returnTo,
   onClose,
   overlayZClass = 'z-40',
+  showFloatingMooni = false,
   favorited = false,
   onToggleFavorite,
 }) {
@@ -930,6 +933,7 @@ export default function ThemeSpotDetailModal({
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [mooniOpen, setMooniOpen] = useState(false);
   const [mooniBound, setMooniBound] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const heroSwipeStartRef = useRef(null);
@@ -1160,6 +1164,20 @@ export default function ThemeSpotDetailModal({
     selectedCulture,
     selectedAttraction,
   ]);
+
+  useEffect(() => {
+    if (!showFloatingMooni) {
+      setShowScrollTop(false);
+      return undefined;
+    }
+    const el = scrollRef.current;
+    if (!el) return undefined;
+    setShowScrollTop(false);
+    const onScroll = () => setShowScrollTop(el.scrollTop > 180);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [showFloatingMooni, spot?.id, spot?.contentId]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -2430,6 +2448,43 @@ export default function ThemeSpotDetailModal({
             {t('korea.theme.spotDetail.close')}
           </button>
         </div>
+
+        {showFloatingMooni ? (
+          <>
+            <button
+              type="button"
+              aria-label={t('korea.common.scrollToTop')}
+              onClick={(e) => {
+                e.stopPropagation();
+                scrollToTop();
+              }}
+              className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-[56] flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
+                showScrollTop && !lightboxOpen && !mooniOpen && !videosOpen
+                  ? 'pointer-events-auto translate-y-0 opacity-100'
+                  : 'pointer-events-none translate-y-3 opacity-0'
+              }`}
+            >
+              <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+              <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                openMooni();
+              }}
+              className={`pointer-events-auto fixed right-3 z-[56] flex h-14 w-14 items-center justify-center rounded-full border border-cyan-200 bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-300 shadow-[0_8px_24px_rgba(34,211,238,0.35)] ring-2 ring-white/80 transition-[transform,bottom] duration-300 hover:scale-105 active:scale-95 sm:right-4 ${
+                showScrollTop && !lightboxOpen && !videosOpen
+                  ? 'bottom-[max(7.35rem,calc(env(safe-area-inset-bottom)+6.6rem))] sm:bottom-[8.5rem]'
+                  : 'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] sm:bottom-24'
+              } ${mooniOpen ? 'pointer-events-none scale-90 opacity-0' : ''}`}
+              aria-label={t('worldEventDetail.askMooni')}
+              title={t('worldEventDetail.askMooni')}
+            >
+              <img src={mooniChar} alt="" className="h-10 w-10 object-contain" draggable={false} />
+            </button>
+          </>
+        ) : null}
       </div>
 
       {selectedFood ? (

@@ -518,6 +518,9 @@ export default function FestivalDetailSheet({
   const [selectedNearby, setSelectedNearby] = useState(null);
   const [selectedScenic, setSelectedScenic] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const childSpotSheetOpen = Boolean(
+    selectedNearby || selectedScenic || selectedCourse,
+  );
   const [courseDetail, setCourseDetail] = useState(null);
   const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const sheetScrollRef = useRef(null);
@@ -2090,7 +2093,7 @@ export default function FestivalDetailSheet({
           sheetScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-[45] flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
-          showScrollTop && !lightboxOpen && !mooniOpen
+          showScrollTop && !lightboxOpen && !mooniOpen && !childSpotSheetOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-3 opacity-0'
         }`}
@@ -2099,12 +2102,14 @@ export default function FestivalDetailSheet({
         <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
 
-      <FestivalMooniFab
-        item={item}
-        location={festivalCross?.stay?.location}
-        raised={showScrollTop && !lightboxOpen}
-        onOpenChange={setMooniOpen}
-      />
+      {!childSpotSheetOpen ? (
+        <FestivalMooniFab
+          item={item}
+          location={festivalCross?.stay?.location}
+          raised={showScrollTop && !lightboxOpen}
+          onOpenChange={setMooniOpen}
+        />
+      ) : null}
 
       {selectedNearby && (
         <ThemeSpotDetailModal
@@ -2112,6 +2117,7 @@ export default function FestivalDetailSheet({
           eyebrow={nearbyEyebrow(selectedNearby)}
           returnTo="/korea"
           overlayZClass="z-50"
+          showFloatingMooni
           onClose={() => setSelectedNearby(null)}
         />
       )}
@@ -2122,6 +2128,7 @@ export default function FestivalDetailSheet({
           eyebrow={t('korea.festival.detail.nearScenic')}
           returnTo="/korea"
           overlayZClass="z-50"
+          showFloatingMooni
           onClose={() => setSelectedScenic(null)}
         />
       )}
