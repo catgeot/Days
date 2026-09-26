@@ -745,10 +745,10 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#67 push** tip `60cb6fcb` · PR [#320](https://github.com/catgeot/Days/pull/320) · 산청9경 2 · **#68 서천 결손 오버레이** |
+| **상태** | **#67 push** tip `60cb6fcb` · PR [#321](https://github.com/catgeot/Days/pull/321) · 산청9경 2 · **#68 서천 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
 | **tip** | `60cb6fcb` |
-| **PR** | [#320](https://github.com/catgeot/Days/pull/320) · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ · [#284](https://github.com/catgeot/Days/pull/284) merge ✅ · [#282](https://github.com/catgeot/Days/pull/282) merge ✅ |
+| **PR** | [#321](https://github.com/catgeot/Days/pull/321) · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ · [#284](https://github.com/catgeot/Days/pull/284) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-26-project-log.md`](./2026-09-26-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=sancheong` 산청9경 3경 황매산 철쭉·7경 남명조식유적지 |
