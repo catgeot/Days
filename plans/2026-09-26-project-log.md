@@ -42,3 +42,11 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS. 순수 사진/개요 누락 **30**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=ansan` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan`
 - **다음** `팔경 활용 #70, 화성 결손 오버레이` — 용주사 범종·입파홍암
+
+## 축제 페이지 #7 — 본문은 홈 지도
+
+- **세션** `축제 페이지 #7, 본문은 홈 지도` · feature `cursor/festival-sheet-ui-ec8b` · tip `481d4b61` · PR [#322](https://github.com/catgeot/Days/pull/322)
+- **조치** 본문 「이 축제 위치로」는 네이버 지도 직링크를 빼고 축제 홈 지도를 열어 그 핀(줌 13)으로 이동. 본문은 닫힘. 장소 정보·길찾기는 읽을거리 네이버 검색에 유지. 좌표 없는 축제는 버튼 없음. 지역·시간 필터를 바꾸거나 지도를 닫으면 핀 고정 해제.
+- **VERIFY** `smoke:festival-home-map` PASS · `smoke:korea-festival-nearby` PASS · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/festival-ui → `/korea` · git `https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea`
+- **다음** `축제 페이지 #8, Preview OK면 PR 병합`
