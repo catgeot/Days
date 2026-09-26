@@ -919,7 +919,7 @@ export default function ThemeSpotDetailModal({
   eyebrow,
   returnTo,
   onClose,
-  overlayZClass = 'z-40',
+  overlayZClass = 'z-[55]',
   favorited = false,
   onToggleFavorite,
 }) {
@@ -927,6 +927,7 @@ export default function ThemeSpotDetailModal({
   const { locale } = useLocale();
   const isEnglish = String(locale || '').startsWith('en');
   const koText = koreanApiTextProps(isEnglish);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [detail, setDetail] = useState(null);
@@ -1009,14 +1010,13 @@ export default function ThemeSpotDetailModal({
       cancelled = true;
     };
   }, [nearbyMissingThumbIds]);
-  const nestedChildZ =
-    overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
-      ? 'z-[55]'
-      : 'z-50';
-  const lightboxZ =
-    overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
-      ? 'z-[60]'
-      : 'z-[55]';
+  const overlayElevated =
+    overlayZClass === 'z-50' ||
+    overlayZClass === 'z-[50]' ||
+    overlayZClass === 'z-[55]' ||
+    overlayZClass === 'z-55';
+  const nestedChildZ = overlayElevated ? 'z-[60]' : 'z-[55]';
+  const lightboxZ = overlayElevated ? 'z-[65]' : 'z-[60]';
 
   const imageUrls = useMemo(() => {
     const heroUrl = toHttps(detail?.imageUrl);
@@ -1199,6 +1199,19 @@ export default function ThemeSpotDetailModal({
     setLightboxOpen(false);
     resetLightboxPinch();
   }, [spot?.id, resetLightboxPinch]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) {
+      setShowScrollTop(false);
+      return undefined;
+    }
+    setShowScrollTop(false);
+    const onScroll = () => setShowScrollTop(el.scrollTop > 160);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [spot?.id]);
 
   useEffect(() => {
     if (activeImage >= imageUrls.length) {
@@ -1798,7 +1811,7 @@ export default function ThemeSpotDetailModal({
         />
       ) : null}
     <div
-      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(3.75rem,calc(env(safe-area-inset-bottom)+3rem))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
+      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
       onClick={(e) => {
         e.stopPropagation();
         if (mooniOpen || videosOpen || lightboxOpen) return;
@@ -1860,7 +1873,7 @@ export default function ThemeSpotDetailModal({
 
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar"
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar max-md:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
         >
           {hero ? (
             <button
@@ -2469,7 +2482,7 @@ export default function ThemeSpotDetailModal({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 border-t border-stone-200/80 bg-white px-3 py-2.5 sm:px-4">
+        <div className="hidden md:flex shrink-0 items-center gap-2 border-t border-stone-200/80 bg-white px-3 py-2.5 sm:px-4">
           <button
             type="button"
             onClick={scrollToTop}
@@ -2488,6 +2501,31 @@ export default function ThemeSpotDetailModal({
           </button>
         </div>
       </div>
+
+      <button
+        type="button"
+        aria-label={t('korea.common.scrollToTop')}
+        onClick={(e) => {
+          e.stopPropagation();
+          scrollToTop();
+        }}
+        className={`md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-3 z-10 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 ${
+          showScrollTop &&
+          !lightboxOpen &&
+          !mooniOpen &&
+          !videosOpen &&
+          !selectedFood &&
+          !selectedLeports &&
+          !selectedCulture &&
+          !selectedAttraction &&
+          !selectedSameHub
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
+      >
+        <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+        <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
+      </button>
 
       {selectedFood ? (
         <ThemeSpotDetailModal

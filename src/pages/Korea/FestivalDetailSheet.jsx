@@ -2122,7 +2122,7 @@ export default function FestivalDetailSheet({
           spot={toNearbyModalSpot(selectedNearby)}
           eyebrow={nearbyEyebrow(selectedNearby)}
           returnTo="/korea"
-          overlayZClass="z-50"
+          overlayZClass="z-[55]"
           onClose={() => setSelectedNearby(null)}
         />
       )}
@@ -2132,7 +2132,7 @@ export default function FestivalDetailSheet({
           spot={toScenicModalSpot(selectedScenic, locale)}
           eyebrow={t('korea.festival.detail.nearScenic')}
           returnTo="/korea"
-          overlayZClass="z-50"
+          overlayZClass="z-[55]"
           onClose={() => setSelectedScenic(null)}
         />
       )}
@@ -2146,7 +2146,7 @@ export default function FestivalDetailSheet({
           }}
           detail={courseDetail}
           detailLoading={courseDetailLoading}
-          overlayZClass="z-50"
+          overlayZClass="z-[55]"
           onClose={() => {
             setSelectedCourse(null);
             setCourseDetail(null);
