@@ -78,6 +78,10 @@ import {
   rankSpotsByDistance,
 } from '../KoreaTheme/nearbyScenicRank';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
+import {
+  loadScenicFavorites,
+  toggleScenicFavorite,
+} from '../KoreaTheme/scenicPersonalStore';
 import CourseDetailModal from '../KoreaTheme/CourseDetailModal';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
@@ -390,6 +394,11 @@ function FestivalNearScenicRow({ spot, km, locale, onSelect }) {
   );
 }
 
+function scenicSpotFavoriteKey(spot) {
+  if (!spot) return '';
+  return String(spot.id || spot.contentId || '').trim();
+}
+
 function toNearbyModalSpot(spot) {
   if (!spot) return null;
   const merged = mergeNearbyRowWithLocalScenicDetail(spot);
@@ -511,6 +520,15 @@ export default function FestivalDetailSheet({
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
+  const [scenicFavoriteVersion, setScenicFavoriteVersion] = useState(0);
+  const scenicFavoriteIds = useMemo(
+    () => new Set(loadScenicFavorites().map((r) => String(r.id))),
+    [scenicFavoriteVersion],
+  );
+  const handleScenicSpotFavorite = useCallback((spot) => {
+    toggleScenicFavorite(spot);
+    setScenicFavoriteVersion((v) => v + 1);
+  }, []);
   const [nearbyFood, setNearbyFood] = useState([]);
   const [nearbyFoodStatus, setNearbyFoodStatus] = useState('idle');
   const [nearbyLeports, setNearbyLeports] = useState([]);
@@ -2122,7 +2140,9 @@ export default function FestivalDetailSheet({
           spot={toNearbyModalSpot(selectedNearby)}
           eyebrow={nearbyEyebrow(selectedNearby)}
           returnTo="/korea"
-          overlayZClass="z-50"
+          overlayZClass="z-[55]"
+          favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedNearby))}
+          onToggleFavorite={handleScenicSpotFavorite}
           onClose={() => setSelectedNearby(null)}
         />
       )}
@@ -2132,7 +2152,9 @@ export default function FestivalDetailSheet({
           spot={toScenicModalSpot(selectedScenic, locale)}
           eyebrow={t('korea.festival.detail.nearScenic')}
           returnTo="/korea"
-          overlayZClass="z-50"
+          overlayZClass="z-[55]"
+          favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedScenic))}
+          onToggleFavorite={handleScenicSpotFavorite}
           onClose={() => setSelectedScenic(null)}
         />
       )}
@@ -2146,7 +2168,7 @@ export default function FestivalDetailSheet({
           }}
           detail={courseDetail}
           detailLoading={courseDetailLoading}
-          overlayZClass="z-50"
+          overlayZClass="z-[55]"
           onClose={() => {
             setSelectedCourse(null);
             setCourseDetail(null);

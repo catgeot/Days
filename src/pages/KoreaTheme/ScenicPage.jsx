@@ -5606,7 +5606,7 @@ export default function KoreaThemeScenicPage() {
           returnTo={listReturnTo}
           onClose={closeModal}
           overlayZClass={
-            searchActive || mapOpen ? 'z-50' : 'z-40'
+            searchActive || mapOpen ? 'z-[60]' : 'z-[55]'
           }
           favorited={
             modalSpot?.id != null && favoriteIds.has(String(modalSpot.id))
