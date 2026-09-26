@@ -36,6 +36,7 @@ import {
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
+import mooniChar from '../../assets/MOONI_transparent.png';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
@@ -912,6 +913,7 @@ function toCultureModalSpot(spot) {
  *   overlayZClass?: string,
  *   favorited?: boolean,
  *   onToggleFavorite?: (spot: Record<string, unknown>) => void,
+ *   mooniFab?: boolean,
  * }} props
  */
 export default function ThemeSpotDetailModal({
@@ -922,6 +924,7 @@ export default function ThemeSpotDetailModal({
   overlayZClass = 'z-[55]',
   favorited = false,
   onToggleFavorite,
+  mooniFab = false,
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -1892,7 +1895,11 @@ export default function ThemeSpotDetailModal({
 
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar max-md:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+          className={`min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar ${
+            mooniFab
+              ? 'max-md:pb-[max(7.25rem,calc(env(safe-area-inset-bottom)+5.75rem))]'
+              : 'max-md:pb-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))]'
+          }`}
         >
           {hero ? (
             <button
@@ -2528,7 +2535,7 @@ export default function ThemeSpotDetailModal({
           e.stopPropagation();
           scrollToTop();
         }}
-        className={`md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-3 z-10 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 ${
+        className={`md:hidden fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-20 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 ${
           showScrollTop &&
           !lightboxOpen &&
           !mooniOpen &&
@@ -2545,6 +2552,33 @@ export default function ThemeSpotDetailModal({
         <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
         <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
+
+      {mooniFab &&
+      !mooniOpen &&
+      !lightboxOpen &&
+      !videosOpen &&
+      !selectedFood &&
+      !selectedLeports &&
+      !selectedCulture &&
+      !selectedAttraction &&
+      !selectedSameHub ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            openMooni();
+          }}
+          className={`md:hidden pointer-events-auto fixed right-3 z-20 flex h-14 w-14 items-center justify-center rounded-full border border-cyan-200 bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-300 shadow-[0_8px_24px_rgba(34,211,238,0.35)] ring-2 ring-white/80 transition-[transform,bottom] duration-300 hover:scale-105 active:scale-95 ${
+            showScrollTop
+              ? 'bottom-[max(7.35rem,calc(env(safe-area-inset-bottom)+6.6rem))]'
+              : 'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))]'
+          }`}
+          aria-label={t('worldEventDetail.askMooni')}
+          title={t('worldEventDetail.askMooni')}
+        >
+          <img src={mooniChar} alt="" className="h-10 w-10 object-contain" draggable={false} />
+        </button>
+      ) : null}
 
       {selectedFood ? (
         <ThemeSpotDetailModal
