@@ -278,19 +278,19 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 
 | | |
 |--|--|
-| **상태** | **#5 push** · tip `89d7049a` · PR [#287](https://github.com/catgeot/Days/pull/287) |
+| **상태** | **#6 push** · tip `a5562ba2` · PR [#287](https://github.com/catgeot/Days/pull/287) |
 | **브랜치** | `cursor/festival-sheet-ui-ec8b` |
-| **Preview** | `/qa/festival-ui` → git Preview `/korea` |
-| **VERIFY** | `smoke:korea-festival-personal` · `smoke:korea-festival-nearby` · `vite build` |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 지도에서 보기 |
+| **VERIFY** | `smoke:festival-naver-map` · `smoke:korea-festival-nearby` · `vite build` |
 
 **다음 제시어**:
 
 ```
-축제 페이지 #6, Preview OK면 PR 병합
+축제 페이지 #7, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/2026-09-19-project-log.md
+@plans/2026-09-26-project-log.md
 @plans/korea-festival-hub-plan.md
 브랜치 cursor/festival-sheet-ui-ec8b · PR #287 · Preview /qa/festival-ui
-금지: 축제 시트 리팩터 · feature에 plans/** 커밋 · 검증 없이 main push
-작업: Preview /korea 축제 본문 끝까지 스크롤 → 닫기가 푸터에 안 가리는지 · 무니와 위로가 겹치지 않는지 · 무니 채팅이 밝은지. OK면 PR #287 병합.
+금지: 축제 시트 리팩터 · 지도 검색어에 축제명 · feature에 plans/** 커밋 · 검증 없이 main push
+작업: Preview /korea 축제 본문 — 주소 아래 지도에서 보기가 네이버 지도의 장소(또는 주소)로 열리는지. 본문 끝까지 스크롤 시 닫기·푸터·무니. OK면 PR #287 병합.
 ```
