@@ -745,7 +745,7 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#66 push** tip `0ac3dc04` · PR [#286](https://github.com/catgeot/Days/pull/286) · 홍천 3경·5경 썸네일 · **#67 산청 결손 오버레이** |
+| **상태** | **#66 push** tip `0ac3dc04` · PR [#320](https://github.com/catgeot/Days/pull/320) · 홍천 3경·5경 썸네일 · **#67 산청 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
 | **tip** | `0ac3dc04` |
 | **PR** | [#286](https://github.com/catgeot/Days/pull/286) · [#284](https://github.com/catgeot/Days/pull/284) merge ✅ · [#282](https://github.com/catgeot/Days/pull/282) merge ✅ · [#280](https://github.com/catgeot/Days/pull/280) merge ✅ |
