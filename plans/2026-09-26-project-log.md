@@ -13,7 +13,7 @@
 
 ## 팔경 활용 #67 — 산청9경 황매산 철쭉·남명조식유적지
 
-- **세션** `팔경 활용 #67, 산청 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `60cb6fcb` · PR [#320](https://github.com/catgeot/Days/pull/320)
+- **세션** `팔경 활용 #67, 산청 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `60cb6fcb` · PR [#321](https://github.com/catgeot/Days/pull/321) (#320은 #66에서 병합됨)
 - **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 산청9경 결손 2건. 3경 황매산 철쭉은 차황면 법평리 1,113.1m·5월 철쭉제(한국관광공사 황매산(산청) 사진). 7경 남명조식유적지는 시천면 사리 384 사적·1561 산천재·1576 덕천서원(국가유산청 `1628317`·관광공사 산천재 남명매). 합천8경 황매산·일림산 철쭉·도산서원·남사예담촌과 구분.
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS. 순수 사진/개요 누락 **34**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=sancheong` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=sancheong`
