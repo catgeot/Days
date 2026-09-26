@@ -4629,6 +4629,75 @@ assert.ok(
   '서천 검색 9경 유부도 썸네일',
 );
 
+const ansanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'ansan');
+const ansanNine = ansanMerged.filter((s) => s.localScenicListId === 'ansan-gugyeong');
+assert.equal(ansanNine.length, 9, '안산9경 9명');
+assert.equal(ansanNine[0]?.groupTitle, '안산 구경');
+const ansanDeficitNames = ['시화호조력발전소', '다문화거리'];
+const ansanDeficit = ansanNine.filter((s) => ansanDeficitNames.includes(s.attractionName));
+assert.equal(ansanDeficit.length, 2, '안산9경 결손 2명');
+assert.ok(
+  ansanDeficit.every((s) => s.overview && s.imageUrl),
+  '안산 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  ansanDeficit.every((s) => !s.contentId),
+  '안산 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(ansanDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '시화호조력·다문화거리 썸네일 다름',
+);
+const asSihwa = resolveLocalScenicListSpotById(
+  'local-scenic:ansan-gugyeong:시화호조력발전소',
+);
+assert.ok(asSihwa?.overview && asSihwa?.imageUrl, '안산 시화호조력 overlay 사진·개요');
+assert.ok(!asSihwa?.contentId, '안산 시화호조력 JSON contentId 없음 유지');
+assert.ok(asSihwa?.overview?.includes('대부황금로 1927'), '안산 시화호조력 overlay 주소');
+assert.ok(asSihwa?.overview?.includes('2011년'), '안산 시화호조력 overlay 준공');
+assert.ok(asSihwa?.overview?.includes('5억 5천만'), '안산 시화호조력 overlay 발전량');
+assert.ok(asSihwa?.overview?.includes('달전망대'), '안산 시화호조력 overlay 달전망대');
+assert.ok(asSihwa?.overview?.includes('안산갈대습지'), '안산 시화호조력≠갈대습지');
+assert.ok(asSihwa?.overview?.includes('안산 시화호'), '안산 시화호조력≠시화호 호수');
+assert.ok(asSihwa?.imageUrl?.includes('1-1-1.jpg'), '안산 시화호조력 시 공식 사진');
+assert.ok(
+  asSihwa?.galleryUrls?.some((u) => u.includes('1753767218065')),
+  '안산 시화호조력 수문 사진',
+);
+assert.ok(asSihwa?.homepage?.includes('C0001969'), '안산 시화호조력 공식 홈');
+const asMulti = resolveLocalScenicListSpotById('local-scenic:ansan-gugyeong:다문화거리');
+assert.ok(asMulti?.overview && asMulti?.imageUrl, '안산 다문화거리 overlay 사진·개요');
+assert.ok(!asMulti?.contentId, '안산 다문화거리 JSON contentId 없음 유지');
+assert.ok(asMulti?.overview?.includes('다문화길 16'), '안산 다문화거리 overlay 주소');
+assert.ok(asMulti?.overview?.includes('2009년'), '안산 다문화거리 overlay 특구');
+assert.ok(asMulti?.overview?.includes('1666-1234'), '안산 다문화거리 overlay 문의');
+assert.ok(asMulti?.overview?.includes('인천차이나타운'), '안산 다문화거리≠인천차이나타운');
+assert.ok(asMulti?.imageUrl?.includes('1-1-8.jpg'), '안산 다문화거리 시 공식 사진');
+assert.ok(asMulti?.homepage?.includes('C0001976'), '안산 다문화거리 공식 홈');
+assert.notEqual(asSihwa?.imageUrl, asMulti?.imageUrl, '시화호조력·다문화거리 썸네일 다름');
+assert.ok(!asMulti?.imageUrl?.includes('1-1-1.jpg'), '다문화거리≠시화호조력 사진');
+assert.ok(!asSihwa?.imageUrl?.includes('1-1-8.jpg'), '시화호조력≠다문화거리 사진');
+const ansanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '안산9경', {
+  injectLocalScenic: true,
+});
+const ansanGlobeNine = ansanGlobe.filter((s) => s.localScenicListId === 'ansan-gugyeong');
+assert.equal(ansanGlobeNine.length, 9, '안산 검색 안산9경 9행');
+assert.ok(
+  ansanGlobe.find((s) => s.attractionName === '시화호조력발전소')?.overview?.includes('달전망대'),
+  '안산 검색 1경 시화호조력 개요',
+);
+assert.ok(
+  ansanGlobe
+    .find((s) => s.attractionName === '시화호조력발전소')
+    ?.imageUrl?.includes('1-1-1.jpg'),
+  '안산 검색 1경 시화호조력 썸네일',
+);
+assert.ok(
+  ansanGlobe.find((s) => s.attractionName === '다문화거리')?.imageUrl?.includes('1-1-8.jpg'),
+  '안산 검색 8경 다문화거리 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

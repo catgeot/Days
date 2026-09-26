@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 68,
-  sessionPhase: '서천 결손 오버레이',
+  sessionNo: 69,
+  sessionPhase: '안산 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=seocheon',
+  previewPath: '/korea/theme/scenic?hub=ansan',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-palgyeong-use-69-ansan-overlay',
+    session: '팔경 활용 #69, 안산 결손 오버레이',
+    title: '안산9경 시화호조력발전소·다문화거리',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 안산9경 결손 2건(시화호조력발전소·다문화거리)의 공공 공식 팩트 개요·주소·안산시 문화관광 12경 공식 사진을 보강했습니다. 시화호조력발전소는 단원구 대부황금로 1927 2011년 준공·연 약 5억 5천만 kWh·달전망대(1경), 다문화거리는 다문화길 16 일대 2009년 다문화마을특구(8경)입니다. 대부도·안산갈대습지·안산 시화호·시흥 오이도·인천차이나타운과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=ansan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T11:20:00.000Z',
+  },
   {
     id: '2026-09-26-palgyeong-use-68-seocheon-overlay',
     session: '팔경 활용 #68, 서천 결손 오버레이',

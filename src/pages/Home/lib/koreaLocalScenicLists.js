@@ -1625,6 +1625,21 @@ const SCH_YUBU = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000
 const SCH_YUBU_2 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=1`;
 const SCH_YUBU_3 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=2`;
 const SCH_YUBU_HOME = `${SCH_BASE}/prog/trspt/tour/sub01_01_09/view.do?trsptSn=9`;
+const AS_BASE = 'https://www.ansan.go.kr';
+const AS_SIHWA = `${AS_BASE}/site/tourinfo/images/contents/1-1-1.jpg`;
+const AS_SIHWA_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767218065GXGH8LZP973A8Y31XRRX873U7.jpg`;
+const AS_SIHWA_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767218091ABS5PLFEK3QPAE1CC525TANTC.jpg`;
+const AS_SIHWA_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001969`;
+const AS_MULTI = `${AS_BASE}/site/tourinfo/images/contents/1-1-8.jpg`;
+const AS_MULTI_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753769297771CP8JKEZ30ROGXB5G2AS9UAWDU.jpg`;
+const AS_MULTI_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753769297810GFP862WZ2J21FJA339UIT0N72.jpg`;
+const AS_MULTI_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001976`;
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3541,6 +3556,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     SCH_YUBU,
     [SCH_YUBU_2, SCH_YUBU_3],
     SCH_YUBU_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:시화호조력발전소': localScenicPhotoOverlay(
+    '안산9경 제1경 시화호조력발전소는 단원구 대부황금로 1927입니다. 안산시 문화관광 안산12경 1경은 주소를 대부황금로 1927로 두고, 안산시 단원구와 시흥시 오이도를 잇는 시화방조제 한가운데의 세계 최대 규모 조력발전소라고 적습니다. 2011년 8월 준공되었고, 시화호와 서해를 연결하는 입·출수로로 조수간만의 차에 터빈을 돌려 전기를 생산합니다. 연간 발전량은 약 5억 5천만 kWh로, 50만 명이 1년 동안 쓸 전력량에 해당합니다. 발전소 건물에는 전망대와 문화관(홍보관)이 있어 조력발전 원리와 시화호의 역사·생태를 볼 수 있습니다. 달전망대에서는 시화호와 서해, 방아머리항, 대부도 전경과 석양·야경이 펼쳐집니다. 문의는 시화호조력발전소 032-890-6524, 조력문화관 032-885-7530이며 K-water 시화나래 안내 홈이 있습니다. 2경 대부도(대부해솔길)·7경 안산갈대습지공원·GATEO 선정 안산 시화호·시흥 오이도와 다른 방조제 발전소입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 대부황금로 1927 (시화호조력발전소·시화나래)',
+    AS_SIHWA,
+    [AS_SIHWA_2, AS_SIHWA_3],
+    AS_SIHWA_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:다문화거리': localScenicPhotoOverlay(
+    '안산9경 제8경 다문화거리는 단원구 원곡동 일대입니다. 안산시 문화관광 안산12경 8경은 주소를 다문화길 16 일대로 두고, 세계 속 작은 지구촌이며 다양한 국적의 사람이 모여 사는 문화 공간이라고 적습니다. 안산은 국내에서 외국인 주민이 가장 많이 거주하는 도시 중 하나이고, 이 거리는 2009년 다문화마을특구로 지정되었습니다. 중국·베트남·태국·러시아·우즈베키스탄 등 현지 음식점과 식자재 슈퍼마켓이 있고, 한글보다 외국어 간판이 많습니다. 외국인주민지원본부와 외국어 간판의 은행·휴대폰 매장이 있습니다. 문의는 안산시 외국인주민지원본부 1666-1234, 안내 홈은 global.iansan.net입니다. 7경 안산갈대습지공원·인천9경 인천차이나타운과 다른 단원구 다문화길입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 다문화길 16 일대 (다문화거리)',
+    AS_MULTI,
+    [AS_MULTI_2, AS_MULTI_3],
+    AS_MULTI_HOME,
   ),
 };
 
