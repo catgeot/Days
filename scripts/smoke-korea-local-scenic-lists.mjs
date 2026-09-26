@@ -4718,6 +4718,74 @@ assert.ok(
   '안산 검색 5경 풍도 썸네일',
 );
 
+const hwaseongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hwaseong');
+const hwaseongEight = hwaseongMerged.filter((s) => s.localScenicListId === 'hwaseong-palgyeong');
+assert.equal(hwaseongEight.length, 8, '화성8경 8명');
+assert.equal(hwaseongEight[0]?.groupTitle, '화성 팔경');
+const hwaseongDeficitNames = ['용주사 범종', '입파홍암'];
+const hwaseongDeficit = hwaseongEight.filter((s) => hwaseongDeficitNames.includes(s.attractionName));
+assert.equal(hwaseongDeficit.length, 2, '화성8경 결손 2명');
+assert.ok(
+  hwaseongDeficit.every((s) => s.overview && s.imageUrl),
+  '화성 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  hwaseongDeficit.every((s) => !s.contentId),
+  '화성 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(hwaseongDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '용주사 범종·입파홍암 썸네일 다름',
+);
+const hsBell = resolveLocalScenicListSpotById('local-scenic:hwaseong-palgyeong:용주사범종');
+assert.ok(hsBell?.overview && hsBell?.imageUrl, '화성 용주사 범종 overlay 사진·개요');
+assert.ok(!hsBell?.contentId, '화성 용주사 범종 JSON contentId 없음 유지');
+assert.ok(hsBell?.overview?.includes('용주로 136'), '화성 용주사 범종 overlay 주소');
+assert.ok(hsBell?.overview?.includes('145㎝'), '화성 용주사 범종 overlay 높이');
+assert.ok(hsBell?.overview?.includes('87㎝'), '화성 용주사 범종 overlay 지름');
+assert.ok(hsBell?.overview?.includes('1964년'), '화성 용주사 범종 overlay 지정');
+assert.ok(hsBell?.overview?.includes('융건릉'), '화성 용주사 범종≠융건릉');
+assert.ok(hsBell?.overview?.includes('성덕대왕신종'), '화성 용주사 범종≠성덕대왕신종');
+assert.ok(hsBell?.imageUrl?.includes('1612040.jpg'), '화성 용주사 범종 국가유산청 사진');
+assert.ok(hsBell?.homepage?.includes('ccbaCpno=1113101200000'), '화성 용주사 범종 공식 홈');
+const hsHong = resolveLocalScenicListSpotById('local-scenic:hwaseong-palgyeong:입파홍암');
+assert.ok(hsHong?.overview && hsHong?.imageUrl, '화성 입파홍암 overlay 사진·개요');
+assert.ok(!hsHong?.contentId, '화성 입파홍암 JSON contentId 없음 유지');
+assert.ok(hsHong?.overview?.includes('입파길 24-15'), '화성 입파홍암 overlay 주소');
+assert.ok(hsHong?.overview?.includes('50분'), '화성 입파홍암 overlay 뱃길');
+assert.ok(hsHong?.overview?.includes('0.44'), '화성 입파홍암 overlay 면적');
+assert.ok(hsHong?.overview?.includes('제부도'), '화성 입파홍암≠제부도');
+assert.ok(hsHong?.overview?.includes('궁평낙조'), '화성 입파홍암≠궁평낙조');
+assert.ok(hsHong?.imageUrl?.includes('j9_4.png'), '화성 입파홍암 지질공원 홍암전경');
+assert.ok(
+  hsHong?.galleryUrls?.some((u) => u.includes('j9_0.png')),
+  '화성 입파홍암 해안 사진',
+);
+assert.ok(hsHong?.homepage?.includes('j9.jsp'), '화성 입파홍암 공식 홈');
+assert.notEqual(hsBell?.imageUrl, hsHong?.imageUrl, '용주사 범종·입파홍암 썸네일 다름');
+assert.ok(!hsHong?.imageUrl?.includes('1612040'), '입파홍암≠용주사 범종 사진');
+assert.ok(!hsBell?.imageUrl?.includes('j9_4.png'), '용주사 범종≠입파홍암 사진');
+const hwaseongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '화성', {
+  injectLocalScenic: true,
+});
+const hwaseongGlobeEight = hwaseongGlobe.filter((s) => s.localScenicListId === 'hwaseong-palgyeong');
+assert.equal(hwaseongGlobeEight.length, 8, '화성 검색 화성8경 8행');
+assert.ok(
+  hwaseongGlobe.find((s) => s.attractionName === '용주사 범종')?.overview?.includes('145㎝'),
+  '화성 검색 2경 용주사 범종 개요',
+);
+assert.ok(
+  hwaseongGlobe
+    .find((s) => s.attractionName === '용주사 범종')
+    ?.imageUrl?.includes('1612040.jpg'),
+  '화성 검색 2경 용주사 범종 썸네일',
+);
+assert.ok(
+  hwaseongGlobe.find((s) => s.attractionName === '입파홍암')?.imageUrl?.includes('j9_4.png'),
+  '화성 검색 6경 입파홍암 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

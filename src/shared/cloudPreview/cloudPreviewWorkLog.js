@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 69,
-  sessionPhase: '안산 풍도 썸네일',
+  sessionNo: 70,
+  sessionPhase: '화성 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=ansan',
+  previewPath: '/korea/theme/scenic?hub=hwaseong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-palgyeong-use-70-hwaseong-overlay',
+    session: '팔경 활용 #70, 화성 결손 오버레이',
+    title: '화성8경 용주사 범종·입파홍암',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 화성8경 결손 2건(용주사 범종·입파홍암)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 용주사 범종은 용주로 136 국보 동종·높이 145㎝·지름 87㎝(2경, 1964 국보 제120호·2021 재지정), 입파홍암은 우정읍 입파길 24-15 입파도 북쪽 붉은 기암(6경, 궁평항 뱃길 약 50분)입니다. 융건릉·제부도·궁평낙조·국화도·수원 화성과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwaseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T16:40:00.000Z',
+  },
   {
     id: '2026-09-26-palgyeong-use-69-ansan-pungdo-thumb',
     session: '팔경 활용 #69, 안산 풍도 썸네일',

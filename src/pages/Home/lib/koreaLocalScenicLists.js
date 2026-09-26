@@ -1647,6 +1647,15 @@ const AS_PUNG_3 =
   `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767828374NF4XB9J8M4Y0BA6UG92AR2GHA.jpg`;
 const AS_PUNG_HOME =
   `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001973`;
+const HS_BELL =
+  'https://www.khs.go.kr/unisearch/images/national_treasure/1612040.jpg';
+const HS_BELL_HOME =
+  'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaKdcd=11&ccbaAsno=0001200000000&ccbaCtcd=31&ccbaCpno=1113101200000';
+const HS_GEO = 'https://tour.hscity.go.kr/geopark/common/images/contents';
+const HS_HONG = `${HS_GEO}/j9_4.png`;
+const HS_HONG_2 = `${HS_GEO}/j9_0.png`;
+const HS_HONG_3 = `${HS_GEO}/j9_1.png`;
+const HS_HONG_HOME = 'https://tour.hscity.go.kr/geopark/geoInfo/j9.jsp';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3584,6 +3593,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     AS_PUNG,
     [AS_PUNG_2, AS_PUNG_3],
     AS_PUNG_HOME,
+  ),
+  'local-scenic:hwaseong-palgyeong:용주사범종': localScenicPhotoOverlay(
+    '화성8경 제2경 용주사 범종은 용주사 범종각의 동종입니다. 국가유산포털은 화성 용주사 동종을 국보로 두고 소재지를 화성시 용주로 136, 용주사(송산동)로 적습니다. 1964년 3월 30일 국보 제120호로 지정되었고 2021년 11월 19일 국보로 재지정되었습니다. 수량은 1구, 시대는 고려시대입니다. 디지털화성시문화대전은 높이를 145㎝, 지름을 87㎝, 재질을 구리로 두고, 대웅보전 서쪽 범종각에 걸려 있다고 적습니다. 종신 명문은 통일신라 문성왕 16년(854) 조성을 적지만 형태와 문양이 그 시대와 달라 고려 전기 제작으로 봅니다. 용뉴·용통과 연뢰 일부가 깨진 것 외에는 보존이 양호하고, 신라 범종 양식과 고려 전기 양식이 함께 있어 전환기 종으로 평가됩니다. 경기도뉴스는 정조가 사도세자 능을 화산으로 옮기고 원찰로 삼은 절이며, 낙성식 밤 용이 여의주를 물고 승천하는 꿈을 꾼 뒤 용주사라 이름했다고 적습니다. 주소는 용주로 136, 문의 031-234-0040, 절 홈은 yongjoosa.or.kr입니다. 1경 융건릉·대웅전 후불탱화·수원 화성·성덕대왕신종과 다른 범종각의 국보입니다. 사진은 국가유산청 국보 용주사 동종 공식 사진입니다.',
+    '경기도 화성시 용주로 136 (송산동 188, 용주사 범종각)',
+    HS_BELL,
+    [],
+    HS_BELL_HOME,
+  ),
+  'local-scenic:hwaseong-palgyeong:입파홍암': localScenicPhotoOverlay(
+    '화성8경 제6경 입파홍암은 우정읍 국화리 입파도 북쪽의 붉은 기암입니다. 화성국가지질공원은 주소를 우정읍 입파길 24-15로 두고, 국화도 북쪽이며 서신면 궁평항에서 뱃길로 약 50분이라고 적습니다. 입파도(立波島)는 서서 파도를 맞는 섬이라는 뜻입니다. 썰물 때 북쪽 홍암에서 남쪽 기암괴석까지 갯바위·모래·자갈사주 바닷길로 걸을 수 있습니다. 홍암은 입파도에서 가장 알려진 곳이며, 철산화물이 풍화되어 붉은색을 띤다고 지질공원은 적습니다. 경기도뉴스는 화성8경 제6경을 입파도로 소개하고 면적을 0.44㎢로 두며, 궁평항·전곡항 배 시간을 확인하라고 적습니다. 3경 제부도·4경 궁평낙조·국화도와 다른 우정읍 홍암입니다. 사진은 화성국가지질공원 입파도 홍암전경·해안 공식 사진입니다.',
+    '경기도 화성시 우정읍 입파길 24-15 (국화리 입파도 홍암)',
+    HS_HONG,
+    [HS_HONG_2, HS_HONG_3],
+    HS_HONG_HOME,
   ),
 };
 
