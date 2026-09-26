@@ -1601,6 +1601,21 @@ const BS_SEO = `${BS_TOUR}/21492/seojp2.jpg`;
 const BS_SEO_2 = `${BS_TOUR}/21492/juam2.jpg`;
 const BS_SEO_3 = `${BS_TOUR}/21492/seojp11.jpg`;
 const BS_SEO_HOME = 'https://www.boseong.go.kr/tour/tourist/9tour/juam_seojp';
+const SC_HWANG =
+  'https://tong.visitkorea.or.kr/cms/resource/00/2658500_image2_1.jpg';
+const SC_HWANG_2 =
+  'https://tong.visitkorea.or.kr/cms/resource/50/2653250_image2_1.jpg';
+const SC_HWANG_3 =
+  'https://tong.visitkorea.or.kr/cms/resource/99/2658499_image2_1.jpg';
+const SC_HWANG_4 =
+  'https://tong.visitkorea.or.kr/cms/resource/51/2653251_image2_1.jpg';
+const SC_HWANG_HOME = 'https://sancheong.go.kr/tour/contents.do?key=1941';
+const SC_NAM = 'https://www.khs.go.kr/unisearch/images/history_site/1628317.jpg';
+const SC_NAM_2 =
+  'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=6e9586a4-e8a9-4c5e-bb33-bdbd20dbe3af';
+const SC_NAM_3 =
+  'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=0b1e0a04-4d9c-4f1e-b6a0-6bc591469e7b';
+const SC_NAM_HOME = 'https://sancheong.go.kr/tour/contents.do?key=1945';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3489,6 +3504,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     BS_SEO,
     [BS_SEO_2, BS_SEO_3],
     BS_SEO_HOME,
+  ),
+  'local-scenic:sancheong-gugyeong:황매산철쭉': localScenicPhotoOverlay(
+    '산청9경 제3경 황매산 철쭉은 차황면 법평리 황매산입니다. 산청군 문화관광 9경은 높이를 1,113.1m로 두고, 한뫼산(큰 산)이 한자로 바뀌어 황매산이 되었다고 적습니다. 태백산맥 마지막 준봉이며 고려 무학대사가 수도한 곳으로, 칡넝쿨·땅가시·뱀이 없다는 삼무(三無)의 산으로도 불립니다. 5월이면 정상 부근 평전이 철쭉으로 덮이고 산청 황매산 철쭉제가 열리며, 산청·합천이 함께 개막 퍼포먼스를 합니다. 네비 주소는 차황면 법평리 1-1이고, 한국관광공사는 황매산로1202번길·법평리로 안내합니다. 문의 055-970-7204(관광진흥과)·055-970-6901(산림녹지과)입니다. 합천8경 황매산·보성9경 일림산 철쭉·화순 수만리 철쭉·하동 형제봉 철쭉과 다른 차황면 법평리 철쭉 평전입니다. 사진은 한국관광공사 황매산(산청) 철쭉군락·황매산성·모원재 공식 사진입니다.',
+    '경상남도 산청군 차황면 법평리 (황매산로1202번길, 법평리 1-1)',
+    SC_HWANG,
+    [SC_HWANG_2, SC_HWANG_3, SC_HWANG_4],
+    SC_HWANG_HOME,
+  ),
+  'local-scenic:sancheong-gugyeong:남명조식유적지': localScenicPhotoOverlay(
+    '산청9경 제7경 남명조식유적지는 시천면 사리·원리입니다. 산청군 문화관광 9경은 조선 실천유학의 대가 남명 조식(1501~1572)이 을묘 단성소를 올린 선비의 고장 유적이며, 시천면 덕천강변에 산천재·덕천서원·남명기념관·세심정·묘소·여재실이 있다고 적습니다. 국가유산청 사적(1984.1.26., 구 사적 제305호) 소재지는 시천면 사리 384번지 일원입니다. 사리에는 산천재·별묘·신도비·묘비, 원리에는 덕천서원·세심정이 있습니다. 산천재는 명종 16년(1561)에 짓고 순조 18년(1818)에 고친 앞면 2칸·옆면 2칸 서실이며, 뜰의 남명매는 선생이 손수 심었다고 전합니다. 덕천서원은 선조 9년(1576)에 세웠고 광해군 원년(1608) 사액 뒤 서원철폐로 훼철되었다가 1926년에 고쳐 지었습니다. 세심정은 선조 15년(1582) 덕천강가에 세웠습니다. 산천재·남명기념관 주소는 남명로 311, 덕천서원은 남명로 137입니다. 문의 055-973-9781입니다. 안동 도산서원·하동 회남재·단속사지 정당매·6경 남사예담촌과 다른 시천면 사리 유적입니다. 사진은 국가유산청 사적 산청 조식 유적·한국관광공사 산천재 남명매·덕천서원 공식 사진입니다.',
+    '경상남도 산청군 시천면 사리 384번지 일원 (산천재 남명로 311 · 덕천서원 남명로 137)',
+    SC_NAM,
+    [SC_NAM_2, SC_NAM_3],
+    SC_NAM_HOME,
   ),
 };
 

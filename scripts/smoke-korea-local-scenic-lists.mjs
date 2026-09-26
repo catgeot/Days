@@ -4478,6 +4478,81 @@ assert.ok(
   '보성 검색 9경 서재필기념관 썸네일',
 );
 
+const sancheongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'sancheong');
+const sancheongNine = sancheongMerged.filter((s) => s.localScenicListId === 'sancheong-gugyeong');
+assert.equal(sancheongNine.length, 9, '산청9경 9명');
+assert.equal(sancheongNine[0]?.groupTitle, '산청 구경');
+const sancheongDeficitNames = ['황매산 철쭉', '남명조식유적지'];
+const sancheongDeficit = sancheongNine.filter((s) =>
+  sancheongDeficitNames.includes(s.attractionName),
+);
+assert.equal(sancheongDeficit.length, 2, '산청9경 결손 2명');
+assert.ok(
+  sancheongDeficit.every((s) => s.overview && s.imageUrl),
+  '산청 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  sancheongDeficit.every((s) => !s.contentId),
+  '산청 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(sancheongDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '황매산 철쭉·남명조식유적지 썸네일 다름',
+);
+const scHwang = resolveLocalScenicListSpotById('local-scenic:sancheong-gugyeong:황매산철쭉');
+assert.ok(scHwang?.overview && scHwang?.imageUrl, '산청 황매산 철쭉 overlay 사진·개요');
+assert.ok(!scHwang?.contentId, '산청 황매산 철쭉 JSON contentId 없음 유지');
+assert.ok(scHwang?.overview?.includes('차황면'), '산청 황매산 overlay 차황면');
+assert.ok(scHwang?.overview?.includes('1,113.1m'), '산청 황매산 overlay 1,113.1m');
+assert.ok(scHwang?.overview?.includes('철쭉제'), '산청 황매산 overlay 철쭉제');
+assert.ok(scHwang?.overview?.includes('합천8경'), '산청 황매산≠합천8경 황매산');
+assert.ok(scHwang?.overview?.includes('일림산'), '산청 황매산≠보성 일림산 철쭉');
+assert.ok(scHwang?.imageUrl?.includes('2658500'), '산청 황매산 관광공사 철쭉 사진');
+assert.ok(
+  scHwang?.galleryUrls?.some((u) => u.includes('2653250')),
+  '산청 황매산 관광공사 황매산성 사진',
+);
+assert.ok(scHwang?.homepage?.includes('key=1941'), '산청 황매산 공식 홈');
+const scNam = resolveLocalScenicListSpotById('local-scenic:sancheong-gugyeong:남명조식유적지');
+assert.ok(scNam?.overview && scNam?.imageUrl, '산청 남명조식유적지 overlay 사진·개요');
+assert.ok(!scNam?.contentId, '산청 남명조식유적지 JSON contentId 없음 유지');
+assert.ok(scNam?.overview?.includes('사리 384'), '산청 남명 overlay 사리 384');
+assert.ok(scNam?.overview?.includes('1561'), '산청 남명 overlay 1561');
+assert.ok(scNam?.overview?.includes('305호'), '산청 남명 overlay 사적 305호');
+assert.ok(scNam?.overview?.includes('도산서원'), '산청 남명≠안동 도산서원');
+assert.ok(scNam?.overview?.includes('남사예담촌'), '산청 남명≠6경 남사예담촌');
+assert.ok(scNam?.imageUrl?.includes('1628317'), '산청 남명 국가유산청 사진');
+assert.ok(
+  scNam?.galleryUrls?.some((u) => u.includes('6e9586a4')),
+  '산청 남명 관광공사 산천재 남명매 사진',
+);
+assert.ok(scNam?.homepage?.includes('key=1945'), '산청 남명 공식 홈');
+assert.notEqual(scHwang?.imageUrl, scNam?.imageUrl, '황매산·남명 썸네일 다름');
+assert.ok(!scNam?.imageUrl?.includes('2658500'), '남명≠황매산 철쭉 사진');
+assert.ok(!scHwang?.imageUrl?.includes('1628317'), '황매산≠남명 국가유산 사진');
+const sancheongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '산청9경', {
+  injectLocalScenic: true,
+});
+const sancheongGlobeNine = sancheongGlobe.filter((s) => s.localScenicListId === 'sancheong-gugyeong');
+assert.equal(sancheongGlobeNine.length, 9, '산청 검색 산청9경 9행');
+assert.ok(
+  sancheongGlobe.find((s) => s.attractionName === '황매산 철쭉')?.overview?.includes('차황면'),
+  '산청 검색 9경 황매산 철쭉 개요',
+);
+assert.ok(
+  sancheongGlobe
+    .find((s) => s.attractionName === '황매산 철쭉')
+    ?.imageUrl?.includes('2658500'),
+  '산청 검색 9경 황매산 철쭉 썸네일',
+);
+assert.ok(
+  sancheongGlobe
+    .find((s) => s.attractionName === '남명조식유적지')
+    ?.imageUrl?.includes('1628317'),
+  '산청 검색 9경 남명조식유적지 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
