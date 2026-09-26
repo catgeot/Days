@@ -4697,6 +4697,26 @@ assert.ok(
   ansanGlobe.find((s) => s.attractionName === '다문화거리')?.imageUrl?.includes('1-1-8.jpg'),
   '안산 검색 8경 다문화거리 썸네일',
 );
+const asPung = resolveLocalScenicListSpotById('local-scenic:ansan-gugyeong:풍도');
+assert.ok(asPung?.overview && asPung?.imageUrl, '안산 풍도 overlay 사진·개요');
+assert.equal(asPung?.contentId, '126720', '안산 풍도 JSON contentId 유지');
+assert.ok(asPung?.overview?.includes('풍도동'), '안산 풍도 overlay 주소');
+assert.ok(asPung?.overview?.includes('24km'), '안산 풍도 overlay 거리');
+assert.ok(asPung?.overview?.includes('풍도바람꽃'), '안산 풍도 overlay 바람꽃');
+assert.ok(asPung?.overview?.includes('대부도'), '안산 풍도≠2경만 아님·대부도와 구분 문구');
+assert.ok(asPung?.overview?.includes('제부도'), '안산 풍도≠제부도');
+assert.ok(asPung?.imageUrl?.includes('1-1-5.jpg'), '안산 풍도 시 공식 사진');
+assert.ok(asPung?.homepage?.includes('C0001973'), '안산 풍도 공식 홈');
+assert.notEqual(asPung?.imageUrl, asSihwa?.imageUrl, '풍도≠시화호조력 사진');
+assert.notEqual(asPung?.imageUrl, asMulti?.imageUrl, '풍도≠다문화거리 사진');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126720')?.imageUrl?.includes('1-1-5.jpg'),
+  '안산 풍도 contentId 썸네일',
+);
+assert.ok(
+  ansanGlobe.find((s) => s.attractionName === '풍도')?.imageUrl?.includes('1-1-5.jpg'),
+  '안산 검색 5경 풍도 썸네일',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

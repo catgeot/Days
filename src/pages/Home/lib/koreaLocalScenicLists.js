@@ -1640,6 +1640,13 @@ const AS_MULTI_3 =
   `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753769297810GFP862WZ2J21FJA339UIT0N72.jpg`;
 const AS_MULTI_HOME =
   `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001976`;
+const AS_PUNG = `${AS_BASE}/site/tourinfo/images/contents/1-1-5.jpg`;
+const AS_PUNG_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/17537678283493TZ4HHLV6QRT29QG5PI8FIFBB.JPG`;
+const AS_PUNG_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767828374NF4XB9J8M4Y0BA6UG92AR2GHA.jpg`;
+const AS_PUNG_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001973`;
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3570,6 +3577,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     AS_MULTI,
     [AS_MULTI_2, AS_MULTI_3],
     AS_MULTI_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:풍도': localScenicPhotoOverlay(
+    '안산9경 제5경 풍도는 단원구 풍도동입니다. 안산시 문화관광 안산12경 5경은 이름 풍(楓)이 가을 단풍에서 왔고, 대부도에서 약 24km·안산시에서 남쪽으로 약 45km 떨어진 서해의 섬이며 서해의 꽃섬이라고 적습니다. 3월이면 풍도바람꽃·풍도민들레·변산바람꽃이 피고, 섬 둘레는 약 6km로 걸어서 한 바퀴에 약 2시간입니다. 절벽과 기암, 해안 초원, 맑은 바다가 이어지고 맑은 날에는 대부도·제부도·인천 앞바다가 보입니다. 배편은 하루 1~2회라 운항 시각과 날씨를 확인해야 하며, 문의는 대부해운 032-886-7813, 편도요금은 대인 13,600원, 방아머리항을 거칩니다. 2경 대부도·화성8경 제부도와 다른 풍도동 섬입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 풍도동 (풍도)',
+    AS_PUNG,
+    [AS_PUNG_2, AS_PUNG_3],
+    AS_PUNG_HOME,
   ),
 };
 

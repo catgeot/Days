@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 69,
-  sessionPhase: '안산 결손 오버레이',
+  sessionPhase: '안산 풍도 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=ansan',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-palgyeong-use-69-ansan-pungdo-thumb',
+    session: '팔경 활용 #69, 안산 풍도 썸네일',
+    title: '안산9경 5경 풍도 썸네일',
+    detail:
+      '사람 Preview에서 안산 5경 풍도만 랜드마크 아이콘이었습니다. JSON contentId 126720은 유지하고 Tour firstimage가 비어 목록·검색 사진이 없었습니다. LOCAL_SCENIC_MEMBER_OVERLAYS에 안산시 문화관광 12경 공식 사진과 풍도동·대부도 24km·풍도바람꽃 개요를 넣었습니다. 2경 대부도·화성 제부도와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=ansan 5경 썸네일.',
+    at: '2026-09-26T15:10:00.000Z',
+  },
   {
     id: '2026-09-26-palgyeong-use-69-ansan-overlay',
     session: '팔경 활용 #69, 안산 결손 오버레이',
