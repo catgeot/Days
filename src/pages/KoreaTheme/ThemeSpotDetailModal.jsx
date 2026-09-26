@@ -1808,6 +1808,7 @@ export default function ThemeSpotDetailModal({
           onClick={onClose}
           ariaLabel={t('korea.common.close')}
           title={t('korea.common.close')}
+          className="!hidden md:!flex"
         />
       ) : null}
     <div
@@ -1874,6 +1875,16 @@ export default function ThemeSpotDetailModal({
                   }
                   aria-hidden="true"
                 />
+              </button>
+            ) : null}
+            {showViewportClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label={t('korea.common.close')}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 md:hidden"
+              >
+                <X size={18} aria-hidden="true" />
               </button>
             ) : null}
           </div>
