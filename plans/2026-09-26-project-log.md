@@ -18,3 +18,11 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS. 순수 사진/개요 누락 **34**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=sancheong` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=sancheong`
 - **다음** `팔경 활용 #68, 서천 결손 오버레이` — 장항송림산림욕장과 장항스카이워크·유부도와 서천갯벌
+
+## 팔경 활용 #68 — 서천9경 장항송림·유부도
+
+- **세션** `팔경 활용 #68, 서천 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `fdfc3ff2` · PR [#321](https://github.com/catgeot/Days/pull/321)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 서천9경 결손 2건. 8경 장항송림산림욕장과 장항스카이워크는 장항읍 장항산단로34번길 122-16(공식명 장항송림자연휴양림, 1954년 곰솔 방풍림·면적 275,703㎡·스카이워크 높이 15m·길이 236m·문의 041-956-5505). 9경 유부도와 서천갯벌은 장항읍 유부도길6번길 3(서천갯벌 약 68.09㎢·2021 유네스코 한국의 갯벌·2009 람사르·검은머리물떼새 천연기념물 326호). 춘장대·금강하굿둑·울돌목 스카이워크·고창·신안·보성순천 갯벌과 구분.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS. 순수 사진/개요 누락 **32**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=seocheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=seocheon`
+- **다음** `팔경 활용 #69, 안산 결손 오버레이` — 시화호조력발전소·다문화거리
