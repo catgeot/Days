@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 77,
-  sessionPhase: '경주 결손 오버레이',
+  sessionNo: 78,
+  sessionPhase: '고성 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gyeongju',
+  previewPath: '/korea/theme/scenic?hub=goseong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-78-goseong-overlay',
+    session: '팔경 활용 #78, 고성 결손 오버레이',
+    title: '고성8경 마산봉설경',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 고성8경 결손 1건(마산봉설경)의 공공 공식 팩트 개요·주소·고성군 문화관광 공식 사진을 보강했습니다. 마산봉설경은 간성읍 흘리의 제8경(진부령 인근 백두대간·남한 제2봉·군내 대간 23.4km·흘리 숲길 6.1km·산림과 033-680-3382)입니다. 경남 고성·창원 마산·울산바위·통일전망대와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T09:00:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-77-gyeongju-overlay',
     session: '팔경 활용 #77, 경주 결손 오버레이',
