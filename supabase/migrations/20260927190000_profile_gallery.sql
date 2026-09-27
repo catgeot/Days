@@ -6,3 +6,9 @@ ALTER TABLE public.profiles
 
 COMMENT ON COLUMN public.profiles.avatar_urls IS 'Profile photo URLs. The cover shown elsewhere is avatar_url (first item).';
 COMMENT ON COLUMN public.profiles.profile_public IS 'When false, other people do not see the photos or the photo count.';
+
+UPDATE public.profiles
+SET avatar_urls = jsonb_build_array(avatar_url)
+WHERE avatar_url IS NOT NULL
+  AND btrim(avatar_url) <> ''
+  AND avatar_urls = '[]'::jsonb;
