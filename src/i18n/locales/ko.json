@@ -105,6 +105,7 @@
     },
     "account": {
       "open": "프로필",
+      "closeProfile": "프로필 닫기",
       "title": "프로필",
       "subtitle": "필명, 사진, 비밀번호, 로그인 계정을 여기서 바꿉니다.",
       "needLogin": "로그인 후 프로필을 바꿀 수 있습니다.",
@@ -116,7 +117,11 @@
       "viewPhoto": "{{name}} 프로필 사진",
       "closePhoto": "프로필 사진 닫기",
       "changePhoto": "사진 올리기",
-      "photoHint": "여러 장을 올릴 수 있습니다. 숫자는 나와 다른 사람에게 보이고, 첫 사진이 대표입니다.",
+      "photoHint": "여러 장을 올릴 수 있습니다. 아래 썸네일을 누르면 대표 사진을 바꿀 수 있고, 숫자는 나와 다른 사람에게 보입니다.",
+      "pickCoverTitle": "대표 사진을 골라 주세요",
+      "pickCoverBody": "방금 올린 사진 중 프로필에 보일 사진을 탭하세요.",
+      "pickCoverHint": "대표 사진을 골라 주세요.",
+      "pickCoverSkip": "지금은 그대로 두기",
       "photoCountLabel": "프로필 사진 {{count}}장",
       "photoUpdated": "프로필 사진을 바꿨습니다.",
       "photoFail": "사진을 올리지 못했습니다.",
@@ -478,7 +483,8 @@
       "signInBody": "로그인하고 나만의 버킷리스트를 만들고 지구본의 모든 기능을 제한 없이 이용할 수 있습니다.",
       "signIn": "로그인",
       "signOut": "로그아웃",
-      "changePassword": "비밀번호 변경"
+      "changePassword": "비밀번호 변경",
+      "backHome": "홈으로"
     },
     "agencies": {
       "title": "방문한 여행사",
