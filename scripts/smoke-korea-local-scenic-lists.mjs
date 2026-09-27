@@ -11,6 +11,7 @@ import {
   resolveCityAttractionHub,
   resolveHubAttraction,
   attractionToPlacePin,
+  hubToSuggestion,
 } from '../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   listKoreaLocalScenicLists,
@@ -29,6 +30,8 @@ import {
   groupNearbySpotsWithLocalScenic,
   missingNearbyThumbContentIds,
   hasTourContentId,
+  isNearbyAttractionRowClickable,
+  mergeNearbyRowWithLocalScenicDetail,
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
   lookupLocalScenicPhotoByContentId,
@@ -98,17 +101,17 @@ assert.ok(
   'searchSuggestions expands list cluster',
 );
 assert.ok(
-  searchSrc.includes('pushLocalScenicMembersFirst'),
-  'searchSuggestions prepends palgyeong members before hub cluster',
+  searchSrc.includes('exactHubCityQuery'),
+  'searchSuggestions distinguishes bare hub city query from hub alias',
 );
-{
-  const idxMembers = searchSrc.indexOf('pushLocalScenicMembersFirst(exactHub');
-  const idxSpots = searchSrc.indexOf('const spotHits');
-  assert.ok(
-    idxMembers >= 0 && idxSpots >= 0 && idxMembers < idxSpots,
-    '문경 팔경 members are pushed before travel spots',
-  );
-}
+assert.ok(
+  searchSrc.includes('pushLocalScenicMembersFirst(exactHub, out, seen, scenicLists)'),
+  'searchSuggestions still expands palgyeong members for hub queries',
+);
+assert.ok(
+  searchSrc.includes('skipHub: true'),
+  'hub city exact query avoids duplicate hub card after palgyeong block',
+);
 assert.ok(
   searchSrc.includes('slice(0, 24)'),
   'searchSuggestions raises result cap for palgyeong group',
@@ -199,6 +202,12 @@ assert.equal(
 );
 assert.ok(listsForHub('mungyeong').length >= 1, 'listsForHub mungyeong');
 
+const danyangHub = resolveCityAttractionHub('단양');
+assert.ok(
+  resolveSearchScenicMedia(hubToSuggestion(danyangHub)).imageUrl,
+  '단양 hub 도시 카드 탐색 썸네일',
+);
+
 const memberRows = listsForHub('mungyeong').flatMap((list) =>
   (list.members || [])
     .map((member) => localScenicMemberToSuggestion(list, mungyeongHub, member))
@@ -275,6 +284,49 @@ const geumhakJob = hongcheonJobs.find((j) => j.name === '금학산');
 assert.ok(garisanJob?.contentId === '125593', '가리산 job contentId');
 assert.ok(!geumhakJob?.contentId, '금학산 job has no SSOT contentId');
 
+const miyak = resolveLocalScenicListSpotById('local-scenic:hongcheon-palgyeong:미약골');
+assert.equal(miyak?.contentId, '2613261', '미약골 JSON contentId 유지');
+assert.ok(miyak?.imageUrl?.includes('p_20210208082101687jnf379'), '미약골 홍천군 공식 사진');
+assert.ok(miyak?.overview?.includes('구룡령로 3748-8'), '미약골 주소');
+assert.ok(miyak?.overview?.includes('용소계곡'), '미약골≠용소계곡');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('2613261')?.imageUrl?.includes('p_20210208082101687jnf379'),
+  '미약골 Tour 빈 썸네일 overlay 2613261',
+);
+assert.ok(
+  resolveSearchScenicMedia({ hubId: 'hongcheon', name: '미약골', contentId: '2613261' })
+    .imageUrl?.includes('p_20210208082101687jnf379'),
+  '홍천 팔경 미약골 검색 썸네일',
+);
+const garyeong = resolveLocalScenicListSpotById('local-scenic:hongcheon-palgyeong:가령폭포');
+assert.equal(garyeong?.contentId, '125658', '가령폭포 JSON contentId 유지');
+assert.ok(garyeong?.imageUrl?.includes('p_202102180508378213s06jQ'), '가령폭포 홍천군 공식 사진');
+assert.equal(garyeong?.galleryUrls?.length, 3, '가령폭포 공식 사진 3장');
+assert.ok(garyeong?.overview?.includes('와야리 산12-1'), '가령폭포 주소');
+assert.ok(garyeong?.overview?.includes('동해'), '가령폭포≠동해 용추');
+assert.notEqual(miyak?.imageUrl, garyeong?.imageUrl, '미약골·가령폭포 썸네일 다름');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('125658')?.imageUrl?.includes('p_202102180508378213s06jQ'),
+  '가령폭포 Tour 빈 썸네일 overlay 125658',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(
+    { id: 'local-scenic:hongcheon-palgyeong:가령폭포', contentId: '125658', hubId: 'hongcheon' },
+    new Map([['125658', 'https://tong.visitkorea.or.kr/cms/resource/other.jpg']]),
+  )?.includes('p_202102180508378213s06jQ'),
+  '가령폭포 오버레이가 Tour firstimage보다 우선',
+);
+const hongcheonList = lists.find((l) => l.listId === 'hongcheon-palgyeong');
+const garyeongSuggest = localScenicMemberToSuggestion(
+  hongcheonList,
+  resolveCityAttractionHub('hongcheon'),
+  hongcheonList?.members?.find((m) => m.attractionName === '가령폭포'),
+);
+assert.ok(
+  garyeongSuggest?.imageUrl?.includes('p_202102180508378213s06jQ'),
+  '홍천 팔경 드롭다운 가령폭포 썸네일',
+);
+
 const pickedGarisan = pickTourAttractionRowForTitle(
   [
     { name: '가리산자연휴양림', contentId: '126905', addr1: '강원특별자치도 홍천군' },
@@ -324,6 +376,39 @@ assert.equal(
   true,
   'missing nearby thumbs are Tour ids',
 );
+
+const injeNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'inje' });
+const injeGroup = injeNearby.groups.find((g) => g.listId === 'inje-palgyeong');
+assert.ok(injeGroup?.title?.includes('인제'), 'inje nearby group title');
+for (const name of ['대청봉', '내린천계곡', '방동약수', '대승폭포', '합강정']) {
+  const row = injeGroup?.items?.find((i) => i.name === name);
+  assert.ok(
+    String(row?.firstImage || row?.imageUrl || '').includes('injetour.co.kr'),
+    `inje 팔경 ${name} overlay thumb`,
+  );
+}
+assert.ok(
+  !missingNearbyThumbContentIds(injeNearby).includes('125723'),
+  '방동약수 thumb from overlay not async-only',
+);
+
+const damyangNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'damyang' });
+const damyangGroup = damyangNearby.groups.find((g) => g.listId === 'damyang-other');
+const gamagol = damyangGroup?.items?.find((i) => i.name === '가마골용소');
+assert.ok(gamagol?.localScenicListId === 'damyang-other', '담양10경 가마골용소 nearby row');
+assert.ok(
+  isNearbyAttractionRowClickable(gamagol),
+  '담양10경 가마골용소 — contentId 없어도 오버레이로 클릭 가능',
+);
+const gamagolModal = mergeNearbyRowWithLocalScenicDetail(gamagol);
+assert.ok(
+  String(gamagolModal?.overview || '').includes('가마골용소'),
+  '담양10경 가마골용소 modal overview',
+);
+const chuwol = damyangGroup?.items?.find((i) => i.name === '추월산');
+assert.ok(chuwol?.imageUrl?.includes('visitkorea'), '담양10경 추월산 nearby Tour thumb');
+const geumseong = damyangGroup?.items?.find((i) => i.name === '금성산성');
+assert.ok(geumseong?.imageUrl?.includes('visitkorea'), '담양10경 금성산성 nearby Tour thumb');
 
 // curated 멤버 필터 (리스트 있을 때만)
 const curated = listKoreaScenicSpots();
@@ -4136,6 +4221,1161 @@ assert.ok(
 assert.ok(
   !gwangjuGiGlobeEight.some((s) => s.attractionName === '화담숲'),
   '광주 검색 8경≠화담숲',
+);
+
+const mokpoMerged = mergeLocalScenicMembersIntoScenicSpots([], 'mokpo');
+const mokpoNine = mokpoMerged.filter((s) => s.localScenicListId === 'mokpo-gugyeong');
+assert.equal(mokpoNine.length, 9, '목포9경 9명');
+assert.equal(mokpoNine[0]?.groupTitle, '목포 구경');
+const mokpoDeficitNames = ['목포진', '다도해 전경'];
+const mokpoDeficit = mokpoNine.filter((s) => mokpoDeficitNames.includes(s.attractionName));
+assert.equal(mokpoDeficit.length, 2, '목포9경 결손 2명');
+assert.ok(
+  mokpoDeficit.every((s) => s.overview && s.imageUrl),
+  '목포 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  mokpoDeficit.every((s) => !s.contentId),
+  '목포 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(mokpoDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '목포진·다도해 전경 썸네일 다름',
+);
+const mpJin = resolveLocalScenicListSpotById('local-scenic:mokpo-gugyeong:목포진');
+assert.ok(mpJin?.overview && mpJin?.imageUrl, '목포 목포진 overlay 사진·개요');
+assert.ok(!mpJin?.contentId, '목포 목포진 JSON contentId 없음 유지');
+assert.ok(mpJin?.overview?.includes('만호동'), '목포 목포진 주소 만호동');
+assert.ok(mpJin?.overview?.includes('1439'), '목포 목포진 overlay 세종 21년');
+assert.ok(mpJin?.overview?.includes('2014'), '목포 목포진 overlay 2014 복원');
+assert.ok(mpJin?.overview?.includes('137호'), '목포 목포진 overlay 문화재자료 137호');
+assert.ok(mpJin?.overview?.includes('목포구등대'), '목포 목포진≠해남 구 목포구등대');
+assert.ok(mpJin?.overview?.includes('달성토성'), '목포 목포진≠대구 달성토성');
+assert.ok(mpJin?.imageUrl?.includes('mokpojin_intro.jpg'), '목포 목포진 시 공식 사진');
+assert.ok(mpJin?.homepage?.includes('/nineplace/mokpojin'), '목포 목포진 공식 홈');
+const mpDado = resolveLocalScenicListSpotById('local-scenic:mokpo-gugyeong:다도해전경');
+assert.ok(mpDado?.overview && mpDado?.imageUrl, '목포 다도해 전경 overlay 사진·개요');
+assert.ok(!mpDado?.contentId, '목포 다도해 전경 JSON contentId 없음 유지');
+assert.ok(mpDado?.overview?.includes('고하도'), '목포 다도해 전경 overlay 고하도');
+assert.ok(mpDado?.overview?.includes('외달도'), '목포 다도해 전경 overlay 외달도');
+assert.ok(mpDado?.overview?.includes('유달산'), '목포 다도해 전경 overlay 유달산 조망');
+assert.ok(mpDado?.overview?.includes('목포대교'), '목포 다도해 전경≠2경 목포대교');
+assert.ok(mpDado?.overview?.includes('해상국립공원'), '목포 다도해 전경≠진도 다도해해상국립공원');
+assert.ok(mpDado?.overview?.includes('해상케이블카'), '목포 다도해 전경≠목포해상케이블카');
+assert.ok(mpDado?.imageUrl?.includes('archipelago1.jpg'), '목포 다도해 전경 시 공식 사진');
+assert.ok(mpDado?.homepage?.includes('/nineplace/archipelago'), '목포 다도해 전경 공식 홈');
+assert.notEqual(mpJin?.imageUrl, mpDado?.imageUrl, '목포진·다도해 전경 썸네일 다름');
+assert.ok(!mpDado?.imageUrl?.includes('mokpojin'), '다도해 전경≠목포진 공식 사진');
+const mokpoGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '목포9경', {
+  injectLocalScenic: true,
+});
+const mokpoGlobeNine = mokpoGlobe.filter((s) => s.localScenicListId === 'mokpo-gugyeong');
+assert.equal(mokpoGlobeNine.length, 9, '목포 검색 목포9경 9행');
+assert.ok(
+  mokpoGlobe.find((s) => s.attractionName === '목포진')?.overview?.includes('1439'),
+  '목포 검색 9경 목포진 개요',
+);
+assert.ok(
+  mokpoGlobe.find((s) => s.attractionName === '목포진')?.imageUrl?.includes('mokpojin_intro.jpg'),
+  '목포 검색 9경 목포진 썸네일',
+);
+assert.ok(
+  mokpoGlobe.find((s) => s.attractionName === '다도해 전경')?.imageUrl?.includes('archipelago1.jpg'),
+  '목포 검색 9경 다도해 전경 썸네일',
+);
+
+const muanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'muan');
+const muanNine = muanMerged.filter((s) => s.localScenicListId === 'muan-gugyeong');
+assert.equal(muanNine.length, 9, '무안9경 9명');
+assert.equal(muanNine[0]?.groupTitle, '무안 구경');
+const muanDeficitNames = ['영산강 식영정과 느러지', '톱머리·홀통 해수욕장'];
+const muanDeficit = muanNine.filter((s) => muanDeficitNames.includes(s.attractionName));
+assert.equal(muanDeficit.length, 2, '무안9경 결손 2명');
+assert.ok(
+  muanDeficit.every((s) => s.overview && s.imageUrl),
+  '무안 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  muanDeficit.every((s) => !s.contentId),
+  '무안 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(muanDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '식영정·톱머리홀통 썸네일 다름',
+);
+const maSik = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:영산강식영정과느러지');
+assert.ok(maSik?.overview && maSik?.imageUrl, '무안 식영정과 느러지 overlay 사진·개요');
+assert.ok(!maSik?.contentId, '무안 식영정과 느러지 JSON contentId 없음 유지');
+assert.ok(maSik?.overview?.includes('몽탄면'), '무안 식영정 overlay 몽탄면');
+assert.ok(maSik?.overview?.includes('1630'), '무안 식영정 overlay 1630');
+assert.ok(maSik?.overview?.includes('237호'), '무안 식영정 overlay 문화재자료 237호');
+assert.ok(maSik?.overview?.includes('息營亭'), '무안 식영정 overlay 息營亭');
+assert.ok(maSik?.overview?.includes('息影亭'), '무안 식영정≠담양 息影亭');
+assert.ok(maSik?.overview?.includes('느러지전망대'), '무안 식영정≠나주 느러지전망대');
+assert.ok(maSik?.overview?.includes('한반도지형'), '무안 느러지≠영월 한반도지형');
+assert.ok(maSik?.imageUrl?.includes('spring_5_2_200401.jpg'), '무안 식영정 군 공식 항공 사진');
+assert.ok(maSik?.homepage?.includes('idx=247'), '무안 식영정 공식 홈');
+const maBeach = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:톱머리·홀통해수욕장');
+assert.ok(maBeach?.overview && maBeach?.imageUrl, '무안 톱머리·홀통 overlay 사진·개요');
+assert.ok(!maBeach?.contentId, '무안 톱머리·홀통 JSON contentId 없음 유지');
+assert.ok(maBeach?.overview?.includes('톱머리길 66'), '무안 톱머리 overlay 주소');
+assert.ok(maBeach?.overview?.includes('홀통길 198-1'), '무안 홀통 overlay 주소');
+assert.ok(maBeach?.overview?.includes('2km'), '무안 톱머리 overlay 백사장 2km');
+assert.ok(maBeach?.overview?.includes('윈드서핑'), '무안 홀통 overlay 윈드서핑');
+assert.ok(maBeach?.overview?.includes('도리포'), '무안 톱머리·홀통≠7경 도리포');
+assert.ok(maBeach?.overview?.includes('조금나루'), '무안 톱머리·홀통≠조금나루');
+assert.ok(maBeach?.imageUrl?.includes('tommeori_2.jpg'), '무안 톱머리 군 공식 사진');
+assert.ok(maBeach?.galleryUrls?.some((u) => u.includes('summer_4_200401.jpg')), '무안 홀통 군 공식 사진');
+assert.ok(maBeach?.homepage?.includes('tommeori_beach'), '무안 톱머리 공식 홈');
+assert.notEqual(maSik?.imageUrl, maBeach?.imageUrl, '식영정·톱머리홀통 썸네일 다름');
+assert.ok(!maBeach?.imageUrl?.includes('spring_5'), '톱머리·홀통≠식영정 공식 사진');
+const muanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '무안9경', {
+  injectLocalScenic: true,
+});
+const muanGlobeNine = muanGlobe.filter((s) => s.localScenicListId === 'muan-gugyeong');
+assert.equal(muanGlobeNine.length, 9, '무안 검색 무안9경 9행');
+assert.ok(
+  muanGlobe.find((s) => s.attractionName === '영산강 식영정과 느러지')?.overview?.includes('1630'),
+  '무안 검색 9경 식영정 개요',
+);
+assert.ok(
+  muanGlobe
+    .find((s) => s.attractionName === '영산강 식영정과 느러지')
+    ?.imageUrl?.includes('spring_5_2_200401.jpg'),
+  '무안 검색 9경 식영정 썸네일',
+);
+assert.ok(
+  muanGlobe
+    .find((s) => s.attractionName === '톱머리·홀통 해수욕장')
+    ?.imageUrl?.includes('tommeori_2.jpg'),
+  '무안 검색 9경 톱머리·홀통 썸네일',
+);
+const maSeung = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:승달산');
+assert.equal(maSeung?.contentId, '126614', '무안 승달산 JSON contentId 유지');
+assert.ok(maSeung?.overview?.includes('333m'), '무안 승달산 overlay 해발 333m');
+assert.ok(maSeung?.overview?.includes('청계면'), '무안 승달산 overlay 청계면');
+assert.ok(maSeung?.overview?.includes('법천사 무안'), '무안 승달산≠법천사 무안');
+assert.ok(maSeung?.overview?.includes('목포대'), '무안 승달산 overlay 목포대');
+assert.ok(maSeung?.imageUrl?.includes('seungdalsan_8.jpg'), '무안 승달산 군 공식 산나리 조망');
+assert.ok(maSeung?.homepage?.includes('seungdalsan'), '무안 승달산 공식 홈');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126614')?.imageUrl?.includes('seungdalsan_8.jpg'),
+  '무안 검색 Tour 행 승달산 126614 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'muan',
+    name: '승달산',
+    contentId: '126614',
+  }).imageUrl?.includes('seungdalsan_8.jpg'),
+  '탐색홈 무안9경 승달산 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    name: '승달산',
+    contentId: '126614',
+  }).imageUrl?.includes('seungdalsan_8.jpg'),
+  '탐색 검색 Tour 행 승달산 썸네일',
+);
+const maChoeui = resolveLocalScenicListSpotById('local-scenic:muan-gugyeong:초의선사탄생지');
+assert.equal(maChoeui?.contentId, '127177', '무안 초의선사탄생지 JSON contentId 유지');
+assert.ok(maChoeui?.overview?.includes('초의길 30'), '무안 초의 overlay 초의길 30');
+assert.ok(maChoeui?.overview?.includes('1786'), '무안 초의 overlay 1786');
+assert.ok(maChoeui?.overview?.includes('왕산리'), '무안 초의 overlay 왕산리');
+assert.ok(maChoeui?.overview?.includes('일지암'), '무안 초의≠해남 대흥사 일지암');
+assert.ok(maChoeui?.overview?.includes('법천사 무안'), '무안 초의≠법천사 무안');
+assert.ok(maChoeui?.imageUrl?.includes('/9/01.jpg'), '무안 초의 군 공식 전경');
+assert.ok(maChoeui?.homepage?.includes('historic_site'), '무안 초의 공식 홈');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127177')?.imageUrl?.includes('/9/01.jpg'),
+  '무안 검색 Tour 행 초의선사탄생지 127177 썸네일',
+);
+assert.ok(
+  resolveSearchScenicMedia({
+    hubId: 'muan',
+    name: '초의선사탄생지',
+    contentId: '127177',
+  }).imageUrl?.includes('/9/01.jpg'),
+  '탐색홈 무안9경 초의선사탄생지 썸네일',
+);
+assert.notEqual(maSeung?.imageUrl, maChoeui?.imageUrl, '승달산·초의 썸네일 다름');
+assert.ok(!maSeung?.imageUrl?.includes('/9/01.jpg'), '승달산≠초의 공식 사진');
+assert.ok(!maChoeui?.imageUrl?.includes('seungdalsan'), '초의≠승달산 공식 사진');
+assert.ok(
+  muanGlobe.find((s) => s.attractionName === '승달산')?.imageUrl?.includes('seungdalsan_8.jpg'),
+  '무안 검색 9경 승달산 썸네일',
+);
+assert.ok(
+  muanGlobe
+    .find((s) => s.attractionName === '초의선사탄생지')
+    ?.imageUrl?.includes('/9/01.jpg'),
+  '무안 검색 9경 초의선사탄생지 썸네일',
+);
+
+const boseongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'boseong');
+const boseongNine = boseongMerged.filter((s) => s.localScenicListId === 'boseong-gugyeong');
+assert.equal(boseongNine.length, 9, '보성9경 9명');
+assert.equal(boseongNine[0]?.groupTitle, '보성 구경');
+const boseongDeficitNames = ['일림산 용추계곡', '주암호 서재필기념관'];
+const boseongDeficit = boseongNine.filter((s) => boseongDeficitNames.includes(s.attractionName));
+assert.equal(boseongDeficit.length, 2, '보성9경 결손 2명');
+assert.ok(
+  boseongDeficit.every((s) => s.overview && s.imageUrl),
+  '보성 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  boseongDeficit.every((s) => !s.contentId),
+  '보성 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(boseongDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '용추계곡·서재필기념관 썸네일 다름',
+);
+const bsIlim = resolveLocalScenicListSpotById('local-scenic:boseong-gugyeong:일림산용추계곡');
+assert.ok(bsIlim?.overview && bsIlim?.imageUrl, '보성 일림산 용추계곡 overlay 사진·개요');
+assert.ok(!bsIlim?.contentId, '보성 일림산 용추계곡 JSON contentId 없음 유지');
+assert.ok(bsIlim?.overview?.includes('웅치면'), '보성 용추계곡 overlay 웅치면');
+assert.ok(bsIlim?.overview?.includes('664m'), '보성 용추계곡 overlay 664m');
+assert.ok(bsIlim?.overview?.includes('용추폭포'), '보성 용추계곡 overlay 용추폭포');
+assert.ok(bsIlim?.overview?.includes('선녀탕'), '보성 용추계곡 overlay 선녀탕');
+assert.ok(bsIlim?.overview?.includes('문경8경'), '보성 용추계곡≠문경8경 용추계곡');
+assert.ok(bsIlim?.overview?.includes('동해 용추폭포'), '보성 용추계곡≠동해 용추폭포');
+assert.ok(bsIlim?.overview?.includes('제암산자연휴양림'), '보성 용추계곡≠6경 제암산자연휴양림');
+assert.ok(bsIlim?.imageUrl?.includes('ilrim10.jpg'), '보성 용추계곡 군 공식 폭포 사진');
+assert.ok(bsIlim?.galleryUrls?.some((u) => u.includes('ilrim12.jpg')), '보성 용추계곡 군 공식 계곡 사진');
+assert.ok(bsIlim?.homepage?.includes('ilrim_yongchoo'), '보성 용추계곡 공식 홈');
+const bsSeo = resolveLocalScenicListSpotById('local-scenic:boseong-gugyeong:주암호서재필기념관');
+assert.ok(bsSeo?.overview && bsSeo?.imageUrl, '보성 주암호 서재필기념관 overlay 사진·개요');
+assert.ok(!bsSeo?.contentId, '보성 서재필기념관 JSON contentId 없음 유지');
+assert.ok(bsSeo?.overview?.includes('용암길 8'), '보성 서재필 overlay 용암길 8');
+assert.ok(bsSeo?.overview?.includes('1864'), '보성 서재필 overlay 1864');
+assert.ok(bsSeo?.overview?.includes('개화문'), '보성 서재필 overlay 개화문');
+assert.ok(bsSeo?.overview?.includes('가내길 18-35'), '보성 서재필 overlay 생가 주소');
+assert.ok(bsSeo?.overview?.includes('서울 독립문'), '보성 서재필≠서울 독립문');
+assert.ok(bsSeo?.overview?.includes('주암호생태습지'), '보성 서재필≠주암호생태습지');
+assert.ok(bsSeo?.overview?.includes('대원사'), '보성 서재필≠8경 대원사');
+assert.ok(bsSeo?.imageUrl?.includes('seojp2.jpg'), '보성 서재필 군 공식 개화문·동상 사진');
+assert.ok(bsSeo?.galleryUrls?.some((u) => u.includes('juam2.jpg')), '보성 서재필 군 공식 주암호 항공');
+assert.ok(bsSeo?.homepage?.includes('juam_seojp'), '보성 서재필 공식 홈');
+assert.notEqual(bsIlim?.imageUrl, bsSeo?.imageUrl, '용추계곡·서재필 썸네일 다름');
+assert.ok(!bsSeo?.imageUrl?.includes('ilrim'), '서재필≠용추계곡 공식 사진');
+assert.ok(!bsIlim?.imageUrl?.includes('seojp'), '용추계곡≠서재필 공식 사진');
+const boseongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '보성9경', {
+  injectLocalScenic: true,
+});
+const boseongGlobeNine = boseongGlobe.filter((s) => s.localScenicListId === 'boseong-gugyeong');
+assert.equal(boseongGlobeNine.length, 9, '보성 검색 보성9경 9행');
+assert.ok(
+  boseongGlobe.find((s) => s.attractionName === '일림산 용추계곡')?.overview?.includes('664m'),
+  '보성 검색 9경 일림산 용추계곡 개요',
+);
+assert.ok(
+  boseongGlobe
+    .find((s) => s.attractionName === '일림산 용추계곡')
+    ?.imageUrl?.includes('ilrim10.jpg'),
+  '보성 검색 9경 일림산 용추계곡 썸네일',
+);
+assert.ok(
+  boseongGlobe
+    .find((s) => s.attractionName === '주암호 서재필기념관')
+    ?.imageUrl?.includes('seojp2.jpg'),
+  '보성 검색 9경 서재필기념관 썸네일',
+);
+
+const sancheongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'sancheong');
+const sancheongNine = sancheongMerged.filter((s) => s.localScenicListId === 'sancheong-gugyeong');
+assert.equal(sancheongNine.length, 9, '산청9경 9명');
+assert.equal(sancheongNine[0]?.groupTitle, '산청 구경');
+const sancheongDeficitNames = ['황매산 철쭉', '남명조식유적지'];
+const sancheongDeficit = sancheongNine.filter((s) =>
+  sancheongDeficitNames.includes(s.attractionName),
+);
+assert.equal(sancheongDeficit.length, 2, '산청9경 결손 2명');
+assert.ok(
+  sancheongDeficit.every((s) => s.overview && s.imageUrl),
+  '산청 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  sancheongDeficit.every((s) => !s.contentId),
+  '산청 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(sancheongDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '황매산 철쭉·남명조식유적지 썸네일 다름',
+);
+const scHwang = resolveLocalScenicListSpotById('local-scenic:sancheong-gugyeong:황매산철쭉');
+assert.ok(scHwang?.overview && scHwang?.imageUrl, '산청 황매산 철쭉 overlay 사진·개요');
+assert.ok(!scHwang?.contentId, '산청 황매산 철쭉 JSON contentId 없음 유지');
+assert.ok(scHwang?.overview?.includes('차황면'), '산청 황매산 overlay 차황면');
+assert.ok(scHwang?.overview?.includes('1,113.1m'), '산청 황매산 overlay 1,113.1m');
+assert.ok(scHwang?.overview?.includes('철쭉제'), '산청 황매산 overlay 철쭉제');
+assert.ok(scHwang?.overview?.includes('합천8경'), '산청 황매산≠합천8경 황매산');
+assert.ok(scHwang?.overview?.includes('일림산'), '산청 황매산≠보성 일림산 철쭉');
+assert.ok(scHwang?.imageUrl?.includes('2658500'), '산청 황매산 관광공사 철쭉 사진');
+assert.ok(
+  scHwang?.galleryUrls?.some((u) => u.includes('2653250')),
+  '산청 황매산 관광공사 황매산성 사진',
+);
+assert.ok(scHwang?.homepage?.includes('key=1941'), '산청 황매산 공식 홈');
+const scNam = resolveLocalScenicListSpotById('local-scenic:sancheong-gugyeong:남명조식유적지');
+assert.ok(scNam?.overview && scNam?.imageUrl, '산청 남명조식유적지 overlay 사진·개요');
+assert.ok(!scNam?.contentId, '산청 남명조식유적지 JSON contentId 없음 유지');
+assert.ok(scNam?.overview?.includes('사리 384'), '산청 남명 overlay 사리 384');
+assert.ok(scNam?.overview?.includes('1561'), '산청 남명 overlay 1561');
+assert.ok(scNam?.overview?.includes('305호'), '산청 남명 overlay 사적 305호');
+assert.ok(scNam?.overview?.includes('도산서원'), '산청 남명≠안동 도산서원');
+assert.ok(scNam?.overview?.includes('남사예담촌'), '산청 남명≠6경 남사예담촌');
+assert.ok(scNam?.imageUrl?.includes('1628317'), '산청 남명 국가유산청 사진');
+assert.ok(
+  scNam?.galleryUrls?.some((u) => u.includes('6e9586a4')),
+  '산청 남명 관광공사 산천재 남명매 사진',
+);
+assert.ok(scNam?.homepage?.includes('key=1945'), '산청 남명 공식 홈');
+assert.notEqual(scHwang?.imageUrl, scNam?.imageUrl, '황매산·남명 썸네일 다름');
+assert.ok(!scNam?.imageUrl?.includes('2658500'), '남명≠황매산 철쭉 사진');
+assert.ok(!scHwang?.imageUrl?.includes('1628317'), '황매산≠남명 국가유산 사진');
+const sancheongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '산청9경', {
+  injectLocalScenic: true,
+});
+const sancheongGlobeNine = sancheongGlobe.filter((s) => s.localScenicListId === 'sancheong-gugyeong');
+assert.equal(sancheongGlobeNine.length, 9, '산청 검색 산청9경 9행');
+assert.ok(
+  sancheongGlobe.find((s) => s.attractionName === '황매산 철쭉')?.overview?.includes('차황면'),
+  '산청 검색 9경 황매산 철쭉 개요',
+);
+assert.ok(
+  sancheongGlobe
+    .find((s) => s.attractionName === '황매산 철쭉')
+    ?.imageUrl?.includes('2658500'),
+  '산청 검색 9경 황매산 철쭉 썸네일',
+);
+assert.ok(
+  sancheongGlobe
+    .find((s) => s.attractionName === '남명조식유적지')
+    ?.imageUrl?.includes('1628317'),
+  '산청 검색 9경 남명조식유적지 썸네일',
+);
+
+const seocheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'seocheon');
+const seocheonNine = seocheonMerged.filter((s) => s.localScenicListId === 'seocheon-gugyeong');
+assert.equal(seocheonNine.length, 9, '서천9경 9명');
+assert.equal(seocheonNine[0]?.groupTitle, '서천 구경');
+const seocheonDeficitNames = ['장항송림산림욕장과 장항스카이워크', '유부도와 서천갯벌'];
+const seocheonDeficit = seocheonNine.filter((s) =>
+  seocheonDeficitNames.includes(s.attractionName),
+);
+assert.equal(seocheonDeficit.length, 2, '서천9경 결손 2명');
+assert.ok(
+  seocheonDeficit.every((s) => s.overview && s.imageUrl),
+  '서천 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  seocheonDeficit.every((s) => !s.contentId),
+  '서천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(seocheonDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '장항송림·유부도 썸네일 다름',
+);
+const schJang = resolveLocalScenicListSpotById(
+  'local-scenic:seocheon-gugyeong:장항송림산림욕장과장항스카이워크',
+);
+assert.ok(schJang?.overview && schJang?.imageUrl, '서천 장항송림 overlay 사진·개요');
+assert.ok(!schJang?.contentId, '서천 장항송림 JSON contentId 없음 유지');
+assert.ok(schJang?.overview?.includes('장항산단로34번길'), '서천 장항송림 overlay 주소');
+assert.ok(schJang?.overview?.includes('236m'), '서천 장항송림 overlay 236m');
+assert.ok(schJang?.overview?.includes('275,703'), '서천 장항송림 overlay 면적');
+assert.ok(schJang?.overview?.includes('춘장대'), '서천 장항송림≠춘장대');
+assert.ok(schJang?.overview?.includes('울돌목'), '서천 장항송림≠해남 울돌목');
+assert.ok(schJang?.imageUrl?.includes('FILE_00000004924Gw2i'), '서천 장항송림 군 공식 사진');
+assert.ok(
+  schJang?.galleryUrls?.some((u) => u.includes('fileSn=2')),
+  '서천 장항송림 스카이워크 사진',
+);
+assert.ok(schJang?.homepage?.includes('trsptSn=8'), '서천 장항송림 공식 홈');
+const schYubu = resolveLocalScenicListSpotById(
+  'local-scenic:seocheon-gugyeong:유부도와서천갯벌',
+);
+assert.ok(schYubu?.overview && schYubu?.imageUrl, '서천 유부도 overlay 사진·개요');
+assert.ok(!schYubu?.contentId, '서천 유부도 JSON contentId 없음 유지');
+assert.ok(schYubu?.overview?.includes('유부도길6번길'), '서천 유부도 overlay 주소');
+assert.ok(schYubu?.overview?.includes('68.09'), '서천 유부도 overlay 68.09㎢');
+assert.ok(schYubu?.overview?.includes('326호'), '서천 유부도 overlay 천연기념물 326호');
+assert.ok(schYubu?.overview?.includes('람사르'), '서천 유부도 overlay 람사르');
+assert.ok(schYubu?.overview?.includes('금강하굿둑'), '서천 유부도≠7경 금강하굿둑');
+assert.ok(schYubu?.overview?.includes('보성순천'), '서천갯벌≠보성순천 갯벌');
+assert.ok(schYubu?.imageUrl?.includes('FILE_00000004926Ey2h'), '서천 유부도 군 공식 사진');
+assert.ok(schYubu?.homepage?.includes('trsptSn=9'), '서천 유부도 공식 홈');
+assert.notEqual(schJang?.imageUrl, schYubu?.imageUrl, '장항송림·유부도 썸네일 다름');
+assert.ok(!schYubu?.imageUrl?.includes('FILE_00000004924Gw2i'), '유부도≠장항송림 사진');
+assert.ok(!schJang?.imageUrl?.includes('FILE_00000004926Ey2h'), '장항송림≠유부도 사진');
+const seocheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '서천9경', {
+  injectLocalScenic: true,
+});
+const seocheonGlobeNine = seocheonGlobe.filter((s) => s.localScenicListId === 'seocheon-gugyeong');
+assert.equal(seocheonGlobeNine.length, 9, '서천 검색 서천9경 9행');
+assert.ok(
+  seocheonGlobe.find((s) => s.attractionName === '장항송림산림욕장과 장항스카이워크')?.overview?.includes('236m'),
+  '서천 검색 9경 장항송림 개요',
+);
+assert.ok(
+  seocheonGlobe
+    .find((s) => s.attractionName === '장항송림산림욕장과 장항스카이워크')
+    ?.imageUrl?.includes('FILE_00000004924Gw2i'),
+  '서천 검색 9경 장항송림 썸네일',
+);
+assert.ok(
+  seocheonGlobe
+    .find((s) => s.attractionName === '유부도와 서천갯벌')
+    ?.imageUrl?.includes('FILE_00000004926Ey2h'),
+  '서천 검색 9경 유부도 썸네일',
+);
+
+const ansanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'ansan');
+const ansanNine = ansanMerged.filter((s) => s.localScenicListId === 'ansan-gugyeong');
+assert.equal(ansanNine.length, 9, '안산9경 9명');
+assert.equal(ansanNine[0]?.groupTitle, '안산 구경');
+const ansanDeficitNames = ['시화호조력발전소', '다문화거리'];
+const ansanDeficit = ansanNine.filter((s) => ansanDeficitNames.includes(s.attractionName));
+assert.equal(ansanDeficit.length, 2, '안산9경 결손 2명');
+assert.ok(
+  ansanDeficit.every((s) => s.overview && s.imageUrl),
+  '안산 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  ansanDeficit.every((s) => !s.contentId),
+  '안산 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(ansanDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '시화호조력·다문화거리 썸네일 다름',
+);
+const asSihwa = resolveLocalScenicListSpotById(
+  'local-scenic:ansan-gugyeong:시화호조력발전소',
+);
+assert.ok(asSihwa?.overview && asSihwa?.imageUrl, '안산 시화호조력 overlay 사진·개요');
+assert.ok(!asSihwa?.contentId, '안산 시화호조력 JSON contentId 없음 유지');
+assert.ok(asSihwa?.overview?.includes('대부황금로 1927'), '안산 시화호조력 overlay 주소');
+assert.ok(asSihwa?.overview?.includes('2011년'), '안산 시화호조력 overlay 준공');
+assert.ok(asSihwa?.overview?.includes('5억 5천만'), '안산 시화호조력 overlay 발전량');
+assert.ok(asSihwa?.overview?.includes('달전망대'), '안산 시화호조력 overlay 달전망대');
+assert.ok(asSihwa?.overview?.includes('안산갈대습지'), '안산 시화호조력≠갈대습지');
+assert.ok(asSihwa?.overview?.includes('안산 시화호'), '안산 시화호조력≠시화호 호수');
+assert.ok(asSihwa?.imageUrl?.includes('1-1-1.jpg'), '안산 시화호조력 시 공식 사진');
+assert.ok(
+  asSihwa?.galleryUrls?.some((u) => u.includes('1753767218065')),
+  '안산 시화호조력 수문 사진',
+);
+assert.ok(asSihwa?.homepage?.includes('C0001969'), '안산 시화호조력 공식 홈');
+const asMulti = resolveLocalScenicListSpotById('local-scenic:ansan-gugyeong:다문화거리');
+assert.ok(asMulti?.overview && asMulti?.imageUrl, '안산 다문화거리 overlay 사진·개요');
+assert.ok(!asMulti?.contentId, '안산 다문화거리 JSON contentId 없음 유지');
+assert.ok(asMulti?.overview?.includes('다문화길 16'), '안산 다문화거리 overlay 주소');
+assert.ok(asMulti?.overview?.includes('2009년'), '안산 다문화거리 overlay 특구');
+assert.ok(asMulti?.overview?.includes('1666-1234'), '안산 다문화거리 overlay 문의');
+assert.ok(asMulti?.overview?.includes('인천차이나타운'), '안산 다문화거리≠인천차이나타운');
+assert.ok(asMulti?.imageUrl?.includes('1-1-8.jpg'), '안산 다문화거리 시 공식 사진');
+assert.ok(asMulti?.homepage?.includes('C0001976'), '안산 다문화거리 공식 홈');
+assert.notEqual(asSihwa?.imageUrl, asMulti?.imageUrl, '시화호조력·다문화거리 썸네일 다름');
+assert.ok(!asMulti?.imageUrl?.includes('1-1-1.jpg'), '다문화거리≠시화호조력 사진');
+assert.ok(!asSihwa?.imageUrl?.includes('1-1-8.jpg'), '시화호조력≠다문화거리 사진');
+const ansanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '안산9경', {
+  injectLocalScenic: true,
+});
+const ansanGlobeNine = ansanGlobe.filter((s) => s.localScenicListId === 'ansan-gugyeong');
+assert.equal(ansanGlobeNine.length, 9, '안산 검색 안산9경 9행');
+assert.ok(
+  ansanGlobe.find((s) => s.attractionName === '시화호조력발전소')?.overview?.includes('달전망대'),
+  '안산 검색 1경 시화호조력 개요',
+);
+assert.ok(
+  ansanGlobe
+    .find((s) => s.attractionName === '시화호조력발전소')
+    ?.imageUrl?.includes('1-1-1.jpg'),
+  '안산 검색 1경 시화호조력 썸네일',
+);
+assert.ok(
+  ansanGlobe.find((s) => s.attractionName === '다문화거리')?.imageUrl?.includes('1-1-8.jpg'),
+  '안산 검색 8경 다문화거리 썸네일',
+);
+const asPung = resolveLocalScenicListSpotById('local-scenic:ansan-gugyeong:풍도');
+assert.ok(asPung?.overview && asPung?.imageUrl, '안산 풍도 overlay 사진·개요');
+assert.equal(asPung?.contentId, '126720', '안산 풍도 JSON contentId 유지');
+assert.ok(asPung?.overview?.includes('풍도동'), '안산 풍도 overlay 주소');
+assert.ok(asPung?.overview?.includes('24km'), '안산 풍도 overlay 거리');
+assert.ok(asPung?.overview?.includes('풍도바람꽃'), '안산 풍도 overlay 바람꽃');
+assert.ok(asPung?.overview?.includes('대부도'), '안산 풍도≠2경만 아님·대부도와 구분 문구');
+assert.ok(asPung?.overview?.includes('제부도'), '안산 풍도≠제부도');
+assert.ok(asPung?.imageUrl?.includes('1-1-5.jpg'), '안산 풍도 시 공식 사진');
+assert.ok(asPung?.homepage?.includes('C0001973'), '안산 풍도 공식 홈');
+assert.notEqual(asPung?.imageUrl, asSihwa?.imageUrl, '풍도≠시화호조력 사진');
+assert.notEqual(asPung?.imageUrl, asMulti?.imageUrl, '풍도≠다문화거리 사진');
+assert.ok(
+  lookupLocalScenicPhotoByContentId('126720')?.imageUrl?.includes('1-1-5.jpg'),
+  '안산 풍도 contentId 썸네일',
+);
+assert.ok(
+  ansanGlobe.find((s) => s.attractionName === '풍도')?.imageUrl?.includes('1-1-5.jpg'),
+  '안산 검색 5경 풍도 썸네일',
+);
+
+const hwaseongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hwaseong');
+const hwaseongEight = hwaseongMerged.filter((s) => s.localScenicListId === 'hwaseong-palgyeong');
+assert.equal(hwaseongEight.length, 8, '화성8경 8명');
+assert.equal(hwaseongEight[0]?.groupTitle, '화성 팔경');
+const hwaseongDeficitNames = ['용주사 범종', '입파홍암'];
+const hwaseongDeficit = hwaseongEight.filter((s) => hwaseongDeficitNames.includes(s.attractionName));
+assert.equal(hwaseongDeficit.length, 2, '화성8경 결손 2명');
+assert.ok(
+  hwaseongDeficit.every((s) => s.overview && s.imageUrl),
+  '화성 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  hwaseongDeficit.every((s) => !s.contentId),
+  '화성 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(hwaseongDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '용주사 범종·입파홍암 썸네일 다름',
+);
+const hsBell = resolveLocalScenicListSpotById('local-scenic:hwaseong-palgyeong:용주사범종');
+assert.ok(hsBell?.overview && hsBell?.imageUrl, '화성 용주사 범종 overlay 사진·개요');
+assert.ok(!hsBell?.contentId, '화성 용주사 범종 JSON contentId 없음 유지');
+assert.ok(hsBell?.overview?.includes('용주로 136'), '화성 용주사 범종 overlay 주소');
+assert.ok(hsBell?.overview?.includes('145㎝'), '화성 용주사 범종 overlay 높이');
+assert.ok(hsBell?.overview?.includes('87㎝'), '화성 용주사 범종 overlay 지름');
+assert.ok(hsBell?.overview?.includes('1964년'), '화성 용주사 범종 overlay 지정');
+assert.ok(hsBell?.overview?.includes('융건릉'), '화성 용주사 범종≠융건릉');
+assert.ok(hsBell?.overview?.includes('성덕대왕신종'), '화성 용주사 범종≠성덕대왕신종');
+assert.ok(hsBell?.imageUrl?.includes('1612040.jpg'), '화성 용주사 범종 국가유산청 사진');
+assert.ok(hsBell?.homepage?.includes('ccbaCpno=1113101200000'), '화성 용주사 범종 공식 홈');
+const hsHong = resolveLocalScenicListSpotById('local-scenic:hwaseong-palgyeong:입파홍암');
+assert.ok(hsHong?.overview && hsHong?.imageUrl, '화성 입파홍암 overlay 사진·개요');
+assert.ok(!hsHong?.contentId, '화성 입파홍암 JSON contentId 없음 유지');
+assert.ok(hsHong?.overview?.includes('입파길 24-15'), '화성 입파홍암 overlay 주소');
+assert.ok(hsHong?.overview?.includes('50분'), '화성 입파홍암 overlay 뱃길');
+assert.ok(hsHong?.overview?.includes('0.44'), '화성 입파홍암 overlay 면적');
+assert.ok(hsHong?.overview?.includes('제부도'), '화성 입파홍암≠제부도');
+assert.ok(hsHong?.overview?.includes('궁평낙조'), '화성 입파홍암≠궁평낙조');
+assert.ok(hsHong?.imageUrl?.includes('j9_4.png'), '화성 입파홍암 지질공원 홍암전경');
+assert.ok(
+  hsHong?.galleryUrls?.some((u) => u.includes('j9_0.png')),
+  '화성 입파홍암 해안 사진',
+);
+assert.ok(hsHong?.homepage?.includes('j9.jsp'), '화성 입파홍암 공식 홈');
+assert.notEqual(hsBell?.imageUrl, hsHong?.imageUrl, '용주사 범종·입파홍암 썸네일 다름');
+assert.ok(!hsHong?.imageUrl?.includes('1612040'), '입파홍암≠용주사 범종 사진');
+assert.ok(!hsBell?.imageUrl?.includes('j9_4.png'), '용주사 범종≠입파홍암 사진');
+const hwaseongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '화성', {
+  injectLocalScenic: true,
+});
+const hwaseongGlobeEight = hwaseongGlobe.filter((s) => s.localScenicListId === 'hwaseong-palgyeong');
+assert.equal(hwaseongGlobeEight.length, 8, '화성 검색 화성8경 8행');
+assert.ok(
+  hwaseongGlobe.find((s) => s.attractionName === '용주사 범종')?.overview?.includes('145㎝'),
+  '화성 검색 2경 용주사 범종 개요',
+);
+assert.ok(
+  hwaseongGlobe
+    .find((s) => s.attractionName === '용주사 범종')
+    ?.imageUrl?.includes('1612040.jpg'),
+  '화성 검색 2경 용주사 범종 썸네일',
+);
+assert.ok(
+  hwaseongGlobe.find((s) => s.attractionName === '입파홍암')?.imageUrl?.includes('j9_4.png'),
+  '화성 검색 6경 입파홍암 썸네일',
+);
+
+const yonginMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yongin');
+const yonginEight = yonginMerged.filter((s) => s.localScenicListId === 'yongin-palgyeong');
+assert.equal(yonginEight.length, 8, '용인8경 8명');
+assert.equal(yonginEight[0]?.groupTitle, '용인 팔경');
+const yonginDeficitNames = ['조비산', '어비낙조'];
+const yonginDeficit = yonginEight.filter((s) => yonginDeficitNames.includes(s.attractionName));
+assert.equal(yonginDeficit.length, 2, '용인8경 결손 2명');
+assert.ok(
+  yonginDeficit.every((s) => s.overview && s.imageUrl),
+  '용인 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  yonginDeficit.every((s) => !s.contentId),
+  '용인 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yonginDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '조비산·어비낙조 썸네일 다름',
+);
+const yiJobi = resolveLocalScenicListSpotById('local-scenic:yongin-palgyeong:조비산');
+assert.ok(yiJobi?.overview && yiJobi?.imageUrl, '용인 조비산 overlay 사진·개요');
+assert.ok(!yiJobi?.contentId, '용인 조비산 JSON contentId 없음 유지');
+assert.ok(yiJobi?.overview?.includes('용천리'), '용인 조비산 overlay 주소');
+assert.ok(yiJobi?.overview?.includes('294.5m'), '용인 조비산 overlay 해발');
+assert.ok(yiJobi?.overview?.includes('역적산'), '용인 조비산 overlay 옛 이름');
+assert.ok(yiJobi?.overview?.includes('석성산'), '용인 조비산≠석성산');
+assert.ok(yiJobi?.overview?.includes('광교산'), '용인 조비산≠광교산');
+assert.ok(yiJobi?.imageUrl?.includes('01020106_1.jpg'), '용인 조비산 시 공식 사진');
+assert.ok(
+  yiJobi?.galleryUrls?.some((u) => u.includes('01020106_2.jpg')),
+  '용인 조비산 추가 사진',
+);
+assert.ok(yiJobi?.homepage?.includes('yttourmn01_05.jsp'), '용인 조비산 공식 홈');
+const yiEobi = resolveLocalScenicListSpotById('local-scenic:yongin-palgyeong:어비낙조');
+assert.ok(yiEobi?.overview && yiEobi?.imageUrl, '용인 어비낙조 overlay 사진·개요');
+assert.ok(!yiEobi?.contentId, '용인 어비낙조 JSON contentId 없음 유지');
+assert.ok(yiEobi?.overview?.includes('어비리 357'), '용인 어비낙조 overlay 주소');
+assert.ok(yiEobi?.overview?.includes('송전저수지'), '용인 어비낙조 overlay 저수지');
+assert.ok(yiEobi?.overview?.includes('031-274-0538'), '용인 어비낙조 overlay 문의');
+assert.ok(yiEobi?.overview?.includes('궁평낙조'), '용인 어비낙조≠궁평낙조');
+assert.ok(yiEobi?.overview?.includes('가실벚꽃'), '용인 어비낙조≠가실벚꽃');
+assert.ok(yiEobi?.imageUrl?.includes('01020108_2.jpg'), '용인 어비낙조 시 공식 사진');
+assert.ok(
+  yiEobi?.galleryUrls?.some((u) => u.includes('01020108_3.jpg')),
+  '용인 어비낙조 추가 사진',
+);
+assert.ok(yiEobi?.homepage?.includes('yttourmn01_07.jsp'), '용인 어비낙조 공식 홈');
+assert.notEqual(yiJobi?.imageUrl, yiEobi?.imageUrl, '조비산·어비낙조 썸네일 다름');
+assert.ok(!yiEobi?.imageUrl?.includes('01020106'), '어비낙조≠조비산 사진');
+assert.ok(!yiJobi?.imageUrl?.includes('01020108'), '조비산≠어비낙조 사진');
+const yonginGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '용인', {
+  injectLocalScenic: true,
+});
+const yonginGlobeEight = yonginGlobe.filter((s) => s.localScenicListId === 'yongin-palgyeong');
+assert.equal(yonginGlobeEight.length, 8, '용인 검색 용인8경 8행');
+assert.ok(
+  yonginGlobe.find((s) => s.attractionName === '조비산')?.overview?.includes('294.5m'),
+  '용인 검색 6경 조비산 개요',
+);
+assert.ok(
+  yonginGlobe.find((s) => s.attractionName === '조비산')?.imageUrl?.includes('01020106_1.jpg'),
+  '용인 검색 6경 조비산 썸네일',
+);
+assert.ok(
+  yonginGlobe.find((s) => s.attractionName === '어비낙조')?.imageUrl?.includes('01020108_2.jpg'),
+  '용인 검색 8경 어비낙조 썸네일',
+);
+
+const ulsanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'ulsan');
+const ulsanTwelve = ulsanMerged.filter((s) => s.localScenicListId === 'ulsan-sipgyeong');
+assert.equal(ulsanTwelve.length, 12, '울산12경 12명');
+assert.equal(ulsanTwelve[0]?.groupTitle, '울산 12경');
+const ulsanDeficitNames = ['울산 가지산 사계', '울산 반구대암각화'];
+const ulsanDeficit = ulsanTwelve.filter((s) => ulsanDeficitNames.includes(s.attractionName));
+assert.equal(ulsanDeficit.length, 2, '울산12경 결손 2명');
+assert.ok(
+  ulsanDeficit.every((s) => s.overview && s.imageUrl),
+  '울산 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  ulsanDeficit.every((s) => !s.contentId),
+  '울산 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(ulsanDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '가지산 사계·반구대암각화 썸네일 다름',
+);
+const usGaji = resolveLocalScenicListSpotById('local-scenic:ulsan-sipgyeong:울산가지산사계');
+assert.ok(usGaji?.overview && usGaji?.imageUrl, '울산 가지산 사계 overlay 사진·개요');
+assert.ok(!usGaji?.contentId, '울산 가지산 사계 JSON contentId 없음 유지');
+assert.ok(usGaji?.overview?.includes('상북면'), '울산 가지산 사계 overlay 주소');
+assert.ok(usGaji?.overview?.includes('1,241m'), '울산 가지산 사계 overlay 해발');
+assert.ok(usGaji?.overview?.includes('제462호'), '울산 가지산 사계 overlay 철쭉');
+assert.ok(usGaji?.overview?.includes('824년'), '울산 가지산 사계 overlay 석남사');
+assert.ok(usGaji?.overview?.includes('신불산'), '울산 가지산 사계≠신불산');
+assert.ok(usGaji?.overview?.includes('황매산'), '울산 가지산 사계≠황매산');
+assert.ok(usGaji?.imageUrl?.includes('img_12view03.jpg'), '울산 가지산 사계 시 공식 사진');
+assert.ok(
+  usGaji?.galleryUrls?.some((u) => u.includes('FILE_000000000002274')),
+  '울산 가지산 사계 추가 사진',
+);
+assert.ok(usGaji?.homepage?.includes('unqId=1'), '울산 가지산 사계 공식 홈');
+const usBang = resolveLocalScenicListSpotById('local-scenic:ulsan-sipgyeong:울산반구대암각화');
+assert.ok(usBang?.overview && usBang?.imageUrl, '울산 반구대암각화 overlay 사진·개요');
+assert.ok(!usBang?.contentId, '울산 반구대암각화 JSON contentId 없음 유지');
+assert.ok(usBang?.overview?.includes('대곡리 991-3'), '울산 반구대암각화 overlay 주소');
+assert.ok(usBang?.overview?.includes('국보 285호'), '울산 반구대암각화 overlay 국보');
+assert.ok(usBang?.overview?.includes('2025년 7월 12일'), '울산 반구대암각화 overlay 세계유산');
+assert.ok(usBang?.overview?.includes('052-254-5724'), '울산 반구대암각화 overlay 문의');
+assert.ok(usBang?.overview?.includes('천전리'), '울산 반구대암각화≠천전리 각석');
+assert.ok(usBang?.overview?.includes('암각화박물관'), '울산 반구대암각화≠암각화박물관');
+assert.ok(usBang?.imageUrl?.includes('img_12view06.jpg'), '울산 반구대암각화 시 공식 사진');
+assert.ok(
+  usBang?.galleryUrls?.some((u) => u.includes('FILE_000000000002251')),
+  '울산 반구대암각화 추가 사진',
+);
+assert.ok(usBang?.homepage?.includes('unqId=100'), '울산 반구대암각화 공식 홈');
+assert.notEqual(usGaji?.imageUrl, usBang?.imageUrl, '가지산 사계·반구대암각화 썸네일 다름');
+assert.ok(!usBang?.imageUrl?.includes('12view03'), '반구대암각화≠가지산 사진');
+assert.ok(!usGaji?.imageUrl?.includes('12view06'), '가지산 사계≠반구대 사진');
+const ulsanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '울산', {
+  injectLocalScenic: true,
+});
+const ulsanGlobeTwelve = ulsanGlobe.filter((s) => s.localScenicListId === 'ulsan-sipgyeong');
+assert.equal(ulsanGlobeTwelve.length, 12, '울산 검색 울산12경 12행');
+assert.ok(
+  ulsanGlobe.find((s) => s.attractionName === '울산 가지산 사계')?.overview?.includes('1,241m'),
+  '울산 검색 3경 가지산 사계 개요',
+);
+assert.ok(
+  ulsanGlobe.find((s) => s.attractionName === '울산 가지산 사계')?.imageUrl?.includes('img_12view03.jpg'),
+  '울산 검색 3경 가지산 사계 썸네일',
+);
+assert.ok(
+  ulsanGlobe.find((s) => s.attractionName === '울산 반구대암각화')?.imageUrl?.includes('img_12view06.jpg'),
+  '울산 검색 6경 반구대암각화 썸네일',
+);
+
+const yeongcheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeongcheon');
+const yeongcheonNine = yeongcheonMerged.filter((s) => s.localScenicListId === 'yeongcheon-gugyeong');
+assert.equal(yeongcheonNine.length, 9, '영천9경 9명');
+const yeongcheonDeficitNames = ['영천댐 벚꽃 백리길', '영천 별별미술마을'];
+const yeongcheonDeficit = yeongcheonNine.filter((s) => yeongcheonDeficitNames.includes(s.attractionName));
+assert.equal(yeongcheonDeficit.length, 2, '영천9경 결손 2명');
+assert.ok(
+  yeongcheonDeficit.every((s) => s.overview && s.imageUrl),
+  '영천 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  yeongcheonDeficit.every((s) => !s.contentId),
+  '영천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yeongcheonDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '영천댐 벚꽃 백리길·별별미술마을 썸네일 다름',
+);
+const ycCherry = resolveLocalScenicListSpotById('local-scenic:yeongcheon-gugyeong:영천댐벚꽃백리길');
+assert.ok(ycCherry?.overview && ycCherry?.imageUrl, '영천댐 벚꽃 백리길 overlay 사진·개요');
+assert.ok(!ycCherry?.contentId, '영천댐 벚꽃 백리길 JSON contentId 없음 유지');
+assert.ok(ycCherry?.overview?.includes('신방로 19'), '영천댐 벚꽃 백리길 overlay 주소');
+assert.ok(ycCherry?.overview?.includes('40km'), '영천댐 벚꽃 백리길 overlay 거리');
+assert.ok(ycCherry?.overview?.includes('9,640만'), '영천댐 벚꽃 백리길 overlay 저수량');
+assert.ok(ycCherry?.overview?.includes('054-330-6585'), '영천댐 벚꽃 백리길 overlay 문의');
+assert.ok(ycCherry?.overview?.includes('임고강변공원'), '영천댐 벚꽃 백리길≠임고강변공원');
+assert.ok(ycCherry?.overview?.includes('보현산천문대'), '영천댐 벚꽃 백리길≠보현산천문대');
+assert.ok(ycCherry?.imageUrl?.includes('14d4d63f'), '영천댐 벚꽃 백리길 관광공사 사진');
+assert.ok(ycCherry?.homepage?.includes('83ec57e2'), '영천댐 벚꽃 백리길 공식 글');
+const ycArt = resolveLocalScenicListSpotById('local-scenic:yeongcheon-gugyeong:영천별별미술마을');
+assert.ok(ycArt?.overview && ycArt?.imageUrl, '영천 별별미술마을 overlay 사진·개요');
+assert.ok(!ycArt?.contentId, '영천 별별미술마을 JSON contentId 없음 유지');
+assert.ok(ycArt?.overview?.includes('가상리 649'), '영천 별별미술마을 overlay 주소');
+assert.ok(ycArt?.overview?.includes('62점'), '영천 별별미술마을 overlay 작품');
+assert.ok(ycArt?.overview?.includes('054-330-6067'), '영천 별별미술마을 overlay 문의');
+assert.ok(ycArt?.overview?.includes('시안미술관'), '영천 별별미술마을≠시안미술관');
+assert.ok(ycArt?.overview?.includes('한의마을'), '영천 별별미술마을≠한의마을');
+assert.ok(ycArt?.imageUrl?.includes('2d029348'), '영천 별별미술마을 골목 사진');
+assert.ok(
+  ycArt?.galleryUrls?.some((u) => u.includes('4b37cc23')),
+  '영천 별별미술마을 우리동네박물관 사진',
+);
+assert.ok(ycArt?.homepage?.includes('toursub/garaesil'), '영천 별별미술마을 공식 홈');
+assert.notEqual(ycCherry?.imageUrl, ycArt?.imageUrl, '벚꽃 백리길·별별미술마을 썸네일 다름');
+assert.ok(!ycArt?.imageUrl?.includes('14d4d63f'), '별별미술마을≠벚꽃길 사진');
+assert.ok(!ycCherry?.imageUrl?.includes('2d029348'), '벚꽃 백리길≠미술마을 사진');
+const yeongcheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '영천', {
+  injectLocalScenic: true,
+});
+const yeongcheonGlobeNine = yeongcheonGlobe.filter((s) => s.localScenicListId === 'yeongcheon-gugyeong');
+assert.equal(yeongcheonGlobeNine.length, 9, '영천 검색 영천9경 9행');
+assert.ok(
+  yeongcheonGlobe.find((s) => s.attractionName === '영천댐 벚꽃 백리길')?.overview?.includes('40km'),
+  '영천 검색 7경 벚꽃 백리길 개요',
+);
+assert.ok(
+  yeongcheonGlobe.find((s) => s.attractionName === '영천댐 벚꽃 백리길')?.imageUrl?.includes('14d4d63f'),
+  '영천 검색 7경 벚꽃 백리길 썸네일',
+);
+assert.ok(
+  yeongcheonGlobe.find((s) => s.attractionName === '영천 별별미술마을')?.imageUrl?.includes('2d029348'),
+  '영천 검색 9경 별별미술마을 썸네일',
+);
+
+const cheongdoMerged = mergeLocalScenicMembersIntoScenicSpots([], 'cheongdo');
+const cheongdoNine = cheongdoMerged.filter((s) => s.localScenicListId === 'cheongdo-gugyeong');
+assert.equal(cheongdoNine.length, 9, '청도 관광 9경 9명');
+const cheongdoDeficitNames = ['청도 새마을운동발상지기념공원', '청도 섶마리한옥마을'];
+const cheongdoDeficit = cheongdoNine.filter((s) => cheongdoDeficitNames.includes(s.attractionName));
+assert.equal(cheongdoDeficit.length, 2, '청도 관광 9경 결손 2명');
+assert.ok(
+  cheongdoDeficit.every((s) => s.overview && s.imageUrl),
+  '청도 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  cheongdoDeficit.every((s) => !s.contentId),
+  '청도 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(cheongdoDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '새마을운동발상지·섶마리한옥마을 썸네일 다름',
+);
+const cdSae = resolveLocalScenicListSpotById('local-scenic:cheongdo-gugyeong:청도새마을운동발상지기념공원');
+assert.ok(cdSae?.overview && cdSae?.imageUrl, '새마을운동발상지 overlay 사진·개요');
+assert.ok(!cdSae?.contentId, '새마을운동발상지 JSON contentId 없음 유지');
+assert.ok(cdSae?.overview?.includes('새마을1길 34'), '새마을운동발상지 overlay 주소');
+assert.ok(cdSae?.overview?.includes('054-372-5500'), '새마을운동발상지 overlay 문의');
+assert.ok(cdSae?.overview?.includes('신거역'), '새마을운동발상지 overlay 신거역');
+assert.ok(cdSae?.overview?.includes('새마을운동테마공원'), '새마을운동발상지≠구미 테마공원');
+assert.ok(cdSae?.overview?.includes('신화랑풍류마을'), '새마을운동발상지≠신화랑풍류마을');
+assert.ok(cdSae?.imageUrl?.includes('GC055P00043'), '새마을운동발상지 공원 전경');
+assert.ok(
+  cdSae?.galleryUrls?.some((u) => u.includes('GC055P01766')),
+  '새마을운동발상지 기념관 사진',
+);
+assert.ok(cdSae?.homepage?.includes('GC05501668'), '새마을운동발상지 문화대전');
+const cdSeop = resolveLocalScenicListSpotById('local-scenic:cheongdo-gugyeong:청도섶마리한옥마을');
+assert.ok(cdSeop?.overview && cdSeop?.imageUrl, '섶마리한옥마을 overlay 사진·개요');
+assert.ok(!cdSeop?.contentId, '섶마리한옥마을 JSON contentId 없음 유지');
+assert.ok(cdSeop?.overview?.includes('신지리'), '섶마리한옥마을 overlay 주소');
+assert.ok(cdSeop?.overview?.includes('선암로 474'), '섶마리한옥마을 overlay 운강고택');
+assert.ok(cdSeop?.overview?.includes('하회마을'), '섶마리한옥마을≠하회마을');
+assert.ok(cdSeop?.overview?.includes('운문사'), '섶마리한옥마을≠운문사');
+assert.ok(cdSeop?.imageUrl?.includes('GC055P03568'), '섶마리한옥마을 마을 사진');
+assert.ok(
+  cdSeop?.galleryUrls?.some((u) => u.includes('GC055P04093')),
+  '섶마리한옥마을 운강고택 사진',
+);
+assert.ok(
+  cdSeop?.galleryUrls?.some((u) => u.includes('GC055P03522')),
+  '섶마리한옥마을 만화정 사진',
+);
+assert.ok(cdSeop?.homepage?.includes('GC05500258'), '섶마리한옥마을 문화대전');
+assert.notEqual(cdSae?.imageUrl, cdSeop?.imageUrl, '발상지·섶마리 썸네일 다름');
+assert.ok(!cdSeop?.imageUrl?.includes('GC055P00043'), '섶마리≠발상지 사진');
+assert.ok(!cdSae?.imageUrl?.includes('GC055P03568'), '발상지≠섶마리 사진');
+const cheongdoGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '청도', {
+  injectLocalScenic: true,
+});
+const cheongdoGlobeNine = cheongdoGlobe.filter((s) => s.localScenicListId === 'cheongdo-gugyeong');
+assert.equal(cheongdoGlobeNine.length, 9, '청도 검색 청도 관광 9경 9행');
+assert.ok(
+  cheongdoGlobe.find((s) => s.attractionName === '청도 새마을운동발상지기념공원')?.overview?.includes('새마을1길 34'),
+  '청도 검색 2경 새마을운동발상지 개요',
+);
+assert.ok(
+  cheongdoGlobe.find((s) => s.attractionName === '청도 새마을운동발상지기념공원')?.imageUrl?.includes('GC055P00043'),
+  '청도 검색 2경 새마을운동발상지 썸네일',
+);
+assert.ok(
+  cheongdoGlobe.find((s) => s.attractionName === '청도 섶마리한옥마을')?.imageUrl?.includes('GC055P03568'),
+  '청도 검색 5경 섶마리한옥마을 썸네일',
+);
+
+const uiryeongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'uiryeong');
+const uiryeongNine = uiryeongMerged.filter((s) => s.localScenicListId === 'uiryeong-gugyeong');
+assert.equal(uiryeongNine.length, 9, '의령9경 9명');
+const uiryeongDeficitNames = ['백산안희제선생 생가', '호암이병철선생 생가'];
+const uiryeongDeficit = uiryeongNine.filter((s) => uiryeongDeficitNames.includes(s.attractionName));
+assert.equal(uiryeongDeficit.length, 2, '의령9경 결손 2명');
+assert.ok(
+  uiryeongDeficit.every((s) => s.overview && s.imageUrl),
+  '의령 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  uiryeongDeficit.every((s) => !s.contentId),
+  '의령 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(uiryeongDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '백산안희제·호암이병철 썸네일 다름',
+);
+const urAn = resolveLocalScenicListSpotById('local-scenic:uiryeong-gugyeong:백산안희제선생생가');
+assert.ok(urAn?.overview && urAn?.imageUrl, '백산안희제 생가 overlay 사진·개요');
+assert.ok(!urAn?.contentId, '백산안희제 생가 JSON contentId 없음 유지');
+assert.ok(urAn?.overview?.includes('입산로2길 37'), '백산안희제 생가 overlay 주소');
+assert.ok(urAn?.overview?.includes('055-570-2444'), '백산안희제 생가 overlay 문의');
+assert.ok(urAn?.overview?.includes('1993년 1월 8일'), '백산안희제 생가 overlay 지정일');
+assert.ok(urAn?.overview?.includes('백산상회'), '백산안희제 생가 overlay 백산상회');
+assert.ok(urAn?.overview?.includes('호암'), '백산안희제 생가≠호암 생가');
+assert.ok(urAn?.overview?.includes('곽재우'), '백산안희제 생가≠곽재우 생가');
+assert.ok(urAn?.imageUrl?.includes('1664302'), '백산안희제 생가 국가유산청 사진');
+assert.ok(
+  urAn?.galleryUrls?.some((u) => u.includes('1664304')),
+  '백산안희제 생가 두 번째 사진',
+);
+assert.ok(urAn?.homepage?.includes('3413801930000'), '백산안희제 생가 국가유산포털');
+const urHoam = resolveLocalScenicListSpotById('local-scenic:uiryeong-gugyeong:호암이병철선생생가');
+assert.ok(urHoam?.overview && urHoam?.imageUrl, '호암이병철 생가 overlay 사진·개요');
+assert.ok(!urHoam?.contentId, '호암이병철 생가 JSON contentId 없음 유지');
+assert.ok(urHoam?.overview?.includes('호암길 22-4'), '호암이병철 생가 overlay 주소');
+assert.ok(urHoam?.overview?.includes('055-573-0723'), '호암이병철 생가 overlay 문의');
+assert.ok(urHoam?.overview?.includes('1,907'), '호암이병철 생가 overlay 대지');
+assert.ok(urHoam?.overview?.includes('백산'), '호암이병철 생가≠백산 생가');
+assert.ok(urHoam?.overview?.includes('호암미술관'), '호암이병철 생가≠호암미술관');
+assert.ok(urHoam?.imageUrl?.includes('img_map_pho01'), '호암이병철 생가 대문채 사진');
+assert.ok(
+  urHoam?.galleryUrls?.some((u) => u.includes('img_map_pho02')),
+  '호암이병철 생가 안채 사진',
+);
+assert.ok(urHoam?.homepage?.includes('hoamfoundation.org'), '호암이병철 생가 호암재단');
+assert.notEqual(urAn?.imageUrl, urHoam?.imageUrl, '백산·호암 썸네일 다름');
+assert.ok(!urHoam?.imageUrl?.includes('1664302'), '호암≠백산 사진');
+assert.ok(!urAn?.imageUrl?.includes('img_map_pho01'), '백산≠호암 사진');
+const uiryeongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '의령', {
+  injectLocalScenic: true,
+});
+const uiryeongGlobeNine = uiryeongGlobe.filter((s) => s.localScenicListId === 'uiryeong-gugyeong');
+assert.equal(uiryeongGlobeNine.length, 9, '의령 검색 의령9경 9행');
+assert.ok(
+  uiryeongGlobe.find((s) => s.attractionName === '백산안희제선생 생가')?.overview?.includes('입산로2길 37'),
+  '의령 검색 8경 백산안희제 생가 개요',
+);
+assert.ok(
+  uiryeongGlobe.find((s) => s.attractionName === '백산안희제선생 생가')?.imageUrl?.includes('1664302'),
+  '의령 검색 8경 백산안희제 생가 썸네일',
+);
+assert.ok(
+  uiryeongGlobe.find((s) => s.attractionName === '호암이병철선생 생가')?.imageUrl?.includes('img_map_pho01'),
+  '의령 검색 9경 호암이병철 생가 썸네일',
+);
+
+const jangheungMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jangheung');
+const jangheungNine = jangheungMerged.filter((s) => s.localScenicListId === 'jangheung-gugyeong');
+assert.equal(jangheungNine.length, 9, '장흥9경 9명');
+const jangheungDeficitNames = ['선학동마을', '하늘빛수목정원'];
+const jangheungDeficit = jangheungNine.filter((s) => jangheungDeficitNames.includes(s.attractionName));
+assert.equal(jangheungDeficit.length, 2, '장흥9경 결손 2명');
+assert.ok(
+  jangheungDeficit.every((s) => s.overview && s.imageUrl),
+  '장흥 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  jangheungDeficit.every((s) => !s.contentId),
+  '장흥 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jangheungDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '선학동·하늘빛 썸네일 다름',
+);
+const jhSeon = resolveLocalScenicListSpotById('local-scenic:jangheung-gugyeong:선학동마을');
+assert.ok(jhSeon?.overview && jhSeon?.imageUrl, '선학동마을 overlay 사진·개요');
+assert.ok(!jhSeon?.contentId, '선학동마을 JSON contentId 없음 유지');
+assert.ok(jhSeon?.overview?.includes('가학회진로 1212'), '선학동마을 overlay 주소');
+assert.ok(jhSeon?.overview?.includes('061-860-8350'), '선학동마을 overlay 문의');
+assert.ok(jhSeon?.overview?.includes('천년학'), '선학동마을 overlay 천년학');
+assert.ok(jhSeon?.overview?.includes('23㏊'), '선학동마을 overlay 꽃밭 면적');
+assert.ok(jhSeon?.overview?.includes('소등섬'), '선학동마을≠소등섬');
+assert.ok(jhSeon?.overview?.includes('우드랜드'), '선학동마을≠우드랜드');
+assert.ok(jhSeon?.imageUrl?.includes('GC097P02280'), '선학동마을 문화대전 사진');
+assert.ok(
+  jhSeon?.galleryUrls?.some((u) => u.includes('GC097P02281')),
+  '선학동마을 두 번째 사진',
+);
+assert.ok(jhSeon?.homepage?.includes('GC09700234'), '선학동마을 문화대전');
+const jhSky = resolveLocalScenicListSpotById('local-scenic:jangheung-gugyeong:하늘빛수목정원');
+assert.ok(jhSky?.overview && jhSky?.imageUrl, '하늘빛수목정원 overlay 사진·개요');
+assert.ok(!jhSky?.contentId, '하늘빛수목정원 JSON contentId 없음 유지');
+assert.ok(jhSky?.overview?.includes('장흥대로 2746'), '하늘빛수목정원 overlay 주소');
+assert.ok(jhSky?.overview?.includes('061-862-2000'), '하늘빛수목정원 overlay 문의');
+assert.ok(jhSky?.overview?.includes('2019년 1월 1일'), '하늘빛수목정원 overlay 지정일');
+assert.ok(jhSky?.overview?.includes('3만 3,058'), '하늘빛수목정원 overlay 면적');
+assert.ok(jhSky?.overview?.includes('우드랜드'), '하늘빛수목정원≠우드랜드');
+assert.ok(jhSky?.overview?.includes('완도수목원'), '하늘빛수목정원≠완도수목원');
+assert.ok(jhSky?.imageUrl?.includes('GC097P02085'), '하늘빛수목정원 정문 사진');
+assert.ok(
+  jhSky?.galleryUrls?.some((u) => u.includes('GC097P02087')),
+  '하늘빛수목정원 정원 사진',
+);
+assert.ok(jhSky?.homepage?.includes('GC09700349'), '하늘빛수목정원 문화대전');
+assert.notEqual(jhSeon?.imageUrl, jhSky?.imageUrl, '선학동·하늘빛 썸네일 다름');
+assert.ok(!jhSky?.imageUrl?.includes('GC097P02280'), '하늘빛≠선학동 사진');
+assert.ok(!jhSeon?.imageUrl?.includes('GC097P02085'), '선학동≠하늘빛 사진');
+const jangheungGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '장흥', {
+  injectLocalScenic: true,
+});
+const jangheungGlobeNine = jangheungGlobe.filter((s) => s.localScenicListId === 'jangheung-gugyeong');
+assert.equal(jangheungGlobeNine.length, 9, '장흥 검색 장흥9경 9행');
+assert.ok(
+  jangheungGlobe.find((s) => s.attractionName === '선학동마을')?.overview?.includes('가학회진로 1212'),
+  '장흥 검색 7경 선학동마을 개요',
+);
+assert.ok(
+  jangheungGlobe.find((s) => s.attractionName === '선학동마을')?.imageUrl?.includes('GC097P02280'),
+  '장흥 검색 7경 선학동마을 썸네일',
+);
+assert.ok(
+  jangheungGlobe.find((s) => s.attractionName === '하늘빛수목정원')?.imageUrl?.includes('GC097P02085'),
+  '장흥 검색 9경 하늘빛수목정원 썸네일',
+);
+
+const gyeongjuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gyeongju');
+const gyeongjuEight = gyeongjuMerged.filter((s) => s.localScenicListId === 'gyeongju-8gwae');
+assert.equal(gyeongjuEight.length, 8, '경주8怪 8명');
+const nawon = gyeongjuEight.find((s) => s.attractionName === '나원백탑');
+assert.ok(nawon?.overview && nawon?.imageUrl, '나원백탑 overlay 사진·개요');
+assert.ok(!nawon?.contentId, '나원백탑 JSON contentId 없음 유지');
+assert.ok(nawon?.overview?.includes('라원리 676'), '나원백탑 overlay 주소');
+assert.ok(nawon?.overview?.includes('1962년 12월 20일'), '나원백탑 overlay 지정일');
+assert.ok(nawon?.overview?.includes('무구정광대다라니경'), '나원백탑 overlay 사리');
+assert.ok(nawon?.overview?.includes('1995년 11월'), '나원백탑 overlay 해체수리');
+assert.ok(nawon?.overview?.includes('장항리'), '나원백탑≠장항리 오층석탑');
+assert.ok(nawon?.overview?.includes('나원사'), '나원백탑≠나원사');
+assert.ok(nawon?.imageUrl?.includes('2021070209124901'), '나원백탑 국가유산청 전경');
+assert.ok(
+  nawon?.galleryUrls?.some((u) => u.includes('1612776')),
+  '나원백탑 두 번째 사진',
+);
+assert.ok(nawon?.homepage?.includes('1113700390000'), '나원백탑 국가유산포털');
+const gyeongjuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '경주', {
+  injectLocalScenic: true,
+});
+const gyeongjuGlobeEight = gyeongjuGlobe.filter((s) => s.localScenicListId === 'gyeongju-8gwae');
+assert.equal(gyeongjuGlobeEight.length, 8, '경주 검색 경주8怪 8행');
+assert.ok(
+  gyeongjuGlobe.find((s) => s.attractionName === '나원백탑')?.overview?.includes('라원리 676'),
+  '경주 검색 나원백탑 개요',
+);
+assert.ok(
+  gyeongjuGlobe.find((s) => s.attractionName === '나원백탑')?.imageUrl?.includes('2021070209124901'),
+  '경주 검색 나원백탑 썸네일',
+);
+
+const goseongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'goseong');
+const goseongEight = goseongMerged.filter((s) => s.localScenicListId === 'goseong-palgyeong');
+assert.equal(goseongEight.length, 8, '고성8경 8명');
+const masan = goseongEight.find((s) => s.attractionName === '마산봉설경');
+assert.ok(masan?.overview && masan?.imageUrl, '마산봉설경 overlay 사진·개요');
+assert.ok(!masan?.contentId, '마산봉설경 JSON contentId 없음 유지');
+assert.ok(masan?.overview?.includes('간성읍 흘리'), '마산봉설경 overlay 주소');
+assert.ok(masan?.overview?.includes('033-680-3382'), '마산봉설경 overlay 문의');
+assert.ok(masan?.overview?.includes('23.4'), '마산봉설경 overlay 백두대간 길이');
+assert.ok(masan?.overview?.includes('6.1'), '마산봉설경 overlay 숲길');
+assert.ok(masan?.overview?.includes('남한 제2봉'), '마산봉설경 overlay 봉우리');
+assert.ok(masan?.overview?.includes('경남 고성'), '마산봉설경≠경남 고성');
+assert.ok(masan?.overview?.includes('울산바위'), '마산봉설경≠울산바위');
+assert.ok(masan?.imageUrl?.includes('TUCN_201812110649330460'), '마산봉설경 고성군 설경 사진');
+assert.ok(
+  masan?.galleryUrls?.some((u) => u.includes('TUCN_201812110649597970')),
+  '마산봉설경 두 번째 사진',
+);
+assert.ok(masan?.homepage?.includes('cntno=22'), '마산봉설경 고성군 8경');
+const goseongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '고성', {
+  injectLocalScenic: true,
+});
+const goseongGlobeEight = goseongGlobe.filter((s) => s.localScenicListId === 'goseong-palgyeong');
+assert.equal(goseongGlobeEight.length, 8, '고성 검색 고성8경 8행');
+assert.ok(
+  goseongGlobe.find((s) => s.attractionName === '마산봉설경')?.overview?.includes('간성읍 흘리'),
+  '고성 검색 마산봉설경 개요',
+);
+assert.ok(
+  goseongGlobe.find((s) => s.attractionName === '마산봉설경')?.imageUrl?.includes('TUCN_201812110649330460'),
+  '고성 검색 마산봉설경 썸네일',
+);
+
+const gongjuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gongju');
+const gongjuTen = gongjuMerged.filter((s) => s.localScenicListId === 'gongju-sipgyeong');
+assert.equal(gongjuTen.length, 10, '공주10경 10명');
+const changbyeok = gongjuTen.find((s) => s.attractionName === '창벽');
+assert.ok(changbyeok?.overview && changbyeok?.imageUrl, '창벽 overlay 사진·개요');
+assert.ok(!changbyeok?.contentId, '창벽 JSON contentId 없음 유지');
+assert.ok(changbyeok?.overview?.includes('마암리 산4-4'), '창벽 overlay 주소');
+assert.ok(changbyeok?.overview?.includes('041-840-2836'), '창벽 overlay 문의');
+assert.ok(changbyeok?.overview?.includes('277'), '창벽 overlay 해발');
+assert.ok(changbyeok?.overview?.includes('100m'), '창벽 overlay 절벽 폭');
+assert.ok(changbyeok?.overview?.includes('4.3'), '창벽 overlay 산행');
+assert.ok(changbyeok?.overview?.includes('월성산'), '창벽≠월성산');
+assert.ok(changbyeok?.overview?.includes('청벽'), '창벽 이칭 청벽');
+assert.ok(changbyeok?.imageUrl?.includes('TUCN_202004220935549330'), '창벽 공주시 절벽 사진');
+assert.ok(
+  changbyeok?.galleryUrls?.some((u) => u.includes('TUCN_202004220935550071')),
+  '창벽 두 번째 사진',
+);
+assert.ok(changbyeok?.homepage?.includes('cntno=57'), '창벽 공주시 창벽산');
+const gongjuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '공주', {
+  injectLocalScenic: true,
+});
+const gongjuGlobeTen = gongjuGlobe.filter((s) => s.localScenicListId === 'gongju-sipgyeong');
+assert.equal(gongjuGlobeTen.length, 10, '공주 검색 공주10경 10행');
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '창벽')?.overview?.includes('마암리 산4-4'),
+  '공주 검색 창벽 개요',
+);
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '창벽')?.imageUrl?.includes('TUCN_202004220935549330'),
+  '공주 검색 창벽 썸네일',
+);
+const magoksa = gongjuTen.find((s) => s.attractionName === '마곡사');
+const muryeong = gongjuTen.find((s) => s.attractionName === '무령왕릉');
+assert.equal(magoksa?.contentId, '125894', '마곡사 JSON contentId 유지');
+assert.equal(muryeong?.contentId, '126681', '무령왕릉 JSON contentId 유지');
+assert.ok(magoksa?.imageUrl?.includes('TUCN_202004270543350711'), '마곡사 공주시 전각 사진');
+assert.ok(muryeong?.imageUrl?.includes('TUCN_202004270541140631'), '무령왕릉 공주시 봉분 사진');
+assert.notEqual(magoksa?.imageUrl, muryeong?.imageUrl, '마곡사·무령왕릉 썸네일 다름');
+assert.ok(
+  resolveLocalScenicRowFirstImage(magoksa, new Map())?.includes('TUCN_202004270543350711'),
+  '마곡사 목록 행은 Tour firstimage 없이 공식 사진',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(muryeong, new Map())?.includes('TUCN_202004270541140631'),
+  '무령왕릉 목록 행은 Tour firstimage 없이 공식 사진',
+);
+assert.ok(magoksa?.homepage?.includes('cntno=25'), '마곡사 공주시 10경');
+assert.ok(muryeong?.homepage?.includes('cntno=16'), '무령왕릉 공주시 10경');
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '무령왕릉')?.imageUrl?.includes('TUCN_202004270541140631'),
+  '공주 검색 무령왕릉 썸네일',
+);
+const cheongbyeokThumb = lookupLocalScenicPhotoByContentId('2755172');
+assert.ok(
+  cheongbyeokThumb?.imageUrl?.includes('TUCN_202004220935549330'),
+  '청벽산 검색 행 공주시 절벽 사진',
+);
+assert.ok(cheongbyeokThumb?.homepage?.includes('cntno=57'), '청벽산 공주시 창벽산');
+assert.equal(
+  resolveSearchScenicMedia({
+    hubId: 'gongju',
+    name: '청벽산',
+    contentId: '2755172',
+    addr1: '충청남도 공주시 반포면 마암리 산 4-4',
+  }).imageUrl,
+  cheongbyeokThumb.imageUrl,
+  '검색「공주」청벽산 썸네일',
+);
+const singwan = listKoreaScenicSpots().find((s) => s.id === 'geumgang-singwan-park');
+assert.equal(singwan?.contentId, '2756156', '금강신관공원 contentId 유지');
+assert.ok(!singwan?.imageUrl, '금강신관공원 JSON imageUrl 공란 유지');
+const singwanThumb = lookupLocalScenicPhotoByContentId('2756156');
+assert.ok(
+  singwanThumb?.imageUrl?.includes('TRSRCN_202501140412570660'),
+  '금강신관공원 충남관광 강변 사진',
+);
+assert.ok(singwanThumb?.homepage?.includes('trsrcnNo=208'), '금강신관공원 충남관광');
+assert.equal(
+  resolveSearchScenicMedia({
+    hubId: 'gongju',
+    name: '금강신관공원',
+    contentId: '2756156',
+  }).imageUrl,
+  singwanThumb.imageUrl,
+  '지역 대표 명소 금강신관공원 썸네일',
+);
+assert.ok(
+  scenicPageSrc.includes('applyLocalScenicContentIdThumb(spot)'),
+  '허브 대표 명소 목록이 contentId 썸네일을 쓴다',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('1956330')?.imageUrl?.includes('TRSRCN_202501060339307250'),
+  '명탄서원 충남관광 현판 사진',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127239')?.imageUrl?.includes('GC017P00956'),
+  '중악단 디지털공주문화대전 본전 사진',
+);
+assert.notEqual(
+  lookupLocalScenicPhotoByContentId('127239')?.imageUrl,
+  gongjuTen.find((s) => s.attractionName === '계룡산')?.imageUrl,
+  '중악단≠계룡산 썸네일',
 );
 
 const extra = process.argv.slice(2);

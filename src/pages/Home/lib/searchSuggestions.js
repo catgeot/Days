@@ -18,6 +18,7 @@ import {
   buildHubDisambiguationCandidates,
   makeDisambiguationResult,
 } from './cityAttractionHubs';
+import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import {
   getSettlementsForHub,
   settlementsForHubSuggestions,
@@ -53,6 +54,11 @@ import {
   collectKoreaHomonymDisambiguationCandidates,
   shouldOfferKoreaHomonymDisambiguation,
 } from './detectHomonymLocation.js';
+import {
+  collectKoreaPoiTypeSearchCandidates,
+  parseKoreaPoiTypeQuery,
+  shouldExpandKoreaPoiTypeSearch,
+} from './koreaPoiTypeSearch.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -143,16 +149,19 @@ export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
  * @param {object} hub
  * @param {object[]} out
  * @param {Set<string>} seen
- * @param {{ preferAttraction?: object, preferSettlement?: object, includeSettlements?: boolean }} [opts]
+ * @param {{ preferAttraction?: object, preferSettlement?: object, includeSettlements?: boolean, skipHub?: boolean }} [opts]
  */
 function pushHubAttractionCluster(hub, out, seen, opts = {}) {
   if (!hub) return;
   const rowStub = { hubId: hub.hubId };
-  pushUnique(out, seen, hubToSuggestion(hub));
-
   const preferSettlement = opts.preferSettlement;
   if (preferSettlement) {
     pushUnique(out, seen, settlementToSuggestion(rowStub, preferSettlement));
+    if (!opts.skipHub) {
+      pushUnique(out, seen, hubToSuggestion(hub));
+    }
+  } else if (!opts.skipHub) {
+    pushUnique(out, seen, hubToSuggestion(hub));
   }
 
   const preferAttraction = opts.preferAttraction;
@@ -259,7 +268,13 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
-    : resolveCityAttractionHub(q);
+    : resolveExploreCityHubExact(q);
+  const exactHubCityQuery =
+    Boolean(exactHub) &&
+    !exactListHit &&
+    (normalizeKey(q) === normalizeKey(exactHub.name) ||
+      normalizeKey(q) === normalizeKey(exactHub.hubId) ||
+      (exactHub.aliases || []).some((alias) => normalizeKey(alias) === normalizeKey(q)));
   const scenicLists = exactListHit
     ? [exactListHit.list]
     : exactHub
@@ -269,24 +284,31 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     exactHub || exactListHit ? null : resolveHubAttraction(q);
   const exactSettlement =
     exactHub || exactListHit || exactAttraction ? null : resolveSettlement(q);
-  const { hubs, attractions } = matchCityAttractionHubsPrefix(q, { limit: 6 });
+  const poiType = parseKoreaPoiTypeQuery(q);
+  const { hubs, attractions } = matchCityAttractionHubsPrefix(q, {
+    limit: poiType ? 40 : 6,
+  });
 
-  if (exactHub) {
+  if (exactHub && !exactHubCityQuery) {
     pushLocalScenicMembersFirst(exactHub, out, seen, scenicLists);
-  } else if (scenicLists.length) {
+  } else if (!exactHub && scenicLists.length) {
     for (const list of scenicLists) {
       const h = resolveCityAttractionHub(list.hubId);
       pushLocalScenicMembersFirst(h, out, seen, [list]);
     }
   }
 
-  const officialSpot = resolveTravelSpotFromSearchQuery(q);
+  const officialSpot = poiType ? null : resolveTravelSpotFromSearchQuery(q);
   if (officialSpot) pushUnique(out, seen, spotToSuggestion(officialSpot));
-  for (const extra of collectKnownTravelHomonyms(q, officialSpot ? [officialSpot] : [])) {
-    pushUnique(out, seen, extra);
+  if (!poiType) {
+    for (const extra of collectKnownTravelHomonyms(q, officialSpot ? [officialSpot] : [])) {
+      pushUnique(out, seen, extra);
+    }
   }
 
-  const spotHits = TRAVEL_SPOTS.filter((spot) => {
+  const spotHits = poiType
+    ? []
+    : TRAVEL_SPOTS.filter((spot) => {
     const name = (spot.name || '').toLowerCase();
     const nameEn = (spot.name_en || '').toLowerCase();
     const country = (spot.country || '').toLowerCase();
@@ -303,14 +325,25 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
 
   for (const spot of spotHits) pushUnique(out, seen, spotToSuggestion(spot));
 
-  const exactCity = findCityBySearchQuery(q);
-  if (exactCity) pushUnique(out, seen, cityToSuggestion(exactCity));
-  for (const city of matchCitiesPrefix(q, { limit: 4 })) {
-    pushUnique(out, seen, cityToSuggestion(city));
+  if (!poiType) {
+    const exactCity = findCityBySearchQuery(q);
+    if (exactCity) pushUnique(out, seen, cityToSuggestion(exactCity));
+    for (const city of matchCitiesPrefix(q, { limit: 4 })) {
+      pushUnique(out, seen, cityToSuggestion(city));
+    }
   }
 
   if (exactHub) {
-    pushHubAttractionCluster(exactHub, out, seen, { includeSettlements: true });
+    if (exactHubCityQuery) {
+      pushUnique(out, seen, hubToSuggestion(exactHub));
+      pushLocalScenicMembersFirst(exactHub, out, seen, scenicLists);
+      pushHubAttractionCluster(exactHub, out, seen, {
+        includeSettlements: true,
+        skipHub: true,
+      });
+    } else {
+      pushHubAttractionCluster(exactHub, out, seen, { includeSettlements: true });
+    }
   } else if (exactListHit) {
     for (const item of buildLocalScenicListHubCluster(
       exactListHit.list,
@@ -340,23 +373,27 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     }
   } else {
     const singleHubHit = uniqueHubFromAttractionHits(attractions, q);
-    if (singleHubHit && hubs.length === 0) {
+    if (!poiType && singleHubHit && hubs.length === 0) {
       pushHubAttractionCluster(singleHubHit.hub, out, seen, {
         preferAttraction: singleHubHit.prefers[0],
         includeSettlements: false,
       });
     } else {
-      for (const hub of hubs) pushUnique(out, seen, hubToSuggestion(hub));
+      if (!poiType) {
+        for (const hub of hubs) pushUnique(out, seen, hubToSuggestion(hub));
+      }
       for (const { hub, attraction } of attractions) {
         pushUnique(out, seen, attractionToSuggestion(hub, attraction));
       }
     }
-    for (const { row, settlement } of matchSettlementsPrefix(q, { limit: 4 })) {
-      pushUnique(out, seen, settlementToSuggestion(row, settlement));
+    if (!poiType) {
+      for (const { row, settlement } of matchSettlementsPrefix(q, { limit: 4 })) {
+        pushUnique(out, seen, settlementToSuggestion(row, settlement));
+      }
     }
   }
 
-  return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
+  return out.slice(0, poiType ? 180 : 24).map(enrichSearchCandidateScenicMedia);
 }
 
 /**
@@ -373,11 +410,21 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
-    : resolveCityAttractionHub(q);
+    : resolveExploreCityHubExact(q);
   const exactAttraction =
     exactHub || exactListHit ? null : resolveHubAttraction(q);
   const exactSettlement =
     exactHub || exactListHit || exactAttraction ? null : resolveSettlement(q);
+
+  if (shouldExpandKoreaPoiTypeSearch(q)) {
+    const poi = await collectKoreaPoiTypeSearchCandidates(q);
+    const seenPoi = new Set();
+    const merged = [];
+    for (const item of [...poi, ...local]) {
+      pushUnique(merged, seenPoi, enrichSearchCandidateScenicMedia(item));
+    }
+    if (merged.length >= 1) return merged.slice(0, 180);
+  }
 
   // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
   // 무드 결합(quiet beaches)은 도로·상호 오탐을 막기 위해 Mapbox 보강도 생략
@@ -448,8 +495,17 @@ export async function buildHubCandidatesForEnter(hub) {
 export function prependLocalScenicToHubCandidates(hub, candidates, lists) {
   const out = [];
   const seen = new Set();
+  const hubKey = normalizeKey(hub?.name);
+  pushUnique(out, seen, enrichSearchCandidateScenicMedia(hubToSuggestion(hub)));
   pushLocalScenicMembersFirst(hub, out, seen, lists);
   for (const item of candidates || []) {
+    if (
+      hubKey &&
+      item?.kind === 'city' &&
+      normalizeKey(item.name) === hubKey
+    ) {
+      continue;
+    }
     pushUnique(out, seen, enrichSearchCandidateScenicMedia(item));
   }
   return out;
@@ -525,7 +581,7 @@ export async function buildCuratedEnterDisambiguation(query) {
   if (!q) return null;
 
   const listHit = resolveLocalScenicListFromSearchQuery(q);
-  const hubHit = listHit?.hub || resolveCityAttractionHub(q);
+  const hubHit = listHit?.hub || resolveExploreCityHubExact(q);
   if (hubHit) {
     let candidates = await buildHubCandidatesForEnter(hubHit);
     const spot =
@@ -582,7 +638,7 @@ export async function buildCuratedEnterDisambiguation(query) {
       return ensureDisambiguation(
         q,
         candidates,
-        `'${parentHub.name}' → 도시·명소·지역을 골라주세요`,
+        `'${settlement.name}' → 도시·명소·지역을 골라주세요`,
       );
     }
     return ensureDisambiguation(

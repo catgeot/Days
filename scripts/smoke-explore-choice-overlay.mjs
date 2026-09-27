@@ -163,6 +163,15 @@ assert.match(vercel, /days-git-cursor-explore-search-d14b/);
 assert.match(vercel, /\/qa\/search-enter-hub/);
 assert.match(vercel, /days-git-cursor-search-enter-hub-2018/);
 
+const daejeonHub = resolveCityAttractionHub('대전');
+assert.ok(daejeonHub, '대전 hub');
+const daejeonMarket = buildHubDisambiguationCandidates(daejeonHub, []).find(
+  (c) => c.name === '신중앙시장',
+);
+assert.ok(daejeonMarket?.contentId === '1434477', '신중앙시장 theme Tour ID on choice card');
+const daejeonMarketMedia = enrichSearchCandidateScenicMedia(daejeonMarket);
+assert.equal(daejeonMarketMedia.contentId, '1434477');
+
 console.log(
   `PASS explore-choice-overlay (옹진 hub + ${candidates.length} choice cards, dropdown gated)`,
 );

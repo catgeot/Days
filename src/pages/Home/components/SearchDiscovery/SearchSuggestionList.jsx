@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Landmark, Building2, Compass, Loader2, ChevronRight, Sparkles } from 'lucide-react';
+import { MapPin, Landmark, Building2, Compass, Loader2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
@@ -23,6 +23,7 @@ import {
   koreaHomonymChoiceQuery,
 } from '../../lib/detectHomonymLocation';
 import { HomonymChoiceChips } from './HomonymChoiceChips';
+import { sliceSearchDisambiguationPage } from '../../lib/searchDisambiguationPaging.js';
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
 
@@ -355,6 +356,36 @@ export function SearchSuggestionList({
   );
 }
 
+function DisambiguationPager({ page, totalPages, onPrev, onNext }) {
+  const { t } = useTranslation();
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <button
+        type="button"
+        disabled={page <= 1}
+        onClick={onPrev}
+        className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-40"
+      >
+        <ChevronLeft size={14} aria-hidden="true" />
+        {t('home.explore.paginationPrev')}
+      </button>
+      <span className="text-xs font-medium tabular-nums text-white/70">
+        {t('home.explore.paginationPage', { page, total: totalPages })}
+      </span>
+      <button
+        type="button"
+        disabled={page >= totalPages}
+        onClick={onNext}
+        className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-40"
+      >
+        {t('home.explore.paginationNext')}
+        <ChevronRight size={14} aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
 /**
  * Enter 후 모호함 해소용 선택 카드
  * place_chat_intro 캐시가 있으면 desc를 채워 표시 (AI 호출 없음 · SSOT 하드코딩 포함).
@@ -365,10 +396,11 @@ export function SearchDisambiguationCards({
   candidates = [],
   onSelect,
   onCancel,
+  onPageChange,
 }) {
   const { t, i18n } = useTranslation();
+  const [page, setPage] = useState(1);
   const [introByKey, setIntroByKey] = useState({});
-  const thumbByIndex = useMissingTourAttractionThumbs(candidates);
   const homonymChoice = isKoreaHomonymChoiceSet(candidates);
   const homonymQuery = koreaHomonymChoiceQuery(candidates, query);
   const heading =
@@ -388,14 +420,31 @@ export function SearchDisambiguationCards({
   );
 
   useEffect(() => {
+    setPage(1);
+  }, [candidateKey]);
+
+  const paging = useMemo(
+    () => sliceSearchDisambiguationPage(candidates, page),
+    [candidates, page],
+  );
+  const pageItems = paging.items;
+
+  useEffect(() => {
+    if (paging.page !== page) setPage(paging.page);
+  }, [paging.page, page]);
+
+  const thumbByIndex = useMissingTourAttractionThumbs(pageItems);
+
+  useEffect(() => {
     let cancelled = false;
     setIntroByKey({});
-    if (!candidates.length) return undefined;
+    const list = sliceSearchDisambiguationPage(candidates, page).items;
+    if (!list.length) return undefined;
 
     (async () => {
       const next = {};
       await Promise.all(
-        candidates.map(async (item, index) => {
+        list.map(async (item, index) => {
           if (!needsPlaceChatIntroHydration(item)) return;
           const summary = await fetchPlaceChatIntroSummaryForLocation(item);
           if (!summary) return;
@@ -408,7 +457,13 @@ export function SearchDisambiguationCards({
     return () => {
       cancelled = true;
     };
-  }, [candidateKey, candidates]);
+  }, [candidateKey, page, candidates]);
+
+  const goPage = (nextPage) => {
+    const next = sliceSearchDisambiguationPage(candidates, nextPage);
+    setPage(next.page);
+    onPageChange?.(next.page);
+  };
 
   if (!candidates.length) return null;
 
@@ -434,8 +489,19 @@ export function SearchDisambiguationCards({
         )}
       </div>
 
+      {paging.totalPages > 1 ? (
+        <div className="mb-3">
+          <DisambiguationPager
+            page={paging.page}
+            totalPages={paging.totalPages}
+            onPrev={() => goPage(paging.page - 1)}
+            onNext={() => goPage(paging.page + 1)}
+          />
+        </div>
+      ) : null}
+
       <div className="flex flex-col gap-2">
-        {candidates.map((item, index) => {
+        {pageItems.map((item, index) => {
           const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
           const badge = localizedExploreBadgeLabel(t, badgeKey);
           const badgeClass = BADGE_STYLES[badgeKey] || BADGE_STYLES[EXPLORE_BADGE_PLACE];
@@ -447,7 +513,7 @@ export function SearchDisambiguationCards({
           const desc = resolveCardDesc(hydrated, locationLine);
           const showIntroMore = Boolean(desc) && desc.length >= SEARCH_INTRO_MORE_MIN_LEN;
           const groupTitle = String(item.groupTitle || '').trim();
-          const prevGroup = String(candidates[index - 1]?.groupTitle || '').trim();
+          const prevGroup = String(pageItems[index - 1]?.groupTitle || '').trim();
           const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
           const rankBlurb = String(item.rankBlurb || '').trim();
           const thumbItem = thumbByIndex[index]
@@ -520,6 +586,17 @@ export function SearchDisambiguationCards({
           );
         })}
       </div>
+
+      {paging.totalPages > 1 ? (
+        <div className="mt-3">
+          <DisambiguationPager
+            page={paging.page}
+            totalPages={paging.totalPages}
+            onPrev={() => goPage(paging.page - 1)}
+            onNext={() => goPage(paging.page + 1)}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

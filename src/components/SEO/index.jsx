@@ -11,6 +11,7 @@ import {
   buildPlaceGalleryJsonLd,
   resolvePlaceOgImageUrl,
 } from '../../pages/Home/lib/placeSeoOg.js';
+import { buildTravelerAggregateRatingSchema } from '../../utils/placeReviewStats.js';
 
 const SCHEMA_TYPES = {
   TOURIST_ATTRACTION: 'TouristAttraction',
@@ -39,6 +40,7 @@ const SEO = ({
   location = null,
   tab = null,
   galleryImages = null,
+  reviewStats = null,
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -135,8 +137,13 @@ const SEO = ({
       }
     }
 
+    const aggregateRating = buildTravelerAggregateRatingSchema(reviewStats);
+    if (aggregateRating) {
+      schema.aggregateRating = aggregateRating;
+    }
+
     return schema;
-  }, [location, displayName, seoDescription, seoUrl, seoImage, locale]);
+  }, [location, displayName, seoDescription, seoUrl, seoImage, locale, reviewStats]);
 
   const gallerySchema = useMemo(() => {
     if (!isGalleryTab || !location || !galleryImages?.length) return null;

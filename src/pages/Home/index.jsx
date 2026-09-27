@@ -405,6 +405,7 @@ function Home() {
       setSelectedSeaBasinId(null);
       setSelectedTopOceanId(null);
       globeRef.current?.clearRegionFocus?.();
+      globeRef.current?.requestGateoMarkerReveal?.();
       return;
     }
 
@@ -416,6 +417,9 @@ function Home() {
     setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
     setCategoryFaceEpoch((epoch) => epoch + 1);
+    window.requestAnimationFrame(() => {
+      globeRef.current?.requestGateoMarkerReveal?.();
+    });
   }, [category, faceRegionsOpen, clearPendingRegionFlies, flightCinemaActive, globeMode]);
 
   const handleFaceSubregionSelect = useCallback((subregionId) => {

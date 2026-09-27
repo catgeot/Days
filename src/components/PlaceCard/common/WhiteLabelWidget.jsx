@@ -12,8 +12,7 @@ import { resolveFlightDepartureIataForTrip } from '../../../pages/Home/lib/fligh
 
 /**
  * 플래너 Trip.com 항공권 제휴 링크.
- * 모바일: 앱 내 전체 화면 모달(iframe 중앙 정렬·도착지 자동입력).
- * 데스크톱: /flights/ 직링크 + 새 탭 + Referer(gateo 복귀 링크).
+ * iframe 위젯이 되면 모달. 위젯이 막히면 일정 선택 네이티브 폼 모달.
  * @param {Record<string, unknown> | null | undefined} [location]
  * @param {Record<string, unknown> | null | undefined} [essentialGuide]
  * @param {string | null | undefined} [departureIata] - 시네마 Bar 등 명시 시에만 전달. 미지정(플래너)은 ICN 고정.

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LogOut, Image as ImageIcon, UserRoundPen, Lock } from 'lucide-react';
+import { LogOut, Image as ImageIcon, UserRoundPen } from 'lucide-react';
+import { ownerProfilePhotos, profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
+import ProfilePhotoCount from '../../../shared/Auth/ProfilePhotoCount';
 import { useTranslation } from 'react-i18next';
 import { usePenNameContext } from '../context/PenNameContext';
 import {
@@ -10,7 +12,8 @@ import {
 
 const UserProfile = ({ user, onLogout, onOpenSlide }) => {
   const { t } = useTranslation();
-  const avatarUrl = user?.user_metadata?.avatar_url?.replace(/^http:\/\//i, 'https://');
+  const avatarUrl = profileAvatarUrl(user);
+  const photoCount = ownerProfilePhotos(null, user).length;
   const { displayName, setDisplayName, loading: penLoading, saving, save, maxLen } = usePenNameContext();
   const [saveHint, setSaveHint] = useState('');
   const handlePenNameBlur = useDeferredViewportSyncOnBlur();
@@ -44,6 +47,9 @@ const UserProfile = ({ user, onLogout, onOpenSlide }) => {
                 <span className="text-[10px]">{t('logbook.profile.noPhoto')}</span>
               </div>
             )}
+            <span className="absolute top-2 right-2">
+              <ProfilePhotoCount count={photoCount} />
+            </span>
             <div className="absolute inset-0 bg-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <span className="text-gray-800 text-xs font-bold bg-white/60 px-2 py-1 rounded-full backdrop-blur-sm border border-gray-200/50 shadow-sm">Gallery</span>
             </div>
@@ -88,11 +94,10 @@ const UserProfile = ({ user, onLogout, onOpenSlide }) => {
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <Link
-                to="/auth/update-password"
+                to="/account"
                 className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-500 px-1.5 py-1 rounded-lg hover:bg-blue-50"
               >
-                <Lock size={12} aria-hidden="true" />
-                {t('logbook.profile.changePassword')}
+                {t('authPage.account.open')}
               </Link>
               <button onClick={onLogout} className="text-gray-500 hover:text-red-500 p-1.5 hover:bg-gray-200 rounded-lg transition-colors">
                 <LogOut size={16} />

@@ -23,6 +23,7 @@ import {
   THEME_REGION_LABEL_TO_AREA,
 } from '../src/pages/Home/lib/koreaThemeCrossLinks.js';
 import { themeNavBackEntryForSpot } from '../src/pages/Home/lib/koreaThemeNavBack.js';
+import { areaCodeFromJeonnamGwangjuIntegratedAddr } from '../src/pages/Home/lib/koreaTourAddrNormalize.js';
 import { extractTourAttractionSigungu } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -287,6 +288,85 @@ assert(
     '춘천시',
   'sigungu from addr1 → 춘천시',
 );
+
+const sieafAddr = '전남광주통합특별시 곡성군 죽곡면 섬진강둔치';
+assert(
+  extractTourAttractionSigungu(sieafAddr) === '곡성군',
+  'SIEAF addr → 곡성군 (전남광주통합)',
+);
+assert(
+  extractTourAttractionSigungu('전남광주통합특별시 담양군 수북면') === '담양군',
+  '전남광주통합 담양군 sigungu',
+);
+assert(
+  extractTourAttractionSigungu('전라남도 곡성군 죽곡면') === '곡성군',
+  'legacy 전라남도 곡성군 sigungu',
+);
+
+const damyangFest = resolveFestivalThemeCrossLinks(
+  {
+    title: '담양 대나무축제',
+    areaCode: '38',
+    addr1: '전남광주통합특별시 담양군 수북면',
+    mapx: 126.991,
+    mapy: 35.321,
+    contentId: 'fixture-damyang',
+  },
+  { region: '전라' },
+);
+assert(
+  damyangFest.stay?.location?.hubId === 'damyang',
+  `담양군 addr stay hub damyang (got ${damyangFest.stay?.location?.hubId})`,
+);
+assert(
+  String(damyangFest.stay?.keyword || '').includes('담양'),
+  `담양 stay keyword 담양 (got ${damyangFest.stay?.keyword})`,
+);
+assert(damyangFest.packageCta?.key !== 'koreaYeosu', '담양 no yeosu package');
+
+const sieafFest = resolveFestivalThemeCrossLinks(
+  {
+    title: '2026 섬진강국제실험예술제',
+    areaCode: '38',
+    addr1: sieafAddr,
+    mapx: 127.295,
+    mapy: 35.275,
+    contentId: 'fixture-sieaf',
+  },
+  { region: '전라' },
+);
+assert(sieafFest.stay?.location?.hubId === 'gokseong', `SIEAF stay hub gokseong (got ${sieafFest.stay?.location?.hubId})`);
+assert(
+  String(sieafFest.stay?.keyword || '').includes('곡성'),
+  `SIEAF stay keyword 곡성 (got ${sieafFest.stay?.keyword})`,
+);
+assert(sieafFest.packageCta == null, 'SIEAF no yeosu package CTA');
+
+const chungjangAddr = '전남광주통합특별시 동구 금남로3가';
+assert(
+  areaCodeFromJeonnamGwangjuIntegratedAddr(chungjangAddr) === '5',
+  'integrated addr 동구 → area 5',
+);
+const chungjangFest = resolveFestivalThemeCrossLinks(
+  {
+    title: '광주 추억의 충장축제',
+    areaCode: '38',
+    addr1: chungjangAddr,
+    mapx: 126.915,
+    mapy: 35.148,
+    contentId: 'fixture-chungjang',
+  },
+  { region: '전라' },
+);
+assert(
+  chungjangFest.stay?.location?.hubId === 'gwangju',
+  `충장축제 stay hub gwangju (got ${chungjangFest.stay?.location?.hubId})`,
+);
+assert(
+  String(chungjangFest.stay?.keyword || '').includes('광주'),
+  `충장축제 stay keyword 광주 (got ${chungjangFest.stay?.keyword})`,
+);
+assert(chungjangFest.packageCta?.key !== 'koreaYeosu', '충장축제 no yeosu package');
 
 const poiNoHub = {
   name: '생명건강 과학원',

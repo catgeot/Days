@@ -8,6 +8,46 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'planner-stages',
+    label: '플래너 3단계 — 네이티브 검색 폼',
+    branch: 'cursor/planner-stages-7ee0',
+    destination:
+      'https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner',
+    active: true,
+  },
+  {
+    slug: 'flight',
+    label: '플래너 항공권 검색 위젯',
+    branch: 'cursor/tripcom-flight-widget-3ec3',
+    destination:
+      'https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner',
+    active: true,
+  },
+  {
+    slug: 'tripcom-flight',
+    label: '플래너 항공권 검색 위젯·배너',
+    branch: 'cursor/tripcom-flight-widget-3ec3',
+    destination:
+      'https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner',
+    active: false,
+  },
+  {
+    slug: 'festival-ui',
+    label: '축제 페이지 — 본문 가독성',
+    branch: 'cursor/festival-sheet-ui-ec8b',
+    destination:
+      'https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
+    slug: 'hyanggyo',
+    label: '향교 검색 — 도시별 다후보',
+    branch: 'cursor/hyanggyo-search-f9b8',
+    destination:
+      'https://days-git-cursor-hyanggyo-search-f9b8-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'search-enter-hub',
     label: '탐색 Enter — 도시 허브 리스트',
     branch: 'cursor/search-enter-hub-2018',
@@ -216,6 +256,22 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: false,
   },
   {
+    slug: 'profile',
+    label: '프로필 — 필명·사진·계정',
+    branch: 'cursor/profile-a231',
+    destination:
+      'https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog',
+    active: true,
+  },
+  {
+    slug: 'logbook-reads',
+    label: '로그북 공개 피드 읽음',
+    branch: 'cursor/logbook-reads-af3f',
+    destination:
+      'https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog',
+    active: true,
+  },
+  {
     slug: 'aitutaki-tour',
     label: '아이투타키 투어 오탐',
     branch: 'cursor/aitutaki-gyg-tour-b09e',
@@ -401,6 +457,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'scenic-mooni',
+    label: '명소홈 — 본문 무니 FAB',
+    branch: 'cursor/scenic-mooni-b353',
+    destination:
+      'https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
     slug: 'home-korea',
     label: '홈·축제 헤더 간소화',
     branch: 'main',
@@ -409,9 +473,10 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'korea-theme',
-    label: '한국의 명승',
-    branch: 'main',
-    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    label: '축제·테마 — 숙소 hub 매칭',
+    branch: 'cursor/korea-theme',
+    destination:
+      'https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea',
     active: true,
   },
   {

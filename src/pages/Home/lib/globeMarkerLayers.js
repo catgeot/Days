@@ -297,6 +297,7 @@ export function markGlobeCameraBusy(map) {
     state.busy = false;
     state.safetyTimer = null;
     runPendingGateoMarkerFlush(map);
+    setGateoMarkerLayerVisibility(map, true);
   }, 5000);
 }
 

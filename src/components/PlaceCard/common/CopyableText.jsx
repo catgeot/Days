@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { resolveAffiliateHomeFromBrandText } from '../../../utils/affiliateBrandMatch';
 import { openPartnerExternalUrl } from './partnerNavigation';
 import { isMobileDevice } from './device';
+import { normalizePlannerSmartLinkPhrases } from '../tabs/planner/plannerSmartLinkPhrases';
 
 export const CopyableWord = ({ word, koreanName, locationName, type }) => {
     const { t } = useTranslation();
@@ -61,7 +62,8 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
 const parseSmartLinks = (text, locationName, type) => {
     if (typeof text !== 'string') return text;
 
-    let normalizedText = text.replace(/['"‘’“”]([가-힣a-zA-Z0-9\s]+?)\((.+?)\)['"‘’“”]/g, "$1('$2')");
+    let normalizedText = normalizePlannerSmartLinkPhrases(text, type);
+    normalizedText = normalizedText.replace(/['"‘’“”]([가-힣a-zA-Z0-9\s]+?)\((.+?)\)['"‘’“”]/g, "$1('$2')");
     normalizedText = normalizedText.replace(/([가-힣a-zA-Z0-9\s]+?)\(['"‘’“”](.+?)['"‘’“”]\)/g, "$1('$2')");
 
     const regex = /([가-힣a-zA-Z0-9]+(?:\s[가-힣a-zA-Z0-9]+){0,2})?(?:\[@([^@\]]+)@\]|\('([^']+)'\))/g;

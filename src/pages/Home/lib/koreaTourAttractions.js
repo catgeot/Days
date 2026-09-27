@@ -151,6 +151,21 @@ function applyNoImageFilter(q) {
   return q.or('first_image.is.null,first_image.eq.');
 }
 
+function tourTitleSearchNeedles(title) {
+  const q = sanitizeScenicDbSearchQuery(title);
+  const compact = q.replace(/\s+/g, '');
+  const needles = [];
+  if (q.length >= 2) needles.push(q);
+  if (compact.length >= 2 && compact !== q) needles.push(compact);
+  return needles;
+}
+
+function applyTitleIlikeNeedles(q, needles) {
+  if (!needles.length) return q;
+  if (needles.length === 1) return q.ilike('title', `%${needles[0]}%`);
+  return q.or(needles.map((n) => `title.ilike.%${n}%`).join(','));
+}
+
 /**
  * @param {{
  *   region?: string | null,
@@ -668,19 +683,46 @@ export async function lookupKoreaTourAttractionByTitle(opts = {}) {
  * @param {string} title
  */
 export async function lookupKoreaTourAttractionFirstPass(title) {
-  const q = sanitizeScenicDbSearchQuery(title);
-  if (q.length < 3) return null;
-  const { data, error } = await supabase
+  const needles = tourTitleSearchNeedles(title);
+  const compact = String(title || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+  if (compact.length < 3 || !needles.length) return null;
+  let q = supabase
     .from('tourapi_attraction')
     .select(LIST_SELECT)
     .eq('active', true)
-    .eq('content_type_id', '12')
-    .ilike('title', `%${q}%`)
-    .limit(24);
+    .eq('content_type_id', '12');
+  q = applyTitleIlikeNeedles(q, needles);
+  const { data, error } = await q.limit(24);
   if (error) {
     console.warn('[koreaTourAttractions] firstPass', error.message || error);
     return null;
   }
   const rows = (data || []).map(mapTourAttractionRow).filter(Boolean);
-  return pickUniqueTourAttractionRowForTitle(rows, q, [], 88);
+  return pickUniqueTourAttractionRowForTitle(rows, compact || needles[0], [], 88);
+}
+
+/**
+ * title ilike 다건 — 향교처럼 유형 검색. 공백 없는 표기(춘천향교)도 찾는다.
+ * @param {string} title
+ * @param {{ limit?: number }} [opts]
+ */
+export async function lookupKoreaTourAttractionsMatchingTitle(title, { limit = 80 } = {}) {
+  const needles = tourTitleSearchNeedles(title);
+  if (!needles.length) return [];
+  const take = Math.min(Math.max(Number(limit) || 80, 1), 400);
+  let q = supabase
+    .from('tourapi_attraction')
+    .select(LIST_SELECT)
+    .eq('active', true)
+    .eq('content_type_id', '12');
+  q = applyTitleIlikeNeedles(q, needles);
+  const { data, error } = await q.order('title', { ascending: true }).limit(take);
+  if (error) {
+    console.warn('[koreaTourAttractions] matchingTitle', error.message || error);
+    return [];
+  }
+  return (data || []).map(mapTourAttractionRow).filter(Boolean);
 }

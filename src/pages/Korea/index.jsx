@@ -2149,7 +2149,7 @@ export default function KoreaFestivalHub() {
             ? 'pointer-events-none flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0'
             : mapOpen
               ? 'flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0 lg:max-w-6xl lg:px-8 lg:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:pt-3 xl:max-w-7xl'
-              : 'max-w-3xl overflow-y-auto overscroll-contain px-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl'
+              : 'max-w-3xl overflow-y-auto overscroll-contain px-3 pb-[max(7.25rem,calc(env(safe-area-inset-bottom)+5.75rem))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 md:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:max-w-6xl lg:px-8 xl:max-w-7xl'
         }`}
       >
         {loading && !mapOpen && (
@@ -2563,8 +2563,8 @@ export default function KoreaFestivalHub() {
         onClick={() => {
           mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        className={`fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
-          showScrollTop && !mapOpen
+        className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
+          showScrollTop && !mapOpen && !selected
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-3 opacity-0'
         }`}

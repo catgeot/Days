@@ -1,6 +1,31 @@
 {
   "redirects": [
     {
+      "source": "/qa/planner-stages",
+      "destination": "https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/flight",
+      "destination": "https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/tripcom-flight",
+      "destination": "https://days-git-cursor-tripcom-flight-widget-3ec3-catgeots-projects.vercel.app/place/paris/planner",
+      "permanent": false
+    },
+    {
+      "source": "/qa/festival-ui",
+      "destination": "https://days-git-cursor-festival-sheet-ui-ec8b-catgeots-projects.vercel.app/korea",
+      "permanent": false
+    },
+    {
+      "source": "/qa/hyanggyo",
+      "destination": "https://days-git-cursor-hyanggyo-search-f9b8-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/search-enter-hub",
       "destination": "https://days-git-cursor-search-enter-hub-2018-catgeots-projects.vercel.app/explore",
       "permanent": false
@@ -141,6 +166,16 @@
       "permanent": false
     },
     {
+      "source": "/qa/profile",
+      "destination": "https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog",
+      "permanent": false
+    },
+    {
+      "source": "/qa/logbook-reads",
+      "destination": "https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog",
+      "permanent": false
+    },
+    {
       "source": "/qa/aitutaki-tour",
       "destination": "https://days-git-cursor-aitutaki-gyg-tour-b09e-catgeots-projects.vercel.app/",
       "permanent": false
@@ -262,13 +297,18 @@
       "permanent": false
     },
     {
+      "source": "/qa/scenic-mooni",
+      "destination": "https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
       "source": "/qa/home-korea",
       "destination": "https://www.gateo.kr/korea",
       "permanent": false
     },
     {
       "source": "/qa/korea-theme",
-      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "destination": "https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea",
       "permanent": false
     },
     {

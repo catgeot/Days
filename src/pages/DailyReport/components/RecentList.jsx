@@ -1,26 +1,85 @@
-import React, { useState } from 'react';
-import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, RectangleVertical, XCircle, User } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   MOBILE_INPUT_TEXT_CLASS,
   useDeferredViewportSyncOnBlur,
 } from '../../../shared/hooks/useMobileInputViewport';
+import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
+import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
+import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
+import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
+import { readLogbookViewCount } from '../../../utils/logbookViewCount';
+import {
+  countReportsByPlace,
+  listLogbookPlaceChips,
+  logbookPlaceKey,
+  logbookReadingMinutes,
+  reportMatchesLogbookPlace,
+  samePlaceCount,
+} from '../../../utils/logbookReadingMeta';
+import { logbookCommentsHref, readLogbookCommentCount, readLogbookLikeCount } from '../../../utils/logbookReactions';
+import EditorialLogbookBadge from './EditorialLogbookBadge';
+import LogbookReadFacts from './LogbookReadFacts';
+import LogbookReactionSlot from './LogbookReactionSlot';
+import { useLogbookLikes } from '../hooks/useLogbookLikes';
+
+const GATEO_PUBLIC_SOURCE_URL = 'https://www.gateo.kr/';
+
+const FEED_VIEW_MODES = [
+  { id: 'list', labelKey: 'logbook.recentList.viewList', Icon: ListIcon },
+  { id: 'column', labelKey: 'logbook.recentList.viewColumn', Icon: RectangleVertical },
+  { id: 'grid', labelKey: 'logbook.recentList.viewGrid', Icon: LayoutGrid },
+];
+
+function placeChipClass(active) {
+  return `shrink-0 inline-flex max-w-[14rem] items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors ${
+    active
+      ? 'border-blue-200 bg-blue-50 font-semibold text-blue-700'
+      : 'border-gray-200 bg-white text-gray-600 hover:border-blue-200 hover:text-blue-700'
+  }`;
+}
 
 const RecentList = ({ reports, loading, isPublicMode }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState('grid');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [viewMode, setViewMode] = useState('column');
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchBlur = useDeferredViewportSyncOnBlur();
+  const placeFilter = searchParams.get('location') || '';
+  const activePlace = logbookPlaceKey(placeFilter);
 
-  const filteredReports = reports.filter(report =>
-    report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const placeChips = useMemo(() => listLogbookPlaceChips(reports), [reports]);
+
+  const selectPlace = (name) => {
+    const next = new URLSearchParams(searchParams);
+    if (!name || logbookPlaceKey(next.get('location')) === name) next.delete('location');
+    else next.set('location', name);
+    setSearchParams(next, { replace: true });
+  };
+
+  const filteredReports = reports.filter((report) => {
+    if (!reportMatchesLogbookPlace(report, placeFilter)) return false;
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+    return (
+      String(report.title || '').toLowerCase().includes(term) ||
+      String(report.content || '').toLowerCase().includes(term) ||
+      String(report.location || '').toLowerCase().includes(term)
+    );
+  });
+
+  // Search narrows cards; same-place counts stay on the loaded feed.
+  const placeCounts = useMemo(() => countReportsByPlace(reports), [reports]);
+  const reactionsEnabled = isPublicMode && reports.some((report) => readLogbookLikeCount(report) != null);
+  const { resolveLike, toggleLike } = useLogbookLikes(reports, reactionsEnabled);
 
   const isCompact = filteredReports.length > 5;
+  const cardLayout = viewMode !== 'list';
+  const cardDense = viewMode === 'grid' && isCompact;
 
   if (loading) {
     return (
@@ -39,7 +98,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   return (
     <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] flex flex-col transition-all">
 
-      <div className="p-5 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-transparent sticky top-0 z-10">
+      <div className="border-b border-gray-200 bg-white/80 backdrop-blur-xl sticky top-0 z-10">
+      <div className="p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2 self-start sm:self-center tracking-tight">
           <ClipboardList className="text-blue-500" size={20} />
           {isCompact ? t('logbook.recentList.titleCompact') : t('logbook.recentList.title')}
@@ -76,16 +136,64 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
             )}
           </form>
 
-          <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-200 flex-shrink-0">
-            <button
-              onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white text-blue-600 shadow-sm border border-gray-100 rounded-lg transition-all hover:bg-gray-50"
-            >
-              {viewMode === 'list' ? <LayoutGrid size={16} /> : <ListIcon size={16} />}
-              <span className="text-xs font-medium hidden sm:block">{viewMode === 'list' ? t('logbook.recentList.viewGrid') : t('logbook.recentList.viewList')}</span>
-            </button>
+          <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-200 flex-shrink-0" role="group" aria-label={t('logbook.recentList.viewGroup')}>
+            {FEED_VIEW_MODES.map(({ id, labelKey, Icon }) => {
+              const active = viewMode === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setViewMode(id)}
+                  aria-pressed={active}
+                  aria-label={t(labelKey)}
+                  className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg transition-all ${
+                    active
+                      ? 'bg-white text-blue-600 shadow-sm border border-gray-100'
+                      : 'text-gray-500 border border-transparent hover:text-gray-800 hover:bg-white/70'
+                  }`}
+                >
+                  <Icon size={16} />
+                  <span className="text-xs font-medium hidden sm:block">{t(labelKey)}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
+      </div>
+        {placeChips.length > 0 && (
+          <div
+            className="flex gap-2 overflow-x-auto overscroll-x-contain px-5 pb-4 touch-pan-x sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="group"
+            aria-label={t('logbook.recentList.placeGroup')}
+          >
+            <button
+              type="button"
+              onClick={() => selectPlace('')}
+              aria-pressed={!activePlace}
+              className={placeChipClass(!activePlace)}
+            >
+              {t('logbook.recentList.placeAll')}
+            </button>
+            {placeChips.map((chip) => {
+              const active = activePlace === chip.name;
+              return (
+                <button
+                  key={chip.name}
+                  type="button"
+                  onClick={() => selectPlace(active ? '' : chip.name)}
+                  aria-pressed={active}
+                  title={chip.name}
+                  className={placeChipClass(active)}
+                >
+                  <span className="truncate">{chip.name}</span>
+                  <span className={`text-[10px] tabular-nums ${active ? 'text-blue-600/80' : 'text-gray-400'}`}>
+                    {chip.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="p-5 sm:p-6 flex-1 bg-transparent">
@@ -102,70 +210,201 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
             </button>
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="text-center py-20 text-gray-500"><Search size={40} className="mx-auto mb-4 opacity-30" /><p className="text-lg">{t('logbook.recentList.noResults', { term: searchTerm })}</p><button onClick={() => setSearchTerm('')} className="text-blue-500 text-sm mt-3 hover:text-blue-600 underline underline-offset-4 transition-colors">{t('logbook.recentList.showAll')}</button></div>
+          <div className="text-center py-20 text-gray-500">
+            <Search size={40} className="mx-auto mb-4 opacity-30" />
+            <p className="text-lg">
+              {searchTerm
+                ? t('logbook.recentList.noResults', { term: searchTerm })
+                : t('logbook.recentList.noPlaceResults', { place: activePlace || placeFilter })}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm('');
+                if (activePlace) selectPlace('');
+              }}
+              className="text-blue-500 text-sm mt-3 hover:text-blue-600 underline underline-offset-4 transition-colors"
+            >
+              {t('logbook.recentList.showAll')}
+            </button>
+          </div>
         ) : (
-          <div className={viewMode === 'grid'
-            ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-5')
-            : `flex flex-col ${isCompact ? 'gap-3' : 'gap-5'}`
+          <div className={
+            viewMode === 'column'
+              ? 'grid grid-cols-1 gap-5'
+              : viewMode === 'grid'
+                ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-5')
+                : `flex flex-col ${isCompact ? 'gap-3' : 'gap-5'}`
           }>
 
-            {filteredReports.map((report) => (
+            {filteredReports.map((report) => {
+              const editorial = isEditorialLogbook(report);
+              const thumbUrl = logbookHeroImageUrl(report.images, { thumbnail: true });
+              const detailPath = isPublicMode
+                ? publicLogbookDetailPath(report)
+                : `/blog/${report.id}`;
+              const cardDate = formatLogbookDisplayDate(report);
+              const cardExcerpt = resolveLogbookFeedExcerpt(report);
+              const editorialPublicFeed = isPublicMode && editorial;
+              const viewCount = isPublicMode ? readLogbookViewCount(report) : null;
+              const readingMinutes = logbookReadingMinutes(report.content);
+              const placeCount = samePlaceCount(placeCounts, report.location);
+              const likeState = isPublicMode ? resolveLike(report) : { likeCount: null, liked: false, pending: false };
+              const commentCount = isPublicMode ? readLogbookCommentCount(report) : null;
+
+              return (
               <div
                 key={report.id}
-                onClick={() => navigate(isPublicMode ? `/p/${report.id}` : `/blog/${report.id}`)}
+                onClick={() => navigate(detailPath)}
                 className={`
-                  group bg-white border border-gray-200 rounded-2xl hover:border-blue-400 hover:bg-blue-50/30 transition-all cursor-pointer overflow-hidden hover:shadow-md
-                  ${viewMode === 'grid' ? 'flex flex-col h-full' : (isCompact ? 'p-3 flex gap-4 items-center' : 'p-5 flex gap-5 items-start')}
+                  group bg-white border rounded-2xl transition-all cursor-pointer overflow-hidden hover:shadow-md
+                  ${editorial ? 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50/20' : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50/30'}
+                  ${cardLayout ? 'flex flex-col h-full' : (isCompact ? 'p-3 flex gap-4 items-center' : 'p-5 flex gap-5 items-start')}
                 `}
               >
                 <div className={`
                   bg-gray-100 flex-shrink-0 overflow-hidden relative
-                  ${viewMode === 'grid' ? 'w-full aspect-video border-b border-gray-200' : (isCompact ? 'w-16 h-16 rounded-xl border border-gray-200' : 'w-24 h-24 rounded-2xl border border-gray-200')}
+                  ${
+                    cardLayout
+                      ? editorialPublicFeed
+                        ? 'w-full aspect-[16/10] min-h-[7.25rem] sm:min-h-[8.5rem] border-b border-indigo-100'
+                        : 'w-full aspect-[16/10] border-b border-gray-200'
+                      : editorialPublicFeed
+                        ? isCompact
+                          ? 'w-[4.25rem] h-[4.25rem] rounded-xl border border-indigo-100'
+                          : 'w-28 h-28 rounded-2xl border border-indigo-100'
+                        : isCompact
+                          ? 'w-16 h-16 rounded-xl border border-gray-200'
+                          : 'w-24 h-24 rounded-2xl border border-gray-200'
+                  }
                 `}>
-                  {report.images && report.images.length > 0 ? (
-                    <img src={report.images[0]} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
+                  {thumbUrl ? (
+                    <img src={thumbUrl} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50">
-                      <ImageIcon size={viewMode === 'grid' ? (isCompact ? 24 : 32) : (isCompact ? 16 : 24)} />
+                      <ImageIcon size={cardLayout ? (cardDense ? 24 : 32) : (isCompact ? 16 : 24)} />
                     </div>
                   )}
-                  {viewMode === 'grid' && <div className={`absolute top-2 right-2 bg-white/90 backdrop-blur-md text-gray-700 px-2.5 py-1 rounded-md border border-gray-200/50 font-medium tracking-wide shadow-sm ${isCompact ? 'text-[10px]' : 'text-xs'}`}>{report.date}</div>}
+                  {report.images && report.images.length > 1 && (
+                    <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-md text-[10px] font-semibold flex items-center gap-1 shadow-sm">
+                      <ImageIcon size={10} /> +{report.images.length - 1}
+                    </div>
+                  )}
                 </div>
 
-                <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-4 flex flex-col h-full' : 'p-5 flex flex-col h-full') : ''}`}>
-                  <div className={`flex justify-between ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
-                    <h4 className={`font-bold text-gray-900 truncate pr-3 group-hover:text-blue-600 transition-colors tracking-tight ${viewMode === 'grid' ? (isCompact ? 'text-base' : 'text-xl') : (isCompact ? 'text-base' : 'text-xl')}`}>
-                      {report.title}
-                    </h4>
-                    {viewMode === 'list' && (
-                      <span className={`text-xs text-gray-500 whitespace-nowrap bg-gray-100 px-2.5 rounded-md border border-gray-200 font-medium tracking-wide ${isCompact ? 'py-1' : 'py-1.5'}`}>
-                        {report.date}
-                      </span>
-                    )}
+                <div className={`flex-1 min-w-0 ${cardLayout ? (cardDense ? 'p-3 sm:p-4 flex flex-col h-full' : 'p-4 sm:p-5 flex flex-col h-full') : ''}`}>
+                  {/* 상단 메타 행: 에디터 뱃지 / 작성자 + 발행일 */}
+                  <div className="flex items-center justify-between gap-2 mb-2 text-xs">
+                    <div className="flex items-center gap-1.5 min-w-0 truncate">
+                      {editorialPublicFeed ? (
+                        <EditorialLogbookBadge report={report} />
+                      ) : isPublicMode && report.author_label ? (
+                        <span className="flex items-center gap-1 text-gray-600 font-semibold truncate" title={t('logbook.common.author')}>
+                          {profileAvatarUrl(report.author_avatar) ? (
+                            <img src={profileAvatarUrl(report.author_avatar)} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                          ) : (
+                            <User size={12} className="text-gray-400 shrink-0" />
+                          )}
+                          <span className="truncate">{report.author_label}</span>
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-medium text-gray-400">
+                          {t('logbook.common.traveler')}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[11px] text-gray-400 whitespace-nowrap shrink-0 font-medium">
+                      {cardDate}
+                    </span>
                   </div>
 
-                  {!(isCompact && viewMode === 'list') && (
-                    <p className={`text-sm text-gray-500 leading-relaxed font-light ${viewMode === 'grid' ? (isCompact ? 'line-clamp-2 mb-3 text-xs flex-1' : 'line-clamp-3 mb-4 flex-1') : 'line-clamp-2 h-10'}`}>
-                      {report.content}
+                  <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-1.5'}`}>
+                    <h4
+                      title={report.title}
+                      className={`font-semibold text-gray-900 transition-colors tracking-tight min-w-0 flex-1 break-keep break-words ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${
+                        cardLayout
+                          ? `line-clamp-2 leading-snug ${
+                              viewMode === 'column' ? 'text-base' : cardDense ? 'text-sm' : 'text-sm sm:text-base'
+                            }`
+                          : viewMode === 'list' && isCompact
+                            ? 'line-clamp-1 text-sm'
+                            : 'line-clamp-2 text-sm sm:text-base'
+                      }`}
+                    >
+                      {report.title}
+                    </h4>
+                  </div>
+
+                  {cardExcerpt && (
+                    <p
+                      className={`leading-relaxed break-keep break-words ${
+                        editorialPublicFeed
+                          ? `text-indigo-950/85 font-medium ${viewMode === 'column' ? 'text-sm' : 'text-xs sm:text-[13px] line-clamp-2'}`
+                          : 'text-gray-500 font-normal'
+                      } ${
+                        cardLayout
+                          ? viewMode === 'column'
+                            ? 'line-clamp-3 mb-4 flex-1 text-sm'
+                            : cardDense
+                              ? 'line-clamp-2 mb-3 flex-1 text-xs'
+                              : 'line-clamp-2 mb-4 flex-1 text-xs sm:text-sm'
+                          : isCompact
+                            ? 'line-clamp-1 mt-1 text-xs'
+                            : 'line-clamp-2 mt-1 text-xs sm:text-sm'
+                      }`}
+                    >
+                      {cardExcerpt}
                     </p>
                   )}
 
-                  <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-gray-100' : 'mt-auto pt-4 border-t border-gray-100')}`}>
-                    {isPublicMode && report.author_label && (
-                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-500" title={t('logbook.common.author')}>
-                        <User size={12} className="text-gray-400 shrink-0" />
-                        <span className="truncate">{report.author_label}</span>
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1.5 truncate max-w-[150px]">
-                      <MapPin size={12} className="text-gray-400" /> {report.location}
+                  <div className={`flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-1' : 'mt-3') : (cardDense ? 'mt-auto pt-2.5 border-t border-gray-100' : 'mt-auto pt-3 border-t border-gray-100')}`}>
+                    <span className="flex items-center gap-1 truncate text-gray-500 shrink min-w-0" title={report.location}>
+                      <MapPin size={12} className="text-gray-400 shrink-0" />
+                      <span className="truncate">{report.location}</span>
                     </span>
-                    {report.images && report.images.length > 1 && (
-                      <span className="flex items-center gap-1 text-blue-600 font-bold bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md ml-auto sm:ml-0">
-                        <ImageIcon size={10} /> +{report.images.length - 1}
-                      </span>
-                    )}
+
+                    <div className="flex items-center gap-2.5 shrink-0 ml-auto">
+                      <LogbookReadFacts
+                        minutes={readingMinutes}
+                        placeCount={placeCount}
+                        viewCount={viewCount}
+                      />
+                      <LogbookReactionSlot
+                        likeCount={likeState.likeCount}
+                        commentCount={commentCount}
+                        liked={likeState.liked}
+                        pending={likeState.pending}
+                        commentHref={logbookCommentsHref(detailPath)}
+                        onToggleLike={() => toggleLike(report)}
+                      />
+                    </div>
                   </div>
+
+                  {isPublicMode && !editorial && (
+                    <div
+                      className={`flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 ${
+                        cardLayout
+                          ? 'mt-2 pt-2 border-t border-dashed border-gray-100'
+                          : isCompact
+                            ? 'mt-1.5'
+                            : 'mt-2'
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span className="shrink-0 rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-gray-500">
+                        출처 · GATEO
+                      </span>
+                      <a
+                        href={GATEO_PUBLIC_SOURCE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="min-w-0 max-w-full truncate text-[10px] text-blue-600 hover:text-blue-700 hover:underline sm:text-xs"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {GATEO_PUBLIC_SOURCE_URL}
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 {viewMode === 'list' && !isCompact && (
@@ -174,7 +413,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                   </div>
                 )}
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>

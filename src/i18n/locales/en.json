@@ -102,6 +102,47 @@
       "submit": "Update password",
       "successStay": "Password updated.",
       "successAlert": "Password updated! Please sign in again."
+    },
+    "account": {
+      "open": "Profile",
+      "closeProfile": "Close profile",
+      "title": "Profile",
+      "subtitle": "Change your pen name, photo, password, and sign-in accounts here.",
+      "needLogin": "Sign in to edit your profile.",
+      "penName": "Pen name",
+      "penNameHint": "This name shows on the public logbook and in the logo panel.",
+      "save": "Save",
+      "saved": "Saved.",
+      "saveFail": "Could not save the pen name.",
+      "viewPhoto": "{{name}} profile photo",
+      "closePhoto": "Close profile photo",
+      "changePhoto": "Upload photo",
+      "photoHint": "You can upload more than one. Tap a thumbnail below to choose the cover photo; the count is visible to you and others.",
+      "pickCoverTitle": "Choose your cover photo",
+      "pickCoverBody": "Tap one of the photos you just uploaded to use as your profile cover.",
+      "pickCoverHint": "Choose which photo is your cover.",
+      "pickCoverSkip": "Keep current cover",
+      "photoCountLabel": "{{count}} profile photos",
+      "photoUpdated": "Profile photo updated.",
+      "photoFail": "Could not upload the photo.",
+      "photoLimit": "You can upload up to {{max}} photos.",
+      "removePhoto": "Remove this photo",
+      "setCover": "Use as cover",
+      "prevPhoto": "Previous photo",
+      "nextPhoto": "Next photo",
+      "publicLabel": "Public profile",
+      "publicOn": "Other people can see your photos and the count.",
+      "publicOff": "Other people cannot see your photos or the count.",
+      "publicSaved": "Visibility saved.",
+      "password": "Change password",
+      "accounts": "Add account",
+      "accountsHint": "Add Google or Kakao sign-in to this same profile.",
+      "connected": "Connected",
+      "addProvider": "Add {{name}}",
+      "email": "Email",
+      "google": "Google",
+      "kakao": "Kakao",
+      "linkFail": "Could not add that account."
     }
   },
   "home": {
@@ -474,6 +515,9 @@
       "askMooniBadge": "AI",
       "disambiguationTitle": "Choose a place",
       "disambiguationBody": "This name may match several places. Tap a card to open it.",
+      "paginationPrev": "Previous",
+      "paginationNext": "Next",
+      "paginationPage": "{{page}} / {{total}}",
       "homonymChoiceTitle": "Which {{query}} are you looking for?",
       "homonymChoiceBody": "Tap a card to open that place.",
       "more": "See more",
@@ -669,7 +713,8 @@
       "signInBody": "Sign in to build your bucket list and use the globe without limits.",
       "signIn": "Sign in",
       "signOut": "Sign out",
-      "changePassword": "Change password"
+      "changePassword": "Change password",
+      "backHome": "Home"
     },
     "agencies": {
       "title": "Visited agencies",
@@ -909,7 +954,7 @@
         "nextHintEnjoy": "To see another step, choose one below."
       },
       "esim": {
-        "choose": "Choose one eSIM",
+        "choose": "eSIM",
         "airalo": "Airalo",
         "holafly": "Holafly"
       },
@@ -1022,6 +1067,19 @@
           "routeDepart": "Depart",
           "routeArrive": "Arrive",
           "routeEditable": "auto-filled · editable in banner",
+          "nativeDepartDate": "Depart",
+          "nativeReturnDate": "Return",
+          "nativeTripType": "Trip type",
+          "nativeRoundTrip": "Round trip",
+          "nativeOneWay": "One way",
+          "nativeSwap": "Swap airports",
+          "nativeAirportSearch": "Airport name or code",
+          "nativeDateRange": "Dates",
+          "nativeDateRangeOpen": "Pick departure and return on one calendar",
+          "nativePickDepart": "Select departure date",
+          "nativePickReturn": "Select return date",
+          "nativeCalendarPrev": "Previous month",
+          "nativeCalendarNext": "Next month",
           "fullScreenSearch": "Full-screen search",
           "noArrivalFallback": "No arrival airport found — opens generic search.",
           "tripcomFlights": "Trip.com flights"
@@ -1030,8 +1088,11 @@
           "title": "Search live flights",
           "search": "Search",
           "autoFill": "Trip.com pre-fills departure and arrival airports",
+          "chooseDates": "Choose dates in the search form at the top, then search",
           "ariaWithRoute": "Trip.com flight search — {{depart}} to {{arrive}}",
-          "ariaGeneric": "Trip.com live flight search"
+          "ariaGeneric": "Trip.com live flight search",
+          "ariaScrollWithRoute": "Go to the flight search form — {{depart}} to {{arrive}}",
+          "ariaScrollGeneric": "Go to the flight search form at the top"
         },
         "twelveGo": {
           "routeLabel": "Ferry & transport search",
@@ -1287,6 +1348,8 @@
       "reads": "{{count}} views",
       "loginPrompt": "Sign in to join the conversation and share your experience.",
       "count": "{{count}} reviews",
+      "countSplit": "Traveler reviews {{traveler}} · GATEO editor reviews {{editorial}}",
+      "noTravelerRating": "No traveler ratings yet",
       "write": "Write",
       "loginCta": "Sign in to leave the first review!",
       "loginHint": "It helps other travelers a lot.",
@@ -1311,7 +1374,8 @@
       "emptyMine": "You haven't written any reviews yet.",
       "emptyAll": "No reviews yet.",
       "blogBadge": "Blog",
-      "galleryViewerAlt": "Gallery viewer image"
+      "galleryViewerAlt": "Gallery viewer image",
+      "thumbnailPreviewAria": "Review photo preview"
     },
     "common": {
       "bookmark": "Bookmark",
@@ -2027,6 +2091,10 @@
       "traveler": "Traveler",
       "attachment": "Attachment {{n}}"
     },
+    "editorial": {
+      "badge": "GATEO Editor",
+      "secondaryNotice": "AI-assisted · not a personal trip report"
+    },
     "sidebar": {
       "travelLogTitle": "Your travel log",
       "travelLogBody": "Sign in to write reviews and vivid travel stories from around the world."
@@ -2056,13 +2124,42 @@
       "clearSearch": "Clear search",
       "viewGrid": "Grid",
       "viewList": "Details",
+      "viewColumn": "1 col",
+      "viewGroup": "Entry layout",
       "emptyTitle": "No journeys logged yet.",
       "emptyBody": "Write your first story.",
       "emptyCta": "Create new entry",
       "noResults": "No memories found for \"{{term}}\".",
       "showAll": "Show all",
       "footer": "{{count}} entries total",
-      "footerCompact": "(summarized)"
+      "footerCompact": "(summarized)",
+      "readCount": "{{count}} reads",
+      "placeGroup": "Places",
+      "placeAll": "All",
+      "noPlaceResults": "No entries for \"{{place}}\"."
+    },
+    "meta": {
+      "readingMinutes": "{{count}} min read",
+      "readingMinutesShort": "{{count}} min",
+      "readingAria": "{{count}} min read",
+      "samePlace": "{{count}} at this place",
+      "samePlaceAria": "{{count}} entries at this place"
+    },
+    "reactions": {
+      "like": "Like",
+      "likeAria": "{{count}} likes",
+      "unlikeAria": "Unlike",
+      "comment": "Comment",
+      "commentAria": "{{count}} comments",
+      "commentsTitle": "Comments",
+      "placeholder": "Write a short comment",
+      "submit": "Post",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this comment?",
+      "empty": "No comments yet.",
+      "loginConfirm": "Sign in to like and comment. Go to the login page?",
+      "loginToComment": "Sign in to leave a comment.",
+      "saveFail": "Could not save. Try again in a moment."
     },
     "calendar": {
       "month": "{{month}}/{{year}}"
@@ -2217,6 +2314,11 @@
       "penNameSaved": "Pen name saved.",
       "compressing": "Optimizing file size...",
       "progress": "Progress: {{current}} / {{total}}",
+      "titleFieldLabel": "Title",
+      "titleHint": "Keep it short. Put longer lines in the body lead.",
+      "dekLabel": "Subtitle · one-line summary",
+      "dekPlaceholder": "Lead sentence or intro line (optional)",
+      "dekHint": "If empty, the first body paragraph is used as the subtitle on public views.",
       "titlePlaceholder": "Sum up this journey in one line?",
       "aiEssay": "AI essay",
       "aiSns": "AI social post",
@@ -2235,7 +2337,26 @@
         "3": "Finalizing your draft..."
       },
       "defaultTitle": "Notes from {{place}}",
-      "defaultPlace": "a lovely place"
+      "defaultPlace": "a lovely place",
+      "editor": {
+        "modeEdit": "Edit",
+        "modePreview": "Preview",
+        "bold": "Bold",
+        "italic": "Italic",
+        "heading2": "Heading",
+        "heading3": "Subheading",
+        "link": "Link",
+        "linkUrlPrompt": "Enter link URL (https://…)",
+        "linkLabel": "link text",
+        "divider": "Divider",
+        "insertBodyImage": "Insert photo in body",
+        "insertMoment": "Insert gallery moment",
+        "momentSlot": "Moment {{n}}",
+        "bodyImageAlt": "Travel photo",
+        "bodyImageFail": "Could not upload body photo. Check login and network.",
+        "hint": "Use the toolbar for headings, bold, links, and inline photos. Gallery shots from “Captured moments” can be inserted via the gallery icon as [Photo N] placeholders. Body is stored as Markdown and rendered safely like Phase 1.",
+        "previewEmpty": "Nothing to preview yet."
+      }
     },
     "detail": {
       "deleteConfirm": "Delete this entry permanently? (Cannot be undone.)",

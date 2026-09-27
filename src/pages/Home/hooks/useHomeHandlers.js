@@ -55,6 +55,7 @@ import {
   resolveKoreaDestinationFirstPassSync,
 } from '../lib/resolveKoreaDestinationFirstPass.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
+import { resolveExploreCityHubExact } from '../lib/exploreHubResolve.js';
 import { pickSeaBasinCurationSpot } from '../lib/seaBasinResolve.js';
 import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js';
 import {
@@ -66,7 +67,9 @@ import {
   locationToChoiceCandidate,
   prependLocalScenicToHubCandidates,
 } from '../lib/searchSuggestions.js';
-import { preferEnterSuggestion, placeNameMatchesSearchQuery } from '../lib/searchEnterMatch.js';
+import {
+  collectKoreaPoiTypeSearchCandidates,
+} from '../lib/koreaPoiTypeSearch.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   overlayGeocodeLatinOnHits,
@@ -787,6 +790,15 @@ export function useHomeHandlers({
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;
 
+      const poiTypeChoices = await collectKoreaPoiTypeSearchCandidates(query);
+      if (poiTypeChoices.length >= 1) {
+        return ensureDisambiguation(
+          query,
+          poiTypeChoices,
+          `'${query}' → 원하는 장소를 선택하세요`,
+        );
+      }
+
       // 동명 리/읍/면/동·bare 화이트리스트 — prefix 스냅(남양→남양주)보다 우선
       if (!isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {
         koHomonymPlaceTried = true;
@@ -863,7 +875,7 @@ export function useHomeHandlers({
       }
 
       // 도시 허브 exact (속초·파리) → 선택 카드 (임의 1곳 점프 금지)
-      const hubHit = resolveCityAttractionHub(query);
+      const hubHit = resolveExploreCityHubExact(query);
       if (hubHit) {
         let candidates = await buildHubCandidatesForEnter(hubHit);
         const spot =

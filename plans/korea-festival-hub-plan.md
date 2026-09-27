@@ -271,3 +271,26 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 - 축제 → hub → `/place/...`
 - `smoke:tourapi` festival/area PASS · 키 미노출
 - `git log` / 일지만으로 S0→현재 세션 추적 가능
+
+---
+
+## 9. Cloud 핸드오프 (축제 페이지 UI)
+
+| | |
+|--|--|
+| **상태** | **#8 push** · tip `44256af7` · PR [#322](https://github.com/catgeot/Days/pull/322) |
+| **브랜치** | `cursor/festival-sheet-ui-ec8b` |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 주소 아래 네이버·구글 검색 |
+| **VERIFY** | `smoke:festival-surface-search` · `smoke:korea-festival-nearby` · `vite build` |
+
+**다음 제시어**:
+
+```
+축제 페이지 #9, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-26-project-log.md
+@plans/korea-festival-hub-plan.md
+브랜치 cursor/festival-sheet-ui-ec8b · PR #322 · Preview /qa/festival-ui
+금지: 축제 시트 리팩터 · 본문 네이버 지도 직링크 · 이 축제 위치로 복귀 · feature에 plans/** 커밋
+작업: Preview /korea 축제 카드 — 탭을 열지 않아도 주소 아래 네이버 검색·구글 검색이 보이는지. 읽을거리에는 영상만. OK면 PR #322 병합.
+```

@@ -26,6 +26,10 @@ export {
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
 import { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveTripcomCurrency } from './tripcomPartnerLocale.js';
+import {
+  buildTripcomFlightTicketsHref,
+  resolveTripcomFlightTicketsDates,
+} from './tripcomFlightResultsUrl.js';
 import { resolveGygLocale, resolveGygCurrency } from './gygPartnerLocale.js';
 import {
   GYG_PARTNER_ID,
@@ -806,6 +810,8 @@ export const TRIPCOM_FLIGHT_AD = {
   height: 200,
   mobileWidth: 320,
   mobileHeight: 480,
+  // Trip.com 모바일 partners/ad iframe이 3rd-party 인증 오류(Authentication failed)로 빈 박스가 됨 → 네이티브 CTA 전환
+  mobileIframeUsable: false,
 };
 
 /** 제휴 호텔 검색 배너 (iframe) — 데스크톱 900×200 / 모바일 320×480 */
@@ -904,9 +910,11 @@ function resolveTripcomFlightTracking(options = {}) {
  *   mode?: 'flights' | 'ad' | 'packages',
  *   adId?: string,
  *   departureIata?: string,
+ *   arrivalIata?: string,
  *   tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' | 'event-detail-flight',
  *   departDate?: string,
  *   returnDate?: string,
+ *   tripType?: 'RT' | 'OW' | 'rt' | 'ow' | 'roundtrip' | 'oneway',
  *   adultCount?: number,
  *   childCount?: number,
  *   partnerLocale?: string,
@@ -915,7 +923,8 @@ function resolveTripcomFlightTracking(options = {}) {
  */
 export function buildTripcomPlannerFlightUrl(location, options = {}) {
   const { mode = 'flights', adId = TRIPCOM_FLIGHT_AD.adId, departureIata } = options;
-  const arrival = getPlannerFlightArrivalIata(location, options);
+  const arrivalOverride = normalizeTripcomIata(options.arrivalIata);
+  const arrival = arrivalOverride || getPlannerFlightArrivalIata(location, options);
   const { sub1, sub3 } = resolveTripcomFlightTracking(options);
   const partnerLocale =
     options.partnerLocale ?? getTripcomPartnerLocale();
@@ -930,42 +939,61 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     trip_sub3: sub3,
   });
 
-  let depart = String(departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT)
-    .trim()
-    .toUpperCase();
-  const arriveCode = arrival ? String(arrival).trim().toUpperCase() : null;
+  let depart = normalizeTripcomIata(departureIata) || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+  const arriveCode = arrival ? normalizeTripcomIata(arrival) : null;
   if (arriveCode && depart === arriveCode) {
     depart = TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
   }
   if (depart) {
     params.set('dAirportCode', depart);
+    params.set('dcity', depart.toLowerCase());
   }
   if (arriveCode) {
     params.set('aAirportCode', arriveCode);
+    params.set('acity', arriveCode.toLowerCase());
   }
 
   const departDate = normalizeTripcomFlightYmd(options.departDate);
   const returnDate = normalizeTripcomFlightYmd(options.returnDate);
+  const tripType = resolveTripcomFlightTripType(options, departDate, returnDate);
+  const isRoundTrip = tripType === 'RT';
   if (departDate) {
     params.set('ddate', departDate);
   }
-  if (returnDate && (!departDate || returnDate > departDate)) {
+  if (isRoundTrip && returnDate && (!departDate || returnDate > departDate)) {
     params.set('rdate', returnDate);
-    // rdate만으로는 편도 유지 — 왕복 라디오는 tripType=RT 필요
-    params.set('tripType', 'RT');
+  }
+  if (departDate) {
+    params.set('tripType', isRoundTrip ? 'RT' : 'OW');
+    params.set('triptype', isRoundTrip ? 'rt' : 'ow');
   }
 
   const adults = Number(options.adultCount);
+  const adultQty = Number.isFinite(adults) && adults > 0
+    ? Math.min(8, Math.max(1, Math.floor(adults)))
+    : 1;
   if (Number.isFinite(adults) && adults > 0) {
-    params.set('adult', String(Math.min(8, Math.max(1, Math.floor(adults)))));
+    params.set('adult', String(adultQty));
+    params.set('quantity', String(adultQty));
+  } else if (departDate) {
+    params.set('adult', '1');
+    params.set('quantity', '1');
   }
   const children = Number(options.childCount);
   if (Number.isFinite(children) && children >= 0) {
-    params.set('child', String(Math.min(8, Math.floor(children))));
+    const childQty = Math.min(8, Math.floor(children));
+    params.set('child', String(childQty));
+    params.set('childqty', String(childQty));
   }
 
   if (mode === 'ad') {
-    return `${origin}/partners/ad/${adId}?${params.toString()}`;
+    // Trip.com 제휴 ad iframe은 allianceId/SID/trip_sub1 등 공식 발급 파라미터만 전달
+    const adParams = new URLSearchParams({
+      Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+      SID: TRIPCOM_KR_PARTNER.sid,
+      trip_sub1: sub1,
+    });
+    return `${origin}/partners/ad/${adId}?${adParams.toString()}`;
   }
 
   if (mode === 'packages') {
@@ -1009,7 +1037,52 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     return `${packagesOrigin}/packages/list?${params.toString()}`;
   }
 
+  // /flights/ 홈은 항공+호텔 검색박스라 출도착이 비거나 이전 검색이 남음.
+  if (depart && arriveCode) {
+    const ticketsDates = resolveTripcomFlightTicketsDates({
+      tripType: options.tripType ?? options.tripWay,
+      departDate,
+      returnDate,
+    });
+    params.set('ddate', ticketsDates.ddate);
+    params.set('tripType', ticketsDates.tripType);
+    params.set('triptype', ticketsDates.tripType.toLowerCase());
+    if (ticketsDates.rdate) {
+      params.set('rdate', ticketsDates.rdate);
+    } else {
+      params.delete('rdate');
+    }
+    if (!params.get('quantity')) {
+      params.set('adult', '1');
+      params.set('quantity', '1');
+    }
+    params.set('class', 'y');
+    return buildTripcomFlightTicketsHref(origin, depart, arriveCode, params);
+  }
+
   return `${origin}/flights/?${params.toString()}`;
+}
+
+/** @param {unknown} value @returns {string | null} */
+function normalizeTripcomIata(value) {
+  const code = String(value || '').trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(code) ? code : null;
+}
+
+/**
+ * @param {{ tripType?: unknown, tripWay?: unknown }} options
+ * @param {string | null} departDate
+ * @param {string | null} returnDate
+ * @returns {'RT' | 'OW'}
+ */
+function resolveTripcomFlightTripType(options, departDate, returnDate) {
+  const raw = String(options?.tripType ?? options?.tripWay ?? '')
+    .trim()
+    .toLowerCase();
+  if (['ow', 'oneway', 'one-way', 'oway'].includes(raw)) return 'OW';
+  if (['rt', 'roundtrip', 'round-trip', 'round'].includes(raw)) return 'RT';
+  if (returnDate && departDate && returnDate > departDate) return 'RT';
+  return 'OW';
 }
 
 /** @param {unknown} value @returns {string | null} YYYY-MM-DD */

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePlaceGallery } from './hooks/usePlaceGallery';
+import { usePlaceReviewSeoStats } from '../../hooks/usePlaceReviewSeoStats';
 import PlaceCardExpanded from './modes/PlaceCardExpanded';
 import SEO from '../SEO';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -31,6 +32,21 @@ const PlaceCard = () => {
 
   const galleryData = usePlaceGallery(contextLocation);
 
+  const currentTab = tab || 'gallery';
+  const tabKey = ['wiki', 'reviews', 'gallery', 'video', 'planner'].includes(currentTab)
+    ? currentTab
+    : 'gallery';
+
+  const reviewPlaceSlug =
+    contextLocation?.id != null &&
+    (String(contextLocation.id).startsWith('search-') ||
+      String(contextLocation.id).startsWith('loc-'))
+      ? String(contextLocation.id)
+      : contextLocation?.slug || String(contextLocation?.id ?? '');
+  const reviewSeoStats = usePlaceReviewSeoStats(
+    tabKey === 'reviews' && reviewPlaceSlug ? reviewPlaceSlug : null,
+  );
+
   useEffect(() => {
     let timeoutId;
     if (!contextLocation && slug) {
@@ -44,11 +60,6 @@ const PlaceCard = () => {
 
   if (!contextLocation) return null;
 
-  const currentTab = tab || 'gallery';
-
-  const tabKey = ['wiki', 'reviews', 'gallery', 'video', 'planner'].includes(currentTab)
-    ? currentTab
-    : 'gallery';
   const locationDesc = getPlaceTabSeoDescription(contextLocation, locale, tabKey, t);
   const seoTitle = getPlaceTabSeoTitle(contextLocation, locale, tabKey);
   const seoKeywords = getPlaceSeoKeywords(contextLocation, locale, tabKey);
@@ -64,6 +75,7 @@ const PlaceCard = () => {
         location={contextLocation}
         tab={tabKey}
         galleryImages={tabKey === 'gallery' ? galleryData?.images : null}
+        reviewStats={tabKey === 'reviews' ? reviewSeoStats : null}
       />
       <PlaceCardExpanded
         location={contextLocation}

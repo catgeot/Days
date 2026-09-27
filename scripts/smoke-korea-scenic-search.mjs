@@ -172,9 +172,13 @@ assert.ok(
   'commitSearch tour region prefers curated/heritage match over stale tregion',
 );
 assert.ok(
-  pageSrc.includes('현 관광지 권역 0건이면') ||
-    pageSrc.includes('수도권+화엄사'),
-  'search auto-switches tour region when curated hits but tour region has 0',
+  pageSrc.includes('현 URL 권역에 Tour 0건일 때만') ||
+    pageSrc.includes('curN > 0) return'),
+  'search tour region auto-switch only when current region has 0 tour hits',
+);
+assert.ok(
+  pageSrc.includes('사용자가 고른 권역(curN>0)'),
+  'search keeps user-picked tour region when that region has matches',
 );
 assert.ok(
   pageSrc.includes('pickRegionFromTourCounts'),

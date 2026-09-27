@@ -102,6 +102,47 @@
       "submit": "변경 완료",
       "successStay": "비밀번호가 변경되었습니다.",
       "successAlert": "비밀번호가 성공적으로 변경되었습니다! 다시 로그인해주세요."
+    },
+    "account": {
+      "open": "프로필",
+      "closeProfile": "프로필 닫기",
+      "title": "프로필",
+      "subtitle": "필명, 사진, 비밀번호, 로그인 계정을 여기서 바꿉니다.",
+      "needLogin": "로그인 후 프로필을 바꿀 수 있습니다.",
+      "penName": "필명",
+      "penNameHint": "공개 로그북과 로고 패널에 이 이름이 보입니다.",
+      "save": "저장",
+      "saved": "저장했습니다.",
+      "saveFail": "필명을 저장하지 못했습니다.",
+      "viewPhoto": "{{name}} 프로필 사진",
+      "closePhoto": "프로필 사진 닫기",
+      "changePhoto": "사진 올리기",
+      "photoHint": "여러 장을 올릴 수 있습니다. 아래 썸네일을 누르면 대표 사진을 바꿀 수 있고, 숫자는 나와 다른 사람에게 보입니다.",
+      "pickCoverTitle": "대표 사진을 골라 주세요",
+      "pickCoverBody": "방금 올린 사진 중 프로필에 보일 사진을 탭하세요.",
+      "pickCoverHint": "대표 사진을 골라 주세요.",
+      "pickCoverSkip": "지금은 그대로 두기",
+      "photoCountLabel": "프로필 사진 {{count}}장",
+      "photoUpdated": "프로필 사진을 바꿨습니다.",
+      "photoFail": "사진을 올리지 못했습니다.",
+      "photoLimit": "사진은 {{max}}장까지입니다.",
+      "removePhoto": "이 사진 빼기",
+      "setCover": "대표 사진으로",
+      "prevPhoto": "이전 사진",
+      "nextPhoto": "다음 사진",
+      "publicLabel": "프로필 공개",
+      "publicOn": "다른 사람에게 사진과 장 수가 보입니다.",
+      "publicOff": "다른 사람에게 사진과 장 수가 보이지 않습니다.",
+      "publicSaved": "공개 설정을 저장했습니다.",
+      "password": "비밀번호 변경",
+      "accounts": "계정 추가",
+      "accountsHint": "같은 프로필에 Google·Kakao 로그인을 더할 수 있습니다.",
+      "connected": "연결됨",
+      "addProvider": "{{name}} 추가",
+      "email": "이메일",
+      "google": "Google",
+      "kakao": "Kakao",
+      "linkFail": "계정을 추가하지 못했습니다."
     }
   },
   "home": {
@@ -253,6 +294,9 @@
       "askMooniBadge": "AI",
       "disambiguationTitle": "원하는 장소를 선택하세요",
       "disambiguationBody": "위치가 여러 곳일 수 있어요. 카드를 누르면 해당 장소로 이동합니다.",
+      "paginationPrev": "이전",
+      "paginationNext": "다음",
+      "paginationPage": "{{page}} / {{total}}",
       "homonymChoiceTitle": "어느 지역의 {{query}}을 찾으시나요?",
       "homonymChoiceBody": "카드를 누르면 해당 장소로 이동합니다.",
       "more": "더 찾아보기",
@@ -439,7 +483,8 @@
       "signInBody": "로그인하고 나만의 버킷리스트를 만들고 지구본의 모든 기능을 제한 없이 이용할 수 있습니다.",
       "signIn": "로그인",
       "signOut": "로그아웃",
-      "changePassword": "비밀번호 변경"
+      "changePassword": "비밀번호 변경",
+      "backHome": "홈으로"
     },
     "agencies": {
       "title": "방문한 여행사",
@@ -679,7 +724,7 @@
         "nextHintEnjoy": "다른 단계도 보시려면 아래에서 선택해 주세요."
       },
       "esim": {
-        "choose": "유심 1종 선택",
+        "choose": "유심 · eSIM",
         "airalo": "Airalo",
         "holafly": "Holafly"
       },
@@ -792,6 +837,19 @@
           "routeDepart": "출발",
           "routeArrive": "도착",
           "routeEditable": "자동 반영 · 배너에서 수정 가능",
+          "nativeDepartDate": "가는 날",
+          "nativeReturnDate": "오는 날",
+          "nativeTripType": "여정 유형",
+          "nativeRoundTrip": "왕복",
+          "nativeOneWay": "편도",
+          "nativeSwap": "출발·도착 바꾸기",
+          "nativeAirportSearch": "공항 이름 또는 코드",
+          "nativeDateRange": "일정",
+          "nativeDateRangeOpen": "달력에서 가는 날과 오는 날 선택",
+          "nativePickDepart": "가는 날을 고르세요",
+          "nativePickReturn": "오는 날을 고르세요",
+          "nativeCalendarPrev": "이전 달",
+          "nativeCalendarNext": "다음 달",
           "fullScreenSearch": "전체 화면 검색",
           "noArrivalFallback": "도착 공항을 찾지 못해 일반 검색으로 열립니다.",
           "tripcomFlights": "Trip.com 항공권"
@@ -800,8 +858,11 @@
           "title": "항공권 실시간 검색",
           "search": "검색",
           "autoFill": "Trip.com에서 출발·도착 공항이 자동 입력됩니다",
+          "chooseDates": "상단 검색폼에서 가는 날·오는 날을 고른 뒤 검색합니다",
           "ariaWithRoute": "Trip.com 항공권 검색 — {{depart}}에서 {{arrive}}까지",
-          "ariaGeneric": "Trip.com 항공권 실시간 검색"
+          "ariaGeneric": "Trip.com 항공권 실시간 검색",
+          "ariaScrollWithRoute": "상단 항공권 검색폼으로 이동 — {{depart}}에서 {{arrive}}까지",
+          "ariaScrollGeneric": "상단 항공권 검색폼으로 이동"
         },
         "twelveGo": {
           "routeLabel": "페리·교통 검색",
@@ -1057,6 +1118,8 @@
       "reads": "{{count}} 읽음",
       "loginPrompt": "로그인 하고 리뷰에 참여하고 경험을 공유하세요.",
       "count": "리뷰 {{count}}개",
+      "countSplit": "여행자 리뷰 {{traveler}} · GATEO 에디터 리뷰 {{editorial}}",
+      "noTravelerRating": "아직 여행자 평점이 없어요",
       "write": "작성",
       "loginCta": "로그인하고 첫 리뷰를 남겨보세요!",
       "loginHint": "다른 여행자들에게 큰 도움이 됩니다.",
@@ -1081,7 +1144,8 @@
       "emptyMine": "작성한 리뷰가 없습니다.",
       "emptyAll": "아직 작성된 리뷰가 없습니다.",
       "blogBadge": "블로그",
-      "galleryViewerAlt": "갤러리 뷰어 이미지"
+      "galleryViewerAlt": "갤러리 뷰어 이미지",
+      "thumbnailPreviewAria": "리뷰 사진 미리보기"
     },
     "common": {
       "bookmark": "즐겨찾기",
@@ -1790,6 +1854,10 @@
       "traveler": "여행자",
       "attachment": "첨부 {{n}}"
     },
+    "editorial": {
+      "badge": "GATEO 에디터",
+      "secondaryNotice": "AI 보조 · 실제 방문기 아님"
+    },
     "sidebar": {
       "travelLogTitle": "나만의 여행 기록",
       "travelLogBody": "로그인하고 전 세계 명소 리뷰와 생생한 여행기를 작성해보세요."
@@ -1819,13 +1887,42 @@
       "clearSearch": "검색어 지우기",
       "viewGrid": "그리드",
       "viewList": "자세히",
+      "viewColumn": "1열",
+      "viewGroup": "기록 배치",
       "emptyTitle": "기록된 여정이 없습니다.",
       "emptyBody": "당신만의 첫 번째 이야기를 남겨보세요.",
       "emptyCta": "새 기록 작성하기",
       "noResults": "\"{{term}}\"에 대한 기억을 찾을 수 없습니다.",
       "showAll": "전체 목록 보기",
       "footer": "총 {{count}}개의 기록",
-      "footerCompact": "(요약됨)"
+      "footerCompact": "(요약됨)",
+      "readCount": "읽음 {{count}}",
+      "placeGroup": "여행지",
+      "placeAll": "전체",
+      "noPlaceResults": "\"{{place}}\" 기록은 없습니다."
+    },
+    "meta": {
+      "readingMinutes": "{{count}}분 읽기",
+      "readingMinutesShort": "{{count}}분",
+      "readingAria": "읽는 시간 {{count}}분",
+      "samePlace": "같은 장소 {{count}}",
+      "samePlaceAria": "같은 장소 기록 {{count}}개"
+    },
+    "reactions": {
+      "like": "좋아요",
+      "likeAria": "좋아요 {{count}}",
+      "unlikeAria": "좋아요 취소",
+      "comment": "댓글",
+      "commentAria": "댓글 {{count}}",
+      "commentsTitle": "댓글",
+      "placeholder": "짧은 댓글을 남겨 주세요",
+      "submit": "등록",
+      "delete": "삭제",
+      "deleteConfirm": "이 댓글을 삭제할까요?",
+      "empty": "아직 댓글이 없습니다.",
+      "loginConfirm": "로그인하면 좋아요와 댓글을 남길 수 있습니다. 로그인 페이지로 이동할까요?",
+      "loginToComment": "로그인 후 댓글을 남길 수 있습니다.",
+      "saveFail": "저장하지 못했습니다. 잠시 후 다시 시도해 주세요."
     },
     "calendar": {
       "month": "{{year}}년 {{month}}월"
@@ -1980,6 +2077,11 @@
       "penNameSaved": "필명이 저장되었습니다.",
       "compressing": "기록의 용량을 최적화 중...",
       "progress": "Progress: {{current}} / {{total}}",
+      "titleFieldLabel": "제목",
+      "titleHint": "짧게. 긴 문장은 본문 리드로",
+      "dekLabel": "부제 · 한 줄 요약",
+      "dekPlaceholder": "리드 문장이나 여정을 소개하는 한 줄 (선택)",
+      "dekHint": "비우면 공개 화면에서 본문 첫 문단을 부제로 씁니다.",
       "titlePlaceholder": "이번 여정을 한 문장으로 정의한다면?",
       "aiEssay": "AI 에세이 작성",
       "aiSns": "AI SNS 인플루언서",
@@ -1998,7 +2100,26 @@
         "3": "마무리 원고를 진행 중입니다..."
       },
       "defaultTitle": "{{place}}에서의 기록",
-      "defaultPlace": "어느 멋진 곳"
+      "defaultPlace": "어느 멋진 곳",
+      "editor": {
+        "modeEdit": "편집",
+        "modePreview": "미리보기",
+        "bold": "굵게",
+        "italic": "기울임",
+        "heading2": "제목(큰)",
+        "heading3": "제목(작은)",
+        "link": "링크",
+        "linkUrlPrompt": "링크 URL을 입력하세요 (https://…)",
+        "linkLabel": "링크 텍스트",
+        "divider": "구분선",
+        "insertBodyImage": "본문에 사진 삽입",
+        "insertMoment": "장면 갤러리 사진 삽입",
+        "momentSlot": "장면 {{n}}",
+        "bodyImageAlt": "여행 사진",
+        "bodyImageFail": "본문 사진 업로드에 실패했습니다. 로그인 상태와 네트워크를 확인해 주세요.",
+        "hint": "툴바로 제목·굵게·링크·본문 사진을 넣을 수 있습니다. 「장면의 포착」 사진은 갤러리 아이콘으로 [사진 N] 자리표시를 넣을 수 있습니다. 저장 형식은 마크다운이며, 공개 글은 Phase 1과 동일하게 안전하게 렌더됩니다.",
+        "previewEmpty": "미리볼 본문이 없습니다."
+      }
     },
     "detail": {
       "deleteConfirm": "이 기록을 영구적으로 삭제하시겠습니까? (삭제 후 복구할 수 없습니다)",

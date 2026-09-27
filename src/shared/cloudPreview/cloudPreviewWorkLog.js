@@ -5,9 +5,9 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '탐색 Enter',
+  title: '탐색 hub 썸네일',
   sessionNo: 1,
-  sessionPhase: '도시 허브 리스트',
+  sessionPhase: '대전 신중앙시장 Tour ID',
   branch: 'cursor/search-enter-hub-2018',
   previewPath: '/explore',
   qaShareSlug: 'search-enter-hub',
@@ -24,12 +24,380 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-27-search-enter-hub-thumbnail-daejeon-market',
+    session: '탐색 hub 썸네일 #1, 대전 신중앙시장 Tour ID',
+    title: '대전 신중앙시장 선택 카드 Tour ID',
+    detail:
+      'Explore 「대전」선택 카드의 신중앙시장은 hub JSON에 contentId가 없어 Tour 썸네일 조회가 스킵되었습니다. koreaThemeRegionTour SSOT(1434477·대전 중앙시장)를 hub 후보 생성 시 병합해 contentId를 붙였습니다. coord 큐 후보 ID는 넣지 않았습니다. Preview /qa/search-enter-hub — /explore 「대전」→ 신중앙시장 썸네일·요약.',
+    at: '2026-09-27T19:15:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-area-thumbs',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주 권역 빈 썸네일',
+    detail:
+      '팔경 밖 공주 관광지 중 Tour firstimage가 비어 아이콘이던 청벽산(2755172)·금강신관공원(2756156)·명탄서원(1956330)·계룡산 중악단(127239)에 공식 사진을 연결했습니다. JSON contentId·scenic 승격은 없습니다. 청벽산은 창벽과 같은 마암리 절벽 사진이고, 금강신관공원은 지역 대표 명소 행입니다. Preview /qa/palgyeong-use — 검색「공주」·/korea/theme/scenic?hub=gongju.',
+    at: '2026-09-27T12:30:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-thumbs',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주10경 마곡사·무령왕릉 썸네일',
+    detail:
+      '공주10경 마곡사·무령왕릉은 JSON contentId가 있어도 Tour firstimage가 비어 목록이 랜드마크 아이콘이었습니다. contentId는 유지하고 공주시 문화관광 10경 공식 사진(마곡사 전각·무령왕릉 봉분)을 썸네일로 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gongju 7경·8경.',
+    at: '2026-09-27T12:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-overlay',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주10경 창벽',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 공주10경 결손 1건(창벽)의 공공 공식 팩트 개요·주소·공주시 문화관광 공식 사진을 보강했습니다. 창벽은 반포면 마암리 산4-4의 창벽산(청벽산, 폭 100m·높이 25m·해발 277m·산행 4.3km·문의 041-840-2836)입니다. 신기동 월성산·금강 물길·계룡산·석장리와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gongju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T11:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-5-header-overlap',
+    session: '프로필 #5, 헤더 터치 가림',
+    title: '본문 스크롤이 헤더를 덮던 문제',
+    detail:
+      '모바일 /blog에서 본문 flex h-full 때문에 스크롤 영역이 헤더와 겹쳐 우상단 프로필 탭이 막혔습니다. min-h-0·sticky z-100 헤더로 수정. Preview 하단 「모바일 위젯 로그」에 blog.header.layout(overlap)·blog.header.tap(hit)이 찍힙니다 — overlap false·hit profile-btn이면 정상.',
+    at: '2026-09-27T11:05:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-5-header-tap',
+    session: '프로필 #5, 헤더 프로필 탭',
+    title: '로그북 헤더 프로필·닫기 탭',
+    detail:
+      '로그북 /blog 모바일 우측 상단은 아이디와 프로필만 보이고, 프로필을 누르면 페이지 이동 없이 프로필 창이 바로 열립니다. 닫기와 사진 보기 닫기는 터치 영역을 키웠습니다. 사진 장 수는 프로필 사진을 열었을 때와 프로필 카드 사진 위에만 보입니다. Preview /qa/profile — 헤더 프로필 열기·닫기, 로고 패널 프로필 닫기, 사진 라이트박스 장 수.',
+    at: '2026-09-27T11:00:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-4-header-count',
+    session: '프로필 #4, 헤더 사진 숫자',
+    title: '아이디 옆 사진 숫자 제거',
+    detail:
+      '로그북 홈 우측 상단은 아이디와 프로필만 있고, 사진 숫자는 없습니다. 숫자는 프로필 사진을 열었을 때와 프로필 사진 위에만 보입니다. 공개 글·댓글 작성자 이름 옆에도 숫자는 없습니다. Preview /qa/profile — /blog 모바일 헤더에서 프로필이 바로 열리는지, 작성자 사진을 열면 장 수가 보이는지.',
+    at: '2026-09-27T10:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-3-in-panel',
+    session: '프로필 #3, 패널 안 프로필',
+    title: '로고 패널 안 프로필·사진 여러 장',
+    detail:
+      '로고 패널에서 프로필을 열면 패널 안에 남고, 닫아도 지구본 홈으로 나가지 않습니다. 프로필은 위아래로만 스크롤됩니다. 사진은 여러 장이고 숫자가 보이며, 공개를 끄면 다른 사람에게 사진과 장 수가 보이지 않습니다. Preview /qa/profile — 로그인 후 로고 패널 카드, 사진 추가, 공개 스위치, 공개 글 작성자 숫자.',
+    at: '2026-09-27T09:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-2-photo-card',
+    session: '프로필 #2, 사진 카드',
+    title: '로고 패널 프로필 카드·원본 사진',
+    detail:
+      '로고 패널은 왼쪽 프로필 카드, 오른쪽은 방문한 여행사와 나의 여행 기록, 그 아래 버킷리스트입니다. 카드는 프로필로 갑니다. 무니 질문 옆 사진과 프로필 사진 영역을 키웠습니다. 공개 글의 작성자 사진을 누르면 원본이 열립니다. Preview /qa/profile — 로그인 후 로고 패널 좌우 배치, /account 사진, 무니 질문, 공개 글 작성자 사진.',
+    at: '2026-09-27T09:20:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-78-goseong-overlay',
+    session: '팔경 활용 #78, 고성 결손 오버레이',
+    title: '고성8경 마산봉설경',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 고성8경 결손 1건(마산봉설경)의 공공 공식 팩트 개요·주소·고성군 문화관광 공식 사진을 보강했습니다. 마산봉설경은 간성읍 흘리의 제8경(진부령 인근 백두대간·남한 제2봉·군내 대간 23.4km·흘리 숲길 6.1km·산림과 033-680-3382)입니다. 경남 고성·창원 마산·울산바위·통일전망대와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T09:00:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-1-page',
+    session: '프로필 #1, 프로필 페이지',
+    title: '프로필 페이지·보관소 1열',
+    detail:
+      '기록 보관소 기본 배치를 1열로 바꿨습니다. 로그북 헤더와 로고 패널의 비밀번호 변경은 프로필로 갑니다. /account에서 필명, 프로필 사진, 비밀번호, Google·Kakao 계정 추가를 합니다. 사진은 무니 질문, 로고 패널, 로그북 작성자 옆에 보입니다. Preview /qa/profile — /blog 공개 피드는 1열, 로그인 후 프로필에서 사진을 올리면 헤더·무니 질문에 같은 사진.',
+    at: '2026-09-27T08:20:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-21-korean-city-chips',
+    session: '로그북 #21, 한국 주소는 도시 칩',
+    title: '한국 주소는 도시 칩',
+    detail:
+      '칩 줄은 그대로 하나입니다. 현재 위치로 저장된 한국 주소는 도시로 모입니다. 춘천·춘천시 소양로3가·춘천시 퇴계동은 칩 「춘천」입니다. 보라카이·아이슬란드·길리 메모는 작성한 이름 그대로이고, 파리 근교는 파리가 아닙니다. 카드에 적힌 주소 문자열은 그대로입니다. Preview /qa/logbook-reads — /blog 공개 피드에서 춘천 칩 하나, 카드 주소는 춘천시 퇴계동처럼 긴 문자열.',
+    at: '2026-09-27T07:50:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-77-gyeongju-overlay',
+    session: '팔경 활용 #77, 경주 결손 오버레이',
+    title: '경주8怪 나원백탑',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 경주8怪 결손 1건(나원백탑)의 공공 공식 팩트 개요·주소·국가유산청 공식 사진을 보강했습니다. 나원백탑은 현곡면 라원리 676의 경주 나원리 오층석탑(1962-12-20 국보·통일신라 초기·2층 기단 5층 탑신·1995-11~1996-07 해체수리·무구정광대다라니경)입니다. 장항리 오층석탑·나원사·남산부석·불국영지·백율사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gyeongju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T07:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-18-place-chips',
+    session: '로그북 #18, 여행지 분류',
+    title: '보관소 여행지 분류 칩',
+    detail:
+      '기록 보관소 검색 아래에 여행지 칩을 붙였습니다. 전체와 여행지마다 글 수가 보이고, 칩을 누르면 그 장소 글만 남습니다. 다시 누르거나 전체를 누르면 돌아옵니다. 위치 미상은 칩에 넣지 않습니다. 글이 늘면 칩은 가로로 스크롤됩니다. Preview /qa/logbook-reads — /blog 공개 피드에서 여행지 칩을 눌러 카드가 그 장소만 남는지.',
+    at: '2026-09-27T06:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-76-jangheung-overlay',
+    session: '팔경 활용 #76, 장흥 결손 오버레이',
+    title: '장흥9경 선학동마을·하늘빛수목정원',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 장흥9경 결손 2건(선학동마을·하늘빛수목정원)의 공공 공식 팩트 개요·주소·디지털장흥문화대전 공식 사진을 보강했습니다. 선학동마을은 회진면 가학회진로 1212(7경, 산저·천년학 주막·2006 유채·메밀 23㏊·2017 장흥 9경), 하늘빛수목정원은 용산면 장흥대로 2746(9경, 2019-01-01 전남 제8호 민간정원·함지봉)입니다. 이청준 생가·소등섬·편백숲 우드랜드·완도수목원과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jangheung 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T06:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-75-uiryeong-overlay',
+    session: '팔경 활용 #75, 의령 결손 오버레이',
+    title: '의령9경 백산안희제 생가·호암이병철 생가',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의령9경 결손 2건(백산안희제선생 생가·호암이병철선생 생가)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 백산안희제선생 생가는 부림면 입산로2길 37(8경, 1885 출생·1993 문화유산자료·1915 중수·국가유산청 사진), 호암이병철선생 생가는 정곡면 호암길 22-4(9경, 1851 한옥·10–17시 월요휴관·호암재단 사진)입니다. 곽재우 생가·부산 백산상회·용인 호암미술관과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiryeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T05:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-17-reaction-words',
+    session: '로그북 #17, 본문 반응 문구',
+    title: '본문은 좋아요·댓글 단어, 카드는 그래프·붉은 하트',
+    detail:
+      '카드의 좋아요·댓글·조회는 좁은 칸이라 아이콘을 유지합니다. 조회수는 눈 대신 그래프, 하트는 누르기 전에도 붉은 테두리입니다. 글을 열면 머리의 좋아요와 댓글은 아이콘 대신 단어로 나옵니다. Preview /qa/logbook-reads — /blog 카드의 그래프·붉은 하트, 글을 열어 좋아요·댓글 단어.',
+    at: '2026-09-27T05:30:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-16-column',
+    session: '로그북 #16, 1열 그리드',
+    title: '보관소 1열 카드',
+    detail:
+      '기록 보관소 검색 옆 배치를 자세히·1열·그리드 세 버튼으로 나눴습니다. 1열은 사진이 위인 카드 그대로 한 줄에 하나씩 보여 제목과 요약이 넓게 읽힙니다. 기본은 그리드입니다. 좋아요 확인 창의 긴 주소는 프리뷰 호스트이고, 본문 문구는 그대로입니다. Preview /qa/logbook-reads — /blog 공개 피드에서 1열을 눌러 카드가 한 줄인지.',
+    at: '2026-09-27T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-15-reactions',
+    session: '로그북 #15, 좋아요·댓글 연동',
+    title: '피드 카드 슬롯에 좋아요·댓글',
+    detail:
+      '공개 피드 카드 하단(읽는 시간·읽은 수 옆)에 하트와 댓글 수를 붙였습니다. 하트는 로그인 후 토글되고, 댓글 수는 글 하단 댓글로 이어집니다. 숫자는 반응 테이블이 올리고, 화면에서 view_count·like_count를 직접 고치지 않습니다. 컬럼이 없으면 아이콘을 숨깁니다. Preview /qa/logbook-reads — /blog 공개 피드에서 하트와 댓글 수, 글을 열어 댓글 등록.',
+    at: '2026-09-27T02:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-74-cheongdo-overlay',
+    session: '팔경 활용 #74, 청도 결손 오버레이',
+    title: '청도 관광 9경 새마을운동발상지·섶마리한옥마을',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 청도 관광 9경 결손 2건(청도 새마을운동발상지기념공원·청도 섶마리한옥마을)의 공공 공식 팩트 개요·주소·디지털청도문화대전 공식 사진을 보강했습니다. 새마을운동발상지기념공원은 청도읍 새마을1길 34 신도마을(2경, 2009 기념관·2011 발상지 공원·대통령 전용 열차·신거역), 섶마리한옥마을은 금천면 신지리 고택 마을(5경, 운강고택 선암로 474·만화정·국가민속문화유산)입니다. 구미 새마을운동테마공원·신화랑풍류마을·하회·양동마을과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=cheongdo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T01:30:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-73-yeongcheon-overlay',
+    session: '팔경 활용 #73, 영천 결손 오버레이',
+    title: '영천9경 벚꽃 백리길·별별미술마을',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영천9경 결손 2건(영천댐 벚꽃 백리길·영천 별별미술마을)의 공공 공식 팩트 개요·주소·한국관광공사 공식 사진을 보강했습니다. 벚꽃 백리길은 임고면 신방로 19 일원 영천호 일주 40km(7경, 1980 준공 댐 높이 42m·9,640만 톤), 별별미술마을은 화산면 가상리 649 지붕 없는 미술관(9경, 2011 마을미술·작품 62점)입니다. 임고강변공원 벚꽃길·보현산천문대·시안미술관·한의마을과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongcheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T01:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-14-card-redesign',
+    session: '로그북 #14, 카드 디자인 리뉴얼',
+    title: '피드 카드 정보 구조 및 하단 메타 슬림화',
+    detail:
+      '이미지 위에 떠 있던 큰 날짜 배지를 본문 상단(에디터 뱃지/작성자 옆)으로 자연스럽게 통합하고, 사진 추가 배지(+N)는 썸네일 우측 하단 뱃지로 정돈했습니다. 2행으로 분산되어 복잡했던 하단 메타를 [좌측 장소 / 우측 읽는 시간·조회수] 단일 행으로 깔끔하게 통합하여 향후 좋아요·댓글 아이콘이 들어갈 슬롯 공간을 확보했습니다. Preview /qa/logbook-reads — /blog 공개 피드 카드의 정보 위계와 여백이 한결 정돈되었는지.',
+    at: '2026-09-27T01:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-72-ulsan-overlay',
+    session: '팔경 활용 #72, 울산 결손 오버레이',
+    title: '울산12경 가지산 사계·반구대암각화',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 울산12경 결손 2건(울산 가지산 사계·울산 반구대암각화)의 공공 공식 팩트 개요·주소·울산광역시 문화관광 12경 공식 사진을 보강했습니다. 가지산 사계는 울주군 상북면 해발 1,241m 영남알프스 주봉(3경, 1979 경남 도립공원·천연기념물 462호 철쭉·824년 석남사), 반구대암각화는 언양읍 대곡리 991-3 국보 285호(6경, 2025-07-12 반구천의 암각화 세계유산·그림 312점)입니다. 신불산 억새평원·황매산 철쭉·천전리 각석·울산암각화박물관과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=ulsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T00:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-13-reading-place',
+    session: '로그북 #13, 읽는 시간·같은 장소 수',
+    title: '카드와 본문에 읽는 시간·같은 장소',
+    detail:
+      '공개 피드 카드와 글 본문 머리(날짜·장소 줄)에 읽는 시간과 같은 장소 기록 수를 넣었습니다. 본문에는 읽은 수도 같이 보입니다. 같은 장소 숫자는 공백을 맞춘 장소 이름 기준이고, 위치 미상은 빠집니다. 본문의 같은 장소 숫자는 그 장소 피드로 이어집니다. 내 기록 카드·내 글에는 읽은 수가 없고, 내 글의 같은 장소 수는 내 기록 기준입니다. Preview /qa/logbook-reads — /blog 공개 피드 카드와 글을 열어 분·같은 장소·읽은 수가 본문 머리에도 있는지.',
+    at: '2026-09-27T00:45:00.000Z',
+  },
+  {
+    id: '2026-09-27-scenic-mooni-1-fab',
+    session: '명소홈 #1, 본문 무니 FAB',
+    title: '명소 본문 무니는 축제와 같은 떠 있는 버튼',
+    detail:
+      '명소홈 상세 본문의 「무니에게 묻기」를 뺐습니다. 축제 본문처럼 오른쪽 무니 버튼이 뜨고, 위로가 보이면 그 위로 올라갑니다. 버튼을 누르면 그 명소에 묶인 채팅이 열립니다. Preview /qa/scenic-mooni — /korea/theme/scenic?spot=gyeongbokgung 본문에서 떠 있는 무니·읽을거리에는 영상만.',
+    at: '2026-09-27T00:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-12-public-reads',
+    session: '로그북 #12, 공개 피드 읽음',
+    title: '공개 피드 카드에 읽은 수',
+    detail:
+      '로그북 홈 공개 피드 카드 하단에 눈 아이콘과 읽은 수를 넣었습니다. 공개 글을 열면 브라우저 세션당 1회 올라갑니다. view_count 마이그레이션은 적용되어 있고, 기존 글은 0부터입니다. Preview /qa/logbook-reads — /blog 공개 피드에서 카드를 연 뒤 돌아오면 숫자가 1 오르는지.',
+    at: '2026-09-27T00:20:00.000Z',
+  },
+  {
+    id: '2026-09-26-palgyeong-use-71-yongin-overlay',
+    session: '팔경 활용 #71, 용인 결손 오버레이',
+    title: '용인8경 조비산·어비낙조',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 용인8경 결손 2건(조비산·어비낙조)의 공공 공식 팩트 개요·주소·용인시 문화관광 8경 공식 사진을 보강했습니다. 조비산은 백암면 용천리 해발 294.5m 조망(6경, 용천리·석천리·장평리·역적산), 어비낙조는 이동읍 어비리 357 송전저수지 노을(8경, 이동저수지·경기도에서 가장 큰 저수지)입니다. 석성산 일출·광교산·구봉산·가실벚꽃·궁평낙조와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yongin 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T23:58:00.000Z',
+  },
+  {
+    id: '2026-09-26-palgyeong-use-70-hwaseong-overlay',
+    session: '팔경 활용 #70, 화성 결손 오버레이',
+    title: '화성8경 용주사 범종·입파홍암',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 화성8경 결손 2건(용주사 범종·입파홍암)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 용주사 범종은 용주로 136 국보 동종·높이 145㎝·지름 87㎝(2경, 1964 국보 제120호·2021 재지정), 입파홍암은 우정읍 입파길 24-15 입파도 북쪽 붉은 기암(6경, 궁평항 뱃길 약 50분)입니다. 융건릉·제부도·궁평낙조·국화도·수원 화성과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwaseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T16:40:00.000Z',
+  },
+  {
+    id: '2026-09-26-palgyeong-use-69-ansan-pungdo-thumb',
+    session: '팔경 활용 #69, 안산 풍도 썸네일',
+    title: '안산9경 5경 풍도 썸네일',
+    detail:
+      '사람 Preview에서 안산 5경 풍도만 랜드마크 아이콘이었습니다. JSON contentId 126720은 유지하고 Tour firstimage가 비어 목록·검색 사진이 없었습니다. LOCAL_SCENIC_MEMBER_OVERLAYS에 안산시 문화관광 12경 공식 사진과 풍도동·대부도 24km·풍도바람꽃 개요를 넣었습니다. 2경 대부도·화성 제부도와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=ansan 5경 썸네일.',
+    at: '2026-09-26T15:10:00.000Z',
+  },
+  {
+    id: '2026-09-26-palgyeong-use-69-ansan-overlay',
+    session: '팔경 활용 #69, 안산 결손 오버레이',
+    title: '안산9경 시화호조력발전소·다문화거리',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 안산9경 결손 2건(시화호조력발전소·다문화거리)의 공공 공식 팩트 개요·주소·안산시 문화관광 12경 공식 사진을 보강했습니다. 시화호조력발전소는 단원구 대부황금로 1927 2011년 준공·연 약 5억 5천만 kWh·달전망대(1경), 다문화거리는 다문화길 16 일대 2009년 다문화마을특구(8경)입니다. 대부도·안산갈대습지·안산 시화호·시흥 오이도·인천차이나타운과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=ansan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-26-palgyeong-use-68-seocheon-overlay',
+    session: '팔경 활용 #68, 서천 결손 오버레이',
+    title: '서천9경 장항송림·유부도',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 서천9경 결손 2건(장항송림산림욕장과 장항스카이워크·유부도와 서천갯벌)의 공공 공식 팩트 개요·주소·서천군 문화관광 9경 공식 사진을 보강했습니다. 장항송림은 장항읍 장항산단로34번길 122-16 1954년 곰솔 방풍림·스카이워크 15m·236m(8경), 유부도는 유부도길6번길 3 서천갯벌 68.09㎢·2021 유네스코·2009 람사르(9경)입니다. 춘장대·금강하굿둑·울돌목 스카이워크·고창·신안·보성순천 갯벌과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=seocheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T10:50:00.000Z',
+  },
+  {
+    id: '2026-09-26-festival-ui-8-surface-search',
+    session: '축제 페이지 #8, 검색 링크 표면',
+    title: '네이버·구글 검색을 본문 표면으로',
+    detail:
+      '읽을거리 안의 네이버 검색·구글 검색을 주소 아래 표면으로 옮겼습니다. 이 축제 위치로와 홈 지도 핀 이동은 뺐습니다. Preview /qa/festival-ui — /korea 축제 카드에서 탭을 열지 않아도 네이버·구글이 보이는지.',
+    at: '2026-09-26T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-26-festival-ui-7-home-map',
+    session: '축제 페이지 #7, 본문은 홈 지도',
+    title: '본문 위치는 축제 홈 지도',
+    detail:
+      '본문 「이 축제 위치로」는 네이버 지도 대신 축제 홈 지도를 열고 그 핀으로 이동합니다. 장소 정보·길찾기는 읽을거리의 네이버 검색에 두었습니다. Preview /qa/festival-ui — /korea 축제 카드에서 버튼을 누르면 본문이 닫히고 홈 지도가 그 축제로 이동하는지.',
+    at: '2026-09-26T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-26-festival-ui-6-naver-map',
+    session: '축제 페이지 #6, 본문 네이버 지도',
+    title: '축제 본문 지도에서 보기',
+    detail:
+      '축제 본문 주소 아래에 지도에서 보기 버튼을 두었습니다. 네이버 지도 검색어는 축제명이 아니라 행사 장소(신트리공원 등)이고, 장소가 일대·도로뿐이면 도로명 주소로 엽니다. Preview /qa/festival-ui — /korea 축제 카드에서 주소 아래 버튼이 네이버 지도의 장소·주소로 열리는지.',
+    at: '2026-09-26T10:40:00.000Z',
+  },
+  {
+    id: '2026-09-26-palgyeong-use-67-sancheong-overlay',
+    session: '팔경 활용 #67, 산청 결손 오버레이',
+    title: '산청9경 황매산 철쭉·남명조식유적지',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 산청9경 결손 2건(황매산 철쭉·남명조식유적지)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 황매산 철쭉은 차황면 법평리 1,113.1m 5월 철쭉 평전(3경, 한뫼산·삼무의 산·산청·합천 철쭉제), 남명조식유적지는 시천면 사리 384 사적 산천재·덕천서원(7경, 1561 산천재·1576 덕천서원·남명매)입니다. 합천8경 황매산·일림산 철쭉·도산서원·남사예담촌과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=sancheong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T10:20:00.000Z',
+  },
+  {
+    id: '2026-09-26-palgyeong-use-66-hongcheon-thumbs',
+    session: '팔경 활용 #66, 홍천 썸네일',
+    title: '홍천9경 미약골·가령폭포 썸네일',
+    detail:
+      '사람 Preview에서 홍천 팔경 3경 미약골·5경 가령폭포가 랜드마크 아이콘이었습니다. #2 오버레이는 가리산·금학산·살둔계곡·삼봉약수뿐이고, 미약골(2613261)·가령폭포(125658)는 JSON contentId만 있어 Tour firstimage가 비면 목록 사진이 없습니다. JSON contentId 기입 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 홍천군 문화관광 9경 공식 사진(미약골 1장·가령폭포 3장)과 주소·개요를 넣었습니다. 용소계곡·살둔·가리산·문경 용추·동해 용추와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 3경·5경 썸네일.',
+    at: '2026-09-26T09:50:00.000Z',
+  },
+  {
+    id: '2026-09-21-korea-theme-scenic-detail-prose',
+    session: '명승 본문 가독성 #1, ThemeSpotDetailModal 프로즈',
+    title: '명승·관광지 상세 개요 문단·연한 카드',
+    detail:
+      '축제 상세와 같은 readableDetail 공유 모듈로 ThemeSpotDetailModal 개요(highlight+prose)·긴 이용안내/안내 항목만 prose 적용. Preview /qa/korea-theme → 경복궁·긴 개요 관광지 1건에서 개요 문단·카드 확인.',
+    at: '2026-09-21T08:50:00.000Z',
+  },
+  {
+    id: '2026-08-09-korea-theme-home-category-chip-anchor',
+    session: '테마여행 #68, 카테고리 하위칩 겹침',
+    title: 'PC 카테고리 하위칩 펼침 시 상단 밀림 방지',
+    detail:
+      '테마 카테고리 클릭 후 나라/하위칩이 생기면 세로 중앙 정렬 때문에 레일이 위로 밀려 명승 버튼과 겹치던 문제를, 투톱 아래 상단 고정(`justify-start`)으로 바꿔 아래로만 확장되게 고쳤습니다. Preview 홈(PC)에서 카테고리 클릭 후에도 명승과 겹치지 않는지 확인해 주세요.',
+    at: '2026-08-09T12:00:00.000Z',
+  },
+  {
+    id: '2026-09-19-festival-ui-5-footer-mooni',
+    session: '축제 페이지 #5, 푸터·무니 겹침',
+    title: '본문 하단 여유·무니/위로 분리·밝은 무니',
+    detail:
+      '축제 상세 본문 하단 패딩을 늘려 Trust 푸터와 닫기 버튼이 겹치지 않게 했습니다. 우측 무니는 위로 버튼이 보일 때 그 위로 올라가고, FAB·채팅은 하늘·민트 톤으로 바꿨습니다. Preview /qa/festival-ui — /korea 축제 카드 본문 끝까지 스크롤 → 닫기·푸터·무니·위로.',
+    at: '2026-09-19T07:40:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-2-page-size-10',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 목록을 검색 표준 10개씩 넘기게',
+    detail:
+      '사람 Preview에서 8개가 적어 보였습니다. 검색 결과 페이지 표준(구글·네이버 10건)에 맞춰 한 장 10개로 늘립니다. Preview git 홈「향교」엔터 → 1페이지 10장·다음.',
+    at: '2026-09-19T07:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-65-boseong-overlays',
+    session: '팔경 활용 #65, 보성 결손 오버레이',
+    title: '보성9경 일림산 용추계곡·주암호 서재필기념관 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 보성9경 결손 2건(일림산 용추계곡·주암호 서재필기념관)의 공공 공식 팩트 개요·주소·보성군 문화관광 9경 공식 사진을 보강했습니다. 용추계곡은 웅치면 용반리 일림산 664m 보성강 시원·용추폭포(7경), 서재필기념관은 문덕면 용암길 8 주암호 호반·개화문·생가(9경, 1864 가내마을·1992 조성)입니다. 문경 용추계곡·가평·동해 용추폭포·제암산자연휴양림·서울 독립문·순천 주암댐·주암호생태습지·대원사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=boseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T07:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-2-list-pages',
+    session: '향교 검색 #2, 목록 페이지',
+    title: '향교 선택 카드를 8개씩 넘겨 보게',
+    detail:
+      '「향교」엔터 전국 목록이 한 화면에 다 나와 스크롤하다 포기하게 됐습니다. 기존 선택 카드는 그대로 두고 8개씩 이전·다음으로 넘깁니다. 춘천 향교처럼 짧은 목록과 목포 도시 리스트는 페이지 버튼이 없습니다. Preview /qa/hyanggyo 홈「향교」엔터 → 1페이지 8장·다음. 「춘천 향교」엔터 → 춘천향교. 「목포」엔터 → 리스트 유지.',
+    at: '2026-09-19T07:20:00.000Z',
+  },
+  {
+    id: '2026-09-19-hyanggyo-search-1-tour-disambiguation',
+    session: '향교 검색 #1, TourAPI 다후보',
+    title: '향교 검색이 도시로 떨어지지 않고 전국 향교를 고르게',
+    detail:
+      '허브 prefix가 「춘천향교」를 춘천 도시로 스냅해서 실제 춘천향교가 안 나왔습니다. 도시명 뒤 나머지가 시·군이 아니면 허브로 안 보고, 향교·서원은 TourAPI 제목으로 다후보 카드를 붙입니다. Preview /qa/hyanggyo 홈「향교」엔터 → 춘천·나주 등 여러 장. 「춘천 향교」엔터 → 춘천향교 · 춘천 도시 카드 아님.',
+    at: '2026-09-19T07:10:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-64-muan-search-thumbs',
+    session: '팔경 활용 #64, 무안 결손 오버레이',
+    title: '무안 검색 승달산·초의선사탄생지 빈 썸네일',
+    detail:
+      '사람 Preview 「무안」검색에서 무안 8경 승달산이 랜드마크 아이콘만 나왔습니다. Tour DB 126614 first_image가 공란입니다. 같은 검색 4경 초의선사탄생지 127177은 tourapi_attraction에 없어 라이브 채움도 안 됩니다. JSON contentId 기입 없이 무안군 문화관광 공식 사진(승달산 산나리 조망·초의길 30 전경)을 LOCAL_SCENIC_MEMBER_OVERLAYS에 보강했습니다. 도리포·낙지공원·백로 번식지는 Tour first_image가 있어 그대로 둡니다. 법천사 무안(GATEO 선정)과 구분합니다. Preview /qa/palgyeong-use — 「무안」검색 8경·4경 썸네일.',
+    at: '2026-09-19T07:05:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-64-muan-overlays',
+    session: '팔경 활용 #64, 무안 결손 오버레이',
+    title: '무안9경 식영정·느러지·톱머리·홀통 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 무안9경 결손 2건(영산강 식영정과 느러지·톱머리·홀통 해수욕장)의 공공 공식 팩트 개요·주소·무안군 문화관광 공식 사진을 보강했습니다. 식영정은 몽탄면 호반로 562-15 息營亭(3경, 1630 한호 임연·문화재자료 237호)와 영산강 느러지 곡강이며, 톱머리·홀통은 망운면 톱머리길 66·현경면 홀통길 198-1 백사장·해송입니다. 담양 息影亭·나주 느러지전망대·영월 한반도지형·도리포·조금나루와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=muan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T06:45:00.000Z',
+  },
+  {
     id: '2026-09-19-search-enter-hub-1-mokpo-list',
     session: '탐색 Enter #1, 도시 허브 리스트',
     title: '목포처럼 도시 허브 Enter는 써머리 점프 없이 선택 카드',
     detail:
       '여행지 매칭 #2가 타이핑 제안 이름 일치를 Enter에서 바로 고르게 해서, 목포 드롭다운의 도시 카드가 써머리 장소 카드로 열렸습니다. 도시 허브 exact는 제안 점프를 건너뛰고 도시+명소 선택 카드로 갑니다. 유달산·광천선굴처럼 명소 exact는 그대로 해당 카드입니다. Preview /qa/search-enter-hub — /explore 에서 목포 타이핑 후 Enter.',
     at: '2026-09-19T06:30:00.000Z',
+  },
+  {
+    id: '2026-09-19-palgyeong-use-63-mokpo-overlays',
+    session: '팔경 활용 #63, 목포 결손 오버레이',
+    title: '목포9경 목포진·다도해 전경 결손 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 목포9경 결손 2건(목포진·다도해 전경)의 공공 공식 팩트 개요·주소·목포시 문화관광 9경 공식 사진을 보강했습니다. 목포진은 만호동 목포진길 11번길 1-5 수군진 역사공원(6경, 세종 21년 설치·2014 객사 복원·문화재자료 137호), 다도해 전경은 유달산에서 고하도·외달도를 보는 조망(8경)입니다. 해남 구 목포구등대·목포대교 일몰·유달산 산봉·외달도 섬·진도 다도해해상국립공원과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mokpo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-19T05:10:00.000Z',
   },
   {
     id: '2026-09-19-mooni-itinerary-3-main-merge',
