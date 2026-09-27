@@ -16,7 +16,15 @@ import {
   readLogbookCommentCount,
   readLogbookLikeCount,
 } from '../src/utils/logbookReactions.js';
-import { profileAvatarUrl, profileLabel } from '../src/shared/Auth/profileAvatar.js';
+import {
+  PROFILE_PHOTO_LIMIT,
+  normalizeProfilePhotoUrls,
+  ownerProfilePhotos,
+  ownerProfilePublic,
+  profileAvatarUrl,
+  profileLabel,
+  publicProfilePhotos,
+} from '../src/shared/Auth/profileAvatar.js';
 import {
   countReportsByPlace,
   fetchSamePlaceCount,
@@ -232,6 +240,27 @@ assert.equal(profileAvatarUrl({ user_metadata: { avatar_url: 'http://cdn.example
 assert.equal(profileAvatarUrl(''), '');
 assert.equal(profileLabel('  길리  ', { email: 'a@b.c' }), '길리');
 assert.equal(profileLabel('', { email: 'catgeot@x.com' }), 'catgeot');
+assert.deepEqual(
+  normalizeProfilePhotoUrls(['http://cdn.example/a.jpg', 'https://cdn.example/a.jpg', 'https://cdn.example/b.jpg']),
+  ['https://cdn.example/a.jpg', 'https://cdn.example/b.jpg'],
+);
+assert.equal(normalizeProfilePhotoUrls(Array.from({ length: 12 }, (_, i) => `https://cdn.example/${i}.jpg`)).length, PROFILE_PHOTO_LIMIT);
+assert.deepEqual(publicProfilePhotos({ profile_public: false, avatar_urls: ['https://cdn.example/a.jpg'], avatar_url: 'https://cdn.example/a.jpg' }), []);
+assert.deepEqual(publicProfilePhotos({ avatar_url: 'http://cdn.example/a.jpg' }), ['https://cdn.example/a.jpg']);
+assert.deepEqual(
+  ownerProfilePhotos(null, { user_metadata: { avatar_urls: ['https://cdn.example/b.jpg', 'https://cdn.example/a.jpg'] } }),
+  ['https://cdn.example/b.jpg', 'https://cdn.example/a.jpg'],
+);
+assert.equal(ownerProfilePublic({ profile_public: false }, { user_metadata: { profile_public: true } }), false);
+assert.equal(ownerProfilePublic(null, null), true);
+const logoPanel = readFileSync(join(root, 'src/pages/Home/components/LogoPanel.jsx'), 'utf8');
+const accountProfile = readFileSync(join(root, 'src/shared/Auth/AccountProfile.jsx'), 'utf8');
+assert.doesNotMatch(logoPanel, /navigate\('\/account'\)/);
+assert.match(logoPanel, /setProfileOpen\(true\)/);
+assert.match(logoPanel, /embedded/);
+assert.match(accountProfile, /overflow-x-hidden/);
+assert.match(accountProfile, /overscroll-contain/);
+assert.match(accountProfile, /profilePublic/);
 const appSource = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSource, /path="\/account"/);
 assert.match(recentList, /grid-cols-1 gap-5/);

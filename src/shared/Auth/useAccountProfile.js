@@ -1,22 +1,27 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchUserProfile, supabase } from '../api/supabase';
-import { PROFILE_UPDATED_EVENT, profileAvatarUrl, profileLabel } from './profileAvatar';
+import {
+  PROFILE_UPDATED_EVENT,
+  ownerProfilePhotos,
+  ownerProfilePublic,
+  profileLabel,
+} from './profileAvatar';
 
 export function useAccountProfile() {
   const [user, setUser] = useState(null);
   const [displayName, setDisplayName] = useState('');
-  const [storedAvatar, setStoredAvatar] = useState('');
+  const [profile, setProfile] = useState(null);
 
   const applyUser = useCallback(async (nextUser) => {
     setUser(nextUser || null);
     if (!nextUser?.id) {
       setDisplayName('');
-      setStoredAvatar('');
+      setProfile(null);
       return;
     }
-    const profile = await fetchUserProfile(nextUser.id);
-    setDisplayName(typeof profile?.display_name === 'string' ? profile.display_name : '');
-    setStoredAvatar(typeof profile?.avatar_url === 'string' ? profile.avatar_url : '');
+    const nextProfile = await fetchUserProfile(nextUser.id);
+    setProfile(nextProfile);
+    setDisplayName(typeof nextProfile?.display_name === 'string' ? nextProfile.display_name : '');
   }, []);
 
   useEffect(() => {
@@ -39,11 +44,15 @@ export function useAccountProfile() {
     };
   }, [applyUser]);
 
-  const avatarUrl = profileAvatarUrl(user) || profileAvatarUrl(storedAvatar);
+  const photos = useMemo(() => ownerProfilePhotos(profile, user), [profile, user]);
+  const profilePublic = ownerProfilePublic(profile, user);
   return {
     user,
     displayName,
-    avatarUrl,
+    avatarUrl: photos[0] || '',
+    photos,
+    photoCount: photos.length,
+    profilePublic,
     label: profileLabel(displayName, user),
   };
 }

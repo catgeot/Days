@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,8 @@ import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGal
 import { hydrateLocationFromSavedTrip, getSavedTripDisplayName } from '../lib/placeRouteHydrate';
 import { openFooterModal } from '../../../shared/lib/footerModalEvents';
 import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
+import AccountProfile from '../../../shared/Auth/AccountProfile';
+import ProfilePhotoCount from '../../../shared/Auth/ProfilePhotoCount';
 
 const DEFAULT_THUMB =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
@@ -59,8 +61,13 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
   const { t } = useTranslation();
   const { openReport } = useReport();
   const account = useAccountProfile();
+  const [profileOpen, setProfileOpen] = useState(false);
   const avatarUrl = user ? account.avatarUrl : '';
   const profileName = user ? (account.label || user.email.split('@')[0]) : '';
+
+  useEffect(() => {
+    if (!isOpen) setProfileOpen(false);
+  }, [isOpen]);
 
   const handleOpenFooter = (tab) => {
     openFooterModal(tab);
@@ -75,7 +82,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
       ></div>
 
       <div
-        className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 z-[140] transform transition-transform duration-500 ease-out shadow-2xl flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 z-[140] transform transition-transform duration-500 ease-out shadow-2xl flex flex-col overflow-hidden ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-black/50 backdrop-blur-md">
           <div>
@@ -98,7 +105,11 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
+        <div className="flex-1 min-h-0 overflow-hidden">
+        {profileOpen && user ? (
+          <AccountProfile embedded onBack={() => setProfileOpen(false)} />
+        ) : (
+        <div className="h-full overflow-x-hidden overflow-y-auto overscroll-contain p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
 
           {user ? (
             <div className="space-y-6 animate-fade-in">
@@ -108,10 +119,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                     <div className="flex items-stretch gap-3">
                       <button
                         type="button"
-                        onClick={() => {
-                          onClose();
-                          navigate('/account');
-                        }}
+                        onClick={() => setProfileOpen(true)}
                         title={t('authPage.account.open')}
                         className="relative w-[38%] max-w-[11.5rem] shrink-0 aspect-square overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-left"
                       >
@@ -122,6 +130,9 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                             {(profileName || '?').slice(0, 1).toUpperCase()}
                           </span>
                         )}
+                        <span className="absolute top-2 right-2">
+                          <ProfilePhotoCount count={account.photoCount} />
+                        </span>
                         <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent px-2.5 pb-2 pt-8">
                           <span className="block text-[10px] font-bold uppercase tracking-wider text-blue-200">{t('authPage.account.open')}</span>
                           <span className="block truncate text-xs font-bold text-white">{profileName}</span>
@@ -204,6 +215,8 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
               </div>
             </div>
           )}
+        </div>
+        )}
         </div>
 
         <div className="p-5 border-t border-white/10 bg-black">

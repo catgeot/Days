@@ -6,12 +6,13 @@ import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PenNameProvider } from '../context/PenNameContext';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
+import ProfilePhotoCount from '../../../shared/Auth/ProfilePhotoCount';
 
 const DailyLayout = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, avatarUrl, label } = useAccountProfile();
+  const { user, avatarUrl, label, photoCount } = useAccountProfile();
   const mainScrollRef = useRef(null);
 
   const hideMobileBlogChrome = (() => {
@@ -59,6 +60,7 @@ const DailyLayout = () => {
               <span className="text-xs text-gray-500 truncate max-w-[88px]">
                 {label || user?.email?.split('@')[0]}
               </span>
+              <ProfilePhotoCount count={photoCount} tone="text" />
               <span className="text-[11px] font-bold text-blue-600">
                 {t('authPage.account.open')}
               </span>

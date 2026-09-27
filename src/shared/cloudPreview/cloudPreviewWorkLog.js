@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '프로필',
-  sessionNo: 2,
-  sessionPhase: '사진 카드',
+  sessionNo: 3,
+  sessionPhase: '패널 안 프로필',
   branch: 'cursor/profile-a231',
   previewPath: '/blog',
   qaShareSlug: 'profile',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-profile-3-in-panel',
+    session: '프로필 #3, 패널 안 프로필',
+    title: '로고 패널 안 프로필·사진 여러 장',
+    detail:
+      '로고 패널에서 프로필을 열면 패널 안에 남고, 닫아도 지구본 홈으로 나가지 않습니다. 프로필은 위아래로만 스크롤됩니다. 사진은 여러 장이고 숫자가 보이며, 공개를 끄면 다른 사람에게 사진과 장 수가 보이지 않습니다. Preview /qa/profile — 로그인 후 로고 패널 카드, 사진 추가, 공개 스위치, 공개 글 작성자 숫자.',
+    at: '2026-09-27T09:40:00.000Z',
+  },
   {
     id: '2026-09-27-profile-2-photo-card',
     session: '프로필 #2, 사진 카드',

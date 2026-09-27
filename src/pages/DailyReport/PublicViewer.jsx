@@ -4,7 +4,8 @@ import { MapPin, Home, Compass, PenTool, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { profileAvatarUrl } from '../../shared/Auth/profileAvatar';
+import { publicProfilePhotos } from '../../shared/Auth/profileAvatar';
+import ProfilePhotoCount from '../../shared/Auth/ProfilePhotoCount';
 import ProfilePhotoLightbox from '../../shared/Auth/ProfilePhotoLightbox';
 import { fetchAuthorProfiles, reportAuthorLabel } from './utils/reportAuthor';
 import LogbookBody from './components/LogbookBody';
@@ -61,6 +62,7 @@ const PublicViewer = () => {
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
   const [authorAvatar, setAuthorAvatar] = useState('');
+  const [authorPhotos, setAuthorPhotos] = useState([]);
   const [authorPhotoOpen, setAuthorPhotoOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [seenCount, setSeenCount] = useState(null);
@@ -117,19 +119,21 @@ const PublicViewer = () => {
       if (isEditorialLogbook(data)) {
         setAuthorLabel('');
         setAuthorAvatar('');
+        setAuthorPhotos([]);
         return;
       }
 
       let displayName = '';
-      let avatar = '';
+      let photos = [];
       if (data.user_id) {
         const profiles = await fetchAuthorProfiles([data.user_id]);
         const prof = profiles.get(data.user_id);
         displayName = prof?.display_name || '';
-        avatar = profileAvatarUrl(prof?.avatar_url);
+        photos = publicProfilePhotos(prof);
       }
       setAuthorLabel(reportAuthorLabel(data.user_id, displayName));
-      setAuthorAvatar(avatar);
+      setAuthorPhotos(photos);
+      setAuthorAvatar(photos[0] || '');
     };
     void fetchPublicReport();
   }, [id, editorialSlug, navigate]);
@@ -265,7 +269,12 @@ const PublicViewer = () => {
                   className="text-gray-500 text-sm flex items-center gap-1.5 font-medium min-w-0"
                   aria-label={t('authPage.account.viewPhoto', { name: authorLabel })}
                 >
-                  <img src={authorAvatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                  <span className="relative shrink-0">
+                    <img src={authorAvatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+                    <span className="absolute -bottom-1 -right-1">
+                      <ProfilePhotoCount count={authorPhotos.length} />
+                    </span>
+                  </span>
                   <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
                 </button>
               ) : (
@@ -378,6 +387,7 @@ const PublicViewer = () => {
       {authorPhotoOpen && authorAvatar ? (
         <ProfilePhotoLightbox
           src={authorAvatar}
+          photos={authorPhotos}
           name={authorLabel}
           onClose={() => setAuthorPhotoOpen(false)}
         />
