@@ -17,10 +17,21 @@ import {
   readLogbookLikeCount,
 } from '../src/utils/logbookReactions.js';
 import {
+  PROFILE_PHOTO_LIMIT,
+  normalizeProfilePhotoUrls,
+  ownerProfilePhotos,
+  ownerProfilePublic,
+  profileAvatarUrl,
+  profileLabel,
+  publicProfilePhotos,
+} from '../src/shared/Auth/profileAvatar.js';
+import {
   countReportsByPlace,
   fetchSamePlaceCount,
+  listLogbookPlaceChips,
   logbookPlaceKey,
   logbookReadingMinutes,
+  reportMatchesLogbookPlace,
   samePlaceCount,
 } from '../src/utils/logbookReadingMeta.js';
 
@@ -75,6 +86,18 @@ assert.equal(logbookReadingMinutes(`# ${'가'.repeat(10)}\n\n**본문**`), 1);
 assert.equal(logbookPlaceKey('  파리  '), '파리');
 assert.equal(logbookPlaceKey('위치 미상'), '');
 assert.equal(logbookPlaceKey('Location unknown'), '');
+assert.equal(logbookPlaceKey('보라카이'), '보라카이');
+assert.equal(logbookPlaceKey('아이슬란드'), '아이슬란드');
+assert.equal(logbookPlaceKey('길리 메모'), '길리 메모');
+assert.equal(logbookPlaceKey('춘천'), '춘천');
+assert.equal(logbookPlaceKey('춘천시 소양로3가'), '춘천');
+assert.equal(logbookPlaceKey('춘천시 퇴계동'), '춘천');
+assert.equal(logbookPlaceKey('춘천시'), '춘천');
+assert.equal(logbookPlaceKey('파리 근교'), '파리 근교');
+assert.equal(logbookPlaceKey('춘천시 근교'), '춘천시 근교');
+assert.equal(logbookPlaceKey('서울특별시 종로구 사직동'), '서울');
+assert.equal(logbookPlaceKey('제주특별자치도 제주시 애월읍'), '제주');
+assert.equal(logbookPlaceKey('오사카시 난바'), '오사카시 난바');
 
 const placeCounts = countReportsByPlace([
   { location: '파리' },
@@ -85,6 +108,57 @@ const placeCounts = countReportsByPlace([
 assert.equal(samePlaceCount(placeCounts, '파리'), 2);
 assert.equal(samePlaceCount(placeCounts, '파리 근교'), 1);
 assert.equal(samePlaceCount(placeCounts, '위치 미상'), null);
+
+const placeChips = listLogbookPlaceChips([
+  { location: '방콕' },
+  { location: '파리' },
+  { location: '파리 ' },
+  { location: '위치 미상' },
+  { location: 'Location unknown' },
+]);
+assert.deepEqual(placeChips, [
+  { name: '파리', count: 2 },
+  { name: '방콕', count: 1 },
+]);
+assert.equal(reportMatchesLogbookPlace({ location: '파리 ' }, '파리'), true);
+assert.equal(reportMatchesLogbookPlace({ location: '파리 근교' }, '파리'), false);
+assert.equal(reportMatchesLogbookPlace({ location: '위치 미상' }, ''), true);
+assert.equal(reportMatchesLogbookPlace({ location: '위치 미상' }, '파리'), false);
+
+const koreaChips = listLogbookPlaceChips([
+  { location: '보라카이' },
+  { location: '보라카이' },
+  { location: '아이슬란드' },
+  { location: '아이슬란드' },
+  { location: '길리 메모' },
+  { location: '길리 메모' },
+  { location: '춘천' },
+  { location: '춘천시 소양로3가' },
+  { location: '춘천시 퇴계동' },
+  { location: '파리' },
+  { location: '파리 근교' },
+]);
+assert.deepEqual(koreaChips, [
+  { name: '춘천', count: 3 },
+  { name: '길리 메모', count: 2 },
+  { name: '보라카이', count: 2 },
+  { name: '아이슬란드', count: 2 },
+  { name: '파리', count: 1 },
+  { name: '파리 근교', count: 1 },
+]);
+assert.equal(reportMatchesLogbookPlace({ location: '춘천시 퇴계동' }, '춘천'), true);
+assert.equal(reportMatchesLogbookPlace({ location: '춘천시 소양로3가' }, '춘천'), true);
+assert.equal(reportMatchesLogbookPlace({ location: '춘천' }, '춘천'), true);
+assert.equal(reportMatchesLogbookPlace({ location: '길리 메모' }, '길리'), false);
+assert.equal(reportMatchesLogbookPlace({ location: '파리 근교' }, '춘천'), false);
+const chuncheonCounts = countReportsByPlace([
+  { location: '춘천' },
+  { location: '춘천시 소양로3가' },
+  { location: '춘천시 퇴계동' },
+  { location: '파리 근교' },
+]);
+assert.equal(samePlaceCount(chuncheonCounts, '춘천시 퇴계동'), 3);
+assert.equal(samePlaceCount(chuncheonCounts, '파리 근교'), 1);
 
 function queryChain(result) {
   const api = {
@@ -159,9 +233,50 @@ assert.match(detail, /tone="article"/);
 assert.doesNotMatch(publicViewer, /update\(\s*\{[^}]*view_count/);
 assert.doesNotMatch(detail, /update\(\s*\{[^}]*view_count/);
 assert.match(recentList, /LogbookReactionSlot/);
+assert.match(recentList, /useState\('column'\)/);
+assert.doesNotMatch(recentList, /useState\('grid'\)/);
 assert.match(recentList, /viewMode === 'column'/);
+assert.equal(profileAvatarUrl({ user_metadata: { avatar_url: 'http://cdn.example/a.jpg' } }), 'https://cdn.example/a.jpg');
+assert.equal(profileAvatarUrl(''), '');
+assert.equal(profileLabel('  길리  ', { email: 'a@b.c' }), '길리');
+assert.equal(profileLabel('', { email: 'catgeot@x.com' }), 'catgeot');
+assert.deepEqual(
+  normalizeProfilePhotoUrls(['http://cdn.example/a.jpg', 'https://cdn.example/a.jpg', 'https://cdn.example/b.jpg']),
+  ['https://cdn.example/a.jpg', 'https://cdn.example/b.jpg'],
+);
+assert.equal(normalizeProfilePhotoUrls(Array.from({ length: 12 }, (_, i) => `https://cdn.example/${i}.jpg`)).length, PROFILE_PHOTO_LIMIT);
+assert.deepEqual(publicProfilePhotos({ profile_public: false, avatar_urls: ['https://cdn.example/a.jpg'], avatar_url: 'https://cdn.example/a.jpg' }), []);
+assert.deepEqual(publicProfilePhotos({ avatar_url: 'http://cdn.example/a.jpg' }), ['https://cdn.example/a.jpg']);
+assert.deepEqual(
+  ownerProfilePhotos(null, { user_metadata: { avatar_urls: ['https://cdn.example/b.jpg', 'https://cdn.example/a.jpg'] } }),
+  ['https://cdn.example/b.jpg', 'https://cdn.example/a.jpg'],
+);
+assert.equal(ownerProfilePublic({ profile_public: false }, { user_metadata: { profile_public: true } }), false);
+assert.equal(ownerProfilePublic(null, null), true);
+const logoPanel = readFileSync(join(root, 'src/pages/Home/components/LogoPanel.jsx'), 'utf8');
+const dailyLayout = readFileSync(join(root, 'src/pages/DailyReport/layout/DailyLayout.jsx'), 'utf8');
+const accountProfile = readFileSync(join(root, 'src/shared/Auth/AccountProfile.jsx'), 'utf8');
+assert.doesNotMatch(logoPanel, /navigate\('\/account'\)/);
+assert.match(logoPanel, /setProfileOpen\(true\)/);
+assert.match(logoPanel, /embedded/);
+assert.match(dailyLayout, /setProfileOpen\(true\)/);
+assert.match(dailyLayout, /createPortal/);
+assert.doesNotMatch(dailyLayout, /Link to="\/account"/);
+assert.match(dailyLayout, /data-logbook-mobile-header/);
+assert.match(dailyLayout, /min-h-0 flex-1/);
+assert.match(dailyLayout, /data-logbook-header-profile/);
+assert.match(accountProfile, /data-profile-close/);
+assert.match(accountProfile, /overflow-x-hidden/);
+assert.match(accountProfile, /overscroll-contain/);
+assert.match(accountProfile, /profilePublic/);
+const appSource = readFileSync(join(root, 'src/App.jsx'), 'utf8');
+assert.match(appSource, /path="\/account"/);
 assert.match(recentList, /grid-cols-1 gap-5/);
 assert.match(recentList, /viewColumn/);
+assert.match(recentList, /listLogbookPlaceChips/);
+assert.match(recentList, /\{report\.location\}/);
+assert.match(recentList, /logbook\.recentList\.placeGroup/);
+assert.match(recentList, /logbook\.recentList\.placeAll/);
 assert.match(publicViewer, /LogbookComments/);
 assert.match(publicViewer, /LogbookReactionSlot/);
 assert.match(publicViewer, /tone="article"/);
@@ -213,6 +328,10 @@ assert.doesNotMatch(reactionClient, /\.update\(/);
 
 const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
 const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
+for (const key of ['placeGroup', 'placeAll', 'noPlaceResults']) {
+  assert.equal(typeof ko.logbook.recentList[key], 'string');
+  assert.equal(typeof en.logbook.recentList[key], 'string');
+}
 for (const key of ['readingMinutes', 'readingMinutesShort', 'readingAria', 'samePlace', 'samePlaceAria']) {
   assert.equal(typeof ko.logbook.meta[key], 'string');
   assert.equal(typeof en.logbook.meta[key], 'string');

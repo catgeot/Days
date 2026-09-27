@@ -256,6 +256,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: false,
   },
   {
+    slug: 'profile',
+    label: '프로필 — 필명·사진·계정',
+    branch: 'cursor/profile-a231',
+    destination:
+      'https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog',
+    active: true,
+  },
+  {
     slug: 'logbook-reads',
     label: '로그북 공개 피드 읽음',
     branch: 'cursor/logbook-reads-af3f',

@@ -4,7 +4,9 @@ import { MapPin, Home, Compass, PenTool, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { reportAuthorLabel } from './utils/reportAuthor';
+import { publicProfilePhotos } from '../../shared/Auth/profileAvatar';
+import ProfilePhotoLightbox from '../../shared/Auth/ProfilePhotoLightbox';
+import { fetchAuthorProfiles, reportAuthorLabel } from './utils/reportAuthor';
 import LogbookBody from './components/LogbookBody';
 import EditorialLogbookBadge from './components/EditorialLogbookBadge';
 import EditorialLogbookImageCredits from './components/EditorialLogbookImageCredits';
@@ -58,6 +60,9 @@ const PublicViewer = () => {
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
+  const [authorAvatar, setAuthorAvatar] = useState('');
+  const [authorPhotos, setAuthorPhotos] = useState([]);
+  const [authorPhotoOpen, setAuthorPhotoOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [seenCount, setSeenCount] = useState(null);
   const [placeCount, setPlaceCount] = useState(null);
@@ -112,19 +117,22 @@ const PublicViewer = () => {
 
       if (isEditorialLogbook(data)) {
         setAuthorLabel('');
+        setAuthorAvatar('');
+        setAuthorPhotos([]);
         return;
       }
 
       let displayName = '';
+      let photos = [];
       if (data.user_id) {
-        const { data: prof } = await supabase
-          .from('profiles')
-          .select('display_name')
-          .eq('id', data.user_id)
-          .maybeSingle();
+        const profiles = await fetchAuthorProfiles([data.user_id]);
+        const prof = profiles.get(data.user_id);
         displayName = prof?.display_name || '';
+        photos = publicProfilePhotos(prof);
       }
       setAuthorLabel(reportAuthorLabel(data.user_id, displayName));
+      setAuthorPhotos(photos);
+      setAuthorAvatar(photos[0] || '');
     };
     void fetchPublicReport();
   }, [id, editorialSlug, navigate]);
@@ -253,10 +261,22 @@ const PublicViewer = () => {
               <MapPin size={14} className="text-gray-400" /> {report.location}
             </span>
             {!editorial && authorLabel && (
-              <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
-                <User size={14} className="text-gray-400 shrink-0" />
-                <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
-              </span>
+              authorAvatar ? (
+                <button
+                  type="button"
+                  onClick={() => setAuthorPhotoOpen(true)}
+                  className="text-gray-500 text-sm flex items-center gap-1.5 font-medium min-w-0"
+                  aria-label={t('authPage.account.viewPhoto', { name: authorLabel })}
+                >
+                  <img src={authorAvatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                  <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
+                </button>
+              ) : (
+                <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
+                  <User size={14} className="text-gray-400 shrink-0" />
+                  <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
+                </span>
+              )
             )}
             <LogbookReadFacts
               tone="article"
@@ -358,6 +378,14 @@ const PublicViewer = () => {
           </div>
         </div>
       </div>
+      {authorPhotoOpen && authorAvatar ? (
+        <ProfilePhotoLightbox
+          src={authorAvatar}
+          photos={authorPhotos}
+          name={authorLabel}
+          onClose={() => setAuthorPhotoOpen(false)}
+        />
+      ) : null}
     </div>
   );
 };

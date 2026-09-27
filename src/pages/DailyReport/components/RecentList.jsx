@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, RectangleVertical, XCircle, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   MOBILE_INPUT_TEXT_CLASS,
@@ -9,9 +9,17 @@ import {
 import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { readLogbookViewCount } from '../../../utils/logbookViewCount';
-import { countReportsByPlace, logbookReadingMinutes, samePlaceCount } from '../../../utils/logbookReadingMeta';
+import {
+  countReportsByPlace,
+  listLogbookPlaceChips,
+  logbookPlaceKey,
+  logbookReadingMinutes,
+  reportMatchesLogbookPlace,
+  samePlaceCount,
+} from '../../../utils/logbookReadingMeta';
 import { logbookCommentsHref, readLogbookCommentCount, readLogbookLikeCount } from '../../../utils/logbookReactions';
 import EditorialLogbookBadge from './EditorialLogbookBadge';
 import LogbookReadFacts from './LogbookReadFacts';
@@ -26,18 +34,43 @@ const FEED_VIEW_MODES = [
   { id: 'grid', labelKey: 'logbook.recentList.viewGrid', Icon: LayoutGrid },
 ];
 
+function placeChipClass(active) {
+  return `shrink-0 inline-flex max-w-[14rem] items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors ${
+    active
+      ? 'border-blue-200 bg-blue-50 font-semibold text-blue-700'
+      : 'border-gray-200 bg-white text-gray-600 hover:border-blue-200 hover:text-blue-700'
+  }`;
+}
+
 const RecentList = ({ reports, loading, isPublicMode }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState('grid');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [viewMode, setViewMode] = useState('column');
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchBlur = useDeferredViewportSyncOnBlur();
+  const placeFilter = searchParams.get('location') || '';
+  const activePlace = logbookPlaceKey(placeFilter);
 
-  const filteredReports = reports.filter(report =>
-    report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const placeChips = useMemo(() => listLogbookPlaceChips(reports), [reports]);
+
+  const selectPlace = (name) => {
+    const next = new URLSearchParams(searchParams);
+    if (!name || logbookPlaceKey(next.get('location')) === name) next.delete('location');
+    else next.set('location', name);
+    setSearchParams(next, { replace: true });
+  };
+
+  const filteredReports = reports.filter((report) => {
+    if (!reportMatchesLogbookPlace(report, placeFilter)) return false;
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+    return (
+      String(report.title || '').toLowerCase().includes(term) ||
+      String(report.content || '').toLowerCase().includes(term) ||
+      String(report.location || '').toLowerCase().includes(term)
+    );
+  });
 
   // Search narrows cards; same-place counts stay on the loaded feed.
   const placeCounts = useMemo(() => countReportsByPlace(reports), [reports]);
@@ -65,7 +98,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   return (
     <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] flex flex-col transition-all">
 
-      <div className="p-5 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-transparent sticky top-0 z-10">
+      <div className="border-b border-gray-200 bg-white/80 backdrop-blur-xl sticky top-0 z-10">
+      <div className="p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2 self-start sm:self-center tracking-tight">
           <ClipboardList className="text-blue-500" size={20} />
           {isCompact ? t('logbook.recentList.titleCompact') : t('logbook.recentList.title')}
@@ -126,6 +160,41 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
           </div>
         </div>
       </div>
+        {placeChips.length > 0 && (
+          <div
+            className="flex gap-2 overflow-x-auto overscroll-x-contain px-5 pb-4 touch-pan-x sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="group"
+            aria-label={t('logbook.recentList.placeGroup')}
+          >
+            <button
+              type="button"
+              onClick={() => selectPlace('')}
+              aria-pressed={!activePlace}
+              className={placeChipClass(!activePlace)}
+            >
+              {t('logbook.recentList.placeAll')}
+            </button>
+            {placeChips.map((chip) => {
+              const active = activePlace === chip.name;
+              return (
+                <button
+                  key={chip.name}
+                  type="button"
+                  onClick={() => selectPlace(active ? '' : chip.name)}
+                  aria-pressed={active}
+                  title={chip.name}
+                  className={placeChipClass(active)}
+                >
+                  <span className="truncate">{chip.name}</span>
+                  <span className={`text-[10px] tabular-nums ${active ? 'text-blue-600/80' : 'text-gray-400'}`}>
+                    {chip.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <div className="p-5 sm:p-6 flex-1 bg-transparent">
         {reports.length === 0 ? (
@@ -141,7 +210,24 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
             </button>
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="text-center py-20 text-gray-500"><Search size={40} className="mx-auto mb-4 opacity-30" /><p className="text-lg">{t('logbook.recentList.noResults', { term: searchTerm })}</p><button onClick={() => setSearchTerm('')} className="text-blue-500 text-sm mt-3 hover:text-blue-600 underline underline-offset-4 transition-colors">{t('logbook.recentList.showAll')}</button></div>
+          <div className="text-center py-20 text-gray-500">
+            <Search size={40} className="mx-auto mb-4 opacity-30" />
+            <p className="text-lg">
+              {searchTerm
+                ? t('logbook.recentList.noResults', { term: searchTerm })
+                : t('logbook.recentList.noPlaceResults', { place: activePlace || placeFilter })}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm('');
+                if (activePlace) selectPlace('');
+              }}
+              className="text-blue-500 text-sm mt-3 hover:text-blue-600 underline underline-offset-4 transition-colors"
+            >
+              {t('logbook.recentList.showAll')}
+            </button>
+          </div>
         ) : (
           <div className={
             viewMode === 'column'
@@ -214,7 +300,11 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                         <EditorialLogbookBadge report={report} />
                       ) : isPublicMode && report.author_label ? (
                         <span className="flex items-center gap-1 text-gray-600 font-semibold truncate" title={t('logbook.common.author')}>
-                          <User size={12} className="text-gray-400 shrink-0" />
+                          {profileAvatarUrl(report.author_avatar) ? (
+                            <img src={profileAvatarUrl(report.author_avatar)} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                          ) : (
+                            <User size={12} className="text-gray-400 shrink-0" />
+                          )}
                           <span className="truncate">{report.author_label}</span>
                         </span>
                       ) : (

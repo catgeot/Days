@@ -18,6 +18,16 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-09-27',
+    category: 'feature',
+    title: '프로필 사진을 여러 장 올릴 수 있어요',
+    items: [
+      '로고 패널에서 프로필을 열어도 패널 안에 머물고, 닫으면 패널로 돌아와요.',
+      '프로필 사진을 여러 장 올릴 수 있고, 장 수가 나와 다른 사람에게 보여요.',
+      '프로필 공개를 끄면 다른 사람에게 사진과 장 수가 보이지 않아요.',
+    ],
+  },
+  {
     id: '2026-09-12',
     category: 'feature',
     title: '축제·명승 본문에서 투어·티켓을 바로 볼 수 있어요',
@@ -388,6 +398,14 @@ export const RELEASE_CATEGORY_LABELS_EN = {
 
 /** EN overlay — id → { title, items } */
 const RELEASE_NOTES_EN_BY_ID = {
+  '2026-09-27': {
+    title: 'Upload more than one profile photo',
+    items: [
+      'Opening your profile from the logo panel keeps you in the panel, and closing it returns there.',
+      'You can upload several profile photos, and the count is visible to you and to other people.',
+      'Turn off a public profile to hide the photos and the count from other people.',
+    ],
+  },
   '2026-09-12': {
     title: 'See tours and tickets in Korea festival and scenic spot details',
     items: [

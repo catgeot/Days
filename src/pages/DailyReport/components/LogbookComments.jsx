@@ -5,7 +5,8 @@ import { supabase } from '../../../shared/api/supabase';
 import { MOBILE_INPUT_TEXT_CLASS } from '../../../shared/hooks/useMobileInputViewport';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { LOGBOOK_COMMENTS_HASH, readLogbookCommentCount } from '../../../utils/logbookReactions';
-import { reportAuthorLabel } from '../utils/reportAuthor';
+import { publicProfilePhotos } from '../../../shared/Auth/profileAvatar';
+import { fetchAuthorProfiles, reportAuthorLabel } from '../utils/reportAuthor';
 import {
   addReportComment,
   deleteReportComment,
@@ -15,12 +16,16 @@ import {
 async function withAuthorLabels(rows) {
   const ids = [...new Set(rows.map((row) => row.user_id).filter(Boolean))];
   if (!ids.length) return rows;
-  const { data: profs } = await supabase.from('profiles').select('id, display_name').in('id', ids);
-  const byId = new Map((profs || []).map((row) => [row.id, row.display_name]));
-  return rows.map((row) => ({
-    ...row,
-    author_label: reportAuthorLabel(row.user_id, byId.get(row.user_id)),
-  }));
+  const byId = await fetchAuthorProfiles(ids);
+  return rows.map((row) => {
+    const profile = byId.get(row.user_id);
+    const photos = publicProfilePhotos(profile);
+    return {
+      ...row,
+      author_label: reportAuthorLabel(row.user_id, profile?.display_name),
+      author_avatar: photos[0] || '',
+    };
+  });
 }
 
 export default function LogbookComments({ report, onCountChange }) {
@@ -118,7 +123,12 @@ export default function LogbookComments({ report, onCountChange }) {
           {rows.map((row) => (
             <li key={row.id} className="min-w-0">
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-xs font-semibold text-gray-700 truncate">{row.author_label}</span>
+                <span className="text-xs font-semibold text-gray-700 truncate inline-flex items-center gap-1.5 min-w-0">
+                  {row.author_avatar ? (
+                    <img src={row.author_avatar} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                  ) : null}
+                  <span className="truncate">{row.author_label}</span>
+                </span>
                 <span className="text-[11px] text-gray-400 shrink-0">
                   {formatLogbookDisplayDate(row.created_at, { locale })}
                 </span>

@@ -2,6 +2,80 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 프로필 #5, 헤더 터치 가림
+
+- **세션** `프로필 #5, 헤더 터치 가림` · feature `cursor/profile-a231` · tip `28bfe727` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **원인** 모바일 `/blog` 본문 `flex-1 h-full` 스크롤이 헤더 영역과 겹쳐 우상단 프로필 탭이 막힘. Preview 「모바일 위젯 로그」 `blog.header.layout overlap:true`로 확인 가능.
+- **조치** `min-h-0`·sticky `z-[100]` 헤더. Preview 진단 `blog.header.layout` / `blog.header.tap` / `blog.header.profile.open`.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
+- **다음** Preview에서 overlap false·프로필 탭 OK면 PR #338 병합.
+- **추가** tip `f23c3a1e` — 로그 `profile.open` 정상·`y:61 hit:svg` 닫기 실패 → 상단 고정 닫기·`blog.profile.close` 로그.
+
+## 프로필 #5, 헤더 프로필 탭
+
+- **세션** `프로필 #5, 헤더 프로필 탭` · feature `cursor/profile-a231` · tip `07ce723d` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **조치** `/blog` 모바일 헤더 프로필은 `/account` 이동 대신 body 포털로 바로 연다. 닫기·사진 라이트박스 닫기 터치 영역·z-index 보강. 대표 사진 탭은 보기(장 수는 라이트박스·카드 위), 변경은 아래 버튼.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
+- **다음** `프로필 #6, Preview OK면 PR 병합` — 헤더·패널 프로필 탭 OK면 PR #338 병합.
+
+## 프로필 #4, 헤더 사진 숫자
+
+- **세션** `프로필 #4, 헤더 사진 숫자` · feature `cursor/profile-a231` · tip `8073fc78` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **조치** 로그북 홈 우측 상단과 공개 글·댓글 작성자 이름 옆의 사진 숫자를 뺐다. 숫자는 프로필 사진을 열었을 때와 프로필 사진 위에만 남긴다. 헤더의 프로필 글자는 줄지 않는다.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
+- **다음** `프로필 #5, Preview OK면 PR 병합` — 헤더 프로필이 바로 열리고, 숫자는 사진을 볼 때만. OK면 PR #338 병합.
+
+## 프로필 #3, 패널 안 프로필
+
+- **세션** `프로필 #3, 패널 안 프로필` · feature `cursor/profile-a231` · tip `5a5d5d57` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **조치** 로고 패널 프로필은 `/account`로 나가지 않고 패널 안에서 열고 닫는다. 스크롤은 세로만. 사진은 최대 8장, 장 수는 본인·공개 글 작성자에 표시. 공개를 끄면 다른 사람에게 사진과 장 수가 안 보인다. `profiles.avatar_urls`·`profile_public` 적용. 기존 대표 사진 4건을 목록에 넣음. 프로필 13건은 공개. 로고 패널 Updates에 `2026-09-27` 릴리스 노트.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS · 컬럼 조회 PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
+- **다음** `프로필 #4, Preview OK면 PR 병합` — 패널 유지·세로 스크롤·사진 장 수·공개 스위치 OK면 PR #338 병합.
+
+## E2E Health, 보이는 입력칸
+
+- **세션** `E2E Health #1, 입력칸 타임아웃` · feature `cursor/e2e-health-1fbd` · tip `8247297c` · draft PR [#337](https://github.com/catgeot/Days/pull/337)
+- **원인** 2026-09-12 성공 이후 `main` 일정 실행이 연속 실패. E2E-3만 실패. 칩 도크가 켜지면 placeholder `메시지 입력...` 칸은 hidden이고, 보이는 칸은 `직접 입력…`. `getByPlaceholder`가 숨은 칸에서 180초 타임아웃.
+- **조치** `e2e/helpers.js`가 보이는 textbox role로 입력. 채팅 UI는 그대로.
+- **VERIFY** `SMOKE_SITE_URL=https://gateo.kr npx playwright test` — 3 passed (13.9s).
+- **다음** PR #337 병합. 일 1회 cron은 `main`을 checkout하므로 병합 전엔 실패가 계속된다.
+
+## 프로필 #2, 사진 카드
+
+- **세션** `프로필 #2, 사진 카드` · feature `cursor/profile-a231` · tip `498a2e1c` · draft PR [#336](https://github.com/catgeot/Days/pull/336)
+- **조치** 로고 패널은 왼쪽 프로필 카드, 오른쪽 방문한 여행사·나의 여행 기록, 아래 버킷리스트. 카드는 `/account`. 헤더의 작은 사진은 뺌. 프로필 사진 영역과 무니 질문 옆 사진을 키움. 공개 글 작성자 사진을 누르면 원본.
+- **VERIFY** `smoke:logbook-view-count` PASS · `smoke:travel-agencies` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog` · 프로필 `/account`
+- **다음** `프로필 #3, Preview OK면 PR 병합` — 좌우 배치·사진 크기·원본 보기 OK면 PR #336 병합.
+
+## 프로필 #1, 프로필 페이지
+
+- **세션** `프로필 #1, 프로필 페이지` · feature `cursor/profile-a231` · tip `6f104728` · draft PR [#336](https://github.com/catgeot/Days/pull/336)
+- **조치** 기록 보관소 기본 배치를 1열로. 로그북 헤더·사이드바·로고 패널의 비밀번호 변경은 프로필(`/account`)로. 필명·사진·비밀번호·Google/Kakao 계정 추가. 사진은 무니 질문·로고 패널·로그북 작성자(피드·글·댓글)에 표시.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog` · 프로필 `/account`
+- **다음** `프로필 #2, Preview OK면 PR 병합` — 1열·프로필 사진이 헤더·로고 패널·무니 질문·로그북에 보이면 PR #336 병합.
+
+## 로그북 #21, 한국 주소는 도시 칩
+
+- **세션** `로그북 #21, 한국 주소는 도시 칩` · feature `cursor/logbook-reads-af3f` · tip `1b0e7f3c` · PR [#334](https://github.com/catgeot/Days/pull/334)
+- **조치** 칩 줄은 하나. 현재 위치 주소의 시·군은 칩에서 도시로 모은다. 춘천·춘천시 소양로3가·춘천시 퇴계동은 「춘천」. 보라카이·아이슬란드·길리 메모는 그대로. 파리 근교와 춘천시 근교는 도시로 안 넣는다. 카드 주소 문자열은 유지.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #22, Preview OK면 PR 병합` — 춘천 칩 하나·카드 주소 유지·파리 근교 분리 확인 후 PR #334 병합.
+
+## 로그북 #20, 칩 검토 — PR 보류
+
+- **세션** `로그북 #20, Preview OK면 PR 병합` · feature `cursor/logbook-reads-af3f` · tip `654f4404` · PR [#334](https://github.com/catgeot/Days/pull/334) **병합 안 함**
+- **Preview** 칩은 사진과 같다. 한 줄이고, 글 수 많은 순. 왼쪽은 전체·길리 메모 2·보라카이 2·아이슬란드 2. 가로로 넘기면 춘천 1·춘천시 소양로3가 1·춘천시 퇴계동 1. 앞쪽 「지정」은 잘린 장소 이름이지 분류 단계가 아니다.
+- **판단** 중분류 칩 줄은 만들지 않는다. 보라카이·아이슬란드·길리 메모는 작성자가 넣은 여행지 이름이고, 그게 필터 단위다. 나라·광역 부모 필드가 없고, 아이슬란드는 나라이면서 여행지라 한 줄이 더 생기면 같은 말이 겹친다.
+- **춘천** 도시로 안 뭉친다. `logbookPlaceKey`는 공백만 없앤다. 「춘천」「춘천시 소양로3가」「춘천시 퇴계동」은 칩 3개다. 「파리 근교」를 「파리」에 넣지 않는 것과 같다. 현재 위치 저장은 시와 동을 한 문자열로 넣고, 칩은 그 문자열을 자르지 않는다. 카드에 적힌 주소는 그대로 둔다.
+- **다음** `로그북 #21, 한국 주소는 도시 칩` — 칩 줄은 하나. 여행지 이름은 유지. 춘천시 퇴계동·춘천시 소양로3가·춘천만 칩 「춘천」으로 합친 뒤 Preview. PR #334는 그 다음.
+
 ## 팔경 활용 #78 — 고성8경 마산봉설경
 
 - **세션** `팔경 활용 #78, 고성 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `430d0be9` · PR [#335](https://github.com/catgeot/Days/pull/335)

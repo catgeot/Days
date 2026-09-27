@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 프로필
+
+| | |
+|--|--|
+| **상태** | **#5 push** · tip `28bfe727` · draft PR [#338](https://github.com/catgeot/Days/pull/338) · **사람 Preview** |
+| **브랜치** | `cursor/profile-a231` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
+| **Preview** | `/qa/profile` → git Preview `/blog` · 프로필은 로고 패널 안 |
+| **금지** | 헤더에 비밀번호 변경 링크를 되돌리기 · 프로필 카드를 본문 전체 폭으로 키우기 · 로고 패널 프로필을 `/account`로 다시 보내기 · 아이디 옆에 사진 숫자를 되돌리기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS |
+| **남은 일** | Preview OK면 PR #338 병합 |
+
+**다음 제시어**:
+
+```
+프로필 #6, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-27-project-log.md
+브랜치 cursor/profile-a231 · PR #338 · Preview /qa/profile
+금지: 헤더에 비밀번호 변경 링크를 되돌리기 · 프로필 카드를 본문 전체 폭으로 키우기 · 로고 패널 프로필을 /account로 다시 보내기 · 아이디 옆에 사진 숫자를 되돌리기 · feature에 plans/** 커밋
+작업: /blog 모바일 헤더 프로필 열기·닫기·로고 패널 프로필 닫기·사진 라이트박스 장 수 확인. OK면 PR #338 병합
+검증: smoke:logbook-view-count · vite build
+```
+
+---
+
 ### 명소홈 본문 무니
 
 | | |
@@ -44,23 +71,23 @@
 
 | | |
 |--|--|
-| **상태** | **#18 push** · tip `c5a8fade` · PR [#334](https://github.com/catgeot/Days/pull/334) (draft) · **사람 Preview** |
+| **상태** | **#21 push** · tip `1b0e7f3c` · PR [#334](https://github.com/catgeot/Days/pull/334) (draft) · **사람 Preview** |
 | **브랜치** | `cursor/logbook-reads-af3f` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
 | **Preview** | `/qa/logbook-reads` → git Preview `/blog` (로그인 시 `?tab=public`) |
-| **금지** | `view_count`·`like_count`·`comment_count` 직접 update · feature에 `plans/**` 커밋 |
+| **금지** | `view_count`·`like_count`·`comment_count` 직접 update · 중분류 칩 줄 신설 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS |
 
 **다음 제시어**:
 
 ```
-로그북 #19, Preview OK면 PR 병합
+로그북 #22, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-27-project-log.md
 브랜치 cursor/logbook-reads-af3f · PR #334 · Preview /qa/logbook-reads
-금지: view_count·like_count·comment_count 직접 update · feature에 plans/** 커밋
-작업: 보관소 여행지 칩 — 칩을 누르면 그 장소만, 전체로 복귀. OK면 PR #334 병합
+금지: view_count·like_count·comment_count 직접 update · 중분류 칩 줄 신설 · feature에 plans/** 커밋
+작업: 칩 줄은 하나. 보라카이·아이슬란드·길리 메모는 그대로. 춘천 칩 하나에 춘천시 소양로3가·춘천시 퇴계동 카드가 모인다. 카드 주소는 그대로. 파리 근교는 파리가 아님. OK면 PR #334 병합
 검증: smoke:logbook-view-count · vite build
 ```
 

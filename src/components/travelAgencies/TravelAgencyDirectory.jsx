@@ -1,5 +1,5 @@
-import React from 'react';
-import { ExternalLink, Building2, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink, Building2, ChevronRight, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TRAVEL_AGENCIES, getTravelAgencyById } from '../../data/travelAgencies.js';
 import { getTravelAgencyHomeUrl, resolveTravelAgencyOpenUrl } from '../../utils/travelAgencyHome.js';
@@ -138,10 +138,35 @@ function AgencyRow({
   );
 }
 
+function TravelAgencyBeside({ title, clearButton, body, children }) {
+  const [open, setOpen] = useState(false);
+  const summary = (
+    <button
+      type="button"
+      aria-expanded={open}
+      onClick={() => setOpen((value) => !value)}
+      className="h-full w-full group flex items-center justify-between gap-2 py-2.5 px-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
+    >
+      <span className="flex items-center gap-2 min-w-0">
+        <Building2 size={16} className="text-blue-400 shrink-0" />
+        <span className="text-sm font-bold text-white truncate">{title}</span>
+      </span>
+      <ChevronRight size={16} className={`text-gray-500 shrink-0 transition-transform ${open ? 'rotate-90' : ''}`} />
+    </button>
+  );
+  const panelBody = (
+    <div className="space-y-4">
+      {clearButton ? <div className="flex justify-end">{clearButton}</div> : null}
+      {body}
+    </div>
+  );
+  return children({ summary, body: panelBody, open });
+}
+
 /**
- * @param {{ variant?: 'panel'|'explore'|'planner', className?: string }} props
+ * @param {{ variant?: 'panel'|'explore'|'planner', className?: string, children?: Function }} props
  */
-const TravelAgencyDirectory = ({ variant = 'panel', className = '' }) => {
+const TravelAgencyDirectory = ({ variant = 'panel', className = '', children = null }) => {
   const { t, i18n } = useTranslation();
   const { visits, removeVisit, clearVisits } = useTravelAgencyVisits();
   const styles = VARIANT[variant] || VARIANT.panel;
@@ -224,6 +249,14 @@ const TravelAgencyDirectory = ({ variant = 'panel', className = '' }) => {
       )}
     </>
   );
+
+  if (typeof children === 'function') {
+    return (
+      <TravelAgencyBeside title={t('home.agencies.title')} clearButton={clearButton} body={body}>
+        {children}
+      </TravelAgencyBeside>
+    );
+  }
 
   if (variant === 'panel') {
     return (

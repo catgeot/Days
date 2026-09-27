@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, fetchUserProfile } from '../../../shared/api/supabase';
+import { notifyProfileUpdated } from '../../../shared/Auth/profileAvatar';
 
 const MAX_LEN = 40;
 
@@ -44,6 +45,7 @@ export function usePenName(user) {
       console.warn('[PenName] save failed:', error);
       return { ok: false, error };
     }
+    notifyProfileUpdated();
     return { ok: true };
   }, [user?.id, displayName]);
 
