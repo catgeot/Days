@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '프로필',
   sessionNo: 5,
-  sessionPhase: '헤더 프로필 탭',
+  sessionPhase: '헤더 터치 가림',
   branch: 'cursor/profile-a231',
   previewPath: '/blog',
   qaShareSlug: 'profile',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-profile-5-header-overlap',
+    session: '프로필 #5, 헤더 터치 가림',
+    title: '본문 스크롤이 헤더를 덮던 문제',
+    detail:
+      '모바일 /blog에서 본문 flex h-full 때문에 스크롤 영역이 헤더와 겹쳐 우상단 프로필 탭이 막혔습니다. min-h-0·sticky z-100 헤더로 수정. Preview 하단 「모바일 위젯 로그」에 blog.header.layout(overlap)·blog.header.tap(hit)이 찍힙니다 — overlap false·hit profile-btn이면 정상.',
+    at: '2026-09-27T11:05:00.000Z',
+  },
   {
     id: '2026-09-27-profile-5-header-tap',
     session: '프로필 #5, 헤더 프로필 탭',
