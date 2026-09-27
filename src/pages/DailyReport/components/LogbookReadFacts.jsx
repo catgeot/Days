@@ -54,13 +54,13 @@ export default function LogbookReadFacts({
     });
   }
 
-  if (placeCount != null) {
+  if (placeCount != null && tone === 'article') {
     items.push({
       key: 'place',
       icon: Files,
-      label: tone === 'article' ? t('logbook.meta.samePlace', { count: placeCount }) : placeCount.toLocaleString(),
+      label: t('logbook.meta.samePlace', { count: placeCount }),
       title: t('logbook.meta.samePlaceAria', { count: placeCount }),
-      href: tone === 'article' ? placeHref : '',
+      href: placeHref,
     });
   }
 

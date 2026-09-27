@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 13,
-  sessionPhase: '읽는 시간·같은 장소 수',
+  sessionNo: 14,
+  sessionPhase: '카드 디자인 리뉴얼',
   branch: 'cursor/logbook-reads-af3f',
   previewPath: '/blog',
   qaShareSlug: 'logbook-reads',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-14-card-redesign',
+    session: '로그북 #14, 카드 디자인 리뉴얼',
+    title: '피드 카드 정보 구조 및 하단 메타 슬림화',
+    detail:
+      '이미지 위에 떠 있던 큰 날짜 배지를 본문 상단(에디터 뱃지/작성자 옆)으로 자연스럽게 통합하고, 사진 추가 배지(+N)는 썸네일 우측 하단 뱃지로 정돈했습니다. 2행으로 분산되어 복잡했던 하단 메타를 [좌측 장소 / 우측 읽는 시간·조회수] 단일 행으로 깔끔하게 통합하여 향후 좋아요·댓글 아이콘이 들어갈 슬롯 공간을 확보했습니다. Preview /qa/logbook-reads — /blog 공개 피드 카드의 정보 위계와 여백이 한결 정돈되었는지.',
+    at: '2026-09-27T01:10:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-13-reading-place',
     session: '로그북 #13, 읽는 시간·같은 장소 수',

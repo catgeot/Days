@@ -151,7 +151,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                     viewMode === 'grid'
                       ? editorialPublicFeed
                         ? 'w-full aspect-[16/10] min-h-[7.25rem] sm:min-h-[8.5rem] border-b border-indigo-100'
-                        : 'w-full aspect-video border-b border-gray-200'
+                        : 'w-full aspect-[16/10] border-b border-gray-200'
                       : editorialPublicFeed
                         ? isCompact
                           ? 'w-[4.25rem] h-[4.25rem] rounded-xl border border-indigo-100'
@@ -168,16 +168,36 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                       <ImageIcon size={viewMode === 'grid' ? (isCompact ? 24 : 32) : (isCompact ? 16 : 24)} />
                     </div>
                   )}
-                  {viewMode === 'grid' && <div className={`absolute top-2 right-2 bg-white/90 backdrop-blur-md text-gray-700 px-2.5 py-1 rounded-md border border-gray-200/50 font-medium tracking-wide shadow-sm max-w-[85%] truncate ${isCompact ? 'text-[10px]' : 'text-xs'}`}>{cardDate}</div>}
+                  {report.images && report.images.length > 1 && (
+                    <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-md text-[10px] font-semibold flex items-center gap-1 shadow-sm">
+                      <ImageIcon size={10} /> +{report.images.length - 1}
+                    </div>
+                  )}
                 </div>
 
-                <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-4 flex flex-col h-full' : 'p-5 flex flex-col h-full') : ''}`}>
-                  {editorialPublicFeed ? (
-                    <div className="mb-2">
-                      <EditorialLogbookBadge report={report} />
+                <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-3 sm:p-4 flex flex-col h-full' : 'p-4 sm:p-5 flex flex-col h-full') : ''}`}>
+                  {/* 상단 메타 행: 에디터 뱃지 / 작성자 + 발행일 */}
+                  <div className="flex items-center justify-between gap-2 mb-2 text-xs">
+                    <div className="flex items-center gap-1.5 min-w-0 truncate">
+                      {editorialPublicFeed ? (
+                        <EditorialLogbookBadge report={report} />
+                      ) : isPublicMode && report.author_label ? (
+                        <span className="flex items-center gap-1 text-gray-600 font-semibold truncate" title={t('logbook.common.author')}>
+                          <User size={12} className="text-gray-400 shrink-0" />
+                          <span className="truncate">{report.author_label}</span>
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-medium text-gray-400">
+                          {t('logbook.common.traveler')}
+                        </span>
+                      )}
                     </div>
-                  ) : null}
-                  <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
+                    <span className="text-[11px] text-gray-400 whitespace-nowrap shrink-0 font-medium">
+                      {cardDate}
+                    </span>
+                  </div>
+
+                  <div className={`flex justify-between gap-2 ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-1.5'}`}>
                     <h4
                       title={report.title}
                       className={`font-semibold text-gray-900 transition-colors tracking-tight min-w-0 flex-1 break-keep break-words ${editorial ? 'group-hover:text-indigo-700' : 'group-hover:text-blue-600'} ${
@@ -190,53 +210,42 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                     >
                       {report.title}
                     </h4>
-                    {viewMode === 'list' && (
-                      <span className={`text-xs text-gray-500 whitespace-nowrap bg-gray-100 px-2.5 rounded-md border border-gray-200 font-medium tracking-wide shrink-0 ${isCompact ? 'py-1' : 'py-1.5'}`}>
-                        {cardDate}
-                      </span>
-                    )}
                   </div>
 
                   {cardExcerpt && (
                     <p
                       className={`leading-relaxed break-keep break-words ${
                         editorialPublicFeed
-                          ? 'text-indigo-950/85 font-medium text-sm sm:text-[15px] line-clamp-2'
+                          ? 'text-indigo-950/85 font-medium text-xs sm:text-[13px] line-clamp-2'
                           : 'text-gray-500 font-normal'
                       } ${
                         viewMode === 'grid'
                           ? isCompact
-                            ? `line-clamp-2 mb-3 flex-1 ${editorialPublicFeed ? '' : 'text-xs'}`
-                            : `line-clamp-2 mb-4 flex-1 ${editorialPublicFeed ? '' : 'text-xs sm:text-sm'}`
+                            ? 'line-clamp-2 mb-3 flex-1 text-xs'
+                            : 'line-clamp-2 mb-4 flex-1 text-xs sm:text-sm'
                           : isCompact
-                            ? `line-clamp-1 mt-1 ${editorialPublicFeed ? 'text-xs sm:text-sm' : 'text-xs'}`
-                            : `line-clamp-2 mt-1 ${editorialPublicFeed ? 'text-sm' : 'text-xs sm:text-sm'}`
+                            ? 'line-clamp-1 mt-1 text-xs'
+                            : 'line-clamp-2 mt-1 text-xs sm:text-sm'
                       }`}
                     >
                       {cardExcerpt}
                     </p>
                   )}
 
-                  <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-gray-100' : 'mt-auto pt-4 border-t border-gray-100')}`}>
-                    {isPublicMode && !editorial && report.author_label && (
-                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-700 font-semibold" title={t('logbook.common.author')}>
-                        <User size={12} className="text-gray-500 shrink-0" />
-                        <span className="truncate">{report.author_label}</span>
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1.5 truncate max-w-[150px]">
-                      <MapPin size={12} className="text-gray-400" /> {report.location}
+                  {/* 하단 단일화 메타 행: 좌측 장소 / 우측 읽는 시간 및 통계 (향후 좋아요/댓글 확장 대비) */}
+                  <div className={`flex items-center justify-between gap-2 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-1' : 'mt-3') : (isCompact ? 'mt-auto pt-2.5 border-t border-gray-100' : 'mt-auto pt-3 border-t border-gray-100')}`}>
+                    <span className="flex items-center gap-1 truncate text-gray-500 shrink min-w-0" title={report.location}>
+                      <MapPin size={12} className="text-gray-400 shrink-0" />
+                      <span className="truncate">{report.location}</span>
                     </span>
-                    <LogbookReadFacts
-                      minutes={readingMinutes}
-                      placeCount={placeCount}
-                      viewCount={viewCount}
-                    />
-                    {report.images && report.images.length > 1 && (
-                      <span className="flex items-center gap-1 text-blue-600 font-bold bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md ml-auto sm:ml-0">
-                        <ImageIcon size={10} /> +{report.images.length - 1}
-                      </span>
-                    )}
+
+                    <div className="flex items-center gap-2.5 shrink-0 ml-auto">
+                      <LogbookReadFacts
+                        minutes={readingMinutes}
+                        placeCount={placeCount}
+                        viewCount={viewCount}
+                      />
+                    </div>
                   </div>
 
                   {isPublicMode && !editorial && (
