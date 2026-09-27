@@ -23,6 +23,8 @@ import {
   placeNameMatchesSearchQuery,
   resolveEnterSearchCanonical,
 } from '../src/pages/Home/lib/searchEnterMatch.js';
+import { resolveExploreCityHubExact } from '../src/pages/Home/lib/exploreHubResolve.js';
+import { resolveSettlement } from '../src/pages/Home/lib/mapboxSettlementPlaces.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -116,4 +118,20 @@ const handlerSrc = readFileSync(join(root, 'src/pages/Home/hooks/useHomeHandlers
 assert.match(handlerSrc, /이름 불일치 교정 캐시 무시/);
 assert.match(handlerSrc, /preferEnterSuggestion\(query, await buildHybridSearchSuggestions/);
 
-console.log('PASS smoke-search-enter-match (광천선굴 Enter ≠ 화암동굴 · 목포 hub Enter = 리스트)');
+assert.ok(!resolveCityAttractionHub('마산'), '마산은 창원 hub alias 아님');
+assert.equal(resolveExploreCityHubExact('마산'), null, '마산 Enter는 창원 hub exact 아님');
+const masanSettlement = resolveSettlement('마산');
+assert.ok(masanSettlement, '마산 정착지 SSOT');
+assert.equal(masanSettlement.settlement.placeId, 'changwon-masan');
+assert.match(
+  suggestionsSrc,
+  /resolveExploreCityHubExact/,
+  '탐색 제안은 정착지 우선 hub exact',
+);
+assert.match(
+  handlerSrc,
+  /resolveExploreCityHubExact/,
+  'Enter handler는 정착지 우선 hub exact',
+);
+
+console.log('PASS smoke-search-enter-match (광천선굴 Enter ≠ 화암동굴 · 목포 hub Enter = 리스트 · 마산≠창원 카드)');
