@@ -5201,6 +5201,38 @@ assert.ok(
   '장흥 검색 9경 하늘빛수목정원 썸네일',
 );
 
+const gyeongjuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gyeongju');
+const gyeongjuEight = gyeongjuMerged.filter((s) => s.localScenicListId === 'gyeongju-8gwae');
+assert.equal(gyeongjuEight.length, 8, '경주8怪 8명');
+const nawon = gyeongjuEight.find((s) => s.attractionName === '나원백탑');
+assert.ok(nawon?.overview && nawon?.imageUrl, '나원백탑 overlay 사진·개요');
+assert.ok(!nawon?.contentId, '나원백탑 JSON contentId 없음 유지');
+assert.ok(nawon?.overview?.includes('라원리 676'), '나원백탑 overlay 주소');
+assert.ok(nawon?.overview?.includes('1962년 12월 20일'), '나원백탑 overlay 지정일');
+assert.ok(nawon?.overview?.includes('무구정광대다라니경'), '나원백탑 overlay 사리');
+assert.ok(nawon?.overview?.includes('1995년 11월'), '나원백탑 overlay 해체수리');
+assert.ok(nawon?.overview?.includes('장항리'), '나원백탑≠장항리 오층석탑');
+assert.ok(nawon?.overview?.includes('나원사'), '나원백탑≠나원사');
+assert.ok(nawon?.imageUrl?.includes('2021070209124901'), '나원백탑 국가유산청 전경');
+assert.ok(
+  nawon?.galleryUrls?.some((u) => u.includes('1612776')),
+  '나원백탑 두 번째 사진',
+);
+assert.ok(nawon?.homepage?.includes('1113700390000'), '나원백탑 국가유산포털');
+const gyeongjuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '경주', {
+  injectLocalScenic: true,
+});
+const gyeongjuGlobeEight = gyeongjuGlobe.filter((s) => s.localScenicListId === 'gyeongju-8gwae');
+assert.equal(gyeongjuGlobeEight.length, 8, '경주 검색 경주8怪 8행');
+assert.ok(
+  gyeongjuGlobe.find((s) => s.attractionName === '나원백탑')?.overview?.includes('라원리 676'),
+  '경주 검색 나원백탑 개요',
+);
+assert.ok(
+  gyeongjuGlobe.find((s) => s.attractionName === '나원백탑')?.imageUrl?.includes('2021070209124901'),
+  '경주 검색 나원백탑 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
