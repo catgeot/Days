@@ -26,6 +26,14 @@
 - **Preview** https://www.gateo.kr/qa/scenic-mooni (main 병합 후) · git `https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung`
 - **다음** `명소홈 #2, Preview OK면 PR 병합`
 
+## 로그북 #14, 피드 카드 디자인 리뉴얼
+
+- **세션** `로그북 #14, 피드 카드 디자인 리뉴얼` · feature `cursor/logbook-reads-af3f` · tip `133bdc68` · PR [#325](https://github.com/catgeot/Days/pull/325)
+- **조치** 이미지 위 큰 날짜 배지를 본문 상단 메타(에디터 뱃지 / 작성자 + 발행일)로 자연스럽게 통합. 사진 추가 배지(+N)는 썸네일 우측 하단 뱃지로 정돈. 하단에 2행으로 분산되어 복잡했던 메타정보를 [좌측 장소 / 우측 읽는 시간·조회수] 단일 행으로 통합하여 향후 좋아요·댓글 확장을 위한 인라인 슬롯 구조를 확보. 모바일 2열 그리드 패딩 및 행간 최적화.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #15, 좋아요·댓글 시스템 연동` — 리뉴얼된 카드 슬롯에 좋아요 및 댓글 데이터/인터랙션 연동.
+
 ## 로그북 #13, 읽는 시간·같은 장소 수
 
 - **세션** `로그북 #13, 읽는 시간·같은 장소 수` · feature `cursor/logbook-reads-af3f` · tip `636f38a6` · PR [#325](https://github.com/catgeot/Days/pull/325)
