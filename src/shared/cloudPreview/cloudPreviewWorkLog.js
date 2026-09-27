@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 73,
-  sessionPhase: '영천 결손 오버레이',
+  sessionNo: 74,
+  sessionPhase: '청도 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=yeongcheon',
+  previewPath: '/korea/theme/scenic?hub=cheongdo',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-74-cheongdo-overlay',
+    session: '팔경 활용 #74, 청도 결손 오버레이',
+    title: '청도 관광 9경 새마을운동발상지·섶마리한옥마을',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 청도 관광 9경 결손 2건(청도 새마을운동발상지기념공원·청도 섶마리한옥마을)의 공공 공식 팩트 개요·주소·디지털청도문화대전 공식 사진을 보강했습니다. 새마을운동발상지기념공원은 청도읍 새마을1길 34 신도마을(2경, 2009 기념관·2011 발상지 공원·대통령 전용 열차·신거역), 섶마리한옥마을은 금천면 신지리 고택 마을(5경, 운강고택 선암로 474·만화정·국가민속문화유산)입니다. 구미 새마을운동테마공원·신화랑풍류마을·하회·양동마을과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=cheongdo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T01:30:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-73-yeongcheon-overlay',
     session: '팔경 활용 #73, 영천 결손 오버레이',
