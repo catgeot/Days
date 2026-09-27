@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
@@ -98,6 +99,7 @@ const ChatModal = ({
   onClearPlaceBinding = null,
 }) => {
   const { t, i18n } = useTranslation();
+  const account = useAccountProfile();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -1305,13 +1307,16 @@ const ChatModal = ({
                   ref={idx === lastUserIdx ? lastQuestionRef : null}
                   className={`flex flex-col w-full ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
-                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider inline-flex items-center gap-1.5 ${
                     msg.role === 'user'
                       ? tone(fresh, 'text-blue-400', 'text-sky-600')
                       : msg.role === 'error'
                         ? 'text-red-400'
                         : tone(fresh, 'text-cyan-400', 'text-cyan-600')
                   }`}>
+                    {msg.role === 'user' && account.avatarUrl ? (
+                      <img src={account.avatarUrl} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                    ) : null}
                     {msg.role === 'user' ? 'Me' : 'MOONi'}
                   </span>
                   <div className={`p-4 rounded-2xl text-base shadow-md w-full ${

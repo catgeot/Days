@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight, Lock } from 'lucide-react';
+import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight, UserRound } from 'lucide-react';
+import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Logo from './Logo';
@@ -57,6 +58,9 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { openReport } = useReport();
+  const account = useAccountProfile();
+  const avatarUrl = user ? account.avatarUrl : '';
+  const profileName = user ? (account.label || user.email.split('@')[0]) : '';
 
   const handleOpenFooter = (tab) => {
     openFooterModal(tab);
@@ -79,10 +83,27 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
           </div>
           <div className="flex items-center gap-3">
             {user && (
-              <div className="flex items-center gap-2 bg-white/5 py-1.5 px-3 rounded-full border border-white/10 shadow-inner">
-                <div className="w-20 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white">
-                  {user.email.split('@')[0].toUpperCase()}
-                </div>
+              <div className="flex items-center gap-2 bg-white/5 py-1 pl-1.5 pr-2 rounded-full border border-white/10 shadow-inner">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    navigate('/account');
+                  }}
+                  className="flex items-center gap-1.5 min-w-0"
+                  title={t('authPage.account.open')}
+                >
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover" />
+                  ) : (
+                    <div className="h-5 px-2 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white max-w-[5.5rem] truncate">
+                      {profileName.toUpperCase()}
+                    </div>
+                  )}
+                  {avatarUrl ? (
+                    <span className="text-[11px] font-bold text-white truncate max-w-[6.5rem]">{profileName}</span>
+                  ) : null}
+                </button>
                 <button
                   onClick={onLogout}
                   title={t('home.logoPanel.signOut')}
@@ -122,13 +143,13 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                 type="button"
                 onClick={() => {
                   onClose();
-                  navigate('/auth/update-password');
+                  navigate('/account');
                 }}
                 className="w-full group flex items-center justify-between py-3 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300"
               >
                 <div className="flex items-center gap-3">
-                  <Lock size={18} className="text-gray-400" />
-                  <span className="text-sm font-bold text-white tracking-wide">{t('home.logoPanel.changePassword')}</span>
+                  <UserRound size={18} className="text-gray-400" />
+                  <span className="text-sm font-bold text-white tracking-wide">{t('authPage.account.open')}</span>
                 </div>
                 <ChevronRight size={16} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
               </button>

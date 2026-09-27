@@ -9,6 +9,7 @@ import {
 import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { readLogbookViewCount } from '../../../utils/logbookViewCount';
 import {
@@ -45,7 +46,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState('grid');
+  const [viewMode, setViewMode] = useState('column');
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchBlur = useDeferredViewportSyncOnBlur();
   const placeFilter = searchParams.get('location') || '';
@@ -299,7 +300,11 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                         <EditorialLogbookBadge report={report} />
                       ) : isPublicMode && report.author_label ? (
                         <span className="flex items-center gap-1 text-gray-600 font-semibold truncate" title={t('logbook.common.author')}>
-                          <User size={12} className="text-gray-400 shrink-0" />
+                          {profileAvatarUrl(report.author_avatar) ? (
+                            <img src={profileAvatarUrl(report.author_avatar)} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                          ) : (
+                            <User size={12} className="text-gray-400 shrink-0" />
+                          )}
                           <span className="truncate">{report.author_label}</span>
                         </span>
                       ) : (

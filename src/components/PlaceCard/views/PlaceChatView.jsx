@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { Send, Loader2, Sparkles } from 'lucide-react';
 import BookingActionCards from '../../chat/BookingActionCards';
 import { refreshStoredBookingActionLabels } from '../../../utils/chatBookingResolver';
@@ -18,6 +19,7 @@ const PlaceChatView = ({
   onPlannerNavigate = null,
 }) => {
   const { t } = useTranslation();
+  const account = useAccountProfile();
   const [inputStr, setInputStr] = useState("");
   const messagesEndRef = useRef(null);
   const handleInputBlur = useDeferredViewportSyncOnBlur();
@@ -68,9 +70,12 @@ const PlaceChatView = ({
           chatHistory.map((msg, idx) => (
             <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end mt-8' : 'items-start mt-2'} animate-fade-in-up w-full`}>
 
-              <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${
+              <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider inline-flex items-center gap-1.5 ${
                 msg.role === 'user' ? 'text-blue-400' : msg.role === 'error' ? 'text-red-400' : 'text-purple-400'
               }`}>
+                  {msg.role === 'user' && account.avatarUrl ? (
+                    <img src={account.avatarUrl} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                  ) : null}
                   {msg.role === 'user' ? t('place.chat.roleUser') : t('place.chat.roleAi')}
               </span>
 

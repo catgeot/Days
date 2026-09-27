@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '로그북',
-  sessionNo: 21,
-  sessionPhase: '한국 주소는 도시 칩',
-  branch: 'cursor/logbook-reads-af3f',
+  title: '프로필',
+  sessionNo: 1,
+  sessionPhase: '프로필 페이지',
+  branch: 'cursor/profile-a231',
   previewPath: '/blog',
-  qaShareSlug: 'logbook-reads',
+  qaShareSlug: 'profile',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-profile-1-page',
+    session: '프로필 #1, 프로필 페이지',
+    title: '프로필 페이지·보관소 1열',
+    detail:
+      '기록 보관소 기본 배치를 1열로 바꿨습니다. 로그북 헤더와 로고 패널의 비밀번호 변경은 프로필로 갑니다. /account에서 필명, 프로필 사진, 비밀번호, Google·Kakao 계정 추가를 합니다. 사진은 무니 질문, 로고 패널, 로그북 작성자 옆에 보입니다. Preview /qa/profile — /blog 공개 피드는 1열, 로그인 후 프로필에서 사진을 올리면 헤더·무니 질문에 같은 사진.',
+    at: '2026-09-27T08:20:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-21-korean-city-chips',
     session: '로그북 #21, 한국 주소는 도시 칩',

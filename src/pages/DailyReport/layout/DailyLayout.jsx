@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PenNameProvider } from '../context/PenNameContext';
+import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 
 const DailyLayout = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const { user, avatarUrl, label } = useAccountProfile();
   const mainScrollRef = useRef(null);
 
   const hideMobileBlogChrome = (() => {
@@ -20,14 +21,6 @@ const DailyLayout = () => {
     const segment = match[1];
     return segment !== 'curation' && segment !== 'write';
   })();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
-    };
-    fetchUser();
-  }, []);
 
   const handleLogout = async () => {
     if (window.confirm(t('logbook.common.logoutConfirm'))) {
@@ -59,14 +52,16 @@ const DailyLayout = () => {
 
         {user && (
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500 truncate max-w-[120px]">
-              {user?.email?.split('@')[0]}
-            </span>
-            <Link
-              to="/auth/update-password"
-              className="text-[11px] font-bold text-blue-600 hover:text-blue-500"
-            >
-              {t('logbook.profile.changePassword')}
+            <Link to="/account" className="flex items-center gap-1.5 min-w-0">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
+              ) : null}
+              <span className="text-xs text-gray-500 truncate max-w-[88px]">
+                {label || user?.email?.split('@')[0]}
+              </span>
+              <span className="text-[11px] font-bold text-blue-600">
+                {t('authPage.account.open')}
+              </span>
             </Link>
             <button
               onClick={handleLogout}
