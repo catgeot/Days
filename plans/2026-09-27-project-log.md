@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 로그북 #16, 1열 그리드
+
+- **세션** `로그북 #16, 1열 그리드` · feature `cursor/logbook-reads-af3f` · tip `e908d8cc` · PR [#325](https://github.com/catgeot/Days/pull/325)
+- **조치** 기록 보관소 검색 옆 배치를 자세히·1열·그리드 세 버튼으로. 1열은 사진 위 카드를 한 줄에 하나, 제목·요약을 넓게. 기본은 그리드. 좋아요 `window.confirm`의 긴 주소는 브라우저가 붙이는 프리뷰 호스트이고, 본문은 그대로.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #17, Preview OK면 PR 병합` — 1열·하트·댓글 확인 후 PR #325.
+
 ## 팔경 활용 #74 — 청도 관광 9경 새마을운동발상지·섶마리한옥마을
 
 - **세션** `팔경 활용 #74, 청도 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `49b6b0be` · PR [#329](https://github.com/catgeot/Days/pull/329)
