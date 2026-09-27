@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 프로필 #2, 사진 카드
+
+- **세션** `프로필 #2, 사진 카드` · feature `cursor/profile-a231` · tip `498a2e1c` · draft PR [#336](https://github.com/catgeot/Days/pull/336)
+- **조치** 로고 패널은 왼쪽 프로필 카드, 오른쪽 방문한 여행사·나의 여행 기록, 아래 버킷리스트. 카드는 `/account`. 헤더의 작은 사진은 뺌. 프로필 사진 영역과 무니 질문 옆 사진을 키움. 공개 글 작성자 사진을 누르면 원본.
+- **VERIFY** `smoke:logbook-view-count` PASS · `smoke:travel-agencies` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog` · 프로필 `/account`
+- **다음** `프로필 #3, Preview OK면 PR 병합` — 좌우 배치·사진 크기·원본 보기 OK면 PR #336 병합.
+
 ## 프로필 #1, 프로필 페이지
 
 - **세션** `프로필 #1, 프로필 페이지` · feature `cursor/profile-a231` · tip `6f104728` · draft PR [#336](https://github.com/catgeot/Days/pull/336)
