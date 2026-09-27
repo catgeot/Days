@@ -1735,6 +1735,16 @@ const CNGJ_CHANG_2 = `${CNGJ_IMG}/TUCN_202004220935550071.JPG`;
 const CNGJ_CHANG_3 = `${CNGJ_IMG}/TUCN_202004220935550752.JPG`;
 const CNGJ_CHANG_HOME =
   'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_06_04/view.do?cntno=57';
+const CNGJ_MAGOK = `${CNGJ_IMG}/TUCN_202004270543350711.jpg`;
+const CNGJ_MAGOK_2 = `${CNGJ_IMG}/TUCN_202004270543351502.jpg`;
+const CNGJ_MAGOK_3 = `${CNGJ_IMG}/TUCN_202004270543352633.jpg`;
+const CNGJ_MAGOK_HOME =
+  'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_01_07/view.do?cntno=25';
+const CNGJ_MURY = `${CNGJ_IMG}/TUCN_202004270541140631.jpg`;
+const CNGJ_MURY_2 = `${CNGJ_IMG}/TUCN_202004270541142122.jpg`;
+const CNGJ_MURY_3 = `${CNGJ_IMG}/TUCN_202004270541143563.jpg`;
+const CNGJ_MURY_HOME =
+  'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_01_06/view.do?cntno=16';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3792,6 +3802,18 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [CNGJ_CHANG_2, CNGJ_CHANG_3],
     CNGJ_CHANG_HOME,
   ),
+  'local-scenic:gongju-sipgyeong:마곡사': {
+    imageUrl: CNGJ_MAGOK,
+    firstImage: CNGJ_MAGOK,
+    galleryUrls: [CNGJ_MAGOK, CNGJ_MAGOK_2, CNGJ_MAGOK_3],
+    homepage: CNGJ_MAGOK_HOME,
+  },
+  'local-scenic:gongju-sipgyeong:무령왕릉': {
+    imageUrl: CNGJ_MURY,
+    firstImage: CNGJ_MURY,
+    galleryUrls: [CNGJ_MURY, CNGJ_MURY_2, CNGJ_MURY_3],
+    homepage: CNGJ_MURY_HOME,
+  },
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {

@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 79,
-  sessionPhase: '공주 결손 오버레이',
+  sessionPhase: '공주 빈 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=gongju',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-thumbs',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주10경 마곡사·무령왕릉 썸네일',
+    detail:
+      '공주10경 마곡사·무령왕릉은 JSON contentId가 있어도 Tour firstimage가 비어 목록이 랜드마크 아이콘이었습니다. contentId는 유지하고 공주시 문화관광 10경 공식 사진(마곡사 전각·무령왕릉 봉분)을 썸네일로 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gongju 7경·8경.',
+    at: '2026-09-27T12:10:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-79-gongju-overlay',
     session: '팔경 활용 #79, 공주 결손 오버레이',

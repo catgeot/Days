@@ -5298,6 +5298,27 @@ assert.ok(
   gongjuGlobe.find((s) => s.attractionName === '창벽')?.imageUrl?.includes('TUCN_202004220935549330'),
   '공주 검색 창벽 썸네일',
 );
+const magoksa = gongjuTen.find((s) => s.attractionName === '마곡사');
+const muryeong = gongjuTen.find((s) => s.attractionName === '무령왕릉');
+assert.equal(magoksa?.contentId, '125894', '마곡사 JSON contentId 유지');
+assert.equal(muryeong?.contentId, '126681', '무령왕릉 JSON contentId 유지');
+assert.ok(magoksa?.imageUrl?.includes('TUCN_202004270543350711'), '마곡사 공주시 전각 사진');
+assert.ok(muryeong?.imageUrl?.includes('TUCN_202004270541140631'), '무령왕릉 공주시 봉분 사진');
+assert.notEqual(magoksa?.imageUrl, muryeong?.imageUrl, '마곡사·무령왕릉 썸네일 다름');
+assert.ok(
+  resolveLocalScenicRowFirstImage(magoksa, new Map())?.includes('TUCN_202004270543350711'),
+  '마곡사 목록 행은 Tour firstimage 없이 공식 사진',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(muryeong, new Map())?.includes('TUCN_202004270541140631'),
+  '무령왕릉 목록 행은 Tour firstimage 없이 공식 사진',
+);
+assert.ok(magoksa?.homepage?.includes('cntno=25'), '마곡사 공주시 10경');
+assert.ok(muryeong?.homepage?.includes('cntno=16'), '무령왕릉 공주시 10경');
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '무령왕릉')?.imageUrl?.includes('TUCN_202004270541140631'),
+  '공주 검색 무령왕릉 썸네일',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {
