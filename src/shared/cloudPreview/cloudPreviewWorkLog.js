@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '로그북',
-  sessionNo: 17,
-  sessionPhase: '본문 반응 문구',
-  branch: 'cursor/logbook-reads-af3f',
-  previewPath: '/blog',
-  qaShareSlug: 'logbook-reads',
+  title: '팔경 활용',
+  sessionNo: 75,
+  sessionPhase: '의령 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=uiryeong',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-75-uiryeong-overlay',
+    session: '팔경 활용 #75, 의령 결손 오버레이',
+    title: '의령9경 백산안희제 생가·호암이병철 생가',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의령9경 결손 2건(백산안희제선생 생가·호암이병철선생 생가)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 백산안희제선생 생가는 부림면 입산로2길 37(8경, 1885 출생·1993 문화유산자료·1915 중수·국가유산청 사진), 호암이병철선생 생가는 정곡면 호암길 22-4(9경, 1851 한옥·10–17시 월요휴관·호암재단 사진)입니다. 곽재우 생가·부산 백산상회·용인 호암미술관과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiryeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T05:40:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-17-reaction-words',
     session: '로그북 #17, 본문 반응 문구',
