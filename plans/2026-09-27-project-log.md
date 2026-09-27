@@ -10,6 +10,7 @@
 - **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
 - **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
 - **다음** Preview에서 overlap false·프로필 탭 OK면 PR #338 병합.
+- **추가** tip `f23c3a1e` — 로그 `profile.open` 정상·`y:61 hit:svg` 닫기 실패 → 상단 고정 닫기·`blog.profile.close` 로그.
 
 ## 프로필 #5, 헤더 프로필 탭
 
