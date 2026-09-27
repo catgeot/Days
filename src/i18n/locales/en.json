@@ -2091,6 +2091,13 @@
       "footerCompact": "(summarized)",
       "readCount": "{{count}} reads"
     },
+    "meta": {
+      "readingMinutes": "{{count}} min read",
+      "readingMinutesShort": "{{count}} min",
+      "readingAria": "{{count}} min read",
+      "samePlace": "{{count}} at this place",
+      "samePlaceAria": "{{count}} entries at this place"
+    },
     "calendar": {
       "month": "{{month}}/{{year}}"
     },

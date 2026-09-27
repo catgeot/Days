@@ -12,7 +12,9 @@ import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnipp
 import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
-import { claimLogbookViewSession, releaseLogbookViewSession } from '../../utils/logbookViewCount';
+import { claimLogbookViewSession, readLogbookViewCount, releaseLogbookViewSession } from '../../utils/logbookViewCount';
+import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
+import LogbookReadFacts from './components/LogbookReadFacts';
 import LogbookArticleHead from './components/LogbookArticleHead';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
@@ -21,13 +23,17 @@ import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 
 const SCHEMA_TYPE = 'EditorialLogbookArticle';
 
-function recordPublicRead(reportId) {
+function recordPublicRead(reportId, onCount) {
   if (typeof sessionStorage === 'undefined') return;
   if (!claimLogbookViewSession(reportId, sessionStorage)) return;
-  void supabase.rpc('increment_report_view', { report_id_param: String(reportId) }).then(({ error }) => {
-    if (!error) return;
-    releaseLogbookViewSession(reportId, sessionStorage);
-    console.warn('[logbook] view count', error.message);
+  void supabase.rpc('increment_report_view', { report_id_param: String(reportId) }).then(({ data, error }) => {
+    if (error) {
+      releaseLogbookViewSession(reportId, sessionStorage);
+      console.warn('[logbook] view count', error.message);
+      return;
+    }
+    const n = typeof data === 'number' ? data : typeof data === 'string' && data.trim() !== '' ? Number(data) : NaN;
+    if (Number.isFinite(n) && onCount) onCount(Math.floor(n));
   });
 }
 
@@ -49,6 +55,8 @@ const PublicViewer = () => {
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [seenCount, setSeenCount] = useState(null);
+  const [placeCount, setPlaceCount] = useState(null);
 
   const handleBack = useCallback(() => {
     navigateAppBack(navigate, { fallback: '/blog' });
@@ -89,8 +97,10 @@ const PublicViewer = () => {
       }
 
       setReport(data);
+      setSeenCount(null);
+      setPlaceCount(null);
       setErrorMsg('');
-      recordPublicRead(data.id);
+      recordPublicRead(data.id, setSeenCount);
 
       if (isEditorialLogbook(data)) {
         setAuthorLabel('');
@@ -110,6 +120,17 @@ const PublicViewer = () => {
     };
     void fetchPublicReport();
   }, [id, editorialSlug, navigate]);
+
+  useEffect(() => {
+    if (!report?.location) return undefined;
+    let cancelled = false;
+    void fetchSamePlaceCount(supabase, { location: report.location }).then((count) => {
+      if (!cancelled) setPlaceCount(count);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [report]);
 
   const pageUrl = useMemo(() => {
     if (!report) return '';
@@ -151,6 +172,10 @@ const PublicViewer = () => {
   const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
   const displayDate = formatLogbookDisplayDate(report);
   const showDecorativeHeroBlur = Boolean(heroImageUrl && !editorial);
+  const readingMinutes = logbookReadingMinutes(report.content);
+  const viewCount = seenCount ?? readLogbookViewCount(report);
+  const placeKey = logbookPlaceKey(report.location);
+  const placeHref = placeKey ? `/blog?tab=public&location=${encodeURIComponent(placeKey)}` : '';
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -224,6 +249,13 @@ const PublicViewer = () => {
                 <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
               </span>
             )}
+            <LogbookReadFacts
+              tone="article"
+              minutes={readingMinutes}
+              placeCount={placeCount}
+              viewCount={viewCount}
+              placeHref={placeHref}
+            />
           </div>
 
           <LogbookArticleHead report={report} readerDek={editorial} />

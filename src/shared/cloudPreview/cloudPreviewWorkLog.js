@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 12,
-  sessionPhase: '공개 피드 읽음',
+  sessionNo: 13,
+  sessionPhase: '읽는 시간·같은 장소 수',
   branch: 'cursor/logbook-reads-af3f',
   previewPath: '/blog',
   qaShareSlug: 'logbook-reads',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-13-reading-place',
+    session: '로그북 #13, 읽는 시간·같은 장소 수',
+    title: '카드와 본문에 읽는 시간·같은 장소',
+    detail:
+      '공개 피드 카드와 글 본문 머리(날짜·장소 줄)에 읽는 시간과 같은 장소 기록 수를 넣었습니다. 본문에는 읽은 수도 같이 보입니다. 같은 장소 숫자는 공백을 맞춘 장소 이름 기준이고, 위치 미상은 빠집니다. 본문의 같은 장소 숫자는 그 장소 피드로 이어집니다. 내 기록 카드·내 글에는 읽은 수가 없고, 내 글의 같은 장소 수는 내 기록 기준입니다. Preview /qa/logbook-reads — /blog 공개 피드 카드와 글을 열어 분·같은 장소·읽은 수가 본문 머리에도 있는지.',
+    at: '2026-09-27T00:45:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-12-public-reads',
     session: '로그북 #12, 공개 피드 읽음',

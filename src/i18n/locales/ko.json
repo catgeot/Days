@@ -1854,6 +1854,13 @@
       "footerCompact": "(요약됨)",
       "readCount": "읽음 {{count}}"
     },
+    "meta": {
+      "readingMinutes": "{{count}}분 읽기",
+      "readingMinutesShort": "{{count}}분",
+      "readingAria": "읽는 시간 {{count}}분",
+      "samePlace": "같은 장소 {{count}}",
+      "samePlaceAria": "같은 장소 기록 {{count}}개"
+    },
     "calendar": {
       "month": "{{year}}년 {{month}}월"
     },

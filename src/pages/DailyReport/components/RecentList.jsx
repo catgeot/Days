@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle, User, Eye } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,7 +11,9 @@ import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logb
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { readLogbookViewCount } from '../../../utils/logbookViewCount';
+import { countReportsByPlace, logbookReadingMinutes, samePlaceCount } from '../../../utils/logbookReadingMeta';
 import EditorialLogbookBadge from './EditorialLogbookBadge';
+import LogbookReadFacts from './LogbookReadFacts';
 
 const GATEO_PUBLIC_SOURCE_URL = 'https://www.gateo.kr/';
 
@@ -27,6 +29,9 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
     report.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
     report.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Search narrows cards; same-place counts stay on the loaded feed.
+  const placeCounts = useMemo(() => countReportsByPlace(reports), [reports]);
 
   const isCompact = filteredReports.length > 5;
 
@@ -127,6 +132,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
               const cardExcerpt = resolveLogbookFeedExcerpt(report);
               const editorialPublicFeed = isPublicMode && editorial;
               const viewCount = isPublicMode ? readLogbookViewCount(report) : null;
+              const readingMinutes = logbookReadingMinutes(report.content);
+              const placeCount = samePlaceCount(placeCounts, report.location);
 
               return (
               <div
@@ -220,16 +227,11 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                     <span className="flex items-center gap-1.5 truncate max-w-[150px]">
                       <MapPin size={12} className="text-gray-400" /> {report.location}
                     </span>
-                    {viewCount != null && (
-                      <span
-                        className="flex items-center gap-1 text-gray-500"
-                        title={t('logbook.recentList.readCount', { count: viewCount })}
-                        aria-label={t('logbook.recentList.readCount', { count: viewCount })}
-                      >
-                        <Eye size={12} className="text-gray-400 shrink-0" />
-                        {viewCount.toLocaleString()}
-                      </span>
-                    )}
+                    <LogbookReadFacts
+                      minutes={readingMinutes}
+                      placeCount={placeCount}
+                      viewCount={viewCount}
+                    />
                     {report.images && report.images.length > 1 && (
                       <span className="flex items-center gap-1 text-blue-600 font-bold bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md ml-auto sm:ml-0">
                         <ImageIcon size={10} /> +{report.images.length - 1}

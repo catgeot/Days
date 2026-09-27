@@ -6,6 +6,13 @@ import {
   readLogbookViewCount,
   releaseLogbookViewSession,
 } from '../src/utils/logbookViewCount.js';
+import {
+  countReportsByPlace,
+  fetchSamePlaceCount,
+  logbookPlaceKey,
+  logbookReadingMinutes,
+  samePlaceCount,
+} from '../src/utils/logbookReadingMeta.js';
 
 assert.equal(readLogbookViewCount({ view_count: 0 }), 0);
 assert.equal(readLogbookViewCount({ view_count: 12 }), 12);
@@ -48,5 +55,103 @@ const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js
 assert.match(vercel, /\/qa\/logbook-reads/);
 assert.match(qa, /slug:\s*'logbook-reads'/);
 assert.match(qa, /cursor\/logbook-reads-af3f/);
+
+assert.equal(logbookReadingMinutes(''), null);
+assert.equal(logbookReadingMinutes('가'.repeat(500)), 1);
+assert.equal(logbookReadingMinutes('가'.repeat(501)), 2);
+assert.equal(logbookReadingMinutes(`${'word '.repeat(200)}`), 1);
+assert.equal(logbookReadingMinutes(`${'word '.repeat(201)}`), 2);
+assert.equal(logbookReadingMinutes(`# ${'가'.repeat(10)}\n\n**본문**`), 1);
+assert.equal(logbookPlaceKey('  파리  '), '파리');
+assert.equal(logbookPlaceKey('위치 미상'), '');
+assert.equal(logbookPlaceKey('Location unknown'), '');
+
+const placeCounts = countReportsByPlace([
+  { location: '파리' },
+  { location: '파리 ' },
+  { location: '파리 근교' },
+  { location: '위치 미상' },
+]);
+assert.equal(samePlaceCount(placeCounts, '파리'), 2);
+assert.equal(samePlaceCount(placeCounts, '파리 근교'), 1);
+assert.equal(samePlaceCount(placeCounts, '위치 미상'), null);
+
+function queryChain(result) {
+  const api = {
+    select() { return api; },
+    eq() { return api; },
+    ilike() { return api; },
+    limit() { return Promise.resolve(result); },
+  };
+  return { from() { return api; } };
+}
+
+const publicRows = await fetchSamePlaceCount(
+  queryChain({
+    data: [
+      { location: '파리', is_editorial: false },
+      { location: '파리 ', is_editorial: false },
+      { location: '파리 근교', is_editorial: false },
+      { location: '파리', is_editorial: true, status: 'draft' },
+    ],
+    error: null,
+  }),
+  { location: '파리' },
+);
+assert.equal(publicRows, 2);
+
+const mine = await fetchSamePlaceCount(
+  queryChain({
+    data: [
+      { location: '제주', is_editorial: true, status: 'draft' },
+      { location: '제주' },
+    ],
+    error: null,
+  }),
+  { location: '제주', userId: 'user-1' },
+);
+assert.equal(mine, 2);
+
+let selects = 0;
+const fallback = await fetchSamePlaceCount(
+  {
+    from() {
+      const api = {
+        select() {
+          selects += 1;
+          return api;
+        },
+        eq() { return api; },
+        ilike() { return api; },
+        limit() {
+          if (selects === 1) {
+            return Promise.resolve({ data: null, error: { code: 'PGRST204', message: 'column' } });
+          }
+          return Promise.resolve({ data: [{ location: '부산' }], error: null });
+        },
+      };
+      return api;
+    },
+  },
+  { location: '부산' },
+);
+assert.equal(fallback, 1);
+assert.equal(selects, 2);
+
+const recentList = readFileSync(join(root, 'src/pages/DailyReport/components/RecentList.jsx'), 'utf8');
+const publicViewer = readFileSync(join(root, 'src/pages/DailyReport/PublicViewer.jsx'), 'utf8');
+const detail = readFileSync(join(root, 'src/pages/DailyReport/Detail.jsx'), 'utf8');
+assert.match(recentList, /LogbookReadFacts/);
+assert.match(publicViewer, /tone="article"/);
+assert.match(detail, /tone="article"/);
+assert.doesNotMatch(publicViewer, /update\(\s*\{[^}]*view_count/);
+assert.doesNotMatch(detail, /update\(\s*\{[^}]*view_count/);
+
+const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
+const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
+for (const key of ['readingMinutes', 'readingMinutesShort', 'readingAria', 'samePlace', 'samePlaceAria']) {
+  assert.equal(typeof ko.logbook.meta[key], 'string');
+  assert.equal(typeof en.logbook.meta[key], 'string');
+}
 
 console.log('smoke:logbook-view-count PASS');
