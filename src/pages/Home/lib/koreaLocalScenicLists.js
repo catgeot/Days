@@ -1745,6 +1745,19 @@ const CNGJ_MURY_2 = `${CNGJ_IMG}/TUCN_202004270541142122.jpg`;
 const CNGJ_MURY_3 = `${CNGJ_IMG}/TUCN_202004270541143563.jpg`;
 const CNGJ_MURY_HOME =
   'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_01_06/view.do?cntno=16';
+const CN_TOUR_IMG = 'https://tour.chungnam.go.kr/thumbnail/trsrcn';
+const CN_SINGWAN = `${CN_TOUR_IMG}/TRSRCN_202501140412570660.JPG`;
+const CN_SINGWAN_2 = `${CN_TOUR_IMG}/TRSRCN_202605091035591187.JPG`;
+const CN_SINGWAN_3 = `${CN_TOUR_IMG}/TRSRCN_202607071221072488.JPG`;
+const CN_SINGWAN_HOME =
+  'https://tour.chungnam.go.kr/prog/trsrcn/kor/sub02_01_01/view.do?trsrcnNo=208';
+const CN_MYEONG = `${CN_TOUR_IMG}/TRSRCN_202501060339307250.jpg`;
+const CN_MYEONG_HOME =
+  'https://tour.chungnam.go.kr/prog/trsrcn/kor/sub02_01_01/view.do?trsrcnNo=222';
+const GJ_ENC_IMG = 'https://gongju.grandculture.net/Image?localName=gongju&id=';
+const CN_JUNG = `${GJ_ENC_IMG}GC017P00956`;
+const CN_JUNG_2 = `${GJ_ENC_IMG}GC017P00957`;
+const CN_JUNG_HOME = 'https://gongju.grandculture.net/gongju/toc/GC01700663';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3875,6 +3888,26 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   126643: localScenicThumbOverlay(INJE_DAESEUNG_FALLS),
   125723: localScenicThumbOverlay(INJE_BANGDONG_SPRING),
   1932458: localScenicThumbOverlay(INJE_HAPGANG_PAVILION),
+  // 공주 검색 청벽산 — Tour firstimage·detailImage 없음. 창벽산과 같은 마암리 절벽. 10경 승격 아님.
+  2755172: {
+    ...localScenicThumbOverlay(CNGJ_CHANG, [CNGJ_CHANG_2, CNGJ_CHANG_3]),
+    homepage: CNGJ_CHANG_HOME,
+  },
+  // 공주 지역 대표 명소 금강신관공원 — JSON imageUrl 공란·Tour firstimage 없음. contentId 유지.
+  2756156: {
+    ...localScenicThumbOverlay(CN_SINGWAN, [CN_SINGWAN_2, CN_SINGWAN_3]),
+    homepage: CN_SINGWAN_HOME,
+  },
+  // 공주 검색 명탄서원 — Tour firstimage 없음. 충남관광 대표 사진.
+  1956330: {
+    ...localScenicThumbOverlay(CN_MYEONG),
+    homepage: CN_MYEONG_HOME,
+  },
+  // 공주 검색 계룡산 중악단 — Tour firstimage 없음. 계룡산 10경과 다른 제단.
+  127239: {
+    ...localScenicThumbOverlay(CN_JUNG, [CN_JUNG_2]),
+    homepage: CN_JUNG_HOME,
+  },
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

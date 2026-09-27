@@ -1118,22 +1118,23 @@ export default function KoreaThemeScenicPage() {
       curatedSpotsWithLocalScenic.map((s) => s.contentId),
     );
     return curatedSpotsWithLocalScenic.map((spot) => {
+      const seeded = applyLocalScenicContentIdThumb(spot);
       const extra = localScenicTourBySpotId.get(String(spot.id || ''));
-      const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
+      const overlay = lookupLocalScenicMemberOverlayForSpot(seeded);
       const firstImage = resolveLocalScenicRowFirstImage(
-        spot,
+        seeded,
         curatedImageByContentId,
         peeked,
         extra,
       );
-      if (!firstImage && !overlay?.imageUrl) return spot;
+      if (!firstImage && !overlay?.imageUrl) return seeded;
       const overlayThumb = overlay?.imageUrl;
       return {
-        ...spot,
+        ...seeded,
         firstImage: overlayThumb || firstImage,
-        imageUrl: overlayThumb || spot.imageUrl || firstImage,
-        galleryUrls: overlay?.galleryUrls || spot.galleryUrls,
-        homepage: overlay?.homepage || spot.homepage,
+        imageUrl: overlayThumb || seeded.imageUrl || firstImage,
+        galleryUrls: overlay?.galleryUrls || seeded.galleryUrls,
+        homepage: overlay?.homepage || seeded.homepage,
       };
     });
   }, [
@@ -2648,24 +2649,25 @@ export default function KoreaThemeScenicPage() {
     }
     const curated = CURATED_ALL.find((s) => s.id === selectedId);
     if (curated) {
-      const overlay = lookupLocalScenicMemberOverlayForSpot(curated);
+      const seeded = applyLocalScenicContentIdThumb(curated);
+      const overlay = lookupLocalScenicMemberOverlayForSpot(seeded);
       const overlayThumb = overlay?.imageUrl;
       const firstImage = resolveLocalScenicRowFirstImage(
-        curated,
+        seeded,
         curatedImageByContentId,
       );
       setSelectedSpot(
         firstImage || overlayThumb
           ? {
-              ...curated,
+              ...seeded,
               firstImage: overlayThumb || firstImage,
-              imageUrl: overlayThumb || curated.imageUrl || firstImage,
-              galleryUrls: overlay?.galleryUrls || curated.galleryUrls,
-              overview: overlay?.overview || curated.overview,
-              addr1: overlay?.addr1 || curated.addr1,
-              homepage: overlay?.homepage || curated.homepage,
+              imageUrl: overlayThumb || seeded.imageUrl || firstImage,
+              galleryUrls: overlay?.galleryUrls || seeded.galleryUrls,
+              overview: overlay?.overview || seeded.overview,
+              addr1: overlay?.addr1 || seeded.addr1,
+              homepage: overlay?.homepage || seeded.homepage,
             }
-          : curated,
+          : seeded,
       );
       return undefined;
     }

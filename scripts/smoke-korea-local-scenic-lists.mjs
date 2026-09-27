@@ -5319,6 +5319,57 @@ assert.ok(
   gongjuGlobe.find((s) => s.attractionName === '무령왕릉')?.imageUrl?.includes('TUCN_202004270541140631'),
   '공주 검색 무령왕릉 썸네일',
 );
+const cheongbyeokThumb = lookupLocalScenicPhotoByContentId('2755172');
+assert.ok(
+  cheongbyeokThumb?.imageUrl?.includes('TUCN_202004220935549330'),
+  '청벽산 검색 행 공주시 절벽 사진',
+);
+assert.ok(cheongbyeokThumb?.homepage?.includes('cntno=57'), '청벽산 공주시 창벽산');
+assert.equal(
+  resolveSearchScenicMedia({
+    hubId: 'gongju',
+    name: '청벽산',
+    contentId: '2755172',
+    addr1: '충청남도 공주시 반포면 마암리 산 4-4',
+  }).imageUrl,
+  cheongbyeokThumb.imageUrl,
+  '검색「공주」청벽산 썸네일',
+);
+const singwan = listKoreaScenicSpots().find((s) => s.id === 'geumgang-singwan-park');
+assert.equal(singwan?.contentId, '2756156', '금강신관공원 contentId 유지');
+assert.ok(!singwan?.imageUrl, '금강신관공원 JSON imageUrl 공란 유지');
+const singwanThumb = lookupLocalScenicPhotoByContentId('2756156');
+assert.ok(
+  singwanThumb?.imageUrl?.includes('TRSRCN_202501140412570660'),
+  '금강신관공원 충남관광 강변 사진',
+);
+assert.ok(singwanThumb?.homepage?.includes('trsrcnNo=208'), '금강신관공원 충남관광');
+assert.equal(
+  resolveSearchScenicMedia({
+    hubId: 'gongju',
+    name: '금강신관공원',
+    contentId: '2756156',
+  }).imageUrl,
+  singwanThumb.imageUrl,
+  '지역 대표 명소 금강신관공원 썸네일',
+);
+assert.ok(
+  scenicPageSrc.includes('applyLocalScenicContentIdThumb(spot)'),
+  '허브 대표 명소 목록이 contentId 썸네일을 쓴다',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('1956330')?.imageUrl?.includes('TRSRCN_202501060339307250'),
+  '명탄서원 충남관광 현판 사진',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127239')?.imageUrl?.includes('GC017P00956'),
+  '중악단 디지털공주문화대전 본전 사진',
+);
+assert.notEqual(
+  lookupLocalScenicPhotoByContentId('127239')?.imageUrl,
+  gongjuTen.find((s) => s.attractionName === '계룡산')?.imageUrl,
+  '중악단≠계룡산 썸네일',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

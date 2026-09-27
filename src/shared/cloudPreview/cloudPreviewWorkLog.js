@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 79,
-  sessionPhase: '공주 빈 썸네일',
+  sessionPhase: '공주 권역 썸네일',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=gongju',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-area-thumbs',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주 권역 빈 썸네일',
+    detail:
+      '팔경 밖 공주 관광지 중 Tour firstimage가 비어 아이콘이던 청벽산(2755172)·금강신관공원(2756156)·명탄서원(1956330)·계룡산 중악단(127239)에 공식 사진을 연결했습니다. JSON contentId·scenic 승격은 없습니다. 청벽산은 창벽과 같은 마암리 절벽 사진이고, 금강신관공원은 지역 대표 명소 행입니다. Preview /qa/palgyeong-use — 검색「공주」·/korea/theme/scenic?hub=gongju.',
+    at: '2026-09-27T12:30:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-79-gongju-thumbs',
     session: '팔경 활용 #79, 공주 결손 오버레이',
