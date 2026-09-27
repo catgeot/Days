@@ -5,7 +5,7 @@ import { supabase } from '../../../shared/api/supabase';
 import { MOBILE_INPUT_TEXT_CLASS } from '../../../shared/hooks/useMobileInputViewport';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { LOGBOOK_COMMENTS_HASH, readLogbookCommentCount } from '../../../utils/logbookReactions';
-import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
+import { publicProfilePhotos } from '../../../shared/Auth/profileAvatar';
 import { fetchAuthorProfiles, reportAuthorLabel } from '../utils/reportAuthor';
 import {
   addReportComment,
@@ -19,10 +19,11 @@ async function withAuthorLabels(rows) {
   const byId = await fetchAuthorProfiles(ids);
   return rows.map((row) => {
     const profile = byId.get(row.user_id);
+    const photos = publicProfilePhotos(profile);
     return {
       ...row,
       author_label: reportAuthorLabel(row.user_id, profile?.display_name),
-      author_avatar: profileAvatarUrl(profile?.avatar_url),
+      author_avatar: photos[0] || '',
     };
   });
 }

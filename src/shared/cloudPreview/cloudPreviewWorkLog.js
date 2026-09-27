@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '프로필',
-  sessionNo: 2,
-  sessionPhase: '사진 카드',
+  sessionNo: 5,
+  sessionPhase: '헤더 터치 가림',
   branch: 'cursor/profile-a231',
   previewPath: '/blog',
   qaShareSlug: 'profile',
@@ -23,6 +23,38 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-profile-5-header-overlap',
+    session: '프로필 #5, 헤더 터치 가림',
+    title: '본문 스크롤이 헤더를 덮던 문제',
+    detail:
+      '모바일 /blog에서 본문 flex h-full 때문에 스크롤 영역이 헤더와 겹쳐 우상단 프로필 탭이 막혔습니다. min-h-0·sticky z-100 헤더로 수정. Preview 하단 「모바일 위젯 로그」에 blog.header.layout(overlap)·blog.header.tap(hit)이 찍힙니다 — overlap false·hit profile-btn이면 정상.',
+    at: '2026-09-27T11:05:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-5-header-tap',
+    session: '프로필 #5, 헤더 프로필 탭',
+    title: '로그북 헤더 프로필·닫기 탭',
+    detail:
+      '로그북 /blog 모바일 우측 상단은 아이디와 프로필만 보이고, 프로필을 누르면 페이지 이동 없이 프로필 창이 바로 열립니다. 닫기와 사진 보기 닫기는 터치 영역을 키웠습니다. 사진 장 수는 프로필 사진을 열었을 때와 프로필 카드 사진 위에만 보입니다. Preview /qa/profile — 헤더 프로필 열기·닫기, 로고 패널 프로필 닫기, 사진 라이트박스 장 수.',
+    at: '2026-09-27T11:00:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-4-header-count',
+    session: '프로필 #4, 헤더 사진 숫자',
+    title: '아이디 옆 사진 숫자 제거',
+    detail:
+      '로그북 홈 우측 상단은 아이디와 프로필만 있고, 사진 숫자는 없습니다. 숫자는 프로필 사진을 열었을 때와 프로필 사진 위에만 보입니다. 공개 글·댓글 작성자 이름 옆에도 숫자는 없습니다. Preview /qa/profile — /blog 모바일 헤더에서 프로필이 바로 열리는지, 작성자 사진을 열면 장 수가 보이는지.',
+    at: '2026-09-27T10:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-profile-3-in-panel',
+    session: '프로필 #3, 패널 안 프로필',
+    title: '로고 패널 안 프로필·사진 여러 장',
+    detail:
+      '로고 패널에서 프로필을 열면 패널 안에 남고, 닫아도 지구본 홈으로 나가지 않습니다. 프로필은 위아래로만 스크롤됩니다. 사진은 여러 장이고 숫자가 보이며, 공개를 끄면 다른 사람에게 사진과 장 수가 보이지 않습니다. Preview /qa/profile — 로그인 후 로고 패널 카드, 사진 추가, 공개 스위치, 공개 글 작성자 숫자.',
+    at: '2026-09-27T09:40:00.000Z',
+  },
   {
     id: '2026-09-27-profile-2-photo-card',
     session: '프로필 #2, 사진 카드',

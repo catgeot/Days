@@ -1,6 +1,6 @@
 import { supabase } from '../../../shared/api/supabase';
 import { i18n } from '../../../i18n/config';
-import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
+import { publicProfilePhotos } from '../../../shared/Auth/profileAvatar';
 import { isEditorialLogbook } from '../../../utils/logbookEditorial';
 
 /** 공개 글: 프로필 닉네임이 없으면 사용자 UUID 앞 8자 */
@@ -11,21 +11,28 @@ export function reportAuthorLabel(userId, displayName) {
   return i18n.t('logbook.common.traveler');
 }
 
-function avatarColumnMissing(error) {
+function schemaColumnMissing(error) {
   if (!error) return false;
-  return error.code === 'PGRST204' || /avatar_url/i.test(error.message || '');
+  return error.code === 'PGRST204' || error.code === '42703' || /column/i.test(error.message || '');
 }
 
 export async function fetchAuthorProfiles(ids) {
   if (!ids?.length) return new Map();
-  const withAvatar = await supabase
-    .from('profiles')
-    .select('id, display_name, avatar_url')
-    .in('id', ids);
-  const rows = avatarColumnMissing(withAvatar.error)
-    ? (await supabase.from('profiles').select('id, display_name').in('id', ids)).data
-    : withAvatar.data;
-  return new Map((rows || []).map((row) => [row.id, row]));
+  const selects = [
+    'id, display_name, avatar_url, avatar_urls, profile_public',
+    'id, display_name, avatar_url',
+    'id, display_name',
+  ];
+  let rows = [];
+  for (const select of selects) {
+    const result = await supabase.from('profiles').select(select).in('id', ids);
+    if (!result.error) {
+      rows = result.data || [];
+      break;
+    }
+    if (!schemaColumnMissing(result.error)) break;
+  }
+  return new Map(rows.map((row) => [row.id, row]));
 }
 
 export async function attachAuthorLabels(rows) {
@@ -36,12 +43,14 @@ export async function attachAuthorLabels(rows) {
 
   return rows.map((r) => {
     const profile = byId.get(r.user_id);
+    const photos = isEditorialLogbook(r) ? [] : publicProfilePhotos(profile);
     return {
       ...r,
       author_label: isEditorialLogbook(r)
         ? null
         : reportAuthorLabel(r.user_id, profile?.display_name),
-      author_avatar: isEditorialLogbook(r) ? '' : profileAvatarUrl(profile?.avatar_url),
+      author_avatar: photos[0] || '',
+      author_photos: photos,
     };
   });
 }

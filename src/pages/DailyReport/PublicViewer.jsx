@@ -4,7 +4,7 @@ import { MapPin, Home, Compass, PenTool, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { profileAvatarUrl } from '../../shared/Auth/profileAvatar';
+import { publicProfilePhotos } from '../../shared/Auth/profileAvatar';
 import ProfilePhotoLightbox from '../../shared/Auth/ProfilePhotoLightbox';
 import { fetchAuthorProfiles, reportAuthorLabel } from './utils/reportAuthor';
 import LogbookBody from './components/LogbookBody';
@@ -61,6 +61,7 @@ const PublicViewer = () => {
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
   const [authorAvatar, setAuthorAvatar] = useState('');
+  const [authorPhotos, setAuthorPhotos] = useState([]);
   const [authorPhotoOpen, setAuthorPhotoOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [seenCount, setSeenCount] = useState(null);
@@ -117,19 +118,21 @@ const PublicViewer = () => {
       if (isEditorialLogbook(data)) {
         setAuthorLabel('');
         setAuthorAvatar('');
+        setAuthorPhotos([]);
         return;
       }
 
       let displayName = '';
-      let avatar = '';
+      let photos = [];
       if (data.user_id) {
         const profiles = await fetchAuthorProfiles([data.user_id]);
         const prof = profiles.get(data.user_id);
         displayName = prof?.display_name || '';
-        avatar = profileAvatarUrl(prof?.avatar_url);
+        photos = publicProfilePhotos(prof);
       }
       setAuthorLabel(reportAuthorLabel(data.user_id, displayName));
-      setAuthorAvatar(avatar);
+      setAuthorPhotos(photos);
+      setAuthorAvatar(photos[0] || '');
     };
     void fetchPublicReport();
   }, [id, editorialSlug, navigate]);
@@ -378,6 +381,7 @@ const PublicViewer = () => {
       {authorPhotoOpen && authorAvatar ? (
         <ProfilePhotoLightbox
           src={authorAvatar}
+          photos={authorPhotos}
           name={authorLabel}
           onClose={() => setAuthorPhotoOpen(false)}
         />
