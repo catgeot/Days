@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 프로필 #5, 헤더 프로필 탭
+
+- **세션** `프로필 #5, 헤더 프로필 탭` · feature `cursor/profile-a231` · tip `07ce723d` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **조치** `/blog` 모바일 헤더 프로필은 `/account` 이동 대신 body 포털로 바로 연다. 닫기·사진 라이트박스 닫기 터치 영역·z-index 보강. 대표 사진 탭은 보기(장 수는 라이트박스·카드 위), 변경은 아래 버튼.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
+- **다음** `프로필 #6, Preview OK면 PR 병합` — 헤더·패널 프로필 탭 OK면 PR #338 병합.
+
 ## 프로필 #4, 헤더 사진 숫자
 
 - **세션** `프로필 #4, 헤더 사진 숫자` · feature `cursor/profile-a231` · tip `8073fc78` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
