@@ -303,6 +303,36 @@
 
 ---
 
+### 탐색 hub 썸네일 — theme Tour ID (Explore 선택 카드)
+
+| | |
+|--|--|
+| **상태** | **#1 핸드오ff** · 패치 **대기** · 증상: 대전 검색 2/2 **신중앙시장** 빈 썸네일 · (부) 서울 동명 intro |
+| **브랜치** | `cursor/search-enter-hub-2018` |
+| **PR** | [#283](https://github.com/catgeot/Days/pull/283) (탐색 Enter와 동일 feature · 병합 전) |
+| **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) — 「탐색 hub 썸네일 #1」 |
+| **Preview** | `/qa/search-enter-hub` → git Preview `/explore` · `대전` → 2/2 신중앙시장 |
+| **SSOT** | `koreaThemeRegionTour.json` `daejeon:daejeon-central-market` → **1434477** · hub JSON에는 아직 없음 |
+| **coord 큐** | [`city-attraction-tourapi-coord-queue.md`](./city-attraction-tourapi-coord-queue.md) — multi_title · **1434477 사용 금지(큐 후보만)** |
+| **소유** | `cityAttractionHubs.js` · `koreaThemeRegions.js` · `SearchSuggestionList.jsx` · 검색 스모크 |
+| **금지** | coord 큐 ID(`1003205`,`1227095`) 무분별 기입 · UI 리디자인 · feature에 `plans/**` · 팔경 JSON fill |
+| **VERIFY** | `npm run smoke:search-enter-match` · `smoke:explore-choice-overlay` · `npm run build` |
+| **관련** | 팔경 #80 QA 중 발견 — **팔경 브랜치와 별도 커밋** |
+
+**다음 제시어**:
+
+```
+탐색 hub 썸네일 #1, 대전 신중앙시장 Tour ID
+@plans/feature-handoff-index.md
+@plans/2026-09-27-project-log.md
+브랜치 cursor/search-enter-hub-2018 · Preview /qa/search-enter-hub
+금지: coord 큐 1003205/1227095 무분별 기입 · UI 리디자인 · feature에 plans/** · palgyeong JSON fill
+작업: Explore 「대전」2/2 신중앙시장 후보에 theme 1434477 병합 → 썸네일·intro QA. 스모크 assert 추가.
+검증: npm run smoke:search-enter-match PASS · smoke:explore-choice-overlay PASS · vite build PASS
+```
+
+---
+
 ### MOONi 일정 페이스메이커 — main 병합 완료 ✅
 
 | | |
@@ -824,9 +854,9 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#80 push** tip `cc7d5ea0` · PR [#339](https://github.com/catgeot/Days/pull/339) · 대전8경 장태산 · **#81 태안 결손 오버레이** |
+| **상태** | **#80 push** tip `dad07800` · PR [#339](https://github.com/catgeot/Days/pull/339) · 대전8경 장태산 · **#81 태안 결손 오버레이** · Explore 신중앙 썸네일은 **「탐색 hub 썸네일」행** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `cc7d5ea0` |
+| **tip** | `dad07800` |
 | **PR** | [#339](https://github.com/catgeot/Days/pull/339) · [#335](https://github.com/catgeot/Days/pull/335) merge ✅ · [#333](https://github.com/catgeot/Days/pull/333) merge ✅ · [#332](https://github.com/catgeot/Days/pull/332) merge ✅ · [#330](https://github.com/catgeot/Days/pull/330) merge ✅ · [#329](https://github.com/catgeot/Days/pull/329) merge ✅ · [#328](https://github.com/catgeot/Days/pull/328) merge ✅ · [#327](https://github.com/catgeot/Days/pull/327) merge ✅ · [#324](https://github.com/catgeot/Days/pull/324) merge ✅ · [#323](https://github.com/catgeot/Days/pull/323) merge ✅ · [#321](https://github.com/catgeot/Days/pull/321) merge ✅ · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |

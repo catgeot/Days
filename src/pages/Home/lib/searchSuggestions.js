@@ -18,6 +18,7 @@ import {
   buildHubDisambiguationCandidates,
   makeDisambiguationResult,
 } from './cityAttractionHubs';
+import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import {
   getSettlementsForHub,
   settlementsForHubSuggestions,
@@ -153,13 +154,14 @@ export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
 function pushHubAttractionCluster(hub, out, seen, opts = {}) {
   if (!hub) return;
   const rowStub = { hubId: hub.hubId };
-  if (!opts.skipHub) {
-    pushUnique(out, seen, hubToSuggestion(hub));
-  }
-
   const preferSettlement = opts.preferSettlement;
   if (preferSettlement) {
     pushUnique(out, seen, settlementToSuggestion(rowStub, preferSettlement));
+    if (!opts.skipHub) {
+      pushUnique(out, seen, hubToSuggestion(hub));
+    }
+  } else if (!opts.skipHub) {
+    pushUnique(out, seen, hubToSuggestion(hub));
   }
 
   const preferAttraction = opts.preferAttraction;
@@ -266,7 +268,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
-    : resolveCityAttractionHub(q);
+    : resolveExploreCityHubExact(q);
   const exactHubCityQuery =
     Boolean(exactHub) &&
     !exactListHit &&
@@ -408,7 +410,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
-    : resolveCityAttractionHub(q);
+    : resolveExploreCityHubExact(q);
   const exactAttraction =
     exactHub || exactListHit ? null : resolveHubAttraction(q);
   const exactSettlement =
@@ -579,7 +581,7 @@ export async function buildCuratedEnterDisambiguation(query) {
   if (!q) return null;
 
   const listHit = resolveLocalScenicListFromSearchQuery(q);
-  const hubHit = listHit?.hub || resolveCityAttractionHub(q);
+  const hubHit = listHit?.hub || resolveExploreCityHubExact(q);
   if (hubHit) {
     let candidates = await buildHubCandidatesForEnter(hubHit);
     const spot =
@@ -636,7 +638,7 @@ export async function buildCuratedEnterDisambiguation(query) {
       return ensureDisambiguation(
         q,
         candidates,
-        `'${parentHub.name}' → 도시·명소·지역을 골라주세요`,
+        `'${settlement.name}' → 도시·명소·지역을 골라주세요`,
       );
     }
     return ensureDisambiguation(
