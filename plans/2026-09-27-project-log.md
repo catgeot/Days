@@ -18,6 +18,14 @@
 - **Preview** https://www.gateo.kr/qa/scenic-mooni (main 병합 후) · git `https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung`
 - **다음** `명소홈 #2, Preview OK면 PR 병합`
 
+## 로그북 #13, 읽는 시간·같은 장소 수
+
+- **세션** `로그북 #13, 읽는 시간·같은 장소 수` · feature `cursor/logbook-reads-af3f` · tip `636f38a6` · PR [#325](https://github.com/catgeot/Days/pull/325)
+- **조치** 카드와 글 본문 머리(날짜·장소 줄)에 읽는 시간·같은 장소 기록 수. 공개 본문에는 읽은 수도 표시. 같은 장소는 공백을 맞춘 이름, 위치 미상 제외. 본문 숫자는 그 장소 피드로 이동. 내 기록·내 글에는 읽은 수 없음. 내 글의 같은 장소 수는 내 기록 기준.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #14, Preview OK면 PR 병합` — 카드·본문 확인 후 PR #325. 좋아요·댓글 수는 기능이 생긴 뒤.
+
 ## 로그북 #12, 공개 피드 읽음
 
 - **세션** `로그북 #12, 공개 피드 읽음` · feature `cursor/logbook-reads-af3f` · tip `b0d732fc` · PR [#325](https://github.com/catgeot/Days/pull/325)

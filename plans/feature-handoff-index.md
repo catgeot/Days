@@ -44,7 +44,7 @@
 
 | | |
 |--|--|
-| **상태** | **#12 push** · tip `b0d732fc` · PR [#325](https://github.com/catgeot/Days/pull/325) (draft) · migration 적용됨 |
+| **상태** | **#13 push** · tip `636f38a6` · PR [#325](https://github.com/catgeot/Days/pull/325) (draft) · migration 적용됨 |
 | **브랜치** | `cursor/logbook-reads-af3f` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
@@ -55,12 +55,12 @@
 **다음 제시어**:
 
 ```
-로그북 #13, 읽는 시간·같은 장소 수
+로그북 #14, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-27-project-log.md
 브랜치 cursor/logbook-reads-af3f · PR #325 · Preview /qa/logbook-reads
 금지: 좋아요·댓글 카운트 · view_count 직접 update · feature에 plans/** 커밋
-작업: 카드에 읽는 시간·같은 장소 기록 수 (view_count migration 적용됨)
+작업: 카드·본문의 읽는 시간·같은 장소 수·읽은 수 확인. OK면 PR #325 병합
 검증: smoke:logbook-view-count · vite build
 ```
 
