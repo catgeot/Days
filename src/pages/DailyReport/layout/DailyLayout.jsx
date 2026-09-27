@@ -8,6 +8,12 @@ import { useTranslation } from 'react-i18next';
 import { PenNameProvider } from '../context/PenNameContext';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import AccountProfile from '../../../shared/Auth/AccountProfile';
+import {
+  describeHitElement,
+  logLogbookHeaderDebug,
+} from '../../../shared/cloudPreview/logbookHeaderDebug';
+
+const MOBILE_HEADER_BAND_PX = 112;
 
 const DailyLayout = () => {
   const { t } = useTranslation();
@@ -17,6 +23,19 @@ const DailyLayout = () => {
   const mainScrollRef = useRef(null);
   const [profileOpen, setProfileOpen] = useState(false);
 
+  const hideMobileBlogChrome = (() => {
+    if (location.pathname.startsWith('/blog/curation')) return true;
+    const match = location.pathname.match(/^\/blog\/([^/]+)$/);
+    if (!match) return false;
+    const segment = match[1];
+    return segment !== 'curation' && segment !== 'write';
+  })();
+
+  const openProfile = () => {
+    setProfileOpen(true);
+    logLogbookHeaderDebug('blog.header.profile.open', { open: true });
+  };
+
   useEffect(() => {
     setProfileOpen(false);
   }, [location.pathname, location.search]);
@@ -25,13 +44,50 @@ const DailyLayout = () => {
     if (!user) setProfileOpen(false);
   }, [user]);
 
-  const hideMobileBlogChrome = (() => {
-    if (location.pathname.startsWith('/blog/curation')) return true;
-    const match = location.pathname.match(/^\/blog\/([^/]+)$/);
-    if (!match) return false;
-    const segment = match[1];
-    return segment !== 'curation' && segment !== 'write';
-  })();
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    if (!location.pathname.startsWith('/blog')) return undefined;
+
+    const logLayout = () => {
+      const header = document.querySelector('[data-logbook-mobile-header]');
+      const main = mainScrollRef.current;
+      if (!header || !main) return;
+      const headerRect = header.getBoundingClientRect();
+      const mainRect = main.getBoundingClientRect();
+      const x = Math.round(window.innerWidth * 0.82);
+      const y = Math.round(headerRect.top + headerRect.height / 2);
+      const hit = document.elementFromPoint(x, y);
+      logLogbookHeaderDebug('blog.header.layout', {
+        headerBottom: Math.round(headerRect.bottom),
+        mainTop: Math.round(mainRect.top),
+        overlap: mainRect.top < headerRect.bottom - 1,
+        hit: describeHitElement(hit),
+      });
+    };
+
+    logLayout();
+    const t = window.setTimeout(logLayout, 800);
+    return () => window.clearTimeout(t);
+  }, [location.pathname, hideMobileBlogChrome]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    if (!location.pathname.startsWith('/blog')) return undefined;
+
+    const onPointerDown = (event) => {
+      if (event.clientY > MOBILE_HEADER_BAND_PX) return;
+      const hit = document.elementFromPoint(event.clientX, event.clientY);
+      logLogbookHeaderDebug('blog.header.tap', {
+        x: Math.round(event.clientX),
+        y: Math.round(event.clientY),
+        hit: describeHitElement(hit),
+        onProfile: Boolean(event.target?.closest?.('[data-logbook-header-profile]')),
+      });
+    };
+
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => document.removeEventListener('pointerdown', onPointerDown, true);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     if (window.confirm(t('logbook.common.logoutConfirm'))) {
@@ -45,10 +101,11 @@ const DailyLayout = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 text-gray-900 overflow-hidden">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-gray-50 text-gray-900 md:flex-row">
 
       <div
-        className={`relative z-[60] md:hidden w-full min-h-14 shrink-0 border-b border-gray-200 bg-white flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] ${
+        data-logbook-mobile-header
+        className={`sticky top-0 z-[100] isolate md:hidden w-full min-h-14 shrink-0 border-b border-gray-200 bg-white flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] ${
           hideMobileBlogChrome ? 'hidden' : ''
         }`}
       >
@@ -65,8 +122,9 @@ const DailyLayout = () => {
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
-              onClick={() => setProfileOpen(true)}
-              className="flex min-h-11 max-w-[min(100vw-7rem,14rem)] items-center gap-1.5 rounded-lg px-1 py-1 touch-manipulation active:opacity-80"
+              data-logbook-header-profile
+              onClick={openProfile}
+              className="relative z-[1] flex min-h-11 max-w-[min(100vw-7rem,14rem)] items-center gap-1.5 rounded-lg px-1 py-1 touch-manipulation active:opacity-80"
               aria-expanded={profileOpen}
             >
               {avatarUrl ? (
@@ -98,10 +156,16 @@ const DailyLayout = () => {
         : null}
 
       <PenNameProvider user={user}>
-        <Sidebar user={user} />
+        <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+          <Sidebar user={user} />
 
-        <div ref={mainScrollRef} className="flex-1 h-full overflow-y-auto relative">
-          <Outlet />
+          <div
+            ref={mainScrollRef}
+            data-logbook-main-scroll
+            className="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
+          >
+            <Outlet />
+          </div>
         </div>
       </PenNameProvider>
 
