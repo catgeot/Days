@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 명소홈 #1, 본문 무니 FAB
+
+- **세션** `명소홈 #1, 본문 무니 FAB` · feature `cursor/scenic-mooni-b353` · tip `f8757bad` · PR [#326](https://github.com/catgeot/Days/pull/326)
+- **조치** 명소홈 상세 본문의 「무니에게 묻기」를 제거. 축제 본문과 같은 오른쪽 무니 버튼. 위로가 보이면 그 위로. 10대 절경·지역 목록은 본문 버튼 유지.
+- **VERIFY** `smoke:korea-theme-spot-modal` 무니 단언 PASS · `vite build` PASS. contentId 커버리지 2건은 origin/main과 같은 기존 FAIL.
+- **Preview** https://www.gateo.kr/qa/scenic-mooni (main 병합 후) · git `https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung`
+- **다음** `명소홈 #2, Preview OK면 PR 병합`
+
 ## 로그북 #12, 공개 피드 읽음
 
 - **세션** `로그북 #12, 공개 피드 읽음` · feature `cursor/logbook-reads-af3f` · tip `b0d732fc` · PR [#325](https://github.com/catgeot/Days/pull/325)
