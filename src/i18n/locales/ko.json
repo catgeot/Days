@@ -1854,7 +1854,10 @@
       "showAll": "전체 목록 보기",
       "footer": "총 {{count}}개의 기록",
       "footerCompact": "(요약됨)",
-      "readCount": "읽음 {{count}}"
+      "readCount": "읽음 {{count}}",
+      "placeGroup": "여행지",
+      "placeAll": "전체",
+      "noPlaceResults": "\"{{place}}\" 기록은 없습니다."
     },
     "meta": {
       "readingMinutes": "{{count}}분 읽기",

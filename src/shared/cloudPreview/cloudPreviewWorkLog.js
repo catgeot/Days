@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 77,
-  sessionPhase: '경주 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gyeongju',
-  qaShareSlug: 'palgyeong-use',
+  title: '로그북',
+  sessionNo: 21,
+  sessionPhase: '한국 주소는 도시 칩',
+  branch: 'cursor/logbook-reads-af3f',
+  previewPath: '/blog',
+  qaShareSlug: 'logbook-reads',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-21-korean-city-chips',
+    session: '로그북 #21, 한국 주소는 도시 칩',
+    title: '한국 주소는 도시 칩',
+    detail:
+      '칩 줄은 그대로 하나입니다. 현재 위치로 저장된 한국 주소는 도시로 모입니다. 춘천·춘천시 소양로3가·춘천시 퇴계동은 칩 「춘천」입니다. 보라카이·아이슬란드·길리 메모는 작성한 이름 그대로이고, 파리 근교는 파리가 아닙니다. 카드에 적힌 주소 문자열은 그대로입니다. Preview /qa/logbook-reads — /blog 공개 피드에서 춘천 칩 하나, 카드 주소는 춘천시 퇴계동처럼 긴 문자열.',
+    at: '2026-09-27T07:50:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-18-place-chips',
+    session: '로그북 #18, 여행지 분류',
+    title: '보관소 여행지 분류 칩',
+    detail:
+      '기록 보관소 검색 아래에 여행지 칩을 붙였습니다. 전체와 여행지마다 글 수가 보이고, 칩을 누르면 그 장소 글만 남습니다. 다시 누르거나 전체를 누르면 돌아옵니다. 위치 미상은 칩에 넣지 않습니다. 글이 늘면 칩은 가로로 스크롤됩니다. Preview /qa/logbook-reads — /blog 공개 피드에서 여행지 칩을 눌러 카드가 그 장소만 남는지.',
+    at: '2026-09-27T06:40:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-77-gyeongju-overlay',
     session: '팔경 활용 #77, 경주 결손 오버레이',

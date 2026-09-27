@@ -2091,7 +2091,10 @@
       "showAll": "Show all",
       "footer": "{{count}} entries total",
       "footerCompact": "(summarized)",
-      "readCount": "{{count}} reads"
+      "readCount": "{{count}} reads",
+      "placeGroup": "Places",
+      "placeAll": "All",
+      "noPlaceResults": "No entries for \"{{place}}\"."
     },
     "meta": {
       "readingMinutes": "{{count}} min read",
