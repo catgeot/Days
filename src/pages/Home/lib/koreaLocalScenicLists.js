@@ -1723,6 +1723,12 @@ const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
 const GJ_NAWON_3 = `${GJ_KHS}/1612779.jpg`;
 const GJ_NAWON_HOME =
   'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=1113700390000&ccbaKdcd=11&ccbaAsno=0000390000000&ccbaCtcd=37';
+const GWGS_IMG = 'https://www.gwgs.go.kr/thumbnail/tursmCn';
+const GWGS_MASAN = `${GWGS_IMG}/TUCN_201812110649330460.jpg`;
+const GWGS_MASAN_2 = `${GWGS_IMG}/TUCN_201812110649597970.jpg`;
+const GWGS_MASAN_3 = `${GWGS_IMG}/TUCN_201812110650095520.jpg`;
+const GWGS_MASAN_HOME =
+  'https://www.gwgs.go.kr/prog/tursmCn/tour/sub02_0108/view.do?cntno=22';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3765,6 +3771,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     GJ_NAWON,
     [GJ_NAWON_2, GJ_NAWON_3],
     GJ_NAWON_HOME,
+  ),
+  'local-scenic:goseong-palgyeong:마산봉설경': localScenicPhotoOverlay(
+    '고성8경 제8경 마산봉설경은 간성읍 흘리의 마산봉입니다. 고성군 관광포털은 백두대간 준령 위 진부령 인근 봉우리에서 바라보는 동해안 절경과 겨울 설경이 대자연의 위용을 느끼게 하고, 마산봉을 정점으로 서쪽에 여러 계곡이 수려한 경관을 이룬다고 적습니다. 같은 안내는 금강산 1만 2천봉의 남한 제2봉이며, 고성군 안 백두대간 23.4km가 미시령·신선봉·마산봉·진부령·향로봉으로 이어진다고 적습니다. 봄 등산 코스로도 경치가 빼어나다고 합니다. 고성군 주요숲길은 흘리 마산봉 숲길을 진부령 정상 백두대간 표지석에서 흘리초교·알프스스키장 주차장·마산 정상까지 6.1km, 약 2시간으로 두고 병풍바위·향로봉·참나무숲을 볼거리로 적습니다. 문의는 산림과 033-680-3382입니다. 경남 고성·창원 마산·5경 울산바위·6경 통일전망대와 다른 간성읍 흘리 설경입니다. 사진은 고성군 문화관광 8경 공식 사진입니다.',
+    '강원특별자치도 고성군 간성읍 흘리 (마산봉)',
+    GWGS_MASAN,
+    [GWGS_MASAN_2, GWGS_MASAN_3],
+    GWGS_MASAN_HOME,
   ),
 };
 

@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '프로필',
-  sessionNo: 5,
-  sessionPhase: '헤더 터치 가림',
-  branch: 'cursor/profile-a231',
-  previewPath: '/blog',
-  qaShareSlug: 'profile',
+  title: '팔경 활용',
+  sessionNo: 78,
+  sessionPhase: '고성 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=goseong',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -64,6 +64,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-27T09:20:00.000Z',
   },
   {
+    id: '2026-09-27-palgyeong-use-78-goseong-overlay',
+    session: '팔경 활용 #78, 고성 결손 오버레이',
+    title: '고성8경 마산봉설경',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 고성8경 결손 1건(마산봉설경)의 공공 공식 팩트 개요·주소·고성군 문화관광 공식 사진을 보강했습니다. 마산봉설경은 간성읍 흘리의 제8경(진부령 인근 백두대간·남한 제2봉·군내 대간 23.4km·흘리 숲길 6.1km·산림과 033-680-3382)입니다. 경남 고성·창원 마산·울산바위·통일전망대와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=goseong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T09:00:00.000Z',
+  },
+  {
     id: '2026-09-27-profile-1-page',
     session: '프로필 #1, 프로필 페이지',
     title: '프로필 페이지·보관소 1열',
@@ -80,20 +88,20 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-27T07:50:00.000Z',
   },
   {
-    id: '2026-09-27-logbook-18-place-chips',
-    session: '로그북 #18, 여행지 분류',
-    title: '보관소 여행지 분류 칩',
-    detail:
-      '기록 보관소 검색 아래에 여행지 칩을 붙였습니다. 전체와 여행지마다 글 수가 보이고, 칩을 누르면 그 장소 글만 남습니다. 다시 누르거나 전체를 누르면 돌아옵니다. 위치 미상은 칩에 넣지 않습니다. 글이 늘면 칩은 가로로 스크롤됩니다. Preview /qa/logbook-reads — /blog 공개 피드에서 여행지 칩을 눌러 카드가 그 장소만 남는지.',
-    at: '2026-09-27T06:40:00.000Z',
-  },
-  {
     id: '2026-09-27-palgyeong-use-77-gyeongju-overlay',
     session: '팔경 활용 #77, 경주 결손 오버레이',
     title: '경주8怪 나원백탑',
     detail:
       'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 경주8怪 결손 1건(나원백탑)의 공공 공식 팩트 개요·주소·국가유산청 공식 사진을 보강했습니다. 나원백탑은 현곡면 라원리 676의 경주 나원리 오층석탑(1962-12-20 국보·통일신라 초기·2층 기단 5층 탑신·1995-11~1996-07 해체수리·무구정광대다라니경)입니다. 장항리 오층석탑·나원사·남산부석·불국영지·백율사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gyeongju 팔경 행 썸네일·상세 개요.',
     at: '2026-09-27T07:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-18-place-chips',
+    session: '로그북 #18, 여행지 분류',
+    title: '보관소 여행지 분류 칩',
+    detail:
+      '기록 보관소 검색 아래에 여행지 칩을 붙였습니다. 전체와 여행지마다 글 수가 보이고, 칩을 누르면 그 장소 글만 남습니다. 다시 누르거나 전체를 누르면 돌아옵니다. 위치 미상은 칩에 넣지 않습니다. 글이 늘면 칩은 가로로 스크롤됩니다. Preview /qa/logbook-reads — /blog 공개 피드에서 여행지 칩을 눌러 카드가 그 장소만 남는지.',
+    at: '2026-09-27T06:40:00.000Z',
   },
   {
     id: '2026-09-27-palgyeong-use-76-jangheung-overlay',

@@ -5233,6 +5233,39 @@ assert.ok(
   '경주 검색 나원백탑 썸네일',
 );
 
+const goseongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'goseong');
+const goseongEight = goseongMerged.filter((s) => s.localScenicListId === 'goseong-palgyeong');
+assert.equal(goseongEight.length, 8, '고성8경 8명');
+const masan = goseongEight.find((s) => s.attractionName === '마산봉설경');
+assert.ok(masan?.overview && masan?.imageUrl, '마산봉설경 overlay 사진·개요');
+assert.ok(!masan?.contentId, '마산봉설경 JSON contentId 없음 유지');
+assert.ok(masan?.overview?.includes('간성읍 흘리'), '마산봉설경 overlay 주소');
+assert.ok(masan?.overview?.includes('033-680-3382'), '마산봉설경 overlay 문의');
+assert.ok(masan?.overview?.includes('23.4'), '마산봉설경 overlay 백두대간 길이');
+assert.ok(masan?.overview?.includes('6.1'), '마산봉설경 overlay 숲길');
+assert.ok(masan?.overview?.includes('남한 제2봉'), '마산봉설경 overlay 봉우리');
+assert.ok(masan?.overview?.includes('경남 고성'), '마산봉설경≠경남 고성');
+assert.ok(masan?.overview?.includes('울산바위'), '마산봉설경≠울산바위');
+assert.ok(masan?.imageUrl?.includes('TUCN_201812110649330460'), '마산봉설경 고성군 설경 사진');
+assert.ok(
+  masan?.galleryUrls?.some((u) => u.includes('TUCN_201812110649597970')),
+  '마산봉설경 두 번째 사진',
+);
+assert.ok(masan?.homepage?.includes('cntno=22'), '마산봉설경 고성군 8경');
+const goseongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '고성', {
+  injectLocalScenic: true,
+});
+const goseongGlobeEight = goseongGlobe.filter((s) => s.localScenicListId === 'goseong-palgyeong');
+assert.equal(goseongGlobeEight.length, 8, '고성 검색 고성8경 8행');
+assert.ok(
+  goseongGlobe.find((s) => s.attractionName === '마산봉설경')?.overview?.includes('간성읍 흘리'),
+  '고성 검색 마산봉설경 개요',
+);
+assert.ok(
+  goseongGlobe.find((s) => s.attractionName === '마산봉설경')?.imageUrl?.includes('TUCN_201812110649330460'),
+  '고성 검색 마산봉설경 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
