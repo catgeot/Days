@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #73 — 영천9경 벚꽃 백리길·별별미술마을
+
+- **세션** `팔경 활용 #73, 영천 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `416b7596` · PR [#328](https://github.com/catgeot/Days/pull/328)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 영천9경 결손 2건. 7경 영천댐 벚꽃 백리길은 임고면 신방로 19 일원(영천호 일주 40km·1980년 12월 준공·높이 42m·총저수량 9,640만 톤·문의 054-330-6585). 9경 별별미술마을은 화산면 가상리 649(2011년 마을미술프로젝트·다섯 길·작품 62점·문의 054-330-6067). 임고강변공원 벚꽃길·보현산천문대·시안미술관·한의마을과 구분. 사진은 한국관광공사 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **22**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=yeongcheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongcheon`
+- **다음** `팔경 활용 #74, 청도 결손 오버레이` — 청도 새마을운동발상지기념공원·청도 섶마리한옥마을
+
 ## 팔경 활용 #72 — 울산12경 가지산 사계·반구대암각화
 
 - **세션** `팔경 활용 #72, 울산 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `5ea23cc8` · PR [#327](https://github.com/catgeot/Days/pull/327)
