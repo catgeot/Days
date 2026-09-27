@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #80 — 대전8경 장태산
+
+- **세션** `팔경 활용 #80, 대전 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `cc7d5ea0` · PR [#339](https://github.com/catgeot/Days/pull/339)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 대전8경 결손 1건. 대전 장태산은 서구 장안로 461 장태산자연휴양림(1996년 8경·82ha·메타세콰이아 숲·1991 최초 민간 휴양림·2006.4.25 재개장·문의 042-270-7887). 한밭수목원·보문산·식장산·대청호·유성온천과 구분. 사진은 숲나들e 공식 안내 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **12**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=daejeon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=daejeon`
+- **다음** `팔경 활용 #81, 태안 결손 오버레이` — 안흥성
+
 ## 팔경 활용 #79 — 공주10경 창벽
 
 - **세션** `팔경 활용 #79, 공주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `b8a23d0f` · PR [#339](https://github.com/catgeot/Days/pull/339)
