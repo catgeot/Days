@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '로그북',
-  sessionNo: 17,
-  sessionPhase: '본문 반응 문구',
-  branch: 'cursor/logbook-reads-af3f',
-  previewPath: '/blog',
-  qaShareSlug: 'logbook-reads',
+  title: '팔경 활용',
+  sessionNo: 76,
+  sessionPhase: '장흥 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=jangheung',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-76-jangheung-overlay',
+    session: '팔경 활용 #76, 장흥 결손 오버레이',
+    title: '장흥9경 선학동마을·하늘빛수목정원',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 장흥9경 결손 2건(선학동마을·하늘빛수목정원)의 공공 공식 팩트 개요·주소·디지털장흥문화대전 공식 사진을 보강했습니다. 선학동마을은 회진면 가학회진로 1212(7경, 산저·천년학 주막·2006 유채·메밀 23㏊·2017 장흥 9경), 하늘빛수목정원은 용산면 장흥대로 2746(9경, 2019-01-01 전남 제8호 민간정원·함지봉)입니다. 이청준 생가·소등섬·편백숲 우드랜드·완도수목원과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jangheung 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T06:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-75-uiryeong-overlay',
+    session: '팔경 활용 #75, 의령 결손 오버레이',
+    title: '의령9경 백산안희제 생가·호암이병철 생가',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의령9경 결손 2건(백산안희제선생 생가·호암이병철선생 생가)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 백산안희제선생 생가는 부림면 입산로2길 37(8경, 1885 출생·1993 문화유산자료·1915 중수·국가유산청 사진), 호암이병철선생 생가는 정곡면 호암길 22-4(9경, 1851 한옥·10–17시 월요휴관·호암재단 사진)입니다. 곽재우 생가·부산 백산상회·용인 호암미술관과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiryeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T05:40:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-17-reaction-words',
     session: '로그북 #17, 본문 반응 문구',

@@ -5062,6 +5062,145 @@ assert.ok(
   '청도 검색 5경 섶마리한옥마을 썸네일',
 );
 
+const uiryeongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'uiryeong');
+const uiryeongNine = uiryeongMerged.filter((s) => s.localScenicListId === 'uiryeong-gugyeong');
+assert.equal(uiryeongNine.length, 9, '의령9경 9명');
+const uiryeongDeficitNames = ['백산안희제선생 생가', '호암이병철선생 생가'];
+const uiryeongDeficit = uiryeongNine.filter((s) => uiryeongDeficitNames.includes(s.attractionName));
+assert.equal(uiryeongDeficit.length, 2, '의령9경 결손 2명');
+assert.ok(
+  uiryeongDeficit.every((s) => s.overview && s.imageUrl),
+  '의령 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  uiryeongDeficit.every((s) => !s.contentId),
+  '의령 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(uiryeongDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '백산안희제·호암이병철 썸네일 다름',
+);
+const urAn = resolveLocalScenicListSpotById('local-scenic:uiryeong-gugyeong:백산안희제선생생가');
+assert.ok(urAn?.overview && urAn?.imageUrl, '백산안희제 생가 overlay 사진·개요');
+assert.ok(!urAn?.contentId, '백산안희제 생가 JSON contentId 없음 유지');
+assert.ok(urAn?.overview?.includes('입산로2길 37'), '백산안희제 생가 overlay 주소');
+assert.ok(urAn?.overview?.includes('055-570-2444'), '백산안희제 생가 overlay 문의');
+assert.ok(urAn?.overview?.includes('1993년 1월 8일'), '백산안희제 생가 overlay 지정일');
+assert.ok(urAn?.overview?.includes('백산상회'), '백산안희제 생가 overlay 백산상회');
+assert.ok(urAn?.overview?.includes('호암'), '백산안희제 생가≠호암 생가');
+assert.ok(urAn?.overview?.includes('곽재우'), '백산안희제 생가≠곽재우 생가');
+assert.ok(urAn?.imageUrl?.includes('1664302'), '백산안희제 생가 국가유산청 사진');
+assert.ok(
+  urAn?.galleryUrls?.some((u) => u.includes('1664304')),
+  '백산안희제 생가 두 번째 사진',
+);
+assert.ok(urAn?.homepage?.includes('3413801930000'), '백산안희제 생가 국가유산포털');
+const urHoam = resolveLocalScenicListSpotById('local-scenic:uiryeong-gugyeong:호암이병철선생생가');
+assert.ok(urHoam?.overview && urHoam?.imageUrl, '호암이병철 생가 overlay 사진·개요');
+assert.ok(!urHoam?.contentId, '호암이병철 생가 JSON contentId 없음 유지');
+assert.ok(urHoam?.overview?.includes('호암길 22-4'), '호암이병철 생가 overlay 주소');
+assert.ok(urHoam?.overview?.includes('055-573-0723'), '호암이병철 생가 overlay 문의');
+assert.ok(urHoam?.overview?.includes('1,907'), '호암이병철 생가 overlay 대지');
+assert.ok(urHoam?.overview?.includes('백산'), '호암이병철 생가≠백산 생가');
+assert.ok(urHoam?.overview?.includes('호암미술관'), '호암이병철 생가≠호암미술관');
+assert.ok(urHoam?.imageUrl?.includes('img_map_pho01'), '호암이병철 생가 대문채 사진');
+assert.ok(
+  urHoam?.galleryUrls?.some((u) => u.includes('img_map_pho02')),
+  '호암이병철 생가 안채 사진',
+);
+assert.ok(urHoam?.homepage?.includes('hoamfoundation.org'), '호암이병철 생가 호암재단');
+assert.notEqual(urAn?.imageUrl, urHoam?.imageUrl, '백산·호암 썸네일 다름');
+assert.ok(!urHoam?.imageUrl?.includes('1664302'), '호암≠백산 사진');
+assert.ok(!urAn?.imageUrl?.includes('img_map_pho01'), '백산≠호암 사진');
+const uiryeongGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '의령', {
+  injectLocalScenic: true,
+});
+const uiryeongGlobeNine = uiryeongGlobe.filter((s) => s.localScenicListId === 'uiryeong-gugyeong');
+assert.equal(uiryeongGlobeNine.length, 9, '의령 검색 의령9경 9행');
+assert.ok(
+  uiryeongGlobe.find((s) => s.attractionName === '백산안희제선생 생가')?.overview?.includes('입산로2길 37'),
+  '의령 검색 8경 백산안희제 생가 개요',
+);
+assert.ok(
+  uiryeongGlobe.find((s) => s.attractionName === '백산안희제선생 생가')?.imageUrl?.includes('1664302'),
+  '의령 검색 8경 백산안희제 생가 썸네일',
+);
+assert.ok(
+  uiryeongGlobe.find((s) => s.attractionName === '호암이병철선생 생가')?.imageUrl?.includes('img_map_pho01'),
+  '의령 검색 9경 호암이병철 생가 썸네일',
+);
+
+const jangheungMerged = mergeLocalScenicMembersIntoScenicSpots([], 'jangheung');
+const jangheungNine = jangheungMerged.filter((s) => s.localScenicListId === 'jangheung-gugyeong');
+assert.equal(jangheungNine.length, 9, '장흥9경 9명');
+const jangheungDeficitNames = ['선학동마을', '하늘빛수목정원'];
+const jangheungDeficit = jangheungNine.filter((s) => jangheungDeficitNames.includes(s.attractionName));
+assert.equal(jangheungDeficit.length, 2, '장흥9경 결손 2명');
+assert.ok(
+  jangheungDeficit.every((s) => s.overview && s.imageUrl),
+  '장흥 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  jangheungDeficit.every((s) => !s.contentId),
+  '장흥 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(jangheungDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '선학동·하늘빛 썸네일 다름',
+);
+const jhSeon = resolveLocalScenicListSpotById('local-scenic:jangheung-gugyeong:선학동마을');
+assert.ok(jhSeon?.overview && jhSeon?.imageUrl, '선학동마을 overlay 사진·개요');
+assert.ok(!jhSeon?.contentId, '선학동마을 JSON contentId 없음 유지');
+assert.ok(jhSeon?.overview?.includes('가학회진로 1212'), '선학동마을 overlay 주소');
+assert.ok(jhSeon?.overview?.includes('061-860-8350'), '선학동마을 overlay 문의');
+assert.ok(jhSeon?.overview?.includes('천년학'), '선학동마을 overlay 천년학');
+assert.ok(jhSeon?.overview?.includes('23㏊'), '선학동마을 overlay 꽃밭 면적');
+assert.ok(jhSeon?.overview?.includes('소등섬'), '선학동마을≠소등섬');
+assert.ok(jhSeon?.overview?.includes('우드랜드'), '선학동마을≠우드랜드');
+assert.ok(jhSeon?.imageUrl?.includes('GC097P02280'), '선학동마을 문화대전 사진');
+assert.ok(
+  jhSeon?.galleryUrls?.some((u) => u.includes('GC097P02281')),
+  '선학동마을 두 번째 사진',
+);
+assert.ok(jhSeon?.homepage?.includes('GC09700234'), '선학동마을 문화대전');
+const jhSky = resolveLocalScenicListSpotById('local-scenic:jangheung-gugyeong:하늘빛수목정원');
+assert.ok(jhSky?.overview && jhSky?.imageUrl, '하늘빛수목정원 overlay 사진·개요');
+assert.ok(!jhSky?.contentId, '하늘빛수목정원 JSON contentId 없음 유지');
+assert.ok(jhSky?.overview?.includes('장흥대로 2746'), '하늘빛수목정원 overlay 주소');
+assert.ok(jhSky?.overview?.includes('061-862-2000'), '하늘빛수목정원 overlay 문의');
+assert.ok(jhSky?.overview?.includes('2019년 1월 1일'), '하늘빛수목정원 overlay 지정일');
+assert.ok(jhSky?.overview?.includes('3만 3,058'), '하늘빛수목정원 overlay 면적');
+assert.ok(jhSky?.overview?.includes('우드랜드'), '하늘빛수목정원≠우드랜드');
+assert.ok(jhSky?.overview?.includes('완도수목원'), '하늘빛수목정원≠완도수목원');
+assert.ok(jhSky?.imageUrl?.includes('GC097P02085'), '하늘빛수목정원 정문 사진');
+assert.ok(
+  jhSky?.galleryUrls?.some((u) => u.includes('GC097P02087')),
+  '하늘빛수목정원 정원 사진',
+);
+assert.ok(jhSky?.homepage?.includes('GC09700349'), '하늘빛수목정원 문화대전');
+assert.notEqual(jhSeon?.imageUrl, jhSky?.imageUrl, '선학동·하늘빛 썸네일 다름');
+assert.ok(!jhSky?.imageUrl?.includes('GC097P02280'), '하늘빛≠선학동 사진');
+assert.ok(!jhSeon?.imageUrl?.includes('GC097P02085'), '선학동≠하늘빛 사진');
+const jangheungGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '장흥', {
+  injectLocalScenic: true,
+});
+const jangheungGlobeNine = jangheungGlobe.filter((s) => s.localScenicListId === 'jangheung-gugyeong');
+assert.equal(jangheungGlobeNine.length, 9, '장흥 검색 장흥9경 9행');
+assert.ok(
+  jangheungGlobe.find((s) => s.attractionName === '선학동마을')?.overview?.includes('가학회진로 1212'),
+  '장흥 검색 7경 선학동마을 개요',
+);
+assert.ok(
+  jangheungGlobe.find((s) => s.attractionName === '선학동마을')?.imageUrl?.includes('GC097P02280'),
+  '장흥 검색 7경 선학동마을 썸네일',
+);
+assert.ok(
+  jangheungGlobe.find((s) => s.attractionName === '하늘빛수목정원')?.imageUrl?.includes('GC097P02085'),
+  '장흥 검색 9경 하늘빛수목정원 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

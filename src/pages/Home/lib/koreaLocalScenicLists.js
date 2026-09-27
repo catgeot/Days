@@ -1698,6 +1698,25 @@ const CD_SEOP = `${CD_IMG}GC055P03568`;
 const CD_SEOP_HOUSE = `${CD_IMG}GC055P04093`;
 const CD_SEOP_PAV = `${CD_IMG}GC055P03522`;
 const CD_SEOP_HOME = 'https://cheongdo.grandculture.net/cheongdo/toc/GC05500258';
+const UR_KHS = 'https://www.khs.go.kr/unisearch/images/cultural_material';
+const UR_AN = `${UR_KHS}/1664302.jpg`;
+const UR_AN_2 = `${UR_KHS}/1664304.jpg`;
+const UR_AN_HOME =
+  'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=3413801930000&ccbaKdcd=31&ccbaAsno=0001930000000&ccbaCtcd=38';
+const UR_HOAM = 'https://www.hoamfoundation.org/images/hoam';
+const UR_HOAM_GATE = `${UR_HOAM}/img_map_pho01.jpg`;
+const UR_HOAM_ANCHAE = `${UR_HOAM}/img_map_pho02.jpg`;
+const UR_HOAM_BACK = `${UR_HOAM}/img_map_pho09.jpg`;
+const UR_HOAM_HOME = 'https://www.hoamfoundation.org/kor/hoam/hoam_map.asp';
+const JH_IMG = 'https://jangheung.grandculture.net/Image?localName=jangheung&id=';
+const JH_SEON = `${JH_IMG}GC097P02280`;
+const JH_SEON_2 = `${JH_IMG}GC097P02281`;
+const JH_SEON_3 = `${JH_IMG}GC097P02283`;
+const JH_SEON_HOME = 'https://jangheung.grandculture.net/jangheung/toc/GC09700234';
+const JH_SKY = `${JH_IMG}GC097P02085`;
+const JH_SKY_2 = `${JH_IMG}GC097P02087`;
+const JH_SKY_3 = `${JH_IMG}GC097P02088`;
+const JH_SKY_HOME = 'https://jangheung.grandculture.net/jangheung/toc/GC09700349';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3705,6 +3724,34 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     CD_SEOP,
     [CD_SEOP_HOUSE, CD_SEOP_PAV],
     CD_SEOP_HOME,
+  ),
+  'local-scenic:uiryeong-gugyeong:백산안희제선생생가': localScenicPhotoOverlay(
+    '의령9경 제8경 백산안희제선생 생가는 부림면 입산로2길 37(입산리)입니다. 의령군 관광 안내는 백산 안희제 선생이 1885년 부림면 입산리에서 태어났고, 1907년 창남학교·1908년 의신학교·1909년 동래 구명학교와 대구 교남학교를 세워 신학문 보급에 힘썼으며, 1942년 조선어학회 사건과 1943년 만주 대종교단 사건으로 구금되었다가 출옥 4시간 만인 1943년 9월 2일에 사망했다고 적습니다. 국가유산청은 이 집을 의령 안희제 생가(문화유산자료)로 두고, 1993년 1월 8일 지정·수량 2동이며 초창은 17세기 이후로 추정되고 1915년 안희제가 직접 중수했다고 적습니다. 안채는 앞면 6칸·옆면 2칸 팔작지붕으로 마루·방·대청·방·부엌 순이고, 사랑채는 앞면 4칸 초가이며 두 채 모두 동향에 남쪽 마루 1칸이 있습니다. 한국민족문화대백과는 호를 백산이라 하고 1914년 부산에서 백산상회를 경영해 국내외 독립운동 연락과 자금에 썼다고 적습니다. 문의는 055-570-2444(의령군 문화관광과)입니다. 9경 호암 이병철 생가·유곡면 망우당 곽재우 생가·부산 중구 백산상회 터와 다른 부림면 입산리 생가입니다. 사진은 국가유산청 의령 안희제 생가 공식 사진입니다.',
+    '경상남도 의령군 부림면 입산로2길 37 (입산리, 백산 안희제 생가)',
+    UR_AN,
+    [UR_AN_2],
+    UR_AN_HOME,
+  ),
+  'local-scenic:uiryeong-gugyeong:호암이병철선생생가': localScenicPhotoOverlay(
+    '의령9경 제9경 호암이병철선생 생가는 정곡면 호암길 22-4입니다. 의령군 관광 안내는 남서향 일자형 생가가 안채·사랑채·대문채·광으로 되어 있고, 아담한 토담과 바위벽·뒷산 대나무가 운치를 더하며 호암 선생이 좋아했던 오동나무·우물·유품을 볼 수 있다고 적습니다. 호암재단은 1851년 조부가 대지 1,907㎡에 전통 한옥으로 지었고, 이병철 선생이 결혼 후 분가하기 전까지 이 집에서 살았으며, 주변 산은 곡식을 쌓아 놓은 노적봉 형상이고 남강이 생가를 돌아 천천히 흐르는 역수라고 적습니다. 관람은 오전 10시~오후 5시, 월요일 휴관이고 문의는 055-573-0723(호암생가)입니다. 의령군 문화관광과 담당은 055-570-2512입니다. 8경 백산 안희제 생가·6경 탑바위·용인 호암미술관과 다른 정곡면 생가입니다. 사진은 호암재단 생가 대문채·안채 공식 사진입니다.',
+    '경상남도 의령군 정곡면 호암길 22-4 (호암 이병철 생가)',
+    UR_HOAM_GATE,
+    [UR_HOAM_ANCHAE, UR_HOAM_BACK],
+    UR_HOAM_HOME,
+  ),
+  'local-scenic:jangheung-gugyeong:선학동마을': localScenicPhotoOverlay(
+    '장흥9경 제7경 선학동마을은 회진면 가학회진로 1212(회진리 164-3)입니다. 디지털장흥문화대전은 회진면에서 가장 높은 공지산(관음봉) 아래라 산저(山低)라 불리다가, 이청준의 「선학동 나그네」에 묘사된 뒤 선학동(仙鶴洞)으로 바꿨고, 2005년 회진리 선학동마을로 개설되었다고 적습니다. 포구에 물이 차면 산 그림자가 바다에 비쳐 학이 날아오는 듯했다고 합니다. 2022년 12월 현재 46가구 80명입니다. 마을 어귀에는 임권택 감독이 같은 소설을 영화화한 『천년학』 세트장 주막이 남아 있습니다. 2006년부터 주변 23㏊(약 7만 평) 계단식 논밭에 봄 유채·가을 메밀을 심고, 2010년부터 매년 10월경 선학동메밀꽃축제를 엽니다. 2012년 경관 우수 마을, 2014년 전라남도 경관 우수 시범 마을, 2015년 새뜰마을, 2017년 장흥 9경, 2024년 UN관광청 최우수 관광 마을 후보로 선정되었습니다. 축제 문의는 061-860-8350입니다. 진목마을 이청준 생가·8경 소등섬·1경 편백숲 우드랜드·양주 장흥관광지와 다른 회진면 마을입니다. 사진은 디지털장흥문화대전 선학동마을 공식 사진입니다.',
+    '전라남도 장흥군 회진면 가학회진로 1212 (회진리 164-3, 선학동마을)',
+    JH_SEON,
+    [JH_SEON_2, JH_SEON_3],
+    JH_SEON_HOME,
+  ),
+  'local-scenic:jangheung-gugyeong:하늘빛수목정원': localScenicPhotoOverlay(
+    '장흥9경 제9경 하늘빛수목정원은 용산면 장흥대로 2746(어산리 383-4)입니다. 디지털장흥문화대전은 장흥읍과 용산면 경계 함지봉 산자락의 민간 정원이고, 정남진 장흥에서 천관산 방향으로 8㎞ 지점의 치유의 숲이라고 적습니다. 2019년 1월 1일 전라남도 제8호·전국 22번째 민간 정원으로 지정되었습니다. 명품 정원은 1만여 평(3만 3,058㎡), 편백나무 산림은 2,000여 평(6,612㎡)이고, 조경수 300여 종과 지피 식물·야생화 500여 종이 있습니다. 이용 시간은 오전 9시부터 오후 6시까지이고 입장료가 있으며 문의는 061-862-2000입니다. 4월 튤립축제와 10월 향기축제를 엽니다. 1경 정남진 편백숲 우드랜드·완도수목원·구례수목원과 다른 용산면 민간 정원입니다. 사진은 디지털장흥문화대전 하늘빛수목정원 정문 공식 사진입니다.',
+    '전라남도 장흥군 용산면 장흥대로 2746 (어산리 383-4, 하늘빛수목정원)',
+    JH_SKY,
+    [JH_SKY_2, JH_SKY_3],
+    JH_SKY_HOME,
   ),
 };
 

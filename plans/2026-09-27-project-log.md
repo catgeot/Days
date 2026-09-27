@@ -2,6 +2,22 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #77 — 경주8怪 나원백탑
+
+- **세션** `팔경 활용 #77, 경주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `81a15bcf` · PR [#333](https://github.com/catgeot/Days/pull/333)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 경주8怪 결손 1건. 나원백탑은 현곡면 라원리 676의 경주 나원리 오층석탑(1962년 12월 20일 국보·2층 기단 5층 탑신·1995년 11월~1996년 7월 해체수리·무구정광대다라니경). 장항리 오층석탑·나원사·남산부석·불국영지·백율사와 구분. 사진은 국가유산청 국립문화재연구소 2007년 전경.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **15**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=gyeongju` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=gyeongju`
+- **다음** `팔경 활용 #78, 고성 결손 오버레이` — 마산봉설경
+
+## 팔경 활용 #76 — 장흥9경 선학동마을·하늘빛수목정원
+
+- **세션** `팔경 활용 #76, 장흥 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `adf413a6` · PR [#332](https://github.com/catgeot/Days/pull/332)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 장흥9경 결손 2건. 7경 선학동마을은 회진면 가학회진로 1212(산저·2005 개설·『천년학』 주막·2006 유채·메밀 23㏊·2017 장흥 9경·문의 061-860-8350). 9경 하늘빛수목정원은 용산면 장흥대로 2746(2019년 1월 1일 전남 제8호 민간정원·함지봉·문의 061-862-2000). 이청준 생가·소등섬·편백숲 우드랜드·완도수목원과 구분. 사진은 디지털장흥문화대전 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **16**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=jangheung` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=jangheung`
+- **다음** `팔경 활용 #77, 경주 결손 오버레이` — 나원백탑
+
 ## 팔경 활용 #75 — 의령9경 백산안희제·호암이병철 생가
 
 - **세션** `팔경 활용 #75, 의령 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `f6c3518e` · PR [#330](https://github.com/catgeot/Days/pull/330)
