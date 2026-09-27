@@ -2088,7 +2088,8 @@
       "noResults": "No memories found for \"{{term}}\".",
       "showAll": "Show all",
       "footer": "{{count}} entries total",
-      "footerCompact": "(summarized)"
+      "footerCompact": "(summarized)",
+      "readCount": "{{count}} reads"
     },
     "calendar": {
       "month": "{{month}}/{{year}}"

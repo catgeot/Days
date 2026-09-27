@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle, User } from 'lucide-react';
+import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle, User, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,6 +10,7 @@ import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
+import { readLogbookViewCount } from '../../../utils/logbookViewCount';
 import EditorialLogbookBadge from './EditorialLogbookBadge';
 
 const GATEO_PUBLIC_SOURCE_URL = 'https://www.gateo.kr/';
@@ -125,6 +126,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
               const cardDate = formatLogbookDisplayDate(report);
               const cardExcerpt = resolveLogbookFeedExcerpt(report);
               const editorialPublicFeed = isPublicMode && editorial;
+              const viewCount = isPublicMode ? readLogbookViewCount(report) : null;
 
               return (
               <div
@@ -218,6 +220,16 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                     <span className="flex items-center gap-1.5 truncate max-w-[150px]">
                       <MapPin size={12} className="text-gray-400" /> {report.location}
                     </span>
+                    {viewCount != null && (
+                      <span
+                        className="flex items-center gap-1 text-gray-500"
+                        title={t('logbook.recentList.readCount', { count: viewCount })}
+                        aria-label={t('logbook.recentList.readCount', { count: viewCount })}
+                      >
+                        <Eye size={12} className="text-gray-400 shrink-0" />
+                        {viewCount.toLocaleString()}
+                      </span>
+                    )}
                     {report.images && report.images.length > 1 && (
                       <span className="flex items-center gap-1 text-blue-600 font-bold bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md ml-auto sm:ml-0">
                         <ImageIcon size={10} /> +{report.images.length - 1}

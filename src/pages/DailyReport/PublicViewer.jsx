@@ -12,6 +12,7 @@ import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnipp
 import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
+import { claimLogbookViewSession, releaseLogbookViewSession } from '../../utils/logbookViewCount';
 import LogbookArticleHead from './components/LogbookArticleHead';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
@@ -19,6 +20,16 @@ import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 
 const SCHEMA_TYPE = 'EditorialLogbookArticle';
+
+function recordPublicRead(reportId) {
+  if (typeof sessionStorage === 'undefined') return;
+  if (!claimLogbookViewSession(reportId, sessionStorage)) return;
+  void supabase.rpc('increment_report_view', { report_id_param: String(reportId) }).then(({ error }) => {
+    if (!error) return;
+    releaseLogbookViewSession(reportId, sessionStorage);
+    console.warn('[logbook] view count', error.message);
+  });
+}
 
 function upsertEditorialJsonLd(schema) {
   const selector = `script[data-schema-type="${SCHEMA_TYPE}"]`;
@@ -79,6 +90,7 @@ const PublicViewer = () => {
 
       setReport(data);
       setErrorMsg('');
+      recordPublicRead(data.id);
 
       if (isEditorialLogbook(data)) {
         setAuthorLabel('');

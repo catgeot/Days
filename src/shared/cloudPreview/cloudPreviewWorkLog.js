@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 70,
-  sessionPhase: '화성 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=hwaseong',
-  qaShareSlug: 'palgyeong-use',
+  title: '로그북',
+  sessionNo: 12,
+  sessionPhase: '공개 피드 읽음',
+  branch: 'cursor/logbook-reads-af3f',
+  previewPath: '/blog',
+  qaShareSlug: 'logbook-reads',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-12-public-reads',
+    session: '로그북 #12, 공개 피드 읽음',
+    title: '공개 피드 카드에 읽은 수',
+    detail:
+      '로그북 홈 공개 피드 카드 하단에 눈 아이콘과 읽은 수를 넣었습니다. 공개 글을 열면 브라우저 세션당 1회 올라갑니다. 마이그레이션 적용 전에는 숫자가 비어 있습니다. Preview /qa/logbook-reads — /blog 공개 피드에서 카드를 연 뒤 돌아오면 숫자가 1 오르는지.',
+    at: '2026-09-27T00:20:00.000Z',
+  },
   {
     id: '2026-09-26-palgyeong-use-70-hwaseong-overlay',
     session: '팔경 활용 #70, 화성 결손 오버레이',
