@@ -266,6 +266,7 @@ const PublicViewer = () => {
               placeHref={placeHref}
             />
             <LogbookReactionSlot
+              tone="article"
               likeCount={likeState.likeCount}
               commentCount={commentCount}
               liked={likeState.liked}

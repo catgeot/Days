@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 16,
-  sessionPhase: '1열 그리드',
+  sessionNo: 17,
+  sessionPhase: '본문 반응 문구',
   branch: 'cursor/logbook-reads-af3f',
   previewPath: '/blog',
   qaShareSlug: 'logbook-reads',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-17-reaction-words',
+    session: '로그북 #17, 본문 반응 문구',
+    title: '본문은 좋아요·댓글 단어, 카드는 그래프·붉은 하트',
+    detail:
+      '카드의 좋아요·댓글·조회는 좁은 칸이라 아이콘을 유지합니다. 조회수는 눈 대신 그래프, 하트는 누르기 전에도 붉은 테두리입니다. 글을 열면 머리의 좋아요와 댓글은 아이콘 대신 단어로 나옵니다. Preview /qa/logbook-reads — /blog 카드의 그래프·붉은 하트, 글을 열어 좋아요·댓글 단어.',
+    at: '2026-09-27T05:30:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-16-column',
     session: '로그북 #16, 1열 그리드',

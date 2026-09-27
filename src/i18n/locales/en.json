@@ -2101,8 +2101,10 @@
       "samePlaceAria": "{{count}} entries at this place"
     },
     "reactions": {
+      "like": "Like",
       "likeAria": "{{count}} likes",
       "unlikeAria": "Unlike",
+      "comment": "Comment",
       "commentAria": "{{count}} comments",
       "commentsTitle": "Comments",
       "placeholder": "Write a short comment",

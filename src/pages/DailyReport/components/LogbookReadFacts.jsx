@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Eye, Files } from 'lucide-react';
+import { ChartColumn, Clock, Files } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -67,7 +67,7 @@ export default function LogbookReadFacts({
   if (viewCount != null) {
     items.push({
       key: 'views',
-      icon: Eye,
+      icon: ChartColumn,
       label: viewCount.toLocaleString(),
       title: t('logbook.recentList.readCount', { count: viewCount }),
     });

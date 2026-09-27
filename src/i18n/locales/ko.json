@@ -1864,8 +1864,10 @@
       "samePlaceAria": "같은 장소 기록 {{count}}개"
     },
     "reactions": {
+      "like": "좋아요",
       "likeAria": "좋아요 {{count}}",
       "unlikeAria": "좋아요 취소",
+      "comment": "댓글",
       "commentAria": "댓글 {{count}}",
       "commentsTitle": "댓글",
       "placeholder": "짧은 댓글을 남겨 주세요",
