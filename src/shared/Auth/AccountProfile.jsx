@@ -23,7 +23,7 @@ function providerLabel(t, provider) {
   return provider;
 }
 
-const AccountProfile = ({ embedded = false, onBack }) => {
+const AccountProfile = ({ embedded = false, onBack, embeddedCloseInParent = false }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const account = useAccountProfile();
@@ -99,8 +99,8 @@ const AccountProfile = ({ embedded = false, onBack }) => {
       onClick={close}
       className={
         tone === 'dark'
-          ? 'flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/10 text-gray-400 touch-manipulation hover:bg-white/5 hover:text-white active:opacity-80'
-          : 'flex min-h-11 min-w-11 items-center justify-center rounded-full text-gray-400 touch-manipulation transition-all hover:bg-gray-100/50 hover:text-gray-800 active:opacity-80'
+          ? 'flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-white/35 bg-black/50 text-gray-100 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] touch-manipulation hover:border-white/55 hover:bg-white/10 hover:text-white active:opacity-80'
+          : 'flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-gray-300/90 bg-white/95 text-gray-600 shadow-sm touch-manipulation transition-all hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900 active:opacity-80'
       }
       title={t('authPage.login.backTitle')}
       aria-label={t('authPage.login.backTitle')}
@@ -251,7 +251,7 @@ const AccountProfile = ({ embedded = false, onBack }) => {
 
       {/* overflow-y auto alone computes overflow-x to auto, so wide blur orbs roll the page sideways and trap the scroll */}
       <div className="relative z-10 min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
-        {embedded ? (
+        {embedded && !embeddedCloseInParent ? (
           <div className="pointer-events-auto sticky top-0 z-30 flex justify-end bg-[#0a0a0a]/95 px-2 py-2 backdrop-blur-sm">
             {closeBar('dark')}
           </div>
@@ -268,8 +268,12 @@ const AccountProfile = ({ embedded = false, onBack }) => {
               {embedded ? null : (
                 <div className="mb-2 flex scale-110 justify-center"><Logo /></div>
               )}
-              <h1 className="text-xl font-bold text-gray-900">{t('authPage.account.title')}</h1>
-              <p className="mt-1 break-keep text-xs text-gray-500">{t('authPage.account.subtitle')}</p>
+              {embedded && embeddedCloseInParent ? null : (
+                <h1 className="text-xl font-bold text-gray-900">{t('authPage.account.title')}</h1>
+              )}
+              <p className={`break-keep text-xs text-gray-500 ${embedded && embeddedCloseInParent ? '' : 'mt-1'}`}>
+                {t('authPage.account.subtitle')}
+              </p>
             </div>
 
             {!user ? (

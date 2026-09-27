@@ -105,6 +105,7 @@
     },
     "account": {
       "open": "Profile",
+      "closeProfile": "Close profile",
       "title": "Profile",
       "subtitle": "Change your pen name, photo, password, and sign-in accounts here.",
       "needLogin": "Sign in to edit your profile.",
@@ -708,7 +709,8 @@
       "signInBody": "Sign in to build your bucket list and use the globe without limits.",
       "signIn": "Sign in",
       "signOut": "Sign out",
-      "changePassword": "Change password"
+      "changePassword": "Change password",
+      "backHome": "Home"
     },
     "agencies": {
       "title": "Visited agencies",

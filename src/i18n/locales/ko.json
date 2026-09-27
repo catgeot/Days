@@ -105,6 +105,7 @@
     },
     "account": {
       "open": "프로필",
+      "closeProfile": "프로필 닫기",
       "title": "프로필",
       "subtitle": "필명, 사진, 비밀번호, 로그인 계정을 여기서 바꿉니다.",
       "needLogin": "로그인 후 프로필을 바꿀 수 있습니다.",
@@ -478,7 +479,8 @@
       "signInBody": "로그인하고 나만의 버킷리스트를 만들고 지구본의 모든 기능을 제한 없이 이용할 수 있습니다.",
       "signIn": "로그인",
       "signOut": "로그아웃",
-      "changePassword": "비밀번호 변경"
+      "changePassword": "비밀번호 변경",
+      "backHome": "홈으로"
     },
     "agencies": {
       "title": "방문한 여행사",
