@@ -234,6 +234,33 @@ export function resolveLocalScenicRowFirstImage(
  * @param {object} [item]
  * @returns {{ imageUrl: string | null, contentId: string | null }}
  */
+function resolveSearchScenicMediaForAttraction(hubId, name, contentId, extra = {}) {
+  const existing =
+    String(
+      extra.imageUrl ||
+        extra.thumbUrl ||
+        extra.firstImage ||
+        extra.image_url ||
+        '',
+    ).trim() || null;
+  const overlay =
+    overlayForHubMemberName(hubId, name) ||
+    lookupLocalScenicMemberOverlayForSpot({ hubId, name, ...extra });
+  const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
+  const rawId = String(
+    overlay?.contentId || contentId || fromCurated.contentId || '',
+  ).trim();
+  const resolvedContentId = /^\d{1,32}$/.test(rawId) ? rawId : null;
+  const byContentId = lookupLocalScenicPhotoByContentId(resolvedContentId);
+  const imageUrl =
+    overlay?.imageUrl ||
+    existing ||
+    byContentId?.imageUrl ||
+    fromCurated.imageUrl ||
+    null;
+  return { imageUrl, contentId: resolvedContentId };
+}
+
 export function resolveSearchScenicMedia(item) {
   if (!item || typeof item !== 'object') {
     return { imageUrl: null, contentId: null };
@@ -244,21 +271,35 @@ export function resolveSearchScenicMedia(item) {
     String(
       item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '',
     ).trim() || null;
-  const overlay =
-    overlayForHubMemberName(hubId, name) || lookupLocalScenicMemberOverlayForSpot(item);
-  const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
-  const rawId = String(
-    overlay?.contentId || item.contentId || fromCurated.contentId || '',
-  ).trim();
-  const contentId = /^\d{1,32}$/.test(rawId) ? rawId : null;
-  const byContentId = lookupLocalScenicPhotoByContentId(contentId);
-  const imageUrl =
-    overlay?.imageUrl ||
-    existing ||
-    byContentId?.imageUrl ||
-    fromCurated.imageUrl ||
-    null;
-  return { imageUrl, contentId };
+
+  if (
+    !existing &&
+    hubId &&
+    item.kind === 'city' &&
+    item.source === 'hub'
+  ) {
+    const hub = resolveCityAttractionHub(hubId);
+    for (const attraction of hub?.attractions || []) {
+      const sub = resolveSearchScenicMediaForAttraction(
+        hubId,
+        String(attraction.name || '').trim(),
+        memberContentId({}, attraction),
+      );
+      if (sub.imageUrl) return sub;
+    }
+    for (const list of listsForHub(hubId)) {
+      for (const member of list.members || []) {
+        const sub = resolveSearchScenicMediaForAttraction(
+          hubId,
+          String(member.attractionName || '').trim(),
+          memberContentId(member, resolveMemberAttraction(hub, member)),
+        );
+        if (sub.imageUrl) return sub;
+      }
+    }
+  }
+
+  return resolveSearchScenicMediaForAttraction(hubId, name, item.contentId, item);
 }
 
 /**
