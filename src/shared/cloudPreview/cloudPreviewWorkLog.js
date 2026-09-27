@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '명소홈',
-  sessionNo: 1,
-  sessionPhase: '본문 무니 FAB',
-  branch: 'cursor/scenic-mooni-b353',
-  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
-  qaShareSlug: 'scenic-mooni',
+  title: '팔경 활용',
+  sessionNo: 72,
+  sessionPhase: '울산 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic?hub=ulsan',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-72-ulsan-overlay',
+    session: '팔경 활용 #72, 울산 결손 오버레이',
+    title: '울산12경 가지산 사계·반구대암각화',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 울산12경 결손 2건(울산 가지산 사계·울산 반구대암각화)의 공공 공식 팩트 개요·주소·울산광역시 문화관광 12경 공식 사진을 보강했습니다. 가지산 사계는 울주군 상북면 해발 1,241m 영남알프스 주봉(3경, 1979 경남 도립공원·천연기념물 462호 철쭉·824년 석남사), 반구대암각화는 언양읍 대곡리 991-3 국보 285호(6경, 2025-07-12 반구천의 암각화 세계유산·그림 312점)입니다. 신불산 억새평원·황매산 철쭉·천전리 각석·울산암각화박물관과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=ulsan 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T00:40:00.000Z',
+  },
   {
     id: '2026-09-27-scenic-mooni-1-fab',
     session: '명소홈 #1, 본문 무니 FAB',

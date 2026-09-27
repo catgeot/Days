@@ -4855,6 +4855,77 @@ assert.ok(
   '용인 검색 8경 어비낙조 썸네일',
 );
 
+const ulsanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'ulsan');
+const ulsanTwelve = ulsanMerged.filter((s) => s.localScenicListId === 'ulsan-sipgyeong');
+assert.equal(ulsanTwelve.length, 12, '울산12경 12명');
+assert.equal(ulsanTwelve[0]?.groupTitle, '울산 12경');
+const ulsanDeficitNames = ['울산 가지산 사계', '울산 반구대암각화'];
+const ulsanDeficit = ulsanTwelve.filter((s) => ulsanDeficitNames.includes(s.attractionName));
+assert.equal(ulsanDeficit.length, 2, '울산12경 결손 2명');
+assert.ok(
+  ulsanDeficit.every((s) => s.overview && s.imageUrl),
+  '울산 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  ulsanDeficit.every((s) => !s.contentId),
+  '울산 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(ulsanDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '가지산 사계·반구대암각화 썸네일 다름',
+);
+const usGaji = resolveLocalScenicListSpotById('local-scenic:ulsan-sipgyeong:울산가지산사계');
+assert.ok(usGaji?.overview && usGaji?.imageUrl, '울산 가지산 사계 overlay 사진·개요');
+assert.ok(!usGaji?.contentId, '울산 가지산 사계 JSON contentId 없음 유지');
+assert.ok(usGaji?.overview?.includes('상북면'), '울산 가지산 사계 overlay 주소');
+assert.ok(usGaji?.overview?.includes('1,241m'), '울산 가지산 사계 overlay 해발');
+assert.ok(usGaji?.overview?.includes('제462호'), '울산 가지산 사계 overlay 철쭉');
+assert.ok(usGaji?.overview?.includes('824년'), '울산 가지산 사계 overlay 석남사');
+assert.ok(usGaji?.overview?.includes('신불산'), '울산 가지산 사계≠신불산');
+assert.ok(usGaji?.overview?.includes('황매산'), '울산 가지산 사계≠황매산');
+assert.ok(usGaji?.imageUrl?.includes('img_12view03.jpg'), '울산 가지산 사계 시 공식 사진');
+assert.ok(
+  usGaji?.galleryUrls?.some((u) => u.includes('FILE_000000000002274')),
+  '울산 가지산 사계 추가 사진',
+);
+assert.ok(usGaji?.homepage?.includes('unqId=1'), '울산 가지산 사계 공식 홈');
+const usBang = resolveLocalScenicListSpotById('local-scenic:ulsan-sipgyeong:울산반구대암각화');
+assert.ok(usBang?.overview && usBang?.imageUrl, '울산 반구대암각화 overlay 사진·개요');
+assert.ok(!usBang?.contentId, '울산 반구대암각화 JSON contentId 없음 유지');
+assert.ok(usBang?.overview?.includes('대곡리 991-3'), '울산 반구대암각화 overlay 주소');
+assert.ok(usBang?.overview?.includes('국보 285호'), '울산 반구대암각화 overlay 국보');
+assert.ok(usBang?.overview?.includes('2025년 7월 12일'), '울산 반구대암각화 overlay 세계유산');
+assert.ok(usBang?.overview?.includes('052-254-5724'), '울산 반구대암각화 overlay 문의');
+assert.ok(usBang?.overview?.includes('천전리'), '울산 반구대암각화≠천전리 각석');
+assert.ok(usBang?.overview?.includes('암각화박물관'), '울산 반구대암각화≠암각화박물관');
+assert.ok(usBang?.imageUrl?.includes('img_12view06.jpg'), '울산 반구대암각화 시 공식 사진');
+assert.ok(
+  usBang?.galleryUrls?.some((u) => u.includes('FILE_000000000002251')),
+  '울산 반구대암각화 추가 사진',
+);
+assert.ok(usBang?.homepage?.includes('unqId=100'), '울산 반구대암각화 공식 홈');
+assert.notEqual(usGaji?.imageUrl, usBang?.imageUrl, '가지산 사계·반구대암각화 썸네일 다름');
+assert.ok(!usBang?.imageUrl?.includes('12view03'), '반구대암각화≠가지산 사진');
+assert.ok(!usGaji?.imageUrl?.includes('12view06'), '가지산 사계≠반구대 사진');
+const ulsanGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '울산', {
+  injectLocalScenic: true,
+});
+const ulsanGlobeTwelve = ulsanGlobe.filter((s) => s.localScenicListId === 'ulsan-sipgyeong');
+assert.equal(ulsanGlobeTwelve.length, 12, '울산 검색 울산12경 12행');
+assert.ok(
+  ulsanGlobe.find((s) => s.attractionName === '울산 가지산 사계')?.overview?.includes('1,241m'),
+  '울산 검색 3경 가지산 사계 개요',
+);
+assert.ok(
+  ulsanGlobe.find((s) => s.attractionName === '울산 가지산 사계')?.imageUrl?.includes('img_12view03.jpg'),
+  '울산 검색 3경 가지산 사계 썸네일',
+);
+assert.ok(
+  ulsanGlobe.find((s) => s.attractionName === '울산 반구대암각화')?.imageUrl?.includes('img_12view06.jpg'),
+  '울산 검색 6경 반구대암각화 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
