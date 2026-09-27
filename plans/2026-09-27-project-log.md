@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 프로필 #4, 헤더 사진 숫자
+
+- **세션** `프로필 #4, 헤더 사진 숫자` · feature `cursor/profile-a231` · tip `8073fc78` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **조치** 로그북 홈 우측 상단과 공개 글·댓글 작성자 이름 옆의 사진 숫자를 뺐다. 숫자는 프로필 사진을 열었을 때와 프로필 사진 위에만 남긴다. 헤더의 프로필 글자는 줄지 않는다.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
+- **다음** `프로필 #5, Preview OK면 PR 병합` — 헤더 프로필이 바로 열리고, 숫자는 사진을 볼 때만. OK면 PR #338 병합.
+
 ## 프로필 #3, 패널 안 프로필
 
 - **세션** `프로필 #3, 패널 안 프로필` · feature `cursor/profile-a231` · tip `5a5d5d57` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
