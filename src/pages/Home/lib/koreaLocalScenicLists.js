@@ -1698,6 +1698,16 @@ const CD_SEOP = `${CD_IMG}GC055P03568`;
 const CD_SEOP_HOUSE = `${CD_IMG}GC055P04093`;
 const CD_SEOP_PAV = `${CD_IMG}GC055P03522`;
 const CD_SEOP_HOME = 'https://cheongdo.grandculture.net/cheongdo/toc/GC05500258';
+const UR_KHS = 'https://www.khs.go.kr/unisearch/images/cultural_material';
+const UR_AN = `${UR_KHS}/1664302.jpg`;
+const UR_AN_2 = `${UR_KHS}/1664304.jpg`;
+const UR_AN_HOME =
+  'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=3413801930000&ccbaKdcd=31&ccbaAsno=0001930000000&ccbaCtcd=38';
+const UR_HOAM = 'https://www.hoamfoundation.org/images/hoam';
+const UR_HOAM_GATE = `${UR_HOAM}/img_map_pho01.jpg`;
+const UR_HOAM_ANCHAE = `${UR_HOAM}/img_map_pho02.jpg`;
+const UR_HOAM_BACK = `${UR_HOAM}/img_map_pho09.jpg`;
+const UR_HOAM_HOME = 'https://www.hoamfoundation.org/kor/hoam/hoam_map.asp';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3705,6 +3715,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     CD_SEOP,
     [CD_SEOP_HOUSE, CD_SEOP_PAV],
     CD_SEOP_HOME,
+  ),
+  'local-scenic:uiryeong-gugyeong:백산안희제선생생가': localScenicPhotoOverlay(
+    '의령9경 제8경 백산안희제선생 생가는 부림면 입산로2길 37(입산리)입니다. 의령군 관광 안내는 백산 안희제 선생이 1885년 부림면 입산리에서 태어났고, 1907년 창남학교·1908년 의신학교·1909년 동래 구명학교와 대구 교남학교를 세워 신학문 보급에 힘썼으며, 1942년 조선어학회 사건과 1943년 만주 대종교단 사건으로 구금되었다가 출옥 4시간 만인 1943년 9월 2일에 사망했다고 적습니다. 국가유산청은 이 집을 의령 안희제 생가(문화유산자료)로 두고, 1993년 1월 8일 지정·수량 2동이며 초창은 17세기 이후로 추정되고 1915년 안희제가 직접 중수했다고 적습니다. 안채는 앞면 6칸·옆면 2칸 팔작지붕으로 마루·방·대청·방·부엌 순이고, 사랑채는 앞면 4칸 초가이며 두 채 모두 동향에 남쪽 마루 1칸이 있습니다. 한국민족문화대백과는 호를 백산이라 하고 1914년 부산에서 백산상회를 경영해 국내외 독립운동 연락과 자금에 썼다고 적습니다. 문의는 055-570-2444(의령군 문화관광과)입니다. 9경 호암 이병철 생가·유곡면 망우당 곽재우 생가·부산 중구 백산상회 터와 다른 부림면 입산리 생가입니다. 사진은 국가유산청 의령 안희제 생가 공식 사진입니다.',
+    '경상남도 의령군 부림면 입산로2길 37 (입산리, 백산 안희제 생가)',
+    UR_AN,
+    [UR_AN_2],
+    UR_AN_HOME,
+  ),
+  'local-scenic:uiryeong-gugyeong:호암이병철선생생가': localScenicPhotoOverlay(
+    '의령9경 제9경 호암이병철선생 생가는 정곡면 호암길 22-4입니다. 의령군 관광 안내는 남서향 일자형 생가가 안채·사랑채·대문채·광으로 되어 있고, 아담한 토담과 바위벽·뒷산 대나무가 운치를 더하며 호암 선생이 좋아했던 오동나무·우물·유품을 볼 수 있다고 적습니다. 호암재단은 1851년 조부가 대지 1,907㎡에 전통 한옥으로 지었고, 이병철 선생이 결혼 후 분가하기 전까지 이 집에서 살았으며, 주변 산은 곡식을 쌓아 놓은 노적봉 형상이고 남강이 생가를 돌아 천천히 흐르는 역수라고 적습니다. 관람은 오전 10시~오후 5시, 월요일 휴관이고 문의는 055-573-0723(호암생가)입니다. 의령군 문화관광과 담당은 055-570-2512입니다. 8경 백산 안희제 생가·6경 탑바위·용인 호암미술관과 다른 정곡면 생가입니다. 사진은 호암재단 생가 대문채·안채 공식 사진입니다.',
+    '경상남도 의령군 정곡면 호암길 22-4 (호암 이병철 생가)',
+    UR_HOAM_GATE,
+    [UR_HOAM_ANCHAE, UR_HOAM_BACK],
+    UR_HOAM_HOME,
   ),
 };
 
