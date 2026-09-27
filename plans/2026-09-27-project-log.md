@@ -4,8 +4,8 @@
 
 ## 프로필 #3, 패널 안 프로필
 
-- **세션** `프로필 #3, 패널 안 프로필` · feature `cursor/profile-a231` · tip `9abf5413` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
-- **조치** 로고 패널 프로필은 `/account`로 나가지 않고 패널 안에서 열고 닫는다. 스크롤은 세로만. 사진은 최대 8장, 장 수는 본인·공개 글 작성자에 표시. 공개를 끄면 다른 사람에게 사진과 장 수가 안 보인다. `profiles.avatar_urls`·`profile_public` 적용. 기존 대표 사진 4건을 목록에 넣음. 프로필 13건은 공개.
+- **세션** `프로필 #3, 패널 안 프로필` · feature `cursor/profile-a231` · tip `5a5d5d57` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **조치** 로고 패널 프로필은 `/account`로 나가지 않고 패널 안에서 열고 닫는다. 스크롤은 세로만. 사진은 최대 8장, 장 수는 본인·공개 글 작성자에 표시. 공개를 끄면 다른 사람에게 사진과 장 수가 안 보인다. `profiles.avatar_urls`·`profile_public` 적용. 기존 대표 사진 4건을 목록에 넣음. 프로필 13건은 공개. 로고 패널 Updates에 `2026-09-27` 릴리스 노트.
 - **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS · 컬럼 조회 PASS.
 - **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
 - **다음** `프로필 #4, Preview OK면 PR 병합` — 패널 유지·세로 스크롤·사진 장 수·공개 스위치 OK면 PR #338 병합.

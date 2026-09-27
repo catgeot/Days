@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `9abf5413` · draft PR [#338](https://github.com/catgeot/Days/pull/338) · **사람 Preview** |
+| **상태** | **#3 push** · tip `5a5d5d57` · draft PR [#338](https://github.com/catgeot/Days/pull/338) · **사람 Preview** |
 | **브랜치** | `cursor/profile-a231` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
