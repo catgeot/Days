@@ -1717,6 +1717,12 @@ const JH_SKY = `${JH_IMG}GC097P02085`;
 const JH_SKY_2 = `${JH_IMG}GC097P02087`;
 const JH_SKY_3 = `${JH_IMG}GC097P02088`;
 const JH_SKY_HOME = 'https://jangheung.grandculture.net/jangheung/toc/GC09700349';
+const GJ_KHS = 'https://www.khs.go.kr/unisearch/images/national_treasure';
+const GJ_NAWON = `${GJ_KHS}/2021070209124901.JPG`;
+const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
+const GJ_NAWON_3 = `${GJ_KHS}/1612779.jpg`;
+const GJ_NAWON_HOME =
+  'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=1113700390000&ccbaKdcd=11&ccbaAsno=0000390000000&ccbaCtcd=37';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3752,6 +3758,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     JH_SKY,
     [JH_SKY_2, JH_SKY_3],
     JH_SKY_HOME,
+  ),
+  'local-scenic:gyeongju-8gwae:나원백탑': localScenicPhotoOverlay(
+    '경주8怪 나원백탑은 현곡면 라원리 676의 경주 나원리 오층석탑입니다. 국가유산청은 1962년 12월 20일 국보로 지정했고 수량 1기, 시대는 통일신라 초기, 국유이며 경주시가 관리한다고 적습니다. 국가유산 설명은 나원리 마을 절터에 남은 석탑으로 감은사지 동·서 삼층석탑·고선사지 삼층석탑과 견줄 규모이고, 천년이 지나도 순백이라 나원백탑이라 부른다고 적습니다. 2층 기단 위 5층 탑신이고 8세기경으로 추정됩니다. 안내판은 절 이름이 전하지 않아 지명을 따 나원리 탑이라 하고 삼기팔괴의 하나이며, 1996년 해체·수리 때 3층 지붕돌 안에서 금동 사리함·금동구층탑 3기·금동삼층탑 1기·금동불상·「무구정광대다라니경」 파편이 나왔다고 적습니다. 한국민족문화대백과는 해체수리를 1995년 11월부터 1996년 7월까지로 적고, 경주 지역 신라 오층탑은 이곳과 장항리사지뿐이며 탑 남서쪽의 나원사는 마을 이름을 딴 근래의 작은 절이라고 적습니다. 남산부석·불국영지·백율사·장항리 오층석탑과 다른 현곡면 석탑입니다. 사진은 국가유산청 국립문화재연구소 2007년 전경입니다.',
+    '경상북도 경주시 현곡면 라원리 676 (경주 나원리 오층석탑)',
+    GJ_NAWON,
+    [GJ_NAWON_2, GJ_NAWON_3],
+    GJ_NAWON_HOME,
   ),
 };
 
