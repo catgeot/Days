@@ -1729,6 +1729,12 @@ const GWGS_MASAN_2 = `${GWGS_IMG}/TUCN_201812110649597970.jpg`;
 const GWGS_MASAN_3 = `${GWGS_IMG}/TUCN_201812110650095520.jpg`;
 const GWGS_MASAN_HOME =
   'https://www.gwgs.go.kr/prog/tursmCn/tour/sub02_0108/view.do?cntno=22';
+const CNGJ_IMG = 'https://www.gongju.go.kr/thumbnail/tursmCn';
+const CNGJ_CHANG = `${CNGJ_IMG}/TUCN_202004220935549330.JPG`;
+const CNGJ_CHANG_2 = `${CNGJ_IMG}/TUCN_202004220935550071.JPG`;
+const CNGJ_CHANG_3 = `${CNGJ_IMG}/TUCN_202004220935550752.JPG`;
+const CNGJ_CHANG_HOME =
+  'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_06_04/view.do?cntno=57';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3778,6 +3784,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     GWGS_MASAN,
     [GWGS_MASAN_2, GWGS_MASAN_3],
     GWGS_MASAN_HOME,
+  ),
+  'local-scenic:gongju-sipgyeong:창벽': localScenicPhotoOverlay(
+    '공주10경 창벽은 반포면 마암리 산4-4의 창벽산(청벽산)입니다. 공주시 문화관광은 계룡산이 북쪽으로 줄기를 뻗어 급히 금강으로 잦아들면서 생긴 절경이고, 폭 100m·높이 25m 바위절벽 아래로 금강이 흐르며, 해발 277m 창벽산에서 자락을 적시고 남으로 휘도는 금강을 본다고 적습니다. 디지털공주문화대전은 한자를 蒼壁, 이칭을 청벽이라 하고, 서거정이 중국에는 적벽이 있고 조선에는 창벽이 있다고 칭찬한 금강가 층암이며, 계룡산이 국사봉을 이룬 뒤 청벽산으로 굽이쳐 금강과 맞닿은 곳이라고 적습니다. 북으로 강을 건너 장군산·무학봉이 보이고, 아래는 말아귀나루·위는 불티나루입니다. 같은 시 금강 안내는 창벽에 오르면 청벽대교와 32번 국도가 보인다고 적습니다. 산행은 원점회귀·종주 4.3km, 순수 이동 1시간 10분이고 청벽가든에서 전망대·정상으로 이어집니다. 연중무휴·무료이고 주차시설은 없으며 문의는 041-840-2836, 관광과 041-840-8082입니다. 신기동 월성산(314m·봉수대)·금강 물길·계룡산·석장리와 다른 마암리 절벽입니다. 사진은 공주시 문화관광 창벽산 공식 사진입니다.',
+    '충청남도 공주시 반포면 마암리 산4-4 (창벽산·청벽산)',
+    CNGJ_CHANG,
+    [CNGJ_CHANG_2, CNGJ_CHANG_3],
+    CNGJ_CHANG_HOME,
   ),
 };
 

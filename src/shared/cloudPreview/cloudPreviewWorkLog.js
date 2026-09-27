@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 78,
-  sessionPhase: '고성 결손 오버레이',
+  sessionNo: 79,
+  sessionPhase: '공주 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=goseong',
+  previewPath: '/korea/theme/scenic?hub=gongju',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-overlay',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주10경 창벽',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 공주10경 결손 1건(창벽)의 공공 공식 팩트 개요·주소·공주시 문화관광 공식 사진을 보강했습니다. 창벽은 반포면 마암리 산4-4의 창벽산(청벽산, 폭 100m·높이 25m·해발 277m·산행 4.3km·문의 041-840-2836)입니다. 신기동 월성산·금강 물길·계룡산·석장리와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gongju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T11:40:00.000Z',
+  },
   {
     id: '2026-09-27-profile-5-header-overlap',
     session: '프로필 #5, 헤더 터치 가림',

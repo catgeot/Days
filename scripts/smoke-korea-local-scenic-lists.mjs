@@ -5266,6 +5266,39 @@ assert.ok(
   '고성 검색 마산봉설경 썸네일',
 );
 
+const gongjuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gongju');
+const gongjuTen = gongjuMerged.filter((s) => s.localScenicListId === 'gongju-sipgyeong');
+assert.equal(gongjuTen.length, 10, '공주10경 10명');
+const changbyeok = gongjuTen.find((s) => s.attractionName === '창벽');
+assert.ok(changbyeok?.overview && changbyeok?.imageUrl, '창벽 overlay 사진·개요');
+assert.ok(!changbyeok?.contentId, '창벽 JSON contentId 없음 유지');
+assert.ok(changbyeok?.overview?.includes('마암리 산4-4'), '창벽 overlay 주소');
+assert.ok(changbyeok?.overview?.includes('041-840-2836'), '창벽 overlay 문의');
+assert.ok(changbyeok?.overview?.includes('277'), '창벽 overlay 해발');
+assert.ok(changbyeok?.overview?.includes('100m'), '창벽 overlay 절벽 폭');
+assert.ok(changbyeok?.overview?.includes('4.3'), '창벽 overlay 산행');
+assert.ok(changbyeok?.overview?.includes('월성산'), '창벽≠월성산');
+assert.ok(changbyeok?.overview?.includes('청벽'), '창벽 이칭 청벽');
+assert.ok(changbyeok?.imageUrl?.includes('TUCN_202004220935549330'), '창벽 공주시 절벽 사진');
+assert.ok(
+  changbyeok?.galleryUrls?.some((u) => u.includes('TUCN_202004220935550071')),
+  '창벽 두 번째 사진',
+);
+assert.ok(changbyeok?.homepage?.includes('cntno=57'), '창벽 공주시 창벽산');
+const gongjuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '공주', {
+  injectLocalScenic: true,
+});
+const gongjuGlobeTen = gongjuGlobe.filter((s) => s.localScenicListId === 'gongju-sipgyeong');
+assert.equal(gongjuGlobeTen.length, 10, '공주 검색 공주10경 10행');
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '창벽')?.overview?.includes('마암리 산4-4'),
+  '공주 검색 창벽 개요',
+);
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '창벽')?.imageUrl?.includes('TUCN_202004220935549330'),
+  '공주 검색 창벽 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
