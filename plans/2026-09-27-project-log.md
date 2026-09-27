@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 프로필 #1, 프로필 페이지
+
+- **세션** `프로필 #1, 프로필 페이지` · feature `cursor/profile-a231` · tip `6f104728` · draft PR [#336](https://github.com/catgeot/Days/pull/336)
+- **조치** 기록 보관소 기본 배치를 1열로. 로그북 헤더·사이드바·로고 패널의 비밀번호 변경은 프로필(`/account`)로. 필명·사진·비밀번호·Google/Kakao 계정 추가. 사진은 무니 질문·로고 패널·로그북 작성자(피드·글·댓글)에 표시.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog` · 프로필 `/account`
+- **다음** `프로필 #2, Preview OK면 PR 병합` — 1열·프로필 사진이 헤더·로고 패널·무니 질문·로그북에 보이면 PR #336 병합.
+
 ## 로그북 #21, 한국 주소는 도시 칩
 
 - **세션** `로그북 #21, 한국 주소는 도시 칩` · feature `cursor/logbook-reads-af3f` · tip `1b0e7f3c` · PR [#334](https://github.com/catgeot/Days/pull/334)
