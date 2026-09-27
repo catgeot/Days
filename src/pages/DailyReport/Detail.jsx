@@ -261,8 +261,9 @@ const Detail = () => {
 
       <div className="relative z-10 max-w-3xl mx-auto max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-8 sm:pt-12 px-4 sm:px-6">
 
-        <div className="flex justify-end items-center mb-8 flex-wrap gap-4">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div
+          className="mb-8 flex flex-wrap items-center justify-start gap-2 sm:gap-3 max-md:pr-[3.75rem] sm:max-w-[calc(100%-3.5rem)]"
+        >
 
             {/* 🚨 [New] 직관적인 공유하기 버튼 (가장 돋보이게 처리) */}
             <button
@@ -306,7 +307,6 @@ const Detail = () => {
             <button onClick={handleDelete} className="flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-3 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium">
               <Trash2 size={16} /> <span className="hidden sm:inline">{t('logbook.detail.delete')}</span>
             </button>
-          </div>
         </div>
 
         <div className="bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm">
