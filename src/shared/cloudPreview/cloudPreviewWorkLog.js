@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 18,
-  sessionPhase: '여행지 분류',
+  sessionNo: 21,
+  sessionPhase: '한국 주소는 도시 칩',
   branch: 'cursor/logbook-reads-af3f',
   previewPath: '/blog',
   qaShareSlug: 'logbook-reads',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-21-korean-city-chips',
+    session: '로그북 #21, 한국 주소는 도시 칩',
+    title: '한국 주소는 도시 칩',
+    detail:
+      '칩 줄은 그대로 하나입니다. 현재 위치로 저장된 한국 주소는 도시로 모입니다. 춘천·춘천시 소양로3가·춘천시 퇴계동은 칩 「춘천」입니다. 보라카이·아이슬란드·길리 메모는 작성한 이름 그대로이고, 파리 근교는 파리가 아닙니다. 카드에 적힌 주소 문자열은 그대로입니다. Preview /qa/logbook-reads — /blog 공개 피드에서 춘천 칩 하나, 카드 주소는 춘천시 퇴계동처럼 긴 문자열.',
+    at: '2026-09-27T07:50:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-18-place-chips',
     session: '로그북 #18, 여행지 분류',

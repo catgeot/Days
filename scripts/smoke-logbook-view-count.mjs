@@ -77,6 +77,18 @@ assert.equal(logbookReadingMinutes(`# ${'가'.repeat(10)}\n\n**본문**`), 1);
 assert.equal(logbookPlaceKey('  파리  '), '파리');
 assert.equal(logbookPlaceKey('위치 미상'), '');
 assert.equal(logbookPlaceKey('Location unknown'), '');
+assert.equal(logbookPlaceKey('보라카이'), '보라카이');
+assert.equal(logbookPlaceKey('아이슬란드'), '아이슬란드');
+assert.equal(logbookPlaceKey('길리 메모'), '길리 메모');
+assert.equal(logbookPlaceKey('춘천'), '춘천');
+assert.equal(logbookPlaceKey('춘천시 소양로3가'), '춘천');
+assert.equal(logbookPlaceKey('춘천시 퇴계동'), '춘천');
+assert.equal(logbookPlaceKey('춘천시'), '춘천');
+assert.equal(logbookPlaceKey('파리 근교'), '파리 근교');
+assert.equal(logbookPlaceKey('춘천시 근교'), '춘천시 근교');
+assert.equal(logbookPlaceKey('서울특별시 종로구 사직동'), '서울');
+assert.equal(logbookPlaceKey('제주특별자치도 제주시 애월읍'), '제주');
+assert.equal(logbookPlaceKey('오사카시 난바'), '오사카시 난바');
 
 const placeCounts = countReportsByPlace([
   { location: '파리' },
@@ -103,6 +115,41 @@ assert.equal(reportMatchesLogbookPlace({ location: '파리 ' }, '파리'), true)
 assert.equal(reportMatchesLogbookPlace({ location: '파리 근교' }, '파리'), false);
 assert.equal(reportMatchesLogbookPlace({ location: '위치 미상' }, ''), true);
 assert.equal(reportMatchesLogbookPlace({ location: '위치 미상' }, '파리'), false);
+
+const koreaChips = listLogbookPlaceChips([
+  { location: '보라카이' },
+  { location: '보라카이' },
+  { location: '아이슬란드' },
+  { location: '아이슬란드' },
+  { location: '길리 메모' },
+  { location: '길리 메모' },
+  { location: '춘천' },
+  { location: '춘천시 소양로3가' },
+  { location: '춘천시 퇴계동' },
+  { location: '파리' },
+  { location: '파리 근교' },
+]);
+assert.deepEqual(koreaChips, [
+  { name: '춘천', count: 3 },
+  { name: '길리 메모', count: 2 },
+  { name: '보라카이', count: 2 },
+  { name: '아이슬란드', count: 2 },
+  { name: '파리', count: 1 },
+  { name: '파리 근교', count: 1 },
+]);
+assert.equal(reportMatchesLogbookPlace({ location: '춘천시 퇴계동' }, '춘천'), true);
+assert.equal(reportMatchesLogbookPlace({ location: '춘천시 소양로3가' }, '춘천'), true);
+assert.equal(reportMatchesLogbookPlace({ location: '춘천' }, '춘천'), true);
+assert.equal(reportMatchesLogbookPlace({ location: '길리 메모' }, '길리'), false);
+assert.equal(reportMatchesLogbookPlace({ location: '파리 근교' }, '춘천'), false);
+const chuncheonCounts = countReportsByPlace([
+  { location: '춘천' },
+  { location: '춘천시 소양로3가' },
+  { location: '춘천시 퇴계동' },
+  { location: '파리 근교' },
+]);
+assert.equal(samePlaceCount(chuncheonCounts, '춘천시 퇴계동'), 3);
+assert.equal(samePlaceCount(chuncheonCounts, '파리 근교'), 1);
 
 function queryChain(result) {
   const api = {
@@ -181,6 +228,7 @@ assert.match(recentList, /viewMode === 'column'/);
 assert.match(recentList, /grid-cols-1 gap-5/);
 assert.match(recentList, /viewColumn/);
 assert.match(recentList, /listLogbookPlaceChips/);
+assert.match(recentList, /\{report\.location\}/);
 assert.match(recentList, /logbook\.recentList\.placeGroup/);
 assert.match(recentList, /logbook\.recentList\.placeAll/);
 assert.match(publicViewer, /LogbookComments/);
