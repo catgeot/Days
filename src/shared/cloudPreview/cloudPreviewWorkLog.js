@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '프로필',
-  sessionNo: 1,
-  sessionPhase: '프로필 페이지',
+  sessionNo: 2,
+  sessionPhase: '사진 카드',
   branch: 'cursor/profile-a231',
   previewPath: '/blog',
   qaShareSlug: 'profile',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-profile-2-photo-card',
+    session: '프로필 #2, 사진 카드',
+    title: '로고 패널 프로필 카드·원본 사진',
+    detail:
+      '로고 패널은 왼쪽 프로필 카드, 오른쪽은 방문한 여행사와 나의 여행 기록, 그 아래 버킷리스트입니다. 카드는 프로필로 갑니다. 무니 질문 옆 사진과 프로필 사진 영역을 키웠습니다. 공개 글의 작성자 사진을 누르면 원본이 열립니다. Preview /qa/profile — 로그인 후 로고 패널 좌우 배치, /account 사진, 무니 질문, 공개 글 작성자 사진.',
+    at: '2026-09-27T09:20:00.000Z',
+  },
   {
     id: '2026-09-27-profile-1-page',
     session: '프로필 #1, 프로필 페이지',

@@ -113,6 +113,8 @@
       "save": "저장",
       "saved": "저장했습니다.",
       "saveFail": "필명을 저장하지 못했습니다.",
+      "viewPhoto": "{{name}} 프로필 사진",
+      "closePhoto": "프로필 사진 닫기",
       "changePhoto": "사진 올리기",
       "photoHint": "무니에게 보낸 질문, 로고 패널, 로그북에 이 사진이 보입니다.",
       "photoUpdated": "프로필 사진을 바꿨습니다.",

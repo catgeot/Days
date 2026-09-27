@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { profileAvatarUrl } from '../../shared/Auth/profileAvatar';
+import ProfilePhotoLightbox from '../../shared/Auth/ProfilePhotoLightbox';
 import { fetchAuthorProfiles, reportAuthorLabel } from './utils/reportAuthor';
 import LogbookBody from './components/LogbookBody';
 import EditorialLogbookBadge from './components/EditorialLogbookBadge';
@@ -60,6 +61,7 @@ const PublicViewer = () => {
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
   const [authorAvatar, setAuthorAvatar] = useState('');
+  const [authorPhotoOpen, setAuthorPhotoOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [seenCount, setSeenCount] = useState(null);
   const [placeCount, setPlaceCount] = useState(null);
@@ -256,14 +258,22 @@ const PublicViewer = () => {
               <MapPin size={14} className="text-gray-400" /> {report.location}
             </span>
             {!editorial && authorLabel && (
-              <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
-                {authorAvatar ? (
-                  <img src={authorAvatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
-                ) : (
+              authorAvatar ? (
+                <button
+                  type="button"
+                  onClick={() => setAuthorPhotoOpen(true)}
+                  className="text-gray-500 text-sm flex items-center gap-1.5 font-medium min-w-0"
+                  aria-label={t('authPage.account.viewPhoto', { name: authorLabel })}
+                >
+                  <img src={authorAvatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                  <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
+                </button>
+              ) : (
+                <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
                   <User size={14} className="text-gray-400 shrink-0" />
-                )}
-                <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
-              </span>
+                  <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
+                </span>
+              )
             )}
             <LogbookReadFacts
               tone="article"
@@ -365,6 +375,13 @@ const PublicViewer = () => {
           </div>
         </div>
       </div>
+      {authorPhotoOpen && authorAvatar ? (
+        <ProfilePhotoLightbox
+          src={authorAvatar}
+          name={authorLabel}
+          onClose={() => setAuthorPhotoOpen(false)}
+        />
+      ) : null}
     </div>
   );
 };

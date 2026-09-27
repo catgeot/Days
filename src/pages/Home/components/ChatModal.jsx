@@ -1315,7 +1315,7 @@ const ChatModal = ({
                         : tone(fresh, 'text-cyan-400', 'text-cyan-600')
                   }`}>
                     {msg.role === 'user' && account.avatarUrl ? (
-                      <img src={account.avatarUrl} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                      <img src={account.avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
                     ) : null}
                     {msg.role === 'user' ? 'Me' : 'MOONi'}
                   </span>

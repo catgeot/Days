@@ -74,7 +74,7 @@ const PlaceChatView = ({
                 msg.role === 'user' ? 'text-blue-400' : msg.role === 'error' ? 'text-red-400' : 'text-purple-400'
               }`}>
                   {msg.role === 'user' && account.avatarUrl ? (
-                    <img src={account.avatarUrl} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                    <img src={account.avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
                   ) : null}
                   {msg.role === 'user' ? t('place.chat.roleUser') : t('place.chat.roleAi')}
               </span>

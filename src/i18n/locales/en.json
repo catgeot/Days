@@ -113,6 +113,8 @@
       "save": "Save",
       "saved": "Saved.",
       "saveFail": "Could not save the pen name.",
+      "viewPhoto": "{{name}} profile photo",
+      "closePhoto": "Close profile photo",
       "changePhoto": "Upload photo",
       "photoHint": "This photo shows on your questions to MOONi, in the logo panel, and on the logbook.",
       "photoUpdated": "Profile photo updated.",

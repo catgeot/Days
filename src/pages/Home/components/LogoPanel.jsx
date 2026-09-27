@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight, UserRound } from 'lucide-react';
+import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -81,37 +81,16 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
           <div>
             <Logo size="panel" />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {user && (
-              <div className="flex items-center gap-2 bg-white/5 py-1 pl-1.5 pr-2 rounded-full border border-white/10 shadow-inner">
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    navigate('/account');
-                  }}
-                  className="flex items-center gap-1.5 min-w-0"
-                  title={t('authPage.account.open')}
-                >
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover" />
-                  ) : (
-                    <div className="h-5 px-2 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white max-w-[5.5rem] truncate">
-                      {profileName.toUpperCase()}
-                    </div>
-                  )}
-                  {avatarUrl ? (
-                    <span className="text-[11px] font-bold text-white truncate max-w-[6.5rem]">{profileName}</span>
-                  ) : null}
-                </button>
-                <button
-                  onClick={onLogout}
-                  title={t('home.logoPanel.signOut')}
-                  className="text-gray-400 hover:text-red-400 transition-colors ml-1"
-                >
-                  <LogOut size={15} />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={onLogout}
+                title={t('home.logoPanel.signOut')}
+                className="p-1.5 text-gray-400 hover:text-red-400 transition-colors border border-white/5 rounded-full hover:bg-white/5"
+              >
+                <LogOut size={18} />
+              </button>
             )}
             <button onClick={onClose} className="p-1.5 text-gray-500 hover:text-white transition-colors border border-white/5 rounded-full hover:bg-white/5">
               <X size={20} />
@@ -119,40 +98,57 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
 
           {user ? (
-            <div className="space-y-8 animate-fade-in">
-              <TravelAgencyDirectory variant="panel" />
-
-              <button
-                onClick={() => {
-                  openReport('dashboard');
-                  onClose();
-                }}
-                className="w-full group flex items-center justify-between py-3 px-5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 rounded-xl transition-all duration-300"
-              >
-                <div className="flex items-center gap-3">
-                  <BookOpen size={18} className="text-blue-400" />
-                  <span className="text-sm font-bold text-white tracking-wide">{t('home.logoPanel.myTravelLog')}</span>
-                </div>
-                <ChevronRight size={16} className="text-blue-500 group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  navigate('/account');
-                }}
-                className="w-full group flex items-center justify-between py-3 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300"
-              >
-                <div className="flex items-center gap-3">
-                  <UserRound size={18} className="text-gray-400" />
-                  <span className="text-sm font-bold text-white tracking-wide">{t('authPage.account.open')}</span>
-                </div>
-                <ChevronRight size={16} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
-              </button>
+            <div className="space-y-6 animate-fade-in">
+              <TravelAgencyDirectory variant="panel">
+                {({ summary, body, open }) => (
+                  <div className="space-y-3">
+                    <div className="flex items-stretch gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          navigate('/account');
+                        }}
+                        title={t('authPage.account.open')}
+                        className="relative w-[38%] max-w-[11.5rem] shrink-0 aspect-square overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-left"
+                      >
+                        {avatarUrl ? (
+                          <img src={avatarUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                        ) : (
+                          <span className="absolute inset-0 flex items-center justify-center bg-gradient-to-tr from-blue-600 to-purple-600 text-3xl font-bold text-white">
+                            {(profileName || '?').slice(0, 1).toUpperCase()}
+                          </span>
+                        )}
+                        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent px-2.5 pb-2 pt-8">
+                          <span className="block text-[10px] font-bold uppercase tracking-wider text-blue-200">{t('authPage.account.open')}</span>
+                          <span className="block truncate text-xs font-bold text-white">{profileName}</span>
+                        </span>
+                      </button>
+                      <div className="flex min-w-0 flex-1 flex-col gap-2">
+                        <div className="flex min-h-0 flex-1">{summary}</div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            openReport('dashboard');
+                            onClose();
+                          }}
+                          className="flex-1 group flex items-center justify-between gap-2 py-2.5 px-3 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 rounded-xl transition-all"
+                        >
+                          <span className="flex items-center gap-2 min-w-0">
+                            <BookOpen size={16} className="text-blue-400 shrink-0" />
+                            <span className="text-sm font-bold text-white truncate">{t('home.logoPanel.myTravelLog')}</span>
+                          </span>
+                          <ChevronRight size={16} className="text-blue-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                        </button>
+                      </div>
+                    </div>
+                    {open ? body : null}
+                  </div>
+                )}
+              </TravelAgencyDirectory>
 
               <div>
                 <div className="flex justify-between items-end mb-4 px-1">

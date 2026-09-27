@@ -171,14 +171,14 @@ const AccountProfile = () => {
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={photoBusy}
-                className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-100 border border-gray-200"
+                className="relative w-full aspect-[5/4] max-h-72 rounded-3xl overflow-hidden bg-gray-100 border border-gray-200"
                 aria-label={t('authPage.account.changePhoto')}
               >
                 {photoUrl ? (
                   <img src={photoUrl} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-gray-400">
-                    <Camera size={22} />
+                    <Camera size={36} />
                   </span>
                 )}
               </button>
