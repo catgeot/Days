@@ -41,11 +41,12 @@ const ProfilePhotoLightbox = ({ src, photos, name, onClose }) => {
     >
       <button
         type="button"
+        data-profile-close
         onClick={onClose}
         className="absolute top-4 right-4 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/10 text-white touch-manipulation hover:bg-white/20 active:opacity-80"
         aria-label={t('authPage.account.closePhoto')}
       >
-        <X size={22} />
+        <X size={22} className="pointer-events-none" />
       </button>
       <figure className="max-w-full" onClick={(event) => event.stopPropagation()}>
         <img

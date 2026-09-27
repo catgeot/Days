@@ -265,7 +265,7 @@ assert.doesNotMatch(dailyLayout, /Link to="\/account"/);
 assert.match(dailyLayout, /data-logbook-mobile-header/);
 assert.match(dailyLayout, /min-h-0 flex-1/);
 assert.match(dailyLayout, /data-logbook-header-profile/);
-assert.match(accountProfile, /ProfilePhotoLightbox/);
+assert.match(accountProfile, /data-profile-close/);
 assert.match(accountProfile, /overflow-x-hidden/);
 assert.match(accountProfile, /overscroll-contain/);
 assert.match(accountProfile, /profilePublic/);

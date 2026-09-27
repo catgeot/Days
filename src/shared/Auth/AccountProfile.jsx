@@ -12,6 +12,7 @@ import { PROFILE_PHOTO_LIMIT } from './profileAvatar';
 import { persistProfileGallery, uploadProfilePhotoFile } from './uploadProfileAvatar';
 import ProfilePhotoCount from './ProfilePhotoCount';
 import ProfilePhotoLightbox from './ProfilePhotoLightbox';
+import { logLogbookHeaderDebug } from '../cloudPreview/logbookHeaderDebug';
 
 const ADDABLE_PROVIDERS = ['google', 'kakao'];
 
@@ -86,9 +87,27 @@ const AccountProfile = ({ embedded = false, onBack }) => {
   }, [user?.id]);
 
   const close = () => {
+    logLogbookHeaderDebug('blog.profile.close', { embedded: Boolean(embedded) });
     if (onBack) onBack();
     else navigate(-1);
   };
+
+  const closeBar = (tone) => (
+    <button
+      type="button"
+      data-profile-close
+      onClick={close}
+      className={
+        tone === 'dark'
+          ? 'flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/10 text-gray-400 touch-manipulation hover:bg-white/5 hover:text-white active:opacity-80'
+          : 'flex min-h-11 min-w-11 items-center justify-center rounded-full text-gray-400 touch-manipulation transition-all hover:bg-gray-100/50 hover:text-gray-800 active:opacity-80'
+      }
+      title={t('authPage.login.backTitle')}
+      aria-label={t('authPage.login.backTitle')}
+    >
+      <X size={22} className="pointer-events-none" />
+    </button>
+  );
 
   const saveGallery = async (nextPhotos, nextPublic) => {
     setPhotoBusy(true);
@@ -224,36 +243,25 @@ const AccountProfile = ({ embedded = false, onBack }) => {
         <>
           <div className="pointer-events-none absolute top-[-20%] left-[-10%] h-[400px] w-[400px] rounded-full bg-blue-500/20 blur-[100px]" />
           <div className="pointer-events-none absolute bottom-[-20%] right-[-10%] h-[400px] w-[400px] rounded-full bg-purple-500/20 blur-[100px]" />
+          <div className="relative z-40 flex shrink-0 justify-end bg-slate-800/90 px-3 pb-1 pt-[max(0.35rem,env(safe-area-inset-top,0px))] backdrop-blur-sm">
+            {closeBar('dark')}
+          </div>
         </>
       ) : null}
 
       {/* overflow-y auto alone computes overflow-x to auto, so wide blur orbs roll the page sideways and trap the scroll */}
-      <div className="min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
+      <div className="relative z-10 min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
         {embedded ? (
           <div className="pointer-events-auto sticky top-0 z-30 flex justify-end bg-[#0a0a0a]/95 px-2 py-2 backdrop-blur-sm">
-            <button
-              type="button"
-              onClick={close}
-              className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/10 text-gray-400 touch-manipulation hover:bg-white/5 hover:text-white active:opacity-80"
-              title={t('authPage.login.backTitle')}
-              aria-label={t('authPage.login.backTitle')}
-            >
-              <X size={20} />
-            </button>
+            {closeBar('dark')}
           </div>
         ) : null}
         <div className={`mx-auto w-full max-w-sm ${embedded ? 'px-4 pb-10' : 'p-4 py-6 pb-16'}`}>
           <div className="relative w-full max-w-full rounded-3xl border border-gray-200 bg-white/95 p-6 shadow-2xl backdrop-blur-xl">
             {embedded ? null : (
-              <button
-                type="button"
-                onClick={close}
-                className="absolute top-2 right-2 z-30 flex min-h-11 min-w-11 items-center justify-center rounded-full text-gray-400 touch-manipulation transition-all hover:bg-gray-100/50 hover:text-gray-800 active:opacity-80"
-                title={t('authPage.login.backTitle')}
-                aria-label={t('authPage.login.backTitle')}
-              >
-                <X size={20} />
-              </button>
+              <div className="hidden md:absolute md:right-2 md:top-2 md:z-30 md:block">
+                {closeBar('light')}
+              </div>
             )}
 
             <div className="mb-5 text-center">
@@ -320,7 +328,7 @@ const AccountProfile = ({ embedded = false, onBack }) => {
                             aria-label={t('authPage.account.removePhoto')}
                             className="absolute -right-1 -top-1 rounded-full border border-gray-200 bg-white p-0.5 text-gray-500 hover:text-gray-800"
                           >
-                            <X size={10} />
+                            <X size={10} className="pointer-events-none" />
                           </button>
                         </li>
                       ))}

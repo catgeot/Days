@@ -107,7 +107,7 @@ const DailyLayout = () => {
         data-logbook-mobile-header
         className={`sticky top-0 z-[100] isolate md:hidden w-full min-h-14 shrink-0 border-b border-gray-200 bg-white flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] ${
           hideMobileBlogChrome ? 'hidden' : ''
-        }`}
+        } ${profileOpen ? 'pointer-events-none' : ''}`}
       >
         <button
           type="button"

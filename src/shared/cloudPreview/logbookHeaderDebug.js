@@ -17,7 +17,13 @@ export function describeHitElement(el) {
   if (!(el instanceof Element)) return 'none';
   const profile = el.closest('[data-logbook-header-profile]');
   if (profile) return 'profile-btn';
+  if (el.closest('[data-profile-close]')) return 'profile-close-btn';
   const tag = el.tagName.toLowerCase();
+  if (tag === 'svg' || tag === 'circle' || tag === 'path') {
+    const btn = el.closest('button[data-profile-close], button[data-logbook-header-profile]');
+    if (btn?.hasAttribute('data-profile-close')) return 'profile-close-btn';
+    if (btn?.hasAttribute('data-logbook-header-profile')) return 'profile-btn';
+  }
   const cls = typeof el.className === 'string' ? el.className.split(/\s+/).slice(0, 4).join('.') : '';
   return cls ? `${tag}.${cls}` : tag;
 }
