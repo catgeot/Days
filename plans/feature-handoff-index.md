@@ -44,23 +44,23 @@
 
 | | |
 |--|--|
-| **상태** | **#14 push** · tip `133bdc68` · PR [#325](https://github.com/catgeot/Days/pull/325) (draft) · **사람 Preview** |
+| **상태** | **#15 push** · tip `4f05357b` · PR [#325](https://github.com/catgeot/Days/pull/325) (draft) · **사람 Preview** |
 | **브랜치** | `cursor/logbook-reads-af3f` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
 | **Preview** | `/qa/logbook-reads` → git Preview `/blog` (로그인 시 `?tab=public`) |
-| **금지** | view_count 직접 update · feature에 `plans/**` 커밋 |
-| **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS · DB migration `20260927120000` 적용됨 (49행 `view_count` 0) |
+| **금지** | `view_count`·`like_count`·`comment_count` 직접 update · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS · migration `20260927150000` 적용됨 (49행 `like_count`·`comment_count` 0, `view_count` 합 4 유지) |
 
 **다음 제시어**:
 
 ```
-로그북 #15, 좋아요·댓글 시스템 연동
+로그북 #16, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-27-project-log.md
 브랜치 cursor/logbook-reads-af3f · PR #325 · Preview /qa/logbook-reads
-금지: view_count 직접 update · feature에 plans/** 커밋
-작업: 리뉴얼된 피드 카드 하단 슬롯에 좋아요·댓글 수 데이터 모델 및 인터랙션 연결
+금지: view_count·like_count·comment_count 직접 update · feature에 plans/** 커밋
+작업: 공개 피드 카드 하트 토글·댓글 수, 글 하단 댓글 등록. OK면 PR #325 병합
 검증: smoke:logbook-view-count · vite build
 ```
 

@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 로그북 #15, 좋아요·댓글 연동
+
+- **세션** `로그북 #15, 좋아요·댓글 시스템 연동` · feature `cursor/logbook-reads-af3f` · tip `4f05357b` · PR [#325](https://github.com/catgeot/Days/pull/325)
+- **조치** 공개 피드 카드 하단 슬롯(읽는 시간·읽은 수 옆)에 하트·댓글 수. 하트는 로그인 후 `report_likes` 토글, 댓글 수는 글 하단 등록·삭제. 집계 컬럼은 트리거만 기록. 내 기록 탭에는 없음. 컬럼이 없으면 아이콘을 숨김.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS. migration `20260927150000_reports_likes_comments.sql` 적용됨 — 49행 `like_count`·`comment_count` 0, `view_count` 합 4 유지. 직접 `like_count` 갱신은 가드가 버리고, 좋아요 행은 집계만 올린 뒤 롤백 확인.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #16, Preview OK면 PR 병합` — 카드 하트·댓글 수와 글 하단 댓글 확인 후 PR #325.
+
 ## 팔경 활용 #73 — 영천9경 벚꽃 백리길·별별미술마을
 
 - **세션** `팔경 활용 #73, 영천 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `416b7596` · PR [#328](https://github.com/catgeot/Days/pull/328)
