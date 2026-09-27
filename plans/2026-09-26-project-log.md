@@ -2,6 +2,14 @@
 
 직전: [`2026-09-22-project-log.md`](./2026-09-22-project-log.md)
 
+## 팔경 활용 #71 — 용인8경 조비산·어비낙조
+
+- **세션** `팔경 활용 #71, 용인 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `dc828b7b` · PR [#324](https://github.com/catgeot/Days/pull/324)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 용인8경 결손 2건. 6경 조비산은 처인구 백암면 용천리 해발 294.5m(용천리·석천리·장평리·역적산). 8경 어비낙조는 이동읍 어비리 357 송전저수지(이동저수지·경기도에서 가장 큰 저수지·문의 031-274-0538). 석성산 일출·광교산·구봉산·가실벚꽃·궁평낙조와 구분. 사진은 용인시 문화관광 8경 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **26**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=yongin` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=yongin`
+- **다음** `팔경 활용 #72, 울산 결손 오버레이` — 울산 가지산 사계·울산 반구대암각화
+
 ## 팔경 활용 #70 — 화성8경 용주사 범종·입파홍암
 
 - **세션** `팔경 활용 #70, 화성 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `08046b49` · PR [#323](https://github.com/catgeot/Days/pull/323)
