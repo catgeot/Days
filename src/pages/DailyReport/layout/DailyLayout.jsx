@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
@@ -11,10 +11,10 @@ const DailyLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
-  const hideMobileBlogChrome = location.pathname.startsWith('/blog/curation');
   const mainScrollRef = useRef(null);
 
-  const isPrivateRecordDetail = (() => {
+  const hideMobileBlogChrome = (() => {
+    if (location.pathname.startsWith('/blog/curation')) return true;
     const match = location.pathname.match(/^\/blog\/([^/]+)$/);
     if (!match) return false;
     const segment = match[1];
@@ -40,15 +40,6 @@ const DailyLayout = () => {
     navigate('/');
   };
 
-  const handleMobileHeaderTap = useCallback(() => {
-    const el = mainScrollRef.current;
-    if (isPrivateRecordDetail && el && el.scrollTop > 48) {
-      el.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    handleGoHome();
-  }, [isPrivateRecordDetail]);
-
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 text-gray-900 overflow-hidden">
 
@@ -59,7 +50,7 @@ const DailyLayout = () => {
       >
         <button
           type="button"
-          onClick={handleMobileHeaderTap}
+          onClick={handleGoHome}
           className="text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors"
         >
           <Globe size={20} />

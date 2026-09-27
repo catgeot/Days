@@ -259,7 +259,7 @@ const Detail = () => {
         </div>
       )}
 
-      <div className="relative z-10 max-w-3xl mx-auto pt-12 px-4 sm:px-6">
+      <div className="relative z-10 max-w-3xl mx-auto max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-8 sm:pt-12 px-4 sm:px-6">
 
         <div className="flex justify-end items-center mb-8 flex-wrap gap-4">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
