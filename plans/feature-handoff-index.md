@@ -14,17 +14,43 @@
 
 ## 활성 목록
 
+### 명소홈 본문 무니
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `f8757bad` · draft PR [#326](https://github.com/catgeot/Days/pull/326) · **사람 Preview** |
+| **브랜치** | `cursor/scenic-mooni-b353` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
+| **Preview** | `/qa/scenic-mooni` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
+| **금지** | 10대 절경·지역 목록 본문 버튼 제거 · 축제 시트 리팩터 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-theme-spot-modal` 무니 단언 PASS · `vite build` PASS · contentId 커버리지 FAIL은 origin/main과 동일 |
+
+**다음 제시어**:
+
+```
+명소홈 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-27-project-log.md
+브랜치 cursor/scenic-mooni-b353 · PR #326 · Preview /qa/scenic-mooni
+금지: 10대 절경·지역 본문 버튼 제거 · 축제 시트 리팩터 · feature에 plans/** 커밋
+작업: Preview 경복궁 상세 — 떠 있는 무니 · 읽을거리는 영상만 · 스크롤 후 위로와 겹치지 않음. OK면 PR #326 병합
+검증: smoke:korea-theme-spot-modal · vite build PASS
+```
+
+---
+
 ### 로그북 공개 피드 읽음
 
 | | |
 |--|--|
-| **상태** | **#12 push** · tip `883f5e49` · PR [#325](https://github.com/catgeot/Days/pull/325) (draft) |
+| **상태** | **#12 push** · tip `b0d732fc` · PR [#325](https://github.com/catgeot/Days/pull/325) (draft) · migration 적용됨 |
 | **브랜치** | `cursor/logbook-reads-af3f` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
 | **Preview** | `/qa/logbook-reads` → git Preview `/blog` (로그인 시 `?tab=public`) |
 | **금지** | 좋아요·댓글 수 · `view_count` 클라 update · feature에 `plans/**` 커밋 |
-| **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS · DB migration `20260927120000` 미적용 |
+| **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS · DB migration `20260927120000` 적용됨 (49행 `view_count` 0) |
 
 **다음 제시어**:
 
@@ -34,7 +60,7 @@
 @plans/2026-09-27-project-log.md
 브랜치 cursor/logbook-reads-af3f · PR #325 · Preview /qa/logbook-reads
 금지: 좋아요·댓글 카운트 · view_count 직접 update · feature에 plans/** 커밋
-작업: migration 20260927120000 적용 확인 후, 카드에 읽는 시간·같은 장소 기록 수
+작업: 카드에 읽는 시간·같은 장소 기록 수 (view_count migration 적용됨)
 검증: smoke:logbook-view-count · vite build
 ```
 
