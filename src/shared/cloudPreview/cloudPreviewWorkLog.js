@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-27T12:30:00.000Z',
   },
   {
+    id: '2026-09-27-palgyeong-use-80-daejeon-overlay',
+    session: '팔경 활용 #80, 대전 결손 오버레이',
+    title: '대전8경 장태산',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 대전8경 결손 1건(대전 장태산)의 공공 공식 팩트 개요·주소·숲나들e 장태산자연휴양림 공식 사진을 보강했습니다. 장태산은 서구 장안로 461(1996년 8경·82ha·메타세콰이아 숲·문의 042-270-7887)입니다. 한밭수목원·보문산·식장산·대청호·유성온천과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=daejeon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T12:50:00.000Z',
+  },
+  {
     id: '2026-09-27-palgyeong-use-79-gongju-thumbs',
     session: '팔경 활용 #79, 공주 결손 오버레이',
     title: '공주10경 마곡사·무령왕릉 썸네일',

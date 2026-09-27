@@ -1786,6 +1786,11 @@ const CNGJ_MURY_2 = `${CNGJ_IMG}/TUCN_202004270541142122.jpg`;
 const CNGJ_MURY_3 = `${CNGJ_IMG}/TUCN_202004270541143563.jpg`;
 const CNGJ_MURY_HOME =
   'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_01_06/view.do?cntno=16';
+const DJ_FOREST_IMG = 'https://image.foresttrip.go.kr/frip';
+const DJ_JANGTAE = `${DJ_FOREST_IMG}/2a9ccc94-9600-487e-bcef-67c6e3f2af94.jpg`;
+const DJ_JANGTAE_2 = `${DJ_FOREST_IMG}/4606705b-c25c-48c4-b505-563698164228.jpg`;
+const DJ_JANGTAE_3 = `${DJ_FOREST_IMG}/493cd595-4e99-47d2-b096-3e53affd46db.jpg`;
+const DJ_JANGTAE_HOME = 'https://www.foresttrip.go.kr/indvz/main.do?hmpgId=ID02030106';
 const CN_TOUR_IMG = 'https://tour.chungnam.go.kr/thumbnail/trsrcn';
 const CN_SINGWAN = `${CN_TOUR_IMG}/TRSRCN_202501140412570660.JPG`;
 const CN_SINGWAN_2 = `${CN_TOUR_IMG}/TRSRCN_202605091035591187.JPG`;
@@ -3855,6 +3860,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     CNGJ_CHANG,
     [CNGJ_CHANG_2, CNGJ_CHANG_3],
     CNGJ_CHANG_HOME,
+  ),
+  'local-scenic:daejeon-palgyeong:대전장태산': localScenicPhotoOverlay(
+    '대전8경 대전 장태산은 서구 장안로 461의 장태산자연휴양림입니다. 대전광역시 공원관리사업소는 서구 장안동에 있으며, 1991년부터 1994년까지 임창봉 선생이 조성·운영하다 2002년 2월 시가 매입해 2006년 4월 25일 재개장했다고 적습니다. 구역면적은 82ha(815,855㎡)이고, 1970년대부터 조성된 국내 유일 규모의 메타세콰이아 숲이 울창해 이국적 경관과 가족 산림욕 명소로 알려져 있습니다. 숲나들e 안내는 1991년 전국 최초 민간 자연휴양림 지정, 1996년 대전 8경 지정, 2019년 국가산림문화자산, 2021~2022년 한국관광 100선 선정을 적습니다. 안평산(470.2m) 옆 산줄기에 용태을 저수지와 기암·호수 경관이 어우러지고, 대전시 깃대종 하늘다람쥐·이끼도룽뇽이 서식합니다. 입장료·주차료는 무료이며 숙박·야영은 별도 요금이고, 휴양림관리과 문의는 042-270-7887입니다. 한밭수목원·보문산·식장산·대청호·유성온천과 다른 서구 메타세콰이아 숲입니다. 사진은 숲나들e 장태산자연휴양림 공식 안내 사진입니다.',
+    '대전광역시 서구 장안로 461 (장태산자연휴양림)',
+    DJ_JANGTAE,
+    [DJ_JANGTAE_2, DJ_JANGTAE_3],
+    DJ_JANGTAE_HOME,
   ),
   'local-scenic:gongju-sipgyeong:마곡사': {
     imageUrl: CNGJ_MAGOK,

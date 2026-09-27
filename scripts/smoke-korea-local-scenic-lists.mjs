@@ -5378,6 +5378,39 @@ assert.notEqual(
   '중악단≠계룡산 썸네일',
 );
 
+const daejeonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'daejeon');
+const daejeonEight = daejeonMerged.filter((s) => s.localScenicListId === 'daejeon-palgyeong');
+assert.equal(daejeonEight.length, 8, '대전8경 8명');
+const jangtae = daejeonEight.find((s) => s.attractionName === '대전 장태산');
+assert.ok(jangtae?.overview && jangtae?.imageUrl, '대전 장태산 overlay 사진·개요');
+assert.ok(!jangtae?.contentId, '대전 장태산 JSON contentId 없음 유지');
+assert.ok(jangtae?.overview?.includes('장안로 461'), '대전 장태산 overlay 주소');
+assert.ok(jangtae?.overview?.includes('042-270-7887'), '대전 장태산 overlay 문의');
+assert.ok(jangtae?.overview?.includes('1996년'), '대전 장태산 overlay 8경 지정');
+assert.ok(jangtae?.overview?.includes('815,855'), '대전 장태산 overlay 면적');
+assert.ok(jangtae?.overview?.includes('메타세콰이아'), '대전 장태산 overlay 메타세콰이아');
+assert.ok(jangtae?.overview?.includes('한밭수목원'), '대전 장태산≠한밭수목원');
+assert.ok(jangtae?.overview?.includes('보문산'), '대전 장태산≠보문산');
+assert.ok(jangtae?.imageUrl?.includes('2a9ccc94-9600-487e-bcef-67c6e3f2af94'), '장태산 숲나들e 공식 사진');
+assert.ok(
+  jangtae?.galleryUrls?.some((u) => u.includes('4606705b-c25c-48c4-b505-563698164228')),
+  '대전 장태산 두 번째 사진',
+);
+assert.ok(jangtae?.homepage?.includes('ID02030106'), '장태산자연휴양림 숲나들e');
+const daejeonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '대전', {
+  injectLocalScenic: true,
+});
+const daejeonGlobeEight = daejeonGlobe.filter((s) => s.localScenicListId === 'daejeon-palgyeong');
+assert.equal(daejeonGlobeEight.length, 8, '대전 검색 대전8경 8행');
+assert.ok(
+  daejeonGlobe.find((s) => s.attractionName === '대전 장태산')?.overview?.includes('장안로 461'),
+  '대전 검색 장태산 개요',
+);
+assert.ok(
+  daejeonGlobe.find((s) => s.attractionName === '대전 장태산')?.imageUrl?.includes('2a9ccc94'),
+  '대전 검색 장태산 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
