@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #78 — 고성8경 마산봉설경
+
+- **세션** `팔경 활용 #78, 고성 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `430d0be9` · PR [#335](https://github.com/catgeot/Days/pull/335)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 고성8경 결손 1건. 마산봉설경은 간성읍 흘리의 제8경(진부령 인근 백두대간·금강산 1만 2천봉의 남한 제2봉·군내 대간 23.4km 미시령~향로봉·흘리 숲길 6.1km·약 2시간·산림과 033-680-3382). 경남 고성·창원 마산·울산바위·통일전망대와 구분. 사진은 고성군 문화관광 8경 공식 설경.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **14**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=goseong` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=goseong`
+- **다음** `팔경 활용 #79, 공주 결손 오버레이` — 창벽
+
 ## 로그북 #18, 여행지 분류
 
 - **세션** `로그북 #18, 여행지 분류` · feature `cursor/logbook-reads-af3f` · tip `c5a8fade` · PR [#334](https://github.com/catgeot/Days/pull/334)
