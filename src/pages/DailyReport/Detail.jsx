@@ -3,9 +3,9 @@
 // 🚨 [New] Web Share API (navigator.share) 전면 도입으로 모바일 네이티브 공유 경험(카카오톡/인스타 연동) 최적화
 // 🚨 [Safe Path] Web Share 미지원 환경(PC 등)을 위한 Clipboard Fallback(대비책) 구축
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
-import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
+import { ArrowUp, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LogbookBody from './components/LogbookBody';
@@ -14,6 +14,21 @@ import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
 import LogbookReadFacts from './components/LogbookReadFacts';
+import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
+
+function findScrollParent(el) {
+  let node = el?.parentElement;
+  while (node && node !== document.body) {
+    const style = window.getComputedStyle(node);
+    const overflowY = style.overflowY;
+    if (overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay') {
+      return node;
+    }
+    node = node.parentElement;
+  }
+  return null;
+}
 
 const Detail = () => {
   const { t } = useTranslation();
@@ -24,6 +39,13 @@ const Detail = () => {
   const [isCopied, setIsCopied] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [placeCount, setPlaceCount] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const rootRef = useRef(null);
+  const scrollParentRef = useRef(null);
+
+  const handleBack = useCallback(() => {
+    navigateAppBack(navigate, { fallback: '/blog' });
+  }, [navigate]);
 
   useEffect(() => {
     const getOneReport = async () => {
@@ -62,6 +84,35 @@ const Detail = () => {
       cancelled = true;
     };
   }, [report]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+
+    const scrollEl = findScrollParent(root) || document.documentElement;
+    scrollParentRef.current = scrollEl;
+
+    const readTop = () =>
+      scrollEl === document.documentElement
+        ? window.scrollY || document.documentElement.scrollTop || 0
+        : scrollEl.scrollTop;
+
+    const onScroll = () => setShowScrollTop(readTop() > 280);
+    onScroll();
+
+    const target = scrollEl === document.documentElement ? window : scrollEl;
+    target.addEventListener('scroll', onScroll, { passive: true });
+    return () => target.removeEventListener('scroll', onScroll);
+  }, [report]);
+
+  const scrollToTop = () => {
+    const el = scrollParentRef.current;
+    if (!el || el === document.documentElement) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    el.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleDelete = async () => {
     if (window.confirm(t('logbook.detail.deleteConfirm'))) {
@@ -193,7 +244,13 @@ const Detail = () => {
   const placeKey = logbookPlaceKey(report.location);
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
+    <div ref={rootRef} className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
+
+      <AppOutlineBackButton
+        onClick={handleBack}
+        ariaLabel={t('logbook.public.backTitle')}
+        title={t('logbook.public.backTitle')}
+      />
 
       {heroImageUrl && (
         <div className="absolute inset-0 z-0 opacity-10 transition-opacity duration-700 pointer-events-none">
@@ -202,14 +259,11 @@ const Detail = () => {
         </div>
       )}
 
-      <div className="relative z-10 max-w-3xl mx-auto pt-8 px-4 sm:px-6">
+      <div className="relative z-10 max-w-3xl mx-auto max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-8 sm:pt-12 px-4 sm:px-6">
 
-        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-          <button onClick={() => navigate('/blog')} className="text-gray-500 hover:text-gray-900 transition-colors p-2 bg-gray-100 rounded-full backdrop-blur-md border border-gray-200">
-            <ArrowLeft size={24} />
-          </button>
-
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 ml-auto">
+        <div
+          className="mb-8 flex flex-wrap items-center justify-start gap-2 sm:gap-3 max-md:pr-[3.75rem] sm:max-w-[calc(100%-3.5rem)]"
+        >
 
             {/* 🚨 [New] 직관적인 공유하기 버튼 (가장 돋보이게 처리) */}
             <button
@@ -253,7 +307,6 @@ const Detail = () => {
             <button onClick={handleDelete} className="flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-3 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium">
               <Trash2 size={16} /> <span className="hidden sm:inline">{t('logbook.detail.delete')}</span>
             </button>
-          </div>
         </div>
 
         <div className="bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm">
@@ -292,6 +345,20 @@ const Detail = () => {
         </div>
 
       </div>
+
+      <button
+        type="button"
+        aria-label={t('logbook.curationPage.scrollTop')}
+        onClick={scrollToTop}
+        className={`fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-blue-500/50 bg-blue-600 px-3.5 text-white shadow-[0_4px_18px_rgba(37,99,235,0.4)] transition-all duration-300 ${
+          showScrollTop
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
+      >
+        <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+        <span className="text-xs font-bold">{t('logbook.curationPage.scrollUp')}</span>
+      </button>
     </div>
   );
 };
