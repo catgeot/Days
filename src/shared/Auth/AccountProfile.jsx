@@ -11,6 +11,7 @@ import { useAccountProfile } from './useAccountProfile';
 import { PROFILE_PHOTO_LIMIT } from './profileAvatar';
 import { persistProfileGallery, uploadProfilePhotoFile } from './uploadProfileAvatar';
 import ProfilePhotoCount from './ProfilePhotoCount';
+import ProfilePhotoLightbox from './ProfilePhotoLightbox';
 
 const ADDABLE_PROVIDERS = ['google', 'kakao'];
 
@@ -43,6 +44,7 @@ const AccountProfile = ({ embedded = false, onBack }) => {
   const [identitiesReady, setIdentitiesReady] = useState(false);
   const [linkBusy, setLinkBusy] = useState('');
   const [linkError, setLinkError] = useState('');
+  const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
   const photoBusyRef = useRef(false);
   const photoKey = account.photos.join('\n');
   photoBusyRef.current = photoBusy;
@@ -216,7 +218,7 @@ const AccountProfile = ({ embedded = false, onBack }) => {
   return (
     <div className={embedded
       ? 'flex h-full min-h-0 w-full flex-col overflow-hidden bg-[#0a0a0a]'
-      : 'fixed inset-0 z-[80] flex flex-col overflow-hidden bg-slate-800'}
+      : 'fixed inset-0 z-[150] flex flex-col overflow-hidden bg-slate-800'}
     >
       {!embedded ? (
         <>
@@ -228,14 +230,15 @@ const AccountProfile = ({ embedded = false, onBack }) => {
       {/* overflow-y auto alone computes overflow-x to auto, so wide blur orbs roll the page sideways and trap the scroll */}
       <div className="min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
         {embedded ? (
-          <div className="sticky top-0 z-20 flex justify-end bg-[#0a0a0a] px-3 py-2">
+          <div className="pointer-events-auto sticky top-0 z-30 flex justify-end bg-[#0a0a0a]/95 px-2 py-2 backdrop-blur-sm">
             <button
               type="button"
               onClick={close}
-              className="rounded-full border border-white/10 p-1.5 text-gray-400 hover:bg-white/5 hover:text-white"
+              className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/10 text-gray-400 touch-manipulation hover:bg-white/5 hover:text-white active:opacity-80"
               title={t('authPage.login.backTitle')}
+              aria-label={t('authPage.login.backTitle')}
             >
-              <X size={18} />
+              <X size={20} />
             </button>
           </div>
         ) : null}
@@ -245,10 +248,11 @@ const AccountProfile = ({ embedded = false, onBack }) => {
               <button
                 type="button"
                 onClick={close}
-                className="absolute top-3 right-3 rounded-full p-1.5 text-gray-400 transition-all hover:bg-gray-100/50 hover:text-gray-800"
+                className="absolute top-2 right-2 z-30 flex min-h-11 min-w-11 items-center justify-center rounded-full text-gray-400 touch-manipulation transition-all hover:bg-gray-100/50 hover:text-gray-800 active:opacity-80"
                 title={t('authPage.login.backTitle')}
+                aria-label={t('authPage.login.backTitle')}
               >
-                <X size={18} />
+                <X size={20} />
               </button>
             )}
 
@@ -276,21 +280,26 @@ const AccountProfile = ({ embedded = false, onBack }) => {
                 <section className="flex flex-col items-center text-center">
                   <button
                     type="button"
-                    onClick={() => fileRef.current?.click()}
-                    disabled={photoBusy || atLimit}
-                    className="relative aspect-[5/4] max-h-72 w-full overflow-hidden rounded-3xl border border-gray-200 bg-gray-100"
-                    aria-label={t('authPage.account.changePhoto')}
+                    onClick={() => {
+                      if (cover) setPhotoViewerOpen(true);
+                      else fileRef.current?.click();
+                    }}
+                    disabled={photoBusy}
+                    className="relative aspect-[5/4] max-h-72 w-full overflow-hidden rounded-3xl border border-gray-200 bg-gray-100 touch-manipulation"
+                    aria-label={cover ? t('authPage.account.viewPhoto', { name: previewName }) : t('authPage.account.changePhoto')}
                   >
                     {cover ? (
-                      <img src={cover} alt="" className="h-full w-full object-cover" />
+                      <img src={cover} alt="" className="pointer-events-none h-full w-full object-cover" />
                     ) : (
                       <span className="flex h-full w-full items-center justify-center text-gray-400">
                         <Camera size={36} />
                       </span>
                     )}
-                    <span className="absolute top-2 right-2">
-                      <ProfilePhotoCount count={photos.length} />
-                    </span>
+                    {cover ? (
+                      <span className="pointer-events-none absolute top-2 right-2">
+                        <ProfilePhotoCount count={photos.length} />
+                      </span>
+                    ) : null}
                   </button>
                   {photos.length > 1 ? (
                     <ul className="mt-3 flex w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain px-1 pt-1 pb-1">
@@ -453,6 +462,14 @@ const AccountProfile = ({ embedded = false, onBack }) => {
           </div>
         </div>
       </div>
+      {photoViewerOpen && cover ? (
+        <ProfilePhotoLightbox
+          src={cover}
+          photos={photos}
+          name={previewName}
+          onClose={() => setPhotoViewerOpen(false)}
+        />
+      ) : null}
     </div>
   );
 };

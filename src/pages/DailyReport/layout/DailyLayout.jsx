@@ -1,11 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
-import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PenNameProvider } from '../context/PenNameContext';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
+import AccountProfile from '../../../shared/Auth/AccountProfile';
 
 const DailyLayout = () => {
   const { t } = useTranslation();
@@ -13,6 +15,15 @@ const DailyLayout = () => {
   const location = useLocation();
   const { user, avatarUrl, label } = useAccountProfile();
   const mainScrollRef = useRef(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  useEffect(() => {
+    setProfileOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!user) setProfileOpen(false);
+  }, [user]);
 
   const hideMobileBlogChrome = (() => {
     if (location.pathname.startsWith('/blog/curation')) return true;
@@ -37,7 +48,7 @@ const DailyLayout = () => {
     <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 text-gray-900 overflow-hidden">
 
       <div
-        className={`md:hidden w-full min-h-14 shrink-0 border-b border-gray-200 z-50 bg-white flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] ${
+        className={`relative z-[60] md:hidden w-full min-h-14 shrink-0 border-b border-gray-200 bg-white flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] ${
           hideMobileBlogChrome ? 'hidden' : ''
         }`}
       >
@@ -51,27 +62,40 @@ const DailyLayout = () => {
         </button>
 
         {user && (
-          <div className="flex items-center gap-3">
-            <Link to="/account" className="flex items-center gap-1.5 min-w-0 self-stretch">
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setProfileOpen(true)}
+              className="flex min-h-11 max-w-[min(100vw-7rem,14rem)] items-center gap-1.5 rounded-lg px-1 py-1 touch-manipulation active:opacity-80"
+              aria-expanded={profileOpen}
+            >
               {avatarUrl ? (
-                <img src={avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
+                <img src={avatarUrl} alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
               ) : null}
-              <span className="text-xs text-gray-500 truncate max-w-[88px]">
+              <span className="min-w-0 truncate text-xs text-gray-500">
                 {label || user?.email?.split('@')[0]}
               </span>
               <span className="shrink-0 whitespace-nowrap text-[11px] font-bold text-blue-600">
                 {t('authPage.account.open')}
               </span>
-            </Link>
+            </button>
             <button
+              type="button"
               onClick={handleLogout}
-              className="text-gray-500 hover:text-red-500 transition-colors p-1"
+              className="shrink-0 rounded-lg p-2 text-gray-500 transition-colors touch-manipulation hover:text-red-500 active:opacity-80"
             >
               <LogOut size={16} />
             </button>
           </div>
         )}
       </div>
+
+      {profileOpen && user
+        ? createPortal(
+            <AccountProfile onBack={() => setProfileOpen(false)} />,
+            document.body,
+          )
+        : null}
 
       <PenNameProvider user={user}>
         <Sidebar user={user} />

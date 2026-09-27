@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '프로필',
-  sessionNo: 4,
-  sessionPhase: '헤더 사진 숫자',
+  sessionNo: 5,
+  sessionPhase: '헤더 프로필 탭',
   branch: 'cursor/profile-a231',
   previewPath: '/blog',
   qaShareSlug: 'profile',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-profile-5-header-tap',
+    session: '프로필 #5, 헤더 프로필 탭',
+    title: '로그북 헤더 프로필·닫기 탭',
+    detail:
+      '로그북 /blog 모바일 우측 상단은 아이디와 프로필만 보이고, 프로필을 누르면 페이지 이동 없이 프로필 창이 바로 열립니다. 닫기와 사진 보기 닫기는 터치 영역을 키웠습니다. 사진 장 수는 프로필 사진을 열었을 때와 프로필 카드 사진 위에만 보입니다. Preview /qa/profile — 헤더 프로필 열기·닫기, 로고 패널 프로필 닫기, 사진 라이트박스 장 수.',
+    at: '2026-09-27T11:00:00.000Z',
+  },
   {
     id: '2026-09-27-profile-4-header-count',
     session: '프로필 #4, 헤더 사진 숫자',

@@ -254,10 +254,15 @@ assert.deepEqual(
 assert.equal(ownerProfilePublic({ profile_public: false }, { user_metadata: { profile_public: true } }), false);
 assert.equal(ownerProfilePublic(null, null), true);
 const logoPanel = readFileSync(join(root, 'src/pages/Home/components/LogoPanel.jsx'), 'utf8');
+const dailyLayout = readFileSync(join(root, 'src/pages/DailyReport/layout/DailyLayout.jsx'), 'utf8');
 const accountProfile = readFileSync(join(root, 'src/shared/Auth/AccountProfile.jsx'), 'utf8');
 assert.doesNotMatch(logoPanel, /navigate\('\/account'\)/);
 assert.match(logoPanel, /setProfileOpen\(true\)/);
 assert.match(logoPanel, /embedded/);
+assert.match(dailyLayout, /setProfileOpen\(true\)/);
+assert.match(dailyLayout, /createPortal/);
+assert.doesNotMatch(dailyLayout, /Link to="\/account"/);
+assert.match(accountProfile, /ProfilePhotoLightbox/);
 assert.match(accountProfile, /overflow-x-hidden/);
 assert.match(accountProfile, /overscroll-contain/);
 assert.match(accountProfile, /profilePublic/);
