@@ -287,6 +287,11 @@
       "permanent": false
     },
     {
+      "source": "/qa/scenic-mooni",
+      "destination": "https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
       "source": "/qa/home-korea",
       "destination": "https://www.gateo.kr/korea",
       "permanent": false
