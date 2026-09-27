@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Image as ImageIcon, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
-import imageCompression from 'browser-image-compression';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../../../shared/api/supabase';
+import { uploadProfileAvatar } from '../../../shared/Auth/uploadProfileAvatar';
 
 const SlideViewer = ({ isOpen, onClose, slides, user }) => {
   const { t } = useTranslation();
@@ -39,15 +38,9 @@ const SlideViewer = ({ isOpen, onClose, slides, user }) => {
 
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
-    if (!file) return;
+    if (!file || !user) return;
     try {
-      const options = { maxSizeMB: 3, maxWidthOrHeight: 2560, useWebWorker: true, fileType: 'image/jpeg' };
-      const compressedFile = await imageCompression(file, options);
-      const fileName = `${user.id}_${Date.now()}.jpg`;
-      const { error } = await supabase.storage.from('profiles').upload(fileName, compressedFile);
-      if (error) throw error;
-      const { data: { publicUrl } } = supabase.storage.from('profiles').getPublicUrl(fileName);
-      await supabase.auth.updateUser({ data: { avatar_url: `${publicUrl}?t=${Date.now()}` } });
+      await uploadProfileAvatar(user, file);
       alert(t('logbook.slide.avatarUpdated'));
       window.location.reload();
     } catch (error) { console.error(error); alert(t('logbook.slide.uploadFail')); }

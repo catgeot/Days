@@ -102,6 +102,32 @@
       "submit": "변경 완료",
       "successStay": "비밀번호가 변경되었습니다.",
       "successAlert": "비밀번호가 성공적으로 변경되었습니다! 다시 로그인해주세요."
+    },
+    "account": {
+      "open": "프로필",
+      "title": "프로필",
+      "subtitle": "필명, 사진, 비밀번호, 로그인 계정을 여기서 바꿉니다.",
+      "needLogin": "로그인 후 프로필을 바꿀 수 있습니다.",
+      "penName": "필명",
+      "penNameHint": "공개 로그북과 로고 패널에 이 이름이 보입니다.",
+      "save": "저장",
+      "saved": "저장했습니다.",
+      "saveFail": "필명을 저장하지 못했습니다.",
+      "viewPhoto": "{{name}} 프로필 사진",
+      "closePhoto": "프로필 사진 닫기",
+      "changePhoto": "사진 올리기",
+      "photoHint": "무니에게 보낸 질문, 로고 패널, 로그북에 이 사진이 보입니다.",
+      "photoUpdated": "프로필 사진을 바꿨습니다.",
+      "photoFail": "사진을 올리지 못했습니다.",
+      "password": "비밀번호 변경",
+      "accounts": "계정 추가",
+      "accountsHint": "같은 프로필에 Google·Kakao 로그인을 더할 수 있습니다.",
+      "connected": "연결됨",
+      "addProvider": "{{name}} 추가",
+      "email": "이메일",
+      "google": "Google",
+      "kakao": "Kakao",
+      "linkFail": "계정을 추가하지 못했습니다."
     }
   },
   "home": {

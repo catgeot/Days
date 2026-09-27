@@ -16,6 +16,7 @@ import {
   readLogbookCommentCount,
   readLogbookLikeCount,
 } from '../src/utils/logbookReactions.js';
+import { profileAvatarUrl, profileLabel } from '../src/shared/Auth/profileAvatar.js';
 import {
   countReportsByPlace,
   fetchSamePlaceCount,
@@ -224,7 +225,15 @@ assert.match(detail, /tone="article"/);
 assert.doesNotMatch(publicViewer, /update\(\s*\{[^}]*view_count/);
 assert.doesNotMatch(detail, /update\(\s*\{[^}]*view_count/);
 assert.match(recentList, /LogbookReactionSlot/);
+assert.match(recentList, /useState\('column'\)/);
+assert.doesNotMatch(recentList, /useState\('grid'\)/);
 assert.match(recentList, /viewMode === 'column'/);
+assert.equal(profileAvatarUrl({ user_metadata: { avatar_url: 'http://cdn.example/a.jpg' } }), 'https://cdn.example/a.jpg');
+assert.equal(profileAvatarUrl(''), '');
+assert.equal(profileLabel('  길리  ', { email: 'a@b.c' }), '길리');
+assert.equal(profileLabel('', { email: 'catgeot@x.com' }), 'catgeot');
+const appSource = readFileSync(join(root, 'src/App.jsx'), 'utf8');
+assert.match(appSource, /path="\/account"/);
 assert.match(recentList, /grid-cols-1 gap-5/);
 assert.match(recentList, /viewColumn/);
 assert.match(recentList, /listLogbookPlaceChips/);

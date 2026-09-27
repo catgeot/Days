@@ -102,6 +102,32 @@
       "submit": "Update password",
       "successStay": "Password updated.",
       "successAlert": "Password updated! Please sign in again."
+    },
+    "account": {
+      "open": "Profile",
+      "title": "Profile",
+      "subtitle": "Change your pen name, photo, password, and sign-in accounts here.",
+      "needLogin": "Sign in to edit your profile.",
+      "penName": "Pen name",
+      "penNameHint": "This name shows on the public logbook and in the logo panel.",
+      "save": "Save",
+      "saved": "Saved.",
+      "saveFail": "Could not save the pen name.",
+      "viewPhoto": "{{name}} profile photo",
+      "closePhoto": "Close profile photo",
+      "changePhoto": "Upload photo",
+      "photoHint": "This photo shows on your questions to MOONi, in the logo panel, and on the logbook.",
+      "photoUpdated": "Profile photo updated.",
+      "photoFail": "Could not upload the photo.",
+      "password": "Change password",
+      "accounts": "Add account",
+      "accountsHint": "Add Google or Kakao sign-in to this same profile.",
+      "connected": "Connected",
+      "addProvider": "Add {{name}}",
+      "email": "Email",
+      "google": "Google",
+      "kakao": "Kakao",
+      "linkFail": "Could not add that account."
     }
   },
   "home": {

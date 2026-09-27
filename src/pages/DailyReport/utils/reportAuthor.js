@@ -1,5 +1,6 @@
 import { supabase } from '../../../shared/api/supabase';
 import { i18n } from '../../../i18n/config';
+import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
 import { isEditorialLogbook } from '../../../utils/logbookEditorial';
 
 /** 공개 글: 프로필 닉네임이 없으면 사용자 UUID 앞 8자 */
@@ -10,22 +11,37 @@ export function reportAuthorLabel(userId, displayName) {
   return i18n.t('logbook.common.traveler');
 }
 
+function avatarColumnMissing(error) {
+  if (!error) return false;
+  return error.code === 'PGRST204' || /avatar_url/i.test(error.message || '');
+}
+
+export async function fetchAuthorProfiles(ids) {
+  if (!ids?.length) return new Map();
+  const withAvatar = await supabase
+    .from('profiles')
+    .select('id, display_name, avatar_url')
+    .in('id', ids);
+  const rows = avatarColumnMissing(withAvatar.error)
+    ? (await supabase.from('profiles').select('id, display_name').in('id', ids)).data
+    : withAvatar.data;
+  return new Map((rows || []).map((row) => [row.id, row]));
+}
+
 export async function attachAuthorLabels(rows) {
   if (!rows?.length) return rows;
   const ids = [...new Set(rows.map((r) => r.user_id).filter(Boolean))];
   if (!ids.length) return rows;
+  const byId = await fetchAuthorProfiles(ids);
 
-  const { data: profs } = await supabase
-    .from('profiles')
-    .select('id, display_name')
-    .in('id', ids);
-
-  const byId = new Map((profs || []).map((p) => [p.id, p.display_name]));
-
-  return rows.map((r) => ({
-    ...r,
-    author_label: isEditorialLogbook(r)
-      ? null
-      : reportAuthorLabel(r.user_id, byId.get(r.user_id)),
-  }));
+  return rows.map((r) => {
+    const profile = byId.get(r.user_id);
+    return {
+      ...r,
+      author_label: isEditorialLogbook(r)
+        ? null
+        : reportAuthorLabel(r.user_id, profile?.display_name),
+      author_avatar: isEditorialLogbook(r) ? '' : profileAvatarUrl(profile?.avatar_url),
+    };
+  });
 }
