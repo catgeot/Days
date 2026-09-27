@@ -9,12 +9,16 @@ import LogbookBody from './components/LogbookBody';
 import EditorialLogbookBadge from './components/EditorialLogbookBadge';
 import EditorialLogbookImageCredits from './components/EditorialLogbookImageCredits';
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
-import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
+import { isEditorialLogbook, isEditorialLogbookPublished, publicLogbookDetailPath } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
 import { claimLogbookViewSession, readLogbookViewCount, releaseLogbookViewSession } from '../../utils/logbookViewCount';
 import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
+import { logbookCommentsHref, readLogbookCommentCount, readLogbookLikeCount } from '../../utils/logbookReactions';
 import LogbookReadFacts from './components/LogbookReadFacts';
+import LogbookReactionSlot from './components/LogbookReactionSlot';
+import LogbookComments from './components/LogbookComments';
+import { useLogbookLikes } from './hooks/useLogbookLikes';
 import LogbookArticleHead from './components/LogbookArticleHead';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
@@ -57,6 +61,9 @@ const PublicViewer = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [seenCount, setSeenCount] = useState(null);
   const [placeCount, setPlaceCount] = useState(null);
+  const [commentCount, setCommentCount] = useState(null);
+  const reactionEnabled = Boolean(report) && readLogbookLikeCount(report) != null;
+  const { resolveLike, toggleLike } = useLogbookLikes(report ? [report] : [], reactionEnabled);
 
   const handleBack = useCallback(() => {
     navigateAppBack(navigate, { fallback: '/blog' });
@@ -99,6 +106,7 @@ const PublicViewer = () => {
       setReport(data);
       setSeenCount(null);
       setPlaceCount(null);
+      setCommentCount(readLogbookCommentCount(data));
       setErrorMsg('');
       recordPublicRead(data.id, setSeenCount);
 
@@ -176,6 +184,7 @@ const PublicViewer = () => {
   const viewCount = seenCount ?? readLogbookViewCount(report);
   const placeKey = logbookPlaceKey(report.location);
   const placeHref = placeKey ? `/blog?tab=public&location=${encodeURIComponent(placeKey)}` : '';
+  const likeState = resolveLike(report);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -256,6 +265,14 @@ const PublicViewer = () => {
               viewCount={viewCount}
               placeHref={placeHref}
             />
+            <LogbookReactionSlot
+              likeCount={likeState.likeCount}
+              commentCount={commentCount}
+              liked={likeState.liked}
+              pending={likeState.pending}
+              commentHref={logbookCommentsHref(publicLogbookDetailPath(report))}
+              onToggleLike={() => toggleLike(report)}
+            />
           </div>
 
           <LogbookArticleHead report={report} readerDek={editorial} />
@@ -318,6 +335,8 @@ const PublicViewer = () => {
           {editorial && !hasPlaceholders && report.images?.length ? (
             <EditorialLogbookImageCredits images={report.images} className="mt-6 border-t border-gray-100 pt-4" />
           ) : null}
+
+          <LogbookComments report={report} onCountChange={setCommentCount} />
 
           <div className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
             <p className="text-gray-500 text-sm font-medium mb-6">{t('logbook.public.ctaBody')}</p>

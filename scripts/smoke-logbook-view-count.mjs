@@ -7,6 +7,16 @@ import {
   releaseLogbookViewSession,
 } from '../src/utils/logbookViewCount.js';
 import {
+  LOGBOOK_COMMENT_MAX,
+  chunkList,
+  isLogbookReactionSchemaMissing,
+  logbookCommentsHref,
+  nextLogbookLikeState,
+  normalizeLogbookCommentBody,
+  readLogbookCommentCount,
+  readLogbookLikeCount,
+} from '../src/utils/logbookReactions.js';
+import {
   countReportsByPlace,
   fetchSamePlaceCount,
   logbookPlaceKey,
@@ -146,12 +156,59 @@ assert.match(publicViewer, /tone="article"/);
 assert.match(detail, /tone="article"/);
 assert.doesNotMatch(publicViewer, /update\(\s*\{[^}]*view_count/);
 assert.doesNotMatch(detail, /update\(\s*\{[^}]*view_count/);
+assert.match(recentList, /LogbookReactionSlot/);
+assert.match(publicViewer, /LogbookComments/);
+assert.match(publicViewer, /LogbookReactionSlot/);
+
+assert.equal(readLogbookLikeCount({ like_count: 0 }), 0);
+assert.equal(readLogbookLikeCount({ like_count: '3' }), 3);
+assert.equal(readLogbookLikeCount({}), null);
+assert.equal(readLogbookLikeCount({ like_count: -2 }), null);
+assert.equal(readLogbookCommentCount({ comment_count: 8 }), 8);
+assert.equal(readLogbookCommentCount({}), null);
+assert.deepEqual(nextLogbookLikeState({ liked: false, likeCount: 0 }), { liked: true, likeCount: 1 });
+assert.deepEqual(nextLogbookLikeState({ liked: true, likeCount: 1 }), { liked: false, likeCount: 0 });
+assert.deepEqual(nextLogbookLikeState({ liked: true, likeCount: 0 }), { liked: false, likeCount: 0 });
+assert.equal(normalizeLogbookCommentBody('  안녕  '), '안녕');
+assert.equal(normalizeLogbookCommentBody('   '), '');
+assert.equal(normalizeLogbookCommentBody('가'.repeat(LOGBOOK_COMMENT_MAX + 20)).length, LOGBOOK_COMMENT_MAX);
+assert.equal(logbookCommentsHref('/p/abc'), '/p/abc#logbook-comments');
+assert.equal(chunkList(['a', 'b', 'c'], 2).length, 2);
+assert.equal(isLogbookReactionSchemaMissing({ code: 'PGRST205' }), true);
+assert.equal(isLogbookReactionSchemaMissing({ code: '23505' }), false);
+
+const reactionsMigration = readFileSync(
+  join(root, 'supabase/migrations/20260927150000_reports_likes_comments.sql'),
+  'utf8',
+);
+assert.match(reactionsMigration, /report_likes/);
+assert.match(reactionsMigration, /report_comments/);
+assert.match(reactionsMigration, /like_count/);
+assert.match(reactionsMigration, /comment_count/);
+assert.match(reactionsMigration, /gateo\.report_reaction_counts/);
+assert.match(reactionsMigration, /report_is_reaction_target/);
+assert.doesNotMatch(reactionsMigration, /view_count\s*=/);
+assert.match(reactionsMigration, /char_length\(btrim\(body\)\) BETWEEN 1 AND 500/);
+
+const reactionClient = readFileSync(
+  join(root, 'src/pages/DailyReport/lib/logbookReactionClient.js'),
+  'utf8',
+);
+assert.match(reactionClient, /from\('report_likes'\)/);
+assert.match(reactionClient, /from\('report_comments'\)/);
+assert.doesNotMatch(reactionClient, /from\('reports'\)/);
+assert.doesNotMatch(reactionClient, /view_count/);
+assert.doesNotMatch(reactionClient, /\.update\(/);
 
 const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
 const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
 for (const key of ['readingMinutes', 'readingMinutesShort', 'readingAria', 'samePlace', 'samePlaceAria']) {
   assert.equal(typeof ko.logbook.meta[key], 'string');
   assert.equal(typeof en.logbook.meta[key], 'string');
+}
+for (const key of ['likeAria', 'unlikeAria', 'commentAria', 'commentsTitle', 'placeholder', 'submit', 'delete', 'empty', 'loginConfirm']) {
+  assert.equal(typeof ko.logbook.reactions[key], 'string');
+  assert.equal(typeof en.logbook.reactions[key], 'string');
 }
 
 console.log('smoke:logbook-view-count PASS');

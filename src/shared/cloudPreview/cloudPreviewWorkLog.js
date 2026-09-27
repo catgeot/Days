@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 14,
-  sessionPhase: '카드 디자인 리뉴얼',
+  sessionNo: 15,
+  sessionPhase: '좋아요·댓글 연동',
   branch: 'cursor/logbook-reads-af3f',
   previewPath: '/blog',
   qaShareSlug: 'logbook-reads',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-15-reactions',
+    session: '로그북 #15, 좋아요·댓글 연동',
+    title: '피드 카드 슬롯에 좋아요·댓글',
+    detail:
+      '공개 피드 카드 하단(읽는 시간·읽은 수 옆)에 하트와 댓글 수를 붙였습니다. 하트는 로그인 후 토글되고, 댓글 수는 글 하단 댓글로 이어집니다. 숫자는 반응 테이블이 올리고, 화면에서 view_count·like_count를 직접 고치지 않습니다. 컬럼이 없으면 아이콘을 숨깁니다. Preview /qa/logbook-reads — /blog 공개 피드에서 하트와 댓글 수, 글을 열어 댓글 등록.',
+    at: '2026-09-27T02:10:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-14-card-redesign',
     session: '로그북 #14, 카드 디자인 리뉴얼',

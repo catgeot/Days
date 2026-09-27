@@ -2098,6 +2098,20 @@
       "samePlace": "{{count}} at this place",
       "samePlaceAria": "{{count}} entries at this place"
     },
+    "reactions": {
+      "likeAria": "{{count}} likes",
+      "unlikeAria": "Unlike",
+      "commentAria": "{{count}} comments",
+      "commentsTitle": "Comments",
+      "placeholder": "Write a short comment",
+      "submit": "Post",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this comment?",
+      "empty": "No comments yet.",
+      "loginConfirm": "Sign in to like and comment. Go to the login page?",
+      "loginToComment": "Sign in to leave a comment.",
+      "saveFail": "Could not save. Try again in a moment."
+    },
     "calendar": {
       "month": "{{month}}/{{year}}"
     },

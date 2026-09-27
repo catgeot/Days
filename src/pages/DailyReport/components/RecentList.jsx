@@ -12,8 +12,11 @@ import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { readLogbookViewCount } from '../../../utils/logbookViewCount';
 import { countReportsByPlace, logbookReadingMinutes, samePlaceCount } from '../../../utils/logbookReadingMeta';
+import { logbookCommentsHref, readLogbookCommentCount, readLogbookLikeCount } from '../../../utils/logbookReactions';
 import EditorialLogbookBadge from './EditorialLogbookBadge';
 import LogbookReadFacts from './LogbookReadFacts';
+import LogbookReactionSlot from './LogbookReactionSlot';
+import { useLogbookLikes } from '../hooks/useLogbookLikes';
 
 const GATEO_PUBLIC_SOURCE_URL = 'https://www.gateo.kr/';
 
@@ -32,6 +35,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
 
   // Search narrows cards; same-place counts stay on the loaded feed.
   const placeCounts = useMemo(() => countReportsByPlace(reports), [reports]);
+  const reactionsEnabled = isPublicMode && reports.some((report) => readLogbookLikeCount(report) != null);
+  const { resolveLike, toggleLike } = useLogbookLikes(reports, reactionsEnabled);
 
   const isCompact = filteredReports.length > 5;
 
@@ -134,6 +139,8 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
               const viewCount = isPublicMode ? readLogbookViewCount(report) : null;
               const readingMinutes = logbookReadingMinutes(report.content);
               const placeCount = samePlaceCount(placeCounts, report.location);
+              const likeState = isPublicMode ? resolveLike(report) : { likeCount: null, liked: false, pending: false };
+              const commentCount = isPublicMode ? readLogbookCommentCount(report) : null;
 
               return (
               <div
@@ -232,8 +239,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                     </p>
                   )}
 
-                  {/* 하단 단일화 메타 행: 좌측 장소 / 우측 읽는 시간 및 통계 (향후 좋아요/댓글 확장 대비) */}
-                  <div className={`flex items-center justify-between gap-2 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-1' : 'mt-3') : (isCompact ? 'mt-auto pt-2.5 border-t border-gray-100' : 'mt-auto pt-3 border-t border-gray-100')}`}>
+                  <div className={`flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-1' : 'mt-3') : (isCompact ? 'mt-auto pt-2.5 border-t border-gray-100' : 'mt-auto pt-3 border-t border-gray-100')}`}>
                     <span className="flex items-center gap-1 truncate text-gray-500 shrink min-w-0" title={report.location}>
                       <MapPin size={12} className="text-gray-400 shrink-0" />
                       <span className="truncate">{report.location}</span>
@@ -244,6 +250,14 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                         minutes={readingMinutes}
                         placeCount={placeCount}
                         viewCount={viewCount}
+                      />
+                      <LogbookReactionSlot
+                        likeCount={likeState.likeCount}
+                        commentCount={commentCount}
+                        liked={likeState.liked}
+                        pending={likeState.pending}
+                        commentHref={logbookCommentsHref(detailPath)}
+                        onToggleLike={() => toggleLike(report)}
                       />
                     </div>
                   </div>
