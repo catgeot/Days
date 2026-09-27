@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 로그북 #17, 본문 반응 문구
+
+- **세션** `로그북 #17, 본문 반응 문구` · feature `cursor/logbook-reads-af3f` · tip `87a92125` · PR [#325](https://github.com/catgeot/Days/pull/325)
+- **조치** 카드의 조회수는 눈 대신 그래프, 하트는 누르기 전에도 붉은 테두리. 글을 열면 머리의 좋아요·댓글은 아이콘 대신 단어. 카드의 좋아요·댓글 아이콘은 유지.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #18, Preview OK면 PR 병합` — 카드 그래프·붉은 하트, 본문 좋아요·댓글 단어 확인 후 PR #325.
+
 ## 로그북 #16, 1열 그리드
 
 - **세션** `로그북 #16, 1열 그리드` · feature `cursor/logbook-reads-af3f` · tip `e908d8cc` · PR [#325](https://github.com/catgeot/Days/pull/325)
