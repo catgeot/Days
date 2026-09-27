@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `6f104728` · draft PR [#336](https://github.com/catgeot/Days/pull/336) · **사람 Preview** |
+| **상태** | **#2 push** · tip `498a2e1c` · draft PR [#336](https://github.com/catgeot/Days/pull/336) · **사람 Preview** |
 | **브랜치** | `cursor/profile-a231` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
@@ -29,12 +29,12 @@
 **다음 제시어**:
 
 ```
-프로필 #2, Preview OK면 PR 병합
+프로필 #3, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-27-project-log.md
 브랜치 cursor/profile-a231 · PR #336 · Preview /qa/profile
-금지: 헤더에 비밀번호 변경 링크를 되돌리기 · feature에 plans/** 커밋
-작업: /blog 기본은 1열. 로그인 후 프로필에서 필명·사진·비밀번호·Google/Kakao. 사진이 헤더·로고 패널·무니 질문·로그북 작성자에 보이면 PR #336 병합
+금지: 헤더에 비밀번호 변경 링크를 되돌리기 · 프로필 카드를 본문 전체 폭으로 키우기 · feature에 plans/** 커밋
+작업: 로그인 후 로고 패널은 왼쪽 프로필 카드, 오른쪽 방문한 여행사·나의 여행 기록, 아래 버킷리스트. /account 사진 영역이 더 큼. 무니 질문 옆 사진이 더 큼. 공개 글 작성자 사진을 누르면 원본. OK면 PR #336 병합
 검증: smoke:logbook-view-count · vite build
 ```
 
