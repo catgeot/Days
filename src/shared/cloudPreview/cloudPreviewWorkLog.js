@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 76,
-  sessionPhase: '장흥 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jangheung',
-  qaShareSlug: 'palgyeong-use',
+  title: '로그북',
+  sessionNo: 18,
+  sessionPhase: '여행지 분류',
+  branch: 'cursor/logbook-reads-af3f',
+  previewPath: '/blog',
+  qaShareSlug: 'logbook-reads',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-18-place-chips',
+    session: '로그북 #18, 여행지 분류',
+    title: '보관소 여행지 분류 칩',
+    detail:
+      '기록 보관소 검색 아래에 여행지 칩을 붙였습니다. 전체와 여행지마다 글 수가 보이고, 칩을 누르면 그 장소 글만 남습니다. 다시 누르거나 전체를 누르면 돌아옵니다. 위치 미상은 칩에 넣지 않습니다. 글이 늘면 칩은 가로로 스크롤됩니다. Preview /qa/logbook-reads — /blog 공개 피드에서 여행지 칩을 눌러 카드가 그 장소만 남는지.',
+    at: '2026-09-27T06:40:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-76-jangheung-overlay',
     session: '팔경 활용 #76, 장흥 결손 오버레이',

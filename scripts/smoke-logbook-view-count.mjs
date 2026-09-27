@@ -19,8 +19,10 @@ import {
 import {
   countReportsByPlace,
   fetchSamePlaceCount,
+  listLogbookPlaceChips,
   logbookPlaceKey,
   logbookReadingMinutes,
+  reportMatchesLogbookPlace,
   samePlaceCount,
 } from '../src/utils/logbookReadingMeta.js';
 
@@ -85,6 +87,22 @@ const placeCounts = countReportsByPlace([
 assert.equal(samePlaceCount(placeCounts, '파리'), 2);
 assert.equal(samePlaceCount(placeCounts, '파리 근교'), 1);
 assert.equal(samePlaceCount(placeCounts, '위치 미상'), null);
+
+const placeChips = listLogbookPlaceChips([
+  { location: '방콕' },
+  { location: '파리' },
+  { location: '파리 ' },
+  { location: '위치 미상' },
+  { location: 'Location unknown' },
+]);
+assert.deepEqual(placeChips, [
+  { name: '파리', count: 2 },
+  { name: '방콕', count: 1 },
+]);
+assert.equal(reportMatchesLogbookPlace({ location: '파리 ' }, '파리'), true);
+assert.equal(reportMatchesLogbookPlace({ location: '파리 근교' }, '파리'), false);
+assert.equal(reportMatchesLogbookPlace({ location: '위치 미상' }, ''), true);
+assert.equal(reportMatchesLogbookPlace({ location: '위치 미상' }, '파리'), false);
 
 function queryChain(result) {
   const api = {
@@ -162,6 +180,9 @@ assert.match(recentList, /LogbookReactionSlot/);
 assert.match(recentList, /viewMode === 'column'/);
 assert.match(recentList, /grid-cols-1 gap-5/);
 assert.match(recentList, /viewColumn/);
+assert.match(recentList, /listLogbookPlaceChips/);
+assert.match(recentList, /logbook\.recentList\.placeGroup/);
+assert.match(recentList, /logbook\.recentList\.placeAll/);
 assert.match(publicViewer, /LogbookComments/);
 assert.match(publicViewer, /LogbookReactionSlot/);
 assert.match(publicViewer, /tone="article"/);
@@ -213,6 +234,10 @@ assert.doesNotMatch(reactionClient, /\.update\(/);
 
 const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
 const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
+for (const key of ['placeGroup', 'placeAll', 'noPlaceResults']) {
+  assert.equal(typeof ko.logbook.recentList[key], 'string');
+  assert.equal(typeof en.logbook.recentList[key], 'string');
+}
 for (const key of ['readingMinutes', 'readingMinutesShort', 'readingAria', 'samePlace', 'samePlaceAria']) {
   assert.equal(typeof ko.logbook.meta[key], 'string');
   assert.equal(typeof en.logbook.meta[key], 'string');

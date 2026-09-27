@@ -8,6 +8,7 @@ import AICurationCard from './components/AICurationCard';
 import CalendarCard from './components/CalendarCard';
 import RecentList from './components/RecentList';
 import { useDashboardData } from './hooks/useDashboardData';
+import { reportMatchesLogbookPlace } from '../../utils/logbookReadingMeta';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -43,9 +44,7 @@ const Dashboard = () => {
   } = useDashboardData() || {};
 
   // URL 파라미터가 있을 경우 리포트 필터링
-  const filteredReports = locationFilter
-    ? (reports || []).filter(r => r.location && r.location.includes(locationFilter))
-    : (reports || []);
+  const filteredReports = (reports || []).filter((report) => reportMatchesLogbookPlace(report, locationFilter));
 
   const handleWriteClick = () => {
     // !user 체크 시, Dashboard 마운트 초기에는 user가 null일 수 있으므로 localStorage의 토큰 등으로 교차 검증하거나
@@ -181,7 +180,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        <RecentList reports={filteredReports} loading={loading} isPublicMode={isPublicMode} />
+        <RecentList reports={reports || []} loading={loading} isPublicMode={isPublicMode} />
 
       </div>
     </div>

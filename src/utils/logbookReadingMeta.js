@@ -48,6 +48,21 @@ export function samePlaceCount(counts, location) {
   return n;
 }
 
+/** Archive chips: one row per saved place, busiest first. Unknown places are omitted. */
+export function listLogbookPlaceChips(reports) {
+  const counts = countReportsByPlace(reports);
+  return [...counts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'ko'));
+}
+
+/** Empty filter keeps every row. A chip matches the normalized place only. */
+export function reportMatchesLogbookPlace(report, locationFilter) {
+  const filter = logbookPlaceKey(locationFilter);
+  if (!filter) return true;
+  return logbookPlaceKey(report?.location) === filter;
+}
+
 function ilikeContains(key) {
   return `%${key.replace(/[\\%_]/g, (ch) => `\\${ch}`)}%`;
 }
