@@ -1708,6 +1708,15 @@ const UR_HOAM_GATE = `${UR_HOAM}/img_map_pho01.jpg`;
 const UR_HOAM_ANCHAE = `${UR_HOAM}/img_map_pho02.jpg`;
 const UR_HOAM_BACK = `${UR_HOAM}/img_map_pho09.jpg`;
 const UR_HOAM_HOME = 'https://www.hoamfoundation.org/kor/hoam/hoam_map.asp';
+const JH_IMG = 'https://jangheung.grandculture.net/Image?localName=jangheung&id=';
+const JH_SEON = `${JH_IMG}GC097P02280`;
+const JH_SEON_2 = `${JH_IMG}GC097P02281`;
+const JH_SEON_3 = `${JH_IMG}GC097P02283`;
+const JH_SEON_HOME = 'https://jangheung.grandculture.net/jangheung/toc/GC09700234';
+const JH_SKY = `${JH_IMG}GC097P02085`;
+const JH_SKY_2 = `${JH_IMG}GC097P02087`;
+const JH_SKY_3 = `${JH_IMG}GC097P02088`;
+const JH_SKY_HOME = 'https://jangheung.grandculture.net/jangheung/toc/GC09700349';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3729,6 +3738,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     UR_HOAM_GATE,
     [UR_HOAM_ANCHAE, UR_HOAM_BACK],
     UR_HOAM_HOME,
+  ),
+  'local-scenic:jangheung-gugyeong:선학동마을': localScenicPhotoOverlay(
+    '장흥9경 제7경 선학동마을은 회진면 가학회진로 1212(회진리 164-3)입니다. 디지털장흥문화대전은 회진면에서 가장 높은 공지산(관음봉) 아래라 산저(山低)라 불리다가, 이청준의 「선학동 나그네」에 묘사된 뒤 선학동(仙鶴洞)으로 바꿨고, 2005년 회진리 선학동마을로 개설되었다고 적습니다. 포구에 물이 차면 산 그림자가 바다에 비쳐 학이 날아오는 듯했다고 합니다. 2022년 12월 현재 46가구 80명입니다. 마을 어귀에는 임권택 감독이 같은 소설을 영화화한 『천년학』 세트장 주막이 남아 있습니다. 2006년부터 주변 23㏊(약 7만 평) 계단식 논밭에 봄 유채·가을 메밀을 심고, 2010년부터 매년 10월경 선학동메밀꽃축제를 엽니다. 2012년 경관 우수 마을, 2014년 전라남도 경관 우수 시범 마을, 2015년 새뜰마을, 2017년 장흥 9경, 2024년 UN관광청 최우수 관광 마을 후보로 선정되었습니다. 축제 문의는 061-860-8350입니다. 진목마을 이청준 생가·8경 소등섬·1경 편백숲 우드랜드·양주 장흥관광지와 다른 회진면 마을입니다. 사진은 디지털장흥문화대전 선학동마을 공식 사진입니다.',
+    '전라남도 장흥군 회진면 가학회진로 1212 (회진리 164-3, 선학동마을)',
+    JH_SEON,
+    [JH_SEON_2, JH_SEON_3],
+    JH_SEON_HOME,
+  ),
+  'local-scenic:jangheung-gugyeong:하늘빛수목정원': localScenicPhotoOverlay(
+    '장흥9경 제9경 하늘빛수목정원은 용산면 장흥대로 2746(어산리 383-4)입니다. 디지털장흥문화대전은 장흥읍과 용산면 경계 함지봉 산자락의 민간 정원이고, 정남진 장흥에서 천관산 방향으로 8㎞ 지점의 치유의 숲이라고 적습니다. 2019년 1월 1일 전라남도 제8호·전국 22번째 민간 정원으로 지정되었습니다. 명품 정원은 1만여 평(3만 3,058㎡), 편백나무 산림은 2,000여 평(6,612㎡)이고, 조경수 300여 종과 지피 식물·야생화 500여 종이 있습니다. 이용 시간은 오전 9시부터 오후 6시까지이고 입장료가 있으며 문의는 061-862-2000입니다. 4월 튤립축제와 10월 향기축제를 엽니다. 1경 정남진 편백숲 우드랜드·완도수목원·구례수목원과 다른 용산면 민간 정원입니다. 사진은 디지털장흥문화대전 하늘빛수목정원 정문 공식 사진입니다.',
+    '전라남도 장흥군 용산면 장흥대로 2746 (어산리 383-4, 하늘빛수목정원)',
+    JH_SKY,
+    [JH_SKY_2, JH_SKY_3],
+    JH_SKY_HOME,
   ),
 };
 
