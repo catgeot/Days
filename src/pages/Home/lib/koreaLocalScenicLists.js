@@ -1656,6 +1656,17 @@ const HS_HONG = `${HS_GEO}/j9_4.png`;
 const HS_HONG_2 = `${HS_GEO}/j9_0.png`;
 const HS_HONG_3 = `${HS_GEO}/j9_1.png`;
 const HS_HONG_HOME = 'https://tour.hscity.go.kr/geopark/geoInfo/j9.jsp';
+const YI_IMG = 'https://www.yongin.go.kr/resources/user/yitour/img/content';
+const YI_JOBI = `${YI_IMG}/01020106_1.jpg`;
+const YI_JOBI_2 = `${YI_IMG}/01020106_2.jpg`;
+const YI_JOBI_3 = `${YI_IMG}/01020106_3.jpg`;
+const YI_JOBI_HOME =
+  'https://www.yongin.go.kr/home/yitour/ytour01/yttour02/yttourmn01_05.jsp';
+const YI_EOBI = `${YI_IMG}/01020108_2.jpg`;
+const YI_EOBI_2 = `${YI_IMG}/01020108_3.jpg`;
+const YI_EOBI_3 = `${YI_IMG}/01020108_4.jpg`;
+const YI_EOBI_HOME =
+  'https://www.yongin.go.kr/home/yitour/ytour01/yttour02/yttourmn01_07.jsp';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3607,6 +3618,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     HS_HONG,
     [HS_HONG_2, HS_HONG_3],
     HS_HONG_HOME,
+  ),
+  'local-scenic:yongin-palgyeong:조비산': localScenicPhotoOverlay(
+    '용인8경 제6경 조비산은 용인시 문화관광이 조비산 조망으로 소개하는 산입니다. 조비산(鳥飛山)은 새가 나는 형상이고, 해발 294.5m로 처인구 백암면 용천리·석천리·장평리에 접합니다. 넓은 들녘 가운데 봉우리 하나가 돌을 이고 선 듯하고, 가파르지만 높지 않으며 정상부가 한쪽으로 기운 듯합니다. 늦가을 사방이 트인 정상에서 내려다보는 황금 들녘을 용인 최고의 전원 풍경으로 둡니다. 다른 산과 달리 머리를 남쪽으로 두고 있어 역적산이라고도 불렸습니다. 주소는 처인구 백암면 용천리입니다. 1경 석성산 일출·2경 광교산 사계·처인구 구봉산 등산로와 다른 백암 조망입니다. 사진은 용인시 문화관광 8경 공식 사진입니다.',
+    '경기도 용인시 처인구 백암면 용천리 (조비산)',
+    YI_JOBI,
+    [YI_JOBI_2, YI_JOBI_3],
+    YI_JOBI_HOME,
+  ),
+  'local-scenic:yongin-palgyeong:어비낙조': localScenicPhotoOverlay(
+    '용인8경 제8경 어비낙조는 이동읍 송전저수지의 해 질 녘 노을입니다. 용인시 문화관광은 저수지 수면과 들판을 붉게 물들이는 풍경이라 하고, 지도에는 이동저수지로도 표기되며 수몰된 마을 어비리를 기억하는 사람들이 어비리 저수지라고도 불러 어비낙조가 되었다고 적습니다. 일교차가 큰 계절에는 버드나무 사이로 물안개가 피어오릅니다. 용인시 체험 안내는 주소를 이동읍 어비리 357로 두고, 송전리에 있어 송전저수지라고도 하며 경기도에서 가장 큰 저수지라고 적습니다. 문의는 031-274-0538입니다. 1경 석성산 일출·7경 가실벚꽃·화성8경 궁평낙조·안양 망해암 일몰과 다른 이동읍 노을입니다. 사진은 용인시 문화관광 8경 공식 사진입니다.',
+    '경기도 용인시 처인구 이동읍 어비리 357 (송전저수지·이동저수지)',
+    YI_EOBI,
+    [YI_EOBI_2, YI_EOBI_3],
+    YI_EOBI_HOME,
   ),
 };
 

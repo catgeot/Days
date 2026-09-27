@@ -4786,6 +4786,75 @@ assert.ok(
   '화성 검색 6경 입파홍암 썸네일',
 );
 
+const yonginMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yongin');
+const yonginEight = yonginMerged.filter((s) => s.localScenicListId === 'yongin-palgyeong');
+assert.equal(yonginEight.length, 8, '용인8경 8명');
+assert.equal(yonginEight[0]?.groupTitle, '용인 팔경');
+const yonginDeficitNames = ['조비산', '어비낙조'];
+const yonginDeficit = yonginEight.filter((s) => yonginDeficitNames.includes(s.attractionName));
+assert.equal(yonginDeficit.length, 2, '용인8경 결손 2명');
+assert.ok(
+  yonginDeficit.every((s) => s.overview && s.imageUrl),
+  '용인 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  yonginDeficit.every((s) => !s.contentId),
+  '용인 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yonginDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '조비산·어비낙조 썸네일 다름',
+);
+const yiJobi = resolveLocalScenicListSpotById('local-scenic:yongin-palgyeong:조비산');
+assert.ok(yiJobi?.overview && yiJobi?.imageUrl, '용인 조비산 overlay 사진·개요');
+assert.ok(!yiJobi?.contentId, '용인 조비산 JSON contentId 없음 유지');
+assert.ok(yiJobi?.overview?.includes('용천리'), '용인 조비산 overlay 주소');
+assert.ok(yiJobi?.overview?.includes('294.5m'), '용인 조비산 overlay 해발');
+assert.ok(yiJobi?.overview?.includes('역적산'), '용인 조비산 overlay 옛 이름');
+assert.ok(yiJobi?.overview?.includes('석성산'), '용인 조비산≠석성산');
+assert.ok(yiJobi?.overview?.includes('광교산'), '용인 조비산≠광교산');
+assert.ok(yiJobi?.imageUrl?.includes('01020106_1.jpg'), '용인 조비산 시 공식 사진');
+assert.ok(
+  yiJobi?.galleryUrls?.some((u) => u.includes('01020106_2.jpg')),
+  '용인 조비산 추가 사진',
+);
+assert.ok(yiJobi?.homepage?.includes('yttourmn01_05.jsp'), '용인 조비산 공식 홈');
+const yiEobi = resolveLocalScenicListSpotById('local-scenic:yongin-palgyeong:어비낙조');
+assert.ok(yiEobi?.overview && yiEobi?.imageUrl, '용인 어비낙조 overlay 사진·개요');
+assert.ok(!yiEobi?.contentId, '용인 어비낙조 JSON contentId 없음 유지');
+assert.ok(yiEobi?.overview?.includes('어비리 357'), '용인 어비낙조 overlay 주소');
+assert.ok(yiEobi?.overview?.includes('송전저수지'), '용인 어비낙조 overlay 저수지');
+assert.ok(yiEobi?.overview?.includes('031-274-0538'), '용인 어비낙조 overlay 문의');
+assert.ok(yiEobi?.overview?.includes('궁평낙조'), '용인 어비낙조≠궁평낙조');
+assert.ok(yiEobi?.overview?.includes('가실벚꽃'), '용인 어비낙조≠가실벚꽃');
+assert.ok(yiEobi?.imageUrl?.includes('01020108_2.jpg'), '용인 어비낙조 시 공식 사진');
+assert.ok(
+  yiEobi?.galleryUrls?.some((u) => u.includes('01020108_3.jpg')),
+  '용인 어비낙조 추가 사진',
+);
+assert.ok(yiEobi?.homepage?.includes('yttourmn01_07.jsp'), '용인 어비낙조 공식 홈');
+assert.notEqual(yiJobi?.imageUrl, yiEobi?.imageUrl, '조비산·어비낙조 썸네일 다름');
+assert.ok(!yiEobi?.imageUrl?.includes('01020106'), '어비낙조≠조비산 사진');
+assert.ok(!yiJobi?.imageUrl?.includes('01020108'), '조비산≠어비낙조 사진');
+const yonginGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '용인', {
+  injectLocalScenic: true,
+});
+const yonginGlobeEight = yonginGlobe.filter((s) => s.localScenicListId === 'yongin-palgyeong');
+assert.equal(yonginGlobeEight.length, 8, '용인 검색 용인8경 8행');
+assert.ok(
+  yonginGlobe.find((s) => s.attractionName === '조비산')?.overview?.includes('294.5m'),
+  '용인 검색 6경 조비산 개요',
+);
+assert.ok(
+  yonginGlobe.find((s) => s.attractionName === '조비산')?.imageUrl?.includes('01020106_1.jpg'),
+  '용인 검색 6경 조비산 썸네일',
+);
+assert.ok(
+  yonginGlobe.find((s) => s.attractionName === '어비낙조')?.imageUrl?.includes('01020108_2.jpg'),
+  '용인 검색 8경 어비낙조 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
