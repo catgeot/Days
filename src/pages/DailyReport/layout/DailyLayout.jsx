@@ -92,8 +92,14 @@ const DailyLayout = () => {
   const handleLogout = async () => {
     if (window.confirm(t('logbook.common.logoutConfirm'))) {
       await supabase.auth.signOut();
-      navigate('/');
+      setProfileOpen(false);
     }
+  };
+
+  const handleLogin = () => {
+    navigate('/auth/login', {
+      state: { from: `${location.pathname}${location.search}` },
+    });
   };
 
   const handleGoHome = () => {
@@ -118,34 +124,46 @@ const DailyLayout = () => {
           <span className="text-sm font-bold tracking-wider">GATEO</span>
         </button>
 
-        {user && (
-          <div className="flex items-center gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
+          {user ? (
+            <>
+              <button
+                type="button"
+                data-logbook-header-profile
+                onClick={openProfile}
+                className="relative z-[1] flex min-h-11 max-w-[min(100vw-7rem,14rem)] items-center gap-1.5 rounded-lg px-1 py-1 touch-manipulation active:opacity-80"
+                aria-expanded={profileOpen}
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
+                ) : null}
+                <span className="min-w-0 truncate text-xs text-gray-500">
+                  {label || user?.email?.split('@')[0]}
+                </span>
+                <span className="shrink-0 whitespace-nowrap text-[11px] font-bold text-blue-600">
+                  {t('authPage.account.open')}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="shrink-0 rounded-lg p-2 text-gray-500 transition-colors touch-manipulation hover:text-red-500 active:opacity-80"
+                aria-label={t('home.logoPanel.signOut')}
+              >
+                <LogOut size={16} />
+              </button>
+            </>
+          ) : (
             <button
               type="button"
-              data-logbook-header-profile
-              onClick={openProfile}
-              className="relative z-[1] flex min-h-11 max-w-[min(100vw-7rem,14rem)] items-center gap-1.5 rounded-lg px-1 py-1 touch-manipulation active:opacity-80"
-              aria-expanded={profileOpen}
+              data-logbook-header-login
+              onClick={handleLogin}
+              className="min-h-11 shrink-0 rounded-lg px-2 py-1 text-[11px] font-bold text-blue-600 touch-manipulation active:opacity-80"
             >
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
-              ) : null}
-              <span className="min-w-0 truncate text-xs text-gray-500">
-                {label || user?.email?.split('@')[0]}
-              </span>
-              <span className="shrink-0 whitespace-nowrap text-[11px] font-bold text-blue-600">
-                {t('authPage.account.open')}
-              </span>
+              {t('logbook.common.loginSignup')}
             </button>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="shrink-0 rounded-lg p-2 text-gray-500 transition-colors touch-manipulation hover:text-red-500 active:opacity-80"
-            >
-              <LogOut size={16} />
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {profileOpen && user
