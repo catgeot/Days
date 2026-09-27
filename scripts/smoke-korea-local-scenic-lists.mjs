@@ -11,6 +11,7 @@ import {
   resolveCityAttractionHub,
   resolveHubAttraction,
   attractionToPlacePin,
+  hubToSuggestion,
 } from '../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   listKoreaLocalScenicLists,
@@ -100,17 +101,17 @@ assert.ok(
   'searchSuggestions expands list cluster',
 );
 assert.ok(
-  searchSrc.includes('pushLocalScenicMembersFirst'),
-  'searchSuggestions prepends palgyeong members before hub cluster',
+  searchSrc.includes('exactHubCityQuery'),
+  'searchSuggestions distinguishes bare hub city query from hub alias',
 );
-{
-  const idxMembers = searchSrc.indexOf('pushLocalScenicMembersFirst(exactHub');
-  const idxSpots = searchSrc.indexOf('const spotHits');
-  assert.ok(
-    idxMembers >= 0 && idxSpots >= 0 && idxMembers < idxSpots,
-    '문경 팔경 members are pushed before travel spots',
-  );
-}
+assert.ok(
+  searchSrc.includes('pushLocalScenicMembersFirst(exactHub, out, seen, scenicLists)'),
+  'searchSuggestions still expands palgyeong members for hub queries',
+);
+assert.ok(
+  searchSrc.includes('skipHub: true'),
+  'hub city exact query avoids duplicate hub card after palgyeong block',
+);
 assert.ok(
   searchSrc.includes('slice(0, 24)'),
   'searchSuggestions raises result cap for palgyeong group',
@@ -200,6 +201,12 @@ assert.equal(
   'display title 문경 팔경 (not SSOT 문경8경)',
 );
 assert.ok(listsForHub('mungyeong').length >= 1, 'listsForHub mungyeong');
+
+const danyangHub = resolveCityAttractionHub('단양');
+assert.ok(
+  resolveSearchScenicMedia(hubToSuggestion(danyangHub)).imageUrl,
+  '단양 hub 도시 카드 탐색 썸네일',
+);
 
 const memberRows = listsForHub('mungyeong').flatMap((list) =>
   (list.members || [])
@@ -5264,6 +5271,111 @@ assert.ok(
 assert.ok(
   goseongGlobe.find((s) => s.attractionName === '마산봉설경')?.imageUrl?.includes('TUCN_201812110649330460'),
   '고성 검색 마산봉설경 썸네일',
+);
+
+const gongjuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gongju');
+const gongjuTen = gongjuMerged.filter((s) => s.localScenicListId === 'gongju-sipgyeong');
+assert.equal(gongjuTen.length, 10, '공주10경 10명');
+const changbyeok = gongjuTen.find((s) => s.attractionName === '창벽');
+assert.ok(changbyeok?.overview && changbyeok?.imageUrl, '창벽 overlay 사진·개요');
+assert.ok(!changbyeok?.contentId, '창벽 JSON contentId 없음 유지');
+assert.ok(changbyeok?.overview?.includes('마암리 산4-4'), '창벽 overlay 주소');
+assert.ok(changbyeok?.overview?.includes('041-840-2836'), '창벽 overlay 문의');
+assert.ok(changbyeok?.overview?.includes('277'), '창벽 overlay 해발');
+assert.ok(changbyeok?.overview?.includes('100m'), '창벽 overlay 절벽 폭');
+assert.ok(changbyeok?.overview?.includes('4.3'), '창벽 overlay 산행');
+assert.ok(changbyeok?.overview?.includes('월성산'), '창벽≠월성산');
+assert.ok(changbyeok?.overview?.includes('청벽'), '창벽 이칭 청벽');
+assert.ok(changbyeok?.imageUrl?.includes('TUCN_202004220935549330'), '창벽 공주시 절벽 사진');
+assert.ok(
+  changbyeok?.galleryUrls?.some((u) => u.includes('TUCN_202004220935550071')),
+  '창벽 두 번째 사진',
+);
+assert.ok(changbyeok?.homepage?.includes('cntno=57'), '창벽 공주시 창벽산');
+const gongjuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '공주', {
+  injectLocalScenic: true,
+});
+const gongjuGlobeTen = gongjuGlobe.filter((s) => s.localScenicListId === 'gongju-sipgyeong');
+assert.equal(gongjuGlobeTen.length, 10, '공주 검색 공주10경 10행');
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '창벽')?.overview?.includes('마암리 산4-4'),
+  '공주 검색 창벽 개요',
+);
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '창벽')?.imageUrl?.includes('TUCN_202004220935549330'),
+  '공주 검색 창벽 썸네일',
+);
+const magoksa = gongjuTen.find((s) => s.attractionName === '마곡사');
+const muryeong = gongjuTen.find((s) => s.attractionName === '무령왕릉');
+assert.equal(magoksa?.contentId, '125894', '마곡사 JSON contentId 유지');
+assert.equal(muryeong?.contentId, '126681', '무령왕릉 JSON contentId 유지');
+assert.ok(magoksa?.imageUrl?.includes('TUCN_202004270543350711'), '마곡사 공주시 전각 사진');
+assert.ok(muryeong?.imageUrl?.includes('TUCN_202004270541140631'), '무령왕릉 공주시 봉분 사진');
+assert.notEqual(magoksa?.imageUrl, muryeong?.imageUrl, '마곡사·무령왕릉 썸네일 다름');
+assert.ok(
+  resolveLocalScenicRowFirstImage(magoksa, new Map())?.includes('TUCN_202004270543350711'),
+  '마곡사 목록 행은 Tour firstimage 없이 공식 사진',
+);
+assert.ok(
+  resolveLocalScenicRowFirstImage(muryeong, new Map())?.includes('TUCN_202004270541140631'),
+  '무령왕릉 목록 행은 Tour firstimage 없이 공식 사진',
+);
+assert.ok(magoksa?.homepage?.includes('cntno=25'), '마곡사 공주시 10경');
+assert.ok(muryeong?.homepage?.includes('cntno=16'), '무령왕릉 공주시 10경');
+assert.ok(
+  gongjuGlobe.find((s) => s.attractionName === '무령왕릉')?.imageUrl?.includes('TUCN_202004270541140631'),
+  '공주 검색 무령왕릉 썸네일',
+);
+const cheongbyeokThumb = lookupLocalScenicPhotoByContentId('2755172');
+assert.ok(
+  cheongbyeokThumb?.imageUrl?.includes('TUCN_202004220935549330'),
+  '청벽산 검색 행 공주시 절벽 사진',
+);
+assert.ok(cheongbyeokThumb?.homepage?.includes('cntno=57'), '청벽산 공주시 창벽산');
+assert.equal(
+  resolveSearchScenicMedia({
+    hubId: 'gongju',
+    name: '청벽산',
+    contentId: '2755172',
+    addr1: '충청남도 공주시 반포면 마암리 산 4-4',
+  }).imageUrl,
+  cheongbyeokThumb.imageUrl,
+  '검색「공주」청벽산 썸네일',
+);
+const singwan = listKoreaScenicSpots().find((s) => s.id === 'geumgang-singwan-park');
+assert.equal(singwan?.contentId, '2756156', '금강신관공원 contentId 유지');
+assert.ok(!singwan?.imageUrl, '금강신관공원 JSON imageUrl 공란 유지');
+const singwanThumb = lookupLocalScenicPhotoByContentId('2756156');
+assert.ok(
+  singwanThumb?.imageUrl?.includes('TRSRCN_202501140412570660'),
+  '금강신관공원 충남관광 강변 사진',
+);
+assert.ok(singwanThumb?.homepage?.includes('trsrcnNo=208'), '금강신관공원 충남관광');
+assert.equal(
+  resolveSearchScenicMedia({
+    hubId: 'gongju',
+    name: '금강신관공원',
+    contentId: '2756156',
+  }).imageUrl,
+  singwanThumb.imageUrl,
+  '지역 대표 명소 금강신관공원 썸네일',
+);
+assert.ok(
+  scenicPageSrc.includes('applyLocalScenicContentIdThumb(spot)'),
+  '허브 대표 명소 목록이 contentId 썸네일을 쓴다',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('1956330')?.imageUrl?.includes('TRSRCN_202501060339307250'),
+  '명탄서원 충남관광 현판 사진',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127239')?.imageUrl?.includes('GC017P00956'),
+  '중악단 디지털공주문화대전 본전 사진',
+);
+assert.notEqual(
+  lookupLocalScenicPhotoByContentId('127239')?.imageUrl,
+  gongjuTen.find((s) => s.attractionName === '계룡산')?.imageUrl,
+  '중악단≠계룡산 썸네일',
 );
 
 const extra = process.argv.slice(2);

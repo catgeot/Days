@@ -2,11 +2,20 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #80 — 대전8경 장태산
+
+- **세션** `팔경 활용 #80, 대전 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `cc7d5ea0` · PR [#339](https://github.com/catgeot/Days/pull/339)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 대전8경 결손 1건. 대전 장태산은 서구 장안로 461 장태산자연휴양림(1996년 8경·82ha·메타세콰이아 숲·1991 최초 민간 휴양림·2006.4.25 재개장·문의 042-270-7887). 한밭수목원·보문산·식장산·대청호·유성온천과 구분. 사진은 숲나들e 공식 안내 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **12**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=daejeon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=daejeon`
+- **다음** `팔경 활용 #81, 태안 결손 오버레이` — 안흥성
+
 ## 팔경 활용 #79 — 공주10경 창벽
 
-- **세션** `팔경 활용 #79, 공주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `d6e03d1c` · PR [#339](https://github.com/catgeot/Days/pull/339)
+- **세션** `팔경 활용 #79, 공주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `b8a23d0f` · PR [#339](https://github.com/catgeot/Days/pull/339)
 - **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 공주10경 결손 1건. 창벽은 반포면 마암리 산4-4의 창벽산(청벽산, 폭 100m·높이 25m·해발 277m·산행 4.3km·문의 041-840-2836). 신기동 월성산·금강 물길·계룡산·석장리와 구분. 사진은 공주시 문화관광 창벽산 공식 사진.
-- **QA** 마곡사·무령왕릉은 contentId(`125894`·`126681`)를 유지하고 Tour firstimage가 비어 아이콘이었다. 공주시 10경 공식 사진(마곡사 전각·무령왕릉 봉분)을 썸네일로 연결. tip `d6e03d1c`.
+- **QA** 마곡사·무령왕릉은 contentId(`125894`·`126681`)를 유지하고 Tour firstimage가 비어 아이콘이었다. 공주시 10경 공식 사진(마곡사 전각·무령왕릉 봉분)을 썸네일로 연결.
+- **QA** 팔경 밖 공주 권역 Tour firstimage 공란 4건. 청벽산 `2755172`(마암리 산 4-4, 창벽과 같은 공주시 절벽 사진)·금강신관공원 `2756156`(지역 대표 명소, 충남관광 강변·야경, JSON imageUrl 공란 유지)·명탄서원 `1956330`(충남관광 현판)·계룡산 중악단 `127239`(디지털공주문화대전 본전, 계룡산 10경과 다른 사진). JSON contentId·팔경 명단 변경 없음. tip `b8a23d0f`.
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **13**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=gongju` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=gongju`
 - **다음** `팔경 활용 #80, 대전 결손 오버레이` — 대전 장태산
