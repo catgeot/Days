@@ -2,6 +2,22 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #74 — 청도 관광 9경 새마을운동발상지·섶마리한옥마을
+
+- **세션** `팔경 활용 #74, 청도 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `49b6b0be` · PR [#329](https://github.com/catgeot/Days/pull/329)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 청도 관광 9경 결손 2건. 2경 새마을운동발상지기념공원은 청도읍 새마을1길 34(2009년 4월 14일 기념관 개관·2011년 8월 27일 발상지 공원·대통령 전용 열차·신거역·문의 054-372-5500). 5경 섶마리한옥마을은 금천면 신지리(운강고택 선암로 474·1809 건립·1824 증축·만화정 1856·국가민속문화유산). 구미 새마을운동테마공원·신화랑풍류마을·하회·양동마을과 구분. 사진은 디지털청도문화대전 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **20**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=cheongdo` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=cheongdo`
+- **다음** `팔경 활용 #75, 의령 결손 오버레이` — 백산안희제선생 생가·호암이병철선생 생가
+
+## 로그북 #15, 좋아요·댓글 연동
+
+- **세션** `로그북 #15, 좋아요·댓글 시스템 연동` · feature `cursor/logbook-reads-af3f` · tip `4f05357b` · PR [#325](https://github.com/catgeot/Days/pull/325)
+- **조치** 공개 피드 카드 하단 슬롯(읽는 시간·읽은 수 옆)에 하트·댓글 수. 하트는 로그인 후 `report_likes` 토글, 댓글 수는 글 하단 등록·삭제. 집계 컬럼은 트리거만 기록. 내 기록 탭에는 없음. 컬럼이 없으면 아이콘을 숨김.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS. migration `20260927150000_reports_likes_comments.sql` 적용됨 — 49행 `like_count`·`comment_count` 0, `view_count` 합 4 유지. 직접 `like_count` 갱신은 가드가 버리고, 좋아요 행은 집계만 올린 뒤 롤백 확인.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #16, Preview OK면 PR 병합` — 카드 하트·댓글 수와 글 하단 댓글 확인 후 PR #325.
+
 ## 팔경 활용 #73 — 영천9경 벚꽃 백리길·별별미술마을
 
 - **세션** `팔경 활용 #73, 영천 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `416b7596` · PR [#328](https://github.com/catgeot/Days/pull/328)
