@@ -2082,13 +2082,39 @@
       "clearSearch": "Clear search",
       "viewGrid": "Grid",
       "viewList": "Details",
+      "viewColumn": "1 col",
+      "viewGroup": "Entry layout",
       "emptyTitle": "No journeys logged yet.",
       "emptyBody": "Write your first story.",
       "emptyCta": "Create new entry",
       "noResults": "No memories found for \"{{term}}\".",
       "showAll": "Show all",
       "footer": "{{count}} entries total",
-      "footerCompact": "(summarized)"
+      "footerCompact": "(summarized)",
+      "readCount": "{{count}} reads"
+    },
+    "meta": {
+      "readingMinutes": "{{count}} min read",
+      "readingMinutesShort": "{{count}} min",
+      "readingAria": "{{count}} min read",
+      "samePlace": "{{count}} at this place",
+      "samePlaceAria": "{{count}} entries at this place"
+    },
+    "reactions": {
+      "like": "Like",
+      "likeAria": "{{count}} likes",
+      "unlikeAria": "Unlike",
+      "comment": "Comment",
+      "commentAria": "{{count}} comments",
+      "commentsTitle": "Comments",
+      "placeholder": "Write a short comment",
+      "submit": "Post",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this comment?",
+      "empty": "No comments yet.",
+      "loginConfirm": "Sign in to like and comment. Go to the login page?",
+      "loginToComment": "Sign in to leave a comment.",
+      "saveFail": "Could not save. Try again in a moment."
     },
     "calendar": {
       "month": "{{month}}/{{year}}"

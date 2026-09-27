@@ -2,6 +2,22 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #75 — 의령9경 백산안희제·호암이병철 생가
+
+- **세션** `팔경 활용 #75, 의령 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `f6c3518e` · PR [#330](https://github.com/catgeot/Days/pull/330)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 의령9경 결손 2건. 8경 백산안희제선생 생가는 부림면 입산로2길 37(1885년 출생·1993년 1월 8일 문화유산자료·1915년 중수·안채 6칸 팔작·사랑채 4칸 초가·문의 055-570-2444). 9경 호암이병철선생 생가는 정곡면 호암길 22-4(1851년 조부 한옥·대지 1,907㎡·10–17시·월요일 휴관·문의 055-573-0723). 곽재우 생가·부산 백산상회·용인 호암미술관과 구분. 사진은 국가유산청·호암재단 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **18**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=uiryeong` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=uiryeong`
+- **다음** `팔경 활용 #76, 장흥 결손 오버레이` — 선학동마을·하늘빛수목정원
+
+## 로그북 #17, 본문 반응 문구
+
+- **세션** `로그북 #17, 본문 반응 문구` · feature `cursor/logbook-reads-af3f` · tip `87a92125` · PR [#325](https://github.com/catgeot/Days/pull/325)
+- **조치** 카드의 조회수는 눈 대신 그래프, 하트는 누르기 전에도 붉은 테두리. 글을 열면 머리의 좋아요·댓글은 아이콘 대신 단어. 카드의 좋아요·댓글 아이콘은 유지.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #18, Preview OK면 PR 병합` — 카드 그래프·붉은 하트, 본문 좋아요·댓글 단어 확인 후 PR #325.
+
 ## 로그북 #16, 1열 그리드
 
 - **세션** `로그북 #16, 1열 그리드` · feature `cursor/logbook-reads-af3f` · tip `e908d8cc` · PR [#325](https://github.com/catgeot/Days/pull/325)

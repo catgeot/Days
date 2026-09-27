@@ -1845,13 +1845,39 @@
       "clearSearch": "검색어 지우기",
       "viewGrid": "그리드",
       "viewList": "자세히",
+      "viewColumn": "1열",
+      "viewGroup": "기록 배치",
       "emptyTitle": "기록된 여정이 없습니다.",
       "emptyBody": "당신만의 첫 번째 이야기를 남겨보세요.",
       "emptyCta": "새 기록 작성하기",
       "noResults": "\"{{term}}\"에 대한 기억을 찾을 수 없습니다.",
       "showAll": "전체 목록 보기",
       "footer": "총 {{count}}개의 기록",
-      "footerCompact": "(요약됨)"
+      "footerCompact": "(요약됨)",
+      "readCount": "읽음 {{count}}"
+    },
+    "meta": {
+      "readingMinutes": "{{count}}분 읽기",
+      "readingMinutesShort": "{{count}}분",
+      "readingAria": "읽는 시간 {{count}}분",
+      "samePlace": "같은 장소 {{count}}",
+      "samePlaceAria": "같은 장소 기록 {{count}}개"
+    },
+    "reactions": {
+      "like": "좋아요",
+      "likeAria": "좋아요 {{count}}",
+      "unlikeAria": "좋아요 취소",
+      "comment": "댓글",
+      "commentAria": "댓글 {{count}}",
+      "commentsTitle": "댓글",
+      "placeholder": "짧은 댓글을 남겨 주세요",
+      "submit": "등록",
+      "delete": "삭제",
+      "deleteConfirm": "이 댓글을 삭제할까요?",
+      "empty": "아직 댓글이 없습니다.",
+      "loginConfirm": "로그인하면 좋아요와 댓글을 남길 수 있습니다. 로그인 페이지로 이동할까요?",
+      "loginToComment": "로그인 후 댓글을 남길 수 있습니다.",
+      "saveFail": "저장하지 못했습니다. 잠시 후 다시 시도해 주세요."
     },
     "calendar": {
       "month": "{{year}}년 {{month}}월"
