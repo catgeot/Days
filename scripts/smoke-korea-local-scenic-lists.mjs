@@ -11,6 +11,7 @@ import {
   resolveCityAttractionHub,
   resolveHubAttraction,
   attractionToPlacePin,
+  hubToSuggestion,
 } from '../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   listKoreaLocalScenicLists,
@@ -100,17 +101,17 @@ assert.ok(
   'searchSuggestions expands list cluster',
 );
 assert.ok(
-  searchSrc.includes('pushLocalScenicMembersFirst'),
-  'searchSuggestions prepends palgyeong members before hub cluster',
+  searchSrc.includes('exactHubCityQuery'),
+  'searchSuggestions distinguishes bare hub city query from hub alias',
 );
-{
-  const idxMembers = searchSrc.indexOf('pushLocalScenicMembersFirst(exactHub');
-  const idxSpots = searchSrc.indexOf('const spotHits');
-  assert.ok(
-    idxMembers >= 0 && idxSpots >= 0 && idxMembers < idxSpots,
-    '문경 팔경 members are pushed before travel spots',
-  );
-}
+assert.ok(
+  searchSrc.includes('pushLocalScenicMembersFirst(exactHub, out, seen, scenicLists)'),
+  'searchSuggestions still expands palgyeong members for hub queries',
+);
+assert.ok(
+  searchSrc.includes('skipHub: true'),
+  'hub city exact query avoids duplicate hub card after palgyeong block',
+);
 assert.ok(
   searchSrc.includes('slice(0, 24)'),
   'searchSuggestions raises result cap for palgyeong group',
@@ -200,6 +201,12 @@ assert.equal(
   'display title 문경 팔경 (not SSOT 문경8경)',
 );
 assert.ok(listsForHub('mungyeong').length >= 1, 'listsForHub mungyeong');
+
+const danyangHub = resolveCityAttractionHub('단양');
+assert.ok(
+  resolveSearchScenicMedia(hubToSuggestion(danyangHub)).imageUrl,
+  '단양 hub 도시 카드 탐색 썸네일',
+);
 
 const memberRows = listsForHub('mungyeong').flatMap((list) =>
   (list.members || [])
