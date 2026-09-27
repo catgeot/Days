@@ -5,7 +5,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { publicProfilePhotos } from '../../shared/Auth/profileAvatar';
-import ProfilePhotoCount from '../../shared/Auth/ProfilePhotoCount';
 import ProfilePhotoLightbox from '../../shared/Auth/ProfilePhotoLightbox';
 import { fetchAuthorProfiles, reportAuthorLabel } from './utils/reportAuthor';
 import LogbookBody from './components/LogbookBody';
@@ -269,12 +268,7 @@ const PublicViewer = () => {
                   className="text-gray-500 text-sm flex items-center gap-1.5 font-medium min-w-0"
                   aria-label={t('authPage.account.viewPhoto', { name: authorLabel })}
                 >
-                  <span className="relative shrink-0">
-                    <img src={authorAvatar} alt="" className="w-8 h-8 rounded-full object-cover" />
-                    <span className="absolute -bottom-1 -right-1">
-                      <ProfilePhotoCount count={authorPhotos.length} />
-                    </span>
-                  </span>
+                  <img src={authorAvatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
                   <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
                 </button>
               ) : (

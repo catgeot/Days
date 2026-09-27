@@ -51,7 +51,6 @@ export async function attachAuthorLabels(rows) {
         : reportAuthorLabel(r.user_id, profile?.display_name),
       author_avatar: photos[0] || '',
       author_photos: photos,
-      author_photo_count: photos.length,
     };
   });
 }

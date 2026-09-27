@@ -10,7 +10,6 @@ import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
-import ProfilePhotoCount from '../../../shared/Auth/ProfilePhotoCount';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { readLogbookViewCount } from '../../../utils/logbookViewCount';
 import {
@@ -307,7 +306,6 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                             <User size={12} className="text-gray-400 shrink-0" />
                           )}
                           <span className="truncate">{report.author_label}</span>
-                          <ProfilePhotoCount count={report.author_photo_count} tone="text" />
                         </span>
                       ) : (
                         <span className="text-[11px] font-medium text-gray-400">

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '프로필',
-  sessionNo: 3,
-  sessionPhase: '패널 안 프로필',
+  sessionNo: 4,
+  sessionPhase: '헤더 사진 숫자',
   branch: 'cursor/profile-a231',
   previewPath: '/blog',
   qaShareSlug: 'profile',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-profile-4-header-count',
+    session: '프로필 #4, 헤더 사진 숫자',
+    title: '아이디 옆 사진 숫자 제거',
+    detail:
+      '로그북 홈 우측 상단은 아이디와 프로필만 있고, 사진 숫자는 없습니다. 숫자는 프로필 사진을 열었을 때와 프로필 사진 위에만 보입니다. 공개 글·댓글 작성자 이름 옆에도 숫자는 없습니다. Preview /qa/profile — /blog 모바일 헤더에서 프로필이 바로 열리는지, 작성자 사진을 열면 장 수가 보이는지.',
+    at: '2026-09-27T10:40:00.000Z',
+  },
   {
     id: '2026-09-27-profile-3-in-panel',
     session: '프로필 #3, 패널 안 프로필',
