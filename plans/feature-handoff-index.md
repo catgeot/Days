@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 프로필
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `6f104728` · draft PR [#336](https://github.com/catgeot/Days/pull/336) · **사람 Preview** |
+| **브랜치** | `cursor/profile-a231` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
+| **Preview** | `/qa/profile` → git Preview `/blog` · 프로필은 `/account` |
+| **금지** | 헤더에 비밀번호 변경 링크를 되돌리기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS |
+
+**다음 제시어**:
+
+```
+프로필 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-09-27-project-log.md
+브랜치 cursor/profile-a231 · PR #336 · Preview /qa/profile
+금지: 헤더에 비밀번호 변경 링크를 되돌리기 · feature에 plans/** 커밋
+작업: /blog 기본은 1열. 로그인 후 프로필에서 필명·사진·비밀번호·Google/Kakao. 사진이 헤더·로고 패널·무니 질문·로그북 작성자에 보이면 PR #336 병합
+검증: smoke:logbook-view-count · vite build
+```
+
+---
+
 ### 명소홈 본문 무니
 
 | | |
