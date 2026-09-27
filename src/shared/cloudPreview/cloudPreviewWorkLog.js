@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-27T02:10:00.000Z',
   },
   {
+    id: '2026-09-27-palgyeong-use-73-yeongcheon-overlay',
+    session: '팔경 활용 #73, 영천 결손 오버레이',
+    title: '영천9경 벚꽃 백리길·별별미술마을',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영천9경 결손 2건(영천댐 벚꽃 백리길·영천 별별미술마을)의 공공 공식 팩트 개요·주소·한국관광공사 공식 사진을 보강했습니다. 벚꽃 백리길은 임고면 신방로 19 일원 영천호 일주 40km(7경, 1980 준공 댐 높이 42m·9,640만 톤), 별별미술마을은 화산면 가상리 649 지붕 없는 미술관(9경, 2011 마을미술·작품 62점)입니다. 임고강변공원 벚꽃길·보현산천문대·시안미술관·한의마을과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongcheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T01:10:00.000Z',
+  },
+  {
     id: '2026-09-27-logbook-14-card-redesign',
     session: '로그북 #14, 카드 디자인 리뉴얼',
     title: '피드 카드 정보 구조 및 하단 메타 슬림화',

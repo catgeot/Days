@@ -1683,6 +1683,13 @@ const US_BANG_3 =
   `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002251&fileSn=3`;
 const US_BANG_HOME =
   `${US_BASE}/tour/kor/unit/attrctn/view.ulsan?mId=001002007000000000&unqId=100`;
+const YC_VK = 'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=';
+const YC_CHERRY = `${YC_VK}14d4d63f-4f8c-431b-9d0b-f9eb1bb7f273`;
+const YC_CHERRY_HOME =
+  'https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=83ec57e2-953a-42f9-b874-e7e2c74f0d72';
+const YC_ALLEY = `${YC_VK}2d029348-6d0d-4d1f-862f-01e70f6c2b6e`;
+const YC_MUSEUM = `${YC_VK}4b37cc23-2ca9-4965-a2cd-ada7e201b3ad`;
+const YC_ART_HOME = 'https://www.yc.go.kr/toursub/garaesil';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3662,6 +3669,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     US_BANG,
     [US_BANG_2, US_BANG_3],
     US_BANG_HOME,
+  ),
+  'local-scenic:yeongcheon-gugyeong:영천댐벚꽃백리길': localScenicPhotoOverlay(
+    '영천9경 제7경 영천댐 벚꽃 백리길은 임고면 신방로 19 일원입니다. 영천시 9경 자료는 임고면 삼매리의 영천댐을 일명 자양댐이라고 하고, 일주도로 어디에서 보아도 호수와 산이 어울리며 봄이면 영천호를 따라 이어지는 지방도가 벚꽃으로 가득 차 드라이브 명소가 된다고 적습니다. 문의는 054-330-6585입니다. 한국관광공사 여행기사는 영천댐에서 보현산 천문과학관 인근까지 40km 지방도를 따라 벚꽃이 이어지고, 백리가 조금 넘는 자동차 벚꽃 드라이브라고 적습니다. 같은 관광공사 영천댐 안내와 K-water는 이 댐을 1980년 12월 준공, 높이 42m·길이 300m·총저수량 9,640만 톤의 중앙차수벽형 석괴댐으로 두고, 관리소 주소는 자양면 포은로 1792입니다. 임고강변공원 벚꽃길(자호천 둑길)·6경 운주산승마자연휴양림·3경 보현산천문대와 다른 영천호 일주 벚꽃길입니다. 사진은 한국관광공사 영천댐 벚꽃 백리길 시작점 공식 사진입니다.',
+    '경상북도 영천시 임고면 신방로 19 일원 (영천댐 벚꽃 백리길·자양댐)',
+    YC_CHERRY,
+    [],
+    YC_CHERRY_HOME,
+  ),
+  'local-scenic:yeongcheon-gugyeong:영천별별미술마을': localScenicPhotoOverlay(
+    '영천9경 제9경 별별미술마을은 화산면 가상리 649입니다. 영천시 9경 자료는 2011년 마을미술프로젝트 공모로 농촌마을이 지붕 없는 미술관이 되었고, 걷는 길·바람 길·스무골길·귀호마을 길·도화원 길 다섯 길을 따라 걷는 곳이라고 적습니다. 한국관광공사 여행기사는 화산면 실개천 마을이며 주제가 「신몽유도원도―다섯 갈래 행복길」이고, 골목에 조각·그림·디자인·사진 45점을 둔 뒤 17점을 더해 62점이라고 적습니다. 우리동네박물관에는 가래실 주민의 졸업식·결혼식·사계절 사진이 있습니다. 문의는 054-330-6067이고, 안내 홈은 yc.go.kr/toursub/garaesil이며 도로명으로는 가래실로 364로도 안내됩니다. 시안미술관(054-338-9391, 체험·전시 실내)·8경 영천 한의마을과 다른 화산면 골목입니다. 사진은 한국관광공사 별별미술마을 골목·우리동네박물관 공식 사진입니다.',
+    '경상북도 영천시 화산면 가상리 649 (가래실로 364, 별별미술마을)',
+    YC_ALLEY,
+    [YC_MUSEUM],
+    YC_ART_HOME,
   ),
 };
 
