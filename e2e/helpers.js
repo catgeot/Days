@@ -33,9 +33,15 @@ export async function mooniOneChatTurn(page, message = '안녕') {
     .click();
   await expect(page.getByLabel(/채팅 닫기|Close chat/i)).toBeVisible({ timeout: 20_000 });
 
-  const input = page.getByPlaceholder(/메시지 입력|Type a message/i);
+  // 칩 도크가 켜지면 placeholder "메시지 입력..." 인풋은 hidden.
+  // 보이는 칸은 placeholder "직접 입력…"이고 accessible name은 title("메시지 입력...").
+  // getByPlaceholder는 hidden 칸만 잡아 fill이 180s 타임아웃된다. role은 hidden을 제외한다.
+  const input = page.getByRole('textbox', {
+    name: /메시지 입력|직접 입력|Type a message|Type directly/i,
+  });
+  await expect(input).toBeVisible({ timeout: 20_000 });
   await input.fill(message);
-  const chatForm = page.locator('form').filter({ has: input });
+  const chatForm = input.locator('xpath=ancestor::form[1]');
   const sendButton = chatForm.getByRole('button', { name: /전송|Send/i });
   if (await sendButton.isVisible({ timeout: 2000 }).catch(() => false)) {
     await sendButton.click();

@@ -2,6 +2,15 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 프로필 #3, 패널 안 프로필
+
+- **세션** `프로필 #3, 패널 안 프로필` · feature `cursor/profile-a231` · tip `dc6d32e3` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **조치** 로고 패널 프로필은 `/account`로 나가지 않고 패널 안에서 열고 닫는다. 스크롤은 세로만. 사진은 최대 8장, 장 수는 본인·공개 글 작성자에 표시. 공개를 끄면 다른 사람에게 사진과 장 수가 안 보인다.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **남은 일** DB 비밀번호가 없어 `supabase/migrations/20260927190000_profile_gallery.sql` 미적용. 적용 전 다른 사람은 대표 사진 1장만 본다.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
+- **다음** `프로필 #4, Preview OK면 PR 병합` — 패널 유지·세로 스크롤·사진 장 수·공개 스위치 OK, 마이그레이션 적용 후 PR #338 병합.
+
 ## E2E Health, 보이는 입력칸
 
 - **세션** `E2E Health #1, 입력칸 타임아웃` · feature `cursor/e2e-health-1fbd` · tip `8247297c` · draft PR [#337](https://github.com/catgeot/Days/pull/337)
