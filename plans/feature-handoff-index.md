@@ -18,23 +18,23 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `5a5d5d57` · draft PR [#338](https://github.com/catgeot/Days/pull/338) · **사람 Preview** |
+| **상태** | **#4 push** · tip `8073fc78` · draft PR [#338](https://github.com/catgeot/Days/pull/338) · **사람 Preview** |
 | **브랜치** | `cursor/profile-a231` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
 | **Preview** | `/qa/profile` → git Preview `/blog` · 프로필은 로고 패널 안 |
-| **금지** | 헤더에 비밀번호 변경 링크를 되돌리기 · 프로필 카드를 본문 전체 폭으로 키우기 · 로고 패널 프로필을 `/account`로 다시 보내기 · feature에 `plans/**` 커밋 |
+| **금지** | 헤더에 비밀번호 변경 링크를 되돌리기 · 프로필 카드를 본문 전체 폭으로 키우기 · 로고 패널 프로필을 `/account`로 다시 보내기 · 아이디 옆에 사진 숫자를 되돌리기 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS · 프로필 갤러리 컬럼 적용됨 |
 
 **다음 제시어**:
 
 ```
-프로필 #4, Preview OK면 PR 병합
+프로필 #5, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-27-project-log.md
 브랜치 cursor/profile-a231 · PR #338 · Preview /qa/profile
-금지: 헤더에 비밀번호 변경 링크를 되돌리기 · 프로필 카드를 본문 전체 폭으로 키우기 · 로고 패널 프로필을 /account로 다시 보내기 · feature에 plans/** 커밋
-작업: 로그인 후 로고 패널에서 프로필을 열고 닫아도 패널이 유지. 위아래만 스크롤. 사진 여러 장과 숫자. 공개를 끄면 다른 사람에게 사진·숫자 없음. OK면 PR #338 병합
+금지: 헤더에 비밀번호 변경 링크를 되돌리기 · 프로필 카드를 본문 전체 폭으로 키우기 · 로고 패널 프로필을 /account로 다시 보내기 · 아이디 옆에 사진 숫자를 되돌리기 · feature에 plans/** 커밋
+작업: 로그북 홈 우측 상단은 아이디와 프로필만. 사진 숫자는 프로필 사진을 열었을 때만. 헤더 프로필이 바로 열린다. 로고 패널은 그대로. OK면 PR #338 병합
 검증: smoke:logbook-view-count · vite build
 ```
 
