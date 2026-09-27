@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #75 — 의령9경 백산안희제·호암이병철 생가
+
+- **세션** `팔경 활용 #75, 의령 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `f6c3518e` · PR [#330](https://github.com/catgeot/Days/pull/330)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 의령9경 결손 2건. 8경 백산안희제선생 생가는 부림면 입산로2길 37(1885년 출생·1993년 1월 8일 문화유산자료·1915년 중수·안채 6칸 팔작·사랑채 4칸 초가·문의 055-570-2444). 9경 호암이병철선생 생가는 정곡면 호암길 22-4(1851년 조부 한옥·대지 1,907㎡·10–17시·월요일 휴관·문의 055-573-0723). 곽재우 생가·부산 백산상회·용인 호암미술관과 구분. 사진은 국가유산청·호암재단 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **18**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=uiryeong` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=uiryeong`
+- **다음** `팔경 활용 #76, 장흥 결손 오버레이` — 선학동마을·하늘빛수목정원
+
 ## 로그북 #17, 본문 반응 문구
 
 - **세션** `로그북 #17, 본문 반응 문구` · feature `cursor/logbook-reads-af3f` · tip `87a92125` · PR [#325](https://github.com/catgeot/Days/pull/325)
