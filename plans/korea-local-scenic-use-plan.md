@@ -92,7 +92,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#79 push** tip `5a993b15` · PR [#339](https://github.com/catgeot/Days/pull/339) · 공주10경 1 · **#80 대전 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#79 push** tip `d6e03d1c` · PR [#339](https://github.com/catgeot/Days/pull/339) · 공주10경 창벽·마곡사·무령왕릉 썸네일 · **#80 대전 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -180,7 +180,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 76 | `팔경 활용 #76, 장흥 결손 오버레이` | A | **완료** · tip `adf413a6` · PR [#332](https://github.com/catgeot/Days/pull/332) · 장흥9경 2 |
 | 77 | `팔경 활용 #77, 경주 결손 오버레이` | A | **완료** · tip `81a15bcf` · PR [#333](https://github.com/catgeot/Days/pull/333) · 경주8怪 1 |
 | 78 | `팔경 활용 #78, 고성 결손 오버레이` | A | **완료** · tip `430d0be9` · PR [#335](https://github.com/catgeot/Days/pull/335) · 고성8경 1 |
-| 79 | `팔경 활용 #79, 공주 결손 오버레이` | A | **완료** · tip `5a993b15` · PR [#339](https://github.com/catgeot/Days/pull/339) · 공주10경 1 |
+| 79 | `팔경 활용 #79, 공주 결손 오버레이` | A | **완료** · tip `d6e03d1c` · PR [#339](https://github.com/catgeot/Days/pull/339) · 공주10경 1 · QA 마곡사·무령왕릉 썸네일 |
 | 80 | `팔경 활용 #80, 대전 결손 오버레이` | A | **열기 가능** · 대전8경 1 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |

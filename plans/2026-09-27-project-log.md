@@ -4,8 +4,9 @@
 
 ## 팔경 활용 #79 — 공주10경 창벽
 
-- **세션** `팔경 활용 #79, 공주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `5a993b15` · PR [#339](https://github.com/catgeot/Days/pull/339)
+- **세션** `팔경 활용 #79, 공주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `d6e03d1c` · PR [#339](https://github.com/catgeot/Days/pull/339)
 - **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 공주10경 결손 1건. 창벽은 반포면 마암리 산4-4의 창벽산(청벽산, 폭 100m·높이 25m·해발 277m·산행 4.3km·문의 041-840-2836). 신기동 월성산·금강 물길·계룡산·석장리와 구분. 사진은 공주시 문화관광 창벽산 공식 사진.
+- **QA** 마곡사·무령왕릉은 contentId(`125894`·`126681`)를 유지하고 Tour firstimage가 비어 아이콘이었다. 공주시 10경 공식 사진(마곡사 전각·무령왕릉 봉분)을 썸네일로 연결. tip `d6e03d1c`.
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **13**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=gongju` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=gongju`
 - **다음** `팔경 활용 #80, 대전 결손 오버레이` — 대전 장태산
