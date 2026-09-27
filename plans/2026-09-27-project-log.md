@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 로그북 #21, 한국 주소는 도시 칩
+
+- **세션** `로그북 #21, 한국 주소는 도시 칩` · feature `cursor/logbook-reads-af3f` · tip `1b0e7f3c` · PR [#334](https://github.com/catgeot/Days/pull/334)
+- **조치** 칩 줄은 하나. 현재 위치 주소의 시·군은 칩에서 도시로 모은다. 춘천·춘천시 소양로3가·춘천시 퇴계동은 「춘천」. 보라카이·아이슬란드·길리 메모는 그대로. 파리 근교와 춘천시 근교는 도시로 안 넣는다. 카드 주소 문자열은 유지.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #22, Preview OK면 PR 병합` — 춘천 칩 하나·카드 주소 유지·파리 근교 분리 확인 후 PR #334 병합.
+
 ## 로그북 #20, 칩 검토 — PR 보류
 
 - **세션** `로그북 #20, Preview OK면 PR 병합` · feature `cursor/logbook-reads-af3f` · tip `654f4404` · PR [#334](https://github.com/catgeot/Days/pull/334) **병합 안 함**
