@@ -2,6 +2,15 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 프로필 #5, 헤더 터치 가림
+
+- **세션** `프로필 #5, 헤더 터치 가림` · feature `cursor/profile-a231` · tip `28bfe727` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
+- **원인** 모바일 `/blog` 본문 `flex-1 h-full` 스크롤이 헤더 영역과 겹쳐 우상단 프로필 탭이 막힘. Preview 「모바일 위젯 로그」 `blog.header.layout overlap:true`로 확인 가능.
+- **조치** `min-h-0`·sticky `z-[100]` 헤더. Preview 진단 `blog.header.layout` / `blog.header.tap` / `blog.header.profile.open`.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/profile · git `https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog`
+- **다음** Preview에서 overlap false·프로필 탭 OK면 PR #338 병합.
+
 ## 프로필 #5, 헤더 프로필 탭
 
 - **세션** `프로필 #5, 헤더 프로필 탭` · feature `cursor/profile-a231` · tip `07ce723d` · draft PR [#338](https://github.com/catgeot/Days/pull/338)
