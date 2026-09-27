@@ -9,9 +9,16 @@ import LogbookBody from './components/LogbookBody';
 import EditorialLogbookBadge from './components/EditorialLogbookBadge';
 import EditorialLogbookImageCredits from './components/EditorialLogbookImageCredits';
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
-import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
+import { isEditorialLogbook, isEditorialLogbookPublished, publicLogbookDetailPath } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
+import { claimLogbookViewSession, readLogbookViewCount, releaseLogbookViewSession } from '../../utils/logbookViewCount';
+import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
+import { logbookCommentsHref, readLogbookCommentCount, readLogbookLikeCount } from '../../utils/logbookReactions';
+import LogbookReadFacts from './components/LogbookReadFacts';
+import LogbookReactionSlot from './components/LogbookReactionSlot';
+import LogbookComments from './components/LogbookComments';
+import { useLogbookLikes } from './hooks/useLogbookLikes';
 import LogbookArticleHead from './components/LogbookArticleHead';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
@@ -19,6 +26,20 @@ import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 
 const SCHEMA_TYPE = 'EditorialLogbookArticle';
+
+function recordPublicRead(reportId, onCount) {
+  if (typeof sessionStorage === 'undefined') return;
+  if (!claimLogbookViewSession(reportId, sessionStorage)) return;
+  void supabase.rpc('increment_report_view', { report_id_param: String(reportId) }).then(({ data, error }) => {
+    if (error) {
+      releaseLogbookViewSession(reportId, sessionStorage);
+      console.warn('[logbook] view count', error.message);
+      return;
+    }
+    const n = typeof data === 'number' ? data : typeof data === 'string' && data.trim() !== '' ? Number(data) : NaN;
+    if (Number.isFinite(n) && onCount) onCount(Math.floor(n));
+  });
+}
 
 function upsertEditorialJsonLd(schema) {
   const selector = `script[data-schema-type="${SCHEMA_TYPE}"]`;
@@ -38,6 +59,11 @@ const PublicViewer = () => {
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [seenCount, setSeenCount] = useState(null);
+  const [placeCount, setPlaceCount] = useState(null);
+  const [commentCount, setCommentCount] = useState(null);
+  const reactionEnabled = Boolean(report) && readLogbookLikeCount(report) != null;
+  const { resolveLike, toggleLike } = useLogbookLikes(report ? [report] : [], reactionEnabled);
 
   const handleBack = useCallback(() => {
     navigateAppBack(navigate, { fallback: '/blog' });
@@ -78,7 +104,11 @@ const PublicViewer = () => {
       }
 
       setReport(data);
+      setSeenCount(null);
+      setPlaceCount(null);
+      setCommentCount(readLogbookCommentCount(data));
       setErrorMsg('');
+      recordPublicRead(data.id, setSeenCount);
 
       if (isEditorialLogbook(data)) {
         setAuthorLabel('');
@@ -98,6 +128,17 @@ const PublicViewer = () => {
     };
     void fetchPublicReport();
   }, [id, editorialSlug, navigate]);
+
+  useEffect(() => {
+    if (!report?.location) return undefined;
+    let cancelled = false;
+    void fetchSamePlaceCount(supabase, { location: report.location }).then((count) => {
+      if (!cancelled) setPlaceCount(count);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [report]);
 
   const pageUrl = useMemo(() => {
     if (!report) return '';
@@ -139,6 +180,11 @@ const PublicViewer = () => {
   const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
   const displayDate = formatLogbookDisplayDate(report);
   const showDecorativeHeroBlur = Boolean(heroImageUrl && !editorial);
+  const readingMinutes = logbookReadingMinutes(report.content);
+  const viewCount = seenCount ?? readLogbookViewCount(report);
+  const placeKey = logbookPlaceKey(report.location);
+  const placeHref = placeKey ? `/blog?tab=public&location=${encodeURIComponent(placeKey)}` : '';
+  const likeState = resolveLike(report);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -212,6 +258,22 @@ const PublicViewer = () => {
                 <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
               </span>
             )}
+            <LogbookReadFacts
+              tone="article"
+              minutes={readingMinutes}
+              placeCount={placeCount}
+              viewCount={viewCount}
+              placeHref={placeHref}
+            />
+            <LogbookReactionSlot
+              tone="article"
+              likeCount={likeState.likeCount}
+              commentCount={commentCount}
+              liked={likeState.liked}
+              pending={likeState.pending}
+              commentHref={logbookCommentsHref(publicLogbookDetailPath(report))}
+              onToggleLike={() => toggleLike(report)}
+            />
           </div>
 
           <LogbookArticleHead report={report} readerDek={editorial} />
@@ -274,6 +336,8 @@ const PublicViewer = () => {
           {editorial && !hasPlaceholders && report.images?.length ? (
             <EditorialLogbookImageCredits images={report.images} className="mt-6 border-t border-gray-100 pt-4" />
           ) : null}
+
+          <LogbookComments report={report} onCountChange={setCommentCount} />
 
           <div className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
             <p className="text-gray-500 text-sm font-medium mb-6">{t('logbook.public.ctaBody')}</p>

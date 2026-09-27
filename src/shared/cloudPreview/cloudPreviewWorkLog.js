@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 74,
-  sessionPhase: '청도 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=cheongdo',
-  qaShareSlug: 'palgyeong-use',
+  title: '로그북',
+  sessionNo: 17,
+  sessionPhase: '본문 반응 문구',
+  branch: 'cursor/logbook-reads-af3f',
+  previewPath: '/blog',
+  qaShareSlug: 'logbook-reads',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-17-reaction-words',
+    session: '로그북 #17, 본문 반응 문구',
+    title: '본문은 좋아요·댓글 단어, 카드는 그래프·붉은 하트',
+    detail:
+      '카드의 좋아요·댓글·조회는 좁은 칸이라 아이콘을 유지합니다. 조회수는 눈 대신 그래프, 하트는 누르기 전에도 붉은 테두리입니다. 글을 열면 머리의 좋아요와 댓글은 아이콘 대신 단어로 나옵니다. Preview /qa/logbook-reads — /blog 카드의 그래프·붉은 하트, 글을 열어 좋아요·댓글 단어.',
+    at: '2026-09-27T05:30:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-16-column',
+    session: '로그북 #16, 1열 그리드',
+    title: '보관소 1열 카드',
+    detail:
+      '기록 보관소 검색 옆 배치를 자세히·1열·그리드 세 버튼으로 나눴습니다. 1열은 사진이 위인 카드 그대로 한 줄에 하나씩 보여 제목과 요약이 넓게 읽힙니다. 기본은 그리드입니다. 좋아요 확인 창의 긴 주소는 프리뷰 호스트이고, 본문 문구는 그대로입니다. Preview /qa/logbook-reads — /blog 공개 피드에서 1열을 눌러 카드가 한 줄인지.',
+    at: '2026-09-27T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-15-reactions',
+    session: '로그북 #15, 좋아요·댓글 연동',
+    title: '피드 카드 슬롯에 좋아요·댓글',
+    detail:
+      '공개 피드 카드 하단(읽는 시간·읽은 수 옆)에 하트와 댓글 수를 붙였습니다. 하트는 로그인 후 토글되고, 댓글 수는 글 하단 댓글로 이어집니다. 숫자는 반응 테이블이 올리고, 화면에서 view_count·like_count를 직접 고치지 않습니다. 컬럼이 없으면 아이콘을 숨깁니다. Preview /qa/logbook-reads — /blog 공개 피드에서 하트와 댓글 수, 글을 열어 댓글 등록.',
+    at: '2026-09-27T02:10:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-74-cheongdo-overlay',
     session: '팔경 활용 #74, 청도 결손 오버레이',
@@ -40,6 +64,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-27T01:10:00.000Z',
   },
   {
+    id: '2026-09-27-logbook-14-card-redesign',
+    session: '로그북 #14, 카드 디자인 리뉴얼',
+    title: '피드 카드 정보 구조 및 하단 메타 슬림화',
+    detail:
+      '이미지 위에 떠 있던 큰 날짜 배지를 본문 상단(에디터 뱃지/작성자 옆)으로 자연스럽게 통합하고, 사진 추가 배지(+N)는 썸네일 우측 하단 뱃지로 정돈했습니다. 2행으로 분산되어 복잡했던 하단 메타를 [좌측 장소 / 우측 읽는 시간·조회수] 단일 행으로 깔끔하게 통합하여 향후 좋아요·댓글 아이콘이 들어갈 슬롯 공간을 확보했습니다. Preview /qa/logbook-reads — /blog 공개 피드 카드의 정보 위계와 여백이 한결 정돈되었는지.',
+    at: '2026-09-27T01:10:00.000Z',
+  },
+  {
     id: '2026-09-27-palgyeong-use-72-ulsan-overlay',
     session: '팔경 활용 #72, 울산 결손 오버레이',
     title: '울산12경 가지산 사계·반구대암각화',
@@ -48,12 +80,28 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-27T00:40:00.000Z',
   },
   {
+    id: '2026-09-27-logbook-13-reading-place',
+    session: '로그북 #13, 읽는 시간·같은 장소 수',
+    title: '카드와 본문에 읽는 시간·같은 장소',
+    detail:
+      '공개 피드 카드와 글 본문 머리(날짜·장소 줄)에 읽는 시간과 같은 장소 기록 수를 넣었습니다. 본문에는 읽은 수도 같이 보입니다. 같은 장소 숫자는 공백을 맞춘 장소 이름 기준이고, 위치 미상은 빠집니다. 본문의 같은 장소 숫자는 그 장소 피드로 이어집니다. 내 기록 카드·내 글에는 읽은 수가 없고, 내 글의 같은 장소 수는 내 기록 기준입니다. Preview /qa/logbook-reads — /blog 공개 피드 카드와 글을 열어 분·같은 장소·읽은 수가 본문 머리에도 있는지.',
+    at: '2026-09-27T00:45:00.000Z',
+  },
+  {
     id: '2026-09-27-scenic-mooni-1-fab',
     session: '명소홈 #1, 본문 무니 FAB',
     title: '명소 본문 무니는 축제와 같은 떠 있는 버튼',
     detail:
       '명소홈 상세 본문의 「무니에게 묻기」를 뺐습니다. 축제 본문처럼 오른쪽 무니 버튼이 뜨고, 위로가 보이면 그 위로 올라갑니다. 버튼을 누르면 그 명소에 묶인 채팅이 열립니다. Preview /qa/scenic-mooni — /korea/theme/scenic?spot=gyeongbokgung 본문에서 떠 있는 무니·읽을거리에는 영상만.',
     at: '2026-09-27T00:40:00.000Z',
+  },
+  {
+    id: '2026-09-27-logbook-12-public-reads',
+    session: '로그북 #12, 공개 피드 읽음',
+    title: '공개 피드 카드에 읽은 수',
+    detail:
+      '로그북 홈 공개 피드 카드 하단에 눈 아이콘과 읽은 수를 넣었습니다. 공개 글을 열면 브라우저 세션당 1회 올라갑니다. view_count 마이그레이션은 적용되어 있고, 기존 글은 0부터입니다. Preview /qa/logbook-reads — /blog 공개 피드에서 카드를 연 뒤 돌아오면 숫자가 1 오르는지.',
+    at: '2026-09-27T00:20:00.000Z',
   },
   {
     id: '2026-09-26-palgyeong-use-71-yongin-overlay',

@@ -256,6 +256,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: false,
   },
   {
+    slug: 'logbook-reads',
+    label: '로그북 공개 피드 읽음',
+    branch: 'cursor/logbook-reads-af3f',
+    destination:
+      'https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog',
+    active: true,
+  },
+  {
     slug: 'aitutaki-tour',
     label: '아이투타키 투어 오탐',
     branch: 'cursor/aitutaki-gyg-tour-b09e',

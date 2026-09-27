@@ -166,6 +166,11 @@
       "permanent": false
     },
     {
+      "source": "/qa/logbook-reads",
+      "destination": "https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog",
+      "permanent": false
+    },
+    {
       "source": "/qa/aitutaki-tour",
       "destination": "https://days-git-cursor-aitutaki-gyg-tour-b09e-catgeots-projects.vercel.app/",
       "permanent": false

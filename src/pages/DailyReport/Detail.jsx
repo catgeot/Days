@@ -12,6 +12,8 @@ import LogbookBody from './components/LogbookBody';
 import LogbookArticleHead from './components/LogbookArticleHead';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
+import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
+import LogbookReadFacts from './components/LogbookReadFacts';
 
 const Detail = () => {
   const { t } = useTranslation();
@@ -21,6 +23,7 @@ const Detail = () => {
   const [report, setReport] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
+  const [placeCount, setPlaceCount] = useState(null);
 
   useEffect(() => {
     const getOneReport = async () => {
@@ -47,6 +50,18 @@ const Detail = () => {
     };
     getOneReport();
   }, [id, navigate]);
+
+  useEffect(() => {
+    if (!report?.user_id || !report.location) return undefined;
+    let cancelled = false;
+    setPlaceCount(null);
+    void fetchSamePlaceCount(supabase, { location: report.location, userId: report.user_id }).then((count) => {
+      if (!cancelled) setPlaceCount(count);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [report]);
 
   const handleDelete = async () => {
     if (window.confirm(t('logbook.detail.deleteConfirm'))) {
@@ -175,6 +190,7 @@ const Detail = () => {
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
   const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
+  const placeKey = logbookPlaceKey(report.location);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -244,6 +260,12 @@ const Detail = () => {
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{formatLogbookDisplayDate(report)}</span>
             <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
+            <LogbookReadFacts
+              tone="article"
+              minutes={logbookReadingMinutes(report.content)}
+              placeCount={placeCount}
+              placeHref={placeKey ? `/blog?location=${encodeURIComponent(placeKey)}` : ''}
+            />
           </div>
 
           <LogbookArticleHead report={report} />
