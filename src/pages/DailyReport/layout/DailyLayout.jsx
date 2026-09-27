@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
@@ -11,7 +11,15 @@ const DailyLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
-  const hideMobileBlogChrome = location.pathname.startsWith('/blog/curation');
+  const mainScrollRef = useRef(null);
+
+  const hideMobileBlogChrome = (() => {
+    if (location.pathname.startsWith('/blog/curation')) return true;
+    const match = location.pathname.match(/^\/blog\/([^/]+)$/);
+    if (!match) return false;
+    const segment = match[1];
+    return segment !== 'curation' && segment !== 'write';
+  })();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,6 +49,7 @@ const DailyLayout = () => {
         }`}
       >
         <button
+          type="button"
           onClick={handleGoHome}
           className="text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors"
         >
@@ -72,7 +81,7 @@ const DailyLayout = () => {
       <PenNameProvider user={user}>
         <Sidebar user={user} />
 
-        <div className="flex-1 h-full overflow-y-auto relative">
+        <div ref={mainScrollRef} className="flex-1 h-full overflow-y-auto relative">
           <Outlet />
         </div>
       </PenNameProvider>
