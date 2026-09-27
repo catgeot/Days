@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 로그북 #18, 여행지 분류
+
+- **세션** `로그북 #18, 여행지 분류` · feature `cursor/logbook-reads-af3f` · tip `c5a8fade` · PR [#334](https://github.com/catgeot/Days/pull/334)
+- **조치** 기록 보관소 검색 아래에 여행지 칩. 전체·장소별 글 수. 칩은 그 장소만, 다시 누르거나 전체로 복귀. 위치 미상은 칩에서 제외. 글이 늘면 가로 스크롤.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #19, Preview OK면 PR 병합` — 여행지 칩으로 장소만 남고 전체로 돌아오면 PR #334 병합.
+
 ## 팔경 활용 #77 — 경주8怪 나원백탑
 
 - **세션** `팔경 활용 #77, 경주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `81a15bcf` · PR [#333](https://github.com/catgeot/Days/pull/333)
