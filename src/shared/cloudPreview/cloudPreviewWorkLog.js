@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 70,
-  sessionPhase: '화성 결손 오버레이',
+  sessionNo: 71,
+  sessionPhase: '용인 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=hwaseong',
+  previewPath: '/korea/theme/scenic?hub=yongin',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-26-palgyeong-use-71-yongin-overlay',
+    session: '팔경 활용 #71, 용인 결손 오버레이',
+    title: '용인8경 조비산·어비낙조',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 용인8경 결손 2건(조비산·어비낙조)의 공공 공식 팩트 개요·주소·용인시 문화관광 8경 공식 사진을 보강했습니다. 조비산은 백암면 용천리 해발 294.5m 조망(6경, 용천리·석천리·장평리·역적산), 어비낙조는 이동읍 어비리 357 송전저수지 노을(8경, 이동저수지·경기도에서 가장 큰 저수지)입니다. 석성산 일출·광교산·구봉산·가실벚꽃·궁평낙조와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yongin 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-26T23:58:00.000Z',
+  },
   {
     id: '2026-09-26-palgyeong-use-70-hwaseong-overlay',
     session: '팔경 활용 #70, 화성 결손 오버레이',
