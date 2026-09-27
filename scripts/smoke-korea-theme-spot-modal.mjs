@@ -104,6 +104,20 @@ assert(
   !modalSrc.includes("homepage.replace(/^https?:\\/\\//i, '')"),
   'modal does not dump raw homepage URL as label',
 );
+assert(
+  modalSrc.includes('!mooniFab'),
+  'in-body Mooni CTA is skipped when the floating Mooni button is on',
+);
+assert(modalSrc.includes('mooniChar'), 'modal floating Mooni uses the character image');
+
+const scenicPageSrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/ScenicPage.jsx'),
+  'utf8',
+);
+assert(
+  scenicPageSrc.includes('mooniFab'),
+  'scenic home detail enables the floating Mooni button',
+);
 
 for (const [file, label] of [
   ['Top10Page.jsx', 'top10'],

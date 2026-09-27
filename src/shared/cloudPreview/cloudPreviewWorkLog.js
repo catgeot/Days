@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-27T00:40:00.000Z',
   },
   {
+    id: '2026-09-27-scenic-mooni-1-fab',
+    session: '명소홈 #1, 본문 무니 FAB',
+    title: '명소 본문 무니는 축제와 같은 떠 있는 버튼',
+    detail:
+      '명소홈 상세 본문의 「무니에게 묻기」를 뺐습니다. 축제 본문처럼 오른쪽 무니 버튼이 뜨고, 위로가 보이면 그 위로 올라갑니다. 버튼을 누르면 그 명소에 묶인 채팅이 열립니다. Preview /qa/scenic-mooni — /korea/theme/scenic?spot=gyeongbokgung 본문에서 떠 있는 무니·읽을거리에는 영상만.',
+    at: '2026-09-27T00:40:00.000Z',
+  },
+  {
     id: '2026-09-26-palgyeong-use-71-yongin-overlay',
     session: '팔경 활용 #71, 용인 결손 오버레이',
     title: '용인8경 조비산·어비낙조',
