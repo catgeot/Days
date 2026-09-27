@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## E2E Health, 보이는 입력칸
+
+- **세션** `E2E Health #1, 입력칸 타임아웃` · feature `cursor/e2e-health-1fbd` · tip `8247297c` · draft PR [#337](https://github.com/catgeot/Days/pull/337)
+- **원인** 2026-09-12 성공 이후 `main` 일정 실행이 연속 실패. E2E-3만 실패. 칩 도크가 켜지면 placeholder `메시지 입력...` 칸은 hidden이고, 보이는 칸은 `직접 입력…`. `getByPlaceholder`가 숨은 칸에서 180초 타임아웃.
+- **조치** `e2e/helpers.js`가 보이는 textbox role로 입력. 채팅 UI는 그대로.
+- **VERIFY** `SMOKE_SITE_URL=https://gateo.kr npx playwright test` — 3 passed (13.9s).
+- **다음** PR #337 병합. 일 1회 cron은 `main`을 checkout하므로 병합 전엔 실패가 계속된다.
+
 ## 프로필 #2, 사진 카드
 
 - **세션** `프로필 #2, 사진 카드` · feature `cursor/profile-a231` · tip `498a2e1c` · draft PR [#336](https://github.com/catgeot/Days/pull/336)
