@@ -44,23 +44,23 @@
 
 | | |
 |--|--|
-| **상태** | **#20 검토** · tip `654f4404` · PR [#334](https://github.com/catgeot/Days/pull/334) (draft) · **병합 보류** |
+| **상태** | **#21 push** · tip `1b0e7f3c` · PR [#334](https://github.com/catgeot/Days/pull/334) (draft) · **사람 Preview** |
 | **브랜치** | `cursor/logbook-reads-af3f` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) |
 | **Preview** | `/qa/logbook-reads` → git Preview `/blog` (로그인 시 `?tab=public`) |
 | **금지** | `view_count`·`like_count`·`comment_count` 직접 update · 중분류 칩 줄 신설 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS (#18) · #20은 코드 없음 |
+| **VERIFY** | `npm run smoke:logbook-view-count` · `vite build` PASS |
 
 **다음 제시어**:
 
 ```
-로그북 #21, 한국 주소는 도시 칩
+로그북 #22, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-27-project-log.md
 브랜치 cursor/logbook-reads-af3f · PR #334 · Preview /qa/logbook-reads
 금지: view_count·like_count·comment_count 직접 update · 중분류 칩 줄 신설 · feature에 plans/** 커밋
-작업: 칩 줄은 하나. 보라카이·아이슬란드·길리 메모는 그대로. 춘천·춘천시 소양로3가·춘천시 퇴계동은 칩 「춘천」으로 합친다. 파리 근교는 파리가 아님. 카드 주소 문자열은 유지
+작업: 칩 줄은 하나. 보라카이·아이슬란드·길리 메모는 그대로. 춘천 칩 하나에 춘천시 소양로3가·춘천시 퇴계동 카드가 모인다. 카드 주소는 그대로. 파리 근교는 파리가 아님. OK면 PR #334 병합
 검증: smoke:logbook-view-count · vite build
 ```
 
