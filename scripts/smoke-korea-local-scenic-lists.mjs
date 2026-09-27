@@ -4926,6 +4926,71 @@ assert.ok(
   '울산 검색 6경 반구대암각화 썸네일',
 );
 
+const yeongcheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeongcheon');
+const yeongcheonNine = yeongcheonMerged.filter((s) => s.localScenicListId === 'yeongcheon-gugyeong');
+assert.equal(yeongcheonNine.length, 9, '영천9경 9명');
+const yeongcheonDeficitNames = ['영천댐 벚꽃 백리길', '영천 별별미술마을'];
+const yeongcheonDeficit = yeongcheonNine.filter((s) => yeongcheonDeficitNames.includes(s.attractionName));
+assert.equal(yeongcheonDeficit.length, 2, '영천9경 결손 2명');
+assert.ok(
+  yeongcheonDeficit.every((s) => s.overview && s.imageUrl),
+  '영천 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  yeongcheonDeficit.every((s) => !s.contentId),
+  '영천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(yeongcheonDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '영천댐 벚꽃 백리길·별별미술마을 썸네일 다름',
+);
+const ycCherry = resolveLocalScenicListSpotById('local-scenic:yeongcheon-gugyeong:영천댐벚꽃백리길');
+assert.ok(ycCherry?.overview && ycCherry?.imageUrl, '영천댐 벚꽃 백리길 overlay 사진·개요');
+assert.ok(!ycCherry?.contentId, '영천댐 벚꽃 백리길 JSON contentId 없음 유지');
+assert.ok(ycCherry?.overview?.includes('신방로 19'), '영천댐 벚꽃 백리길 overlay 주소');
+assert.ok(ycCherry?.overview?.includes('40km'), '영천댐 벚꽃 백리길 overlay 거리');
+assert.ok(ycCherry?.overview?.includes('9,640만'), '영천댐 벚꽃 백리길 overlay 저수량');
+assert.ok(ycCherry?.overview?.includes('054-330-6585'), '영천댐 벚꽃 백리길 overlay 문의');
+assert.ok(ycCherry?.overview?.includes('임고강변공원'), '영천댐 벚꽃 백리길≠임고강변공원');
+assert.ok(ycCherry?.overview?.includes('보현산천문대'), '영천댐 벚꽃 백리길≠보현산천문대');
+assert.ok(ycCherry?.imageUrl?.includes('14d4d63f'), '영천댐 벚꽃 백리길 관광공사 사진');
+assert.ok(ycCherry?.homepage?.includes('83ec57e2'), '영천댐 벚꽃 백리길 공식 글');
+const ycArt = resolveLocalScenicListSpotById('local-scenic:yeongcheon-gugyeong:영천별별미술마을');
+assert.ok(ycArt?.overview && ycArt?.imageUrl, '영천 별별미술마을 overlay 사진·개요');
+assert.ok(!ycArt?.contentId, '영천 별별미술마을 JSON contentId 없음 유지');
+assert.ok(ycArt?.overview?.includes('가상리 649'), '영천 별별미술마을 overlay 주소');
+assert.ok(ycArt?.overview?.includes('62점'), '영천 별별미술마을 overlay 작품');
+assert.ok(ycArt?.overview?.includes('054-330-6067'), '영천 별별미술마을 overlay 문의');
+assert.ok(ycArt?.overview?.includes('시안미술관'), '영천 별별미술마을≠시안미술관');
+assert.ok(ycArt?.overview?.includes('한의마을'), '영천 별별미술마을≠한의마을');
+assert.ok(ycArt?.imageUrl?.includes('2d029348'), '영천 별별미술마을 골목 사진');
+assert.ok(
+  ycArt?.galleryUrls?.some((u) => u.includes('4b37cc23')),
+  '영천 별별미술마을 우리동네박물관 사진',
+);
+assert.ok(ycArt?.homepage?.includes('toursub/garaesil'), '영천 별별미술마을 공식 홈');
+assert.notEqual(ycCherry?.imageUrl, ycArt?.imageUrl, '벚꽃 백리길·별별미술마을 썸네일 다름');
+assert.ok(!ycArt?.imageUrl?.includes('14d4d63f'), '별별미술마을≠벚꽃길 사진');
+assert.ok(!ycCherry?.imageUrl?.includes('2d029348'), '벚꽃 백리길≠미술마을 사진');
+const yeongcheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '영천', {
+  injectLocalScenic: true,
+});
+const yeongcheonGlobeNine = yeongcheonGlobe.filter((s) => s.localScenicListId === 'yeongcheon-gugyeong');
+assert.equal(yeongcheonGlobeNine.length, 9, '영천 검색 영천9경 9행');
+assert.ok(
+  yeongcheonGlobe.find((s) => s.attractionName === '영천댐 벚꽃 백리길')?.overview?.includes('40km'),
+  '영천 검색 7경 벚꽃 백리길 개요',
+);
+assert.ok(
+  yeongcheonGlobe.find((s) => s.attractionName === '영천댐 벚꽃 백리길')?.imageUrl?.includes('14d4d63f'),
+  '영천 검색 7경 벚꽃 백리길 썸네일',
+);
+assert.ok(
+  yeongcheonGlobe.find((s) => s.attractionName === '영천 별별미술마을')?.imageUrl?.includes('2d029348'),
+  '영천 검색 9경 별별미술마을 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
