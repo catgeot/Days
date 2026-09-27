@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 78,
-  sessionPhase: '고성 결손 오버레이',
+  sessionNo: 79,
+  sessionPhase: '공주 권역 썸네일',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=goseong',
+  previewPath: '/korea/theme/scenic?hub=gongju',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-area-thumbs',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주 권역 빈 썸네일',
+    detail:
+      '팔경 밖 공주 관광지 중 Tour firstimage가 비어 아이콘이던 청벽산(2755172)·금강신관공원(2756156)·명탄서원(1956330)·계룡산 중악단(127239)에 공식 사진을 연결했습니다. JSON contentId·scenic 승격은 없습니다. 청벽산은 창벽과 같은 마암리 절벽 사진이고, 금강신관공원은 지역 대표 명소 행입니다. Preview /qa/palgyeong-use — 검색「공주」·/korea/theme/scenic?hub=gongju.',
+    at: '2026-09-27T12:30:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-thumbs',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주10경 마곡사·무령왕릉 썸네일',
+    detail:
+      '공주10경 마곡사·무령왕릉은 JSON contentId가 있어도 Tour firstimage가 비어 목록이 랜드마크 아이콘이었습니다. contentId는 유지하고 공주시 문화관광 10경 공식 사진(마곡사 전각·무령왕릉 봉분)을 썸네일로 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gongju 7경·8경.',
+    at: '2026-09-27T12:10:00.000Z',
+  },
+  {
+    id: '2026-09-27-palgyeong-use-79-gongju-overlay',
+    session: '팔경 활용 #79, 공주 결손 오버레이',
+    title: '공주10경 창벽',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 공주10경 결손 1건(창벽)의 공공 공식 팩트 개요·주소·공주시 문화관광 공식 사진을 보강했습니다. 창벽은 반포면 마암리 산4-4의 창벽산(청벽산, 폭 100m·높이 25m·해발 277m·산행 4.3km·문의 041-840-2836)입니다. 신기동 월성산·금강 물길·계룡산·석장리와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gongju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T11:40:00.000Z',
+  },
   {
     id: '2026-09-27-profile-5-header-overlap',
     session: '프로필 #5, 헤더 터치 가림',
