@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
@@ -12,6 +12,14 @@ const DailyLayout = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const hideMobileBlogChrome = location.pathname.startsWith('/blog/curation');
+  const mainScrollRef = useRef(null);
+
+  const isPrivateRecordDetail = (() => {
+    const match = location.pathname.match(/^\/blog\/([^/]+)$/);
+    if (!match) return false;
+    const segment = match[1];
+    return segment !== 'curation' && segment !== 'write';
+  })();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,6 +40,15 @@ const DailyLayout = () => {
     navigate('/');
   };
 
+  const handleMobileHeaderTap = useCallback(() => {
+    const el = mainScrollRef.current;
+    if (isPrivateRecordDetail && el && el.scrollTop > 48) {
+      el.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    handleGoHome();
+  }, [isPrivateRecordDetail]);
+
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 text-gray-900 overflow-hidden">
 
@@ -41,7 +58,8 @@ const DailyLayout = () => {
         }`}
       >
         <button
-          onClick={handleGoHome}
+          type="button"
+          onClick={handleMobileHeaderTap}
           className="text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors"
         >
           <Globe size={20} />
@@ -72,7 +90,7 @@ const DailyLayout = () => {
       <PenNameProvider user={user}>
         <Sidebar user={user} />
 
-        <div className="flex-1 h-full overflow-y-auto relative">
+        <div ref={mainScrollRef} className="flex-1 h-full overflow-y-auto relative">
           <Outlet />
         </div>
       </PenNameProvider>
