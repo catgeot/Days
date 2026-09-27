@@ -1667,6 +1667,22 @@ const YI_EOBI_2 = `${YI_IMG}/01020108_3.jpg`;
 const YI_EOBI_3 = `${YI_IMG}/01020108_4.jpg`;
 const YI_EOBI_HOME =
   'https://www.yongin.go.kr/home/yitour/ytour01/yttour02/yttourmn01_07.jsp';
+const US_BASE = 'https://www.ulsan.go.kr';
+const US_12 = `${US_BASE}/tour/storyCms/kor/images/sub01`;
+const US_GAJI = `${US_12}/img_12view03.jpg`;
+const US_GAJI_2 =
+  `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002274&fileSn=3`;
+const US_GAJI_3 =
+  `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002274&fileSn=4`;
+const US_GAJI_HOME =
+  `${US_BASE}/tour/kor/unit/attrctn/view.ulsan?mId=001002001000000000&unqId=1`;
+const US_BANG = `${US_12}/img_12view06.jpg`;
+const US_BANG_2 =
+  `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002251&fileSn=1`;
+const US_BANG_3 =
+  `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002251&fileSn=3`;
+const US_BANG_HOME =
+  `${US_BASE}/tour/kor/unit/attrctn/view.ulsan?mId=001002007000000000&unqId=100`;
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3632,6 +3648,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     YI_EOBI,
     [YI_EOBI_2, YI_EOBI_3],
     YI_EOBI_HOME,
+  ),
+  'local-scenic:ulsan-sipgyeong:울산가지산사계': localScenicPhotoOverlay(
+    '울산12경 제3경 가지산 사계는 울산광역시 문화관광이 자연 교향곡 4악장으로 소개하는 산입니다. 관광 안내는 영남알프스에서 가장 높은 산이고 1979년 경상남도 도립공원으로 지정되었으며, 울주군·밀양시·청도군에 걸친 해발 1,000m 이상 9개 고산의 주봉이라고 적습니다. 해발은 1,241m입니다. 봄에는 진달래와 천연기념물 제462호 철쭉군락, 여름에는 석남사계곡·심심이계곡·학소대폭포가 있는 학심이골·오천평반석이 있는 쇠점골계곡·호박소가 있는 용수골, 가을에는 석남사계곡 단풍, 겨울에는 쌀바위 설경이 있습니다. 동쪽 기슭 석남사는 신라 헌덕왕 16년(824년)에 도의국사가 창건했다고 적습니다. 주소는 울주군 상북면이며 경남 밀양시 산내면·경북 청도군 운문면에도 걸칩니다. 4경 신불산 억새평원·산청9경 황매산 철쭉·가지산온천과 다른 상북 사계입니다. 사진은 울산광역시 문화관광 12경·가지산 공식 사진입니다.',
+    '울산광역시 울주군 상북면 (경남 밀양시 산내면 · 경북 청도군 운문면, 가지산)',
+    US_GAJI,
+    [US_GAJI_2, US_GAJI_3],
+    US_GAJI_HOME,
+  ),
+  'local-scenic:ulsan-sipgyeong:울산반구대암각화': localScenicPhotoOverlay(
+    '울산12경 제6경 반구대암각화는 울주 대곡리 반구대 암각화입니다. 울산 문화관광 12경은 반구대암각화와 울주 천전리 명문·암각화를 한 경으로 두고, 관광 안내는 천전리와 묶어 단일유산 「반구천의 암각화」로 2025년 7월 12일 유네스코 세계유산에 등재되었다고 적습니다. 이 행은 태화강 상류 지류 반구천(행정명 대곡천) 절벽, 반구대에서 하류 약 0.7km의 대곡리 바위입니다. 너비 약 8m·높이 약 4.5m 중심 바위면과 주변 10여 곳에 그림 312점이 있고, 고래·거북·상어와 호랑이·사슴·멧돼지 등 20여 종, 배를 탄 고래잡이와 활 사냥이 새겨져 있습니다. 위쪽은 2~3m 처마처럼 튀어나와 비바람을 막습니다. 동남해안 신석기 유적의 동물 뼈·도구와 맞아 약 7,000년 전 제작으로 추정합니다. 부가정보는 국보 285호, 연중무휴, 주소 언양읍 대곡리 991-3, 문의 052-254-5724입니다. 같은 6경의 천전리 각석·울산암각화박물관과 다른 대곡리 바위면입니다. 사진은 울산광역시 문화관광 12경·반구대 암각화 공식 사진입니다.',
+    '울산광역시 울주군 언양읍 대곡리 991-3 (반구대 암각화)',
+    US_BANG,
+    [US_BANG_2, US_BANG_3],
+    US_BANG_HOME,
   ),
 };
 

@@ -2,6 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
+## 팔경 활용 #73 — 영천9경 벚꽃 백리길·별별미술마을
+
+- **세션** `팔경 활용 #73, 영천 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `416b7596` · PR [#328](https://github.com/catgeot/Days/pull/328)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 영천9경 결손 2건. 7경 영천댐 벚꽃 백리길은 임고면 신방로 19 일원(영천호 일주 40km·1980년 12월 준공·높이 42m·총저수량 9,640만 톤·문의 054-330-6585). 9경 별별미술마을은 화산면 가상리 649(2011년 마을미술프로젝트·다섯 길·작품 62점·문의 054-330-6067). 임고강변공원 벚꽃길·보현산천문대·시안미술관·한의마을과 구분. 사진은 한국관광공사 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **22**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=yeongcheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongcheon`
+- **다음** `팔경 활용 #74, 청도 결손 오버레이` — 청도 새마을운동발상지기념공원·청도 섶마리한옥마을
+
 ## 팔경 활용 #72 — 울산12경 가지산 사계·반구대암각화
 
 - **세션** `팔경 활용 #72, 울산 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `5ea23cc8` · PR [#327](https://github.com/catgeot/Days/pull/327)
@@ -17,6 +25,14 @@
 - **VERIFY** `smoke:korea-theme-spot-modal` 무니 단언 PASS · `vite build` PASS. contentId 커버리지 2건은 origin/main과 같은 기존 FAIL.
 - **Preview** https://www.gateo.kr/qa/scenic-mooni (main 병합 후) · git `https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung`
 - **다음** `명소홈 #2, Preview OK면 PR 병합`
+
+## 로그북 #14, 피드 카드 디자인 리뉴얼
+
+- **세션** `로그북 #14, 피드 카드 디자인 리뉴얼` · feature `cursor/logbook-reads-af3f` · tip `133bdc68` · PR [#325](https://github.com/catgeot/Days/pull/325)
+- **조치** 이미지 위 큰 날짜 배지를 본문 상단 메타(에디터 뱃지 / 작성자 + 발행일)로 자연스럽게 통합. 사진 추가 배지(+N)는 썸네일 우측 하단 뱃지로 정돈. 하단에 2행으로 분산되어 복잡했던 메타정보를 [좌측 장소 / 우측 읽는 시간·조회수] 단일 행으로 통합하여 향후 좋아요·댓글 확장을 위한 인라인 슬롯 구조를 확보. 모바일 2열 그리드 패딩 및 행간 최적화.
+- **VERIFY** `smoke:logbook-view-count` PASS · `vite build` PASS.
+- **Preview** https://www.gateo.kr/qa/logbook-reads · git `https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog` (로그인 시 `?tab=public`)
+- **다음** `로그북 #15, 좋아요·댓글 시스템 연동` — 리뉴얼된 카드 슬롯에 좋아요 및 댓글 데이터/인터랙션 연동.
 
 ## 로그북 #13, 읽는 시간·같은 장소 수
 
