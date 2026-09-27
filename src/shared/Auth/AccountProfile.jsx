@@ -46,6 +46,7 @@ const AccountProfile = ({ embedded = false, onBack, embeddedCloseInParent = fals
   const [linkBusy, setLinkBusy] = useState('');
   const [linkError, setLinkError] = useState('');
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
+  const [coverPickUrls, setCoverPickUrls] = useState(null);
   const photoBusyRef = useRef(false);
   const photoKey = account.photos.join('\n');
   photoBusyRef.current = photoBusy;
@@ -156,12 +157,18 @@ const AccountProfile = ({ embedded = false, onBack, embeddedCloseInParent = fals
         added.push(await uploadProfilePhotoFile(user, file));
       }
       const saved = await persistProfileGallery(user, {
-        photos: [...added, ...photos],
+        photos: [...photos, ...added],
         profilePublic,
       });
       setPhotos(saved.photos);
       setProfilePublic(saved.profilePublic);
-      setPhotoHint(t('authPage.account.photoUpdated'));
+      if (added.length > 1) {
+        setCoverPickUrls(added);
+        setPhotoHint(t('authPage.account.pickCoverHint'));
+      } else {
+        setCoverPickUrls(null);
+        setPhotoHint(t('authPage.account.photoUpdated'));
+      }
       if (files.length > room) {
         setPhotoHint(t('authPage.account.photoLimit', { max: PROFILE_PHOTO_LIMIT }));
       }
@@ -178,6 +185,7 @@ const AccountProfile = ({ embedded = false, onBack, embeddedCloseInParent = fals
   };
 
   const setCover = (url) => {
+    setCoverPickUrls(null);
     if (photos[0] === url) return;
     void saveGallery([url, ...photos.filter((item) => item !== url)], profilePublic);
   };
@@ -313,6 +321,34 @@ const AccountProfile = ({ embedded = false, onBack, embeddedCloseInParent = fals
                       </span>
                     ) : null}
                   </button>
+                  {coverPickUrls?.length ? (
+                    <div className="mt-3 w-full rounded-xl border border-blue-200 bg-blue-50/90 p-3 text-left">
+                      <p className="text-xs font-bold text-blue-900">{t('authPage.account.pickCoverTitle')}</p>
+                      <p className="mt-1 break-keep text-[10px] leading-snug text-blue-800/80">
+                        {t('authPage.account.pickCoverBody')}
+                      </p>
+                      <ul className="mt-2 flex w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1">
+                        {coverPickUrls.map((url) => (
+                          <li key={url} className="shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => setCover(url)}
+                              className={`h-16 w-16 overflow-hidden rounded-lg border-2 ${url === cover ? 'border-blue-600 ring-2 ring-blue-300' : 'border-blue-300 hover:border-blue-500'}`}
+                            >
+                              <img src={url} alt="" className="h-full w-full object-cover" />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        type="button"
+                        onClick={() => setCoverPickUrls(null)}
+                        className="mt-2 text-[10px] font-bold text-blue-700 underline-offset-2 hover:underline"
+                      >
+                        {t('authPage.account.pickCoverSkip')}
+                      </button>
+                    </div>
+                  ) : null}
                   {photos.length > 1 ? (
                     <ul className="mt-3 flex w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain px-1 pt-1 pb-1">
                       {photos.map((url) => (
@@ -321,7 +357,8 @@ const AccountProfile = ({ embedded = false, onBack, embeddedCloseInParent = fals
                             type="button"
                             onClick={() => setCover(url)}
                             title={t('authPage.account.setCover')}
-                            className={`h-14 w-14 overflow-hidden rounded-lg border ${url === cover ? 'border-blue-500' : 'border-gray-200'}`}
+                            aria-pressed={url === cover}
+                            className={`h-14 w-14 overflow-hidden rounded-lg border-2 ${url === cover ? 'border-blue-600 ring-2 ring-blue-200' : 'border-gray-200'}`}
                           >
                             <img src={url} alt="" className="h-full w-full object-cover" />
                           </button>
