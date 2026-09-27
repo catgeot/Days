@@ -4991,6 +4991,77 @@ assert.ok(
   '영천 검색 9경 별별미술마을 썸네일',
 );
 
+const cheongdoMerged = mergeLocalScenicMembersIntoScenicSpots([], 'cheongdo');
+const cheongdoNine = cheongdoMerged.filter((s) => s.localScenicListId === 'cheongdo-gugyeong');
+assert.equal(cheongdoNine.length, 9, '청도 관광 9경 9명');
+const cheongdoDeficitNames = ['청도 새마을운동발상지기념공원', '청도 섶마리한옥마을'];
+const cheongdoDeficit = cheongdoNine.filter((s) => cheongdoDeficitNames.includes(s.attractionName));
+assert.equal(cheongdoDeficit.length, 2, '청도 관광 9경 결손 2명');
+assert.ok(
+  cheongdoDeficit.every((s) => s.overview && s.imageUrl),
+  '청도 결손 2명 overlay 사진·개요',
+);
+assert.ok(
+  cheongdoDeficit.every((s) => !s.contentId),
+  '청도 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(cheongdoDeficit.map((s) => s.imageUrl)).size,
+  2,
+  '새마을운동발상지·섶마리한옥마을 썸네일 다름',
+);
+const cdSae = resolveLocalScenicListSpotById('local-scenic:cheongdo-gugyeong:청도새마을운동발상지기념공원');
+assert.ok(cdSae?.overview && cdSae?.imageUrl, '새마을운동발상지 overlay 사진·개요');
+assert.ok(!cdSae?.contentId, '새마을운동발상지 JSON contentId 없음 유지');
+assert.ok(cdSae?.overview?.includes('새마을1길 34'), '새마을운동발상지 overlay 주소');
+assert.ok(cdSae?.overview?.includes('054-372-5500'), '새마을운동발상지 overlay 문의');
+assert.ok(cdSae?.overview?.includes('신거역'), '새마을운동발상지 overlay 신거역');
+assert.ok(cdSae?.overview?.includes('새마을운동테마공원'), '새마을운동발상지≠구미 테마공원');
+assert.ok(cdSae?.overview?.includes('신화랑풍류마을'), '새마을운동발상지≠신화랑풍류마을');
+assert.ok(cdSae?.imageUrl?.includes('GC055P00043'), '새마을운동발상지 공원 전경');
+assert.ok(
+  cdSae?.galleryUrls?.some((u) => u.includes('GC055P01766')),
+  '새마을운동발상지 기념관 사진',
+);
+assert.ok(cdSae?.homepage?.includes('GC05501668'), '새마을운동발상지 문화대전');
+const cdSeop = resolveLocalScenicListSpotById('local-scenic:cheongdo-gugyeong:청도섶마리한옥마을');
+assert.ok(cdSeop?.overview && cdSeop?.imageUrl, '섶마리한옥마을 overlay 사진·개요');
+assert.ok(!cdSeop?.contentId, '섶마리한옥마을 JSON contentId 없음 유지');
+assert.ok(cdSeop?.overview?.includes('신지리'), '섶마리한옥마을 overlay 주소');
+assert.ok(cdSeop?.overview?.includes('선암로 474'), '섶마리한옥마을 overlay 운강고택');
+assert.ok(cdSeop?.overview?.includes('하회마을'), '섶마리한옥마을≠하회마을');
+assert.ok(cdSeop?.overview?.includes('운문사'), '섶마리한옥마을≠운문사');
+assert.ok(cdSeop?.imageUrl?.includes('GC055P03568'), '섶마리한옥마을 마을 사진');
+assert.ok(
+  cdSeop?.galleryUrls?.some((u) => u.includes('GC055P04093')),
+  '섶마리한옥마을 운강고택 사진',
+);
+assert.ok(
+  cdSeop?.galleryUrls?.some((u) => u.includes('GC055P03522')),
+  '섶마리한옥마을 만화정 사진',
+);
+assert.ok(cdSeop?.homepage?.includes('GC05500258'), '섶마리한옥마을 문화대전');
+assert.notEqual(cdSae?.imageUrl, cdSeop?.imageUrl, '발상지·섶마리 썸네일 다름');
+assert.ok(!cdSeop?.imageUrl?.includes('GC055P00043'), '섶마리≠발상지 사진');
+assert.ok(!cdSae?.imageUrl?.includes('GC055P03568'), '발상지≠섶마리 사진');
+const cheongdoGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '청도', {
+  injectLocalScenic: true,
+});
+const cheongdoGlobeNine = cheongdoGlobe.filter((s) => s.localScenicListId === 'cheongdo-gugyeong');
+assert.equal(cheongdoGlobeNine.length, 9, '청도 검색 청도 관광 9경 9행');
+assert.ok(
+  cheongdoGlobe.find((s) => s.attractionName === '청도 새마을운동발상지기념공원')?.overview?.includes('새마을1길 34'),
+  '청도 검색 2경 새마을운동발상지 개요',
+);
+assert.ok(
+  cheongdoGlobe.find((s) => s.attractionName === '청도 새마을운동발상지기념공원')?.imageUrl?.includes('GC055P00043'),
+  '청도 검색 2경 새마을운동발상지 썸네일',
+);
+assert.ok(
+  cheongdoGlobe.find((s) => s.attractionName === '청도 섶마리한옥마을')?.imageUrl?.includes('GC055P03568'),
+  '청도 검색 5경 섶마리한옥마을 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

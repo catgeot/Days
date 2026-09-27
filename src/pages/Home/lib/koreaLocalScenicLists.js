@@ -1690,6 +1690,14 @@ const YC_CHERRY_HOME =
 const YC_ALLEY = `${YC_VK}2d029348-6d0d-4d1f-862f-01e70f6c2b6e`;
 const YC_MUSEUM = `${YC_VK}4b37cc23-2ca9-4965-a2cd-ada7e201b3ad`;
 const YC_ART_HOME = 'https://www.yc.go.kr/toursub/garaesil';
+const CD_IMG = 'https://cheongdo.grandculture.net/Image?localName=cheongdo&id=';
+const CD_SAE = `${CD_IMG}GC055P00043`;
+const CD_SAE_HALL = `${CD_IMG}GC055P01766`;
+const CD_SAE_HOME = 'https://cheongdo.grandculture.net/cheongdo/toc/GC05501668';
+const CD_SEOP = `${CD_IMG}GC055P03568`;
+const CD_SEOP_HOUSE = `${CD_IMG}GC055P04093`;
+const CD_SEOP_PAV = `${CD_IMG}GC055P03522`;
+const CD_SEOP_HOME = 'https://cheongdo.grandculture.net/cheongdo/toc/GC05500258';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3683,6 +3691,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     YC_ALLEY,
     [YC_MUSEUM],
     YC_ART_HOME,
+  ),
+  'local-scenic:cheongdo-gugyeong:청도새마을운동발상지기념공원': localScenicPhotoOverlay(
+    '청도 관광 9경 제2경 새마을운동발상지기념공원은 청도읍 새마을1길 34(신도리 18-2)입니다. 디지털청도문화대전은 새마을운동이 청도읍 신도리에서 비롯되었음을 기념하는 곳이며, 기념관은 2009년 4월 14일 개관했다고 적습니다. 2009년부터 2011년 8월 27일까지 시범단지 가꾸기 사업비 45억 원으로 박정희 대통령의 신도마을 시찰을 재현하는 대통령 전용 열차·시찰 동상, 신거역·신도 정미소 복원과 발상지 공원을 조성했습니다. 기념관은 총사업비 62억 원, 대지 1만 994㎡, 연면적 1,494.6㎡이고 1층은 전시실, 2층은 영상실입니다. 문의는 054-372-5500입니다. 구미 새마을운동테마공원·3경 청도 신화랑풍류마을(운문면 화랑)·1경 청도읍성과 다른 신도마을 공원입니다. 사진은 디지털청도문화대전 발상지 공원 전경·기념관 공식 사진입니다.',
+    '경상북도 청도군 청도읍 새마을1길 34 (신도리 18-2, 새마을운동발상지기념공원)',
+    CD_SAE,
+    [CD_SAE_HALL],
+    CD_SAE_HOME,
+  ),
+  'local-scenic:cheongdo-gugyeong:청도섶마리한옥마을': localScenicPhotoOverlay(
+    '청도 관광 9경 제5경 섶마리한옥마을은 금천면 신지리입니다. 디지털청도문화대전은 신지를 선마리라고 부르고 섶마리라고 쓰며, 섶다리는 동곡에서 신지리로 가을에 나무로 놓았다가 여름 큰비에 떠내려가던 다리라고 적습니다. 소요당 박하담이 신지리에 소요당을 짓고 장구지소로 삼은 뒤 후손이 정착한 밀양 박씨 집성촌이고, 기와집이 약 40동입니다. 중심은 국가민속문화유산 청도 운강고택과 만화정입니다. 운강고택은 금천면 선암로 474(신지리 269-1)로, 1809년 박정주의 살림집이고 1824년 운강 박시묵이 증축했습니다. 만화정은 1856년 박시묵이 운문천 절벽 위에 지은 별서입니다. 경상북도 민속문화유산 섬암고택·도일고택·명중고택·운남고택과 선암서원이 같은 마을에 있습니다. 안동 하회마을·경주 양동마을·4경 운문사·3경 신화랑풍류마을과 다른 금천면 고택 마을입니다. 사진은 디지털청도문화대전 신지리 고택 마을·운강고택·만화정 공식 사진입니다.',
+    '경상북도 청도군 금천면 신지리 (운강고택 선암로 474, 섶마리한옥마을)',
+    CD_SEOP,
+    [CD_SEOP_HOUSE, CD_SEOP_PAV],
+    CD_SEOP_HOME,
   ),
 };
 
