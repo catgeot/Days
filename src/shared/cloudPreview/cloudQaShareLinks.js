@@ -441,6 +441,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'scenic-mooni',
+    label: '명소홈 — 본문 무니 FAB',
+    branch: 'cursor/scenic-mooni-b353',
+    destination:
+      'https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
     slug: 'home-korea',
     label: '홈·축제 헤더 간소화',
     branch: 'main',

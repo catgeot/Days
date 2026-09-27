@@ -5612,6 +5612,7 @@ export default function KoreaThemeScenicPage() {
             modalSpot?.id != null && favoriteIds.has(String(modalSpot.id))
           }
           onToggleFavorite={handleToggleFavorite}
+          mooniFab
         />
       ) : null}
     </div>
