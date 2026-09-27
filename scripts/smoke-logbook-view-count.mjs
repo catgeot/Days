@@ -157,6 +157,9 @@ assert.match(detail, /tone="article"/);
 assert.doesNotMatch(publicViewer, /update\(\s*\{[^}]*view_count/);
 assert.doesNotMatch(detail, /update\(\s*\{[^}]*view_count/);
 assert.match(recentList, /LogbookReactionSlot/);
+assert.match(recentList, /viewMode === 'column'/);
+assert.match(recentList, /grid-cols-1 gap-5/);
+assert.match(recentList, /viewColumn/);
 assert.match(publicViewer, /LogbookComments/);
 assert.match(publicViewer, /LogbookReactionSlot/);
 

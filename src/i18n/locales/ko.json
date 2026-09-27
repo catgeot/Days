@@ -1845,6 +1845,8 @@
       "clearSearch": "검색어 지우기",
       "viewGrid": "그리드",
       "viewList": "자세히",
+      "viewColumn": "1열",
+      "viewGroup": "기록 배치",
       "emptyTitle": "기록된 여정이 없습니다.",
       "emptyBody": "당신만의 첫 번째 이야기를 남겨보세요.",
       "emptyCta": "새 기록 작성하기",

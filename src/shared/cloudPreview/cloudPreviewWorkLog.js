@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 15,
-  sessionPhase: '좋아요·댓글 연동',
+  sessionNo: 16,
+  sessionPhase: '1열 그리드',
   branch: 'cursor/logbook-reads-af3f',
   previewPath: '/blog',
   qaShareSlug: 'logbook-reads',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-logbook-16-column',
+    session: '로그북 #16, 1열 그리드',
+    title: '보관소 1열 카드',
+    detail:
+      '기록 보관소 검색 옆 배치를 자세히·1열·그리드 세 버튼으로 나눴습니다. 1열은 사진이 위인 카드 그대로 한 줄에 하나씩 보여 제목과 요약이 넓게 읽힙니다. 기본은 그리드입니다. 좋아요 확인 창의 긴 주소는 프리뷰 호스트이고, 본문 문구는 그대로입니다. Preview /qa/logbook-reads — /blog 공개 피드에서 1열을 눌러 카드가 한 줄인지.',
+    at: '2026-09-27T03:50:00.000Z',
+  },
   {
     id: '2026-09-27-logbook-15-reactions',
     session: '로그북 #15, 좋아요·댓글 연동',

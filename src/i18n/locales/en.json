@@ -2082,6 +2082,8 @@
       "clearSearch": "Clear search",
       "viewGrid": "Grid",
       "viewList": "Details",
+      "viewColumn": "1 col",
+      "viewGroup": "Entry layout",
       "emptyTitle": "No journeys logged yet.",
       "emptyBody": "Write your first story.",
       "emptyCta": "Create new entry",
