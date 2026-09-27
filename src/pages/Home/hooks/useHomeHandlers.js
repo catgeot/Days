@@ -55,6 +55,7 @@ import {
   resolveKoreaDestinationFirstPassSync,
 } from '../lib/resolveKoreaDestinationFirstPass.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
+import { resolveExploreCityHubExact } from '../lib/exploreHubResolve.js';
 import { pickSeaBasinCurationSpot } from '../lib/seaBasinResolve.js';
 import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js';
 import {
@@ -874,7 +875,7 @@ export function useHomeHandlers({
       }
 
       // 도시 허브 exact (속초·파리) → 선택 카드 (임의 1곳 점프 금지)
-      const hubHit = resolveCityAttractionHub(query);
+      const hubHit = resolveExploreCityHubExact(query);
       if (hubHit) {
         let candidates = await buildHubCandidatesForEnter(hubHit);
         const spot =
