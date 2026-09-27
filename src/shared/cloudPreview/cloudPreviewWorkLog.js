@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 76,
-  sessionPhase: '장흥 결손 오버레이',
+  sessionNo: 77,
+  sessionPhase: '경주 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jangheung',
+  previewPath: '/korea/theme/scenic?hub=gyeongju',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-27-palgyeong-use-77-gyeongju-overlay',
+    session: '팔경 활용 #77, 경주 결손 오버레이',
+    title: '경주8怪 나원백탑',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 경주8怪 결손 1건(나원백탑)의 공공 공식 팩트 개요·주소·국가유산청 공식 사진을 보강했습니다. 나원백탑은 현곡면 라원리 676의 경주 나원리 오층석탑(1962-12-20 국보·통일신라 초기·2층 기단 5층 탑신·1995-11~1996-07 해체수리·무구정광대다라니경)입니다. 장항리 오층석탑·나원사·남산부석·불국영지·백율사와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gyeongju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-27T07:10:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-76-jangheung-overlay',
     session: '팔경 활용 #76, 장흥 결손 오버레이',
