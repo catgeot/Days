@@ -83,11 +83,6 @@ async function openFirstCard(page, cards) {
   await expect(detailDialog(page)).toBeVisible({ timeout: 30_000 });
 }
 
-async function openSecondCard(page, cards) {
-  await cards.nth(1).click({ force: true });
-  await expect(detailDialog(page)).toBeVisible({ timeout: 30_000 });
-}
-
 test.describe('Korea festival detail URL + history', () => {
   test.beforeEach(async ({ page }) => {
     await blockSupabaseWrites(page);
