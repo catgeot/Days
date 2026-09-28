@@ -2,6 +2,14 @@
 
 직전: [`2026-09-27-project-log.md`](./2026-09-27-project-log.md)
 
+## 팔경 활용 #83 — 부여10경 천정대 백제보
+
+- **세션** `팔경 활용 #83, 부여 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `eb9fb7d9` · PR [#339](https://github.com/catgeot/Days/pull/339)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 부여10경 결손 1건. 천정대(규암면 호암리 산5·기념물 제49호·정사암)와 백제보(부여읍 북포로 451·311m·금강문화관). 공주보·세종보·부소산 낙화암과 구분. 사진은 부여군 문화관광 공식 3장.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `vite build` PASS. 순수 사진/개요 누락 **9**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=buyeo` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=buyeo`
+- **다음** `팔경 활용 #84, 성주 결손 오버레이` — 성주참외하우스 들녘 · **오버레이 사진 ≥3장**([`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §2.1)
+
 ## 팔경 활용 #81 — 태안8경 안흥성
 
 - **세션** `팔경 활용 #81, 태안 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `3a97c812` · PR [#339](https://github.com/catgeot/Days/pull/339)
