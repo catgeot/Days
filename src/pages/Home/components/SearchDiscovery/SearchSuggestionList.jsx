@@ -23,7 +23,10 @@ import {
   koreaHomonymChoiceQuery,
 } from '../../lib/detectHomonymLocation';
 import { HomonymChoiceChips } from './HomonymChoiceChips';
-import { sliceSearchDisambiguationPage } from '../../lib/searchDisambiguationPaging.js';
+import {
+  sliceSearchDisambiguationPage,
+  resolveSearchDisambiguationPageSize,
+} from '../../lib/searchDisambiguationPaging.js';
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
 
@@ -423,9 +426,14 @@ export function SearchDisambiguationCards({
     setPage(1);
   }, [candidateKey]);
 
+  const disambiguationPageSize = useMemo(
+    () => resolveSearchDisambiguationPageSize(candidates),
+    [candidates],
+  );
+
   const paging = useMemo(
-    () => sliceSearchDisambiguationPage(candidates, page),
-    [candidates, page],
+    () => sliceSearchDisambiguationPage(candidates, page, disambiguationPageSize),
+    [candidates, page, disambiguationPageSize],
   );
   const pageItems = paging.items;
 
@@ -438,7 +446,7 @@ export function SearchDisambiguationCards({
   useEffect(() => {
     let cancelled = false;
     setIntroByKey({});
-    const list = sliceSearchDisambiguationPage(candidates, page).items;
+    const list = sliceSearchDisambiguationPage(candidates, page, disambiguationPageSize).items;
     if (!list.length) return undefined;
 
     (async () => {
@@ -460,7 +468,7 @@ export function SearchDisambiguationCards({
   }, [candidateKey, page, candidates]);
 
   const goPage = (nextPage) => {
-    const next = sliceSearchDisambiguationPage(candidates, nextPage);
+    const next = sliceSearchDisambiguationPage(candidates, nextPage, disambiguationPageSize);
     setPage(next.page);
     onPageChange?.(next.page);
   };
