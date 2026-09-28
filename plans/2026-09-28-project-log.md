@@ -2,6 +2,14 @@
 
 직전: [`2026-09-27-project-log.md`](./2026-09-27-project-log.md)
 
+## 팔경 활용 #84 — 성주10경 성주참외하우스 들녘
+
+- **세션** `팔경 활용 #84, 성주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `720f5e9b` · PR [#347](https://github.com/catgeot/Days/pull/347)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 성주10경 결손 1건. 성주참외하우스 들녘(성주읍 성주로 3200·전국 최대 참외 주산지 비닐하우스 들녘·2022년 10경 제10경). 가야산·세종대왕자태실·참외체험형 테마공원과 구분. 사진은 성주군 문화관광 공식 3장.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `vite build` PASS. 순수 사진/개요 누락 **8**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=seongju` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=seongju`
+- **다음** `팔경 활용 #85, 양양 결손 오버레이` — 죽도정 · **오버레이 사진 ≥3장**([`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §2.1)
+
 ## 팔경 활용 #83 — 부여10경 천정대 백제보
 
 - **세션** `팔경 활용 #83, 부여 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `eb9fb7d9` · PR [#339](https://github.com/catgeot/Days/pull/339)
