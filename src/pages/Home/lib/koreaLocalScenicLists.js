@@ -1797,6 +1797,10 @@ const TA_ANHEUNG_2 = `${TA_TOUR_IMG}/920_TUCN_202301180236267362.jpg`;
 const TA_ANHEUNG_3 = `${TA_TOUR_IMG}/920_TUCN_202301180236296524.jpg`;
 const TA_ANHEUNG_HOME =
   'https://www.taean.go.kr/prog/tursmCn/tour/sub02_02_02/view.do?cntno=2';
+const BU_TOUR_SUB = 'https://www.buan.go.kr/travel/img/sub';
+const BU_BYUNSAN_SEOHAE = `${BU_TOUR_SUB}/img_byunsan_list_05.jpg`;
+const BU_BYUNSAN_HOME =
+  'https://www.buan.go.kr/index.buan?menuCd=DOM_000000208002000000';
 const CN_TOUR_IMG = 'https://tour.chungnam.go.kr/thumbnail/trsrcn';
 const CN_SINGWAN = `${CN_TOUR_IMG}/TRSRCN_202501140412570660.JPG`;
 const CN_SINGWAN_2 = `${CN_TOUR_IMG}/TRSRCN_202605091035591187.JPG`;
@@ -3873,6 +3877,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     DJ_JANGTAE,
     [DJ_JANGTAE_2, DJ_JANGTAE_3],
     DJ_JANGTAE_HOME,
+  ),
+  'local-scenic:buan-palgyeong:서해낙조': localScenicPhotoOverlay(
+    '변산8경 제5경 서해낙조(西海落照)는 내변산 월명암 옆 낙조대에서 해질 무렵 바라보는 서해 풍경입니다. 부안군 문화관광은 예부터 낙산의 일출과 서해의 낙조를 비경으로 꼽았으며, 낙조대에 서면 멀리 점점이 떠 있는 고군산군도와 위도가 한눈에 들어오고 마지막 정열을 불태운 해가 진홍빛 바닷속으로 빠지는 장관이라고 적습니다. 디지털부안문화대전은 서해안 산 중 낙조대가 적지 않으나 이곳에서 태양의 위세가 특히 장관을 이룬다고 하고, 육당 최남선 『심춘순례』에서 낙산 일출과 월명 낙조를 변산 팔경 중 가장 기장(奇絶)한 줄로 칭했다고 전합니다. 노산 이은상은 「월명암 낙조대를 찾아간다오」 시를 남겼습니다. 남여치 공원에서 월명암·낙조대까지 등산 코스가 이어집니다. 군산 선유낙조·영광 불갑사 낙조와 다른 변산면 내변산 일몰 전망입니다. 사진은 부안군 문화관광 변산8경 제5경 공식 사진입니다.',
+    '전북특별자치도 부안군 변산면 (월명암·낙조대)',
+    BU_BYUNSAN_SEOHAE,
+    [],
+    BU_BYUNSAN_HOME,
   ),
   'local-scenic:taean-palgyeong:안흥성': localScenicPhotoOverlay(
     '태안8경 제2경 안흥성(안흥진성)은 근흥면 정죽리 1155-1 안흥항 뒷산의 석성입니다. 태안군 문화관광은 조선 시대 진성(鎭城)으로 충청도 유일의 수군 방어영이 배치되어 왜구·해적 방어와 곡선·사신 접대 기능을 맡았으며, 남 성벽 글씨에 1583년 최초 축성·1655년 대수리가 적힌다고 안내합니다. 성벽 전체 길이는 약 1,798m로 태안 수군 진성 중 최대이며 동문 수성루·서문 수홍루·남문 복파루·북문 감성루가 있었고 현재는 서문만 문루를 복원한 상태라고 적습니다. 충남 지정 기념물에서 2020년 국가사적으로 승격되었습니다. 성마루에서는 안흥항과 섬들이 어우러진 서해 경관을 조망합니다. 화성 안흥창호·이천 안흥동·충남 다른 진성과 다른 근흥면 정죽리 국가사적입니다. 사진은 태안군 문화관광 제2경 안흥진성 공식 사진입니다.',
