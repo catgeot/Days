@@ -1,6 +1,13 @@
 import { buildTripcomPlannerFlightUrl, TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
+import { areMetroCoterminalAirports } from '../../../pages/Home/lib/flightOriginMetroGateways.js';
 import { recordTravelAgencyVisit } from '../../../utils/travelAgencyVisits.js';
 import { isMobileDevice } from './device';
+
+/** @param {unknown} value @returns {string | null} */
+function normalizeTripcomPackageIata(value) {
+  const code = String(value ?? '').trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(code) ? code : null;
+}
 
 /** @param {unknown} value @returns {boolean} */
 function hasTripcomFlightSchedulePrefill(value) {
@@ -163,4 +170,22 @@ export function openTripcomExternalUrl(url, { target = getPartnerLinkTarget(), p
  */
 export function getTripcomPackageLinkTarget() {
     return '_blank';
+}
+
+/** Trip.com 항공+숙소(packages/list) — 제휴 고지 + 새 탭 안전. */
+export function getTripcomPackageLinkRel() {
+    return 'sponsored noopener noreferrer';
+}
+
+/**
+ * 항공+숙소 CTA 표시 — 출·도착 IATA가 모두 있고 동일 공항·동일 대도시권(ICN↔GMP 등)이 아닐 때만.
+ * @param {string | null | undefined} departureIata
+ * @param {string | null | undefined} arrivalIata
+ */
+export function shouldShowTripcomPackageFlightHotelLink(departureIata, arrivalIata) {
+    const depart = normalizeTripcomPackageIata(departureIata);
+    const arrive = normalizeTripcomPackageIata(arrivalIata);
+    if (!depart || !arrive) return false;
+    if (areMetroCoterminalAirports(depart, arrive)) return false;
+    return true;
 }

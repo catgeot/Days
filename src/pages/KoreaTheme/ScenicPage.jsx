@@ -28,6 +28,10 @@ import {
   X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
+import {
+  KOREA_NEAR_ME_FILLED_ACTIVE,
+  KOREA_NEAR_ME_FILLED_IDLE,
+} from '../Korea/koreaHubFilterChipStyles.js';
 import KoreaScenicMap from './KoreaScenicMap';
 import {
   focusViewFromScenicItems,
@@ -4436,8 +4440,8 @@ export default function KoreaThemeScenicPage() {
                       aria-pressed={nearActive}
                       className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-60 ${
                         nearActive
-                          ? 'border-amber-500 bg-amber-500 text-white hover:bg-amber-600'
-                          : 'border-amber-500/40 bg-amber-500 text-white hover:bg-amber-600'
+                          ? KOREA_NEAR_ME_FILLED_ACTIVE
+                          : KOREA_NEAR_ME_FILLED_IDLE
                       }`}
                     >
                       {nearBusy ? (

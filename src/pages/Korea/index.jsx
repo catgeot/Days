@@ -63,6 +63,7 @@ import {
   DEFAULT_AREA_CODE,
   NEAR_FESTIVAL_KM,
 } from './koreaFestivalDefaults';
+import { KOREA_FILTER_CHIP_ACTIVE } from './koreaHubFilterChipStyles.js';
 import {
   clearRecentSearches,
   FESTIVAL_RECENT_SEARCH_KEY,
@@ -265,7 +266,7 @@ function festivalKey(item) {
 function chipClass(active) {
   return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 ${
     active
-      ? 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm'
+      ? KOREA_FILTER_CHIP_ACTIVE
       : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50 hover:border-stone-300'
   }`;
 }
@@ -274,7 +275,7 @@ function chipClass(active) {
 function majorChipClass(panelOpen) {
   return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 font-bold ${
     panelOpen
-      ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+      ? KOREA_FILTER_CHIP_ACTIVE
       : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
   }`;
 }

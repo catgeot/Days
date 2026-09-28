@@ -7,8 +7,9 @@ import {
   getPlannerFlightArrivalIata,
 } from '../../utils/affiliate';
 import {
-  getTripcomLinkRel,
+  getTripcomPackageLinkRel,
   getTripcomPackageLinkTarget,
+  shouldShowTripcomPackageFlightHotelLink,
 } from '../../components/PlaceCard/common/partnerNavigation';
 import {
   GuestStepper,
@@ -62,11 +63,12 @@ function EventFlightHotelCta({
   const partnerLocale = resolveTripcomPartnerLocale(locale);
   const packageUrl = useMemo(() => {
     if (!location) return null;
-    const depart = departureIata
-      ? resolveFlightDepartureIataForTrip(departureIata)
-      : undefined;
+    const depart = resolveFlightDepartureIataForTrip(departureIata);
+    const arrive = getPlannerFlightArrivalIata(location);
+    if (!shouldShowTripcomPackageFlightHotelLink(depart, arrive)) return null;
     return buildTripcomPlannerFlightUrl(location, {
       departureIata: depart,
+      arrivalIata: arrive,
       tracking: 'event-detail-flight',
       mode: 'packages',
       departDate: checkIn,
@@ -82,7 +84,7 @@ function EventFlightHotelCta({
   if (!location || !packageUrl) return null;
 
   const linkTarget = getTripcomPackageLinkTarget();
-  const linkRel = getTripcomLinkRel(linkTarget);
+  const linkRel = getTripcomPackageLinkRel();
 
   return (
     <a
