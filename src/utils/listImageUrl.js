@@ -25,16 +25,7 @@ export function resolveListImageUrl(url, opts = {}) {
 
   try {
     const parsed = new URL(raw.startsWith('//') ? `https:${raw}` : raw);
-    if (isVisitKoreaHost(parsed.hostname)) {
-      // CMS: _image2_1 is ~940px; _image1_1 is a smaller variant on the same asset.
-      if (/_image2_1\.(jpe?g|png|webp)$/i.test(parsed.pathname)) {
-        parsed.pathname = parsed.pathname.replace(
-          /_image2_1\.(jpe?g|png|webp)$/i,
-          '_image1_1.$1',
-        );
-        return parsed.toString();
-      }
-    }
+    // VisitKorea CMS: keep _image2_1 for list — _image1_1 is not consistently smaller on the wire.
     if (parsed.hostname === 'images.unsplash.com') {
       parsed.searchParams.set('auto', 'format');
       parsed.searchParams.set('fit', 'crop');
