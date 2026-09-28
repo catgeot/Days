@@ -234,6 +234,33 @@ export function resolveLocalScenicRowFirstImage(
  * @param {object} [item]
  * @returns {{ imageUrl: string | null, contentId: string | null }}
  */
+function resolveSearchScenicMediaForAttraction(hubId, name, contentId, extra = {}) {
+  const existing =
+    String(
+      extra.imageUrl ||
+        extra.thumbUrl ||
+        extra.firstImage ||
+        extra.image_url ||
+        '',
+    ).trim() || null;
+  const overlay =
+    overlayForHubMemberName(hubId, name) ||
+    lookupLocalScenicMemberOverlayForSpot({ hubId, name, ...extra });
+  const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
+  const rawId = String(
+    overlay?.contentId || contentId || fromCurated.contentId || '',
+  ).trim();
+  const resolvedContentId = /^\d{1,32}$/.test(rawId) ? rawId : null;
+  const byContentId = lookupLocalScenicPhotoByContentId(resolvedContentId);
+  const imageUrl =
+    overlay?.imageUrl ||
+    existing ||
+    byContentId?.imageUrl ||
+    fromCurated.imageUrl ||
+    null;
+  return { imageUrl, contentId: resolvedContentId };
+}
+
 export function resolveSearchScenicMedia(item) {
   if (!item || typeof item !== 'object') {
     return { imageUrl: null, contentId: null };
@@ -244,21 +271,35 @@ export function resolveSearchScenicMedia(item) {
     String(
       item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '',
     ).trim() || null;
-  const overlay =
-    overlayForHubMemberName(hubId, name) || lookupLocalScenicMemberOverlayForSpot(item);
-  const fromCurated = scenicThumbFromCurated(lookupCuratedScenicSpot(hubId, name));
-  const rawId = String(
-    overlay?.contentId || item.contentId || fromCurated.contentId || '',
-  ).trim();
-  const contentId = /^\d{1,32}$/.test(rawId) ? rawId : null;
-  const byContentId = lookupLocalScenicPhotoByContentId(contentId);
-  const imageUrl =
-    overlay?.imageUrl ||
-    existing ||
-    byContentId?.imageUrl ||
-    fromCurated.imageUrl ||
-    null;
-  return { imageUrl, contentId };
+
+  if (
+    !existing &&
+    hubId &&
+    item.kind === 'city' &&
+    item.source === 'hub'
+  ) {
+    const hub = resolveCityAttractionHub(hubId);
+    for (const attraction of hub?.attractions || []) {
+      const sub = resolveSearchScenicMediaForAttraction(
+        hubId,
+        String(attraction.name || '').trim(),
+        memberContentId({}, attraction),
+      );
+      if (sub.imageUrl) return sub;
+    }
+    for (const list of listsForHub(hubId)) {
+      for (const member of list.members || []) {
+        const sub = resolveSearchScenicMediaForAttraction(
+          hubId,
+          String(member.attractionName || '').trim(),
+          memberContentId(member, resolveMemberAttraction(hub, member)),
+        );
+        if (sub.imageUrl) return sub;
+      }
+    }
+  }
+
+  return resolveSearchScenicMediaForAttraction(hubId, name, item.contentId, item);
 }
 
 /**
@@ -1616,6 +1657,159 @@ const SC_NAM_2 =
 const SC_NAM_3 =
   'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=0b1e0a04-4d9c-4f1e-b6a0-6bc591469e7b';
 const SC_NAM_HOME = 'https://sancheong.go.kr/tour/contents.do?key=1945';
+const SCH_BASE = 'https://www.seocheon.go.kr';
+const SCH_JANG = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=0`;
+const SCH_JANG_2 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=1`;
+const SCH_JANG_3 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004924Gw2i&fileSn=2`;
+const SCH_JANG_HOME = `${SCH_BASE}/prog/trspt/tour/sub01_01_08/view.do?trsptSn=8`;
+const SCH_YUBU = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=0`;
+const SCH_YUBU_2 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=1`;
+const SCH_YUBU_3 = `${SCH_BASE}/cmm/fms/getImage.do?kind=920&atchFileId=FILE_00000004926Ey2h&fileSn=2`;
+const SCH_YUBU_HOME = `${SCH_BASE}/prog/trspt/tour/sub01_01_09/view.do?trsptSn=9`;
+const AS_BASE = 'https://www.ansan.go.kr';
+const AS_SIHWA = `${AS_BASE}/site/tourinfo/images/contents/1-1-1.jpg`;
+const AS_SIHWA_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767218065GXGH8LZP973A8Y31XRRX873U7.jpg`;
+const AS_SIHWA_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767218091ABS5PLFEK3QPAE1CC525TANTC.jpg`;
+const AS_SIHWA_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001969`;
+const AS_MULTI = `${AS_BASE}/site/tourinfo/images/contents/1-1-8.jpg`;
+const AS_MULTI_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753769297771CP8JKEZ30ROGXB5G2AS9UAWDU.jpg`;
+const AS_MULTI_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753769297810GFP862WZ2J21FJA339UIT0N72.jpg`;
+const AS_MULTI_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001976`;
+const AS_PUNG = `${AS_BASE}/site/tourinfo/images/contents/1-1-5.jpg`;
+const AS_PUNG_2 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/17537678283493TZ4HHLV6QRT29QG5PI8FIFBB.JPG`;
+const AS_PUNG_3 =
+  `${AS_BASE}/cmsdata/web_upload/temp/20250729/1753767828374NF4XB9J8M4Y0BA6UG92AR2GHA.jpg`;
+const AS_PUNG_HOME =
+  `${AS_BASE}/tourinfo/common/cntnts/selectContents.do?cntnts_id=C0001973`;
+const HS_BELL =
+  'https://www.khs.go.kr/unisearch/images/national_treasure/1612040.jpg';
+const HS_BELL_HOME =
+  'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaKdcd=11&ccbaAsno=0001200000000&ccbaCtcd=31&ccbaCpno=1113101200000';
+const HS_GEO = 'https://tour.hscity.go.kr/geopark/common/images/contents';
+const HS_HONG = `${HS_GEO}/j9_4.png`;
+const HS_HONG_2 = `${HS_GEO}/j9_0.png`;
+const HS_HONG_3 = `${HS_GEO}/j9_1.png`;
+const HS_HONG_HOME = 'https://tour.hscity.go.kr/geopark/geoInfo/j9.jsp';
+const YI_IMG = 'https://www.yongin.go.kr/resources/user/yitour/img/content';
+const YI_JOBI = `${YI_IMG}/01020106_1.jpg`;
+const YI_JOBI_2 = `${YI_IMG}/01020106_2.jpg`;
+const YI_JOBI_3 = `${YI_IMG}/01020106_3.jpg`;
+const YI_JOBI_HOME =
+  'https://www.yongin.go.kr/home/yitour/ytour01/yttour02/yttourmn01_05.jsp';
+const YI_EOBI = `${YI_IMG}/01020108_2.jpg`;
+const YI_EOBI_2 = `${YI_IMG}/01020108_3.jpg`;
+const YI_EOBI_3 = `${YI_IMG}/01020108_4.jpg`;
+const YI_EOBI_HOME =
+  'https://www.yongin.go.kr/home/yitour/ytour01/yttour02/yttourmn01_07.jsp';
+const US_BASE = 'https://www.ulsan.go.kr';
+const US_12 = `${US_BASE}/tour/storyCms/kor/images/sub01`;
+const US_GAJI = `${US_12}/img_12view03.jpg`;
+const US_GAJI_2 =
+  `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002274&fileSn=3`;
+const US_GAJI_3 =
+  `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002274&fileSn=4`;
+const US_GAJI_HOME =
+  `${US_BASE}/tour/kor/unit/attrctn/view.ulsan?mId=001002001000000000&unqId=1`;
+const US_BANG = `${US_12}/img_12view06.jpg`;
+const US_BANG_2 =
+  `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002251&fileSn=1`;
+const US_BANG_3 =
+  `${US_BASE}/tour/storyCms1/getImage.do?atchFileId=FILE_000000000002251&fileSn=3`;
+const US_BANG_HOME =
+  `${US_BASE}/tour/kor/unit/attrctn/view.ulsan?mId=001002007000000000&unqId=100`;
+const YC_VK = 'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=';
+const YC_CHERRY = `${YC_VK}14d4d63f-4f8c-431b-9d0b-f9eb1bb7f273`;
+const YC_CHERRY_HOME =
+  'https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=83ec57e2-953a-42f9-b874-e7e2c74f0d72';
+const YC_ALLEY = `${YC_VK}2d029348-6d0d-4d1f-862f-01e70f6c2b6e`;
+const YC_MUSEUM = `${YC_VK}4b37cc23-2ca9-4965-a2cd-ada7e201b3ad`;
+const YC_ART_HOME = 'https://www.yc.go.kr/toursub/garaesil';
+const CD_IMG = 'https://cheongdo.grandculture.net/Image?localName=cheongdo&id=';
+const CD_SAE = `${CD_IMG}GC055P00043`;
+const CD_SAE_HALL = `${CD_IMG}GC055P01766`;
+const CD_SAE_HOME = 'https://cheongdo.grandculture.net/cheongdo/toc/GC05501668';
+const CD_SEOP = `${CD_IMG}GC055P03568`;
+const CD_SEOP_HOUSE = `${CD_IMG}GC055P04093`;
+const CD_SEOP_PAV = `${CD_IMG}GC055P03522`;
+const CD_SEOP_HOME = 'https://cheongdo.grandculture.net/cheongdo/toc/GC05500258';
+const UR_KHS = 'https://www.khs.go.kr/unisearch/images/cultural_material';
+const UR_AN = `${UR_KHS}/1664302.jpg`;
+const UR_AN_2 = `${UR_KHS}/1664304.jpg`;
+const UR_AN_HOME =
+  'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=3413801930000&ccbaKdcd=31&ccbaAsno=0001930000000&ccbaCtcd=38';
+const UR_HOAM = 'https://www.hoamfoundation.org/images/hoam';
+const UR_HOAM_GATE = `${UR_HOAM}/img_map_pho01.jpg`;
+const UR_HOAM_ANCHAE = `${UR_HOAM}/img_map_pho02.jpg`;
+const UR_HOAM_BACK = `${UR_HOAM}/img_map_pho09.jpg`;
+const UR_HOAM_HOME = 'https://www.hoamfoundation.org/kor/hoam/hoam_map.asp';
+const JH_IMG = 'https://jangheung.grandculture.net/Image?localName=jangheung&id=';
+const JH_SEON = `${JH_IMG}GC097P02280`;
+const JH_SEON_2 = `${JH_IMG}GC097P02281`;
+const JH_SEON_3 = `${JH_IMG}GC097P02283`;
+const JH_SEON_HOME = 'https://jangheung.grandculture.net/jangheung/toc/GC09700234';
+const JH_SKY = `${JH_IMG}GC097P02085`;
+const JH_SKY_2 = `${JH_IMG}GC097P02087`;
+const JH_SKY_3 = `${JH_IMG}GC097P02088`;
+const JH_SKY_HOME = 'https://jangheung.grandculture.net/jangheung/toc/GC09700349';
+const GJ_KHS = 'https://www.khs.go.kr/unisearch/images/national_treasure';
+const GJ_NAWON = `${GJ_KHS}/2021070209124901.JPG`;
+const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
+const GJ_NAWON_3 = `${GJ_KHS}/1612779.jpg`;
+const GJ_NAWON_HOME =
+  'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=1113700390000&ccbaKdcd=11&ccbaAsno=0000390000000&ccbaCtcd=37';
+const GWGS_IMG = 'https://www.gwgs.go.kr/thumbnail/tursmCn';
+const GWGS_MASAN = `${GWGS_IMG}/TUCN_201812110649330460.jpg`;
+const GWGS_MASAN_2 = `${GWGS_IMG}/TUCN_201812110649597970.jpg`;
+const GWGS_MASAN_3 = `${GWGS_IMG}/TUCN_201812110650095520.jpg`;
+const GWGS_MASAN_HOME =
+  'https://www.gwgs.go.kr/prog/tursmCn/tour/sub02_0108/view.do?cntno=22';
+const CNGJ_IMG = 'https://www.gongju.go.kr/thumbnail/tursmCn';
+const CNGJ_CHANG = `${CNGJ_IMG}/TUCN_202004220935549330.JPG`;
+const CNGJ_CHANG_2 = `${CNGJ_IMG}/TUCN_202004220935550071.JPG`;
+const CNGJ_CHANG_3 = `${CNGJ_IMG}/TUCN_202004220935550752.JPG`;
+const CNGJ_CHANG_HOME =
+  'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_06_04/view.do?cntno=57';
+const CNGJ_MAGOK = `${CNGJ_IMG}/TUCN_202004270543350711.jpg`;
+const CNGJ_MAGOK_2 = `${CNGJ_IMG}/TUCN_202004270543351502.jpg`;
+const CNGJ_MAGOK_3 = `${CNGJ_IMG}/TUCN_202004270543352633.jpg`;
+const CNGJ_MAGOK_HOME =
+  'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_01_07/view.do?cntno=25';
+const CNGJ_MURY = `${CNGJ_IMG}/TUCN_202004270541140631.jpg`;
+const CNGJ_MURY_2 = `${CNGJ_IMG}/TUCN_202004270541142122.jpg`;
+const CNGJ_MURY_3 = `${CNGJ_IMG}/TUCN_202004270541143563.jpg`;
+const CNGJ_MURY_HOME =
+  'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_01_06/view.do?cntno=16';
+const DJ_FOREST_IMG = 'https://image.foresttrip.go.kr/frip';
+const DJ_JANGTAE = `${DJ_FOREST_IMG}/2a9ccc94-9600-487e-bcef-67c6e3f2af94.jpg`;
+const DJ_JANGTAE_2 = `${DJ_FOREST_IMG}/4606705b-c25c-48c4-b505-563698164228.jpg`;
+const DJ_JANGTAE_3 = `${DJ_FOREST_IMG}/493cd595-4e99-47d2-b096-3e53affd46db.jpg`;
+const DJ_JANGTAE_HOME = 'https://www.foresttrip.go.kr/indvz/main.do?hmpgId=ID02030106';
+const TA_TOUR_IMG = 'https://www.taean.go.kr/uloads_clone/tursmCn';
+const TA_ANHEUNG = `${TA_TOUR_IMG}/920_TUCN_202301180236266311.jpg`;
+const TA_ANHEUNG_2 = `${TA_TOUR_IMG}/920_TUCN_202301180236267362.jpg`;
+const TA_ANHEUNG_3 = `${TA_TOUR_IMG}/920_TUCN_202301180236296524.jpg`;
+const TA_ANHEUNG_HOME =
+  'https://www.taean.go.kr/prog/tursmCn/tour/sub02_02_02/view.do?cntno=2';
+const CN_TOUR_IMG = 'https://tour.chungnam.go.kr/thumbnail/trsrcn';
+const CN_SINGWAN = `${CN_TOUR_IMG}/TRSRCN_202501140412570660.JPG`;
+const CN_SINGWAN_2 = `${CN_TOUR_IMG}/TRSRCN_202605091035591187.JPG`;
+const CN_SINGWAN_3 = `${CN_TOUR_IMG}/TRSRCN_202607071221072488.JPG`;
+const CN_SINGWAN_HOME =
+  'https://tour.chungnam.go.kr/prog/trsrcn/kor/sub02_01_01/view.do?trsrcnNo=208';
+const CN_MYEONG = `${CN_TOUR_IMG}/TRSRCN_202501060339307250.jpg`;
+const CN_MYEONG_HOME =
+  'https://tour.chungnam.go.kr/prog/trsrcn/kor/sub02_01_01/view.do?trsrcnNo=222';
+const GJ_ENC_IMG = 'https://gongju.grandculture.net/Image?localName=gongju&id=';
+const CN_JUNG = `${GJ_ENC_IMG}GC017P00956`;
+const CN_JUNG_2 = `${GJ_ENC_IMG}GC017P00957`;
+const CN_JUNG_HOME = 'https://gongju.grandculture.net/gongju/toc/GC01700663';
 
 const INJE_SCENICS_HOME = 'https://injetour.co.kr/scenics/index';
 const INJE_DCB =
@@ -3519,6 +3713,186 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [SC_NAM_2, SC_NAM_3],
     SC_NAM_HOME,
   ),
+  'local-scenic:seocheon-gugyeong:장항송림산림욕장과장항스카이워크': localScenicPhotoOverlay(
+    '서천9경 제8경 장항송림산림욕장과 장항스카이워크는 장항읍 송림리입니다. 서천군 문화관광 9경 공식명은 장항송림자연휴양림과 스카이워크입니다. 바닷바람을 막는 방풍림으로 1954년 장항농고(현 장항공고) 학생들이 2년생 곰솔을 심었고, 곰솔(해송)이 1만2천여 그루 자랍니다. 면적 275,703㎡, 해안 산책로 1.5km이며 맥문동·해국·송엽국이 하층에 있습니다. 8~9월이면 맥문동이 핍니다. 2019년 산림청 국가산림문화자산으로, 2021년 자연휴양림으로 지정되었습니다. 스카이워크(기벌포 전망대)는 높이 15m·길이 236m로 해송 위와 서해·갯벌·일몰을 봅니다. 앞바다는 676년(문무왕 16) 기벌포해전이 있던 바다입니다. 주소는 장항읍 장항산단로34번길 122-16, 문의 041-956-5505입니다. 5경 춘장대해수욕장·7경 금강하굿둑 철새도래지·해남 울돌목 스카이워크와 다른 장항 송림입니다. 사진은 서천군 문화관광 9경 공식 사진입니다.',
+    '충청남도 서천군 장항읍 장항산단로34번길 122-16 (장항송림자연휴양림·스카이워크)',
+    SCH_JANG,
+    [SCH_JANG_2, SCH_JANG_3],
+    SCH_JANG_HOME,
+  ),
+  'local-scenic:seocheon-gugyeong:유부도와서천갯벌': localScenicPhotoOverlay(
+    '서천9경 제9경 유부도와 서천갯벌은 장항읍 유부도입니다. 서천군 문화관광 9경은 서천갯벌 면적을 약 68.09㎢로 두고, 금강하구에서 온 펄과 모래 갯벌이 함께 있다고 적습니다. 유부도는 철새 이동 경로의 중간기착지이자 바닷게 거점이며 100여 종의 희귀 철새가 쉽니다. 섬 이름은 임진왜란 때 아버지가 머문 섬을 유부도, 아들이 머문 섬을 유자도라 한 데서 왔다는 이야기가 있고, 고려 때부터 유배지로도 알려졌습니다. 검은머리물떼새는 천연기념물 제326호·멸종위기 야생생물 Ⅱ급이며 겨울에 2천5백여 마리가 모입니다. 서천군 해안선은 장항읍·마서면·종천면·비인면·서면 72.5km입니다. 2008년 2월 1일 서천 선언으로 서면 월호리, 비인면 다사리·장포리, 종천면 당정리와 유부도 연안습지 15.3㎢가 습지보호지역이 되었고 2009년 람사르 습지로 지정되었습니다. 서천갯벌은 2021년 유네스코 세계자연유산 「한국의 갯벌」에 등재된 구성 자산입니다. 주소는 장항읍 유부도길6번길 3입니다. 7경 금강하굿둑 철새도래지·5경 춘장대 모래갯벌·고창·신안·보성순천 갯벌과 다른 유부도 일대입니다. 사진은 서천군 문화관광 9경 공식 사진입니다.',
+    '충청남도 서천군 장항읍 유부도길6번길 3 (유부도·서천갯벌)',
+    SCH_YUBU,
+    [SCH_YUBU_2, SCH_YUBU_3],
+    SCH_YUBU_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:시화호조력발전소': localScenicPhotoOverlay(
+    '안산9경 제1경 시화호조력발전소는 단원구 대부황금로 1927입니다. 안산시 문화관광 안산12경 1경은 주소를 대부황금로 1927로 두고, 안산시 단원구와 시흥시 오이도를 잇는 시화방조제 한가운데의 세계 최대 규모 조력발전소라고 적습니다. 2011년 8월 준공되었고, 시화호와 서해를 연결하는 입·출수로로 조수간만의 차에 터빈을 돌려 전기를 생산합니다. 연간 발전량은 약 5억 5천만 kWh로, 50만 명이 1년 동안 쓸 전력량에 해당합니다. 발전소 건물에는 전망대와 문화관(홍보관)이 있어 조력발전 원리와 시화호의 역사·생태를 볼 수 있습니다. 달전망대에서는 시화호와 서해, 방아머리항, 대부도 전경과 석양·야경이 펼쳐집니다. 문의는 시화호조력발전소 032-890-6524, 조력문화관 032-885-7530이며 K-water 시화나래 안내 홈이 있습니다. 2경 대부도(대부해솔길)·7경 안산갈대습지공원·GATEO 선정 안산 시화호·시흥 오이도와 다른 방조제 발전소입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 대부황금로 1927 (시화호조력발전소·시화나래)',
+    AS_SIHWA,
+    [AS_SIHWA_2, AS_SIHWA_3],
+    AS_SIHWA_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:다문화거리': localScenicPhotoOverlay(
+    '안산9경 제8경 다문화거리는 단원구 원곡동 일대입니다. 안산시 문화관광 안산12경 8경은 주소를 다문화길 16 일대로 두고, 세계 속 작은 지구촌이며 다양한 국적의 사람이 모여 사는 문화 공간이라고 적습니다. 안산은 국내에서 외국인 주민이 가장 많이 거주하는 도시 중 하나이고, 이 거리는 2009년 다문화마을특구로 지정되었습니다. 중국·베트남·태국·러시아·우즈베키스탄 등 현지 음식점과 식자재 슈퍼마켓이 있고, 한글보다 외국어 간판이 많습니다. 외국인주민지원본부와 외국어 간판의 은행·휴대폰 매장이 있습니다. 문의는 안산시 외국인주민지원본부 1666-1234, 안내 홈은 global.iansan.net입니다. 7경 안산갈대습지공원·인천9경 인천차이나타운과 다른 단원구 다문화길입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 다문화길 16 일대 (다문화거리)',
+    AS_MULTI,
+    [AS_MULTI_2, AS_MULTI_3],
+    AS_MULTI_HOME,
+  ),
+  'local-scenic:ansan-gugyeong:풍도': localScenicPhotoOverlay(
+    '안산9경 제5경 풍도는 단원구 풍도동입니다. 안산시 문화관광 안산12경 5경은 이름 풍(楓)이 가을 단풍에서 왔고, 대부도에서 약 24km·안산시에서 남쪽으로 약 45km 떨어진 서해의 섬이며 서해의 꽃섬이라고 적습니다. 3월이면 풍도바람꽃·풍도민들레·변산바람꽃이 피고, 섬 둘레는 약 6km로 걸어서 한 바퀴에 약 2시간입니다. 절벽과 기암, 해안 초원, 맑은 바다가 이어지고 맑은 날에는 대부도·제부도·인천 앞바다가 보입니다. 배편은 하루 1~2회라 운항 시각과 날씨를 확인해야 하며, 문의는 대부해운 032-886-7813, 편도요금은 대인 13,600원, 방아머리항을 거칩니다. 2경 대부도·화성8경 제부도와 다른 풍도동 섬입니다. 사진은 안산시 문화관광 12경 공식 사진입니다.',
+    '경기도 안산시 단원구 풍도동 (풍도)',
+    AS_PUNG,
+    [AS_PUNG_2, AS_PUNG_3],
+    AS_PUNG_HOME,
+  ),
+  'local-scenic:hwaseong-palgyeong:용주사범종': localScenicPhotoOverlay(
+    '화성8경 제2경 용주사 범종은 용주사 범종각의 동종입니다. 국가유산포털은 화성 용주사 동종을 국보로 두고 소재지를 화성시 용주로 136, 용주사(송산동)로 적습니다. 1964년 3월 30일 국보 제120호로 지정되었고 2021년 11월 19일 국보로 재지정되었습니다. 수량은 1구, 시대는 고려시대입니다. 디지털화성시문화대전은 높이를 145㎝, 지름을 87㎝, 재질을 구리로 두고, 대웅보전 서쪽 범종각에 걸려 있다고 적습니다. 종신 명문은 통일신라 문성왕 16년(854) 조성을 적지만 형태와 문양이 그 시대와 달라 고려 전기 제작으로 봅니다. 용뉴·용통과 연뢰 일부가 깨진 것 외에는 보존이 양호하고, 신라 범종 양식과 고려 전기 양식이 함께 있어 전환기 종으로 평가됩니다. 경기도뉴스는 정조가 사도세자 능을 화산으로 옮기고 원찰로 삼은 절이며, 낙성식 밤 용이 여의주를 물고 승천하는 꿈을 꾼 뒤 용주사라 이름했다고 적습니다. 주소는 용주로 136, 문의 031-234-0040, 절 홈은 yongjoosa.or.kr입니다. 1경 융건릉·대웅전 후불탱화·수원 화성·성덕대왕신종과 다른 범종각의 국보입니다. 사진은 국가유산청 국보 용주사 동종 공식 사진입니다.',
+    '경기도 화성시 용주로 136 (송산동 188, 용주사 범종각)',
+    HS_BELL,
+    [],
+    HS_BELL_HOME,
+  ),
+  'local-scenic:hwaseong-palgyeong:입파홍암': localScenicPhotoOverlay(
+    '화성8경 제6경 입파홍암은 우정읍 국화리 입파도 북쪽의 붉은 기암입니다. 화성국가지질공원은 주소를 우정읍 입파길 24-15로 두고, 국화도 북쪽이며 서신면 궁평항에서 뱃길로 약 50분이라고 적습니다. 입파도(立波島)는 서서 파도를 맞는 섬이라는 뜻입니다. 썰물 때 북쪽 홍암에서 남쪽 기암괴석까지 갯바위·모래·자갈사주 바닷길로 걸을 수 있습니다. 홍암은 입파도에서 가장 알려진 곳이며, 철산화물이 풍화되어 붉은색을 띤다고 지질공원은 적습니다. 경기도뉴스는 화성8경 제6경을 입파도로 소개하고 면적을 0.44㎢로 두며, 궁평항·전곡항 배 시간을 확인하라고 적습니다. 3경 제부도·4경 궁평낙조·국화도와 다른 우정읍 홍암입니다. 사진은 화성국가지질공원 입파도 홍암전경·해안 공식 사진입니다.',
+    '경기도 화성시 우정읍 입파길 24-15 (국화리 입파도 홍암)',
+    HS_HONG,
+    [HS_HONG_2, HS_HONG_3],
+    HS_HONG_HOME,
+  ),
+  'local-scenic:yongin-palgyeong:조비산': localScenicPhotoOverlay(
+    '용인8경 제6경 조비산은 용인시 문화관광이 조비산 조망으로 소개하는 산입니다. 조비산(鳥飛山)은 새가 나는 형상이고, 해발 294.5m로 처인구 백암면 용천리·석천리·장평리에 접합니다. 넓은 들녘 가운데 봉우리 하나가 돌을 이고 선 듯하고, 가파르지만 높지 않으며 정상부가 한쪽으로 기운 듯합니다. 늦가을 사방이 트인 정상에서 내려다보는 황금 들녘을 용인 최고의 전원 풍경으로 둡니다. 다른 산과 달리 머리를 남쪽으로 두고 있어 역적산이라고도 불렸습니다. 주소는 처인구 백암면 용천리입니다. 1경 석성산 일출·2경 광교산 사계·처인구 구봉산 등산로와 다른 백암 조망입니다. 사진은 용인시 문화관광 8경 공식 사진입니다.',
+    '경기도 용인시 처인구 백암면 용천리 (조비산)',
+    YI_JOBI,
+    [YI_JOBI_2, YI_JOBI_3],
+    YI_JOBI_HOME,
+  ),
+  'local-scenic:yongin-palgyeong:어비낙조': localScenicPhotoOverlay(
+    '용인8경 제8경 어비낙조는 이동읍 송전저수지의 해 질 녘 노을입니다. 용인시 문화관광은 저수지 수면과 들판을 붉게 물들이는 풍경이라 하고, 지도에는 이동저수지로도 표기되며 수몰된 마을 어비리를 기억하는 사람들이 어비리 저수지라고도 불러 어비낙조가 되었다고 적습니다. 일교차가 큰 계절에는 버드나무 사이로 물안개가 피어오릅니다. 용인시 체험 안내는 주소를 이동읍 어비리 357로 두고, 송전리에 있어 송전저수지라고도 하며 경기도에서 가장 큰 저수지라고 적습니다. 문의는 031-274-0538입니다. 1경 석성산 일출·7경 가실벚꽃·화성8경 궁평낙조·안양 망해암 일몰과 다른 이동읍 노을입니다. 사진은 용인시 문화관광 8경 공식 사진입니다.',
+    '경기도 용인시 처인구 이동읍 어비리 357 (송전저수지·이동저수지)',
+    YI_EOBI,
+    [YI_EOBI_2, YI_EOBI_3],
+    YI_EOBI_HOME,
+  ),
+  'local-scenic:ulsan-sipgyeong:울산가지산사계': localScenicPhotoOverlay(
+    '울산12경 제3경 가지산 사계는 울산광역시 문화관광이 자연 교향곡 4악장으로 소개하는 산입니다. 관광 안내는 영남알프스에서 가장 높은 산이고 1979년 경상남도 도립공원으로 지정되었으며, 울주군·밀양시·청도군에 걸친 해발 1,000m 이상 9개 고산의 주봉이라고 적습니다. 해발은 1,241m입니다. 봄에는 진달래와 천연기념물 제462호 철쭉군락, 여름에는 석남사계곡·심심이계곡·학소대폭포가 있는 학심이골·오천평반석이 있는 쇠점골계곡·호박소가 있는 용수골, 가을에는 석남사계곡 단풍, 겨울에는 쌀바위 설경이 있습니다. 동쪽 기슭 석남사는 신라 헌덕왕 16년(824년)에 도의국사가 창건했다고 적습니다. 주소는 울주군 상북면이며 경남 밀양시 산내면·경북 청도군 운문면에도 걸칩니다. 4경 신불산 억새평원·산청9경 황매산 철쭉·가지산온천과 다른 상북 사계입니다. 사진은 울산광역시 문화관광 12경·가지산 공식 사진입니다.',
+    '울산광역시 울주군 상북면 (경남 밀양시 산내면 · 경북 청도군 운문면, 가지산)',
+    US_GAJI,
+    [US_GAJI_2, US_GAJI_3],
+    US_GAJI_HOME,
+  ),
+  'local-scenic:ulsan-sipgyeong:울산반구대암각화': localScenicPhotoOverlay(
+    '울산12경 제6경 반구대암각화는 울주 대곡리 반구대 암각화입니다. 울산 문화관광 12경은 반구대암각화와 울주 천전리 명문·암각화를 한 경으로 두고, 관광 안내는 천전리와 묶어 단일유산 「반구천의 암각화」로 2025년 7월 12일 유네스코 세계유산에 등재되었다고 적습니다. 이 행은 태화강 상류 지류 반구천(행정명 대곡천) 절벽, 반구대에서 하류 약 0.7km의 대곡리 바위입니다. 너비 약 8m·높이 약 4.5m 중심 바위면과 주변 10여 곳에 그림 312점이 있고, 고래·거북·상어와 호랑이·사슴·멧돼지 등 20여 종, 배를 탄 고래잡이와 활 사냥이 새겨져 있습니다. 위쪽은 2~3m 처마처럼 튀어나와 비바람을 막습니다. 동남해안 신석기 유적의 동물 뼈·도구와 맞아 약 7,000년 전 제작으로 추정합니다. 부가정보는 국보 285호, 연중무휴, 주소 언양읍 대곡리 991-3, 문의 052-254-5724입니다. 같은 6경의 천전리 각석·울산암각화박물관과 다른 대곡리 바위면입니다. 사진은 울산광역시 문화관광 12경·반구대 암각화 공식 사진입니다.',
+    '울산광역시 울주군 언양읍 대곡리 991-3 (반구대 암각화)',
+    US_BANG,
+    [US_BANG_2, US_BANG_3],
+    US_BANG_HOME,
+  ),
+  'local-scenic:yeongcheon-gugyeong:영천댐벚꽃백리길': localScenicPhotoOverlay(
+    '영천9경 제7경 영천댐 벚꽃 백리길은 임고면 신방로 19 일원입니다. 영천시 9경 자료는 임고면 삼매리의 영천댐을 일명 자양댐이라고 하고, 일주도로 어디에서 보아도 호수와 산이 어울리며 봄이면 영천호를 따라 이어지는 지방도가 벚꽃으로 가득 차 드라이브 명소가 된다고 적습니다. 문의는 054-330-6585입니다. 한국관광공사 여행기사는 영천댐에서 보현산 천문과학관 인근까지 40km 지방도를 따라 벚꽃이 이어지고, 백리가 조금 넘는 자동차 벚꽃 드라이브라고 적습니다. 같은 관광공사 영천댐 안내와 K-water는 이 댐을 1980년 12월 준공, 높이 42m·길이 300m·총저수량 9,640만 톤의 중앙차수벽형 석괴댐으로 두고, 관리소 주소는 자양면 포은로 1792입니다. 임고강변공원 벚꽃길(자호천 둑길)·6경 운주산승마자연휴양림·3경 보현산천문대와 다른 영천호 일주 벚꽃길입니다. 사진은 한국관광공사 영천댐 벚꽃 백리길 시작점 공식 사진입니다.',
+    '경상북도 영천시 임고면 신방로 19 일원 (영천댐 벚꽃 백리길·자양댐)',
+    YC_CHERRY,
+    [],
+    YC_CHERRY_HOME,
+  ),
+  'local-scenic:yeongcheon-gugyeong:영천별별미술마을': localScenicPhotoOverlay(
+    '영천9경 제9경 별별미술마을은 화산면 가상리 649입니다. 영천시 9경 자료는 2011년 마을미술프로젝트 공모로 농촌마을이 지붕 없는 미술관이 되었고, 걷는 길·바람 길·스무골길·귀호마을 길·도화원 길 다섯 길을 따라 걷는 곳이라고 적습니다. 한국관광공사 여행기사는 화산면 실개천 마을이며 주제가 「신몽유도원도―다섯 갈래 행복길」이고, 골목에 조각·그림·디자인·사진 45점을 둔 뒤 17점을 더해 62점이라고 적습니다. 우리동네박물관에는 가래실 주민의 졸업식·결혼식·사계절 사진이 있습니다. 문의는 054-330-6067이고, 안내 홈은 yc.go.kr/toursub/garaesil이며 도로명으로는 가래실로 364로도 안내됩니다. 시안미술관(054-338-9391, 체험·전시 실내)·8경 영천 한의마을과 다른 화산면 골목입니다. 사진은 한국관광공사 별별미술마을 골목·우리동네박물관 공식 사진입니다.',
+    '경상북도 영천시 화산면 가상리 649 (가래실로 364, 별별미술마을)',
+    YC_ALLEY,
+    [YC_MUSEUM],
+    YC_ART_HOME,
+  ),
+  'local-scenic:cheongdo-gugyeong:청도새마을운동발상지기념공원': localScenicPhotoOverlay(
+    '청도 관광 9경 제2경 새마을운동발상지기념공원은 청도읍 새마을1길 34(신도리 18-2)입니다. 디지털청도문화대전은 새마을운동이 청도읍 신도리에서 비롯되었음을 기념하는 곳이며, 기념관은 2009년 4월 14일 개관했다고 적습니다. 2009년부터 2011년 8월 27일까지 시범단지 가꾸기 사업비 45억 원으로 박정희 대통령의 신도마을 시찰을 재현하는 대통령 전용 열차·시찰 동상, 신거역·신도 정미소 복원과 발상지 공원을 조성했습니다. 기념관은 총사업비 62억 원, 대지 1만 994㎡, 연면적 1,494.6㎡이고 1층은 전시실, 2층은 영상실입니다. 문의는 054-372-5500입니다. 구미 새마을운동테마공원·3경 청도 신화랑풍류마을(운문면 화랑)·1경 청도읍성과 다른 신도마을 공원입니다. 사진은 디지털청도문화대전 발상지 공원 전경·기념관 공식 사진입니다.',
+    '경상북도 청도군 청도읍 새마을1길 34 (신도리 18-2, 새마을운동발상지기념공원)',
+    CD_SAE,
+    [CD_SAE_HALL],
+    CD_SAE_HOME,
+  ),
+  'local-scenic:cheongdo-gugyeong:청도섶마리한옥마을': localScenicPhotoOverlay(
+    '청도 관광 9경 제5경 섶마리한옥마을은 금천면 신지리입니다. 디지털청도문화대전은 신지를 선마리라고 부르고 섶마리라고 쓰며, 섶다리는 동곡에서 신지리로 가을에 나무로 놓았다가 여름 큰비에 떠내려가던 다리라고 적습니다. 소요당 박하담이 신지리에 소요당을 짓고 장구지소로 삼은 뒤 후손이 정착한 밀양 박씨 집성촌이고, 기와집이 약 40동입니다. 중심은 국가민속문화유산 청도 운강고택과 만화정입니다. 운강고택은 금천면 선암로 474(신지리 269-1)로, 1809년 박정주의 살림집이고 1824년 운강 박시묵이 증축했습니다. 만화정은 1856년 박시묵이 운문천 절벽 위에 지은 별서입니다. 경상북도 민속문화유산 섬암고택·도일고택·명중고택·운남고택과 선암서원이 같은 마을에 있습니다. 안동 하회마을·경주 양동마을·4경 운문사·3경 신화랑풍류마을과 다른 금천면 고택 마을입니다. 사진은 디지털청도문화대전 신지리 고택 마을·운강고택·만화정 공식 사진입니다.',
+    '경상북도 청도군 금천면 신지리 (운강고택 선암로 474, 섶마리한옥마을)',
+    CD_SEOP,
+    [CD_SEOP_HOUSE, CD_SEOP_PAV],
+    CD_SEOP_HOME,
+  ),
+  'local-scenic:uiryeong-gugyeong:백산안희제선생생가': localScenicPhotoOverlay(
+    '의령9경 제8경 백산안희제선생 생가는 부림면 입산로2길 37(입산리)입니다. 의령군 관광 안내는 백산 안희제 선생이 1885년 부림면 입산리에서 태어났고, 1907년 창남학교·1908년 의신학교·1909년 동래 구명학교와 대구 교남학교를 세워 신학문 보급에 힘썼으며, 1942년 조선어학회 사건과 1943년 만주 대종교단 사건으로 구금되었다가 출옥 4시간 만인 1943년 9월 2일에 사망했다고 적습니다. 국가유산청은 이 집을 의령 안희제 생가(문화유산자료)로 두고, 1993년 1월 8일 지정·수량 2동이며 초창은 17세기 이후로 추정되고 1915년 안희제가 직접 중수했다고 적습니다. 안채는 앞면 6칸·옆면 2칸 팔작지붕으로 마루·방·대청·방·부엌 순이고, 사랑채는 앞면 4칸 초가이며 두 채 모두 동향에 남쪽 마루 1칸이 있습니다. 한국민족문화대백과는 호를 백산이라 하고 1914년 부산에서 백산상회를 경영해 국내외 독립운동 연락과 자금에 썼다고 적습니다. 문의는 055-570-2444(의령군 문화관광과)입니다. 9경 호암 이병철 생가·유곡면 망우당 곽재우 생가·부산 중구 백산상회 터와 다른 부림면 입산리 생가입니다. 사진은 국가유산청 의령 안희제 생가 공식 사진입니다.',
+    '경상남도 의령군 부림면 입산로2길 37 (입산리, 백산 안희제 생가)',
+    UR_AN,
+    [UR_AN_2],
+    UR_AN_HOME,
+  ),
+  'local-scenic:uiryeong-gugyeong:호암이병철선생생가': localScenicPhotoOverlay(
+    '의령9경 제9경 호암이병철선생 생가는 정곡면 호암길 22-4입니다. 의령군 관광 안내는 남서향 일자형 생가가 안채·사랑채·대문채·광으로 되어 있고, 아담한 토담과 바위벽·뒷산 대나무가 운치를 더하며 호암 선생이 좋아했던 오동나무·우물·유품을 볼 수 있다고 적습니다. 호암재단은 1851년 조부가 대지 1,907㎡에 전통 한옥으로 지었고, 이병철 선생이 결혼 후 분가하기 전까지 이 집에서 살았으며, 주변 산은 곡식을 쌓아 놓은 노적봉 형상이고 남강이 생가를 돌아 천천히 흐르는 역수라고 적습니다. 관람은 오전 10시~오후 5시, 월요일 휴관이고 문의는 055-573-0723(호암생가)입니다. 의령군 문화관광과 담당은 055-570-2512입니다. 8경 백산 안희제 생가·6경 탑바위·용인 호암미술관과 다른 정곡면 생가입니다. 사진은 호암재단 생가 대문채·안채 공식 사진입니다.',
+    '경상남도 의령군 정곡면 호암길 22-4 (호암 이병철 생가)',
+    UR_HOAM_GATE,
+    [UR_HOAM_ANCHAE, UR_HOAM_BACK],
+    UR_HOAM_HOME,
+  ),
+  'local-scenic:jangheung-gugyeong:선학동마을': localScenicPhotoOverlay(
+    '장흥9경 제7경 선학동마을은 회진면 가학회진로 1212(회진리 164-3)입니다. 디지털장흥문화대전은 회진면에서 가장 높은 공지산(관음봉) 아래라 산저(山低)라 불리다가, 이청준의 「선학동 나그네」에 묘사된 뒤 선학동(仙鶴洞)으로 바꿨고, 2005년 회진리 선학동마을로 개설되었다고 적습니다. 포구에 물이 차면 산 그림자가 바다에 비쳐 학이 날아오는 듯했다고 합니다. 2022년 12월 현재 46가구 80명입니다. 마을 어귀에는 임권택 감독이 같은 소설을 영화화한 『천년학』 세트장 주막이 남아 있습니다. 2006년부터 주변 23㏊(약 7만 평) 계단식 논밭에 봄 유채·가을 메밀을 심고, 2010년부터 매년 10월경 선학동메밀꽃축제를 엽니다. 2012년 경관 우수 마을, 2014년 전라남도 경관 우수 시범 마을, 2015년 새뜰마을, 2017년 장흥 9경, 2024년 UN관광청 최우수 관광 마을 후보로 선정되었습니다. 축제 문의는 061-860-8350입니다. 진목마을 이청준 생가·8경 소등섬·1경 편백숲 우드랜드·양주 장흥관광지와 다른 회진면 마을입니다. 사진은 디지털장흥문화대전 선학동마을 공식 사진입니다.',
+    '전라남도 장흥군 회진면 가학회진로 1212 (회진리 164-3, 선학동마을)',
+    JH_SEON,
+    [JH_SEON_2, JH_SEON_3],
+    JH_SEON_HOME,
+  ),
+  'local-scenic:jangheung-gugyeong:하늘빛수목정원': localScenicPhotoOverlay(
+    '장흥9경 제9경 하늘빛수목정원은 용산면 장흥대로 2746(어산리 383-4)입니다. 디지털장흥문화대전은 장흥읍과 용산면 경계 함지봉 산자락의 민간 정원이고, 정남진 장흥에서 천관산 방향으로 8㎞ 지점의 치유의 숲이라고 적습니다. 2019년 1월 1일 전라남도 제8호·전국 22번째 민간 정원으로 지정되었습니다. 명품 정원은 1만여 평(3만 3,058㎡), 편백나무 산림은 2,000여 평(6,612㎡)이고, 조경수 300여 종과 지피 식물·야생화 500여 종이 있습니다. 이용 시간은 오전 9시부터 오후 6시까지이고 입장료가 있으며 문의는 061-862-2000입니다. 4월 튤립축제와 10월 향기축제를 엽니다. 1경 정남진 편백숲 우드랜드·완도수목원·구례수목원과 다른 용산면 민간 정원입니다. 사진은 디지털장흥문화대전 하늘빛수목정원 정문 공식 사진입니다.',
+    '전라남도 장흥군 용산면 장흥대로 2746 (어산리 383-4, 하늘빛수목정원)',
+    JH_SKY,
+    [JH_SKY_2, JH_SKY_3],
+    JH_SKY_HOME,
+  ),
+  'local-scenic:gyeongju-8gwae:나원백탑': localScenicPhotoOverlay(
+    '경주8怪 나원백탑은 현곡면 라원리 676의 경주 나원리 오층석탑입니다. 국가유산청은 1962년 12월 20일 국보로 지정했고 수량 1기, 시대는 통일신라 초기, 국유이며 경주시가 관리한다고 적습니다. 국가유산 설명은 나원리 마을 절터에 남은 석탑으로 감은사지 동·서 삼층석탑·고선사지 삼층석탑과 견줄 규모이고, 천년이 지나도 순백이라 나원백탑이라 부른다고 적습니다. 2층 기단 위 5층 탑신이고 8세기경으로 추정됩니다. 안내판은 절 이름이 전하지 않아 지명을 따 나원리 탑이라 하고 삼기팔괴의 하나이며, 1996년 해체·수리 때 3층 지붕돌 안에서 금동 사리함·금동구층탑 3기·금동삼층탑 1기·금동불상·「무구정광대다라니경」 파편이 나왔다고 적습니다. 한국민족문화대백과는 해체수리를 1995년 11월부터 1996년 7월까지로 적고, 경주 지역 신라 오층탑은 이곳과 장항리사지뿐이며 탑 남서쪽의 나원사는 마을 이름을 딴 근래의 작은 절이라고 적습니다. 남산부석·불국영지·백율사·장항리 오층석탑과 다른 현곡면 석탑입니다. 사진은 국가유산청 국립문화재연구소 2007년 전경입니다.',
+    '경상북도 경주시 현곡면 라원리 676 (경주 나원리 오층석탑)',
+    GJ_NAWON,
+    [GJ_NAWON_2, GJ_NAWON_3],
+    GJ_NAWON_HOME,
+  ),
+  'local-scenic:goseong-palgyeong:마산봉설경': localScenicPhotoOverlay(
+    '고성8경 제8경 마산봉설경은 간성읍 흘리의 마산봉입니다. 고성군 관광포털은 백두대간 준령 위 진부령 인근 봉우리에서 바라보는 동해안 절경과 겨울 설경이 대자연의 위용을 느끼게 하고, 마산봉을 정점으로 서쪽에 여러 계곡이 수려한 경관을 이룬다고 적습니다. 같은 안내는 금강산 1만 2천봉의 남한 제2봉이며, 고성군 안 백두대간 23.4km가 미시령·신선봉·마산봉·진부령·향로봉으로 이어진다고 적습니다. 봄 등산 코스로도 경치가 빼어나다고 합니다. 고성군 주요숲길은 흘리 마산봉 숲길을 진부령 정상 백두대간 표지석에서 흘리초교·알프스스키장 주차장·마산 정상까지 6.1km, 약 2시간으로 두고 병풍바위·향로봉·참나무숲을 볼거리로 적습니다. 문의는 산림과 033-680-3382입니다. 경남 고성·창원 마산·5경 울산바위·6경 통일전망대와 다른 간성읍 흘리 설경입니다. 사진은 고성군 문화관광 8경 공식 사진입니다.',
+    '강원특별자치도 고성군 간성읍 흘리 (마산봉)',
+    GWGS_MASAN,
+    [GWGS_MASAN_2, GWGS_MASAN_3],
+    GWGS_MASAN_HOME,
+  ),
+  'local-scenic:gongju-sipgyeong:창벽': localScenicPhotoOverlay(
+    '공주10경 창벽은 반포면 마암리 산4-4의 창벽산(청벽산)입니다. 공주시 문화관광은 계룡산이 북쪽으로 줄기를 뻗어 급히 금강으로 잦아들면서 생긴 절경이고, 폭 100m·높이 25m 바위절벽 아래로 금강이 흐르며, 해발 277m 창벽산에서 자락을 적시고 남으로 휘도는 금강을 본다고 적습니다. 디지털공주문화대전은 한자를 蒼壁, 이칭을 청벽이라 하고, 서거정이 중국에는 적벽이 있고 조선에는 창벽이 있다고 칭찬한 금강가 층암이며, 계룡산이 국사봉을 이룬 뒤 청벽산으로 굽이쳐 금강과 맞닿은 곳이라고 적습니다. 북으로 강을 건너 장군산·무학봉이 보이고, 아래는 말아귀나루·위는 불티나루입니다. 같은 시 금강 안내는 창벽에 오르면 청벽대교와 32번 국도가 보인다고 적습니다. 산행은 원점회귀·종주 4.3km, 순수 이동 1시간 10분이고 청벽가든에서 전망대·정상으로 이어집니다. 연중무휴·무료이고 주차시설은 없으며 문의는 041-840-2836, 관광과 041-840-8082입니다. 신기동 월성산(314m·봉수대)·금강 물길·계룡산·석장리와 다른 마암리 절벽입니다. 사진은 공주시 문화관광 창벽산 공식 사진입니다.',
+    '충청남도 공주시 반포면 마암리 산4-4 (창벽산·청벽산)',
+    CNGJ_CHANG,
+    [CNGJ_CHANG_2, CNGJ_CHANG_3],
+    CNGJ_CHANG_HOME,
+  ),
+  'local-scenic:daejeon-palgyeong:대전장태산': localScenicPhotoOverlay(
+    '대전8경 대전 장태산은 서구 장안로 461의 장태산자연휴양림입니다. 대전광역시 공원관리사업소는 서구 장안동에 있으며, 1991년부터 1994년까지 임창봉 선생이 조성·운영하다 2002년 2월 시가 매입해 2006년 4월 25일 재개장했다고 적습니다. 구역면적은 82ha(815,855㎡)이고, 1970년대부터 조성된 국내 유일 규모의 메타세콰이아 숲이 울창해 이국적 경관과 가족 산림욕 명소로 알려져 있습니다. 숲나들e 안내는 1991년 전국 최초 민간 자연휴양림 지정, 1996년 대전 8경 지정, 2019년 국가산림문화자산, 2021~2022년 한국관광 100선 선정을 적습니다. 안평산(470.2m) 옆 산줄기에 용태을 저수지와 기암·호수 경관이 어우러지고, 대전시 깃대종 하늘다람쥐·이끼도룽뇽이 서식합니다. 입장료·주차료는 무료이며 숙박·야영은 별도 요금이고, 휴양림관리과 문의는 042-270-7887입니다. 한밭수목원·보문산·식장산·대청호·유성온천과 다른 서구 메타세콰이아 숲입니다. 사진은 숲나들e 장태산자연휴양림 공식 안내 사진입니다.',
+    '대전광역시 서구 장안로 461 (장태산자연휴양림)',
+    DJ_JANGTAE,
+    [DJ_JANGTAE_2, DJ_JANGTAE_3],
+    DJ_JANGTAE_HOME,
+  ),
+  'local-scenic:taean-palgyeong:안흥성': localScenicPhotoOverlay(
+    '태안8경 제2경 안흥성(안흥진성)은 근흥면 정죽리 1155-1 안흥항 뒷산의 석성입니다. 태안군 문화관광은 조선 시대 진성(鎭城)으로 충청도 유일의 수군 방어영이 배치되어 왜구·해적 방어와 곡선·사신 접대 기능을 맡았으며, 남 성벽 글씨에 1583년 최초 축성·1655년 대수리가 적힌다고 안내합니다. 성벽 전체 길이는 약 1,798m로 태안 수군 진성 중 최대이며 동문 수성루·서문 수홍루·남문 복파루·북문 감성루가 있었고 현재는 서문만 문루를 복원한 상태라고 적습니다. 충남 지정 기념물에서 2020년 국가사적으로 승격되었습니다. 성마루에서는 안흥항과 섬들이 어우러진 서해 경관을 조망합니다. 화성 안흥창호·이천 안흥동·충남 다른 진성과 다른 근흥면 정죽리 국가사적입니다. 사진은 태안군 문화관광 제2경 안흥진성 공식 사진입니다.',
+    '충청남도 태안군 근흥면 정죽리 1155-1 (안흥진성)',
+    TA_ANHEUNG,
+    [TA_ANHEUNG_2, TA_ANHEUNG_3],
+    TA_ANHEUNG_HOME,
+  ),
+  'local-scenic:gongju-sipgyeong:마곡사': {
+    imageUrl: CNGJ_MAGOK,
+    firstImage: CNGJ_MAGOK,
+    galleryUrls: [CNGJ_MAGOK, CNGJ_MAGOK_2, CNGJ_MAGOK_3],
+    homepage: CNGJ_MAGOK_HOME,
+  },
+  'local-scenic:gongju-sipgyeong:무령왕릉': {
+    imageUrl: CNGJ_MURY,
+    firstImage: CNGJ_MURY,
+    galleryUrls: [CNGJ_MURY, CNGJ_MURY_2, CNGJ_MURY_3],
+    homepage: CNGJ_MURY_HOME,
+  },
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -3580,6 +3954,26 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   126643: localScenicThumbOverlay(INJE_DAESEUNG_FALLS),
   125723: localScenicThumbOverlay(INJE_BANGDONG_SPRING),
   1932458: localScenicThumbOverlay(INJE_HAPGANG_PAVILION),
+  // 공주 검색 청벽산 — Tour firstimage·detailImage 없음. 창벽산과 같은 마암리 절벽. 10경 승격 아님.
+  2755172: {
+    ...localScenicThumbOverlay(CNGJ_CHANG, [CNGJ_CHANG_2, CNGJ_CHANG_3]),
+    homepage: CNGJ_CHANG_HOME,
+  },
+  // 공주 지역 대표 명소 금강신관공원 — JSON imageUrl 공란·Tour firstimage 없음. contentId 유지.
+  2756156: {
+    ...localScenicThumbOverlay(CN_SINGWAN, [CN_SINGWAN_2, CN_SINGWAN_3]),
+    homepage: CN_SINGWAN_HOME,
+  },
+  // 공주 검색 명탄서원 — Tour firstimage 없음. 충남관광 대표 사진.
+  1956330: {
+    ...localScenicThumbOverlay(CN_MYEONG),
+    homepage: CN_MYEONG_HOME,
+  },
+  // 공주 검색 계룡산 중악단 — Tour firstimage 없음. 계룡산 10경과 다른 제단.
+  127239: {
+    ...localScenicThumbOverlay(CN_JUNG, [CN_JUNG_2]),
+    homepage: CN_JUNG_HOME,
+  },
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

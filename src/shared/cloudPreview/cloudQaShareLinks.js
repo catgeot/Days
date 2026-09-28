@@ -256,6 +256,22 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: false,
   },
   {
+    slug: 'profile',
+    label: '프로필 — 필명·사진·계정',
+    branch: 'cursor/profile-a231',
+    destination:
+      'https://days-git-cursor-profile-a231-catgeots-projects.vercel.app/blog',
+    active: true,
+  },
+  {
+    slug: 'logbook-reads',
+    label: '로그북 공개 피드 읽음',
+    branch: 'cursor/logbook-reads-af3f',
+    destination:
+      'https://days-git-cursor-logbook-reads-af3f-catgeots-projects.vercel.app/blog',
+    active: true,
+  },
+  {
     slug: 'aitutaki-tour',
     label: '아이투타키 투어 오탐',
     branch: 'cursor/aitutaki-gyg-tour-b09e',
@@ -438,6 +454,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     branch: 'cursor/scenic-nearby-yanggu-7658',
     destination:
       'https://days-git-cursor-scenic-nearby-yanggu-7658-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
+    slug: 'scenic-mooni',
+    label: '명소홈 — 본문 무니 FAB',
+    branch: 'cursor/scenic-mooni-b353',
+    destination:
+      'https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
     active: true,
   },
   {

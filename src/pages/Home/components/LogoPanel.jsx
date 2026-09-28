@@ -1,5 +1,7 @@
-import React, { useMemo } from 'react';
-import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight, Lock } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { LogIn, LogOut, Plane, Star, BookOpen, ChevronRight, X } from 'lucide-react';
+import TrustLinkBar from '../../../shared/layout/TrustLinkBar';
+import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Logo from './Logo';
@@ -7,8 +9,9 @@ import Logo from './Logo';
 import { useReport } from '../../../context/ReportContext';
 import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGallery';
 import { hydrateLocationFromSavedTrip, getSavedTripDisplayName } from '../lib/placeRouteHydrate';
-import { openFooterModal } from '../../../shared/lib/footerModalEvents';
 import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
+import AccountProfile from '../../../shared/Auth/AccountProfile';
+import ProfilePhotoCount from '../../../shared/Auth/ProfilePhotoCount';
 
 const DEFAULT_THUMB =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
@@ -57,10 +60,14 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { openReport } = useReport();
+  const account = useAccountProfile();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const avatarUrl = user ? account.avatarUrl : '';
+  const profileName = user ? (account.label || user.email.split('@')[0]) : '';
 
-  const handleOpenFooter = (tab) => {
-    openFooterModal(tab);
-  };
+  useEffect(() => {
+    if (!isOpen) setProfileOpen(false);
+  }, [isOpen]);
 
   return (
     <>
@@ -71,67 +78,103 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
       ></div>
 
       <div
-        className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 z-[140] transform transition-transform duration-500 ease-out shadow-2xl flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 z-[140] transform transition-transform duration-500 ease-out shadow-2xl flex flex-col overflow-hidden ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-black/50 backdrop-blur-md">
-          <div>
-            <Logo size="panel" />
-          </div>
-          <div className="flex items-center gap-3">
-            {user && (
-              <div className="flex items-center gap-2 bg-white/5 py-1.5 px-3 rounded-full border border-white/10 shadow-inner">
-                <div className="w-20 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white">
-                  {user.email.split('@')[0].toUpperCase()}
-                </div>
-                <button
-                  onClick={onLogout}
-                  title={t('home.logoPanel.signOut')}
-                  className="text-gray-400 hover:text-red-400 transition-colors ml-1"
-                >
-                  <LogOut size={15} />
-                </button>
-              </div>
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/5 bg-black/50 p-4 backdrop-blur-md md:p-6">
+          <div className="min-w-0">
+            {profileOpen && user ? (
+              <p className="truncate text-sm font-bold text-white">{t('authPage.account.title')}</p>
+            ) : (
+              <Logo size="panel" />
             )}
-            <button onClick={onClose} className="p-1.5 text-gray-500 hover:text-white transition-colors border border-white/5 rounded-full hover:bg-white/5">
-              <X size={20} />
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {user && !profileOpen ? (
+              <button
+                type="button"
+                onClick={onLogout}
+                title={t('home.logoPanel.signOut')}
+                className="rounded-full border border-white/10 p-1.5 text-gray-400 transition-colors hover:bg-white/5 hover:text-red-400"
+              >
+                <LogOut size={18} />
+              </button>
+            ) : null}
+            {profileOpen && user ? (
+              <button
+                type="button"
+                data-profile-close
+                onClick={() => setProfileOpen(false)}
+                className="flex min-h-10 items-center gap-1.5 rounded-full border-2 border-white/35 bg-black/50 px-3 text-[11px] font-bold text-gray-100 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] touch-manipulation hover:border-white/55 hover:bg-white/10 hover:text-white active:opacity-80"
+              >
+                <X size={16} className="pointer-events-none shrink-0" aria-hidden="true" />
+                <span>{t('authPage.account.closeProfile')}</span>
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={onClose}
+              className="min-h-10 rounded-full border border-white/15 bg-white/5 px-3 text-[11px] font-bold tracking-wide text-gray-300 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
+            >
+              {t('home.logoPanel.backHome')}
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
+        <div className="flex-1 min-h-0 overflow-hidden">
+        {profileOpen && user ? (
+          <AccountProfile embedded embeddedCloseInParent onBack={() => setProfileOpen(false)} />
+        ) : (
+        <div className="h-full overflow-x-hidden overflow-y-auto overscroll-contain p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
 
           {user ? (
-            <div className="space-y-8 animate-fade-in">
-              <TravelAgencyDirectory variant="panel" />
-
-              <button
-                onClick={() => {
-                  openReport('dashboard');
-                  onClose();
-                }}
-                className="w-full group flex items-center justify-between py-3 px-5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 rounded-xl transition-all duration-300"
-              >
-                <div className="flex items-center gap-3">
-                  <BookOpen size={18} className="text-blue-400" />
-                  <span className="text-sm font-bold text-white tracking-wide">{t('home.logoPanel.myTravelLog')}</span>
-                </div>
-                <ChevronRight size={16} className="text-blue-500 group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  navigate('/auth/update-password');
-                }}
-                className="w-full group flex items-center justify-between py-3 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300"
-              >
-                <div className="flex items-center gap-3">
-                  <Lock size={18} className="text-gray-400" />
-                  <span className="text-sm font-bold text-white tracking-wide">{t('home.logoPanel.changePassword')}</span>
-                </div>
-                <ChevronRight size={16} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
-              </button>
+            <div className="space-y-6 animate-fade-in">
+              <TravelAgencyDirectory variant="panel">
+                {({ summary, body, open }) => (
+                  <div className="space-y-3">
+                    <div className="flex items-stretch gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setProfileOpen(true)}
+                        title={t('authPage.account.open')}
+                        className="relative w-[38%] max-w-[11.5rem] shrink-0 aspect-square overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-left"
+                      >
+                        {avatarUrl ? (
+                          <img src={avatarUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                        ) : (
+                          <span className="absolute inset-0 flex items-center justify-center bg-gradient-to-tr from-blue-600 to-purple-600 text-3xl font-bold text-white">
+                            {(profileName || '?').slice(0, 1).toUpperCase()}
+                          </span>
+                        )}
+                        <span className="absolute top-2 right-2">
+                          <ProfilePhotoCount count={account.photoCount} />
+                        </span>
+                        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent px-2.5 pb-2 pt-8">
+                          <span className="block text-[10px] font-bold uppercase tracking-wider text-blue-200">{t('authPage.account.open')}</span>
+                          <span className="block truncate text-xs font-bold text-white">{profileName}</span>
+                        </span>
+                      </button>
+                      <div className="flex min-w-0 flex-1 flex-col gap-2">
+                        <div className="flex min-h-0 flex-1">{summary}</div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            openReport('dashboard');
+                            onClose();
+                          }}
+                          className="flex-1 group flex items-center justify-between gap-2 py-2.5 px-3 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 rounded-xl transition-all"
+                        >
+                          <span className="flex items-center gap-2 min-w-0">
+                            <BookOpen size={16} className="text-blue-400 shrink-0" />
+                            <span className="text-sm font-bold text-white truncate">{t('home.logoPanel.myTravelLog')}</span>
+                          </span>
+                          <ChevronRight size={16} className="text-blue-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                        </button>
+                      </div>
+                    </div>
+                    {open ? body : null}
+                  </div>
+                )}
+              </TravelAgencyDirectory>
 
               <div>
                 <div className="flex justify-between items-end mb-4 px-1">
@@ -188,22 +231,11 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
             </div>
           )}
         </div>
+        )}
+        </div>
 
-        <div className="p-5 border-t border-white/10 bg-black">
-          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[9px] text-gray-300 uppercase tracking-widest font-bold">
-            <button onClick={() => handleOpenFooter('about')} className="hover:text-white transition-colors">{t('home.footerModal.tab.about')}</button>
-            <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('updates')} className="hover:text-white transition-colors">{t('home.footerModal.tab.updates')}</button>
-            <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('credits')} className="hover:text-white transition-colors">{t('home.footerModal.tab.credits')}</button>
-            <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('terms')} className="hover:text-white transition-colors">{t('home.footerModal.tab.terms')}</button>
-            <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('privacy')} className="hover:text-white transition-colors">{t('home.footerModal.tab.privacy')}</button>
-            <span className="text-gray-800">|</span>
-            <button onClick={() => handleOpenFooter('contact')} className="hover:text-white transition-colors">{t('home.footerModal.tab.contact')}</button>
-          </div>
-          <p className="text-center text-[8px] text-gray-700 mt-3 tracking-widest">© 2026 GATEO</p>
+        <div className="shrink-0 border-t border-white/5 px-3 py-3 md:px-4">
+          <TrustLinkBar variant="stack" className="mx-auto w-full max-w-none justify-center" />
         </div>
       </div>
     </>

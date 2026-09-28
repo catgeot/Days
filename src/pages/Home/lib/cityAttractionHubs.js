@@ -3,6 +3,7 @@
  * Mapbox Search Box 보강 전에 품질 앵커로 사용.
  */
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
+import koreaThemeRegionTour from '../data/koreaThemeRegionTour.json' with { type: 'json' };
 import { rankStayPointDisambiguationCandidates } from '../../../utils/mrtStayQuery.js';
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 import { hubNameMatchesPrefixQuery } from './koreaPoiTypeQuery.js';
@@ -193,14 +194,25 @@ export function hubToSuggestion(hub) {
   };
 }
 
-function attractionTourContentId(attraction) {
+function themeRegionTourContentId(hub, attraction) {
+  const hubId = String(hub?.hubId || '').trim();
+  const slug = placeUrlSlug(attraction?.name_en, attraction?.name);
+  if (!hubId || !slug) return null;
+  const fromTheme = koreaThemeRegionTour?.byAttractionId?.[`${hubId}:${slug}`];
+  const themeId = String(fromTheme?.contentId || '').trim();
+  return /^\d{1,32}$/.test(themeId) ? themeId : null;
+}
+
+function attractionTourContentId(attraction, hub) {
   const id = String(attraction?.contentId || '').trim();
-  return /^\d{1,32}$/.test(id) ? id : null;
+  if (/^\d{1,32}$/.test(id)) return id;
+  if (hub) return themeRegionTourContentId(hub, attraction);
+  return null;
 }
 
 export function attractionToSuggestion(hub, attraction) {
   const kindLabel = getKindLabel(attraction.kind);
-  const contentId = attractionTourContentId(attraction);
+  const contentId = attractionTourContentId(attraction, hub);
   return {
     id: `hub-attr-${hub.hubId}-${normalizeKey(attraction.name)}`,
     kind: 'attraction',
@@ -242,7 +254,7 @@ export function hubToPlacePin(hub) {
 
 export function attractionToPlacePin(hub, attraction) {
   const kindLabel = getKindLabel(attraction.kind);
-  const contentId = attractionTourContentId(attraction);
+  const contentId = attractionTourContentId(attraction, hub);
   const placeCategory = inferPlaceMatchCategory({
     kind: attraction.kind,
     name: attraction.name,

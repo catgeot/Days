@@ -31,6 +31,7 @@ import Login from './shared/Auth/Login';
 import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
+import AccountProfile from './shared/Auth/AccountProfile';
 import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
 import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
 import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
@@ -140,6 +141,7 @@ function App() {
             <Route path="/auth/signup" element={<Signup />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/update-password" element={<UpdatePassword />} />
+            <Route path="/account" element={<AccountProfile />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ReportProvider>

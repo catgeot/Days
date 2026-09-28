@@ -13,6 +13,7 @@ import {
   isSearchDisambiguation,
   makeDisambiguationResult,
   resolveCityAttractionHub,
+  hubToSuggestion,
 } from '../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   enrichSearchCandidateScenicMedia,
@@ -20,6 +21,10 @@ import {
   localScenicMemberToSuggestion,
   hubAttractionSearchGroupTitle,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
+import {
+  resolveSearchDisambiguationPageSize,
+  sliceSearchDisambiguationPage,
+} from '../src/pages/Home/lib/searchDisambiguationPaging.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -162,6 +167,87 @@ assert.match(vercel, /\/qa\/explore-search/);
 assert.match(vercel, /days-git-cursor-explore-search-d14b/);
 assert.match(vercel, /\/qa\/search-enter-hub/);
 assert.match(vercel, /days-git-cursor-search-enter-hub-2018/);
+
+const daejeonHub = resolveCityAttractionHub('대전');
+assert.ok(daejeonHub, '대전 hub');
+const daejeonMarket = buildHubDisambiguationCandidates(daejeonHub, []).find(
+  (c) => c.name === '신중앙시장',
+);
+assert.ok(daejeonMarket?.contentId === '1434477', '신중앙시장 theme Tour ID on choice card');
+const daejeonMarketMedia = enrichSearchCandidateScenicMedia(daejeonMarket);
+assert.equal(daejeonMarketMedia.contentId, '1434477');
+
+const normalizeKey = (s) =>
+  String(s ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+
+function pushUnique(out, seen, item) {
+  if (!item?.name) return;
+  const k = normalizeKey(item.name);
+  if (!k || seen.has(k)) return;
+  seen.add(k);
+  out.push(item);
+}
+
+function prependLocalScenicToHubCandidates(hub, candidates, lists) {
+  const out = [];
+  const seen = new Set();
+  const hubKey = normalizeKey(hub?.name);
+  pushUnique(out, seen, enrichSearchCandidateScenicMedia(hubToSuggestion(hub)));
+  for (const list of lists || listsForHub(hub.hubId)) {
+    for (const member of list.members || []) {
+      const item = localScenicMemberToSuggestion(list, hub, member);
+      if (item) pushUnique(out, seen, enrichSearchCandidateScenicMedia(item));
+    }
+  }
+  for (const item of candidates || []) {
+    if (hubKey && item?.kind === 'city' && normalizeKey(item.name) === hubKey) continue;
+    pushUnique(out, seen, enrichSearchCandidateScenicMedia(item));
+  }
+  return out;
+}
+
+const daejeonMerged = prependLocalScenicToHubCandidates(
+  daejeonHub,
+  buildHubDisambiguationCandidates(daejeonHub, []).map(enrichSearchCandidateScenicMedia),
+);
+assert.equal(
+  daejeonMerged.filter((c) => c.source === 'localScenicList').length,
+  8,
+  '대전 Enter — 팔경 8경',
+);
+assert.equal(daejeonMerged[1]?.rankBlurb, '대전 1경');
+assert.equal(daejeonMerged[1]?.groupTitle, '대전 팔경');
+const daejeonPageSize = resolveSearchDisambiguationPageSize(daejeonMerged);
+assert.equal(daejeonPageSize, 24);
+const daejeonPage1 = sliceSearchDisambiguationPage(daejeonMerged, 1, daejeonPageSize);
+assert.equal(daejeonPage1.totalPages, 1, '대전 hub+팔경+명소 단일 페이지');
+assert.ok(
+  daejeonPage1.items.some((c) => c.name === '신중앙시장'),
+  '단일 페이지에 신중앙시장 포함',
+);
+
+assert.match(
+  suggestionListSrc,
+  /resolveSearchDisambiguationPageSize/,
+  '선택 카드 — 팔경 hub 페이지 크기',
+);
+
+assert.match(
+  suggestionListSrc,
+  /fetchTourApiFirstImage/,
+  'DB에 없는 팔경 contentId는 Tour 라이브 사진',
+);
+
+const daejeonList = listsForHub('daejeon').find((list) => list.listId === 'daejeon-palgyeong');
+const jangtae = localScenicMemberToSuggestion(
+  daejeonList,
+  daejeonHub,
+  daejeonList.members.find((m) => m.attractionName === '대전 장태산'),
+);
+assert.ok(jangtae?.imageUrl?.includes('foresttrip.go.kr'), '대전 7경 장태산 오버레이 썸네일');
 
 console.log(
   `PASS explore-choice-overlay (옹진 hub + ${candidates.length} choice cards, dropdown gated)`,

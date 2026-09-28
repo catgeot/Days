@@ -2088,14 +2088,16 @@ export default function ThemeSpotDetailModal({
                 {t('korea.theme.spotDetail.readMore')}
               </h3>
               <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
-                <button
-                  type="button"
-                  onClick={openMooni}
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
-                >
-                  <MessageCircle size={15} aria-hidden="true" />
-                  {t('korea.theme.spotDetail.askMooni')}
-                </button>
+                {!mooniFab ? (
+                  <button
+                    type="button"
+                    onClick={openMooni}
+                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                  >
+                    <MessageCircle size={15} aria-hidden="true" />
+                    {t('korea.theme.spotDetail.askMooni')}
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => setVideosOpen(true)}
@@ -2522,10 +2524,10 @@ export default function ThemeSpotDetailModal({
             e.stopPropagation();
             openMooni();
           }}
-          className={`md:hidden pointer-events-auto fixed right-3 z-20 flex h-14 w-14 items-center justify-center rounded-full border border-cyan-200 bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-300 shadow-[0_8px_24px_rgba(34,211,238,0.35)] ring-2 ring-white/80 transition-[transform,bottom] duration-300 hover:scale-105 active:scale-95 ${
+          className={`pointer-events-auto fixed right-3 z-20 flex h-14 w-14 items-center justify-center rounded-full border border-cyan-200 bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-300 shadow-[0_8px_24px_rgba(34,211,238,0.35)] ring-2 ring-white/80 transition-[transform,bottom] duration-300 hover:scale-105 active:scale-95 sm:right-4 ${
             showScrollTop
-              ? 'bottom-[max(7.35rem,calc(env(safe-area-inset-bottom)+6.6rem))]'
-              : 'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))]'
+              ? 'bottom-[max(7.35rem,calc(env(safe-area-inset-bottom)+6.6rem))] sm:bottom-[8.5rem]'
+              : 'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] sm:bottom-24'
           }`}
           aria-label={t('worldEventDetail.askMooni')}
           title={t('worldEventDetail.askMooni')}
@@ -2540,6 +2542,7 @@ export default function ThemeSpotDetailModal({
           eyebrow={t('korea.theme.spotDetail.nearEyebrowFood')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
+          mooniFab={mooniFab}
           onClose={() => setSelectedFood(null)}
         />
       ) : null}
@@ -2549,6 +2552,7 @@ export default function ThemeSpotDetailModal({
           eyebrow={t('korea.theme.spotDetail.nearEyebrowLeports')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
+          mooniFab={mooniFab}
           onClose={() => setSelectedLeports(null)}
         />
       ) : null}
@@ -2558,6 +2562,7 @@ export default function ThemeSpotDetailModal({
           eyebrow={t('korea.theme.spotDetail.nearEyebrowCulture')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
+          mooniFab={mooniFab}
           onClose={() => setSelectedCulture(null)}
         />
       ) : null}
@@ -2567,6 +2572,7 @@ export default function ThemeSpotDetailModal({
           eyebrow={t('korea.theme.spotDetail.nearEyebrowAttraction')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
+          mooniFab={mooniFab}
           onClose={() => setSelectedAttraction(null)}
         />
       ) : null}
@@ -2576,6 +2582,7 @@ export default function ThemeSpotDetailModal({
           eyebrow={t('korea.theme.spotDetail.nearEyebrowSameHub')}
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
+          mooniFab={mooniFab}
           onClose={() => setSelectedSameHub(null)}
         />
       ) : null}

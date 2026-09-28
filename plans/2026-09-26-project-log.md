@@ -2,6 +2,22 @@
 
 직전: [`2026-09-22-project-log.md`](./2026-09-22-project-log.md)
 
+## 팔경 활용 #71 — 용인8경 조비산·어비낙조
+
+- **세션** `팔경 활용 #71, 용인 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `dc828b7b` · PR [#324](https://github.com/catgeot/Days/pull/324)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 용인8경 결손 2건. 6경 조비산은 처인구 백암면 용천리 해발 294.5m(용천리·석천리·장평리·역적산). 8경 어비낙조는 이동읍 어비리 357 송전저수지(이동저수지·경기도에서 가장 큰 저수지·문의 031-274-0538). 석성산 일출·광교산·구봉산·가실벚꽃·궁평낙조와 구분. 사진은 용인시 문화관광 8경 공식 사진.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **26**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=yongin` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=yongin`
+- **다음** `팔경 활용 #72, 울산 결손 오버레이` — 울산 가지산 사계·울산 반구대암각화
+
+## 팔경 활용 #70 — 화성8경 용주사 범종·입파홍암
+
+- **세션** `팔경 활용 #70, 화성 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `08046b49` · PR [#323](https://github.com/catgeot/Days/pull/323)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 화성8경 결손 2건. 2경 용주사 범종은 용주로 136 국보 동종(높이 145㎝·지름 87㎝·1964년 국보 제120호·2021년 재지정·문의 031-234-0040). 6경 입파홍암은 우정읍 입파길 24-15 북쪽 붉은 기암(궁평항 뱃길 약 50분·0.44㎢). 융건릉·제부도·궁평낙조·국화도와 구분. 사진은 국가유산청 동종·화성국가지질공원 홍암전경.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **28**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hwaseong` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hwaseong`
+- **다음** `팔경 활용 #71, 용인 결손 오버레이` — 조비산·어비낙조
+
 ## 팔경 활용 #66 — 홍천9경 미약골·가령폭포 썸네일
 
 - **세션** `팔경 활용 #66, 홍천 썸네일` · feature `cursor/palgyeong-use-e744` · tip `0ac3dc04` · PR [#320](https://github.com/catgeot/Days/pull/320) (#286은 #65에서 병합됨)
@@ -40,6 +56,15 @@
 - **세션** `팔경 활용 #69, 안산 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `e45292e1` · PR [#323](https://github.com/catgeot/Days/pull/323) (#321은 #67에서 병합됨)
 - **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 안산9경 결손 2건. 1경 시화호조력발전소는 단원구 대부황금로 1927(2011년 8월 준공·연 약 5억 5천만 kWh·달전망대·문의 032-890-6524). 8경 다문화거리는 단원구 다문화길 16 일대(2009년 다문화마을특구·외국인주민지원본부 1666-1234). 대부도·안산갈대습지·안산 시화호·시흥 오이도·인천차이나타운과 구분. 사진은 안산시 문화관광 12경 공식 사진.
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS. 순수 사진/개요 누락 **30**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=ansan` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan`
+- **다음** `팔경 활용 #70, 화성 결손 오버레이` — 용주사 범종·입파홍암
+
+## 팔경 활용 #69 — 안산 5경 풍도 썸네일
+
+- **세션** QA 피드백 · feature `cursor/palgyeong-use-e744` · tip `30bcb7d4` · PR [#323](https://github.com/catgeot/Days/pull/323)
+- **증상** Preview 안산 팔경 목록·검색에서 5경 풍도만 랜드마크 아이콘. contentId `126720`은 있으나 Tour firstimage가 비어 있다.
+- **조치** JSON contentId는 유지하고 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 안산시 문화관광 12경 공식 사진. 풍도동, 대부도에서 약 24km, 3월 풍도바람꽃. 2경 대부도·화성 제부도와 구분. 순수 누락은 contentId가 있어 **30**/876 유지.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=ansan` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan`
 - **다음** `팔경 활용 #70, 화성 결손 오버레이` — 용주사 범종·입파홍암
 

@@ -4,14 +4,23 @@ import { MapPin, Home, Compass, PenTool, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { reportAuthorLabel } from './utils/reportAuthor';
+import { publicProfilePhotos } from '../../shared/Auth/profileAvatar';
+import ProfilePhotoLightbox from '../../shared/Auth/ProfilePhotoLightbox';
+import { fetchAuthorProfiles, reportAuthorLabel } from './utils/reportAuthor';
 import LogbookBody from './components/LogbookBody';
 import EditorialLogbookBadge from './components/EditorialLogbookBadge';
 import EditorialLogbookImageCredits from './components/EditorialLogbookImageCredits';
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
-import { isEditorialLogbook, isEditorialLogbookPublished } from '../../utils/logbookEditorial';
+import { isEditorialLogbook, isEditorialLogbookPublished, publicLogbookDetailPath } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
+import { claimLogbookViewSession, readLogbookViewCount, releaseLogbookViewSession } from '../../utils/logbookViewCount';
+import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
+import { logbookCommentsHref, readLogbookCommentCount, readLogbookLikeCount } from '../../utils/logbookReactions';
+import LogbookReadFacts from './components/LogbookReadFacts';
+import LogbookReactionSlot from './components/LogbookReactionSlot';
+import LogbookComments from './components/LogbookComments';
+import { useLogbookLikes } from './hooks/useLogbookLikes';
 import LogbookArticleHead from './components/LogbookArticleHead';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
@@ -19,6 +28,20 @@ import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 
 const SCHEMA_TYPE = 'EditorialLogbookArticle';
+
+function recordPublicRead(reportId, onCount) {
+  if (typeof sessionStorage === 'undefined') return;
+  if (!claimLogbookViewSession(reportId, sessionStorage)) return;
+  void supabase.rpc('increment_report_view', { report_id_param: String(reportId) }).then(({ data, error }) => {
+    if (error) {
+      releaseLogbookViewSession(reportId, sessionStorage);
+      console.warn('[logbook] view count', error.message);
+      return;
+    }
+    const n = typeof data === 'number' ? data : typeof data === 'string' && data.trim() !== '' ? Number(data) : NaN;
+    if (Number.isFinite(n) && onCount) onCount(Math.floor(n));
+  });
+}
 
 function upsertEditorialJsonLd(schema) {
   const selector = `script[data-schema-type="${SCHEMA_TYPE}"]`;
@@ -37,7 +60,15 @@ const PublicViewer = () => {
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
+  const [authorAvatar, setAuthorAvatar] = useState('');
+  const [authorPhotos, setAuthorPhotos] = useState([]);
+  const [authorPhotoOpen, setAuthorPhotoOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [seenCount, setSeenCount] = useState(null);
+  const [placeCount, setPlaceCount] = useState(null);
+  const [commentCount, setCommentCount] = useState(null);
+  const reactionEnabled = Boolean(report) && readLogbookLikeCount(report) != null;
+  const { resolveLike, toggleLike } = useLogbookLikes(report ? [report] : [], reactionEnabled);
 
   const handleBack = useCallback(() => {
     navigateAppBack(navigate, { fallback: '/blog' });
@@ -78,26 +109,44 @@ const PublicViewer = () => {
       }
 
       setReport(data);
+      setSeenCount(null);
+      setPlaceCount(null);
+      setCommentCount(readLogbookCommentCount(data));
       setErrorMsg('');
+      recordPublicRead(data.id, setSeenCount);
 
       if (isEditorialLogbook(data)) {
         setAuthorLabel('');
+        setAuthorAvatar('');
+        setAuthorPhotos([]);
         return;
       }
 
       let displayName = '';
+      let photos = [];
       if (data.user_id) {
-        const { data: prof } = await supabase
-          .from('profiles')
-          .select('display_name')
-          .eq('id', data.user_id)
-          .maybeSingle();
+        const profiles = await fetchAuthorProfiles([data.user_id]);
+        const prof = profiles.get(data.user_id);
         displayName = prof?.display_name || '';
+        photos = publicProfilePhotos(prof);
       }
       setAuthorLabel(reportAuthorLabel(data.user_id, displayName));
+      setAuthorPhotos(photos);
+      setAuthorAvatar(photos[0] || '');
     };
     void fetchPublicReport();
   }, [id, editorialSlug, navigate]);
+
+  useEffect(() => {
+    if (!report?.location) return undefined;
+    let cancelled = false;
+    void fetchSamePlaceCount(supabase, { location: report.location }).then((count) => {
+      if (!cancelled) setPlaceCount(count);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [report]);
 
   const pageUrl = useMemo(() => {
     if (!report) return '';
@@ -139,6 +188,11 @@ const PublicViewer = () => {
   const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
   const displayDate = formatLogbookDisplayDate(report);
   const showDecorativeHeroBlur = Boolean(heroImageUrl && !editorial);
+  const readingMinutes = logbookReadingMinutes(report.content);
+  const viewCount = seenCount ?? readLogbookViewCount(report);
+  const placeKey = logbookPlaceKey(report.location);
+  const placeHref = placeKey ? `/blog?tab=public&location=${encodeURIComponent(placeKey)}` : '';
+  const likeState = resolveLike(report);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -207,11 +261,39 @@ const PublicViewer = () => {
               <MapPin size={14} className="text-gray-400" /> {report.location}
             </span>
             {!editorial && authorLabel && (
-              <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
-                <User size={14} className="text-gray-400 shrink-0" />
-                <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
-              </span>
+              authorAvatar ? (
+                <button
+                  type="button"
+                  onClick={() => setAuthorPhotoOpen(true)}
+                  className="text-gray-500 text-sm flex items-center gap-1.5 font-medium min-w-0"
+                  aria-label={t('authPage.account.viewPhoto', { name: authorLabel })}
+                >
+                  <img src={authorAvatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                  <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
+                </button>
+              ) : (
+                <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
+                  <User size={14} className="text-gray-400 shrink-0" />
+                  <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
+                </span>
+              )
             )}
+            <LogbookReadFacts
+              tone="article"
+              minutes={readingMinutes}
+              placeCount={placeCount}
+              viewCount={viewCount}
+              placeHref={placeHref}
+            />
+            <LogbookReactionSlot
+              tone="article"
+              likeCount={likeState.likeCount}
+              commentCount={commentCount}
+              liked={likeState.liked}
+              pending={likeState.pending}
+              commentHref={logbookCommentsHref(publicLogbookDetailPath(report))}
+              onToggleLike={() => toggleLike(report)}
+            />
           </div>
 
           <LogbookArticleHead report={report} readerDek={editorial} />
@@ -275,6 +357,8 @@ const PublicViewer = () => {
             <EditorialLogbookImageCredits images={report.images} className="mt-6 border-t border-gray-100 pt-4" />
           ) : null}
 
+          <LogbookComments report={report} onCountChange={setCommentCount} />
+
           <div className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
             <p className="text-gray-500 text-sm font-medium mb-6">{t('logbook.public.ctaBody')}</p>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -294,6 +378,14 @@ const PublicViewer = () => {
           </div>
         </div>
       </div>
+      {authorPhotoOpen && authorAvatar ? (
+        <ProfilePhotoLightbox
+          src={authorAvatar}
+          photos={authorPhotos}
+          name={authorLabel}
+          onClose={() => setAuthorPhotoOpen(false)}
+        />
+      ) : null}
     </div>
   );
 };
