@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
 import {
   ArrowUp,
   Bike,
@@ -780,63 +781,16 @@ function spotGoogleSearchUrl(spot, detail, locale = 'ko') {
   return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=${hl}`;
 }
 
-function NaverOutboundButton({ href }) {
-  const { t } = useTranslation();
-  const url = String(href || '').trim();
-  if (!url) return null;
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={t('korea.theme.spotDetail.naverSearchAria')}
-      className="inline-flex items-center gap-1.5 rounded-full border border-[#03C75A]/50 bg-[#E8F9EF] px-2.5 py-1.5 text-xs font-bold text-[#027A38] transition-colors hover:border-[#03C75A]/75 hover:bg-[#D9F5E5]"
-    >
-      <span
-        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-[#03C75A] text-[9px] font-black leading-none text-white"
-        aria-hidden="true"
-      >
-        N
-      </span>
-      {t('korea.theme.spotDetail.naverSearch')}
-      <ExternalLink size={12} aria-hidden="true" />
-    </a>
-  );
-}
-
-function GoogleOutboundButton({ href }) {
-  const { t } = useTranslation();
-  const url = String(href || '').trim();
-  if (!url) return null;
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={t('korea.theme.spotDetail.googleSearchAria')}
-      className="inline-flex items-center gap-1.5 rounded-full border border-[#4285F4]/40 bg-[#E8F0FE] px-2.5 py-1.5 text-xs font-bold text-[#174EA6] transition-colors hover:border-[#4285F4]/70 hover:bg-[#D2E3FC]"
-    >
-      <span
-        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-[#4285F4] text-[9px] font-black leading-none text-white"
-        aria-hidden="true"
-      >
-        G
-      </span>
-      {t('korea.theme.spotDetail.googleSearch')}
-      <ExternalLink size={12} aria-hidden="true" />
-    </a>
-  );
-}
-
 function SpotOutboundSearchButtons({ naverHref, googleHref }) {
-  const naver = String(naverHref || '').trim();
-  const google = String(googleHref || '').trim();
-  if (!naver && !google) return null;
   return (
-    <div className="flex min-w-0 flex-wrap gap-1.5">
-      {naver ? <NaverOutboundButton href={naver} /> : null}
-      {google ? <GoogleOutboundButton href={google} /> : null}
-    </div>
+    <OutboundSearchButtons
+      naverHref={naverHref}
+      googleHref={googleHref}
+      naverLabelKey="korea.theme.spotDetail.naverSearch"
+      googleLabelKey="korea.theme.spotDetail.googleSearch"
+      naverAriaKey="korea.theme.spotDetail.naverSearchAria"
+      googleAriaKey="korea.theme.spotDetail.googleSearchAria"
+    />
   );
 }
 

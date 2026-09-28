@@ -23,16 +23,29 @@ const sheet = readFileSync(
 );
 const page = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
 const readingAt = sheet.indexOf('activeTab === TAB_READING');
-const naverAt = sheet.indexOf("t('korea.festival.detail.naverSearch')");
-const googleAt = sheet.indexOf("t('korea.festival.detail.googleSearch')");
+const outboundAt = sheet.indexOf('OutboundSearchButtons');
+const naverKeyAt = sheet.indexOf('korea.festival.detail.naverSearch');
+const googleKeyAt = sheet.indexOf('korea.festival.detail.googleSearch');
 
-assert(naverAt > 0 && naverAt < readingAt, 'Naver search sits above the reading tab');
-assert(googleAt > 0 && googleAt < readingAt, 'Google search sits above the reading tab');
 assert(
-  (sheet.match(/detail\.naverSearch/g) || []).length === 1,
-  'Naver search is not duplicated in the reading tab',
+  outboundAt > 0 && outboundAt < readingAt,
+  'Outbound search buttons sit above the reading tab',
+);
+assert(naverKeyAt > 0 && naverKeyAt < readingAt, 'Festival Naver label key is on the surface');
+assert(googleKeyAt > 0 && googleKeyAt < readingAt, 'Festival Google label key is on the surface');
+assert(
+  (sheet.match(/naverLabelKey="korea\.festival\.detail\.naverSearch"/g) || []).length === 1,
+  'Festival Naver search is not duplicated in the reading tab',
 );
 assert(sheet.includes('naverSearchUrl(item.title)'), 'Naver link still uses the festival title');
+assert(
+  sheet.includes('OutboundSearchButtons'),
+  'Festival surface uses shared outbound search buttons',
+);
+assert(
+  sheet.includes('korea.festival.detail.naverSearchAria'),
+  'Festival Naver button has accessible label key',
+);
 assert(!sheet.includes('showOnHomeMap'), 'home-map button is gone');
 assert(!sheet.includes('map.naver.com'), 'sheet does not deep-link Naver map');
 assert(!page.includes('mapPinId'), 'home page pin-focus state is gone');
