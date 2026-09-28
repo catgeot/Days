@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '축제 페이지',
-  sessionNo: 9,
-  sessionPhase: '검색 버튼 시인성',
-  branch: 'cursor/festival-sheet-ui-ec8b',
-  previewPath: '/korea',
-  qaShareSlug: 'festival-ui',
+  title: '탐색 hub 썸네일',
+  sessionNo: 1,
+  sessionPhase: '대전8경 썸네일',
+  branch: 'cursor/search-enter-hub-2018',
+  previewPath: '/explore',
+  qaShareSlug: 'search-enter-hub',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,30 +23,6 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
-  {
-    id: '2026-09-28-palgyeong-use-82-buan-gallery',
-    session: '팔경 활용 #82, 부안 결손 오버레이',
-    title: '변산8경 오버레이 갤러리 3장',
-    detail:
-      '가령폭포·안흥성과 같이 변산8경 오버레이 5건(소사모종·월명무애·서해낙조·채석강·지포신경) 상세 갤러리를 공식 사진 3장으로 보감했습니다. 목록 썸네일은 부안군 img_byunsan_list 행별 유지, 추가 2장은 한국관광공사 내소사·채석강 또는 부안 8경 공식 사진입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=buan 상세 사진 스와이프',
-    at: '2026-09-28T04:15:00.000Z',
-  },
-  {
-    id: '2026-09-28-palgyeong-use-82-buan-overlay',
-    session: '팔경 활용 #82, 부안 결손 오버레이',
-    title: '변산8경 서해낙조·썸네일 분리',
-    detail:
-      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 변산8경 서해낙조와 소사모종·월명무애·채석강·지포신경 행마다 부안군 문화관광 8경 공식 사진을 연결했습니다. 3·4경 동일 Tour id·6·7경 유사 Tour 사진으로 썸네일이 겹치던 문제를 행별 오버레이로 분리했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=buan',
-    at: '2026-09-28T03:55:00.000Z',
-  },
-  {
-    id: '2026-09-28-festival-ui-9-outbound-search-buttons',
-    session: '축제 페이지 #9, 검색 버튼 시인성',
-    title: '명승과 동일한 네이버·구글 CTA',
-    detail:
-      '축제 본문 주소 아래 네이버·구글을 명승 상세와 같은 OutboundSearchButtons(브랜드 N/G·상세정보 보기 문구)로 맞췄습니다. Preview /qa/festival-ui — /korea 축제 카드에서 회색 칩 대신 초록·파란 버튼이 보이는지.',
-    at: '2026-09-28T03:50:00.000Z',
-  },
   {
     id: '2026-09-28-search-enter-hub-daejeon-palgyeong-thumbs',
     session: '탐색 hub 썸네일 #1, 대전8경 썸네일',

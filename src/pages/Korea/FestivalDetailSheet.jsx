@@ -24,6 +24,7 @@ import {
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
@@ -1359,30 +1360,14 @@ export default function FestivalDetailSheet({
           </div>
 
           {(naverHref || googleHref) && (
-            <div className="flex flex-wrap gap-2">
-              {naverHref ? (
-                <a
-                  href={naverHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                >
-                  <ExternalLink size={12} aria-hidden="true" />
-                  {t('korea.festival.detail.naverSearch')}
-                </a>
-              ) : null}
-              {googleHref ? (
-                <a
-                  href={googleHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                >
-                  <ExternalLink size={12} aria-hidden="true" />
-                  {t('korea.festival.detail.googleSearch')}
-                </a>
-              ) : null}
-            </div>
+            <OutboundSearchButtons
+              naverHref={naverHref}
+              googleHref={googleHref}
+              naverLabelKey="korea.festival.detail.naverSearch"
+              googleLabelKey="korea.festival.detail.googleSearch"
+              naverAriaKey="korea.festival.detail.naverSearchAria"
+              googleAriaKey="korea.festival.detail.googleSearchAria"
+            />
           )}
 
           {homepage && (
