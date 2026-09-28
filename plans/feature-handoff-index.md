@@ -855,13 +855,13 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#82 push** tip `2014cce4` · PR [#339](https://github.com/catgeot/Days/pull/339) · 변산8경 서해낙조 · **#83 부여 결손 오버레이** · Explore 신중앙 썸네일은 **「탐색 hub 썸네일」행** |
+| **상태** | **#82 push** tip `0c697388` · PR [#344](https://github.com/catgeot/Days/pull/344) · 변산8경 **갤러리 3장** · **#83 부여** · 오버레이 사진 **§2.1**(플랜) **≥3장 필수** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `2014cce4` |
+| **tip** | `0c697388` |
 | **PR** | [#339](https://github.com/catgeot/Days/pull/339) · [#335](https://github.com/catgeot/Days/pull/335) merge ✅ · [#333](https://github.com/catgeot/Days/pull/333) merge ✅ · [#332](https://github.com/catgeot/Days/pull/332) merge ✅ · [#330](https://github.com/catgeot/Days/pull/330) merge ✅ · [#329](https://github.com/catgeot/Days/pull/329) merge ✅ · [#328](https://github.com/catgeot/Days/pull/328) merge ✅ · [#327](https://github.com/catgeot/Days/pull/327) merge ✅ · [#324](https://github.com/catgeot/Days/pull/324) merge ✅ · [#323](https://github.com/catgeot/Days/pull/323) merge ✅ · [#321](https://github.com/catgeot/Days/pull/321) merge ✅ · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-28-project-log.md`](./2026-09-28-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=buan` 변산8경 서해낙조 |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=buan` 변산8경(오버레이 5행 **사진 3장**) |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
@@ -876,7 +876,7 @@ AI 모델 #3, Preview OK면 PR 병합
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 부여10경 사진·개요 없는 1건(천정대 백제보)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=buyeo
+작업: 부여10경 사진·개요 없는 1건(천정대 백제보)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. **공식 사진 ≥3장**(플랜 §2.1). Preview /korea/theme/scenic?hub=buyeo
 ```
 
 ---

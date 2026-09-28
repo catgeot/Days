@@ -14,7 +14,13 @@
 - **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 변산8경 결손 1건. 서해낙조는 월명암 옆 낙조대에서 고군산군도·위도와 서해 석양(디지털부안문화대전·부안군 문화관광 5경). 군산 선유낙조·영광 불갑사 낙조와 구분. 사진은 부안군 문화관광 변산8경 제5경 공식 사진.
 - **VERIFY** `smoke:korea-local-scenic-lists` · `vite build` PASS. 순수 사진/개요 누락 **10**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=buan` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=buan`
-- **다음** `팔경 활용 #83, 부여 결손 오버레이` — 천정대 백제보
+- **다음** `팔경 활용 #83, 부여 결손 오버레이` — 천정대 백제보 · **오버레이 사진 ≥3장**([`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §2.1)
+
+## 팔경 활용 — 오버레이 사진 장수 SSOT (문서)
+
+- **실측** `LOCAL_SCENIC_MEMBER_OVERLAYS` 314건: 평균 **2.75장**, 중앙값 **3장** (팔·구·십 계열 233건 평균 **2.90**).
+- **규칙** 플랜 **§2.1** — 결손 오버레이는 **최소 3장**, 가능하면 4~6장. 오버레이가 Tour 갤러리를 대체하므로 **추가 자동 보강 없음**. #77~#82 1장 부채는 허브 재작업 시 보강.
+- **#82 follow-up** tip `0c697388` · 변산8경 오버레이 5행 갤러리 3장(부안 8경 썸네일 + visitkorea/군 공식).
 
 ## 축제 페이지 #9 — 검색 버튼 시인성
 

@@ -60,6 +60,31 @@ index **행 2개**. A는 본 플랜 §9 A 블록만 · B는 큐·method §5.7만
 | A2 | [`searchSuggestions.js`](../src/pages/Home/lib/searchSuggestions.js) · [`SearchSuggestionList.jsx`](../src/pages/Home/components/SearchDiscovery/SearchSuggestionList.jsx) · [`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) | hub exact이어도 팔경 소제목 **앞**. 리스트 alias는 hub 흡수보다 우선. `groupTitle`. 전체 상한 여유(예: 24) |
 | A3 | [`ScenicPage.jsx`](../src/pages/KoreaTheme/ScenicPage.jsx) curated `ul` | 같은 리스트 선두에 N경 멤버 + 소제목. `ScenicListRow`. `contentId` 있을 때만 Tour 모달 |
 | A4 | [`FestivalDetailSheet.jsx`](../src/pages/Korea/FestivalDetailSheet.jsx) · [`ThemeSpotDetailModal.jsx`](../src/pages/KoreaTheme/ThemeSpotDetailModal.jsx) | 기존 `nearAttractions` **내부만** 상단 그룹 · 새 파트 금지 |
+| A5 | [`koreaLocalScenicLists.js`](../src/pages/Home/lib/koreaLocalScenicLists.js) `LOCAL_SCENIC_MEMBER_OVERLAYS` | 결손 행 **런타임 오버레이** — 아래 **§2.1 사진 장수** 준수 |
+
+### 2.1 결손 오버레이 — 사진 장수 (SSOT · 2026-09-28)
+
+**배경**: 오버레이가 있으면 상세 `galleryUrls`는 Tour `detailImage`를 **대체**한다. JSON·fill·별도 갤러리 동기화 job **없음**. 남은 팔경 결손·1장만 넣은 허브는 **이번 커밋이 사진 SSOT의 사실상 유일한 기회**다.
+
+**현재 SSOT 실측** (`LOCAL_SCENIC_MEMBER_OVERLAYS` 파싱 · feature tip `0c697388` 기준):
+
+| 범위 | 건수 | `galleryUrls` **평균** | **중앙값** | 3장 이상 | 1장만 |
+|------|------|------------------------|------------|----------|-------|
+| 오버레이 전체 | 314 | **2.75** | **3** | 242 (77%) | 45 (14%) |
+| 팔·구·십·8怪·빙계 계열 | 233 | **2.90** | **3** | 196 (84%) | 21 (9%) |
+
+분포(전체): 1장 45 · 2장 27 · **3장 210** · 4장 28 · 5장 3 · 6장 1.
+
+**앞으로의 규칙 (A 결손 오버레이)**:
+
+1. **기본 목표 = 공식 사진 3장** — `localScenicPhotoOverlay(개요, addr1, imageUrl, extraGallery, homepage)`에서 `imageUrl` 1 + `extraGallery` **최소 2** (합 3). 개요 마지막에 「공식 사진 N장」과 출처를 맞출 것.
+2. **권장 = 4~6장** — 시·군 문화관광 **다장 공식 팩**(태안8경 3연속 JPG, 홍천 가령폭포 3장, 공주 마곡사 3장 등) 또는 멤버·인접 POI `contentId`의 Tour **`detailImage`**(Edge `tourapi-proxy`, 갈래 A에서 **조회만**)로 **서로 다른** 고해상도 URL을 더 넣는다. 중복·워터마크·썸네일만 있는 URL 금지.
+3. **출처 우선순위** — (1) 해당 시·군·광역 문화관광·디지털문화대전 공식 (2) 국가유산청·숲나들e 등 공공 (3) 한국관광공사 `tong.visitkorea.or.kr` — 멤버 JSON `contentId` 또는 동일 장소 verified id (4) GATEO 선정 명소와 **다른 장면**만 보조. **1장만 넣고 종료 금지**(Tour firstimage 1장으로 끝내기 ≠ 오버레이 완료).
+4. **같은 팔경 리스트 썸네일** — 행마다 `imageUrl`이 겹치면 목록에서 동일 썸네일(변산8경 3·4경 등). **행별 대표 1장 분리** + 갤러리는 §2.1 3장 이상 유지(부안 #82 패턴).
+5. **검증** — 허브·결손 건을 건드리면 `scripts/smoke-korea-local-scenic-lists.mjs`에 해당 멤버 `galleryUrls.length >= 3`(또는 허브 전체 오버레이) assert 추가. `npm run smoke:korea-local-scenic-lists` · `npm run build` PASS 후 feature push.
+6. **기존 1~2장 부채** — #77~#82 등 「허브당 1~2건·1장」으로 넣은 행은 **같은 허브를 다시 열 때** 3장 이상으로 **즉시 보강**(부안 변산8경 5행 3장 — #82 갤러리 follow-up). 새 허브(#83~)는 처음부터 3장 이상.
+
+**금지**: 오버레이 1장만 넣고 「나중에 Tour가 채움」에 기대기 · JSON `contentId` 기입으로 사진 회피 · scenic 승격.
 
 **A 금지**: `koreaLocalScenicLists.json` · `cityAttractionHubs.json` · fill · LIVE Tour.
 
@@ -92,7 +117,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#82 push** tip `2014cce4` · PR [#339](https://github.com/catgeot/Days/pull/339) · 변산8경 서해낙조 · **#83 부여 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#82 push** tip `0c697388` · PR [#344](https://github.com/catgeot/Days/pull/344) · 변산8경 오버레이 5행 **갤러리 3장** · **#83 부여** — §**2.1** **3장 이상** 필수 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -183,8 +208,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 79 | `팔경 활용 #79, 공주 결손 오버레이` | A | **완료** · tip `b8a23d0f` · PR [#339](https://github.com/catgeot/Days/pull/339) · 공주10경 1 · QA 마곡사·무령왕릉 · QA 권역 빈 썸네일 4 |
 | 80 | `팔경 활용 #80, 대전 결손 오버레이` | A | **완료** · tip `cc7d5ea0` · PR [#339](https://github.com/catgeot/Days/pull/339) · 대전8경 1 |
 | 81 | `팔경 활용 #81, 태안 결손 오버레이` | A | **완료** · tip `3a97c812` · PR [#339](https://github.com/catgeot/Days/pull/339) · 태안8경 1 |
-| 82 | `팔경 활용 #82, 부안 결손 오버레이` | A | **완료** · tip `2014cce4` · PR [#339](https://github.com/catgeot/Days/pull/339) · 변산8경 1 |
-| 83 | `팔경 활용 #83, 부여 결손 오버레이` | A | **열기 가능** · 부여10경 1 · Preview QA는 사람 병행(세션 생략) |
+| 82 | `팔경 활용 #82, 부안 결손 오버레이` | A | **완료** · tip `0c697388` · PR [#344](https://github.com/catgeot/Days/pull/344) · 변산8경 1+썸네일 분리+**갤러리 3장** · §**2.1** |
+| 83 | `팔경 활용 #83, 부여 결손 오버레이` | A | **열기 가능** · 부여10경 1 · **오버레이 공식 사진 ≥3장**(§**2.1**) · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
