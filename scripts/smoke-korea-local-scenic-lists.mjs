@@ -5378,6 +5378,39 @@ assert.notEqual(
   '중악단≠계룡산 썸네일',
 );
 
+const buyeoMerged = mergeLocalScenicMembersIntoScenicSpots([], 'buyeo');
+const buyeoTen = buyeoMerged.filter((s) => s.localScenicListId === 'buyeo-sipgyeong');
+assert.equal(buyeoTen.length, 10, '부여10경 10명');
+const cheonjeong = buyeoTen.find((s) => s.attractionName === '천정대 백제보');
+assert.ok(cheonjeong?.overview && cheonjeong?.imageUrl, '천정대 백제보 overlay 사진·개요');
+assert.ok(!cheonjeong?.contentId, '천정대 백제보 JSON contentId 없음 유지');
+assert.ok(cheonjeong?.overview?.includes('호암리 산5'), '천정대 overlay 주소');
+assert.ok(cheonjeong?.overview?.includes('북포로 451'), '백제보 overlay 주소');
+assert.ok(cheonjeong?.overview?.includes('041-830-2641'), '천정대 overlay 문의');
+assert.ok(cheonjeong?.overview?.includes('제49호'), '천정대 overlay 기념물');
+assert.ok(cheonjeong?.overview?.includes('정사암'), '천정대 overlay 정사암');
+assert.ok(cheonjeong?.overview?.includes('311m'), '백제보 overlay 길이');
+assert.ok(cheonjeong?.overview?.includes('공주보'), '천정대≠공주보');
+assert.ok(cheonjeong?.imageUrl?.includes('info010105_gallery01'), '천정대 부여군 공식 사진');
+assert.ok(
+  cheonjeong?.galleryUrls?.some((u) => u.includes('info010105_gallery02')),
+  '천정대 두 번째 사진',
+);
+assert.ok(cheonjeong?.homepage?.includes('info_010105'), '천정대 부여군 공식 페이지');
+const buyeoGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '부여', {
+  injectLocalScenic: true,
+});
+const buyeoGlobeTen = buyeoGlobe.filter((s) => s.localScenicListId === 'buyeo-sipgyeong');
+assert.equal(buyeoGlobeTen.length, 10, '부여 검색 부여10경 10행');
+assert.ok(
+  buyeoGlobe.find((s) => s.attractionName === '천정대 백제보')?.overview?.includes('호암리 산5'),
+  '부여 검색 천정대 개요',
+);
+assert.ok(
+  buyeoGlobe.find((s) => s.attractionName === '천정대 백제보')?.imageUrl?.includes('info010105_gallery01'),
+  '부여 검색 천정대 썸네일',
+);
+
 const daejeonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'daejeon');
 const daejeonEight = daejeonMerged.filter((s) => s.localScenicListId === 'daejeon-palgyeong');
 assert.equal(daejeonEight.length, 8, '대전8경 8명');

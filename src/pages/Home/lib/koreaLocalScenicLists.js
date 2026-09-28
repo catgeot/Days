@@ -1786,6 +1786,11 @@ const CNGJ_MURY_2 = `${CNGJ_IMG}/TUCN_202004270541142122.jpg`;
 const CNGJ_MURY_3 = `${CNGJ_IMG}/TUCN_202004270541143563.jpg`;
 const CNGJ_MURY_HOME =
   'https://www.gongju.go.kr/prog/tursmCn/tour/sub02_01_06/view.do?cntno=16';
+const BYEO_TOUR_IMG = 'https://buyeo.go.kr/images/tour/info';
+const BYEO_CHEONJEONG = `${BYEO_TOUR_IMG}/info010105_gallery01.jpg`;
+const BYEO_CHEONJEONG_2 = `${BYEO_TOUR_IMG}/info010105_gallery02.jpg`;
+const BYEO_CHEONJEONG_3 = `${BYEO_TOUR_IMG}/info010105_gallery03.jpg`;
+const BYEO_CHEONJEONG_HOME = 'https://buyeo.go.kr/html/tour/info/info_010105.html';
 const DJ_FOREST_IMG = 'https://image.foresttrip.go.kr/frip';
 const DJ_JANGTAE = `${DJ_FOREST_IMG}/2a9ccc94-9600-487e-bcef-67c6e3f2af94.jpg`;
 const DJ_JANGTAE_2 = `${DJ_FOREST_IMG}/4606705b-c25c-48c4-b505-563698164228.jpg`;
@@ -3888,6 +3893,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     CNGJ_CHANG,
     [CNGJ_CHANG_2, CNGJ_CHANG_3],
     CNGJ_CHANG_HOME,
+  ),
+  'local-scenic:buyeo-sipgyeong:천정대백제보': localScenicPhotoOverlay(
+    '부여10경 천정대 백제보는 규암면 호암리 산5 천정대(기념물 제49호, 1984.7.26)와 부여읍 북포로 451 백제보 일대입니다. 부여군 문화관광은 『삼국유사』에 재상 후보 이름을 봉함해 두었다 이름 위에 도장이 찍힌 사람을 임명했다 하여 정사암(政事岩)이라 불렀다고 적습니다. 백제 산악신앙과 하늘의 뜻을 따르던 정치사상의 흔적이 깃든 곳이며, 아래로 백마강이 흐르고 주장산성·부소산성이 한눈에 들어옵니다. 벼랑에는 임금바위·신하바위 등 기암이 있고, 연꽃무늬 수막새 기와 조각이 발견되어 당시 건물이 있었을 것으로 추정됩니다. 금강 백제보(311m)는 계백장군의 계백위환을 테마로 말을 탄 수문장 형상을 세웠고, 복합문화공간 금강문화관(4대강·금강특화존)과 전망대에서 백마강을 내려다봅니다. 천정대는 연중무휴·상시 개방, 금강문화관은 09:00~18:00·월요일 휴무(전망대는 운행)이며 문의는 부여군 문화재과 041-830-2641, 백제보 041-830-0661입니다. 공주보·세종보·부소산 낙화암·백제문화단지와 다른 호암리·북포 일대입니다. 사진은 부여군 문화관광 천정대 백제보 공식 사진입니다.',
+    '충청남도 부여군 규암면 호암리 산5 (천정대) · 부여읍 북포로 451 (백제보)',
+    BYEO_CHEONJEONG,
+    [BYEO_CHEONJEONG_2, BYEO_CHEONJEONG_3],
+    BYEO_CHEONJEONG_HOME,
   ),
   'local-scenic:daejeon-palgyeong:대전장태산': localScenicPhotoOverlay(
     '대전8경 대전 장태산은 서구 장안로 461의 장태산자연휴양림입니다. 대전광역시 공원관리사업소는 서구 장안동에 있으며, 1991년부터 1994년까지 임창봉 선생이 조성·운영하다 2002년 2월 시가 매입해 2006년 4월 25일 재개장했다고 적습니다. 구역면적은 82ha(815,855㎡)이고, 1970년대부터 조성된 국내 유일 규모의 메타세콰이아 숲이 울창해 이국적 경관과 가족 산림욕 명소로 알려져 있습니다. 숲나들e 안내는 1991년 전국 최초 민간 자연휴양림 지정, 1996년 대전 8경 지정, 2019년 국가산림문화자산, 2021~2022년 한국관광 100선 선정을 적습니다. 안평산(470.2m) 옆 산줄기에 용태을 저수지와 기암·호수 경관이 어우러지고, 대전시 깃대종 하늘다람쥐·이끼도룽뇽이 서식합니다. 입장료·주차료는 무료이며 숙박·야영은 별도 요금이고, 휴양림관리과 문의는 042-270-7887입니다. 한밭수목원·보문산·식장산·대청호·유성온천과 다른 서구 메타세콰이아 숲입니다. 사진은 숲나들e 장태산자연휴양림 공식 안내 사진입니다.',
