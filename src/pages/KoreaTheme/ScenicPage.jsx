@@ -31,6 +31,7 @@ import SEO from '../../components/SEO';
 import {
   KOREA_NEAR_ME_FILLED_ACTIVE,
   KOREA_NEAR_ME_FILLED_IDLE,
+  koreaFilterChipCountClass,
 } from '../Korea/koreaHubFilterChipStyles.js';
 import KoreaScenicMap from './KoreaScenicMap';
 import {
@@ -324,7 +325,7 @@ function pickRegionFromTourCounts(regionCounts, fallback) {
   );
 }
 
-function FilterChipLabel({ label, count, locale, chipMeta }) {
+function FilterChipLabel({ label, count, locale, chipMeta, active = false }) {
   const n = chipCountLabel(count);
   const display =
     locale && chipMeta
@@ -333,7 +334,11 @@ function FilterChipLabel({ label, count, locale, chipMeta }) {
   return (
     <span className="inline-flex items-center gap-1">
       <span>{display}</span>
-      {n != null ? <span className="opacity-70 tabular-nums">{n}</span> : null}
+      {n != null ? (
+        <span className={koreaFilterChipCountClass(active, 'tabular-nums')}>
+          {n}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -4546,7 +4551,13 @@ export default function KoreaThemeScenicPage() {
                   }
                 >
                   {t('korea.common.favorites')}
-                  <span className="opacity-70">{favoriteList.length}</span>
+                  <span
+                    className={koreaFilterChipCountClass(
+                      personalTab === 'favorites',
+                    )}
+                  >
+                    {favoriteList.length}
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -4558,7 +4569,13 @@ export default function KoreaThemeScenicPage() {
                   }
                 >
                   {t('korea.common.viewed')}
-                  <span className="opacity-70">{viewedList.length}</span>
+                  <span
+                    className={koreaFilterChipCountClass(
+                      personalTab === 'viewed',
+                    )}
+                  >
+                    {viewedList.length}
+                  </span>
                 </button>
               </div>
               {personalItems.length === 0 ? (
@@ -4704,6 +4721,7 @@ export default function KoreaThemeScenicPage() {
                             count={curatedRegionCountsForChips[r]}
                             locale={locale}
                             chipMeta={{ kind: 'major' }}
+                            active={active}
                           />
                         </button>
                       );
@@ -4740,6 +4758,7 @@ export default function KoreaThemeScenicPage() {
                             count={curatedAreaCounts[chip.code]}
                             locale={locale}
                             chipMeta={{ kind: 'area', code: chip.code }}
+                            active={active}
                           />
                         </button>
                       );
@@ -4776,6 +4795,7 @@ export default function KoreaThemeScenicPage() {
                             count={chip.count}
                             locale={locale}
                             chipMeta={{ kind: 'cluster', clusterId: chip.id }}
+                            active={active}
                           />
                         </button>
                       );
@@ -4816,6 +4836,7 @@ export default function KoreaThemeScenicPage() {
                               code: chip.hubId,
                               hub: resolveCityAttractionHub(chip.hubId),
                             }}
+                            active={active}
                           />
                         </button>
                       );
@@ -5044,6 +5065,7 @@ export default function KoreaThemeScenicPage() {
                             count={heritageRegionCountsForChips[r]}
                             locale={locale}
                             chipMeta={{ kind: 'major' }}
+                            active={active}
                           />
                         </button>
                       );
@@ -5080,6 +5102,7 @@ export default function KoreaThemeScenicPage() {
                             count={heritageAreaCounts[chip.code]}
                             locale={locale}
                             chipMeta={{ kind: 'area', code: chip.code }}
+                            active={active}
                           />
                         </button>
                       );
@@ -5116,6 +5139,7 @@ export default function KoreaThemeScenicPage() {
                             count={chip.count}
                             locale={locale}
                             chipMeta={{ kind: 'heritage' }}
+                            active={active}
                           />
                         </button>
                       );
@@ -5304,6 +5328,7 @@ export default function KoreaThemeScenicPage() {
                           count={chipCounts.regionCounts?.[r]}
                           locale={locale}
                           chipMeta={{ kind: 'major' }}
+                          active={active}
                         />
                       </button>
                     );
@@ -5340,6 +5365,7 @@ export default function KoreaThemeScenicPage() {
                           count={tourAreaCounts[chip.code]}
                           locale={locale}
                           chipMeta={{ kind: 'area', code: chip.code }}
+                          active={active}
                         />
                       </button>
                     );
@@ -5376,6 +5402,7 @@ export default function KoreaThemeScenicPage() {
                           count={chipCounts.cat1Counts[chip.code]}
                           locale={locale}
                           chipMeta={{ kind: 'tourCat', code: chip.code }}
+                          active={active}
                         />
                       </button>
                     );
@@ -5417,6 +5444,7 @@ export default function KoreaThemeScenicPage() {
                           count={chipCounts.cat2Counts[chip.code]}
                           locale={locale}
                           chipMeta={{ kind: 'tourCat', code: chip.code }}
+                          active={active}
                         />
                       </button>
                     );
@@ -5458,6 +5486,7 @@ export default function KoreaThemeScenicPage() {
                           count={chipCounts.cat3Counts[chip.code]}
                           locale={locale}
                           chipMeta={{ kind: 'tourCat', code: chip.code }}
+                          active={active}
                         />
                       </button>
                     );
