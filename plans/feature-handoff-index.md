@@ -855,10 +855,10 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#85 push** tip `828fcdd9` · PR [#347](https://github.com/catgeot/Days/pull/347) · **#86 여주** · 오버레이 사진 **§2.1** **≥3장 필수** |
+| **상태** | **#85 push** tip `828fcdd9` · PR [#349](https://github.com/catgeot/Days/pull/349) · **#86 여주** · 오버레이 사진 **§2.1** **≥3장 필수** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
 | **tip** | `828fcdd9` |
-| **PR** | [#347](https://github.com/catgeot/Days/pull/347) · [#339](https://github.com/catgeot/Days/pull/339) merge ✅ · [#335](https://github.com/catgeot/Days/pull/335) merge ✅ · [#333](https://github.com/catgeot/Days/pull/333) merge ✅ · [#332](https://github.com/catgeot/Days/pull/332) merge ✅ · [#330](https://github.com/catgeot/Days/pull/330) merge ✅ · [#329](https://github.com/catgeot/Days/pull/329) merge ✅ · [#328](https://github.com/catgeot/Days/pull/328) merge ✅ · [#327](https://github.com/catgeot/Days/pull/327) merge ✅ · [#324](https://github.com/catgeot/Days/pull/324) merge ✅ · [#323](https://github.com/catgeot/Days/pull/323) merge ✅ · [#321](https://github.com/catgeot/Days/pull/321) merge ✅ · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ |
+| **PR** | [#349](https://github.com/catgeot/Days/pull/349) · [#347](https://github.com/catgeot/Days/pull/347) merge ✅ · [#339](https://github.com/catgeot/Days/pull/339) merge ✅ · [#335](https://github.com/catgeot/Days/pull/335) merge ✅ · [#333](https://github.com/catgeot/Days/pull/333) merge ✅ · [#332](https://github.com/catgeot/Days/pull/332) merge ✅ · [#330](https://github.com/catgeot/Days/pull/330) merge ✅ · [#329](https://github.com/catgeot/Days/pull/329) merge ✅ · [#328](https://github.com/catgeot/Days/pull/328) merge ✅ · [#327](https://github.com/catgeot/Days/pull/327) merge ✅ · [#324](https://github.com/catgeot/Days/pull/324) merge ✅ · [#323](https://github.com/catgeot/Days/pull/323) merge ✅ · [#321](https://github.com/catgeot/Days/pull/321) merge ✅ · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-28-project-log.md`](./2026-09-28-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=yangyang` 양양10경 죽도정(사진 3장) |
