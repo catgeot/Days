@@ -11,7 +11,8 @@ import {
   localizedExploreBadgeLabel,
 } from '../../../../i18n/exploreUi';
 import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve.js';
-import { fetchKoreaTourAttractionFirstImagesByIds } from '../../lib/koreaTourAttractions';
+import { fetchKoreaTourAttractionFirstImagesByIds, rememberKoreaTourAttractionFirstImage } from '../../lib/koreaTourAttractions';
+import { fetchTourApiFirstImage } from '../../../../utils/fetchTourApiAttractionDetail';
 import { resolveSearchScenicMedia } from '../../lib/koreaLocalScenicLists';
 import {
   getLocalizedCountryName,
@@ -23,7 +24,10 @@ import {
   koreaHomonymChoiceQuery,
 } from '../../lib/detectHomonymLocation';
 import { HomonymChoiceChips } from './HomonymChoiceChips';
-import { sliceSearchDisambiguationPage } from '../../lib/searchDisambiguationPaging.js';
+import {
+  sliceSearchDisambiguationPage,
+  resolveSearchDisambiguationPageSize,
+} from '../../lib/searchDisambiguationPaging.js';
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
 
@@ -159,15 +163,33 @@ function useMissingTourAttractionThumbs(items) {
       .filter(Boolean);
     if (!ids.length) return undefined;
 
-    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then(async (dbMap) => {
       if (cancelled) return;
       const next = {};
+      const liveTargets = [];
       list.forEach((item, index) => {
         if (searchCandidateThumbUrl(item)) return;
-        const url = dbMap.get(String(item?.contentId || '').trim());
+        const id = String(item?.contentId || '').trim();
+        const url = dbMap.get(id);
         if (url) next[index] = url;
+        else if (id) liveTargets.push({ index, id });
       });
-      if (Object.keys(next).length) setThumbByIndex(next);
+      if (Object.keys(next).length) setThumbByIndex({ ...next });
+      if (!liveTargets.length || cancelled) return;
+      const liveHits = await Promise.all(
+        liveTargets.map(async ({ index, id }) => ({
+          index,
+          id,
+          url: await fetchTourApiFirstImage(id),
+        })),
+      );
+      if (cancelled) return;
+      for (const hit of liveHits) {
+        if (!hit.url) continue;
+        next[hit.index] = hit.url;
+        rememberKoreaTourAttractionFirstImage(hit.id, hit.url);
+      }
+      if (Object.keys(next).length) setThumbByIndex({ ...next });
     });
 
     return () => {
@@ -423,9 +445,14 @@ export function SearchDisambiguationCards({
     setPage(1);
   }, [candidateKey]);
 
+  const disambiguationPageSize = useMemo(
+    () => resolveSearchDisambiguationPageSize(candidates),
+    [candidates],
+  );
+
   const paging = useMemo(
-    () => sliceSearchDisambiguationPage(candidates, page),
-    [candidates, page],
+    () => sliceSearchDisambiguationPage(candidates, page, disambiguationPageSize),
+    [candidates, page, disambiguationPageSize],
   );
   const pageItems = paging.items;
 
@@ -438,7 +465,7 @@ export function SearchDisambiguationCards({
   useEffect(() => {
     let cancelled = false;
     setIntroByKey({});
-    const list = sliceSearchDisambiguationPage(candidates, page).items;
+    const list = sliceSearchDisambiguationPage(candidates, page, disambiguationPageSize).items;
     if (!list.length) return undefined;
 
     (async () => {
@@ -460,7 +487,7 @@ export function SearchDisambiguationCards({
   }, [candidateKey, page, candidates]);
 
   const goPage = (nextPage) => {
-    const next = sliceSearchDisambiguationPage(candidates, nextPage);
+    const next = sliceSearchDisambiguationPage(candidates, nextPage, disambiguationPageSize);
     setPage(next.page);
     onPageChange?.(next.page);
   };
