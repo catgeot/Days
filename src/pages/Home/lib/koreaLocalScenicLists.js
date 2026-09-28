@@ -1525,6 +1525,10 @@ const YY_JUKDOJEONG = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655452231_2
 const YY_JUKDOJEONG_2 = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655451898_cc4fa391cba752b0beb83498f3a2b739.jpg`;
 const YY_JUKDOJEONG_3 = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655463733_fedc75e948b4b1b6e390e0c0d9a26a5c.jpg`;
 const YY_JUKDOJEONG_HOME = `${YY_TOUR}/pub/yy10view.do?mode=v&seq=167`;
+const YJ_TOUR_HOME = 'https://www.yeoju.go.kr/tour/index.do';
+const YJ_YEOKANG = 'https://tong.visitkorea.or.kr/cms/resource/21/2661421_image2_1.jpg';
+const YJ_YEOKANG_2 = 'https://tong.visitkorea.or.kr/cms/resource/20/2661420_image2_1.jpg';
+const YJ_YEOKANG_3 = 'https://tong.visitkorea.or.kr/cms/resource/22/2661422_image2_1.jpg';
 const JE_9GYEONG = 'https://www.jeongeup.go.kr/upload_data/board_data/BBS_0000011';
 const JE_DH = `${JE_9GYEONG}/175305752440905.png`;
 const JE_DH_2 = 'https://www.1894.or.kr/main/img/sub/77/77_1_1.jpg';
@@ -3553,6 +3557,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     YY_JUKDOJEONG,
     [YY_JUKDOJEONG_2, YY_JUKDOJEONG_3],
     YY_JUKDOJEONG_HOME,
+  ),
+  'local-scenic:yeoju-palgyeong:팔수장림': localScenicPhotoOverlay(
+    '여주8경 제6경 팔수장림(八藪長林)은 오학리 강변 무성한 숲이 남한강 여강에 비치는 전경입니다. 여주시 관광은 여주팔경 여덟 곳 중 제6경으로 같은 뜻의 팔대장림(八大長林)을 함께 소개하며, 조선 시대 여주목 관아 맞은편 여강 강변에 울창한 수림이 펼쳐져 청심루와 어우러진 파노라마 경관을 이루었다고 전합니다. 현 지명은 오학동·현암동 일대 강변이며, 여주시는 현암동 달팽이공원을 팔대장림의 시작점으로 안내하고 여주대교까지 이어지는 천년도자길(여강길 10코스)에서 벚꽃길·산책과 함께 학동모연(3경)·신륵모종(1경) 배경을 볼 수 있다고 적습니다. 이포보·여주강변유원지(연양동)·오학체육공원과 다른 오학·현암 강변 수림 전경이며, 다른 지역 「팔수」 지명·일반 산림욕장과도 구분합니다. 사진은 여주시 관광 여주8경 제6경 팔수장림 안내와 같은 여강 강변 구간의 한국관광공사 여강길 공식 사진 3장입니다.',
+    '경기도 여주시 오학동·현암동 일원 (남한강 여강 오학리 강변·팔대장림)',
+    YJ_YEOKANG,
+    [YJ_YEOKANG_2, YJ_YEOKANG_3],
+    YJ_TOUR_HOME,
   ),
   'local-scenic:jeongeup-gugyeong:동학농민혁명기념공원': localScenicPhotoOverlay(
     '정읍9경 4경 동학농민혁명기념공원은 덕천면 하학리입니다. 정읍시 문화관광은 1894년 반부패·반봉건·반외세의 기치를 들고 봉기한 동학농민군이 관군을 크게 이긴 최초 전승지 황토현 전적 안에 국가사업으로 들어선 공원이며, 전시관·추모관·기념관이 있다고 적습니다. 주소는 동학로 742입니다. 사적 제295호 정읍 황토현전적 일대이며, 동학농민혁명기념재단은 2022년 5월 11일(동학농민혁명기념일) 개원했다고 안내합니다. 면적 약 30만㎡이며 사발통문광장·울림의 기둥·기억의 들판·방문자센터511과 군상 「불멸, 바람길」이 있습니다. 2004년 개관한 동학농민혁명기념관(동학로 715) 단독 전시관이 아니라 2022년 연 공원이며, 고창 무장·전주 동학농민혁명기념관·내장산국립공원과 다른 덕천면 황토현입니다. 사진은 정읍시 문화관광 4경·동학농민혁명기념재단 공식 사진입니다.',
