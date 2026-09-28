@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '탐색 hub 썸네일',
   sessionNo: 1,
-  sessionPhase: '대전 신중앙시장 Tour ID',
+  sessionPhase: '대전8경 썸네일',
   branch: 'cursor/search-enter-hub-2018',
   previewPath: '/explore',
   qaShareSlug: 'search-enter-hub',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-28-search-enter-hub-daejeon-palgyeong-thumbs',
+    session: '탐색 hub 썸네일 #1, 대전8경 썸네일',
+    title: '대전 검색 팔경 사진',
+    detail:
+      '탐색 선택 카드는 tourapi_attraction에 없는 팔경 contentId(구봉산·계족산·식장산·보문산)를 아이콘으로 남겼습니다. 명승 페이지와 같이 Tour 라이브 사진으로 채웁니다. 장태산은 contentId 없이 숲나들e 공식 사진을 오버레이합니다. Preview /qa/search-enter-hub — /explore 「대전」.',
+    at: '2026-09-28T00:30:00.000Z',
+  },
   {
     id: '2026-09-27-search-enter-hub-thumbnail-daejeon-market',
     session: '탐색 hub 썸네일 #1, 대전 신중앙시장 Tour ID',
