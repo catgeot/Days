@@ -1791,6 +1791,12 @@ const BYEO_CHEONJEONG = `${BYEO_TOUR_IMG}/info010105_gallery01.jpg`;
 const BYEO_CHEONJEONG_2 = `${BYEO_TOUR_IMG}/info010105_gallery02.jpg`;
 const BYEO_CHEONJEONG_3 = `${BYEO_TOUR_IMG}/info010105_gallery03.jpg`;
 const BYEO_CHEONJEONG_HOME = 'https://buyeo.go.kr/html/tour/info/info_010105.html';
+const SJ_TOUR = 'https://www.sj.go.kr';
+const SJ_MELON_FIELDS = `${SJ_TOUR}/data/content/20210805/1605EA98C17E4CBCB58D70F2784C94D8.jpg`;
+const SJ_MELON_FIELDS_2 = `${SJ_TOUR}/data/content/20201126/C30190E50D944A08A0D9ED7F7E15B7F6.jpg`;
+const SJ_MELON_FIELDS_3 = `${SJ_TOUR}/data/content/20210805/C862B2DB499247DE8E1D75D63EDC5FB7.jpg`;
+const SJ_MELON_FIELDS_HOME =
+  'https://www.sj.go.kr/tour/page.do?listType=&mnu_uid=3749&sortKwd=&code_uid=272&srchKwd=&area_uid=250&cmd=2&pageNo=2';
 const DJ_FOREST_IMG = 'https://image.foresttrip.go.kr/frip';
 const DJ_JANGTAE = `${DJ_FOREST_IMG}/2a9ccc94-9600-487e-bcef-67c6e3f2af94.jpg`;
 const DJ_JANGTAE_2 = `${DJ_FOREST_IMG}/4606705b-c25c-48c4-b505-563698164228.jpg`;
@@ -3900,6 +3906,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     BYEO_CHEONJEONG,
     [BYEO_CHEONJEONG_2, BYEO_CHEONJEONG_3],
     BYEO_CHEONJEONG_HOME,
+  ),
+  'local-scenic:seongju-sipgyeong:성주참외하우스들녘': localScenicPhotoOverlay(
+    '성주10경 제10경 성주참외하우스 들녘은 성주읍 성주로 3200 일대 참외 비닐하우스가 펼쳐진 농경 경관입니다. 성주군 문화관광은 성주의 대표 농산물이자 주소득원인 참외가 재배되는 비닐하우스가 성주군을 상징한다고 소개하며, 전국 최대 참외 주산지인 만큼 들판에 이어진 하우스가 물결처럼 보이는 풍경을 제10경으로 꼽습니다. 성주 10경은 2022년 가야산·독용산성·회연서원·포천계곡·성밖숲·세종대왕자태실·한개마을·역사테마공원·성산동 고분군과 함께 확정되었습니다. 달빛 아래 비닐하우스가 반짝이는 야경도 알려져 있으며, 성주참외·생명문화축제(5월)와 참외체험형 테마공원 등 체험 시설과는 구분되는 성주읍 들녘 조망 명소입니다. 가야산 국립공원·세종대왕자태실·성주역사테마공원과 다른 평야 비닐하우스 전경입니다. 사진은 성주군 문화관광 성주참외하우스 들녘 공식 사진 3장입니다.',
+    '경상북도 성주군 성주읍 성주로 3200 (성주참외하우스 들녘)',
+    SJ_MELON_FIELDS,
+    [SJ_MELON_FIELDS_2, SJ_MELON_FIELDS_3],
+    SJ_MELON_FIELDS_HOME,
   ),
   'local-scenic:daejeon-palgyeong:대전장태산': localScenicPhotoOverlay(
     '대전8경 대전 장태산은 서구 장안로 461의 장태산자연휴양림입니다. 대전광역시 공원관리사업소는 서구 장안동에 있으며, 1991년부터 1994년까지 임창봉 선생이 조성·운영하다 2002년 2월 시가 매입해 2006년 4월 25일 재개장했다고 적습니다. 구역면적은 82ha(815,855㎡)이고, 1970년대부터 조성된 국내 유일 규모의 메타세콰이아 숲이 울창해 이국적 경관과 가족 산림욕 명소로 알려져 있습니다. 숲나들e 안내는 1991년 전국 최초 민간 자연휴양림 지정, 1996년 대전 8경 지정, 2019년 국가산림문화자산, 2021~2022년 한국관광 100선 선정을 적습니다. 안평산(470.2m) 옆 산줄기에 용태을 저수지와 기암·호수 경관이 어우러지고, 대전시 깃대종 하늘다람쥐·이끼도룽뇽이 서식합니다. 입장료·주차료는 무료이며 숙박·야영은 별도 요금이고, 휴양림관리과 문의는 042-270-7887입니다. 한밭수목원·보문산·식장산·대청호·유성온천과 다른 서구 메타세콰이아 숲입니다. 사진은 숲나들e 장태산자연휴양림 공식 안내 사진입니다.',
