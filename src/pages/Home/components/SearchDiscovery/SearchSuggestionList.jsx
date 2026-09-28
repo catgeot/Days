@@ -11,7 +11,8 @@ import {
   localizedExploreBadgeLabel,
 } from '../../../../i18n/exploreUi';
 import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve.js';
-import { fetchKoreaTourAttractionFirstImagesByIds } from '../../lib/koreaTourAttractions';
+import { fetchKoreaTourAttractionFirstImagesByIds, rememberKoreaTourAttractionFirstImage } from '../../lib/koreaTourAttractions';
+import { fetchTourApiFirstImage } from '../../../../utils/fetchTourApiAttractionDetail';
 import { resolveSearchScenicMedia } from '../../lib/koreaLocalScenicLists';
 import {
   getLocalizedCountryName,
@@ -162,15 +163,33 @@ function useMissingTourAttractionThumbs(items) {
       .filter(Boolean);
     if (!ids.length) return undefined;
 
-    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then(async (dbMap) => {
       if (cancelled) return;
       const next = {};
+      const liveTargets = [];
       list.forEach((item, index) => {
         if (searchCandidateThumbUrl(item)) return;
-        const url = dbMap.get(String(item?.contentId || '').trim());
+        const id = String(item?.contentId || '').trim();
+        const url = dbMap.get(id);
         if (url) next[index] = url;
+        else if (id) liveTargets.push({ index, id });
       });
-      if (Object.keys(next).length) setThumbByIndex(next);
+      if (Object.keys(next).length) setThumbByIndex({ ...next });
+      if (!liveTargets.length || cancelled) return;
+      const liveHits = await Promise.all(
+        liveTargets.map(async ({ index, id }) => ({
+          index,
+          id,
+          url: await fetchTourApiFirstImage(id),
+        })),
+      );
+      if (cancelled) return;
+      for (const hit of liveHits) {
+        if (!hit.url) continue;
+        next[hit.index] = hit.url;
+        rememberKoreaTourAttractionFirstImage(hit.id, hit.url);
+      }
+      if (Object.keys(next).length) setThumbByIndex({ ...next });
     });
 
     return () => {

@@ -235,6 +235,20 @@ assert.match(
   '선택 카드 — 팔경 hub 페이지 크기',
 );
 
+assert.match(
+  suggestionListSrc,
+  /fetchTourApiFirstImage/,
+  'DB에 없는 팔경 contentId는 Tour 라이브 사진',
+);
+
+const daejeonList = listsForHub('daejeon').find((list) => list.listId === 'daejeon-palgyeong');
+const jangtae = localScenicMemberToSuggestion(
+  daejeonList,
+  daejeonHub,
+  daejeonList.members.find((m) => m.attractionName === '대전 장태산'),
+);
+assert.ok(jangtae?.imageUrl?.includes('foresttrip.go.kr'), '대전 7경 장태산 오버레이 썸네일');
+
 console.log(
   `PASS explore-choice-overlay (옹진 hub + ${candidates.length} choice cards, dropdown gated)`,
 );
