@@ -5,7 +5,7 @@
 ## 탐색 hub 썸네일 #1 — 대전 신중앙시장 Tour ID
 
 - **세션** `탐색 hub 썸네일 #1, 대전 신중앙시장 Tour ID` · feature `cursor/search-enter-hub-2018` · tip `57f632d4` · PR [#343](https://github.com/catgeot/Days/pull/343)
-- **조치** `cityAttractionHubs.js` — hub JSON `contentId` 없을 때 `koreaThemeRegionTour` **1434477** 병합 · 스모크 단언 · origin/main 머지(탐색 Enter·QA redirect)
+- **조치** `cityAttractionHubs.js` — theme Tour **1434477** 병합 · Enter **팔경 hub 단일 페이지(24)** 로 8경+신중앙 분할 방지 · 스모크 단언
 - **VERIFY** `smoke:search-enter-match` · `smoke:explore-choice-overlay` · `vite build` PASS
 - **Preview** https://www.gateo.kr/qa/search-enter-hub → git `https://days-git-cursor-search-enter-hub-2018-catgeots-projects.vercel.app/explore` · 「대전」→ **신중앙시장**
 - **사람 QA** 썸네일 · intro 대전 맥락(동명 서울 잔존 시 후속)

@@ -307,12 +307,12 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `57f632d4` · draft PR [#343](https://github.com/catgeot/Days/pull/343) · **사람 Preview** |
+| **상태** | **#1 push** · tip `1161d5bd` · draft PR [#343](https://github.com/catgeot/Days/pull/343) · **사람 Preview** |
 | **브랜치** | `cursor/search-enter-hub-2018` |
 | **PR** | [#343](https://github.com/catgeot/Days/pull/343) (탐색 Enter와 동일 feature) |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) — 「탐색 hub 썸네일 #1」 |
 | **Preview** | `/qa/search-enter-hub` → git Preview `/explore` · `대전` → 신중앙시장 |
-| **조치** | `cityAttractionHubs.js` — theme Tour **1434477** 병합 · 스모크 단언 |
+| **조치** | theme **1434477** 병합 · 팔경 Enter **단일 페이지(24)** · tip `1161d5bd` |
 | **SSOT** | `koreaThemeRegionTour.json` `daejeon:daejeon-central-market` → **1434477** (hub JSON 미기입) |
 | **coord 큐** | [`city-attraction-tourapi-coord-queue.md`](./city-attraction-tourapi-coord-queue.md) — multi_title · **1434477 사용 금지(큐 후보만)** |
 | **소유** | `cityAttractionHubs.js` · `koreaThemeRegions.js` · `SearchSuggestionList.jsx` · 검색 스모크 |
