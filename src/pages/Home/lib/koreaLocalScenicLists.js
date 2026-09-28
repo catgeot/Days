@@ -1791,6 +1791,12 @@ const DJ_JANGTAE = `${DJ_FOREST_IMG}/2a9ccc94-9600-487e-bcef-67c6e3f2af94.jpg`;
 const DJ_JANGTAE_2 = `${DJ_FOREST_IMG}/4606705b-c25c-48c4-b505-563698164228.jpg`;
 const DJ_JANGTAE_3 = `${DJ_FOREST_IMG}/493cd595-4e99-47d2-b096-3e53affd46db.jpg`;
 const DJ_JANGTAE_HOME = 'https://www.foresttrip.go.kr/indvz/main.do?hmpgId=ID02030106';
+const TA_TOUR_IMG = 'https://www.taean.go.kr/uloads_clone/tursmCn';
+const TA_ANHEUNG = `${TA_TOUR_IMG}/920_TUCN_202301180236266311.jpg`;
+const TA_ANHEUNG_2 = `${TA_TOUR_IMG}/920_TUCN_202301180236267362.jpg`;
+const TA_ANHEUNG_3 = `${TA_TOUR_IMG}/920_TUCN_202301180236296524.jpg`;
+const TA_ANHEUNG_HOME =
+  'https://www.taean.go.kr/prog/tursmCn/tour/sub02_02_02/view.do?cntno=2';
 const CN_TOUR_IMG = 'https://tour.chungnam.go.kr/thumbnail/trsrcn';
 const CN_SINGWAN = `${CN_TOUR_IMG}/TRSRCN_202501140412570660.JPG`;
 const CN_SINGWAN_2 = `${CN_TOUR_IMG}/TRSRCN_202605091035591187.JPG`;
@@ -3867,6 +3873,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     DJ_JANGTAE,
     [DJ_JANGTAE_2, DJ_JANGTAE_3],
     DJ_JANGTAE_HOME,
+  ),
+  'local-scenic:taean-palgyeong:안흥성': localScenicPhotoOverlay(
+    '태안8경 제2경 안흥성(안흥진성)은 근흥면 정죽리 1155-1 안흥항 뒷산의 석성입니다. 태안군 문화관광은 조선 시대 진성(鎭城)으로 충청도 유일의 수군 방어영이 배치되어 왜구·해적 방어와 곡선·사신 접대 기능을 맡았으며, 남 성벽 글씨에 1583년 최초 축성·1655년 대수리가 적힌다고 안내합니다. 성벽 전체 길이는 약 1,798m로 태안 수군 진성 중 최대이며 동문 수성루·서문 수홍루·남문 복파루·북문 감성루가 있었고 현재는 서문만 문루를 복원한 상태라고 적습니다. 충남 지정 기념물에서 2020년 국가사적으로 승격되었습니다. 성마루에서는 안흥항과 섬들이 어우러진 서해 경관을 조망합니다. 화성 안흥창호·이천 안흥동·충남 다른 진성과 다른 근흥면 정죽리 국가사적입니다. 사진은 태안군 문화관광 제2경 안흥진성 공식 사진입니다.',
+    '충청남도 태안군 근흥면 정죽리 1155-1 (안흥진성)',
+    TA_ANHEUNG,
+    [TA_ANHEUNG_2, TA_ANHEUNG_3],
+    TA_ANHEUNG_HOME,
   ),
   'local-scenic:gongju-sipgyeong:마곡사': {
     imageUrl: CNGJ_MAGOK,
