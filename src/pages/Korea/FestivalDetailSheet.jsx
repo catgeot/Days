@@ -610,8 +610,9 @@ export default function FestivalDetailSheet({
       lat: pt?.lat,
       lng: pt?.lng,
       locale,
+      areaCode: festivalAreaCode || undefined,
     });
-  }, [nearbySpots, nearestHub?.hubId, item?.mapx, item?.mapy, locale]);
+  }, [nearbySpots, nearestHub?.hubId, item?.mapx, item?.mapy, locale, festivalAreaCode]);
   const nearbyHasLocalScenic = nearbyGrouped.groups.some((g) => g.items.length);
   const nearbyMissingThumbIds = useMemo(
     () => missingNearbyThumbContentIds(nearbyGrouped),

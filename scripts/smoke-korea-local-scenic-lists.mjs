@@ -392,6 +392,41 @@ assert.ok(
   '방동약수 thumb from overlay not async-only',
 );
 
+const busanCentumNearby = groupNearbySpotsWithLocalScenic(
+  [
+    {
+      name: '천태산',
+      contentId: '125907',
+      distKm: 5.2,
+      lat: 36.1586024648,
+      lng: 127.5996540718,
+    },
+  ],
+  { hubId: 'busan', lat: 35.168, lng: 129.131, areaCode: '6' },
+);
+assert.equal(
+  busanCentumNearby.groups.length,
+  0,
+  'busan centum — no 양산12경 inject (wrong-name Tour hit + far members)',
+);
+assert.ok(
+  busanCentumNearby.rest.some((r) => r.name === '천태산'),
+  'busan centum — unrelated Tour 천태산 stays in rest',
+);
+
+const yangsanNearby = groupNearbySpotsWithLocalScenic([], {
+  hubId: 'yangsan',
+  lat: 35.325,
+  lng: 129.024,
+});
+const yangsanGroup = yangsanNearby.groups.find((g) => g.listId === 'yangsan-other');
+const yangsanCheontae = yangsanGroup?.items?.find((i) => i.name === '천태산');
+assert.ok(yangsanCheontae?.imageUrl, '양산 12경 천태산 nearby overlay thumb');
+assert.ok(
+  String(yangsanCheontae?.contentId || '') !== '125907',
+  '양산 천태산 — 충북 영동 Tour 125907 미연결',
+);
+
 const damyangNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'damyang' });
 const damyangGroup = damyangNearby.groups.find((g) => g.listId === 'damyang-other');
 const gamagol = damyangGroup?.items?.find((i) => i.name === '가마골용소');
