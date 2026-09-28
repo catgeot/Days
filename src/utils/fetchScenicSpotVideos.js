@@ -1,4 +1,4 @@
-import { supabase } from '../shared/api/supabase';
+import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 
 const INVOKE_TIMEOUT_MS = 15_000;
 export const SCENIC_VIDEOS_PAGE = 5;
@@ -81,7 +81,7 @@ export async function fetchScenicSpotVideos(opts) {
     }
 
     const { data, error } = await withTimeout(
-      supabase.functions.invoke('fetch-place-videos', {
+      invokeSupabaseFunctionDeduped('fetch-place-videos', {
         body: {
           query: title,
           fallbackQuery,

@@ -22,15 +22,7 @@ export function hasGlobeTourLandmark(locationOrSlug) {
   return Boolean(globeLandmarks[slug]);
 }
 
-/** Summary 카드 3D 투어 — 유효 좌표면 전 여행지·신규/숨은 지명 노출 (품질은 landmark·category 템플릿으로 조정) */
-export function canStartGlobeTour(location) {
-  if (!location || location.isScanning) return false;
-  const lat = Number(location.lat);
-  const lng = Number(location.lng);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
-  if (lat === 0 && lng === 0) return false;
-  return true;
-}
+export { canStartGlobeTour } from './globeTourEligibility.js';
 
 export function resolveTourKeyframes(slug, fallbackLng, fallbackLat, location) {
   const key = String(slug || resolveGlobeTourSlug({ slug, lat: fallbackLat, lng: fallbackLng }) || '').toLowerCase();

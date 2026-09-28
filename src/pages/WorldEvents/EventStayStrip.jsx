@@ -27,6 +27,7 @@ import {
   normalizeMrtStayDates,
 } from '../../utils/fetchMrtStays';
 import StripListLargeToggle from './StripListLargeToggle';
+import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { MRT_HOME_MYLINK_ID } from '../Home/data/mrtPackageThemeLinks';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
 import { resolveTripcomPartnerLocale } from '../../utils/tripcomPartnerLocale.js';
@@ -114,7 +115,13 @@ function StayCard({ item, price, large = false }) {
     >
       <div className={`relative w-full bg-stone-100 ${large ? 'h-[132px]' : 'h-[88px]'}`}>
         {item.imageUrl ? (
-          <img src={item.imageUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+          <img
+            src={resolveListImageUrl(item.imageUrl, { role: 'list' })}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full items-center justify-center text-[10px] text-stone-400">—</div>
         )}
@@ -277,7 +284,6 @@ export default function EventStayStrip({
           const listed = Array.isArray(partial?.items) ? partial.items : [];
           const bookable = filterBookableMrtStays(listed);
           if (bookable.length === 0) return;
-          fetchedKeyRef.current = fetchKey;
           setItems(bookable.slice(0, MRT_STAY_PAGE_SIZE));
           setMrtListMeta({
             regionId: partial.region?.regionId ?? null,
@@ -300,7 +306,6 @@ export default function EventStayStrip({
             const retryListed = Array.isArray(partial?.items) ? partial.items : [];
             const retryBookable = filterBookableMrtStays(retryListed);
             if (retryBookable.length === 0 && retryListed.length === 0) return;
-            fetchedKeyRef.current = fetchKey;
             setItems((retryBookable.length > 0 ? retryBookable : retryListed).slice(
               0,
               MRT_STAY_PAGE_SIZE,

@@ -1,4 +1,4 @@
-import { supabase } from '../shared/api/supabase';
+import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 
 const INVOKE_TIMEOUT_MS = 15_000;
 export const FESTIVAL_VIDEOS_PAGE = 5;
@@ -72,7 +72,7 @@ export async function fetchFestivalVideos(opts) {
     }
 
     const { data, error } = await withTimeout(
-      supabase.functions.invoke('fetch-place-videos', {
+      invokeSupabaseFunctionDeduped('fetch-place-videos', {
         body: {
           mode: 'festival',
           query,

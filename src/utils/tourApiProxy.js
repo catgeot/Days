@@ -1,4 +1,4 @@
-import { supabase } from '../shared/api/supabase';
+import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 import { i18n } from '../i18n/config';
 import { normalizeAppLocale } from '../i18n/constants';
 
@@ -53,7 +53,7 @@ export async function invokeTourApiProxy(action, payload = {}, opts = {}) {
   const locale = resolveTourApiLocale(opts.locale ?? getTourApiLocale());
   try {
     const { data, error } = await withTourApiTimeout(
-      supabase.functions.invoke('tourapi-proxy', {
+      invokeSupabaseFunctionDeduped('tourapi-proxy', {
         body: { action, locale, ...payload },
       }),
       timeoutMs,

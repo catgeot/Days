@@ -1,11 +1,10 @@
-import { supabase } from '../shared/api/supabase';
 import { formatTourAttractionLocality } from '../pages/Home/lib/koreaTourAttractionLocality';
 import { scenicRegionForAreaCode } from '../pages/Home/lib/koreaTourAttractionMap';
 import {
   fetchNearbyTourAreaBasedFallback,
   isTourApiQuotaError,
 } from './nearbyTourAreaFallback';
-import { NEARBY_TOUR_API_LOCALE, withTourApiTimeout } from './tourApiProxy';
+import { invokeTourApiProxy, NEARBY_TOUR_API_LOCALE } from './tourApiProxy';
 
 export const RESTAURANT_CONTENT_TYPE_ID = '39';
 
@@ -119,27 +118,19 @@ export async function fetchNearbyTourRestaurants(opts) {
   };
 
   try {
-    const { data, error } = await withTourApiTimeout(
-      supabase.functions.invoke('tourapi-proxy', {
-        body: {
-          action: 'locationBasedList',
-          locale: NEARBY_TOUR_API_LOCALE,
-          mapX: lng,
-          mapY: lat,
-          radius: radiusM,
-          contentTypeId: RESTAURANT_CONTENT_TYPE_ID,
-          numOfRows: Math.min(Math.max(limit, 8), 20),
-          pageNo: 1,
-          arrange: 'E',
-        },
-      }),
-      14_000,
-      'tourapi:locationBasedList',
+    const data = await invokeTourApiProxy(
+      'locationBasedList',
+      {
+        mapX: lng,
+        mapY: lat,
+        radius: radiusM,
+        contentTypeId: RESTAURANT_CONTENT_TYPE_ID,
+        numOfRows: Math.min(Math.max(limit, 8), 20),
+        pageNo: 1,
+        arrange: 'E',
+      },
+      { timeoutMs: 14_000, locale: NEARBY_TOUR_API_LOCALE, returnRawOnFail: true },
     );
-    if (error) {
-      console.warn('[nearbyTourRestaurants]', error.message || error);
-      return runAreaFallback(error.message || String(error));
-    }
     if (!data?.ok) {
       const msg = data?.message || data?.error || 'locationBasedList failed';
       console.warn('[nearbyTourRestaurants]', msg);

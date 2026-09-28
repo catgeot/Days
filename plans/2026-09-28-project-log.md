@@ -2,6 +2,14 @@
 
 직전: [`2026-09-27-project-log.md`](./2026-09-27-project-log.md)
 
+## 팔경 활용 #86 — 여주8경 팔수장림
+
+- **세션** `팔경 활용 #86, 여주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `9b17f25d` · PR [#349](https://github.com/catgeot/Days/pull/349)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 여주8경 결손 1건. 팔수장림(八藪長林·제6경·오학동·현암동 여강 강변·팔대장림·천년도자길). 이포보·연양동 강변유원지·오학체육공원과 구분. 사진은 여주시 관광 제6경 안내와 연계한 한국관광공사 여강길 공식 3장.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **6**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=yeoju` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeoju`
+- **다음** `팔경 활용 #87, 영월 결손 오버레이` — 김삿갓유적지 · **오버레이 사진 ≥3장**([`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §2.1)
+
 ## 팔경 활용 #85 — 양양10경 죽도정
 
 - **세션** `팔경 활용 #85, 양양 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `828fcdd9` · PR [#349](https://github.com/catgeot/Days/pull/349)

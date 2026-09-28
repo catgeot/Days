@@ -25,6 +25,7 @@ import {
   X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
+import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { ThemeFestivalBackLink } from '../KoreaTheme/ThemeModuleBackButton';
 import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
@@ -248,7 +249,8 @@ function formatYmdLabel(ymd) {
 }
 
 function festivalImage(item) {
-  return item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
+  const raw = item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
+  return resolveListImageUrl(raw, { role: 'list' });
 }
 
 function festivalKey(item) {
@@ -642,6 +644,7 @@ function FestivalRow({
               alt={item.title || ''}
               className="w-full h-full object-cover"
               loading="lazy"
+              decoding="async"
               onError={() => setImgFailed(true)}
               {...koText}
             />

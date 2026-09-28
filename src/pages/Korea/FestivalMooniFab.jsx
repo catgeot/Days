@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import mooniChar from '../../assets/MOONI_transparent.png';
+import mooniChar from '../../assets/MOONI_transparent.webp';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 

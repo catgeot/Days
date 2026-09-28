@@ -117,6 +117,7 @@ import {
   resolveLocalScenicListSpotById,
 } from '../Home/lib/koreaLocalScenicLists';
 import { fetchTourApiFirstImage } from '../../utils/fetchTourApiAttractionDetail';
+import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -546,18 +547,12 @@ function tourListMissingContentIds(spots) {
 }
 
 function spotListThumbCandidates(spot) {
-  const gallery = Array.isArray(spot?.galleryUrls) ? spot.galleryUrls : [];
-  const raw = [
-    spot?.thumbUrl,
-    spot?.firstImage,
-    spot?.imageUrl,
-    ...gallery,
-  ];
+  const raw = [spot?.thumbUrl, spot?.firstImage, spot?.imageUrl];
   /** @type {string[]} */
   const out = [];
   const seen = new Set();
   for (const item of raw) {
-    const url = toHttps(item);
+    const url = resolveListImageUrl(toHttps(item), { role: 'list' });
     if (!url || seen.has(url)) continue;
     seen.add(url);
     out.push(url);
@@ -1569,11 +1564,7 @@ export default function KoreaThemeScenicPage() {
         ...[...resolved.values()].map((row) => row.contentId),
       ];
       const uniqueIds = [
-        ...new Set([
-          ...curatedIds,
-          ...palgyeongIds,
-          ...tourListMissingContentIds(dbSpots),
-        ]),
+        ...new Set([...curatedIds, ...palgyeongIds]),
       ];
       if (!uniqueIds.length) return;
 
@@ -1636,6 +1627,46 @@ export default function KoreaThemeScenicPage() {
     heritage: false,
     tour: false,
   });
+
+  useEffect(() => {
+    if (!openPods.tour || !dbSpots.length) return undefined;
+    let cancelled = false;
+    const missingIds = tourListMissingContentIds(dbSpots);
+    if (!missingIds.length) return undefined;
+
+    const applyImageEntries = (entries) => {
+      if (!entries.length) return;
+      setCuratedImageByContentId((prev) => mergeContentIdImageMap(prev, entries));
+    };
+
+    (async () => {
+      const peeked = peekKoreaTourAttractionFirstImagesByIds(missingIds);
+      applyImageEntries([...peeked.entries()]);
+      const dbMap = await fetchKoreaTourAttractionFirstImagesByIds(missingIds);
+      if (cancelled) return;
+      applyImageEntries([...dbMap.entries()]);
+      const liveTargets = missingIds.filter((id) => {
+        const key = String(id || '').trim();
+        return key && !peeked.get(key) && !dbMap.get(key);
+      });
+      if (!liveTargets.length) return;
+      const liveHits = await Promise.all(
+        liveTargets.map(async (id) => {
+          const url = await fetchTourApiFirstImage(id);
+          return [id, url];
+        }),
+      );
+      if (cancelled) return;
+      for (const [id, url] of liveHits) {
+        rememberKoreaTourAttractionFirstImage(id, url);
+      }
+      applyImageEntries(liveHits);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [openPods.tour, dbSpots]);
   const [mapSessionKey, setMapSessionKey] = useState(0);
   /** 명소·명승·관광지 지도 드릴다운(목록 URL 기본칩과 분리) */
   const [curatedMapDrill, setCuratedMapDrill] = useState(() => ({
