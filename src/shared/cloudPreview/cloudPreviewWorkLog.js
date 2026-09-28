@@ -26,10 +26,10 @@ export const cloudPreviewWorkLog = [
   {
     id: '2026-09-28-palgyeong-use-82-buan-overlay',
     session: '팔경 활용 #82, 부안 결손 오버레이',
-    title: '변산8경 서해낙조',
+    title: '변산8경 서해낙조·썸네일 분리',
     detail:
-      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 변산8경 결손 1건(서해낙조)의 공공 공식 팩트 개요·주소·부안군 문화관광 제5경 공식 사진을 보강했습니다. 월명암 옆 낙조대에서 고군산군도·위도와 서해 석양을 본다고 안내합니다. 군산 선유낙조·영광 불갑사 낙조와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=buan 팔경 행 썸네일·상세 개요.',
-    at: '2026-09-28T03:45:00.000Z',
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 변산8경 서해낙조와 소사모종·월명무애·채석강·지포신경 행마다 부안군 문화관광 8경 공식 사진을 연결했습니다. 3·4경 동일 Tour id·6·7경 유사 Tour 사진으로 썸네일이 겹치던 문제를 행별 오버레이로 분리했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=buan',
+    at: '2026-09-28T03:55:00.000Z',
   },
   {
     id: '2026-09-28-search-enter-hub-daejeon-palgyeong-thumbs',
