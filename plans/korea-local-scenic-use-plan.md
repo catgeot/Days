@@ -1093,6 +1093,18 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 부여10경 사진·개요 없는 1건(천정대 백제보)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=buyeo
 ```
 
+### §1.2 A #84 성주 결손 오버레이
+
+```
+팔경 활용 #84, 성주 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-28-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 성주10경 사진·개요 없는 1건(성주참외하우스 들녘)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. **공식 사진 ≥3장**(플랜 §2.1). Preview /korea/theme/scenic?hub=seongju
+```
+
 ### §1.2 A #69 안산 결손 오버레이
 
 ```
