@@ -261,7 +261,6 @@ export default function EventStayStrip({
       return undefined;
     }
     if (fetchedKeyRef.current === fetchKey) return undefined;
-    fetchedKeyRef.current = fetchKey;
 
     let cancelled = false;
     setStatus('loading');

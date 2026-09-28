@@ -199,7 +199,6 @@ export default function EventTnaStrip({
     }
 
     if (fetchedKeyRef.current === fetchKey) return undefined;
-    fetchedKeyRef.current = fetchKey;
 
     let cancelled = false;
     setItems(null);
@@ -222,17 +221,21 @@ export default function EventTnaStrip({
         if (cancelled) return;
 
         const listed = Array.isArray(result?.items) ? result.items : [];
+        if (cancelled) return;
         if (listed.length > 0) {
           setItems(listed);
           setStatus('ready');
+          fetchedKeyRef.current = fetchKey;
         } else {
           setItems([]);
           setStatus('empty');
+          fetchedKeyRef.current = fetchKey;
         }
       } catch {
         if (cancelled) return;
         setItems([]);
         setStatus('empty');
+        fetchedKeyRef.current = fetchKey;
       }
     })();
 

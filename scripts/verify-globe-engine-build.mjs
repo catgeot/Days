@@ -2,17 +2,36 @@ import fs from 'fs';
 import path from 'path';
 
 const distAssets = path.join(process.cwd(), 'dist', 'assets');
-const indexFiles = fs.readdirSync(distAssets).filter((file) => file.startsWith('index-') && file.endsWith('.js'));
+const jsFiles = fs.readdirSync(distAssets).filter((file) => file.endsWith('.js'));
 
+const indexFiles = jsFiles.filter((file) => file.startsWith('index-')).sort();
 if (indexFiles.length === 0) {
   console.error('[verify-globe-engine] dist/assets/index-*.js not found. Run npm run build first.');
   process.exit(1);
 }
 
-const bundlePath = path.join(distAssets, indexFiles[0]);
-const bundle = fs.readFileSync(bundlePath, 'utf8');
+/** Index entry chunks + any asset that embeds Mapbox token or gateo map layers. */
+const relevantFiles = new Set(indexFiles);
+for (const file of jsFiles) {
+  const text = fs.readFileSync(path.join(distAssets, file), 'utf8');
+  if (
+    text.includes('pk.ey') ||
+    text.includes('gateo-spots-dot') ||
+    text.includes('gateo-spots-label')
+  ) {
+    relevantFiles.add(file);
+  }
+}
+
+const sortedRelevant = [...relevantFiles].sort();
+const bundle = sortedRelevant
+  .map((file) => fs.readFileSync(path.join(distAssets, file), 'utf8'))
+  .join('\n');
+
 const hasMapboxToken = bundle.includes('pk.ey');
-const hasBrokenMobileBranch = /useMemo\(\(\)=>\{try\{const \w=window\.navigator\?\.userAgent[^]*?return"legacy"/.test(bundle);
+const hasBrokenMobileBranch = /useMemo\(\(\)=>\{try\{const \w=window\.navigator\?\.userAgent[^]*?return"legacy"/.test(
+  bundle,
+);
 // Vite/esbuild minify varies across resolver refactors.
 const hasProdFirstResolver =
   /return t\?i\?"mapbox"/.test(bundle) ||
@@ -27,7 +46,9 @@ if (hasMapboxToken && hasBrokenMobileBranch) {
 }
 
 if (hasMapboxToken && !hasProdFirstResolver) {
-  console.error('[verify-globe-engine] Mapbox token is present but production resolver is missing prod-first mapbox path.');
+  console.error(
+    '[verify-globe-engine] Mapbox token is present but production resolver is missing prod-first mapbox path.',
+  );
   process.exit(1);
 }
 
@@ -37,4 +58,4 @@ if (hasMapboxToken && !hasGateoMarkerLayers) {
   process.exit(1);
 }
 
-console.log(`[verify-globe-engine] OK (${indexFiles[0]})`);
+console.log(`[verify-globe-engine] OK (${sortedRelevant.join(', ')})`);
