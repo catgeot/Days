@@ -224,12 +224,12 @@
 
 | | |
 |--|--|
-| **상태** | **#8 push** · tip `44256af7` · PR [#322](https://github.com/catgeot/Days/pull/322) · **사람 Preview** |
+| **상태** | **#9 push** · tip `b635fa66` · PR [#345](https://github.com/catgeot/Days/pull/345) · **사람 Preview** |
 | **브랜치** | `cursor/festival-sheet-ui-ec8b` |
-| **PR** | [#322](https://github.com/catgeot/Days/pull/322) |
+| **PR** | [#345](https://github.com/catgeot/Days/pull/345) |
 | **플랜** | [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) **§9** |
-| **일지** | [`2026-09-26-project-log.md`](./2026-09-26-project-log.md) |
-| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 주소 아래 네이버·구글 검색 |
+| **일지** | [`2026-09-28-project-log.md`](./2026-09-28-project-log.md) |
+| **Preview** | `/qa/festival-ui` → git Preview `/korea` — 본문 네이버·구글 CTA(명승 동일) |
 | **소유** | `FestivalDetailSheet` |
 | **금지** | 축제 시트 리팩터 · 본문 네이버 지도 직링크 · 이 축제 위치로 복귀 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:festival-surface-search` PASS · `smoke:korea-festival-nearby` PASS · `npx vite build` PASS |
@@ -237,13 +237,13 @@
 **다음 제시어**:
 
 ```
-축제 페이지 #9, Preview OK면 PR 병합
+축제 페이지 #10, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
-@plans/2026-09-26-project-log.md
+@plans/2026-09-28-project-log.md
 @plans/korea-festival-hub-plan.md
-브랜치 cursor/festival-sheet-ui-ec8b · PR #322 · Preview /qa/festival-ui
+브랜치 cursor/festival-sheet-ui-ec8b · PR #345 · Preview /qa/festival-ui
 금지: 축제 시트 리팩터 · 본문 네이버 지도 직링크 · 이 축제 위치로 복귀 · feature에 plans/** 커밋
-작업: Preview /korea 축제 카드 — 탭을 열지 않아도 주소 아래 네이버 검색·구글 검색이 보이는지. 읽을거리에는 영상만. OK면 PR #322 병합.
+작업: Preview /korea 축제 카드 — 주소 아래 네이버·구글이 명승과 같은 초록·파란 「상세정보 보기」 버튼인지. OK면 PR #345 병합.
 검증: npm run smoke:festival-surface-search PASS · smoke:korea-festival-nearby PASS · vite build PASS
 ```
 
