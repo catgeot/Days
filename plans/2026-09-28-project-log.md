@@ -2,6 +2,14 @@
 
 직전: [`2026-09-27-project-log.md`](./2026-09-27-project-log.md)
 
+## 팔경 활용 #85 — 양양10경 죽도정
+
+- **세션** `팔경 활용 #85, 양양 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `828fcdd9` · PR [#347](https://github.com/catgeot/Days/pull/347)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 양양10경 결손 1건. 죽도정(현남면 인구리 1-1·제6경·1965년 준공·죽도해변·하조대 전망). 출입 통제구역·홍성 죽도(유인도)와 구분. 사진은 양양관광 공식 3장.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **7**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=yangyang` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang`
+- **다음** `팔경 활용 #86, 여주 결손 오버레이` — 팔수장림 · **오버레이 사진 ≥3장**([`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §2.1)
+
 ## 팔경 활용 #84 — 성주10경 성주참외하우스 들녘
 
 - **세션** `팔경 활용 #84, 성주 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `720f5e9b` · PR [#347](https://github.com/catgeot/Days/pull/347)
