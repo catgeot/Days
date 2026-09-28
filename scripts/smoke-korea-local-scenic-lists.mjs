@@ -5411,6 +5411,50 @@ assert.ok(
   '부여 검색 천정대 썸네일',
 );
 
+const seongjuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'seongju');
+const seongjuTen = seongjuMerged.filter((s) => s.localScenicListId === 'seongju-sipgyeong');
+assert.equal(seongjuTen.length, 10, '성주10경 10명');
+const melonFields = seongjuTen.find((s) => s.attractionName === '성주참외하우스 들녘');
+assert.ok(melonFields?.overview && melonFields?.imageUrl, '성주참외하우스 들녘 overlay 사진·개요');
+assert.ok(!melonFields?.contentId, '성주참외하우스 들녘 JSON contentId 없음 유지');
+assert.ok(melonFields?.overview?.includes('제10경'), '성주참외하우스 들녘 overlay 제10경');
+assert.ok(melonFields?.overview?.includes('성주로 3200'), '성주참외하우스 들녘 overlay 주소');
+assert.ok(melonFields?.overview?.includes('비닐하우스'), '성주참외하우스 들녘 overlay 비닐하우스');
+assert.ok(melonFields?.overview?.includes('가야산'), '성주참외하우스 들녘≠가야산');
+assert.ok(melonFields?.overview?.includes('세종대왕자태실'), '성주참외하우스 들녘≠자태실');
+assert.ok(melonFields?.imageUrl?.includes('1605EA98C17E4CBCB58D70F2784C94D8'), '성주군 공식 사진 1');
+assert.ok(
+  melonFields?.galleryUrls?.length >= 3,
+  '성주참외하우스 들녘 갤러리 3장 이상',
+);
+assert.ok(
+  melonFields?.galleryUrls?.some((u) => u.includes('C30190E50D944A08A0D9ED7F7E15B7F6')),
+  '성주참외하우스 들녘 두 번째 사진',
+);
+assert.ok(
+  melonFields?.galleryUrls?.some((u) => u.includes('GC084P01962')),
+  '성주참외하우스 들녘 세 번째 사진(디지털성주문화대전)',
+);
+assert.equal(
+  new Set(melonFields?.galleryUrls).size,
+  melonFields?.galleryUrls?.length,
+  '성주참외하우스 들녘 갤러리 URL 중복 없음',
+);
+assert.ok(melonFields?.homepage?.includes('area_uid=250'), '성주참외하우스 들녘 성주군 공식 페이지');
+const seongjuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '성주', {
+  injectLocalScenic: true,
+});
+const seongjuGlobeTen = seongjuGlobe.filter((s) => s.localScenicListId === 'seongju-sipgyeong');
+assert.equal(seongjuGlobeTen.length, 10, '성주 검색 성주10경 10행');
+assert.ok(
+  seongjuGlobe.find((s) => s.attractionName === '성주참외하우스 들녘')?.overview?.includes('성주로 3200'),
+  '성주 검색 참외하우스 들녘 개요',
+);
+assert.ok(
+  seongjuGlobe.find((s) => s.attractionName === '성주참외하우스 들녘')?.imageUrl?.includes('1605EA98'),
+  '성주 검색 참외하우스 들녘 썸네일',
+);
+
 const daejeonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'daejeon');
 const daejeonEight = daejeonMerged.filter((s) => s.localScenicListId === 'daejeon-palgyeong');
 assert.equal(daejeonEight.length, 8, '대전8경 8명');
