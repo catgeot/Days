@@ -1520,6 +1520,11 @@ const YG_BONG_3 = `${YG_DMZ}/7-4.jpg`;
 const YG_BRIDGE = `${YG_DMZ}/8-4.png`;
 const YG_BRIDGE_2 = `${YG_DMZ}/8-2.jpg`;
 const YG_BRIDGE_3 = `${YG_DMZ}/8-5.jpg`;
+const YY_TOUR = 'https://tour.yangyang.go.kr';
+const YY_JUKDOJEONG = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655452231_238b8df0c131b00da504701dba9d2efc.jpg`;
+const YY_JUKDOJEONG_2 = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655451898_cc4fa391cba752b0beb83498f3a2b739.jpg`;
+const YY_JUKDOJEONG_3 = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655463733_fedc75e948b4b1b6e390e0c0d9a26a5c.jpg`;
+const YY_JUKDOJEONG_HOME = `${YY_TOUR}/pub/yy10view.do?mode=v&seq=167`;
 const JE_9GYEONG = 'https://www.jeongeup.go.kr/upload_data/board_data/BBS_0000011';
 const JE_DH = `${JE_9GYEONG}/175305752440905.png`;
 const JE_DH_2 = 'https://www.1894.or.kr/main/img/sub/77/77_1_1.jpg';
@@ -3541,6 +3546,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '강원특별자치도 양구군 양구읍 간척월명로 1719-21 (상무룡 출렁다리)',
     YG_BRIDGE,
     [YG_BRIDGE_2, YG_BRIDGE_3],
+  ),
+  'local-scenic:yangyang-sipgyeong:죽도정': localScenicPhotoOverlay(
+    '양양10경 제6경 죽도정은 현남면 인구리 죽도 정상에 있는 정자입니다. 양양관광은 주소를 강원특별자치도 양양군 현남면 인구리 1-1로 두고 상시 이용 가능하며, 문의는 양양관광안내소 033-670-2397이라고 안내합니다. 옛날에는 섬이었으나 지금은 육지와 연결되었고 사시사철 송죽이 울창해 죽도라 이름 붙었다고 소개합니다. 1965년 현남면 주민 모금과 지방행정 지원으로 준공된 휴식처로, 정상에서 동해와 죽도해변·하조대 일대 전망을 볼 수 있습니다. 죽도해변에서 차로 약 1분 거리이며 서핑·해수욕 후 들르기 좋은 코스입니다. 죽도는 군작전 출입 통제구역이므로 안내에 따라 출입합니다. 정자 외 전망대·신선바위·선녀탕·철교 둘레길 등 산책로가 이어집니다. 홍성12경 죽도(유인도)·진도 하조대와 다른 양양 현남면 해안 정락입니다. 사진은 양양관광 양양10경 제6경 죽도정 공식 사진 3장입니다.',
+    '강원특별자치도 양양군 현남면 인구리 1-1 (죽도정)',
+    YY_JUKDOJEONG,
+    [YY_JUKDOJEONG_2, YY_JUKDOJEONG_3],
+    YY_JUKDOJEONG_HOME,
   ),
   'local-scenic:jeongeup-gugyeong:동학농민혁명기념공원': localScenicPhotoOverlay(
     '정읍9경 4경 동학농민혁명기념공원은 덕천면 하학리입니다. 정읍시 문화관광은 1894년 반부패·반봉건·반외세의 기치를 들고 봉기한 동학농민군이 관군을 크게 이긴 최초 전승지 황토현 전적 안에 국가사업으로 들어선 공원이며, 전시관·추모관·기념관이 있다고 적습니다. 주소는 동학로 742입니다. 사적 제295호 정읍 황토현전적 일대이며, 동학농민혁명기념재단은 2022년 5월 11일(동학농민혁명기념일) 개원했다고 안내합니다. 면적 약 30만㎡이며 사발통문광장·울림의 기둥·기억의 들판·방문자센터511과 군상 「불멸, 바람길」이 있습니다. 2004년 개관한 동학농민혁명기념관(동학로 715) 단독 전시관이 아니라 2022년 연 공원이며, 고창 무장·전주 동학농민혁명기념관·내장산국립공원과 다른 덕천면 황토현입니다. 사진은 정읍시 문화관광 4경·동학농민혁명기념재단 공식 사진입니다.',
