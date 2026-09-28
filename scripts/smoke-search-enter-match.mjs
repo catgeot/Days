@@ -13,6 +13,7 @@ import {
   resolveCityAttractionHub,
   hubToSuggestion,
   attractionToSuggestion,
+  buildHubDisambiguationCandidates,
 } from '../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   resolveExploreSearchAlias,
@@ -134,4 +135,18 @@ assert.match(
   'Enter handler는 정착지 우선 hub exact',
 );
 
-console.log('PASS smoke-search-enter-match (광천선굴 Enter ≠ 화암동굴 · 목포 hub Enter = 리스트 · 마산≠창원 카드)');
+const daejeonHub = resolveCityAttractionHub('대전');
+assert.ok(daejeonHub, '대전 hub');
+const sinjungang = buildHubDisambiguationCandidates(daejeonHub, []).find(
+  (c) => c.name === '신중앙시장',
+);
+assert.ok(sinjungang, '대전 선택 카드에 신중앙시장');
+assert.equal(
+  sinjungang.contentId,
+  '1434477',
+  '신중앙시장 theme Tour ID (대전 중앙시장)',
+);
+
+console.log(
+  'PASS smoke-search-enter-match (광천선굴 Enter ≠ 화암동굴 · 목포 hub Enter = 리스트 · 마산≠창원 · 대전 신중앙 1434477)',
+);

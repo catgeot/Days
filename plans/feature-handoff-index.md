@@ -307,12 +307,13 @@
 
 | | |
 |--|--|
-| **상태** | **#1 핸드오ff** · 패치 **대기** · 증상: 대전 검색 2/2 **신중앙시장** 빈 썸네일 · (부) 서울 동명 intro |
+| **상태** | **#1 push** · tip `a2c71136` · draft PR [#343](https://github.com/catgeot/Days/pull/343) · **사람 Preview** |
 | **브랜치** | `cursor/search-enter-hub-2018` |
-| **PR** | [#283](https://github.com/catgeot/Days/pull/283) (탐색 Enter와 동일 feature · 병합 전) |
+| **PR** | [#343](https://github.com/catgeot/Days/pull/343) (탐색 Enter와 동일 feature) |
 | **일지** | [`2026-09-27-project-log.md`](./2026-09-27-project-log.md) — 「탐색 hub 썸네일 #1」 |
-| **Preview** | `/qa/search-enter-hub` → git Preview `/explore` · `대전` → 2/2 신중앙시장 |
-| **SSOT** | `koreaThemeRegionTour.json` `daejeon:daejeon-central-market` → **1434477** · hub JSON에는 아직 없음 |
+| **Preview** | `/qa/search-enter-hub` → git Preview `/explore` · `대전` → 신중앙시장 |
+| **조치** | Tour 라이브 팔경 썸네일 · 장태산 오버레이 · theme **1434477** · tip `a2c71136` |
+| **SSOT** | `koreaThemeRegionTour.json` `daejeon:daejeon-central-market` → **1434477** (hub JSON 미기입) |
 | **coord 큐** | [`city-attraction-tourapi-coord-queue.md`](./city-attraction-tourapi-coord-queue.md) — multi_title · **1434477 사용 금지(큐 후보만)** |
 | **소유** | `cityAttractionHubs.js` · `koreaThemeRegions.js` · `SearchSuggestionList.jsx` · 검색 스모크 |
 | **금지** | coord 큐 ID(`1003205`,`1227095`) 무분별 기입 · UI 리디자인 · feature에 `plans/**` · 팔경 JSON fill |
@@ -322,12 +323,12 @@
 **다음 제시어**:
 
 ```
-탐색 hub 썸네일 #1, 대전 신중앙시장 Tour ID
+탐색 hub 썸네일 #1, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-09-27-project-log.md
-브랜치 cursor/search-enter-hub-2018 · Preview /qa/search-enter-hub
+브랜치 cursor/search-enter-hub-2018 · PR #343 · Preview /qa/search-enter-hub
 금지: coord 큐 1003205/1227095 무분별 기입 · UI 리디자인 · feature에 plans/** · palgyeong JSON fill
-작업: Explore 「대전」2/2 신중앙시장 후보에 theme 1434477 병합 → 썸네일·intro QA. 스모크 assert 추가.
+작업: Preview /explore 「대전」→ 신중앙시장 썸네일·intro(대전 맥락). 「목포」Enter 선택 리스트 회귀 없음. OK면 PR #343 병합
 검증: npm run smoke:search-enter-match PASS · smoke:explore-choice-overlay PASS · vite build PASS
 ```
 

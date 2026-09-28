@@ -1,6 +1,17 @@
 /** 검색 결과 페이지 표준(구글·네이버 10건) */
 export const SEARCH_DISAMBIGUATION_PAGE_SIZE = 10;
 
+/** hub+팔경 Enter 카드는 한 화면에 묶음(대전 8경+명소 분할 방지) */
+export const SEARCH_DISAMBIGUATION_PALGYEONG_PAGE_SIZE = 24;
+
+export function resolveSearchDisambiguationPageSize(candidates) {
+  const list = Array.isArray(candidates) ? candidates : [];
+  if (list.some((item) => item?.source === 'localScenicList')) {
+    return SEARCH_DISAMBIGUATION_PALGYEONG_PAGE_SIZE;
+  }
+  return SEARCH_DISAMBIGUATION_PAGE_SIZE;
+}
+
 export function searchDisambiguationPageCount(
   length,
   pageSize = SEARCH_DISAMBIGUATION_PAGE_SIZE,

@@ -2,27 +2,14 @@
 
 직전: [`2026-09-26-project-log.md`](./2026-09-26-project-log.md)
 
-## 탐색 hub 썸네일 #1 — 대전 신중앙시장 (핸드오프 · 패치 대기)
+## 탐색 hub 썸네일 #1 — 대전 신중앙시장 Tour ID
 
-- **세션 표기** `탐색 hub 썸네일 #1, 대전 신중앙시장 Tour ID` · **코드 미적용** — 다음 Cloud 세션에서 패치
-- **증상** Preview `/explore`에서 「대전」검색 → 선택 카드 2/2 **신중앙시장** Landmark 아이콘(썸네일 없음). 카드 요약이 **서울 황학동** 신중앙시장 문구로 보일 수 있음(동명이).
-- **재현** `/qa/search-enter-hub` → git Preview `/explore` · 쿼리 `대전` · 페이지 2/2 · **신중앙시장** 카드
-- **원인 (코드 경로)**
-  1. `cityAttractionHubs.json` `daejeon` / **신중앙시장** — lat/lng만 있고 **`contentId` 없음** (`계족산`은 `1720749` 있음).
-  2. `attractionToSuggestion()` — hub JSON의 `contentId`만 전달 → 탐색 후보에 **contentId 없음**.
-  3. `resolveSearchScenicMedia()` — 오버레이·선정 사진 없으면 `{ imageUrl: null, contentId: null }`.
-  4. `SearchSuggestionList.jsx` `useMissingTourAttractionThumbs` — **contentId 있는 항목만** Tour firstimage 비동기 조회 → 신중앙은 조회 자체가 스킵.
-  5. **테마 SSOT는 이미 있음** — `koreaThemeRegionTour.json` `daejeon:daejeon-central-market` → **`1434477`** (`tourTitle`: 대전 중앙시장). `getThemeMembership('daejeon-central-market')`·sameHub 모달은 사용 중이나 **Explore disambiguation 후보에는 미병합**.
-  6. `plans/city-attraction-tourapi-coord-queue.md` — 신중앙시장 **multi_title** · 후보 `1003205`,`1227095` (**1434477 아님**) — JSON에 coord 큐 ID를 그대로 넣지 말 것.
-- **패치 방향 (다음 세션)**
-  - **우선**: hub 탐색 후보 생성 시 theme Tour ID 병합 — 예) `attractionToSuggestion` 또는 `buildHubDisambiguationCandidates` 직후 `koreaThemeRegionTour.byAttractionId[`${hubId}:${placeSlug}`]` / `resolveRegionAttractionContentId`(`koreaThemeRegions.js`, 비export) 재사용. **1434477** 검증 후 연결.
-  - **대안(협의)**: `cityAttractionHubs.json`에 `contentId: "1434477"` 1필드 — coord 큐 후보와 충돌 주의.
-  - **부가**: 동명 intro 오탐이 남으면 `placeSlug`·`parentCity`(대전)로 intro 키 분기.
-  - **스모크**: `scripts/smoke-explore-choice-overlay.mjs` 또는 `smoke-search-enter-match.mjs`에 `resolveCityAttractionHub('대전')` → 신중앙 후보 **contentId 1434477** + `enrichSearchCandidateScenicMedia` 또는 Tour thumb 경로 assert.
-- **브랜치** `cursor/search-enter-hub-2018` (탐색 Enter PR [#283](https://github.com/catgeot/Days/pull/283)와 동일 Preview) — **팔경** `cursor/palgyeong-use-e744`와 분리
-- **VERIFY** `npm run smoke:search-enter-match` · `smoke:explore-choice-overlay` · `npm run build`
-- **금지** coord 큐 `1003205`/`1227095` 무분별 기입 · UI 리디자인 · feature에 `plans/**` · JSON palgyeong fill
-- **사람 QA** 패치 후 같은 경로에서 썸네일 표시 · intro가 대전 중앙시장 맥락인지
+- **세션** `탐색 hub 썸네일 #1, 대전8경 썸네일` · feature `cursor/search-enter-hub-2018` · tip `a2c71136` · PR [#343](https://github.com/catgeot/Days/pull/343)
+- **조치** DB에 없는 팔경 contentId(구봉산·계족산·식장산·보문산)는 Tour 라이브 사진. 장태산은 JSON contentId 없이 숲나들e 오버레이. theme **1434477** · 단일 페이지 유지
+- **VERIFY** `smoke:search-enter-match` · `smoke:explore-choice-overlay` · `vite build` PASS · detailCommon img true
+- **Preview** https://www.gateo.kr/qa/search-enter-hub → git `https://days-git-cursor-search-enter-hub-2018-catgeots-projects.vercel.app/explore` · 「대전」→ **대전 팔경**+신중앙시장
+- **사람 QA** 1~8경 썸네일 · 신중앙시장 같은 목록
+- **다음** Preview OK면 PR #343 병합
 
 ## 팔경 활용 #80 — 대전8경 장태산
 

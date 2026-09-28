@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 79,
-  sessionPhase: '공주 권역 썸네일',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gongju',
-  qaShareSlug: 'palgyeong-use',
+  title: '탐색 hub 썸네일',
+  sessionNo: 1,
+  sessionPhase: '대전8경 썸네일',
+  branch: 'cursor/search-enter-hub-2018',
+  previewPath: '/explore',
+  qaShareSlug: 'search-enter-hub',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-28-search-enter-hub-daejeon-palgyeong-thumbs',
+    session: '탐색 hub 썸네일 #1, 대전8경 썸네일',
+    title: '대전 검색 팔경 사진',
+    detail:
+      '탐색 선택 카드는 tourapi_attraction에 없는 팔경 contentId(구봉산·계족산·식장산·보문산)를 아이콘으로 남겼습니다. 명승 페이지와 같이 Tour 라이브 사진으로 채웁니다. 장태산은 contentId 없이 숲나들e 공식 사진을 오버레이합니다. Preview /qa/search-enter-hub — /explore 「대전」.',
+    at: '2026-09-28T00:30:00.000Z',
+  },
+  {
+    id: '2026-09-27-search-enter-hub-thumbnail-daejeon-market',
+    session: '탐색 hub 썸네일 #1, 대전 신중앙시장 Tour ID',
+    title: '대전 신중앙시장 선택 카드 Tour ID',
+    detail:
+      'Explore 「대전」선택 카드의 신중앙시장은 hub JSON에 contentId가 없어 Tour 썸네일 조회가 스킵되었습니다. koreaThemeRegionTour SSOT(1434477·대전 중앙시장)를 hub 후보 생성 시 병합해 contentId를 붙였습니다. coord 큐 후보 ID는 넣지 않았습니다. Preview /qa/search-enter-hub — /explore 「대전」→ 신중앙시장 썸네일·요약.',
+    at: '2026-09-27T19:15:00.000Z',
+  },
   {
     id: '2026-09-27-palgyeong-use-79-gongju-area-thumbs',
     session: '팔경 활용 #79, 공주 결손 오버레이',
