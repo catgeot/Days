@@ -5436,6 +5436,11 @@ assert.notEqual(
   buanEight.find((s) => s.attractionName === '지포신경')?.imageUrl,
   '채석강·지포신경 썸네일 분리',
 );
+const buanOverlayGalleryNames = ['소사모종', '월명무애', '서해낙조', '채석강', '지포신경'];
+for (const name of buanOverlayGalleryNames) {
+  const spot = buanEight.find((s) => s.attractionName === name);
+  assert.equal(spot?.galleryUrls?.length, 3, `변산8경 ${name} 공식 사진 3장`);
+}
 
 const extra = process.argv.slice(2);
 for (const q of extra) {
