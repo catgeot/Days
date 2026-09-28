@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '축제 페이지',
-  sessionNo: 9,
-  sessionPhase: '검색 버튼 시인성',
-  branch: 'cursor/festival-sheet-ui-ec8b',
-  previewPath: '/korea',
-  qaShareSlug: 'festival-ui',
+  title: '팔경 활용',
+  sessionNo: 83,
+  sessionPhase: '부여 결손 오버레이',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,11 +24,19 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-28-palgyeong-use-83-buyeo-overlay',
+    session: '팔경 활용 #83, 부여 결손 오버레이',
+    title: '부여10경 천정대 백제보',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 부여10경 결손 1건(천정대 백제보)의 공공 공식 팩트 개요·주소·부여군 문화관광 공식 사진 3장을 보강했습니다. 천정대는 규암면 호암리 산5(기념물 제49호·정사암)·백제보는 부여읍 북포로 451(311m·금강문화관·문의 041-830-2641·041-830-0661)입니다. 공주보·세종보·부소산 낙화암과 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=buyeo 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-28T11:25:00.000Z',
+  },
+  {
     id: '2026-09-28-palgyeong-use-82-buan-gallery',
     session: '팔경 활용 #82, 부안 결손 오버레이',
     title: '변산8경 오버레이 갤러리 3장',
     detail:
-      '가령폭포·안흥성과 같이 변산8경 오버레이 5건(소사모종·월명무애·서해낙조·채석강·지포신경) 상세 갤러리를 공식 사진 3장으로 보감했습니다. 목록 썸네일은 부안군 img_byunsan_list 행별 유지, 추가 2장은 한국관광공사 내소사·채석강 또는 부안 8경 공식 사진입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=buan 상세 사진 스와이프',
+      '가령폭포·안흥성과 같이 변산8경 오버레이 5건(소사모종·월명무애·서해낙조·채석강·지포신경) 상세 갤러리를 공식 사진 3장으로 보강했습니다. 목록 썸네일은 부안군 img_byunsan_list 행별 유지, 추가 2장은 한국관광공사 내소사·채석강 또는 부안 8경 공식 사진입니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=buan 상세 사진 스와이프',
     at: '2026-09-28T04:15:00.000Z',
   },
   {
