@@ -5431,6 +5431,15 @@ assert.ok(
   melonFields?.galleryUrls?.some((u) => u.includes('C30190E50D944A08A0D9ED7F7E15B7F6')),
   '성주참외하우스 들녘 두 번째 사진',
 );
+assert.ok(
+  melonFields?.galleryUrls?.some((u) => u.includes('GC084P01962')),
+  '성주참외하우스 들녘 세 번째 사진(디지털성주문화대전)',
+);
+assert.equal(
+  new Set(melonFields?.galleryUrls).size,
+  melonFields?.galleryUrls?.length,
+  '성주참외하우스 들녘 갤러리 URL 중복 없음',
+);
 assert.ok(melonFields?.homepage?.includes('area_uid=250'), '성주참외하우스 들녘 성주군 공식 페이지');
 const seongjuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '성주', {
   injectLocalScenic: true,

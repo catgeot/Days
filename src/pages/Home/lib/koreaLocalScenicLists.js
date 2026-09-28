@@ -1794,7 +1794,8 @@ const BYEO_CHEONJEONG_HOME = 'https://buyeo.go.kr/html/tour/info/info_010105.htm
 const SJ_TOUR = 'https://www.sj.go.kr';
 const SJ_MELON_FIELDS = `${SJ_TOUR}/data/content/20210805/1605EA98C17E4CBCB58D70F2784C94D8.jpg`;
 const SJ_MELON_FIELDS_2 = `${SJ_TOUR}/data/content/20201126/C30190E50D944A08A0D9ED7F7E15B7F6.jpg`;
-const SJ_MELON_FIELDS_3 = `${SJ_TOUR}/data/content/20210805/C862B2DB499247DE8E1D75D63EDC5FB7.jpg`;
+const SJ_GC_IMG = 'https://seongju.grandculture.net/Image?localName=seongju&id=';
+const SJ_MELON_FIELDS_3 = `${SJ_GC_IMG}GC084P01962`;
 const SJ_MELON_FIELDS_HOME =
   'https://www.sj.go.kr/tour/page.do?listType=&mnu_uid=3749&sortKwd=&code_uid=272&srchKwd=&area_uid=250&cmd=2&pageNo=2';
 const DJ_FOREST_IMG = 'https://image.foresttrip.go.kr/frip';
@@ -3908,7 +3909,7 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     BYEO_CHEONJEONG_HOME,
   ),
   'local-scenic:seongju-sipgyeong:성주참외하우스들녘': localScenicPhotoOverlay(
-    '성주10경 제10경 성주참외하우스 들녘은 성주읍 성주로 3200 일대 참외 비닐하우스가 펼쳐진 농경 경관입니다. 성주군 문화관광은 성주의 대표 농산물이자 주소득원인 참외가 재배되는 비닐하우스가 성주군을 상징한다고 소개하며, 전국 최대 참외 주산지인 만큼 들판에 이어진 하우스가 물결처럼 보이는 풍경을 제10경으로 꼽습니다. 성주 10경은 2022년 가야산·독용산성·회연서원·포천계곡·성밖숲·세종대왕자태실·한개마을·역사테마공원·성산동 고분군과 함께 확정되었습니다. 달빛 아래 비닐하우스가 반짝이는 야경도 알려져 있으며, 성주참외·생명문화축제(5월)와 참외체험형 테마공원 등 체험 시설과는 구분되는 성주읍 들녘 조망 명소입니다. 가야산 국립공원·세종대왕자태실·성주역사테마공원과 다른 평야 비닐하우스 전경입니다. 사진은 성주군 문화관광 성주참외하우스 들녘 공식 사진 3장입니다.',
+    '성주10경 제10경 성주참외하우스 들녘은 성주읍 성주로 3200 일대 참외 비닐하우스가 펼쳐진 농경 경관입니다. 성주군 문화관광은 성주의 대표 농산물이자 주소득원인 참외가 재배되는 비닐하우스가 성주군을 상징한다고 소개하며, 전국 최대 참외 주산지인 만큼 들판에 이어진 하우스가 물결처럼 보이는 풍경을 제10경으로 꼽습니다. 성주 10경은 2022년 가야산·독용산성·회연서원·포천계곡·성밖숲·세종대왕자태실·한개마을·역사테마공원·성산동 고분군과 함께 확정되었습니다. 달빛 아래 비닐하우스가 반짝이는 야경도 알려져 있으며, 성주참외·생명문화축제(5월)와 참외체험형 테마공원 등 체험 시설과는 구분되는 성주읍 들녘 조망 명소입니다. 가야산 국립공원·세종대왕자태실·성주역사테마공원과 다른 평야 비닐하우스 전경입니다. 사진은 성주군 문화관광 공식 사진 2장·디지털성주문화대전 후포 평야 참외 비닐하우스(GC084P01962) 공식 사진 1장입니다.',
     '경상북도 성주군 성주읍 성주로 3200 (성주참외하우스 들녘)',
     SJ_MELON_FIELDS,
     [SJ_MELON_FIELDS_2, SJ_MELON_FIELDS_3],
