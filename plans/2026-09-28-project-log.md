@@ -15,3 +15,10 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `vite build` PASS. 순수 사진/개요 누락 **10**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=buan` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=buan`
 - **다음** `팔경 활용 #83, 부여 결손 오버레이` — 천정대 백제보
+
+## 축제 페이지 #9 — 검색 버튼 시인성
+
+- **세션** `축제 페이지 #9, 검색 버튼 시인성` · feature `cursor/festival-sheet-ui-ec8b` · tip `b635fa66` · PR [#345](https://github.com/catgeot/Days/pull/345)
+- **조치** `OutboundSearchButtons` 공유 SSOT로 축제 본문·명승 상세 네이버·구글 CTA 통일(브랜드 N/G, 「상세정보 보기」 문구).
+- **VERIFY** `smoke:festival-surface-search` · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/festival-ui → `/korea` 축제 카드
