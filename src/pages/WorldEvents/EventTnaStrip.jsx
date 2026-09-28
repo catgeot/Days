@@ -12,6 +12,7 @@ import {
 } from '../../utils/fetchMrtTnas';
 import { getKlookSearchUrl, getMrtDomesticRentalUrl, getTripcomTrainUrl } from '../../utils/affiliate';
 import StripListLargeToggle from './StripListLargeToggle';
+import { resolveListImageUrl } from '../../utils/listImageUrl';
 
 const outboundChipClass =
   'inline-flex max-w-full items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 transition-colors hover:border-amber-300 hover:bg-amber-50';
@@ -90,9 +91,10 @@ function TnaStripCard({ item, locale, t, large = false }) {
       <div className={`relative w-full bg-stone-100 ${large ? 'h-[132px]' : 'h-[88px]'}`}>
         {item.imageUrl ? (
           <img
-            src={item.imageUrl}
+            src={resolveListImageUrl(item.imageUrl, { role: 'list' })}
             alt=""
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
           />
         ) : (
@@ -197,6 +199,7 @@ export default function EventTnaStrip({
     }
 
     if (fetchedKeyRef.current === fetchKey) return undefined;
+    fetchedKeyRef.current = fetchKey;
 
     let cancelled = false;
     setItems(null);
@@ -217,7 +220,6 @@ export default function EventTnaStrip({
         }
 
         if (cancelled) return;
-        fetchedKeyRef.current = fetchKey;
 
         const listed = Array.isArray(result?.items) ? result.items : [];
         if (listed.length > 0) {

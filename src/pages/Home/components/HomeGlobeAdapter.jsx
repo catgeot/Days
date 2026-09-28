@@ -1,6 +1,17 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import HomeGlobeLegacy from './HomeGlobe';
+import React, {
+  forwardRef,
+  lazy,
+  Suspense,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import HomeGlobeMapbox from './HomeGlobeMapbox';
+
+const HomeGlobeLegacy = lazy(() => import('./HomeGlobe'));
 import { resolveHomeGlobeEngine } from './resolveHomeGlobeEngine';
 import { registerGlobeApi, unregisterGlobeApi } from '../lib/globeApiRegistry.js';
 import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
@@ -92,7 +103,11 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     );
   }
 
-  return <HomeGlobeLegacy ref={childRef} {...props} />;
+  return (
+    <Suspense fallback={null}>
+      <HomeGlobeLegacy ref={childRef} {...props} />
+    </Suspense>
+  );
 });
 
 HomeGlobeAdapter.displayName = 'HomeGlobeAdapter';

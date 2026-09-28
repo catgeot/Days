@@ -3,7 +3,7 @@
  * 브라우저에 MYREALTRIP / VITE_ MRT 키 사용 금지.
  * 숙소 `itemName`은 파트너 API 한글 SSOT — `?lang=en`·Accept-Language로 EN 목록 분기·재호출 금지.
  */
-import { supabase } from '../shared/api/supabase';
+import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 import {
   canShowMrtStayStrip,
   collectMrtStayGeoSanityKeys,
@@ -279,7 +279,7 @@ function originPair(params) {
 }
 
 async function invokeStayGeocodeItems(missing, origin) {
-  const { data } = await supabase.functions.invoke('fetch-mrt-stays', {
+  const { data } = await invokeSupabaseFunctionDeduped('fetch-mrt-stays', {
     body: {
       geocodeItems: missing.map((it) => ({
         itemId: it.itemId,
@@ -337,7 +337,7 @@ async function enrichMrtStayCoords(payload, params) {
 
   if (!got) {
     try {
-      const { data, error } = await supabase.functions.invoke('fetch-mrt-stays', {
+      const { data, error } = await invokeSupabaseFunctionDeduped('fetch-mrt-stays', {
         body: {
           ...listingBody(params),
           originLat: origin.lat,
@@ -433,7 +433,7 @@ export async function fetchMrtStays(params) {
 
   if (!payload) {
     try {
-      const { data, error } = await supabase.functions.invoke('fetch-mrt-stays', {
+      const { data, error } = await invokeSupabaseFunctionDeduped('fetch-mrt-stays', {
         body: listingBody(invokeParams),
       });
 

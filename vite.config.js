@@ -101,6 +101,11 @@ export default defineConfig({
   build: {
     minify: 'esbuild',
     chunkSizeWarningLimit: 1500,
+    modulePreload: {
+      resolveDependencies(_filename, deps) {
+        return deps.filter((dep) => !/(?:^|\/)three-[^/]+\.js$/i.test(dep) && !/(?:^|\/)globe-[^/]+\.js$/i.test(dep));
+      },
+    },
     rollupOptions: {
       output: {
         // 🚨 [강화] 수동으로 이름표를 붙여주는 대신, 패키지 이름에 따라 자동으로 쪼개주는 함수 적용
