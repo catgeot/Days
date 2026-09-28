@@ -37,7 +37,8 @@ import {
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
-import mooniChar from '../../assets/MOONI_transparent.png';
+import mooniChar from '../../assets/MOONI_transparent.webp';
+import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
@@ -497,7 +498,7 @@ function nearbyThumbUrls(spot, extraThumb) {
   const out = [];
   const seen = new Set();
   for (const raw of [spot?.firstImage, spot?.imageUrl, extraThumb]) {
-    const url = toHttps(raw);
+    const url = resolveListImageUrl(toHttps(raw), { role: 'list' });
     if (!url || seen.has(url)) continue;
     seen.add(url);
     out.push(url);
@@ -1879,6 +1880,8 @@ export default function ThemeSpotDetailModal({
                 src={hero}
                 alt=""
                 draggable={false}
+                fetchPriority="high"
+                decoding="async"
                 className="aspect-[16/9] w-full object-cover pointer-events-none select-none sm:aspect-[2/1]"
               />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
@@ -2051,10 +2054,11 @@ export default function ThemeSpotDetailModal({
                       })}
                     >
                       <img
-                        src={url}
+                        src={resolveListImageUrl(url, { role: 'list' })}
                         alt=""
                         className="absolute inset-0 h-full w-full object-cover"
                         loading="lazy"
+                        decoding="async"
                       />
                     </button>
                   ))}

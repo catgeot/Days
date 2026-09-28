@@ -2,7 +2,7 @@
  * MRT TNA(투어·티켓) — Edge `fetch-mrt-tnas`.
  * 브라우저에 MYREALTRIP / VITE_ MRT 키 사용 금지.
  */
-import { supabase } from '../shared/api/supabase';
+import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 import { buildMrtMylinkUrl, getMrtSearchUrl } from './affiliate';
 import { stripUnsafeMrtTnaItems } from './mrtTnaRelevance.js';
 import {
@@ -118,7 +118,7 @@ export async function fetchMrtTnas(params) {
   if (hit) return hit;
 
   try {
-    const { data, error } = await supabase.functions.invoke('fetch-mrt-tnas', {
+    const { data, error } = await invokeSupabaseFunctionDeduped('fetch-mrt-tnas', {
       body: {
         keyword,
         page,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import mooniChar from '../../assets/MOONI_transparent.png';
+import mooniChar from '../../assets/MOONI_transparent.webp';
 
 /**
  * @param {{ onClick: () => void }} props

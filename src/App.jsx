@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { HelmetProvider } from 'react-helmet-async';
@@ -7,8 +7,8 @@ import { supabase } from './shared/api/supabase';
 
 import MainLayout from './shared/layout/MainLayout';
 import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
-import Home from './pages/Home';
-import PlaceCard from './components/PlaceCard/index';
+const Home = lazy(() => import('./pages/Home'));
+const PlaceCard = lazy(() => import('./components/PlaceCard/index'));
 import KoreaFestivalHub from './pages/Korea';
 import WorldEventsHub from './pages/WorldEvents';
 import EventDetailPage from './pages/WorldEvents/EventDetailPage';
@@ -87,7 +87,14 @@ function App() {
           <TravelAgencyVisitCapture />
           <Routes>
             <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />}>
+              <Route
+                path="/"
+                element={
+                  <Suspense fallback={null}>
+                    <Home />
+                  </Suspense>
+                }
+              >
                 <Route path="place/:slug" element={<PlaceCard />} />
                 <Route path="place/:slug/:tab" element={<PlaceCard />} />
                 {/* Explore Routes (Modal as a child of Home) */}

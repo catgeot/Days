@@ -78,6 +78,7 @@ import {
   formatDistanceKm,
   rankSpotsByDistance,
 } from '../KoreaTheme/nearbyScenicRank';
+import { resolveListImageUrl } from '../../utils/listImageUrl';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
 import {
   loadScenicFavorites,
@@ -270,7 +271,7 @@ function nearbyThumbUrls(spot, extraThumb) {
   const out = [];
   const seen = new Set();
   for (const raw of [spot?.firstImage, spot?.imageUrl, extraThumb]) {
-    const url = toHttps(raw);
+    const url = resolveListImageUrl(toHttps(raw), { role: 'list' });
     if (!url || seen.has(url)) continue;
     seen.add(url);
     out.push(url);
@@ -1258,6 +1259,8 @@ export default function FestivalDetailSheet({
                 src={hero}
                 alt=""
                 draggable={false}
+                fetchPriority="high"
+                decoding="async"
                 className="h-auto w-full max-h-[min(52vh,28rem)] object-contain pointer-events-none select-none md:max-h-full md:h-full md:w-full"
               />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
@@ -1297,9 +1300,11 @@ export default function FestivalDetailSheet({
                       ].join(' ')}
                     >
                       <img
-                        src={url}
+                        src={resolveListImageUrl(url, { role: 'list' })}
                         alt=""
                         className="absolute inset-0 h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </button>
                   );

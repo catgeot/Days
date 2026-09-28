@@ -17,7 +17,7 @@ import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
-import mooniChar from '../../../assets/MOONI_transparent.png';
+import mooniChar from '../../../assets/MOONI_transparent.webp';
 import {
   clearPlaceReturnTo,
   isKoreaPlaceReturnPath,

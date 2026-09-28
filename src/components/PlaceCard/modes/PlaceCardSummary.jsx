@@ -6,7 +6,7 @@ import BookmarkButton from '../common/BookmarkButton';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import { getPlaceTitleLinesForLocale, getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
-import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
+import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEligibility';
 import FlightOriginSelector from '../../../pages/Home/components/FlightOriginSelector.jsx';
 import {
   useCoarsePointer,

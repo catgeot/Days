@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
-import mooniChar from '../../../assets/MOONI_transparent.png';
+import mooniChar from '../../../assets/MOONI_transparent.webp';
 import mooniText from '../../../assets/MONNI_text.png';
 import { PERSONA_TYPES } from '../lib/prompts';
 import {
