@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '축제 페이지',
-  sessionNo: 8,
-  sessionPhase: '검색 링크 표면',
+  sessionNo: 9,
+  sessionPhase: '검색 버튼 시인성',
   branch: 'cursor/festival-sheet-ui-ec8b',
   previewPath: '/korea',
   qaShareSlug: 'festival-ui',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-28-festival-ui-9-outbound-search-buttons',
+    session: '축제 페이지 #9, 검색 버튼 시인성',
+    title: '명승과 동일한 네이버·구글 CTA',
+    detail:
+      '축제 본문 주소 아래 네이버·구글을 명승 상세와 같은 OutboundSearchButtons(브랜드 N/G·상세정보 보기 문구)로 맞췄습니다. Preview /qa/festival-ui — /korea 축제 카드에서 회색 칩 대신 초록·파란 버튼이 보이는지.',
+    at: '2026-09-28T03:50:00.000Z',
+  },
   {
     id: '2026-09-26-festival-ui-8-surface-search',
     session: '축제 페이지 #8, 검색 링크 표면',
