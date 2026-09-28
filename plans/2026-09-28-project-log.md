@@ -4,7 +4,7 @@
 
 ## 팔경 활용 #85 — 양양10경 죽도정
 
-- **세션** `팔경 활용 #85, 양양 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `828fcdd9` · PR [#347](https://github.com/catgeot/Days/pull/347)
+- **세션** `팔경 활용 #85, 양양 결손 오버레이` · feature `cursor/palgyeong-use-e744` · tip `828fcdd9` · PR [#349](https://github.com/catgeot/Days/pull/349)
 - **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 양양10경 결손 1건. 죽도정(현남면 인구리 1-1·제6경·1965년 준공·죽도해변·하조대 전망). 출입 통제구역·홍성 죽도(유인도)와 구분. 사진은 양양관광 공식 3장.
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `vite build` PASS. 순수 사진/개요 누락 **7**/876.
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=yangyang` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang`
