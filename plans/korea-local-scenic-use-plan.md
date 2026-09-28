@@ -117,11 +117,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#85 push** tip `828fcdd9` · PR [#349](https://github.com/catgeot/Days/pull/349) · **#86 여주** — §**2.1** **3장 이상** 필수 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#86 push** tip `9b17f25d` · PR [#349](https://github.com/catgeot/Days/pull/349) · **#87 영월** — §**2.1** **3장 이상** 필수 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **여주8경 1** (`#86` · 팔수장림).
+**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 허브 **영월10경 1** (`#87` · 김삿갓유적지).
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
@@ -1127,6 +1127,18 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 여주8경 사진·개요 없는 1건(팔수장림)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. **공식 사진 ≥3장**(플랜 §2.1). Preview /korea/theme/scenic?hub=yeoju
+```
+
+### §1.2 A #87 영월 결손 오버레이
+
+```
+팔경 활용 #87, 영월 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-28-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 영월10경 사진·개요 없는 1건(김삿갓유적지)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. **공식 사진 ≥3장**(플랜 §2.1). Preview /korea/theme/scenic?hub=yeongwol
 ```
 
 ### §1.2 A #69 안산 결손 오버레이
