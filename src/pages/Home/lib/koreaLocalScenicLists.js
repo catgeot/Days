@@ -1797,6 +1797,28 @@ const TA_ANHEUNG_2 = `${TA_TOUR_IMG}/920_TUCN_202301180236267362.jpg`;
 const TA_ANHEUNG_3 = `${TA_TOUR_IMG}/920_TUCN_202301180236296524.jpg`;
 const TA_ANHEUNG_HOME =
   'https://www.taean.go.kr/prog/tursmCn/tour/sub02_02_02/view.do?cntno=2';
+const BU_TOUR_SUB = 'https://www.buan.go.kr/travel/img/sub';
+const BU_BYUNSAN_SOSAMO = `${BU_TOUR_SUB}/img_byunsan_list_03.jpg`;
+const BU_BYUNSAN_WOLMYEONG = `${BU_TOUR_SUB}/img_byunsan_list_04.jpg`;
+const BU_BYUNSAN_SEOHAE = `${BU_TOUR_SUB}/img_byunsan_list_05.jpg`;
+const BU_BYUNSAN_CHAESEOK = `${BU_TOUR_SUB}/img_byunsan_list_06.jpg`;
+const BU_BYUNSAN_JIPO = `${BU_TOUR_SUB}/img_byunsan_list_07.jpg`;
+const BU_VK_NAESOSA_1 =
+  'https://tong.visitkorea.or.kr/cms/resource/32/4039332_image2_1.jpg';
+const BU_VK_NAESOSA_2 =
+  'https://tong.visitkorea.or.kr/cms/resource/88/4090588_image2_1.jpg';
+const BU_VK_NAESOSA_3 =
+  'https://tong.visitkorea.or.kr/cms/resource/91/4090591_image2_1.jpg';
+const BU_VK_NAESOSA_4 =
+  'https://tong.visitkorea.or.kr/cms/resource/94/4090594_image2_1.jpg';
+const BU_VK_CHAESEOK_1 =
+  'https://tong.visitkorea.or.kr/cms/resource/44/3356644_image2_1.jpg';
+const BU_VK_CHAESEOK_2 =
+  'https://tong.visitkorea.or.kr/cms/resource/46/3356646_image2_1.jpg';
+const BU_VK_CHAESEOK_3 =
+  'https://tong.visitkorea.or.kr/cms/resource/47/3356647_image2_1.jpg';
+const BU_BYUNSAN_HOME =
+  'https://www.buan.go.kr/index.buan?menuCd=DOM_000000208002000000';
 const CN_TOUR_IMG = 'https://tour.chungnam.go.kr/thumbnail/trsrcn';
 const CN_SINGWAN = `${CN_TOUR_IMG}/TRSRCN_202501140412570660.JPG`;
 const CN_SINGWAN_2 = `${CN_TOUR_IMG}/TRSRCN_202605091035591187.JPG`;
@@ -3873,6 +3895,41 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     DJ_JANGTAE,
     [DJ_JANGTAE_2, DJ_JANGTAE_3],
     DJ_JANGTAE_HOME,
+  ),
+  'local-scenic:buan-palgyeong:소사모종': localScenicPhotoOverlay(
+    '변산8경 제3경 소사모종(蘇寺暮鐘)은 해질 무렵 내소사(來蘇寺)의 종소리입니다. 부안군 문화관광은 관음봉 아래 곰소만 푸른 바다를 내려다보는 천년고찰 경내에서 저녁 종이 울려 퍼지는 신비로운 정경을 제3경으로 꼽는다고 적습니다. 디지털부안문화대전은 633년(무왕 34) 건립·대웅보전·동종 등 국가유산을 간직한 절에서 어둠을 헤치고 은은히 울리는 저녁 종소리가 장관이라고 합니다. 월명무애(4경) 안개·월명암 전경과 다른 내소사 종소리입니다. 사진은 부안군 문화관광 변산8경 제3경·한국관광공사 내소사(부안) 공식 사진 3장입니다.',
+    '전북특별자치도 부안군 변산면 석포리 (내소사)',
+    BU_BYUNSAN_SOSAMO,
+    [BU_VK_NAESOSA_1, BU_VK_NAESOSA_2],
+    BU_BYUNSAN_HOME,
+  ),
+  'local-scenic:buan-palgyeong:월명무애': localScenicPhotoOverlay(
+    '변산8경 제4경 월명무애(月明霧靄)는 내변산 월명암(月明庵)에서 바라보는 아침 안개와 구름입니다. 부안군 문화관광은 월명암에서 떠오르는 달과 함께 봉우리마다 자욱한 안개·구름이 춤추는 구름바다가 변산의 명승이라고 적습니다. 디지털부안문화대전은 691년(신문왕 11) 부설 거사 창건 유서, 남여치에서 약 2km·1시간 등반, 짙은 녹음과 서해 갯벌·고군산군도 조망을 안내합니다. 내소사 종소리(3경)와 다른 월명암 일출·안개 경관입니다. 사진은 부안군 문화관광 변산8경 제4경·한국관광공사 내변산 일대 공식 사진 3장입니다.',
+    '전북특별자치도 부안군 변산면 (월명암)',
+    BU_BYUNSAN_WOLMYEONG,
+    [BU_VK_NAESOSA_3, BU_VK_NAESOSA_4],
+    BU_BYUNSAN_HOME,
+  ),
+  'local-scenic:buan-palgyeong:서해낙조': localScenicPhotoOverlay(
+    '변산8경 제5경 서해낙조(西海落照)는 내변산 월명암 옆 낙조대에서 해질 무렵 바라보는 서해 풍경입니다. 부안군 문화관광은 예부터 낙산의 일출과 서해의 낙조를 비경으로 꼽았으며, 낙조대에 서면 멀리 점점이 떠 있는 고군산군도와 위도가 한눈에 들어오고 마지막 정열을 불태운 해가 진홍빛 바닷속으로 빠지는 장관이라고 적습니다. 디지털부안문화대전은 서해안 산 중 낙조대가 적지 않으나 이곳에서 태양의 위세가 특히 장관을 이룬다고 하고, 육당 최남선 『심춘순례』에서 낙산 일출과 월명 낙조를 변산 팔경 중 가장 기장(奇絶)한 줄로 칭했다고 전합니다. 노산 이은상은 「월명암 낙조대를 찾아간다오」 시를 남겼습니다. 남여치 공원에서 월명암·낙조대까지 등산 코스가 이어집니다. 군산 선유낙조·영광 불갑사 낙조와 다른 변산면 내변산 일몰 전망입니다. 사진은 부안군 문화관광 변산8경 공식 사진 3장입니다.',
+    '전북특별자치도 부안군 변산면 (월명암·낙조대)',
+    BU_BYUNSAN_SEOHAE,
+    [BU_BYUNSAN_WOLMYEONG, BU_BYUNSAN_JIPO],
+    BU_BYUNSAN_HOME,
+  ),
+  'local-scenic:buan-palgyeong:채석강': localScenicPhotoOverlay(
+    '변산8경 제6경 채석범주(彩石帆舟)는 채석강(採石江)과 돛단배 풍경입니다. 부안군 문화관광은 억겁의 파도가 빚은 해식단애·동굴과 함께 외변산 제일의 경관이라고 적습니다. 디지털부안문화대전은 수만 권의 책을 쌓은 듯한 해식 단애·썰물 때 동굴·명승 제116호 직소폭포 일원과 구분되는 격포 앞바다 절벽이라고 합니다. 지포신경(7경) 능선 전망과 다른 채석강 해안 암벽 사진입니다. 사진은 부안군 문화관광 변산8경 제6경·한국관광공사 채석강 공식 사진 3장입니다.',
+    '전북특별자치도 부안군 변산면 격포리 (채석강)',
+    BU_BYUNSAN_CHAESEOK,
+    [BU_VK_CHAESEOK_1, BU_VK_CHAESEOK_2],
+    BU_BYUNSAN_HOME,
+  ),
+  'local-scenic:buan-palgyeong:지포신경': localScenicPhotoOverlay(
+    '변산8경 제7경 지포신경(止浦神景)은 지포 김구 선생 묘역 일원에서 바라보는 능선 풍경입니다. 부안군 문화관광은 크고 작은 봉우리로 이어진 산세를 지포 김구 묘역 전망으로 소개하며, 지포에서 쌍선봉에 오르며 돌아본 서해 풍경이라는 설도 적습니다. 디지털부안문화대전은 변산면 지서리 옛 지포·쌍선봉에서 하섬·누에섬·고군산군도·부안호·새만금이 보인다고 합니다. 채석강(6경) 절벽 사진과 다른 능선·서해 조망입니다. 사진은 부안군 문화관광 변산8경 제7경·한국관광공사 채석강 일대 서해 조망 공식 사진 3장입니다.',
+    '전북특별자치도 부안군 변산면 (지포 김구 선생 묘역·쌍선봉 일원)',
+    BU_BYUNSAN_JIPO,
+    [BU_VK_CHAESEOK_2, BU_VK_CHAESEOK_3],
+    BU_BYUNSAN_HOME,
   ),
   'local-scenic:taean-palgyeong:안흥성': localScenicPhotoOverlay(
     '태안8경 제2경 안흥성(안흥진성)은 근흥면 정죽리 1155-1 안흥항 뒷산의 석성입니다. 태안군 문화관광은 조선 시대 진성(鎭城)으로 충청도 유일의 수군 방어영이 배치되어 왜구·해적 방어와 곡선·사신 접대 기능을 맡았으며, 남 성벽 글씨에 1583년 최초 축성·1655년 대수리가 적힌다고 안내합니다. 성벽 전체 길이는 약 1,798m로 태안 수군 진성 중 최대이며 동문 수성루·서문 수홍루·남문 복파루·북문 감성루가 있었고 현재는 서문만 문루를 복원한 상태라고 적습니다. 충남 지정 기념물에서 2020년 국가사적으로 승격되었습니다. 성마루에서는 안흥항과 섬들이 어우러진 서해 경관을 조망합니다. 화성 안흥창호·이천 안흥동·충남 다른 진성과 다른 근흥면 정죽리 국가사적입니다. 사진은 태안군 문화관광 제2경 안흥진성 공식 사진입니다.',

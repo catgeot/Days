@@ -5411,6 +5411,37 @@ assert.ok(
   '대전 검색 장태산 썸네일',
 );
 
+const buanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'buan');
+const buanEight = buanMerged.filter((s) => s.localScenicListId === 'buan-palgyeong');
+assert.equal(buanEight.length, 8, '변산8경 8명');
+const buanThumbPairNames = ['소사모종', '월명무애', '채석강', '지포신경'];
+const buanThumbPair = buanEight.filter((s) => buanThumbPairNames.includes(s.attractionName));
+assert.equal(buanThumbPair.length, 4, '변산8경 썸네일 분리 4명');
+assert.equal(
+  new Set(buanThumbPair.map((s) => s.imageUrl)).size,
+  4,
+  '변산8경 4명 썸네일 서로 다름',
+);
+assert.ok(
+  buanThumbPair.every((s) => String(s.imageUrl).includes('buan.go.kr/travel/img/sub/img_byunsan_list_')),
+  '변산8경 분리 썸네일은 부안군 문화관광 공식 사진',
+);
+assert.notEqual(
+  buanEight.find((s) => s.attractionName === '소사모종')?.imageUrl,
+  buanEight.find((s) => s.attractionName === '월명무애')?.imageUrl,
+  '소사모종·월명무애 썸네일 분리',
+);
+assert.notEqual(
+  buanEight.find((s) => s.attractionName === '채석강')?.imageUrl,
+  buanEight.find((s) => s.attractionName === '지포신경')?.imageUrl,
+  '채석강·지포신경 썸네일 분리',
+);
+const buanOverlayGalleryNames = ['소사모종', '월명무애', '서해낙조', '채석강', '지포신경'];
+for (const name of buanOverlayGalleryNames) {
+  const spot = buanEight.find((s) => s.attractionName === name);
+  assert.equal(spot?.galleryUrls?.length, 3, `변산8경 ${name} 공식 사진 3장`);
+}
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
