@@ -1,5 +1,4 @@
-import { supabase } from '../shared/api/supabase';
-import { NEARBY_TOUR_API_LOCALE, withTourApiTimeout } from './tourApiProxy';
+import { invokeTourApiProxy, NEARBY_TOUR_API_LOCALE } from './tourApiProxy';
 
 function haversineKm(lat1, lng1, lat2, lng2) {
   const toRad = (d) => (d * Math.PI) / 180;
@@ -52,9 +51,7 @@ export async function fetchNearbyTourAreaBasedFallback(opts) {
 
   try {
     for (let pageNo = 1; pageNo <= maxPages; pageNo += 1) {
-      const body = {
-        action: 'areaBasedList',
-        locale: NEARBY_TOUR_API_LOCALE,
+      const payload = {
         areaCode,
         contentTypeId,
         numOfRows: 50,
@@ -62,22 +59,18 @@ export async function fetchNearbyTourAreaBasedFallback(opts) {
         listYN: 'Y',
         arrange: 'A',
       };
-      if (/^\d{1,10}$/.test(sigunguCode)) body.sigunguCode = sigunguCode;
+      if (/^\d{1,10}$/.test(sigunguCode)) payload.sigunguCode = sigunguCode;
 
-      const { data, error } = await withTourApiTimeout(
-        supabase.functions.invoke('tourapi-proxy', { body }),
-        14_000,
-        `tourapi:areaBasedList:${contentTypeId}`,
-      );
-      if (error || !data?.ok) {
+      const data = await invokeTourApiProxy('areaBasedList', payload, {
+        timeoutMs: 14_000,
+        locale: NEARBY_TOUR_API_LOCALE,
+        returnRawOnFail: true,
+      });
+      if (!data?.ok) {
         if (!spots.length) {
           return {
             spots: [],
-            error:
-              error?.message ||
-              data?.message ||
-              data?.error ||
-              'areaBasedList failed',
+            error: data?.message || data?.error || 'areaBasedList failed',
           };
         }
         break;

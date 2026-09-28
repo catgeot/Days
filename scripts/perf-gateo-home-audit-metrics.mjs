@@ -12,6 +12,7 @@ function parseArgs() {
   const args = process.argv.slice(2);
   let base = DEFAULT_BASE;
   let label = 'run';
+  let runs = 3;
   for (let i = 0; i < args.length; i += 1) {
     if (args[i] === '--base' && args[i + 1]) {
       base = args[i + 1].replace(/\/$/, '');
@@ -19,9 +20,36 @@ function parseArgs() {
     } else if (args[i] === '--label' && args[i + 1]) {
       label = args[i + 1];
       i += 1;
+    } else if (args[i] === '--runs' && args[i + 1]) {
+      runs = Math.max(1, Number(args[i + 1]) || 3);
+      i += 1;
     }
   }
-  return { base, label };
+  return { base, label, runs };
+}
+
+function median(nums) {
+  const arr = nums.filter((n) => Number.isFinite(n)).sort((a, b) => a - b);
+  if (!arr.length) return null;
+  const mid = Math.floor(arr.length / 2);
+  return arr.length % 2 ? arr[mid] : (arr[mid - 1] + arr[mid]) / 2;
+}
+
+function summarizeEdgePosts(edgePosts) {
+  const counts = new Map();
+  for (const p of edgePosts) {
+    const key = edgeKey(p.url, p.postData);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  const duplicates = [...counts.entries()]
+    .filter(([, c]) => c > 1)
+    .map(([key, count]) => ({ key, count }))
+    .sort((a, b) => b.count - a.count);
+  return {
+    total: edgePosts.length,
+    unique: counts.size,
+    duplicates,
+  };
 }
 
 function stableSerialize(value) {
@@ -61,12 +89,21 @@ const AFFILIATE_HOST_RE =
 async function measurePage(page, context, url, { waitForDetail = false } = {}) {
   const edgePosts = [];
   let transferBytes = 0;
+  const resourceBytes = new Map();
 
   const cdp = await context.newCDPSession(page);
   await cdp.send('Network.enable');
+  const requestUrls = new Map();
+  cdp.on('Network.requestWillBeSent', (event) => {
+    if (event.requestId && event.request?.url) {
+      requestUrls.set(event.requestId, event.request.url);
+    }
+  });
   cdp.on('Network.loadingFinished', (event) => {
     if (Number.isFinite(event.encodedDataLength)) {
       transferBytes += event.encodedDataLength;
+      const u = requestUrls.get(event.requestId) || '';
+      if (u) resourceBytes.set(u, (resourceBytes.get(u) || 0) + event.encodedDataLength);
     }
   });
 
@@ -135,25 +172,71 @@ async function measurePage(page, context, url, { waitForDetail = false } = {}) {
       .some((e) => /three-[^/]+\.js/i.test(e.name));
   });
 
+  const globeChunkLoaded = await page.evaluate(() => {
+    return performance
+      .getEntriesByType('resource')
+      .some((e) => /globe-[^/]+\.js/i.test(e.name));
+  });
+
+  const topResources = [...resourceBytes.entries()]
+    .map(([name, bytes]) => ({ url: name, transferBytes: bytes }))
+    .sort((a, b) => b.transferBytes - a.transferBytes)
+    .slice(0, 10);
+
   page.off('request', onRequest);
   await cdp.detach().catch(() => {});
 
-  const uniqueEdge = new Set(edgePosts.map((p) => edgeKey(p.url, p.postData)));
+  const edgeSummary = summarizeEdgePosts(edgePosts);
 
   return {
     url,
     transferBytes,
     lcpMs: lcp != null ? Math.round(lcp) : null,
-    edgePostTotal: edgePosts.length,
-    edgePostUnique: uniqueEdge.size,
+    edgePostTotal: edgeSummary.total,
+    edgePostUnique: edgeSummary.unique,
+    edgeDuplicates: edgeSummary.duplicates,
     brokenImages,
     affiliateHrefs,
     threeChunkLoaded,
+    globeChunkLoaded,
+    topResources,
   };
 }
 
+function medianPageMetrics(runs) {
+  const keys = [
+    'transferBytes',
+    'lcpMs',
+    'edgePostTotal',
+    'edgePostUnique',
+    'brokenImages',
+  ];
+  const out = {};
+  for (const k of keys) {
+    out[k] = median(runs.map((r) => r[k]));
+  }
+  out.threeChunkLoaded = runs.some((r) => r.threeChunkLoaded);
+  out.globeChunkLoaded = runs.some((r) => r.globeChunkLoaded);
+  const affiliate = runs[runs.length - 1]?.affiliateHrefs ?? [];
+  out.affiliateHrefs = affiliate;
+  const topPick =
+    runs.find((r) => r.topResources?.length)?.topResources ?? [];
+  out.topResources = topPick;
+  const dupMap = new Map();
+  for (const run of runs) {
+    for (const d of run.edgeDuplicates || []) {
+      dupMap.set(d.key, Math.max(dupMap.get(d.key) || 0, d.count));
+    }
+  }
+  out.edgeDuplicates = [...dupMap.entries()]
+    .map(([key, count]) => ({ key, count }))
+    .filter((d) => d.count > 1)
+    .sort((a, b) => b.count - a.count);
+  return out;
+}
+
 async function main() {
-  const { base, label } = parseArgs();
+  const { base, label, runs: runCount } = parseArgs();
   const pages = [
     { key: 'festival-home', path: '/korea/' },
     { key: 'scenic-home', path: '/korea/theme/scenic' },
@@ -195,13 +278,19 @@ async function main() {
   });
 
   const results = {};
+  const rawRuns = {};
   for (const spec of pages) {
-    const page = await context.newPage();
-    const fullUrl = `${base}${spec.path}`;
-    results[spec.key] = await measurePage(page, context, fullUrl, {
-      waitForDetail: spec.waitForDetail,
-    });
-    await page.close();
+    rawRuns[spec.key] = [];
+    for (let i = 0; i < runCount; i += 1) {
+      const page = await context.newPage();
+      const fullUrl = `${base}${spec.path}`;
+      const row = await measurePage(page, context, fullUrl, {
+        waitForDetail: spec.waitForDetail,
+      });
+      rawRuns[spec.key].push(row);
+      await page.close();
+    }
+    results[spec.key] = medianPageMetrics(rawRuns[spec.key]);
   }
 
   await browser.close();
@@ -212,10 +301,12 @@ async function main() {
   const payload = {
     label,
     base,
+    runCount,
     measuredAt: new Date().toISOString(),
     note:
-      'Non-GET supabase rest/v1 aborted. Edge POSTs counted at request time (not aborted).',
+      'Non-GET supabase rest/v1 aborted. Edge POSTs counted at request time (not aborted). Medians over runCount.',
     results,
+    rawRuns,
   };
   await writeFile(outPath, `${JSON.stringify(payload, null, 2)}\n`);
   console.log(JSON.stringify(payload, null, 2));

@@ -9,8 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import HomeGlobeMapbox from './HomeGlobeMapbox';
-
+const HomeGlobeMapbox = lazy(() => import('./HomeGlobeMapbox'));
 const HomeGlobeLegacy = lazy(() => import('./HomeGlobe'));
 import { resolveHomeGlobeEngine } from './resolveHomeGlobeEngine';
 import { registerGlobeApi, unregisterGlobeApi } from '../lib/globeApiRegistry.js';
@@ -91,15 +90,17 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
 
   if (activeEngine === 'mapbox') {
     return (
-      <HomeGlobeMapbox
-        ref={childRef}
-        {...props}
-        onFatalError={(error) => {
-          if (import.meta.env.DEV) {
-            console.warn('[HomeGlobeAdapter] mapbox fatal error:', error);
-          }
-        }}
-      />
+      <Suspense fallback={null}>
+        <HomeGlobeMapbox
+          ref={childRef}
+          {...props}
+          onFatalError={(error) => {
+            if (import.meta.env.DEV) {
+              console.warn('[HomeGlobeAdapter] mapbox fatal error:', error);
+            }
+          }}
+        />
+      </Suspense>
     );
   }
 
