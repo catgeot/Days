@@ -2,6 +2,14 @@
 
 직전: [`2026-09-28-project-log.md`](./2026-09-28-project-log.md)
 
+## 팔경 활용 #90, 탐색 검색 팔경 써머리 QA
+
+- **세션** `팔경 활용 #90, 탐색 검색 팔경 써머리 QA` · branch `cursor/palgyeong-use-e744` · tip `22d5708c` · 코드 `04842b6f` · PR [#357](https://github.com/catgeot/Days/pull/357) merge ✅
+- **조치** 에이전트 검증만 — `localScenicMemberToSuggestion` desc·화천 비래바위·광덕산·딴산 빈 desc 스모크 재확인. UI 변경 없음.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/explore` 탐색「화천」다후보 2줄 요약(비래바위·광덕산) · 딴산 요약 빈칸
+- **다음** **#91 옥천9경 1**(옛37번 국도변 벚꽃길) — [`feature-handoff-index.md`](./feature-handoff-index.md)
+
 ## 축제 주변 팔경 — 부산·양산 오탐 (#352 main)
 
 - **세션** 축제 상세 QA 피드백(부산 BPAM · 양산 12경·썸네일) · branch `cursor/festival-palgyeong-nearby-6e7c` · main merge `a2105f85` · PR [#352](https://github.com/catgeot/Days/pull/352)
