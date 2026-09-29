@@ -4,10 +4,17 @@ import {
   createGlobeAdapterCameraQueue,
   flushGlobeAdapterCameraQueue,
 } from '../src/pages/Home/lib/globeApiRegistry.js';
+import { canResumeGlobeAutoRotate } from '../src/pages/Home/lib/globeRotateResume.js';
 
 test.use({ ignoreHTTPSErrors: true });
 
 test.describe('globe adapter camera queue (unit)', () => {
+  test('canResumeGlobeAutoRotate blocks fly and cinema', () => {
+    expect(canResumeGlobeAutoRotate({ labelsSettled: true, cameraAnimating: true })).toBe(false);
+    expect(canResumeGlobeAutoRotate({ labelsSettled: true, flightCinemaActive: true })).toBe(false);
+    expect(canResumeGlobeAutoRotate({ labelsSettled: true })).toBe(true);
+  });
+
   test('latest-wins, flush once, clear on unmount pattern', () => {
     const queue = createGlobeAdapterCameraQueue();
     queue.set('flyToAndPin', [1, 2, 'a', null, {}]);
@@ -133,6 +140,20 @@ test.describe('Globe crash regressions', () => {
       }
       await route.continue();
     });
+  });
+
+  test('home load — globe focus ready without isStyleLoaded polling timeout', async ({ page }) => {
+    await page.goto('/');
+    await waitForGlobeMap(page);
+    await waitForGlobeApi(page);
+    const ready = await page.evaluate(async () => {
+      const api = window.__gateoGlobeApi;
+      if (!api?.whenGlobeFocusReady) return false;
+      const ok = await api.whenGlobeFocusReady({ timeoutMs: 12_000 });
+      const sync = api.isGlobeFocusReady?.() ?? false;
+      return ok && sync;
+    });
+    expect(ready).toBe(true);
   });
 
   test('home load — no uncaught Style is not done loading', async ({ page }) => {

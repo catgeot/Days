@@ -99,6 +99,10 @@ function safeMapUpdate(map, fn) {
   }
 }
 
+function mapIsCameraMoving(map) {
+  return typeof map?.isMoving === 'function' && map.isMoving();
+}
+
 export function gateoMarkerLayersReady(map) {
   if (!isGlobeMapStyleReady(map)) return false;
   try {
@@ -281,24 +285,18 @@ export function setupGateoMarkerLayers(map) {
   }
 }
 
-/** @type {WeakMap<object, { busy: boolean, safetyTimer: ReturnType<typeof setTimeout> | null }>} */
+/** @type {WeakMap<object, { busy: boolean }>} */
 const globeCameraBusyState = new WeakMap();
 
+/** Legacy handoff hook — no marker hide / 5s safety (PR2). Prefer cameraAnimatingRef + isMoving. */
 export function markGlobeCameraBusy(map) {
   if (!map) return;
   let state = globeCameraBusyState.get(map);
   if (!state) {
-    state = { busy: false, safetyTimer: null };
+    state = { busy: false };
     globeCameraBusyState.set(map, state);
   }
   state.busy = true;
-  if (state.safetyTimer) clearTimeout(state.safetyTimer);
-  state.safetyTimer = setTimeout(() => {
-    state.busy = false;
-    state.safetyTimer = null;
-    runPendingGateoMarkerFlush(map);
-    setGateoMarkerLayerVisibility(map, true);
-  }, 5000);
 }
 
 export function clearGlobeCameraBusy(map) {
@@ -306,10 +304,6 @@ export function clearGlobeCameraBusy(map) {
   const state = globeCameraBusyState.get(map);
   if (!state) return;
   state.busy = false;
-  if (state.safetyTimer) {
-    clearTimeout(state.safetyTimer);
-    state.safetyTimer = null;
-  }
 }
 
 export function isGlobeCameraBusy(map) {
@@ -332,8 +326,7 @@ function runPendingGateoMarkerFlush(map) {
   const data = state?.pending;
   if (!data) return false;
 
-  if (typeof map.isMoving === 'function' && map.isMoving()) return false;
-  if (isGlobeCameraBusy(map)) return false;
+  if (mapIsCameraMoving(map)) return false;
 
   if (state) state.pending = null;
   updateGateoMarkerSource(map, data);
@@ -358,7 +351,7 @@ export function scheduleUpdateGateoMarkerSource(map, geojson) {
   }
   state.pending = geojson || { type: 'FeatureCollection', features: [] };
 
-  if (isGlobeCameraBusy(map) || (typeof map.isMoving === 'function' && map.isMoving())) {
+  if (mapIsCameraMoving(map)) {
     return;
   }
 
