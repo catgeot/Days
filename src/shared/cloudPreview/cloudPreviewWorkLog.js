@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 87,
-  sessionPhase: '영월 결손 오버레이',
+  sessionNo: 89,
+  sessionPhase: '화천 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-29-palgyeong-use-89-hwacheon-birae-overlay',
+    session: '팔경 활용 #89, 화천 결손 오버레이',
+    title: '화천9경 비래바위',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 화천9경 결손 1건(비래바위)의 공공 공식 팩트 개요·주소·화천군 문화관광 제6경 공식 사진 3장을 보강했습니다. 비래바위는 상서면 구운리 해발 970m 기암(폭 100m·높이 60m)·병풍바위로도 불립니다. 정선·여수 등 다른 지역 비래 지명 바위와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hwacheon 비래바위 행 썸네일·상세 갤러리.',
+    at: '2026-09-29T08:15:00.000Z',
+  },
   {
     id: '2026-09-29-palgyeong-use-87-yeongwol-kimsatgat-overlay',
     session: '팔경 활용 #87, 영월 결손 오버레이',
