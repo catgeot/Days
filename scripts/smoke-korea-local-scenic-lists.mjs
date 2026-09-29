@@ -5621,6 +5621,81 @@ assert.ok(
   '영월 검색 김삿갓유적지 썸네일',
 );
 
+const hwacheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hwacheon');
+const hwacheonNine = hwacheonMerged.filter((s) => s.localScenicListId === 'hwacheon-gugyeong');
+assert.equal(hwacheonNine.length, 9, '화천9경 9명');
+const biraeRock = hwacheonNine.find((s) => s.attractionName === '비래바위');
+assert.ok(biraeRock?.overview && biraeRock?.imageUrl, '비래바위 overlay 사진·개요');
+assert.ok(!biraeRock?.contentId, '비래바위 JSON contentId 없음 유지');
+assert.ok(biraeRock?.overview?.includes('제6경'), '비래바위 overlay 제6경');
+assert.ok(biraeRock?.overview?.includes('비래바위'), '비래바위 overlay 명칭');
+assert.equal(biraeRock?.galleryUrls?.length, 3, '비래바위 공식 사진 3장');
+assert.ok(
+  biraeRock?.galleryUrls?.some((u) => u.includes('cf166fd6-8796-4e77-bc52-c2951449dd83')),
+  '비래바위 화천군 공식 사진 1',
+);
+assert.ok(
+  biraeRock?.galleryUrls?.some((u) => u.includes('e862c113-0b33-42b0-ac7f-749fa8af3c8b')),
+  '비래바위 화천군 공식 사진 2',
+);
+assert.equal(
+  new Set(biraeRock?.galleryUrls).size,
+  biraeRock?.galleryUrls?.length,
+  '비래바위 갤러리 URL 중복 없음',
+);
+assert.ok(biraeRock?.homepage?.includes('tour.ihc.go.kr'), '비래바위 화천군 관광 홈');
+const hwacheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '화천', {
+  injectLocalScenic: true,
+});
+const hwacheonGlobeNine = hwacheonGlobe.filter((s) => s.localScenicListId === 'hwacheon-gugyeong');
+assert.equal(hwacheonGlobeNine.length, 9, '화천 검색 화천9경 9행');
+assert.ok(
+  hwacheonGlobe.find((s) => s.attractionName === '비래바위')?.imageUrl?.includes('cf166fd6'),
+  '화천 검색 비래바위 썸네일',
+);
+
+const gwangdeoksan = hwacheonNine.find((s) => s.attractionName === '광덕산');
+assert.ok(gwangdeoksan?.overview && gwangdeoksan?.imageUrl, '광덕산 overlay 사진·개요');
+assert.ok(gwangdeoksan?.overview?.includes('제9경'), '광덕산 overlay 제9경');
+assert.ok(gwangdeoksan?.overview?.includes('화천군'), '광덕산 overlay 화천');
+assert.ok(!gwangdeoksan?.overview?.includes('천안시와 아산시'), '광덕산 Tour 천안·아산 오매칭 본문 없음');
+assert.equal(gwangdeoksan?.galleryUrls?.length, 3, '광덕산 공식 사진 3장');
+assert.ok(
+  gwangdeoksan?.galleryUrls?.some((u) => u.includes('content/81/2a777ae7')),
+  '광덕산 화천군 공식 사진 1',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('128098')?.imageUrl?.includes('content/81/'),
+  '광덕산 contentId 128098 썸네일 화천군 공식',
+);
+
+const hwacheonList = lists.find((l) => l.listId === 'hwacheon-gugyeong');
+const hwacheonHub = resolveCityAttractionHub('hwacheon');
+const biraeSuggest = localScenicMemberToSuggestion(
+  hwacheonList,
+  hwacheonHub,
+  hwacheonList?.members?.find((m) => m.attractionName === '비래바위'),
+);
+assert.ok(
+  biraeSuggest?.desc?.includes('제6경') && biraeSuggest.desc.includes('비래바위'),
+  '탐색 검색 비래바위 desc = 멤버 오버레이 overview',
+);
+const gwangdeokSuggest = localScenicMemberToSuggestion(
+  hwacheonList,
+  hwacheonHub,
+  hwacheonList?.members?.find((m) => m.attractionName === '광덕산'),
+);
+assert.ok(
+  gwangdeokSuggest?.desc?.includes('제9경') && !gwangdeokSuggest.desc.includes('천안시와 아산시'),
+  '탐색 검색 광덕산 desc = 화천 오버레이',
+);
+const ttansanSuggest = localScenicMemberToSuggestion(
+  hwacheonList,
+  hwacheonHub,
+  hwacheonList?.members?.find((m) => m.attractionName === '딴산'),
+);
+assert.equal(String(ttansanSuggest?.desc || '').trim(), '', '오버레이 없는 화천 행 desc 비움 유지');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

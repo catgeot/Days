@@ -114,6 +114,7 @@ import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
   listKoreaLocalScenicLists,
   listLocalScenicMemberJobs,
+  hasLocalScenicCuratedGalleryOverlay,
   lookupLocalScenicMemberOverlayForSpot,
   lookupLocalScenicPhotoByContentId,
   resolveLocalScenicRowFirstImage,
@@ -2745,6 +2746,7 @@ export default function KoreaThemeScenicPage() {
         : localScenic;
       setSelectedSpot(base);
       if (!/^\d{1,32}$/.test(contentId)) return undefined;
+      if (hasLocalScenicCuratedGalleryOverlay(localScenic)) return undefined;
       fetchKoreaTourAttractionById(contentId).then((spot) => {
         if (cancelled || !spot) return;
         const tourImage = overlayThumb || spot.firstImage || spot.imageUrl || null;

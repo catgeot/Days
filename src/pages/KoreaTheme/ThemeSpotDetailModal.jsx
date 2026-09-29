@@ -45,7 +45,9 @@ import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttraction
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
   groupNearbySpotsWithLocalScenic,
+  hasLocalScenicCuratedGalleryOverlay,
   isNearbyAttractionRowClickable,
+  lookupLocalScenicMemberOverlayForSpot,
   mergeNearbyRowWithLocalScenicDetail,
   missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
@@ -1185,6 +1187,19 @@ export default function ThemeSpotDetailModal({
       return undefined;
     }
 
+    const memberOverlay = lookupLocalScenicMemberOverlayForSpot(spot);
+    const spotForDetail = memberOverlay
+      ? {
+          ...spot,
+          overview: memberOverlay.overview || spot.overview,
+          galleryUrls: memberOverlay.galleryUrls || spot.galleryUrls,
+          imageUrl: memberOverlay.imageUrl || spot.imageUrl,
+          firstImage: memberOverlay.firstImage || spot.firstImage,
+          addr1: memberOverlay.addr1 || spot.addr1,
+          homepage: memberOverlay.homepage || spot.homepage,
+        }
+      : spot;
+
     if (spot.source === 'cha') {
       const overview = String(spot.content || spot.blurb || '').trim();
       const imageUrl = String(spot.imageUrl || '').trim() || null;
@@ -1244,30 +1259,33 @@ export default function ThemeSpotDetailModal({
       return undefined;
     }
 
-    const contentId = String(spot.contentId || '').trim();
-    if (!/^\d{1,32}$/.test(contentId)) {
+    const contentId = String(spotForDetail.contentId || '').trim();
+    const curatedOverviewOnly = stripCuratedOverviewMeta(spotForDetail.overview);
+    const useCuratedLocalScenic =
+      hasLocalScenicCuratedGalleryOverlay(spotForDetail) && curatedOverviewOnly;
+
+    if (!/^\d{1,32}$/.test(contentId) || useCuratedLocalScenic) {
       // Tour contentId 부재 — SSOT overview가 있으면 LIVE 대신 GATEO 안내 본문
-      const curatedOverview = stripCuratedOverviewMeta(spot.overview);
-      if (curatedOverview) {
-        const imageUrl = String(spot.imageUrl || '').trim() || null;
-        const galleryFromSpot = Array.isArray(spot.galleryUrls)
-          ? spot.galleryUrls.map((u) => String(u || '').trim()).filter(Boolean)
+      if (curatedOverviewOnly) {
+        const imageUrl = String(spotForDetail.imageUrl || '').trim() || null;
+        const galleryFromSpot = Array.isArray(spotForDetail.galleryUrls)
+          ? spotForDetail.galleryUrls.map((u) => String(u || '').trim()).filter(Boolean)
           : [];
         const galleryUrls = [...galleryFromSpot];
         if (imageUrl && !galleryUrls.includes(imageUrl)) {
           galleryUrls.unshift(imageUrl);
         }
         setDetail({
-          title: spot.name,
-          overview: curatedOverview,
+          title: spotForDetail.name,
+          overview: curatedOverviewOnly,
           imageUrl: imageUrl || galleryUrls[0] || null,
           galleryUrls,
-          addr1: spot.addr1 || null,
+          addr1: spotForDetail.addr1 || null,
           addr2: null,
-          homepage: spot.homepage || null,
+          homepage: spotForDetail.homepage || null,
           tel: null,
-          mapx: Number.isFinite(Number(spot.lng)) ? Number(spot.lng) : null,
-          mapy: Number.isFinite(Number(spot.lat)) ? Number(spot.lat) : null,
+          mapx: Number.isFinite(Number(spotForDetail.lng)) ? Number(spotForDetail.lng) : null,
+          mapy: Number.isFinite(Number(spotForDetail.lat)) ? Number(spotForDetail.lat) : null,
           heritageMeta: null,
           intro: null,
           infoItems: [],
