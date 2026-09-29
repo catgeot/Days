@@ -16,3 +16,11 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS
 - **Preview** `/qa/palgyeong-use` → `/korea/theme/scenic?hub=yangsan` · 검색「양산」
 - **다음** 백로그 **#87 영월10경 1**(김삿갓유적지) — [`feature-handoff-index.md`](./feature-handoff-index.md)
+
+## 팔경 활용 #87, 영월 결손 오버레이
+
+- **세션** `팔경 활용 #87, 영월 결손 오버레이` · branch `cursor/palgyeong-use-e744` · tip `f71b691c` · PR [#356](https://github.com/catgeot/Days/pull/356)
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 영월10경 결손 1건. 김삿갓유적지(제4경·김삿갓면 김삿갓로 216-22·난고김삿갓문학관·묘역). 화순 김삿갓 문학동산·김삿갓계곡과 구분. 사진은 영월군 문화관광 공식 3장.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS. 순수 사진/개요 누락 **5**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=yeongwol` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongwol`
+- **다음** `팔경 활용 #89, 화천 결손 오버레이` — 화천9경 비래바위 1건 · [`feature-handoff-index.md`](./feature-handoff-index.md)
