@@ -17,6 +17,14 @@
 - **Preview** `/qa/palgyeong-use` → `/korea/theme/scenic?hub=yangsan` · 검색「양산」
 - **다음** 백로그 **#87 영월10경 1**(김삿갓유적지) — [`feature-handoff-index.md`](./feature-handoff-index.md)
 
+## 팔경 활용 #89, 화천 결손 오버레이
+
+- **세션** `팔경 활용 #89, 화천 결손 오버레이` · branch `cursor/palgyeong-use-e744` · tip `299aadf0`
+- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 화천9경 결손 1건. 비래바위(제6경·상서면 구운리·해발 970m 기암·병풍바위). Tour 미등록 유지. 사진은 화천군 문화관광(`tour.ihc.go.kr`) 공식 3장.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS. 순수 사진/개요 누락 **4**/876.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hwacheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hwacheon`
+- **다음** 순수 결손 4건 중 **#90 옥천9경 1**(옛37번 국도변 벚꽃길) — [`feature-handoff-index.md`](./feature-handoff-index.md)
+
 ## 팔경 활용 #87, 영월 결손 오버레이
 
 - **세션** `팔경 활용 #87, 영월 결손 오버레이` · branch `cursor/palgyeong-use-e744` · tip `f71b691c` · PR [#356](https://github.com/catgeot/Days/pull/356)
