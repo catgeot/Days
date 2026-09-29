@@ -46,5 +46,6 @@ function escapeRegExp(str) {
 export function needsPlaceChatIntroHydration(location) {
   if (!location?.name) return false;
   if (location.placeChatIntroApplied) return false;
+  if (!isSyntheticOrEmptyPlaceDesc(location)) return false;
   return true;
 }

@@ -5669,6 +5669,33 @@ assert.ok(
   '광덕산 contentId 128098 썸네일 화천군 공식',
 );
 
+const hwacheonList = lists.find((l) => l.listId === 'hwacheon-gugyeong');
+const hwacheonHub = resolveCityAttractionHub('hwacheon');
+const biraeSuggest = localScenicMemberToSuggestion(
+  hwacheonList,
+  hwacheonHub,
+  hwacheonList?.members?.find((m) => m.attractionName === '비래바위'),
+);
+assert.ok(
+  biraeSuggest?.desc?.includes('제6경') && biraeSuggest.desc.includes('비래바위'),
+  '탐색 검색 비래바위 desc = 멤버 오버레이 overview',
+);
+const gwangdeokSuggest = localScenicMemberToSuggestion(
+  hwacheonList,
+  hwacheonHub,
+  hwacheonList?.members?.find((m) => m.attractionName === '광덕산'),
+);
+assert.ok(
+  gwangdeokSuggest?.desc?.includes('제9경') && !gwangdeokSuggest.desc.includes('천안시와 아산시'),
+  '탐색 검색 광덕산 desc = 화천 오버레이',
+);
+const ttansanSuggest = localScenicMemberToSuggestion(
+  hwacheonList,
+  hwacheonHub,
+  hwacheonList?.members?.find((m) => m.attractionName === '딴산'),
+);
+assert.equal(String(ttansanSuggest?.desc || '').trim(), '', '오버레이 없는 화천 행 desc 비움 유지');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

@@ -643,6 +643,9 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
     contentId,
   });
   const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
+  const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
+  const overlay = lookupLocalScenicMemberOverlay(spotId);
+  const desc = localScenicMemberSearchDescFromOverlay(overlay);
   return {
     ...base,
     groupTitle: localScenicListDisplayTitle(list, h, locale),
@@ -652,6 +655,7 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
     contentId: media.contentId,
     imageUrl: media.imageUrl,
     thumbUrl: media.imageUrl,
+    ...(desc ? { desc } : {}),
   };
 }
 
@@ -918,6 +922,16 @@ export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
 
 export function localScenicMemberSpotId(listId, attractionName) {
   return `local-scenic:${listId}:${normalizeKey(attractionName)}`;
+}
+
+/** 탐색 검색 다후보 카드 2줄 — 멤버 오버레이 overview (place_chat_intro 없을 때 SSOT) */
+export function localScenicMemberSearchDescFromOverlay(overlay, maxLen = 240) {
+  const text = String(overlay?.overview || '')
+    .trim()
+    .replace(/\s+/g, ' ');
+  if (!text) return '';
+  if (text.length <= maxLen) return text;
+  return `${text.slice(0, maxLen - 1)}…`;
 }
 
 const LOCAL_SCENIC_SPOT_ID_RE = /^local-scenic:([^:]+):(.+)$/;
