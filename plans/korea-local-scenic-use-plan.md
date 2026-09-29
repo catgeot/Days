@@ -117,11 +117,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#89 push** tip `04842b6f` · **다음 = #90 탐색 검색 써머리 QA** → **#91 옥천** 1건 · 순수 누락 **4**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#90 QA** tip `22d5708c` · **다음 = #91 옥천** 1건(옛37번 국도변 벚꽃길) · 순수 누락 **4**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **#90 탐색 검색 써머리 QA**(코드 `04842b6f` push 완료) → **#91 옥천9경 1**. `사람 Preview QA` 단독 세션 생략. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**.
+**A 다음 제시어**: **#91 옥천9경 1**(옛37번 국도변 벚꽃길). #90 탐색 검색 써머리 QA 완료(`04842b6f`·PR [#357](https://github.com/catgeot/Days/pull/357)). 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**.
 
 **탐색 검색 써머리 (A · #90)** — 명승 허브 상세(`memberToScenicListSpot`·모달)와 탐색 `SearchDisambiguationCards`는 별 SSOT. 검색 `desc` = `item.desc` 또는 `place_chat_intro`(조회만·AI 없음). feature `localScenicMemberToSuggestion` + `localScenicMemberSearchDescFromOverlay` + `placeDescText.needsPlaceChatIntroHydration`(실문장 desc면 intro skip). 오버레이 없는 팔경 행은 여전히 빈칸 — 결손 오버레이(#91~)로 해소.
 
