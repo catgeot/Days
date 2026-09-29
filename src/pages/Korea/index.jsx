@@ -64,6 +64,10 @@ import {
   NEAR_FESTIVAL_KM,
 } from './koreaFestivalDefaults';
 import {
+  KOREA_FILTER_CHIP_ACTIVE,
+  koreaFilterChipCountClass,
+} from './koreaHubFilterChipStyles.js';
+import {
   clearRecentSearches,
   FESTIVAL_RECENT_SEARCH_KEY,
   loadRecentSearches,
@@ -265,7 +269,7 @@ function festivalKey(item) {
 function chipClass(active) {
   return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 ${
     active
-      ? 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm'
+      ? KOREA_FILTER_CHIP_ACTIVE
       : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50 hover:border-stone-300'
   }`;
 }
@@ -274,7 +278,7 @@ function chipClass(active) {
 function majorChipClass(panelOpen) {
   return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 font-bold ${
     panelOpen
-      ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+      ? KOREA_FILTER_CHIP_ACTIVE
       : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
   }`;
 }
@@ -476,7 +480,9 @@ function RelatedChipFlap({
             className={chipClass(cityName === c.id)}
           >
             {c.label}
-            <span className="opacity-70">{c.count}</span>
+            <span className={koreaFilterChipCountClass(cityName === c.id)}>
+              {c.count}
+            </span>
           </button>
         ))}
       </ChipScrollRow>
@@ -516,7 +522,11 @@ function RelatedChipFlap({
               className={flapChipClass(cityName === c.id)}
             >
               <span className="truncate">{c.label}</span>
-              <span className="shrink-0 opacity-70">{c.count}</span>
+              <span
+                className={`shrink-0 ${koreaFilterChipCountClass(cityName === c.id)}`}
+              >
+                {c.count}
+              </span>
             </button>
           ))}
         </div>
@@ -552,7 +562,11 @@ function RelatedChipFlap({
               className={flapChipClass(tasteId === t.id)}
             >
               <span className="truncate">{t.label}</span>
-              <span className="shrink-0 opacity-70">{t.count}</span>
+              <span
+                className={`shrink-0 ${koreaFilterChipCountClass(tasteId === t.id)}`}
+              >
+                {t.count}
+              </span>
             </button>
           ))}
         </div>
@@ -2162,7 +2176,9 @@ export default function KoreaFestivalHub() {
                     >
                       <ChipPanelIcon panel="time" />
                       {t.label}
-                      <span className="opacity-70">
+                      <span
+                        className={koreaFilterChipCountClass(timeTab === t.id)}
+                      >
                         {timeChipCounts[t.id] ?? 0}
                       </span>
                     </button>
@@ -2188,7 +2204,13 @@ export default function KoreaFestivalHub() {
                       >
                         <ChipPanelIcon panel="region" />
                         {s.label}
-                        <span className="opacity-70">{s.count}</span>
+                        <span
+                          className={koreaFilterChipCountClass(
+                            areaCode === s.id,
+                          )}
+                        >
+                          {s.count}
+                        </span>
                       </button>
                     ))}
                   </>
@@ -2214,7 +2236,13 @@ export default function KoreaFestivalHub() {
                       >
                         <ChipPanelIcon panel="taste" />
                         {t.label}
-                        <span className="opacity-70">{t.count}</span>
+                        <span
+                          className={koreaFilterChipCountClass(
+                            tasteId === t.id,
+                          )}
+                        >
+                          {t.count}
+                        </span>
                       </button>
                     ))}
                   </>
@@ -2431,7 +2459,13 @@ export default function KoreaFestivalHub() {
                   className={chipClass(personalTab === 'favorites')}
                 >
                   {t('korea.common.favorites')}
-                  <span className="opacity-70">{favoriteList.length}</span>
+                  <span
+                    className={koreaFilterChipCountClass(
+                      personalTab === 'favorites',
+                    )}
+                  >
+                    {favoriteList.length}
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -2439,7 +2473,13 @@ export default function KoreaFestivalHub() {
                   className={chipClass(personalTab === 'viewed')}
                 >
                   {t('korea.common.viewed')}
-                  <span className="opacity-70">{viewedList.length}</span>
+                  <span
+                    className={koreaFilterChipCountClass(
+                      personalTab === 'viewed',
+                    )}
+                  >
+                    {viewedList.length}
+                  </span>
                 </button>
               </div>
             )}
