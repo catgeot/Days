@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 88,
-  sessionPhase: '양산 12경 결손 오버레이',
+  sessionNo: 87,
+  sessionPhase: '영월 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-29-palgyeong-use-87-yeongwol-kimsatgat-overlay',
+    session: '팔경 활용 #87, 영월 결손 오버레이',
+    title: '영월10경 김삿갓유적지',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 영월10경 결손 1건(김삿갓유적지)의 공공 공식 팩트 개요·주소·영월군 문화관광 제4경 공식 사진 3장을 보강했습니다. 김삿갓유적지는 김삿갓면 김삿갓로 216-22 난고김삿갓문학관·묘역·집터 일대(1807~1863 난고 김병연)입니다. 화순 김삿갓 문학동산·김삿갓계곡·옥동장터와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongwol 김삿갓유적지 행 썸네일·상세 개요.',
+    at: '2026-09-29T08:00:00.000Z',
+  },
   {
     id: '2026-09-29-palgyeong-use-88-yangsan-12-overlay',
     session: '팔경 활용 #88, 양산 12경 결손 오버레이',

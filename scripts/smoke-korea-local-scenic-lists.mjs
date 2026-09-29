@@ -5588,6 +5588,39 @@ assert.ok(
   '여주 검색 팔수장림 썸네일',
 );
 
+const yeongwolMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeongwol');
+const yeongwolTen = yeongwolMerged.filter((s) => s.localScenicListId === 'yeongwol-sipgyeong');
+assert.equal(yeongwolTen.length, 10, '영월10경 10명');
+const kimsatgatSite = yeongwolTen.find((s) => s.attractionName === '김삿갓유적지');
+assert.ok(kimsatgatSite?.overview && kimsatgatSite?.imageUrl, '김삿갓유적지 overlay 사진·개요');
+assert.ok(!kimsatgatSite?.contentId, '김삿갓유적지 JSON contentId 없음 유지');
+assert.ok(kimsatgatSite?.overview?.includes('제4경'), '김삿갓유적지 overlay 제4경');
+assert.ok(kimsatgatSite?.overview?.includes('난고'), '김삿갓유적지 overlay 난고');
+assert.equal(kimsatgatSite?.galleryUrls?.length, 3, '김삿갓유적지 공식 사진 3장');
+assert.ok(
+  kimsatgatSite?.galleryUrls?.some((u) => u.includes('BDCC3710-4B6C-F9E9-3F9A-5DF1D0C17AA3')),
+  '김삿갓유적지 영월군 공식 사진 1',
+);
+assert.ok(
+  kimsatgatSite?.galleryUrls?.some((u) => u.includes('32852782-FE05-3C3B-1B91-DB951C19ED58')),
+  '김삿갓유적지 영월군 공식 사진 2',
+);
+assert.equal(
+  new Set(kimsatgatSite?.galleryUrls).size,
+  kimsatgatSite?.galleryUrls?.length,
+  '김삿갓유적지 갤러리 URL 중복 없음',
+);
+assert.ok(kimsatgatSite?.homepage?.includes('yw.go.kr/tour'), '김삿갓유적지 영월군 관광 홈');
+const yeongwolGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '영월', {
+  injectLocalScenic: true,
+});
+const yeongwolGlobeTen = yeongwolGlobe.filter((s) => s.localScenicListId === 'yeongwol-sipgyeong');
+assert.equal(yeongwolGlobeTen.length, 10, '영월 검색 영월10경 10행');
+assert.ok(
+  yeongwolGlobe.find((s) => s.attractionName === '김삿갓유적지')?.imageUrl?.includes('BDCC3710'),
+  '영월 검색 김삿갓유적지 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
