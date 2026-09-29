@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkCjkFriendly from 'remark-cjk-friendly';
+import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import mooniRemarkGfm from '../src/components/chat/mooniRemarkGfm.js';
 import { mooniChatMarkdownSanitizeSchema } from '../src/components/chat/mooniChatMarkdownSchema.js';
 

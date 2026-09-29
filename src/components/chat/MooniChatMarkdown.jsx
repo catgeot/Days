@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkCjkFriendly from 'remark-cjk-friendly';
+import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import rehypeSanitize from 'rehype-sanitize';
 import mooniRemarkGfm from './mooniRemarkGfm.js';
 import { mooniChatMarkdownSanitizeSchema } from './mooniChatMarkdownSchema.js';
