@@ -49,3 +49,35 @@ export function subscribeGlobeApi(listener) {
   if (api) listener(api);
   return () => listeners.delete(listener);
 }
+
+/** Latest-wins slot for camera commands while the lazy globe child is still loading. */
+export function createGlobeAdapterCameraQueue() {
+  /** @type {{ kind: string, args: unknown[] } | null} */
+  let pending = null;
+  return {
+    set(kind, args) {
+      pending = { kind, args };
+    },
+    take() {
+      const cmd = pending;
+      pending = null;
+      return cmd;
+    },
+    clear() {
+      pending = null;
+    },
+    peek() {
+      return pending;
+    },
+  };
+}
+
+export function flushGlobeAdapterCameraQueue(queue, child) {
+  if (!queue || !child) return;
+  const cmd = queue.take();
+  if (!cmd) return;
+  const fn = child[cmd.kind];
+  if (typeof fn === 'function') {
+    fn(...cmd.args);
+  }
+}
