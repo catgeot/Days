@@ -117,11 +117,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#88 양산12경**(`hub=yangsan`) 전수 오버레이 · 축제 인근 **#352** main ✅ · feature tip `9b17f25d` · 백로그 **#87 영월** — §**2.1** **≥3장** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#88 push** tip `401dfa11` · PR [#353](https://github.com/catgeot/Days/pull/353) · **다음 = #87 영월** 1건(김삿갓유적지) — §**2.1** **≥3장** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 **`#88` 경남 양산12경 12건 전수** (`listId` `yangsan-other` · **#16 영동 양산팔경과 별개**) · 이후 백로그 **영월10경 1** (`#87` · 김삿갓유적지).
+**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션. 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**. 다음 **백로그 `#87` 영월10경 1**(김삿갓유적지 · `hub=yeongwol`).
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
