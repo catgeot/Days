@@ -71,6 +71,11 @@ function gateoEmitVersionJson() {
 const devSsl = process.env.DEV_SSL !== '0';
 
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_GATEO_QA_MOONI_MD_FIXTURE': JSON.stringify(
+      process.env.VERCEL_ENV === 'preview' ? '1' : '',
+    ),
+  },
   plugins: [
     react(),
     ...(devSsl ? [basicSsl()] : []),

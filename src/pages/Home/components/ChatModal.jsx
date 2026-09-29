@@ -1332,13 +1332,13 @@ const ChatModal = ({
                         ? 'bg-red-950/50 text-red-200 rounded-tl-sm'
                         : tone(fresh, 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed', 'bg-white/90 border border-cyan-100 text-slate-700 rounded-tl-sm leading-relaxed')
                   }`}>
-                    {isMooniUi && isModelMsg ? (
+                    {isModelMsg ? (
                       <Suspense
                         fallback={<div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>}
                       >
                         <MooniChatMarkdownBoundary
                           text={displayMsgText}
-                          variant={fresh ? 'light' : 'dark'}
+                          variant={isMooniUi ? 'light' : 'dark'}
                         />
                       </Suspense>
                     ) : (

@@ -1,8 +1,15 @@
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import remarkCjkFriendly from 'remark-cjk-friendly';
 import rehypeSanitize from 'rehype-sanitize';
+import mooniRemarkGfm from './mooniRemarkGfm.js';
 import { mooniChatMarkdownSanitizeSchema } from './mooniChatMarkdownSchema.js';
+
+function mooniChatUrlTransform(url) {
+  const value = String(url).trim();
+  if (value.startsWith('https://') || value.startsWith('http://')) return value;
+  return '';
+}
 
 const headingClass =
   'text-[1.0625rem] font-bold leading-snug mt-3 mb-1.5 first:mt-0 break-keep';
@@ -55,8 +62,9 @@ export default function MooniChatMarkdown({ text, variant = 'dark' }) {
   return (
     <div className="mooni-chat-markdown min-w-0 break-words">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[mooniRemarkGfm, remarkCjkFriendly]}
         rehypePlugins={[[rehypeSanitize, mooniChatMarkdownSanitizeSchema]]}
+        urlTransform={mooniChatUrlTransform}
         components={components}
       >
         {markdown}
