@@ -1040,6 +1040,43 @@ const YD_GALGI = 'https://tong.visitkorea.or.kr/cms/resource/51/3341351_image2_1
 const YD_GAHAK = 'https://tong.visitkorea.or.kr/cms/resource/62/3572762_image2_1.jpg';
 const YD_CHEONTAE = 'https://tong.visitkorea.or.kr/cms/resource/36/3059936_image2_1.JPG';
 const YD_MULHAN = 'https://tong.visitkorea.or.kr/cms/resource/27/3082527_image2_1.jpg';
+const YS_YANGSAN_TOUR = 'https://www.yangsan.go.kr/tour/main.do';
+const YS_TONGDOSA = 'https://tong.visitkorea.or.kr/cms/resource/55/3490255_image2_1.JPG';
+const YS_TONGDOSA_2 = 'https://tong.visitkorea.or.kr/cms/resource/53/3490253_image2_1.JPG';
+const YS_TONGDOSA_3 = 'https://tong.visitkorea.or.kr/cms/resource/54/3490254_image2_1.JPG';
+const YS_CHEONSEONG = 'https://tong.visitkorea.or.kr/cms/resource/41/3489441_image2_1.JPG';
+const YS_CHEONSEONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/42/3489442_image2_1.JPG';
+const YS_CHEONSEONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/43/3489443_image2_1.JPG';
+const YS_NAewon_1 = 'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG';
+const YS_NAewon_2 = 'https://tong.visitkorea.or.kr/cms/resource/25/3489425_image2_1.JPG';
+const YS_NAewon_3 = 'https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg';
+const YS_HONGRYONG = 'https://tong.visitkorea.or.kr/cms/resource/51/3492151_image2_1.jpg';
+const YS_HONGRYONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/52/3492152_image2_1.jpg';
+const YS_HONGRYONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/53/3492153_image2_1.jpg';
+const YS_BAENAEGOL = 'https://tong.visitkorea.or.kr/cms/resource/72/3581272_image2_1.jpg';
+const YS_BAENAEGOL_2 = 'https://tong.visitkorea.or.kr/cms/resource/70/3581270_image2_1.jpg';
+const YS_BAENAEGOL_3 = 'https://tong.visitkorea.or.kr/cms/resource/71/3581271_image2_1.jpg';
+const YS_CHEONTAE_YS = 'https://tong.visitkorea.or.kr/cms/resource/86/3489186_image2_1.JPG';
+const YS_CHEONTAE_YS_2 = 'https://tong.visitkorea.or.kr/cms/resource/87/3489187_image2_1.JPG';
+const YS_CHEONTAE_YS_3 = 'https://tong.visitkorea.or.kr/cms/resource/88/3489188_image2_1.JPG';
+const YS_IMGYEONG = 'https://tong.visitkorea.or.kr/cms/resource/41/4039141_image2_1.jpg';
+const YS_IMGYEONG_2 = 'https://tong.visitkorea.or.kr/cms/resource/20/2783920_image2_1.JPG';
+const YS_IMGYEONG_3 = 'https://tong.visitkorea.or.kr/cms/resource/21/2783921_image2_1.JPG';
+const YS_DAEUNSAN = 'https://tong.visitkorea.or.kr/cms/resource/77/2744077_image2_1.jpg';
+const YS_DAEUNSAN_2 = 'https://tong.visitkorea.or.kr/cms/resource/60/2744060_image2_1.jpg';
+const YS_DAEUNSAN_3 = 'https://tong.visitkorea.or.kr/cms/resource/66/2744066_image2_1.jpg';
+const YS_HWANGSAN = 'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG';
+const YS_HWANGSAN_2 = 'https://tong.visitkorea.or.kr/cms/resource/82/2731482_image2_1.jpg';
+const YS_HWANGSAN_3 = 'https://tong.visitkorea.or.kr/cms/resource/99/2784399_image2_1.JPG';
+const YS_BEOPGI = 'https://tong.visitkorea.or.kr/cms/resource/56/3489356_image2_1.jpg';
+const YS_BEOPGI_2 = 'https://tong.visitkorea.or.kr/cms/resource/57/3489357_image2_1.JPG';
+const YS_BEOPGI_3 = 'https://tong.visitkorea.or.kr/cms/resource/58/3489358_image2_1.JPG';
+const YS_TOWER = 'https://tong.visitkorea.or.kr/cms/resource/87/3538187_image2_1.jpg';
+const YS_TOWER_2 = 'https://tong.visitkorea.or.kr/cms/resource/82/3538182_image2_1.jpg';
+const YS_TOWER_3 = 'https://tong.visitkorea.or.kr/cms/resource/83/3538183_image2_1.jpg';
+const YS_GAYAJINSA = 'https://tong.visitkorea.or.kr/cms/resource/46/3531546_image2_1.png';
+const YS_GAYAJINSA_2 = 'https://tong.visitkorea.or.kr/cms/resource/46/3531546_image3_1.png';
+const YS_GAYAJINSA_3 = 'https://tong.visitkorea.or.kr/cms/resource/46/3531546_image1_1.png';
 const HAMAN_MARI = 'https://tong.visitkorea.or.kr/cms/resource/21/4002121_image2_1.jpg';
 const HAMAN_MARI_2 = 'https://tong.visitkorea.or.kr/cms/resource/16/4002116_image2_1.jpg';
 const HAMAN_MARI_3 = 'https://tong.visitkorea.or.kr/cms2/website/81/3034481.jpg';
@@ -1640,6 +1677,10 @@ const YY_JUKDOJEONG = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655452231_2
 const YY_JUKDOJEONG_2 = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655451898_cc4fa391cba752b0beb83498f3a2b739.jpg`;
 const YY_JUKDOJEONG_3 = `${YY_TOUR}/dzSmart/upfiles/Tours/2022June/24/1655463733_fedc75e948b4b1b6e390e0c0d9a26a5c.jpg`;
 const YY_JUKDOJEONG_HOME = `${YY_TOUR}/pub/yy10view.do?mode=v&seq=167`;
+const YJ_TOUR_HOME = 'https://www.yeoju.go.kr/tour/index.do';
+const YJ_YEOKANG = 'https://tong.visitkorea.or.kr/cms/resource/21/2661421_image2_1.jpg';
+const YJ_YEOKANG_2 = 'https://tong.visitkorea.or.kr/cms/resource/20/2661420_image2_1.jpg';
+const YJ_YEOKANG_3 = 'https://tong.visitkorea.or.kr/cms/resource/22/2661422_image2_1.jpg';
 const JE_9GYEONG = 'https://www.jeongeup.go.kr/upload_data/board_data/BBS_0000011';
 const JE_DH = `${JE_9GYEONG}/175305752440905.png`;
 const JE_DH_2 = 'https://www.1894.or.kr/main/img/sub/77/77_1_1.jpg';
@@ -2621,52 +2662,95 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     YD_GANGSEON_3,
     [YD_GANGSEON, YD_GANGSEON_2],
   ),
+  'local-scenic:yangsan-other:통도사': localScenicPhotoOverlay(
+    '양산 12경 제1경 통도사는 영축산 자락에 자리한 대한불교 조계종 말사·영남 삼보사찰입니다. 한국관광공사는 주소를 하북면 통도사로 108로 두고, 신라 진흥왕 때 진표국사가 개창한 사찰로 전해지며 불보·법보·승보를 함께 모신 유일한 곳으로 소개합니다. 대웅전·금강계단·성보박물관과 함께 양산시 문화관광 12경의 출발점입니다. 통도환타지아 테마파크·부산 범어사·해인사와 다른 하북면 천년 고찰입니다. 사진은 한국관광공사 통도사(양산) 공식 사진 3장입니다.',
+    '경상남도 양산시 하북면 통도사로 108',
+    YS_TONGDOSA,
+    [YS_TONGDOSA_2, YS_TONGDOSA_3],
+    YS_YANGSAN_TOUR,
+  ),
+  'local-scenic:yangsan-other:천성산': localScenicPhotoOverlay(
+    '양산 12경 제2경 천성산은 해발 922.6m의 양산 대표 산으로, 정상부 고원지대의 억새 평원과 사계절 조망이 유명합니다. 한국관광공사는 하북면 용연리 일대 주소를 두고, 영축산·통도사와 이어지는 능선과 가을 억새 군락을 소개합니다. 내원사 계곡·홍룡폭포와 같은 천성산 능선 계열이며, 창원 천성산·다른 지역 천성산과 구분합니다. 사진은 한국관광공사 천성산(양산) 공식 사진 3장입니다.',
+    '경상남도 양산시 하북면 용연리 (천성산 일원)',
+    YS_CHEONSEONG,
+    [YS_CHEONSEONG_2, YS_CHEONSEONG_3],
+    YS_YANGSAN_TOUR,
+  ),
   'local-scenic:yangsan-other:내원사계곡': {
     contentId: '126073',
     overview:
-      '양산 12경 제3경 내원사 계곡은 천성산 기슭에 자리한 유서 깊은 청정 계곡입니다. 예부터 소금강이라 불릴 정도로 자연경관이 빼어나며, 사시사철 맑고 깨끗한 계류가 기암괴석과 첩첩이 선 삼층바위, 병풍바위 사이를 굽이쳐 흐릅니다. 여름철 피서와 봄·가을 등산 및 단풍 명소로 널리 알려져 있습니다.',
+      '양산 12경 제3경 내원사 계곡은 천성산 기슭에 자리한 유서 깊은 청정 계곡입니다. 한국관광공사는 하북면 용연리 일대를 두고, 예부터 소금강이라 불릴 정도로 자연경관이 빼어나며 사시사철 맑은 계류가 기암괴석과 삼층바위·병풍바위 사이를 굽이친다고 소개합니다. 여름 피서와 봄·가을 단풍 명소로 널리 알려져 있으며 산청 내원사계곡·다른 지역 내원사와 구분합니다. 사진은 한국관광공사 내원사계곡(양산) 공식 사진 3장입니다.',
     addr1: '경상남도 양산시 하북면 용연리 (내원사 계곡 일원)',
-    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
-    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
-    galleryUrls: [
-      'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
-      'https://tong.visitkorea.or.kr/cms/resource/25/3489425_image2_1.JPG',
-      'https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg',
-    ],
+    imageUrl: YS_NAewon_1,
+    firstImage: YS_NAewon_1,
+    galleryUrls: [YS_NAewon_1, YS_NAewon_2, YS_NAewon_3],
+    homepage: YS_YANGSAN_TOUR,
   },
+  'local-scenic:yangsan-other:홍룡폭포': localScenicPhotoOverlay(
+    '양산 12경 제4경 홍룡폭포는 상북면 홍룡로 372 일대 계곡 폭포입니다. 한국관광공사는 홍룡폭포를 천성산 능선의 시원한 폭포로 소개하며, 여름철 피서와 계곡 산책 코스로 알려져 있습니다. 내원사 계곡·배내골과 같은 양산 북부 산간 계곡이지만 홍룡 계곡 전용 명소이며, 다른 지역 홍룡폭포·홍룡사와 구분합니다. 사진은 한국관광공사 홍룡폭포 공식 사진 3장입니다.',
+    '경상남도 양산시 상북면 홍룡로 372',
+    YS_HONGRYONG,
+    [YS_HONGRYONG_2, YS_HONGRYONG_3],
+    YS_YANGSAN_TOUR,
+  ),
+  'local-scenic:yangsan-other:배내골': localScenicPhotoOverlay(
+    '양산 12경 제5경 배내골은 원동면 영취산 자락의 청정 계곡 마을입니다. 한국관광공사는 장선2길 30 배내골 휴 마을을 두고, 맑은 개울과 야생 배나무, 율무·들깨 등 친환경 농촌 경관을 소개합니다. 밀양댐 상류에 위치해 태고의 비경을 간직한 곳으로 알려져 있으며, 천태산·임경대와 연계되는 원동면 산촌 코스입니다. 경북 안동 배내골·다른 배내골 계곡과 구분합니다. 사진은 한국관광공사 배내골 휴 마을 공식 사진 3장입니다.',
+    '경상남도 양산시 원동면 장선2길 30 (배내골 휴 마을)',
+    YS_BAENAEGOL,
+    [YS_BAENAEGOL_2, YS_BAENAEGOL_3],
+    YS_YANGSAN_TOUR,
+  ),
+  'local-scenic:yangsan-other:천태산': localScenicPhotoOverlay(
+    '양산 12경 제6경 천태산은 해발 630.9m로 천성산·영축산과 함께 양산 3대 명산입니다. 한국관광공사 천태산(양산)은 원동면 일대를 두고, 낙동강·삼랑진 양수발전소·배내골과 연계된 등산 코스와 정상 낙조를 소개합니다. 용연폭포·천태정사 계곡이 이어지며, 충북 영동 양산면 천태산(Tour 125907)과 반드시 구분합니다. 사진은 한국관광공사 천태산(양산) 공식 사진 3장입니다.',
+    '경상남도 양산시 원동면 (천태산 일원)',
+    YS_CHEONTAE_YS,
+    [YS_CHEONTAE_YS_2, YS_CHEONTAE_YS_3],
+    YS_YANGSAN_TOUR,
+  ),
+  'local-scenic:yangsan-other:오봉산임경대': localScenicPhotoOverlay(
+    '양산 12경 제7경 오봉산 임경대(임경대)는 원동면 원동로 285 일대 전망대입니다. 한국관광공사 임경대는 고운 최치원 선생이 유상했던 곳으로 소개하며, 영남알프스 능선과 원동면 산세를 조망합니다. 오봉산(양산) 등산 코스와 연결되나 양산타워·물금 임경대 터와 다른 12경 명칭입니다. 양산타워 전망 사진과 혼동하지 않습니다. 사진은 한국관광공사 임경대(양산) 공식 사진 3장입니다.',
+    '경상남도 양산시 원동면 원동로 285 (임경대)',
+    YS_IMGYEONG,
+    [YS_IMGYEONG_2, YS_IMGYEONG_3],
+    YS_YANGSAN_TOUR,
+  ),
+  'local-scenic:yangsan-other:대운산자연휴양림': localScenicPhotoOverlay(
+    '양산 12경 제8경 대운산 자연휴양림은 용당동 탑골길 270의 국립 산림휴양림입니다. 한국관광공사는 대운산 서북 자락 계곡에 숲속의 집·카라반·산책로를 두고, 양산시 문화관광 12경으로 소개합니다. 산림청 숲나들e 대운산자연휴양림과 동일 부지이며, 대구 대운산·다른 지역 대운산과 구분합니다. 사진은 한국관광공사 대운산 자연휴양림 공식 사진 3장입니다.',
+    '경상남도 양산시 탑골길 270 (대운산자연휴양림)',
+    YS_DAEUNSAN,
+    [YS_DAEUNSAN_2, YS_DAEUNSAN_3],
+    'https://www.foresttrip.go.kr/indvz/main.do?hmpgId=ID02030038',
+  ),
   'local-scenic:yangsan-other:황산공원': {
     contentId: '2784326',
     overview:
-      '양산 12경 제9경 황산공원은 물금읍 낙동강변에 187만㎡ 규모로 조성된 대규모 수변문화공원입니다. 드넓은 억새 생태탐방로와 사계절 야생화 단지, 캠핑장, 산책로, 자전거길, 파크골프장 등 다양한 휴식·레저 공간을 갖추고 있습니다. 시원한 강바람과 낙동강을 붉게 물들이는 저녁 낙조가 아름다운 양산의 대표 힐링 명소입니다.',
+      '양산 12경 제9경 황산공원은 물금읍 낙동강변에 조성된 대규모 수변문화공원입니다. 한국관광공사는 물금리 162-1 황산문화체육공원을 두고, 억새 생태탐방로·야생화 단지·캠핑장·자전거길·파크골프장과 낙동강 낙조를 소개합니다. 창원 진해 제황산공원·다른 황산 지명과 구분합니다. 사진은 한국관광공사 황산공원(양산) 공식 사진 3장입니다.',
     addr1: '경상남도 양산시 물금읍 물금리 162-1 (황산문화체육공원)',
-    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
-    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
-    galleryUrls: [
-      'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
-      'https://tong.visitkorea.or.kr/cms/resource/82/2731482_image2_1.jpg',
-    ],
+    imageUrl: YS_HWANGSAN,
+    firstImage: YS_HWANGSAN,
+    galleryUrls: [YS_HWANGSAN, YS_HWANGSAN_2, YS_HWANGSAN_3],
+    homepage: YS_YANGSAN_TOUR,
   },
-  'local-scenic:yangsan-other:천태산': localScenicPhotoOverlay(
-    '양산 12경 제6경 천태산은 해발 630.9m로 천성산·영축산과 함께 양산 3대 명산입니다. 양산시는 낙동강·삼량진 양수발전소·배내골과 연계된 등산 코스로 소개합니다. 충북 영동 양산면 천태산(Tour 125907)과 구분합니다.',
-    '경상남도 양산시 동면 산막리 일원',
-    'https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg',
-  ),
-  'local-scenic:yangsan-other:오봉산임경대': localScenicPhotoOverlay(
-    '양산 12경 제7경 오봉산 임경대(임경대)는 영남알프스 능선 조망으로 유명한 곳입니다. 양산시 12경 안내에 고운 최치원 선생이 유상했던 임경대로 소개합니다.',
-    '경상남도 양산시 물금읍 원동로 일원',
-    'https://tong.visitkorea.or.kr/cms/resource/87/3538187_image2_1.jpg',
-  ),
-  'local-scenic:yangsan-other:대운산자연휴양림': localScenicPhotoOverlay(
-    '양산 12경 제12경 대운산 자연휴양림은 대운산 서북 자락 탑골 계곡의 국립 산림휴양림입니다. 숲속의 집·카라반·산책로가 있으며 양산시 문화관광 12경으로 소개됩니다.',
-    '경상남도 양산시 탑골길 270 (대운산자연휴양림)',
-    'https://tong.visitkorea.or.kr/cms/resource/07/3078007_image2_1.JPG',
-    [],
-    'https://www.foresttrip.go.kr/indvz/main.do?hmpgId=ID02030038',
-  ),
   'local-scenic:yangsan-other:법기수원지': localScenicPhotoOverlay(
-    '양산 12경 제11경 법기수원지는 히말라야시다 숲길과 맑은 수면이 어우러진 자연형 수원지입니다. 양산시 문화관광 12경으로 사계절 산책·힐링 명소로 소개합니다.',
-    '경상남도 양산시 법기리 일원',
-    'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
+    '양산 12경 제10경 법기수원지는 동면 법기로 198-13의 자연형 수원지입니다. 한국관광공사는 히말라야시다 숲길과 맑은 수면이 어우러진 사계절 산책·힐링 명소로 소개합니다. 양산시 2026년 12경 확대 지정 명소이며, 황산공원 낙동강변·다른 법기 지명과 구분합니다. 사진은 한국관광공사 법기수원지 공식 사진 3장입니다.',
+    '경상남도 양산시 동면 법기로 198-13 (법기수원지)',
+    YS_BEOPGI,
+    [YS_BEOPGI_2, YS_BEOPGI_3],
+    YS_YANGSAN_TOUR,
+  ),
+  'local-scenic:yangsan-other:양산타워': localScenicPhotoOverlay(
+    '양산 12경 제11경 양산타워는 동면 강변로 264의 전망 타워입니다. 한국관광공사는 낙동강과 양산 시가지·산세를 한눈에 보는 조망 명소로 소개합니다. 2026년 양산 12경 신규 지정 명소이며, 오봉산 임경대·대구타워·다른 지역 타워와 구분합니다. 사진은 한국관광공사 양산타워 공식 사진 3장입니다.',
+    '경상남도 양산시 동면 강변로 264 (양산타워)',
+    YS_TOWER,
+    [YS_TOWER_2, YS_TOWER_3],
+    YS_YANGSAN_TOUR,
+  ),
+  'local-scenic:yangsan-other:가야진사': localScenicPhotoOverlay(
+    '양산 12경 제12경 가야진사는 원동면 용당들길 43-62의 나루터 신 사당입니다. 한국관광공사는 신라가 가야를 정벌할 때 왕래 나루터에 세운 제당으로, 1965년 현 위치로 옮겨졌다고 소개합니다. 낙동강 동쪽 가야 문화 유적지이며 김해 가야유적·다른 가야진사와 구분합니다. 사진은 한국관광공사 가야진사 공식 사진 3장입니다.',
+    '경상남도 양산시 원동면 용당들길 43-62 (가야진사)',
+    YS_GAYAJINSA,
+    [YS_GAYAJINSA_2, YS_GAYAJINSA_3],
+    YS_YANGSAN_TOUR,
   ),
   'local-scenic:haman-gugyeong:말이산고분군': localScenicPhotoOverlay(
     '함안9경 제1경 말이산고분군은 아라가야 왕과 귀족의 묘역입니다. 디지털함안문화대전에 따르면 가야읍 말이산 능선에 100여 기가 이어지고, 사적으로 지정된 면적은 약 52만㎡입니다. 도항리·말산리 고분군을 2011년 통합했고, 2023년 유네스코 세계유산 가야고분군에 포함되었습니다. 함안박물관과 이어진 고분 산책이 대표 경관입니다.',
@@ -3691,6 +3775,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [YY_JUKDOJEONG_2, YY_JUKDOJEONG_3],
     YY_JUKDOJEONG_HOME,
   ),
+  'local-scenic:yeoju-palgyeong:팔수장림': localScenicPhotoOverlay(
+    '여주8경 제6경 팔수장림(八藪長林)은 오학리 강변 무성한 숲이 남한강 여강에 비치는 전경입니다. 여주시 관광은 여주팔경 여덟 곳 중 제6경으로 같은 뜻의 팔대장림(八大長林)을 함께 소개하며, 조선 시대 여주목 관아 맞은편 여강 강변에 울창한 수림이 펼쳐져 청심루와 어우러진 파노라마 경관을 이루었다고 전합니다. 현 지명은 오학동·현암동 일대 강변이며, 여주시는 현암동 달팽이공원을 팔대장림의 시작점으로 안내하고 여주대교까지 이어지는 천년도자길(여강길 10코스)에서 벚꽃길·산책과 함께 학동모연(3경)·신륵모종(1경) 배경을 볼 수 있다고 적습니다. 이포보·여주강변유원지(연양동)·오학체육공원과 다른 오학·현암 강변 수림 전경이며, 다른 지역 「팔수」 지명·일반 산림욕장과도 구분합니다. 사진은 여주시 관광 여주8경 제6경 팔수장림 안내와 같은 여강 강변 구간의 한국관광공사 여강길 공식 사진 3장입니다.',
+    '경기도 여주시 오학동·현암동 일원 (남한강 여강 오학리 강변·팔대장림)',
+    YJ_YEOKANG,
+    [YJ_YEOKANG_2, YJ_YEOKANG_3],
+    YJ_TOUR_HOME,
+  ),
   'local-scenic:jeongeup-gugyeong:동학농민혁명기념공원': localScenicPhotoOverlay(
     '정읍9경 4경 동학농민혁명기념공원은 덕천면 하학리입니다. 정읍시 문화관광은 1894년 반부패·반봉건·반외세의 기치를 들고 봉기한 동학농민군이 관군을 크게 이긴 최초 전승지 황토현 전적 안에 국가사업으로 들어선 공원이며, 전시관·추모관·기념관이 있다고 적습니다. 주소는 동학로 742입니다. 사적 제295호 정읍 황토현전적 일대이며, 동학농민혁명기념재단은 2022년 5월 11일(동학농민혁명기념일) 개원했다고 안내합니다. 면적 약 30만㎡이며 사발통문광장·울림의 기둥·기억의 들판·방문자센터511과 군상 「불멸, 바람길」이 있습니다. 2004년 개관한 동학농민혁명기념관(동학로 715) 단독 전시관이 아니라 2022년 연 공원이며, 고창 무장·전주 동학농민혁명기념관·내장산국립공원과 다른 덕천면 황토현입니다. 사진은 정읍시 문화관광 4경·동학농민혁명기념재단 공식 사진입니다.',
     '전북특별자치도 정읍시 덕천면 동학로 742 (하학리 동학농민혁명기념공원)',
@@ -4206,10 +4297,12 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
     ...localScenicThumbOverlay(CN_JUNG, [CN_JUNG_2]),
     homepage: CN_JUNG_HOME,
   },
-  // 양산 12경 오봉산 임경대 — Tour 128180 first_image 공란.
-  128180: localScenicThumbOverlay(
-    'https://tong.visitkorea.or.kr/cms/resource/87/3538187_image2_1.jpg',
-  ),
+  // 양산 12경 오봉산 임경대 — Tour 128180 first_image 공란. 임경대(2782548) 사진과 양산타워 혼동 방지.
+  128180: localScenicThumbOverlay(YS_IMGYEONG, [YS_IMGYEONG_2, YS_IMGYEONG_3]),
+  2743856: localScenicThumbOverlay(YS_DAEUNSAN, [YS_DAEUNSAN_2, YS_DAEUNSAN_3]),
+  2381381: localScenicThumbOverlay(YS_BEOPGI, [YS_BEOPGI_2, YS_BEOPGI_3]),
+  2784427: localScenicThumbOverlay(YS_TOWER, [YS_TOWER_2, YS_TOWER_3]),
+  1236556: localScenicThumbOverlay(YS_GAYAJINSA, [YS_GAYAJINSA_2, YS_GAYAJINSA_3]),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

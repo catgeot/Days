@@ -5554,6 +5554,40 @@ for (const name of buanOverlayGalleryNames) {
   assert.equal(spot?.galleryUrls?.length, 3, `변산8경 ${name} 공식 사진 3장`);
 }
 
+const yeojuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeoju');
+const yeojuEight = yeojuMerged.filter((s) => s.localScenicListId === 'yeoju-palgyeong');
+assert.equal(yeojuEight.length, 8, '여주8경 8명');
+const palsuForest = yeojuEight.find((s) => s.attractionName === '팔수장림');
+assert.ok(palsuForest?.overview && palsuForest?.imageUrl, '팔수장림 overlay 사진·개요');
+assert.ok(!palsuForest?.contentId, '팔수장림 JSON contentId 없음 유지');
+assert.ok(palsuForest?.overview?.includes('제6경'), '팔수장림 overlay 제6경');
+assert.ok(palsuForest?.overview?.includes('팔대장림'), '팔수장림 overlay 팔대장림');
+assert.ok(palsuForest?.overview?.includes('오학'), '팔수장림 overlay 오학');
+assert.equal(palsuForest?.galleryUrls?.length, 3, '팔수장림 공식 사진 3장');
+assert.ok(
+  palsuForest?.galleryUrls?.some((u) => u.includes('2661421_image2')),
+  '팔수장림 여강길 공식 사진 1',
+);
+assert.ok(
+  palsuForest?.galleryUrls?.some((u) => u.includes('2661420_image2')),
+  '팔수장림 여강길 공식 사진 2',
+);
+assert.equal(
+  new Set(palsuForest?.galleryUrls).size,
+  palsuForest?.galleryUrls?.length,
+  '팔수장림 갤러리 URL 중복 없음',
+);
+assert.ok(palsuForest?.homepage?.includes('yeoju.go.kr/tour'), '팔수장림 여주관광 홈');
+const yeojuGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '여주', {
+  injectLocalScenic: true,
+});
+const yeojuGlobeEight = yeojuGlobe.filter((s) => s.localScenicListId === 'yeoju-palgyeong');
+assert.equal(yeojuGlobeEight.length, 8, '여주 검색 여주8경 8행');
+assert.ok(
+  yeojuGlobe.find((s) => s.attractionName === '팔수장림')?.imageUrl?.includes('2661421'),
+  '여주 검색 팔수장림 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
