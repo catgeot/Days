@@ -5621,6 +5621,39 @@ assert.ok(
   '영월 검색 김삿갓유적지 썸네일',
 );
 
+const hwacheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hwacheon');
+const hwacheonNine = hwacheonMerged.filter((s) => s.localScenicListId === 'hwacheon-gugyeong');
+assert.equal(hwacheonNine.length, 9, '화천9경 9명');
+const biraeRock = hwacheonNine.find((s) => s.attractionName === '비래바위');
+assert.ok(biraeRock?.overview && biraeRock?.imageUrl, '비래바위 overlay 사진·개요');
+assert.ok(!biraeRock?.contentId, '비래바위 JSON contentId 없음 유지');
+assert.ok(biraeRock?.overview?.includes('제6경'), '비래바위 overlay 제6경');
+assert.ok(biraeRock?.overview?.includes('비래바위'), '비래바위 overlay 명칭');
+assert.equal(biraeRock?.galleryUrls?.length, 3, '비래바위 공식 사진 3장');
+assert.ok(
+  biraeRock?.galleryUrls?.some((u) => u.includes('cf166fd6-8796-4e77-bc52-c2951449dd83')),
+  '비래바위 화천군 공식 사진 1',
+);
+assert.ok(
+  biraeRock?.galleryUrls?.some((u) => u.includes('e862c113-0b33-42b0-ac7f-749fa8af3c8b')),
+  '비래바위 화천군 공식 사진 2',
+);
+assert.equal(
+  new Set(biraeRock?.galleryUrls).size,
+  biraeRock?.galleryUrls?.length,
+  '비래바위 갤러리 URL 중복 없음',
+);
+assert.ok(biraeRock?.homepage?.includes('tour.ihc.go.kr'), '비래바위 화천군 관광 홈');
+const hwacheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '화천', {
+  injectLocalScenic: true,
+});
+const hwacheonGlobeNine = hwacheonGlobe.filter((s) => s.localScenicListId === 'hwacheon-gugyeong');
+assert.equal(hwacheonGlobeNine.length, 9, '화천 검색 화천9경 9행');
+assert.ok(
+  hwacheonGlobe.find((s) => s.attractionName === '비래바위')?.imageUrl?.includes('cf166fd6'),
+  '화천 검색 비래바위 썸네일',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

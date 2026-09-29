@@ -1686,6 +1686,11 @@ const YW_TOUR_HOME = `${YW_TOUR}/tour/selectTourCntntsWebView.do?ctgry=5&key=559
 const YW_KIMSATGAT = `${YW_TOUR}/DATA/tour/5/thumb/p_BDCC3710-4B6C-F9E9-3F9A-5DF1D0C17AA3.jpg`;
 const YW_KIMSATGAT_2 = `${YW_TOUR}/DATA/tour/5/thumb/p_32852782-FE05-3C3B-1B91-DB951C19ED58.jpg`;
 const YW_KIMSATGAT_3 = `${YW_TOUR}/DATA/tour/5/thumb/p_A13534B3-03DD-9272-D123-81D5030FE054.jpg`;
+const IHC_TOUR = 'https://tour.ihc.go.kr';
+const IHC_BIRAE_HOME = `${IHC_TOUR}/tour/attraction/mountain?contsSn=531`;
+const IHC_BIRAE = `${IHC_TOUR}/upload/tour/content/531/cf166fd6-8796-4e77-bc52-c2951449dd83.jpg`;
+const IHC_BIRAE_2 = `${IHC_TOUR}/upload/tour/content/531/e862c113-0b33-42b0-ac7f-749fa8af3c8b.jpg`;
+const IHC_BIRAE_3 = `${IHC_TOUR}/upload/tour/content/531/9e89ff21-8ef3-4036-b068-8b6b3e731ebf.jpg`;
 const JE_9GYEONG = 'https://www.jeongeup.go.kr/upload_data/board_data/BBS_0000011';
 const JE_DH = `${JE_9GYEONG}/175305752440905.png`;
 const JE_DH_2 = 'https://www.1894.or.kr/main/img/sub/77/77_1_1.jpg';
@@ -3502,6 +3507,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 홍성군 홍성읍 의사로 79 (홍주의사총)',
     HS_UISA,
     [HS_UISA_2, HS_UISA_3],
+  ),
+  'local-scenic:hwacheon-gugyeong:비래바위': localScenicPhotoOverlay(
+    '화천9경 제6경 비래바위(飛來巖)는 상서면 구운리 만산동 뒤편 해발 970m에 우뚝 선 기암괴석입니다. 화천군 문화관광은 폭 약 100m·높이 약 60m로 병풍처럼 깎아 지른 절벽이 주변 산중에 홀로 솟아 웅장하고 이국적인 풍경을 이룬다고 소개하며, 병풍바위라고도 부릅니다. 금강산에서 바위가 날아와 이곳에 안착했다는 전설에서 날비(飛)·올래(徠)·바위암(巖)을 써 비래바위라 이름붙였다고 적습니다. 등산로 안내도 지점에서 정상까지 약 1시간이며 산 아래에서 바라보는 전경도 유명합니다. 등산 시작점은 상서면 구운리입니다. 정선 화암8경 거북바위·여수·거제·남해 등 다른 지역 「비래」 지명 바위와 다른 화천 상서면 산악 바위입니다. 사진은 화천군 문화관광 화천9경 제6경 비래바위 공식 사진 3장입니다.',
+    '강원특별자치도 화천군 상서면 구운리 (비래바위 등산로 안내도 지점)',
+    IHC_BIRAE,
+    [IHC_BIRAE_2, IHC_BIRAE_3],
+    IHC_BIRAE_HOME,
   ),
   'local-scenic:hwasun-other:백아산하늘다리': localScenicPhotoOverlay(
     '화순11경 제3경 백아산 하늘다리는 백아면 백아산 산악 현수교입니다. 화순군 문화관광은 주소를 백아면 백아로 1310-56으로 두고, 희끗한 바위가 흰 거위처럼 보여 백아산이라 부르며 해발 756m 마당바위와 절터바위를 잇는 연장 66m·폭 1.2m 산악현수교라고 적습니다. 다리 가운데 강화유리 조망창(가로 40cm·세로 1m) 3곳이 있어 하늘 위를 걷는 듯한 스릴을 느낄 수 있습니다. 한국관광공사는 산 높이 810m이며 무등산·만연산과 함께 화순을 대표하는 산이라고 안내합니다. 사진은 화순군 문화관광 백아산하늘다리 공식 사진입니다.',
