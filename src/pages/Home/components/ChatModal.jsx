@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -77,6 +77,12 @@ import {
 } from '../lib/mooniTripSession';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
+
+const MooniChatMarkdownBoundary = lazy(() =>
+  import('../../../components/chat/MooniChatMarkdownBoundary.jsx').then((m) => ({
+    default: m.MooniChatMarkdownBoundary,
+  })),
+);
 
 const ChatModal = ({
   isOpen,
@@ -1326,7 +1332,18 @@ const ChatModal = ({
                         ? 'bg-red-950/50 text-red-200 rounded-tl-sm'
                         : tone(fresh, 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed', 'bg-white/90 border border-cyan-100 text-slate-700 rounded-tl-sm leading-relaxed')
                   }`}>
-                    <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
+                    {isModelMsg ? (
+                      <Suspense
+                        fallback={<div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>}
+                      >
+                        <MooniChatMarkdownBoundary
+                          text={displayMsgText}
+                          variant={isMooniUi ? 'light' : 'dark'}
+                        />
+                      </Suspense>
+                    ) : (
+                      <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
+                    )}
                     {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
                       <DestinationResolutionChips
                         confirmed={msg.confirmedDestination}

@@ -46,6 +46,18 @@ const koreaRoutes = [
 
 const dynamicRoutes = [...placeRoutes, ...exploreRoutes, ...koreaRoutes];
 
+/** Lazy Mooni chat markdown only — keep out of eager `vendor` (see modulePreload filter). */
+function isMooniChatMarkdownDep(id) {
+  if (!id.includes('node_modules')) return false;
+  return (
+    /node_modules\/remark-cjk-friendly(?:\/|$)/.test(id)
+    || /node_modules\/micromark-extension-cjk-friendly(?:\/|$)/.test(id)
+    || /node_modules\/micromark-extension-cjk-friendly-util(?:\/|$)/.test(id)
+    || /node_modules\/mdast-util-to-markdown-cjk-friendly(?:\/|$)/.test(id)
+    || /node_modules\/get-east-asian-width(?:\/|$)/.test(id)
+  );
+}
+
 function gateoEmitVersionJson() {
   return {
     name: 'gateo-emit-version-json',
@@ -71,6 +83,11 @@ function gateoEmitVersionJson() {
 const devSsl = process.env.DEV_SSL !== '0';
 
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_GATEO_QA_MOONI_MD_FIXTURE': JSON.stringify(
+      process.env.VERCEL_ENV === 'preview' ? '1' : '',
+    ),
+  },
   plugins: [
     react(),
     ...(devSsl ? [basicSsl()] : []),
@@ -103,7 +120,13 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
     modulePreload: {
       resolveDependencies(_filename, deps) {
-        return deps.filter((dep) => !/(?:^|\/)three-[^/]+\.js$/i.test(dep) && !/(?:^|\/)globe-[^/]+\.js$/i.test(dep));
+        return deps.filter(
+          (dep) =>
+            !/(?:^|\/)three-[^/]+\.js$/i.test(dep)
+            && !/(?:^|\/)globe-[^/]+\.js$/i.test(dep)
+            && !/(?:^|\/)mooni-chat-markdown-[^/]+\.js$/i.test(dep)
+            && !/(?:^|\/)MooniChatMarkdownBoundary-[^/]+\.js$/i.test(dep),
+        );
       },
     },
     rollupOptions: {
@@ -123,6 +146,7 @@ export default defineConfig({
             // 기존 분리 항목들
             if (id.includes('@supabase')) return 'supabase';
             if (id.includes('lucide-react')) return 'icons';
+            if (isMooniChatMarkdownDep(id)) return 'mooni-chat-markdown';
 
             return 'vendor';
           }
