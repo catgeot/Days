@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-29-palgyeong-use-89-hwacheon-gwangdeoksan-tour-fix',
+    session: '팔경 활용 #89, 화천 결손 오버레이',
+    title: '화천9경 광덕산 Tour 오매칭 수정',
+    detail:
+      '화천9경 광덕산 JSON contentId 128098이 천안·아산 동명산 Tour 본문·사진을 끌어오던 문제를 수정했습니다. 화천군 문화관광 제9경 공식 오버레이(3장)·128098 썸네일 매핑·명승 상세·장소 갤러리에서 오버레이 우선 적용. Preview /qa/palgyeong-use — ?hub=hwacheon 광덕산 상세·장소카드 개요에 「천안시와 아산시」 문구 없어야 함.',
+    at: '2026-09-29T11:30:00.000Z',
+  },
+  {
     id: '2026-09-29-palgyeong-use-89-hwacheon-birae-overlay',
     session: '팔경 활용 #89, 화천 결손 오버레이',
     title: '화천9경 비래바위',
