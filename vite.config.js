@@ -52,10 +52,9 @@ function isMooniChatMarkdownDep(id) {
   return (
     /node_modules\/remark-cjk-friendly(?:\/|$)/.test(id)
     || /node_modules\/micromark-extension-cjk-friendly(?:\/|$)/.test(id)
+    || /node_modules\/micromark-extension-cjk-friendly-util(?:\/|$)/.test(id)
     || /node_modules\/mdast-util-to-markdown-cjk-friendly(?:\/|$)/.test(id)
-    // mooniRemarkGfm micromark (logbook uses `micromark-extension-gfm` bundle — different ids)
-    || /node_modules\/micromark-extension-gfm-(?:footnote|strikethrough|table|tagfilter|task-list-item)(?:\/|$)/.test(id)
-    || /node_modules\/micromark-util-combine-extensions(?:\/|$)/.test(id)
+    || /node_modules\/get-east-asian-width(?:\/|$)/.test(id)
   );
 }
 
