@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 86,
-  sessionPhase: '여주 결손 오버레이',
+  sessionNo: 88,
+  sessionPhase: '양산 12경 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-29-palgyeong-use-88-yangsan-12-overlay',
+    session: '팔경 활용 #88, 양산 12경 결손 오버레이',
+    title: '양산12경 전수 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 yangsan-other 12경 전 행(통도사·천성산·내원사계곡·홍룡폭포·배내골·천태산·오봉산임경대·대운산자연휴양림·황산공원·법기수원지·양산타워·가야진사)의 공식 팩트 개요·주소·한국관광공사 공식 사진 각 3장을 보강했습니다. 천태산은 영동 Tour 125907 미연결·천태산(양산) 사진 사용. 오봉산 임경대는 임경대(2782548) 사진으로 양산타워 썸네일 혼동을 제거했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yangsan 12행 썸네일·상세 갤러리.',
+    at: '2026-09-29T04:50:00.000Z',
+  },
   {
     id: '2026-09-28-palgyeong-use-86-yeoju-palsu-overlay',
     session: '팔경 활용 #86, 여주 결손 오버레이',
