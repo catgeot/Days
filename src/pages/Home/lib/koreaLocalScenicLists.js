@@ -74,6 +74,12 @@ function localScenicNumberedDisplayTitle(list, locale = 'ko') {
 }
 
 const LOCAL_SCENIC_NEAR_HUB_KM = 40;
+/** 축제·명소 좌표 대비 팔경 멤버 표시 상한 (km) */
+const LOCAL_SCENIC_MEMBER_NEAR_KM = 20;
+/** Tour 인근 행 ↔ 팔경 멤버 좌표 일치 허용 오차 (km) */
+const LOCAL_SCENIC_NEARBY_HIT_COORD_KM = 3;
+/** 좌표 없는 멤버 — Tour 인근 거리 상한 (km) */
+const LOCAL_SCENIC_NEARBY_HIT_MAX_KM = 8;
 
 /** @type {Map<string, object>} */
 const listByKey = new Map();
@@ -428,6 +434,7 @@ export function matchLocalScenicListsForQuery(query) {
  */
 export function resolveLocalScenicHubId(opts = {}) {
   const hid = String(opts.hubId || '').trim();
+  const areaCode = String(opts.areaCode || '').trim();
   if (hid && listsForHub(hid).length) return hid;
   if (hid) {
     const hub = resolveCityAttractionHub(hid);
@@ -438,6 +445,8 @@ export function resolveLocalScenicHubId(opts = {}) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return hid || null;
   let bestId = null;
   let bestKm = Infinity;
+  let bestSameSidoId = null;
+  let bestSameSidoKm = Infinity;
   const seen = new Set();
   for (const list of LISTS) {
     if (!list?.hubId || seen.has(list.hubId)) continue;
@@ -445,10 +454,22 @@ export function resolveLocalScenicHubId(opts = {}) {
     const hub = resolveCityAttractionHub(list.hubId);
     if (hub?.lat == null || hub?.lng == null) continue;
     const km = haversineKm(lat, lng, Number(hub.lat), Number(hub.lng));
+    const hubArea = scenicAreaCodeForHubId(list.hubId);
+    if (areaCode && hubArea === areaCode && km < bestSameSidoKm) {
+      bestSameSidoKm = km;
+      bestSameSidoId = list.hubId;
+    }
     if (km < bestKm) {
       bestKm = km;
       bestId = list.hubId;
     }
+  }
+  if (
+    bestSameSidoId &&
+    bestSameSidoKm <= LOCAL_SCENIC_NEAR_HUB_KM &&
+    listsForHub(bestSameSidoId).length
+  ) {
+    return bestSameSidoId;
   }
   if (bestId && bestKm <= LOCAL_SCENIC_NEAR_HUB_KM) return bestId;
   return hid || null;
@@ -659,6 +680,55 @@ export function enrichSearchCandidateScenicMedia(item, locale = 'ko') {
   return next;
 }
 
+function memberLngLat(member, attraction, hub) {
+  const lat = Number(member?.lat ?? attraction?.lat ?? hub?.lat);
+  const lng = Number(member?.lng ?? attraction?.lng ?? hub?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return { lat, lng };
+}
+
+function pickNearbyHitForMember(member, attraction, hub, nearbyHit, originLat, originLng) {
+  if (!nearbyHit) return null;
+  const memberPt = memberLngLat(member, attraction, hub);
+  const hitLat = Number(nearbyHit.lat);
+  const hitLng = Number(nearbyHit.lng);
+  if (memberPt && Number.isFinite(hitLat) && Number.isFinite(hitLng)) {
+    const gap = haversineKm(memberPt.lat, memberPt.lng, hitLat, hitLng);
+    return gap <= LOCAL_SCENIC_NEARBY_HIT_COORD_KM ? nearbyHit : null;
+  }
+  const hitDist = Number(nearbyHit.distKm);
+  if (!Number.isFinite(hitDist) || hitDist > LOCAL_SCENIC_NEARBY_HIT_MAX_KM) return null;
+  if (memberPt && Number.isFinite(originLat) && Number.isFinite(originLng)) {
+    const memberDist = haversineKm(originLat, originLng, memberPt.lat, memberPt.lng);
+    if (Math.abs(memberDist - hitDist) > LOCAL_SCENIC_NEARBY_HIT_COORD_KM + 1) return null;
+    return nearbyHit;
+  }
+  if (Number.isFinite(originLat) && Number.isFinite(originLng)) return null;
+  return nearbyHit;
+}
+
+function memberDistKmFromOrigin(member, attraction, hub, originLat, originLng) {
+  if (!Number.isFinite(originLat) || !Number.isFinite(originLng)) return null;
+  const pt = memberLngLat(member, attraction, hub);
+  if (!pt) return null;
+  return haversineKm(originLat, originLng, pt.lat, pt.lng);
+}
+
+function memberWithinFestivalRadius(member, attraction, hub, originLat, originLng, nearbyHit) {
+  if (!Number.isFinite(originLat) || !Number.isFinite(originLng)) return true;
+  const dist = memberDistKmFromOrigin(member, attraction, hub, originLat, originLng);
+  if (dist != null) return dist <= LOCAL_SCENIC_MEMBER_NEAR_KM;
+  const hit = pickNearbyHitForMember(
+    member,
+    attraction,
+    hub,
+    nearbyHit,
+    originLat,
+    originLng,
+  );
+  return Boolean(hit);
+}
+
 /**
  * 인근 관광지 행 — Tour 스팟과 이름 매칭 시 썸네일·contentId 유지.
  * @param {object} list
@@ -666,18 +736,36 @@ export function enrichSearchCandidateScenicMedia(item, locale = 'ko') {
  * @param {object} [hub]
  * @param {object} [nearbyHit]
  * @param {string} [locale]
+ * @param {{ originLat?: number, originLng?: number }} [ctx]
  */
-export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, locale = 'ko') {
+export function localScenicMemberToNearbyItem(
+  list,
+  member,
+  hub,
+  nearbyHit,
+  locale = 'ko',
+  ctx = {},
+) {
   const h = hub || resolveCityAttractionHub(list.hubId);
   const attraction = resolveMemberAttraction(h, member);
+  const originLat = Number(ctx.originLat);
+  const originLng = Number(ctx.originLng);
+  const hit = pickNearbyHitForMember(
+    member,
+    attraction,
+    h,
+    nearbyHit,
+    originLat,
+    originLng,
+  );
   const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
   const fromCurated = scenicThumbFromCurated(curated);
   const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
   const overlay = lookupLocalScenicMemberOverlay(spotId);
   const contentId =
     memberContentId(member, attraction) ||
-    (nearbyHit && /^\d{1,32}$/.test(String(nearbyHit.contentId || '').trim())
-      ? String(nearbyHit.contentId).trim()
+    (hit && /^\d{1,32}$/.test(String(hit.contentId || '').trim())
+      ? String(hit.contentId).trim()
       : null) ||
     overlay?.contentId ||
     fromCurated.contentId;
@@ -685,29 +773,33 @@ export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, loca
   const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
   const fromTourThumb = lookupLocalScenicPhotoByContentId(contentId);
   const thumb =
-    nearbyHit?.firstImage ||
+    hit?.firstImage ||
     overlay?.firstImage ||
     overlay?.imageUrl ||
     fromTourThumb?.firstImage ||
     fromTourThumb?.imageUrl ||
     fromCurated.imageUrl ||
     null;
+  const memberPt = memberLngLat(member, attraction, h);
+  const distKm =
+    memberDistKmFromOrigin(member, attraction, h, originLat, originLng) ??
+    (hit ? Number(hit.distKm) : null);
   return {
-    ...(nearbyHit || {}),
+    ...(hit || {}),
     id:
-      nearbyHit?.id ||
-      nearbyHit?.contentId ||
+      hit?.id ||
+      hit?.contentId ||
       `local-scenic-member-${list.listId}-${normalizeKey(name)}`,
-    name: nearbyHit?.name || name,
+    name: hit?.name || name,
     contentId,
-    lat: nearbyHit?.lat ?? member.lat ?? attraction?.lat ?? h?.lat,
-    lng: nearbyHit?.lng ?? member.lng ?? attraction?.lng ?? h?.lng,
+    lat: memberPt?.lat ?? hit?.lat ?? null,
+    lng: memberPt?.lng ?? hit?.lng ?? null,
     hubId: list.hubId,
-    locality: nearbyHit?.locality || h?.name,
+    locality: hit?.locality || h?.name,
     firstImage: thumb,
     imageUrl: thumb,
-    distKm: nearbyHit?.distKm,
-    source: nearbyHit?.source || 'localScenicList',
+    distKm: Number.isFinite(distKm) ? distKm : null,
+    source: hit?.source || 'localScenicList',
     groupTitle: localScenicListDisplayTitle(list, h, locale),
     localScenicListId: list.listId,
     rankBlurb,
@@ -741,14 +833,17 @@ export function missingNearbyThumbContentIds(grouped) {
 
 /**
  * @param {object[]} spots
- * @param {{ hubId?: string, lat?: number, lng?: number, locale?: string }} [opts]
+ * @param {{ hubId?: string, lat?: number, lng?: number, locale?: string, areaCode?: string }} [opts]
  */
 export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
   const incoming = Array.isArray(spots) ? spots : [];
+  const originLat = Number(opts.lat);
+  const originLng = Number(opts.lng);
   const hubId = resolveLocalScenicHubId({
     hubId: opts.hubId,
     lat: opts.lat,
     lng: opts.lng,
+    areaCode: opts.areaCode,
   });
   const lists = listsForHub(hubId);
   if (!lists.length) return { groups: [], rest: incoming };
@@ -762,11 +857,25 @@ export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
   const used = new Set();
   const groups = [];
   const hub = resolveCityAttractionHub(hubId);
+  const ctx = { originLat, originLng };
   for (const list of lists) {
     const items = [];
     for (const member of list.members || []) {
       const k = normalizeKey(member.attractionName);
       if (!k || used.has(k)) continue;
+      const attraction = resolveMemberAttraction(hub, member);
+      if (
+        !memberWithinFestivalRadius(
+          member,
+          attraction,
+          hub,
+          originLat,
+          originLng,
+          byName.get(k) || null,
+        )
+      ) {
+        continue;
+      }
       used.add(k);
       items.push(
         localScenicMemberToNearbyItem(
@@ -775,10 +884,16 @@ export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
           hub,
           byName.get(k) || null,
           opts.locale,
+          ctx,
         ),
       );
     }
     if (items.length) {
+      items.sort(
+        (a, b) =>
+          (Number.isFinite(a.distKm) ? a.distKm : Infinity) -
+          (Number.isFinite(b.distKm) ? b.distKm : Infinity),
+      );
       groups.push({
         title: localScenicListDisplayTitle(list, hub, opts.locale),
         listId: list.listId,
@@ -2531,6 +2646,28 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
       'https://tong.visitkorea.or.kr/cms/resource/82/2731482_image2_1.jpg',
     ],
   },
+  'local-scenic:yangsan-other:천태산': localScenicPhotoOverlay(
+    '양산 12경 제6경 천태산은 해발 630.9m로 천성산·영축산과 함께 양산 3대 명산입니다. 양산시는 낙동강·삼량진 양수발전소·배내골과 연계된 등산 코스로 소개합니다. 충북 영동 양산면 천태산(Tour 125907)과 구분합니다.',
+    '경상남도 양산시 동면 산막리 일원',
+    'https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg',
+  ),
+  'local-scenic:yangsan-other:오봉산임경대': localScenicPhotoOverlay(
+    '양산 12경 제7경 오봉산 임경대(임경대)는 영남알프스 능선 조망으로 유명한 곳입니다. 양산시 12경 안내에 고운 최치원 선생이 유상했던 임경대로 소개합니다.',
+    '경상남도 양산시 물금읍 원동로 일원',
+    'https://tong.visitkorea.or.kr/cms/resource/87/3538187_image2_1.jpg',
+  ),
+  'local-scenic:yangsan-other:대운산자연휴양림': localScenicPhotoOverlay(
+    '양산 12경 제12경 대운산 자연휴양림은 대운산 서북 자락 탑골 계곡의 국립 산림휴양림입니다. 숲속의 집·카라반·산책로가 있으며 양산시 문화관광 12경으로 소개됩니다.',
+    '경상남도 양산시 탑골길 270 (대운산자연휴양림)',
+    'https://tong.visitkorea.or.kr/cms/resource/07/3078007_image2_1.JPG',
+    [],
+    'https://www.foresttrip.go.kr/indvz/main.do?hmpgId=ID02030038',
+  ),
+  'local-scenic:yangsan-other:법기수원지': localScenicPhotoOverlay(
+    '양산 12경 제11경 법기수원지는 히말라야시다 숲길과 맑은 수면이 어우러진 자연형 수원지입니다. 양산시 문화관광 12경으로 사계절 산책·힐링 명소로 소개합니다.',
+    '경상남도 양산시 법기리 일원',
+    'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
+  ),
   'local-scenic:haman-gugyeong:말이산고분군': localScenicPhotoOverlay(
     '함안9경 제1경 말이산고분군은 아라가야 왕과 귀족의 묘역입니다. 디지털함안문화대전에 따르면 가야읍 말이산 능선에 100여 기가 이어지고, 사적으로 지정된 면적은 약 52만㎡입니다. 도항리·말산리 고분군을 2011년 통합했고, 2023년 유네스코 세계유산 가야고분군에 포함되었습니다. 함안박물관과 이어진 고분 산책이 대표 경관입니다.',
     '경상남도 함안군 가야읍 도항리 484 (말이산고분군)',
@@ -4069,6 +4206,10 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
     ...localScenicThumbOverlay(CN_JUNG, [CN_JUNG_2]),
     homepage: CN_JUNG_HOME,
   },
+  // 양산 12경 오봉산 임경대 — Tour 128180 first_image 공란.
+  128180: localScenicThumbOverlay(
+    'https://tong.visitkorea.or.kr/cms/resource/87/3538187_image2_1.jpg',
+  ),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {
