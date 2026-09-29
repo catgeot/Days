@@ -5,6 +5,8 @@ import {
   flushGlobeAdapterCameraQueue,
 } from '../src/pages/Home/lib/globeApiRegistry.js';
 
+test.use({ ignoreHTTPSErrors: true });
+
 test.describe('globe adapter camera queue (unit)', () => {
   test('latest-wins, flush once, clear on unmount pattern', () => {
     const queue = createGlobeAdapterCameraQueue();
@@ -54,40 +56,85 @@ async function waitForGlobeMap(page) {
   return map;
 }
 
-async function readMapCenter(page) {
+async function readMapCenterViaGlobeApi(page) {
   return page.evaluate(() => {
-    const canvas = document.querySelector('.mapboxgl-canvas');
-    const map = canvas?.closest('.mapboxgl-map')?.__mapbox ?? null;
-    const inst =
-      window.__gateoGlobeApi?.getMapView?.() ??
-      (map && typeof map.getCenter === 'function'
-        ? {
-            center: { lng: map.getCenter().lng, lat: map.getCenter().lat },
-            zoom: map.getZoom(),
-          }
-        : null);
-    return inst;
+    const view = window.__gateoGlobeApi?.getMapView?.();
+    if (!view?.center) return null;
+    return {
+      center: { lng: view.center.lng, lat: view.center.lat },
+      zoom: view.zoom ?? null,
+    };
   });
 }
 
-async function expectCameraMoved(page, { timeoutMs = 25_000 } = {}) {
-  const before = await readMapCenter(page);
+async function waitForGlobeApi(page, { timeoutMs = 60_000 } = {}) {
   await page.waitForFunction(
-    (prev) => {
+    () => {
       const api = window.__gateoGlobeApi;
       const view = api?.getMapView?.();
-      if (!view?.center || !prev?.center) return false;
-      const dLat = Math.abs(view.center.lat - prev.center.lat);
-      const dLng = Math.abs(view.center.lng - prev.center.lng);
-      const dZoom = Math.abs((view.zoom ?? 0) - (prev.zoom ?? 0));
-      return dLat + dLng > 0.02 || dZoom > 0.15;
+      return Boolean(api && view?.center);
     },
-    before,
+    { timeout: timeoutMs },
+  );
+}
+
+/** Session keys from curation handoff; falls back to test seed coords. */
+async function resolveCurationFlyTarget(page, fallback) {
+  const fromSession = await page.evaluate(() => {
+    const readKey = (key) => {
+      try {
+        const raw = sessionStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        const loc = parsed.location ?? parsed;
+        const lat = Number(loc?.lat);
+        const lng = Number(loc?.lng);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+        if (lat === 0 && lng === 0) return null;
+        return { lat, lng };
+      } catch {
+        return null;
+      }
+    };
+    return (
+      readKey('gateo_curation_pending_home') ??
+      readKey('gateo_curation_data') ??
+      null
+    );
+  });
+  if (fromSession) return fromSession;
+  return fallback;
+}
+
+async function expectCameraNearTarget(
+  page,
+  { lat, lng, toleranceDeg = 0.35, timeoutMs = 45_000 },
+) {
+  await page.waitForFunction(
+    ({ targetLat, targetLng, tol }) => {
+      const view = window.__gateoGlobeApi?.getMapView?.();
+      if (!view?.center) return false;
+      const dLat = Math.abs(view.center.lat - targetLat);
+      const dLng = Math.abs(view.center.lng - targetLng);
+      return dLat <= tol && dLng <= tol;
+    },
+    { targetLat: lat, targetLng: lng, tol: toleranceDeg },
     { timeout: timeoutMs },
   );
 }
 
 test.describe('Globe crash regressions', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route(/\.supabase\.co/i, async (route) => {
+      const req = route.request();
+      if (req.method() !== 'GET') {
+        await route.abort();
+        return;
+      }
+      await route.continue();
+    });
+  });
+
   test('home load — no uncaught Style is not done loading', async ({ page }) => {
     const errors = attachGlobePageErrors(page);
     await page.goto('/');
@@ -117,7 +164,14 @@ test.describe('Globe crash regressions', () => {
     await viewOnGlobe.click();
     await expect(page).toHaveURL(/\//, { timeout: 30_000 });
     await waitForGlobeMap(page);
-    await expectCameraMoved(page);
+    await waitForGlobeApi(page);
+    const startView = await readMapCenterViaGlobeApi(page);
+    expect(startView?.center).toBeTruthy();
+    const flyTarget = await resolveCurationFlyTarget(page, {
+      lat: curationSeed.lat,
+      lng: curationSeed.lng,
+    });
+    await expectCameraNearTarget(page, flyTarget);
     const styleErrors = errors.filter(isStyleNotDoneLoadingError);
     expect(styleErrors).toEqual([]);
   });
