@@ -141,6 +141,11 @@ export default defineConfig({
             ) {
               return 'react-vendor';
             }
+            // Legacy globe (react-globe.gl → three-globe imports three/webgpu) — lazy route only
+            if (id.includes('node_modules/three')) return 'three';
+            if (id.includes('globe.gl') || id.includes('three-globe') || id.includes('react-globe.gl')) {
+              return 'globe';
+            }
             // 이미지 압축 라이브러리 분리
             if (id.includes('browser-image-compression')) return 'image-compression';
             // 기존 분리 항목들
