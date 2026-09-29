@@ -14,6 +14,7 @@ import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
+import { lookupLocalScenicMemberOverlayForSpot } from '../../../pages/Home/lib/koreaLocalScenicLists';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
@@ -560,6 +561,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
     const hasOfficialTourContentId = Boolean(tourMapping?.contentId);
 
+    const localScenicOverlay = lookupLocalScenicMemberOverlayForSpot(
+      typeof tourPlaceWithCategory === 'object' && tourPlaceWithCategory
+        ? {
+            hubId: tourPlaceWithCategory.hubId || locationSource?.hubId,
+            attractionName: koreanName,
+            name: koreanName,
+          }
+        : null,
+    );
+    const localScenicOfficialGallery =
+      localScenicOverlay?.overview &&
+      Array.isArray(localScenicOverlay.galleryUrls) &&
+      localScenicOverlay.galleryUrls.length >= 1
+        ? localScenicOverlay.galleryUrls
+        : null;
+
     const clearSafety = () => {
       if (safetyTimer != null) {
         clearTimeout(safetyTimer);
@@ -696,6 +713,21 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     };
 
     let tourSeed = [];
+
+    if (!forceRefresh && localScenicOfficialGallery) {
+      const officialImages = localScenicOfficialGallery.map((url, idx) => ({
+        id: `local-scenic-official-${stablePlaceKey}-${idx}`,
+        urls: { small: url, regular: url },
+        alt_description: koreanName,
+        source: 'local-scenic-official',
+      }));
+      processAndSetImages(officialImages);
+      saveToSmartCache(CACHE_KEY, allImagesRef.current);
+      markFetchDone();
+      finishLoading();
+      writeGallerySwrAt(stablePlaceKey);
+      return undefined;
+    }
 
     if (!forceRefresh) {
       unsplashPageRef.current = 1;

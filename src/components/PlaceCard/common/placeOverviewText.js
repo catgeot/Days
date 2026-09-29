@@ -1,4 +1,5 @@
 import { isSyntheticOrEmptyPlaceDesc } from '../../../pages/Home/lib/placeDescText.js';
+import { lookupLocalScenicMemberOverlayForSpot } from '../../../pages/Home/lib/koreaLocalScenicLists.js';
 import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
 
 /**
@@ -8,7 +9,19 @@ import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
  */
 export function splitPlaceOverview(location, locale = 'ko') {
   const curation = String(location?.curationSummary || '').trim();
-  let fixed = getLocalizedPlaceDesc(location, locale).trim();
+  const hubId = String(location?.hubId || '').trim();
+  const placeName = String(location?.name || location?.name_ko || '').trim();
+  const localScenicOverlay =
+    hubId && placeName
+      ? lookupLocalScenicMemberOverlayForSpot({
+          hubId,
+          attractionName: placeName,
+          name: placeName,
+        })
+      : null;
+  let fixed =
+    String(localScenicOverlay?.overview || '').trim() ||
+    getLocalizedPlaceDesc(location, locale).trim();
 
   if (fixed && isSyntheticOrEmptyPlaceDesc({ ...location, desc: fixed })) {
     fixed = '';

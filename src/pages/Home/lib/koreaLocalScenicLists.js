@@ -192,6 +192,16 @@ function overlayForHubMemberName(hubId, attractionName) {
  * Tour contentId 썸네일보다 멤버 오버레이가 우선 (같은 id를 쓰는 2경·3경 분리).
  * @param {object} [spot]
  */
+/** 팔경 멤버 오버레이 개요·갤러리가 있으면 잘못된 Tour contentId 상세·갤러리 대신 SSOT 사용 */
+export function hasLocalScenicCuratedGalleryOverlay(spot) {
+  const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
+  return Boolean(
+    String(overlay?.overview || '').trim() &&
+      Array.isArray(overlay?.galleryUrls) &&
+      overlay.galleryUrls.length >= 1,
+  );
+}
+
 export function lookupLocalScenicMemberOverlayForSpot(spot) {
   if (!spot || typeof spot !== 'object') return null;
   const byId = lookupLocalScenicMemberOverlay(String(spot.id || '').trim());
@@ -1691,6 +1701,10 @@ const IHC_BIRAE_HOME = `${IHC_TOUR}/tour/attraction/mountain?contsSn=531`;
 const IHC_BIRAE = `${IHC_TOUR}/upload/tour/content/531/cf166fd6-8796-4e77-bc52-c2951449dd83.jpg`;
 const IHC_BIRAE_2 = `${IHC_TOUR}/upload/tour/content/531/e862c113-0b33-42b0-ac7f-749fa8af3c8b.jpg`;
 const IHC_BIRAE_3 = `${IHC_TOUR}/upload/tour/content/531/9e89ff21-8ef3-4036-b068-8b6b3e731ebf.jpg`;
+const IHC_GWANGDEOK_HOME = `${IHC_TOUR}/tour/attraction/mountain?contsSn=81`;
+const IHC_GWANGDEOK = `${IHC_TOUR}/upload/tour/content/81/2a777ae7-cc47-417a-accb-053ceedf721c.jpg`;
+const IHC_GWANGDEOK_2 = `${IHC_TOUR}/upload/tour/content/81/adc323d7-c0b4-4c67-ba53-fbb9516f7e4e.jpg`;
+const IHC_GWANGDEOK_3 = `${IHC_TOUR}/upload/tour/content/81/2909cf43-25ac-4abe-887d-e72bb442a47c.jpg`;
 const JE_9GYEONG = 'https://www.jeongeup.go.kr/upload_data/board_data/BBS_0000011';
 const JE_DH = `${JE_9GYEONG}/175305752440905.png`;
 const JE_DH_2 = 'https://www.1894.or.kr/main/img/sub/77/77_1_1.jpg';
@@ -3515,6 +3529,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [IHC_BIRAE_2, IHC_BIRAE_3],
     IHC_BIRAE_HOME,
   ),
+  'local-scenic:hwacheon-gugyeong:광덕산': localScenicPhotoOverlay(
+    '화천9경 제9경 광덕산은 화천군·철원군·포천군 경계에 우뚝 선 해발 1,046m 산입니다. 화천군 문화관광은 웅장한 산세와 암벽 능선이 스릴 넘치며, 노송과 기암괴석이 어우러진 등산로 전망이 뛰어나다고 소개합니다. 광덕산에서 발원해 북한강으로 흐르는 사내천 상류 광덕계곡은 왕모래·암반 바닥으로 물이 맑아 여름 피서지로 유명합니다. 천안·아산·포천 단독 명산 Tour 항목과 다른 화천·철원·포천 삼군 경계 산입니다. 사진은 화천군 문화관광 화천9경 제9경 광덕산 공식 사진 3장입니다.',
+    '강원특별자치도 화천군·철원군·포천군 경계 (광덕산·광덕계곡)',
+    IHC_GWANGDEOK,
+    [IHC_GWANGDEOK_2, IHC_GWANGDEOK_3],
+    IHC_GWANGDEOK_HOME,
+  ),
   'local-scenic:hwasun-other:백아산하늘다리': localScenicPhotoOverlay(
     '화순11경 제3경 백아산 하늘다리는 백아면 백아산 산악 현수교입니다. 화순군 문화관광은 주소를 백아면 백아로 1310-56으로 두고, 희끗한 바위가 흰 거위처럼 보여 백아산이라 부르며 해발 756m 마당바위와 절터바위를 잇는 연장 66m·폭 1.2m 산악현수교라고 적습니다. 다리 가운데 강화유리 조망창(가로 40cm·세로 1m) 3곳이 있어 하늘 위를 걷는 듯한 스릴을 느낄 수 있습니다. 한국관광공사는 산 높이 810m이며 무등산·만연산과 함께 화순을 대표하는 산이라고 안내합니다. 사진은 화순군 문화관광 백아산하늘다리 공식 사진입니다.',
     '전라남도 화순군 백아면 백아로 1310-56 (백아산 하늘다리)',
@@ -4297,6 +4318,8 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   1910438: localScenicThumbOverlay(YC_SILLA, [YC_SILLA_2, YC_SILLA_3]),
   // 통영 탐색홈 이순신공원 — hub 명소(팔경 아님). Tour 584970 firstimage는 LIVE CMS, DB 미동기화.
   584970: localScenicThumbOverlay(TY_YI, [TY_YI_2, TY_YI_3, TY_YI_4]),
+  // 화천9경 광덕산 — JSON contentId 128098은 천안·아산 동명산 Tour 오매칭. 화천군 공식 사진으로 덮음.
+  128098: localScenicThumbOverlay(IHC_GWANGDEOK, [IHC_GWANGDEOK_2, IHC_GWANGDEOK_3]),
   // 인제8경 — Tour DB first_image 공란·축제 주변 팔경 행. JSON contentId 기입 아님.
   126643: localScenicThumbOverlay(INJE_DAESEUNG_FALLS),
   125723: localScenicThumbOverlay(INJE_BANGDONG_SPRING),

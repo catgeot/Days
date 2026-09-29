@@ -5654,6 +5654,21 @@ assert.ok(
   '화천 검색 비래바위 썸네일',
 );
 
+const gwangdeoksan = hwacheonNine.find((s) => s.attractionName === '광덕산');
+assert.ok(gwangdeoksan?.overview && gwangdeoksan?.imageUrl, '광덕산 overlay 사진·개요');
+assert.ok(gwangdeoksan?.overview?.includes('제9경'), '광덕산 overlay 제9경');
+assert.ok(gwangdeoksan?.overview?.includes('화천군'), '광덕산 overlay 화천');
+assert.ok(!gwangdeoksan?.overview?.includes('천안시와 아산시'), '광덕산 Tour 천안·아산 오매칭 본문 없음');
+assert.equal(gwangdeoksan?.galleryUrls?.length, 3, '광덕산 공식 사진 3장');
+assert.ok(
+  gwangdeoksan?.galleryUrls?.some((u) => u.includes('content/81/2a777ae7')),
+  '광덕산 화천군 공식 사진 1',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('128098')?.imageUrl?.includes('content/81/'),
+  '광덕산 contentId 128098 썸네일 화천군 공식',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
