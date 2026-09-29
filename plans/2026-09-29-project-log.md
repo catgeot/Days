@@ -19,11 +19,12 @@
 
 ## 팔경 활용 #89, 화천 결손 오버레이
 
-- **세션** `팔경 활용 #89, 화천 결손 오버레이` · branch `cursor/palgyeong-use-e744` · tip `299aadf0`
-- **조치** JSON contentId 기입 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 화천9경 결손 1건. 비래바위(제6경·상서면 구운리·해발 970m 기암·병풍바위). Tour 미등록 유지. 사진은 화천군 문화관광(`tour.ihc.go.kr`) 공식 3장.
-- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS. 순수 사진/개요 누락 **4**/876.
-- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hwacheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hwacheon`
-- **다음** 순수 결손 4건 중 **#90 옥천9경 1**(옛37번 국도변 벚꽃길) — [`feature-handoff-index.md`](./feature-handoff-index.md)
+- **세션** `팔경 활용 #89, 화천 결손 오버레이` · branch `cursor/palgyeong-use-e744` · tip `626768c1` → `04842b6f`(탐색 검색 desc) · PR [#357](https://github.com/catgeot/Days/pull/357)
+- **조치** 비래바위 오버레이(제6경·화천군 공식 3장). QA 광덕산 Tour `128098` 천안·아산 오매칭 → 화천 제9경 오버레이·curated 갤러리 시 Tour LIVE 스킵·`LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID` 화천 썸.
+- **탐색 검색 써머리(준비)** 명승 허브 상세 오버레이와 **별 경로**였음 — `SearchDisambiguationCards`는 `place_chat_intro`만 조회·AI 생성 없음. feature `04842b6f`: `localScenicMemberToSuggestion` → `desc` = 멤버 오버레이 `overview`(240자)·`needsPlaceChatIntroHydration`은 이미 실문장 `desc` 있으면 skip.
+- **VERIFY** `smoke:korea-local-scenic-lists`(비래바위·광덕산 desc·딴산 빈 desc) · `npm run build` PASS.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → 탐색「화천」다후보 카드 2줄 요약 · `/korea/theme/scenic?hub=hwacheon`
+- **다음** **#90 탐색 검색 써머리 Preview QA** → **#91 옥천9경 1**(옛37번 국도변 벚꽃길) — [`feature-handoff-index.md`](./feature-handoff-index.md)
 
 ## 팔경 활용 #87, 영월 결손 오버레이
 

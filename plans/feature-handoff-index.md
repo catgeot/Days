@@ -855,13 +855,13 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#89 push** tip `299aadf0` · **다음 = #90 옥천** 1건(옛37번 국도변 벚꽃길) · §**2.1** **≥3장** · 순수 누락 **4**/876 |
+| **상태** | **#89 push** tip `04842b6f` · **다음 = #90 탐색 검색 써머리 QA** → **#91 옥천** 1건 · 순수 누락 **4**/876 |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `299aadf0` |
+| **tip** | `04842b6f` |
 | **PR** | [#349](https://github.com/catgeot/Days/pull/349) · [#347](https://github.com/catgeot/Days/pull/347) merge ✅ · [#339](https://github.com/catgeot/Days/pull/339) merge ✅ · [#335](https://github.com/catgeot/Days/pull/335) merge ✅ · [#333](https://github.com/catgeot/Days/pull/333) merge ✅ · [#332](https://github.com/catgeot/Days/pull/332) merge ✅ · [#330](https://github.com/catgeot/Days/pull/330) merge ✅ · [#329](https://github.com/catgeot/Days/pull/329) merge ✅ · [#328](https://github.com/catgeot/Days/pull/328) merge ✅ · [#327](https://github.com/catgeot/Days/pull/327) merge ✅ · [#324](https://github.com/catgeot/Days/pull/324) merge ✅ · [#323](https://github.com/catgeot/Days/pull/323) merge ✅ · [#321](https://github.com/catgeot/Days/pull/321) merge ✅ · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-29-project-log.md`](./2026-09-29-project-log.md) · [`2026-09-28-project-log.md`](./2026-09-28-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → `/korea/theme/scenic?hub=hwacheon` 화천9경 비래바위 |
+| **Preview** | `/qa/palgyeong-use` → 탐색「화천」다후보 **2줄 요약**(#90 QA) · `/korea/theme/scenic?hub=hwacheon` |
 | **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
@@ -870,13 +870,14 @@ AI 모델 #3, Preview OK면 PR 병합
 **다음 제시어**:
 
 ```
-팔경 활용 #90, 옥천 결손 오버레이
+팔경 활용 #90, 탐색 검색 팔경 써머리 QA
 @plans/feature-handoff-index.md
 @plans/2026-09-29-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · tip 04842b6f · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 옥천9경 사진·개요 없는 1건(옛37번 국도변 벚꽃길) LOCAL_SCENIC_MEMBER_OVERLAYS — 공식 사진 ≥3장(§2.1). Preview /korea/theme/scenic?hub=okcheon
+작업: 탐색「화천」다후보 — 비래바위·광덕산 카드에 2줄 요약(오버레이 overview). 딴산 등 오버레이 없는 행은 요약 빈칸 정상. OK면 #91 옥천9경 1건(옛37번 국도변 벚꽃길)
+검증: smoke:korea-local-scenic-lists · build PASS 후 Preview
 ```
 
 ---
