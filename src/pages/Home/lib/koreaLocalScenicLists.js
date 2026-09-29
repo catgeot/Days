@@ -1681,6 +1681,11 @@ const YJ_TOUR_HOME = 'https://www.yeoju.go.kr/tour/index.do';
 const YJ_YEOKANG = 'https://tong.visitkorea.or.kr/cms/resource/21/2661421_image2_1.jpg';
 const YJ_YEOKANG_2 = 'https://tong.visitkorea.or.kr/cms/resource/20/2661420_image2_1.jpg';
 const YJ_YEOKANG_3 = 'https://tong.visitkorea.or.kr/cms/resource/22/2661422_image2_1.jpg';
+const YW_TOUR = 'https://www.yw.go.kr';
+const YW_TOUR_HOME = `${YW_TOUR}/tour/selectTourCntntsWebView.do?ctgry=5&key=559&tourNo=644`;
+const YW_KIMSATGAT = `${YW_TOUR}/DATA/tour/5/thumb/p_BDCC3710-4B6C-F9E9-3F9A-5DF1D0C17AA3.jpg`;
+const YW_KIMSATGAT_2 = `${YW_TOUR}/DATA/tour/5/thumb/p_32852782-FE05-3C3B-1B91-DB951C19ED58.jpg`;
+const YW_KIMSATGAT_3 = `${YW_TOUR}/DATA/tour/5/thumb/p_A13534B3-03DD-9272-D123-81D5030FE054.jpg`;
 const JE_9GYEONG = 'https://www.jeongeup.go.kr/upload_data/board_data/BBS_0000011';
 const JE_DH = `${JE_9GYEONG}/175305752440905.png`;
 const JE_DH_2 = 'https://www.1894.or.kr/main/img/sub/77/77_1_1.jpg';
@@ -3781,6 +3786,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     YJ_YEOKANG,
     [YJ_YEOKANG_2, YJ_YEOKANG_3],
     YJ_TOUR_HOME,
+  ),
+  'local-scenic:yeongwol-sipgyeong:김삿갓유적지': localScenicPhotoOverlay(
+    '영월10경 제4경 김삿갓유적지는 김삿갓면 와석리 노루목 마대산 자락에 조성된 난고 김병연(김삿갓, 1807~1863) 기념 공간입니다. 영월군 문화관광은 난고김삿갓문학관·묘역·집터·돌탑·성황당 등이 어우러진 유적지로, 2003년 강원도 정신 고취사업의 일환으로 조성했다고 소개합니다. 주소는 김삿갓로 216-22이며 문학관 문의는 033-375-7900, 이용시간 09:00~18:00, 입장료는 무료(문학관)입니다. 방랑 시인 김삿갓은 1863년 전남 화순에서 생을 마친 뒤 3년 후 아들이 현 영월 김삿갓면으로 이장했고, 묘소는 1982년 확인·집터 주거지는 1982년 발굴 후 2002년 복원했다고 적습니다. 매년 10월 중순 추모제·살풀이춤·백일장 등이 열립니다. 화순 동북면 구암리(최종 생존)·화순 연둔리 숲정이 인근 김삿갓 문학동산·영월 김삿갓계곡(별도 관광지)·김삿갓면 옥동장터와 다른 와석리 유적지입니다. 사진은 영월군 문화관광 영월10경 제4경 김삿갓유적지 공식 사진 3장입니다.',
+    '강원특별자치도 영월군 김삿갓면 김삿갓로 216-22 (김삿갓유적지·난고김삿갓문학관)',
+    YW_KIMSATGAT,
+    [YW_KIMSATGAT_2, YW_KIMSATGAT_3],
+    YW_TOUR_HOME,
   ),
   'local-scenic:jeongeup-gugyeong:동학농민혁명기념공원': localScenicPhotoOverlay(
     '정읍9경 4경 동학농민혁명기념공원은 덕천면 하학리입니다. 정읍시 문화관광은 1894년 반부패·반봉건·반외세의 기치를 들고 봉기한 동학농민군이 관군을 크게 이긴 최초 전승지 황토현 전적 안에 국가사업으로 들어선 공원이며, 전시관·추모관·기념관이 있다고 적습니다. 주소는 동학로 742입니다. 사적 제295호 정읍 황토현전적 일대이며, 동학농민혁명기념재단은 2022년 5월 11일(동학농민혁명기념일) 개원했다고 안내합니다. 면적 약 30만㎡이며 사발통문광장·울림의 기둥·기억의 들판·방문자센터511과 군상 「불멸, 바람길」이 있습니다. 2004년 개관한 동학농민혁명기념관(동학로 715) 단독 전시관이 아니라 2022년 연 공원이며, 고창 무장·전주 동학농민혁명기념관·내장산국립공원과 다른 덕천면 황토현입니다. 사진은 정읍시 문화관광 4경·동학농민혁명기념재단 공식 사진입니다.',
