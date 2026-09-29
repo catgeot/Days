@@ -17,6 +17,7 @@ import KoreaThemeScenicPage from './pages/KoreaTheme/ScenicPage';
 import KoreaThemeCoursesPage from './pages/KoreaTheme/CoursesPage';
 import QaShareIndex from './pages/QaShare';
 import QaShareRedirect from './pages/QaShare/QaShareRedirect';
+const MooniChatMarkdownFixturePage = lazy(() => import('./pages/Qa/MooniChatMarkdownFixturePage.jsx'));
 import AboutPage from './pages/AboutPage';
 
 import Dashboard from './pages/DailyReport/Dashboard';
@@ -126,6 +127,7 @@ function App() {
               <Route path="/world-events/:eventId" element={<EventDetailPage />} />
               <Route path="/en/world-events" element={<Navigate to="/world-events?lang=en" replace />} />
               <Route path="/en/world-events/:eventId" element={<EnWorldEventDetailRedirect />} />
+              <Route path="/qa/mooni-markdown-fixture" element={<MooniChatMarkdownFixturePage />} />
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
               <Route path="/about" element={<AboutPage />} />
