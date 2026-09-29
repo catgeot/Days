@@ -9,10 +9,10 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-festival-nearby` · `vite build` PASS
 - **다음** [`feature-handoff-index.md`](./feature-handoff-index.md) **#88 양산 12경**(우선) · 백로그 **#87 영월** 1건
 
-## 팔경 활용 — #88 양산 12경 핸드오프 (준비)
+## 팔경 활용 #88, 양산 12경 결손 오버레이
 
-- **배경** `listId` `yangsan-other` · hub `yangsan` · SSOT [`koreaLocalScenicLists.json`](../src/pages/Home/data/koreaLocalScenicLists.json). **#16**은 **충북 영동 양산팔경**만 처리 — **경남 양산시 12경**은 허브 단위 전수 오버레이 미완.
-- **이미 있음** (main `a2105f85` 이후): 내원사계곡·황산공원(갤러리 2~3장) · 천태산·오봉산 임경대·대운산 휴양림·법기수원지(**임시 1장** — #88에서 **§2.1 ≥3장**으로 승격).
-- **#88 작업 범위** (JSON contentId 기입·scenic 승격 금지): 12경 전 행 `LOCAL_SCENIC_MEMBER_OVERLAYS` — 개요·주소·**공식 사진 ≥3장**·상세 갤러리. `pending_coord` 멤버는 시 공식 좌표 반영 검토(오버레이 addr만으로도 가능). Tour id 검증: `128180` 오봉산(양산)·`2743856`·`2381381` DB 없음 → 오버레이 우선. **125907 천태산 금지**(영동).
-- **QA** `/qa/palgyeong-use` → `/korea/theme/scenic?hub=yangsan` 12행 썸네일·상세 스와이프 · 검색「양산」 · (선택) 부산 축제 주변 관광지에 양산 팔경 잘못 뜨지 않음(#352)
-- **브랜치** `cursor/palgyeong-use-e744` · VERIFY `smoke:korea-local-scenic-lists` 등 팔경 게이트
+- **세션** `팔경 활용 #88, 양산 12경 결손 오버레이` · branch `cursor/palgyeong-use-e744` · tip `401dfa11` · PR [#353](https://github.com/catgeot/Days/pull/353)
+- **조치** `yangsan-other` 12경 전 행 `LOCAL_SCENIC_MEMBER_OVERLAYS`(개요·주소·한국관광공사 공식 사진 ≥3장). 천태산=천태산(양산) 사진 · **125907**(영동) 미연결. 오봉산 임경대=임경대(2782548) 사진·양산타워 혼동 제거. Tour thumb `128180`·`2743856`·`2381381`·`2784427`·`1236556` 보강.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS
+- **Preview** `/qa/palgyeong-use` → `/korea/theme/scenic?hub=yangsan` · 검색「양산」
+- **다음** 백로그 **#87 영월10경 1**(김삿갓유적지) — [`feature-handoff-index.md`](./feature-handoff-index.md)
