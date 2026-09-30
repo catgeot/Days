@@ -5,7 +5,7 @@ import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
  * 갤러리 PLACE_OVERVIEW — 큐레이션 연결 문구와 고정/intro desc를 분리.
  * /place/ URL sync가 desc만 SSOT로 바꿔도 curationSummary가 있으면 큐레이션이 남는다.
  * 합성 hub·종류 desc는 실문장으로 보지 않음 · 표시 desc는 place_chat_intro hydrate SSOT.
- * 팔경 멤버 오버레이 overview는 탐색 검색 desc·명승 상세용 — 갤러리 써머리에 쓰지 않음.
+ * 팔경 멤버 오버레이 overview는 검색 행 searchOverlayDesc·명승 상세용. desc에 넣으면 intro hydrate가 skip된다.
  */
 export function splitPlaceOverview(location, locale = 'ko') {
   const curation = String(location?.curationSummary || '').trim();

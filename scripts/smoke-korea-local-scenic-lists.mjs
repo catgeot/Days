@@ -45,6 +45,7 @@ import {
   normalizeScenicQuery,
 } from '../src/pages/Home/lib/scenicSearch.js';
 import { listKoreaScenicSpots } from '../src/pages/Home/lib/koreaScenicSpots.js';
+import { needsPlaceChatIntroHydration } from '../src/pages/Home/lib/placeDescText.js';
 import { sortScenicSpotsByPlaceCluster } from '../src/pages/Home/lib/sortScenicSpotsByPlaceCluster.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -5677,8 +5678,18 @@ const biraeSuggest = localScenicMemberToSuggestion(
   hwacheonList?.members?.find((m) => m.attractionName === '비래바위'),
 );
 assert.ok(
-  biraeSuggest?.desc?.includes('제6경') && biraeSuggest.desc.includes('비래바위'),
-  '탐색 검색 비래바위 desc = 멤버 오버레이 overview',
+  biraeSuggest?.searchOverlayDesc?.includes('제6경') &&
+    biraeSuggest.searchOverlayDesc.includes('비래바위'),
+  '탐색 검색 비래바위 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(biraeSuggest?.desc || '').includes('제6경'),
+  '비래바위 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(biraeSuggest),
+  true,
+  '비래바위 suggestion은 intro hydrate 대상',
 );
 const gwangdeokSuggest = localScenicMemberToSuggestion(
   hwacheonList,
@@ -5686,8 +5697,13 @@ const gwangdeokSuggest = localScenicMemberToSuggestion(
   hwacheonList?.members?.find((m) => m.attractionName === '광덕산'),
 );
 assert.ok(
-  gwangdeokSuggest?.desc?.includes('제9경') && !gwangdeokSuggest.desc.includes('천안시와 아산시'),
-  '탐색 검색 광덕산 desc = 화천 오버레이',
+  gwangdeokSuggest?.searchOverlayDesc?.includes('제9경') &&
+    !gwangdeokSuggest.searchOverlayDesc.includes('천안시와 아산시'),
+  '탐색 검색 광덕산 표시 = 화천 오버레이',
+);
+assert.ok(
+  !String(gwangdeokSuggest?.desc || '').includes('제9경'),
+  '광덕산 desc에 오버레이 overview 없음',
 );
 const ttansanSuggest = localScenicMemberToSuggestion(
   hwacheonList,
@@ -5739,8 +5755,22 @@ const cherrySuggest = localScenicMemberToSuggestion(
   okcheonList?.members?.find((m) => m.attractionName === '옛37번 국도변 벚꽃길'),
 );
 assert.ok(
-  cherrySuggest?.desc?.includes('제2경') && cherrySuggest.desc.includes('벚꽃'),
-  '탐색 검색 옛37번 벚꽃길 desc = 멤버 오버레이 overview',
+  cherrySuggest?.searchOverlayDesc?.includes('제2경') &&
+    cherrySuggest.searchOverlayDesc.includes('벚꽃'),
+  '탐색 검색 옛37번 벚꽃길 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(cherrySuggest?.desc || '').includes('제2경'),
+  '벚꽃길 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(cherrySuggest),
+  true,
+  '벚꽃길 suggestion은 intro hydrate 대상',
+);
+assert.ok(
+  String(cherrySuggest?.imageUrl || cherrySuggest?.thumbUrl || '').includes('oc_cts3831_img01'),
+  '벚꽃길 suggestion 썸네일',
 );
 
 const geumgangResort = okcheonNine.find((s) => s.attractionName === '금강유원지');
@@ -5769,8 +5799,22 @@ const geumgangSuggest = localScenicMemberToSuggestion(
   okcheonList?.members?.find((m) => m.attractionName === '금강유원지'),
 );
 assert.ok(
-  geumgangSuggest?.desc?.includes('제7경') && geumgangSuggest.desc.includes('금강'),
-  '탐색 검색 금강유원지 desc = 멤버 오버레이 overview',
+  geumgangSuggest?.searchOverlayDesc?.includes('제7경') &&
+    geumgangSuggest.searchOverlayDesc.includes('금강'),
+  '탐색 검색 금강유원지 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(geumgangSuggest?.desc || '').includes('제7경'),
+  '금강유원지 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(geumgangSuggest),
+  true,
+  '금강유원지 suggestion은 intro hydrate 대상',
+);
+assert.ok(
+  String(geumgangSuggest?.imageUrl || geumgangSuggest?.thumbUrl || '').includes('oc_cts3836_img01'),
+  '금강유원지 suggestion 썸네일',
 );
 
 const extra = process.argv.slice(2);

@@ -643,7 +643,8 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
   const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
   const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
   const overlay = lookupLocalScenicMemberOverlay(spotId);
-  const desc = localScenicMemberSearchDescFromOverlay(overlay);
+  // overview를 desc에 넣으면 실문장으로 보여 intro hydrate가 skip되고 장소 카드에 팔경 개요가 남는다.
+  const searchOverlayDesc = localScenicMemberSearchDescFromOverlay(overlay);
   return {
     ...base,
     groupTitle: localScenicListDisplayTitle(list, h, locale),
@@ -653,7 +654,7 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
     contentId: media.contentId,
     imageUrl: media.imageUrl,
     thumbUrl: media.imageUrl,
-    ...(desc ? { desc } : {}),
+    ...(searchOverlayDesc ? { searchOverlayDesc } : {}),
   };
 }
 
@@ -922,7 +923,7 @@ export function localScenicMemberSpotId(listId, attractionName) {
   return `local-scenic:${listId}:${normalizeKey(attractionName)}`;
 }
 
-/** 탐색 검색 다후보 카드 2줄 — 멤버 오버레이 overview (place_chat_intro 없을 때 SSOT) */
+/** 탐색 검색 행 표시 전용. suggestion.desc에 넣지 않는다(장소 카드 intro hydrate 유지). */
 export function localScenicMemberSearchDescFromOverlay(overlay, maxLen = 240) {
   const text = String(overlay?.overview || '')
     .trim()
