@@ -855,9 +855,9 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#91** tip `5e47e56f` · **다음 = #92 함양** 1건(덕유운해) · 순수 누락 **3**/876 |
+| **상태** | **#91** tip `5f20e005` · **다음 = #92 함양** 1건(덕유운해) · 순수 누락 **3**/876 |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `5e47e56f` |
+| **tip** | `5f20e005` |
 | **PR** | [#361](https://github.com/catgeot/Days/pull/361) · [#349](https://github.com/catgeot/Days/pull/349) · [#347](https://github.com/catgeot/Days/pull/347) merge ✅ · [#339](https://github.com/catgeot/Days/pull/339) merge ✅ · [#335](https://github.com/catgeot/Days/pull/335) merge ✅ · [#333](https://github.com/catgeot/Days/pull/333) merge ✅ · [#332](https://github.com/catgeot/Days/pull/332) merge ✅ · [#330](https://github.com/catgeot/Days/pull/330) merge ✅ · [#329](https://github.com/catgeot/Days/pull/329) merge ✅ · [#328](https://github.com/catgeot/Days/pull/328) merge ✅ · [#327](https://github.com/catgeot/Days/pull/327) merge ✅ · [#324](https://github.com/catgeot/Days/pull/324) merge ✅ · [#323](https://github.com/catgeot/Days/pull/323) merge ✅ · [#321](https://github.com/catgeot/Days/pull/321) merge ✅ · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-30-project-log.md`](./2026-09-30-project-log.md) · [`2026-09-29-project-log.md`](./2026-09-29-project-log.md) |
