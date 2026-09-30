@@ -11,6 +11,7 @@
     "generate:index-static-links": "node scripts/generate-index-static-links.mjs",
     "generate:gsc-baseline": "node scripts/generate-gsc-baseline-template.mjs",
     "lint": "eslint .",
+    "lint:ci": "eslint -c eslint.ci.config.js src/pages/Home/hooks src/pages/Home/lib/searchEnterMatch.js src/pages/Home/lib/resolveKoreaDestinationFirstPass.js src/pages/Home/components/SearchDiscoveryModal.jsx",
     "preview": "vite preview",
     "audit:airports": "node scripts/audit-rental-airports.mjs",
     "audit:city-attraction-hubs": "node scripts/audit-city-attraction-hubs.mjs",

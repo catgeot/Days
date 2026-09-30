@@ -70,6 +70,7 @@ import {
 import {
   collectKoreaPoiTypeSearchCandidates,
 } from '../lib/koreaPoiTypeSearch.js';
+import { preferEnterSuggestion, placeNameMatchesSearchQuery } from '../lib/searchEnterMatch.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   overlayGeocodeLatinOnHits,
