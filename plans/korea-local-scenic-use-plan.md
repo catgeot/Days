@@ -117,11 +117,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#92** tip `14a2b992` · PR [#361](https://github.com/catgeot/Days/pull/361) · **다음 = #93 함양** 1건(덕유운해) · 순수 누락 **3**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#92 main** `102a4fae` · PR [#361](https://github.com/catgeot/Days/pull/361) MERGED · **다음 = #93 함양** 1건(덕유운해) · 순수 누락 **3**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: **#93 함양8경 1**(덕유운해). #92 옥천 장소 카드 써머리 수정(`14a2b992`·PR [#361](https://github.com/catgeot/Days/pull/361)). 오버레이 overview는 `searchOverlayDesc`만.
+**A 다음 제시어**: **#93 함양8경 1**(덕유운해). #92 옥천 장소 카드 써머리는 main `102a4fae`(PR [#361](https://github.com/catgeot/Days/pull/361) MERGED). 오버레이 overview는 `searchOverlayDesc`만.
 
 **탐색 검색 써머리 (A · #92)** — 검색 행 표시 = `searchOverlayDesc`(오버레이 overview). suggestion `desc`에는 넣지 않음. 장소 카드 갤러리는 `place_chat_intro` hydrate. `needsPlaceChatIntroHydration`은 실문장 `desc`면 skip하므로 오버레이를 `desc`에 다시 넣지 말 것. 명승 허브 상세 overview는 별 SSOT.
 
