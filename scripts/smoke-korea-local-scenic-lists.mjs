@@ -5873,6 +5873,19 @@ assert.ok(
   String(deogyuSuggest?.imageUrl || deogyuSuggest?.thumbUrl || '').includes('GC072P02448'),
   '덕유운해 suggestion 썸네일',
 );
+const gibackThumb = lookupLocalScenicPhotoByContentId('126033');
+assert.ok(gibackThumb?.imageUrl?.includes('GC072P02944'), '기백산 Tour 126033 빈 썸네일');
+assert.equal(gibackThumb?.galleryUrls?.length, 3, '기백산 공식 사진 3장');
+assert.ok(
+  gibackThumb?.galleryUrls?.every(
+    (u) => u.includes('hamyang.grandculture.net') || u.includes('devin.aks.ac.kr'),
+  ),
+  '기백산 디지털함양문화대전·민족문화대백과 사진',
+);
+assert.ok(
+  !String(lookupLocalScenicPhotoByContentId('126053')?.imageUrl || '').includes('GC072P02944'),
+  '기백산 썸네일 ≠ 용추계곡 126053',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

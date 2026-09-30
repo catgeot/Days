@@ -1970,6 +1970,11 @@ const HY_DEOGYU = `${HY_IMG}GC072P02448`;
 const HY_DEOGYU_2 = `${HY_IMG}GC072P02449`;
 const HY_DEOGYU_3 = `${HY_IMG}GC072P02450`;
 const HY_DEOGYU_HOME = 'https://www.hygn.go.kr/01211/01214.web';
+const HY_GIBAEK = `${HY_IMG}GC072P02944`;
+const HY_GIBAEK_2 = `${HY_IMG}GC072P02945`;
+const HY_GIBAEK_3 =
+  'https://devin.aks.ac.kr/image/676248ab-1c6e-4dbc-8b0f-3b8606885933?preset=orig';
+const HY_GIBAEK_HOME = 'https://hamyang.grandculture.net/hamyang/toc/GC07200042';
 const GJ_KHS = 'https://www.khs.go.kr/unisearch/images/national_treasure';
 const GJ_NAWON = `${GJ_KHS}/2021070209124901.JPG`;
 const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
@@ -4398,6 +4403,11 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   2381381: localScenicThumbOverlay(YS_BEOPGI, [YS_BEOPGI_2, YS_BEOPGI_3]),
   2784427: localScenicThumbOverlay(YS_TOWER, [YS_TOWER_2, YS_TOWER_3]),
   1236556: localScenicThumbOverlay(YS_GAYAJINSA, [YS_GAYAJINSA_2, YS_GAYAJINSA_3]),
+  // 함양 검색 기백산 — Tour 126033 first_image 없음. 용추계곡·용추폭포 126053과 다른 산. JSON contentId 기입 아님.
+  126033: {
+    ...localScenicThumbOverlay(HY_GIBAEK, [HY_GIBAEK_2, HY_GIBAEK_3]),
+    homepage: HY_GIBAEK_HOME,
+  },
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

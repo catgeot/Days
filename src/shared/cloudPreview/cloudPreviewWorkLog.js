@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 93,
-  sessionPhase: '함양 목록 본문 분리',
+  sessionPhase: '함양 기백산 사진',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-30-palgyeong-use-93-gibacksan-photo',
+    session: '팔경 활용 #93, 함양 기백산 사진',
+    title: '기백산 검색 사진',
+    detail:
+      '명소홈「함양」검색의 기백산(Tour 126033)은 first_image가 없어 랜드마크 아이콘만 보였습니다. 디지털함양문화대전 기백산 항공 사진 2장과 한국민족문화대백과 기백산 사진 1장을 검색 썸네일·갤러리에 넣었습니다. 용추계곡·용추폭포(126053) 사진과 구분합니다. 목록 행 문구는 주소 그대로입니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「함양」기백산.',
+    at: '2026-09-30T21:00:00.000Z',
+  },
   {
     id: '2026-09-30-palgyeong-use-93-hamyang-list-body',
     session: '팔경 활용 #93, 함양 목록 본문 분리',
