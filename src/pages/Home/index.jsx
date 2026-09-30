@@ -1551,6 +1551,7 @@ function Home() {
           highlightCategory={category}
           categoryFaceEpoch={categoryFaceEpoch}
           focusSlug={globeFocusSlug}
+          placeCardOpen={isPlaceCardSummaryVisible}
           onReturnToSpace={closeFaceRegions}
         />
       </div>

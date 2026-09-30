@@ -18,6 +18,7 @@ import {
 } from './globeRegionHighlightOpacity.js';
 import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
 import { raiseLayersToTopIfNeeded } from './globeMapLayerOrder.js';
+import { FLIGHT_CINEMA_ARC_LAYER_IDS } from './globeFlightCinemaEngine.js';
 
 export const REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID = 'gateo-region-highlight-countries';
 export const REGION_HIGHLIGHT_FILL_ID = 'gateo-region-highlight-fill';
@@ -188,8 +189,21 @@ function countryFillFilter(iso) {
   ];
 }
 
+function flightCinemaArcsVisible(map) {
+  return FLIGHT_CINEMA_ARC_LAYER_IDS.some((layerId) => {
+    try {
+      return map.getLayoutProperty(layerId, 'visibility') === 'visible';
+    } catch {
+      return false;
+    }
+  });
+}
+
 function raiseHighlightLayers(map) {
   raiseLayersToTopIfNeeded(map, REGION_HIGHLIGHT_LAYER_IDS);
+  if (flightCinemaArcsVisible(map)) {
+    raiseLayersToTopIfNeeded(map, FLIGHT_CINEMA_ARC_LAYER_IDS);
+  }
 }
 
 function removeLegacyLayers(map) {

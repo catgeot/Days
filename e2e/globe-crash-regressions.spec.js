@@ -5,6 +5,7 @@ import {
   flushGlobeAdapterCameraQueue,
 } from '../src/pages/Home/lib/globeApiRegistry.js';
 import { canResumeGlobeAutoRotate } from '../src/pages/Home/lib/globeRotateResume.js';
+import { raiseLayersToTopIfNeeded } from '../src/pages/Home/lib/globeMapLayerOrder.js';
 
 test.use({ ignoreHTTPSErrors: true });
 
@@ -12,7 +13,47 @@ test.describe('globe adapter camera queue (unit)', () => {
   test('canResumeGlobeAutoRotate blocks fly and cinema', () => {
     expect(canResumeGlobeAutoRotate({ labelsSettled: true, cameraAnimating: true })).toBe(false);
     expect(canResumeGlobeAutoRotate({ labelsSettled: true, flightCinemaActive: true })).toBe(false);
+    expect(canResumeGlobeAutoRotate({ labelsSettled: true, placeCardOpen: true })).toBe(false);
     expect(canResumeGlobeAutoRotate({ labelsSettled: true })).toBe(true);
+  });
+
+  test('raiseLayersToTopIfNeeded is idempotent and fixes wrong order', () => {
+    const makeMap = (layerIds) => {
+      const layers = layerIds.map((id) => ({ id }));
+      let order = [...layerIds];
+      const moveLayerCalls = [];
+      return {
+        layers,
+        moveLayerCalls,
+        getStyle: () => ({ layers: order.map((id) => ({ id })) }),
+        getLayer: (id) => (order.includes(id) ? { id } : null),
+        moveLayer: (id) => {
+          moveLayerCalls.push(id);
+          order = order.filter((x) => x !== id);
+          order.push(id);
+        },
+      };
+    };
+
+    const one = makeMap(['base', 'a']);
+    raiseLayersToTopIfNeeded(one, ['a']);
+    expect(one.moveLayerCalls).toEqual([]);
+
+    const twoOk = makeMap(['base', 'a', 'b']);
+    raiseLayersToTopIfNeeded(twoOk, ['a', 'b']);
+    expect(twoOk.moveLayerCalls).toEqual([]);
+
+    const twoWrong = makeMap(['base', 'b', 'a']);
+    raiseLayersToTopIfNeeded(twoWrong, ['a', 'b']);
+    expect(twoWrong.moveLayerCalls).toEqual(['a', 'b']);
+
+    const threeOk = makeMap(['base', 'x', 'a', 'b', 'c']);
+    raiseLayersToTopIfNeeded(threeOk, ['a', 'b', 'c']);
+    expect(threeOk.moveLayerCalls).toEqual([]);
+
+    const threeWrong = makeMap(['base', 'c', 'b', 'a']);
+    raiseLayersToTopIfNeeded(threeWrong, ['a', 'b', 'c']);
+    expect(threeWrong.moveLayerCalls).toEqual(['a', 'b', 'c']);
   });
 
   test('latest-wins, flush once, clear on unmount pattern', () => {
@@ -130,6 +171,24 @@ async function expectCameraNearTarget(
   );
 }
 
+/** Curation fly — judge at moveend (before late API registration / auto-rotate drift). */
+async function expectFlyArrivalNearTarget(
+  page,
+  { lat, lng, toleranceDeg = 0.35, timeoutMs = 45_000 },
+) {
+  await page.waitForFunction(
+    ({ targetLat, targetLng, tol }) => {
+      const arrival = window.__gateoGlobeLastFlyArrival;
+      if (!arrival) return false;
+      const dLat = Math.abs(arrival.lat - targetLat);
+      const dLng = Math.abs(arrival.lng - targetLng);
+      return dLat <= tol && dLng <= tol;
+    },
+    { targetLat: lat, targetLng: lng, tol: toleranceDeg },
+    { timeout: timeoutMs },
+  );
+}
+
 test.describe('Globe crash regressions', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(/\.supabase\.co/i, async (route) => {
@@ -185,15 +244,12 @@ test.describe('Globe crash regressions', () => {
     await viewOnGlobe.click();
     await expect(page).toHaveURL(/\//, { timeout: 30_000 });
     await waitForGlobeMap(page);
-    await waitForGlobeApi(page);
     const flyTarget = await resolveCurationFlyTarget(page, {
       lat: curationSeed.lat,
       lng: curationSeed.lng,
     });
-    await page.evaluate(() => {
-      window.__gateoGlobeApi?.pauseRotation?.();
-    });
-    await expectCameraNearTarget(page, flyTarget);
+    await expectFlyArrivalNearTarget(page, flyTarget);
+    await waitForGlobeApi(page);
     const styleErrors = errors.filter(isStyleNotDoneLoadingError);
     expect(styleErrors).toEqual([]);
   });

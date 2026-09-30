@@ -450,6 +450,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   categoryFaceEpoch = 0,
   onReturnToSpace = null,
   autoRotatePaused = false,
+  placeCardOpen = false,
   onGlobeReady,
 }, ref) => {
   const { locale } = useLocale();
@@ -492,6 +493,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const waitingThemeSettleRef = useRef(false);
   const globeBaseRevealedRef = useRef(false);
   const globeOverlaysRevealedRef = useRef(false);
+  const placeCardOpenRef = useRef(placeCardOpen);
+  placeCardOpenRef.current = placeCardOpen;
   const globeLabelsSettledRef = useRef(false);
   const resumeRotateAfterLabelsTimerRef = useRef(null);
   const basemapLabelsAppliedRef = useRef(false);
@@ -556,6 +559,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     globeCameraBusy: map ? isGlobeCameraBusy(map) : false,
     mapMoving: map && typeof map.isMoving === 'function' ? map.isMoving() : false,
     labelsSettled: globeLabelsSettledRef.current,
+    placeCardOpen: placeCardOpenRef.current,
   }), [pauseRender]);
 
   const canResumeRotate = useCallback(
@@ -1551,6 +1555,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       });
       map.once('moveend', () => {
         cameraAnimatingRef.current = false;
+        try {
+          const center = map.getCenter();
+          if (typeof window !== 'undefined' && center) {
+            window.__gateoGlobeLastFlyArrival = {
+              lat: center.lat,
+              lng: center.lng,
+              at: Date.now(),
+            };
+          }
+        } catch {
+          // Map may be mid-teardown.
+        }
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             flushPendingGateoMarkerSource(map);
@@ -2790,6 +2806,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           markGlobeLoadPhase('onLoad');
           mapLoadedRef.current = true;
           const map = evt?.target ?? mapRef.current?.getMap();
+
+          if (map && typeof window !== 'undefined' && typeof window.__gateoDiagHookMoveLayer === 'function') {
+            try {
+              window.__gateoDiagHookMoveLayer(map);
+            } catch {
+              // Diagnostic hook only.
+            }
+          }
 
           if (map) {
             bindGlobeMapStyleLatch(map, {

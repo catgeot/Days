@@ -12,10 +12,12 @@ export function canResumeGlobeAutoRotate({
   globeCameraBusy = false,
   mapMoving = false,
   labelsSettled = false,
+  placeCardOpen = false,
 } = {}) {
   if (pauseRender || userPausedRotate || interaction) return false;
   if (tourActive || immerseActive || flightCinemaActive) return false;
   if (cameraAnimating || globeCameraBusy || mapMoving) return false;
+  if (placeCardOpen) return false;
   if (shouldHoldGlobeAutoRotate({ pauseRender, labelsSettled })) return false;
   return true;
 }

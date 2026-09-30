@@ -29,7 +29,7 @@ export function raiseLayersToTopIfNeeded(map, layerIdsInRaiseOrder) {
 
   const n = existing.length;
   const expectedTopToBottom = [...existing].reverse();
-  const actualTopToBottom = layers.slice(-n).map((l) => l.id);
+  const actualTopToBottom = layers.slice(-n).map((l) => l.id).reverse();
 
   if (
     actualTopToBottom.length === n
