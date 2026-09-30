@@ -1,3 +1,4 @@
+import { supabase } from '../shared/api/supabase';
 import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 
 const INVOKE_TIMEOUT_MS = 15_000;

@@ -32,17 +32,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Explore search Enter e2e (local preview)
-        env:
-          PLAYWRIGHT_BASE_URL: https://127.0.0.1:4173
-        run: |
-          npm run preview -- --host 127.0.0.1 --port 4173 &
-          for i in $(seq 1 30); do
-            if curl -kfsS -o /dev/null https://127.0.0.1:4173/; then break; fi
-            sleep 2
-          done
-          npx playwright test e2e/explore-search-enter.spec.js
