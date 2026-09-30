@@ -132,6 +132,10 @@ async function main() {
     'locale effect must wait for mapReady (Safari first mount mapRef is null)',
   );
   assert(
+    globeSrc.includes('ensureGateoMarkersVisible'),
+    'HomeGlobeMapbox must centralize gateo marker reveal via ensureGateoMarkersVisible',
+  );
+  assert(
     globeSrc.includes('updateGateoMarkerSource(map, markerGeoJSONRef.current)'),
     'first overlay reveal must flush gateo GeoJSON (schedule stuck while rotating)',
   );
