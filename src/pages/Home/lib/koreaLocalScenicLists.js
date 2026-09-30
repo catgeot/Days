@@ -1965,6 +1965,11 @@ const JH_SKY = `${JH_IMG}GC097P02085`;
 const JH_SKY_2 = `${JH_IMG}GC097P02087`;
 const JH_SKY_3 = `${JH_IMG}GC097P02088`;
 const JH_SKY_HOME = 'https://jangheung.grandculture.net/jangheung/toc/GC09700349';
+const HY_IMG = 'https://hamyang.grandculture.net/Image?localName=hamyang&id=';
+const HY_DEOGYU = `${HY_IMG}GC072P02448`;
+const HY_DEOGYU_2 = `${HY_IMG}GC072P02449`;
+const HY_DEOGYU_3 = `${HY_IMG}GC072P02450`;
+const HY_DEOGYU_HOME = 'https://www.hygn.go.kr/01211/01214.web';
 const GJ_KHS = 'https://www.khs.go.kr/unisearch/images/national_treasure';
 const GJ_NAWON = `${GJ_KHS}/2021070209124901.JPG`;
 const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
@@ -3557,6 +3562,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     OC_GEUMGANG,
     [OC_GEUMGANG_2, OC_GEUMGANG_3],
     OC_GEUMGANG_HOME,
+  ),
+  'local-scenic:hamyang-palgyeong:덕유운해': localScenicPhotoOverlay(
+    '함양8경 제7경 덕유운해는 남덕유산 아래로 펼쳐지는 구름바다입니다. 함양군 문화관광은 남덕유산을 덕유산의 제2고봉으로 두고, 그 아래 구름바다의 신비로움을 제7경으로 적습니다. 디지털함양문화대전은 북덕유산 향적봉 1,614m와 남덕유산 1,507m가 쌍봉이며 1975년 덕유산이 국립공원으로 지정됐다고 적고, 함양군은 남덕유산 남쪽에 자리한다고 적습니다. 한국관광공사 영각사(함양)는 서상면 덕유월성로 567로, 남덕유산 들머리 사찰입니다. 무주 향적봉·무주리조트 운해, 거창군 북상면 남덕유분소와 구분합니다. 사진은 디지털함양문화대전 덕유산 공식 사진 3장입니다.',
+    '경상남도 함양군 서상면 덕유월성로 567 (남덕유산·영각사 일원)',
+    HY_DEOGYU,
+    [HY_DEOGYU_2, HY_DEOGYU_3],
+    HY_DEOGYU_HOME,
   ),
   'local-scenic:hwacheon-gugyeong:비래바위': localScenicPhotoOverlay(
     '화천9경 제6경 비래바위(飛來巖)는 상서면 구운리 만산동 뒤편 해발 970m에 우뚝 선 기암괴석입니다. 화천군 문화관광은 폭 약 100m·높이 약 60m로 병풍처럼 깎아 지른 절벽이 주변 산중에 홀로 솟아 웅장하고 이국적인 풍경을 이룬다고 소개하며, 병풍바위라고도 부릅니다. 금강산에서 바위가 날아와 이곳에 안착했다는 전설에서 날비(飛)·올래(徠)·바위암(巖)을 써 비래바위라 이름붙였다고 적습니다. 등산로 안내도 지점에서 정상까지 약 1시간이며 산 아래에서 바라보는 전경도 유명합니다. 등산 시작점은 상서면 구운리입니다. 정선 화암8경 거북바위·여수·거제·남해 등 다른 지역 「비래」 지명 바위와 다른 화천 상서면 산악 바위입니다. 사진은 화천군 문화관광 화천9경 제6경 비래바위 공식 사진 3장입니다.',

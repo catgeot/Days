@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 92,
-  sessionPhase: '옥천 세션 점검·QA',
+  sessionNo: 93,
+  sessionPhase: '함양 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-30-palgyeong-use-93-hamyang-deogyu-overlay',
+    session: '팔경 활용 #93, 함양 결손 오버레이',
+    title: '함양8경 덕유운해',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 함양8경 제7경 덕유운해(서상면 남덕유산 1,507m·영각사 덕유월성로 567) 디지털함양문화대전 덕유산 공식 사진 3장·개요. 오버레이 overview는 searchOverlayDesc만. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hamyang 덕유운해 행.',
+    at: '2026-09-30T13:30:00.000Z',
+  },
   {
     id: '2026-09-30-palgyeong-use-92-okcheon-intro-desc',
     session: '팔경 활용 #92, 옥천 세션 점검·QA',
