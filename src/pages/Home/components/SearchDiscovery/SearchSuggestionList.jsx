@@ -71,7 +71,21 @@ function buildLocationLine(item, locale = 'ko') {
  * 위치 줄·뱃지와 동일한 합성 문구면 설명란을 숨김.
  * (예: 위치「미야코지마 · 일본」+ 설명「미야코지마 · 해변」)
  */
+function scenicSearchOverlayDesc(item) {
+  return String(item?.searchOverlayDesc || '').trim();
+}
+
+/** 선택 장소에는 검색 행 전용 개요를 넘기지 않는다. desc로 옮기면 intro hydrate가 skip된다. */
+function placeFromSearchItem(item) {
+  if (!item?.searchOverlayDesc) return item;
+  const rest = { ...item };
+  delete rest.searchOverlayDesc;
+  return rest;
+}
+
 function resolveCardDesc(item, locationLine) {
+  const overlayDesc = scenicSearchOverlayDesc(item);
+  if (overlayDesc) return overlayDesc;
   const desc = String(item?.desc || '').trim();
   if (!desc) return '';
 
@@ -340,7 +354,7 @@ export function SearchSuggestionList({
                 <li>
                 <button
                   type="button"
-                  onClick={() => onSelect?.(item)}
+                  onClick={() => onSelect?.(placeFromSearchItem(item))}
                   className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
                     isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
                   }`}
@@ -472,6 +486,7 @@ export function SearchDisambiguationCards({
       const next = {};
       await Promise.all(
         list.map(async (item, index) => {
+          if (scenicSearchOverlayDesc(item)) return;
           if (!needsPlaceChatIntroHydration(item)) return;
           const summary = await fetchPlaceChatIntroSummaryForLocation(item);
           if (!summary) return;
@@ -558,7 +573,7 @@ export function SearchDisambiguationCards({
               ) : null}
             <button
               type="button"
-              onClick={() => onSelect?.(hydrated)}
+              onClick={() => onSelect?.(placeFromSearchItem(hydrated))}
               className="group flex w-full items-stretch gap-3 rounded-2xl border border-white/25 bg-[#32281f]/95 p-3 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
             >
               <SearchResultThumb

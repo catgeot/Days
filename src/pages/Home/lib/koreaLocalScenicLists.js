@@ -192,13 +192,11 @@ function overlayForHubMemberName(hubId, attractionName) {
  * Tour contentId 썸네일보다 멤버 오버레이가 우선 (같은 id를 쓰는 2경·3경 분리).
  * @param {object} [spot]
  */
-/** 팔경 멤버 오버레이 개요·갤러리가 있으면 잘못된 Tour contentId 상세·갤러리 대신 SSOT 사용 */
+/** 팔경 멤버 오버레이 공식 갤러리가 있으면 잘못된 Tour contentId 상세·갤러리 대신 SSOT 사용 */
 export function hasLocalScenicCuratedGalleryOverlay(spot) {
   const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
   return Boolean(
-    String(overlay?.overview || '').trim() &&
-      Array.isArray(overlay?.galleryUrls) &&
-      overlay.galleryUrls.length >= 1,
+    Array.isArray(overlay?.galleryUrls) && overlay.galleryUrls.length >= 1,
   );
 }
 
@@ -645,7 +643,8 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
   const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
   const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
   const overlay = lookupLocalScenicMemberOverlay(spotId);
-  const desc = localScenicMemberSearchDescFromOverlay(overlay);
+  // overview를 desc에 넣으면 실문장으로 보여 intro hydrate가 skip되고 장소 카드에 팔경 개요가 남는다.
+  const searchOverlayDesc = localScenicMemberSearchDescFromOverlay(overlay);
   return {
     ...base,
     groupTitle: localScenicListDisplayTitle(list, h, locale),
@@ -655,7 +654,7 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
     contentId: media.contentId,
     imageUrl: media.imageUrl,
     thumbUrl: media.imageUrl,
-    ...(desc ? { desc } : {}),
+    ...(searchOverlayDesc ? { searchOverlayDesc } : {}),
   };
 }
 
@@ -924,7 +923,7 @@ export function localScenicMemberSpotId(listId, attractionName) {
   return `local-scenic:${listId}:${normalizeKey(attractionName)}`;
 }
 
-/** 탐색 검색 다후보 카드 2줄 — 멤버 오버레이 overview (place_chat_intro 없을 때 SSOT) */
+/** 탐색 검색 행 표시 전용. suggestion.desc에 넣지 않는다(장소 카드 intro hydrate 유지). */
 export function localScenicMemberSearchDescFromOverlay(overlay, maxLen = 240) {
   const text = String(overlay?.overview || '')
     .trim()
@@ -1815,6 +1814,15 @@ const MP_DADO = `${MP_TOUR}/17316/archipelago1.jpg`;
 const MP_DADO_2 = `${MP_TOUR}/17316/archipelago2.jpg`;
 const MP_DADO_3 = `${MP_TOUR}/17316/archipelago.jpg`;
 const MP_DADO_HOME = 'https://www.mokpo.go.kr/tour/attraction/nineplace/archipelago';
+const OC_TOUR = 'https://www.oc.go.kr';
+const OC_CHERRY_HOME = `${OC_TOUR}/tour/contents.do?key=3831`;
+const OC_CHERRY = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img01.jpg`;
+const OC_CHERRY_2 = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img02.jpg`;
+const OC_CHERRY_3 = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img03.jpg`;
+const OC_GEUMGANG_HOME = `${OC_TOUR}/tour/contents.do?key=3836`;
+const OC_GEUMGANG = `${OC_TOUR}/site/tour/images/contents/oc_cts3836_img01.jpg`;
+const OC_GEUMGANG_2 = `${OC_TOUR}/site/tour/images/contents/oc_cts3836_img02.jpg`;
+const OC_GEUMGANG_3 = `${OC_TOUR}/site/tour/images/contents/oc_cts3836_img03.jpg`;
 const MA_TOUR = 'https://tour.muan.go.kr/contents';
 const MA_SIK = `${MA_TOUR}/18/spring_5_2_200401.jpg`;
 const MA_SIK_2 = `${MA_TOUR}/18/spring_5_200401.jpg`;
@@ -3535,6 +3543,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 홍성군 홍성읍 의사로 79 (홍주의사총)',
     HS_UISA,
     [HS_UISA_2, HS_UISA_3],
+  ),
+  'local-scenic:okcheon-gugyeong:옛37번국도변벚꽃길': localScenicPhotoOverlay(
+    '옥천9경 제2경 옛37번 국도변 벚꽃길은 향수옥천 100리길의 시작 구간입니다. 옥천군 문화관광은 매년 4월 만개하는 벚꽃길로, 구읍 봄꽃축제가 열리는 옥천읍 교동저수지에서 군북면 소정리까지 약 8km 이어지며 중간부터 금강 줄기가 보여 드라이브하기 좋다고 적습니다. 문의는 043-730-3413입니다. 충북나드리는 주소를 옥천읍 교동리 143으로 두고, 길 양옆 벚나무와 4월 벚꽃 축제·금강 조망 드라이브를 소개합니다. 6경 옥천 장계관광지·8경 향수호수길·9경 옥천 구읍·7경 금강유원지·음성 응천 십리벚꽃길과 다른 옥천읍~군북면 국도변 벚꽃 코스입니다. 사진은 옥천군 문화관광 옥천9경 제2경 공식 사진 3장입니다.',
+    '충청북도 옥천군 옥천읍 교동리 143 (교동저수지~군북면 소정리 옛 37번 국도변)',
+    OC_CHERRY,
+    [OC_CHERRY_2, OC_CHERRY_3],
+    OC_CHERRY_HOME,
+  ),
+  'local-scenic:okcheon-gugyeong:금강유원지': localScenicPhotoOverlay(
+    '옥천9경 제7경 금강유원지는 동이면 금강변 수변 휴양지입니다. 옥천군 문화관광은 1970년 경부고속도로 개통과 금강휴게소 조성으로 널리 알려진 옥천의 명소라 하고, 휴게소 내 금강IC로 접근이 좋으며 강변 산책·수상스키·오리배·낚시를 즐길 수 있고 전망대에서 금강 줄기를 조망할 수 있다고 적습니다. 주소는 동이면 금강로 596입니다. 2경 옛37번 국도변 벚꽃길·6경 장계관광지·8경 향수호수길·금강비경 3선(유원지~안남독락정)·다른 지역 금강유원지 명칭과 구분합니다. 사진은 옥천군 문화관광 옥천9경 제7경 공식 사진 3장입니다.',
+    '충청북도 옥천군 동이면 금강로 596 (금강유원지·금강IC 인근)',
+    OC_GEUMGANG,
+    [OC_GEUMGANG_2, OC_GEUMGANG_3],
+    OC_GEUMGANG_HOME,
   ),
   'local-scenic:hwacheon-gugyeong:비래바위': localScenicPhotoOverlay(
     '화천9경 제6경 비래바위(飛來巖)는 상서면 구운리 만산동 뒤편 해발 970m에 우뚝 선 기암괴석입니다. 화천군 문화관광은 폭 약 100m·높이 약 60m로 병풍처럼 깎아 지른 절벽이 주변 산중에 홀로 솟아 웅장하고 이국적인 풍경을 이룬다고 소개하며, 병풍바위라고도 부릅니다. 금강산에서 바위가 날아와 이곳에 안착했다는 전설에서 날비(飛)·올래(徠)·바위암(巖)을 써 비래바위라 이름붙였다고 적습니다. 등산로 안내도 지점에서 정상까지 약 1시간이며 산 아래에서 바라보는 전경도 유명합니다. 등산 시작점은 상서면 구운리입니다. 정선 화암8경 거북바위·여수·거제·남해 등 다른 지역 「비래」 지명 바위와 다른 화천 상서면 산악 바위입니다. 사진은 화천군 문화관광 화천9경 제6경 비래바위 공식 사진 3장입니다.',
