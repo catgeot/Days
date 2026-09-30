@@ -1815,6 +1815,11 @@ const MP_DADO = `${MP_TOUR}/17316/archipelago1.jpg`;
 const MP_DADO_2 = `${MP_TOUR}/17316/archipelago2.jpg`;
 const MP_DADO_3 = `${MP_TOUR}/17316/archipelago.jpg`;
 const MP_DADO_HOME = 'https://www.mokpo.go.kr/tour/attraction/nineplace/archipelago';
+const OC_TOUR = 'https://www.oc.go.kr';
+const OC_CHERRY_HOME = `${OC_TOUR}/tour/contents.do?key=3831`;
+const OC_CHERRY = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img01.jpg`;
+const OC_CHERRY_2 = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img02.jpg`;
+const OC_CHERRY_3 = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img03.jpg`;
 const MA_TOUR = 'https://tour.muan.go.kr/contents';
 const MA_SIK = `${MA_TOUR}/18/spring_5_2_200401.jpg`;
 const MA_SIK_2 = `${MA_TOUR}/18/spring_5_200401.jpg`;
@@ -3535,6 +3540,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '충청남도 홍성군 홍성읍 의사로 79 (홍주의사총)',
     HS_UISA,
     [HS_UISA_2, HS_UISA_3],
+  ),
+  'local-scenic:okcheon-gugyeong:옛37번국도변벚꽃길': localScenicPhotoOverlay(
+    '옥천9경 제2경 옛37번 국도변 벚꽃길은 향수옥천 100리길의 시작 구간입니다. 옥천군 문화관광은 매년 4월 만개하는 벚꽃길로, 구읍 봄꽃축제가 열리는 옥천읍 교동저수지에서 군북면 소정리까지 약 8km 이어지며 중간부터 금강 줄기가 보여 드라이브하기 좋다고 적습니다. 문의는 043-730-3413입니다. 충북나드리는 주소를 옥천읍 교동리 143으로 두고, 길 양옆 벚나무와 4월 벚꽃 축제·금강 조망 드라이브를 소개합니다. 6경 옥천 장계관광지·8경 향수호수길·9경 옥천 구읍·7경 금강유원지·음성 응천 십리벚꽃길과 다른 옥천읍~군북면 국도변 벚꽃 코스입니다. 사진은 옥천군 문화관광 옥천9경 제2경 공식 사진 3장입니다.',
+    '충청북도 옥천군 옥천읍 교동리 143 (교동저수지~군북면 소정리 옛 37번 국도변)',
+    OC_CHERRY,
+    [OC_CHERRY_2, OC_CHERRY_3],
+    OC_CHERRY_HOME,
   ),
   'local-scenic:hwacheon-gugyeong:비래바위': localScenicPhotoOverlay(
     '화천9경 제6경 비래바위(飛來巖)는 상서면 구운리 만산동 뒤편 해발 970m에 우뚝 선 기암괴석입니다. 화천군 문화관광은 폭 약 100m·높이 약 60m로 병풍처럼 깎아 지른 절벽이 주변 산중에 홀로 솟아 웅장하고 이국적인 풍경을 이룬다고 소개하며, 병풍바위라고도 부릅니다. 금강산에서 바위가 날아와 이곳에 안착했다는 전설에서 날비(飛)·올래(徠)·바위암(巖)을 써 비래바위라 이름붙였다고 적습니다. 등산로 안내도 지점에서 정상까지 약 1시간이며 산 아래에서 바라보는 전경도 유명합니다. 등산 시작점은 상서면 구운리입니다. 정선 화암8경 거북바위·여수·거제·남해 등 다른 지역 「비래」 지명 바위와 다른 화천 상서면 산악 바위입니다. 사진은 화천군 문화관광 화천9경 제6경 비래바위 공식 사진 3장입니다.',

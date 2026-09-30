@@ -5696,6 +5696,53 @@ const ttansanSuggest = localScenicMemberToSuggestion(
 );
 assert.equal(String(ttansanSuggest?.desc || '').trim(), '', '오버레이 없는 화천 행 desc 비움 유지');
 
+const okcheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'okcheon');
+const okcheonNine = okcheonMerged.filter((s) => s.localScenicListId === 'okcheon-gugyeong');
+assert.equal(okcheonNine.length, 9, '옥천9경 9명');
+const oldRoute37Cherry = okcheonNine.find((s) => s.attractionName === '옛37번 국도변 벚꽃길');
+assert.ok(oldRoute37Cherry?.overview && oldRoute37Cherry?.imageUrl, '옛37번 벚꽃길 overlay 사진·개요');
+assert.ok(!oldRoute37Cherry?.contentId, '옛37번 벚꽃길 JSON contentId 없음 유지');
+assert.ok(oldRoute37Cherry?.overview?.includes('제2경'), '옛37번 벚꽃길 overlay 제2경');
+assert.ok(oldRoute37Cherry?.overview?.includes('8km'), '옛37번 벚꽃길 overlay 거리');
+assert.ok(oldRoute37Cherry?.overview?.includes('교동저수지'), '옛37번 벚꽃길 overlay 교동저수지');
+assert.equal(oldRoute37Cherry?.galleryUrls?.length, 3, '옛37번 벚꽃길 공식 사진 3장');
+assert.ok(
+  oldRoute37Cherry?.galleryUrls?.some((u) => u.includes('oc_cts3831_img01')),
+  '옛37번 벚꽃길 옥천군 공식 사진 1',
+);
+assert.ok(
+  oldRoute37Cherry?.galleryUrls?.some((u) => u.includes('oc_cts3831_img02')),
+  '옛37번 벚꽃길 옥천군 공식 사진 2',
+);
+assert.equal(
+  new Set(oldRoute37Cherry?.galleryUrls).size,
+  oldRoute37Cherry?.galleryUrls?.length,
+  '옛37번 벚꽃길 갤러리 URL 중복 없음',
+);
+assert.ok(oldRoute37Cherry?.homepage?.includes('oc.go.kr'), '옛37번 벚꽃길 옥천군 관광 홈');
+const okcheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '옥천', {
+  injectLocalScenic: true,
+});
+const okcheonGlobeNine = okcheonGlobe.filter((s) => s.localScenicListId === 'okcheon-gugyeong');
+assert.equal(okcheonGlobeNine.length, 9, '옥천 검색 옥천9경 9행');
+assert.ok(
+  okcheonGlobe.find((s) => s.attractionName === '옛37번 국도변 벚꽃길')?.imageUrl?.includes(
+    'oc_cts3831_img01',
+  ),
+  '옥천 검색 옛37번 벚꽃길 썸네일',
+);
+const okcheonList = lists.find((l) => l.listId === 'okcheon-gugyeong');
+const okcheonHub = resolveCityAttractionHub('okcheon');
+const cherrySuggest = localScenicMemberToSuggestion(
+  okcheonList,
+  okcheonHub,
+  okcheonList?.members?.find((m) => m.attractionName === '옛37번 국도변 벚꽃길'),
+);
+assert.ok(
+  cherrySuggest?.desc?.includes('제2경') && cherrySuggest.desc.includes('벚꽃'),
+  '탐색 검색 옛37번 벚꽃길 desc = 멤버 오버레이 overview',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
