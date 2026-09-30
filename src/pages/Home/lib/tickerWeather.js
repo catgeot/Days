@@ -4,8 +4,63 @@
  */
 
 const CACHE_KEY_PREFIX = 'gateo_ticker_weather_v1:';
+const FAILURE_KEY_PREFIX = 'gateo_ticker_weather_fail_v1:';
+const GLOBAL_FAILURE_KEY = 'gateo_ticker_weather_fail_global_v1';
 const CACHE_TTL_MS = 30 * 60 * 1000;
+const FAILURE_BACKOFF_MS = 45 * 60 * 1000;
 const OPEN_METEO_URL = 'https://api.open-meteo.com/v1/forecast';
+
+const globalFailureUntil = { at: 0 };
+
+function isGlobalFailureActive() {
+  if (globalFailureUntil.at && Date.now() < globalFailureUntil.at) return true;
+  try {
+    const raw = sessionStorage.getItem(GLOBAL_FAILURE_KEY);
+    if (!raw) return false;
+    const entry = JSON.parse(raw);
+    if (!entry?.until || Date.now() >= entry.until) return false;
+    globalFailureUntil.at = entry.until;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function markGlobalFailure() {
+  const until = Date.now() + FAILURE_BACKOFF_MS;
+  globalFailureUntil.at = until;
+  try {
+    sessionStorage.setItem(GLOBAL_FAILURE_KEY, JSON.stringify({ until }));
+  } catch {
+    // quota / private mode
+  }
+}
+
+function failureCacheKey(lat, lng) {
+  return `${FAILURE_KEY_PREFIX}${lat.toFixed(2)},${lng.toFixed(2)}`;
+}
+
+function readFailureBackoff(lat, lng) {
+  try {
+    const raw = sessionStorage.getItem(failureCacheKey(lat, lng));
+    if (!raw) return false;
+    const entry = JSON.parse(raw);
+    return entry?.until && Date.now() < entry.until;
+  } catch {
+    return false;
+  }
+}
+
+function writeFailureBackoff(lat, lng) {
+  try {
+    sessionStorage.setItem(
+      failureCacheKey(lat, lng),
+      JSON.stringify({ until: Date.now() + FAILURE_BACKOFF_MS }),
+    );
+  } catch {
+    // quota / private mode
+  }
+}
 
 export const TICKER_WEATHER_FALLBACK = { temp: 20, weather: 'cloud' };
 
@@ -68,6 +123,8 @@ export async function fetchTickerWeatherForCoords(lat, lng) {
   const cached = readCache(lat, lng);
   if (cached) return cached;
 
+  if (isGlobalFailureActive() || readFailureBackoff(lat, lng)) return null;
+
   const params = new URLSearchParams({
     latitude: String(lat),
     longitude: String(lng),
@@ -76,7 +133,11 @@ export async function fetchTickerWeatherForCoords(lat, lng) {
   });
 
   const res = await fetch(`${OPEN_METEO_URL}?${params}`);
-  if (!res.ok) return null;
+  if (!res.ok) {
+    writeFailureBackoff(lat, lng);
+    if (res.status === 429) markGlobalFailure();
+    return null;
+  }
 
   const data = await res.json();
   const current = data?.current;
