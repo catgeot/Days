@@ -117,11 +117,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#91** tip `5e47e56f` · PR [#361](https://github.com/catgeot/Days/pull/361) · **다음 = #92 함양** 1건(덕유운해) · 순수 누락 **3**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#91 보류** tip `6b94d0a8` · PR [#361](https://github.com/catgeot/Days/pull/361) · **다음 = #92 옥천 세션 점검·QA** · 함양 덕유운해는 QA 후 **#93** · 순수 누락 **3**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
-| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
+| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **#92는 옥천 점검·QA만**(함양 착수 금지) | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: **#92 함양8경 1**(덕유운해). #91 옥천9경 옛37번 국도변 벚꽃길 완료(`a3c8e435`·PR [#361](https://github.com/catgeot/Days/pull/361)). 전 주제: [`AGENTS.md`](../AGENTS.md) Cloud **같은 세션 QA**.
+**A 다음 제시어**: **#92 옥천 세션 점검·QA** (사람 요청으로 #91 중단). 함양8경 덕유운해는 QA 통과 후 **#93**. #91 코드: 벚꽃길 `a3c8e435` · 금강유원지 `bde8f1b0` · 써머리 분리 시도 `5f20e005`(미완 — 검색 `desc`가 오버레이 개요). PR [#361](https://github.com/catgeot/Days/pull/361).
 
 **탐색 검색 써머리 (A · #90)** — 명승 허브 상세(`memberToScenicListSpot`·모달)와 탐색 `SearchDisambiguationCards`는 별 SSOT. 검색 `desc` = `item.desc` 또는 `place_chat_intro`(조회만·AI 없음). feature `localScenicMemberToSuggestion` + `localScenicMemberSearchDescFromOverlay` + `placeDescText.needsPlaceChatIntroHydration`(실문장 desc면 intro skip). 오버레이 없는 팔경 행은 여전히 빈칸 — 결손 오버레이(#91~)로 해소.
 
@@ -1156,17 +1156,28 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 옥천9경 사진·개요 없는 1건(옛37번 국도변 벚꽃길) LOCAL_SCENIC_MEMBER_OVERLAYS — 공식 사진 ≥3장(§2.1). Preview /korea/theme/scenic?hub=okcheon
 ```
 
-### §1.2 A #92 함양 결손 오버레이
+### §1.2 A #92 옥천 세션 점검·QA (다음)
 
 ```
-팔경 활용 #92, 함양 결손 오버레이
+팔경 활용 #92, 옥천 세션 점검·QA
 @plans/feature-handoff-index.md
 @plans/2026-09-30-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
-금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+금지: JSON contentId 기입 · scenic 승격 · 함양·신규 오버레이 · feature에 plans/** 커밋
+작업: #91 옥천만 점검. (1) 검색「옥천」금강유원지·옛37번 국도변 벚꽃길 목록 썸네일 (2) 장소 카드 갤러리 사진 3장 (3) 갤러리 써머리 = 무니 place_chat_intro. 알려진 결함: localScenicMemberToSuggestion이 desc에 오버레이 overview를 넣어 intro hydrate skip → 벚꽃길 카드에 오버레이 문장이 보임(5f20e005는 splitPlaceOverview만 분리). 원인 확인 후 그 경로만 수정. 함양 덕유운해는 QA 후 #93.
+검증: smoke:korea-local-scenic-lists · build
+```
+
+### §1.2 A #93 함양 결손 오버레이 (보류 · QA 후)
+
+```
+팔경 활용 #93, 함양 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: #92 QA 전에 착수 · JSON contentId 기입 · scenic 승격
 작업: 함양8경 사진·개요 없는 1건(덕유운해) LOCAL_SCENIC_MEMBER_OVERLAYS — 공식 사진 ≥3장(§2.1). Preview /korea/theme/scenic?hub=hamyang
-검증: smoke:korea-local-scenic-lists · smoke:korea-scenic-search · smoke:korea-scenic-spots · build
 ```
 
 ### §1.2 A #89 화천 결손 오버레이
