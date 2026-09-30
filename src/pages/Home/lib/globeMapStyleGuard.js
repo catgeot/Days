@@ -86,16 +86,6 @@ export function isGlobeMapStyleReady(map) {
   return Boolean(map && !map._removed && getLatchState(map)?.latched);
 }
 
-/** Alias for focus/camera readiness (parsed latch, not tile/source settlement). */
-export function isGlobeMapStyleParsed(map) {
-  return isGlobeMapStyleReady(map);
-}
-
-/** Tiles/sources settled — use before setData / setLayoutProperty re-sync loops. */
-export function isGlobeMapStyleSettled(map) {
-  return Boolean(map && !map._removed && map.isStyleLoaded?.());
-}
-
 export function whenGlobeMapStyleReady(map, { timeoutMs = 8000 } = {}) {
   if (!map || map._removed) return Promise.resolve(false);
   bindGlobeMapStyleLatch(map);

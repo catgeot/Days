@@ -154,6 +154,10 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
   const runCameraMethod = useCallback((kind, args) => {
     const child = childRef.current;
     if (childCanRunCamera(child)) {
+      const pending = cameraQueueRef.current.peek();
+      if (pending?.kind === kind) {
+        cameraQueueRef.current.clear();
+      }
       return delegateCamera(child, kind, args);
     }
     queueCameraCommand(cameraQueueRef, kind, args);

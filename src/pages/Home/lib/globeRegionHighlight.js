@@ -17,6 +17,7 @@ import {
   opacityExprFromSettle,
 } from './globeRegionHighlightOpacity.js';
 import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+import { raiseLayersToTopIfNeeded } from './globeMapLayerOrder.js';
 
 export const REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID = 'gateo-region-highlight-countries';
 export const REGION_HIGHLIGHT_FILL_ID = 'gateo-region-highlight-fill';
@@ -188,14 +189,7 @@ function countryFillFilter(iso) {
 }
 
 function raiseHighlightLayers(map) {
-  for (const layerId of REGION_HIGHLIGHT_LAYER_IDS) {
-    if (!map.getLayer(layerId)) continue;
-    try {
-      map.moveLayer(layerId);
-    } catch {
-      // Layer may be mid-transition.
-    }
-  }
+  raiseLayersToTopIfNeeded(map, REGION_HIGHLIGHT_LAYER_IDS);
 }
 
 function removeLegacyLayers(map) {

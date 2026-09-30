@@ -1,5 +1,6 @@
 import { getClusterMembersWithCoords } from '../../../utils/travelSpotClusters.js';
 import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+import { raiseLayersToTopIfNeeded } from './globeMapLayerOrder.js';
 
 export const CLUSTER_HULL_SOURCE_ID = 'gateo-cluster-hull';
 export const CLUSTER_POI_SOURCE_ID = 'gateo-cluster-poi';
@@ -165,14 +166,7 @@ export function clusterBoundaryLayersReady(map) {
 }
 
 function raiseClusterBoundaryLayers(map) {
-  for (const layerId of CLUSTER_LAYER_IDS) {
-    if (!map.getLayer(layerId)) continue;
-    try {
-      map.moveLayer(layerId);
-    } catch {
-      // Layer may be mid-transition.
-    }
-  }
+  raiseLayersToTopIfNeeded(map, CLUSTER_LAYER_IDS);
 }
 
 export function setupClusterBoundaryLayers(map) {

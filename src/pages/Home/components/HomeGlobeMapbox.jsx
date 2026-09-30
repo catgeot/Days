@@ -2329,6 +2329,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     pauseRotation: () => {
       autoRotateRef.current = false;
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
+      if (resumeRotateAfterLabelsTimerRef.current) {
+        window.clearTimeout(resumeRotateAfterLabelsTimerRef.current);
+        resumeRotateAfterLabelsTimerRef.current = null;
+      }
     },
     resumeRotation: () => {
       if (userPausedRotateRef.current) return;
