@@ -15,7 +15,7 @@
 
 ## 팔경 활용 #92, 옥천 세션 점검·QA
 
-- **세션** `팔경 활용 #92, 옥천 세션 점검·QA` · branch `cursor/palgyeong-use-e744` · tip `14a2b992` · PR [#361](https://github.com/catgeot/Days/pull/361)
+- **세션** `팔경 활용 #92, 옥천 세션 점검·QA` · branch `cursor/palgyeong-use-e744` · tip `14a2b992` · **main** `102a4fae` · PR [#361](https://github.com/catgeot/Days/pull/361) MERGED
 - **진단** 장소 카드에 팔경 개요가 보인 것은 옥천 데이터만의 문제가 아님. `#89` `a2273d0a`가 갤러리에 오버레이 overview를 직접 넣었고, `#90` `04842b6f`가 검색 `desc`에 같은 개요를 넣어 intro hydrate를 skip. `#91` `5f20e005`는 `splitPlaceOverview`만 분리해 `desc` 경로는 남음. 옥천에서 확인된 기존 로직 부작용.
 - **조치** `localScenicMemberToSuggestion`은 오버레이 개요를 `desc`에 넣지 않음. 검색 행은 `searchOverlayDesc`. 벚꽃길·금강유원지 썸네일·갤러리 3장 유지. 장소 카드는 `place_chat_intro` hydrate.
 - **VERIFY** `smoke:korea-local-scenic-lists` · `npm run build` PASS
