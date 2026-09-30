@@ -30,3 +30,6 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hamyang` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hamyang`
 - **다음** **#94 합천8경 1**(옥전고분군) · 잔여 순수 누락 완도 국화섬 — [`feature-handoff-index.md`](./feature-handoff-index.md)
 - **추가** 사람 QA — 검색 목록에 Tour 개요 전문이 행으로 나열됨(기백산·국립지리산자연휴양림). `092c1f02` 표시를 `79187ef9`에서 제거. 개요는 상세 본문만. 목록 행은 주소·짧은 안내.
+- **추가** 사람 QA — 기백산(Tour `126033`)은 first_image가 없어 검색 행이 랜드마크 아이콘. `e776474c`에서 디지털함양문화대전 항공 2장(GC072P02944·02945)과 한국민족문화대백과 기백산 사진을 썸네일·갤러리에 넣음. 용추계곡·용추폭포 `126053`과 구분. 목록 문구는 주소 유지.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic` 검색「함양」기백산 · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic`
