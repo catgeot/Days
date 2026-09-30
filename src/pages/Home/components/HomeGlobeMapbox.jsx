@@ -501,6 +501,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const globeThemeInitializedRef = useRef(false);
   const globeIdleMarkedRef = useRef(false);
   const globeReadyNotifiedRef = useRef(false);
+  const mapLoadedRef = useRef(false);
   const onGlobeReadyRef = useRef(onGlobeReady);
   onGlobeReadyRef.current = onGlobeReady;
   const prevStyleTransitioningRef = useRef(false);
@@ -545,7 +546,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [reachBoundariesVisible]);
 
   const buildRotateResumeSnapshot = useCallback((map) => ({
-    pauseRender,
+    pauseRender: pauseRender || !mapLoadedRef.current,
     userPausedRotate: userPausedRotateRef.current,
     interaction: interactionRef.current,
     tourActive: tourActiveRef.current,
@@ -1445,6 +1446,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!isGlobeMapStyleReady(map) && !gateoMarkerLayersReady(map)) {
       return;
     }
+    if (!map.isStyleLoaded?.()) return;
 
     syncGateoMarkerLayers();
 
@@ -2782,6 +2784,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         }}
         onLoad={(evt) => {
           markGlobeLoadPhase('onLoad');
+          mapLoadedRef.current = true;
           const map = evt?.target ?? mapRef.current?.getMap();
 
           if (map) {

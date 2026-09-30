@@ -9,7 +9,7 @@ function getLatchState(map) {
   if (!map) return null;
   let state = latchStateByMap.get(map);
   if (!state) {
-    state = { latched: false, waiters: [], bound: false };
+    state = { latched: false, waiters: [], bound: false, callbacks: new Set() };
     latchStateByMap.set(map, state);
   }
   return state;
@@ -52,14 +52,22 @@ export function bindGlobeMapStyleLatch(map, { onLatched } = {}) {
 
   const fireLatched = () => {
     if (!state.latched) return;
-    onLatched?.();
+    state.callbacks.forEach((cb) => {
+      try {
+        cb();
+      } catch {
+        // ignore
+      }
+    });
   };
+
+  if (onLatched) state.callbacks.add(onLatched);
 
   if (!state.bound) {
     state.bound = true;
     map.on('style.load', () => {
       latchStyleReady(map);
-      onLatched?.();
+      fireLatched();
     });
   }
 
@@ -73,8 +81,19 @@ export function bindGlobeMapStyleLatch(map, { onLatched } = {}) {
   }
 }
 
+/** Style JSON parsed (style.load) — safe for getStyle/getLayer and camera/focus gates. */
 export function isGlobeMapStyleReady(map) {
   return Boolean(map && !map._removed && getLatchState(map)?.latched);
+}
+
+/** Alias for focus/camera readiness (parsed latch, not tile/source settlement). */
+export function isGlobeMapStyleParsed(map) {
+  return isGlobeMapStyleReady(map);
+}
+
+/** Tiles/sources settled — use before setData / setLayoutProperty re-sync loops. */
+export function isGlobeMapStyleSettled(map) {
+  return Boolean(map && !map._removed && map.isStyleLoaded?.());
 }
 
 export function whenGlobeMapStyleReady(map, { timeoutMs = 8000 } = {}) {

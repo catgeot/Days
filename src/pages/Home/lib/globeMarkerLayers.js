@@ -310,10 +310,17 @@ export function isGlobeCameraBusy(map) {
   return Boolean(globeCameraBusyState.get(map)?.busy);
 }
 
+const GATEO_EMPTY_FC = { type: 'FeatureCollection', features: [] };
+const lastGateoSourceData = new WeakMap();
+
 export function updateGateoMarkerSource(map, geojson) {
   safeMapUpdate(map, () => {
     const source = map.getSource(GATEO_SOURCE_ID);
-    if (source) source.setData(geojson || { type: 'FeatureCollection', features: [] });
+    if (!source) return;
+    const data = geojson || GATEO_EMPTY_FC;
+    if (lastGateoSourceData.get(source) === data) return;
+    lastGateoSourceData.set(source, data);
+    source.setData(data);
   });
 }
 

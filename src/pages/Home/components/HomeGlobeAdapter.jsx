@@ -106,10 +106,21 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
   }, []);
 
   const scheduleFlushPendingCamera = useCallback(() => {
-    if (flushPendingCameraWhenReady()) return;
-    runWhenGlobeFocusReady({ timeoutMs: 8_000 }).then((ok) => {
-      if (ok) flushPendingCameraWhenReady();
+    const tryFlush = () => flushPendingCameraWhenReady();
+    if (tryFlush()) return;
+
+    runWhenGlobeFocusReady({ timeoutMs: 12_000 }).then(() => {
+      tryFlush();
     });
+
+    let polls = 0;
+    const pollFlush = () => {
+      if (tryFlush() || !cameraQueueRef.current.peek()) return;
+      polls += 1;
+      if (polls >= 120) return;
+      window.setTimeout(pollFlush, 500);
+    };
+    window.setTimeout(pollFlush, 500);
   }, [flushPendingCameraWhenReady, runWhenGlobeFocusReady]);
 
   const publishGlobeApiWhenReady = useCallback(() => {

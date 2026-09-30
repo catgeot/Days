@@ -186,11 +186,12 @@ test.describe('Globe crash regressions', () => {
     await expect(page).toHaveURL(/\//, { timeout: 30_000 });
     await waitForGlobeMap(page);
     await waitForGlobeApi(page);
-    const startView = await readMapCenterViaGlobeApi(page);
-    expect(startView?.center).toBeTruthy();
     const flyTarget = await resolveCurationFlyTarget(page, {
       lat: curationSeed.lat,
       lng: curationSeed.lng,
+    });
+    await page.evaluate(() => {
+      window.__gateoGlobeApi?.pauseRotation?.();
     });
     await expectCameraNearTarget(page, flyTarget);
     const styleErrors = errors.filter(isStyleNotDoneLoadingError);

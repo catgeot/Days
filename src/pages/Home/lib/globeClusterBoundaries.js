@@ -273,18 +273,26 @@ export function setupClusterBoundaryLayers(map) {
   }
 }
 
+const lastClusterSourceData = new WeakMap();
+
 export function updateClusterHullSource(map, geojson) {
   if (!isGlobeMapStyleReady(map)) return;
   const source = map.getSource(CLUSTER_HULL_SOURCE_ID);
   if (!source) return;
-  source.setData(geojson || EMPTY_FC);
+  const data = geojson || EMPTY_FC;
+  if (lastClusterSourceData.get(source) === data) return;
+  lastClusterSourceData.set(source, data);
+  source.setData(data);
 }
 
 export function updateClusterPoiSource(map, geojson) {
   if (!isGlobeMapStyleReady(map)) return;
   const source = map.getSource(CLUSTER_POI_SOURCE_ID);
   if (!source) return;
-  source.setData(geojson || EMPTY_FC);
+  const data = geojson || EMPTY_FC;
+  if (lastClusterSourceData.get(source) === data) return;
+  lastClusterSourceData.set(source, data);
+  source.setData(data);
 }
 
 export function clearClusterBoundaries(map) {
