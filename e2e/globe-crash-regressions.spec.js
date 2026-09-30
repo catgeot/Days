@@ -4,10 +4,140 @@ import {
   createGlobeAdapterCameraQueue,
   flushGlobeAdapterCameraQueue,
 } from '../src/pages/Home/lib/globeApiRegistry.js';
+import { canResumeGlobeAutoRotate } from '../src/pages/Home/lib/globeRotateResume.js';
+import { raiseLayersToTopIfNeeded } from '../src/pages/Home/lib/globeMapLayerOrder.js';
+
+const REGION_HIGHLIGHT_LAYER_IDS_FIXTURE = [
+  'gateo-region-highlight-fill',
+  'gateo-region-highlight-halo',
+  'gateo-region-highlight-line',
+  'gateo-region-highlight-disputed',
+];
+const FLIGHT_CINEMA_ARC_LAYER_IDS_FIXTURE = [
+  'gateo-flight-cinema-arc-glow',
+  'gateo-flight-cinema-arc-line',
+];
+
+function raiseHighlightLayersLike(map, highlightIds, arcIds) {
+  const arcsVisible = arcIds.some((layerId) => {
+    try {
+      return map.getLayoutProperty(layerId, 'visibility') === 'visible';
+    } catch {
+      return false;
+    }
+  });
+  const ids = arcsVisible ? [...highlightIds, ...arcIds] : highlightIds;
+  raiseLayersToTopIfNeeded(map, ids);
+}
 
 test.use({ ignoreHTTPSErrors: true });
 
 test.describe('globe adapter camera queue (unit)', () => {
+  test('canResumeGlobeAutoRotate blocks fly and cinema', () => {
+    expect(canResumeGlobeAutoRotate({ labelsSettled: true, cameraAnimating: true })).toBe(false);
+    expect(canResumeGlobeAutoRotate({ labelsSettled: true, flightCinemaActive: true })).toBe(false);
+    expect(canResumeGlobeAutoRotate({ labelsSettled: true, placeCardOpen: true })).toBe(false);
+    expect(canResumeGlobeAutoRotate({ labelsSettled: true })).toBe(true);
+  });
+
+  test('raiseLayersToTopIfNeeded is idempotent and fixes wrong order', () => {
+    const makeMap = (layerIds) => {
+      const layers = layerIds.map((id) => ({ id }));
+      let order = [...layerIds];
+      const moveLayerCalls = [];
+      return {
+        layers,
+        moveLayerCalls,
+        getStyle: () => ({ layers: order.map((id) => ({ id })) }),
+        getLayer: (id) => (order.includes(id) ? { id } : null),
+        moveLayer: (id) => {
+          moveLayerCalls.push(id);
+          order = order.filter((x) => x !== id);
+          order.push(id);
+        },
+      };
+    };
+
+    const one = makeMap(['base', 'a']);
+    raiseLayersToTopIfNeeded(one, ['a']);
+    expect(one.moveLayerCalls).toEqual([]);
+
+    const twoOk = makeMap(['base', 'a', 'b']);
+    raiseLayersToTopIfNeeded(twoOk, ['a', 'b']);
+    expect(twoOk.moveLayerCalls).toEqual([]);
+
+    const twoWrong = makeMap(['base', 'b', 'a']);
+    raiseLayersToTopIfNeeded(twoWrong, ['a', 'b']);
+    expect(twoWrong.moveLayerCalls).toEqual(['a', 'b']);
+
+    const threeOk = makeMap(['base', 'x', 'a', 'b', 'c']);
+    raiseLayersToTopIfNeeded(threeOk, ['a', 'b', 'c']);
+    expect(threeOk.moveLayerCalls).toEqual([]);
+
+    const threeWrong = makeMap(['base', 'c', 'b', 'a']);
+    raiseLayersToTopIfNeeded(threeWrong, ['a', 'b', 'c']);
+    expect(threeWrong.moveLayerCalls).toEqual(['a', 'b', 'c']);
+  });
+
+  test('raiseHighlightLayers — combined highlight+arc is idempotent (no ping-pong)', () => {
+    const highlightIds = REGION_HIGHLIGHT_LAYER_IDS_FIXTURE;
+    const arcIds = FLIGHT_CINEMA_ARC_LAYER_IDS_FIXTURE;
+    const allIds = [...highlightIds, ...arcIds];
+    const base = ['mapbox-base'];
+
+    const makeMap = (initialOrder, arcVisibilityRef) => {
+      const layerOrder = [...initialOrder];
+      const moveLayerCalls = [];
+      return {
+        moveLayerCalls,
+        getStyle: () => ({ layers: layerOrder.map((id) => ({ id })) }),
+        getLayer: (id) => (layerOrder.includes(id) ? { id } : null),
+        getLayoutProperty: (layerId, prop) => {
+          if (prop !== 'visibility') return undefined;
+          if (arcIds.includes(layerId)) return arcVisibilityRef.arcs ? 'visible' : 'none';
+          return 'visible';
+        },
+        moveLayer: (id) => {
+          moveLayerCalls.push(id);
+          const idx = layerOrder.indexOf(id);
+          if (idx === -1) return;
+          layerOrder.splice(idx, 1);
+          layerOrder.push(id);
+        },
+      };
+    };
+
+    const wrongOrder = [...base, ...arcIds, ...highlightIds];
+    const mapArcsOn = makeMap(wrongOrder, { arcs: true });
+    raiseHighlightLayersLike(mapArcsOn, highlightIds, arcIds);
+    const firstPassMoves = mapArcsOn.moveLayerCalls.length;
+    expect(firstPassMoves).toBeGreaterThan(0);
+    raiseHighlightLayersLike(mapArcsOn, highlightIds, arcIds);
+    expect(mapArcsOn.moveLayerCalls.length).toBe(firstPassMoves);
+
+    const mapArcsOff = makeMap([...base, ...highlightIds], { arcs: false });
+    raiseHighlightLayersLike(mapArcsOff, highlightIds, arcIds);
+    const offMoves = mapArcsOff.moveLayerCalls.length;
+    raiseHighlightLayersLike(mapArcsOff, highlightIds, arcIds);
+    expect(mapArcsOff.moveLayerCalls.length).toBe(offMoves);
+
+    const arcVis = { arcs: false };
+    const mapToggle = makeMap([...base, ...allIds], arcVis);
+    raiseHighlightLayersLike(mapToggle, highlightIds, arcIds);
+    const afterHidden = mapToggle.moveLayerCalls.length;
+    arcVis.arcs = true;
+    raiseHighlightLayersLike(mapToggle, highlightIds, arcIds);
+    const afterVisible = mapToggle.moveLayerCalls.length;
+    raiseHighlightLayersLike(mapToggle, highlightIds, arcIds);
+    expect(mapToggle.moveLayerCalls.length).toBe(afterVisible);
+    arcVis.arcs = false;
+    raiseHighlightLayersLike(mapToggle, highlightIds, arcIds);
+    const afterHiddenAgain = mapToggle.moveLayerCalls.length;
+    raiseHighlightLayersLike(mapToggle, highlightIds, arcIds);
+    expect(mapToggle.moveLayerCalls.length).toBe(afterHiddenAgain);
+    expect(afterHiddenAgain).toBeGreaterThanOrEqual(afterHidden);
+  });
+
   test('latest-wins, flush once, clear on unmount pattern', () => {
     const queue = createGlobeAdapterCameraQueue();
     queue.set('flyToAndPin', [1, 2, 'a', null, {}]);
@@ -123,6 +253,24 @@ async function expectCameraNearTarget(
   );
 }
 
+/** Curation fly — judge at moveend (before late API registration / auto-rotate drift). */
+async function expectFlyArrivalNearTarget(
+  page,
+  { lat, lng, toleranceDeg = 0.35, timeoutMs = 45_000 },
+) {
+  await page.waitForFunction(
+    ({ targetLat, targetLng, tol }) => {
+      const arrival = window.__gateoGlobeLastFlyArrival;
+      if (!arrival) return false;
+      const dLat = Math.abs(arrival.lat - targetLat);
+      const dLng = Math.abs(arrival.lng - targetLng);
+      return dLat <= tol && dLng <= tol;
+    },
+    { targetLat: lat, targetLng: lng, tol: toleranceDeg },
+    { timeout: timeoutMs },
+  );
+}
+
 test.describe('Globe crash regressions', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(/\.supabase\.co/i, async (route) => {
@@ -133,6 +281,20 @@ test.describe('Globe crash regressions', () => {
       }
       await route.continue();
     });
+  });
+
+  test('home load — globe focus ready without isStyleLoaded polling timeout', async ({ page }) => {
+    await page.goto('/');
+    await waitForGlobeMap(page);
+    await waitForGlobeApi(page);
+    const ready = await page.evaluate(async () => {
+      const api = window.__gateoGlobeApi;
+      if (!api?.whenGlobeFocusReady) return false;
+      const ok = await api.whenGlobeFocusReady({ timeoutMs: 12_000 });
+      const sync = api.isGlobeFocusReady?.() ?? false;
+      return ok && sync;
+    });
+    expect(ready).toBe(true);
   });
 
   test('home load — no uncaught Style is not done loading', async ({ page }) => {
@@ -164,14 +326,24 @@ test.describe('Globe crash regressions', () => {
     await viewOnGlobe.click();
     await expect(page).toHaveURL(/\//, { timeout: 30_000 });
     await waitForGlobeMap(page);
-    await waitForGlobeApi(page);
-    const startView = await readMapCenterViaGlobeApi(page);
-    expect(startView?.center).toBeTruthy();
     const flyTarget = await resolveCurationFlyTarget(page, {
       lat: curationSeed.lat,
       lng: curationSeed.lng,
     });
-    await expectCameraNearTarget(page, flyTarget);
+    await expectFlyArrivalNearTarget(page, flyTarget);
+    await waitForGlobeApi(page);
+    await page.waitForTimeout(3_000);
+    await page.waitForFunction(
+      ({ targetLat, targetLng, tol }) => {
+        const view = window.__gateoGlobeApi?.getMapView?.();
+        if (!view?.center) return false;
+        const dLat = Math.abs(view.center.lat - targetLat);
+        const dLng = Math.abs(view.center.lng - targetLng);
+        return dLat <= tol && dLng <= tol;
+      },
+      { targetLat: flyTarget.lat, targetLng: flyTarget.lng, tol: 0.35 },
+      { timeout: 10_000 },
+    );
     const styleErrors = errors.filter(isStyleNotDoneLoadingError);
     expect(styleErrors).toEqual([]);
   });

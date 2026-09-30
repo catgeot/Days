@@ -11,6 +11,7 @@ import {
 } from './globeFlightCinema.js';
 import { normalizeLngNear } from './globeLngUtils.js';
 import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+import { raiseLayersToTopIfNeeded } from './globeMapLayerOrder.js';
 import {
   flightCinemaDebugLocationTag,
   logFlightCinemaDebug,
@@ -234,12 +235,12 @@ export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = f
         } else {
           map.setLayoutProperty(layerId, 'visibility', 'none');
         }
-        if (promoteZIndex) {
-          map.moveLayer(layerId);
-        }
       } catch {
         // Style may be mid-transition.
       }
+    }
+    if (promoteZIndex) {
+      raiseLayersToTopIfNeeded(map, FLIGHT_CINEMA_ARC_LAYER_IDS);
     }
 
     // IATA 코드는 HTML Marker만 — Mapbox circle 점은 Safari 등에서 과하게 보임
@@ -298,8 +299,8 @@ function refreshFlightCinemaLayersForRelaunch(map) {
       if (!map.getLayer(layerId)) continue;
       map.setLayerZoomRange(layerId, 0, 24);
       map.setLayoutProperty(layerId, 'visibility', 'visible');
-      map.moveLayer(layerId);
     }
+    raiseLayersToTopIfNeeded(map, FLIGHT_CINEMA_ARC_LAYER_IDS);
     if (map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)) {
       map.setLayoutProperty(FLIGHT_CINEMA_AIRPORT_LAYER_ID, 'visibility', 'none');
     }
