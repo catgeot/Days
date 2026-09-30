@@ -20,17 +20,6 @@ const TYPE_META = {
   },
 };
 
-/**
- * @template T
- * @param {Promise<T>} promise
- * @param {number} ms
- * @param {string} label
- * @returns {Promise<T>}
- */
-function withTimeout(promise, ms, label) {
-  return withTourApiTimeout(promise, ms, label);
-}
-
 function toHttps(url) {
   const s = String(url || '').trim();
   if (!s) return null;
