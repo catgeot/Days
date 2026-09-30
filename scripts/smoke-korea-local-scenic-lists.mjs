@@ -5743,6 +5743,36 @@ assert.ok(
   '탐색 검색 옛37번 벚꽃길 desc = 멤버 오버레이 overview',
 );
 
+const geumgangResort = okcheonNine.find((s) => s.attractionName === '금강유원지');
+assert.ok(geumgangResort?.overview && geumgangResort?.imageUrl, '금강유원지 overlay 사진·개요');
+assert.equal(geumgangResort?.contentId, '127618', '금강유원지 JSON contentId 유지');
+assert.ok(geumgangResort?.overview?.includes('제7경'), '금강유원지 overlay 제7경');
+assert.ok(geumgangResort?.overview?.includes('금강로 596'), '금강유원지 overlay 주소');
+assert.equal(geumgangResort?.galleryUrls?.length, 3, '금강유원지 공식 사진 3장');
+assert.ok(
+  geumgangResort?.galleryUrls?.some((u) => u.includes('oc_cts3836_img01')),
+  '금강유원지 옥천군 공식 사진 1',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127618')?.imageUrl?.includes('oc_cts3836_img01'),
+  '금강유원지 contentId 127618 썸네일 오버레이',
+);
+assert.ok(
+  okcheonGlobe.find((s) => s.attractionName === '금강유원지')?.imageUrl?.includes(
+    'oc_cts3836_img01',
+  ),
+  '옥천 검색 금강유원지 썸네일',
+);
+const geumgangSuggest = localScenicMemberToSuggestion(
+  okcheonList,
+  okcheonHub,
+  okcheonList?.members?.find((m) => m.attractionName === '금강유원지'),
+);
+assert.ok(
+  geumgangSuggest?.desc?.includes('제7경') && geumgangSuggest.desc.includes('금강'),
+  '탐색 검색 금강유원지 desc = 멤버 오버레이 overview',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-30-palgyeong-use-91-okcheon-geumgang-overlay',
+    session: '팔경 활용 #91, 옥천 결손 오버레이',
+    title: '옥천9경 금강유원지',
+    detail:
+      'LOCAL_SCENIC_MEMBER_OVERLAYS에 옥천9경 제7경 금강유원지(동이면 금강로 596·금강IC) 옥천군 문화관광 공식 사진 3장·개요. Tour contentId 127618 firstimage 공란 검색 썸네일 보강. Preview /qa/palgyeong-use — 검색「옥천」금강유원지·?hub=okcheon 7경 행.',
+    at: '2026-09-30T03:30:00.000Z',
+  },
+  {
     id: '2026-09-30-palgyeong-use-91-okcheon-cherry-overlay',
     session: '팔경 활용 #91, 옥천 결손 오버레이',
     title: '옥천9경 옛37번 국도변 벚꽃길',

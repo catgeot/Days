@@ -1820,6 +1820,10 @@ const OC_CHERRY_HOME = `${OC_TOUR}/tour/contents.do?key=3831`;
 const OC_CHERRY = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img01.jpg`;
 const OC_CHERRY_2 = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img02.jpg`;
 const OC_CHERRY_3 = `${OC_TOUR}/site/tour/images/contents/oc_cts3831_img03.jpg`;
+const OC_GEUMGANG_HOME = `${OC_TOUR}/tour/contents.do?key=3836`;
+const OC_GEUMGANG = `${OC_TOUR}/site/tour/images/contents/oc_cts3836_img01.jpg`;
+const OC_GEUMGANG_2 = `${OC_TOUR}/site/tour/images/contents/oc_cts3836_img02.jpg`;
+const OC_GEUMGANG_3 = `${OC_TOUR}/site/tour/images/contents/oc_cts3836_img03.jpg`;
 const MA_TOUR = 'https://tour.muan.go.kr/contents';
 const MA_SIK = `${MA_TOUR}/18/spring_5_2_200401.jpg`;
 const MA_SIK_2 = `${MA_TOUR}/18/spring_5_200401.jpg`;
@@ -3547,6 +3551,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     OC_CHERRY,
     [OC_CHERRY_2, OC_CHERRY_3],
     OC_CHERRY_HOME,
+  ),
+  'local-scenic:okcheon-gugyeong:금강유원지': localScenicPhotoOverlay(
+    '옥천9경 제7경 금강유원지는 동이면 금강변 수변 휴양지입니다. 옥천군 문화관광은 1970년 경부고속도로 개통과 금강휴게소 조성으로 널리 알려진 옥천의 명소라 하고, 휴게소 내 금강IC로 접근이 좋으며 강변 산책·수상스키·오리배·낚시를 즐길 수 있고 전망대에서 금강 줄기를 조망할 수 있다고 적습니다. 주소는 동이면 금강로 596입니다. TourAPI contentId 127618은 firstimage가 없어 검색·목록 썸네일이 비었습니다. 2경 옛37번 국도변 벚꽃길·6경 장계관광지·8경 향수호수길·금강비경 3선(유원지~안남독락정)·다른 지역 금강유원지 명칭과 구분합니다. 사진은 옥천군 문화관광 옥천9경 제7경 공식 사진 3장입니다.',
+    '충청북도 옥천군 동이면 금강로 596 (금강유원지·금강IC 인근)',
+    OC_GEUMGANG,
+    [OC_GEUMGANG_2, OC_GEUMGANG_3],
+    OC_GEUMGANG_HOME,
   ),
   'local-scenic:hwacheon-gugyeong:비래바위': localScenicPhotoOverlay(
     '화천9경 제6경 비래바위(飛來巖)는 상서면 구운리 만산동 뒤편 해발 970m에 우뚝 선 기암괴석입니다. 화천군 문화관광은 폭 약 100m·높이 약 60m로 병풍처럼 깎아 지른 절벽이 주변 산중에 홀로 솟아 웅장하고 이국적인 풍경을 이룬다고 소개하며, 병풍바위라고도 부릅니다. 금강산에서 바위가 날아와 이곳에 안착했다는 전설에서 날비(飛)·올래(徠)·바위암(巖)을 써 비래바위라 이름붙였다고 적습니다. 등산로 안내도 지점에서 정상까지 약 1시간이며 산 아래에서 바라보는 전경도 유명합니다. 등산 시작점은 상서면 구운리입니다. 정선 화암8경 거북바위·여수·거제·남해 등 다른 지역 「비래」 지명 바위와 다른 화천 상서면 산악 바위입니다. 사진은 화천군 문화관광 화천9경 제6경 비래바위 공식 사진 3장입니다.',
