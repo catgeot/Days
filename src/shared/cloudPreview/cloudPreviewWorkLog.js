@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 93,
-  sessionPhase: '함양 검색·명소 써머리',
+  sessionPhase: '함양 목록 본문 분리',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-30-palgyeong-use-93-hamyang-list-body',
+    session: '팔경 활용 #93, 함양 목록 본문 분리',
+    title: '관광지 개요는 상세 본문만',
+    detail:
+      '함양 검색 목록에 Tour 개요 전문이 행으로 나열되던 것을 뺐습니다. 기백산·지리산자연휴양림 같은 관광지 정보는 행을 열었을 때 상세 본문에만 있습니다. 목록 행은 주소·짧은 안내로 돌아갑니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「함양」.',
+    at: '2026-09-30T14:20:00.000Z',
+  },
   {
     id: '2026-09-30-palgyeong-use-93-hamyang-summary',
     session: '팔경 활용 #93, 함양 검색·명소 써머리',

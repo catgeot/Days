@@ -131,9 +131,8 @@ assert.ok(
   'SearchSuggestionList renders palgyeong rankBlurb',
 );
 assert.ok(
-  suggestionListSrc.includes('useTourOverviewByContentId') &&
-    suggestionListSrc.includes('placeFromSearchItem(introByKey[index] ? hydrated : item)'),
-  '검색홈 카드 써머리는 Tour overview 표시만, 선택 시 desc에 넣지 않음',
+  !suggestionListSrc.includes('useTourOverviewByContentId'),
+  '검색 목록에 Tour 본문 overview를 넣지 않음',
 );
 const scenicPageSrc = readFileSync(
   join(root, 'src/pages/KoreaTheme/ScenicPage.jsx'),

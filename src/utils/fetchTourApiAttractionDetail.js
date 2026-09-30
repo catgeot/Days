@@ -28,7 +28,7 @@ function pickImageUrl(...candidates) {
   return null;
 }
 
-/** contentId → detailCommon item. 리스트 썸네일·개요가 같은 호출을 두 번 하지 않게 한다. */
+/** contentId → detailCommon item. 썸네일과 상세가 같은 호출을 두 번 하지 않게 한다. */
 const detailCommonCache = new Map();
 
 function detailCommonItem(contentId) {
@@ -42,25 +42,6 @@ function detailCommonItem(contentId) {
     detailCommonCache.set(id, pending);
   }
   return pending;
-}
-
-function plainOverview(raw) {
-  const text = String(raw || '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (text.length < 12) return null;
-  return text;
-}
-
-/**
- * 검색·명소 목록 써머리. detailCommon overview만. suggestion.desc에는 넣지 않는다.
- * @param {string | number | null | undefined} contentId
- * @returns {Promise<string | null>}
- */
-export async function fetchTourApiOverview(contentId) {
-  const item = await detailCommonItem(contentId);
-  return plainOverview(item?.overview);
 }
 
 /**
