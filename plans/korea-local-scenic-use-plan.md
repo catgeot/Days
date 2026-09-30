@@ -117,11 +117,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#92 main** `102a4fae` · PR [#361](https://github.com/catgeot/Days/pull/361) MERGED · **다음 = #93 함양** 1건(덕유운해) · 순수 누락 **3**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#93** tip `e656ab9d` · PR [#362](https://github.com/catgeot/Days/pull/362) · **다음 = #94 합천** 1건(옥전고분군) · 순수 누락 **2**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: **#93 함양8경 1**(덕유운해). #92 옥천 장소 카드 써머리는 main `102a4fae`(PR [#361](https://github.com/catgeot/Days/pull/361) MERGED). 오버레이 overview는 `searchOverlayDesc`만.
+**A 다음 제시어**: **#94 합천8경 1**(옥전고분군). #93 함양 덕유운해는 tip `e656ab9d`(PR [#362](https://github.com/catgeot/Days/pull/362)). 오버레이 overview는 `searchOverlayDesc`만. 순수 누락 잔여: 합천 옥전고분군 · 완도 국화섬.
 
 **탐색 검색 써머리 (A · #92)** — 검색 행 표시 = `searchOverlayDesc`(오버레이 overview). suggestion `desc`에는 넣지 않음. 장소 카드 갤러리는 `place_chat_intro` hydrate. `needsPlaceChatIntroHydration`은 실문장 `desc`면 skip하므로 오버레이를 `desc`에 다시 넣지 말 것. 명승 허브 상세 overview는 별 SSOT.
 
@@ -1168,16 +1168,29 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: #91 옥천만 점검. 갤러리 써머리 = 무니 place_chat_intro. localScenicMemberToSuggestion desc 경로 수정.
 ```
 
-### §1.2 A #93 함양 결손 오버레이 (다음)
+### §1.2 A #93 함양 결손 오버레이 (실행됨)
 
 ```
 팔경 활용 #93, 함양 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-30-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · tip e656ab9d · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 함양8경 사진·개요 없는 1건(덕유운해) LOCAL_SCENIC_MEMBER_OVERLAYS — 공식 사진 ≥3장(§2.1). 오버레이 overview는 suggestion desc에 넣지 말 것(searchOverlayDesc). Preview /korea/theme/scenic?hub=hamyang
+검증: smoke:korea-local-scenic-lists · smoke:korea-scenic-search · smoke:korea-scenic-spots · build
+```
+
+### §1.2 A #94 합천 결손 오버레이 (다음)
+
+```
+팔경 활용 #94, 합천 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-30-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 합천8경 사진·개요 없는 1건(옥전고분군) LOCAL_SCENIC_MEMBER_OVERLAYS — 공식 사진 ≥3장(§2.1). 오버레이 overview는 suggestion desc에 넣지 말 것(searchOverlayDesc). Preview /korea/theme/scenic?hub=hapcheon
 검증: smoke:korea-local-scenic-lists · smoke:korea-scenic-search · smoke:korea-scenic-spots · build
 ```
 

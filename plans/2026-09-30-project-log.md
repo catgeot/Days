@@ -21,3 +21,11 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → 검색「옥천」· `/korea/theme/scenic?hub=okcheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=okcheon`
 - **다음** **#93 함양8경 1**(덕유운해) · 순수 누락 **3**/876 — [`feature-handoff-index.md`](./feature-handoff-index.md)
+
+## 팔경 활용 #93, 함양 결손 오버레이
+
+- **세션** `팔경 활용 #93, 함양 결손 오버레이` · branch `cursor/palgyeong-use-e744` · tip `e656ab9d` · PR [#362](https://github.com/catgeot/Days/pull/362)
+- **조치** JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 함양8경 제7경 덕유운해(서상면 남덕유산 1,507m·영각사 덕유월성로 567). 디지털함양문화대전 덕유산 공식 사진 3장. 오버레이 overview는 `searchOverlayDesc`만.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS · 순수 누락 **2**/876
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hamyang` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hamyang`
+- **다음** **#94 합천8경 1**(옥전고분군) · 잔여 순수 누락 완도 국화섬 — [`feature-handoff-index.md`](./feature-handoff-index.md)
