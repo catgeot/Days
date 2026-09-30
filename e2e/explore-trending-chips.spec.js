@@ -2,6 +2,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Explore trending chips', () => {
+  test.use({ ignoreHTTPSErrors: true });
+
   test.beforeEach(async ({ page }) => {
     await page.route(/\.supabase\.co/i, async (route) => {
       const req = route.request();
