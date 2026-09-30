@@ -192,13 +192,11 @@ function overlayForHubMemberName(hubId, attractionName) {
  * Tour contentId 썸네일보다 멤버 오버레이가 우선 (같은 id를 쓰는 2경·3경 분리).
  * @param {object} [spot]
  */
-/** 팔경 멤버 오버레이 개요·갤러리가 있으면 잘못된 Tour contentId 상세·갤러리 대신 SSOT 사용 */
+/** 팔경 멤버 오버레이 공식 갤러리가 있으면 잘못된 Tour contentId 상세·갤러리 대신 SSOT 사용 */
 export function hasLocalScenicCuratedGalleryOverlay(spot) {
   const overlay = lookupLocalScenicMemberOverlayForSpot(spot);
   return Boolean(
-    String(overlay?.overview || '').trim() &&
-      Array.isArray(overlay?.galleryUrls) &&
-      overlay.galleryUrls.length >= 1,
+    Array.isArray(overlay?.galleryUrls) && overlay.galleryUrls.length >= 1,
   );
 }
 
@@ -3553,7 +3551,7 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     OC_CHERRY_HOME,
   ),
   'local-scenic:okcheon-gugyeong:금강유원지': localScenicPhotoOverlay(
-    '옥천9경 제7경 금강유원지는 동이면 금강변 수변 휴양지입니다. 옥천군 문화관광은 1970년 경부고속도로 개통과 금강휴게소 조성으로 널리 알려진 옥천의 명소라 하고, 휴게소 내 금강IC로 접근이 좋으며 강변 산책·수상스키·오리배·낚시를 즐길 수 있고 전망대에서 금강 줄기를 조망할 수 있다고 적습니다. 주소는 동이면 금강로 596입니다. TourAPI contentId 127618은 firstimage가 없어 검색·목록 썸네일이 비었습니다. 2경 옛37번 국도변 벚꽃길·6경 장계관광지·8경 향수호수길·금강비경 3선(유원지~안남독락정)·다른 지역 금강유원지 명칭과 구분합니다. 사진은 옥천군 문화관광 옥천9경 제7경 공식 사진 3장입니다.',
+    '옥천9경 제7경 금강유원지는 동이면 금강변 수변 휴양지입니다. 옥천군 문화관광은 1970년 경부고속도로 개통과 금강휴게소 조성으로 널리 알려진 옥천의 명소라 하고, 휴게소 내 금강IC로 접근이 좋으며 강변 산책·수상스키·오리배·낚시를 즐길 수 있고 전망대에서 금강 줄기를 조망할 수 있다고 적습니다. 주소는 동이면 금강로 596입니다. 2경 옛37번 국도변 벚꽃길·6경 장계관광지·8경 향수호수길·금강비경 3선(유원지~안남독락정)·다른 지역 금강유원지 명칭과 구분합니다. 사진은 옥천군 문화관광 옥천9경 제7경 공식 사진 3장입니다.',
     '충청북도 옥천군 동이면 금강로 596 (금강유원지·금강IC 인근)',
     OC_GEUMGANG,
     [OC_GEUMGANG_2, OC_GEUMGANG_3],
