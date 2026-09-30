@@ -110,6 +110,7 @@ import {
   scenicRegionForAreaCode,
   SCENIC_REGION_ORDER,
 } from '../Home/lib/koreaTourAttractions';
+import { useTourOverviewByContentId } from '../Home/hooks/useTourOverviewByContentId';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
   listKoreaLocalScenicLists,
@@ -1522,6 +1523,10 @@ export default function KoreaThemeScenicPage() {
       };
     });
   }, [dbSpots, curatedImageByContentId]);
+
+  const tourOverviewById = useTourOverviewByContentId(
+    searchActive ? dbSpotsWithThumbs : [],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -5531,10 +5536,15 @@ export default function KoreaThemeScenicPage() {
               <ul
                 className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
               >
-                {dbSpotsWithThumbs.map((spot) => (
+                {dbSpotsWithThumbs.map((spot) => {
+                  const tourOverview = String(
+                    tourOverviewById[String(spot.contentId || '').trim()] || '',
+                  ).trim();
+                  const rowSpot = tourOverview ? { ...spot, blurb: tourOverview } : spot;
+                  return (
                   <li key={`d-${spot.id}`} className="[overflow-anchor:none]">
                     <ScenicListRow
-                      spot={spot}
+                      spot={rowSpot}
                       large={listLarge}
                       distanceKm={dbKmById.get(String(spot.id))}
                       onOpen={openSpot}
@@ -5543,7 +5553,8 @@ export default function KoreaThemeScenicPage() {
                       locale={locale}
                     />
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             ) : null}
 

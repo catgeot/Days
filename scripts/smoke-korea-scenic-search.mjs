@@ -128,6 +128,11 @@ assert.ok(
   'tour catalog blurb is short',
 );
 assert.ok(
+  pageSrc.includes('useTourOverviewByContentId') &&
+    pageSrc.includes('tourOverview ? { ...spot, blurb: tourOverview }'),
+  '명소홈 검색 행은 Tour overview가 있으면 주소 대신 써머리',
+);
+assert.ok(
   pageSrc.includes('showTourFilterChips'),
   'search keeps category chips',
 );

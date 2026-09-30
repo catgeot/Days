@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 93,
-  sessionPhase: '함양 결손 오버레이',
+  sessionPhase: '함양 검색·명소 써머리',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-30-palgyeong-use-93-hamyang-summary',
+    session: '팔경 활용 #93, 함양 검색·명소 써머리',
+    title: '함양 검색홈·명소홈 써머리',
+    detail:
+      '검색홈 선택 카드와 명소홈「함양」검색의 관광지 행은 개요가 없으면 빈 줄이거나 주소만 보였습니다. contentId가 있으면 Tour detailCommon overview를 그 줄에만 표시하고, suggestion desc에는 넣지 않아 장소 카드는 place_chat_intro로 채웁니다. 덕유운해는 오버레이 searchOverlayDesc가 우선입니다. Preview /qa/palgyeong-use — 홈「함양」Enter, /korea/theme/scenic 검색「함양」.',
+    at: '2026-09-30T14:00:00.000Z',
+  },
   {
     id: '2026-09-30-palgyeong-use-93-hamyang-deogyu-overlay',
     session: '팔경 활용 #93, 함양 결손 오버레이',

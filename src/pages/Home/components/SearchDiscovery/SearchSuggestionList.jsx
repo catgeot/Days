@@ -13,6 +13,7 @@ import {
 import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve.js';
 import { fetchKoreaTourAttractionFirstImagesByIds, rememberKoreaTourAttractionFirstImage } from '../../lib/koreaTourAttractions';
 import { fetchTourApiFirstImage } from '../../../../utils/fetchTourApiAttractionDetail';
+import { useTourOverviewByContentId } from '../../hooks/useTourOverviewByContentId';
 import { resolveSearchScenicMedia } from '../../lib/koreaLocalScenicLists';
 import {
   getLocalizedCountryName,
@@ -475,6 +476,9 @@ export function SearchDisambiguationCards({
   }, [paging.page, page]);
 
   const thumbByIndex = useMissingTourAttractionThumbs(pageItems);
+  const tourOverviewById = useTourOverviewByContentId(
+    pageItems.filter((item) => !scenicSearchOverlayDesc(item)),
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -552,7 +556,14 @@ export function SearchDisambiguationCards({
           const hydrated = introByKey[index]
             ? { ...item, desc: introByKey[index], placeChatIntroApplied: true }
             : item;
-          const desc = resolveCardDesc(hydrated, locationLine);
+          const tourOverview = scenicSearchOverlayDesc(item)
+            ? ''
+            : String(tourOverviewById[String(item.contentId || '').trim()] || '').trim();
+          const displayItem =
+            !scenicSearchOverlayDesc(hydrated) && !introByKey[index] && tourOverview
+              ? { ...hydrated, searchOverlayDesc: tourOverview }
+              : hydrated;
+          const desc = resolveCardDesc(displayItem, locationLine);
           const showIntroMore = Boolean(desc) && desc.length >= SEARCH_INTRO_MORE_MIN_LEN;
           const groupTitle = String(item.groupTitle || '').trim();
           const prevGroup = String(pageItems[index - 1]?.groupTitle || '').trim();
@@ -573,7 +584,9 @@ export function SearchDisambiguationCards({
               ) : null}
             <button
               type="button"
-              onClick={() => onSelect?.(placeFromSearchItem(hydrated))}
+              onClick={() =>
+                onSelect?.(placeFromSearchItem(introByKey[index] ? hydrated : item))
+              }
               className="group flex w-full items-stretch gap-3 rounded-2xl border border-white/25 bg-[#32281f]/95 p-3 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
             >
               <SearchResultThumb
