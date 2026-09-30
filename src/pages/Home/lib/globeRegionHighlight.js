@@ -200,10 +200,10 @@ function flightCinemaArcsVisible(map) {
 }
 
 function raiseHighlightLayers(map) {
-  raiseLayersToTopIfNeeded(map, REGION_HIGHLIGHT_LAYER_IDS);
-  if (flightCinemaArcsVisible(map)) {
-    raiseLayersToTopIfNeeded(map, FLIGHT_CINEMA_ARC_LAYER_IDS);
-  }
+  const ids = flightCinemaArcsVisible(map)
+    ? [...REGION_HIGHLIGHT_LAYER_IDS, ...FLIGHT_CINEMA_ARC_LAYER_IDS]
+    : REGION_HIGHLIGHT_LAYER_IDS;
+  raiseLayersToTopIfNeeded(map, ids);
 }
 
 function removeLegacyLayers(map) {

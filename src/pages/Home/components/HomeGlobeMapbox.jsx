@@ -2807,7 +2807,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           mapLoadedRef.current = true;
           const map = evt?.target ?? mapRef.current?.getMap();
 
-          if (map && typeof window !== 'undefined' && typeof window.__gateoDiagHookMoveLayer === 'function') {
+          const diagMoveLayerHookEnabled =
+            import.meta.env.DEV
+            || (typeof window !== 'undefined'
+              && /(?:\?|&)gateoDiagMoveLayer=1(?:&|$)/.test(window.location.search));
+          if (
+            map
+            && diagMoveLayerHookEnabled
+            && typeof window !== 'undefined'
+            && typeof window.__gateoDiagHookMoveLayer === 'function'
+          ) {
             try {
               window.__gateoDiagHookMoveLayer(map);
             } catch {

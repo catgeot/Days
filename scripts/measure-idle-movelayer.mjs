@@ -7,7 +7,7 @@ import { chromium } from '@playwright/test';
 const previewUrl = process.env.PREVIEW_URL || 'https://127.0.0.1:4173';
 const idleMs = Number(process.env.IDLE_MS || 5000);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const context = await browser.newContext({ ignoreHTTPSErrors: true });
 const page = await context.newPage();
 
@@ -35,8 +35,11 @@ await page.addInitScript(() => {
   };
 });
 
+const previewWithDiag = previewUrl.includes('gateoDiagMoveLayer=1')
+  ? previewUrl
+  : `${previewUrl}${previewUrl.includes('?') ? '&' : '?'}gateoDiagMoveLayer=1`;
 const loadStarted = Date.now();
-await page.goto(previewUrl, { waitUntil: 'domcontentloaded' });
+await page.goto(previewWithDiag, { waitUntil: 'domcontentloaded' });
 await page.locator('.mapboxgl-map').first().waitFor({ state: 'visible', timeout: 90_000 });
 await page.waitForFunction(() => window.__gateoDiagHookReady === true, { timeout: 90_000 });
 await page.waitForFunction(
