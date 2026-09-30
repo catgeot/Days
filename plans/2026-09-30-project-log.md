@@ -12,3 +12,12 @@
 - **수정** `5f20e005` 갤러리 `splitPlaceOverview`에서 오버레이 `overview` 제거 · 금강유원지 overview에서 TourAPI 메모 문장 삭제. **미완** — 탐색 검색 `localScenicMemberToSuggestion`이 `desc`에 오버레이 개요(240자)를 넣고 intro hydrate를 건너뜀. Preview에서 옛37번 벚꽃길 장소 카드 써머리가 여전히 오버레이 문장.
 - **보류** 사람 요청으로 #91 옥천 작업 **중단**. 함양(#93 예정) 착수 금지. 다음 = **#92 옥천 세션 점검·QA**
 - **다음** [`feature-handoff-index.md`](./feature-handoff-index.md) **#92**
+
+## 팔경 활용 #92, 옥천 세션 점검·QA
+
+- **세션** `팔경 활용 #92, 옥천 세션 점검·QA` · branch `cursor/palgyeong-use-e744` · tip `14a2b992` · PR [#361](https://github.com/catgeot/Days/pull/361)
+- **진단** 장소 카드에 팔경 개요가 보인 것은 옥천 데이터만의 문제가 아님. `#89` `a2273d0a`가 갤러리에 오버레이 overview를 직접 넣었고, `#90` `04842b6f`가 검색 `desc`에 같은 개요를 넣어 intro hydrate를 skip. `#91` `5f20e005`는 `splitPlaceOverview`만 분리해 `desc` 경로는 남음. 옥천에서 확인된 기존 로직 부작용.
+- **조치** `localScenicMemberToSuggestion`은 오버레이 개요를 `desc`에 넣지 않음. 검색 행은 `searchOverlayDesc`. 벚꽃길·금강유원지 썸네일·갤러리 3장 유지. 장소 카드는 `place_chat_intro` hydrate.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → 검색「옥천」· `/korea/theme/scenic?hub=okcheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=okcheon`
+- **다음** **#93 함양8경 1**(덕유운해) · 순수 누락 **3**/876 — [`feature-handoff-index.md`](./feature-handoff-index.md)
