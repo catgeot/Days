@@ -1,4 +1,5 @@
 import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+import { raiseLayersToTopIfNeeded } from './globeMapLayerOrder.js';
 
 export const REACH_SOURCE_ID = 'gateo-reach-boundaries';
 export const REACH_DRIVE_FILL_ID = 'gateo-reach-drive-fill';
@@ -184,14 +185,7 @@ function removeLegacyLayers(map) {
 }
 
 function raiseReachBoundaryLayers(map) {
-  for (const layerId of REACH_LAYER_IDS) {
-    if (!map.getLayer(layerId)) continue;
-    try {
-      map.moveLayer(layerId);
-    } catch {
-      // Layer may be mid-transition.
-    }
-  }
+  raiseLayersToTopIfNeeded(map, REACH_LAYER_IDS);
 }
 
 export function setupReachBoundaryLayers(map) {

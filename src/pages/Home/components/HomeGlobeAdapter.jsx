@@ -58,7 +58,6 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
   const childRef = useRef(null);
   const cameraQueueRef = useRef(createGlobeAdapterCameraQueue());
   const globeApiPublishedRef = useRef(false);
-  const cameraFlushPollActiveRef = useRef(false);
 
   useEffect(() => {
     if (!MAPBOX_TOKEN && import.meta.env.DEV) {
@@ -81,24 +80,48 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     return true;
   }, []);
 
+  const runWhenGlobeFocusReady = useCallback((options) => {
+    const child = childRef.current;
+    if (child?.whenGlobeFocusReady) {
+      return child.whenGlobeFocusReady(options);
+    }
+    const timeoutMs = options?.timeoutMs ?? 4000;
+    const intervalMs = options?.intervalMs ?? 80;
+    return new Promise((resolve) => {
+      const start = Date.now();
+      const tick = () => {
+        const current = childRef.current;
+        if (current?.whenGlobeFocusReady) {
+          current.whenGlobeFocusReady(options).then(resolve);
+          return;
+        }
+        if (Date.now() - start >= timeoutMs) {
+          resolve(false);
+          return;
+        }
+        window.setTimeout(tick, intervalMs);
+      };
+      window.setTimeout(tick, intervalMs);
+    });
+  }, []);
+
   const scheduleFlushPendingCamera = useCallback(() => {
-    if (cameraFlushPollActiveRef.current) return;
-    if (flushPendingCameraWhenReady()) return;
-    cameraFlushPollActiveRef.current = true;
-    const start = Date.now();
-    const tick = () => {
-      if (flushPendingCameraWhenReady()) {
-        cameraFlushPollActiveRef.current = false;
-        return;
-      }
-      if (Date.now() - start >= 8_000) {
-        cameraFlushPollActiveRef.current = false;
-        return;
-      }
-      window.setTimeout(tick, 80);
+    const tryFlush = () => flushPendingCameraWhenReady();
+    if (tryFlush()) return;
+
+    runWhenGlobeFocusReady({ timeoutMs: 12_000 }).then(() => {
+      tryFlush();
+    });
+
+    let polls = 0;
+    const pollFlush = () => {
+      if (tryFlush() || !cameraQueueRef.current.peek()) return;
+      polls += 1;
+      if (polls >= 120) return;
+      window.setTimeout(pollFlush, 500);
     };
-    window.setTimeout(tick, 80);
-  }, [flushPendingCameraWhenReady]);
+    window.setTimeout(pollFlush, 500);
+  }, [flushPendingCameraWhenReady, runWhenGlobeFocusReady]);
 
   const publishGlobeApiWhenReady = useCallback(() => {
     if (globeApiPublishedRef.current) return;
@@ -128,34 +151,13 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     [activeEngine, publishGlobeApiWhenReady],
   );
 
-  const runWhenGlobeFocusReady = useCallback((options) => {
-    const child = childRef.current;
-    if (child?.whenGlobeFocusReady) {
-      return child.whenGlobeFocusReady(options);
-    }
-    const timeoutMs = options?.timeoutMs ?? 4000;
-    const intervalMs = options?.intervalMs ?? 80;
-    return new Promise((resolve) => {
-      const start = Date.now();
-      const tick = () => {
-        const current = childRef.current;
-        if (current?.whenGlobeFocusReady) {
-          current.whenGlobeFocusReady(options).then(resolve);
-          return;
-        }
-        if (Date.now() - start >= timeoutMs) {
-          resolve(false);
-          return;
-        }
-        window.setTimeout(tick, intervalMs);
-      };
-      window.setTimeout(tick, intervalMs);
-    });
-  }, []);
-
   const runCameraMethod = useCallback((kind, args) => {
     const child = childRef.current;
     if (childCanRunCamera(child)) {
+      const pending = cameraQueueRef.current.peek();
+      if (pending?.kind === kind) {
+        cameraQueueRef.current.clear();
+      }
       return delegateCamera(child, kind, args);
     }
     queueCameraCommand(cameraQueueRef, kind, args);
@@ -205,7 +207,6 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     return () => {
       cameraQueueRef.current.clear();
       globeApiPublishedRef.current = false;
-      cameraFlushPollActiveRef.current = false;
       if (globeApiRef.current) unregisterGlobeApi(globeApiRef.current);
     };
   }, []);

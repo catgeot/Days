@@ -1173,7 +1173,6 @@ function Home() {
         }
         const { lat, lng, name } = focusForHome;
         const focusCategory = focusForHome.category || category;
-        globeRef.current?.markCameraBusy?.();
         // Explore pause 직후: resize·입력 복구 없이 flyTo가 씹히는 경우(hub·신규 지역) 방지
         window.setTimeout(() => {
           globeRef.current?.wakeAfterOverlay?.();
@@ -1552,6 +1551,7 @@ function Home() {
           highlightCategory={category}
           categoryFaceEpoch={categoryFaceEpoch}
           focusSlug={globeFocusSlug}
+          placeCardOpen={isPlaceCardSummaryVisible}
           onReturnToSpace={closeFaceRegions}
         />
       </div>
@@ -1768,7 +1768,6 @@ function Home() {
             pendingGlobeHomeFocusRef.current = pin;
             rememberGlobeFocus(pin);
             selectedLocationRef.current = pin;
-            globeRef.current?.markCameraBusy?.();
             handleLocationSelect(pin, { deferGlobeFocus: true });
             navigate('/', { state: { fromSearch: true } });
           }}
