@@ -29,3 +29,4 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS · 순수 누락 **2**/876
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hamyang` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hamyang`
 - **다음** **#94 합천8경 1**(옥전고분군) · 잔여 순수 누락 완도 국화섬 — [`feature-handoff-index.md`](./feature-handoff-index.md)
+- **추가** 사람 QA — 검색홈「함양」카드(서암석불·대봉산·개평한옥마을·지안재)와 명소홈 검색(지리산 가는길·화림동계곡·기백산) 써머리 공란·주소만. tip `092c1f02` Tour overview를 그 줄에만 표시. desc 미대입. 덕유운해는 오버레이 개요 우선.
