@@ -571,8 +571,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         : null,
     );
     const localScenicOfficialGallery =
-      localScenicOverlay?.overview &&
-      Array.isArray(localScenicOverlay.galleryUrls) &&
+      Array.isArray(localScenicOverlay?.galleryUrls) &&
       localScenicOverlay.galleryUrls.length >= 1
         ? localScenicOverlay.galleryUrls
         : null;

@@ -45,6 +45,7 @@ import {
   normalizeScenicQuery,
 } from '../src/pages/Home/lib/scenicSearch.js';
 import { listKoreaScenicSpots } from '../src/pages/Home/lib/koreaScenicSpots.js';
+import { needsPlaceChatIntroHydration } from '../src/pages/Home/lib/placeDescText.js';
 import { sortScenicSpotsByPlaceCluster } from '../src/pages/Home/lib/sortScenicSpotsByPlaceCluster.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -5677,8 +5678,18 @@ const biraeSuggest = localScenicMemberToSuggestion(
   hwacheonList?.members?.find((m) => m.attractionName === '비래바위'),
 );
 assert.ok(
-  biraeSuggest?.desc?.includes('제6경') && biraeSuggest.desc.includes('비래바위'),
-  '탐색 검색 비래바위 desc = 멤버 오버레이 overview',
+  biraeSuggest?.searchOverlayDesc?.includes('제6경') &&
+    biraeSuggest.searchOverlayDesc.includes('비래바위'),
+  '탐색 검색 비래바위 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(biraeSuggest?.desc || '').includes('제6경'),
+  '비래바위 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(biraeSuggest),
+  true,
+  '비래바위 suggestion은 intro hydrate 대상',
 );
 const gwangdeokSuggest = localScenicMemberToSuggestion(
   hwacheonList,
@@ -5686,8 +5697,13 @@ const gwangdeokSuggest = localScenicMemberToSuggestion(
   hwacheonList?.members?.find((m) => m.attractionName === '광덕산'),
 );
 assert.ok(
-  gwangdeokSuggest?.desc?.includes('제9경') && !gwangdeokSuggest.desc.includes('천안시와 아산시'),
-  '탐색 검색 광덕산 desc = 화천 오버레이',
+  gwangdeokSuggest?.searchOverlayDesc?.includes('제9경') &&
+    !gwangdeokSuggest.searchOverlayDesc.includes('천안시와 아산시'),
+  '탐색 검색 광덕산 표시 = 화천 오버레이',
+);
+assert.ok(
+  !String(gwangdeokSuggest?.desc || '').includes('제9경'),
+  '광덕산 desc에 오버레이 overview 없음',
 );
 const ttansanSuggest = localScenicMemberToSuggestion(
   hwacheonList,
@@ -5695,6 +5711,111 @@ const ttansanSuggest = localScenicMemberToSuggestion(
   hwacheonList?.members?.find((m) => m.attractionName === '딴산'),
 );
 assert.equal(String(ttansanSuggest?.desc || '').trim(), '', '오버레이 없는 화천 행 desc 비움 유지');
+
+const okcheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'okcheon');
+const okcheonNine = okcheonMerged.filter((s) => s.localScenicListId === 'okcheon-gugyeong');
+assert.equal(okcheonNine.length, 9, '옥천9경 9명');
+const oldRoute37Cherry = okcheonNine.find((s) => s.attractionName === '옛37번 국도변 벚꽃길');
+assert.ok(oldRoute37Cherry?.overview && oldRoute37Cherry?.imageUrl, '옛37번 벚꽃길 overlay 사진·개요');
+assert.ok(!oldRoute37Cherry?.contentId, '옛37번 벚꽃길 JSON contentId 없음 유지');
+assert.ok(oldRoute37Cherry?.overview?.includes('제2경'), '옛37번 벚꽃길 overlay 제2경');
+assert.ok(oldRoute37Cherry?.overview?.includes('8km'), '옛37번 벚꽃길 overlay 거리');
+assert.ok(oldRoute37Cherry?.overview?.includes('교동저수지'), '옛37번 벚꽃길 overlay 교동저수지');
+assert.equal(oldRoute37Cherry?.galleryUrls?.length, 3, '옛37번 벚꽃길 공식 사진 3장');
+assert.ok(
+  oldRoute37Cherry?.galleryUrls?.some((u) => u.includes('oc_cts3831_img01')),
+  '옛37번 벚꽃길 옥천군 공식 사진 1',
+);
+assert.ok(
+  oldRoute37Cherry?.galleryUrls?.some((u) => u.includes('oc_cts3831_img02')),
+  '옛37번 벚꽃길 옥천군 공식 사진 2',
+);
+assert.equal(
+  new Set(oldRoute37Cherry?.galleryUrls).size,
+  oldRoute37Cherry?.galleryUrls?.length,
+  '옛37번 벚꽃길 갤러리 URL 중복 없음',
+);
+assert.ok(oldRoute37Cherry?.homepage?.includes('oc.go.kr'), '옛37번 벚꽃길 옥천군 관광 홈');
+const okcheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '옥천', {
+  injectLocalScenic: true,
+});
+const okcheonGlobeNine = okcheonGlobe.filter((s) => s.localScenicListId === 'okcheon-gugyeong');
+assert.equal(okcheonGlobeNine.length, 9, '옥천 검색 옥천9경 9행');
+assert.ok(
+  okcheonGlobe.find((s) => s.attractionName === '옛37번 국도변 벚꽃길')?.imageUrl?.includes(
+    'oc_cts3831_img01',
+  ),
+  '옥천 검색 옛37번 벚꽃길 썸네일',
+);
+const okcheonList = lists.find((l) => l.listId === 'okcheon-gugyeong');
+const okcheonHub = resolveCityAttractionHub('okcheon');
+const cherrySuggest = localScenicMemberToSuggestion(
+  okcheonList,
+  okcheonHub,
+  okcheonList?.members?.find((m) => m.attractionName === '옛37번 국도변 벚꽃길'),
+);
+assert.ok(
+  cherrySuggest?.searchOverlayDesc?.includes('제2경') &&
+    cherrySuggest.searchOverlayDesc.includes('벚꽃'),
+  '탐색 검색 옛37번 벚꽃길 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(cherrySuggest?.desc || '').includes('제2경'),
+  '벚꽃길 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(cherrySuggest),
+  true,
+  '벚꽃길 suggestion은 intro hydrate 대상',
+);
+assert.ok(
+  String(cherrySuggest?.imageUrl || cherrySuggest?.thumbUrl || '').includes('oc_cts3831_img01'),
+  '벚꽃길 suggestion 썸네일',
+);
+
+const geumgangResort = okcheonNine.find((s) => s.attractionName === '금강유원지');
+assert.ok(geumgangResort?.overview && geumgangResort?.imageUrl, '금강유원지 overlay 사진·개요');
+assert.equal(geumgangResort?.contentId, '127618', '금강유원지 JSON contentId 유지');
+assert.ok(geumgangResort?.overview?.includes('제7경'), '금강유원지 overlay 제7경');
+assert.ok(geumgangResort?.overview?.includes('금강로 596'), '금강유원지 overlay 주소');
+assert.equal(geumgangResort?.galleryUrls?.length, 3, '금강유원지 공식 사진 3장');
+assert.ok(
+  geumgangResort?.galleryUrls?.some((u) => u.includes('oc_cts3836_img01')),
+  '금강유원지 옥천군 공식 사진 1',
+);
+assert.ok(
+  lookupLocalScenicPhotoByContentId('127618')?.imageUrl?.includes('oc_cts3836_img01'),
+  '금강유원지 contentId 127618 썸네일 오버레이',
+);
+assert.ok(
+  okcheonGlobe.find((s) => s.attractionName === '금강유원지')?.imageUrl?.includes(
+    'oc_cts3836_img01',
+  ),
+  '옥천 검색 금강유원지 썸네일',
+);
+const geumgangSuggest = localScenicMemberToSuggestion(
+  okcheonList,
+  okcheonHub,
+  okcheonList?.members?.find((m) => m.attractionName === '금강유원지'),
+);
+assert.ok(
+  geumgangSuggest?.searchOverlayDesc?.includes('제7경') &&
+    geumgangSuggest.searchOverlayDesc.includes('금강'),
+  '탐색 검색 금강유원지 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(geumgangSuggest?.desc || '').includes('제7경'),
+  '금강유원지 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(geumgangSuggest),
+  true,
+  '금강유원지 suggestion은 intro hydrate 대상',
+);
+assert.ok(
+  String(geumgangSuggest?.imageUrl || geumgangSuggest?.thumbUrl || '').includes('oc_cts3836_img01'),
+  '금강유원지 suggestion 썸네일',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

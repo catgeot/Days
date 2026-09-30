@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 89,
-  sessionPhase: '화천 결손 오버레이',
+  sessionNo: 92,
+  sessionPhase: '옥천 세션 점검·QA',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-30-palgyeong-use-92-okcheon-intro-desc',
+    session: '팔경 활용 #92, 옥천 세션 점검·QA',
+    title: '옥천 장소 카드 써머리',
+    detail:
+      '팔경 오버레이 overview는 검색 행 searchOverlayDesc만. suggestion desc에 넣지 않아 옛37번 국도변 벚꽃길·금강유원지 장소 카드 갤러리 써머리가 place_chat_intro로 hydrate된다. 검색 썸네일·갤러리 3장은 유지. Preview /qa/palgyeong-use — 검색「옥천」.',
+    at: '2026-09-30T07:00:00.000Z',
+  },
+  {
+    id: '2026-09-30-palgyeong-use-91-okcheon-geumgang-overlay',
+    session: '팔경 활용 #91, 옥천 결손 오버레이',
+    title: '옥천9경 금강유원지',
+    detail:
+      'LOCAL_SCENIC_MEMBER_OVERLAYS에 옥천9경 제7경 금강유원지(동이면 금강로 596·금강IC) 옥천군 문화관광 공식 사진 3장·개요. Tour contentId 127618 firstimage 공란 검색 썸네일 보강. Preview /qa/palgyeong-use — 검색「옥천」금강유원지·?hub=okcheon 7경 행.',
+    at: '2026-09-30T03:30:00.000Z',
+  },
+  {
+    id: '2026-09-30-palgyeong-use-91-okcheon-cherry-overlay',
+    session: '팔경 활용 #91, 옥천 결손 오버레이',
+    title: '옥천9경 옛37번 국도변 벚꽃길',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 옥천9경 결손 1건(옛37번 국도변 벚꽃길)의 공공 공식 팩트 개요·주소·옥천군 문화관광 제2경 공식 사진 3장을 보강했습니다. 교동저수지~군북면 소정리 약 8km 향수옥천 100리길 벚꽃 드라이브(문의 043-730-3413)입니다. 장계관광지·향수호수길·금강유원지와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=okcheon 옛37번 국도변 벚꽃길 행 썸네일·상세 갤러리.',
+    at: '2026-09-30T00:35:00.000Z',
+  },
   {
     id: '2026-09-29-palgyeong-use-89-hwacheon-gwangdeoksan-tour-fix',
     session: '팔경 활용 #89, 화천 결손 오버레이',
