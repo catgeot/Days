@@ -444,6 +444,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   categoryFaceEpoch = 0,
   onReturnToSpace = null,
   autoRotatePaused = false,
+  onGlobeReady,
 }, ref) => {
   const { locale } = useLocale();
   const { t } = useTranslation();
@@ -494,6 +495,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const firstLabelSettleStartedRef = useRef(false);
   const globeThemeInitializedRef = useRef(false);
   const globeIdleMarkedRef = useRef(false);
+  const globeReadyNotifiedRef = useRef(false);
+  const onGlobeReadyRef = useRef(onGlobeReady);
+  onGlobeReadyRef.current = onGlobeReady;
   const prevStyleTransitioningRef = useRef(false);
   const pendingThemeCameraRef = useRef(null);
   const pendingFocusRef = useRef(null);
@@ -2828,6 +2832,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           tryRevealGlobeBase();
 
           setMapReady(true);
+          if (!globeReadyNotifiedRef.current) {
+            globeReadyNotifiedRef.current = true;
+            onGlobeReadyRef.current?.();
+          }
           syncMapZoom();
           // bright만 setLanguage — satellite는 deferLabelSync의 applySatelliteBasemapLabels
           if (globeTheme === 'bright' && map && typeof map.setLanguage === 'function') {
