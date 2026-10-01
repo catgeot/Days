@@ -4,18 +4,18 @@
 
 import { TRAVEL_SPOTS } from './travelSpots';
 
-// 1. 순위 설정 (수동 관리 or 기본값) — 날씨는 Open-Meteo(tickerWeather.js)에서 실시간 조회
+// 1. 순위 설정 (수동 관리 or 기본값) — DB 실패 시 fallback
 const RANKING_CONFIG = [
-  { id: 403, change: 'up' },
-  { id: 401, change: 'same' },
-  { id: 103, change: 'up' },
-  { id: 405, change: 'down' },
-  { id: 304, change: 'up' },
-  { id: 102, change: 'down' },
-  { id: 105, change: 'same' },
-  { id: 301, change: 'up' },
-  { id: 303, change: 'down' },
-  { id: 201, change: 'up' },
+  { id: 403 },
+  { id: 401 },
+  { id: 103 },
+  { id: 405 },
+  { id: 304 },
+  { id: 102 },
+  { id: 105 },
+  { id: 301 },
+  { id: 303 },
+  { id: 201 },
 ];
 
 // 2. 데이터 결합 및 내보내기 (Export)
@@ -30,6 +30,5 @@ export const TRENDING_LIST = RANKING_CONFIG.map((config, index) => {
   return {
     ...spot,
     rank: index + 1,
-    change: config.change,
   };
 }).filter(item => item !== null); // 없는 데이터는 제외

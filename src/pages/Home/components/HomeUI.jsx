@@ -191,7 +191,7 @@ const HomeUI = React.memo(({
   }, []);
 
   const isMdUp = useMdUpViewport();
-  const trendingData = useTrendingData({ enabled: isMdUp, withWeather: true });
+  const trendingData = useTrendingData({ enabled: isMdUp });
 
   useEffect(() => {
     if (externalInput) {

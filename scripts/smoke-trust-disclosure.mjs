@@ -18,11 +18,10 @@ const read = (rel) => readFileSync(join(root, rel), 'utf8');
 const creditsKo = resolveMapboxAttribution('ko');
 const creditsEn = resolveMapboxAttribution('en');
 
-assert.equal(GATEO_DATA_SOURCES.length, 4, '데이터 출처 4종');
+assert.equal(GATEO_DATA_SOURCES.length, 3, '데이터 출처 3종');
 assert.equal(GATEO_TRAVEL_PARTNERS.length, 4, '제휴 파트너 4종');
 assert.match(creditsKo.dataSources.map((item) => item.name).join(' '), /TourAPI/);
 assert.match(creditsKo.dataSources.map((item) => item.detail).join(' '), /공공누리/);
-assert.ok(creditsKo.dataSources.some((item) => item.name === 'Open-Meteo'));
 assert.ok(creditsKo.dataSources.some((item) => item.name === 'Unsplash'));
 assert.ok(creditsKo.dataSources.some((item) => item.name === 'Pexels'));
 assert.deepEqual(
