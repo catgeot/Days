@@ -4,7 +4,8 @@
 --
 -- Restores the original public INSERT policy exactly:
 --   name "Enable insert for all users", INSERT, role public, WITH CHECK (true).
--- Drops public.upsert_search_dictionary(text, text, jsonb).
+-- Drops public.upsert_search_dictionary(text, text, jsonb)
+-- and public.bump_search_dictionary_served(text, integer).
 -- Does not change "Enable read access for all users".
 
 DROP POLICY IF EXISTS "Enable insert for all users" ON public.search_dictionary;
@@ -16,4 +17,5 @@ CREATE POLICY "Enable insert for all users"
   TO public
   WITH CHECK (true);
 
+DROP FUNCTION IF EXISTS public.bump_search_dictionary_served(text, integer);
 DROP FUNCTION IF EXISTS public.upsert_search_dictionary(text, text, jsonb);

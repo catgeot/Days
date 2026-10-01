@@ -1346,13 +1346,26 @@ export function useHomeHandlers({
       let isCorrected = false;
       try {
         const lowerQuery = query.toLowerCase();
-        // Public RLS is SELECT-only. Cache writes go through upsert_search_dictionary.
+        // Public RLS is SELECT-only. New keys insert via upsert_search_dictionary.
+        // Existing rows are not client-overwritable; mood serves call bump_search_dictionary_served.
         const upsertSearchDictionary = (correctedQuery, locationData, warnLabel) => {
           supabase
             .rpc('upsert_search_dictionary', {
               p_original_query: lowerQuery,
               p_corrected_query: correctedQuery,
               p_location_data: locationData,
+            })
+            .then(({ error }) => {
+              if (error) console.warn(warnLabel, error);
+            }, (error) => {
+              console.warn(warnLabel, error);
+            });
+        };
+        const bumpSearchDictionaryServed = (variantIndex, warnLabel) => {
+          supabase
+            .rpc('bump_search_dictionary_served', {
+              p_original_query: lowerQuery,
+              p_variant_index: variantIndex,
             })
             .then(({ error }) => {
               if (error) console.warn(warnLabel, error);
@@ -1435,16 +1448,8 @@ export function useHomeHandlers({
                   processSearchKeywords(verifiedMoodLoc);
                   isCorrected = true;
 
-                  const nextVariants = [...moodVariants];
-                  nextVariants[picked.index] = {
-                    ...nextVariants[picked.index],
-                    served_count: Number(nextVariants[picked.index]?.served_count || 0) + 1,
-                    last_served_at: new Date().toISOString()
-                  };
-
-                  upsertSearchDictionary(
-                    verifiedMoodLoc.name,
-                    { ...parsedData, variants: nextVariants, last_pick_at: new Date().toISOString() },
+                  bumpSearchDictionaryServed(
+                    picked.index,
                     "[Smart Search Mood Cache Update Error]"
                   );
 
@@ -1598,11 +1603,13 @@ export function useHomeHandlers({
                     last_pick_at: new Date().toISOString()
                   }
                 };
-                upsertSearchDictionary(
-                  cachePayload.corrected_query,
-                  cachePayload.location_data,
-                  "[Smart Search Mood Cache Upsert Error]"
-                );
+                if (!cachedDict) {
+                  upsertSearchDictionary(
+                    cachePayload.corrected_query,
+                    cachePayload.location_data,
+                    "[Smart Search Mood Cache Upsert Error]"
+                  );
+                }
 
                 return makeDisambiguationResult(query, cards, {
                   title: `'${query}'에 어울리는 여행지 → 골라주세요`,
@@ -1654,11 +1661,13 @@ export function useHomeHandlers({
                     }
                   };
 
-                  upsertSearchDictionary(
-                    cachePayload.corrected_query,
-                    cachePayload.location_data,
-                    "[Smart Search Mood Cache Upsert Error]"
-                  );
+                  if (!cachedDict) {
+                    upsertSearchDictionary(
+                      cachePayload.corrected_query,
+                      cachePayload.location_data,
+                      "[Smart Search Mood Cache Upsert Error]"
+                    );
+                  }
 
                   return commitLocation(chosenLoc, `'${query}'에 어울리는 여행지 → 골라주세요`);
                 }
@@ -1680,21 +1689,23 @@ export function useHomeHandlers({
                 const verifiedAiLoc = await verifyAndNormalizeCandidate(candidateForVerify, query, "AI");
 
                 if (verifiedAiLoc) {
-                  // 3. AI 교정 성공 + 실재 검증 성공 시에만 캐시 저장
-                  upsertSearchDictionary(
-                    verifiedAiLoc.name,
-                    {
-                      intent_type: 'typo',
-                      name: verifiedAiLoc.name,
-                      name_en: verifiedAiLoc.name_en,
-                      country: verifiedAiLoc.country,
-                      country_en: verifiedAiLoc.country_en,
-                      lat: verifiedAiLoc.lat,
-                      lng: verifiedAiLoc.lng,
-                      reason: parsedData.reason || ""
-                    },
-                    "[Smart Search Cache Insert Error]"
-                  );
+                  // 3. AI 교정 성공 + 실재 검증 성공 시에만 새 키를 저장. 기존 행은 덮어쓰지 않는다.
+                  if (!cachedDict) {
+                    upsertSearchDictionary(
+                      verifiedAiLoc.name,
+                      {
+                        intent_type: 'typo',
+                        name: verifiedAiLoc.name,
+                        name_en: verifiedAiLoc.name_en,
+                        country: verifiedAiLoc.country,
+                        country_en: verifiedAiLoc.country_en,
+                        lat: verifiedAiLoc.lat,
+                        lng: verifiedAiLoc.lng,
+                        reason: parsedData.reason || ""
+                      },
+                      "[Smart Search Cache Insert Error]"
+                    );
+                  }
 
                   if (!requireChoice) {
                     setDraftInput(verifiedAiLoc.name);
