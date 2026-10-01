@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 초안** · tip `03086721` · draft PR [#371](https://github.com/catgeot/Days/pull/371) · **DB 미적용 · 병합 금지** |
+| **상태** | **#1 초안** · tip `358ed558` · draft PR [#371](https://github.com/catgeot/Days/pull/371) · **insert-only · DB 미적용 · 병합 금지** |
 | **브랜치** | `cursor/search-dictionary-lockdown-4a4e` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-01-project-log.md`](./2026-10-01-project-log.md) |
