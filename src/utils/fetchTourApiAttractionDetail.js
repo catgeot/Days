@@ -28,6 +28,22 @@ function pickImageUrl(...candidates) {
   return null;
 }
 
+/** contentId → detailCommon item. 썸네일과 상세가 같은 호출을 두 번 하지 않게 한다. */
+const detailCommonCache = new Map();
+
+function detailCommonItem(contentId) {
+  const id = String(contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(id)) return Promise.resolve(null);
+  let pending = detailCommonCache.get(id);
+  if (!pending) {
+    pending = invokeTourApi('detailCommon', { contentId: id })
+      .then((res) => res?.items?.[0] || null)
+      .catch(() => null);
+    detailCommonCache.set(id, pending);
+  }
+  return pending;
+}
+
 /**
  * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진 (KorService2 SSOT).
  * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
@@ -38,8 +54,8 @@ export async function fetchTourApiAttractionDetail(opts) {
 
   const preferredType = String(opts?.contentTypeId || '').trim();
 
-  const [common, images] = await Promise.all([
-    invokeTourApi('detailCommon', { contentId }),
+  const [commonItem, images] = await Promise.all([
+    detailCommonItem(contentId),
     invokeTourApi('detailImage', {
       contentId,
       numOfRows: 12,
@@ -47,7 +63,6 @@ export async function fetchTourApiAttractionDetail(opts) {
     }),
   ]);
 
-  const commonItem = common?.items?.[0] || null;
   const typeFromCommon = String(commonItem?.contentTypeId || '').trim();
   const typeOrder = [
     ...new Set(
@@ -149,11 +164,10 @@ export async function fetchTourApiAttractionDetail(opts) {
 export async function fetchTourApiFirstImage(contentId) {
   const id = String(contentId ?? '').trim();
   if (!/^\d{1,32}$/.test(id)) return null;
-  const [common, images] = await Promise.all([
-    invokeTourApi('detailCommon', { contentId: id }),
+  const [item, images] = await Promise.all([
+    detailCommonItem(id),
     invokeTourApi('detailImage', { contentId: id, numOfRows: 8, pageNo: 1 }),
   ]);
-  const item = common?.items?.[0] || null;
   const directImage = pickImageUrl(
     item?.imageUrl,
     item?.firstimage,

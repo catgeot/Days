@@ -128,6 +128,10 @@ assert.ok(
   'tour catalog blurb is short',
 );
 assert.ok(
+  !pageSrc.includes('useTourOverviewByContentId'),
+  '명소 검색 목록 행에 Tour 본문 overview를 넣지 않음',
+);
+assert.ok(
   pageSrc.includes('showTourFilterChips'),
   'search keeps category chips',
 );

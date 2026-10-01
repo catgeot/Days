@@ -130,6 +130,10 @@ assert.ok(
   suggestionListSrc.includes('rankBlurb'),
   'SearchSuggestionList renders palgyeong rankBlurb',
 );
+assert.ok(
+  !suggestionListSrc.includes('useTourOverviewByContentId'),
+  '검색 목록에 Tour 본문 overview를 넣지 않음',
+);
 const scenicPageSrc = readFileSync(
   join(root, 'src/pages/KoreaTheme/ScenicPage.jsx'),
   'utf8',
@@ -5815,6 +5819,72 @@ assert.equal(
 assert.ok(
   String(geumgangSuggest?.imageUrl || geumgangSuggest?.thumbUrl || '').includes('oc_cts3836_img01'),
   '금강유원지 suggestion 썸네일',
+);
+
+const hamyangMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hamyang');
+const hamyangEight = hamyangMerged.filter((s) => s.localScenicListId === 'hamyang-palgyeong');
+assert.equal(hamyangEight.length, 8, '함양8경 8명');
+const deogyuCloud = hamyangEight.find((s) => s.attractionName === '덕유운해');
+assert.ok(deogyuCloud?.overview && deogyuCloud?.imageUrl, '덕유운해 overlay 사진·개요');
+assert.ok(!deogyuCloud?.contentId, '덕유운해 JSON contentId 없음 유지');
+assert.ok(deogyuCloud?.overview?.includes('제7경'), '덕유운해 overlay 제7경');
+assert.ok(deogyuCloud?.overview?.includes('1,507m'), '덕유운해 overlay 남덕유산 높이');
+assert.ok(deogyuCloud?.overview?.includes('덕유월성로 567'), '덕유운해 overlay 영각사 주소');
+assert.equal(deogyuCloud?.galleryUrls?.length, 3, '덕유운해 공식 사진 3장');
+assert.ok(
+  deogyuCloud?.galleryUrls?.every((u) => u.includes('hamyang.grandculture.net')),
+  '덕유운해 디지털함양문화대전 사진',
+);
+assert.equal(
+  new Set(deogyuCloud?.galleryUrls).size,
+  deogyuCloud?.galleryUrls?.length,
+  '덕유운해 갤러리 URL 중복 없음',
+);
+assert.ok(deogyuCloud?.homepage?.includes('hygn.go.kr'), '덕유운해 함양군 관광 홈');
+const hamyangGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '함양', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  hamyangGlobe.find((s) => s.attractionName === '덕유운해')?.imageUrl?.includes('GC072P02448'),
+  '함양 검색 덕유운해 썸네일',
+);
+const hamyangList = lists.find((l) => l.listId === 'hamyang-palgyeong');
+const hamyangHub = resolveCityAttractionHub('hamyang');
+const deogyuSuggest = localScenicMemberToSuggestion(
+  hamyangList,
+  hamyangHub,
+  hamyangList?.members?.find((m) => m.attractionName === '덕유운해'),
+);
+assert.ok(
+  deogyuSuggest?.searchOverlayDesc?.includes('제7경') &&
+    deogyuSuggest.searchOverlayDesc.includes('구름바다'),
+  '탐색 검색 덕유운해 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(deogyuSuggest?.desc || '').includes('제7경'),
+  '덕유운해 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(deogyuSuggest),
+  true,
+  '덕유운해 suggestion은 intro hydrate 대상',
+);
+assert.ok(
+  String(deogyuSuggest?.imageUrl || deogyuSuggest?.thumbUrl || '').includes('GC072P02448'),
+  '덕유운해 suggestion 썸네일',
+);
+const gibackThumb = lookupLocalScenicPhotoByContentId('126033');
+assert.ok(gibackThumb?.imageUrl?.includes('GC072P02944'), '기백산 Tour 126033 빈 썸네일');
+assert.equal(gibackThumb?.galleryUrls?.length, 3, '기백산 공식 사진 3장');
+assert.ok(
+  gibackThumb?.galleryUrls?.every(
+    (u) => u.includes('hamyang.grandculture.net') || u.includes('devin.aks.ac.kr'),
+  ),
+  '기백산 디지털함양문화대전·민족문화대백과 사진',
+);
+assert.ok(
+  !String(lookupLocalScenicPhotoByContentId('126053')?.imageUrl || '').includes('GC072P02944'),
+  '기백산 썸네일 ≠ 용추계곡 126053',
 );
 
 const extra = process.argv.slice(2);

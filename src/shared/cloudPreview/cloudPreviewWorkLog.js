@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 92,
-  sessionPhase: '옥천 세션 점검·QA',
+  sessionNo: 93,
+  sessionPhase: '함양 기백산 사진',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,38 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-30-palgyeong-use-93-gibacksan-photo',
+    session: '팔경 활용 #93, 함양 기백산 사진',
+    title: '기백산 검색 사진',
+    detail:
+      '명소홈「함양」검색의 기백산(Tour 126033)은 first_image가 없어 랜드마크 아이콘만 보였습니다. 디지털함양문화대전 기백산 항공 사진 2장과 한국민족문화대백과 기백산 사진 1장을 검색 썸네일·갤러리에 넣었습니다. 용추계곡·용추폭포(126053) 사진과 구분합니다. 목록 행 문구는 주소 그대로입니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「함양」기백산.',
+    at: '2026-09-30T21:00:00.000Z',
+  },
+  {
+    id: '2026-09-30-palgyeong-use-93-hamyang-list-body',
+    session: '팔경 활용 #93, 함양 목록 본문 분리',
+    title: '관광지 개요는 상세 본문만',
+    detail:
+      '함양 검색 목록에 Tour 개요 전문이 행으로 나열되던 것을 뺐습니다. 기백산·지리산자연휴양림 같은 관광지 정보는 행을 열었을 때 상세 본문에만 있습니다. 목록 행은 주소·짧은 안내로 돌아갑니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「함양」.',
+    at: '2026-09-30T14:20:00.000Z',
+  },
+  {
+    id: '2026-09-30-palgyeong-use-93-hamyang-summary',
+    session: '팔경 활용 #93, 함양 검색·명소 써머리',
+    title: '함양 검색홈·명소홈 써머리',
+    detail:
+      '검색홈 선택 카드와 명소홈「함양」검색의 관광지 행은 개요가 없으면 빈 줄이거나 주소만 보였습니다. contentId가 있으면 Tour detailCommon overview를 그 줄에만 표시하고, suggestion desc에는 넣지 않아 장소 카드는 place_chat_intro로 채웁니다. 덕유운해는 오버레이 searchOverlayDesc가 우선입니다. Preview /qa/palgyeong-use — 홈「함양」Enter, /korea/theme/scenic 검색「함양」.',
+    at: '2026-09-30T14:00:00.000Z',
+  },
+  {
+    id: '2026-09-30-palgyeong-use-93-hamyang-deogyu-overlay',
+    session: '팔경 활용 #93, 함양 결손 오버레이',
+    title: '함양8경 덕유운해',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 함양8경 제7경 덕유운해(서상면 남덕유산 1,507m·영각사 덕유월성로 567) 디지털함양문화대전 덕유산 공식 사진 3장·개요. 오버레이 overview는 searchOverlayDesc만. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hamyang 덕유운해 행.',
+    at: '2026-09-30T13:30:00.000Z',
+  },
   {
     id: '2026-09-30-palgyeong-use-92-okcheon-intro-desc',
     session: '팔경 활용 #92, 옥천 세션 점검·QA',
