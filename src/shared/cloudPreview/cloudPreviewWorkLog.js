@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-10-01-palgyeong-use-94-hapcheon-list-summary',
+    session: '팔경 활용 #94, 합천 결손 오버레이',
+    title: '합천 검색 한 줄 써머리',
+    detail:
+      '한국의 명승에서 「합천」을 검색하면 관광지 목록 둘째 줄이 주소뿐이었습니다. 팔경 항목은 그대로 두고, 합천 검색의 관광지 행만 주소 뒤에 Tour 개요 첫 문장을 붙입니다. 황계폭포·내천못재·신소양체육공원·허굴산이 해당합니다. 본문 전문은 행을 열었을 때 나오고, 다른 지역 목록은 주소만 유지합니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「합천」.',
+    at: '2026-10-01T23:55:00.000Z',
+  },
+  {
     id: '2026-10-01-palgyeong-use-94-hapcheon-okjeon',
     session: '팔경 활용 #94, 합천 결손 오버레이',
     title: '합천 옥전고분군 사진',
