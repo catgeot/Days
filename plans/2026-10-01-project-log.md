@@ -19,3 +19,12 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → 홈 검색「기백산」 · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/`
 - **작업 로그** 기백산 검색 한 장
 - **다음** **#94 합천8경 1**(옥전고분군) · 순수 누락 **2**/876 — [`feature-handoff-index.md`](./feature-handoff-index.md)
+
+## 팔경 활용 #94, 합천 결손 오버레이
+
+- **세션** `팔경 활용 #94, 합천 결손 오버레이` · branch `cursor/palgyeong-use-e744` · tip `9c4840aa` · PR [#368](https://github.com/catgeot/Days/pull/368)
+- **조치** 합천8경 제7경 옥전고분군(쌍책면 성산리 산23-18·황강옥전로 1558) 민족문화대백과 공식 사진 3장·개요. 사적 제326호·유네스코 가야고분군 1666-003. JSON contentId 없음. overview는 `searchOverlayDesc`만.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hapcheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hapcheon`
+- **작업 로그** 합천 옥전고분군 사진
+- **다음** **#95 완도8경 1**(국화섬) · 순수 누락 **1**/876 — [`feature-handoff-index.md`](./feature-handoff-index.md)
