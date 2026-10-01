@@ -19,6 +19,7 @@ import MrtTnaActivitiesWidget from './MrtTnaActivitiesWidget';
 import { THEME_COLORS } from '../constants';
 import { plannerLinkHint } from '../readableText';
 import { cleanAdviceText, getAdviceText, getMultiLinks } from '../utils';
+import { replaceEtiasClaims } from '../etiasNotice';
 import { buildGygActivitiesSearchQuery } from '../locationRules';
 import { shouldShowFerryCard } from '../../../../../utils/ferryBookingMatch';
 import { canShowMrtTnaStrip } from '../../../../../utils/mrtTnaQuery';
@@ -37,12 +38,15 @@ const ToolkitCard = ({
     themeColor = 'gray',
     className = '',
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
     const links = getMultiLinks({ type, data, location, essentialGuide });
-    const ferryAdviceText = cleanAdviceText(getAdviceText(data));
+    const cleanedAdviceText = cleanAdviceText(getAdviceText(data));
+    // 비자 카드: 저장된 AI 문구의 ETIAS 날짜 주장을 EU 공식 확인 문구로 대체
+    const ferryAdviceText =
+        type === 'visa' ? replaceEtiasClaims(cleanedAdviceText, i18n?.language) : cleanedAdviceText;
     const ferryHasSsot = type === 'ferry_booking' && shouldShowFerryCard(location?.slug);
     const showFerryAdviceBlock = ferryAdviceText || !ferryHasSsot;
     const useMrtTna = type === 'map_poi' && canShowMrtTnaStrip(location);

@@ -38,7 +38,7 @@ export const OFFICIAL_VISA_LINKS = [
     { keywords: ['이집트', '카이로', '다합', '후르가다', '룩소르', '아스완'], url: 'https://www.visa2egypt.gov.eg/eVisa/', label: '이집트 e-Visa 공식 포털', labelEn: 'Egypt e-Visa official portal' },
     { keywords: ['인도', '뉴델리', '뭄바이', '바라나시', '자이푸르'], url: 'https://indianvisaonline.gov.in/evisa/', label: '인도 e-Visa 공식 신청', labelEn: 'India e-Visa — official application' },
     { keywords: ['eTA', '케냐', '나이로비', '마사이마라'], url: 'https://www.etakenya.go.ke/', label: '케냐 eTA 공식 신청', labelEn: 'Kenya eTA — official application' },
-    { keywords: ['ETIAS', '유럽', '프랑스', '이탈리아', '스페인', '독일', '스위스', '파리', '로마', '밀라노', '피렌체', '베네치아', '바르셀로나', '마드리드', '뮌헨', '프랑크푸르트', '취리히', '인터라켄', '체르마트'], url: 'https://travel-europe.europa.eu/etias_en', label: '유럽 ETIAS (시행 예정 확인)', labelEn: 'Europe ETIAS (check rollout status)' },
+    { keywords: ['ETIAS', '유럽', '프랑스', '이탈리아', '스페인', '독일', '스위스', '파리', '로마', '밀라노', '피렌체', '베네치아', '바르셀로나', '마드리드', '뮌헨', '프랑크푸르트', '취리히', '인터라켄', '체르마트'], url: 'https://travel-europe.europa.eu/etias_en', label: '유럽 ETIAS 공식 안내 (현재 미시행)', labelEn: 'Europe ETIAS — official info (not yet in operation)' },
     { keywords: ['스리랑카', '콜롬보', 'ETA', '캔디', '갈레'], url: 'https://eta.gov.lk/slvisa/', label: '스리랑카 ETA 공식 신청', labelEn: 'Sri Lanka ETA — official application' },
     { keywords: ['탄자니아', '잔지바르', '세렝게티', '다르에스살람', '아루샤', '킬리만자로'], url: 'https://visa.immigration.go.tz/', label: '탄자니아 e-Visa 공식 신청', labelEn: 'Tanzania e-Visa — official application' },
     { keywords: ['러시아', '블라디보스톡', '모스크바', '상트페테르부르크', '이르쿠츠크', '하바롭스크'], url: 'https://electronic-visa.kdmid.ru/', label: '러시아 e-Visa 공식 신청', labelEn: 'Russia e-Visa — official application' },
