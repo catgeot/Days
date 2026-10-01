@@ -40,7 +40,7 @@ function clampRegionalGatewayIatas(
   const allowed = key ? REGIONAL_GATEWAY_IATAS_BY_SLUG[key] : null;
   if (!allowed?.length) return guide;
 
-  const next = { ...guide, primary_arrival_airports_iata: [...allowed] };
+  const next: Record<string, unknown> = { ...guide, primary_arrival_airports_iata: [...allowed] };
 
   if (Array.isArray(next.journey_timeline)) {
     const allowedSet = new Set(allowed.map((c) => c.toUpperCase()));
@@ -199,7 +199,7 @@ Example shape:
      - "accommodation" (object): 타겟별 지역 추천 (예: '휴양/호캉스: A지역', '관광/이동편의: B지역', '가성비: C지역')
      - "connectivity" (object): 현지 eSIM 사용 가능 여부, 대표 통신사 추천
      - "transport" (object): 공항에서 시내 진입 시 선택 가능한 옵션(버스 vs 택시/픽업) 요금 및 소요시간 비교표 제공, 필수 교통 패스 안내
-       - **파리 Navigo Semaine**: 본문에 `나비고 주간권 [@Navigo Semaine@]` 또는 `[@나비고 주간권 Navigo Semaine@]` 형태로 작성(클릭→구글 검색). 역 매표소·Découverte 카드·증명사진 등 구매 요령은 advice에 서술.
+       - **파리 Navigo Semaine**: 본문에 \`나비고 주간권 [@Navigo Semaine@]\` 또는 \`[@나비고 주간권 Navigo Semaine@]\` 형태로 작성(클릭→구글 검색). 역 매표소·Découverte 카드·증명사진 등 구매 요령은 advice에 서술.
      - "apps" (object): 현지에서 유용한 필수 앱 (Uber, Grab 등)
      - "map_poi" (object): 핵심 지역/맛집
      - "safety" (object): 치안 상황 및 여행자 대상 주요 범죄 패턴, 긴급 연락처
@@ -238,6 +238,90 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
 }`;
 
   return { systemPrompt, userPrompt };
+}
+
+
+// ---------------------------------------------------------------------------
+// Caller auth + cost guard (security 2026-10-02)
+// - 기존 내용이 있는 행 덮어쓰기(Force Update 포함) = 관리자만 (TOOLKIT_ADMIN_USER_IDS)
+// - 빈 툴킷 최초 생성 = 등록 slug(canonicalPlaceIdMap / place_alias)만, 익명 허용
+// - 최초 생성 Gemini 비용 가드: slug별 시도 쿨다운 + 전역 시간당 상한 (새 테이블 없음)
+// ---------------------------------------------------------------------------
+
+function jsonResponse(body: Record<string, unknown>, status: number): Response {
+  return new Response(JSON.stringify(body), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    status,
+  });
+}
+
+function readPositiveIntEnv(name: string, fallback: number): number {
+  const n = Number(Deno.env.get(name));
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
+}
+
+/** 쉼표 구분 UUID 목록 — 비어 있으면 관리자 없음(fail-closed) */
+function getToolkitAdminIds(): Set<string> {
+  return new Set(
+    String(Deno.env.get('TOOLKIT_ADMIN_USER_IDS') ?? '')
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean)
+  );
+}
+
+function extractBearerToken(req: Request): string {
+  const raw = req.headers.get('Authorization') ?? req.headers.get('authorization') ?? '';
+  const m = raw.match(/^Bearer\s+(.+)$/i);
+  return m ? m[1].trim() : '';
+}
+
+type CallerInfo = { userId: string | null; isAdmin: boolean };
+
+// deno-lint-ignore no-explicit-any
+async function resolveCaller(req: Request, supabaseAdmin: any): Promise<CallerInfo> {
+  const token = extractBearerToken(req);
+  if (!token) return { userId: null, isAdmin: false };
+  try {
+    // anon key JWT·만료/위조 토큰 → user 없음
+    const { data, error } = await supabaseAdmin.auth.getUser(token);
+    const user = error ? null : data?.user ?? null;
+    if (!user?.id) return { userId: null, isAdmin: false };
+    const admins = getToolkitAdminIds();
+    return { userId: user.id, isAdmin: admins.has(String(user.id).toLowerCase()) };
+  } catch (e) {
+    console.warn('[update-place-toolkit] auth.getUser failed:', (e as Error)?.message);
+    return { userId: null, isAdmin: false };
+  }
+}
+
+/** 클라이언트 essentialGuideHasContent보다 보수적: null/빈 객체·빈 문자열만 "없음" */
+function guideColumnHasContent(value: unknown): boolean {
+  if (value == null) return false;
+  if (typeof value === 'string') {
+    const t = value.trim();
+    return t !== '' && t !== '{}' && t !== 'null' && t !== '[]';
+  }
+  if (Array.isArray(value)) return value.length > 0;
+  if (typeof value === 'object') return Object.keys(value as Record<string, unknown>).length > 0;
+  return true;
+}
+
+// deno-lint-ignore no-explicit-any
+async function isRegisteredSlug(supabaseAdmin: any, slug: string): Promise<boolean> {
+  if (!slug) return false;
+  if (isKnownTravelSpotSlug(slug)) return true;
+  // 번들 맵이 배포보다 늦을 때 대비: DB place_alias(canonical_slug) 서버측 확인
+  const { data, error } = await supabaseAdmin
+    .from('place_alias')
+    .select('canonical_slug')
+    .eq('canonical_slug', slug)
+    .limit(1);
+  if (error) {
+    console.warn('[update-place-toolkit] place_alias lookup failed:', error.message);
+    return false;
+  }
+  return Array.isArray(data) && data.length > 0;
 }
 
 serve(async (req) => {
@@ -291,6 +375,106 @@ serve(async (req) => {
         Deno.env.get('SUPABASE_URL') ?? '',
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
+
+    // ----- caller auth / overwrite guard / first-creation cost guard (before any Gemini call) -----
+    const caller = await resolveCaller(req, supabaseAdmin);
+    const cooldownMin = readPositiveIntEnv('TOOLKIT_ATTEMPT_COOLDOWN_MIN', 10);
+    const hourlyCap = readPositiveIntEnv('TOOLKIT_PUBLIC_HOURLY_CAP', 30);
+    const nowMs = Date.now();
+    const cooldownSinceIso = new Date(nowMs - cooldownMin * 60_000).toISOString();
+
+    const { data: existingRow, error: existingErr } = await supabaseAdmin
+      .from('place_toolkit')
+      .select('place_id, essential_guide, essential_guide_en, toolkit_updated_at')
+      .eq('place_id', canonicalPlaceId)
+      .maybeSingle();
+    if (existingErr) {
+      console.error('[update-place-toolkit] existing row lookup failed:', existingErr.message);
+      return jsonResponse({ success: false, error: 'toolkit lookup failed' }, 503);
+    }
+
+    const rowHasContent = Boolean(
+      existingRow &&
+        (guideColumnHasContent(existingRow.essential_guide) ||
+          guideColumnHasContent(existingRow.essential_guide_en))
+    );
+
+    if (!caller.isAdmin) {
+      const updatedAtMs = existingRow?.toolkit_updated_at
+        ? new Date(existingRow.toolkit_updated_at).getTime()
+        : NaN;
+      const recentlyTouched = Number.isFinite(updatedAtMs) && updatedAtMs >= nowMs - cooldownMin * 60_000;
+
+      if (rowHasContent) {
+        // 방금 다른 방문자가 만든 툴킷 → Gemini 없이 기존 행 반환(멱등)
+        if (recentlyTouched) {
+          const col = toolkitLocale === 'en' && guideColumnHasContent(existingRow!.essential_guide_en)
+            ? existingRow!.essential_guide_en
+            : existingRow!.essential_guide ?? existingRow!.essential_guide_en;
+          return jsonResponse(
+            { success: true, cached: true, locale: toolkitLocale, essentialGuide: col },
+            200
+          );
+        }
+        // 덮어쓰기 = 관리자 전용
+        return caller.userId
+          ? jsonResponse({ success: false, error: 'forbidden: toolkit overwrite requires admin' }, 403)
+          : jsonResponse({ success: false, error: 'unauthorized: toolkit overwrite requires admin login' }, 401);
+      }
+
+      // ---- 최초 생성 (행 없음 또는 본문 빈 행) ----
+      if (!slugNorm || canonicalPlaceId !== slugNorm || !(await isRegisteredSlug(supabaseAdmin, slugNorm))) {
+        return jsonResponse({ success: false, error: 'forbidden: unregistered place' }, 403);
+      }
+      if (String(locationName).length > 120) {
+        return jsonResponse({ success: false, error: 'locationName too long' }, 400);
+      }
+
+      // 전역 시간당 상한 (최근 1시간 내 생성/시도된 행 수 — 시도 마커 포함)
+      const { count: recentCount, error: countErr } = await supabaseAdmin
+        .from('place_toolkit')
+        .select('place_id', { count: 'exact', head: true })
+        .gte('toolkit_updated_at', new Date(nowMs - 60 * 60_000).toISOString());
+      if (countErr) {
+        console.error('[update-place-toolkit] rate count failed:', countErr.message);
+        return jsonResponse({ success: false, error: 'rate check failed' }, 503);
+      }
+      if ((recentCount ?? 0) >= hourlyCap) {
+        return jsonResponse({ success: false, error: 'rate limited: try again later' }, 429);
+      }
+
+      // slug별 시도 마커(원자적 claim): 빈 행의 toolkit_updated_at = 마지막 시도 시각
+      const claimIso = new Date(nowMs).toISOString();
+      if (!existingRow) {
+        const { error: insErr } = await supabaseAdmin
+          .from('place_toolkit')
+          .insert({ place_id: canonicalPlaceId, toolkit_updated_at: claimIso });
+        if (insErr) {
+          if ((insErr as { code?: string }).code === '23505') {
+            return jsonResponse({ success: false, error: 'toolkit generation already in progress' }, 429);
+          }
+          console.error('[update-place-toolkit] claim insert failed:', insErr.message);
+          return jsonResponse({ success: false, error: 'toolkit claim failed' }, 503);
+        }
+      } else {
+        const { data: claimed, error: claimErr } = await supabaseAdmin
+          .from('place_toolkit')
+          .update({ toolkit_updated_at: claimIso })
+          .eq('place_id', canonicalPlaceId)
+          .or(`toolkit_updated_at.is.null,toolkit_updated_at.lt."${cooldownSinceIso}"`)
+          .select('place_id');
+        if (claimErr) {
+          console.error('[update-place-toolkit] claim update failed:', claimErr.message);
+          return jsonResponse({ success: false, error: 'toolkit claim failed' }, 503);
+        }
+        if (!claimed?.length) {
+          return jsonResponse(
+            { success: false, error: `toolkit generation attempted recently; retry after ${cooldownMin} min` },
+            429
+          );
+        }
+      }
+    }
 
     const geminiApiKey = Deno.env.get('VITE_GEMINI_API_KEY') || Deno.env.get('GEMINI_API_KEY');
     if (!geminiApiKey) {
