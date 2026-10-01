@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 검색 사전 잠금
+
+| | |
+|--|--|
+| **상태** | **#1 초안** · tip `03086721` · draft PR [#371](https://github.com/catgeot/Days/pull/371) · **DB 미적용 · 병합 금지** |
+| **브랜치** | `cursor/search-dictionary-lockdown-4a4e` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-01-project-log.md`](./2026-10-01-project-log.md) |
+| **금지** | prod·로컬 DB에 마이그레이션 적용 · PR 병합 · anon INSERT 정책 유지한 채 클라이언트만 배포 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run lint:ci` · `npm run build` PASS |
+| **남은 일** | 사람이 forward SQL 적용 → 검증 계획 → 그 다음 PR #371 병합 |
+
+**다음 제시어**:
+
+```
+검색 사전 #2, SQL 적용은 사람만
+@plans/feature-handoff-index.md
+@plans/2026-10-01-project-log.md
+브랜치 cursor/search-dictionary-lockdown-4a4e · draft PR #371
+금지: DB 적용 · PR 병합 · feature에 plans 커밋
+작업: 초안 유지. 사람이 20261002120000 SQL을 적용하기 전에는 prod RPC를 넣지 않는다
+검증: npm run lint:ci · npm run build
+```
+
+---
+
 ### 프로필
 
 | | |
