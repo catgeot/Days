@@ -248,6 +248,51 @@ export function resolveLocalScenicRowFirstImage(
  * @param {object} [item]
  * @returns {{ imageUrl: string | null, contentId: string | null }}
  */
+/** 탐색 검색 — Tour first_image가 비어 오버레이로 채운 산. 방문 행 슬러그와 무관. */
+const OFFICIAL_SEARCH_CONTENT_BY_NAME = {
+  기백산: '126033',
+};
+
+const OFFICIAL_SEARCH_LATIN_BY_NAME = {
+  기백산: 'Gibaeksan',
+};
+
+function isStockSearchImage(url) {
+  return /images\.unsplash\.com|images\.pexels\.com/i.test(String(url || ''));
+}
+
+/**
+ * 방문 place_stats 등 contentId 없는 검색 행에 공식 썸네일·contentId를 붙인다.
+ * Unsplash가 영문 지명(Sang-won-ri)으로 다른 도시 사진을 넣은 경우는 공식 사진으로 바꾼다.
+ * @param {object} spot
+ */
+export function applyOfficialTourSearchMedia(spot) {
+  if (!spot || typeof spot !== 'object') return spot;
+  const nameKey = normalizeKey(spot.name || spot.name_ko);
+  const id = OFFICIAL_SEARCH_CONTENT_BY_NAME[nameKey];
+  if (!id) return spot;
+  const overlay = lookupLocalScenicPhotoByContentId(id);
+  if (!overlay?.imageUrl) return spot;
+  const existing = String(spot.imageUrl || spot.image_url || spot.thumbUrl || '').trim();
+  const replaceImage = !existing || isStockSearchImage(existing);
+  const latin = OFFICIAL_SEARCH_LATIN_BY_NAME[nameKey];
+  const hasLatin = /[A-Za-z]/.test(String(spot.name_en || '').trim());
+  return {
+    ...spot,
+    contentId: spot.contentId || id,
+    ...(latin && !hasLatin ? { name_en: latin } : {}),
+    ...(replaceImage
+      ? {
+          imageUrl: overlay.imageUrl,
+          thumbUrl: overlay.imageUrl,
+          image_url: overlay.imageUrl,
+          galleryUrls: overlay.galleryUrls || spot.galleryUrls || null,
+          homepage: overlay.homepage || spot.homepage || null,
+        }
+      : {}),
+  };
+}
+
 function resolveSearchScenicMediaForAttraction(hubId, name, contentId, extra = {}) {
   const existing =
     String(
@@ -279,6 +324,8 @@ export function resolveSearchScenicMedia(item) {
   if (!item || typeof item !== 'object') {
     return { imageUrl: null, contentId: null };
   }
+  const withOfficial = applyOfficialTourSearchMedia(item);
+  if (withOfficial !== item) item = withOfficial;
   const hubId = String(item.hubId || '').trim();
   const name = String(item.name || item.attractionName || '').trim();
   const existing =
@@ -666,7 +713,7 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
  */
 export function enrichSearchCandidateScenicMedia(item, locale = 'ko') {
   if (!item || typeof item !== 'object') return item;
-  let next = item;
+  let next = applyOfficialTourSearchMedia(item);
   const hubId = String(item.hubId || '').trim();
   const hasThumb = Boolean(
     String(item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '').trim(),

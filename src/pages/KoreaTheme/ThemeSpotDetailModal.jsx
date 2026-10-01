@@ -979,10 +979,14 @@ export default function ThemeSpotDetailModal({
   const lightboxZ = overlayElevated ? 'z-[65]' : 'z-[60]';
 
   const imageUrls = useMemo(() => {
-    const heroUrl = toHttps(detail?.imageUrl);
-    const gallery = Array.isArray(detail?.galleryUrls)
-      ? detail.galleryUrls.map(toHttps).filter(Boolean)
-      : [];
+    const heroUrl = toHttps(detail?.imageUrl || spot?.imageUrl || spot?.firstImage);
+    const gallerySource =
+      Array.isArray(detail?.galleryUrls) && detail.galleryUrls.length
+        ? detail.galleryUrls
+        : Array.isArray(spot?.galleryUrls)
+          ? spot.galleryUrls
+          : [];
+    const gallery = gallerySource.map(toHttps).filter(Boolean);
     const out = [];
     const seen = new Set();
     for (const url of [heroUrl, ...gallery]) {
@@ -991,7 +995,7 @@ export default function ThemeSpotDetailModal({
       out.push(url);
     }
     return out;
-  }, [detail]);
+  }, [detail, spot?.imageUrl, spot?.firstImage, spot?.galleryUrls]);
 
   const {
     transformStyle: lightboxTransformStyle,

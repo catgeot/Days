@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import {
   buildPlaceStatsIdentityPayload,
   buildVisitedLookupTokens,
+  collapseDuplicateVisitedSpots,
   isSafeVisitedSearchQuery,
   normalizeVisitedSearchKey,
   overlayGeoFieldsOnVisitedSpot,
@@ -155,5 +156,57 @@ assert.equal(
   null,
   'Null Island coords are not persisted',
 );
+
+const gibackKo = visitedRowToSearchSpot({
+  place_id: '기백산',
+  name_ko: '기백산',
+  name_en: null,
+  lat: 35.6874394914,
+  lng: 127.7632188894,
+  image_url: null,
+});
+const gibackLatin = visitedRowToSearchSpot({
+  place_id: 'sang-won-ri',
+  name_ko: '기백산',
+  name_en: 'Sang-won-ri',
+  lat: 35.6874394914,
+  lng: 127.7632188894,
+  image_url: 'https://images.unsplash.com/photo-1744058644697-ccb2e002edae',
+});
+const gibackCollapsed = collapseDuplicateVisitedSpots([gibackLatin, gibackKo]);
+assert.equal(gibackCollapsed.length, 1, '같은 기백산·같은 좌표는 카드 하나');
+assert.equal(gibackCollapsed[0].slug, '기백산', '한글 place_id가 라틴 슬러그보다 남음');
+assert.equal(gibackCollapsed[0].name, '기백산');
+const gibackOtherPeak = visitedRowToSearchSpot({
+  place_id: 'giback-other',
+  name_ko: '기백산',
+  name_en: 'Gibaeksan',
+  lat: 35.8,
+  lng: 127.9,
+});
+assert.equal(
+  collapseDuplicateVisitedSpots([gibackKo, gibackOtherPeak]).length,
+  2,
+  '좌표가 다르면 합치지 않음',
+);
+const stockOnly = visitedRowToSearchSpot({
+  place_id: 'sang-won-ri',
+  name_ko: '기백산',
+  name_en: 'Sang-won-ri',
+  lat: 35.6874394914,
+  lng: 127.7632188894,
+  image_url: 'https://images.unsplash.com/photo-1744058644697-ccb2e002edae',
+});
+const realPhoto = visitedRowToSearchSpot({
+  place_id: 'other-slug',
+  name_ko: '기백산',
+  name_en: 'Gibaeksan',
+  lat: 35.6874394914,
+  lng: 127.7632188894,
+  image_url: 'https://example.com/gibaek.jpg',
+});
+const preferReal = collapseDuplicateVisitedSpots([stockOnly, realPhoto]);
+assert.equal(preferReal.length, 1);
+assert.equal(preferReal[0].image_url, 'https://example.com/gibaek.jpg');
 
 console.log('smoke:visited-place-search OK');

@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 93,
-  sessionPhase: '함양 기백산 사진',
+  sessionPhase: '기백산 검색 중복',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-10-01-palgyeong-use-93-giback-search-dedupe',
+    session: '팔경 활용 #93, 기백산 검색 중복',
+    title: '기백산 검색 한 장',
+    detail:
+      '배포본 탐색 검색「기백산」은 같은 좌표의 방문 기록 두 줄(사진 없는 함양·사라예보 건물이 찍힌 Sang-won-ri)이 카드 둘로 나왔습니다. 같은 한글 이름·같은 좌표는 한 장으로 합치고, 그 사진은 기백산 공식 사진 3장입니다. 함평 팔경 목록의 빈 줄은 영구 결손이 아니었습니다. 행은 「함평 N경」이고 상세 개요는 관광 정보를 받은 뒤에 채워집니다. 상세를 여는 동안에는 목록에 있는 사진을 먼저 보여 아이콘만 보이지 않게 했습니다. Preview /qa/palgyeong-use — 홈 검색「기백산」.',
+    at: '2026-10-01T04:10:00.000Z',
+  },
   {
     id: '2026-09-30-palgyeong-use-93-gibacksan-photo',
     session: '팔경 활용 #93, 함양 기백산 사진',

@@ -14,7 +14,10 @@ import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
-import { lookupLocalScenicMemberOverlayForSpot } from '../../../pages/Home/lib/koreaLocalScenicLists';
+import {
+  lookupLocalScenicMemberOverlayForSpot,
+  lookupLocalScenicPhotoByContentId,
+} from '../../../pages/Home/lib/koreaLocalScenicLists';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
@@ -570,11 +573,17 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           }
         : null,
     );
+    const contentThumb = lookupLocalScenicPhotoByContentId(
+      tourMapping?.contentId ||
+        (typeof locationSource === 'object' ? locationSource?.contentId : null),
+    );
     const localScenicOfficialGallery =
       Array.isArray(localScenicOverlay?.galleryUrls) &&
       localScenicOverlay.galleryUrls.length >= 1
         ? localScenicOverlay.galleryUrls
-        : null;
+        : Array.isArray(contentThumb?.galleryUrls) && contentThumb.galleryUrls.length >= 1
+          ? contentThumb.galleryUrls
+          : null;
 
     const clearSafety = () => {
       if (safetyTimer != null) {
