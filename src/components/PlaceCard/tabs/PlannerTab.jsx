@@ -42,6 +42,9 @@ import {
   parseEventPlannerEntry,
 } from '../../../utils/placePlannerPath';
 
+// Force Update Toolkit: 관리자 역할 검사가 없으므로 운영 빌드에서는 숨김 (로컬 `vite` 개발 서버에서만 표시)
+const SHOW_TOOLKIT_FORCE_UPDATE = import.meta.env.DEV === true;
+
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
 
@@ -594,7 +597,8 @@ const PlannerTab = ({
                         onChange={handlePlannerStageChange}
                     />
 
-                {/* 관리자/테스트: AI 툴킷 강제 재실행 (평소 흐릿 · hover 시 확인 가능) */}
+                {/* 관리자/테스트: AI 툴킷 강제 재실행 — 코드베이스에 관리자 역할 검사가 없어 로컬 개발 빌드에서만 노출 (운영·익명 사용자 비노출) */}
+                {SHOW_TOOLKIT_FORCE_UPDATE ? (
                 <div
                     id="planner-admin-force-update"
                     className="mt-2 flex shrink-0 justify-end pb-[max(0.25rem,env(safe-area-inset-bottom,0px))]"
@@ -610,6 +614,7 @@ const PlannerTab = ({
                         {isRemoteUpdating ? t('place.planner.toolkit.forceUpdating') : t('place.planner.toolkit.forceUpdateShort')}
                     </button>
                 </div>
+                ) : null}
             </div>
             </div>
             {showScrollToTop && createPortal(

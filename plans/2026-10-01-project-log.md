@@ -27,4 +27,18 @@
 - **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hapcheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hapcheon`
 - **작업 로그** 합천 옥전고분군 사진
+- **후속** `516f1db1` 팔경이 아닌 합천 검색 관광지(황계폭포·내천못재·신소양체육공원·허굴산) 목록은 주소 뒤에 Tour 개요 첫 문장. 전문은 상세. 다른 지역 목록은 주소만. 작업 로그 「합천 검색 한 줄 써머리」.
 - **다음** **#95 완도8경 1**(국화섬) · 순수 누락 **1**/876 — [`feature-handoff-index.md`](./feature-handoff-index.md)
+
+## 검색 사전 #1, upsert RPC 초안
+
+- **세션** `검색 사전 #1, upsert RPC 초안` · branch `cursor/search-dictionary-lockdown-4a4e` · tip `03086721` · draft PR [#371](https://github.com/catgeot/Days/pull/371)
+- **조치** `search_dictionary` 공개 INSERT 정책 제거 초안 + `upsert_search_dictionary` (검증·시간당 신규 60행 best-effort). 클라이언트 캐시 쓰기는 RPC. SELECT는 유지. **DB 미적용 · 병합 안 함.** 사람이 SQL을 적용한 뒤에만 병합.
+- **VERIFY** `npm run lint:ci` 0 errors · `npm run build` PASS. 단위 테스트 스크립트 없음.
+- **다음** 사람 SQL 적용 전 에이전트는 적용·병합 금지 — [`feature-handoff-index.md`](./feature-handoff-index.md)
+
+## 검색 사전 #1, 기존 행 덮어쓰기 차단
+
+- **세션** `검색 사전 #1, upsert RPC 초안` · branch `cursor/search-dictionary-lockdown-4a4e` · tip `358ed558` · draft PR [#371](https://github.com/catgeot/Days/pull/371)
+- **조치** upsert는 `ON CONFLICT DO NOTHING`. 기존 키 좌표 교체 불가. 노출 횟수는 `bump_search_dictionary_served`가 서버에서 +1. `search_path`는 빈 문자열. **DB 미적용 · 병합 안 함.**
+- **VERIFY** `npm run lint:ci` 0 errors · `npm run build` PASS
