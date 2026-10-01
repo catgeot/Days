@@ -5874,6 +5874,60 @@ assert.ok(
   String(deogyuSuggest?.imageUrl || deogyuSuggest?.thumbUrl || '').includes('GC072P02448'),
   '덕유운해 suggestion 썸네일',
 );
+
+const hapcheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hapcheon');
+const hapcheonEight = hapcheonMerged.filter((s) => s.localScenicListId === 'hapcheon-palgyeong');
+assert.equal(hapcheonEight.length, 8, '합천8경 8명');
+const okjeonCloud = hapcheonEight.find((s) => s.attractionName === '옥전고분군');
+assert.ok(okjeonCloud?.overview && okjeonCloud?.imageUrl, '옥전고분군 overlay 사진·개요');
+assert.ok(!okjeonCloud?.contentId, '옥전고분군 JSON contentId 없음 유지');
+assert.ok(okjeonCloud?.overview?.includes('제7경'), '옥전고분군 overlay 제7경');
+assert.ok(okjeonCloud?.overview?.includes('황강옥전로 1558'), '옥전고분군 overlay 박물관 주소');
+assert.ok(okjeonCloud?.overview?.includes('사적 제326호'), '옥전고분군 overlay 사적');
+assert.ok(okjeonCloud?.overview?.includes('1666-003'), '옥전고분군 overlay 유네스코 구성요소');
+assert.equal(okjeonCloud?.galleryUrls?.length, 3, '옥전고분군 공식 사진 3장');
+assert.ok(
+  okjeonCloud?.galleryUrls?.every((u) => u.includes('devin.aks.ac.kr/image/')),
+  '옥전고분군 한국민족문화대백과 사진',
+);
+assert.equal(
+  new Set(okjeonCloud?.galleryUrls).size,
+  okjeonCloud?.galleryUrls?.length,
+  '옥전고분군 갤러리 URL 중복 없음',
+);
+assert.ok(okjeonCloud?.homepage?.includes('hc.go.kr'), '옥전고분군 합천박물관 홈');
+const hapcheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '합천', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  hapcheonGlobe.find((s) => s.attractionName === '옥전고분군')?.imageUrl?.includes('dbb074b6'),
+  '합천 검색 옥전고분군 썸네일',
+);
+const hapcheonList = lists.find((l) => l.listId === 'hapcheon-palgyeong');
+const hapcheonHub = resolveCityAttractionHub('hapcheon');
+const okjeonSuggest = localScenicMemberToSuggestion(
+  hapcheonList,
+  hapcheonHub,
+  hapcheonList?.members?.find((m) => m.attractionName === '옥전고분군'),
+);
+assert.ok(
+  okjeonSuggest?.searchOverlayDesc?.includes('제7경') &&
+    okjeonSuggest.searchOverlayDesc.includes('황강옥전로 1558'),
+  '탐색 검색 옥전고분군 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(okjeonSuggest?.desc || '').includes('제7경'),
+  '옥전고분군 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(okjeonSuggest),
+  true,
+  '옥전고분군 suggestion은 intro hydrate 대상',
+);
+assert.ok(
+  String(okjeonSuggest?.imageUrl || okjeonSuggest?.thumbUrl || '').includes('dbb074b6'),
+  '옥전고분군 suggestion 썸네일',
+);
 const gibackThumb = lookupLocalScenicPhotoByContentId('126033');
 assert.ok(gibackThumb?.imageUrl?.includes('GC072P02944'), '기백산 Tour 126033 빈 썸네일');
 assert.equal(gibackThumb?.galleryUrls?.length, 3, '기백산 공식 사진 3장');

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 93,
-  sessionPhase: '기백산 검색 중복',
+  sessionNo: 94,
+  sessionPhase: '합천 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-10-01-palgyeong-use-94-hapcheon-okjeon',
+    session: '팔경 활용 #94, 합천 결손 오버레이',
+    title: '합천 옥전고분군 사진',
+    detail:
+      '합천8경 제7경 옥전고분군(쌍책면 성산리 산23-18·황강옥전로 1558)에 사진과 개요를 넣었습니다. 한국민족문화대백과 공식 사진 3장입니다. 사적 제326호·2023년 유네스코 가야고분군 1666-003. JSON contentId는 넣지 않았습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hapcheon 옥전고분군.',
+    at: '2026-10-01T15:10:00.000Z',
+  },
   {
     id: '2026-10-01-palgyeong-use-93-giback-search-dedupe',
     session: '팔경 활용 #93, 기백산 검색 중복',

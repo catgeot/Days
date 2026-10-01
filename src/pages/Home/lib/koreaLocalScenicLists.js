@@ -2022,6 +2022,13 @@ const HY_GIBAEK_2 = `${HY_IMG}GC072P02945`;
 const HY_GIBAEK_3 =
   'https://devin.aks.ac.kr/image/676248ab-1c6e-4dbc-8b0f-3b8606885933?preset=orig';
 const HY_GIBAEK_HOME = 'https://hamyang.grandculture.net/hamyang/toc/GC07200042';
+const HC_OKJEON =
+  'https://devin.aks.ac.kr/image/dbb074b6-92bc-4f63-8e6d-43aba8d1004b?preset=orig';
+const HC_OKJEON_2 =
+  'https://devin.aks.ac.kr/image/f535fc95-493a-4771-9d85-3d99aec7aa3e?preset=orig';
+const HC_OKJEON_3 =
+  'https://devin.aks.ac.kr/image/1ef10a9a-2c70-4820-8fee-023877bcf72c?preset=orig';
+const HC_OKJEON_HOME = 'http://www.hc.go.kr/06423/06435/06443.web';
 const GJ_KHS = 'https://www.khs.go.kr/unisearch/images/national_treasure';
 const GJ_NAWON = `${GJ_KHS}/2021070209124901.JPG`;
 const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
@@ -3621,6 +3628,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     HY_DEOGYU,
     [HY_DEOGYU_2, HY_DEOGYU_3],
     HY_DEOGYU_HOME,
+  ),
+  'local-scenic:hapcheon-palgyeong:옥전고분군': localScenicPhotoOverlay(
+    '합천8경 제7경 옥전고분군은 쌍책면 성산리 산23-18, 황강옥전로 1558의 가야 고분군입니다. 합천군 문화관광은 4~6세기 가야 지배층의 묘역으로 고총 28기와 수백 기의 무덤이 있다고 적고, 위치는 쌍책면 성산리, 문의는 055-930-3182입니다. 합천박물관은 황강변 야산 정상부에 복원 고총 28기를 포함해 약 1,000기로 추산하고, 1985년 겨울부터 1992년 봄까지 경상대학교박물관이 5차·146기를 발굴해 토기·철제 갑옷과 투구·무기·말갖춤·귀걸이 등 2,500여 점을 수습했다고 적습니다. 주인공은 『양직공도』·『일본서기』의 다라국 지배층으로 추정합니다. 한국민족문화대백과는 사적 제326호(1988년 7월 28일), 해발 50~80m, 지름 20~30m 고총 18기 군집이라고 적습니다. 유네스코는 2023년 가야고분군(1666)의 구성요소 1666-003 옥전 고분군(합천군)으로 등재했습니다. 김해 대성동·함안 말이산·고령 지산동 고분군과 다른 합천 쌍책면 묘역입니다. 사진은 한국민족문화대백과 합천 옥전 고분군 공식 사진 3장입니다.',
+    '경상남도 합천군 쌍책면 성산리 산23-18 (황강옥전로 1558)',
+    HC_OKJEON,
+    [HC_OKJEON_2, HC_OKJEON_3],
+    HC_OKJEON_HOME,
   ),
   'local-scenic:hwacheon-gugyeong:비래바위': localScenicPhotoOverlay(
     '화천9경 제6경 비래바위(飛來巖)는 상서면 구운리 만산동 뒤편 해발 970m에 우뚝 선 기암괴석입니다. 화천군 문화관광은 폭 약 100m·높이 약 60m로 병풍처럼 깎아 지른 절벽이 주변 산중에 홀로 솟아 웅장하고 이국적인 풍경을 이룬다고 소개하며, 병풍바위라고도 부릅니다. 금강산에서 바위가 날아와 이곳에 안착했다는 전설에서 날비(飛)·올래(徠)·바위암(巖)을 써 비래바위라 이름붙였다고 적습니다. 등산로 안내도 지점에서 정상까지 약 1시간이며 산 아래에서 바라보는 전경도 유명합니다. 등산 시작점은 상서면 구운리입니다. 정선 화암8경 거북바위·여수·거제·남해 등 다른 지역 「비래」 지명 바위와 다른 화천 상서면 산악 바위입니다. 사진은 화천군 문화관광 화천9경 제6경 비래바위 공식 사진 3장입니다.',
