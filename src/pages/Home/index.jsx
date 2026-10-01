@@ -72,6 +72,7 @@ import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
 } from './lib/placeReturnTo';
+import { clearExploreReturn, peekExploreReturn } from './lib/exploreReturnSnapshot';
 import {
   claimCurationHomeHandoff,
   clearCurationPendingHomeSession,
@@ -834,6 +835,7 @@ function Home() {
   /** 장소카드 헤더 지구본 — URL SSOT 포커스 고정 후 홈 (연관 키워드 점프 후 stale selectedLocation race 방지) */
   const goHomeFromPlace = useCallback(() => {
     clearPlaceReturnTo();
+    clearExploreReturn();
     const focusLoc = routeLocation.pathname.startsWith('/place/')
       ? resolveFocusLocationFromPlacePath(routeLocation.pathname, category, savedTrips)
       : null;
@@ -857,7 +859,9 @@ function Home() {
       return;
     }
     // 써머리→/place 오탭 후 X: explore 루프 대신 홈으로. 써머리 재오픈은 skipHomeSummaryRestoreRef.
+    // 탐색 검색에서 연 카드의 ← 는 leavePlaceCard까지 오지 않고 탐색 스냅샷으로 복귀.
     clearPlaceReturnTo();
+    clearExploreReturn();
     skipHomeSummaryRestoreRef.current = true;
     pendingGlobeHomeFocusRef.current = null;
     setIsCardExpanded(false);
@@ -1129,6 +1133,9 @@ function Home() {
   }, [routeLocation.pathname, savedTrips]);
 
   const prevPathRef = useRef(routeLocation.pathname);
+  useEffect(() => () => {
+    clearExploreReturn();
+  }, []);
   useEffect(() => {
     const currentPath = routeLocation.pathname;
     const prevPath = prevPathRef.current;
@@ -1263,6 +1270,7 @@ function Home() {
 
   /** 써머리·투어 UI만 닫고 지구본 마지막 방문 핀은 유지 */
   const dismissPlaceSelectionKeepGlobePin = useCallback(() => {
+    clearExploreReturn();
     const globeApi = globeRef.current || getGlobeApi();
     // Android Chrome: summary X unmounts on pointerdown, then a ghost click hits Mapbox.
     globeApi?.suppressOverlayClick?.();
@@ -1644,7 +1652,8 @@ function Home() {
               const param = getPlaceUrlParam(selectedLocation);
               if (!param) return;
               setIsCardExpanded(true);
-              navigate(`/place/${param}`);
+              const fromExplore = Boolean(peekExploreReturn()?.path);
+              navigate(`/place/${param}`, fromExplore ? { replace: true } : undefined);
             }}
             onChat={openMooniFromPlace}
             onToggleBookmark={handleToggleBookmark}

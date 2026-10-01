@@ -37,6 +37,11 @@ import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../li
 import { preferEnterSuggestion } from '../lib/searchEnterMatch';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
+import {
+  clearExploreReturn,
+  peekExploreReturn,
+  rememberExploreReturn,
+} from '../lib/exploreReturnSnapshot';
 import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
 import { needsLatinPlaceName } from '../lib/uiPlaceAssetQuery';
 import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
@@ -112,6 +117,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const quickMenuRowRefPc = useRef(null);
   const quickMenuRowRefMobile = useRef(null);
   const suggestRequestIdRef = useRef(0);
+  const exploreRestoreAppliedIdRef = useRef(null);
+  const pendingExploreScrollRef = useRef(null);
+  const suppressSearchHistoryRef = useRef(false);
 
   // URL Path 분석하여 상태 동기화
   useEffect(() => {
@@ -193,21 +201,44 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
 
   const leadingPackageCopy = useMemo(() => localizedLeadingExplorePackage(t), [t]);
 
+  const captureExploreReturn = () => {
+    rememberExploreReturn({
+      path: `${location.pathname}${location.search || ''}`,
+      query,
+      disambiguation,
+      scrollTop: scrollContainerRef.current?.scrollTop ?? 0,
+    });
+  };
+
   useEffect(() => {
     if (isOpen) {
-      setQuery(''); // 모달 열릴 때마다 항상 검색어 초기화
+      const restored = peekExploreReturn();
+      const appliedId = exploreRestoreAppliedIdRef.current;
+      if (restored && appliedId !== restored.id) {
+        exploreRestoreAppliedIdRef.current = restored.id;
+        pendingExploreScrollRef.current = restored.scrollTop ?? 0;
+        suppressSearchHistoryRef.current = true;
+        setQuery(restored.query || '');
+        setDisambiguation(restored.disambiguation ?? null);
+        setIsSearchHistoryOpen(false);
+        setActiveQuickSection(null);
+        clearExploreReturn();
+      } else if (!restored && appliedId == null) {
+        setQuery(''); // 모달 열릴 때마다 항상 검색어 초기화
+        setActiveQuickSection(null);
+        setIsSearchHistoryOpen(false);
+        setHybridSuggestions([]);
+        setDisambiguation(null);
+        setSelectedSubGroup(null);
+        setSelectedPackage(null);
+      }
       setRecentSearches(safeLoadRecentList(RECENT_SEARCH_KEY));
       setRecentVisitedDestinations(safeLoadRecentVisited());
       setKeywordVisitHistory(safeLoadKeywordVisits());
-      setActiveQuickSection(null);
-      setIsSearchHistoryOpen(false);
-      setHybridSuggestions([]);
-      setDisambiguation(null);
       // 모바일 키보드 자동 올림 방지를 위해 focus() 제거
       document.body.style.overflow = 'hidden';
-      setSelectedSubGroup(null);
-      setSelectedPackage(null);
     } else {
+      exploreRestoreAppliedIdRef.current = null;
       document.body.style.overflow = '';
       setFilterMode('theme');
       setSelectedContinent('all');
@@ -225,6 +256,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     if (!isOpen) return undefined;
     const q = query.trim();
     if (!q) {
+      suppressSearchHistoryRef.current = false;
       setHybridSuggestions([]);
       setSuggestionsLoading(false);
       return undefined;
@@ -233,7 +265,12 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     // 큐레이션·SSOT는 동기 즉시 → 드롭다운에 바로 표시
     const local = buildLocalSearchSuggestions(q);
     setHybridSuggestions(local);
-    setIsSearchHistoryOpen(true);
+    if (suppressSearchHistoryRef.current) {
+      suppressSearchHistoryRef.current = false;
+      setIsSearchHistoryOpen(false);
+    } else {
+      setIsSearchHistoryOpen(true);
+    }
     setActiveQuickSection(null);
 
     const requestId = ++suggestRequestIdRef.current;
@@ -260,12 +297,24 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   useEffect(() => {
     if (!hasChoiceCards) return undefined;
     dismissSearchKeyboard();
-    scrollContainerRef.current?.scrollTo({ top: 0 });
+    const pendingScroll = pendingExploreScrollRef.current;
+    if (pendingScroll != null) {
+      pendingExploreScrollRef.current = null;
+      scrollContainerRef.current?.scrollTo({ top: pendingScroll });
+    } else {
+      scrollContainerRef.current?.scrollTo({ top: 0 });
+    }
     const t = window.setTimeout(() => dismissSearchKeyboard(), 50);
     return () => window.clearTimeout(t);
-    // dismissSearchKeyboard는 inputRef 기반 — 매 렌더 동일 동작
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasChoiceCards, disambiguation]);
+
+  useEffect(() => {
+    if (!isOpen || hasChoiceCards) return;
+    const pending = pendingExploreScrollRef.current;
+    if (pending == null) return;
+    pendingExploreScrollRef.current = null;
+    scrollContainerRef.current?.scrollTo({ top: pending });
+  }, [isOpen, hasChoiceCards, query]);
 
   /** 검색/섹션 확장 패널 바깥 클릭 시 닫기 (앵커·패널 내부는 유지) */
   useEffect(() => {
@@ -397,6 +446,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   };
 
   const handleSpotSelect = (spot) => {
+    captureExploreReturn();
     setRecentVisitedDestinations(pushRecentVisited(spot));
     setDisambiguation(null);
     onSelect(spot);
@@ -418,15 +468,24 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     setDisambiguation(null);
     setSearchSubmitError(null);
     setIsSearchHistoryOpen(false);
+    rememberExploreReturn({
+      path: `${location.pathname}${location.search || ''}`,
+      query: finalQuery,
+      disambiguation: null,
+      scrollTop: scrollContainerRef.current?.scrollTop ?? 0,
+    });
     try {
       const result = await onSearch(finalQuery);
       if (isSearchDisambiguation(result)) {
+        clearExploreReturn();
         setDisambiguation(result);
         dismissSearchKeyboard();
         return;
       }
+      if (!result?.name) clearExploreReturn();
     } catch (err) {
       console.warn('[SearchDiscovery] onSearch failed', err);
+      clearExploreReturn();
       if (onAskMooni) {
         onAskMooni(finalQuery);
         onClose?.();
