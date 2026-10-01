@@ -498,6 +498,8 @@
       "keywordVisits": "Keyword history",
       "keywordVisitsCount": "Keyword history {{count}}",
       "agenciesVisitedCount": "Agencies opened {{count}}",
+      "trendingTitle": "🔥 Popular on GATEO — TOP 10",
+      "trendingMetric": "Total views",
       "recentSearch": "Recent search",
       "removeItem": "Remove {{item}}",
       "removeRecord": "Remove {{keyword}} record",

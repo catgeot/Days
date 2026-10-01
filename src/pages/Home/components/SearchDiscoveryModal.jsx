@@ -56,6 +56,7 @@ import {
 } from './SearchDiscovery/curationTargets';
 import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
 import { useTravelAgencyVisits } from '../../../hooks/useTravelAgencyVisits';
+import TrendingExploreChipsRow from './TrendingExploreChipsRow';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -1071,6 +1072,17 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
               )}
             </div>
           </div>
+
+        {isMobileView
+          && !isSearching
+          && !activeQuickSection
+          && !hasChoiceCards
+          && !showSearchDropdown && (
+          <TrendingExploreChipsRow
+            active={isOpen}
+            onSpotSelect={handleSpotSelect}
+          />
+        )}
       </div>
     </div>
   );
