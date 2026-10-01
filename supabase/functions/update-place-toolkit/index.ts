@@ -244,7 +244,9 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
 // ---------------------------------------------------------------------------
 // Caller auth + cost guard (security 2026-10-02)
 // - 기존 내용이 있는 행 덮어쓰기(Force Update 포함) = 관리자만 (TOOLKIT_ADMIN_USER_IDS)
-// - 빈 툴킷 최초 생성 = 등록 slug(canonicalPlaceIdMap / place_alias)만, 익명 허용
+// - 빈 툴킷 최초 생성 = canonicalPlaceIdMap slug만 (place_alias 폴백 없음), 익명 허용
+// - 비관리자 프롬프트 지명 = slug 또는 그 slug의 place_alias.alias 와 일치할 때만
+// - 비관리자 최종 저장 = 이 요청의 claim 시각 + 본문이 여전히 비어 있을 때만
 // - 최초 생성 Gemini 비용 가드: slug별 시도 쿨다운 + 전역 시간당 상한 (새 테이블 없음)
 // ---------------------------------------------------------------------------
 
@@ -307,21 +309,124 @@ function guideColumnHasContent(value: unknown): boolean {
   return true;
 }
 
+function textHasNewlineOrUrl(value: string): boolean {
+  if (/[\r\n]/.test(value)) return true;
+  return /http/i.test(value) || /www\./i.test(value) || value.includes('://');
+}
+
+function labelsMatch(a: string, b: string): boolean {
+  const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+  return norm(a) === norm(b);
+}
+
+type CoordRead =
+  | { state: 'missing' }
+  | { state: 'invalid' }
+  | { state: 'ok'; value: number };
+
+function readCoord(value: unknown): CoordRead {
+  if (value == null || value === '') return { state: 'missing' };
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? { state: 'ok', value } : { state: 'invalid' };
+  }
+  if (typeof value === 'string') {
+    const t = value.trim();
+    if (!t) return { state: 'missing' };
+    if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(t)) return { state: 'invalid' };
+    const n = Number(t);
+    return Number.isFinite(n) ? { state: 'ok', value: n } : { state: 'invalid' };
+  }
+  return { state: 'invalid' };
+}
+
+function validateCreationCoords(
+  latRaw: unknown,
+  lngRaw: unknown
+): { ok: true; lat: number; lng: number } | { ok: false; error: string } {
+  const lat = readCoord(latRaw);
+  const lng = readCoord(lngRaw);
+  if (lat.state === 'missing' || lng.state === 'missing') {
+    return { ok: false, error: 'coordinates required' };
+  }
+  if (lat.state === 'invalid' || lng.state === 'invalid') {
+    return { ok: false, error: 'coordinates invalid' };
+  }
+  if (lat.value < -90 || lat.value > 90 || lng.value < -180 || lng.value > 180) {
+    return { ok: false, error: 'coordinates out of range' };
+  }
+  return { ok: true, lat: lat.value, lng: lng.value };
+}
+
+function validateCreationCountry(country: unknown): { ok: true; value: string } | { ok: false; error: string } {
+  if (country == null || country === '') return { ok: true, value: '' };
+  if (typeof country !== 'string') return { ok: false, error: 'country invalid' };
+  if (country.trim().length > 60) return { ok: false, error: 'country too long' };
+  if (textHasNewlineOrUrl(country)) return { ok: false, error: 'country contains newline or url' };
+  return { ok: true, value: country.trim() };
+}
+
+/** 클라이언트 지명은 slug 또는 해당 slug의 place_alias.alias 와 같을 때만. 아니면 canonical slug. */
 // deno-lint-ignore no-explicit-any
-async function isRegisteredSlug(supabaseAdmin: any, slug: string): Promise<boolean> {
-  if (!slug) return false;
-  if (isKnownTravelSpotSlug(slug)) return true;
-  // 번들 맵이 배포보다 늦을 때 대비: DB place_alias(canonical_slug) 서버측 확인
+async function resolveNonAdminLocationName(
+  supabaseAdmin: any,
+  slug: string,
+  clientName: string
+): Promise<string> {
+  if (labelsMatch(clientName, slug)) return slug;
   const { data, error } = await supabaseAdmin
     .from('place_alias')
-    .select('canonical_slug')
-    .eq('canonical_slug', slug)
-    .limit(1);
+    .select('alias')
+    .eq('canonical_slug', slug);
   if (error) {
-    console.warn('[update-place-toolkit] place_alias lookup failed:', error.message);
-    return false;
+    console.warn('[update-place-toolkit] place_alias name lookup failed:', error.message);
+    return slug;
   }
-  return Array.isArray(data) && data.length > 0;
+  if (Array.isArray(data)) {
+    for (const row of data) {
+      const alias = typeof row?.alias === 'string' ? row.alias.trim() : '';
+      if (!alias || alias.length > 120 || textHasNewlineOrUrl(alias)) continue;
+      if (labelsMatch(alias, clientName)) return alias;
+    }
+  }
+  return slug;
+}
+
+function pickGuideForLocale(
+  row: { essential_guide?: unknown; essential_guide_en?: unknown } | null,
+  locale: 'ko' | 'en'
+): unknown {
+  if (!row) return null;
+  if (locale === 'en' && guideColumnHasContent(row.essential_guide_en)) return row.essential_guide_en;
+  if (guideColumnHasContent(row.essential_guide)) return row.essential_guide;
+  if (guideColumnHasContent(row.essential_guide_en)) return row.essential_guide_en;
+  return null;
+}
+
+// deno-lint-ignore no-explicit-any
+async function respondWithCurrentToolkit(
+  supabaseAdmin: any,
+  placeId: string,
+  locale: 'ko' | 'en'
+): Promise<Response> {
+  const { data, error } = await supabaseAdmin
+    .from('place_toolkit')
+    .select('place_id, essential_guide, essential_guide_en, toolkit_updated_at')
+    .eq('place_id', placeId)
+    .maybeSingle();
+  if (error) {
+    console.error('[update-place-toolkit] current row lookup failed:', error.message);
+    return jsonResponse({ success: false, error: 'toolkit lookup failed' }, 503);
+  }
+  return jsonResponse(
+    {
+      success: true,
+      cached: true,
+      locale,
+      essentialGuide: pickGuideForLocale(data, locale),
+      row: data ?? null,
+    },
+    200
+  );
 }
 
 serve(async (req) => {
@@ -364,12 +469,11 @@ serve(async (req) => {
 
     const destLat = typeof lat === 'number' ? lat : Number(lat);
     const destLng = typeof lng === 'number' ? lng : Number(lng);
-    const coordHint = buildCoordHint(
-      Number.isFinite(destLat) ? destLat : undefined,
-      Number.isFinite(destLng) ? destLng : undefined,
-      country,
-      toolkitLocale
-    );
+    let generationLocationName = String(locationName);
+    let generationCountry: unknown = country;
+    let generationLat = Number.isFinite(destLat) ? destLat : undefined;
+    let generationLng = Number.isFinite(destLng) ? destLng : undefined;
+    let nonAdminClaimIso: string | null = null;
 
     const supabaseAdmin = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
@@ -422,13 +526,31 @@ serve(async (req) => {
           : jsonResponse({ success: false, error: 'unauthorized: toolkit overwrite requires admin login' }, 401);
       }
 
-      // ---- 최초 생성 (행 없음 또는 본문 빈 행) ----
-      if (!slugNorm || canonicalPlaceId !== slugNorm || !(await isRegisteredSlug(supabaseAdmin, slugNorm))) {
+      // ---- 최초 생성 (행 없음 또는 본문 빈 행). canonical map slug만 — place_alias 전용 slug 거부 ----
+      if (!slugNorm || canonicalPlaceId !== slugNorm || !isKnownTravelSpotSlug(slugNorm)) {
         return jsonResponse({ success: false, error: 'forbidden: unregistered place' }, 403);
       }
-      if (String(locationName).length > 120) {
+      if (typeof locationName !== 'string') {
+        return jsonResponse({ success: false, error: 'locationName invalid' }, 400);
+      }
+      if (locationName.length > 120) {
         return jsonResponse({ success: false, error: 'locationName too long' }, 400);
       }
+      if (textHasNewlineOrUrl(locationName)) {
+        return jsonResponse({ success: false, error: 'locationName contains newline or url' }, 400);
+      }
+      const countryCheck = validateCreationCountry(country);
+      if (!countryCheck.ok) {
+        return jsonResponse({ success: false, error: countryCheck.error }, 400);
+      }
+      const coordCheck = validateCreationCoords(lat, lng);
+      if (!coordCheck.ok) {
+        return jsonResponse({ success: false, error: coordCheck.error }, 400);
+      }
+      generationLocationName = await resolveNonAdminLocationName(supabaseAdmin, slugNorm, locationName);
+      generationCountry = countryCheck.value;
+      generationLat = coordCheck.lat;
+      generationLng = coordCheck.lng;
 
       // 전역 시간당 상한 (최근 1시간 내 생성/시도된 행 수 — 시도 마커 포함)
       const { count: recentCount, error: countErr } = await supabaseAdmin
@@ -474,7 +596,10 @@ serve(async (req) => {
           );
         }
       }
+      nonAdminClaimIso = claimIso;
     }
+
+    const coordHint = buildCoordHint(generationLat, generationLng, generationCountry, toolkitLocale);
 
     const geminiApiKey = Deno.env.get('VITE_GEMINI_API_KEY') || Deno.env.get('GEMINI_API_KEY');
     if (!geminiApiKey) {
@@ -483,7 +608,7 @@ serve(async (req) => {
 
     const { systemPrompt, userPrompt } = buildToolkitPrompts(
       toolkitLocale,
-      String(locationName),
+      generationLocationName,
       coordHint,
       slugNorm || slug || null
     );
@@ -601,9 +726,9 @@ serve(async (req) => {
 
     const validationError = validateEssentialGuideForLocation(
       essentialGuideJson,
-      String(locationName),
-      Number.isFinite(destLat) ? destLat : undefined,
-      Number.isFinite(destLng) ? destLng : undefined,
+      generationLocationName,
+      generationLat,
+      generationLng,
       slugNorm || null
     );
     if (validationError) {
@@ -616,17 +741,40 @@ serve(async (req) => {
 
     // Upsert locale column into place_toolkit (canonical SSOT place_id)
     const guideColumn = toolkitLocale === 'en' ? 'essential_guide_en' : 'essential_guide';
-    const { error: dbError } = await supabaseAdmin
-      .from('place_toolkit')
-      .upsert({
-        place_id: canonicalPlaceId,
-        [guideColumn]: essentialGuideJson,
-        toolkit_updated_at: new Date().toISOString()
-      }, { onConflict: 'place_id' });
+    if (nonAdminClaimIso) {
+      // 관리자가 claim 이후 본문을 썼으면 0행 → 현재 행을 그대로 반환
+      const { data: written, error: dbError } = await supabaseAdmin
+        .from('place_toolkit')
+        .update({
+          [guideColumn]: essentialGuideJson,
+          toolkit_updated_at: new Date().toISOString(),
+        })
+        .eq('place_id', canonicalPlaceId)
+        .eq('toolkit_updated_at', nonAdminClaimIso)
+        .or(
+          'and(or(essential_guide.is.null,essential_guide.eq.{},essential_guide.eq.[]),or(essential_guide_en.is.null,essential_guide_en.eq.{},essential_guide_en.eq.[]))'
+        )
+        .select('place_id');
+      if (dbError) {
+        console.error('DB Update Error:', dbError);
+        throw new Error(`Failed to update essential_guide in database: ${dbError.message}`);
+      }
+      if (!written?.length) {
+        return await respondWithCurrentToolkit(supabaseAdmin, canonicalPlaceId, toolkitLocale);
+      }
+    } else {
+      const { error: dbError } = await supabaseAdmin
+        .from('place_toolkit')
+        .upsert({
+          place_id: canonicalPlaceId,
+          [guideColumn]: essentialGuideJson,
+          toolkit_updated_at: new Date().toISOString()
+        }, { onConflict: 'place_id' });
 
-    if (dbError) {
-      console.error('DB Update Error:', dbError);
-      throw new Error(`Failed to update essential_guide in database: ${dbError.message}`);
+      if (dbError) {
+        console.error('DB Update Error:', dbError);
+        throw new Error(`Failed to update essential_guide in database: ${dbError.message}`);
+      }
     }
 
     return new Response(JSON.stringify({
