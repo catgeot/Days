@@ -37,7 +37,7 @@ gateo.kr은 **"3D 인터랙티브 지구본과 AI 도슨트(MOONi)를 결합하�
 | **7** | **제휴 Disclosure** | `PreTravelChecklist.jsx` 거대 CTA 3개(항공/숙소/픽업)에 광고 표기 누락, 종합 안내가 플래너 최하단에 매몰 | **P1 (상)** | 체크리스트 버튼 `[AD/제휴]` 인라인 명시, 플래너 상단으로 `hybridNotice` 승격 |
 | **8** | **플래너 복잡도** | `(복잡도 90/100)` 직결 노출, 11개 섹션 25~30개 버튼이 단일 스크롤에 전개되어 과부하 | **P1 (상)** | 3단계 점진적 노출(1.필수 비자·항공·숙소 -> 2.이동·유심 -> 3.투어·패스), 중복 CTA 통합, 복잡도 문구 완화 |
 | **9** | **언어 일관성** | `PlaceCardExpanded.jsx` 118행 raw `location.desc` 참조, `toolkitPlaceIdResolve.js` 한글 폴백, `HomeUI.jsx` 영문 하드코딩 | **P2 (중)** | `getLocalizedPlaceDesc` 연결, 네비 `t()` 적용, DB 미번역 안내 배너 |
-| **10** | **신뢰 요소** | 전역 푸터 부재, `LogoPanel.jsx` 로고 클릭 드로어에만 은닉, TourAPI/Open-Meteo 출처 누락 | **P2 (중)** | 서브페이지/전역 최소 푸터 바 신설, `mapboxAttribution.js` 데이터 출처 보강 |
+| **10** | **신뢰 요소** | 전역 푸터 부재, `LogoPanel.jsx` 로고 클릭 드로어에만 은닉, TourAPI 출처 누락 | **P2 (중)** | 서브페이지/전역 최소 푸터 바 신설, `mapboxAttribution.js` 데이터 출처 보강 |
 | **11** | **로딩/빈 상태 UX** | `/korea` 행 이미지 `onError` 누락(엑박), `/blog/curation` 브라우저 `alert()` 후 초기화 | **P2 (중)** | 축제 이미지 `onError` 그라데이션 폴백, 축제 리스트 스켈레톤, 큐레이션 인라인 에러 및 재시도 버튼 |
 | **12** | **가입 전 혜택** | `Login.jsx` 혜택 안내 전무, `SignUp.jsx` "일보 작성" 레거시 노출, 버킷리스트/필명 가치 단절 | **P2 (중)** | 인증 폼 좌측/상단에 4대 핵심 혜택(버킷리스트, 작가필명, AI맞춤추천, 플래너저장) 시각화 |
 | **13** | **접근성 & 모션** | `Trash2` 등 무속성 아이콘 버튼, 9px 저대비 텍스트, 3D 지구본 `prefers-reduced-motion` 미연동 및 일시정지 부재 | **P2 (중)** | 아이콘 `aria-label` 부여, 텍스트 명도대비(7:1) 개선, 3D 지구본 자전 일시정지 토글 및 감속 연동 |
@@ -371,7 +371,7 @@ flowchart TD
   2. **데이터 출처(Credits) 보강 (`mapboxAttribution.js`, `MapboxCreditsPanel.jsx`)**:
      - 핵심 데이터 소스 명시 추가:
        - 한국관광공사 TourAPI 4.0 (공공누리 제1유형)
-       - Open-Meteo (실시간 기상 데이터)
+       - (티커 날씨 연동 제거됨)
        - Unsplash & Pexels (고해상도 라이선스 미디어)
        - Trip.com, Klook, GetYourGuide, MyRealTrip (여행 제휴 파트너)
   3. **체크리스트 메인 CTA에 제휴 고지 결합 (`PreTravelChecklist.jsx`, `WhiteLabelWidget.jsx`)**:

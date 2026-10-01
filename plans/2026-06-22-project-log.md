@@ -93,11 +93,11 @@ Phase 4 실행 — 출발지·경유 UI …
 - **QA**: 사용자 1차 확인 ✅ (추가 이슈 있으면 재보고)
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) · [`.ai-context.md`](../.ai-context.md) 3절 준비 판정 갱신
 
-## 홈 TravelTicker — Open-Meteo 실제 날씨 연동
+## 홈 TravelTicker — 외부 날씨 API 연동 (이후 제거)
 
-- **변경**: `tickerWeather.js` — WMO→아이콘 매핑 · Open-Meteo `current` · sessionStorage 30분 캐시 · `useTrendingData` 랭킹 후 enrich · Fallback `trendingData` 수동 temp/weather 제거
+- **변경**: `tickerWeather.js` — WMO→아이콘 매핑 · 외부 기상 API `current` · sessionStorage 30분 캐시 · `useTrendingData` 랭킹 후 enrich · Fallback `trendingData` 수동 temp/weather 제거
 - **Fallback**: API 실패 시 `20°`·`cloud` · 로딩 중 `–°` (`TravelTicker`)
-- **QA**: `npm run build` ✅ · Osaka Open-Meteo 스모크 21°C · 커밋·푸시 ✅
+- **QA**: `npm run build` ✅ · Osaka 기상 스모크 21°C · 커밋·푸시 ✅
 
 ## 항공 시네마 — 태평양 waypoint 남하 과다 fix
 
