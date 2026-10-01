@@ -33,13 +33,6 @@ export const GATEO_DATA_SOURCES = [
     href: 'https://www.visitkorea.or.kr/',
   },
   {
-    name: 'Open-Meteo',
-    nameEn: 'Open-Meteo',
-    detail: '실시간 기상 데이터',
-    detailEn: 'Live weather data',
-    href: 'https://open-meteo.com/',
-  },
-  {
     name: 'Unsplash',
     nameEn: 'Unsplash',
     detail: '고해상도 라이선스 사진',

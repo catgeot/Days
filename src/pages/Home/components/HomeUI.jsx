@@ -28,6 +28,7 @@ import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
 import { shouldShowFaceSeaOceanChips } from '../lib/faceSeaOceans.js';
 import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListHeight';
 import { useTrendingData } from '../hooks/useTrendingData';
+import { useMdUpViewport } from '../hooks/useMdUpViewport';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import TrustLinkBar from '../../../shared/layout/TrustLinkBar';
@@ -189,7 +190,8 @@ const HomeUI = React.memo(({
     setMobileRegionsExpanded(expanded);
   }, []);
 
-  const trendingData = useTrendingData();
+  const isMdUp = useMdUpViewport();
+  const trendingData = useTrendingData({ enabled: isMdUp });
 
   useEffect(() => {
     if (externalInput) {

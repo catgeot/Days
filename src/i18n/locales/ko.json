@@ -247,14 +247,7 @@
     },
     "chatWithAi": "AI와 대화하기",
     "ticker": {
-      "liveTrending": "실시간 트렌드",
-      "liveRanking": "실시간 순위",
-      "updated": "업데이트",
-      "live": "● LIVE",
-      "popularDest": "인기 여행지",
-      "rising": "상승",
-      "down": "하락",
-      "same": "-",
+      "topTen": "TOP 10",
       "gateSystem": "GATE 0 SYSTEM"
     },
     "explore": {
@@ -277,6 +270,8 @@
       "keywordVisits": "키워드 방문 기록",
       "keywordVisitsCount": "키워드 방문 기록 {{count}}",
       "agenciesVisitedCount": "방문한 여행사 {{count}}",
+      "trendingTitle": "🔥 GATEO에서 많이 보는 여행지 TOP10",
+      "trendingMetric": "누적 조회",
       "recentSearch": "최근 검색",
       "removeItem": "{{item}} 삭제",
       "removeRecord": "{{keyword}} 기록 삭제",

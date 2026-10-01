@@ -56,6 +56,7 @@ import {
 } from './SearchDiscovery/curationTargets';
 import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
 import { useTravelAgencyVisits } from '../../../hooks/useTravelAgencyVisits';
+import TrendingExploreChipsRow from './TrendingExploreChipsRow';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -104,6 +105,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const [hybridSuggestions, setHybridSuggestions] = useState([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [disambiguation, setDisambiguation] = useState(null);
+  const [searchSubmitError, setSearchSubmitError] = useState(null);
 
   const searchBarRowRefPc = useRef(null);
   const searchBarRowRefMobile = useRef(null);
@@ -414,6 +416,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     setRecentSearches(pushRecentSearch(finalQuery));
     setIsAILoading(true);
     setDisambiguation(null);
+    setSearchSubmitError(null);
     setIsSearchHistoryOpen(false);
     try {
       const result = await onSearch(finalQuery);
@@ -422,6 +425,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
         dismissSearchKeyboard();
         return;
       }
+    } catch (err) {
+      console.warn('[SearchDiscovery] onSearch failed', err);
+      if (onAskMooni) {
+        onAskMooni(finalQuery);
+        onClose?.();
+        return;
+      }
+      setSearchSubmitError(
+        t('home.explore.searchSubmitFailed', {
+          defaultValue: '검색 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+        }),
+      );
     } finally {
       setIsAILoading(false);
       setIsSearchHistoryOpen(false);
@@ -946,6 +961,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
               onChange={(e) => {
                 setQuery(e.target.value);
                 setDisambiguation(null);
+                setSearchSubmitError(null);
                 setActiveQuickSection(null);
                 // 타이핑 중에는 드롭다운에 제안 리스트를 유지
                 setIsSearchHistoryOpen(true);
@@ -972,7 +988,12 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
           </form>
         </div>
         {/* 드롭다운·선택 카드가 열린 동안 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
-        {!showSearchDropdown && !activeQuickSection && !hasChoiceCards && (
+        {searchSubmitError && (
+          <p className="text-xs md:text-sm text-red-300/90 px-1 pt-1.5 leading-relaxed" role="alert">
+            {searchSubmitError}
+          </p>
+        )}
+        {!showSearchDropdown && !activeQuickSection && !hasChoiceCards && !searchSubmitError && (
           <p className="text-xs md:text-sm text-blue-200/80 px-1 pt-1.5 leading-relaxed">
             {searchGuideText}
           </p>
@@ -1051,6 +1072,17 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
               )}
             </div>
           </div>
+
+        {isMobileView
+          && !isSearching
+          && !activeQuickSection
+          && !hasChoiceCards
+          && !showSearchDropdown && (
+          <TrendingExploreChipsRow
+            active={isOpen}
+            onSpotSelect={handleSpotSelect}
+          />
+        )}
       </div>
     </div>
   );

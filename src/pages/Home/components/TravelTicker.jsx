@@ -1,25 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plane, CloudSun, Sun, CloudRain, Cloud, Wind, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Plane } from 'lucide-react';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 
-const WeatherIcon = ({ type, size = 14 }) => {
-  switch (type) {
-    case 'sun': return <Sun size={size} className="text-yellow-400" />;
-    case 'rain': return <CloudRain size={size} className="text-blue-400" />;
-    case 'cloud': return <Cloud size={size} className="text-gray-300" />;
-    case 'wind': return <Wind size={size} className="text-gray-400" />;
-    default: return <CloudSun size={size} className="text-yellow-200" />;
-  }
-};
-
-const RankChange = ({ type, size = 12 }) => {
-  switch (type) {
-    case 'up': return <TrendingUp size={size} className="text-red-400" />;
-    case 'down': return <TrendingDown size={size} className="text-blue-400" />;
-    default: return <Minus size={size} className="text-gray-500" />;
-  }
-};
+function formatViewCount(score, locale) {
+  if (typeof score !== 'number' || !Number.isFinite(score)) return '–';
+  return score.toLocaleString(locale === 'ko' ? 'ko-KR' : 'en-US');
+}
 
 export default function TravelTicker({ data = [], onCityClick, isExpanded: externalExpanded, onToggle }) {
   const { t, i18n } = useTranslation();
@@ -29,35 +16,31 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
   const displayName = (city) =>
     getLocalizedPlaceName(city, i18n.language) || city?.name || '';
 
-  const rankChangeLabel = (change) => {
-    if (change === 'up') return t('home.ticker.rising');
-    if (change === 'down') return t('home.ticker.down');
-    return t('home.ticker.same');
-  };
-  
+  const metricLabel = t('home.explore.trendingMetric');
+
   const isControlled = externalExpanded !== undefined;
   const [internalExpanded, setInternalExpanded] = useState(false);
   const isExpanded = isControlled ? externalExpanded : internalExpanded;
 
-  const cities = data.length > 0 ? data : []; 
+  const cities = data.length > 0 ? data : [];
 
   useEffect(() => {
-    if (cities.length === 0) return; 
+    if (cities.length === 0) return;
 
     let interval;
-    if (!isExpanded) { 
+    if (!isExpanded) {
       interval = setInterval(() => {
-        setFade(false); 
+        setFade(false);
         setTimeout(() => {
           setCurrentIndex((prev) => (prev + 1) % cities.length);
-          setFade(true); 
-        }, 500); 
-      }, 4000); 
+          setFade(true);
+        }, 500);
+      }, 4000);
     } else {
-      clearInterval(interval); 
+      clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [isExpanded, cities.length]); 
+  }, [isExpanded, cities.length]);
 
   const currentCity = cities[currentIndex] || cities[0];
 
@@ -70,17 +53,17 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
 
   const handleToggle = () => {
     if (onToggle) onToggle(!isExpanded);
-    else setInternalExpanded(prev => !prev);
+    else setInternalExpanded((prev) => !prev);
   };
 
   const handleCityClick = (e, city) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     if (onCityClick) {
       onCityClick(city);
     }
   };
 
-  if (!currentCity) return null; 
+  if (!currentCity) return null;
 
   return (
     <div
@@ -89,84 +72,81 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
         ${isExpanded ? 'w-60 hover:bg-black/30' : 'w-48 hover:bg-black/30 cursor-pointer'}
         group
       `}
-      onMouseLeave={handleMouseLeave} 
-      onClick={!isExpanded ? handleToggle : undefined} 
+      onMouseLeave={handleMouseLeave}
+      onClick={!isExpanded ? handleToggle : undefined}
     >
-
-      <div className="flex justify-between items-center mb-2 border-b border-white/5 pb-2" onClick={isExpanded ? handleToggle : undefined}>
+      <div
+        className="flex justify-between items-center mb-2 border-b border-white/5 pb-2"
+        onClick={isExpanded ? handleToggle : undefined}
+      >
         <div className="text-[9px] text-gray-400 font-bold flex items-center gap-1 uppercase tracking-wider">
-          <Plane size={10} className="animate-pulse text-blue-400" />
-          {isExpanded ? t('home.ticker.liveRanking') : t('home.ticker.liveTrending')}
+          <Plane size={10} className="text-blue-400" />
+          {t('home.ticker.topTen')}
         </div>
-        {isExpanded ? (
-          <span className="text-[8px] text-green-500 font-mono animate-pulse">{t('home.ticker.live')}</span>
-        ) : (
-          <span className="text-[8px] text-gray-600 font-mono">{t('home.ticker.updated')}</span>
-        )}
+        <span className="text-[8px] text-gray-500 font-medium">{metricLabel}</span>
       </div>
 
       {isExpanded ? (
         <div className="flex flex-col gap-1">
           {cities.map((city) => (
             <div
-              key={city.rank} 
+              key={city.rank}
               onClick={(e) => handleCityClick(e, city)}
               className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <span className={`text-xs font-bold font-mono w-4 text-center ${city.rank <= 3 ? 'text-blue-400' : 'text-gray-500'}`}>
+                <span
+                  className={`text-xs font-bold font-mono w-4 text-center ${
+                    city.rank <= 3 ? 'text-blue-400' : 'text-gray-500'
+                  }`}
+                >
                   {city.rank}
                 </span>
 
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors truncate">
                     {displayName(city)}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <RankChange type={city.change} size={10} />
-                    <span className="text-[8px] text-gray-500 uppercase">
-                      {rankChangeLabel(city.change)}
-                    </span>
-                  </span>
+                  <span className="text-[8px] text-gray-500">{metricLabel}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-                <WeatherIcon type={city.weather} size={12} />
-                <span className="text-xs font-medium text-gray-300 group-hover:text-white font-mono">
-                  {typeof city.temp === 'number' ? city.temp : '–'}°
-                </span>
-              </div>
+              <span className="text-xs font-medium text-gray-300 group-hover:text-white font-mono tabular-nums shrink-0">
+                {formatViewCount(city.score, i18n.language)}
+              </span>
             </div>
           ))}
         </div>
       ) : (
         <>
-          <div className={`flex justify-between items-center transition-opacity duration-500 ${fade ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="flex items-center gap-3">
-              <div className="flex flex-col items-center justify-center w-5">
-                <span className="font-mono text-lg font-bold text-white/40 leading-none">
-                  {String(currentCity.rank).padStart(2, '0')}
-                </span>
-                <div className="mt-0.5"><RankChange type={currentCity.change} size={12} /></div>
-              </div>
+          <div
+            className={`flex justify-between items-center transition-opacity duration-500 ${fade ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="font-mono text-lg font-bold text-white/40 leading-none shrink-0">
+                {String(currentCity.rank).padStart(2, '0')}
+              </span>
 
-              <div className="flex flex-col">
-                <span className="font-bold text-sm text-white/90 tracking-wide">{displayName(currentCity)}</span>
-                <span className="text-[10px] text-gray-400">{t('home.ticker.popularDest')}</span>
+              <div className="flex flex-col min-w-0">
+                <span className="font-bold text-sm text-white/90 tracking-wide truncate">
+                  {displayName(currentCity)}
+                </span>
+                <span className="text-[10px] text-gray-400">{metricLabel}</span>
               </div>
             </div>
 
-            <div className="flex flex-col items-end">
-              <WeatherIcon type={currentCity.weather} size={14} />
-              <span className="text-xs font-medium text-white/80 mt-0.5">
-                {typeof currentCity.temp === 'number' ? currentCity.temp : '–'}°
+            <div className="flex flex-col items-end shrink-0">
+              <span className="text-xs font-medium text-white/80 font-mono tabular-nums">
+                {formatViewCount(currentCity.score, i18n.language)}
               </span>
             </div>
           </div>
 
           <div className="w-full h-0.5 bg-white/5 mt-3 rounded-full overflow-hidden">
-            <div key={currentIndex} className="h-full bg-blue-500/50 w-full animate-progress-bar origin-left"></div>
+            <div
+              key={currentIndex}
+              className="h-full bg-blue-500/50 w-full animate-progress-bar origin-left"
+            />
           </div>
           <style>{`
             @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }

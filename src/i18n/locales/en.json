@@ -468,14 +468,7 @@
     },
     "chatWithAi": "Chat with AI",
     "ticker": {
-      "liveTrending": "Live Trending",
-      "liveRanking": "Live Ranking",
-      "updated": "UPDATED",
-      "live": "● LIVE",
-      "popularDest": "Popular Dest.",
-      "rising": "Rising",
-      "down": "Down",
-      "same": "-",
+      "topTen": "TOP 10",
       "gateSystem": "GATE 0 SYSTEM"
     },
     "explore": {
@@ -498,6 +491,8 @@
       "keywordVisits": "Keyword history",
       "keywordVisitsCount": "Keyword history {{count}}",
       "agenciesVisitedCount": "Agencies opened {{count}}",
+      "trendingTitle": "🔥 Popular on GATEO — TOP 10",
+      "trendingMetric": "Total views",
       "recentSearch": "Recent search",
       "removeItem": "Remove {{item}}",
       "removeRecord": "Remove {{keyword}} record",
