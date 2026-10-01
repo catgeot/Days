@@ -18,9 +18,11 @@ import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import mooniChar from '../../../assets/MOONI_transparent.webp';
+import { getAppHistoryPath } from '../../../shared/navigation/appHistoryPathIndex';
+import { peekExploreReturn } from '../../../pages/Home/lib/exploreReturnSnapshot';
+import { resolvePlaceCardBack } from '../../../pages/Home/lib/placeCardBack';
 import {
   clearPlaceReturnTo,
-  isKoreaPlaceReturnPath,
   peekPlaceReturnTo,
 } from '../../../pages/Home/lib/placeReturnTo';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
@@ -61,8 +63,6 @@ const PlaceChatPanel = React.memo(({
   const scrollRef = useRef(null);
   const navigate = useNavigate();
   const routeLocation = useRouteLocation();
-  /** React Router history idx → pathname (카드 마운트 중만) — ← 시 place/explore/korea·returnTo */
-  const pathByHistoryIdxRef = useRef(new Map());
   const anchorKeyRef = useRef(null);
   const skipRelatedRefreshRef = useRef(false);
   const [relatedPlaces, setRelatedPlaces] = useState([]);
@@ -71,13 +71,6 @@ const PlaceChatPanel = React.memo(({
   const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
 
   const getPlaceKey = (place) => `${place?.id ?? ''}:${place?.name ?? ''}`;
-
-  useEffect(() => {
-    const idx = window.history.state?.idx;
-    if (typeof idx === 'number') {
-      pathByHistoryIdxRef.current.set(idx, routeLocation.pathname);
-    }
-  }, [routeLocation.pathname]);
 
   useEffect(() => {
     const key = getPlaceKey(location);
@@ -194,28 +187,22 @@ const PlaceChatPanel = React.memo(({
                 onClick={(event) => {
                     event.stopPropagation();
                     const idx = window.history.state?.idx;
-                    const returnTo = peekPlaceReturnTo(routeLocation.state);
-                    if (typeof idx === 'number' && idx > 0) {
-                        const prevPath = pathByHistoryIdxRef.current.get(idx - 1);
-                        // 탭·명소·탐색 간만 -1. 테마/축제 목록은 returnTo로 복귀.
-                        if (
-                            typeof prevPath === 'string' &&
-                            (prevPath.startsWith('/place/') ||
-                              prevPath.startsWith('/explore'))
-                        ) {
-                            navigate(-1);
-                            return;
-                        }
-                        if (returnTo && isKoreaPlaceReturnPath(prevPath)) {
-                            clearPlaceReturnTo();
-                            navigate(returnTo);
-                            return;
-                        }
+                    const prevPath =
+                      typeof idx === 'number' ? getAppHistoryPath(idx - 1) : null;
+                    const action = resolvePlaceCardBack({
+                      historyIdx: typeof idx === 'number' ? idx : null,
+                      prevPath,
+                      returnTo: peekPlaceReturnTo(routeLocation.state),
+                      exploreReturnPath: peekExploreReturn()?.path ?? null,
+                    });
+                    if (action.type === 'history') {
+                      navigate(-1);
+                      return;
                     }
-                    if (returnTo) {
-                        clearPlaceReturnTo();
-                        navigate(returnTo);
-                        return;
+                    if (action.type === 'push') {
+                      if (action.clearReturnTo) clearPlaceReturnTo();
+                      navigate(action.path);
+                      return;
                     }
                     onClose?.();
                 }}
