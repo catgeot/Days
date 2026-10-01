@@ -38,6 +38,7 @@ import {
   lookupLocalScenicMemberOverlayForSpot,
   resolveLocalScenicRowFirstImage,
   resolveSearchScenicMedia,
+  applyOfficialTourSearchMedia,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import { pickTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
 import {
@@ -5886,6 +5887,39 @@ assert.ok(
   !String(lookupLocalScenicPhotoByContentId('126053')?.imageUrl || '').includes('GC072P02944'),
   '기백산 썸네일 ≠ 용추계곡 126053',
 );
+const gibackStock = applyOfficialTourSearchMedia({
+  name: '기백산',
+  name_ko: '기백산',
+  name_en: '',
+  image_url: 'https://images.unsplash.com/photo-1744058644697-ccb2e002edae',
+});
+assert.equal(gibackStock.contentId, '126033', '방문 행 기백산 contentId');
+assert.equal(gibackStock.name_en, 'Gibaeksan', '빈 영문명은 Gibaeksan');
+assert.ok(
+  String(gibackStock.image_url).includes('GC072P02944'),
+  'Unsplash는 기백산 공식 사진으로 교체',
+);
+assert.ok(!String(gibackStock.imageUrl).includes('unsplash.com'));
+assert.equal(gibackStock.galleryUrls?.length, 3);
+const gibackKeptPhoto = applyOfficialTourSearchMedia({
+  name: '기백산',
+  name_en: 'Sang-won-ri',
+  image_url: 'https://example.com/visit.jpg',
+});
+assert.equal(gibackKeptPhoto.image_url, 'https://example.com/visit.jpg', '비축 사진이 아니면 유지');
+assert.equal(gibackKeptPhoto.name_en, 'Sang-won-ri');
+assert.equal(gibackKeptPhoto.contentId, '126033');
+const gibackMedia = resolveSearchScenicMedia({
+  name: '기백산',
+  image_url: 'https://images.unsplash.com/photo-1744058644697-ccb2e002edae',
+});
+assert.equal(gibackMedia.contentId, '126033');
+assert.ok(String(gibackMedia.imageUrl).includes('GC072P02944'));
+const unrelatedStock = applyOfficialTourSearchMedia({
+  name: '자킨토스',
+  image_url: 'https://images.unsplash.com/photo-1744058644697-ccb2e002edae',
+});
+assert.match(unrelatedStock.image_url, /unsplash\.com/);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

@@ -4,8 +4,10 @@
 import { supabase } from '../../../shared/api/supabase.js';
 import { fetchPlaceChatIntroSummaryForLocation } from './placeChatIntro.js';
 import { geocodeReversePlaceFields } from './mapboxGeocodeSuggestions.js';
+import { applyOfficialTourSearchMedia } from './koreaLocalScenicLists.js';
 import {
   buildVisitedLookupTokens,
+  collapseDuplicateVisitedSpots,
   isSafeVisitedSearchQuery,
   overlayGeoFieldsOnVisitedSpot,
   rowMatchesVisitedSearchQuery,
@@ -76,7 +78,10 @@ export async function lookupVisitedPlacesForSearch(query) {
     }
 
     if (!spots.length) return [];
-    const healed = await Promise.all(spots.map((spot) => healVisitedSpot(spot)));
+    const collapsed = collapseDuplicateVisitedSpots(spots).map((spot) =>
+      applyOfficialTourSearchMedia(spot),
+    );
+    const healed = await Promise.all(collapsed.map((spot) => healVisitedSpot(spot)));
     return Promise.all(healed.map((spot) => attachIntroDesc(spot)));
   } catch {
     return [];

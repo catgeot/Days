@@ -154,6 +154,57 @@ export function overlayGeoFieldsOnVisitedSpots(visitedSpots, geoHits) {
   );
 }
 
+function visitedCoordKey(spot) {
+  const lat = Number(spot?.lat);
+  const lng = Number(spot?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return '';
+  return `${lat.toFixed(3)}|${lng.toFixed(3)}`;
+}
+
+function visitedNameKey(spot) {
+  return normalizeVisitedSearchKey(spot?.name_ko || spot?.name);
+}
+
+function isStockSearchImage(url) {
+  return /images\.unsplash\.com|images\.pexels\.com/i.test(String(url || ''));
+}
+
+/**
+ * 같은 한글 이름·같은 좌표의 place_stats 행은 한 장.
+ * 한글 place_id를 라틴 지명 슬러그(sang-won-ri)보다 남긴다.
+ * @param {object[]} spots
+ */
+export function collapseDuplicateVisitedSpots(spots) {
+  const out = [];
+  for (const spot of Array.isArray(spots) ? spots : []) {
+    if (!spot) continue;
+    const name = visitedNameKey(spot);
+    const coord = visitedCoordKey(spot);
+    const idx = out.findIndex(
+      (row) => name && visitedNameKey(row) === name && coord && visitedCoordKey(row) === coord,
+    );
+    if (idx < 0) {
+      out.push(spot);
+      continue;
+    }
+    out[idx] = preferVisitedSpot(out[idx], spot);
+  }
+  return out;
+}
+
+function preferVisitedSpot(current, next) {
+  const name = visitedNameKey(current) || visitedNameKey(next);
+  const currentId = normalizeVisitedSearchKey(current?.slug || current?.place_id);
+  const nextId = normalizeVisitedSearchKey(next?.slug || next?.place_id);
+  const currentNamed = Boolean(name) && currentId === name;
+  const nextNamed = Boolean(name) && nextId === name;
+  if (currentNamed !== nextNamed) return currentNamed ? current : next;
+  const currentStock = isStockSearchImage(current?.image_url || current?.imageUrl);
+  const nextStock = isStockSearchImage(next?.image_url || next?.imageUrl);
+  if (currentStock !== nextStock) return currentStock ? next : current;
+  return current;
+}
+
 export function buildPlaceStatsIdentityPayload(location) {
   if (!location || typeof location !== 'object') return null;
   const placeId = getPlaceStatsId(location);
