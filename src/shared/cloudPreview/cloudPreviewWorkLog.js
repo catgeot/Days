@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 95,
-  sessionPhase: '완도 검색 지역',
+  sessionPhase: '완도 데이터만',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-10-02-palgyeong-use-95-wando-data-only',
+    session: '팔경 활용 #95, 완도 데이터만',
+    title: '국화섬 로직 되돌림',
+    detail:
+      '갤러리 개요에 넣었던 상왕봉 문장과, 무니 조회 키를 바꾸는 로직을 뺐습니다. 갤러리 개요는 다시 무니 써머리가 채웁니다. 국화섬 데이터는 검색 행 개요와 공식 사진 3장만 남습니다. Preview /qa/palgyeong-use — 홈 검색「완도」국화섬.',
+    at: '2026-10-02T12:45:00.000Z',
+  },
   {
     id: '2026-10-02-palgyeong-use-95-wando-gukhwa-region',
     session: '팔경 활용 #95, 완도 검색 지역',

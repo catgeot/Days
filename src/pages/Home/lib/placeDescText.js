@@ -49,9 +49,3 @@ export function needsPlaceChatIntroHydration(location) {
   if (!isSyntheticOrEmptyPlaceDesc(location)) return false;
   return true;
 }
-
-/** 동명 캐시를 피하려는 전용 intro 키. 없으면 빈 문자열. */
-export function exclusivePlaceChatIntroDestination(location) {
-  if (!location || typeof location !== 'object') return '';
-  return String(location.placeChatIntroKey || '').trim().replace(/\s+/g, ' ');
-}
