@@ -64,7 +64,7 @@ alwaysApply: true
 - `travelSpotAirports.json` / `travelSpotFerries.json` **spots 직접 수정 금지** → overrides → `generate:*`
 - API 키 브라우저 노출·사용자 승인 없는 「완료」 단정 금지
 - **UI 임의 변경 금지** (`.ai-context` **§4.1 5**): 승인 없이 기존 버튼·레이아웃·톤·카피 교체 금지. **기능 추가 시에도 기존 비주얼 유지**(연결·동작만). 「커밋 보류」≠ 리디자인 허가
-- **데이터 작업에서 기존 로직 수정 금지** (`.ai-context` **§4.1 15**): 오버레이·사진·개요·SSOT 행은 데이터만. 무니 써머리·hydrate·검색 선택처럼 동작 중인 로직을 막거나 우회하지 말 것. 동명·오지역은 로직 수정 없이 현상만 보고
+- **지명 오탐·동명 충돌은 SSOT 데이터로 정제** (`.ai-context` **§4.1 15**): 전역 로직에 ad-hoc 우회 분기를 넣지 말고, SSOT 데이터(`koreaLocalScenicLists.json`, 오버레이 키 등)에서 공식 지명과 좌표를 정규 규약에 맞게 정제한다.
 - **브라우저/`computerUse` QA 금지** (`.ai-context` **§4.1 13** · **1.6**): `Task(computerUse)`·`RecordScreen`·화면 클릭 QA **기본 금지**. **사람 명시 요청 시에만**. 채팅명·일지 `… QA` = **사람 Preview** 단계(에이전트 실행 지시 아님). 에이전트 검증 = audit/smoke/`build` → push → `/qa/…`·Preview + 사람 체크 1~3줄. **같은 세션 QA**: 복잡 로직·토큰 과다 외에는 작업 세션에서 마무리 · 다음 제시어는 다음 작업 (`AGENTS.md` Cloud)
 
 - 사용자 명시 없이 `plans/`에 새 완료보고/대형 기획서 생성 금지
