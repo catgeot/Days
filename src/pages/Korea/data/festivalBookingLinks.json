@@ -1,0 +1,21 @@
+{
+  "1998564": [
+    {
+      "id": "achim",
+      "program": "창덕궁 아침 궁을 깨우다",
+      "programEn": "Waking Up the Palace in the Morning (Changdeokgung)",
+      "url": "https://www.ticketlink.co.kr/product/65330",
+      "provider": "ticketlink",
+      "audience": "domestic",
+      "eventStart": "2026-10-07",
+      "eventEnd": "2026-10-11",
+      "saleStart": "2026-09-04T14:00:00+09:00",
+      "saleEnd": "2026-10-10T23:59:59+09:00",
+      "timeText": "07:30",
+      "priceText": "1만원",
+      "featured": true,
+      "sourceUrl": "https://www.kh.or.kr/cont/view/all/month/menu/363?idx=110665",
+      "verifiedAt": "2026-10-02T11:00:00+09:00"
+    }
+  ]
+}

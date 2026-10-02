@@ -72,6 +72,11 @@ import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import FestivalStayStrip from './FestivalStayStrip';
 import FestivalTnaStrip from './FestivalTnaStrip';
 import FestivalMooniFab from './FestivalMooniFab';
+import { FestivalBookingActions } from './FestivalBookingActions.jsx';
+import {
+  getVisibleBookingLinks,
+  shouldHideOfficialHomepage,
+} from './lib/festivalBookingLinks.js';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
 import {
@@ -1031,6 +1036,12 @@ export default function FestivalDetailSheet({
     return normalizeHomepage(common?.homepage);
   }, [intro?.eventhomepage, common?.homepage]);
 
+  const bookingLinks = useMemo(
+    () => getVisibleBookingLinks(item?.contentId, { uiLang: locale }),
+    [item?.contentId, locale],
+  );
+  const hideOfficialHomepage = shouldHideOfficialHomepage(homepage, bookingLinks);
+
   const programText = useMemo(
     () => stripHtml(intro?.program || ''),
     [intro?.program],
@@ -1376,7 +1387,14 @@ export default function FestivalDetailSheet({
             />
           )}
 
-          {homepage && (
+          <FestivalBookingActions
+            contentId={item?.contentId}
+            links={bookingLinks}
+            bookNowLabel={t('korea.festival.detail.bookNow')}
+            uiLang={locale}
+          />
+
+          {homepage && !hideOfficialHomepage && (
             <a
               href={homepage}
               target="_blank"

@@ -97,6 +97,7 @@
     "smoke:korea-festival-nearby": "node scripts/smoke-korea-festival-nearby.mjs",
     "smoke:korea-festival-stay-url": "node scripts/smoke-korea-festival-stay-url.mjs",
     "smoke:korea-festival-detail-url": "node scripts/smoke-korea-festival-detail-url.mjs",
+    "smoke:festival-booking-links": "node scripts/smoke-festival-booking-links.mjs",
     "test:e2e:korea-festival-detail-url": "playwright test --config=playwright.config.festival-detail-url.js",
     "smoke:korea-festival-planner-link": "node scripts/smoke-korea-festival-planner-link.mjs",
     "smoke:festival-detail-locale": "node scripts/smoke-festival-detail-locale.mjs",
