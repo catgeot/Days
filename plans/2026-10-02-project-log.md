@@ -2,6 +2,15 @@
 
 직전: [`2026-10-01-project-log.md`](./2026-10-01-project-log.md)
 
+## 팔경 활용 #95, 국화섬 로직 되돌림
+
+- **세션** `팔경 활용 #95, 완도 데이터만` · branch `cursor/palgyeong-use-e744` · tip `32246408` · PR [#368](https://github.com/catgeot/Days/pull/368)
+- **조치** 갤러리 개요에 넣었던 상왕봉 문장과 `place_chat_intro` 조회 키 우회를 제거. 갤러리 개요는 무니 써머리. 국화섬은 검색 행 개요·공식 사진 3장만. 재발 방지: `.ai-context` **§4.1 15**.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` PASS.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use
+- **작업 로그** 국화섬 로직 되돌림
+- **다음** 없음
+
 ## 팔경 활용 #95, 완도 검색 지역
 
 - **세션** `팔경 활용 #95, 완도 검색 지역` · branch `cursor/palgyeong-use-e744` · tip `75aaa7f4` · PR [#368](https://github.com/catgeot/Days/pull/368)

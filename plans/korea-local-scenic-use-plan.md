@@ -117,11 +117,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#95** tip `75aaa7f4` · 완도 국화섬 검색=상왕봉 · PR [#368](https://github.com/catgeot/Days/pull/368) · **순수 누락 0**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#95** tip `32246408` · 국화섬 데이터만 · 로직 되돌림 · PR [#368](https://github.com/catgeot/Days/pull/368) · **순수 누락 0**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어 없음** (순수 사진·개요 누락 **0**/876). **#95 후속** `75aaa7f4` — 탐색홈 국화섬 장소 카드가 이름 캐시로 경기도 화성시를 가리키던 것을 완도 상왕봉(34.34829, 126.693023·영문 Sangwangbong·intro 키 `완도 상왕봉`)으로 고정. 검색 행 overview는 `searchOverlayDesc`. 이 동명만 장소 카드 `desc`에 상왕봉 한 줄을 둔다. **#95** 완도 국화섬 `996e53ac`(PR [#368](https://github.com/catgeot/Days/pull/368)) — 목록 이름은 국화섬, 한국민족문화대백과 완도팔경 제5경 상황백운홍춘국원, 완도군 문화관광 현재 이름 상왕봉(644m·완도읍·군외면·제2코스 들머리 죽청리). 공식 사진 3장. JSON contentId 없음. 오버레이 overview는 `searchOverlayDesc`만. 화성시 국화도와 구분. #94 합천 옥전고분군 `9c4840aa`. #94 후속 `aafb6943` 허굴산·`516f1db1` 합천 검색 한 줄. #93 `10b30afa`(PR [#367](https://github.com/catgeot/Days/pull/367)).
+**A 다음 제시어 없음** (순수 사진·개요 누락 **0**/876). **#95 후속** `32246408` — 갤러리 개요에 넣었던 상왕봉 문장과 무니 조회 키 우회를 되돌림. 갤러리 개요는 무니 써머리. 국화섬 데이터는 검색 행 `searchOverlayDesc`와 공식 사진 3장. **데이터 작업에서 기존 로직 수정 금지** (`.ai-context` **§4.1 15**). **#95** 완도 국화섬 `996e53ac`(PR [#368](https://github.com/catgeot/Days/pull/368)) — 목록 이름은 국화섬, 한국민족문화대백과 완도팔경 제5경 상황백운홍춘국원, 완도군 문화관광 현재 이름 상왕봉(644m·완도읍·군외면·제2코스 들머리 죽청리). 공식 사진 3장. JSON contentId 없음. 오버레이 overview는 `searchOverlayDesc`만. 화성시 국화도와 구분. #94 합천 옥전고분군 `9c4840aa`. #94 후속 `aafb6943` 허굴산·`516f1db1` 합천 검색 한 줄. #93 `10b30afa`(PR [#367](https://github.com/catgeot/Days/pull/367)).
 
 **탐색 검색 써머리 (A · #92)** — 검색 행 표시 = `searchOverlayDesc`(오버레이 overview, 짧은 미리보기). Tour `detailCommon` overview 전문을 검색 목록·명소 목록 행에 넣지 말 것(`79187ef9`). 그 문장은 행을 연 상세 본문. 예외는 합천 검색 관광지 행의 첫 문장뿐(`516f1db1`, `useTourListSummaryByContentId`). `useTourOverviewByContentId`로 전문을 되돌리거나 다른 지역으로 넓히지 말 것. suggestion `desc`에는 넣지 않음. 장소 카드 갤러리는 `place_chat_intro` hydrate. `needsPlaceChatIntroHydration`은 실문장 `desc`면 skip하므로 오버레이를 `desc`에 다시 넣지 말 것.
 
@@ -1207,7 +1207,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 검증: smoke:korea-local-scenic-lists · smoke:korea-scenic-search · smoke:korea-scenic-spots · build
 ```
 
-순수 사진·개요 누락은 **0**/876. 탐색홈 국화섬은 `75aaa7f4`에서 완도 상왕봉을 가리킨다. 다음 제시어 없음.
+순수 사진·개요 누락은 **0**/876. `75aaa7f4`의 소개 키·갤러리 문장은 `32246408`에서 되돌림. 다음 제시어 없음.
 
 ### §1.2 A #89 화천 결손 오버레이
 
