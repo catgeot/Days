@@ -74,6 +74,7 @@ import FestivalTnaStrip from './FestivalTnaStrip';
 import FestivalMooniFab from './FestivalMooniFab';
 import { FestivalBookingActions } from './FestivalBookingActions.jsx';
 import {
+  earliestBookingVerifiedDate,
   getVisibleBookingLinks,
   shouldHideOfficialHomepage,
 } from './lib/festivalBookingLinks.js';
@@ -1392,6 +1393,9 @@ export default function FestivalDetailSheet({
             links={bookingLinks}
             bookNowLabel={t('korea.festival.detail.bookNow')}
             uiLang={locale}
+            programsTitle={t('korea.festival.detail.bookPrograms')}
+            moreLabel={t('korea.festival.detail.bookMore')}
+            providerLabel={t('korea.festival.detail.bookProviderTicketlink')}
           />
 
           {homepage && !hideOfficialHomepage && (
@@ -1991,6 +1995,17 @@ export default function FestivalDetailSheet({
                     )}
                   </div>
                 )}
+
+              {bookingLinks.length > 0 && (
+                <p
+                  className="text-[11px] leading-snug text-stone-500 break-keep"
+                  data-festival-booking-note=""
+                >
+                  {t('korea.festival.detail.bookingChecked', {
+                    date: earliestBookingVerifiedDate(bookingLinks),
+                  })}
+                </p>
+              )}
             </div>
           )}
 

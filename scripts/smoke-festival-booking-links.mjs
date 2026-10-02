@@ -4,11 +4,14 @@ import { fileURLToPath } from 'node:url';
 import { trackEvent } from '../src/shared/analytics/trackEvent.js';
 import {
   bookingClickParams,
+  bookingScheduleText,
   bookingUrlKey,
+  earliestBookingVerifiedDate,
   filterVisibleBookingLinks,
   getVisibleBookingLinks,
   isAllowedBookingUrl,
   shouldHideOfficialHomepage,
+  visibleBookingListRows,
 } from '../src/pages/Korea/lib/festivalBookingLinks.js';
 
 const ACHIM_URL = 'https://www.ticketlink.co.kr/product/65330';
@@ -23,16 +26,17 @@ const achimVisible = getVisibleBookingLinks('1998564', {
   now: VISIBLE_NOW,
   uiLang: 'ko',
 });
-assert.deepEqual(ids(achimVisible), ['achim']);
-assert.equal(achimVisible[0].url, ACHIM_URL);
-assert.equal(new URL(achimVisible[0].url).search, '');
+const achimRow = achimVisible.find((row) => row.id === 'achim');
+assert.ok(achimRow, 'achim still on sale one second before saleEnd');
+assert.equal(achimRow.url, ACHIM_URL);
+assert.equal(new URL(achimRow.url).search, '');
 assert.equal(isAllowedBookingUrl(ACHIM_URL), true);
 
 const achimHidden = getVisibleBookingLinks(1998564, {
   now: HIDDEN_NOW,
   uiLang: 'ko',
 });
-assert.deepEqual(achimHidden, []);
+assert.ok(!achimHidden.some((row) => row.id === 'achim'));
 
 assert.deepEqual(
   getVisibleBookingLinks('not-a-festival', { now: VISIBLE_NOW, uiLang: 'ko' }),
@@ -133,7 +137,7 @@ assert.equal(
 );
 assert.equal(bookingUrlKey('https://WWW.ticketlink.co.kr/product/65330/'), bookingUrlKey(ACHIM_URL));
 
-const params = bookingClickParams('1998564', achimVisible[0], {
+const params = bookingClickParams('1998564', achimRow, {
   placement: 'festival_detail_top',
   uiLang: 'ko',
 });
@@ -165,6 +169,42 @@ globalThis.window = {
 assert.doesNotThrow(() => trackEvent('booking_click', params));
 delete globalThis.window;
 assert.doesNotThrow(() => trackEvent('booking_click', params));
+
+const palaceNow = '2026-10-07T12:00:00+09:00';
+const palace = getVisibleBookingLinks('1998564', { now: palaceNow, uiLang: 'ko' });
+assert.equal(palace.length, 8);
+assert.equal(palace[0].id, 'achim');
+assert.equal(palace[0].program, '창덕궁 아침 궁을 깨우다');
+assert.deepEqual(
+  visibleBookingListRows(palace).map((row) => row.id),
+  palace.slice(0, 5).map((row) => row.id),
+);
+assert.equal(visibleBookingListRows(palace, { showAll: true }).length, 8);
+assert.equal(earliestBookingVerifiedDate(palace), '2026-10-02');
+assert.equal(bookingScheduleText(palace.find((row) => row.id === 'seminar')), '2026-10-11 14:00');
+assert.equal(
+  bookingScheduleText(palace.find((row) => row.id === 'jongmyo-architecture')),
+  '2026-10-10~2026-10-11',
+);
+
+const afterAchimSale = getVisibleBookingLinks('1998564', {
+  now: '2026-10-11T00:00:00+09:00',
+  uiLang: 'ko',
+});
+assert.ok(!afterAchimSale.some((row) => row.id === 'achim'));
+assert.ok(!afterAchimSale.some((row) => row.id === 'donggwol-jangwonseo'));
+assert.ok(afterAchimSale.some((row) => row.id === 'seminar'));
+assert.deepEqual(
+  getVisibleBookingLinks('1998564', { now: '2026-10-12T00:00:00+09:00', uiLang: 'ko' }),
+  [],
+);
+
+const listCalls = [];
+globalThis.window = { gtag: (...args) => listCalls.push(args) };
+trackEvent('booking_list_open', { festival_id: '1998564', item_count: palace.length });
+assert.equal(listCalls.at(-1)[1], 'booking_list_open');
+assert.equal(listCalls.at(-1)[2].item_count, 8);
+delete globalThis.window;
 
 if (process.env.BOOKING_TZ_CHILD !== '1') {
   const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url)], {

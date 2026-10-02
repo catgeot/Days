@@ -157,6 +157,59 @@ export function shouldHideOfficialHomepage(homepage, links) {
  * @param {{ id?: string, provider?: string, url?: string, audience?: string }} link
  * @param {{ placement: string, uiLang?: string }} meta
  */
+const BOOKING_LIST_LIMIT = 5;
+
+/**
+ * @param {Array<Record<string, unknown>>} links
+ * @param {{ showAll?: boolean, limit?: number }} [opts]
+ */
+export function visibleBookingListRows(links, opts = {}) {
+  const limit = opts.limit ?? BOOKING_LIST_LIMIT;
+  const rows = Array.isArray(links) ? links : [];
+  if (opts.showAll || rows.length <= limit) return rows;
+  return rows.slice(0, limit);
+}
+
+/**
+ * @param {Record<string, unknown>} link
+ * @param {string} [uiLang]
+ */
+export function bookingProgramLabel(link, uiLang) {
+  const lang = String(uiLang || 'ko').toLowerCase();
+  const korean = lang === 'ko' || lang.startsWith('ko-');
+  if (!korean && link?.programEn) return String(link.programEn);
+  return String(link?.program || '');
+}
+
+/**
+ * @param {Record<string, unknown>} link
+ */
+export function bookingScheduleText(link) {
+  const start = String(link?.eventStart || '').trim();
+  const end = String(link?.eventEnd || '').trim();
+  const range = start && end && start !== end ? `${start}~${end}` : start || end;
+  const time = String(link?.timeText || '').trim();
+  return [range, time].filter(Boolean).join(' ');
+}
+
+/**
+ * Earliest verifiedAt calendar date in KST (YYYY-MM-DD).
+ * @param {Array<{ verifiedAt?: string }>} links
+ */
+export function earliestBookingVerifiedDate(links) {
+  let min = Infinity;
+  for (const link of links || []) {
+    const ms = Date.parse(String(link?.verifiedAt || ''));
+    if (Number.isFinite(ms) && ms < min) min = ms;
+  }
+  if (!Number.isFinite(min)) return '';
+  const kst = new Date(min + 9 * 60 * 60 * 1000);
+  const y = kst.getUTCFullYear();
+  const m = String(kst.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(kst.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 export function bookingClickParams(contentId, link, meta) {
   return {
     festival_id: String(contentId ?? ''),
