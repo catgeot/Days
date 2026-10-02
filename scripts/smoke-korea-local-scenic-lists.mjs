@@ -5984,6 +5984,7 @@ assert.ok(
 );
 assert.equal(sangwangSuggest?.name, '상왕봉', '상왕봉 명칭');
 assert.equal(sangwangSuggest?.name_en, 'Sangwangbong Peak', '상왕봉 영문명');
+assert.equal(sangwangSuggest?.parentCity, '완도', '상왕봉 suggestion parentCity 완도');
 assert.ok(
   Math.abs(Number(sangwangSuggest?.lat) - 34.34829) < 0.001 &&
     Math.abs(Number(sangwangSuggest?.lng) - 126.693023) < 0.001,
