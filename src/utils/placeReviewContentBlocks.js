@@ -3,6 +3,8 @@
  * @typedef {{ type: 'image', image_index: number }} ImageBlock
  */
 
+import { stripReviewInlineMarkdown } from './reviewInlineMarkdown.js';
+
 function parseImageIndex(block) {
   if (!block || block.type !== 'image') return null;
   const raw = block.image_index ?? block.image_id;
@@ -160,16 +162,20 @@ export function getReviewLeadThumbnailImageIndex(review) {
 }
 
 /**
- * @param {{ content?: string, content_blocks?: unknown, images?: unknown[] }} review
+ * @param {{ content?: string, content_blocks?: unknown, images?: unknown[], is_editorial?: boolean }} review
  */
 export function shouldShowReviewExpandToggle(review) {
   const imageCount = Array.isArray(review?.images) ? review.images.length : 0;
+  const preview = hasReviewContentBlocks(review?.content_blocks)
+    ? getCollapsedPreviewText(review)
+    : (review?.content || '');
+  const measured = review?.is_editorial === true
+    ? stripReviewInlineMarkdown(preview).length
+    : preview.length;
   if (hasReviewContentBlocks(review?.content_blocks)) {
-    return (
-      getCollapsedPreviewText(review).length > 120 || reviewHasHiddenMediaWhenCollapsed(review)
-    );
+    return measured > 120 || reviewHasHiddenMediaWhenCollapsed(review);
   }
-  return (review?.content || '').length > 120 || imageCount >= 1;
+  return measured > 120 || imageCount >= 1;
 }
 
 /**

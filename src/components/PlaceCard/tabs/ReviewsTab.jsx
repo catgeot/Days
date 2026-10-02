@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { EditorialReviewText } from './EditorialReviewText.jsx';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
@@ -346,12 +347,29 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         <div className="flex-1 min-w-0 text-gray-700 text-sm leading-relaxed break-keep">
           {usesContentBlocks ? (
             !isExpanded ? (
-              <div className="whitespace-pre-wrap line-clamp-3">
-                {collapsedPreviewText}
-              </div>
+              review.is_editorial === true ? (
+                <EditorialReviewText
+                  text={collapsedPreviewText}
+                  inline
+                  className="line-clamp-3"
+                />
+              ) : (
+                <div className="whitespace-pre-wrap line-clamp-3">
+                  {collapsedPreviewText}
+                </div>
+              )
             ) : (
               contentBlocks.map((block, blockIdx) => {
                 if (block.type === 'text') {
+                  if (review.is_editorial === true) {
+                    return (
+                      <EditorialReviewText
+                        key={`text-${blockIdx}`}
+                        text={block.text}
+                        className="mt-3 first:mt-0"
+                      />
+                    );
+                  }
                   return (
                     <p key={`text-${blockIdx}`} className="whitespace-pre-wrap mt-3 first:mt-0">
                       {block.text}
@@ -366,6 +384,12 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
                 return null;
               })
             )
+          ) : review.is_editorial === true ? (
+            <EditorialReviewText
+              text={review.content}
+              inline={!isExpanded}
+              className={isExpanded ? '' : 'line-clamp-3'}
+            />
           ) : (
             <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
               {review.content}
