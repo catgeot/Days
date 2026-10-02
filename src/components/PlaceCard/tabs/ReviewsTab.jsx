@@ -322,9 +322,11 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         </div>
 
         <div className="flex flex-col items-end gap-1">
-          <div className="flex gap-0.5">
-            {renderStars(review.rating)}
-          </div>
+          {review.is_editorial === true ? null : (
+            <div className="flex gap-0.5" data-review-stars="">
+              {renderStars(review.rating)}
+            </div>
+          )}
 
           {user && user.id === review.user_id && (
             <div className="flex items-center gap-2 mt-2">
