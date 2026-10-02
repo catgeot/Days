@@ -46,7 +46,10 @@ import {
   normalizeScenicQuery,
 } from '../src/pages/Home/lib/scenicSearch.js';
 import { listKoreaScenicSpots } from '../src/pages/Home/lib/koreaScenicSpots.js';
-import { needsPlaceChatIntroHydration } from '../src/pages/Home/lib/placeDescText.js';
+import {
+  exclusivePlaceChatIntroDestination,
+  needsPlaceChatIntroHydration,
+} from '../src/pages/Home/lib/placeDescText.js';
 import { sortScenicSpotsByPlaceCluster } from '../src/pages/Home/lib/sortScenicSpotsByPlaceCluster.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -5973,10 +5976,33 @@ assert.ok(
   !String(gukhwaSuggest?.desc || '').includes('제5경'),
   '국화섬 desc에 오버레이 overview 없음',
 );
+assert.ok(
+  String(gukhwaSuggest?.desc || '').includes('완도군') &&
+    String(gukhwaSuggest?.desc || '').includes('상왕봉') &&
+    !String(gukhwaSuggest?.desc || '').includes('화성'),
+  '국화섬 장소 카드는 완도 상왕봉',
+);
+assert.equal(
+  exclusivePlaceChatIntroDestination(gukhwaSuggest),
+  '완도 상왕봉',
+  '국화섬 intro 키는 봉우리',
+);
+assert.notEqual(
+  exclusivePlaceChatIntroDestination(gukhwaSuggest),
+  gukhwaSuggest?.name,
+  '국화섬 intro 키 ≠ 목록명',
+);
+assert.equal(gukhwaSuggest?.name, '국화섬', '국화섬 목록명 유지');
+assert.equal(gukhwaSuggest?.name_en, 'Sangwangbong', '국화섬 영문명은 상왕봉');
+assert.ok(
+  Math.abs(Number(gukhwaSuggest?.lat) - 34.34829) < 0.001 &&
+    Math.abs(Number(gukhwaSuggest?.lng) - 126.693023) < 0.001,
+  '국화섬 핀은 상왕봉 좌표',
+);
 assert.equal(
   needsPlaceChatIntroHydration(gukhwaSuggest),
-  true,
-  '국화섬 suggestion은 intro hydrate 대상',
+  false,
+  '국화섬은 이름 캐시(국화섬)로 intro hydrate하지 않음',
 );
 assert.ok(
   String(gukhwaSuggest?.imageUrl || gukhwaSuggest?.thumbUrl || '').includes('sanghwangbong1'),

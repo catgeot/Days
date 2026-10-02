@@ -12,6 +12,7 @@ import {
   getLocalizedPlaceName,
 } from '../../../components/PlaceCard/common/locationDisplay';
 import {
+  exclusivePlaceChatIntroDestination,
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
 } from './placeDescText.js';
@@ -178,6 +179,8 @@ export function stripPlaceChatIntroForSummary(text, placeName = '') {
 /** 조회·저장에 쓸 destination_key 후보 (이름 / 국가+이름 / displayLabel) */
 export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   if (locOrName == null) return [];
+  const exclusive = normalizeDestinationKey(exclusivePlaceChatIntroDestination(locOrName));
+  if (isValidIntroDestination(exclusive)) return [exclusive];
   if (typeof locOrName === 'string') {
     const key = normalizeDestinationKey(locOrName);
     return isValidIntroDestination(key) ? [key] : [];
@@ -340,10 +343,12 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
         locOrName?.displayLabel ||
         locOrName?.name ||
         primaryKey;
+  const exclusive = normalizeDestinationKey(exclusivePlaceChatIntroDestination(locOrName));
   const generateLabel =
-    typeof locOrName === 'string'
+    exclusive ||
+    (typeof locOrName === 'string'
       ? normalizeDestinationKey(locOrName)
-      : formatPlaceChatLabel(locOrName, lng) || primaryKey;
+      : formatPlaceChatLabel(locOrName, lng) || primaryKey);
 
   const promise = (async () => {
     try {

@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 95,
-  sessionPhase: '완도 결손 오버레이',
+  sessionPhase: '완도 검색 지역',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-10-02-palgyeong-use-95-wando-gukhwa-region',
+    session: '팔경 활용 #95, 완도 검색 지역',
+    title: '완도 국화섬 검색 지역',
+    detail:
+      '탐색홈에서 완도8경 국화섬을 열면 장소 소개가 경기도 화성시 국화섬이었습니다. 목록 이름은 국화섬이고, 핀·영문명·소개는 완도 상왕봉(644m)입니다. 이름만 같은 place_chat_intro는 쓰지 않습니다. Preview /qa/palgyeong-use — 홈 검색「완도」국화섬.',
+    at: '2026-10-02T12:20:00.000Z',
+  },
   {
     id: '2026-10-02-palgyeong-use-95-wando-gukhwa',
     session: '팔경 활용 #95, 완도 결손 오버레이',
