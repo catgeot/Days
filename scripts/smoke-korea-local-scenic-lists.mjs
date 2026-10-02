@@ -5928,6 +5928,17 @@ assert.ok(
   String(okjeonSuggest?.imageUrl || okjeonSuggest?.thumbUrl || '').includes('dbb074b6'),
   '옥전고분군 suggestion 썸네일',
 );
+const heogulThumb = lookupLocalScenicPhotoByContentId('1914603');
+assert.ok(heogulThumb?.imageUrl?.includes('idx=21260'), '허굴산 Tour 1914603 빈 썸네일');
+assert.equal(heogulThumb?.galleryUrls?.length, 2, '허굴산 공식 전경·안내도');
+assert.ok(
+  heogulThumb?.galleryUrls?.every((u) => u.includes('web.archive.org') && u.includes('MF00001900')),
+  '허굴산 합천군 문화관광 사진',
+);
+assert.ok(
+  !String(lookupLocalScenicPhotoByContentId('126698')?.imageUrl || '').includes('idx=21260'),
+  '허굴산 썸네일 ≠ 황계폭포 126698',
+);
 const gibackThumb = lookupLocalScenicPhotoByContentId('126033');
 assert.ok(gibackThumb?.imageUrl?.includes('GC072P02944'), '기백산 Tour 126033 빈 썸네일');
 assert.equal(gibackThumb?.galleryUrls?.length, 3, '기백산 공식 사진 3장');

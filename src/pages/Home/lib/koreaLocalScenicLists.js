@@ -2029,6 +2029,12 @@ const HC_OKJEON_2 =
 const HC_OKJEON_3 =
   'https://devin.aks.ac.kr/image/1ef10a9a-2c70-4820-8fee-023877bcf72c?preset=orig';
 const HC_OKJEON_HOME = 'http://www.hc.go.kr/06423/06435/06443.web';
+/** 합천군 문화관광 허굴산. 군 HTTPS는 오류 페이지라 공식 파일의 아카이브 주소. */
+const HC_HEOGUL =
+  'https://web.archive.org/web/20211103004913im_/https://www.hc.go.kr/CmsMultiFile/view.do?multifileId=MF00001900&idx=21260';
+const HC_HEOGUL_MAP =
+  'https://web.archive.org/web/20261002001034im_/http://www.hc.go.kr/CmsMultiFile/view.do?multifileId=MF00001900&idx=21261';
+const HC_HEOGUL_HOME = 'http://www.hc.go.kr/06571/06780/06788.web?amode=view&idx=50';
 const GJ_KHS = 'https://www.khs.go.kr/unisearch/images/national_treasure';
 const GJ_NAWON = `${GJ_KHS}/2021070209124901.JPG`;
 const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
@@ -4464,6 +4470,11 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   2381381: localScenicThumbOverlay(YS_BEOPGI, [YS_BEOPGI_2, YS_BEOPGI_3]),
   2784427: localScenicThumbOverlay(YS_TOWER, [YS_TOWER_2, YS_TOWER_3]),
   1236556: localScenicThumbOverlay(YS_GAYAJINSA, [YS_GAYAJINSA_2, YS_GAYAJINSA_3]),
+  // 합천 검색 허굴산 — Tour 1914603 firstimage·detailImage 없음. 팔경 아님. 대병3산 전경·허굴산 안내도. JSON contentId 기입 아님.
+  1914603: {
+    ...localScenicThumbOverlay(HC_HEOGUL, [HC_HEOGUL_MAP]),
+    homepage: HC_HEOGUL_HOME,
+  },
   // 함양 검색 기백산 — Tour 126033 first_image 없음. 용추계곡·용추폭포 126053과 다른 산. JSON contentId 기입 아님.
   126033: {
     ...localScenicThumbOverlay(HY_GIBAEK, [HY_GIBAEK_2, HY_GIBAEK_3]),

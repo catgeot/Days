@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-10-02-palgyeong-use-94-heogulsan-photo',
+    session: '팔경 활용 #94, 합천 결손 오버레이',
+    title: '합천 허굴산 사진',
+    detail:
+      '명승 검색「합천」허굴산(Tour 1914603, 대병면)은 firstimage와 detailImage가 없어 랜드마크 아이콘이었습니다. 팔경 항목이 아니라 관광지 사진 데이터만 넣었습니다. 합천군 문화관광 허굴산 페이지의 대병3산 전경이 목록 사진이고, 같은 페이지의 허굴산 안내도가 둘째 장입니다. 군 누리집 HTTPS는 오류 페이지라 그 공식 파일의 아카이브 주소입니다. JSON contentId는 넣지 않았습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「합천」허굴산.',
+    at: '2026-10-02T00:15:00.000Z',
+  },
+  {
     id: '2026-10-01-palgyeong-use-94-hapcheon-list-summary',
     session: '팔경 활용 #94, 합천 결손 오버레이',
     title: '합천 검색 한 줄 써머리',
