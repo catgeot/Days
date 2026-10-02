@@ -101,6 +101,7 @@
     "smoke:korea-festival-detail-url": "node scripts/smoke-korea-festival-detail-url.mjs",
     "smoke:festival-booking-links": "node scripts/smoke-festival-booking-links.mjs",
     "smoke:mooni-open": "node scripts/smoke-mooni-open.mjs",
+    "smoke:trending-ranking-backoff": "node scripts/smoke-trending-ranking-backoff.mjs",
     "test:e2e:korea-festival-detail-url": "playwright test --config=playwright.config.festival-detail-url.js",
     "smoke:korea-festival-planner-link": "node scripts/smoke-korea-festival-planner-link.mjs",
     "smoke:festival-detail-locale": "node scripts/smoke-festival-detail-locale.mjs",
