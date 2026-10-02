@@ -28,6 +28,7 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hapcheon` · git `https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/korea/theme/scenic?hub=hapcheon`
 - **작업 로그** 합천 옥전고분군 사진
 - **후속** `516f1db1` 팔경이 아닌 합천 검색 관광지(황계폭포·내천못재·신소양체육공원·허굴산) 목록은 주소 뒤에 Tour 개요 첫 문장. 전문은 상세. 다른 지역 목록은 주소만. 작업 로그 「합천 검색 한 줄 써머리」.
+- **후속** `aafb6943` 허굴산(Tour `1914603`) 사진은 합천군 문화관광 대병3산 전경·허굴산 안내도. 로직 수정 없음. 군 HTTPS는 오류 페이지라 공식 파일 아카이브 주소. JSON contentId 없음. 작업 로그 「합천 허굴산 사진」.
 - **다음** **#95 완도8경 1**(국화섬) · 순수 누락 **1**/876 — [`feature-handoff-index.md`](./feature-handoff-index.md)
 
 ## 검색 사전 #1, upsert RPC 초안
