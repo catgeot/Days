@@ -10,12 +10,16 @@ import {
   reviewInlineUrlTransform,
 } from '../../../utils/reviewInlineMarkdown.js';
 
+const REVIEW_LINK_CLASS =
+  'text-blue-600 hover:text-blue-700 underline underline-offset-2 break-words';
+
 function ReviewAnchor({ href, children }) {
   const props = reviewInlineLinkProps(href);
   if (!props) return <>{children}</>;
   return (
     <a
       {...props}
+      className={REVIEW_LINK_CLASS}
       onClick={(event) => {
         event.stopPropagation();
       }}
@@ -29,7 +33,11 @@ export default function ReviewInlineMarkdown({ text, inline = false }) {
   const components = useMemo(
     () => ({
       p: ({ children }) =>
-        inline ? <span>{children}</span> : <p className="whitespace-pre-wrap">{children}</p>,
+        inline ? (
+          <span className="whitespace-pre-wrap">{children}</span>
+        ) : (
+          <p className="whitespace-pre-wrap">{children}</p>
+        ),
       strong: ({ children }) => <strong className="font-bold">{children}</strong>,
       a: ReviewAnchor,
       br: () => <br />,
@@ -72,7 +80,7 @@ export class ReviewInlineMarkdownBoundary extends React.Component {
 
   render() {
     if (this.state.failed) {
-      return <div className="whitespace-pre-wrap">{this.props.text}</div>;
+      return <span className="whitespace-pre-wrap">{this.props.text}</span>;
     }
     const Markdown = this.props.MarkdownComponent || ReviewInlineMarkdown;
     return <Markdown text={this.props.text} inline={this.props.inline} />;

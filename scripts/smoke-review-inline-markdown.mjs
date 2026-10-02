@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import ReviewInlineMarkdown, {
@@ -49,10 +50,12 @@ assert.match(ticket, /<a href="https:\/\/www\.ticketlink\.co\.kr\/product\/65330
 assert.match(ticket, /target="_blank"/);
 assert.match(ticket, /rel="noopener noreferrer nofollow"/);
 assert.match(ticket, />티켓 예매</);
+assert.match(ticket, /class="text-blue-600 hover:text-blue-700 underline underline-offset-2 break-words"/);
 assert.equal(ticket.includes('utm_'), false);
 
 const tel = renderMd('[전화](tel:+66-2-123-4567)');
 assert.match(tel, /href="tel:\+6621234567"/);
+assert.match(tel, /underline underline-offset-2/);
 assert.equal(tel.includes('target='), false);
 
 for (const sample of [
@@ -110,11 +113,25 @@ for (const literal of ['# 제목', '- 목록', '> 인용', '`코드`', '---']) {
 }
 
 const lines = renderMd('첫 줄\n둘째 줄');
-assert.match(lines, /첫 줄<br\s*\/?>둘째 줄|첫 줄<br\s*\/?>\s*둘째 줄/);
+assert.equal(lines.includes('<br'), false);
+assert.match(lines, /whitespace-pre-wrap/);
+assert.match(lines, /첫 줄\n둘째 줄/);
+
+const paragraphs = renderMd('문단1\n\n문단2');
+assert.equal(paragraphs.includes('<br'), false);
+assert.equal((paragraphs.match(/<p /g) || []).length, 1);
+assert.match(paragraphs, /문단1\n(?:\u00a0|&nbsp;)?\n문단2|문단1\n\u00a0\n문단2/);
+
+const inlineParagraphs = renderMd('문단1\n\n문단2', { inline: true });
+assert.equal(inlineParagraphs.includes('<p'), false);
+assert.equal((inlineParagraphs.match(/<span /g) || []).length, 1);
+assert.match(inlineParagraphs, /문단1\n\u00a0\n문단2|문단1\n&nbsp;\n문단2/);
 
 const preview = renderMd('[티켓 예매](https://www.ticketlink.co.kr/product/65330)', { inline: true });
 assert.equal(preview.includes('<p'), false);
-assert.match(preview, /<span>/);
+assert.match(preview, /<span/);
+assert.match(preview, /text-blue-600/);
+assert.match(preview, /underline underline-offset-2/);
 assert.match(preview, /stopPropagation|target="_blank"/);
 
 assert.equal(reviewInlineUrlTransform('https://www.gateo.kr/').includes('utm_'), false);
@@ -183,5 +200,27 @@ assert.match(chipsHtml, /target="_blank"/);
 assert.match(chipsHtml, /rel="noopener noreferrer nofollow"/);
 assert.equal(chipsHtml.includes('utm_'), false);
 assert.equal(renderToStaticMarkup(React.createElement(ReviewLinkChips, { items: [] })), '');
+
+const editorialSrc = readFileSync(
+  new URL('../src/components/PlaceCard/tabs/EditorialReviewText.jsx', import.meta.url),
+  'utf8',
+);
+assert.match(editorialSrc, /const plain = <div className=\{plainClass\}>/);
+assert.match(editorialSrc, /<Suspense fallback=\{plain\}>\s*<div className=\{plainClass\}>/);
+
+const collapsed = renderToStaticMarkup(
+  React.createElement(
+    'div',
+    { className: 'whitespace-pre-wrap line-clamp-3' },
+    React.createElement(ReviewInlineMarkdown, {
+      text: '**미즈노** 한 줄\n둘째 줄\n\n다음 문단',
+      inline: true,
+    }),
+  ),
+);
+assert.match(collapsed, /class="whitespace-pre-wrap line-clamp-3"/);
+assert.match(collapsed, /<strong class="font-bold">미즈노<\/strong>/);
+assert.equal(collapsed.includes('<p'), false);
+assert.match(collapsed, /둘째 줄\n\u00a0\n다음 문단|둘째 줄\n&nbsp;\n다음 문단/);
 
 console.log('smoke-review-inline-markdown: OK');

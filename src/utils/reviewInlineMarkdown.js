@@ -58,9 +58,17 @@ export function reviewInlineLinkProps(href) {
   return null;
 }
 
-/** Single newlines become markdown hard breaks so the line stays a line. */
+/**
+ * Keep newline characters so `whitespace-pre-wrap` matches plain reviews.
+ * A blank line stays one line box (`\n` + nbsp + `\n`) instead of a new `<p>`,
+ * which would drop the gap or double it next to a hard `<br>`.
+ */
 export function prepareReviewInlineMarkdown(text) {
-  return String(text ?? '').replace(/([^\n])\n(?!\n)/g, '$1  \n');
+  let next = String(text ?? '').replace(/\r\n/g, '\n');
+  while (next.includes('\n\n')) {
+    next = next.replaceAll('\n\n', '\n\u00a0\n');
+  }
+  return next;
 }
 
 /**
