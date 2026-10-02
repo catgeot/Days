@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import ReviewInlineMarkdown, {
   ReviewInlineMarkdownBoundary,
 } from '../src/components/PlaceCard/tabs/ReviewInlineMarkdown.jsx';
+import { ReviewLinkChips } from '../src/components/PlaceCard/tabs/ReviewLinkChips.jsx';
 import { ReviewPlainFallbackBoundary } from '../src/components/PlaceCard/tabs/ReviewPlainFallbackBoundary.jsx';
 import {
   reviewInlineLinkProps,
@@ -163,5 +164,24 @@ assert.equal(live.includes('utm_'), false);
 
 const checked = renderMd('정보 확인일 2026-10-02 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요');
 assert.match(checked, /정보 확인일 2026-10-02 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요/);
+
+const longLabel = 'Octave Rooftop Lounge & Bar 지도';
+const chipsHtml = renderToStaticMarkup(
+  React.createElement(ReviewLinkChips, {
+    items: [
+      {
+        label: longLabel,
+        url: 'https://www.google.com/maps/search/?api=1&query=Octave',
+        kind: 'map',
+      },
+    ],
+  }),
+);
+assert.ok(chipsHtml.includes('title="Octave Rooftop Lounge &amp; Bar 지도"'));
+assert.match(chipsHtml, /class="[^"]*truncate/);
+assert.match(chipsHtml, /target="_blank"/);
+assert.match(chipsHtml, /rel="noopener noreferrer nofollow"/);
+assert.equal(chipsHtml.includes('utm_'), false);
+assert.equal(renderToStaticMarkup(React.createElement(ReviewLinkChips, { items: [] })), '');
 
 console.log('smoke-review-inline-markdown: OK');

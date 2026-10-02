@@ -60,6 +60,10 @@ export function ensureEditorHasTextBlocks(blocks) {
     }
     if (b.type === 'text') {
       out.push({ type: 'text', text: typeof b.text === 'string' ? b.text : '' });
+      continue;
+    }
+    if (b.type === 'links') {
+      out.push(b);
     }
   }
 
@@ -133,7 +137,7 @@ export function collapseBlocksToLegacyIfNoInlineImages(blocks) {
     return { contentBlocks: null, content: null };
   }
   const normalized = normalizeReviewContentBlocks(blocks);
-  if (getReferencedImageIndices(normalized).size > 0) {
+  if (getReferencedImageIndices(normalized).size > 0 || normalized.some((b) => b.type === 'links')) {
     return { contentBlocks: normalized, content: null };
   }
   const text = getCollapsedPreviewText({ content_blocks: normalized });
@@ -291,11 +295,11 @@ export function buildReviewSavePayload({
     is_public,
   };
 
-  const hasInline =
-    contentBlocks &&
-    getReferencedImageIndices(contentBlocks).size > 0;
+  const normalizedForSave = contentBlocks ? normalizeReviewContentBlocks(contentBlocks) : [];
+  const hasInline = getReferencedImageIndices(normalizedForSave).size > 0;
+  const hasLinks = normalizedForSave.some((block) => block.type === 'links');
 
-  if (!hasInline) {
+  if (!hasInline && !hasLinks) {
     return {
       ...base,
       content: (content || '').trim(),
@@ -303,10 +307,9 @@ export function buildReviewSavePayload({
     };
   }
 
-  const normalized = normalizeReviewContentBlocks(contentBlocks);
   return {
     ...base,
-    content: getCollapsedPreviewText({ content_blocks: normalized }),
-    content_blocks: normalized,
+    content: getCollapsedPreviewText({ content_blocks: normalizedForSave }),
+    content_blocks: normalizedForSave,
   };
 }

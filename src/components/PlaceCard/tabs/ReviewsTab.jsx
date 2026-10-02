@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EditorialReviewText } from './EditorialReviewText.jsx';
+import { ReviewLinkChips } from './ReviewLinkChips.jsx';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
@@ -21,6 +22,8 @@ import {
   getReviewLeadThumbnailImageIndex,
   hasReviewContentBlocks,
   normalizeReviewContentBlocks,
+  dedupeReviewLinkItems,
+  reviewBodyLinkUrlKeys,
   resolveReviewImageSrc,
   resolveReviewThumbnailSrc,
   shouldShowReviewBottomGallery,
@@ -375,6 +378,15 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
                       {block.text}
                     </p>
                   );
+                }
+                if (block.type === 'links') {
+                  if (review.is_editorial !== true) return null;
+                  const chipItems = dedupeReviewLinkItems(
+                    block.items,
+                    reviewBodyLinkUrlKeys(contentBlocks),
+                  );
+                  if (chipItems.length === 0) return null;
+                  return <ReviewLinkChips key={`links-${blockIdx}`} items={chipItems} />;
                 }
                 if (block.type === 'image') {
                   const images = review.images || [];
