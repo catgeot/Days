@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 94,
-  sessionPhase: '합천 결손 오버레이',
+  sessionNo: 95,
+  sessionPhase: '완도 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-10-02-palgyeong-use-95-wando-gukhwa',
+    session: '팔경 활용 #95, 완도 결손 오버레이',
+    title: '완도 국화섬 사진',
+    detail:
+      '완도8경 국화섬에 사진과 개요를 넣었습니다. 한국민족문화대백과 완도팔경 제5경 상황백운홍춘국원이고, 완도군 문화관광의 현재 이름은 상왕봉(644m)입니다. 공식 사진 3장입니다. JSON contentId는 넣지 않았습니다. 화성 국화도와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=wando 국화섬.',
+    at: '2026-10-02T12:00:00.000Z',
+  },
   {
     id: '2026-10-02-palgyeong-use-94-heogulsan-photo',
     session: '팔경 활용 #94, 합천 결손 오버레이',

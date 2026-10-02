@@ -2035,6 +2035,11 @@ const HC_HEOGUL =
 const HC_HEOGUL_MAP =
   'https://web.archive.org/web/20261002001034im_/http://www.hc.go.kr/CmsMultiFile/view.do?multifileId=MF00001900&idx=21261';
 const HC_HEOGUL_HOME = 'http://www.hc.go.kr/06571/06780/06788.web?amode=view&idx=50';
+const WD_TOUR = 'https://www.wando.go.kr/contents/2510';
+const WD_SANGWANG = `${WD_TOUR}/sanghwangbong1.jpg`;
+const WD_SANGWANG_2 = `${WD_TOUR}/sanghwangbong4.jpg`;
+const WD_SANGWANG_3 = `${WD_TOUR}/sanghwangbong3-1.jpg`;
+const WD_SANGWANG_HOME = 'https://www.wando.go.kr/tour/sub.cs?m=130';
 const GJ_KHS = 'https://www.khs.go.kr/unisearch/images/national_treasure';
 const GJ_NAWON = `${GJ_KHS}/2021070209124901.JPG`;
 const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
@@ -3641,6 +3646,13 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     HC_OKJEON,
     [HC_OKJEON_2, HC_OKJEON_3],
     HC_OKJEON_HOME,
+  ),
+  'local-scenic:wando-palgyeong:국화섬': localScenicPhotoOverlay(
+    '완도8경 목록의 국화섬은 한국민족문화대백과가 적은 완도팔경 제5경 상황백운홍춘국원(象皇白雲紅椿國苑)입니다. 완도군 문화관광의 현재 이름은 상왕봉(옛 상황봉)으로, 완도읍과 군외면 경계의 해발 644m 진산입니다. 대백과는 상황봉이 동백으로 들어차 한겨울 눈 속 동백이 이 경치라고 적고, 완도라는 이름에 금산봉송의 섬 곧 국원(國苑)의 섬이라는 설을 함께 적습니다. 군 문화관광은 백운봉 600m·심봉 598m·업진봉 544m·숙승봉 461m를 거느린 오봉산 중심이며, 제1코스는 대구리 마을 표지석에서 6.2km, 제2코스는 죽청리 LPG충전소에서 11.3km, 제3코스는 원불교수련장에서 9km라고 안내합니다. 정상에서는 고금도·신지도·청산도·소안도·보길도가 보입니다. 화성시 우정읍 국화도·청산도·완도타워와 다른 완도 본섬 봉우리입니다. 사진은 완도군 문화관광 상왕봉 공식 사진 3장입니다.',
+    '전라남도 완도군 완도읍·군외면 (상왕봉 644m, 제2코스 들머리 완도읍 죽청리)',
+    WD_SANGWANG,
+    [WD_SANGWANG_2, WD_SANGWANG_3],
+    WD_SANGWANG_HOME,
   ),
   'local-scenic:hwacheon-gugyeong:비래바위': localScenicPhotoOverlay(
     '화천9경 제6경 비래바위(飛來巖)는 상서면 구운리 만산동 뒤편 해발 970m에 우뚝 선 기암괴석입니다. 화천군 문화관광은 폭 약 100m·높이 약 60m로 병풍처럼 깎아 지른 절벽이 주변 산중에 홀로 솟아 웅장하고 이국적인 풍경을 이룬다고 소개하며, 병풍바위라고도 부릅니다. 금강산에서 바위가 날아와 이곳에 안착했다는 전설에서 날비(飛)·올래(徠)·바위암(巖)을 써 비래바위라 이름붙였다고 적습니다. 등산로 안내도 지점에서 정상까지 약 1시간이며 산 아래에서 바라보는 전경도 유명합니다. 등산 시작점은 상서면 구운리입니다. 정선 화암8경 거북바위·여수·거제·남해 등 다른 지역 「비래」 지명 바위와 다른 화천 상서면 산악 바위입니다. 사진은 화천군 문화관광 화천9경 제6경 비래바위 공식 사진 3장입니다.',
