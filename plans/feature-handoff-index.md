@@ -881,9 +881,9 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#95** tip `32246408` · 국화섬 데이터만 · PR [#368](https://github.com/catgeot/Days/pull/368) · [#367](https://github.com/catgeot/Days/pull/367) merged · **순수 누락 0**/876 |
+| **상태** | **#95** tip `54ba8135` · 완도 국화섬→상왕봉 SSOT 정제 · PR [#368](https://github.com/catgeot/Days/pull/368) · [#367](https://github.com/catgeot/Days/pull/367) merged · **순수 누락 0**/876 |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `32246408` |
+| **tip** | `54ba8135` |
 | **PR** | [#368](https://github.com/catgeot/Days/pull/368) · [#367](https://github.com/catgeot/Days/pull/367) MERGED · [#362](https://github.com/catgeot/Days/pull/362) MERGED · [#361](https://github.com/catgeot/Days/pull/361) MERGED · [#349](https://github.com/catgeot/Days/pull/349) · [#347](https://github.com/catgeot/Days/pull/347) merge ✅ · [#339](https://github.com/catgeot/Days/pull/339) merge ✅ · [#335](https://github.com/catgeot/Days/pull/335) merge ✅ · [#333](https://github.com/catgeot/Days/pull/333) merge ✅ · [#332](https://github.com/catgeot/Days/pull/332) merge ✅ · [#330](https://github.com/catgeot/Days/pull/330) merge ✅ · [#329](https://github.com/catgeot/Days/pull/329) merge ✅ · [#328](https://github.com/catgeot/Days/pull/328) merge ✅ · [#327](https://github.com/catgeot/Days/pull/327) merge ✅ · [#324](https://github.com/catgeot/Days/pull/324) merge ✅ · [#323](https://github.com/catgeot/Days/pull/323) merge ✅ · [#321](https://github.com/catgeot/Days/pull/321) merge ✅ · [#320](https://github.com/catgeot/Days/pull/320) merge ✅ · [#286](https://github.com/catgeot/Days/pull/286) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-10-02-project-log.md`](./2026-10-02-project-log.md) · [`2026-10-01-project-log.md`](./2026-10-01-project-log.md) |

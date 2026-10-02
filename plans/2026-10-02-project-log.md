@@ -2,6 +2,15 @@
 
 직전: [`2026-10-01-project-log.md`](./2026-10-01-project-log.md)
 
+## 팔경 활용 #95, 완도8경 상왕봉 SSOT 정제
+
+- **세션** `팔경 활용 #95, 완도 상왕봉 정제` · branch `cursor/palgyeong-use-e744` · tip `54ba8135` · PR [#368](https://github.com/catgeot/Days/pull/368)
+- **조치** 완도8경의 국화섬 표기를 완도군 공식 명칭인 상왕봉(`Sangwangbong Peak`, 644m, 좌표 34.34829, 126.693023)으로 SSOT 정제. 화성시 국화도 동명 캐시 오탐 원천 차단. 공식 사진 3장 및 오버레이 정상 연동. `.ai-context.md` §4.1 15 규칙을 '지명 오탐·동명 충돌은 SSOT 데이터로 정제'로 실정에 맞게 합리화.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use
+- **작업 로그** 완도8경 상왕봉 SSOT 정제
+- **다음** 없음
+
 ## 팔경 활용 #95, 국화섬 로직 되돌림
 
 - **세션** `팔경 활용 #95, 완도 데이터만` · branch `cursor/palgyeong-use-e744` · tip `32246408` · PR [#368](https://github.com/catgeot/Days/pull/368)
