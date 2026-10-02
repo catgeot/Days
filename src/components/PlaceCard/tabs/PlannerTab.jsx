@@ -16,6 +16,21 @@ import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
 import FlightCinemaPlannerNotice from './planner/components/FlightCinemaPlannerNotice';
+import { PlannerToolkitErrorNotice } from './planner/PlannerToolkitErrorNotice.jsx';
+import {
+    plannerToolkitErrorKey,
+    plannerToolkitMapHref,
+    plannerToolkitSafetyHref,
+} from './planner/plannerToolkitError.js';
+
+const TOOLKIT_ERROR_MESSAGE_KEY = {
+    badRequest: 'place.planner.toolkit.errorBadRequest',
+    unauthorized: 'place.planner.toolkit.errorUnauthorized',
+    forbidden: 'place.planner.toolkit.errorForbidden',
+    rateLimit: 'place.planner.toolkit.errorRateLimit',
+    generic: 'place.planner.toolkit.errorGeneric',
+    network: 'place.planner.toolkit.errorNetwork',
+};
 import PlannerStageNav from './planner/components/PlannerStageNav';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
@@ -60,6 +75,7 @@ const PlannerTab = ({
     const { locale } = useLocale();
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
+    const [toolkitErrorKey, setToolkitErrorKey] = useState(null);
 
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
@@ -204,6 +220,7 @@ const PlannerTab = ({
         }
 
         setIsRemoteUpdating(true);
+        setToolkitErrorKey(null);
 
         // 새 요청 생성 및 전역 캐시 등록
         const requestPromise = (async () => {
@@ -224,7 +241,9 @@ const PlannerTab = ({
 
                 if (error) {
                     console.error("[PlannerTab] Edge Function Error response:", error);
-                    throw error;
+                    setToolkitErrorKey(plannerToolkitErrorKey(error, null));
+                    setIsRemoteUpdating(false);
+                    return null;
                 }
 
                 console.log("[PlannerTab] Edge Function 호출 완료 - 응답 데이터:", data);
@@ -241,6 +260,7 @@ const PlannerTab = ({
                     }));
                 } else {
                     console.error("[PlannerTab] 백엔드 응답 에러 (success: false):", data);
+                    setToolkitErrorKey(plannerToolkitErrorKey(null, data || { success: false }));
                 }
 
                 // 성공 여부와 상관없이 로딩 상태는 해제
@@ -249,8 +269,9 @@ const PlannerTab = ({
                 return data;
             } catch (err) {
                 console.error('[PlannerTab] Request Error catch:', err);
+                setToolkitErrorKey(plannerToolkitErrorKey(err, null));
                 setIsRemoteUpdating(false);
-                throw err;
+                return null;
             } finally {
                 // 요청 완료 후 캐시에서 제거 (메모리 누수 방지)
                 pendingToolkitRequests.delete(canonicalPlaceId);
@@ -366,6 +387,15 @@ const PlannerTab = ({
     }
 
     const plannerBodyScrollClass = `flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceFooterScrollPadding} md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`;
+    const toolkitErrorNotice = (
+        <PlannerToolkitErrorNotice
+            message={toolkitErrorKey ? t(TOOLKIT_ERROR_MESSAGE_KEY[toolkitErrorKey] || TOOLKIT_ERROR_MESSAGE_KEY.generic) : ''}
+            safetyHref={plannerToolkitSafetyHref()}
+            safetyLabel={t('place.planner.toolkit.errorSafetyLink')}
+            mapHref={plannerToolkitMapHref(location)}
+            mapLabel={t('place.planner.toolkit.errorMapLink')}
+        />
+    );
 
     if (!guideData && !isLoading) {
         return (
@@ -409,6 +439,7 @@ const PlannerTab = ({
                     <Sparkles size={16} />
                     <span>{t('place.planner.runToolkit')}</span>
                 </button>
+                {toolkitErrorNotice}
                 <div className="mt-8 w-full text-left">
                     <TravelAgencyDirectory variant="planner" />
                 </div>
@@ -613,6 +644,7 @@ const PlannerTab = ({
                     >
                         {isRemoteUpdating ? t('place.planner.toolkit.forceUpdating') : t('place.planner.toolkit.forceUpdateShort')}
                     </button>
+                    {toolkitErrorNotice}
                 </div>
                 ) : null}
             </div>

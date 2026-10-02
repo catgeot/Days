@@ -738,7 +738,15 @@
         "sponsoredTitle": "파트너사 제휴광고 연결로, 사이트 운영에 도움이 됩니다.",
         "forceUpdate": "기존 툴킷 강제 업데이트 (관리자/테스트용)",
         "forceUpdateShort": "Force Update Toolkit",
-        "forceUpdating": "Updating..."
+        "forceUpdating": "Updating...",
+        "errorBadRequest": "이 장소 정보로는 툴킷을 만들 수 없어요",
+        "errorUnauthorized": "이 장소 툴킷은 관리자만 다시 만들 수 있어요",
+        "errorForbidden": "아직 툴킷을 지원하지 않는 장소예요",
+        "errorRateLimit": "방금 생성 중이에요. 몇 분 뒤 다시 시도해 주세요",
+        "errorGeneric": "지금은 툴킷을 만들지 못했어요",
+        "errorNetwork": "연결을 확인한 뒤 다시 시도해 주세요",
+        "errorSafetyLink": "외교부 해외안전여행",
+        "errorMapLink": "지도"
       },
       "hybridNotice": "하이브리드 정보 안내: 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴광고 연결(숙박, 유심 등)이 일부 포함되어 있습니다. 제휴광고를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.",
       "preTravel": {

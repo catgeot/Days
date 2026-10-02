@@ -968,7 +968,15 @@
         "sponsoredTitle": "Partner links help support this site.",
         "forceUpdate": "Force toolkit update (admin/test)",
         "forceUpdateShort": "Force Update Toolkit",
-        "forceUpdating": "Updating..."
+        "forceUpdating": "Updating...",
+        "errorBadRequest": "This place doesn't have enough information to build a toolkit",
+        "errorUnauthorized": "Only an admin can rebuild this place toolkit",
+        "errorForbidden": "Toolkits aren't available for this place yet",
+        "errorRateLimit": "A toolkit is already being created. Try again in a few minutes",
+        "errorGeneric": "The toolkit couldn't be created just now",
+        "errorNetwork": "Check your connection and try again",
+        "errorSafetyLink": "MOFA travel safety",
+        "errorMapLink": "Map"
       },
       "hybridNotice": "Hybrid info notice: This toolkit mixes objective public info (visas, safety, etc.) with partner links (stays, eSIM, etc.) to help you prepare. Using partner links supports the site. Tips are AI-generated and may change over time.",
       "preTravel": {

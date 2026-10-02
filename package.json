@@ -35,6 +35,7 @@
     "smoke:mrt-package": "node scripts/smoke-mrt-package-links.mjs",
     "smoke:travel-agencies": "node scripts/smoke-travel-agencies.mjs",
     "smoke:planner-empty-scroll": "node scripts/smoke-planner-empty-scroll.mjs",
+    "smoke:planner-toolkit-error": "node --import ./scripts/register-jsx-hook.mjs scripts/smoke-planner-toolkit-error.mjs",
     "smoke:trust-disclosure": "node scripts/smoke-trust-disclosure.mjs",
     "smoke:visitor-locale": "node scripts/smoke-visitor-locale.mjs",
     "smoke:logbook-markdown": "node scripts/smoke-logbook-markdown.mjs",
