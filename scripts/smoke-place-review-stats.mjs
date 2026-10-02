@@ -21,6 +21,18 @@ assert.equal(mixed.editorialCount, 1);
 assert.equal(mixed.averageRating, 4);
 assert.equal(mixed.averageRatingDisplay, '4.0');
 
+const travelersOnly = computePlaceReviewStats([
+  { rating: 5, is_editorial: false },
+  { rating: 1, is_editorial: false },
+]);
+const withEditorialFive = computePlaceReviewStats([
+  { rating: 5, is_editorial: false },
+  { rating: 1, is_editorial: false },
+  { rating: 5, is_editorial: true },
+]);
+assert.equal(withEditorialFive.averageRating, travelersOnly.averageRating);
+assert.equal(withEditorialFive.averageRating, 3);
+
 const editorialOnly = computePlaceReviewStats([{ rating: 5, is_editorial: true }]);
 assert.equal(editorialOnly.travelerCount, 0);
 assert.equal(editorialOnly.editorialCount, 1);

@@ -17,6 +17,7 @@ import {
 } from './lib/exploreCategorySeo';
 
 import { supabase } from '../../shared/api/supabase';
+import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { logSeaExplore } from '../../shared/cloudPreview/seaExploreDebug.js';
 import { logCurationHandoff } from '../../shared/cloudPreview/curationHandoffDebug';
 import { TRAVEL_SPOTS } from './data/travelSpots';
@@ -455,11 +456,16 @@ function Home() {
   const openMooniFromPlace = useCallback((payload = {}) => {
     const boundSpot = buildMooniBoundSpotFromLocation(selectedLocation);
     if (!boundSpot?.name) return;
+    trackMooniOpenIfRising(isChatOpen, true, {
+      placement: 'place',
+      place_id: String(selectedLocation?.id || selectedLocation?.slug || ''),
+      ui_lang: locale,
+    });
     handleStartChat('MOONi', {
       ...payload,
       boundSpot,
     });
-  }, [handleStartChat, selectedLocation]);
+  }, [handleStartChat, isChatOpen, locale, selectedLocation]);
 
   useEffect(() => {
     const st = routeLocation.state;
@@ -1690,7 +1696,13 @@ function Home() {
             isZenMode={isZenMode}
             isTourActive={isTourActive}
             hideForStayPanel={mobileStayScrimStrong}
-            onOpenChat={(payload) => handleStartChat('MOONi', payload)}
+            onOpenChat={(payload) => {
+              trackMooniOpenIfRising(isChatOpen, true, {
+                placement: 'home',
+                ui_lang: locale,
+              });
+              handleStartChat('MOONi', payload);
+            }}
           />
         )}
 

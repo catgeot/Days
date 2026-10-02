@@ -66,8 +66,15 @@ assert(/Tokyo/i.test(tokyoGalleryEn.title), 'tokyo gallery EN title');
 assert(tokyoGalleryEn.canonicalUrl.includes('lang=en'), 'tokyo gallery EN canonical has lang=en');
 
 const tokyoBaseKo = resolveCrawlerMeta('/place/tokyo', 'ko');
-assert(tokyoBaseKo?.title === tokyoGalleryKo.title, 'tier1 base path uses gallery meta title');
-assert(tokyoBaseKo?.canonicalUrl === tokyoGalleryKo.canonicalUrl, 'tier1 base canonical matches gallery');
+assert(tokyoBaseKo?.canonicalUrl === 'https://www.gateo.kr/place/tokyo', 'tokyo base canonical is itself');
+assert(!String(tokyoBaseKo?.title || '').includes('갤러리'), 'tokyo base title is not the gallery title');
+assert(tokyoGalleryKo.canonicalUrl === 'https://www.gateo.kr/place/tokyo/gallery', 'gallery canonical unchanged');
+const parisBaseKo = resolveCrawlerMeta('/place/paris', 'ko');
+assert(parisBaseKo?.canonicalUrl === 'https://www.gateo.kr/place/paris', 'paris base canonical');
+assert(parisBaseKo?.title === '파리 여행 — 명소·플래너·AI 도슨트', 'paris base title');
+const parisGalleryKo = resolveCrawlerMeta('/place/paris/gallery', 'ko');
+assert(parisGalleryKo?.canonicalUrl === 'https://www.gateo.kr/place/paris/gallery', 'paris gallery canonical unchanged');
+assert(String(parisGalleryKo?.title || '').includes('갤러리'), 'paris gallery title unchanged');
 
 const angkorPlanner = resolveCrawlerMeta('/place/angkor-wat/planner', 'en');
 assert(/Angkor Wat/i.test(angkorPlanner.title), 'angkor planner EN title');
@@ -118,7 +125,8 @@ assert(
 );
 
 const phuketBaseKo = resolveCrawlerMeta('/place/phuket', 'ko');
-assert(phuketBaseKo?.title === phuketGalleryKo.title, 'phuket tier2 base path uses gallery meta');
+assert(phuketBaseKo?.canonicalUrl === 'https://www.gateo.kr/place/phuket', 'phuket base canonical is itself');
+assert(!String(phuketBaseKo?.title || '').includes('갤러리'), 'phuket base title is not the gallery title');
 
 const seychellesGalleryKo = resolveCrawlerMeta('/place/seychelles/gallery', 'ko');
 assert(Boolean(seychellesGalleryKo?.title), 'seychelles tier2 pop79 gallery KO meta resolved');

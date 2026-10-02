@@ -1,13 +1,14 @@
-import { supabase } from '../../../shared/api/supabase';
-import { TRAVEL_SPOTS } from '../data/travelSpots';
-import { buildSpotLookup, resolveTravelSpotFromPlaceId } from '../../../utils/travelSpotResolve';
-
-const spotLookup = buildSpotLookup(TRAVEL_SPOTS);
-
 const SESSION_CACHE_KEY = 'gateo_trending_ranking_v1';
+const FAIL_CACHE_KEY = 'gateo_trending_ranking_fail_v1';
+const FAIL_BACKOFF_MS = 5 * 60 * 1000;
 
 let memoryCache = null;
 let inflight = null;
+
+export function clearTrendingRankingMemoryCache() {
+  memoryCache = null;
+  inflight = null;
+}
 
 function readSessionCache() {
   try {
@@ -18,6 +19,36 @@ function readSessionCache() {
     return parsed.spots;
   } catch {
     return null;
+  }
+}
+
+function readFailUntil() {
+  try {
+    const raw = sessionStorage.getItem(FAIL_CACHE_KEY);
+    if (!raw) return 0;
+    const until = Number(JSON.parse(raw)?.until);
+    return Number.isFinite(until) ? until : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function writeFailUntil(now) {
+  try {
+    sessionStorage.setItem(
+      FAIL_CACHE_KEY,
+      JSON.stringify({ until: now + FAIL_BACKOFF_MS }),
+    );
+  } catch {
+    // quota / private mode
+  }
+}
+
+function clearFailUntil() {
+  try {
+    sessionStorage.removeItem(FAIL_CACHE_KEY);
+  } catch {
+    // quota / private mode
   }
 }
 
@@ -34,6 +65,13 @@ function writeSessionCache(spots) {
  * @returns {Promise<Array<{ rank: number, score?: number, ... }> | null>}
  */
 export async function fetchTrendingRankingFromDb() {
+  const { supabase } = await import('../../../shared/api/supabase');
+  const { TRAVEL_SPOTS } = await import('../data/travelSpots');
+  const { buildSpotLookup, resolveTravelSpotFromPlaceId } = await import(
+    '../../../utils/travelSpotResolve'
+  );
+  const spotLookup = buildSpotLookup(TRAVEL_SPOTS);
+
   const { data, error } = await supabase
     .from('place_stats')
     .select('place_id, total_score')
@@ -61,26 +99,41 @@ export async function fetchTrendingRankingFromDb() {
 
 /**
  * Session-cached ranking for explore sheet (one network round-trip per session).
+ * Failures are remembered for 5 minutes so a closed sheet does not refetch immediately.
+ * @param {{ now?: number, fetchDb?: () => Promise<Array | null> }} [options]
  * @returns {Promise<Array | null>} null on error or insufficient data
  */
-export async function fetchTrendingRankingCached() {
+export async function fetchTrendingRankingCached(options = {}) {
+  const now = options.now ?? Date.now();
+  const fetchDb = options.fetchDb ?? fetchTrendingRankingFromDb;
+
   if (memoryCache?.length >= 3) return memoryCache;
 
   const fromSession = readSessionCache();
   if (fromSession) {
     memoryCache = fromSession;
+    clearFailUntil();
     return fromSession;
   }
 
+  if (readFailUntil() > now) return null;
+
   if (inflight) return inflight;
 
-  inflight = fetchTrendingRankingFromDb()
+  inflight = fetchDb()
     .then((spots) => {
-      if (!spots?.length) return null;
+      if (!spots?.length) {
+        writeFailUntil(now);
+        return null;
+      }
+      clearFailUntil();
       writeSessionCache(spots);
       return spots;
     })
-    .catch(() => null)
+    .catch(() => {
+      writeFailUntil(now);
+      return null;
+    })
     .finally(() => {
       inflight = null;
     });

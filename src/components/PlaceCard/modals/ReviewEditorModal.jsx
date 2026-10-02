@@ -437,6 +437,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
             {contentBlocks ? (
               <div className="flex flex-col gap-2 flex-1 min-h-[120px] md:min-h-[250px]">
                 {contentBlocks.map((block, blockIdx) => {
+                  if (block.type === 'links') return null;
                   if (block.type === 'image') {
                     const imgSrc = images[block.image_index];
                     if (!imgSrc) return null;

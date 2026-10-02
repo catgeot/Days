@@ -1,6 +1,21 @@
 {
   "redirects": [
     {
+      "source": "/korea/theme/packages",
+      "destination": "/korea/theme/scenic",
+      "permanent": true
+    },
+    {
+      "source": "/korea/theme/top10",
+      "destination": "/korea/theme/scenic",
+      "permanent": true
+    },
+    {
+      "source": "/korea/theme/regions",
+      "destination": "/korea/theme/scenic",
+      "permanent": true
+    },
+    {
       "source": "/qa/planner-stages",
       "destination": "https://days-git-cursor-planner-stages-7ee0-catgeots-projects.vercel.app/place/paris/planner",
       "permanent": false
