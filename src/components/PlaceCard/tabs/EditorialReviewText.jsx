@@ -16,7 +16,9 @@ export function EditorialReviewText({ text, inline = false, className = '' }) {
   return (
     <ReviewPlainFallbackBoundary text={text} className={plainClass}>
       <Suspense fallback={plain}>
-        <ReviewInlineMarkdownBoundary text={text} inline={inline} />
+        <div className={plainClass}>
+          <ReviewInlineMarkdownBoundary text={text} inline={inline} />
+        </div>
       </Suspense>
     </ReviewPlainFallbackBoundary>
   );
