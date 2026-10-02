@@ -30,9 +30,6 @@ const i18nHubPaths = [
   '/korea/theme',
   '/korea/theme/scenic',
   '/korea/theme/courses',
-  '/korea/theme/packages',
-  '/korea/theme/top10',
-  '/korea/theme/regions',
   '/blog',
   '/blog/curation',
   '/world-events',
@@ -85,9 +82,6 @@ const koreaHubRoutes = [
   { path: '/korea/theme', changefreq: 'weekly', priority: '0.85' },
   { path: '/korea/theme/scenic', changefreq: 'daily', priority: '0.95' },
   { path: '/korea/theme/courses', changefreq: 'weekly', priority: '0.7' },
-  { path: '/korea/theme/packages', changefreq: 'weekly', priority: '0.65' },
-  { path: '/korea/theme/top10', changefreq: 'weekly', priority: '0.6' },
-  { path: '/korea/theme/regions', changefreq: 'weekly', priority: '0.6' },
 ];
 
 // Sitemap 생성

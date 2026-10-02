@@ -5,6 +5,30 @@ import {
   isExploreSeoContinent,
 } from '../pages/Home/lib/exploreCategorySeo.js';
 
+const SITE_ORIGIN = 'https://www.gateo.kr';
+
+function buildPlaceBaseUrl(slug, locale) {
+  const path = `/place/${slug}`;
+  if (locale === 'en') return `${SITE_ORIGIN}${path}?lang=en`;
+  return `${SITE_ORIGIN}${path}`;
+}
+
+function buildPlaceBaseHreflang(slug) {
+  const ko = buildPlaceBaseUrl(slug, 'ko');
+  const en = buildPlaceBaseUrl(slug, 'en');
+  return [
+    { hreflang: 'ko', href: ko },
+    { hreflang: 'en', href: en },
+    { hreflang: 'x-default', href: ko },
+  ];
+}
+
+function placeBaseTitle(placeName, locale) {
+  const name = String(placeName || '').trim();
+  if (locale === 'en') return `${name} travel — sights, planner, and AI docent`;
+  return `${name} 여행 — 명소·플래너·AI 도슨트`;
+}
+
 const PLACE_TABS = new Set(['gallery', 'planner', 'wiki']);
 const HUB_PATHS = new Set(['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation', '/world-events']);
 
@@ -78,8 +102,23 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
   }
 
   if (parsed.kind === 'place-base') {
-    const row = crawlerPlaceMeta?.[parsed.slug]?.gallery?.[locale];
-    return toMetaRow(row, locale);
+    const gallery = crawlerPlaceMeta?.[parsed.slug]?.gallery?.[locale];
+    if (!gallery) return null;
+    return toMetaRow(
+      {
+        ...gallery,
+        title: placeBaseTitle(gallery.placeName, locale),
+        description:
+          locale === 'en'
+            ? `Plan ${gallery.placeName}: sights, a trip planner, and an AI docent on GATEO.`
+            : `${gallery.placeName} 여행. 명소, 플래너, AI 도슨트를 GATEO에서 확인하세요.`,
+        canonicalUrl: buildPlaceBaseUrl(parsed.slug, locale),
+        hreflangAlternates: buildPlaceBaseHreflang(parsed.slug),
+        tab: 'base',
+        galleryImages: undefined,
+      },
+      locale,
+    );
   }
 
   if (parsed.kind === 'place-tab') {
