@@ -3,11 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Plane } from 'lucide-react';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 
-function formatViewCount(score, locale) {
-  if (typeof score !== 'number' || !Number.isFinite(score)) return '–';
-  return score.toLocaleString(locale === 'ko' ? 'ko-KR' : 'en-US');
-}
-
 export default function TravelTicker({ data = [], onCityClick, isExpanded: externalExpanded, onToggle }) {
   const { t, i18n } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -107,13 +102,8 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
                   <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors truncate">
                     {displayName(city)}
                   </span>
-                  <span className="text-[8px] text-gray-500">{metricLabel}</span>
                 </div>
               </div>
-
-              <span className="text-xs font-medium text-gray-300 group-hover:text-white font-mono tabular-nums shrink-0">
-                {formatViewCount(city.score, i18n.language)}
-              </span>
             </div>
           ))}
         </div>
@@ -131,14 +121,7 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
                 <span className="font-bold text-sm text-white/90 tracking-wide truncate">
                   {displayName(currentCity)}
                 </span>
-                <span className="text-[10px] text-gray-400">{metricLabel}</span>
               </div>
-            </div>
-
-            <div className="flex flex-col items-end shrink-0">
-              <span className="text-xs font-medium text-white/80 font-mono tabular-nums">
-                {formatViewCount(currentCity.score, i18n.language)}
-              </span>
             </div>
           </div>
 
