@@ -21,7 +21,7 @@ export function remarkReviewInlineOnly() {
 }
 
 export const reviewInlineSanitizeSchema = {
-  tagNames: ['p', 'a', 'br'],
+  tagNames: ['p', 'strong', 'a', 'br'],
   attributes: {
     a: ['href', 'target', 'rel'],
   },

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import rehypeSanitize from 'rehype-sanitize';
 import {
   prepareReviewInlineMarkdown,
@@ -29,6 +30,7 @@ export default function ReviewInlineMarkdown({ text, inline = false }) {
     () => ({
       p: ({ children }) =>
         inline ? <span>{children}</span> : <p className="whitespace-pre-wrap">{children}</p>,
+      strong: ({ children }) => <strong className="font-bold">{children}</strong>,
       a: ReviewAnchor,
       br: () => <br />,
     }),
@@ -39,7 +41,7 @@ export default function ReviewInlineMarkdown({ text, inline = false }) {
 
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkReviewInlineOnly]}
+      remarkPlugins={[remarkReviewInlineOnly, remarkCjkFriendly]}
       rehypePlugins={[[rehypeSanitize, reviewInlineSanitizeSchema]]}
       urlTransform={reviewInlineUrlTransform}
       allowedElements={reviewInlineSanitizeSchema.tagNames}

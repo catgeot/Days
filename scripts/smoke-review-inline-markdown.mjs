@@ -24,6 +24,25 @@ function assertNoActiveHtml(html) {
   assert.equal(/href="javascript:/i.test(html), false);
 }
 
+const bold = renderMd('**미즈노**에서 점심');
+assert.match(bold, /<strong class="font-bold">미즈노<\/strong>에서 점심/);
+
+for (const sample of ['**로칼 들로우하(Lokál)**에서', '**「미즈노」**를']) {
+  const html = renderMd(sample);
+  assert.match(html, /<strong /, sample);
+  assert.equal(html.includes('**'), false, sample);
+}
+
+const boldLink = renderMd('**[굵은 링크](https://www.gateo.kr/)**');
+assert.equal((boldLink.match(/<a /g) || []).length, 1);
+assert.match(boldLink, /<strong[^>]*>\s*<a |<a[^>]*>\s*<strong/);
+assert.equal(boldLink.includes('target='), false);
+
+const boldInside = renderMd('[**링크 속 굵게**](https://www.gateo.kr/)');
+assert.equal((boldInside.match(/<a /g) || []).length, 1);
+assert.match(boldInside, /<strong/);
+assert.equal(boldInside.includes('target='), false);
+
 const ticket = renderMd('[티켓 예매](https://www.ticketlink.co.kr/product/65330)');
 assert.match(ticket, /<a href="https:\/\/www\.ticketlink\.co\.kr\/product\/65330"/);
 assert.match(ticket, /target="_blank"/);
