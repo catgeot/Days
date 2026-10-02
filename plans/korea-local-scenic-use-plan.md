@@ -117,11 +117,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#94** tip `aafb6943` · 허굴산 사진 · 검색 써머리 `516f1db1` · 옥전고분군 `9c4840aa` · PR [#368](https://github.com/catgeot/Days/pull/368) · **다음 = #95 완도** 1건(국화섬) · 순수 누락 **1**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#95** tip `996e53ac` · 완도 국화섬(상왕봉) · PR [#368](https://github.com/catgeot/Days/pull/368) · **순수 누락 0**/876 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
 
-**A 다음 제시어**: **#95 완도8경 1**(국화섬). #94 합천 옥전고분군 `9c4840aa`(PR [#368](https://github.com/catgeot/Days/pull/368)) — 쌍책면 성산리 산23-18·황강옥전로 1558, 민족문화대백과 공식 사진 3장, 사적 제326호·유네스코 가야고분군 1666-003. JSON contentId 없음. 오버레이 overview는 `searchOverlayDesc`만. #94 후속 `aafb6943` — 허굴산 Tour `1914603` 목록 사진은 합천군 문화관광 대병3산 전경, 둘째 장은 허굴산 안내도. 로직 수정 없음. #94 후속 `516f1db1` — 합천 검색 관광지 목록만 주소 뒤 Tour 개요 첫 문장. #93 탐색 검색「기백산」중복은 `10b30afa`(PR [#367](https://github.com/catgeot/Days/pull/367)). 순수 누락 잔여: 완도 국화섬.
+**A 다음 제시어 없음** (순수 사진·개요 누락 **0**/876). **#95** 완도 국화섬 `996e53ac`(PR [#368](https://github.com/catgeot/Days/pull/368)) — 목록 이름은 국화섬, 한국민족문화대백과 완도팔경 제5경 상황백운홍춘국원, 완도군 문화관광 현재 이름 상왕봉(644m·완도읍·군외면·제2코스 들머리 죽청리). 공식 사진 3장. JSON contentId 없음. 오버레이 overview는 `searchOverlayDesc`만. 화성시 국화도와 구분. #94 합천 옥전고분군 `9c4840aa`. #94 후속 `aafb6943` 허굴산·`516f1db1` 합천 검색 한 줄. #93 `10b30afa`(PR [#367](https://github.com/catgeot/Days/pull/367)).
 
 **탐색 검색 써머리 (A · #92)** — 검색 행 표시 = `searchOverlayDesc`(오버레이 overview, 짧은 미리보기). Tour `detailCommon` overview 전문을 검색 목록·명소 목록 행에 넣지 말 것(`79187ef9`). 그 문장은 행을 연 상세 본문. 예외는 합천 검색 관광지 행의 첫 문장뿐(`516f1db1`, `useTourListSummaryByContentId`). `useTourOverviewByContentId`로 전문을 되돌리거나 다른 지역으로 넓히지 말 것. suggestion `desc`에는 넣지 않음. 장소 카드 갤러리는 `place_chat_intro` hydrate. `needsPlaceChatIntroHydration`은 실문장 `desc`면 skip하므로 오버레이를 `desc`에 다시 넣지 말 것.
 
@@ -1194,18 +1194,20 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 검증: smoke:korea-local-scenic-lists · smoke:korea-scenic-search · smoke:korea-scenic-spots · build
 ```
 
-### §1.2 A #95 완도 결손 오버레이 (다음)
+### §1.2 A #95 완도 결손 오버레이 (실행됨)
 
 ```
 팔경 활용 #95, 완도 결손 오버레이
 @plans/feature-handoff-index.md
-@plans/2026-10-01-project-log.md
+@plans/2026-10-02-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · tip 996e53ac · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 완도8경 사진·개요 없는 1건(국화섬) LOCAL_SCENIC_MEMBER_OVERLAYS — 공식 사진 ≥3장(§2.1). 오버레이 overview는 suggestion desc에 넣지 말 것(searchOverlayDesc). Preview /korea/theme/scenic?hub=wando
 검증: smoke:korea-local-scenic-lists · smoke:korea-scenic-search · smoke:korea-scenic-spots · build
 ```
+
+순수 사진·개요 누락은 **0**/876. 다음 제시어 없음.
 
 ### §1.2 A #89 화천 결손 오버레이
 
