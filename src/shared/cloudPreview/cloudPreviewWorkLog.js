@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 95,
-  sessionPhase: '완도 데이터만',
+  sessionPhase: '완도 상왕봉 정제',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-10-02-palgyeong-use-95-wando-sangwangbong',
+    session: '팔경 활용 #95, 완도 상왕봉 정제',
+    title: '완도8경 상왕봉 SSOT 정제',
+    detail:
+      '화성시 국화도와의 동명 오탐을 방지하기 위해 완도8경 멤버 명칭을 완도군 공식 명소인 상왕봉(옛 상황봉·상황백운홍춘국원)으로 SSOT 정제. 공식 사진 3장 및 좌표(34.34829, 126.693023) 연동. Preview /qa/palgyeong-use.',
+    at: '2026-10-02T13:30:00.000Z',
+  },
   {
     id: '2026-10-02-palgyeong-use-95-wando-data-only',
     session: '팔경 활용 #95, 완도 데이터만',

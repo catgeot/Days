@@ -5931,56 +5931,63 @@ assert.ok(
 const wandoMerged = mergeLocalScenicMembersIntoScenicSpots([], 'wando');
 const wandoEight = wandoMerged.filter((s) => s.localScenicListId === 'wando-palgyeong');
 assert.equal(wandoEight.length, 8, '완도8경 8명');
-const gukhwaCloud = wandoEight.find((s) => s.attractionName === '국화섬');
-assert.ok(gukhwaCloud?.overview && gukhwaCloud?.imageUrl, '국화섬 overlay 사진·개요');
-assert.ok(!gukhwaCloud?.contentId, '국화섬 JSON contentId 없음 유지');
-assert.ok(gukhwaCloud?.overview?.includes('제5경'), '국화섬 overlay 제5경');
-assert.ok(gukhwaCloud?.overview?.includes('상왕봉'), '국화섬 overlay 상왕봉');
-assert.ok(gukhwaCloud?.overview?.includes('644m'), '국화섬 overlay 해발');
-assert.ok(gukhwaCloud?.overview?.includes('죽청리'), '국화섬 overlay 제2코스 들머리');
-assert.ok(gukhwaCloud?.addr1?.includes('완도읍'), '국화섬 overlay 주소');
-assert.equal(gukhwaCloud?.galleryUrls?.length, 3, '국화섬 공식 사진 3장');
+const sangwangCloud = wandoEight.find((s) => s.attractionName === '상왕봉');
+assert.ok(sangwangCloud?.overview && sangwangCloud?.imageUrl, '상왕봉 overlay 사진·개요');
+assert.ok(!sangwangCloud?.contentId, '상왕봉 JSON contentId 없음 유지');
+assert.ok(sangwangCloud?.overview?.includes('제5경'), '상왕봉 overlay 제5경');
+assert.ok(sangwangCloud?.overview?.includes('상왕봉'), '상왕봉 overlay 상왕봉');
+assert.ok(sangwangCloud?.overview?.includes('644m'), '상왕봉 overlay 해발');
+assert.ok(sangwangCloud?.overview?.includes('죽청리'), '상왕봉 overlay 제2코스 들머리');
+assert.ok(sangwangCloud?.addr1?.includes('완도읍'), '상왕봉 overlay 주소');
+assert.equal(sangwangCloud?.galleryUrls?.length, 3, '상왕봉 공식 사진 3장');
 assert.ok(
-  gukhwaCloud?.galleryUrls?.every((u) => u.includes('wando.go.kr/contents/2510/sanghwangbong')),
-  '국화섬 완도군 문화관광 사진',
+  sangwangCloud?.galleryUrls?.every((u) => u.includes('wando.go.kr/contents/2510/sanghwangbong')),
+  '상왕봉 완도군 문화관광 사진',
 );
 assert.equal(
-  new Set(gukhwaCloud?.galleryUrls).size,
-  gukhwaCloud?.galleryUrls?.length,
-  '국화섬 갤러리 URL 중복 없음',
+  new Set(sangwangCloud?.galleryUrls).size,
+  sangwangCloud?.galleryUrls?.length,
+  '상왕봉 갤러리 URL 중복 없음',
 );
-assert.ok(gukhwaCloud?.homepage?.includes('wando.go.kr/tour/sub.cs?m=130'), '국화섬 상왕봉 안내');
+assert.ok(sangwangCloud?.homepage?.includes('wando.go.kr/tour/sub.cs?m=130'), '상왕봉 안내');
 const wandoGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '완도', {
   injectLocalScenic: true,
 });
 assert.ok(
-  wandoGlobe.find((s) => s.attractionName === '국화섬')?.imageUrl?.includes('sanghwangbong1'),
-  '완도 검색 국화섬 썸네일',
+  wandoGlobe.find((s) => s.attractionName === '상왕봉')?.imageUrl?.includes('sanghwangbong1'),
+  '완도 검색 상왕봉 썸네일',
 );
 const wandoList = lists.find((l) => l.listId === 'wando-palgyeong');
 const wandoHub = resolveCityAttractionHub('wando');
-const gukhwaSuggest = localScenicMemberToSuggestion(
+const sangwangSuggest = localScenicMemberToSuggestion(
   wandoList,
   wandoHub,
-  wandoList?.members?.find((m) => m.attractionName === '국화섬'),
+  wandoList?.members?.find((m) => m.attractionName === '상왕봉'),
 );
 assert.ok(
-  gukhwaSuggest?.searchOverlayDesc?.includes('제5경') &&
-    gukhwaSuggest.searchOverlayDesc.includes('상왕봉'),
-  '탐색 검색 국화섬 표시 = 멤버 오버레이 overview',
+  sangwangSuggest?.searchOverlayDesc?.includes('제5경') &&
+    sangwangSuggest.searchOverlayDesc.includes('상왕봉'),
+  '탐색 검색 상왕봉 표시 = 멤버 오버레이 overview',
 );
 assert.ok(
-  !String(gukhwaSuggest?.desc || '').includes('제5경'),
-  '국화섬 desc에 오버레이 overview 없음',
+  !String(sangwangSuggest?.desc || '').includes('제5경'),
+  '상왕봉 desc에 오버레이 overview 없음',
 );
 assert.equal(
-  needsPlaceChatIntroHydration(gukhwaSuggest),
+  needsPlaceChatIntroHydration(sangwangSuggest),
   true,
-  '국화섬 suggestion은 intro hydrate 대상',
+  '상왕봉 suggestion은 intro hydrate 대상',
 );
 assert.ok(
-  String(gukhwaSuggest?.imageUrl || gukhwaSuggest?.thumbUrl || '').includes('sanghwangbong1'),
-  '국화섬 suggestion 썸네일',
+  String(sangwangSuggest?.imageUrl || sangwangSuggest?.thumbUrl || '').includes('sanghwangbong1'),
+  '상왕봉 suggestion 썸네일',
+);
+assert.equal(sangwangSuggest?.name, '상왕봉', '상왕봉 명칭');
+assert.equal(sangwangSuggest?.name_en, 'Sangwangbong Peak', '상왕봉 영문명');
+assert.ok(
+  Math.abs(Number(sangwangSuggest?.lat) - 34.34829) < 0.001 &&
+    Math.abs(Number(sangwangSuggest?.lng) - 126.693023) < 0.001,
+  '상왕봉 핀 좌표',
 );
 const heogulThumb = lookupLocalScenicPhotoByContentId('1914603');
 assert.ok(heogulThumb?.imageUrl?.includes('idx=21260'), '허굴산 Tour 1914603 빈 썸네일');
