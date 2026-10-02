@@ -1436,6 +1436,7 @@
       "mapToList": "Back to list",
       "locChecking": "Checking location…",
       "locDenied": "Location permission is required. Allow location in your browser.",
+      "locOffPickRegion": "Location is off. Pick a region yourself.",
       "locTimeout": "Location timed out. Try again in a moment.",
       "locFailed": "Could not get location. Check permission and network.",
       "locUnavailable": "Location is not available on this device.",
