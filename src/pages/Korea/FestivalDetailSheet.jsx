@@ -72,6 +72,7 @@ import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import FestivalStayStrip from './FestivalStayStrip';
 import FestivalTnaStrip from './FestivalTnaStrip';
 import FestivalMooniFab from './FestivalMooniFab';
+import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { FestivalBookingActions } from './FestivalBookingActions.jsx';
 import {
   earliestBookingVerifiedDate,
@@ -525,6 +526,7 @@ export default function FestivalDetailSheet({
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mooniOpen, setMooniOpen] = useState(false);
+  const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
@@ -2160,7 +2162,15 @@ export default function FestivalDetailSheet({
           item={item}
           location={festivalCross?.stay?.location}
           raised={showScrollTop && !lightboxOpen}
-          onOpenChange={setMooniOpen}
+          onOpenChange={(open) => {
+            trackMooniOpenIfRising(mooniWasOpenRef.current, open, {
+              placement: 'festival_detail',
+              festival_id: String(item?.contentId ?? ''),
+              ui_lang: locale,
+            });
+            mooniWasOpenRef.current = open;
+            setMooniOpen(open);
+          }}
         />
       ) : null}
 

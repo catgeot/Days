@@ -3,6 +3,18 @@
  * @param {string} name
  * @param {Record<string, unknown>} [params]
  */
+/**
+ * One event when a closed MOONi surface becomes open. Close and repeat true are ignored.
+ * @param {boolean} wasOpen
+ * @param {boolean} open
+ * @param {Record<string, unknown>} params
+ */
+export function trackMooniOpenIfRising(wasOpen, open, params) {
+  if (wasOpen || !open) return false;
+  trackEvent('mooni_open', params);
+  return true;
+}
+
 export function trackEvent(name, params) {
   try {
     if (typeof window === 'undefined') return;
