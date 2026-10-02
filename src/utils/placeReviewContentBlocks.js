@@ -3,6 +3,85 @@
  * @typedef {{ type: 'image', image_index: number }} ImageBlock
  */
 
+import { stripReviewInlineMarkdown } from './reviewInlineMarkdown.js';
+
+const REVIEW_LINK_KINDS = new Set([
+  'booking',
+  'menu',
+  'official',
+  'sns',
+  'map',
+  'phone',
+  'gateo',
+]);
+const REVIEW_LINK_ITEM_LIMIT = 8;
+
+function normalizeChipUrl(url) {
+  const trimmed = String(url ?? '').trim();
+  if (trimmed.startsWith('https://')) return trimmed;
+  const tel = trimmed.replace(/[\s-]/g, '');
+  if (/^tel:\+[0-9]{6,15}$/.test(tel)) return tel;
+  return '';
+}
+
+function normalizeLinksBlock(block) {
+  const items = Array.isArray(block?.items) ? block.items : [];
+  const normalized = [];
+  for (const item of items) {
+    if (!item || typeof item !== 'object') continue;
+    const label = typeof item.label === 'string' ? item.label.trim() : '';
+    const url = normalizeChipUrl(item.url);
+    if (!label || !url || !REVIEW_LINK_KINDS.has(item.kind)) continue;
+    normalized.push({ label, url, kind: item.kind });
+    if (normalized.length >= REVIEW_LINK_ITEM_LIMIT) break;
+  }
+  if (normalized.length === 0) return null;
+  return { type: 'links', items: normalized };
+}
+
+/**
+ * Scheme and host are lowercased. One trailing slash is ignored.
+ * @param {unknown} url
+ */
+export function reviewLinkUrlKey(url) {
+  const raw = String(url ?? '').trim();
+  if (/^tel:/i.test(raw)) return raw.replace(/[\s-]/g, '').toLowerCase();
+  try {
+    const parsed = new URL(raw);
+    const path = parsed.pathname.replace(/\/$/, '');
+    return `${parsed.protocol.toLowerCase()}//${parsed.hostname.toLowerCase()}${path}${parsed.search}`;
+  } catch {
+    return raw.toLowerCase();
+  }
+}
+
+/**
+ * @param {Array<{ type?: string, text?: string }>} blocks
+ */
+export function reviewBodyLinkUrlKeys(blocks) {
+  const keys = new Set();
+  const re = /\[[^\]]*\]\(([^)]+)\)/g;
+  for (const block of blocks || []) {
+    if (block?.type !== 'text' || typeof block.text !== 'string') continue;
+    re.lastIndex = 0;
+    let match = re.exec(block.text);
+    while (match) {
+      const key = reviewLinkUrlKey(match[1]);
+      if (key) keys.add(key);
+      match = re.exec(block.text);
+    }
+  }
+  return keys;
+}
+
+/**
+ * @param {Array<{ url: string }>} items
+ * @param {Set<string>} bodyKeys
+ */
+export function dedupeReviewLinkItems(items, bodyKeys) {
+  return (items || []).filter((item) => !bodyKeys.has(reviewLinkUrlKey(item.url)));
+}
+
 function parseImageIndex(block) {
   if (!block || block.type !== 'image') return null;
   const raw = block.image_index ?? block.image_id;
@@ -40,6 +119,11 @@ export function normalizeReviewContentBlocks(blocks) {
       if (imageIndex !== null) {
         normalized.push({ type: 'image', image_index: imageIndex });
       }
+      continue;
+    }
+    if (block.type === 'links') {
+      const links = normalizeLinksBlock(block);
+      if (links) normalized.push(links);
     }
   }
   return normalized;
@@ -98,7 +182,7 @@ export function reviewHasHiddenMediaWhenCollapsed(review) {
   if (!hasReviewContentBlocks(review?.content_blocks)) return false;
 
   const blocks = normalizeReviewContentBlocks(review.content_blocks);
-  if (blocks.some((b) => b.type === 'image')) return true;
+  if (blocks.some((b) => b.type === 'image' || b.type === 'links')) return true;
 
   const gallery = getGalleryImageEntries(review.images, review.content_blocks);
   return gallery.length > 0;
@@ -160,16 +244,20 @@ export function getReviewLeadThumbnailImageIndex(review) {
 }
 
 /**
- * @param {{ content?: string, content_blocks?: unknown, images?: unknown[] }} review
+ * @param {{ content?: string, content_blocks?: unknown, images?: unknown[], is_editorial?: boolean }} review
  */
 export function shouldShowReviewExpandToggle(review) {
   const imageCount = Array.isArray(review?.images) ? review.images.length : 0;
+  const preview = hasReviewContentBlocks(review?.content_blocks)
+    ? getCollapsedPreviewText(review)
+    : (review?.content || '');
+  const measured = review?.is_editorial === true
+    ? stripReviewInlineMarkdown(preview).length
+    : preview.length;
   if (hasReviewContentBlocks(review?.content_blocks)) {
-    return (
-      getCollapsedPreviewText(review).length > 120 || reviewHasHiddenMediaWhenCollapsed(review)
-    );
+    return measured > 120 || reviewHasHiddenMediaWhenCollapsed(review);
   }
-  return (review?.content || '').length > 120 || imageCount >= 1;
+  return measured > 120 || imageCount >= 1;
 }
 
 /**

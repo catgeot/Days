@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { EditorialReviewText } from './EditorialReviewText.jsx';
+import { ReviewLinkChips } from './ReviewLinkChips.jsx';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
@@ -20,6 +22,8 @@ import {
   getReviewLeadThumbnailImageIndex,
   hasReviewContentBlocks,
   normalizeReviewContentBlocks,
+  dedupeReviewLinkItems,
+  reviewBodyLinkUrlKeys,
   resolveReviewImageSrc,
   resolveReviewThumbnailSrc,
   shouldShowReviewBottomGallery,
@@ -318,9 +322,11 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         </div>
 
         <div className="flex flex-col items-end gap-1">
-          <div className="flex gap-0.5">
-            {renderStars(review.rating)}
-          </div>
+          {review.is_editorial === true ? null : (
+            <div className="flex gap-0.5" data-review-stars="">
+              {renderStars(review.rating)}
+            </div>
+          )}
 
           {user && user.id === review.user_id && (
             <div className="flex items-center gap-2 mt-2">
@@ -346,17 +352,43 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         <div className="flex-1 min-w-0 text-gray-700 text-sm leading-relaxed break-keep">
           {usesContentBlocks ? (
             !isExpanded ? (
-              <div className="whitespace-pre-wrap line-clamp-3">
-                {collapsedPreviewText}
-              </div>
+              review.is_editorial === true ? (
+                <EditorialReviewText
+                  text={collapsedPreviewText}
+                  inline
+                  className="line-clamp-3"
+                />
+              ) : (
+                <div className="whitespace-pre-wrap line-clamp-3">
+                  {collapsedPreviewText}
+                </div>
+              )
             ) : (
               contentBlocks.map((block, blockIdx) => {
                 if (block.type === 'text') {
+                  if (review.is_editorial === true) {
+                    return (
+                      <EditorialReviewText
+                        key={`text-${blockIdx}`}
+                        text={block.text}
+                        className="mt-3 first:mt-0"
+                      />
+                    );
+                  }
                   return (
                     <p key={`text-${blockIdx}`} className="whitespace-pre-wrap mt-3 first:mt-0">
                       {block.text}
                     </p>
                   );
+                }
+                if (block.type === 'links') {
+                  if (review.is_editorial !== true) return null;
+                  const chipItems = dedupeReviewLinkItems(
+                    block.items,
+                    reviewBodyLinkUrlKeys(contentBlocks),
+                  );
+                  if (chipItems.length === 0) return null;
+                  return <ReviewLinkChips key={`links-${blockIdx}`} items={chipItems} />;
                 }
                 if (block.type === 'image') {
                   const images = review.images || [];
@@ -366,6 +398,12 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
                 return null;
               })
             )
+          ) : review.is_editorial === true ? (
+            <EditorialReviewText
+              text={review.content}
+              inline={!isExpanded}
+              className={isExpanded ? '' : 'line-clamp-3'}
+            />
           ) : (
             <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
               {review.content}

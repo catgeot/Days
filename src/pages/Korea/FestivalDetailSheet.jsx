@@ -72,6 +72,13 @@ import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import FestivalStayStrip from './FestivalStayStrip';
 import FestivalTnaStrip from './FestivalTnaStrip';
 import FestivalMooniFab from './FestivalMooniFab';
+import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
+import { FestivalBookingActions } from './FestivalBookingActions.jsx';
+import {
+  earliestBookingVerifiedDate,
+  getVisibleBookingLinks,
+  shouldHideOfficialHomepage,
+} from './lib/festivalBookingLinks.js';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
 import {
@@ -519,6 +526,7 @@ export default function FestivalDetailSheet({
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mooniOpen, setMooniOpen] = useState(false);
+  const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
@@ -1031,6 +1039,12 @@ export default function FestivalDetailSheet({
     return normalizeHomepage(common?.homepage);
   }, [intro?.eventhomepage, common?.homepage]);
 
+  const bookingLinks = useMemo(
+    () => getVisibleBookingLinks(item?.contentId, { uiLang: locale }),
+    [item?.contentId, locale],
+  );
+  const hideOfficialHomepage = shouldHideOfficialHomepage(homepage, bookingLinks);
+
   const programText = useMemo(
     () => stripHtml(intro?.program || ''),
     [intro?.program],
@@ -1376,7 +1390,17 @@ export default function FestivalDetailSheet({
             />
           )}
 
-          {homepage && (
+          <FestivalBookingActions
+            contentId={item?.contentId}
+            links={bookingLinks}
+            bookNowLabel={t('korea.festival.detail.bookNow')}
+            uiLang={locale}
+            programsTitle={t('korea.festival.detail.bookPrograms')}
+            moreLabel={t('korea.festival.detail.bookMore')}
+            providerLabel={t('korea.festival.detail.bookProviderTicketlink')}
+          />
+
+          {homepage && !hideOfficialHomepage && (
             <a
               href={homepage}
               target="_blank"
@@ -1973,6 +1997,17 @@ export default function FestivalDetailSheet({
                     )}
                   </div>
                 )}
+
+              {bookingLinks.length > 0 && (
+                <p
+                  className="text-[11px] leading-snug text-stone-500 break-keep"
+                  data-festival-booking-note=""
+                >
+                  {t('korea.festival.detail.bookingChecked', {
+                    date: earliestBookingVerifiedDate(bookingLinks),
+                  })}
+                </p>
+              )}
             </div>
           )}
 
@@ -2127,7 +2162,15 @@ export default function FestivalDetailSheet({
           item={item}
           location={festivalCross?.stay?.location}
           raised={showScrollTop && !lightboxOpen}
-          onOpenChange={setMooniOpen}
+          onOpenChange={(open) => {
+            trackMooniOpenIfRising(mooniWasOpenRef.current, open, {
+              placement: 'festival_detail',
+              festival_id: String(item?.contentId ?? ''),
+              ui_lang: locale,
+            });
+            mooniWasOpenRef.current = open;
+            setMooniOpen(open);
+          }}
         />
       ) : null}
 

@@ -2,6 +2,15 @@
 
 직전: [`2026-10-01-project-log.md`](./2026-10-01-project-log.md)
 
+## 팔경 활용 #95, 상왕봉 무니 인트로 동명 오탐 해소
+
+- **세션** `팔경 활용 #95, 상왕봉 무니 인트로 동명 오탐 해소` · branch `cursor/palgyeong-use-e744` · tip `00db54eb` · PR [#368](https://github.com/catgeot/Days/pull/368)
+- **조치** 완도8경 제5경 상왕봉 장소 카드 진입 시 합천 가야산 상왕봉(우두봉, 1430m, 해인사 일대)의 소개문이 노출되던 동명 지명 오탐 해결. `buildPlaceChatIntroKeys`에서 `parentCity`가 있을 경우 구체적 지역 키(`완도 상왕봉`, `대한민국 완도 상왕봉`)를 우선 생성·조회하도록 보강. DB `place_chat_intro` 내 기존 가야산 상왕봉 레코드 키를 `가야산 상왕봉`으로 리네이밍 분리하고, `완도 상왕봉` 키로 완도 진산·완도8경 제5경 정규 써머리 등록 완료.
+- **VERIFY** `smoke:korea-local-scenic-lists` · `smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `npm run build` PASS. Supabase DB 조회 검증 완료.
+- **Preview** https://www.gateo.kr/qa/palgyeong-use
+- **작업 로그** 상왕봉 무니 인트로 동명 오탐 해소
+- **다음** 없음
+
 ## 팔경 활용 #95, 완도8경 상왕봉 SSOT 정제
 
 - **세션** `팔경 활용 #95, 완도 상왕봉 정제` · branch `cursor/palgyeong-use-e744` · tip `54ba8135` · PR [#368](https://github.com/catgeot/Days/pull/368)

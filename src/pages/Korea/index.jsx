@@ -173,9 +173,6 @@ function buildPanelListMeta({ areaCode, cityName, count, t, locale = 'ko' }) {
 
 const NEAR_KM = NEAR_FESTIVAL_KM;
 
-/** Strict Mode 재마운트에도 진입 GPS는 JS 세션당 1회(첫 시도) */
-let koreaFestivalLocationBooted = false;
-
 const LOC_HINT_DONE_KEY = 'korea-festival-loc-hint-done';
 
 function readLocHintDone() {
@@ -835,7 +832,6 @@ export default function KoreaFestivalHub() {
     readLocHintDone(),
   );
   const userRegionOverrideRef = useRef(false);
-  const mountLocTriedRef = useRef(false);
   /** 내 주변 진입 직전 필터 — 재탭 시 복원 */
   const preNearSnapshotRef = useRef(
     /** @type {null | { timeTab: string, tasteId: string, areaCode: string, cityName: string, chipPanel: ChipPanelId }} */ (
@@ -1705,7 +1701,7 @@ export default function KoreaFestivalHub() {
     }
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setNearLabel('');
-      setNearMsg(t('korea.common.locUnavailable'));
+      setNearMsg(t('korea.common.locOffPickRegion'));
       return;
     }
     preNearSnapshotRef.current = {
@@ -1727,82 +1723,16 @@ export default function KoreaFestivalHub() {
         });
         if (!ok) preNearSnapshotRef.current = null;
       },
-      (err) => {
+      () => {
         setNearBusy(false);
         preNearSnapshotRef.current = null;
         setNearLabel('');
-        const code = err?.code;
-        if (code === 1) {
-          setNearMsg(t('korea.common.locDenied'));
-        } else if (code === 3) {
-          dismissLocHint();
-          setNearMsg(t('korea.common.locTimeout'));
-        } else {
-          dismissLocHint();
-          setNearMsg(t('korea.common.locFailed'));
-        }
+        dismissLocHint();
+        setNearMsg(t('korea.common.locOffPickRegion'));
       },
       { enableHighAccuracy: false, timeout: 15_000, maximumAge: 120_000 },
     );
   };
-
-  useEffect(() => {
-    if (loading) return;
-    if (mountLocTriedRef.current) return;
-    if (userRegionOverrideRef.current) {
-      mountLocTriedRef.current = true;
-      return;
-    }
-    if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      mountLocTriedRef.current = true;
-      return;
-    }
-
-    const opts = {
-      enableHighAccuracy: false,
-      timeout: 8_000,
-      maximumAge: 300_000,
-    };
-
-    const onOk = (pos) => {
-      dismissLocHint();
-      if (userRegionOverrideRef.current) return;
-      applyUserLocation(pos.coords.latitude, pos.coords.longitude, {
-        silent: true,
-        festivalItems: items,
-      });
-    };
-
-    mountLocTriedRef.current = true;
-
-    if (!koreaFestivalLocationBooted) {
-      koreaFestivalLocationBooted = true;
-      navigator.geolocation.getCurrentPosition(onOk, () => {}, opts);
-      return;
-    }
-
-    const retryIfGranted = () => {
-      navigator.geolocation.getCurrentPosition(onOk, () => dismissLocHint(), opts);
-    };
-
-    if (navigator.permissions?.query) {
-      navigator.permissions
-        .query({ name: 'geolocation' })
-        .then((status) => {
-          if (status.state === 'granted') retryIfGranted();
-          else if (status.state === 'prompt' && readLocHintDone()) {
-            /* 이전에 허용·닫기 한 세션 — 잘못된 힌트만 유지 방지 */
-            dismissLocHint();
-          }
-        })
-        .catch(() => {
-          if (readLocHintDone()) retryIfGranted();
-        });
-      return;
-    }
-
-    if (readLocHintDone()) retryIfGranted();
-  }, [loading, items, applyUserLocation, dismissLocHint]);
 
   useEffect(() => {
     const el = mainScrollRef.current;
@@ -2160,6 +2090,14 @@ export default function KoreaFestivalHub() {
                   </button>
                 </div>
               </div>
+              {!nearActive && nearMsg ? (
+                <p
+                  className="text-[11px] leading-snug text-stone-600 break-keep"
+                  data-near-me-hint
+                >
+                  {nearMsg}
+                </p>
+              ) : null}
               <ChipScrollRow
                 ariaLabel={t('korea.common.detailChips')}
                 panelKey={detailChipPanelKey}

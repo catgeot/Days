@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import {
+  dedupeReviewLinkItems,
   getCollapsedPreviewText,
   getGalleryImageEntries,
   getReferencedImageIndices,
   hasReviewContentBlocks,
   normalizeReviewContentBlocks,
+  reviewBodyLinkUrlKeys,
   reviewHasHiddenMediaWhenCollapsed,
+  reviewLinkUrlKey,
   shouldShowReviewBottomGallery,
   shouldShowReviewExpandToggle,
   getReviewLeadThumbnailImageIndex,
@@ -179,6 +182,91 @@ assert.equal(
     .map((b) => b.text)
     .join('|'),
   'alpha|beta'
+);
+
+const mapChips = {
+  type: 'links',
+  items: [
+    {
+      label: '마하나콘 스카이워크 지도',
+      url: 'https://www.google.com/maps/search/?api=1&query=King+Power+Mahanakhon+SkyWalk+Bangkok',
+      kind: 'map',
+    },
+    {
+      label: 'Asiatique The Riverfront 지도',
+      url: 'https://www.google.com/maps/search/?api=1&query=Asiatique+The+Riverfront+Bangkok',
+      kind: 'map',
+    },
+  ],
+};
+const longLabel = 'Octave Rooftop Lounge & Bar 지도';
+assert.equal(longLabel.length, 30);
+const withLong = normalizeReviewContentBlocks([
+  { type: 'text', text: '본문' },
+  {
+    type: 'links',
+    items: [
+      ...mapChips.items,
+      { label: longLabel, url: 'https://www.google.com/maps/search/?api=1&query=Octave', kind: 'map' },
+      { label: 'bad http', url: 'http://evil.com', kind: 'official' },
+      { label: 'bad js', url: 'javascript:alert(1)', kind: 'official' },
+      { label: 'phone', url: 'tel:+66-2-123-4567', kind: 'phone' },
+    ],
+  },
+]);
+const linksBlock = withLong.find((block) => block.type === 'links');
+assert.ok(linksBlock);
+assert.equal(linksBlock.items.some((item) => item.label === longLabel), true);
+assert.equal(linksBlock.items.some((item) => item.url.startsWith('http:')), false);
+assert.equal(linksBlock.items.some((item) => item.url.includes('javascript')), false);
+assert.equal(linksBlock.items.find((item) => item.kind === 'phone').url, 'tel:+6621234567');
+assert.equal(getCollapsedPreviewText({ content_blocks: withLong }), '본문');
+assert.equal(reviewHasHiddenMediaWhenCollapsed({ content_blocks: withLong, images: [] }), true);
+assert.equal(
+  shouldShowReviewExpandToggle({
+    is_editorial: true,
+    content_blocks: [{ type: 'text', text: '짧은 본문' }, mapChips],
+    images: [],
+  }),
+  true,
+);
+
+const dedupedBlocks = normalizeReviewContentBlocks([
+  {
+    type: 'text',
+    text: '**미즈노**([공식 사이트](https://www.mizuno-osaka.com/))',
+  },
+  {
+    type: 'links',
+    items: [
+      { label: '공식', url: 'https://www.mizuno-osaka.com/', kind: 'official' },
+      mapChips.items[0],
+    ],
+  },
+]);
+const kept = dedupeReviewLinkItems(
+  dedupedBlocks.find((block) => block.type === 'links').items,
+  reviewBodyLinkUrlKeys(dedupedBlocks),
+);
+assert.deepEqual(kept.map((item) => item.label), ['마하나콘 스카이워크 지도']);
+assert.equal(
+  reviewLinkUrlKey('https://www.Mizuno-osaka.com'),
+  reviewLinkUrlKey('https://www.mizuno-osaka.com/'),
+);
+
+assert.equal(
+  normalizeReviewContentBlocks([{ type: 'links', items: [{ label: 'x', url: 'http://nope', kind: 'map' }] }]).length,
+  0,
+);
+
+const nine = Array.from({ length: 9 }, (_, index) => ({
+  label: `지도 ${index}`,
+  url: `https://www.google.com/maps/search/?api=1&query=${index}`,
+  kind: 'map',
+}));
+assert.equal(
+  normalizeReviewContentBlocks([{ type: 'links', items: nine }])[0].items.length,
+  8,
 );
 
 console.log('smoke-place-review-content-blocks: OK');

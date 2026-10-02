@@ -60,33 +60,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.gateo.kr/korea/theme/packages</loc>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/korea/theme/packages"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/korea/theme/packages?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/korea/theme/packages"/>
-    <lastmod>2026-09-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.65</priority>
-  </url>
-  <url>
-    <loc>https://www.gateo.kr/korea/theme/top10</loc>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/korea/theme/top10"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/korea/theme/top10?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/korea/theme/top10"/>
-    <lastmod>2026-09-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.gateo.kr/korea/theme/regions</loc>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/korea/theme/regions"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/korea/theme/regions?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/korea/theme/regions"/>
-    <lastmod>2026-09-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.gateo.kr/blog</loc>
     <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/blog"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/blog?lang=en"/>
