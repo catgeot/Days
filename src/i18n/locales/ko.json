@@ -1009,6 +1009,7 @@
       "manageBodyAdmin": "숨기기는 내 화면에서만 적용됩니다. 관리자 제거는 모든 이용자에게 공유 갤러리에서 사진을 삭제합니다.",
       "manageHide": "이 사진 숨기기(내 화면에서만)",
       "manageReport": "부적절·무관한 사진 신고",
+      "manageReportToast": "신고해 주셔서 감사합니다. 검토에 참고하겠습니다.",
       "manageAdminRemove": "관리자: 공유 갤러리에서 제거",
       "manageCancel": "취소"
     },

@@ -10,9 +10,11 @@ function parseAdminUidOverride() {
   return ids.length ? new Set(ids) : null;
 }
 
-let adminUidSet = DEFAULT_ADMIN_UIDS;
+const adminUidSet = new Set(DEFAULT_ADMIN_UIDS);
 const override = parseAdminUidOverride();
-if (override) adminUidSet = override;
+if (override) {
+  for (const id of override) adminUidSet.add(id);
+}
 
 export function isGalleryAdminUser(userId) {
   if (!userId || typeof userId !== 'string') return false;

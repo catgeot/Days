@@ -54,13 +54,19 @@ assert.match(view, /place\.gallery\.manageAdminRemove/, 'admin remove copy is i1
 const hook = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'), 'utf8');
 assert.match(hook, /handleHideGalleryImage/, 'hide handler exported');
 assert.match(hook, /handleAdminRemoveGalleryImage/, 'admin remove handler');
-assert.match(hook, /filterHiddenGalleryIncoming/, 'hidden filter on gallery loads');
+assert.match(hook, /syncGalleryViewFromStorage/, 'view list applies hidden filter only');
+assert.match(hook, /allImagesRef\.current = storage/, 'storage ref keeps unfiltered gallery');
+assert.doesNotMatch(
+  hook,
+  /handleHideGalleryImage[\s\S]{0,400}allImagesRef\.current\.filter/,
+  'hide does not remove from storage ref',
+);
 const adminFn = hook.match(
   /const handleAdminRemoveGalleryImage = useCallback\([\s\S]*?\n  \);/,
 )?.[0];
 assert.ok(adminFn, 'handleAdminRemoveGalleryImage block');
 assert.match(adminFn, /\.from\('place_stats'\)/, 'admin remove PATCHes place_stats');
-assert.match(adminFn, /gallery_urls:\s*newImages/, 'admin remove sends gallery_urls');
+assert.match(adminFn, /gallery_urls:\s*newStorage/, 'admin remove sends storage gallery_urls');
 const hideFn = hook.match(
   /const handleHideGalleryImage = useCallback\([\s\S]*?\n  \);/,
 )?.[0];
@@ -70,6 +76,7 @@ assert.doesNotMatch(hideFn, /place_stats/, 'hide handler does not touch place_st
 const adminUtil = readFileSync(join(root, 'src/utils/galleryAdmin.js'), 'utf8');
 assert.match(adminUtil, /f31e47ac-144d-41e3-9ef9-441a2d008424/, 'default admin UID');
 assert.match(adminUtil, /VITE_ADMIN_UIDS/, 'optional admin UID override');
+assert.match(adminUtil, /adminUidSet\.add/, 'VITE_ADMIN_UIDS merges with default admin');
 
 const reportUtil = readFileSync(join(root, 'src/shared/analytics/galleryPhotoReport.js'), 'utf8');
 assert.match(reportUtil, /gallery_photo_report/, 'GA report event name');
@@ -82,6 +89,7 @@ for (const key of [
   'manageBodyAdmin',
   'manageHide',
   'manageReport',
+  'manageReportToast',
   'manageAdminRemove',
   'manageCancel',
 ]) {

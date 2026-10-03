@@ -302,6 +302,7 @@ const PlaceGalleryView = React.memo(({
   /** 그리드 클릭 직후 라이트박스에 같은 클릭이 전달되어 즉시 닫히는 것 방지 */
   const suppressOpenClickRef = useRef(false);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const [reportToastVisible, setReportToastVisible] = useState(false);
   const pendingPlaceScrollResetRef = useRef(false);
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
@@ -439,6 +440,8 @@ const PlaceGalleryView = React.memo(({
     if (!manageTarget || !handleReportGalleryImage) return;
     handleReportGalleryImage(manageTarget);
     setManageTarget(null);
+    setReportToastVisible(true);
+    window.setTimeout(() => setReportToastVisible(false), 3500);
   }, [manageTarget, handleReportGalleryImage]);
 
   const confirmManageAdminRemove = useCallback(() => {
@@ -1128,6 +1131,17 @@ const PlaceGalleryView = React.memo(({
           onCancel={closeManageSheet}
         />
       )}
+      {reportToastVisible &&
+        createPortal(
+          <div
+            className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] left-1/2 z-[10060] w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 rounded-2xl border border-white/15 bg-[#0b1018]/95 px-4 py-3 text-center text-sm font-medium text-white shadow-[0_8px_32px_rgba(0,0,0,0.55)] backdrop-blur-md"
+            role="status"
+            aria-live="polite"
+          >
+            {t('place.gallery.manageReportToast')}
+          </div>,
+          document.body,
+        )}
       {showScrollToTop && !selectedImg && createPortal(
         <button
           type="button"

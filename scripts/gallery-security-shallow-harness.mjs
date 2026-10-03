@@ -44,6 +44,41 @@ function placeStatsWrites(log) {
   );
 }
 
+function galleryUrlsFromWrite(entry) {
+  if (!entry?.body) return null;
+  try {
+    const parsed = JSON.parse(entry.body);
+    const raw = parsed.gallery_urls;
+    if (!raw) return null;
+    return Array.isArray(raw) ? raw : [raw];
+  } catch {
+    return null;
+  }
+}
+
+function writesIncludeImageId(writes, imageId) {
+  if (!writes.length) return true;
+  return writes.some((w) => {
+    const urls = galleryUrlsFromWrite(w);
+    return urls?.some((img) => img?.id === imageId);
+  });
+}
+
+const UNSPLASH_SEARCH_BODY = JSON.stringify({
+  results: [
+    {
+      id: 'harness-unsplash-fresh',
+      width: 1200,
+      height: 800,
+      urls: {
+        small: 'https://img.mock.invalid/99.png',
+        regular: 'https://img.mock.invalid/99.png',
+      },
+      user: { name: 'Harness Unsplash' },
+    },
+  ],
+});
+
 async function seedAuthStorage(page, adminSession) {
   await page.addInitScript(
     ({ admin, uid }) => {
@@ -74,7 +109,7 @@ async function seedAuthStorage(page, adminSession) {
   );
 }
 
-async function installRoutes(ctx, { adminMode = false } = {}) {
+async function installRoutes(ctx, { adminMode = false, dbGallery = gallery } = {}) {
   const log = [];
   await ctx.route('**/*', async (route) => {
     const req = route.request();
@@ -83,7 +118,14 @@ async function installRoutes(ctx, { adminMode = false } = {}) {
     if (u.hostname === 'img.mock.invalid') {
       return route.fulfill({ status: 200, contentType: 'image/png', body: PNG });
     }
-    if (u.hostname === 'api.unsplash.com' || u.hostname === 'images.unsplash.com') {
+    if (u.hostname === 'api.unsplash.com' && u.pathname.includes('/search/photos')) {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: UNSPLASH_SEARCH_BODY,
+      });
+    }
+    if (u.hostname === 'images.unsplash.com') {
       return route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
     }
     if (u.hostname === 'api.pexels.com') {
@@ -152,8 +194,8 @@ async function installRoutes(ctx, { adminMode = false } = {}) {
           body: JSON.stringify([
             {
               place_id: 'bangkok',
-              image_url: gallery[0].urls.small,
-              gallery_urls: gallery,
+              image_url: dbGallery[0].urls.small,
+              gallery_urls: dbGallery,
             },
           ]),
         });
@@ -170,7 +212,7 @@ async function installRoutes(ctx, { adminMode = false } = {}) {
 }
 
 async function waitGalleryTiles(page) {
-  const tiles = page.locator('img[src^="https://img.mock.invalid"]');
+  const tiles = page.locator('div.break-inside-avoid img[src]');
   await tiles.first().waitFor({ state: 'visible', timeout: 45_000 });
   return tiles;
 }
@@ -192,7 +234,7 @@ async function longPressTile(page, tileLocator, browserName) {
   await tileLocator.dispatchEvent('touchend', {});
 }
 
-async function runScenario(browserType, profile) {
+async function runScenario(browserType, profile, { dbGallery = gallery, hideIndex = 1, hiddenId = 'mock-1' } = {}) {
   const isMobile = profile.includes('mobile');
   const contextOptions = {
     ignoreHTTPSErrors: true,
@@ -211,7 +253,7 @@ async function runScenario(browserType, profile) {
   // --- logged-out hide: 0 place_stats writes ---
   const guestBrowser = await browserType.launch();
   const guestCtx = await guestBrowser.newContext(contextOptions);
-  const logGuest = await installRoutes(guestCtx);
+  const logGuest = await installRoutes(guestCtx, { dbGallery });
   const page = await guestCtx.newPage();
   await seedAuthStorage(page, false);
   await page.goto(`${BASE}/place/bangkok/gallery`, {
@@ -219,19 +261,30 @@ async function runScenario(browserType, profile) {
     timeout: 60_000,
   });
   const tiles = await waitGalleryTiles(page);
+  if (dbGallery.length <= 7) {
+    await page.waitForTimeout(12_000);
+  }
+  let effectiveHideIndex = hideIndex;
+  let effectiveHiddenId = hiddenId;
+  const tileCount = await tiles.count();
+  if (tileCount <= hideIndex) {
+    effectiveHideIndex = 0;
+    effectiveHiddenId = 'mock-0';
+  }
   const before = await tiles.count();
   await page.screenshot({ path: join(OUT, 'shots', `${profile}-guest-before.png`) });
   const markGuest = logGuest.length;
 
   if (isMobile) {
-    const t = tiles.nth(1);
+    const t = tiles.nth(effectiveHideIndex);
     await longPressTile(page, t, browserType.name());
     await page.waitForTimeout(600);
     await page.screenshot({ path: join(OUT, 'shots', `${profile}-guest-sheet.png`) });
     await page.getByRole('button', { name: /숨기기|Hide this photo/i }).first().click();
   } else {
-    const t = tiles.nth(1);
+    const t = tiles.nth(effectiveHideIndex);
     const box = await t.boundingBox();
+    if (!box) throw new Error(`desktop tile ${effectiveHideIndex} box missing`);
     await page.keyboard.down('Control');
     await page.mouse.dblclick(box.x + box.width / 2, box.y + box.height / 2);
     await page.keyboard.up('Control');
@@ -254,19 +307,37 @@ async function runScenario(browserType, profile) {
   results.noLegacyCopy =
     !pageHtml.includes('갤러리에서 제거') && !pageHtml.includes('저장된 목록에서도 빠집니다');
 
-  await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(2000);
-  const afterReload = await page.locator('img[src^="https://img.mock.invalid"]').count();
+  await page.evaluate(() => {
+    for (let i = sessionStorage.length - 1; i >= 0; i -= 1) {
+      const k = sessionStorage.key(i);
+      if (k?.startsWith('days_gallery_')) sessionStorage.removeItem(k);
+    }
+    for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+      const k = localStorage.key(i);
+      if (k?.startsWith('days_gallery_swr_')) localStorage.removeItem(k);
+    }
+  });
+  const markUpsert = logGuest.length;
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await page.waitForTimeout(14_000);
+  const upsertWrites = placeStatsWrites(logGuest.slice(markUpsert)).filter(
+    (w) => w.method === 'POST' && w.body && w.body.includes('gallery_urls'),
+  );
+  results.upsertAfterHideCount = upsertWrites.length;
+  results.hiddenIdPreservedInUpsert = writesIncludeImageId(upsertWrites, effectiveHiddenId);
+  results.hiddenTargetId = effectiveHiddenId;
+
+  const afterReload = await page.locator('div.break-inside-avoid img[src]').count();
   results.hiddenAfterReload = afterReload === after;
 
   // report: still 0 writes
   const markReport = logGuest.length;
   if (isMobile) {
-    const t2 = page.locator('img[src^="https://img.mock.invalid"]').nth(2);
+    const t2 = page.locator('div.break-inside-avoid img[src]').nth(2);
     await longPressTile(page, t2, browserType.name());
     await page.waitForTimeout(500);
   } else {
-    const t2 = page.locator('img[src^="https://img.mock.invalid"]').nth(2);
+    const t2 = page.locator('div.break-inside-avoid img[src]').nth(2);
     const box2 = await t2.boundingBox();
     await page.keyboard.down('Control');
     await page.mouse.dblclick(box2.x + box2.width / 2, box2.y + box2.height / 2);
@@ -326,8 +397,11 @@ for (const [browserType, profile] of [
 ]) {
   summary.push(await runScenario(browserType, profile));
 }
-
 assert.ok(summary.every((r) => r.guestHideWrites === 0), 'guest hide: 0 place_stats writes');
+assert.ok(
+  summary.every((r) => r.hiddenIdPreservedInUpsert),
+  'reload upsert keeps locally hidden id in gallery_urls body',
+);
 assert.ok(summary.every((r) => r.guestReportWrites === 0), 'guest report: 0 place_stats writes');
 assert.ok(summary.every((r) => r.adminPatchCount >= 1), 'admin: PATCH place_stats');
 assert.ok(summary.every((r) => r.hiddenAfterReload), 'hidden survives reload');
@@ -337,5 +411,8 @@ assert.ok(
   'desktop ctrl+dblclick opens sheet',
 );
 
-writeFileSync(join(OUT, 'pass-summary.json'), JSON.stringify({ pass: true, summary }, null, 2));
+writeFileSync(
+  join(OUT, 'pass-summary.json'),
+  JSON.stringify({ pass: true, summary }, null, 2),
+);
 console.log(JSON.stringify({ pass: true, summary }, null, 2));

@@ -1239,6 +1239,7 @@
       "manageBodyAdmin": "Hide is local to you. Admin remove deletes the photo from the shared gallery for everyone.",
       "manageHide": "Hide this photo (only on my screen)",
       "manageReport": "Report inappropriate or unrelated photo",
+      "manageReportToast": "Thank you for reporting. We will review this photo.",
       "manageAdminRemove": "Admin: remove from shared gallery",
       "manageCancel": "Cancel"
     },
