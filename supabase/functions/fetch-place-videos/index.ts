@@ -8,10 +8,38 @@ const corsHeaders = {
 
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
-function clampMaxResults(n: unknown): number {
+function clampMaxResults(n: unknown, opts?: { raiseCap?: boolean }): number {
   const v = Number(n);
   if (!Number.isFinite(v) || v < 1) return 5;
-  return Math.min(10, Math.floor(v));
+  const cap = opts?.raiseCap ? 20 : 10;
+  return Math.min(cap, Math.floor(v));
+}
+
+function decodeHtmlEntities(input: string): string {
+  if (!input) return '';
+  return input.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (match, body: string) => {
+    if (body[0] === '#') {
+      const isHex = body[1] === 'x' || body[1] === 'X';
+      const numStr = isHex ? body.slice(2) : body.slice(1);
+      const code = parseInt(numStr, isHex ? 16 : 10);
+      if (!Number.isFinite(code)) return match;
+      try {
+        return String.fromCodePoint(code);
+      } catch {
+        return match;
+      }
+    }
+    const named: Record<string, string> = {
+      amp: '&',
+      lt: '<',
+      gt: '>',
+      quot: '"',
+      apos: "'",
+      '#39': "'",
+    };
+    const key = body in named ? body : body.toLowerCase();
+    return named[key] ?? match;
+  });
 }
 
 serve(async (req) => {
@@ -24,11 +52,14 @@ serve(async (req) => {
     const body = await req.json();
     const { query, fallbackQuery, placeId } = body;
     const mode = body.mode === 'festival' ? 'festival' : 'place';
-    const maxResults = clampMaxResults(body.maxResults);
     const pageToken =
       typeof body.pageToken === 'string' && body.pageToken.trim()
         ? body.pageToken.trim()
         : '';
+    const skipUpsert = Boolean(pageToken) || body.skipUpsert === true;
+    const maxResults = clampMaxResults(body.maxResults, {
+      raiseCap: skipUpsert && !pageToken,
+    });
     const relevanceLanguage =
       typeof body.relevanceLanguage === 'string' && body.relevanceLanguage.trim()
         ? body.relevanceLanguage.trim()
@@ -62,6 +93,8 @@ serve(async (req) => {
       type: 'video',
       relevanceLanguage,
       regionCode,
+      videoEmbeddable: 'true',
+      videoSyndicated: 'true',
       key: youtubeApiKey,
     });
     if (pageToken) params.set('pageToken', pageToken);
@@ -85,6 +118,8 @@ serve(async (req) => {
         q: secondQuery,
         maxResults: String(maxResults),
         type: 'video',
+        videoEmbeddable: 'true',
+        videoSyndicated: 'true',
         key: youtubeApiKey,
       });
 
@@ -101,8 +136,10 @@ serve(async (req) => {
     // API 응답 데이터를 프로젝트 표준 규격(TRAVEL_VIDEOS)으로 변환
     const videosToCache = data.items?.map((item: any) => ({
       id: item.id.videoId,
-      title: item.snippet.title,
+      title: decodeHtmlEntities(item.snippet.title || ''),
       location_keyword: query,
+      channelTitle: item.snippet.channelTitle || null,
+      publishedAt: item.snippet.publishedAt || null,
       ai_context: {
         summary: item.snippet.description || '영상 설명이 없습니다.',
         tags: [`#${query}`, ...tagBase],
@@ -115,9 +152,6 @@ serve(async (req) => {
       typeof data.nextPageToken === 'string' && data.nextPageToken
         ? data.nextPageToken
         : null;
-
-    // pageToken(추가 페이지)이면 캐시를 덮어쓰지 않음 — 클라가 병합 후 재저장
-    const skipUpsert = Boolean(pageToken) || body.skipUpsert === true;
 
     if (!skipUpsert) {
       const supabaseAdmin = createClient(
