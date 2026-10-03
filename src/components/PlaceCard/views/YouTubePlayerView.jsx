@@ -27,6 +27,7 @@ const YouTubePlayerView = forwardRef(({
   isLoadingMore = false,
   onVideoUnplayable,
   loadMoreError = false,
+  loadMoreNoNew = false,
 }, ref) => {
   const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -373,6 +374,11 @@ const YouTubePlayerView = forwardRef(({
           {loadMoreError && (
             <p className="mt-2 text-center text-xs text-red-400/90 max-w-xs">
               {t('place.video.loadMoreFailed')}
+            </p>
+          )}
+          {loadMoreNoNew && !loadMoreError && (
+            <p className="mt-2 text-center text-xs text-white/50 max-w-xs">
+              {t('place.video.loadMoreNoNew')}
             </p>
           )}
         </div>

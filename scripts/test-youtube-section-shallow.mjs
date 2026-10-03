@@ -21,9 +21,12 @@ function assert(cond, msg) {
 const edgeSrc = readFileSync('supabase/functions/fetch-place-videos/index.ts', 'utf8');
 assert(edgeSrc.includes("videoEmbeddable: 'true'"), 'S1 primary search has videoEmbeddable');
 assert(edgeSrc.includes("videoSyndicated: 'true'"), 'S1 primary search has videoSyndicated');
-const fallbackBlock = edgeSrc.slice(edgeSrc.indexOf('secondQuery'));
-assert(fallbackBlock.includes("videoEmbeddable: 'true'"), 'S1 fallback search has videoEmbeddable');
-assert(fallbackBlock.includes("videoSyndicated: 'true'"), 'S1 fallback search has videoSyndicated');
+assert(!edgeSrc.includes('maxFollowPages'), 'quota: no follow-page loop in edge');
+assert(edgeSrc.includes('const fetchSearch = async'), 'S1 uses shared fetchSearch helper');
+assert(
+  edgeSrc.includes("videoEmbeddable: 'true'") && edgeSrc.includes("videoSyndicated: 'true'"),
+  'S1 fetchSearch sets embeddable + syndicated',
+);
 
 assert(!readFileSync('src/pages/Home/hooks/useYouTubeSearch.js', 'utf8').includes('TRAVEL_VIDEOS'), 'S4 hook has no TRAVEL_VIDEOS');
 try {

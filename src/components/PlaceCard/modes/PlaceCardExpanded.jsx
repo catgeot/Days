@@ -81,6 +81,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
     canLoadMore: canLoadMoreVideos,
     isLoadingMore: isLoadingMoreVideos,
     loadMoreError: loadMoreVideoError,
+    loadMoreNoNew: loadMoreVideoNoNew,
     markUnplayable: markVideoUnplayable,
     googleFormUrl,
   } = useYouTubeSearch(location, mediaMode);
@@ -263,6 +264,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
             canLoadMoreVideos={canLoadMoreVideos}
             isLoadingMoreVideos={isLoadingMoreVideos}
             loadMoreVideoError={loadMoreVideoError}
+            loadMoreVideoNoNew={loadMoreVideoNoNew}
             onVideoUnplayable={markVideoUnplayable}
             googleFormUrl={googleFormUrl}
             matchedPackage={matchedPackage}

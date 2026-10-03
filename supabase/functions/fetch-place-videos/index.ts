@@ -86,51 +86,46 @@ serve(async (req) => {
     const primaryQ = mode === 'festival'
       ? String(query).trim()
       : `${query} 여행 브이로그`;
+    const fallbackQ = fallbackQuery
+      ? String(fallbackQuery).trim()
+      : (mode === 'festival' ? String(query).trim() : `${query} travel vlog`);
 
-    // 1차 검색
-    let params = new URLSearchParams({
-      part: 'snippet',
-      q: primaryQ,
-      maxResults: String(maxResults),
-      type: 'video',
-      relevanceLanguage,
-      regionCode,
-      videoEmbeddable: 'true',
-      videoSyndicated: 'true',
-      key: youtubeApiKey,
-    });
-    if (pageToken) params.set('pageToken', pageToken);
-
-    let youtubeResponse = await fetch(`${BASE_URL}/search?${params.toString()}`);
-
-    if (!youtubeResponse.ok) {
-      const errorData = await youtubeResponse.json().catch(() => ({}));
-      throw new Error(`YouTube API Error: ${youtubeResponse.status} - ${errorData.error?.message || 'Unknown Error'}`);
-    }
-
-    let data = await youtubeResponse.json();
-
-    // 결과가 없거나 적을 경우 2차 일반 검색 (pageToken 없을 때만)
-    if ((!data.items || data.items.length === 0) && !pageToken) {
-      const secondQuery = fallbackQuery
-        ? fallbackQuery
-        : (mode === 'festival' ? String(query).trim() : `${query} travel vlog`);
-      params = new URLSearchParams({
+    const fetchSearch = async (q: string, token?: string) => {
+      const p = new URLSearchParams({
         part: 'snippet',
-        q: secondQuery,
+        q,
         maxResults: String(maxResults),
         type: 'video',
+        relevanceLanguage,
+        regionCode,
         videoEmbeddable: 'true',
         videoSyndicated: 'true',
         key: youtubeApiKey,
       });
-
-      youtubeResponse = await fetch(`${BASE_URL}/search?${params.toString()}`);
-      if (!youtubeResponse.ok) {
-        const errorData = await youtubeResponse.json().catch(() => ({}));
-        throw new Error(`YouTube API Error (Fallback): ${youtubeResponse.status} - ${errorData.error?.message || 'Unknown Error'}`);
+      if (token) p.set('pageToken', token);
+      const res = await fetch(`${BASE_URL}/search?${p.toString()}`);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(`YouTube API Error: ${res.status} - ${errorData.error?.message || 'Unknown Error'}`);
       }
-      data = await youtubeResponse.json();
+      return res.json();
+    };
+
+    let data: { items?: unknown[]; nextPageToken?: string };
+    let paginationSource: 'primary' | 'fallback' | null = null;
+
+    if (pageToken) {
+      const useFallback = body.paginationSource === 'fallback';
+      const q = useFallback ? fallbackQ : primaryQ;
+      data = await fetchSearch(q, pageToken);
+      paginationSource = useFallback ? 'fallback' : 'primary';
+    } else {
+      data = await fetchSearch(primaryQ);
+      paginationSource = 'primary';
+      if (!data.items || data.items.length === 0) {
+        data = await fetchSearch(fallbackQ);
+        paginationSource = 'fallback';
+      }
     }
 
     const tagBase = mode === 'festival' ? ['#축제', '#festival'] : ['#여행', '#vlog'];
@@ -162,52 +157,14 @@ serve(async (req) => {
       collected = collected.filter((v) => v.id && !excludeSet.has(v.id));
     }
 
-    let nextPageToken =
+    const nextPageToken =
       typeof data.nextPageToken === 'string' && data.nextPageToken
         ? data.nextPageToken
         : null;
 
-    const mayFollowPages = skipUpsert && excludeSet.size > 0 && !pageToken;
-    let pagesFetched = 1;
-    const maxFollowPages = 4;
-
-    while (
-      mayFollowPages &&
-      collected.length < maxResults &&
-      nextPageToken &&
-      pagesFetched < maxFollowPages
-    ) {
-      pagesFetched += 1;
-      const followParams = new URLSearchParams({
-        part: 'snippet',
-        q: primaryQ,
-        maxResults: String(maxResults),
-        type: 'video',
-        relevanceLanguage,
-        regionCode,
-        videoEmbeddable: 'true',
-        videoSyndicated: 'true',
-        key: youtubeApiKey,
-        pageToken: nextPageToken,
-      });
-
-      youtubeResponse = await fetch(`${BASE_URL}/search?${followParams.toString()}`);
-      if (!youtubeResponse.ok) break;
-
-      data = await youtubeResponse.json();
-      const batch = mapSnippetItems(data.items).filter(
-        (v) => v.id && !excludeSet.has(v.id),
-      );
-      for (const v of batch) {
-        if (!collected.some((c) => c.id === v.id)) collected.push(v);
-      }
-      nextPageToken =
-        typeof data.nextPageToken === 'string' && data.nextPageToken
-          ? data.nextPageToken
-          : null;
-    }
-
     const videosToCache = collected.slice(0, maxResults);
+    const paginationSourceOut =
+      nextPageToken && paginationSource ? paginationSource : null;
 
     if (!skipUpsert) {
       const supabaseAdmin = createClient(
@@ -233,6 +190,7 @@ serve(async (req) => {
       success: true,
       videos: videosToCache,
       nextPageToken,
+      paginationSource: paginationSourceOut,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,

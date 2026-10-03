@@ -1255,7 +1255,8 @@
       "errorTitle": "Couldn't load videos",
       "retry": "Try again",
       "loadMore": "More videos",
-      "loadMoreFailed": "Couldn't load more videos. Please try again in a moment."
+      "loadMoreFailed": "Couldn't load more videos. Please try again in a moment.",
+      "loadMoreNoNew": "No more videos to show."
     },
     "wiki": {
       "toc": "Table of contents",

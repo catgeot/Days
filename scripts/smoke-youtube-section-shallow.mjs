@@ -118,7 +118,7 @@ for (const [label, res] of [
 if (failed > 0) process.exit(1);
 console.log('Smoke screenshots saved to', OUT_DIR);
 
-const s2 = spawnSync('node', ['scripts/smoke-youtube-s2-autoskip.mjs', '--base', base], {
+const quota = spawnSync('node', ['scripts/test-youtube-quota-harness.mjs', '--base', base], {
   stdio: 'inherit',
 });
-if (s2.status !== 0) process.exit(s2.status ?? 1);
+if (quota.status !== 0) process.exit(quota.status ?? 1);

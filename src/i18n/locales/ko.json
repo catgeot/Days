@@ -1025,7 +1025,8 @@
       "errorTitle": "영상을 불러오지 못했어요",
       "retry": "다시 시도",
       "loadMore": "영상 더 보기",
-      "loadMoreFailed": "추가 영상을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+      "loadMoreFailed": "추가 영상을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+      "loadMoreNoNew": "더 볼 영상이 없어요."
     },
     "wiki": {
       "toc": "문서 목차",
