@@ -356,8 +356,10 @@ const YouTubePlayerView = forwardRef(({
 
       {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreNoNew) && (
         <div
-          className={`absolute left-1/2 -translate-x-1/2 z-[215] ${
-            isPlaying ? 'bottom-3 md:bottom-4' : 'bottom-24 md:bottom-28'
+          className={`absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
+            isPlaying
+              ? 'bottom-3 md:bottom-4'
+              : 'bottom-28 md:bottom-[13.5rem]'
           }`}
         >
           {canLoadMore && (

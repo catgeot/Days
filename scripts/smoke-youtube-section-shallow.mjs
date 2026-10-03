@@ -6,6 +6,13 @@ import { chromium, webkit } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
+import {
+  createHarnessNetworkState,
+  ensureHarnessPreviewBuild,
+  installDefaultSupabaseHarnessMocks,
+  installSupabaseHarnessGuard,
+  reportHarnessNetworkViolations,
+} from './youtube-harness-supabase-guard.mjs';
 
 const OUT_DIR = '/opt/cursor/artifacts/youtube-section-shallow';
 const DEFAULT_BASE = 'https://127.0.0.1:4173';
@@ -24,6 +31,10 @@ function parseArgs() {
 
 const { base } = parseArgs();
 
+ensureHarnessPreviewBuild();
+
+const harnessNetwork = createHarnessNetworkState();
+
 await mkdir(OUT_DIR, { recursive: true });
 
 const mockVideos = [
@@ -32,6 +43,17 @@ const mockVideos = [
 ];
 
 async function setupRoutes(page) {
+  await installSupabaseHarnessGuard(page, harnessNetwork);
+  await installDefaultSupabaseHarnessMocks(page);
+  await page.route('**/rest/v1/rpc/increment_place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: 'null' });
+  });
+  await page.route('**/rest/v1/place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
+  await page.route('**/functions/v1/pexels-proxy**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"photos":[]}' });
+  });
   await page.route('**/rest/v1/place_videos**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -79,8 +101,19 @@ async function runErrorState(browserType, name, viewport) {
   const browser = await browserType.launch({ headless: true });
   const context = await browser.newContext({ viewport, ignoreHTTPSErrors: true });
   const page = await context.newPage();
+  await installSupabaseHarnessGuard(page, harnessNetwork);
+  await installDefaultSupabaseHarnessMocks(page);
+  await page.route('**/rest/v1/rpc/increment_place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: 'null' });
+  });
+  await page.route('**/rest/v1/place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
   await page.route('**/rest/v1/place_videos**', async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
+  await page.route('**/functions/v1/pexels-proxy**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"photos":[]}' });
   });
   await page.route('**/functions/v1/fetch-place-videos**', async (route) => {
     await route.fulfill({
@@ -115,10 +148,13 @@ for (const [label, res] of [
   }
 }
 
+failed += reportHarnessNetworkViolations(harnessNetwork);
+
 if (failed > 0) process.exit(1);
 console.log('Smoke screenshots saved to', OUT_DIR);
 
 const quota = spawnSync('node', ['scripts/test-youtube-quota-harness.mjs', '--base', base], {
   stdio: 'inherit',
+  env: process.env,
 });
 if (quota.status !== 0) process.exit(quota.status ?? 1);

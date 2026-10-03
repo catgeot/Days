@@ -4,6 +4,13 @@
 import { readFileSync } from 'node:fs';
 import { chromium } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
+import {
+  createHarnessNetworkState,
+  ensureHarnessPreviewBuild,
+  installDefaultSupabaseHarnessMocks,
+  installSupabaseHarnessGuard,
+  reportHarnessNetworkViolations,
+} from './youtube-harness-supabase-guard.mjs';
 
 const DEFAULT_BASE = 'https://127.0.0.1:4173';
 
@@ -13,7 +20,10 @@ function parseBase() {
   return DEFAULT_BASE;
 }
 
+ensureHarnessPreviewBuild();
+
 const base = parseBase();
+const harnessNetwork = createHarnessNetworkState();
 let failed = 0;
 function assert(cond, msg) {
   if (!cond) {
@@ -22,6 +32,13 @@ function assert(cond, msg) {
     return;
   }
   console.log(`OK    ${msg}`);
+}
+
+async function withGuardedPage(context) {
+  const page = await context.newPage();
+  await installSupabaseHarnessGuard(page, harnessNetwork);
+  await installDefaultSupabaseHarnessMocks(page);
+  return page;
 }
 
 const edgeSrc = readFileSync('supabase/functions/fetch-place-videos/index.ts', 'utf8');
@@ -40,13 +57,27 @@ async function countEdgeOnFirstOpen(placeSlug, runs = 20) {
   const counts = [];
   for (let i = 0; i < runs; i += 1) {
     const context = await browser.newContext({ ignoreHTTPSErrors: true });
-    const page = await context.newPage();
+    const page = await withGuardedPage(context);
     let edgeCalls = 0;
     await page.route('**/rest/v1/place_videos**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/vnd.pgrst.object+json',
         body: JSON.stringify(null),
+      });
+    });
+    await page.route('**/rest/v1/rpc/increment_place_stats**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(null),
+      });
+    });
+    await page.route('**/rest/v1/place_stats**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
       });
     });
     await page.route('**/functions/v1/fetch-place-videos**', async (route) => {
@@ -59,6 +90,13 @@ async function countEdgeOnFirstOpen(placeSlug, runs = 20) {
           videos: [{ id: `v${i}`, title: 't', ai_context: { tags: [], timeline: [] } }],
           nextPageToken: null,
         }),
+      });
+    });
+    await page.route('**/functions/v1/pexels-proxy**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ photos: [] }),
       });
     });
     const edgeWait = page.waitForResponse(
@@ -82,7 +120,7 @@ async function countEdgeOnFirstOpen(placeSlug, runs = 20) {
 async function loadMoreSessionCap() {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
-  const page = await context.newPage();
+  const page = await withGuardedPage(context);
   let edgeCalls = 0;
   await page.route('**/rest/v1/place_videos**', async (route) => {
     await route.fulfill({
@@ -93,6 +131,12 @@ async function loadMoreSessionCap() {
       }),
     });
   });
+  await page.route('**/rest/v1/rpc/increment_place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: 'null' });
+  });
+  await page.route('**/rest/v1/place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
   await page.route('**/functions/v1/fetch-place-videos**', async (route) => {
     edgeCalls += 1;
     await route.fulfill({
@@ -100,6 +144,9 @@ async function loadMoreSessionCap() {
       contentType: 'application/json',
       body: JSON.stringify({ success: false, error: 'mock 403' }),
     });
+  });
+  await page.route('**/functions/v1/pexels-proxy**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"photos":[]}' });
   });
   await page.goto(`${base}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.waitForTimeout(1500);
@@ -125,7 +172,7 @@ assert(loadMoreCalls * 100 <= 400, `session worst-case units ≤400 (${loadMoreC
 async function loadMoreNoNewUi() {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ ignoreHTTPSErrors: true, locale: 'ko-KR' });
-  const page = await context.newPage();
+  const page = await withGuardedPage(context);
   await page.addInitScript(() => {
     window.localStorage.setItem('gateo.locale', 'ko');
   });
@@ -139,6 +186,12 @@ async function loadMoreNoNewUi() {
       }),
     });
   });
+  await page.route('**/rest/v1/rpc/increment_place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: 'null' });
+  });
+  await page.route('**/rest/v1/place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
   await page.route('**/functions/v1/fetch-place-videos**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -149,6 +202,9 @@ async function loadMoreNoNewUi() {
         nextPageToken: null,
       }),
     });
+  });
+  await page.route('**/functions/v1/pexels-proxy**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"photos":[]}' });
   });
   await page.goto(`${base}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.waitForTimeout(1500);
@@ -162,7 +218,7 @@ async function loadMoreNoNewUi() {
 async function loadMoreFailureMessageAfterCap() {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ ignoreHTTPSErrors: true, locale: 'ko-KR' });
-  const page = await context.newPage();
+  const page = await withGuardedPage(context);
   await page.addInitScript(() => {
     window.localStorage.setItem('gateo.locale', 'ko');
   });
@@ -175,12 +231,21 @@ async function loadMoreFailureMessageAfterCap() {
       }),
     });
   });
+  await page.route('**/rest/v1/rpc/increment_place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: 'null' });
+  });
+  await page.route('**/rest/v1/place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
   await page.route('**/functions/v1/fetch-place-videos**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ success: false, error: 'mock 403' }),
     });
+  });
+  await page.route('**/functions/v1/pexels-proxy**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"photos":[]}' });
   });
   await page.goto(`${base}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.waitForTimeout(1500);
@@ -202,7 +267,10 @@ assert(
   'F11: loadMoreFailed visible after 3rd failed click hits session cap',
 );
 
-const s2 = spawnSync('node', ['scripts/smoke-youtube-s2-autoskip.mjs', '--base', base], { stdio: 'inherit' });
+const s2 = spawnSync('node', ['scripts/smoke-youtube-s2-autoskip.mjs', '--base', base], {
+  stdio: 'inherit',
+  env: process.env,
+});
 if (s2.status !== 0) {
   failed += 1;
   console.error('FAIL  S2 auto-skip smoke');
@@ -210,8 +278,11 @@ if (s2.status !== 0) {
   console.log('OK    S2 auto-skip smoke');
 }
 
+failed += reportHarnessNetworkViolations(harnessNetwork);
+assert(harnessNetwork.externalRequests.length === 0, 'zero external Supabase requests');
+
 if (failed > 0) {
   console.error(`\n${failed} harness check(s) failed`);
   process.exit(1);
 }
-console.log('\nAll quota harness checks passed');
+console.log('\nAll quota harness checks passed (0 external Supabase requests)');
