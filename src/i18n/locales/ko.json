@@ -1004,9 +1004,13 @@
       "sourcesRateLimit": "Unsplash · Pexels · {{seconds}}초에 한 번",
       "enlargeImage": "{{alt}} 확대하기",
       "imageFallback": "갤러리 이미지",
-      "manageTitle": "관련 없는 사진인가요?",
-      "manageBody": "이 사진을 갤러리에서 제거합니다. 저장된 목록에서도 빠집니다.",
-      "manageRemove": "갤러리에서 제거",
+      "manageTitle": "이 사진을 어떻게 할까요?",
+      "manageBody": "숨기기는 이 기기·브라우저에서만 보이지 않습니다. 다른 이용자의 갤러리는 바뀌지 않습니다.",
+      "manageBodyAdmin": "숨기기는 내 화면에서만 적용됩니다. 관리자 제거는 모든 이용자에게 공유 갤러리에서 사진을 삭제합니다.",
+      "manageHide": "이 사진 숨기기(내 화면에서만)",
+      "manageReport": "부적절·무관한 사진 신고",
+      "manageReportToast": "신고해 주셔서 감사합니다. 검토에 참고하겠습니다.",
+      "manageAdminRemove": "관리자: 공유 갤러리에서 제거",
       "manageCancel": "취소"
     },
     "video": {

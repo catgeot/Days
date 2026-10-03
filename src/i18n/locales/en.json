@@ -1234,9 +1234,13 @@
       "sourcesRateLimit": "Unsplash · Pexels · once every {{seconds}}s",
       "enlargeImage": "Enlarge {{alt}}",
       "imageFallback": "Gallery image",
-      "manageTitle": "Unrelated photo?",
-      "manageBody": "Remove this photo from the gallery. It will also drop from the saved list.",
-      "manageRemove": "Remove from gallery",
+      "manageTitle": "What would you like to do?",
+      "manageBody": "Hide affects only this device and browser. Other travelers still see the photo.",
+      "manageBodyAdmin": "Hide is local to you. Admin remove deletes the photo from the shared gallery for everyone.",
+      "manageHide": "Hide this photo (only on my screen)",
+      "manageReport": "Report inappropriate or unrelated photo",
+      "manageReportToast": "Thank you for reporting. We will review this photo.",
+      "manageAdminRemove": "Admin: remove from shared gallery",
       "manageCancel": "Cancel"
     },
     "video": {

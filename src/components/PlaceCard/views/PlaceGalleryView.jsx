@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp, Trash2 } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp, Trash2, EyeOff, Flag } from 'lucide-react';
 import { i18n } from '../../../i18n/config';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
@@ -37,7 +37,6 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   index,
   eager = false,
   onOpen,
-  onRemove,
   onManage,
   enableLongPress = false,
   onBroken,
@@ -127,7 +126,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
       onDoubleClick={(e) => {
         if (e.ctrlKey || e.metaKey) {
           e.stopPropagation();
-          if (onRemove) onRemove(img);
+          onManage?.(img);
         }
       }}
       onTouchStart={longPress.onTouchStart}
@@ -191,7 +190,15 @@ const mobileNavButtonClass = (enabled) =>
     enabled ? 'hover:bg-blue-600/90 hover:border-blue-300/60' : 'opacity-45'
   }`;
 
-const GalleryManageSheet = ({ img, onConfirm, onCancel, t }) => {
+const GalleryManageSheet = ({
+  img,
+  isGalleryAdmin = false,
+  onHide,
+  onReport,
+  onAdminRemove,
+  onCancel,
+  t,
+}) => {
   if (!img) return null;
   const thumb = img.urls?.small || img.urls?.regular;
   return createPortal(
@@ -218,17 +225,35 @@ const GalleryManageSheet = ({ img, onConfirm, onCancel, t }) => {
           {t('place.gallery.manageTitle')}
         </h2>
         <p className="mt-1.5 text-sm leading-relaxed text-white/65">
-          {t('place.gallery.manageBody')}
+          {isGalleryAdmin ? t('place.gallery.manageBodyAdmin') : t('place.gallery.manageBody')}
         </p>
         <div className="mt-4 flex flex-col gap-2">
           <button
             type="button"
-            onClick={onConfirm}
-            className="flex h-12 items-center justify-center gap-2 rounded-full border border-red-400/40 bg-red-500/90 text-sm font-semibold text-white shadow-[0_4px_24px_rgba(0,0,0,0.35)] transition-all touch-manipulation active:scale-95 hover:bg-red-500"
+            onClick={onHide}
+            className="flex h-12 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/[0.08] text-sm font-semibold text-white transition-all touch-manipulation active:scale-95 hover:bg-white/12"
           >
-            <Trash2 size={16} strokeWidth={2.25} />
-            {t('place.gallery.manageRemove')}
+            <EyeOff size={16} strokeWidth={2.25} />
+            {t('place.gallery.manageHide')}
           </button>
+          <button
+            type="button"
+            onClick={onReport}
+            className="flex h-12 items-center justify-center gap-2 rounded-full border border-amber-400/35 bg-amber-500/15 text-sm font-semibold text-amber-100 transition-all touch-manipulation active:scale-95 hover:bg-amber-500/25"
+          >
+            <Flag size={16} strokeWidth={2.25} />
+            {t('place.gallery.manageReport')}
+          </button>
+          {isGalleryAdmin && (
+            <button
+              type="button"
+              onClick={onAdminRemove}
+              className="flex h-12 items-center justify-center gap-2 rounded-full border border-red-400/40 bg-red-500/90 text-sm font-semibold text-white shadow-[0_4px_24px_rgba(0,0,0,0.35)] transition-all touch-manipulation active:scale-95 hover:bg-red-500"
+            >
+              <Trash2 size={16} strokeWidth={2.25} />
+              {t('place.gallery.manageAdminRemove')}
+            </button>
+          )}
           <button
             type="button"
             onClick={onCancel}
@@ -259,7 +284,10 @@ const PlaceGalleryView = React.memo(({
   getRefreshCooldownRemaining,
   refreshCooldownSec = 30,
   galleryAtMax = false,
-  handleRemoveImage,
+  handleHideGalleryImage,
+  handleReportGalleryImage,
+  handleAdminRemoveGalleryImage,
+  isGalleryAdmin = false,
   handleDropBrokenImage,
   loadFailed = false,
   handleRetryLoad,
@@ -274,6 +302,7 @@ const PlaceGalleryView = React.memo(({
   /** 그리드 클릭 직후 라이트박스에 같은 클릭이 전달되어 즉시 닫히는 것 방지 */
   const suppressOpenClickRef = useRef(false);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const [reportToastVisible, setReportToastVisible] = useState(false);
   const pendingPlaceScrollResetRef = useRef(false);
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
@@ -396,13 +425,31 @@ const PlaceGalleryView = React.memo(({
     return () => mq.removeEventListener('change', sync);
   }, []);
 
+  const galleryManageEnabled = Boolean(handleHideGalleryImage);
+
   const closeManageSheet = useCallback(() => setManageTarget(null), []);
-  const confirmManageRemove = useCallback(() => {
-    if (!manageTarget || !handleRemoveImage) return;
-    handleRemoveImage(manageTarget);
+
+  const confirmManageHide = useCallback(() => {
+    if (!manageTarget || !handleHideGalleryImage) return;
+    handleHideGalleryImage(manageTarget);
     if (selectedImg?.id === manageTarget.id) setSelectedImg(null);
     setManageTarget(null);
-  }, [manageTarget, handleRemoveImage, selectedImg, setSelectedImg]);
+  }, [manageTarget, handleHideGalleryImage, selectedImg, setSelectedImg]);
+
+  const confirmManageReport = useCallback(() => {
+    if (!manageTarget || !handleReportGalleryImage) return;
+    handleReportGalleryImage(manageTarget);
+    setManageTarget(null);
+    setReportToastVisible(true);
+    window.setTimeout(() => setReportToastVisible(false), 3500);
+  }, [manageTarget, handleReportGalleryImage]);
+
+  const confirmManageAdminRemove = useCallback(() => {
+    if (!manageTarget || !handleAdminRemoveGalleryImage || !isGalleryAdmin) return;
+    void handleAdminRemoveGalleryImage(manageTarget);
+    if (selectedImg?.id === manageTarget.id) setSelectedImg(null);
+    setManageTarget(null);
+  }, [manageTarget, handleAdminRemoveGalleryImage, isGalleryAdmin, selectedImg, setSelectedImg]);
 
   const {
     onTouchStart: onLightboxLongPressStart,
@@ -412,7 +459,7 @@ const PlaceGalleryView = React.memo(({
     onContextMenu: onLightboxLongPressContextMenu,
     consumeClickSuppression: consumeLightboxClickSuppression,
   } = useGalleryLongPress(
-    Boolean(isTouchDevice && selectedImg && handleRemoveImage && !isZoomed()),
+    Boolean(isTouchDevice && selectedImg && galleryManageEnabled && !isZoomed()),
     () => {
       suppressMobileTapRef.current = true;
       setManageTarget(selectedImg);
@@ -650,9 +697,8 @@ const PlaceGalleryView = React.memo(({
             onDoubleClick={(e) => {
               if (e.ctrlKey || e.metaKey) {
                 e.stopPropagation();
-                if (handleRemoveImage && selectedImg) {
-                  handleRemoveImage(selectedImg);
-                  setSelectedImg(null);
+                if (galleryManageEnabled && selectedImg) {
+                  setManageTarget(selectedImg);
                 }
               }
             }}
@@ -771,9 +817,8 @@ const PlaceGalleryView = React.memo(({
       onDoubleClick={(e) => {
           if (e.ctrlKey || e.metaKey) {
               e.stopPropagation();
-              if (handleRemoveImage && selectedImg) {
-                  handleRemoveImage(selectedImg);
-                  setSelectedImg(null);
+              if (galleryManageEnabled && selectedImg) {
+                  setManageTarget(selectedImg);
               }
           }
       }}>
@@ -1009,9 +1054,8 @@ const PlaceGalleryView = React.memo(({
                           suppressOpenClickRef.current = false;
                         });
                       }}
-                      onRemove={handleRemoveImage}
-                      onManage={handleRemoveImage ? (photo) => setManageTarget(photo) : undefined}
-                      enableLongPress={Boolean(isTouchDevice && handleRemoveImage)}
+                      onManage={galleryManageEnabled ? (photo) => setManageTarget(photo) : undefined}
+                      enableLongPress={Boolean(isTouchDevice && galleryManageEnabled)}
                       onBroken={handleDropBrokenImage}
                     />
                   ))}
@@ -1080,10 +1124,24 @@ const PlaceGalleryView = React.memo(({
         <GalleryManageSheet
           img={manageTarget}
           t={t}
-          onConfirm={confirmManageRemove}
+          isGalleryAdmin={isGalleryAdmin}
+          onHide={confirmManageHide}
+          onReport={confirmManageReport}
+          onAdminRemove={confirmManageAdminRemove}
           onCancel={closeManageSheet}
         />
       )}
+      {reportToastVisible &&
+        createPortal(
+          <div
+            className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] left-1/2 z-[10060] w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 rounded-2xl border border-white/15 bg-[#0b1018]/95 px-4 py-3 text-center text-sm font-medium text-white shadow-[0_8px_32px_rgba(0,0,0,0.55)] backdrop-blur-md"
+            role="status"
+            aria-live="polite"
+          >
+            {t('place.gallery.manageReportToast')}
+          </div>,
+          document.body,
+        )}
       {showScrollToTop && !selectedImg && createPortal(
         <button
           type="button"
