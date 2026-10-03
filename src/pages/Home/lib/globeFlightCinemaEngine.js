@@ -11,6 +11,11 @@ import {
 } from './globeFlightCinema.js';
 import { normalizeLngNear } from './globeLngUtils.js';
 import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+import {
+  setLayerZoomRangeIfChanged,
+  setLayoutPropertyIfChanged,
+  setPaintPropertyIfChanged,
+} from './globeMapStyleWrite.js';
 import { raiseLayersToTopIfNeeded } from './globeMapLayerOrder.js';
 import {
   flightCinemaDebugLocationTag,
@@ -166,11 +171,7 @@ function removeLegacyAirportLayers(map) {
 function applyLayerPaint(map, layerId, paint) {
   if (!map.getLayer(layerId)) return;
   for (const [key, value] of Object.entries(paint)) {
-    try {
-      map.setPaintProperty(layerId, key, value);
-    } catch {
-      // Style may be mid-transition.
-    }
+    setPaintPropertyIfChanged(map, layerId, key, value);
   }
 }
 
@@ -228,15 +229,11 @@ export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = f
 
     for (const layerId of FLIGHT_CINEMA_ARC_LAYER_IDS) {
       if (!map.getLayer(layerId)) continue;
-      try {
-        if (visible) {
-          map.setLayerZoomRange(layerId, 0, 24);
-          map.setLayoutProperty(layerId, 'visibility', 'visible');
-        } else {
-          map.setLayoutProperty(layerId, 'visibility', 'none');
-        }
-      } catch {
-        // Style may be mid-transition.
+      if (visible) {
+        setLayerZoomRangeIfChanged(map, layerId, 0, 24);
+        setLayoutPropertyIfChanged(map, layerId, 'visibility', 'visible');
+      } else {
+        setLayoutPropertyIfChanged(map, layerId, 'visibility', 'none');
       }
     }
     if (promoteZIndex) {
@@ -244,13 +241,7 @@ export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = f
     }
 
     // IATA 코드는 HTML Marker만 — Mapbox circle 점은 Safari 등에서 과하게 보임
-    if (map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)) {
-      try {
-        map.setLayoutProperty(FLIGHT_CINEMA_AIRPORT_LAYER_ID, 'visibility', 'none');
-      } catch {
-        // Style may be mid-transition.
-      }
-    }
+    setLayoutPropertyIfChanged(map, FLIGHT_CINEMA_AIRPORT_LAYER_ID, 'visibility', 'none');
 
     return true;
   } catch {
