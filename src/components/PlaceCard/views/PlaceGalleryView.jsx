@@ -15,6 +15,15 @@ import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
+import { GALLERY_REPORT_REASONS } from '../../../shared/api/placeGalleryPersist';
+
+const REPORT_REASON_I18N = {
+  irrelevant: 'place.gallery.manageReasonIrrelevant',
+  inappropriate: 'place.gallery.manageReasonInappropriate',
+  low_quality: 'place.gallery.manageReasonLowQuality',
+  copyright: 'place.gallery.manageReasonCopyright',
+  other: 'place.gallery.manageReasonOther',
+};
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
@@ -193,6 +202,7 @@ const mobileNavButtonClass = (enabled) =>
 const GalleryManageSheet = ({
   img,
   isGalleryAdmin = false,
+  loginPrompt = false,
   onHide,
   onReport,
   onAdminRemove,
@@ -236,14 +246,28 @@ const GalleryManageSheet = ({
             <EyeOff size={16} strokeWidth={2.25} />
             {t('place.gallery.manageHide')}
           </button>
-          <button
-            type="button"
-            onClick={onReport}
-            className="flex h-12 items-center justify-center gap-2 rounded-full border border-amber-400/35 bg-amber-500/15 text-sm font-semibold text-amber-100 transition-all touch-manipulation active:scale-95 hover:bg-amber-500/25"
-          >
-            <Flag size={16} strokeWidth={2.25} />
-            {t('place.gallery.manageReport')}
-          </button>
+          <p className="px-1 text-xs font-semibold text-amber-100/80">{t('place.gallery.manageReport')}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {GALLERY_REPORT_REASONS.map((reason) => (
+              <button
+                key={reason}
+                type="button"
+                onClick={() => onReport?.(reason)}
+                className="flex h-11 items-center justify-center gap-1.5 rounded-full border border-amber-400/35 bg-amber-500/15 px-2 text-sm font-semibold text-amber-100 transition-all touch-manipulation active:scale-95 hover:bg-amber-500/25"
+              >
+                <Flag size={14} strokeWidth={2.25} />
+                {t(REPORT_REASON_I18N[reason])}
+              </button>
+            ))}
+          </div>
+          {loginPrompt && (
+            <p className="text-sm leading-relaxed text-white" role="status">
+              {t('place.gallery.manageLogin')}{' '}
+              <a href="/auth/login" className="font-semibold text-amber-100 underline">
+                {t('place.gallery.manageLoginAction')}
+              </a>
+            </p>
+          )}
           {isGalleryAdmin && (
             <button
               type="button"
@@ -302,7 +326,8 @@ const PlaceGalleryView = React.memo(({
   /** 그리드 클릭 직후 라이트박스에 같은 클릭이 전달되어 즉시 닫히는 것 방지 */
   const suppressOpenClickRef = useRef(false);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
-  const [reportToastVisible, setReportToastVisible] = useState(false);
+  const [reportToast, setReportToast] = useState('');
+  const [reportLoginPrompt, setReportLoginPrompt] = useState(false);
   const pendingPlaceScrollResetRef = useRef(false);
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
@@ -427,28 +452,51 @@ const PlaceGalleryView = React.memo(({
 
   const galleryManageEnabled = Boolean(handleHideGalleryImage);
 
-  const closeManageSheet = useCallback(() => setManageTarget(null), []);
+  const closeManageSheet = useCallback(() => {
+    setManageTarget(null);
+    setReportLoginPrompt(false);
+  }, []);
+
+  const openManageSheet = useCallback((photo) => {
+    if (!photo) return;
+    setReportLoginPrompt(false);
+    setManageTarget(photo);
+  }, []);
 
   const confirmManageHide = useCallback(() => {
     if (!manageTarget || !handleHideGalleryImage) return;
     handleHideGalleryImage(manageTarget);
     if (selectedImg?.id === manageTarget.id) setSelectedImg(null);
     setManageTarget(null);
+    setReportLoginPrompt(false);
   }, [manageTarget, handleHideGalleryImage, selectedImg, setSelectedImg]);
 
-  const confirmManageReport = useCallback(() => {
+  const confirmManageReport = useCallback(async (reason) => {
     if (!manageTarget || !handleReportGalleryImage) return;
-    handleReportGalleryImage(manageTarget);
+    const result = await handleReportGalleryImage(manageTarget, reason);
+    if (!result || result.reason === 'login') {
+      setReportLoginPrompt(true);
+      return;
+    }
+    if (result.ok) {
+      setReportToast(t('place.gallery.manageReportToast'));
+    } else if (result.reason === 'duplicate') {
+      setReportToast(t('place.gallery.manageReportDuplicate'));
+    } else {
+      return;
+    }
     setManageTarget(null);
-    setReportToastVisible(true);
-    window.setTimeout(() => setReportToastVisible(false), 3500);
-  }, [manageTarget, handleReportGalleryImage]);
+    setReportLoginPrompt(false);
+    window.setTimeout(() => setReportToast(''), 3500);
+  }, [manageTarget, handleReportGalleryImage, t]);
 
-  const confirmManageAdminRemove = useCallback(() => {
+  const confirmManageAdminRemove = useCallback(async () => {
     if (!manageTarget || !handleAdminRemoveGalleryImage || !isGalleryAdmin) return;
-    void handleAdminRemoveGalleryImage(manageTarget);
+    const removed = await handleAdminRemoveGalleryImage(manageTarget);
+    if (!removed) return;
     if (selectedImg?.id === manageTarget.id) setSelectedImg(null);
     setManageTarget(null);
+    setReportLoginPrompt(false);
   }, [manageTarget, handleAdminRemoveGalleryImage, isGalleryAdmin, selectedImg, setSelectedImg]);
 
   const {
@@ -462,7 +510,7 @@ const PlaceGalleryView = React.memo(({
     Boolean(isTouchDevice && selectedImg && galleryManageEnabled && !isZoomed()),
     () => {
       suppressMobileTapRef.current = true;
-      setManageTarget(selectedImg);
+      openManageSheet(selectedImg);
     },
   );
 
@@ -698,7 +746,7 @@ const PlaceGalleryView = React.memo(({
               if (e.ctrlKey || e.metaKey) {
                 e.stopPropagation();
                 if (galleryManageEnabled && selectedImg) {
-                  setManageTarget(selectedImg);
+                  openManageSheet(selectedImg);
                 }
               }
             }}
@@ -818,7 +866,7 @@ const PlaceGalleryView = React.memo(({
           if (e.ctrlKey || e.metaKey) {
               e.stopPropagation();
               if (galleryManageEnabled && selectedImg) {
-                  setManageTarget(selectedImg);
+                  openManageSheet(selectedImg);
               }
           }
       }}>
@@ -1054,7 +1102,7 @@ const PlaceGalleryView = React.memo(({
                           suppressOpenClickRef.current = false;
                         });
                       }}
-                      onManage={galleryManageEnabled ? (photo) => setManageTarget(photo) : undefined}
+                      onManage={galleryManageEnabled ? openManageSheet : undefined}
                       enableLongPress={Boolean(isTouchDevice && galleryManageEnabled)}
                       onBroken={handleDropBrokenImage}
                     />
@@ -1125,20 +1173,21 @@ const PlaceGalleryView = React.memo(({
           img={manageTarget}
           t={t}
           isGalleryAdmin={isGalleryAdmin}
+          loginPrompt={reportLoginPrompt}
           onHide={confirmManageHide}
           onReport={confirmManageReport}
           onAdminRemove={confirmManageAdminRemove}
           onCancel={closeManageSheet}
         />
       )}
-      {reportToastVisible &&
+      {reportToast &&
         createPortal(
           <div
             className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] left-1/2 z-[10060] w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 rounded-2xl border border-white/15 bg-[#0b1018]/95 px-4 py-3 text-center text-sm font-medium text-white shadow-[0_8px_32px_rgba(0,0,0,0.55)] backdrop-blur-md"
             role="status"
             aria-live="polite"
           >
-            {t('place.gallery.manageReportToast')}
+            {reportToast}
           </div>,
           document.body,
         )}

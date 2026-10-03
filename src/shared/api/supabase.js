@@ -45,10 +45,15 @@ export const recordInteraction = async (placeIdOrLocation, type) => {
     const identity = buildPlaceStatsIdentityPayload(placeIdOrLocation);
     if (!identity) return;
     supabase
-      .from('place_stats')
-      .upsert(identity, { onConflict: 'place_id' })
+      .rpc('record_place_visit', {
+        p_place_id: identity.place_id,
+        p_lat: identity.lat,
+        p_lng: identity.lng,
+        p_name_ko: identity.name_ko ?? null,
+        p_name_en: identity.name_en ?? null,
+      })
       .then(({ error: metaError }) => {
-        if (metaError) console.warn('🚨 [Rank] place_stats identity upsert failed:', metaError);
+        if (metaError) console.warn('🚨 [Rank] record_place_visit failed:', metaError);
       });
   };
 

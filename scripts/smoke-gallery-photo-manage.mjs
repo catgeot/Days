@@ -41,7 +41,7 @@ assert.match(view, /GalleryManageSheet/, 'confirm sheet for mobile manage');
 assert.match(view, /enableLongPress/, 'tiles opt into long-press on touch');
 assert.match(view, /handleHideGalleryImage/, 'hide uses local-only handler');
 assert.match(view, /handleReportGalleryImage/, 'report action wired');
-assert.match(view, /setManageTarget\(selectedImg\)/, 'PC Ctrl/Cmd + double-click opens sheet');
+assert.match(view, /openManageSheet\(selectedImg\)/, 'PC Ctrl/Cmd + double-click opens sheet');
 assert.doesNotMatch(
   view,
   /handleRemoveImage/,
@@ -49,7 +49,12 @@ assert.doesNotMatch(
 );
 assert.match(view, /place\.gallery\.manageHide/, 'hide copy is i18n');
 assert.match(view, /place\.gallery\.manageReport/, 'report copy is i18n');
+assert.match(view, /place\.gallery\.manageReportToast/, 'report toast is i18n');
+assert.match(view, /place\.gallery\.manageReportDuplicate/, 'duplicate report toast is i18n');
+assert.match(view, /place\.gallery\.manageLogin/, 'logged-out report shows login prompt');
 assert.match(view, /place\.gallery\.manageAdminRemove/, 'admin remove copy is i18n');
+assert.match(view, /isGalleryAdmin &&/, 'admin remove button is role-gated');
+assert.doesNotMatch(view, /저장된 목록에서도 빠집니다/, 'view must not promise global removal');
 
 const hook = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'), 'utf8');
 assert.match(hook, /handleHideGalleryImage/, 'hide handler exported');
@@ -65,8 +70,13 @@ const adminFn = hook.match(
   /const handleAdminRemoveGalleryImage = useCallback\([\s\S]*?\n  \);/,
 )?.[0];
 assert.ok(adminFn, 'handleAdminRemoveGalleryImage block');
-assert.match(adminFn, /\.from\('place_stats'\)/, 'admin remove PATCHes place_stats');
-assert.match(adminFn, /gallery_urls:\s*newStorage/, 'admin remove sends storage gallery_urls');
+assert.match(adminFn, /gallery-moderate/, 'admin remove calls gallery-moderate');
+assert.match(adminFn, /action:\s*'remove'/, 'admin remove action');
+assert.doesNotMatch(adminFn, /place_stats/, 'admin remove does not write place_stats');
+assert.match(hook, /persist_place_gallery/, 'gallery writes go through persist_place_gallery');
+assert.match(hook, /merge_keep_hero/, 'SWR uses merge_keep_hero');
+assert.match(hook, /am_i_app_admin/, 'admin UI follows am_i_app_admin');
+assert.match(hook, /loadedStatsPlaceIdRef/, 'persist uses the loaded place_stats row id');
 const hideFn = hook.match(
   /const handleHideGalleryImage = useCallback\([\s\S]*?\n  \);/,
 )?.[0];
@@ -90,6 +100,14 @@ for (const key of [
   'manageHide',
   'manageReport',
   'manageReportToast',
+  'manageReportDuplicate',
+  'manageLogin',
+  'manageLoginAction',
+  'manageReasonIrrelevant',
+  'manageReasonInappropriate',
+  'manageReasonLowQuality',
+  'manageReasonCopyright',
+  'manageReasonOther',
   'manageAdminRemove',
   'manageCancel',
 ]) {

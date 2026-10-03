@@ -21,6 +21,10 @@ import { isQaMooniMarkdownFixtureEnabled } from './shared/cloudPreview/isQaMooni
 const MooniChatMarkdownFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniChatMarkdownFixturePage.jsx'))
   : null;
+const galleryWriterHarnessOn = import.meta.env.VITE_GALLERY_WRITER_HARNESS === '1';
+const GallerySingleWriterHarness = galleryWriterHarnessOn
+  ? lazy(() => import('./pages/Qa/GallerySingleWriterHarness.jsx'))
+  : null;
 import AboutPage from './pages/AboutPage';
 
 import Dashboard from './pages/DailyReport/Dashboard';
@@ -36,6 +40,7 @@ import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 import AccountProfile from './shared/Auth/AccountProfile';
+import GalleryAdminPage from './pages/Admin/GalleryAdminPage';
 import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
 import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
 import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
@@ -133,6 +138,16 @@ function App() {
               {isQaMooniMarkdownFixtureEnabled && MooniChatMarkdownFixturePage ? (
                 <Route path="/qa/mooni-markdown-fixture" element={<MooniChatMarkdownFixturePage />} />
               ) : null}
+              {GallerySingleWriterHarness ? (
+                <Route
+                  path="/qa/gallery-single-writer"
+                  element={
+                    <Suspense fallback={null}>
+                      <GallerySingleWriterHarness />
+                    </Suspense>
+                  }
+                />
+              ) : null}
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
               <Route path="/about" element={<AboutPage />} />
@@ -156,6 +171,7 @@ function App() {
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/update-password" element={<UpdatePassword />} />
             <Route path="/account" element={<AccountProfile />} />
+            <Route path="/admin/gallery" element={<GalleryAdminPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ReportProvider>
