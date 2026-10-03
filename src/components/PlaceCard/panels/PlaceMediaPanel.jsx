@@ -33,6 +33,7 @@ const PlaceMediaPanel = React.memo(({
     onLoadMoreVideos,
     canLoadMoreVideos,
     isLoadingMoreVideos,
+    loadMoreVideoError,
     onVideoUnplayable,
     googleFormUrl,
     matchedPackage,
@@ -101,6 +102,7 @@ const PlaceMediaPanel = React.memo(({
                 canLoadMore={canLoadMoreVideos}
                 isLoadingMore={isLoadingMoreVideos}
                 onVideoUnplayable={onVideoUnplayable}
+                loadMoreError={loadMoreVideoError}
                 mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>

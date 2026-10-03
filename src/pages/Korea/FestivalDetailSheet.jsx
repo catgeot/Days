@@ -33,6 +33,7 @@ import {
   localizedScenicMajorRegion,
 } from '../../i18n/koreaRegionLabels';
 import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
+import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
   fetchNearbyTourRestaurants,
@@ -2107,7 +2108,7 @@ export default function FestivalDetailSheet({
                                 <div className="h-16 w-28 shrink-0 rounded-xl bg-stone-200" />
                               )}
                               <span className="min-w-0 flex-1 text-sm font-bold text-stone-800 leading-snug line-clamp-3 break-keep">
-                                {video.title ||
+                                {decodeHtmlEntities(video.title || '') ||
                                   t('korea.festival.detail.youtubeFallback')}
                               </span>
                             </a>

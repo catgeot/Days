@@ -24,13 +24,10 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
     if (videoData.error) {
         return (
             <div className="animate-fade-in space-y-4 p-5 border border-white/5 rounded-2xl bg-white/5">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2">
                     <AlertCircle size={18} className="text-white/40" />
                     <h3 className="text-sm font-bold text-white/80">{t('place.video.errorTitle')}</h3>
                 </div>
-                <p className="text-xs text-white/40 leading-relaxed">
-                    {t('place.video.loading')}
-                </p>
             </div>
         );
     }

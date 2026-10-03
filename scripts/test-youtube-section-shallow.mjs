@@ -35,6 +35,7 @@ try {
 
 assert(decodeHtmlEntities('Tom &amp; Jerry&#39;s') === "Tom & Jerry's", 'S5 named and decimal entities');
 assert(decodeHtmlEntities('A &#x27; test') === "A ' test", 'S5 hex entity');
+assert(decodeHtmlEntities('&constructor;') === '&constructor;', 'S5 unknown entity not polluted');
 
 assert(YOUTUBE_UNPLAYABLE_ERROR_CODES.has(150), 'S2 includes error 150');
 assert(YOUTUBE_ALLOWED_MESSAGE_ORIGINS.has('https://www.youtube.com'), 'S2 allows youtube origin');

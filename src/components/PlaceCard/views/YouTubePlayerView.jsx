@@ -26,6 +26,7 @@ const YouTubePlayerView = forwardRef(({
   canLoadMore = false,
   isLoadingMore = false,
   onVideoUnplayable,
+  loadMoreError = false,
 }, ref) => {
   const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -37,6 +38,9 @@ const YouTubePlayerView = forwardRef(({
   const iframeRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const currentVideoIndexRef = useRef(0);
+  const isPlayingRef = useRef(false);
+  const preservePlaybackRef = useRef(false);
+  const prevVideoIdRef = useRef(videoId);
 
   const videoList = videos || [];
   const currentVideo = videoList[currentVideoIndex];
@@ -44,6 +48,10 @@ const YouTubePlayerView = forwardRef(({
   useEffect(() => {
     currentVideoIndexRef.current = currentVideoIndex;
   }, [currentVideoIndex]);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   const displayTitle = (title) => decodeHtmlEntities(title || '');
 
@@ -65,22 +73,26 @@ const YouTubePlayerView = forwardRef(({
     const list = videos || [];
     const idx = currentVideoIndexRef.current;
     const failedId = list[idx]?.id;
-    if (failedId && onVideoUnplayable) onVideoUnplayable(failedId);
+    if (!failedId) return;
 
-    const nextIdx = idx + 1;
-
-    if (nextIdx < list.length) {
-      setCurrentVideoIndex(nextIdx);
-      if (onVideoSelect) onVideoSelect(list[nextIdx].id);
-      if (wasPlaying) {
-        setIsPlaying(true);
-        setIsPaused(false);
-      }
+    const afterFilter = list.filter((v) => v.id !== failedId);
+    if (afterFilter.length === 0 || idx >= afterFilter.length) {
+      if (onVideoUnplayable) onVideoUnplayable(failedId);
+      setIsPlaying(false);
+      setIsPaused(true);
       return;
     }
 
-    setIsPlaying(false);
-    setIsPaused(true);
+    const nextVideo = afterFilter[idx];
+    if (onVideoUnplayable) onVideoUnplayable(failedId);
+
+    preservePlaybackRef.current = wasPlaying;
+    setCurrentVideoIndex(idx);
+    if (onVideoSelect) onVideoSelect(nextVideo.id);
+    if (wasPlaying) {
+      setIsPlaying(true);
+      setIsPaused(false);
+    }
   }, [videos, onVideoSelect, onVideoUnplayable]);
 
   useImperativeHandle(ref, () => ({
@@ -125,7 +137,7 @@ const YouTubePlayerView = forwardRef(({
 
           if (data?.event === 'onError' && typeof data.info === 'number') {
             if (YOUTUBE_UNPLAYABLE_ERROR_CODES.has(data.info)) {
-              advanceToNextVideo(isPlaying);
+              advanceToNextVideo(isPlayingRef.current);
             }
           }
       };
@@ -143,25 +155,27 @@ const YouTubePlayerView = forwardRef(({
 
   useEffect(() => {
     queueMicrotask(() => {
-      setIsPlaying(false);
-      setIsPaused(true);
       const list = videos || [];
+      let targetIndex = 0;
       if (videoId && list.length > 0) {
-        const targetIndex = list.findIndex(v => v.id === videoId);
-        setCurrentVideoIndex(targetIndex >= 0 ? targetIndex : 0);
-      } else {
-        setCurrentVideoIndex(0);
+        const found = list.findIndex((v) => v.id === videoId);
+        targetIndex = found >= 0 ? found : 0;
+      }
+      setCurrentVideoIndex(targetIndex);
+
+      if (preservePlaybackRef.current) {
+        preservePlaybackRef.current = false;
+        prevVideoIdRef.current = videoId;
+        return;
+      }
+
+      if (prevVideoIdRef.current !== videoId) {
+        prevVideoIdRef.current = videoId;
+        setIsPlaying(false);
+        setIsPaused(true);
       }
     });
   }, [videoId, videos]);
-
-  useEffect(() => {
-    if (videoList.length === 0) return;
-    if (!videoList[currentVideoIndex]) {
-      setCurrentVideoIndex(0);
-      if (onVideoSelect && videoList[0]?.id) onVideoSelect(videoList[0].id);
-    }
-  }, [videoList, currentVideoIndex, onVideoSelect]);
 
   useEffect(() => {
     if (currentVideo) {
@@ -244,6 +258,7 @@ const YouTubePlayerView = forwardRef(({
         <div className="relative w-full h-full flex items-center justify-center bg-black">
           <div className={`transition-all duration-500 mx-auto ${isFullScreen ? 'w-full h-full p-0 max-w-none' : 'w-full md:w-[98%] h-[100%] md:h-[95%] max-w-[1440px] md:rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] md:border md:border-white/5'}`}>
             <iframe
+              key={currentVideo?.id}
               ref={iframeRef}
               width="100%"
               height="100%"
@@ -339,7 +354,11 @@ const YouTubePlayerView = forwardRef(({
       )}
 
       {canLoadMore && !isLoading && videoList.length > 0 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[215] md:bottom-6">
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 z-[215] ${
+            isPlaying ? 'bottom-3 md:bottom-4' : 'bottom-24 md:bottom-28'
+          }`}
+        >
           <button
             type="button"
             disabled={isLoadingMore}
@@ -351,6 +370,11 @@ const YouTubePlayerView = forwardRef(({
           >
             {isLoadingMore ? t('place.video.loading') : t('place.video.loadMore')}
           </button>
+          {loadMoreError && (
+            <p className="mt-2 text-center text-xs text-red-400/90 max-w-xs">
+              {t('place.video.loadMoreFailed')}
+            </p>
+          )}
         </div>
       )}
 

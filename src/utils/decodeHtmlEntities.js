@@ -23,7 +23,9 @@ export function decodeHtmlEntities(input) {
           return match;
         }
       }
-      const named = NAMED[body] ?? NAMED[body.toLowerCase()];
-      return named !== undefined ? named : match;
+      const lower = body.toLowerCase();
+      if (Object.hasOwn(NAMED, body)) return NAMED[body];
+      if (Object.hasOwn(NAMED, lower)) return NAMED[lower];
+      return match;
     });
 }

@@ -37,8 +37,10 @@ function decodeHtmlEntities(input: string): string {
       apos: "'",
       '#39': "'",
     };
-    const key = body in named ? body : body.toLowerCase();
-    return named[key] ?? match;
+    const lower = body.toLowerCase();
+    if (Object.hasOwn(named, body)) return named[body];
+    if (Object.hasOwn(named, lower)) return named[lower];
+    return match;
   });
 }
 
@@ -133,25 +135,79 @@ serve(async (req) => {
 
     const tagBase = mode === 'festival' ? ['#축제', '#festival'] : ['#여행', '#vlog'];
 
-    // API 응답 데이터를 프로젝트 표준 규격(TRAVEL_VIDEOS)으로 변환
-    const videosToCache = data.items?.map((item: any) => ({
-      id: item.id.videoId,
-      title: decodeHtmlEntities(item.snippet.title || ''),
-      location_keyword: query,
-      channelTitle: item.snippet.channelTitle || null,
-      publishedAt: item.snippet.publishedAt || null,
-      ai_context: {
-        summary: item.snippet.description || '영상 설명이 없습니다.',
-        tags: [`#${query}`, ...tagBase],
-        best_moment: { time: '00:00', desc: '자동 생성된 영상' },
-        timeline: []
-      },
-    })) || [];
+    const excludeSet = new Set<string>();
+    if (Array.isArray(body.excludeVideoIds)) {
+      for (const rawId of body.excludeVideoIds) {
+        if (typeof rawId === 'string' && rawId.trim()) excludeSet.add(rawId.trim());
+      }
+    }
 
-    const nextPageToken =
+    const mapSnippetItems = (items: any[]) =>
+      (items || []).map((item: any) => ({
+        id: item.id.videoId,
+        title: decodeHtmlEntities(item.snippet.title || ''),
+        location_keyword: query,
+        channelTitle: item.snippet.channelTitle || null,
+        publishedAt: item.snippet.publishedAt || null,
+        ai_context: {
+          summary: item.snippet.description || '영상 설명이 없습니다.',
+          tags: [`#${query}`, ...tagBase],
+          best_moment: { time: '00:00', desc: '자동 생성된 영상' },
+          timeline: []
+        },
+      }));
+
+    let collected = mapSnippetItems(data.items);
+    if (excludeSet.size > 0) {
+      collected = collected.filter((v) => v.id && !excludeSet.has(v.id));
+    }
+
+    let nextPageToken =
       typeof data.nextPageToken === 'string' && data.nextPageToken
         ? data.nextPageToken
         : null;
+
+    const mayFollowPages = skipUpsert && excludeSet.size > 0 && !pageToken;
+    let pagesFetched = 1;
+    const maxFollowPages = 4;
+
+    while (
+      mayFollowPages &&
+      collected.length < maxResults &&
+      nextPageToken &&
+      pagesFetched < maxFollowPages
+    ) {
+      pagesFetched += 1;
+      const followParams = new URLSearchParams({
+        part: 'snippet',
+        q: primaryQ,
+        maxResults: String(maxResults),
+        type: 'video',
+        relevanceLanguage,
+        regionCode,
+        videoEmbeddable: 'true',
+        videoSyndicated: 'true',
+        key: youtubeApiKey,
+        pageToken: nextPageToken,
+      });
+
+      youtubeResponse = await fetch(`${BASE_URL}/search?${followParams.toString()}`);
+      if (!youtubeResponse.ok) break;
+
+      data = await youtubeResponse.json();
+      const batch = mapSnippetItems(data.items).filter(
+        (v) => v.id && !excludeSet.has(v.id),
+      );
+      for (const v of batch) {
+        if (!collected.some((c) => c.id === v.id)) collected.push(v);
+      }
+      nextPageToken =
+        typeof data.nextPageToken === 'string' && data.nextPageToken
+          ? data.nextPageToken
+          : null;
+    }
+
+    const videosToCache = collected.slice(0, maxResults);
 
     if (!skipUpsert) {
       const supabaseAdmin = createClient(

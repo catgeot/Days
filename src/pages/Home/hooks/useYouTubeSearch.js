@@ -34,6 +34,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
   const [hasMorePages, setHasMorePages] = useState(false);
   const [loadMoreCount, setLoadMoreCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState(false);
   const [unplayableBump, setUnplayableBump] = useState(0);
 
   const fetchContextRef = useRef(null);
@@ -71,6 +72,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     setNextPageToken(null);
     setHasMorePages(false);
     setLoadMoreCount(0);
+    setLoadMoreError(false);
 
     const { data: cachedData } = await supabase
       .from('place_videos')
@@ -163,7 +165,9 @@ export const useYouTubeSearch = (location, mediaMode) => {
     }
 
     setIsLoadingMore(true);
+    setLoadMoreError(false);
     try {
+      const excludeVideoIds = rawVideos.map((v) => v.id).filter(Boolean);
       const edgeData = await invokeEdge({
         query: ctx.searchQuery,
         fallbackQuery: ctx.fallbackQuery,
@@ -171,20 +175,27 @@ export const useYouTubeSearch = (location, mediaMode) => {
         maxResults: INITIAL_MAX_RESULTS,
         skipUpsert: true,
         pageToken: nextPageToken || undefined,
+        excludeVideoIds,
       });
 
-      const incoming = edgeData.videos || [];
-      setRawVideos((prev) => mergeVideosById(prev, incoming));
-      const token = edgeData.nextPageToken || null;
-      setNextPageToken(token);
-      setHasMorePages(Boolean(token));
+      const seen = new Set(excludeVideoIds);
+      const incoming = (edgeData.videos || []).filter((v) => v?.id && !seen.has(v.id));
+      if (incoming.length === 0 && !edgeData.nextPageToken) {
+        setHasMorePages(false);
+      } else {
+        setRawVideos((prev) => mergeVideosById(prev, incoming));
+        const token = edgeData.nextPageToken || null;
+        setNextPageToken(token);
+        setHasMorePages(Boolean(token));
+      }
       setLoadMoreCount((c) => c + 1);
     } catch (err) {
       console.error('[useYouTubeSearch] loadMore Error:', err);
+      setLoadMoreError(true);
     } finally {
       setIsLoadingMore(false);
     }
-  }, [hasMorePages, invokeEdge, isLoadingMore, loadMoreCount, nextPageToken]);
+  }, [hasMorePages, invokeEdge, isLoadingMore, loadMoreCount, nextPageToken, rawVideos]);
 
   const markUnplayable = useCallback((videoId) => {
     markYoutubeIdUnplayable(videoId);
@@ -207,6 +218,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     loadMore,
     canLoadMore,
     isLoadingMore,
+    loadMoreError,
     markUnplayable,
     googleFormUrl: GOOGLE_FORM_URL,
   };

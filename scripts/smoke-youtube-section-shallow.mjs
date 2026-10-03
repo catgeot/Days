@@ -3,6 +3,7 @@
  * Usage: node scripts/smoke-youtube-section-shallow.mjs --base http://127.0.0.1:4173
  */
 import { chromium, webkit } from '@playwright/test';
+import { spawnSync } from 'node:child_process';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -116,3 +117,8 @@ for (const [label, res] of [
 
 if (failed > 0) process.exit(1);
 console.log('Smoke screenshots saved to', OUT_DIR);
+
+const s2 = spawnSync('node', ['scripts/smoke-youtube-s2-autoskip.mjs', '--base', base], {
+  stdio: 'inherit',
+});
+if (s2.status !== 0) process.exit(s2.status ?? 1);
