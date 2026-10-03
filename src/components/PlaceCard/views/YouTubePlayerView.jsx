@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Maximize2, Minimize2, Play, Sparkles, List, X, ChevronLeft, ChevronRight, AlertCircle, ExternalLink } from 'lucide-react';
+import { Maximize2, Minimize2, Play, Sparkles, List, X, ChevronLeft, ChevronRight, AlertCircle, ExternalLink, RotateCcw } from 'lucide-react';
 import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
+import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities';
+import {
+  YOUTUBE_POST_MESSAGE_TARGET,
+  YOUTUBE_ALLOWED_MESSAGE_ORIGINS,
+  YOUTUBE_UNPLAYABLE_ERROR_CODES,
+} from '../../../utils/youtubePlayerMessaging';
 
 const YouTubePlayerView = forwardRef(({
   videoId,
@@ -12,7 +18,16 @@ const YouTubePlayerView = forwardRef(({
   onVideoSelect,
   isLoading = false,
   googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7",
-  mobileSecondaryNav = null
+  mobileSecondaryNav = null,
+  fetchError = false,
+  onRetry,
+  isEmptyResult = false,
+  onLoadMore,
+  canLoadMore = false,
+  isLoadingMore = false,
+  onVideoUnplayable,
+  loadMoreError = false,
+  loadMoreNoNew = false,
 }, ref) => {
   const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -23,9 +38,23 @@ const YouTubePlayerView = forwardRef(({
 
   const iframeRef = useRef(null);
   const scrollContainerRef = useRef(null);
+  const currentVideoIndexRef = useRef(0);
+  const isPlayingRef = useRef(false);
+  const preservePlaybackRef = useRef(false);
+  const prevVideoIdRef = useRef(videoId);
 
   const videoList = videos || [];
   const currentVideo = videoList[currentVideoIndex];
+
+  useEffect(() => {
+    currentVideoIndexRef.current = currentVideoIndex;
+  }, [currentVideoIndex]);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  const displayTitle = (title) => decodeHtmlEntities(title || '');
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
@@ -34,72 +63,117 @@ const YouTubePlayerView = forwardRef(({
     }
   };
 
+  const postToPlayer = useCallback((payload) => {
+    const win = iframeRef.current?.contentWindow;
+    if (win) {
+      win.postMessage(JSON.stringify(payload), YOUTUBE_POST_MESSAGE_TARGET);
+    }
+  }, []);
+
+  const advanceToNextVideo = useCallback((wasPlaying) => {
+    const list = videos || [];
+    const idx = currentVideoIndexRef.current;
+    const failedId = list[idx]?.id;
+    if (!failedId) return;
+
+    const afterFilter = list.filter((v) => v.id !== failedId);
+    if (afterFilter.length === 0 || idx >= afterFilter.length) {
+      if (onVideoUnplayable) onVideoUnplayable(failedId);
+      setIsPlaying(false);
+      setIsPaused(true);
+      return;
+    }
+
+    const nextVideo = afterFilter[idx];
+    if (onVideoUnplayable) onVideoUnplayable(failedId);
+
+    preservePlaybackRef.current = wasPlaying;
+    setCurrentVideoIndex(idx);
+    if (onVideoSelect) onVideoSelect(nextVideo.id);
+    if (wasPlaying) {
+      setIsPlaying(true);
+      setIsPaused(false);
+    }
+  }, [videos, onVideoSelect, onVideoUnplayable]);
+
   useImperativeHandle(ref, () => ({
     seekTo: (seconds) => {
       if (!isPlaying) {
           setIsPlaying(true);
           setIsPaused(false);
           setTimeout(() => {
-            if (iframeRef.current) {
-               iframeRef.current.contentWindow.postMessage(
-                   JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }), '*'
-               );
-               iframeRef.current.contentWindow.postMessage(
-                   JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'
-               );
-            }
+            postToPlayer({ event: 'command', func: 'seekTo', args: [seconds, true] });
+            postToPlayer({ event: 'command', func: 'playVideo', args: [] });
           }, 500);
           return;
       }
-      if (iframeRef.current) {
-          iframeRef.current.contentWindow.postMessage(
-              JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }), '*'
-          );
-          iframeRef.current.contentWindow.postMessage(
-              JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'
-          );
-      }
+      postToPlayer({ event: 'command', func: 'seekTo', args: [seconds, true] });
+      postToPlayer({ event: 'command', func: 'playVideo', args: [] });
     },
     playVideo: () => {
         if (!isPlaying) {
             setIsPlaying(true);
             setIsPaused(false);
         }
-        if (iframeRef.current) {
-            iframeRef.current.contentWindow.postMessage(
-                JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'
-            );
-        }
+        postToPlayer({ event: 'command', func: 'playVideo', args: [] });
     }
   }));
 
   useEffect(() => {
       const handleMessage = (event) => {
+          if (!YOUTUBE_ALLOWED_MESSAGE_ORIGINS.has(event.origin)) return;
+          if (event.source !== iframeRef.current?.contentWindow) return;
           if (!event.data) return;
+
           let data = event.data;
           if (typeof data === 'string') {
               try { data = JSON.parse(data); } catch { return; }
           }
+
           if (data?.event === 'infoDelivery' && data.info && data.info.playerState !== undefined) {
               const state = data.info.playerState;
               const isActive = state === 1 || state === 3;
               setIsPaused(!isActive);
           }
+
+          if (data?.event === 'onError' && typeof data.info === 'number') {
+            if (YOUTUBE_UNPLAYABLE_ERROR_CODES.has(data.info)) {
+              advanceToNextVideo(isPlayingRef.current);
+            }
+          }
       };
       window.addEventListener('message', handleMessage);
       return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [advanceToNextVideo, isPlaying]);
+
+  useEffect(() => {
+    if (!isPlaying || !currentVideo?.id) return;
+    const timer = setTimeout(() => {
+      postToPlayer({ event: 'listening' });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [isPlaying, currentVideo?.id, postToPlayer]);
 
   useEffect(() => {
     queueMicrotask(() => {
-      setIsPlaying(false);
-      setIsPaused(true);
       const list = videos || [];
+      let targetIndex = 0;
       if (videoId && list.length > 0) {
-        const targetIndex = list.findIndex(v => v.id === videoId);
-        setCurrentVideoIndex(targetIndex >= 0 ? targetIndex : 0);
-      } else {
-        setCurrentVideoIndex(0);
+        const found = list.findIndex((v) => v.id === videoId);
+        targetIndex = found >= 0 ? found : 0;
+      }
+      setCurrentVideoIndex(targetIndex);
+
+      if (preservePlaybackRef.current) {
+        preservePlaybackRef.current = false;
+        prevVideoIdRef.current = videoId;
+        return;
+      }
+
+      if (prevVideoIdRef.current !== videoId) {
+        prevVideoIdRef.current = videoId;
+        setIsPlaying(false);
+        setIsPaused(true);
       }
     });
   }, [videoId, videos]);
@@ -124,7 +198,9 @@ const YouTubePlayerView = forwardRef(({
       setIsPaused(false);
   };
 
-  const isEmpty = !isLoading && videoList.length === 0;
+  const showFetchError = !isLoading && fetchError;
+  const showEmpty = !isLoading && !fetchError && isEmptyResult && videoList.length === 0;
+  const showNoPlayable = !isLoading && !fetchError && !isEmptyResult && videoList.length === 0;
 
   return (
     <div
@@ -138,13 +214,28 @@ const YouTubePlayerView = forwardRef(({
       )}
 
       <div className="flex-1 min-h-0 relative overflow-hidden">
-      {/* 1. Main Content Area */}
       {isLoading ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
            <div className="w-12 h-12 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
            <p className="text-white/40 text-sm animate-pulse">{t('place.video.loading')}</p>
         </div>
-      ) : isEmpty ? (
+      ) : showFetchError ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
+            <AlertCircle size={40} className="text-white/20" />
+          </div>
+          <h3 className="text-white text-xl font-bold mb-2">{t('place.video.errorTitle')}</h3>
+          <button
+            type="button"
+            onClick={() => onRetry?.()}
+            disabled={isLoading}
+            className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 disabled:opacity-40 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
+          >
+            <RotateCcw size={18} />
+            {t('place.video.retry')}
+          </button>
+        </div>
+      ) : (showEmpty || showNoPlayable) ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
           <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
             <AlertCircle size={40} className="text-white/20" />
@@ -168,6 +259,7 @@ const YouTubePlayerView = forwardRef(({
         <div className="relative w-full h-full flex items-center justify-center bg-black">
           <div className={`transition-all duration-500 mx-auto ${isFullScreen ? 'w-full h-full p-0 max-w-none' : 'w-full md:w-[98%] h-[100%] md:h-[95%] max-w-[1440px] md:rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] md:border md:border-white/5'}`}>
             <iframe
+              key={currentVideo?.id}
               ref={iframeRef}
               width="100%"
               height="100%"
@@ -201,18 +293,17 @@ const YouTubePlayerView = forwardRef(({
              </div>
           </div>
           <div className="absolute bottom-12 text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-             <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{currentVideo?.title}</p>
+             <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{displayTitle(currentVideo?.title)}</p>
              <p className="text-[10px] md:text-xs text-white/60 tracking-wider uppercase mt-1">Click to Play</p>
           </div>
         </div>
       )}
 
-      {!isEmpty && videoList.length > 0 && showUI && (
+      {!showFetchError && !showEmpty && !showNoPlayable && videoList.length > 0 && showUI && (
         <div className={`hidden md:block absolute bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-[1000px] z-[210] transition-opacity duration-500
             ${(!isPlaying || isPaused) ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
         >
           <div className="relative group/playlist">
-            {/* Left Arrow Overlay */}
             <button
               onClick={(e) => { e.stopPropagation(); scroll('left'); }}
               className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-white opacity-0 group-hover/playlist:opacity-100 transition-opacity hover:bg-red-600"
@@ -220,7 +311,6 @@ const YouTubePlayerView = forwardRef(({
               <ChevronLeft size={20} />
             </button>
 
-            {/* Scroll Container */}
             <div
               ref={scrollContainerRef}
               className="flex gap-4 p-4 overflow-x-auto scrollbar-hide snap-x no-scrollbar"
@@ -248,13 +338,12 @@ const YouTubePlayerView = forwardRef(({
                           </div>
                       )}
                       <div className="absolute bottom-0 left-0 w-full bg-black/80 text-[9px] text-white p-1.5 truncate opacity-0 group-hover/item:opacity-100 transition-opacity font-medium">
-                          {video.title}
+                          {displayTitle(video.title)}
                       </div>
                   </button>
               ))}
             </div>
 
-            {/* Right Arrow Overlay */}
             <button
               onClick={(e) => { e.stopPropagation(); scroll('right'); }}
               className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-white opacity-0 group-hover/playlist:opacity-100 transition-opacity hover:bg-red-600"
@@ -265,11 +354,43 @@ const YouTubePlayerView = forwardRef(({
         </div>
       )}
 
+      {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreNoNew) && (
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 z-[215] ${
+            isPlaying ? 'bottom-3 md:bottom-4' : 'bottom-24 md:bottom-28'
+          }`}
+        >
+          {canLoadMore && (
+            <button
+              type="button"
+              disabled={isLoadingMore}
+              onClick={(e) => {
+                e.stopPropagation();
+                onLoadMore?.();
+              }}
+              className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold disabled:opacity-50 transition-all"
+            >
+              {isLoadingMore ? t('place.video.loading') : t('place.video.loadMore')}
+            </button>
+          )}
+          {loadMoreError && (
+            <p className={`text-center text-xs text-red-400/90 max-w-xs ${canLoadMore ? 'mt-2' : ''}`}>
+              {t('place.video.loadMoreFailed')}
+            </p>
+          )}
+          {loadMoreNoNew && !loadMoreError && (
+            <p className={`text-center text-xs text-white/50 max-w-xs ${canLoadMore ? 'mt-2' : ''}`}>
+              {t('place.video.loadMoreNoNew')}
+            </p>
+          )}
+        </div>
+      )}
+
       {!isFullScreen && (
         <div className={`md:hidden absolute bottom-32 right-4 z-[210] flex flex-col gap-3 transition-all duration-300
             ${(showUI || !isPlaying || isPaused) ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}>
 
-            {!isEmpty && videoList.length > 1 && (
+            {!showEmpty && !showFetchError && !showNoPlayable && videoList.length > 1 && (
               <button
                   onClick={(e) => { e.stopPropagation(); setIsMobileListOpen(true); }}
                   className="p-4 bg-white/10 text-white rounded-full shadow-2xl backdrop-blur-md border border-white/20 active:scale-90 transition-all"
@@ -278,7 +399,7 @@ const YouTubePlayerView = forwardRef(({
               </button>
             )}
 
-            {isEmpty && (
+            {showEmpty && (
               <a
                 href={googleFormUrl}
                 target="_blank"
@@ -331,7 +452,7 @@ const YouTubePlayerView = forwardRef(({
                                 )}
                             </div>
                             <div className="flex-1 text-left min-w-0">
-                                <p className={`text-sm line-clamp-2 leading-snug ${currentVideoIndex === idx ? 'text-red-400 font-bold' : 'text-gray-300'}`}>{video.title}</p>
+                                <p className={`text-sm line-clamp-2 leading-snug ${currentVideoIndex === idx ? 'text-red-400 font-bold' : 'text-gray-300'}`}>{displayTitle(video.title)}</p>
                             </div>
                         </button>
                     ))}
@@ -341,7 +462,7 @@ const YouTubePlayerView = forwardRef(({
       )}
 
       <div className={`hidden md:flex absolute top-6 right-6 items-center gap-3 z-[220] transition-opacity ${(!showUI && isFullScreen) ? 'opacity-0' : 'opacity-100'}`}>
-        {!isEmpty && (
+        {!showEmpty && !showFetchError && !showNoPlayable && videoList.length > 0 && (
           <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2 shadow-lg">
               <Sparkles size={14} className="text-red-500 animate-pulse" />
               <span className="text-[10px] text-white font-bold tracking-widest uppercase">Cinema Mode</span>

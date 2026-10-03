@@ -18,6 +18,7 @@ import {
   isPlaceDescKoreanOnly,
 } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
+import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
@@ -73,9 +74,27 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
   const {
     videos: spotVideos,
     isLoading: isVideoLoading,
-    error: videoError,
-    googleFormUrl
+    error: videoFetchError,
+    isEmpty: isVideoEmptyResult,
+    retry: retryVideoFetch,
+    loadMore: loadMoreVideos,
+    canLoadMore: canLoadMoreVideos,
+    isLoadingMore: isLoadingMoreVideos,
+    loadMoreError: loadMoreVideoError,
+    loadMoreNoNew: loadMoreVideoNoNew,
+    markUnplayable: markVideoUnplayable,
+    googleFormUrl,
   } = useYouTubeSearch(location, mediaMode);
+
+  const formatVideoPublishedAt = (publishedAt) => {
+    if (!publishedAt) return null;
+    const d = new Date(publishedAt);
+    if (Number.isNaN(d.getTime())) return null;
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}.${m}.${day}`;
+  };
 
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = useMemo(() => spotVideos.find(v => v.id === activeVideoId) || (spotVideos.length > 0 ? spotVideos[0] : null), [spotVideos, activeVideoId]);
@@ -102,17 +121,24 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
     }
 
     if (mediaMode === 'VIDEO') {
-        const isVideoEmpty = !isVideoLoading && spotVideos.length === 0;
+        const isVideoEmpty = !isVideoLoading && !videoFetchError && spotVideos.length === 0;
+        const publishedLabel = formatVideoPublishedAt(activeVideoData?.publishedAt);
+        const channelTitle = activeVideoData?.channelTitle;
+        let channelLine = null;
+        if (channelTitle && publishedLabel) channelLine = `${channelTitle} · ${publishedLabel}`;
+        else if (channelTitle) channelLine = channelTitle;
+        else if (publishedLabel) channelLine = publishedLabel;
 
         return {
             mode: 'VIDEO',
-            title: activeVideoData?.title || t('place.fallback.videoMissing'),
-            summary: activeVideoData?.ai_context?.summary || null,
+            title: decodeHtmlEntities(activeVideoData?.title || '') || t('place.fallback.videoMissing'),
+            summary: null,
+            channelLine,
             tags: activeVideoData?.ai_context?.tags || ['Travel', 'Video'],
             ai_context: activeVideoData?.ai_context || null,
             isLoading: isVideoLoading,
             isEmpty: isVideoEmpty,
-            error: videoError,
+            error: videoFetchError,
             googleFormUrl: googleFormUrl
         };
     }
@@ -130,7 +156,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         koreanGuideNotice: locale === 'en' && isPlaceDescKoreanOnly(location),
         ai_context: null
     };
-  }, [mediaMode, galleryData.selectedImg, isVideoLoading, spotVideos.length, activeVideoData, videoError, googleFormUrl, location, displayName, locale, t]);
+  }, [mediaMode, galleryData.selectedImg, isVideoLoading, spotVideos.length, activeVideoData, videoFetchError, googleFormUrl, location, displayName, locale, t]);
 
   const handleSeekTime = useCallback((timeValue) => {
     if (!playerRef.current) return;
@@ -231,7 +257,15 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
             refetchPlannerFromDb={refetchPlannerFromDb}
             isPlannerRefreshing={isPlannerRefreshing}
             isVideoLoading={isVideoLoading}
-            videoError={videoError}
+            videoFetchError={videoFetchError}
+            isVideoEmptyResult={isVideoEmptyResult}
+            onRetryVideoFetch={retryVideoFetch}
+            onLoadMoreVideos={loadMoreVideos}
+            canLoadMoreVideos={canLoadMoreVideos}
+            isLoadingMoreVideos={isLoadingMoreVideos}
+            loadMoreVideoError={loadMoreVideoError}
+            loadMoreVideoNoNew={loadMoreVideoNoNew}
+            onVideoUnplayable={markVideoUnplayable}
             googleFormUrl={googleFormUrl}
             matchedPackage={matchedPackage}
             onOpenPackage={() => setTripLinkModalPkg(matchedPackage)}

@@ -14,6 +14,7 @@ import {
   naverWebSearchUrl,
   youtubeWebSearchUrl,
 } from '../../utils/worldEventOutboundLinks';
+import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities';
 
 /**
  * @param {{ event: import('../../utils/worldEvents').WorldEvent, locale?: string }} props
@@ -131,7 +132,7 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
                   </span>
                 </div>
                 <p className="px-3 py-2 text-xs font-bold leading-snug text-stone-800">
-                  {video.title}
+                  {decodeHtmlEntities(video.title || '')}
                 </p>
               </a>
             ))}

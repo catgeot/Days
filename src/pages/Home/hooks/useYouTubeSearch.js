@@ -1,111 +1,271 @@
 // src/pages/Home/hooks/useYouTubeSearch.js
-// 🚨 [Fix/New] 수정 이유:
-// 1. [Safe-Path] 정적 데이터 -> Supabase 캐시 -> API 순서의 다중 레이어 탐색 유지.
-// 2. 🚨 [Fix/New] Lazy Fetching (지연 호출): mediaMode 파라미터를 추가하여, 사용자가 'VIDEO' 탭을 활성화했을 때만 데이터를 가져오도록 API 누수(과호출) 원천 차단.
-// 3. 🚨 [Fix/New] Clean Slate (잔상 방지): 장소가 변경되었을 때 탭이 'GALLERY'라면, 이전 장소의 영상이 노출되지 않도록 상태를 즉시 초기화.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '../../../shared/api/supabase';
-import { TRAVEL_VIDEOS } from '../data/travelVideos';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { resolvePlaceVideoQueries } from '../lib/uiPlaceAssetQuery.js';
+import {
+  filterPlayableVideos,
+  markYoutubeIdUnplayable,
+} from '../../../utils/youtubeUnplayableStorage.js';
 
-const GOOGLE_FORM_URL = "https://forms.gle/QgofLDzzYD6NfWYN7";
+const GOOGLE_FORM_URL = 'https://forms.gle/QgofLDzzYD6NfWYN7';
+const LOAD_MORE_SESSION_MAX = 3;
+const INITIAL_MAX_RESULTS = 10;
+const LOAD_MORE_FIRST_MAX_RESULTS = 20;
 
-// 🚨 [Fix] 파라미터에 mediaMode 추가
+function mergeVideosById(existing, incoming) {
+  const seen = new Set(existing.map((v) => v.id));
+  const merged = [...existing];
+  for (const v of incoming || []) {
+    if (v?.id && !seen.has(v.id)) {
+      seen.add(v.id);
+      merged.push(v);
+    }
+  }
+  return merged;
+}
+
+function placeFetchKey(location, mediaMode) {
+  return [
+    mediaMode,
+    location?.id,
+    location?.slug,
+    location?.canonical_slug,
+    location?.name,
+    location?.country,
+    location?.name_en,
+  ].join('|');
+}
+
 export const useYouTubeSearch = (location, mediaMode) => {
-  const [videos, setVideos] = useState([]);
+  const [rawVideos, setRawVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [fetchError, setFetchError] = useState(false);
+  const [isEmptyResult, setIsEmptyResult] = useState(false);
+  const [nextPageToken, setNextPageToken] = useState(null);
+  const [paginationSource, setPaginationSource] = useState(null);
+  const [hasMorePages, setHasMorePages] = useState(false);
+  const [loadMoreCount, setLoadMoreCount] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState(false);
+  const [loadMoreNoNew, setLoadMoreNoNew] = useState(false);
+  const [unplayableBump, setUnplayableBump] = useState(0);
 
-  // 🚨 [Fix] 의존성 배열에 mediaMode 추가
+  const fetchContextRef = useRef(null);
+  const completedInitialKeysRef = useRef(new Set());
+
+  const videos = useMemo(
+    () => filterPlayableVideos(rawVideos),
+    [rawVideos, unplayableBump],
+  );
+
+  const invokeEdge = useCallback(async (body) => {
+    const { data: edgeData, error: edgeError } = await supabase.functions.invoke(
+      'fetch-place-videos',
+      { body },
+    );
+    if (edgeError) {
+      throw new Error('영상을 가져오는 데 실패했습니다.');
+    }
+    if (!edgeData?.success) {
+      throw new Error(edgeData?.error || 'YouTube 검색에 실패했습니다.');
+    }
+    return edgeData;
+  }, []);
+
+  const runInitialFetch = useCallback(async () => {
+    const cacheKey = getPlaceStableKey(location);
+    const dbCandidates = buildPlaceDbIdCandidates(location);
+    const statsId = getPlaceStatsId(location);
+    const { query: searchQuery, fallbackQuery } = resolvePlaceVideoQueries(location);
+    const placeId = statsId || cacheKey;
+
+    fetchContextRef.current = { searchQuery, fallbackQuery, placeId, fromCache: false };
+
+    setFetchError(false);
+    setIsEmptyResult(false);
+    setNextPageToken(null);
+    setPaginationSource(null);
+    setHasMorePages(false);
+    setLoadMoreCount(0);
+    setLoadMoreError(false);
+    setLoadMoreNoNew(false);
+
+    const { data: cachedData } = await supabase
+      .from('place_videos')
+      .select('videos')
+      .in('place_id', dbCandidates.length ? dbCandidates : [cacheKey])
+      .limit(1)
+      .maybeSingle();
+
+    if (cachedData && Array.isArray(cachedData.videos)) {
+      console.log(`[L2] DB Cache found for: ${location.name} (Items: ${cachedData.videos.length})`);
+      fetchContextRef.current = { searchQuery, fallbackQuery, placeId, fromCache: true };
+      setRawVideos(cachedData.videos);
+      setHasMorePages(cachedData.videos.length > 0);
+      setIsEmptyResult(cachedData.videos.length === 0);
+      return;
+    }
+
+    console.log(`[L3] Calling YouTube API for: ${location.name}`);
+    const edgeData = await invokeEdge({
+      query: searchQuery,
+      fallbackQuery,
+      placeId,
+      maxResults: INITIAL_MAX_RESULTS,
+    });
+
+    const list = edgeData.videos || [];
+    setRawVideos(list);
+    setNextPageToken(edgeData.nextPageToken || null);
+    setPaginationSource(edgeData.paginationSource || null);
+    setHasMorePages(Boolean(edgeData.nextPageToken) || list.length > 0);
+    setIsEmptyResult(list.length === 0);
+  }, [
+    location?.id,
+    location?.slug,
+    location?.canonical_slug,
+    location?.name,
+    location?.country,
+    location?.name_en,
+    invokeEdge,
+  ]);
+
   useEffect(() => {
     if (!location?.name) return;
 
-    // 🚨 [Fix/New] Clean Slate: 장소가 바뀌면 일단 이전 장소의 데이터 비우기 (잔상 방지)
-    setVideos([]);
+    setRawVideos([]);
     setIsLoading(true);
-    setError(null);
+    setFetchError(false);
+    setIsEmptyResult(false);
 
-    // 🚨 [Fix/New] Lazy Fetching 방어막: 영상 탭이 아닐 경우 여기서 즉시 실행 종료 (API/DB 통신 전면 차단)
     if (mediaMode !== 'VIDEO') {
-        return;
+      return;
     }
 
-    const fetchAllSources = async () => {
-      const cacheKey = getPlaceStableKey(location);
-      const dbCandidates = buildPlaceDbIdCandidates(location);
-      const statsId = getPlaceStatsId(location);
-      const staticKey = String(location.id || cacheKey || location.name);
+    const key = placeFetchKey(location, mediaMode);
+    if (completedInitialKeysRef.current.has(key)) {
+      queueMicrotask(() => setIsLoading(false));
+      return;
+    }
 
+    let cancelled = false;
+
+    (async () => {
       try {
-        // --- [L1] Static Fallback (정적 데이터 확인) ---
-        if (TRAVEL_VIDEOS[staticKey]) {
-          console.log(`[L1] Static data found for: ${location.name}`);
-          setVideos(TRAVEL_VIDEOS[staticKey]);
-          setIsLoading(false);
-          return;
-        } else if (TRAVEL_VIDEOS[cacheKey]) {
-          console.log(`[L1] Static data found for: ${location.name}`);
-          setVideos(TRAVEL_VIDEOS[cacheKey]);
-          setIsLoading(false);
-          return;
-        }
-
-        // --- [L2] Supabase Cache (공유 캐시 확인) ---
-        const { data: cachedData, error: _dbError } = await supabase
-          .from('place_videos')
-          .select('videos')
-          .in('place_id', dbCandidates.length ? dbCandidates : [cacheKey])
-          .limit(1)
-          .maybeSingle();
-
-        if (cachedData && Array.isArray(cachedData.videos)) {
-          console.log(`[L2] DB Cache found for: ${location.name} (Items: ${cachedData.videos.length})`);
-          setVideos(cachedData.videos);
-          setIsLoading(false);
-          return;
-        }
-
-        // --- [L3] YouTube API Call (신규 검색) ---
-        console.log(`[L3] Calling YouTube API for: ${location.name}`);
-
-        const { query: searchQuery, fallbackQuery } = resolvePlaceVideoQueries(location);
-
-        // 🚨 [Security Fix] 클라이언트 단에서 YouTube API 직접 호출 & DB Upsert 하는 것을 방지하고 Edge Function으로 위임
-        const { data: edgeData, error: edgeError } = await supabase.functions.invoke('fetch-place-videos', {
-          body: { query: searchQuery, fallbackQuery: fallbackQuery, placeId: statsId || cacheKey }
-        });
-
-        if (edgeError) {
-          console.error("Edge Function Error:", edgeError);
-          throw new Error("영상을 가져오는 데 실패했습니다.");
-        }
-
-        if (edgeData && edgeData.success) {
-          setVideos(edgeData.videos || []);
-        } else {
-          throw new Error(edgeData?.error || "YouTube 검색에 실패했습니다.");
-        }
-
+        await runInitialFetch();
+        if (!cancelled) completedInitialKeysRef.current.add(key);
       } catch (err) {
         console.error('[useYouTubeSearch] Error:', err);
-        setError({
-          message: "영상을 불러오지 못했습니다.",
-          formUrl: GOOGLE_FORM_URL
-        });
+        if (!cancelled) setFetchError(true);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
-    };
+    })();
 
-    fetchAllSources();
-  }, [location?.id, location?.name, location?.country, location?.name_en, location?.slug, location?.canonical_slug, mediaMode]);
+    return () => {
+      cancelled = true;
+    };
+  }, [location?.id, location?.slug, location?.canonical_slug, location?.name, location?.country, location?.name_en, mediaMode, runInitialFetch]);
+
+  const retry = useCallback(async () => {
+    if (mediaMode !== 'VIDEO' || !location?.name) return;
+    completedInitialKeysRef.current.delete(placeFetchKey(location, mediaMode));
+    setIsLoading(true);
+    setFetchError(false);
+    setIsEmptyResult(false);
+    try {
+      await runInitialFetch();
+    } catch (err) {
+      console.error('[useYouTubeSearch] retry Error:', err);
+      setFetchError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [mediaMode, location?.name, runInitialFetch]);
+
+  const loadMore = useCallback(async () => {
+    const ctx = fetchContextRef.current;
+    if (!ctx || isLoadingMore || loadMoreCount >= LOAD_MORE_SESSION_MAX || !hasMorePages) {
+      return;
+    }
+
+    setIsLoadingMore(true);
+    setLoadMoreError(false);
+    setLoadMoreNoNew(false);
+    try {
+      const excludeVideoIds = rawVideos.map((v) => v.id).filter(Boolean);
+      const isFirstFromCache = ctx.fromCache && !nextPageToken;
+      const edgeData = await invokeEdge({
+        query: ctx.searchQuery,
+        fallbackQuery: ctx.fallbackQuery,
+        placeId: ctx.placeId,
+        maxResults: isFirstFromCache ? LOAD_MORE_FIRST_MAX_RESULTS : INITIAL_MAX_RESULTS,
+        skipUpsert: true,
+        pageToken: nextPageToken || undefined,
+        paginationSource: nextPageToken && paginationSource ? paginationSource : undefined,
+        excludeVideoIds,
+      });
+
+      const seen = new Set(excludeVideoIds);
+      const incoming = (edgeData.videos || []).filter((v) => v?.id && !seen.has(v.id));
+      const token = edgeData.nextPageToken || null;
+
+      if (incoming.length === 0) {
+        setLoadMoreNoNew(true);
+        setHasMorePages(false);
+      } else {
+        setRawVideos((prev) => mergeVideosById(prev, incoming));
+        setNextPageToken(token);
+        setPaginationSource(edgeData.paginationSource || null);
+        setHasMorePages(Boolean(token));
+        if (ctx.fromCache && isFirstFromCache) {
+          fetchContextRef.current = { ...ctx, fromCache: false };
+        }
+      }
+    } catch (err) {
+      console.error('[useYouTubeSearch] loadMore Error:', err);
+      setLoadMoreError(true);
+    } finally {
+      setLoadMoreCount((c) => c + 1);
+      setIsLoadingMore(false);
+    }
+  }, [
+    hasMorePages,
+    invokeEdge,
+    isLoadingMore,
+    loadMoreCount,
+    nextPageToken,
+    paginationSource,
+    rawVideos,
+  ]);
+
+  const markUnplayable = useCallback((videoId) => {
+    markYoutubeIdUnplayable(videoId);
+    setUnplayableBump((n) => n + 1);
+  }, []);
+
+  const canLoadMore =
+    !isLoading &&
+    !fetchError &&
+    videos.length > 0 &&
+    loadMoreCount < LOAD_MORE_SESSION_MAX &&
+    hasMorePages &&
+    !loadMoreNoNew;
 
   return {
     videos,
     isLoading,
-    error,
-    googleFormUrl: GOOGLE_FORM_URL
+    error: fetchError,
+    isEmpty: !isLoading && !fetchError && rawVideos.length === 0 && isEmptyResult,
+    retry,
+    loadMore,
+    canLoadMore,
+    isLoadingMore,
+    loadMoreError,
+    loadMoreNoNew,
+    markUnplayable,
+    googleFormUrl: GOOGLE_FORM_URL,
   };
 };

@@ -1251,7 +1251,12 @@
       "playlist": "Playlist ({{count}})",
       "insightsLoading": "Searching video insights...",
       "insightsEmpty": "No video insights",
-      "insightsEmptyBody": "We do not have enough video data for this place yet. Use the player panel on the right to be the first to recommend one."
+      "insightsEmptyBody": "We do not have enough video data for this place yet. Use the player panel on the right to be the first to recommend one.",
+      "errorTitle": "Couldn't load videos",
+      "retry": "Try again",
+      "loadMore": "More videos",
+      "loadMoreFailed": "Couldn't load more videos. Please try again in a moment.",
+      "loadMoreNoNew": "No more videos to show."
     },
     "wiki": {
       "toc": "Table of contents",

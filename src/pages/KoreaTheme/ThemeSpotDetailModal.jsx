@@ -70,6 +70,7 @@ import {
   SCENIC_VIDEOS_MAX,
   SCENIC_VIDEOS_PAGE,
 } from '../../utils/fetchScenicSpotVideos';
+import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
@@ -2761,7 +2762,7 @@ export default function ThemeSpotDetailModal({
                               <div className="h-16 w-28 shrink-0 rounded-xl bg-stone-200" />
                             )}
                             <span className="min-w-0 flex-1 text-sm font-bold text-stone-800 leading-snug line-clamp-3 break-keep">
-                              {video.title || t('korea.theme.spotDetail.youtubeFallback')}
+                              {decodeHtmlEntities(video.title || '') || t('korea.theme.spotDetail.youtubeFallback')}
                             </span>
                           </a>
                         </li>

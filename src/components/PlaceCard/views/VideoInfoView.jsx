@@ -21,6 +21,17 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
         );
     }
 
+    if (videoData.error) {
+        return (
+            <div className="animate-fade-in space-y-4 p-5 border border-white/5 rounded-2xl bg-white/5">
+                <div className="flex items-center gap-2">
+                    <AlertCircle size={18} className="text-white/40" />
+                    <h3 className="text-sm font-bold text-white/80">{t('place.video.errorTitle')}</h3>
+                </div>
+            </div>
+        );
+    }
+
     if (videoData.isEmpty || !videoData.ai_context) {
         return (
             <div className="animate-fade-in space-y-4 p-5 border border-white/5 rounded-2xl bg-white/5">
@@ -72,9 +83,15 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
                      </span>
                  </div>
                  
-                 <p className="text-[13px] text-gray-200 leading-7 font-normal tracking-wide whitespace-pre-line">
-                    {videoData.summary}
-                 </p>
+                 {videoData.channelLine ? (
+                   <p className="text-[13px] text-gray-300 leading-7 font-normal tracking-wide">
+                     {videoData.channelLine}
+                   </p>
+                 ) : videoData.summary ? (
+                   <p className="text-[13px] text-gray-200 leading-7 font-normal tracking-wide whitespace-pre-line">
+                     {videoData.summary}
+                   </p>
+                 ) : null}
                  
                  <div className="flex flex-wrap gap-1.5 pt-2">
                      {videoData.tags && videoData.tags.map((tag, idx) => (

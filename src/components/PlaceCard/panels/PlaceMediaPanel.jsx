@@ -27,7 +27,15 @@ const PlaceMediaPanel = React.memo(({
     location,
     displayPlaceName,
     isVideoLoading,
-    videoError: _videoError,
+    videoFetchError,
+    isVideoEmptyResult,
+    onRetryVideoFetch,
+    onLoadMoreVideos,
+    canLoadMoreVideos,
+    isLoadingMoreVideos,
+    loadMoreVideoError,
+    loadMoreVideoNoNew,
+    onVideoUnplayable,
     googleFormUrl,
     matchedPackage,
     onOpenPackage,
@@ -88,6 +96,15 @@ const PlaceMediaPanel = React.memo(({
                 onVideoSelect={onVideoSelect}
                 isLoading={isVideoLoading}
                 googleFormUrl={googleFormUrl}
+                fetchError={videoFetchError}
+                onRetry={onRetryVideoFetch}
+                isEmptyResult={isVideoEmptyResult}
+                onLoadMore={onLoadMoreVideos}
+                canLoadMore={canLoadMoreVideos}
+                isLoadingMore={isLoadingMoreVideos}
+                onVideoUnplayable={onVideoUnplayable}
+                loadMoreError={loadMoreVideoError}
+                loadMoreNoNew={loadMoreVideoNoNew}
                 mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>

@@ -8,10 +8,40 @@ const corsHeaders = {
 
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
-function clampMaxResults(n: unknown): number {
+function clampMaxResults(n: unknown, opts?: { raiseCap?: boolean }): number {
   const v = Number(n);
   if (!Number.isFinite(v) || v < 1) return 5;
-  return Math.min(10, Math.floor(v));
+  const cap = opts?.raiseCap ? 20 : 10;
+  return Math.min(cap, Math.floor(v));
+}
+
+function decodeHtmlEntities(input: string): string {
+  if (!input) return '';
+  return input.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (match, body: string) => {
+    if (body[0] === '#') {
+      const isHex = body[1] === 'x' || body[1] === 'X';
+      const numStr = isHex ? body.slice(2) : body.slice(1);
+      const code = parseInt(numStr, isHex ? 16 : 10);
+      if (!Number.isFinite(code)) return match;
+      try {
+        return String.fromCodePoint(code);
+      } catch {
+        return match;
+      }
+    }
+    const named: Record<string, string> = {
+      amp: '&',
+      lt: '<',
+      gt: '>',
+      quot: '"',
+      apos: "'",
+      '#39': "'",
+    };
+    const lower = body.toLowerCase();
+    if (Object.hasOwn(named, body)) return named[body];
+    if (Object.hasOwn(named, lower)) return named[lower];
+    return match;
+  });
 }
 
 serve(async (req) => {
@@ -24,11 +54,14 @@ serve(async (req) => {
     const body = await req.json();
     const { query, fallbackQuery, placeId } = body;
     const mode = body.mode === 'festival' ? 'festival' : 'place';
-    const maxResults = clampMaxResults(body.maxResults);
     const pageToken =
       typeof body.pageToken === 'string' && body.pageToken.trim()
         ? body.pageToken.trim()
         : '';
+    const skipUpsert = Boolean(pageToken) || body.skipUpsert === true;
+    const maxResults = clampMaxResults(body.maxResults, {
+      raiseCap: skipUpsert && !pageToken,
+    });
     const relevanceLanguage =
       typeof body.relevanceLanguage === 'string' && body.relevanceLanguage.trim()
         ? body.relevanceLanguage.trim()
@@ -53,71 +86,85 @@ serve(async (req) => {
     const primaryQ = mode === 'festival'
       ? String(query).trim()
       : `${query} 여행 브이로그`;
+    const fallbackQ = fallbackQuery
+      ? String(fallbackQuery).trim()
+      : (mode === 'festival' ? String(query).trim() : `${query} travel vlog`);
 
-    // 1차 검색
-    let params = new URLSearchParams({
-      part: 'snippet',
-      q: primaryQ,
-      maxResults: String(maxResults),
-      type: 'video',
-      relevanceLanguage,
-      regionCode,
-      key: youtubeApiKey,
-    });
-    if (pageToken) params.set('pageToken', pageToken);
-
-    let youtubeResponse = await fetch(`${BASE_URL}/search?${params.toString()}`);
-
-    if (!youtubeResponse.ok) {
-      const errorData = await youtubeResponse.json().catch(() => ({}));
-      throw new Error(`YouTube API Error: ${youtubeResponse.status} - ${errorData.error?.message || 'Unknown Error'}`);
-    }
-
-    let data = await youtubeResponse.json();
-
-    // 결과가 없거나 적을 경우 2차 일반 검색 (pageToken 없을 때만)
-    if ((!data.items || data.items.length === 0) && !pageToken) {
-      const secondQuery = fallbackQuery
-        ? fallbackQuery
-        : (mode === 'festival' ? String(query).trim() : `${query} travel vlog`);
-      params = new URLSearchParams({
+    const fetchSearch = async (q: string, token?: string) => {
+      const p = new URLSearchParams({
         part: 'snippet',
-        q: secondQuery,
+        q,
         maxResults: String(maxResults),
         type: 'video',
+        relevanceLanguage,
+        regionCode,
+        videoEmbeddable: 'true',
+        videoSyndicated: 'true',
         key: youtubeApiKey,
       });
-
-      youtubeResponse = await fetch(`${BASE_URL}/search?${params.toString()}`);
-      if (!youtubeResponse.ok) {
-        const errorData = await youtubeResponse.json().catch(() => ({}));
-        throw new Error(`YouTube API Error (Fallback): ${youtubeResponse.status} - ${errorData.error?.message || 'Unknown Error'}`);
+      if (token) p.set('pageToken', token);
+      const res = await fetch(`${BASE_URL}/search?${p.toString()}`);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(`YouTube API Error: ${res.status} - ${errorData.error?.message || 'Unknown Error'}`);
       }
-      data = await youtubeResponse.json();
+      return res.json();
+    };
+
+    let data: { items?: unknown[]; nextPageToken?: string };
+    let paginationSource: 'primary' | 'fallback' | null = null;
+
+    if (pageToken) {
+      const useFallback = body.paginationSource === 'fallback';
+      const q = useFallback ? fallbackQ : primaryQ;
+      data = await fetchSearch(q, pageToken);
+      paginationSource = useFallback ? 'fallback' : 'primary';
+    } else {
+      data = await fetchSearch(primaryQ);
+      paginationSource = 'primary';
+      if (!data.items || data.items.length === 0) {
+        data = await fetchSearch(fallbackQ);
+        paginationSource = 'fallback';
+      }
     }
 
     const tagBase = mode === 'festival' ? ['#축제', '#festival'] : ['#여행', '#vlog'];
 
-    // API 응답 데이터를 프로젝트 표준 규격(TRAVEL_VIDEOS)으로 변환
-    const videosToCache = data.items?.map((item: any) => ({
-      id: item.id.videoId,
-      title: item.snippet.title,
-      location_keyword: query,
-      ai_context: {
-        summary: item.snippet.description || '영상 설명이 없습니다.',
-        tags: [`#${query}`, ...tagBase],
-        best_moment: { time: '00:00', desc: '자동 생성된 영상' },
-        timeline: []
-      },
-    })) || [];
+    const excludeSet = new Set<string>();
+    if (Array.isArray(body.excludeVideoIds)) {
+      for (const rawId of body.excludeVideoIds) {
+        if (typeof rawId === 'string' && rawId.trim()) excludeSet.add(rawId.trim());
+      }
+    }
+
+    const mapSnippetItems = (items: any[]) =>
+      (items || []).map((item: any) => ({
+        id: item.id.videoId,
+        title: decodeHtmlEntities(item.snippet.title || ''),
+        location_keyword: query,
+        channelTitle: item.snippet.channelTitle || null,
+        publishedAt: item.snippet.publishedAt || null,
+        ai_context: {
+          summary: item.snippet.description || '영상 설명이 없습니다.',
+          tags: [`#${query}`, ...tagBase],
+          best_moment: { time: '00:00', desc: '자동 생성된 영상' },
+          timeline: []
+        },
+      }));
+
+    let collected = mapSnippetItems(data.items);
+    if (excludeSet.size > 0) {
+      collected = collected.filter((v) => v.id && !excludeSet.has(v.id));
+    }
 
     const nextPageToken =
       typeof data.nextPageToken === 'string' && data.nextPageToken
         ? data.nextPageToken
         : null;
 
-    // pageToken(추가 페이지)이면 캐시를 덮어쓰지 않음 — 클라가 병합 후 재저장
-    const skipUpsert = Boolean(pageToken) || body.skipUpsert === true;
+    const videosToCache = collected.slice(0, maxResults);
+    const paginationSourceOut =
+      nextPageToken && paginationSource ? paginationSource : null;
 
     if (!skipUpsert) {
       const supabaseAdmin = createClient(
@@ -143,6 +190,7 @@ serve(async (req) => {
       success: true,
       videos: videosToCache,
       nextPageToken,
+      paginationSource: paginationSourceOut,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
