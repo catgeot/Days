@@ -2,6 +2,14 @@
  * S2 auto-skip: onError 150 on 1st video → same index plays 2nd (RSgPFcRdWig), never 3rd.
  */
 import { chromium, webkit } from '@playwright/test';
+import {
+  createHarnessNetworkState,
+  installDefaultSupabaseHarnessMocks,
+  installSupabaseHarnessGuard,
+  reportHarnessNetworkViolations,
+} from './youtube-harness-supabase-guard.mjs';
+
+const harnessNetwork = createHarnessNetworkState();
 
 const DEFAULT_BASE = 'https://127.0.0.1:4173';
 const PARIS_VIDEOS = [
@@ -19,12 +27,23 @@ function parseBase() {
 const base = parseBase();
 
 async function setupParisCache(page) {
+  await installSupabaseHarnessGuard(page, harnessNetwork);
+  await installDefaultSupabaseHarnessMocks(page);
   await page.route('**/rest/v1/place_videos**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/vnd.pgrst.object+json',
       body: JSON.stringify({ videos: PARIS_VIDEOS }),
     });
+  });
+  await page.route('**/rest/v1/rpc/increment_place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: 'null' });
+  });
+  await page.route('**/rest/v1/place_stats**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
+  await page.route('**/functions/v1/pexels-proxy**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"photos":[]}' });
   });
 }
 
@@ -80,5 +99,7 @@ for (const [browserType, label] of [[chromium, 'chromium'], [webkit, 'webkit']])
     console.error(`FAIL  S2 auto-skip ${label} — iframe ${res.iframeSrc}`);
   }
 }
+
+failed += reportHarnessNetworkViolations(harnessNetwork);
 
 if (failed > 0) process.exit(1);
