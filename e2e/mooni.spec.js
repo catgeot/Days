@@ -1,5 +1,5 @@
 // E2E-3 @see plans/site-health-monitoring-plan.md Phase 2-B
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 import { mooniOneChatTurn } from './helpers.js';
 
 test.describe('MOONi', () => {

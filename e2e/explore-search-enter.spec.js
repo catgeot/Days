@@ -1,18 +1,7 @@
 // Explore Enter 검색 — 기백산 ReferenceError 회귀 (@see QA report 2026-10-01)
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 
 test.use({ ignoreHTTPSErrors: true });
-
-async function blockSupabaseWrites(page) {
-  await page.route(/\/rest\/v1\//, async (route) => {
-    const req = route.request();
-    if (req.method() !== 'GET') {
-      await route.abort();
-      return;
-    }
-    await route.continue();
-  });
-}
 
 function attachReferenceErrors(page) {
   const errors = [];
@@ -29,7 +18,6 @@ async function openExploreSearch(page) {
 
 async function submitExploreQuery(page, query) {
   const errors = attachReferenceErrors(page);
-  await blockSupabaseWrites(page);
   const searchInput = await openExploreSearch(page);
   await searchInput.fill(query);
   await searchInput.press('Enter');

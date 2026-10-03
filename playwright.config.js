@@ -23,6 +23,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     locale: 'ko-KR',
+    timezoneId: 'Asia/Seoul',
   },
   projects: [
     {

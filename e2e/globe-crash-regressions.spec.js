@@ -1,5 +1,5 @@
 // Globe pin / curation handoff regressions — #159, #128/#130, 75dd7bfe
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 import {
   createGlobeAdapterCameraQueue,
   flushGlobeAdapterCameraQueue,
@@ -272,17 +272,6 @@ async function expectFlyArrivalNearTarget(
 }
 
 test.describe('Globe crash regressions', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.route(/\.supabase\.co/i, async (route) => {
-      const req = route.request();
-      if (req.method() !== 'GET') {
-        await route.abort();
-        return;
-      }
-      await route.continue();
-    });
-  });
-
   test('home load — globe focus ready without isStyleLoaded polling timeout', async ({ page }) => {
     await page.goto('/');
     await waitForGlobeMap(page);
