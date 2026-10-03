@@ -39,32 +39,66 @@ const view = readFileSync(join(root, 'src/components/PlaceCard/views/PlaceGaller
 assert.match(view, /useGalleryLongPress/, 'grid/lightbox long-press hook wired');
 assert.match(view, /GalleryManageSheet/, 'confirm sheet for mobile manage');
 assert.match(view, /enableLongPress/, 'tiles opt into long-press on touch');
-assert.match(view, /handleRemoveImage/, 'remove still uses existing DB handler');
-assert.match(view, /e\.ctrlKey \|\| e\.metaKey/, 'PC Ctrl/Cmd + double-click remains');
-assert.match(view, /place\.gallery\.manageRemove/, 'manage copy is i18n');
+assert.match(view, /handleHideGalleryImage/, 'hide uses local-only handler');
+assert.match(view, /handleReportGalleryImage/, 'report action wired');
+assert.match(view, /setManageTarget\(selectedImg\)/, 'PC Ctrl/Cmd + double-click opens sheet');
+assert.doesNotMatch(
+  view,
+  /handleRemoveImage/,
+  'legacy immediate remove handler removed from view',
+);
+assert.match(view, /place\.gallery\.manageHide/, 'hide copy is i18n');
+assert.match(view, /place\.gallery\.manageReport/, 'report copy is i18n');
+assert.match(view, /place\.gallery\.manageAdminRemove/, 'admin remove copy is i18n');
 
 const hook = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'), 'utf8');
-assert.match(hook, /gallery_urls:\s*newImages/, 'remove persists remaining photos to place_stats');
-assert.match(hook, /\.eq\('place_id',\s*koreanName\)/, 'remove targets place_stats by place_id');
+assert.match(hook, /handleHideGalleryImage/, 'hide handler exported');
+assert.match(hook, /handleAdminRemoveGalleryImage/, 'admin remove handler');
+assert.match(hook, /filterHiddenGalleryIncoming/, 'hidden filter on gallery loads');
+const adminFn = hook.match(
+  /const handleAdminRemoveGalleryImage = useCallback\([\s\S]*?\n  \);/,
+)?.[0];
+assert.ok(adminFn, 'handleAdminRemoveGalleryImage block');
+assert.match(adminFn, /\.from\('place_stats'\)/, 'admin remove PATCHes place_stats');
+assert.match(adminFn, /gallery_urls:\s*newImages/, 'admin remove sends gallery_urls');
+const hideFn = hook.match(
+  /const handleHideGalleryImage = useCallback\([\s\S]*?\n  \);/,
+)?.[0];
+assert.ok(hideFn, 'handleHideGalleryImage block');
+assert.doesNotMatch(hideFn, /place_stats/, 'hide handler does not touch place_stats');
 
-const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
-assert.match(vercel, /\/qa\/gallery/, 'vercel.json has /qa/gallery');
-assert.match(
-  vercel,
-  /days-git-cursor-gallery-manage-173f-catgeots-projects\.vercel\.app\/place\/paris\/gallery/,
-  'qa/gallery points at gallery-manage Preview',
-);
+const adminUtil = readFileSync(join(root, 'src/utils/galleryAdmin.js'), 'utf8');
+assert.match(adminUtil, /f31e47ac-144d-41e3-9ef9-441a2d008424/, 'default admin UID');
+assert.match(adminUtil, /VITE_ADMIN_UIDS/, 'optional admin UID override');
 
-const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
-assert.match(qa, /branch:\s*'cursor\/gallery-manage-173f'/, 'qa share branch is gallery-manage');
+const reportUtil = readFileSync(join(root, 'src/shared/analytics/galleryPhotoReport.js'), 'utf8');
+assert.match(reportUtil, /gallery_photo_report/, 'GA report event name');
 
 const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
 const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
-for (const key of ['manageTitle', 'manageBody', 'manageRemove', 'manageCancel']) {
+for (const key of [
+  'manageTitle',
+  'manageBody',
+  'manageBodyAdmin',
+  'manageHide',
+  'manageReport',
+  'manageAdminRemove',
+  'manageCancel',
+]) {
   assert.equal(typeof ko.place.gallery[key], 'string', `ko place.gallery.${key}`);
   assert.equal(typeof en.place.gallery[key], 'string', `en place.gallery.${key}`);
   assert.ok(ko.place.gallery[key].length > 0);
   assert.ok(en.place.gallery[key].length > 0);
 }
+const forbiddenKo = '저장된 목록에서도 빠집니다';
+const forbiddenEn = 'saved list';
+assert.ok(
+  !JSON.stringify(ko.place.gallery).includes(forbiddenKo),
+  'ko gallery manage copy must not promise global saved-list removal',
+);
+assert.ok(
+  !en.place.gallery.manageBody.toLowerCase().includes(forbiddenEn),
+  'en manageBody must not promise saved-list removal',
+);
 
 console.log('smoke:gallery-photo-manage PASS');
