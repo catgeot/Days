@@ -2,6 +2,7 @@ import React, {
   useRef,
   useState,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useCallback,
   forwardRef,
@@ -100,6 +101,11 @@ import {
   emphasizeMapboxMarineLabels,
   isGlobeContextBasemapLabel,
 } from '../lib/globeMapboxLabelPolicy';
+import {
+  clearGlobeStyleWriteCache,
+  setLayoutPropertyIfChanged,
+  setPaintPropertyIfChanged,
+} from '../lib/globeMapStyleWrite';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZoom } from '../lib/globeCategoryFocus';
 import {
   GLOBE_LABEL_APPLY_PUMP_MS,
@@ -278,10 +284,136 @@ const normalizeLngDelta = (a, b) => {
 };
 
 const GLOBE_MAX_PIXEL_RATIO = 2;
+const GLOBE_IDLE_ROTATE_MS = 30000;
 const resolveGlobePixelRatio = () => {
   if (typeof window === 'undefined') return 1;
   return Math.min(window.devicePixelRatio || 1, GLOBE_MAX_PIXEL_RATIO);
 };
+
+// mapbox-gl 3.20 has no pixelRatio constructor option and no setPixelRatio.
+// _resizeCanvas / painter.resize read window.devicePixelRatio directly, so the
+// react-map-gl pixelRatio prop is ignored. Cap the getter the engine actually reads.
+function installGlobePixelRatioCap(maxRatio) {
+  if (typeof window === 'undefined') return () => {};
+  const protoDesc = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
+  const ownBefore = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
+  const readNative = () => {
+    if (protoDesc?.get) return protoDesc.get.call(window);
+    if (ownBefore && !ownBefore.get && 'value' in ownBefore) return ownBefore.value;
+    if (ownBefore?.get) return ownBefore.get.call(window);
+    return 1;
+  };
+  Object.defineProperty(window, 'devicePixelRatio', {
+    configurable: true,
+    get() {
+      const n = Number(readNative());
+      const dpr = Number.isFinite(n) && n > 0 ? n : 1;
+      return Math.min(dpr, maxRatio);
+    },
+  });
+  return () => {
+    try {
+      delete window.devicePixelRatio;
+    } catch {
+      // Ignore if the host locked the property.
+    }
+    if (ownBefore && !protoDesc?.get) {
+      try {
+        Object.defineProperty(window, 'devicePixelRatio', ownBefore);
+      } catch {
+        // Prototype getter remains after delete.
+      }
+    }
+  };
+}
+
+function applyMapRenderHold(holdRef, map) {
+  const hold = holdRef.current;
+  if (!map || map._removed || hold.original || hold.reasons.size === 0) return;
+  // loaded() is false while _styleDirty. Swallowing triggerRepaint before that
+  // clears leaves the map stuck at loaded:false.
+  if (!map.loaded?.()) return;
+  hold.original = map.triggerRepaint.bind(map);
+  hold.map = map;
+  const original = hold.original;
+  map.triggerRepaint = () => {
+    if (map._removed || map.loaded?.()) return;
+    original();
+  };
+  try {
+    map.stop();
+  } catch {
+    // Map may already be stopped.
+  }
+}
+
+function holdMapRender(holdRef, map, reason) {
+  if (!map || map._removed) return;
+  const hold = holdRef.current;
+  hold.reasons.add(reason);
+  if (hold.armOff && hold.waitMap !== map) {
+    hold.armOff();
+    hold.armOff = null;
+    hold.waitMap = null;
+  }
+  if (map.loaded?.()) {
+    applyMapRenderHold(holdRef, map);
+    return;
+  }
+  if (!hold.flushed) {
+    hold.flushed = true;
+    try {
+      map.triggerRepaint();
+    } catch {
+      // Style may still be starting.
+    }
+  }
+  if (hold.waitMap === map) return;
+  hold.waitMap = map;
+  const arm = () => {
+    if (hold.waitMap !== map || hold.reasons.size === 0 || hold.original) return;
+    applyMapRenderHold(holdRef, map);
+    if (hold.original && hold.armOff) {
+      const off = hold.armOff;
+      hold.armOff = null;
+      hold.waitMap = null;
+      off();
+    }
+  };
+  map.on('idle', arm);
+  hold.armOff = () => {
+    try {
+      map.off('idle', arm);
+    } catch {
+      // Map may already be removed.
+    }
+  };
+}
+
+function releaseMapRender(holdRef, map, reason) {
+  const hold = holdRef.current;
+  hold.reasons.delete(reason);
+  if (hold.reasons.size > 0) return;
+  if (hold.armOff) {
+    hold.armOff();
+    hold.armOff = null;
+    hold.waitMap = null;
+  }
+  hold.flushed = false;
+  if (!hold.original) return;
+  const target = map && !map._removed ? map : hold.map;
+  const original = hold.original;
+  hold.original = null;
+  hold.map = null;
+  if (!target || target._removed) return;
+  target.triggerRepaint = original;
+  try {
+    target.triggerRepaint();
+    safeMapResize(target);
+  } catch {
+    // Map may be mid-remove.
+  }
+}
 
 const safeMapResize = (map) => {
   if (!map || map._removed) return;
@@ -463,6 +595,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   userPausedRotateRef.current = autoRotatePaused;
   const rotationFrameRef = useRef(null);
   const rotationTimer = useRef(null);
+  const pauseRenderRef = useRef(pauseRender);
+  pauseRenderRef.current = pauseRender;
+  const pageHiddenRef = useRef(typeof document !== 'undefined' && document.hidden);
+  const idleRotateStoppedRef = useRef(false);
+  const resumeAfterIdleTouchRef = useRef(false);
+  const lastInteractionAtRef = useRef(typeof performance !== 'undefined' ? performance.now() : 0);
+  const startRotationLoopRef = useRef(() => {});
+  const beginFirstLabelSettleRef = useRef(() => {});
+  const tryResumeAutoRotateRef = useRef(() => {});
+  const renderHoldRef = useRef({ reasons: new Set(), original: null, map: null });
+  const labelPolicySyncRef = useRef({
+    applying: false,
+    pending: false,
+    raf: 0,
+    wasLoaded: false,
+    lastZoom: null,
+  });
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
   const immerseActiveRef = useRef(false);
   /** @type {React.MutableRefObject<{ iso?: string, iso3166_2?: string, bbox?: number[], settleZoom?: number } | null>} */
@@ -576,8 +725,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       && zoom <= GLOBE_VIEW.rotateZoomThreshold
     ) {
       autoRotateRef.current = true;
+      if (idleRotateStoppedRef.current) {
+        idleRotateStoppedRef.current = false;
+        releaseMapRender(renderHoldRef, map, 'idle');
+      }
+      lastInteractionAtRef.current = performance.now();
+      startRotationLoopRef.current?.();
     }
   }, [canResumeRotate]);
+  tryResumeAutoRotateRef.current = tryResumeAutoRotate;
 
   const toggleReachBoundaries = useCallback(() => {
     setReachBoundariesVisible((prev) => {
@@ -752,13 +908,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       ...poiLabelLayerIdsRef.current,
       ...contextLabelLayerIdsRef.current,
     ].forEach((layerId) => {
-      try {
-        if (isGateoLayer(layerId) || isFlightCinemaLayer(layerId) || !map.getLayer(layerId)) return;
-        map.setLayoutProperty(layerId, 'text-field', textField);
-        updated += 1;
-      } catch {
-        // Ignore per-layer label field updates during style transitions.
-      }
+      if (isGateoLayer(layerId) || isFlightCinemaLayer(layerId)) return;
+      if (setLayoutPropertyIfChanged(map, layerId, 'text-field', textField)) updated += 1;
     });
 
     // 0레이어 no-op에 suppress를 걸면 직후 styledata 실적용이 막힘 (모바일 idle 적음 → 고착)
@@ -840,14 +991,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         const layer = map.getLayer(layerId);
         if (!layer) return;
         if (layer.type === 'fill') {
-          map.setPaintProperty(layerId, 'fill-color', waterColor);
-          map.setPaintProperty(layerId, 'fill-opacity', 0.92);
+          setPaintPropertyIfChanged(map, layerId, 'fill-color', waterColor);
+          setPaintPropertyIfChanged(map, layerId, 'fill-opacity', 0.92);
         } else if (layer.type === 'line') {
-          map.setPaintProperty(layerId, 'line-color', waterColor);
-          map.setPaintProperty(layerId, 'line-opacity', 0.85);
+          setPaintPropertyIfChanged(map, layerId, 'line-color', waterColor);
+          setPaintPropertyIfChanged(map, layerId, 'line-opacity', 0.85);
         }
       } catch {
-        // Ignore style paint errors per-layer.
+        // Style may be mid-transition.
       }
     });
   }, [globeTheme]);
@@ -1125,9 +1276,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const applyLocaleToMap = () => {
       if (cancelled) return 0;
       if (useSatelliteLabelPatch) {
-        // 자전 jumpTo 중에도 setLayoutProperty가 씹히지 않게 잠깐 정지
+        // 자전 jumpTo 중에도 setLayoutProperty가 씹히지 않게 잠깐 정지.
+        // 값이 그대로면 쓰기를 건너뛰므로 자전을 끄지 않은 채로 둔다.
+        const wasRotating = autoRotateRef.current;
         autoRotateRef.current = false;
         const updated = applySatelliteBasemapLabels({ force: true, reapply: true, refresh: true });
+        if (updated <= 0) autoRotateRef.current = wasRotating;
         // gateo 핀 name은 GeoJSON — schedule는 isMoving/idle 대기로 모바일 자전 중 고착
         if (!cameraAnimatingRef.current && !isGlobeCameraBusy(map)) {
           updateGateoMarkerSource(map, markerGeoJSONRef.current);
@@ -1425,6 +1579,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     clearFirstLabelSettleTimers,
     pauseRender,
   ]);
+  beginFirstLabelSettleRef.current = beginFirstLabelSettle;
 
   /** Satellite globe — show as soon as map loads; suppress Mapbox detail labels until overlays ready. */
   const tryRevealGlobeBase = useCallback(() => {
@@ -2575,10 +2730,102 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return () => window.clearTimeout(timer);
   }, [pauseRender, mapReady, applyPendingFocus]);
 
-  useEffect(() => {
-    const tick = (ts) => {
+  const scheduleLabelPolicySync = useCallback((reason) => {
+    const st = labelPolicySyncRef.current;
+    if (st.applying) {
+      st.pending = true;
+      return;
+    }
+    if (st.raf) return;
+    st.raf = requestAnimationFrame(() => {
+      st.raf = 0;
       const map = mapRef.current?.getMap();
-      if (!map || pauseRender) {
+      if (!map || map._removed) return;
+      if (!map.isStyleLoaded?.()) return;
+
+      const zoom = map.getZoom?.();
+      const zoomChanged = Number.isFinite(zoom)
+        && (st.lastZoom == null || Math.abs(st.lastZoom - zoom) >= 0.01);
+      const styleLoad = !st.wasLoaded || reason === 'style.load';
+      if (!styleLoad && !zoomChanged) return;
+
+      st.applying = true;
+      try {
+        if (!st.wasLoaded || reason === 'style.load') clearGlobeStyleWriteCache(map);
+        applyEarlyMapboxGlobeLabelSuppress(map, globeTheme);
+        if (globeTheme !== 'bright') {
+          refreshPlaceLabelLayers();
+          applySatelliteBasemapLabels({ force: true });
+        }
+        if (styleLoad) {
+          ensureInteractionReady();
+          applyWaterPaint();
+        }
+        const cameraBusy = cameraAnimatingRef.current
+          || isGlobeCameraBusy(map)
+          || (typeof map.isMoving === 'function' && map.isMoving());
+        if (!cameraBusy) {
+          resetAndApplyPlaceLabelVisibility();
+          if (styleLoad && !pauseRenderRef.current) {
+            syncGateoMarkerLayers();
+            tryRevealGlobe();
+          }
+        }
+        st.wasLoaded = true;
+        if (Number.isFinite(zoom)) st.lastZoom = zoom;
+      } finally {
+        st.applying = false;
+        if (st.pending) {
+          st.pending = false;
+          scheduleLabelPolicySync('styledata');
+        }
+      }
+    });
+  }, [
+    applySatelliteBasemapLabels,
+    applyWaterPaint,
+    ensureInteractionReady,
+    globeTheme,
+    refreshPlaceLabelLayers,
+    resetAndApplyPlaceLabelVisibility,
+    syncGateoMarkerLayers,
+    tryRevealGlobe,
+  ]);
+
+  useLayoutEffect(() => installGlobePixelRatioCap(GLOBE_MAX_PIXEL_RATIO), []);
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || !mapReady) return undefined;
+    const onStyleLoad = () => {
+      labelPolicySyncRef.current.wasLoaded = false;
+      labelPolicySyncRef.current.lastZoom = null;
+      clearGlobeStyleWriteCache(map);
+      scheduleLabelPolicySync('style.load');
+    };
+    map.on('style.load', onStyleLoad);
+    return () => {
+      map.off('style.load', onStyleLoad);
+      if (labelPolicySyncRef.current.raf) {
+        cancelAnimationFrame(labelPolicySyncRef.current.raf);
+        labelPolicySyncRef.current.raf = 0;
+      }
+    };
+  }, [mapReady, scheduleLabelPolicySync]);
+
+  useEffect(() => {
+    const stopLoop = () => {
+      if (rotationFrameRef.current) {
+        cancelAnimationFrame(rotationFrameRef.current);
+        rotationFrameRef.current = null;
+      }
+    };
+
+    const tick = (ts) => {
+      rotationFrameRef.current = null;
+      if (pauseRenderRef.current || pageHiddenRef.current || idleRotateStoppedRef.current) return;
+      const map = mapRef.current?.getMap();
+      if (!map || map._removed) {
         rotationFrameRef.current = requestAnimationFrame(tick);
         return;
       }
@@ -2590,22 +2837,124 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         const speed = isZenMode ? 1.8 : 3;
         const center = map.getCenter();
         const lastTs = tick.lastTs || ts;
-        const delta = (ts - lastTs) / 1000;
+        const delta = Math.min(0.05, (ts - lastTs) / 1000);
         tick.lastTs = ts;
-        map.jumpTo({ center: [center.lng - delta * speed, center.lat] });
+        if (delta > 0) {
+          map.jumpTo({ center: [center.lng - delta * speed, center.lat] });
+        }
       } else {
         tick.lastTs = ts;
       }
 
-      rotationFrameRef.current = requestAnimationFrame(tick);
+      if (!pauseRenderRef.current && !pageHiddenRef.current && !idleRotateStoppedRef.current) {
+        rotationFrameRef.current = requestAnimationFrame(tick);
+      }
     };
 
-    rotationFrameRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rotationFrameRef.current) cancelAnimationFrame(rotationFrameRef.current);
-      if (rotationTimer.current) clearTimeout(rotationTimer.current);
+    const startLoop = () => {
+      if (rotationFrameRef.current) return;
+      if (pauseRenderRef.current || pageHiddenRef.current || idleRotateStoppedRef.current) return;
+      rotationFrameRef.current = requestAnimationFrame(tick);
     };
-  }, [buildRotateResumeSnapshot, isZenMode, pauseRender]);
+    startRotationLoopRef.current = startLoop;
+
+    if (pauseRender) {
+      stopLoop();
+      holdMapRender(renderHoldRef, mapRef.current?.getMap(), 'pause');
+      return () => {
+        releaseMapRender(renderHoldRef, mapRef.current?.getMap(), 'pause');
+      };
+    }
+
+    lastInteractionAtRef.current = performance.now();
+    idleRotateStoppedRef.current = false;
+    resumeAfterIdleTouchRef.current = false;
+    releaseMapRender(renderHoldRef, mapRef.current?.getMap(), 'pause');
+    releaseMapRender(renderHoldRef, mapRef.current?.getMap(), 'idle');
+    startLoop();
+    let kickTimer = 0;
+    let tries = 0;
+    const kickRotate = () => {
+      if (pauseRenderRef.current || pageHiddenRef.current) return;
+      const map = mapRef.current?.getMap();
+      if (!map || map._removed) return;
+      if (!globeLabelsSettledRef.current) {
+        if (!firstLabelSettleStartedRef.current) beginFirstLabelSettleRef.current(map);
+      } else {
+        tryResumeAutoRotateRef.current(map);
+      }
+      if (!autoRotateRef.current && tries < 10) {
+        tries += 1;
+        kickTimer = window.setTimeout(kickRotate, 400);
+      }
+    };
+    kickRotate();
+
+    return () => {
+      window.clearTimeout(kickTimer);
+      stopLoop();
+      startRotationLoopRef.current = () => {};
+    };
+  }, [buildRotateResumeSnapshot, isZenMode, mapReady, pauseRender]);
+
+  useEffect(() => {
+    const syncHidden = (hidden) => {
+      pageHiddenRef.current = hidden;
+      const map = mapRef.current?.getMap();
+      if (hidden) {
+        if (rotationFrameRef.current) {
+          cancelAnimationFrame(rotationFrameRef.current);
+          rotationFrameRef.current = null;
+        }
+        holdMapRender(renderHoldRef, map, 'hidden');
+        return;
+      }
+      releaseMapRender(renderHoldRef, map, 'hidden');
+      if (pauseRenderRef.current) return;
+      lastInteractionAtRef.current = performance.now();
+      idleRotateStoppedRef.current = false;
+      releaseMapRender(renderHoldRef, map, 'idle');
+      startRotationLoopRef.current?.();
+    };
+    const onVisibility = () => syncHidden(document.hidden);
+    const onPageHide = () => {
+      if (document.hidden) syncHidden(true);
+    };
+    const onPageShow = () => syncHidden(document.hidden);
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('pageshow', onPageShow);
+    if (document.hidden) syncHidden(true);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('pageshow', onPageShow);
+      releaseMapRender(renderHoldRef, mapRef.current?.getMap(), 'hidden');
+    };
+  }, []);
+
+  useEffect(() => {
+    if (pauseRender) return undefined;
+    const id = window.setInterval(() => {
+      if (pageHiddenRef.current && !document.hidden) {
+        pageHiddenRef.current = false;
+        releaseMapRender(renderHoldRef, mapRef.current?.getMap(), 'hidden');
+        if (!pauseRenderRef.current && !idleRotateStoppedRef.current) {
+          startRotationLoopRef.current?.();
+        }
+      }
+      if (pauseRenderRef.current || pageHiddenRef.current || idleRotateStoppedRef.current) return;
+      if (performance.now() - lastInteractionAtRef.current < GLOBE_IDLE_ROTATE_MS) return;
+      idleRotateStoppedRef.current = true;
+      autoRotateRef.current = false;
+      if (rotationFrameRef.current) {
+        cancelAnimationFrame(rotationFrameRef.current);
+        rotationFrameRef.current = null;
+      }
+      holdMapRender(renderHoldRef, mapRef.current?.getMap(), 'idle');
+    }, 500);
+    return () => window.clearInterval(id);
+  }, [pauseRender]);
 
   useEffect(() => () => {
     unbindSpaceDragGuardRef.current?.();
@@ -2754,17 +3103,41 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     } else if (!isMapEventOnGlobe(map, event)) {
       return;
     }
+    if (idleRotateStoppedRef.current) {
+      resumeAfterIdleTouchRef.current = true;
+      idleRotateStoppedRef.current = false;
+      releaseMapRender(renderHoldRef, map, 'idle');
+    }
+    lastInteractionAtRef.current = performance.now();
     interactionRef.current = true;
     autoRotateRef.current = false;
   }, []);
 
   const handleInteractionStart = useCallback((event) => {
+    const resumeIdle = idleRotateStoppedRef.current;
     pauseAutoRotateIfGlobeHit(event);
-  }, [pauseAutoRotateIfGlobeHit]);
+    if (event?.type === 'wheel' && resumeIdle && !idleRotateStoppedRef.current) {
+      resumeAfterIdleTouchRef.current = false;
+      if (!pauseRenderRef.current && !pageHiddenRef.current) {
+        tryResumeAutoRotate(mapRef.current?.getMap());
+        startRotationLoopRef.current?.();
+      }
+    }
+  }, [pauseAutoRotateIfGlobeHit, tryResumeAutoRotate]);
+
+  const resumeRotationAfterIdleTouch = useCallback(() => {
+    if (!resumeAfterIdleTouchRef.current) return;
+    resumeAfterIdleTouchRef.current = false;
+    lastInteractionAtRef.current = performance.now();
+    if (pauseRenderRef.current || pageHiddenRef.current) return;
+    tryResumeAutoRotate(mapRef.current?.getMap());
+    startRotationLoopRef.current?.();
+  }, [tryResumeAutoRotate]);
 
   const handleInteractionEnd = useCallback(() => {
     interactionRef.current = false;
-  }, []);
+    resumeRotationAfterIdleTouch();
+  }, [resumeRotationAfterIdleTouch]);
 
   if (!MAPBOX_TOKEN) return null;
 
@@ -2806,6 +3179,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           markGlobeLoadPhase('onLoad');
           mapLoadedRef.current = true;
           const map = evt?.target ?? mapRef.current?.getMap();
+          if (map && typeof map.setPixelRatio === 'function') {
+            try {
+              map.setPixelRatio(resolveGlobePixelRatio());
+            } catch {
+              // mapbox-gl 3.20 reads window.devicePixelRatio instead.
+            }
+          }
+          if (map) {
+            try {
+              map.resize();
+            } catch {
+              // Container may still be hidden.
+            }
+          }
 
           const diagMoveLayerHookEnabled =
             import.meta.env.DEV
@@ -2906,39 +3293,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
           if (!map.isStyleLoaded?.()) {
             flightCinemaLayersLatchedRef.current = false;
+            return;
           }
 
-          applyEarlyMapboxGlobeLabelSuppress(map, globeTheme);
-
-          const cameraBusy =
-            cameraAnimatingRef.current || isGlobeCameraBusy(map)
-            || (typeof map.isMoving === 'function' && map.isMoving());
-
-          // satellite: locale text-field 유지. setLanguage는 쓰지 않음(이중 깜박임).
-          if (map.isStyleLoaded?.() && globeTheme !== 'bright') {
-            refreshPlaceLabelLayers();
-            applySatelliteBasemapLabels({ force: true });
-          }
-
-          if (cameraBusy) return;
-
-          tryRevealGlobeOverlays();
-
-          if (!map.isStyleLoaded?.()) return;
-
-          ensureInteractionReady();
-          applyWaterPaint();
-          resetAndApplyPlaceLabelVisibility();
-          syncGateoMarkerLayers();
-          tryRevealGlobe();
+          scheduleLabelPolicySync('styledata');
         }}
         onIdle={() => {
           if (import.meta.env.DEV && !globeIdleMarkedRef.current) {
             globeIdleMarkedRef.current = true;
             markGlobeLoadPhase('idle');
           }
-          syncMapZoom();
-          applyPlaceLabelVisibility();
+          if (!pauseRenderRef.current && !pageHiddenRef.current && !idleRotateStoppedRef.current) {
+            syncMapZoom();
+            applyPlaceLabelVisibility();
+          }
           const map = mapRef.current?.getMap();
           if (
             map
@@ -2960,7 +3328,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             pendingThemeCameraRef.current = null;
             waitingThemeSettleRef.current = false;
           }
-          tryRevealGlobe();
+          if (!pauseRenderRef.current && !pageHiddenRef.current && !idleRotateStoppedRef.current) {
+            tryRevealGlobe();
+          }
         }}
         onDragStart={(event) => {
           pauseAutoRotateIfGlobeHit(event);
@@ -2969,16 +3339,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         onDragEnd={() => {
           interactionRef.current = false;
           suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
+          resumeRotationAfterIdleTouch();
         }}
         onZoomStart={(event) => {
           pauseAutoRotateIfGlobeHit(event);
         }}
         onZoomEnd={() => {
           interactionRef.current = false;
+          resumeRotationAfterIdleTouch();
         }}
         onZoom={() => {
           syncMapZoom();
-          applyPlaceLabelVisibility();
+          scheduleLabelPolicySync('zoom');
         }}
         style={{ width: '100%', height: '100%' }}
         minZoom={1}
