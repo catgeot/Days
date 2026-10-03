@@ -122,6 +122,86 @@ const loadMoreCalls = await loadMoreSessionCap();
 assert(loadMoreCalls <= 3, `load more session cap ≤3 edge calls including failures (got ${loadMoreCalls})`);
 assert(loadMoreCalls * 100 <= 400, `session worst-case units ≤400 (${loadMoreCalls * 100})`);
 
+async function loadMoreNoNewUi() {
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ ignoreHTTPSErrors: true, locale: 'ko-KR' });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.localStorage.setItem('gateo.locale', 'ko');
+  });
+  const cachedId = 'cached-only-id';
+  await page.route('**/rest/v1/place_videos**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/vnd.pgrst.object+json',
+      body: JSON.stringify({
+        videos: [{ id: cachedId, title: 'Cached', ai_context: { tags: [], timeline: [] } }],
+      }),
+    });
+  });
+  await page.route('**/functions/v1/fetch-place-videos**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        videos: [{ id: cachedId, title: 'Cached dup', ai_context: { tags: [], timeline: [] } }],
+        nextPageToken: null,
+      }),
+    });
+  });
+  await page.goto(`${base}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await page.waitForTimeout(1500);
+  await page.getByRole('button', { name: /영상 더 보기|More videos/i }).click({ timeout: 10000 });
+  await page.waitForTimeout(800);
+  const noNew = await page.getByText('더 볼 영상이 없어요.').isVisible();
+  await browser.close();
+  return noNew;
+}
+
+async function loadMoreFailureMessageAfterCap() {
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ ignoreHTTPSErrors: true, locale: 'ko-KR' });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.localStorage.setItem('gateo.locale', 'ko');
+  });
+  await page.route('**/rest/v1/place_videos**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/vnd.pgrst.object+json',
+      body: JSON.stringify({
+        videos: [{ id: 'a', title: 'A', ai_context: { tags: [], timeline: [] } }],
+      }),
+    });
+  });
+  await page.route('**/functions/v1/fetch-place-videos**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: false, error: 'mock 403' }),
+    });
+  });
+  await page.goto(`${base}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await page.waitForTimeout(1500);
+  const btn = page.getByRole('button', { name: /영상 더 보기|More videos/i });
+  for (let c = 0; c < 3; c += 1) {
+    if (await btn.isVisible().catch(() => false)) {
+      await btn.click({ timeout: 5000 }).catch(() => {});
+      await page.waitForTimeout(500);
+    }
+  }
+  const visible = await page.getByText(/추가 영상을 불러오지 못했어요/).isVisible();
+  await browser.close();
+  return visible;
+}
+
+assert(await loadMoreNoNewUi(), "F11: '더 볼 영상이 없어요.' after duplicate-only load more");
+assert(
+  await loadMoreFailureMessageAfterCap(),
+  'F11: loadMoreFailed visible after 3rd failed click hits session cap',
+);
+
 const s2 = spawnSync('node', ['scripts/smoke-youtube-s2-autoskip.mjs', '--base', base], { stdio: 'inherit' });
 if (s2.status !== 0) {
   failed += 1;

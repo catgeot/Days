@@ -354,30 +354,32 @@ const YouTubePlayerView = forwardRef(({
         </div>
       )}
 
-      {canLoadMore && !isLoading && videoList.length > 0 && (
+      {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreNoNew) && (
         <div
           className={`absolute left-1/2 -translate-x-1/2 z-[215] ${
             isPlaying ? 'bottom-3 md:bottom-4' : 'bottom-24 md:bottom-28'
           }`}
         >
-          <button
-            type="button"
-            disabled={isLoadingMore}
-            onClick={(e) => {
-              e.stopPropagation();
-              onLoadMore?.();
-            }}
-            className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold disabled:opacity-50 transition-all"
-          >
-            {isLoadingMore ? t('place.video.loading') : t('place.video.loadMore')}
-          </button>
+          {canLoadMore && (
+            <button
+              type="button"
+              disabled={isLoadingMore}
+              onClick={(e) => {
+                e.stopPropagation();
+                onLoadMore?.();
+              }}
+              className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold disabled:opacity-50 transition-all"
+            >
+              {isLoadingMore ? t('place.video.loading') : t('place.video.loadMore')}
+            </button>
+          )}
           {loadMoreError && (
-            <p className="mt-2 text-center text-xs text-red-400/90 max-w-xs">
+            <p className={`text-center text-xs text-red-400/90 max-w-xs ${canLoadMore ? 'mt-2' : ''}`}>
               {t('place.video.loadMoreFailed')}
             </p>
           )}
           {loadMoreNoNew && !loadMoreError && (
-            <p className="mt-2 text-center text-xs text-white/50 max-w-xs">
+            <p className={`text-center text-xs text-white/50 max-w-xs ${canLoadMore ? 'mt-2' : ''}`}>
               {t('place.video.loadMoreNoNew')}
             </p>
           )}
