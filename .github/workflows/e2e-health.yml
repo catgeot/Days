@@ -35,8 +35,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Chromium and WebKit
-        run: npx playwright install --with-deps chromium webkit
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
 
       - name: Run E2E against production
         env:
@@ -45,7 +45,7 @@ jobs:
           CI: true
           PLAYWRIGHT_JSON_OUTPUT_FILE: health/e2e.json
           PLAYWRIGHT_HTML_OPEN: never
-        run: npx playwright test --reporter=line,json
+        run: npx playwright test --project=chromium --reporter=line,json
 
       - name: Summarize E2E results
         if: always()
