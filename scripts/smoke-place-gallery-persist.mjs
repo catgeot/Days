@@ -16,6 +16,7 @@ import {
   withoutDroppedGalleryImages,
 } from '../src/shared/api/placeGalleryPersist.js';
 import {
+  isPlaceChatIntroKeyAccepted,
   isPlaceChatIntroRpcLength,
   PLACE_CHAT_INTRO_MAX_CHARS,
   PLACE_CHAT_INTRO_MIN_CHARS,
@@ -126,5 +127,12 @@ assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(1200)}${emoji}`), false);
 assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(40)} https://example.com`), false);
 assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(40)} <b>bold</b>`), false);
 assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(20)}\n${'가'.repeat(20)}`), true);
+
+assert.equal(isPlaceChatIntroKeyAccepted('QA Place'), true);
+assert.equal(isPlaceChatIntroKeyAccepted('qa\u007fplace'), false, 'DEL is [[:cntrl:]]');
+assert.equal(isPlaceChatIntroKeyAccepted('qa\u0080place'), false, 'C1 start U+0080');
+assert.equal(isPlaceChatIntroKeyAccepted('qa\u0085place'), false, 'C1 U+0085');
+assert.equal(isPlaceChatIntroKeyAccepted('qa\u009fplace'), false, 'C1 end U+009F');
+assert.equal(isPlaceChatIntroKeyAccepted('qa\u00a0place'), true, 'U+00A0 is not [[:cntrl:]]');
 
 console.log('smoke:place-gallery-persist PASS');

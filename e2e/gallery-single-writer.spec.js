@@ -489,7 +489,7 @@ test('숨기기 저장이 실패하면 안내하고 사진은 남는다', async 
   await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
   await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
   await page.getByRole('button', { name: '이 사진 숨기기' }).click();
-  await expect(page.getByRole('status').filter({ hasText: '이 사진을 숨기지 못했어요.' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '이 사진을 숨기지 못했어요. 잠시 후 다시 시도해 주세요.' })).toBeVisible();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
   assertNoProdOrDirectWrites(bag);
@@ -505,7 +505,7 @@ test('갤러리에 없는 사진 신고는 안내한다', async ({ page }) => {
   await page.goto('/qa/gallery-single-writer');
   await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
   await page.getByRole('button', { name: '관련 없음' }).click();
-  await expect(page.getByRole('status').filter({ hasText: '이 사진은 갤러리에 없어요.' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '이 사진은 갤러리에 없어요. 새로고침하면 최신 갤러리를 볼 수 있어요.' })).toBeVisible();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   assertNoProdOrDirectWrites(bag);
 });
@@ -520,7 +520,7 @@ test('신고 테이블이 없으면 안내한다', async ({ page }) => {
   await page.goto('/qa/gallery-single-writer');
   await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
   await page.getByRole('button', { name: '관련 없음' }).click();
-  await expect(page.getByRole('status').filter({ hasText: '지금은 신고를 받을 수 없어요.' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '지금은 신고를 받을 수 없어요. 잠시 후 다시 시도해 주세요.' })).toBeVisible();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   assertNoProdOrDirectWrites(bag);
 });

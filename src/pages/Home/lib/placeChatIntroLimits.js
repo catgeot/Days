@@ -14,7 +14,7 @@ export function placeChatIntroCodePoints(value) {
 
 const SUMMARY_CONTROL_RE = /[\u0001-\u0009\u000b-\u001f\u007f<>]/;
 const SUMMARY_URL_RE = /https?:|www\.|:\/\/|javascript:|data:/i;
-const KEY_CONTROL_RE = /[\u0000-\u001f\u007f<>\\]/;
+const KEY_CONTROL_RE = /[\u0000-\u001f\u007f-\u009f<>\\]/;
 const KEY_URL_RE = /https?:|www\.|:\/\//i;
 
 export function isPlaceChatIntroSummaryAccepted(summary) {
