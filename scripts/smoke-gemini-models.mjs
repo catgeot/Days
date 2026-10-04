@@ -96,8 +96,8 @@ async function main() {
   check(logbookSrc.includes("invokeGeminiTask('curation'"), 'curation uses curation task');
   check(!logbookSrc.includes('GEMINI_MODELS.WRITE'), 'logbook AI does not pick WRITE');
   const healthSrc = read('scripts/smoke-health.mjs');
-  check(healthSrc.includes("task: 'health_ping'"), 'site health uses health_ping');
-  check(!healthSrc.includes('GEMINI_MODELS.QUALITY'), 'site health does not probe QUALITY');
+  check(healthSrc.includes('GEMINI_MODELS.FAST'), 'site health probes FAST');
+  check(healthSrc.includes('GEMINI_MODELS.QUALITY'), 'site health probes QUALITY');
   check(
     !/modelId:\s*'gemini-3\.1-flash-lite'/.test(healthSrc),
     'site health does not hardcode FAST id',

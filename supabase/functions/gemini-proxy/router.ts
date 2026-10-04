@@ -1,6 +1,7 @@
 import { callGemini, extractGeminiAnswer } from "../_shared/gemini/call.ts";
 import {
   allowMemoryBypass,
+  buildHealthChecks,
   buildRateChecks,
   loadLimits,
   loadTokenBudget,
@@ -8,6 +9,7 @@ import {
 import {
   clientIp,
   hashIp,
+  healthTokenMatches,
   isBlockedUserAgent,
   isOriginAllowed,
   readJwtClaims,
@@ -134,6 +136,27 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     return jsonResponse(413, { success: false, error: "too_large" }, origin, originAllowed);
   }
 
+  if (taskName === "health_ping") {
+    if (!env.GEMINI_HEALTH_TOKEN?.trim()) {
+      console.error(JSON.stringify({ fn: "gemini-proxy", error: "missing_health_token" }));
+    }
+    const tokenOk = await healthTokenMatches(
+      req.headers.get("x-gateo-health"),
+      env.GEMINI_HEALTH_TOKEN,
+    );
+    if (!tokenOk) {
+      logLine({
+        task: "health_ping",
+        status: 403,
+        error: "forbidden",
+        health: true,
+        ms: Date.now() - started,
+        legacy: false,
+      });
+      return jsonResponse(403, { success: false, error: "forbidden" }, origin, originAllowed);
+    }
+  }
+
   if (taskName !== "health_ping" && !originAllowed) {
     logLine({ task: taskName || "legacy", status: 403, error: "origin_not_allowed", ms: Date.now() - started, legacy: isLegacy });
     return jsonResponse(403, { success: false, error: "origin_not_allowed" }, origin, false);
@@ -152,8 +175,11 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
   const ipHash = await hashIp(ip, env.GEMINI_PROXY_IP_SALT);
   const uid = claims.role === "authenticated" && claims.sub ? claims.sub : null;
   const limits = loadLimits(env.GEMINI_PROXY_LIMITS);
-  const checks = buildRateChecks(ipHash, uid, built.task, built.tier, limits);
-  const tokenBudget = loadTokenBudget(env.GEMINI_DAILY_TOKEN_BUDGET);
+  const health = built.task === "health_ping";
+  const checks = health
+    ? buildHealthChecks(limits)
+    : buildRateChecks(ipHash, uid, built.task, built.tier, limits);
+  const tokenBudget = health ? null : loadTokenBudget(env.GEMINI_DAILY_TOKEN_BUDGET);
 
   let admitted = false;
   try {
@@ -173,6 +199,7 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
         uidSet: Boolean(uid),
         ms: Date.now() - started,
         legacy: built.task === "legacy",
+        ...(health ? { health: true } : {}),
       });
       return jsonResponse(
         429,
@@ -189,7 +216,17 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
       error: "rate_rpc_error",
       detail: String(error instanceof Error ? error.message : error).slice(0, 200),
     }));
-    if (!allowMemoryBypass(ipHash, deps.now?.() ?? Date.now())) {
+    if (health || !allowMemoryBypass(ipHash, deps.now?.() ?? Date.now())) {
+      if (health) {
+        logLine({
+          task: built.task,
+          status: 503,
+          error: "busy",
+          health: true,
+          ms: Date.now() - started,
+          legacy: false,
+        });
+      }
       return jsonResponse(503, { success: false, error: "busy" }, origin, originAllowed);
     }
   }
@@ -230,6 +267,7 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
       ms: (deps.now?.() ?? Date.now()) - started,
       legacy: built.task === "legacy",
       admitted,
+      ...(health ? { health: true } : {}),
     });
     return jsonResponse(status, { success: false, error }, origin, originAllowed);
   }
@@ -244,19 +282,21 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
   };
   if (built.task === "legacy") payload.data = upstream.data;
 
-  try {
-    await rpc(fetchImpl, env, "gemini_proxy_record_usage", {
-      p_task: built.task,
-      p_model: model,
-      p_prompt_tokens: answer.promptTokens,
-      p_output_tokens: answer.outputTokens,
-    });
-  } catch (error) {
-    console.error(JSON.stringify({
-      fn: "gemini-proxy",
-      error: "usage_rpc_error",
-      detail: String(error instanceof Error ? error.message : error).slice(0, 200),
-    }));
+  if (!health) {
+    try {
+      await rpc(fetchImpl, env, "gemini_proxy_record_usage", {
+        p_task: built.task,
+        p_model: model,
+        p_prompt_tokens: answer.promptTokens,
+        p_output_tokens: answer.outputTokens,
+      });
+    } catch (error) {
+      console.error(JSON.stringify({
+        fn: "gemini-proxy",
+        error: "usage_rpc_error",
+        detail: String(error instanceof Error ? error.message : error).slice(0, 200),
+      }));
+    }
   }
 
   logLine({
@@ -271,6 +311,7 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     thoughts: answer.thoughts,
     finishReason: answer.finishReason,
     legacy: built.task === "legacy",
+    ...(health ? { health: true } : {}),
   });
   return jsonResponse(200, payload, origin, originAllowed);
 }

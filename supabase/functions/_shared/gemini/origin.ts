@@ -67,6 +67,25 @@ export async function hashIp(ip: string, salt: string | undefined): Promise<stri
     .slice(0, 16);
 }
 
+/** SHA-256 다이제스트를 고정 길이로 비교한다. 헤더 값과 시크릿 원문은 로그에 남기지 않는다. */
+export async function healthTokenMatches(
+  presented: string | null,
+  secret: string | undefined,
+): Promise<boolean> {
+  const expected = secret?.trim() ?? "";
+  if (!expected) return false;
+  const enc = new TextEncoder();
+  const [left, right] = await Promise.all([
+    crypto.subtle.digest("SHA-256", enc.encode(presented?.trim() ?? "")),
+    crypto.subtle.digest("SHA-256", enc.encode(expected)),
+  ]);
+  const a = new Uint8Array(left);
+  const b = new Uint8Array(right);
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
+
 export function readJwtClaims(req: Request): { role: string | null; sub: string | null } {
   const header = req.headers.get("authorization") || "";
   const match = header.match(/^Bearer\s+(\S+)/i);

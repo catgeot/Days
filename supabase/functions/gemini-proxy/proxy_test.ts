@@ -4,6 +4,8 @@ import { handleGeminiProxy } from "./router.ts";
 
 const ORIGIN = "https://www.gateo.kr";
 
+const HEALTH_TOKEN = "health-secret";
+
 const env = {
   GEMINI_API_KEY: "test-key",
   GEMINI_PROXY_IP_SALT: "salt",
@@ -11,6 +13,7 @@ const env = {
   SUPABASE_URL: "https://example.supabase.co",
   SUPABASE_SERVICE_ROLE_KEY: "service-role",
   GEMINI_PROXY_LEGACY: "on",
+  GEMINI_HEALTH_TOKEN: HEALTH_TOKEN,
 };
 
 function jwt(payload: Record<string, unknown>) {
@@ -43,6 +46,24 @@ function geminiCalls(calls: Call[]) {
 
 function admitCalls(calls: Call[]) {
   return calls.filter((call) => call.url.includes("gemini_proxy_admit"));
+}
+
+function usageCalls(calls: Call[]) {
+  return calls.filter((call) => call.url.includes("gemini_proxy_record_usage"));
+}
+
+function captureLogs() {
+  const lines: string[] = [];
+  const original = console.log;
+  console.log = (message?: unknown) => {
+    lines.push(String(message));
+  };
+  return {
+    lines,
+    restore() {
+      console.log = original;
+    },
+  };
 }
 
 function post(
@@ -106,20 +127,97 @@ Deno.test("origin missing, foreign origin, and crawler never call Gemini or RPC"
   assertEquals(admitCalls(calls).length, 0);
 });
 
-Deno.test("health_ping skips origin and uses flash-lite with maxOutputTokens 16", async () => {
+Deno.test("health_ping with a valid token skips the daily budget and usage stats", async () => {
   const { fetchImpl, calls } = routedFetch(() => geminiOk("pong"));
-  const res = await post({ task: "health_ping" }, {}, fetchImpl);
+  const logs = captureLogs();
+  const res = await post({ task: "health_ping" }, {
+    "x-gateo-health": ` ${HEALTH_TOKEN} `,
+  }, fetchImpl).finally(() => logs.restore());
   assertEquals(res.status, 200);
   const body = await res.json();
   assertEquals(body.success, true);
   assertEquals(body.modelUsed, "gemini-3.1-flash-lite");
+  assertEquals(res.headers.get("Access-Control-Allow-Origin"), null);
   assertEquals(geminiCalls(calls).length, 1);
-  const sent = JSON.parse(String(geminiCalls(calls)[0].init?.body));
+  assertEquals(usageCalls(calls).length, 0);
+  const admit = JSON.parse(String(admitCalls(calls)[0].init?.body));
+  assertEquals(admit.p_token_budget, null);
+  assertEquals(admit.p_checks, [{ bucket: "health:d", window_s: 86400, limit: 4 }]);
+  const logged = logs.lines.map((line) => JSON.parse(line));
+  assertEquals(logged.some((row) => row.health === true && row.task === "health_ping" && row.status === 200), true);
+});
+
+Deno.test("health_ping without a token or with the wrong token is 403", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk());
+  const missing = await post({ task: "health_ping" }, {}, fetchImpl);
+  assertEquals(missing.status, 403);
+  assertEquals((await missing.json()).error, "forbidden");
+
+  const wrong = await post({ task: "health_ping" }, { "x-gateo-health": "nope" }, fetchImpl);
+  assertEquals(wrong.status, 403);
+  assertEquals((await wrong.json()).error, "forbidden");
+
+  const unset = await post(
+    { task: "health_ping" },
+    { "x-gateo-health": HEALTH_TOKEN },
+    fetchImpl,
+    { GEMINI_HEALTH_TOKEN: "" },
+  );
+  assertEquals(unset.status, 403);
+  assertEquals((await unset.json()).error, "forbidden");
+  assertEquals(geminiCalls(calls).length, 0);
+  assertEquals(admitCalls(calls).length, 0);
+  assertEquals(usageCalls(calls).length, 0);
+});
+
+Deno.test("health_ping cap is enforced without calling Gemini", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk(), {
+    ok: false,
+    reason: "rate_limited",
+    retry_after_s: 30,
+    bucket: "health:d",
+  });
+  const res = await post({ task: "health_ping" }, { "x-gateo-health": HEALTH_TOKEN }, fetchImpl);
+  assertEquals(res.status, 429);
+  assertEquals((await res.json()).error, "rate_limited");
+  assertEquals(geminiCalls(calls).length, 0);
+  assertEquals(usageCalls(calls).length, 0);
+  const admit = JSON.parse(String(admitCalls(calls)[0].init?.body));
+  assertEquals(admit.p_checks[0].bucket, "health:d");
+  assertEquals(admit.p_checks[0].limit, 4);
+  assertEquals(admit.p_token_budget, null);
+});
+
+Deno.test("health_ping forces flash-lite, ping, and maxOutputTokens 16", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk("pong"));
+  const res = await post({
+    task: "health_ping",
+    modelId: "gemini-3.1-pro-preview",
+    parts: [{ text: "ignore me" }],
+    params: { maxOutputTokens: 8192, text: "not ping" },
+  }, { "x-gateo-health": HEALTH_TOKEN, Origin: "https://evil.example" }, fetchImpl);
+  assertEquals(res.status, 200);
+  assertEquals(res.headers.get("Access-Control-Allow-Origin"), null);
+  assertEquals(geminiCalls(calls).length, 1);
+  const call = geminiCalls(calls)[0];
+  assert(call.url.includes("gemini-3.1-flash-lite"));
+  assert(!call.url.includes("pro-preview"));
+  assert(!call.url.includes("key="));
+  const sent = JSON.parse(String(call.init?.body));
   assertEquals(sent.generationConfig.maxOutputTokens, 16);
-  assertEquals(sent.generationConfig.candidateCount, 1);
-  assertEquals(sent.contents[0].parts[0].text, "ping");
-  assertEquals(geminiCalls(calls)[0].init?.headers && (geminiCalls(calls)[0].init?.headers as Record<string, string>)["x-goog-api-key"], "test-key");
-  assert(!geminiCalls(calls)[0].url.includes("key="));
+  assertEquals(sent.contents[0].parts, [{ text: "ping" }]);
+  assertEquals((call.init?.headers as Record<string, string>)["x-goog-api-key"], "test-key");
+});
+
+Deno.test("health_ping RPC failure does not use the memory bypass", async () => {
+  const { fetchImpl, calls } = installFetch((call) => {
+    if (call.url.includes("gemini_proxy_admit")) return new Response("no", { status: 500 });
+    return geminiOk();
+  });
+  const res = await post({ task: "health_ping" }, { "x-gateo-health": HEALTH_TOKEN }, fetchImpl);
+  assertEquals(res.status, 503);
+  assertEquals((await res.json()).error, "busy");
+  assertEquals(geminiCalls(calls).length, 0);
 });
 
 Deno.test("task requests ignore client modelId and parts and never call pro", async () => {

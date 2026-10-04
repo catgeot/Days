@@ -2,6 +2,7 @@
  * gateo.kr 사이트·API 헬스 스모크 (Phase 1-A)
  * @see plans/site-health-monitoring-plan.md
  */
+import { GEMINI_MODELS } from '../src/utils/geminiModels.js';
 import { loadEnvFile } from './lib/load-env-file.mjs';
 
 if (!process.env.GITHUB_ACTIONS) {
@@ -165,7 +166,12 @@ async function probeSupabaseRest() {
   }
 }
 
-async function pingGeminiProxy() {
+const GEMINI_HEALTH_PROBES = [
+  { key: 'FAST', modelId: GEMINI_MODELS.FAST },
+  { key: 'QUALITY', modelId: GEMINI_MODELS.QUALITY },
+];
+
+async function pingGeminiProxy(modelId) {
   const response = await fetchWithTimeout(
     `${supabaseUrl.replace(/\/$/, '')}/functions/v1/gemini-proxy`,
     {
@@ -174,7 +180,10 @@ async function pingGeminiProxy() {
         ...supabaseHeaders(),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ task: 'health_ping' }),
+      body: JSON.stringify({
+        modelId,
+        parts: [{ text: 'ping' }],
+      }),
     }
   );
   const { raw, body } = await parseJsonBody(response);
@@ -195,36 +204,41 @@ async function probeGeminiProxy() {
     return;
   }
 
-  try {
-    const { status, raw, body, combined } = await pingGeminiProxy();
+  const used = [];
 
-    if (status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
-      record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
+  for (const { key, modelId } of GEMINI_HEALTH_PROBES) {
+    try {
+      const { status, raw, body, combined } = await pingGeminiProxy(modelId);
+
+      if (status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
+        record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
+        return;
+      }
+
+      if (body?.success === true) {
+        used.push(`${key}=${body.modelUsed ?? modelId}`);
+        continue;
+      }
+
+      if (
+        status === 429 ||
+        /429|RESOURCE_EXHAUSTED|prepayment credits are depleted/i.test(combined)
+      ) {
+        record(id, name, 'warn', '429 RESOURCE_EXHAUSTED — Gemini credits depleted', 'P0');
+        return;
+      }
+
+      const errMsg = body?.error || raw.slice(0, 200) || `HTTP ${status}`;
+      record(id, name, 'fail', `${key} ${modelId}: ${errMsg}`, 'P0');
+      return;
+    } catch (error) {
+      const detail = error.name === 'AbortError' ? 'timeout' : error.message;
+      record(id, name, 'fail', `${key} ${modelId}: ${detail}`, 'P0');
       return;
     }
-
-    if (body?.success === true) {
-      record(id, name, 'pass', `health_ping model=${body.modelUsed ?? 'gemini-3.1-flash-lite'}`, 'P0');
-      return;
-    }
-
-    if (
-      status === 429 ||
-      body?.error === 'budget' ||
-      body?.error === 'quota' ||
-      body?.error === 'rate_limited' ||
-      /429|RESOURCE_EXHAUSTED|prepayment credits are depleted/i.test(combined)
-    ) {
-      record(id, name, 'warn', `429 ${body?.error || 'RESOURCE_EXHAUSTED'} — Gemini credits or proxy budget`, 'P0');
-      return;
-    }
-
-    const errMsg = body?.error || raw.slice(0, 200) || `HTTP ${status}`;
-    record(id, name, 'fail', `health_ping: ${errMsg}`, 'P0');
-  } catch (error) {
-    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
-    record(id, name, 'fail', `health_ping: ${detail}`, 'P0');
   }
+
+  record(id, name, 'pass', used.join(' · '), 'P0');
 }
 
 /**

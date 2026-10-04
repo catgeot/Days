@@ -26,7 +26,8 @@ export const DEFAULT_LIMITS: LimitConfig = {
     review_draft: 150,
     logbook_polish: 100,
     curation: 150,
-    health_ping: 12,
+    /** health_ping 전용 전역 일 상한. 공용 일일 호출·토큰 예산에는 넣지 않는다. */
+    health_ping: 4,
     legacy: 600,
   },
 };
@@ -92,6 +93,15 @@ export function buildRateChecks(
   checks.push({ bucket: "global:h", window_s: 3600, limit: limits.global_hour });
   checks.push({ bucket: "global:d", window_s: 86400, limit: limits.global_day });
   return checks;
+}
+
+/** 헬스 핑 전용. 전역 일·토큰 예산 버킷은 포함하지 않는다. */
+export function buildHealthChecks(limits: LimitConfig): RateCheck[] {
+  return [{
+    bucket: "health:d",
+    window_s: 86400,
+    limit: limits.tasks.health_ping,
+  }];
 }
 
 function bumpMemory(key: string, limit: number, minute: number): boolean {
