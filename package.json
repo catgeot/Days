@@ -206,6 +206,7 @@
     "toolkit:reconcile-place-id": "node scripts/reconcile-place-toolkit-place-id.mjs",
     "toolkit:patch-guide-iata": "node scripts/patch-place-toolkit-guide-iata.mjs",
     "generate:canonical-place-id-map": "node scripts/generate-canonical-place-id-map.mjs",
+    "check:place-video-catalog": "node scripts/generate-place-video-catalog.mjs --check",
     "generate:place-alias-seed": "node scripts/generate-place-alias-seed.mjs --write",
     "migrate:place-id-to-slug": "node scripts/migrate-place-id-to-slug.mjs",
     "restore:place-wiki-archive": "node scripts/restore-place-wiki-from-archive.mjs",

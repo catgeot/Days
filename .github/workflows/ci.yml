@@ -30,6 +30,9 @@ jobs:
       - name: Lint (src — no-undef blocking)
         run: npm run lint:ci
 
+      - name: Place video allowlist matches /place sources
+        run: npm run check:place-video-catalog
+
       - name: Build
         run: npm run build
 

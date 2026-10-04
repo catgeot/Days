@@ -27,9 +27,23 @@ const YouTubePlayerView = forwardRef(({
   isLoadingMore = false,
   onVideoUnplayable,
   loadMoreError = false,
+  loadMoreLimitCode = null,
+  fetchLimitCode = null,
+  externalYouTubeUrl = '',
+  placeYouTubeUrl = '',
   loadMoreNoNew = false,
 }, ref) => {
   const { t } = useTranslation();
+  const limitMessage = (code) => {
+    if (code === 'page_ip_limited') return t('place.video.loadMoreIpLimit');
+    if (code === 'page_place_limited') return t('place.video.loadMorePlaceLimit');
+    if (code === 'ip_quota') return t('place.video.ipQuota');
+    if (code === 'global_quota') return t('place.video.globalQuota');
+    return t('place.video.loadMoreFailed');
+  };
+  const emptyQuotaMessage = (code) => (
+    code === 'global_quota' ? t('place.video.globalQuotaEmpty') : t('place.video.ipQuotaEmpty')
+  );
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -198,7 +212,11 @@ const YouTubePlayerView = forwardRef(({
       setIsPaused(false);
   };
 
+  const watchOnYouTubeUrl = externalYouTubeUrl || placeYouTubeUrl;
   const showFetchError = !isLoading && fetchError;
+  const quotaWithoutVideos = showFetchError
+    && (fetchLimitCode === 'ip_quota' || fetchLimitCode === 'global_quota')
+    && videoList.length === 0;
   const showEmpty = !isLoading && !fetchError && isEmptyResult && videoList.length === 0;
   const showNoPlayable = !isLoading && !fetchError && !isEmptyResult && videoList.length === 0;
 
@@ -225,6 +243,22 @@ const YouTubePlayerView = forwardRef(({
             <AlertCircle size={40} className="text-white/20" />
           </div>
           <h3 className="text-white text-xl font-bold mb-2">{t('place.video.errorTitle')}</h3>
+          {fetchLimitCode ? (
+            <p className="text-white/60 text-sm mb-4 max-w-sm">
+              {quotaWithoutVideos ? emptyQuotaMessage(fetchLimitCode) : limitMessage(fetchLimitCode)}
+            </p>
+          ) : null}
+          {quotaWithoutVideos && watchOnYouTubeUrl ? (
+            <a
+              href={watchOnYouTubeUrl}
+              target="_blank"
+              rel="noopener"
+              className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+            >
+              {t('place.video.openOnYouTube')}
+              <ExternalLink size={14} className="opacity-50" />
+            </a>
+          ) : onRetry ? (
           <button
             type="button"
             onClick={() => onRetry?.()}
@@ -234,6 +268,7 @@ const YouTubePlayerView = forwardRef(({
             <RotateCcw size={18} />
             {t('place.video.retry')}
           </button>
+          ) : null}
         </div>
       ) : (showEmpty || showNoPlayable) ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
@@ -247,25 +282,53 @@ const YouTubePlayerView = forwardRef(({
             {showNoPlayable ? t('place.video.noPlayableBody') : t('place.video.emptyBody')}
           </p>
           {showEmpty ? (
-            <a
-              href={googleFormUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-            >
-              <Sparkles size={18} />
-              {t('place.video.recommend')}
-              <ExternalLink size={14} className="opacity-50" />
-            </a>
+            <div className="flex flex-col items-center gap-3">
+              {watchOnYouTubeUrl ? (
+                <a
+                  href={watchOnYouTubeUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+                >
+                  {t('place.video.openOnYouTube')}
+                  <ExternalLink size={14} className="opacity-50" />
+                </a>
+              ) : null}
+              <a
+                href={googleFormUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+              >
+                <Sparkles size={18} />
+                {t('place.video.recommend')}
+                <ExternalLink size={14} className="opacity-50" />
+              </a>
+            </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => onRetry?.()}
-              className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
-            >
-              <RotateCcw size={18} />
-              {t('place.video.retry')}
-            </button>
+            <div className="flex flex-col items-center gap-3">
+              {watchOnYouTubeUrl ? (
+                <a
+                  href={watchOnYouTubeUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+                >
+                  {t('place.video.openOnYouTube')}
+                  <ExternalLink size={14} className="opacity-50" />
+                </a>
+              ) : null}
+              {onRetry ? (
+              <button
+                type="button"
+                onClick={() => onRetry()}
+                className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
+              >
+                <RotateCcw size={18} />
+                {t('place.video.retry')}
+              </button>
+              ) : null}
+            </div>
           )}
         </div>
       ) : isPlaying ? (
@@ -367,7 +430,7 @@ const YouTubePlayerView = forwardRef(({
         </div>
       )}
 
-      {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreNoNew) && (
+      {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreLimitCode || loadMoreNoNew) && (
         <div
           className={`absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
             isPlaying
@@ -388,9 +451,9 @@ const YouTubePlayerView = forwardRef(({
               {isLoadingMore ? t('place.video.loading') : t('place.video.loadMore')}
             </button>
           )}
-          {loadMoreError && (
+          {(loadMoreLimitCode || loadMoreError) && (
             <p className={`text-center text-xs text-red-400/90 max-w-xs ${canLoadMore ? 'mt-2' : ''}`}>
-              {t('place.video.loadMoreFailed')}
+              {limitMessage(loadMoreLimitCode)}
             </p>
           )}
           {loadMoreNoNew && !loadMoreError && (

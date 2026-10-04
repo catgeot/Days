@@ -320,3 +320,58 @@ test('session cache keeps about 30 places', async () => {
   assert.equal(calls.db.length, 0, 'newest place stays cached');
   assert.equal(hook.videos.length, 2);
 });
+
+test('placeholder pin does not read or request the shared name cache', async () => {
+  setYouTubeMock({
+    db: async () => ({
+      data: { videos: mk('shared', 4), next_retry_at: null },
+    }),
+  });
+  mount();
+  await render({ id: 'loc-10-20', name: '알 수 없는 지역', lat: 10, lng: 20 }, 'VIDEO');
+  assert.equal(calls.db.length, 0);
+  assert.equal(calls.edge.length, 0);
+  assert.equal(hook.videos.length, 0);
+  assert.equal(hook.isEmpty, true);
+  assert.equal(hook.suppressVideoRetry, true);
+});
+
+test('named free-search pin shows a cached row and does not call the edge', async () => {
+  setYouTubeMock({
+    db: async () => ({
+      data: { videos: mk('hill', 2), next_retry_at: null },
+    }),
+  });
+  mount();
+  await render({ id: 'search-37.5-127', name: '화곡리' }, 'VIDEO');
+  assert.equal(calls.edge.length, 0);
+  assert.ok(calls.db.length >= 1);
+  assert.deepEqual(ids(), ['hill0', 'hill1']);
+  assert.equal(hook.externalYouTubeUrl, '');
+  assert.equal(hook.suppressVideoRetry, true);
+});
+
+test('named free-search pin without a cache row is link-only', async () => {
+  setYouTubeMock({
+    db: async () => ({ data: null }),
+  });
+  mount();
+  await render({ id: 'search-37.5-127', name: '화곡리', city: '서울' }, 'VIDEO');
+  assert.equal(calls.edge.length, 0);
+  assert.equal(hook.videos.length, 0);
+  assert.match(hook.externalYouTubeUrl, /^https:\/\/www\.youtube\.com\/results\?search_query=/);
+  assert.match(decodeURIComponent(hook.externalYouTubeUrl), /화곡리/);
+});
+
+test('quota refusal sets fetchLimitCode and does not clear a later retry path', async () => {
+  setYouTubeMock({
+    db: async () => ({ data: null }),
+    edge: async () => ({ data: { success: false, error: 'ip_quota' } }),
+  });
+  mount();
+  await render(sapa, 'VIDEO');
+  assert.equal(hook.fetchLimitCode, 'ip_quota');
+  assert.equal(hook.error, true);
+  assert.equal(hook.videos.length, 0);
+  assert.equal(hook.suppressVideoRetry, false);
+});
