@@ -1,4 +1,8 @@
 import { supabase } from '../../../shared/api/supabase';
+import {
+  isPlaceChatIntroKeyAccepted,
+  isPlaceChatIntroSummaryAccepted,
+} from './placeChatIntroLimits';
 import { apiClient } from './apiClient';
 import { getPlaceChatIntroSystemPrompt } from './prompts';
 import { MOONI_GEMINI } from '../../../utils/mooniChatModel';
@@ -264,33 +268,17 @@ export async function persistPlaceChatIntroSummary(destinationDisplayName, summa
   if (!isValidIntroDestination(destinationKey) || !text) return;
 
   savePlaceChatIntroLocal(destinationKey, text, lng);
+  if (!isPlaceChatIntroKeyAccepted(storageKey) || !isPlaceChatIntroSummaryAccepted(text)) return;
 
-  const { data: existing, error: selErr } = await supabase
-    .from('place_chat_intro')
-    .select('id')
-    .eq('destination_key', storageKey)
-    .maybeSingle();
-
-  if (selErr) {
-    console.warn('[place_chat_intro] select failed:', selErr);
+  const { data, error } = await supabase.rpc('save_place_chat_intro', {
+    p_destination_key: storageKey,
+    p_summary: text,
+  });
+  if (error) {
+    console.warn('[place_chat_intro] save_place_chat_intro failed:', error);
     return;
   }
-
-  const now = new Date().toISOString();
-  if (existing?.id) {
-    const { error } = await supabase
-      .from('place_chat_intro')
-      .update({ summary: text, updated_at: now })
-      .eq('destination_key', storageKey);
-    if (error) console.warn('[place_chat_intro] update failed:', error);
-  } else {
-    const { error } = await supabase.from('place_chat_intro').insert({
-      destination_key: storageKey,
-      summary: text,
-      updated_at: now
-    });
-    if (error) console.warn('[place_chat_intro] insert failed:', error);
-  }
+  if (data === false) return;
 }
 
 export async function generatePlaceChatIntroWithAi(destinationDisplayName, lng = i18n.language) {
