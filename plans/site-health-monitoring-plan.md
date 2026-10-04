@@ -15,7 +15,7 @@
 | [Smoke Health](../.github/workflows/smoke-health.yml) | `0 */6 * * *` | P0 API·번들 + Playwright 홈·place·`/korea` 목록 |
 | [E2E Health](../.github/workflows/e2e-health.yml) | `0 9 * * *` UTC · `TZ=Asia/Seoul` | guarded `e2e/*` — 지구본·MOONi·축제 URL/MRT·#372–376 place·explore·globe |
 
-**Smoke Probe (node `scripts/smoke-health.mjs`)**: P0 gateo.kr HTML·**Vite `/assets/index-*.js` 번들** · Supabase REST · **tourapi-proxy** · **fetch-place-videos**(`skipUpsert`) · P1 sitemap. **읽기 전용 가드** — REST/RPC 쓰기·비허용 Edge POST 차단(`e2e/readOnlyGuard.js` · Edge 허용 **tourapi-proxy·fetch-place-videos**만). gemini-proxy·fetch-mrt-stays는 **E2E/MOONi·MRT 스트립**으로 이관(중복 제거).
+**Smoke Probe (node `scripts/smoke-health.mjs`)**: P0 **www.gateo.kr** HTML·**Vite `/assets/index-*.js` 번들**(홈 1회 fetch) · Supabase REST · **`tourapi_festival_cache` anon GET**(rolling12 ko — **TourAPI/Edge upstream 없음**) · **`place_videos` anon GET** · P1 sitemap. cron **6h 유지** · run당 HTTP 최소화(Supabase 로그 부담). **E2E 읽기 전용 가드** — REST/RPC 쓰기·비허용 Edge POST 차단(`e2e/readOnlyGuard.js` · 페이지 Edge **fetch-mrt-stays·tourapi-proxy·fetch-place-videos** 등). gemini-proxy·MRT/tourapi Edge **스모크 중복 제거** — E2E/MOONi·축제 스트립.
 
 **Smoke Pages (Playwright `e2e/smoke-health-pages.spec.js`)**: `fixtures.js` 가드 · `/` 지구본 · `/place/paris` 제목 · `/korea/` 축제 카드 1개 이상. **HTTP 200 on SPA shell만으로 place 통과 금지**(구 P1-1 제거).
 
@@ -231,9 +231,6 @@ npx playwright install chromium
 | 규칙 | |
 |------|--|
 | **같은 변경에** | PlaceCard·홈 등 **사용자에게 보이는 버튼/탭/라벨**을 바꾸면 `e2e/*.spec.js`의 `getByRole(…, { name })`·텍스트 assert를 **같은 커밋**에서 맞춤 |
-| **사이트 PR 체크리스트 (2026-10-04)** | E2E Health·Smoke Health가 다루는 UI/API(홈 지구본·`/place/*`·MOONi·`/korea`·MRT·explore·Smoke P0 Edge)를 바꾸는 PR은 **같은 PR에서** `e2e/*.spec.js`·`scripts/smoke-health.mjs` 기대값을 **함께 갱신·확인**한다. 외부 재고(MRT 등) 개수는 하드코딩하지 말고 「로딩 종료 + ≥1 또는 명시적 빈 상태 + 제휴 파라미터」로 검사한다. |
-| **E2E 읽기 전용** | 모든 E2E spec은 `e2e/fixtures.js`의 `test`를 쓴다(쓰기 차단 가드). 새 Edge 함수를 페이지가 부르면 쓰기 여부 확인 후 `e2e/readOnlyGuard.js` 허용 목록에 넣는다. anon 쓰기 401/403/RLS는 정상. |
-| **Smoke ↔ E2E 역할** | **Smoke** = 6h liveness(번들·REST·tourapi/fetch-place-videos Edge·Playwright 홈/place/korea 목록). **E2E** = 1d 기능 플로우(축제 상세·MRT 스트립·갤러리 숨김/신고·YouTube 10+더 보기·페르소나 별점 없음·제휴 href). 겹치면 E2E에 두고 Smoke에서 제거. |
 | **배포 전** | UI 카피 변경 시 `SMOKE_SITE_URL=https://gateo.kr npm run test:e2e` (또는 해당 spec만) 로컬 1회 |
 | **실패 분류** | Actions에서 E2E만 빨갛고 Smoke가 초록 → **프로덕션 다운보다 스펙 드리프트·UI 회귀**를 먼저 의 |
 | **하드코딩 문구** | E2E는 접근성 name(한글 라벨)에 의존 — 리네임 시 테스트가 SSOT. 별도 i18n 키 추상화는 없음 |
