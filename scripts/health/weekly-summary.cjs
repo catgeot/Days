@@ -25,6 +25,10 @@ function sevenDaysAgoIso() {
   return d.toISOString();
 }
 
+function countableRuns(runs) {
+  return runs.filter((r) => r.conclusion && r.conclusion !== 'skipped');
+}
+
 async function listRuns(github, owner, repo, workflowId, createdGte) {
   const runs = [];
   let page = 1;
@@ -46,32 +50,40 @@ async function listRuns(github, owner, repo, workflowId, createdGte) {
 }
 
 function passRate(runs) {
-  if (runs.length === 0) return '— (run 없음)';
-  const ok = runs.filter((r) => r.conclusion === 'success').length;
-  return `${Math.round((ok / runs.length) * 1000) / 10}% (${ok}/${runs.length})`;
+  const eligible = countableRuns(runs);
+  if (eligible.length === 0) return '— (run 없음)';
+  const ok = eligible.filter((r) => r.conclusion === 'success').length;
+  return `${Math.round((ok / eligible.length) * 1000) / 10}% (${ok}/${eligible.length})`;
 }
 
 async function smokeJobRates(github, owner, repo, runs) {
   const jobs = { probe: [], pages: [] };
-  for (const run of runs.slice(0, 40)) {
-    const res = await github.rest.actions.listJobsForWorkflowRun({
-      owner,
-      repo,
-      run_id: run.id,
-      per_page: 20,
-    });
-    for (const job of res.data.jobs) {
-      if (job.name === 'probe') jobs.probe.push(job);
-      if (job.name === 'pages') jobs.pages.push(job);
+  for (const run of countableRuns(runs)) {
+    let page = 1;
+    for (;;) {
+      const res = await github.rest.actions.listJobsForWorkflowRun({
+        owner,
+        repo,
+        run_id: run.id,
+        per_page: 100,
+        page,
+      });
+      for (const job of res.data.jobs) {
+        if (job.conclusion === 'skipped') continue;
+        if (job.name === 'probe') jobs.probe.push(job);
+        if (job.name === 'pages') jobs.pages.push(job);
+      });
+      if (res.data.jobs.length < 100) break;
+      page += 1;
     }
   }
+  const toRun = (list) =>
+    list.map((j) => ({
+      conclusion: j.conclusion === 'success' ? 'success' : 'failure',
+    }));
   return {
-    probe: passRate(
-      jobs.probe.map((j) => ({ conclusion: j.conclusion === 'success' ? 'success' : 'failure' })),
-    ),
-    pages: passRate(
-      jobs.pages.map((j) => ({ conclusion: j.conclusion === 'success' ? 'success' : 'failure' })),
-    ),
+    probe: passRate(toRun(jobs.probe)),
+    pages: passRate(toRun(jobs.pages)),
   };
 }
 
@@ -109,21 +121,21 @@ async function run({ github, context, core }) {
   const { year, week } = isoWeekKst();
   const weekTag = `${year}-W${String(week).padStart(2, '0')}`;
 
+  let md = `# gateo 사이트 건강 주간 요약 (${weekTag})\n\n`;
+  md += `기간: 지난 7일 (main, KST 기준 집계 · skipped run 제외)\n\n`;
+
+  if (dry) {
+    md += `(dry-run) Actions API·이슈 API 호출 생략\n\n`;
+    reportIssues.writeSummary(core, md);
+    return { md, weekTag, dry: true };
+  }
+
   const wfSmoke = await github.rest.actions.listRepoWorkflows({ owner, repo });
   const findId = (name) => wfSmoke.data.workflows.find((w) => w.name === name || w.path.endsWith(name))?.id;
 
   const smokeId = findId('Smoke Health');
   const e2eId = findId('E2E Health');
   const ciId = findId('CI');
-
-  let md = `# gateo 사이트 건강 주간 요약 (${weekTag})\n\n`;
-  md += `기간: 지난 7일 (main, KST 기준 집계)\n\n`;
-
-  if (dry) {
-    md += `(dry-run) Actions API·이슈 API 호출 생략\n\n`;
-    core.summary.addRaw(md);
-    return { md, weekTag, dry: true };
-  }
 
   const smokeRuns = smokeId ? await listRuns(github, owner, repo, smokeId, createdGte) : [];
   const e2eRuns = e2eId ? await listRuns(github, owner, repo, e2eId, createdGte) : [];
@@ -155,7 +167,7 @@ async function run({ github, context, core }) {
     }
   }
 
-  core.summary.addRaw(`${md}\n`);
+  reportIssues.writeSummary(core, `${md}\n`);
 
   const prevWeekly = await github.rest.issues.listForRepo({
     owner,

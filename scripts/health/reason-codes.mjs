@@ -6,7 +6,12 @@ const REASON_KO = {
   assert: '검증 실패',
   network: '네트워크 오류',
   unknown: '원인 미분류',
+  missing_result: '결과 파일 없음',
 };
+
+export function publicReason(reasonCode) {
+  return REASON_KO[reasonCode] || REASON_KO.unknown;
+}
 
 export function classifyReasonCode(detail) {
   const text = String(detail || '');
@@ -19,16 +24,17 @@ export function classifyReasonCode(detail) {
   return 'unknown';
 }
 
-export function koreanReason(reasonCode, detail) {
-  const base = REASON_KO[reasonCode] || REASON_KO.unknown;
-  const trimmed = String(detail || '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 80);
-  if (!trimmed) return base;
-  return `${base} (${trimmed})`;
+/** 공개 경로(이슈·Summary)용 — raw detail 절대 포함 금지 */
+export function koreanReason(reasonCode) {
+  return publicReason(reasonCode);
 }
 
 export function buildCauseKey(layer, id, reasonCode) {
   return `${layer}:${id}:${reasonCode}`;
+}
+
+export function logPrivateDetail(scope, detail) {
+  const raw = String(detail || '').replace(/\u001b\[[0-9;]*m/g, '');
+  if (!raw.trim()) return;
+  console.error(`[health-private][${scope}] ${raw.slice(0, 2000)}`);
 }

@@ -6,6 +6,7 @@ import {
   buildCauseKey,
   classifyReasonCode,
   koreanReason,
+  logPrivateDetail,
 } from './reason-codes.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -48,14 +49,19 @@ function smokeCheckToResult(layer, check, source) {
   else if (check.status === 'warn') status = 'warn';
   else if (check.status === 'skip') status = 'pass';
 
+  if (status === 'fail' && check.detail) {
+    logPrivateDetail(check.id, check.detail);
+  }
+
   return {
     id: check.id,
     feature: resolveFeatureSmoke(check.id),
     status,
     reasonCode,
-    reason: koreanReason(reasonCode, check.detail),
+    reason: koreanReason(reasonCode),
     causeKey: buildCauseKey(layer, check.id, reasonCode),
     source,
+    privateDetail: status === 'fail' ? String(check.detail || '') : undefined,
   };
 }
 
@@ -73,7 +79,12 @@ function walkPlaywrightSuites(suites, fileStack = [], out = []) {
           const status = test.status || test.results?.[0]?.status;
           let mapped = 'pass';
           if (status === 'flaky') mapped = 'flaky';
-          else if (status === 'failed' || status === 'timedOut' || status === 'unexpected') {
+          else if (
+            status === 'failed' ||
+            status === 'timedOut' ||
+            status === 'unexpected' ||
+            status === 'fail'
+          ) {
             mapped = 'fail';
           } else if (status === 'skipped' || status === 'interrupted') {
             mapped = 'pass';
@@ -85,6 +96,7 @@ function walkPlaywrightSuites(suites, fileStack = [], out = []) {
             testTitle;
 
           const reasonCode = classifyReasonCode(errMsg);
+          if (mapped === 'fail') logPrivateDetail(path.basename(specFile), errMsg);
           const relSpec = specFile.replace(/^e2e\//, 'e2e/');
           out.push({
             id: path.basename(specFile),
@@ -94,12 +106,13 @@ function walkPlaywrightSuites(suites, fileStack = [], out = []) {
             feature: resolveFeatureSpec(specFile),
             status: mapped,
             reasonCode,
-            reason: koreanReason(reasonCode, errMsg),
+            reason: koreanReason(reasonCode),
             causeKey:
               mapped === 'flaky'
                 ? `flaky:${path.basename(specFile)}:${slugTitle(testTitle)}`
                 : buildCauseKey('pages', path.basename(specFile), reasonCode),
             source: relSpec.startsWith('e2e/') ? relSpec : `e2e/${path.basename(specFile)}`,
+            privateDetail: mapped === 'fail' ? String(errMsg || '') : undefined,
           });
         }
       }
@@ -181,7 +194,7 @@ export function maybeSimulateFailure(results) {
       feature: '모의 실패',
       status: 'fail',
       reasonCode: 'unknown',
-      reason: '모의 실패 (dispatch 검증)',
+      reason: koreanReason('unknown'),
       causeKey: 'smoke:SIM-1:unknown',
       source: 'scripts/health/summarize.mjs',
     },
@@ -215,10 +228,20 @@ export function runSummarize(options) {
 
   results = maybeSimulateFailure(results);
 
-  const payload = buildHealthResult({ layer, runUrl, sha, results });
+  const debugPath = process.env.HEALTH_DEBUG_FILE;
+  if (debugPath) {
+    const debugRows = results
+      .filter((r) => r.privateDetail)
+      .map((r) => ({ id: r.id, causeKey: r.causeKey, detail: r.privateDetail }));
+    fs.mkdirSync(path.dirname(debugPath), { recursive: true });
+    fs.writeFileSync(debugPath, `${JSON.stringify({ layer, debugRows }, null, 2)}\n`, 'utf8');
+  }
+
+  const publicResults = results.map(({ privateDetail, ...rest }) => rest);
+  const payload = buildHealthResult({ layer, runUrl, sha, results: publicResults });
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-  writeSummaryLines(layer, results);
+  writeSummaryLines(layer, publicResults);
   return payload;
 }
 
