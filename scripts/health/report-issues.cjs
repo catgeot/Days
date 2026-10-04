@@ -5,8 +5,12 @@ const PASS_STREAK_RE = /pass-streak:\s*(\d+)/i;
 const COUNT_RE = /횟수:\s*(\d+)/i;
 const REOPEN_DAYS = 7;
 const BOT_COMMENT_MARKER = '<!-- health-bot-notify -->';
+/** GitHub Actions 기본 봇 로그인 — PAT/App 토큰으로 바꾸면 listComments 필터가 깨져 24h 스로틀 무효(스팸) */
 const BOT_LOGIN = 'github-actions[bot]';
 const BOT_NOTIFY_WINDOW_MS = 24 * 60 * 60 * 1000;
+const STATE_CHANGE_WINDOW_MS = 24 * 60 * 60 * 1000;
+const LAST_REOPEN_RE = /<!-- health-last-reopen: ([^>]+) -->/;
+const LAST_CLOSE_RE = /<!-- health-last-close: ([^>]+) -->/;
 
 const ALL_LABELS = [
   'site-health',
@@ -187,6 +191,35 @@ function findIssuesByIdPrefix(issues, layer, id) {
   });
 }
 
+function parseTimestampFromBody(body, re) {
+  const m = String(body || '').match(re);
+  if (!m) return NaN;
+  return Date.parse(m[1].trim());
+}
+
+function withinMs(isoOrMs, windowMs) {
+  const t = typeof isoOrMs === 'number' ? isoOrMs : Date.parse(isoOrMs);
+  if (!Number.isFinite(t)) return false;
+  return Date.now() - t <= windowMs;
+}
+
+function canChangeIssueState(body, kind) {
+  const re = kind === 'reopen' ? LAST_REOPEN_RE : LAST_CLOSE_RE;
+  const last = parseTimestampFromBody(body, re);
+  if (!Number.isFinite(last)) return true;
+  return !withinMs(last, STATE_CHANGE_WINDOW_MS);
+}
+
+function stampStateChange(body, kind) {
+  const tag =
+    kind === 'reopen'
+      ? `<!-- health-last-reopen: ${new Date().toISOString()} -->`
+      : `<!-- health-last-close: ${new Date().toISOString()} -->`;
+  const re = kind === 'reopen' ? LAST_REOPEN_RE : LAST_CLOSE_RE;
+  if (re.test(body)) return String(body).replace(re, tag);
+  return `${body}\n${tag}`;
+}
+
 async function countRecentBotNotifyComments(github, owner, repo, issueNumber, withinMs = BOT_NOTIFY_WINDOW_MS) {
   const since = new Date(Date.now() - withinMs).toISOString();
   let page = 1;
@@ -231,15 +264,18 @@ async function maybeComment(github, owner, repo, issueNumber, body, force = fals
   return postBotComment(github, owner, repo, issueNumber, body, { force });
 }
 
-async function closeIssue(github, owner, repo, issueNumber, comment) {
+async function closeIssue(github, owner, repo, issueNumber, comment, issueBody = '') {
   if (isDryRun()) return;
+  if (issueBody && !canChangeIssueState(issueBody, 'close')) return;
   await postBotComment(github, owner, repo, issueNumber, comment, { force: false });
-  await github.rest.issues.update({
+  const payload = {
     owner,
     repo,
     issue_number: issueNumber,
     state: 'closed',
-  });
+    body: issueBody ? stampStateChange(issueBody, 'close') : undefined,
+  };
+  await github.rest.issues.update(payload);
 }
 
 function layerLabel(layer) {
@@ -272,7 +308,10 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
     if (!isDryRun()) {
       const closed = await findClosedIssueByCauseKey(github, owner, repo, causeKey);
       if (closed && closedWithinReopenWindow(closed)) {
-        const body = buildIssueBody({
+        if (!canChangeIssueState(closed.body, 'reopen')) {
+          return openIssues;
+        }
+        let body = buildIssueBody({
           causeKey,
           summaryLine,
           firstSeen:
@@ -282,6 +321,7 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
           passStreak: 0,
           runUrl,
         });
+        body = stampStateChange(body, 'reopen');
         const title = buildTitle(row.feature, reasonCode);
         await github.rest.issues.update({
           owner,
@@ -470,6 +510,7 @@ async function handlePassForRun(github, context, core, row, layer, openIssues, f
         repo,
         issue.number,
         `연속 통과 ${streak}회로 자동 종료.`,
+        body,
       );
       openIssues = openIssues.filter((i) => i.number !== issue.number);
     } else {

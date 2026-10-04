@@ -8,6 +8,7 @@ import {
   koreanReason,
   logPrivateDetail,
 } from './reason-codes.mjs';
+import { maskPrivate } from './mask-private.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -36,7 +37,7 @@ function resolveFeatureSpec(specFile) {
 function appendStepSummary(line) {
   const summaryFile = process.env.GITHUB_STEP_SUMMARY;
   if (!summaryFile) {
-    console.log(`[step-summary] ${line}`);
+    console.log(maskPrivate(`[step-summary] ${line}`));
     return;
   }
   fs.appendFileSync(summaryFile, `${line}\n`, 'utf8');

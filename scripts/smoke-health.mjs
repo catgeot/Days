@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { loadEnvFile } from './lib/load-env-file.mjs';
 import { smokeSupabaseFetch } from './lib/smoke-supabase-fetch.mjs';
+import { maskPrivate } from './health/mask-private.mjs';
 
 if (!process.env.GITHUB_ACTIONS) {
   loadEnvFile();
@@ -76,6 +77,10 @@ const checks = [];
 
 function record(id, name, status, detail, priority) {
   checks.push({ id, name, status, detail, priority });
+}
+
+function smokeLog(...parts) {
+  console.log(maskPrivate(parts.join(' ')));
 }
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
@@ -350,17 +355,20 @@ function printSummary() {
 
   for (const check of checks) {
     const tag = check.status.toUpperCase().padEnd(4);
-    console.log(`[smoke-health] ${check.id} ${tag} ${check.name} — ${check.detail}`);
+    smokeLog(`[smoke-health] ${check.id} ${tag} ${check.name} — ${check.detail}`);
   }
 
   const p0Warn = p0Checks.filter((c) => c.status === 'warn');
   if (p0Warn.length && ok) {
-    console.log(
+    smokeLog(
       `[smoke-health] note: ${p0Warn.map((c) => c.id).join(', ')} warn (upstream degraded, exit 0)`,
     );
   }
 
-  const summary = { ok, checks };
+  const summary = {
+    ok,
+    checks: checks.map((c) => ({ ...c, detail: maskPrivate(c.detail) })),
+  };
   console.log(JSON.stringify(summary));
 
   const resultFile = process.env.SMOKE_RESULT_FILE?.trim();

@@ -45,7 +45,7 @@ jobs:
           CI: true
           PLAYWRIGHT_JSON_OUTPUT_FILE: health/e2e.json
           PLAYWRIGHT_HTML_OPEN: never
-        run: npx playwright test --reporter=github,html,json
+        run: npx playwright test --reporter=line,json
 
       - name: Summarize E2E results
         if: always()
@@ -68,13 +68,3 @@ jobs:
           name: health-result-e2e
           path: health/health-result.json
           retention-days: 14
-
-      - name: Upload Playwright report
-        if: failure()
-        uses: actions/upload-artifact@v5
-        with:
-          name: playwright-report
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 7
