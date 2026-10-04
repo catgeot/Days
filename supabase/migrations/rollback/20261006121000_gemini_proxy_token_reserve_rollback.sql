@@ -1,4 +1,5 @@
--- Rollback for 20261006120000_gemini_proxy_token_reserve.sql only.
+-- Rollback for 20261006121000_gemini_proxy_token_reserve.sql only.
+-- Does not touch 20261006120000_edge_rate_limit_cost.sql.
 -- Does not drop gemini_proxy_usage_daily or the approved 20261006114000 objects.
 BEGIN;
 SET LOCAL lock_timeout = '3s';

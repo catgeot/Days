@@ -55,6 +55,7 @@ function usageCalls(calls: Call[]) {
   );
 }
 
+/** RPC from 20261006121000_gemini_proxy_token_reserve.sql (20261006120000 is #378). */
 function reserveCalls(calls: Call[]) {
   return calls.filter((call) => call.url.includes("gemini_proxy_reserve_usage"));
 }

@@ -1,4 +1,5 @@
--- 20261006120000_gemini_proxy_token_reserve.sql
+-- 20261006121000_gemini_proxy_token_reserve.sql
+-- Version 20261006120000 is already used by 20261006120000_edge_rate_limit_cost.sql (#378).
 -- Separate from the approved 20261006114000 migration (do not edit that file).
 -- Atomic token reserve so concurrent requests cannot all pass a read-then-call budget check.
 -- Needs approval before apply. gemini_proxy_record_usage cannot subtract, so reconcile is a new RPC.

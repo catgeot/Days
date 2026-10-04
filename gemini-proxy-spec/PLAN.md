@@ -88,7 +88,7 @@
    - 모든 값은 env로 덮어쓸 수 있게 한다(`GEMINI_PROXY_LIMITS` JSON). 배포 없이 `supabase secrets set`으로 조정.
    - 초과 → 429 `rate_limited` + `Retry-After` 헤더 + `retryAfter`(초). 예산 초과 → 429 `budget`.
    - **속도 RPC 오류 시**: isolate 메모리 한도(IP당 분 3, isolate 전역 분 20)로만 통과. 넘으면 503 `busy`.
-   - **토큰 예산**: 호출 전에 `gemini_proxy_reserve_usage`로 `입력 추정 + maxOutputTokens`를 원자적으로 선점하고, 성공 후 `gemini_proxy_reconcile_usage`로 실제 usageMetadata에 맞춘다. 타임아웃·폴백은 선점을 남긴다(성공이 아니면 깎지 않음). 예산 RPC가 실패하면 **503으로 닫는다**. 이 두 함수는 승인된 `20261006114000`과 분리된 `20261006120000`이며 적용 전 승인이 필요하다. `gemini_proxy_record_usage`는 음수 조정이 없어 정산에 재사용할 수 없다.
+   - **토큰 예산**: 호출 전에 `gemini_proxy_reserve_usage`로 `입력 추정 + maxOutputTokens`를 원자적으로 선점하고, 성공 후 `gemini_proxy_reconcile_usage`로 실제 usageMetadata에 맞춘다. 타임아웃·폴백은 선점을 남긴다(성공이 아니면 깎지 않음). 예산 RPC가 실패하면 **503으로 닫는다**. 이 두 함수는 승인된 `20261006114000`과 분리된 `20261006121000`이며 적용 전 승인이 필요하다. `20261006120000`은 #378 `edge_rate_limit_cost`가 이미 쓴다. `gemini_proxy_record_usage`는 음수 조정이 없어 정산에 재사용할 수 없다.
    - Google Cloud 할당량과 결제 알림을 콘솔에 둔다. 앱 예산과 별개다.
 6. **오류 응답 (MOONi가 부드럽게 처리)** — 모두 `{ success:false, error:<code>, retryAfter? }`. Gemini 오류 본문은 클라이언트에 보내지 않고 로그에만 남긴다.
 
@@ -138,7 +138,7 @@ RUNBOOK 공통 절차(백업 → 사전 확인 → 롤백 준비 → 1회 실행
 
 | 단계 | 내용 | 게이트 | 롤백 | 가장 이른 창 (KST) |
 |---|---|---|---|---|
-| 3g | DB `20261006114000_…` 후, 승인 시에만 `20261006120000_…`(토큰 선점) | 로컬 PASS | 각 rollback. 선점 함수만 먼저 내려도 됨 | 엣지보다 먼저 |
+| 3g | DB `20261006114000_…` 후, 승인 시에만 `20261006121000_…`(토큰 선점. `20261006120000`은 #378) | 로컬 PASS | 각 rollback. 선점 함수만 먼저 내려도 됨 | 엣지보다 먼저 |
 | E3 | `gemini-proxy` 배포 (LEGACY=on, verify_jwt=true) | 3g live, PR 머지, 시크릿 | §4.4 | 프런트보다 먼저 |
 | P | 헬스 핑 PR 머지 (하루 1회 워크플로. 2시간 스모크와 분리) | E3 live, `GEMINI_HEALTH_TOKEN` | 워크플로 비활성 | E3 다음 |
 | S | 기존 smoke-health (Gemini 실핑 아님) | P | | P 다음 |

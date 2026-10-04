@@ -1,4 +1,4 @@
-94c94a0c5dbfb8854cfeb58213dbd77dbb853410fad37a8ba73ed22afba95c98  ./PLAN.md
+6dfe75c539127fca2a09c940bd2c86f533f4e046b0a67baee36cb41f6e79fe59  ./PLAN.md
 4e01a48157641442c94e3d97382a64c4c864a9da404a48e4f8ac8240231e4a15  ./api/functions.json
 f1ed876a41161153eae2fa1639d58bb19883efb00a19c5a7a8f100844a4cab93  ./api/gemini-proxy.json
 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570  ./api/prod_name_check.json
@@ -25,3 +25,5 @@ aee8c52ff33e2730ca1ca0b7370b7c00d412ab326bcf2cb7ebc65d8d183aa06b  ./sql/20261006
 406e94033cd06d60794f92435617f611147e27b14ae5c8c04bb186fa19f2f28a  ./sql/rollback/20261006114000_gemini_proxy_rate_limits_rollback.sql
 e42d067efc49ae038805e38e3945374e5b74359c09977c9a704e46957843c30c  ./sql/tests/local_test.sh
 61dea635d8d373a5771ca1f40b158dc9d7218791b099b50eab068662f2c4b307  ./sql/tests/local_test_result_2026-10-03.txt
+0c7c2e90b3d32b2f7068d8b84f6e431aef06987e3bb7e8ddd6bb03ce2b73f6e8  ../supabase/migrations/20261006121000_gemini_proxy_token_reserve.sql
+55fefd2af66384a15f8f85c17fe18ce0cfb303d09c88ba35a1228f847c435678  ../supabase/migrations/rollback/20261006121000_gemini_proxy_token_reserve_rollback.sql
