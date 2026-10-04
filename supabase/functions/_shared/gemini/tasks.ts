@@ -409,17 +409,28 @@ export function acceptProxyParts(
   return { ok: true, parts: out };
 }
 
-/** 글자 4개당 1토큰, 이미지 1장당 1024. base64 길이는 토큰으로 세지 않는다. */
+/** ASCII는 4자당 1. ASCII가 아니면 1자당 1(한글 1–2자당 1의 보수적 끝). 이미지 1장당 1024. base64 길이는 세지 않는다. */
 export function estimatePromptTokens(parts: unknown[]): number {
-  let chars = 0;
+  let tokens = 0;
   let images = 0;
   for (const part of parts) {
     if (!part || typeof part !== "object") continue;
     const text = (part as { text?: unknown }).text;
-    if (typeof text === "string") chars += text.length;
+    if (typeof text === "string") tokens += estimateTextTokens(text);
     if ((part as { inlineData?: unknown }).inlineData) images += 1;
   }
-  return Math.ceil(chars / 4) + images * 1024;
+  return tokens + images * 1024;
+}
+
+function estimateTextTokens(text: string): number {
+  let ascii = 0;
+  let other = 0;
+  for (const ch of text) {
+    const code = ch.codePointAt(0) ?? 0;
+    if (code <= 0x7f) ascii += 1;
+    else other += 1;
+  }
+  return Math.ceil(ascii / 4) + other;
 }
 
 export function buildLegacy(body: Record<string, unknown>, legacyEnabled: boolean): TaskBuild {

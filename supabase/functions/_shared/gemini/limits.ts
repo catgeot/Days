@@ -31,7 +31,8 @@ export const DEFAULT_LIMITS: LimitConfig = {
     curation: 150,
     /** health_ping 전용 전역 일 상한. 공용 일일 호출·토큰 예산에는 넣지 않는다. */
     health_ping: 4,
-    legacy: 600,
+    /** 구 번들. 72시간 뒤 GEMINI_PROXY_LEGACY=off. 기본 일 100. */
+    legacy: 100,
   },
 };
 
@@ -76,7 +77,7 @@ export function buildRateChecks(
   tier: string | null,
   limits: LimitConfig,
 ): RateCheck[] {
-  const taskLimit = limits.tasks[task] ?? limits.tasks.legacy ?? 600;
+  const taskLimit = limits.tasks[task] ?? limits.tasks.legacy ?? 100;
   const checks: RateCheck[] = [
     { bucket: `ip:${ipHash}:m`, window_s: 60, limit: limits.ip_minute },
     { bucket: `ip:${ipHash}:h`, window_s: 3600, limit: limits.ip_hour },

@@ -234,8 +234,11 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     return jsonResponse(502, { success: false, error: "upstream_error" }, origin, originAllowed);
   }
 
+  type Hold = { id: string; prompt: number; output: number };
+
   const reserve = async (modelName: string, outputTokens: number) => {
     const promptTokens = estimatePromptTokens(parts);
+    const id = crypto.randomUUID();
     try {
       const result = await rpc(fetchImpl, env, "gemini_proxy_reserve_usage", {
         p_task: built.task,
@@ -244,11 +247,15 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
         p_prompt_tokens: promptTokens,
         p_output_tokens: outputTokens,
         p_token_budget: tokenBudget,
-      }) as { ok?: boolean; reason?: string; retry_after_s?: number } | null;
+        p_reservation_id: id,
+      }) as { ok?: boolean; reason?: string; retry_after_s?: number; reservation_id?: string } | null;
       if (!result || result.ok !== true) {
         return { ok: false as const, budget: result?.reason === "budget", retryAfter: Number(result?.retry_after_s) || 1 };
       }
-      return { ok: true as const, prompt: promptTokens, output: outputTokens };
+      const reservationId = typeof result.reservation_id === "string" && result.reservation_id
+        ? result.reservation_id
+        : id;
+      return { ok: true as const, id: reservationId, prompt: promptTokens, output: outputTokens };
     } catch (error) {
       console.error(JSON.stringify({
         fn: "gemini-proxy",
@@ -256,6 +263,18 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
         detail: String(error instanceof Error ? error.message : error).slice(0, 200),
       }));
       return { ok: false as const, budget: false, retryAfter: 1 };
+    }
+  };
+
+  const releaseHold = async (hold: Hold) => {
+    try {
+      await rpc(fetchImpl, env, "gemini_proxy_release_usage", { p_reservation_id: hold.id });
+    } catch (error) {
+      console.error(JSON.stringify({
+        fn: "gemini-proxy",
+        error: "budget_rpc_error",
+        detail: String(error instanceof Error ? error.message : error).slice(0, 200),
+      }));
     }
   };
 
@@ -274,25 +293,30 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
   );
 
   let model = built.model;
-  let reserved: { prompt: number; output: number } | null = null;
+  let reserved: Hold | null = null;
   if (!health) {
     const held = await reserve(model, built.maxOutputTokens);
     if (!held.ok) return budgetDenied(held);
-    reserved = { prompt: held.prompt, output: held.output };
+    reserved = { id: held.id, prompt: held.prompt, output: held.output };
   }
 
   let upstream = await callGemini(fetchImpl, apiKey, model, parts, built.maxOutputTokens);
   if (!upstream.ok && (upstream.status === 503 || upstream.status === 404 || upstream.timedOut) && model !== GEMINI_FAST) {
+    if (reserved) {
+      await releaseHold(reserved);
+      reserved = null;
+    }
     if (!health) {
       const held = await reserve(GEMINI_FAST, built.maxOutputTokens);
       if (!held.ok) return budgetDenied(held);
-      reserved = { prompt: held.prompt, output: held.output };
+      reserved = { id: held.id, prompt: held.prompt, output: held.output };
     }
     model = GEMINI_FAST;
     upstream = await callGemini(fetchImpl, apiKey, model, parts, built.maxOutputTokens);
   }
 
   if (!upstream.ok) {
+    if (reserved) await releaseHold(reserved);
     if (upstream.errorText) {
       console.error(JSON.stringify({
         fn: "gemini-proxy",
@@ -333,11 +357,9 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
   if (!health && reserved) {
     try {
       await rpc(fetchImpl, env, "gemini_proxy_reconcile_usage", {
-        p_task: built.task,
-        p_model: model,
-        p_prompt_delta: answer.promptTokens - reserved.prompt,
-        p_output_delta: answer.outputTokens - reserved.output,
-        p_calls_delta: 0,
+        p_reservation_id: reserved.id,
+        p_prompt_tokens: answer.promptTokens,
+        p_output_tokens: answer.outputTokens,
       });
     } catch (error) {
       console.error(JSON.stringify({

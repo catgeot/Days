@@ -1,5 +1,6 @@
 import { assert, assertEquals } from "@std/assert";
 import { resetRateMemory } from "../_shared/gemini/limits.ts";
+import { estimatePromptTokens } from "../_shared/gemini/tasks.ts";
 import { handleGeminiProxy } from "./router.ts";
 
 const ORIGIN = "https://www.gateo.kr";
@@ -51,8 +52,12 @@ function admitCalls(calls: Call[]) {
 function usageCalls(calls: Call[]) {
   return calls.filter((call) =>
     call.url.includes("gemini_proxy_record_usage") || call.url.includes("gemini_proxy_reserve_usage") ||
-    call.url.includes("gemini_proxy_reconcile_usage")
+    call.url.includes("gemini_proxy_reconcile_usage") || call.url.includes("gemini_proxy_release_usage")
   );
+}
+
+function releaseCalls(calls: Call[]) {
+  return calls.filter((call) => call.url.includes("gemini_proxy_release_usage"));
 }
 
 /** RPC from 20261006121000_gemini_proxy_token_reserve.sql (20261006120000 is #378). */
@@ -97,7 +102,10 @@ function routedFetch(gemini: (call: Call) => Response, admitBody: unknown = { ok
     if (call.url.includes("gemini_proxy_reserve_usage")) {
       return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }
-    if (call.url.includes("gemini_proxy_reconcile_usage") || call.url.includes("gemini_proxy_record_usage")) {
+    if (
+      call.url.includes("gemini_proxy_reconcile_usage") || call.url.includes("gemini_proxy_record_usage") ||
+      call.url.includes("gemini_proxy_release_usage")
+    ) {
       return new Response("null", { status: 200 });
     }
     if (call.url.includes("generativelanguage")) return gemini(call);
@@ -329,6 +337,12 @@ Deno.test("admit checks are ordered and stop before Gemini when limited", async 
   const reserved = JSON.parse(String(reserveCalls(calls)[0].init?.body));
   assertEquals(reserved.p_token_budget, 1_500_000);
   assertEquals(reserved.p_output_tokens, 2048);
+  assertEquals(typeof reserved.p_reservation_id, "string");
+  const reconciled = calls.filter((call) => call.url.includes("gemini_proxy_reconcile_usage"));
+  assertEquals(reconciled.length, 1);
+  const settled = JSON.parse(String(reconciled[0].init?.body));
+  assertEquals(settled.p_reservation_id, reserved.p_reservation_id);
+  assertEquals(releaseCalls(calls).length, 0);
 });
 
 Deno.test("RPC errors pass only inside the memory cap", async () => {
@@ -383,7 +397,7 @@ Deno.test("Gemini 503 falls back to flash-lite once then busy", async () => {
     if (call.url.includes("gemini_proxy_reserve_usage")) {
       return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }
-    if (call.url.includes("reconcile") || call.url.includes("record_usage")) {
+    if (call.url.includes("reconcile") || call.url.includes("record_usage") || call.url.includes("release_usage")) {
       return new Response("null", { status: 200 });
     }
     n += 1;
@@ -399,6 +413,9 @@ Deno.test("Gemini 503 falls back to flash-lite once then busy", async () => {
   assert(geminiCalls(calls)[0].url.includes("gemini-3.5-flash"));
   assert(geminiCalls(calls)[1].url.includes("gemini-3.1-flash-lite"));
   assertEquals(admitCalls(calls).length, 1);
+  assertEquals(reserveCalls(calls).length, 2);
+  assertEquals(releaseCalls(calls).length, 2);
+  assertEquals(calls.filter((call) => call.url.includes("reconcile")).length, 0);
 });
 
 Deno.test("MAX_TOKENS is returned as truncated text", async () => {
@@ -422,6 +439,9 @@ Deno.test("legacy on is capped and legacy off is rejected", async () => {
   const sent = JSON.parse(String(geminiCalls(calls)[0].init?.body));
   assertEquals(sent.generationConfig.maxOutputTokens, 2048);
   assert(geminiCalls(calls)[0].url.includes("gemini-3.5-flash"));
+  const legacyAdmit = JSON.parse(String(admitCalls(calls)[0].init?.body));
+  const legacyDay = legacyAdmit.p_checks.find((check: { bucket: string }) => check.bucket === "task:legacy:d");
+  assertEquals(legacyDay.limit, 100);
 
   const pro = await post({
     modelId: "gemini-3.1-pro-preview",
@@ -519,7 +539,14 @@ Deno.test("budget reserve RPC failure is 503 and does not call Gemini", async ()
   assertEquals(geminiCalls(calls).length, 0);
 });
 
-Deno.test("reserve budget hit is 429 and a timeout keeps the reservation", async () => {
+Deno.test("non-ASCII text reserves about one token per character", () => {
+  assertEquals(estimatePromptTokens([{ text: "abcd" }]), 1);
+  assertEquals(estimatePromptTokens([{ text: "안녕" }]), 2);
+  assertEquals(estimatePromptTokens([{ text: "ab안녕" }]), 3);
+  assertEquals(estimatePromptTokens([{ text: "hi", inlineData: { mimeType: "image/png", data: "qq" } }]), 1025);
+});
+
+Deno.test("reserve budget hit is 429 and a timeout releases the reservation", async () => {
   const { fetchImpl, calls } = installFetch((call) => {
     if (call.url.includes("gemini_proxy_admit")) return new Response(JSON.stringify({ ok: true }), { status: 200 });
     if (call.url.includes("gemini_proxy_reserve_usage")) {
@@ -537,7 +564,9 @@ Deno.test("reserve budget hit is 429 and a timeout keeps the reservation", async
     if (call.url.includes("gemini_proxy_reserve_usage")) {
       return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }
-    if (call.url.includes("reconcile")) return new Response("null", { status: 200 });
+    if (call.url.includes("reconcile") || call.url.includes("release_usage")) {
+      return new Response("null", { status: 200 });
+    }
     const error = new Error("aborted");
     error.name = "AbortError";
     throw error;
@@ -545,7 +574,11 @@ Deno.test("reserve budget hit is 429 and a timeout keeps the reservation", async
   const timedOut = await post(mooni, { Origin: ORIGIN }, fetchTimeout);
   assertEquals(timedOut.status, 503);
   assertEquals(reserveCalls(timed).length, 1);
+  assertEquals(releaseCalls(timed).length, 1);
   assertEquals(timed.filter((call) => call.url.includes("reconcile")).length, 0);
+  const reservedId = JSON.parse(String(reserveCalls(timed)[0].init?.body)).p_reservation_id;
+  const releasedId = JSON.parse(String(releaseCalls(timed)[0].init?.body)).p_reservation_id;
+  assertEquals(releasedId, reservedId);
 });
 
 Deno.test("OPTIONS echoes only an allowed origin", async () => {
