@@ -2,30 +2,50 @@
  * Client IP for fetch-place-videos rate-limit keys.
  * Staging echo (staging-ip-echo) imports this same function. Delete that echo after verification.
  *
- * The leftmost X-Forwarded-For hop is client-supplied. Do not trust it.
- * Supabase Edge docs do not say the gateway overwrites X-Forwarded-For, and
- * they do not say `cf-connecting-ip` is forwarded. Staging verification is required.
+ * Staging on 2026-10-04: Supabase sends X-Forwarded-For as
+ * `<client>, <client>, <internal hop>`. The rightmost hop is a platform
+ * address (3.2.51.x / 99.82.165.x) and changes per request, so trusting one
+ * hop from the right shares one counter and never trips the per-minute cap.
+ * `cf-connecting-ip` is the real client. Spoofed CF-Connecting-IP is rejected
+ * by Cloudflare (403, non-JSON, error code 1000) before the function runs.
+ * Spoofed X-Forwarded-For and X-Real-IP are stripped by the platform.
  *
- * FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER (default `x-forwarded-for`):
- *   a single platform header such as `cf-connecting-ip` is used when present.
- *   `x-real-ip` and `x-forwarded-for` as this env value are ignored. The env
- *   does not switch the source to X-Real-IP. X-Real-IP is only the fallback
- *   when X-Forwarded-For is absent.
- * FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS (default 1, clamp 1–5), counted from
- * the right. Assumption: one gateway appends the observed peer, so hop 1 is
- * the rightmost address. Client-supplied hops stay on the left.
+ * Default source is `cf-connecting-ip` (code default, not an env requirement).
+ * If that header is missing or not a valid IP, fall back to X-Forwarded-For.
+ * FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS defaults to 2 (clamp 1–5), counted from
+ * the right, so the internal hop is skipped and the client hop is kept.
+ * FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER overrides the primary header when it is
+ * some other single platform header. `x-real-ip` and `x-forwarded-for` as this
+ * env value are ignored. X-Real-IP is not a client identity source.
  * `sb-forwarded-for` is Auth/GoTrue only and is not read here.
+ *
+ * If neither the primary header nor XFF yields a valid IP, the key is
+ * `unknown`. Every such request shares that bucket, so a missing IP cannot
+ * bypass the per-IP limits.
  *
  * IPv6 keys use the /64 prefix. IPv4-mapped IPv6 (`::ffff:a.b.c.d`) is the
  * IPv4 address. Ports are stripped so `ip:port` does not split the bucket.
  */
 
+const DEFAULT_CLIENT_IP_HEADER = "cf-connecting-ip";
+const DEFAULT_XFF_TRUSTED_HOPS = 2;
+
 function trustedXffHops(): number {
   const raw = Deno.env.get("FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS");
-  if (raw == null || raw.trim() === "") return 1;
+  if (raw == null || raw.trim() === "") return DEFAULT_XFF_TRUSTED_HOPS;
   const n = Number(raw);
-  if (!Number.isInteger(n) || n < 1 || n > 5) return 1;
+  if (!Number.isInteger(n) || n < 1 || n > 5) return DEFAULT_XFF_TRUSTED_HOPS;
   return n;
+}
+
+function primaryHeaderName(): string {
+  const configured = (Deno.env.get("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER") ?? DEFAULT_CLIENT_IP_HEADER)
+    .trim()
+    .toLowerCase();
+  if (!configured || configured === "x-forwarded-for" || configured === "x-real-ip") {
+    return DEFAULT_CLIENT_IP_HEADER;
+  }
+  return configured;
 }
 
 export function normalizeIpToken(raw: string): string {
@@ -60,33 +80,41 @@ function expandIpv6(raw: string): string[] | null {
   return [...left, ...Array(missing).fill("0000"), ...right].map((part) => part.padStart(4, "0"));
 }
 
+function isIpv4(ip: string): boolean {
+  const parts = ip.split(".");
+  if (parts.length !== 4) return false;
+  return parts.every((part) => /^\d{1,3}$/.test(part) && Number(part) <= 255);
+}
+
+function isValidIp(ip: string): boolean {
+  if (!ip || ip === "unknown") return false;
+  if (isIpv4(ip)) return true;
+  return expandIpv6(ip) !== null;
+}
+
 function bucketIp(ip: string): string {
   const v6 = expandIpv6(ip);
   if (!v6) return ip;
   return `${v6.slice(0, 4).join(":")}::/64`;
 }
 
+function xffClient(req: Request): string {
+  const forwarded = (req.headers.get("x-forwarded-for") ?? "")
+    .split(",")
+    .map((part) => normalizeIpToken(part.trim()))
+    .filter(Boolean);
+  if (!forwarded.length) return "";
+  const index = Math.max(0, forwarded.length - trustedXffHops());
+  const hop = forwarded[index];
+  if (!isValidIp(hop)) return "";
+  return bucketIp(hop);
+}
+
 export function clientIp(req: Request): string {
-  const headerName = (Deno.env.get("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER") ?? "x-forwarded-for")
-    .trim()
-    .toLowerCase();
-  let raw = "";
-  // x-real-ip is not a platform-overwritten header. Setting the env to it is ignored.
-  if (headerName && headerName !== "x-forwarded-for" && headerName !== "x-real-ip") {
-    raw = (req.headers.get(headerName) ?? "").split(",")[0]?.trim() ?? "";
-  }
-  if (!raw) {
-    const forwarded = (req.headers.get("x-forwarded-for") ?? "")
-      .split(",")
-      .map((part) => normalizeIpToken(part.trim()))
-      .filter(Boolean);
-    if (forwarded.length) {
-      const index = Math.max(0, forwarded.length - trustedXffHops());
-      raw = forwarded[index];
-    }
-  }
-  if (!raw) raw = normalizeIpToken(req.headers.get("x-real-ip")?.trim() || "unknown");
-  else raw = normalizeIpToken(raw);
-  const cleaned = raw.replace(/[^0-9a-fA-F:.\-]/g, "").slice(0, 64);
-  return bucketIp(cleaned || "unknown");
+  const headerName = primaryHeaderName();
+  const headerRaw = normalizeIpToken((req.headers.get(headerName) ?? "").split(",")[0]?.trim() ?? "");
+  if (isValidIp(headerRaw)) return bucketIp(headerRaw);
+  const fromXff = xffClient(req);
+  if (fromXff) return fromXff;
+  return "unknown";
 }

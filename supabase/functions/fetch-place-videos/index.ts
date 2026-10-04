@@ -198,6 +198,8 @@ function json(req: Request, body: Record<string, unknown>, status: number): Resp
   });
 }
 
+// Legacy anon JWT only: three dot-separated parts. An `sb_publishable_` key is not a JWT and gets 401.
+// Callers must also send an allowed Origin (www.gateo.kr, gateo.kr, or a days-git Vercel preview host).
 function hasBearerJwt(req: Request): boolean {
   const raw = req.headers.get("Authorization") ?? req.headers.get("authorization") ?? "";
   const m = raw.match(/^Bearer\s+(.+)$/i);

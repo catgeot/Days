@@ -45,3 +45,24 @@ Deno.test("200 when STAGING_IP_ECHO_ALLOW is 1", async () => {
   assertEquals(body.clientIp, "203.0.113.8");
   Deno.env.delete("STAGING_IP_ECHO_ALLOW");
 });
+
+Deno.test("echo uses cf-connecting-ip, then the XFF hop before the platform hop", async () => {
+  Deno.env.set("STAGING_IP_ECHO_ALLOW", "1");
+  Deno.env.delete("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER");
+  Deno.env.delete("FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS");
+  const preferred = await hit({
+    "cf-connecting-ip": "203.0.113.50",
+    "x-forwarded-for": "1.2.3.4, 198.51.100.8, 3.2.51.9",
+    "x-real-ip": "9.9.9.9",
+  });
+  assertEquals(preferred.status, 200);
+  assertEquals((await preferred.json()).clientIp, "203.0.113.50");
+  const fallback = await hit({
+    "x-forwarded-for": "1.2.3.4, 203.0.113.8, 3.2.51.9",
+    "x-real-ip": "9.9.9.9",
+  });
+  assertEquals((await fallback.json()).clientIp, "203.0.113.8");
+  const missing = await hit({ "x-real-ip": "9.9.9.9", "x-forwarded-for": "not-an-ip" });
+  assertEquals((await missing.json()).clientIp, "unknown");
+  Deno.env.delete("STAGING_IP_ECHO_ALLOW");
+});

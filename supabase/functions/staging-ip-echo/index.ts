@@ -7,7 +7,8 @@
  * verify_jwt stays true (see config.toml). No CORS header: browsers cannot read this body.
  * Without STAGING_IP_ECHO_ALLOW=1 the function returns 404 and echoes nothing.
  *
- * Returns the raw forwarding headers and the same clientIp() fetch-place-videos uses.
+ * Returns the raw forwarding headers and the same clientIp() fetch-place-videos uses
+ * (cf-connecting-ip, then X-Forwarded-For with trusted hops 2, else "unknown").
  */
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { clientIp } from "../_shared/placeVideoClientIp.ts";

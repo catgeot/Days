@@ -2,6 +2,10 @@
 # STAGING ONLY. Delete staging-ip-echo after this passes.
 # Committed config keeps enabled = false. In a working copy on staging only:
 # flip enabled = true, set secret STAGING_IP_ECHO_ALLOW=1, deploy by name, run this, delete.
+#
+# ANON_KEY must be the legacy anon JWT (three dot-separated parts).
+# An sb_publishable_ key is not a JWT and fetch-place-videos returns 401.
+# fetch-place-videos also requires an allowed Origin (this script sends https://www.gateo.kr).
 # Usage:
 #   IP_ECHO_URL=https://<staging-ref>.supabase.co/functions/v1/staging-ip-echo \
 #   VIDEOS_URL=https://<staging-ref>.supabase.co/functions/v1/fetch-place-videos \
@@ -10,14 +14,24 @@
 set -euo pipefail
 
 PROD_REF="phdjnbfitvmrguqzverm"
+lower() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
 
 if [[ -z "${IP_ECHO_URL:-}" || -z "${ANON_KEY:-}" ]]; then
   echo "Set IP_ECHO_URL and ANON_KEY. Optional VIDEOS_URL for the 7/min check." >&2
   exit 1
 fi
 
+IP_ECHO_URL=$(lower "$IP_ECHO_URL")
+if [[ -n "${VIDEOS_URL:-}" ]]; then VIDEOS_URL=$(lower "$VIDEOS_URL"); fi
+if [[ -n "${STAGING_REF:-}" ]]; then STAGING_REF=$(lower "$STAGING_REF"); fi
+
 if [[ "${IP_ECHO_URL}${VIDEOS_URL:-}${STAGING_REF:-}" == *"$PROD_REF"* ]]; then
   echo "FAIL refusing production project $PROD_REF" >&2
+  exit 1
+fi
+
+if [[ "$ANON_KEY" == sb_publishable_* || "$ANON_KEY" != *.*.* ]]; then
+  echo "FAIL ANON_KEY must be the legacy anon JWT (three dot-separated parts). sb_publishable_ keys get 401." >&2
   exit 1
 fi
 
@@ -57,8 +71,37 @@ bucket_ip() {
   ' "$1"
 }
 
-echo "egress lookup (IPv4, same family as the echo call)"
-egress_raw=$(curl -4 -fsS --max-time 15 https://api.ipify.org || curl -4 -fsS --max-time 15 https://ifconfig.me/ip || true)
+project_ref() {
+  if [[ -n "${STAGING_REF:-}" ]]; then
+    printf '%s' "$STAGING_REF"
+    return
+  fi
+  local host="${IP_ECHO_URL#*://}"
+  host="${host%%/*}"
+  host="${host%%:*}"
+  if [[ "$host" == *.functions.supabase.co ]]; then
+    printf '%s' "${host%%.functions.supabase.co}"
+    return
+  fi
+  if [[ "$host" == *.supabase.co ]]; then
+    printf '%s' "${host%%.supabase.co}"
+    return
+  fi
+  return 1
+}
+
+if ! ref=$(project_ref); then
+  echo "FAIL could not read the project ref from IP_ECHO_URL or STAGING_REF" >&2
+  exit 1
+fi
+if [[ "$ref" == "$PROD_REF" ]]; then
+  echo "FAIL refusing production project $PROD_REF" >&2
+  exit 1
+fi
+
+echo "egress lookup via https://${ref}.supabase.co/cdn-cgi/trace (IPv4)"
+trace=$(curl -4 -fsS --max-time 15 "https://${ref}.supabase.co/cdn-cgi/trace" || true)
+egress_raw=$(printf '%s\n' "$trace" | awk -F= '$1=="ip" { print $2; exit }')
 egress_raw=$(printf '%s' "$egress_raw" | tr -d '[:space:]')
 if [[ -z "$egress_raw" || "$egress_raw" == "unknown" ]]; then
   echo "FAIL could not read the external egress IP" >&2
@@ -109,13 +152,37 @@ check() {
 
 check "b) one forged XFF hop" -H "X-Forwarded-For: 1.2.3.4"
 check "c) two forged XFF hops" -H "X-Forwarded-For: 1.2.3.4, 5.6.7.8"
-check "d) forged CF-Connecting-IP" -H "CF-Connecting-IP: 9.9.9.9"
+
+echo "d) forged CF-Connecting-IP"
+cf_raw=$(curl -4 -sS -w $'\n%{http_code}' "${auth[@]}" -H "CF-Connecting-IP: 9.9.9.9" "$IP_ECHO_URL" || true)
+cf_code=$(printf '%s\n' "$cf_raw" | tail -n 1)
+cf_body=$(printf '%s\n' "$cf_raw" | sed '$d')
+if printf '%s' "$cf_body" | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{try{JSON.parse(s);process.exit(0)}catch{process.exit(2)}})'; then
+  cf_json=1
+else
+  cf_json=0
+fi
+if [[ "$cf_code" == "403" && "$cf_json" == "0" ]]; then
+  echo "d) forged CF-Connecting-IP -> spoof rejected PASS"
+else
+  if ! got=$(printf '%s' "$cf_body" | client_of); then
+    echo "FAIL d) forged CF-Connecting-IP was HTTP $cf_code and not a clientIp" >&2
+    printf '%s\n' "$cf_body" >&2
+    exit 1
+  fi
+  echo "d) forged CF-Connecting-IP -> $got"
+  if [[ "$got" == "unknown" || "$got" != "$egress" ]]; then
+    echo "FAIL d) clientIp=$got expected egress $egress" >&2
+    exit 1
+  fi
+fi
+
 check "e) forged X-Real-IP" -H "X-Real-IP: 9.9.9.9"
-echo "f) this script forces curl -4, so egress and clientIp are both IPv4."
+echo "f) this script forces curl -4, and the egress IP comes from the staging cdn-cgi/trace."
 echo "g) repeat from another network (mobile hotspot)."
 
 if [[ -n "${VIDEOS_URL:-}" ]]; then
-  echo "7 requests/min, seven distinct uncached catalog places, rotated first hop"
+  echo "7 requests/min, seven distinct uncached catalog places. Forged XFF must not open a new bucket."
   mapfile -t places < <(node -e '
     const catalog = require(process.argv[1]);
     const ids = Object.keys(catalog.places || {});
@@ -129,7 +196,7 @@ if [[ -n "${VIDEOS_URL:-}" ]]; then
   fi
   for i in 1 2 3 4 5 6 7; do
     place="${places[$((i - 1))]}"
-    code=$(curl -sS -o /tmp/ip-echo-videos.json -w "%{http_code}" \
+    code=$(curl -4 -sS -o /tmp/ip-echo-videos.json -w "%{http_code}" \
       "${auth[@]}" -H "Content-Type: application/json" -H "Origin: https://www.gateo.kr" \
       -H "X-Forwarded-For: 198.51.100.${i}" \
       -d "{\"placeId\":\"${place}\"}" \

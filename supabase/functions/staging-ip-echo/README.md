@@ -22,6 +22,10 @@ bash supabase/functions/staging-ip-echo/verify.sh
 supabase functions delete staging-ip-echo --project-ref "$STAGING_REF"
 ```
 
-`verify.sh` refuses the production project ref `phdjnbfitvmrguqzverm`. Egress lookup and the echo call both use `curl -4`, so they share one IPv4 path.
+`verify.sh` lowercases the project ref and refuses production ref `phdjnbfitvmrguqzverm`. The egress IP is the `ip=` line from `https://<ref>.supabase.co/cdn-cgi/trace` (`curl -4`), not a public IP echo. The echo call also uses `curl -4`.
 
-`FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER=x-real-ip` is ignored. X-Real-IP is used only when X-Forwarded-For is absent. See the PR plan for the pass rules.
+`ANON_KEY` must be the legacy anon JWT (three dot-separated parts). An `sb_publishable_` key is not a JWT: `fetch-place-videos` returns 401. Requests to that function also need an allowed Origin (`https://www.gateo.kr`, `https://gateo.kr`, or a `days-git` Vercel preview host). `verify.sh` sends `https://www.gateo.kr`.
+
+The client IP default is `cf-connecting-ip`. If that header is missing, X-Forwarded-For is read with trusted hops 2, skipping the Supabase internal hop. `FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER=x-real-ip` is ignored. A forged `CF-Connecting-IP` that Cloudflare answers with HTTP 403 and a non-JSON body is PASS (`spoof rejected`).
+
+PASS: `clientIp` equals the trace IP. Missing or `unknown` is FAIL. No port. Forged XFF and forged X-Real-IP still match the trace IP. Seven distinct uncached catalog places, seventh response 429.

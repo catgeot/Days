@@ -180,7 +180,7 @@ function post(body: Record<string, unknown>, headers?: Record<string, string>): 
       Origin: "https://www.gateo.kr",
       "Content-Type": "application/json",
       Authorization: `Bearer ${JWT}`,
-      "x-real-ip": "203.0.113.10",
+      "cf-connecting-ip": "203.0.113.10",
       ...headers,
     },
     body: JSON.stringify(body),
@@ -514,7 +514,11 @@ Deno.test("page tokens are capped per IP per place and per place", async () => {
 
   const other = await post(
     { placeId: "paris", pageToken: "T-other" },
-    { "x-forwarded-for": "1.2.3.4, 198.51.100.8", "x-real-ip": "9.9.9.9" },
+    {
+      "cf-connecting-ip": "",
+      "x-forwarded-for": "1.2.3.4, 198.51.100.8, 3.2.51.9",
+      "x-real-ip": "9.9.9.9",
+    },
   );
   assertEquals(other.status, 200);
   assert(counts.has("page:ip:198.51.100.8:paris"), [...counts.keys()].join(","));
@@ -523,7 +527,7 @@ Deno.test("page tokens are capped per IP per place and per place", async () => {
   counts.set("page:place:sokcho", 30);
   const placeCap = await post(
     { placeId: "sokcho", pageToken: "T-place" },
-    { "x-forwarded-for": "203.0.113.77" },
+    { "cf-connecting-ip": "", "x-forwarded-for": "203.0.113.77" },
   );
   assertEquals(placeCap.status, 429);
   assertEquals((await placeCap.json()).error, "page_place_limited");
@@ -580,14 +584,14 @@ Deno.test("IPv6 addresses in one /64 share a rate-limit bucket", async () => {
   const sameA = "2001:db8:abcd:12:1111:2222:3333:4444";
   const sameB = "2001:db8:abcd:12:aaaa:bbbb:cccc:dddd";
   const other = "2001:db8:abcd:13::1";
-  const first = await post({ placeId: "paris", pageToken: "A" }, { "x-forwarded-for": sameA, "x-real-ip": "203.0.113.10" });
-  const second = await post({ placeId: "paris", pageToken: "B" }, { "x-forwarded-for": sameB });
+  const first = await post({ placeId: "paris", pageToken: "A" }, { "cf-connecting-ip": "", "x-forwarded-for": sameA });
+  const second = await post({ placeId: "paris", pageToken: "B" }, { "cf-connecting-ip": "", "x-forwarded-for": sameB });
   assertEquals(first.status, 200);
   assertEquals(second.status, 200);
   const bucket = "page:ip:2001:0db8:abcd:0012::/64:paris";
   assertEquals(counts.get(bucket), 2);
   assert(![...counts.keys()].some((key) => key.includes("203.0.113.10")), [...counts.keys()].join(","));
-  const third = await post({ placeId: "paris", pageToken: "C" }, { "x-forwarded-for": other });
+  const third = await post({ placeId: "paris", pageToken: "C" }, { "cf-connecting-ip": "", "x-forwarded-for": other });
   assertEquals(third.status, 200);
   assertEquals(counts.get("page:ip:2001:0db8:abcd:0013::/64:paris"), 1);
   assertEquals(counts.get(bucket), 2);
@@ -704,7 +708,7 @@ Deno.test("a spoofed left XFF hop does not open a new ip bucket", async () => {
   for (let i = 0; i < places.length; i += 1) {
     const res = await post(
       { placeId: places[i] },
-      { "x-forwarded-for": `198.51.100.${i}, 203.0.113.10` },
+      { "cf-connecting-ip": "", "x-forwarded-for": `198.51.100.${i}, 203.0.113.10, 3.2.51.20` },
     );
     if (i < 2) assertEquals(res.status, 200);
     else {
@@ -717,25 +721,77 @@ Deno.test("a spoofed left XFF hop does not open a new ip bucket", async () => {
   assertEquals(ytCalls, 2);
 });
 
-Deno.test("cf-connecting-ip is used only when that header is configured", async () => {
+Deno.test("cf-connecting-ip is the default and beats a spoofed XFF and x-real-ip", async () => {
   reset();
-  Deno.env.set("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER", "cf-connecting-ip");
   const res = await post(
     { placeId: "paris", pageToken: "CF" },
-    { "cf-connecting-ip": "203.0.113.50", "x-forwarded-for": "1.2.3.4, 198.51.100.8" },
+    {
+      "cf-connecting-ip": "203.0.113.50",
+      "x-forwarded-for": "1.2.3.4, 198.51.100.8, 3.2.51.9",
+      "x-real-ip": "9.9.9.9",
+    },
   );
   assertEquals(res.status, 200);
   assert(counts.has("page:ip:203.0.113.50:paris"), [...counts.keys()].join(","));
-  assert(![...counts.keys()].some((key) => key.includes("1.2.3.4") || key.includes("198.51.100.8")), [...counts.keys()].join(","));
+  assert(![...counts.keys()].some((key) => /1\.2\.3\.4|198\.51\.100\.8|3\.2\.51\.9|9\.9\.9\.9/.test(key)), [...counts.keys()].join(","));
+});
 
+Deno.test("missing cf-connecting-ip uses the XFF hop before the platform hop", async () => {
   reset();
-  Deno.env.set("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER", "cf-connecting-ip");
-  const fallback = await post(
-    { placeId: "paris", pageToken: "FB" },
-    { "x-forwarded-for": "1.2.3.4, 198.51.100.8" },
+  const res = await post(
+    { placeId: "paris", pageToken: "HOP" },
+    {
+      "cf-connecting-ip": "",
+      "x-forwarded-for": "1.2.3.4, 203.0.113.50, 3.2.51.9",
+      "x-real-ip": "9.9.9.9",
+    },
   );
-  assertEquals(fallback.status, 200);
-  assert(counts.has("page:ip:198.51.100.8:paris"), [...counts.keys()].join(","));
+  assertEquals(res.status, 200);
+  assert(counts.has("page:ip:203.0.113.50:paris"), [...counts.keys()].join(","));
+  assert(![...counts.keys()].some((key) => /1\.2\.3\.4|3\.2\.51\.9|9\.9\.9\.9/.test(key)), [...counts.keys()].join(","));
+});
+
+Deno.test("XFF_TRUSTED_HOPS still overrides the two-hop fallback", async () => {
+  reset();
+  Deno.env.set("FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS", "1");
+  const res = await post(
+    { placeId: "paris", pageToken: "H1" },
+    { "cf-connecting-ip": "", "x-forwarded-for": "1.2.3.4, 203.0.113.50, 3.2.51.9" },
+  );
+  assertEquals(res.status, 200);
+  assert(counts.has("page:ip:3.2.51.9:paris"), [...counts.keys()].join(","));
+});
+
+Deno.test("CLIENT_IP_HEADER still selects another platform header", async () => {
+  reset();
+  Deno.env.set("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER", "true-client-ip");
+  const res = await post(
+    { placeId: "paris", pageToken: "ALT" },
+    {
+      "cf-connecting-ip": "203.0.113.50",
+      "true-client-ip": "198.51.100.40",
+      "x-forwarded-for": "1.2.3.4, 203.0.113.10, 3.2.51.9",
+    },
+  );
+  assertEquals(res.status, 200);
+  assert(counts.has("page:ip:198.51.100.40:paris"), [...counts.keys()].join(","));
+  assert(![...counts.keys()].some((key) => key.includes("203.0.113.50")), [...counts.keys()].join(","));
+});
+
+Deno.test("an unreadable client IP shares the unknown bucket", async () => {
+  reset();
+  const first = await post(
+    { placeId: "paris", pageToken: "U1" },
+    { "cf-connecting-ip": "", "x-real-ip": "", "x-forwarded-for": "" },
+  );
+  const second = await post(
+    { placeId: "paris", pageToken: "U2" },
+    { "cf-connecting-ip": "not-an-ip", "x-real-ip": "9.9.9.9", "x-forwarded-for": "still-bad, also-bad" },
+  );
+  assertEquals(first.status, 200);
+  assertEquals(second.status, 200);
+  assertEquals(counts.get("page:ip:unknown:paris"), 2);
+  assert(![...counts.keys()].some((key) => key.includes("9.9.9.9")), [...counts.keys()].join(","));
 });
 
 Deno.test("detailCommon uses its own budget and only caches a confirmed empty hit", async () => {
@@ -826,7 +882,7 @@ Deno.test("detailCommon costs 1 per call, so five calls fit under 400 and 200", 
   state.proxyBody = { ok: true, items: [{ contentid: "990011", title: "아이피" }] };
   const ipBlocked = await post(
     { placeId: "scenic:990011" },
-    { "x-real-ip": "198.51.100.9" },
+    { "cf-connecting-ip": "198.51.100.9" },
   );
   assertEquals(ipBlocked.status, 429);
   assertEquals((await ipBlocked.json()).error, "rate_limited");
@@ -921,27 +977,31 @@ Deno.test("ports and ipv4-mapped addresses share one bucket", async () => {
   reset();
   const mapped = await post(
     { placeId: "paris", pageToken: "A" },
-    { "x-forwarded-for": "::ffff:203.0.113.50" },
+    { "cf-connecting-ip": "", "x-forwarded-for": "::ffff:203.0.113.50" },
   );
   const port = await post(
     { placeId: "paris", pageToken: "B" },
-    { "x-forwarded-for": "203.0.113.50:443" },
+    { "cf-connecting-ip": "", "x-forwarded-for": "203.0.113.50:443" },
   );
   assertEquals(mapped.status, 200);
   assertEquals(port.status, 200);
   assertEquals(counts.get("page:ip:203.0.113.50:paris"), 2);
 });
 
-Deno.test("CLIENT_IP_HEADER=x-real-ip does not override the rightmost XFF hop", async () => {
+Deno.test("CLIENT_IP_HEADER=x-real-ip is ignored and the XFF fallback skips the platform hop", async () => {
   reset();
   Deno.env.set("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER", "x-real-ip");
   const res = await post(
     { placeId: "paris", pageToken: "R" },
-    { "x-forwarded-for": "1.2.3.4, 198.51.100.8", "x-real-ip": "9.9.9.9" },
+    {
+      "cf-connecting-ip": "",
+      "x-forwarded-for": "1.2.3.4, 198.51.100.8, 3.2.51.9",
+      "x-real-ip": "9.9.9.9",
+    },
   );
   assertEquals(res.status, 200);
   assert(counts.has("page:ip:198.51.100.8:paris"), [...counts.keys()].join(","));
-  assert(![...counts.keys()].some((key) => key.includes("9.9.9.9") || key.includes("1.2.3.4")), [...counts.keys()].join(","));
+  assert(![...counts.keys()].some((key) => /9\.9\.9\.9|1\.2\.3\.4|3\.2\.51\.9/.test(key)), [...counts.keys()].join(","));
 });
 
 Deno.test("an entity-wrapped word is kept when tags are stripped", async () => {

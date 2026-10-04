@@ -64,7 +64,10 @@ assert(ko.includes('"ipQuotaEmpty": "오늘 이 접속의 영상 검색 한도�
 assert(readFileSync('src/utils/fetchScenicSpotVideos.js', 'utf8').includes('error.context'), 'modal fetch reads the 429 JSON body');
 assert(ipSrc.includes('FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER'), 'client ip header is configurable');
 assert(ipSrc.includes('FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS'), 'xff trusted hop count is configurable');
+assert(ipSrc.includes('DEFAULT_CLIENT_IP_HEADER = "cf-connecting-ip"'), 'default client ip header is cf-connecting-ip');
+assert(ipSrc.includes('DEFAULT_XFF_TRUSTED_HOPS = 2'), 'xff trusted hops default to 2');
 assert(ipSrc.includes('x-real-ip') && ipSrc.includes('ignored'), 'CLIENT_IP_HEADER=x-real-ip is documented as ignored');
+assert(ipSrc.includes('return "unknown"'), 'missing client ip uses the unknown bucket');
 assert(edgeSrc.includes('writeFailure("empty"'), 'only an empty YouTube result writes the negative cache');
 assert(!edgeSrc.includes('writeFailure(error.code'), 'quota refusal does not writeFailure');
 assert(!edgeSrc.includes('writeFailure(yt.reason'), 'youtube errors do not writeFailure');
