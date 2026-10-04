@@ -162,6 +162,7 @@ test('SIM-1 reopen needs 6 clean runs before close', async () => {
 test('orphan check id closes after required passes', async () => {
   process.env.DRY_RUN = '0';
   const { s, api } = gh();
+  const runUrl = 'https://github.com/o/r/actions/runs/99';
   s.issues.push({
     number: 1,
     title: '[site-health] 레거시: 원인 미분류',
@@ -182,9 +183,47 @@ test('orphan check id closes after required passes', async () => {
     labels: ['site-health', 'health:fail', 'layer:smoke'],
     state: 'open',
   });
-  const f = tmpResult({ layer: 'smoke', results: [p0PassRow()] });
+  const f = tmpResult({ layer: 'smoke', runUrl, results: [p0PassRow()] });
   await report({ github: api, context: ctx, core, resultFile: f, layer: 'smoke' });
   assert.equal(s.issues[0].state, 'closed');
+  const closeComment = s.comments.find((c) => c.body.includes('health-bot-notify'));
+  assert.match(closeComment.body, /해당 검사가 더 이상 없어/);
+  assert.ok(closeComment.body.includes(runUrl));
+});
+
+test('injected SIM-1 pass only does not advance any pass-streak', async () => {
+  process.env.DRY_RUN = '0';
+  const { s, api } = gh();
+  for (const [num, key, streak] of [
+    [10, 'smoke:LEGACY-ONLY:timeout', '2'],
+    [11, 'smoke:SIM-1:unknown', '1'],
+  ]) {
+    s.issues.push({
+      number: num,
+      title: 't',
+      body: [
+        `<!-- health-key: ${key} -->`,
+        '',
+        '요약',
+        '',
+        '최초: x (KST)',
+        '최근: y (KST)',
+        '횟수: 1',
+        `pass-streak: ${streak}`,
+        'run: u',
+        '',
+        '대응 후 연속 통과하면 자동으로 닫힘',
+      ].join('\n'),
+      labels: ['site-health', 'health:fail', 'layer:smoke'],
+      state: 'open',
+    });
+  }
+  const f = tmpResult({ layer: 'smoke', results: [simPassRow()] });
+  await report({ github: api, context: ctx, core, resultFile: f, layer: 'smoke' });
+  const legacy = s.issues.find((i) => report.parseHealthKey(i.body) === 'smoke:LEGACY-ONLY:timeout');
+  const sim = s.issues.find((i) => report.parseHealthKey(i.body) === 'smoke:SIM-1:unknown');
+  assert.equal(legacy.body.match(/pass-streak: (\d+)/)[1], '2');
+  assert.equal(sim.body.match(/pass-streak: (\d+)/)[1], '1');
 });
 
 test('missing result file does not advance pass-streak', async () => {

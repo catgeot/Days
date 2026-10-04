@@ -31,6 +31,27 @@ const PASS_STREAK_CLOSE = {
   ci: 1,
 };
 
+const INJECTED_SIM_PASS_SOURCE = 'scripts/health/summarize.mjs';
+
+function isInjectedSimPassRow(row, layer) {
+  if (layer !== 'smoke') return false;
+  if (row.id !== 'SIM-1' || row.status !== 'pass') return false;
+  return row.source === INJECTED_SIM_PASS_SOURCE;
+}
+
+function substantiveHealthResults(results, layer) {
+  if (!Array.isArray(results)) return [];
+  return results.filter((r) => !isInjectedSimPassRow(r, layer));
+}
+
+function formatAutoCloseComment({ streak, runUrl, orphanClose }) {
+  const runLine = runUrl ? ` run: ${runUrl}` : ' run: (없음)';
+  if (orphanClose) {
+    return `이번 실행에서 해당 검사가 더 이상 없어 연속 ${streak}회 확인 후 자동 종료.${runLine}`;
+  }
+  return `연속 통과 ${streak}회로 자동 종료.${runLine}`;
+}
+
 function isDryRun(env = process.env) {
   return env.DRY_RUN === 'true' || env.DRY_RUN === '1';
 }
@@ -507,9 +528,20 @@ async function upsertFlakyIssue(github, context, core, row, layer, openIssues) {
   return openIssues;
 }
 
-async function handlePassForRun(github, context, core, row, layer, openIssues, failedCauseKeys, failedMatchIds) {
+async function handlePassForRun(
+  github,
+  context,
+  core,
+  row,
+  layer,
+  openIssues,
+  failedCauseKeys,
+  failedMatchIds,
+  { orphanClose = false } = {},
+) {
   const { owner, repo } = context.repo;
   const matchId = row.matchId || row.id;
+  const runUrl = row.runUrl || '';
   if (failedMatchIds.has(matchId)) return openIssues;
 
   const matches = findIssuesByIdPrefix(openIssues, layer, matchId);
@@ -534,7 +566,7 @@ async function handlePassForRun(github, context, core, row, layer, openIssues, f
         owner,
         repo,
         issue.number,
-        `연속 통과 ${streak}회로 자동 종료.`,
+        formatAutoCloseComment({ streak, runUrl, orphanClose }),
         body,
       );
       openIssues = openIssues.filter((i) => i.number !== issue.number);
@@ -670,31 +702,35 @@ async function run({ github, context, core, resultFile, layer: layerHint = 'smok
     if (!passByMatchId.has(mid)) passByMatchId.set(mid, row);
   }
 
-  for (const row of passByMatchId.values()) {
-    const enriched = { ...row, runUrl: payloadRunUrl };
-    openIssues = await handlePassForRun(
-      github,
-      context,
-      core,
-      enriched,
-      layer,
-      openIssues,
-      failedCauseKeys,
-      failedMatchIds,
-    );
+  const passStreakAllowed = substantiveHealthResults(results, layer).length > 0;
+
+  if (passStreakAllowed) {
+    for (const row of passByMatchId.values()) {
+      const enriched = { ...row, runUrl: payloadRunUrl };
+      openIssues = await handlePassForRun(
+        github,
+        context,
+        core,
+        enriched,
+        layer,
+        openIssues,
+        failedCauseKeys,
+        failedMatchIds,
+      );
+    }
   }
 
   const presentMatchIds = new Set(results.map((r) => r.matchId || r.id));
   const layerTag = layerLabel(layer);
 
-  if (results.length > 0) {
+  if (passStreakAllowed) {
     const missingCauseKey = `${layer}:_missing:missing_result`;
     if (!failedCauseKeys.has(missingCauseKey)) {
       openIssues = await handlePassForRun(
         github,
         context,
         core,
-        { id: '_missing', matchId: '_missing' },
+        { id: '_missing', matchId: '_missing', runUrl: payloadRunUrl },
         layer,
         openIssues,
         failedCauseKeys,
@@ -723,11 +759,12 @@ async function run({ github, context, core, resultFile, layer: layerHint = 'smok
         github,
         context,
         core,
-        { id, matchId: id },
+        { id, matchId: id, runUrl: payloadRunUrl },
         layer,
         openIssues,
         failedCauseKeys,
         failedMatchIds,
+        { orphanClose: true },
       );
     }
   }
@@ -749,3 +786,6 @@ module.exports.writeSummary = writeSummary;
 module.exports.BOT_COMMENT_MARKER = BOT_COMMENT_MARKER;
 module.exports.BOT_LOGIN = BOT_LOGIN;
 module.exports.countRecentBotNotifyComments = countRecentBotNotifyComments;
+module.exports.isInjectedSimPassRow = isInjectedSimPassRow;
+module.exports.substantiveHealthResults = substantiveHealthResults;
+module.exports.formatAutoCloseComment = formatAutoCloseComment;
