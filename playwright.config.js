@@ -26,7 +26,18 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: /youtube-loadmore-session\.spec\.js/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
+    },
+    {
+      name: 'chromium-mobile',
+      testMatch: /youtube-loadmore-session\.spec\.js/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 } },
+    },
+    {
+      name: 'webkit-mobile',
+      testMatch: /youtube-loadmore-session\.spec\.js/,
+      use: { ...devices['iPhone 13'] },
     },
   ],
 });
