@@ -231,19 +231,7 @@ const YouTubePlayerView = forwardRef(({
       )}
 
       <div className="flex-1 min-h-0 relative overflow-hidden">
-      {externalYouTubeUrl ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-          <a
-            href={externalYouTubeUrl}
-            target="_blank"
-            rel="noopener"
-            className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-          >
-            {t('place.video.openOnYouTube')}
-            <ExternalLink size={14} className="opacity-50" />
-          </a>
-        </div>
-      ) : isLoading ? (
+      {isLoading ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
            <div className="w-12 h-12 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
            <p className="text-white/40 text-sm animate-pulse">{t('place.video.loading')}</p>
@@ -293,25 +281,51 @@ const YouTubePlayerView = forwardRef(({
             {showNoPlayable ? t('place.video.noPlayableBody') : t('place.video.emptyBody')}
           </p>
           {showEmpty ? (
-            <a
-              href={googleFormUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-            >
-              <Sparkles size={18} />
-              {t('place.video.recommend')}
-              <ExternalLink size={14} className="opacity-50" />
-            </a>
+            <div className="flex flex-col items-center gap-3">
+              {externalYouTubeUrl ? (
+                <a
+                  href={externalYouTubeUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+                >
+                  {t('place.video.openOnYouTube')}
+                  <ExternalLink size={14} className="opacity-50" />
+                </a>
+              ) : null}
+              <a
+                href={googleFormUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+              >
+                <Sparkles size={18} />
+                {t('place.video.recommend')}
+                <ExternalLink size={14} className="opacity-50" />
+              </a>
+            </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => onRetry?.()}
-              className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
-            >
-              <RotateCcw size={18} />
-              {t('place.video.retry')}
-            </button>
+            <div className="flex flex-col items-center gap-3">
+              {externalYouTubeUrl ? (
+                <a
+                  href={externalYouTubeUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+                >
+                  {t('place.video.openOnYouTube')}
+                  <ExternalLink size={14} className="opacity-50" />
+                </a>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => onRetry?.()}
+                className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
+              >
+                <RotateCcw size={18} />
+                {t('place.video.retry')}
+              </button>
+            </div>
           )}
         </div>
       ) : isPlaying ? (
