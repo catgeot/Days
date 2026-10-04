@@ -28,22 +28,18 @@ function isStateChangeComment(body) {
   );
 }
 
-function maxStateChangeCommentsInAnyWindow(comments, startMs, endMs) {
+function maxEventsInWindow(events, startMs, endMs) {
   let max = 0;
-  for (let wStart = startMs; wStart <= endMs - WINDOW_MS; wStart += 30 * 60 * 1000) {
+  for (let wStart = startMs; wStart <= endMs - WINDOW_MS; wStart += 15 * 60 * 1000) {
     const wEnd = wStart + WINDOW_MS;
-    let n = 0;
-    for (const c of comments) {
-      const t = Date.parse(c.updated_at);
-      if (t >= wStart && t < wEnd) n += 1;
-    }
+    const n = events.filter((e) => e.t >= wStart && e.t < wEnd).length;
     if (n > max) max = n;
   }
   return max;
 }
 
 function gh() {
-  const s = { issues: [], comments: [], next: 1 };
+  const s = { issues: [], comments: [], transitions: [], next: 1 };
   return {
     s,
     api: {
@@ -71,9 +67,13 @@ function gh() {
           },
           update: async ({ issue_number, body, labels, state, title }) => {
             const i = s.issues.find((x) => x.number === issue_number);
+            const prev = i.state;
             if (body) i.body = body;
             if (title) i.title = title;
             if (labels) i.labels = labels;
+            if (state && state !== prev) {
+              s.transitions.push({ from: prev, to: state, t: T });
+            }
             if (state) {
               i.state = state;
               i.closed_at = state === 'closed' ? iso() : null;
@@ -126,65 +126,175 @@ function simPass() {
   };
 }
 
-function failFile(runUrl) {
-  const f = path.join(dir, `fail-${T}.json`);
-  fs.writeFileSync(
-    f,
-    JSON.stringify({
-      layer: 'smoke',
-      runUrl,
-      results: [
-        {
-          id: 'P0-1',
-          feature: '사이트 HTML',
-          status: 'fail',
-          reasonCode: 'timeout',
-          reason: 'raw secret',
-          causeKey: 'smoke:P0-1:timeout',
-          immediate: true,
-        },
-        p0Pass(),
-        simPass(),
-      ],
-    }),
-  );
+function failRow() {
+  return {
+    id: 'P0-1',
+    feature: '사이트 HTML',
+    status: 'fail',
+    reasonCode: 'timeout',
+    reason: 'raw',
+    causeKey: 'smoke:P0-1:timeout',
+    immediate: true,
+  };
+}
+
+function writeResult(name, results, runUrl) {
+  const f = path.join(dir, `${name}-${T}.json`);
+  fs.writeFileSync(f, JSON.stringify({ layer: 'smoke', runUrl, results }));
   return f;
 }
 
-function passFile(runUrl) {
-  const f = path.join(dir, `pass-${T}.json`);
-  fs.writeFileSync(
-    f,
-    JSON.stringify({
-      layer: 'smoke',
-      runUrl,
-      results: [p0Pass(), simPass()],
-    }),
-  );
-  return f;
-}
-
-async function runFlap30m(api, steps) {
+async function runPattern(api, { steps, stepMs, pattern }) {
   const runUrl = 'https://github.com/o/r/actions/runs/1001';
-  const pat = [failFile(runUrl), passFile(runUrl), passFile(runUrl), passFile(runUrl)];
   for (let i = 0; i < steps; i += 1) {
-    await report({ github: api, context: ctx, core, resultFile: pat[i % 4], layer: 'smoke' });
-    clock(T + 30 * 60 * 1000);
+    const kind = pattern[i % pattern.length];
+    const results =
+      kind === 'F'
+        ? [failRow(), p0Pass(), simPass()]
+        : [p0Pass(), simPass()];
+    await report({
+      github: api,
+      context: ctx,
+      core,
+      resultFile: writeResult(kind, results, runUrl),
+      layer: 'smoke',
+    });
+    clock(T + stepMs);
   }
 }
 
-test('30m F,P,P,P flap: <=2 state-change bot comments per 24h (24h and 7d)', async () => {
+function assertNoSilentStateChanges(s) {
+  const stateComments = s.comments.filter((c) => c.body.includes(MARKER) && isStateChangeComment(c.body));
+  assert.equal(
+    s.transitions.length,
+    stateComments.length,
+    `transitions=${s.transitions.length} comments=${stateComments.length}`,
+  );
+}
+
+test('30m F+3P flap 7d: no silent state changes, <=5 transitions per 24h', async () => {
   process.env.DRY_RUN = '0';
   clock(realNow());
   const startMs = T;
   const { s, api } = gh();
-  const steps24h = (24 * 60) / 30;
-  const steps7d = steps24h * 7;
-  await runFlap30m(api, steps7d);
+  const steps = ((24 * 60) / 30) * 7;
+  await runPattern(api, { steps, stepMs: 30 * 60 * 1000, pattern: ['F', 'P', 'P', 'P'] });
   Date.now = realNow;
+  assertNoSilentStateChanges(s);
+  const max24 = maxEventsInWindow(s.transitions, startMs, T);
+  assert.ok(max24 <= 5, `max state changes per 24h: ${max24}`);
+});
 
-  const stateComments = s.comments.filter((c) => c.body.includes(MARKER) && isStateChangeComment(c.body));
-  const max24 = maxStateChangeCommentsInAnyWindow(stateComments, startMs, T);
-  assert.ok(max24 <= 2, `max state-change comments in any 24h window: ${max24}`);
-  assert.equal(s.issues.length, 1);
+test('2h F+6P flap 7d: no silent state changes, <=5 transitions per 24h', async () => {
+  process.env.DRY_RUN = '0';
+  clock(realNow());
+  const startMs = T;
+  const { s, api } = gh();
+  const stepsPerDay = 24 / 2;
+  const steps = stepsPerDay * 7;
+  const pattern = ['F', 'P', 'P', 'P', 'P', 'P', 'P'];
+  await runPattern(api, { steps, stepMs: 2 * 3600e3, pattern });
+  Date.now = realNow;
+  assertNoSilentStateChanges(s);
+  const max24 = maxEventsInWindow(s.transitions, startMs, T);
+  assert.ok(max24 <= 5, `max state changes per 24h: ${max24}`);
+});
+
+test('scenario 8: 6th clean pass after reopen closes with comment and run URL', async () => {
+  process.env.DRY_RUN = '0';
+  clock(realNow());
+  const { s, api } = gh();
+  const runUrl = 'https://github.com/o/r/actions/runs/37170552104';
+  await report({
+    github: api,
+    context: ctx,
+    core,
+    resultFile: writeResult('f1', [failRow(), p0Pass(), simPass()], runUrl),
+    layer: 'smoke',
+  });
+  for (let i = 0; i < 3; i += 1) {
+    await report({
+      github: api,
+      context: ctx,
+      core,
+      resultFile: writeResult(`p${i}`, [p0Pass(), simPass()], runUrl),
+      layer: 'smoke',
+    });
+  }
+  assert.equal(s.issues[0].state, 'closed');
+  await report({
+    github: api,
+    context: ctx,
+    core,
+    resultFile: writeResult('f2', [failRow(), p0Pass(), simPass()], runUrl),
+    layer: 'smoke',
+  });
+  assert.equal(s.issues[0].state, 'open');
+  for (let i = 0; i < 5; i += 1) {
+    await report({
+      github: api,
+      context: ctx,
+      core,
+      resultFile: writeResult(`p2-${i}`, [p0Pass(), simPass()], runUrl),
+      layer: 'smoke',
+    });
+    assert.equal(s.issues[0].state, 'open');
+  }
+  await report({
+    github: api,
+    context: ctx,
+    core,
+    resultFile: writeResult('p2-6', [p0Pass(), simPass()], runUrl),
+    layer: 'smoke',
+  });
+  assert.equal(s.issues[0].state, 'closed');
+  const closeComments = s.comments.filter((c) => c.body.includes('연속 통과'));
+  assert.ok(closeComments.length >= 2, 'expected two close comments');
+  assert.ok(closeComments.at(-1).body.includes(runUrl));
+  assertNoSilentStateChanges(s);
+  Date.now = realNow;
+});
+
+test('24h outage not buried: fail×3 after reopen keeps issue open', async () => {
+  process.env.DRY_RUN = '0';
+  clock(realNow());
+  const { s, api } = gh();
+  const runUrl = 'https://github.com/o/r/actions/runs/2002';
+  await report({
+    github: api,
+    context: ctx,
+    core,
+    resultFile: writeResult('o1', [failRow(), p0Pass(), simPass()], runUrl),
+    layer: 'smoke',
+  });
+  for (let i = 0; i < 3; i += 1) {
+    await report({
+      github: api,
+      context: ctx,
+      core,
+      resultFile: writeResult(`c${i}`, [p0Pass(), simPass()], runUrl),
+      layer: 'smoke',
+    });
+  }
+  assert.equal(s.issues[0].state, 'closed');
+  await report({
+    github: api,
+    context: ctx,
+    core,
+    resultFile: writeResult('r1', [failRow(), p0Pass(), simPass()], runUrl),
+    layer: 'smoke',
+  });
+  assert.equal(s.issues[0].state, 'open');
+  for (let i = 0; i < 3; i += 1) {
+    clock(T + 2 * 3600e3);
+    await report({
+      github: api,
+      context: ctx,
+      core,
+      resultFile: writeResult(`o${i}`, [failRow(), p0Pass(), simPass()], runUrl),
+      layer: 'smoke',
+    });
+    assert.equal(s.issues[0].state, 'open');
+  }
+  Date.now = realNow;
 });

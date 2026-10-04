@@ -11,6 +11,9 @@ const BOT_NOTIFY_WINDOW_MS = 24 * 60 * 60 * 1000;
 const STATE_CHANGE_WINDOW_MS = 24 * 60 * 60 * 1000;
 const LAST_REOPEN_RE = /<!-- health-last-reopen: ([^>]+) -->/;
 const LAST_CLOSE_RE = /<!-- health-last-close: ([^>]+) -->/;
+const CLOSE_LOG_RE = /<!-- health-close-log: ([^>]+) -->/;
+const CHECK_ID_ALLOW_RE = /^[a-z0-9:._/-]{1,80}$/i;
+const FLAP_DEFER_LINE = '플랩으로 종료 보류';
 
 function escapeRegExp(s) {
   return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -73,8 +76,13 @@ function formatAutoCloseComment({ streak, runUrl, orphanClose, owner, repo }) {
 function formatReopenComment({ runUrl, checkId, reasonCode, owner, repo }) {
   const runLine = runUrlCommentLine(runUrl, owner, repo);
   const reason = publicReason(reasonCode);
-  const id = checkId || 'check';
+  const id = publicCheckId(checkId);
   return `${id}: ${reason} — 종료 후 동일 원인 재발로 자동 재개.${runLine}`;
+}
+
+function publicCheckId(checkId) {
+  const s = String(checkId || '').trim();
+  return CHECK_ID_ALLOW_RE.test(s) ? s : '알 수 없는 검사';
 }
 
 function isDryRun(env = process.env) {
@@ -140,11 +148,50 @@ function parseCount(body) {
 function carryForwardStateMarkers(newBody, oldBody) {
   let body = String(newBody || '');
   const prev = String(oldBody || '');
-  for (const re of [LAST_REOPEN_RE, LAST_CLOSE_RE]) {
+  for (const re of [LAST_REOPEN_RE, LAST_CLOSE_RE, CLOSE_LOG_RE]) {
     const oldTag = prev.match(re)?.[0];
     if (oldTag && !re.test(body)) body = `${body}\n${oldTag}`;
   }
   return body;
+}
+
+function parseCloseLogMs(body) {
+  const m = String(body || '').match(CLOSE_LOG_RE);
+  if (!m) return [];
+  return m[1]
+    .split(',')
+    .map((x) => Date.parse(x.trim()))
+    .filter(Number.isFinite);
+}
+
+function closeCountInWindow(body, windowMs = STATE_CHANGE_WINDOW_MS) {
+  const now = Date.now();
+  return parseCloseLogMs(body).filter((t) => now - t <= windowMs).length;
+}
+
+function canCloseWithComment(body) {
+  return closeCountInWindow(body) < 2;
+}
+
+function appendCloseLog(body) {
+  const now = Date.now();
+  const times = parseCloseLogMs(body).filter((t) => now - t <= STATE_CHANGE_WINDOW_MS);
+  times.push(now);
+  const tag = `<!-- health-close-log: ${times.map((t) => new Date(t).toISOString()).join(',')} -->`;
+  if (CLOSE_LOG_RE.test(body)) return String(body).replace(CLOSE_LOG_RE, tag);
+  return `${body}\n${tag}`;
+}
+
+function clearFlapDeferLine(body) {
+  return String(body || '')
+    .split('\n')
+    .filter((line) => !line.includes(FLAP_DEFER_LINE))
+    .join('\n');
+}
+
+function setFlapDeferLine(body) {
+  const cleaned = clearFlapDeferLine(body);
+  return `${cleaned}\n${FLAP_DEFER_LINE}`;
 }
 
 function passStreakRequired(layer, issueBody) {
@@ -338,19 +385,22 @@ async function maybeComment(github, owner, repo, issueNumber, body, force = fals
 }
 
 async function closeIssue(github, owner, repo, issueNumber, comment, issueBody = '') {
-  if (isDryRun()) return;
-  const notify = !issueBody || canChangeIssueState(issueBody, 'close');
-  if (notify) {
-    await postBotComment(github, owner, repo, issueNumber, comment, { force: true });
+  if (isDryRun()) return 'dry';
+  if (issueBody && !canCloseWithComment(issueBody)) {
+    return 'deferred';
   }
-  const payload = {
+  await postBotComment(github, owner, repo, issueNumber, comment, { force: true });
+  let body = clearFlapDeferLine(issueBody);
+  body = stampStateChange(body, 'close');
+  body = appendCloseLog(body);
+  await github.rest.issues.update({
     owner,
     repo,
     issue_number: issueNumber,
     state: 'closed',
-    body: issueBody ? stampStateChange(issueBody, 'close') : undefined,
-  };
-  await github.rest.issues.update(payload);
+    body,
+  });
+  return 'closed';
 }
 
 function layerLabel(layer) {
@@ -394,7 +444,6 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
           runUrl,
         });
         body = carryForwardStateMarkers(body, closed.body);
-        const reopenNotify = canChangeIssueState(body, 'reopen');
         body = stampStateChange(body, 'reopen');
         const title = buildTitle(row.feature, reasonCode);
         await github.rest.issues.update({
@@ -406,16 +455,14 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
           body,
           labels: baseLabels,
         });
-        if (reopenNotify) {
-          await maybeComment(
-            github,
-            owner,
-            repo,
-            closed.number,
-            formatReopenComment({ runUrl, checkId: row.id, reasonCode, owner, repo }),
-            true,
-          );
-        }
+        await maybeComment(
+          github,
+          owner,
+          repo,
+          closed.number,
+          formatReopenComment({ runUrl, checkId: row.id, reasonCode, owner, repo }),
+          true,
+        );
         const reopened = { ...closed, body, title, state: 'open', labels: baseLabels };
         openIssues.push(reopened);
         return openIssues;
@@ -601,7 +648,7 @@ async function handlePassForRun(
     }
 
     if (streak >= need) {
-      await closeIssue(
+      const outcome = await closeIssue(
         github,
         owner,
         repo,
@@ -609,7 +656,19 @@ async function handlePassForRun(
         formatAutoCloseComment({ streak, runUrl, orphanClose, owner, repo }),
         body,
       );
-      openIssues = openIssues.filter((i) => i.number !== issue.number);
+      if (outcome === 'closed') {
+        openIssues = openIssues.filter((i) => i.number !== issue.number);
+      } else if (outcome === 'deferred') {
+        const deferredBody = setFlapDeferLine(body);
+        await github.rest.issues.update({
+          owner,
+          repo,
+          issue_number: issue.number,
+          body: deferredBody,
+          state: 'open',
+        });
+        issue.body = deferredBody;
+      }
     } else {
       await github.rest.issues.update({
         owner,
@@ -831,3 +890,7 @@ module.exports.substantiveHealthResults = substantiveHealthResults;
 module.exports.formatAutoCloseComment = formatAutoCloseComment;
 module.exports.formatReopenComment = formatReopenComment;
 module.exports.sanitizeRunUrlForComment = sanitizeRunUrlForComment;
+module.exports.publicCheckId = publicCheckId;
+module.exports.canCloseWithComment = canCloseWithComment;
+module.exports.closeCountInWindow = closeCountInWindow;
+module.exports.FLAP_DEFER_LINE = FLAP_DEFER_LINE;

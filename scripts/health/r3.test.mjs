@@ -17,7 +17,7 @@ const clock = (t) => {
 const iso = () => new Date(T).toISOString();
 
 function gh() {
-  const s = { issues: [], comments: [], calls: [], next: 1 };
+  const s = { issues: [], comments: [], calls: [], next: 1, transitions: [] };
   const L = (n) => s.calls.push(n);
   return {
     s,
@@ -48,9 +48,13 @@ function gh() {
           update: async ({ issue_number, body, labels, state, title }) => {
             L(`update:${state || ''}`);
             const i = s.issues.find((x) => x.number === issue_number);
+            const prev = i.state;
             if (body) i.body = body;
             if (title) i.title = title;
             if (labels) i.labels = labels;
+            if (state && state !== prev) {
+              s.transitions.push({ from: prev, to: state, t: T });
+            }
             if (state) {
               i.state = state;
               i.closed_at = state === 'closed' ? iso() : null;
@@ -127,13 +131,15 @@ test('HUMAN comments interleaved + human spoofing marker: 48h @2h ≤ 2 bot comm
   assert.ok(bot(s).length <= 2);
 });
 
-test('FLAP fail,pass×3 repeated 48h: bot comments (incl. close) bounded', async () => {
+test('FLAP fail,pass×3 repeated 48h: no silent state changes, <=5 per 24h', async () => {
   process.env.DRY_RUN = '0';
   clock(realNow());
   const startMs = T;
   const { s, api } = gh();
   const pat = [F, P, P, P];
   for (let i = 0; i < 24; i++) {
+    const commentsBefore = s.comments.length;
+    const transBefore = s.transitions?.length || 0;
     await report({ github: api, context: ctx, core, resultFile: pat[i % 4] });
     clock(T + 2 * 3600e3);
   }
@@ -145,16 +151,15 @@ test('FLAP fail,pass×3 repeated 48h: bot comments (incl. close) bounded', async
         c.body.includes('자동 재개') ||
         c.body.includes('복구 확인 아님')),
   );
+  const transitions = s.transitions || [];
+  assert.equal(transitions.length, stateComments.length);
   let maxInWindow = 0;
   for (let w = startMs; w <= T - 24 * 3600e3; w += 3600e3) {
     const wEnd = w + 24 * 3600e3;
-    const n = stateComments.filter((c) => {
-      const t = Date.parse(c.updated_at);
-      return t >= w && t < wEnd;
-    }).length;
+    const n = transitions.filter((tr) => tr.t >= w && tr.t < wEnd).length;
     if (n > maxInWindow) maxInWindow = n;
   }
-  assert.ok(maxInWindow <= 2, `max state-change comments per 24h: ${maxInWindow}`);
+  assert.ok(maxInWindow <= 5, `max state changes per 24h: ${maxInWindow}`);
   Date.now = realNow;
 });
 
