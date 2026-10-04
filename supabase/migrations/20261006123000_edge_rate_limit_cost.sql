@@ -1,24 +1,24 @@
--- 20261006120000_edge_rate_limit_cost.sql
+-- 20261006123000_edge_rate_limit_cost.sql
 -- Separate from 20261006113000 (3v). 3v is hash-locked for the 2026-10-05 03:12 KST prod run.
--- Apply ONLY after 3v is live. Do not edit 3v.
+-- Version is after 20261006120000 (routine stage 4a) and 20261006121000 (#381). Do not reuse those.
+-- Apply ONLY after 3v is live. Do not edit 3v. Do not drop the 3-arg function.
 -- Deploy order: 3v (scheduled) → this cost migration (needs approval) → fetch-place-videos edge.
+-- Edge first returns 503: the new edge always passes p_cost, and 3v has no 4-arg overload yet.
 --
--- PostgreSQL CREATE OR REPLACE cannot change an argument list in place. A second overload
--- whose last argument has a default makes 3-argument calls "function is not unique".
--- Drop only the 3-arg overload from 3v, then create the 4-arg function. Callers that omit
--- p_cost still increment by 1. YouTube search.list passes p_cost = 100.
+-- A 4-arg overload WITH a default makes 3-arg calls "function is not unique".
+-- This migration ADDs a 4-arg function with NO default. 3-arg callers
+-- (pass_checks.sql V3, postcheck 3v) keep the original function and still increment by 1.
+-- The edge passes p_cost explicitly and binds this overload. YouTube search.list uses 100.
 -- SECURITY DEFINER, search_path, and the service_role-only grant match 3v.
 BEGIN;
 SET LOCAL lock_timeout = '3s';
 SET LOCAL statement_timeout = '30s';
 
-DROP FUNCTION IF EXISTS public.edge_rate_limit_hit(text, integer, integer);
-
 CREATE OR REPLACE FUNCTION public.edge_rate_limit_hit(
   p_key text,
   p_window_seconds integer,
   p_limit integer,
-  p_cost integer DEFAULT 1
+  p_cost integer
 )
 RETURNS boolean
 LANGUAGE plpgsql
@@ -32,6 +32,7 @@ BEGIN
   IF p_key IS NULL OR char_length(p_key) NOT BETWEEN 1 AND 200
      OR p_window_seconds NOT BETWEEN 1 AND 2592000
      OR p_limit NOT BETWEEN 0 AND 1000000
+     OR p_cost IS NULL
      OR p_cost NOT BETWEEN 1 AND 10000 THEN
     RAISE EXCEPTION 'edge_rate_limit_hit: bad arguments' USING ERRCODE = '22023';
   END IF;

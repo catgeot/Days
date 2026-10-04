@@ -28,9 +28,17 @@ const YouTubePlayerView = forwardRef(({
   onVideoUnplayable,
   loadMoreError = false,
   loadMoreLimitCode = null,
+  fetchLimitCode = null,
   loadMoreNoNew = false,
 }, ref) => {
   const { t } = useTranslation();
+  const limitMessage = (code) => {
+    if (code === 'page_ip_limited') return t('place.video.loadMoreIpLimit');
+    if (code === 'page_place_limited') return t('place.video.loadMorePlaceLimit');
+    if (code === 'ip_quota') return t('place.video.ipQuota');
+    if (code === 'global_quota') return t('place.video.globalQuota');
+    return t('place.video.loadMoreFailed');
+  };
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -226,6 +234,9 @@ const YouTubePlayerView = forwardRef(({
             <AlertCircle size={40} className="text-white/20" />
           </div>
           <h3 className="text-white text-xl font-bold mb-2">{t('place.video.errorTitle')}</h3>
+          {fetchLimitCode ? (
+            <p className="text-white/60 text-sm mb-4 max-w-sm">{limitMessage(fetchLimitCode)}</p>
+          ) : null}
           <button
             type="button"
             onClick={() => onRetry?.()}
@@ -391,11 +402,7 @@ const YouTubePlayerView = forwardRef(({
           )}
           {(loadMoreLimitCode || loadMoreError) && (
             <p className={`text-center text-xs text-red-400/90 max-w-xs ${canLoadMore ? 'mt-2' : ''}`}>
-              {loadMoreLimitCode === 'page_ip_limited'
-                ? t('place.video.loadMoreIpLimit')
-                : loadMoreLimitCode === 'page_place_limited'
-                  ? t('place.video.loadMorePlaceLimit')
-                  : t('place.video.loadMoreFailed')}
+              {limitMessage(loadMoreLimitCode)}
             </p>
           )}
           {loadMoreNoNew && !loadMoreError && (

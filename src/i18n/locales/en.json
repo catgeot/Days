@@ -1260,6 +1260,8 @@
       "loadMoreFailed": "Couldn't load more videos. Please try again in a moment.",
       "loadMoreIpLimit": "You've reached today's extra-video limit for this place on this connection.",
       "loadMorePlaceLimit": "This place has reached today's extra-video limit. Please try again tomorrow.",
+      "ipQuota": "This connection has reached today's video search limit. It resets tomorrow, and videos already loaded stay on screen.",
+      "globalQuota": "Today's video search limit for everyone has been reached. It resets tomorrow, and videos already loaded stay on screen.",
       "loadMoreNoNew": "No more videos to show."
     },
     "wiki": {

@@ -7,16 +7,15 @@ const corsBase = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Vary": "Origin",
 };
-
 const BASE_URL = "https://www.googleapis.com/youtube/v3";
 const DAY_MS = 24 * 60 * 60 * 1000;
 // search.list = 100 units. Ceiling stays well under the 10,000 unit daily quota.
-// p_cost needs 20261006120000. Deploy: 3v 20261006113000 → cost migration → this function.
+// p_cost needs 20261006123000 (4-arg, no default). The 3-arg function from 3v stays.
+// Deploy: 3v 20261006113000 → cost migration 20261006123000 → this function.
+// Edge first returns 503 because this function always passes p_cost.
 const YT_SEARCH_UNITS = 100;
 const LIMIT_GLOBAL_UNITS = 6000;
-// One IP cannot take more than ~10% of that budget. Daily cap is tighter than the share.
-const LIMIT_IP_SHARE_UNITS = 600;
-const LIMIT_IP_DAILY_UNITS = 400;
+const LIMIT_IP_DAILY_UNITS_DEFAULT = 400;
 const LIMIT_IP_PER_MINUTE = 6;
 const LIMIT_PLACE_NEW_PER_DAY = 2;
 const LIMIT_PAGE_IP_PLACE = 3;
@@ -30,6 +29,8 @@ const FORBIDDEN_QUERY_RES = [
   /\b(?:porn|xxx)\b/i,
   /음란|야동|포르노/,
 ];
+const HTML_TAG_TOKEN = /^(?:\/?(?:a|b|br|div|em|font|i|p|span|strong|u))$/i;
+const FREE_SEARCH_ID_RE = /^(loc|search|city|label)-(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)$/;
 
 const PLACES = catalog.places as Record<string, string>;
 const SCENIC = catalog.scenic as Record<string, string>;
@@ -48,7 +49,7 @@ type AdminClient = {
   from: (table: string) => {
     select: (cols: string) => {
       eq: (col: string, val: string) => {
-        maybeSingle: () => Promise<{ data: PlaceVideoRow | null; error: DbError }>;
+        maybeSingle: () => Promise<{ data: Record<string, unknown> | null; error: DbError }>;
       };
       in: (col: string, vals: string[]) => Promise<{ data: FestivalCacheRow[] | null; error: DbError }>;
       like: (col: string, pattern: string) => Promise<{ data: FestivalCacheRow[] | null; error: DbError }>;
@@ -57,7 +58,7 @@ type AdminClient = {
   };
   rpc: (
     fn: string,
-    args: { p_key: string; p_window_seconds: number; p_limit: number; p_cost?: number },
+    args: { p_key: string; p_window_seconds: number; p_limit: number; p_cost: number },
   ) => Promise<{ data: boolean | null; error: DbError }>;
 };
 type YtSnippet = {
@@ -74,6 +75,7 @@ type ResolvedPlace = {
   mode: "place" | "festival";
   fallback: string;
 };
+type TitleHit = { title: string; year: string };
 
 class YtError extends Error {
   status: number;
@@ -130,8 +132,9 @@ function decodeHtmlEntities(input: string): string {
 }
 
 function sanitizeQuery(input: string): string {
+  const decoded = decodeHtmlEntities(input).replace(/<[^>]*>/g, " ");
   let out = "";
-  for (const ch of input) {
+  for (const ch of decoded) {
     const code = ch.codePointAt(0) ?? 0;
     if (ch === "<" || ch === ">" || code < 32 || code === 127) {
       out += " ";
@@ -139,7 +142,12 @@ function sanitizeQuery(input: string): string {
     }
     out += ch;
   }
-  const text = out.replace(/\s+/g, " ").trim();
+  const text = out
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter((token) => token && !HTML_TAG_TOKEN.test(token))
+    .join(" ");
   if (!text) return "";
   return text.length > 180 ? text.slice(0, 180).trim() : text;
 }
@@ -184,16 +192,59 @@ function hasBearerJwt(req: Request): boolean {
   return parts.length === 3 && parts.every((p) => p.length > 0);
 }
 
+function ipDailyUnits(): number {
+  const raw = Deno.env.get("FETCH_PLACE_VIDEOS_IP_DAILY_UNITS");
+  if (raw == null || raw.trim() === "") return LIMIT_IP_DAILY_UNITS_DEFAULT;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 100 || n > 10000) return LIMIT_IP_DAILY_UNITS_DEFAULT;
+  return n;
+}
+
+function allowFreeSearch(): boolean {
+  const v = (Deno.env.get("FETCH_PLACE_VIDEOS_ALLOW_FREE_SEARCH") ?? "").trim().toLowerCase();
+  return v === "1" || v === "true" || v === "yes";
+}
+
+function expandIpv6(raw: string): string[] | null {
+  const s = raw.toLowerCase();
+  if (!s.includes(":") || s.includes(".")) return null;
+  const halves = s.split("::");
+  if (halves.length > 2) return null;
+  const parse = (part: string) => (part ? part.split(":") : []);
+  const left = parse(halves[0]);
+  const right = halves.length === 2 ? parse(halves[1]) : [];
+  const hextet = /^[0-9a-f]{1,4}$/;
+  if ([...left, ...right].some((part) => !hextet.test(part))) return null;
+  if (halves.length === 1) {
+    if (left.length !== 8) return null;
+    return left.map((part) => part.padStart(4, "0"));
+  }
+  const missing = 8 - left.length - right.length;
+  if (missing < 1) return null;
+  return [...left, ...Array(missing).fill("0000"), ...right].map((part) => part.padStart(4, "0"));
+}
+
+function bucketIp(ip: string): string {
+  const v6 = expandIpv6(ip);
+  if (!v6) return ip;
+  return `${v6.slice(0, 4).join(":")}::/64`;
+}
+
 /**
  * Client IP for rate-limit keys.
  *
- * Supabase Edge Functions do not document a header they overwrite with the
- * connecting address. The hosted gateway appends the peer it observed onto
- * `x-forwarded-for` (a client-supplied list stays on the left; proxies append).
- * `x-real-ip` is not a documented Edge overwrite. `sb-forwarded-for` belongs
- * to Supabase Auth (GoTrue), not this runtime, and a caller can set it.
- * Prefer the rightmost `x-forwarded-for` value. `x-real-ip` is only a fallback
- * when that header is absent. Staging verification of the live gateway is pending.
+ * Supabase's Edge examples take the first X-Forwarded-For hop:
+ * location (`clientIps[0]`) and the Turnstile guide. Auth's GetIPAddress
+ * also returns the first parsable X-Forwarded-For address. `sb-forwarded-for`
+ * is Auth/GoTrue only and is not read here. `x-real-ip` is used only when
+ * X-Forwarded-For is absent.
+ *
+ * Staging verification is still required. The Edge architecture doc does not
+ * say whether the gateway overwrites X-Forwarded-For or appends the peer.
+ * If a staging request shows a client-supplied hop in front of the gateway
+ * hop, switch this to that trusted hop before production.
+ *
+ * IPv6 keys use the /64 prefix so addresses in one network share a bucket.
  */
 function clientIp(req: Request): string {
   const forwarded = (req.headers.get("x-forwarded-for") ?? "")
@@ -201,10 +252,10 @@ function clientIp(req: Request): string {
     .map((part) => part.trim())
     .filter(Boolean);
   const raw = forwarded.length
-    ? forwarded[forwarded.length - 1]
+    ? forwarded[0]
     : (req.headers.get("x-real-ip")?.trim() || "unknown");
   const cleaned = raw.replace(/[^0-9a-fA-F:.\-]/g, "").slice(0, 64);
-  return cleaned || "unknown";
+  return bucketIp(cleaned || "unknown");
 }
 
 function rowFresh(row: PlaceVideoRow | null): boolean {
@@ -239,15 +290,56 @@ function placeMode(query: string): ResolvedPlace | null {
   };
 }
 
+function resolvedFromTitle(placeId: string, hit: TitleHit, mode: "place" | "festival"): ResolvedPlace | null {
+  let query = sanitizeQuery(hit.title);
+  if (hit.year && !query.includes(hit.year)) query = sanitizeQuery(`${query} ${hit.year}`);
+  if (mode === "festival" && query && !query.includes("축제")) query = sanitizeQuery(`${query} 축제`);
+  if (mode === "festival") {
+    if (queryRejected(query)) return null;
+    return {
+      placeId,
+      query,
+      mode,
+      fallback: sanitizeQuery(`${sanitizeQuery(hit.title)} festival`),
+    };
+  }
+  const resolved = placeMode(query);
+  if (!resolved) return null;
+  resolved.placeId = placeId;
+  return resolved;
+}
+
+function resolveFreeSearch(raw: string): ResolvedPlace | null {
+  if (!allowFreeSearch()) return null;
+  const match = raw.trim().toLowerCase().match(FREE_SEARCH_ID_RE);
+  if (!match) return null;
+  const lat = Number(match[2]);
+  const lng = Number(match[3]);
+  if (!Number.isFinite(lat) || lat < -90 || lat > 90) return null;
+  if (!Number.isFinite(lng) || lng < -180 || lng > 180) return null;
+  const resolved = placeMode(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+  if (!resolved) return null;
+  resolved.placeId = `${match[1]}-${lat}-${lng}`;
+  return resolved;
+}
+
 function resolveStaticPlace(raw: string): ResolvedPlace | null {
   const id = raw.trim();
   const scenicKey = id.startsWith("scenic:") ? id.slice("scenic:".length) : "";
-  if (scenicKey) {
+  if (scenicKey && !/^\d{1,32}$/.test(scenicKey)) {
     const q = SCENIC[scenicKey] ?? SCENIC[scenicKey.toLowerCase()];
     if (!q) return null;
     const resolved = placeMode(q);
     if (!resolved) return null;
-    resolved.placeId = `scenic:${/^\d+$/.test(scenicKey) ? scenicKey : scenicKey.toLowerCase()}`;
+    resolved.placeId = `scenic:${scenicKey.toLowerCase()}`;
+    return resolved;
+  }
+  if (scenicKey) {
+    const q = SCENIC[scenicKey];
+    if (!q) return null;
+    const resolved = placeMode(q);
+    if (!resolved) return null;
+    resolved.placeId = `scenic:${scenicKey}`;
     return resolved;
   }
   const world = id.match(/^world-event:([a-z0-9]+(?:-[a-z0-9]+)*):(ko|en)$/i);
@@ -255,7 +347,9 @@ function resolveStaticPlace(raw: string): ResolvedPlace | null {
     const key = `${world[1].toLowerCase()}:${world[2].toLowerCase()}`;
     const q = sanitizeQuery(WORLD_EVENTS[key] ?? "");
     if (queryRejected(q)) return null;
-    const other = world[2].toLowerCase() === "en" ? WORLD_EVENTS[`${world[1].toLowerCase()}:ko`] : WORLD_EVENTS[`${world[1].toLowerCase()}:en`];
+    const other = world[2].toLowerCase() === "en"
+      ? WORLD_EVENTS[`${world[1].toLowerCase()}:ko`]
+      : WORLD_EVENTS[`${world[1].toLowerCase()}:en`];
     return {
       placeId: `world-event:${key}`,
       query: q,
@@ -263,6 +357,8 @@ function resolveStaticPlace(raw: string): ResolvedPlace | null {
       fallback: sanitizeQuery(other && other !== q ? other : `${q} festival`),
     };
   }
+  const free = resolveFreeSearch(id);
+  if (free) return free;
   if (id.includes(":")) return null;
   const slug = id.toLowerCase();
   const q = PLACES[slug];
@@ -273,10 +369,22 @@ function resolveStaticPlace(raw: string): ResolvedPlace | null {
   return resolved;
 }
 
-function festivalTitleFromPayload(payload: unknown, contentId: string, keyed: boolean): { title: string; year: string } | null {
+function recordTitle(row: Record<string, unknown>, contentId: string, keyed: boolean, items: boolean): TitleHit | null {
+  const rowId = String(row.contentId ?? row.contentid ?? "").trim();
+  if (!keyed && rowId !== contentId) return null;
+  if (keyed && rowId && rowId !== contentId && items) return null;
+  const title = String(row.title ?? "").trim();
+  if (!title) return null;
+  const ymd = String(row.eventStartDate ?? row.eventstartdate ?? "");
+  const year = /^\d{8}$/.test(ymd) ? ymd.slice(0, 4) : "";
+  return { title, year };
+}
+
+function festivalTitleFromPayload(payload: unknown, contentId: string, keyed: boolean): TitleHit | null {
   if (!payload || typeof payload !== "object") return null;
   const rec = payload as Record<string, unknown>;
   const rows: Record<string, unknown>[] = [];
+  if (rec.common && typeof rec.common === "object") rows.push(rec.common as Record<string, unknown>);
   if (Array.isArray(rec.items)) {
     for (const item of rec.items) {
       if (item && typeof item === "object") rows.push(item as Record<string, unknown>);
@@ -284,48 +392,73 @@ function festivalTitleFromPayload(payload: unknown, contentId: string, keyed: bo
   }
   if (rec.intro && typeof rec.intro === "object") rows.push(rec.intro as Record<string, unknown>);
   if (typeof rec.title === "string") rows.push(rec);
+  const items = Array.isArray(rec.items);
   for (const row of rows) {
-    const rowId = String(row.contentId ?? "").trim();
-    if (!keyed && rowId !== contentId) continue;
-    if (keyed && rowId && rowId !== contentId && Array.isArray(rec.items)) continue;
-    const title = String(row.title ?? "").trim();
-    if (!title) continue;
-    const ymd = String(row.eventStartDate ?? "");
-    const year = /^\d{8}$/.test(ymd) ? ymd.slice(0, 4) : "";
-    return { title, year };
+    const hit = recordTitle(row, contentId, keyed, items);
+    if (hit) return hit;
   }
   return null;
 }
 
-async function resolveFestival(admin: AdminClient, contentId: string): Promise<ResolvedPlace | null> {
+async function festivalDetailHit(admin: AdminClient, contentId: string): Promise<TitleHit | null> {
   const detailKeys = [`detail:ko:${contentId}`, `detail:en:${contentId}`];
   const details = await admin.from("tourapi_festival_cache").select("cache_key, payload").in("cache_key", detailKeys);
   if (details.error) throw new Error("festival_cache");
-  let hit: { title: string; year: string } | null = null;
   for (const row of details.data ?? []) {
     const key = String(row.cache_key ?? "");
-    hit = festivalTitleFromPayload(row.payload, contentId, key.endsWith(`:${contentId}`));
-    if (hit) break;
+    const hit = festivalTitleFromPayload(row.payload, contentId, key.endsWith(`:${contentId}`));
+    if (hit) return hit;
   }
-  if (!hit) {
-    const lists = await admin.from("tourapi_festival_cache").select("cache_key, payload").like("cache_key", "list:%");
-    if (lists.error) throw new Error("festival_cache");
-    for (const row of lists.data ?? []) {
-      hit = festivalTitleFromPayload(row.payload, contentId, false);
-      if (hit) break;
-    }
+  return null;
+}
+
+async function festivalListHit(admin: AdminClient, contentId: string): Promise<TitleHit | null> {
+  const lists = await admin.from("tourapi_festival_cache").select("cache_key, payload").like("cache_key", "list:%");
+  if (lists.error) throw new Error("festival_cache");
+  for (const row of lists.data ?? []) {
+    const hit = festivalTitleFromPayload(row.payload, contentId, false);
+    if (hit) return hit;
   }
-  if (!hit) return null;
-  let query = sanitizeQuery(hit.title);
-  if (hit.year && !query.includes(hit.year)) query = sanitizeQuery(`${query} ${hit.year}`);
-  if (query && !query.includes("축제")) query = sanitizeQuery(`${query} 축제`);
-  if (queryRejected(query)) return null;
-  return {
-    placeId: `festival:${contentId}`,
-    query,
-    mode: "festival",
-    fallback: sanitizeQuery(`${sanitizeQuery(hit.title)} festival`),
-  };
+  return null;
+}
+
+async function attractionHit(admin: AdminClient, contentId: string): Promise<TitleHit | null> {
+  const row = await admin.from("tourapi_attraction").select("content_id, title").eq("content_id", contentId).maybeSingle();
+  if (row.error) throw new Error("attraction_cache");
+  const title = String(row.data?.title ?? "").trim();
+  if (!title) return null;
+  return { title, year: "" };
+}
+
+async function proxyDetailHit(contentId: string): Promise<TitleHit | null> {
+  const base = (Deno.env.get("SUPABASE_URL") ?? "").replace(/\/$/, "");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  if (!base || !key) return null;
+  let res: Response;
+  try {
+    res = await fetch(`${base}/functions/v1/tourapi-proxy`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        apikey: key,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "detailCommon", contentId }),
+    });
+  } catch {
+    return null;
+  }
+  if (!res.ok) return null;
+  const body = await res.json().catch(() => null) as { items?: unknown } | null;
+  const items = Array.isArray(body?.items) ? body.items : [];
+  const item = items[0];
+  if (!item || typeof item !== "object") return null;
+  const rec = item as Record<string, unknown>;
+  const id = String(rec.contentid ?? rec.contentId ?? "").trim();
+  if (id !== contentId) return null;
+  const title = String(rec.title ?? "").trim();
+  if (!title) return null;
+  return { title, year: "" };
 }
 
 function primaryQuery(resolved: ResolvedPlace): string {
@@ -354,27 +487,34 @@ serve(async (req) => {
 
   const rawPlaceId = String(body.placeId ?? "").trim();
   const festivalMatch = rawPlaceId.match(/^festival:(\d{1,32})$/);
+  const scenicDigits = rawPlaceId.match(/^scenic:(\d{1,32})$/);
+  const festivalId = festivalMatch ? festivalMatch[1] : "";
+  const scenicId = scenicDigits && !SCENIC[scenicDigits[1]] ? scenicDigits[1] : "";
 
   const supabaseAdmin = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
   ) as unknown as AdminClient;
 
-  let resolved: ResolvedPlace | null = null;
-  if (festivalMatch) {
-    try {
-      resolved = await resolveFestival(supabaseAdmin, festivalMatch[1]);
-    } catch {
-      logFail(rawPlaceId, "festival_cache_read_failed", null);
-      return json(req, { success: false, error: "cache_unavailable" }, 503);
+  let resolved: ResolvedPlace | null = festivalId || scenicId ? null : resolveStaticPlace(rawPlaceId);
+  try {
+    if (festivalId && !resolved) {
+      const hit = await festivalDetailHit(supabaseAdmin, festivalId);
+      if (hit) resolved = resolvedFromTitle(`festival:${festivalId}`, hit, "festival");
     }
-  } else {
-    resolved = resolveStaticPlace(rawPlaceId);
+    if (scenicId && !resolved) {
+      const hit = await attractionHit(supabaseAdmin, scenicId) ?? await festivalDetailHit(supabaseAdmin, scenicId);
+      if (hit) resolved = resolvedFromTitle(`scenic:${scenicId}`, hit, "place");
+    }
+  } catch {
+    logFail(rawPlaceId, "tour_cache_read_failed", null);
+    return json(req, { success: false, error: "cache_unavailable" }, 503);
   }
-  if (!resolved) return json(req, { success: false, error: "bad_place_id" }, 400);
 
-  const placeId = resolved.placeId;
-  const mode = resolved.mode;
+  const placeId = resolved?.placeId
+    || (festivalId ? `festival:${festivalId}` : scenicId ? `scenic:${scenicId}` : "");
+  if (!placeId) return json(req, { success: false, error: "bad_place_id" }, 400);
+
   const pageToken = typeof body.pageToken === "string" && body.pageToken.trim()
     ? body.pageToken.trim()
     : "";
@@ -388,9 +528,6 @@ serve(async (req) => {
     : relevanceLanguage === "en"
       ? "US"
       : "KR";
-  const query = resolved.query;
-  const primaryQ = primaryQuery(resolved);
-  const fallbackQ = resolved.fallback || primaryQ;
 
   const loaded = await supabaseAdmin
     .from("place_videos")
@@ -401,7 +538,7 @@ serve(async (req) => {
     logFail(placeId, "place_videos_read_failed", null);
     return json(req, { success: false, error: "cache_unavailable" }, 503);
   }
-  const row = loaded.data;
+  const row = loaded.data as PlaceVideoRow | null;
 
   if (!skipUpsert && rowFresh(row)) {
     const retryAt = row?.next_retry_at && Date.parse(row.next_retry_at) > Date.now()
@@ -416,15 +553,8 @@ serve(async (req) => {
     }, 200);
   }
 
-  const youtubeApiKey = Deno.env.get("VITE_YOUTUBE_API_KEY") || Deno.env.get("YOUTUBE_API_KEY");
-  if (!youtubeApiKey) {
-    logFail(placeId, "youtube_key_missing", null);
-    return json(req, { success: false, error: "youtube_not_configured" }, 500);
-  }
-
   const ip = clientIp(req);
   const pagination = Boolean(pageToken) || body.skipUpsert === true;
-
   const charge = async (
     key: string,
     windowSeconds: number,
@@ -463,10 +593,34 @@ serve(async (req) => {
     if (denied) return denied;
   }
 
+  try {
+    if (!resolved && festivalId) {
+      const hit = await festivalListHit(supabaseAdmin, festivalId);
+      if (hit) resolved = resolvedFromTitle(`festival:${festivalId}`, hit, "festival");
+    }
+    if (!resolved && scenicId) {
+      const hit = await proxyDetailHit(scenicId);
+      if (hit) resolved = resolvedFromTitle(`scenic:${scenicId}`, hit, "place");
+    }
+  } catch {
+    logFail(placeId, "tour_cache_read_failed", null);
+    return json(req, { success: false, error: "cache_unavailable" }, 503);
+  }
+  if (!resolved) return json(req, { success: false, error: "bad_place_id" }, 400);
+
+  const mode = resolved.mode;
+  const query = resolved.query;
+  const primaryQ = primaryQuery(resolved);
+  const fallbackQ = resolved.fallback || primaryQ;
+  const youtubeApiKey = Deno.env.get("VITE_YOUTUBE_API_KEY") || Deno.env.get("YOUTUBE_API_KEY");
+  if (!youtubeApiKey) {
+    logFail(placeId, "youtube_key_missing", null);
+    return json(req, { success: false, error: "youtube_not_configured" }, 500);
+  }
+
   const chargeSearchUnits = async () => {
     const gates: Array<[string, number, string]> = [
-      [`ip:${ip}:u`, LIMIT_IP_DAILY_UNITS, "ip_quota"],
-      [`ip:${ip}:share`, LIMIT_IP_SHARE_UNITS, "ip_share_limited"],
+      [`ip:${ip}:u`, ipDailyUnits(), "ip_quota"],
       ["global:yt:u", LIMIT_GLOBAL_UNITS, "global_quota"],
     ];
     for (const [key, limit, code] of gates) {
@@ -525,6 +679,18 @@ serve(async (req) => {
     if (error) logFail(placeId, "place_videos_write_failed", null);
   };
 
+  const staleVideos = () => {
+    const videos = preservedVideos(row);
+    if (skipUpsert || videos.length === 0) return null;
+    return json(req, {
+      success: true,
+      videos,
+      stale: true,
+      nextPageToken: null,
+      paginationSource: null,
+    }, 200);
+  };
+
   let data: YtSearch;
   let paginationSource: "primary" | "fallback" | null = null;
   try {
@@ -544,6 +710,9 @@ serve(async (req) => {
   } catch (error) {
     if (error instanceof LimitError) {
       logFail(placeId, error.code, null);
+      await writeFailure(error.code, false);
+      const stale = staleVideos();
+      if (stale) return stale;
       return json(req, { success: false, error: error.code }, 429);
     }
     if (error instanceof YtError && error.reason === "rate_limit_unavailable") {
@@ -554,6 +723,8 @@ serve(async (req) => {
     const status = yt.status >= 400 && yt.status <= 599 ? yt.status : 502;
     await writeFailure(yt.reason, false);
     logFail(placeId, yt.reason, yt.status === 502 && yt.reason === "youtube_network" ? null : yt.status);
+    const stale = staleVideos();
+    if (stale) return stale;
     return json(req, { success: false, error: yt.reason }, status);
   }
 

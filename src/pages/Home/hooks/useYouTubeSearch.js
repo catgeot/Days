@@ -28,7 +28,12 @@ function mergeVideosById(existing, incoming) {
   return merged;
 }
 
-const PAGE_LIMIT_CODES = new Set(['page_ip_limited', 'page_place_limited']);
+const PAGE_LIMIT_CODES = new Set([
+  'page_ip_limited',
+  'page_place_limited',
+  'ip_quota',
+  'global_quota',
+]);
 
 function placeFetchKey(location, mediaMode) {
   return [
@@ -105,6 +110,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState(false);
   const [loadMoreLimitCode, setLoadMoreLimitCode] = useState(null);
+  const [fetchLimitCode, setFetchLimitCode] = useState(null);
   const [loadMoreNoNew, setLoadMoreNoNew] = useState(() => boot?.loadMoreNoNew ?? false);
   const [unplayableBump, setUnplayableBump] = useState(0);
 
@@ -133,6 +139,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setRawVideos(mem.rawVideos);
       setIsLoading(false);
       setFetchError(false);
+      setFetchLimitCode(null);
       setIsEmptyResult(mem.rawVideos.length === 0);
       setNextPageToken(mem.nextPageToken);
       setPaginationSource(mem.paginationSource);
@@ -148,6 +155,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setRawVideos([]);
       setIsLoading(true);
       setFetchError(false);
+      setFetchLimitCode(null);
       setIsEmptyResult(false);
       setNextPageToken(null);
       setPaginationSource(null);
@@ -211,6 +219,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     };
 
     setFetchError(false);
+    setFetchLimitCode(null);
     setIsEmptyResult(false);
     setNextPageToken(null);
     setPaginationSource(null);
@@ -340,7 +349,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
         }
       } catch (err) {
         console.error('[useYouTubeSearch] Error:', err);
-        if (!cancelled && fetchGenRef.current === gen) setFetchError(true);
+        if (!cancelled && fetchGenRef.current === gen) {
+          setFetchError(true);
+          setFetchLimitCode(err?.limitCode || null);
+        }
       } finally {
         if (!cancelled && fetchGenRef.current === gen) setIsLoading(false);
       }
@@ -360,6 +372,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     const gen = fetchGenRef.current;
     setIsLoading(true);
     setFetchError(false);
+    setFetchLimitCode(null);
     setIsEmptyResult(false);
     try {
       await runInitialFetch(gen);
@@ -368,7 +381,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
       }
     } catch (err) {
       console.error('[useYouTubeSearch] retry Error:', err);
-      if (fetchGenRef.current === gen) setFetchError(true);
+      if (fetchGenRef.current === gen) {
+        setFetchError(true);
+        setFetchLimitCode(err?.limitCode || null);
+      }
     } finally {
       if (fetchGenRef.current === gen) setIsLoading(false);
     }
@@ -502,6 +518,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     isLoadingMore,
     loadMoreError,
     loadMoreLimitCode,
+    fetchLimitCode,
     loadMoreNoNew,
     markUnplayable,
     googleFormUrl: GOOGLE_FORM_URL,

@@ -1676,7 +1676,12 @@ export default function ThemeSpotDetailModal({
       setVideosExpanded(false);
       if (!result.ok) {
         setVideos([]);
-        setVideosError(t('korea.theme.spotDetail.videosNotFound'));
+        const quota = result.error === 'ip_quota'
+          ? t('place.video.ipQuota')
+          : result.error === 'global_quota'
+            ? t('place.video.globalQuota')
+            : t('korea.theme.spotDetail.videosNotFound');
+        setVideosError(quota);
         return;
       }
       const list = Array.isArray(result.videos)

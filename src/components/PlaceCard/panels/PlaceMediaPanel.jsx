@@ -35,6 +35,7 @@ const PlaceMediaPanel = React.memo(({
     isLoadingMoreVideos,
     loadMoreVideoError,
     loadMoreVideoLimitCode,
+    videoFetchLimitCode = null,
     loadMoreVideoNoNew,
     onVideoUnplayable,
     googleFormUrl,
@@ -106,6 +107,7 @@ const PlaceMediaPanel = React.memo(({
                 onVideoUnplayable={onVideoUnplayable}
                 loadMoreError={loadMoreVideoError}
                 loadMoreLimitCode={loadMoreVideoLimitCode}
+                fetchLimitCode={videoFetchLimitCode}
                 loadMoreNoNew={loadMoreVideoNoNew}
                 mobileSecondaryNav={mobileSecondaryNav}
             />

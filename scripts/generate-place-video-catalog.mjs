@@ -212,7 +212,19 @@ const catalog = {
   worldEvents: Object.fromEntries([...worldEvents.entries()].sort(([a], [b]) => a.localeCompare(b))),
 };
 
-writeFileSync(outPath, `${JSON.stringify(catalog)}\n`);
-console.log(
-  `places ${places.size} scenic ${scenic.size} worldEvents ${worldEvents.size} → ${outPath}`,
-);
+const payload = `${JSON.stringify(catalog)}\n`;
+if (process.argv.includes('--check')) {
+  const committed = readFileSync(outPath, 'utf8');
+  if (committed !== payload) {
+    console.error('placeVideoCatalog.json is stale. Run: node scripts/generate-place-video-catalog.mjs');
+    process.exit(1);
+  }
+  console.log(
+    `place video catalog matches /place route sources (places ${places.size} scenic ${scenic.size} worldEvents ${worldEvents.size})`,
+  );
+} else {
+  writeFileSync(outPath, payload);
+  console.log(
+    `places ${places.size} scenic ${scenic.size} worldEvents ${worldEvents.size} → ${outPath}`,
+  );
+}
