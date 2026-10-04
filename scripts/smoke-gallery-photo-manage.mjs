@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -76,6 +76,13 @@ assert.doesNotMatch(adminFn, /place_stats/, 'admin remove does not write place_s
 assert.match(hook, /persist_place_gallery/, 'gallery writes go through persist_place_gallery');
 assert.match(hook, /merge_keep_hero/, 'SWR uses merge_keep_hero');
 assert.match(hook, /am_i_app_admin/, 'admin UI follows am_i_app_admin');
+assert.match(hook, /adminProbeSeqRef/, 'admin probe has a request-order guard');
+assert.match(hook, /galleryAdminFromProbe/, 'stale admin response cannot overwrite a newer one');
+assert.doesNotMatch(
+  hook,
+  /getSession\(\)\.then\(\(\{ data \}\) =>/,
+  'admin probe is not also fired from getSession',
+);
 assert.match(hook, /loadedStatsPlaceIdRef/, 'persist uses the loaded place_stats row id');
 const hideFn = hook.match(
   /const handleHideGalleryImage = useCallback\([\s\S]*?\n  \);/,
@@ -83,10 +90,24 @@ const hideFn = hook.match(
 assert.ok(hideFn, 'handleHideGalleryImage block');
 assert.doesNotMatch(hideFn, /place_stats/, 'hide handler does not touch place_stats');
 
-const adminUtil = readFileSync(join(root, 'src/utils/galleryAdmin.js'), 'utf8');
-assert.match(adminUtil, /f31e47ac-144d-41e3-9ef9-441a2d008424/, 'default admin UID');
-assert.match(adminUtil, /VITE_ADMIN_UIDS/, 'optional admin UID override');
-assert.match(adminUtil, /adminUidSet\.add/, 'VITE_ADMIN_UIDS merges with default admin');
+assert.equal(existsSync(join(root, 'src/utils/galleryAdmin.js')), false, 'client UID list is removed');
+
+function walkSrc(dir, acc = []) {
+  for (const name of readdirSync(dir)) {
+    const path = join(dir, name);
+    if (statSync(path).isDirectory()) {
+      walkSrc(path, acc);
+    } else if (/\.(js|jsx|mjs|ts|tsx)$/.test(name)) {
+      acc.push(path);
+    }
+  }
+  return acc;
+}
+for (const file of walkSrc(join(root, 'src'))) {
+  const text = readFileSync(file, 'utf8');
+  assert.doesNotMatch(text, /from ['"][^'"]*galleryAdmin['"]/, `${file} must not import galleryAdmin`);
+  assert.doesNotMatch(text, /isGalleryAdminUser/, `${file} must not call isGalleryAdminUser`);
+}
 
 const reportUtil = readFileSync(join(root, 'src/shared/analytics/galleryPhotoReport.js'), 'utf8');
 assert.match(reportUtil, /gallery_photo_report/, 'GA report event name');
@@ -101,6 +122,10 @@ for (const key of [
   'manageReport',
   'manageReportToast',
   'manageReportDuplicate',
+  'manageReportMissing',
+  'manageReportUnavailable',
+  'manageHideFailed',
+  'manageAdminForbidden',
   'manageLogin',
   'manageLoginAction',
   'manageReasonIrrelevant',

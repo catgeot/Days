@@ -463,13 +463,25 @@ const PlaceGalleryView = React.memo(({
     setManageTarget(photo);
   }, []);
 
+  const finishManageWithToast = useCallback((message) => {
+    setReportToast(message);
+    setManageTarget(null);
+    setReportLoginPrompt(false);
+    window.setTimeout(() => setReportToast(''), 3500);
+  }, []);
+
   const confirmManageHide = useCallback(() => {
     if (!manageTarget || !handleHideGalleryImage) return;
-    handleHideGalleryImage(manageTarget);
+    const result = handleHideGalleryImage(manageTarget);
+    if (!result?.ok) {
+      setReportToast(t('place.gallery.manageHideFailed'));
+      window.setTimeout(() => setReportToast(''), 3500);
+      return;
+    }
     if (selectedImg?.id === manageTarget.id) setSelectedImg(null);
     setManageTarget(null);
     setReportLoginPrompt(false);
-  }, [manageTarget, handleHideGalleryImage, selectedImg, setSelectedImg]);
+  }, [manageTarget, handleHideGalleryImage, selectedImg, setSelectedImg, t]);
 
   const confirmManageReport = useCallback(async (reason) => {
     if (!manageTarget || !handleReportGalleryImage) return;
@@ -479,25 +491,35 @@ const PlaceGalleryView = React.memo(({
       return;
     }
     if (result.ok) {
-      setReportToast(t('place.gallery.manageReportToast'));
-    } else if (result.reason === 'duplicate') {
-      setReportToast(t('place.gallery.manageReportDuplicate'));
-    } else {
+      finishManageWithToast(t('place.gallery.manageReportToast'));
       return;
     }
-    setManageTarget(null);
-    setReportLoginPrompt(false);
-    window.setTimeout(() => setReportToast(''), 3500);
-  }, [manageTarget, handleReportGalleryImage, t]);
+    if (result.reason === 'duplicate') {
+      finishManageWithToast(t('place.gallery.manageReportDuplicate'));
+      return;
+    }
+    if (result.reason === 'missing_photo') {
+      finishManageWithToast(t('place.gallery.manageReportMissing'));
+      return;
+    }
+    if (result.reason === 'unavailable') {
+      finishManageWithToast(t('place.gallery.manageReportUnavailable'));
+    }
+  }, [manageTarget, handleReportGalleryImage, finishManageWithToast, t]);
 
   const confirmManageAdminRemove = useCallback(async () => {
     if (!manageTarget || !handleAdminRemoveGalleryImage || !isGalleryAdmin) return;
     const removed = await handleAdminRemoveGalleryImage(manageTarget);
-    if (!removed) return;
+    if (!removed?.ok) {
+      if (removed?.reason === 'forbidden') {
+        finishManageWithToast(t('place.gallery.manageAdminForbidden'));
+      }
+      return;
+    }
     if (selectedImg?.id === manageTarget.id) setSelectedImg(null);
     setManageTarget(null);
     setReportLoginPrompt(false);
-  }, [manageTarget, handleAdminRemoveGalleryImage, isGalleryAdmin, selectedImg, setSelectedImg]);
+  }, [manageTarget, handleAdminRemoveGalleryImage, isGalleryAdmin, selectedImg, setSelectedImg, finishManageWithToast, t]);
 
   const {
     onTouchStart: onLightboxLongPressStart,

@@ -6,10 +6,20 @@
 import assert from 'node:assert/strict';
 import {
   buildPersistPlaceGalleryArgs,
+  droppedGalleryIds,
+  galleryAdminFromProbe,
+  galleryModerateFailureReason,
   galleryPersistDropsStoredImages,
+  galleryReportErrorReason,
   imagesForGalleryPersist,
   resolveGalleryPersistPlaceId,
+  withoutDroppedGalleryImages,
 } from '../src/shared/api/placeGalleryPersist.js';
+import {
+  isPlaceChatIntroRpcLength,
+  PLACE_CHAT_INTRO_MAX_CHARS,
+  PLACE_CHAT_INTRO_MIN_CHARS,
+} from '../src/pages/Home/lib/placeChatIntroLimits.js';
 
 const hidden = { id: 'hidden-photo', urls: { small: 'https://images.unsplash.com/hidden' } };
 const visible = { id: 'visible-photo', urls: { small: 'https://images.unsplash.com/visible' } };
@@ -69,5 +79,43 @@ assert.equal(
 );
 assert.equal(resolveGalleryPersistPlaceId('', 'qa-gallery-writer'), 'qa-gallery-writer');
 assert.equal(resolveGalleryPersistPlaceId('  ', 'qa-gallery-writer'), 'qa-gallery-writer');
+
+assert.equal(galleryReportErrorReason({ code: '23503' }), 'missing_photo');
+assert.equal(
+  galleryReportErrorReason({
+    code: 'PGRST205',
+    message: "Could not find the table 'public.gallery_photo_reports' in the schema cache",
+  }),
+  'unavailable',
+);
+assert.equal(galleryReportErrorReason({ code: '42P01', message: 'relation does not exist' }), 'unavailable');
+
+assert.equal(
+  galleryAdminFromProbe({ seq: 1, latestSeq: 2, hasUser: true, error: null, data: true }),
+  null,
+  'late admin response is ignored',
+);
+assert.equal(
+  galleryAdminFromProbe({ seq: 2, latestSeq: 2, hasUser: true, error: { message: 'down' }, data: null }),
+  false,
+  'admin probe error fails closed',
+);
+assert.equal(
+  galleryAdminFromProbe({ seq: 2, latestSeq: 2, hasUser: true, error: null, data: true }),
+  true,
+);
+assert.equal(
+  galleryModerateFailureReason({ context: { status: 403 } }, null),
+  'forbidden',
+);
+
+const dropped = withoutDroppedGalleryImages(storage, droppedGalleryIds({ dropped_ids: ['hidden-photo'] }));
+assert.deepEqual(dropped.map((img) => img.id), ['visible-photo']);
+
+assert.equal(isPlaceChatIntroRpcLength('짧음'), false);
+assert.equal(isPlaceChatIntroRpcLength('가'.repeat(PLACE_CHAT_INTRO_MIN_CHARS - 1)), false);
+assert.equal(isPlaceChatIntroRpcLength('가'.repeat(PLACE_CHAT_INTRO_MIN_CHARS)), true);
+assert.equal(isPlaceChatIntroRpcLength('가'.repeat(PLACE_CHAT_INTRO_MAX_CHARS)), true);
+assert.equal(isPlaceChatIntroRpcLength('가'.repeat(PLACE_CHAT_INTRO_MAX_CHARS + 1)), false);
 
 console.log('smoke:place-gallery-persist PASS');

@@ -66,8 +66,33 @@ export function withoutDroppedGalleryImages(storage, droppedIds) {
 
 export function galleryReportErrorReason(error) {
   const code = String(error?.code || '');
+  const message = String(error?.message || '');
   if (code === '23505') return 'duplicate';
   if (code === '42501') return 'login';
   if (code === '23503') return 'missing_photo';
+  if (
+    code === 'PGRST205'
+    || code === '42P01'
+    || code === 'PGRST204'
+    || /could not find the table/i.test(message)
+    || (/gallery_photo_reports/.test(message) && /schema cache|does not exist/i.test(message))
+  ) {
+    return 'unavailable';
+  }
+  return 'error';
+}
+
+/** 늦은 응답은 null. 에러·비관리자는 false (버튼 숨김). */
+export function galleryAdminFromProbe({ seq, latestSeq, hasUser, error, data }) {
+  if (seq !== latestSeq) return null;
+  if (!hasUser || error || data !== true) return false;
+  return true;
+}
+
+export function galleryModerateFailureReason(error, data) {
+  if (!error && data?.ok !== false) return null;
+  const status = Number(error?.context?.status || error?.status || 0);
+  const code = String(error?.code || data?.code || '');
+  if (status === 403 || code === '42501' || code === '403') return 'forbidden';
   return 'error';
 }

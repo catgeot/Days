@@ -16,6 +16,8 @@ import {
   GALLERY_REPORT_REASONS,
   buildPersistPlaceGalleryArgs,
   droppedGalleryIds,
+  galleryAdminFromProbe,
+  galleryModerateFailureReason,
   galleryPersistDropsStoredImages,
   galleryReportErrorReason,
   imagesForGalleryPersist,
@@ -252,13 +254,14 @@ function readHiddenGalleryIds(placeKey) {
 }
 
 function addHiddenGalleryId(placeKey, imageId) {
-  if (!placeKey || !imageId) return;
+  if (!placeKey || !imageId) return false;
   const next = readHiddenGalleryIds(placeKey);
   next.add(imageId);
   try {
     localStorage.setItem(galleryHiddenIdsKey(CACHE_VERSION, placeKey), JSON.stringify([...next]));
+    return true;
   } catch {
-    /* quota */
+    return false;
   }
 }
 
@@ -293,21 +296,37 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   const [loadFailed, setLoadFailed] = useState(false);
   const [isGalleryAdmin, setIsGalleryAdmin] = useState(false);
 
+  const adminProbeSeqRef = useRef(0);
   useEffect(() => {
     let cancel = false;
-    const syncAdmin = async (session) => {
-      if (!session?.user) {
-        if (!cancel) setIsGalleryAdmin(false);
+    const applyAdminProbe = (session) => {
+      const seq = ++adminProbeSeqRef.current;
+      const hasUser = Boolean(session?.user);
+      if (!hasUser) {
+        const next = galleryAdminFromProbe({
+          seq,
+          latestSeq: adminProbeSeqRef.current,
+          hasUser: false,
+          error: null,
+          data: null,
+        });
+        if (!cancel && next !== null) setIsGalleryAdmin(next);
         return;
       }
-      const { data, error } = await supabase.rpc('am_i_app_admin', { p_scope: 'gallery' });
-      if (!cancel) setIsGalleryAdmin(!error && data === true);
+      void supabase.rpc('am_i_app_admin', { p_scope: 'gallery' }).then(({ data, error }) => {
+        const next = galleryAdminFromProbe({
+          seq,
+          latestSeq: adminProbeSeqRef.current,
+          hasUser: true,
+          error,
+          data,
+        });
+        if (cancel || next === null) return;
+        setIsGalleryAdmin(next);
+      });
     };
-    supabase.auth.getSession().then(({ data }) => {
-      void syncAdmin(data?.session);
-    });
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      void syncAdmin(session);
+      applyAdminProbe(session);
     });
     return () => {
       cancel = true;
@@ -1272,16 +1291,18 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   const handleHideGalleryImage = useCallback(
     (imageToHide) => {
-      if (!imageToHide?.id) return;
+      if (!imageToHide?.id) return { ok: false, reason: 'missing' };
       const placeKey = currentPlaceKeyRef.current;
       const hidden = readHiddenGalleryIds(placeKey);
       if (!hidden.has(imageToHide.id)) {
-        addHiddenGalleryId(placeKey, imageToHide.id);
+        const saved = addHiddenGalleryId(placeKey, imageToHide.id);
+        if (!saved) return { ok: false, reason: 'storage' };
       }
       const view = syncGalleryViewFromStorage(placeKey);
       if (selectedImg?.id === imageToHide.id) {
         setSelectedImg(view[0] || null);
       }
+      return { ok: true };
     },
     [selectedImg, syncGalleryViewFromStorage],
   );
@@ -1342,12 +1363,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   const handleAdminRemoveGalleryImage = useCallback(
     async (imageToRemove) => {
-      if (!isGalleryAdmin || !imageToRemove?.id) return false;
+      if (!isGalleryAdmin || !imageToRemove?.id) return { ok: false, reason: 'forbidden' };
       const placeId = resolveGalleryPersistPlaceId(
         loadedStatsPlaceIdRef.current,
         canonicalStatsIdRef.current,
       );
-      if (!placeId) return false;
+      if (!placeId) return { ok: false, reason: 'missing' };
       const { data, error } = await supabase.functions.invoke('gallery-moderate', {
         body: {
           action: 'remove',
@@ -1355,11 +1376,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           imageId: String(imageToRemove.id),
         },
       });
-      if (error || data?.ok === false) {
+      const failure = galleryModerateFailureReason(error, data);
+      if (failure) {
         console.error('🚨 gallery-moderate remove failed', error || data);
-        return false;
+        return { ok: false, reason: failure };
       }
-      return Boolean(removeImageFromGalleryStorage(imageToRemove));
+      return removeImageFromGalleryStorage(imageToRemove)
+        ? { ok: true }
+        : { ok: false, reason: 'missing' };
     },
     [removeImageFromGalleryStorage, isGalleryAdmin],
   );

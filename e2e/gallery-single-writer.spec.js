@@ -52,7 +52,7 @@ function corsHeaders() {
 }
 
 async function installMocks(page, scene) {
-  const bag = { rpc: [], writes: [], prod: [], reports: [], moderate: [] };
+  const bag = { rpc: [], writes: [], prod: [], reports: [], moderate: [], admin: [] };
   const headers = corsHeaders();
 
   await page.route(/phdjnbfitvmrguqzverm/, (route) => {
@@ -89,6 +89,17 @@ async function installMocks(page, scene) {
     }
     if (path.includes('/rpc/persist_place_gallery') && req.method() === 'POST') {
       bag.rpc.push(JSON.parse(req.postData() || '{}'));
+      const status = scene.persistStatus || 200;
+      if (status !== 200) {
+        return route.fulfill({
+          status,
+          headers,
+          body: JSON.stringify({
+            code: status === 404 ? 'PGRST202' : '500',
+            message: status === 404 ? 'Could not find the function' : 'persist failed',
+          }),
+        });
+      }
       return route.fulfill({
         status: 200,
         headers,
@@ -96,11 +107,20 @@ async function installMocks(page, scene) {
           applied: 'ok',
           count: 1,
           image_url: null,
-          dropped_ids: [],
+          dropped_ids: scene.droppedIds || [],
         }),
       });
     }
     if (path.includes('/rpc/am_i_app_admin')) {
+      bag.admin.push(req.postData() || '');
+      if (scene.adminHold) await scene.adminHold;
+      if (scene.adminStatus && scene.adminStatus !== 200) {
+        return route.fulfill({
+          status: scene.adminStatus,
+          headers,
+          body: JSON.stringify({ code: String(scene.adminStatus), message: 'admin probe failed' }),
+        });
+      }
       return route.fulfill({
         status: 200,
         headers,
@@ -141,11 +161,39 @@ async function installMocks(page, scene) {
           }),
         });
       }
+      if (scene.reportCode === '23503') {
+        return route.fulfill({
+          status: 409,
+          headers,
+          body: JSON.stringify({
+            code: '23503',
+            message: 'insert or update violates foreign key constraint',
+          }),
+        });
+      }
+      if (scene.reportCode === 'PGRST205') {
+        return route.fulfill({
+          status: 404,
+          headers,
+          body: JSON.stringify({
+            code: 'PGRST205',
+            message: "Could not find the table 'public.gallery_photo_reports' in the schema cache",
+          }),
+        });
+      }
       return route.fulfill({ status: 201, headers, body: '{}' });
     }
     if (path.includes('/functions/v1/gallery-moderate') && req.method() === 'POST') {
       const body = JSON.parse(req.postData() || '{}');
       bag.moderate.push(body);
+      const status = scene.moderateStatus || 200;
+      if (status !== 200) {
+        return route.fulfill({
+          status,
+          headers,
+          body: JSON.stringify({ ok: false, code: String(status), message: 'moderate rejected' }),
+        });
+      }
       return route.fulfill({
         status: 200,
         headers,
@@ -159,16 +207,27 @@ async function installMocks(page, scene) {
   });
 
   await page.addInitScript(
-    ({ hiddenKey, hiddenIds, authKey, session }) => {
+    ({ hiddenKey, hiddenIds, authKey, session, hideStorageFails }) => {
       localStorage.setItem('gateo.locale', 'ko');
       if (hiddenIds?.length) localStorage.setItem(hiddenKey, JSON.stringify(hiddenIds));
       if (session) localStorage.setItem(authKey, JSON.stringify(session));
+      if (hideStorageFails) {
+        const proto = Storage.prototype;
+        const orig = proto.setItem;
+        proto.setItem = function setItem(key, value) {
+          if (String(key).includes('days_gallery_hidden_')) {
+            throw new Error('quota');
+          }
+          return orig.call(this, key, value);
+        };
+      }
     },
     {
       hiddenKey: HIDDEN_KEY,
       hiddenIds: scene.hiddenIds || [],
       authKey: AUTH_KEY,
       session: scene.userId ? sessionFor(scene.userId) : null,
+      hideStorageFails: scene.hideStorageFails === true,
     },
   );
   return bag;
@@ -177,6 +236,14 @@ async function installMocks(page, scene) {
 function assertNoProdOrDirectWrites(bag) {
   expect(bag.prod, 'prod supabase host must receive zero requests').toEqual([]);
   expect(bag.writes, 'logged-out and general users must not write place_stats directly').toEqual([]);
+}
+
+async function expectRpcSettled(page, bag, count) {
+  await expect.poll(() => bag.rpc.length).toBe(count);
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(500);
+  expect(bag.rpc.length).toBe(count);
+  expect(bag.writes).toEqual([]);
 }
 
 test.beforeAll(() => {
@@ -195,7 +262,7 @@ test('첫 방문 replace 1회, 숨긴 사진도 저장용 목록에 포함', asy
   });
   await page.goto('/qa/gallery-single-writer');
   await expect(page.locator('.break-inside-avoid')).toHaveCount(7);
-  await expect.poll(() => bag.rpc.length).toBe(1);
+  await expectRpcSettled(page, bag, 1);
   const body = bag.rpc[0];
   expect(body.p_mode).toBe('replace');
   expect(body.p_place_id).toBe('qa-gallery-writer');
@@ -325,4 +392,145 @@ test('관리자 큐 제거·기각·복원', async ({ page }) => {
   await expect.poll(() => bag.moderate.map((row) => row.action).join(',')).toBe('remove,dismiss,restore');
   expect(bag.prod).toEqual([]);
   expect(bag.writes).toEqual([]);
+});
+
+function storedPhotos() {
+  return Array.from({ length: 8 }, (_, i) => photo(`vis-${i + 1}`));
+}
+
+for (const status of [404, 500]) {
+  test(`persist ${status}는 직접 쓰기와 재시도가 없다`, async ({ page }) => {
+    const bag = await installMocks(page, {
+      rows: [],
+      unsplash: storedPhotos(),
+      persistStatus: status,
+    });
+    await page.goto('/qa/gallery-single-writer');
+    await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+    await expectRpcSettled(page, bag, 1);
+    expect(bag.rpc[0].p_mode).toBe('replace');
+    assertNoProdOrDirectWrites(bag);
+  });
+}
+
+test('관리자 확인이 늦거나 실패하면 제거 버튼은 숨는다', async ({ page }) => {
+  let releaseAdmin = () => {};
+  const adminHold = new Promise((resolve) => {
+    releaseAdmin = resolve;
+  });
+  const bag = await installMocks(page, {
+    rows: [{ place_id: 'loaded-latin-row', gallery_urls: storedPhotos() }],
+    unsplash: [],
+    userId: '22222222-2222-2222-2222-222222222222',
+    admin: true,
+    adminHold,
+    adminStatus: 500,
+  });
+  await page.goto('/qa/gallery-single-writer');
+  await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+  await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByRole('button', { name: '갤러리에서 제거 (모든 사용자)' })).toHaveCount(0);
+  releaseAdmin();
+  await page.waitForTimeout(500);
+  await expect(page.getByRole('button', { name: '갤러리에서 제거 (모든 사용자)' })).toHaveCount(0);
+  expect(bag.admin).toHaveLength(1);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('dropped_ids는 화면에서 빠진다', async ({ page }) => {
+  const bag = await installMocks(page, {
+    rows: [],
+    unsplash: storedPhotos(),
+    droppedIds: ['vis-1'],
+  });
+  await page.goto('/qa/gallery-single-writer');
+  await expect(page.locator('img[src*="vis-1"]')).toHaveCount(0);
+  await expect(page.locator('.break-inside-avoid')).toHaveCount(7);
+  await expectRpcSettled(page, bag, 1);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('숨기기는 화면에서만 빠지고 저장 요청은 없다', async ({ page }) => {
+  const bag = await installMocks(page, {
+    rows: [{ place_id: 'loaded-latin-row', gallery_urls: storedPhotos() }],
+    unsplash: [],
+  });
+  await page.goto('/qa/gallery-single-writer');
+  await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+  await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
+  await page.getByRole('button', { name: '이 사진 숨기기' }).click();
+  await expect(page.locator('.break-inside-avoid')).toHaveCount(7);
+  await expect(page.locator('img[src*="vis-1"]')).toHaveCount(0);
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(400);
+  expect(bag.rpc).toEqual([]);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('숨기기 저장이 실패하면 안내하고 사진은 남는다', async ({ page }) => {
+  const bag = await installMocks(page, {
+    rows: [{ place_id: 'loaded-latin-row', gallery_urls: storedPhotos() }],
+    unsplash: [],
+    hideStorageFails: true,
+  });
+  await page.goto('/qa/gallery-single-writer');
+  await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+  await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
+  await page.getByRole('button', { name: '이 사진 숨기기' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '이 사진을 숨기지 못했어요.' })).toBeVisible();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('갤러리에 없는 사진 신고는 안내한다', async ({ page }) => {
+  const bag = await installMocks(page, {
+    rows: [{ place_id: 'loaded-latin-row', gallery_urls: storedPhotos() }],
+    unsplash: [],
+    userId: '11111111-1111-1111-1111-111111111111',
+    reportCode: '23503',
+  });
+  await page.goto('/qa/gallery-single-writer');
+  await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
+  await page.getByRole('button', { name: '관련 없음' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '이 사진은 갤러리에 없어요.' })).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('신고 테이블이 없으면 안내한다', async ({ page }) => {
+  const bag = await installMocks(page, {
+    rows: [{ place_id: 'loaded-latin-row', gallery_urls: storedPhotos() }],
+    unsplash: [],
+    userId: '11111111-1111-1111-1111-111111111111',
+    reportCode: 'PGRST205',
+  });
+  await page.goto('/qa/gallery-single-writer');
+  await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
+  await page.getByRole('button', { name: '관련 없음' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '지금은 신고를 받을 수 없어요.' })).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('관리자 제거 403은 권한 안내를 보여 준다', async ({ page }) => {
+  const bag = await installMocks(page, {
+    rows: [{ place_id: 'loaded-latin-row', gallery_urls: storedPhotos() }],
+    unsplash: [],
+    userId: '22222222-2222-2222-2222-222222222222',
+    admin: true,
+    moderateStatus: 403,
+  });
+  await page.goto('/qa/gallery-single-writer');
+  await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+  await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
+  await page.getByRole('button', { name: '갤러리에서 제거 (모든 사용자)' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '제거 권한이 없어요.' })).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+  expect(bag.moderate).toEqual([
+    { action: 'remove', placeId: 'loaded-latin-row', imageId: 'vis-1' },
+  ]);
+  assertNoProdOrDirectWrites(bag);
 });
