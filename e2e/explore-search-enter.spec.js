@@ -1,5 +1,6 @@
 // Explore Enter 검색 — 기백산 ReferenceError 회귀 (@see QA report 2026-10-01)
 import { test, expect } from './fixtures.js';
+import { installExploreGeminiMock } from './explore-gemini-mock.js';
 
 test.use({ ignoreHTTPSErrors: true });
 
@@ -48,6 +49,7 @@ test.describe('Explore search Enter', () => {
   });
 
   test('기백 + Enter shows selection card (AI fallback path)', async ({ page }) => {
+    await installExploreGeminiMock(page.context());
     const { errors } = await submitExploreQuery(page, '기백');
 
     await expect(

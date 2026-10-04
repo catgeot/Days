@@ -13,6 +13,8 @@ if (!process.env.GITHUB_ACTIONS) {
 }
 
 const REQUEST_TIMEOUT_MS = 15_000;
+/** Fail P0-4 when rolling12 cache row is older than this (hours). Override: SMOKE_FESTIVAL_CACHE_MAX_AGE_HOURS */
+const FESTIVAL_CACHE_MAX_AGE_HOURS = Number(process.env.SMOKE_FESTIVAL_CACHE_MAX_AGE_HOURS) || 96;
 
 let siteUrl = (process.env.SMOKE_SITE_URL || 'https://www.gateo.kr/').replace(/\/$/, '');
 const supabaseUrl = process.env.VITE_SUPABASE_URL?.trim();
@@ -244,11 +246,27 @@ async function probeTourapiFestivalCache() {
       record(id, name, 'fail', `cache_key=${row?.cache_key ?? '?'} items=${n}`, 'P0');
       return;
     }
+    const fetchedAt = row?.fetched_at ? Date.parse(row.fetched_at) : NaN;
+    if (!Number.isFinite(fetchedAt)) {
+      record(id, name, 'fail', 'fetched_at missing or invalid', 'P0');
+      return;
+    }
+    const ageHours = (Date.now() - fetchedAt) / 3_600_000;
+    if (ageHours > FESTIVAL_CACHE_MAX_AGE_HOURS) {
+      record(
+        id,
+        name,
+        'fail',
+        `cache stale ${ageHours.toFixed(1)}h > ${FESTIVAL_CACHE_MAX_AGE_HOURS}h (${row.cache_key})`,
+        'P0',
+      );
+      return;
+    }
     record(
       id,
       name,
       'pass',
-      `${row.cache_key} items=${n} fetched_at=${row.fetched_at ?? '?'}`,
+      `${row.cache_key} items=${n} age=${ageHours.toFixed(1)}h`,
       'P0',
     );
   } catch (error) {
@@ -284,8 +302,18 @@ async function probeFetchPlaceVideos() {
       record(id, name, 'fail', 'GET place_videos body not array', 'P0');
       return;
     }
+    if (rows.length === 0) {
+      record(id, name, 'fail', 'No place_videos row for paris', 'P0');
+      return;
+    }
+    const videos = rows[0]?.videos;
+    const videoCount = Array.isArray(videos) ? videos.length : 0;
+    if (videoCount < 1) {
+      record(id, name, 'fail', 'paris place_videos cache empty', 'P0');
+      return;
+    }
 
-    record(id, name, 'pass', `cache rows=${rows.length} (anon REST only, no Edge)`, 'P0');
+    record(id, name, 'pass', `paris videos=${videoCount} (anon REST only, no Edge)`, 'P0');
   } catch (error) {
     const detail = error.name === 'AbortError' ? 'timeout' : error.message;
     record(id, name, 'fail', detail, 'P0');

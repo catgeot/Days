@@ -1,6 +1,10 @@
 /** Editorial/persona cards must not show user star ratings (#372). */
 export function editorialReviewCards(page) {
-  return page.locator('.border-indigo-100');
+  return page
+    .locator('div.bg-white.border.border-gray-100.rounded-xl.p-5.shadow-sm')
+    .filter({
+      has: page.locator('span.border-indigo-100', { hasText: /GATEO 리뷰어/i }),
+    });
 }
 
 export function starRatingIn(scope) {

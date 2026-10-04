@@ -14,7 +14,8 @@ function parseExternalHref(href) {
 }
 
 function isTripComHost(hostname) {
-  return hostname === 'trip.com' || hostname.endsWith('.trip.com');
+  const h = String(hostname || '').toLowerCase();
+  return h === 'trip.com' || h.endsWith('.trip.com');
 }
 
 function isKlookHost(hostname) {
@@ -69,9 +70,26 @@ async function assertPlannerBookingLinks(page) {
       /^(placeholder|준비 중|coming soon|tbd)$/i,
     );
     if (isTripComHost(u.hostname)) {
-      expect(u.hostname.includes('myrealtrip'), 'trip.com must not match myrealtrip host').toBe(
+      expect(isMyRealTripHost(u.hostname), 'trip.com host must not be myrealtrip subdomain').toBe(
         false,
       );
+      const qs = u.searchParams.toString();
+      expect(
+        u.searchParams.has('Allianceid') ||
+          u.searchParams.has('AllianceId') ||
+          u.searchParams.has('SID') ||
+          /trip_sub1=|partners\/ad\//i.test(`${u.pathname}?${u.searchParams}`),
+        `trip.com affiliate params: ${href}`,
+      ).toBe(true);
+    }
+    if (isMyRealTripHost(u.hostname)) {
+      const affiliateOk =
+        /mylink_id=\d+/.test(href) ||
+        (u.hostname === 'myrealt.rip' && u.pathname.length > 1);
+      expect(affiliateOk, `MRT affiliate link: ${href}`).toBe(true);
+    }
+    if (isKlookHost(u.hostname)) {
+      expect(u.searchParams.toString() || href, `klook tracking: ${href}`).not.toBe('');
     }
   }
 }

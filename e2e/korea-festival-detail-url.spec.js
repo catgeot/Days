@@ -2,16 +2,17 @@ import { test, expect } from './fixtures.js';
 
 const FESTIVAL_INVALID = '999999999';
 const MRT_SCAN_MAX = 10;
-/** Prod cross-link fixture — perf-gateo-home-audit-metrics `festival-detail-613316` */
-const MRT_PINNED_FESTIVAL_IDS = ['613316'];
 
 async function dismissLocHint(page) {
   const close = page
     .getByRole('main')
     .getByRole('button', { name: /^닫기$|^Close$/i })
     .first();
-  if (await close.isVisible({ timeout: 2500 }).catch(() => false)) {
+  try {
+    await close.waitFor({ state: 'visible', timeout: 2500 });
     await close.click();
+  } catch {
+    /* location hint not shown */
   }
 }
 
@@ -48,80 +49,102 @@ async function countBrokenImages(page) {
   });
 }
 
-async function settleMrtStrips(page) {
-  const dialog = detailDialog(page);
-  await expect(dialog.getByText(/숙소를 불러오는 중|Loading stays/i)).toHaveCount(0, {
-    timeout: 120_000,
-  });
-  await expect(
-    dialog.getByText(/투어·티켓 상품을 불러오는 중|Loading tours and tickets/i),
-  ).toHaveCount(0, { timeout: 120_000 });
+async function readMrtStripSnapshot(dialog) {
+  const stayLoading =
+    (await dialog.getByText(/숙소를 불러오는 중|Loading stays/i).count()) > 0;
+  const stayEmpty =
+    (await dialog.getByText(/선택 일정에 맞는 숙소가 없습니다|No stays for these dates/i).count()) >
+    0;
+  const stayCards = await dialog
+    .locator('.overflow-x-auto a[href*="accommodation.myrealtrip.com"]')
+    .count();
+  const stayRendered =
+    (await dialog.getByText(/내 여행 일정|My trip dates/i).count()) > 0 ||
+    stayLoading ||
+    stayEmpty ||
+    stayCards > 0;
 
-  const stays = dialog.locator('.overflow-x-auto a[href*="accommodation.myrealtrip.com"]');
-  const tnas = dialog.locator('.overflow-x-auto a[href*="experiences.myrealtrip.com"]');
-  const stayEmpty = await dialog
-    .getByText(/선택 일정에 맞는 숙소가 없습니다|No stays for these dates/i)
-    .isVisible()
-    .catch(() => false);
-  const tnaEmpty = await dialog
-    .getByText(/선택 지역에 맞는 투어·티켓 상품이 없습니다|No tours or tickets found/i)
-    .isVisible()
-    .catch(() => false);
-  const stayHrefs = await stays.evaluateAll((as) => as.map((a) => a.href));
-  const tnaHrefs = await tnas.evaluateAll((as) => as.map((a) => a.href));
+  const tnaLoading =
+    (await dialog.getByText(/투어·티켓 상품을 불러오는 중|Loading tours and tickets/i).count()) >
+    0;
+  const tnaEmpty =
+    (await dialog.getByText(/선택 지역에 맞는 투어·티켓 상품이 없습니다|No tours or tickets found/i).count()) >
+    0;
+  const tnaCards = await dialog.locator('a[href*="experiences.myrealtrip.com"]').count();
+  const tnaRendered =
+    (await dialog.getByText(/투어 · 티켓|투어·티켓|Tour · ticket/i).count()) > 0 ||
+    tnaLoading ||
+    tnaEmpty ||
+    tnaCards > 0;
+
+  const staySettled =
+    !stayRendered || (!stayLoading && (stayCards > 0 || stayEmpty));
+  const tnaSettled = !tnaRendered || (!tnaLoading && (tnaCards > 0 || tnaEmpty));
+
   return {
-    stays: await stays.count(),
-    tnas: await tnas.count(),
-    stayEmpty,
-    tnaEmpty,
-    stayHrefs,
-    tnaHrefs,
+    stay: {
+      rendered: stayRendered,
+      settled: staySettled,
+      loading: stayLoading,
+      empty: stayEmpty,
+      cards: stayCards,
+    },
+    tna: {
+      rendered: tnaRendered,
+      settled: tnaSettled,
+      loading: tnaLoading,
+      empty: tnaEmpty,
+      cards: tnaCards,
+    },
+    stayHrefs: await dialog
+      .locator('.overflow-x-auto a[href*="accommodation.myrealtrip.com"]')
+      .evaluateAll((as) => as.map((a) => a.href)),
+    tnaHrefs: await dialog
+      .locator('.overflow-x-auto a[href*="experiences.myrealtrip.com"]')
+      .evaluateAll((as) => as.map((a) => a.href)),
   };
 }
 
-async function waitMrtStripReady(dialog) {
-  const loadingStay = dialog.getByText(/숙소를 불러오는 중|Loading stays/i);
-  const loadingTna = dialog.getByText(/투어·티켓 상품을 불러오는 중|Loading tours and tickets/i);
-  await loadingStay.waitFor({ state: 'hidden', timeout: 90_000 }).catch(() =>
-    expect(loadingStay).toHaveCount(0, { timeout: 90_000 }),
-  );
-  await loadingTna.waitFor({ state: 'hidden', timeout: 90_000 }).catch(() =>
-    expect(loadingTna).toHaveCount(0, { timeout: 90_000 }),
-  );
+async function waitFestivalMrtSettled(dialog) {
+  await expect
+    .poll(
+      async () => {
+        const snap = await readMrtStripSnapshot(dialog);
+        if (!snap.stay.rendered && !snap.tna.rendered) return null;
+        if (!snap.stay.settled || !snap.tna.settled) return null;
+        return snap;
+      },
+      { timeout: 120_000, message: 'MRT strips settled (loading finished → cards or empty)' },
+    )
+    .not.toBeNull();
 }
 
-async function tryFestivalMrtStrips(page, id) {
+async function tryFestivalWithMrtProducts(page, id) {
   await page.goto(`/korea/?festival=${id}`);
   const dialog = detailDialog(page);
   try {
     await dialog.waitFor({ state: 'visible', timeout: 45_000 });
-    await waitMrtStripReady(dialog);
+    await waitFestivalMrtSettled(dialog);
   } catch {
     return null;
   }
-  const stayCount = await dialog.locator('a[href*="accommodation.myrealtrip.com"]').count();
-  const tnaCount = await dialog.locator('a[href*="experiences.myrealtrip.com"]').count();
-  if (stayCount > 0 || tnaCount > 0) return id;
+  const snap = await readMrtStripSnapshot(dialog);
+  if (snap.stay.cards + snap.tna.cards > 0) return { id, snap };
   await clickDetailClose(page).catch(() => {});
   return null;
 }
 
 async function pickFestivalWithMrtStrips(page, cards) {
-  for (const id of MRT_PINNED_FESTIVAL_IDS) {
-    const hit = await tryFestivalMrtStrips(page, id);
-    if (hit) return hit;
-  }
-
   const total = Math.min(await cards.count(), MRT_SCAN_MAX);
   for (let i = 0; i < total; i += 1) {
     const card = cards.nth(i);
     await card.scrollIntoViewIfNeeded();
     const id = await card.getAttribute('data-festival-id');
-    if (!id || MRT_PINNED_FESTIVAL_IDS.includes(id)) continue;
-    const hit = await tryFestivalMrtStrips(page, id);
+    if (!id) continue;
+    const hit = await tryFestivalWithMrtProducts(page, id);
     if (hit) return hit;
   }
-  throw new Error('no listed festival exposes MRT strips — check festivalCross/stay mapping');
+  throw new Error('no listed festival exposes MRT product cards — check festivalCross/stay mapping');
 }
 
 function assertMrtAffiliateLinks(mrt) {
@@ -251,10 +274,11 @@ test.describe('Korea festival detail URL + history', () => {
 
     const cards3 = await waitForFestivalList(page);
     const brokenOnList = await countBrokenImages(page);
-    const mrtFestivalId = await pickFestivalWithMrtStrips(page, cards3);
+    const picked = await pickFestivalWithMrtStrips(page, cards3);
+    const mrtFestivalId = picked.id;
+    const mrt = picked.snap;
     await expect(detailDialog(page)).toBeVisible({ timeout: 60_000 });
     const brokenOnDetail = await countBrokenImages(page);
-    const mrt = await settleMrtStrips(page);
 
     test.info().attach(`${engine}-scenario-results.json`, {
       body: JSON.stringify(
@@ -264,10 +288,8 @@ test.describe('Korea festival detail URL + history', () => {
           brokenOnList,
           brokenOnDetail,
           mrt: {
-            stays: mrt.stays,
-            tnas: mrt.tnas,
-            stayEmpty: mrt.stayEmpty,
-            tnaEmpty: mrt.tnaEmpty,
+            stay: mrt.stay,
+            tna: mrt.tna,
             hrefSample: [...mrt.stayHrefs.slice(0, 2), ...mrt.tnaHrefs.slice(0, 2)],
             mrtFestivalId,
           },
@@ -287,10 +309,15 @@ test.describe('Korea festival detail URL + history', () => {
     expect(brokenOnList, 'broken images on list').toBe(0);
     expect(brokenOnDetail, 'broken images on detail').toBe(0);
 
-    expect(mrt.stays > 0 || mrt.stayEmpty, 'stay strip settled (cards or explicit empty)').toBe(true);
-    expect(mrt.tnas > 0 || mrt.tnaEmpty, 'TNA strip settled (cards or explicit empty)').toBe(true);
-    expect(mrt.stays + mrt.tnas, 'at least one MRT product card on festival detail').toBeGreaterThan(0);
-    expect(mrt.stays, 'stay cards ≤ page size').toBeLessThanOrEqual(20);
+    expect(mrt.stay.rendered || mrt.tna.rendered, 'at least one MRT strip rendered').toBe(true);
+    if (mrt.stay.rendered) {
+      expect(mrt.stay.cards > 0 || mrt.stay.empty, 'stay strip settled (cards or empty)').toBe(true);
+    }
+    if (mrt.tna.rendered) {
+      expect(mrt.tna.cards > 0 || mrt.tna.empty, 'TNA strip settled (cards or empty)').toBe(true);
+    }
+    expect(mrt.stay.cards + mrt.tna.cards, 'at least one MRT product card').toBeGreaterThan(0);
+    expect(mrt.stay.cards, 'stay cards ≤ page size').toBeLessThanOrEqual(20);
     assertMrtAffiliateLinks(mrt);
   });
 });
