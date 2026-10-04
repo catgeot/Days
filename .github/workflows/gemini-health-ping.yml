@@ -1,0 +1,61 @@
+# MOONi 실경로 헬스 핑. smoke-health(2시간/6시간)와 분리된 하루 1회.
+# 정시가 아닌 분(04:17 UTC). 엣지 health_ping 상한은 하루 4회.
+#
+# Repository secrets (값은 로그에 남기지 않음):
+#   VITE_SUPABASE_URL
+#   VITE_SUPABASE_ANON_KEY
+#   GEMINI_HEALTH_TOKEN
+
+name: Gemini health ping
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: gemini-health-ping
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: POST health_ping once
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          GEMINI_HEALTH_TOKEN: ${{ secrets.GEMINI_HEALTH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VITE_SUPABASE_URL// /}" ] || [ -z "${VITE_SUPABASE_ANON_KEY// /}" ]; then
+            echo "::error title=Secrets missing::VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY 가 비어 있습니다."
+            exit 1
+          fi
+          if [ -z "${GEMINI_HEALTH_TOKEN// /}" ]; then
+            echo "::error title=Secret missing::GEMINI_HEALTH_TOKEN 이 비어 있습니다. 값은 출력하지 않습니다."
+            exit 1
+          fi
+          url="${VITE_SUPABASE_URL%/}/functions/v1/gemini-proxy"
+          code=$(curl -sS -o /tmp/gemini-health-body.json -w '%{http_code}' \
+            -X POST "$url" \
+            -H "Authorization: Bearer ${VITE_SUPABASE_ANON_KEY}" \
+            -H "apikey: ${VITE_SUPABASE_ANON_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "x-gateo-health: ${GEMINI_HEALTH_TOKEN}" \
+            --data '{"task":"health_ping"}')
+          CODE="$code" python3 - << 'PY'
+          import json, os, sys
+          code = os.environ["CODE"]
+          raw = open("/tmp/gemini-health-body.json", encoding="utf-8").read()
+          print(f"HTTP {code}")
+          try:
+              data = json.loads(raw)
+          except Exception:
+              print("body was not json (contents hidden)")
+              sys.exit(1)
+          print("success", data.get("success"), "model", data.get("modelUsed"), "error", data.get("error"))
+          ok = code == "200" and data.get("success") is True
+          sys.exit(0 if ok else 1)
+          PY
