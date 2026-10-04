@@ -108,7 +108,7 @@
 8. **로그**: 호출마다 `console.log` JSON 1줄 `{fn:'gemini-proxy', task, model, status, error?, ipHash8, uidSet:bool, ms, promptTokens, outputTokens, thoughts, finishReason, legacy:bool}`. 프롬프트·답변 본문은 남기지 않는다.
 
 **PASS** (로컬 모의 fetch로 Gemini 호출 수를 센다)
-- Origin 없음(health_ping 제외)·목록 밖·크롤러 UA → 403, Gemini 0회, admit RPC 0회
+- Origin 없음·목록 밖·크롤러 UA → 403, Gemini 0회, admit RPC 0회. `health_ping`이 Origin을 건너뛰는 것은 헤더 `x-gateo-health`가 `GEMINI_HEALTH_TOKEN`과 같을 때뿐이다. 토큰이 없으면 일반 요청과 같이 Origin을 본다.
 - `modelId`·`parts`를 보내도 `task` 형식에서는 무시된다. 어떤 입력으로도 pro-preview URL이 만들어지지 않는다.
 - 모든 Gemini 요청 본문에 작업별 `maxOutputTokens`가 있다.
 - 상한 초과 → 429 + Retry-After, Gemini 0회. 예산 초과 → 429 budget.
@@ -125,12 +125,13 @@
   - 기존 테이블·함수·정책은 건드리지 않는다. prod에 같은 이름 객체 없음(`api/prod_name_check.json`, read_only SELECT).
   - 3v의 `edge_rate_limits`와 **분리**했다. 둘 중 하나만 롤백할 수 있게 하기 위해서다.
 - 롤백 `sql/rollback/20261006114000_gemini_proxy_rate_limits_rollback.sql` (`406e94033cd0`) — 새로 만든 4개만 drop. **엣지 롤백(§4.4) 뒤에만** 실행.
-- 버전은 #378과 섞인다. 적용 순서는 `20261006113000` → `20261006114000` → `20261006120000` → `20261006121000`. 번호 순으로 적용한다. `20261006121000`(예약 테이블 + reserve/reconcile/release)은 엣지보다 **먼저 반드시** 넣는다. 새 엣지가 살아있는 동안 이 함수를 지우면 AI가 전부 503이다.
+- 버전은 #378과 섞인다. 적용 순서는 `20261006113000` → `20261006114000` → `20261006120000` → `20261006121000`. 번호 순으로 적용한다. `20261006121000`은 테이블 `gemini_proxy_reservations` 1개와 함수 3개(`gemini_proxy_reserve_usage`, `gemini_proxy_reconcile_usage`, `gemini_proxy_release_usage`)다. 엣지보다 **먼저 반드시** 넣는다. 새 엣지가 살아있는 동안 이 함수를 지우면 AI가 전부 503이다.
+- 후속(이번 PR에서는 코드로 만들지 않음): `gemini_proxy_reservations`는 호출마다 한 행이라 대략 하루 600행이 쌓인다. 정리 잡은 별도 PR로 둔다.
 - 로컬 검증(PG 17, 박스 전용, 기존 하네스의 supabase_shim 사용): `sql/tests/local_test.sh` → `sql/tests/local_test_result_2026-10-03.txt` **15/15 PASS** (RLS·권한, IP 한도, 전역 미소진, retry_after, 사용량 누적, 예산, 잘못된 인자, anon 거부, 40개 동시 호출 중 정확히 25개 통과, 롤백 후 fingerprint 동일, 재적용).
 
 ## 3. 승인 메모
 - A6 범위(Cos 전달)로 진행한다. 다만 아래 두 가지는 A6 원문(gallery-moderate·fetch-place-videos 배포)에 없던 항목이라 실행 전 한 줄 확인을 권한다.
-  - ⚠ DB stage 3g(신규 테이블 2 + 함수 2)
+  - ⚠ DB stage 3g. `20261006114000`은 테이블 2 + 함수 2(승인분, 그대로). `20261006121000`은 테이블 `gemini_proxy_reservations` 1 + 함수 3(`reserve` / `reconcile` / `release`).
   - ⚠ 엣지 배포 전에 시크릿이 있어야 한다. 필수: `GEMINI_PROXY_IP_SALT`(신규 난수), `GEMINI_HEALTH_TOKEN`(GitHub Actions secret `GEMINI_HEALTH_TOKEN`과 **같은 값**). 함께: `GEMINI_PROXY_ALLOWED_ORIGINS`, `GEMINI_PROXY_LEGACY`. 선택: `GEMINI_PROXY_LIMITS`, `GEMINI_DAILY_TOKEN_BUDGET`. 기존 `GEMINI_API_KEY`는 그대로. 값은 보고서·로그에 적지 않는다.
 - 범위 밖(이번에 점검하지 않음): Gemini를 쓰는 다른 함수 `explain-event-term`, `generate-place-magazine`, `update-event-travel-guide`, `update-place-wiki`도 배포본 verify_jwt=false다. 각 함수의 자체 인증·상한은 확인하지 않았다(**미확인**). 별도 점검 권장.
 
@@ -139,7 +140,7 @@ RUNBOOK 공통 절차(백업 → 사전 확인 → 롤백 준비 → 1회 실행
 
 | 단계 | 내용 | 게이트 | 롤백 | 가장 이른 창 (KST) |
 |---|---|---|---|---|
-| 3g | 버전 순: #378 `113000` → 이 PR `114000` → #378 `120000` → 이 PR `121000` 선점. 선점은 엣지 전에 반드시 | 로컬 PASS | 선점 함수는 엣지를 v14로 되돌린 **다음**에만 drop | 엣지보다 먼저 |
+| 3g | 버전 순: #378 `113000` → 이 PR `114000` → #378 `120000` → 이 PR `121000`(테이블 1 + 함수 3). 선점은 엣지 전에 반드시 | 로컬 PASS | 롤백 순: 프런트 → 엣지 v14 → `121000` → `114000` | 엣지보다 먼저 |
 | E3 | `gemini-proxy` 배포 (LEGACY=on, verify_jwt=true) | `121000` live, PR 머지, `GEMINI_PROXY_IP_SALT`와 `GEMINI_HEALTH_TOKEN`(GitHub secret과 동일) | §4.4 엣지를 먼저 v14로 | 프런트보다 먼저 |
 | P | 헬스 핑 PR 머지 (하루 1회 워크플로. 2시간 스모크와 분리) | E3 live, `GEMINI_HEALTH_TOKEN` | 워크플로 비활성 | E3 다음 |
 | S | 기존 smoke-health (Gemini 실핑 아님) | P | | P 다음 |
@@ -176,15 +177,16 @@ supabase functions deploy gemini-proxy --project-ref phdjnbfitvmrguqzverm --use-
   - anon JWT + `Origin: https://evil.example` + `{task:'mooni_chat',…}` → 403 `origin_not_allowed`
   - 위 세 건 뒤 function_logs에 Gemini 호출 줄 0, `gemini_proxy_usage_daily` 0행(read_only SELECT)
   - API로 `verify_jwt` **true** 확인. false이면 스모크를 멈추고 §4.4로 엣지를 v14에 되돌린다. version은 배포 후 번호.
+- **배포 후 스모크에는 실제 AI 요청 1회가 반드시 들어간다** (아래 S1). `health_ping`은 reserve/reconcile/release를 타지 않으므로 선점 경로를 대신 증명하지 못한다. 수동 `health_ping`은 크론(04:17 UTC = 13:17 KST, 하루 1회)과 합쳐 하루 4회를 넘기지 않는다.
 - **S1 MOONi 실답변 1회 (E3 직후 = 구 번들 → legacy 경로)**
   - 박스 브라우저로 https://www.gateo.kr/ 홈 → MOONi(장소 바인딩 아님 → 인트로 생성 없음) → «안녕! 한 문장으로 인사해 줘» 1회만 보낸다. 짧은 일반 질문이라 flash-lite가 선택될 것으로 예상한다(`resolveMooniChatModel`; 실제 모델은 로그로 확인, 3.5-flash여도 PASS).
   - PASS: 답 말풍선이 뜬다. 로그 1줄 `status 200, legacy:true, outputTokens ≤ 2048, finishReason STOP`(thinking 토큰 수도 기록). `gemini_proxy_usage_daily` calls=1. 같은 시각 실사용자 4xx 0.
 - **S2 (FG 배포 직후, 새 번들 → task 경로)**: S1과 같은 질문 1회. 로그 `task:'mooni_chat', legacy:false`. (S1과 S2는 서로 다른 단계에서 각각 1회)
-- **관찰 1시간**: 실사용자 IP의 403/413/429 0, 503 비율이 배포 전(0)과 같음. `health_ping`은 smoke-health가 아니라 **하루 1회** 전용 워크플로(정시가 아닌 분)가 `x-gateo-health`로 호출한다. 상한 하루 4회.
+- **관찰 1시간**: 실사용자 IP의 403/413/429 0, 503 비율이 배포 전(0)과 같음. `health_ping`은 smoke-health가 아니라 **하루 1회** 전용 워크플로 `17 4 * * *`(13:17 KST)가 `x-gateo-health`로 호출한다. 그 1회를 포함해 수동 핑까지 하루 4회 이하다.
 
 ### 4.4 롤백 (현재 배포본 v14 그대로 복원)
 - 보관본: `deployed/v14/supabase/functions/gemini-proxy/index.ts` `f3d811a18c86`, `deno.json` `776494746017`, `_shared/geminiModels.ts` `1947872d447e`. 이 세 파일은 `catgeot/Days` 커밋 `ca6e6b11`의 같은 경로와 바이트 동일.
-- **순서**: FG가 이미 나갔다면 **먼저 Vercel에서 이전 프런트 배포로 되돌린다**(새 번들의 `{task}` 요청은 v14에서 400/500이 됨). 한도·Origin 문제뿐이면 롤백 대신 시크릿(`GEMINI_PROXY_LIMITS`, `GEMINI_PROXY_LEGACY=on`, 허용 목록)만 고친다. DB는 그 다음이다. **먼저 엣지를 v14로 되돌리고**, 그 다음에만 `20261006121000` 롤백으로 선점 함수를 지운다. 새 엣지가 살아있는 채로 선점 함수를 지우면 예산 RPC가 실패해 AI가 전부 503이다. 승인분 `20261006114000` 롤백은 그 다음이다.
+- **순서**: 프런트 → 엣지 v14 → `20261006121000` → `20261006114000`. FG가 이미 나갔다면 **먼저 Vercel에서 이전 프런트 배포로 되돌린다**(새 번들의 `{task}` 요청은 v14에서 400/500이 됨). 한도·Origin 문제뿐이면 롤백 대신 시크릿(`GEMINI_PROXY_LIMITS`, `GEMINI_PROXY_LEGACY=on`, 허용 목록)만 고친다. 그 다음 **엣지를 v14로 되돌리고**, 그 다음에만 `121000` 선점 함수를 지운다. 새 엣지가 살아있는 채로 선점 함수를 지우면 예산 RPC가 실패해 AI가 전부 503이다. 승인분 `114000` 롤백은 맨 마지막이다.
 ```bash
 git -C /workspace/days-src fetch origin && git -C /workspace/days-src worktree add --detach /tmp/gemini-proxy-rollback ca6e6b11
 cd /tmp/gemini-proxy-rollback && sha256sum supabase/functions/gemini-proxy/index.ts supabase/functions/gemini-proxy/deno.json supabase/functions/_shared/geminiModels.ts
@@ -192,7 +194,7 @@ cd /tmp/gemini-proxy-rollback && sha256sum supabase/functions/gemini-proxy/index
 supabase functions deploy gemini-proxy --project-ref phdjnbfitvmrguqzverm --use-api --no-verify-jwt   # v14와 같게 verify_jwt=false
 ```
 - 확인: API `verify_jwt` False, version +1. `supabase functions download`로 다시 받아 `index.ts` sha256 `f3d811a18c86` 확인. 홈 MOONi 1회(S1과 같음).
-- 엣지가 v14로 돌아온 뒤에만 DB 롤백. 먼저 `20261006121000` 선점 함수·예약 테이블, 그 다음 `20261006114000`. 시크릿은 남겨도 v14가 읽지 않는다.
+- 엣지가 v14로 돌아온 뒤에만 DB 롤백. 먼저 `20261006121000`, 그 다음 `20261006114000`. 시크릿은 남겨도 v14가 읽지 않는다.
 
 ## Cos GO (2026-10-03 21:57 KST): 10/5 묶음에 포함
 1) DB 단계 GO: 승인된 `20261006114000`은 새 테이블 2개와 함수 2개만 만들고, 기존 데이터는 건드리지 않음. 그에 더해 `20261006121000` 선점(예약 id)은 엣지 배포 전에 반드시 적용한다. #378과 버전 순: `113000` → `114000` → `120000` → `121000`.
