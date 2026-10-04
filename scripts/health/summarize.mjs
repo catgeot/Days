@@ -202,6 +202,25 @@ export function maybeSimulateFailure(results) {
   ];
 }
 
+export function maybeEmitSimPassSmoke(layer, results) {
+  if (layer !== 'smoke') return results;
+  const flag = process.env.HEALTH_SIMULATE_FAILURE;
+  if (flag === 'true' || flag === '1') return results;
+  if (results.some((r) => r.id === 'SIM-1')) return results;
+  return [
+    ...results,
+    {
+      id: 'SIM-1',
+      feature: '모의 실패',
+      status: 'pass',
+      reasonCode: 'unknown',
+      reason: koreanReason('unknown'),
+      causeKey: 'smoke:SIM-1:unknown',
+      source: 'scripts/health/summarize.mjs',
+    },
+  ];
+}
+
 export function runSummarize(options) {
   const {
     layer,
@@ -228,6 +247,7 @@ export function runSummarize(options) {
   }
 
   results = maybeSimulateFailure(results);
+  results = maybeEmitSimPassSmoke(layer, results);
 
   const publicResults = results.map(({ privateDetail, ...rest }) => rest);
   const payload = buildHealthResult({ layer, runUrl, sha, results: publicResults });

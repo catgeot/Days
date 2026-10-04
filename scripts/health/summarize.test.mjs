@@ -103,6 +103,7 @@ test('simulate_failure adds SIM-1 without failing write', () => {
   process.env.HEALTH_SIMULATE_FAILURE = 'true';
   const outPath = path.join(tmp, 'out.json');
   const payload = runSummarize({ layer: 'smoke', smokePath, outPath });
-  assert.ok(payload.results.some((r) => r.id === 'SIM-1'));
+  const sim = payload.results.find((r) => r.id === 'SIM-1');
+  assert.equal(sim?.status, 'fail');
   delete process.env.HEALTH_SIMULATE_FAILURE;
 });
