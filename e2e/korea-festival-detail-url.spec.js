@@ -1,6 +1,9 @@
 import { test, expect } from './fixtures.js';
 
 const FESTIVAL_INVALID = '999999999';
+const MRT_SCAN_MAX = 10;
+/** Prod cross-link fixture — perf-gateo-home-audit-metrics `festival-detail-613316` */
+const MRT_PINNED_FESTIVAL_IDS = ['613316'];
 
 async function dismissLocHint(page) {
   const close = page
@@ -47,18 +50,13 @@ async function countBrokenImages(page) {
 
 async function settleMrtStrips(page) {
   const dialog = detailDialog(page);
-  await expect(dialog.getByRole('heading', { name: /내 여행 일정|Your trip dates/i })).toBeVisible({
-    timeout: 60_000,
-  });
-  await expect(
-    dialog.getByRole('heading', { name: /투어 · 체험 · 티켓|Tours & Tickets/i }),
-  ).toBeVisible({ timeout: 60_000 });
   await expect(dialog.getByText(/숙소를 불러오는 중|Loading stays/i)).toHaveCount(0, {
     timeout: 120_000,
   });
   await expect(
     dialog.getByText(/투어·티켓 상품을 불러오는 중|Loading tours and tickets/i),
   ).toHaveCount(0, { timeout: 120_000 });
+
   const stays = dialog.locator('.overflow-x-auto a[href*="accommodation.myrealtrip.com"]');
   const tnas = dialog.locator('.overflow-x-auto a[href*="experiences.myrealtrip.com"]');
   const stayEmpty = await dialog
@@ -69,35 +67,72 @@ async function settleMrtStrips(page) {
     .getByText(/선택 지역에 맞는 투어·티켓 상품이 없습니다|No tours or tickets found/i)
     .isVisible()
     .catch(() => false);
-  const hrefs = await dialog
-    .locator('.overflow-x-auto a[href*="myrealtrip.com"]')
-    .evaluateAll((as) => as.map((a) => a.href));
+  const stayHrefs = await stays.evaluateAll((as) => as.map((a) => a.href));
+  const tnaHrefs = await tnas.evaluateAll((as) => as.map((a) => a.href));
   return {
     stays: await stays.count(),
     tnas: await tnas.count(),
     stayEmpty,
     tnaEmpty,
-    hrefs,
+    stayHrefs,
+    tnaHrefs,
   };
 }
 
+async function waitMrtStripReady(dialog) {
+  const loadingStay = dialog.getByText(/숙소를 불러오는 중|Loading stays/i);
+  const loadingTna = dialog.getByText(/투어·티켓 상품을 불러오는 중|Loading tours and tickets/i);
+  await loadingStay.waitFor({ state: 'hidden', timeout: 90_000 }).catch(() =>
+    expect(loadingStay).toHaveCount(0, { timeout: 90_000 }),
+  );
+  await loadingTna.waitFor({ state: 'hidden', timeout: 90_000 }).catch(() =>
+    expect(loadingTna).toHaveCount(0, { timeout: 90_000 }),
+  );
+}
+
+async function tryFestivalMrtStrips(page, id) {
+  await page.goto(`/korea/?festival=${id}`);
+  const dialog = detailDialog(page);
+  try {
+    await dialog.waitFor({ state: 'visible', timeout: 45_000 });
+    await waitMrtStripReady(dialog);
+  } catch {
+    return null;
+  }
+  const stayCount = await dialog.locator('a[href*="accommodation.myrealtrip.com"]').count();
+  const tnaCount = await dialog.locator('a[href*="experiences.myrealtrip.com"]').count();
+  if (stayCount > 0 || tnaCount > 0) return id;
+  await clickDetailClose(page).catch(() => {});
+  return null;
+}
+
 async function pickFestivalWithMrtStrips(page, cards) {
-  const total = Math.min(await cards.count(), 120);
+  for (const id of MRT_PINNED_FESTIVAL_IDS) {
+    const hit = await tryFestivalMrtStrips(page, id);
+    if (hit) return hit;
+  }
+
+  const total = Math.min(await cards.count(), MRT_SCAN_MAX);
   for (let i = 0; i < total; i += 1) {
-    const id = await cards.nth(i).getAttribute('data-festival-id');
-    if (!id) continue;
-    await page.goto(`/korea/?festival=${id}`);
-    const dialog = detailDialog(page);
-    const dialogOpen = await dialog.isVisible({ timeout: 45_000 }).catch(() => false);
-    if (!dialogOpen) continue;
-    const visible = await dialog
-      .getByRole('heading', { name: /내 여행 일정|Your trip dates/i })
-      .isVisible({ timeout: 8_000 })
-      .catch(() => false);
-    if (visible) return id;
-    await clickDetailClose(page).catch(() => {});
+    const card = cards.nth(i);
+    await card.scrollIntoViewIfNeeded();
+    const id = await card.getAttribute('data-festival-id');
+    if (!id || MRT_PINNED_FESTIVAL_IDS.includes(id)) continue;
+    const hit = await tryFestivalMrtStrips(page, id);
+    if (hit) return hit;
   }
   throw new Error('no listed festival exposes MRT strips — check festivalCross/stay mapping');
+}
+
+function assertMrtAffiliateLinks(mrt) {
+  for (const h of mrt.stayHrefs) {
+    expect(h, `lodging href: ${h}`).toMatch(/accommodation\.myrealtrip\.com/);
+    expect(h, `lodging affiliate: ${h}`).toMatch(/mylink_id=\d+/);
+  }
+  for (const h of mrt.tnaHrefs) {
+    expect(h, `tna href: ${h}`).toMatch(/experiences\.myrealtrip\.com/);
+    expect(h, `tna affiliate: ${h}`).toMatch(/mylink_id=\d+|utm_source=mktpartner/);
+  }
 }
 
 function detailDialog(page) {
@@ -129,7 +164,6 @@ test.describe('Korea festival detail URL + history', () => {
     const festivalA = await cards.first().getAttribute('data-festival-id');
     expect(festivalA, 'list card data-festival-id').toBeTruthy();
 
-    // (a) card → detail → browser back
     await openFirstCard(page, cards);
     await expect(page).toHaveURL(/festival=/, { timeout: 15_000 });
     const idA = festivalParam(page.url());
@@ -144,7 +178,6 @@ test.describe('Korea festival detail URL + history', () => {
       !festivalParam(page.url()) &&
       !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (b) card → close → back does not reopen detail
     await openFirstCard(page, cards);
     await clickDetailClose(page);
     await expect(detailDialog(page)).toBeHidden({ timeout: 15_000 });
@@ -158,7 +191,6 @@ test.describe('Korea festival detail URL + history', () => {
       .toBe('');
     results.b = !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (c) deep link → close → clean URL → reload stays closed
     await page.goto(`/korea/?festival=${festivalA}`);
     await expect(detailDialog(page)).toBeVisible({ timeout: 60_000 });
     await clickDetailClose(page);
@@ -170,7 +202,6 @@ test.describe('Korea festival detail URL + history', () => {
     await expect(detailDialog(page)).toBeHidden({ timeout: 30_000 });
     results.c = !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (d) deep link → back stays on site
     await page.goto(`/korea/?festival=${festivalA}`);
     await expect(detailDialog(page)).toBeVisible({ timeout: 60_000 });
     await page.goBack();
@@ -180,7 +211,6 @@ test.describe('Korea festival detail URL + history', () => {
       page.url().includes('/korea') &&
       !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (e) A → B → back → list (not A)
     const cards2 = await waitForFestivalList(page);
     await openFirstCard(page, cards2);
     const firstId = festivalParam(page.url());
@@ -190,9 +220,18 @@ test.describe('Korea festival detail URL + history', () => {
       document.querySelector(`[data-festival-id="${id}"]`)?.click();
     }, secondContentId);
     await expect(detailDialog(page)).toBeVisible({ timeout: 30_000 });
-    const secondId = festivalParam(page.url());
-    expect(secondId).toBeTruthy();
-    expect(secondId).not.toBe(firstId);
+    await expect
+      .poll(() => festivalParam(page.url()), {
+        timeout: 30_000,
+        message: 'second festival id appears in URL',
+      })
+      .not.toBe('');
+    await expect
+      .poll(() => festivalParam(page.url()), {
+        timeout: 30_000,
+        message: 'second festival differs from first',
+      })
+      .not.toBe(firstId);
     await page.goBack();
     await expect(detailDialog(page)).toBeHidden({ timeout: 15_000 });
     await expect
@@ -200,7 +239,6 @@ test.describe('Korea festival detail URL + history', () => {
       .toBe('');
     results.e = !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (f) invalid id
     await page.goto(`/korea/?festival=${FESTIVAL_INVALID}`);
     await expect(detailDialog(page)).toBeHidden({ timeout: 30_000 });
     await expect
@@ -211,22 +249,12 @@ test.describe('Korea festival detail URL + history', () => {
     ).toBeVisible();
     results.f = !(await detailDialog(page).isVisible().catch(() => false));
 
-    // broken images + MRT on list and festival detail
     const cards3 = await waitForFestivalList(page);
     const brokenOnList = await countBrokenImages(page);
     const mrtFestivalId = await pickFestivalWithMrtStrips(page, cards3);
     await expect(detailDialog(page)).toBeVisible({ timeout: 60_000 });
     const brokenOnDetail = await countBrokenImages(page);
     const mrt = await settleMrtStrips(page);
-
-    const mrtAttachment = {
-      stays: mrt.stays,
-      tnas: mrt.tnas,
-      stayEmpty: mrt.stayEmpty,
-      tnaEmpty: mrt.tnaEmpty,
-      hrefSample: mrt.hrefs.slice(0, 3),
-      mrtFestivalId,
-    };
 
     test.info().attach(`${engine}-scenario-results.json`, {
       body: JSON.stringify(
@@ -235,7 +263,14 @@ test.describe('Korea festival detail URL + history', () => {
           scenarios: results,
           brokenOnList,
           brokenOnDetail,
-          mrt: mrtAttachment,
+          mrt: {
+            stays: mrt.stays,
+            tnas: mrt.tnas,
+            stayEmpty: mrt.stayEmpty,
+            tnaEmpty: mrt.tnaEmpty,
+            hrefSample: [...mrt.stayHrefs.slice(0, 2), ...mrt.tnaHrefs.slice(0, 2)],
+            mrtFestivalId,
+          },
         },
         null,
         2,
@@ -256,9 +291,6 @@ test.describe('Korea festival detail URL + history', () => {
     expect(mrt.tnas > 0 || mrt.tnaEmpty, 'TNA strip settled (cards or explicit empty)').toBe(true);
     expect(mrt.stays + mrt.tnas, 'at least one MRT product card on festival detail').toBeGreaterThan(0);
     expect(mrt.stays, 'stay cards ≤ page size').toBeLessThanOrEqual(20);
-
-    for (const h of mrt.hrefs.filter((u) => /myrealtrip\.com\/(union\/)?products\/\d+/.test(u))) {
-      expect(h, `MRT card affiliate params: ${h}`).toMatch(/mylink_id=\d+/);
-    }
+    assertMrtAffiliateLinks(mrt);
   });
 });

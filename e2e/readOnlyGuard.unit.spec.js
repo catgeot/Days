@@ -49,6 +49,6 @@ test.describe('classifySupabaseRequest', () => {
       classifySupabaseRequest('POST', `${SUPABASE}/functions/v1/tourapi-proxy`, {
         edgeAllowlist: SMOKE_PROBE_EDGE_FUNCTIONS,
       }),
-    ).toBe('allow');
+    ).toBe('reject');
   });
 });

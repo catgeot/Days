@@ -1,11 +1,80 @@
 // Place page regressions shipped in #372–#376 (persona stars, gallery manage, YouTube cap, booking hrefs)
 import { test, expect } from './fixtures.js';
+import { editorialReviewCards, starRatingIn } from './review-star-locators.js';
 
 const PLACE_SLUG = 'paris';
 const PLACE_TITLE = '파리';
 
-const AFFILIATE_LINK_SELECTOR =
-  'a[href*="myrealtrip.com"], a[href*="myrealt.rip"], a[href*="klook.com"], a[href*="trip.com"], a[href*="ticketlink.co.kr"], a[href*="getyourguide"]';
+function parseExternalHref(href) {
+  try {
+    return new URL(href);
+  } catch {
+    return null;
+  }
+}
+
+function isTripComHost(hostname) {
+  return hostname === 'trip.com' || hostname.endsWith('.trip.com');
+}
+
+function isKlookHost(hostname) {
+  return hostname.includes('klook.com');
+}
+
+function isMyRealTripHost(hostname) {
+  return hostname.includes('myrealtrip.com') || hostname === 'myrealt.rip';
+}
+
+async function collectPlannerAffiliateHrefs(page) {
+  return page.locator('a[href^="http"]').evaluateAll((anchors) => {
+    const isTrip = (h) => h === 'trip.com' || h.endsWith('.trip.com');
+    const isKlook = (h) => h.includes('klook.com');
+    const isMrt = (h) => h.includes('myrealtrip.com') || h === 'myrealt.rip';
+    return anchors
+      .map((a) => ({
+        href: a.getAttribute('href') || '',
+        text: (a.innerText || a.textContent || '').trim(),
+      }))
+      .filter((x) => {
+        if (!/^https?:\/\//.test(x.href) || x.href.includes('gateo.kr')) return false;
+        const u = new URL(x.href);
+        if (['mapbox.com', 'openstreetmap.org', 'maxar.com'].some((d) => u.hostname.includes(d))) {
+          return false;
+        }
+        return (
+          isTrip(u.hostname) ||
+          isKlook(u.hostname) ||
+          isMrt(u.hostname) ||
+          u.hostname.includes('ticketlink.co.kr') ||
+          u.hostname.includes('getyourguide.com')
+        );
+      });
+  });
+}
+
+async function assertPlannerBookingLinks(page) {
+  await switchPlaceTab(page, /^여행 플래너$/);
+  await page
+    .locator('#planner-prep-flight-booking')
+    .first()
+    .scrollIntoViewIfNeeded()
+    .catch(() => {});
+
+  const hrefs = await collectPlannerAffiliateHrefs(page);
+  expect(hrefs.length, 'planner affiliate/booking links').toBeGreaterThan(0);
+  for (const { href, text } of hrefs) {
+    const u = parseExternalHref(href);
+    expect(u, `parseable href: ${href}`).toBeTruthy();
+    expect(text, `link label not placeholder: ${href}`).not.toMatch(
+      /^(placeholder|준비 중|coming soon|tbd)$/i,
+    );
+    if (isTripComHost(u.hostname)) {
+      expect(u.hostname.includes('myrealtrip'), 'trip.com must not match myrealtrip host').toBe(
+        false,
+      );
+    }
+  }
+}
 
 async function openPlace(page) {
   await page.goto(`/place/${PLACE_SLUG}`);
@@ -34,7 +103,6 @@ test.describe('Place shipped features (read-only)', () => {
     );
     expect(brokenGallery, 'broken gallery thumbnails').toBe(0);
 
-    // Hide / report actions (open manage sheet, cancel — do not hide or report)
     await galleryTiles.first().dblclick({ modifiers: ['ControlOrMeta'] });
     await expect(page.getByRole('button', { name: /이 사진 숨기기/i })).toBeVisible({
       timeout: 15_000,
@@ -45,58 +113,34 @@ test.describe('Place shipped features (read-only)', () => {
       timeout: 10_000,
     });
 
-    // Persona / official (editorial) reviews — no star row (#372)
     await switchPlaceTab(page, /^리뷰$/);
-    const editorialCards = page.locator('.border-indigo-100');
+    const editorialCards = editorialReviewCards(page);
     await expect(editorialCards.first()).toBeVisible({ timeout: 90_000 });
     const editorialCount = await editorialCards.count();
     expect(editorialCount, 'editorial persona reviews').toBeGreaterThan(0);
     for (let i = 0; i < editorialCount; i += 1) {
-      await expect(editorialCards.nth(i).locator('[data-review-stars]')).toHaveCount(0);
+      await expect(starRatingIn(editorialCards.nth(i))).toHaveCount(0);
     }
 
-    // YouTube section — initial cap 10, load-more when more pages exist (#375/#376)
     await switchPlaceTab(page, /유튜브 영상/i);
     await expect(page.getByText(/관련 영상을 불러오는 중|불러오는 중/i)).toHaveCount(0, {
       timeout: 120_000,
     });
     const emptyVideo = page.getByRole('heading', { name: /아직 등록된 영상이 없습니다/i });
-    if (await emptyVideo.isVisible().catch(() => false)) {
-      await expect(page.getByText(/멋진 영상을 알고/i)).toBeVisible();
-      return;
-    }
-
-    const thumbCount = await page.evaluate(
-      () => document.querySelectorAll('[class*="group/item"]').length,
-    );
-    expect(thumbCount, 'initial YouTube playlist visible count').toBeGreaterThan(0);
-    expect(thumbCount, 'initial YouTube playlist ≤10').toBeLessThanOrEqual(10);
-
-    const loadMore = page.getByRole('button', { name: /영상 더 보기/i });
-    if (await loadMore.isVisible().catch(() => false)) {
-      await expect(loadMore).toBeEnabled();
-    }
-
-    // Booking / affiliate CTAs on planner — valid hrefs, not placeholder copy
-    await switchPlaceTab(page, /^여행 플래너$/);
-    await page.locator('#planner-prep-flight-booking, [href*="trip.com"], [href*="klook"]').first().scrollIntoViewIfNeeded().catch(() => {});
-
-    const affiliateLinks = page.locator(AFFILIATE_LINK_SELECTOR);
-    const hrefs = await affiliateLinks.evaluateAll((anchors) =>
-      anchors
-        .map((a) => ({
-          href: a.getAttribute('href') || '',
-          text: (a.innerText || a.textContent || '').trim(),
-        }))
-        .filter((x) => /^https?:\/\//.test(x.href) && !x.href.includes('gateo.kr')),
-    );
-    expect(hrefs.length, 'planner affiliate/booking links').toBeGreaterThan(0);
-    for (const { href, text } of hrefs) {
-      expect(href, `booking/affiliate href: ${href}`).toMatch(/^https?:\/\//);
-      expect(href, `non-empty href: ${href}`).not.toMatch(/^(https?:\/\/[^/?#]+)?\/?#?$/);
-      expect(text, `link label not placeholder: ${href}`).not.toMatch(
-        /^(placeholder|준비 중|coming soon|tbd)$/i,
+    if (!(await emptyVideo.isVisible().catch(() => false))) {
+      const thumbCount = await page.evaluate(
+        () => document.querySelectorAll('[class*="group/item"]').length,
       );
+      expect(thumbCount, 'initial YouTube playlist visible count').toBeGreaterThan(0);
+      expect(thumbCount, 'initial YouTube playlist ≤10').toBeLessThanOrEqual(10);
+      const loadMore = page.getByRole('button', { name: /영상 더 보기/i });
+      if (await loadMore.isVisible().catch(() => false)) {
+        await expect(loadMore).toBeEnabled();
+      }
+    } else {
+      await expect(page.getByText(/멋진 영상을 알고/i)).toBeVisible();
     }
+
+    await assertPlannerBookingLinks(page);
   });
 });

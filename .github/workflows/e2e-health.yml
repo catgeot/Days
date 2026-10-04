@@ -3,6 +3,9 @@
 
 name: E2E Health
 
+permissions:
+  contents: read
+
 on:
   schedule:
     - cron: '0 9 * * *'
@@ -35,7 +38,7 @@ jobs:
       - name: Run E2E against production
         env:
           TZ: Asia/Seoul
-          SMOKE_SITE_URL: https://gateo.kr
+          SMOKE_SITE_URL: https://www.gateo.kr
           CI: true
         run: npm run test:e2e
 

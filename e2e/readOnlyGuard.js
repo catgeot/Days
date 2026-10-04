@@ -1,16 +1,14 @@
+/** Edge POST allowed during guarded E2E page loads (read path only). No billing / external POST beyond read-through cache. */
 const READ_ONLY_EDGE_FUNCTIONS = [
   'fetch-mrt-stays',
   'fetch-mrt-tnas',
-  'gemini-proxy',
   'pexels-proxy',
-  'resolve-flight-route',
-  'mrt-link-generator',
-  'tourapi-proxy', // read-through cache upsert (same as visitor page load)
-  'fetch-place-videos', // read-through cache upsert (same as visitor page load)
+  'tourapi-proxy', // service-role read-through cache upsert (same as visitor)
+  'fetch-place-videos', // service-role read-through cache upsert (same as visitor)
 ];
 
-/** Smoke Health `smoke-health.mjs` direct Edge probes only (no gemini/mrt — covered by E2E). */
-export const SMOKE_PROBE_EDGE_FUNCTIONS = ['tourapi-proxy', 'fetch-place-videos'];
+/** Smoke uses anon REST only (no direct Edge POST). E2E uses READ_ONLY_EDGE_FUNCTIONS. */
+export const SMOKE_PROBE_EDGE_FUNCTIONS = [];
 
 export function classifySupabaseRequest(method, url, options = {}) {
   const edgeAllowlist = options.edgeAllowlist ?? READ_ONLY_EDGE_FUNCTIONS;
