@@ -20,6 +20,7 @@ function assert(cond, msg) {
 }
 
 const edgeSrc = readFileSync('supabase/functions/fetch-place-videos/index.ts', 'utf8');
+const ipSrc = readFileSync('supabase/functions/_shared/placeVideoClientIp.ts', 'utf8');
 assert(edgeSrc.includes("videoEmbeddable: 'true'"), 'S1 primary search has videoEmbeddable');
 assert(edgeSrc.includes("videoSyndicated: 'true'"), 'S1 primary search has videoSyndicated');
 assert(!edgeSrc.includes('maxFollowPages'), 'quota: no follow-page loop in edge');
@@ -61,8 +62,9 @@ const ko = readFileSync('src/i18n/locales/ko.json', 'utf8');
 assert(ko.includes('ipQuotaEmpty'), 'ko ipQuotaEmpty');
 assert(ko.includes('"ipQuotaEmpty": "오늘 이 접속의 영상 검색 한도에 도달했어요. 한도는 내일 다시 채워져요."'), 'empty ip quota has no cached-video sentence');
 assert(readFileSync('src/utils/fetchScenicSpotVideos.js', 'utf8').includes('error.context'), 'modal fetch reads the 429 JSON body');
-assert(edgeSrc.includes('FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER'), 'client ip header is configurable');
-assert(edgeSrc.includes('FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS'), 'xff trusted hop count is configurable');
+assert(ipSrc.includes('FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER'), 'client ip header is configurable');
+assert(ipSrc.includes('FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS'), 'xff trusted hop count is configurable');
+assert(ipSrc.includes('x-real-ip') && ipSrc.includes('ignored'), 'CLIENT_IP_HEADER=x-real-ip is documented as ignored');
 assert(edgeSrc.includes('writeFailure("empty"'), 'only an empty YouTube result writes the negative cache');
 assert(!edgeSrc.includes('writeFailure(error.code'), 'quota refusal does not writeFailure');
 assert(!edgeSrc.includes('writeFailure(yt.reason'), 'youtube errors do not writeFailure');

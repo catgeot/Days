@@ -2751,7 +2751,9 @@ export default function ThemeSpotDetailModal({
                     <a
                       href={freeSearchYouTubeUrl({
                         name: displayTitle,
-                        city: spot.areaLabel || spot.region || '',
+                        addr1: detail?.addr1 || spot.addr1 || '',
+                        locality: spot.locality || '',
+                        city: spot.locality || '',
                       })}
                       target="_blank"
                       rel="noopener"

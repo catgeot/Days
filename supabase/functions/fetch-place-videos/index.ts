@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import catalog from "./placeVideoCatalog.json" with { type: "json" };
+import { clientIp } from "../_shared/placeVideoClientIp.ts";
 
 const corsBase = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -17,6 +18,9 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 // Edge first on deploy also returns 503 for the same reason.
 const YT_SEARCH_UNITS = 100;
 const LIMIT_GLOBAL_UNITS = 6000;
+// detailCommon does not spend the YouTube global budget.
+const LIMIT_DETAIL_GLOBAL_UNITS = 400;
+const LIMIT_DETAIL_IP_UNITS = 200;
 const LIMIT_IP_DAILY_UNITS_DEFAULT = 1000;
 const LIMIT_IP_PER_MINUTE = 6;
 const LIMIT_PLACE_NEW_PER_DAY = 2;
@@ -207,81 +211,6 @@ function ipDailyUnits(): number {
   return n;
 }
 
-function expandIpv6(raw: string): string[] | null {
-  const s = raw.toLowerCase();
-  if (!s.includes(":") || s.includes(".")) return null;
-  const halves = s.split("::");
-  if (halves.length > 2) return null;
-  const parse = (part: string) => (part ? part.split(":") : []);
-  const left = parse(halves[0]);
-  const right = halves.length === 2 ? parse(halves[1]) : [];
-  const hextet = /^[0-9a-f]{1,4}$/;
-  if ([...left, ...right].some((part) => !hextet.test(part))) return null;
-  if (halves.length === 1) {
-    if (left.length !== 8) return null;
-    return left.map((part) => part.padStart(4, "0"));
-  }
-  const missing = 8 - left.length - right.length;
-  if (missing < 1) return null;
-  return [...left, ...Array(missing).fill("0000"), ...right].map((part) => part.padStart(4, "0"));
-}
-
-function bucketIp(ip: string): string {
-  const v6 = expandIpv6(ip);
-  if (!v6) return ip;
-  return `${v6.slice(0, 4).join(":")}::/64`;
-}
-
-/**
- * Client IP for rate-limit keys.
- *
- * The leftmost X-Forwarded-For hop is client-supplied. Do not trust it.
- * Supabase Edge docs do not say the gateway overwrites X-Forwarded-For, and
- * they do not say `cf-connecting-ip` is forwarded. Staging verification is
- * required before production: confirm the header the gateway actually sets.
- *
- * FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER (default `x-forwarded-for`):
- *   a single platform header such as `cf-connecting-ip` is used when present.
- *   If that header is absent, fall back to the trusted X-Forwarded-For hop.
- * FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS (default 1, clamp 1–5), counted from
- * the right. Assumption: one gateway appends the observed peer, so hop 1 is
- * the rightmost address. Client-supplied hops stay on the left.
- * `x-real-ip` is used only when both of the above are absent.
- * `sb-forwarded-for` is Auth/GoTrue only and is not read here.
- *
- * IPv6 keys use the /64 prefix so addresses in one network share a bucket.
- */
-function trustedXffHops(): number {
-  const raw = Deno.env.get("FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS");
-  if (raw == null || raw.trim() === "") return 1;
-  const n = Number(raw);
-  if (!Number.isInteger(n) || n < 1 || n > 5) return 1;
-  return n;
-}
-
-function clientIp(req: Request): string {
-  const headerName = (Deno.env.get("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER") ?? "x-forwarded-for")
-    .trim()
-    .toLowerCase();
-  let raw = "";
-  if (headerName && headerName !== "x-forwarded-for" && headerName !== "x-real-ip") {
-    raw = (req.headers.get(headerName) ?? "").split(",")[0]?.trim() ?? "";
-  }
-  if (!raw) {
-    const forwarded = (req.headers.get("x-forwarded-for") ?? "")
-      .split(",")
-      .map((part) => part.trim())
-      .filter(Boolean);
-    if (forwarded.length) {
-      const index = Math.max(0, forwarded.length - trustedXffHops());
-      raw = forwarded[index];
-    }
-  }
-  if (!raw) raw = req.headers.get("x-real-ip")?.trim() || "unknown";
-  const cleaned = raw.replace(/[^0-9a-fA-F:.\-]/g, "").slice(0, 64);
-  return bucketIp(cleaned || "unknown");
-}
-
 function rowFresh(row: PlaceVideoRow | null): boolean {
   if (!row || !Array.isArray(row.videos)) return false;
   if (row.next_retry_at == null || row.next_retry_at === "") return true;
@@ -459,14 +388,18 @@ async function proxyDetailHit(contentId: string): Promise<ProxyDetail> {
     return { ok: false, unknown: false };
   }
   if (!res.ok) return { ok: false, unknown: false };
-  const body = await res.json().catch(() => null) as { items?: unknown } | null;
-  const items = Array.isArray(body?.items) ? body.items : [];
+  const body = await res.json().catch(() => null) as { ok?: unknown; items?: unknown } | null;
+  // tourapi-proxy answers HTTP 200 { ok:false, items:[] } on timeout and quota.
+  // That is transient. A negative cache is only a confirmed empty hit.
+  if (!body || body.ok !== true) return { ok: false, unknown: false };
+  const items = Array.isArray(body.items) ? body.items : [];
+  if (items.length === 0) return { ok: false, unknown: true };
   const item = items[0];
-  if (!item || typeof item !== "object") return { ok: false, unknown: true };
+  if (!item || typeof item !== "object") return { ok: false, unknown: false };
   const rec = item as Record<string, unknown>;
   const id = String(rec.contentid ?? rec.contentId ?? "").trim();
   const title = String(rec.title ?? "").trim();
-  if (id !== contentId || !title) return { ok: false, unknown: true };
+  if (id !== contentId || !title) return { ok: false, unknown: false };
   return { ok: true, hit: { title, year: "" } };
 }
 
@@ -602,7 +535,21 @@ serve(async (req) => {
   }
   for (const [key, windowSeconds, limit, code] of preGates) {
     const denied = await charge(key, windowSeconds, limit, 1, code);
-    if (denied) return denied;
+    if (!denied) continue;
+    // Per-minute rejection still shows videos already stored for this place.
+    if (key.endsWith(":m")) {
+      const videos = preservedVideos(row);
+      if (!skipUpsert && videos.length > 0) {
+        return json(req, {
+          success: true,
+          videos,
+          stale: true,
+          nextPageToken: null,
+          paginationSource: null,
+        }, 200);
+      }
+    }
+    return denied;
   }
 
   const youtubeApiKey = Deno.env.get("VITE_YOUTUBE_API_KEY") || Deno.env.get("YOUTUBE_API_KEY");
@@ -610,6 +557,23 @@ serve(async (req) => {
     logFail(placeId, "youtube_key_missing", null);
     return json(req, { success: false, error: "youtube_not_configured" }, 500);
   }
+
+  const chargeDetailUnits = async () => {
+    const gates: Array<[string, number, string]> = [
+      [`ip:${ip}:detail`, LIMIT_DETAIL_IP_UNITS, "rate_limited"],
+      ["global:detail:u", LIMIT_DETAIL_GLOBAL_UNITS, "rate_limited"],
+    ];
+    for (const [key, limit, code] of gates) {
+      const hit = await supabaseAdmin.rpc("edge_rate_limit_hit", {
+        p_key: key,
+        p_window_seconds: 86400,
+        p_limit: limit,
+        p_cost: YT_SEARCH_UNITS,
+      });
+      if (hit.error) throw new YtError(503, "rate_limit_unavailable");
+      if (hit.data !== true) throw new LimitError(code);
+    }
+  };
 
   const chargeSearchUnits = async () => {
     const gates: Array<[string, number, string]> = [
@@ -646,7 +610,7 @@ serve(async (req) => {
       if (hit) resolved = resolvedFromTitle(`festival:${festivalId}`, hit, "festival");
     }
     if (!resolved && scenicId) {
-      await chargeSearchUnits();
+      await chargeDetailUnits();
       const proxied = await proxyDetailHit(scenicId);
       if (proxied.ok) {
         resolved = resolvedFromTitle(`scenic:${scenicId}`, proxied.hit, "place");
@@ -666,6 +630,9 @@ serve(async (req) => {
         const stale = staleVideos();
         if (stale) return stale;
         return json(req, { success: false, error: "bad_place_id" }, 400);
+      } else {
+        const stale = staleVideos();
+        if (stale) return stale;
       }
     }
   } catch (error) {
@@ -774,7 +741,8 @@ serve(async (req) => {
 
   const tagBase = mode === "festival" ? ["#축제", "#festival"] : ["#여행", "#vlog"];
   const excludeSet = new Set<string>();
-  if (Array.isArray(body.excludeVideoIds)) {
+  // Forged excludes on the first search must not empty the cached row (72h negative cache).
+  if (skipUpsert && Array.isArray(body.excludeVideoIds)) {
     for (const rawId of body.excludeVideoIds) {
       if (typeof rawId === "string" && rawId.trim()) excludeSet.add(rawId.trim());
     }

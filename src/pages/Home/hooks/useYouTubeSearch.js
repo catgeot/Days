@@ -9,7 +9,7 @@ import {
   markYoutubeIdUnplayable,
 } from '../../../utils/youtubeUnplayableStorage.js';
 import { shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
-import { freeSearchYouTubeUrl, isFreeSearchLocation } from '../lib/freeSearchYouTubeLink.js';
+import { freeSearchYouTubeUrl, isFreeSearchLocation, shouldShowFreeSearchLink } from '../lib/freeSearchYouTubeLink.js';
 
 const GOOGLE_FORM_URL = 'https://forms.gle/QgofLDzzYD6NfWYN7';
 const LOAD_MORE_SESSION_MAX = 3;
@@ -114,6 +114,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
   const [fetchLimitCode, setFetchLimitCode] = useState(null);
   const [loadMoreNoNew, setLoadMoreNoNew] = useState(() => boot?.loadMoreNoNew ?? false);
   const [unplayableBump, setUnplayableBump] = useState(0);
+  const [freeSearchLinkOnly, setFreeSearchLinkOnly] = useState(false);
 
   const fetchContextRef = useRef(boot?.ctx ?? null);
   const completedInitialKeysRef = useRef(new Set());
@@ -150,6 +151,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setLoadMoreError(false);
       setLoadMoreLimitCode(null);
       setLoadMoreNoNew(mem.loadMoreNoNew);
+      setFreeSearchLinkOnly(false);
     } else {
       fetchContextRef.current = null;
       liveRef.current = emptyLive();
@@ -166,6 +168,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setLoadMoreError(false);
       setLoadMoreLimitCode(null);
       setLoadMoreNoNew(false);
+      setFreeSearchLinkOnly(false);
     }
   }
 
@@ -184,16 +187,9 @@ export const useYouTubeSearch = (location, mediaMode) => {
     ],
   );
 
-  const externalYouTubeUrl = useMemo(() => (
-    isFreeSearchLocation(location) ? placeYouTubeUrl : ''
-  ), [
-    placeYouTubeUrl,
-    location?.id,
-    location?.place_id,
-    location?.placeId,
-    location?.slug,
-    location?.canonical_slug,
-  ]);
+  const freeSearch = isFreeSearchLocation(location);
+
+  const externalYouTubeUrl = freeSearch && freeSearchLinkOnly ? placeYouTubeUrl : '';
 
   const invokeEdge = useCallback(async (body) => {
     const { data: edgeData, error: edgeError } = await supabase.functions.invoke(
@@ -330,16 +326,6 @@ export const useYouTubeSearch = (location, mediaMode) => {
   ]);
 
   useEffect(() => {
-    if (externalYouTubeUrl) {
-      setRawVideos([]);
-      setIsLoading(false);
-      setFetchError(false);
-      setFetchLimitCode(null);
-      setIsEmptyResult(false);
-      setHasMorePages(false);
-      return;
-    }
-
     if (!location?.name) return;
     if (mediaMode !== 'VIDEO') return;
 
@@ -347,6 +333,59 @@ export const useYouTubeSearch = (location, mediaMode) => {
     if (completedInitialKeysRef.current.has(key)) {
       queueMicrotask(() => setIsLoading(false));
       return;
+    }
+
+    if (freeSearch) {
+      const gen = fetchGenRef.current;
+      let cancelled = false;
+      setIsLoading(true);
+      setFetchError(false);
+      setFetchLimitCode(null);
+      (async () => {
+        const cacheKey = getPlaceStableKey(location);
+        const dbCandidates = buildPlaceDbIdCandidates(location);
+        const candidateIds = dbCandidates.length ? dbCandidates : [cacheKey];
+        let cachedData = null;
+        const cachedRes = await supabase
+          .from('place_videos')
+          .select('videos, next_retry_at')
+          .in('place_id', candidateIds)
+          .limit(1)
+          .maybeSingle();
+        if (cachedRes.error) {
+          const legacy = await supabase
+            .from('place_videos')
+            .select('videos')
+            .in('place_id', candidateIds)
+            .limit(1)
+            .maybeSingle();
+          cachedData = legacy.data;
+        } else {
+          cachedData = cachedRes.data;
+        }
+        if (cancelled || fetchGenRef.current !== gen) return;
+        if (cachedData && !shouldShowFreeSearchLink(location, cachedData)) {
+          const list = cachedData.videos;
+          setFreeSearchLinkOnly(false);
+          liveRef.current = { ...emptyLive(), rawVideos: list };
+          setRawVideos(list);
+          setHasMorePages(false);
+          setIsEmptyResult(false);
+          completedInitialKeysRef.current.add(key);
+          setIsLoading(false);
+          return;
+        }
+        setFreeSearchLinkOnly(true);
+        liveRef.current = emptyLive();
+        setRawVideos([]);
+        setHasMorePages(false);
+        setIsEmptyResult(true);
+        completedInitialKeysRef.current.add(key);
+        setIsLoading(false);
+      })();
+      return () => {
+        cancelled = true;
+      };
     }
 
     const currentPlaceKey = placeKeyOnly(location);
@@ -393,10 +432,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
     return () => {
       cancelled = true;
     };
-  }, [externalYouTubeUrl, location?.id, location?.slug, location?.canonical_slug, location?.name, location?.country, location?.name_en, mediaMode, runInitialFetch]);
+  }, [freeSearch, location?.id, location?.slug, location?.canonical_slug, location?.name, location?.country, location?.name_en, mediaMode, runInitialFetch]);
 
   const retry = useCallback(async () => {
-    if (externalYouTubeUrl || mediaMode !== 'VIDEO' || !location?.name) return;
+    if (freeSearch || mediaMode !== 'VIDEO' || !location?.name) return;
     const currentPlaceKey = placeKeyOnly(location);
     sessionVideoCache.delete(currentPlaceKey);
     completedInitialKeysRef.current.delete(placeFetchKey(location, mediaMode));
@@ -420,10 +459,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
     } finally {
       if (fetchGenRef.current === gen) setIsLoading(false);
     }
-  }, [externalYouTubeUrl, mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.name_en, runInitialFetch]);
+  }, [freeSearch, mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.name_en, runInitialFetch]);
 
   const loadMore = useCallback(async () => {
-    if (externalYouTubeUrl) return;
+    if (freeSearch) return;
     const ctx = fetchContextRef.current;
     const live = liveRef.current;
     if (
@@ -525,7 +564,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
         }
       }
     }
-  }, [invokeEdge, externalYouTubeUrl]);
+  }, [invokeEdge, freeSearch]);
 
   const markUnplayable = useCallback((videoId) => {
     markYoutubeIdUnplayable(videoId);
@@ -533,7 +572,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
   }, []);
 
   const canLoadMore =
-    !externalYouTubeUrl &&
+    !freeSearch &&
     !isLoading &&
     !fetchError &&
     videos.length > 0 &&
