@@ -12,12 +12,14 @@
 
 | 워크플로 | cron | 확인 |
 |----------|------|------|
-| [Smoke Health](../.github/workflows/smoke-health.yml) | `0 */6 * * *` | P0·P1 Pass |
-| [E2E Health](../.github/workflows/e2e-health.yml) | `0 9 * * *` UTC | home·place·mooni Pass (수동 ~1m) |
+| [Smoke Health](../.github/workflows/smoke-health.yml) | `0 */6 * * *` | P0 API·번들 + Playwright 홈·place·`/korea` 목록 |
+| [E2E Health](../.github/workflows/e2e-health.yml) | `0 9 * * *` UTC · `TZ=Asia/Seoul` | guarded `e2e/*` — 지구본·MOONi·축제 URL/MRT·#372–376 place·explore·globe |
 
-**Smoke Probe**: P0 gateo.kr HTML · Supabase · gemini-proxy(429→fail) · **fetch-mrt-stays** · **tourapi-proxy** · P1 `/place/bali` · sitemap.
+**Smoke Probe (node `scripts/smoke-health.mjs`)**: P0 **www.gateo.kr** HTML·**Vite `/assets/index-*.js` 번들**(홈 1회 fetch) · Supabase REST · **`tourapi_festival_cache` anon GET**(rolling12 ko — **TourAPI/Edge upstream 없음**) · **`place_videos` anon GET** · P1 sitemap. cron **6h 유지** · run당 HTTP 최소화(Supabase 로그 부담). **E2E 읽기 전용 가드** — REST/RPC 쓰기·비허용 Edge POST 차단(`e2e/readOnlyGuard.js` · 페이지 Edge **fetch-mrt-stays·tourapi-proxy·fetch-place-videos** 등). gemini-proxy·MRT/tourapi Edge **스모크 중복 제거** — E2E/MOONi·축제 스트립.
 
-**E2E**: 지구본/map · PlaceCard 발리 · MOONi 1턴(응답 또는 S3 에러 문구).
+**Smoke Pages (Playwright `e2e/smoke-health-pages.spec.js`)**: `fixtures.js` 가드 · `/` 지구본 · `/place/paris` 제목 · `/korea/` 축제 카드 1개 이상. **HTTP 200 on SPA shell만으로 place 통과 금지**(구 P1-1 제거).
+
+**E2E**: `e2e/fixtures.js` read-only 가드 · home·place(bali)·**place-shipped(paris #372–376)** · mooni · korea festival URL/MRT · explore · globe 회귀 · no-webgpu.
 
 **로컬**: `npm run smoke:health` · `npm run test:e2e` (`.env.local` — smoke만).
 
