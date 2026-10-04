@@ -91,6 +91,25 @@ function parseCount(body) {
   return m ? Number(m[1]) : 1;
 }
 
+function carryForwardStateMarkers(newBody, oldBody) {
+  let body = String(newBody || '');
+  const prev = String(oldBody || '');
+  for (const re of [LAST_REOPEN_RE, LAST_CLOSE_RE]) {
+    const oldTag = prev.match(re)?.[0];
+    if (oldTag && !re.test(body)) body = `${body}\n${oldTag}`;
+  }
+  return body;
+}
+
+function passStreakRequired(layer, issueBody) {
+  const base = PASS_STREAK_CLOSE[layer] ?? 3;
+  const lastReopen = parseTimestampFromBody(issueBody, LAST_REOPEN_RE);
+  if (Number.isFinite(lastReopen) && withinMs(lastReopen, STATE_CHANGE_WINDOW_MS)) {
+    return base * 2;
+  }
+  return base;
+}
+
 function buildIssueBody({ causeKey, summaryLine, firstSeen, lastSeen, count, passStreak, runUrl }) {
   const toIso = (value, fallback) => {
     if (typeof value === 'string' && value.includes('T')) return value;
@@ -308,9 +327,6 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
     if (!isDryRun()) {
       const closed = await findClosedIssueByCauseKey(github, owner, repo, causeKey);
       if (closed && closedWithinReopenWindow(closed)) {
-        if (!canChangeIssueState(closed.body, 'reopen')) {
-          return openIssues;
-        }
         let body = buildIssueBody({
           causeKey,
           summaryLine,
@@ -375,15 +391,18 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
     if (!labels.includes('health:fail')) labels.push('health:fail');
   }
 
-  const body = buildIssueBody({
-    causeKey,
-    summaryLine,
-    firstSeen,
-    lastSeen: now,
-    count: nextCount,
-    passStreak: 0,
-    runUrl,
-  });
+  const body = carryForwardStateMarkers(
+    buildIssueBody({
+      causeKey,
+      summaryLine,
+      firstSeen,
+      lastSeen: now,
+      count: nextCount,
+      passStreak: 0,
+      runUrl,
+    }),
+    issue.body,
+  );
 
   if (isDryRun()) {
     await writeSummary(core, `(dry-run) 이슈 갱신 예정: #${issue.number} (${causeKey})\n`);
@@ -489,9 +508,8 @@ async function handlePassForRun(github, context, core, row, layer, openIssues, f
   const matches = findIssuesByIdPrefix(openIssues, layer, matchId);
   if (matches.length === 0) return openIssues;
 
-  const need = PASS_STREAK_CLOSE[layer] ?? 3;
-
   for (const issue of matches) {
+    const need = passStreakRequired(layer, issue.body);
     const causeKey = parseHealthKey(issue.body);
     if (causeKey && failedCauseKeys.has(causeKey)) continue;
 
@@ -681,6 +699,10 @@ module.exports.sanitizeText = sanitizeText;
 module.exports.publicReason = publicReason;
 module.exports.parseHealthKey = parseHealthKey;
 module.exports.PASS_STREAK_CLOSE = PASS_STREAK_CLOSE;
+module.exports.passStreakRequired = passStreakRequired;
+module.exports.carryForwardStateMarkers = carryForwardStateMarkers;
+module.exports.STATE_CHANGE_WINDOW_MS = STATE_CHANGE_WINDOW_MS;
+module.exports.LAST_REOPEN_RE = LAST_REOPEN_RE;
 module.exports.isDryRun = isDryRun;
 module.exports.writeSummary = writeSummary;
 module.exports.BOT_COMMENT_MARKER = BOT_COMMENT_MARKER;

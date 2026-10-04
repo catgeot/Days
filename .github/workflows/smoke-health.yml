@@ -122,7 +122,7 @@ jobs:
           SMOKE_SITE_URL: https://www.gateo.kr/
           CI: true
           PLAYWRIGHT_JSON_OUTPUT_FILE: health/pages.json
-        run: npx playwright test e2e/smoke-health-pages.spec.js --reporter=github,json
+        run: npx playwright test e2e/smoke-health-pages.spec.js --reporter=line,json
 
       - name: Summarize page smoke results
         if: always()
