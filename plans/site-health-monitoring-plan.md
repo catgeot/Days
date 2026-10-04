@@ -6,16 +6,21 @@
 
 ---
 
-## 현재 운영 상태 (2026-06-08)
+## 현재 운영 상태 (2026-10-04)
 
-**GHA 2종 ✅** — Smoke 6h + E2E 1일 · **UptimeRobot 생략**(운영자 결정) · Gemini 선불 **자동 충전** 설정.
+**GHA** — Smoke probe 2h · pages 6h · E2E 1일 · 주간 요약 · CI 알림 · **UptimeRobot 생략**(운영자 결정).
 
-| 워크플로 | cron | 확인 |
-|----------|------|------|
-| [Smoke Health](../.github/workflows/smoke-health.yml) | `0 */6 * * *` | P0 API·번들 + Playwright 홈·place·`/korea` 목록 |
-| [E2E Health](../.github/workflows/e2e-health.yml) | `0 9 * * *` UTC · `TZ=Asia/Seoul` | guarded `e2e/*` — 지구본·MOONi·축제 URL/MRT·#372–376 place·explore·globe |
+| 워크플로 | cron (UTC) | KST 참고 | 확인 |
+|----------|------------|----------|------|
+| [Smoke Health](../.github/workflows/smoke-health.yml) job `probe` | `23 */2 * * *` | 홀수 시 :23 | node probe — HTML·번들·REST·캐시·sitemap |
+| [Smoke Health](../.github/workflows/smoke-health.yml) job `pages` | `47 */6 * * *` | 03:47·09:47·15:47·21:47 | Playwright `smoke-health-pages.spec.js` |
+| [E2E Health](../.github/workflows/e2e-health.yml) | `23 21 * * *` | 매일 06:23 | guarded `e2e/*` |
+| [Health Weekly](../.github/workflows/health-weekly.yml) | `7 22 * * 6` | 일요일 07:07 | 주간 요약 골격 |
+| [Health CI Alert](../.github/workflows/health-ci-alert.yml) | `workflow_run` (CI) | — | main push CI 실패·복구 |
 
-**Smoke Probe (node `scripts/smoke-health.mjs`)**: P0 **www.gateo.kr** HTML·**Vite `/assets/index-*.js` 번들**(홈 1회 fetch) · Supabase REST · **`tourapi_festival_cache` anon GET**(rolling12 ko, **items≥1·age≤96h** — TourAPI/Edge upstream 없음) · **`place_videos` anon GET**(paris, **videos≥1**) · P1 sitemap. cron **6h 유지** · Node 단계는 **Edge POST 0**. **Gemini 크레딧 감시는 본 PR 범위 밖** — 전용 probe는 **PR #381**(`smoke-gemini-models` 등)에서 추가 예정 · 병합 후 본 브랜치는 rebase하여 probe 유지.
+**알림**: 원인별 GitHub 이슈 1개(`site-health` 라벨) — **main에서만** 생성·갱신 · flaky는 `health:flaky` 별도 · **사용량·호출량 수치는 이슈·요약·artifact에 금지**(상태만).
+
+**Smoke Probe (node `scripts/smoke-health.mjs`)**: P0 **https://www.gateo.kr/** HTML·**Vite `/assets/index-*.js` 번들**(홈 1회 fetch) · Supabase REST · **`tourapi_festival_cache` anon GET**(rolling12 ko, **items≥1·age≤96h** — TourAPI/Edge upstream 없음) · **`place_videos` anon GET**(paris, **videos≥1**) · P1 sitemap. cron **probe 2h · pages 6h** · Node 단계는 **Edge POST 0**. **Gemini 크레딧 감시는 본 PR 범위 밖** — 전용 probe는 **PR #381**(`smoke-gemini-models` 등)에서 추가 예정.
 
 **Smoke Pages (Playwright `e2e/smoke-health-pages.spec.js`)**: `fixtures.js` 가드 · `/` 지구본 · `/place/paris` 제목 · `/korea/` 축제 카드 1개 이상. **HTTP 200 on SPA shell만으로 place 통과 금지**(구 P1-1 제거). Playwright 단계는 페이지 로드 시 **허용 Edge POST**(아래 예산) 발생.
 
@@ -23,7 +28,7 @@
 
 **E2E**: `e2e/fixtures.js` read-only 가드 · home·place(bali)·**place-shipped(paris #372–376)** · mooni(mock) · korea festival URL/MRT · explore · globe 회귀 · no-webgpu.
 
-**Supabase Edge 호출 예산 (문서용 — cron 6h Smoke + 1d E2E)**
+**Supabase Edge 호출 예산 (문서용 — probe 2h · pages 6h · E2E 1d)**
 
 | 단계 | Edge POST | 대략적 규모/run |
 |------|-----------|-----------------|
@@ -31,11 +36,11 @@
 | Playwright `smoke-health-pages` | tourapi-proxy 등 (홈·place·`/korea` **목록**) | 소량 read-through (**festival 상세 없음**) |
 | E2E Health (guarded) | fetch-mrt-stays/tnas · tourapi-proxy · fetch-place-videos · pexels-proxy | MRT search ~**25–55** POST/run · **`korea-festival-detail-url` tourapi ~13 upsert/run** + 기타 read-through |
 
-로그 1GB 한도 — Smoke **6h 유지** · Node probe는 upstream/TourAPI/Gemini **직접 호출 없음**.
+로그 1GB 한도 — Smoke **probe 2h · pages 6h** · Node probe는 upstream/TourAPI/Gemini **직접 호출 없음**.
 
 **로컬**: `npm run smoke:health` · `npm run test:e2e` (`.env.local` — smoke만).
 
-**알림**: GitHub Actions 실패 → Watch **All Activity**.
+**알림(레거시)**: Watch All Activity는 보조 — **주 알림은 site-health 이슈**(위 표).
 
 **운영자 체크리스트**: [`site-health-operator-next-steps.md`](site-health-operator-next-steps.md)
 
@@ -195,8 +200,8 @@ flowchart TB
 
 | Monitor | URL | 간격 |
 |---------|-----|------|
-| M1 | `https://gateo.kr/` | 5분 |
-| M2 | `https://gateo.kr/place/bali` | 15분 |
+| M1 | `https://www.gateo.kr/` | 5분 |
+| M2 | `https://www.gateo.kr/place/bali` | 15분 |
 | M3 | (선택) GitHub Actions badge / status page | — |
 
 Gemini 직접 ping은 **Actions 스크립트**가 담당 (UptimeRobot은 HTTP surface만).
@@ -235,7 +240,7 @@ npx playwright install chromium
 | 규칙 | |
 |------|--|
 | **같은 변경에** | PlaceCard·홈 등 **사용자에게 보이는 버튼/탭/라벨**을 바꾸면 `e2e/*.spec.js`의 `getByRole(…, { name })`·텍스트 assert를 **같은 커밋**에서 맞춤 |
-| **배포 전** | UI 카피 변경 시 `SMOKE_SITE_URL=https://gateo.kr npm run test:e2e` (또는 해당 spec만) 로컬 1회 |
+| **배포 전** | UI 카피 변경 시 `SMOKE_SITE_URL=https://www.gateo.kr/ npx playwright test <spec>` 로컬 1회 |
 | **실패 분류** | Actions에서 E2E만 빨갛고 Smoke가 초록 → **프로덕션 다운보다 스펙 드리프트·UI 회귀**를 먼저 의 |
 | **하드코딩 문구** | E2E는 접근성 name(한글 라벨)에 의존 — 리네임 시 테스트가 SSOT. 별도 i18n 키 추상화는 없음 |
 
@@ -276,7 +281,7 @@ npx playwright install chromium
 
 | 증상 | 1차 확인 | 조치 |
 |------|----------|------|
-| MOONi 「통신 실패」 | `npm run smoke:health` P0-3 | Gemini 크레딧·`GEMINI_API_KEY` |
+| MOONi 「통신 실패」 | E2E-3(mock) · PR-2 M1 `health_ping` | Gemini 크레딧·`GEMINI_API_KEY` · smoke P0-3=Supabase REST |
 | 전체 401 | anon key 공백·Vercel env | key trim·재배포 |
 | 지구본 blank | Mapbox token·quota | Mapbox dashboard |
 | 갤러리 only | Unsplash/Pexels | 키·rate limit |
@@ -343,12 +348,12 @@ Phase 0: Google AI Studio Budget 알림 · UptimeRobot gateo.kr + /place/bali
 
 | 단계 | Gemini 비용 | 권장 빈도 |
 |------|-------------|-----------|
-| Node smoke-health | **0** (Gemini 호출 없음) | 6h (`0 */6 * * *`) |
+| Node smoke-health | **0** (Gemini 호출 없음) | probe 2h (`23 */2 * * *`) · pages 6h (`47 */6 * * *`) |
 | Smoke Playwright pages | **0** (Gemini 차단) · Edge read-through | 동일 workflow |
 | E2E MOONi / Explore AI | **0** (gemini-proxy mock) | 1d |
 | **PR #381** gemini live probe (예정) | FAST ping 등 | 별도 workflow — 본 PR과 분리 |
 
-Supabase Edge 로그: 위 **호출 예산** 표 참고 · Smoke cron **증가 금지**.
+Supabase Edge 로그: 위 **호출 예산** 표 참고 · PR-1 스케줄(probe 2h · pages 6h) 기준.
 
 ---
 
@@ -369,4 +374,4 @@ Supabase Edge 로그: 위 **호출 예산** 표 참고 · Smoke cron **증가 �
 
 [`scripts/verify-globe-engine-build.mjs`](../scripts/verify-globe-engine-build.mjs)는 **번들 회귀**(모바일 legacy globe)만 검사 — **런타임·API 헬스와 별개**. smoke-health와 **병행**한다.
 
-**Edge 배포**: [`gemini-proxy`](../supabase/functions/gemini-proxy/index.ts) — `.ai-context` 3절: project ref 일치 후 `npx supabase functions deploy gemini-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` (JWT 정책 변경 시 재점검).
+**Edge 배포**: [`gemini-proxy`](../supabase/functions/gemini-proxy/index.ts) — `verify_jwt=true`, see PR #381 PLAN (JWT·health_ping 헤더는 #381에서 정리).

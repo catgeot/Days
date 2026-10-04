@@ -1,12 +1,15 @@
 /**
- * gateo.kr 사이트·API 헬스 스모크 (Phase 1-A)
+ * gateo.kr API·사이트 헬스 스모크 — probe 2h · pages 6h
  * @see plans/site-health-monitoring-plan.md
  *
  * 역할: 빠른 liveness (HTML·JS 번들·Supabase REST·DB 캐시·place_videos). Edge upstream 호출 최소화.
  * 기능 플로우(MRT·MOONi·갤러리 UI 등)는 E2E Health + smoke-health-pages.spec.js.
  */
+import fs from 'node:fs';
+import path from 'node:path';
 import { loadEnvFile } from './lib/load-env-file.mjs';
 import { smokeSupabaseFetch } from './lib/smoke-supabase-fetch.mjs';
+import { maskPrivate } from './health/mask-private.mjs';
 
 if (!process.env.GITHUB_ACTIONS) {
   loadEnvFile();
@@ -74,6 +77,10 @@ const checks = [];
 
 function record(id, name, status, detail, priority) {
   checks.push({ id, name, status, detail, priority });
+}
+
+function smokeLog(...parts) {
+  console.log(maskPrivate(parts.join(' ')));
 }
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
@@ -348,18 +355,27 @@ function printSummary() {
 
   for (const check of checks) {
     const tag = check.status.toUpperCase().padEnd(4);
-    console.log(`[smoke-health] ${check.id} ${tag} ${check.name} — ${check.detail}`);
+    smokeLog(`[smoke-health] ${check.id} ${tag} ${check.name} — ${check.detail}`);
   }
 
   const p0Warn = p0Checks.filter((c) => c.status === 'warn');
   if (p0Warn.length && ok) {
-    console.log(
+    smokeLog(
       `[smoke-health] note: ${p0Warn.map((c) => c.id).join(', ')} warn (upstream degraded, exit 0)`,
     );
   }
 
-  const summary = { ok, checks };
+  const summary = {
+    ok,
+    checks: checks.map((c) => ({ ...c, detail: maskPrivate(c.detail) })),
+  };
   console.log(JSON.stringify(summary));
+
+  const resultFile = process.env.SMOKE_RESULT_FILE?.trim();
+  if (resultFile) {
+    fs.mkdirSync(path.dirname(resultFile), { recursive: true });
+    fs.writeFileSync(resultFile, `${JSON.stringify(summary)}\n`, 'utf8');
+  }
 
   return ok ? 0 : 1;
 }

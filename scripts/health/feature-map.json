@@ -1,0 +1,24 @@
+{
+  "smoke": {
+    "P0-1": "사이트 HTML",
+    "P0-2": "JS 번들",
+    "P0-3": "Supabase REST",
+    "P0-4": "축제 목록 캐시",
+    "P0-5": "영상 캐시",
+    "P1-1": "sitemap",
+    "SIM-1": "모의 실패"
+  },
+  "spec": {
+    "home.spec.js": "지구본 홈",
+    "place.spec.js": "장소 상세",
+    "place-shipped-health.spec.js": "장소 갤러리·리뷰·영상·플래너",
+    "mooni.spec.js": "MOONi 채팅(UI)",
+    "korea-festival-detail-url.spec.js": "축제 상세·MRT",
+    "explore-search-enter.spec.js": "검색",
+    "explore-trending-chips.spec.js": "트렌딩 칩",
+    "globe-crash-regressions.spec.js": "지구본 안정성",
+    "no-webgpu.spec.js": "지구본(WebGPU 없음)",
+    "smoke-health-pages.spec.js": "핵심 페이지",
+    "readOnlyGuard.unit.spec.js": "읽기 전용 가드"
+  }
+}
