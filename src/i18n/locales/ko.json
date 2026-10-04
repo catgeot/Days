@@ -1017,6 +1017,8 @@
       "loading": "관련 영상을 불러오는 중...",
       "emptyTitle": "아직 등록된 영상이 없습니다",
       "emptyBody": "이 장소에 멋진 영상을 알고 계신가요? 직접 추천해주시면 서비스에 반영됩니다.",
+      "noPlayableTitle": "재생 가능한 영상이 없어요",
+      "noPlayableBody": "불러온 영상을 재생할 수 없습니다. 다시 시도해 주세요.",
       "recommend": "영상 추천하기",
       "playlist": "재생 목록 ({{count}})",
       "insightsLoading": "영상 인사이트를 검색하는 중입니다...",

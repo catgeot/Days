@@ -45,7 +45,7 @@ jobs:
           CI: true
           PLAYWRIGHT_JSON_OUTPUT_FILE: health/e2e.json
           PLAYWRIGHT_HTML_OPEN: never
-        run: npx playwright test --reporter=line,json
+        run: npx playwright test --project=chromium --reporter=line,json
 
       - name: Summarize E2E results
         if: always()

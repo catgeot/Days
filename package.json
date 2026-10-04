@@ -215,6 +215,7 @@
     "smoke:gemini-models": "node scripts/smoke-gemini-models.mjs",
     "smoke:health:local": "set SMOKE_SITE_URL=https://localhost:5173&& node scripts/smoke-health.mjs",
     "smoke:health:ci": "node scripts/smoke-health.mjs",
+    "test": "node --import ./scripts/register-youtube-hook-test.mjs --test scripts/useYouTubeSearch.session.test.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
@@ -256,6 +257,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "jsdom": "^29.1.1",
     "pg": "^8.22.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
