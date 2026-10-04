@@ -10,8 +10,9 @@ const corsBase = {
 
 const BASE_URL = "https://www.googleapis.com/youtube/v3";
 const DAY_MS = 24 * 60 * 60 * 1000;
-const YT_SEARCH_UNITS = 100;
 // search.list = 100 units. Ceiling stays well under the 10,000 unit daily quota.
+// p_cost needs 20261006120000. Deploy: 3v 20261006113000 → cost migration → this function.
+const YT_SEARCH_UNITS = 100;
 const LIMIT_GLOBAL_UNITS = 6000;
 // One IP cannot take more than ~10% of that budget. Daily cap is tighter than the share.
 const LIMIT_IP_SHARE_UNITS = 600;

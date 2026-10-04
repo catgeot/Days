@@ -3,7 +3,6 @@
 -- function will fail on the missing columns/RPC. Drops only what the forward file added.
 BEGIN;
 SET LOCAL lock_timeout = '3s';
-DROP FUNCTION IF EXISTS public.edge_rate_limit_hit(text, integer, integer, integer);
 DROP FUNCTION IF EXISTS public.edge_rate_limit_hit(text, integer, integer);
 DROP TABLE IF EXISTS public.edge_rate_limits;
 ALTER TABLE public.place_videos
