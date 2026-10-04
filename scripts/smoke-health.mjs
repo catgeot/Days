@@ -1,25 +1,28 @@
 /**
  * gateo.kr 사이트·API 헬스 스모크 (Phase 1-A)
  * @see plans/site-health-monitoring-plan.md
+ *
+ * 역할: 빠른 liveness (HTML·JS 번들·Supabase REST·DB 캐시·place_videos). Edge upstream 호출 최소화.
+ * 기능 플로우(MRT·MOONi·갤러리 UI 등)는 E2E Health + smoke-health-pages.spec.js.
  */
-import { GEMINI_MODELS } from '../src/utils/geminiModels.js';
 import { loadEnvFile } from './lib/load-env-file.mjs';
+import { smokeSupabaseFetch } from './lib/smoke-supabase-fetch.mjs';
 
 if (!process.env.GITHUB_ACTIONS) {
   loadEnvFile();
 }
 
 const REQUEST_TIMEOUT_MS = 15_000;
-/** Edge + 외부 upstream (MRT·TourAPI) — 콜드스타트·일시 지연 여유 */
-const EDGE_PROBE_TIMEOUT_MS = 28_000;
-const EDGE_PROBE_ATTEMPTS = 3;
-const EDGE_PROBE_RETRY_MS = 1_500;
+/** Fail P0-4 when rolling12 cache row is older than this (hours). Override: SMOKE_FESTIVAL_CACHE_MAX_AGE_HOURS */
+const FESTIVAL_CACHE_MAX_AGE_HOURS = Number(process.env.SMOKE_FESTIVAL_CACHE_MAX_AGE_HOURS) || 96;
 
-let siteUrl = (process.env.SMOKE_SITE_URL || 'https://gateo.kr').replace(/\/$/, '');
+let siteUrl = (process.env.SMOKE_SITE_URL || 'https://www.gateo.kr/').replace(/\/$/, '');
 const supabaseUrl = process.env.VITE_SUPABASE_URL?.trim();
 const anonKey = process.env.VITE_SUPABASE_ANON_KEY?.trim().replace(/\s+/g, '');
-const skipGemini = process.env.SMOKE_SKIP_GEMINI === '1';
 const isCi = process.env.GITHUB_ACTIONS === 'true';
+
+/** @type {{ ok: boolean, status: number, html: string } | null} */
+let siteHomeSnapshot = null;
 
 function isLocalHost(url) {
   try {
@@ -30,17 +33,12 @@ function isLocalHost(url) {
   }
 }
 
-/** Vite basic-ssl(self-signed) 로컬 HTTPS — Node fetch가 인증서 거부하지 않도록 */
 function allowInsecureLocalTls(url) {
   if (isLocalHost(url) && url.startsWith('https://')) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   }
 }
 
-/**
- * 로컬에서 http://localhost:5173 로 치면 Vite HTTPS(dev)에 실패함 → https로 한 번 재시도.
- * @returns {Promise<string>}
- */
 async function resolveSiteUrl(preferred) {
   allowInsecureLocalTls(preferred);
   if (!isLocalHost(preferred) || !preferred.startsWith('http://')) {
@@ -50,7 +48,7 @@ async function resolveSiteUrl(preferred) {
     const response = await fetchWithTimeout(`${preferred}/`);
     if (response.ok) return preferred;
   } catch {
-    // fall through to https
+    /* fall through */
   }
   const httpsUrl = preferred.replace(/^http:\/\//i, 'https://');
   allowInsecureLocalTls(httpsUrl);
@@ -58,14 +56,14 @@ async function resolveSiteUrl(preferred) {
     const response = await fetchWithTimeout(`${httpsUrl}/`);
     if (response.ok) {
       console.log(
-        `[smoke-health] local HTTP unreachable — using ${httpsUrl} (Vite basic-ssl). Set SMOKE_SITE_URL=${httpsUrl}`
+        `[smoke-health] local HTTP unreachable — using ${httpsUrl} (Vite basic-ssl). Set SMOKE_SITE_URL=${httpsUrl}`,
       );
       return httpsUrl;
     }
   } catch (error) {
     const detail = error.name === 'AbortError' ? 'timeout' : error.message;
     console.log(
-      `[smoke-health] local site probe failed (${preferred} / ${httpsUrl}): ${detail}. Is npm run dev running?`
+      `[smoke-health] local site probe failed (${preferred} / ${httpsUrl}): ${detail}. Is npm run dev running?`,
     );
   }
   return preferred;
@@ -88,19 +86,8 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_M
   }
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function parseJsonBody(response) {
-  const raw = await response.text();
-  let body = null;
-  try {
-    body = raw ? JSON.parse(raw) : null;
-  } catch {
-    body = null;
-  }
-  return { raw, body };
+async function supabaseFetch(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+  return smokeSupabaseFetch(url, options, fetchWithTimeout, timeoutMs);
 }
 
 function supabaseHeaders() {
@@ -110,22 +97,74 @@ function supabaseHeaders() {
   };
 }
 
-async function probeSiteHtml() {
-  const id = 'P0-1';
-  const name = 'Site HTML';
+async function loadSiteHomeOnce() {
+  if (siteHomeSnapshot) return siteHomeSnapshot;
   try {
     const response = await fetchWithTimeout(`${siteUrl}/`);
     const html = await response.text();
-    if (!response.ok) {
-      record(id, name, 'fail', `HTTP ${response.status}`, 'P0');
+    siteHomeSnapshot = { ok: response.ok, status: response.status, html };
+  } catch (error) {
+    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
+    siteHomeSnapshot = { ok: false, status: 0, html: '', error: detail };
+  }
+  return siteHomeSnapshot;
+}
+
+async function probeSiteHtml() {
+  const id = 'P0-1';
+  const name = 'Site HTML';
+  const home = await loadSiteHomeOnce();
+  if (home.error) {
+    record(id, name, 'fail', home.error, 'P0');
+    return;
+  }
+  if (!home.ok) {
+    record(id, name, 'fail', `HTTP ${home.status}`, 'P0');
+    return;
+  }
+  const html = home.html;
+  const hasShell = /<title[\s>]/i.test(html) && /id=["']root["']/i.test(html);
+  if (!hasShell) {
+    record(id, name, 'fail', 'Missing <title> or #root in HTML', 'P0');
+    return;
+  }
+  if (!/GATEO/i.test(html)) {
+    record(id, name, 'fail', 'Missing GATEO in document title/meta', 'P0');
+    return;
+  }
+  record(id, name, 'pass', `HTTP ${home.status}`, 'P0');
+}
+
+async function probeJsBundle() {
+  const id = 'P0-2';
+  const name = 'Vite JS bundle';
+  const home = await loadSiteHomeOnce();
+  if (home.error) {
+    record(id, name, 'fail', home.error, 'P0');
+    return;
+  }
+  if (!home.ok) {
+    record(id, name, 'fail', `home HTTP ${home.status}`, 'P0');
+    return;
+  }
+  try {
+    const match = home.html.match(/src="(\/assets\/index-[^"]+\.js)"/);
+    if (!match) {
+      record(id, name, 'fail', 'No /assets/index-*.js in index.html', 'P0');
       return;
     }
-    const hasShell = /<title[\s>]/i.test(html) || /id=["']root["']/i.test(html);
-    if (!hasShell) {
-      record(id, name, 'fail', 'Missing <title> or #root in HTML', 'P0');
+    const assetUrl = new URL(match[1], siteUrl).href;
+    const asset = await fetchWithTimeout(assetUrl);
+    const body = await asset.text();
+    if (!asset.ok) {
+      record(id, name, 'fail', `HTTP ${asset.status} for ${match[1]}`, 'P0');
       return;
     }
-    record(id, name, 'pass', `HTTP ${response.status}`, 'P0');
+    if (body.length < 5000 || !/\b(import|export|function)\b/.test(body)) {
+      record(id, name, 'fail', `Suspicious bundle payload (${body.length} bytes)`, 'P0');
+      return;
+    }
+    record(id, name, 'pass', `${match[1]} (${body.length} bytes)`, 'P0');
   } catch (error) {
     const detail = error.name === 'AbortError' ? 'timeout' : error.message;
     record(id, name, 'fail', detail, 'P0');
@@ -133,7 +172,7 @@ async function probeSiteHtml() {
 }
 
 async function probeSupabaseRest() {
-  const id = 'P0-2';
+  const id = 'P0-3';
   const name = 'Supabase REST';
   if (!supabaseUrl || !anonKey) {
     record(
@@ -143,7 +182,7 @@ async function probeSupabaseRest() {
       isCi
         ? 'VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY missing — Repository secrets 확인'
         : 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing',
-      'P0'
+      'P0',
     );
     return;
   }
@@ -152,7 +191,7 @@ async function probeSupabaseRest() {
     return;
   }
   try {
-    const response = await fetchWithTimeout(`${supabaseUrl.replace(/\/$/, '')}/rest/v1/`, {
+    const response = await supabaseFetch(`${supabaseUrl.replace(/\/$/, '')}/rest/v1/`, {
       headers: supabaseHeaders(),
     });
     if (response.ok || response.status === 401) {
@@ -166,262 +205,123 @@ async function probeSupabaseRest() {
   }
 }
 
-const GEMINI_HEALTH_PROBES = [
-  { key: 'FAST', modelId: GEMINI_MODELS.FAST },
-  { key: 'QUALITY', modelId: GEMINI_MODELS.QUALITY },
-];
-
-async function pingGeminiProxy(modelId) {
-  const response = await fetchWithTimeout(
-    `${supabaseUrl.replace(/\/$/, '')}/functions/v1/gemini-proxy`,
-    {
-      method: 'POST',
-      headers: {
-        ...supabaseHeaders(),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        modelId,
-        parts: [{ text: 'ping' }],
-      }),
-    }
-  );
-  const { raw, body } = await parseJsonBody(response);
-  return { status: response.status, raw, body, combined: `${response.status} ${raw}` };
-}
-
-async function probeGeminiProxy() {
-  const id = 'P0-3';
-  const name = 'gemini-proxy';
-
-  if (skipGemini) {
-    record(id, name, 'skip', 'SMOKE_SKIP_GEMINI=1', 'P0');
-    return;
-  }
-
-  if (!supabaseUrl || !anonKey) {
-    record(id, name, 'fail', 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing', 'P0');
-    return;
-  }
-
-  const used = [];
-
-  for (const { key, modelId } of GEMINI_HEALTH_PROBES) {
-    try {
-      const { status, raw, body, combined } = await pingGeminiProxy(modelId);
-
-      if (status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
-        record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
-        return;
-      }
-
-      if (body?.success === true) {
-        used.push(`${key}=${body.modelUsed ?? modelId}`);
-        continue;
-      }
-
-      if (
-        status === 429 ||
-        /429|RESOURCE_EXHAUSTED|prepayment credits are depleted/i.test(combined)
-      ) {
-        record(id, name, 'warn', '429 RESOURCE_EXHAUSTED — Gemini credits depleted', 'P0');
-        return;
-      }
-
-      const errMsg = body?.error || raw.slice(0, 200) || `HTTP ${status}`;
-      record(id, name, 'fail', `${key} ${modelId}: ${errMsg}`, 'P0');
-      return;
-    } catch (error) {
-      const detail = error.name === 'AbortError' ? 'timeout' : error.message;
-      record(id, name, 'fail', `${key} ${modelId}: ${detail}`, 'P0');
-      return;
-    }
-  }
-
-  record(id, name, 'pass', used.join(' · '), 'P0');
-}
-
-/**
- * MRT 숙소 Edge — Summary「숙소 찾기」의존.
- * Pass: ok + items≥1. 설정 오류는 fail · MRT upstream 일시 502/빈결과는 warn(재시도 후).
- */
-async function probeMrtStayProxy() {
+async function probeTourapiFestivalCache() {
   const id = 'P0-4';
-  const name = 'fetch-mrt-stays';
+  const name = 'tourapi festival cache';
 
   if (!supabaseUrl || !anonKey) {
     record(id, name, 'fail', 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing', 'P0');
     return;
   }
 
-  const url = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/fetch-mrt-stays`;
-  const init = {
-    method: 'POST',
-    headers: {
-      ...supabaseHeaders(),
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      keyword: '덴파사르',
-      isDomestic: false,
-      countryHint: '인도네시아',
-      countryHintAlts: ['Indonesia'],
-      altKeywords: ['Denpasar', '우붓', 'Ubud', '발리', 'Bali'],
-      nameEn: 'Bali',
-      size: 3,
-    }),
-  };
+  const base = supabaseUrl.replace(/\/$/, '');
+  const cacheUrl =
+    `${base}/rest/v1/tourapi_festival_cache` +
+    '?select=cache_key,fetched_at,payload' +
+    '&cache_key=like.list:ko:rolling12*' +
+    '&order=fetched_at.desc' +
+    '&limit=1';
 
-  let lastDetail = 'unknown';
-
-  for (let attempt = 1; attempt <= EDGE_PROBE_ATTEMPTS; attempt += 1) {
-    try {
-      const response = await fetchWithTimeout(url, init, EDGE_PROBE_TIMEOUT_MS);
-      const { raw, body } = await parseJsonBody(response);
-      const combined = `${response.status} ${raw}`;
-
-      if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
-        record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
-        return;
-      }
-
-      if (/MYREALTRIP_API_KEY missing/i.test(combined)) {
-        record(id, name, 'fail', 'MYREALTRIP_API_KEY missing on Edge', 'P0');
-        return;
-      }
-
-      if (body?.ok === true) {
-        const n = Array.isArray(body.items) ? body.items.length : 0;
-        if (n >= 1) {
-          record(
-            id,
-            name,
-            'pass',
-            attempt > 1 ? `ok items=${n} (attempt ${attempt})` : `ok items=${n}`,
-            'P0'
-          );
-          return;
-        }
-        lastDetail = `ok but items=0 (region=${body.region?.subName || body.region?.name || '-'})`;
-      } else {
-        lastDetail =
-          body?.error || body?.message || body?.detail || raw.slice(0, 200) || `HTTP ${response.status}`;
-        // MRT upstream 일시 실패(502 accommodation/search) — 재시도
-        const upstreamFlaky =
-          response.status === 502 ||
-          /accommodation\/search failed|upstream/i.test(String(lastDetail));
-        if (!upstreamFlaky && response.status >= 500) {
-          record(id, name, 'fail', `HTTP ${response.status}: ${lastDetail}`, 'P0');
-          return;
-        }
-      }
-    } catch (error) {
-      lastDetail = error.name === 'AbortError' ? 'timeout' : error.message;
-    }
-
-    if (attempt < EDGE_PROBE_ATTEMPTS) {
-      console.log(`[smoke-health] ${id} retry ${attempt}/${EDGE_PROBE_ATTEMPTS} — ${lastDetail}`);
-      await sleep(EDGE_PROBE_RETRY_MS);
-    }
-  }
-
-  record(id, name, 'warn', `${lastDetail} (after ${EDGE_PROBE_ATTEMPTS} attempts)`, 'P0');
-}
-
-/**
- * TourAPI Edge — 국내 갤러리·명소 좌표.
- * Pass: searchKeyword 경복궁 items≥1. 키 미설정은 fail · upstream 일시 오류는 warn.
- */
-async function probeTourapiProxy() {
-  const id = 'P0-5';
-  const name = 'tourapi-proxy';
-
-  if (!supabaseUrl || !anonKey) {
-    record(id, name, 'fail', 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing', 'P0');
-    return;
-  }
-
-  const url = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/tourapi-proxy`;
-  const init = {
-    method: 'POST',
-    headers: {
-      ...supabaseHeaders(),
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      action: 'searchKeyword',
-      keyword: '경복궁',
-      numOfRows: 3,
-    }),
-  };
-
-  let lastDetail = 'unknown';
-
-  for (let attempt = 1; attempt <= EDGE_PROBE_ATTEMPTS; attempt += 1) {
-    try {
-      const response = await fetchWithTimeout(url, init, EDGE_PROBE_TIMEOUT_MS);
-      const { raw, body } = await parseJsonBody(response);
-      const combined = `${response.status} ${raw}`;
-
-      if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
-        record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
-        return;
-      }
-
-      if (/TOUR_API_SERVICE_KEY is not configured/i.test(combined)) {
-        record(id, name, 'fail', 'TOUR_API_SERVICE_KEY missing on Edge', 'P0');
-        return;
-      }
-
-      const n = Array.isArray(body?.items) ? body.items.length : 0;
-      if (body?.ok === true && n >= 1) {
-        record(
-          id,
-          name,
-          'pass',
-          attempt > 1 ? `ok items=${n} (attempt ${attempt})` : `ok items=${n}`,
-          'P0'
-        );
-        return;
-      }
-
-      lastDetail =
-        body?.error ||
-        body?.message ||
-        (body?.ok ? `items=${n}` : null) ||
-        raw.slice(0, 200) ||
-        `HTTP ${response.status}`;
-    } catch (error) {
-      lastDetail = error.name === 'AbortError' ? 'timeout' : error.message;
-    }
-
-    if (attempt < EDGE_PROBE_ATTEMPTS) {
-      console.log(`[smoke-health] ${id} retry ${attempt}/${EDGE_PROBE_ATTEMPTS} — ${lastDetail}`);
-      await sleep(EDGE_PROBE_RETRY_MS);
-    }
-  }
-
-  record(id, name, 'warn', `${lastDetail} (after ${EDGE_PROBE_ATTEMPTS} attempts)`, 'P0');
-}
-
-async function probePlaceCardShell() {
-  const id = 'P1-1';
-  const name = 'PlaceCard shell';
   try {
-    const response = await fetchWithTimeout(`${siteUrl}/place/bali`);
-    if (response.ok) {
-      record(id, name, 'pass', `HTTP ${response.status}`, 'P1');
+    const response = await supabaseFetch(cacheUrl, {
+      headers: { ...supabaseHeaders(), Accept: 'application/json' },
+    });
+    if (response.status === 401 || response.status === 403) {
+      record(id, name, 'fail', `GET cache HTTP ${response.status} — anon SELECT policy`, 'P0');
       return;
     }
-    record(id, name, 'fail', `HTTP ${response.status}`, 'P1');
+    if (!response.ok) {
+      record(id, name, 'fail', `GET cache HTTP ${response.status}`, 'P0');
+      return;
+    }
+    const rows = await response.json();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      record(id, name, 'fail', 'No rolling12 ko cache row (Edge festivalWindow may not have run)', 'P0');
+      return;
+    }
+    const row = rows[0];
+    const items = row?.payload?.items;
+    const n = Array.isArray(items) ? items.length : 0;
+    if (n < 1) {
+      record(id, name, 'fail', `cache_key=${row?.cache_key ?? '?'} items=${n}`, 'P0');
+      return;
+    }
+    const fetchedAt = row?.fetched_at ? Date.parse(row.fetched_at) : NaN;
+    if (!Number.isFinite(fetchedAt)) {
+      record(id, name, 'fail', 'fetched_at missing or invalid', 'P0');
+      return;
+    }
+    const ageHours = (Date.now() - fetchedAt) / 3_600_000;
+    if (ageHours > FESTIVAL_CACHE_MAX_AGE_HOURS) {
+      record(
+        id,
+        name,
+        'fail',
+        `cache stale ${ageHours.toFixed(1)}h > ${FESTIVAL_CACHE_MAX_AGE_HOURS}h (${row.cache_key})`,
+        'P0',
+      );
+      return;
+    }
+    record(
+      id,
+      name,
+      'pass',
+      `${row.cache_key} items=${n} age=${ageHours.toFixed(1)}h`,
+      'P0',
+    );
   } catch (error) {
     const detail = error.name === 'AbortError' ? 'timeout' : error.message;
-    record(id, name, 'fail', detail, 'P1');
+    record(id, name, 'fail', detail, 'P0');
+  }
+}
+
+async function probeFetchPlaceVideos() {
+  const id = 'P0-5';
+  const name = 'place_videos cache';
+
+  if (!supabaseUrl || !anonKey) {
+    record(id, name, 'fail', 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing', 'P0');
+    return;
+  }
+
+  const base = supabaseUrl.replace(/\/$/, '');
+
+  try {
+    const cacheRes = await supabaseFetch(
+      `${base}/rest/v1/place_videos?place_id=eq.paris&select=place_id,videos&limit=1`,
+      {
+        headers: { ...supabaseHeaders(), Accept: 'application/json' },
+      },
+    );
+    if (cacheRes.status >= 400) {
+      record(id, name, 'fail', `GET place_videos HTTP ${cacheRes.status}`, 'P0');
+      return;
+    }
+    const rows = await cacheRes.json();
+    if (!Array.isArray(rows)) {
+      record(id, name, 'fail', 'GET place_videos body not array', 'P0');
+      return;
+    }
+    if (rows.length === 0) {
+      record(id, name, 'fail', 'No place_videos row for paris', 'P0');
+      return;
+    }
+    const videos = rows[0]?.videos;
+    const videoCount = Array.isArray(videos) ? videos.length : 0;
+    if (videoCount < 1) {
+      record(id, name, 'fail', 'paris place_videos cache empty', 'P0');
+      return;
+    }
+
+    record(id, name, 'pass', `paris videos=${videoCount} (anon REST only, no Edge)`, 'P0');
+  } catch (error) {
+    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
+    record(id, name, 'fail', detail, 'P0');
   }
 }
 
 async function probeSitemap() {
-  const id = 'P1-2';
+  const id = 'P1-1';
   const name = 'Sitemap';
   try {
     const response = await fetchWithTimeout(`${siteUrl}/sitemap.xml`);
@@ -444,24 +344,17 @@ async function probeSitemap() {
 function printSummary() {
   const p0Checks = checks.filter((c) => c.priority === 'P0');
   const p0Failed = p0Checks.some((c) => c.status === 'fail');
-  /** Gemini 크레딧(P0-3) warn만 CI 실패 — MRT/Tour upstream 일시 warn은 알림만(로그) */
-  const failOnWarn = process.env.SMOKE_FAIL_ON_WARN === '1';
-  const geminiWarn = checks.some((c) => c.id === 'P0-3' && c.status === 'warn');
-  const ok = !p0Failed && !(failOnWarn && geminiWarn);
+  const ok = !p0Failed;
 
   for (const check of checks) {
     const tag = check.status.toUpperCase().padEnd(4);
     console.log(`[smoke-health] ${check.id} ${tag} ${check.name} — ${check.detail}`);
   }
 
-  if (failOnWarn && geminiWarn && !p0Failed) {
-    console.log('[smoke-health] SMOKE_FAIL_ON_WARN=1 — P0-3 gemini warn treated as failure');
-  }
-
-  const otherWarn = p0Checks.filter((c) => c.status === 'warn' && c.id !== 'P0-3');
-  if (otherWarn.length && ok) {
+  const p0Warn = p0Checks.filter((c) => c.status === 'warn');
+  if (p0Warn.length && ok) {
     console.log(
-      `[smoke-health] note: ${otherWarn.map((c) => c.id).join(', ')} warn (upstream degraded, exit 0)`
+      `[smoke-health] note: ${p0Warn.map((c) => c.id).join(', ')} warn (upstream degraded, exit 0)`,
     );
   }
 
@@ -474,11 +367,10 @@ function printSummary() {
 siteUrl = await resolveSiteUrl(siteUrl);
 
 await probeSiteHtml();
+await probeJsBundle();
 await probeSupabaseRest();
-await probeGeminiProxy();
-await probeMrtStayProxy();
-await probeTourapiProxy();
-await probePlaceCardShell();
+await probeTourapiFestivalCache();
+await probeFetchPlaceVideos();
 await probeSitemap();
 
 process.exit(printSummary());

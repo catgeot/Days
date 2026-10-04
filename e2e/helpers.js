@@ -48,21 +48,4 @@ export async function mooniOneChatTurn(page, message = '안녕') {
   } else {
     await chatForm.locator('button[type="submit"]').click();
   }
-
-  await page.waitForFunction(
-    ({ patternSource, userMessage }) => {
-      const pattern = new RegExp(patternSource, 'i');
-      const text = document.body.innerText;
-      if (pattern.test(text)) return true;
-      if (/답변을 생성 중|Generating a reply/i.test(text)) return false;
-      return text.includes(userMessage) && text.includes('MOONi');
-    },
-    { patternSource: AI_ERROR_PATTERN.source, userMessage: message },
-    { timeout: 90_000 },
-  );
-
-  const bodyText = await page.locator('body').innerText();
-  const hasError = AI_ERROR_PATTERN.test(bodyText);
-  const hasDialogue = bodyText.includes(message) && bodyText.includes('MOONi');
-  return { hasError, hasDialogue };
 }

@@ -15,11 +15,23 @@
 | [Smoke Health](../.github/workflows/smoke-health.yml) | `0 */6 * * *` | P0 API·번들 + Playwright 홈·place·`/korea` 목록 |
 | [E2E Health](../.github/workflows/e2e-health.yml) | `0 9 * * *` UTC · `TZ=Asia/Seoul` | guarded `e2e/*` — 지구본·MOONi·축제 URL/MRT·#372–376 place·explore·globe |
 
-**Smoke Probe (node `scripts/smoke-health.mjs`)**: P0 **www.gateo.kr** HTML·**Vite `/assets/index-*.js` 번들**(홈 1회 fetch) · Supabase REST · **`tourapi_festival_cache` anon GET**(rolling12 ko — **TourAPI/Edge upstream 없음**) · **`place_videos` anon GET** · P1 sitemap. cron **6h 유지** · run당 HTTP 최소화(Supabase 로그 부담). **E2E 읽기 전용 가드** — REST/RPC 쓰기·비허용 Edge POST 차단(`e2e/readOnlyGuard.js` · 페이지 Edge **fetch-mrt-stays·tourapi-proxy·fetch-place-videos** 등). gemini-proxy·MRT/tourapi Edge **스모크 중복 제거** — E2E/MOONi·축제 스트립.
+**Smoke Probe (node `scripts/smoke-health.mjs`)**: P0 **www.gateo.kr** HTML·**Vite `/assets/index-*.js` 번들**(홈 1회 fetch) · Supabase REST · **`tourapi_festival_cache` anon GET**(rolling12 ko, **items≥1·age≤96h** — TourAPI/Edge upstream 없음) · **`place_videos` anon GET**(paris, **videos≥1**) · P1 sitemap. cron **6h 유지** · Node 단계는 **Edge POST 0**. **Gemini 크레딧 감시는 본 PR 범위 밖** — 전용 probe는 **PR #381**(`smoke-gemini-models` 등)에서 추가 예정 · 병합 후 본 브랜치는 rebase하여 probe 유지.
 
-**Smoke Pages (Playwright `e2e/smoke-health-pages.spec.js`)**: `fixtures.js` 가드 · `/` 지구본 · `/place/paris` 제목 · `/korea/` 축제 카드 1개 이상. **HTTP 200 on SPA shell만으로 place 통과 금지**(구 P1-1 제거).
+**Smoke Pages (Playwright `e2e/smoke-health-pages.spec.js`)**: `fixtures.js` 가드 · `/` 지구본 · `/place/paris` 제목 · `/korea/` 축제 카드 1개 이상. **HTTP 200 on SPA shell만으로 place 통과 금지**(구 P1-1 제거). Playwright 단계는 페이지 로드 시 **허용 Edge POST**(아래 예산) 발생.
 
-**E2E**: `e2e/fixtures.js` read-only 가드 · home·place(bali)·**place-shipped(paris #372–376)** · mooni · korea festival URL/MRT · explore · globe 회귀 · no-webgpu.
+**E2E read-only 가드** (`e2e/readOnlyGuard.js`): REST/RPC 쓰기·비허용 Edge POST 차단. **허용 Edge 5종** — `fetch-mrt-stays` · `fetch-mrt-tnas` · `pexels-proxy` · `tourapi-proxy` · `fetch-place-videos`. **`gemini-proxy` POST 차단** — MOONi E2E는 `e2e/mooni-gemini-mock.js` · Explore 「기백」 AI fallback은 `e2e/explore-gemini-mock.js`로 대체(실 Gemini 0).
+
+**E2E**: `e2e/fixtures.js` read-only 가드 · home·place(bali)·**place-shipped(paris #372–376)** · mooni(mock) · korea festival URL/MRT · explore · globe 회귀 · no-webgpu.
+
+**Supabase Edge 호출 예산 (문서용 — cron 6h Smoke + 1d E2E)**
+
+| 단계 | Edge POST | 대략적 규모/run |
+|------|-----------|-----------------|
+| Node `smoke-health.mjs` | **없음** | REST GET만 (~4 Supabase + 2 site) |
+| Playwright `smoke-health-pages` | tourapi-proxy 등 (홈·place·`/korea` **목록**) | 소량 read-through (**festival 상세 없음**) |
+| E2E Health (guarded) | fetch-mrt-stays/tnas · tourapi-proxy · fetch-place-videos · pexels-proxy | MRT search ~**25–55** POST/run · **`korea-festival-detail-url` tourapi ~13 upsert/run** + 기타 read-through |
+
+로그 1GB 한도 — Smoke **6h 유지** · Node probe는 upstream/TourAPI/Gemini **직접 호출 없음**.
 
 **로컬**: `npm run smoke:health` · `npm run test:e2e` (`.env.local` — smoke만).
 
@@ -119,39 +131,32 @@ flowchart TB
 |------|------|------|
 | `VITE_SUPABASE_URL` | ✅ | Supabase REST·Functions base |
 | `VITE_SUPABASE_ANON_KEY` | ✅ | Functions invoke (앞뒤 trim) |
-| `SMOKE_SITE_URL` | 선택 | 기본 `https://gateo.kr` |
-| `SMOKE_SKIP_GEMINI` | 선택 | `1`이면 AI probe 생략 (빌드-only CI) |
-| `SMOKE_GEMINI_PROBE` | 선택 | `1`이면 **실제 Gemini 1토큰 호출** (비용·쿼터 소모 — cron 4~6회/일 권장) |
+| `SMOKE_SITE_URL` | 선택 | 기본 `https://www.gateo.kr/` |
+| `SMOKE_FESTIVAL_CACHE_MAX_AGE_HOURS` | 선택 | P0-4 cache **stale fail** 임계(기본 **96**) |
 
 **Probe 목록**
 
-| ID | 이름 | 방법 | Pass | Fail 코드 |
-|----|------|------|------|-----------|
-| P0-1 | **Site HTML** | `GET ${SMOKE_SITE_URL}/` | status 200, `<title>` 또는 `#root` 존재 | 네트워크·5xx |
-| P0-2 | **Supabase REST** | `GET ${SUPABASE_URL}/rest/v1/` + anon headers | 200 또는 401 (서버 alive) | timeout·5xx |
-| P0-3 | **gemini-proxy** | `POST` FAST+QUALITY (`geminiModels` SSOT) `{ modelId, parts:[{text:"ping"}] }` | 둘 다 `success:true` **또는** `429`/`RESOURCE_EXHAUSTED` → **경고(warn)** | 401 JWT·500 기타·timeout · QUALITY 404 |
-| P0-4 | **fetch-mrt-stays** | 발리 `size:3` · **3회 재시도** | `ok` + items≥1 | JWT·키 없음 → fail · MRT 502/빈결과(재시도 후) → **warn**(CI exit 0) |
-| P0-5 | **tourapi-proxy** | 경복궁 `searchKeyword` · **3회 재시도** | `ok` + items≥1 | JWT·키 없음 → fail · upstream 열화(재시도 후) → **warn**(CI exit 0) |
-| P1-1 | **PlaceCard SSR shell** | `GET /place/bali` (또는 고정 slug) | 200 | 404·5xx |
-| P1-2 | **Sitemap** | `GET /sitemap.xml` | 200, `urlset` | missing |
+| ID | 이름 | 방법 | Pass | Fail |
+|----|------|------|------|------|
+| P0-1 | **Site HTML** | `GET ${SMOKE_SITE_URL}/` | 200, `<title>`·`#root`·GATEO | 네트워크·5xx |
+| P0-2 | **Vite JS bundle** | 홈 HTML에서 `/assets/index-*.js` 1회 fetch | ≥5KB·JS 토큰 | missing·5xx |
+| P0-3 | **Supabase REST** | `GET …/rest/v1/` + anon | 200 또는 401 | timeout·5xx·키 형식 |
+| P0-4 | **tourapi festival cache** | anon `GET tourapi_festival_cache` rolling12 ko | items≥1 · **fetched_at age≤96h**(기본) | row 없음·stale·빈 payload |
+| P0-5 | **place_videos cache** | anon `GET place_videos?place_id=eq.paris` | row≥1 · **videos[]≥1** | 0 row·빈 videos |
+| P1-1 | **Sitemap** | `GET /sitemap.xml` | 200·`urlset` | missing |
 
-**Exit code**
-
-- `0` — P0 Fail 없음 (`SMOKE_FAIL_ON_WARN=1`일 때 **P0-3 Gemini warn만** exit 1; P0-4/P0-5 warn은 exit 0)
-- `1` — P0 Fail 1개 이상, 또는 CI에서 Gemini 크레딧 warn
+**Exit code**: P0 **fail** 1개 이상 → exit 1. **Gemini live probe 없음**(본 repo smoke) — 크레딧 감시는 **PR #381** 전용 workflow 예정.
 
 **출력 형식** (JSON 한 줄 + human summary):
 
 ```json
-{ "ok": false, "checks": [{ "id": "P0-3", "status": "warn", "detail": "429 RESOURCE_EXHAUSTED" }] }
+{ "ok": false, "checks": [{ "id": "P0-4", "status": "fail", "detail": "cache stale …" }] }
 ```
 
 **구현 메모**
 
-- Node 18+ native `fetch` 사용 (추가 dep 없음)
-- anon key: `process.env.VITE_SUPABASE_ANON_KEY?.trim()`
-- Gemini probe는 **최소 parts** — 비용 최소화
-- 429 → `warn` (서비스 degraded) vs 401 → `fail` (설정 오류)
+- Node 18+ native `fetch` · anon key trim
+- **Gemini**: E2E Health는 mock · live credit probe = **PR #381** (rebase 시 smoke에 probe 코드 추가/삭제 금지 — 별도 PR 유지)
 
 #### 1-B. `package.json` scripts
 
@@ -166,7 +171,7 @@ flowchart TB
 |------|-----|
 | trigger | `schedule: cron '0 */6 * * *'` (6시간) + `workflow_dispatch` |
 | secrets | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (Repository secrets) |
-| env | `SMOKE_SITE_URL=https://gateo.kr`, `SMOKE_GEMINI_PROBE=1` |
+| env | `SMOKE_SITE_URL=https://www.gateo.kr/` |
 | on failure | GitHub 이메일 (기본) — 추후 Slack webhook |
 
 **주의**: anon key는 **Repository secret**에 공백 없이 저장. Production Vercel env와 **동일 값** 사용.
@@ -184,7 +189,7 @@ flowchart TB
 3. **Actions** 탭 → **Smoke Health** → **Run workflow** 로 수동 1회 Pass 확인
 4. 실패 시 GitHub 계정 이메일로 알림 (저장소 Watch → All Activity 권장)
 
-워크플로: [`.github/workflows/smoke-health.yml`](../.github/workflows/smoke-health.yml) · CI는 `SMOKE_FAIL_ON_WARN=1` — Gemini 429(warn)도 **실패 처리**해 이메일 알림.
+워크플로: [`.github/workflows/smoke-health.yml`](../.github/workflows/smoke-health.yml) · CI는 P0 fail 시 exit 1 (Node smoke에 **Gemini probe 없음** — 크레딧 감시는 **PR #381**).
 
 #### 1-D. UptimeRobot (또는 Better Stack) — 외부 ping
 
@@ -200,7 +205,6 @@ Gemini 직접 ping은 **Actions 스크립트**가 담당 (UptimeRobot은 HTTP su
 
 - [x] `npm run smoke:health` 로컬 Pass — 2026-06-06
 - [x] GitHub Actions 수동·cron Pass — 2026-06-08 (`8affb1a` CI supabase-js 의존성 제거 후)
-- [x] 크레딧 0 → P0-3 warn + `SMOKE_FAIL_ON_WARN=1` exit 1 (CI 알림)
 - [x] UptimeRobot — **생략** (Smoke+E2E로 충분, 2026-06-08)
 
 ---
@@ -222,7 +226,7 @@ npx playwright install chromium
 |----|------|----------|--------|
 | E2E-1 | `e2e/home.spec.js` | `/` 로드 | 지구본 canvas 또는 map container visible |
 | E2E-2 | `e2e/place.spec.js` | `/place/bali` | PlaceCard 제목·탭 visible (**표시 문구와 동일** — 아래 재발 방지) |
-| E2E-3 | `e2e/mooni.spec.js` | MOONi FAB → 채팅 1턴 | **모델 응답** 또는 **429/통신 실패 메시지** 중 하나 (완전 무응답 = fail) |
+| E2E-3 | `e2e/mooni.spec.js` | MOONi FAB → 채팅 1턴 | **`mooni-gemini-mock` 고정 응답** visible · AI 에러 문구 없음 (실 Gemini 0) |
 
 #### 2-B-1. E2E ↔ UI 문구 동기화 (재발 방지 · 2026-07-19)
 
@@ -292,7 +296,7 @@ npx playwright install chromium
 |---|------|-----------|
 | 1 | 홈·지구본 | E2E-1 |
 | 2 | `/place/bali` 카드 | E2E-2 |
-| 3 | MOONi 1턴 | E2E-3 + P0-3 |
+| 3 | MOONi 1턴 (mock) | E2E-3 |
 | 4 | 로그인 (변경 시만) | 수동 |
 | 5 | 플래너 CTA·페리 링크 (데이터 변경 시) | 수동 |
 | 6 | 모바일 `<lg` TourMobileBar (UI 변경 시) | 수동 |
@@ -337,13 +341,14 @@ Phase 0: Google AI Studio Budget 알림 · UptimeRobot gateo.kr + /place/bali
 
 ## 7. 비용·빈도 가이드
 
-| Probe | Gemini 비용 | 권장 빈도 |
-|-------|-------------|-----------|
-| P0-3 gemini-proxy | FAST + QUALITY ping (flash-lite · 3.5-flash) | 6시간 × 4회/일 |
-| E2E-3 MOONi | ~1 full chat turn | 1~2회/일 |
-| UptimeRobot M1 | 없음 | 5분 |
+| 단계 | Gemini 비용 | 권장 빈도 |
+|------|-------------|-----------|
+| Node smoke-health | **0** (Gemini 호출 없음) | 6h (`0 */6 * * *`) |
+| Smoke Playwright pages | **0** (Gemini 차단) · Edge read-through | 동일 workflow |
+| E2E MOONi / Explore AI | **0** (gemini-proxy mock) | 1d |
+| **PR #381** gemini live probe (예정) | FAST ping 등 | 별도 workflow — 본 PR과 분리 |
 
-크레딧紧张 시: `SMOKE_GEMINI_PROBE=0` + **Billing 알림(Phase 0)**에 의존.
+Supabase Edge 로그: 위 **호출 예산** 표 참고 · Smoke cron **증가 금지**.
 
 ---
 

@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
 const siteUrl =
   process.env.SMOKE_SITE_URL ||
   process.env.PLAYWRIGHT_BASE_URL ||
-  'https://gateo.kr';
+  'https://www.gateo.kr/';
 
 export default defineConfig({
   testDir: './e2e',
@@ -23,6 +23,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     locale: 'ko-KR',
+    timezoneId: 'Asia/Seoul',
   },
   projects: [
     {

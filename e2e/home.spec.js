@@ -1,5 +1,5 @@
 // E2E-1 @see plans/site-health-monitoring-plan.md Phase 2-B
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 
 test.describe('Home', () => {
   test('E2E-1 loads globe or map container', async ({ page }) => {

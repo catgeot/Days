@@ -1,12 +1,10 @@
 # gateo.kr API·사이트 헬스 스모크 — 6시간마다 + 수동 실행
 # @see plans/site-health-monitoring-plan.md Phase 1-C
-#
-# 필수 Repository secrets (Settings → Secrets and variables → Actions → Repository secrets):
-#   VITE_SUPABASE_URL      — https://phdjnbfitvmrguqzverm.supabase.co
-#   VITE_SUPABASE_ANON_KEY — Vercel production과 동일, = 뒤·줄바꿈·공백 없음
-# ⚠️ Environment secrets / Variables 탭이 아닌 **Repository secrets** 에 등록
 
 name: Smoke Health
+
+permissions:
+  contents: read
 
 on:
   schedule:
@@ -20,7 +18,7 @@ concurrency:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -29,6 +27,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '22'
+          cache: npm
 
       - name: Validate repository secrets
         env:
@@ -52,12 +51,24 @@ jobs:
             *) echo "::error title=Invalid anon key::VITE_SUPABASE_ANON_KEY는 eyJ 로 시작하는 JWT여야 합니다."; exit 1 ;;
           esac
 
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
       - name: Run smoke health probes
         env:
           GITHUB_ACTIONS: true
+          TZ: Asia/Seoul
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          SMOKE_SITE_URL: https://gateo.kr
-          SMOKE_GEMINI_PROBE: '1'
-          SMOKE_FAIL_ON_WARN: '1'
+          SMOKE_SITE_URL: https://www.gateo.kr
         run: node scripts/smoke-health.mjs
+
+      - name: Run smoke page liveness (Playwright)
+        env:
+          TZ: Asia/Seoul
+          SMOKE_SITE_URL: https://www.gateo.kr
+          CI: true
+        run: npx playwright test e2e/smoke-health-pages.spec.js
