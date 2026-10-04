@@ -5,8 +5,10 @@ import imageCompression from 'browser-image-compression';
 import { supabase } from '../../../shared/api/supabase';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
-import { GEMINI_MODELS } from '../../../utils/geminiModels';
-import { getReviewPrompt } from '../../../pages/Home/lib/prompts';
+import {
+  AI_FEATURE_LIMIT_MESSAGE,
+  isGeminiFeatureLimitError,
+} from '../../../pages/Home/lib/geminiProxyError';
 import {
   MOBILE_TEXTAREA_CLASS,
   dismissMobileTextInput,
@@ -278,16 +280,11 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
             .map((b) => b.text)
             .join('\n\n')
         : content;
-      const prompt = getReviewPrompt(placeName, rating, draftText);
-
-      const resultText = await apiClient.fetchProxyGemini(
-        null,
-        [],
-        "사용자의 입력을 바탕으로 자연스럽고 매력적인 리뷰 초안을 작성하세요. 팩트를 왜곡하지 않습니다.",
-        prompt,
-        [],
-        GEMINI_MODELS.QUALITY
-      );
+      const resultText = await apiClient.invokeGeminiTask('review_draft', {
+        placeName,
+        rating,
+        draft: draftText || '',
+      });
 
       if (contentBlocks) {
         setContentBlocks(
@@ -302,7 +299,11 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       }
     } catch (error) {
       console.error(error);
-      alert('AI 글 생성에 실패했습니다.');
+      alert(
+        isGeminiFeatureLimitError(error)
+          ? AI_FEATURE_LIMIT_MESSAGE
+          : 'AI 글 생성에 실패했습니다.',
+      );
     } finally {
       setIsGenerating(false);
     }
