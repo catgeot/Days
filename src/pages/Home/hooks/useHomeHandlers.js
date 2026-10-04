@@ -29,7 +29,6 @@ import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
-import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
 import {
   mergeCanonicalTravelSpot,
@@ -1487,74 +1486,11 @@ export function useHomeHandlers({
         if (!isCorrected) {
           // 2. 캐시가 없으면 Proxy를 통해 AI 호출
           try {
-            const aiPrompt = treatAsMoodQuery
-              ? `사용자가 여행 검색창에 "${query}"라고 입력했습니다.
-입력값은 오타일 수도 있고, 감정(예: 번아웃, 설렘, 흥분, 화남, 그리움), 분위기, 사물, 문장일 수도 있습니다.
-
-당신은 사용자의 마음을 여행 계획으로 연결하는 감성 여행 큐레이터입니다.
-다음 규칙을 반드시 지키세요.
-1) 실제로 존재하는 여행지 3곳을 제안합니다.
-2) 지명/국가/좌표가 실제로 일치해야 합니다. 추측 지명, 가상 지명, 별칭, 신조어는 금지합니다.
-3) 오타로 보이면 가장 가능성 높은 실제 지명으로 교정합니다.
-4) 감정/사물/상황 입력이면 그 감정을 환기하거나 확장하기 좋은 실제 여행지를 매칭합니다.
-5) 좌표는 해당 지명의 중심 좌표를 사용하세요.
-
-응답은 반드시 다른 설명 없이 아래 JSON 형식으로만 응답하세요.
-{
-  "intent_type": "mood",
-  "candidates": [
-    {
-      "name": "정확한 지명(한국어)",
-      "name_en": "정확한 지명(영어)",
-      "country": "소속 국가(한국어)",
-      "country_en": "소속 국가(영어)",
-      "lat": 위도(숫자),
-      "lng": 경도(숫자),
-      "reason": "이 목적지가 현재 입력 감정을 어떻게 다음 계획으로 연결하는지 1문장 (한국어, 40자 내외)"
-    }
-  ]
-}`
-              : isFacilityQuery(query)
-              ? `사용자가 여행 검색창에 "${query}"라고 입력했습니다.
-이는 휴게소·역·공원·댐 등 **세부 장소·시설** 검색입니다.
-규칙을 지키세요.
-1) 입력한 시설·명소 자체를 찾으세요. 시·군·구 등 상위 행정구역으로 축소·교정하지 마세요.
-2) 예: "홍천 휴게소" → 홍천(고속)휴게소 좌표. "홍천군"으로 바꾸지 마세요.
-3) 실제로 존재하는 장소여야 하며, 좌표는 해당 시설 위치여야 합니다.
-응답은 반드시 다른 설명 없이 아래 JSON 형식으로만 응답하세요.
-{
-  "intent_type": "typo",
-  "name": "시설·명소의 정확한 이름(한국어)",
-  "name_en": "정확한 이름(영어)",
-  "country": "소속 국가(한국어)",
-  "country_en": "소속 국가(영어)",
-  "lat": 위도(숫자),
-  "lng": 경도(숫자),
-  "reason": "이 시설을 찾은 이유 1문장 (한국어, 30자 내외)"
-}`
-              : `사용자가 여행 검색창에 "${query}"라고 입력했습니다.
-입력값은 오타일 가능성이 높습니다. 가장 가능성 높은 실제 지명 1곳으로 교정하세요.
-세부 시설(휴게소·역 등)이 아니면 행정구역으로 넓히지 마세요.
-응답은 반드시 다른 설명 없이 아래 JSON 형식으로만 응답하세요.
-{
-  "intent_type": "typo",
-  "name": "정확한 지명(한국어)",
-  "name_en": "정확한 지명(영어)",
-  "country": "소속 국가(한국어)",
-  "country_en": "소속 국가(영어)",
-  "lat": 위도(숫자),
-  "lng": 경도(숫자),
-  "reason": "교정 이유 1문장 (한국어, 30자 내외)"
-}`;
-
-            const aiResponse = await apiClient.fetchProxyGemini(
-              null, // 🚨 더 이상 클라이언트에서 API 키를 넘기지 않습니다. 서버에서 처리합니다.
-              [],
-              "당신은 감정 기반 여행지 매칭 전문가입니다. 실재 지명만 사용하고 오직 유효한 JSON만 출력해야 합니다.",
-              aiPrompt,
-              [],
-              GEMINI_MODELS.FAST
-            );
+            const searchMode = treatAsMoodQuery ? 'mood' : isFacilityQuery(query) ? 'facility' : 'typo';
+            const aiResponse = await apiClient.invokeGeminiTask('search_intent', {
+              mode: searchMode,
+              query,
+            });
 
             const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsedData = JSON.parse(cleanJsonString);

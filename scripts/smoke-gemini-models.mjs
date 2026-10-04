@@ -30,6 +30,9 @@ const LIVE_FILES = [
   'src/pages/DailyReport/hooks/useLogbookAI.js',
   'src/pages/Home/lib/placeChatIntro.js',
   'supabase/functions/gemini-proxy/index.ts',
+  'supabase/functions/gemini-proxy/router.ts',
+  'supabase/functions/_shared/gemini/tasks.ts',
+  'supabase/functions/_shared/gemini/call.ts',
   'supabase/functions/update-place-wiki/index.ts',
   'supabase/functions/update-place-toolkit/index.ts',
   'supabase/functions/generate-place-magazine/index.ts',
@@ -86,12 +89,15 @@ async function main() {
   );
 
   const reviewSrc = read('src/components/PlaceCard/modals/ReviewEditorModal.jsx');
-  check(reviewSrc.includes('GEMINI_MODELS.QUALITY'), 'review AI uses QUALITY');
+  check(reviewSrc.includes("invokeGeminiTask('review_draft'"), 'review AI uses review_draft');
+  check(!reviewSrc.includes('GEMINI_MODELS.WRITE'), 'review AI does not pick WRITE');
   const logbookSrc = read('src/pages/DailyReport/hooks/useLogbookAI.js');
-  check(logbookSrc.includes('GEMINI_MODELS.WRITE'), 'logbook AI uses WRITE');
+  check(logbookSrc.includes("invokeGeminiTask('logbook_polish'"), 'logbook AI uses logbook_polish');
+  check(logbookSrc.includes("invokeGeminiTask('curation'"), 'curation uses curation task');
+  check(!logbookSrc.includes('GEMINI_MODELS.WRITE'), 'logbook AI does not pick WRITE');
   const healthSrc = read('scripts/smoke-health.mjs');
-  check(healthSrc.includes('GEMINI_MODELS.FAST'), 'site health probes FAST');
-  check(healthSrc.includes('GEMINI_MODELS.QUALITY'), 'site health probes QUALITY');
+  check(healthSrc.includes("task: 'health_ping'"), 'site health uses health_ping');
+  check(!healthSrc.includes('GEMINI_MODELS.QUALITY'), 'site health does not probe QUALITY');
   check(
     !/modelId:\s*'gemini-3\.1-flash-lite'/.test(healthSrc),
     'site health does not hardcode FAST id',
@@ -101,6 +107,24 @@ async function main() {
   check(edge.includes(`"${GEMINI_MODELS.FAST}"`), 'Edge FAST matches client');
   check(edge.includes(`"${GEMINI_MODELS.QUALITY}"`), 'Edge QUALITY matches client');
   check(edge.includes(`"${GEMINI_MODELS.WRITE}"`), 'Edge WRITE matches client');
+  const proxyBlock = edge.slice(
+    edge.indexOf('export const GEMINI_PROXY_MODELS'),
+    edge.indexOf('export function resolveGeminiModelId'),
+  );
+  check(proxyBlock.includes('GEMINI_FAST') && proxyBlock.includes('GEMINI_QUALITY'), 'proxy models list FAST and QUALITY');
+  check(!proxyBlock.includes('WRITE') && !proxyBlock.includes('pro-preview'), 'proxy models exclude WRITE');
+
+  const proxySources = [
+    'supabase/functions/gemini-proxy/index.ts',
+    'supabase/functions/gemini-proxy/router.ts',
+    'supabase/functions/_shared/gemini/tasks.ts',
+    'supabase/functions/_shared/gemini/call.ts',
+    'supabase/functions/_shared/gemini/templates.js',
+  ];
+  for (const rel of proxySources) {
+    const text = read(rel);
+    check(!text.includes('gemini-3.1-pro-preview'), `${rel} does not reference pro-preview`);
+  }
 
   for (const rel of LIVE_FILES) {
     const text = read(rel);

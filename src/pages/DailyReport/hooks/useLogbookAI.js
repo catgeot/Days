@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { i18n } from '../../../i18n/config';
-import { getLogbookPrompt, getCurationPrompt } from '../../Home/lib/prompts.js';
 import { apiClient } from '../../Home/lib/apiClient.js';
-import { GEMINI_MODELS } from '../../../utils/geminiModels.js';
 import { convertToBase64 } from './useLogbookMedia';
 import { getCoordinatesFromAddress } from '../../Home/lib/geocoding.js';
 import { TRAVEL_SPOTS } from '../../Home/data/travelSpots.js';
@@ -59,16 +57,21 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
         base64Images = await Promise.all(imageFiles.map(file => convertToBase64(file)));
       }
 
-      const prompt = getLogbookPrompt(mode, date, mapLocation, content, imageFiles.length);
+      const images = base64Images.map((imgBase64) => {
+        const mimeTypeMatch = String(imgBase64).match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,/);
+        let mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
+        if (mimeType === 'image/jpg') mimeType = 'image/jpeg';
+        const data = String(imgBase64).replace(/^data:image\/\w+;base64,/, '');
+        return { mimeType, data };
+      });
 
-      const resultText = await apiClient.fetchProxyGemini(
-        null,
-        [],
-        "사용자의 메모와 사진을 분석하여 블로그 형식으로 변환하세요. 팩트를 왜곡하지 않는 세련된 에세이를 지향합니다.",
-        prompt,
-        base64Images,
-        GEMINI_MODELS.WRITE
-      );
+      const resultText = await apiClient.invokeGeminiTask('logbook_polish', {
+        mode,
+        date: date || '',
+        location: mapLocation || '',
+        memo: content || '',
+        images,
+      });
 
       setContent(resultText);
       if (!title) setTitle(i18n.t('logbook.write.defaultTitle', { place: mapLocation || i18n.t('logbook.write.defaultPlace') }));
@@ -275,15 +278,36 @@ export const useCurationAI = () => {
         .map((item) => destinationLabel(item))
         .filter(Boolean)
         .slice(0, 10);
-      const systemPrompt = getCurationPrompt(validReports, validSaved, excludeNames, {
-        rejectedList,
-        tasteTags: tags,
-        recentSearches,
-        recentVisited,
-        locale: i18n.language,
-      });
+      const reportNames = (validReports || [])
+        .map((row) => String(row?.location || '').trim())
+        .filter(Boolean);
+      const savedNames = (validSaved || [])
+        .map((row) => String(row?.destination || '').trim())
+        .filter(Boolean);
+      const rejectedNames = (rejectedList || [])
+        .map((item) => (typeof item === 'string' ? item : item?.location))
+        .map((name) => String(name || '').trim())
+        .filter(Boolean);
 
-      const resultText = await apiClient.fetchProxyGemini(null, [], systemPrompt, "");
+      const clip = (values) => (values || [])
+        .map((value) => String(value ?? '').trim())
+        .filter(Boolean)
+        .slice(0, 20)
+        .map((value) => value.slice(0, 80));
+
+      const resultText = await apiClient.invokeGeminiTask('curation', {
+        locale: i18n.language,
+        reports: clip(reportNames),
+        saved: clip(savedNames),
+        exclude: clip(excludeNames),
+        rejected: clip(rejectedNames),
+        recentSearches: clip(recentSearches),
+        recentVisited: clip(recentVisited),
+        tasteTags: (tags || [])
+          .map((tag) => String(tag ?? '').trim())
+          .filter((tag) => /^[a-z0-9_]{1,40}$/.test(tag))
+          .slice(0, 12),
+      });
 
       const jsonMatch = resultText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("JSON 파싱 실패: 형식을 찾을 수 없음");

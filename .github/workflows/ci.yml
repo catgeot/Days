@@ -30,5 +30,11 @@ jobs:
       - name: Lint (src — no-undef blocking)
         run: npm run lint:ci
 
+      - name: Gemini prompt contract
+        run: |
+          npm run check:gemini-prompt-mirror
+          npm run test:gemini-prompt-golden
+          npm run test:gemini-proxy-error
+
       - name: Build
         run: npm run build
