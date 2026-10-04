@@ -52,6 +52,11 @@ function formatAutoCloseComment({ streak, runUrl, orphanClose }) {
   return `연속 통과 ${streak}회로 자동 종료.${runLine}`;
 }
 
+function formatReopenComment({ runUrl }) {
+  const runLine = runUrl ? ` run: ${runUrl}` : ' run: (없음)';
+  return `종료 후 동일 원인 재발로 자동 재개.${runLine}`;
+}
+
 function isDryRun(env = process.env) {
   return env.DRY_RUN === 'true' || env.DRY_RUN === '1';
 }
@@ -314,7 +319,7 @@ async function maybeComment(github, owner, repo, issueNumber, body, force = fals
 async function closeIssue(github, owner, repo, issueNumber, comment, issueBody = '') {
   if (isDryRun()) return;
   if (issueBody && !canChangeIssueState(issueBody, 'close')) return;
-  await postBotComment(github, owner, repo, issueNumber, comment, { force: false });
+  await postBotComment(github, owner, repo, issueNumber, comment, { force: true });
   const payload = {
     owner,
     repo,
@@ -376,6 +381,14 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
           body,
           labels: baseLabels,
         });
+        await maybeComment(
+          github,
+          owner,
+          repo,
+          closed.number,
+          formatReopenComment({ runUrl }),
+          true,
+        );
         const reopened = { ...closed, body, title, state: 'open', labels: baseLabels };
         openIssues.push(reopened);
         return openIssues;
@@ -789,3 +802,4 @@ module.exports.countRecentBotNotifyComments = countRecentBotNotifyComments;
 module.exports.isInjectedSimPassRow = isInjectedSimPassRow;
 module.exports.substantiveHealthResults = substantiveHealthResults;
 module.exports.formatAutoCloseComment = formatAutoCloseComment;
+module.exports.formatReopenComment = formatReopenComment;
