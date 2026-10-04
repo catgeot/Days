@@ -322,7 +322,21 @@ test('reopen posts bot comment even when another bot notify exists within 24h', 
     (c) => c.body.includes(marker) && c.body.includes('자동 재개'),
   );
   assert.equal(reopenComments.length, 1);
+  assert.ok(reopenComments[0].body.includes('P0-1'));
+  assert.ok(reopenComments[0].body.includes('응답 시간 초과'));
   assert.ok(reopenComments[0].body.includes(runUrl));
+});
+
+test('invalid runUrl omitted from state-change comment', () => {
+  const line = reportIssues.formatAutoCloseComment({
+    streak: 3,
+    runUrl: 'https://evil.com/?token=ghp_secret',
+    orphanClose: false,
+    owner: 'o',
+    repo: 'r',
+  });
+  assert.match(line, /run: \(없음\)/);
+  assert.doesNotMatch(line, /ghp_secret/);
 });
 
 test('24h throttle blocks second ordinary fail notify', async () => {

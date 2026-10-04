@@ -187,8 +187,8 @@ test('orphan check id closes after required passes', async () => {
   await report({ github: api, context: ctx, core, resultFile: f, layer: 'smoke' });
   assert.equal(s.issues[0].state, 'closed');
   const closeComment = s.comments.find((c) => c.body.includes('health-bot-notify'));
-  assert.match(closeComment.body, /해당 검사가 더 이상 없어/);
-  assert.ok(closeComment.body.includes(runUrl));
+  assert.match(closeComment.body, /더 이상 실행되지 않아/);
+  assert.ok(closeComment.body.includes('https://github.com/o/r/actions/runs/99'));
 });
 
 test('injected SIM-1 pass only does not advance any pass-streak', async () => {

@@ -12,6 +12,24 @@ const STATE_CHANGE_WINDOW_MS = 24 * 60 * 60 * 1000;
 const LAST_REOPEN_RE = /<!-- health-last-reopen: ([^>]+) -->/;
 const LAST_CLOSE_RE = /<!-- health-last-close: ([^>]+) -->/;
 
+function escapeRegExp(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function sanitizeRunUrlForComment(runUrl, owner, repo) {
+  const s = String(runUrl || '').trim();
+  if (!owner || !repo) return '';
+  const re = new RegExp(
+    `^https://github\\.com/${escapeRegExp(owner)}/${escapeRegExp(repo)}/actions/runs/\\d+(?:/attempts/\\d+)?$`,
+  );
+  return re.test(s) ? s : '';
+}
+
+function runUrlCommentLine(runUrl, owner, repo) {
+  const safe = sanitizeRunUrlForComment(runUrl, owner, repo);
+  return safe ? ` run: ${safe}` : ' run: (없음)';
+}
+
 const ALL_LABELS = [
   'site-health',
   'health:fail',
@@ -44,17 +62,19 @@ function substantiveHealthResults(results, layer) {
   return results.filter((r) => !isInjectedSimPassRow(r, layer));
 }
 
-function formatAutoCloseComment({ streak, runUrl, orphanClose }) {
-  const runLine = runUrl ? ` run: ${runUrl}` : ' run: (없음)';
+function formatAutoCloseComment({ streak, runUrl, orphanClose, owner, repo }) {
+  const runLine = runUrlCommentLine(runUrl, owner, repo);
   if (orphanClose) {
-    return `이번 실행에서 해당 검사가 더 이상 없어 연속 ${streak}회 확인 후 자동 종료.${runLine}`;
+    return `해당 검사가 더 이상 실행되지 않아 자동 종료했어요(복구 확인 아님).${runLine}`;
   }
   return `연속 통과 ${streak}회로 자동 종료.${runLine}`;
 }
 
-function formatReopenComment({ runUrl }) {
-  const runLine = runUrl ? ` run: ${runUrl}` : ' run: (없음)';
-  return `종료 후 동일 원인 재발로 자동 재개.${runLine}`;
+function formatReopenComment({ runUrl, checkId, reasonCode, owner, repo }) {
+  const runLine = runUrlCommentLine(runUrl, owner, repo);
+  const reason = publicReason(reasonCode);
+  const id = checkId || 'check';
+  return `${id}: ${reason} — 종료 후 동일 원인 재발로 자동 재개.${runLine}`;
 }
 
 function isDryRun(env = process.env) {
@@ -303,11 +323,12 @@ async function postBotComment(github, owner, repo, issueNumber, body, { force = 
     const recent = await countRecentBotNotifyComments(github, owner, repo, issueNumber);
     if (recent >= 1) return false;
   }
+  const { maskPrivate } = await import('./mask-private.mjs');
   await github.rest.issues.createComment({
     owner,
     repo,
     issue_number: issueNumber,
-    body: sanitizeText(`${BOT_COMMENT_MARKER}\n${body}`),
+    body: sanitizeText(`${BOT_COMMENT_MARKER}\n${maskPrivate(body)}`),
   });
   return true;
 }
@@ -318,8 +339,10 @@ async function maybeComment(github, owner, repo, issueNumber, body, force = fals
 
 async function closeIssue(github, owner, repo, issueNumber, comment, issueBody = '') {
   if (isDryRun()) return;
-  if (issueBody && !canChangeIssueState(issueBody, 'close')) return;
-  await postBotComment(github, owner, repo, issueNumber, comment, { force: true });
+  const notify = !issueBody || canChangeIssueState(issueBody, 'close');
+  if (notify) {
+    await postBotComment(github, owner, repo, issueNumber, comment, { force: true });
+  }
   const payload = {
     owner,
     repo,
@@ -370,6 +393,8 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
           passStreak: 0,
           runUrl,
         });
+        body = carryForwardStateMarkers(body, closed.body);
+        const reopenNotify = canChangeIssueState(body, 'reopen');
         body = stampStateChange(body, 'reopen');
         const title = buildTitle(row.feature, reasonCode);
         await github.rest.issues.update({
@@ -381,14 +406,16 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
           body,
           labels: baseLabels,
         });
-        await maybeComment(
-          github,
-          owner,
-          repo,
-          closed.number,
-          formatReopenComment({ runUrl }),
-          true,
-        );
+        if (reopenNotify) {
+          await maybeComment(
+            github,
+            owner,
+            repo,
+            closed.number,
+            formatReopenComment({ runUrl, checkId: row.id, reasonCode, owner, repo }),
+            true,
+          );
+        }
         const reopened = { ...closed, body, title, state: 'open', labels: baseLabels };
         openIssues.push(reopened);
         return openIssues;
@@ -579,7 +606,7 @@ async function handlePassForRun(
         owner,
         repo,
         issue.number,
-        formatAutoCloseComment({ streak, runUrl, orphanClose }),
+        formatAutoCloseComment({ streak, runUrl, orphanClose, owner, repo }),
         body,
       );
       openIssues = openIssues.filter((i) => i.number !== issue.number);
@@ -803,3 +830,4 @@ module.exports.isInjectedSimPassRow = isInjectedSimPassRow;
 module.exports.substantiveHealthResults = substantiveHealthResults;
 module.exports.formatAutoCloseComment = formatAutoCloseComment;
 module.exports.formatReopenComment = formatReopenComment;
+module.exports.sanitizeRunUrlForComment = sanitizeRunUrlForComment;

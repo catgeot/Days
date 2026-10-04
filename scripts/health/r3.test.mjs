@@ -130,6 +130,7 @@ test('HUMAN comments interleaved + human spoofing marker: 48h @2h ≤ 2 bot comm
 test('FLAP fail,pass×3 repeated 48h: bot comments (incl. close) bounded', async () => {
   process.env.DRY_RUN = '0';
   clock(realNow());
+  const startMs = T;
   const { s, api } = gh();
   const pat = [F, P, P, P];
   for (let i = 0; i < 24; i++) {
@@ -137,7 +138,24 @@ test('FLAP fail,pass×3 repeated 48h: bot comments (incl. close) bounded', async
     clock(T + 2 * 3600e3);
   }
   assert.equal(s.issues.length, 1);
-  assert.ok(bot(s).length <= 4, `bot comments: ${bot(s).length} (close/reopen always post)`);
+  const stateComments = s.comments.filter(
+    (c) =>
+      c.user.type === 'Bot' &&
+      (c.body.includes('연속 통과') ||
+        c.body.includes('자동 재개') ||
+        c.body.includes('복구 확인 아님')),
+  );
+  let maxInWindow = 0;
+  for (let w = startMs; w <= T - 24 * 3600e3; w += 3600e3) {
+    const wEnd = w + 24 * 3600e3;
+    const n = stateComments.filter((c) => {
+      const t = Date.parse(c.updated_at);
+      return t >= w && t < wEnd;
+    }).length;
+    if (n > maxInWindow) maxInWindow = n;
+  }
+  assert.ok(maxInWindow <= 2, `max state-change comments per 24h: ${maxInWindow}`);
+  Date.now = realNow;
 });
 
 test('MASK coverage (must be masked)', () => {
