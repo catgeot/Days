@@ -22,6 +22,11 @@ import {
 } from '../src/pages/Home/lib/scenicSearch.js';
 import { nextTourCatsWhenCountsZero } from '../src/pages/KoreaTheme/scenicDefaultChips.js';
 import { SCENIC_REGION_ORDER } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
+import {
+  blurbWithListSummary,
+  isAddressOnlyBlurb,
+  tourListSummaryFromOverview,
+} from '../src/pages/Home/lib/tourListSummary.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PAGE = join(__dirname, '../src/pages/KoreaTheme/ScenicPage.jsx');
@@ -130,6 +135,28 @@ assert.ok(
 assert.ok(
   !pageSrc.includes('useTourOverviewByContentId'),
   '명소 검색 목록 행에 Tour 본문 overview를 넣지 않음',
+);
+assert.ok(
+  pageSrc.includes('useTourListSummaryByContentId') &&
+    pageSrc.includes('hapcheonTourSearch') &&
+    pageSrc.includes('blurbWithListSummary'),
+  '합천 검색 관광지 행은 개요 첫 문장만 써머리',
+);
+const hwanggyeOverview =
+  '합천댐 남동쪽 허굴산에 있는 폭포이며, 허굴산 능선에서 발원한 계류가 모여 황계가 되어 황강으로 흘러든다. 폭포는 황강의 가장 상류부에 있으며, 이어서 더 긴 본문이 온다.';
+const hwanggyeSummary = tourListSummaryFromOverview(hwanggyeOverview);
+assert.ok(hwanggyeSummary.endsWith('흘러든다.'), '황계폭포 써머리는 첫 문장');
+assert.ok(!hwanggyeSummary.includes('가장 상류'), '황계폭포 써머리에 다음 문장 없음');
+assert.ok(hwanggyeSummary.length < hwanggyeOverview.length);
+const hwanggyeAddr = '경상남도 합천군 용주면 황계리';
+assert.equal(isAddressOnlyBlurb(hwanggyeAddr, hwanggyeAddr), true);
+const hwanggyeRow = blurbWithListSummary(hwanggyeAddr, hwanggyeAddr, hwanggyeSummary);
+assert.ok(hwanggyeRow.startsWith(`${hwanggyeAddr} · `), '주소 유지');
+assert.ok(hwanggyeRow.includes('허굴산'), '써머리 문장');
+assert.equal(
+  blurbWithListSummary(hwanggyeRow, hwanggyeAddr, hwanggyeSummary),
+  hwanggyeRow,
+  '이미 써머리가 있으면 다시 붙이지 않음',
 );
 assert.ok(
   pageSrc.includes('showTourFilterChips'),
