@@ -39,13 +39,14 @@ async function prAssertion(page) {
 test.describe('review-star-locators', () => {
   test('NEGATIVE: editorial review WITH stars → assertion must FAIL', async ({ page }) => {
     await page.setContent(`<main>${blogCard}${card(true, true)}${card(false, true)}</main>`);
-    let failed = false;
+    let err;
     try {
       await prAssertion(page);
-    } catch {
-      failed = true;
+    } catch (e) {
+      err = e;
     }
-    expect(failed, 'star check must fail when stars exist on editorial review card').toBe(true);
+    expect(err, 'expected star locator failure').toBeDefined();
+    expect(String(err.message)).toMatch(/Expected:\s*0[\s\S]*Received:\s*[1-9]/);
   });
 
   test('POSITIVE: editorial review WITHOUT stars → assertion passes', async ({ page }) => {

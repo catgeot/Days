@@ -70,10 +70,7 @@ async function assertPlannerBookingLinks(page) {
       /^(placeholder|준비 중|coming soon|tbd)$/i,
     );
     if (isTripComHost(u.hostname)) {
-      expect(isMyRealTripHost(u.hostname), 'trip.com host must not be myrealtrip subdomain').toBe(
-        false,
-      );
-      const qs = u.searchParams.toString();
+      expect(href.includes('myrealtrip.com'), 'trip.com CTA must not use MRT host').toBe(false);
       expect(
         u.searchParams.has('Allianceid') ||
           u.searchParams.has('AllianceId') ||
@@ -89,7 +86,11 @@ async function assertPlannerBookingLinks(page) {
       expect(affiliateOk, `MRT affiliate link: ${href}`).toBe(true);
     }
     if (isKlookHost(u.hostname)) {
-      expect(u.searchParams.toString() || href, `klook tracking: ${href}`).not.toBe('');
+      const klookAffiliate =
+        u.searchParams.has('aid') ||
+        u.searchParams.has('aff_adid') ||
+        /^affiliate\.klook\.com\/redirect/i.test(`${u.hostname}${u.pathname}`);
+      expect(klookAffiliate, `klook aid/aff_adid or affiliate redirect: ${href}`).toBe(true);
     }
   }
 }

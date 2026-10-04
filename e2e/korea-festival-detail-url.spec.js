@@ -2,6 +2,8 @@ import { test, expect } from './fixtures.js';
 
 const FESTIVAL_INVALID = '999999999';
 const MRT_SCAN_MAX = 10;
+/** Per festival candidate when no MRT strip / no product cards — then try next. */
+const MRT_PER_FESTIVAL_PROBE_MS = 20_000;
 
 async function dismissLocHint(page) {
   const close = page
@@ -72,7 +74,7 @@ async function readMrtStripSnapshot(dialog) {
     0;
   const tnaCards = await dialog.locator('a[href*="experiences.myrealtrip.com"]').count();
   const tnaRendered =
-    (await dialog.getByText(/투어 · 티켓|투어·티켓|Tour · ticket/i).count()) > 0 ||
+    (await dialog.getByText(/투어\s*·\s*체험\s*·\s*티켓|투어\s*·\s*티켓|Tour · ticket/i).count()) > 0 ||
     tnaLoading ||
     tnaEmpty ||
     tnaCards > 0;
@@ -105,7 +107,7 @@ async function readMrtStripSnapshot(dialog) {
   };
 }
 
-async function waitFestivalMrtSettled(dialog) {
+async function waitFestivalMrtSettled(dialog, timeoutMs = 120_000) {
   await expect
     .poll(
       async () => {
@@ -114,7 +116,10 @@ async function waitFestivalMrtSettled(dialog) {
         if (!snap.stay.settled || !snap.tna.settled) return null;
         return snap;
       },
-      { timeout: 120_000, message: 'MRT strips settled (loading finished → cards or empty)' },
+      {
+        timeout: timeoutMs,
+        message: 'MRT strips settled (loading finished → cards or empty)',
+      },
     )
     .not.toBeNull();
 }
@@ -123,9 +128,10 @@ async function tryFestivalWithMrtProducts(page, id) {
   await page.goto(`/korea/?festival=${id}`);
   const dialog = detailDialog(page);
   try {
-    await dialog.waitFor({ state: 'visible', timeout: 45_000 });
-    await waitFestivalMrtSettled(dialog);
+    await dialog.waitFor({ state: 'visible', timeout: 15_000 });
+    await waitFestivalMrtSettled(dialog, MRT_PER_FESTIVAL_PROBE_MS);
   } catch {
+    await clickDetailClose(page).catch(() => {});
     return null;
   }
   const snap = await readMrtStripSnapshot(dialog);

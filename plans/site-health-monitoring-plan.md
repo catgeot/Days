@@ -28,8 +28,8 @@
 | 단계 | Edge POST | 대략적 규모/run |
 |------|-----------|-----------------|
 | Node `smoke-health.mjs` | **없음** | REST GET만 (~4 Supabase + 2 site) |
-| Playwright `smoke-health-pages` | tourapi-proxy 등 페이지 트래픽 | 최악 ~**13** tourapi cache upsert/run (축제·place·korea 목록) |
-| E2E Health (guarded) | fetch-mrt-stays/tnas · tourapi-proxy · fetch-place-videos · pexels-proxy | MRT search ~**25–55** POST/run(축제·place·explore) + 기타 read-through |
+| Playwright `smoke-health-pages` | tourapi-proxy 등 (홈·place·`/korea` **목록**) | 소량 read-through (**festival 상세 없음**) |
+| E2E Health (guarded) | fetch-mrt-stays/tnas · tourapi-proxy · fetch-place-videos · pexels-proxy | MRT search ~**25–55** POST/run · **`korea-festival-detail-url` tourapi ~13 upsert/run** + 기타 read-through |
 
 로그 1GB 한도 — Smoke **6h 유지** · Node probe는 upstream/TourAPI/Gemini **직접 호출 없음**.
 
@@ -189,7 +189,7 @@ flowchart TB
 3. **Actions** 탭 → **Smoke Health** → **Run workflow** 로 수동 1회 Pass 확인
 4. 실패 시 GitHub 계정 이메일로 알림 (저장소 Watch → All Activity 권장)
 
-워크플로: [`.github/workflows/smoke-health.yml`](../.github/workflows/smoke-health.yml) · CI는 `SMOKE_FAIL_ON_WARN=1` — Gemini 429(warn)도 **실패 처리**해 이메일 알림.
+워크플로: [`.github/workflows/smoke-health.yml`](../.github/workflows/smoke-health.yml) · CI는 P0 fail 시 exit 1 (Node smoke에 **Gemini probe 없음** — 크레딧 감시는 **PR #381**).
 
 #### 1-D. UptimeRobot (또는 Better Stack) — 외부 ping
 
@@ -205,7 +205,6 @@ Gemini 직접 ping은 **Actions 스크립트**가 담당 (UptimeRobot은 HTTP su
 
 - [x] `npm run smoke:health` 로컬 Pass — 2026-06-06
 - [x] GitHub Actions 수동·cron Pass — 2026-06-08 (`8affb1a` CI supabase-js 의존성 제거 후)
-- [x] 크레딧 0 → P0-3 warn + `SMOKE_FAIL_ON_WARN=1` exit 1 (CI 알림)
 - [x] UptimeRobot — **생략** (Smoke+E2E로 충분, 2026-06-08)
 
 ---
@@ -227,7 +226,7 @@ npx playwright install chromium
 |----|------|----------|--------|
 | E2E-1 | `e2e/home.spec.js` | `/` 로드 | 지구본 canvas 또는 map container visible |
 | E2E-2 | `e2e/place.spec.js` | `/place/bali` | PlaceCard 제목·탭 visible (**표시 문구와 동일** — 아래 재발 방지) |
-| E2E-3 | `e2e/mooni.spec.js` | MOONi FAB → 채팅 1턴 | **모델 응답** 또는 **429/통신 실패 메시지** 중 하나 (완전 무응답 = fail) |
+| E2E-3 | `e2e/mooni.spec.js` | MOONi FAB → 채팅 1턴 | **`mooni-gemini-mock` 고정 응답** visible · AI 에러 문구 없음 (실 Gemini 0) |
 
 #### 2-B-1. E2E ↔ UI 문구 동기화 (재발 방지 · 2026-07-19)
 
@@ -297,7 +296,7 @@ npx playwright install chromium
 |---|------|-----------|
 | 1 | 홈·지구본 | E2E-1 |
 | 2 | `/place/bali` 카드 | E2E-2 |
-| 3 | MOONi 1턴 | E2E-3 + P0-3 |
+| 3 | MOONi 1턴 (mock) | E2E-3 |
 | 4 | 로그인 (변경 시만) | 수동 |
 | 5 | 플래너 CTA·페리 링크 (데이터 변경 시) | 수동 |
 | 6 | 모바일 `<lg` TourMobileBar (UI 변경 시) | 수동 |
