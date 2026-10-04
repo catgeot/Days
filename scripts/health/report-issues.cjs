@@ -103,7 +103,7 @@ function carryForwardStateMarkers(newBody, oldBody) {
 
 function passStreakRequired(layer, issueBody) {
   const base = PASS_STREAK_CLOSE[layer] ?? 3;
-  const lastReopen = parseTimestampFromBody(issueBody, LAST_REOPEN_RE);
+  const lastReopen = parseStateMarkerTimestamp(issueBody, LAST_REOPEN_RE);
   if (Number.isFinite(lastReopen) && withinMs(lastReopen, STATE_CHANGE_WINDOW_MS)) {
     return base * 2;
   }
@@ -216,6 +216,12 @@ function parseTimestampFromBody(body, re) {
   return Date.parse(m[1].trim());
 }
 
+function parseStateMarkerTimestamp(body, re) {
+  const t = parseTimestampFromBody(body, re);
+  if (!Number.isFinite(t) || t > Date.now()) return NaN;
+  return t;
+}
+
 function withinMs(isoOrMs, windowMs) {
   const t = typeof isoOrMs === 'number' ? isoOrMs : Date.parse(isoOrMs);
   if (!Number.isFinite(t)) return false;
@@ -224,16 +230,17 @@ function withinMs(isoOrMs, windowMs) {
 
 function canChangeIssueState(body, kind) {
   const re = kind === 'reopen' ? LAST_REOPEN_RE : LAST_CLOSE_RE;
-  const last = parseTimestampFromBody(body, re);
+  const last = parseStateMarkerTimestamp(body, re);
   if (!Number.isFinite(last)) return true;
   return !withinMs(last, STATE_CHANGE_WINDOW_MS);
 }
 
 function stampStateChange(body, kind) {
+  const iso = new Date(Date.now()).toISOString();
   const tag =
     kind === 'reopen'
-      ? `<!-- health-last-reopen: ${new Date().toISOString()} -->`
-      : `<!-- health-last-close: ${new Date().toISOString()} -->`;
+      ? `<!-- health-last-reopen: ${iso} -->`
+      : `<!-- health-last-close: ${iso} -->`;
   const re = kind === 'reopen' ? LAST_REOPEN_RE : LAST_CLOSE_RE;
   if (re.test(body)) return String(body).replace(re, tag);
   return `${body}\n${tag}`;
@@ -677,18 +684,52 @@ async function run({ github, context, core, resultFile, layer: layerHint = 'smok
     );
   }
 
-  const missingCauseKey = `${layer}:_missing:missing_result`;
-  if (!failedCauseKeys.has(missingCauseKey)) {
-    openIssues = await handlePassForRun(
-      github,
-      context,
-      core,
-      { id: '_missing', matchId: '_missing' },
-      layer,
-      openIssues,
-      failedCauseKeys,
-      failedMatchIds,
-    );
+  const presentMatchIds = new Set(results.map((r) => r.matchId || r.id));
+  const layerTag = layerLabel(layer);
+
+  if (results.length > 0) {
+    const missingCauseKey = `${layer}:_missing:missing_result`;
+    if (!failedCauseKeys.has(missingCauseKey)) {
+      openIssues = await handlePassForRun(
+        github,
+        context,
+        core,
+        { id: '_missing', matchId: '_missing' },
+        layer,
+        openIssues,
+        failedCauseKeys,
+        failedMatchIds,
+      );
+    }
+
+    const orphanCandidates = openIssues.filter((issue) => {
+      if (!issue.labels.some((l) => (typeof l === 'string' ? l : l.name) === layerTag)) {
+        return false;
+      }
+      const causeKey = parseHealthKey(issue.body);
+      if (!causeKey) return false;
+      const [issueLayer, id] = causeKey.split(':');
+      if (issueLayer !== layer || !id || id === '_missing') return false;
+      if (presentMatchIds.has(id)) return false;
+      if (failedMatchIds.has(id)) return false;
+      if (failedCauseKeys.has(causeKey)) return false;
+      return true;
+    });
+
+    for (const issue of orphanCandidates) {
+      const causeKey = parseHealthKey(issue.body);
+      const id = causeKey.split(':')[1];
+      openIssues = await handlePassForRun(
+        github,
+        context,
+        core,
+        { id, matchId: id },
+        layer,
+        openIssues,
+        failedCauseKeys,
+        failedMatchIds,
+      );
+    }
   }
 }
 
