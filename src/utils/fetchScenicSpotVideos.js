@@ -109,8 +109,17 @@ export async function fetchScenicSpotVideos(opts) {
     );
 
     if (error) {
-      console.warn('[scenic-videos] invoke error:', error.message || error);
-      return { ok: false, videos: [], error: error.message || 'invoke failed' };
+      let code = data?.error ? String(data.error) : '';
+      if (!code && error.context && typeof error.context.json === 'function') {
+        try {
+          const parsed = await error.context.clone().json();
+          if (parsed?.error) code = String(parsed.error);
+        } catch {
+          code = '';
+        }
+      }
+      console.warn('[scenic-videos] invoke error:', code || error.message || error);
+      return { ok: false, videos: [], error: code || error.message || 'invoke failed' };
     }
     if (!data?.success) {
       return {

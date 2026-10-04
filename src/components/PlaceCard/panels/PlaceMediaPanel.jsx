@@ -36,6 +36,8 @@ const PlaceMediaPanel = React.memo(({
     loadMoreVideoError,
     loadMoreVideoLimitCode,
     videoFetchLimitCode = null,
+    externalYouTubeUrl = '',
+    placeYouTubeUrl = '',
     loadMoreVideoNoNew,
     onVideoUnplayable,
     googleFormUrl,
@@ -108,6 +110,8 @@ const PlaceMediaPanel = React.memo(({
                 loadMoreError={loadMoreVideoError}
                 loadMoreLimitCode={loadMoreVideoLimitCode}
                 fetchLimitCode={videoFetchLimitCode}
+                externalYouTubeUrl={externalYouTubeUrl}
+                placeYouTubeUrl={placeYouTubeUrl}
                 loadMoreNoNew={loadMoreVideoNoNew}
                 mobileSecondaryNav={mobileSecondaryNav}
             />

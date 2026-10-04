@@ -204,6 +204,8 @@ function reset() {
   proxyCalls = 0;
   Deno.env.delete("FETCH_PLACE_VIDEOS_IP_DAILY_UNITS");
   Deno.env.delete("FETCH_PLACE_VIDEOS_ALLOW_FREE_SEARCH");
+  Deno.env.delete("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER");
+  Deno.env.delete("FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS");
 }
 
 function youtubeQuery(): string {
@@ -275,18 +277,17 @@ Deno.test("fewer than 10 results do not call YouTube again", async () => {
   assertEquals(ytCalls, 1);
 });
 
-Deno.test("quotaExceeded stores last_error, keeps videos, and blocks a same-day retry", async () => {
+Deno.test("quotaExceeded keeps cached videos and does not start a backoff", async () => {
   reset();
+  const expired = new Date(Date.now() - DAY).toISOString();
   store.set("paris", {
     place_id: "paris",
     videos: [{ id: "keep-me", title: "old" }],
     fail_count: 0,
     last_error: null,
-    next_retry_at: null,
+    next_retry_at: expired,
     last_updated: "2020-01-01T00:00:00.000Z",
   });
-  // Existing fresh rows short-circuit. Expire the row so this call reaches YouTube.
-  store.get("paris")!.next_retry_at = new Date(Date.now() - DAY).toISOString();
   state.yt = "quota";
   const first = await post({ query: "파리", placeId: "paris" });
   assertEquals(first.status, 200);
@@ -297,16 +298,18 @@ Deno.test("quotaExceeded stores last_error, keeps videos, and blocks a same-day 
   assertEquals(ytCalls, 1);
   const row = store.get("paris")!;
   assertEquals(row.videos, [{ id: "keep-me", title: "old" }]);
-  assertEquals(row.last_error, "quotaExceeded");
-  assertEquals(row.fail_count, 1);
-  const retryIn = Date.parse(row.next_retry_at!) - Date.now();
-  assert(retryIn > 0.5 * DAY && retryIn < 1.5 * DAY, `backoff not ~1 day (${retryIn})`);
+  assertEquals(row.last_error, null);
+  assertEquals(row.fail_count, 0);
+  assertEquals(row.next_retry_at, expired);
 
+  state.yt = "three";
   const second = await post({ query: "파리", placeId: "paris" });
   assertEquals(second.status, 200);
   const secondBody = await second.json();
-  assertEquals(secondBody.videos, [{ id: "keep-me", title: "old" }]);
-  assertEquals(ytCalls, 1);
+  assertEquals(secondBody.videos.length, 3);
+  assertEquals(ytCalls, 2);
+  assertEquals(store.get("paris")?.fail_count, 0);
+  assertEquals(store.get("paris")?.next_retry_at, null);
 });
 
 Deno.test("a failed search does not delete existing videos", async () => {
@@ -320,13 +323,21 @@ Deno.test("a failed search does not delete existing videos", async () => {
     last_updated: "2020-01-01T00:00:00.000Z",
   });
   state.yt = "boom";
+  const expired = store.get("tokyo")!.next_retry_at;
   const res = await post({ query: "도쿄", placeId: "tokyo" });
   assertEquals(res.status, 200);
   const body = await res.json();
   assertEquals(body.stale, true);
   assertEquals(body.videos, [{ id: "stay", title: "kept" }]);
   assertEquals(store.get("tokyo")?.videos, [{ id: "stay", title: "kept" }]);
+  assertEquals(store.get("tokyo")?.fail_count, 0);
+  assertEquals(store.get("tokyo")?.next_retry_at, expired);
   assertEquals(ytCalls, 1);
+
+  state.yt = "three";
+  const again = await post({ query: "도쿄", placeId: "tokyo" });
+  assertEquals(again.status, 200);
+  assertEquals(ytCalls, 2);
 });
 
 Deno.test("place-tab empty results use a 3 day retry and keep a later call off YouTube", async () => {
@@ -472,6 +483,7 @@ Deno.test("global unit ceiling counts the fallback search separately", async () 
   assert(youtubeQuery().includes("Paris"), youtubeQuery());
   assert(!youtubeQuery().includes("ignore"), youtubeQuery());
   assertEquals(counts.get("global:yt:u"), 6100);
+  assertEquals(store.has("paris"), false);
 });
 
 Deno.test("ip daily cap counts real searches up to the env ceiling", async () => {
@@ -485,6 +497,7 @@ Deno.test("ip daily cap counts real searches up to the env ceiling", async () =>
   assertEquals(third.status, 429);
   assertEquals((await third.json()).error, "ip_quota");
   assertEquals(counts.get("ip:203.0.113.10:u"), 300);
+  assertEquals(store.has("tokyo"), false);
   assertEquals(ytCalls, 2);
   assert(![...counts.keys()].some((key) => key.endsWith(":share")), [...counts.keys()].join(","));
 });
@@ -504,8 +517,8 @@ Deno.test("page tokens are capped per IP per place and per place", async () => {
     { "x-forwarded-for": "1.2.3.4, 198.51.100.8", "x-real-ip": "9.9.9.9" },
   );
   assertEquals(other.status, 200);
-  assert(counts.has("page:ip:1.2.3.4:paris"), [...counts.keys()].join(","));
-  assert(![...counts.keys()].some((key) => key.includes("198.51.100.8") || key.includes("9.9.9.9")), [...counts.keys()].join(","));
+  assert(counts.has("page:ip:198.51.100.8:paris"), [...counts.keys()].join(","));
+  assert(![...counts.keys()].some((key) => key.includes("1.2.3.4") || key.includes("9.9.9.9")), [...counts.keys()].join(","));
 
   counts.set("page:place:sokcho", 30);
   const placeCap = await post(
@@ -535,7 +548,15 @@ Deno.test("an expired row still serves its videos when the global quota is exhau
   assertEquals(body.stale, true);
   assertEquals(body.videos, [{ id: "keep-me", title: "old" }]);
   assertEquals(ytCalls, 0);
-  assertEquals(store.get("paris")?.videos, [{ id: "keep-me", title: "old" }]);
+  const kept = store.get("paris")!;
+  assertEquals(kept.videos, [{ id: "keep-me", title: "old" }]);
+  assertEquals(kept.fail_count, 0);
+  assert(Date.parse(kept.next_retry_at!) < Date.now(), "quota must not push next_retry_at forward");
+
+  counts.set("global:yt:u", 0);
+  const again = await post({ query: "ignore", placeId: "paris" });
+  assertEquals(again.status, 200);
+  assertEquals(ytCalls, 1);
 });
 
 Deno.test("parallel searches share one unit counter", async () => {
@@ -548,9 +569,9 @@ Deno.test("parallel searches share one unit counter", async () => {
   })));
   const ok = statuses.filter((row) => row.status === 200).length;
   const limited = statuses.filter((row) => row.error === "ip_quota").length;
-  assertEquals(ok, 4);
-  assertEquals(limited, 1);
-  assertEquals(ytCalls, 4);
+  assertEquals(ok, 5);
+  assertEquals(limited, 0);
+  assertEquals(ytCalls, 5);
   assertEquals(counts.get("ip:203.0.113.10:u"), 500);
 });
 
@@ -642,20 +663,160 @@ Deno.test("a live TourAPI content id is accepted from the attraction cache or th
   assertEquals(ytCalls, 0);
 });
 
-Deno.test("free-search coordinate places stay closed unless the env flag is on", async () => {
+Deno.test("free-search ids never spend quota, even if the old env flag is set", async () => {
   reset();
-  const closed = await post({ query: "클라이언트 지명", placeId: "search-37.5-127.0" });
-  assertEquals(closed.status, 400);
+  Deno.env.set("FETCH_PLACE_VIDEOS_ALLOW_FREE_SEARCH", "1");
+  for (const placeId of ["search-37.5-127.0", "loc-abc", "city-12-34", "label-busan"]) {
+    const res = await post({ query: "클라이언트 지명", placeId });
+    assertEquals(res.status, 400);
+    assertEquals((await res.json()).error, "bad_place_id");
+  }
+  assertEquals(ytCalls, 0);
+  assertEquals(proxyCalls, 0);
+  assertEquals(counts.size, 0);
+  assertEquals(store.size, 0);
+});
+
+Deno.test("default ip daily cap is 1000 units", async () => {
+  reset();
+  const ids = Object.keys(catalog.places).slice(0, 11);
+  assertEquals(ids.length, 11);
+  for (let i = 0; i < ids.length; i += 1) {
+    if (i === 6 || i === 10) counts.delete("ip:203.0.113.10:m");
+    const res = await post({ placeId: ids[i] });
+    if (i < 10) {
+      assertEquals(res.status, 200);
+    } else {
+      assertEquals(res.status, 429);
+      assertEquals((await res.json()).error, "ip_quota");
+    }
+  }
+  assertEquals(ytCalls, 10);
+  assertEquals(counts.get("ip:203.0.113.10:u"), 1100);
+  assertEquals(store.has(ids[10]), false);
+});
+
+Deno.test("a spoofed left XFF hop does not open a new ip bucket", async () => {
+  reset();
+  Deno.env.set("FETCH_PLACE_VIDEOS_IP_DAILY_UNITS", "200");
+  const places = ["paris", "busan", "tokyo"];
+  for (let i = 0; i < places.length; i += 1) {
+    const res = await post(
+      { placeId: places[i] },
+      { "x-forwarded-for": `198.51.100.${i}, 203.0.113.10` },
+    );
+    if (i < 2) assertEquals(res.status, 200);
+    else {
+      assertEquals(res.status, 429);
+      assertEquals((await res.json()).error, "ip_quota");
+    }
+  }
+  assertEquals(counts.get("ip:203.0.113.10:u"), 300);
+  assert(![...counts.keys()].some((key) => key.includes("198.51.100")), [...counts.keys()].join(","));
+  assertEquals(ytCalls, 2);
+});
+
+Deno.test("cf-connecting-ip is used only when that header is configured", async () => {
+  reset();
+  Deno.env.set("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER", "cf-connecting-ip");
+  const res = await post(
+    { placeId: "paris", pageToken: "CF" },
+    { "cf-connecting-ip": "203.0.113.50", "x-forwarded-for": "1.2.3.4, 198.51.100.8" },
+  );
+  assertEquals(res.status, 200);
+  assert(counts.has("page:ip:203.0.113.50:paris"), [...counts.keys()].join(","));
+  assert(![...counts.keys()].some((key) => key.includes("1.2.3.4") || key.includes("198.51.100.8")), [...counts.keys()].join(","));
+
+  reset();
+  Deno.env.set("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER", "cf-connecting-ip");
+  const fallback = await post(
+    { placeId: "paris", pageToken: "FB" },
+    { "x-forwarded-for": "1.2.3.4, 198.51.100.8" },
+  );
+  assertEquals(fallback.status, 200);
+  assert(counts.has("page:ip:198.51.100.8:paris"), [...counts.keys()].join(","));
+});
+
+Deno.test("detailCommon shares the ip and global caps and unknown ids are cached", async () => {
+  reset();
+  counts.set("global:yt:u", 6000);
+  state.proxyBody = { items: [{ contentid: "555", title: "진주" }] };
+  const blocked = await post({ placeId: "scenic:555" });
+  assertEquals(blocked.status, 429);
+  assertEquals((await blocked.json()).error, "global_quota");
+  assertEquals(proxyCalls, 0);
+  assertEquals(store.has("scenic:555"), false);
   assertEquals(ytCalls, 0);
 
-  Deno.env.set("FETCH_PLACE_VIDEOS_ALLOW_FREE_SEARCH", "1");
-  const open = await post({ query: "클라이언트 지명", placeId: "search-37.5-127.0" });
-  assertEquals(open.status, 200);
-  const q = youtubeQuery();
-  assert(q.includes("37.5000"), q);
-  assert(q.includes("127.0000"), q);
-  assert(!q.includes("클라이언트"), q);
+  reset();
+  Deno.env.set("FETCH_PLACE_VIDEOS_IP_DAILY_UNITS", "100");
+  const spent = await post({ placeId: "paris" });
+  assertEquals(spent.status, 200);
+  state.proxyBody = { items: [{ contentid: "555", title: "진주" }] };
+  const ipBlocked = await post({ placeId: "scenic:555" });
+  assertEquals(ipBlocked.status, 429);
+  assertEquals((await ipBlocked.json()).error, "ip_quota");
+  assertEquals(proxyCalls, 0);
+  assertEquals(store.has("scenic:555"), false);
 
-  const named = await post({ query: "파리", placeId: "search-paris" });
-  assertEquals(named.status, 400);
+  reset();
+  state.proxyBody = { items: [{ contentid: "999", title: "다른 장소" }] };
+  const unknown = await post({ placeId: "scenic:555" });
+  assertEquals(unknown.status, 400);
+  assertEquals(proxyCalls, 1);
+  assertEquals(ytCalls, 0);
+  const row = store.get("scenic:555");
+  assert(row, "negative cache row");
+  assertEquals(row?.videos, []);
+  assertEquals(row?.fail_count, 0);
+  assertEquals(row?.last_error, "unknown_content");
+  const retryIn = Date.parse(row?.next_retry_at ?? "") - Date.now();
+  assert(retryIn > 0.5 * DAY && retryIn < 1.5 * DAY, `unknown ttl not ~1 day (${retryIn})`);
+  assertEquals(counts.get("ip:203.0.113.10:u"), 100);
+
+  const second = await post({ placeId: "scenic:555" });
+  assertEquals(second.status, 200);
+  assertEquals((await second.json()).videos, []);
+  assertEquals(proxyCalls, 1);
+  assertEquals(counts.get("ip:203.0.113.10:u"), 100);
+});
+
+Deno.test("unknown content does not wipe videos that are already cached", async () => {
+  reset();
+  store.set("scenic:556", {
+    place_id: "scenic:556",
+    videos: [{ id: "keep", title: "old" }],
+    fail_count: 0,
+    last_error: null,
+    next_retry_at: new Date(Date.now() - DAY).toISOString(),
+    last_updated: "2020-01-01T00:00:00.000Z",
+  });
+  state.proxyBody = { items: [] };
+  const keptVideos = await post({ placeId: "scenic:556" });
+  assertEquals(keptVideos.status, 200);
+  assertEquals((await keptVideos.json()).stale, true);
+  assertEquals(store.get("scenic:556")?.videos, [{ id: "keep", title: "old" }]);
+  assertEquals(store.get("scenic:556")?.fail_count, 0);
+  assertEquals(proxyCalls, 1);
+  const again = await post({ placeId: "scenic:556" });
+  assertEquals(again.status, 200);
+  assertEquals(proxyCalls, 1);
+});
+
+Deno.test("an entity-wrapped word is kept when tags are stripped", async () => {
+  reset();
+  festivals.push({
+    cache_key: "detail:ko:89",
+    payload: {
+      intro: null,
+      common: { title: "&lt;탈춤&gt;", contentid: "89" },
+      info: [],
+    },
+  });
+  const res = await post({ placeId: "festival:89" });
+  assertEquals(res.status, 200);
+  const q = youtubeQuery();
+  assert(q.includes("탈춤"), q);
+  assert(!q.includes("lt;"), q);
+  assert(!q.includes("&"), q);
 });

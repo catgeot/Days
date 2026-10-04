@@ -12,10 +12,12 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 // search.list = 100 units. Ceiling stays well under the 10,000 unit daily quota.
 // p_cost needs 20261006123000 (4-arg, no default). The 3-arg function from 3v stays.
 // Deploy: 3v 20261006113000 → cost migration 20261006123000 → this function.
-// Edge first returns 503 because this function always passes p_cost.
+// Rollback: this function → 20261006123000 → 3v.
+// Reverting 3v first makes this function 503 (it always passes p_cost).
+// Edge first on deploy also returns 503 for the same reason.
 const YT_SEARCH_UNITS = 100;
 const LIMIT_GLOBAL_UNITS = 6000;
-const LIMIT_IP_DAILY_UNITS_DEFAULT = 400;
+const LIMIT_IP_DAILY_UNITS_DEFAULT = 1000;
 const LIMIT_IP_PER_MINUTE = 6;
 const LIMIT_PLACE_NEW_PER_DAY = 2;
 const LIMIT_PAGE_IP_PLACE = 3;
@@ -30,7 +32,7 @@ const FORBIDDEN_QUERY_RES = [
   /음란|야동|포르노/,
 ];
 const HTML_TAG_TOKEN = /^(?:\/?(?:a|b|br|div|em|font|i|p|span|strong|u))$/i;
-const FREE_SEARCH_ID_RE = /^(loc|search|city|label)-(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)$/;
+const FREE_SEARCH_ID_RE = /^(loc|search|city|label)-/i;
 
 const PLACES = catalog.places as Record<string, string>;
 const SCENIC = catalog.scenic as Record<string, string>;
@@ -131,8 +133,13 @@ function decodeHtmlEntities(input: string): string {
   });
 }
 
+function stripRealTags(input: string): string {
+  return input.replace(/<\/?[a-zA-Z][^>]*>/g, " ");
+}
+
 function sanitizeQuery(input: string): string {
-  const decoded = decodeHtmlEntities(input).replace(/<[^>]*>/g, " ");
+  // Real tags first, then entities. `&lt;탈춤&gt;` is not a tag and must keep 탈춤.
+  const decoded = stripRealTags(decodeHtmlEntities(stripRealTags(input)));
   let out = "";
   for (const ch of decoded) {
     const code = ch.codePointAt(0) ?? 0;
@@ -200,11 +207,6 @@ function ipDailyUnits(): number {
   return n;
 }
 
-function allowFreeSearch(): boolean {
-  const v = (Deno.env.get("FETCH_PLACE_VIDEOS_ALLOW_FREE_SEARCH") ?? "").trim().toLowerCase();
-  return v === "1" || v === "true" || v === "yes";
-}
-
 function expandIpv6(raw: string): string[] | null {
   const s = raw.toLowerCase();
   if (!s.includes(":") || s.includes(".")) return null;
@@ -233,27 +235,49 @@ function bucketIp(ip: string): string {
 /**
  * Client IP for rate-limit keys.
  *
- * Supabase's Edge examples take the first X-Forwarded-For hop:
- * location (`clientIps[0]`) and the Turnstile guide. Auth's GetIPAddress
- * also returns the first parsable X-Forwarded-For address. `sb-forwarded-for`
- * is Auth/GoTrue only and is not read here. `x-real-ip` is used only when
- * X-Forwarded-For is absent.
+ * The leftmost X-Forwarded-For hop is client-supplied. Do not trust it.
+ * Supabase Edge docs do not say the gateway overwrites X-Forwarded-For, and
+ * they do not say `cf-connecting-ip` is forwarded. Staging verification is
+ * required before production: confirm the header the gateway actually sets.
  *
- * Staging verification is still required. The Edge architecture doc does not
- * say whether the gateway overwrites X-Forwarded-For or appends the peer.
- * If a staging request shows a client-supplied hop in front of the gateway
- * hop, switch this to that trusted hop before production.
+ * FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER (default `x-forwarded-for`):
+ *   a single platform header such as `cf-connecting-ip` is used when present.
+ *   If that header is absent, fall back to the trusted X-Forwarded-For hop.
+ * FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS (default 1, clamp 1–5), counted from
+ * the right. Assumption: one gateway appends the observed peer, so hop 1 is
+ * the rightmost address. Client-supplied hops stay on the left.
+ * `x-real-ip` is used only when both of the above are absent.
+ * `sb-forwarded-for` is Auth/GoTrue only and is not read here.
  *
  * IPv6 keys use the /64 prefix so addresses in one network share a bucket.
  */
+function trustedXffHops(): number {
+  const raw = Deno.env.get("FETCH_PLACE_VIDEOS_XFF_TRUSTED_HOPS");
+  if (raw == null || raw.trim() === "") return 1;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 1 || n > 5) return 1;
+  return n;
+}
+
 function clientIp(req: Request): string {
-  const forwarded = (req.headers.get("x-forwarded-for") ?? "")
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean);
-  const raw = forwarded.length
-    ? forwarded[0]
-    : (req.headers.get("x-real-ip")?.trim() || "unknown");
+  const headerName = (Deno.env.get("FETCH_PLACE_VIDEOS_CLIENT_IP_HEADER") ?? "x-forwarded-for")
+    .trim()
+    .toLowerCase();
+  let raw = "";
+  if (headerName && headerName !== "x-forwarded-for" && headerName !== "x-real-ip") {
+    raw = (req.headers.get(headerName) ?? "").split(",")[0]?.trim() ?? "";
+  }
+  if (!raw) {
+    const forwarded = (req.headers.get("x-forwarded-for") ?? "")
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
+    if (forwarded.length) {
+      const index = Math.max(0, forwarded.length - trustedXffHops());
+      raw = forwarded[index];
+    }
+  }
+  if (!raw) raw = req.headers.get("x-real-ip")?.trim() || "unknown";
   const cleaned = raw.replace(/[^0-9a-fA-F:.\-]/g, "").slice(0, 64);
   return bucketIp(cleaned || "unknown");
 }
@@ -309,20 +333,6 @@ function resolvedFromTitle(placeId: string, hit: TitleHit, mode: "place" | "fest
   return resolved;
 }
 
-function resolveFreeSearch(raw: string): ResolvedPlace | null {
-  if (!allowFreeSearch()) return null;
-  const match = raw.trim().toLowerCase().match(FREE_SEARCH_ID_RE);
-  if (!match) return null;
-  const lat = Number(match[2]);
-  const lng = Number(match[3]);
-  if (!Number.isFinite(lat) || lat < -90 || lat > 90) return null;
-  if (!Number.isFinite(lng) || lng < -180 || lng > 180) return null;
-  const resolved = placeMode(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
-  if (!resolved) return null;
-  resolved.placeId = `${match[1]}-${lat}-${lng}`;
-  return resolved;
-}
-
 function resolveStaticPlace(raw: string): ResolvedPlace | null {
   const id = raw.trim();
   const scenicKey = id.startsWith("scenic:") ? id.slice("scenic:".length) : "";
@@ -357,8 +367,6 @@ function resolveStaticPlace(raw: string): ResolvedPlace | null {
       fallback: sanitizeQuery(other && other !== q ? other : `${q} festival`),
     };
   }
-  const free = resolveFreeSearch(id);
-  if (free) return free;
   if (id.includes(":")) return null;
   const slug = id.toLowerCase();
   const q = PLACES[slug];
@@ -430,10 +438,12 @@ async function attractionHit(admin: AdminClient, contentId: string): Promise<Tit
   return { title, year: "" };
 }
 
-async function proxyDetailHit(contentId: string): Promise<TitleHit | null> {
+type ProxyDetail = { ok: true; hit: TitleHit } | { ok: false; unknown: boolean };
+
+async function proxyDetailHit(contentId: string): Promise<ProxyDetail> {
   const base = (Deno.env.get("SUPABASE_URL") ?? "").replace(/\/$/, "");
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-  if (!base || !key) return null;
+  if (!base || !key) return { ok: false, unknown: false };
   let res: Response;
   try {
     res = await fetch(`${base}/functions/v1/tourapi-proxy`, {
@@ -446,19 +456,18 @@ async function proxyDetailHit(contentId: string): Promise<TitleHit | null> {
       body: JSON.stringify({ action: "detailCommon", contentId }),
     });
   } catch {
-    return null;
+    return { ok: false, unknown: false };
   }
-  if (!res.ok) return null;
+  if (!res.ok) return { ok: false, unknown: false };
   const body = await res.json().catch(() => null) as { items?: unknown } | null;
   const items = Array.isArray(body?.items) ? body.items : [];
   const item = items[0];
-  if (!item || typeof item !== "object") return null;
+  if (!item || typeof item !== "object") return { ok: false, unknown: true };
   const rec = item as Record<string, unknown>;
   const id = String(rec.contentid ?? rec.contentId ?? "").trim();
-  if (id !== contentId) return null;
   const title = String(rec.title ?? "").trim();
-  if (!title) return null;
-  return { title, year: "" };
+  if (id !== contentId || !title) return { ok: false, unknown: true };
+  return { ok: true, hit: { title, year: "" } };
 }
 
 function primaryQuery(resolved: ResolvedPlace): string {
@@ -486,6 +495,9 @@ serve(async (req) => {
   }
 
   const rawPlaceId = String(body.placeId ?? "").trim();
+  if (FREE_SEARCH_ID_RE.test(rawPlaceId)) {
+    return json(req, { success: false, error: "bad_place_id" }, 400);
+  }
   const festivalMatch = rawPlaceId.match(/^festival:(\d{1,32})$/);
   const scenicDigits = rawPlaceId.match(/^scenic:(\d{1,32})$/);
   const festivalId = festivalMatch ? festivalMatch[1] : "";
@@ -593,27 +605,8 @@ serve(async (req) => {
     if (denied) return denied;
   }
 
-  try {
-    if (!resolved && festivalId) {
-      const hit = await festivalListHit(supabaseAdmin, festivalId);
-      if (hit) resolved = resolvedFromTitle(`festival:${festivalId}`, hit, "festival");
-    }
-    if (!resolved && scenicId) {
-      const hit = await proxyDetailHit(scenicId);
-      if (hit) resolved = resolvedFromTitle(`scenic:${scenicId}`, hit, "place");
-    }
-  } catch {
-    logFail(placeId, "tour_cache_read_failed", null);
-    return json(req, { success: false, error: "cache_unavailable" }, 503);
-  }
-  if (!resolved) return json(req, { success: false, error: "bad_place_id" }, 400);
-
-  const mode = resolved.mode;
-  const query = resolved.query;
-  const primaryQ = primaryQuery(resolved);
-  const fallbackQ = resolved.fallback || primaryQ;
   const youtubeApiKey = Deno.env.get("VITE_YOUTUBE_API_KEY") || Deno.env.get("YOUTUBE_API_KEY");
-  if (!youtubeApiKey) {
+  if (!resolved && (festivalId || scenicId) && !youtubeApiKey) {
     logFail(placeId, "youtube_key_missing", null);
     return json(req, { success: false, error: "youtube_not_configured" }, 500);
   }
@@ -634,6 +627,71 @@ serve(async (req) => {
       if (hit.data !== true) throw new LimitError(code);
     }
   };
+
+  const staleVideos = () => {
+    const videos = preservedVideos(row);
+    if (skipUpsert || videos.length === 0) return null;
+    return json(req, {
+      success: true,
+      videos,
+      stale: true,
+      nextPageToken: null,
+      paginationSource: null,
+    }, 200);
+  };
+
+  try {
+    if (!resolved && festivalId) {
+      const hit = await festivalListHit(supabaseAdmin, festivalId);
+      if (hit) resolved = resolvedFromTitle(`festival:${festivalId}`, hit, "festival");
+    }
+    if (!resolved && scenicId) {
+      await chargeSearchUnits();
+      const proxied = await proxyDetailHit(scenicId);
+      if (proxied.ok) {
+        resolved = resolvedFromTitle(`scenic:${scenicId}`, proxied.hit, "place");
+      } else if (proxied.unknown) {
+        const existing = preservedVideos(row);
+        const { error } = await supabaseAdmin.from("place_videos").upsert({
+          place_id: placeId,
+          videos: existing,
+          last_updated: existing.length
+            ? (row?.last_updated ?? new Date().toISOString())
+            : new Date().toISOString(),
+          last_error: "unknown_content",
+          fail_count: 0,
+          next_retry_at: new Date(Date.now() + DAY_MS).toISOString(),
+        });
+        if (error) logFail(placeId, "place_videos_write_failed", null);
+        const stale = staleVideos();
+        if (stale) return stale;
+        return json(req, { success: false, error: "bad_place_id" }, 400);
+      }
+    }
+  } catch (error) {
+    if (error instanceof LimitError) {
+      logFail(placeId, error.code, null);
+      const stale = staleVideos();
+      if (stale) return stale;
+      return json(req, { success: false, error: error.code }, 429);
+    }
+    if (error instanceof YtError && error.reason === "rate_limit_unavailable") {
+      logFail(placeId, "rate_limit_rpc_failed", null);
+      return json(req, { success: false, error: "rate_limit_unavailable" }, 503);
+    }
+    logFail(placeId, "tour_cache_read_failed", null);
+    return json(req, { success: false, error: "cache_unavailable" }, 503);
+  }
+  if (!resolved) return json(req, { success: false, error: "bad_place_id" }, 400);
+
+  const mode = resolved.mode;
+  const query = resolved.query;
+  const primaryQ = primaryQuery(resolved);
+  const fallbackQ = resolved.fallback || primaryQ;
+  if (!youtubeApiKey) {
+    logFail(placeId, "youtube_key_missing", null);
+    return json(req, { success: false, error: "youtube_not_configured" }, 500);
+  }
 
   const fetchSearch = async (q: string, token?: string): Promise<YtSearch> => {
     await chargeSearchUnits();
@@ -679,18 +737,6 @@ serve(async (req) => {
     if (error) logFail(placeId, "place_videos_write_failed", null);
   };
 
-  const staleVideos = () => {
-    const videos = preservedVideos(row);
-    if (skipUpsert || videos.length === 0) return null;
-    return json(req, {
-      success: true,
-      videos,
-      stale: true,
-      nextPageToken: null,
-      paginationSource: null,
-    }, 200);
-  };
-
   let data: YtSearch;
   let paginationSource: "primary" | "fallback" | null = null;
   try {
@@ -710,7 +756,6 @@ serve(async (req) => {
   } catch (error) {
     if (error instanceof LimitError) {
       logFail(placeId, error.code, null);
-      await writeFailure(error.code, false);
       const stale = staleVideos();
       if (stale) return stale;
       return json(req, { success: false, error: error.code }, 429);
@@ -721,7 +766,6 @@ serve(async (req) => {
     }
     const yt = error instanceof YtError ? error : new YtError(502, "youtube_network");
     const status = yt.status >= 400 && yt.status <= 599 ? yt.status : 502;
-    await writeFailure(yt.reason, false);
     logFail(placeId, yt.reason, yt.status === 502 && yt.reason === "youtube_network" ? null : yt.status);
     const stale = staleVideos();
     if (stale) return stale;

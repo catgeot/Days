@@ -29,6 +29,8 @@ const YouTubePlayerView = forwardRef(({
   loadMoreError = false,
   loadMoreLimitCode = null,
   fetchLimitCode = null,
+  externalYouTubeUrl = '',
+  placeYouTubeUrl = '',
   loadMoreNoNew = false,
 }, ref) => {
   const { t } = useTranslation();
@@ -39,6 +41,9 @@ const YouTubePlayerView = forwardRef(({
     if (code === 'global_quota') return t('place.video.globalQuota');
     return t('place.video.loadMoreFailed');
   };
+  const emptyQuotaMessage = (code) => (
+    code === 'global_quota' ? t('place.video.globalQuotaEmpty') : t('place.video.ipQuotaEmpty')
+  );
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -208,6 +213,9 @@ const YouTubePlayerView = forwardRef(({
   };
 
   const showFetchError = !isLoading && fetchError;
+  const quotaWithoutVideos = showFetchError
+    && (fetchLimitCode === 'ip_quota' || fetchLimitCode === 'global_quota')
+    && videoList.length === 0;
   const showEmpty = !isLoading && !fetchError && isEmptyResult && videoList.length === 0;
   const showNoPlayable = !isLoading && !fetchError && !isEmptyResult && videoList.length === 0;
 
@@ -223,7 +231,19 @@ const YouTubePlayerView = forwardRef(({
       )}
 
       <div className="flex-1 min-h-0 relative overflow-hidden">
-      {isLoading ? (
+      {externalYouTubeUrl ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+          <a
+            href={externalYouTubeUrl}
+            target="_blank"
+            rel="noopener"
+            className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+          >
+            {t('place.video.openOnYouTube')}
+            <ExternalLink size={14} className="opacity-50" />
+          </a>
+        </div>
+      ) : isLoading ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
            <div className="w-12 h-12 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
            <p className="text-white/40 text-sm animate-pulse">{t('place.video.loading')}</p>
@@ -235,8 +255,21 @@ const YouTubePlayerView = forwardRef(({
           </div>
           <h3 className="text-white text-xl font-bold mb-2">{t('place.video.errorTitle')}</h3>
           {fetchLimitCode ? (
-            <p className="text-white/60 text-sm mb-4 max-w-sm">{limitMessage(fetchLimitCode)}</p>
+            <p className="text-white/60 text-sm mb-4 max-w-sm">
+              {quotaWithoutVideos ? emptyQuotaMessage(fetchLimitCode) : limitMessage(fetchLimitCode)}
+            </p>
           ) : null}
+          {quotaWithoutVideos && placeYouTubeUrl ? (
+            <a
+              href={placeYouTubeUrl}
+              target="_blank"
+              rel="noopener"
+              className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+            >
+              {t('place.video.openOnYouTube')}
+              <ExternalLink size={14} className="opacity-50" />
+            </a>
+          ) : (
           <button
             type="button"
             onClick={() => onRetry?.()}
@@ -246,6 +279,7 @@ const YouTubePlayerView = forwardRef(({
             <RotateCcw size={18} />
             {t('place.video.retry')}
           </button>
+          )}
         </div>
       ) : (showEmpty || showNoPlayable) ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">

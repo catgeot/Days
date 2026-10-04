@@ -9,6 +9,7 @@ import {
   markYoutubeIdUnplayable,
 } from '../../../utils/youtubeUnplayableStorage.js';
 import { shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
+import { freeSearchYouTubeUrl, isFreeSearchLocation } from '../lib/freeSearchYouTubeLink.js';
 
 const GOOGLE_FORM_URL = 'https://forms.gle/QgofLDzzYD6NfWYN7';
 const LOAD_MORE_SESSION_MAX = 3;
@@ -173,6 +174,27 @@ export const useYouTubeSearch = (location, mediaMode) => {
     [rawVideos, unplayableBump],
   );
 
+  const placeYouTubeUrl = useMemo(
+    () => freeSearchYouTubeUrl(location),
+    [
+      location?.name,
+      location?.name_en,
+      location?.city,
+      location?.parentCity,
+    ],
+  );
+
+  const externalYouTubeUrl = useMemo(() => (
+    isFreeSearchLocation(location) ? placeYouTubeUrl : ''
+  ), [
+    placeYouTubeUrl,
+    location?.id,
+    location?.place_id,
+    location?.placeId,
+    location?.slug,
+    location?.canonical_slug,
+  ]);
+
   const invokeEdge = useCallback(async (body) => {
     const { data: edgeData, error: edgeError } = await supabase.functions.invoke(
       'fetch-place-videos',
@@ -308,6 +330,16 @@ export const useYouTubeSearch = (location, mediaMode) => {
   ]);
 
   useEffect(() => {
+    if (externalYouTubeUrl) {
+      setRawVideos([]);
+      setIsLoading(false);
+      setFetchError(false);
+      setFetchLimitCode(null);
+      setIsEmptyResult(false);
+      setHasMorePages(false);
+      return;
+    }
+
     if (!location?.name) return;
     if (mediaMode !== 'VIDEO') return;
 
@@ -361,10 +393,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
     return () => {
       cancelled = true;
     };
-  }, [location?.id, location?.slug, location?.canonical_slug, location?.name, location?.country, location?.name_en, mediaMode, runInitialFetch]);
+  }, [externalYouTubeUrl, location?.id, location?.slug, location?.canonical_slug, location?.name, location?.country, location?.name_en, mediaMode, runInitialFetch]);
 
   const retry = useCallback(async () => {
-    if (mediaMode !== 'VIDEO' || !location?.name) return;
+    if (externalYouTubeUrl || mediaMode !== 'VIDEO' || !location?.name) return;
     const currentPlaceKey = placeKeyOnly(location);
     sessionVideoCache.delete(currentPlaceKey);
     completedInitialKeysRef.current.delete(placeFetchKey(location, mediaMode));
@@ -388,9 +420,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
     } finally {
       if (fetchGenRef.current === gen) setIsLoading(false);
     }
-  }, [mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.name_en, runInitialFetch]);
+  }, [externalYouTubeUrl, mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.name_en, runInitialFetch]);
 
   const loadMore = useCallback(async () => {
+    if (externalYouTubeUrl) return;
     const ctx = fetchContextRef.current;
     const live = liveRef.current;
     if (
@@ -492,7 +525,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
         }
       }
     }
-  }, [invokeEdge]);
+  }, [invokeEdge, externalYouTubeUrl]);
 
   const markUnplayable = useCallback((videoId) => {
     markYoutubeIdUnplayable(videoId);
@@ -500,6 +533,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
   }, []);
 
   const canLoadMore =
+    !externalYouTubeUrl &&
     !isLoading &&
     !fetchError &&
     videos.length > 0 &&
@@ -519,6 +553,8 @@ export const useYouTubeSearch = (location, mediaMode) => {
     loadMoreError,
     loadMoreLimitCode,
     fetchLimitCode,
+    externalYouTubeUrl,
+    placeYouTubeUrl,
     loadMoreNoNew,
     markUnplayable,
     googleFormUrl: GOOGLE_FORM_URL,
