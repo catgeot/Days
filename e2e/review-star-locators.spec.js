@@ -46,7 +46,9 @@ test.describe('review-star-locators', () => {
       err = e;
     }
     expect(err, 'expected star locator failure').toBeDefined();
-    expect(String(err.message)).toMatch(/Expected:\s*0[\s\S]*Received:\s*[1-9]/);
+    const plain = String(err.message).replace(/\u001b\[[0-9;]*m/g, '');
+    expect(plain).toContain('toHaveCount');
+    expect(plain).toMatch(/Expected:\s*0[\s\S]*Received:\s*[1-9]/);
   });
 
   test('POSITIVE: editorial review WITHOUT stars → assertion passes', async ({ page }) => {
