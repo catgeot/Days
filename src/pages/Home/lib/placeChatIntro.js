@@ -1,5 +1,8 @@
 import { supabase } from '../../../shared/api/supabase';
-import { isPlaceChatIntroRpcLength } from './placeChatIntroLimits';
+import {
+  isPlaceChatIntroKeyAccepted,
+  isPlaceChatIntroSummaryAccepted,
+} from './placeChatIntroLimits';
 import { apiClient } from './apiClient';
 import { getPlaceChatIntroSystemPrompt } from './prompts';
 import { MOONI_GEMINI } from '../../../utils/mooniChatModel';
@@ -265,7 +268,7 @@ export async function persistPlaceChatIntroSummary(destinationDisplayName, summa
   if (!isValidIntroDestination(destinationKey) || !text) return;
 
   savePlaceChatIntroLocal(destinationKey, text, lng);
-  if (!isPlaceChatIntroRpcLength(text)) return;
+  if (!isPlaceChatIntroKeyAccepted(storageKey) || !isPlaceChatIntroSummaryAccepted(text)) return;
 
   const { data, error } = await supabase.rpc('save_place_chat_intro', {
     p_destination_key: storageKey,

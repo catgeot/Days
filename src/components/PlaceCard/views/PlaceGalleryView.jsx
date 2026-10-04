@@ -504,16 +504,20 @@ const PlaceGalleryView = React.memo(({
     }
     if (result.reason === 'unavailable') {
       finishManageWithToast(t('place.gallery.manageReportUnavailable'));
+      return;
     }
+    finishManageWithToast(t('place.gallery.manageRetry'));
   }, [manageTarget, handleReportGalleryImage, finishManageWithToast, t]);
 
   const confirmManageAdminRemove = useCallback(async () => {
     if (!manageTarget || !handleAdminRemoveGalleryImage || !isGalleryAdmin) return;
     const removed = await handleAdminRemoveGalleryImage(manageTarget);
     if (!removed?.ok) {
-      if (removed?.reason === 'forbidden') {
-        finishManageWithToast(t('place.gallery.manageAdminForbidden'));
-      }
+      finishManageWithToast(
+        removed?.reason === 'forbidden'
+          ? t('place.gallery.manageAdminForbidden')
+          : t('place.gallery.manageRetry'),
+      );
       return;
     }
     if (selectedImg?.id === manageTarget.id) setSelectedImg(null);

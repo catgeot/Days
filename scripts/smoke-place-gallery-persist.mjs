@@ -117,5 +117,14 @@ assert.equal(isPlaceChatIntroRpcLength('가'.repeat(PLACE_CHAT_INTRO_MIN_CHARS -
 assert.equal(isPlaceChatIntroRpcLength('가'.repeat(PLACE_CHAT_INTRO_MIN_CHARS)), true);
 assert.equal(isPlaceChatIntroRpcLength('가'.repeat(PLACE_CHAT_INTRO_MAX_CHARS)), true);
 assert.equal(isPlaceChatIntroRpcLength('가'.repeat(PLACE_CHAT_INTRO_MAX_CHARS + 1)), false);
+const emoji = '😀';
+assert.equal(`${'가'.repeat(38)}${emoji}`.length, 40, 'utf-16 length would pass the old check');
+assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(38)}${emoji}`), false, '39 code points stay under 40');
+assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(39)}${emoji}`), true, '40 code points with emoji are accepted');
+assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(1199)}${emoji}`), true);
+assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(1200)}${emoji}`), false);
+assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(40)} https://example.com`), false);
+assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(40)} <b>bold</b>`), false);
+assert.equal(isPlaceChatIntroRpcLength(`${'가'.repeat(20)}\n${'가'.repeat(20)}`), true);
 
 console.log('smoke:place-gallery-persist PASS');

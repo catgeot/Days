@@ -52,7 +52,7 @@ function corsHeaders() {
 }
 
 async function installMocks(page, scene) {
-  const bag = { rpc: [], writes: [], prod: [], reports: [], moderate: [], admin: [] };
+  const bag = { rpc: [], writes: [], prod: [], reports: [], moderate: [], admin: [], intro: [] };
   const headers = corsHeaders();
 
   await page.route(/phdjnbfitvmrguqzverm/, (route) => {
@@ -110,6 +110,10 @@ async function installMocks(page, scene) {
           dropped_ids: scene.droppedIds || [],
         }),
       });
+    }
+    if (path.includes('/rpc/save_place_chat_intro') && req.method() === 'POST') {
+      bag.intro.push(JSON.parse(req.postData() || '{}'));
+      return route.fulfill({ status: 200, headers, body: 'true' });
     }
     if (path.includes('/rpc/am_i_app_admin')) {
       bag.admin.push(req.postData() || '');
@@ -169,6 +173,13 @@ async function installMocks(page, scene) {
             code: '23503',
             message: 'insert or update violates foreign key constraint',
           }),
+        });
+      }
+      if (scene.reportCode === '500') {
+        return route.fulfill({
+          status: 500,
+          headers,
+          body: JSON.stringify({ code: 'XX000', message: 'internal error' }),
         });
       }
       if (scene.reportCode === 'PGRST205') {
@@ -532,5 +543,70 @@ test('관리자 제거 403은 권한 안내를 보여 준다', async ({ page }) 
   expect(bag.moderate).toEqual([
     { action: 'remove', placeId: 'loaded-latin-row', imageId: 'vis-1' },
   ]);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('신고 500은 다시 시도 안내 후 시트를 닫는다', async ({ page }) => {
+  const bag = await installMocks(page, {
+    rows: [{ place_id: 'loaded-latin-row', gallery_urls: storedPhotos() }],
+    unsplash: [],
+    userId: '11111111-1111-1111-1111-111111111111',
+    reportCode: '500',
+  });
+  await page.goto('/qa/gallery-single-writer');
+  await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
+  await page.getByRole('button', { name: '관련 없음' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '잠시 후 다시 시도해 주세요.' })).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  assertNoProdOrDirectWrites(bag);
+});
+
+for (const status of [404, 500]) {
+  test(`관리자 제거 ${status}은 다시 시도 안내 후 시트를 닫는다`, async ({ page }) => {
+    const bag = await installMocks(page, {
+      rows: [{ place_id: 'loaded-latin-row', gallery_urls: storedPhotos() }],
+      unsplash: [],
+      userId: '22222222-2222-2222-2222-222222222222',
+      admin: true,
+      moderateStatus: status,
+    });
+    await page.goto('/qa/gallery-single-writer');
+    await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+    await page.locator('.break-inside-avoid').first().dblclick({ modifiers: ['Control'] });
+    await page.getByRole('button', { name: '갤러리에서 제거 (모든 사용자)' }).click();
+    await expect(page.getByRole('status').filter({ hasText: '잠시 후 다시 시도해 주세요.' })).toBeVisible();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(page.locator('.break-inside-avoid')).toHaveCount(8);
+    assertNoProdOrDirectWrites(bag);
+  });
+}
+
+test('이모지 39코드포인트 소개는 RPC를 호출하지 않는다', async ({ page }) => {
+  const bag = await installMocks(page, { rows: [], unsplash: [] });
+  await page.goto('/qa/gallery-single-writer');
+  await page.getByRole('button', { name: '소개 짧은 이모지' }).click();
+  await page.waitForTimeout(400);
+  expect(bag.intro).toEqual([]);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('이모지 40코드포인트 소개는 RPC를 호출한다', async ({ page }) => {
+  const bag = await installMocks(page, { rows: [], unsplash: [] });
+  await page.goto('/qa/gallery-single-writer');
+  await page.getByRole('button', { name: '소개 경계 이모지' }).click();
+  await expect.poll(() => bag.intro.length).toBe(1);
+  const summary = bag.intro[0].p_summary;
+  expect(Array.from(summary).length).toBe(40);
+  expect(summary.endsWith('😀')).toBe(true);
+  expect(summary.length).toBe(41);
+  assertNoProdOrDirectWrites(bag);
+});
+
+test('주소가 있는 소개는 RPC를 호출하지 않는다', async ({ page }) => {
+  const bag = await installMocks(page, { rows: [], unsplash: [] });
+  await page.goto('/qa/gallery-single-writer');
+  await page.getByRole('button', { name: '소개 주소' }).click();
+  await page.waitForTimeout(400);
+  expect(bag.intro).toEqual([]);
   assertNoProdOrDirectWrites(bag);
 });

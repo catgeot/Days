@@ -1015,6 +1015,7 @@
       "manageReportUnavailable": "지금은 신고를 받을 수 없어요.",
       "manageHideFailed": "이 사진을 숨기지 못했어요.",
       "manageAdminForbidden": "제거 권한이 없어요.",
+      "manageRetry": "잠시 후 다시 시도해 주세요.",
       "manageLogin": "신고하려면 로그인해 주세요.",
       "manageLoginAction": "로그인",
       "manageReasonIrrelevant": "관련 없음",

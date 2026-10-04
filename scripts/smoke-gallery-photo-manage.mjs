@@ -126,6 +126,7 @@ for (const key of [
   'manageReportUnavailable',
   'manageHideFailed',
   'manageAdminForbidden',
+  'manageRetry',
   'manageLogin',
   'manageLoginAction',
   'manageReasonIrrelevant',

@@ -1245,6 +1245,7 @@
       "manageReportUnavailable": "Reporting is unavailable right now.",
       "manageHideFailed": "Could not hide this photo.",
       "manageAdminForbidden": "You can't remove this photo.",
+      "manageRetry": "Please try again in a moment.",
       "manageLogin": "Log in to report this photo.",
       "manageLoginAction": "Log in",
       "manageReasonIrrelevant": "Unrelated",

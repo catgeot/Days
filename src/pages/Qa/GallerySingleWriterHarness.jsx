@@ -1,5 +1,8 @@
 import { usePlaceGallery } from '../../components/PlaceCard/hooks/usePlaceGallery';
 import PlaceGalleryView from '../../components/PlaceCard/views/PlaceGalleryView';
+import { persistPlaceChatIntroSummary } from '../../pages/Home/lib/placeChatIntro';
+
+const EMOJI = '😀';
 
 const LOCATION = {
   slug: 'qa-gallery-writer',
@@ -16,6 +19,26 @@ export default function GallerySingleWriterHarness() {
   const gallery = usePlaceGallery(LOCATION, { enabled: true });
   return (
     <div className="h-[100dvh] w-screen bg-black">
+      <div className="fixed right-1 top-1 z-[300] flex max-w-[9rem] flex-col gap-1">
+        <button
+          type="button"
+          onClick={() => persistPlaceChatIntroSummary('QA Place', `${'가'.repeat(38)}${EMOJI}`)}
+        >
+          소개 짧은 이모지
+        </button>
+        <button
+          type="button"
+          onClick={() => persistPlaceChatIntroSummary('QA Place', `${'가'.repeat(39)}${EMOJI}`)}
+        >
+          소개 경계 이모지
+        </button>
+        <button
+          type="button"
+          onClick={() => persistPlaceChatIntroSummary('QA Place', `${'가'.repeat(40)} https://example.com`)}
+        >
+          소개 주소
+        </button>
+      </div>
       <PlaceGalleryView
         location={LOCATION}
         images={gallery.images}
