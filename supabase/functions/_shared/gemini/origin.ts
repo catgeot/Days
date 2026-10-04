@@ -42,6 +42,11 @@ export function isBlockedUserAgent(userAgent: string | null, env: ProxyEnv): boo
   return BOT_RE.test(ua);
 }
 
+/**
+ * Supabase 게이트웨이(Kong)가 클라이언트 연결 주소로 덮어쓰는 헤더는 `x-real-ip`다.
+ * `x-forwarded-for`의 첫 값은 클라이언트가 붙일 수 있어 그다음으로만 본다.
+ * 스테이징에서 게이트웨이가 실제로 덮어쓰는지 확인은 아직 하지 않았다.
+ */
 export function clientIp(req: Request): string {
   const real = req.headers.get("x-real-ip")?.trim();
   if (real) return real;

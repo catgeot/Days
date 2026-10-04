@@ -10,14 +10,17 @@ export type LimitConfig = {
 
 export type RateCheck = { bucket: string; window_s: number; limit: number };
 
-/** 7일 194회 → 일평균 약 28. 전역 일 2000은 그 5배(140) 이상. */
+/**
+ * 7일 194회, 하루 최대 47. 기본값은 시크릿 `GEMINI_PROXY_LIMITS`로 덮을 수 있다.
+ * 전역 일 300은 평균(약 28)의 5배(140)보다 크고, 관측 최대 47보다는 타이트하다.
+ */
 export const DEFAULT_LIMITS: LimitConfig = {
-  ip_minute: 6,
-  ip_hour: 40,
-  ip_day: 150,
-  user_day: 120,
-  global_hour: 200,
-  global_day: 2000,
+  ip_minute: 4,
+  ip_hour: 20,
+  ip_day: 40,
+  user_day: 40,
+  global_hour: 60,
+  global_day: 300,
   tasks: {
     mooni_chat: 1200,
     mooni_chat_quality: 400,
@@ -33,10 +36,10 @@ export const DEFAULT_LIMITS: LimitConfig = {
 };
 
 /**
- * 토큰도 호출과 같은 5배 이상.
- * 호출당 8,000 토큰이어도 28 * 8000 * 5 = 1,120,000. 기본 8,000,000은 그 위.
+ * 호출당 8,000 토큰이면 28 * 8000 * 5 = 1,120,000. 기본 1,500,000은 그 위.
+ * `GEMINI_DAILY_TOKEN_BUDGET`으로 덮을 수 있다.
  */
-export const DEFAULT_DAILY_TOKEN_BUDGET = 8_000_000;
+export const DEFAULT_DAILY_TOKEN_BUDGET = 1_500_000;
 
 const memory = new Map<string, { minute: number; n: number }>();
 

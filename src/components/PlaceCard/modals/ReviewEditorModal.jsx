@@ -6,6 +6,10 @@ import { supabase } from '../../../shared/api/supabase';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import {
+  AI_FEATURE_LIMIT_MESSAGE,
+  isGeminiFeatureLimitError,
+} from '../../../pages/Home/lib/geminiProxyError';
+import {
   MOBILE_TEXTAREA_CLASS,
   dismissMobileTextInput,
   useMobileOverlayViewport,
@@ -295,7 +299,11 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       }
     } catch (error) {
       console.error(error);
-      alert('AI 글 생성에 실패했습니다.');
+      alert(
+        isGeminiFeatureLimitError(error)
+          ? AI_FEATURE_LIMIT_MESSAGE
+          : 'AI 글 생성에 실패했습니다.',
+      );
     } finally {
       setIsGenerating(false);
     }

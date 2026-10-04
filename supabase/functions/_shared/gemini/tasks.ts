@@ -2,6 +2,7 @@ import {
   GEMINI_FAST,
   GEMINI_PROXY_MODELS,
   GEMINI_QUALITY,
+  GEMINI_WRITE,
   resolveGeminiModelId,
 } from "../geminiModels.ts";
 import { KO } from "./mooniPromptBundleData.js";
@@ -375,39 +376,74 @@ export function buildTask(task: string, params: unknown, role: string | null): T
   return { ok: false, status: 400, error: "unknown_task" };
 }
 
+const PART_KEYS = new Set(["text", "inlineData"]);
+
+/** text 와 허용 이미지 inlineData 만 통과. fileData 등 다른 키는 400. */
+export function acceptProxyParts(
+  parts: unknown,
+): { ok: true; parts: Array<Record<string, unknown>> } | { ok: false } {
+  if (!Array.isArray(parts)) return { ok: false };
+  const out: Array<Record<string, unknown>> = [];
+  for (const part of parts) {
+    if (!part || typeof part !== "object" || Array.isArray(part)) return { ok: false };
+    const keys = Object.keys(part as object);
+    if (keys.length === 0 || keys.some((key) => !PART_KEYS.has(key))) return { ok: false };
+    const text = (part as { text?: unknown }).text;
+    const inline = (part as { inlineData?: unknown }).inlineData;
+    if (text != null && typeof text !== "string") return { ok: false };
+    const clean: Record<string, unknown> = {};
+    if (typeof text === "string") clean.text = text;
+    if (inline != null) {
+      if (!inline || typeof inline !== "object" || Array.isArray(inline)) return { ok: false };
+      const inlineKeys = Object.keys(inline as object);
+      if (inlineKeys.some((key) => key !== "mimeType" && key !== "data")) return { ok: false };
+      const mimeType = (inline as { mimeType?: unknown }).mimeType;
+      const data = (inline as { data?: unknown }).data;
+      if (typeof mimeType !== "string" || !IMAGE_MIME.has(mimeType)) return { ok: false };
+      if (typeof data !== "string" || data.length === 0 || data.length > IMAGE_MAX) return { ok: false };
+      clean.inlineData = { mimeType, data };
+    }
+    if (!("text" in clean) && !("inlineData" in clean)) return { ok: false };
+    out.push(clean);
+  }
+  return { ok: true, parts: out };
+}
+
+/** 글자 4개당 1토큰, 이미지 1장당 1024. base64 길이는 토큰으로 세지 않는다. */
+export function estimatePromptTokens(parts: unknown[]): number {
+  let chars = 0;
+  let images = 0;
+  for (const part of parts) {
+    if (!part || typeof part !== "object") continue;
+    const text = (part as { text?: unknown }).text;
+    if (typeof text === "string") chars += text.length;
+    if ((part as { inlineData?: unknown }).inlineData) images += 1;
+  }
+  return Math.ceil(chars / 4) + images * 1024;
+}
+
 export function buildLegacy(body: Record<string, unknown>, legacyEnabled: boolean): TaskBuild {
   if (!legacyEnabled) return { ok: false, status: 400, error: "legacy_disabled" };
-  const parts = body.parts;
-  if (!Array.isArray(parts) || parts.length === 0 || parts.length > 5) {
+  const accepted = acceptProxyParts(body.parts);
+  if (!accepted.ok || accepted.parts.length === 0 || accepted.parts.length > 5) {
     return { ok: false, status: 400, error: "bad_request" };
   }
   let textLen = 0;
   let images = 0;
-  for (const part of parts) {
-    if (!part || typeof part !== "object") return { ok: false, status: 400, error: "bad_request" };
-    const text = (part as { text?: unknown }).text;
-    const inline = (part as { inlineData?: { mimeType?: unknown; data?: unknown } }).inlineData;
-    if (typeof text === "string") textLen += text.length;
-    if (inline) {
-      images += 1;
-      if (images > 4) return { ok: false, status: 400, error: "bad_request" };
-      if (typeof inline.mimeType !== "string" || !IMAGE_MIME.has(inline.mimeType)) {
-        return { ok: false, status: 400, error: "bad_request" };
-      }
-      if (typeof inline.data !== "string" || inline.data.length > IMAGE_MAX) {
-        return { ok: false, status: 400, error: "bad_request" };
-      }
-    }
+  for (const part of accepted.parts) {
+    if (typeof part.text === "string") textLen += part.text.length;
+    if (part.inlineData) images += 1;
   }
-  if (textLen > 24_000) return { ok: false, status: 400, error: "bad_request" };
-  const model = resolveGeminiModelId(typeof body.modelId === "string" ? body.modelId : undefined);
+  if (images > 4 || textLen > 24_000) return { ok: false, status: 400, error: "bad_request" };
+  let model = resolveGeminiModelId(typeof body.modelId === "string" ? body.modelId : undefined);
+  if (model === GEMINI_WRITE) model = GEMINI_QUALITY;
   if (!GEMINI_PROXY_MODELS.includes(model)) return { ok: false, status: 400, error: "bad_request" };
   return {
     ok: true,
     task: "legacy",
     model,
     maxOutputTokens: 2048,
-    parts,
+    parts: accepted.parts,
     tier: null,
   };
 }

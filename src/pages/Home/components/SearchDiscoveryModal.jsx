@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree, Waves, Landmark } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
@@ -111,6 +111,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [disambiguation, setDisambiguation] = useState(null);
   const [searchSubmitError, setSearchSubmitError] = useState(null);
+  const [aiLimitLinks, setAiLimitLinks] = useState([]);
 
   const searchBarRowRefPc = useRef(null);
   const searchBarRowRefMobile = useRef(null);
@@ -467,6 +468,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     setIsAILoading(true);
     setDisambiguation(null);
     setSearchSubmitError(null);
+    setAiLimitLinks([]);
     setIsSearchHistoryOpen(false);
     rememberExploreReturn({
       path: `${location.pathname}${location.search || ''}`,
@@ -476,6 +478,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     });
     try {
       const result = await onSearch(finalQuery);
+      if (result?.__aiLimit) {
+        clearExploreReturn();
+        setSearchSubmitError(result.limitMessage);
+        setAiLimitLinks(Array.isArray(result.links) ? result.links : []);
+        if (isSearchDisambiguation(result)) setDisambiguation(result);
+        dismissSearchKeyboard();
+        return;
+      }
       if (isSearchDisambiguation(result)) {
         clearExploreReturn();
         setDisambiguation(result);
@@ -1036,6 +1046,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
                   setQuery('');
                   setIsSearchHistoryOpen(false);
                   setDisambiguation(null);
+                  setSearchSubmitError(null);
+                  setAiLimitLinks([]);
                   setHybridSuggestions([]);
                   inputRef.current?.focus();
                 }}
@@ -1048,9 +1060,22 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
         </div>
         {/* 드롭다운·선택 카드가 열린 동안 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
         {searchSubmitError && (
-          <p className="text-xs md:text-sm text-red-300/90 px-1 pt-1.5 leading-relaxed" role="alert">
-            {searchSubmitError}
-          </p>
+          <div className="px-1 pt-1.5" role="alert">
+            <p className="text-xs md:text-sm text-red-300/90 leading-relaxed">
+              {searchSubmitError}
+            </p>
+            {aiLimitLinks.length > 0 && (
+              <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs md:text-sm">
+                {aiLimitLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link to={link.href} className="text-blue-200 underline underline-offset-2">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
         {!showSearchDropdown && !activeQuickSection && !hasChoiceCards && !searchSubmitError && (
           <p className="text-xs md:text-sm text-blue-200/80 px-1 pt-1.5 leading-relaxed">

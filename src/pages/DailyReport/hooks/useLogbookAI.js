@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { i18n } from '../../../i18n/config';
 import { apiClient } from '../../Home/lib/apiClient.js';
+import {
+  AI_FEATURE_LIMIT_MESSAGE,
+  isGeminiFeatureLimitError,
+} from '../../Home/lib/geminiProxyError.js';
 import { convertToBase64 } from './useLogbookMedia';
 import { getCoordinatesFromAddress } from '../../Home/lib/geocoding.js';
 import { TRAVEL_SPOTS } from '../../Home/data/travelSpots.js';
@@ -78,7 +82,7 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
 
     } catch (error) {
       console.error("AI 변환 실패:", error);
-      alert(i18n.t('logbook.ai.fail'));
+      alert(isGeminiFeatureLimitError(error) ? AI_FEATURE_LIMIT_MESSAGE : i18n.t('logbook.ai.fail'));
 
       setTitle(originalTitle);
       setContent(originalContent);
@@ -355,7 +359,11 @@ export const useCurationAI = () => {
 
     } catch (error) {
       console.warn("큐레이션 에러:", error);
-      setErrorMessage(i18n.t('logbook.curationHub.fail'));
+      setErrorMessage(
+        isGeminiFeatureLimitError(error)
+          ? AI_FEATURE_LIMIT_MESSAGE
+          : i18n.t('logbook.curationHub.fail'),
+      );
       setStatus('error');
     }
   };

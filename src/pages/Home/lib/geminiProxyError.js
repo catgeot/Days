@@ -21,6 +21,16 @@ const USER_MESSAGES = {
     '오늘은 MOONi와 나눌 수 있는 이야기가 잠시 쉬어가요. 내일 다시 물어봐 주세요.',
 };
 
+/** 리뷰·로그북·큐레이션·검색 교정. MOONi 대화 문구와 따로 둔다. */
+export const AI_FEATURE_LIMIT_MESSAGE =
+  '오늘 AI 사용 한도에 도달했어요. 잠시 후 다시 시도해 주세요.';
+
+const FEATURE_LIMIT_KINDS = new Set([
+  GEMINI_PROXY_ERROR_KIND.BUDGET,
+  GEMINI_PROXY_ERROR_KIND.RATE_LIMITED,
+  GEMINI_PROXY_ERROR_KIND.QUOTA,
+]);
+
 function rateLimitedMessage(retryAfter) {
   const n = Number(retryAfter);
   if (Number.isFinite(n) && n > 0 && n <= 60) {
@@ -132,6 +142,10 @@ export class GeminiProxyError extends Error {
  * @param {unknown} err
  * @returns {string}
  */
+export function isGeminiFeatureLimitError(err) {
+  return err instanceof GeminiProxyError && FEATURE_LIMIT_KINDS.has(err.kind);
+}
+
 export function getGeminiProxyErrorMessage(err) {
   if (err instanceof GeminiProxyError) return err.userMessage;
   if (err instanceof Error && err.message) return err.message;

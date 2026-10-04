@@ -49,7 +49,14 @@ function admitCalls(calls: Call[]) {
 }
 
 function usageCalls(calls: Call[]) {
-  return calls.filter((call) => call.url.includes("gemini_proxy_record_usage"));
+  return calls.filter((call) =>
+    call.url.includes("gemini_proxy_record_usage") || call.url.includes("gemini_proxy_reserve_usage") ||
+    call.url.includes("gemini_proxy_reconcile_usage")
+  );
+}
+
+function reserveCalls(calls: Call[]) {
+  return calls.filter((call) => call.url.includes("gemini_proxy_reserve_usage"));
 }
 
 function captureLogs() {
@@ -86,7 +93,10 @@ function routedFetch(gemini: (call: Call) => Response, admitBody: unknown = { ok
     if (call.url.includes("gemini_proxy_admit")) {
       return new Response(JSON.stringify(admitBody), { status: 200 });
     }
-    if (call.url.includes("gemini_proxy_record_usage")) {
+    if (call.url.includes("gemini_proxy_reserve_usage")) {
+      return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    }
+    if (call.url.includes("gemini_proxy_reconcile_usage") || call.url.includes("gemini_proxy_record_usage")) {
       return new Response("null", { status: 200 });
     }
     if (call.url.includes("generativelanguage")) return gemini(call);
@@ -140,6 +150,7 @@ Deno.test("health_ping with a valid token skips the daily budget and usage stats
   assertEquals(res.headers.get("Access-Control-Allow-Origin"), null);
   assertEquals(geminiCalls(calls).length, 1);
   assertEquals(usageCalls(calls).length, 0);
+  assertEquals(reserveCalls(calls).length, 0);
   const admit = JSON.parse(String(admitCalls(calls)[0].init?.body));
   assertEquals(admit.p_token_budget, null);
   assertEquals(admit.p_checks, [{ bucket: "health:d", window_s: 86400, limit: 4 }]);
@@ -147,27 +158,30 @@ Deno.test("health_ping with a valid token skips the daily budget and usage stats
   assertEquals(logged.some((row) => row.health === true && row.task === "health_ping" && row.status === 200), true);
 });
 
-Deno.test("health_ping without a token or with the wrong token is 403", async () => {
-  const { fetchImpl, calls } = routedFetch(() => geminiOk());
+Deno.test("health_ping without a valid token is a normal origin-checked request", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk("pong"));
   const missing = await post({ task: "health_ping" }, {}, fetchImpl);
   assertEquals(missing.status, 403);
-  assertEquals((await missing.json()).error, "forbidden");
+  assertEquals((await missing.json()).error, "origin_not_allowed");
 
-  const wrong = await post({ task: "health_ping" }, { "x-gateo-health": "nope" }, fetchImpl);
+  const wrong = await post({ task: "health_ping" }, {
+    "x-gateo-health": "nope",
+    Origin: "https://evil.example",
+  }, fetchImpl);
   assertEquals(wrong.status, 403);
-  assertEquals((await wrong.json()).error, "forbidden");
-
-  const unset = await post(
-    { task: "health_ping" },
-    { "x-gateo-health": HEALTH_TOKEN },
-    fetchImpl,
-    { GEMINI_HEALTH_TOKEN: "" },
-  );
-  assertEquals(unset.status, 403);
-  assertEquals((await unset.json()).error, "forbidden");
+  assertEquals((await wrong.json()).error, "origin_not_allowed");
   assertEquals(geminiCalls(calls).length, 0);
   assertEquals(admitCalls(calls).length, 0);
-  assertEquals(usageCalls(calls).length, 0);
+
+  const normal = await post({ task: "health_ping" }, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(normal.status, 200);
+  const admit = JSON.parse(String(admitCalls(calls)[0].init?.body));
+  assertEquals(admit.p_token_budget, null);
+  assert(admit.p_checks.some((check: { bucket: string }) => check.bucket === "global:d"));
+  assert(!admit.p_checks.some((check: { bucket: string }) => check.bucket === "health:d"));
+  assertEquals(reserveCalls(calls).length, 1);
+  const reserved = JSON.parse(String(reserveCalls(calls)[0].init?.body));
+  assertEquals(reserved.p_token_budget, 1_500_000);
 });
 
 Deno.test("health_ping cap is enforced without calling Gemini", async () => {
@@ -304,13 +318,25 @@ Deno.test("admit checks are ordered and stop before Gemini when limited", async 
   assertEquals(buckets[5], "task:mooni_chat:quality:d");
   assertEquals(buckets[6], "global:h");
   assertEquals(buckets[7], "global:d");
-  assertEquals(payload.p_token_budget, 8_000_000);
+  assertEquals(payload.p_token_budget, null);
+  assertEquals(payload.p_checks[0].limit, 4);
+  assertEquals(payload.p_checks[1].limit, 20);
+  assertEquals(payload.p_checks[2].limit, 40);
+  assertEquals(payload.p_checks[3].limit, 40);
+  assertEquals(payload.p_checks[6].limit, 60);
+  assertEquals(payload.p_checks[7].limit, 300);
+  const reserved = JSON.parse(String(reserveCalls(calls)[0].init?.body));
+  assertEquals(reserved.p_token_budget, 1_500_000);
+  assertEquals(reserved.p_output_tokens, 2048);
 });
 
 Deno.test("RPC errors pass only inside the memory cap", async () => {
   let gemini = 0;
   const { fetchImpl } = installFetch((call) => {
     if (call.url.includes("gemini_proxy_admit")) return new Response("no", { status: 500 });
+    if (call.url.includes("gemini_proxy_reserve_usage")) {
+      return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    }
     if (call.url.includes("generativelanguage")) {
       gemini += 1;
       return geminiOk();
@@ -353,7 +379,12 @@ Deno.test("Gemini 503 falls back to flash-lite once then busy", async () => {
   let n = 0;
   const { fetchImpl, calls } = installFetch((call) => {
     if (call.url.includes("gemini_proxy_admit")) return new Response(JSON.stringify({ ok: true }), { status: 200 });
-    if (call.url.includes("record_usage")) return new Response("null", { status: 200 });
+    if (call.url.includes("gemini_proxy_reserve_usage")) {
+      return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    }
+    if (call.url.includes("reconcile") || call.url.includes("record_usage")) {
+      return new Response("null", { status: 200 });
+    }
     n += 1;
     return new Response("unavailable", { status: 503 });
   });
@@ -395,7 +426,9 @@ Deno.test("legacy on is capped and legacy off is rejected", async () => {
     modelId: "gemini-3.1-pro-preview",
     parts: [{ text: "ping" }],
   }, { Origin: ORIGIN }, fetchImpl);
-  assertEquals(pro.status, 400);
+  assertEquals(pro.status, 200);
+  assert(geminiCalls(calls).some((call) => call.url.includes("gemini-3.5-flash")));
+  assert(!geminiCalls(calls).some((call) => call.url.includes("pro-preview")));
 
   const off = await post({
     modelId: "gemini-3.5-flash",
@@ -421,6 +454,97 @@ Deno.test("review and logbook require an authenticated JWT", async () => {
   }, { Origin: ORIGIN, Authorization: jwt({ role: "authenticated", sub: "user-9" }) }, fetchImpl);
   assertEquals(authed.status, 200);
   assertEquals(geminiCalls(calls).length, 1);
+});
+
+Deno.test("fileData and other part types are rejected on every path", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk());
+  const fileOnly = await post({
+    modelId: "gemini-3.5-flash",
+    parts: [{ fileData: { fileUri: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" } }],
+  }, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(fileOnly.status, 400);
+  const mixed = await post({
+    modelId: "gemini-3.5-flash",
+    parts: [{ text: "ping", fileData: { fileUri: "https://youtu.be/x" } }],
+  }, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(mixed.status, 400);
+  const badMime = await post({
+    task: "logbook_polish",
+    params: {
+      mode: "essay",
+      date: "2026-10-03",
+      location: "파리",
+      memo: "걸었다",
+      images: [{ mimeType: "image/gif", data: "aaaa" }],
+    },
+  }, { Origin: ORIGIN, Authorization: jwt({ role: "authenticated", sub: "user-9" }) }, fetchImpl);
+  assertEquals(badMime.status, 400);
+  assertEquals(geminiCalls(calls).length, 0);
+  assertEquals(reserveCalls(calls).length, 0);
+});
+
+Deno.test("legacy pro maps to 3.5-flash and image bodies may exceed 64KB up to 7MiB", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk("pong"));
+  const res = await post({
+    modelId: "gemini-3.1-pro-preview",
+    parts: [
+      { text: "ping" },
+      { inlineData: { mimeType: "image/jpeg", data: "a".repeat(70_000) } },
+    ],
+  }, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(res.status, 200);
+  assert(geminiCalls(calls)[0].url.includes("gemini-3.5-flash"));
+  assert(!geminiCalls(calls)[0].url.includes("pro"));
+});
+
+Deno.test("missing IP salt fails closed", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk());
+  const res = await post(mooni, { Origin: ORIGIN }, fetchImpl, { GEMINI_PROXY_IP_SALT: "" });
+  assertEquals(res.status, 503);
+  assertEquals((await res.json()).error, "busy");
+  assertEquals(geminiCalls(calls).length, 0);
+  assertEquals(admitCalls(calls).length, 0);
+});
+
+Deno.test("budget reserve RPC failure is 503 and does not call Gemini", async () => {
+  const { fetchImpl, calls } = installFetch((call) => {
+    if (call.url.includes("gemini_proxy_admit")) return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    if (call.url.includes("gemini_proxy_reserve_usage")) return new Response("no", { status: 500 });
+    return geminiOk();
+  });
+  const res = await post(mooni, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(res.status, 503);
+  assertEquals((await res.json()).error, "busy");
+  assertEquals(geminiCalls(calls).length, 0);
+});
+
+Deno.test("reserve budget hit is 429 and a timeout keeps the reservation", async () => {
+  const { fetchImpl, calls } = installFetch((call) => {
+    if (call.url.includes("gemini_proxy_admit")) return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    if (call.url.includes("gemini_proxy_reserve_usage")) {
+      return new Response(JSON.stringify({ ok: false, reason: "budget", retry_after_s: 40 }), { status: 200 });
+    }
+    return geminiOk();
+  });
+  const limited = await post(mooni, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(limited.status, 429);
+  assertEquals((await limited.json()).error, "budget");
+  assertEquals(geminiCalls(calls).length, 0);
+
+  const { fetchImpl: fetchTimeout, calls: timed } = installFetch((call) => {
+    if (call.url.includes("gemini_proxy_admit")) return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    if (call.url.includes("gemini_proxy_reserve_usage")) {
+      return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    }
+    if (call.url.includes("reconcile")) return new Response("null", { status: 200 });
+    const error = new Error("aborted");
+    error.name = "AbortError";
+    throw error;
+  });
+  const timedOut = await post(mooni, { Origin: ORIGIN }, fetchTimeout);
+  assertEquals(timedOut.status, 503);
+  assertEquals(reserveCalls(timed).length, 1);
+  assertEquals(timed.filter((call) => call.url.includes("reconcile")).length, 0);
 });
 
 Deno.test("OPTIONS echoes only an allowed origin", async () => {

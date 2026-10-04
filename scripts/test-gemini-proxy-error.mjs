@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 import {
+  AI_FEATURE_LIMIT_MESSAGE,
   GEMINI_PROXY_ERROR_KIND,
+  GeminiProxyError,
   classifyGeminiProxyFailure,
   formatGeminiProxyUserMessage,
+  isGeminiFeatureLimitError,
 } from '../src/pages/Home/lib/geminiProxyError.js';
 
 let fail = 0;
@@ -73,6 +76,20 @@ check(
   classifyGeminiProxyFailure({ data: { error: 'upstream_error' }, httpStatus: 502 }).kind
     === GEMINI_PROXY_ERROR_KIND.GENERIC,
   '502 generic',
+);
+check(
+  AI_FEATURE_LIMIT_MESSAGE === '오늘 AI 사용 한도에 도달했어요. 잠시 후 다시 시도해 주세요.',
+  'feature limit message',
+);
+for (const kind of ['budget', 'rate_limited', 'quota']) {
+  check(
+    isGeminiFeatureLimitError(new GeminiProxyError({ kind, userMessage: 'x' })),
+    `${kind} is a feature limit`,
+  );
+}
+check(
+  !isGeminiFeatureLimitError(new GeminiProxyError({ kind: 'busy', userMessage: 'x' })),
+  'busy is not a feature limit',
 );
 
 if (fail) {

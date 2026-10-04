@@ -22,7 +22,11 @@ import {
   collectKoreaHomonymDisambiguationCandidates,
   shouldOfferKoreaHomonymDisambiguation,
 } from '../lib/detectHomonymLocation.js';
-import { formatUrlName, pickUrlSafeEnglishName, isUrlSafeEnglishLabel, isEphemeralSlug } from '../lib/formatUrlName';
+import { formatUrlName, pickUrlSafeEnglishName, isUrlSafeEnglishLabel, isEphemeralSlug, getPlaceUrlParam } from '../lib/formatUrlName';
+import {
+  AI_FEATURE_LIMIT_MESSAGE,
+  isGeminiFeatureLimitError,
+} from '../lib/geminiProxyError';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
@@ -1343,6 +1347,7 @@ export function useHomeHandlers({
 
       // 🚨 [New] Smart Search Fallback (AI 자동 교정 엔진)
       let isCorrected = false;
+      let aiLimitHit = false;
       try {
         const lowerQuery = query.toLowerCase();
         // Public RLS is SELECT-only. New keys insert via upsert_search_dictionary.
@@ -1654,10 +1659,43 @@ export function useHomeHandlers({
             }
           } catch (aiErr) {
             console.warn("Smart Search AI Proxy Error:", aiErr);
+            if (isGeminiFeatureLimitError(aiErr)) aiLimitHit = true;
           }
         }
       } catch (err) {
         console.warn("Smart Search Fallback Error:", err);
+      }
+
+      if (!isCorrected && aiLimitHit) {
+        const local = buildLocalSearchSuggestions(query).slice(0, 8);
+        const links = [];
+        const seen = new Set();
+        for (const item of local) {
+          const param = getPlaceUrlParam(item);
+          const href = param ? `/place/${param}` : `/explore?q=${encodeURIComponent(item.name || query)}`;
+          if (seen.has(href)) continue;
+          seen.add(href);
+          links.push({ href, label: item.name || query });
+        }
+        const searchHref = `/explore?q=${encodeURIComponent(query)}`;
+        if (!seen.has(searchHref)) {
+          links.push({ href: searchHref, label: `'${query}' 검색 결과` });
+        }
+        if (!requireChoice) window.alert(AI_FEATURE_LIMIT_MESSAGE);
+        if (local.length) {
+          return {
+            ...makeDisambiguationResult(query, local, { title: `'${query}' 검색 결과` }),
+            __aiLimit: true,
+            limitMessage: AI_FEATURE_LIMIT_MESSAGE,
+            links,
+          };
+        }
+        return {
+          __aiLimit: true,
+          limitMessage: AI_FEATURE_LIMIT_MESSAGE,
+          links,
+          query,
+        };
       }
 
       if (!isCorrected) {
