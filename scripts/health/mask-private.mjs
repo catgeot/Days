@@ -33,6 +33,10 @@ export function maskPrivate(text) {
   s = s.replace(/\bBearer\s+[\w.-]+/gi, 'Bearer [redacted]');
   s = s.replace(/apikey=[^\s'"]+/gi, 'apikey=[redacted]');
   s = s.replace(/\bsb_(?:secret|publishable)_[A-Za-z0-9]+\b/g, '[redacted]');
+  s = s.replace(/\bgh[pousr]_[A-Za-z0-9_]+\b/gi, '[redacted]');
+  s = s.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, '[redacted]');
+  s = s.replace(/@[A-Za-z0-9_]+/g, '@[redacted]');
+  s = s.replace(/<[^>]+>/g, '[redacted]');
 
   s = s.replace(/::ffff:(?:\d{1,3}\.){3}\d{1,3}/gi, '[redacted-ip]');
   s = s.replace(/(?:^|[\s(])::1(?=[\s),.]|$)/g, (_m, lead) => `${lead}[redacted-ip]`);
