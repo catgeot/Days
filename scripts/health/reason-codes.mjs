@@ -33,8 +33,10 @@ export function buildCauseKey(layer, id, reasonCode) {
   return `${layer}:${id}:${reasonCode}`;
 }
 
+import { maskPrivate } from './mask-private.mjs';
+
 export function logPrivateDetail(scope, detail) {
-  const raw = String(detail || '').replace(/\u001b\[[0-9;]*m/g, '');
-  if (!raw.trim()) return;
-  console.error(`[health-private][${scope}] ${raw.slice(0, 2000)}`);
+  const masked = maskPrivate(detail);
+  if (!masked) return;
+  console.error(`[health-private][${scope}] ${masked.slice(0, 500)}`);
 }

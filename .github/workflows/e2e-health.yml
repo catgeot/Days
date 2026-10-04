@@ -49,8 +49,6 @@ jobs:
 
       - name: Summarize E2E results
         if: always()
-        env:
-          HEALTH_DEBUG_FILE: health/health-debug.json
         run: node scripts/health/summarize.mjs --layer e2e --playwright health/e2e.json
 
       - name: Report health issues
@@ -62,15 +60,6 @@ jobs:
           script: |
             const run = require('./scripts/health/report-issues.cjs');
             await run({ github, context, core, resultFile: 'health/health-result.json', layer: 'e2e' });
-
-      - name: Upload private debug details
-        if: always()
-        uses: actions/upload-artifact@v5
-        with:
-          name: health-debug-e2e
-          path: health/health-debug.json
-          retention-days: 7
-          if-no-files-found: ignore
 
       - name: Upload health result
         if: always()

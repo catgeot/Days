@@ -228,15 +228,6 @@ export function runSummarize(options) {
 
   results = maybeSimulateFailure(results);
 
-  const debugPath = process.env.HEALTH_DEBUG_FILE;
-  if (debugPath) {
-    const debugRows = results
-      .filter((r) => r.privateDetail)
-      .map((r) => ({ id: r.id, causeKey: r.causeKey, detail: r.privateDetail }));
-    fs.mkdirSync(path.dirname(debugPath), { recursive: true });
-    fs.writeFileSync(debugPath, `${JSON.stringify({ layer, debugRows }, null, 2)}\n`, 'utf8');
-  }
-
   const publicResults = results.map(({ privateDetail, ...rest }) => rest);
   const payload = buildHealthResult({ layer, runUrl, sha, results: publicResults });
   fs.mkdirSync(path.dirname(outPath), { recursive: true });

@@ -4,6 +4,9 @@ const HEALTH_KEY_RE = /<!--\s*health-key:\s*([^>]+?)\s*-->/i;
 const PASS_STREAK_RE = /pass-streak:\s*(\d+)/i;
 const COUNT_RE = /횟수:\s*(\d+)/i;
 const REOPEN_DAYS = 7;
+const BOT_COMMENT_MARKER = '<!-- health-bot-notify -->';
+const BOT_LOGIN = 'github-actions[bot]';
+const BOT_NOTIFY_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 const ALL_LABELS = [
   'site-health',
@@ -28,13 +31,12 @@ function isDryRun(env = process.env) {
   return env.DRY_RUN === 'true' || env.DRY_RUN === '1';
 }
 
-function writeSummary(core, text) {
-  if (core.summary?.write) {
-    core.summary.write(text);
-    return;
-  }
+async function writeSummary(core, text) {
   if (core.summary?.addRaw) {
     core.summary.addRaw(text);
+  }
+  if (typeof core.summary?.write === 'function') {
+    await core.summary.write();
   }
 }
 
@@ -185,42 +187,53 @@ function findIssuesByIdPrefix(issues, layer, id) {
   });
 }
 
-async function lastIssueCommentTime(github, owner, repo, issueNumber) {
-  const res = await github.rest.issues.listComments({
-    owner,
-    repo,
-    issue_number: issueNumber,
-    per_page: 1,
-    page: 1,
-    sort: 'created',
-    direction: 'desc',
-  });
-  const latest = res.data[0];
-  return latest ? new Date(latest.created_at).getTime() : 0;
+async function countRecentBotNotifyComments(github, owner, repo, issueNumber, withinMs = BOT_NOTIFY_WINDOW_MS) {
+  const since = new Date(Date.now() - withinMs).toISOString();
+  let page = 1;
+  let count = 0;
+  for (;;) {
+    const res = await github.rest.issues.listComments({
+      owner,
+      repo,
+      issue_number: issueNumber,
+      per_page: 100,
+      page,
+      since,
+    });
+    for (const comment of res.data) {
+      const login = comment.user?.login;
+      if (login === BOT_LOGIN && String(comment.body || '').includes(BOT_COMMENT_MARKER)) {
+        count += 1;
+      }
+    }
+    if (res.data.length < 100) break;
+    page += 1;
+  }
+  return count;
 }
 
-async function maybeComment(github, owner, repo, issueNumber, body, force = false) {
-  if (isDryRun()) return;
+async function postBotComment(github, owner, repo, issueNumber, body, { force = false } = {}) {
+  if (isDryRun()) return false;
   if (!force) {
-    const last = await lastIssueCommentTime(github, owner, repo, issueNumber);
-    if (Date.now() - last < 24 * 60 * 60 * 1000) return;
+    const recent = await countRecentBotNotifyComments(github, owner, repo, issueNumber);
+    if (recent >= 1) return false;
   }
   await github.rest.issues.createComment({
     owner,
     repo,
     issue_number: issueNumber,
-    body: sanitizeText(body),
+    body: sanitizeText(`${BOT_COMMENT_MARKER}\n${body}`),
   });
+  return true;
+}
+
+async function maybeComment(github, owner, repo, issueNumber, body, force = false) {
+  return postBotComment(github, owner, repo, issueNumber, body, { force });
 }
 
 async function closeIssue(github, owner, repo, issueNumber, comment) {
   if (isDryRun()) return;
-  await github.rest.issues.createComment({
-    owner,
-    repo,
-    issue_number: issueNumber,
-    body: sanitizeText(comment),
-  });
+  await postBotComment(github, owner, repo, issueNumber, comment, { force: false });
   await github.rest.issues.update({
     owner,
     repo,
@@ -296,7 +309,7 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
     });
     const title = buildTitle(row.feature, reasonCode);
     if (isDryRun()) {
-      writeSummary(core, `(dry-run) 이슈 생성 예정: ${title}\n`);
+      await writeSummary(core, `(dry-run) 이슈 생성 예정: ${title}\n`);
       return openIssues;
     }
     const created = await github.rest.issues.create({
@@ -333,7 +346,7 @@ async function upsertFailIssue(github, context, core, row, layer, openIssues) {
   });
 
   if (isDryRun()) {
-    writeSummary(core, `(dry-run) 이슈 갱신 예정: #${issue.number} (${causeKey})\n`);
+    await writeSummary(core, `(dry-run) 이슈 갱신 예정: #${issue.number} (${causeKey})\n`);
     return openIssues;
   }
 
@@ -386,7 +399,7 @@ async function upsertFlakyIssue(github, context, core, row, layer, openIssues) {
     });
     const title = buildTitle(row.feature, 'unknown');
     if (isDryRun()) {
-      writeSummary(core, `(dry-run) flaky 이슈 생성 예정: ${title}\n`);
+      await writeSummary(core, `(dry-run) flaky 이슈 생성 예정: ${title}\n`);
       return openIssues;
     }
     const created = await github.rest.issues.create({
@@ -414,7 +427,7 @@ async function upsertFlakyIssue(github, context, core, row, layer, openIssues) {
   });
 
   if (isDryRun()) {
-    writeSummary(core, `(dry-run) flaky 이슈 갱신 예정: #${issue.number}\n`);
+    await writeSummary(core, `(dry-run) flaky 이슈 갱신 예정: #${issue.number}\n`);
     return openIssues;
   }
 
@@ -446,7 +459,7 @@ async function handlePassForRun(github, context, core, row, layer, openIssues, f
     const body = issue.body.replace(PASS_STREAK_RE, `pass-streak: ${streak}`);
 
     if (isDryRun()) {
-      writeSummary(core, `(dry-run) pass-streak ${streak}/${need} — #${issue.number}\n`);
+      await writeSummary(core, `(dry-run) pass-streak ${streak}/${need} — #${issue.number}\n`);
       continue;
     }
 
@@ -492,7 +505,7 @@ async function upsertSimple({ github, context, core, causeKey, feature, reason, 
 
 async function handlePassByCauseKey(github, context, core, causeKey, layer) {
   if (isDryRun()) {
-    writeSummary(core, `(dry-run) CI pass-streak 처리: ${causeKey}\n`);
+    await writeSummary(core, `(dry-run) CI pass-streak 처리: ${causeKey}\n`);
     return;
   }
   const { owner, repo } = context.repo;
@@ -539,7 +552,7 @@ async function run({ github, context, core, resultFile, layer: layerHint = 'smok
 
   if (!fs.existsSync(resultFile)) {
     if (isDryRun()) {
-      writeSummary(
+      await writeSummary(
         core,
         `(dry-run) 결과 파일 없음 — 이슈 생성 예정 (${layerHint}:_missing:missing_result)\n`,
       );
@@ -604,6 +617,20 @@ async function run({ github, context, core, resultFile, layer: layerHint = 'smok
       failedMatchIds,
     );
   }
+
+  const missingCauseKey = `${layer}:_missing:missing_result`;
+  if (!failedCauseKeys.has(missingCauseKey)) {
+    openIssues = await handlePassForRun(
+      github,
+      context,
+      core,
+      { id: '_missing', matchId: '_missing' },
+      layer,
+      openIssues,
+      failedCauseKeys,
+      failedMatchIds,
+    );
+  }
 }
 
 module.exports = run;
@@ -615,3 +642,6 @@ module.exports.parseHealthKey = parseHealthKey;
 module.exports.PASS_STREAK_CLOSE = PASS_STREAK_CLOSE;
 module.exports.isDryRun = isDryRun;
 module.exports.writeSummary = writeSummary;
+module.exports.BOT_COMMENT_MARKER = BOT_COMMENT_MARKER;
+module.exports.BOT_LOGIN = BOT_LOGIN;
+module.exports.countRecentBotNotifyComments = countRecentBotNotifyComments;

@@ -72,7 +72,7 @@ async function smokeJobRates(github, owner, repo, runs) {
         if (job.conclusion === 'skipped') continue;
         if (job.name === 'probe') jobs.probe.push(job);
         if (job.name === 'pages') jobs.pages.push(job);
-      });
+      }
       if (res.data.jobs.length < 100) break;
       page += 1;
     }
@@ -126,7 +126,7 @@ async function run({ github, context, core }) {
 
   if (dry) {
     md += `(dry-run) Actions API·이슈 API 호출 생략\n\n`;
-    reportIssues.writeSummary(core, md);
+    await reportIssues.writeSummary(core, md);
     return { md, weekTag, dry: true };
   }
 
@@ -167,7 +167,7 @@ async function run({ github, context, core }) {
     }
   }
 
-  reportIssues.writeSummary(core, `${md}\n`);
+  await reportIssues.writeSummary(core, `${md}\n`);
 
   const prevWeekly = await github.rest.issues.listForRepo({
     owner,
