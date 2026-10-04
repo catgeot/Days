@@ -211,6 +211,7 @@
     "restore:place-wiki-archive": "node scripts/restore-place-wiki-from-archive.mjs",
     "verify:place-slug-resolve": "node scripts/verify-place-slug-resolve.mjs",
     "smoke:health": "node scripts/smoke-health.mjs",
+    "test:health": "node --test scripts/health/*.test.mjs",
     "smoke:gemini-models": "node scripts/smoke-gemini-models.mjs",
     "smoke:health:local": "set SMOKE_SITE_URL=https://localhost:5173&& node scripts/smoke-health.mjs",
     "smoke:health:ci": "node scripts/smoke-health.mjs",

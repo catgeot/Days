@@ -1,10 +1,12 @@
 /**
- * gateo.kr 사이트·API 헬스 스모크 (Phase 1-A)
+ * gateo.kr API·사이트 헬스 스모크 — probe 2h · pages 6h
  * @see plans/site-health-monitoring-plan.md
  *
  * 역할: 빠른 liveness (HTML·JS 번들·Supabase REST·DB 캐시·place_videos). Edge upstream 호출 최소화.
  * 기능 플로우(MRT·MOONi·갤러리 UI 등)는 E2E Health + smoke-health-pages.spec.js.
  */
+import fs from 'node:fs';
+import path from 'node:path';
 import { loadEnvFile } from './lib/load-env-file.mjs';
 import { smokeSupabaseFetch } from './lib/smoke-supabase-fetch.mjs';
 
@@ -360,6 +362,12 @@ function printSummary() {
 
   const summary = { ok, checks };
   console.log(JSON.stringify(summary));
+
+  const resultFile = process.env.SMOKE_RESULT_FILE?.trim();
+  if (resultFile) {
+    fs.mkdirSync(path.dirname(resultFile), { recursive: true });
+    fs.writeFileSync(resultFile, `${JSON.stringify(summary)}\n`, 'utf8');
+  }
 
   return ok ? 0 : 1;
 }

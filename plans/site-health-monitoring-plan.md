@@ -6,14 +6,19 @@
 
 ---
 
-## 현재 운영 상태 (2026-06-08)
+## 현재 운영 상태 (2026-10-04)
 
-**GHA 2종 ✅** — Smoke 6h + E2E 1일 · **UptimeRobot 생략**(운영자 결정) · Gemini 선불 **자동 충전** 설정.
+**GHA** — Smoke probe 2h · pages 6h · E2E 1일 · 주간 요약 · CI 알림 · **UptimeRobot 생략**(운영자 결정).
 
-| 워크플로 | cron | 확인 |
-|----------|------|------|
-| [Smoke Health](../.github/workflows/smoke-health.yml) | `0 */6 * * *` | P0 API·번들 + Playwright 홈·place·`/korea` 목록 |
-| [E2E Health](../.github/workflows/e2e-health.yml) | `0 9 * * *` UTC · `TZ=Asia/Seoul` | guarded `e2e/*` — 지구본·MOONi·축제 URL/MRT·#372–376 place·explore·globe |
+| 워크플로 | cron (UTC) | KST 참고 | 확인 |
+|----------|------------|----------|------|
+| [Smoke Health](../.github/workflows/smoke-health.yml) job `probe` | `23 */2 * * *` | 홀수 시 :23 | node probe — HTML·번들·REST·캐시·sitemap |
+| [Smoke Health](../.github/workflows/smoke-health.yml) job `pages` | `47 */6 * * *` | 03:47·09:47·15:47·21:47 | Playwright `smoke-health-pages.spec.js` |
+| [E2E Health](../.github/workflows/e2e-health.yml) | `23 21 * * *` | 매일 06:23 | guarded `e2e/*` |
+| [Health Weekly](../.github/workflows/health-weekly.yml) | `7 22 * * 6` | 일요일 07:07 | 주간 요약 골격 |
+| [Health CI Alert](../.github/workflows/health-ci-alert.yml) | `workflow_run` (CI) | — | main push CI 실패·복구 |
+
+**알림**: 원인별 GitHub 이슈 1개(`site-health` 라벨) — **main에서만** 생성·갱신 · flaky는 `health:flaky` 별도 · **사용량·호출량 수치는 이슈·요약·artifact에 금지**(상태만).
 
 **Smoke Probe (node `scripts/smoke-health.mjs`)**: P0 **www.gateo.kr** HTML·**Vite `/assets/index-*.js` 번들**(홈 1회 fetch) · Supabase REST · **`tourapi_festival_cache` anon GET**(rolling12 ko, **items≥1·age≤96h** — TourAPI/Edge upstream 없음) · **`place_videos` anon GET**(paris, **videos≥1**) · P1 sitemap. cron **6h 유지** · Node 단계는 **Edge POST 0**. **Gemini 크레딧 감시는 본 PR 범위 밖** — 전용 probe는 **PR #381**(`smoke-gemini-models` 등)에서 추가 예정 · 병합 후 본 브랜치는 rebase하여 probe 유지.
 
@@ -35,7 +40,7 @@
 
 **로컬**: `npm run smoke:health` · `npm run test:e2e` (`.env.local` — smoke만).
 
-**알림**: GitHub Actions 실패 → Watch **All Activity**.
+**알림(레거시)**: Watch All Activity는 보조 — **주 알림은 site-health 이슈**(위 표).
 
 **운영자 체크리스트**: [`site-health-operator-next-steps.md`](site-health-operator-next-steps.md)
 
@@ -276,7 +281,7 @@ npx playwright install chromium
 
 | 증상 | 1차 확인 | 조치 |
 |------|----------|------|
-| MOONi 「통신 실패」 | `npm run smoke:health` P0-3 | Gemini 크레딧·`GEMINI_API_KEY` |
+| MOONi 「통신 실패」 | E2E-3(mock) · PR-2 M1 `health_ping` | Gemini 크레딧·`GEMINI_API_KEY` · smoke P0-3=Supabase REST |
 | 전체 401 | anon key 공백·Vercel env | key trim·재배포 |
 | 지구본 blank | Mapbox token·quota | Mapbox dashboard |
 | 갤러리 only | Unsplash/Pexels | 키·rate limit |
@@ -369,4 +374,4 @@ Supabase Edge 로그: 위 **호출 예산** 표 참고 · Smoke cron **증가 �
 
 [`scripts/verify-globe-engine-build.mjs`](../scripts/verify-globe-engine-build.mjs)는 **번들 회귀**(모바일 legacy globe)만 검사 — **런타임·API 헬스와 별개**. smoke-health와 **병행**한다.
 
-**Edge 배포**: [`gemini-proxy`](../supabase/functions/gemini-proxy/index.ts) — `.ai-context` 3절: project ref 일치 후 `npx supabase functions deploy gemini-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` (JWT 정책 변경 시 재점검).
+**Edge 배포**: [`gemini-proxy`](../supabase/functions/gemini-proxy/index.ts) — `verify_jwt=true`, see PR #381 PLAN (JWT·health_ping 헤더는 #381에서 정리).
