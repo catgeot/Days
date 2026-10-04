@@ -9,7 +9,12 @@ import {
   markYoutubeIdUnplayable,
 } from '../../../utils/youtubeUnplayableStorage.js';
 import { shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
-import { freeSearchYouTubeUrl, isFreeSearchLocation, shouldShowFreeSearchLink } from '../lib/freeSearchYouTubeLink.js';
+import {
+  freeSearchYouTubeUrl,
+  isFreeSearchLocation,
+  isPlaceholderPlaceName,
+  shouldShowFreeSearchLink,
+} from '../lib/freeSearchYouTubeLink.js';
 
 const GOOGLE_FORM_URL = 'https://forms.gle/QgofLDzzYD6NfWYN7';
 const LOAD_MORE_SESSION_MAX = 3;
@@ -248,6 +253,12 @@ export const useYouTubeSearch = (location, mediaMode) => {
     setLoadMoreNoNew(false);
     liveRef.current = emptyLive();
 
+    if (isPlaceholderPlaceName(location?.name)) {
+      setRawVideos([]);
+      setIsEmptyResult(true);
+      return;
+    }
+
     const candidateIds = dbCandidates.length ? dbCandidates : [cacheKey];
     let cachedData = null;
     const cachedRes = await supabase
@@ -336,6 +347,18 @@ export const useYouTubeSearch = (location, mediaMode) => {
     }
 
     if (freeSearch) {
+      if (isPlaceholderPlaceName(location?.name)) {
+        setFreeSearchLinkOnly(true);
+        setFetchError(false);
+        setFetchLimitCode(null);
+        liveRef.current = emptyLive();
+        setRawVideos([]);
+        setHasMorePages(false);
+        setIsEmptyResult(true);
+        completedInitialKeysRef.current.add(key);
+        queueMicrotask(() => setIsLoading(false));
+        return;
+      }
       const gen = fetchGenRef.current;
       let cancelled = false;
       setIsLoading(true);
@@ -594,6 +617,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     fetchLimitCode,
     externalYouTubeUrl,
     placeYouTubeUrl,
+    suppressVideoRetry: freeSearch,
     loadMoreNoNew,
     markUnplayable,
     googleFormUrl: GOOGLE_FORM_URL,

@@ -10,6 +10,7 @@ import {
   freeSearchYouTubeQuery,
   freeSearchYouTubeUrl,
   isFreeSearchLocation,
+  isPlaceholderPlaceName,
   shouldShowFreeSearchLink,
 } from '../src/pages/Home/lib/freeSearchYouTubeLink.js';
 
@@ -76,8 +77,16 @@ const locPin = {
   slug: 'loc-1-2',
   name: '알 수 없는 지역',
 };
+assert.equal(isPlaceholderPlaceName(locPin.name), true);
+assert.equal(isPlaceholderPlaceName('좌표 탐색'), true);
+assert.equal(isPlaceholderPlaceName('사파'), false);
 assert.equal(freeSearchYouTubeQuery(locPin), '');
 assert.equal(freeSearchYouTubeUrl(locPin), '');
+assert.equal(
+  shouldShowFreeSearchLink(locPin, { videos: [{ id: 'other' }], next_retry_at: null }),
+  true,
+  'placeholder name must not reuse another pin cache row',
+);
 assert.equal(
   freeSearchYouTubeQuery({ ...locPin, name: '남산', region: '서울' }),
   '남산',

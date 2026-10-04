@@ -19,8 +19,10 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const YT_SEARCH_UNITS = 100;
 const LIMIT_GLOBAL_UNITS = 6000;
 // detailCommon does not spend the YouTube global budget.
+// 400 / 200 are call counts. Each proxy call costs 1, not a YouTube search (100).
 const LIMIT_DETAIL_GLOBAL_UNITS = 400;
 const LIMIT_DETAIL_IP_UNITS = 200;
+const DETAIL_CALL_COST = 1;
 const LIMIT_IP_DAILY_UNITS_DEFAULT = 1000;
 const LIMIT_IP_PER_MINUTE = 6;
 const LIMIT_PLACE_NEW_PER_DAY = 2;
@@ -37,6 +39,7 @@ const FORBIDDEN_QUERY_RES = [
 ];
 const HTML_TAG_TOKEN = /^(?:\/?(?:a|b|br|div|em|font|i|p|span|strong|u))$/i;
 const FREE_SEARCH_ID_RE = /^(loc|search|city|label)-/i;
+const PLACEHOLDER_PLACE_NAME = /^(?:알 수 없는 지역|알 수 없는 도시|좌표 탐색)$/;
 
 const PLACES = catalog.places as Record<string, string>;
 const SCENIC = catalog.scenic as Record<string, string>;
@@ -392,9 +395,10 @@ async function proxyDetailHit(contentId: string): Promise<ProxyDetail> {
   // tourapi-proxy answers HTTP 200 { ok:false, items:[] } on timeout and quota.
   // That is transient. A negative cache is only a confirmed empty hit.
   if (!body || body.ok !== true) return { ok: false, unknown: false };
-  const items = Array.isArray(body.items) ? body.items : [];
-  if (items.length === 0) return { ok: false, unknown: true };
-  const item = items[0];
+  // items: null is a broken payload, not a confirmed empty hit.
+  if (!Array.isArray(body.items)) return { ok: false, unknown: false };
+  if (body.items.length === 0) return { ok: false, unknown: true };
+  const item = body.items[0];
   if (!item || typeof item !== "object") return { ok: false, unknown: false };
   const rec = item as Record<string, unknown>;
   const id = String(rec.contentid ?? rec.contentId ?? "").trim();
@@ -428,7 +432,7 @@ serve(async (req) => {
   }
 
   const rawPlaceId = String(body.placeId ?? "").trim();
-  if (FREE_SEARCH_ID_RE.test(rawPlaceId)) {
+  if (FREE_SEARCH_ID_RE.test(rawPlaceId) || PLACEHOLDER_PLACE_NAME.test(rawPlaceId)) {
     return json(req, { success: false, error: "bad_place_id" }, 400);
   }
   const festivalMatch = rawPlaceId.match(/^festival:(\d{1,32})$/);
@@ -568,7 +572,7 @@ serve(async (req) => {
         p_key: key,
         p_window_seconds: 86400,
         p_limit: limit,
-        p_cost: YT_SEARCH_UNITS,
+        p_cost: DETAIL_CALL_COST,
       });
       if (hit.error) throw new YtError(503, "rate_limit_unavailable");
       if (hit.data !== true) throw new LimitError(code);

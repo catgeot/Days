@@ -212,6 +212,7 @@ const YouTubePlayerView = forwardRef(({
       setIsPaused(false);
   };
 
+  const watchOnYouTubeUrl = externalYouTubeUrl || placeYouTubeUrl;
   const showFetchError = !isLoading && fetchError;
   const quotaWithoutVideos = showFetchError
     && (fetchLimitCode === 'ip_quota' || fetchLimitCode === 'global_quota')
@@ -247,9 +248,9 @@ const YouTubePlayerView = forwardRef(({
               {quotaWithoutVideos ? emptyQuotaMessage(fetchLimitCode) : limitMessage(fetchLimitCode)}
             </p>
           ) : null}
-          {quotaWithoutVideos && placeYouTubeUrl ? (
+          {quotaWithoutVideos && watchOnYouTubeUrl ? (
             <a
-              href={placeYouTubeUrl}
+              href={watchOnYouTubeUrl}
               target="_blank"
               rel="noopener"
               className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
@@ -257,7 +258,7 @@ const YouTubePlayerView = forwardRef(({
               {t('place.video.openOnYouTube')}
               <ExternalLink size={14} className="opacity-50" />
             </a>
-          ) : (
+          ) : onRetry ? (
           <button
             type="button"
             onClick={() => onRetry?.()}
@@ -267,7 +268,7 @@ const YouTubePlayerView = forwardRef(({
             <RotateCcw size={18} />
             {t('place.video.retry')}
           </button>
-          )}
+          ) : null}
         </div>
       ) : (showEmpty || showNoPlayable) ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
@@ -282,9 +283,9 @@ const YouTubePlayerView = forwardRef(({
           </p>
           {showEmpty ? (
             <div className="flex flex-col items-center gap-3">
-              {externalYouTubeUrl ? (
+              {watchOnYouTubeUrl ? (
                 <a
-                  href={externalYouTubeUrl}
+                  href={watchOnYouTubeUrl}
                   target="_blank"
                   rel="noopener"
                   className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
@@ -306,9 +307,9 @@ const YouTubePlayerView = forwardRef(({
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3">
-              {externalYouTubeUrl ? (
+              {watchOnYouTubeUrl ? (
                 <a
-                  href={externalYouTubeUrl}
+                  href={watchOnYouTubeUrl}
                   target="_blank"
                   rel="noopener"
                   className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
@@ -317,14 +318,16 @@ const YouTubePlayerView = forwardRef(({
                   <ExternalLink size={14} className="opacity-50" />
                 </a>
               ) : null}
+              {onRetry ? (
               <button
                 type="button"
-                onClick={() => onRetry?.()}
+                onClick={() => onRetry()}
                 className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
               >
                 <RotateCcw size={18} />
                 {t('place.video.retry')}
               </button>
+              ) : null}
             </div>
           )}
         </div>

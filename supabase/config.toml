@@ -433,3 +433,10 @@ entrypoint = "./functions/fetch-mrt-tnas/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/gallery-moderate/index.ts"
+
+# Staging XFF check only. Deploy by name on the staging project, then delete.
+# verify_jwt stays true. Do not deploy this to production.
+[functions.staging-ip-echo]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/staging-ip-echo/index.ts"

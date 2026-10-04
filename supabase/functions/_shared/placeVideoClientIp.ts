@@ -1,6 +1,6 @@
 /**
  * Client IP for fetch-place-videos rate-limit keys.
- * Staging echo (_staging-ip-echo) imports this same function. Delete that echo after verification.
+ * Staging echo (staging-ip-echo) imports this same function. Delete that echo after verification.
  *
  * The leftmost X-Forwarded-For hop is client-supplied. Do not trust it.
  * Supabase Edge docs do not say the gateway overwrites X-Forwarded-For, and

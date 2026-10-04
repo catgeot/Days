@@ -1,7 +1,8 @@
 /**
- * STAGING ONLY. Delete this function after the XFF check in the PR plan.
- * Underscore folder: `supabase functions deploy` (all) skips it.
- * Do not deploy to production.
+ * STAGING ONLY. Delete after the XFF check.
+ * Deploy: `supabase functions deploy staging-ip-echo --project-ref "$STAGING_REF"`
+ * Delete: `supabase functions delete staging-ip-echo --project-ref "$STAGING_REF"`
+ * verify_jwt stays true (see config.toml). No CORS header: browsers cannot read this body.
  *
  * Returns the raw forwarding headers and the same clientIp() fetch-place-videos uses.
  */
@@ -10,12 +11,7 @@ import { clientIp } from "../_shared/placeVideoClientIp.ts";
 
 serve((req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-forwarded-for, x-real-ip, cf-connecting-ip",
-      },
-    });
+    return new Response("ok", { status: 204 });
   }
   const body = {
     deleteAfterUse: true,

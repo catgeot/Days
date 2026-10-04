@@ -32,7 +32,7 @@ const state: {
   forceLimited: boolean;
   festivalError: boolean;
   yt: "three" | "empty" | "quota" | "boom";
-  proxyBody: { ok?: boolean; items: Array<Record<string, unknown>> };
+  proxyBody: { ok?: boolean; items: unknown };
   proxyStatus: number;
 } = {
   rpcError: false,
@@ -746,7 +746,7 @@ Deno.test("detailCommon uses its own budget and only caches a confirmed empty hi
   assertEquals(afterDetail.status, 429);
   assertEquals((await afterDetail.json()).error, "global_quota");
   assertEquals(proxyCalls, 1);
-  assertEquals(counts.get("global:detail:u"), 100);
+  assertEquals(counts.get("global:detail:u"), 1);
   assertEquals(store.has("scenic:555"), false);
 
   reset();
@@ -789,6 +789,67 @@ Deno.test("detailCommon uses its own budget and only caches a confirmed empty hi
   assertEquals(second.status, 200);
   assertEquals((await second.json()).videos, []);
   assertEquals(proxyCalls, 1);
+
+  reset();
+  state.proxyBody = { ok: true, items: null };
+  const broken = await post({ placeId: "scenic:555" });
+  assertEquals(broken.status, 400);
+  assertEquals(proxyCalls, 1);
+  assertEquals(store.has("scenic:555"), false);
+  const brokenAgain = await post({ placeId: "scenic:555" });
+  assertEquals(brokenAgain.status, 400);
+  assertEquals(proxyCalls, 2);
+  assertEquals(store.has("scenic:555"), false);
+});
+
+Deno.test("detailCommon costs 1 per call, so five calls fit under 400 and 200", async () => {
+  reset();
+  for (let i = 1; i <= 5; i += 1) {
+    const id = String(990000 + i);
+    state.proxyBody = { ok: true, items: [{ contentid: id, title: `명소${i}` }] };
+    const res = await post({ placeId: `scenic:${id}` });
+    assertEquals(res.status, 200);
+  }
+  assertEquals(proxyCalls, 5);
+  assertEquals(counts.get("global:detail:u"), 5);
+  assertEquals(counts.get("ip:203.0.113.10:detail"), 5);
+
+  counts.set("global:detail:u", 400);
+  state.proxyBody = { ok: true, items: [{ contentid: "990010", title: "한도" }] };
+  const globalBlocked = await post({ placeId: "scenic:990010" });
+  assertEquals(globalBlocked.status, 429);
+  assertEquals((await globalBlocked.json()).error, "rate_limited");
+  assertEquals(proxyCalls, 5);
+  assertEquals(counts.get("global:detail:u"), 401);
+
+  counts.set("ip:198.51.100.9:detail", 200);
+  state.proxyBody = { ok: true, items: [{ contentid: "990011", title: "아이피" }] };
+  const ipBlocked = await post(
+    { placeId: "scenic:990011" },
+    { "x-real-ip": "198.51.100.9" },
+  );
+  assertEquals(ipBlocked.status, 429);
+  assertEquals((await ipBlocked.json()).error, "rate_limited");
+  assertEquals(proxyCalls, 5);
+  assertEquals(counts.get("ip:198.51.100.9:detail"), 201);
+});
+
+Deno.test("a placeholder place name does not read or write the video cache", async () => {
+  reset();
+  const cached = {
+    place_id: "알 수 없는 지역",
+    videos: [{ id: "other", title: "다른 핀" }],
+    fail_count: 0,
+    last_error: null,
+    next_retry_at: new Date(Date.now() + DAY).toISOString(),
+    last_updated: "2020-01-01T00:00:00.000Z",
+  };
+  store.set("알 수 없는 지역", cached);
+  const res = await post({ placeId: "알 수 없는 지역" });
+  assertEquals(res.status, 400);
+  assertEquals(store.get("알 수 없는 지역"), cached);
+  assertEquals(ytCalls, 0);
+  assertEquals(proxyCalls, 0);
 });
 
 Deno.test("unknown content does not wipe videos that are already cached", async () => {

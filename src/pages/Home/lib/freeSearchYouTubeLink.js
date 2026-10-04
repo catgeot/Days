@@ -2,7 +2,12 @@ import { citiesData } from '../data/citiesData.js';
 import { shouldRefreshPlaceVideoCache } from './placeVideoCache.js';
 
 const FREE_SEARCH_ID_RE = /^(loc|search|city|label)-/i;
-const PLACEHOLDER_NAME = /^(알 수 없는 지역|알 수 없는 도시)$/;
+const PLACEHOLDER_NAME = /^(알 수 없는 지역|알 수 없는 도시|좌표 탐색)$/;
+
+/** 이름 없는 핀이 공유하는 표시명. 이 문자열을 place_videos 키로 쓰면 다른 핀의 영상이 섞인다. */
+export function isPlaceholderPlaceName(value) {
+  return PLACEHOLDER_NAME.test(String(value ?? '').trim());
+}
 const BROAD_REGION = /수도권|전국/;
 
 const CATALOG_CITY_SLUGS = new Set(
@@ -93,6 +98,7 @@ export function freeSearchYouTubeUrl(location) {
 
 /** 자유 검색 핀도 기존 place_videos 행이 있으면 링크 대신 그 영상을 보여 준다. API는 호출하지 않는다. */
 export function shouldShowFreeSearchLink(location, row) {
+  if (isPlaceholderPlaceName(location?.name)) return true;
   if (!isFreeSearchLocation(location)) return false;
   if (
     row
