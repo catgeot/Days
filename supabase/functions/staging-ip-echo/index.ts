@@ -1,8 +1,11 @@
 /**
  * STAGING ONLY. Delete after the XFF check.
- * Deploy: `supabase functions deploy staging-ip-echo --project-ref "$STAGING_REF"`
- * Delete: `supabase functions delete staging-ip-echo --project-ref "$STAGING_REF"`
+ * config.toml keeps enabled = false. On staging, flip that in a working copy,
+ * set secret STAGING_IP_ECHO_ALLOW=1, then:
+ *   supabase functions deploy staging-ip-echo --project-ref "$STAGING_REF"
+ *   supabase functions delete staging-ip-echo --project-ref "$STAGING_REF"
  * verify_jwt stays true (see config.toml). No CORS header: browsers cannot read this body.
+ * Without STAGING_IP_ECHO_ALLOW=1 the function returns 404 and echoes nothing.
  *
  * Returns the raw forwarding headers and the same clientIp() fetch-place-videos uses.
  */
@@ -10,6 +13,9 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { clientIp } from "../_shared/placeVideoClientIp.ts";
 
 serve((req) => {
+  if (Deno.env.get("STAGING_IP_ECHO_ALLOW") !== "1") {
+    return new Response("not found", { status: 404 });
+  }
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 204 });
   }

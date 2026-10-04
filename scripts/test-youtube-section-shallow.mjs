@@ -54,7 +54,7 @@ assert(!isFreeSearchLocation({ id: 'paris', slug: 'paris' }), 'catalog slug is n
 
 const playerSrc = readFileSync('src/components/PlaceCard/views/YouTubePlayerView.jsx', 'utf8');
 assert(playerSrc.includes('target="_blank"'), 'YouTube link opens a new tab');
-assert(playerSrc.includes('rel="noopener"'), 'YouTube link uses rel=noopener');
+assert(playerSrc.includes('rel="noopener noreferrer"'), 'YouTube link uses rel=noopener noreferrer');
 assert(playerSrc.includes('place.video.ipQuotaEmpty'), 'empty ip quota copy');
 assert(playerSrc.includes('place.video.retry'), 'retry copy remains for other errors');
 assert(readFileSync('src/i18n/locales/ko.json', 'utf8').includes('YouTube에서 보기'), 'Korean YouTube link label');

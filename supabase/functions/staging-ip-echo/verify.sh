@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# STAGING ONLY. Delete staging-ip-echo after this passes. Do not point this at production.
+# STAGING ONLY. Delete staging-ip-echo after this passes.
+# Committed config keeps enabled = false. In a working copy on staging only:
+# flip enabled = true, set secret STAGING_IP_ECHO_ALLOW=1, deploy by name, run this, delete.
 # Usage:
 #   IP_ECHO_URL=https://<staging-ref>.supabase.co/functions/v1/staging-ip-echo \
 #   VIDEOS_URL=https://<staging-ref>.supabase.co/functions/v1/fetch-place-videos \
@@ -7,8 +9,15 @@
 #   bash supabase/functions/staging-ip-echo/verify.sh
 set -euo pipefail
 
+PROD_REF="phdjnbfitvmrguqzverm"
+
 if [[ -z "${IP_ECHO_URL:-}" || -z "${ANON_KEY:-}" ]]; then
   echo "Set IP_ECHO_URL and ANON_KEY. Optional VIDEOS_URL for the 7/min check." >&2
+  exit 1
+fi
+
+if [[ "${IP_ECHO_URL}${VIDEOS_URL:-}${STAGING_REF:-}" == *"$PROD_REF"* ]]; then
+  echo "FAIL refusing production project $PROD_REF" >&2
   exit 1
 fi
 
@@ -16,7 +25,7 @@ auth=(-H "Authorization: Bearer ${ANON_KEY}" -H "apikey: ${ANON_KEY}")
 root=$(cd "$(dirname "$0")/../../.." && pwd)
 
 echo_ip() {
-  curl -sS "${auth[@]}" "$@" "$IP_ECHO_URL"
+  curl -4 -sS "${auth[@]}" "$@" "$IP_ECHO_URL"
 }
 
 client_of() {
@@ -48,8 +57,8 @@ bucket_ip() {
   ' "$1"
 }
 
-echo "egress lookup"
-egress_raw=$(curl -fsS --max-time 15 https://api.ipify.org || curl -fsS --max-time 15 https://ifconfig.me/ip || true)
+echo "egress lookup (IPv4, same family as the echo call)"
+egress_raw=$(curl -4 -fsS --max-time 15 https://api.ipify.org || curl -4 -fsS --max-time 15 https://ifconfig.me/ip || true)
 egress_raw=$(printf '%s' "$egress_raw" | tr -d '[:space:]')
 if [[ -z "$egress_raw" || "$egress_raw" == "unknown" ]]; then
   echo "FAIL could not read the external egress IP" >&2
@@ -102,7 +111,7 @@ check "b) one forged XFF hop" -H "X-Forwarded-For: 1.2.3.4"
 check "c) two forged XFF hops" -H "X-Forwarded-For: 1.2.3.4, 5.6.7.8"
 check "d) forged CF-Connecting-IP" -H "CF-Connecting-IP: 9.9.9.9"
 check "e) forged X-Real-IP" -H "X-Real-IP: 9.9.9.9"
-echo "f) repeat a-e from an IPv6 egress. clientIp must be that /64, still with no port."
+echo "f) this script forces curl -4, so egress and clientIp are both IPv4."
 echo "g) repeat from another network (mobile hotspot)."
 
 if [[ -n "${VIDEOS_URL:-}" ]]; then

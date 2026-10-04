@@ -252,7 +252,7 @@ const YouTubePlayerView = forwardRef(({
             <a
               href={watchOnYouTubeUrl}
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
               className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
             >
               {t('place.video.openOnYouTube')}
@@ -287,7 +287,7 @@ const YouTubePlayerView = forwardRef(({
                 <a
                   href={watchOnYouTubeUrl}
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
                 >
                   {t('place.video.openOnYouTube')}
@@ -311,7 +311,7 @@ const YouTubePlayerView = forwardRef(({
                 <a
                   href={watchOnYouTubeUrl}
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
                 >
                   {t('place.video.openOnYouTube')}

@@ -434,9 +434,11 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/gallery-moderate/index.ts"
 
-# Staging XFF check only. Deploy by name on the staging project, then delete.
-# verify_jwt stays true. Do not deploy this to production.
+# Staging XFF check only. Committed disabled so a bulk deploy skips it.
+# On staging, in a working copy only: set enabled = true, set secret
+# STAGING_IP_ECHO_ALLOW=1, deploy by name, run verify.sh, delete the function.
+# Do not commit enabled = true. verify_jwt stays true. Do not deploy to production.
 [functions.staging-ip-echo]
-enabled = true
+enabled = false
 verify_jwt = true
 entrypoint = "./functions/staging-ip-echo/index.ts"
