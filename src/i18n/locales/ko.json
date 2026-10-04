@@ -1028,6 +1028,8 @@
       "retry": "다시 시도",
       "loadMore": "영상 더 보기",
       "loadMoreFailed": "추가 영상을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+      "loadMoreIpLimit": "오늘 이 접속에서는 이 장소의 영상을 더 볼 수 없어요.",
+      "loadMorePlaceLimit": "오늘 이 장소의 추가 영상 한도에 도달했어요. 내일 다시 시도해 주세요.",
       "loadMoreNoNew": "더 볼 영상이 없어요."
     },
     "wiki": {

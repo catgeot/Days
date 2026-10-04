@@ -8,6 +8,7 @@ import {
   filterPlayableVideos,
   markYoutubeIdUnplayable,
 } from '../../../utils/youtubeUnplayableStorage.js';
+import { shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
 
 const GOOGLE_FORM_URL = 'https://forms.gle/QgofLDzzYD6NfWYN7';
 const LOAD_MORE_SESSION_MAX = 3;
@@ -26,6 +27,8 @@ function mergeVideosById(existing, incoming) {
   }
   return merged;
 }
+
+const PAGE_LIMIT_CODES = new Set(['page_ip_limited', 'page_place_limited']);
 
 function placeFetchKey(location, mediaMode) {
   return [
@@ -101,6 +104,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
   const [loadMoreCount, setLoadMoreCount] = useState(() => boot?.loadMoreCount ?? 0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState(false);
+  const [loadMoreLimitCode, setLoadMoreLimitCode] = useState(null);
   const [loadMoreNoNew, setLoadMoreNoNew] = useState(() => boot?.loadMoreNoNew ?? false);
   const [unplayableBump, setUnplayableBump] = useState(0);
 
@@ -136,6 +140,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setLoadMoreCount(mem.loadMoreCount);
       setIsLoadingMore(false);
       setLoadMoreError(false);
+      setLoadMoreLimitCode(null);
       setLoadMoreNoNew(mem.loadMoreNoNew);
     } else {
       fetchContextRef.current = null;
@@ -150,6 +155,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setLoadMoreCount(0);
       setIsLoadingMore(false);
       setLoadMoreError(false);
+      setLoadMoreLimitCode(null);
       setLoadMoreNoNew(false);
     }
   }
@@ -164,6 +170,20 @@ export const useYouTubeSearch = (location, mediaMode) => {
       'fetch-place-videos',
       { body },
     );
+    let code = edgeData?.error;
+    if (!code && edgeError?.context && typeof edgeError.context.json === 'function') {
+      try {
+        const parsed = await edgeError.context.clone().json();
+        code = parsed?.error;
+      } catch {
+        code = null;
+      }
+    }
+    if (PAGE_LIMIT_CODES.has(code)) {
+      const err = new Error(code);
+      err.limitCode = code;
+      throw err;
+    }
     if (edgeError) {
       throw new Error('영상을 가져오는 데 실패했습니다.');
     }
@@ -197,19 +217,33 @@ export const useYouTubeSearch = (location, mediaMode) => {
     setHasMorePages(false);
     setLoadMoreCount(0);
     setLoadMoreError(false);
+    setLoadMoreLimitCode(null);
     setLoadMoreNoNew(false);
     liveRef.current = emptyLive();
 
-    const { data: cachedData } = await supabase
+    const candidateIds = dbCandidates.length ? dbCandidates : [cacheKey];
+    let cachedData = null;
+    const cachedRes = await supabase
       .from('place_videos')
-      .select('videos')
-      .in('place_id', dbCandidates.length ? dbCandidates : [cacheKey])
+      .select('videos, next_retry_at')
+      .in('place_id', candidateIds)
       .limit(1)
       .maybeSingle();
+    if (cachedRes.error) {
+      const legacy = await supabase
+        .from('place_videos')
+        .select('videos')
+        .in('place_id', candidateIds)
+        .limit(1)
+        .maybeSingle();
+      cachedData = legacy.data;
+    } else {
+      cachedData = cachedRes.data;
+    }
 
     if (fetchGenRef.current !== gen) return;
 
-    if (cachedData && Array.isArray(cachedData.videos)) {
+    if (cachedData && Array.isArray(cachedData.videos) && !shouldRefreshPlaceVideoCache(cachedData)) {
       console.log(`[L2] DB Cache found for: ${location.name} (Items: ${cachedData.videos.length})`);
       fetchContextRef.current = {
         searchQuery,
@@ -361,6 +395,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     live.isLoadingMore = true;
     setIsLoadingMore(true);
     setLoadMoreError(false);
+    setLoadMoreLimitCode(null);
     setLoadMoreNoNew(false);
 
     try {
@@ -412,7 +447,14 @@ export const useYouTubeSearch = (location, mediaMode) => {
       }
     } catch (err) {
       console.error('[useYouTubeSearch] loadMore Error:', err);
-      if (fetchGenRef.current === gen) setLoadMoreError(true);
+      if (fetchGenRef.current === gen) {
+        if (err?.limitCode) {
+          setLoadMoreLimitCode(err.limitCode);
+          setLoadMoreError(false);
+        } else {
+          setLoadMoreError(true);
+        }
+      }
     } finally {
       if (fetchGenRef.current === gen && placeKeyRef.current === placeKeyAtStart) {
         const nextCount = liveRef.current.loadMoreCount + 1;
@@ -459,6 +501,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     canLoadMore,
     isLoadingMore,
     loadMoreError,
+    loadMoreLimitCode,
     loadMoreNoNew,
     markUnplayable,
     googleFormUrl: GOOGLE_FORM_URL,

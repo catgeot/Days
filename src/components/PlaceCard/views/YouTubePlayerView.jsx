@@ -27,6 +27,7 @@ const YouTubePlayerView = forwardRef(({
   isLoadingMore = false,
   onVideoUnplayable,
   loadMoreError = false,
+  loadMoreLimitCode = null,
   loadMoreNoNew = false,
 }, ref) => {
   const { t } = useTranslation();
@@ -367,7 +368,7 @@ const YouTubePlayerView = forwardRef(({
         </div>
       )}
 
-      {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreNoNew) && (
+      {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreLimitCode || loadMoreNoNew) && (
         <div
           className={`absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
             isPlaying
@@ -388,9 +389,13 @@ const YouTubePlayerView = forwardRef(({
               {isLoadingMore ? t('place.video.loading') : t('place.video.loadMore')}
             </button>
           )}
-          {loadMoreError && (
+          {(loadMoreLimitCode || loadMoreError) && (
             <p className={`text-center text-xs text-red-400/90 max-w-xs ${canLoadMore ? 'mt-2' : ''}`}>
-              {t('place.video.loadMoreFailed')}
+              {loadMoreLimitCode === 'page_ip_limited'
+                ? t('place.video.loadMoreIpLimit')
+                : loadMoreLimitCode === 'page_place_limited'
+                  ? t('place.video.loadMorePlaceLimit')
+                  : t('place.video.loadMoreFailed')}
             </p>
           )}
           {loadMoreNoNew && !loadMoreError && (

@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import canonicalPlaceIdMap from "../_shared/canonicalPlaceIdMap.json" with { type: "json" };
+import catalog from "./placeVideoCatalog.json" with { type: "json" };
 
 const corsBase = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -10,32 +10,29 @@ const corsBase = {
 
 const BASE_URL = "https://www.googleapis.com/youtube/v3";
 const DAY_MS = 24 * 60 * 60 * 1000;
-const QUERY_MAX_CHARS = 180;
-// pageToken/skipUpsert는 신규 검색(placeId 일 2)과 따로 둔다. brief는 숫자만 비워 두었다.
-// 장소 탭 더 보기의 세션 상한이 3이라, 장소당 하루 6으로 둔다.
+const YT_SEARCH_UNITS = 100;
+// search.list = 100 units. Ceiling stays well under the 10,000 unit daily quota.
+const LIMIT_GLOBAL_UNITS = 6000;
+// One IP cannot take more than ~10% of that budget. Daily cap is tighter than the share.
+const LIMIT_IP_SHARE_UNITS = 600;
+const LIMIT_IP_DAILY_UNITS = 400;
 const LIMIT_IP_PER_MINUTE = 6;
-const LIMIT_IP_PER_DAY = 60;
 const LIMIT_PLACE_NEW_PER_DAY = 2;
-const LIMIT_PLACE_PAGE_PER_DAY = 6;
-const LIMIT_GLOBAL_PER_DAY = 80;
+const LIMIT_PAGE_IP_PLACE = 3;
+const LIMIT_PAGE_PLACE = 30;
 
 const PREVIEW_ORIGIN_RE = /^https:\/\/days-git-[a-z0-9-]+-catgeots-projects\.vercel\.app$/;
-const FESTIVAL_RE = /^festival:\d{1,32}$/;
-const SCENIC_DIGITS_RE = /^scenic:\d{1,32}$/;
-// 상세 모달은 contentId가 없는 명소를 scenic:<placeSlug>로 보낸다.
-const SCENIC_SLUG_RE = /^scenic:[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const WORLD_EVENT_RE = /^world-event:[a-z0-9]+(?:-[a-z0-9]+)*:(?:ko|en)$/;
-const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const FORBIDDEN_QUERY_RES = [
   /https?:\/\//i,
   /javascript:/i,
-  /[<>]/,
   /\b(?:site|cache|related|link|inurl|intitle):/i,
   /\b(?:porn|xxx)\b/i,
   /음란|야동|포르노/,
 ];
 
-const SLUGS = canonicalPlaceIdMap as Record<string, string>;
+const PLACES = catalog.places as Record<string, string>;
+const SCENIC = catalog.scenic as Record<string, string>;
+const WORLD_EVENTS = catalog.worldEvents as Record<string, string>;
 
 type DbError = { message?: string; code?: string } | null;
 type PlaceVideoRow = {
@@ -45,18 +42,21 @@ type PlaceVideoRow = {
   next_retry_at: string | null;
   last_updated: string | null;
 };
+type FestivalCacheRow = { cache_key?: string; payload?: unknown };
 type AdminClient = {
   from: (table: string) => {
     select: (cols: string) => {
       eq: (col: string, val: string) => {
         maybeSingle: () => Promise<{ data: PlaceVideoRow | null; error: DbError }>;
       };
+      in: (col: string, vals: string[]) => Promise<{ data: FestivalCacheRow[] | null; error: DbError }>;
+      like: (col: string, pattern: string) => Promise<{ data: FestivalCacheRow[] | null; error: DbError }>;
     };
     upsert: (payload: Record<string, unknown>) => Promise<{ error: DbError }>;
   };
   rpc: (
     fn: string,
-    args: { p_key: string; p_window_seconds: number; p_limit: number },
+    args: { p_key: string; p_window_seconds: number; p_limit: number; p_cost?: number },
   ) => Promise<{ data: boolean | null; error: DbError }>;
 };
 type YtSnippet = {
@@ -67,6 +67,12 @@ type YtSnippet = {
 };
 type YtItem = { id?: { videoId?: string }; snippet?: YtSnippet };
 type YtSearch = { items?: YtItem[]; nextPageToken?: string };
+type ResolvedPlace = {
+  placeId: string;
+  query: string;
+  mode: "place" | "festival";
+  fallback: string;
+};
 
 class YtError extends Error {
   status: number;
@@ -75,6 +81,14 @@ class YtError extends Error {
     super(reason);
     this.status = status;
     this.reason = reason;
+  }
+}
+
+class LimitError extends Error {
+  code: string;
+  constructor(code: string) {
+    super(code);
+    this.code = code;
   }
 }
 
@@ -114,6 +128,26 @@ function decodeHtmlEntities(input: string): string {
   });
 }
 
+function sanitizeQuery(input: string): string {
+  let out = "";
+  for (const ch of input) {
+    const code = ch.codePointAt(0) ?? 0;
+    if (ch === "<" || ch === ">" || code < 32 || code === 127) {
+      out += " ";
+      continue;
+    }
+    out += ch;
+  }
+  const text = out.replace(/\s+/g, " ").trim();
+  if (!text) return "";
+  return text.length > 180 ? text.slice(0, 180).trim() : text;
+}
+
+function queryRejected(q: string): boolean {
+  if (!q) return true;
+  return FORBIDDEN_QUERY_RES.some((re) => re.test(q));
+}
+
 function allowedOriginSet(): Set<string> {
   const raw = Deno.env.get("FETCH_PLACE_VIDEOS_ALLOWED_ORIGINS")
     ?? "https://www.gateo.kr,https://gateo.kr";
@@ -149,39 +183,27 @@ function hasBearerJwt(req: Request): boolean {
   return parts.length === 3 && parts.every((p) => p.length > 0);
 }
 
+/**
+ * Client IP for rate-limit keys.
+ *
+ * Supabase Edge Functions do not document a header they overwrite with the
+ * connecting address. The hosted gateway appends the peer it observed onto
+ * `x-forwarded-for` (a client-supplied list stays on the left; proxies append).
+ * `x-real-ip` is not a documented Edge overwrite. `sb-forwarded-for` belongs
+ * to Supabase Auth (GoTrue), not this runtime, and a caller can set it.
+ * Prefer the rightmost `x-forwarded-for` value. `x-real-ip` is only a fallback
+ * when that header is absent. Staging verification of the live gateway is pending.
+ */
 function clientIp(req: Request): string {
-  const real = req.headers.get("x-real-ip")?.trim();
-  const fwd = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  const raw = real || fwd || "unknown";
+  const forwarded = (req.headers.get("x-forwarded-for") ?? "")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const raw = forwarded.length
+    ? forwarded[forwarded.length - 1]
+    : (req.headers.get("x-real-ip")?.trim() || "unknown");
   const cleaned = raw.replace(/[^0-9a-fA-F:.\-]/g, "").slice(0, 64);
   return cleaned || "unknown";
-}
-
-function hasControlChar(s: string): boolean {
-  for (let i = 0; i < s.length; i++) {
-    if (s.charCodeAt(i) < 32) return true;
-  }
-  return false;
-}
-
-function queryRejected(q: string): boolean {
-  const text = q.trim();
-  if (!text || text.length > QUERY_MAX_CHARS || hasControlChar(text)) return true;
-  return FORBIDDEN_QUERY_RES.some((re) => re.test(text));
-}
-
-function normalizePlaceId(raw: string): string | null {
-  const id = raw.trim();
-  if (FESTIVAL_RE.test(id)) return id;
-  if (SCENIC_DIGITS_RE.test(id)) return id;
-  if (SCENIC_SLUG_RE.test(id.toLowerCase())) return id.toLowerCase();
-  const world = id.match(/^world-event:([a-z0-9]+(?:-[a-z0-9]+)*):(ko|en)$/i);
-  if (world && WORLD_EVENT_RE.test(`world-event:${world[1].toLowerCase()}:${world[2].toLowerCase()}`)) {
-    return `world-event:${world[1].toLowerCase()}:${world[2].toLowerCase()}`;
-  }
-  const slug = id.toLowerCase();
-  if (SLUG_RE.test(slug) && Object.hasOwn(SLUGS, slug)) return slug;
-  return null;
 }
 
 function rowFresh(row: PlaceVideoRow | null): boolean {
@@ -205,6 +227,111 @@ function logFail(placeId: string, reason: string, ytStatus: number | null): void
   console.error(JSON.stringify({ placeId, reason, yt_status: ytStatus }));
 }
 
+function placeMode(query: string): ResolvedPlace | null {
+  const q = sanitizeQuery(query);
+  if (queryRejected(q)) return null;
+  return {
+    placeId: "",
+    query: q,
+    mode: "place",
+    fallback: sanitizeQuery(`${q} travel vlog`),
+  };
+}
+
+function resolveStaticPlace(raw: string): ResolvedPlace | null {
+  const id = raw.trim();
+  const scenicKey = id.startsWith("scenic:") ? id.slice("scenic:".length) : "";
+  if (scenicKey) {
+    const q = SCENIC[scenicKey] ?? SCENIC[scenicKey.toLowerCase()];
+    if (!q) return null;
+    const resolved = placeMode(q);
+    if (!resolved) return null;
+    resolved.placeId = `scenic:${/^\d+$/.test(scenicKey) ? scenicKey : scenicKey.toLowerCase()}`;
+    return resolved;
+  }
+  const world = id.match(/^world-event:([a-z0-9]+(?:-[a-z0-9]+)*):(ko|en)$/i);
+  if (world) {
+    const key = `${world[1].toLowerCase()}:${world[2].toLowerCase()}`;
+    const q = sanitizeQuery(WORLD_EVENTS[key] ?? "");
+    if (queryRejected(q)) return null;
+    const other = world[2].toLowerCase() === "en" ? WORLD_EVENTS[`${world[1].toLowerCase()}:ko`] : WORLD_EVENTS[`${world[1].toLowerCase()}:en`];
+    return {
+      placeId: `world-event:${key}`,
+      query: q,
+      mode: "festival",
+      fallback: sanitizeQuery(other && other !== q ? other : `${q} festival`),
+    };
+  }
+  if (id.includes(":")) return null;
+  const slug = id.toLowerCase();
+  const q = PLACES[slug];
+  if (!q) return null;
+  const resolved = placeMode(q);
+  if (!resolved) return null;
+  resolved.placeId = slug;
+  return resolved;
+}
+
+function festivalTitleFromPayload(payload: unknown, contentId: string, keyed: boolean): { title: string; year: string } | null {
+  if (!payload || typeof payload !== "object") return null;
+  const rec = payload as Record<string, unknown>;
+  const rows: Record<string, unknown>[] = [];
+  if (Array.isArray(rec.items)) {
+    for (const item of rec.items) {
+      if (item && typeof item === "object") rows.push(item as Record<string, unknown>);
+    }
+  }
+  if (rec.intro && typeof rec.intro === "object") rows.push(rec.intro as Record<string, unknown>);
+  if (typeof rec.title === "string") rows.push(rec);
+  for (const row of rows) {
+    const rowId = String(row.contentId ?? "").trim();
+    if (!keyed && rowId !== contentId) continue;
+    if (keyed && rowId && rowId !== contentId && Array.isArray(rec.items)) continue;
+    const title = String(row.title ?? "").trim();
+    if (!title) continue;
+    const ymd = String(row.eventStartDate ?? "");
+    const year = /^\d{8}$/.test(ymd) ? ymd.slice(0, 4) : "";
+    return { title, year };
+  }
+  return null;
+}
+
+async function resolveFestival(admin: AdminClient, contentId: string): Promise<ResolvedPlace | null> {
+  const detailKeys = [`detail:ko:${contentId}`, `detail:en:${contentId}`];
+  const details = await admin.from("tourapi_festival_cache").select("cache_key, payload").in("cache_key", detailKeys);
+  if (details.error) throw new Error("festival_cache");
+  let hit: { title: string; year: string } | null = null;
+  for (const row of details.data ?? []) {
+    const key = String(row.cache_key ?? "");
+    hit = festivalTitleFromPayload(row.payload, contentId, key.endsWith(`:${contentId}`));
+    if (hit) break;
+  }
+  if (!hit) {
+    const lists = await admin.from("tourapi_festival_cache").select("cache_key, payload").like("cache_key", "list:%");
+    if (lists.error) throw new Error("festival_cache");
+    for (const row of lists.data ?? []) {
+      hit = festivalTitleFromPayload(row.payload, contentId, false);
+      if (hit) break;
+    }
+  }
+  if (!hit) return null;
+  let query = sanitizeQuery(hit.title);
+  if (hit.year && !query.includes(hit.year)) query = sanitizeQuery(`${query} ${hit.year}`);
+  if (query && !query.includes("축제")) query = sanitizeQuery(`${query} 축제`);
+  if (queryRejected(query)) return null;
+  return {
+    placeId: `festival:${contentId}`,
+    query,
+    mode: "festival",
+    fallback: sanitizeQuery(`${sanitizeQuery(hit.title)} festival`),
+  };
+}
+
+function primaryQuery(resolved: ResolvedPlace): string {
+  if (resolved.mode === "festival") return resolved.query;
+  return sanitizeQuery(`${resolved.query} 여행 브이로그`);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     const origin = req.headers.get("Origin") ?? "";
@@ -224,35 +351,45 @@ serve(async (req) => {
     return json(req, { success: false, error: "invalid json" }, 400);
   }
 
-  const placeId = normalizePlaceId(String(body.placeId ?? ""));
-  if (!placeId) return json(req, { success: false, error: "bad_place_id" }, 400);
-
-  const queryRaw = String(body.query ?? "");
-  if (queryRejected(queryRaw)) return json(req, { success: false, error: "bad_query" }, 400);
-  if (body.fallbackQuery != null && String(body.fallbackQuery).trim() && queryRejected(String(body.fallbackQuery))) {
-    return json(req, { success: false, error: "bad_query" }, 400);
-  }
-
-  const mode = body.mode === "festival" ? "festival" : "place";
-  const pageToken = typeof body.pageToken === "string" && body.pageToken.trim()
-    ? body.pageToken.trim()
-    : "";
-  const skipUpsert = Boolean(pageToken) || body.skipUpsert === true;
-  const maxResults = clampMaxResults(body.maxResults, { raiseCap: skipUpsert && !pageToken });
-  const relevanceLanguage = typeof body.relevanceLanguage === "string" && body.relevanceLanguage.trim()
-    ? body.relevanceLanguage.trim()
-    : "ko";
-  const regionCode = typeof body.regionCode === "string" && body.regionCode.trim()
-    ? body.regionCode.trim()
-    : relevanceLanguage === "en"
-      ? "US"
-      : "KR";
-  const query = queryRaw.trim();
+  const rawPlaceId = String(body.placeId ?? "").trim();
+  const festivalMatch = rawPlaceId.match(/^festival:(\d{1,32})$/);
 
   const supabaseAdmin = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
   ) as unknown as AdminClient;
+
+  let resolved: ResolvedPlace | null = null;
+  if (festivalMatch) {
+    try {
+      resolved = await resolveFestival(supabaseAdmin, festivalMatch[1]);
+    } catch {
+      logFail(rawPlaceId, "festival_cache_read_failed", null);
+      return json(req, { success: false, error: "cache_unavailable" }, 503);
+    }
+  } else {
+    resolved = resolveStaticPlace(rawPlaceId);
+  }
+  if (!resolved) return json(req, { success: false, error: "bad_place_id" }, 400);
+
+  const placeId = resolved.placeId;
+  const mode = resolved.mode;
+  const pageToken = typeof body.pageToken === "string" && body.pageToken.trim()
+    ? body.pageToken.trim()
+    : "";
+  const skipUpsert = Boolean(pageToken) || body.skipUpsert === true;
+  const maxResults = clampMaxResults(body.maxResults, { raiseCap: skipUpsert && !pageToken });
+  const langRaw = typeof body.relevanceLanguage === "string" ? body.relevanceLanguage.trim().toLowerCase() : "";
+  const relevanceLanguage = langRaw === "en" || langRaw === "ko" ? langRaw : "ko";
+  const regionRaw = typeof body.regionCode === "string" ? body.regionCode.trim().toUpperCase() : "";
+  const regionCode = /^[A-Z]{2}$/.test(regionRaw)
+    ? regionRaw
+    : relevanceLanguage === "en"
+      ? "US"
+      : "KR";
+  const query = resolved.query;
+  const primaryQ = primaryQuery(resolved);
+  const fallbackQ = resolved.fallback || primaryQ;
 
   const loaded = await supabaseAdmin
     .from("place_videos")
@@ -286,36 +423,65 @@ serve(async (req) => {
 
   const ip = clientIp(req);
   const pagination = Boolean(pageToken) || body.skipUpsert === true;
-  const gates: Array<[string, number, number]> = [
-    [`ip:${ip}:m`, 60, LIMIT_IP_PER_MINUTE],
-    [`ip:${ip}:d`, 86400, LIMIT_IP_PER_DAY],
-    pagination
-      ? [`place:${placeId}:page:d`, 86400, LIMIT_PLACE_PAGE_PER_DAY]
-      : [`place:${placeId}:new:d`, 86400, LIMIT_PLACE_NEW_PER_DAY],
-    ["global:yt:d", 86400, LIMIT_GLOBAL_PER_DAY],
-  ];
-  for (const [key, windowSeconds, limit] of gates) {
+
+  const charge = async (
+    key: string,
+    windowSeconds: number,
+    limit: number,
+    cost: number,
+    limitedCode: string,
+  ) => {
     const hit = await supabaseAdmin.rpc("edge_rate_limit_hit", {
       p_key: key,
       p_window_seconds: windowSeconds,
       p_limit: limit,
+      p_cost: cost,
     });
-    if (hit.error || hit.data !== true) {
-      if (hit.error) {
-        logFail(placeId, "rate_limit_rpc_failed", null);
-        return json(req, { success: false, error: "rate_limit_unavailable" }, 503);
-      }
-      logFail(placeId, "rate_limited", null);
-      return json(req, { success: false, error: "rate_limited" }, 429);
+    if (hit.error) {
+      logFail(placeId, "rate_limit_rpc_failed", null);
+      return json(req, { success: false, error: "rate_limit_unavailable" }, 503);
     }
+    if (hit.data !== true) {
+      logFail(placeId, limitedCode, null);
+      return json(req, { success: false, error: limitedCode }, 429);
+    }
+    return null;
+  };
+
+  const preGates: Array<[string, number, number, string]> = [
+    [`ip:${ip}:m`, 60, LIMIT_IP_PER_MINUTE, "rate_limited"],
+  ];
+  if (pagination) {
+    preGates.push([`page:ip:${ip}:${placeId}`, 86400, LIMIT_PAGE_IP_PLACE, "page_ip_limited"]);
+    preGates.push([`page:place:${placeId}`, 86400, LIMIT_PAGE_PLACE, "page_place_limited"]);
+  } else {
+    preGates.push([`place:${placeId}:new:d`, 86400, LIMIT_PLACE_NEW_PER_DAY, "rate_limited"]);
+  }
+  for (const [key, windowSeconds, limit, code] of preGates) {
+    const denied = await charge(key, windowSeconds, limit, 1, code);
+    if (denied) return denied;
   }
 
-  const primaryQ = mode === "festival" ? query : `${query} 여행 브이로그`;
-  const fallbackQ = body.fallbackQuery
-    ? String(body.fallbackQuery).trim()
-    : (mode === "festival" ? query : `${query} travel vlog`);
+  const chargeSearchUnits = async () => {
+    const gates: Array<[string, number, string]> = [
+      [`ip:${ip}:u`, LIMIT_IP_DAILY_UNITS, "ip_quota"],
+      [`ip:${ip}:share`, LIMIT_IP_SHARE_UNITS, "ip_share_limited"],
+      ["global:yt:u", LIMIT_GLOBAL_UNITS, "global_quota"],
+    ];
+    for (const [key, limit, code] of gates) {
+      const hit = await supabaseAdmin.rpc("edge_rate_limit_hit", {
+        p_key: key,
+        p_window_seconds: 86400,
+        p_limit: limit,
+        p_cost: YT_SEARCH_UNITS,
+      });
+      if (hit.error) throw new YtError(503, "rate_limit_unavailable");
+      if (hit.data !== true) throw new LimitError(code);
+    }
+  };
 
   const fetchSearch = async (q: string, token?: string): Promise<YtSearch> => {
+    await chargeSearchUnits();
     const p = new URLSearchParams({
       part: "snippet",
       q,
@@ -375,6 +541,14 @@ serve(async (req) => {
       }
     }
   } catch (error) {
+    if (error instanceof LimitError) {
+      logFail(placeId, error.code, null);
+      return json(req, { success: false, error: error.code }, 429);
+    }
+    if (error instanceof YtError && error.reason === "rate_limit_unavailable") {
+      logFail(placeId, "rate_limit_rpc_failed", null);
+      return json(req, { success: false, error: "rate_limit_unavailable" }, 503);
+    }
     const yt = error instanceof YtError ? error : new YtError(502, "youtube_network");
     const status = yt.status >= 400 && yt.status <= 599 ? yt.status : 502;
     await writeFailure(yt.reason, false);

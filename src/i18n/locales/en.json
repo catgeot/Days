@@ -1258,6 +1258,8 @@
       "retry": "Try again",
       "loadMore": "More videos",
       "loadMoreFailed": "Couldn't load more videos. Please try again in a moment.",
+      "loadMoreIpLimit": "You've reached today's extra-video limit for this place on this connection.",
+      "loadMorePlaceLimit": "This place has reached today's extra-video limit. Please try again tomorrow.",
       "loadMoreNoNew": "No more videos to show."
     },
     "wiki": {
