@@ -21,7 +21,11 @@ function renderLogbookMd(markdown) {
 function parseLogbookMarkdown(source) {
   let processor = unified().use(remarkParse);
   for (const plugin of logbookRemarkPlugins) {
-    processor = processor.use(plugin);
+    if (Array.isArray(plugin)) {
+      processor = processor.use(plugin[0], plugin[1]);
+    } else {
+      processor = processor.use(plugin);
+    }
   }
   return processor.parse(source);
 }
@@ -35,7 +39,7 @@ const cjkBoldSamples = [
   '**나플라프카 파머스 마켓(Náplavka)**을',
   '**시그널 페스티벌(Signal Festival)**이',
   '**대이집트박물관(GEM)**은',
-  '**Koshary Abou Tarek)**은',
+  '**코샤리 아부 타렉(Koshary Abou Tarek)**은',
   '**주바(Zööba)**처',
 ];
 
@@ -56,6 +60,11 @@ assert.equal(linkMd.includes('**'), false, 'link line has no raw bold');
 const listMd = renderLogbookMd('- 첫째\n- 둘째');
 assert.match(listMd, /<ul/);
 assert.match(listMd, /<li/);
+
+const hoursMd = renderLogbookMd('운영 06:00~22:00, 휴관일 09:00~17:00.');
+assert.equal(hoursMd.includes('<del>'), false, 'single tilde must not strike through hours');
+assert.match(hoursMd, /06:00~22:00/);
+assert.match(hoursMd, /09:00~17:00/);
 
 const sample = `## 파리\n\n**루브르** — [공식](https://example.com)\n\n---\n\n[사진 1]\n\nplain line`;
 

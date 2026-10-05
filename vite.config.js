@@ -155,6 +155,9 @@ export default defineConfig({
 
             return 'vendor';
           }
+          if (id.includes('LogbookMarkdownChunk.jsx') || id.includes('logbookMarkdownRemark.js')) {
+            return 'logbook-markdown';
+          }
         }
       }
     }
