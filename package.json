@@ -192,6 +192,7 @@
     "smoke:mood-search-intent": "node scripts/smoke-mood-search-intent.mjs",
     "smoke:mooni-ask-bridge": "node scripts/smoke-mooni-ask-bridge.mjs",
     "smoke:mooni-trip-session": "node scripts/smoke-mooni-trip-session.mjs",
+    "smoke:mooni-korea-festival": "node scripts/smoke-mooni-korea-festival.mjs",
     "smoke:explore-choice-overlay": "node scripts/smoke-explore-choice-overlay.mjs",
     "smoke:place-card-back": "node scripts/smoke-place-card-back.mjs",
     "smoke:tripcom-flight-planner": "node scripts/smoke-tripcom-flight-planner.mjs",
