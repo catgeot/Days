@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: 'korea-festival-detail-url.spec.js',
+  testMatch: /korea-festival-detail-url\.spec\.js|korea-search-festival-click\.spec\.js/,
   fullyParallel: false,
   workers: 1,
   timeout: 180_000,
