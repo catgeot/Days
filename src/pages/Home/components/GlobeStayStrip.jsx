@@ -54,6 +54,7 @@ import {
   getTripcomHotelErrorCopy,
   resolveTripcomPartnerLocale,
 } from '../../../utils/affiliate';
+import PartnerBookingHandoff from '../../../shared/affiliate/PartnerBookingHandoff.jsx';
 import {
   getStayAgencyKindLabel,
   getStayAgencyDisclaimer,
@@ -579,84 +580,90 @@ function StayCard({
     ? buildMrtMylinkUrl(item.productUrl)
     : MRT_AFFILIATE_HOME_URL;
 
+  const shellClass = `flex flex-col rounded-2xl border overflow-hidden transition-colors ${
+    dateFlexible
+      ? 'border-white/15 bg-white/5 opacity-95'
+      : 'border-amber-400/30 bg-amber-500/10'
+  } ${className}`;
+
   return (
-    <a
-      href={productHref}
-      target="_blank"
-      rel="noopener noreferrer sponsored"
-      draggable={false}
-      className={`rounded-2xl border overflow-hidden transition-colors ${
-        dateFlexible
-          ? 'border-white/15 bg-white/5 opacity-95 hover:border-amber-300/35 hover:bg-amber-500/10'
-          : 'border-amber-400/30 bg-amber-500/10 hover:border-amber-300/45 hover:bg-amber-500/20'
-      } ${className}`}
-    >
-      <div className={`relative w-full bg-white/5 pointer-events-none ${imageClassName}`}>
-        {item.imageUrl ? (
-          <img
-            src={item.imageUrl}
-            alt=""
-            loading="lazy"
-            draggable={false}
-            className={`h-full w-full object-cover ${dateFlexible ? 'opacity-80' : ''}`}
-          />
-        ) : (
-          <div
-            className={`flex h-full w-full items-center justify-center text-white/30 ${
-              large ? 'text-xs' : 'text-[10px]'
-            }`}
-          >
-            No image
-          </div>
-        )}
-      </div>
-      <div className={`pointer-events-none ${large ? 'space-y-1 p-2.5' : 'space-y-0.5 p-2'}`}>
-        <p
-          className={`line-clamp-2 break-keep font-semibold leading-snug text-white ${
-            large ? 'text-[13px]' : 'text-[11px]'
-          }`}
-        >
-          {item.itemName}
-        </p>
-        {distanceText ? (
-          <p
-            className={`truncate font-semibold text-amber-100/75 ${
-              large ? 'text-[11px]' : 'text-[10px]'
-            }`}
-          >
-            {distanceText}
-          </p>
-        ) : null}
-        <div className="flex min-w-0 items-center justify-between gap-1">
-          {item.reviewScore ? (
-            <span
-              className={`tabular-nums text-amber-100/80 ${large ? 'text-xs' : 'text-[10px]'}`}
-            >
-              ★ {item.reviewScore}
-            </span>
+    <div className={shellClass}>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className={`relative w-full shrink-0 bg-white/5 ${imageClassName}`}>
+          {item.imageUrl ? (
+            <img
+              src={item.imageUrl}
+              alt=""
+              loading="lazy"
+              draggable={false}
+              className={`h-full w-full object-cover ${dateFlexible ? 'opacity-80' : ''}`}
+            />
           ) : (
-            <span />
+            <div
+              className={`flex h-full w-full items-center justify-center text-white/30 ${
+                large ? 'text-xs' : 'text-[10px]'
+              }`}
+            >
+              No image
+            </div>
           )}
-          {price ? (
-            <span
-              className={`truncate font-bold tabular-nums text-white/90 ${
-                large ? 'text-xs' : 'text-[10px]'
+        </div>
+        <div className={`${large ? 'space-y-1 p-2.5' : 'space-y-0.5 p-2'}`}>
+          <p
+            className={`line-clamp-2 break-keep font-semibold leading-snug text-white ${
+              large ? 'text-[13px]' : 'text-[11px]'
+            }`}
+          >
+            {item.itemName}
+          </p>
+          {distanceText ? (
+            <p
+              className={`truncate font-semibold text-amber-100/75 ${
+                large ? 'text-[11px]' : 'text-[10px]'
               }`}
             >
-              {price}
-            </span>
-          ) : dateFlexible ? (
-            <span
-              className={`truncate font-semibold text-amber-100/70 ${
-                large ? 'text-xs' : 'text-[10px]'
-              }`}
-            >
-              {t('home.stayStrip.bookAfterAdjust')}
-            </span>
+              {distanceText}
+            </p>
           ) : null}
+          <div className="flex min-w-0 items-center justify-between gap-1">
+            {item.reviewScore ? (
+              <span
+                className={`tabular-nums text-amber-100/80 ${large ? 'text-xs' : 'text-[10px]'}`}
+              >
+                ★ {item.reviewScore}
+              </span>
+            ) : (
+              <span />
+            )}
+            {price ? (
+              <span
+                className={`truncate font-bold tabular-nums text-white/90 ${
+                  large ? 'text-xs' : 'text-[10px]'
+                }`}
+              >
+                {price}
+              </span>
+            ) : dateFlexible ? (
+              <span
+                className={`truncate font-semibold text-amber-100/70 ${
+                  large ? 'text-xs' : 'text-[10px]'
+                }`}
+              >
+                {t('home.stayStrip.bookAfterAdjust')}
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
-    </a>
+      <div className={`border-t border-white/10 ${large ? 'p-2.5 pt-2' : 'p-2 pt-1.5'}`}>
+        <PartnerBookingHandoff
+          href={productHref}
+          kind="lodging"
+          item={item}
+          theme="dark"
+        />
+      </div>
+    </div>
   );
 }
 

@@ -13,6 +13,7 @@ import {
 import { getKlookSearchUrl, getMrtDomesticRentalUrl, getTripcomTrainUrl } from '../../utils/affiliate';
 import StripListLargeToggle from './StripListLargeToggle';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
+import PartnerBookingHandoff from '../../shared/affiliate/PartnerBookingHandoff.jsx';
 
 const outboundChipClass =
   'inline-flex max-w-full items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 transition-colors hover:border-amber-300 hover:bg-amber-50';
@@ -76,71 +77,72 @@ function formatTnaPrice(item, locale = 'ko', t) {
 function TnaStripCard({ item, locale, t, large = false }) {
   const href = buildMrtTnaProductUrl(item);
   const price = formatTnaPrice(item, locale, t);
+  if (!href) return null;
+
+  const shellClass = large
+    ? 'flex w-[220px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm sm:w-[252px]'
+    : 'flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm sm:w-[168px]';
 
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer sponsored"
-      className={
-        large
-          ? 'flex w-[220px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40 sm:w-[252px]'
-          : 'flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40 sm:w-[168px]'
-      }
-    >
-      <div className={`relative w-full bg-stone-100 ${large ? 'h-[132px]' : 'h-[88px]'}`}>
-        {item.imageUrl ? (
-          <img
-            src={resolveListImageUrl(item.imageUrl, { role: 'list' })}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-[10px] text-stone-400">
-            —
-          </div>
-        )}
-        {item.category ? (
-          <span className="absolute bottom-1.5 left-1.5 max-w-[calc(100%-12px)] truncate rounded bg-stone-900/70 px-1 py-0.5 text-[9px] font-medium text-white backdrop-blur-xs">
-            {item.category}
-          </span>
-        ) : null}
-      </div>
-      <div className="flex flex-1 flex-col justify-between space-y-1 p-2">
-        <p
-          className={`line-clamp-2 font-semibold leading-snug text-stone-900 ${
-            large ? 'text-sm' : 'text-[11px]'
-          }`}
-        >
-          {item.itemName}
-        </p>
-        <div
-          className={`flex items-center justify-between gap-1 pt-0.5 ${
-            large ? 'text-xs' : 'text-[10px]'
-          }`}
-        >
-          {item.reviewScore != null && Number(item.reviewScore) > 0 ? (
-            <span className="font-bold tabular-nums text-amber-700">
-              ★ {Number(item.reviewScore).toFixed(1)}
-              {item.reviewCount ? (
-                <span className="ml-0.5 font-normal text-stone-400">
-                  ({item.reviewCount})
-                </span>
-              ) : null}
-            </span>
+    <div className={shellClass}>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className={`relative w-full shrink-0 bg-stone-100 ${large ? 'h-[132px]' : 'h-[88px]'}`}>
+          {item.imageUrl ? (
+            <img
+              src={resolveListImageUrl(item.imageUrl, { role: 'list' })}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
           ) : (
-            <span />
+            <div className="flex h-full items-center justify-center text-[10px] text-stone-400">
+              —
+            </div>
           )}
-          {price ? (
-            <span className="truncate font-bold tabular-nums text-amber-900">
-              {price}
+          {item.category ? (
+            <span className="absolute bottom-1.5 left-1.5 max-w-[calc(100%-12px)] truncate rounded bg-stone-900/70 px-1 py-0.5 text-[9px] font-medium text-white backdrop-blur-xs">
+              {item.category}
             </span>
           ) : null}
         </div>
+        <div className="flex flex-1 flex-col justify-between space-y-1 p-2">
+          <p
+            className={`line-clamp-2 font-semibold leading-snug text-stone-900 ${
+              large ? 'text-sm' : 'text-[11px]'
+            }`}
+          >
+            {item.itemName}
+          </p>
+          <div
+            className={`flex items-center justify-between gap-1 pt-0.5 ${
+              large ? 'text-xs' : 'text-[10px]'
+            }`}
+          >
+            {item.reviewScore != null && Number(item.reviewScore) > 0 ? (
+              <span className="font-bold tabular-nums text-amber-700">
+                ★ {Number(item.reviewScore).toFixed(1)}
+                {item.reviewCount ? (
+                  <span className="ml-0.5 font-normal text-stone-400">
+                    ({item.reviewCount})
+                  </span>
+                ) : null}
+              </span>
+            ) : (
+              <span />
+            )}
+            {price ? (
+              <span className="truncate font-bold tabular-nums text-amber-900">
+                {price}
+              </span>
+            ) : null}
+          </div>
+        </div>
       </div>
-    </a>
+      <div className="mt-auto border-t border-stone-100 p-2 pt-1.5">
+        <PartnerBookingHandoff href={href} kind="tour" theme="light" />
+      </div>
+    </div>
   );
 }
 
