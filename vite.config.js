@@ -46,7 +46,10 @@ const koreaRoutes = [
 
 const dynamicRoutes = [...placeRoutes, ...exploreRoutes, ...koreaRoutes];
 
-/** Lazy Mooni chat markdown only — keep out of eager `vendor` (see modulePreload filter). */
+/**
+ * remark-cjk-friendly — shared by LogbookBody (entry) and lazy MOONi chat markdown.
+ * Kept out of `vendor`; preloaded with entry when LogbookBody pulls it in (modulePreload).
+ */
 function isMooniChatMarkdownDep(id) {
   if (!id.includes('node_modules')) return false;
   return (
@@ -124,7 +127,6 @@ export default defineConfig({
           (dep) =>
             !/(?:^|\/)three-[^/]+\.js$/i.test(dep)
             && !/(?:^|\/)globe-[^/]+\.js$/i.test(dep)
-            && !/(?:^|\/)mooni-chat-markdown-[^/]+\.js$/i.test(dep)
             && !/(?:^|\/)MooniChatMarkdownBoundary-[^/]+\.js$/i.test(dep),
         );
       },
