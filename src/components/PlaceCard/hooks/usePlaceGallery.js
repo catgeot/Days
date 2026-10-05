@@ -4,15 +4,26 @@
 // 2. [Maintain] Unsplash API 최종 실패 시 기본 대체 이미지를 제공하는 3차 방어막(Fallback) '유지'
 // 3. 🚨 [Subtraction] 영문 매핑 사전(FALLBACK_DICTIONARY) '제거' -> 기형적인 로직을 버리고 citiesData.js의 원본 데이터(name_en)를 직접 참조하도록 아키텍처 원복
 // 4. 🚨 [New] Unsplash 프로덕션 승인 요건: 다운로드 트래킹(download_location) 호출 및 실제 파일 다운로드 로직(handleDownload) 추가
-// 5. 갤러리 사진 숨기기(로컬) · 신고(GA) · 관리자만 place_stats PATCH — handleHideGalleryImage 등
+// 5. 갤러리 사진 숨기기(로컬) · 신고(insert) · 관리자 제거는 gallery-moderate
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots';
 import { citiesData } from '../../../pages/Home/data/citiesData';
 import { supabase } from '../../../shared/api/supabase';
-import { isGalleryAdminUser } from '../../../utils/galleryAdmin';
 import { trackGalleryPhotoReport } from '../../../shared/analytics/galleryPhotoReport';
+import {
+  GALLERY_REPORT_REASONS,
+  buildPersistPlaceGalleryArgs,
+  droppedGalleryIds,
+  galleryAdminFromProbe,
+  galleryModerateFailureReason,
+  galleryPersistDropsStoredImages,
+  galleryReportErrorReason,
+  imagesForGalleryPersist,
+  resolveGalleryPersistPlaceId,
+  withoutDroppedGalleryImages,
+} from '../../../shared/api/placeGalleryPersist';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
@@ -243,13 +254,14 @@ function readHiddenGalleryIds(placeKey) {
 }
 
 function addHiddenGalleryId(placeKey, imageId) {
-  if (!placeKey || !imageId) return;
+  if (!placeKey || !imageId) return false;
   const next = readHiddenGalleryIds(placeKey);
   next.add(imageId);
   try {
     localStorage.setItem(galleryHiddenIdsKey(CACHE_VERSION, placeKey), JSON.stringify([...next]));
+    return true;
   } catch {
-    /* quota */
+    return false;
   }
 }
 
@@ -282,21 +294,45 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [galleryAdminUid, setGalleryAdminUid] = useState(null);
+  const [isGalleryAdmin, setIsGalleryAdmin] = useState(false);
 
+  const adminProbeSeqRef = useRef(0);
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setGalleryAdminUid(data?.session?.user?.id ?? null);
-    });
+    let cancel = false;
+    const applyAdminProbe = (session) => {
+      const seq = ++adminProbeSeqRef.current;
+      const hasUser = Boolean(session?.user);
+      if (!hasUser) {
+        const next = galleryAdminFromProbe({
+          seq,
+          latestSeq: adminProbeSeqRef.current,
+          hasUser: false,
+          error: null,
+          data: null,
+        });
+        if (!cancel && next !== null) setIsGalleryAdmin(next);
+        return;
+      }
+      void supabase.rpc('am_i_app_admin', { p_scope: 'gallery' }).then(({ data, error }) => {
+        const next = galleryAdminFromProbe({
+          seq,
+          latestSeq: adminProbeSeqRef.current,
+          hasUser: true,
+          error,
+          data,
+        });
+        if (cancel || next === null) return;
+        setIsGalleryAdmin(next);
+      });
+    };
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setGalleryAdminUid(session?.user?.id ?? null);
+      applyAdminProbe(session);
     });
     return () => {
+      cancel = true;
       authListener?.subscription?.unsubscribe();
     };
   }, []);
-
-  const isGalleryAdmin = isGalleryAdminUser(galleryAdminUid);
 
   /** 같은 영문 쿼리를 쓰는 서로 다른 장소 구분 + in-flight 요청 무효화 */
   const lastFetchKeyRef = useRef(null);
@@ -308,6 +344,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   const currentKoreanNameRef = useRef('');
   const currentQueryRef = useRef('');
   const currentPlaceKeyRef = useRef('');
+  /** pickPlaceStatsGalleryRow가 고른 행. alias(dbStatsId)로 쓰지 않는다. */
+  const loadedStatsPlaceIdRef = useRef('');
+  const canonicalStatsIdRef = useRef('');
   /** 여행지(slug/id)별 갤러리 새로고침 쿨타임 — 장소 전환 시 다른 여행지에 영향 없음 */
   const lastRefreshAtByPlaceRef = useRef(new Map());
 
@@ -495,6 +534,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     currentPlaceKeyRef.current = stablePlaceKey;
     currentKoreanNameRef.current = dbStatsId || koreanName;
     currentQueryRef.current = primaryQuery;
+    const nextCanonicalId = String(dbStatsId || '').trim();
+    if (canonicalStatsIdRef.current !== nextCanonicalId) {
+      loadedStatsPlaceIdRef.current = '';
+    }
+    canonicalStatsIdRef.current = nextCanonicalId;
 
     // 이미 성공한 동일 키 + 이미지가 있을 때만 스킵 (시작 전 마킹하면 hang 후 재시도 불가)
     if (
@@ -659,18 +703,43 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
     const pexelsQueries = resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlugForDb);
 
-    const persistGalleryKeepThumb = (galleryUrls) => {
-      const statsPlaceId = dbStatsId || koreanName;
-      if (!statsPlaceId) return;
-      supabase
-        .from('place_stats')
-        .upsert(
-          { place_id: statsPlaceId, gallery_urls: galleryUrls },
-          { onConflict: 'place_id' },
-        )
-        .then(({ error }) => {
-          if (error) console.error('⚠️ SWR gallery upsert Error:', error);
-        });
+    const persistGallery = (mode, images, imageUrl) => {
+      const placeId = resolveGalleryPersistPlaceId(
+        loadedStatsPlaceIdRef.current,
+        canonicalStatsIdRef.current,
+      );
+      if (!placeId) return;
+      const payloadImages = imagesForGalleryPersist(
+        mode,
+        mode === 'replace' ? { storage: images } : { fresh: images },
+      );
+      if (mode === 'replace' && galleryPersistDropsStoredImages(payloadImages, allImagesRef.current)) {
+        console.error('⚠️ persist_place_gallery refused: storage list was filtered');
+        return;
+      }
+      if (mode !== 'thumb' && (!Array.isArray(payloadImages) || payloadImages.length === 0)) return;
+      if (mode === 'thumb' && !imageUrl) return;
+      const args = buildPersistPlaceGalleryArgs({
+        placeId,
+        mode,
+        images: payloadImages,
+        imageUrl,
+      });
+      const runAtCall = runId;
+      supabase.rpc('persist_place_gallery', args).then(({ data, error }) => {
+        if (runAtCall !== galleryLoadSeqRef.current) return;
+        if (error) {
+          console.error('⚠️ persist_place_gallery', mode, error);
+          return;
+        }
+        const dropped = droppedGalleryIds(data);
+        if (!dropped.length) return;
+        const next = withoutDroppedGalleryImages(allImagesRef.current, dropped);
+        if (next.length === allImagesRef.current.length) return;
+        allImagesRef.current = next;
+        syncGalleryViewFromStorage();
+        saveToSmartCache(CACHE_KEY, next);
+      });
     };
 
     const runStockSwr = async () => {
@@ -696,6 +765,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, 1);
         }
         if (runId !== galleryLoadSeqRef.current) return;
+        const beforeIds = new Set((allImagesRef.current || []).map((img) => img?.id).filter(Boolean));
         const { merged, added } = mergeGalleryFreshKeepHero(
           allImagesRef.current,
           results,
@@ -708,7 +778,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
         processAndSetImages(merged);
         saveToSmartCache(CACHE_KEY, allImagesRef.current);
-        persistGalleryKeepThumb(allImagesRef.current);
+        const fresh = allImagesRef.current.filter((img) => img?.id && !beforeIds.has(img.id));
+        persistGallery('merge_keep_hero', fresh);
         console.log(`✅ Gallery SWR ${added}장 병합 (hero 유지)`);
       } catch (err) {
         console.warn('⚠️ Gallery SWR miss — DB/session 유지', err);
@@ -805,6 +876,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           );
 
           const dbData = pickPlaceStatsGalleryRow(dbRows, dbStatsId);
+          if (dbData?.place_id) {
+            loadedStatsPlaceIdRef.current = String(dbData.place_id).trim();
+          }
 
           if (isStale()) return;
 
@@ -897,36 +971,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             saveToSmartCache(CACHE_KEY, allImagesRef.current);
             if (skipStock) {
               markFetchDone();
-              if (dbStatsId || koreanName) {
+              if (loadedStatsPlaceIdRef.current || canonicalStatsIdRef.current) {
                 const thumbnailToSave =
                   allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
-                const statsPlaceId = dbStatsId || koreanName;
                 if (thumbnailOnly) {
-                  if (thumbnailToSave) {
-                    supabase
-                      .from('place_stats')
-                      .upsert(
-                        { place_id: statsPlaceId, image_url: thumbnailToSave },
-                        { onConflict: 'place_id' },
-                      )
-                      .then(({ error }) => {
-                        if (error) console.error('⚠️ Supabase Thumbnail Update Error:', error);
-                      });
-                  }
+                  if (thumbnailToSave) persistGallery('thumb', null, thumbnailToSave);
                 } else {
-                  supabase
-                    .from('place_stats')
-                    .upsert(
-                      {
-                        place_id: statsPlaceId,
-                        gallery_urls: allImagesRef.current,
-                        image_url: thumbnailToSave,
-                      },
-                      { onConflict: 'place_id' },
-                    )
-                    .then(({ error }) => {
-                      if (error) console.error('⚠️ Supabase Update Error:', error);
-                    });
+                  persistGallery('replace', allImagesRef.current);
                 }
               }
               finishLoading();
@@ -1082,30 +1133,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         saveToSmartCache(CACHE_KEY, allImagesRef.current);
 
         // 더보기(append)는 세션만 — place_stats 큐레이션을 Unsplash 병합본으로 덮지 않음
-        if (!forceRefresh && allImagesRef.current.length > 0 && (dbStatsId || koreanName)) {
+        if (!forceRefresh && allImagesRef.current.length > 0 && (loadedStatsPlaceIdRef.current || canonicalStatsIdRef.current)) {
           const thumbnailToSave = allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
-          const statsPlaceId = dbStatsId || koreanName;
-
           if (thumbnailOnly) {
-            if (thumbnailToSave) {
-              supabase
-                .from('place_stats')
-                .upsert({ place_id: statsPlaceId, image_url: thumbnailToSave }, { onConflict: 'place_id' })
-                .then(({ error }) => {
-                  if (error) console.error('⚠️ Supabase Thumbnail Update Error:', error);
-                });
-            }
+            if (thumbnailToSave) persistGallery('thumb', null, thumbnailToSave);
           } else {
-            supabase
-              .from('place_stats')
-              .upsert({
-                place_id: statsPlaceId,
-                gallery_urls: allImagesRef.current,
-                image_url: thumbnailToSave
-              }, { onConflict: 'place_id' })
-              .then(({ error }) => {
-                if (error) console.error('⚠️ Supabase Update Error:', error);
-              });
+            persistGallery('replace', allImagesRef.current);
           }
         }
         if (!forceRefresh) writeGallerySwrAt(stablePlaceKey);
@@ -1258,29 +1291,56 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   const handleHideGalleryImage = useCallback(
     (imageToHide) => {
-      if (!imageToHide?.id) return;
+      if (!imageToHide?.id) return { ok: false, reason: 'missing' };
       const placeKey = currentPlaceKeyRef.current;
       const hidden = readHiddenGalleryIds(placeKey);
       if (!hidden.has(imageToHide.id)) {
-        addHiddenGalleryId(placeKey, imageToHide.id);
+        const saved = addHiddenGalleryId(placeKey, imageToHide.id);
+        if (!saved) return { ok: false, reason: 'storage' };
       }
       const view = syncGalleryViewFromStorage(placeKey);
       if (selectedImg?.id === imageToHide.id) {
         setSelectedImg(view[0] || null);
       }
+      return { ok: true };
     },
     [selectedImg, syncGalleryViewFromStorage],
   );
 
-  const handleReportGalleryImage = useCallback((imageToReport) => {
+  const handleReportGalleryImage = useCallback(async (imageToReport, reason) => {
     if (!imageToReport?.id) {
-      return { sent: false, reason: 'missing_ids' };
+      return { ok: false, reason: 'missing_ids' };
     }
-    return trackGalleryPhotoReport({
-      placeId: currentKoreanNameRef.current,
+    if (!GALLERY_REPORT_REASONS.includes(reason)) {
+      return { ok: false, reason: 'bad_reason' };
+    }
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData?.session?.user) {
+      return { ok: false, reason: 'login' };
+    }
+    const placeId = resolveGalleryPersistPlaceId(
+      loadedStatsPlaceIdRef.current,
+      canonicalStatsIdRef.current,
+    );
+    if (!placeId) return { ok: false, reason: 'missing_ids' };
+    const imageUrl = imageToReport.urls?.regular || imageToReport.urls?.small || null;
+    const { error } = await supabase.from('gallery_photo_reports').insert({
+      place_id: placeId,
+      image_id: String(imageToReport.id),
+      image_url: imageUrl,
+      reason,
+    });
+    if (error) {
+      const why = galleryReportErrorReason(error);
+      if (why === 'error') console.warn('gallery report failed', error);
+      return { ok: false, reason: why };
+    }
+    trackGalleryPhotoReport({
+      placeId,
       imageId: imageToReport.id,
       source: imageToReport.source,
     });
+    return { ok: true };
   }, []);
 
   const removeImageFromGalleryStorage = useCallback(
@@ -1303,30 +1363,27 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   const handleAdminRemoveGalleryImage = useCallback(
     async (imageToRemove) => {
-      if (!isGalleryAdmin) return;
-      const newStorage = removeImageFromGalleryStorage(imageToRemove);
-      if (!newStorage) return;
-
-      const koreanName = currentKoreanNameRef.current;
-      if (!koreanName) return;
-
-      const thumbnailToSave =
-        newStorage[0]?.urls?.small || newStorage[0]?.urls?.regular || '';
-      try {
-        const { error } = await supabase
-          .from('place_stats')
-          .update({
-            gallery_urls: newStorage,
-            image_url: thumbnailToSave,
-          })
-          .eq('place_id', koreanName);
-
-        if (error) {
-          console.error('🚨 관리자 갤러리 제거 후 DB 업데이트 실패:', error);
-        }
-      } catch (err) {
-        console.error('🚨 관리자 갤러리 제거 중 예외 발생:', err);
+      if (!isGalleryAdmin || !imageToRemove?.id) return { ok: false, reason: 'forbidden' };
+      const placeId = resolveGalleryPersistPlaceId(
+        loadedStatsPlaceIdRef.current,
+        canonicalStatsIdRef.current,
+      );
+      if (!placeId) return { ok: false, reason: 'missing' };
+      const { data, error } = await supabase.functions.invoke('gallery-moderate', {
+        body: {
+          action: 'remove',
+          placeId,
+          imageId: String(imageToRemove.id),
+        },
+      });
+      const failure = galleryModerateFailureReason(error, data);
+      if (failure) {
+        console.error('🚨 gallery-moderate remove failed', error || data);
+        return { ok: false, reason: failure };
       }
+      return removeImageFromGalleryStorage(imageToRemove)
+        ? { ok: true }
+        : { ok: false, reason: 'missing' };
     },
     [removeImageFromGalleryStorage, isGalleryAdmin],
   );
