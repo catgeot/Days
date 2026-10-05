@@ -14,6 +14,8 @@ import {
   resolveMrtTnaQuery,
 } from '../../../../../utils/fetchMrtTnas';
 
+import PartnerBookingHandoff from '../../../../../shared/affiliate/PartnerBookingHandoff.jsx';
+
 const LG_MQ = '(min-width: 1024px)';
 
 const TOUR_SORT_OPTION_IDS = [
@@ -98,87 +100,95 @@ function TnaCard({ item, size = 'md', theme = 'dark', imageClassName, locale = '
   const href = buildMrtTnaProductUrl(item);
   const price = formatPrice(item, locale);
   const imgBox = imageClassName || 'aspect-square';
+  if (!href) return null;
+
+  const shellClass = light
+    ? 'flex flex-col rounded-xl border border-orange-200 bg-white overflow-hidden'
+    : 'flex flex-col rounded-2xl border border-orange-400/30 bg-orange-500/10 overflow-hidden';
 
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer sponsored"
-      draggable={false}
-      className={
-        light
-          ? 'rounded-xl border border-orange-200 bg-white overflow-hidden transition-colors hover:border-orange-300 hover:shadow-sm'
-          : 'rounded-2xl border border-orange-400/30 bg-orange-500/10 overflow-hidden transition-colors hover:border-orange-300/45 hover:bg-orange-500/20'
-      }
-    >
-      <div
-        className={`relative w-full pointer-events-none overflow-hidden ${
-          light ? 'bg-gray-50' : 'bg-white/5'
-        } ${imgBox}`}
-      >
-        {item.imageUrl ? (
-          <img
-            src={item.imageUrl}
-            alt=""
-            loading="lazy"
-            draggable={false}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-        ) : (
-          <div
-            className={`flex h-full w-full items-center justify-center ${
-              light ? 'text-gray-300' : 'text-white/30'
-            } ${large ? 'text-xs' : 'text-[10px]'}`}
-          >
-            No image
-          </div>
-        )}
-      </div>
-      <div
-        className={`pointer-events-none ${
-          large ? 'space-y-1.5 px-3 py-2.5' : 'space-y-1 px-2.5 py-2'
-        }`}
-      >
-        {item.category ? (
-          <p
-            className={`break-keep ${
-              light ? 'text-orange-600/80' : 'text-orange-100/70'
-            } ${large ? 'text-[11px]' : 'text-[10px]'}`}
-          >
-            {item.category}
-          </p>
-        ) : null}
-        <p
-          className={`line-clamp-3 break-keep font-semibold leading-snug ${
-            light ? 'text-gray-800' : 'text-white'
-          } ${large ? 'text-[13px]' : 'text-[11px]'}`}
+    <div className={shellClass}>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div
+          className={`relative w-full shrink-0 overflow-hidden ${
+            light ? 'bg-gray-50' : 'bg-white/5'
+          } ${imgBox}`}
         >
-          {item.itemName}
-        </p>
-        <div className="flex min-w-0 items-end justify-between gap-2">
-          {item.reviewScore != null ? (
-            <span
-              className={`shrink-0 tabular-nums ${
-                light ? 'text-amber-600' : 'text-orange-100/80'
-              } ${large ? 'text-xs' : 'text-[10px]'}`}
-            >
-              ★ {item.reviewScore}
-            </span>
+          {item.imageUrl ? (
+            <img
+              src={item.imageUrl}
+              alt=""
+              loading="lazy"
+              draggable={false}
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
           ) : (
-            <span />
-          )}
-          {price ? (
-            <span
-              className={`min-w-0 text-right font-bold tabular-nums break-keep ${
-                light ? 'text-gray-700' : 'text-white/90'
+            <div
+              className={`flex h-full w-full items-center justify-center ${
+                light ? 'text-gray-300' : 'text-white/30'
               } ${large ? 'text-xs' : 'text-[10px]'}`}
             >
-              {price}
-            </span>
+              No image
+            </div>
+          )}
+        </div>
+        <div
+          className={`${
+            large ? 'space-y-1.5 px-3 py-2.5' : 'space-y-1 px-2.5 py-2'
+          }`}
+        >
+          {item.category ? (
+            <p
+              className={`break-keep ${
+                light ? 'text-orange-600/80' : 'text-orange-100/70'
+              } ${large ? 'text-[11px]' : 'text-[10px]'}`}
+            >
+              {item.category}
+            </p>
           ) : null}
+          <p
+            className={`line-clamp-3 break-keep font-semibold leading-snug ${
+              light ? 'text-gray-800' : 'text-white'
+            } ${large ? 'text-[13px]' : 'text-[11px]'}`}
+          >
+            {item.itemName}
+          </p>
+          <div className="flex min-w-0 items-end justify-between gap-2">
+            {item.reviewScore != null ? (
+              <span
+                className={`shrink-0 tabular-nums ${
+                  light ? 'text-amber-600' : 'text-orange-100/80'
+                } ${large ? 'text-xs' : 'text-[10px]'}`}
+              >
+                ★ {item.reviewScore}
+              </span>
+            ) : (
+              <span />
+            )}
+            {price ? (
+              <span
+                className={`min-w-0 text-right font-bold tabular-nums break-keep ${
+                  light ? 'text-gray-700' : 'text-white/90'
+                } ${large ? 'text-xs' : 'text-[10px]'}`}
+              >
+                {price}
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
-    </a>
+      <div
+        className={`border-t ${
+          light ? 'border-orange-100 p-2.5 pt-2' : 'border-white/10 p-2.5 pt-2'
+        }`}
+      >
+        <PartnerBookingHandoff
+          href={href}
+          kind="tour"
+          theme={light ? 'light' : 'dark'}
+        />
+      </div>
+    </div>
   );
 }
 

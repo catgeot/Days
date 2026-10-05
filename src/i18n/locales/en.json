@@ -4,6 +4,15 @@
     "defaultDescription": "Plan and record trips with an AI docent on a 3D globe — GATEO, your smart travel toolkit.",
     "defaultKeywords": "travel, AI docent, 3D globe, trip planner, GATEO, Korea festivals, scenic spots, Phuket travel, Galapagos photos, Angkor Wat photos, world destinations"
   },
+  "partnerBookingHandoff": {
+    "noticeDefault": "Opens the partner booking page · price and availability are on their site",
+    "noticeNarrow": "Book on the partner site · price and seats are on their site",
+    "ctaLodgingHotel": "View hotel & start booking",
+    "ctaLodgingMixed": "View stay & start booking",
+    "ctaTourProduct": "View product & start booking",
+    "affiliatePartner": "Affiliate · {{partner}}",
+    "partnerMyRealTrip": "MyRealTrip"
+  },
   "layout": {
     "locale": {
       "switchToEn": "Switch to English",
