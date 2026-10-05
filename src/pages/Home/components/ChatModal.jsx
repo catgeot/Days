@@ -505,6 +505,7 @@ const ChatModal = ({
         }
         text = await generatePlaceChatIntroWithAi(placeIntroTarget, i18n.language);
         if (cancelled) return;
+        if (!text) return;
         setPlaceIntro(text);
         await persistPlaceChatIntroSummary(placeIntroTarget, text, i18n.language);
         notifyPlaceCard(text);
