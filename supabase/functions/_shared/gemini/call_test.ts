@@ -16,6 +16,14 @@ Deno.test("sanitizeGeminiUserText keeps Korean numbered lists", () => {
   assertEquals(sanitizeGeminiUserText(ko), ko);
 });
 
+Deno.test("sanitizeGeminiUserText strips Thinking block before Korean", () => {
+  const raw =
+    "**Thinking:** Plan a warm intro about the temple.\n\n보로부두르는 이른 아침 일출 명소로도 알려져 있습니다.";
+  const out = sanitizeGeminiUserText(raw);
+  assertEquals(out.startsWith("보로부두르는"), true);
+  assertEquals(detectMooniReplyLeak(out), null);
+});
+
 Deno.test("sanitizeGeminiUserText keeps clean Korean prose", () => {
   const ko = "보로부두르는 자바 중부에 있는 불교 사원 단지입니다. 일출을 보며 올라가는 코스가 인기 있습니다.";
   assertEquals(sanitizeGeminiUserText(ko), ko);

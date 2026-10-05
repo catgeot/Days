@@ -9,6 +9,8 @@ const LEAK_MARKERS = [
   /\bDraft\s*:/i,
   /historical\/visual/i,
   /\bReasoning\s*:/i,
+  /\*\*Thinking:\*\*/i,
+  /^\s*Thinking\s*:/im,
   /chain-of-thought/i,
   /\bscratch\s*pad\b/i,
   /^\s*\d+\.\s*\*\*Draft/im,

@@ -32,6 +32,13 @@ const koProse =
   '보로부두르는 자바 중부에 있는 불교 사원 단지입니다. 일출을 보며 올라가는 코스가 인기 있습니다.';
 check(sanitizeGeminiUserText(koProse) === koProse, 'clean Korean prose unchanged');
 
+const thinkingLeak =
+  '**Thinking:** The user wants a general overview. Keep it factual and short.\n\n오사카는 간사이의 중심 도시로, 먹거리와 거리 산책이 즐거운 곳입니다.';
+check(detectMooniReplyLeak(thinkingLeak) !== null, 'Thinking leak detected');
+const thinkingClean = sanitizeGeminiUserText(thinkingLeak);
+check(thinkingClean.startsWith('오사카는'), 'Thinking prefix stripped before Korean answer');
+check(detectMooniReplyLeak(thinkingClean) === null, 'Thinking-cleaned text passes leak scan');
+
 if (fail) {
   console.error(`smoke-mooni-reply-leak: ${fail} failure(s)`);
   process.exit(1);
