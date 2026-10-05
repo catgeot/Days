@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "https://deno.land/std@0.177.0/http/server.ts": "../_test_shims/serve.ts"
+  }
+}

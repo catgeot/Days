@@ -1,0 +1,67 @@
+# main CI 실패·복구 — site-health 이슈
+# @see plans/site-health-monitoring-plan.md
+
+name: Health CI Alert
+
+permissions:
+  contents: read
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+
+jobs:
+  alert:
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v5
+
+      - name: Open CI failure issue
+        uses: actions/github-script@v7
+        env:
+          DRY_RUN: ${{ github.ref != 'refs/heads/main' }}
+        with:
+          script: |
+            const report = require('./scripts/health/report-issues.cjs');
+            await report.upsertSimple({
+              github,
+              context,
+              core,
+              causeKey: 'ci:main:failure',
+              feature: 'CI(main 빌드·린트)',
+              reason: '빌드 또는 린트 실패',
+              runUrl: context.payload.workflow_run.html_url,
+              layer: 'ci',
+              immediate: true,
+            });
+
+  recover:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v5
+
+      - name: Close CI failure issue on success
+        uses: actions/github-script@v7
+        env:
+          DRY_RUN: ${{ github.ref != 'refs/heads/main' }}
+        with:
+          script: |
+            const report = require('./scripts/health/report-issues.cjs');
+            await report.handlePassByCauseKey(github, context, core, 'ci:main:failure', 'ci');

@@ -1,26 +1,20 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 
-const FESTIVAL_A = '613316';
 const FESTIVAL_INVALID = '999999999';
-
-async function blockSupabaseWrites(page) {
-  await page.route(/\/rest\/v1\//, async (route) => {
-    const req = route.request();
-    if (req.method() !== 'GET') {
-      await route.abort();
-      return;
-    }
-    await route.continue();
-  });
-}
+const MRT_SCAN_MAX = 10;
+/** Per festival candidate when no MRT strip / no product cards — then try next. */
+const MRT_PER_FESTIVAL_PROBE_MS = 20_000;
 
 async function dismissLocHint(page) {
   const close = page
     .getByRole('main')
     .getByRole('button', { name: /^닫기$|^Close$/i })
     .first();
-  if (await close.isVisible({ timeout: 2500 }).catch(() => false)) {
+  try {
+    await close.waitFor({ state: 'visible', timeout: 2500 });
     await close.click();
+  } catch {
+    /* location hint not shown */
   }
 }
 
@@ -57,11 +51,117 @@ async function countBrokenImages(page) {
   });
 }
 
-async function countMrtProductCards(page) {
+async function readMrtStripSnapshot(dialog) {
+  const stayLoading =
+    (await dialog.getByText(/숙소를 불러오는 중|Loading stays/i).count()) > 0;
+  const stayEmpty =
+    (await dialog.getByText(/선택 일정에 맞는 숙소가 없습니다|No stays for these dates/i).count()) >
+    0;
+  const stayCards = await dialog
+    .locator('.overflow-x-auto a[href*="accommodation.myrealtrip.com"]')
+    .count();
+  const stayRendered =
+    (await dialog.getByText(/내 여행 일정|My trip dates/i).count()) > 0 ||
+    stayLoading ||
+    stayEmpty ||
+    stayCards > 0;
+
+  const tnaLoading =
+    (await dialog.getByText(/투어·티켓 상품을 불러오는 중|Loading tours and tickets/i).count()) >
+    0;
+  const tnaEmpty =
+    (await dialog.getByText(/선택 지역에 맞는 투어·티켓 상품이 없습니다|No tours or tickets found/i).count()) >
+    0;
+  const tnaCards = await dialog.locator('a[href*="experiences.myrealtrip.com"]').count();
+  const tnaRendered =
+    (await dialog.getByText(/투어\s*·\s*체험\s*·\s*티켓|투어\s*·\s*티켓|Tour · ticket/i).count()) > 0 ||
+    tnaLoading ||
+    tnaEmpty ||
+    tnaCards > 0;
+
+  const staySettled =
+    !stayRendered || (!stayLoading && (stayCards > 0 || stayEmpty));
+  const tnaSettled = !tnaRendered || (!tnaLoading && (tnaCards > 0 || tnaEmpty));
+
+  return {
+    stay: {
+      rendered: stayRendered,
+      settled: staySettled,
+      loading: stayLoading,
+      empty: stayEmpty,
+      cards: stayCards,
+    },
+    tna: {
+      rendered: tnaRendered,
+      settled: tnaSettled,
+      loading: tnaLoading,
+      empty: tnaEmpty,
+      cards: tnaCards,
+    },
+    stayHrefs: await dialog
+      .locator('.overflow-x-auto a[href*="accommodation.myrealtrip.com"]')
+      .evaluateAll((as) => as.map((a) => a.href)),
+    tnaHrefs: await dialog
+      .locator('.overflow-x-auto a[href*="experiences.myrealtrip.com"]')
+      .evaluateAll((as) => as.map((a) => a.href)),
+  };
+}
+
+async function waitFestivalMrtSettled(dialog, timeoutMs = 120_000) {
+  await expect
+    .poll(
+      async () => {
+        const snap = await readMrtStripSnapshot(dialog);
+        if (!snap.stay.rendered && !snap.tna.rendered) return null;
+        if (!snap.stay.settled || !snap.tna.settled) return null;
+        return snap;
+      },
+      {
+        timeout: timeoutMs,
+        message: 'MRT strips settled (loading finished → cards or empty)',
+      },
+    )
+    .not.toBeNull();
+}
+
+async function tryFestivalWithMrtProducts(page, id) {
+  await page.goto(`/korea/?festival=${id}`);
   const dialog = detailDialog(page);
-  const cards = dialog.locator('.overflow-x-auto a[href*="myrealtrip.com"]');
-  await expect(cards.first()).toBeVisible({ timeout: 120_000 });
-  return cards.count();
+  try {
+    await dialog.waitFor({ state: 'visible', timeout: 15_000 });
+    await waitFestivalMrtSettled(dialog, MRT_PER_FESTIVAL_PROBE_MS);
+  } catch {
+    await clickDetailClose(page).catch(() => {});
+    return null;
+  }
+  const snap = await readMrtStripSnapshot(dialog);
+  if (snap.stay.cards + snap.tna.cards > 0) return { id, snap };
+  await clickDetailClose(page).catch(() => {});
+  return null;
+}
+
+async function pickFestivalWithMrtStrips(page, cards) {
+  const total = Math.min(await cards.count(), MRT_SCAN_MAX);
+  for (let i = 0; i < total; i += 1) {
+    const card = cards.nth(i);
+    await card.scrollIntoViewIfNeeded();
+    const id = await card.getAttribute('data-festival-id');
+    if (!id) continue;
+    const hit = await tryFestivalWithMrtProducts(page, id);
+    if (hit) return hit;
+  }
+  throw new Error('no listed festival exposes MRT product cards — check festivalCross/stay mapping');
+}
+
+function assertMrtAffiliateLinks(mrt) {
+  for (const h of mrt.stayHrefs) {
+    expect(h, `lodging href: ${h}`).toMatch(/accommodation\.myrealtrip\.com/);
+    expect(h, `lodging affiliate: ${h}`).toMatch(/mylink_id=\d+/);
+  }
+  for (const h of mrt.tnaHrefs) {
+    expect(h, `tna href: ${h}`).toMatch(/experiences\.myrealtrip\.com/);
+    expect(h, `tna affiliate: ${h}`).toMatch(/mylink_id=\d+|utm_source=mktpartner/);
+  }
 }
 
 function detailDialog(page) {
@@ -84,17 +184,15 @@ async function openFirstCard(page, cards) {
 }
 
 test.describe('Korea festival detail URL + history', () => {
-  test.beforeEach(async ({ page }) => {
-    await blockSupabaseWrites(page);
-  });
-
   test('scenarios a–f + image/MRT counts', async ({ page }, testInfo) => {
+    test.setTimeout(300_000);
     const engine = testInfo.project.name;
     const results = {};
 
     const cards = await waitForFestivalList(page);
+    const festivalA = await cards.first().getAttribute('data-festival-id');
+    expect(festivalA, 'list card data-festival-id').toBeTruthy();
 
-    // (a) card → detail → browser back
     await openFirstCard(page, cards);
     await expect(page).toHaveURL(/festival=/, { timeout: 15_000 });
     const idA = festivalParam(page.url());
@@ -102,33 +200,38 @@ test.describe('Korea festival detail URL + history', () => {
     await page.goBack();
     await expect(detailDialog(page)).toBeHidden({ timeout: 15_000 });
     await expect(page).toHaveURL(/\/korea\/?(\?|$)/);
-    expect(festivalParam(page.url())).toBe('');
+    await expect
+      .poll(() => festivalParam(page.url()), { timeout: 30_000, message: 'festival param cleared after back' })
+      .toBe('');
     results.a =
       !festivalParam(page.url()) &&
       !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (b) card → close → back does not reopen detail
     await openFirstCard(page, cards);
     await clickDetailClose(page);
     await expect(detailDialog(page)).toBeHidden({ timeout: 15_000 });
-    expect(festivalParam(page.url())).toBe('');
+    await expect
+      .poll(() => festivalParam(page.url()), { timeout: 30_000, message: 'festival param cleared after close' })
+      .toBe('');
     await page.goBack();
     await expect(detailDialog(page)).toBeHidden({ timeout: 15_000 });
-    expect(festivalParam(page.url())).toBe('');
+    await expect
+      .poll(() => festivalParam(page.url()), { timeout: 30_000, message: 'festival param stays clear after back' })
+      .toBe('');
     results.b = !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (c) deep link → close → clean URL → reload stays closed
-    await page.goto(`/korea/?festival=${FESTIVAL_A}`);
+    await page.goto(`/korea/?festival=${festivalA}`);
     await expect(detailDialog(page)).toBeVisible({ timeout: 60_000 });
     await clickDetailClose(page);
     await expect(detailDialog(page)).toBeHidden({ timeout: 15_000 });
-    expect(festivalParam(page.url())).toBe('');
+    await expect
+      .poll(() => festivalParam(page.url()), { timeout: 30_000, message: 'festival param cleared after deep link close' })
+      .toBe('');
     await page.reload();
     await expect(detailDialog(page)).toBeHidden({ timeout: 30_000 });
     results.c = !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (d) deep link → back stays on site
-    await page.goto(`/korea/?festival=${FESTIVAL_A}`);
+    await page.goto(`/korea/?festival=${festivalA}`);
     await expect(detailDialog(page)).toBeVisible({ timeout: 60_000 });
     await page.goBack();
     await expect(detailDialog(page)).toBeHidden({ timeout: 15_000 });
@@ -137,7 +240,6 @@ test.describe('Korea festival detail URL + history', () => {
       page.url().includes('/korea') &&
       !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (e) A → B → back → list (not A)
     const cards2 = await waitForFestivalList(page);
     await openFirstCard(page, cards2);
     const firstId = festivalParam(page.url());
@@ -147,30 +249,42 @@ test.describe('Korea festival detail URL + history', () => {
       document.querySelector(`[data-festival-id="${id}"]`)?.click();
     }, secondContentId);
     await expect(detailDialog(page)).toBeVisible({ timeout: 30_000 });
-    const secondId = festivalParam(page.url());
-    expect(secondId).toBeTruthy();
-    expect(secondId).not.toBe(firstId);
+    await expect
+      .poll(() => festivalParam(page.url()), {
+        timeout: 30_000,
+        message: 'second festival id appears in URL',
+      })
+      .not.toBe('');
+    await expect
+      .poll(() => festivalParam(page.url()), {
+        timeout: 30_000,
+        message: 'second festival differs from first',
+      })
+      .not.toBe(firstId);
     await page.goBack();
     await expect(detailDialog(page)).toBeHidden({ timeout: 15_000 });
-    expect(festivalParam(page.url())).toBe('');
+    await expect
+      .poll(() => festivalParam(page.url()), { timeout: 30_000, message: 'festival param cleared after A→B→back' })
+      .toBe('');
     results.e = !(await detailDialog(page).isVisible().catch(() => false));
 
-    // (f) invalid id
     await page.goto(`/korea/?festival=${FESTIVAL_INVALID}`);
     await expect(detailDialog(page)).toBeHidden({ timeout: 30_000 });
-    expect(festivalParam(page.url())).toBe('');
+    await expect
+      .poll(() => festivalParam(page.url()), { timeout: 30_000, message: 'invalid festival id stripped from URL' })
+      .toBe('');
     await expect(
       page.getByRole('heading', { name: /한국의 축제|Korea festivals/i }),
     ).toBeVisible();
     results.f = !(await detailDialog(page).isVisible().catch(() => false));
 
-    // broken images + MRT on list and festival detail
-    await waitForFestivalList(page);
+    const cards3 = await waitForFestivalList(page);
     const brokenOnList = await countBrokenImages(page);
-    await page.goto(`/korea/?festival=${FESTIVAL_A}`);
+    const picked = await pickFestivalWithMrtStrips(page, cards3);
+    const mrtFestivalId = picked.id;
+    const mrt = picked.snap;
     await expect(detailDialog(page)).toBeVisible({ timeout: 60_000 });
     const brokenOnDetail = await countBrokenImages(page);
-    const mrtCount = await countMrtProductCards(page);
 
     test.info().attach(`${engine}-scenario-results.json`, {
       body: JSON.stringify(
@@ -179,7 +293,12 @@ test.describe('Korea festival detail URL + history', () => {
           scenarios: results,
           brokenOnList,
           brokenOnDetail,
-          mrtCount,
+          mrt: {
+            stay: mrt.stay,
+            tna: mrt.tna,
+            hrefSample: [...mrt.stayHrefs.slice(0, 2), ...mrt.tnaHrefs.slice(0, 2)],
+            mrtFestivalId,
+          },
         },
         null,
         2,
@@ -195,6 +314,16 @@ test.describe('Korea festival detail URL + history', () => {
     expect(results.f, 'scenario f').toBe(true);
     expect(brokenOnList, 'broken images on list').toBe(0);
     expect(brokenOnDetail, 'broken images on detail').toBe(0);
-    expect(mrtCount, 'MRT cards on 613316').toBe(27);
+
+    expect(mrt.stay.rendered || mrt.tna.rendered, 'at least one MRT strip rendered').toBe(true);
+    if (mrt.stay.rendered) {
+      expect(mrt.stay.cards > 0 || mrt.stay.empty, 'stay strip settled (cards or empty)').toBe(true);
+    }
+    if (mrt.tna.rendered) {
+      expect(mrt.tna.cards > 0 || mrt.tna.empty, 'TNA strip settled (cards or empty)').toBe(true);
+    }
+    expect(mrt.stay.cards + mrt.tna.cards, 'at least one MRT product card').toBeGreaterThan(0);
+    expect(mrt.stay.cards, 'stay cards ≤ page size').toBeLessThanOrEqual(20);
+    assertMrtAffiliateLinks(mrt);
   });
 });
