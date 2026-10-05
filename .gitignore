@@ -60,4 +60,5 @@ scripts/data/cache/
 # Playwright E2E
 /test-results/
 /playwright-report/
-/blob-report/
+/blob-report/actionlint
+actionlint

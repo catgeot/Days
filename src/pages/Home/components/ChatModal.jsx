@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass } from 'lucide-react';
-import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
+import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
-import { getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
+import { GeminiProxyError, getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import {
@@ -44,7 +44,7 @@ import {
   buildPlacePlannerPathWithFocus,
   resolvePlannerFocusFromUserText,
 } from '../../../utils/placePlannerFocus';
-import { getChatCtaPromptHint } from '../../../utils/chatCtaPromptHint';
+import { resolveChatCtaCode } from '../../../utils/chatCtaPromptHint';
 import {
   ensureChatEssentialGuide,
   useChatEssentialGuide,
@@ -58,8 +58,8 @@ import {
 } from '../lib/mooniQuickReplies';
 import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
-import { getMooniChipPromptHint, MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
-import { getMooniPromptBundle } from '../../../i18n/mooniPromptBundles';
+import { GEMINI_MODELS } from '../../../utils/geminiModels';
+import { extractMooniChipPromptFacts, MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
@@ -69,7 +69,6 @@ import {
 } from '../lib/flightOriginPreference';
 import {
   extractMooniTripFacts,
-  formatMooniTripSessionHint,
   hasMooniTripSessionFacts,
   hydrateMooniTripSession,
   mergeMooniTripSession,
@@ -849,55 +848,54 @@ const ChatModal = ({
       tripSessionRef.current = nextSession;
       persistMooniTripSession(nextSession, { slug, destinationName: destName });
       if (nextSession.departureIata) persistFlightOriginIata(nextSession.departureIata);
-      const tripSessionHint = formatMooniTripSessionHint(
-        nextSession,
-        getMooniPromptBundle(i18n.language),
-      );
       const sessionExtras = hasMooniTripSessionFacts(nextSession)
         ? { mooniSession: nextSession }
         : undefined;
 
       const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
 
-      const chatCtaHint = getChatCtaPromptHint({
-        userText: cleanText,
-        slug,
-        destinationName: destName,
-        chatHistory: priorTurns,
-        essentialGuide,
-      });
-
-      const chipPromptHint = getMooniChipPromptHint({
+      const chipFacts = extractMooniChipPromptFacts({
         chipId,
         userText: cleanText,
         slug,
         destinationName: destName,
         chatHistory: priorTurns,
         essentialGuide,
+        locale: i18n.language,
         tripSession: nextSession,
       });
-
-      const systemInstruction = getSystemPrompt(personaToUse, destForPrompt, {
-        isMooni: Boolean(placeBound) || destForPrompt === 'MOONi',
-        boundPlaceName: placeBound?.name ?? null,
-        chipPromptHint,
-        chatCtaHint,
-        tripSessionHint,
+      const cta = resolveChatCtaCode({
+        userText: cleanText,
+        slug,
+        destinationName: destName,
+        chatHistory: priorTurns,
+        essentialGuide,
       });
+
       const chatModelId = resolveMooniChatModel({
         userText: cleanText,
         chatHistory: priorTurns,
         persona: personaToUse,
       });
+      const history = priorTurns
+        .filter((turn) => turn.role === 'user' || turn.role === 'model')
+        .map((turn) => ({ role: turn.role, text: String(turn.text ?? '') }));
 
-      const aiReply = await apiClient.fetchProxyGemini(
-        null,
-        priorTurns,
-        systemInstruction,
-        cleanText,
-        [],
-        chatModelId
-      );
+      const aiReply = await apiClient.invokeGeminiTask('mooni_chat', {
+        locale: i18n.language,
+        persona: personaToUse,
+        tier: chatModelId === GEMINI_MODELS.QUALITY ? 'quality' : 'fast',
+        locationName: destForPrompt,
+        boundPlaceName: placeBound?.name ?? '',
+        isMooni: Boolean(placeBound) || destForPrompt === 'MOONi',
+        chipId: chipFacts?.chipId ?? null,
+        facts: chipFacts?.facts ?? null,
+        tripSession: hasMooniTripSessionFacts(nextSession) ? nextSession : null,
+        cta: cta.code,
+        ctaPlace: cta.place,
+        history,
+        userText: cleanText,
+      });
 
       const booking = resolveChatBookingActions({
         userText: cleanText,
@@ -953,7 +951,8 @@ const ChatModal = ({
       onUpdateChat(effectiveChatId, finalMessages, sessionExtras);
     } catch (error) {
       const text = getGeminiProxyErrorMessage(error);
-      setMessages((prev) => [...prev, { role: 'error', text }]);
+      const role = error instanceof GeminiProxyError && error.kind === 'budget' ? 'model' : 'error';
+      setMessages((prev) => [...prev, { role, text }]);
     } finally {
       setIsLoading(false);
     }

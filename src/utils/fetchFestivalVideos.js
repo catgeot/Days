@@ -52,22 +52,35 @@ export async function fetchFestivalVideos(opts) {
   const fallbackQuery = `${title} festival`;
 
   try {
-    const { data: cached } = await supabase
+    const { data: cached, error: cacheReadError } = await supabase
       .from('place_videos')
-      .select('videos')
+      .select('videos, next_retry_at')
       .eq('place_id', placeId)
       .limit(1)
       .maybeSingle();
 
-    // 10개까지 채워진 캐시만 hit (예전 5개 캐시는 1회 재호출로 갱신)
-    if (
-      cached &&
-      Array.isArray(cached.videos) &&
-      cached.videos.length >= FESTIVAL_VIDEOS_MAX
-    ) {
+    // 3v 전(컬럼 없음)에는 기존 10개 규칙. 있으면 행이 있고 만료 전.
+    let cacheRow = cached;
+    let legacyCountRule = false;
+    if (cacheReadError) {
+      legacyCountRule = true;
+      const { data: legacy } = await supabase
+        .from('place_videos')
+        .select('videos')
+        .eq('place_id', placeId)
+        .limit(1)
+        .maybeSingle();
+      cacheRow = legacy;
+    }
+    const retryAt = cacheRow?.next_retry_at ? Date.parse(cacheRow.next_retry_at) : NaN;
+    const notExpired = !cacheRow?.next_retry_at || (Number.isFinite(retryAt) && retryAt > Date.now());
+    const countOk = legacyCountRule
+      ? Array.isArray(cacheRow?.videos) && cacheRow.videos.length >= FESTIVAL_VIDEOS_MAX
+      : Array.isArray(cacheRow?.videos);
+    if (cacheRow && countOk && (legacyCountRule || notExpired)) {
       return {
         ok: true,
-        videos: cached.videos.slice(0, FESTIVAL_VIDEOS_MAX),
+        videos: cacheRow.videos.slice(0, FESTIVAL_VIDEOS_MAX),
         fromCache: true,
       };
     }

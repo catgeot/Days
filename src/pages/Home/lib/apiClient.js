@@ -5,63 +5,53 @@
 
 import { supabase } from '../../../shared/api/supabase';
 import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFilter';
-import { GEMINI_MODELS, resolveGeminiModelId } from '../../../utils/geminiModels';
 import {
   classifyGeminiProxyFailure,
   GeminiProxyError,
 } from './geminiProxyError';
 
-export const apiClient = {
-  // --- 1. 프록시 기반 Gemini 통신 (New) ---
-  fetchProxyGemini: async (apiKey, history, systemInstruction, userText, images = [], modelId = GEMINI_MODELS.QUALITY) => {
+async function readInvokeFailure(error) {
+  const ctx = error && typeof error === 'object' ? error.context : null;
+  if (ctx instanceof Response) {
+    let data = null;
     try {
-      // 1. parts 배열 생성 (기존과 동일)
-      const parts = [{ text: `${systemInstruction}\n\n[이전 대화 내역]\n${JSON.stringify(history)}\n\n사용자 질문: ${userText}` }];
-
-      if (images && images.length > 0) {
-        images.forEach((imgBase64) => {
-          const mimeTypeMatch = imgBase64.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,/);
-          const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
-          const base64Data = imgBase64.replace(/^data:image\/\w+;base64,/, "");
-
-          parts.push({
-            inlineData: {
-              mimeType: mimeType,
-              data: base64Data
-            }
-          });
-        });
-      }
-
-      const finalModelId = resolveGeminiModelId(modelId);
-
-      // 2. Edge Function 프록시 호출
-      console.log(`[API Proxy] Calling gemini-proxy with model: ${finalModelId}`);
-      const { data, error } = await supabase.functions.invoke('gemini-proxy', {
-        body: { modelId: finalModelId, parts }
-      });
-
-      if (error || !data?.success) {
-        const classified = classifyGeminiProxyFailure({ error, data });
-        throw new GeminiProxyError(classified);
-      }
-
-      // 3. 결과 파싱
-      return data.data?.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
-
-    } catch (error) {
-      console.error("[API Proxy] Fetch Error:", error);
-      if (error instanceof GeminiProxyError) throw error;
-      throw new GeminiProxyError(classifyGeminiProxyFailure({ error }));
+      data = await ctx.clone().json();
+    } catch {
+      data = null;
     }
-  },
+    return { httpStatus: ctx.status, data };
+  }
+  if (ctx && typeof ctx.status === 'number') {
+    return { httpStatus: ctx.status, data: null };
+  }
+  return { httpStatus: null, data: null };
+}
 
-  // --- 기존 클라이언트 직접 호출 (Fallback 용도로 유지) ---
-  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = [], modelId = GEMINI_MODELS.QUALITY) => {
-    // 🚨 보안 수정: 더 이상 클라이언트에서 직접 구글 API를 호출하지 않습니다.
-    // 기존에 fetchGeminiResponse를 사용하던 모든 호출은 프록시를 통하도록 리다이렉트합니다.
-    console.warn("[API Deprecated] fetchGeminiResponse is deprecated. Redirecting to fetchProxyGemini.");
-    return await apiClient.fetchProxyGemini(null, history, systemInstruction, userText, images, modelId);
+export const apiClient = {
+  invokeGeminiTask: async (task, params) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('gemini-proxy', {
+        body: { task, params },
+      });
+      if (error || !data?.success) {
+        const extra = error ? await readInvokeFailure(error) : { httpStatus: null, data: null };
+        throw new GeminiProxyError(classifyGeminiProxyFailure({
+          error,
+          data: data ?? extra.data,
+          httpStatus: extra.httpStatus,
+        }));
+      }
+      return typeof data.text === 'string' && data.text.trim() ? data.text : '죄송합니다.';
+    } catch (error) {
+      console.error('[API Proxy] Fetch Error:', error);
+      if (error instanceof GeminiProxyError) throw error;
+      const extra = await readInvokeFailure(error);
+      throw new GeminiProxyError(classifyGeminiProxyFailure({
+        error,
+        data: extra.data,
+        httpStatus: extra.httpStatus,
+      }));
+    }
   },
 
   // --- 2. Unsplash 이미지 통신 ---
