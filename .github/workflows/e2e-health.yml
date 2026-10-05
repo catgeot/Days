@@ -1,11 +1,14 @@
-# gateo.kr Playwright E2E — 수동 + 일 1회 (MOONi AI 비용)
-# @see plans/site-health-monitoring-plan.md Phase 2-C
+# gateo.kr Playwright E2E — 매일 06:23 KST
+# @see plans/site-health-monitoring-plan.md
 
 name: E2E Health
 
+permissions:
+  contents: read
+
 on:
   schedule:
-    - cron: '0 9 * * *'
+    - cron: '23 21 * * *'
   workflow_dispatch:
 
 concurrency:
@@ -16,6 +19,9 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -34,16 +40,31 @@ jobs:
 
       - name: Run E2E against production
         env:
-          SMOKE_SITE_URL: https://gateo.kr
+          TZ: Asia/Seoul
+          SMOKE_SITE_URL: https://www.gateo.kr/
           CI: true
-        run: npm run test:e2e
+          PLAYWRIGHT_JSON_OUTPUT_FILE: health/e2e.json
+          PLAYWRIGHT_HTML_OPEN: never
+        run: npx playwright test --project=chromium --reporter=line,json
 
-      - name: Upload Playwright report
-        if: failure()
+      - name: Summarize E2E results
+        if: always()
+        run: node scripts/health/summarize.mjs --layer e2e --playwright health/e2e.json
+
+      - name: Report health issues
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          DRY_RUN: ${{ github.ref != 'refs/heads/main' }}
+        with:
+          script: |
+            const run = require('./scripts/health/report-issues.cjs');
+            await run({ github, context, core, resultFile: 'health/health-result.json', layer: 'e2e' });
+
+      - name: Upload health result
+        if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-report
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 7
+          name: health-result-e2e
+          path: health/health-result.json
+          retention-days: 14

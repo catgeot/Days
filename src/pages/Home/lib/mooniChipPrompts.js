@@ -114,8 +114,22 @@ function summarizeJourneyTimeline(essentialGuide) {
   return lines.length ? lines.join('\n') : null;
 }
 
+function emptyFlightFacts() {
+  return {
+    arrivalIata: null,
+    toolkitIatas: null,
+    flightSearch: null,
+    routeNote: null,
+    journeyTimeline: null,
+    flightAdvice: null,
+    departure: null,
+    departureDefault: false,
+  };
+}
+
 function buildFlightSsotContext(location, essentialGuide, chatHistory, userText, ssot, tripSession = null) {
-  if (!location) return [];
+  const flight = emptyFlightFacts();
+  if (!location) return { lines: [], flight };
 
   const lines = [];
   const banner = resolveRentalPickupBannerInfo(location, { essentialGuide });
@@ -129,39 +143,36 @@ function buildFlightSsotContext(location, essentialGuide, chatHistory, userText,
   const departure = resolveDepartureFromChat(userText, chatHistory ?? []);
 
   if (arrivalIata) {
-    lines.push(
-      fillMooniPromptTemplate(ssot.arrivalIata, {
-        label: hubLabel(arrivalIata) ?? arrivalIata,
-      }),
-    );
+    const label = hubLabel(arrivalIata) ?? arrivalIata;
+    flight.arrivalIata = label;
+    lines.push(fillMooniPromptTemplate(ssot.arrivalIata, { label }));
   }
   if (plannerIatas?.length) {
-    lines.push(
-      fillMooniPromptTemplate(ssot.toolkitIatas, {
-        labels: plannerIatas.map((c) => hubLabel(c) ?? c).join(', '),
-      }),
-    );
+    const labels = plannerIatas.map((c) => hubLabel(c) ?? c).join(', ');
+    flight.toolkitIatas = labels;
+    lines.push(fillMooniPromptTemplate(ssot.toolkitIatas, { labels }));
   }
   if (searchHint) {
+    flight.flightSearch = searchHint;
     lines.push(fillMooniPromptTemplate(ssot.flightSearch, { hint: searchHint }));
   }
   if (banner?.bannerNote) {
+    flight.routeNote = banner.bannerNote;
     lines.push(fillMooniPromptTemplate(ssot.routeNote, { note: banner.bannerNote }));
   }
 
   const journey = summarizeJourneyTimeline(essentialGuide);
   if (journey) {
+    flight.journeyTimeline = journey;
     lines.push(fillMooniPromptTemplate(ssot.journeyTimeline, { timeline: journey }));
   }
 
   const flightAdvice =
     essentialGuide?.categories?.flight?.advice ?? essentialGuide?.flight?.advice ?? null;
   if (typeof flightAdvice === 'string' && flightAdvice.trim()) {
-    lines.push(
-      fillMooniPromptTemplate(ssot.flightAdvice, {
-        advice: flightAdvice.trim().slice(0, 400),
-      }),
-    );
+    const advice = flightAdvice.trim().slice(0, 400);
+    flight.flightAdvice = advice;
+    lines.push(fillMooniPromptTemplate(ssot.flightAdvice, { advice }));
   }
 
   const sessionDeparture = tripSession?.departureIata
@@ -170,29 +181,41 @@ function buildFlightSsotContext(location, essentialGuide, chatHistory, userText,
   if (sessionDeparture || departure?.iata) {
     const depIata = sessionDeparture || departure.iata;
     const depLabel = tripSession?.departureAirportLabel || departure?.label || '';
-    lines.push(
-      fillMooniPromptTemplate(ssot.departureKnown, {
-        label: hubLabel(depIata) ?? depIata,
-        extra: depLabel ? ` (${depLabel})` : '',
-      }),
-    );
+    const label = hubLabel(depIata) ?? depIata;
+    const extra = depLabel ? ` (${depLabel})` : '';
+    flight.departure = { label, extra };
+    lines.push(fillMooniPromptTemplate(ssot.departureKnown, { label, extra }));
   } else {
+    flight.departureDefault = true;
     lines.push(ssot.departureDefault);
   }
 
-  return lines;
+  return { lines, flight };
+}
+
+function emptyProfileFacts() {
+  return {
+    ferryRequired: false,
+    noCarOnIsland: false,
+    ferryStep: null,
+    preTravel: null,
+  };
 }
 
 function buildProfileContext(slug, essentialGuide, ssot) {
   const profile = getDestinationBookingProfile(slug);
+  const profileFacts = emptyProfileFacts();
   const lines = [];
   if (profile.ferryRequired) {
+    profileFacts.ferryRequired = true;
     lines.push(ssot.ferryRequired);
   }
   if (profile.noCarOnIsland) {
+    profileFacts.noCarOnIsland = true;
     lines.push(ssot.noCarOnIsland);
   }
   if (profile.defaultFerryStep) {
+    profileFacts.ferryStep = profile.defaultFerryStep;
     lines.push(fillMooniPromptTemplate(ssot.ferryStep, { step: profile.defaultFerryStep }));
   }
   const preTravel = essentialGuide?.categories?.pre_travel;
@@ -202,10 +225,40 @@ function buildProfileContext(slug, essentialGuide, ssot) {
       .filter(Boolean)
       .slice(0, 4);
     if (titles.length) {
+      profileFacts.preTravel = titles.join(', ');
       lines.push(fillMooniPromptTemplate(ssot.preTravel, { titles: titles.join(', ') }));
     }
   }
-  return lines;
+  return { lines, profile: profileFacts };
+}
+
+const FLIGHT_CHIP_IDS = new Set([
+  MOONI_CHIP_IDS.PREP_FLIGHT,
+  MOONI_CHIP_IDS.ACCESS_ORIGIN,
+  MOONI_CHIP_IDS.FROM_SEOUL,
+  MOONI_CHIP_IDS.FROM_BUSAN,
+  MOONI_CHIP_IDS.FROM_INCHEON,
+  MOONI_CHIP_IDS.FERRY,
+]);
+
+const PROFILE_CHIP_IDS = new Set([
+  MOONI_CHIP_IDS.PREP_TRANSPORT,
+  MOONI_CHIP_IDS.PREP_HOTEL,
+  MOONI_CHIP_IDS.VISA_DOCS,
+]);
+
+function prepTransportArrivalLabel(location, essentialGuide, tripSession) {
+  if (!location) return null;
+  const sessionArrival = tripSession?.arrivalIata
+    ? String(tripSession.arrivalIata).trim().toUpperCase()
+    : '';
+  const arrivalIata = sessionArrival || getPlannerFlightArrivalIata(location, { essentialGuide });
+  if (!arrivalIata) return null;
+  return (
+    (hasMooniTripSessionFacts(tripSession) && tripSession.arrivalAirportLabel) ||
+    hubLabel(arrivalIata) ||
+    arrivalIata
+  );
 }
 
 /**
@@ -268,37 +321,17 @@ export function getMooniChipPromptHint({
 
   const ssot = bundle.ssot;
   const ssotLines = [];
-  if (
-    resolvedChipId === MOONI_CHIP_IDS.PREP_FLIGHT ||
-    resolvedChipId === MOONI_CHIP_IDS.ACCESS_ORIGIN ||
-    resolvedChipId === MOONI_CHIP_IDS.FROM_SEOUL ||
-    resolvedChipId === MOONI_CHIP_IDS.FROM_BUSAN ||
-    resolvedChipId === MOONI_CHIP_IDS.FROM_INCHEON ||
-    resolvedChipId === MOONI_CHIP_IDS.FERRY
-  ) {
-    ssotLines.push(...buildFlightSsotContext(location, essentialGuide, chatHistory, userText, ssot, tripSession));
-    ssotLines.push(...buildProfileContext(slug, essentialGuide, ssot));
-  } else if (
-    resolvedChipId === MOONI_CHIP_IDS.PREP_TRANSPORT ||
-    resolvedChipId === MOONI_CHIP_IDS.PREP_HOTEL ||
-    resolvedChipId === MOONI_CHIP_IDS.VISA_DOCS
-  ) {
-    ssotLines.push(...buildProfileContext(slug, essentialGuide, ssot));
-    if (resolvedChipId === MOONI_CHIP_IDS.PREP_TRANSPORT && location) {
-      const sessionArrival = tripSession?.arrivalIata
-        ? String(tripSession.arrivalIata).trim().toUpperCase()
-        : '';
-      const arrivalIata =
-        sessionArrival || getPlannerFlightArrivalIata(location, { essentialGuide });
-      if (arrivalIata) {
-        ssotLines.push(
-          fillMooniPromptTemplate(ssot.arrivalAirport, {
-            label:
-              (hasMooniTripSessionFacts(tripSession) && tripSession.arrivalAirportLabel) ||
-              hubLabel(arrivalIata) ||
-              arrivalIata,
-          }),
-        );
+  if (FLIGHT_CHIP_IDS.has(resolvedChipId)) {
+    ssotLines.push(
+      ...buildFlightSsotContext(location, essentialGuide, chatHistory, userText, ssot, tripSession).lines,
+    );
+    ssotLines.push(...buildProfileContext(slug, essentialGuide, ssot).lines);
+  } else if (PROFILE_CHIP_IDS.has(resolvedChipId)) {
+    ssotLines.push(...buildProfileContext(slug, essentialGuide, ssot).lines);
+    if (resolvedChipId === MOONI_CHIP_IDS.PREP_TRANSPORT) {
+      const label = prepTransportArrivalLabel(location, essentialGuide, tripSession);
+      if (label) {
+        ssotLines.push(fillMooniPromptTemplate(ssot.arrivalAirport, { label }));
       }
     }
   }
@@ -308,4 +341,48 @@ export function getMooniChipPromptHint({
   }
 
   return lines.join('\n');
+}
+
+/**
+ * Chip SSOT values the server template fills. Sentence assembly stays on the server.
+ * @param {Parameters<typeof getMooniChipPromptHint>[0]} params
+ * @returns {{ chipId: string, facts: { flight: ReturnType<typeof emptyFlightFacts> | null, profile: ReturnType<typeof emptyProfileFacts> | null, arrivalAirport: string | null } } | null}
+ */
+export function extractMooniChipPromptFacts({
+  chipId = null,
+  userText = '',
+  slug = null,
+  destinationName = '',
+  chatHistory = [],
+  essentialGuide = null,
+  locale,
+  tripSession = null,
+}) {
+  const bundle = getMooniPromptBundle(locale);
+  const resolvedChipId = resolveMooniChipId({ chipId, userText });
+  if (!resolvedChipId || !bundle.chips[resolvedChipId]) return null;
+
+  const location = buildLocation(slug, destinationName);
+  const ssot = bundle.ssot;
+  /** @type {{ flight: ReturnType<typeof emptyFlightFacts> | null, profile: ReturnType<typeof emptyProfileFacts> | null, arrivalAirport: string | null }} */
+  const facts = { flight: null, profile: null, arrivalAirport: null };
+
+  if (FLIGHT_CHIP_IDS.has(resolvedChipId)) {
+    facts.flight = buildFlightSsotContext(
+      location,
+      essentialGuide,
+      chatHistory,
+      userText,
+      ssot,
+      tripSession,
+    ).flight;
+    facts.profile = buildProfileContext(slug, essentialGuide, ssot).profile;
+  } else if (PROFILE_CHIP_IDS.has(resolvedChipId)) {
+    facts.profile = buildProfileContext(slug, essentialGuide, ssot).profile;
+    if (resolvedChipId === MOONI_CHIP_IDS.PREP_TRANSPORT) {
+      facts.arrivalAirport = prepTransportArrivalLabel(location, essentialGuide, tripSession);
+    }
+  }
+
+  return { chipId: resolvedChipId, facts };
 }

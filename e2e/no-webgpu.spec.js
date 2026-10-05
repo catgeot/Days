@@ -1,5 +1,6 @@
 // Home must render Mapbox globe when WebGPU is unavailable (three/webgpu not in eager vendor).
-import { test, expect, devices } from '@playwright/test';
+import { test, expect, newGuardedContext } from './fixtures.js';
+import { devices } from '@playwright/test';
 
 test.use({ ignoreHTTPSErrors: true });
 
@@ -13,7 +14,7 @@ async function expectHomeMapVisible(page) {
 
 test.describe('Home without WebGPU', () => {
   test('Firefox — mapbox map visible, no GPUShaderStage error', async ({ browser }) => {
-    const context = await browser.newContext({ ...devices['Desktop Firefox'] });
+    const context = await newGuardedContext(browser, { ...devices['Desktop Firefox'] });
     const page = await context.newPage();
     const pageErrors = [];
     page.on('pageerror', (err) => pageErrors.push(String(err)));
@@ -27,7 +28,7 @@ test.describe('Home without WebGPU', () => {
   });
 
   test('Chromium — GPUShaderStage stripped, mapbox map visible', async ({ browser }) => {
-    const context = await browser.newContext({ ...devices['Desktop Chrome'] });
+    const context = await newGuardedContext(browser, { ...devices['Desktop Chrome'] });
     await context.addInitScript(() => {
       delete self.GPUShaderStage;
       delete navigator.gpu;

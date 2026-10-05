@@ -1,0 +1,73 @@
+# MOONi 실경로 헬스 핑. smoke-health(2시간/6시간)와 분리된 하루 1회.
+# 정시가 아닌 분(04:17 UTC). 엣지 health_ping 상한은 하루 4회.
+# 공개 로그는 OK 또는 FAIL(<class>)만. HTTP 코드·오류 문장은 찍지 않는다.
+#
+# Repository secrets (값은 로그에 남기지 않음):
+#   VITE_SUPABASE_URL
+#   VITE_SUPABASE_ANON_KEY
+#   GEMINI_HEALTH_TOKEN  (엣지 시크릿과 같은 값)
+
+name: Gemini health ping
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: gemini-health-ping
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: POST health_ping once
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          GEMINI_HEALTH_TOKEN: ${{ secrets.GEMINI_HEALTH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VITE_SUPABASE_URL// /}" ] || [ -z "${VITE_SUPABASE_ANON_KEY// /}" ] || [ -z "${GEMINI_HEALTH_TOKEN// /}" ]; then
+            echo "FAIL(config)"
+            exit 1
+          fi
+          url="${VITE_SUPABASE_URL%/}/functions/v1/gemini-proxy"
+          set +e
+          curl -sS --max-time 60 -o /tmp/gemini-health-body.json -w '%{http_code}' \
+            -X POST "$url" \
+            -H "Authorization: Bearer ${VITE_SUPABASE_ANON_KEY}" \
+            -H "apikey: ${VITE_SUPABASE_ANON_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "x-gateo-health: ${GEMINI_HEALTH_TOKEN}" \
+            --data '{"task":"health_ping"}' > /tmp/gemini-health-code.txt 2>/tmp/gemini-health-curl.err
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ]; then
+            if [ "$status" -eq 28 ]; then
+              echo "FAIL(timeout)"
+            else
+              echo "FAIL(network)"
+            fi
+            exit 1
+          fi
+          python3 - << 'PY'
+          import json, sys
+          code = open("/tmp/gemini-health-code.txt", encoding="utf-8").read().strip()
+          raw = open("/tmp/gemini-health-body.json", encoding="utf-8").read()
+          try:
+              data = json.loads(raw)
+          except Exception:
+              print("FAIL(http)")
+              sys.exit(1)
+          if code == "200" and data.get("success") is True:
+              print("OK")
+              sys.exit(0)
+          print("FAIL(http)")
+          sys.exit(1)
+          PY

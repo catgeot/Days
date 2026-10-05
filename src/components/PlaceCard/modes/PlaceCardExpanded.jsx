@@ -81,6 +81,11 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
     canLoadMore: canLoadMoreVideos,
     isLoadingMore: isLoadingMoreVideos,
     loadMoreError: loadMoreVideoError,
+    loadMoreLimitCode: loadMoreVideoLimitCode,
+    fetchLimitCode: videoFetchLimitCode,
+    externalYouTubeUrl,
+    placeYouTubeUrl,
+    suppressVideoRetry,
     loadMoreNoNew: loadMoreVideoNoNew,
     markUnplayable: markVideoUnplayable,
     googleFormUrl,
@@ -259,11 +264,15 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
             isVideoLoading={isVideoLoading}
             videoFetchError={videoFetchError}
             isVideoEmptyResult={isVideoEmptyResult}
-            onRetryVideoFetch={retryVideoFetch}
+            onRetryVideoFetch={suppressVideoRetry ? undefined : retryVideoFetch}
             onLoadMoreVideos={loadMoreVideos}
             canLoadMoreVideos={canLoadMoreVideos}
             isLoadingMoreVideos={isLoadingMoreVideos}
             loadMoreVideoError={loadMoreVideoError}
+            loadMoreVideoLimitCode={loadMoreVideoLimitCode}
+            videoFetchLimitCode={videoFetchLimitCode}
+            externalYouTubeUrl={externalYouTubeUrl}
+            placeYouTubeUrl={placeYouTubeUrl}
             loadMoreVideoNoNew={loadMoreVideoNoNew}
             onVideoUnplayable={markVideoUnplayable}
             googleFormUrl={googleFormUrl}

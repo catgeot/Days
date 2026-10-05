@@ -402,7 +402,7 @@ entrypoint = "./functions/generate-place-magazine/index.ts"
 
 [functions.fetch-place-videos]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 entrypoint = "./functions/fetch-place-videos/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
@@ -428,3 +428,17 @@ entrypoint = "./functions/fetch-mrt-stays/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/fetch-mrt-tnas/index.ts"
+
+[functions.gallery-moderate]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/gallery-moderate/index.ts"
+
+# Staging XFF check only. Committed disabled so a bulk deploy skips it.
+# On staging, in a working copy only: set enabled = true, set secret
+# STAGING_IP_ECHO_ALLOW=1, deploy by name, run verify.sh, delete the function.
+# Do not commit enabled = true. verify_jwt stays true. Do not deploy to production.
+[functions.staging-ip-echo]
+enabled = false
+verify_jwt = true
+entrypoint = "./functions/staging-ip-echo/index.ts"

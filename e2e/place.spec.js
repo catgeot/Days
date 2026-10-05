@@ -1,5 +1,5 @@
 // E2E-2 @see plans/site-health-monitoring-plan.md Phase 2-B · §2-B-1 (라벨 변경 시 이 assert도 같이)
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 
 test.describe('PlaceCard', () => {
   test('E2E-2 /place/bali shows title and tabs', async ({ page }) => {

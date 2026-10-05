@@ -70,6 +70,7 @@ import {
   SCENIC_VIDEOS_MAX,
   SCENIC_VIDEOS_PAGE,
 } from '../../utils/fetchScenicSpotVideos';
+import { freeSearchYouTubeUrl } from '../Home/lib/freeSearchYouTubeLink.js';
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
@@ -914,6 +915,7 @@ export default function ThemeSpotDetailModal({
   const [videos, setVideos] = useState([]);
   const [videosLoading, setVideosLoading] = useState(false);
   const [videosError, setVideosError] = useState('');
+  const [videosQuota, setVideosQuota] = useState(false);
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [mooniOpen, setMooniOpen] = useState(false);
@@ -1662,6 +1664,7 @@ export default function ThemeSpotDetailModal({
     let cancelled = false;
     setVideosLoading(true);
     setVideosError('');
+    setVideosQuota(false);
 
     (async () => {
       const result = await fetchScenicSpotVideos({
@@ -1676,9 +1679,20 @@ export default function ThemeSpotDetailModal({
       setVideosExpanded(false);
       if (!result.ok) {
         setVideos([]);
-        setVideosError(t('korea.theme.spotDetail.videosNotFound'));
+        const quotaCode = result.error === 'ip_quota' || result.error === 'global_quota'
+          ? result.error
+          : '';
+        setVideosQuota(Boolean(quotaCode));
+        setVideosError(
+          quotaCode === 'ip_quota'
+            ? t('place.video.ipQuotaEmpty')
+            : quotaCode === 'global_quota'
+              ? t('place.video.globalQuotaEmpty')
+              : t('korea.theme.spotDetail.videosNotFound'),
+        );
         return;
       }
+      setVideosQuota(false);
       const list = Array.isArray(result.videos)
         ? result.videos.slice(0, SCENIC_VIDEOS_MAX)
         : [];
@@ -2731,7 +2745,24 @@ export default function ThemeSpotDetailModal({
                 </div>
               )}
               {!videosLoading && videosError && videos.length === 0 && (
-                <p className="text-xs text-stone-500">{videosError}</p>
+                <div className="space-y-3">
+                  <p className="text-xs text-stone-500">{videosError}</p>
+                  {videosQuota && (
+                    <a
+                      href={freeSearchYouTubeUrl({
+                        name: displayTitle,
+                        addr1: detail?.addr1 || spot.addr1 || '',
+                        locality: spot.locality || '',
+                        city: spot.locality || '',
+                      })}
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex items-center text-sm font-semibold text-red-600 hover:text-red-500"
+                    >
+                      {t('place.video.openOnYouTube')}
+                    </a>
+                  )}
+                </div>
               )}
               {!videosLoading && videos.length > 0 && (
                 <>
