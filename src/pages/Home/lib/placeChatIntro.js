@@ -119,7 +119,11 @@ export function loadPlaceChatIntroLocal(destinationKey, lng = i18n.language) {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     const s = sanitizeGeminiUserText(typeof parsed?.summary === 'string' ? parsed.summary.trim() : '');
-    return s || null;
+    if (!s || !isPlaceChatIntroSummaryAccepted(s)) {
+      localStorage.removeItem(localStorageKey(destinationKey, lng));
+      return null;
+    }
+    return s;
   } catch {
     return null;
   }
@@ -225,7 +229,7 @@ async function fetchIntroByExactKey(destinationKey, lng = i18n.language) {
 
   if (!error && data?.summary) {
     const text = sanitizeGeminiUserText(String(data.summary).trim());
-    if (text) {
+    if (text && isPlaceChatIntroSummaryAccepted(text)) {
       savePlaceChatIntroLocal(destinationKey, text, lng);
       return text;
     }
@@ -267,9 +271,9 @@ export async function persistPlaceChatIntroSummary(destinationDisplayName, summa
   const storageKey = withPlaceChatIntroLocale(destinationKey, lng);
   const text = sanitizeGeminiUserText(String(summary ?? '').trim());
   if (!isValidIntroDestination(destinationKey) || !text) return;
+  if (!isPlaceChatIntroKeyAccepted(storageKey) || !isPlaceChatIntroSummaryAccepted(text)) return;
 
   savePlaceChatIntroLocal(destinationKey, text, lng);
-  if (!isPlaceChatIntroKeyAccepted(storageKey) || !isPlaceChatIntroSummaryAccepted(text)) return;
 
   const { data, error } = await supabase.rpc('save_place_chat_intro', {
     p_destination_key: storageKey,
@@ -288,11 +292,18 @@ export async function generatePlaceChatIntroWithAi(destinationDisplayName, lng =
   if (!isValidIntroDestination(name)) {
     throw new Error(bundle.introInvalidDestination);
   }
-  const raw = await apiClient.invokeGeminiTask('place_intro', {
-    locale: lng,
-    placeName: name,
-  });
-  return sanitizeGeminiUserText(String(raw ?? '').trim());
+  try {
+    const raw = await apiClient.invokeGeminiTask('place_intro', {
+      locale: lng,
+      placeName: name,
+    });
+    const text = sanitizeGeminiUserText(String(raw ?? '').trim());
+    if (!isPlaceChatIntroSummaryAccepted(text)) return '';
+    return text;
+  } catch (err) {
+    console.warn('[place_chat_intro] place_intro generate failed:', err);
+    return '';
+  }
 }
 
 /** 동시 방문·탭 전환 시 동일 키 AI 재호출 방지 */

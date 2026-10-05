@@ -1,5 +1,7 @@
 /** save_place_chat_intro 와 같은 검사. Postgres char_length = 유니코드 코드포인트. */
 
+import { detectMooniReplyLeak } from '../../../../supabase/functions/_shared/gemini/answerSanitize.mjs';
+
 export const PLACE_CHAT_INTRO_MIN_CHARS = 40;
 export const PLACE_CHAT_INTRO_MAX_CHARS = 1200;
 export const PLACE_CHAT_INTRO_KEY_MAX_CHARS = 120;
@@ -17,12 +19,21 @@ const SUMMARY_URL_RE = /https?:|www\.|:\/\/|javascript:|data:/i;
 const KEY_CONTROL_RE = /[\u0000-\u001f\u007f-\u009f<>\\]/;
 const KEY_URL_RE = /https?:|www\.|:\/\//i;
 
+/** Complete sentence end — rejects mid-word cuts like 「…품겨 있는 수」. */
+const SUMMARY_SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;
+
+export function isPlaceChatIntroSentenceComplete(summary) {
+  return SUMMARY_SENTENCE_END_RE.test(pgBtrim(summary));
+}
+
 export function isPlaceChatIntroSummaryAccepted(summary) {
   const text = pgBtrim(summary);
   const n = Array.from(text).length;
   if (n < PLACE_CHAT_INTRO_MIN_CHARS || n > PLACE_CHAT_INTRO_MAX_CHARS) return false;
   if (SUMMARY_CONTROL_RE.test(text)) return false;
   if (SUMMARY_URL_RE.test(text)) return false;
+  if (detectMooniReplyLeak(text)) return false;
+  if (!isPlaceChatIntroSentenceComplete(text)) return false;
   return true;
 }
 
