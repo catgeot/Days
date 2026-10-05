@@ -1,4 +1,9 @@
-import { callGemini, extractGeminiAnswer } from "../_shared/gemini/call.ts";
+import {
+  callGemini,
+  extractGeminiAnswer,
+  isPlaceIntroTruncated,
+  thinkingConfigForPlaceIntro,
+} from "../_shared/gemini/call.ts";
 import {
   allowMemoryBypass,
   buildHealthChecks,
@@ -300,7 +305,17 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     reserved = { id: held.id, prompt: held.prompt, output: held.output };
   }
 
-  let upstream = await callGemini(fetchImpl, apiKey, model, parts, built.maxOutputTokens);
+  const callUpstream = (modelName: string) => callGemini(
+    fetchImpl,
+    apiKey,
+    modelName,
+    parts,
+    built.maxOutputTokens,
+    25_000,
+    built.limitThinking ? thinkingConfigForPlaceIntro(modelName) : undefined,
+  );
+
+  let upstream = await callUpstream(model);
   if (!upstream.ok && (upstream.status === 503 || upstream.status === 404 || upstream.timedOut) && model !== GEMINI_FAST) {
     if (reserved) {
       await releaseHold(reserved);
@@ -312,7 +327,7 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
       reserved = { id: held.id, prompt: held.prompt, output: held.output };
     }
     model = GEMINI_FAST;
-    upstream = await callGemini(fetchImpl, apiKey, model, parts, built.maxOutputTokens);
+    upstream = await callUpstream(model);
   }
 
   if (!upstream.ok) {
@@ -345,14 +360,7 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
   }
 
   const answer = extractGeminiAnswer(upstream.data);
-  const payload: Record<string, unknown> = {
-    success: true,
-    text: answer.text,
-    modelUsed: model,
-    finishReason: answer.finishReason,
-    truncated: answer.finishReason === "MAX_TOKENS",
-  };
-  if (built.task === "legacy") payload.data = upstream.data;
+  const truncatedIntro = built.task === "place_intro" && isPlaceIntroTruncated(answer);
 
   if (!health && reserved) {
     try {
@@ -369,6 +377,33 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
       }));
     }
   }
+
+  if (truncatedIntro) {
+    logLine({
+      task: built.task,
+      model,
+      status: 502,
+      error: "truncated",
+      ipHash8: ipHash.slice(0, 8),
+      uidSet: Boolean(uid),
+      ms: (deps.now?.() ?? Date.now()) - started,
+      promptTokens: answer.promptTokens,
+      outputTokens: answer.outputTokens,
+      thoughts: answer.thoughts,
+      finishReason: answer.finishReason,
+      legacy: false,
+    });
+    return jsonResponse(502, { success: false, error: "truncated" }, origin, originAllowed);
+  }
+
+  const payload: Record<string, unknown> = {
+    success: true,
+    text: answer.text,
+    modelUsed: model,
+    finishReason: answer.finishReason,
+    truncated: answer.finishReason === "MAX_TOKENS",
+  };
+  if (built.task === "legacy") payload.data = upstream.data;
 
   logLine({
     task: built.task,

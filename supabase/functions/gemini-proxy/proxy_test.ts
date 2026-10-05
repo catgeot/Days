@@ -264,15 +264,22 @@ Deno.test("every gemini body carries task maxOutputTokens", async () => {
   const cases = [
     { body: mooni, max: 1536 },
     { body: { task: "mooni_chat", params: { ...mooni.params, tier: "quality", persona: "PLANNER" } }, max: 2048 },
-    { body: { task: "place_intro", params: { locale: "ko", placeName: "파리" } }, max: 512 },
+    { body: { task: "place_intro", params: { locale: "ko", placeName: "파리" } }, max: 2048 },
     { body: { task: "search_intent", params: { mode: "typo", query: "파리" } }, max: 512 },
   ];
   for (const item of cases) {
-    const { fetchImpl, calls } = routedFetch(() => geminiOk());
+    const reply = item.body.task === "place_intro" ? "파리는 센 강변의 도시입니다." : "안녕";
+    const { fetchImpl, calls } = routedFetch(() => geminiOk(reply));
     const res = await post(item.body, { Origin: ORIGIN }, fetchImpl);
     assertEquals(res.status, 200);
     const sent = JSON.parse(String(geminiCalls(calls)[0].init?.body));
     assertEquals(sent.generationConfig.maxOutputTokens, item.max);
+    if (item.body.task === "place_intro") {
+      assertEquals(sent.generationConfig.thinkingConfig, { thinkingLevel: "low" });
+      assertEquals("thinkingBudget" in sent.generationConfig.thinkingConfig, false);
+    } else {
+      assertEquals(sent.generationConfig.thinkingConfig, undefined);
+    }
     assert(!calls.some((call) => call.url.includes("pro-preview") || call.url.includes("gemini-3.1-pro")));
   }
 });
@@ -412,6 +419,12 @@ Deno.test("Gemini 503 falls back to flash-lite once then busy", async () => {
   assertEquals(n, 2);
   assert(geminiCalls(calls)[0].url.includes("gemini-3.5-flash"));
   assert(geminiCalls(calls)[1].url.includes("gemini-3.1-flash-lite"));
+  const primary = JSON.parse(String(geminiCalls(calls)[0].init?.body));
+  const fallback = JSON.parse(String(geminiCalls(calls)[1].init?.body));
+  assertEquals(primary.generationConfig.maxOutputTokens, 2048);
+  assertEquals(primary.generationConfig.thinkingConfig, { thinkingLevel: "low" });
+  assertEquals(fallback.generationConfig.maxOutputTokens, 2048);
+  assertEquals(fallback.generationConfig.thinkingConfig, undefined);
   assertEquals(admitCalls(calls).length, 1);
   assertEquals(reserveCalls(calls).length, 2);
   assertEquals(releaseCalls(calls).length, 2);
@@ -437,6 +450,51 @@ Deno.test("MAX_TOKENS is returned as truncated text", async () => {
   assertEquals(body.truncated, true);
   assertEquals(body.text, "잘린");
   assertEquals(body.finishReason, "MAX_TOKENS");
+});
+
+const PLACE_INTRO = { task: "place_intro", params: { locale: "ko", placeName: "수타사" } };
+const COMPLETE_INTRO = "파리는 센 강변의 도시입니다. 박물관과 카페가 가깝습니다.";
+
+Deno.test("place_intro MAX_TOKENS or incomplete body is 502 truncated", async () => {
+  const cases = [
+    { text: "강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수", finish: "MAX_TOKENS" },
+    { text: COMPLETE_INTRO, finish: "MAX_TOKENS" },
+    { text: "강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수", finish: "STOP" },
+    { text: "", finish: "STOP" },
+  ];
+  for (const item of cases) {
+    const { fetchImpl, calls } = routedFetch(() => geminiOk(item.text, item.finish));
+    const logs = captureLogs();
+    const res = await post(PLACE_INTRO, { Origin: ORIGIN }, fetchImpl).finally(() => logs.restore());
+    assertEquals(res.status, 502);
+    const body = await res.json();
+    assertEquals(body, { success: false, error: "truncated" });
+    assert(!JSON.stringify(body).includes("품겨"));
+    assert(!JSON.stringify(body).includes(COMPLETE_INTRO.slice(0, 8)));
+    const reconciled = calls.filter((call) => call.url.includes("gemini_proxy_reconcile_usage"));
+    assertEquals(reconciled.length, 1);
+    const settled = JSON.parse(String(reconciled[0].init?.body));
+    assertEquals(settled.p_output_tokens, 3);
+    assertEquals(releaseCalls(calls).length, 0);
+    const reserved = JSON.parse(String(reserveCalls(calls)[0].init?.body));
+    assertEquals(reserved.p_output_tokens, 2048);
+    const logged = logs.lines.map((line) => JSON.parse(line)).find((row) => row.error === "truncated");
+    assertEquals(logged?.status, 502);
+    assertEquals(logged?.task, "place_intro");
+    assertEquals(logged?.finishReason, item.finish);
+    assertEquals(logged?.thoughts, 1);
+  }
+});
+
+Deno.test("place_intro complete STOP stays 200", async () => {
+  const { fetchImpl } = routedFetch(() => geminiOk(COMPLETE_INTRO, "STOP"));
+  const res = await post(PLACE_INTRO, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.success, true);
+  assertEquals(body.text, COMPLETE_INTRO);
+  assertEquals(body.truncated, false);
+  assertEquals(body.finishReason, "STOP");
 });
 
 Deno.test("legacy on is capped and legacy off is rejected", async () => {

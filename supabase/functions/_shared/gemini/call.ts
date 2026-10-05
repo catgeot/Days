@@ -12,6 +12,36 @@ function geminiUrl(model: string): string {
   return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 }
 
+/** Gemini 3.x `thinkingLevel` 과 2.5 `thinkingBudget` 은 한 요청에 같이 넣으면 400. */
+export type GeminiThinkingConfig =
+  | { thinkingLevel: "minimal" | "low" | "medium" | "high" }
+  | { thinkingBudget: number };
+
+/**
+ * place_intro 전용. 3.5-flash 기본 thinking(medium)이 maxOutputTokens를 사고에 써 본문이 잘린다.
+ * flash-lite 폴백은 레벨 집합이 달라 설정을 생략한다(한도 2048은 유지).
+ */
+export function thinkingConfigForPlaceIntro(model: string): GeminiThinkingConfig | undefined {
+  if (/gemini-2\.5(?:-|$)/.test(model)) return { thinkingBudget: 0 };
+  if (/flash-lite/.test(model)) return undefined;
+  if (/gemini-3/.test(model)) return { thinkingLevel: "low" };
+  return undefined;
+}
+
+/** placeChatIntroLimits SUMMARY_SENTENCE_END_RE 와 동일. 「…있는 수」 같은 중간 절단을 본문 미완으로 본다. */
+const PLACE_INTRO_SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;
+
+export function isPlaceIntroTruncated(answer: {
+  text: string;
+  finishReason: string | null;
+}): boolean {
+  const reason = String(answer.finishReason ?? "").toUpperCase();
+  if (reason.includes("MAX_TOKEN")) return true;
+  const text = answer.text.trim();
+  if (!text) return true;
+  return !PLACE_INTRO_SENTENCE_END_RE.test(text);
+}
+
 export async function callGemini(
   fetchImpl: typeof fetch,
   apiKey: string,
@@ -19,9 +49,12 @@ export async function callGemini(
   parts: unknown[],
   maxOutputTokens: number,
   timeoutMs = 25_000,
+  thinkingConfig?: GeminiThinkingConfig,
 ): Promise<GeminiCallResult> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const generationConfig: Record<string, unknown> = { maxOutputTokens, candidateCount: 1 };
+  if (thinkingConfig) generationConfig.thinkingConfig = thinkingConfig;
   try {
     const response = await fetchImpl(geminiUrl(model), {
       method: "POST",
@@ -31,7 +64,7 @@ export async function callGemini(
       },
       body: JSON.stringify({
         contents: [{ role: "user", parts }],
-        generationConfig: { maxOutputTokens, candidateCount: 1 },
+        generationConfig,
       }),
       signal: controller.signal,
     });
