@@ -1473,6 +1473,14 @@ export default function KoreaFestivalHub() {
   const dismissSearchUi = useCallback(() => {
     setSearchSuggestOpen(false);
     setSearchOpen(false);
+    const q = searchDraft.trim();
+    if (q) {
+      setSearchApplied(q);
+      setRecentSearches(pushRecentSearch(FESTIVAL_RECENT_SEARCH_KEY, q));
+      setAreaCode('all');
+      setCityName('all');
+      setTasteId('all');
+    }
     setSearchDraft('');
     if (typeof document !== 'undefined') {
       const el =
@@ -1481,7 +1489,7 @@ export default function KoreaFestivalHub() {
           : null;
       el?.blur?.();
     }
-  }, []);
+  }, [searchDraft]);
 
   useEffect(() => {
     if (!searchOpen && !searchSuggestOpen) return undefined;
@@ -1491,6 +1499,12 @@ export default function KoreaFestivalHub() {
       if (pcSearchRootRef.current?.contains(target)) return;
       if (mobileSearchRootRef.current?.contains(target)) return;
       if (mobileSearchToggleRef.current?.contains(target)) return;
+      if (
+        target instanceof Element &&
+        target.closest('[data-festival-id]')
+      ) {
+        return;
+      }
       dismissSearchUi();
     };
     document.addEventListener('pointerdown', onPointerDown, true);
