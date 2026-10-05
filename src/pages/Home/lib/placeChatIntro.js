@@ -1,12 +1,10 @@
 import { supabase } from '../../../shared/api/supabase';
 import { apiClient } from './apiClient';
-import { getPlaceChatIntroSystemPrompt } from './prompts';
-import { MOONI_GEMINI } from '../../../utils/mooniChatModel';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import { MOONI_TOPIC_HINT } from './mooniQuickReplies';
 import { i18n } from '../../../i18n/config';
 import { normalizeAppLocale } from '../../../i18n/constants';
-import { getMooniPromptBundle, fillMooniPromptTemplate } from '../../../i18n/mooniPromptBundles';
+import { getMooniPromptBundle } from '../../../i18n/mooniPromptBundles';
 import {
   getLocalizedCountryName,
   getLocalizedPlaceName,
@@ -299,9 +297,10 @@ export async function generatePlaceChatIntroWithAi(destinationDisplayName, lng =
   if (!isValidIntroDestination(name)) {
     throw new Error(bundle.introInvalidDestination);
   }
-  const system = getPlaceChatIntroSystemPrompt(lng);
-  const userText = fillMooniPromptTemplate(bundle.introUser, { name });
-  const raw = await apiClient.fetchProxyGemini(null, [], system, userText, [], MOONI_GEMINI.INTRO);
+  const raw = await apiClient.invokeGeminiTask('place_intro', {
+    locale: lng,
+    placeName: name,
+  });
   return String(raw ?? '').trim();
 }
 

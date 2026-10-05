@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
-import { getGeminiProxyErrorMessage } from '../../../pages/Home/lib/geminiProxyError';
+import { GeminiProxyError, getGeminiProxyErrorMessage } from '../../../pages/Home/lib/geminiProxyError';
 import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
+import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import {
   ensureChatEssentialGuide,
@@ -21,7 +22,7 @@ export const usePlaceChat = (options = {}) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const sendMessage = useCallback(async (userText, currentSystemPrompt = '') => {
+  const sendMessage = useCallback(async (userText, taskParams = {}) => {
     if (!userText.trim() || isAiLoading) return;
 
     setIsAiLoading(true);
@@ -36,15 +37,26 @@ export const usePlaceChat = (options = {}) => {
         userText,
         chatHistory: priorHistory,
       });
+      const params = taskParams && typeof taskParams === 'object' ? taskParams : {};
+      const history = priorHistory
+        .filter((turn) => turn.role === 'user' || turn.role === 'model')
+        .map((turn) => ({ role: turn.role, text: String(turn.text ?? '') }));
 
-      const aiReply = await apiClient.fetchProxyGemini(
-        null,
-        priorHistory,
-        currentSystemPrompt,
+      const aiReply = await apiClient.invokeGeminiTask('mooni_chat', {
+        locale: params.locale || 'ko',
+        persona: params.persona || 'GENERAL',
+        tier: chatModelId === GEMINI_MODELS.QUALITY ? 'quality' : 'fast',
+        locationName: params.locationName || destinationName || '',
+        boundPlaceName: params.boundPlaceName || destinationName || '',
+        isMooni: params.isMooni !== false,
+        chipId: params.chipId ?? null,
+        facts: params.facts ?? null,
+        tripSession: params.tripSession ?? null,
+        cta: params.cta ?? 'none_quiet',
+        ctaPlace: params.ctaPlace || destinationName || '',
+        history,
         userText,
-        [],
-        chatModelId,
-      );
+      });
 
       const essentialGuide =
         (await ensureChatEssentialGuide(slug, destinationName)) ?? cachedGuide;
@@ -72,10 +84,11 @@ export const usePlaceChat = (options = {}) => {
       ]);
     } catch (err) {
       const message = getGeminiProxyErrorMessage(err);
+      const role = err instanceof GeminiProxyError && err.kind === 'budget' ? 'model' : 'error';
       setError(message);
       setChatHistory((prev) => [
         ...prev,
-        { role: 'error', text: message },
+        { role, text: message },
       ]);
     } finally {
       setIsAiLoading(false);
