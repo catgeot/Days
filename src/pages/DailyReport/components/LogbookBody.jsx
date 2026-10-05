@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import { logbookRemarkPlugins } from '../utils/logbookMarkdownRemark.js';
 import { useTranslation } from 'react-i18next';
 import {
   parseLogbookPhotoIndex,
@@ -166,7 +166,7 @@ function LogbookMarkdownChunk({ markdown, readerTypography = false }) {
 
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={logbookRemarkPlugins}
       rehypePlugins={[[rehypeSanitize, sanitizeSchema]]}
       components={components}
     >
