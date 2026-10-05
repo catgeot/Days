@@ -5,14 +5,12 @@ import {
   ArrowUp,
   Bike,
   Building2,
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
   Expand,
   Landmark,
   Loader2,
-  MapPin,
   Phone,
   Route,
   Star,
@@ -75,11 +73,14 @@ import FestivalTnaStrip from './FestivalTnaStrip';
 import FestivalMooniFab from './FestivalMooniFab';
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { FestivalBookingActions } from './FestivalBookingActions.jsx';
+import { FestivalDetailFirstSummary } from './FestivalDetailFirstSummary.jsx';
+import { FestivalDetailOverviewCollapse } from './FestivalDetailOverviewCollapse.jsx';
 import {
   earliestBookingVerifiedDate,
   getVisibleBookingLinks,
   shouldHideOfficialHomepage,
 } from './lib/festivalBookingLinks.js';
+import { buildFestivalDetailSummary } from './lib/festivalDetailSummary.js';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
 import {
@@ -1046,6 +1047,26 @@ export default function FestivalDetailSheet({
   );
   const hideOfficialHomepage = shouldHideOfficialHomepage(homepage, bookingLinks);
 
+  const summaryFields = useMemo(() => {
+    const start = formatYmdLabel(item?.eventStartDate || intro?.eventStartDate);
+    const end = formatYmdLabel(item?.eventEndDate || intro?.eventEndDate);
+    const dateRange = [start, end].filter(Boolean).join(' – ');
+    return buildFestivalDetailSummary({
+      item,
+      intro,
+      range: dateRange,
+      freeLabel: t('korea.festival.detail.feeFree'),
+    });
+  }, [
+    item,
+    intro,
+    t,
+    item?.eventStartDate,
+    item?.eventEndDate,
+    intro?.eventStartDate,
+    intro?.eventEndDate,
+  ]);
+
   const programText = useMemo(
     () => stripHtml(intro?.program || ''),
     [intro?.program],
@@ -1333,14 +1354,7 @@ export default function FestivalDetailSheet({
         <div className="min-w-0 shrink-0 overflow-visible px-5 pt-5 pb-[max(7.25rem,calc(env(safe-area-inset-bottom)+5.75rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 space-y-4 md:space-y-5 md:custom-scrollbar">
           <div className="space-y-1.5 pr-10">
             <div className="flex items-start justify-between gap-2">
-              {range ? (
-                <p className="text-[11px] md:text-xs font-bold text-amber-700 flex items-center gap-1">
-                  <CalendarDays size={12} aria-hidden="true" />
-                  {range}
-                </p>
-              ) : (
-                <span />
-              )}
+              <span className="min-w-0 flex-1" aria-hidden="true" />
               {onToggleFavorite && (
                 <button
                   type="button"
@@ -1372,45 +1386,56 @@ export default function FestivalDetailSheet({
             >
               {displayTitle}
             </h3>
-            {item.addr1 && (
-              <p className="text-xs text-stone-500 flex items-start gap-1">
-                <MapPin size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
-                <span {...koText}>{item.addr1}</span>
-              </p>
-            )}
           </div>
 
-          {(naverHref || googleHref) && (
-            <OutboundSearchButtons
-              naverHref={naverHref}
-              googleHref={googleHref}
-              naverLabelKey="korea.festival.detail.naverSearch"
-              googleLabelKey="korea.festival.detail.googleSearch"
-              naverAriaKey="korea.festival.detail.naverSearchAria"
-              googleAriaKey="korea.festival.detail.googleSearchAria"
-            />
-          )}
-
-          <FestivalBookingActions
-            contentId={item?.contentId}
-            links={bookingLinks}
-            bookNowLabel={t('korea.festival.detail.bookNow')}
-            uiLang={locale}
-            programsTitle={t('korea.festival.detail.bookPrograms')}
-            moreLabel={t('korea.festival.detail.bookMore')}
-            providerLabel={t('korea.festival.detail.bookProviderTicketlink')}
+          <FestivalDetailFirstSummary
+            dateLabel={t('korea.festival.detail.labelDates')}
+            timeLabel={t('korea.festival.detail.labelTime')}
+            feeLabel={t('korea.festival.detail.labelFee')}
+            placeLabel={t('korea.festival.detail.labelVenue')}
+            dateText={summaryFields.dateText}
+            timeText={summaryFields.timeText}
+            feeText={summaryFields.fee?.text}
+            placeText={summaryFields.placeText}
+            homepage={homepage}
+            hideOfficialHomepage={hideOfficialHomepage}
+            officialLabel={t('korea.festival.detail.officialSite')}
+            bookingSlot={
+              <FestivalBookingActions
+                contentId={item?.contentId}
+                links={bookingLinks}
+                bookNowLabel={t('korea.festival.detail.bookNow')}
+                uiLang={locale}
+                programsTitle={t('korea.festival.detail.bookPrograms')}
+                moreLabel={t('korea.festival.detail.bookMore')}
+                providerLabel={t('korea.festival.detail.bookProviderTicketlink')}
+              />
+            }
           />
 
-          {homepage && !hideOfficialHomepage && (
-            <a
-              href={homepage}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-amber-300 bg-amber-100 px-4 py-3 text-sm font-bold text-amber-900 shadow-sm transition-colors hover:border-amber-500 hover:bg-amber-100 hover:shadow-md hover:ring-2 hover:ring-amber-200"
+          {overview ? (
+            <FestivalDetailOverviewCollapse
+              text={overview}
+              overviewLabel={t('korea.festival.detail.labelOverview')}
+              expandLabel={t('korea.festival.detail.overviewExpand')}
+              collapseLabel={t('korea.festival.detail.overviewCollapse')}
+            />
+          ) : null}
+
+          {(naverHref || googleHref) && (
+            <div
+              className="flex min-w-0 flex-wrap gap-1.5 opacity-90 [&_a]:px-2 [&_a]:py-1.5 [&_a]:text-[11px] [&_a]:font-semibold"
+              data-festival-outbound-search=""
             >
-              <ExternalLink size={15} aria-hidden="true" />
-              {t('korea.festival.detail.officialSite')}
-            </a>
+              <OutboundSearchButtons
+                naverHref={naverHref}
+                googleHref={googleHref}
+                naverLabelKey="korea.festival.detail.naverSearch"
+                googleLabelKey="korea.festival.detail.googleSearch"
+                naverAriaKey="korea.festival.detail.naverSearchAria"
+                googleAriaKey="korea.festival.detail.googleSearchAria"
+              />
+            </div>
           )}
 
           {detailLoading && (
@@ -1464,34 +1489,23 @@ export default function FestivalDetailSheet({
 
           {!detailLoading && activeTab === TAB_INFO && (
             <div className="space-y-3">
-              {overview && (
-                <DetailRow
-                  label={t('korea.festival.detail.labelOverview')}
-                  prose
-                  highlight
-                >
-                  {overview}
-                </DetailRow>
-              )}
-
               {(intro || scenicRegion) && (
-                <div
-                  className={[
-                    'space-y-3',
-                    overview ? 'border-t border-stone-200 pt-3' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  <DetailRow label={t('korea.festival.detail.labelVenue')}>
-                    {showEventPlace ? eventplace : null}
-                  </DetailRow>
-                  <DetailRow label={t('korea.festival.detail.labelTime')}>
-                    {stripHtml(intro?.playtime || '') || null}
-                  </DetailRow>
-                  <DetailRow label={t('korea.festival.detail.labelFee')}>
-                    {stripHtml(intro?.usetimefestival || '') || null}
-                  </DetailRow>
+                <div className="space-y-3">
+                  {!summaryFields.placeText && (
+                    <DetailRow label={t('korea.festival.detail.labelVenue')}>
+                      {showEventPlace ? eventplace : null}
+                    </DetailRow>
+                  )}
+                  {!summaryFields.timeText && (
+                    <DetailRow label={t('korea.festival.detail.labelTime')}>
+                      {stripHtml(intro?.playtime || '') || null}
+                    </DetailRow>
+                  )}
+                  {!summaryFields.fee?.text && (
+                    <DetailRow label={t('korea.festival.detail.labelFee')}>
+                      {stripHtml(intro?.usetimefestival || '') || null}
+                    </DetailRow>
+                  )}
                   <DetailRow label={t('korea.festival.detail.labelAge')}>
                     {stripHtml(intro?.agelimit || '') || null}
                   </DetailRow>
