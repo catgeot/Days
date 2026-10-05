@@ -241,6 +241,8 @@ export function buildTask(task: string, params: unknown, role: string | null): T
     if (arrivalAirport == null) return { ok: false, status: 400, error: "bad_request" };
     const session = tripSession(input.tripSession);
     if (input.tripSession != null && !session) return { ok: false, status: 400, error: "bad_request" };
+    const koreaFestivalHint = optStr(input.koreaFestivalHint, 8000);
+    if (koreaFestivalHint == null) return { ok: false, status: 400, error: "bad_request" };
     const system = renderMooniSystem({
       locale: input.locale,
       persona,
@@ -252,6 +254,7 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       chipFacts: { flight, profile, arrivalAirport: arrivalAirport || null },
       cta,
       ctaPlace,
+      koreaFestivalHint: koreaFestivalHint || "",
     });
     return {
       ok: true,

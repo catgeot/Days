@@ -39,6 +39,13 @@ import {
   sanitizeMooniModelReply,
   shouldShowMooniPlannerFollowUp,
 } from '../../../utils/mooniReplySanitizer';
+import {
+  buildMooniKoreaFestivalSystemHint,
+  isMooniKoreaFestivalQuery,
+  mergeMooniKoreaFestivalReply,
+  selectMooniKoreaFestivalCandidates,
+} from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { fetchKoreaFestivalsRolling12 } from '../../Korea/fetchKoreaFestivalsWindow.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
@@ -881,6 +888,29 @@ const ChatModal = ({
         .filter((turn) => turn.role === 'user' || turn.role === 'model')
         .map((turn) => ({ role: turn.role, text: String(turn.text ?? '') }));
 
+      let koreaFestivalHint = '';
+      let mooniFestivalCandidates = [];
+      if (isMooniKoreaFestivalQuery(cleanText)) {
+        try {
+          const festWindow = await fetchKoreaFestivalsRolling12({ locale: i18n.language });
+          if (festWindow?.items?.length) {
+            const picked = selectMooniKoreaFestivalCandidates(festWindow.items, {
+              userText: cleanText,
+              boundPlaceName: destName,
+            });
+            mooniFestivalCandidates = picked.candidates;
+            koreaFestivalHint = buildMooniKoreaFestivalSystemHint({
+              userText: cleanText,
+              boundPlaceName: destName,
+              items: festWindow.items,
+              locale: i18n.language,
+            });
+          }
+        } catch (festErr) {
+          console.warn('[mooni] korea festival SSOT skipped:', festErr?.message || festErr);
+        }
+      }
+
       const aiReply = await apiClient.invokeGeminiTask('mooni_chat', {
         locale: i18n.language,
         persona: personaToUse,
@@ -893,6 +923,7 @@ const ChatModal = ({
         tripSession: hasMooniTripSessionFacts(nextSession) ? nextSession : null,
         cta: cta.code,
         ctaPlace: cta.place,
+        koreaFestivalHint,
         history,
         userText: cleanText,
       });
@@ -912,9 +943,15 @@ const ChatModal = ({
           a.provider
         )
       );
-      const { text: displayReply, hadBracketLinks } = sanitizeMooniModelReply(aiReply, {
-        stripPhantomTicketMention: !hasTransportCta,
+      const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
+        candidates: mooniFestivalCandidates,
       });
+      const { text: displayReply, hadBracketLinks } = sanitizeMooniModelReply(
+        festivalMergedReply,
+        {
+          stripPhantomTicketMention: !hasTransportCta,
+        },
+      );
       const plannerFocus = resolvePlannerFocusFromUserText(cleanText, {
         essentialGuide,
         chipId,

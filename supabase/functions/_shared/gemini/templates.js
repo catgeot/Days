@@ -238,6 +238,7 @@ function buildPersonaSystem(personaType, bundle) {
  *   } | null,
  *   cta?: string | null,
  *   ctaPlace?: string,
+ *   koreaFestivalHint?: string,
  * }} input
  */
 export function renderMooniSystem({
@@ -251,6 +252,7 @@ export function renderMooniSystem({
   chipFacts = null,
   cta = null,
   ctaPlace = "",
+  koreaFestivalHint = "",
 }) {
   const bundle = bundleFor(locale);
   const bound = String(boundPlaceName ?? "").trim();
@@ -269,6 +271,7 @@ export function renderMooniSystem({
   const tripHint = String(renderTripSessionHint(locale, tripSession) ?? "").trim();
   const chipHint = String(chipId ? renderChipHint(locale, chipId, chipFacts) : "").trim();
   const ctaHint = String(cta ? renderCtaHint(locale, cta, ctaPlace) : "").trim();
+  const festivalHint = String(koreaFestivalHint ?? "").trim();
   return (
     buildPersonaSystem(persona, bundle) +
     mooniContext +
@@ -276,6 +279,7 @@ export function renderMooniSystem({
     boundPlaceRules +
     (tripHint ? `\n${tripHint}` : "") +
     (chipHint ? `\n${chipHint}` : "") +
+    (festivalHint ? `\n${festivalHint}` : "") +
     (ctaHint ? `\n${ctaHint}` : "")
   );
 }
