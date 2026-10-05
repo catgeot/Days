@@ -1,6 +1,22 @@
 import { detectMooniReplyLeak } from '../../supabase/functions/_shared/gemini/answerSanitize.mjs';
 
 const PAGE_SIZE = 500;
+/** placeChatIntroLimits SUMMARY_SENTENCE_END_RE · RPC 최소 길이와 같다. */
+const SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;
+const MIN_SUMMARY_CHARS = 40;
+
+/**
+ * @param {string} summary
+ * @returns {string | null}
+ */
+export function placeChatIntroStoredProbeReason(summary) {
+  const leak = detectMooniReplyLeak(summary);
+  if (leak) return leak;
+  const trimmed = String(summary ?? '').trim();
+  if (!SENTENCE_END_RE.test(trimmed)) return 'mid_sentence_end';
+  if (Array.from(trimmed).length < MIN_SUMMARY_CHARS) return 'too_short';
+  return null;
+}
 
 /**
  * Scan place_chat_intro.summary rows for MOONi draft / instruction leaks (stored text).
@@ -45,7 +61,7 @@ export async function probePlaceChatIntroSummariesForLeaks(opts) {
     for (const row of rows) {
       scanned += 1;
       const summary = typeof row?.summary === 'string' ? row.summary : '';
-      const reason = detectMooniReplyLeak(summary);
+      const reason = placeChatIntroStoredProbeReason(summary);
       if (reason) {
         leaks.push({ destination_key: String(row.destination_key ?? ''), reason });
       }

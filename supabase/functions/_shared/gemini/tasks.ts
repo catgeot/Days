@@ -38,7 +38,16 @@ const IMAGE_MAX = Math.floor(1.5 * 1024 * 1024);
 const CHIP_IDS = new Set(Object.keys(KO.chips));
 
 export type TaskBuild =
-  | { ok: true; task: string; model: string; maxOutputTokens: number; parts: unknown[]; tier: string | null }
+  | {
+    ok: true;
+    task: string;
+    model: string;
+    maxOutputTokens: number;
+    parts: unknown[];
+    tier: string | null;
+    /** place_intro: 모델별 thinking 상한을 call 시 붙인다. */
+    limitThinking?: boolean;
+  }
   | { ok: false; status: number; error: string };
 
 function str(value: unknown, max: number): string | null {
@@ -276,7 +285,9 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       ok: true,
       task,
       model: GEMINI_QUALITY,
-      maxOutputTokens: 512,
+      // thoughtsTokenCount가 maxOutputTokens에 포함된다. 512 + 기본 thinking → 본문 ~20토큰 MAX_TOKENS (2026-10-06).
+      maxOutputTokens: 2048,
+      limitThinking: true,
       parts: [{ text: wrapUserTurn(rendered.system, [], rendered.userText) }],
       tier: null,
     };
