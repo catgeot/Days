@@ -221,8 +221,8 @@ test.describe('YouTube load-more session', () => {
     await closePlaylist(page);
 
     await clientNavigate(page, '/place/sapa/video');
-    await expect(page.getByText('관련 영상을 불러오는 중...')).toHaveCount(0);
-    expect(await openPlaylist(page)).toBe(15);
+    await expect(page.getByRole('button', { name: '사파' }).first()).toBeVisible();
+    await expect.poll(async () => openPlaylist(page)).toBe(15);
     await closePlaylist(page);
   });
 

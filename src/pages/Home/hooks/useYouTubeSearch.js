@@ -8,6 +8,13 @@ import {
   filterPlayableVideos,
   markYoutubeIdUnplayable,
 } from '../../../utils/youtubeUnplayableStorage.js';
+import { shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
+import {
+  freeSearchYouTubeUrl,
+  isFreeSearchLocation,
+  isPlaceholderPlaceName,
+  shouldShowFreeSearchLink,
+} from '../lib/freeSearchYouTubeLink.js';
 
 const GOOGLE_FORM_URL = 'https://forms.gle/QgofLDzzYD6NfWYN7';
 const LOAD_MORE_SESSION_MAX = 3;
@@ -26,6 +33,13 @@ function mergeVideosById(existing, incoming) {
   }
   return merged;
 }
+
+const PAGE_LIMIT_CODES = new Set([
+  'page_ip_limited',
+  'page_place_limited',
+  'ip_quota',
+  'global_quota',
+]);
 
 function placeFetchKey(location, mediaMode) {
   return [
@@ -101,8 +115,11 @@ export const useYouTubeSearch = (location, mediaMode) => {
   const [loadMoreCount, setLoadMoreCount] = useState(() => boot?.loadMoreCount ?? 0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState(false);
+  const [loadMoreLimitCode, setLoadMoreLimitCode] = useState(null);
+  const [fetchLimitCode, setFetchLimitCode] = useState(null);
   const [loadMoreNoNew, setLoadMoreNoNew] = useState(() => boot?.loadMoreNoNew ?? false);
   const [unplayableBump, setUnplayableBump] = useState(0);
+  const [freeSearchLinkOnly, setFreeSearchLinkOnly] = useState(false);
 
   const fetchContextRef = useRef(boot?.ctx ?? null);
   const completedInitialKeysRef = useRef(new Set());
@@ -129,6 +146,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setRawVideos(mem.rawVideos);
       setIsLoading(false);
       setFetchError(false);
+      setFetchLimitCode(null);
       setIsEmptyResult(mem.rawVideos.length === 0);
       setNextPageToken(mem.nextPageToken);
       setPaginationSource(mem.paginationSource);
@@ -136,13 +154,16 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setLoadMoreCount(mem.loadMoreCount);
       setIsLoadingMore(false);
       setLoadMoreError(false);
+      setLoadMoreLimitCode(null);
       setLoadMoreNoNew(mem.loadMoreNoNew);
+      setFreeSearchLinkOnly(false);
     } else {
       fetchContextRef.current = null;
       liveRef.current = emptyLive();
       setRawVideos([]);
       setIsLoading(true);
       setFetchError(false);
+      setFetchLimitCode(null);
       setIsEmptyResult(false);
       setNextPageToken(null);
       setPaginationSource(null);
@@ -150,7 +171,9 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setLoadMoreCount(0);
       setIsLoadingMore(false);
       setLoadMoreError(false);
+      setLoadMoreLimitCode(null);
       setLoadMoreNoNew(false);
+      setFreeSearchLinkOnly(false);
     }
   }
 
@@ -159,11 +182,39 @@ export const useYouTubeSearch = (location, mediaMode) => {
     [rawVideos, unplayableBump],
   );
 
+  const placeYouTubeUrl = useMemo(
+    () => freeSearchYouTubeUrl(location),
+    [
+      location?.name,
+      location?.name_en,
+      location?.city,
+      location?.parentCity,
+    ],
+  );
+
+  const freeSearch = isFreeSearchLocation(location);
+
+  const externalYouTubeUrl = freeSearch && freeSearchLinkOnly ? placeYouTubeUrl : '';
+
   const invokeEdge = useCallback(async (body) => {
     const { data: edgeData, error: edgeError } = await supabase.functions.invoke(
       'fetch-place-videos',
       { body },
     );
+    let code = edgeData?.error;
+    if (!code && edgeError?.context && typeof edgeError.context.json === 'function') {
+      try {
+        const parsed = await edgeError.context.clone().json();
+        code = parsed?.error;
+      } catch {
+        code = null;
+      }
+    }
+    if (PAGE_LIMIT_CODES.has(code)) {
+      const err = new Error(code);
+      err.limitCode = code;
+      throw err;
+    }
     if (edgeError) {
       throw new Error('영상을 가져오는 데 실패했습니다.');
     }
@@ -191,25 +242,46 @@ export const useYouTubeSearch = (location, mediaMode) => {
     };
 
     setFetchError(false);
+    setFetchLimitCode(null);
     setIsEmptyResult(false);
     setNextPageToken(null);
     setPaginationSource(null);
     setHasMorePages(false);
     setLoadMoreCount(0);
     setLoadMoreError(false);
+    setLoadMoreLimitCode(null);
     setLoadMoreNoNew(false);
     liveRef.current = emptyLive();
 
-    const { data: cachedData } = await supabase
+    if (isPlaceholderPlaceName(location?.name)) {
+      setRawVideos([]);
+      setIsEmptyResult(true);
+      return;
+    }
+
+    const candidateIds = dbCandidates.length ? dbCandidates : [cacheKey];
+    let cachedData = null;
+    const cachedRes = await supabase
       .from('place_videos')
-      .select('videos')
-      .in('place_id', dbCandidates.length ? dbCandidates : [cacheKey])
+      .select('videos, next_retry_at')
+      .in('place_id', candidateIds)
       .limit(1)
       .maybeSingle();
+    if (cachedRes.error) {
+      const legacy = await supabase
+        .from('place_videos')
+        .select('videos')
+        .in('place_id', candidateIds)
+        .limit(1)
+        .maybeSingle();
+      cachedData = legacy.data;
+    } else {
+      cachedData = cachedRes.data;
+    }
 
     if (fetchGenRef.current !== gen) return;
 
-    if (cachedData && Array.isArray(cachedData.videos)) {
+    if (cachedData && Array.isArray(cachedData.videos) && !shouldRefreshPlaceVideoCache(cachedData)) {
       console.log(`[L2] DB Cache found for: ${location.name} (Items: ${cachedData.videos.length})`);
       fetchContextRef.current = {
         searchQuery,
@@ -274,6 +346,71 @@ export const useYouTubeSearch = (location, mediaMode) => {
       return;
     }
 
+    if (freeSearch) {
+      if (isPlaceholderPlaceName(location?.name)) {
+        setFreeSearchLinkOnly(true);
+        setFetchError(false);
+        setFetchLimitCode(null);
+        liveRef.current = emptyLive();
+        setRawVideos([]);
+        setHasMorePages(false);
+        setIsEmptyResult(true);
+        completedInitialKeysRef.current.add(key);
+        queueMicrotask(() => setIsLoading(false));
+        return;
+      }
+      const gen = fetchGenRef.current;
+      let cancelled = false;
+      setIsLoading(true);
+      setFetchError(false);
+      setFetchLimitCode(null);
+      (async () => {
+        const cacheKey = getPlaceStableKey(location);
+        const dbCandidates = buildPlaceDbIdCandidates(location);
+        const candidateIds = dbCandidates.length ? dbCandidates : [cacheKey];
+        let cachedData = null;
+        const cachedRes = await supabase
+          .from('place_videos')
+          .select('videos, next_retry_at')
+          .in('place_id', candidateIds)
+          .limit(1)
+          .maybeSingle();
+        if (cachedRes.error) {
+          const legacy = await supabase
+            .from('place_videos')
+            .select('videos')
+            .in('place_id', candidateIds)
+            .limit(1)
+            .maybeSingle();
+          cachedData = legacy.data;
+        } else {
+          cachedData = cachedRes.data;
+        }
+        if (cancelled || fetchGenRef.current !== gen) return;
+        if (cachedData && !shouldShowFreeSearchLink(location, cachedData)) {
+          const list = cachedData.videos;
+          setFreeSearchLinkOnly(false);
+          liveRef.current = { ...emptyLive(), rawVideos: list };
+          setRawVideos(list);
+          setHasMorePages(false);
+          setIsEmptyResult(false);
+          completedInitialKeysRef.current.add(key);
+          setIsLoading(false);
+          return;
+        }
+        setFreeSearchLinkOnly(true);
+        liveRef.current = emptyLive();
+        setRawVideos([]);
+        setHasMorePages(false);
+        setIsEmptyResult(true);
+        completedInitialKeysRef.current.add(key);
+        setIsLoading(false);
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const currentPlaceKey = placeKeyOnly(location);
     const mem = sessionVideoCache.get(currentPlaceKey);
     if (mem) {
@@ -306,7 +443,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
         }
       } catch (err) {
         console.error('[useYouTubeSearch] Error:', err);
-        if (!cancelled && fetchGenRef.current === gen) setFetchError(true);
+        if (!cancelled && fetchGenRef.current === gen) {
+          setFetchError(true);
+          setFetchLimitCode(err?.limitCode || null);
+        }
       } finally {
         if (!cancelled && fetchGenRef.current === gen) setIsLoading(false);
       }
@@ -315,10 +455,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
     return () => {
       cancelled = true;
     };
-  }, [location?.id, location?.slug, location?.canonical_slug, location?.name, location?.country, location?.name_en, mediaMode, runInitialFetch]);
+  }, [freeSearch, location?.id, location?.slug, location?.canonical_slug, location?.name, location?.country, location?.name_en, mediaMode, runInitialFetch]);
 
   const retry = useCallback(async () => {
-    if (mediaMode !== 'VIDEO' || !location?.name) return;
+    if (freeSearch || mediaMode !== 'VIDEO' || !location?.name) return;
     const currentPlaceKey = placeKeyOnly(location);
     sessionVideoCache.delete(currentPlaceKey);
     completedInitialKeysRef.current.delete(placeFetchKey(location, mediaMode));
@@ -326,6 +466,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     const gen = fetchGenRef.current;
     setIsLoading(true);
     setFetchError(false);
+    setFetchLimitCode(null);
     setIsEmptyResult(false);
     try {
       await runInitialFetch(gen);
@@ -334,13 +475,17 @@ export const useYouTubeSearch = (location, mediaMode) => {
       }
     } catch (err) {
       console.error('[useYouTubeSearch] retry Error:', err);
-      if (fetchGenRef.current === gen) setFetchError(true);
+      if (fetchGenRef.current === gen) {
+        setFetchError(true);
+        setFetchLimitCode(err?.limitCode || null);
+      }
     } finally {
       if (fetchGenRef.current === gen) setIsLoading(false);
     }
-  }, [mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.name_en, runInitialFetch]);
+  }, [freeSearch, mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.name_en, runInitialFetch]);
 
   const loadMore = useCallback(async () => {
+    if (freeSearch) return;
     const ctx = fetchContextRef.current;
     const live = liveRef.current;
     if (
@@ -361,6 +506,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     live.isLoadingMore = true;
     setIsLoadingMore(true);
     setLoadMoreError(false);
+    setLoadMoreLimitCode(null);
     setLoadMoreNoNew(false);
 
     try {
@@ -412,7 +558,14 @@ export const useYouTubeSearch = (location, mediaMode) => {
       }
     } catch (err) {
       console.error('[useYouTubeSearch] loadMore Error:', err);
-      if (fetchGenRef.current === gen) setLoadMoreError(true);
+      if (fetchGenRef.current === gen) {
+        if (err?.limitCode) {
+          setLoadMoreLimitCode(err.limitCode);
+          setLoadMoreError(false);
+        } else {
+          setLoadMoreError(true);
+        }
+      }
     } finally {
       if (fetchGenRef.current === gen && placeKeyRef.current === placeKeyAtStart) {
         const nextCount = liveRef.current.loadMoreCount + 1;
@@ -434,7 +587,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
         }
       }
     }
-  }, [invokeEdge]);
+  }, [invokeEdge, freeSearch]);
 
   const markUnplayable = useCallback((videoId) => {
     markYoutubeIdUnplayable(videoId);
@@ -442,6 +595,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
   }, []);
 
   const canLoadMore =
+    !freeSearch &&
     !isLoading &&
     !fetchError &&
     videos.length > 0 &&
@@ -459,6 +613,11 @@ export const useYouTubeSearch = (location, mediaMode) => {
     canLoadMore,
     isLoadingMore,
     loadMoreError,
+    loadMoreLimitCode,
+    fetchLimitCode,
+    externalYouTubeUrl,
+    placeYouTubeUrl,
+    suppressVideoRetry: freeSearch,
     loadMoreNoNew,
     markUnplayable,
     googleFormUrl: GOOGLE_FORM_URL,
