@@ -10,6 +10,7 @@ import path from 'node:path';
 import { loadEnvFile } from './lib/load-env-file.mjs';
 import { smokeSupabaseFetch } from './lib/smoke-supabase-fetch.mjs';
 import { maskPrivate } from './health/mask-private.mjs';
+import { probePlaceChatIntroSummariesForLeaks } from './lib/probe-place-chat-intro-leak.mjs';
 
 if (!process.env.GITHUB_ACTIONS) {
   loadEnvFile();
@@ -327,6 +328,42 @@ async function probeFetchPlaceVideos() {
   }
 }
 
+async function probePlaceChatIntroLeak() {
+  const id = 'P0-6';
+  const name = 'place_chat_intro leak scan';
+
+  if (!supabaseUrl || !anonKey) {
+    record(id, name, 'fail', 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing', 'P0');
+    return;
+  }
+
+  try {
+    const { ok, scanned, leaks } = await probePlaceChatIntroSummariesForLeaks({
+      supabaseUrl,
+      anonKey,
+      fetch: (url, options) => supabaseFetch(url, options),
+    });
+    if (!ok) {
+      const sample = leaks
+        .slice(0, 3)
+        .map((row) => `${row.destination_key} (${row.reason})`)
+        .join('; ');
+      record(
+        id,
+        name,
+        'fail',
+        `${leaks.length} leaky summary row(s) of ${scanned} — ${sample}`,
+        'P0',
+      );
+      return;
+    }
+    record(id, name, 'pass', `${scanned} rows scanned`, 'P0');
+  } catch (error) {
+    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
+    record(id, name, 'fail', detail, 'P0');
+  }
+}
+
 async function probeSitemap() {
   const id = 'P1-1';
   const name = 'Sitemap';
@@ -387,6 +424,7 @@ await probeJsBundle();
 await probeSupabaseRest();
 await probeTourapiFestivalCache();
 await probeFetchPlaceVideos();
+await probePlaceChatIntroLeak();
 await probeSitemap();
 
 process.exit(printSummary());

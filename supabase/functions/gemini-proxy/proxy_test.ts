@@ -418,6 +418,18 @@ Deno.test("Gemini 503 falls back to flash-lite once then busy", async () => {
   assertEquals(calls.filter((call) => call.url.includes("reconcile")).length, 0);
 });
 
+Deno.test("mooni_chat strips Draft/Stick-to leak from Gemini text", async () => {
+  const leak =
+    '1 million tourists per year". Stick to historical/visual facts.\n\n3. **Draft\n\n이곳이 어떤 곳인지부터, 가는 방법·준비·즐길거리까지 골라보셔도 좋아요.';
+  const { fetchImpl } = routedFetch(() => geminiOk(leak));
+  const res = await post(mooni, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.success, true);
+  assertEquals(String(body.text).startsWith("이곳이"), true);
+  assert(!String(body.text).includes("Stick to"));
+});
+
 Deno.test("MAX_TOKENS is returned as truncated text", async () => {
   const { fetchImpl } = routedFetch(() => geminiOk("잘린", "MAX_TOKENS"));
   const res = await post(mooni, { Origin: ORIGIN }, fetchImpl);

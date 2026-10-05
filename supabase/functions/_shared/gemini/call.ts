@@ -1,3 +1,5 @@
+import { sanitizeGeminiUserText } from "./answerSanitize.mjs";
+
 export type GeminiCallResult = {
   ok: boolean;
   status: number;
@@ -63,10 +65,11 @@ export function extractGeminiAnswer(data: Record<string, unknown> | null): {
   const candidate = (data?.candidates as Array<Record<string, unknown>> | undefined)?.[0];
   const content = candidate?.content as { parts?: Array<{ text?: string; thought?: boolean }> } | undefined;
   const parts = Array.isArray(content?.parts) ? content.parts : [];
-  const text = parts
+  const rawText = parts
     .filter((part) => part && !part.thought && typeof part.text === "string")
     .map((part) => part.text ?? "")
     .join("");
+  const text = sanitizeGeminiUserText(rawText);
   const usage = (data?.usageMetadata ?? {}) as {
     promptTokenCount?: number;
     candidatesTokenCount?: number;
