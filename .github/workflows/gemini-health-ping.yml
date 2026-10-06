@@ -1,6 +1,6 @@
 # MOONi 실경로 헬스 핑. smoke-health(2시간/6시간)와 분리된 하루 1회.
 # 정시가 아닌 분(04:17 UTC). 엣지 health_ping 상한은 하루 4회.
-# 공개 로그는 OK 또는 FAIL(<class>)만. HTTP 코드·오류 문장은 찍지 않는다.
+# 공개 로그는 OK 또는 FAIL(<class>)와 HTTP 코드·allowlist error 코드만. 시크릿·raw body는 찍지 않는다.
 #
 # Repository secrets (값은 로그에 남기지 않음):
 #   VITE_SUPABASE_URL
@@ -57,17 +57,44 @@ jobs:
             exit 1
           fi
           python3 - << 'PY'
-          import json, sys
-          code = open("/tmp/gemini-health-code.txt", encoding="utf-8").read().strip()
+          import json, re, sys
+
+          ALLOWED_ERRORS = frozenset({
+              "origin_not_allowed",
+              "rate_limited",
+              "busy",
+              "quota",
+              "upstream_error",
+              "unauthorized",
+              "forbidden",
+              "invalid_request",
+              "unknown_task",
+              "health_disabled",
+              "server_error",
+              "budget",
+          })
+
+          def sanitize_code(raw: str) -> str:
+              digits = re.sub(r"\D", "", raw)[:3]
+              return digits if digits else "000"
+
+          code = sanitize_code(open("/tmp/gemini-health-code.txt", encoding="utf-8").read().strip())
           raw = open("/tmp/gemini-health-body.json", encoding="utf-8").read()
           try:
               data = json.loads(raw)
           except Exception:
-              print("FAIL(http)")
+              print(f"FAIL(http) code={code} body=non_json")
               sys.exit(1)
           if code == "200" and data.get("success") is True:
               print("OK")
               sys.exit(0)
-          print("FAIL(http)")
+          err_val = data.get("error")
+          if isinstance(err_val, str) and err_val in ALLOWED_ERRORS:
+              err = err_val
+          elif err_val is None:
+              err = "none"
+          else:
+              err = "other"
+          print(f"FAIL(http) code={code} error={err}")
           sys.exit(1)
           PY
