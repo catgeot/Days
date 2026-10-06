@@ -1,4 +1,5 @@
 import { resolveScenicSpotForPlace, isDomesticKoreaLocation } from '../src/pages/Home/lib/placeScenicGateway.js';
+import { isHiddenKoreaScenicSpotId } from '../src/pages/Home/lib/koreaScenicSpotVisibility.js';
 
 let passed = 0;
 let failed = 0;
@@ -138,6 +139,17 @@ function assert(cond, msg) {
     hubWithReturn?.deepPath.includes('returnTo=%2Fplace%2Fsokcho%2Fgallery'),
     'Hub deepPath preserves returnTo',
   );
+}
+
+{
+  assert(isHiddenKoreaScenicSpotId('gunwi-whistle-forest'), 'gunwi-whistle-forest marked hidden');
+  const hiddenPlace = resolveScenicSpotForPlace({
+    name: '군위 휘파람숲',
+    slug: 'gunwi-whistle-forest',
+    hubId: 'gunwi',
+    country: '대한민국',
+  });
+  assert(hiddenPlace === null, 'hidden scenic does not resolve in gateway');
 }
 
 console.log(`Smoke test completed: ${passed} passed, ${failed} failed.`);

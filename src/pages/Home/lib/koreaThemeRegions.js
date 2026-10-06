@@ -5,6 +5,7 @@ import {
   placeUrlSlug,
   resolveCityAttractionHub,
 } from './cityAttractionHubs.js';
+import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import { hubIdsForArea } from '../../Korea/koreaHubSeeds.js';
 import { resolveTourApiPlace } from '../../../utils/tourApiMatch.js';
 
@@ -125,6 +126,7 @@ export function listKoreaThemeRegionAttractions(areaCode) {
     const hubName = String(hub.name || hubId);
     for (const attraction of hub.attractions || []) {
       if (!attraction?.name) continue;
+      if (isHiddenHubScenicAttraction(hubId, attraction.name)) continue;
       const placeSlug = placeUrlSlug(attraction.name_en, attraction.name);
       if (!placeSlug) continue;
       const id = `${hubId}:${placeSlug}`;

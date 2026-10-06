@@ -169,6 +169,12 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
       ? raw.galleryUrls.map(toHttps).filter(Boolean)
       : null;
 
+    const hidden = raw.hidden === true;
+    let hiddenReason = null;
+    if (hidden) {
+      hiddenReason = String(raw.hiddenReason || 'unverified').trim() || 'unverified';
+    }
+
     spots.push({
       order,
       id,
@@ -187,6 +193,7 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
       ...(addr1 ? { addr1 } : {}),
       ...(homepage ? { homepage } : {}),
       ...(galleryUrls && galleryUrls.length > 0 ? { galleryUrls } : {}),
+      ...(hidden ? { hidden: true, hiddenReason } : {}),
     });
   }
 

@@ -38,6 +38,7 @@ import {
   overlaySessionCuration,
   resolvePlaceTargetFromSlug,
 } from './lib/placeRouteHydrate';
+import { isHiddenKoreaScenicPlaceSlug } from './lib/koreaScenicSpotVisibility.js';
 import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
@@ -934,6 +935,11 @@ function Home() {
       }
 
       const normalizedTargetSlug = targetSlug.toLowerCase();
+
+      if (isHiddenKoreaScenicPlaceSlug(normalizedTargetSlug)) {
+        navigate('/korea/theme/scenic', { replace: true });
+        return;
+      }
 
       let target = resolvePlaceTargetFromSlug(targetSlug, {
         savedTrips,

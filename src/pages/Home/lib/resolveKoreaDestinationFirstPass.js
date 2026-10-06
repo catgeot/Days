@@ -9,6 +9,7 @@ import {
   resolveCityAttractionHub,
   resolveHubAttraction,
 } from './cityAttractionHubs.js';
+import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import { placeNameMatchesSearchQuery } from './searchEnterMatch.js';
 import { shouldSkipGeocodeForMood } from './moodSearchIntent.js';
@@ -101,6 +102,7 @@ function resolveKoreaHubAttractionMatch(query) {
   for (const hub of listCityAttractionHubs()) {
     if (!isKoreaHub(hub)) continue;
     for (const attraction of hub.attractions || []) {
+      if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
       if (!placeNameMatchesSearchQuery(query, attraction)) continue;
       const id = `${hub.hubId}:${compactKey(attraction.name)}`;
       if (seen.has(id)) continue;

@@ -6452,8 +6452,9 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gunwi',
       attractionName: '군위 휘파람숲',
       overview: '휘파람숲 — 군위 숲 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: '2815446',
-    }, // TODO contentId
+      hidden: true,
+      hiddenReason: 'unverified',
+    },
 
     {
       order: 5980,

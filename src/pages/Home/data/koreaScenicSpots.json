@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-16T13:12:04.892Z",
+    "generatedAt": "2026-10-06T08:34:23.248Z",
     "count": 871,
     "imageCount": 796,
     "curation": "GATEO",
@@ -9845,9 +9845,11 @@
       "placeSlug": "gunwi-whistle-forest",
       "lat": 36.2255,
       "lng": 128.5855,
-      "contentId": "2815446",
+      "contentId": null,
       "overview": "휘파람숲 — 군위 숲 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
-      "imageUrl": null
+      "imageUrl": null,
+      "hidden": true,
+      "hiddenReason": "unverified"
     },
     {
       "order": 5980,

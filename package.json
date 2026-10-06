@@ -96,6 +96,8 @@
     "smoke:korea-recent-searches": "node scripts/smoke-korea-recent-searches.mjs",
     "smoke:korea-scenic-personal": "node scripts/smoke-korea-scenic-personal.mjs",
     "smoke:korea-scenic-map": "node scripts/smoke-korea-scenic-map.mjs",
+    "smoke:korea-scenic-hidden": "node scripts/smoke-korea-scenic-hidden.mjs",
+    "smoke:outbound-search-buttons-layout": "node scripts/smoke-outbound-search-buttons-layout.mjs",
     "smoke:korea-festival-nearby": "node scripts/smoke-korea-festival-nearby.mjs",
     "smoke:korea-festival-stay-url": "node scripts/smoke-korea-festival-stay-url.mjs",
     "smoke:korea-festival-detail-url": "node scripts/smoke-korea-festival-detail-url.mjs",
