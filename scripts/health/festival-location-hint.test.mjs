@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  coarseCoord,
+  clearLocationSuccess,
   isHintDismissed,
   isWithinTtl,
   readDismissTimestamp,
@@ -9,6 +11,7 @@ import {
   shouldShowDefaultLocHint,
   writeHintDismissed,
   writeLocationSuccess,
+  LOC_HINT_SUCCESS_KEY,
   LOC_HINT_TTL_MS,
 } from '../../src/pages/Korea/festivalLocationHint.js';
 
@@ -21,6 +24,9 @@ function mockStorage() {
     getItem: (k) => (k in map ? map[k] : null),
     setItem: (k, v) => {
       map[k] = String(v);
+    },
+    removeItem: (k) => {
+      delete map[k];
     },
   };
 }
@@ -74,6 +80,21 @@ test('recent success record is readable within TTL', () => {
   assert.equal(readLocationSuccess(storage, NOW + LOC_HINT_TTL_MS + 1), null);
 });
 
+test('writeLocationSuccess stores coarse coords (~2 decimals)', () => {
+  const storage = mockStorage();
+  writeLocationSuccess(storage, 37.5665123, 126.9780456, NOW);
+  const hit = readLocationSuccess(storage, NOW);
+  assert.deepEqual(hit, { at: NOW, lat: 37.57, lng: 126.98 });
+  assert.equal(coarseCoord(37.5665123), 37.57);
+});
+
+test('clearLocationSuccess removes cached record', () => {
+  const storage = mockStorage();
+  writeLocationSuccess(storage, 37.5, 127.0, NOW);
+  clearLocationSuccess(storage);
+  assert.equal(storage.getItem(LOC_HINT_SUCCESS_KEY), null);
+});
+
 test('shouldShowDefaultLocHint — granted hides banner', () => {
   assert.equal(
     shouldShowDefaultLocHint({
@@ -121,27 +142,11 @@ test('shouldShowDefaultLocHint — expired dismissal shows again', () => {
   );
 });
 
-test('shouldAttemptSilentGeolocation matrix', () => {
-  assert.equal(
-    shouldAttemptSilentGeolocation('granted', null, false),
-    true,
-  );
-  assert.equal(
-    shouldAttemptSilentGeolocation('denied', null, false),
-    false,
-  );
-  assert.equal(
-    shouldAttemptSilentGeolocation(
-      'unsupported',
-      { at: NOW, lat: 1, lng: 2 },
-      false,
-    ),
-    true,
-  );
-  assert.equal(
-    shouldAttemptSilentGeolocation('denied', { at: NOW, lat: 1, lng: 2 }, false),
-    true,
-  );
+test('shouldAttemptSilentGeolocation — only granted', () => {
+  assert.equal(shouldAttemptSilentGeolocation('granted'), true);
+  assert.equal(shouldAttemptSilentGeolocation('prompt'), false);
+  assert.equal(shouldAttemptSilentGeolocation('denied'), false);
+  assert.equal(shouldAttemptSilentGeolocation('unsupported'), false);
 });
 
 test('storage throws — reads return safe defaults', () => {

@@ -80,6 +80,14 @@ export function readLocationSuccess(storage, now = Date.now()) {
 }
 
 /**
+ * @param {number} n
+ */
+export function coarseCoord(n) {
+  if (!Number.isFinite(n)) return n;
+  return Math.round(n * 100) / 100;
+}
+
+/**
  * @param {Pick<Storage, 'setItem'> | null | undefined} storage
  * @param {number} lat
  * @param {number} lng
@@ -90,7 +98,11 @@ export function writeLocationSuccess(storage, lat, lng, now = Date.now()) {
   try {
     storage.setItem(
       LOC_HINT_SUCCESS_KEY,
-      JSON.stringify({ at: now, lat, lng }),
+      JSON.stringify({
+        at: now,
+        lat: coarseCoord(lat),
+        lng: coarseCoord(lng),
+      }),
     );
   } catch {
     /* private mode */
@@ -98,16 +110,22 @@ export function writeLocationSuccess(storage, lat, lng, now = Date.now()) {
 }
 
 /**
- * @param {GeolocationPermissionState} permission
- * @param {FestivalLocationSuccessRecord | null} recentSuccess
- * @param {boolean} hintDismissed
+ * @param {Pick<Storage, 'removeItem'> | null | undefined} storage
  */
-export function shouldAttemptSilentGeolocation(permission, recentSuccess, hintDismissed) {
-  if (permission === 'granted') return true;
-  if (recentSuccess) return true;
-  if (permission === 'denied') return false;
-  if (permission === 'prompt' && recentSuccess) return true;
-  return false;
+export function clearLocationSuccess(storage) {
+  if (!storage) return;
+  try {
+    storage.removeItem(LOC_HINT_SUCCESS_KEY);
+  } catch {
+    /* private mode */
+  }
+}
+
+/**
+ * @param {GeolocationPermissionState} permission
+ */
+export function shouldAttemptSilentGeolocation(permission) {
+  return permission === 'granted';
 }
 
 /**

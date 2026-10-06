@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import {
+  clearLocationSuccess,
   queryGeolocationPermission,
   readLocationSuccess,
   shouldAttemptSilentGeolocation,
@@ -16,7 +17,6 @@ const GEO_OPTIONS = {
  * @param {object} p
  * @param {boolean} p.loading
  * @param {number} p.itemsLength
- * @param {boolean} p.hintDismissed
  * @param {(lat: number, lng: number, opts?: { boot?: boolean }) => boolean} p.applyUserLocation
  * @param {() => void} p.dismissLocHint
  * @param {Pick<Storage, 'getItem' | 'setItem'> | null} [p.storage]
@@ -24,7 +24,6 @@ const GEO_OPTIONS = {
 export function useFestivalLocationBoot({
   loading,
   itemsLength,
-  hintDismissed,
   applyUserLocation,
   dismissLocHint,
   storage,
@@ -53,13 +52,7 @@ export function useFestivalLocationBoot({
         dismissLocHint();
       }
 
-      if (
-        !shouldAttemptSilentGeolocation(
-          permission,
-          recentSuccess,
-          hintDismissed,
-        )
-      ) {
+      if (!shouldAttemptSilentGeolocation(permission)) {
         return;
       }
 
@@ -74,7 +67,8 @@ export function useFestivalLocationBoot({
         },
         (err) => {
           if (cancelled) return;
-          if (err?.code === 1 && recentSuccess) {
+          if (err?.code === 1) {
+            clearLocationSuccess(storageRef);
             dismissLocHint();
           }
         },
@@ -89,7 +83,6 @@ export function useFestivalLocationBoot({
   }, [
     loading,
     itemsLength,
-    hintDismissed,
     applyUserLocation,
     dismissLocHint,
     storageRef,

@@ -1418,7 +1418,6 @@ export default function KoreaFestivalHub() {
   useFestivalLocationBoot({
     loading,
     itemsLength: items.length,
-    hintDismissed: locHintDismissed,
     applyUserLocation,
     dismissLocHint,
   });
