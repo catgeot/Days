@@ -259,8 +259,11 @@ async function expectRpcSettled(page, bag, count) {
 
 test.beforeAll(() => {
   const url = process.env.VITE_SUPABASE_URL || '';
-  if (!url || url.includes(PROD_HOST)) {
-    throw new Error(`ABORT: VITE_SUPABASE_URL points at ${PROD_HOST}`);
+  if (!url) {
+    throw new Error('ABORT: VITE_SUPABASE_URL is empty (gallery writer harness needs a non-prod URL)');
+  }
+  if (url.includes(PROD_HOST)) {
+    throw new Error(`ABORT: VITE_SUPABASE_URL points at prod host ${PROD_HOST}`);
   }
 });
 

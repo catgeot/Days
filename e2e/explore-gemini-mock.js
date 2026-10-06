@@ -1,3 +1,5 @@
+import { buildGeminiProxyMockBody } from './gemini-proxy-mock-response.js';
+
 /** Explore Enter AI typo fallback — gemini-proxy blocked by read-only guard in E2E. */
 export const EXPLORE_GIBAEK_MOCK_JSON = {
   intent_type: 'typo',
@@ -21,19 +23,11 @@ export async function installExploreGeminiMock(contextOrPage) {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({
-        success: true,
-        modelUsed: 'mock-e2e-explore',
-        data: {
-          candidates: [
-            {
-              content: {
-                parts: [{ text: JSON.stringify(EXPLORE_GIBAEK_MOCK_JSON) }],
-              },
-            },
-          ],
-        },
-      }),
+      body: JSON.stringify(
+        buildGeminiProxyMockBody(JSON.stringify(EXPLORE_GIBAEK_MOCK_JSON), {
+          modelUsed: 'mock-e2e-explore',
+        }),
+      ),
     });
   });
 }

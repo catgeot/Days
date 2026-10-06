@@ -26,7 +26,10 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      testIgnore: /youtube-loadmore-session\.spec\.js/,
+      testIgnore: [
+        /youtube-loadmore-session\.spec\.js/,
+        /gallery-single-writer\.spec\.js/,
+      ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
     {

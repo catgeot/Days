@@ -18,6 +18,7 @@ const smokeScripts = [
   'scripts/smoke-place-stats-direct-write.mjs',
   'scripts/smoke-place-gallery-persist.mjs',
   'scripts/smoke-gallery-photo-manage.mjs',
+  'scripts/test-gemini-proxy-e2e-mock.mjs',
 ];
 let smokeCode = 0;
 for (const script of smokeScripts) {
