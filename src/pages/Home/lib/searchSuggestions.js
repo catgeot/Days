@@ -166,7 +166,10 @@ function pushHubAttractionCluster(hub, out, seen, opts = {}) {
   }
 
   const preferAttraction = opts.preferAttraction;
-  if (preferAttraction) {
+  if (
+    preferAttraction &&
+    !isHiddenHubScenicAttraction(hub.hubId, preferAttraction.name)
+  ) {
     pushUnique(out, seen, attractionToSuggestion(hub, preferAttraction));
   }
 
@@ -219,6 +222,7 @@ function uniqueHubFromAttractionHits(attractionHits, query) {
   const byId = new Map();
   for (const { hub, attraction } of attractionHits) {
     if (!hub?.hubId) continue;
+    if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
     if (!byId.has(hub.hubId)) byId.set(hub.hubId, { hub, prefers: [] });
     byId.get(hub.hubId).prefers.push(attraction);
   }
@@ -385,6 +389,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
         for (const hub of hubs) pushUnique(out, seen, hubToSuggestion(hub));
       }
       for (const { hub, attraction } of attractions) {
+        if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
         pushUnique(out, seen, attractionToSuggestion(hub, attraction));
       }
     }

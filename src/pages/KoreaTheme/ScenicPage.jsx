@@ -851,13 +851,26 @@ export default function KoreaThemeScenicPage() {
   const selectedId = searchParams.get('spot');
   const page = Math.max(Number(searchParams.get('page') || '1') || 1, 1);
 
+  const replaceScenicHomeWithoutSpot = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    next.delete('spot');
+    const qs = next.toString();
+    navigate(
+      {
+        pathname: '/korea/theme/scenic',
+        search: qs ? `?${qs}` : '',
+      },
+      { replace: true },
+    );
+  }, [navigate, searchParams]);
+
   useEffect(() => {
     if (!selectedId) return;
     const record = getKoreaScenicSpotRecordById(selectedId);
     if (record && isScenicSpotHidden(record)) {
-      navigate('/korea/theme/scenic', { replace: true });
+      replaceScenicHomeWithoutSpot();
     }
-  }, [selectedId, navigate]);
+  }, [selectedId, replaceScenicHomeWithoutSpot]);
 
   const [nearOrigin, setNearOrigin] = useState(null);
   const [nearLabel, setNearLabel] = useState('');
@@ -2817,10 +2830,16 @@ export default function KoreaThemeScenicPage() {
       if (resolveLocalScenicListSpotById(id, locale)) return;
       if (dbSpotsWithThumbs.some((s) => String(s.id) === id)) return;
       if (/^\d{1,32}$/.test(id)) return;
-      navigate('/korea/theme/scenic', { replace: true });
+      replaceScenicHomeWithoutSpot();
     }, 900);
     return () => window.clearTimeout(timer);
-  }, [selectedId, selectedSpot, locale, navigate, dbSpotsWithThumbs]);
+  }, [
+    selectedId,
+    selectedSpot,
+    locale,
+    replaceScenicHomeWithoutSpot,
+    dbSpotsWithThumbs,
+  ]);
 
   const setCuratedRegion = useCallback(
     (r) => {

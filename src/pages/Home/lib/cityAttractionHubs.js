@@ -133,7 +133,12 @@ export function resolveCityAttractionHub(query) {
 export function resolveHubAttraction(query) {
   const key = normalizeKey(query);
   if (!key) return null;
-  return attractionByKey.get(key) || null;
+  const hit = attractionByKey.get(key);
+  if (!hit) return null;
+  if (isHiddenHubScenicAttraction(hit.hub?.hubId, hit.attraction?.name)) {
+    return null;
+  }
+  return hit;
 }
 
 /**
@@ -163,6 +168,7 @@ export function matchCityAttractionHubsPrefix(query, { limit = 8 } = {}) {
   const attractionHits = [];
   for (const hub of HUBS) {
     for (const attraction of hub.attractions || []) {
+      if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
       const names = [attraction.name, attraction.name_en, ...(attraction.aliases || [])].filter(Boolean);
       if (names.some((n) => {
         const nk = normalizeKey(n);

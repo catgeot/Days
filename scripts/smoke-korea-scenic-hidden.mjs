@@ -28,6 +28,12 @@ import {
   scenicSpotLngLat,
 } from '../src/pages/KoreaTheme/nearbyScenicRank.js';
 import { listKoreaHeritageScenic } from '../src/pages/Home/lib/koreaHeritageScenic.js';
+import {
+  matchCityAttractionHubsPrefix,
+  resolveHubAttraction,
+} from '../src/pages/Home/lib/cityAttractionHubs.js';
+import { resolveKoreaDestinationFirstPassSync } from '../src/pages/Home/lib/resolveKoreaDestinationFirstPass.js';
+import { createServer } from 'vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const HIDDEN_ID = 'gunwi-whistle-forest';
@@ -42,6 +48,52 @@ assert.equal(raw.contentId, null);
 assert.ok(isHiddenKoreaScenicSpotId(HIDDEN_ID));
 assert.ok(isHiddenKoreaScenicPlaceSlug('gunwi-whistle-forest'));
 assert.ok(isHiddenHubScenicAttraction('gunwi', '군위 휘파람숲'));
+
+const HIDDEN_SEARCH_NAMES = ['휘파람숲', '군위 휘파람숲'];
+function suggestionNamesWhistle(items) {
+  return (items || []).some((item) => {
+    const name = String(item?.name || item?.name_ko || '').trim();
+    const slug = String(item?.slug || item?.placeSlug || '').toLowerCase();
+    return (
+      name.includes('휘파람숲') ||
+      slug === 'gunwi-whistle-forest' ||
+      slug === 'gunwiwhistleforest'
+    );
+  });
+}
+
+for (const q of HIDDEN_SEARCH_NAMES) {
+  assert.equal(resolveHubAttraction(q), null, `resolveHubAttraction hides: ${q}`);
+  const { attractions } = matchCityAttractionHubsPrefix(q, { limit: 24 });
+  assert.ok(
+    !attractions.some(({ attraction }) =>
+      String(attraction?.name || '').includes('휘파람숲'),
+    ),
+    `matchCityAttractionHubsPrefix hides: ${q}`,
+  );
+  const koreaHit = resolveKoreaDestinationFirstPassSync(q);
+  assert.ok(
+    !koreaHit || !String(koreaHit.name || '').includes('휘파람숲'),
+    `resolveKoreaDestinationFirstPassSync hides: ${q}`,
+  );
+}
+
+const viteRoot = join(__dirname, '..');
+const viteServer = await createServer({
+  configFile: join(viteRoot, 'vite.config.js'),
+  logLevel: 'error',
+});
+const { buildLocalSearchSuggestions } = await viteServer.ssrLoadModule(
+  '/src/pages/Home/lib/searchSuggestions.js',
+);
+for (const q of HIDDEN_SEARCH_NAMES) {
+  const local = buildLocalSearchSuggestions(q);
+  assert.ok(
+    !suggestionNamesWhistle(local),
+    `buildLocalSearchSuggestions hides: ${q}`,
+  );
+}
+await viteServer.close();
 
 const visible = listKoreaScenicSpots();
 assert.ok(!visible.some((s) => s.id === HIDDEN_ID), 'hidden spot excluded from listKoreaScenicSpots');
@@ -78,8 +130,12 @@ if (gyeongbuk) {
 }
 
 assert.ok(
-  scenicPageSrc.includes("navigate('/korea/theme/scenic'"),
-  'ScenicPage redirects invalid/hidden spot to scenic home',
+  scenicPageSrc.includes('replaceScenicHomeWithoutSpot'),
+  'ScenicPage strips spot param on hidden/invalid deep-link',
+);
+assert.ok(
+  scenicPageSrc.includes("next.delete('spot')"),
+  'ScenicPage removes spot query on redirect',
 );
 assert.ok(scenicPageSrc.includes('isScenicSpotHidden'), 'ScenicPage uses hidden helper');
 
