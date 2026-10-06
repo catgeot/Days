@@ -7,6 +7,7 @@ import koreaThemeRegionTour from '../data/koreaThemeRegionTour.json' with { type
 import { rankStayPointDisambiguationCandidates } from '../../../utils/mrtStayQuery.js';
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 import { hubNameMatchesPrefixQuery } from './koreaPoiTypeQuery.js';
+import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 
 const KIND_LABELS = {
   beach: '해변',
@@ -294,6 +295,14 @@ export function resolveHubPlaceFromSlug(slug) {
 
   const attractionHit = attractionByPlaceSlug.get(normalized);
   if (attractionHit) {
+    if (
+      isHiddenHubScenicAttraction(
+        attractionHit.hub?.hubId,
+        attractionHit.attraction?.name,
+      )
+    ) {
+      return null;
+    }
     return attractionToPlacePin(attractionHit.hub, attractionHit.attraction);
   }
 
@@ -315,6 +324,7 @@ export function buildHubDisambiguationCandidates(hub, extraAttractions = []) {
   for (const attraction of hub.attractions || []) {
     const k = normalizeKey(attraction.name);
     if (!k || seen.has(k)) continue;
+    if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
     seen.add(k);
     candidates.push(attractionToSuggestion(hub, attraction));
   }

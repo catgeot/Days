@@ -66,6 +66,8 @@ import {
   listKoreaScenicHubChips,
   listKoreaScenicRegions,
   listKoreaScenicSpots,
+  getKoreaScenicSpotRecordById,
+  isScenicSpotHidden,
 } from '../Home/lib/koreaScenicSpots';
 import {
   areaHasScenicClusters,
@@ -848,6 +850,14 @@ export default function KoreaThemeScenicPage() {
   const heritageCategory = normalizeHeritageCategory(searchParams.get('hcat'));
   const selectedId = searchParams.get('spot');
   const page = Math.max(Number(searchParams.get('page') || '1') || 1, 1);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const record = getKoreaScenicSpotRecordById(selectedId);
+    if (record && isScenicSpotHidden(record)) {
+      navigate('/korea/theme/scenic', { replace: true });
+    }
+  }, [selectedId, navigate]);
 
   const [nearOrigin, setNearOrigin] = useState(null);
   const [nearLabel, setNearLabel] = useState('');
@@ -2793,6 +2803,24 @@ export default function KoreaThemeScenicPage() {
     viewedList,
     locale,
   ]);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const id = String(selectedId).trim();
+    const hiddenRecord = getKoreaScenicSpotRecordById(id);
+    if (hiddenRecord && isScenicSpotHidden(hiddenRecord)) return;
+    if (selectedSpot) return;
+
+    const timer = window.setTimeout(() => {
+      if (CURATED_ALL.some((s) => String(s.id) === id)) return;
+      if (getKoreaHeritageScenicById(id)) return;
+      if (resolveLocalScenicListSpotById(id, locale)) return;
+      if (dbSpotsWithThumbs.some((s) => String(s.id) === id)) return;
+      if (/^\d{1,32}$/.test(id)) return;
+      navigate('/korea/theme/scenic', { replace: true });
+    }, 900);
+    return () => window.clearTimeout(timer);
+  }, [selectedId, selectedSpot, locale, navigate, dbSpotsWithThumbs]);
 
   const setCuratedRegion = useCallback(
     (r) => {

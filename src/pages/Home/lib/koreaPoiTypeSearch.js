@@ -8,6 +8,7 @@ import {
   placeUrlSlug,
   resolveCityAttractionHub,
 } from './cityAttractionHubs.js';
+import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import {
   parseKoreaPoiTypeQuery,
   shouldExpandKoreaPoiTypeSearch,
@@ -39,6 +40,7 @@ function collectHubPoiTypeSuggestions(parsed) {
   for (const hub of listCityAttractionHubs()) {
     if (parsed.cityPrefix && !hubMatchesCityPrefix(hub, parsed.cityPrefix)) continue;
     for (const attraction of hub.attractions || []) {
+      if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
       const names = [attraction.name, attraction.name_en, ...(attraction.aliases || [])];
       if (!names.some((n) => titleMatchesPoiType(n, parsed.type))) continue;
       const item = attractionToSuggestion(hub, attraction);

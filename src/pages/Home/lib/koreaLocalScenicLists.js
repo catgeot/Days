@@ -4,6 +4,7 @@
  */
 import listsJson from '../data/koreaLocalScenicLists.json' with { type: 'json' };
 import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
+import { isScenicSpotHidden } from './koreaScenicSpotVisibility.js';
 import {
   resolveCityAttractionHub,
   hubToSuggestion,
@@ -140,6 +141,7 @@ function memberContentId(member, attraction) {
 /** @type {Map<string, object>} hubId:name → GATEO 선정 명소 (썸네일·contentId) */
 const curatedScenicByHubName = new Map();
 for (const spot of Array.isArray(scenicJson?.spots) ? scenicJson.spots : []) {
+  if (isScenicSpotHidden(spot)) continue;
   const hubKey = normalizeKey(spot?.hubId);
   const nameKey = normalizeKey(spot?.attractionName || spot?.name);
   if (!hubKey || !nameKey) continue;

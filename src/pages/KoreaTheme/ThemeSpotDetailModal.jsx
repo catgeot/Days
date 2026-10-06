@@ -788,14 +788,16 @@ function spotGoogleSearchUrl(spot, detail, locale = 'ko') {
 
 function SpotOutboundSearchButtons({ naverHref, googleHref }) {
   return (
-    <OutboundSearchButtons
-      naverHref={naverHref}
-      googleHref={googleHref}
-      naverLabelKey="korea.theme.spotDetail.naverSearch"
-      googleLabelKey="korea.theme.spotDetail.googleSearch"
-      naverAriaKey="korea.theme.spotDetail.naverSearchAria"
-      googleAriaKey="korea.theme.spotDetail.googleSearchAria"
-    />
+    <div className="min-w-0" data-scenic-outbound-search="">
+      <OutboundSearchButtons
+        naverHref={naverHref}
+        googleHref={googleHref}
+        naverLabelKey="korea.theme.spotDetail.naverSearch"
+        googleLabelKey="korea.theme.spotDetail.googleSearch"
+        naverAriaKey="korea.theme.spotDetail.naverSearchAria"
+        googleAriaKey="korea.theme.spotDetail.googleSearchAria"
+      />
+    </div>
   );
 }
 

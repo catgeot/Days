@@ -3,6 +3,11 @@ import heritageJson from '../data/koreaHeritageScenic.json' with { type: 'json' 
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import { scenicHomePathForHubId } from './koreaThemeCrossLinks.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import {
+  isHiddenKoreaScenicPlaceSlug,
+  isHiddenKoreaScenicSpotId,
+  isScenicSpotHidden,
+} from './koreaScenicSpotVisibility.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -63,6 +68,7 @@ const spotByName = new Map();
 const spotByAttractionName = new Map();
 
 for (const spot of SCENIC_SPOTS) {
+  if (isScenicSpotHidden(spot)) continue;
   if (spot.id) {
     const idKey = String(spot.id).toLowerCase();
     spotById.set(idKey, spot);
@@ -206,6 +212,9 @@ export function resolveScenicSpotForPlace(loc, options = {}) {
     .trim()
     .toLowerCase();
   const rawId = String(loc.id || '').trim();
+  if (isHiddenKoreaScenicPlaceSlug(slug) || isHiddenKoreaScenicSpotId(rawId)) {
+    return null;
+  }
   const contentId = loc.contentId ? String(loc.contentId).trim() : null;
   const hubId = String(loc.hubId || '').trim().toLowerCase();
   const name = loc.name || loc.name_ko || '';
@@ -257,7 +266,7 @@ export function resolveScenicSpotForPlace(loc, options = {}) {
     matchedSpot = spotByPlaceSlug.get(nameEnSlug);
   }
 
-  if (matchedSpot) {
+  if (matchedSpot && !isScenicSpotHidden(matchedSpot)) {
     const sHubId = matchedSpot.hubId || hubId || null;
     let deepPath = '/korea/theme/scenic';
     if (sHubId && resolveCityAttractionHub(sHubId)) {
@@ -345,7 +354,10 @@ export function resolveScenicSpotForPlace(loc, options = {}) {
   // 3. 한국 도시 허브 자체 매칭
   const targetHubId = (hubId || slug || '').toLowerCase();
   if (targetHubId && spotsByHubId.has(targetHubId)) {
-    const hubSpots = spotsByHubId.get(targetHubId);
+    const hubSpots = spotsByHubId.get(targetHubId).filter((s) => !isScenicSpotHidden(s));
+    if (!hubSpots.length) {
+      return null;
+    }
     const resolvedHub = resolveCityAttractionHub(targetHubId);
     const hubName = resolvedHub?.name || loc.name || targetHubId;
     const base = scenicHomePathForHubId(targetHubId);

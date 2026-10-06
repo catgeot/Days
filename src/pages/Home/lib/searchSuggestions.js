@@ -18,6 +18,7 @@ import {
   buildHubDisambiguationCandidates,
   makeDisambiguationResult,
 } from './cityAttractionHubs';
+import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import {
   getSettlementsForHub,
@@ -170,6 +171,7 @@ function pushHubAttractionCluster(hub, out, seen, opts = {}) {
   }
 
   for (const attraction of hub.attractions || []) {
+    if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
     pushUnique(out, seen, attractionToSuggestion(hub, attraction));
   }
 

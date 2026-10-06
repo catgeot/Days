@@ -1,5 +1,15 @@
 import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { filterVisibleKoreaScenicSpots } from './koreaScenicSpotVisibility.js';
+
+export {
+  filterVisibleKoreaScenicSpots,
+  getKoreaScenicSpotRecordById,
+  isHiddenHubScenicAttraction,
+  isHiddenKoreaScenicPlaceSlug,
+  isHiddenKoreaScenicSpotId,
+  isScenicSpotHidden,
+} from './koreaScenicSpotVisibility.js';
 import {
   hubMatchesScenicCluster,
   listScenicClusterDefs,
@@ -35,7 +45,9 @@ const REGION_ORDER = SCENIC_REGION_ORDER;
 
 /** @returns {KoreaScenicSpot[]} */
 export function listKoreaScenicSpots(region = null) {
-  const list = Array.isArray(scenicJson?.spots) ? scenicJson.spots : [];
+  const list = filterVisibleKoreaScenicSpots(
+    Array.isArray(scenicJson?.spots) ? scenicJson.spots : [],
+  );
   const sorted = list.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   if (!region || region === '전체') return sorted;
   return sorted.filter((s) => s.region === region);
@@ -43,7 +55,7 @@ export function listKoreaScenicSpots(region = null) {
 
 /** @returns {string[]} */
 export function listKoreaScenicRegions() {
-  const list = Array.isArray(scenicJson?.spots) ? scenicJson.spots : [];
+  const list = listKoreaScenicSpots();
   const present = new Set(list.map((s) => s.region).filter(Boolean));
   return REGION_ORDER.filter((r) => present.has(r));
 }
@@ -64,7 +76,7 @@ export function countKoreaScenicSpotsByRegion() {
   /** @type {Record<string, number>} */
   const out = {};
   for (const r of REGION_ORDER) out[r] = 0;
-  for (const s of Array.isArray(scenicJson?.spots) ? scenicJson.spots : []) {
+  for (const s of listKoreaScenicSpots()) {
     if (out[s.region] != null) out[s.region] += 1;
   }
   return out;
