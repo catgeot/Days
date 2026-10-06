@@ -101,6 +101,15 @@ import {
 } from '../../i18n/koreaUi';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
+import {
+  isHintDismissed,
+  queryGeolocationPermission,
+  readLocationSuccess,
+  shouldShowDefaultLocHint,
+  writeHintDismissed,
+  writeLocationSuccess,
+} from './festivalLocationHint.js';
+import { useFestivalLocationBoot } from './useFestivalLocationBoot.js';
 
 /**
  * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction, locale?: string }} p
@@ -172,24 +181,6 @@ function buildPanelListMeta({ areaCode, cityName, count, t, locale = 'ko' }) {
 /** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
 
 const NEAR_KM = NEAR_FESTIVAL_KM;
-
-const LOC_HINT_DONE_KEY = 'korea-festival-loc-hint-done';
-
-function readLocHintDone() {
-  try {
-    return sessionStorage.getItem(LOC_HINT_DONE_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
-
-function writeLocHintDone() {
-  try {
-    sessionStorage.setItem(LOC_HINT_DONE_KEY, '1');
-  } catch {
-    /* ignore */
-  }
-}
 
 function toRad(d) {
   return (d * Math.PI) / 180;
@@ -829,8 +820,11 @@ export default function KoreaFestivalHub() {
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
-    readLocHintDone(),
+    isHintDismissed(
+      typeof localStorage !== 'undefined' ? localStorage : null,
+    ),
   );
+  const [geoPermission, setGeoPermission] = useState('unsupported');
   const userRegionOverrideRef = useRef(false);
   /** 내 주변 진입 직전 필터 — 재탭 시 복원 */
   const preNearSnapshotRef = useRef(
@@ -1304,7 +1298,19 @@ export default function KoreaFestivalHub() {
 
   const dismissLocHint = useCallback(() => {
     setLocHintDismissed(true);
-    writeLocHintDone();
+    writeHintDismissed(
+      typeof localStorage !== 'undefined' ? localStorage : null,
+    );
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    queryGeolocationPermission().then((state) => {
+      if (!cancelled) setGeoPermission(state);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const clearNear = useCallback(() => {
@@ -1333,28 +1339,37 @@ export default function KoreaFestivalHub() {
 
   /**
    * GPS 성공 시: 시도 칩 맞춤.
-   * silent — 부트/재진입: 지역만 (반경 리스트 없음)
+   * boot — 재진입·자동 GPS: 시도 칩만 (반경 리스트 없음)
    * 명시적 내 주변 — 반경 리스트 + 포커스
    * @param {number} lat
    * @param {number} lng
-   * @param {{ silent?: boolean, festivalItems?: object[] }} [opts]
+   * @param {{ boot?: boolean, festivalItems?: object[] }} [opts]
    */
   const applyUserLocation = useCallback(
     (lat, lng, opts = {}) => {
-      const silent = Boolean(opts.silent);
+      const boot = Boolean(opts.boot);
       const sourceItems = opts.festivalItems ?? items;
       const hubResolved = resolveKoreaAreaFromCoords(lat, lng);
       dismissLocHint();
+      writeLocationSuccess(
+        typeof localStorage !== 'undefined' ? localStorage : null,
+        lat,
+        lng,
+      );
       if (!hubResolved) {
-        if (!silent) {
+        if (!boot) {
           setNearLabel('');
           setNearMsg(t('korea.common.locDomesticMiss'));
         }
         return false;
       }
 
-      // 진입 시 자동 GPS: 힌트만 닫고 전국 기본 유지 (지역 칩을 강원 등으로 덮지 않음)
-      if (silent) {
+      if (boot) {
+        userRegionOverrideRef.current = true;
+        setTasteId('all');
+        setAreaCode(String(hubResolved.areaCode));
+        setCityName('all');
+        setChipPanel('region');
         setNearIds(null);
         setNearOrigin(null);
         setNearLabel('');
@@ -1399,6 +1414,13 @@ export default function KoreaFestivalHub() {
     },
     [items, now, timeTab, dismissLocHint, t],
   );
+
+  useFestivalLocationBoot({
+    loading,
+    itemsLength: items.length,
+    applyUserLocation,
+    dismissLocHint,
+  });
 
   useEffect(() => {
     if (!nearOrigin || !nearLabel) return;
@@ -1519,15 +1541,23 @@ export default function KoreaFestivalHub() {
 
   const nearActive = Boolean(nearOrigin && nearLabel);
 
-  const showDefaultLocHint =
-    personalTab == null &&
-    !loading &&
-    !error &&
-    !nearActive &&
-    !locHintDismissed &&
-    areaCode === DEFAULT_AREA_CODE &&
-    cityName === 'all' &&
-    !searchActive;
+  const recentLocationSuccess = readLocationSuccess(
+    typeof localStorage !== 'undefined' ? localStorage : null,
+  );
+
+  const showDefaultLocHint = shouldShowDefaultLocHint({
+    hintDismissed: locHintDismissed,
+    recentSuccess: recentLocationSuccess,
+    permission: geoPermission,
+    loading,
+    error: Boolean(error),
+    nearActive,
+    personalTab,
+    areaCode,
+    cityName,
+    defaultAreaCode: DEFAULT_AREA_CODE,
+    searchActive,
+  });
 
   const panelListMeta = useMemo(() => {
     if (nearBaseItems && nearLabel) {
@@ -1732,7 +1762,6 @@ export default function KoreaFestivalHub() {
       (pos) => {
         setNearBusy(false);
         const ok = applyUserLocation(pos.coords.latitude, pos.coords.longitude, {
-          silent: false,
           festivalItems: items,
         });
         if (!ok) preNearSnapshotRef.current = null;

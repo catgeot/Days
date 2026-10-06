@@ -2,10 +2,23 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const home = readFileSync(new URL('../src/pages/Korea/index.jsx', import.meta.url), 'utf8');
-assert.equal((home.match(/getCurrentPosition/g) || []).length, 1);
-assert.equal(home.includes('watchPosition'), false);
-assert.equal(home.includes('permissions'), false);
-assert.equal(home.includes('koreaFestivalLocationBooted'), false);
+const bootHook = readFileSync(
+  new URL('../src/pages/Korea/useFestivalLocationBoot.js', import.meta.url),
+  'utf8',
+);
+const hint = readFileSync(
+  new URL('../src/pages/Korea/festivalLocationHint.js', import.meta.url),
+  'utf8',
+);
+
+assert.match(home, /useFestivalLocationBoot/);
+assert.match(home, /shouldShowDefaultLocHint/);
+assert.match(home, /festivalLocationHint/);
+assert.equal(home.includes('korea-festival-loc-hint-done'), false);
+assert.match(hint, /LOC_HINT_DISMISS_KEY/);
+assert.match(home, /localStorage/);
+assert.match(hint, /queryGeolocationPermission/);
+assert.match(bootHook, /getCurrentPosition/);
 assert.match(home, /data-near-me-hint/);
 assert.match(home, /locOffPickRegion/);
 
