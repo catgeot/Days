@@ -4,11 +4,15 @@ import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import rehypeSanitize from 'rehype-sanitize';
 import mooniRemarkGfm from './mooniRemarkGfm.js';
 import { mooniChatMarkdownSanitizeSchema } from './mooniChatMarkdownSchema.js';
-import { isMooniPlaceholderUrl } from '../../utils/mooniPlaceholderUrls.js';
+import {
+  isUnsafeMooniLinkUrl,
+  shouldStripMooniMarkdownLink,
+} from '../../utils/mooniPlaceholderUrls.js';
+import { mooniMarkdownLinkLabelText } from './mooniMarkdownLinkLabel.js';
 
 function mooniChatUrlTransform(url) {
   const value = String(url).trim();
-  if (isMooniPlaceholderUrl(value)) return '';
+  if (isUnsafeMooniLinkUrl(value)) return '';
   if (value.startsWith('https://') || value.startsWith('http://')) return value;
   return '';
 }
@@ -45,7 +49,8 @@ function createMooniMarkdownComponents(variant) {
     ),
     li: ({ children }) => <li className="leading-relaxed break-keep">{children}</li>,
     a: ({ href, children }) => {
-      if (!href || isMooniPlaceholderUrl(href)) {
+      const label = mooniMarkdownLinkLabelText(children);
+      if (!href || shouldStripMooniMarkdownLink(href, label)) {
         return <span className="break-keep">{children}</span>;
       }
       return (

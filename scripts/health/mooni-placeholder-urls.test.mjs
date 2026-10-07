@@ -3,32 +3,52 @@ import { test } from 'node:test';
 import { micromark } from 'micromark';
 import { gfm, gfmHtml } from 'micromark-extension-gfm';
 import {
-  isMooniPlaceholderUrl,
-  stripMooniPlaceholderMarkdownLinks,
+  isUnsafeMooniLinkUrl,
+  sanitizeMooniMarkdownLinks,
+  shouldStripMooniMarkdownLink,
 } from '../../src/utils/mooniPlaceholderUrls.js';
 import { getMooniModelMarkdownForRender } from '../../src/pages/Home/lib/mooniModelMessageText.js';
 
-test('isMooniPlaceholderUrl — example and reserved hosts', () => {
-  assert.equal(isMooniPlaceholderUrl('https://planner.example.com/plan'), true);
-  assert.equal(isMooniPlaceholderUrl('http://localhost:3000'), true);
-  assert.equal(isMooniPlaceholderUrl('https://www.gateo.kr/'), false);
-});
+function renderMd(markdown) {
+  return micromark(markdown, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+}
 
-test('stripMooniPlaceholderMarkdownLinks — keeps label, drops href', () => {
-  const raw =
-    '맛집은 시내에 많아요. 자세한 일정은 [플래너 보기](https://planner.example.com/plan)에서 확인하세요.';
-  const stripped = stripMooniPlaceholderMarkdownLinks(raw);
-  assert.ok(!stripped.includes('planner.example.com'));
-  assert.ok(stripped.includes('플래너 보기'));
-});
-
-test('render path — placeholder link is not an anchor in HTML', () => {
-  const md = getMooniModelMarkdownForRender(
-    '추천: [플래너 보기](https://planner.example.com/plan)',
-    { stripPhantomTicketMention: true },
+test('MOONi model bubbles — ChatModal·PlaceChatView → MooniChatMarkdown only', () => {
+  assert.ok(
+    typeof getMooniModelMarkdownForRender === 'function',
+    'all model types use getMooniModelMarkdownForRender before MooniChatMarkdown',
   );
-  const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
-  assert.ok(!html.includes('<a'), 'placeholder must not render as link');
+});
+
+test('① unsafe / example domain — plain text, no anchor', () => {
+  const raw = '[플래너 보기](https://planner.example.com/plan)';
+  assert.equal(shouldStripMooniMarkdownLink('https://planner.example.com/plan', '플래너 보기'), true);
+  assert.equal(isUnsafeMooniLinkUrl('javascript:alert(1)'), true);
+  const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
+  const html = renderMd(md);
+  assert.ok(!html.includes('<a'), 'example domain must not be a link');
   assert.ok(html.includes('플래너 보기'));
-  assert.ok(!html.includes('**'));
+});
+
+test('② in-app UI label + non-gateo URL — plain text', () => {
+  const raw = '일정은 [플래너 보기](https://www.trip.com/flights)에서 확인하세요.';
+  assert.equal(shouldStripMooniMarkdownLink('https://www.trip.com/flights', '플래너 보기'), true);
+  const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
+  const html = renderMd(md);
+  assert.ok(!html.includes('<a'));
+  assert.ok(html.includes('플래너 보기'));
+});
+
+test('③ real external official link — anchor kept', () => {
+  const raw = '관광청 [공식 안내](https://www.okinawastory.jp/)를 참고하세요.';
+  assert.equal(shouldStripMooniMarkdownLink('https://www.okinawastory.jp/', '공식 안내'), false);
+  const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
+  const html = renderMd(md);
+  assert.ok(html.includes('<a'), 'official external link should remain');
+  assert.ok(html.includes('okinawastory.jp'));
+});
+
+test('sanitizeMooniMarkdownLinks — gateo production planner path allowed', () => {
+  const kept = sanitizeMooniMarkdownLinks('[플래너 보기](https://www.gateo.kr/place/miyakojima/planner)');
+  assert.ok(kept.includes('](https://www.gateo.kr/'));
 });

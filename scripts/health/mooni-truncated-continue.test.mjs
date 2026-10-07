@@ -133,3 +133,29 @@ test('이어쓰기 후 booking 카드 묶음 — frozen fingerprint unchanged', 
 test('buildMooniContinueUserText — ko hint', () => {
   assert.ok(buildMooniContinueUserText('ko').includes('끊긴'));
 });
+
+/** 라이브: 도입부 ~130자에서 끊김(1일차 제목 전) */
+const truncatedEarlyIntro = `미야코지마 3박 4일 일정 (mock)
+
+오키나와 남부 미야코지마는 푸른 바다와 산책로, 드라이브 코스, 스노클링 포인트가 잘 갖춰진 섬입니다. 이번 여행은 시모지 공항 도착 후 히라라 시내 숙소로 이동한 뒤 가볍게`;
+
+const continueAfterEarlyIntro = ` 시내로 이동해 체크인합니다.
+
+**1일차** 시모지 공항 → 히라라 · 체크인
+히라라 시내 저녁
+
+**2일차** 요시노 해변
+**3일차** 이리부 다리
+**4일차** 공항 · 출발`;
+
+test('mergeMooniContinuation — 도입부 130자 끊김 후 이어쓰기, intro 1회·1~4일차', () => {
+  assert.ok(
+    truncatedEarlyIntro.length >= 120 && truncatedEarlyIntro.length <= 140,
+    `intro len ${truncatedEarlyIntro.length}`,
+  );
+  assert.ok(!truncatedEarlyIntro.includes('**1일차**'));
+  const merged = mergeMooniContinuation(truncatedEarlyIntro, continueAfterEarlyIntro);
+  assert.equal((merged.match(/미야코지마\s*3박\s*4일\s*일정\s*\(mock\)/gi) || []).length, 1);
+  assertItineraryDaysOneThroughFour(merged);
+  assert.ok(merged.includes('히라라 시내'));
+});
