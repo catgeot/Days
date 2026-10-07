@@ -49,7 +49,7 @@ export function useFestivalMooniEntry({
         const entry = entries[0];
         if (entry) setInlineVisible(entry.isIntersecting);
       },
-      { root, threshold: 0.15 },
+      { root: null, threshold: 0.15 },
     );
     observer.observe(inline);
     return () => observer.disconnect();
