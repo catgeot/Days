@@ -71,6 +71,7 @@ import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import FestivalStayStrip from './FestivalStayStrip';
 import FestivalTnaStrip from './FestivalTnaStrip';
 import { useFestivalMooniEntry } from './FestivalMooniEntry.jsx';
+import { festivalDetailSummaryWillRender } from './lib/festivalMooniFabVisibility.js';
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { FestivalBookingActions } from './FestivalBookingActions.jsx';
 import { FestivalDetailFirstSummary } from './FestivalDetailFirstSummary.jsx';
@@ -1067,14 +1068,41 @@ export default function FestivalDetailSheet({
     intro?.eventEndDate,
   ]);
 
+  const mooniEntryLocation = festivalCross?.stay?.location;
+  const mooniEntryEnabled = Boolean(
+    String(item?.title || '').trim() || mooniEntryLocation?.name,
+  );
+  const mooniSummaryCardWillRender = useMemo(
+    () =>
+      festivalDetailSummaryWillRender({
+        dateText: summaryFields.dateText,
+        timeText: summaryFields.timeText,
+        feeText: summaryFields.fee?.text,
+        placeText: summaryFields.placeText,
+        hasBooking: bookingLinks.length > 0,
+        showOfficialHomepage: Boolean(homepage) && !hideOfficialHomepage,
+        mooniEnabled: mooniEntryEnabled,
+      }),
+    [
+      summaryFields.dateText,
+      summaryFields.timeText,
+      summaryFields.fee?.text,
+      summaryFields.placeText,
+      bookingLinks.length,
+      homepage,
+      hideOfficialHomepage,
+      mooniEntryEnabled,
+    ],
+  );
+
   const festivalMooni = useFestivalMooniEntry({
     item: item || {},
     intro,
-    location: festivalCross?.stay?.location,
+    location: mooniEntryLocation,
     homepage,
     summaryFields,
     raised: showScrollTop && !lightboxOpen,
-    sheetRootRef: sheetScrollRef,
+    inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {
       if (!open) {
         mooniWasOpenRef.current = false;
@@ -1437,7 +1465,7 @@ export default function FestivalDetailSheet({
                 providerLabel={t('korea.festival.detail.bookProviderTicketlink')}
               />
             }
-            mooniSlot={festivalMooni.inlineButton}
+            mooniSlot={mooniSummaryCardWillRender ? festivalMooni.inlineButton : null}
           />
 
           {overview ? (

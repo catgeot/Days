@@ -3,14 +3,19 @@ import { useTranslation } from 'react-i18next';
 import mooniChar from '../../assets/MOONI_transparent.webp';
 
 /**
- * @param {{ onClick: (e: React.MouseEvent) => void, disabled?: boolean }} props
+ * @param {{
+ *   onClick: (e: React.MouseEvent) => void,
+ *   disabled?: boolean,
+ *   inlineRef?: (node: HTMLButtonElement | null) => void,
+ * }} props
  */
-export default function FestivalMooniInlineButton({ onClick, disabled = false }) {
+export default function FestivalMooniInlineButton({ onClick, disabled = false, inlineRef }) {
   const { t } = useTranslation();
 
   return (
     <button
       type="button"
+      ref={inlineRef}
       data-festival-mooni-inline=""
       disabled={disabled}
       onClick={onClick}

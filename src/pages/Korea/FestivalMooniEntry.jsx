@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import mooniChar from '../../assets/MOONI_transparent.webp';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import FestivalMooniInlineButton from './FestivalMooniInlineButton.jsx';
 import { buildFestivalMooniBoundSpot } from './lib/festivalMooniBoundSpot.js';
+import { shouldShowFestivalMooniFab } from './lib/festivalMooniFabVisibility.js';
 
 /**
  * @param {{
@@ -13,7 +14,7 @@ import { buildFestivalMooniBoundSpot } from './lib/festivalMooniBoundSpot.js';
  *   homepage?: string,
  *   summaryFields?: { dateText?: string, timeText?: string, fee?: { text?: string } },
  *   raised?: boolean,
- *   sheetRootRef?: React.RefObject<HTMLElement | null>,
+ *   inlineAnchorExpected?: boolean,
  *   onOpenChange?: (open: boolean) => void,
  *   onOpenTrack?: (placement: 'festival_detail_inline' | 'festival_detail_fab') => void,
  * }} props
@@ -25,25 +26,33 @@ export function useFestivalMooniEntry({
   homepage,
   summaryFields,
   raised = false,
-  sheetRootRef,
+  inlineAnchorExpected,
   onOpenChange,
   onOpenTrack,
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [boundSpot, setBoundSpot] = useState(null);
+  const [inlineMounted, setInlineMounted] = useState(false);
   const [inlineVisible, setInlineVisible] = useState(true);
+  const intersectionObserverRef = useRef(null);
 
   const title = String(item?.title || '').trim();
+  const enabled = Boolean(title || location?.name);
+  const expectInlineAnchor = inlineAnchorExpected ?? enabled;
 
-  useEffect(() => {
-    const root = sheetRootRef?.current;
-    if (!root) return undefined;
-    const inline = root.querySelector('[data-festival-mooni-inline]');
-    if (!inline || typeof IntersectionObserver === 'undefined') {
-      setInlineVisible(false);
-      return undefined;
+  const inlineObserveRef = useCallback((node) => {
+    if (intersectionObserverRef.current) {
+      intersectionObserverRef.current.disconnect();
+      intersectionObserverRef.current = null;
     }
+
+    setInlineMounted(Boolean(node));
+
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
@@ -51,9 +60,9 @@ export function useFestivalMooniEntry({
       },
       { root: null, threshold: 0.15 },
     );
-    observer.observe(inline);
-    return () => observer.disconnect();
-  }, [sheetRootRef, item?.contentId, title]);
+    observer.observe(node);
+    intersectionObserverRef.current = observer;
+  }, []);
 
   const openMooni = useCallback(
     (placement) => {
@@ -82,11 +91,18 @@ export function useFestivalMooniEntry({
     onOpenChange?.(false);
   }, [onOpenChange]);
 
-  const enabled = Boolean(title || location?.name);
-  const showFab = enabled && !inlineVisible;
+  const showFab = shouldShowFestivalMooniFab({
+    enabled,
+    inlineAnchorExpected: expectInlineAnchor,
+    inlineMounted,
+    inlineVisible,
+  });
 
   const inlineButton = enabled ? (
-    <FestivalMooniInlineButton onClick={openMooni('festival_detail_inline')} />
+    <FestivalMooniInlineButton
+      inlineRef={inlineObserveRef}
+      onClick={openMooni('festival_detail_inline')}
+    />
   ) : null;
 
   const fabNode = showFab ? (

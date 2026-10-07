@@ -97,8 +97,9 @@ export function formatPlaceChatLabel(loc, lng = i18n.language) {
 /** 장소카드 → 무니 boundSpot 시드 (SSOT slug 없어도 국가·지명 유지) */
 export function buildMooniBoundSpotFromLocation(loc) {
   if (!loc?.name) return null;
-  const explicitLabel = normalizeDestinationKey(loc.displayLabel || '');
-  const displayLabel = explicitLabel || formatPlaceChatLabel(loc);
+  const displayLabel = loc.festivalContext
+    ? normalizeDestinationKey(loc.displayLabel || '') || formatPlaceChatLabel(loc)
+    : formatPlaceChatLabel(loc);
   const rawSlug = typeof loc.slug === 'string' ? loc.slug.trim() : '';
   return {
     slug: rawSlug || null,
