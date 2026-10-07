@@ -15,17 +15,13 @@ function addDaysYmd(ymd, days) {
   return ymdLocal(d);
 }
 
-/**
- * @param {string} userText
- * @param {{ nights?: number | null }} [tripSession]
- */
+/** @param {string} userText @param {{ nights?: number | null }} [tripSession] */
 export function extractItineraryStayDates(userText, tripSession = {}) {
   const raw = String(userText ?? '');
   const today = new Date();
   let year = today.getFullYear();
   let month = null;
   let day = null;
-
   const ko = raw.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
   if (ko) {
     month = Number(ko[1]);
@@ -37,18 +33,13 @@ export function extractItineraryStayDates(userText, tripSession = {}) {
       day = Number(slash[2]);
     }
   }
-
-  if (month == null || day == null) {
-    return { checkIn: null, checkOut: null };
-  }
-
+  if (month == null || day == null) return { checkIn: null, checkOut: null };
   let checkIn = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   const probe = new Date(year, month - 1, day, 12, 0, 0, 0);
   if (probe < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
     year += 1;
     checkIn = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
-
   const facts = extractMooniTripFacts(raw, {});
   const nights =
     facts.nights != null && facts.nights >= 1
@@ -56,9 +47,7 @@ export function extractItineraryStayDates(userText, tripSession = {}) {
       : tripSession?.nights != null && tripSession.nights >= 1
         ? tripSession.nights
         : null;
-
   const checkOut =
     nights != null ? addDaysYmd(checkIn, nights) : addDaysYmd(checkIn, 1);
-
   return { checkIn, checkOut };
 }

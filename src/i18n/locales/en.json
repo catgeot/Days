@@ -2626,6 +2626,7 @@
       "itineraryTour": "Tours in {{place}}",
       "itineraryPickup": "{{place}} airport transfer",
       "itineraryCollapsed": "Show stays, flights, tours & pickup for {{place}}",
+      "itineraryAffiliateFootnote": "Affiliate · MyRealTrip · Klook",
       "modal": {
         "title": "Flight search",
         "ariaSearch": "Trip.com flight search",

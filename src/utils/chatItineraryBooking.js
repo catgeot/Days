@@ -1,6 +1,5 @@
 import {
   buildTripcomPlannerFlightUrl,
-  getKlookAffiliateUrl,
   getKlookSearchUrl,
   getMrtAccommodationSearchUrl,
   getMrtSearchUrl,
@@ -15,7 +14,6 @@ import {
 } from './mrtStayQuery.js';
 import { canShowMrtTnaStrip, resolveMrtTnaQuery } from './mrtTnaQuery.js';
 import { resolveTravelSpotFromLocation } from './travelSpotResolve.js';
-import { CHAT_KLOOK_AIRPORT_TRANSFER_URL } from './chatPrepBookingLinks.js';
 import { getDestinationBookingProfile } from './destinationBookingProfile.js';
 import { resolveDepartureFromChat } from './resolveDepartureIataFromChat.js';
 import { i18n } from '../i18n/config.js';
@@ -116,7 +114,7 @@ function buildStayAction(location, dateOpts) {
   if (!url) return null;
   return {
     type: 'mrt_stay',
-    label: i18n.t('mooni.booking.itineraryStay', { place, defaultValue: `${place} 숙소` }),
+    label: i18n.t('mooni.booking.itineraryStay', { place }),
     url,
     provider: 'mrt_lodging',
     handoffKind: 'lodging',
@@ -133,7 +131,7 @@ function buildTourAction(location) {
     if (!url) return null;
     return {
       type: 'mrt_tour',
-      label: i18n.t('mooni.booking.itineraryTour', { place, defaultValue: `${place} 투어·액티비티` }),
+      label: i18n.t('mooni.booking.itineraryTour', { place }),
       url,
       provider: 'mrt_tour',
       handoffKind: 'tour',
@@ -144,7 +142,7 @@ function buildTourAction(location) {
   if (!url) return null;
   return {
     type: 'klook_tour',
-    label: i18n.t('mooni.booking.itineraryTour', { place, defaultValue: `${place} 투어·액티비티` }),
+    label: i18n.t('mooni.booking.itineraryTour', { place }),
     url,
     provider: 'klook_tour',
     handoffKind: 'tour',
@@ -222,16 +220,14 @@ export function resolveItineraryBookingActions(params) {
   if (tour) actions.push(tour);
 
   if (arrivalIata) {
-    const pickupUrl = getKlookAffiliateUrl(CHAT_KLOOK_AIRPORT_TRANSFER_URL);
+    const locale = i18n.language?.slice?.(0, 2) ?? 'ko';
+    const pickupUrl = getKlookSearchUrl(`${location.name} 공항 픽업`, locale);
     if (pickupUrl) {
       actions.push({
         type: 'klook_transfer',
-        label: i18n.t('mooni.booking.itineraryPickup', {
-          place: location.name,
-          defaultValue: `${location.name} 공항 픽업`,
-        }),
+        label: i18n.t('mooni.booking.itineraryPickup', { place: location.name }),
         url: pickupUrl,
-        provider: 'klook_tour',
+        provider: 'klook_pickup',
         handoffKind: 'tour',
       });
     }

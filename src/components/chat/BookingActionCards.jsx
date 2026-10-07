@@ -29,7 +29,12 @@ const TRANSPORT_PROVIDERS = new Set([
 
 const PREP_PROVIDERS = new Set(['klook', 'official', 'pre_travel']);
 
-const PARTNER_HANDOFF_PROVIDERS = new Set(['mrt_lodging', 'mrt_tour', 'klook_tour']);
+const PARTNER_HANDOFF_PROVIDERS = new Set([
+  'mrt_lodging',
+  'mrt_tour',
+  'klook_tour',
+  'klook_pickup',
+]);
 
 const TRANSPORT_PROVIDER_STYLES = {
   trip_com: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-500',
@@ -85,7 +90,12 @@ const BookingActionCards = ({
   );
   const isItineraryBundle =
     handoffActions.length > 0 &&
-    actions.some((a) => a.provider === 'mrt_lodging' || a.provider === 'mrt_tour');
+    actions.some(
+      (a) =>
+        a.provider === 'mrt_lodging' ||
+        a.provider === 'mrt_tour' ||
+        a.provider === 'klook_pickup',
+    );
   const showItineraryCollapsed =
     itineraryBookingCompact && isItineraryBundle && !itineraryExpanded;
 
@@ -295,9 +305,12 @@ const BookingActionCards = ({
   const renderItineraryHandoffSection = () => {
     if (!handoffActions.length || showItineraryCollapsed) return null;
     return (
-      <div className="space-y-2 rounded-lg border border-teal-500/20 bg-teal-950/25 p-2.5">
-        <p className="text-[10px] font-bold uppercase tracking-wide text-teal-300/90 break-keep">
+      <div className="space-y-2.5 rounded-lg border border-amber-500/50 bg-slate-900 p-3 shadow-md">
+        <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300 break-keep">
           {t('mooni.booking.itinerarySection')}
+        </p>
+        <p className="text-[11px] leading-snug text-slate-100 break-keep">
+          {t('partnerBookingHandoff.noticeDefault')}
         </p>
         <div className="flex flex-col gap-2">
           {handoffActions.map((action, idx) => (
@@ -306,10 +319,15 @@ const BookingActionCards = ({
               href={action.url}
               kind={action.handoffKind === 'tour' ? 'tour' : 'lodging'}
               theme="dark"
-              showPartnerLabel={idx === handoffActions.length - 1}
+              ctaLabel={action.label}
+              showNotice={false}
+              showPartnerLabel={false}
             />
           ))}
         </div>
+        <p className="text-[10px] text-slate-300 break-keep">
+          {t('mooni.booking.itineraryAffiliateFootnote')}
+        </p>
       </div>
     );
   };
