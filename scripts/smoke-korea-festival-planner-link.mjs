@@ -50,8 +50,18 @@ const placeIntroSrc = readFileSync(
 );
 assert.match(
   placeIntroSrc,
-  /explicitLabel/,
-  'buildMooniBoundSpotFromLocation preserves explicit displayLabel',
+  /loc\.festivalContext/,
+  'buildMooniBoundSpotFromLocation uses explicit displayLabel only for festivalContext',
+);
+assert.match(
+  mooniSrc,
+  /shouldShowFestivalMooniFab/,
+  'Festival mooni entry uses shared FAB visibility helper',
+);
+assert.match(
+  mooniSrc,
+  /inlineObserveRef/,
+  'Festival mooni inline uses callback ref for IntersectionObserver',
 );
 
 console.log('OK    smoke:korea-festival-planner-link — all assertions passed');
