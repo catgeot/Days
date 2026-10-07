@@ -71,6 +71,29 @@ const PACKAGE_BY_HUB = {
 const DEFAULT_NEARBY_LIMIT = 4;
 const DEFAULT_SAME_HUB_LIMIT = 4;
 
+/**
+ * 구 연기군 GATEO hub(yeongi) — 세종특별자치시와 동일 시도·좌표 권역.
+ * 축제 addr에 「연기」가 없어도 koreaAreaCodes 8번 시드(sejong, yeongi)로 칩·폴백에 붙음.
+ */
+export function isYeongiLegacySejongHub(hubId) {
+  return normId(hubId) === 'yeongi';
+}
+
+/** @param {string | null | undefined} stayHubId */
+export function shouldSuppressYeongiLegacyForStayHub(stayHubId) {
+  return normId(stayHubId) === 'sejong';
+}
+
+function isSuppressedYeongiLegacyKeyword(stayHubId, raw) {
+  if (!shouldSuppressYeongiLegacyForStayHub(stayHubId)) return false;
+  const id = normId(raw);
+  if (id === 'yeongi') return true;
+  const kw = String(raw || '').trim();
+  if (!kw) return false;
+  const bare = stripKoAdminSuffix(kw) || kw;
+  return bare === '연기' || kw.toLowerCase() === 'yeongi';
+}
+
 function normId(v) {
   return String(v || '')
     .trim()
@@ -531,6 +554,9 @@ export function areaSeedStayHubs(areaCode, stayHubId) {
     const hid = normId(id);
     if (!hid || seen.has(hid) || !isSeededStayHub(hid)) continue;
     if (hid === stayId) continue;
+    if (shouldSuppressYeongiLegacyForStayHub(stayId) && isYeongiLegacySejongHub(hid)) {
+      continue;
+    }
     if (isOngjinFallbackMismatch(hid, stayId)) continue;
     seen.add(hid);
     const hub = resolveCityAttractionHub(hid);
@@ -554,6 +580,9 @@ function nearbyHubKeywordFallbacks(nearbyHubs, stayHubId, primaryKeyword) {
   for (const h of nearbyHubs || []) {
     const id = normId(h?.hubId);
     if (!id || id === stayId || !isSeededStayHub(id)) continue;
+    if (shouldSuppressYeongiLegacyForStayHub(stayId) && isYeongiLegacySejongHub(id)) {
+      continue;
+    }
     if (isOngjinFallbackMismatch(id, stayId)) continue;
     const name = String(h?.name || '').trim();
     const bare = stripKoAdminSuffix(name) || name;
@@ -624,11 +653,15 @@ export function buildFestivalStayAreas(cross) {
   for (const h of [...(cross?.nearbyHubs || []), ...seedHubs]) {
     const id = normId(h?.hubId);
     if (!id || !isSeededStayHub(id)) continue;
+    if (shouldSuppressYeongiLegacyForStayHub(stayId) && isYeongiLegacySejongHub(id)) {
+      continue;
+    }
     const name = String(h?.name || '').trim();
     const bare = stripKoAdminSuffix(name) || name;
     push(name || bare, bare, id);
   }
   for (const alt of cross?.stay?.altKeywords || []) {
+    if (isSuppressedYeongiLegacyKeyword(stayId, alt)) continue;
     push(alt, alt);
   }
   return areas.slice(0, 6);
@@ -901,13 +934,18 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
     stayHubId,
     cross.stay?.keyword || cross.tna?.keyword,
   );
+  const stayHubForLegacy = cross.stay?.location?.hubId || nearestHubId;
+  const filterYeongiLegacy = (list) =>
+    (list || []).filter((k) => !isSuppressedYeongiLegacyKeyword(stayHubForLegacy, k));
+  const fallbackKwFiltered = filterYeongiLegacy(fallbackKw);
+
   if (cross.stay) {
     if (eventTitle && isSameKeyword(cross.stay.keyword, eventTitle)) {
       cross.stay.keyword = nearestHub?.name || cross.stay.keyword;
     }
     cross.stay.altKeywords = mergeAltKeywords(
-      omitBannedKeywords(cross.stay.altKeywords, [eventTitle]),
-      fallbackKw,
+      filterYeongiLegacy(omitBannedKeywords(cross.stay.altKeywords, [eventTitle])),
+      fallbackKwFiltered,
       cross.stay.keyword,
     );
   }
@@ -916,13 +954,13 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
       cross.tna.keyword = cross.stay?.keyword || nearestHub?.name || cross.tna.keyword;
     }
     cross.tna.altKeywords = mergeAltKeywords(
-      omitBannedKeywords(cross.tna.altKeywords, [eventTitle]),
-      fallbackKw,
+      filterYeongiLegacy(omitBannedKeywords(cross.tna.altKeywords, [eventTitle])),
+      fallbackKwFiltered,
       cross.tna.keyword,
     );
     cross.tna.nearbyKeywords = mergeAltKeywords(
-      omitBannedKeywords(cross.tna.nearbyKeywords, [eventTitle]),
-      fallbackKw,
+      filterYeongiLegacy(omitBannedKeywords(cross.tna.nearbyKeywords, [eventTitle])),
+      fallbackKwFiltered,
       cross.tna.keyword,
     );
   }
