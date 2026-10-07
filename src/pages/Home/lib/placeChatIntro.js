@@ -61,6 +61,8 @@ function resolveIntroLocale(lng = i18n.language) {
 /** MOONi 칩·헤더 — slug 카탈로그 lookup 후 locale 표시명 */
 export function localizeMooniPlaceLabel(place, lng = i18n.language) {
   if (!place) return '';
+  const explicit = normalizeDestinationKey(place.displayLabel || '');
+  if (explicit) return explicit;
   const locale = resolveIntroLocale(lng);
   const catalogSlug = place.slug ? resolveCatalogPlaceSlug(place.slug) : null;
   if (catalogSlug) {
@@ -91,7 +93,8 @@ export function formatPlaceChatLabel(loc, lng = i18n.language) {
 /** 장소카드 → 무니 boundSpot 시드 (SSOT slug 없어도 국가·지명 유지) */
 export function buildMooniBoundSpotFromLocation(loc) {
   if (!loc?.name) return null;
-  const displayLabel = formatPlaceChatLabel(loc);
+  const explicitLabel = normalizeDestinationKey(loc.displayLabel || '');
+  const displayLabel = explicitLabel || formatPlaceChatLabel(loc);
   const rawSlug = typeof loc.slug === 'string' ? loc.slug.trim() : '';
   return {
     slug: rawSlug || null,
@@ -103,6 +106,8 @@ export function buildMooniBoundSpotFromLocation(loc) {
     lat: Number.isFinite(Number(loc.lat)) ? Number(loc.lat) : null,
     lng: Number.isFinite(Number(loc.lng)) ? Number(loc.lng) : null,
     uiPlace: Boolean(loc.uiPlace),
+    festivalContext: loc.festivalContext ?? null,
+    eventContext: loc.eventContext ?? null,
   };
 }
 

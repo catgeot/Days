@@ -35,6 +35,7 @@ const officialLinkClass =
  *   hideOfficialHomepage?: boolean,
  *   officialLabel: string,
  *   bookingSlot?: React.ReactNode,
+ *   mooniSlot?: React.ReactNode,
  * }} props
  */
 export function FestivalDetailFirstSummary({
@@ -50,10 +51,11 @@ export function FestivalDetailFirstSummary({
   hideOfficialHomepage,
   officialLabel,
   bookingSlot,
+  mooniSlot,
 }) {
   const showOfficial = Boolean(homepage) && !hideOfficialHomepage;
   const hasFacts =
-    dateText || timeText || feeText || placeText || bookingSlot || showOfficial;
+    dateText || timeText || feeText || placeText || bookingSlot || mooniSlot || showOfficial;
   if (!hasFacts) return null;
 
   return (
@@ -75,9 +77,10 @@ export function FestivalDetailFirstSummary({
           {placeText}
         </SummaryRow>
       </dl>
-      {(bookingSlot || showOfficial) && (
+      {(bookingSlot || mooniSlot || showOfficial) && (
         <div className="mt-3 flex flex-col gap-2">
           {bookingSlot}
+          {mooniSlot}
           {showOfficial ? (
             <a
               href={homepage}

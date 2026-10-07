@@ -46,6 +46,7 @@ import {
   selectMooniKoreaFestivalCandidates,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 import { fetchKoreaFestivalsRolling12 } from '../../Korea/fetchKoreaFestivalsWindow.js';
+import { buildFestivalMooniNeutralOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
@@ -315,8 +316,15 @@ const ChatModal = ({
     return label ? `${label} · MOONi` : 'MOONi';
   }, [isMooniUi, activeSessionPlace, introDestinationRaw, i18n.language]);
 
+  const festivalMooniContext = mooniPlaceContext?.festivalContext ?? null;
+  const festivalMooniOpening = useMemo(
+    () => buildFestivalMooniNeutralOpening(festivalMooniContext),
+    [festivalMooniContext],
+  );
+
   const placeIntroTarget = useMemo(() => {
     if (!isOpen) return '';
+    if (festivalMooniContext) return '';
     if (activeSessionPlace) {
       return localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
     }
@@ -327,7 +335,7 @@ const ChatModal = ({
       return '';
     }
     return raw;
-  }, [isOpen, activeSessionPlace, isMooniUi, introDestinationRaw, i18n.language]);
+  }, [isOpen, activeSessionPlace, isMooniUi, introDestinationRaw, festivalMooniContext, i18n.language]);
 
   const effectiveQuickReplySlug = boundDestinationSlug;
 
@@ -1272,6 +1280,25 @@ const ChatModal = ({
                   </span>
                   <div className="w-full p-3 rounded-2xl text-sm shadow-md bg-amber-950/40 border border-amber-500/20 text-amber-50 rounded-tl-sm leading-relaxed whitespace-pre-wrap">
                     {mooniPlaceContext.eventContext.seedText}
+                  </div>
+                </div>
+              )}
+              {isMooniUi &&
+                messages.length === 0 &&
+                !isLoading &&
+                festivalMooniContext &&
+                festivalMooniOpening &&
+                !(
+                  typeof initialQuery === 'string'
+                    ? initialQuery.trim()
+                    : String(
+                        initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
+                      ).trim()
+                ) && (
+                <div className="flex flex-col items-start w-full mb-3">
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed whitespace-pre-wrap ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
+                    {festivalMooniOpening}
                   </div>
                 </div>
               )}
