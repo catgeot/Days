@@ -192,19 +192,90 @@ export function selectMooniKoreaFestivalCandidates(items, opts) {
   return { window, candidates };
 }
 
+const NO_MATCH_KO = '매칭 없음';
+const NO_MATCH_KO_DETAIL = '겹치는 행사가 없습니다';
+
+/**
+ * @param {Record<string, unknown>} festivalContext
+ * @param {string} [locale]
+ */
+export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko') {
+  const ctx = festivalContext && typeof festivalContext === 'object' ? festivalContext : null;
+  const title = String(ctx?.title || '').trim();
+  if (!title) return '';
+
+  const isEn = String(locale || 'ko').slice(0, 2) === 'en';
+  const lines = isEn
+    ? [
+        '[GATEO Korea festival — verified facts for this chat session]',
+        'Use ONLY the facts below for the festival the user is viewing. Do not claim there is no matching festival or that it is missing from GATEO.',
+      ]
+    : [
+        '[GATEO 한국 축제 — 이 세션의 확인된 사실]',
+        '아래는 사용자가 보고 있는 축제의 확인된 정보입니다. 이 축제에 대해 답하세요. 「매칭 없음」「겹치는 행사가 없음」 등으로 안내하지 마세요.',
+      ];
+
+  lines.push(isEn ? `- Title: ${title}` : `- 제목: ${title}`);
+
+  const periodLabel =
+    String(ctx?.dateLabel || '').trim() ||
+    formatFestivalPeriodLabel(
+      String(ctx?.eventStartDate || ''),
+      String(ctx?.eventEndDate || ''),
+    );
+  if (periodLabel) {
+    lines.push(isEn ? `- Period: ${periodLabel}` : `- 기간: ${periodLabel}`);
+  }
+  const startYmd = String(ctx?.eventStartDate || '').trim();
+  const endYmd = String(ctx?.eventEndDate || '').trim();
+  if (/^\d{8}$/.test(startYmd) && /^\d{8}$/.test(endYmd)) {
+    lines.push(isEn ? `- Dates (YMD): ${startYmd}–${endYmd}` : `- 일정(YMD): ${startYmd}–${endYmd}`);
+  }
+
+  const timeText = String(ctx?.timeText || '').trim();
+  if (timeText) lines.push(isEn ? `- Hours: ${timeText}` : `- 시간: ${timeText}`);
+
+  const feeText = String(ctx?.feeText || '').trim();
+  if (feeText) lines.push(isEn ? `- Fee: ${feeText}` : `- 요금: ${feeText}`);
+
+  const venue = String(ctx?.venue || '').trim();
+  if (venue) lines.push(isEn ? `- Venue: ${venue}` : `- 장소: ${venue}`);
+
+  const address = String(ctx?.address || '').trim();
+  if (address) lines.push(isEn ? `- Address: ${address}` : `- 주소: ${address}`);
+
+  const gateoUrl =
+    String(ctx?.gateoUrl || '').trim() || gateoKoreaFestivalDetailUrl(String(ctx?.contentId || ''));
+  if (gateoUrl.startsWith('https://www.gateo.kr/')) {
+    lines.push(isEn ? `- GATEO detail: ${gateoUrl}` : `- GATEO 상세: ${gateoUrl}`);
+  }
+
+  const homepage = String(ctx?.homepage || '').trim();
+  if (homepage) lines.push(isEn ? `- Official site: ${homepage}` : `- 공식 홈페이지: ${homepage}`);
+
+  return `\n${lines.join('\n')}`;
+}
+
 /**
  * @param {{
  *   userText: string,
  *   boundPlaceName?: string,
- *   items: object[],
+ *   items?: object[],
  *   locale?: string,
  *   now?: Date,
+ *   festivalContext?: Record<string, unknown> | null,
  * }} input
  * @returns {string}
  */
 export function buildMooniKoreaFestivalSystemHint(input) {
   if (!isMooniKoreaFestivalQuery(input.userText)) return '';
-  const { window, candidates } = selectMooniKoreaFestivalCandidates(input.items, {
+
+  const boundCtx = input.festivalContext;
+  if (boundCtx && String(boundCtx.title || '').trim()) {
+    return buildMooniBoundFestivalSystemHint(boundCtx, input.locale);
+  }
+  const items = Array.isArray(input.items) ? input.items : [];
+  const { window, candidates } = selectMooniKoreaFestivalCandidates(items, {
     userText: input.userText,
     boundPlaceName: input.boundPlaceName,
     now: input.now,
@@ -253,3 +324,60 @@ export function mergeMooniKoreaFestivalReply(aiReply, ctx) {
     'GATEO에 등록된 축제만 정리했습니다. 이름을 누르면 상세·일정으로 바로 갈 수 있습니다.\n\n';
   return `${reply.trim()}\n\n${intro}${blocks.join('\n')}`.trim();
 }
+
+/**
+ * ChatModal · usePlaceChat 공통 — mooni_chat용 koreaFestivalHint.
+ * @param {{
+ *   userText: string,
+ *   festivalContext?: Record<string, unknown> | null,
+ *   boundPlaceName?: string,
+ *   locale?: string,
+ *   now?: Date,
+ *   loadFestivalItems?: () => Promise<object[]>,
+ * }} input
+ * @returns {Promise<{ hint: string, candidates: object[] }>}
+ */
+export async function resolveMooniChatKoreaFestivalHint(input = {}) {
+  const userText = String(input.userText || '');
+  const festivalContext = input.festivalContext;
+  if (festivalContext && String(festivalContext.title || '').trim()) {
+    return {
+      hint: buildMooniBoundFestivalSystemHint(festivalContext, input.locale),
+      candidates: [],
+    };
+  }
+
+  if (!isMooniKoreaFestivalQuery(userText)) {
+    return { hint: '', candidates: [] };
+  }
+
+  let items = [];
+  try {
+    if (typeof input.loadFestivalItems === 'function') {
+      items = await input.loadFestivalItems();
+    }
+  } catch {
+    items = [];
+  }
+  if (!items.length) {
+    return { hint: '', candidates: [] };
+  }
+
+  const picked = selectMooniKoreaFestivalCandidates(items, {
+    userText,
+    boundPlaceName: input.boundPlaceName,
+    now: input.now,
+  });
+
+  const hint = buildMooniKoreaFestivalSystemHint({
+    userText,
+    boundPlaceName: input.boundPlaceName,
+    items,
+    locale: input.locale,
+    now: input.now,
+  });
+
+  return { hint, candidates: picked.candidates };
+}
+
+export { NO_MATCH_KO, NO_MATCH_KO_DETAIL };

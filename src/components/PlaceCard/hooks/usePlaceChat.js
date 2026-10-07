@@ -12,6 +12,7 @@ import {
   ensureChatEssentialGuide,
   useChatEssentialGuide,
 } from '../../../hooks/useChatEssentialGuide';
+import { resolvePlaceChatKoreaFestivalHint } from '../../../pages/Home/lib/resolvePlaceChatKoreaFestivalHint.js';
 
 /**
  * Place Card AI 채팅 — 예약 CTA 포함 메시지 지원.
@@ -46,6 +47,19 @@ export const usePlaceChat = (options = {}) => {
         .filter((turn) => turn.role === 'user' || turn.role === 'model')
         .map((turn) => ({ role: turn.role, text: String(turn.text ?? '') }));
 
+      let koreaFestivalHint = '';
+      try {
+        const festHint = await resolvePlaceChatKoreaFestivalHint({
+          userText,
+          festivalContext: params.festivalContext ?? null,
+          boundPlaceName: params.boundPlaceName || destinationName || '',
+          locale: params.locale || 'ko',
+        });
+        koreaFestivalHint = festHint.hint;
+      } catch {
+        koreaFestivalHint = '';
+      }
+
       const aiReply = await apiClient.invokeGeminiTask('mooni_chat', {
         locale: params.locale || 'ko',
         persona: params.persona || 'GENERAL',
@@ -58,6 +72,7 @@ export const usePlaceChat = (options = {}) => {
         tripSession: params.tripSession ?? null,
         cta: params.cta ?? 'none_quiet',
         ctaPlace: params.ctaPlace || destinationName || '',
+        koreaFestivalHint,
         history,
         userText,
       });

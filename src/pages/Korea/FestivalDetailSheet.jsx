@@ -70,7 +70,8 @@ import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import FestivalStayStrip from './FestivalStayStrip';
 import FestivalTnaStrip from './FestivalTnaStrip';
-import FestivalMooniFab from './FestivalMooniFab';
+import { useFestivalMooniEntry } from './FestivalMooniEntry.jsx';
+import { festivalDetailSummaryWillRender } from './lib/festivalMooniFabVisibility.js';
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { FestivalBookingActions } from './FestivalBookingActions.jsx';
 import { FestivalDetailFirstSummary } from './FestivalDetailFirstSummary.jsx';
@@ -1067,6 +1068,59 @@ export default function FestivalDetailSheet({
     intro?.eventEndDate,
   ]);
 
+  const mooniEntryLocation = festivalCross?.stay?.location;
+  const mooniEntryEnabled = Boolean(
+    String(item?.title || '').trim() || mooniEntryLocation?.name,
+  );
+  const mooniSummaryCardWillRender = useMemo(
+    () =>
+      festivalDetailSummaryWillRender({
+        dateText: summaryFields.dateText,
+        timeText: summaryFields.timeText,
+        feeText: summaryFields.fee?.text,
+        placeText: summaryFields.placeText,
+        hasBooking: bookingLinks.length > 0,
+        showOfficialHomepage: Boolean(homepage) && !hideOfficialHomepage,
+        mooniEnabled: mooniEntryEnabled,
+      }),
+    [
+      summaryFields.dateText,
+      summaryFields.timeText,
+      summaryFields.fee?.text,
+      summaryFields.placeText,
+      bookingLinks.length,
+      homepage,
+      hideOfficialHomepage,
+      mooniEntryEnabled,
+    ],
+  );
+
+  const festivalMooni = useFestivalMooniEntry({
+    item: item || {},
+    intro,
+    location: mooniEntryLocation,
+    homepage,
+    summaryFields,
+    raised: showScrollTop && !lightboxOpen,
+    inlineAnchorExpected: mooniSummaryCardWillRender,
+    onOpenChange: (open) => {
+      if (!open) {
+        mooniWasOpenRef.current = false;
+        setMooniOpen(false);
+        return;
+      }
+      setMooniOpen(true);
+    },
+    onOpenTrack: (placement) => {
+      trackMooniOpenIfRising(mooniWasOpenRef.current, true, {
+        placement,
+        festival_id: String(item?.contentId ?? ''),
+        ui_lang: locale,
+      });
+      mooniWasOpenRef.current = true;
+    },
+  });
+
   const programText = useMemo(
     () => stripHtml(intro?.program || ''),
     [intro?.program],
@@ -1411,6 +1465,7 @@ export default function FestivalDetailSheet({
                 providerLabel={t('korea.festival.detail.bookProviderTicketlink')}
               />
             }
+            mooniSlot={mooniSummaryCardWillRender ? festivalMooni.inlineButton : null}
           />
 
           {overview ? (
@@ -2153,6 +2208,9 @@ export default function FestivalDetailSheet({
             {t('korea.common.close')}
           </button>
         </div>
+
+        {!nestedSpotModalOpen ? festivalMooni.fabNode : null}
+        {festivalMooni.chatNode}
       </div>
 
       <button
@@ -2171,23 +2229,6 @@ export default function FestivalDetailSheet({
         <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
         <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
-
-      {!nestedSpotModalOpen ? (
-        <FestivalMooniFab
-          item={item}
-          location={festivalCross?.stay?.location}
-          raised={showScrollTop && !lightboxOpen}
-          onOpenChange={(open) => {
-            trackMooniOpenIfRising(mooniWasOpenRef.current, open, {
-              placement: 'festival_detail',
-              festival_id: String(item?.contentId ?? ''),
-              ui_lang: locale,
-            });
-            mooniWasOpenRef.current = open;
-            setMooniOpen(open);
-          }}
-        />
-      ) : null}
 
       {selectedNearby && (
         <ThemeSpotDetailModal
