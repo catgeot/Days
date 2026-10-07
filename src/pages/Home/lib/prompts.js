@@ -1,6 +1,7 @@
 // src/pages/Home/lib/prompts.js
 
 import { getMooniPromptBundle, fillMooniPromptTemplate } from '../../../i18n/mooniPromptBundles.js';
+import { applyMooniDestinationRulesPlannerVisibility } from '../../../shared/mooni/mooniChatPlannerHeaderPrompt.js';
 
 export { getCurationPrompt } from './curationPrompt.js';
 
@@ -37,7 +38,12 @@ export const getSystemPrompt = (personaType, locationName = '', options = {}) =>
     options.isMooni ||
     Boolean(boundPlaceName) ||
     String(locationName ?? '').trim().toLowerCase() === 'mooni';
-  const mooniContext = isMooni ? `\n${bundle.mooniDestinationRules}` : '';
+  const showPlannerHeader = options.showPlannerHeader === true;
+  const destinationRules = applyMooniDestinationRulesPlannerVisibility(
+    bundle.mooniDestinationRules,
+    showPlannerHeader,
+  );
+  const mooniContext = isMooni ? `\n${destinationRules}` : '';
   const effectiveLocation = boundPlaceName || locationName;
   const locationContext = effectiveLocation
     ? `\n${fillMooniPromptTemplate(bundle.locationContext, { location: effectiveLocation })}`

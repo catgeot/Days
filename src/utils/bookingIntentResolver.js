@@ -8,6 +8,7 @@ import {
 import { get12GoAffiliateUrl, get12GoHomeUrl } from './affiliate.js';
 import { resolveTravelSpotFromLocation } from './travelSpotResolve.js';
 import { buildPlacePlannerPath } from './placePlannerPath.js';
+import { formatFerryOperatorChatLabel } from './ferryChatLabel.js';
 
 const BOOKING_KEYWORDS = [
   '예약',
@@ -175,7 +176,10 @@ export function resolveFerryActions(slug, stepTitle, context) {
 
   return bookings.map((b) => ({
     type: b.provider === 'twelve_go' ? 'twelve_go' : b.provider,
-    label: b.provider === 'twelve_go' ? resolveTwelveGoBannerLabel(route, profile) : b.name,
+    label:
+      b.provider === 'twelve_go'
+        ? resolveTwelveGoBannerLabel(route, profile)
+        : formatFerryOperatorChatLabel(b.name, context.locale),
     url: b.url,
     provider: b.provider,
     routeId: route?.id,

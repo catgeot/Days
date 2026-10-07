@@ -5,7 +5,8 @@
 
 export function parseGeminiProxyInvokeText(data) {
   if (!data?.success) return null;
-  return typeof data.text === 'string' && data.text.trim() ? data.text : '죄송합니다.';
+  const text = typeof data.text === 'string' && data.text.trim() ? data.text : '죄송합니다.';
+  return text;
 }
 
 export function buildGeminiProxyMockBody(

@@ -209,10 +209,12 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
     ? [
         '[GATEO Korea festival — verified facts for this chat session]',
         'Use ONLY the facts below for the festival the user is viewing. Do not claim there is no matching festival or that it is missing from GATEO.',
+        'Do not state facilities or services that are not listed below (e.g. parking, shuttles). If an official site or contact is listed, direct the user there for details.',
       ]
     : [
         '[GATEO 한국 축제 — 이 세션의 확인된 사실]',
         '아래는 사용자가 보고 있는 축제의 확인된 정보입니다. 이 축제에 대해 답하세요. 「매칭 없음」「겹치는 행사가 없음」 등으로 안내하지 마세요.',
+        '아래 목록에 없는 편의·시설 정보는 단정하지 마세요. 공식 홈페이지나 문의처가 아래에 있으면 그곳에서 확인하도록 안내하세요.',
       ];
 
   lines.push(isEn ? `- Title: ${title}` : `- 제목: ${title}`);

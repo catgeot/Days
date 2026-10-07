@@ -77,7 +77,7 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
         images,
       });
 
-      setContent(resultText);
+      setContent(resultText.text);
       if (!title) setTitle(i18n.t('logbook.write.defaultTitle', { place: mapLocation || i18n.t('logbook.write.defaultPlace') }));
 
     } catch (error) {
@@ -313,7 +313,7 @@ export const useCurationAI = () => {
           .slice(0, 12),
       });
 
-      const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+      const jsonMatch = resultText.text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("JSON 파싱 실패: 형식을 찾을 수 없음");
 
       const safeJsonString = jsonMatch[0].replace(/[\n\r\t]+/g, ' ');

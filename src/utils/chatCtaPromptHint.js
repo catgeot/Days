@@ -1,10 +1,15 @@
+import { classifyChatIntent, shouldUseQuietCtaForItinerary } from './chatIntentClassifier.js';
 import { resolveChatBookingActions } from './chatBookingResolver.js';
 import {
   resolvePlannerFocusFromUserText,
   PLANNER_FOCUS_ID,
 } from './placePlannerFocus.js';
-import { i18n } from '../i18n/config';
-import { getMooniPromptBundle, fillMooniPromptTemplate } from '../i18n/mooniPromptBundles';
+import { i18n } from '../i18n/config.js';
+import { getMooniPromptBundle, fillMooniPromptTemplate } from '../i18n/mooniPromptBundles.js';
+import {
+  applyMooniGateoPlannerNoteVisibility,
+  shouldIncludeMooniCtaPlannerHeaderLine,
+} from '../shared/mooni/mooniChatPlannerHeaderPrompt.js';
 
 const TRANSPORT_PROVIDERS = new Set([
   'trip_com',
@@ -41,6 +46,12 @@ export function resolveChatCtaCode({
   chatHistory = [],
   essentialGuide = null,
 }) {
+  const place = String(destinationName ?? '').trim();
+  const intentResult = classifyChatIntent(userText, chatHistory, slug);
+  if (shouldUseQuietCtaForItinerary(intentResult)) {
+    return { code: 'none_quiet', place };
+  }
+
   const booking = resolveChatBookingActions({
     userText,
     destinationName,
@@ -49,7 +60,6 @@ export function resolveChatCtaCode({
     essentialGuide,
     aiReplyText: '',
   });
-  const place = String(destinationName ?? '').trim();
   if (!booking.show) {
     return {
       code: TRANSPORT_TEXT_RE.test(userText) ? 'none_transport' : 'none_quiet',
@@ -96,9 +106,11 @@ export function getChatCtaPromptHint({
   chatHistory = [],
   essentialGuide = null,
   locale,
+  showPlannerHeader = true,
 }) {
   const bundle = getMooniPromptBundle(locale ?? i18n.language);
   const cta = bundle.cta;
+  const loc = (locale ?? i18n.language)?.slice(0, 2) === 'en' ? 'en' : 'ko';
   const { code, place: rawPlace } = resolveChatCtaCode({
     userText,
     slug,
@@ -110,14 +122,18 @@ export function getChatCtaPromptHint({
   const lines = ['', cta.header, cta.noTicketSearch];
 
   if (code === 'none_transport') {
-    lines.push(
-      fillMooniPromptTemplate(cta.transportOnlyPlanner, { place }),
-      cta.transportOnlyHeader,
-    );
+    lines.push(fillMooniPromptTemplate(cta.transportOnlyPlanner, { place }));
+    if (shouldIncludeMooniCtaPlannerHeaderLine('transportOnlyHeader', showPlannerHeader)) {
+      lines.push(cta.transportOnlyHeader);
+    }
     return lines.join('\n');
   }
   if (code === 'none_quiet') {
-    lines.push(cta.noBookingShow, cta.plannerHeaderOnly, cta.noPhantomButtons);
+    lines.push(cta.noBookingShow);
+    if (shouldIncludeMooniCtaPlannerHeaderLine('plannerHeaderOnly', showPlannerHeader)) {
+      lines.push(cta.plannerHeaderOnly);
+    }
+    lines.push(cta.noPhantomButtons);
     return lines.join('\n');
   }
 
@@ -141,7 +157,10 @@ export function getChatCtaPromptHint({
       }),
     );
   }
-  lines.push(cta.fullPlanner, cta.gateoPlannerNote);
+  if (shouldIncludeMooniCtaPlannerHeaderLine('fullPlanner', showPlannerHeader)) {
+    lines.push(cta.fullPlanner);
+  }
+  lines.push(applyMooniGateoPlannerNoteVisibility(cta.gateoPlannerNote, showPlannerHeader, loc));
   if (hasTransport) lines.push(cta.moreOptions);
 
   return lines.join('\n');

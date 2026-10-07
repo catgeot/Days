@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,7 @@ import {
 import BookingActionCards from '../../../components/chat/BookingActionCards';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
 import MooniPlannerFollowUp from '../../../components/chat/MooniPlannerFollowUp';
+import MooniTruncatedContinue from '../../../components/chat/MooniTruncatedContinue';
 import MooniQuickReplyChips from '../../../components/chat/MooniQuickReplyChips';
 import {
   sanitizeMooniModelReply,
@@ -48,6 +49,7 @@ import {
   resolvePlannerFocusFromUserText,
 } from '../../../utils/placePlannerFocus';
 import { resolveChatCtaCode } from '../../../utils/chatCtaPromptHint';
+import { mooniChatShowsPlannerHeaderButton } from '../../../shared/mooni/mooniChatPlannerHeaderPrompt';
 import {
   ensureChatEssentialGuide,
   useChatEssentialGuide,
@@ -77,14 +79,20 @@ import {
   mergeMooniTripSession,
   persistMooniTripSession,
 } from '../lib/mooniTripSession';
+import {
+  buildMooniContinueUserText,
+  buildMooniGeminiHistory,
+  finalizeMooniContinuation,
+  messageTextPlain,
+} from '../lib/mooniChatContinue';
+import { prepareMooniGeminiHistory } from '../../../utils/mooniGeminiHistoryPayload.js';
+import {
+  getMooniModelMarkdownForRender,
+  getMooniModelRawText,
+} from '../lib/mooniModelMessageText';
+import { MooniChatMarkdownBoundary } from '../../../components/chat/MooniChatMarkdownBoundary.jsx';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
-
-const MooniChatMarkdownBoundary = lazy(() =>
-  import('../../../components/chat/MooniChatMarkdownBoundary.jsx').then((m) => ({
-    default: m.MooniChatMarkdownBoundary,
-  })),
-);
 
 const ChatModal = ({
   isOpen,
@@ -111,6 +119,7 @@ const ChatModal = ({
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [mooniContinuingIdx, setMooniContinuingIdx] = useState(null);
   const [currentPersona, setCurrentPersona] = useState(PERSONA_TYPES.GENERAL);
   const [loadingStatus, setLoadingStatus] = useState(() => t('mooni.chat.loadingDefault'));
   const [placeIntro, setPlaceIntro] = useState(null);
@@ -920,9 +929,18 @@ const ChatModal = ({
         chatHistory: priorTurns,
         persona: personaToUse,
       });
-      const history = priorTurns
-        .filter((turn) => turn.role === 'user' || turn.role === 'model')
-        .map((turn) => ({ role: turn.role, text: String(turn.text ?? '') }));
+      const history = prepareMooniGeminiHistory(
+        newMessages
+          .slice(0, -1)
+          .filter((m) => m.role === 'user' || m.role === 'model')
+          .map((m) => ({
+            role: m.role,
+            text:
+              m.role === 'model'
+                ? String(m.mooniRawReply ?? messageTextPlain(m))
+                : messageTextPlain(m),
+          })),
+      );
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
@@ -939,7 +957,9 @@ const ChatModal = ({
         console.warn('[mooni] korea festival SSOT skipped:', festErr?.message || festErr);
       }
 
-      const aiReply = await apiClient.invokeGeminiTask('mooni_chat', {
+      const showPlannerHeader = mooniChatShowsPlannerHeaderButton(boundDestinationSlug);
+
+      const geminiParams = {
         locale: i18n.language,
         persona: personaToUse,
         tier: chatModelId === GEMINI_MODELS.QUALITY ? 'quality' : 'fast',
@@ -952,9 +972,15 @@ const ChatModal = ({
         cta: cta.code,
         ctaPlace: cta.place,
         koreaFestivalHint,
+        showPlannerHeader,
+      };
+
+      const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
+        ...geminiParams,
         history,
         userText: cleanText,
       });
+      const aiReply = geminiResult.text;
 
       const booking = resolveChatBookingActions({
         userText: cleanText,
@@ -975,12 +1001,13 @@ const ChatModal = ({
       const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
         candidates: mooniFestivalCandidates,
       });
-      const { text: displayReply, hadBracketLinks } = sanitizeMooniModelReply(
-        festivalMergedReply,
-        {
-          stripPhantomTicketMention: !hasTransportCta,
-        },
-      );
+      const stripPhantomTicketMention = !hasTransportCta;
+      const displayReply = getMooniModelMarkdownForRender(festivalMergedReply, {
+        stripPhantomTicketMention,
+      });
+      const { hadBracketLinks } = sanitizeMooniModelReply(festivalMergedReply, {
+        stripPhantomTicketMention,
+      });
       const plannerFocus = resolvePlannerFocusFromUserText(cleanText, {
         essentialGuide,
         chipId,
@@ -1004,6 +1031,15 @@ const ChatModal = ({
         {
           role: 'model',
           text: displayReply,
+          mooniRawReply: festivalMergedReply,
+          truncated: geminiResult.truncated,
+          finishReason: geminiResult.finishReason,
+          continueAttempts: 0,
+          mooniTurnContext: {
+            geminiParams,
+            stripPhantomTicketMention,
+          },
+          frozenBookingActions: booking.show ? booking.actions : null,
           bookingActions: booking.show ? booking.actions : null,
           plannerFollowUp,
           bookingMeta:
@@ -1043,6 +1079,50 @@ const ChatModal = ({
     mooniPlaceContext,
     topicDockParent,
   ]);
+
+  const handleMooniContinueReading = useCallback(
+    async (modelIdx) => {
+      const msg = messages[modelIdx];
+      const ctx = msg?.mooniTurnContext;
+      if (!ctx?.geminiParams || mooniContinuingIdx != null) return;
+
+      setMooniContinuingIdx(modelIdx);
+      try {
+        const history = buildMooniGeminiHistory(messages, modelIdx);
+        const priorRaw = String(msg.mooniRawReply ?? messageTextPlain(msg));
+        const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
+          ...ctx.geminiParams,
+          history,
+          userText: buildMooniContinueUserText(i18n.language),
+        });
+        const { mergedRaw, displayText } = finalizeMooniContinuation({
+          priorRaw,
+          continuationText: geminiResult.text,
+          stripPhantomTicketMention: ctx.stripPhantomTicketMention,
+        });
+        const nextMessages = messages.map((m, i) =>
+          i === modelIdx
+            ? {
+                ...m,
+                text: displayText,
+                mooniRawReply: mergedRaw,
+                truncated: geminiResult.truncated,
+                finishReason: geminiResult.finishReason,
+                continueAttempts: (m.continueAttempts ?? 0) + 1,
+              }
+            : m,
+        );
+        setMessages(nextMessages);
+        if (activeChatId) onUpdateChat(activeChatId, nextMessages);
+      } catch (error) {
+        const text = getGeminiProxyErrorMessage(error);
+        setMessages((prev) => [...prev, { role: 'error', text }]);
+      } finally {
+        setMooniContinuingIdx(null);
+      }
+    },
+    [messages, mooniContinuingIdx, activeChatId, onUpdateChat, i18n.language],
+  );
 
   const handleAccessOriginSelect = useCallback(
     (iata) => {
@@ -1367,12 +1447,25 @@ const ChatModal = ({
                 </div>
               )}
               {messages.map((msg, idx) => {
-                const rawMsgText =
-                  typeof msg.text === 'object' ? msg.text?.text ?? t('mooni.chat.noContent') : msg.text ?? '';
                 const isModelMsg = msg.role === 'model';
-                const { text: displayMsgText, hadBracketLinks } = isModelMsg
-                  ? sanitizeMooniModelReply(rawMsgText)
-                  : { text: rawMsgText, hadBracketLinks: false };
+                const rawMsgText = isModelMsg
+                  ? getMooniModelRawText(msg) || t('mooni.chat.noContent')
+                  : typeof msg.text === 'object'
+                    ? msg.text?.text ?? t('mooni.chat.noContent')
+                    : msg.text ?? '';
+                const stripPhantomOnRender =
+                  msg.mooniTurnContext?.stripPhantomTicketMention ?? true;
+                const displayMsgText = isModelMsg
+                  ? getMooniModelMarkdownForRender(rawMsgText, {
+                      stripPhantomTicketMention: stripPhantomOnRender,
+                    })
+                  : rawMsgText;
+                const { hadBracketLinks } = isModelMsg
+                  ? sanitizeMooniModelReply(rawMsgText, {
+                      stripPhantomTicketMention: stripPhantomOnRender,
+                    })
+                  : { hadBracketLinks: false };
+                const cardActions = msg.frozenBookingActions ?? msg.bookingActions;
                 const msgSlug = msg.bookingMeta?.slug ?? boundDestinationSlug;
                 const msgDestinationName = isMooniUi
                   ? localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
@@ -1398,7 +1491,7 @@ const ChatModal = ({
                     shouldShowMooniPlannerFollowUp({
                       slug: msgSlug,
                       hadBracketLinks,
-                      bookingShow: Boolean(msg.bookingActions?.length),
+                      bookingShow: Boolean(cardActions?.length),
                       userText: priorUserText,
                       aiReplyText: rawMsgText,
                     }));
@@ -1429,17 +1522,23 @@ const ChatModal = ({
                         : tone(fresh, 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed', 'bg-white/90 border border-cyan-100 text-slate-700 rounded-tl-sm leading-relaxed')
                   }`}>
                     {isModelMsg ? (
-                      <Suspense
-                        fallback={<div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>}
-                      >
-                        <MooniChatMarkdownBoundary
-                          text={displayMsgText}
-                          variant={isMooniUi ? 'light' : 'dark'}
-                        />
-                      </Suspense>
+                      <MooniChatMarkdownBoundary
+                        text={displayMsgText}
+                        variant={isMooniUi ? 'light' : 'dark'}
+                      />
                     ) : (
                       <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
                     )}
+                    {isModelMsg ? (
+                      <MooniTruncatedContinue
+                        truncated={Boolean(msg.truncated)}
+                        finishReason={msg.finishReason}
+                        continueAttempts={msg.continueAttempts ?? 0}
+                        isContinuing={mooniContinuingIdx === idx}
+                        onContinue={() => handleMooniContinueReading(idx)}
+                        variant={isMooniUi ? 'light' : 'dark'}
+                      />
+                    ) : null}
                     {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
                       <DestinationResolutionChips
                         confirmed={msg.confirmedDestination}
@@ -1448,9 +1547,9 @@ const ChatModal = ({
                         onSelectCandidate={(c) => handleSelectDestinationCandidate(c, idx)}
                       />
                     )}
-                    {msg.role === 'model' && msg.bookingActions?.length > 0 && (
+                    {msg.role === 'model' && cardActions?.length > 0 && (
                       <BookingActionCards
-                        actions={refreshStoredBookingActionLabels(msg.bookingActions, {
+                        actions={refreshStoredBookingActionLabels(cardActions, {
                           slug: msg.bookingMeta?.slug ?? boundDestinationSlug,
                           destinationName: msgDestinationName,
                           chatHistory: messages
@@ -1480,6 +1579,7 @@ const ChatModal = ({
                         chipId={msg.bookingMeta?.chipId}
                         userText={priorUserText}
                         itineraryBookingCompact={Boolean(msg.bookingMeta?.itineraryBookingCompact)}
+                        bubbleVariant={isMooniUi ? 'light' : 'dark'}
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}

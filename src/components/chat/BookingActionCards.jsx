@@ -62,6 +62,7 @@ const PREP_PROVIDER_STYLES = {
  *   chipId?: string | null,
  *   userText?: string,
  *   itineraryBookingCompact?: boolean,
+ *   bubbleVariant?: 'dark' | 'light',
  *   onPlannerNavigate?: (url: string) => void,
  *   className?: string,
  * }} props
@@ -76,6 +77,7 @@ const BookingActionCards = ({
   chipId = null,
   userText = '',
   itineraryBookingCompact = false,
+  bubbleVariant = 'dark',
   onPlannerNavigate = null,
   className = '',
 }) => {
@@ -332,13 +334,18 @@ const BookingActionCards = ({
     );
   };
 
+  const itineraryCollapsedButtonClass =
+    bubbleVariant === 'light'
+      ? 'inline-flex w-full items-center justify-center rounded-lg border border-teal-800/35 bg-teal-100 px-3 py-2 text-xs font-bold text-teal-950 hover:bg-teal-200 transition-colors break-keep pointer-events-auto'
+      : 'inline-flex w-full items-center justify-center rounded-lg border border-teal-600/55 bg-teal-900 px-3 py-2 text-xs font-bold text-white hover:bg-teal-800 transition-colors break-keep pointer-events-auto';
+
   if (showItineraryCollapsed) {
     return (
       <div className={`mt-3 space-y-2 w-full ${className}`}>
         <button
           type="button"
           onClick={() => setItineraryExpanded(true)}
-          className="inline-flex w-full items-center justify-center rounded-lg border border-teal-500/35 bg-teal-950/30 px-3 py-2 text-xs font-bold text-teal-100 hover:bg-teal-900/40 transition-colors break-keep pointer-events-auto"
+          className={itineraryCollapsedButtonClass}
         >
           {t('mooni.booking.itineraryCollapsed', { place: destinationName || slug })}
         </button>

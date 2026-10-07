@@ -4,9 +4,15 @@ import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import rehypeSanitize from 'rehype-sanitize';
 import mooniRemarkGfm from './mooniRemarkGfm.js';
 import { mooniChatMarkdownSanitizeSchema } from './mooniChatMarkdownSchema.js';
+import {
+  isUnsafeMooniLinkUrl,
+  shouldStripMooniMarkdownLink,
+} from '../../utils/mooniPlaceholderUrls.js';
+import { mooniMarkdownLinkLabelText } from './mooniMarkdownLinkLabel.js';
 
 function mooniChatUrlTransform(url) {
   const value = String(url).trim();
+  if (isUnsafeMooniLinkUrl(value)) return '';
   if (value.startsWith('https://') || value.startsWith('http://')) return value;
   return '';
 }
@@ -42,11 +48,17 @@ function createMooniMarkdownComponents(variant) {
       <ol className={`list-decimal pl-5 mb-2 space-y-1.5 last:mb-0 ${listClass}`}>{children}</ol>
     ),
     li: ({ children }) => <li className="leading-relaxed break-keep">{children}</li>,
-    a: ({ href, children }) => (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
-        {children}
-      </a>
-    ),
+    a: ({ href, children }) => {
+      const label = mooniMarkdownLinkLabelText(children);
+      if (!href || shouldStripMooniMarkdownLink(href, label)) {
+        return <span className="break-keep">{children}</span>;
+      }
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+          {children}
+        </a>
+      );
+    },
   };
 }
 

@@ -2358,7 +2358,9 @@
       "askButton": "물어보기",
       "spotOverviewTitle": "이 장소 한눈에 보기",
       "placeSummaryLoading": "여행지 요약을 준비하고 있어요...",
-      "placeIntroLoading": "여행지 소개를 준비하고 있어요..."
+      "placeIntroLoading": "여행지 소개를 준비하고 있어요...",
+      "truncatedNotice": "답변이 길어 일부만 표시됐어요.",
+      "continueReading": "이어서 보기"
     },
     "resolution": {
       "departure": "출발",
