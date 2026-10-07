@@ -19,6 +19,8 @@ import {
   resolveSlugFromDestination,
 } from './bookingIntentResolver.js';
 import { resolveChatPrepActions } from './chatPrepBookingLinks.js';
+import { resolveItineraryBookingActions } from './chatItineraryBooking.js';
+import { countPriorPlanItineraryTurns } from './chatIntentClassifier.js';
 import { buildPlacePlannerPath } from './placePlannerPath.js';
 import { getMooniPlannerCtaLabel } from './placePlannerFocus.js';
 import { i18n } from '../i18n/config.js';
@@ -157,6 +159,7 @@ export function resolveChatBookingActions(params) {
     chatSource = 'home',
     aiReplyText = '',
     essentialGuide = null,
+    tripSession = null,
   } = params;
 
   const slug =
@@ -184,6 +187,27 @@ export function resolveChatBookingActions(params) {
     profile,
     intentResult.intents
   );
+
+  if (legs.includes('itinerary_bundle')) {
+    const priorItinerary = countPriorPlanItineraryTurns(chatHistory);
+    const itinerary = resolveItineraryBookingActions({
+      slug,
+      destinationName,
+      userText,
+      chatHistory,
+      essentialGuide,
+      tripSession,
+    });
+    return {
+      show: itinerary.actions.length > 0,
+      transportType: 'general',
+      actions: itinerary.actions,
+      slug,
+      plannerUrl: buildPlacePlannerPath(slug),
+      intent: intentResult.primary,
+      itineraryBookingCompact: priorItinerary > 0,
+    };
+  }
 
   /** @type {Array<{ type: string, label: string, url: string, provider?: string, routeId?: string }>} */
   const actions = [];

@@ -77,8 +77,28 @@ const BOOK_GENERAL_PATTERNS = [
   /12\s*go/i,
 ];
 
+const PLAN_ITINERARY_PATTERNS = [
+  /일정\s*(?:짜|만들|추천|잡|계획)/,
+  /(?:여행|방문)\s*(?:일정|코스|동선|루트)/,
+  /코스\s*추천/,
+  /동선\s*(?:짜|추천|잡)/,
+  /루트\s*(?:짜|추천|잡)/,
+  /\d+\s*박\s*\d*\s*일/,
+  /\d+\s*박(?:\s*\d+\s*일)?\s*일정/,
+  /숙소.*(?:투어|액티비티)|(?:투어|액티비티).*숙소/,
+  /itinerary/i,
+  /plan\s+(?:a\s+)?(?:trip|itinerary)/i,
+  /suggest\s+(?:a\s+)?(?:route|itinerary)/i,
+];
+
+/** @param {string} text */
+export function isPlanItineraryIntentText(text) {
+  const current = String(text ?? '').toLowerCase();
+  return PLAN_ITINERARY_PATTERNS.some((re) => re.test(current));
+}
+
 /**
- * @typedef {'access_route'|'book_flight'|'book_ferry'|'book_transfer'|'book_ground'|'book_hotel'|'book_rental'|'info_visa'|'info_fees'|'book_general'|'none'} ChatIntent
+ * @typedef {'access_route'|'book_flight'|'book_ferry'|'book_transfer'|'book_ground'|'book_hotel'|'book_rental'|'info_visa'|'info_fees'|'book_general'|'plan_itinerary'|'none'} ChatIntent
  */
 
 /**
@@ -105,9 +125,12 @@ export function classifyChatIntent(userText, chatHistory = [], slug = null) {
 
   const matchAny = (patterns, text) => patterns.some((re) => re.test(text));
 
+  const itineraryIntent = isPlanItineraryIntentText(current);
+
   // 이번 턴 발화만 — 이전 「어떻게 가」 등이 페리·비자 단독 질문 CTA를 오염시키지 않음
   const isEntryProof = matchAny(ENTRY_PROOF_PATTERNS, current);
 
+  if (itineraryIntent) intents.push('plan_itinerary');
   if (matchAny(ACCESS_ROUTE_PATTERNS, current)) intents.push('access_route');
   if (matchAny(BOOK_FERRY_PATTERNS, current)) intents.push('book_ferry');
   if (!isEntryProof && matchAny(BOOK_FLIGHT_PATTERNS, current)) {
@@ -122,7 +145,8 @@ export function classifyChatIntent(userText, chatHistory = [], slug = null) {
 
   if (
     INFO_ONLY_PATTERNS.test(current) &&
-    !matchAny(BOOKING_SIGNAL_PATTERNS, current)
+    !matchAny(BOOKING_SIGNAL_PATTERNS, current) &&
+    !itineraryIntent
   ) {
     return {
       primary: 'none',
@@ -140,10 +164,10 @@ export function classifyChatIntent(userText, chatHistory = [], slug = null) {
   const primary = unique[0] ?? 'none';
 
   let confidence = 'low';
-  if (primary !== 'none' && matchAny(
+  if (primary !== 'none' && (itineraryIntent || matchAny(
     [...ACCESS_ROUTE_PATTERNS, ...BOOK_FERRY_PATTERNS, ...BOOK_FLIGHT_PATTERNS, ...BOOK_GENERAL_PATTERNS],
     current
-  )) {
+  ))) {
     confidence = 'high';
   } else if (primary !== 'none') {
     confidence = 'medium';
@@ -166,6 +190,18 @@ export function shouldShowChatBookingCta(intentResult, userText, chatHistory = [
       'book_general',
       'info_visa',
       'info_fees',
+      'plan_itinerary',
     ].includes(i)
   );
+}
+
+/** @param {Array<{ role?: string, text?: string }>} chatHistory */
+export function countPriorPlanItineraryTurns(chatHistory = []) {
+  let count = 0;
+  for (const msg of chatHistory) {
+    if (msg?.role !== 'user') continue;
+    const text = typeof msg.text === 'object' ? msg.text?.text : msg.text;
+    if (isPlanItineraryIntentText(text)) count += 1;
+  }
+  return count;
 }

@@ -5,6 +5,10 @@ import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import {
+  extractMooniTripFacts,
+  mergeMooniTripSession,
+} from '../../../pages/Home/lib/mooniTripSession.js';
+import {
   ensureChatEssentialGuide,
   useChatEssentialGuide,
 } from '../../../hooks/useChatEssentialGuide';
@@ -61,6 +65,11 @@ export const usePlaceChat = (options = {}) => {
       const essentialGuide =
         (await ensureChatEssentialGuide(slug, destinationName)) ?? cachedGuide;
 
+      const tripSession = mergeMooniTripSession(params.tripSession, extractMooniTripFacts(userText, {
+        destinationName,
+        slug,
+      }));
+
       const booking = resolveChatBookingActions({
         userText,
         destinationName,
@@ -69,6 +78,7 @@ export const usePlaceChat = (options = {}) => {
         chatSource,
         aiReplyText: aiReply,
         essentialGuide,
+        tripSession,
       });
 
       setChatHistory((prev) => [
@@ -78,7 +88,11 @@ export const usePlaceChat = (options = {}) => {
           text: aiReply,
           bookingActions: booking.show ? booking.actions : null,
           bookingMeta: booking.show
-            ? { slug: booking.slug, plannerUrl: booking.plannerUrl }
+            ? {
+                slug: booking.slug,
+                plannerUrl: booking.plannerUrl,
+                itineraryBookingCompact: Boolean(booking.itineraryBookingCompact),
+              }
             : null,
         },
       ]);

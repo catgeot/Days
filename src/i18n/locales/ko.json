@@ -2384,6 +2384,11 @@
       "flightRouteSearch": "{{departName}}({{depart}}) → {{arriveName}}({{arrive}}) 항공권 검색",
       "flightRouteSearchIata": "{{depart}} → {{arrive}} 항공권 검색",
       "flightSearchPlace": "{{place}} 검색",
+      "itinerarySection": "예약 · 정보",
+      "itineraryStay": "{{place}} 숙소",
+      "itineraryTour": "{{place}} 투어·액티비티",
+      "itineraryPickup": "{{place}} 공항 픽업",
+      "itineraryCollapsed": "{{place}} 숙소·항공·투어·픽업 보기",
       "modal": {
         "title": "항공권 검색",
         "ariaSearch": "Trip.com 항공권 검색",

@@ -2621,6 +2621,11 @@
       "flightRouteSearch": "{{departName}} ({{depart}}) → {{arriveName}} ({{arrive}}) flight search",
       "flightRouteSearchIata": "{{depart}} → {{arrive}} flight search",
       "flightSearchPlace": "Search {{place}}",
+      "itinerarySection": "Book · info",
+      "itineraryStay": "Stays in {{place}}",
+      "itineraryTour": "Tours in {{place}}",
+      "itineraryPickup": "{{place}} airport transfer",
+      "itineraryCollapsed": "Show stays, flights, tours & pickup for {{place}}",
       "modal": {
         "title": "Flight search",
         "ariaSearch": "Trip.com flight search",

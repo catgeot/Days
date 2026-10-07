@@ -43,6 +43,10 @@ export function getDestinationBookingProfile(slug) {
 export function resolveBookingLegsForIntent(primary, profile, intents = []) {
   if (primary === 'none') return [];
 
+  if (primary === 'plan_itinerary' || intents.includes('plan_itinerary')) {
+    return ['itinerary_bundle'];
+  }
+
   if (primary === 'access_route') {
     const legs = ['flight'];
     if (profile.ferryRequired) legs.push('ferry');
