@@ -1515,6 +1515,7 @@ const ChatModal = ({
                         chipId={msg.bookingMeta?.chipId}
                         userText={priorUserText}
                         itineraryBookingCompact={Boolean(msg.bookingMeta?.itineraryBookingCompact)}
+                        bubbleVariant={isMooniUi ? 'light' : 'dark'}
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}
