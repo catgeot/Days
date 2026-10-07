@@ -2,6 +2,7 @@ import {
   buildMooniContinueUserText,
   mergeMooniContinuation,
 } from '../../../utils/mooniTruncatedContinue.js';
+import { prepareMooniGeminiHistory } from '../../../utils/mooniGeminiHistoryPayload.js';
 import { getMooniModelMarkdownForRender } from './mooniModelMessageText.js';
 
 export function messageTextPlain(msg) {
@@ -28,7 +29,7 @@ export function buildMooniGeminiHistory(messages, modelIndex) {
       });
     }
   }
-  return history;
+  return prepareMooniGeminiHistory(history);
 }
 
 /**

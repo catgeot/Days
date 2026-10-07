@@ -88,6 +88,7 @@ import {
   finalizeMooniContinuation,
   messageTextPlain,
 } from '../lib/mooniChatContinue';
+import { prepareMooniGeminiHistory } from '../../../utils/mooniGeminiHistoryPayload.js';
 import {
   getMooniModelMarkdownForRender,
   getMooniModelRawText,
@@ -894,9 +895,18 @@ const ChatModal = ({
         chatHistory: priorTurns,
         persona: personaToUse,
       });
-      const history = priorTurns
-        .filter((turn) => turn.role === 'user' || turn.role === 'model')
-        .map((turn) => ({ role: turn.role, text: String(turn.text ?? '') }));
+      const history = prepareMooniGeminiHistory(
+        newMessages
+          .slice(0, -1)
+          .filter((m) => m.role === 'user' || m.role === 'model')
+          .map((m) => ({
+            role: m.role,
+            text:
+              m.role === 'model'
+                ? String(m.mooniRawReply ?? messageTextPlain(m))
+                : messageTextPlain(m),
+          })),
+      );
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];

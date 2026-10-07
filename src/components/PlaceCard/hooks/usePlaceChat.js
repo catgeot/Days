@@ -7,6 +7,7 @@ import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { resolveChatCtaCode } from '../../../utils/chatCtaPromptHint';
 import { sanitizeMooniModelReply } from '../../../utils/mooniReplySanitizer';
 import { getMooniModelMarkdownForRender } from '../../../pages/Home/lib/mooniModelMessageText';
+import { prepareMooniGeminiHistory } from '../../../utils/mooniGeminiHistoryPayload.js';
 import {
   extractMooniTripFacts,
   mergeMooniTripSession,
@@ -52,12 +53,14 @@ export const usePlaceChat = (options = {}) => {
         chatHistory: priorHistory,
       });
       const params = taskParams && typeof taskParams === 'object' ? taskParams : {};
-      const history = priorHistory
-        .filter((turn) => turn.role === 'user' || turn.role === 'model')
-        .map((turn) => ({
-          role: turn.role,
-          text: String(turn.mooniRawReply ?? turn.text ?? ''),
-        }));
+      const history = prepareMooniGeminiHistory(
+        priorHistory
+          .filter((turn) => turn.role === 'user' || turn.role === 'model')
+          .map((turn) => ({
+            role: turn.role,
+            text: String(turn.mooniRawReply ?? turn.text ?? ''),
+          })),
+      );
 
       const essentialGuide =
         (await ensureChatEssentialGuide(slug, destinationName)) ?? cachedGuide;
