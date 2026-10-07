@@ -1,5 +1,6 @@
 import React from 'react';
 import MooniChatMarkdown from './MooniChatMarkdown.jsx';
+import { mooniChatMarkdownPlainFallback } from './mooniChatMarkdownPlainFallback.js';
 
 export class MooniChatMarkdownBoundary extends React.Component {
   constructor(props) {
@@ -23,6 +24,19 @@ export class MooniChatMarkdownBoundary extends React.Component {
 
   render() {
     const { text, variant } = this.props;
+    if (this.state.failed) {
+      const plain = mooniChatMarkdownPlainFallback(text);
+      return (
+        <div
+          className={`mooni-chat-markdown mooni-chat-markdown--plain-fallback${
+            variant === 'dark' ? ' mooni-chat-markdown--dark' : ''
+          }`}
+          style={{ whiteSpace: 'pre-wrap' }}
+        >
+          {plain}
+        </div>
+      );
+    }
     return <MooniChatMarkdown text={text} variant={variant} />;
   }
 }
