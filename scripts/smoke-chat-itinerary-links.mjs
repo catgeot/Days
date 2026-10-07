@@ -27,7 +27,7 @@ for (const action of actions) {
 
 for (const row of results) {
   const ok = row.status >= 200 && row.status < 400;
-  if (!ok && row.provider === 'klook_tour' && row.status === 403) {
+  if (!ok && (row.provider === 'klook_tour' || row.provider === 'klook_pickup') && row.status === 403) {
     console.warn(`warn: ${row.provider} returned ${row.status} (bot block — URL still valid)`);
     continue;
   }
