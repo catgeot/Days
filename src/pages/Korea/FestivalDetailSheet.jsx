@@ -1074,7 +1074,7 @@ export default function FestivalDetailSheet({
     homepage,
     summaryFields,
     raised: showScrollTop && !lightboxOpen,
-    sheetRootRef,
+    sheetRootRef: sheetScrollRef,
     onOpenChange: (open) => {
       if (!open) {
         mooniWasOpenRef.current = false;
