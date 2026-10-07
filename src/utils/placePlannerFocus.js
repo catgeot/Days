@@ -1,6 +1,6 @@
 import { buildPlacePlannerPath } from './placePlannerPath.js';
 import { getPreTravelItemsFromGuide } from './chatPrepBookingLinks.js';
-import { i18n } from '../i18n/config';
+import { i18n } from '../i18n/config.js';
 
 /** PlannerTab DOM id — hash와 1:1 */
 export const PLANNER_FOCUS_ID = {

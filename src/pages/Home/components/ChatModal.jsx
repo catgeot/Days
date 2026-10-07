@@ -867,7 +867,9 @@ const ChatModal = ({
         (sessionDest === 'MOONi'
           ? (sessionBound?.name || resolution?.name || sessionDest)
           : sessionDest);
-      const priorTurns = messages.map((m) => ({ role: m.role, text: m.text }));
+      const priorTurns = newMessages
+        .slice(0, -1)
+        .map((m) => ({ role: m.role, text: m.text }));
 
       const slug =
         placeBound?.slug ||
@@ -975,6 +977,7 @@ const ChatModal = ({
         chatSource: mooniPlaceContext ? 'place' : 'home',
         aiReplyText: aiReply,
         essentialGuide,
+        tripSession: nextSession,
       });
 
       const hasTransportCta = (booking.actions ?? []).some((a) =>
@@ -1018,7 +1021,13 @@ const ChatModal = ({
           plannerFollowUp,
           bookingMeta:
             booking.show || plannerFollowUp
-              ? { slug: booking.slug ?? slug, plannerUrl, plannerFocus, chipId: chipId ?? null }
+              ? {
+                  slug: booking.slug ?? slug,
+                  plannerUrl,
+                  plannerFocus,
+                  chipId: chipId ?? null,
+                  itineraryBookingCompact: Boolean(booking.itineraryBookingCompact),
+                }
               : null,
         },
       ];
@@ -1483,6 +1492,7 @@ const ChatModal = ({
                         plannerFocus={msg.bookingMeta?.plannerFocus}
                         chipId={msg.bookingMeta?.chipId}
                         userText={priorUserText}
+                        itineraryBookingCompact={Boolean(msg.bookingMeta?.itineraryBookingCompact)}
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}
