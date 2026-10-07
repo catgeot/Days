@@ -1,4 +1,4 @@
-import { supabase } from '../../../shared/api/supabase';
+import { supabase } from '../../../shared/api/supabase.js';
 import {
   isPlaceChatIntroKeyAccepted,
   isPlaceChatIntroSummaryAccepted,
@@ -17,8 +17,12 @@ import {
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
 } from './placeDescText.js';
-import { TRAVEL_SPOTS } from '../data/travelSpots.js';
-import { resolveCatalogPlaceSlug } from './formatUrlName.js';
+import {
+  buildMooniBoundSpotFromLocation,
+  formatPlaceChatLabel,
+  localizeMooniPlaceLabel,
+  normalizeDestinationKey,
+} from './mooniPlaceChatLabel.js';
 import {
   sanitizeGeminiUserText,
 } from '../../../../supabase/functions/_shared/gemini/answerSanitize.mjs';
@@ -44,76 +48,15 @@ function localStorageKey(destinationKey, lng = i18n.language) {
   return `${LS_PREFIX}${encodeURIComponent(withPlaceChatIntroLocale(destinationKey, lng))}`;
 }
 
-export function normalizeDestinationKey(name) {
-  return String(name ?? '')
-    .trim()
-    .replace(/\s+/g, ' ');
-}
+export {
+  buildMooniBoundSpotFromLocation,
+  formatPlaceChatLabel,
+  localizeMooniPlaceLabel,
+  normalizeDestinationKey,
+} from './mooniPlaceChatLabel.js';
 
 function resolveIntroLocale(lng = i18n.language) {
   return normalizeAppLocale(lng?.slice?.(0, 2) ?? lng);
-}
-
-/**
- * 무니·장소 채팅용 표시 라벨 — 「일본 쿠시로」/「Japan Kyoto」처럼 국가+지명.
- * placeholder 국가(Explore 등)·중복 표기는 생략.
- */
-/** MOONi 칩·헤더 — slug 카탈로그 lookup 후 locale 표시명 */
-export function localizeMooniPlaceLabel(place, lng = i18n.language) {
-  if (!place) return '';
-  const locale = resolveIntroLocale(lng);
-  if (place.festivalContext) {
-    const explicit = normalizeDestinationKey(
-      place.displayLabel || place.festivalContext.title || '',
-    );
-    if (explicit) return explicit;
-  }
-  const catalogSlug = place.slug ? resolveCatalogPlaceSlug(place.slug) : null;
-  if (catalogSlug) {
-    const spot = TRAVEL_SPOTS.find((s) => s.slug === catalogSlug);
-    if (spot) {
-      const label = formatPlaceChatLabel(spot, locale);
-      if (label) return label;
-    }
-  }
-  return formatPlaceChatLabel(place, locale) || String(place.name || '').trim();
-}
-
-export function formatPlaceChatLabel(loc, lng = i18n.language) {
-  if (!loc || typeof loc !== 'object') {
-    return normalizeDestinationKey(loc);
-  }
-  const locale = resolveIntroLocale(lng);
-  const name = normalizeDestinationKey(
-    getLocalizedPlaceName(loc, locale) || loc.displayLabel || loc.name || '',
-  );
-  if (!name) return '';
-  const country = normalizeDestinationKey(getLocalizedCountryName(loc, locale) || loc.country || '');
-  if (!country || isPlaceholderCountry(country)) return name;
-  if (name.includes(country) || country.includes(name)) return name;
-  return `${country} ${name}`;
-}
-
-/** 장소카드 → 무니 boundSpot 시드 (SSOT slug 없어도 국가·지명 유지) */
-export function buildMooniBoundSpotFromLocation(loc) {
-  if (!loc?.name) return null;
-  const displayLabel = loc.festivalContext
-    ? normalizeDestinationKey(loc.displayLabel || '') || formatPlaceChatLabel(loc)
-    : formatPlaceChatLabel(loc);
-  const rawSlug = typeof loc.slug === 'string' ? loc.slug.trim() : '';
-  return {
-    slug: rawSlug || null,
-    name: String(loc.name).trim(),
-    displayLabel,
-    name_en: loc.name_en ?? null,
-    country: isPlaceholderCountry(loc.country) ? null : (loc.country ?? null),
-    country_en: isPlaceholderCountry(loc.country_en) ? null : (loc.country_en ?? null),
-    lat: Number.isFinite(Number(loc.lat)) ? Number(loc.lat) : null,
-    lng: Number.isFinite(Number(loc.lng)) ? Number(loc.lng) : null,
-    uiPlace: Boolean(loc.uiPlace),
-    festivalContext: loc.festivalContext ?? null,
-    eventContext: loc.eventContext ?? null,
-  };
 }
 
 const INVALID_DESTINATIONS = new Set(['', 'new session', 'scanning...', 'mooni']);

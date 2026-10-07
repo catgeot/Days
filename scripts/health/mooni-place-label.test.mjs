@@ -4,7 +4,7 @@ import {
   buildMooniBoundSpotFromLocation,
   formatPlaceChatLabel,
   localizeMooniPlaceLabel,
-} from '../../src/pages/Home/lib/placeChatIntro.js';
+} from '../../src/pages/Home/lib/mooniPlaceChatLabel.js';
 import { buildFestivalMooniBoundSpot } from '../../src/pages/Korea/lib/festivalMooniBoundSpot.js';
 
 const FESTIVAL_FIXTURE = {

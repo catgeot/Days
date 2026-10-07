@@ -1,4 +1,4 @@
-import { buildMooniBoundSpotFromLocation } from '../../Home/lib/placeChatIntro.js';
+import { buildMooniBoundSpotFromLocation } from '../../Home/lib/mooniPlaceChatLabel.js';
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
 import { buildFestivalMooniContext } from './festivalMooniContext.js';
 

@@ -56,9 +56,11 @@ export function useFestivalMooniEntry({
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry) setInlineVisible(entry.isIntersecting);
+        if (!entry) return;
+        const ratio = entry.intersectionRatio ?? 0;
+        setInlineVisible(entry.isIntersecting && ratio >= 0.35);
       },
-      { root: null, threshold: 0.15 },
+      { root: null, threshold: [0, 0.15, 0.35, 0.5, 0.75, 1], rootMargin: '0px 0px -56px 0px' },
     );
     observer.observe(node);
     intersectionObserverRef.current = observer;

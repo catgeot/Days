@@ -39,13 +39,8 @@ import {
   sanitizeMooniModelReply,
   shouldShowMooniPlannerFollowUp,
 } from '../../../utils/mooniReplySanitizer';
-import {
-  buildMooniKoreaFestivalSystemHint,
-  isMooniKoreaFestivalQuery,
-  mergeMooniKoreaFestivalReply,
-  selectMooniKoreaFestivalCandidates,
-} from '../../../shared/korea/mooniKoreaFestivalAssist.js';
-import { fetchKoreaFestivalsRolling12 } from '../../Korea/fetchKoreaFestivalsWindow.js';
+import { mergeMooniKoreaFestivalReply } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
@@ -931,25 +926,17 @@ const ChatModal = ({
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
-      if (isMooniKoreaFestivalQuery(cleanText)) {
-        try {
-          const festWindow = await fetchKoreaFestivalsRolling12({ locale: i18n.language });
-          if (festWindow?.items?.length) {
-            const picked = selectMooniKoreaFestivalCandidates(festWindow.items, {
-              userText: cleanText,
-              boundPlaceName: destName,
-            });
-            mooniFestivalCandidates = picked.candidates;
-            koreaFestivalHint = buildMooniKoreaFestivalSystemHint({
-              userText: cleanText,
-              boundPlaceName: destName,
-              items: festWindow.items,
-              locale: i18n.language,
-            });
-          }
-        } catch (festErr) {
-          console.warn('[mooni] korea festival SSOT skipped:', festErr?.message || festErr);
-        }
+      try {
+        const festHint = await resolvePlaceChatKoreaFestivalHint({
+          userText: cleanText,
+          festivalContext: mooniPlaceContext?.festivalContext ?? null,
+          boundPlaceName: destName,
+          locale: i18n.language,
+        });
+        koreaFestivalHint = festHint.hint;
+        mooniFestivalCandidates = festHint.candidates;
+      } catch (festErr) {
+        console.warn('[mooni] korea festival SSOT skipped:', festErr?.message || festErr);
       }
 
       const aiReply = await apiClient.invokeGeminiTask('mooni_chat', {
