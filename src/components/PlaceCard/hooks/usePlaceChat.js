@@ -5,6 +5,8 @@ import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { resolveChatCtaCode } from '../../../utils/chatCtaPromptHint';
+import { mooniChatShowsPlannerHeaderButton } from '../../../shared/mooni/mooniChatPlannerHeaderPrompt';
+import { resolveCatalogPlaceSlug } from '../../../pages/Home/lib/formatUrlName';
 import { getMooniModelMarkdownForRender } from '../../../pages/Home/lib/mooniModelMessageText';
 import { prepareMooniGeminiHistory } from '../../../utils/mooniGeminiHistoryPayload.js';
 import {
@@ -86,6 +88,9 @@ export const usePlaceChat = (options = {}) => {
         koreaFestivalHint = '';
       }
 
+      const catalogSlug = resolveCatalogPlaceSlug(slug);
+      const showPlannerHeader = mooniChatShowsPlannerHeaderButton(catalogSlug);
+
       const geminiParams = {
         locale: params.locale || locale,
         persona: params.persona || 'GENERAL',
@@ -99,6 +104,7 @@ export const usePlaceChat = (options = {}) => {
         cta: cta.code,
         ctaPlace: cta.place || destinationName || '',
         koreaFestivalHint,
+        showPlannerHeader,
       };
 
       const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {

@@ -49,6 +49,7 @@ import {
   resolvePlannerFocusFromUserText,
 } from '../../../utils/placePlannerFocus';
 import { resolveChatCtaCode } from '../../../utils/chatCtaPromptHint';
+import { mooniChatShowsPlannerHeaderButton } from '../../../shared/mooni/mooniChatPlannerHeaderPrompt';
 import {
   ensureChatEssentialGuide,
   useChatEssentialGuide,
@@ -956,6 +957,8 @@ const ChatModal = ({
         console.warn('[mooni] korea festival SSOT skipped:', festErr?.message || festErr);
       }
 
+      const showPlannerHeader = mooniChatShowsPlannerHeaderButton(boundDestinationSlug);
+
       const geminiParams = {
         locale: i18n.language,
         persona: personaToUse,
@@ -969,6 +972,7 @@ const ChatModal = ({
         cta: cta.code,
         ctaPlace: cta.place,
         koreaFestivalHint,
+        showPlannerHeader,
       };
 
       const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
