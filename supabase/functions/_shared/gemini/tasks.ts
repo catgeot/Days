@@ -264,7 +264,6 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       cta,
       ctaPlace,
       koreaFestivalHint: koreaFestivalHint || "",
-      showPlannerHeader: input.showPlannerHeader === true,
     });
     return {
       ok: true,

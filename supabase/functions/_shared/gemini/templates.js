@@ -1,10 +1,4 @@
 import { EN, KO } from "./mooniPromptBundleData.js";
-import {
-  applyMooniDestinationRulesPlannerVisibility,
-  applyMooniGateoPlannerNoteVisibility,
-  filterMooniChipRulesForPlannerHeader,
-  shouldIncludeMooniCtaPlannerHeaderLine,
-} from "./mooniChatPlannerHeaderPrompt.js";
 
 const FLIGHT_CHIPS = new Set([
   "prep_flight",
@@ -119,16 +113,15 @@ function pushProfileLines(lines, ssot, profile) {
   if (profile.preTravel) lines.push(fillTemplate(ssot.preTravel, { titles: profile.preTravel }));
 }
 
-export function renderChipHint(locale, chipId, facts, showPlannerHeader = true) {
+export function renderChipHint(locale, chipId, facts) {
   const bundle = bundleFor(locale);
   const guide = bundle.chips?.[chipId];
   if (!guide) return "";
-  const chipRules = filterMooniChipRulesForPlannerHeader(guide.rules, showPlannerHeader);
   const lines = [
     "",
     fillTemplate(bundle.chipTopicHeader, { title: guide.title }),
     bundle.chipPriority,
-    ...chipRules.map((rule) => `- ${rule}`),
+    ...guide.rules.map((rule) => `- ${rule}`),
   ];
   const ssotLines = [];
   const ssot = bundle.ssot;
@@ -145,25 +138,17 @@ export function renderChipHint(locale, chipId, facts, showPlannerHeader = true) 
   return lines.join("\n");
 }
 
-export function renderCtaHint(locale, code, placeName, showPlannerHeader = true) {
+export function renderCtaHint(locale, code, placeName) {
   const bundle = bundleFor(locale);
   const cta = bundle.cta;
-  const loc = locale?.slice?.(0, 2) === "en" ? "en" : "ko";
   const place = String(placeName ?? "").trim() || cta.destinationFallback;
   const lines = ["", cta.header, cta.noTicketSearch];
   if (code === "none_transport") {
-    lines.push(fillTemplate(cta.transportOnlyPlanner, { place }));
-    if (shouldIncludeMooniCtaPlannerHeaderLine("transportOnlyHeader", showPlannerHeader)) {
-      lines.push(cta.transportOnlyHeader);
-    }
+    lines.push(fillTemplate(cta.transportOnlyPlanner, { place }), cta.transportOnlyHeader);
     return lines.join("\n");
   }
   if (code === "none_quiet") {
-    lines.push(cta.noBookingShow);
-    if (shouldIncludeMooniCtaPlannerHeaderLine("plannerHeaderOnly", showPlannerHeader)) {
-      lines.push(cta.plannerHeaderOnly);
-    }
-    lines.push(cta.noPhantomButtons);
+    lines.push(cta.noBookingShow, cta.plannerHeaderOnly, cta.noPhantomButtons);
     return lines.join("\n");
   }
   const hasPrep = code.startsWith("prep_") || code.startsWith("both");
@@ -183,10 +168,7 @@ export function renderCtaHint(locale, code, placeName, showPlannerHeader = true)
       target: cta.prepTargets[targetKey] || cta.prepTargets.default,
     }));
   }
-  if (shouldIncludeMooniCtaPlannerHeaderLine("fullPlanner", showPlannerHeader)) {
-    lines.push(cta.fullPlanner);
-  }
-  lines.push(applyMooniGateoPlannerNoteVisibility(cta.gateoPlannerNote, showPlannerHeader, loc));
+  lines.push(cta.fullPlanner, cta.gateoPlannerNote);
   if (hasTransport) lines.push(cta.moreOptions);
   return lines.join("\n");
 }
@@ -257,7 +239,6 @@ function buildPersonaSystem(personaType, bundle) {
  *   cta?: string | null,
  *   ctaPlace?: string,
  *   koreaFestivalHint?: string,
- *   showPlannerHeader?: boolean,
  * }} input
  */
 export function renderMooniSystem({
@@ -272,7 +253,6 @@ export function renderMooniSystem({
   cta = null,
   ctaPlace = "",
   koreaFestivalHint = "",
-  showPlannerHeader = false,
 }) {
   const bundle = bundleFor(locale);
   const bound = String(boundPlaceName ?? "").trim();
@@ -281,11 +261,7 @@ export function renderMooniSystem({
     Boolean(bound) ||
     String(locationName ?? "").trim().toLowerCase() === "mooni";
   const effectiveLocation = bound || locationName;
-  const destinationRules = applyMooniDestinationRulesPlannerVisibility(
-    bundle.mooniDestinationRules,
-    showPlannerHeader,
-  );
-  const mooniContext = mooni ? `\n${destinationRules}` : "";
+  const mooniContext = mooni ? `\n${bundle.mooniDestinationRules}` : "";
   const locationContext = effectiveLocation
     ? `\n${fillTemplate(bundle.locationContext, { location: effectiveLocation })}`
     : "";
@@ -293,12 +269,8 @@ export function renderMooniSystem({
     ? `\n${fillTemplate(bundle.boundPlace, { name: bound })}`
     : "";
   const tripHint = String(renderTripSessionHint(locale, tripSession) ?? "").trim();
-  const chipHint = String(
-    chipId ? renderChipHint(locale, chipId, chipFacts, showPlannerHeader) : "",
-  ).trim();
-  const ctaHint = String(
-    cta ? renderCtaHint(locale, cta, ctaPlace, showPlannerHeader) : "",
-  ).trim();
+  const chipHint = String(chipId ? renderChipHint(locale, chipId, chipFacts) : "").trim();
+  const ctaHint = String(cta ? renderCtaHint(locale, cta, ctaPlace) : "").trim();
   const festivalHint = String(koreaFestivalHint ?? "").trim();
   return (
     buildPersonaSystem(persona, bundle) +
