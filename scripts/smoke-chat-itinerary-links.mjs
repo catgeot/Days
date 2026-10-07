@@ -53,6 +53,10 @@ assert.ok(
   ferryItinerary.actions.some((a) => a.provider === 'twelve_go' || a.provider === 'direct'),
   'gili-meno ferryRequired itinerary must include ferry card',
 );
+const ferryDirect = ferryItinerary.actions.find((a) => a.provider === 'direct');
+if (ferryDirect) {
+  assert.match(ferryDirect.label, /^페리 · /);
+}
 assert.ok(ferryItinerary.actions.length <= 4);
 
 console.log('smoke-chat-itinerary-links: PASS');
