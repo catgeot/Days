@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  buildFestivalMooniChatOpening,
   buildFestivalMooniContext,
   buildFestivalMooniNeutralOpening,
 } from '../../src/pages/Korea/lib/festivalMooniContext.js';
@@ -47,4 +48,14 @@ test('buildFestivalMooniNeutralOpening uses verified lines only', () => {
   assert.match(opening, /10\.08 – 10\.11/);
   assert.match(opening, /도시산림공원 토리숲/);
   assert.doesNotMatch(opening, /대한민국 홍천/);
+});
+
+test('buildFestivalMooniChatOpening merges invite line', () => {
+  const opening = buildFestivalMooniChatOpening(
+    buildFestivalMooniContext(FIXTURE),
+    '이 축제에 대해 물어보세요.',
+  );
+  assert.match(opening, /홍천 인삼한우 명품축제/);
+  assert.match(opening, /이 축제에 대해 물어보세요/);
+  assert.equal(opening.split('\n\n').length, 2);
 });

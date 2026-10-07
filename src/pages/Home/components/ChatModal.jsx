@@ -46,7 +46,7 @@ import {
   selectMooniKoreaFestivalCandidates,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 import { fetchKoreaFestivalsRolling12 } from '../../Korea/fetchKoreaFestivalsWindow.js';
-import { buildFestivalMooniNeutralOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
+import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
@@ -183,12 +183,13 @@ const ChatModal = ({
     if (!isOpen) return null;
 
     if (mooniPlaceContext?.festivalContext) {
-      const festivalLabel = String(mooniPlaceContext.displayLabel || mooniPlaceContext.name || '').trim();
-      if (festivalLabel) {
+      const festivalTitle = String(mooniPlaceContext.festivalContext.title || '').trim();
+      if (festivalTitle) {
         return {
           slug: null,
-          name: festivalLabel,
-          country: mooniPlaceContext.country ?? null,
+          name: festivalTitle,
+          displayLabel: festivalTitle,
+          country: null,
           lat: mooniPlaceContext.lat ?? null,
           lng: mooniPlaceContext.lng ?? null,
         };
@@ -323,16 +324,32 @@ const ChatModal = ({
   const allowNameBoundChips =
     chipDockMode === 'topic' && !boundDestinationSlug;
 
+  const festivalMooniContext = mooniPlaceContext?.festivalContext ?? null;
+
+  const festivalMooniHeaderSubtitle = useMemo(() => {
+    if (!festivalMooniContext) return '';
+    const parts = [festivalMooniContext.hubLabel, festivalMooniContext.dateLabel].filter(
+      Boolean,
+    );
+    return parts.join(' · ');
+  }, [festivalMooniContext]);
+
   const mooniHeaderLabel = useMemo(() => {
     if (!isMooniUi) return introDestinationRaw || 'MOONi';
+    if (festivalMooniContext?.title) {
+      return `${festivalMooniContext.title} · MOONi`;
+    }
     const label = localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
     return label ? `${label} · MOONi` : 'MOONi';
-  }, [isMooniUi, activeSessionPlace, introDestinationRaw, i18n.language]);
+  }, [isMooniUi, activeSessionPlace, introDestinationRaw, festivalMooniContext?.title, i18n.language]);
 
-  const festivalMooniContext = mooniPlaceContext?.festivalContext ?? null;
   const festivalMooniOpening = useMemo(
-    () => buildFestivalMooniNeutralOpening(festivalMooniContext),
-    [festivalMooniContext],
+    () =>
+      buildFestivalMooniChatOpening(
+        festivalMooniContext,
+        festivalMooniContext ? t('korea.festival.detail.mooniFestivalInvite') : '',
+      ),
+    [festivalMooniContext, t, i18n.language],
   );
 
   const placeIntroTarget = useMemo(() => {
@@ -1185,13 +1202,15 @@ const ChatModal = ({
                  </span>
                  <span className={`hidden md:block text-[11px] font-medium leading-tight truncate ${tone(fresh, 'text-cyan-300/80', 'text-cyan-600')}`}>
                    {isMooniUi
-                     ? boundDestinationSlug
-                       ? `${t('mooni.chat.travelChat', {
-                           destination:
-                             localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
-                             introDestinationRaw,
-                         })} · ${currentPersona}`
-                       : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
+                     ? festivalMooniHeaderSubtitle
+                       ? `${festivalMooniHeaderSubtitle} · ${currentPersona}`
+                       : boundDestinationSlug
+                         ? `${t('mooni.chat.travelChat', {
+                             destination:
+                               localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
+                               introDestinationRaw,
+                           })} · ${currentPersona}`
+                         : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
                      : `${t('mooni.chat.travelChat', { destination: introDestinationRaw || t('place.fallback.destination') })} · ${currentPersona}`}
                  </span>
                  <span className={`md:hidden text-[10px] font-medium leading-none mt-0.5 truncate ${tone(fresh, 'text-gray-400', 'text-slate-500')}`}>
@@ -1339,7 +1358,11 @@ const ChatModal = ({
                   </div>
                 </div>
               )}
-              {isMooniUi && messages.length === 0 && !isLoading && !placeIntroTarget && (
+              {isMooniUi &&
+                messages.length === 0 &&
+                !isLoading &&
+                !placeIntroTarget &&
+                !festivalMooniOpening && (
                 <div className="flex flex-col items-start w-full">
                   <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
                   <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>

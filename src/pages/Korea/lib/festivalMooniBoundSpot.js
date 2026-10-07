@@ -2,7 +2,11 @@ import { buildMooniBoundSpotFromLocation } from '../../Home/lib/placeChatIntro.j
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
 import { buildFestivalMooniContext } from './festivalMooniContext.js';
 
-export { buildFestivalMooniContext, buildFestivalMooniNeutralOpening } from './festivalMooniContext.js';
+export {
+  buildFestivalMooniContext,
+  buildFestivalMooniNeutralOpening,
+  buildFestivalMooniChatOpening,
+} from './festivalMooniContext.js';
 
 /**
  * @param {{
@@ -20,6 +24,7 @@ export function buildFestivalMooniBoundSpot(input = {}) {
     intro,
     homepage,
     summaryFields,
+    location,
   });
   const title = festivalContext?.title || '';
   const loc = location && typeof location === 'object' ? location : null;

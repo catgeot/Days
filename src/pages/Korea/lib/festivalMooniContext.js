@@ -11,7 +11,8 @@ import { festivalLngLat } from '../koreaFestivalCorridors.js';
  * }} input
  */
 export function buildFestivalMooniContext(input = {}) {
-  const { item, intro, homepage, summaryFields } = input;
+  const { item, intro, homepage, summaryFields, location } = input;
+  const hubLabel = String(location?.name || location?.parentCity || '').trim();
   const title = String(item?.title || '').trim();
   const contentId = String(item?.contentId || '').trim();
   if (!title && !contentId) return null;
@@ -34,7 +35,20 @@ export function buildFestivalMooniContext(input = {}) {
     lat: pt?.lat ?? null,
     lng: pt?.lng ?? null,
     homepage: String(homepage || '').trim(),
+    hubLabel,
   };
+}
+
+/**
+ * @param {ReturnType<typeof buildFestivalMooniContext>} festivalContext
+ * @param {string} [inviteLine]
+ */
+export function buildFestivalMooniChatOpening(festivalContext, inviteLine = '') {
+  const body = buildFestivalMooniNeutralOpening(festivalContext);
+  const invite = String(inviteLine || '').trim();
+  if (!body) return invite;
+  if (!invite) return body;
+  return `${body}\n\n${invite}`;
 }
 
 /**
