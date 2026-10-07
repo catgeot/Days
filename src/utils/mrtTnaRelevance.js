@@ -6,7 +6,7 @@ export const OVERSEAS_TNA_NOISE_RE =
 const GENERIC_EN_TOKEN_RE =
   /^(valley|park|tour|island|beach|museum|tower|bridge|lake|mountain|city|hotel|pass|garden|temple|palace|castle|road|street|point|peak|falls|river|bay|coast|harbor|harbour|village|town|center|centre)$/i;
 
-const AMBIGUOUS_KO_PLACE_NAMES = new Set(['영양', '동해', '남해']);
+const AMBIGUOUS_KO_PLACE_NAMES = new Set(['영양', '동해', '남해', '연기']);
 
 function escapeRegExp(s) {
   return String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

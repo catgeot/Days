@@ -175,6 +175,27 @@ const sampleFestivalItem = {
   mapy: 37.79,
   areaCode: '32',
 };
+const sejongFestivalItem = {
+  contentId: 'sejong-hangeul-2026',
+  title: '2026 한글문화특별기획전 <세종과 남준>',
+  addr1: '세종특별자치시 세종시 조치원읍 번영로 123',
+  addr2: '비엔날레전시관',
+  mapx: 127.289,
+  mapy: 36.48,
+  areaCode: '8',
+};
+const sejongCross = resolveFestivalThemeCrossLinks(sejongFestivalItem);
+assert.equal(sejongCross.stay?.keyword, '세종', `세종 축제 stay keyword (got ${sejongCross.stay?.keyword})`);
+assert.equal(sejongCross.tna?.keyword, '세종', `세종 축제 tna keyword (got ${sejongCross.tna?.keyword})`);
+assert.ok(
+  !(sejongCross.stayAreas || []).some((a) => a.mrtKeyword === '연기' || a.hubId === 'yeongi'),
+  `세종 축제 stayAreas must not list legacy yeongi chip (got ${JSON.stringify(sejongCross.stayAreas)})`,
+);
+assert.ok(
+  !(sejongCross.tna?.nearbyKeywords || []).includes('연기'),
+  `세종 축제 tna nearbyKeywords exclude 연기 (got ${sejongCross.tna?.nearbyKeywords?.join(',')})`,
+);
+
 const festivalCross = resolveFestivalThemeCrossLinks(sampleFestivalItem);
 assert.ok(festivalCross.tna, 'festival cross link has tna');
 assert.ok(festivalCross.tna.keyword, 'festival tna has keyword');

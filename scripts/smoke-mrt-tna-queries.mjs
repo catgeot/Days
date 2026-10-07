@@ -451,6 +451,10 @@ function assertRelevanceSmoke() {
     scoreMrtTnaRelevance('[경북영양] 음식디미방 1박2일', '영양') > 0,
     '영양 경북영양 prefix match',
   );
+  assert(
+    scoreMrtTnaRelevance('연기체험 공연 티켓', '연기') === 0,
+    '연기 homonym blocks acting-experience partial match',
+  );
   const stripped = stripUnsafeMrtTnaItems([
     { itemName: '[잔지바르] 응두투 3일 사파리 :: 새끼 영양' },
     { itemName: '[경북/영양] 벌건공방 솟대 만들기' },
