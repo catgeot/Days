@@ -6,6 +6,7 @@ import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { resolveChatCtaCode } from '../../../utils/chatCtaPromptHint';
 import { sanitizeMooniModelReply } from '../../../utils/mooniReplySanitizer';
+import { getMooniModelMarkdownForRender } from '../../../pages/Home/lib/mooniModelMessageText';
 import {
   extractMooniTripFacts,
   mergeMooniTripSession,
@@ -112,8 +113,9 @@ export const usePlaceChat = (options = {}) => {
           a.provider,
         ),
       );
-      const { text: displayReply } = sanitizeMooniModelReply(aiReply, {
-        stripPhantomTicketMention: !hasTransportCta,
+      const stripPhantomTicketMention = !hasTransportCta;
+      const displayReply = getMooniModelMarkdownForRender(aiReply, {
+        stripPhantomTicketMention,
       });
 
       setChatHistory((prev) => [
@@ -122,12 +124,13 @@ export const usePlaceChat = (options = {}) => {
           role: 'model',
           text: displayReply,
           mooniRawReply: aiReply,
+          frozenBookingActions: booking.show ? booking.actions : null,
           truncated: geminiResult.truncated,
           finishReason: geminiResult.finishReason,
           continueAttempts: 0,
           mooniTurnContext: {
             geminiParams,
-            stripPhantomTicketMention: !hasTransportCta,
+            stripPhantomTicketMention,
           },
           bookingActions: booking.show ? booking.actions : null,
           bookingMeta: booking.show

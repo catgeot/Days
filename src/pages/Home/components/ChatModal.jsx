@@ -88,6 +88,10 @@ import {
   finalizeMooniContinuation,
   messageTextPlain,
 } from '../lib/mooniChatContinue';
+import {
+  getMooniModelMarkdownForRender,
+  getMooniModelRawText,
+} from '../lib/mooniModelMessageText';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
 
@@ -963,12 +967,13 @@ const ChatModal = ({
       const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
         candidates: mooniFestivalCandidates,
       });
-      const { text: displayReply, hadBracketLinks } = sanitizeMooniModelReply(
-        festivalMergedReply,
-        {
-          stripPhantomTicketMention: !hasTransportCta,
-        },
-      );
+      const stripPhantomTicketMention = !hasTransportCta;
+      const displayReply = getMooniModelMarkdownForRender(festivalMergedReply, {
+        stripPhantomTicketMention,
+      });
+      const { hadBracketLinks } = sanitizeMooniModelReply(festivalMergedReply, {
+        stripPhantomTicketMention,
+      });
       const plannerFocus = resolvePlannerFocusFromUserText(cleanText, {
         essentialGuide,
         chipId,
@@ -998,8 +1003,9 @@ const ChatModal = ({
           continueAttempts: 0,
           mooniTurnContext: {
             geminiParams,
-            stripPhantomTicketMention: !hasTransportCta,
+            stripPhantomTicketMention,
           },
+          frozenBookingActions: booking.show ? booking.actions : null,
           bookingActions: booking.show ? booking.actions : null,
           plannerFollowUp,
           bookingMeta:
@@ -1382,12 +1388,25 @@ const ChatModal = ({
                 </div>
               )}
               {messages.map((msg, idx) => {
-                const rawMsgText =
-                  typeof msg.text === 'object' ? msg.text?.text ?? t('mooni.chat.noContent') : msg.text ?? '';
                 const isModelMsg = msg.role === 'model';
-                const { text: displayMsgText, hadBracketLinks } = isModelMsg
-                  ? sanitizeMooniModelReply(rawMsgText)
-                  : { text: rawMsgText, hadBracketLinks: false };
+                const rawMsgText = isModelMsg
+                  ? getMooniModelRawText(msg) || t('mooni.chat.noContent')
+                  : typeof msg.text === 'object'
+                    ? msg.text?.text ?? t('mooni.chat.noContent')
+                    : msg.text ?? '';
+                const stripPhantomOnRender =
+                  msg.mooniTurnContext?.stripPhantomTicketMention ?? true;
+                const displayMsgText = isModelMsg
+                  ? getMooniModelMarkdownForRender(rawMsgText, {
+                      stripPhantomTicketMention: stripPhantomOnRender,
+                    })
+                  : rawMsgText;
+                const { hadBracketLinks } = isModelMsg
+                  ? sanitizeMooniModelReply(rawMsgText, {
+                      stripPhantomTicketMention: stripPhantomOnRender,
+                    })
+                  : { hadBracketLinks: false };
+                const cardActions = msg.frozenBookingActions ?? msg.bookingActions;
                 const msgSlug = msg.bookingMeta?.slug ?? boundDestinationSlug;
                 const msgDestinationName = isMooniUi
                   ? localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
@@ -1413,7 +1432,7 @@ const ChatModal = ({
                     shouldShowMooniPlannerFollowUp({
                       slug: msgSlug,
                       hadBracketLinks,
-                      bookingShow: Boolean(msg.bookingActions?.length),
+                      bookingShow: Boolean(cardActions?.length),
                       userText: priorUserText,
                       aiReplyText: rawMsgText,
                     }));
@@ -1473,9 +1492,9 @@ const ChatModal = ({
                         onSelectCandidate={(c) => handleSelectDestinationCandidate(c, idx)}
                       />
                     )}
-                    {msg.role === 'model' && msg.bookingActions?.length > 0 && (
+                    {msg.role === 'model' && cardActions?.length > 0 && (
                       <BookingActionCards
-                        actions={refreshStoredBookingActionLabels(msg.bookingActions, {
+                        actions={refreshStoredBookingActionLabels(cardActions, {
                           slug: msg.bookingMeta?.slug ?? boundDestinationSlug,
                           destinationName: msgDestinationName,
                           chatHistory: messages

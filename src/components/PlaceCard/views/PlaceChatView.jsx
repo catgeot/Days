@@ -4,6 +4,8 @@ import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { Send, Loader2, Sparkles } from 'lucide-react';
 import BookingActionCards from '../../chat/BookingActionCards';
 import MooniTruncatedContinue from '../../chat/MooniTruncatedContinue';
+import MooniChatMarkdown from '../../chat/MooniChatMarkdown';
+import { getMooniModelMarkdownForRender, getMooniModelRawText } from '../../../pages/Home/lib/mooniModelMessageText';
 import { refreshStoredBookingActionLabels } from '../../../utils/chatBookingResolver';
 import {
   MOBILE_INPUT_TEXT_CLASS,
@@ -89,9 +91,19 @@ const PlaceChatView = ({
                         ? 'bg-red-950/50 border-red-500/20 text-red-200 rounded-tl-sm'
                         : 'bg-[#0F1115]/60 border-white/5 text-gray-200 rounded-tl-sm'
                   }`}>
-                <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}>
+                {msg.role === 'model' ? (
+                  <MooniChatMarkdown
+                    text={getMooniModelMarkdownForRender(getMooniModelRawText(msg), {
+                      stripPhantomTicketMention:
+                        msg.mooniTurnContext?.stripPhantomTicketMention ?? true,
+                    })}
+                    variant="dark"
+                  />
+                ) : (
+                  <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}>
                     {msg.text}
-                </div>
+                  </div>
+                )}
                 {msg.role === 'model' && onContinueTruncated ? (
                   <MooniTruncatedContinue
                     truncated={Boolean(msg.truncated)}
@@ -102,9 +114,11 @@ const PlaceChatView = ({
                     variant="dark"
                   />
                 ) : null}
-                {msg.role === 'model' && msg.bookingActions?.length > 0 && (
+                {msg.role === 'model' && (msg.frozenBookingActions ?? msg.bookingActions)?.length > 0 && (
                   <BookingActionCards
-                    actions={refreshStoredBookingActionLabels(msg.bookingActions, {
+                    actions={refreshStoredBookingActionLabels(
+                      msg.frozenBookingActions ?? msg.bookingActions,
+                      {
                       slug: msg.bookingMeta?.slug ?? slug,
                       destinationName: locationName,
                       chatHistory: chatHistory

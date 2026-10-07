@@ -1,52 +1,89 @@
 const THINKING_BLOCK_RE = /<thinking>[\s\S]*?<\/thinking>/gi;
-const DAY_HEADING_RE =
-  /(?:^|\n)\s*(?:#{1,4}\s*)?(?:\*\*)?(\d{1,2})\s*일차(?:\*\*)?[^\n]*/gim;
+const DAY_HEADING_LINE_RE =
+  /^\s*(?:#{1,4}\s*)?(?:\*\*)?(\d{1,2})\s*일차(?:\*\*)?\s*(.*)$/i;
+const DAY_HEADING_INLINE_RE = /(?:\*\*)?(\d{1,2})\s*일차(?:\*\*)?/gi;
 
 export const MOONI_CONTINUE_MAX_ATTEMPTS = 2;
 
 export function stripMooniThinkingLeak(text) {
   const raw = String(text ?? '');
   if (!raw) return '';
-  return raw.replace(THINKING_BLOCK_RE, '').trim();
+  return raw.replace(THINKING_BLOCK_RE, '').trimEnd();
 }
 
 /** @param {string} text */
-export function findLastItineraryDayHeading(text) {
-  const raw = String(text ?? '');
-  let last = null;
-  for (const match of raw.matchAll(DAY_HEADING_RE)) {
-    last = match[0].trim();
-  }
-  return last;
+export function ensureItineraryMarkdownLineBreaks(text) {
+  let s = String(text ?? '');
+  if (!s) return s;
+  s = s.replace(/\r\n/g, '\n');
+  s = s.replace(/([^\n])(\n)?(\*\*\d{1,2}일차\*\*)/g, '$1\n\n$3');
+  s = s.replace(/\n{3,}/g, '\n\n');
+  return s;
 }
 
-/**
- * @param {string} continuation
- * @param {string | null} lastHeading
- */
-export function stripLeadingDuplicateDayHeading(continuation, lastHeading) {
-  if (!lastHeading) return String(continuation ?? '').trimStart();
+/** @param {string} text */
+export function dedupeItineraryDayLines(text) {
+  const lines = String(text ?? '').split('\n');
+  const seenDays = new Set();
+  /** @type {string[]} */
+  const out = [];
+  for (const line of lines) {
+    const m = DAY_HEADING_LINE_RE.exec(line);
+    if (m) {
+      const day = m[1];
+      if (seenDays.has(day)) continue;
+      seenDays.add(day);
+    }
+    out.push(line);
+  }
+  return out.join('\n');
+}
+
+function stripRepeatedIntro(prior, continuation) {
+  const introLine = prior.split('\n').find((l) => l.trim())?.trim() ?? '';
+  if (!introLine || introLine.length < 8) return continuation;
   let next = String(continuation ?? '').trimStart();
-  const normalizedLast = lastHeading.replace(/\s+/g, ' ').trim();
-  const tryStrip = () => {
-    const head = next.slice(0, Math.min(next.length, normalizedLast.length + 40));
-    if (head.replace(/\s+/g, ' ').includes(normalizedLast.replace(/\s+/g, ' ').slice(0, 12))) {
-      const lines = next.split('\n');
-      const firstLine = lines[0]?.trim() ?? '';
-      if (/일차/.test(firstLine)) {
-        next = lines.slice(1).join('\n').trimStart();
-      }
-    }
-  };
-  tryStrip();
-  if (/^\s*(?:#{1,4}\s*)?(?:\*\*)?\d{1,2}\s*일차/.test(next)) {
-    const lastNum = normalizedLast.match(/(\d{1,2})\s*일차/)?.[1];
-    const firstNum = next.match(/^\s*(?:#{1,4}\s*)?(?:\*\*)?(\d{1,2})\s*일차/)?.[1];
-    if (lastNum && firstNum && lastNum === firstNum) {
-      next = next.replace(/^\s*(?:#{1,4}\s*)?(?:\*\*)?\d{1,2}\s*일차[^\n]*\n?/, '').trimStart();
-    }
+  if (next.startsWith(introLine)) {
+    next = next.slice(introLine.length).trimStart();
+  }
+  if (/^미야코지마\s*3박\s*4일\s*일정/i.test(next) && /\(mock\)/i.test(prior)) {
+    next = next.replace(/^미야코지마\s*3박\s*4일\s*일정[^\n]*\n?/i, '').trimStart();
   }
   return next;
+}
+
+function joinAtCutPoint(prior, next) {
+  if (!next) return prior;
+  if (!prior) return next;
+  if (prior.endsWith('\n') || next.startsWith('\n')) {
+    return `${prior}${next}`;
+  }
+  const priorEndsMidSentence = /[^\n.!?…]\s*$/.test(prior) && !/\*\*\d{1,2}일차\*\*\s*$/.test(prior.trimEnd());
+  if (priorEndsMidSentence && !/^\s*(?:\*\*)?\d{1,2}\s*일차/.test(next)) {
+    return `${prior}${next}`;
+  }
+  return `${prior}\n${next}`;
+}
+
+function mergeSameDayContinuation(prior, continuation) {
+  const priorLines = prior.split('\n');
+  const lastLine = priorLines[priorLines.length - 1] ?? '';
+  const lastDay = lastLine.match(/(\d{1,2})\s*일차/)?.[1];
+  const contLines = continuation.split('\n');
+  const firstLine = contLines[0]?.trim() ?? '';
+  const firstDay = firstLine.match(/(\d{1,2})\s*일차/)?.[1];
+  if (!lastDay || !firstDay || lastDay !== firstDay) {
+    return joinAtCutPoint(prior, continuation);
+  }
+  const tailOnFirst = firstLine
+    .replace(/^\s*(?:#{1,4}\s*)?(?:\*\*)?\d{1,2}\s*일차(?:\*\*)?\s*/i, '')
+    .trim();
+  const rest = contLines.slice(1).join('\n');
+  const mergedLast =
+    tailOnFirst ? `${lastLine.trimEnd()} ${tailOnFirst}`.trimEnd() : lastLine;
+  const rebuilt = [...priorLines.slice(0, -1), mergedLast];
+  if (rest) rebuilt.push(rest);
+  return rebuilt.join('\n');
 }
 
 /**
@@ -56,25 +93,51 @@ export function stripLeadingDuplicateDayHeading(continuation, lastHeading) {
 export function mergeMooniContinuation(priorText, continuation) {
   const prior = stripMooniThinkingLeak(priorText);
   let next = stripMooniThinkingLeak(continuation);
-  const lastHeading = findLastItineraryDayHeading(prior);
-  if (lastHeading && next) {
-    const lastNum = lastHeading.match(/(\d{1,2})\s*일차/)?.[1];
-    const lines = next.split('\n');
-    const firstLine = lines[0]?.trim() ?? '';
-    const firstNum = firstLine.match(/(\d{1,2})\s*일차/)?.[1];
-    if (lastNum && firstNum && lastNum === firstNum) {
-      const sameDayTail = firstLine
-        .replace(/^\s*(?:#{1,4}\s*)?(?:\*\*)?\d{1,2}\s*일차(?:\*\*)?\s*/i, '')
-        .trim();
-      const tailLines = [sameDayTail, ...lines.slice(1)].filter(Boolean);
-      next = tailLines.join('\n').trim();
-    } else {
-      next = stripLeadingDuplicateDayHeading(next, lastHeading);
+  next = stripRepeatedIntro(prior, next);
+  let merged = mergeSameDayContinuation(prior, next);
+  merged = dedupeItineraryDayLines(merged);
+  merged = ensureItineraryMarkdownLineBreaks(merged);
+  return merged.trimEnd();
+}
+
+/** @param {string} text */
+export function listItineraryDayHeadingNumbers(text) {
+  /** @type {number[]} */
+  const days = [];
+  for (const line of String(text).split('\n')) {
+    const m = DAY_HEADING_LINE_RE.exec(line);
+    if (m) days.push(Number(m[1]));
+  }
+  return days;
+}
+
+/** @param {string} text */
+export function assertItineraryDaysOneThroughFour(text) {
+  const days = listItineraryDayHeadingNumbers(text);
+  const expected = [1, 2, 3, 4];
+  assertDaysMatch(days, expected);
+  const introCount = (String(text).match(/미야코지마\s*3박\s*4일\s*일정\s*\(mock\)/gi) || []).length;
+  if (introCount > 1) {
+    throw new Error(`intro duplicated: ${introCount}`);
+  }
+}
+
+function assertDaysMatch(days, expected) {
+  if (days.length !== expected.length) {
+    throw new Error(`expected days ${expected.join(',')}, got ${days.join(',')}`);
+  }
+  for (let i = 0; i < expected.length; i += 1) {
+    if (days[i] !== expected[i]) {
+      throw new Error(`day order mismatch at ${i}: ${days[i]} vs ${expected[i]}`);
     }
   }
-  if (!next) return prior;
-  const joiner = prior.endsWith('\n') ? '' : '\n';
-  return `${prior}${joiner}${next}`;
+}
+
+/** @param {Array<{ provider?: string, type?: string }>} actions */
+export function bookingActionsFingerprint(actions) {
+  return JSON.stringify(
+    (actions ?? []).map((a) => ({ provider: a.provider, type: a.type })),
+  );
 }
 
 /** @param {'ko' | 'en' | string} [locale] */

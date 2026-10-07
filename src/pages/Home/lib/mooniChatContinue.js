@@ -1,5 +1,8 @@
-import { buildMooniContinueUserText, mergeMooniContinuation } from '../../../utils/mooniTruncatedContinue.js';
-import { sanitizeMooniModelReply } from '../../../utils/mooniReplySanitizer.js';
+import {
+  buildMooniContinueUserText,
+  mergeMooniContinuation,
+} from '../../../utils/mooniTruncatedContinue.js';
+import { getMooniModelMarkdownForRender } from './mooniModelMessageText.js';
 
 export function messageTextPlain(msg) {
   if (!msg) return '';
@@ -41,10 +44,10 @@ export function finalizeMooniContinuation({
   stripPhantomTicketMention = true,
 }) {
   const mergedRaw = mergeMooniContinuation(priorRaw, continuationText);
-  const { text: displayText, hadBracketLinks } = sanitizeMooniModelReply(mergedRaw, {
+  const displayText = getMooniModelMarkdownForRender(mergedRaw, {
     stripPhantomTicketMention,
   });
-  return { mergedRaw, displayText, hadBracketLinks };
+  return { mergedRaw, displayText, hadBracketLinks: false };
 }
 
 export { buildMooniContinueUserText };
