@@ -290,12 +290,12 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
         setContentBlocks(
           applyAiTextToContentBlocks(
             contentBlocks,
-            resultText,
+            resultText.text,
             focusedTextBlockIndexRef.current
           )
         );
       } else {
-        setContent(resultText);
+        setContent(resultText.text);
       }
     } catch (error) {
       console.error(error);

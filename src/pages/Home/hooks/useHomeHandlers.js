@@ -1497,7 +1497,10 @@ export function useHomeHandlers({
               query,
             });
 
-            const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+            const cleanJsonString = String(aiResponse?.text ?? '')
+              .replace(/```json/g, '')
+              .replace(/```/g, '')
+              .trim();
             const parsedData = JSON.parse(cleanJsonString);
             if (treatAsMoodQuery) {
               const rawCandidates = Array.isArray(parsedData?.candidates) ? parsedData.candidates : [];

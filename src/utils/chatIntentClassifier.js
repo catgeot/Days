@@ -228,6 +228,14 @@ export function countItineraryTurnsBeforeCurrent(chatHistory = [], userText = ''
 }
 
 /** @param {Array<{ role?: string, text?: string }>} chatHistory @param {string} [userText] */
+/** @param {{ primary?: string, intents?: string[] }} intentResult */
+export function shouldUseQuietCtaForItinerary(intentResult) {
+  return (
+    intentResult?.primary === 'plan_itinerary' ||
+    intentResult?.intents?.includes('plan_itinerary')
+  );
+}
+
 export function shouldCollapseItineraryBooking(chatHistory = [], userText = '') {
   const current = String(userText ?? '').trim();
   if (!current || !isPlanItineraryIntentText(current)) return false;

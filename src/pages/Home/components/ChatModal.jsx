@@ -34,6 +34,7 @@ import {
 import BookingActionCards from '../../../components/chat/BookingActionCards';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
 import MooniPlannerFollowUp from '../../../components/chat/MooniPlannerFollowUp';
+import MooniTruncatedContinue from '../../../components/chat/MooniTruncatedContinue';
 import MooniQuickReplyChips from '../../../components/chat/MooniQuickReplyChips';
 import {
   sanitizeMooniModelReply,
@@ -81,6 +82,12 @@ import {
   mergeMooniTripSession,
   persistMooniTripSession,
 } from '../lib/mooniTripSession';
+import {
+  buildMooniContinueUserText,
+  buildMooniGeminiHistory,
+  finalizeMooniContinuation,
+  messageTextPlain,
+} from '../lib/mooniChatContinue';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
 
@@ -115,6 +122,7 @@ const ChatModal = ({
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [mooniContinuingIdx, setMooniContinuingIdx] = useState(null);
   const [currentPersona, setCurrentPersona] = useState(PERSONA_TYPES.GENERAL);
   const [loadingStatus, setLoadingStatus] = useState(() => t('mooni.chat.loadingDefault'));
   const [placeIntro, setPlaceIntro] = useState(null);
@@ -914,7 +922,7 @@ const ChatModal = ({
         }
       }
 
-      const aiReply = await apiClient.invokeGeminiTask('mooni_chat', {
+      const geminiParams = {
         locale: i18n.language,
         persona: personaToUse,
         tier: chatModelId === GEMINI_MODELS.QUALITY ? 'quality' : 'fast',
@@ -927,9 +935,14 @@ const ChatModal = ({
         cta: cta.code,
         ctaPlace: cta.place,
         koreaFestivalHint,
+      };
+
+      const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
+        ...geminiParams,
         history,
         userText: cleanText,
       });
+      const aiReply = geminiResult.text;
 
       const booking = resolveChatBookingActions({
         userText: cleanText,
@@ -979,6 +992,14 @@ const ChatModal = ({
         {
           role: 'model',
           text: displayReply,
+          mooniRawReply: festivalMergedReply,
+          truncated: geminiResult.truncated,
+          finishReason: geminiResult.finishReason,
+          continueAttempts: 0,
+          mooniTurnContext: {
+            geminiParams,
+            stripPhantomTicketMention: !hasTransportCta,
+          },
           bookingActions: booking.show ? booking.actions : null,
           plannerFollowUp,
           bookingMeta:
@@ -1018,6 +1039,50 @@ const ChatModal = ({
     mooniPlaceContext,
     topicDockParent,
   ]);
+
+  const handleMooniContinueReading = useCallback(
+    async (modelIdx) => {
+      const msg = messages[modelIdx];
+      const ctx = msg?.mooniTurnContext;
+      if (!ctx?.geminiParams || mooniContinuingIdx != null) return;
+
+      setMooniContinuingIdx(modelIdx);
+      try {
+        const history = buildMooniGeminiHistory(messages, modelIdx);
+        const priorRaw = String(msg.mooniRawReply ?? messageTextPlain(msg));
+        const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
+          ...ctx.geminiParams,
+          history,
+          userText: buildMooniContinueUserText(i18n.language),
+        });
+        const { mergedRaw, displayText } = finalizeMooniContinuation({
+          priorRaw,
+          continuationText: geminiResult.text,
+          stripPhantomTicketMention: ctx.stripPhantomTicketMention,
+        });
+        const nextMessages = messages.map((m, i) =>
+          i === modelIdx
+            ? {
+                ...m,
+                text: displayText,
+                mooniRawReply: mergedRaw,
+                truncated: geminiResult.truncated,
+                finishReason: geminiResult.finishReason,
+                continueAttempts: (m.continueAttempts ?? 0) + 1,
+              }
+            : m,
+        );
+        setMessages(nextMessages);
+        if (activeChatId) onUpdateChat(activeChatId, nextMessages);
+      } catch (error) {
+        const text = getGeminiProxyErrorMessage(error);
+        setMessages((prev) => [...prev, { role: 'error', text }]);
+      } finally {
+        setMooniContinuingIdx(null);
+      }
+    },
+    [messages, mooniContinuingIdx, activeChatId, onUpdateChat, i18n.language],
+  );
 
   const handleAccessOriginSelect = useCallback(
     (iata) => {
@@ -1390,6 +1455,16 @@ const ChatModal = ({
                     ) : (
                       <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
                     )}
+                    {isModelMsg ? (
+                      <MooniTruncatedContinue
+                        truncated={Boolean(msg.truncated)}
+                        finishReason={msg.finishReason}
+                        continueAttempts={msg.continueAttempts ?? 0}
+                        isContinuing={mooniContinuingIdx === idx}
+                        onContinue={() => handleMooniContinueReading(idx)}
+                        variant={isMooniUi ? 'light' : 'dark'}
+                      />
+                    ) : null}
                     {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
                       <DestinationResolutionChips
                         confirmed={msg.confirmedDestination}

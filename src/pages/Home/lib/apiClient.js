@@ -9,6 +9,7 @@ import {
   classifyGeminiProxyFailure,
   GeminiProxyError,
 } from './geminiProxyError';
+import { parseGeminiProxySuccess } from './geminiProxyResult.js';
 
 async function readInvokeFailure(error) {
   const ctx = error && typeof error === 'object' ? error.context : null;
@@ -41,7 +42,7 @@ export const apiClient = {
           httpStatus: extra.httpStatus,
         }));
       }
-      return typeof data.text === 'string' && data.text.trim() ? data.text : '죄송합니다.';
+      return parseGeminiProxySuccess(data);
     } catch (error) {
       console.error('[API Proxy] Fetch Error:', error);
       if (error instanceof GeminiProxyError) throw error;

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { Send, Loader2, Sparkles } from 'lucide-react';
 import BookingActionCards from '../../chat/BookingActionCards';
+import MooniTruncatedContinue from '../../chat/MooniTruncatedContinue';
 import { refreshStoredBookingActionLabels } from '../../../utils/chatBookingResolver';
 import {
   MOBILE_INPUT_TEXT_CLASS,
@@ -17,6 +18,8 @@ const PlaceChatView = ({
   locationName,
   slug = null,
   onPlannerNavigate = null,
+  onContinueTruncated = null,
+  continuingIdx = null,
 }) => {
   const { t } = useTranslation();
   const account = useAccountProfile();
@@ -89,6 +92,16 @@ const PlaceChatView = ({
                 <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}>
                     {msg.text}
                 </div>
+                {msg.role === 'model' && onContinueTruncated ? (
+                  <MooniTruncatedContinue
+                    truncated={Boolean(msg.truncated)}
+                    finishReason={msg.finishReason}
+                    continueAttempts={msg.continueAttempts ?? 0}
+                    isContinuing={continuingIdx === idx}
+                    onContinue={() => onContinueTruncated(idx)}
+                    variant="dark"
+                  />
+                ) : null}
                 {msg.role === 'model' && msg.bookingActions?.length > 0 && (
                   <BookingActionCards
                     actions={refreshStoredBookingActionLabels(msg.bookingActions, {

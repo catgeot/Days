@@ -297,7 +297,7 @@ export async function generatePlaceChatIntroWithAi(destinationDisplayName, lng =
       locale: lng,
       placeName: name,
     });
-    const text = sanitizeGeminiUserText(String(raw ?? '').trim());
+    const text = sanitizeGeminiUserText(String(raw?.text ?? '').trim());
     if (!isPlaceChatIntroSummaryAccepted(text)) return '';
     return text;
   } catch (err) {
