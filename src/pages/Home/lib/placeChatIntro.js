@@ -61,9 +61,13 @@ function resolveIntroLocale(lng = i18n.language) {
 /** MOONi 칩·헤더 — slug 카탈로그 lookup 후 locale 표시명 */
 export function localizeMooniPlaceLabel(place, lng = i18n.language) {
   if (!place) return '';
-  const explicit = normalizeDestinationKey(place.displayLabel || '');
-  if (explicit) return explicit;
   const locale = resolveIntroLocale(lng);
+  if (place.festivalContext) {
+    const explicit = normalizeDestinationKey(
+      place.displayLabel || place.festivalContext.title || '',
+    );
+    if (explicit) return explicit;
+  }
   const catalogSlug = place.slug ? resolveCatalogPlaceSlug(place.slug) : null;
   if (catalogSlug) {
     const spot = TRAVEL_SPOTS.find((s) => s.slug === catalogSlug);
