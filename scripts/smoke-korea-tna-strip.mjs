@@ -184,7 +184,29 @@ const sejongFestivalItem = {
   mapy: 36.48,
   areaCode: '8',
 };
+const sejongFestival4108258 = {
+  contentId: '4108258',
+  title: '2026 한글문화특별기획전 〈세종과 남준〉',
+  addr1: '세종특별자치시 중앙공원로 60',
+  mapx: 127.2717369032,
+  mapy: 36.4917742203,
+  areaCode: '8',
+};
 const sejongCross = resolveFestivalThemeCrossLinks(sejongFestivalItem);
+const sejongLiveCross = resolveFestivalThemeCrossLinks(sejongFestival4108258);
+assert.equal(
+  sejongLiveCross.stay?.location?.hubId,
+  'sejong',
+  `4108258 stay hub must be sejong (got ${sejongLiveCross.stay?.location?.hubId})`,
+);
+assert.ok(
+  !(sejongLiveCross.stayAreas || []).some((a) => a.mrtKeyword === '연기' || a.hubId === 'yeongi'),
+  `4108258 stayAreas exclude yeongi (got ${JSON.stringify(sejongLiveCross.stayAreas)})`,
+);
+assert.ok(
+  !(sejongLiveCross.tna?.nearbyKeywords || []).includes('연기'),
+  `4108258 tna nearby exclude 연기 (got ${sejongLiveCross.tna?.nearbyKeywords?.join(',')})`,
+);
 assert.equal(sejongCross.stay?.keyword, '세종', `세종 축제 stay keyword (got ${sejongCross.stay?.keyword})`);
 assert.equal(sejongCross.tna?.keyword, '세종', `세종 축제 tna keyword (got ${sejongCross.tna?.keyword})`);
 assert.ok(
