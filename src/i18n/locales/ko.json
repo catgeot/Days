@@ -2384,6 +2384,12 @@
       "flightRouteSearch": "{{departName}}({{depart}}) → {{arriveName}}({{arrive}}) 항공권 검색",
       "flightRouteSearchIata": "{{depart}} → {{arrive}} 항공권 검색",
       "flightSearchPlace": "{{place}} 검색",
+      "itinerarySection": "예약 · 정보",
+      "itineraryStay": "{{place}} 숙소 보기",
+      "itineraryTour": "{{place}} 투어·액티비티",
+      "itineraryPickup": "{{place}} 공항 픽업",
+      "itineraryAffiliateFootnote": "제휴 · 마이리얼트립 · Klook",
+      "itineraryCollapsed": "예약·정보 다시 보기",
       "modal": {
         "title": "항공권 검색",
         "ariaSearch": "Trip.com 항공권 검색",

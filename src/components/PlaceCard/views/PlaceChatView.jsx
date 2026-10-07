@@ -105,6 +105,7 @@ const PlaceChatView = ({
                     })}
                     slug={msg.bookingMeta?.slug ?? slug}
                     plannerUrl={msg.bookingMeta?.plannerUrl}
+                    itineraryBookingCompact={Boolean(msg.bookingMeta?.itineraryBookingCompact)}
                     onPlannerNavigate={onPlannerNavigate}
                   />
                 )}

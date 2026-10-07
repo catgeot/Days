@@ -17,6 +17,7 @@ import {
 } from '../../utils/placePlannerFocus';
 import { useTryOpenTripcomFlightSearch } from '../PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import MooniTransportPlannerLinks from './MooniTransportPlannerLinks';
+import PartnerBookingHandoff from '../../shared/affiliate/PartnerBookingHandoff.jsx';
 
 const TRANSPORT_PROVIDERS = new Set([
   'trip_com',
@@ -27,6 +28,13 @@ const TRANSPORT_PROVIDERS = new Set([
 ]);
 
 const PREP_PROVIDERS = new Set(['klook', 'official', 'pre_travel']);
+
+const PARTNER_HANDOFF_PROVIDERS = new Set([
+  'mrt_lodging',
+  'mrt_tour',
+  'klook_tour',
+  'klook_pickup',
+]);
 
 const TRANSPORT_PROVIDER_STYLES = {
   trip_com: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-500',
@@ -53,6 +61,7 @@ const PREP_PROVIDER_STYLES = {
  *   plannerFocus?: string | null,
  *   chipId?: string | null,
  *   userText?: string,
+ *   itineraryBookingCompact?: boolean,
  *   onPlannerNavigate?: (url: string) => void,
  *   className?: string,
  * }} props
@@ -66,13 +75,29 @@ const BookingActionCards = ({
   plannerFocus = null,
   chipId = null,
   userText = '',
+  itineraryBookingCompact = false,
   onPlannerNavigate = null,
   className = '',
 }) => {
   const { t } = useTranslation();
   const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
+  const [itineraryExpanded, setItineraryExpanded] = React.useState(false);
 
   if (!actions.length) return null;
+
+  const handoffActions = actions.filter(
+    (a) => a.url && PARTNER_HANDOFF_PROVIDERS.has(a.provider),
+  );
+  const isItineraryBundle =
+    handoffActions.length > 0 &&
+    actions.some(
+      (a) =>
+        a.provider === 'mrt_lodging' ||
+        a.provider === 'mrt_tour' ||
+        a.provider === 'klook_pickup',
+    );
+  const showItineraryCollapsed =
+    itineraryBookingCompact && isItineraryBundle && !itineraryExpanded;
 
   const linkTarget = getPartnerLinkTarget();
   const linkRel = getPartnerLinkRel(linkTarget);
@@ -84,10 +109,13 @@ const BookingActionCards = ({
     ) ?? normalizePlacePlannerPath(plannerUrl);
 
   const transportActions = actions.filter(
-    (a) => a.url && (TRANSPORT_PROVIDERS.has(a.provider) || !PREP_PROVIDERS.has(a.provider))
+    (a) =>
+      a.url &&
+      !PARTNER_HANDOFF_PROVIDERS.has(a.provider) &&
+      (TRANSPORT_PROVIDERS.has(a.provider) || !PREP_PROVIDERS.has(a.provider)),
   );
   const prepActions = actions.filter(
-    (a) => a.url && PREP_PROVIDERS.has(a.provider)
+    (a) => a.url && PREP_PROVIDERS.has(a.provider) && !PARTNER_HANDOFF_PROVIDERS.has(a.provider),
   );
 
   const tripActions = transportActions.filter((a) => a.provider === 'trip_com');
@@ -274,8 +302,53 @@ const BookingActionCards = ({
 
   const showTransportPlannerLinks = chipId === 'prep_transport' && slug;
 
+  const renderItineraryHandoffSection = () => {
+    if (!handoffActions.length || showItineraryCollapsed) return null;
+    return (
+      <div className="space-y-2.5 rounded-lg border border-amber-500/50 bg-slate-900 p-3 shadow-md">
+        <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300 break-keep">
+          {t('mooni.booking.itinerarySection')}
+        </p>
+        <p className="text-[11px] leading-snug text-slate-100 break-keep">
+          {t('partnerBookingHandoff.noticeDefault')}
+        </p>
+        <div className="flex flex-col gap-2">
+          {handoffActions.map((action, idx) => (
+            <PartnerBookingHandoff
+              key={`handoff-${action.provider}-${idx}`}
+              href={action.url}
+              kind={action.handoffKind === 'tour' ? 'tour' : 'lodging'}
+              theme="dark"
+              ctaLabel={action.label}
+              showNotice={false}
+              showPartnerLabel={false}
+            />
+          ))}
+        </div>
+        <p className="text-[10px] text-slate-300 break-keep">
+          {t('mooni.booking.itineraryAffiliateFootnote')}
+        </p>
+      </div>
+    );
+  };
+
+  if (showItineraryCollapsed) {
+    return (
+      <div className={`mt-3 space-y-2 w-full ${className}`}>
+        <button
+          type="button"
+          onClick={() => setItineraryExpanded(true)}
+          className="inline-flex w-full items-center justify-center rounded-lg border border-teal-500/35 bg-teal-950/30 px-3 py-2 text-xs font-bold text-teal-100 hover:bg-teal-900/40 transition-colors break-keep pointer-events-auto"
+        >
+          {t('mooni.booking.itineraryCollapsed', { place: destinationName || slug })}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={`mt-3 space-y-2 w-full ${className}`}>
+      {renderItineraryHandoffSection()}
       {renderTransportSection()}
       {renderPrepSection()}
       {showTransportPlannerLinks ? (

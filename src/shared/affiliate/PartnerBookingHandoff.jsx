@@ -14,10 +14,10 @@ const THEME = {
     partner: 'text-[9px] text-stone-400',
   },
   dark: {
-    notice: 'text-[10px] leading-snug text-amber-100/75',
+    notice: 'text-[11px] leading-snug text-slate-100',
     button:
-      'inline-flex w-full items-center justify-center gap-1 rounded-lg border border-amber-300/45 bg-amber-500/20 px-2 py-1.5 text-[11px] font-bold text-amber-50 no-underline transition-colors hover:border-amber-200/55 hover:bg-amber-500/30 active:scale-[0.98]',
-    partner: 'text-[9px] text-amber-100/55',
+      'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-amber-400 bg-amber-600 px-3 py-2.5 text-xs font-bold text-white no-underline shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-500 active:scale-[0.98]',
+    partner: 'text-[10px] text-slate-300',
   },
 };
 
@@ -29,6 +29,8 @@ const THEME = {
  *   theme?: 'light' | 'dark',
  *   partnerName?: string,
  *   showPartnerLabel?: boolean,
+ *   showNotice?: boolean,
+ *   ctaLabel?: string,
  *   className?: string,
  * }} props
  */
@@ -39,6 +41,8 @@ export default function PartnerBookingHandoff({
   theme = 'light',
   partnerName,
   showPartnerLabel = true,
+  showNotice = true,
+  ctaLabel: ctaLabelOverride,
   className = '',
 }) {
   const { t } = useTranslation();
@@ -47,7 +51,8 @@ export default function PartnerBookingHandoff({
 
   const variant =
     kind === 'tour' ? 'tour-product' : resolveLodgingHandoffVariant(item);
-  const ctaLabel = t(partnerBookingHandoffCtaKey(variant));
+  const ctaLabel =
+    String(ctaLabelOverride || '').trim() || t(partnerBookingHandoffCtaKey(variant));
   const partner =
     partnerName ||
     t('partnerBookingHandoff.partnerMyRealTrip', { defaultValue: '마이리얼트립' });
@@ -55,10 +60,14 @@ export default function PartnerBookingHandoff({
 
   return (
     <div className={`space-y-1 ${className}`.trim()}>
-      <p className={`${styles.notice} sm:hidden`}>{t('partnerBookingHandoff.noticeNarrow')}</p>
-      <p className={`${styles.notice} hidden sm:block`}>
-        {t('partnerBookingHandoff.noticeDefault')}
-      </p>
+      {showNotice ? (
+        <>
+          <p className={`${styles.notice} sm:hidden`}>{t('partnerBookingHandoff.noticeNarrow')}</p>
+          <p className={`${styles.notice} hidden sm:block`}>
+            {t('partnerBookingHandoff.noticeDefault')}
+          </p>
+        </>
+      ) : null}
       <a
         href={url}
         target="_blank"
