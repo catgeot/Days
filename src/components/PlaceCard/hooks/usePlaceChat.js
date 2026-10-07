@@ -5,7 +5,6 @@ import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { resolveChatCtaCode } from '../../../utils/chatCtaPromptHint';
-import { sanitizeMooniModelReply } from '../../../utils/mooniReplySanitizer';
 import { getMooniModelMarkdownForRender } from '../../../pages/Home/lib/mooniModelMessageText';
 import { prepareMooniGeminiHistory } from '../../../utils/mooniGeminiHistoryPayload.js';
 import {
@@ -16,6 +15,7 @@ import {
   ensureChatEssentialGuide,
   useChatEssentialGuide,
 } from '../../../hooks/useChatEssentialGuide';
+import { resolvePlaceChatKoreaFestivalHint } from '../../../pages/Home/lib/resolvePlaceChatKoreaFestivalHint.js';
 import {
   buildMooniContinueUserText,
   buildMooniGeminiHistory,
@@ -73,6 +73,19 @@ export const usePlaceChat = (options = {}) => {
         essentialGuide,
       });
 
+      let koreaFestivalHint = '';
+      try {
+        const festHint = await resolvePlaceChatKoreaFestivalHint({
+          userText,
+          festivalContext: params.festivalContext ?? null,
+          boundPlaceName: params.boundPlaceName || destinationName || '',
+          locale: params.locale || locale,
+        });
+        koreaFestivalHint = festHint.hint;
+      } catch {
+        koreaFestivalHint = '';
+      }
+
       const geminiParams = {
         locale: params.locale || locale,
         persona: params.persona || 'GENERAL',
@@ -85,7 +98,7 @@ export const usePlaceChat = (options = {}) => {
         tripSession: params.tripSession ?? null,
         cta: cta.code,
         ctaPlace: cta.place || destinationName || '',
-        koreaFestivalHint: '',
+        koreaFestivalHint,
       };
 
       const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {

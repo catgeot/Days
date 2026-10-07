@@ -40,13 +40,9 @@ import {
   sanitizeMooniModelReply,
   shouldShowMooniPlannerFollowUp,
 } from '../../../utils/mooniReplySanitizer';
-import {
-  buildMooniKoreaFestivalSystemHint,
-  isMooniKoreaFestivalQuery,
-  mergeMooniKoreaFestivalReply,
-  selectMooniKoreaFestivalCandidates,
-} from '../../../shared/korea/mooniKoreaFestivalAssist.js';
-import { fetchKoreaFestivalsRolling12 } from '../../Korea/fetchKoreaFestivalsWindow.js';
+import { mergeMooniKoreaFestivalReply } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
+import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
@@ -189,6 +185,20 @@ const ChatModal = ({
   const activeSessionPlace = useMemo(() => {
     if (!isOpen) return null;
 
+    if (mooniPlaceContext?.festivalContext) {
+      const festivalTitle = String(mooniPlaceContext.festivalContext.title || '').trim();
+      if (festivalTitle) {
+        return {
+          slug: null,
+          name: festivalTitle,
+          displayLabel: festivalTitle,
+          country: null,
+          lat: mooniPlaceContext.lat ?? null,
+          lng: mooniPlaceContext.lng ?? null,
+        };
+      }
+    }
+
     const entryLabel = formatPlaceChatLabel(mooniPlaceContext);
     const catalogSlug = resolveCatalogPlaceSlug(mooniPlaceContext?.slug) || null;
     const entrySeed = entryLabel
@@ -317,14 +327,37 @@ const ChatModal = ({
   const allowNameBoundChips =
     chipDockMode === 'topic' && !boundDestinationSlug;
 
+  const festivalMooniContext = mooniPlaceContext?.festivalContext ?? null;
+
+  const festivalMooniHeaderSubtitle = useMemo(() => {
+    if (!festivalMooniContext) return '';
+    const parts = [festivalMooniContext.hubLabel, festivalMooniContext.dateLabel].filter(
+      Boolean,
+    );
+    return parts.join(' · ');
+  }, [festivalMooniContext]);
+
   const mooniHeaderLabel = useMemo(() => {
     if (!isMooniUi) return introDestinationRaw || 'MOONi';
+    if (festivalMooniContext?.title) {
+      return `${festivalMooniContext.title} · MOONi`;
+    }
     const label = localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
     return label ? `${label} · MOONi` : 'MOONi';
-  }, [isMooniUi, activeSessionPlace, introDestinationRaw, i18n.language]);
+  }, [isMooniUi, activeSessionPlace, introDestinationRaw, festivalMooniContext?.title, i18n.language]);
+
+  const festivalMooniOpening = useMemo(
+    () =>
+      buildFestivalMooniChatOpening(
+        festivalMooniContext,
+        festivalMooniContext ? t('korea.festival.detail.mooniFestivalInvite') : '',
+      ),
+    [festivalMooniContext, t, i18n.language],
+  );
 
   const placeIntroTarget = useMemo(() => {
     if (!isOpen) return '';
+    if (festivalMooniContext) return '';
     if (activeSessionPlace) {
       return localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
     }
@@ -335,7 +368,7 @@ const ChatModal = ({
       return '';
     }
     return raw;
-  }, [isOpen, activeSessionPlace, isMooniUi, introDestinationRaw, i18n.language]);
+  }, [isOpen, activeSessionPlace, isMooniUi, introDestinationRaw, festivalMooniContext, i18n.language]);
 
   const effectiveQuickReplySlug = boundDestinationSlug;
 
@@ -910,25 +943,17 @@ const ChatModal = ({
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
-      if (isMooniKoreaFestivalQuery(cleanText)) {
-        try {
-          const festWindow = await fetchKoreaFestivalsRolling12({ locale: i18n.language });
-          if (festWindow?.items?.length) {
-            const picked = selectMooniKoreaFestivalCandidates(festWindow.items, {
-              userText: cleanText,
-              boundPlaceName: destName,
-            });
-            mooniFestivalCandidates = picked.candidates;
-            koreaFestivalHint = buildMooniKoreaFestivalSystemHint({
-              userText: cleanText,
-              boundPlaceName: destName,
-              items: festWindow.items,
-              locale: i18n.language,
-            });
-          }
-        } catch (festErr) {
-          console.warn('[mooni] korea festival SSOT skipped:', festErr?.message || festErr);
-        }
+      try {
+        const festHint = await resolvePlaceChatKoreaFestivalHint({
+          userText: cleanText,
+          festivalContext: mooniPlaceContext?.festivalContext ?? null,
+          boundPlaceName: destName,
+          locale: i18n.language,
+        });
+        koreaFestivalHint = festHint.hint;
+        mooniFestivalCandidates = festHint.candidates;
+      } catch (festErr) {
+        console.warn('[mooni] korea festival SSOT skipped:', festErr?.message || festErr);
       }
 
       const geminiParams = {
@@ -1249,13 +1274,15 @@ const ChatModal = ({
                  </span>
                  <span className={`hidden md:block text-[11px] font-medium leading-tight truncate ${tone(fresh, 'text-cyan-300/80', 'text-cyan-600')}`}>
                    {isMooniUi
-                     ? boundDestinationSlug
-                       ? `${t('mooni.chat.travelChat', {
-                           destination:
-                             localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
-                             introDestinationRaw,
-                         })} · ${currentPersona}`
-                       : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
+                     ? festivalMooniHeaderSubtitle
+                       ? `${festivalMooniHeaderSubtitle} · ${currentPersona}`
+                       : boundDestinationSlug
+                         ? `${t('mooni.chat.travelChat', {
+                             destination:
+                               localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
+                               introDestinationRaw,
+                           })} · ${currentPersona}`
+                         : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
                      : `${t('mooni.chat.travelChat', { destination: introDestinationRaw || t('place.fallback.destination') })} · ${currentPersona}`}
                  </span>
                  <span className={`md:hidden text-[10px] font-medium leading-none mt-0.5 truncate ${tone(fresh, 'text-gray-400', 'text-slate-500')}`}>
@@ -1360,6 +1387,25 @@ const ChatModal = ({
                   </div>
                 </div>
               )}
+              {isMooniUi &&
+                messages.length === 0 &&
+                !isLoading &&
+                festivalMooniContext &&
+                festivalMooniOpening &&
+                !(
+                  typeof initialQuery === 'string'
+                    ? initialQuery.trim()
+                    : String(
+                        initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
+                      ).trim()
+                ) && (
+                <div className="flex flex-col items-start w-full mb-3">
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed whitespace-pre-wrap ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
+                    {festivalMooniOpening}
+                  </div>
+                </div>
+              )}
               {isMooniUi && messages.length === 0 && !isLoading && placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
                   <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
@@ -1384,7 +1430,11 @@ const ChatModal = ({
                   </div>
                 </div>
               )}
-              {isMooniUi && messages.length === 0 && !isLoading && !placeIntroTarget && (
+              {isMooniUi &&
+                messages.length === 0 &&
+                !isLoading &&
+                !placeIntroTarget &&
+                !festivalMooniOpening && (
                 <div className="flex flex-col items-start w-full">
                   <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
                   <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
