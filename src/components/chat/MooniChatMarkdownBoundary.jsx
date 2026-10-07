@@ -22,11 +22,6 @@ export class MooniChatMarkdownBoundary extends React.Component {
   }
 
   render() {
-    if (this.state.failed) {
-      const { text } = this.props;
-      return <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>;
-    }
-
     const { text, variant } = this.props;
     return <MooniChatMarkdown text={text} variant={variant} />;
   }

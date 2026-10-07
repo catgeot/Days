@@ -18,6 +18,9 @@ export function ensureItineraryMarkdownLineBreaks(text) {
   s = s.replace(/\r\n/g, '\n');
   s = s.replace(/([^\n])(\n)?(\*\*\d{1,2}일차\*\*)/g, '$1\n\n$3');
   s = s.replace(/\n{3,}/g, '\n\n');
+  if (/\*\*\d{1,2}일차\*\*/.test(s)) {
+    s = s.replace(/([^\n])\n(?!\n)/g, '$1  \n');
+  }
   return s;
 }
 
