@@ -148,6 +148,12 @@ const continueAfterEarlyIntro = ` 시내로 이동해 체크인합니다.
 **3일차** 이리부 다리
 **4일차** 공항 · 출발`;
 
+test('mergeMooniContinuation — 단어 경계 공백 보존 (걸어서 + 이동해)', () => {
+  const merged = mergeMooniContinuation('오후에는 걸어서', '이동해 보세요.');
+  assert.ok(merged.includes('걸어서 이동해'));
+  assert.ok(!merged.includes('걸어서이동해'));
+});
+
 test('mergeMooniContinuation — 도입부 130자 끊김 후 이어쓰기, intro 1회·1~4일차', () => {
   assert.ok(
     truncatedEarlyIntro.length >= 120 && truncatedEarlyIntro.length <= 140,

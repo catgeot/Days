@@ -55,6 +55,19 @@ function stripRepeatedIntro(prior, continuation) {
   return next;
 }
 
+function firstContinuationWord(text) {
+  const t = String(text ?? '').trimStart();
+  const m = t.match(/^(\S+)/);
+  return m ? m[1] : '';
+}
+
+function shouldGlueMidWordContinuation(prior, next) {
+  const word = firstContinuationWord(next);
+  if (!word || word.length >= 3) return false;
+  const priorLast = prior.trimEnd().slice(-1);
+  return /[가-힣]$/.test(priorLast) && /^[가-힣]/.test(word);
+}
+
 function joinAtCutPoint(prior, next) {
   if (!next) return prior;
   if (!prior) return next;
@@ -63,6 +76,13 @@ function joinAtCutPoint(prior, next) {
   }
   const priorEndsMidSentence = /[^\n.!?…]\s*$/.test(prior) && !/\*\*\d{1,2}일차\*\*\s*$/.test(prior.trimEnd());
   if (priorEndsMidSentence && !/^\s*(?:\*\*)?\d{1,2}\s*일차/.test(next)) {
+    if (shouldGlueMidWordContinuation(prior, next)) {
+      return `${prior}${next}`;
+    }
+    const word = firstContinuationWord(next);
+    if (word.length >= 3 && /[\p{L}\p{N}]$/u.test(prior.trimEnd())) {
+      return `${prior.trimEnd()} ${next.trimStart()}`;
+    }
     return `${prior}${next}`;
   }
   return `${prior}\n${next}`;

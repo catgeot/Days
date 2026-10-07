@@ -18,7 +18,8 @@ export function messageTextPlain(msg) {
 export function buildMooniGeminiHistory(messages, modelIndex) {
   /** @type {Array<{ role: string, text: string }>} */
   const history = [];
-  for (let i = 0; i < modelIndex; i += 1) {
+  const lastIndex = Math.min(modelIndex, (messages?.length ?? 0) - 1);
+  for (let i = 0; i <= lastIndex; i += 1) {
     const m = messages[i];
     if (m?.role === 'user') {
       history.push({ role: 'user', text: messageTextPlain(m) });
@@ -29,7 +30,7 @@ export function buildMooniGeminiHistory(messages, modelIndex) {
       });
     }
   }
-  return prepareMooniGeminiHistory(history);
+  return prepareMooniGeminiHistory(history, { tailPreferLastModelTurn: true });
 }
 
 /**
