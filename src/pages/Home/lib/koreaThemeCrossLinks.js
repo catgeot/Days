@@ -79,13 +79,42 @@ export function isYeongiLegacySejongHub(hubId) {
   return normId(hubId) === 'yeongi';
 }
 
-/** @param {string | null | undefined} stayHubId */
-export function shouldSuppressYeongiLegacyForStayHub(stayHubId) {
+const SEOJONG_TOUR_AREA_CODE = '8';
+
+/** @param {string | number | null | undefined} areaCode @param {string} [addr1] */
+export function isSejongAdministrativeArea(areaCode, addr1) {
+  if (String(areaCode || '').trim() === SEOJONG_TOUR_AREA_CODE) return true;
+  const a = String(addr1 || '');
+  return /세종특별자치시|세종시/u.test(a);
+}
+
+/**
+ * 거리상 yeongi(구 연기군 hub)가 더 가까워도 세종시 권역은 sejong hub로 숙소·투어 매칭.
+ * @param {string | null | undefined} hubId
+ * @param {string | number | null | undefined} areaCode
+ * @param {string} [addr1]
+ */
+export function preferSejongHubOverYeongi(hubId, areaCode, addr1) {
+  const id = normId(hubId);
+  if (!id) return id;
+  if (isYeongiLegacySejongHub(id) && isSejongAdministrativeArea(areaCode, addr1)) {
+    return 'sejong';
+  }
+  return id;
+}
+
+/**
+ * @param {string | null | undefined} stayHubId
+ * @param {string | number | null | undefined} [areaCode]
+ * @param {string} [addr1]
+ */
+export function shouldSuppressYeongiLegacyForStayHub(stayHubId, areaCode, addr1) {
+  if (isSejongAdministrativeArea(areaCode, addr1)) return true;
   return normId(stayHubId) === 'sejong';
 }
 
-function isSuppressedYeongiLegacyKeyword(stayHubId, raw) {
-  if (!shouldSuppressYeongiLegacyForStayHub(stayHubId)) return false;
+function isSuppressedYeongiLegacyKeyword(stayHubId, raw, areaCode, addr1) {
+  if (!shouldSuppressYeongiLegacyForStayHub(stayHubId, areaCode, addr1)) return false;
   const id = normId(raw);
   if (id === 'yeongi') return true;
   const kw = String(raw || '').trim();
@@ -493,17 +522,20 @@ export function isSeededStayHub(hubId) {
  * @param {string | null | undefined} areaCode
  * @param {Array<{ hubId?: string }>} [nearbyHubs]
  */
-export function resolveStayTnaHubId(preferredHubId, areaCode, nearbyHubs = []) {
-  const preferred = normId(preferredHubId);
+export function resolveStayTnaHubId(preferredHubId, areaCode, nearbyHubs = [], opts = {}) {
+  const addr1 = String(opts?.addr1 || '');
+  const pick = (hubId) => preferSejongHubOverYeongi(hubId, areaCode, addr1);
+
+  const preferred = pick(preferredHubId);
   if (preferred && isSeededStayHub(preferred)) return preferred;
 
   const seededNearby = [];
   for (const h of nearbyHubs || []) {
-    const id = normId(h?.hubId);
+    const id = pick(h?.hubId);
     if (id && isSeededStayHub(id)) seededNearby.push(id);
   }
-  const primary = areaCode ? normId(hubIdsForArea(areaCode)[0]) : '';
-  const firstNearby = normId(nearbyHubs?.[0]?.hubId);
+  const primary = areaCode ? pick(hubIdsForArea(areaCode)[0]) : '';
+  const firstNearby = pick(nearbyHubs?.[0]?.hubId);
 
   if (
     preferred &&
@@ -554,7 +586,7 @@ export function areaSeedStayHubs(areaCode, stayHubId) {
     const hid = normId(id);
     if (!hid || seen.has(hid) || !isSeededStayHub(hid)) continue;
     if (hid === stayId) continue;
-    if (shouldSuppressYeongiLegacyForStayHub(stayId) && isYeongiLegacySejongHub(hid)) {
+    if (shouldSuppressYeongiLegacyForStayHub(stayId, areaCode) && isYeongiLegacySejongHub(hid)) {
       continue;
     }
     if (isOngjinFallbackMismatch(hid, stayId)) continue;
@@ -569,7 +601,7 @@ export function areaSeedStayHubs(areaCode, stayHubId) {
   return out;
 }
 
-function nearbyHubKeywordFallbacks(nearbyHubs, stayHubId, primaryKeyword) {
+function nearbyHubKeywordFallbacks(nearbyHubs, stayHubId, primaryKeyword, areaCode, addr1) {
   const extras = [];
   const seen = new Set();
   const skip = String(primaryKeyword || '')
@@ -580,7 +612,7 @@ function nearbyHubKeywordFallbacks(nearbyHubs, stayHubId, primaryKeyword) {
   for (const h of nearbyHubs || []) {
     const id = normId(h?.hubId);
     if (!id || id === stayId || !isSeededStayHub(id)) continue;
-    if (shouldSuppressYeongiLegacyForStayHub(stayId) && isYeongiLegacySejongHub(id)) {
+    if (shouldSuppressYeongiLegacyForStayHub(stayId, areaCode, addr1) && isYeongiLegacySejongHub(id)) {
       continue;
     }
     if (isOngjinFallbackMismatch(id, stayId)) continue;
@@ -625,6 +657,8 @@ export function buildFestivalStayAreas(cross) {
   const areas = [];
   const seen = new Set();
   const stayId = normId(cross?.stay?.location?.hubId);
+  const festivalAreaCode = cross?.areaCode;
+  const festivalAddr1 = cross?.stay?.location?.addr1;
   const push = (name, keyword, hubId) => {
     const id = normId(hubId);
     if (id && isOngjinFallbackMismatch(id, stayId)) return;
@@ -653,7 +687,10 @@ export function buildFestivalStayAreas(cross) {
   for (const h of [...(cross?.nearbyHubs || []), ...seedHubs]) {
     const id = normId(h?.hubId);
     if (!id || !isSeededStayHub(id)) continue;
-    if (shouldSuppressYeongiLegacyForStayHub(stayId) && isYeongiLegacySejongHub(id)) {
+    if (
+      shouldSuppressYeongiLegacyForStayHub(stayId, festivalAreaCode, festivalAddr1) &&
+      isYeongiLegacySejongHub(id)
+    ) {
       continue;
     }
     const name = String(h?.name || '').trim();
@@ -661,7 +698,9 @@ export function buildFestivalStayAreas(cross) {
     push(name || bare, bare, id);
   }
   for (const alt of cross?.stay?.altKeywords || []) {
-    if (isSuppressedYeongiLegacyKeyword(stayId, alt)) continue;
+    if (isSuppressedYeongiLegacyKeyword(stayId, alt, festivalAreaCode, festivalAddr1)) {
+      continue;
+    }
     push(alt, alt);
   }
   return areas.slice(0, 6);
@@ -749,7 +788,9 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
   }
 
   const nearbyHubs = listNearbyHubsForThemeSpot(spot, hubList);
-  const stayHubId = resolveStayTnaHubId(spot.hubId, areaCode, nearbyHubs);
+  const stayHubId = resolveStayTnaHubId(spot.hubId, areaCode, nearbyHubs, {
+    addr1: spot?.addr1,
+  });
   const location = locationForStayTna(spot, stayHubId);
   const stayQ = resolveMrtStayQuery(location);
   const tnaQ = resolveMrtTnaQuery(location);
@@ -758,6 +799,8 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
     fallbackHubs,
     stayHubId,
     stayQ?.keyword || tnaQ?.keyword,
+    areaCode,
+    spot?.addr1,
   );
   const stayAlts = stayQ
     ? mergeAltKeywords(stayQ.altKeywords, fallbackKw, stayQ.keyword)
@@ -893,7 +936,8 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
     { limit: 12 },
   );
 
-  const nearestHubId = nearby[0]?.hubId || null;
+  const nearestHubId =
+    preferSejongHubOverYeongi(nearby[0]?.hubId, areaCode, item.addr1) || null;
 
   const pt = festivalLngLat(item?.mapx, item?.mapy);
   const nearestHub = nearestHubId ? resolveCityAttractionHub(nearestHubId) : null;
@@ -928,15 +972,21 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
     });
   }
 
-  const stayHubId = cross.stay?.location?.hubId || nearestHubId;
+  const stayHubId =
+    preferSejongHubOverYeongi(cross.stay?.location?.hubId || nearestHubId, areaCode, item.addr1) ||
+    null;
   const fallbackKw = nearbyHubKeywordFallbacks(
     [...(cross.nearbyHubs || []), ...areaSeedStayHubs(areaCode, stayHubId)],
     stayHubId,
     cross.stay?.keyword || cross.tna?.keyword,
+    areaCode,
+    item.addr1,
   );
-  const stayHubForLegacy = cross.stay?.location?.hubId || nearestHubId;
+  const stayHubForLegacy = stayHubId;
   const filterYeongiLegacy = (list) =>
-    (list || []).filter((k) => !isSuppressedYeongiLegacyKeyword(stayHubForLegacy, k));
+    (list || []).filter(
+      (k) => !isSuppressedYeongiLegacyKeyword(stayHubForLegacy, k, areaCode, item.addr1),
+    );
   const fallbackKwFiltered = filterYeongiLegacy(fallbackKw);
 
   if (cross.stay) {
