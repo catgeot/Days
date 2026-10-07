@@ -195,13 +195,41 @@ export function shouldShowChatBookingCta(intentResult, userText, chatHistory = [
   );
 }
 
+function userTurnText(msg) {
+  if (!msg || msg.role !== 'user') return '';
+  const raw = typeof msg.text === 'object' ? msg.text?.text : msg.text;
+  return String(raw ?? '').trim();
+}
+
 /** @param {Array<{ role?: string, text?: string }>} chatHistory */
 export function countPriorPlanItineraryTurns(chatHistory = []) {
   let count = 0;
   for (const msg of chatHistory) {
-    if (msg?.role !== 'user') continue;
-    const text = typeof msg.text === 'object' ? msg.text?.text : msg.text;
-    if (isPlanItineraryIntentText(text)) count += 1;
+    const text = userTurnText(msg);
+    if (text && isPlanItineraryIntentText(text)) count += 1;
   }
   return count;
+}
+
+/**
+ * 이번 턴 이전 일정 질문 횟수 — chatHistory에 현재 user 발화가 이미 들어간 경로 보정.
+ * @param {Array<{ role?: string, text?: string }>} chatHistory
+ * @param {string} [userText]
+ */
+export function countItineraryTurnsBeforeCurrent(chatHistory = [], userText = '') {
+  let count = countPriorPlanItineraryTurns(chatHistory);
+  const current = String(userText ?? '').trim();
+  if (!current || !isPlanItineraryIntentText(current)) return count;
+  const last = chatHistory[chatHistory.length - 1];
+  if (userTurnText(last) === current) {
+    count = Math.max(0, count - 1);
+  }
+  return count;
+}
+
+/** @param {Array<{ role?: string, text?: string }>} chatHistory @param {string} [userText] */
+export function shouldCollapseItineraryBooking(chatHistory = [], userText = '') {
+  const current = String(userText ?? '').trim();
+  if (!current || !isPlanItineraryIntentText(current)) return false;
+  return countItineraryTurnsBeforeCurrent(chatHistory, userText) > 0;
 }

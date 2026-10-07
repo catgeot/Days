@@ -20,7 +20,7 @@ import {
 } from './bookingIntentResolver.js';
 import { resolveChatPrepActions } from './chatPrepBookingLinks.js';
 import { resolveItineraryBookingActions } from './chatItineraryBooking.js';
-import { countPriorPlanItineraryTurns } from './chatIntentClassifier.js';
+import { shouldCollapseItineraryBooking } from './chatIntentClassifier.js';
 import { buildPlacePlannerPath } from './placePlannerPath.js';
 import { getMooniPlannerCtaLabel } from './placePlannerFocus.js';
 import { i18n } from '../i18n/config.js';
@@ -33,6 +33,69 @@ function lookupAirportKo(iata) {
   const code = String(iata ?? '').trim().toUpperCase();
   if (code.length !== 3) return null;
   return HUB_BY_IATA.get(code) ?? null;
+}
+
+const FERRY_PROVIDERS = new Set(['twelve_go', 'direct']);
+
+function buildChatFerryActions({
+  slug,
+  userText,
+  destinationName,
+  location,
+  chatHistory,
+  chatSource,
+  aiReplyText,
+}) {
+  const subIdPrefix = slug
+    ? chatSource === 'home'
+      ? `${slug}-home-chat`
+      : `${slug}-chat`
+    : chatSource === 'home'
+      ? 'gateo-home-chat'
+      : 'gateo-chat';
+  const combinedText = [
+    userText,
+    ...chatHistory.slice(-4).map((m) => m.text ?? ''),
+    aiReplyText,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const legacy = resolveLegacyBookingActions({
+    userText,
+    destinationName,
+    slug,
+    location,
+    chatHistory,
+    chatSource,
+    aiReplyText,
+  });
+  let ferryActions = legacy.actions.filter((a) => FERRY_PROVIDERS.has(a.provider));
+  if (ferryActions.length === 0) {
+    ferryActions = resolveFerryActions(slug, combinedText, { subIdPrefix }).filter((a) =>
+      FERRY_PROVIDERS.has(a.provider),
+    );
+  }
+  return ferryActions;
+}
+
+function mergeFerryIntoItineraryActions(actions, ferryActions, max = 4) {
+  if (!ferryActions.length) return actions.slice(0, max);
+  const next = [...actions];
+  if (next.length >= max) {
+    const pickupIdx = next.findIndex((a) => a.provider === 'klook_pickup');
+    if (pickupIdx >= 0) {
+      next.splice(pickupIdx, 1);
+    } else {
+      const tourIdx = next.findLastIndex(
+        (a) => a.provider === 'klook_tour' || a.provider === 'mrt_tour',
+      );
+      if (tourIdx >= 0) next.splice(tourIdx, 1);
+      else next.pop();
+    }
+  }
+  next.push(ferryActions[0]);
+  return next.slice(0, max);
 }
 
 /**
@@ -189,7 +252,6 @@ export function resolveChatBookingActions(params) {
   );
 
   if (legs.includes('itinerary_bundle')) {
-    const priorItinerary = countPriorPlanItineraryTurns(chatHistory);
     const itinerary = resolveItineraryBookingActions({
       slug,
       destinationName,
@@ -198,14 +260,27 @@ export function resolveChatBookingActions(params) {
       essentialGuide,
       tripSession,
     });
+    let actions = itinerary.actions;
+    if (legs.includes('ferry')) {
+      const ferryActions = buildChatFerryActions({
+        slug,
+        userText,
+        destinationName,
+        location,
+        chatHistory,
+        chatSource,
+        aiReplyText,
+      });
+      actions = mergeFerryIntoItineraryActions(actions, ferryActions);
+    }
     return {
-      show: itinerary.actions.length > 0,
-      transportType: 'general',
-      actions: itinerary.actions,
+      show: actions.length > 0,
+      transportType: actions.some((a) => FERRY_PROVIDERS.has(a.provider)) ? 'ferry' : 'general',
+      actions,
       slug,
       plannerUrl: buildPlacePlannerPath(slug),
       intent: intentResult.primary,
-      itineraryBookingCompact: priorItinerary > 0,
+      itineraryBookingCompact: shouldCollapseItineraryBooking(chatHistory, userText),
     };
   }
 
@@ -248,39 +323,17 @@ export function resolveChatBookingActions(params) {
   }
 
   if (legs.includes('ferry')) {
-    const subIdPrefix = slug
-      ? chatSource === 'home'
-        ? `${slug}-home-chat`
-        : `${slug}-chat`
-      : chatSource === 'home'
-        ? 'gateo-home-chat'
-        : 'gateo-chat';
-    const combinedText = [
-      userText,
-      ...chatHistory.slice(-4).map((m) => m.text ?? ''),
-      aiReplyText,
-    ]
-      .filter(Boolean)
-      .join(' ');
-
-    const legacy = resolveLegacyBookingActions({
-      userText,
-      destinationName,
-      slug,
-      location,
-      chatHistory,
-      chatSource,
-      aiReplyText,
-    });
-    let ferryActions = legacy.actions.filter(
-      (a) => a.provider === 'twelve_go' || a.provider === 'direct'
+    actions.push(
+      ...buildChatFerryActions({
+        slug,
+        userText,
+        destinationName,
+        location,
+        chatHistory,
+        chatSource,
+        aiReplyText,
+      }),
     );
-    if (ferryActions.length === 0) {
-      ferryActions = resolveFerryActions(slug, combinedText, { subIdPrefix }).filter(
-        (a) => a.provider === 'twelve_go' || a.provider === 'direct'
-      );
-    }
-    actions.push(...ferryActions);
   }
 
   const prepLegs = legs.filter((leg) =>

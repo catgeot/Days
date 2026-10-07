@@ -3,6 +3,7 @@
  *   node scripts/smoke-chat-itinerary-links.mjs
  */
 import assert from 'node:assert/strict';
+import { resolveChatBookingActions } from '../src/utils/chatBookingResolver.js';
 import { resolveItineraryBookingActions } from '../src/utils/chatItineraryBooking.js';
 
 const { actions } = resolveItineraryBookingActions({
@@ -38,4 +39,20 @@ for (const row of results) {
 }
 
 console.log(JSON.stringify(results, null, 2));
+
+const ferryItinerary = resolveChatBookingActions({
+  userText: '길리메노 3박 4일 페리로 가는 일정 짜줘',
+  destinationName: '길리메노',
+  slug: 'gili-meno',
+  chatHistory: [],
+  chatSource: 'place',
+  aiReplyText: '',
+});
+assert.ok(ferryItinerary.show, 'gili-meno itinerary booking should show');
+assert.ok(
+  ferryItinerary.actions.some((a) => a.provider === 'twelve_go' || a.provider === 'direct'),
+  'gili-meno ferryRequired itinerary must include ferry card',
+);
+assert.ok(ferryItinerary.actions.length <= 4);
+
 console.log('smoke-chat-itinerary-links: PASS');

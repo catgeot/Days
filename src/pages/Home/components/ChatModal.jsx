@@ -829,7 +829,9 @@ const ChatModal = ({
         (sessionDest === 'MOONi'
           ? (sessionBound?.name || resolution?.name || sessionDest)
           : sessionDest);
-      const priorTurns = messages.map((m) => ({ role: m.role, text: m.text }));
+      const priorTurns = newMessages
+        .slice(0, -1)
+        .map((m) => ({ role: m.role, text: m.text }));
 
       const slug =
         placeBound?.slug ||
