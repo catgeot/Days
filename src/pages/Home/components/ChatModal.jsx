@@ -182,6 +182,19 @@ const ChatModal = ({
   const activeSessionPlace = useMemo(() => {
     if (!isOpen) return null;
 
+    if (mooniPlaceContext?.festivalContext) {
+      const festivalLabel = String(mooniPlaceContext.displayLabel || mooniPlaceContext.name || '').trim();
+      if (festivalLabel) {
+        return {
+          slug: null,
+          name: festivalLabel,
+          country: mooniPlaceContext.country ?? null,
+          lat: mooniPlaceContext.lat ?? null,
+          lng: mooniPlaceContext.lng ?? null,
+        };
+      }
+    }
+
     const entryLabel = formatPlaceChatLabel(mooniPlaceContext);
     const catalogSlug = resolveCatalogPlaceSlug(mooniPlaceContext?.slug) || null;
     const entrySeed = entryLabel
