@@ -6,6 +6,7 @@ export {
   buildFestivalMooniContext,
   buildFestivalMooniNeutralOpening,
   buildFestivalMooniChatOpening,
+  getFestivalMooniFollowUpChips,
 } from './festivalMooniContext.js';
 
 /**
@@ -18,13 +19,16 @@ export {
  * }} input
  */
 export function buildFestivalMooniBoundSpot(input = {}) {
-  const { item, intro, location, homepage, summaryFields } = input;
+  const { item, intro, location, homepage, summaryFields, overview, program, tel } = input;
   const festivalContext = buildFestivalMooniContext({
     item,
     intro,
     homepage,
     summaryFields,
     location,
+    overview,
+    program,
+    tel,
   });
   const title = festivalContext?.title || '';
   const loc = location && typeof location === 'object' ? location : null;

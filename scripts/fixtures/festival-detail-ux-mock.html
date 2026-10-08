@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Festival detail UX mock</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #1c1917; color: #292524; }
+    .sheet { max-width: 420px; margin: 0 auto; background: #fff; min-height: 100vh; padding: 16px 16px 120px; }
+    .label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #a8a29e; margin: 16px 0 8px; }
+    .sub { font-size: 11px; font-weight: 700; color: #57534e; margin: 8px 0 4px; }
+    .card { border: 1px solid #e7e5e4; background: #fafaf9; border-radius: 16px; padding: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 700; }
+    .pkg { border-color: #fbbf24; background: #fffbeb; text-align: center; padding: 12px; border-radius: 999px; }
+    .modal { position: fixed; inset: 0; background: rgba(28,25,23,.35); display: flex; align-items: flex-end; justify-content: center; }
+    .modal-inner { background: #fff; width: 100%; max-width: 420px; border-radius: 24px 24px 0 0; max-height: 85vh; display: flex; flex-direction: column; }
+    .modal-body { padding: 16px; overflow: auto; flex: 1; }
+    .modal-foot { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #e7e5e4; }
+    .modal-foot button { flex: 1; padding: 12px; border-radius: 999px; font-weight: 700; border: 1px solid #e7e5e4; background: #fafaf9; }
+    .modal-foot .primary { background: #fffbeb; border-color: #fbbf24; }
+    .mooni { background: #111827; color: #e5e7eb; padding: 16px; min-height: 100vh; }
+    .bubble { background: #1f2937; border-radius: 16px; padding: 16px; line-height: 1.55; font-size: 15px; margin-top: 8px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .chip { border: 1px solid #67e8f9; color: #a5f3fc; padding: 8px 12px; border-radius: 999px; font-size: 12px; }
+    .origin { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+    .origin span { font-size: 11px; font-weight: 700; color: #f1f5f9; }
+    .origin button { border: 1px solid #7dd3fc; background: rgba(15,23,42,.55); color: #fff; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+    .trust { display: none; }
+    .trust.show { display: block; position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.45); color: #9ca3af; font-size: 9px; padding: 4px 12px; border-radius: 999px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .tabs { position: fixed; top: 8px; right: 8px; z-index: 9; display: flex; gap: 4px; flex-wrap: wrap; max-width: 200px; }
+    .tabs button { font-size: 10px; padding: 4px 6px; border-radius: 6px; border: 1px solid #57534e; background: #292524; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="tabs">
+    <button type="button" onclick="show('sections')">1 sections</button>
+    <button type="button" onclick="show('course')">2 course</button>
+    <button type="button" onclick="show('palgyeong')">3 팔경</button>
+    <button type="button" onclick="show('mooni')">4 MOONi</button>
+    <button type="button" onclick="show('origin')">5 origin</button>
+  </div>
+
+  <div id="sections" class="panel active">
+    <div class="sheet">
+      <div class="label">주변 관광지</div>
+      <div class="sub">홍천 팔경</div>
+      <div class="card">금학산 · 12.4km</div>
+      <div class="card">팔봉산 · 15.1km</div>
+      <div class="sub">가까운 곳</div>
+      <div class="card">춘천 소양강 스카이워크 · 8.2km</div>
+      <div class="label">패키지</div>
+      <div class="pkg">강원 패키지 보기</div>
+      <div class="label">인근 여행코스</div>
+      <div class="card">화천·양구·철원 능선 코스 · 48km</div>
+    </div>
+    <div class="trust show">About · 이용약관 · 출처</div>
+  </div>
+
+  <div id="palgyeong" class="panel">
+    <div class="sheet">
+      <div class="label">주변 관광지</div>
+      <div class="sub">홍천 팔경</div>
+      <div class="card">금학산</div>
+      <div class="card">팔봉산</div>
+      <div class="sub">가까운 곳</div>
+      <div class="card">삼봉산 자연휴양림</div>
+      <div class="card">화천 산천어광장</div>
+    </div>
+  </div>
+
+  <div id="course" class="panel">
+    <div class="modal">
+      <div class="modal-inner">
+        <div class="modal-body">
+          <h2 style="margin:0 0 8px;font-size:18px;">화천·양구 능선 트레킹</h2>
+          <p style="font-size:13px;color:#57534e;line-height:1.5;">코스 상세 본문…</p>
+        </div>
+        <div class="modal-foot">
+          <button type="button">맨 위로</button>
+          <button type="button" class="primary">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mooni" class="panel mooni">
+    <p style="font-size:10px;color:#22d3ee;font-weight:700;">MOONi</p>
+    <div class="bubble">
+      <p><strong>제76주년 K-밀리터리 페스티벌 춘천대첩</strong> 안내입니다.</p>
+      <p style="margin-top:12px;">볼거리: 퍼레이드와 체험 부스, 공식 프로그램 안내…</p>
+      <p style="margin-top:12px;">현장 분위기: 춘천 일대에서 열리는 행사입니다.</p>
+      <p style="margin-top:12px;">주변 즐길거리: 상세 페이지 하단 목록·공식 홈페이지 참고.</p>
+    </div>
+    <div class="chips">
+      <span class="chip">주차·교통</span>
+      <span class="chip">일정·시간표</span>
+      <span class="chip">근처 맛집</span>
+      <span class="chip">숙소</span>
+    </div>
+  </div>
+
+  <div id="origin" class="panel mooni">
+    <div class="origin">
+      <span>출발</span>
+      <button type="button">서울 (ICN)</button>
+    </div>
+  </div>
+
+  <script>
+    function show(id) {
+      document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector('.trust')?.classList.toggle('show', id === 'sections');
+    }
+  </script>
+</body>
+</html>

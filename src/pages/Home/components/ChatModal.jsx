@@ -42,7 +42,10 @@ import {
 } from '../../../utils/mooniReplySanitizer';
 import { mergeMooniKoreaFestivalReply } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
-import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
+import {
+  buildFestivalMooniChatOpening,
+  getFestivalMooniFollowUpChips,
+} from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
@@ -410,10 +413,22 @@ const ChatModal = ({
     [isMooniUi, hasPlaceBoundName, i18n.language],
   );
 
-  const dockChips = chipDockMode === 'discovery' ? discoveryChips : quickReplies;
+  const festivalFollowUpChips = useMemo(
+    () => (festivalMooniContext ? getFestivalMooniFollowUpChips(i18n.language) : []),
+    [festivalMooniContext, i18n.language],
+  );
+
+  const dockChips =
+    chipDockMode === 'discovery'
+      ? discoveryChips
+      : festivalMooniContext && messages.length === 0
+        ? festivalFollowUpChips
+        : quickReplies;
 
   const showBoundTopicDock =
-    chipDockMode === 'topic' && hasPlaceBoundName && quickReplies.length > 0;
+    chipDockMode === 'topic' &&
+    hasPlaceBoundName &&
+    (festivalMooniContext ? festivalFollowUpChips.length > 0 : quickReplies.length > 0);
 
   const showDiscoveryDock =
     chipDockMode === 'discovery' && discoveryChips.length > 0;
@@ -1650,6 +1665,7 @@ const ChatModal = ({
                       <div className="min-w-0 flex-1">
                         <FlightOriginSelector
                           variant="chat-header"
+                          headerSurface={fresh ? 'dark' : 'light'}
                           selectedIata={accessOriginIata}
                           disabled={isLoading}
                           onExpandRequest={() => setAccessOriginSearchOpen(true)}

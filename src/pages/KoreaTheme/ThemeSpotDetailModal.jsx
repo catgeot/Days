@@ -37,6 +37,7 @@ import {
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
+import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import mooniChar from '../../assets/MOONI_transparent.webp';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
@@ -887,6 +888,7 @@ export default function ThemeSpotDetailModal({
   onToggleFavorite,
   mooniFab = false,
 }) {
+  useTrustBarOverlayLockEffect(Boolean(spot));
   const { t } = useTranslation();
   const { locale } = useLocale();
   const isEnglish = String(locale || '').startsWith('en');

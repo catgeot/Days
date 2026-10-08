@@ -40,12 +40,14 @@ const LISTBOX_Z_INDEX = 225;
  *   onCollapseRequest?: () => void,
  *   initialExpanded?: boolean,
  *   onSearchActiveChange?: (active: boolean) => void,
+ *   headerSurface?: 'dark' | 'light',
  * }} props
  */
 export default function FlightOriginSelector({
   selectedIata = 'ICN',
   disabled = false,
   variant = 'summary',
+  headerSurface = 'dark',
   browserOriginHint = null,
   onSelect,
   onApplyBrowserOriginSuggestion,
@@ -349,9 +351,14 @@ export default function FlightOriginSelector({
   const summarySelectedClass =
     'inline-flex max-w-[58%] shrink-0 items-center rounded-md border border-sky-400/40 bg-sky-500/20 px-2 py-0.5 text-[11px] font-bold text-sky-50 tabular-nums truncate';
 
-  const summaryHeaderChipClass = `inline-flex min-h-[32px] max-w-[9.5rem] items-center gap-1.5 rounded-md border border-sky-400/45 bg-sky-500/18 px-2.5 py-1 text-[11px] font-semibold leading-tight text-sky-50 transition-colors hover:border-sky-300/55 hover:bg-sky-500/28 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-sky-300/50 motion-safe:active:scale-[0.98] ${
+  const summaryHeaderChipOnDark = `inline-flex min-h-[32px] max-w-[9.5rem] items-center gap-1.5 rounded-md border border-sky-300/80 bg-slate-900/55 px-2.5 py-1 text-[11px] font-semibold leading-tight text-white shadow-sm transition-colors hover:border-sky-200 hover:bg-slate-900/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-300 motion-safe:active:scale-[0.98] ${
     disabled ? 'opacity-60 cursor-wait' : ''
   }`;
+  const summaryHeaderChipOnLight = `inline-flex min-h-[32px] max-w-[9.5rem] items-center gap-1.5 rounded-md border border-cyan-600/70 bg-white px-2.5 py-1 text-[11px] font-semibold leading-tight text-cyan-950 shadow-sm transition-colors hover:border-cyan-700 hover:bg-cyan-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-cyan-600 motion-safe:active:scale-[0.98] ${
+    disabled ? 'opacity-60 cursor-wait' : ''
+  }`;
+  const summaryHeaderChipClass =
+    headerSurface === 'light' ? summaryHeaderChipOnLight : summaryHeaderChipOnDark;
 
   const barSearchLabelClass = 'text-[11px] font-bold text-sky-100 break-keep';
 
@@ -432,6 +439,12 @@ export default function FlightOriginSelector({
         }`;
 
   if (isSummaryHeader) {
+    const headerLabelClass =
+      headerSurface === 'light'
+        ? 'shrink-0 text-[11px] font-bold tracking-wide text-slate-800 break-keep'
+        : 'shrink-0 text-[11px] font-bold tracking-wide text-slate-100 break-keep';
+    const headerChevronClass =
+      headerSurface === 'light' ? 'shrink-0 text-cyan-900' : 'shrink-0 text-slate-200';
     return (
       <div
         ref={rootRef}
@@ -439,7 +452,7 @@ export default function FlightOriginSelector({
         onClick={(event) => event.stopPropagation()}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <span className="shrink-0 text-[11px] font-bold tracking-wide text-sky-100/90 break-keep">
+        <span className={headerLabelClass}>
           {t('flightOrigin.departure')}
         </span>
         <button
@@ -452,7 +465,7 @@ export default function FlightOriginSelector({
           title={selectedLabel}
         >
           <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
-          <ChevronDown size={14} strokeWidth={2.25} className="shrink-0 text-sky-100/90" aria-hidden="true" />
+          <ChevronDown size={14} strokeWidth={2.25} className={headerChevronClass} aria-hidden="true" />
         </button>
       </div>
     );

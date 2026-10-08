@@ -968,6 +968,12 @@ export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
   return { groups, rest };
 }
 
+/** 팔경·구경 등 지자체 명소 묶음 밖 Tour 인근 관광지 소제목 */
+export function nearbyLocalScenicRestGroupTitle(locale = 'ko') {
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  return isEn ? 'Nearby spots' : '가까운 곳';
+}
+
 export function localScenicMemberSpotId(listId, attractionName) {
   return `local-scenic:${listId}:${normalizeKey(attractionName)}`;
 }

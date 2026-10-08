@@ -52,6 +52,7 @@ import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import FestivalDetailProse from './FestivalDetailProse';
 import {
   groupNearbySpotsWithLocalScenic,
+  nearbyLocalScenicRestGroupTitle,
   isNearbyAttractionRowClickable,
   mergeNearbyRowWithLocalScenicDetail,
   missingNearbyThumbContentIds,
@@ -72,6 +73,7 @@ import FestivalStayStrip from './FestivalStayStrip';
 import FestivalTnaStrip from './FestivalTnaStrip';
 import { useFestivalMooniEntry } from './FestivalMooniEntry.jsx';
 import { festivalDetailSummaryWillRender } from './lib/festivalMooniFabVisibility.js';
+import { FESTIVAL_DETAIL_SCROLL_TOP_THRESHOLD_PX } from './lib/festivalDetailBottomSectionOrder.js';
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { FestivalBookingActions } from './FestivalBookingActions.jsx';
 import { FestivalDetailFirstSummary } from './FestivalDetailFirstSummary.jsx';
@@ -528,6 +530,7 @@ export default function FestivalDetailSheet({
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [heroImageBroken, setHeroImageBroken] = useState(false);
   const [mooniOpen, setMooniOpen] = useState(false);
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
@@ -1101,6 +1104,9 @@ export default function FestivalDetailSheet({
     location: mooniEntryLocation,
     homepage,
     summaryFields,
+    overview,
+    program: programText,
+    tel,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {
@@ -1228,11 +1234,16 @@ export default function FestivalDetailSheet({
     }
     el.scrollTo({ top: 0 });
     setShowScrollTop(false);
-    const onScroll = () => setShowScrollTop(el.scrollTop > 180);
+    const onScroll = () =>
+      setShowScrollTop(el.scrollTop > FESTIVAL_DETAIL_SCROLL_TOP_THRESHOLD_PX);
     onScroll();
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, [item?.contentId]);
+
+  useEffect(() => {
+    setHeroImageBroken(false);
+  }, [activeImage, imageUrls]);
 
   if (!item) return null;
 
@@ -1346,14 +1357,24 @@ export default function FestivalDetailSheet({
                   : t('korea.festival.detail.heroExpand')
               }
             >
-              <img
-                src={hero}
-                alt=""
-                draggable={false}
-                fetchPriority="high"
-                decoding="async"
-                className="h-auto w-full max-h-[min(52vh,28rem)] object-contain pointer-events-none select-none md:max-h-full md:h-full md:w-full"
-              />
+              {hero && !heroImageBroken ? (
+                <img
+                  src={hero}
+                  alt=""
+                  draggable={false}
+                  fetchPriority="high"
+                  decoding="async"
+                  onError={() => setHeroImageBroken(true)}
+                  className="h-auto w-full max-h-[min(52vh,28rem)] object-contain pointer-events-none select-none md:max-h-full md:h-full md:w-full"
+                />
+              ) : (
+                <div
+                  className="flex h-[min(40vh,18rem)] w-full items-center justify-center bg-stone-200/80 text-stone-500 md:h-full md:min-h-[12rem]"
+                  aria-hidden="true"
+                >
+                  <Star size={32} strokeWidth={1.5} className="opacity-40" />
+                </div>
+              )}
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
                 <Expand size={13} aria-hidden="true" />
                 {t('korea.festival.detail.expandView')}
@@ -1405,7 +1426,7 @@ export default function FestivalDetailSheet({
           </div>
         ) : null}
 
-        <div className="min-w-0 shrink-0 overflow-visible px-5 pt-5 pb-[max(7.25rem,calc(env(safe-area-inset-bottom)+5.75rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 space-y-4 md:space-y-5 md:custom-scrollbar">
+        <div className="min-w-0 shrink-0 overflow-visible px-5 pt-5 pb-[max(8.5rem,calc(env(safe-area-inset-bottom)+7rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar">
           <div className="space-y-1.5 pr-10">
             <div className="flex items-start justify-between gap-2">
               <span className="min-w-0 flex-1" aria-hidden="true" />
@@ -1657,6 +1678,76 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
+              {nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords' && (
+                <div
+                  className="space-y-2 pt-1"
+                  data-festival-section="nearAttractions"
+                >
+                  <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                    {t('korea.festival.detail.nearAttractions')}
+                  </p>
+                  {nearbyStatus === 'loading' && (
+                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                      {t('korea.festival.detail.nearAttractionsLoading')}
+                    </div>
+                  )}
+                  {nearbyStatus === 'error' && nearbySpots.length === 0 && (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.festival.detail.nearAttractionsError')}
+                    </p>
+                  )}
+                  {nearbyStatus === 'empty' && !nearbyHasLocalScenic && (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.festival.detail.nearAttractionsEmpty')}
+                    </p>
+                  )}
+                  {(nearbySpots.length > 0 || nearbyHasLocalScenic) && (
+                    <ul
+                      className="space-y-2"
+                      aria-label={t('korea.festival.detail.nearAttractionsAria')}
+                    >
+                      {nearbyGrouped.groups.map((group) => (
+                        <React.Fragment key={group.listId}>
+                          <li className="list-none pt-0.5">
+                            <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
+                              {group.title}
+                            </p>
+                          </li>
+                          {group.items.map((spot) => (
+                            <NearbyAttractionRow
+                              key={spot.contentId || spot.id}
+                              spot={spot}
+                              extraThumb={nearbyThumbById.get(
+                                String(spot.contentId || '').trim(),
+                              )}
+                              onSelect={setSelectedNearby}
+                            />
+                          ))}
+                        </React.Fragment>
+                      ))}
+                      {nearbyGrouped.rest.length > 0 && nearbyGrouped.groups.length > 0 ? (
+                        <li className="list-none pt-0.5">
+                          <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
+                            {nearbyLocalScenicRestGroupTitle(locale)}
+                          </p>
+                        </li>
+                      ) : null}
+                      {nearbyGrouped.rest.map((spot) => (
+                        <NearbyAttractionRow
+                          key={spot.contentId || spot.id}
+                          spot={spot}
+                          extraThumb={nearbyThumbById.get(
+                            String(spot.contentId || '').trim(),
+                          )}
+                          onSelect={setSelectedNearby}
+                        />
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
               {showFestivalStayStrip ? (
                 <div className="pt-1">
                   <FestivalStayStrip
@@ -1668,7 +1759,7 @@ export default function FestivalDetailSheet({
               ) : null}
 
               {showFestivalTnaStrip ? (
-                <div className="pt-1">
+                <div className="pt-1" data-festival-section="packages">
                   <FestivalTnaStrip
                     item={item}
                     festivalCross={festivalCross}
@@ -1678,7 +1769,7 @@ export default function FestivalDetailSheet({
               ) : null}
 
               {((!showFestivalTnaStrip && festivalTnaHref) || festivalCross?.packageCta?.url) && (
-                <div className="space-y-3 pt-1">
+                <div className="space-y-3 pt-1" data-festival-section="packages">
                   {!showFestivalTnaStrip && festivalTnaHref ? (
                     <div className="space-y-2">
                       <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
@@ -1724,7 +1815,7 @@ export default function FestivalDetailSheet({
 
               {nearbyCoursesStatus !== 'idle' &&
                 nearbyCoursesStatus !== 'noarea' && (
-                  <div className="space-y-2 pt-1">
+                  <div className="space-y-2 pt-1" data-festival-section="nearCourses">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearCourses')}
                     </p>
@@ -1755,7 +1846,6 @@ export default function FestivalDetailSheet({
                         aria-label={t('korea.festival.detail.nearCoursesAria')}
                       >
                         {nearbyCourses.map((spot) => {
-                          const thumb = toHttps(spot.firstImage);
                           const dist = formatDistKm(spot.distKm);
                           const place = nearbyPlaceLabel(spot);
                           return (
@@ -1765,17 +1855,7 @@ export default function FestivalDetailSheet({
                                 onClick={() => openCourseModal(spot)}
                                 className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
                               >
-                                {thumb ? (
-                                  <img
-                                    src={thumb}
-                                    alt=""
-                                    className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-                                  />
-                                ) : (
-                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800">
-                                    <Route size={18} aria-hidden="true" />
-                                  </div>
-                                )}
+                                <NearbyRowThumb spot={{ firstImage: spot.firstImage }} />
                                 <span className="min-w-0 flex-1">
                                   <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
                                     {spot.name}
@@ -1800,66 +1880,6 @@ export default function FestivalDetailSheet({
                     </button>
                   </div>
                 )}
-
-              {nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords' && (
-                <div className="space-y-2 pt-1">
-                  <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    {t('korea.festival.detail.nearAttractions')}
-                  </p>
-                  {nearbyStatus === 'loading' && (
-                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.festival.detail.nearAttractionsLoading')}
-                    </div>
-                  )}
-                  {nearbyStatus === 'error' && nearbySpots.length === 0 && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.festival.detail.nearAttractionsError')}
-                    </p>
-                  )}
-                  {nearbyStatus === 'empty' && !nearbyHasLocalScenic && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.festival.detail.nearAttractionsEmpty')}
-                    </p>
-                  )}
-                  {(nearbySpots.length > 0 || nearbyHasLocalScenic) && (
-                    <ul
-                      className="space-y-2"
-                      aria-label={t('korea.festival.detail.nearAttractionsAria')}
-                    >
-                      {nearbyGrouped.groups.map((group) => (
-                        <React.Fragment key={group.listId}>
-                          <li className="list-none pt-0.5">
-                            <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
-                              {group.title}
-                            </p>
-                          </li>
-                          {group.items.map((spot) => (
-                            <NearbyAttractionRow
-                              key={spot.contentId || spot.id}
-                              spot={spot}
-                              extraThumb={nearbyThumbById.get(
-                                String(spot.contentId || '').trim(),
-                              )}
-                              onSelect={setSelectedNearby}
-                            />
-                          ))}
-                        </React.Fragment>
-                      ))}
-                      {nearbyGrouped.rest.map((spot) => (
-                        <NearbyAttractionRow
-                          key={spot.contentId || spot.id}
-                          spot={spot}
-                          extraThumb={nearbyThumbById.get(
-                            String(spot.contentId || '').trim(),
-                          )}
-                          onSelect={setSelectedNearby}
-                        />
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
 
               {nearbyFoodStatus !== 'idle' && nearbyFoodStatus !== 'nocoords' && (
                 <div className="space-y-2 pt-1">
