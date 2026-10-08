@@ -57,6 +57,8 @@ jobs:
             *) echo "::error title=Invalid anon key::VITE_SUPABASE_ANON_KEY는 eyJ 로 시작하는 JWT여야 합니다."; exit 1 ;;
           esac
 
+      # P0-3 is Supabase REST (#380). Gemini model ids are SMOKE_GEMINI_PING_MODELS
+      # in scripts/smoke-health.mjs (SSOT). This job does not call the Gemini API.
       - name: Run smoke health probes
         env:
           GITHUB_ACTIONS: true

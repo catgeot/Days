@@ -2,7 +2,7 @@ import {
   callGemini,
   extractGeminiAnswer,
   isPlaceIntroTruncated,
-  thinkingConfigForPlaceIntro,
+  thinkingConfigForBodyText,
 } from "../_shared/gemini/call.ts";
 import {
   allowMemoryBypass,
@@ -312,7 +312,7 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     parts,
     built.maxOutputTokens,
     25_000,
-    built.limitThinking ? thinkingConfigForPlaceIntro(modelName) : undefined,
+    built.limitThinking ? thinkingConfigForBodyText(modelName) : undefined,
   );
 
   let upstream = await callUpstream(model);

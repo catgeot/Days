@@ -1,4 +1,4 @@
-/** gemini-proxy `normalizeHistory` — per-turn cap (tasks.ts, no client trim on edge). */
+/** gemini-proxy history cap. Edge trims over-cap turns; the client still trims before send. */
 export const MOONI_GEMINI_HISTORY_MAX_TURN_CHARS = 2000;
 export const MOONI_GEMINI_HISTORY_MAX_TURNS = 12;
 export const MOONI_GEMINI_HISTORY_MAX_TOTAL_CHARS = 12_000;

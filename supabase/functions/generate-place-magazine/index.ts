@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { GEMINI_QUALITY, GEMINI_WRITE } from "../_shared/geminiModels.ts";
+import { GEMINI_WRITE_FALLBACK, GEMINI_WRITE_TRY_ORDER } from "../_shared/geminiModels.ts";
+import { thinkingConfigForBodyText } from "../_shared/gemini/thinkingConfig.js";
 import { resolveCanonicalPlaceId } from "../_shared/resolveCanonicalPlaceId.ts";
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
 import {
@@ -14,7 +15,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const MODELS_TO_TRY = [GEMINI_WRITE, GEMINI_QUALITY];
+const MODELS_TO_TRY = GEMINI_WRITE_TRY_ORDER;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 5000;
 
@@ -91,9 +92,8 @@ async function callGeminiMagazine(
           body: JSON.stringify({
             generationConfig: {
               responseMimeType: "application/json",
-              // 7섹션 장문 피처 — 잘림 방지
               maxOutputTokens: 65536,
-              temperature: 0.7,
+              thinkingConfig: thinkingConfigForBodyText(model),
             },
             contents: [{ role: "user", parts: [{ text: prompt }] }],
           }),
@@ -278,7 +278,7 @@ serve(async (req) => {
         finishReason: firstCall.finishReason,
       });
     } catch (parseErr) {
-      // 장문 JSON 잘림·이스케이프 실패 시: QUALITY + 안정화 appendix로 1회만 재시도 (타임아웃 방어)
+      // 장문 JSON 잘림·이스케이프 실패 시: WRITE fallback + 안정화 appendix로 1회만 재시도
       console.warn("[generate-place-magazine] retry with JSON stability appendix", {
         error: (parseErr as Error).message,
         finishReason: firstCall.finishReason,
@@ -287,7 +287,7 @@ serve(async (req) => {
       const retryCall = await callGeminiMagazine(
         geminiApiKey,
         `${basePrompt}${buildMagazineJsonStabilityAppendix(locale)}`,
-        [GEMINI_QUALITY],
+        [GEMINI_WRITE_FALLBACK],
       );
       console.log("[generate-place-magazine] gemini ok", {
         pass: 2,

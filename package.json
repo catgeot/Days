@@ -225,6 +225,7 @@
     "test:health": "node --test scripts/health/syntax-check.test.mjs scripts/health/*.test.mjs",
     "test:gemini-answer-sanitize": "node scripts/smoke-mooni-reply-leak.mjs",
     "smoke:gemini-models": "node scripts/smoke-gemini-models.mjs",
+    "staging:compare-gemini-models": "node scripts/staging/compare-gemini-models.mjs",
     "check:gemini-prompt-mirror": "node --import ./scripts/register-src-esm.mjs scripts/check-gemini-prompt-mirror.mjs",
     "test:gemini-prompt-golden": "node --import ./scripts/register-src-esm.mjs scripts/test-gemini-prompt-golden.mjs",
     "test:gemini-proxy-error": "node scripts/test-gemini-proxy-error.mjs",

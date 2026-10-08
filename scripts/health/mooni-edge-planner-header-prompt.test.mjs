@@ -25,6 +25,15 @@ test('Edge renderMooniSystem — showPlannerHeader false 시 플래너 헤더 �
     showPlannerHeader: false,
   });
   assert.equal(countMooniPlannerHeaderGuidance(system), 0);
+  const urlAt = system.indexOf('없는 URL을 지어내지');
+  const hintAt = system.indexOf('목록에 없는');
+  const priority = '힌트에 없는 시설은 단정하지 말고 공식 홈페이지·문의처를 안내한다.';
+  const priorityAt = system.lastIndexOf(priority);
+  assert.ok(urlAt >= 0, 'no-invented-url rule');
+  assert.ok(hintAt > urlAt, 'festival hint follows the URL rule');
+  assert.ok(system.includes('공식 홈페이지'), 'official site instruction kept');
+  assert.ok(priorityAt > hintAt, 'festival priority is after the hint');
+  assert.ok(system.trim().endsWith(priority), 'festival official-site instruction is last');
 });
 
 test('Edge renderMooniSystem — showPlannerHeader true 시 플래너 헤더 안내 포함', () => {

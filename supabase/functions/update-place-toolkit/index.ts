@@ -6,7 +6,8 @@ import {
 } from "../_shared/resolveCanonicalPlaceId.ts";
 import { isRegionalGatewayIata, REGIONAL_GATEWAY_IATAS_BY_SLUG } from "../_shared/regionalGatewayIatas.ts";
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
-import { GEMINI_QUALITY, GEMINI_WRITE } from "../_shared/geminiModels.ts";
+import { GEMINI_WRITE_TRY_ORDER } from "../_shared/geminiModels.ts";
+import { thinkingConfigForBodyText } from "../_shared/gemini/thinkingConfig.js";
 import toolkitAirportCoords from "../_shared/toolkitAirportCoords.json" with { type: "json" };
 
 const corsHeaders = {
@@ -613,11 +614,8 @@ serve(async (req) => {
       slugNorm || slug || null
     );
 
-    // Gemini 모델 폴백 (WRITE → QUALITY)
-    const modelsToTry = [
-      GEMINI_WRITE,
-      GEMINI_QUALITY,
-    ];
+    // Gemini 모델 폴백 (WRITE 3.8-flash → 3.7-flash)
+    const modelsToTry = GEMINI_WRITE_TRY_ORDER;
 
     let response: Response | null = null;
     let lastError: string = '';
@@ -636,8 +634,8 @@ serve(async (req) => {
           body: JSON.stringify({
             generationConfig: {
               responseMimeType: "application/json",
-              // 국가급 지명(부탄 등) 툴킷 JSON이 잘리면 parse 실패 → 여유 토큰
               maxOutputTokens: 16384,
+              thinkingConfig: thinkingConfigForBodyText(model),
             },
             contents: [
               { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }

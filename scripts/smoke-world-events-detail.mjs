@@ -712,7 +712,8 @@ const explainTermSrc = readFileSync(
   join(root, 'supabase/functions/explain-event-term/index.ts'),
   'utf8',
 );
-assert.match(explainTermSrc, /thinkingBudget:\s*0/, 'explain-event-term disables thinking budget');
+assert.match(explainTermSrc, /thinkingConfigForBodyText/, 'explain-event-term uses low thinkingLevel helper');
+assert.doesNotMatch(explainTermSrc, /thinkingBudget/, 'explain-event-term does not send thinkingBudget');
 assert.match(explainTermSrc, /isLikelyTruncatedGlossaryAnswer/, 'explain-event-term trunc guard');
 assert.match(explainTermSrc, /!part\?\.thought/, 'explain-event-term skips thought parts');
 

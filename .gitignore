@@ -53,6 +53,7 @@ tmp/
 
 # scripts가 생성하는 스냅샷 백업(데이터 절감)
 scripts/outputs/
+scripts/staging/out/
 
 # OurAirports raw CSV (~12MB) — import:airports 캐시
 scripts/data/cache/

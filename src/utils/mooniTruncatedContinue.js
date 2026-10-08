@@ -63,9 +63,67 @@ function firstContinuationWord(text) {
 
 function shouldGlueMidWordContinuation(prior, next) {
   const word = firstContinuationWord(next);
-  if (!word || word.length >= 3) return false;
-  const priorLast = prior.trimEnd().slice(-1);
-  return /[가-힣]$/.test(priorLast) && /^[가-힣]/.test(word);
+  if (!word) return false;
+  const priorTrim = prior.trimEnd();
+  const priorLast = priorTrim.slice(-1);
+  if (!/[가-힣]$/.test(priorLast) || !/^[가-힣]/.test(word)) return false;
+  if (word.length < 3) return true;
+  const priorWord = priorTrim.match(/(\S+)$/)?.[1] ?? '';
+  return priorWord.length > 0 && priorWord.length < 3 && /^[가-힣]+$/.test(priorWord);
+}
+
+function normalizeComparableLine(line) {
+  return String(line ?? '').trim().replace(/\s+/g, ' ');
+}
+
+function priorLineSet(prior) {
+  const set = new Set();
+  for (const line of String(prior ?? '').split('\n')) {
+    const n = normalizeComparableLine(line);
+    if (n) set.add(n);
+  }
+  return set;
+}
+
+/** Drop a continuation that restarts at Day 1 or repeats lines already on screen. */
+function trimRestartedContinuation(prior, continuation) {
+  const lines = String(continuation ?? '').split('\n');
+  const seen = priorLineSet(prior);
+  const priorDays = new Set(listItineraryDayHeadingNumbers(prior).map(String));
+  const hasRepeat = lines.some((line) => {
+    const n = normalizeComparableLine(line);
+    return Boolean(n) && seen.has(n);
+  });
+
+  if (hasRepeat && priorDays.size > 0) {
+    let newDayIdx = -1;
+    for (let i = 0; i < lines.length; i += 1) {
+      const m = DAY_HEADING_LINE_RE.exec(lines[i]);
+      if (m && !priorDays.has(m[1])) {
+        newDayIdx = i;
+        break;
+      }
+    }
+    if (newDayIdx > 0) {
+      const head = [];
+      for (let i = 0; i < newDayIdx; i += 1) {
+        const n = normalizeComparableLine(lines[i]);
+        if (!n || seen.has(n)) continue;
+        const m = DAY_HEADING_LINE_RE.exec(lines[i]);
+        if (m && priorDays.has(m[1])) continue;
+        head.push(lines[i]);
+      }
+      return [...head, ...lines.slice(newDayIdx)].join('\n');
+    }
+  }
+
+  const kept = [];
+  for (const line of lines) {
+    const n = normalizeComparableLine(line);
+    if (n && seen.has(n)) continue;
+    kept.push(line);
+  }
+  return kept.join('\n');
 }
 
 function joinAtCutPoint(prior, next) {
@@ -117,6 +175,7 @@ export function mergeMooniContinuation(priorText, continuation) {
   const prior = stripMooniThinkingLeak(priorText);
   let next = stripMooniThinkingLeak(continuation);
   next = stripRepeatedIntro(prior, next);
+  next = trimRestartedContinuation(prior, next);
   let merged = mergeSameDayContinuation(prior, next);
   merged = dedupeItineraryDayLines(merged);
   merged = ensureItineraryMarkdownLineBreaks(merged);

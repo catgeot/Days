@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { GEMINI_QUALITY, GEMINI_WRITE } from "../_shared/geminiModels.ts";
+import { GEMINI_WRITE_TRY_ORDER } from "../_shared/geminiModels.ts";
+import { thinkingConfigForBodyText } from "../_shared/gemini/thinkingConfig.js";
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
 import { buildEventTravelGuidePrompt } from "../_shared/eventTravelGuidePrompts.ts";
 import {
@@ -14,7 +15,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const MODELS_TO_TRY = [GEMINI_WRITE, GEMINI_QUALITY];
+const MODELS_TO_TRY = GEMINI_WRITE_TRY_ORDER;
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 4000;
 
@@ -42,7 +43,7 @@ async function callGemini(apiKey: string, prompt: string): Promise<{ text: strin
             generationConfig: {
               responseMimeType: "application/json",
               maxOutputTokens: 8192,
-              temperature: 0.5,
+              thinkingConfig: thinkingConfigForBodyText(model),
             },
             contents: [{ role: "user", parts: [{ text: prompt }] }],
           }),
