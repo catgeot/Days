@@ -13,6 +13,7 @@ import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { useLocale } from '../../i18n/LocaleProvider';
+import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 
 function stripHtml(html) {
   if (!html) return '';
@@ -71,6 +72,8 @@ export default function CourseDetailModal({
   const scrollRef = useRef(null);
   const [nearbyFestivals, setNearbyFestivals] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
+
+  useTrustBarOverlayLockEffect(Boolean(course));
 
   useEffect(() => {
     const onKey = (event) => {

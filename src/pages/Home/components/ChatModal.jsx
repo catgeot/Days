@@ -1650,6 +1650,7 @@ const ChatModal = ({
                       <div className="min-w-0 flex-1">
                         <FlightOriginSelector
                           variant="chat-header"
+                          headerSurface={fresh ? 'dark' : 'light'}
                           selectedIata={accessOriginIata}
                           disabled={isLoading}
                           onExpandRequest={() => setAccessOriginSearchOpen(true)}

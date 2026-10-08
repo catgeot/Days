@@ -3,9 +3,11 @@ import { Outlet, useLocation } from 'react-router-dom';
 import FooterModal from '../../pages/Home/components/FooterModal';
 import { FOOTER_MODAL_OPEN_EVENT } from '../lib/footerModalEvents';
 import TrustLinkBar from './TrustLinkBar';
+import { useTrustBarOverlayHidden } from '../hooks/useTrustBarOverlayHidden';
 
 const MainLayout = () => {
   const location = useLocation();
+  const trustBarOverlayHidden = useTrustBarOverlayHidden();
   const [isFooterOpen, setIsFooterOpen] = useState(false);
   const [footerTab, setFooterTab] = useState('about');
   const isHomeGlobe =
@@ -25,7 +27,7 @@ const MainLayout = () => {
   return (
     <div className="w-full h-screen relative bg-black overflow-hidden flex flex-col">
       <Outlet />
-      {hideTrustBar ? null : (
+      {hideTrustBar || trustBarOverlayHidden ? null : (
         <TrustLinkBar className={isHomeGlobe ? 'max-md:hidden' : undefined} />
       )}
       <FooterModal
