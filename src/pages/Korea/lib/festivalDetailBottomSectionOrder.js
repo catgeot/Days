@@ -4,5 +4,3 @@ export const FESTIVAL_DETAIL_BOTTOM_SECTION_ORDER = [
   'packages',
   'nearCourses',
 ];
-
-export const FESTIVAL_DETAIL_SCROLL_TOP_THRESHOLD_PX = 280;

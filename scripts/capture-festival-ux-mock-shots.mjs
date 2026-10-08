@@ -11,7 +11,6 @@ const panels = [
   ['sections', '01-festival-bottom-sections'],
   ['course', '02-course-modal-footer'],
   ['palgyeong', '03-palgyeong-grouping'],
-  ['mooni', '04-mooni-festival-opening'],
   ['origin', '05-mooni-origin-row'],
 ];
 

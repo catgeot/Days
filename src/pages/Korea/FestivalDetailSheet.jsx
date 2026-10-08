@@ -73,7 +73,6 @@ import FestivalStayStrip from './FestivalStayStrip';
 import FestivalTnaStrip from './FestivalTnaStrip';
 import { useFestivalMooniEntry } from './FestivalMooniEntry.jsx';
 import { festivalDetailSummaryWillRender } from './lib/festivalMooniFabVisibility.js';
-import { FESTIVAL_DETAIL_SCROLL_TOP_THRESHOLD_PX } from './lib/festivalDetailBottomSectionOrder.js';
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { FestivalBookingActions } from './FestivalBookingActions.jsx';
 import { FestivalDetailFirstSummary } from './FestivalDetailFirstSummary.jsx';
@@ -1104,9 +1103,6 @@ export default function FestivalDetailSheet({
     location: mooniEntryLocation,
     homepage,
     summaryFields,
-    overview,
-    program: programText,
-    tel,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {
@@ -1234,8 +1230,7 @@ export default function FestivalDetailSheet({
     }
     el.scrollTo({ top: 0 });
     setShowScrollTop(false);
-    const onScroll = () =>
-      setShowScrollTop(el.scrollTop > FESTIVAL_DETAIL_SCROLL_TOP_THRESHOLD_PX);
+    const onScroll = () => setShowScrollTop(el.scrollTop > 180);
     onScroll();
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);

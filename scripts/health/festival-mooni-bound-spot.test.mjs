@@ -42,12 +42,11 @@ test('buildFestivalMooniContext keeps TourAPI-shaped fields', () => {
   assert.equal(ctx.lng, 127.888);
 });
 
-test('buildFestivalMooniNeutralOpening uses verified guide sections', () => {
+test('buildFestivalMooniNeutralOpening uses verified lines only', () => {
   const opening = buildFestivalMooniNeutralOpening(buildFestivalMooniContext(FIXTURE));
   assert.match(opening, /홍천 인삼한우 명품축제/);
   assert.match(opening, /10\.08 – 10\.11/);
-  assert.match(opening, /볼거리/);
-  assert.match(opening, /주변 즐길거리/);
+  assert.match(opening, /도시산림공원 토리숲/);
   assert.doesNotMatch(opening, /대한민국 홍천/);
 });
 
@@ -58,5 +57,5 @@ test('buildFestivalMooniChatOpening merges invite line', () => {
   );
   assert.match(opening, /홍천 인삼한우 명품축제/);
   assert.match(opening, /이 축제에 대해 물어보세요/);
-  assert.ok(opening.indexOf('이 축제에 대해 물어보세요.') > 0);
+  assert.equal(opening.split('\n\n').length, 2);
 });
