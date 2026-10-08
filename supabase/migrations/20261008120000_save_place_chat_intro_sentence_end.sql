@@ -31,9 +31,9 @@ BEGIN
 
   -- PREVENTION ⑥: complete sentence ending (no mid-word, trailing comma/colon, unclosed markdown)
   IF v_sum ~ '[,;:：，、]\s*$'
-     OR (char_length(v_sum) - char_length(replace(v_sum, '**', '', 'g'))) % 4 <> 0
-     OR (char_length(v_sum) - char_length(replace(v_sum, '`', '', 'g'))) % 2 <> 0
-     OR v_sum !~ '[.!?。！？…]["''""』)\]]*\s*$' THEN
+     OR (char_length(v_sum) - char_length(replace(v_sum, '**', ''))) % 4 <> 0
+     OR (char_length(v_sum) - char_length(replace(v_sum, '`', ''))) % 2 <> 0
+     OR v_sum !~ '[.!?。！？…]["''""''」』）)\]]*\s*$' THEN
     RAISE EXCEPTION 'place_chat_intro: summary must end with a complete sentence' USING ERRCODE = '22023';
   END IF;
 

@@ -1,9 +1,17 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import {
   isPlaceChatIntroSentenceComplete,
   placeChatIntroSentenceEndRejectReason,
 } from '../../src/pages/Home/lib/placeChatIntroSentenceEnd.js';
+
+const MIGRATION_SQL = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../supabase/migrations/20261008120000_save_place_chat_intro_sentence_end.sql',
+);
 
 const OK_INTRO =
   '강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수타사는 신라 시대에 처음 세워졌다고 전해지는 유서 깊은 산사입니다. ' +
@@ -46,6 +54,27 @@ test('passes terminal ? ! … 。 and optional closing quotes', () => {
     isPlaceChatIntroSentenceComplete('산책로 끝에서 바다가 펼쳐지는 장면이 인상적입니다。」'),
     true,
   );
+  assert.equal(
+    isPlaceChatIntroSentenceComplete('도심을 벗어나면 조용한 산책로가 이어지며, 저녁 노을이 특히 아름답습니다。」'),
+    true,
+  );
+  assert.equal(
+    isPlaceChatIntroSentenceComplete(
+      '해안 산책로를 따라 걷다 보면 작은 전망대가 나오고, 바다 전경이 한눈에 들어옵니다）。',
+    ),
+    true,
+  );
+});
+
+test('migration replace() is Postgres 3-arg only (no fourth g flag)', () => {
+  const sql = readFileSync(MIGRATION_SQL, 'utf8');
+  const calls = sql.match(/replace\s*\([^)]*\)/gi) ?? [];
+  assert.ok(calls.length >= 2, 'expected replace() calls in forward migration');
+  for (const call of calls) {
+    const inner = call.slice(call.indexOf('(') + 1, -1);
+    const argCount = inner.split(',').length;
+    assert.equal(argCount, 3, `replace must have exactly 3 arguments: ${call}`);
+  }
 });
 
 test('rejects mid-sentence cuts and missing terminal punctuation', () => {
