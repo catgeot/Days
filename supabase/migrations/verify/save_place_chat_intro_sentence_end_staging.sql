@@ -30,7 +30,33 @@ SELECT public.save_place_chat_intro(
   '해안 절벽 위 전망대에서 바다를 내려다보면 일몰이 특히 아름다워 사진 찍기 좋은 길입니다!”'
 ) AS ok_curly_exclaim_should_be_true;
 
--- 5) FAIL: mid-sentence, >40 chars (expect 22023 sentence-end message, not length)
+-- 5) PASS: trailing newline after valid ending (btrim + \s*$ parity with JS)
+SELECT public.save_place_chat_intro(
+  '__qa_sentence_end_ok_trailing_nl',
+  E'제주 올레길은 해안을 따라 걷기 좋은 코스가 많아, 가벼운 산책 여행에 잘 맞습니다.\n'
+) AS ok_trailing_newline_should_be_true;
+
+-- 6) FAIL: letter after terminal period (.s) — must not match literal s*$ tail bug
+DO $verify$
+DECLARE
+  msg text;
+BEGIN
+  PERFORM public.save_place_chat_intro(
+    '__qa_sentence_end_bad_dot_s',
+    '제주 올레길은 해안을 따라 걷기 좋은 코스가 많아, 가벼운 산책 여행에 잘 맞습니다.s'
+  );
+  RAISE EXCEPTION 'verify: expected exception for .s suffix';
+EXCEPTION
+  WHEN sqlstate '22023' THEN
+    GET STACKED DIAGNOSTICS msg = MESSAGE_TEXT;
+    IF msg NOT LIKE '%summary must end with a complete sentence%' THEN
+      RAISE EXCEPTION 'verify: wrong 22023 message: %', msg;
+    END IF;
+    RAISE NOTICE 'ok: .s suffix rejected (22023 sentence-end message)';
+END;
+$verify$;
+
+-- 7) FAIL: mid-sentence, >40 chars (expect 22023 sentence-end message, not length)
 DO $verify$
 DECLARE
   msg text;
@@ -50,7 +76,7 @@ EXCEPTION
 END;
 $verify$;
 
--- 6) FAIL: trailing comma (expect EXCEPTION 22023)
+-- 8) FAIL: trailing comma (expect EXCEPTION 22023)
 DO $verify$
 BEGIN
   PERFORM public.save_place_chat_intro(
@@ -64,7 +90,7 @@ EXCEPTION
 END;
 $verify$;
 
--- 7) FAIL: unclosed markdown (expect EXCEPTION 22023)
+-- 9) FAIL: unclosed markdown (expect EXCEPTION 22023)
 DO $verify$
 BEGIN
   PERFORM public.save_place_chat_intro(

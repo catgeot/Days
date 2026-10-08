@@ -80,6 +80,9 @@ test('passes terminal ? ! … 。 and optional closing quotes', () => {
 
 test('migration sentence-end regex includes curly closers (JS parity)', () => {
   const sql = readFileSync(MIGRATION_SQL, 'utf8');
+  assert.match(sql, /!\~\s*\(/, 'sentence-end match must parenthesize pattern concat');
+  assert.ok(sql.includes("||'\\s*$')"), 'regex tail must be plain \\s*$ string, not E-string');
+  assert.doesNotMatch(sql, /E'\\s/, 'E-string \\s is invalid for Postgres whitespace in regex');
   assert.match(sql, /\\u201d\\u2019\\u300d\\u300f\\uff09/);
   const curlyPeriod =
     '제주 올레길은 해안을 따라 걷기 좋은 코스가 많아, 가벼운 산책 여행에 잘 맞아요.”';
@@ -107,6 +110,24 @@ test('rejects mid-sentence cuts and missing terminal punctuation', () => {
       '강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수타사는 오래전부터 수행의 장소로 알려져 왔습니다',
     ),
     'mid_sentence_end',
+  );
+});
+
+test('rejects bogus letter after terminal punctuation (JS parity: .s)', () => {
+  assert.equal(
+    placeChatIntroSentenceEndRejectReason(
+      '제주 올레길은 해안을 따라 걷기 좋은 코스가 많아, 가벼운 산책 여행에 잘 맞습니다.s',
+    ),
+    'mid_sentence_end',
+  );
+});
+
+test('accepts optional trailing whitespace after valid ending (newline)', () => {
+  assert.equal(
+    isPlaceChatIntroSentenceComplete(
+      '제주 올레길은 해안을 따라 걷기 좋은 코스가 많아, 가벼운 산책 여행에 잘 맞습니다.\n',
+    ),
+    true,
   );
 });
 
