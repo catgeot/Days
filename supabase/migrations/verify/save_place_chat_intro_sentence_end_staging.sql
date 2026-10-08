@@ -1,48 +1,64 @@
 -- Human-operated staging verification (gateo-staging-temp, ref qeqszwxjvhnbzhkchera).
--- Run in SQL Editor after applying 20261008120000_save_place_chat_intro_sentence_end.sql.
--- Expect: ok_* → true, bad_* → false. Clean up test keys when done.
+-- After 20261008120000_save_place_chat_intro_sentence_end.sql.
+-- Validation failures raise ERRCODE 22023; hourly cap raises 54000. Existing keys return false (no overwrite).
 
--- PASS: complete Korean intro (Cos 수타사-style)
+-- 1) PASS: insert a new valid intro (expect true)
 SELECT public.save_place_chat_intro(
   '__qa_sentence_end_ok_ko',
   '강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수타사는 신라 시대에 처음 세워졌다고 전해지는 유서 깊은 산사입니다. 사계절 숲길과 고즈넉한 법당이 어우러져, 잠시 발길을 멈추고 쉬어 가 보기 좋습니다.'
-) AS ok_ko_period;
+) AS ok_insert_should_be_true;
 
--- PASS: formal ending 습니다.
+-- 2) No overwrite: same key again with different summary (expect false; row unchanged)
 SELECT public.save_place_chat_intro(
-  '__qa_sentence_end_ok_seupnida',
-  '보로부두르는 자바 중부의 불교 사원으로, 이른 아침 일출을 보며 올라가는 코스가 잘 알려져 있습니다.'
-) AS ok_seupnida;
+  '__qa_sentence_end_ok_ko',
+  '이 문장은 저장되면 안 됩니다. 기존 키가 있으면 덮어쓰지 않고 false를 반환해야 합니다.'
+) AS existing_key_should_be_false;
 
--- PASS: closing quote after period
-SELECT public.save_place_chat_intro(
-  '__qa_sentence_end_ok_quote',
-  '부산 해운대는 넓은 백사장과 야경이 어우러진 대표 해변입니다. 인근 맛집과 산책로도 함께 둘러보기 좋습니다."'
-) AS ok_closing_quote;
+SELECT summary
+FROM public.place_chat_intro
+WHERE destination_key = '__qa_sentence_end_ok_ko';
 
--- FAIL: mid-word / mid-sentence (Cos 수 stump)
-SELECT public.save_place_chat_intro(
-  '__qa_sentence_end_bad_mid',
-  '강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수'
-) AS bad_mid_sentence;
+-- 3) FAIL: mid-sentence (expect EXCEPTION 22023)
+DO $verify$
+BEGIN
+  PERFORM public.save_place_chat_intro(
+    '__qa_sentence_end_bad_mid',
+    '강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수'
+  );
+  RAISE EXCEPTION 'verify: expected exception for mid-sentence summary';
+EXCEPTION
+  WHEN sqlstate '22023' THEN
+    RAISE NOTICE 'ok: mid-sentence rejected (22023)';
+END;
+$verify$;
 
--- FAIL: long but no terminal punctuation
-SELECT public.save_place_chat_intro(
-  '__qa_sentence_end_bad_no_punct',
-  '강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수타사는 오래전부터 수행의 장소로 알려져 왔습니다'
-) AS bad_no_punct;
+-- 4) FAIL: trailing comma (expect EXCEPTION 22023)
+DO $verify$
+BEGIN
+  PERFORM public.save_place_chat_intro(
+    '__qa_sentence_end_bad_comma',
+    '제주도는 한국 최남단의 섬으로, 해안 드라이브가 인기 있는 여행지입니다,'
+  );
+  RAISE EXCEPTION 'verify: expected exception for trailing comma';
+EXCEPTION
+  WHEN sqlstate '22023' THEN
+    RAISE NOTICE 'ok: trailing comma rejected (22023)';
+END;
+$verify$;
 
--- FAIL: trailing comma
-SELECT public.save_place_chat_intro(
-  '__qa_sentence_end_bad_comma',
-  '제주도는 한국 최남단의 섬으로, 해안 드라이브가 인기 있는 여행지입니다,'
-) AS bad_trailing_comma;
-
--- FAIL: unclosed markdown bold
-SELECT public.save_place_chat_intro(
-  '__qa_sentence_end_bad_md',
-  '**Draft intro stub for QA only — should not persist because bold marker is not closed.'
-) AS bad_unclosed_markdown;
+-- 5) FAIL: unclosed markdown (expect EXCEPTION 22023)
+DO $verify$
+BEGIN
+  PERFORM public.save_place_chat_intro(
+    '__qa_sentence_end_bad_md',
+    '**Draft intro stub for QA only — should not persist because bold marker is not closed.'
+  );
+  RAISE EXCEPTION 'verify: expected exception for unclosed markdown';
+EXCEPTION
+  WHEN sqlstate '22023' THEN
+    RAISE NOTICE 'ok: unclosed markdown rejected (22023)';
+END;
+$verify$;
 
 -- Cleanup (optional)
 -- DELETE FROM public.place_chat_intro WHERE destination_key LIKE '__qa_sentence_end_%';

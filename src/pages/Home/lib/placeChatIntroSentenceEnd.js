@@ -6,9 +6,9 @@
 /** Punctuation close — matches placeChatIntroLimits / gemini call.ts SUMMARY_SENTENCE_END_RE. */
 export const PLACE_CHAT_INTRO_SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;
 
-/** Postgres RPC + client use space-only trim (not full Unicode trim). */
+/** Mirrors Postgres btrim() on summary/key for PREVENTION ⑥ (RPC applies btrim before checks). */
 export function pgBtrimSpaces(value) {
-  return String(value ?? '').replace(/^ +| +$/g, '');
+  return String(value ?? '').trim();
 }
 
 /**
