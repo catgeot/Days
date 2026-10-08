@@ -33,7 +33,7 @@ BEGIN
   IF v_sum ~ '[,;:：，、]\s*$'
      OR (char_length(v_sum) - char_length(replace(v_sum, '**', ''))) % 4 <> 0
      OR (char_length(v_sum) - char_length(replace(v_sum, '`', ''))) % 2 <> 0
-     OR v_sum !~ '[.!?。！？…]["''""''」』）)\]]*\s*$' THEN
+     OR v_sum !~ ('[.!?\u3002\uff01\uff1f\u2026]["''\u201d\u2019\u300d\u300f\uff09)\]]*'||E'\s*$') THEN
     RAISE EXCEPTION 'place_chat_intro: summary must end with a complete sentence' USING ERRCODE = '22023';
   END IF;
 

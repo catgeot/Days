@@ -64,6 +64,29 @@ test('passes terminal ? ! … 。 and optional closing quotes', () => {
     ),
     true,
   );
+  assert.equal(
+    isPlaceChatIntroSentenceComplete(
+      '제주 올레길은 해안을 따라 걷기 좋은 코스가 많아, 가벼운 산책 여행에 잘 맞아요.”',
+    ),
+    true,
+  );
+  assert.equal(
+    isPlaceChatIntroSentenceComplete(
+      '해안 절벽 위 전망대에서 바다를 내려다보면 일몰이 특히 아름다워 사진 찍기 좋은 길입니다!”',
+    ),
+    true,
+  );
+});
+
+test('migration sentence-end regex includes curly closers (JS parity)', () => {
+  const sql = readFileSync(MIGRATION_SQL, 'utf8');
+  assert.match(sql, /\\u201d\\u2019\\u300d\\u300f\\uff09/);
+  const curlyPeriod =
+    '제주 올레길은 해안을 따라 걷기 좋은 코스가 많아, 가벼운 산책 여행에 잘 맞아요.”';
+  const curlyExclaim =
+    '해안 절벽 위 전망대에서 바다를 내려다보면 일몰이 특히 아름다워 사진 찍기 좋은 길입니다!”';
+  assert.equal(isPlaceChatIntroSentenceComplete(curlyPeriod), true);
+  assert.equal(isPlaceChatIntroSentenceComplete(curlyExclaim), true);
 });
 
 test('migration replace() is Postgres 3-arg only (no fourth g flag)', () => {

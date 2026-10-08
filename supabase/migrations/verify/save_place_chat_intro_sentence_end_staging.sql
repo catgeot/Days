@@ -18,21 +18,39 @@ SELECT summary
 FROM public.place_chat_intro
 WHERE destination_key = '__qa_sentence_end_ok_ko';
 
--- 3) FAIL: mid-sentence (expect EXCEPTION 22023)
+-- 3) PASS: curly closing quote after period (Edge/client parity)
+SELECT public.save_place_chat_intro(
+  '__qa_sentence_end_ok_curly_period',
+  '제주 올레길은 해안을 따라 걷기 좋은 코스가 많아, 가벼운 산책 여행에 잘 맞아요.”'
+) AS ok_curly_period_should_be_true;
+
+-- 4) PASS: curly closing quote after exclamation
+SELECT public.save_place_chat_intro(
+  '__qa_sentence_end_ok_curly_exclaim',
+  '해안 절벽 위 전망대에서 바다를 내려다보면 일몰이 특히 아름다워 사진 찍기 좋은 길입니다!”'
+) AS ok_curly_exclaim_should_be_true;
+
+-- 5) FAIL: mid-sentence, >40 chars (expect 22023 sentence-end message, not length)
 DO $verify$
+DECLARE
+  msg text;
 BEGIN
   PERFORM public.save_place_chat_intro(
     '__qa_sentence_end_bad_mid',
-    '강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수'
+    '강원도 홍천의 공작산 자락에 아늑하게 품겨 있는 수타사는 오래전부터 수행의 장소로 알려져 왔습니다'
   );
   RAISE EXCEPTION 'verify: expected exception for mid-sentence summary';
 EXCEPTION
   WHEN sqlstate '22023' THEN
-    RAISE NOTICE 'ok: mid-sentence rejected (22023)';
+    GET STACKED DIAGNOSTICS msg = MESSAGE_TEXT;
+    IF msg NOT LIKE '%summary must end with a complete sentence%' THEN
+      RAISE EXCEPTION 'verify: wrong 22023 message: %', msg;
+    END IF;
+    RAISE NOTICE 'ok: mid-sentence rejected (22023 sentence-end message)';
 END;
 $verify$;
 
--- 4) FAIL: trailing comma (expect EXCEPTION 22023)
+-- 6) FAIL: trailing comma (expect EXCEPTION 22023)
 DO $verify$
 BEGIN
   PERFORM public.save_place_chat_intro(
@@ -46,7 +64,7 @@ EXCEPTION
 END;
 $verify$;
 
--- 5) FAIL: unclosed markdown (expect EXCEPTION 22023)
+-- 7) FAIL: unclosed markdown (expect EXCEPTION 22023)
 DO $verify$
 BEGIN
   PERFORM public.save_place_chat_intro(
