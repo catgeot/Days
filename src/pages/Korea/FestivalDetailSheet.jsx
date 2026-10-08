@@ -1744,7 +1744,7 @@ export default function FestivalDetailSheet({
               )}
 
               {showFestivalStayStrip ? (
-                <div className="pt-1">
+                <div className="pt-1" data-festival-section="lodging">
                   <FestivalStayStrip
                     item={item}
                     festivalCross={festivalCross}
@@ -1808,76 +1808,8 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {nearbyCoursesStatus !== 'idle' &&
-                nearbyCoursesStatus !== 'noarea' && (
-                  <div className="space-y-2 pt-1" data-festival-section="nearCourses">
-                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                      {t('korea.festival.detail.nearCourses')}
-                    </p>
-                    {nearbyCoursesStatus === 'loading' && (
-                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                          aria-hidden="true"
-                        />
-                        {t('korea.festival.detail.nearCoursesLoading')}
-                      </div>
-                    )}
-                    {nearbyCoursesStatus === 'error' &&
-                      nearbyCourses.length === 0 && (
-                        <p className="text-xs text-stone-500">
-                          {t('korea.festival.detail.nearCoursesError')}
-                        </p>
-                      )}
-                    {nearbyCoursesStatus === 'empty' && (
-                      <p className="text-xs text-stone-500">
-                        {t('korea.festival.detail.nearCoursesEmpty')}
-                      </p>
-                    )}
-                    {nearbyCourses.length > 0 && (
-                      <ul
-                        className="space-y-2"
-                        aria-label={t('korea.festival.detail.nearCoursesAria')}
-                      >
-                        {nearbyCourses.map((spot) => {
-                          const dist = formatDistKm(spot.distKm);
-                          const place = nearbyPlaceLabel(spot);
-                          return (
-                            <li key={`course-${spot.contentId || spot.id}`}>
-                              <button
-                                type="button"
-                                onClick={() => openCourseModal(spot)}
-                                className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                              >
-                                <NearbyRowThumb spot={{ firstImage: spot.firstImage }} />
-                                <span className="min-w-0 flex-1">
-                                  <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                    {spot.name}
-                                  </span>
-                                  <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-                                    {[place, dist].filter(Boolean).join(' · ')}
-                                  </span>
-                                </span>
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                    <button
-                      type="button"
-                      onClick={openCoursesPage}
-                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
-                    >
-                      {t('korea.festival.detail.moreCourses')}
-                      <ExternalLink size={14} aria-hidden="true" />
-                    </button>
-                  </div>
-                )}
-
               {nearbyFoodStatus !== 'idle' && nearbyFoodStatus !== 'nocoords' && (
-                <div className="space-y-2 pt-1">
+                <div className="space-y-2 pt-1" data-festival-section="nearFood">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                     {t('korea.festival.detail.nearFood')}
                   </p>
@@ -1943,7 +1875,7 @@ export default function FestivalDetailSheet({
 
               {nearbyLeportsStatus !== 'idle' &&
                 nearbyLeportsStatus !== 'nocoords' && (
-                  <div className="space-y-2 pt-1">
+                  <div className="space-y-2 pt-1" data-festival-section="nearLeports">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearLeports')}
                     </p>
@@ -2014,7 +1946,7 @@ export default function FestivalDetailSheet({
 
               {nearbyCultureStatus !== 'idle' &&
                 nearbyCultureStatus !== 'nocoords' && (
-                  <div className="space-y-2 pt-1">
+                  <div className="space-y-2 pt-1" data-festival-section="nearCulture">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearCulture')}
                     </p>
@@ -2080,6 +2012,74 @@ export default function FestivalDetailSheet({
                         })}
                       </ul>
                     )}
+                  </div>
+                )}
+
+              {nearbyCoursesStatus !== 'idle' &&
+                nearbyCoursesStatus !== 'noarea' && (
+                  <div className="space-y-2 pt-1" data-festival-section="nearCourses">
+                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                      {t('korea.festival.detail.nearCourses')}
+                    </p>
+                    {nearbyCoursesStatus === 'loading' && (
+                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                        {t('korea.festival.detail.nearCoursesLoading')}
+                      </div>
+                    )}
+                    {nearbyCoursesStatus === 'error' &&
+                      nearbyCourses.length === 0 && (
+                        <p className="text-xs text-stone-500">
+                          {t('korea.festival.detail.nearCoursesError')}
+                        </p>
+                      )}
+                    {nearbyCoursesStatus === 'empty' && (
+                      <p className="text-xs text-stone-500">
+                        {t('korea.festival.detail.nearCoursesEmpty')}
+                      </p>
+                    )}
+                    {nearbyCourses.length > 0 && (
+                      <ul
+                        className="space-y-2"
+                        aria-label={t('korea.festival.detail.nearCoursesAria')}
+                      >
+                        {nearbyCourses.map((spot) => {
+                          const dist = formatDistKm(spot.distKm);
+                          const place = nearbyPlaceLabel(spot);
+                          return (
+                            <li key={`course-${spot.contentId || spot.id}`}>
+                              <button
+                                type="button"
+                                onClick={() => openCourseModal(spot)}
+                                className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                              >
+                                <NearbyRowThumb spot={{ firstImage: spot.firstImage }} />
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                    {[place, dist].filter(Boolean).join(' · ')}
+                                  </span>
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                    <button
+                      type="button"
+                      onClick={openCoursesPage}
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                    >
+                      {t('korea.festival.detail.moreCourses')}
+                      <ExternalLink size={14} aria-hidden="true" />
+                    </button>
                   </div>
                 )}
 

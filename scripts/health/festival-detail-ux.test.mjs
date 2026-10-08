@@ -26,17 +26,29 @@ function contrastRatio(rgbA, rgbB) {
 test('festival detail bottom section order SSOT', () => {
   assert.deepEqual(FESTIVAL_DETAIL_BOTTOM_SECTION_ORDER, [
     'nearAttractions',
+    'lodging',
     'packages',
+    'nearFood',
+    'nearLeports',
+    'nearCulture',
     'nearCourses',
   ]);
   const sheet = readFileSync(
     join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),
     'utf8',
   );
-  const idxAttr = sheet.indexOf('data-festival-section="nearAttractions"');
-  const idxPkg = sheet.indexOf('data-festival-section="packages"');
-  const idxCourse = sheet.indexOf('data-festival-section="nearCourses"');
-  assert.ok(idxAttr > 0 && idxPkg > idxAttr && idxCourse > idxPkg);
+  const indices = FESTIVAL_DETAIL_BOTTOM_SECTION_ORDER.map((id) =>
+    sheet.indexOf(`data-festival-section="${id}"`),
+  );
+  for (const idx of indices) {
+    assert.ok(idx > 0, `missing data-festival-section marker`);
+  }
+  for (let i = 1; i < indices.length; i += 1) {
+    assert.ok(
+      indices[i] > indices[i - 1],
+      `order violation: ${FESTIVAL_DETAIL_BOTTOM_SECTION_ORDER[i - 1]} before ${FESTIVAL_DETAIL_BOTTOM_SECTION_ORDER[i]}`,
+    );
+  }
 });
 
 test('팔경 rest subgroup title', () => {
