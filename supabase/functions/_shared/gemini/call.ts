@@ -1,4 +1,5 @@
 import { sanitizeGeminiUserText } from "./answerSanitize.mjs";
+import { thinkingConfigForBodyText as thinkingConfigForBodyTextJs } from "./thinkingConfig.js";
 
 export type GeminiCallResult = {
   ok: boolean;
@@ -17,10 +18,26 @@ export type GeminiThinkingConfig =
   | { thinkingLevel: "minimal" | "low" | "medium" | "high" }
   | { thinkingBudget: number };
 
-export {
-  thinkingConfigForBodyText,
-  thinkingConfigForPlaceIntro,
-} from "./thinkingConfig.js";
+/** JS helper returns a widened string; the proxy only sends the low/budget shapes. */
+export function thinkingConfigForBodyText(model: string): GeminiThinkingConfig | undefined {
+  const config = thinkingConfigForBodyTextJs(model) as
+    | { thinkingBudget?: number; thinkingLevel?: string }
+    | null
+    | undefined;
+  if (!config) return undefined;
+  if (typeof config.thinkingBudget === "number") return { thinkingBudget: config.thinkingBudget };
+  if (
+    config.thinkingLevel === "minimal"
+    || config.thinkingLevel === "low"
+    || config.thinkingLevel === "medium"
+    || config.thinkingLevel === "high"
+  ) {
+    return { thinkingLevel: config.thinkingLevel };
+  }
+  return undefined;
+}
+
+export const thinkingConfigForPlaceIntro = thinkingConfigForBodyText;
 
 /** placeChatIntroLimits SUMMARY_SENTENCE_END_RE 와 동일. 「…있는 수」 같은 중간 절단을 본문 미완으로 본다. */
 const PLACE_INTRO_SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;

@@ -342,7 +342,7 @@ Deno.test("admit checks are ordered and stop before Gemini when limited", async 
   assertEquals(payload.p_checks[7].limit, 300);
   const reserved = JSON.parse(String(reserveCalls(calls)[0].init?.body));
   assertEquals(reserved.p_token_budget, 1_500_000);
-  assertEquals(reserved.p_output_tokens, 2048);
+  assertEquals(reserved.p_output_tokens, 4096);
   assertEquals(typeof reserved.p_reservation_id, "string");
   const reconciled = calls.filter((call) => call.url.includes("gemini_proxy_reconcile_usage"));
   assertEquals(reconciled.length, 1);

@@ -28,7 +28,7 @@ export function applyMooniDestinationRulesPlannerVisibility(rules, showPlannerHe
 }
 
 const CHIP_RULE_HEADER_RE =
-  /헤더\s*[「「]?\s*📋?\s*플래너\s*보기|header\s*["「]?\s*📋?\s*Open planner|header\s+"Open planner"/i;
+  /\ud5e4\ub354\s*「?\s*(?:\ud83d\udccb\s*)?\ud50c\ub798\ub108\s*\ubcf4\uae30|header\s*["「]?\s*(?:\ud83d\udccb\s*)?Open planner/iu;
 
 /**
  * @param {string[]} rules

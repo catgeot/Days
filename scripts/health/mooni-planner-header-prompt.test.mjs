@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { KO } from '../../src/i18n/mooniPromptBundleData.js';
+import { EN, KO } from '../../src/i18n/mooniPromptBundleData.js';
 import {
   buildMooniBoundFestivalSystemHint,
   resolveMooniChatKoreaFestivalHint,
@@ -8,9 +8,11 @@ import {
 import {
   applyMooniDestinationRulesPlannerVisibility,
   countMooniPlannerHeaderGuidance,
+  filterMooniChipRulesForPlannerHeader as filterClientChipRules,
   mooniChatShowsPlannerHeaderButton,
   shouldIncludeMooniCtaPlannerHeaderLine,
 } from '../../src/shared/mooni/mooniChatPlannerHeaderPrompt.js';
+import { filterMooniChipRulesForPlannerHeader as filterEdgeChipRules } from '../../supabase/functions/_shared/gemini/mooniChatPlannerHeaderPrompt.js';
 
 const FESTIVAL_CTX_790124 = {
   contentId: '790124',
@@ -57,6 +59,45 @@ test('festival 세션(showPlannerHeader false) — 클라이언트 조립 프롬
     koreaFestivalHint: hint,
   });
   assert.equal(countMooniPlannerHeaderGuidance(assembled), 0);
+});
+
+test('chip header rules are stripped with and without the emoji, Korean and English', () => {
+  const cases = [
+    {
+      label: 'ko without emoji',
+      rule: KO.chips.prep_flight.rules.at(-1),
+      marker: '플래너 보기',
+      emoji: false,
+    },
+    {
+      label: 'ko with emoji',
+      rule: KO.chips.itinerary.rules.at(-1),
+      marker: '플래너 보기',
+      emoji: true,
+    },
+    {
+      label: 'en without emoji',
+      rule: EN.chips.prep_flight.rules.at(-1),
+      marker: 'Open planner',
+      emoji: false,
+    },
+    {
+      label: 'en with emoji',
+      rule: EN.chips.itinerary.rules.at(-1),
+      marker: 'Open planner',
+      emoji: true,
+    },
+  ];
+  assert.equal(cases.length, 4);
+  for (const filter of [filterClientChipRules, filterEdgeChipRules]) {
+    for (const item of cases) {
+      assert.equal(item.rule.includes(item.marker), true, item.label);
+      assert.equal(item.rule.includes('📋'), item.emoji, item.label);
+      const kept = filter([item.rule, 'practical body line'], false);
+      assert.deepEqual(kept, ['practical body line'], item.label);
+      assert.equal(filter([item.rule], true)[0], item.rule, item.label);
+    }
+  }
 });
 
 test('place-linked 세션(showPlannerHeader true) — 클라이언트 CTA에 플래너 헤더 안내 포함', () => {
