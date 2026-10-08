@@ -1,36 +1,61 @@
 #!/usr/bin/env node
 /**
- * Staging-only Gemini sample compare. Do not point this at production.
+ * Two-phase staging Gemini compare. Do not point this at production.
+ *
+ * `--phase before` MUST run before #413 is deployed to staging. It calls the
+ * Edge that is live at that moment (QUALITY is gemini-3.5-flash) and saves JSON.
+ * `--phase after` runs the same samples after that deploy and writes
+ * side-by-side markdown. After deploy, old model ids alias to gemini-3.8-flash,
+ * so a single later run cannot recover the old answers.
  *
  * Usage:
  *   STAGING_SUPABASE_URL=https://qeqszwxjvhnbzhkchera.supabase.co \
  *   STAGING_SUPABASE_ANON_KEY=... \
  *   STAGING_USER_JWT=... \
- *   node scripts/staging/compare-gemini-models.mjs
+ *   node scripts/staging/compare-gemini-models.mjs --phase before
+ *
+ *   # deploy #413 Edge functions to staging, then:
+ *   node scripts/staging/compare-gemini-models.mjs --phase after
  *
  * STAGING_USER_JWT is an authenticated user access token. review_draft
- * returns 403 with the anon key alone.
- * Optional: STAGING_COMPARE_OUT=scripts/staging/out/gemini-model-compare.md
+ * returns 403 with the anon key alone and is stored as skip.
+ * Optional:
+ *   STAGING_COMPARE_BEFORE=scripts/staging/out/gemini-model-compare-before.json
+ *   STAGING_COMPARE_OUT=scripts/staging/out/gemini-model-compare.md
  *
  * The script calls staging gemini-proxy only. It does not deploy functions
  * and does not call the Supabase management or log APIs.
- * After this branch is deployed, old model ids alias to gemini-3.8-flash,
- * so the old-id column is an alias check (modelUsed), not a 3.5/3.1-pro run.
  * Wiki and magazine rows are short legacy prompts. They do not call
  * update-place-wiki or generate-place-magazine (those upsert the database).
+ * On the pre-#413 Edge, legacy WRITE ids are remapped to QUALITY, so those
+ * rows compare gemini-3.5-flash text with the post-deploy gemini-3.8-flash text.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
+import {
+  BEFORE_SCHEMA,
+  NEW_MODEL,
+  WRITE_FALLBACK_MODEL,
+  afterModelError,
+  beforeSnapshotError,
+  pairSamples,
+  parsePhase,
+  renderCompareMarkdown,
+  sampleCatalog,
+  shapeResult,
+  skipResult,
+  writeFallbackModelError,
+} from './compareGeminiModelsLib.mjs';
 
 const STAGING_REF = 'qeqszwxjvhnbzhkchera';
 const PROD_REF = 'phdjnbfitvmrguqzverm';
-const NEW_MODEL = 'gemini-3.8-flash';
-const OLD_QUALITY = 'gemini-3.5-flash';
-const OLD_WRITE = 'gemini-3.1-pro-preview';
 
+const phase = parsePhase(process.argv);
 const url = (process.env.STAGING_SUPABASE_URL || '').trim().replace(/\/$/, '');
 const anon = (process.env.STAGING_SUPABASE_ANON_KEY || '').trim();
 const userJwt = (process.env.STAGING_USER_JWT || '').trim();
+const beforePath = process.env.STAGING_COMPARE_BEFORE
+  || 'scripts/staging/out/gemini-model-compare-before.json';
 const outPath = process.env.STAGING_COMPARE_OUT
   || 'scripts/staging/out/gemini-model-compare.md';
 
@@ -39,6 +64,9 @@ function refuse(message) {
   process.exit(1);
 }
 
+if (!phase) {
+  refuse('Pass --phase before (before the #413 staging deploy) or --phase after (after that deploy).');
+}
 if (!url || !anon) {
   refuse('Set STAGING_SUPABASE_URL and STAGING_SUPABASE_ANON_KEY. This script is not run in CI.');
 }
@@ -49,6 +77,7 @@ if (url.includes(PROD_REF) || !url.includes(STAGING_REF)) {
 const endpoint = `${url}/functions/v1/gemini-proxy`;
 
 async function postProxy(body, token) {
+  const started = Date.now();
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -66,210 +95,113 @@ async function postProxy(body, token) {
   } catch {
     data = { raw: text.slice(0, 500) };
   }
-  return { status: response.status, data };
+  return { status: response.status, data, latencyMs: Date.now() - started };
 }
 
-function excerpt(value, max = 500) {
-  return String(value ?? '').replace(/\s+/g, ' ').slice(0, max);
-}
-
-function cell(value) {
-  return excerpt(value, 280).replace(/\|/g, '\\|');
-}
-
-const rows = [];
-
-function addRow(name, left, right) {
-  rows.push({ name, left, right });
-}
-
-async function taskCall(task, params, token = anon) {
-  const result = await postProxy({ task, params }, token);
+function fromProxy(id, result, expectJson, legacyText) {
   const data = result.data || {};
-  return {
+  return shapeResult({
+    id,
     status: result.status,
     modelUsed: data.modelUsed || '',
     finishReason: data.finishReason || '',
     truncated: data.truncated === true,
     error: data.error || '',
-    text: data.text || data.raw || '',
-  };
-}
-
-async function legacyCall(modelId, prompt, token = anon) {
-  const result = await postProxy({
-    modelId,
-    parts: [{ text: prompt }],
-  }, token);
-  const data = result.data || {};
-  const legacyText = data?.data?.candidates?.[0]?.content?.parts
-    ?.map((part) => part?.text || '')
-    .join('') || data.text || '';
-  return {
-    status: result.status,
-    modelUsed: data.modelUsed || '',
-    finishReason: data.finishReason || '',
-    truncated: data.truncated === true,
-    error: data.error || '',
-    text: legacyText || data.raw || '',
-  };
-}
-
-const places = ['파리', '미야코지마', '교토'];
-const first = await taskCall('place_intro', { locale: 'ko', placeName: places[0] });
-if (first.status !== 200 || first.modelUsed !== NEW_MODEL || !first.text) {
-  refuse(
-    `First call did not confirm ${NEW_MODEL}. status=${first.status} modelUsed=${first.modelUsed || '(empty)'} error=${first.error || '(none)'}`,
-  );
-}
-console.log(`confirmed ${NEW_MODEL} via place_intro (${places[0]})`);
-
-for (const placeName of places) {
-  const fresh = placeName === places[0]
-    ? first
-    : await taskCall('place_intro', { locale: 'ko', placeName });
-  const oldId = await legacyCall(
-    OLD_QUALITY,
-    `여행지 이름: ${placeName}\n이 장소를 2문장으로 소개해줘. URL은 만들지 마.`,
-  );
-  addRow(
-    `place_intro ${placeName}`,
-    oldId,
-    fresh,
-  );
-}
-
-if (!userJwt) {
-  addRow('review_draft', {
-    status: 'skip',
-    error: 'Set STAGING_USER_JWT (authenticated access token). Anon is 403.',
-    text: '',
-    modelUsed: '',
-    finishReason: '',
-    truncated: false,
-  }, {
-    status: 'skip',
-    error: 'same',
-    text: '',
-    modelUsed: '',
-    finishReason: '',
-    truncated: false,
+    text: legacyText || data.text || data.raw || '',
+    latencyMs: result.latencyMs,
+    expectJson,
   });
-} else {
-  const review = await taskCall('review_draft', {
-    placeName: '파리',
-    rating: 5,
-    draft: '센 강 산책이 좋았다',
-  }, userJwt);
-  const reviewOld = await legacyCall(
-    OLD_QUALITY,
-    '파리 별점 5점. 메모: 센 강 산책이 좋았다. 리뷰 초안 4문장. URL은 만들지 마.',
-    userJwt,
-  );
-  addRow('review_draft 파리', reviewOld, review);
 }
 
-const curation = await taskCall('curation', {
-  locale: 'ko',
-  reports: ['파리'],
-  saved: ['교토'],
-  exclude: [],
-  rejected: [],
-  recentSearches: ['바다'],
-  recentVisited: ['미야코지마'],
-  tasteTags: ['sea', 'slow'],
-});
-let curationParsed = false;
-try {
-  const match = String(curation.text).match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-  if (match) {
-    JSON.parse(match[0]);
-    curationParsed = true;
+async function runSample(sample) {
+  if (sample.auth && !userJwt) {
+    return skipResult(sample.id, 'Set STAGING_USER_JWT (authenticated access token). Anon is 403.');
   }
-} catch {
-  curationParsed = false;
-}
-curation.error = curation.error || (curationParsed ? '' : 'json_parse_failed');
-const curationOld = await legacyCall(
-  OLD_QUALITY,
-  '취향: 바다, 느긋. 방문: 파리, 교토. 제외 없음. JSON만 출력: {"picks":[{"name":"...","reason":"..."}]}',
-);
-addRow('curation', curationOld, { ...curation, text: `${curationParsed ? 'JSON_OK ' : 'JSON_FAIL '}${curation.text}` });
-
-const mooni = await taskCall('mooni_chat', {
-  persona: 'PLANNER',
-  tier: 'quality',
-  locale: 'ko',
-  isMooni: true,
-  locationName: '미야코지마',
-  boundPlaceName: '미야코지마',
-  userText: '미야코지마 3박 4일 일정 짜줘',
-  history: [],
-  showPlannerHeader: true,
-});
-const mooniOld = await legacyCall(
-  OLD_QUALITY,
-  '미야코지마 3박 4일 일정만 작성. URL은 맥락에 없으므로 만들지 마.',
-);
-addRow(
-  `mooni_chat 미야코지마 3박4일 finish=${mooni.finishReason || '-'} truncated=${mooni.truncated}`,
-  mooniOld,
-  mooni,
-);
-
-const wikiPrompt = '파리 실용 정보 두 문장만. 없는 URL은 만들지 마. JSON: {"markdown":"..."}';
-addRow(
-  'wiki sample (legacy, no DB upsert)',
-  await legacyCall(OLD_WRITE, wikiPrompt),
-  await legacyCall(NEW_MODEL, wikiPrompt),
-);
-
-const magazinePrompt = '교토 매거진 요약 JSON 배열 1개만. [{"title":"...","content":"..."}]. URL은 만들지 마.';
-addRow(
-  'magazine sample (legacy, no DB upsert)',
-  await legacyCall(OLD_WRITE, magazinePrompt),
-  await legacyCall(NEW_MODEL, magazinePrompt),
-);
-
-const lines = [
-  '# Staging Gemini model compare',
-  '',
-  `Endpoint: \`${endpoint}\``,
-  `First confirmed model: \`${NEW_MODEL}\``,
-  '',
-  'Old-id calls are aliased by the Edge deployed from this branch. `modelUsed` should be `gemini-3.8-flash` (or `gemini-3.7-flash` only if that id was requested).',
-  'Task calls are the live path (place_intro, review_draft, curation, mooni_chat).',
-  '',
-  '| Sample | Old id status | Old modelUsed | Old finish / error | Old excerpt | New status | New modelUsed | New finish / truncated | New excerpt |',
-  '| --- | --- | --- | --- | --- | --- | --- | --- | --- |',
-];
-
-for (const row of rows) {
-  lines.push([
-    cell(row.name),
-    cell(row.left.status),
-    cell(row.left.modelUsed),
-    cell(row.left.finishReason || row.left.error),
-    cell(row.left.text),
-    cell(row.right.status),
-    cell(row.right.modelUsed),
-    cell(`${row.right.finishReason || row.right.error} truncated=${row.right.truncated}`),
-    cell(row.right.text),
-  ].join(' | ').replace(/^/, '| ').replace(/$/, ' |'));
+  const token = sample.auth ? userJwt : anon;
+  if (sample.kind === 'legacy') {
+    const result = await postProxy({
+      modelId: sample.modelId,
+      parts: [{ text: sample.prompt }],
+    }, token);
+    const data = result.data || {};
+    const legacyText = data?.data?.candidates?.[0]?.content?.parts
+      ?.map((part) => part?.text || '')
+      .join('') || '';
+    return fromProxy(sample.id, result, sample.expectJson, legacyText);
+  }
+  const result = await postProxy({ task: sample.task, params: sample.params }, token);
+  return fromProxy(sample.id, result, sample.expectJson, '');
 }
 
-lines.push('');
-const markdown = `${lines.join('\n')}\n`;
-mkdirSync(dirname(outPath), { recursive: true });
-writeFileSync(outPath, markdown, 'utf8');
-console.log(`wrote ${outPath}`);
-
-const failed = rows.some((row) => {
-  const codes = [row.left.status, row.right.status];
-  return codes.some((code) => code !== 200 && code !== 'skip');
-});
-if (!curationParsed && curation.status === 200) {
-  console.error('curation JSON did not parse');
-  process.exit(1);
+async function runCatalog() {
+  const rows = [];
+  for (const sample of sampleCatalog()) {
+    const row = await runSample(sample);
+    console.log(`${phase} ${row.id} status=${row.status} modelUsed=${row.modelUsed || '-'} chars=${row.textLength} ms=${row.latencyMs ?? '-'}`);
+    rows.push(row);
+  }
+  return rows;
 }
-if (failed) process.exit(1);
+
+function writeJson(filePath, payload) {
+  mkdirSync(dirname(filePath), { recursive: true });
+  writeFileSync(filePath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+}
+
+if (phase === 'before') {
+  const samples = await runCatalog();
+  const blocked = beforeSnapshotError(samples);
+  if (blocked) refuse(blocked);
+  writeJson(beforePath, {
+    schema: BEFORE_SCHEMA,
+    phase: 'before',
+    capturedAt: new Date().toISOString(),
+    endpoint,
+    note: 'Captured before the #413 staging deploy. Do not deploy #413 until this file exists.',
+    samples,
+  });
+  console.log(`wrote ${beforePath}`);
+} else {
+  let beforeDoc;
+  try {
+    beforeDoc = JSON.parse(readFileSync(beforePath, 'utf8'));
+  } catch {
+    refuse(`Missing before snapshot ${beforePath}. Run --phase before before deploying #413 to staging.`);
+  }
+  if (beforeDoc?.schema !== BEFORE_SCHEMA || !Array.isArray(beforeDoc.samples)) {
+    refuse(`Before snapshot ${beforePath} is not schema ${BEFORE_SCHEMA}.`);
+  }
+  if (beforeDoc.endpoint !== endpoint) {
+    refuse(`Before snapshot endpoint ${beforeDoc.endpoint} does not match ${endpoint}.`);
+  }
+  const samples = await runCatalog();
+  const fallbackRaw = await postProxy({
+    modelId: WRITE_FALLBACK_MODEL,
+    parts: [{ text: 'Reply with the single word ok.' }],
+  }, anon);
+  const fallback = fromProxy('write_fallback', fallbackRaw, false, '');
+  console.log(`after write_fallback status=${fallback.status} modelUsed=${fallback.modelUsed || '-'}`);
+
+  const pairs = pairSamples(beforeDoc.samples, samples);
+  const markdown = renderCompareMarkdown({
+    endpoint,
+    beforeCapturedAt: beforeDoc.capturedAt,
+    afterCapturedAt: new Date().toISOString(),
+    pairs,
+    fallback,
+  });
+  mkdirSync(dirname(outPath), { recursive: true });
+  writeFileSync(outPath, markdown, 'utf8');
+  console.log(`wrote ${outPath}`);
+
+  const modelError = afterModelError(samples);
+  if (modelError) console.error(modelError);
+  const fallbackError = writeFallbackModelError(fallback);
+  if (fallbackError) console.error(fallbackError);
+  const flagged = pairs.filter((pair) => pair.flags.length > 0);
+  if (flagged.length > 0) {
+    console.error(`New output flagged: ${flagged.map((pair) => `${pair.id} (${pair.flags.join(', ')})`).join('; ')}`);
+  }
+  if (modelError || fallbackError || flagged.length > 0) process.exit(1);
+  console.log(`after modelUsed ${NEW_MODEL} on ${samples.filter((row) => row.status !== 'skip').length} samples; WRITE fallback ${WRITE_FALLBACK_MODEL}`);
+}
