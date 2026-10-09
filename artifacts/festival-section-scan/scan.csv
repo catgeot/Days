@@ -1,0 +1,300 @@
+contentId,title,hubId,hubName,lodging_main,lodging_branch,nearAttractions,packages,nearFood,nearLeports,nearCulture,nearCourses
+3379778,가락 옥토버페스트,seoul,송파,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2746930,감악산 꽃별 여행,geochang,거창,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items,visible|has_items
+506376,강경젓갈축제,nonsan,논산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+737479,강남페스티벌,seoul,강남,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1307813,강동선사문화축제,seoul,강동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2930716,강릉 국수 축제,gangneung,강릉,hidden|canShowMrtStayStrip_false,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+825295,강릉커피축제,gangneung,강릉,hidden|canShowMrtStayStrip_false,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3368470,경기미 디저트 페스타,suwon,수원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+141105,경남고성공룡세계엑스포,goseongnam,경남 고성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+2648460,경복궁 별빛야행,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2759249,경산 대추축제 & 농산물 한마당,gyeongsan,경산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2992940,계룡軍문화축제,gyeryong,계룡,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+1725993,고양가을꽃축제,goyang,고양,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3383613,고양행주한우 숯불구이축제,goyang,고양,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+604454,고창모양성제,gochang,고창,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2872215,고흥유자축제,goheung,고흥,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+1322668,곡성심청어린이대축제,gokseong,곡성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3538633,과천청년축제,gwacheon,과천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3551206,광명동굴 빛 축제,gwangmyeong,광명,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2786391,광안리 M(Marvelous) 드론 라이트쇼,busan,수영,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+692682,광주 추억의 충장축제,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+604097,광주김치축제,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2990881,광주버스킹월드컵,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2561700,광주서창억새축제,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3028462,구미라면 축제,gumi,구미,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3017799,구미푸드페스티벌,gumi,구미,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4116779,국가유산 미디어아트 여수 진남관,yeosu,여수,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4114329,국가유산 미디어아트 철원 노동당사,cheorwon,철원,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error,visible|has_items
+4117505,국가유산 미디어아트 청주,cheongju,청주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4060434,국악공연 진연,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3364857,군산짬뽕페스티벌,gunsan,군산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+1998564,궁중문화축전,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2728613,귀몽 제주신화월드,seogwipo,서귀포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+506465,금산세계인삼축제,geumsan,금산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+1275743,금정산성축제,busan,금정,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2761411,금천하모니축제,seoul,금천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error
+574285,김제지평선축제,gimje,김제,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+3377995,김천김밥축제,gimcheon,김천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+506470,김해분청도자기축제,gimhae,김해,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+2766000,나오라쇼,wonju,원주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3009344,나주영산강축제,naju,나주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+1719667,낙동강 구포나루 축제,busan,부산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2809535,남산봉수의식 등 전통문화행사,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2865258,노원 북 페스티벌,seoul,노원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1720025,다산정약용문화제,namyangju,남양주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4115096,달려라부산 행운미션런,busan,동래,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4109305,달밤에체조 부산 챌린지,busan,부산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3301281,달성가족문화축제 YES! 키즈존,dalseong,달성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4109893,담양 국가유산야행,damyang,담양,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2396313,대구 국가유산야행,daegu,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3113001,대전 동구동락 축제,daejeon,대전,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2770434,대전 빵 축제,daejeon,유성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error
+2488086,대전 서구 아트페스티벌,daejeon,대전,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error
+3532372,대전 중구 북페스티벌,daejeon,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+981658,대전효문화뿌리축제,daejeon,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2756396,덕수궁 밤의 석조전,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3018924,도곡 메타세쿼이아 로드 페스타,seoul,강남,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1726052,독일마을 맥주축제,namhae,남해,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+3380650,동대문페스티벌,seoul,동대문,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+229048,동래읍성역사축제,busan,동래,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4116560,동물행복페스타,seoul,영등포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+637693,마산가고파국화축제,changwon,창원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+1841539,마토예술제,pyeongtaek,평택,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4118276,모이랑께 가보장께,jeonju,전주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+574014,목포항구축제,mokpo,목포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4113071,문경 가은아자개 장터축제,mungyeong,문경,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+635451,문경사과축제,mungyeong,문경,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+2598331,문화가 흐르는 서울광장,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4116358,밀양 매운맛 축제,miryang,밀양,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+952988,백제문화제,buyeo,부여,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+2860545,보물찾기 축제 - 금괴를 찾아라!,iksan,익산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+506544,봉화송이축제,bonghwa,봉화,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+3532971,부산 서구 의료관광축제,busan,부산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+140799,부산국제록페스티벌,busan,사상,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2873292,부산글로벌웹툰페스티벌,busan,해운대,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+235076,부산불꽃축제,busan,수영,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4095478,부산브릿지마라톤,busan,해운대,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3492576,부산일러스트레이션페어V.7,busan,해운대,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3372852,부안 곰소젓갈&왕새우축제,buan,부안,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+2933008,부안붉은노을축제,buan,부안,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+1266642,부평풍물대축제,incheon,부평,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3367405,비건·할랄뷰티페어,seoul,강남,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4116982,산북AI김장문화축제,yeoju,여주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+506600,산청한방약초축제,sancheong,산청,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error,visible|has_items
+1398149,삼랑성역사문화축제,ganghwa,강화,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+2434545,새연교 주말 문화공연 '금토금토 새연쇼',seogwipo,서귀포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+141236,생거진천 문화축제,jincheon,진천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+506616,서귀포칠십리축제,seogwipo,서귀포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+140752,서산해미읍성축제,seosan,서산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+292961,서울 왕궁수문장 교대의식,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+229057,서울와우북페스티벌,seoul,마포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4115702,서초 AI 페스타,seoul,서초,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1718491,설악문화제,sokcho,속초,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4102649,섬유기획전 《안식의 결 Texture of Rest》,seoul,성동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3501104,성남동 커피페스티벌,ulsan,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3348362,성북거리문화축제 다다페스타,seoul,성북,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2858894,성주가야산황금들녘메뚜기축제,seongju,성주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3380662,세계문화유산 화순 고인돌 가을꽃 축제,hwasun,화순,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+2756476,세계유산 조선왕릉축전,hwaseong,화성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4109448,세미원 수련문화제,yangpyeong,양평,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+1849007,세종한글축제,sejong,연기,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error
+506809,소래포구축제,incheon,남동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3544911,수봉산 페스티벌,incheon,미추홀,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2751090,수원화성 미디어아트,suwon,수원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+914138,수원화성문화제,suwon,수원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+638241,순창장류축제,sunchang,순창,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2485123,순천 푸드앤아트페스티벌,suncheon,순천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4110051,숲속의 산성도시 - 남한산성 가을 페스타,gwangju_gi,경기 광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2828336,시흥월곶포구축제,siheung,시흥,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+2666388,아이가 행복입니다 S9,seoul,송파,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+506670,안동국제탈춤페스티벌,andong,안동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+293030,안성 남사당바우덕이 풍물단 상설 공연 ‘곰뱅이텄다’,anseong,안성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+506690,안성맞춤 남사당 바우덕이축제,anseong,안성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2846034,안양청년축제,anyang,안양,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+506708,양양송이연어축제,yangyang,양양,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3011948,양재아트살롱,seoul,서초,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4117047,양평부추축제,yangpyeong,양평,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items,visible|has_items
+3400809,어부장터X포트빌리지 통영,tongyeong,통영,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+507599,얼음나라화천 산천어축제,hwacheon,화천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2874909,여수밤바다 불꽃축제,yeosu,여수,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+1147035,여주오곡나루축제,yeoju,여주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+639993,연산대추문화축제,nonsan,논산,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items,visible|has_items
+2870929,연천 국화축제,yeoncheon,연천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+293084,영동난계국악축제,yeongdong,영동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+506766,영주 풍기인삼축제,yeongju,영주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+2988303,영천한방축제,yeongcheon,영천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+639648,예산사과축제,yesan,예산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3522322,오슬로우 빈티지 마켓,incheon,인천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2433596,왕가의 산책,incheon,인천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+2431706,용인사이버과학축제,yongin,용인,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3371765,용인청년페스티벌,yongin,용인,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2855326,우륵문화제,chungju,충주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2952759,우이천변 페스타 2026 이상한 나라의 웰니스,seoul,강북,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3017778,울산 중구 국가유산야행,ulsan,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+553263,울산고래축제,ulsan,울산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2986930,울산공업축제,ulsan,울산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2877244,웰컴투신관동,gongju,공주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2561795,유성국화축제,daejeon,유성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3544873,유성독서대전,daejeon,유성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4098134,유성온날,daejeon,유성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2560471,의성슈퍼푸드마늘축제,uiseong,의성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3497454,의정부지 상설 전통문화행사,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1087020,의좋은 형제 축제,yesan,예산,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error,visible|has_items
+637276,익산천만송이 국화축제,iksan,익산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2618014,인제가을꽃축제,inje,인제,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error,visible|has_items
+2872078,인천 영화 주간 2026,incheon,연수,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2031318,임실N치즈축제,imsil,임실,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+790211,장애인문화예술축제 A+ Festival,seoul,강서,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2969832,전주국제그림책도서전,jeonju,전주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2547013,전주한옥마을 전통연희 퍼레이드-노상놀이야,jeonju,전주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+506838,전주한지문화축제,jeonju,전주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3018117,전포커피축제,busan,부산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3007256,정관생태하천학습문화축제,gijang,기장,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+142233,정동문화축제,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+506895,정선아리랑제,jeongseon,정선,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2554814,정조대왕 능행차 공동재현,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4106717,제13회 21세기 인문가치포럼,andong,안동,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items,visible|has_items
+617992,제16회 광주비엔날레,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1075049,제17회 광주국제아트페어 《아트광주》,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3528062,제18회 서울건축문화제,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+606549,제24회 동강국제사진제,yeongwol,영월,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4111479,제3회 추도 섬 영화제,tongyeong,통영,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4110067,제4회 칠곡 트랜스미디어 축제,chilgok,칠곡,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+2757751,제6회 전주거리인형극제,jeonju,전주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2989642,제76주년 K-밀리터리 페스티벌：춘천대첩,chuncheon,춘천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2622679,제8회 예천국제스마트폰영화제,yecheon,예천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+2560824,제주광어대축제,jeju,제주시,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1365782,증평인삼골축제,jeungpyeong,증평,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+229054,지상군페스티벌,gyeryong,계룡,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+506926,진주남강유등축제,jinju,진주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3542294,진주의 수호자들,jinju,진주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2818138,창경궁 야연,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4111666,천안 북 페스티벌,cheonan,천안,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+506935,천안흥타령춤축제,cheonan,천안,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+1399407,청도반시축제,cheongdo,청도,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4056606,"청백리의 집, 오늘을 비추다",gwangmyeong,광명,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+921212,청송사과축제,cheongsong,청송,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+3019872,청춘마이크 페스티벌,seoul,동작,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4062805,충북 괴산 우주특별시：별별탐사대,goesan,괴산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3522254,충청북도 정원박람회 in 영동,yeongdong,영동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+1844150,칠곡낙동강평화축제,chilgok,칠곡,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4058556,"컬처라운지 경기, 장(場)",suwon,수원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3514928,코리안드림 한강대축제,seoul,광진,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4115260,"쿼드, 연극의 질문들：〈서안화차〉",seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4115268,"쿼드, 연극의 질문들：〈옥상 밭 고추는 왜〉",seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4115269,"쿼드, 연극의 질문들：〈혁명의 춤〉",seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4115275,"쿼드, 연극의 질문들：〈화염〉",seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4116722,탄광문화축제,jeongseon,정선,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error,visible|has_items
+3545976,태백제,taebaek,태백,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3113045,파주페어 북앤컬처,paju,파주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4082595,팔색찬란,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2859297,페스티벌 광명,gwangmyeong,광명,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3481597,페인터즈,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1620571,포은문화제,yongin,용인,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3352029,포천 한탄강 가든페스타,pocheon,포천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3008665,포천시 청년축제,pocheon,포천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4119230,포항 낙화의 밤,pohang,포항,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+588175,포항국제불빛축제,pohang,포항,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+2992829,피아크와 함께하는 2026 키스포츠페스티벌 부산,busan,부산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+780198,하동 북천 코스모스 메밀꽃 축제,hadong,하동,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4060158,한강 서래섬 피크닉 콘서트,seoul,서초,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3355698,한강수계 걷기행사,gapyeong,가평,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3111722,한강역사탐방,seoul,영등포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2828431,한강페스티벌,seoul,강남,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3540329,한글날 문화행사,yeoju,여주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3006019,함안 국가유산야행,haman,함안,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items,visible|has_items
+2855626,허심청브로이 옥토버페스트,busan,동래,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3530974,호법 코스모스 꽃축제,icheon,이천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3020205,호캠프 리턴즈,okcheon,옥천,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+2874329,홍성글로벌바비큐페스티벌,hongseong,홍성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+140911,홍성남당항 대하축제,hongseong,홍성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+790124,홍천 인삼한우 명품축제,hongcheon,홍천,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items,visible|has_items
+1621746,화도진 축제,incheon,인천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+1391363,화순운주문화축제,hwasun,화순,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+3370635,화순적벽문화축제,hwasun,화순,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items,visible|has_items
+3373572,황매산 억새축제,hapcheon,합천,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+232325,횡성한우축제,hoengseong,횡성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+1373481,흥부제,namwon,남원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4112672,2026 D.FESTA 소극장축제,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2987791,2026 DMZ OPEN 페스티벌,paju,파주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4087092,2026 GHOST(경기 한류 OST) 페스티벌,paju,파주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4117084,2026 HELLO DDC FESTIVAL,dongducheon,동두천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4108260,2026 HUG RUN 허그런,seoul,마포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+1250585,2026 경기도자비엔날레,icheon,이천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+2987489,2026 고흥 녹동항 드론쇼,goheung,고흥,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4114185,2026 광주미식주간,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3369503,2026 광주사운드파크페스티벌,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3488421,2026 국립극장 쏙쏙들이페스티벌,paju,파주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3377038,2026 국제선명상대회,seoul,강남,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3478890,2026 금남로 차 없는 거리 ‘걷자잉’,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4095228,2026 남도 K-가든 페스티벌,yeosu,여수,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4106719,2026 달빛 음악공감,daejeon,대전,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error
+1846905,2026 달성 100대 피아노,dalseong,달성,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items,visible|has_items
+2392105,2026 달성 대구현대미술제  Movement: Flow-Ringer-Flux,dalseong,달성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4115201,2026 대전 세계태양광총회 개최 기념 온시민에너지걷기한마당,daejeon,대전,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error
+3343831,2026 대한민국 AI 콘텐츠 어워즈,suwon,수원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4080078,2026 대한민국 도시·지역혁신 산업박람회,cheongju,청주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2754710,2026 대한민국 산림박람회,cheongju,청주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+4114621,2026 대한민국 제주정원문화박람회,seogwipo,서귀포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3359994,2026 대한민국 해양 모빌리티･안전 엑스포,busan,부산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2767541,2026 대한민국과학축제 with 전북과학축전,jeonju,전주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2865136,2026 라온페스타,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4113301,2026 렉키의 수상한 피크닉,changwon,창원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4099133,2026 로컬 그라운드 연남,seoul,마포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3492276,2026 문화가 있는 날,incheon,인천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3488655,2026 문화가 있는 날 청춘마이크,gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3495437,2026 문화가 있는날  - 문화배달,yeoncheon,연천,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error,visible|has_items
+3014969,2026 문화의 달 여수,yeosu,여수,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+2410727,2026 보드게임페스타(시즌2),seoul,강남,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3006246,2026 부산국제공연예술마켓(BPAM),busan,해운대,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3497353,2026 부산바다도서관,busan,사하,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error,visible|has_items
+3552019,2026 뷰티썸 수원,suwon,수원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2952484,2026 빵빵데이 천안,cheonan,천안,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3512205,2026 서귀포 원도심 문화페스티벌,seogwipo,서귀포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4115205,2026 서울 펫림픽,seoul,마포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2720203,2026 서울거리공연 구석구석라이브,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2488793,2026 서울도시농업박람회,seoul,성동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3011280,2026 서울디자인위크,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2857763,2026 서울뮤직페스티벌,seoul,용산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3021908,2026 서울발레페스티벌,seoul,송파,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3546110,2026 서울한옥위크,seoul,종로,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4067214,2026 섬 방문의 해,yeosu,여수,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3370452,2026 수성국제비엔날레,daegu,수성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3107059,2026 숭례문 파수의식,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3560787,2026 양강섬예술축제,yangpyeong,양평,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4110074,2026 왕생로 빛거리 축제,ulsan,울산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3367339,2026 우리쌀 우리술 K-라이스페스타,goyang,고양,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4109998,2026 울산야외도서관 소풍,ulsan,울산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3554702,2026 원도심 야간여행 ‘섬夜시즌’,jeju,제주시,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4113086,2026 원주시 중소기업 우수제품 박람회,wonju,원주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3016265,2026 유니카 코리아 국제영화제,gyeongsan,경산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3019085,2026 이천펫축제,icheon,이천,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+1129018,2026 인천국제디자인페어(INDEF),incheon,남동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+3550990,2026 인천원도사제&낙섬축제,incheon,미추홀,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3399432,2026 제5회 제주비엔날레 허끄곡 모닥치곡 이야홍 : 변용의 기술,jeju,제주시,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error
+1074568,2026 제주올레걷기축제,jeju,제주시,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error
+3382929,2026 지리산걷기축제 ‘지리산소풍’,sancheong,산청,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4113826,2026 진안고원 포레스티벌,jinan,진안,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible_empty|fetch_error,visible|has_items
+3530139,2026 충청남도 드론 페스타,hongseong,홍성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3011445,2026 크리에이티브X성수,seoul,성동,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3340301,2026 탄소중립 흙살리기 박람회,gurye,구례,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items
+1748721,2026 포항스틸아트페스티벌 (2026PSAF),pohang,포항,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items
+3001045,2026 한강 종이비행기 축제,seoul,영등포,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4108258,2026 한글문화특별기획전 〈세종과 남준〉,sejong,연기,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error
+2740046,2026 한복문화주간,seoul,용산,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+2657619,2026 화성행궁 야간개장,suwon,수원,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2737313,2026섬진강국제실험예술제(SIEAF),gokseong,곡성,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+2630385,2027 코리아그랜드세일,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4101384,"20세기 사진 거장전 - 빛, 시간을 멈추다",seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4109730,6.10만세운동 100주년 기념 독립페어,andong,안동,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible|has_items,visible|has_items,visible|has_items
+3113265,APAP 작품투어 (안양공공예술프로젝트),anyang,안양,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3099365,Colorful Garden 자라섬 꽃 페스타,gapyeong,가평,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3473295,DDP 건축투어,seoul,중구,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+3536325,EX펌킨나잇：화니&워니x십이지신,gyeongju,경주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+4116994,K-Drone Festival,gangneung,강릉,hidden|canShowMrtStayStrip_false,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+2833186,MOIM International,siheung,시흥,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items
+3331805,NS푸드페스타,iksan,익산,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
+4089090,"〈도기陶器, 우리를 담은 질그릇〉",gwangju,광주,visible|,visible|,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible|has_items,visible_empty|fetch_error
+4109218,「인각사」와 함께하는 제5회 군위 삼국유사 전국 가족걷기대회,gunwi,군위,visible|,visible|,visible|has_items,visible|has_items,visible_empty|fetch_error,visible_empty|fetch_error,visible_empty|fetch_error,visible|has_items
