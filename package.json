@@ -110,6 +110,8 @@
     "smoke:festival-geolocation-tap": "node scripts/smoke-festival-geolocation-tap.mjs",
     "test:e2e:korea-festival-detail-url": "playwright test --config=playwright.config.festival-detail-url.js",
     "test:e2e:korea-festival-loc-hint": "playwright test --config=playwright.config.festival-loc-hint.js",
+    "test:e2e:gangneung-festival-stay": "playwright test --config=playwright.config.gangneung-stay-strip.js",
+    "health:place-match-category-scan": "node scripts/health/place-match-category-scan.mjs",
     "smoke:korea-festival-planner-link": "node scripts/smoke-korea-festival-planner-link.mjs",
     "smoke:festival-detail-locale": "node scripts/smoke-festival-detail-locale.mjs",
     "smoke:festival-surface-search": "node scripts/smoke-festival-surface-search.mjs",
