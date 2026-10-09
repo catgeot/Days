@@ -1,8 +1,10 @@
 import { detectMooniReplyLeak } from '../../supabase/functions/_shared/gemini/answerSanitize.mjs';
+import {
+  pgBtrimSpaces,
+  placeChatIntroSentenceEndRejectReason,
+} from '../../src/pages/Home/lib/placeChatIntroSentenceEnd.js';
 
 const PAGE_SIZE = 500;
-/** placeChatIntroLimits SUMMARY_SENTENCE_END_RE · RPC 최소 길이와 같다. */
-const SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;
 const MIN_SUMMARY_CHARS = 40;
 
 /**
@@ -12,8 +14,9 @@ const MIN_SUMMARY_CHARS = 40;
 export function placeChatIntroStoredProbeReason(summary) {
   const leak = detectMooniReplyLeak(summary);
   if (leak) return leak;
-  const trimmed = String(summary ?? '').trim();
-  if (!SENTENCE_END_RE.test(trimmed)) return 'mid_sentence_end';
+  const sentenceReason = placeChatIntroSentenceEndRejectReason(summary);
+  if (sentenceReason && sentenceReason !== 'empty') return sentenceReason;
+  const trimmed = pgBtrimSpaces(summary);
   if (Array.from(trimmed).length < MIN_SUMMARY_CHARS) return 'too_short';
   return null;
 }

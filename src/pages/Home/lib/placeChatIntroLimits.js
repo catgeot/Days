@@ -1,14 +1,16 @@
 /** save_place_chat_intro 와 같은 검사. Postgres char_length = 유니코드 코드포인트. */
 
 import { detectMooniReplyLeak } from '../../../../supabase/functions/_shared/gemini/answerSanitize.mjs';
+import {
+  isPlaceChatIntroSentenceComplete,
+  pgBtrimSpaces,
+} from './placeChatIntroSentenceEnd.js';
 
 export const PLACE_CHAT_INTRO_MIN_CHARS = 40;
 export const PLACE_CHAT_INTRO_MAX_CHARS = 1200;
 export const PLACE_CHAT_INTRO_KEY_MAX_CHARS = 120;
 
-function pgBtrim(value) {
-  return String(value ?? '').replace(/^ +| +$/g, '');
-}
+const pgBtrim = pgBtrimSpaces;
 
 export function placeChatIntroCodePoints(value) {
   return Array.from(pgBtrim(value)).length;
@@ -19,12 +21,7 @@ const SUMMARY_URL_RE = /https?:|www\.|:\/\/|javascript:|data:/i;
 const KEY_CONTROL_RE = /[\u0000-\u001f\u007f-\u009f<>\\]/;
 const KEY_URL_RE = /https?:|www\.|:\/\//i;
 
-/** Complete sentence end — rejects mid-word cuts like 「…품겨 있는 수」. */
-const SUMMARY_SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;
-
-export function isPlaceChatIntroSentenceComplete(summary) {
-  return SUMMARY_SENTENCE_END_RE.test(pgBtrim(summary));
-}
+export { isPlaceChatIntroSentenceComplete } from './placeChatIntroSentenceEnd.js';
 
 export function isPlaceChatIntroSummaryAccepted(summary) {
   const text = pgBtrim(summary);
