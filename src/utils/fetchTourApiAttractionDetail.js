@@ -1,3 +1,4 @@
+import { tourListSummaryFromOverview } from '../pages/Home/lib/tourListSummary.js';
 import { invokeTourApiProxy, TOUR_API_BODY_LOCALE } from './tourApiProxy';
 
 const ATTRACTION_CONTENT_TYPE_ID = '12';
@@ -31,6 +32,15 @@ function pickImageUrl(...candidates) {
 /** contentId → detailCommon item. 썸네일과 상세가 같은 호출을 두 번 하지 않게 한다. */
 const detailCommonCache = new Map();
 
+function plainOverview(raw) {
+  const text = String(raw || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (text.length < 12) return null;
+  return text;
+}
+
 function detailCommonItem(contentId) {
   const id = String(contentId ?? '').trim();
   if (!/^\d{1,32}$/.test(id)) return Promise.resolve(null);
@@ -42,6 +52,17 @@ function detailCommonItem(contentId) {
     detailCommonCache.set(id, pending);
   }
   return pending;
+}
+
+/**
+ * 목록 써머리용 첫 문장. 상세 본문 전문은 여기서 반환하지 않는다.
+ * @param {string | number | null | undefined} contentId
+ * @returns {Promise<string | null>}
+ */
+export async function fetchTourApiListSummary(contentId) {
+  const item = await detailCommonItem(contentId);
+  const sentence = tourListSummaryFromOverview(plainOverview(item?.overview));
+  return sentence || null;
 }
 
 /**

@@ -137,7 +137,7 @@ export function stripPlaceChatIntroForSummary(text, placeName = '') {
   return body;
 }
 
-/** 조회·저장에 쓸 destination_key 후보 (이름 / 국가+이름 / displayLabel) */
+/** 조회·저장에 쓸 destination_key 후보 (이름 / 지역+이름 / 국가+이름 / displayLabel) */
 export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   if (locOrName == null) return [];
   if (typeof locOrName === 'string') {
@@ -155,12 +155,25 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   const country = normalizeDestinationKey(
     getLocalizedCountryName(locOrName, locale) || locOrName.country || '',
   );
+  const parentCity = normalizeDestinationKey(
+    locOrName.parentCity || locOrName.city || locOrName.region || '',
+  );
   const keys = [];
   const push = (k) => {
     const n = normalizeDestinationKey(k);
     if (!isValidIntroDestination(n)) return;
     if (!keys.includes(n)) keys.push(n);
   };
+
+  const explicitLabel = normalizeDestinationKey(locOrName.displayLabel || '');
+  if (explicitLabel) push(explicitLabel);
+
+  if (parentCity && name && !name.includes(parentCity)) {
+    push(`${parentCity} ${name}`);
+    if (country && !isPlaceholderCountry(country) && !parentCity.includes(country)) {
+      push(`${country} ${parentCity} ${name}`);
+    }
+  }
 
   push(label);
   push(name);

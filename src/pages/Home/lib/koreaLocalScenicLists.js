@@ -2030,6 +2030,24 @@ const HY_GIBAEK_2 = `${HY_IMG}GC072P02945`;
 const HY_GIBAEK_3 =
   'https://devin.aks.ac.kr/image/676248ab-1c6e-4dbc-8b0f-3b8606885933?preset=orig';
 const HY_GIBAEK_HOME = 'https://hamyang.grandculture.net/hamyang/toc/GC07200042';
+const HC_OKJEON =
+  'https://devin.aks.ac.kr/image/dbb074b6-92bc-4f63-8e6d-43aba8d1004b?preset=orig';
+const HC_OKJEON_2 =
+  'https://devin.aks.ac.kr/image/f535fc95-493a-4771-9d85-3d99aec7aa3e?preset=orig';
+const HC_OKJEON_3 =
+  'https://devin.aks.ac.kr/image/1ef10a9a-2c70-4820-8fee-023877bcf72c?preset=orig';
+const HC_OKJEON_HOME = 'http://www.hc.go.kr/06423/06435/06443.web';
+/** 합천군 문화관광 허굴산. 군 HTTPS는 오류 페이지라 공식 파일의 아카이브 주소. */
+const HC_HEOGUL =
+  'https://web.archive.org/web/20211103004913im_/https://www.hc.go.kr/CmsMultiFile/view.do?multifileId=MF00001900&idx=21260';
+const HC_HEOGUL_MAP =
+  'https://web.archive.org/web/20261002001034im_/http://www.hc.go.kr/CmsMultiFile/view.do?multifileId=MF00001900&idx=21261';
+const HC_HEOGUL_HOME = 'http://www.hc.go.kr/06571/06780/06788.web?amode=view&idx=50';
+const WD_TOUR = 'https://www.wando.go.kr/contents/2510';
+const WD_SANGWANG = `${WD_TOUR}/sanghwangbong1.jpg`;
+const WD_SANGWANG_2 = `${WD_TOUR}/sanghwangbong4.jpg`;
+const WD_SANGWANG_3 = `${WD_TOUR}/sanghwangbong3-1.jpg`;
+const WD_SANGWANG_HOME = 'https://www.wando.go.kr/tour/sub.cs?m=130';
 const GJ_KHS = 'https://www.khs.go.kr/unisearch/images/national_treasure';
 const GJ_NAWON = `${GJ_KHS}/2021070209124901.JPG`;
 const GJ_NAWON_2 = `${GJ_KHS}/1612776.jpg`;
@@ -3630,6 +3648,20 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     [HY_DEOGYU_2, HY_DEOGYU_3],
     HY_DEOGYU_HOME,
   ),
+  'local-scenic:hapcheon-palgyeong:옥전고분군': localScenicPhotoOverlay(
+    '합천8경 제7경 옥전고분군은 쌍책면 성산리 산23-18, 황강옥전로 1558의 가야 고분군입니다. 합천군 문화관광은 4~6세기 가야 지배층의 묘역으로 고총 28기와 수백 기의 무덤이 있다고 적고, 위치는 쌍책면 성산리, 문의는 055-930-3182입니다. 합천박물관은 황강변 야산 정상부에 복원 고총 28기를 포함해 약 1,000기로 추산하고, 1985년 겨울부터 1992년 봄까지 경상대학교박물관이 5차·146기를 발굴해 토기·철제 갑옷과 투구·무기·말갖춤·귀걸이 등 2,500여 점을 수습했다고 적습니다. 주인공은 『양직공도』·『일본서기』의 다라국 지배층으로 추정합니다. 한국민족문화대백과는 사적 제326호(1988년 7월 28일), 해발 50~80m, 지름 20~30m 고총 18기 군집이라고 적습니다. 유네스코는 2023년 가야고분군(1666)의 구성요소 1666-003 옥전 고분군(합천군)으로 등재했습니다. 김해 대성동·함안 말이산·고령 지산동 고분군과 다른 합천 쌍책면 묘역입니다. 사진은 한국민족문화대백과 합천 옥전 고분군 공식 사진 3장입니다.',
+    '경상남도 합천군 쌍책면 성산리 산23-18 (황강옥전로 1558)',
+    HC_OKJEON,
+    [HC_OKJEON_2, HC_OKJEON_3],
+    HC_OKJEON_HOME,
+  ),
+  'local-scenic:wando-palgyeong:상왕봉': localScenicPhotoOverlay(
+    '완도8경 제5경 상왕봉(옛 상황봉·상황백운홍춘국원)은 완도읍과 군외면 경계의 해발 644m 진산입니다. 한국민족문화대백과는 완도팔경 제5경 상황백운홍춘국원(象皇白雲紅椿國苑)으로 적고, 상황봉이 동백으로 들어차 한겨울 눈 속 동백이 이 경치라고 적으며, 완도라는 이름에 금산봉송의 섬 곧 국원(國苑)의 섬이라는 설을 함께 전합니다. 군 문화관광은 백운봉 600m·심봉 598m·업진봉 544m·숙승봉 461m를 거느린 오봉산 중심이며, 제1코스는 대구리 마을 표지석에서 6.2km, 제2코스는 죽청리 LPG충전소에서 11.3km, 제3코스는 원불교수련장에서 9km라고 안내합니다. 정상에서는 고금도·신지도·청산도·소안도·보길도가 조망됩니다. 화성시 우정읍 국화도·청산도·완도타워와 다른 완도 본섬의 주봉입니다. 사진은 완도군 문화관광 상왕봉 공식 사진 3장입니다.',
+    '전라남도 완도군 완도읍·군외면 (상왕봉 644m, 제2코스 들머리 완도읍 죽청리)',
+    WD_SANGWANG,
+    [WD_SANGWANG_2, WD_SANGWANG_3],
+    WD_SANGWANG_HOME,
+  ),
   'local-scenic:hwacheon-gugyeong:비래바위': localScenicPhotoOverlay(
     '화천9경 제6경 비래바위(飛來巖)는 상서면 구운리 만산동 뒤편 해발 970m에 우뚝 선 기암괴석입니다. 화천군 문화관광은 폭 약 100m·높이 약 60m로 병풍처럼 깎아 지른 절벽이 주변 산중에 홀로 솟아 웅장하고 이국적인 풍경을 이룬다고 소개하며, 병풍바위라고도 부릅니다. 금강산에서 바위가 날아와 이곳에 안착했다는 전설에서 날비(飛)·올래(徠)·바위암(巖)을 써 비래바위라 이름붙였다고 적습니다. 등산로 안내도 지점에서 정상까지 약 1시간이며 산 아래에서 바라보는 전경도 유명합니다. 등산 시작점은 상서면 구운리입니다. 정선 화암8경 거북바위·여수·거제·남해 등 다른 지역 「비래」 지명 바위와 다른 화천 상서면 산악 바위입니다. 사진은 화천군 문화관광 화천9경 제6경 비래바위 공식 사진 3장입니다.',
     '강원특별자치도 화천군 상서면 구운리 (비래바위 등산로 안내도 지점)',
@@ -4458,6 +4490,11 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
   2381381: localScenicThumbOverlay(YS_BEOPGI, [YS_BEOPGI_2, YS_BEOPGI_3]),
   2784427: localScenicThumbOverlay(YS_TOWER, [YS_TOWER_2, YS_TOWER_3]),
   1236556: localScenicThumbOverlay(YS_GAYAJINSA, [YS_GAYAJINSA_2, YS_GAYAJINSA_3]),
+  // 합천 검색 허굴산 — Tour 1914603 firstimage·detailImage 없음. 팔경 아님. 대병3산 전경·허굴산 안내도. JSON contentId 기입 아님.
+  1914603: {
+    ...localScenicThumbOverlay(HC_HEOGUL, [HC_HEOGUL_MAP]),
+    homepage: HC_HEOGUL_HOME,
+  },
   // 함양 검색 기백산 — Tour 126033 first_image 없음. 용추계곡·용추폭포 126053과 다른 산. JSON contentId 기입 아님.
   126033: {
     ...localScenicThumbOverlay(HY_GIBAEK, [HY_GIBAEK_2, HY_GIBAEK_3]),

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 93,
-  sessionPhase: '기백산 검색 중복',
+  sessionNo: 95,
+  sessionPhase: '완도 상왕봉 정제',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,62 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-10-02-palgyeong-use-95-wando-sangwangbong',
+    session: '팔경 활용 #95, 완도 상왕봉 정제',
+    title: '완도8경 상왕봉 SSOT 정제',
+    detail:
+      '화성시 국화도와의 동명 오탐을 방지하기 위해 완도8경 멤버 명칭을 완도군 공식 명소인 상왕봉(옛 상황봉·상황백운홍춘국원)으로 SSOT 정제. 공식 사진 3장 및 좌표(34.34829, 126.693023) 연동. Preview /qa/palgyeong-use.',
+    at: '2026-10-02T13:30:00.000Z',
+  },
+  {
+    id: '2026-10-02-palgyeong-use-95-wando-data-only',
+    session: '팔경 활용 #95, 완도 데이터만',
+    title: '국화섬 로직 되돌림',
+    detail:
+      '갤러리 개요에 넣었던 상왕봉 문장과, 무니 조회 키를 바꾸는 로직을 뺐습니다. 갤러리 개요는 다시 무니 써머리가 채웁니다. 국화섬 데이터는 검색 행 개요와 공식 사진 3장만 남습니다. Preview /qa/palgyeong-use — 홈 검색「완도」국화섬.',
+    at: '2026-10-02T12:45:00.000Z',
+  },
+  {
+    id: '2026-10-02-palgyeong-use-95-wando-gukhwa-region',
+    session: '팔경 활용 #95, 완도 검색 지역',
+    title: '완도 국화섬 검색 지역',
+    detail:
+      '탐색홈에서 완도8경 국화섬을 열면 장소 소개가 경기도 화성시 국화섬이었습니다. 목록 이름은 국화섬이고, 핀·영문명·소개는 완도 상왕봉(644m)입니다. 이름만 같은 place_chat_intro는 쓰지 않습니다. Preview /qa/palgyeong-use — 홈 검색「완도」국화섬.',
+    at: '2026-10-02T12:20:00.000Z',
+  },
+  {
+    id: '2026-10-02-palgyeong-use-95-wando-gukhwa',
+    session: '팔경 활용 #95, 완도 결손 오버레이',
+    title: '완도 국화섬 사진',
+    detail:
+      '완도8경 국화섬에 사진과 개요를 넣었습니다. 한국민족문화대백과 완도팔경 제5경 상황백운홍춘국원이고, 완도군 문화관광의 현재 이름은 상왕봉(644m)입니다. 공식 사진 3장입니다. JSON contentId는 넣지 않았습니다. 화성 국화도와 구분합니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=wando 국화섬.',
+    at: '2026-10-02T12:00:00.000Z',
+  },
+  {
+    id: '2026-10-02-palgyeong-use-94-heogulsan-photo',
+    session: '팔경 활용 #94, 합천 결손 오버레이',
+    title: '합천 허굴산 사진',
+    detail:
+      '명승 검색「합천」허굴산(Tour 1914603, 대병면)은 firstimage와 detailImage가 없어 랜드마크 아이콘이었습니다. 팔경 항목이 아니라 관광지 사진 데이터만 넣었습니다. 합천군 문화관광 허굴산 페이지의 대병3산 전경이 목록 사진이고, 같은 페이지의 허굴산 안내도가 둘째 장입니다. 군 누리집 HTTPS는 오류 페이지라 그 공식 파일의 아카이브 주소입니다. JSON contentId는 넣지 않았습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「합천」허굴산.',
+    at: '2026-10-02T00:15:00.000Z',
+  },
+  {
+    id: '2026-10-01-palgyeong-use-94-hapcheon-list-summary',
+    session: '팔경 활용 #94, 합천 결손 오버레이',
+    title: '합천 검색 한 줄 써머리',
+    detail:
+      '한국의 명승에서 「합천」을 검색하면 관광지 목록 둘째 줄이 주소뿐이었습니다. 팔경 항목은 그대로 두고, 합천 검색의 관광지 행만 주소 뒤에 Tour 개요 첫 문장을 붙입니다. 황계폭포·내천못재·신소양체육공원·허굴산이 해당합니다. 본문 전문은 행을 열었을 때 나오고, 다른 지역 목록은 주소만 유지합니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색「합천」.',
+    at: '2026-10-01T23:55:00.000Z',
+  },
+  {
+    id: '2026-10-01-palgyeong-use-94-hapcheon-okjeon',
+    session: '팔경 활용 #94, 합천 결손 오버레이',
+    title: '합천 옥전고분군 사진',
+    detail:
+      '합천8경 제7경 옥전고분군(쌍책면 성산리 산23-18·황강옥전로 1558)에 사진과 개요를 넣었습니다. 한국민족문화대백과 공식 사진 3장입니다. 사적 제326호·2023년 유네스코 가야고분군 1666-003. JSON contentId는 넣지 않았습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hapcheon 옥전고분군.',
+    at: '2026-10-01T15:10:00.000Z',
+  },
   {
     id: '2026-10-01-palgyeong-use-93-giback-search-dedupe',
     session: '팔경 활용 #93, 기백산 검색 중복',
