@@ -1,0 +1,3 @@
+gemini probe: HTTP 403 error=origin_not_allowed
+screenshot /workspace/artifacts/mooni-festival-chips/390-general-l1.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-general-prep.png

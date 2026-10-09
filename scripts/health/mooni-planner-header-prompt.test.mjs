@@ -112,5 +112,8 @@ test('buildMooniBoundFestivalSystemHint — 목록 밖 시설 단정 금지 지�
     hint.includes('목록에 없는') && hint.includes('단정하지'),
     'no-unlisted-facility-assertion instruction',
   );
-  assert.ok(hint.includes('공식 홈페이지') || hint.includes('문의처'));
+  assert.match(hint, /오늘\(한국시간 KST\): \d{8}/);
+  assert.doesNotMatch(hint, /확인하도록 안내/);
+  assert.match(hint, /오신 것을 환영합니다/);
+  assert.match(hint, /쓰지 않는다/);
 });

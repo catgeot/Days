@@ -27,13 +27,14 @@ test('Edge renderMooniSystem — showPlannerHeader false 시 플래너 헤더 �
   assert.equal(countMooniPlannerHeaderGuidance(system), 0);
   const urlAt = system.indexOf('없는 URL을 지어내지');
   const hintAt = system.indexOf('목록에 없는');
-  const priority = '힌트에 없는 시설은 단정하지 말고 공식 홈페이지·문의처를 안내한다.';
+  const priority = '힌트에 없는 시설은 단정하지 않는다. 링크 없는 「공식에서 확인」 문구는 쓰지 않는다.';
   const priorityAt = system.lastIndexOf(priority);
   assert.ok(urlAt >= 0, 'no-invented-url rule');
   assert.ok(hintAt > urlAt, 'festival hint follows the URL rule');
-  assert.ok(system.includes('공식 홈페이지'), 'official site instruction kept');
+  assert.ok(system.includes('오늘(한국시간 KST)'), 'today KST is in the festival hint');
+  assert.doesNotMatch(system, /공식 홈페이지·문의처를 안내한다/);
   assert.ok(priorityAt > hintAt, 'festival priority is after the hint');
-  assert.ok(system.trim().endsWith(priority), 'festival official-site instruction is last');
+  assert.ok(system.trim().endsWith(priority), 'festival fact rule is last');
 });
 
 test('Edge renderMooniSystem — showPlannerHeader true 시 플래너 헤더 안내 포함', () => {

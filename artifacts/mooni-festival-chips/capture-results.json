@@ -1,0 +1,42 @@
+{
+  "route": "festival home → region chip → open festival → scroll body → inline MOONi button → ask",
+  "preview": "https://127.0.0.1:4173",
+  "viewport": ["390x844", "1280x800 sanity"],
+  "gemini": {
+    "probe": "HTTP 403 origin_not_allowed",
+    "ui": "mocked after the same origin_not_allowed from https://127.0.0.1:4173",
+    "note": "Live Gemini is not reachable from this VM. The deployed gemini-proxy rejects non-allowlisted Origins. The first card is composed on the client from live TourAPI fields and does not call Gemini. Chip replies in the ask screenshot are a local mock built only from hint fact lines. The prompt file is the local renderMooniSystem text, not the currently deployed edge prompt. New chip ids such as festival_sights also 400 on the deployed edge until gemini-proxy is redeployed."
+  },
+  "festivals": [
+    {
+      "id": "2930716",
+      "title": "강릉 국수 축제",
+      "region": "강원",
+      "via": "region chip /강원/ on /korea (this month)",
+      "shots": ["390-gangneung-list.png", "390-gangneung-opening.png", "390-gangneung-chips.png", "390-gangneung-overseas.png", "390-gangneung-ask.png", "390-gangneung-en-opening.png", "390-gangneung-en-chips.png", "1280-gangneung-list.png", "1280-gangneung-opening.png", "1280-gangneung-chips.png"]
+    },
+    {
+      "id": "790124",
+      "title": "홍천 인삼한우 명품축제",
+      "region": "강원",
+      "via": "region chip /강원/ on /korea",
+      "shots": ["390-hongcheon-list.png", "390-hongcheon-opening.png", "390-hongcheon-chips.png"]
+    },
+    {
+      "id": "3554702",
+      "title": "2026 원도심 야간여행 섬夜시즌",
+      "region": "제주",
+      "via": "region chip /제주/ on /korea",
+      "shots": ["390-third-list.png", "390-third-opening.png", "390-third-chips.png"]
+    }
+  ],
+  "englishUi": "Home locale toggle 「English로 전환」, then the same /korea → 강원 chip → open → scroll → MOONi route. gateo.locale became en before /korea.",
+  "general": {
+    "route": "/place/miyakojima → header MOONi button",
+    "shots": ["390-general-l1.png", "390-general-prep.png"],
+    "prepShows": "비자·입국·서류, 숙소, 현지 교통"
+  },
+  "prompt": "prompt-festival_sights-ko.txt",
+  "kstOnCapture": "2026-10-10 (card says 시작까지 5일). Health fixture pins 2026-10-09 and expects 6 days.",
+  "sectionPresenceTable": "not attached — festival detail section markup, order, and visibility were not changed"
+}
