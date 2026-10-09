@@ -1,3 +1,23 @@
 gemini probe: HTTP 403 error=origin_not_allowed
-screenshot /workspace/artifacts/mooni-festival-chips/390-general-l1.png
-screenshot /workspace/artifacts/mooni-festival-chips/390-general-prep.png
+390-ko-gangneung 2930716 via region /강원|Gangwon/
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-gangneung-opening.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-gangneung-chips.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-gangneung-overseas.png
+390-ko-hongcheon 790124 via region /강원|Gangwon/
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-hongcheon-opening.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-hongcheon-chips.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-hongcheon-overseas.png
+390-ko-jeju 3554702 via region /제주|Jeju/
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-jeju-opening.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-jeju-chips.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-ko-jeju-overseas.png
+locale switched to en from the home toggle
+390-en-gangneung 2930716 via region /강원|Gangwon/
+screenshot /workspace/artifacts/mooni-festival-chips/390-en-gangneung-opening.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-en-gangneung-chips.png
+390-en-hongcheon 790124 via region /강원|Gangwon/
+screenshot /workspace/artifacts/mooni-festival-chips/390-en-hongcheon-opening.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-en-hongcheon-chips.png
+390-en-jeju 3554702 via region /제주|Jeju/
+screenshot /workspace/artifacts/mooni-festival-chips/390-en-jeju-opening.png
+screenshot /workspace/artifacts/mooni-festival-chips/390-en-jeju-chips.png

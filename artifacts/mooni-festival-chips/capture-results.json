@@ -1,42 +1,19 @@
 {
-  "route": "festival home → region chip → open festival → scroll body → inline MOONi button → ask",
-  "preview": "https://127.0.0.1:4173",
-  "viewport": ["390x844", "1280x800 sanity"],
+  "route": "festival home → region chip → open → scroll → MOONi",
+  "ko": {
+    "790124": "홍천 인삼한우 명품축제는 도시산림공원 토리숲, 강원특별자치도 홍천군 홍천읍 갈마곡리에서 열려요. 2026년 10월 8일부터 2026년 10월 11일까지 09:00 ~ 22:00에 열리고, 입장료는 무료예요. 오늘 2026년 10월 10일(한국시간) 기준으로 진행 중이에요. 안내된 프로그램 이름은 개장식, 식전공연, 퍼포먼스, 인삼왕이에요. 확인된 근처 장소는 홍천 무궁화공원 하나예요. 자세한 내용은 https://www.gateo.kr/korea/?festival=790124에서 볼 수 있고, 다음으로 가는 법을 정할 수 있어요.",
+    "2930716": "강릉 국수 축제는 강릉 월화거리 일원, 강원특별자치도 강릉시 경강로 2111 (임당동)에서 열려요. 2026년 10월 15일부터 2026년 10월 18일까지 12:00~21:00에 열리고, 입장료는 무료예요. 오늘 2026년 10월 10일(한국시간) 기준으로 시작까지 5일 남았어요. 안내된 프로그램 이름은 메인 먹거리존, 국수존, 페어링존, 누들 경연대회예요. 확인된 근처 장소는 임당생활문화센터 하나예요. 자세한 내용은 https://www.gateo.kr/korea/?festival=2930716에서 볼 수 있고, 다음으로 가는 법을 정할 수 있어요.",
+    "3554702": "2026 원도심 야간여행 ‘섬夜시즌’은 제주시 탑동광장, 제주특별자치도 제주시 중앙로 1 (건입동)에서 열려요. 2026년 10월 17일부터 2026년 10월 18일까지 18:00~20:40에 열리고, 안내된 요금은 무료 ※ 나이트워크 선착순 사전신청 참가비 5,000원이에요. 오늘 2026년 10월 10일(한국시간) 기준으로 시작까지 7일 남았어요. 안내된 프로그램 이름은 나이트워크, 섬夜 콘서트, 부대 행사, 섬夜 불꽃놀이예요. 확인된 근처 장소는 제주항 하나예요. 자세한 내용은 https://www.gateo.kr/korea/?festival=3554702에서 볼 수 있고, 다음으로 가는 법을 정할 수 있어요."
+  },
+  "en": {
+    "790124": "Hongcheon Ginseng & Hanwoo Myeongpum Festival (홍천 인삼한우 명품축제) is held at (도시산림공원 토리숲), (강원특별자치도 홍천군 홍천읍 갈마곡리). It runs October 8, 2026 through October 11, 2026, 09:00 ~ 22:00, and admission is free. As of October 10, 2026 (Korea time), this festival is underway. Listed program names are (개장식, 식전공연, 퍼포먼스, 인삼왕). One nearby place already on GATEO is (홍천 무궁화공원). Details are on https://www.gateo.kr/korea/?festival=790124. Next you can plan how to get there from ICN.",
+    "2930716": "Gangneung Noodle Festival (강릉 국수 축제) is held at (강릉 월화거리 일원), (강원특별자치도 강릉시 경강로 2111 (임당동)). It runs October 15, 2026 through October 18, 2026, 12:00~21:00, and admission is free. As of October 10, 2026 (Korea time), it starts in 5 days. Listed program names are (메인 먹거리존, 국수존, 페어링존, 누들 경연대회). One nearby place already on GATEO is (임당생활문화센터). Details are on https://www.gateo.kr/korea/?festival=2930716. Next you can plan how to get there from ICN.",
+    "3554702": "Night festival (2026 원도심 야간여행 ‘섬夜시즌’) is held at (제주시 탑동광장), (제주특별자치도 제주시 중앙로 1 (건입동)). It runs October 17, 2026 through October 18, 2026, 18:00~20:40, and admission is free. As of October 10, 2026 (Korea time), it starts in 7 days. Listed program names are (나이트워크, 섬夜 콘서트, 부대 행사, 섬夜 불꽃놀이). One nearby place already on GATEO is (제주항). Details are on https://www.gateo.kr/korea/?festival=3554702. Next you can plan how to get there from ICN."
+  },
   "gemini": {
-    "probe": "HTTP 403 origin_not_allowed",
-    "ui": "mocked after the same origin_not_allowed from https://127.0.0.1:4173",
-    "note": "Live Gemini is not reachable from this VM. The deployed gemini-proxy rejects non-allowlisted Origins. The first card is composed on the client from live TourAPI fields and does not call Gemini. Chip replies in the ask screenshot are a local mock built only from hint fact lines. The prompt file is the local renderMooniSystem text, not the currently deployed edge prompt. New chip ids such as festival_sights also 400 on the deployed edge until gemini-proxy is redeployed."
-  },
-  "festivals": [
-    {
-      "id": "2930716",
-      "title": "강릉 국수 축제",
-      "region": "강원",
-      "via": "region chip /강원/ on /korea (this month)",
-      "shots": ["390-gangneung-list.png", "390-gangneung-opening.png", "390-gangneung-chips.png", "390-gangneung-overseas.png", "390-gangneung-ask.png", "390-gangneung-en-opening.png", "390-gangneung-en-chips.png", "1280-gangneung-list.png", "1280-gangneung-opening.png", "1280-gangneung-chips.png"]
-    },
-    {
-      "id": "790124",
-      "title": "홍천 인삼한우 명품축제",
-      "region": "강원",
-      "via": "region chip /강원/ on /korea",
-      "shots": ["390-hongcheon-list.png", "390-hongcheon-opening.png", "390-hongcheon-chips.png"]
-    },
-    {
-      "id": "3554702",
-      "title": "2026 원도심 야간여행 섬夜시즌",
-      "region": "제주",
-      "via": "region chip /제주/ on /korea",
-      "shots": ["390-third-list.png", "390-third-opening.png", "390-third-chips.png"]
-    }
-  ],
-  "englishUi": "Home locale toggle 「English로 전환」, then the same /korea → 강원 chip → open → scroll → MOONi route. gateo.locale became en before /korea.",
-  "general": {
-    "route": "/place/miyakojima → header MOONi button",
-    "shots": ["390-general-l1.png", "390-general-prep.png"],
-    "prepShows": "비자·입국·서류, 숙소, 현지 교통"
-  },
-  "prompt": "prompt-festival_sights-ko.txt",
-  "kstOnCapture": "2026-10-10 (card says 시작까지 5일). Health fixture pins 2026-10-09 and expects 6 days.",
-  "sectionPresenceTable": "not attached — festival detail section markup, order, and visibility were not changed"
+    "mode": "live-rejected",
+    "status": 403,
+    "error": "origin_not_allowed",
+    "promptPath": null
+  }
 }

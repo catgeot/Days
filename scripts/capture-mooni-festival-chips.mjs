@@ -5,7 +5,8 @@
  * Gemini: try the deployed edge; if it rejects the new chip id or is unreachable, mock the reply
  * and still save the local prompt the edge mirror would send.
  */
-import { mkdirSync, writeFileSync, cpSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { mkdirSync, readFileSync, writeFileSync, cpSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
@@ -193,6 +194,17 @@ async function shot(page, name) {
   return file;
 }
 
+async function shotLocator(locator, name) {
+  const file = join(outDir, `${name}.png`);
+  await locator.screenshot({ path: file });
+  note(`screenshot ${file}`);
+  return file;
+}
+
+function fileHash(file) {
+  return createHash('sha256').update(readFileSync(file)).digest('hex');
+}
+
 async function clickChip(page, pattern) {
   const button = page.getByRole('button', { name: pattern }).first();
   await button.scrollIntoViewIfNeeded();
@@ -278,22 +290,41 @@ async function openMooniFromList(page, contentId) {
   }
 }
 
-async function captureFestival(page, { id, region, slug }) {
+async function scrollChat(page, edge) {
+  await page.evaluate((which) => {
+    const opening = document.querySelector('[data-testid="mooni-festival-opening"]');
+    const scroller = opening?.closest('.overflow-y-auto');
+    if (!scroller) return;
+    scroller.scrollTop = which === 'end' ? scroller.scrollHeight : 0;
+  }, edge);
+  await page.waitForTimeout(250);
+}
+
+async function captureFestival(page, { id, region, slug, overseas = false }) {
   const found = await revealFestival(page, id, region);
   note(`${slug} ${id} via ${found.via}`);
-  await shot(page, `${slug}-list`);
   await openMooniFromList(page, id);
-  await shot(page, `${slug}-opening`);
+  await scrollChat(page, 'start');
+  const openingPng = await shotLocator(page.getByTestId('mooni-festival-opening'), `${slug}-opening`);
   const replies = page.locator('[data-testid="mooni-quick-replies"]:visible').first();
   await replies.waitFor({ timeout: 20000 });
-  await replies.scrollIntoViewIfNeeded();
   await page.evaluate(() => {
     for (const row of document.querySelectorAll('[data-testid="mooni-quick-replies"] .overflow-x-auto')) {
       row.scrollLeft = 0;
     }
   });
-  await shot(page, `${slug}-chips`);
-  return found;
+  const chipsPng = await shotLocator(replies, `${slug}-chips`);
+  if (fileHash(openingPng) === fileHash(chipsPng)) {
+    throw new Error(`${slug} opening and chips frames are identical`);
+  }
+  if (overseas) {
+    const group = page.getByRole('button', { name: /해외에서 오시나요|Visiting from abroad/ }).first();
+    await group.click();
+    await page.getByRole('button', { name: /입국·비자|Visa & entry/ }).first().waitFor({ timeout: 10000 });
+    await shotLocator(replies, `${slug}-overseas`);
+  }
+  const opening = await page.getByTestId('mooni-festival-opening').innerText();
+  return { ...found, opening };
 }
 
 async function closeChat(page) {
@@ -326,6 +357,27 @@ async function captureGeneral(page) {
   await shot(page, '390-general-prep');
 }
 
+const FESTIVALS = [
+  { id: GANGNEUNG_ID, region: /강원|Gangwon/, slug: 'gangneung' },
+  { id: HONGCHEON_ID, region: /강원|Gangwon/, slug: 'hongcheon' },
+  { id: '3554702', region: /제주|Jeju/, slug: 'jeju' },
+];
+
+async function captureLocalePass(page, localePrefix) {
+  const openings = {};
+  for (const festival of FESTIVALS) {
+    const captured = await captureFestival(page, {
+      ...festival,
+      slug: `${localePrefix}-${festival.slug}`,
+      overseas: localePrefix === '390-ko',
+    });
+    openings[festival.id] = captured.opening;
+    writeFileSync(join(outDir, `${localePrefix}-${festival.slug}-opening.txt`), captured.opening);
+    await closeChat(page);
+  }
+  return openings;
+}
+
 async function main() {
   await probeGemini();
   const browser = await chromium.launch({ headless: true });
@@ -335,9 +387,39 @@ async function main() {
     writeFileSync(join(outDir, 'capture-log.txt'), log.join('\n'));
     const artifactDir = '/opt/cursor/artifacts/mooni-festival-chips';
     mkdirSync(artifactDir, { recursive: true });
-    cpSync(outDir, artifactDir, { recursive: true });
+    try {
+      cpSync(outDir, artifactDir, { recursive: true });
+    } catch (error) {
+      note(`artifact copy skipped: ${error.message}`);
+    }
     await browser.close();
     note('general capture done');
+    return;
+  }
+  if (process.env.CAPTURE_ONLY === 'festivals') {
+    const { page } = await newPage(browser, { width: 390, height: 844 });
+    const ko = await captureLocalePass(page, '390-ko');
+    await page.goto(`${previewBase}/`, { waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: /English로 전환/ }).click({ timeout: 30000 });
+    await page.waitForFunction(() => window.localStorage.getItem('gateo.locale') === 'en', null, {
+      timeout: 10000,
+    });
+    note('locale switched to en from the home toggle');
+    const en = await captureLocalePass(page, '390-en');
+    writeFileSync(
+      join(outDir, 'capture-results.json'),
+      JSON.stringify({ route: 'festival home → region chip → open → scroll → MOONi', ko, en, gemini }, null, 2),
+    );
+    writeFileSync(join(outDir, 'capture-log.txt'), log.join('\n'));
+    const artifactDir = '/opt/cursor/artifacts/mooni-festival-chips';
+    mkdirSync(artifactDir, { recursive: true });
+    try {
+      cpSync(outDir, artifactDir, { recursive: true });
+    } catch (error) {
+      note(`artifact copy skipped: ${error.message}`);
+    }
+    await browser.close();
+    note('festival capture done');
     return;
   }
   const { context, page } = await newPage(browser, { width: 390, height: 844 });
@@ -426,7 +508,11 @@ async function main() {
   writeFileSync(join(outDir, 'capture-log.txt'), log.join('\n'));
   const artifactDir = '/opt/cursor/artifacts/mooni-festival-chips';
   mkdirSync(artifactDir, { recursive: true });
-  cpSync(outDir, artifactDir, { recursive: true });
+  try {
+    cpSync(outDir, artifactDir, { recursive: true });
+  } catch (error) {
+    note(`artifact copy skipped: ${error.message}`);
+  }
   await browser.close();
   note('capture done');
 }
