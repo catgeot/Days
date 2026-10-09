@@ -1,4 +1,9 @@
 import { localizedMarkerPinLabel } from '../../../i18n/globeUi.js';
+import {
+  setFilterIfChanged,
+  setLayoutPropertyIfChanged,
+  setPaintPropertyIfChanged,
+} from './globeMapStyleWrite.js';
 
 /** Mapbox GeoJSON layers for gateo globe markers (GPU-attached, no DOM jitter) */
 
@@ -130,24 +135,14 @@ export function setGateoMarkerLayerVisibility(map, visible) {
   if (!isGlobeMapStyleReady(map)) return;
   const visibility = visible ? 'visible' : 'none';
   GATEO_LAYER_IDS.forEach((layerId) => {
-    try {
-      if (!map.getLayer(layerId)) return;
-      map.setLayoutProperty(layerId, 'visibility', visibility);
-    } catch {
-      // Style may be mid-transition.
-    }
+    setLayoutPropertyIfChanged(map, layerId, 'visibility', visibility);
   });
 }
 
 /** Symbol placement races flyTo during flight cinema — hide text labels only. */
 export function setGateoMarkerLabelVisibility(map, visible) {
   if (!isGlobeMapStyleReady(map)) return;
-  try {
-    if (!map.getLayer(GATEO_LABEL_LAYER_ID)) return;
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'visibility', visible ? 'visible' : 'none');
-  } catch {
-    // Style may be mid-transition.
-  }
+  setLayoutPropertyIfChanged(map, GATEO_LABEL_LAYER_ID, 'visibility', visible ? 'visible' : 'none');
 }
 
 /** 레이어가 이미 있을 때 스타일·필터 동기화 (테마 전환·핫리로드) */
@@ -155,29 +150,29 @@ export function syncGateoMarkerLayerStyle(map) {
   if (!gateoMarkerLayersReady(map)) return;
 
   safeMapUpdate(map, () => {
-    map.setFilter(GATEO_DOT_LAYER_ID, SHOW_DOT);
+    setFilterIfChanged(map, GATEO_DOT_LAYER_ID, SHOW_DOT);
 
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-size', LABEL_TEXT_SIZE);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-font', ['DIN Pro Medium', 'Arial Unicode MS Regular']);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-offset', [
+    setLayoutPropertyIfChanged(map, GATEO_LABEL_LAYER_ID, 'text-size', LABEL_TEXT_SIZE);
+    setLayoutPropertyIfChanged(map, GATEO_LABEL_LAYER_ID, 'text-font', ['DIN Pro Medium', 'Arial Unicode MS Regular']);
+    setLayoutPropertyIfChanged(map, GATEO_LABEL_LAYER_ID, 'text-offset', [
       'case',
       IS_MAJOR,
       ['literal', [0, 0]],
       ['literal', [0.9, 0]]
     ]);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-anchor', [
+    setLayoutPropertyIfChanged(map, GATEO_LABEL_LAYER_ID, 'text-anchor', [
       'case',
       IS_MAJOR,
       'center',
       'left'
     ]);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'symbol-sort-key', [
+    setLayoutPropertyIfChanged(map, GATEO_LABEL_LAYER_ID, 'symbol-sort-key', [
       '-',
       4,
       ['to-number', ['get', 'tier']]
     ]);
 
-    map.setPaintProperty(GATEO_LABEL_LAYER_ID, 'text-color', [
+    setPaintPropertyIfChanged(map, GATEO_LABEL_LAYER_ID, 'text-color', [
       'case',
       IS_ACTIVE,
       '#fecaca',
