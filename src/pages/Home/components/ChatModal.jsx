@@ -40,7 +40,11 @@ import {
   sanitizeMooniModelReply,
   shouldShowMooniPlannerFollowUp,
 } from '../../../utils/mooniReplySanitizer';
-import { mergeMooniKoreaFestivalReply } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import {
+  appendFestivalLodgingNextStep,
+  FESTIVAL_LODGING_EVENT,
+  mergeMooniKoreaFestivalReply,
+} from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
@@ -334,6 +338,13 @@ const ChatModal = ({
     chipDockMode === 'topic' && !boundDestinationSlug;
 
   const festivalMooniContext = mooniPlaceContext?.festivalContext ?? null;
+
+  useEffect(() => {
+    if (!festivalMooniContext) return undefined;
+    const closeForLodging = () => onClose();
+    window.addEventListener(FESTIVAL_LODGING_EVENT, closeForLodging);
+    return () => window.removeEventListener(FESTIVAL_LODGING_EVENT, closeForLodging);
+  }, [festivalMooniContext, onClose]);
 
   const festivalMooniHeaderSubtitle = useMemo(() => {
     if (!festivalMooniContext) return '';
@@ -1017,10 +1028,20 @@ const ChatModal = ({
         candidates: mooniFestivalCandidates,
       });
       const stripPhantomTicketMention = !hasTransportCta;
-      const displayReply = getMooniModelMarkdownForRender(festivalMergedReply, {
-        stripPhantomTicketMention,
-      });
-      const { hadBracketLinks } = sanitizeMooniModelReply(festivalMergedReply, {
+      const lodgingOptions = {
+        contentId: mooniPlaceContext?.festivalContext?.contentId,
+        locale: i18n.language,
+        chipId,
+        userText: cleanText,
+      };
+      const displayReply = appendFestivalLodgingNextStep(
+        getMooniModelMarkdownForRender(festivalMergedReply, {
+          stripPhantomTicketMention,
+        }),
+        lodgingOptions,
+      );
+      const rawWithLodging = appendFestivalLodgingNextStep(festivalMergedReply, lodgingOptions);
+      const { hadBracketLinks } = sanitizeMooniModelReply(rawWithLodging, {
         stripPhantomTicketMention,
       });
       const plannerFocus = resolvePlannerFocusFromUserText(cleanText, {
@@ -1046,7 +1067,7 @@ const ChatModal = ({
         {
           role: 'model',
           text: displayReply,
-          mooniRawReply: festivalMergedReply,
+          mooniRawReply: rawWithLodging,
           truncated: geminiResult.truncated,
           finishReason: geminiResult.finishReason,
           continueAttempts: 0,
@@ -1115,12 +1136,21 @@ const ChatModal = ({
           continuationText: geminiResult.text,
           stripPhantomTicketMention: ctx.stripPhantomTicketMention,
         });
+        const priorUser = [...messages.slice(0, modelIdx)].reverse().find((m) => m.role === 'user');
+        const lodgingOptions = {
+          contentId: mooniPlaceContext?.festivalContext?.contentId,
+          locale: i18n.language,
+          chipId: msg.bookingMeta?.chipId,
+          userText: messageTextPlain(priorUser),
+        };
+        const continuedRaw = appendFestivalLodgingNextStep(mergedRaw, lodgingOptions);
+        const continuedDisplay = appendFestivalLodgingNextStep(displayText, lodgingOptions);
         const nextMessages = messages.map((m, i) =>
           i === modelIdx
             ? {
                 ...m,
-                text: displayText,
-                mooniRawReply: mergedRaw,
+                text: continuedDisplay,
+                mooniRawReply: continuedRaw,
                 truncated: geminiResult.truncated,
                 finishReason: geminiResult.finishReason,
                 continueAttempts: (m.continueAttempts ?? 0) + 1,
@@ -1136,7 +1166,7 @@ const ChatModal = ({
         setMooniContinuingIdx(null);
       }
     },
-    [messages, mooniContinuingIdx, activeChatId, onUpdateChat, i18n.language],
+    [messages, mooniContinuingIdx, activeChatId, onUpdateChat, i18n.language, mooniPlaceContext],
   );
 
   const handleAccessOriginSelect = useCallback(

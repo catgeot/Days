@@ -18,6 +18,70 @@ export function gateoKoreaFestivalDetailUrl(contentId) {
   return `${GATEO_KOREA_FESTIVAL_BASE}?festival=${encodeURIComponent(id)}`;
 }
 
+/** FestivalStayStrip anchor on the festival detail sheet. */
+export const FESTIVAL_LODGING_SECTION_ID = 'festival-lodging';
+
+export const FESTIVAL_LODGING_EVENT = 'gateo-festival-lodging';
+
+/** @param {string} contentId */
+export function gateoKoreaFestivalLodgingUrl(contentId) {
+  const base = gateoKoreaFestivalDetailUrl(contentId);
+  if (!base.includes('festival=')) return '';
+  return `${base}#${FESTIVAL_LODGING_SECTION_ID}`;
+}
+
+const FESTIVAL_LODGING_ASK_RE =
+  /숙소|숙박|어디서\s*자|어디(?:서)?\s*묵|머물\s*곳|where\s+to\s+stay|where\s+should\s+i\s+stay|accommodation|lodging|\bhotels?\b/i;
+
+/**
+ * @param {{ chipId?: string, userText?: string }} [input]
+ */
+export function isFestivalLodgingAsk(input = {}) {
+  if (String(input.chipId || '') === 'prep_hotel') return true;
+  return FESTIVAL_LODGING_ASK_RE.test(String(input.userText || ''));
+}
+
+/**
+ * @param {string} contentId
+ * @param {string} [locale]
+ */
+export function festivalLodgingNextStep(contentId, locale = 'ko') {
+  const url = gateoKoreaFestivalLodgingUrl(contentId);
+  if (!url) return '';
+  const en = String(locale || '').slice(0, 2) === 'en';
+  if (en) return `Next, stays for this festival are on [the lodging card](${url}).`;
+  return `다음으로 이 축제의 [숙소 카드](${url})에서 볼 수 있어요.`;
+}
+
+/**
+ * One next step for a lodging question in a festival session.
+ * @param {string} reply
+ * @param {{ contentId?: string, locale?: string, chipId?: string, userText?: string }} [options]
+ */
+export function appendFestivalLodgingNextStep(reply, options = {}) {
+  const text = String(reply || '').trim();
+  if (!isFestivalLodgingAsk(options)) return text;
+  const step = festivalLodgingNextStep(options.contentId, options.locale);
+  if (!step) return text;
+  if (text.includes(`#${FESTIVAL_LODGING_SECTION_ID}`)) return text;
+  return text ? `${text}\n\n${step}` : step;
+}
+
+/**
+ * @param {string} href
+ * @returns {string}
+ */
+export function festivalLodgingContentIdFromHref(href) {
+  try {
+    const url = new URL(String(href || ''), GATEO_KOREA_FESTIVAL_BASE);
+    if (url.hash !== `#${FESTIVAL_LODGING_SECTION_ID}`) return '';
+    const id = String(url.searchParams.get('festival') || '');
+    return /^\d+$/.test(id) ? id : '';
+  } catch {
+    return '';
+  }
+}
+
 /** @param {string} ymd */
 export function formatFestivalYmdDot(ymd) {
   const s = String(ymd || '');
@@ -424,10 +488,17 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
   const userText = String(input.userText || '');
   const festivalContext = input.festivalContext;
   if (festivalContext && String(festivalContext.title || '').trim()) {
-    return {
-      hint: buildMooniBoundFestivalSystemHint(festivalContext, input.locale, input.now),
-      candidates: [],
-    };
+    let hint = buildMooniBoundFestivalSystemHint(festivalContext, input.locale, input.now);
+    if (isFestivalLodgingAsk({ userText })) {
+      const lodgingUrl = gateoKoreaFestivalLodgingUrl(festivalContext.contentId);
+      if (lodgingUrl) {
+        const en = String(input.locale || '').slice(0, 2) === 'en';
+        hint += en
+          ? `\n- Lodging next step: end with this lodging-card link and no other stay URL: ${lodgingUrl}`
+          : `\n- 숙소 다음 행동: 답 끝에 이 숙소 카드 링크만 둔다. 다른 숙소 URL은 쓰지 않는다: ${lodgingUrl}`;
+      }
+    }
+    return { hint, candidates: [] };
   }
 
   if (!isMooniKoreaFestivalQuery(userText)) {

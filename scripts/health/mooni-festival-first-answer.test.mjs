@@ -12,7 +12,13 @@ import {
   buildFestivalMooniSentenceAnswer,
   countFestivalCardSentences,
 } from '../../src/pages/Korea/lib/festivalMooniContext.js';
-import { buildMooniBoundFestivalSystemHint } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
+import {
+  appendFestivalLodgingNextStep,
+  buildMooniBoundFestivalSystemHint,
+  gateoKoreaFestivalLodgingUrl,
+  isFestivalLodgingAsk,
+  resolveMooniChatKoreaFestivalHint,
+} from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 import { renderMooniSystem } from '../../supabase/functions/_shared/gemini/templates.js';
 import { countMooniPlannerHeaderGuidance } from '../../supabase/functions/_shared/gemini/mooniChatPlannerHeaderPrompt.js';
 
@@ -170,6 +176,64 @@ test('general chips drop duplicate why-go and flights, and rename local transpor
   assert.match(prep, /prep_transport/);
   assert.equal(koLocale.mooni.chips.l2.prep.prep_transport.label, '현지 교통');
   assert.equal(enLocale.mooni.chips.l2.prep.prep_transport.label, 'Local transport');
+});
+
+test('festival lodging answers end on the stay-section link', async () => {
+  assert.equal(
+    gateoKoreaFestivalLodgingUrl('2930716'),
+    'https://www.gateo.kr/korea/?festival=2930716#festival-lodging',
+  );
+  assert.equal(isFestivalLodgingAsk({ chipId: 'prep_hotel', userText: '볼거리' }), true);
+  assert.equal(isFestivalLodgingAsk({ userText: 'where to stay near this festival' }), true);
+  assert.equal(isFestivalLodgingAsk({ userText: '숙소는 어디가 좋아요' }), true);
+  assert.equal(isFestivalLodgingAsk({ userText: '축제에서 볼 수 있는 것과 현장 분위기' }), false);
+
+  const ko = appendFestivalLodgingNextStep('강릉 월화거리에서 열려요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소 추천해줘',
+  });
+  assert.match(ko, /다음으로 이 축제의 \[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)에서 볼 수 있어요\.$/);
+  assert.equal(
+    appendFestivalLodgingNextStep(ko, { contentId: '2930716', userText: '숙소' }),
+    ko,
+  );
+
+  const en = appendFestivalLodgingNextStep('It is in Gangneung.', {
+    contentId: '2930716',
+    locale: 'en',
+    chipId: 'prep_hotel',
+  });
+  assert.match(en, /\[the lodging card\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)\.$/);
+
+  const sights = appendFestivalLodgingNextStep('먹거리존이 있어요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    chipId: 'festival_sights',
+    userText: '축제에서 볼 수 있는 것',
+  });
+  assert.doesNotMatch(sights, /festival-lodging/);
+
+  const lodgingHint = await resolveMooniChatKoreaFestivalHint({
+    userText: 'where to stay',
+    festivalContext: { title: '강릉 국수 축제', contentId: '2930716' },
+    locale: 'en',
+  });
+  assert.match(lodgingHint.hint, /#festival-lodging/);
+  assert.match(lodgingHint.hint, /no other stay URL/);
+
+  const otherHint = await resolveMooniChatKoreaFestivalHint({
+    userText: 'what can I see',
+    festivalContext: { title: '강릉 국수 축제', contentId: '2930716' },
+    locale: 'en',
+  });
+  assert.doesNotMatch(otherHint.hint, /festival-lodging/);
+
+  const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
+  const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
+  assert.match(chat, /appendFestivalLodgingNextStep/);
+  assert.match(sheet, /id=\{FESTIVAL_LODGING_SECTION_ID\}/);
+  assert.match(sheet, /FESTIVAL_LODGING_EVENT/);
 });
 
 test('prompts forbid an unlinked outside-channel closing', () => {

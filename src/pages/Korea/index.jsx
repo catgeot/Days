@@ -907,13 +907,18 @@ export default function KoreaFestivalHub() {
       const listQs = listParams.toString();
       const detailParams = searchParamsWithFestival(searchParams, festivalId);
       const detailQs = detailParams.toString();
+      const lodgingHash = window.location.hash === '#festival-lodging' ? '#festival-lodging' : '';
       navigate(
         { pathname: location.pathname, search: listQs ? `?${listQs}` : '' },
         { replace: true },
       );
       const timer = window.setTimeout(() => {
         navigate(
-          { pathname: location.pathname, search: detailQs ? `?${detailQs}` : '' },
+          {
+            pathname: location.pathname,
+            search: detailQs ? `?${detailQs}` : '',
+            hash: lodgingHash,
+          },
           { replace: false },
         );
       }, 0);

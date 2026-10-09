@@ -9,6 +9,10 @@ import {
   shouldStripMooniMarkdownLink,
 } from '../../utils/mooniPlaceholderUrls.js';
 import { mooniMarkdownLinkLabelText } from './mooniMarkdownLinkLabel.js';
+import {
+  FESTIVAL_LODGING_EVENT,
+  festivalLodgingContentIdFromHref,
+} from '../../shared/korea/mooniKoreaFestivalAssist.js';
 
 function mooniChatUrlTransform(url) {
   const value = String(url).trim();
@@ -53,8 +57,30 @@ function createMooniMarkdownComponents(variant) {
       if (!href || shouldStripMooniMarkdownLink(href, label)) {
         return <span className="break-keep">{children}</span>;
       }
+      const lodgingId = festivalLodgingContentIdFromHref(href);
+      const here = typeof window !== 'undefined' ? window.location : null;
+      const sameFestival =
+        lodgingId &&
+        here &&
+        String(here.pathname || '').replace(/\/$/, '').endsWith('/korea') &&
+        new URLSearchParams(here.search || '').get('festival') === lodgingId;
       return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+        <a
+          href={href}
+          target={sameFestival ? undefined : '_blank'}
+          rel={sameFestival ? undefined : 'noopener noreferrer'}
+          className={linkClass}
+          onClick={
+            sameFestival
+              ? (event) => {
+                  event.preventDefault();
+                  window.dispatchEvent(
+                    new CustomEvent(FESTIVAL_LODGING_EVENT, { detail: { contentId: lodgingId } }),
+                  );
+                }
+              : undefined
+          }
+        >
           {children}
         </a>
       );
