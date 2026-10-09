@@ -31,6 +31,13 @@ function buildPersonaSystem(personaType, bundle) {
   );
 }
 
+function noInventedUrlRule(locale) {
+  if (String(locale || '').slice(0, 2) === 'en') {
+    return '- Use only URLs that appear in the provided context (hints, session, conversation). Never invent a URL. If none is provided, give the name only. If a festival hint is present, its fact and link rules override this sentence; do not close with an unlinked check-the-official-site line.';
+  }
+  return '- URL은 제공된 맥락(힌트·세션·대화)에 있는 주소만 쓴다. 없는 URL을 지어내지 않는다. 주소가 없으면 이름만 적는다. 축제 힌트가 있으면 그 사실·링크 규칙이 이 문장보다 우선하며, 링크 없는 「공식에서 확인」 문구로 끝내지 않는다.';
+}
+
 export const getSystemPrompt = (personaType, locationName = '', options = {}) => {
   const bundle = getMooniPromptBundle(options.locale);
   const boundPlaceName = String(options.boundPlaceName ?? '').trim();
@@ -59,16 +66,19 @@ export const getSystemPrompt = (personaType, locationName = '', options = {}) =>
   const chipContext = chipHint ? `\n${chipHint}` : '';
   const tripSessionContext = tripSessionHint ? `\n${tripSessionHint}` : '';
   const festivalContext = festivalHint ? `\n${festivalHint}` : '';
+  const festivalPriority = festivalHint ? String(bundle.festivalPriorityLine || '').trim() : '';
 
   return (
     buildPersonaSystem(personaType, bundle) +
+    `\n${noInventedUrlRule(options.locale)}` +
     mooniContext +
     locationContext +
     boundPlaceRules +
     tripSessionContext +
     chipContext +
+    ctaContext +
     festivalContext +
-    ctaContext
+    (festivalPriority ? `\n${festivalPriority}` : '')
   );
 };
 

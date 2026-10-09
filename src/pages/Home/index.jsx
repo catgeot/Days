@@ -1585,7 +1585,13 @@ function Home() {
           externalInput={draftInput}
           savedTrips={filteredSavedTrips}
           onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
-          onOpenChat={(p) => handleStartChat(selectedLocation?.name || 'MOONi', p)}
+          onOpenChat={(p) => {
+            if (selectedLocation?.name) {
+              openMooniFromPlace(p);
+              return;
+            }
+            handleStartChat('MOONi', p);
+          }}
           onLogoClick={() => setIsLogoPanelOpen(true)}
           relatedPlaces={relatedPlaces} isTagLoading={isTagLoading}
           selectedCategory={category} onCategorySelect={handleCategorySelect}
@@ -1703,6 +1709,10 @@ function Home() {
             isTourActive={isTourActive}
             hideForStayPanel={mobileStayScrimStrong}
             onOpenChat={(payload) => {
+              if (selectedLocation?.name) {
+                openMooniFromPlace(payload);
+                return;
+              }
               trackMooniOpenIfRising(isChatOpen, true, {
                 placement: 'home',
                 ui_lang: locale,

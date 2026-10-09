@@ -236,16 +236,14 @@ export function renderTripSessionHint(locale, session) {
 
 function noInventedUrlRule(locale) {
   if (locale?.slice?.(0, 2) === "en") {
-    return "- Use only URLs that appear in the provided context (hints, session, conversation). Never invent a URL. If none is provided, give the name and tell the user to search or check the official site. A session hint that says not to assert unlisted facilities, and to direct the user to the official site or contact, overrides this rule.";
+    return "- Use only URLs that appear in the provided context (hints, session, conversation). Never invent a URL. If none is provided, give the name only. If a festival hint is present, its fact and link rules override this sentence; do not close with an unlinked check-the-official-site line.";
   }
-  return "- URL은 제공된 맥락(힌트·세션·대화)에 있는 주소만 쓴다. 없는 URL을 지어내지 않는다. 주소가 없으면 이름만 적고, 검색하거나 공식 홈페이지를 확인하라고 안내한다. 세션 힌트가 목록에 없는 시설을 단정하지 말고 공식 홈페이지·문의처를 안내하라고 하면 그 지시를 이 규칙보다 우선한다.";
+  return "- URL은 제공된 맥락(힌트·세션·대화)에 있는 주소만 쓴다. 없는 URL을 지어내지 않는다. 주소가 없으면 이름만 적는다. 축제 힌트가 있으면 그 사실·링크 규칙이 이 문장보다 우선하며, 링크 없는 「공식에서 확인」 문구로 끝내지 않는다.";
 }
 
 function festivalHintPriority(locale) {
-  if (locale?.slice?.(0, 2) === "en") {
-    return "- The festival hint above wins over general URL rules: do not assert facilities that are not in the hint; direct the user to the official site or contact.";
-  }
-  return "- 위 축제 힌트를 일반 URL 규칙보다 우선한다. 힌트에 없는 시설은 단정하지 말고 공식 홈페이지·문의처를 안내한다.";
+  const line = bundleFor(locale).festivalPriorityLine;
+  return line || "";
 }
 
 function buildPersonaSystem(personaType, bundle) {

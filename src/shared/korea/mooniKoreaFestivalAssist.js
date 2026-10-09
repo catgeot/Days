@@ -1,3 +1,4 @@
+import { KO, EN } from '../../i18n/mooniPromptBundleData.js';
 import { filterBySearchQuery, normalizeFestivalQuery } from '../../pages/Korea/festivalSearch.js';
 import {
   compareFestivalsByOpenDate,
@@ -196,26 +197,93 @@ const NO_MATCH_KO = '매칭 없음';
 const NO_MATCH_KO_DETAIL = '겹치는 행사가 없습니다';
 
 /**
+ * Calendar date in Asia/Seoul as YYYYMMDD.
+ * @param {Date} [now]
+ */
+export function kstTodayYmd(now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(now);
+  const pick = (type) => parts.find((part) => part.type === type)?.value || '';
+  return `${pick('year')}${pick('month')}${pick('day')}`;
+}
+
+/**
+ * @param {string} startYmd
+ * @param {string} endYmd
+ * @param {string} todayYmdValue
+ * @returns {'upcoming' | 'ongoing' | 'ended' | 'unknown'}
+ */
+export function festivalTimingStatus(startYmd, endYmd, todayYmdValue) {
+  const start = String(startYmd || '');
+  const end = /^\d{8}$/.test(String(endYmd || '')) ? String(endYmd) : start;
+  const today = String(todayYmdValue || '');
+  if (!/^\d{8}$/.test(start) || !/^\d{8}$/.test(today)) return 'unknown';
+  if (today < start) return 'upcoming';
+  if (today > end) return 'ended';
+  return 'ongoing';
+}
+
+/** @param {string} fromYmd @param {string} toYmd */
+export function ymdDayDelta(fromYmd, toYmd) {
+  const toUtc = (ymd) =>
+    Date.UTC(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8)));
+  return Math.round((toUtc(toYmd) - toUtc(fromYmd)) / 86400000);
+}
+
+function clipFact(value, max) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+  if (text.length <= max) return text;
+  return `${text.slice(0, max - 1).trim()}…`;
+}
+
+/**
  * @param {Record<string, unknown>} festivalContext
  * @param {string} [locale]
+ * @param {Date} [now]
  */
-export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko') {
+export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko', now = new Date()) {
   const ctx = festivalContext && typeof festivalContext === 'object' ? festivalContext : null;
   const title = String(ctx?.title || '').trim();
   if (!title) return '';
 
   const isEn = String(locale || 'ko').slice(0, 2) === 'en';
+  const bundle = isEn ? EN : KO;
+  const today = kstTodayYmd(now);
+  const startYmd = String(ctx?.eventStartDate || '').trim();
+  const endYmd = String(ctx?.eventEndDate || '').trim();
+  const status = festivalTimingStatus(startYmd, endYmd, today);
   const lines = isEn
     ? [
         '[GATEO Korea festival — verified facts for this chat session]',
         'Use ONLY the facts below for the festival the user is viewing. Do not claim there is no matching festival or that it is missing from GATEO.',
-        'Do not state facilities or services that are not listed below (e.g. parking, shuttles). If an official site or contact is listed, direct the user there for details.',
+        'Do not state booths, programs, crowd times, fees, parking, or shuttles that are not listed below.',
+        bundle.festivalAnswerRules,
       ]
     : [
         '[GATEO 한국 축제 — 이 세션의 확인된 사실]',
         '아래는 사용자가 보고 있는 축제의 확인된 정보입니다. 이 축제에 대해 답하세요. 「매칭 없음」「겹치는 행사가 없음」 등으로 안내하지 마세요.',
-        '아래 목록에 없는 편의·시설 정보는 단정하지 마세요. 공식 홈페이지나 문의처가 아래에 있으면 그곳에서 확인하도록 안내하세요.',
+        '아래 목록에 없는 부스·프로그램·혼잡 시간·요금·주차·셔틀은 단정하지 마세요.',
+        bundle.festivalAnswerRules,
       ];
+
+  lines.push(isEn ? `- Today (KST): ${today}` : `- 오늘(한국시간 KST): ${today}`);
+  if (status === 'upcoming' && /^\d{8}$/.test(startYmd)) {
+    const days = ymdDayDelta(today, startYmd);
+    lines.push(
+      isEn
+        ? `- Timing vs today: upcoming, ${days} day(s) until start`
+        : `- 오늘 기준 상태: 시작 전, 시작까지 ${days}일`,
+    );
+  } else if (status === 'ongoing') {
+    lines.push(isEn ? '- Timing vs today: underway' : '- 오늘 기준 상태: 진행 중');
+  } else if (status === 'ended') {
+    lines.push(isEn ? '- Timing vs today: ended' : '- 오늘 기준 상태: 종료');
+  }
 
   lines.push(isEn ? `- Title: ${title}` : `- 제목: ${title}`);
 
@@ -228,8 +296,6 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   if (periodLabel) {
     lines.push(isEn ? `- Period: ${periodLabel}` : `- 기간: ${periodLabel}`);
   }
-  const startYmd = String(ctx?.eventStartDate || '').trim();
-  const endYmd = String(ctx?.eventEndDate || '').trim();
   if (/^\d{8}$/.test(startYmd) && /^\d{8}$/.test(endYmd)) {
     lines.push(isEn ? `- Dates (YMD): ${startYmd}–${endYmd}` : `- 일정(YMD): ${startYmd}–${endYmd}`);
   }
@@ -246,6 +312,19 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const address = String(ctx?.address || '').trim();
   if (address) lines.push(isEn ? `- Address: ${address}` : `- 주소: ${address}`);
 
+  const overview = clipFact(ctx?.overview, 700);
+  if (overview) lines.push(isEn ? `- Overview: ${overview}` : `- 개요: ${overview}`);
+
+  const program = clipFact(ctx?.program, 500);
+  if (program) lines.push(isEn ? `- Program: ${program}` : `- 프로그램: ${program}`);
+
+  const nearby = Array.isArray(ctx?.nearbyPlaces)
+    ? ctx.nearbyPlaces.map((name) => String(name || '').trim()).filter(Boolean).slice(0, 6)
+    : [];
+  if (nearby.length) {
+    lines.push(isEn ? `- Nearby (GATEO): ${nearby.join(', ')}` : `- 근처(GATEO): ${nearby.join(', ')}`);
+  }
+
   const gateoUrl =
     String(ctx?.gateoUrl || '').trim() || gateoKoreaFestivalDetailUrl(String(ctx?.contentId || ''));
   if (gateoUrl.startsWith('https://www.gateo.kr/')) {
@@ -253,7 +332,9 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   }
 
   const homepage = String(ctx?.homepage || '').trim();
-  if (homepage) lines.push(isEn ? `- Official site: ${homepage}` : `- 공식 홈페이지: ${homepage}`);
+  if (/^https?:\/\//i.test(homepage)) {
+    lines.push(isEn ? `- Official page URL: ${homepage}` : `- 공식 안내 URL: ${homepage}`);
+  }
 
   return `\n${lines.join('\n')}`;
 }
@@ -274,7 +355,7 @@ export function buildMooniKoreaFestivalSystemHint(input) {
 
   const boundCtx = input.festivalContext;
   if (boundCtx && String(boundCtx.title || '').trim()) {
-    return buildMooniBoundFestivalSystemHint(boundCtx, input.locale);
+    return buildMooniBoundFestivalSystemHint(boundCtx, input.locale, input.now);
   }
   const items = Array.isArray(input.items) ? input.items : [];
   const { window, candidates } = selectMooniKoreaFestivalCandidates(items, {
@@ -344,7 +425,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
   const festivalContext = input.festivalContext;
   if (festivalContext && String(festivalContext.title || '').trim()) {
     return {
-      hint: buildMooniBoundFestivalSystemHint(festivalContext, input.locale),
+      hint: buildMooniBoundFestivalSystemHint(festivalContext, input.locale, input.now),
       candidates: [],
     };
   }

@@ -2465,8 +2465,7 @@
             "sendText": "여행지의 숙소는 어디가 좋을까?"
           },
           "prep_transport": {
-            "label": "렌터카·픽업",
-            "mobileLabel": "교통·픽업",
+            "label": "현지 교통",
             "sendText": "현지 교통은 어떻게 이용하는 것이 좋을까?"
           }
         },
@@ -2488,6 +2487,38 @@
             "label": "동행별 추천",
             "sendText": "누구와 가기 좋아? 동행별 추천해줘"
           }
+        }
+      },
+      "festival": {
+        "festival_sights": {
+          "label": "🎪 볼거리·분위기",
+          "sendText": "이 축제에서 볼 수 있는 것과 현장 분위기를 알려줘. 확인된 프로그램과 시간만 말하고, 데이터에 없는 붐비는 시간은 지어내지 마."
+        },
+        "festival_access": {
+          "label": "🚆 가는 법"
+        },
+        "festival_nearby": {
+          "label": "🍜 근처 먹고 둘러볼 곳",
+          "sendText": "축제장 근처에서 먹을 곳과 함께 들를 곳을 알려줘. GATEO에 확인된 근처 장소만 말하고, 없는 맛집은 지어내지 마."
+        },
+        "festival_day": {
+          "label": "🗺️ 하루 동선",
+          "sendText": "이 축제를 넣어 하루 동선을 짜줘. 확인된 일정과 장소만 쓰고, 없는 프로그램은 지어내지 마."
+        },
+        "festival_overseas": {
+          "label": "해외에서 오시나요?"
+        },
+        "festival_overseas_visa": {
+          "label": "입국·비자",
+          "sendText": "이 축제에 오려면 입국과 비자, 준비 서류를 알려줘. 확인되지 않은 면제나 금액은 단정하지 마."
+        },
+        "festival_overseas_flight": {
+          "label": "항공권",
+          "sendText": "이 축제에 오는 항공권은 GATEO 화면의 항공권 검색으로 어떻게 찾는지 알려줘. 링크 없는 외부 사이트로 보내지 마."
+        },
+        "festival_overseas_airport": {
+          "label": "공항에서 축제장까지",
+          "sendText": "공항에서 이 축제장까지 가는 법을 알려줘. 확인되지 않은 셔틀은 말하지 마."
         }
       }
     }

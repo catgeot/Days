@@ -60,6 +60,10 @@ import {
   getMooniGeneralDiscoveryChips,
   getMooniL1ChipLabel,
   buildAccessRouteAskText,
+  FESTIVAL_ACCESS_PARENT,
+  FESTIVAL_DOMESTIC_ORIGINS,
+  festivalOriginLabel,
+  buildFestivalAccessAskText,
 } from '../lib/mooniQuickReplies';
 import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
@@ -129,6 +133,7 @@ const ChatModal = ({
   /** 모바일 주제 독: 입력 포커스·타이핑 시 칩 숨기고 검색바 확장 */
   const [mobileDockInputFocused, setMobileDockInputFocused] = useState(false);
   const [accessOriginIata, setAccessOriginIata] = useState(() => resolveDefaultFlightOriginIata());
+  const [festivalAccessIata, setFestivalAccessIata] = useState('ICN');
   const [accessOriginSearchOpen, setAccessOriginSearchOpen] = useState(false);
   const [accessOriginSearchActive, setAccessOriginSearchActive] = useState(false);
 
@@ -349,11 +354,10 @@ const ChatModal = ({
 
   const festivalMooniOpening = useMemo(
     () =>
-      buildFestivalMooniChatOpening(
-        festivalMooniContext,
-        festivalMooniContext ? t('korea.festival.detail.mooniFestivalInvite') : '',
-      ),
-    [festivalMooniContext, t, i18n.language],
+      buildFestivalMooniChatOpening(festivalMooniContext, {
+        locale: i18n.language,
+      }),
+    [festivalMooniContext, i18n.language],
   );
 
   const placeIntroTarget = useMemo(() => {
@@ -393,6 +397,7 @@ const ChatModal = ({
           essentialGuide: topicEssentialGuide,
           omitPlanner: !topicDockParent || !boundDestinationSlug,
           allowNameBound: allowNameBoundChips,
+          festivalSession: Boolean(festivalMooniContext),
         }
       ),
     [
@@ -401,6 +406,7 @@ const ChatModal = ({
       topicEssentialGuide,
       boundDestinationSlug,
       allowNameBoundChips,
+      festivalMooniContext,
       i18n.language,
     ]
   );
@@ -427,11 +433,15 @@ const ChatModal = ({
   const showClearPlaceBinding = hasPlaceBoundName && Boolean(onClearPlaceBinding);
 
   const showAccessOriginDock =
-    isMooniUi && topicDockParent === 'access' && chipDockMode === 'topic';
+    isMooniUi && topicDockParent === 'access' && chipDockMode === 'topic' && !festivalMooniContext;
+
+  const showFestivalAccessDock =
+    isMooniUi && topicDockParent === FESTIVAL_ACCESS_PARENT && Boolean(festivalMooniContext);
 
   const mobileDockInputExpanded =
     showMooniChipDock &&
     !showAccessOriginDock &&
+    !showFestivalAccessDock &&
     (mobileDockInputFocused || Boolean(input.trim()));
 
   const topicDockPrompt =
@@ -500,7 +510,12 @@ const ChatModal = ({
   }, [isOpen, mobileDockInputFocused]);
 
   useEffect(() => {
-    if (topicDockParent && topicDockParent !== 'access' && quickReplies.length === 0) {
+    if (
+      topicDockParent &&
+      topicDockParent !== 'access' &&
+      topicDockParent !== FESTIVAL_ACCESS_PARENT &&
+      quickReplies.length === 0
+    ) {
       setTopicDockParent(null);
     }
   }, [topicDockParent, quickReplies.length]);
@@ -1145,6 +1160,16 @@ const ChatModal = ({
     handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
   }, [accessOriginIata, handleSend]);
 
+  const handleFestivalAccessOrigin = useCallback((iata) => {
+    const code = String(iata || 'ICN').trim().toUpperCase();
+    setFestivalAccessIata(code);
+    handleSend(
+      buildFestivalAccessAskText(code, i18n.language),
+      PERSONA_TYPES.PLANNER,
+      { chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS },
+    );
+  }, [handleSend, i18n.language]);
+
   const topicDockChipsProps = useMemo(
     () => ({
       slug: effectiveQuickReplySlug,
@@ -1405,8 +1430,11 @@ const ChatModal = ({
                 ) && (
                 <div className="flex flex-col items-start w-full mb-3">
                   <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
-                  <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed whitespace-pre-wrap ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
-                    {festivalMooniOpening}
+                  <div
+                    data-testid="mooni-festival-opening"
+                    className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}
+                  >
+                    <MooniChatMarkdownBoundary text={festivalMooniOpening} variant={fresh ? 'light' : 'dark'} />
                   </div>
                 </div>
               )}
@@ -1680,6 +1708,52 @@ const ChatModal = ({
                     />
                   ) : null}
                 </div>
+              ) : showFestivalAccessDock ? (
+                <div
+                  data-testid="mooni-festival-access-dock"
+                  className={`px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 ${tone(fresh, 'border-b border-gray-800/80', 'border-b border-cyan-100')}`}
+                >
+                  <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                    <button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => setTopicDockParent(null)}
+                      className={tone(
+                        fresh,
+                        'inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none',
+                        'inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-cyan-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 touch-manipulation hover:border-cyan-300 hover:bg-cyan-50 transition-colors disabled:opacity-50 disabled:pointer-events-none',
+                      )}
+                    >
+                      <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
+                      {t('mooni.chat.backTopic')}
+                    </button>
+                    <span className={`text-[11px] font-medium break-keep min-w-0 ${tone(fresh, 'text-cyan-400/75', 'text-cyan-600')}`}>
+                      {getMooniL1ChipLabel(FESTIVAL_ACCESS_PARENT, { mobile: true })}
+                    </span>
+                  </div>
+                  <div className="flex w-full max-w-full gap-2 flex-nowrap overflow-x-auto overscroll-x-contain pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {FESTIVAL_DOMESTIC_ORIGINS.map((row) => {
+                      const selected = festivalAccessIata === row.iata;
+                      return (
+                        <button
+                          key={row.iata}
+                          type="button"
+                          data-festival-origin={row.iata}
+                          disabled={isLoading}
+                          aria-pressed={selected}
+                          onClick={() => handleFestivalAccessOrigin(row.iata)}
+                          className={tone(
+                            fresh,
+                            `inline-flex shrink-0 items-center justify-center min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-300 bg-cyan-500/30 text-cyan-50' : 'border-cyan-500/35 bg-cyan-950/30 text-cyan-100'}`,
+                            `inline-flex shrink-0 items-center justify-center min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-400 bg-cyan-50 text-cyan-800' : 'border-cyan-200 bg-white text-cyan-700'}`,
+                          )}
+                        >
+                          {festivalOriginLabel(row.iata, i18n.language)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               ) : showMooniChipDock ? (
                 <>
                   <div className="md:hidden px-3 pt-2 pb-1 flex flex-col gap-1.5">
@@ -1820,7 +1894,7 @@ const ChatModal = ({
               ) : null}
               <div
                 className={`px-3 pt-3 md:px-4 md:pt-2.5 md:pb-3 ${
-                  showAccessOriginDock || showMooniChipDock
+                  showAccessOriginDock || showFestivalAccessDock || showMooniChipDock
                     ? 'hidden'
                     : 'pb-0'
                 }`}

@@ -1097,12 +1097,27 @@ export default function FestivalDetailSheet({
     ],
   );
 
+  const mooniNearbyPlaces = useMemo(() => {
+    const names = [];
+    const push = (spot) => {
+      const name = String(spot?.name || '').trim();
+      if (!name || names.includes(name)) return;
+      names.push(name);
+    };
+    for (const spot of nearbySpots) push(spot);
+    for (const spot of nearbyFood) push(spot);
+    return names.slice(0, 6);
+  }, [nearbySpots, nearbyFood]);
+
   const festivalMooni = useFestivalMooniEntry({
     item: item || {},
     intro,
     location: mooniEntryLocation,
     homepage,
     summaryFields,
+    overview,
+    program: stripHtml(intro?.program || ''),
+    nearbyPlaces: mooniNearbyPlaces,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {
