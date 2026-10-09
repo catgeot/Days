@@ -313,7 +313,7 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   if (address) lines.push(isEn ? `- Address: ${address}` : `- 주소: ${address}`);
 
   const overview = clipFact(ctx?.overview, 700);
-  if (overview) lines.push(isEn ? `- Overview: ${overview}` : `- 개요: ${overview}`);
+  if (overview && !isEn) lines.push(`- 개요: ${overview}`);
 
   const program = clipFact(ctx?.program, 500);
   if (program) lines.push(isEn ? `- Program: ${program}` : `- 프로그램: ${program}`);

@@ -10,6 +10,7 @@ import enLocale from '../../src/i18n/locales/en.json' with { type: 'json' };
 import {
   buildFestivalMooniContext,
   buildFestivalMooniSentenceAnswer,
+  countFestivalCardSentences,
 } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 import { buildMooniBoundFestivalSystemHint } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 import { renderMooniSystem } from '../../supabase/functions/_shared/gemini/templates.js';
@@ -28,7 +29,8 @@ const GANGNEUNG = {
   },
   intro: { eventplace: '강릉 월화거리 일원', playtime: '12:00~21:00' },
   summaryFields: { timeText: '12:00~21:00', fee: { text: '입장료 무료' } },
-  overview: '장칼국수와 막국수를 맛보는 자리입니다.',
+  overview:
+    '강릉 국수 축제는 그 어느 지역보다 면 요리가 많은 사랑을 받고 있는 대표 미식 축제이다. 2025년 제5회를 맞이하여 행사명이 변경되었다. 2026년의 황금빛 가을을 이곳 월화거리에서 마음껏 즐길 수 있다. 장칼국수와 막국수를 맛보는 자리입니다.',
   program: '먹거리존\n누들 경연대회',
   nearbyPlaces: ['경포해변', '오죽헌'],
   homepage: 'https://visitgangneung.net/pub/gnfestival/4748.do',
@@ -44,21 +46,86 @@ test('festival opening is sentences with dates, link, and no filler', () => {
   assert.match(ko, /먹거리존, 누들 경연대회/);
   assert.match(ko, /12:00~21:00/);
   assert.match(ko, /시작까지 6일/);
-  assert.match(ko, /경포해변, 오죽헌/);
+  assert.match(ko, /확인된 근처 장소는 경포해변 하나예요/);
+  assert.doesNotMatch(ko, /오죽헌/);
   assert.match(ko, /2026년 10월 15일부터 2026년 10월 18일까지/);
   assert.match(ko, /https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716/);
-  assert.match(ko, /다음으로 가는 법/);
-  assert.doesNotMatch(ko, /오신 것을 환영합니다/);
-  assert.doesNotMatch(ko, /단순히 국수를 먹는/);
-  assert.doesNotMatch(ko, /공식 홈페이지에서 확인/);
+  assert.match(ko, /다음으로 가는 법을 정할 수 있어요\.$/);
+  assert.ok(countFestivalCardSentences(ko) <= 7, `sentences ${countFestivalCardSentences(ko)}: ${ko}`);
+  assert.ok(countFestivalCardSentences(ko) >= 4);
+  for (const phrase of [
+    '사랑을 받',
+    '대표',
+    '마음껏',
+    '황금빛',
+    '다양한 즐길거리',
+    '친숙하게',
+    '행사명이 변경',
+    '제5회',
+    '오신 것을 환영합니다',
+    '단순히 국수를 먹는',
+    '공식 홈페이지에서 확인',
+    '오후 2시',
+  ]) {
+    assert.equal(ko.includes(phrase), false, phrase);
+  }
   assert.doesNotMatch(ko, /^[-•*]\s/m);
-  assert.doesNotMatch(ko, /오후 2시/);
+  assert.doesNotMatch(ko, /입니다/);
 
-  assert.match(en, /Gangneung|강릉 국수 축제 is held at/);
+  assert.match(en, /Gangneung Noodle Festival \(강릉 국수 축제\) is held at/);
   assert.match(en, /starts in 6 days/);
   assert.match(en, /from ICN/);
   assert.match(en, /festival=2930716/);
   assert.doesNotMatch(en, /welcome/i);
+  assert.doesNotMatch(en, /장칼국수/);
+  assert.doesNotMatch(en, /사랑을 받/);
+  let enOutsideNames = en;
+  for (let i = 0; i < 6; i += 1) enOutsideNames = enOutsideNames.replace(/\([^()]*\)/g, '');
+  assert.doesNotMatch(enOutsideNames, /[가-힣]/);
+});
+
+test('Jeju press-release overview and program labels stay off the card', () => {
+  const ctx = buildFestivalMooniContext({
+    item: {
+      contentId: '3554702',
+      title: '2026 원도심 야간여행 ‘섬夜시즌’',
+      eventStartDate: '20261017',
+      eventEndDate: '20261018',
+      addr1: '제주특별자치도 제주시 중앙로 1 (건입동)',
+    },
+    intro: { eventplace: '제주시 탑동광장', playtime: '18:00~20:40' },
+    summaryFields: {
+      timeText: '18:00~20:40',
+      fee: { text: '무료 ※ 나이트워크 선착순 사전신청 참가비 5,000원' },
+    },
+    overview:
+      '제주특별자치도와 제주특별자치도관광협회는 10월 17일(토)부터 18일(일)까지 2일간 제주시 원도심 일대에서 「2026 원도심 야간여행 섬夜시즌」 축제를 개최한다. 특히 축제 첫날인 17일에는 일상의 분주함을 잠시 내려놓고 원도심 일대를 걸으며 정취를 느끼는 「나이트워크」가 열린다. 또한 양일간 제주시 탑동광장에서는 콘서트와 불꽃놀이가 펼쳐질 예정이다.',
+    program: '주요 프로그램 : 나이트워크, 섬夜 콘서트, 부대 행사, 프로그램 : 섬夜 불꽃놀이',
+    nearbyPlaces: ['제주항'],
+  });
+  const ko = buildFestivalMooniSentenceAnswer(ctx, { locale: 'ko', now: NOW });
+  assert.match(ko, /‘섬夜시즌’은 제주시 탑동광장/);
+  assert.match(ko, /나이트워크, 섬夜 콘서트, 부대 행사, 섬夜 불꽃놀이예요/);
+  assert.doesNotMatch(ko, /프로그램\s*:/);
+  assert.doesNotMatch(ko, /개최/);
+  assert.doesNotMatch(ko, /관광협회/);
+  assert.doesNotMatch(ko, /정취/);
+  assert.doesNotMatch(ko, /내려놓/);
+  assert.doesNotMatch(ko, /열린다/);
+  assert.doesNotMatch(ko, /펼쳐질/);
+  assert.doesNotMatch(ko, /또한 양일간/);
+  assert.match(ko, /\?festival=3554702/);
+  assert.match(ko, /다음으로 가는 법을 정할 수 있어요\.$/);
+  assert.ok(countFestivalCardSentences(ko) <= 7);
+
+  const enCtx = { ...ctx, feeText: 'Free' };
+  const en = buildFestivalMooniSentenceAnswer(enCtx, { locale: 'en', now: NOW });
+  assert.match(en, /Night festival \(2026 원도심 야간여행 ‘섬夜시즌’\)/);
+  assert.match(en, /admission is free/i);
+  assert.match(en, /from ICN/);
+  let enOutsideNames = en;
+  for (let i = 0; i < 6; i += 1) enOutsideNames = enOutsideNames.replace(/\([^()]*\)/g, '');
+  assert.doesNotMatch(enOutsideNames, /[가-힣]/);
 });
 
 test('festival chips: four answers plus overseas group, English puts overseas first', () => {
