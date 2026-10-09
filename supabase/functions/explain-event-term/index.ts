@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { GEMINI_QUALITY } from "../_shared/geminiModels.ts";
+import { thinkingConfigForBodyText } from "../_shared/gemini/thinkingConfig.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -70,8 +71,7 @@ async function callGemini(
       systemInstruction: { parts: [{ text: system }] },
       generationConfig: {
         maxOutputTokens,
-        temperature: 0.4,
-        thinkingConfig: { thinkingBudget: 0 },
+        thinkingConfig: thinkingConfigForBodyText(MODEL),
       },
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     }),

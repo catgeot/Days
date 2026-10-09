@@ -1,4 +1,5 @@
 import { sanitizeGeminiUserText } from "./answerSanitize.mjs";
+import { thinkingConfigForBodyText as thinkingConfigForBodyTextJs } from "./thinkingConfig.js";
 
 export type GeminiCallResult = {
   ok: boolean;
@@ -17,16 +18,26 @@ export type GeminiThinkingConfig =
   | { thinkingLevel: "minimal" | "low" | "medium" | "high" }
   | { thinkingBudget: number };
 
-/**
- * place_intro 전용. 3.5-flash 기본 thinking(medium)이 maxOutputTokens를 사고에 써 본문이 잘린다.
- * flash-lite 폴백은 레벨 집합이 달라 설정을 생략한다(한도 2048은 유지).
- */
-export function thinkingConfigForPlaceIntro(model: string): GeminiThinkingConfig | undefined {
-  if (/gemini-2\.5(?:-|$)/.test(model)) return { thinkingBudget: 0 };
-  if (/flash-lite/.test(model)) return undefined;
-  if (/gemini-3/.test(model)) return { thinkingLevel: "low" };
+/** JS helper returns a widened string; the proxy only sends the low/budget shapes. */
+export function thinkingConfigForBodyText(model: string): GeminiThinkingConfig | undefined {
+  const config = thinkingConfigForBodyTextJs(model) as
+    | { thinkingBudget?: number; thinkingLevel?: string }
+    | null
+    | undefined;
+  if (!config) return undefined;
+  if (typeof config.thinkingBudget === "number") return { thinkingBudget: config.thinkingBudget };
+  if (
+    config.thinkingLevel === "minimal"
+    || config.thinkingLevel === "low"
+    || config.thinkingLevel === "medium"
+    || config.thinkingLevel === "high"
+  ) {
+    return { thinkingLevel: config.thinkingLevel };
+  }
   return undefined;
 }
+
+export const thinkingConfigForPlaceIntro = thinkingConfigForBodyText;
 
 /** placeChatIntroLimits SUMMARY_SENTENCE_END_RE 와 동일. 「…있는 수」 같은 중간 절단을 본문 미완으로 본다. */
 const PLACE_INTRO_SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;
@@ -53,7 +64,8 @@ export async function callGemini(
 ): Promise<GeminiCallResult> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
-  const generationConfig: Record<string, unknown> = { maxOutputTokens, candidateCount: 1 };
+  // Gemini 3.8+ generateContent rejects candidateCount.
+  const generationConfig: Record<string, unknown> = { maxOutputTokens };
   if (thinkingConfig) generationConfig.thinkingConfig = thinkingConfig;
   try {
     const response = await fetchImpl(geminiUrl(model), {

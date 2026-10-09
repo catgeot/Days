@@ -1,8 +1,8 @@
+import { trimHistoryTurnText } from "./historyNormalize.js";
 import {
   GEMINI_FAST,
-  GEMINI_PROXY_MODELS,
   GEMINI_QUALITY,
-  GEMINI_WRITE,
+  isGeminiProxyModelAllowed,
   resolveGeminiModelId,
 } from "../geminiModels.ts";
 import { KO } from "./mooniPromptBundleData.js";
@@ -45,7 +45,7 @@ export type TaskBuild =
     maxOutputTokens: number;
     parts: unknown[];
     tier: string | null;
-    /** place_intro: 모델별 thinking 상한을 call 시 붙인다. */
+    /** Body-text tasks: thinkingConfigForBodyText (thinkingLevel low on 3.x). */
     limitThinking?: boolean;
   }
   | { ok: false; status: number; error: string };
@@ -71,8 +71,8 @@ export function normalizeHistory(raw: unknown): { role: string; text: string }[]
     const role = (item as { role?: unknown }).role;
     const text = (item as { text?: unknown }).text;
     if (role !== "user" && role !== "model") return null;
-    if (typeof text !== "string" || text.length > 2000) return null;
-    turns.push({ role, text });
+    if (typeof text !== "string") return null;
+    turns.push({ role, text: trimHistoryTurnText(role, text) });
   }
   let kept = turns.slice(-12);
   while (kept.reduce((sum, turn) => sum + turn.text.length, 0) > 12_000 && kept.length > 1) {
@@ -188,6 +188,19 @@ function stringList(raw: unknown, maxItems: number, maxLen: number): string[] | 
   return out;
 }
 
+const ITINERARY_TURN_RE =
+  /일정\s*(?:짜|만들|추천|잡|계획)|(?:여행|방문)\s*(?:일정|코스|동선|루트)|코스\s*추천|동선\s*(?:짜|추천|잡)|루트\s*(?:짜|추천|잡)|\d+\s*박\s*\d*\s*일|itinerary|plan\s+(?:a\s+)?(?:trip|itinerary)|suggest\s+(?:a\s+)?(?:route|itinerary)|끊긴\s*지점|이미\s*쓴\s*날짜|do not restart from day 1/i;
+
+function isItineraryMooniTurn(
+  userText: string,
+  history: { role: string; text: string }[],
+): boolean {
+  if (ITINERARY_TURN_RE.test(userText)) return true;
+  const lastModel = [...history].reverse().find((turn) => turn.role === "model");
+  if (!lastModel) return false;
+  return /\d{1,2}\s*일차|\bitinerary\b/i.test(lastModel.text);
+}
+
 function images(raw: unknown): { mimeType: string; data: string }[] | null {
   if (raw == null) return [];
   if (!Array.isArray(raw) || raw.length > 4) return null;
@@ -264,12 +277,15 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       cta,
       ctaPlace,
       koreaFestivalHint: koreaFestivalHint || "",
+      showPlannerHeader: input.showPlannerHeader === true,
     });
+    const longForm = tier === "quality" || isItineraryMooniTurn(userText, history);
     return {
       ok: true,
       task,
       model: tier === "quality" ? GEMINI_QUALITY : GEMINI_FAST,
-      maxOutputTokens: tier === "quality" ? 2048 : 1536,
+      maxOutputTokens: longForm ? 4096 : 1536,
+      limitThinking: true,
       parts: [{ text: wrapUserTurn(system, history, userText) }],
       tier,
     };
@@ -324,6 +340,7 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       task,
       model: GEMINI_QUALITY,
       maxOutputTokens: 768,
+      limitThinking: true,
       parts: [{ text: wrapUserTurn(rendered.system, [], rendered.userText) }],
       tier: null,
     };
@@ -345,6 +362,7 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       task,
       model: GEMINI_QUALITY,
       maxOutputTokens: 2048,
+      limitThinking: true,
       parts: [
         { text: wrapUserTurn(rendered.system, [], rendered.userText) },
         ...pics.map((pic) => ({ inlineData: pic })),
@@ -382,6 +400,7 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       task,
       model: GEMINI_QUALITY,
       maxOutputTokens: 1024,
+      limitThinking: true,
       parts: [{ text: wrapUserTurn(system, [], "") }],
       tier: null,
     };
@@ -460,9 +479,8 @@ export function buildLegacy(body: Record<string, unknown>, legacyEnabled: boolea
     if (part.inlineData) images += 1;
   }
   if (images > 4 || textLen > 24_000) return { ok: false, status: 400, error: "bad_request" };
-  let model = resolveGeminiModelId(typeof body.modelId === "string" ? body.modelId : undefined);
-  if (model === GEMINI_WRITE) model = GEMINI_QUALITY;
-  if (!GEMINI_PROXY_MODELS.includes(model)) return { ok: false, status: 400, error: "bad_request" };
+  const model = resolveGeminiModelId(typeof body.modelId === "string" ? body.modelId : undefined);
+  if (!isGeminiProxyModelAllowed(model)) return { ok: false, status: 400, error: "bad_request" };
   return {
     ok: true,
     task: "legacy",

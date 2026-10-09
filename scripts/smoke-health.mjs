@@ -11,6 +11,18 @@ import { loadEnvFile } from './lib/load-env-file.mjs';
 import { smokeSupabaseFetch } from './lib/smoke-supabase-fetch.mjs';
 import { maskPrivate } from './health/mask-private.mjs';
 import { probePlaceChatIntroSummariesForLeaks } from './lib/probe-place-chat-intro-leak.mjs';
+import { GEMINI_MODELS } from '../src/utils/geminiModels.js';
+
+/**
+ * Model ids a Gemini liveness ping would use. The live P0-3 credit ping was
+ * removed in #380 so this script stays liveness-only and does not call Gemini.
+ * Ids stay on the SSOT (FAST unchanged, QUALITY/WRITE = 3.8-flash).
+ */
+export const SMOKE_GEMINI_PING_MODELS = [
+  GEMINI_MODELS.FAST,
+  GEMINI_MODELS.QUALITY,
+  GEMINI_MODELS.WRITE,
+];
 
 if (!process.env.GITHUB_ACTIONS) {
   loadEnvFile();

@@ -56,8 +56,9 @@ async function main() {
   };
 
   check(GEMINI_MODELS.FAST === 'gemini-3.1-flash-lite', 'FAST is 3.1-flash-lite');
-  check(GEMINI_MODELS.QUALITY === 'gemini-3.5-flash', 'QUALITY is 3.5-flash');
-  check(GEMINI_MODELS.WRITE === 'gemini-3.1-pro-preview', 'WRITE is 3.1-pro-preview');
+  check(GEMINI_MODELS.QUALITY === 'gemini-3.8-flash', 'QUALITY is 3.8-flash');
+  check(GEMINI_MODELS.WRITE === 'gemini-3.8-flash', 'WRITE is 3.8-flash');
+  check(!Object.values(GEMINI_MODELS).some((id) => String(id).includes('2.5')), 'live tiers are not 2.5');
 
   const mooniSrc = read('src/utils/mooniChatModel.js');
   check(mooniSrc.includes('CHAT: GEMINI_MODELS.FAST'), 'MOONi CHAT uses FAST');
@@ -77,6 +78,18 @@ async function main() {
     '3.1-pro aliases to WRITE',
   );
   check(
+    resolveGeminiModelId('gemini-3.5-flash') === GEMINI_MODELS.QUALITY,
+    '3.5-flash aliases to QUALITY',
+  );
+  check(
+    resolveGeminiModelId('gemini-3.1-pro-preview') === GEMINI_MODELS.WRITE,
+    '3.1-pro-preview aliases to WRITE',
+  );
+  check(
+    resolveGeminiModelId('gemini-3.8-flash') === GEMINI_MODELS.QUALITY,
+    '3.8-flash is allowed as itself',
+  );
+  check(
     resolveGeminiModelId(undefined) === GEMINI_MODELS.QUALITY,
     'default model is QUALITY',
   );
@@ -85,10 +98,16 @@ async function main() {
     'allowlist includes QUALITY',
   );
 
-  const reviewSrc = read('src/components/PlaceCard/modals/ReviewEditorModal.jsx');
-  check(reviewSrc.includes('GEMINI_MODELS.QUALITY'), 'review AI uses QUALITY');
-  const logbookSrc = read('src/pages/DailyReport/hooks/useLogbookAI.js');
-  check(logbookSrc.includes('GEMINI_MODELS.WRITE'), 'logbook AI uses WRITE');
+  const tasksSrc = read('supabase/functions/_shared/gemini/tasks.ts');
+  check(
+    /task === "review_draft"[\s\S]*?model: GEMINI_QUALITY/.test(tasksSrc),
+    'review_draft task uses QUALITY',
+  );
+  check(
+    /task === "logbook_polish"[\s\S]*?model: GEMINI_QUALITY/.test(tasksSrc),
+    'logbook_polish task uses QUALITY',
+  );
+  check(tasksSrc.includes('GEMINI_WRITE_TRY_ORDER') === false, 'proxy tasks do not call the write fallback list');
   const healthSrc = read('scripts/smoke-health.mjs');
   check(healthSrc.includes('GEMINI_MODELS.FAST'), 'site health probes FAST');
   check(healthSrc.includes('GEMINI_MODELS.QUALITY'), 'site health probes QUALITY');
@@ -97,10 +116,13 @@ async function main() {
     'site health does not hardcode FAST id',
   );
 
-  const edge = read('supabase/functions/_shared/geminiModels.ts');
+  const edge = read('supabase/functions/_shared/geminiModelPolicy.js');
   check(edge.includes(`"${GEMINI_MODELS.FAST}"`), 'Edge FAST matches client');
   check(edge.includes(`"${GEMINI_MODELS.QUALITY}"`), 'Edge QUALITY matches client');
   check(edge.includes(`"${GEMINI_MODELS.WRITE}"`), 'Edge WRITE matches client');
+  check(edge.includes('"gemini-3.7-flash"'), 'Edge WRITE fallback is 3.7-flash');
+  check(edge.includes('"gemini-3.5-flash"'), 'Edge aliases 3.5-flash');
+  check(edge.includes('"gemini-3.1-pro-preview"'), 'Edge aliases 3.1-pro-preview');
 
   for (const rel of LIVE_FILES) {
     const text = read(rel);

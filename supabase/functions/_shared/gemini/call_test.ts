@@ -30,11 +30,13 @@ Deno.test("sanitizeGeminiUserText keeps clean Korean prose", () => {
 });
 
 Deno.test("place_intro thinking config is model-specific and never both knobs", () => {
+  assertEquals(thinkingConfigForPlaceIntro("gemini-3.8-flash"), { thinkingLevel: "low" });
+  assertEquals(thinkingConfigForPlaceIntro("gemini-3.7-flash"), { thinkingLevel: "low" });
   assertEquals(thinkingConfigForPlaceIntro("gemini-3.5-flash"), { thinkingLevel: "low" });
   assertEquals(thinkingConfigForPlaceIntro("gemini-2.5-flash"), { thinkingBudget: 0 });
-  assertEquals(thinkingConfigForPlaceIntro("gemini-3.1-flash-lite"), undefined);
+  assertEquals(thinkingConfigForPlaceIntro("gemini-3.1-flash-lite"), { thinkingLevel: "low" });
   assertEquals(thinkingConfigForPlaceIntro("gemini-3.1-pro-preview"), { thinkingLevel: "low" });
-  for (const model of ["gemini-3.5-flash", "gemini-2.5-flash"]) {
+  for (const model of ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash", "gemini-2.5-flash"]) {
     const config = thinkingConfigForPlaceIntro(model);
     assertEquals(config != null && "thinkingLevel" in config && "thinkingBudget" in config, false);
   }

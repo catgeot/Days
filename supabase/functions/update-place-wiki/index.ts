@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
-import { GEMINI_QUALITY, GEMINI_WRITE } from "../_shared/geminiModels.ts";
+import { GEMINI_WRITE_TRY_ORDER } from "../_shared/geminiModels.ts";
+import { thinkingConfigForBodyText } from "../_shared/gemini/thinkingConfig.js";
 import { magazineStorageId } from "../_shared/magazinePrompts.ts";
 import { resolveCanonicalPlaceId } from "../_shared/resolveCanonicalPlaceId.ts";
 import { buildWatsonSystemPrompt, buildWatsonUserPrompt } from "../_shared/watsonPrompts.ts";
@@ -71,7 +72,7 @@ serve(async (req) => {
         const systemPrompt = buildWatsonSystemPrompt(locale);
         const userPrompt = buildWatsonUserPrompt(String(locationName), today, locale);
 
-    const modelsToTry = [GEMINI_WRITE, GEMINI_QUALITY];
+    const modelsToTry = GEMINI_WRITE_TRY_ORDER;
     let generatedText = '';
     let lastError = '';
 
@@ -85,7 +86,8 @@ serve(async (req) => {
           },
           body: JSON.stringify({
             generationConfig: {
-              responseMimeType: "application/json"
+              responseMimeType: "application/json",
+              thinkingConfig: thinkingConfigForBodyText(model),
             },
             contents: [
               { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }

@@ -148,6 +148,36 @@ const continueAfterEarlyIntro = ` 시내로 이동해 체크인합니다.
 **3일차** 이리부 다리
 **4일차** 공항 · 출발`;
 
+test('mergeMooniContinuation — Day1 본문 3줄 + Day2 첫 줄 반복은 중복되지 않음', () => {
+  const prior = [
+    '**1일차** 시모지 공항 도착',
+    '히라라 시내 체크인',
+    '저녁은 시장',
+    '',
+    '**2일차** 요시노 해변',
+  ].join('\n');
+  const continuation = [
+    '**1일차** 시모지 공항 도착',
+    '히라라 시내 체크인',
+    '저녁은 시장',
+    '**2일차** 요시노 해변',
+    '오후 스노클',
+  ].join('\n');
+  const merged = mergeMooniContinuation(prior, continuation);
+  assert.equal((merged.match(/\*\*1일차\*\*/g) || []).length, 1);
+  assert.equal((merged.match(/히라라 시내 체크인/g) || []).length, 1);
+  assert.equal((merged.match(/저녁은 시장/g) || []).length, 1);
+  assert.equal((merged.match(/\*\*2일차\*\*/g) || []).length, 1);
+  assert.equal((merged.match(/요시노 해변/g) || []).length, 1);
+  assert.ok(merged.includes('오후 스노클'));
+});
+
+test('mergeMooniContinuation — 단어 중간 절단(3자 이상 조각)은 공백을 넣지 않음', () => {
+  const merged = mergeMooniContinuation('오후에는 스노', '클링 포인트입니다.');
+  assert.ok(merged.includes('스노클링'));
+  assert.ok(!merged.includes('스노 클링'));
+});
+
 test('mergeMooniContinuation — 단어 경계 공백 보존 (걸어서 + 이동해)', () => {
   const merged = mergeMooniContinuation('오후에는 걸어서', '이동해 보세요.');
   assert.ok(merged.includes('걸어서 이동해'));

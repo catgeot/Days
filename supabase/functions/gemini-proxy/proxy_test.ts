@@ -262,10 +262,11 @@ Deno.test("task requests ignore client modelId and parts and never call pro", as
 
 Deno.test("every gemini body carries task maxOutputTokens", async () => {
   const cases = [
-    { body: mooni, max: 1536 },
-    { body: { task: "mooni_chat", params: { ...mooni.params, tier: "quality", persona: "PLANNER" } }, max: 2048 },
-    { body: { task: "place_intro", params: { locale: "ko", placeName: "파리" } }, max: 2048 },
-    { body: { task: "search_intent", params: { mode: "typo", query: "파리" } }, max: 512 },
+    { body: mooni, max: 1536, thinking: { thinkingLevel: "low" } },
+    { body: { task: "mooni_chat", params: { ...mooni.params, tier: "quality", persona: "PLANNER" } }, max: 4096, thinking: { thinkingLevel: "low" } },
+    { body: { task: "mooni_chat", params: { ...mooni.params, userText: "미야코지마 3박 4일 일정 짜줘" } }, max: 4096, thinking: { thinkingLevel: "low" } },
+    { body: { task: "place_intro", params: { locale: "ko", placeName: "파리" } }, max: 2048, thinking: { thinkingLevel: "low" } },
+    { body: { task: "search_intent", params: { mode: "typo", query: "파리" } }, max: 512, thinking: undefined },
   ];
   for (const item of cases) {
     const reply = item.body.task === "place_intro" ? "파리는 센 강변의 도시입니다." : "안녕";
@@ -274,11 +275,9 @@ Deno.test("every gemini body carries task maxOutputTokens", async () => {
     assertEquals(res.status, 200);
     const sent = JSON.parse(String(geminiCalls(calls)[0].init?.body));
     assertEquals(sent.generationConfig.maxOutputTokens, item.max);
-    if (item.body.task === "place_intro") {
-      assertEquals(sent.generationConfig.thinkingConfig, { thinkingLevel: "low" });
+    assertEquals(sent.generationConfig.thinkingConfig, item.thinking);
+    if (item.thinking) {
       assertEquals("thinkingBudget" in sent.generationConfig.thinkingConfig, false);
-    } else {
-      assertEquals(sent.generationConfig.thinkingConfig, undefined);
     }
     assert(!calls.some((call) => call.url.includes("pro-preview") || call.url.includes("gemini-3.1-pro")));
   }
@@ -343,7 +342,7 @@ Deno.test("admit checks are ordered and stop before Gemini when limited", async 
   assertEquals(payload.p_checks[7].limit, 300);
   const reserved = JSON.parse(String(reserveCalls(calls)[0].init?.body));
   assertEquals(reserved.p_token_budget, 1_500_000);
-  assertEquals(reserved.p_output_tokens, 2048);
+  assertEquals(reserved.p_output_tokens, 4096);
   assertEquals(typeof reserved.p_reservation_id, "string");
   const reconciled = calls.filter((call) => call.url.includes("gemini_proxy_reconcile_usage"));
   assertEquals(reconciled.length, 1);
@@ -417,14 +416,14 @@ Deno.test("Gemini 503 falls back to flash-lite once then busy", async () => {
   assertEquals(res.status, 503);
   assertEquals((await res.json()).error, "busy");
   assertEquals(n, 2);
-  assert(geminiCalls(calls)[0].url.includes("gemini-3.5-flash"));
+  assert(geminiCalls(calls)[0].url.includes("gemini-3.8-flash"));
   assert(geminiCalls(calls)[1].url.includes("gemini-3.1-flash-lite"));
   const primary = JSON.parse(String(geminiCalls(calls)[0].init?.body));
   const fallback = JSON.parse(String(geminiCalls(calls)[1].init?.body));
   assertEquals(primary.generationConfig.maxOutputTokens, 2048);
   assertEquals(primary.generationConfig.thinkingConfig, { thinkingLevel: "low" });
   assertEquals(fallback.generationConfig.maxOutputTokens, 2048);
-  assertEquals(fallback.generationConfig.thinkingConfig, undefined);
+  assertEquals(fallback.generationConfig.thinkingConfig, { thinkingLevel: "low" });
   assertEquals(admitCalls(calls).length, 1);
   assertEquals(reserveCalls(calls).length, 2);
   assertEquals(releaseCalls(calls).length, 2);
@@ -508,7 +507,9 @@ Deno.test("legacy on is capped and legacy off is rejected", async () => {
   assertEquals(onBody.data.candidates[0].content.parts[0].text, "pong");
   const sent = JSON.parse(String(geminiCalls(calls)[0].init?.body));
   assertEquals(sent.generationConfig.maxOutputTokens, 2048);
-  assert(geminiCalls(calls)[0].url.includes("gemini-3.5-flash"));
+  assert(geminiCalls(calls)[0].url.includes("gemini-3.8-flash"));
+  assert(!geminiCalls(calls)[0].url.includes("gemini-2.5"));
+  assert(!geminiCalls(calls)[0].url.includes("gemini-3.5-flash"));
   const legacyAdmit = JSON.parse(String(admitCalls(calls)[0].init?.body));
   const legacyDay = legacyAdmit.p_checks.find((check: { bucket: string }) => check.bucket === "task:legacy:d");
   assertEquals(legacyDay.limit, 100);
@@ -518,8 +519,9 @@ Deno.test("legacy on is capped and legacy off is rejected", async () => {
     parts: [{ text: "ping" }],
   }, { Origin: ORIGIN }, fetchImpl);
   assertEquals(pro.status, 200);
-  assert(geminiCalls(calls).some((call) => call.url.includes("gemini-3.5-flash")));
+  assert(geminiCalls(calls).some((call) => call.url.includes("gemini-3.8-flash")));
   assert(!geminiCalls(calls).some((call) => call.url.includes("pro-preview")));
+  assert(!geminiCalls(calls).some((call) => call.url.includes("gemini-2.5")));
 
   const off = await post({
     modelId: "gemini-3.5-flash",
@@ -574,7 +576,7 @@ Deno.test("fileData and other part types are rejected on every path", async () =
   assertEquals(reserveCalls(calls).length, 0);
 });
 
-Deno.test("legacy pro maps to 3.5-flash and image bodies may exceed 64KB up to 7MiB", async () => {
+Deno.test("legacy pro-preview aliases to 3.8-flash and image bodies may exceed 64KB up to 7MiB", async () => {
   const { fetchImpl, calls } = routedFetch(() => geminiOk("pong"));
   const res = await post({
     modelId: "gemini-3.1-pro-preview",
@@ -584,8 +586,9 @@ Deno.test("legacy pro maps to 3.5-flash and image bodies may exceed 64KB up to 7
     ],
   }, { Origin: ORIGIN }, fetchImpl);
   assertEquals(res.status, 200);
-  assert(geminiCalls(calls)[0].url.includes("gemini-3.5-flash"));
-  assert(!geminiCalls(calls)[0].url.includes("pro"));
+  assert(geminiCalls(calls)[0].url.includes("gemini-3.8-flash"));
+  assert(!geminiCalls(calls)[0].url.includes("pro-preview"));
+  assert(!geminiCalls(calls)[0].url.includes("gemini-2.5"));
 });
 
 Deno.test("missing IP salt fails closed", async () => {
@@ -667,4 +670,48 @@ Deno.test("OPTIONS echoes only an allowed origin", async () => {
   }), { env });
   assertEquals(bad.status, 204);
   assertEquals(bad.headers.get("Access-Control-Allow-Origin"), null);
+});
+
+Deno.test("long model history is trimmed to the tail instead of 400", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk("이어서", "STOP"));
+  const long = `${"가".repeat(2500)}CUT_TAIL`;
+  const res = await post({
+    task: "mooni_chat",
+    params: {
+      ...mooni.params,
+      history: [{ role: "model", text: long }],
+    },
+  }, { Origin: ORIGIN }, fetchImpl);
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.finishReason, "STOP");
+  const sent = JSON.parse(String(geminiCalls(calls)[0].init?.body));
+  const text = sent.contents[0].parts[0].text as string;
+  assert(text.includes("앞부분 생략"));
+  assert(text.includes("CUT_TAIL"));
+  assert(!text.includes("가".repeat(2000)));
+});
+
+Deno.test("legacy allowlist accepts new ids and aliases old ids onto them", async () => {
+  const cases = [
+    { modelId: "gemini-3.8-flash", expect: "gemini-3.8-flash" },
+    { modelId: "gemini-3.7-flash", expect: "gemini-3.7-flash" },
+    { modelId: "gemini-3.5-flash", expect: "gemini-3.8-flash" },
+    { modelId: "gemini-3.1-pro-preview", expect: "gemini-3.8-flash" },
+  ];
+  for (const item of cases) {
+    const { fetchImpl, calls } = routedFetch(() => geminiOk("ok", "STOP"));
+    const res = await post({
+      modelId: item.modelId,
+      parts: [{ text: "ping" }],
+    }, { Origin: ORIGIN }, fetchImpl);
+    assertEquals(res.status, 200, item.modelId);
+    const body = await res.json();
+    assertEquals(body.finishReason, "STOP");
+    const url = geminiCalls(calls)[0].url;
+    assert(url.includes(item.expect), `${item.modelId} -> ${url}`);
+    assert(!url.includes("gemini-2.5"));
+    assert(!url.includes("gemini-3.5-flash"));
+    assert(!url.includes("pro-preview"));
+  }
 });
