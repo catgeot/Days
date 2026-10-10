@@ -11,7 +11,7 @@
 
 ## 축제 MOONi 후속 #1, 사실·숙소·대화
 
-- **세션** `축제 MOONi 후속 #1, 사실·숙소·대화` · branch `cursor/mooni-festival-followup` · tip `fcc1022b` · draft PR [#419](https://github.com/catgeot/Days/pull/419) · **병합·배포 금지**
-- **조치** 2855626 «트로트»는 개요에 없고 `intro.program`에 있다. 숙소 답은 권역 2~3곳과 `[강릉 숙소 안내]`. 같은 축제를 다시 열면 첫 답·대화를 유지한다. prod gemini-proxy는 여전히 v25 (`05679653`).
-- **VERIFY** `npm run test:health` 202 pass · `npm run build` pass · `node scripts/audit-festival-answer-facts.mjs` live 10건, Gemini 호출 없음.
-- **다음** Preview에서 2930716 «어디서 자요?»와 영어 헤더를 본 뒤, Edge 배포는 사람 요청 때만.
+- **세션** `축제 MOONi 후속 #2, 첫 답 유지·언어` · branch `cursor/mooni-festival-followup` · tip `9f01c4dd` · draft PR [#419](https://github.com/catgeot/Days/pull/419) · **병합·배포 금지**
+- **조치** 첫 답은 질문 뒤에도 스레드 맨 위에 남는다. main `37035580`도 질문이 있으면 첫 답을 숨긴다(#416 라이브). 저장 대화는 축제+언어. 영어 목적지 줄과 반복 제목을 정리. prod gemini-proxy는 v25 (`05679653`).
+- **VERIFY** `npm run test:health` 202 pass.
+- **다음** Preview에서 2930716 첫 답 유지, `?lang=en` 재오픈, 영어 제목 한 번. Edge 배포는 사람 요청 때만.
