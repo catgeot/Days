@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft } from 'lucide-react';
+import { withGroupChipCaret } from '../../pages/Home/lib/mooniQuickReplies';
 
 /**
  * MOONi bound slug — 1단·2단 주제 칩 (§2.11 S8-1)
@@ -39,7 +40,7 @@ export default function MooniQuickReplyChips({
     : 'flex flex-wrap gap-2';
 
   return (
-    <div className={dock ? 'space-y-1' : 'mt-3 space-y-2'}>
+    <div className={dock ? 'space-y-1' : 'mt-3 space-y-2'} data-testid="mooni-quick-replies">
       {onBack ? (
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <button
@@ -91,11 +92,11 @@ export default function MooniQuickReplyChips({
             >
               {chip.mobileLabel ? (
                 <>
-                  <span className="md:hidden">{chip.mobileLabel}</span>
-                  <span className="max-md:hidden">{chip.label}</span>
+                  <span className="md:hidden">{withGroupChipCaret(chip.mobileLabel, chip.drillDown)}</span>
+                  <span className="max-md:hidden">{withGroupChipCaret(chip.label, chip.drillDown)}</span>
                 </>
               ) : (
-                chip.label
+                withGroupChipCaret(chip.label, chip.drillDown)
               )}
             </button>
           ))}

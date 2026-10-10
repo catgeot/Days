@@ -262,9 +262,9 @@ Deno.test("task requests ignore client modelId and parts and never call pro", as
 
 Deno.test("every gemini body carries task maxOutputTokens", async () => {
   const cases = [
-    { body: mooni, max: 1536, thinking: { thinkingLevel: "low" } },
+    { body: mooni, max: 1536, thinking: undefined },
     { body: { task: "mooni_chat", params: { ...mooni.params, tier: "quality", persona: "PLANNER" } }, max: 4096, thinking: { thinkingLevel: "low" } },
-    { body: { task: "mooni_chat", params: { ...mooni.params, userText: "미야코지마 3박 4일 일정 짜줘" } }, max: 4096, thinking: { thinkingLevel: "low" } },
+    { body: { task: "mooni_chat", params: { ...mooni.params, userText: "미야코지마 3박 4일 일정 짜줘" } }, max: 4096, thinking: undefined },
     { body: { task: "place_intro", params: { locale: "ko", placeName: "파리" } }, max: 2048, thinking: { thinkingLevel: "low" } },
     { body: { task: "search_intent", params: { mode: "typo", query: "파리" } }, max: 512, thinking: undefined },
   ];

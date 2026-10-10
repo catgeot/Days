@@ -10,6 +10,5 @@ export function resolveMooniChipDockMode({
 } = {}) {
   if (!isMooniUi) return 'none';
   if (hasPlaceBoundName) return 'topic';
-  if (Number(messageCount) > 0 || hasInitialQuery === true) return 'topic';
   return 'discovery';
 }

@@ -23,7 +23,7 @@ import {
   MODEL_TAIL_OMIT_PREFIX,
   trimHistoryTurnText,
 } from '../../supabase/functions/_shared/gemini/historyNormalize.js';
-import { thinkingConfigForBodyText } from '../../supabase/functions/_shared/gemini/thinkingConfig.js';
+import { thinkingConfigForBodyText, thinkingConfigForMooniChat } from '../../supabase/functions/_shared/gemini/thinkingConfig.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -73,10 +73,18 @@ test('model history over 2000 chars keeps the tail and a omit prefix', () => {
   assert.ok(user.startsWith('…\n'));
 });
 
-test('edge mooni task uses trim, low thinking, and 4096 for itinerary or quality', () => {
+test('mooni_chat flash-lite requests carry no thinking config', () => {
+  assert.equal(thinkingConfigForMooniChat('gemini-3.1-flash-lite'), undefined);
+  assert.equal(thinkingConfigForMooniChat('gemini-3.1-flash-lite-preview'), undefined);
+  assert.deepEqual(thinkingConfigForMooniChat('gemini-3.8-flash'), { thinkingLevel: 'low' });
+  assert.equal('thinkingBudget' in thinkingConfigForMooniChat('gemini-3.8-flash'), false);
+
   const tasks = readFileSync(join(root, 'supabase/functions/_shared/gemini/tasks.ts'), 'utf8');
+  const router = readFileSync(join(root, 'supabase/functions/gemini-proxy/router.ts'), 'utf8');
   assert.match(tasks, /trimHistoryTurnText/);
   assert.doesNotMatch(tasks, /text\.length > 2000\) return null/);
   assert.match(tasks, /maxOutputTokens: longForm \? 4096 : 1536/);
-  assert.match(tasks, /limitThinking: true/);
+  assert.match(tasks, /limitThinking: tier === "quality"/);
+  assert.match(router, /thinkingConfigForMooniChat\(modelName\)/);
+  assert.match(router, /built\.task === "mooni_chat"/);
 });

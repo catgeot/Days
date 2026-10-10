@@ -76,6 +76,45 @@ test('markdown render — day1 sub-lines keep soft breaks after continue', () =>
   );
 });
 
+test('lodging markdown list renders bullets and bold', () => {
+  const flat = '강릉역 근처 숙소예요. * **강릉역 인근**: 호텔 * **월화거리**: 게하';
+  const md = getMooniModelMarkdownForRender(flat, { stripPhantomTicketMention: true });
+  assert.match(md, /\n\* \*\*강릉역 인근\*\*: 호텔/);
+  assert.match(md, /\n\* \*\*월화거리\*\*: 게하/);
+  const html = renderMooniMarkdownHtml(md);
+  assert.match(html, /<ul>/);
+  assert.match(html, /<li>/);
+  assert.match(html, /<strong>강릉역 인근<\/strong>/);
+  assert.doesNotMatch(html, /\* \*\*/);
+});
+
+test('dash lists render like star lists', () => {
+  const dash = [
+    '여권 유효기간을 확인하세요.',
+    '- 왕복 항공권이 필요해요.',
+    '- 숙소 예약 확인서를 준비하세요.',
+  ].join('\n');
+  const star = dash.replace(/^- /gm, '* ');
+  const dashMd = getMooniModelMarkdownForRender(dash, { stripPhantomTicketMention: true });
+  const starMd = getMooniModelMarkdownForRender(star, { stripPhantomTicketMention: true });
+  assert.equal(dashMd, starMd);
+  const html = renderMooniMarkdownHtml(dashMd);
+  assert.match(html, /<ul>/);
+  assert.match(html, /<li>[^<]*왕복 항공권/);
+  assert.match(html, /<li>[^<]*숙소 예약 확인서/);
+  assert.doesNotMatch(html, /<p>[^<]*왕복 항공권[^<]*숙소 예약 확인서/);
+});
+
+test('paragraph after a bullet list stays out of the last bullet', () => {
+  const src = '숙소예요.\n\n* **강릉역 인근**: 호텔\n* **월화거리**: 게하\n다음으로 숙소 카드에서 볼 수 있어요.';
+  const md = getMooniModelMarkdownForRender(src, { stripPhantomTicketMention: true });
+  assert.match(md, /숙소예요\.\n\n\* \*\*강릉역 인근\*\*/);
+  assert.match(md, /게하\n\n다음으로 숙소 카드에서 볼 수 있어요/);
+  const html = renderMooniMarkdownHtml(md);
+  assert.match(html, /<\/ul>\s*<p>다음으로/);
+  assert.doesNotMatch(html, /<li>[^<]*다음으로/);
+});
+
 test('ensureItineraryMarkdownLineBreaks — non-itinerary reply unchanged', () => {
   const md = getMooniModelMarkdownForRender(NORMAL_STOP_REPLY, {
     stripPhantomTicketMention: true,

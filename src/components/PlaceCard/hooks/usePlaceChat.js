@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
+import { invokeMooniChatToleratingChip } from '../../../pages/Home/lib/mooniChipEdgeFallback.js';
 import { GeminiProxyError, getGeminiProxyErrorMessage } from '../../../pages/Home/lib/geminiProxyError';
 import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
@@ -107,11 +108,14 @@ export const usePlaceChat = (options = {}) => {
         showPlannerHeader,
       };
 
-      const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
-        ...geminiParams,
-        history,
-        userText,
-      });
+      const geminiResult = await invokeMooniChatToleratingChip(
+        (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
+        {
+          ...geminiParams,
+          history,
+          userText,
+        },
+      );
       const aiReply = geminiResult.text;
 
       const tripSession = mergeMooniTripSession(params.tripSession, extractMooniTripFacts(userText, {
@@ -128,6 +132,7 @@ export const usePlaceChat = (options = {}) => {
         aiReplyText: aiReply,
         essentialGuide,
         tripSession,
+        domesticKoreaFestival: Boolean(params.festivalContext?.contentId || koreaFestivalHint),
       });
 
       const hasTransportCta = (booking.actions ?? []).some((a) =>
@@ -185,11 +190,14 @@ export const usePlaceChat = (options = {}) => {
       try {
         const history = buildMooniGeminiHistory(chatHistory, modelIdx);
         const priorRaw = String(msg.mooniRawReply ?? messageTextPlain(msg));
-        const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
-          ...ctx.geminiParams,
-          history,
-          userText: buildMooniContinueUserText(ctx.geminiParams.locale || locale),
-        });
+        const geminiResult = await invokeMooniChatToleratingChip(
+          (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
+          {
+            ...ctx.geminiParams,
+            history,
+            userText: buildMooniContinueUserText(ctx.geminiParams.locale || locale),
+          },
+        );
         const { mergedRaw, displayText } = finalizeMooniContinuation({
           priorRaw,
           continuationText: geminiResult.text,

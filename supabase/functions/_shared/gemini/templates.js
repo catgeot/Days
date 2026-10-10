@@ -236,16 +236,14 @@ export function renderTripSessionHint(locale, session) {
 
 function noInventedUrlRule(locale) {
   if (locale?.slice?.(0, 2) === "en") {
-    return "- Use only URLs that appear in the provided context (hints, session, conversation). Never invent a URL. If none is provided, give the name and tell the user to search or check the official site. A session hint that says not to assert unlisted facilities, and to direct the user to the official site or contact, overrides this rule.";
+    return "- Use only URLs that appear in the provided context (hints, session, conversation). Never invent a URL. If none is provided, give the name only. If a festival hint is present, its fact and link rules override this sentence; do not close with an unlinked check-the-official-site line.";
   }
-  return "- URL은 제공된 맥락(힌트·세션·대화)에 있는 주소만 쓴다. 없는 URL을 지어내지 않는다. 주소가 없으면 이름만 적고, 검색하거나 공식 홈페이지를 확인하라고 안내한다. 세션 힌트가 목록에 없는 시설을 단정하지 말고 공식 홈페이지·문의처를 안내하라고 하면 그 지시를 이 규칙보다 우선한다.";
+  return "- URL은 제공된 맥락(힌트·세션·대화)에 있는 주소만 쓴다. 없는 URL을 지어내지 않는다. 주소가 없으면 이름만 적는다. 축제 힌트가 있으면 그 사실·링크 규칙이 이 문장보다 우선하며, 링크 없는 「공식에서 확인」 문구로 끝내지 않는다.";
 }
 
 function festivalHintPriority(locale) {
-  if (locale?.slice?.(0, 2) === "en") {
-    return "- The festival hint above wins over general URL rules: do not assert facilities that are not in the hint; direct the user to the official site or contact.";
-  }
-  return "- 위 축제 힌트를 일반 URL 규칙보다 우선한다. 힌트에 없는 시설은 단정하지 말고 공식 홈페이지·문의처를 안내한다.";
+  const line = bundleFor(locale).festivalPriorityLine;
+  return line || "";
 }
 
 function buildPersonaSystem(personaType, bundle) {
@@ -325,8 +323,23 @@ export function renderMooniSystem({
     (chipHint ? `\n${chipHint}` : "") +
     (ctaHint ? `\n${ctaHint}` : "") +
     (festivalHint ? `\n${festivalHint}` : "") +
-    (festivalPriority ? `\n${festivalPriority}` : "")
+    (festivalPriority ? `\n${festivalPriority}` : "") +
+    haeyoLock(locale)
   );
+}
+
+function haeyoLock(locale) {
+  if (String(locale || "").slice(0, 2) === "en") return "";
+  return [
+    "",
+    "[말투 — 모든 한국어 MOONi 답, 최우선]",
+    "- 문장 끝은 해요체만 쓴다. 축제·숙소·항공·가는 법·일반 답이 같다.",
+    "- 「합니다」「입니다」「있습니다」「남았습니다」「좋습니다」「하십시오」「습니까」「답니다」「랄니다」「냅니다」로 끝내지 않는다. 「있답니다」는 「있어요」, 「된답니다」는 「돼요」로 쓴다.",
+    "- 반말로 끝내지 않는다. 「해」「봐」「좋아」「추천해」는 쓰지 않는다.",
+    "- 「현재 시작까지 N일 남았어요」와 「N월 N일부터 N월 N일까지」는 쓰지 않는다. 날짜는 10/15~18처럼 짧게만 쓴다.",
+    "- URL 없는 「플래너 링크」와 「…」 링크 문구를 쓰지 않는다. 「축제 기간:」「축제 상세 안내:」 같은 정보 카드 머리줄을 쓰지 않는다.",
+    "- 페르소나 예문에 「있습니다」가 있어도 이 규칙이 우선한다.",
+  ].join("\n");
 }
 
 export function renderIntro(locale, placeName) {
@@ -334,6 +347,63 @@ export function renderIntro(locale, placeName) {
   const system = `${bundle.baseRules}\n${bundle.introRole}\n${bundle.introSystem}`;
   const userText = fillTemplate(bundle.introUser, { name: placeName });
   return { system, userText };
+}
+
+/**
+ * Festival first answer. Facts only, no address/hours/fee, flash-lite with no thinking.
+ * @param {string} locale
+ * @param {Record<string, unknown>} facts
+ */
+export function renderFestivalFirstAnswer(locale, facts) {
+  const en = String(locale || "").slice(0, 2) === "en";
+  const system = en
+    ? [
+      "You are GATEO festival MOONi. Write the first answer from the JSON facts only.",
+      "At most 7 sentences. No bullets, no promo filler, no invented booths, crowds, prices, or transport.",
+      "The first sentence starts with titleEn when it is present, otherwise the Korean title. Then use dateLine only. Do not start with the date.",
+      "Do not repeat a street address, clock hours, or admission. Do not write an 'as of' timestamp.",
+      "The next 2 or 3 sentences explain what a visitor does or eats, as a scene, using only overviewFacts and programs. Do not answer that part with a comma-separated name list. Do not mention passes, goods, or souvenirs.",
+      "Mention atmosphere only when atmosphere is non-empty.",
+      "Nearby places: only the names in nearby, in one sentence. Never add a sauna, bathhouse, welfare center, senior association, or community center.",
+      "programs and nearby are already 'English (한글)' pairs. Copy that form, for example Hampyeong Expo Park (함평엑스포공원). Do not leave Hangul outside parentheses.",
+      "Do not write 'the' before a place name. Write Wolhwa Street, not the Wolhwa Street.",
+      "Do not mention a planner, a chip name, or a section. Point only to the festival page or #festival-lodging.",
+      "Never romanize a festival name syllable by syllable. Never write This festival.",
+      "End with the closing sentence exactly, including its markdown link.",
+      "Do not output JSON, code fences, or field names. Do not echo the fact sheet. The first character is the festival title.",
+    ].join("\n")
+    : [
+      "당신은 GATEO 축제 MOONi다. 아래 사실만으로 첫 답을 쓴다.",
+      "7문장 이하. 글머리표 없음. 홍보 문장과 데이터에 없는 부스·혼잡·요금·교통은 쓰지 않는다.",
+      "첫 문장은 축제 제목으로 시작한다. 날짜로 시작하지 않는다. 날짜는 dateLine만 짧게 말한다.",
+      "주소, 운영 시각, 입장료를 반복하지 않는다. 「기준」 시각 문구를 쓰지 않는다.",
+      "이어서 무엇을 하고 먹는지 overviewFacts와 programs만으로 2~3문장 장면으로 설명한다. 프로그램 이름을 쉼표로 나열하지 않는다. 패스·굿즈·기념품은 말하지 않는다. 적힌 사실 밖으로 나가지 않는다.",
+      "atmosphere가 비어 있지 않을 때만 분위기를 말한다.",
+      "근처는 nearby에 있는 이름만 한 문장에 쓴다. 사우나·찜질·목욕·복지·노인회·주민센터·경로당은 쓰지 않는다.",
+      "한국어는 해요체만 쓴다. 모든 문장은 -요로 끝난다. 합니다·입니다·습니다로 끝내지 않는다. 「좋습니다」는 「좋아요」로 쓴다. 「하세요」는 써도 된다.",
+      "축제 화면에는 플래너와 칩 섹션이 없다. 플래너, 칩 이름, 「… 섹션」을 말하지 않는다. 안내는 축제 페이지 또는 #festival-lodging 만 가리킨다.",
+      "축제 제목은 첫 문장에서 한 번만 말한다. 다음 문장에서 제목을 반복하지 않는다.",
+      "예: 축제는 10/15~18, 엿새 뒤 시작해요. 확인된 장면만 짧게 말해요.",
+      "마지막 문장은 closing을 그대로 쓴다. 마크다운 링크를 유지한다.",
+      "JSON, 코드 펜스, 필드 이름을 출력하지 않는다. 사실 목록을 그대로 베끼지 않는다. 첫 글자는 축제 제목이다.",
+    ].join("\n");
+  return { system, userText: festivalFactSheet(facts) };
+}
+
+function festivalFactValue(value) {
+  if (Array.isArray(value)) return value.map((item) => String(item || "").trim()).filter(Boolean).join(" | ");
+  return String(value || "").trim();
+}
+
+/** Labeled lines. A JSON object here is what the model echoes as its first line. */
+function festivalFactSheet(facts) {
+  const src = facts && typeof facts === "object" ? facts : {};
+  const lines = ["Facts:"];
+  for (const label of ["title", "titleEn", "dateLine", "overviewFacts", "programs", "nearby", "atmosphere", "closing", "gateoUrl"]) {
+    const text = festivalFactValue(src[label]);
+    if (text) lines.push(`${label}: ${text}`);
+  }
+  return lines.join("\n");
 }
 
 export const SEARCH_INTENT_SYSTEM =

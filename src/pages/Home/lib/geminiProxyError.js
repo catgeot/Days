@@ -123,18 +123,22 @@ export function classifyGeminiProxyFailure({ error = null, data = null, httpStat
     userMessage: formatGeminiProxyUserMessage(kind, devDetail, retryAfter),
     devDetail,
     retryAfter: Number.isFinite(retryAfter) ? retryAfter : undefined,
+    httpStatus: status ?? undefined,
+    errorCode: code || undefined,
   };
 }
 
 export class GeminiProxyError extends Error {
-  /** @param {{ kind: GeminiProxyErrorKind; userMessage: string; devDetail?: string; retryAfter?: number }} payload */
-  constructor({ kind, userMessage, devDetail, retryAfter }) {
+  /** @param {{ kind: GeminiProxyErrorKind; userMessage: string; devDetail?: string; retryAfter?: number; httpStatus?: number; errorCode?: string }} payload */
+  constructor({ kind, userMessage, devDetail, retryAfter, httpStatus, errorCode }) {
     super(userMessage);
     this.name = 'GeminiProxyError';
     this.kind = kind;
     this.userMessage = userMessage;
     this.devDetail = devDetail;
     this.retryAfter = retryAfter;
+    this.httpStatus = httpStatus;
+    this.errorCode = errorCode;
   }
 }
 

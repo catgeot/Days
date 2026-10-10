@@ -15,16 +15,22 @@ export {
  *   location?: Record<string, unknown> | null,
  *   homepage?: string,
  *   summaryFields?: { dateText?: string, timeText?: string, fee?: { text?: string } },
+ *   overview?: string,
+ *   program?: string,
+ *   nearbyPlaces?: string[],
  * }} input
  */
 export function buildFestivalMooniBoundSpot(input = {}) {
-  const { item, intro, location, homepage, summaryFields } = input;
+  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces } = input;
   const festivalContext = buildFestivalMooniContext({
     item,
     intro,
     homepage,
     summaryFields,
     location,
+    overview,
+    program,
+    nearbyPlaces,
   });
   const title = festivalContext?.title || '';
   const loc = location && typeof location === 'object' ? location : null;

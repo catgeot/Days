@@ -70,6 +70,7 @@ import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import FestivalStayStrip from './FestivalStayStrip';
+import { FESTIVAL_LODGING_EVENT, FESTIVAL_LODGING_SECTION_ID } from '../../shared/korea/mooniKoreaFestivalAssist.js';
 import FestivalTnaStrip from './FestivalTnaStrip';
 import { useFestivalMooniEntry } from './FestivalMooniEntry.jsx';
 import { festivalDetailSummaryWillRender } from './lib/festivalMooniFabVisibility.js';
@@ -1135,12 +1136,27 @@ export default function FestivalDetailSheet({
     ],
   );
 
+  const mooniNearbyPlaces = useMemo(() => {
+    const names = [];
+    const push = (spot) => {
+      const name = String(spot?.name || '').trim();
+      if (!name || names.includes(name)) return;
+      names.push(name);
+    };
+    for (const spot of nearbySpots) push(spot);
+    for (const spot of nearbyFood) push(spot);
+    return names.slice(0, 6);
+  }, [nearbySpots, nearbyFood]);
+
   const festivalMooni = useFestivalMooniEntry({
     item: item || {},
     intro,
     location: mooniEntryLocation,
     homepage,
     summaryFields,
+    overview,
+    program: stripHtml(intro?.program || ''),
+    nearbyPlaces: mooniNearbyPlaces,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {
@@ -1273,6 +1289,34 @@ export default function FestivalDetailSheet({
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, [item?.contentId]);
+
+  useEffect(() => {
+    const id = String(item?.contentId || '');
+    if (!id || !showFestivalStayStrip) return undefined;
+    const scrollToLodging = () => {
+      document.getElementById(FESTIVAL_LODGING_SECTION_ID)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    };
+    const onLodging = (event) => {
+      if (String(event.detail?.contentId || '') !== id) return;
+      window.setTimeout(scrollToLodging, 280);
+    };
+    const onHash = () => {
+      if (window.location.hash !== `#${FESTIVAL_LODGING_SECTION_ID}`) return;
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('festival') !== id) return;
+      window.setTimeout(scrollToLodging, 80);
+    };
+    window.addEventListener(FESTIVAL_LODGING_EVENT, onLodging);
+    window.addEventListener('hashchange', onHash);
+    onHash();
+    return () => {
+      window.removeEventListener(FESTIVAL_LODGING_EVENT, onLodging);
+      window.removeEventListener('hashchange', onHash);
+    };
+  }, [item?.contentId, showFestivalStayStrip]);
 
   useEffect(() => {
     setHeroImageBroken(false);
@@ -1817,7 +1861,11 @@ export default function FestivalDetailSheet({
               )}
 
               {!festivalEnded && showFestivalStayStrip ? (
-                <div className="pt-1" data-festival-section="lodging">
+                <div
+                  className="scroll-mt-4 pt-1"
+                  id={FESTIVAL_LODGING_SECTION_ID}
+                  data-festival-section="lodging"
+                >
                   <FestivalStayStrip
                     item={item}
                     festivalCross={festivalCross}

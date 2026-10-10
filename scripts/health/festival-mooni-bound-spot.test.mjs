@@ -42,20 +42,22 @@ test('buildFestivalMooniContext keeps TourAPI-shaped fields', () => {
   assert.equal(ctx.lng, 127.888);
 });
 
-test('buildFestivalMooniNeutralOpening uses verified lines only', () => {
+test('buildFestivalMooniNeutralOpening uses verified sentences only', () => {
   const opening = buildFestivalMooniNeutralOpening(buildFestivalMooniContext(FIXTURE));
-  assert.match(opening, /홍천 인삼한우 명품축제/);
-  assert.match(opening, /10\.08 – 10\.11/);
-  assert.match(opening, /도시산림공원 토리숲/);
-  assert.doesNotMatch(opening, /대한민국 홍천/);
+  assert.match(opening, /홍천 인삼한우 명품축제는 10\/8~11, 이미 끝났어요/);
+  assert.match(opening, /도시산림공원 토리숲에서 저녁까지 이어져요/);
+  assert.match(opening, /festival=790124/);
+  assert.doesNotMatch(opening, /갈마곡리|09:00|무료|기준|대한민국 홍천/);
+  assert.doesNotMatch(opening, /오신 것을 환영합니다/);
+  assert.doesNotMatch(opening, /^[-•]/m);
 });
 
-test('buildFestivalMooniChatOpening merges invite line', () => {
+test('buildFestivalMooniChatOpening ignores the old invite line', () => {
   const opening = buildFestivalMooniChatOpening(
     buildFestivalMooniContext(FIXTURE),
     '이 축제에 대해 물어보세요.',
   );
   assert.match(opening, /홍천 인삼한우 명품축제/);
-  assert.match(opening, /이 축제에 대해 물어보세요/);
-  assert.equal(opening.split('\n\n').length, 2);
+  assert.doesNotMatch(opening, /이 축제에 대해 물어보세요/);
+  assert.match(opening, /다음으로/);
 });

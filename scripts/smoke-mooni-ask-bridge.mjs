@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * 탐색 드롭다운 MOONi 추천 카드 — 상단 고정 · 기존 목적지 세션 중첩 금지
- * 추천받기(첫 메시지) 이후에도 기존 MOONi 주제 칩 독 유지
+ * 장소가 없으면 첫 질문 이후에도 홈 탐색 칩을 유지한다.
  */
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -24,8 +24,8 @@ assert.equal(
     hasPlaceBoundName: false,
     hasInitialQuery: true,
   }),
-  'topic',
-  'search-ask seed uses topic chips',
+  'discovery',
+  'search-ask seed keeps discovery chips when no place is bound',
 );
 assert.equal(
   resolveMooniChipDockMode({
@@ -33,8 +33,8 @@ assert.equal(
     hasPlaceBoundName: false,
     messageCount: 2,
   }),
-  'topic',
-  'unbound chat after replies keeps topic chips',
+  'discovery',
+  'unbound chat after replies keeps discovery chips',
 );
 assert.equal(
   resolveMooniChipDockMode({

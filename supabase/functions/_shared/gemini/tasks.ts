@@ -8,6 +8,7 @@ import {
 import { KO } from "./mooniPromptBundleData.js";
 import {
   renderCuration,
+  renderFestivalFirstAnswer,
   renderIntro,
   renderLogbook,
   renderMooniSystem,
@@ -35,7 +36,28 @@ export const CTA_CODES = [
 ];
 const IMAGE_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
 const IMAGE_MAX = Math.floor(1.5 * 1024 * 1024);
-const CHIP_IDS = new Set(Object.keys(KO.chips));
+/** Chip ids production clients already send. Keep accepting them after new chips ship. */
+const LEGACY_CHIP_IDS = [
+  "prep_flight",
+  "visa_docs",
+  "prep_hotel",
+  "prep_transport",
+  "access_origin",
+  "from_seoul",
+  "from_busan",
+  "from_incheon",
+  "ferry",
+  "place_overview",
+  "safety_vibe",
+  "history",
+  "why_go",
+  "activities",
+  "food",
+  "itinerary",
+  "companion",
+] as const;
+
+const CHIP_IDS = new Set<string>([...Object.keys(KO.chips), ...LEGACY_CHIP_IDS]);
 
 export type TaskBuild =
   | {
@@ -285,9 +307,59 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       task,
       model: tier === "quality" ? GEMINI_QUALITY : GEMINI_FAST,
       maxOutputTokens: longForm ? 4096 : 1536,
-      limitThinking: true,
+      // flash-lite thinking tokens share this budget and were cutting answers near 100 chars.
+      limitThinking: tier === "quality",
       parts: [{ text: wrapUserTurn(system, history, userText) }],
       tier,
+    };
+  }
+
+  if (task === "festival_first_answer") {
+    const locale = input.locale === "en" ? "en" : input.locale === "ko" || input.locale == null ? "ko" : null;
+    if (!locale) return { ok: false, status: 400, error: "bad_request" };
+    const factsIn = input.facts;
+    if (!factsIn || typeof factsIn !== "object" || Array.isArray(factsIn)) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
+    const src = factsIn as Record<string, unknown>;
+    const title = str(src.title, 120);
+    const titleEn = optStr(src.titleEn, 160);
+    const dateLine = optStr(src.dateLine, 160);
+    const closing = optStr(src.closing, 400);
+    const gateoUrl = optStr(src.gateoUrl, 200);
+    const overviewFacts = stringList(src.overviewFacts, 2, 160);
+    const programs = stringList(src.programs, 4, 96);
+    const nearby = stringList(src.nearby, 3, 96);
+    const atmosphere = stringList(src.atmosphere, 3, 80);
+    if (!title?.trim() || titleEn == null || dateLine == null || closing == null || gateoUrl == null) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
+    if (!overviewFacts || !programs || !nearby || !atmosphere) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
+    if (gateoUrl && !/^https:\/\/www\.gateo\.kr\/korea\/\?festival=\d+(?:#festival-lodging)?$/.test(gateoUrl)) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
+    const facts = {
+      title: title.trim(),
+      titleEn: titleEn || "",
+      dateLine: dateLine || "",
+      overviewFacts,
+      programs,
+      nearby,
+      atmosphere,
+      closing: closing || "",
+      gateoUrl: gateoUrl || "",
+    };
+    const rendered = renderFestivalFirstAnswer(locale, facts);
+    return {
+      ok: true,
+      task,
+      model: GEMINI_FAST,
+      maxOutputTokens: 512,
+      limitThinking: false,
+      parts: [{ text: `${rendered.system}\n\n${rendered.userText}` }],
+      tier: null,
     };
   }
 

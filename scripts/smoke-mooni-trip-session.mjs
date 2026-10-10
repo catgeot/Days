@@ -106,8 +106,8 @@ assert.match(hint, /첫날 가볍게/, '컨디션이 프롬프트에 들어감')
 
 const promptSrc = read('src/pages/Home/lib/prompts.js');
 assert.ok(promptSrc.includes('tripSessionHint'), 'getSystemPrompt가 세션 힌트를 붙임');
-assert.match(read('src/i18n/mooniPromptBundles.js'), /이 여행지 세션에 유지/, '세션 유지 규칙');
-assert.match(read('src/i18n/mooniPromptBundles.js'), /그 값을 최우선/, '일정 칩 세션 우선');
+assert.match(read('src/i18n/mooniPromptBundleData.js'), /이 여행지 세션에 유지/, '세션 유지 규칙');
+assert.match(read('src/i18n/mooniPromptBundleData.js'), /그 값을 최우선/, '일정 칩 세션 우선');
 
 const chipSrc = read('src/pages/Home/lib/mooniChipPrompts.js');
 assert.ok(chipSrc.includes('tripSession = null'), '항공/일정 칩이 세션 도착 공항을 받음');

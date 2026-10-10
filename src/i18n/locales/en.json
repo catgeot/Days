@@ -2706,8 +2706,7 @@
             "sendText": "Where should I stay?"
           },
           "prep_transport": {
-            "label": "Rental & pickup",
-            "mobileLabel": "Transport",
+            "label": "Local transport",
             "sendText": "How should I get around locally?"
           }
         },
@@ -2729,6 +2728,38 @@
             "label": "By travel style",
             "sendText": "Who is it best for? Suggest by companion type"
           }
+        }
+      },
+      "festival": {
+        "festival_sights": {
+          "label": "🎪 Sights & atmosphere",
+          "sendText": "What can I actually see and do at this festival, and what is the on-site feel? Use only confirmed programs and hours. Do not invent crowd times."
+        },
+        "festival_access": {
+          "label": "🚆 Getting there"
+        },
+        "festival_nearby": {
+          "label": "🍜 Food & nearby",
+          "sendText": "What can I eat and where else can I stop near this festival? Use only nearby places confirmed on GATEO. Do not invent restaurants."
+        },
+        "festival_day": {
+          "label": "🗺️ One-day route",
+          "sendText": "Plan a one-day route that includes this festival. Use only confirmed dates and places. Do not invent programs."
+        },
+        "festival_overseas": {
+          "label": "Visiting from abroad?"
+        },
+        "festival_overseas_visa": {
+          "label": "Visa & entry",
+          "sendText": "What entry, visa, and documents do I need for this festival? Do not assert exemptions or fees that are not confirmed."
+        },
+        "festival_overseas_flight": {
+          "label": "Flights",
+          "sendText": "How do I find flights for this festival using GATEO's on-screen flight search? Do not send me to an outside site without a link."
+        },
+        "festival_overseas_airport": {
+          "label": "Airport to the festival",
+          "sendText": "How do I get from the airport to this festival? Use airport codes. Do not invent shuttles."
         }
       }
     }
