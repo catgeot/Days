@@ -3,6 +3,7 @@ import {
   extractGeminiAnswer,
   isPlaceIntroTruncated,
   thinkingConfigForBodyText,
+  thinkingConfigForMooniChat,
 } from "../_shared/gemini/call.ts";
 import {
   allowMemoryBypass,
@@ -312,7 +313,11 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     parts,
     built.maxOutputTokens,
     25_000,
-    built.limitThinking ? thinkingConfigForBodyText(modelName) : undefined,
+    built.limitThinking
+      ? (built.task === "mooni_chat"
+        ? thinkingConfigForMooniChat(modelName)
+        : thinkingConfigForBodyText(modelName))
+      : undefined,
   );
 
   let upstream = await callUpstream(model);

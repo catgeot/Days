@@ -29,6 +29,10 @@ export function sanitizeMooniModelReply(text, options = {}) {
   const hadBracketLinks = BRACKET_ONLY_LINE.test(text);
   BRACKET_ONLY_LINE.lastIndex = 0;
   let cleaned = text.replace(BRACKET_ONLY_LINE, '');
+  cleaned = cleaned.replace(
+    /\[(출발 전 준비|교통\s*[·・]\s*티켓|Before you go|Transport\s*[·・]\s*tickets|플래너 보기)\](?!\()/g,
+    '',
+  );
   if (options.stripPhantomTicketMention !== false) {
     cleaned = cleaned
       .replace(PHANTOM_TICKET_SEARCH_LINE, '')

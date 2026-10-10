@@ -39,6 +39,12 @@ export function thinkingConfigForBodyText(model: string): GeminiThinkingConfig |
 
 export const thinkingConfigForPlaceIntro = thinkingConfigForBodyText;
 
+/** flash-lite mooni_chat omits thinkingConfig so the output budget stays visible text. */
+export function thinkingConfigForMooniChat(model: string): GeminiThinkingConfig | undefined {
+  if (/flash-lite/.test(String(model || ""))) return undefined;
+  return thinkingConfigForBodyText(model);
+}
+
 /** placeChatIntroLimits SUMMARY_SENTENCE_END_RE 와 동일. 「…있는 수」 같은 중간 절단을 본문 미완으로 본다. */
 const PLACE_INTRO_SENTENCE_END_RE = /[.!?。！？…]["'”’」』)\]]*\s*$/;
 

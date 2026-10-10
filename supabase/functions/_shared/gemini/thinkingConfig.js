@@ -11,4 +11,14 @@ export function thinkingConfigForBodyText(model) {
   return undefined;
 }
 
+/**
+ * mooni_chat on flash-lite must not send thinkingConfig.
+ * Thinking tokens count against maxOutputTokens and cut the visible answer.
+ * 3.8-flash quality turns still use thinkingLevel low.
+ */
+export function thinkingConfigForMooniChat(model) {
+  if (/flash-lite/.test(String(model || ""))) return undefined;
+  return thinkingConfigForBodyText(model);
+}
+
 export const thinkingConfigForPlaceIntro = thinkingConfigForBodyText;

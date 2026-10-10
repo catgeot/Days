@@ -43,6 +43,8 @@ const ADMIN = new Map([
   ['경상북도', 'Gyeongbuk'],
   ['경상남도', 'Gyeongnam'],
   ['강릉시', 'Gangneung'],
+  ['동래구', 'Dongnae-gu'],
+  ['동래', 'Dongnae'],
   ['제주시', 'Jeju'],
   ['서귀포시', 'Seogwipo'],
   ['함평군', 'Hampyeong'],
@@ -170,6 +172,120 @@ function translateRoad(road) {
   return `${capitalize(romanizeHangul(stem))}${suffix}`;
 }
 
+const DESCRIPTIVE = [
+  ['프로그램별 상이', 'Varies by program'],
+  ['얼리버드 특가', 'early-bird special'],
+  ['부대 행사', 'Side events'],
+  ['섬夜 콘서트', 'Seomya Concert'],
+  ['섬夜 불꽃놀이', 'Seomya Fireworks'],
+  ['먹거리존', 'Food zone'],
+  ['푸드존', 'Food zone'],
+  ['경연대회', 'contest'],
+  ['불꽃놀이', 'Fireworks'],
+  ['나이트워크', 'Night Walk'],
+  ['페어링', 'Pairing'],
+  ['얼리버드', 'early-bird'],
+  ['입장료', 'Admission'],
+  ['콘서트', 'Concert'],
+  ['메인', 'Main'],
+  ['푸드', 'Food'],
+  ['누들', 'Noodle'],
+  ['체험', 'Experience'],
+  ['공연', 'Performance'],
+  ['전시', 'Exhibition'],
+  ['유료', 'Paid'],
+  ['무료', 'Free'],
+  ['특가', 'special price'],
+  ['존', 'Zone'],
+];
+
+const DESCRIPTIVE_RE = /프로그램|상이|유료|무료|얼리버드|특가|\d\s*원/;
+
+/** Drop a hanja gloss in parentheses without leaving a stray space. 백(白)의 → 백의. */
+export function dropHanjaParentheticals(text) {
+  return String(text || '').replace(/\([\u3400-\u9fff]+\)/g, '');
+}
+
+/**
+ * Translate fees and common phrases. Unknown Hangul is omitted, not romanized.
+ * @param {string} raw
+ */
+export function translateDescriptiveKorean(raw) {
+  let text = dropHanjaParentheticals(raw).replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+  if (!/[가-힣\u3400-\u9fff]/.test(text)) return text;
+  text = text.replace(/(\d{1,3}(?:,\d{3})+|\d+)\s*원/g, (_, num) => {
+    const value = Number(String(num).replace(/,/g, ''));
+    return `${value.toLocaleString('en-US')} won`;
+  });
+  const phrases = [...DESCRIPTIVE].sort((a, b) => b[0].length - a[0].length);
+  for (const [ko, en] of phrases) text = text.split(ko).join(` ${en} `);
+  text = text.replace(/[가-힣\u3400-\u9fff]+/g, ' ');
+  return text.replace(/\s+/g, ' ').replace(/\s+([,.;])/g, '$1').trim();
+}
+
+/** Festival titles are proper nouns: Revised Romanization plus the Korean name. */
+export function romanizeFestivalTitle(title) {
+  const words = String(title || '')
+    .replace(/[^\uac00-\ud7a3\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => capitalize(romanizeHangul(word)))
+    .filter(Boolean);
+  return words.join(' ');
+}
+
+function isPlaceLike(text) {
+  const sign = extractSignName(text).replace(/\s+/g, '');
+  if (!sign) return false;
+  if (EXACT.has(sign) || EXACT.has(extractSignName(text))) return true;
+  return /(?:엑스포공원|해수욕장|국립공원|테마파크|놀이공원|문화회관|공원|거리|시장|광장|해변|마을|박물관|미술관|경기장|체육관|전망대|온천|항구|포구|해안|호수|폭포|사찰|성당|궁궐|궁)$/.test(sign);
+}
+
+function isAddressLike(text) {
+  return /(?:광역시|특별시|특별자치|번길|번로|[가-힣](?:로|길|대로))/.test(text)
+    || /[가-힣]+(?:시|군|구)\s/.test(text);
+}
+
+function formatLooseAddress(original) {
+  const spaced = original
+    .replace(/\s*\([^)]*\)\s*/g, ' ')
+    .replace(/([가-힣]+(?:대로|로|길))(?=\d)/g, '$1 ')
+    .replace(/(\d+)(번길|번로)/g, '$1 $2')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const tokens = spaced.split(' ').filter(Boolean);
+  const admins = [];
+  const roads = [];
+  for (let i = 0; i < tokens.length; i += 1) {
+    const token = tokens[i];
+    if (/^\d+$/.test(token) && (tokens[i + 1] === '번길' || tokens[i + 1] === '번로')) {
+      roads.push(`${token}${tokens[i + 1] === '번길' ? 'beon-gil' : 'beon-ro'}`);
+      i += 1;
+      continue;
+    }
+    if (ADMIN.has(token) || /(?:특별자치도|특별자치시|광역시|특별시|자치도|시|군|구|읍|면)$/.test(token)) {
+      const label = translateAdmin(token);
+      if (label) admins.push(label);
+      continue;
+    }
+    if (/(?:대로|로|길)$/.test(token)) {
+      const road = translateRoad(token);
+      if (road && !/[가-힣]/.test(road)) roads.push(road);
+      continue;
+    }
+    if (/^\d+(?:-\d+)?$/.test(token)) roads.push(token);
+  }
+  if (!admins.length) return '';
+  const adminEn = [];
+  for (const place of [...admins].reverse()) {
+    if (adminEn[adminEn.length - 1] !== place) adminEn.push(place);
+  }
+  const english = [roads.join(' '), adminEn.join(', ')].filter(Boolean).join(', ');
+  if (!english || /[가-힣\u3400-\u9fff]/.test(english)) return '';
+  return `${english} (${original})`;
+}
+
 function formatEnglishAddress(original) {
   const withoutParen = original.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
   const match = withoutParen.match(/^(.*?)(\d+(?:-\d+)?)$/);
@@ -193,6 +309,10 @@ function formatEnglishAddress(original) {
   const english = ordered.length ? `${num} ${roadEn}, ${ordered.join(', ')}` : `${num} ${roadEn}`;
   if (/[가-힣\u3400-\u9fff]/.test(english)) return '';
   return `${english} (${original})`;
+}
+
+function formatEnglishAddressOrLoose(original) {
+  return formatEnglishAddress(original) || formatLooseAddress(original);
 }
 
 function translateStem(rest) {
@@ -249,17 +369,20 @@ function extractSignName(text) {
  * @returns {string}
  */
 export function formatEnglishThenKorean(raw) {
-  const text = String(raw || '').replace(/\s+/g, ' ').trim();
+  const text = dropHanjaParentheticals(String(raw || '')).replace(/\s+/g, ' ').trim();
   if (!text) return '';
   if (!/[가-힣\u3400-\u9fff]/.test(text)) return text;
-  const address = formatEnglishAddress(text);
-  if (address) return address;
+  if (DESCRIPTIVE_RE.test(text) && !isPlaceLike(text)) {
+    const described = translateDescriptiveKorean(text);
+    return described ? `${described} (${extractSignName(text)})` : '';
+  }
+  if (isAddressLike(text)) return formatEnglishAddressOrLoose(text);
+  if (!isPlaceLike(text)) {
+    const described = translateDescriptiveKorean(text);
+    return described ? `${described} (${extractSignName(text)})` : '';
+  }
   const sign = extractSignName(text);
   const english = translatePlaceName(sign);
-  if (!english || /[가-힣\u3400-\u9fff]/.test(english)) {
-    const fallback = capitalize(romanizeHangul(sign.replace(/[^\uac00-\ud7a3\s]/g, ' ')));
-    if (!fallback) return text;
-    return `${fallback} (${sign})`;
-  }
+  if (!english || /[가-힣\u3400-\u9fff]/.test(english)) return '';
   return `${english} (${sign})`;
 }

@@ -134,11 +134,83 @@ export function appendFestivalLodgingNextStep(reply, options = {}) {
  * @param {string} reply
  * @param {{ contentId?: string, locale?: string, chipId?: string, userText?: string }} [options]
  */
+const ALLOWED_FESTIVAL_URL =
+  /^https:\/\/(?:www\.)?gateo\.kr\/korea\/\?festival=\d+(?:#festival-lodging)?$/i;
+
+const UI_CHIP_LABEL_RE =
+  /^(?:출발 전 준비|교통\s*[·・]\s*티켓|Before you go|Transport\s*[·・]\s*tickets|플래너 보기)$/;
+
+const ENTRY_DOC_RE = /입국\s*증빙|입국\s*심사|입국\s*서류|비자\s*서류|proof-of-stay|entry document|immigration document/i;
+const ENTRY_ASK_RE = /비자|입국|visa|entry|immigration/i;
+
+const EN_MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/** Keep festival and lodging links. Drop every other model-written link. */
+export function stripDisallowedFestivalLinks(text) {
+  let next = String(text || '').replace(
+    /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g,
+    (full, _label, url) => (ALLOWED_FESTIVAL_URL.test(url) ? full : ''),
+  );
+  next = next.replace(/https?:\/\/[^\s)]+/g, (url) => {
+    const clean = url.replace(/[.,]+$/, '');
+    return ALLOWED_FESTIVAL_URL.test(clean) ? url : '';
+  });
+  return next.replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/** Chip and section names the model sometimes prints as fake buttons. */
+export function stripMooniUiChipLabels(text) {
+  return String(text || '')
+    .replace(/\[([^\]\n]{1,40})\](?!\()/g, (full, label) => (UI_CHIP_LABEL_RE.test(label.trim()) ? '' : full))
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\s+([.!?])/g, '$1')
+    .trim();
+}
+
+/**
+ * @param {string} text
+ * @param {{ chipId?: string, userText?: string }} [options]
+ */
+export function stripDomesticEntryDocLines(text, options = {}) {
+  const chip = String(options.chipId || '');
+  if (chip === 'visa_docs' || chip === 'festival_overseas_visa') return String(text || '').trim();
+  if (ENTRY_ASK_RE.test(String(options.userText || ''))) return String(text || '').trim();
+  return splitReplyPieces(text).filter((part) => !ENTRY_DOC_RE.test(part)).join(' ').trim();
+}
+
+/**
+ * 20261015 → October 15, 2026 or 2026년 10월 15일. URLs are left alone.
+ * @param {string} text
+ * @param {string} [locale]
+ */
+export function expandCompactDates(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  return String(text || '')
+    .split(/(https?:\/\/[^\s)]+)/)
+    .map((part, index) => {
+      if (index % 2 === 1) return part;
+      return part.replace(/\b(20\d{2})(\d{2})(\d{2})\b/g, (full, year, month, day) => {
+        const m = Number(month);
+        const d = Number(day);
+        if (m < 1 || m > 12 || d < 1 || d > 31) return full;
+        return en ? `${EN_MONTHS[m - 1]} ${d}, ${year}` : `${Number(year)}년 ${m}월 ${d}일`;
+      });
+    })
+    .join('');
+}
+
 export function polishFestivalModelReply(reply, options = {}) {
   let text = String(reply || '').trim();
+  text = stripDisallowedFestivalLinks(text);
+  text = stripMooniUiChipLabels(text);
+  text = expandCompactDates(text, options.locale);
   if (options.contentId) {
     text = stripUnaskedBroadcastLines(text, options.userText);
     text = stripDomesticTwelveGoMention(text);
+    text = stripDomesticEntryDocLines(text, options);
   }
   if (isFestivalLodgingAsk(options)) text = stripNonStayFacilities(text, options.userText);
   return appendFestivalLodgingNextStep(text, options);
@@ -438,8 +510,20 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
     lines.push(isEn ? `- Period: ${periodLabel}` : `- 기간: ${periodLabel}`);
   }
   if (/^\d{8}$/.test(startYmd) && /^\d{8}$/.test(endYmd)) {
-    lines.push(isEn ? `- Dates (YMD): ${startYmd}–${endYmd}` : `- 일정(YMD): ${startYmd}–${endYmd}`);
+    const longStart = expandCompactDates(startYmd, isEn ? 'en' : 'ko');
+    const longEnd = expandCompactDates(endYmd, isEn ? 'en' : 'ko');
+    lines.push(isEn ? `- Dates: ${longStart} through ${longEnd}` : `- 날짜: ${longStart}부터 ${longEnd}까지`);
+    lines.push(
+      isEn
+        ? `- Dates (YMD, do not copy this form into the answer): ${startYmd}–${endYmd}`
+        : `- 일정(YMD, 답에는 이 숫자만 쓰지 않는다): ${startYmd}–${endYmd}`,
+    );
   }
+  lines.push(
+    isEn
+      ? '- Domestic festival in Korea. Do not mention visas or entry documents unless the user asked.'
+      : '- 국내 축제다. 사용자가 비자·입국을 묻지 않으면 입국 증빙·입국 심사를 말하지 않는다.',
+  );
 
   const timeText = String(ctx?.timeText || '').trim();
   if (timeText) lines.push(isEn ? `- Hours: ${timeText}` : `- 시간: ${timeText}`);

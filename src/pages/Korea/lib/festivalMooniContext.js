@@ -4,7 +4,12 @@ import {
   kstTodayYmd,
   ymdDayDelta,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
-import { formatEnglishThenKorean } from '../../../shared/korea/englishPlaceLabel.js';
+import {
+  dropHanjaParentheticals,
+  formatEnglishThenKorean,
+  romanizeFestivalTitle,
+  translateDescriptiveKorean,
+} from '../../../shared/korea/englishPlaceLabel.js';
 import { parseEngFestivalTitle } from '../festivalTitleEnMerge.js';
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
 
@@ -194,7 +199,7 @@ function statusSentence(ctx, today, isEn) {
 }
 
 function programNames(program) {
-  const flat = String(program || '')
+  const flat = dropHanjaParentheticals(String(program || ''))
     .replace(/<[^>]+>/g, ' ')
     .replace(/\([^)]*\)/g, ' ');
   const names = [];
@@ -273,7 +278,8 @@ function englishTitlePhrase(ctx) {
   let en = String(parsed.en || '').trim();
   if (/[가-힣]/.test(stripParentheticals(en))) en = '';
   if (!en) en = fallbackEnglishLabel(ko);
-  if (!en) en = 'This festival';
+  if (!en) en = romanizeFestivalTitle(ko);
+  if (!en) return ko;
   return `${en} (${ko})`;
 }
 
@@ -298,16 +304,38 @@ function feeClause(feeText) {
 function englishFeeSentence(feeText) {
   const fee = String(feeText || '').trim();
   if (!fee) return '';
-  if (/무료|^free$/i.test(fee.trim())) return 'Admission is free.';
+  if ((/무료/.test(fee) || /^free$/i.test(fee)) && !/\d/.test(fee)) return 'Admission is free.';
   if (!/[가-힣\u3400-\u9fff]/.test(fee)) return `The listed fee is ${fee}.`;
-  return `The listed fee is ${formatEnglishThenKorean(fee)}.`;
+  const translated = translateDescriptiveKorean(fee);
+  if (!translated) return '';
+  if (/^varies by program$/i.test(translated)) return 'The fee varies by program.';
+  if (/^free$/i.test(translated)) return 'Admission is free.';
+  if (/^paid$/i.test(translated)) return 'Admission is paid.';
+  if (/^Paid\b/.test(translated)) {
+    const rest = translated.replace(/^Paid\s*/, '');
+    return rest ? `Admission is paid, ${rest}.` : 'Admission is paid.';
+  }
+  return `The listed fee is ${translated}.`;
 }
 
 function englishHours(timeText) {
   const hours = String(timeText || '').trim();
   if (!hours) return '';
-  if (/[가-힣\u3400-\u9fff]/.test(hours)) return `Hours on file are ${formatEnglishThenKorean(hours)}.`;
-  return `Hours are ${hours}.`;
+  if (!/[가-힣\u3400-\u9fff]/.test(hours)) return `Hours are ${hours}.`;
+  const translated = translateDescriptiveKorean(hours);
+  if (!translated) return '';
+  return `Hours on file are ${translated}.`;
+}
+
+function englishProgramLabel(name) {
+  const cleaned = dropHanjaParentheticals(name).replace(/\s+/g, ' ').trim();
+  if (!cleaned) return '';
+  if (/공원|거리|해변|광장|시장|궁|해변|항구/.test(cleaned)) {
+    return formatEnglishThenKorean(cleaned);
+  }
+  const translated = translateDescriptiveKorean(cleaned);
+  if (!translated) return '';
+  return `${translated} (${cleaned})`;
 }
 
 function hangulHasBatchim(title) {
@@ -380,7 +408,7 @@ function fitFestivalCard(parts, closing) {
 
 function koClosingSentence(ctx, ended) {
   const url = ctx.gateoUrl;
-  const linked = url ? `[${url}](${url})` : '';
+  const linked = url ? `[축제 페이지](${url})` : '';
   const next = ended ? '다음으로 근처에서 들를 곳을 볼 수 있어요' : '다음으로 가는 법을 정할 수 있어요';
   if (linked) return `자세한 내용은 ${linked}에서 볼 수 있고, ${next}.`;
   return `${next}.`;
@@ -469,14 +497,15 @@ function englishFestivalCard(ctx, { today, ended, names, nearbyNames }) {
   const status = statusSentence(ctx, today, true);
   if (status) sentences.push(status);
 
-  if (names.length) {
-    sentences.push(`Listed programs include ${names.map((name) => formatEnglishThenKorean(name)).join(', ')}.`);
+  const programLabels = names.map((name) => englishProgramLabel(name)).filter(Boolean);
+  if (programLabels.length) {
+    sentences.push(`Listed programs include ${programLabels.join(', ')}.`);
   }
   const nearby = englishNearbySentence(nearbyNames || []);
   if (nearby) sentences.push(nearby);
 
   const url = ctx.gateoUrl;
-  const linked = url ? `[${url}](${url})` : '';
+  const linked = url ? `[festival page](${url})` : '';
   const next = ended
     ? 'next you can look at nearby stops from ICN'
     : 'next you can plan how to get there from ICN';

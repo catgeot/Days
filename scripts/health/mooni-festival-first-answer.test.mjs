@@ -24,7 +24,18 @@ import {
   stripNonStayFacilities,
   stripUnaskedBroadcastLines,
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
-import { formatEnglishThenKorean } from '../../src/shared/korea/englishPlaceLabel.js';
+import {
+  dropHanjaParentheticals,
+  formatEnglishThenKorean,
+  romanizeFestivalTitle,
+  translateDescriptiveKorean,
+} from '../../src/shared/korea/englishPlaceLabel.js';
+import {
+  expandCompactDates,
+  stripDisallowedFestivalLinks,
+  stripDomesticEntryDocLines,
+  stripMooniUiChipLabels,
+} from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 import {
   invokeMooniChatToleratingChip,
   LEGACY_MOONI_CHIP_IDS,
@@ -65,7 +76,7 @@ test('festival opening is sentences with dates, link, and no filler', () => {
   assert.match(ko, /시작까지 6일/);
   assert.doesNotMatch(ko, /하나예요/);
   assert.match(ko, /2026년 10월 15일부터 2026년 10월 18일까지/);
-  assert.match(ko, /https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716/);
+  assert.match(ko, /\[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)/);
   assert.match(ko, /다음으로 가는 법을 정할 수 있어요\.$/);
   assert.ok(countFestivalCardSentences(ko) <= 5, `sentences ${countFestivalCardSentences(ko)}: ${ko}`);
   assert.ok(countFestivalCardSentences(ko) >= 4);
@@ -95,7 +106,7 @@ test('festival opening is sentences with dates, link, and no filler', () => {
   assert.doesNotMatch(en, /One nearby/);
   assert.match(en, /starts in 6 days/);
   assert.match(en, /from ICN/);
-  assert.match(en, /festival=2930716/);
+  assert.match(en, /\[festival page\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)/);
   assert.doesNotMatch(en, /welcome/i);
   assert.doesNotMatch(en, /장칼국수/);
   assert.doesNotMatch(en, /사랑을 받/);
@@ -270,6 +281,50 @@ test('festival lodging answers end on the stay-section link', async () => {
   assert.match(sheet, /FESTIVAL_LODGING_EVENT/);
 });
 
+test('English card translates fees and addresses and romanizes only names', () => {
+  assert.equal(romanizeFestivalTitle('궁중문화축전'), 'Gungjungmunhwachukjeon');
+  assert.equal(dropHanjaParentheticals('백(白)의 질서'), '백의 질서');
+  assert.equal(translateDescriptiveKorean('프로그램별 상이'), 'Varies by program');
+  assert.match(translateDescriptiveKorean('유료 34000원 얼리버드 특가'), /Paid/);
+  assert.match(translateDescriptiveKorean('유료 34000원 얼리버드 특가'), /34,000 won/);
+  assert.doesNotMatch(translateDescriptiveKorean('유료 34000원 얼리버드 특가'), /Yuryo|Eolribeodeu|Teukga/);
+  const address = formatEnglishThenKorean('부산광역시 동래구 금강공원로20번길');
+  assert.match(address, /Dongnae-gu, Busan/);
+  assert.doesNotMatch(address, /Busangwangyeoksi|Dongraegu/);
+
+  const palace = buildFestivalMooniContext({
+    item: { contentId: '1998564', title: '궁중문화축전' },
+    summaryFields: { fee: { text: '프로그램별 상이' } },
+    program: '백(白)의 질서\n메인 푸드존\n페어링 존',
+  });
+  const ko = buildFestivalMooniSentenceAnswer(palace, { locale: 'ko', now: NOW });
+  const en = buildFestivalMooniSentenceAnswer(palace, { locale: 'en', now: NOW });
+  assert.match(ko, /백의 질서/);
+  assert.doesNotMatch(ko, /백 의/);
+  assert.match(en, /Gungjungmunhwachukjeon \(궁중문화축전\)/);
+  assert.doesNotMatch(en, /This festival/);
+  assert.match(en, /varies by program/i);
+  assert.match(en, /Main Food zone \(메인 푸드존\)/);
+  assert.match(en, /Pairing Zone \(페어링 존\)/);
+  assert.doesNotMatch(en, /Peurogeuraembyeol|Sangi|Mein |Peeoring|백 의/);
+  let outside = en;
+  for (let i = 0; i < 6; i += 1) outside = outside.replace(/\([^()]*\)/g, '');
+  assert.doesNotMatch(outside, /[가-힣]/);
+
+  const busan = buildFestivalMooniContext({
+    item: {
+      contentId: '2855626',
+      title: '부산 옥토버페스트',
+      addr1: '부산광역시 동래구 금강공원로20번길',
+    },
+    summaryFields: { fee: { text: '유료 34000원 얼리버드 특가' } },
+  });
+  const busanEn = buildFestivalMooniSentenceAnswer(busan, { locale: 'en', now: NOW });
+  assert.match(busanEn, /Dongnae-gu, Busan/);
+  assert.match(busanEn, /34,000 won/);
+  assert.doesNotMatch(busanEn, /Busangwangyeoksi|Yuryo|Eolribeodeu/);
+});
+
 test('English place names lead and Korean stays in parentheses', () => {
   assert.equal(formatEnglishThenKorean('함평엑스포공원'), 'Hampyeong Expo Park (함평엑스포공원)');
   assert.equal(formatEnglishThenKorean('강릉 월화거리 일원'), 'Wolhwa Street (월화거리)');
@@ -361,6 +416,37 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   const twelve = stripDomesticTwelveGoMention('버스가 있어요. 12Go 바로가기로 예매하세요.');
   assert.match(twelve, /버스/);
   assert.doesNotMatch(twelve, /12Go/);
+  const invented = polishFestivalModelReply(
+    '버스가 있어요. [강릉행 교통편 확인](https://www.gateo.kr/) [출발 전 준비] [교통 · 티켓]',
+    { contentId: '2930716', locale: 'ko', userText: '근처' },
+  );
+  assert.doesNotMatch(invented, /gateo\.kr\/\)|출발 전 준비|교통 · 티켓/);
+  assert.match(invented, /버스/);
+
+  const entry = polishFestivalModelReply(
+    '월화거리 호텔이 편해요. 입국 증빙으로 예약 확인서가 필요해요.',
+    { contentId: '2930716', locale: 'ko', chipId: 'prep_hotel', userText: '숙소 추천' },
+  );
+  assert.match(entry, /호텔/);
+  assert.doesNotMatch(entry, /입국 증빙/);
+  assert.match(
+    polishFestivalModelReply('입국 증빙이 필요해요.', {
+      contentId: '2930716',
+      chipId: 'visa_docs',
+      userText: '비자',
+    }),
+    /입국 증빙/,
+  );
+
+  assert.equal(expandCompactDates('기간은 20261015부터예요.', 'en'), '기간은 October 15, 2026부터예요.');
+  assert.equal(stripDisallowedFestivalLinks('[이동](https://www.gateo.kr/)'), '');
+  assert.match(
+    stripDisallowedFestivalLinks('[숙소 카드](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)'),
+    /festival-lodging/,
+  );
+  assert.equal(stripMooniUiChipLabels('끝 [출발 전 준비] [교통 · 티켓]'), '끝');
+  assert.doesNotMatch(stripDomesticEntryDocLines('입국 증빙이 필요해요.', { chipId: 'prep_hotel' }), /입국/);
+
   assert.match(KO.festivalAnswerRules, /12Go/);
   assert.match(EN.festivalAnswerRules, /Wolhwa Street \(월화거리\)/);
   assert.match(KO.chips.prep_hotel.rules.join('\n'), /사우나/);

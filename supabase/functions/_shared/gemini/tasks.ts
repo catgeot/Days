@@ -306,7 +306,8 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       task,
       model: tier === "quality" ? GEMINI_QUALITY : GEMINI_FAST,
       maxOutputTokens: longForm ? 4096 : 1536,
-      limitThinking: true,
+      // flash-lite thinking tokens share this budget and were cutting answers near 100 chars.
+      limitThinking: tier === "quality",
       parts: [{ text: wrapUserTurn(system, history, userText) }],
       tier,
     };
