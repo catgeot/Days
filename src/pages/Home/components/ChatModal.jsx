@@ -51,9 +51,12 @@ import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoun
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
 import {
+  festivalTripMatchesLocale,
   readFestivalMooniSession,
+  showFestivalOpeningInThread,
   writeFestivalMooniSession,
 } from '../lib/festivalMooniSessionCache.js';
+import { festivalResolutionLabel } from '../lib/mooniPlaceChatLabel.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
@@ -685,7 +688,9 @@ const ChatModal = ({
       const targetTrip = chatHistory.find(
         (t) => String(t.id) === String(activeChatId)
       );
-      if (targetTrip) {
+      const festivalLocaleOk = !festivalMooniContext?.contentId
+        || festivalTripMatchesLocale(targetTrip, i18n.language);
+      if (targetTrip && festivalLocaleOk) {
         setMessages(targetTrip.messages || []);
         if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
         tripSessionRef.current = hydrateMooniTripSession({
@@ -694,8 +699,8 @@ const ChatModal = ({
           slug: targetTrip.curation_data?.slug || '',
           destinationName: targetTrip.destination || '',
         });
+        return;
       }
-      return;
     }
     if (chatDraft) {
       const cached = festivalMooniContext?.contentId
@@ -1505,17 +1510,14 @@ const ChatModal = ({
                 </div>
               )}
               {isMooniUi &&
-                messages.length === 0 &&
-                !isLoading &&
                 festivalMooniContext &&
-                festivalMooniOpening &&
-                !(
-                  typeof initialQuery === 'string'
-                    ? initialQuery.trim()
-                    : String(
-                        initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
-                      ).trim()
-                ) && (
+                showFestivalOpeningInThread({
+                  opening: festivalMooniOpening,
+                  initialQuery:
+                    typeof initialQuery === 'string'
+                      ? initialQuery
+                      : initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
+                }) && (
                 <div className="flex flex-col items-start w-full mb-3">
                   <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
                   <div
@@ -1657,7 +1659,18 @@ const ChatModal = ({
                     ) : null}
                     {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
                       <DestinationResolutionChips
-                        confirmed={msg.confirmedDestination}
+                        confirmed={
+                          msg.confirmedDestination
+                            ? {
+                                ...msg.confirmedDestination,
+                                name: festivalResolutionLabel(
+                                  msg.confirmedDestination,
+                                  festivalMooniContext,
+                                  i18n.language,
+                                ) || msg.confirmedDestination.name,
+                              }
+                            : msg.confirmedDestination
+                        }
                         departure={msg.departureLabel}
                         candidates={msg.destinationCandidates}
                         onSelectCandidate={(c) => handleSelectDestinationCandidate(c, idx)}

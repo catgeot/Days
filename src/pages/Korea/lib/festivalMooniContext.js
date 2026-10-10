@@ -833,7 +833,7 @@ function dedupeRepeatedTitle(raw, facts) {
     if (first < 0) continue;
     const head = out.slice(0, first + title.length);
     const tail = out.slice(first + title.length).replace(
-      new RegExp(`${escapeRegExp(title)}(?:에서는|에선|에서|은|는|이|가)?\\s*`, 'g'),
+      new RegExp(`\\s+(?:The\\s+|the\\s+)?${escapeRegExp(title)}(?:에서는|에선|에서|은|는|이|가)?`, 'g'),
       '',
     );
     out = `${head}${tail}`;

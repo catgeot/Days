@@ -6,6 +6,7 @@ import {
   localizeMooniPlaceLabel,
 } from '../../src/pages/Home/lib/mooniPlaceChatLabel.js';
 import { buildFestivalMooniBoundSpot } from '../../src/pages/Korea/lib/festivalMooniBoundSpot.js';
+import { festivalChatHeaderTitle } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 
 const FESTIVAL_FIXTURE = {
   item: {
@@ -67,8 +68,9 @@ test('festivalContext keeps explicit festival displayLabel', () => {
   const bound = buildFestivalMooniBoundSpot(FESTIVAL_FIXTURE);
   assert.equal(
     localizeMooniPlaceLabel(bound, 'en'),
-    '홍천 인삼한우 명품축제 · 홍천',
+    festivalChatHeaderTitle(bound.festivalContext, 'en'),
   );
+  assert.match(localizeMooniPlaceLabel(bound, 'en'), /Hongcheon/);
   assert.equal(
     localizeMooniPlaceLabel(bound, 'ko'),
     '홍천 인삼한우 명품축제 · 홍천',

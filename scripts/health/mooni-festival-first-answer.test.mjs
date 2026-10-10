@@ -19,6 +19,13 @@ import {
   unsupportedFestivalFactMentions,
 } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 import {
+  festivalTripMatchesLocale,
+  readFestivalMooniSession,
+  showFestivalOpeningInThread,
+  writeFestivalMooniSession,
+} from '../../src/pages/Home/lib/festivalMooniSessionCache.js';
+import { festivalResolutionLabel } from '../../src/pages/Home/lib/mooniPlaceChatLabel.js';
+import {
   appendFestivalLodgingNextStep,
   buildMooniBoundFestivalSystemHint,
   gateoKoreaFestivalLodgingUrl,
@@ -1067,6 +1074,51 @@ test('festival follow-up keeps facts, lodging areas, and the chat session', asyn
   assert.match(lodgingHint.hint, /강릉 숙소 안내/);
   assert.match(KO.festivalAnswerRules, /개요와 프로그램에 없는 공연/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /없는 공연·프로그램 이름/);
+
+  assert.equal(showFestivalOpeningInThread({ opening: '강릉 국수 축제는 열려요.', initialQuery: '' }), true);
+  assert.equal(
+    showFestivalOpeningInThread({ opening: '강릉 국수 축제는 열려요.', initialQuery: '어디서 자요?' }),
+    false,
+  );
+  const openingBlock = chat.slice(chat.indexOf('data-testid="mooni-festival-opening"') - 700, chat.indexOf('data-testid="mooni-festival-opening"'));
+  assert.match(openingBlock, /showFestivalOpeningInThread/);
+  assert.doesNotMatch(openingBlock, /messages\.length === 0/);
+
+  const koLodging = [
+    { role: 'user', text: '어디서 자요?' },
+    { role: 'model', text: '월화거리, 강릉, 속초에서 묵기 좋아요. [강릉 숙소 안내](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)' },
+  ];
+  assert.equal(festivalTripMatchesLocale({ messages: koLodging }, 'ko'), true);
+  assert.equal(festivalTripMatchesLocale({ messages: koLodging }, 'en'), false);
+  assert.equal(festivalTripMatchesLocale({ mooniLocale: 'en', messages: koLodging }, 'en'), true);
+  writeFestivalMooniSession('2930716', 'ko', { messages: koLodging, opening: '한국어 첫 답' });
+  writeFestivalMooniSession('2930716', 'en', { opening: 'Gangneung Noodle Festival runs 10/15–18.' });
+  assert.equal(readFestivalMooniSession('2930716', 'en').messages, undefined);
+  assert.match(readFestivalMooniSession('2930716', 'ko').opening, /한국어/);
+  const host = readFileSync(join(root, 'src/pages/Home/components/MooniBoundChatHost.jsx'), 'utf8');
+  assert.match(host, /festivalTripMatchesLocale/);
+
+  assert.equal(
+    festivalResolutionLabel({ name: '강릉 국수 축제' }, { title: '강릉 국수 축제', hubLabel: '강릉' }, 'en'),
+    'Gangneung Noodle Festival',
+  );
+  assert.equal(
+    festivalResolutionLabel({ name: '강릉 국수 축제 · 강릉' }, { title: '강릉 국수 축제', hubLabel: '강릉' }, 'en'),
+    'Gangneung Noodle Festival',
+  );
+  assert.equal(
+    festivalResolutionLabel({ name: '강릉 국수 축제' }, { title: '강릉 국수 축제' }, 'ko'),
+    '강릉 국수 축제',
+  );
+
+  const gangneung = JSON.parse(readFileSync(join(root, 'scripts/staging/fixtures/festival-opening/2930716.json'), 'utf8'));
+  const enFacts = buildFestivalFirstAnswerFacts(buildFestivalMooniContext(gangneung), { locale: 'en', now: NOW });
+  const doubled = acceptFestivalModelOpening(
+    'Gangneung Noodle Festival (강릉 국수 축제) The Gangneung Noodle Festival (강릉 국수 축제) runs 10/15–18 and starts in 6 days. You can taste spicy hand-cut noodles (장칼국수).',
+    enFacts,
+  );
+  assert.equal((doubled.match(/Gangneung Noodle Festival/g) || []).length, 1);
+  assert.match(doubled, /spicy hand-cut noodles \(장칼국수\)/);
 });
 
 test('desktop and mobile place entry open bound MOONi', () => {
