@@ -74,54 +74,27 @@ const LEADING_CITY = new Set([
   '양양',
 ]);
 
-/** Longest suffix first. */
-const PLACE_SUFFIXES = [
-  ['엑스포공원', 'Expo Park'],
-  ['해수욕장', 'Beach'],
-  ['국립공원', 'National Park'],
-  ['테마파크', 'Theme Park'],
-  ['놀이공원', 'Amusement Park'],
-  ['문화회관', 'Culture Hall'],
-  ['경연대회', 'Contest'],
-  ['불꽃놀이', 'Fireworks'],
-  ['공원', 'Park'],
-  ['거리', 'Street'],
-  ['시장', 'Market'],
-  ['광장', 'Plaza'],
-  ['해변', 'Beach'],
-  ['마을', 'Village'],
-  ['박물관', 'Museum'],
-  ['미술관', 'Art Museum'],
-  ['경기장', 'Stadium'],
-  ['체육관', 'Gym'],
-  ['전망대', 'Observatory'],
-  ['온천', 'Hot Spring'],
-  ['항구', 'Port'],
-  ['포구', 'Port'],
-  ['해안', 'Coast'],
-  ['호수', 'Lake'],
-  ['폭포', 'Falls'],
-  ['사찰', 'Temple'],
-  ['성당', 'Cathedral'],
-  ['궁궐', 'Palace'],
-  ['콘서트', 'Concert'],
-  ['체험', 'Experience'],
-  ['공연', 'Performance'],
-  ['전시', 'Exhibition'],
-  ['궁', 'Palace'],
-  ['산', 'Mountain'],
-];
-
-const PHRASES = [
-  ['경연대회', 'Contest'],
-  ['먹거리', 'Food'],
+/** Common words inside a proper noun. Unknown Hangul is romanized, never dropped. */
+const NAME_GLOSSARY = [
+  ['프로그램별 상이', 'Varies by program'],
+  ['라이브 공연', 'live performance'],
+  ['야외마당', 'outdoor yard'],
+  ['비어가든', 'Beer Garden'],
+  ['먹거리존', 'Food zone'],
+  ['푸드존', 'Food zone'],
+  ['경연대회', 'contest'],
   ['불꽃놀이', 'Fireworks'],
   ['나이트워크', 'Night Walk'],
   ['콘서트', 'Concert'],
+  ['페어링', 'Pairing'],
+  ['호텔', 'Hotel'],
+  ['메인', 'Main'],
+  ['푸드', 'Food'],
   ['누들', 'Noodle'],
+  ['공연', 'performance'],
   ['체험', 'Experience'],
-  ['공연', 'Performance'],
   ['전시', 'Exhibition'],
+  ['라이브', 'live'],
   ['존', 'Zone'],
 ];
 
@@ -315,53 +288,92 @@ function formatEnglishAddressOrLoose(original) {
   return formatEnglishAddress(original) || formatLooseAddress(original);
 }
 
-function translateStem(rest) {
-  if (!rest) return '';
-  if (EXACT.has(rest)) return EXACT.get(rest);
-  let text = rest;
-  const phrases = [...PHRASES].sort((a, b) => b[0].length - a[0].length);
-  for (const [ko, en] of phrases) {
-    text = text.split(ko).join(` ${en} `);
-  }
-  const words = text
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((word) => {
-      if (EXACT.has(word)) return EXACT.get(word);
-      if (!/[가-힣]/.test(word)) return word.replace(/[\u3400-\u9fff]/g, '');
-      return capitalize(romanizeHangul(word));
-    })
-    .filter(Boolean);
-  return words.join(' ').replace(/\s+/g, ' ').trim();
-}
-
-function translatePlaceName(sign) {
-  if (EXACT.has(sign)) return EXACT.get(sign);
-  let rest = sign;
-  const bits = [];
-  const suffixes = [...PLACE_SUFFIXES].sort((a, b) => b[0].length - a[0].length);
-  let peeled = true;
-  while (peeled && rest) {
-    peeled = false;
-    for (const [ko, en] of suffixes) {
-      if (rest.endsWith(ko) && rest.length > ko.length) {
-        bits.unshift(en);
-        rest = rest.slice(0, -ko.length).trim();
-        peeled = true;
-        break;
-      }
-    }
-  }
-  const stem = translateStem(rest);
-  return [stem, ...bits].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
-}
-
 function extractSignName(text) {
   let sign = text.replace(/(?:\s*(?:일원|일대|부근|인근|주변))+$/g, '').trim();
   const parts = sign.split(/\s+/).filter(Boolean);
   while (parts.length > 1 && LEADING_CITY.has(parts[0])) parts.shift();
   sign = parts.join(' ').trim();
   return sign || text;
+}
+
+function isPunctOnly(text) {
+  return !/[A-Za-z0-9가-힣]/.test(String(text || ''));
+}
+
+/**
+ * Glossary hits stay in English. Every other Hangul run is Revised Romanization.
+ * @param {string} text
+ */
+function applyNameGlossary(text) {
+  const gloss = [...NAME_GLOSSARY].sort((a, b) => b[0].length - a[0].length);
+  const src = String(text || '');
+  let i = 0;
+  let out = '';
+  while (i < src.length) {
+    if (/\s/.test(src[i])) {
+      if (out && !out.endsWith(' ')) out += ' ';
+      while (i < src.length && /\s/.test(src[i])) i += 1;
+      continue;
+    }
+    const hit = /[가-힣]/.test(src[i]) ? gloss.find(([ko]) => src.startsWith(ko, i)) : null;
+    if (hit) {
+      if (out && !/\s$/.test(out)) out += ' ';
+      out += hit[1];
+      i += hit[0].length;
+      continue;
+    }
+    if (/[가-힣]/.test(src[i])) {
+      let run = '';
+      while (
+        i < src.length
+        && /[가-힣]/.test(src[i])
+        && !gloss.some(([ko]) => src.startsWith(ko, i))
+      ) {
+        run += src[i];
+        i += 1;
+      }
+      if (out && !/\s$/.test(out)) out += ' ';
+      out += capitalize(romanizeHangul(run));
+      continue;
+    }
+    out += src[i];
+    i += 1;
+  }
+  return out.replace(/\s+/g, ' ').replace(/\s+([,:])/g, '$1').trim();
+}
+
+/** One place, venue, program, or festival-name item. */
+function labelNameItem(raw) {
+  const text = dropHanjaParentheticals(String(raw || '')).replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+  const sign = extractSignName(text);
+  const key = sign || text;
+  if (EXACT.has(key)) return EXACT.get(key);
+  const compact = key.replace(/\s+/g, '');
+  if (EXACT.has(compact)) return EXACT.get(compact);
+  if (!/[가-힣]/.test(key)) return key;
+  const english = applyNameGlossary(key);
+  if (!english || isPunctOnly(english)) return key;
+  return english;
+}
+
+/** Lists stay split on commas, &, and middle dots. Each item is labeled in full. */
+function splitNameParts(text) {
+  const re = /(\s*(?:,|&|·|・|…|\.{3})\s*)/g;
+  const out = [];
+  let last = 0;
+  for (const match of text.matchAll(re)) {
+    const chunk = text.slice(last, match.index).trim();
+    if (chunk) out.push({ kind: 'item', value: chunk });
+    const sep = match[1].trim();
+    const pretty = sep === ',' ? ', ' : sep === '&' ? ' & ' : sep === '…' || sep === '...' ? ' … ' : ` ${sep} `;
+    out.push({ kind: 'sep', value: pretty });
+    last = match.index + match[0].length;
+  }
+  const tail = text.slice(last).trim();
+  if (tail) out.push({ kind: 'item', value: tail });
+  if (out.filter((part) => part.kind === 'item').length < 2) return [];
+  return out;
 }
 
 /**
@@ -372,17 +384,32 @@ export function formatEnglishThenKorean(raw) {
   const text = dropHanjaParentheticals(String(raw || '')).replace(/\s+/g, ' ').trim();
   if (!text) return '';
   if (!/[가-힣\u3400-\u9fff]/.test(text)) return text;
-  if (DESCRIPTIVE_RE.test(text) && !isPlaceLike(text)) {
-    const described = translateDescriptiveKorean(text);
-    return described ? `${described} (${extractSignName(text)})` : '';
+  if (isAddressLike(text)) {
+    const address = formatEnglishAddressOrLoose(text);
+    if (address) return address;
   }
-  if (isAddressLike(text)) return formatEnglishAddressOrLoose(text);
-  if (!isPlaceLike(text)) {
+  if (DESCRIPTIVE_RE.test(text) && !isPlaceLike(text) && !/[,&·・]/.test(text)) {
     const described = translateDescriptiveKorean(text);
-    return described ? `${described} (${extractSignName(text)})` : '';
+    if (described && !/[가-힣\u3400-\u9fff]/.test(described)) {
+      return `${described} (${extractSignName(text) || text})`;
+    }
+  }
+  const parts = splitNameParts(text);
+  if (parts.length) {
+    const english = parts.map((part) => {
+      if (part.kind === 'sep') return part.value;
+      const label = labelNameItem(part.value);
+      if (!label || isPunctOnly(label)) return part.value;
+      return label;
+    }).join('');
+    const cleaned = english.replace(/\s+/g, ' ').replace(/\s+,/g, ',').trim();
+    if (!cleaned || isPunctOnly(cleaned)) return text;
+    return `${cleaned} (${text})`;
   }
   const sign = extractSignName(text);
-  const english = translatePlaceName(sign);
-  if (!english || /[가-힣\u3400-\u9fff]/.test(english)) return '';
-  return `${english} (${sign})`;
+  const english = labelNameItem(text);
+  if (!english || isPunctOnly(english)) return text;
+  const paren = sign || text;
+  if (english === paren) return text;
+  return `${english} (${paren})`;
 }

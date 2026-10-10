@@ -137,8 +137,71 @@ export function appendFestivalLodgingNextStep(reply, options = {}) {
 const ALLOWED_FESTIVAL_URL =
   /^https:\/\/(?:www\.)?gateo\.kr\/korea\/\?festival=\d+(?:#festival-lodging)?$/i;
 
-const UI_CHIP_LABEL_RE =
-  /^(?:출발 전 준비|교통\s*[·・]\s*티켓|Before you go|Transport\s*[·・]\s*tickets|플래너 보기)$/;
+const SECTION_CTA_LABELS = [
+  '교통 · 티켓',
+  '출발 전 준비',
+  '플래너 보기',
+  '플래너에서 확인',
+  '예약 · 정보',
+  'Transport · tickets',
+  'Before you go',
+  'Open planner',
+  'Check in planner',
+  'Book · info',
+];
+
+function ctaLabelList() {
+  const titles = [...SECTION_CTA_LABELS];
+  for (const bundle of [KO, EN]) {
+    for (const chip of Object.values(bundle?.chips || {})) {
+      if (chip?.title) titles.push(String(chip.title));
+    }
+  }
+  return titles;
+}
+
+function normalizeCta(value) {
+  return String(value || '')
+    .replace(/[\u{1F1E6}-\u{1F1FF}\u{1F300}-\u{1FAFF}\u2600-\u27BF]/gu, '')
+    .replace(/[·・‧]/g, '·')
+    .replace(/#{1,6}/g, ' ')
+    .replace(/-{3,}/g, ' ')
+    .replace(/[-–—•*]+/g, ' ')
+    .replace(/[.!?。]+$/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+const CTA_LABELS = ctaLabelList()
+  .map((label) => normalizeCta(label))
+  .filter((label) => label.length >= 2)
+  .sort((a, b) => b.length - a.length);
+
+const SECTION_LABELS = SECTION_CTA_LABELS
+  .map((label) => normalizeCta(label))
+  .sort((a, b) => b.length - a.length);
+
+function isCtaSequence(raw) {
+  let rest = normalizeCta(raw);
+  if (!rest) return true;
+  while (rest) {
+    rest = rest.replace(/^[·\s]+/, '');
+    if (!rest) return true;
+    const hit = CTA_LABELS.find((label) => rest === label || rest.startsWith(`${label} `) || rest.startsWith(`${label}·`));
+    if (!hit) return false;
+    rest = rest.slice(hit.length).trim();
+  }
+  return true;
+}
+
+function trailingSectionRegExp(label) {
+  const chunks = label.split('·').map((part) => (
+    part.trim().split(/\s+/).filter(Boolean).map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+')
+  ));
+  const body = chunks.join('\\s*[·・‧]\\s*');
+  return new RegExp(`(?:\\s*[-–—•]+\\s*)?${body}\\s*$`, 'i');
+}
 
 const ENTRY_DOC_RE = /입국\s*증빙|입국\s*심사|입국\s*서류|비자\s*서류|proof-of-stay|entry document|immigration document/i;
 const ENTRY_ASK_RE = /비자|입국|visa|entry|immigration/i;
@@ -161,13 +224,36 @@ export function stripDisallowedFestivalLinks(text) {
   return next.replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
 
-/** Chip and section names the model sometimes prints as fake buttons. */
+function stripCtaLine(line) {
+  let s = String(line || '').replace(/\[([^\]\n]+)\](?!\()/g, '');
+  s = s.replace(/(^|\s)#{1,6}[ \t]*([^#\n]*)/g, (_full, lead, body) => (
+    isCtaSequence(body) ? lead : `${lead}${String(body || '').trim()}`
+  ));
+  s = s.replace(/-{3,}/g, ' ');
+  s = s.replace(/(^|\s)[-–—•](?=\s|$)/g, ' ');
+  if (isCtaSequence(s)) return '';
+  let guard = 0;
+  while (guard < 6) {
+    guard += 1;
+    const norm = normalizeCta(s);
+    const hit = SECTION_LABELS.find((label) => norm.endsWith(label) && (norm === label || /\s/.test(norm.charAt(norm.length - label.length - 1))));
+    if (!hit) break;
+    const next = s.replace(trailingSectionRegExp(hit), '').trim();
+    if (!next || next === s) break;
+    s = next;
+  }
+  if (isCtaSequence(s)) return '';
+  return s.replace(/[ \t]{2,}/g, ' ').replace(/\s+([.!?])/g, '$1').trim();
+}
+
+/** Chip headings, CTA labels, separator leftovers, and bracket phrases with no URL. */
 export function stripMooniUiChipLabels(text) {
-  return String(text || '')
-    .replace(/\[([^\]\n]{1,40})\](?!\()/g, (full, label) => (UI_CHIP_LABEL_RE.test(label.trim()) ? '' : full))
-    .replace(/[ \t]{2,}/g, ' ')
-    .replace(/\s+([.!?])/g, '$1')
-    .trim();
+  const lines = String(text || '')
+    .replace(/\[([^\]\n]+)\](?!\()/g, '')
+    .split('\n')
+    .map(stripCtaLine)
+    .filter((line) => line.trim());
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 /**

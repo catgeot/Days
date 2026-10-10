@@ -292,38 +292,109 @@ test('English card translates fees and addresses and romanizes only names', () =
   assert.match(address, /Dongnae-gu, Busan/);
   assert.doesNotMatch(address, /Busangwangyeoksi|Dongraegu/);
 
+  const palaceVenue = '경복궁, 창덕궁, 창경궁, 덕수궁';
   const palace = buildFestivalMooniContext({
     item: { contentId: '1998564', title: '궁중문화축전' },
+    intro: { eventplace: palaceVenue },
     summaryFields: { fee: { text: '프로그램별 상이' } },
-    program: '백(白)의 질서\n메인 푸드존\n페어링 존',
+    program: '조선 공간 미학: 백(白)의 질서\n메인 푸드존\n페어링 존\n불꽃놀이',
   });
   const ko = buildFestivalMooniSentenceAnswer(palace, { locale: 'ko', now: NOW });
   const en = buildFestivalMooniSentenceAnswer(palace, { locale: 'en', now: NOW });
+  assert.match(ko, /경복궁, 창덕궁/);
   assert.match(ko, /백의 질서/);
+  assert.match(ko, /불꽃놀이/);
   assert.doesNotMatch(ko, /백 의/);
   assert.match(en, /Gungjungmunhwachukjeon \(궁중문화축전\)/);
   assert.doesNotMatch(en, /This festival/);
+  assert.match(en, /Gyeongbokgung, Changdeokgung, Changgyeonggung, Deoksugung \(경복궁, 창덕궁, 창경궁, 덕수궁\)/);
+  assert.doesNotMatch(en, /,,|:\s*\(|is held at\s*,/);
   assert.match(en, /varies by program/i);
+  assert.match(en, /Joseon Gonggan Mihak: Baekui Jilseo \(조선 공간 미학: 백의 질서\)/);
   assert.match(en, /Main Food zone \(메인 푸드존\)/);
   assert.match(en, /Pairing Zone \(페어링 존\)/);
+  assert.doesNotMatch(en, /Fireworks|불꽃놀이/);
   assert.doesNotMatch(en, /Peurogeuraembyeol|Sangi|Mein |Peeoring|백 의/);
+  assertNameListKept(en, palaceVenue);
   let outside = en;
-  for (let i = 0; i < 6; i += 1) outside = outside.replace(/\([^()]*\)/g, '');
+  for (let i = 0; i < 8; i += 1) outside = outside.replace(/\([^()]*\)/g, '');
   assert.doesNotMatch(outside, /[가-힣]/);
 
+  const titled = buildFestivalMooniContext({
+    item: {
+      contentId: '1998564',
+      title: '궁중문화축전',
+      titleEn: 'Royal Culture Festival (궁중문화축전)',
+    },
+  });
+  const titledEn = buildFestivalMooniSentenceAnswer(titled, { locale: 'en', now: NOW });
+  assert.match(titledEn, /Royal Culture Festival \(궁중문화축전\)/);
+  assert.doesNotMatch(titledEn, /This festival|Gungjungmunhwachukjeon/);
+
+  const busanVenue = '호텔농심 야외마당 & 비어가든';
   const busan = buildFestivalMooniContext({
     item: {
       contentId: '2855626',
-      title: '부산 옥토버페스트',
+      title: '허심청브로이 옥토버페스트',
       addr1: '부산광역시 동래구 금강공원로20번길',
     },
+    intro: { eventplace: busanVenue },
     summaryFields: { fee: { text: '유료 34000원 얼리버드 특가' } },
+    program: '라이브 공연\n비어 텐트\n전통 의상\n음악 무대',
   });
+  const busanKo = buildFestivalMooniSentenceAnswer(busan, { locale: 'ko', now: NOW });
   const busanEn = buildFestivalMooniSentenceAnswer(busan, { locale: 'en', now: NOW });
+  assert.match(busanKo, /호텔농심 야외마당 & 비어가든/);
+  assert.match(busanEn, /Hotel Nongsim outdoor yard & Beer Garden \(호텔농심 야외마당 & 비어가든\)/);
   assert.match(busanEn, /Dongnae-gu, Busan/);
   assert.match(busanEn, /34,000 won/);
-  assert.doesNotMatch(busanEn, /Busangwangyeoksi|Yuryo|Eolribeodeu/);
+  assert.match(busanEn, /Heosimcheongbeuroi Oktobeopeseuteu \(허심청브로이 옥토버페스트\)/);
+  assert.match(busanEn, /live performance \(라이브 공연\)/);
+  assert.doesNotMatch(busanEn, /Busangwangyeoksi|Yuryo|Eolribeodeu|&\s*\(/);
+  assertNameListKept(busanEn, busanVenue);
+  const busanTitled = buildFestivalMooniSentenceAnswer(
+    buildFestivalMooniContext({
+      item: {
+        contentId: '2855626',
+        title: '허심청브로이 옥토버페스트',
+        titleEn: 'Heosimcheong Brewery Oktoberfest',
+      },
+      intro: { eventplace: busanVenue },
+    }),
+    { locale: 'en', now: NOW },
+  );
+  assert.match(busanTitled, /Heosimcheong Brewery Oktoberfest \(허심청브로이 옥토버페스트\)/);
+
+  const noodle = buildFestivalMooniContext({
+    item: { contentId: '2930716', title: '강릉 국수 축제' },
+    intro: { eventplace: '강릉 월화거리 일원' },
+    program: '국수존\n메인 먹거리존\n페어링 존\n후루룩 대회',
+  });
+  const noodleKo = buildFestivalMooniSentenceAnswer(noodle, { locale: 'ko', now: NOW });
+  const noodleEn = buildFestivalMooniSentenceAnswer(noodle, { locale: 'en', now: NOW });
+  assert.match(noodleKo, /국수존/);
+  assert.match(noodleEn, /Guksu Zone \(국수존\)/);
+  assert.match(noodleEn, /Wolhwa Street \(월화거리\)/);
+  assert.doesNotMatch(noodleEn, /[^u] Zone \(국수존\)|^Zone \(국수존\)/);
+  assert.equal(
+    (noodleEn.match(/Listed programs include ([^.]+)/) || [,''])[1].split(',').filter((part) => part.trim()).length,
+    3,
+  );
 });
+
+function assertNameListKept(rendered, source) {
+  assert.doesNotMatch(rendered, /,,/);
+  assert.doesNotMatch(rendered, /&\s*\(/);
+  const koreanItems = source.split(/\s*[,&·・]\s*/).map((part) => part.trim()).filter((part) => /[가-힣]/.test(part));
+  const block = rendered.slice(rendered.indexOf('is held at ') + 'is held at '.length);
+  const englishSide = block.slice(0, block.indexOf(`(${source})`));
+  for (const item of koreanItems) {
+    assert.ok(item.length > 0, item);
+  }
+  const englishItems = englishSide.split(/\s*[,&·・]\s*/).map((part) => part.trim()).filter((part) => /[A-Za-z0-9]/.test(part));
+  assert.equal(englishItems.length, koreanItems.length, `${englishSide} :: ${source}`);
+  for (const item of englishItems) assert.match(item, /[A-Za-z0-9]/);
+}
 
 test('English place names lead and Korean stays in parentheses', () => {
   assert.equal(formatEnglishThenKorean('함평엑스포공원'), 'Hampyeong Expo Park (함평엑스포공원)');
@@ -445,6 +516,21 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
     /festival-lodging/,
   );
   assert.equal(stripMooniUiChipLabels('끝 [출발 전 준비] [교통 · 티켓]'), '끝');
+  assert.equal(stripMooniUiChipLabels('--- ### 교통 · 티켓 ### 출발 전 준비'), '');
+  assert.equal(stripMooniUiChipLabels('### 교통 · 티켓 - ### 출발 전 준비 -'), '');
+  assert.equal(stripMooniUiChipLabels('교통 · 티켓 출발 전 준비'), '');
+  assert.equal(
+    stripMooniUiChipLabels('[강릉행 KTX 노선 확인] [강릉 숙소 추천 리스트]'),
+    '',
+  );
+  assert.equal(
+    stripMooniUiChipLabels('답변입니다.\n---\n### Transport · tickets\n### Before you go'),
+    '답변입니다.',
+  );
+  assert.match(
+    stripMooniUiChipLabels('버스가 있어요. [숙소 카드](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)'),
+    /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/,
+  );
   assert.doesNotMatch(stripDomesticEntryDocLines('입국 증빙이 필요해요.', { chipId: 'prep_hotel' }), /입국/);
 
   assert.match(KO.festivalAnswerRules, /12Go/);

@@ -330,12 +330,7 @@ function englishHours(timeText) {
 function englishProgramLabel(name) {
   const cleaned = dropHanjaParentheticals(name).replace(/\s+/g, ' ').trim();
   if (!cleaned) return '';
-  if (/공원|거리|해변|광장|시장|궁|해변|항구/.test(cleaned)) {
-    return formatEnglishThenKorean(cleaned);
-  }
-  const translated = translateDescriptiveKorean(cleaned);
-  if (!translated) return '';
-  return `${translated} (${cleaned})`;
+  return formatEnglishThenKorean(cleaned);
 }
 
 function hangulHasBatchim(title) {
@@ -497,7 +492,7 @@ function englishFestivalCard(ctx, { today, ended, names, nearbyNames }) {
   const status = statusSentence(ctx, today, true);
   if (status) sentences.push(status);
 
-  const programLabels = names.map((name) => englishProgramLabel(name)).filter(Boolean);
+  const programLabels = names.slice(0, 3).map((name) => englishProgramLabel(name)).filter(Boolean);
   if (programLabels.length) {
     sentences.push(`Listed programs include ${programLabels.join(', ')}.`);
   }

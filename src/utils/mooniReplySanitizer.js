@@ -1,3 +1,5 @@
+import { stripMooniUiChipLabels } from '../shared/korea/mooniKoreaFestivalAssist.js';
+
 /** MOONi가 출력한 「[버튼 텍스트]」 단독 줄 — UI 링크가 아님 */
 const BRACKET_ONLY_LINE = /^\s*\[[^\]]+\]\s*$/gm;
 
@@ -29,10 +31,7 @@ export function sanitizeMooniModelReply(text, options = {}) {
   const hadBracketLinks = BRACKET_ONLY_LINE.test(text);
   BRACKET_ONLY_LINE.lastIndex = 0;
   let cleaned = text.replace(BRACKET_ONLY_LINE, '');
-  cleaned = cleaned.replace(
-    /\[(출발 전 준비|교통\s*[·・]\s*티켓|Before you go|Transport\s*[·・]\s*tickets|플래너 보기)\](?!\()/g,
-    '',
-  );
+  cleaned = stripMooniUiChipLabels(cleaned);
   if (options.stripPhantomTicketMention !== false) {
     cleaned = cleaned
       .replace(PHANTOM_TICKET_SEARCH_LINE, '')
