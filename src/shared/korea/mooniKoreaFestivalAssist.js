@@ -58,13 +58,90 @@ export function festivalLodgingNextStep(contentId, locale = 'ko') {
  * @param {string} reply
  * @param {{ contentId?: string, locale?: string, chipId?: string, userText?: string }} [options]
  */
+/**
+ * Bare gateo.kr festival URLs become markdown links. Already-linked URLs stay as they are.
+ * @param {string} text
+ * @param {string} [locale]
+ */
+export function linkifyBareGateoFestivalUrls(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const bareGateoFestivalUrlRe =
+    /(^|[^\w(\[])(https?:\/\/(?:www\.)?gateo\.kr\/korea\/?\?[^\s<>)]+)/gi;
+  return String(text || '').replace(bareGateoFestivalUrlRe, (full, prefix, url) => {
+    const clean = url.replace(/[.,]+$/, '');
+    const tail = url.slice(clean.length);
+    const lodging = clean.includes(`#${FESTIVAL_LODGING_SECTION_ID}`);
+    const label = lodging
+      ? (en ? 'the lodging card' : '숙소 카드')
+      : (en ? 'the festival page' : '축제 페이지');
+    return `${prefix}[${label}](${clean})${tail}`;
+  });
+}
+
+function splitReplyPieces(text) {
+  return String(text || '')
+    .split(/\n+|(?<=[.!?。])\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+const NON_STAY_RE = /사우나|찜질|목욕탕|목욕|스파|sauna|jjimjilbang|bathhouse/i;
+const NON_STAY_ASK_RE = /사우나|찜질|목욕|스파|sauna|jjimjilbang|bathhouse/i;
+const BROADCAST_RE = /방청|공개\s*방송|시청자/;
+const BROADCAST_ASK_RE = /방청|공개\s*방송|시청자|KBS|MBC|SBS/;
+const TWELVE_GO_CTA_RE = /12\s*Go[^\n]{0,48}바로\s*가기|바로\s*가기[^\n]{0,48}12\s*Go|12go\.asia/i;
+
+/**
+ * Lodging answers drop saunas and other non-stay facilities unless the user asked.
+ * @param {string} text
+ * @param {string} [userText]
+ */
+export function stripNonStayFacilities(text, userText = '') {
+  if (NON_STAY_ASK_RE.test(String(userText || ''))) return String(text || '').trim();
+  return splitReplyPieces(text).filter((part) => !NON_STAY_RE.test(part)).join(' ').trim();
+}
+
+/**
+ * Drop broadcast-audience lines unless the user asked about them.
+ * @param {string} text
+ * @param {string} [userText]
+ */
+export function stripUnaskedBroadcastLines(text, userText = '') {
+  if (BROADCAST_ASK_RE.test(String(userText || ''))) return String(text || '').trim();
+  return splitReplyPieces(text).filter((part) => !BROADCAST_RE.test(part)).join(' ').trim();
+}
+
+/** Domestic festival answers do not keep a 12Go partner jump line. */
+export function stripDomesticTwelveGoMention(text) {
+  const withoutLinks = String(text || '')
+    .replace(/\[[^\]]*12\s*Go[^\]]*\]\([^)]+\)/gi, '')
+    .replace(/https?:\/\/(?:www\.)?12go\.asia\S*/gi, '');
+  return splitReplyPieces(withoutLinks).filter((part) => !TWELVE_GO_CTA_RE.test(part)).join(' ').trim();
+}
+
 export function appendFestivalLodgingNextStep(reply, options = {}) {
-  const text = String(reply || '').trim();
+  const text = linkifyBareGateoFestivalUrls(String(reply || '').trim(), options.locale);
   if (!isFestivalLodgingAsk(options)) return text;
   const step = festivalLodgingNextStep(options.contentId, options.locale);
   if (!step) return text;
   if (text.includes(`#${FESTIVAL_LODGING_SECTION_ID}`)) return text;
   return text ? `${text}\n\n${step}` : step;
+}
+
+/**
+ * Festival model text: drop unasked broadcast lines, non-stay lodging mentions,
+ * and a domestic 12Go jump, then link bare GATEO festival URLs.
+ * @param {string} reply
+ * @param {{ contentId?: string, locale?: string, chipId?: string, userText?: string }} [options]
+ */
+export function polishFestivalModelReply(reply, options = {}) {
+  let text = String(reply || '').trim();
+  if (options.contentId) {
+    text = stripUnaskedBroadcastLines(text, options.userText);
+    text = stripDomesticTwelveGoMention(text);
+  }
+  if (isFestivalLodgingAsk(options)) text = stripNonStayFacilities(text, options.userText);
+  return appendFestivalLodgingNextStep(text, options);
 }
 
 /**
@@ -494,8 +571,8 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       if (lodgingUrl) {
         const en = String(input.locale || '').slice(0, 2) === 'en';
         hint += en
-          ? `\n- Lodging next step: end with this lodging-card link and no other stay URL: ${lodgingUrl}`
-          : `\n- 숙소 다음 행동: 답 끝에 이 숙소 카드 링크만 둔다. 다른 숙소 URL은 쓰지 않는다: ${lodgingUrl}`;
+          ? `\n- Lodging next step: end with a markdown link to this lodging card and no other stay URL: ${lodgingUrl}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.`
+          : `\n- 숙소 다음 행동: 답 끝에 이 숙소 카드의 마크다운 링크만 둔다. 날 URL이나 다른 숙소 URL은 쓰지 않는다: ${lodgingUrl}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.`;
       }
     }
     return { hint, candidates: [] };

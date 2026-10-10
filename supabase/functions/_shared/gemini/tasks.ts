@@ -35,7 +35,28 @@ export const CTA_CODES = [
 ];
 const IMAGE_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
 const IMAGE_MAX = Math.floor(1.5 * 1024 * 1024);
-const CHIP_IDS = new Set(Object.keys(KO.chips));
+/** Chip ids production clients already send. Keep accepting them after new chips ship. */
+const LEGACY_CHIP_IDS = [
+  "prep_flight",
+  "visa_docs",
+  "prep_hotel",
+  "prep_transport",
+  "access_origin",
+  "from_seoul",
+  "from_busan",
+  "from_incheon",
+  "ferry",
+  "place_overview",
+  "safety_vibe",
+  "history",
+  "why_go",
+  "activities",
+  "food",
+  "itinerary",
+  "companion",
+] as const;
+
+const CHIP_IDS = new Set<string>([...Object.keys(KO.chips), ...LEGACY_CHIP_IDS]);
 
 export type TaskBuild =
   | {

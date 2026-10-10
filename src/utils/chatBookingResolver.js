@@ -230,19 +230,30 @@ export function resolveChatBookingActions(params) {
     resolveSlugFromDestination(location ?? destinationName) ??
     null;
 
+  const domesticKoreaFestival = Boolean(params.domesticKoreaFestival);
+  const finish = (result) => {
+    if (!domesticKoreaFestival) return result;
+    const actions = (result.actions || []).filter((action) => action.provider !== 'twelve_go');
+    return {
+      ...result,
+      actions,
+      show: Boolean(result.show) && actions.length > 0,
+    };
+  };
+
   const intentResult = classifyChatIntent(userText, chatHistory, slug);
   const profile = getDestinationBookingProfile(slug);
   const showByIntent = shouldShowChatBookingCta(intentResult, userText, chatHistory);
 
   if (!slug || !showByIntent) {
-    return {
+    return finish({
       show: false,
       transportType: 'general',
       actions: [],
       slug,
       plannerUrl: buildPlacePlannerPath(slug),
       intent: intentResult.primary,
-    };
+    });
   }
 
   const legs = resolveBookingLegsForIntent(
@@ -273,7 +284,7 @@ export function resolveChatBookingActions(params) {
       });
       actions = mergeFerryIntoItineraryActions(actions, ferryActions);
     }
-    return {
+    return finish({
       show: actions.length > 0,
       transportType: actions.some((a) => FERRY_PROVIDERS.has(a.provider)) ? 'ferry' : 'general',
       actions,
@@ -281,7 +292,7 @@ export function resolveChatBookingActions(params) {
       plannerUrl: buildPlacePlannerPath(slug),
       intent: intentResult.primary,
       itineraryBookingCompact: shouldCollapseItineraryBooking(chatHistory, userText),
-    };
+    });
   }
 
   /** @type {Array<{ type: string, label: string, url: string, provider?: string, routeId?: string }>} */
@@ -364,21 +375,21 @@ export function resolveChatBookingActions(params) {
       chatSource,
       aiReplyText: '',
     });
-    return {
+    return finish({
       ...legacy,
       show: legacy.actions.length > 0,
       intent: intentResult.primary,
-    };
+    });
   }
 
-  return {
+  return finish({
     show: actions.length > 0,
     transportType: legs.includes('ferry') ? 'ferry' : legs.includes('flight') ? 'flight' : 'general',
     actions: actions.slice(0, 6),
     slug,
     plannerUrl: buildPlacePlannerPath(slug),
     intent: intentResult.primary,
-  };
+  });
 }
 
 export { classifyChatIntent, shouldShowChatBookingCta };

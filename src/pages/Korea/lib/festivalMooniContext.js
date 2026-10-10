@@ -4,6 +4,7 @@ import {
   kstTodayYmd,
   ymdDayDelta,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { formatEnglishThenKorean } from '../../../shared/korea/englishPlaceLabel.js';
 import { parseEngFestivalTitle } from '../festivalTitleEnMerge.js';
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
 
@@ -120,6 +121,7 @@ export function filterOverviewFacts(text, title = '', known = '') {
     if (OVERVIEW_FILLER_RE.test(sentence)) continue;
     if (!OVERVIEW_SAYABLE_RE.test(sentence)) continue;
     if (/개최|주최|주관|협회|시장님|축사/.test(sentence)) continue;
+    if (/방청|공개\s*방송|시청자/.test(sentence)) continue;
     if (titleKey.length > 4 && compactFact(sentence).includes(titleKey)) continue;
     if (!CONCRETE_FACT_RE.test(sentence)) continue;
     if (knownKey && !overviewHasNewFact(sentence, knownKey)) continue;
@@ -206,6 +208,7 @@ function programNames(program) {
       .trim();
     if (!name || name.length > 24) continue;
     if (OVERVIEW_FILLER_RE.test(name)) continue;
+    if (/방청|공개\s*방송|시청자/.test(name)) continue;
     if (!/[가-힣]/.test(name)) continue;
     if (!names.includes(name)) names.push(name);
     if (names.length >= 4) break;
@@ -296,13 +299,14 @@ function englishFeeSentence(feeText) {
   const fee = String(feeText || '').trim();
   if (!fee) return '';
   if (/무료|^free$/i.test(fee.trim())) return 'Admission is free.';
-  return `The listed fee is (${fee}).`;
+  if (!/[가-힣\u3400-\u9fff]/.test(fee)) return `The listed fee is ${fee}.`;
+  return `The listed fee is ${formatEnglishThenKorean(fee)}.`;
 }
 
 function englishHours(timeText) {
   const hours = String(timeText || '').trim();
   if (!hours) return '';
-  if (/[가-힣]/.test(hours)) return `Hours on file are (${hours}).`;
+  if (/[가-힣\u3400-\u9fff]/.test(hours)) return `Hours on file are ${formatEnglishThenKorean(hours)}.`;
   return `Hours are ${hours}.`;
 }
 
@@ -357,9 +361,21 @@ function koProgramSentence(names) {
   return `안내된 프로그램 이름은 ${names.join(', ')}${ending}.`;
 }
 
-function koNearbySentence(name) {
-  if (!name) return '';
-  return `확인된 근처 장소는 ${name} 하나예요.`;
+function koNearbySentence(names) {
+  if (!names.length) return '';
+  if (names.length === 1) return `확인된 근처 장소는 ${names[0]} 하나예요.`;
+  const last = names[names.length - 1];
+  const ending = hangulHasBatchim(last) ? '이에요' : '예요';
+  return `확인된 근처 장소는 ${names.join(', ')}${ending}.`;
+}
+
+const FESTIVAL_CARD_SENTENCE_CAP = 5;
+
+function fitFestivalCard(parts, closing) {
+  const body = parts.filter(Boolean);
+  const tail = closing ? [closing] : [];
+  const room = Math.max(0, FESTIVAL_CARD_SENTENCE_CAP - tail.length);
+  return [...body.slice(0, room), ...tail].join(' ');
 }
 
 function koClosingSentence(ctx, ended) {
@@ -388,9 +404,9 @@ export function buildFestivalMooniSentenceAnswer(festivalContext, options = {}) 
   const today = kstTodayYmd(options.now || new Date());
   const ended = festivalTimingStatus(festivalContext.eventStartDate, festivalContext.eventEndDate, today) === 'ended';
   const names = programNames(festivalContext.program);
-  const nearbyName = (festivalContext.nearbyPlaces || [])[0] || '';
+  const nearbyNames = (festivalContext.nearbyPlaces || []).slice(0, 3);
 
-  if (isEn) return englishFestivalCard(festivalContext, { today, ended, names, nearbyName });
+  if (isEn) return englishFestivalCard(festivalContext, { today, ended, names, nearbyNames });
 
   const sentences = [];
   const title = festivalContext.title;
@@ -412,24 +428,29 @@ export function buildFestivalMooniSentenceAnswer(festivalContext, options = {}) 
   const program = koProgramSentence(names);
   if (program) sentences.push(program);
 
-  const reserved = (nearbyName ? 1 : 0) + 1;
-  const overviewRoom = Math.max(0, Math.min(2, 7 - sentences.length - reserved));
   const known = [title, place, festivalContext.feeText, festivalContext.timeText, names.join(' ')].join(' ');
-  for (const fact of filterOverviewFacts(festivalContext.overview, title, known).slice(0, overviewRoom)) {
+  for (const fact of filterOverviewFacts(festivalContext.overview, title, known).slice(0, 1)) {
     sentences.push(toHaeyo(fact));
   }
 
-  const nearby = koNearbySentence(nearbyName);
+  const nearby = koNearbySentence(nearbyNames);
   if (nearby) sentences.push(nearby);
-  sentences.push(koClosingSentence(festivalContext, ended));
-
-  return sentences.filter(Boolean).slice(0, 7).join(' ');
+  return fitFestivalCard(sentences, koClosingSentence(festivalContext, ended));
 }
 
-function englishFestivalCard(ctx, { today, ended, names, nearbyName }) {
+function englishNearbySentence(names) {
+  const labels = names.map((name) => formatEnglishThenKorean(name)).filter(Boolean);
+  if (!labels.length) return '';
+  if (labels.length === 1) return `A nearby place on GATEO is ${labels[0]}.`;
+  if (labels.length === 2) return `Nearby places on GATEO include ${labels[0]} and ${labels[1]}.`;
+  const last = labels[labels.length - 1];
+  return `Nearby places on GATEO include ${labels.slice(0, -1).join(', ')}, and ${last}.`;
+}
+
+function englishFestivalCard(ctx, { today, ended, names, nearbyNames }) {
   const sentences = [];
   const phrase = englishTitlePhrase(ctx);
-  const where = [ctx.venue, ctx.address].filter(Boolean).map((part) => `(${part})`);
+  const where = [ctx.venue, ctx.address].filter(Boolean).map((part) => formatEnglishThenKorean(part));
   sentences.push(where.length ? `${phrase} is held at ${where.join(', ')}.` : `${phrase} is the festival in this chat.`);
 
   const start = formatYmdLong(ctx.eventStartDate, true);
@@ -448,16 +469,19 @@ function englishFestivalCard(ctx, { today, ended, names, nearbyName }) {
   const status = statusSentence(ctx, today, true);
   if (status) sentences.push(status);
 
-  if (names.length) sentences.push(`Listed program names are (${names.join(', ')}).`);
-  if (nearbyName) sentences.push(`One nearby place already on GATEO is (${nearbyName}).`);
+  if (names.length) {
+    sentences.push(`Listed programs include ${names.map((name) => formatEnglishThenKorean(name)).join(', ')}.`);
+  }
+  const nearby = englishNearbySentence(nearbyNames || []);
+  if (nearby) sentences.push(nearby);
 
   const url = ctx.gateoUrl;
   const linked = url ? `[${url}](${url})` : '';
   const next = ended
-    ? 'Next you can look at nearby stops from ICN.'
-    : 'Next you can plan how to get there from ICN.';
-  sentences.push(linked ? `Details are on ${linked}. ${next}` : next);
-  return sentences.filter(Boolean).join(' ');
+    ? 'next you can look at nearby stops from ICN'
+    : 'next you can plan how to get there from ICN';
+  const closing = linked ? `Details are on ${linked}, and ${next}.` : `${next.charAt(0).toUpperCase()}${next.slice(1)}.`;
+  return fitFestivalCard(sentences, closing);
 }
 
 /** @param {ReturnType<typeof buildFestivalMooniContext>} festivalContext */

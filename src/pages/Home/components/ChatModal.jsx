@@ -41,10 +41,11 @@ import {
   shouldShowMooniPlannerFollowUp,
 } from '../../../utils/mooniReplySanitizer';
 import {
-  appendFestivalLodgingNextStep,
   FESTIVAL_LODGING_EVENT,
   mergeMooniKoreaFestivalReply,
+  polishFestivalModelReply,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
@@ -1001,11 +1002,14 @@ const ChatModal = ({
         showPlannerHeader,
       };
 
-      const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
-        ...geminiParams,
-        history,
-        userText: cleanText,
-      });
+      const geminiResult = await invokeMooniChatToleratingChip(
+        (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
+        {
+          ...geminiParams,
+          history,
+          userText: cleanText,
+        },
+      );
       const aiReply = geminiResult.text;
 
       const booking = resolveChatBookingActions({
@@ -1017,6 +1021,7 @@ const ChatModal = ({
         aiReplyText: aiReply,
         essentialGuide,
         tripSession: nextSession,
+        domesticKoreaFestival: Boolean(mooniPlaceContext?.festivalContext?.contentId),
       });
 
       const hasTransportCta = (booking.actions ?? []).some((a) =>
@@ -1034,13 +1039,13 @@ const ChatModal = ({
         chipId,
         userText: cleanText,
       };
-      const displayReply = appendFestivalLodgingNextStep(
+      const displayReply = polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {
           stripPhantomTicketMention,
         }),
         lodgingOptions,
       );
-      const rawWithLodging = appendFestivalLodgingNextStep(festivalMergedReply, lodgingOptions);
+      const rawWithLodging = polishFestivalModelReply(festivalMergedReply, lodgingOptions);
       const { hadBracketLinks } = sanitizeMooniModelReply(rawWithLodging, {
         stripPhantomTicketMention,
       });
@@ -1126,11 +1131,14 @@ const ChatModal = ({
       try {
         const history = buildMooniGeminiHistory(messages, modelIdx);
         const priorRaw = String(msg.mooniRawReply ?? messageTextPlain(msg));
-        const geminiResult = await apiClient.invokeGeminiTask('mooni_chat', {
-          ...ctx.geminiParams,
-          history,
-          userText: buildMooniContinueUserText(i18n.language),
-        });
+        const geminiResult = await invokeMooniChatToleratingChip(
+          (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
+          {
+            ...ctx.geminiParams,
+            history,
+            userText: buildMooniContinueUserText(i18n.language),
+          },
+        );
         const { mergedRaw, displayText } = finalizeMooniContinuation({
           priorRaw,
           continuationText: geminiResult.text,
@@ -1143,8 +1151,8 @@ const ChatModal = ({
           chipId: msg.bookingMeta?.chipId,
           userText: messageTextPlain(priorUser),
         };
-        const continuedRaw = appendFestivalLodgingNextStep(mergedRaw, lodgingOptions);
-        const continuedDisplay = appendFestivalLodgingNextStep(displayText, lodgingOptions);
+        const continuedRaw = polishFestivalModelReply(mergedRaw, lodgingOptions);
+        const continuedDisplay = polishFestivalModelReply(displayText, lodgingOptions);
         const nextMessages = messages.map((m, i) =>
           i === modelIdx
             ? {
