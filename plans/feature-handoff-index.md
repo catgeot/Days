@@ -18,14 +18,14 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `39c9a833` · draft PR [#418](https://github.com/catgeot/Days/pull/418) · **사람 Preview · 병합 금지** |
+| **상태** | **#1 push** · tip `e7773a21` · PR [#418](https://github.com/catgeot/Days/pull/418) ready · **사람 Preview · 병합 금지** |
 | **브랜치** | `cursor/festival-deeplink-1147` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-10-project-log.md`](./2026-10-10-project-log.md) |
 | **Preview** | git `https://days-git-cursor-festival-deeplink-1147-catgeots-projects.vercel.app/korea?festival=638576` (Vercel SSO) |
 | **금지** | Edge 변경 · 목록에 있는 637693·141105 딥링크 동작 변경 · 속초 검색→카드 `?festival=` 흐름 변경 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` · `vite build` |
-| **남은 일** | Preview에서 638576 시트·URL 유지 확인 후 PR #418 병합 |
+| **남은 일** | Preview에서 638576 시트·URL 유지와 기준일 줄 확인 후 PR #418 병합 |
 
 **다음 제시어**:
 
@@ -33,9 +33,9 @@
 축제 딥링크 #2, Preview 확인 후 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-10-10-project-log.md
-브랜치 cursor/festival-deeplink-1147 · draft PR #418
+브랜치 cursor/festival-deeplink-1147 · PR #418 ready
 금지: Edge 변경 · PR 병합은 사람 Preview 전 · feature에 plans 커밋
-작업: /korea?festival=638576 시트와 URL 유지, 637693·141105·속초 검색 카드는 그대로. OK면 PR #418 병합
+작업: /korea?festival=638576 시트·URL 유지·기준일 줄, 637693·141105·속초 검색 카드는 그대로. OK면 PR #418 병합
 검증: npm run test:health
 ```
 
