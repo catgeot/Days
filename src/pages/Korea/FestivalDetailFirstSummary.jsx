@@ -36,6 +36,7 @@ const officialLinkClass =
  *   officialLabel: string,
  *   bookingSlot?: React.ReactNode,
  *   mooniSlot?: React.ReactNode,
+ *   footnote?: React.ReactNode,
  * }} props
  */
 export function FestivalDetailFirstSummary({
@@ -52,10 +53,11 @@ export function FestivalDetailFirstSummary({
   officialLabel,
   bookingSlot,
   mooniSlot,
+  footnote = null,
 }) {
   const showOfficial = Boolean(homepage) && !hideOfficialHomepage;
   const hasFacts =
-    dateText || timeText || feeText || placeText || bookingSlot || mooniSlot || showOfficial;
+    dateText || timeText || feeText || placeText || bookingSlot || mooniSlot || showOfficial || footnote;
   if (!hasFacts) return null;
 
   return (
@@ -77,6 +79,7 @@ export function FestivalDetailFirstSummary({
           {placeText}
         </SummaryRow>
       </dl>
+      {footnote}
       {(bookingSlot || mooniSlot || showOfficial) && (
         <div className="mt-3 flex flex-col gap-2">
           {bookingSlot}
