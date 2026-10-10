@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 축제 MOONi 후속
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `fcc1022b` · draft PR [#419](https://github.com/catgeot/Days/pull/419) · **병합·Edge 배포 금지** |
+| **브랜치** | `cursor/mooni-festival-followup` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-10-project-log.md`](./2026-10-10-project-log.md) |
+| **Preview** | git `https://days-git-cursor-mooni-festival-followup-catgeots-projects.vercel.app/korea?festival=2930716` |
+| **금지** | 이 세션에서 Edge 배포 · PR 병합 · feature에 `plans/**` 커밋 · 모델 변경(현재 `gemini-3.1-flash-lite`, Fast off) |
+| **VERIFY** | `npm run test:health` · `npm run build` · `node scripts/audit-festival-answer-facts.mjs` |
+| **남은 일** | Preview에서 숙소 권역·지명 링크·대화 유지·영어 헤더 확인. Edge 배포는 사람 요청 후 |
+
+**다음 제시어**:
+
+```
+축제 MOONi 후속 #2, Preview 확인
+@plans/feature-handoff-index.md
+@plans/2026-10-10-project-log.md
+브랜치 cursor/mooni-festival-followup · draft PR #419
+금지: Edge 배포 · PR 병합 · feature에 plans 커밋 · 모델 변경
+작업: /korea?festival=2930716 에서 «어디서 자요?»는 권역 2~3곳과 [강릉 숙소 안내]. 숙소 링크 후 다시 열면 첫 답을 다시 만들지 않음. 영어 헤더는 Gangneung Noodle Festival · MOONi
+검증: npm run test:health
+```
+
+---
+
 ### 축제 딥링크
 
 | | |
