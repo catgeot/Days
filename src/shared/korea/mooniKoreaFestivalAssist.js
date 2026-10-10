@@ -1,4 +1,5 @@
 import { KO, EN } from '../../i18n/mooniPromptBundleData.js';
+import { ensureItineraryMarkdownLineBreaks } from '../../utils/mooniTruncatedContinue.js';
 import { filterBySearchQuery, normalizeFestivalQuery } from '../../pages/Korea/festivalSearch.js';
 import {
   compareFestivalsByOpenDate,
@@ -288,16 +289,37 @@ export function expandCompactDates(text, locale = 'ko') {
     .join('');
 }
 
-const LODGING_CALENDAR_RE = /현재\s*시작까지|시작까지\s*\d+\s*일|\d+\s*일(?:이)?\s*남았|\d{4}\s*년\s*\d{1,2}\s*월\s*\d{1,2}\s*일|(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},/i;
+const COUNTDOWN_CLAUSE_RE = /(?:^|[,，]\s*|\s+)(?:현재\s*)?시작까지\s*\d+\s*일(?:이)?\s*남았(?:어요|습니다|다)?[.。]?/g;
+const LONG_SPAN_RE = /(?:\d{4}\s*년\s*)?\d{1,2}\s*월\s*\d{1,2}\s*일\s*부터\s*(?:\d{4}\s*년\s*)?\d{1,2}\s*월\s*\d{1,2}\s*일\s*까지(?:\s*열리(?:며|고))?(?:\s*(?:입니다|이에요|예요|해요))?[.。]?/g;
+const LONG_YMD_RE = /\d{4}\s*년\s*\d{1,2}\s*월\s*\d{1,2}\s*일/g;
+const EN_LONG_DATE_RE = /\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}\b/g;
 
-/** Lodging answers do not restate the festival countdown or a long calendar date. */
+function cleanCalendarLine(line) {
+  let next = String(line || '')
+    .replace(LONG_SPAN_RE, ' ')
+    .replace(COUNTDOWN_CLAUSE_RE, ' ')
+    .replace(LONG_YMD_RE, ' ')
+    .replace(EN_LONG_DATE_RE, ' ');
+  next = next.replace(/[ \t]{2,}/g, ' ').replace(/\s+([,.])/g, '$1').trim();
+  next = next.replace(/^[,，]\s*/, '').replace(/[,，]\s*$/, '').trim();
+  if (/^(?:입니다|예요|이에요|해요)[.。]?$/.test(next)) return '';
+  if (!next || /^[\s,.。]*$/.test(next)) return '';
+  return next;
+}
+
+/** Festival answers drop the countdown clause and long calendar dates without flattening lists. */
+export function stripFestivalCalendarEcho(text) {
+  const lines = String(text || '').split('\n').flatMap((line) => {
+    if (!line.trim()) return [line];
+    const next = cleanCalendarLine(line);
+    return next ? [next] : [];
+  });
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/** @param {string} text */
 export function stripLodgingCalendarEcho(text) {
-  return String(text || '')
-    .split(/(?<=[.!?。])\s+/)
-    .filter((part) => part.trim() && !LODGING_CALENDAR_RE.test(part))
-    .join(' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return stripFestivalCalendarEcho(text);
 }
 
 export function polishFestivalModelReply(reply, options = {}) {
@@ -309,12 +331,12 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = stripUnaskedBroadcastLines(text, options.userText);
     text = stripDomesticTwelveGoMention(text);
     text = stripDomesticEntryDocLines(text, options);
+    text = stripFestivalCalendarEcho(text);
   }
   if (isFestivalLodgingAsk(options)) {
     text = stripNonStayFacilities(text, options.userText);
-    text = stripLodgingCalendarEcho(text);
   }
-  return appendFestivalLodgingNextStep(text, options);
+  return appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
 }
 
 /**
@@ -346,6 +368,19 @@ export function formatFestivalPeriodLabel(startYmd, endYmd) {
   if (!start) return '';
   if (!end || end === start) return start;
   return `${start}–${end}`;
+}
+
+/** 20261015–20261018 → 10/15~18. Spoken dates stay in this short form. */
+function briefFestivalDate(startYmd, endYmd) {
+  if (!/^\d{8}$/.test(String(startYmd || ''))) return '';
+  const sm = Number(startYmd.slice(4, 6));
+  const sd = Number(startYmd.slice(6, 8));
+  const end = /^\d{8}$/.test(String(endYmd || '')) ? String(endYmd) : String(startYmd);
+  const em = Number(end.slice(4, 6));
+  const ed = Number(end.slice(6, 8));
+  if (String(startYmd) === end) return `${sm}/${sd}`;
+  if (sm === em) return `${sm}/${sd}~${ed}`;
+  return `${sm}/${sd}~${em}/${ed}`;
 }
 
 const FESTIVAL_INTENT_RE = /축제|페스티벌|festival/i;
@@ -586,13 +621,8 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
       ];
 
   lines.push(isEn ? `- Today (KST): ${today}` : `- 오늘(한국시간 KST): ${today}`);
-  if (status === 'upcoming' && /^\d{8}$/.test(startYmd)) {
-    const days = ymdDayDelta(today, startYmd);
-    lines.push(
-      isEn
-        ? `- Timing vs today: upcoming, ${days} day(s) until start`
-        : `- 오늘 기준 상태: 시작 전, 시작까지 ${days}일`,
-    );
+  if (status === 'upcoming') {
+    lines.push(isEn ? '- Timing vs today: upcoming' : '- 오늘 기준 상태: 시작 전');
   } else if (status === 'ongoing') {
     lines.push(isEn ? '- Timing vs today: underway' : '- 오늘 기준 상태: 진행 중');
   } else if (status === 'ended') {
@@ -601,25 +631,16 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
 
   lines.push(isEn ? `- Title: ${title}` : `- 제목: ${title}`);
 
-  const periodLabel =
-    String(ctx?.dateLabel || '').trim() ||
-    formatFestivalPeriodLabel(
-      String(ctx?.eventStartDate || ''),
-      String(ctx?.eventEndDate || ''),
-    );
+  const shortDate = briefFestivalDate(startYmd, endYmd);
+  const periodLabel = shortDate || String(ctx?.dateLabel || '').trim();
   if (periodLabel) {
-    lines.push(isEn ? `- Period: ${periodLabel}` : `- 기간: ${periodLabel}`);
+    lines.push(isEn ? `- Dates: ${periodLabel}` : `- 날짜: ${periodLabel}`);
   }
-  if (/^\d{8}$/.test(startYmd) && /^\d{8}$/.test(endYmd)) {
-    const longStart = expandCompactDates(startYmd, isEn ? 'en' : 'ko');
-    const longEnd = expandCompactDates(endYmd, isEn ? 'en' : 'ko');
-    lines.push(isEn ? `- Dates: ${longStart} through ${longEnd}` : `- 날짜: ${longStart}부터 ${longEnd}까지`);
-    lines.push(
-      isEn
-        ? `- Dates (YMD, do not copy this form into the answer): ${startYmd}–${endYmd}`
-        : `- 일정(YMD, 답에는 이 숫자만 쓰지 않는다): ${startYmd}–${endYmd}`,
-    );
-  }
+  lines.push(
+    isEn
+      ? '- Write dates only in that short form. Do not write a countdown or a long calendar date such as "October 15, 2026".'
+      : '- 답의 날짜는 위의 짧은 형식만 쓴다. 「N월 N일부터」와 「시작까지 N일 남았어요」「현재 시작까지」는 쓰지 않는다. 해요체만 쓰고, 반말(해/봐/좋아/추천해)과 「습니다」「입니다」「좋습니다」로 끝내지 않는다.',
+  );
   lines.push(
     isEn
       ? '- Domestic festival in Korea. Do not mention visas or entry documents unless the user asked.'

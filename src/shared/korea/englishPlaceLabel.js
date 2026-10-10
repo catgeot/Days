@@ -74,6 +74,23 @@ const LEADING_CITY = new Set([
   '양양',
 ]);
 
+/** Nearby sights only. A hit keeps a romanized remainder; a pure syllable blob is omitted. */
+const POI_GLOSSARY = [
+  ['북촌한옥마을', 'Bukchon Hanok Village'],
+  ['한옥마을', 'Hanok Village'],
+  ['감고당길', 'Gamgodang-gil'],
+  ['식물원', 'Botanical Garden'],
+  ['산타열차', 'Santa Train'],
+  ['향교', 'Hyanggyo'],
+  ['인력거', 'rickshaw'],
+  ['동래', 'Dongnae'],
+  ['동해', 'Donghae'],
+  ['강릉', 'Gangneung'],
+  ['금강', 'Geumgang'],
+];
+
+const REGION_SUFFIX_RE = /\s*\((?:부산|서울|대구|인천|광주|대전|울산|세종|제주|경기|강원|충북|충남|전북|전남|경북|경남)\)$/;
+
 /** Common words inside a proper noun. Unknown Hangul is romanized, never dropped. */
 const NAME_GLOSSARY = [
   ['프로그램별 상이', 'varies by program'],
@@ -369,6 +386,60 @@ function glossaryCompleteEnglish(text) {
     i += hit[0].length;
   }
   return out.replace(/\s+/g, ' ').replace(/\s+([,:])/g, '$1').trim();
+}
+
+/**
+ * Nearby POI: glossary English, or omit a fused syllable blob.
+ * Region suffixes such as (부산) stay out of the Korean parentheses.
+ * @param {string} name
+ */
+export function formatNearbyPlaceLabel(name) {
+  const ko = String(name || '').replace(REGION_SUFFIX_RE, '').replace(/\s+/g, ' ').trim();
+  if (!ko) return '';
+  if (!/[가-힣]/.test(ko)) return ko;
+  const exact = EXACT.get(ko) || EXACT.get(ko.replace(/\s+/g, ''));
+  if (exact) return `${exact} (${ko})`;
+  const gloss = [...POI_GLOSSARY].sort((a, b) => b[0].length - a[0].length);
+  let i = 0;
+  let hits = 0;
+  const parts = [];
+  while (i < ko.length) {
+    if (/\s/.test(ko[i])) {
+      i += 1;
+      continue;
+    }
+    const hit = /[가-힣]/.test(ko[i]) ? gloss.find(([token]) => ko.startsWith(token, i)) : null;
+    if (hit) {
+      parts.push(hit[1]);
+      hits += 1;
+      i += hit[0].length;
+      continue;
+    }
+    if (/[가-힣]/.test(ko[i])) {
+      let run = '';
+      while (
+        i < ko.length
+        && /[가-힣]/.test(ko[i])
+        && !gloss.some(([token]) => ko.startsWith(token, i))
+      ) {
+        run += ko[i];
+        i += 1;
+      }
+      if (run === '사' && hits > 0) parts.push('Temple');
+      else if (run) parts.push(capitalize(romanizeHangul(run)));
+      continue;
+    }
+    let run = '';
+    while (i < ko.length && !/\s/.test(ko[i]) && !/[가-힣]/.test(ko[i])) {
+      run += ko[i];
+      i += 1;
+    }
+    if (run) parts.push(run);
+  }
+  if (!hits) return '';
+  const english = parts.join(' ').replace(/\s+/g, ' ').trim();
+  if (!english || /[가-힣]/.test(english)) return '';
+  return `${english} (${ko})`;
 }
 
 /**

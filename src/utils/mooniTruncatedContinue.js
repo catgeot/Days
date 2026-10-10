@@ -16,6 +16,8 @@ export function ensureItineraryMarkdownLineBreaks(text) {
   let s = String(text ?? '');
   if (!s) return s;
   s = s.replace(/\r\n/g, '\n');
+  s = s.replace(/([^\n])[ \t]+(\*\s+\*\*)/g, '$1\n\n$2');
+  s = s.replace(/([^\n])[ \t]+(-\s+\*\*)/g, '$1\n\n$2');
   s = s.replace(/([^\n])(\n)?(\*\*\d{1,2}일차\*\*)/g, '$1\n\n$3');
   s = s.replace(/\n{3,}/g, '\n\n');
   if (/\*\*\d{1,2}일차\*\*/.test(s)) {

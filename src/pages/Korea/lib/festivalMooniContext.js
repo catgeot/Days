@@ -8,6 +8,7 @@ import {
   dropHanjaParentheticals,
   formatEnglishThenKorean,
   formatFestivalProgramLabel,
+  formatNearbyPlaceLabel,
 } from '../../../shared/korea/englishPlaceLabel.js';
 import { parseEngFestivalTitle } from '../festivalTitleEnMerge.js';
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
@@ -574,7 +575,7 @@ function koNearbySentence(names, title, leadWithTitle) {
 
 function enNearbySentence(names, phrase, leadWithTitle) {
   const labels = names
-    .map((name) => englishParenPair(name, formatEnglishThenKorean(name)))
+    .map((name) => formatNearbyPlaceLabel(name))
     .filter(Boolean);
   if (!labels.length) return '';
   const list = enList(labels);
@@ -667,7 +668,7 @@ export function buildFestivalMooniSentenceAnswer(festivalContext, options = {}) 
 
 function enClosingSentence(ctx, ended) {
   const url = ctx.gateoUrl;
-  const linked = url ? `[festival page](${url})` : '';
+  const linked = url ? `[the festival page](${url})` : '';
   const next = ended
     ? 'next you can look at nearby stops from ICN'
     : 'next you can plan how to get there from ICN';
@@ -708,7 +709,7 @@ export function buildFestivalFirstAnswerFacts(festivalContext, options = {}) {
     overviewFacts,
     programs: isEn ? enProgramLabels(names) : names,
     nearby: isEn
-      ? nearby.map((name) => englishParenPair(name, formatEnglishThenKorean(name))).filter(Boolean)
+      ? nearby.map((name) => formatNearbyPlaceLabel(name)).filter(Boolean)
       : nearby,
     atmosphere,
     closing: isEn ? enClosingSentence(festivalContext, ended) : koClosingSentence(festivalContext, ended),
@@ -720,7 +721,7 @@ const FORMAL_RE = /습니[다까]|하십시오/;
 const HAEYO_RE = /해요|예요|이에요|있어요|없어요|돼요/;
 const CLOCK_RE = /\d{1,2}\s*:\s*\d{2}/;
 const FEE_RE = /입장료|입장\s*무료|admission is|the listed fee|hours are|운영\s*시간/i;
-const PROMO_RE = /사랑을 받|마음껏|황금빛|오신 것을 환영|welcome to/i;
+const PROMO_RE = /사랑을 받|황금빛|오신 것을 환영|welcome to/i;
 const GOODS_RE = /굿즈|기념품|상품권|궁패스/;
 const MODEL_OPENING_SENTENCE_CAP = 7;
 const NAME_SUFFIX_RE = /[가-힣A-Za-z0-9]{0,18}(?:커피거리|해수욕장|거리|해변|시장|궁궐|향교|광장|박물관|미술관|식물원|전망대|열차|마을|정원|대회|체험관)/g;
@@ -782,6 +783,69 @@ function inventedFactToken(raw, facts) {
   return '';
 }
 
+function openingTitles(facts) {
+  const titles = [];
+  if (facts?.locale === 'en') {
+    const phrase = String(facts.titleEn || '').trim();
+    const en = phrase.replace(/\s*\([^)]*\)\s*$/, '').trim();
+    if (phrase) titles.push(phrase);
+    if (en && en !== phrase) titles.push(en);
+  } else {
+    const title = String(facts?.title || '').trim();
+    if (title) titles.push(title);
+  }
+  return titles;
+}
+
+/** Keep the later title sentence when the model restarts with the same name. */
+function dedupeRepeatedTitle(raw, facts) {
+  const titles = openingTitles(facts);
+  if (!titles.length) return raw;
+  const parts = String(raw || '').split(/(?<=[.!?。])\s+/).filter((part) => part.trim());
+  const starts = (part) => titles.some((title) => part.trim().startsWith(title));
+  const indexes = parts.map((part, index) => (starts(part) ? index : -1)).filter((index) => index >= 0);
+  if (indexes.length >= 2) return parts.slice(indexes[indexes.length - 1]).join(' ').trim();
+  const title = titles[0];
+  const first = raw.indexOf(title);
+  const second = first >= 0 ? raw.indexOf(title, first + title.length) : -1;
+  if (first === 0 && second > 0) return raw.slice(second).trim();
+  return raw;
+}
+
+function factProperNouns(facts) {
+  const chunks = [
+    facts?.titleEn,
+    ...(facts?.programs || []),
+    ...(facts?.nearby || []),
+    ...(facts?.atmosphere || []),
+    ...(facts?.overviewFacts || []),
+  ];
+  const nouns = new Set();
+  for (const chunk of chunks) {
+    const english = stripParentheticals(String(chunk || ''));
+    for (const match of english.matchAll(/\b[A-Z][\w'’-]*/g)) {
+      if (match[0].length >= 2) nouns.add(match[0]);
+    }
+    for (const match of english.matchAll(/\b[A-Z][\w'’-]*(?:\s+[A-Z][\w'’-]*)+/g)) {
+      nouns.add(match[0]);
+    }
+  }
+  return [...nouns].sort((a, b) => b.length - a.length);
+}
+
+/** Drop a lowercase "the" only when the next word is a capitalized fact name. */
+function stripTheBeforeFactNoun(raw, facts) {
+  const nouns = factProperNouns(facts);
+  if (!nouns.length) return raw;
+  const body = nouns.map((noun) => noun.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  const re = new RegExp(`\\bthe (?=(?:${body})\\b)`, 'g');
+  return raw.replace(re, (match, offset, source) => {
+    const before = source.slice(0, offset);
+    if (!before.trim() || /[.!?。]\s*$/.test(before)) return match;
+    return '';
+  });
+}
+
 /**
  * Keep a model opening only when names, dates, and links stay inside the facts.
  * Ordinary Korean verbs and particles are not checked.
@@ -790,10 +854,9 @@ function inventedFactToken(raw, facts) {
  * @param {string[]} [banned]
  */
 export function acceptFestivalModelOpening(text, facts, banned = []) {
-  let raw = String(text || '')
-    .replace(/\s+/g, ' ')
-    .replace(/\bthe (?=(?:[A-Z][\w'’-]* )*(?:Street|Beach|Plaza|Park|Palace|Garden|Market|Zone|Temple)\b)/gi, '')
-    .trim();
+  let raw = String(text || '').replace(/\s+/g, ' ').trim();
+  raw = dedupeRepeatedTitle(raw, facts);
+  raw = stripTheBeforeFactNoun(raw, facts).trim();
   if (!raw || !facts?.title) return '';
   if (!startsWithFestivalTitle(raw, facts)) return '';
   if (countFestivalCardSentences(raw) > MODEL_OPENING_SENTENCE_CAP) return '';

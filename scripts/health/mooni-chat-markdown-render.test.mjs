@@ -76,6 +76,18 @@ test('markdown render — day1 sub-lines keep soft breaks after continue', () =>
   );
 });
 
+test('lodging markdown list renders bullets and bold', () => {
+  const flat = '강릉역 근처 숙소예요. * **강릉역 인근**: 호텔 * **월화거리**: 게하';
+  const md = getMooniModelMarkdownForRender(flat, { stripPhantomTicketMention: true });
+  assert.match(md, /\n\* \*\*강릉역 인근\*\*: 호텔/);
+  assert.match(md, /\n\* \*\*월화거리\*\*: 게하/);
+  const html = renderMooniMarkdownHtml(md);
+  assert.match(html, /<ul>/);
+  assert.match(html, /<li>/);
+  assert.match(html, /<strong>강릉역 인근<\/strong>/);
+  assert.doesNotMatch(html, /\* \*\*/);
+});
+
 test('ensureItineraryMarkdownLineBreaks — non-itinerary reply unchanged', () => {
   const md = getMooniModelMarkdownForRender(NORMAL_STOP_REPLY, {
     stripPhantomTicketMention: true,

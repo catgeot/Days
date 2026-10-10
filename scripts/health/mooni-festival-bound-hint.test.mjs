@@ -33,7 +33,9 @@ const FOLLOW_UP_QUESTIONS = [
 
 function assertFestivalBoundHint(hint) {
   assert.ok(hint.includes('홍천 인삼한우 명품축제'), '제목');
-  assert.ok(hint.includes('20261008') && hint.includes('20261011'), '기간 YMD');
+  assert.ok(hint.includes('- 날짜: 10/8~11'), '짧은 날짜');
+  assert.ok(!/10월\s*8일부터/.test(hint), '긴 날짜 없음');
+  assert.ok(!/시작까지 \d+일/.test(hint), '카운트다운 없음');
   assert.ok(hint.includes('09:00') && hint.includes('22:00'), '시간');
   assert.ok(hint.includes('무료'), '요금');
   assert.ok(hint.includes('도시산림공원 토리숲'), '장소');
