@@ -8,6 +8,7 @@ import {
 import { KO } from "./mooniPromptBundleData.js";
 import {
   renderCuration,
+  renderFestivalFirstAnswer,
   renderIntro,
   renderLogbook,
   renderMooniSystem,
@@ -310,6 +311,55 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       limitThinking: tier === "quality",
       parts: [{ text: wrapUserTurn(system, history, userText) }],
       tier,
+    };
+  }
+
+  if (task === "festival_first_answer") {
+    const locale = input.locale === "en" ? "en" : input.locale === "ko" || input.locale == null ? "ko" : null;
+    if (!locale) return { ok: false, status: 400, error: "bad_request" };
+    const factsIn = input.facts;
+    if (!factsIn || typeof factsIn !== "object" || Array.isArray(factsIn)) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
+    const src = factsIn as Record<string, unknown>;
+    const title = str(src.title, 120);
+    const titleEn = optStr(src.titleEn, 160);
+    const dateLine = optStr(src.dateLine, 160);
+    const closing = optStr(src.closing, 400);
+    const gateoUrl = optStr(src.gateoUrl, 200);
+    const overviewFacts = stringList(src.overviewFacts, 2, 160);
+    const programs = stringList(src.programs, 4, 40);
+    const nearby = stringList(src.nearby, 3, 40);
+    const atmosphere = stringList(src.atmosphere, 3, 80);
+    if (!title?.trim() || titleEn == null || dateLine == null || closing == null || gateoUrl == null) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
+    if (!overviewFacts || !programs || !nearby || !atmosphere) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
+    if (gateoUrl && !/^https:\/\/www\.gateo\.kr\/korea\/\?festival=\d+(?:#festival-lodging)?$/.test(gateoUrl)) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
+    const facts = {
+      title: title.trim(),
+      titleEn: titleEn || "",
+      dateLine: dateLine || "",
+      overviewFacts,
+      programs,
+      nearby,
+      atmosphere,
+      closing: closing || "",
+      gateoUrl: gateoUrl || "",
+    };
+    const rendered = renderFestivalFirstAnswer(locale, facts);
+    return {
+      ok: true,
+      task,
+      model: GEMINI_FAST,
+      maxOutputTokens: 512,
+      limitThinking: false,
+      parts: [{ text: wrapUserTurn(rendered.system, [], rendered.userText) }],
+      tier: null,
     };
   }
 

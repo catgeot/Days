@@ -25,6 +25,7 @@ export const DEFAULT_LIMITS: LimitConfig = {
     mooni_chat: 1200,
     mooni_chat_quality: 400,
     place_intro: 300,
+    festival_first_answer: 400,
     search_intent: 400,
     review_draft: 150,
     logbook_polish: 100,

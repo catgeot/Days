@@ -48,6 +48,7 @@ import {
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
+import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
@@ -364,13 +365,28 @@ const ChatModal = ({
     return label ? `${label} · MOONi` : 'MOONi';
   }, [isMooniUi, activeSessionPlace, introDestinationRaw, festivalMooniContext?.title, i18n.language]);
 
-  const festivalMooniOpening = useMemo(
+  const festivalTemplateOpening = useMemo(
     () =>
       buildFestivalMooniChatOpening(festivalMooniContext, {
         locale: i18n.language,
       }),
     [festivalMooniContext, i18n.language],
   );
+  const festivalOpeningKey = `${festivalMooniContext?.contentId || ''}:${i18n.language}`;
+  const [festivalModelOpening, setFestivalModelOpening] = useState({ key: '', text: '' });
+  useEffect(() => {
+    if (!festivalMooniContext?.title) return undefined;
+    let cancelled = false;
+    requestFestivalFirstAnswer(festivalMooniContext, { locale: i18n.language }).then((text) => {
+      if (!cancelled && text) setFestivalModelOpening({ key: festivalOpeningKey, text });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [festivalMooniContext, festivalOpeningKey, i18n.language]);
+  const festivalMooniOpening = festivalModelOpening.key === festivalOpeningKey && festivalModelOpening.text
+    ? festivalModelOpening.text
+    : festivalTemplateOpening;
 
   const placeIntroTarget = useMemo(() => {
     if (!isOpen) return '';

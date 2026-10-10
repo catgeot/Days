@@ -18,7 +18,7 @@ const EXACT = new Map([
   ['섬夜 콘서트', 'Seomya Concert'],
   ['섬夜 불꽃놀이', 'Seomya Fireworks'],
   ['부대 행사', 'Side events'],
-  ['먹거리존', 'Food zone'],
+  ['먹거리존', 'Food Zone'],
   ['누들 경연대회', 'Noodle contest'],
 ]);
 
@@ -76,12 +76,12 @@ const LEADING_CITY = new Set([
 
 /** Common words inside a proper noun. Unknown Hangul is romanized, never dropped. */
 const NAME_GLOSSARY = [
-  ['프로그램별 상이', 'Varies by program'],
+  ['프로그램별 상이', 'varies by program'],
   ['라이브 공연', 'live performance'],
   ['야외마당', 'outdoor yard'],
   ['비어가든', 'Beer Garden'],
-  ['먹거리존', 'Food zone'],
-  ['푸드존', 'Food zone'],
+  ['먹거리존', 'Food Zone'],
+  ['푸드존', 'Food Zone'],
   ['경연대회', 'contest'],
   ['불꽃놀이', 'Fireworks'],
   ['나이트워크', 'Night Walk'],
@@ -146,13 +146,13 @@ function translateRoad(road) {
 }
 
 const DESCRIPTIVE = [
-  ['프로그램별 상이', 'Varies by program'],
+  ['프로그램별 상이', 'varies by program'],
   ['얼리버드 특가', 'early-bird special'],
   ['부대 행사', 'Side events'],
   ['섬夜 콘서트', 'Seomya Concert'],
   ['섬夜 불꽃놀이', 'Seomya Fireworks'],
-  ['먹거리존', 'Food zone'],
-  ['푸드존', 'Food zone'],
+  ['먹거리존', 'Food Zone'],
+  ['푸드존', 'Food Zone'],
   ['경연대회', 'contest'],
   ['불꽃놀이', 'Fireworks'],
   ['나이트워크', 'Night Walk'],
@@ -317,7 +317,7 @@ function applyNameGlossary(text) {
     }
     const hit = /[가-힣]/.test(src[i]) ? gloss.find(([ko]) => src.startsWith(ko, i)) : null;
     if (hit) {
-      if (out && !/\s$/.test(out)) out += ' ';
+      if (out && !/[\s(:]$/.test(out)) out += ' ';
       out += hit[1];
       i += hit[0].length;
       continue;
@@ -332,14 +332,68 @@ function applyNameGlossary(text) {
         run += src[i];
         i += 1;
       }
-      if (out && !/\s$/.test(out)) out += ' ';
+      if (out && !/[\s(:]$/.test(out)) out += ' ';
       out += capitalize(romanizeHangul(run));
       continue;
     }
     out += src[i];
     i += 1;
   }
+  return out.replace(/\s+/g, ' ').replace(/\(\s+/g, '(').replace(/\s+([,:])/g, '$1').trim();
+}
+
+/**
+ * English only when every Hangul word is in the glossary. Otherwise ''.
+ * @param {string} text
+ */
+function glossaryCompleteEnglish(text) {
+  const gloss = [...NAME_GLOSSARY].sort((a, b) => b[0].length - a[0].length);
+  const src = String(text || '');
+  let i = 0;
+  let out = '';
+  while (i < src.length) {
+    if (/\s/.test(src[i])) {
+      if (out && !/\s$/.test(out)) out += ' ';
+      while (i < src.length && /\s/.test(src[i])) i += 1;
+      continue;
+    }
+    if (!/[가-힣]/.test(src[i])) {
+      out += src[i];
+      i += 1;
+      continue;
+    }
+    const hit = gloss.find(([ko]) => src.startsWith(ko, i));
+    if (!hit) return '';
+    if (out && !/[\s:(]$/.test(out)) out += ' ';
+    out += hit[1];
+    i += hit[0].length;
+  }
   return out.replace(/\s+/g, ' ').replace(/\s+([,:])/g, '$1').trim();
+}
+
+/**
+ * Program label: full glossary, or a zone name, or Korean only.
+ * Festival and program names are not syllable-romanized.
+ * @param {string} name
+ */
+export function formatFestivalProgramLabel(name) {
+  const cleaned = dropHanjaParentheticals(name).replace(/\s+/g, ' ').trim();
+  if (!cleaned) return '';
+  const compact = cleaned.replace(/\s+/g, '');
+  const exact = EXACT.get(cleaned) || EXACT.get(compact);
+  if (exact) return `${exact} (${cleaned})`;
+  const glossed = glossaryCompleteEnglish(cleaned);
+  if (glossed && !/[가-힣]/.test(glossed)) return `${glossed} (${cleaned})`;
+  const zone = cleaned.match(/^(.+?)\s*존$/);
+  if (zone?.[1]?.trim()) {
+    const stem = zone[1].trim();
+    const stemGloss = glossaryCompleteEnglish(stem);
+    const stemEn = stemGloss && !/[가-힣]/.test(stemGloss)
+      ? stemGloss
+      : capitalize(romanizeHangul(stem.replace(/\s+/g, '')));
+    if (stemEn && !/[가-힣]/.test(stemEn)) return `${stemEn} Zone (${cleaned})`;
+  }
+  return cleaned;
 }
 
 /** One place, venue, program, or festival-name item. */

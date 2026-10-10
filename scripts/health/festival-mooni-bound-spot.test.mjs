@@ -44,11 +44,10 @@ test('buildFestivalMooniContext keeps TourAPI-shaped fields', () => {
 
 test('buildFestivalMooniNeutralOpening uses verified sentences only', () => {
   const opening = buildFestivalMooniNeutralOpening(buildFestivalMooniContext(FIXTURE));
-  assert.match(opening, /홍천 인삼한우 명품축제/);
-  assert.match(opening, /2025년 10월 8일부터 2025년 10월 11일까지/);
-  assert.match(opening, /도시산림공원 토리숲/);
+  assert.match(opening, /홍천 인삼한우 명품축제는 10\/8~11, 이미 끝났어요/);
+  assert.match(opening, /도시산림공원 토리숲에서 저녁까지 이어져요/);
   assert.match(opening, /festival=790124/);
-  assert.doesNotMatch(opening, /대한민국 홍천/);
+  assert.doesNotMatch(opening, /갈마곡리|09:00|무료|기준|대한민국 홍천/);
   assert.doesNotMatch(opening, /오신 것을 환영합니다/);
   assert.doesNotMatch(opening, /^[-•]/m);
 });

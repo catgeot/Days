@@ -203,7 +203,7 @@ function trailingSectionRegExp(label) {
   return new RegExp(`(?:\\s*[-–—•]+\\s*)?${body}\\s*$`, 'i');
 }
 
-const ENTRY_DOC_RE = /입국\s*증빙|입국\s*심사|입국\s*서류|비자\s*서류|proof-of-stay|entry document|immigration document/i;
+const ENTRY_DOC_RE = /입국\s*증빙|입국\s*심사|입국\s*서류|비자\s*서류|여행\s*증빙|예약\s*확인서|숙소\s*예약\s*확인|proof-of-stay|entry document|immigration document/i;
 const ENTRY_ASK_RE = /비자|입국|visa|entry|immigration/i;
 
 const EN_MONTHS = [

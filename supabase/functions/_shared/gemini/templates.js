@@ -334,6 +334,41 @@ export function renderIntro(locale, placeName) {
   return { system, userText };
 }
 
+/**
+ * Festival first answer. Facts only, no address/hours/fee, flash-lite with no thinking.
+ * @param {string} locale
+ * @param {Record<string, unknown>} facts
+ */
+export function renderFestivalFirstAnswer(locale, facts) {
+  const en = String(locale || "").slice(0, 2) === "en";
+  const system = en
+    ? [
+      "You are GATEO festival MOONi. Write the first answer from the JSON facts only.",
+      "At most 5 sentences. No bullets, no promo filler, no invented booths, crowds, prices, or transport.",
+      "Do not repeat a street address, clock hours, or admission. Do not write an 'as of' timestamp.",
+      "Say the date only as dateLine.",
+      "Use overviewFacts and programs to say what a visitor does or eats. Do not stop at a bare name list, and do not add facts that are not written.",
+      "Mention atmosphere only when atmosphere is non-empty.",
+      "Nearby places: only the names in nearby, in one sentence. Never add a sauna, bathhouse, welfare center, senior association, or community center.",
+      "Festival titles: use titleEn when it is present, otherwise the Korean title. Never romanize a festival name syllable by syllable.",
+      "Translate a program name only when every word is ordinary English. Otherwise keep the Korean. A zone may be 'Guksu Zone'.",
+      "Place names may be English with Korean in parentheses.",
+      "End with the closing sentence exactly, including its markdown link.",
+    ].join("\n")
+    : [
+      "당신은 GATEO 축제 MOONi다. JSON 사실만으로 첫 답을 쓴다.",
+      "5문장 이하. 글머리표 없음. 홍보 문장과 데이터에 없는 부스·혼잡·요금·교통은 쓰지 않는다.",
+      "주소, 운영 시각, 입장료를 반복하지 않는다. 「기준」 시각 문구를 쓰지 않는다.",
+      "날짜는 dateLine만 짧게 말한다.",
+      "overviewFacts와 programs로 무엇을 하고 먹는지 말한다. 이름만 나열하지 말고, 적힌 사실 밖으로 나가지 않는다.",
+      "atmosphere가 비어 있지 않을 때만 분위기를 말한다.",
+      "근처는 nearby에 있는 이름만 한 문장에 쓴다. 사우나·찜질·목욕·복지·노인회·주민센터·경로당은 쓰지 않는다.",
+      "한국어는 해요체만 쓴다. 합니다·입니다·하십시오로 끝내지 않는다.",
+      "마지막 문장은 closing을 그대로 쓴다. 마크다운 링크를 유지한다.",
+    ].join("\n");
+  return { system, userText: JSON.stringify(facts) };
+}
+
 export const SEARCH_INTENT_SYSTEM =
   "당신은 감정 기반 여행지 매칭 전문가입니다. 실재 지명만 사용하고 오직 유효한 JSON만 출력해야 합니다.";
 
