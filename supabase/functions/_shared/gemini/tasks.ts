@@ -358,7 +358,7 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       model: GEMINI_FAST,
       maxOutputTokens: 512,
       limitThinking: false,
-      parts: [{ text: wrapUserTurn(rendered.system, [], rendered.userText) }],
+      parts: [{ text: `${rendered.system}\n\n${rendered.userText}` }],
       tier: null,
     };
   }

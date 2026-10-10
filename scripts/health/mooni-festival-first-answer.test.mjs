@@ -213,7 +213,7 @@ test('captured fixtures explain the scene without passes or bare English Hangul'
   assert.doesNotMatch(gangEn.nearby.join(' '), /Gangreunghyanggyo|Donghaesantayeolcha/);
   assert.ok(gangEn.nearby.every((name) => /\([가-힣]/.test(name)));
   assert.match(palaceEn.nearby.join(' '), /Bukchon Hanok Village Gamgodang-gil \(북촌한옥마을 감고당길\)/);
-  assert.match(palaceEn.nearby.join(' '), /Atti rickshaw \(아띠인력거\)/);
+  assert.match(palaceEn.nearby.join(' '), /Atti Rickshaw \(아띠인력거\)/);
   assert.doesNotMatch(palaceEn.nearby.join(' '), /Bukchonhanokmaeul|Attiinryeokgeo/);
   assert.match(busanEn.nearby.join(' '), /Geumgang Temple \(금강사\)/);
   assert.match(busanEn.nearby.join(' '), /Geumgang Botanical Garden \(금강식물원\)/);
@@ -225,13 +225,30 @@ test('promo wording in a beer sentence is kept and a repeated title is dropped',
   const facts = buildFestivalFirstAnswerFacts(ctx, { locale: 'ko', now: NOW });
   const beer = '강릉 국수 축제는 10/15~18에 열려요. 시원한 맥주를 마음껏 마시며 즐길 수 있어요.';
   assert.match(acceptFestivalModelOpening(beer, facts), /마음껏/);
-  const repeated = '강릉 국수 축제는 월화거리에서 국수를 맛봐요. 강릉 국수 축제는 10/15~18에 열려요. 근처에서는 경포해변을 둘러볼 수 있어요.';
+  const repeated = '강릉 국수 축제는 장칼국수, 막국수를 맛보는 자리예요. 강릉 국수 축제는 10/15~18. 근처에서는 경포해변을 둘러볼 수 있어요.';
   const kept = acceptFestivalModelOpening(repeated, facts);
-  assert.match(kept, /^강릉 국수 축제는 10\/15~18/);
+  assert.match(kept, /장칼국수, 막국수/);
+  assert.match(kept, /10\/15~18, 엿새 뒤 시작해요/);
   assert.equal((kept.match(/강릉 국수 축제/g) || []).length, 1);
+  assert.match(kept, /^강릉 국수 축제/);
   assert.equal(formatNearbyPlaceLabel('노암터널'), '');
   assert.equal(formatNearbyPlaceLabel('금강사(부산)'), 'Geumgang Temple (금강사)');
   assert.equal(formatNearbyPlaceLabel('강릉향교'), 'Gangneung Hyanggyo (강릉향교)');
+});
+
+test('leading facts JSON is stripped before the title check', () => {
+  const input = JSON.parse(readFileSync(join(root, 'scripts/staging/fixtures/festival-opening/2855626.json'), 'utf8'));
+  const ctx = buildFestivalMooniContext(input);
+  const facts = buildFestivalFirstAnswerFacts(ctx, { locale: 'ko', now: NOW });
+  const echo = '{"title":"허심청브로이 옥토버페스트","dateLine":"10/15~17"}\n허심청브로이 옥토버페스트는 10/15~17, 엿새 뒤 시작해요. 시원한 맥주를 마음껏 마시며 즐길 수 있어요.';
+  const kept = acceptFestivalModelOpening(echo, facts, [ctx.address, ctx.timeText, ctx.feeText]);
+  assert.match(kept, /^허심청브로이 옥토버페스트/);
+  assert.doesNotMatch(kept, /\{"title"/);
+  assert.match(kept, /마음껏/);
+  const fenced = `\`\`\`json\n{"title":"허심청브로이 옥토버페스트","dateLine":"10/15~17"}\n\`\`\`\n${echo.split('\n')[1]}`;
+  const fromFence = acceptFestivalModelOpening(fenced, facts, [ctx.address, ctx.timeText, ctx.feeText]);
+  assert.match(fromFence, /^허심청브로이 옥토버페스트/);
+  assert.doesNotMatch(fromFence, /```|\{"title"/);
 });
 
 test('Jeju press-release overview and program labels stay off the card', () => {
@@ -666,6 +683,9 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /Hampyeong Expo Park \(함평엑스포공원\)/);
   assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /not the Wolhwa Street/);
   assert.match(rendered.userText, /경포해변/);
+  assert.doesNotMatch(rendered.userText, /\{/);
+  assert.match(rendered.system, /JSON, 코드 펜스/);
+  assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /Do not output JSON/);
   assert.doesNotMatch(rendered.userText, /경강로|입장료/);
 });
 
@@ -766,6 +786,12 @@ test('prompts forbid an unlinked outside-channel closing', async () => {
   assert.match(listed, /\n\* \*\*강릉역 인근\*\*/);
   assert.match(listed, /\n\* \*\*월화거리\*\*/);
   assert.doesNotMatch(listed, /시작까지/);
+  const broken = polishFestivalModelReply(
+    '숙소예요.\n\n* **강릉역 인근**: 호텔\n* **월화거리**: 게하\n다음으로 숙소 카드에서 볼 수 있어요.',
+    { contentId: '2930716', locale: 'ko', chipId: 'prep_hotel', userText: '숙소 추천' },
+  );
+  assert.match(broken, /숙소예요\.\n\n/);
+  assert.match(broken, /게하\n\n다음으로/);
   const clientPrompts = readFileSync(join(root, 'src/pages/Home/lib/prompts.js'), 'utf8');
   assert.match(clientPrompts, /없는 URL을 지어내지/);
   assert.match(clientPrompts, /festivalPriorityLine/);

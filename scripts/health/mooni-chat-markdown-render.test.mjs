@@ -88,6 +88,16 @@ test('lodging markdown list renders bullets and bold', () => {
   assert.doesNotMatch(html, /\* \*\*/);
 });
 
+test('paragraph after a bullet list stays out of the last bullet', () => {
+  const src = '숙소예요.\n\n* **강릉역 인근**: 호텔\n* **월화거리**: 게하\n다음으로 숙소 카드에서 볼 수 있어요.';
+  const md = getMooniModelMarkdownForRender(src, { stripPhantomTicketMention: true });
+  assert.match(md, /숙소예요\.\n\n\* \*\*강릉역 인근\*\*/);
+  assert.match(md, /게하\n\n다음으로 숙소 카드에서 볼 수 있어요/);
+  const html = renderMooniMarkdownHtml(md);
+  assert.match(html, /<\/ul>\s*<p>다음으로/);
+  assert.doesNotMatch(html, /<li>[^<]*다음으로/);
+});
+
 test('ensureItineraryMarkdownLineBreaks — non-itinerary reply unchanged', () => {
   const md = getMooniModelMarkdownForRender(NORMAL_STOP_REPLY, {
     stripPhantomTicketMention: true,

@@ -79,11 +79,21 @@ export function linkifyBareGateoFestivalUrls(text, locale = 'ko') {
   });
 }
 
-function splitReplyPieces(text) {
-  return String(text || '')
-    .split(/\n+|(?<=[.!?。])\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean);
+/** Drop matching sentences, but keep paragraph breaks and list lines. */
+function filterPreservingBreaks(text, drop) {
+  const paragraphs = String(text || '').split(/\n{2,}/);
+  const kept = paragraphs.map((paragraph) => {
+    const lines = paragraph.split('\n').map((line) => {
+      const sentences = line
+        .split(/(?<=[.!?。])\s+/)
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .filter((part) => !drop(part));
+      return sentences.join(' ');
+    }).filter((line) => line.trim());
+    return lines.join('\n');
+  }).filter((paragraph) => paragraph.trim());
+  return kept.join('\n\n').trim();
 }
 
 const NON_STAY_RE = /사우나|찜질|목욕탕|목욕|스파|sauna|jjimjilbang|bathhouse/i;
@@ -99,7 +109,7 @@ const TWELVE_GO_CTA_RE = /12\s*Go[^\n]{0,48}바로\s*가기|바로\s*가기[^\n]
  */
 export function stripNonStayFacilities(text, userText = '') {
   if (NON_STAY_ASK_RE.test(String(userText || ''))) return String(text || '').trim();
-  return splitReplyPieces(text).filter((part) => !NON_STAY_RE.test(part)).join(' ').trim();
+  return filterPreservingBreaks(text, (part) => NON_STAY_RE.test(part));
 }
 
 /**
@@ -109,7 +119,7 @@ export function stripNonStayFacilities(text, userText = '') {
  */
 export function stripUnaskedBroadcastLines(text, userText = '') {
   if (BROADCAST_ASK_RE.test(String(userText || ''))) return String(text || '').trim();
-  return splitReplyPieces(text).filter((part) => !BROADCAST_RE.test(part)).join(' ').trim();
+  return filterPreservingBreaks(text, (part) => BROADCAST_RE.test(part));
 }
 
 /** Domestic festival answers do not keep a 12Go partner jump line. */
@@ -117,7 +127,7 @@ export function stripDomesticTwelveGoMention(text) {
   const withoutLinks = String(text || '')
     .replace(/\[[^\]]*12\s*Go[^\]]*\]\([^)]+\)/gi, '')
     .replace(/https?:\/\/(?:www\.)?12go\.asia\S*/gi, '');
-  return splitReplyPieces(withoutLinks).filter((part) => !TWELVE_GO_CTA_RE.test(part)).join(' ').trim();
+  return filterPreservingBreaks(withoutLinks, (part) => TWELVE_GO_CTA_RE.test(part));
 }
 
 export function appendFestivalLodgingNextStep(reply, options = {}) {
@@ -252,8 +262,7 @@ export function stripMooniUiChipLabels(text) {
   const lines = String(text || '')
     .replace(/\[([^\]\n]+)\](?!\()/g, '')
     .split('\n')
-    .map(stripCtaLine)
-    .filter((line) => line.trim());
+    .map((line) => (line.trim() ? stripCtaLine(line) : ''));
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
@@ -265,7 +274,7 @@ export function stripDomesticEntryDocLines(text, options = {}) {
   const chip = String(options.chipId || '');
   if (chip === 'visa_docs' || chip === 'festival_overseas_visa') return String(text || '').trim();
   if (ENTRY_ASK_RE.test(String(options.userText || ''))) return String(text || '').trim();
-  return splitReplyPieces(text).filter((part) => !ENTRY_DOC_RE.test(part)).join(' ').trim();
+  return filterPreservingBreaks(text, (part) => ENTRY_DOC_RE.test(part));
 }
 
 /**

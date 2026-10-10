@@ -82,7 +82,7 @@ const POI_GLOSSARY = [
   ['식물원', 'Botanical Garden'],
   ['산타열차', 'Santa Train'],
   ['향교', 'Hyanggyo'],
-  ['인력거', 'rickshaw'],
+  ['인력거', 'Rickshaw'],
   ['동래', 'Dongnae'],
   ['동해', 'Donghae'],
   ['강릉', 'Gangneung'],

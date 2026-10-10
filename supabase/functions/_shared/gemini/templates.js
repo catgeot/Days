@@ -368,9 +368,10 @@ export function renderFestivalFirstAnswer(locale, facts) {
       "Do not write 'the' before a place name. Write Wolhwa Street, not the Wolhwa Street.",
       "Never romanize a festival name syllable by syllable. Never write This festival.",
       "End with the closing sentence exactly, including its markdown link.",
+      "Do not output JSON, code fences, or field names. Do not echo the fact sheet. The first character is the festival title.",
     ].join("\n")
     : [
-      "당신은 GATEO 축제 MOONi다. JSON 사실만으로 첫 답을 쓴다.",
+      "당신은 GATEO 축제 MOONi다. 아래 사실만으로 첫 답을 쓴다.",
       "7문장 이하. 글머리표 없음. 홍보 문장과 데이터에 없는 부스·혼잡·요금·교통은 쓰지 않는다.",
       "첫 문장은 축제 제목으로 시작한다. 날짜로 시작하지 않는다. 날짜는 dateLine만 짧게 말한다.",
       "주소, 운영 시각, 입장료를 반복하지 않는다. 「기준」 시각 문구를 쓰지 않는다.",
@@ -379,8 +380,25 @@ export function renderFestivalFirstAnswer(locale, facts) {
       "근처는 nearby에 있는 이름만 한 문장에 쓴다. 사우나·찜질·목욕·복지·노인회·주민센터·경로당은 쓰지 않는다.",
       "한국어는 해요체만 쓴다. 합니다·입니다·있습니다·남았습니다·하십시오로 끝내지 않는다.",
       "마지막 문장은 closing을 그대로 쓴다. 마크다운 링크를 유지한다.",
+      "JSON, 코드 펜스, 필드 이름을 출력하지 않는다. 사실 목록을 그대로 베끼지 않는다. 첫 글자는 축제 제목이다.",
     ].join("\n");
-  return { system, userText: JSON.stringify(facts) };
+  return { system, userText: festivalFactSheet(facts) };
+}
+
+function festivalFactValue(value) {
+  if (Array.isArray(value)) return value.map((item) => String(item || "").trim()).filter(Boolean).join(" | ");
+  return String(value || "").trim();
+}
+
+/** Labeled lines. A JSON object here is what the model echoes as its first line. */
+function festivalFactSheet(facts) {
+  const src = facts && typeof facts === "object" ? facts : {};
+  const lines = ["Facts:"];
+  for (const label of ["title", "titleEn", "dateLine", "overviewFacts", "programs", "nearby", "atmosphere", "closing", "gateoUrl"]) {
+    const text = festivalFactValue(src[label]);
+    if (text) lines.push(`${label}: ${text}`);
+  }
+  return lines.join("\n");
 }
 
 export const SEARCH_INTENT_SYSTEM =

@@ -797,19 +797,97 @@ function openingTitles(facts) {
   return titles;
 }
 
-/** Keep the later title sentence when the model restarts with the same name. */
+function escapeRegExp(text) {
+  return String(text || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Drop a later copy of the title, and keep the sentence that followed it. */
 function dedupeRepeatedTitle(raw, facts) {
-  const titles = openingTitles(facts);
+  const titles = openingTitles(facts).sort((a, b) => b.length - a.length);
   if (!titles.length) return raw;
-  const parts = String(raw || '').split(/(?<=[.!?。])\s+/).filter((part) => part.trim());
-  const starts = (part) => titles.some((title) => part.trim().startsWith(title));
-  const indexes = parts.map((part, index) => (starts(part) ? index : -1)).filter((index) => index >= 0);
-  if (indexes.length >= 2) return parts.slice(indexes[indexes.length - 1]).join(' ').trim();
-  const title = titles[0];
-  const first = raw.indexOf(title);
-  const second = first >= 0 ? raw.indexOf(title, first + title.length) : -1;
-  if (first === 0 && second > 0) return raw.slice(second).trim();
+  let out = String(raw || '');
+  for (const title of titles) {
+    const first = out.indexOf(title);
+    if (first < 0) continue;
+    const head = out.slice(0, first + title.length);
+    const tail = out.slice(first + title.length).replace(
+      new RegExp(`${escapeRegExp(title)}(?:은|는|이|가)?\\s*`, 'g'),
+      '',
+    );
+    out = `${head}${tail}`;
+  }
+  return out.replace(/[ \t]{2,}/g, ' ').replace(/\s+([,.])/g, '$1').trim();
+}
+
+function endOfJsonObject(text) {
+  if (!String(text || '').startsWith('{')) return -1;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (ch === '\\') {
+        escaped = true;
+        continue;
+      }
+      if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+    if (ch === '{') depth += 1;
+    else if (ch === '}') {
+      depth -= 1;
+      if (depth === 0) return i + 1;
+    }
+  }
+  return -1;
+}
+
+/** The model sometimes echoes the facts object or a code fence before the answer. */
+function stripLeadingFactsEcho(text) {
+  let raw = String(text || '').replace(/^\uFEFF/, '').trim();
+  for (let guard = 0; guard < 4; guard += 1) {
+    const before = raw;
+    raw = raw.replace(/^(?:```|~~~)[^\n]*\n?/, '').trim();
+    if (raw.startsWith('{')) {
+      const end = endOfJsonObject(raw);
+      if (end > 0) raw = raw.slice(end).trim();
+    }
+    raw = raw.replace(/^(?:```|~~~)\s*/, '').trim();
+    if (raw === before) break;
+  }
   return raw;
+}
+
+const DATE_FRAGMENT_RE = /^(\d{1,2}\/\d{1,2}(?:[~–-]\d{1,2}(?:\/\d{1,2})?)?)\.?$/;
+
+/** «10/15~17.» becomes the short date plus the timing clause from the facts. */
+function expandDateOnlyFragments(raw, facts) {
+  const dateLine = String(facts?.dateLine || '').replace(/[.]+$/, '').trim();
+  if (!dateLine) return raw;
+  const parts = String(raw || '').split(/(?<=[.!?。])\s+/).filter((part) => part.trim());
+  const mapped = parts.map((part) => {
+    const trimmed = part.trim();
+    const match = trimmed.match(DATE_FRAGMENT_RE);
+    if (!match) return trimmed;
+    const token = match[1].replace(/[–-]/g, '~');
+    const line = dateLine.replace(/[–-]/g, '~');
+    const at = line.indexOf(token);
+    if (at < 0) return trimmed;
+    if (parts.length === 1) return /[.!?。]$/.test(dateLine) ? dateLine : `${dateLine}.`;
+    let clause = line.slice(at).trim();
+    if (!/[.!?。]$/.test(clause)) clause = `${clause}.`;
+    return clause;
+  });
+  return mapped.join(' ');
 }
 
 function factProperNouns(facts) {
@@ -854,8 +932,10 @@ function stripTheBeforeFactNoun(raw, facts) {
  * @param {string[]} [banned]
  */
 export function acceptFestivalModelOpening(text, facts, banned = []) {
-  let raw = String(text || '').replace(/\s+/g, ' ').trim();
+  let raw = stripLeadingFactsEcho(text);
+  raw = raw.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, ' ').trim();
   raw = dedupeRepeatedTitle(raw, facts);
+  raw = expandDateOnlyFragments(raw, facts);
   raw = stripTheBeforeFactNoun(raw, facts).trim();
   if (!raw || !facts?.title) return '';
   if (!startsWithFestivalTitle(raw, facts)) return '';
