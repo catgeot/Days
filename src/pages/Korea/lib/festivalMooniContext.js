@@ -911,7 +911,18 @@ function factProperNouns(facts) {
   return [...nouns].sort((a, b) => b.length - a.length);
 }
 
-/** Drop a lowercase "the" only when the next word is a capitalized fact name. */
+const GENERIC_ARTICLE_WORDS = new Set([
+  'Main', 'Food', 'Zone', 'Street', 'Park', 'Market', 'Beach', 'Garden', 'Plaza',
+  'Palace', 'Temple', 'Noodle', 'Experience', 'Exhibition', 'Concert', 'Fireworks',
+  'Hotel', 'Pairing', 'Night', 'Walk', 'Beer', 'Performance',
+]);
+
+function phraseIsGenericArticle(phrase) {
+  const words = String(phrase || '').split(/\s+/).filter(Boolean);
+  return words.length > 0 && words.every((word) => GENERIC_ARTICLE_WORDS.has(word));
+}
+
+/** Drop a lowercase "the" only before a capitalized fact name that is not all generic words. */
 function stripTheBeforeFactNoun(raw, facts) {
   const nouns = factProperNouns(facts);
   if (!nouns.length) return raw;
@@ -920,6 +931,13 @@ function stripTheBeforeFactNoun(raw, facts) {
   return raw.replace(re, (match, offset, source) => {
     const before = source.slice(0, offset);
     if (!before.trim() || /[.!?。]\s*$/.test(before)) return match;
+    const rest = source.slice(offset + match.length);
+    const noun = nouns.find((name) => {
+      if (!rest.startsWith(name)) return false;
+      const after = rest.charAt(name.length);
+      return !after || !/[\w'’-]/u.test(after);
+    });
+    if (noun && phraseIsGenericArticle(noun)) return match;
     return '';
   });
 }

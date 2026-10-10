@@ -257,12 +257,28 @@ function stripCtaLine(line) {
   return s.replace(/[ \t]{2,}/g, ' ').replace(/\s+([.!?])/g, '$1').trim();
 }
 
+const QUOTED_BARE_LINK_RE = /[「『"][^」』"\n]+[」』"]\s*(?:플래너\s*)?링크[.。]?/g;
+const INFO_HEADER_RE = /^(?:[-*]\s*)?(?:\*\*)?(?:축제\s*)?(?:상세\s*안내|기간|날짜|상세|장소|주소|요금|시간|제목|안내)\s*[:：]/;
+
+function lineHasUrl(line) {
+  return /https?:\/\/|\[[^\]]+\]\([^)]+\)/.test(line);
+}
+
+/** Drop info-card headers and unlinked 「…」 플래너 링크 / 「…」 링크 phrases. */
+function stripPlannerResidueLine(line) {
+  const trimmed = String(line || '').trim();
+  if (!trimmed) return '';
+  if (INFO_HEADER_RE.test(trimmed)) return '';
+  if (lineHasUrl(trimmed)) return trimmed;
+  return trimmed.replace(QUOTED_BARE_LINK_RE, '').replace(/[ \t]{2,}/g, ' ').replace(/\s+([.!?。])/g, '$1').trim();
+}
+
 /** Chip headings, CTA labels, separator leftovers, and bracket phrases with no URL. */
 export function stripMooniUiChipLabels(text) {
   const lines = String(text || '')
     .replace(/\[([^\]\n]+)\](?!\()/g, '')
     .split('\n')
-    .map((line) => (line.trim() ? stripCtaLine(line) : ''));
+    .map((line) => (line.trim() ? stripPlannerResidueLine(stripCtaLine(line)) : ''));
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
@@ -316,6 +332,14 @@ function cleanCalendarLine(line) {
   return next;
 }
 
+/** Narrative -답니다 endings are not 해요체. Specific forms first, then a boundary-safe generic. */
+function softenDapnida(text) {
+  return String(text || '')
+    .replace(/있답니다/g, '있어요')
+    .replace(/된답니다/g, '돼요')
+    .replace(/([가-힣])답니다(?=$|[\s.!?。,，])/g, '$1대요');
+}
+
 /** Festival answers drop the countdown clause and long calendar dates without flattening lists. */
 export function stripFestivalCalendarEcho(text) {
   const lines = String(text || '').split('\n').flatMap((line) => {
@@ -345,6 +369,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   if (isFestivalLodgingAsk(options)) {
     text = stripNonStayFacilities(text, options.userText);
   }
+  if (String(options.locale || 'ko').slice(0, 2) !== 'en') text = softenDapnida(text);
   return appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
 }
 
