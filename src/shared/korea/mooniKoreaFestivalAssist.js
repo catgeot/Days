@@ -332,6 +332,77 @@ function cleanCalendarLine(line) {
   return next;
 }
 
+const FORMAL_ENDING_TABLE = [
+  ['있습니다', '있어요'],
+  ['없습니다', '없어요'],
+  ['됩니다', '돼요'],
+  ['엽니다', '열어요'],
+  ['집니다', '져요'],
+  ['냅니다', '나요'],
+  ['갑니다', '가요'],
+  ['립니다', '려요'],
+  ['합니다', '해요'],
+];
+
+function syllableHasBatchim(ch) {
+  const code = String(ch || '').codePointAt(0);
+  if (!code || code < 0xac00 || code > 0xd7a3) return false;
+  return (code - 0xac00) % 28 !== 0;
+}
+
+/**
+ * Sentence-final 합니다체 → 해요체. Only table entries. A bare 습니다/ㅂ니다 stays.
+ * 입니다 picks 예요 or 이에요 from the previous syllable's batchim.
+ * @param {string} text
+ */
+export function rewriteFestivalFormalEndings(text) {
+  let out = String(text || '');
+  for (const [from, to] of FORMAL_ENDING_TABLE) {
+    out = out.replace(new RegExp(`${from}(?=$|[\\s.!?。,，])`, 'g'), to);
+  }
+  return out.replace(/([가-힣])입니다(?=$|[\s.!?。,，])/g, (full, prev) => (
+    syllableHasBatchim(prev) ? `${prev}이에요` : `${prev}예요`
+  ));
+}
+
+/** «자리에요» after a vowel-ending syllable is «자리예요». Keep batchim «이에요». */
+function fixNoBatchimEyeyo(text) {
+  return String(text || '').replace(/([가-힣])에요(?=$|[\s.!?。,，])/g, (full, prev, offset, source) => {
+    if (syllableHasBatchim(prev)) return full;
+    if (prev === '이') {
+      const before = source.charAt(offset - 1);
+      if (before && syllableHasBatchim(before)) return full;
+    }
+    return `${prev}예요`;
+  });
+}
+
+const DATE_LINK_FRAGMENT_RE = /^\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?\s*[,，]\s*\[[^\]]*상세\s*안내[^\]]*\]\([^)]+\)[.。]?$/;
+
+/** Drop a trailing chip sentence that is only a short date plus a detail link. */
+function dropDateLinkFragmentSentences(text) {
+  if (!/\d{1,2}\/\d{1,2}[^\n]{0,80}상세\s*안내/.test(String(text || ''))) return String(text || '');
+  return filterPreservingBreaks(text, (part) => DATE_LINK_FRAGMENT_RE.test(String(part || '').trim()));
+}
+
+/** A repeated prep_hotel «[숙소 검색](url)» is kept once. */
+function dedupeStaySearchLinks(text) {
+  const matches = String(text || '').match(/\[[^\]]*숙소\s*검색[^\]]*\]\([^)\s]+\)/g) || [];
+  if (matches.length < 2) return String(text || '');
+  const seen = new Set();
+  const next = String(text || '').replace(/\[([^\]]*숙소\s*검색[^\]]*)\]\(([^)\s]+)\)/g, (full, label, url) => {
+    const key = `${label}\n${url}`;
+    if (seen.has(key)) return '';
+    seen.add(key);
+    return full;
+  });
+  return next
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 /** Narrative -답니다 endings are not 해요체. Specific forms first, then a boundary-safe generic. */
 function softenDapnida(text) {
   return String(text || '')
@@ -369,7 +440,13 @@ export function polishFestivalModelReply(reply, options = {}) {
   if (isFestivalLodgingAsk(options)) {
     text = stripNonStayFacilities(text, options.userText);
   }
-  if (String(options.locale || 'ko').slice(0, 2) !== 'en') text = softenDapnida(text);
+  if (String(options.locale || 'ko').slice(0, 2) !== 'en') {
+    text = rewriteFestivalFormalEndings(text);
+    text = softenDapnida(text);
+    text = fixNoBatchimEyeyo(text);
+    text = dropDateLinkFragmentSentences(text);
+    text = dedupeStaySearchLinks(text);
+  }
   return appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
 }
 

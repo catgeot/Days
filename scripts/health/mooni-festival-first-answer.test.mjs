@@ -263,6 +263,36 @@ test('leading facts JSON is stripped before the title check', () => {
   assert.doesNotMatch(fromFence, /```|\{"title"/);
 });
 
+test('2855626 formal endings are rewritten before the title check', () => {
+  const input = JSON.parse(readFileSync(join(root, 'scripts/staging/fixtures/festival-opening/2855626.json'), 'utf8'));
+  const ctx = buildFestivalMooniContext(input);
+  const facts = buildFestivalFirstAnswerFacts(ctx, { locale: 'ko', now: NOW });
+  const raw = [
+    '허심청브로이 옥토버페스트는 10/15~17에 특별한 맥주 축제를 엽니다.',
+    '허심청브로이 옥토버페스트에서는 라이브 퍼포먼스가 펼쳐집니다.',
+    '금강식물원 근처에 있습니다.',
+  ].join(' ');
+  const kept = acceptFestivalModelOpening(raw, facts, [ctx.address, ctx.timeText, ctx.feeText]);
+  assert.match(kept, /^허심청브로이 옥토버페스트/);
+  assert.equal((kept.match(/허심청브로이 옥토버페스트/g) || []).length, 1);
+  assert.match(kept, /특별한 맥주 축제를 열어요/);
+  assert.match(kept, /라이브 퍼포먼스가 펼쳐져요/);
+  assert.match(kept, /근처에 있어요/);
+  assert.doesNotMatch(kept, /엽니다|집니다|습니다|입니다/);
+  assert.equal(
+    acceptFestivalModelOpening(
+      '허심청브로이 옥토버페스트는 10/15~17에 특별한 맥주 축제를 엽니다. 분위기가 좋습니다.',
+      facts,
+      [ctx.address, ctx.timeText, ctx.feeText],
+    ),
+    '',
+  );
+  const system = renderFestivalFirstAnswer('ko', { title: '허심청브로이 옥토버페스트' }).system;
+  assert.match(system, /모든 문장은 -요로 끝난다/);
+  assert.match(system, /축제 제목은 첫 문장에서 한 번만/);
+  assert.match(system, /예: 축제는 10\/15~18, 엿새 뒤 시작해요/);
+});
+
 test('Jeju press-release overview and program labels stay off the card', () => {
   const ctx = buildFestivalMooniContext({
     item: {
@@ -698,6 +728,30 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   assert.match(activities, /돼요/);
   assert.match(activities, /한대요/);
   assert.doesNotMatch(activities, /답니다/);
+  const formalChip = polishFestivalModelReply(
+    '허심청브로이 옥토버페스트는 특별한 맥주 축제를 엽니다. 야외에서 펼쳐집니다. 금강식물원 근처에 있습니다. 축제입니다. 사람입니다. 맛보는 자리에요.',
+    { contentId: '2855626', locale: 'ko', chipId: 'festival_sights', userText: '볼거리' },
+  );
+  assert.match(formalChip, /열어요/);
+  assert.match(formalChip, /펼쳐져요/);
+  assert.match(formalChip, /있어요/);
+  assert.match(formalChip, /축제예요/);
+  assert.match(formalChip, /사람이에요/);
+  assert.match(formalChip, /자리예요/);
+  assert.doesNotMatch(formalChip, /엽니다|집니다|습니다|입니다|자리에요|이예요/);
+  const dated = polishFestivalModelReply(
+    '야외에서 맥주를 즐겨요. 10/15~18, [축제 상세 안내](https://www.gateo.kr/korea/?festival=2855626).',
+    { contentId: '2855626', locale: 'ko', chipId: 'festival_sights', userText: '볼거리' },
+  );
+  assert.match(dated, /즐겨요/);
+  assert.doesNotMatch(dated, /10\/15~18|상세 안내/);
+  const stayUrl = 'https://www.gateo.kr/korea/?festival=2855626#festival-lodging';
+  const lodging = polishFestivalModelReply(
+    `월화거리 호텔이 편해요.\n[숙소 검색](${stayUrl})\n[숙소 검색](${stayUrl})`,
+    { contentId: '2855626', locale: 'ko', chipId: 'prep_hotel', userText: '숙소 추천' },
+  );
+  assert.match(lodging, /호텔이 편해요/);
+  assert.equal((lodging.match(/숙소 검색/g) || []).length, 1);
   assert.doesNotMatch(stripDomesticEntryDocLines('입국 증빙이 필요해요.', { chipId: 'prep_hotel' }), /입국/);
   assert.doesNotMatch(
     polishFestivalModelReply('월화거리 호텔이 편해요. 여행 증빙을 위해 숙소 예약 확인서를 미리 준비하세요.', {

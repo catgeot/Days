@@ -2,6 +2,7 @@ import {
   festivalTimingStatus,
   gateoKoreaFestivalDetailUrl,
   kstTodayYmd,
+  rewriteFestivalFormalEndings,
   ymdDayDelta,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 import {
@@ -718,7 +719,7 @@ export function buildFestivalFirstAnswerFacts(festivalContext, options = {}) {
 }
 
 const FORMAL_RE = /습니[다까]|하십시오/;
-const HAEYO_RE = /해요|예요|이에요|있어요|없어요|돼요/;
+const HAEYO_RE = /해요|예요|이에요|어요|돼요/;
 const CLOCK_RE = /\d{1,2}\s*:\s*\d{2}/;
 const FEE_RE = /입장료|입장\s*무료|admission is|the listed fee|hours are|운영\s*시간/i;
 const PROMO_RE = /사랑을 받|황금빛|오신 것을 환영|welcome to/i;
@@ -811,7 +812,7 @@ function dedupeRepeatedTitle(raw, facts) {
     if (first < 0) continue;
     const head = out.slice(0, first + title.length);
     const tail = out.slice(first + title.length).replace(
-      new RegExp(`${escapeRegExp(title)}(?:은|는|이|가)?\\s*`, 'g'),
+      new RegExp(`${escapeRegExp(title)}(?:에서는|에선|에서|은|는|이|가)?\\s*`, 'g'),
       '',
     );
     out = `${head}${tail}`;
@@ -955,6 +956,7 @@ export function acceptFestivalModelOpening(text, facts, banned = []) {
   raw = dedupeRepeatedTitle(raw, facts);
   raw = expandDateOnlyFragments(raw, facts);
   raw = stripTheBeforeFactNoun(raw, facts).trim();
+  if (facts?.locale !== 'en') raw = rewriteFestivalFormalEndings(raw).trim();
   if (!raw || !facts?.title) return '';
   if (!startsWithFestivalTitle(raw, facts)) return '';
   if (countFestivalCardSentences(raw) > MODEL_OPENING_SENTENCE_CAP) return '';
