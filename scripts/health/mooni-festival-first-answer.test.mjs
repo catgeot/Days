@@ -279,9 +279,17 @@ test('2855626 formal endings are rewritten before the title check', () => {
   assert.match(kept, /라이브 퍼포먼스가 펼쳐져요/);
   assert.match(kept, /근처에 있어요/);
   assert.doesNotMatch(kept, /엽니다|집니다|습니다|입니다/);
+  const liked = acceptFestivalModelOpening(
+    '허심청브로이 옥토버페스트는 10/15~17에 특별한 맥주 축제를 엽니다. 분위기가 좋습니다. 공식 채널에서 확인하세요.',
+    facts,
+    [ctx.address, ctx.timeText, ctx.feeText],
+  );
+  assert.match(liked, /좋아요/);
+  assert.match(liked, /확인하세요/);
+  assert.doesNotMatch(liked, /좋습니다/);
   assert.equal(
     acceptFestivalModelOpening(
-      '허심청브로이 옥토버페스트는 10/15~17에 특별한 맥주 축제를 엽니다. 분위기가 좋습니다.',
+      '허심청브로이 옥토버페스트는 10/15~17에 특별한 맥주 축제를 엽니다. 시작까지 남았습니다.',
       facts,
       [ctx.address, ctx.timeText, ctx.feeText],
     ),
@@ -291,6 +299,7 @@ test('2855626 formal endings are rewritten before the title check', () => {
   assert.match(system, /모든 문장은 -요로 끝난다/);
   assert.match(system, /축제 제목은 첫 문장에서 한 번만/);
   assert.match(system, /예: 축제는 10\/15~18, 엿새 뒤 시작해요/);
+  assert.match(system, /하세요/);
 });
 
 test('Jeju press-release overview and program labels stay off the card', () => {
@@ -855,6 +864,47 @@ test('prompts forbid an unlinked outside-channel closing', async () => {
   assert.match(festivalChip, /축제 기간:/);
   assert.match(KO.festivalAnswerRules, /플래너 링크/);
   assert.match(KO.festivalAnswerRules, /답니다/);
+  assert.match(KO.festivalAnswerRules, /축제 화면에는 플래너와 칩 섹션이 없다/);
+  assert.match(KO.festivalPriorityLine, /칩 규칙의 플래너·섹션 안내보다 우선한다/);
+  assert.match(KO.festivalPriorityLine, /#festival-lodging/);
+  assert.match(EN.festivalAnswerRules, /no planner and no chip sections/);
+  const visaSystem = renderMooniSystem({
+    locale: 'ko',
+    persona: 'PLANNER',
+    isMooni: true,
+    chipId: 'visa_docs',
+    koreaFestivalHint: hint,
+  });
+  const chipMayMention = visaSystem.indexOf('플래너 비자 섹션을 언급할 수 있다');
+  const festivalBan = visaSystem.indexOf('칩 규칙의 플래너·섹션 안내보다 우선한다');
+  assert.ok(chipMayMention > 0 && festivalBan > chipMayMention);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '허심청브로이 옥토버페스트' }).system, /플래너와 칩 섹션이 없다/);
+  const visaShown = polishFestivalModelReply(
+    '여권 유효기간을 확인하세요. [출발 전 준비] 섹션 및 플래너에서 반드시 확인하세요.\n[플래너]\n대사관 공식 채널이나 섹션 및 플래너에서 반드시 확인하세요.',
+    { contentId: '2855626', locale: 'ko', chipId: 'visa_docs', userText: '비자' },
+  );
+  assert.match(visaShown, /확인하세요/);
+  assert.doesNotMatch(visaShown, /플래너|섹션|출발 전 준비/);
+  const route = polishFestivalModelReply(
+    '오전에는 월화거리를 걸어요. 더 자세한 하루 동선은 GATEO 플래너를 참고하세요.',
+    { contentId: '2930716', locale: 'ko', chipId: 'festival_day', userText: '동선' },
+  );
+  assert.match(route, /월화거리/);
+  assert.doesNotMatch(route, /플래너/);
+  const labeled = polishFestivalModelReply(
+    '월화거리 호텔이 편해요.\n숙소 확인: [숙소 카드](https://www.gateo.kr/korea/?festival=2855626#festival-lodging)',
+    { contentId: '2855626', locale: 'ko', chipId: 'prep_hotel', userText: '숙소 추천' },
+  );
+  assert.match(labeled, /호텔이 편해요/);
+  assert.match(labeled, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2855626#festival-lodging\)/);
+  assert.doesNotMatch(labeled, /숙소 확인:/);
+  const likedChip = polishFestivalModelReply(
+    '분위기가 좋습니다. 공식 채널에서 확인하세요.',
+    { contentId: '2855626', locale: 'ko', chipId: 'visa_docs', userText: '비자' },
+  );
+  assert.match(likedChip, /좋아요/);
+  assert.match(likedChip, /확인하세요/);
+  assert.doesNotMatch(likedChip, /좋습니다/);
 
   const lodging = await resolveMooniChatKoreaFestivalHint({
     userText: '숙소 추천해 주세요',

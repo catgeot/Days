@@ -719,7 +719,7 @@ export function buildFestivalFirstAnswerFacts(festivalContext, options = {}) {
 }
 
 const FORMAL_RE = /습니[다까]|하십시오/;
-const HAEYO_RE = /해요|예요|이에요|어요|돼요/;
+const HAEYO_RE = /해요|예요|이에요|어요|아요|돼요|세요/;
 const CLOCK_RE = /\d{1,2}\s*:\s*\d{2}/;
 const FEE_RE = /입장료|입장\s*무료|admission is|the listed fee|hours are|운영\s*시간/i;
 const PROMO_RE = /사랑을 받|황금빛|오신 것을 환영|welcome to/i;

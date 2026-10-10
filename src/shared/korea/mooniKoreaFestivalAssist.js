@@ -265,12 +265,42 @@ function lineHasUrl(line) {
 }
 
 /** Drop info-card headers and unlinked 「…」 플래너 링크 / 「…」 링크 phrases. */
+const LABEL_UNWRAP_RE = /^(?:[-*]\s*)?([가-힣A-Za-z][가-힣A-Za-z0-9 ·・]{0,16})\s*[:：]\s*(.+)$/;
+const LABEL_HEAD_RE = /(?:확인|안내|기간|날짜|장소|주소|요금|시간|제목|추천|정보)$/;
+
+/** «숙소 확인: [숙소 카드](url)» keeps the link and drops the label. */
+function unwrapFestivalLabelLine(line) {
+  const match = String(line || '').trim().match(LABEL_UNWRAP_RE);
+  if (!match) return String(line || '').trim();
+  const label = match[1].trim();
+  const rest = match[2].trim();
+  if (!LABEL_HEAD_RE.test(label)) return String(line || '').trim();
+  return rest;
+}
+
 function stripPlannerResidueLine(line) {
-  const trimmed = String(line || '').trim();
+  let trimmed = String(line || '').trim();
+  if (!trimmed) return '';
+  if (INFO_HEADER_RE.test(trimmed)) return '';
+  trimmed = unwrapFestivalLabelLine(trimmed);
   if (!trimmed) return '';
   if (INFO_HEADER_RE.test(trimmed)) return '';
   if (lineHasUrl(trimmed)) return trimmed;
   return trimmed.replace(QUOTED_BARE_LINK_RE, '').replace(/[ \t]{2,}/g, ' ').replace(/\s+([.!?。])/g, '$1').trim();
+}
+
+/** Festival screens have no planner and no chip sections. Drop those sentences. */
+function dropFestivalPlannerSentences(text) {
+  const source = String(text || '');
+  if (!/플래너|섹션/.test(source)) return source;
+  return filterPreservingBreaks(source, (part) => {
+    const line = String(part || '').trim();
+    if (!line) return false;
+    if (/플래너/.test(line)) return true;
+    if (/(?:\[[^\]]+\]|「[^」]+」)\s*섹션/.test(line)) return true;
+    if (/섹션\s*(?:에서|을|와|과|및)/.test(line)) return true;
+    return false;
+  });
 }
 
 /** Chip headings, CTA labels, separator leftovers, and bracket phrases with no URL. */
@@ -335,6 +365,7 @@ function cleanCalendarLine(line) {
 const FORMAL_ENDING_TABLE = [
   ['있습니다', '있어요'],
   ['없습니다', '없어요'],
+  ['좋습니다', '좋아요'],
   ['됩니다', '돼요'],
   ['엽니다', '열어요'],
   ['집니다', '져요'],
@@ -428,6 +459,7 @@ export function stripLodgingCalendarEcho(text) {
 
 export function polishFestivalModelReply(reply, options = {}) {
   let text = String(reply || '').trim();
+  if (String(options.locale || 'ko').slice(0, 2) !== 'en') text = dropFestivalPlannerSentences(text);
   text = stripDisallowedFestivalLinks(text);
   text = stripMooniUiChipLabels(text);
   text = expandCompactDates(text, options.locale);
@@ -750,7 +782,7 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   lines.push(
     isEn
       ? '- Write dates only in that short form. Do not write a countdown or a long calendar date such as "October 15, 2026".'
-      : '- 답의 날짜는 위의 짧은 형식만 쓴다. 「N월 N일부터」와 「시작까지 N일 남았어요」「현재 시작까지」는 쓰지 않는다. 해요체만 쓰고, 반말(해/봐/좋아/추천해)과 「습니다」「입니다」「좋습니다」로 끝내지 않는다.',
+      : '- 답의 날짜는 위의 짧은 형식만 쓴다. 「N월 N일부터」와 「시작까지 N일 남았어요」「현재 시작까지」는 쓰지 않는다. 해요체만 쓰고, 반말(해/봐/좋아/추천해)과 「습니다」「입니다」로 끝내지 않는다. 「좋습니다」는 「좋아요」로 쓰고, 「하세요」는 써도 된다.',
   );
   lines.push(
     isEn
