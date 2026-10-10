@@ -88,6 +88,23 @@ test('lodging markdown list renders bullets and bold', () => {
   assert.doesNotMatch(html, /\* \*\*/);
 });
 
+test('dash lists render like star lists', () => {
+  const dash = [
+    '여권 유효기간을 확인하세요.',
+    '- 왕복 항공권이 필요해요.',
+    '- 숙소 예약 확인서를 준비하세요.',
+  ].join('\n');
+  const star = dash.replace(/^- /gm, '* ');
+  const dashMd = getMooniModelMarkdownForRender(dash, { stripPhantomTicketMention: true });
+  const starMd = getMooniModelMarkdownForRender(star, { stripPhantomTicketMention: true });
+  assert.equal(dashMd, starMd);
+  const html = renderMooniMarkdownHtml(dashMd);
+  assert.match(html, /<ul>/);
+  assert.match(html, /<li>[^<]*왕복 항공권/);
+  assert.match(html, /<li>[^<]*숙소 예약 확인서/);
+  assert.doesNotMatch(html, /<p>[^<]*왕복 항공권[^<]*숙소 예약 확인서/);
+});
+
 test('paragraph after a bullet list stays out of the last bullet', () => {
   const src = '숙소예요.\n\n* **강릉역 인근**: 호텔\n* **월화거리**: 게하\n다음으로 숙소 카드에서 볼 수 있어요.';
   const md = getMooniModelMarkdownForRender(src, { stripPhantomTicketMention: true });

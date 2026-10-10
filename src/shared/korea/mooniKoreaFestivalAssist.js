@@ -265,28 +265,45 @@ function lineHasUrl(line) {
 }
 
 /** Drop info-card headers and unlinked 「…」 플래너 링크 / 「…」 링크 phrases. */
-const LABEL_UNWRAP_RE = /^(?:[-*]\s*)?([가-힣A-Za-z][가-힣A-Za-z0-9 ·・]{0,16})\s*[:：]\s*(.+)$/;
-const LABEL_HEAD_RE = /(?:확인|안내|기간|날짜|장소|주소|요금|시간|제목|추천|정보)$/;
+const SHORT_KO_LABEL_RE = /^([가-힣](?:[가-힣]*[ \t]+)*[가-힣]{0,8})\s*[:：]\s*(.*)$/;
 
-/** «숙소 확인: [숙소 카드](url)» keeps the link and drops the label. */
+function isCardInfoRest(rest) {
+  const text = String(rest || '').replace(/\s+/g, ' ').trim();
+  if (!text) return true;
+  if (/^\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?[.。]?$/.test(text)) return true;
+  if (/^\[[^\]]*(?:상세\s*안내|축제\s*페이지)[^\]]*\]\([^)]+\)[.。]?$/.test(text)) return true;
+  return false;
+}
+
+/**
+ * A line that starts with a short Korean label and a colon keeps the sentence.
+ * Card-only values are dropped. Bullet lines such as «* **강릉역 인근**:» stay.
+ */
 function unwrapFestivalLabelLine(line) {
-  const match = String(line || '').trim().match(LABEL_UNWRAP_RE);
-  if (!match) return String(line || '').trim();
-  const label = match[1].trim();
+  const trimmed = String(line || '').trim();
+  if (/^[*+-]\s/.test(trimmed) || /^\d+\.\s/.test(trimmed) || /^\*\*/.test(trimmed)) return trimmed;
+  const match = trimmed.match(SHORT_KO_LABEL_RE);
+  if (!match) return trimmed;
+  const label = match[1].replace(/\s+/g, ' ').trim();
+  if (!label || label.length > 16 || /[.!?。]/.test(label)) return trimmed;
   const rest = match[2].trim();
-  if (!LABEL_HEAD_RE.test(label)) return String(line || '').trim();
+  if (isCardInfoRest(rest)) return '';
   return rest;
 }
 
 function stripPlannerResidueLine(line) {
   let trimmed = String(line || '').trim();
   if (!trimmed) return '';
-  if (INFO_HEADER_RE.test(trimmed)) return '';
   trimmed = unwrapFestivalLabelLine(trimmed);
   if (!trimmed) return '';
   if (INFO_HEADER_RE.test(trimmed)) return '';
   if (lineHasUrl(trimmed)) return trimmed;
   return trimmed.replace(QUOTED_BARE_LINK_RE, '').replace(/[ \t]{2,}/g, ' ').replace(/\s+([.!?。])/g, '$1').trim();
+}
+
+/** «- 항목» is the same list as «* 항목». A separator dash between chip names is not. */
+function promoteDashListMarkers(text) {
+  return String(text || '').replace(/^( *)[-–—] +(?=\S)/gm, '$1* ');
 }
 
 /** Festival screens have no planner and no chip sections. Drop those sentences. */
@@ -305,7 +322,7 @@ function dropFestivalPlannerSentences(text) {
 
 /** Chip headings, CTA labels, separator leftovers, and bracket phrases with no URL. */
 export function stripMooniUiChipLabels(text) {
-  const lines = String(text || '')
+  const lines = promoteDashListMarkers(text)
     .replace(/\[([^\]\n]+)\](?!\()/g, '')
     .split('\n')
     .map((line) => (line.trim() ? stripPlannerResidueLine(stripCtaLine(line)) : ''));
@@ -436,10 +453,16 @@ function dedupeStaySearchLinks(text) {
 
 /** Narrative -답니다 endings are not 해요체. Specific forms first, then a boundary-safe generic. */
 function softenDapnida(text) {
-  return String(text || '')
+  let out = String(text || '')
     .replace(/있답니다/g, '있어요')
-    .replace(/된답니다/g, '돼요')
-    .replace(/([가-힣])답니다(?=$|[\s.!?。,，])/g, '$1대요');
+    .replace(/된답니다/g, '돼요');
+  out = out.replace(/([가-힣])이랍니다(?=$|[\s.!?。,，])/g, (full, prev) => (
+    syllableHasBatchim(prev) ? `${prev}이에요` : full
+  ));
+  out = out.replace(/([가-힣])랍니다(?=$|[\s.!?。,，])/g, (full, prev) => (
+    syllableHasBatchim(prev) ? full : `${prev}예요`
+  ));
+  return out.replace(/([가-힣])답니다(?=$|[\s.!?。,，])/g, '$1대요');
 }
 
 /** Festival answers drop the countdown clause and long calendar dates without flattening lists. */

@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { micromark } from 'micromark';
+import { gfm, gfmHtml } from 'micromark-extension-gfm';
 import { KO, EN } from '../../src/i18n/mooniPromptBundleData.js';
 import { KO as ServerKO, EN as ServerEN } from '../../supabase/functions/_shared/gemini/mooniPromptBundleData.js';
 import koLocale from '../../src/i18n/locales/ko.json' with { type: 'json' };
@@ -905,6 +907,47 @@ test('prompts forbid an unlinked outside-channel closing', async () => {
   assert.match(likedChip, /좋아요/);
   assert.match(likedChip, /확인하세요/);
   assert.doesNotMatch(likedChip, /좋습니다/);
+  const nextAction = polishFestivalModelReply(getMooniModelMarkdownForRender([
+    '월화거리 호텔이 편해요.',
+    '다음 행동: 숙소 정보를 확인하세요.',
+    '축제 기간: 10/15~18',
+    '축제 상세 안내: [축제 상세 안내](https://www.gateo.kr/korea/?festival=2855626)',
+    '* **강릉역 인근**: 호텔',
+  ].join('\n')), {
+    contentId: '2855626',
+    locale: 'ko',
+    chipId: 'prep_hotel',
+    userText: '숙소 추천',
+  });
+  assert.match(nextAction, /숙소 정보를 확인하세요/);
+  assert.match(nextAction, /\* \*\*강릉역 인근\*\*: 호텔/);
+  assert.doesNotMatch(nextAction, /다음 행동:|축제 기간:|축제 상세 안내:|10\/15~18/);
+  const historyChip = polishFestivalModelReply(
+    '과거를 경험하는 장이랍니다. 이야기를 나누는 자리랍니다.',
+    { contentId: '2855626', locale: 'ko', chipId: 'history', userText: '역사' },
+  );
+  assert.match(historyChip, /경험하는 장이에요/);
+  assert.match(historyChip, /자리예요/);
+  assert.doesNotMatch(historyChip, /답니다|장이랍니다|자리랍니다/);
+  const visaDash = [
+    '여권 유효기간을 확인하세요.',
+    '- 왕복 항공권이 필요해요.',
+    '- 숙소 예약 확인서를 준비하세요.',
+  ].join('\n');
+  const visaStar = visaDash.replace(/^- /gm, '* ');
+  const visaOpts = { contentId: '2855626', locale: 'ko', chipId: 'visa_docs', userText: '비자' };
+  const visaListShown = polishFestivalModelReply(getMooniModelMarkdownForRender(visaDash), visaOpts);
+  const visaStarShown = polishFestivalModelReply(getMooniModelMarkdownForRender(visaStar), visaOpts);
+  const renderMd = (markdown) => micromark(markdown, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+  const visaHtml = renderMd(visaListShown);
+  const visaStarHtml = renderMd(visaStarShown);
+  assert.match(visaListShown, /\n\* 왕복 항공권이 필요해요/);
+  assert.match(visaListShown, /\n\* 숙소 예약 확인서를 준비하세요/);
+  assert.match(visaHtml, /<ul>/);
+  assert.match(visaHtml, /<li>[^<]*왕복 항공권/);
+  assert.match(visaHtml, /<li>[^<]*숙소 예약 확인서/);
+  assert.doesNotMatch(visaHtml, /<p>[^<]*왕복 항공권[^<]*숙소 예약 확인서/);
+  assert.equal(visaHtml, visaStarHtml);
 
   const lodging = await resolveMooniChatKoreaFestivalHint({
     userText: '숙소 추천해 주세요',
