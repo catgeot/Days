@@ -59,6 +59,8 @@ import {
 } from './festivalPersonalStore';
 import { filterBySearchQuery } from './festivalSearch';
 import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
+import { fetchTourApiFestivalDetail } from '../../utils/fetchTourApiFestivals';
+import { projectFestivalDeepLink } from './festivalDeepLinkItem';
 import {
   DEFAULT_AREA_CODE,
   NEAR_FESTIVAL_KM,
@@ -838,12 +840,27 @@ export default function KoreaFestivalHub() {
   const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const selected = useMemo(() => {
-    if (!festivalId || !items.length) return null;
-    return (
-      items.find((row) => String(row?.contentId || '') === festivalId) || null
-    );
-  }, [festivalId, items]);
+  const [deepLinkForId, setDeepLinkForId] = useState('');
+  const [deepLinkPhase, setDeepLinkPhase] = useState(/** @type {'idle' | 'loading' | 'ok' | 'miss'} */ ('idle'));
+  const [deepLinkDetail, setDeepLinkDetail] = useState(/** @type {object | null} */ (null));
+  const [festivalToast, setFestivalToast] = useState('');
+  const deepLinkGenRef = useRef(0);
+  const deepLinkDetailForId =
+    deepLinkForId === festivalId ? deepLinkDetail : null;
+  const deepLinkPhaseForId =
+    deepLinkForId === festivalId ? deepLinkPhase : 'idle';
+  const festivalDeepLink = useMemo(
+    () =>
+      projectFestivalDeepLink({
+        festivalId,
+        items,
+        listLoading: loading,
+        phase: deepLinkPhaseForId,
+        detail: deepLinkDetailForId,
+      }),
+    [festivalId, items, loading, deepLinkPhaseForId, deepLinkDetailForId],
+  );
+  const selected = festivalDeepLink.selected;
 
   const clearFestivalFromUrl = useCallback(() => {
     festivalDetailPushedRef.current = false;
@@ -881,22 +898,50 @@ export default function KoreaFestivalHub() {
   }, [fromTheme, themeAreaParam, location.key, clearFestivalFromUrl]);
 
   useEffect(() => {
-    if (loading || !items.length) return undefined;
+    if (!festivalToast) return undefined;
+    const timer = window.setTimeout(() => setFestivalToast(''), 3200);
+    return () => window.clearTimeout(timer);
+  }, [festivalToast]);
+
+  useEffect(() => {
+    if (loading) return undefined;
     if (!festivalId) {
       festivalDeepLinkSeededForRef.current = '';
       return undefined;
     }
 
-    const hit = items.find(
-      (row) => String(row?.contentId || '') === festivalId,
-    );
-    if (!hit) {
+    if (festivalDeepLink.fetch) {
+      const gen = ++deepLinkGenRef.current;
+      const requestedId = festivalId;
+      setDeepLinkForId(requestedId);
+      setDeepLinkPhase('loading');
+      setDeepLinkDetail(null);
+      fetchTourApiFestivalDetail({ contentId: requestedId }).then((detail) => {
+        if (deepLinkGenRef.current !== gen) return;
+        setDeepLinkForId(requestedId);
+        setDeepLinkDetail(detail);
+        setDeepLinkPhase(detail ? 'ok' : 'miss');
+      });
+      return undefined;
+    }
+
+    if (festivalDeepLink.clearUrl) {
       if (festivalDeepLinkSeededForRef.current !== '__invalid__') {
         festivalDeepLinkSeededForRef.current = '__invalid__';
+        setFestivalToast(t('korea.festival.notFound'));
         clearFestivalFromUrl();
       }
       return undefined;
     }
+
+    if (!festivalDeepLink.selected || festivalDeepLink.sheet === 'loading') {
+      return undefined;
+    }
+
+    const listed = items.some(
+      (row) => String(row?.contentId || '') === festivalId,
+    );
+    if (!listed) return undefined;
 
     if (
       !festivalDetailPushedRef.current &&
@@ -925,10 +970,15 @@ export default function KoreaFestivalHub() {
     loading,
     items,
     festivalId,
+    festivalDeepLink.fetch,
+    festivalDeepLink.clearUrl,
+    festivalDeepLink.sheet,
+    festivalDeepLink.selected,
     searchParams,
     location.pathname,
     navigate,
     clearFestivalFromUrl,
+    t,
   ]);
 
   useEffect(() => {
@@ -2677,10 +2727,20 @@ export default function KoreaFestivalHub() {
         <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
 
-      {selected && (
+      {festivalToast ? (
+        <div
+          role="status"
+          className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-1/2 z-[60] max-w-[90vw] -translate-x-1/2 rounded-full border border-stone-700 bg-stone-900 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg"
+        >
+          {festivalToast}
+        </div>
+      ) : null}
+
+      {(selected || festivalDeepLink.sheet === 'loading') && (
         <FestivalDetailSheet
           item={selected}
-          favorited={favoriteIds.has(String(selected.contentId))}
+          pending={festivalDeepLink.sheet === 'loading'}
+          favorited={Boolean(selected) && favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
           onClose={closeFestivalDetail}
           onOpenHub={(hubId) => {

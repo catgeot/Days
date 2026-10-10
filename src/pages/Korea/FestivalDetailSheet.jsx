@@ -102,6 +102,10 @@ import {
   FESTIVAL_TOURAPI_INFO_INTRO,
   FESTIVAL_TOURAPI_INFO_PROGRAM,
 } from './festivalTourApiMatchLabels';
+import {
+  FestivalEndedBadge,
+  isFestivalEnded,
+} from './festivalDeepLinkItem';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -475,9 +479,34 @@ function toScenicModalSpot(spot, locale = 'ko') {
   };
 }
 
+function FestivalDetailPending({ label, onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-40 flex items-end md:items-stretch justify-center bg-stone-900/30 backdrop-blur-sm p-0 md:py-2 md:px-3 lg:px-4"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        className="relative flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-busy="true"
+        aria-label={label}
+      >
+        <div className="flex items-center gap-2 px-5 py-8 text-sm text-stone-500">
+          <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+          {label}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * @param {{
- *   item: Record<string, unknown>,
+ *   item?: Record<string, unknown> | null,
+ *   pending?: boolean,
  *   favorited?: boolean,
  *   onToggleFavorite?: (item: Record<string, unknown>) => void,
  *   onClose: () => void,
@@ -485,6 +514,7 @@ function toScenicModalSpot(spot, locale = 'ko') {
  */
 export default function FestivalDetailSheet({
   item,
+  pending = false,
   favorited = false,
   onToggleFavorite,
   onClose,
@@ -1240,7 +1270,17 @@ export default function FestivalDetailSheet({
     setHeroImageBroken(false);
   }, [activeImage, imageUrls]);
 
-  if (!item) return null;
+  const festivalEnded = isFestivalEnded(item?.eventEndDate || intro?.eventEndDate);
+
+  if (!item) {
+    if (!pending) return null;
+    return (
+      <FestivalDetailPending
+        label={t('korea.festival.detail.loadingDetail')}
+        onClose={onClose}
+      />
+    );
+  }
 
   const start = formatYmdLabel(item.eventStartDate || intro?.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate || intro?.eventEndDate);
@@ -1449,6 +1489,9 @@ export default function FestivalDetailSheet({
                 </button>
               )}
             </div>
+            {festivalEnded ? (
+              <FestivalEndedBadge label={t('korea.festival.detail.endedBadge')} />
+            ) : null}
             <h3
               id="korea-festival-sheet-title"
               className="text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug text-stone-900"
@@ -1471,15 +1514,17 @@ export default function FestivalDetailSheet({
             hideOfficialHomepage={hideOfficialHomepage}
             officialLabel={t('korea.festival.detail.officialSite')}
             bookingSlot={
-              <FestivalBookingActions
-                contentId={item?.contentId}
-                links={bookingLinks}
-                bookNowLabel={t('korea.festival.detail.bookNow')}
-                uiLang={locale}
-                programsTitle={t('korea.festival.detail.bookPrograms')}
-                moreLabel={t('korea.festival.detail.bookMore')}
-                providerLabel={t('korea.festival.detail.bookProviderTicketlink')}
-              />
+              festivalEnded ? null : (
+                <FestivalBookingActions
+                  contentId={item?.contentId}
+                  links={bookingLinks}
+                  bookNowLabel={t('korea.festival.detail.bookNow')}
+                  uiLang={locale}
+                  programsTitle={t('korea.festival.detail.bookPrograms')}
+                  moreLabel={t('korea.festival.detail.bookMore')}
+                  providerLabel={t('korea.festival.detail.bookProviderTicketlink')}
+                />
+              )
             }
             mooniSlot={mooniSummaryCardWillRender ? festivalMooni.inlineButton : null}
           />
@@ -1743,7 +1788,7 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {showFestivalStayStrip ? (
+              {!festivalEnded && showFestivalStayStrip ? (
                 <div className="pt-1" data-festival-section="lodging">
                   <FestivalStayStrip
                     item={item}
@@ -1753,7 +1798,7 @@ export default function FestivalDetailSheet({
                 </div>
               ) : null}
 
-              {showFestivalTnaStrip ? (
+              {!festivalEnded && showFestivalTnaStrip ? (
                 <div className="pt-1" data-festival-section="packages">
                   <FestivalTnaStrip
                     item={item}
@@ -1763,7 +1808,8 @@ export default function FestivalDetailSheet({
                 </div>
               ) : null}
 
-              {((!showFestivalTnaStrip && festivalTnaHref) || festivalCross?.packageCta?.url) && (
+              {!festivalEnded &&
+              ((!showFestivalTnaStrip && festivalTnaHref) || festivalCross?.packageCta?.url) && (
                 <div className="space-y-3 pt-1" data-festival-section="packages">
                   {!showFestivalTnaStrip && festivalTnaHref ? (
                     <div className="space-y-2">
@@ -2083,7 +2129,7 @@ export default function FestivalDetailSheet({
                   </div>
                 )}
 
-              {bookingLinks.length > 0 && (
+              {!festivalEnded && bookingLinks.length > 0 && (
                 <p
                   className="text-[11px] leading-snug text-stone-500 break-keep"
                   data-festival-booking-note=""
