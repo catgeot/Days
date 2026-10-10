@@ -393,6 +393,50 @@ function glossaryCompleteEnglish(text) {
   return out.replace(/\s+/g, ' ').replace(/\s+([,:])/g, '$1').trim();
 }
 
+function glossaryExact(name) {
+  const ko = String(name || '').trim();
+  if (!ko) return '';
+  if (EXACT.has(ko)) return EXACT.get(ko);
+  const hit = POI_GLOSSARY.find(([token]) => token === ko);
+  return hit ? hit[1] : '';
+}
+
+/**
+ * Lodging area in English (한글). Unknown Hangul is omitted.
+ * The festival city itself is “downtown Gangneung (강릉)”.
+ * @param {string} name
+ * @param {string} [placeName]
+ */
+export function englishLodgingAreaLabel(name, placeName = '') {
+  const ko = String(name || '').replace(/\s*(?:일원|일대|부근|인근)$/g, '').replace(/\s+/g, ' ').trim();
+  if (!ko) return '';
+  if (!/[가-힣]/.test(ko)) return ko;
+  const parts = ko.split(/\s+/).filter(Boolean);
+  if (parts.length > 1 && LEADING_CITY.has(parts[0])) {
+    const rest = parts.slice(1).join(' ');
+    const street = glossaryExact(rest);
+    if (street && !/[가-힣]/.test(street)) return `${street} (${rest})`;
+  }
+  const place = String(placeName || '').replace(/(?:시|군)$/, '').trim();
+  const bare = ko.replace(/(?:시|군)$/, '');
+  if (place && (ko === place || bare === place)) {
+    const city = glossaryExact(bare) || glossaryExact(ko);
+    if (city && !/[가-힣]/.test(city)) return `downtown ${city} (${ko})`;
+  }
+  const english = glossaryExact(ko) || glossaryExact(bare);
+  if (!english || /[가-힣]/.test(english)) return '';
+  return `${english} (${ko})`;
+}
+
+/** City name for an English lodging link. Empty when the glossary has no English. */
+export function englishLodgingPlaceName(placeName) {
+  const ko = String(placeName || '').trim();
+  const bare = ko.replace(/(?:시|군)$/, '');
+  const english = glossaryExact(bare) || glossaryExact(ko);
+  if (!english || /[가-힣]/.test(english)) return '';
+  return english;
+}
+
 /**
  * Nearby POI: glossary English, or omit a fused syllable blob.
  * Region suffixes such as (부산) stay out of the Korean parentheses.

@@ -1,4 +1,5 @@
 import { KO, EN } from '../../i18n/mooniPromptBundleData.js';
+import { englishLodgingAreaLabel, englishLodgingPlaceName } from './englishPlaceLabel.js';
 import { ensureItineraryMarkdownLineBreaks } from '../../utils/mooniTruncatedContinue.js';
 import { filterBySearchQuery, normalizeFestivalQuery } from '../../pages/Korea/festivalSearch.js';
 import {
@@ -49,7 +50,10 @@ export function isFestivalLodgingAsk(input = {}) {
 export function festivalLodgingLinkLabel(placeName, locale = 'ko') {
   const place = String(placeName || '').replace(/\s+/g, ' ').trim();
   const en = String(locale || '').slice(0, 2) === 'en';
-  if (en) return place ? `${place} stay guide` : 'the lodging card';
+  if (en) {
+    const english = englishLodgingPlaceName(place);
+    return english ? `${english} lodging guide` : 'the lodging card';
+  }
   return place ? `${place} 숙소 안내` : '숙소 카드';
 }
 
@@ -80,27 +84,32 @@ function lodgingAreaNames(options = {}) {
   return names.slice(0, 3);
 }
 
-function lodgingAreaLead(areas, locale = 'ko') {
+function lodgingAreaLead(areas, locale = 'ko', placeName = '') {
   const names = (areas || []).slice(0, 3);
-  if (names.length < 2) return '';
   const en = String(locale || '').slice(0, 2) === 'en';
+  const labels = en
+    ? names.map((name) => englishLodgingAreaLabel(name, placeName)).filter(Boolean).slice(0, 3)
+    : names;
+  if (labels.length < 2) return '';
   if (en) {
-    const list = names.length === 2
-      ? `${names[0]} and ${names[1]}`
-      : `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+    const list = labels.length === 2
+      ? `${labels[0]} and ${labels[1]}`
+      : `${labels.slice(0, -1).join(', ')}, and ${labels[labels.length - 1]}`;
     return `${list} are practical places to stay.`;
   }
-  return `${names.join(', ')}에서 묵기 좋아요.`;
+  return `${labels.join(', ')}에서 묵기 좋아요.`;
 }
 
-function renameVagueLodgingLabels(text, label) {
+function renameVagueLodgingLabels(text, label, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
   return String(text || '').replace(
     /\[([^\]]*)\]\((https:\/\/www\.gateo\.kr\/korea\/\?festival=\d+#festival-lodging)\)/g,
-    (full, old, url) => (
-      /이곳|여기|이\s*링크|숙소\s*카드|this link|^here$|the lodging card/i.test(old)
+    (full, old, url) => {
+      if (en && label && !/[가-힣]/.test(label)) return `[${label}](${url})`;
+      return /이곳|여기|이\s*링크|숙소\s*카드|this link|^here$|the lodging card/i.test(old)
         ? `[${label}](${url})`
-        : full
-    ),
+        : full;
+    },
   );
 }
 
@@ -185,11 +194,11 @@ export function appendFestivalLodgingNextStep(reply, options = {}) {
   if (!isFestivalLodgingAsk(options)) return text;
   const placeName = options.placeName || '';
   const label = festivalLodgingLinkLabel(placeName, options.locale);
-  text = renameVagueLodgingLabels(text, label);
+  text = renameVagueLodgingLabels(text, label, options.locale);
   const areas = lodgingAreaNames(options);
   const present = areas.filter((name) => text.includes(name));
   if (areas.length >= 2 && present.length < 2) {
-    const lead = lodgingAreaLead(areas, options.locale);
+    const lead = lodgingAreaLead(areas, options.locale, placeName);
     if (lead) text = text ? `${lead}\n\n${text}` : lead;
   }
   const step = festivalLodgingNextStep(options.contentId, options.locale, placeName);

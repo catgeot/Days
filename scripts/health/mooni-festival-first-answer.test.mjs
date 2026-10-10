@@ -1043,6 +1043,22 @@ test('festival follow-up keeps facts, lodging areas, and the chat session', asyn
   assert.match(stay, /\[강릉 숙소 안내\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
   assert.doesNotMatch(stay, /이곳에서|이곳\]/);
 
+  const stayEn = polishFestivalModelReply(
+    'Check [here](https://www.gateo.kr/korea/?festival=2930716#festival-lodging).',
+    {
+      contentId: '2930716',
+      locale: 'en',
+      userText: 'where to stay',
+      placeName: '강릉',
+      venue: '강릉 월화거리 일원',
+      stayAreas: ['강릉', '동해', '속초'],
+    },
+  );
+  assert.match(stayEn, /Wolhwa Street \(월화거리\), downtown Gangneung \(강릉\), and Donghae \(동해\) are practical places to stay/);
+  assert.match(stayEn, /\[Gangneung lodging guide\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
+  assert.doesNotMatch(stayEn.replace(/\([^)]*\)/g, ''), /[가-힣]/);
+  assert.doesNotMatch(stayEn, /속초/);
+
   const clock = polishFestivalModelReply('공연은 밤 21시까지예요. 특별한 순간을 경험해보세요.', {
     contentId: '2930716',
     locale: 'ko',
