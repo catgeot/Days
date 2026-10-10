@@ -1157,6 +1157,7 @@ export default function FestivalDetailSheet({
     overview,
     program: stripHtml(intro?.program || ''),
     nearbyPlaces: mooniNearbyPlaces,
+    stayAreas: festivalCross?.stayAreas,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {

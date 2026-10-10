@@ -66,7 +66,20 @@ export function buildFestivalMooniContext(input = {}) {
       .replace(/<[^>]+>/g, ' ')
       .trim(),
     nearbyPlaces: uniqueNames(nearbyPlaces),
+    stayAreas: stayAreaNames(input.stayAreas),
   };
+}
+
+function stayAreaNames(value) {
+  const list = Array.isArray(value) ? value : [];
+  const names = [];
+  for (const item of list) {
+    const name = String(item?.name || item || '').replace(/\s+/g, ' ').trim();
+    if (!name || names.includes(name)) continue;
+    names.push(name);
+    if (names.length >= 3) break;
+  }
+  return names;
 }
 
 function plainFact(value) {
@@ -341,6 +354,14 @@ const CURATED_TITLE_EN = new Map([
   ['궁중문화축전', 'Royal Culture Festival'],
   ['허심청브로이 옥토버페스트', 'Heosimcheong Brewery Oktoberfest'],
 ]);
+
+/** Chat header: English festival name when the locale is English. */
+export function festivalChatHeaderTitle(ctx, locale = 'ko') {
+  const title = String(ctx?.title || '').trim();
+  if (String(locale || '').slice(0, 2) !== 'en') return title;
+  const bits = englishTitleBits(ctx);
+  return bits.en || title;
+}
 
 function englishTitleBits(ctx) {
   const ko = String(ctx?.title || '').trim();
@@ -812,7 +833,7 @@ function dedupeRepeatedTitle(raw, facts) {
     if (first < 0) continue;
     const head = out.slice(0, first + title.length);
     const tail = out.slice(first + title.length).replace(
-      new RegExp(`${escapeRegExp(title)}(?:에서는|에선|에서|은|는|이|가)?\\s*`, 'g'),
+      new RegExp(`\\s+(?:The\\s+|the\\s+)?${escapeRegExp(title)}(?:에서는|에선|에서|은|는|이|가)?`, 'g'),
       '',
     );
     out = `${head}${tail}`;
@@ -943,6 +964,43 @@ function stripTheBeforeFactNoun(raw, facts) {
   });
 }
 
+const PERFORMANCE_WORD_RE = /트로트|댄스|콘서트|불꽃놀이|재즈|뮤지컬|오페라|발레|마당극/g;
+const PERFORMANCE_PHRASE_RE = /[가-힣A-Za-z]{1,12}\s*(?:공연|퍼포먼스)/g;
+
+/**
+ * Program, performance, and number tokens in an answer that are absent from the fact corpus.
+ * @param {string} answer
+ * @param {string} corpus
+ */
+export function unsupportedFestivalFactMentions(answer, corpus) {
+  const body = String(corpus || '').replace(/\s+/g, '');
+  const text = String(answer || '');
+  const flags = [];
+  const seen = new Set();
+  const add = (token) => {
+    const key = String(token || '').replace(/\s+/g, '');
+    if (!key || seen.has(key) || body.includes(key)) return;
+    seen.add(key);
+    flags.push(String(token).trim());
+  };
+  for (const match of text.matchAll(PERFORMANCE_PHRASE_RE)) {
+    const phrase = match[0].replace(/\s+/g, '');
+    const stem = phrase.replace(/(?:공연|퍼포먼스)$/, '');
+    if (!stem || body.includes(phrase) || body.includes(stem)) continue;
+    add(match[0]);
+  }
+  for (const match of text.matchAll(PERFORMANCE_WORD_RE)) {
+    if (!body.includes(match[0])) add(match[0]);
+  }
+  const compact = text.replace(/https?:\/\/\S+/g, ' ');
+  for (const match of compact.matchAll(/\d{3,}|\d{1,2}\s*(?:명|회|원|팀|곡)/g)) {
+    const token = match[0];
+    const num = token.match(/\d+/)?.[0] || token;
+    if (!body.includes(num)) add(token);
+  }
+  return flags;
+}
+
 /**
  * Keep a model opening only when names, dates, and links stay inside the facts.
  * Ordinary Korean verbs and particles are not checked.
@@ -977,6 +1035,7 @@ export function acceptFestivalModelOpening(text, facts, banned = []) {
     if (!HAEYO_RE.test(raw)) return '';
   }
   if (inventedFactToken(raw, facts)) return '';
+  if (unsupportedFestivalFactMentions(raw, corpusText(facts)).length) return '';
   if (facts.gateoUrl && !raw.includes(facts.gateoUrl)) {
     const next = `${raw} ${facts.closing || ''}`.trim();
     if (!facts.closing || countFestivalCardSentences(next) > MODEL_OPENING_SENTENCE_CAP) return '';

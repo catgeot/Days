@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../shared/api/supabase';
 import { resolveSessionBoundSpot } from '../../../utils/resolveDestinationFromChat';
+import { festivalTripMatchesLocale } from '../lib/festivalMooniSessionCache.js';
 import ChatModal from './ChatModal';
 import { useTravelData } from '../hooks/useTravelData';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
@@ -17,6 +19,7 @@ const THEME_CHAT_CATEGORY = 'korea-theme';
  * 닫으면 호출측 화면(상세 모달 등)이 그대로 남는다.
  */
 export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = null, onClose }) {
+  const { i18n } = useTranslation();
   const [user, setUser] = useState(null);
   const {
     savedTrips,
@@ -64,7 +67,8 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
         (t) =>
           !t.is_hidden &&
           (t.destination === label || t.destination === spot?.name) &&
-          tripHasPersistedDialogue(t),
+          tripHasPersistedDialogue(t) &&
+          (!spot?.festivalContext || festivalTripMatchesLocale(t, i18n.language)),
       );
       if (placeTrip) {
         setChatDraft(null);
@@ -83,7 +87,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       });
       setActiveChatId(null);
     },
-    [savedTrips, setActiveChatId],
+    [savedTrips, setActiveChatId, i18n.language],
   );
 
   useEffect(() => {
@@ -115,6 +119,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
         is_hidden: false,
         persona,
         category: THEME_CHAT_CATEGORY,
+        mooniLocale: String(i18n.language || 'ko').slice(0, 2) || 'ko',
       };
       const created = await saveNewTrip(newTrip);
       if (created) {
@@ -124,8 +129,23 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       }
       return created;
     },
-    [saveNewTrip, setActiveChatId, user?.id],
+    [saveNewTrip, setActiveChatId, user?.id, i18n.language],
   );
+
+  useEffect(() => {
+    if (!isOpen || !mooniPlaceContext?.festivalContext || !activeChatId) return;
+    const trip = savedTrips.find((item) => String(item.id) === String(activeChatId));
+    if (!trip || festivalTripMatchesLocale(trip, i18n.language)) return;
+    const label = String(mooniPlaceContext.displayLabel || mooniPlaceContext.name || '').trim();
+    setActiveChatId(null);
+    setChatDraft({
+      destination: label || 'MOONi',
+      lat: Number.isFinite(Number(mooniPlaceContext.lat)) ? Number(mooniPlaceContext.lat) : 0,
+      lng: Number.isFinite(Number(mooniPlaceContext.lng)) ? Number(mooniPlaceContext.lng) : 0,
+      persona: PERSONA_TYPES.GENERAL,
+      category: THEME_CHAT_CATEGORY,
+    });
+  }, [isOpen, mooniPlaceContext, activeChatId, savedTrips, i18n.language, setActiveChatId]);
 
   const updateChatDraftDestination = useCallback((patch) => {
     setChatDraft((prev) => (prev ? { ...prev, ...patch } : null));

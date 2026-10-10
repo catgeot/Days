@@ -1,4 +1,5 @@
 import { KO, EN } from '../../i18n/mooniPromptBundleData.js';
+import { englishLodgingAreaLabel, englishLodgingPlaceName } from './englishPlaceLabel.js';
 import { ensureItineraryMarkdownLineBreaks } from '../../utils/mooniTruncatedContinue.js';
 import { filterBySearchQuery, normalizeFestivalQuery } from '../../pages/Korea/festivalSearch.js';
 import {
@@ -46,12 +47,70 @@ export function isFestivalLodgingAsk(input = {}) {
  * @param {string} contentId
  * @param {string} [locale]
  */
-export function festivalLodgingNextStep(contentId, locale = 'ko') {
+export function festivalLodgingLinkLabel(placeName, locale = 'ko') {
+  const place = String(placeName || '').replace(/\s+/g, ' ').trim();
+  const en = String(locale || '').slice(0, 2) === 'en';
+  if (en) {
+    const english = englishLodgingPlaceName(place);
+    return english ? `${english} lodging guide` : 'the lodging card';
+  }
+  return place ? `${place} 숙소 안내` : '숙소 카드';
+}
+
+export function festivalLodgingNextStep(contentId, locale = 'ko', placeName = '') {
   const url = gateoKoreaFestivalLodgingUrl(contentId);
   if (!url) return '';
   const en = String(locale || '').slice(0, 2) === 'en';
-  if (en) return `Next, stays for this festival are on [the lodging card](${url}).`;
-  return `다음으로 이 축제의 [숙소 카드](${url})에서 볼 수 있어요.`;
+  const place = String(placeName || '').trim();
+  if (!place) {
+    if (en) return `Next, stays for this festival are on [the lodging card](${url}).`;
+    return `다음으로 이 축제의 [숙소 카드](${url})에서 볼 수 있어요.`;
+  }
+  const label = festivalLodgingLinkLabel(place, locale);
+  if (en) return `Next, stays for this festival are on [${label}](${url}).`;
+  return `다음으로 [${label}](${url})에서 볼 수 있어요.`;
+}
+
+function lodgingAreaNames(options = {}) {
+  const names = [];
+  const push = (value) => {
+    const text = String(value || '').replace(/\s*(?:일원|일대|부근)$/g, '').replace(/\s+/g, ' ').trim();
+    if (!text || names.includes(text)) return;
+    names.push(text);
+  };
+  push(options.venue);
+  push(options.placeName);
+  for (const area of options.stayAreas || []) push(area?.name || area);
+  return names.slice(0, 3);
+}
+
+function lodgingAreaLead(areas, locale = 'ko', placeName = '') {
+  const names = (areas || []).slice(0, 3);
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const labels = en
+    ? names.map((name) => englishLodgingAreaLabel(name, placeName)).filter(Boolean).slice(0, 3)
+    : names;
+  if (labels.length < 2) return '';
+  if (en) {
+    const list = labels.length === 2
+      ? `${labels[0]} and ${labels[1]}`
+      : `${labels.slice(0, -1).join(', ')}, and ${labels[labels.length - 1]}`;
+    return `${list} are practical places to stay.`;
+  }
+  return `${labels.join(', ')}에서 묵기 좋아요.`;
+}
+
+function renameVagueLodgingLabels(text, label, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  return String(text || '').replace(
+    /\[([^\]]*)\]\((https:\/\/www\.gateo\.kr\/korea\/\?festival=\d+#festival-lodging)\)/g,
+    (full, old, url) => {
+      if (en && label && !/[가-힣]/.test(label)) return `[${label}](${url})`;
+      return /이곳|여기|이\s*링크|숙소\s*카드|this link|^here$|the lodging card/i.test(old)
+        ? `[${label}](${url})`
+        : full;
+    },
+  );
 }
 
 /**
@@ -131,9 +190,18 @@ export function stripDomesticTwelveGoMention(text) {
 }
 
 export function appendFestivalLodgingNextStep(reply, options = {}) {
-  const text = linkifyBareGateoFestivalUrls(String(reply || '').trim(), options.locale);
+  let text = linkifyBareGateoFestivalUrls(String(reply || '').trim(), options.locale);
   if (!isFestivalLodgingAsk(options)) return text;
-  const step = festivalLodgingNextStep(options.contentId, options.locale);
+  const placeName = options.placeName || '';
+  const label = festivalLodgingLinkLabel(placeName, options.locale);
+  text = renameVagueLodgingLabels(text, label, options.locale);
+  const areas = lodgingAreaNames(options);
+  const present = areas.filter((name) => text.includes(name));
+  if (areas.length >= 2 && present.length < 2) {
+    const lead = lodgingAreaLead(areas, options.locale, placeName);
+    if (lead) text = text ? `${lead}\n\n${text}` : lead;
+  }
+  const step = festivalLodgingNextStep(options.contentId, options.locale, placeName);
   if (!step) return text;
   if (text.includes(`#${FESTIVAL_LODGING_SECTION_ID}`)) return text;
   return text ? `${text}\n\n${step}` : step;
@@ -465,6 +533,19 @@ function softenDapnida(text) {
   return out.replace(/([가-힣])답니다(?=$|[\s.!?。,，])/g, '$1대요');
 }
 
+function softenNightHour(text) {
+  return String(text || '').replace(/밤\s*(\d{1,2})\s*시/g, (full, hour) => {
+    const n = Number(hour);
+    if (n < 13 || n > 23) return full;
+    return `밤 ${n - 12}시`;
+  });
+}
+
+function dropFestivalFillerSentences(text) {
+  if (!/특별한 순간을 경험해|The atmosphere is majestic/i.test(String(text || ''))) return String(text || '');
+  return filterPreservingBreaks(text, (part) => /특별한 순간을 경험해\s*보세요|The atmosphere is majestic/i.test(part));
+}
+
 /** Festival answers drop the countdown clause and long calendar dates without flattening lists. */
 export function stripFestivalCalendarEcho(text) {
   const lines = String(text || '').split('\n').flatMap((line) => {
@@ -502,6 +583,8 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = dropDateLinkFragmentSentences(text);
     text = dedupeStaySearchLinks(text);
   }
+  text = softenNightHour(text);
+  text = dropFestivalFillerSentences(text);
   return appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
 }
 
@@ -946,9 +1029,19 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
         .filter((line) => !/^- (?:날짜|Dates|오늘 기준 상태|Timing vs today):/.test(line.trim()))
         .join('\n');
       if (lodgingUrl) {
+        const placeName = String(festivalContext.hubLabel || '').trim();
+        const areas = lodgingAreaNames({
+          venue: festivalContext.venue,
+          placeName,
+          stayAreas: festivalContext.stayAreas,
+        });
+        const label = festivalLodgingLinkLabel(placeName, input.locale);
+        const areaLine = areas.length
+          ? (en ? ` Stay areas: ${areas.join(', ')}.` : ` 숙소 권역: ${areas.join(', ')}.`)
+          : '';
         hint += en
-          ? `\n- Lodging next step: end with a markdown link to this lodging card and no other stay URL: ${lodgingUrl}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate a countdown or a long calendar date (no "N days left", no "October 15, 2026 through"). This overrides the festival date-comparison rule.`
-          : `\n- 숙소 다음 행동: 답 끝에 이 숙소 카드의 마크다운 링크만 둔다. 날 URL이나 다른 숙소 URL은 쓰지 않는다: ${lodgingUrl}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 「현재 시작까지 N일 남았습니다」와 「2026년 10월 15일부터」 같은 긴 날짜를 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
+          ? `\n- Lodging answer: name 2 or 3 of these stay areas in sentences, then end with [${label}](${lodgingUrl}). Do not answer with only a link. Do not use "here", "this link", or "this place" as the link text. No other stay URL.${areaLine}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate a countdown or a long calendar date (no "N days left", no "October 15, 2026 through"). This overrides the festival date-comparison rule.`
+          : `\n- 숙소 답: 숙소 권역 2~3곳을 문장으로 말한 뒤 [${label}](${lodgingUrl})로 끝낸다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 「현재 시작까지 N일 남았습니다」와 「2026년 10월 15일부터」 같은 긴 날짜를 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
       }
     }
     return { hint, candidates: [] };

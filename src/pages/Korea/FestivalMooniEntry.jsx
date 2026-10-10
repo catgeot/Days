@@ -16,6 +16,7 @@ import { shouldShowFestivalMooniFab } from './lib/festivalMooniFabVisibility.js'
  *   overview?: string,
  *   program?: string,
  *   nearbyPlaces?: string[],
+ *   stayAreas?: Array<string | { name?: string }>,
  *   raised?: boolean,
  *   inlineAnchorExpected?: boolean,
  *   onOpenChange?: (open: boolean) => void,
@@ -31,6 +32,7 @@ export function useFestivalMooniEntry({
   overview,
   program,
   nearbyPlaces,
+  stayAreas,
   raised = false,
   inlineAnchorExpected,
   onOpenChange,
@@ -85,6 +87,7 @@ export function useFestivalMooniEntry({
           overview,
           program,
           nearbyPlaces,
+          stayAreas,
         });
         if (!spot) return;
         onOpenTrack?.(placement);
@@ -93,7 +96,7 @@ export function useFestivalMooniEntry({
         onOpenChange?.(true);
       };
     },
-    [item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, onOpenChange, onOpenTrack],
+    [item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, stayAreas, onOpenChange, onOpenTrack],
   );
 
   const closeMooni = useCallback(() => {
