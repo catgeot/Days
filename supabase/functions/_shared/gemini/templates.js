@@ -323,8 +323,20 @@ export function renderMooniSystem({
     (chipHint ? `\n${chipHint}` : "") +
     (ctaHint ? `\n${ctaHint}` : "") +
     (festivalHint ? `\n${festivalHint}` : "") +
-    (festivalPriority ? `\n${festivalPriority}` : "")
+    (festivalPriority ? `\n${festivalPriority}` : "") +
+    haeyoLock(locale)
   );
+}
+
+function haeyoLock(locale) {
+  if (String(locale || "").slice(0, 2) === "en") return "";
+  return [
+    "",
+    "[말투 — 모든 한국어 MOONi 답, 최우선]",
+    "- 문장 끝은 해요체만 쓴다. 축제·숙소·항공·가는 법·일반 답이 같다.",
+    "- 「합니다」「입니다」「있습니다」「남았습니다」「하십시오」「습니까」로 끝내지 않는다.",
+    "- 페르소나 예문에 「있습니다」가 있어도 이 규칙이 우선한다.",
+  ].join("\n");
 }
 
 export function renderIntro(locale, placeName) {
@@ -344,26 +356,26 @@ export function renderFestivalFirstAnswer(locale, facts) {
   const system = en
     ? [
       "You are GATEO festival MOONi. Write the first answer from the JSON facts only.",
-      "At most 5 sentences. No bullets, no promo filler, no invented booths, crowds, prices, or transport.",
+      "At most 7 sentences. No bullets, no promo filler, no invented booths, crowds, prices, or transport.",
+      "The first sentence starts with titleEn when it is present, otherwise the Korean title. Then use dateLine only. Do not start with the date.",
       "Do not repeat a street address, clock hours, or admission. Do not write an 'as of' timestamp.",
-      "Say the date only as dateLine.",
-      "Use overviewFacts and programs to say what a visitor does or eats. Do not stop at a bare name list, and do not add facts that are not written.",
+      "The next 2 or 3 sentences explain what a visitor does or eats, as a scene, using only overviewFacts and programs. Do not answer that part with a comma-separated name list. Do not mention passes, goods, or souvenirs.",
       "Mention atmosphere only when atmosphere is non-empty.",
       "Nearby places: only the names in nearby, in one sentence. Never add a sauna, bathhouse, welfare center, senior association, or community center.",
-      "Festival titles: use titleEn when it is present, otherwise the Korean title. Never romanize a festival name syllable by syllable.",
-      "Translate a program name only when every word is ordinary English. Otherwise keep the Korean. A zone may be 'Guksu Zone'.",
-      "Place names may be English with Korean in parentheses.",
+      "programs and nearby are already 'English (한글)' pairs. Copy that form, for example Hampyeong Expo Park (함평엑스포공원). Do not leave Hangul outside parentheses.",
+      "Do not write 'the' before a place name. Write Wolhwa Street, not the Wolhwa Street.",
+      "Never romanize a festival name syllable by syllable. Never write This festival.",
       "End with the closing sentence exactly, including its markdown link.",
     ].join("\n")
     : [
       "당신은 GATEO 축제 MOONi다. JSON 사실만으로 첫 답을 쓴다.",
-      "5문장 이하. 글머리표 없음. 홍보 문장과 데이터에 없는 부스·혼잡·요금·교통은 쓰지 않는다.",
+      "7문장 이하. 글머리표 없음. 홍보 문장과 데이터에 없는 부스·혼잡·요금·교통은 쓰지 않는다.",
+      "첫 문장은 축제 제목으로 시작한다. 날짜로 시작하지 않는다. 날짜는 dateLine만 짧게 말한다.",
       "주소, 운영 시각, 입장료를 반복하지 않는다. 「기준」 시각 문구를 쓰지 않는다.",
-      "날짜는 dateLine만 짧게 말한다.",
-      "overviewFacts와 programs로 무엇을 하고 먹는지 말한다. 이름만 나열하지 말고, 적힌 사실 밖으로 나가지 않는다.",
+      "이어서 무엇을 하고 먹는지 overviewFacts와 programs만으로 2~3문장 장면으로 설명한다. 프로그램 이름을 쉼표로 나열하지 않는다. 패스·굿즈·기념품은 말하지 않는다. 적힌 사실 밖으로 나가지 않는다.",
       "atmosphere가 비어 있지 않을 때만 분위기를 말한다.",
       "근처는 nearby에 있는 이름만 한 문장에 쓴다. 사우나·찜질·목욕·복지·노인회·주민센터·경로당은 쓰지 않는다.",
-      "한국어는 해요체만 쓴다. 합니다·입니다·하십시오로 끝내지 않는다.",
+      "한국어는 해요체만 쓴다. 합니다·입니다·있습니다·남았습니다·하십시오로 끝내지 않는다.",
       "마지막 문장은 closing을 그대로 쓴다. 마크다운 링크를 유지한다.",
     ].join("\n");
   return { system, userText: JSON.stringify(facts) };

@@ -34,7 +34,9 @@ test('Edge renderMooniSystem — showPlannerHeader false 시 플래너 헤더 �
   assert.ok(system.includes('오늘(한국시간 KST)'), 'today KST is in the festival hint');
   assert.doesNotMatch(system, /공식 홈페이지·문의처를 안내한다/);
   assert.ok(priorityAt > hintAt, 'festival priority is after the hint');
-  assert.ok(system.trim().endsWith(priority), 'festival fact rule is last');
+  const voiceAt = system.lastIndexOf('[말투 — 모든 한국어 MOONi 답, 최우선]');
+  assert.ok(voiceAt > priorityAt, '해요체 lock is after the festival hint');
+  assert.ok(system.trim().endsWith('이 규칙이 우선한다.'), '해요체 lock is last');
 });
 
 test('Edge renderMooniSystem — showPlannerHeader true 시 플래너 헤더 안내 포함', () => {

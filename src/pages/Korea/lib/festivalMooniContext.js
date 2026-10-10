@@ -30,6 +30,7 @@ export function buildFestivalMooniContext(input = {}) {
   const title = String(item?.title || '').trim();
   const contentId = String(item?.contentId || '').trim();
   if (!title && !contentId) return null;
+  const rawOverview = plainFact(overview || intro?.overview || '');
 
   const pt = festivalLngLat(item?.mapx, item?.mapy);
   const venue = String(intro?.eventplace || '').trim();
@@ -52,12 +53,13 @@ export function buildFestivalMooniContext(input = {}) {
     hubLabel,
     titleEn: String(item?.titleEn || '').trim(),
     overview: filterOverviewFacts(
-      plainFact(overview || intro?.overview || ''),
+      rawOverview,
       title,
       [title, venue, address, summaryFields?.fee?.text, summaryFields?.timeText, intro?.playtime, program || intro?.program]
         .filter(Boolean)
         .join(' '),
     ).join(' '),
+    sceneOverview: rawOverview,
     program: String(program || intro?.program || '')
       .replace(/<[^>]+>/g, ' ')
       .trim(),
@@ -140,6 +142,28 @@ export function filterOverviewFacts(text, title = '', known = '') {
   return kept;
 }
 
+/** Up to two overview lines the first answer can turn into a scene. Promo and broadcast stay out. */
+function sceneOverviewFacts(text, title) {
+  const strict = filterOverviewFacts(text, title, '');
+  const extra = [];
+  for (const sentence of splitKoSentences(text)) {
+    if (strict.includes(sentence)) continue;
+    if (OVERVIEW_FILLER_RE.test(sentence)) continue;
+    if (/개최|주최|주관|방청|공개\s*방송|시청자|무료이며|입장료|운영\s*시간/.test(sentence)) continue;
+    if (!/공연|전시|체험|의례|국수|맥주|맛보|궁궐|야시장|라이브/.test(sentence)) continue;
+    let body = sentence.replace(/[.!?。]+$/, '').trim();
+    if (body.length > 120) {
+      const cut = body.slice(0, 120);
+      const at = Math.max(cut.lastIndexOf(','), cut.lastIndexOf('·'), cut.lastIndexOf(' '));
+      body = (at > 40 ? cut.slice(0, at) : cut).trim();
+    }
+    if (body.length < 12) continue;
+    extra.push(`${body}.`);
+    if (strict.length + extra.length >= 2) break;
+  }
+  return [...strict, ...extra].slice(0, 2);
+}
+
 function foodListSentence(text) {
   const src = String(text || '');
   if (!/맛/.test(src)) return '';
@@ -174,12 +198,6 @@ const KO_AHEAD = ['', '하루', '이틀', '사흘', '나흘', '닷새', '엿새'
 
 /** Sauna, welfare, senior, and community facilities are not nearby sights. */
 const NEARBY_FACILITY_RE = /사우나|찜질|목욕|복지|노인회|생활문화|주민센터|경로당|행정복지|노인정|마을회관|주민자치/;
-
-const KO_OPENING_WORDS = new Set([
-  '시작해요', '끝났어요', '진행', '중이에요', '엿새', '닷새', '나흘', '사흘', '이틀', '하루', '이레', '여드레', '아흐레', '열흘',
-  '지금', '이미', '근처에서는', '둘러볼', '있어요', '예요', '이에요', '해요', '축제로', '저녁까지', '이어지고', '이어져요', '열려요',
-  '자세한', '내용은', '페이지', '다음으로', '가는', '법을', '정할', '있고', '에서는', '맛보는', '자리예요', '거리', '축제',
-]);
 
 export function isFestivalOpeningNearbyName(name) {
   const text = String(name || '').trim();
@@ -258,6 +276,7 @@ function programNames(program) {
     if (!name || name.length > 24) continue;
     if (OVERVIEW_FILLER_RE.test(name)) continue;
     if (/방청|공개\s*방송|시청자/.test(name)) continue;
+    if (/패스|굿즈|기념품|상품권/.test(name)) continue;
     if (!/[가-힣]/.test(name)) continue;
     if (!names.includes(name)) names.push(name);
     if (names.length >= 4) break;
@@ -316,14 +335,36 @@ function fallbackEnglishLabel(title) {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
+const CURATED_TITLE_EN = new Map([
+  ['궁중문화축전', 'Royal Culture Festival'],
+  ['허심청브로이 옥토버페스트', 'Heosimcheong Brewery Oktoberfest'],
+]);
+
 function englishTitleBits(ctx) {
   const ko = String(ctx?.title || '').trim();
   const parsed = parseEngFestivalTitle(ctx?.titleEn);
   let en = String(parsed.en || '').trim();
   if (/[가-힣]/.test(stripParentheticals(en))) en = '';
+  if (!en) en = CURATED_TITLE_EN.get(ko) || '';
   if (!en) en = fallbackEnglishLabel(ko);
   if (!en) return { en: '', phrase: ko };
   return { en, phrase: `${en} (${ko})` };
+}
+
+/** English label with the full Korean name in parentheses. Empty when Hangul would sit outside. */
+function englishParenPair(koName, label) {
+  const ko = String(koName || '').trim();
+  const raw = String(label || '').trim();
+  if (!ko || !raw) return '';
+  let english = stripParentheticals(raw).replace(/\s+/g, ' ').trim();
+  if (!english || /[가-힣]/.test(english)) return '';
+  for (const [placeKo, placeEn] of PLACE_EN) {
+    if (!ko.startsWith(`${placeKo} `)) continue;
+    if (english.toLowerCase().startsWith(placeEn.toLowerCase())) break;
+    english = `${placeEn} ${english}`;
+    break;
+  }
+  return `${english} (${ko})`;
 }
 
 function stripParentheticals(text) {
@@ -427,8 +468,14 @@ function enList(labels) {
   return `${labels.slice(0, -1).join(', ')}, and ${labels[labels.length - 1]}`;
 }
 
+function enProgramLabels(names) {
+  return names
+    .map((name) => englishParenPair(name, formatFestivalProgramLabel(name)))
+    .filter(Boolean);
+}
+
 function enProgramSentence(names, also) {
-  const labels = names.map((name) => formatFestivalProgramLabel(name)).filter(Boolean);
+  const labels = enProgramLabels(names);
   if (!labels.length) return '';
   const list = enList(labels);
   return also ? `You can also see ${list}.` : `It includes ${list}.`;
@@ -446,12 +493,34 @@ function foodWords(sentence) {
 }
 
 function enOverviewSentence(fact) {
-  const foods = foodWords(fact);
+  const foods = foodWords(fact)
+    .filter((name) => /국수|막국|짬뽕|옹심이|맥주|만두|커피|한우|인삼|칼국/.test(name))
+    .map((name) => englishParenPair(name, formatEnglishThenKorean(name)))
+    .filter(Boolean);
   if (!foods.length) return '';
+  if (foods.length === 1 && /\(맥주\)$/.test(foods[0])) return '';
   const list = enList(foods);
   if (/맛보/.test(fact)) return `You can taste ${list}.`;
   if (/체험/.test(fact)) return `You can try ${list}.`;
   return `It includes ${list}.`;
+}
+
+function enSceneFacts(sentences, raw) {
+  const out = [];
+  for (const fact of sentences) {
+    const line = enOverviewSentence(fact);
+    if (line && line.length <= 160) out.push(line);
+  }
+  const src = `${sentences.join(' ')} ${raw || ''}`;
+  if (out.length < 2 && /공연/.test(src) && /체험/.test(src)) {
+    out.push('You can watch performances and try hands-on programs.');
+  } else if (out.length < 2 && /라이브|공연/.test(src)) {
+    out.push('You can watch a live performance.');
+  }
+  if (out.length < 2 && /맥주/.test(src) && !out.some((line) => /beer|taste/i.test(line))) {
+    out.push('You can drink beer at this festival.');
+  }
+  return out.filter((line) => line.length <= 160).slice(0, 2);
 }
 
 function koAtmosphere(ctx) {
@@ -469,7 +538,7 @@ function enAtmosphere(ctx) {
   const street = streetName(ctx.venue);
   const evening = runsIntoEvening(ctx);
   const place = shortVenue(ctx.venue);
-  const label = (name) => formatEnglishThenKorean(name) || name;
+  const label = (name) => englishParenPair(name, formatEnglishThenKorean(name)) || name;
   if (street && evening) return `It continues into the evening on ${label(street)}.`;
   if (street) return `It is a street festival on ${label(street)}.`;
   if (evening && place) return `It continues into the evening at ${label(place)}.`;
@@ -504,7 +573,9 @@ function koNearbySentence(names, title, leadWithTitle) {
 }
 
 function enNearbySentence(names, phrase, leadWithTitle) {
-  const labels = names.map((name) => formatEnglishThenKorean(name) || name).filter(Boolean);
+  const labels = names
+    .map((name) => englishParenPair(name, formatEnglishThenKorean(name)))
+    .filter(Boolean);
   if (!labels.length) return '';
   const list = enList(labels);
   return leadWithTitle
@@ -619,76 +690,133 @@ export function buildFestivalFirstAnswerFacts(festivalContext, options = {}) {
   const bits = englishTitleBits(festivalContext);
   const atmosphere = [];
   const street = streetName(festivalContext.venue);
-  if (street) atmosphere.push(street);
+  if (street) {
+    atmosphere.push(isEn ? (englishParenPair(street, formatEnglishThenKorean(street)) || street) : street);
+  }
   if (runsIntoEvening(festivalContext)) atmosphere.push(isEn ? 'continues into the evening' : '저녁까지 이어짐');
+  const sceneSource = festivalContext.sceneOverview || festivalContext.overview;
+  const scene = sceneOverviewFacts(sceneSource, festivalContext.title);
+  const overviewFacts = (isEn
+    ? enSceneFacts(scene, sceneSource)
+    : scene.length ? scene : overview
+  ).filter((line) => line.length <= 160).slice(0, 2);
   return {
     locale: isEn ? 'en' : 'ko',
     title: festivalContext.title,
-    titleEn: bits.en,
+    titleEn: bits.en ? bits.phrase : '',
     dateLine: date.replace(/\.$/, ''),
-    overviewFacts: overview,
-    programs: names,
-    nearby,
+    overviewFacts,
+    programs: isEn ? enProgramLabels(names) : names,
+    nearby: isEn
+      ? nearby.map((name) => englishParenPair(name, formatEnglishThenKorean(name))).filter(Boolean)
+      : nearby,
     atmosphere,
     closing: isEn ? enClosingSentence(festivalContext, ended) : koClosingSentence(festivalContext, ended),
     gateoUrl: festivalContext.gateoUrl || '',
   };
 }
 
-const FORMAL_RE = /합니다|입니다|하십시오|습니까/;
+const FORMAL_RE = /습니[다까]|하십시오/;
 const HAEYO_RE = /해요|예요|이에요|있어요|없어요|돼요/;
 const CLOCK_RE = /\d{1,2}\s*:\s*\d{2}/;
 const FEE_RE = /입장료|입장\s*무료|admission is|the listed fee|hours are|운영\s*시간/i;
 const PROMO_RE = /사랑을 받|마음껏|황금빛|오신 것을 환영|welcome to/i;
+const GOODS_RE = /굿즈|기념품|상품권|궁패스/;
+const MODEL_OPENING_SENTENCE_CAP = 7;
+const NAME_SUFFIX_RE = /[가-힣A-Za-z0-9]{0,18}(?:커피거리|해수욕장|거리|해변|시장|궁궐|향교|광장|박물관|미술관|식물원|전망대|열차|마을|정원|대회|체험관)/g;
+const GENERIC_NAME = new Set(['맛집', '술집', '커피집']);
 
-function strayHangul(raw, corpus) {
-  const compact = String(corpus || '').replace(/\s/g, '');
-  for (const run of String(raw || '').match(/[가-힣]{2,}/g) || []) {
-    if (corpus.includes(run) || compact.includes(run) || KO_OPENING_WORDS.has(run)) continue;
-    const stem = run.replace(/(?:에서는|에서|으로|까지|해요|예요|이에요|있어요|져요|지고|고|도|과|와|은|는|이|가|을|를|의|에|로)$/, '');
-    if (stem && (corpus.includes(stem) || compact.includes(stem) || KO_OPENING_WORDS.has(stem))) continue;
-    return run;
+function corpusText(facts) {
+  return [
+    facts?.title,
+    facts?.titleEn,
+    facts?.dateLine,
+    facts?.closing,
+    ...(facts?.overviewFacts || []),
+    ...(facts?.programs || []),
+    ...(facts?.nearby || []),
+    ...(facts?.atmosphere || []),
+  ].join('\n');
+}
+
+function hangulOutsideParens(text, allowedBare = '') {
+  let stripped = stripParentheticals(text).replace(/\[[^\]]*\]\([^)]*\)/g, ' ');
+  if (allowedBare) stripped = stripped.split(allowedBare).join(' ');
+  return /[가-힣]/.test(stripped);
+}
+
+function startsWithFestivalTitle(raw, facts) {
+  const text = String(raw || '').replace(/^[\s"'「『]+/, '');
+  if (facts?.locale === 'en') {
+    const phrase = String(facts.titleEn || '').trim();
+    const en = phrase.replace(/\s*\([^)]*\)\s*$/, '').trim();
+    if (phrase && (text.startsWith(phrase) || (en && text.startsWith(en)))) return true;
+    if (!phrase && facts.title && text.startsWith(facts.title)) return true;
+    return false;
+  }
+  return text.startsWith(String(facts?.title || ''));
+}
+
+/** Place, program, and long numbers that are not in the facts. Ordinary verbs are ignored. */
+function inventedFactToken(raw, facts) {
+  const corpus = corpusText(facts);
+  const compact = corpus.replace(/\s+/g, '');
+  const known = (name) => {
+    const token = String(name || '').trim();
+    if (!token || GENERIC_NAME.has(token)) return true;
+    return corpus.includes(token) || compact.includes(token.replace(/\s+/g, ''));
+  };
+  for (const match of String(raw || '').matchAll(NAME_SUFFIX_RE)) {
+    const name = match[0].replace(/(?:에서|으로|까지|은|는|이|가|을|를|와|과|도|의|에|로)$/, '');
+    if (!known(name)) return name;
+  }
+  const urlBody = String(raw || '').replace(/https?:\/\/[^\s)]+/g, ' ');
+  for (const num of urlBody.match(/\d{3,}/g) || []) {
+    if (!corpus.includes(num)) return num;
+  }
+  for (const url of String(raw || '').match(/https?:\/\/[^\s)]+/g) || []) {
+    if (facts?.gateoUrl && (url === facts.gateoUrl || facts.gateoUrl.startsWith(url))) continue;
+    if (facts?.closing && facts.closing.includes(url)) continue;
+    return url;
   }
   return '';
 }
 
 /**
- * Keep a model opening only when it stays inside the facts and the voice rules.
+ * Keep a model opening only when names, dates, and links stay inside the facts.
+ * Ordinary Korean verbs and particles are not checked.
  * @param {string} text
  * @param {ReturnType<typeof buildFestivalFirstAnswerFacts>} facts
  * @param {string[]} [banned]
  */
 export function acceptFestivalModelOpening(text, facts, banned = []) {
-  let raw = String(text || '').replace(/\s+/g, ' ').trim();
+  let raw = String(text || '')
+    .replace(/\s+/g, ' ')
+    .replace(/\bthe (?=(?:[A-Z][\w'’-]* )*(?:Street|Beach|Plaza|Park|Palace|Garden|Market|Zone|Temple)\b)/gi, '')
+    .trim();
   if (!raw || !facts?.title) return '';
-  if (countFestivalCardSentences(raw) > 5) return '';
+  if (!startsWithFestivalTitle(raw, facts)) return '';
+  if (countFestivalCardSentences(raw) > MODEL_OPENING_SENTENCE_CAP) return '';
   if (/기준/.test(raw)) return '';
   if (CLOCK_RE.test(raw)) return '';
   if (FEE_RE.test(raw)) return '';
   if (NEARBY_FACILITY_RE.test(raw)) return '';
   if (PROMO_RE.test(raw)) return '';
+  if (GOODS_RE.test(raw) && !corpusText(facts).includes('궁패스') && !/굿즈|기념품|상품권/.test(corpusText(facts))) return '';
   for (const phrase of banned) {
     const bannedText = String(phrase || '').trim();
     if (bannedText.length >= 4 && raw.includes(bannedText)) return '';
   }
-  const corpus = [
-    facts.title,
-    facts.titleEn,
-    facts.dateLine,
-    facts.closing,
-    ...(facts.overviewFacts || []),
-    ...(facts.programs || []),
-    ...(facts.nearby || []),
-    ...(facts.atmosphere || []),
-  ].join('\n');
-  if (facts.locale !== 'en') {
+  if (facts.locale === 'en') {
+    if (hangulOutsideParens(raw, facts.titleEn ? '' : facts.title)) return '';
+  } else {
     if (FORMAL_RE.test(raw)) return '';
     if (!HAEYO_RE.test(raw)) return '';
-    if (strayHangul(raw, corpus)) return '';
   }
+  if (inventedFactToken(raw, facts)) return '';
   if (facts.gateoUrl && !raw.includes(facts.gateoUrl)) {
     const next = `${raw} ${facts.closing || ''}`.trim();
-    if (!facts.closing || countFestivalCardSentences(next) > 5) return '';
+    if (!facts.closing || countFestivalCardSentences(next) > MODEL_OPENING_SENTENCE_CAP) return '';
     raw = next;
   }
   return raw;

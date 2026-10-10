@@ -328,8 +328,8 @@ export function buildTask(task: string, params: unknown, role: string | null): T
     const closing = optStr(src.closing, 400);
     const gateoUrl = optStr(src.gateoUrl, 200);
     const overviewFacts = stringList(src.overviewFacts, 2, 160);
-    const programs = stringList(src.programs, 4, 40);
-    const nearby = stringList(src.nearby, 3, 40);
+    const programs = stringList(src.programs, 4, 96);
+    const nearby = stringList(src.nearby, 3, 96);
     const atmosphere = stringList(src.atmosphere, 3, 80);
     if (!title?.trim() || titleEn == null || dateLine == null || closing == null || gateoUrl == null) {
       return { ok: false, status: 400, error: "bad_request" };

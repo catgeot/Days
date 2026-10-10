@@ -288,6 +288,18 @@ export function expandCompactDates(text, locale = 'ko') {
     .join('');
 }
 
+const LODGING_CALENDAR_RE = /현재\s*시작까지|시작까지\s*\d+\s*일|\d+\s*일(?:이)?\s*남았|\d{4}\s*년\s*\d{1,2}\s*월\s*\d{1,2}\s*일|(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},/i;
+
+/** Lodging answers do not restate the festival countdown or a long calendar date. */
+export function stripLodgingCalendarEcho(text) {
+  return String(text || '')
+    .split(/(?<=[.!?。])\s+/)
+    .filter((part) => part.trim() && !LODGING_CALENDAR_RE.test(part))
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function polishFestivalModelReply(reply, options = {}) {
   let text = String(reply || '').trim();
   text = stripDisallowedFestivalLinks(text);
@@ -298,7 +310,10 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = stripDomesticTwelveGoMention(text);
     text = stripDomesticEntryDocLines(text, options);
   }
-  if (isFestivalLodgingAsk(options)) text = stripNonStayFacilities(text, options.userText);
+  if (isFestivalLodgingAsk(options)) {
+    text = stripNonStayFacilities(text, options.userText);
+    text = stripLodgingCalendarEcho(text);
+  }
   return appendFestivalLodgingNextStep(text, options);
 }
 
@@ -738,11 +753,15 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     let hint = buildMooniBoundFestivalSystemHint(festivalContext, input.locale, input.now);
     if (isFestivalLodgingAsk({ userText })) {
       const lodgingUrl = gateoKoreaFestivalLodgingUrl(festivalContext.contentId);
+      const en = String(input.locale || '').slice(0, 2) === 'en';
+      hint = hint
+        .split('\n')
+        .filter((line) => !/^- (?:날짜|Dates|오늘 기준 상태|Timing vs today):/.test(line.trim()))
+        .join('\n');
       if (lodgingUrl) {
-        const en = String(input.locale || '').slice(0, 2) === 'en';
         hint += en
-          ? `\n- Lodging next step: end with a markdown link to this lodging card and no other stay URL: ${lodgingUrl}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.`
-          : `\n- 숙소 다음 행동: 답 끝에 이 숙소 카드의 마크다운 링크만 둔다. 날 URL이나 다른 숙소 URL은 쓰지 않는다: ${lodgingUrl}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.`;
+          ? `\n- Lodging next step: end with a markdown link to this lodging card and no other stay URL: ${lodgingUrl}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate a countdown or a long calendar date (no "N days left", no "October 15, 2026 through"). This overrides the festival date-comparison rule.`
+          : `\n- 숙소 다음 행동: 답 끝에 이 숙소 카드의 마크다운 링크만 둔다. 날 URL이나 다른 숙소 URL은 쓰지 않는다: ${lodgingUrl}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 「현재 시작까지 N일 남았습니다」와 「2026년 10월 15일부터」 같은 긴 날짜를 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
       }
     }
     return { hint, candidates: [] };
