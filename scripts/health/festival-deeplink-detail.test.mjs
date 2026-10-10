@@ -8,6 +8,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import {
   ENDED_FESTIVAL_BADGE,
   FESTIVAL_NOT_FOUND_TOAST,
+  FestivalDetailAsOfLine,
   FestivalEndedBadge,
   festivalItemFromDetail,
   isFestivalEnded,
@@ -194,4 +195,112 @@ test('ended festival shows the 종료된 축제 badge', () => {
   assert.match(hub, /festivalDeepLink\.fetch/);
   assert.match(hub, /festivalDeepLink\.clearUrl/);
   assert.match(hub, /if \(!listed\) return undefined/);
+});
+
+test('as-of line is shown only for an out-of-list deep link item', () => {
+  const items = [
+    { contentId: '637693', title: '마산가고파국화축제', eventEndDate: '20261108' },
+  ];
+  const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
+  const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
+  assert.equal(ko.korea.festival.detail.asOfDated, '일정·장소는 {{date}} 기준 정보예요');
+  assert.equal(ko.korea.festival.detail.asOfGeneric, '최신 일정은 공식 홈페이지에서 확인해 주세요');
+  assert.equal(en.korea.festival.detail.asOfDated, 'Dates and place are as of {{date}}.');
+  assert.equal(en.korea.festival.detail.asOfGeneric, 'Check the official website for the latest schedule.');
+
+  const listed = projectFestivalDeepLink({
+    festivalId: '637693',
+    items,
+    listLoading: false,
+    phase: 'ok',
+    detail: {
+      ...GUKHYANG_DETAIL,
+      fetchedAt: '2026-10-01T06:28:00.000Z',
+    },
+    now: NOW,
+  });
+  assert.equal(listed.detailAsOf, null);
+  assert.equal(listed.selected.detailAsOf, undefined);
+  const listedHtml = renderToStaticMarkup(
+    createElement(FestivalDetailAsOfLine, {
+      asOf: listed.selected.detailAsOf,
+      datedLabel: '일정·장소는 2026.10.01 기준 정보예요',
+      genericLabel: ko.korea.festival.detail.asOfGeneric,
+      linkLabel: '공식 홈페이지',
+    }),
+  );
+  assert.equal(listedHtml, '');
+
+  const dated = projectFestivalDeepLink({
+    festivalId: '638576',
+    items,
+    listLoading: false,
+    phase: 'ok',
+    detail: {
+      ...GUKHYANG_DETAIL,
+      fetchedAt: '2026-10-01T06:28:00.000Z',
+    },
+    now: NOW,
+  });
+  assert.equal(dated.selected.detailAsOf.fromDetailDeepLink, true);
+  assert.equal(dated.selected.detailAsOf.asOfDate, '2026.10.01');
+  assert.equal(dated.selected.detailAsOf.homepage, '');
+  const datedHtml = renderToStaticMarkup(
+    createElement(FestivalDetailAsOfLine, {
+      asOf: dated.selected.detailAsOf,
+      datedLabel: ko.korea.festival.detail.asOfDated.replace(
+        '{{date}}',
+        dated.selected.detailAsOf.asOfDate,
+      ),
+      genericLabel: ko.korea.festival.detail.asOfGeneric,
+      linkLabel: '공식 홈페이지',
+    }),
+  );
+  assert.match(datedHtml, /data-festival-detail-asof="dated"/);
+  assert.match(datedHtml, /일정·장소는 2026\.10\.01 기준 정보예요/);
+  assert.equal(datedHtml.includes('공식 홈페이지에서'), false);
+
+  const generic = projectFestivalDeepLink({
+    festivalId: '638576',
+    items,
+    listLoading: false,
+    phase: 'ok',
+    detail: {
+      ...GUKHYANG_DETAIL,
+      common: {
+        ...GUKHYANG_DETAIL.common,
+        homepage: 'https://www.hampyeong.go.kr/festival',
+      },
+    },
+    now: NOW,
+  });
+  assert.equal(generic.selected.detailAsOf.asOfDate, '');
+  assert.equal(generic.selected.detailAsOf.homepage, 'https://www.hampyeong.go.kr/festival');
+  const genericHtml = renderToStaticMarkup(
+    createElement(FestivalDetailAsOfLine, {
+      asOf: generic.selected.detailAsOf,
+      datedLabel: '',
+      genericLabel: ko.korea.festival.detail.asOfGeneric,
+      linkLabel: '공식 홈페이지',
+    }),
+  );
+  assert.match(genericHtml, /data-festival-detail-asof="generic"/);
+  assert.match(genericHtml, /최신 일정은 공식 홈페이지에서 확인해 주세요/);
+  assert.match(genericHtml, /href="https:\/\/www\.hampyeong\.go\.kr\/festival"/);
+  assert.match(genericHtml, /data-festival-detail-asof-home/);
+
+  const genericEn = renderToStaticMarkup(
+    createElement(FestivalDetailAsOfLine, {
+      asOf: generic.selected.detailAsOf,
+      datedLabel: '',
+      genericLabel: en.korea.festival.detail.asOfGeneric,
+      linkLabel: 'Official website',
+    }),
+  );
+  assert.match(genericEn, /Check the official website for the latest schedule\./);
+  assert.match(genericEn, /Official website/);
+
+  const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
+  assert.match(sheet, /item\.detailAsOf\?\.fromDetailDeepLink/);
+  assert.match(sheet, /FestivalDetailAsOfLine/);
 });

@@ -102,6 +102,115 @@ export function isFestivalEnded(eventEndDate, now = new Date()) {
   return end < today;
 }
 
+/**
+ * Cache/live timestamp on a festivalDetail payload, if the response exposes one.
+ * @param {object | null | undefined} detail
+ * @returns {string}
+ */
+export function festivalDetailFetchedAt(detail) {
+  return pickStr(
+    detail?.fetchedAt,
+    detail?.fetched_at,
+    detail?.cachedAt,
+    detail?.cached_at,
+    detail?.updatedAt,
+    detail?.updated_at,
+  );
+}
+
+/**
+ * @param {unknown} raw
+ * @returns {string} YYYY.MM.DD in KST, or ''
+ */
+export function formatFestivalAsOfDate(raw) {
+  const text = String(raw ?? '').trim();
+  if (!text) return '';
+  if (!text.includes('T') && !text.includes(':')) {
+    const ymd = ymd8(text);
+    if (/^\d{8}$/.test(ymd)) {
+      return `${ymd.slice(0, 4)}.${ymd.slice(4, 6)}.${ymd.slice(6, 8)}`;
+    }
+  }
+  const date = new Date(text);
+  if (Number.isNaN(date.getTime())) return '';
+  const ymd = todayYmdKst(date);
+  if (!/^\d{8}$/.test(ymd)) return '';
+  return `${ymd.slice(0, 4)}.${ymd.slice(4, 6)}.${ymd.slice(6, 8)}`;
+}
+
+function homepageUrlFromDetail(detail) {
+  const intro = rowBody(detail?.intro);
+  const common = rowBody(detail?.common);
+  const raw = pickStr(
+    intro?.eventhomepage,
+    intro?.eventHomepage,
+    common?.homepage,
+    common?.homePage,
+  );
+  if (!raw) return '';
+  const href = raw.match(/href=["']([^"']+)["']/i)?.[1];
+  const candidate = String(href || raw).replace(/&amp;/gi, '&').trim();
+  const found = candidate.match(/https?:\/\/[^\s<>"']+/i)?.[0] || '';
+  if (!found) return '';
+  return found.replace(/[),\];.'"”’]+$/g, '').replace(/^http:\/\//i, 'https://');
+}
+
+/**
+ * As-of note for an out-of-list detail item. Null when the payload cannot be shown.
+ * A timestamp wins. Otherwise the generic line, with a homepage URL when the detail has one.
+ * @param {object | null | undefined} detail
+ * @returns {{ fromDetailDeepLink: true, asOfDate: string, homepage: string } | null}
+ */
+export function festivalDetailAsOf(detail) {
+  if (!detail || detail.ok === false) return null;
+  if (!rowBody(detail.intro) && !rowBody(detail.common)) return null;
+  const asOfDate = formatFestivalAsOfDate(festivalDetailFetchedAt(detail));
+  return {
+    fromDetailDeepLink: true,
+    asOfDate,
+    homepage: asOfDate ? '' : homepageUrlFromDetail(detail),
+  };
+}
+
+export function FestivalDetailAsOfLine({ asOf, datedLabel, genericLabel, linkLabel }) {
+  if (!asOf?.fromDetailDeepLink) return null;
+  if (asOf.asOfDate) {
+    return React.createElement(
+      'p',
+      {
+        'data-festival-detail-asof': 'dated',
+        className: 'mt-2 text-[11px] leading-snug text-stone-400 break-keep',
+      },
+      datedLabel,
+    );
+  }
+  const children = [genericLabel];
+  if (asOf.homepage) {
+    children.push(' ');
+    children.push(
+      React.createElement(
+        'a',
+        {
+          href: asOf.homepage,
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          'data-festival-detail-asof-home': '',
+          className: 'font-semibold text-stone-500 underline',
+        },
+        linkLabel,
+      ),
+    );
+  }
+  return React.createElement(
+    'p',
+    {
+      'data-festival-detail-asof': 'generic',
+      className: 'mt-2 text-[11px] leading-snug text-stone-400 break-keep',
+    },
+    ...children,
+  );
+}
+
 export function FestivalEndedBadge({ label = ENDED_FESTIVAL_BADGE }) {
   return React.createElement(
     'span',
@@ -155,6 +264,7 @@ export function projectFestivalDeepLink(state) {
       fetch: false,
       ended,
       badge: ended ? ENDED_FESTIVAL_BADGE : '',
+      detailAsOf: null,
     };
   }
 
@@ -186,14 +296,16 @@ export function projectFestivalDeepLink(state) {
     const built = festivalItemFromDetail(state?.detail);
     if (built && built.contentId === festivalId) {
       const ended = isFestivalEnded(built.eventEndDate, state?.now);
+      const detailAsOf = festivalDetailAsOf(state?.detail);
       return {
-        selected: built,
+        selected: { ...built, detailAsOf },
         sheet: 'open',
         clearUrl: false,
         toast: null,
         fetch: false,
         ended,
         badge: ended ? ENDED_FESTIVAL_BADGE : '',
+        detailAsOf,
       };
     }
     return {

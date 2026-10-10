@@ -103,6 +103,7 @@ import {
   FESTIVAL_TOURAPI_INFO_PROGRAM,
 } from './festivalTourApiMatchLabels';
 import {
+  FestivalDetailAsOfLine,
   FestivalEndedBadge,
   isFestivalEnded,
 } from './festivalDeepLinkItem';
@@ -1513,6 +1514,18 @@ export default function FestivalDetailSheet({
             homepage={homepage}
             hideOfficialHomepage={hideOfficialHomepage}
             officialLabel={t('korea.festival.detail.officialSite')}
+            footnote={
+              item.detailAsOf?.fromDetailDeepLink ? (
+                <FestivalDetailAsOfLine
+                  asOf={item.detailAsOf}
+                  datedLabel={t('korea.festival.detail.asOfDated', {
+                    date: item.detailAsOf.asOfDate,
+                  })}
+                  genericLabel={t('korea.festival.detail.asOfGeneric')}
+                  linkLabel={t('korea.festival.detail.officialSite')}
+                />
+              ) : null
+            }
             bookingSlot={
               festivalEnded ? null : (
                 <FestivalBookingActions

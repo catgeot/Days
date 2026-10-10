@@ -1345,6 +1345,8 @@
         "detailLoadError": "상세 정보를 불러오지 못했습니다.",
         "loadingDetail": "상세 불러오는 중…",
         "endedBadge": "종료된 축제",
+        "asOfDated": "일정·장소는 {{date}} 기준 정보예요",
+        "asOfGeneric": "최신 일정은 공식 홈페이지에서 확인해 주세요",
         "heroExpandSwipe": "사진 확대보기 · 좌우로 쓸어 넘기기",
         "heroExpand": "사진 확대보기",
         "expandView": "확대보기",

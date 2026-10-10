@@ -1582,6 +1582,8 @@
         "detailLoadError": "Could not load festival details.",
         "loadingDetail": "Loading details…",
         "endedBadge": "Ended festival",
+        "asOfDated": "Dates and place are as of {{date}}.",
+        "asOfGeneric": "Check the official website for the latest schedule.",
         "heroExpandSwipe": "Expand photo · swipe left or right",
         "heroExpand": "Expand photo",
         "expandView": "Expand",
