@@ -15,3 +15,4 @@
 - **조치** 첫 답은 질문 뒤에도 스레드 맨 위에 남는다. main `37035580`도 질문이 있으면 첫 답을 숨긴다(#416 라이브). 저장 대화는 축제+언어. 영어 목적지 줄과 반복 제목을 정리. prod gemini-proxy는 v25 (`05679653`).
 - **VERIFY** `npm run test:health` 202 pass.
 - **다음** Preview에서 2930716 첫 답 유지, `?lang=en` 재오픈, 영어 제목 한 번. Edge 배포는 사람 요청 때만.
+- **추가** `3bdddf01` 영어 숙소 앞문장은 English (한글), 링크는 Gangneung lodging guide. `npm run test:health` 202 pass. 클라이언트만.

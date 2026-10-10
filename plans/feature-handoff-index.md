@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `9f01c4dd` · draft PR [#419](https://github.com/catgeot/Days/pull/419) · **병합·Edge 배포 금지** |
+| **상태** | **#2 push** · tip `3bdddf01` · draft PR [#419](https://github.com/catgeot/Days/pull/419) · **병합·Edge 배포 금지** |
 | **브랜치** | `cursor/mooni-festival-followup` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-10-project-log.md`](./2026-10-10-project-log.md) |
@@ -33,7 +33,7 @@
 축제 MOONi 후속 #3, Preview 재확인
 @plans/feature-handoff-index.md
 @plans/2026-10-10-project-log.md
-브랜치 cursor/mooni-festival-followup · draft PR #419 · tip 9f01c4dd
+브랜치 cursor/mooni-festival-followup · draft PR #419 · tip 3bdddf01
 금지: Edge 배포 · PR 병합 · feature에 plans 커밋 · 모델 변경
 작업: /korea?festival=2930716 첫 답은 질문·재오픈 뒤에도 맨 위. ?lang=en 은 한국어 숙소 답을 열지 않고 영어 첫 답을 보이며 Destination 줄은 Gangneung Noodle Festival. 영어 제목은 한 번
 검증: npm run test:health
