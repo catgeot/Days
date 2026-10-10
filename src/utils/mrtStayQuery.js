@@ -6,6 +6,7 @@ import { isPlaceholderCountry } from './travelSpotResolve.js';
 import {
   collectStayRegionAnchors,
   inferPlaceMatchCategory,
+  inferPlaceMatchCategoryLegacy,
   isPlacePoiStayLabel,
   isUnanchoredMetroStayToken,
   placeCategoryUsesCountyStay,
@@ -913,14 +914,16 @@ export function resolveMrtCityHints(admin, opts = {}) {
  * @param {object} location
  * @returns {{ keyword: string, altKeywords: string[], countryHint: string, countryHintAlts: string[], nameEn: string, cityHints: string[] }}
  */
-export function resolveMrtStayQuery(location) {
+export function resolveMrtStayQuery(location, opts = {}) {
   const slug = String(location?.slug || '').trim().toLowerCase();
   const override = KO_MRT_STAY_KEYWORD_OVERRIDES[slug] || MRT_STAY_KEYWORD_OVERRIDES[slug];
   const name = String(location?.name || '').trim();
   const nameEn = String(location?.name_en || '').trim();
   const nameKo = String(location?.name_ko || '').trim();
   const isDomestic = isMrtDomesticLocation(location);
-  const placeCategory = inferPlaceMatchCategory(location);
+  const placeCategory = opts.legacyCategoryInference
+    ? inferPlaceMatchCategoryLegacy(location)
+    : inferPlaceMatchCategory(location);
   const countyStay = isDomestic && placeCategoryUsesCountyStay(placeCategory);
   const countryHint = normalizeMrtCountryHint(
     override?.countryHint || location?.country,
@@ -1317,6 +1320,8 @@ export function canShowMrtStayStrip(location, opts = {}) {
   if (isPlaceholderCountry(location.country) && isPlaceholderCountry(location.country_en)) {
     return false;
   }
-  const query = resolveMrtStayQuery(location);
+  const query = resolveMrtStayQuery(location, {
+    legacyCategoryInference: Boolean(opts.legacyCategoryInference),
+  });
   return Boolean(query.keyword);
 }

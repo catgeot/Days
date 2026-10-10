@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "version": 1,
+    "note": "Supplement for health scan — merged with cityAttractionHubs + koreaAreaCodes in collectKoAdminLocalityNames()"
+  },
+  "names": [
+    "검단구",
+    "세종특별자치시",
+    "제주시",
+    "서귀포시"
+  ]
+}
