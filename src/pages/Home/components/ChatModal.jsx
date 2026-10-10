@@ -48,7 +48,12 @@ import {
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
+import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
+import {
+  readFestivalMooniSession,
+  writeFestivalMooniSession,
+} from '../lib/festivalMooniSessionCache.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
@@ -127,6 +132,8 @@ const ChatModal = ({
   const { t, i18n } = useTranslation();
   const account = useAccountProfile();
   const [messages, setMessages] = useState([]);
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mooniContinuingIdx, setMooniContinuingIdx] = useState(null);
@@ -359,11 +366,12 @@ const ChatModal = ({
   const mooniHeaderLabel = useMemo(() => {
     if (!isMooniUi) return introDestinationRaw || 'MOONi';
     if (festivalMooniContext?.title) {
-      return `${festivalMooniContext.title} · MOONi`;
+      const title = festivalChatHeaderTitle(festivalMooniContext, i18n.language) || festivalMooniContext.title;
+      return `${title} · MOONi`;
     }
     const label = localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
     return label ? `${label} · MOONi` : 'MOONi';
-  }, [isMooniUi, activeSessionPlace, introDestinationRaw, festivalMooniContext?.title, i18n.language]);
+  }, [isMooniUi, activeSessionPlace, introDestinationRaw, festivalMooniContext, i18n.language]);
 
   const festivalTemplateOpening = useMemo(
     () =>
@@ -376,14 +384,34 @@ const ChatModal = ({
   const [festivalModelOpening, setFestivalModelOpening] = useState({ key: '', text: '' });
   useEffect(() => {
     if (!festivalMooniContext?.title) return undefined;
+    const contentId = festivalMooniContext.contentId;
+    const cached = readFestivalMooniSession(contentId, i18n.language);
+    if (cached?.opening) {
+      setFestivalModelOpening({ key: festivalOpeningKey, text: cached.opening });
+      return undefined;
+    }
     let cancelled = false;
     requestFestivalFirstAnswer(festivalMooniContext, { locale: i18n.language }).then((text) => {
-      if (!cancelled && text) setFestivalModelOpening({ key: festivalOpeningKey, text });
+      if (!text) return;
+      writeFestivalMooniSession(contentId, i18n.language, { opening: text });
+      if (!cancelled) setFestivalModelOpening({ key: festivalOpeningKey, text });
     });
     return () => {
       cancelled = true;
     };
   }, [festivalMooniContext, festivalOpeningKey, i18n.language]);
+
+  useEffect(() => {
+    const contentId = String(festivalMooniContext?.contentId || '');
+    if (!contentId) return undefined;
+    const locale = i18n.language;
+    return () => {
+      const saved = messagesRef.current;
+      if (Array.isArray(saved) && saved.length) {
+        writeFestivalMooniSession(contentId, locale, { messages: saved });
+      }
+    };
+  }, [festivalMooniContext?.contentId, i18n.language]);
   const festivalMooniOpening = festivalModelOpening.key === festivalOpeningKey && festivalModelOpening.text
     ? festivalModelOpening.text
     : festivalTemplateOpening;
@@ -670,7 +698,10 @@ const ChatModal = ({
       return;
     }
     if (chatDraft) {
-      setMessages([]);
+      const cached = festivalMooniContext?.contentId
+        ? readFestivalMooniSession(festivalMooniContext.contentId, i18n.language)
+        : null;
+      setMessages(cached?.messages?.length ? cached.messages : []);
       if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
       tripSessionRef.current = hydrateMooniTripSession({
         messages: [],
@@ -679,7 +710,7 @@ const ChatModal = ({
         destinationName: chatDraft.destination || '',
       });
     }
-  }, [activeChatId, isOpen, chatHistory, chatDraft]);
+  }, [activeChatId, isOpen, chatHistory, chatDraft, festivalMooniContext?.contentId, i18n.language]);
 
   const applyDestinationBinding = useCallback(async (chatId, draft, candidate) => {
     if (!candidate?.name) return;
@@ -1054,6 +1085,9 @@ const ChatModal = ({
         locale: i18n.language,
         chipId,
         userText: cleanText,
+        placeName: mooniPlaceContext?.festivalContext?.hubLabel,
+        venue: mooniPlaceContext?.festivalContext?.venue,
+        stayAreas: mooniPlaceContext?.festivalContext?.stayAreas,
       };
       const displayReply = polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {

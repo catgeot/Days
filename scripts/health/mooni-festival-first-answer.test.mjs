@@ -15,6 +15,8 @@ import {
   buildFestivalMooniContext,
   buildFestivalMooniSentenceAnswer,
   countFestivalCardSentences,
+  festivalChatHeaderTitle,
+  unsupportedFestivalFactMentions,
 } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 import {
   appendFestivalLodgingNextStep,
@@ -113,7 +115,7 @@ test('festival opening is sentences with dates, link, and no filler', () => {
   assert.doesNotMatch(ko, /입니다/);
 
   assert.match(en, /Gangneung Noodle Festival \(강릉 국수 축제\) runs 10\/15–18 and starts in 6 days/);
-  assert.match(en, /You can taste Jangkalguksu \(장칼국수\) and Makguksu \(막국수\)/);
+  assert.match(en, /You can taste spicy hand-cut noodles \(장칼국수\) and buckwheat noodles \(막국수\)/);
   assert.doesNotMatch(en.replace(/\([^)]*\)/g, ''), /[가-힣]/);
   assert.match(en, /Food Zone \(먹거리존\)/);
   assert.match(en, /Noodle contest \(누들 경연대회\)/);
@@ -436,7 +438,7 @@ test('festival lodging answers end on the stay-section link', async () => {
     locale: 'en',
   });
   assert.match(lodgingHint.hint, /#festival-lodging/);
-  assert.match(lodgingHint.hint, /no other stay URL/);
+  assert.match(lodgingHint.hint, /no other stay URL/i);
 
   const otherHint = await resolveMooniChatKoreaFestivalHint({
     userText: 'what can I see',
@@ -995,6 +997,76 @@ test('prompts forbid an unlinked outside-channel closing', async () => {
   assert.match(clientPrompts, /없는 URL을 지어내지/);
   assert.match(clientPrompts, /festivalPriorityLine/);
   assert.doesNotMatch(clientPrompts, /Trip\.com 등 항공 전용 채널/);
+});
+
+test('festival follow-up keeps facts, lodging areas, and the chat session', async () => {
+  const fixture = JSON.parse(readFileSync(join(root, 'scripts/staging/fixtures/festival-opening/2855626.json'), 'utf8'));
+  assert.match(fixture.program, /트로트/);
+  assert.doesNotMatch(fixture.overview, /트로트/);
+  const facts = buildFestivalFirstAnswerFacts(buildFestivalMooniContext(fixture), { now: NOW });
+  const corpus = [
+    facts.overviewFacts,
+    facts.programs,
+    fixture.overview,
+    fixture.program,
+    facts.dateLine,
+    facts.title,
+  ].flat().join('\n');
+  assert.deepEqual(unsupportedFestivalFactMentions('라이브 퍼포먼스가 있어요. 맥주 무제한이에요.', corpus), []);
+  assert.deepEqual(unsupportedFestivalFactMentions('트로트 공연이 있어요.', corpus), []);
+  assert.ok(unsupportedFestivalFactMentions('재즈 공연이 있어요.', corpus).some((token) => /재즈/.test(token)));
+  assert.equal(
+    acceptFestivalModelOpening('허심청브로이 옥토버페스트는 재즈 공연을 열어요. 10/15~17, 엿새 뒤 시작해요.', facts),
+    '',
+  );
+
+  const stay = polishFestivalModelReply(
+    '숙소를 찾으신다면 [이곳에서](https://www.gateo.kr/korea/?festival=2930716#festival-lodging) 확인해 보세요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '어디서 자요?',
+      placeName: '강릉',
+      venue: '강릉 월화거리 일원',
+      stayAreas: ['강릉', '속초'],
+    },
+  );
+  assert.match(stay, /월화거리/);
+  assert.match(stay, /강릉/);
+  assert.match(stay, /\[강릉 숙소 안내\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
+  assert.doesNotMatch(stay, /이곳에서|이곳\]/);
+
+  const clock = polishFestivalModelReply('공연은 밤 21시까지예요. 특별한 순간을 경험해보세요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    chipId: 'festival_sights',
+    userText: '공연',
+  });
+  assert.match(clock, /밤 9시/);
+  assert.doesNotMatch(clock, /특별한 순간을 경험해/);
+
+  assert.equal(festivalChatHeaderTitle({ title: '강릉 국수 축제' }, 'en'), 'Gangneung Noodle Festival');
+  assert.equal(formatEnglishThenKorean('장칼국수'), 'spicy hand-cut noodles (장칼국수)');
+
+  const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
+  const firstCall = chat.indexOf('requestFestivalFirstAnswer(festivalMooniContext');
+  const cachedRead = chat.lastIndexOf('readFestivalMooniSession', firstCall);
+  assert.ok(cachedRead > 0 && cachedRead < firstCall);
+  const lodgingHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '어디서 자요?',
+    festivalContext: {
+      title: '강릉 국수 축제',
+      contentId: '2930716',
+      hubLabel: '강릉',
+      venue: '강릉 월화거리 일원',
+      stayAreas: ['강릉', '속초'],
+    },
+    locale: 'ko',
+  });
+  assert.match(lodgingHint.hint, /숙소 권역/);
+  assert.match(lodgingHint.hint, /강릉 숙소 안내/);
+  assert.match(KO.festivalAnswerRules, /개요와 프로그램에 없는 공연/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /없는 공연·프로그램 이름/);
 });
 
 test('desktop and mobile place entry open bound MOONi', () => {
