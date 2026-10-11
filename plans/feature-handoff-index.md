@@ -14,6 +14,81 @@
 
 ## 활성 목록
 
+### 카이로 장소 카드
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `635e9dde` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · **병합 금지** |
+| **브랜치** | `cursor/cairo-place-facts-8e40` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | git `https://days-git-cursor-cairo-place-facts-8e40-catgeots-projects.vercel.app/place/cairo` (Vercel SSO) |
+| **금지** | 표에 없는 사실 채우기 · 저장소 경로를 출처로 렌더 · Edge·prod SQL · feature에 `plans/**` 커밋 · PR 병합 |
+| **VERIFY** | `node --test scripts/health/place-verified-facts.test.mjs` · `npm run audit:city-attraction-hubs` · `npm run check:place-video-catalog` |
+| **남은 일** | Preview에서 출처명·빈 칸 한 줄·GEM/술탄 하산 제목·타흐리르·AI 라벨 확인 후 PR #428 병합 |
+
+**다음 제시어**:
+
+```
+카이로 장소 카드 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-10-11-project-log.md
+브랜치 cursor/cairo-place-facts-8e40 · draft PR #428 · tip 635e9dde
+금지: 표에 없는 사실 · 저장소 경로 출처 · Edge·prod SQL · feature에 plans 커밋 · 사람 확인 전 병합
+작업: /place/cairo · /place/grand-egyptian-museum · /place/sultan-hassan-mosque · /place/egyptian-museum-cairo · /place/cairo/wiki · /explore 에서 카이로. 출처는 GATEO 로그북 (2026-10-03), 빈 칸은 한 줄, 제목은 두 줄. OK면 PR #428 병합
+검증: node --test scripts/health/place-verified-facts.test.mjs
+```
+
+### 축제 상세 주변 볼거리
+
+| | |
+|--|--|
+| **상태** | **#1 QA 수정 push** · tip `1780fc9d` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지 |
+| **브랜치** | `cursor/festival-nearby-9654` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | `https://days-git-cursor-festival-nearby-9654-catgeots-projects.vercel.app/korea?festival=638576` · `/qa` 슬러그 없음 |
+| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 팔경 소제목 부활 |
+| **VERIFY** | `node --test scripts/health/festival-nearby-sights.test.mjs scripts/health/festival-detail-ux.test.mjs` · `npx vite build` |
+| **남은 일** | 사람이 638576·637693·2930716을 다시 본 뒤 병합. 함안 구경은 9곳 중 연꽃테마파크만 20km 안이라 1곳이다. 반경을 늘리는 변경은 하지 않았다. |
+
+**다음 제시어**:
+
+```
+축제 상세 #2, 주변 볼거리 재확인
+@plans/feature-handoff-index.md
+@plans/2026-10-11-project-log.md
+브랜치 cursor/festival-nearby-9654 · draft PR #430 · tip 1780fc9d
+금지: PR 병합 · main 코드 push · feature에 plans 커밋 · 팔경 소제목 부활
+작업: Preview에서 국향대전은 소제목 없이 함평 N경 뱃지만, 마산은 연꽃테마파크 한 행과 17km, 강릉 국수는 거리순인지 본다. 통과하면 사람 병합.
+검증: node --test scripts/health/festival-nearby-sights.test.mjs scripts/health/festival-detail-ux.test.mjs
+```
+
+### 축제 가는 법
+
+| | |
+|--|--|
+| **상태** | **#3 push** · tip `26f09934` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지 |
+| **브랜치** | `cursor/transport-proxy-e06e` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | 없음. UI 없음. 스테이징 배포 후 `scripts/staging/transport-probe.mjs` |
+| **금지** | 에이전트 Edge 배포 · prod 배포 · `tourapi-proxy`에 TAGO op 합치기 · 실측 밖 역 ID 창작 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run test:health` 237 pass |
+| **남은 일** | 사람이 마이그레이션 `20261011180000_tago_card_cache.sql` 적용 후 `transport-proxy` 재배포 → 프로브. 응답 `Server-Timing`의 rl·cache·upstream·build를 본다. warm은 `cache;desc="card"`, upstream 0, build 0. 카드 테이블이 비어 있으면 첫 호출은 노선 캐시이고 그 다음이 카드 한 행이다. Cos GO 전 prod 금지. 카드 UI는 그 다음. |
+
+**다음 제시어**:
+
+```
+축제 가는 법 #4, 스테이징 재측정
+@plans/feature-handoff-index.md
+@plans/2026-10-11-project-log.md
+브랜치 cursor/transport-proxy-e06e · draft PR #429 · tip 26f09934
+금지: 에이전트 Edge 배포 · prod 배포 · 역 ID 창작 · feature에 plans 커밋 · main 코드 push · PR 병합
+작업: 카드 캐시 마이그레이션과 함수 재배포 뒤 Server-Timing으로 warm을 가른다. UI는 Cos GO 전이다.
+검증: npm run test:health
+```
+
 ### 축제 MOONi Edge
 
 | | |
