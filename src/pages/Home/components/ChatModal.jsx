@@ -44,11 +44,13 @@ import {
   FESTIVAL_LODGING_EVENT,
   FESTIVAL_PAGE_EVENT,
   isFestivalFoodAsk,
+  isFestivalLodgingAsk,
   mergeMooniKoreaFestivalReply,
   polishFestivalModelReply,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 import { fetchNearbyTourRestaurants } from '../../../utils/fetchNearbyTourRestaurants';
 import { waitForFestivalRestaurantNames } from '../../Korea/lib/festivalRestaurantLoad.js';
+import { waitForFestivalLodgingStays } from '../../Korea/lib/festivalStayLoad.js';
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
@@ -132,6 +134,29 @@ async function loadFestivalRestaurantsForAsk(festivalContext, ask) {
   return { ...festivalContext, nearbyRestaurants: loaded };
 }
 
+async function loadFestivalStaysForAsk(festivalContext, ask) {
+  if (!festivalContext || !isFestivalLodgingAsk(ask)) return festivalContext ?? null;
+  const loaded = await waitForFestivalLodgingStays(festivalContext.contentId, {
+    stays: festivalContext.nearbyStays,
+    timeoutMs: 3000,
+  });
+  if (!loaded.length) return festivalContext;
+  return { ...festivalContext, nearbyStays: loaded };
+}
+
+async function loadFestivalAskContext(festivalContext, ask) {
+  if (!festivalContext) return null;
+  const [withFood, withStays] = await Promise.all([
+    loadFestivalRestaurantsForAsk(festivalContext, ask),
+    loadFestivalStaysForAsk(festivalContext, ask),
+  ]);
+  return {
+    ...festivalContext,
+    nearbyRestaurants: withFood?.nearbyRestaurants ?? festivalContext.nearbyRestaurants,
+    nearbyStays: withStays?.nearbyStays ?? festivalContext.nearbyStays,
+  };
+}
+
 function festivalReplyOptions(festivalContext, extra = {}) {
   return {
     contentId: festivalContext?.contentId,
@@ -143,6 +168,7 @@ function festivalReplyOptions(festivalContext, extra = {}) {
     festivalTitle: festivalContext?.title,
     nearbyPlaces: festivalContext?.nearbyPlaces,
     nearbyRestaurants: festivalContext?.nearbyRestaurants,
+    nearbyStays: festivalContext?.nearbyStays,
     homepage: festivalContext?.homepage,
     tel: festivalContext?.tel,
     parking: festivalContext?.parking,
@@ -1066,7 +1092,7 @@ const ChatModal = ({
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
-      const festivalContext = await loadFestivalRestaurantsForAsk(
+      const festivalContext = await loadFestivalAskContext(
         mooniPlaceContext?.festivalContext ?? null,
         { chipId, userText: cleanText },
       );
@@ -1245,7 +1271,7 @@ const ChatModal = ({
           stripPhantomTicketMention: ctx.stripPhantomTicketMention,
         });
         const priorUser = [...messages.slice(0, modelIdx)].reverse().find((m) => m.role === 'user');
-        const festivalContext = await loadFestivalRestaurantsForAsk(
+        const festivalContext = await loadFestivalAskContext(
           mooniPlaceContext?.festivalContext ?? null,
           { chipId: msg.bookingMeta?.chipId, userText: messageTextPlain(priorUser) },
         );

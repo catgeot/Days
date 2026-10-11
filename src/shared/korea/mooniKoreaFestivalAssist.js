@@ -809,12 +809,25 @@ function foodFactByName(values) {
   return map;
 }
 
-/** 3–4 sheet places. Markets and locals first; chains drop when any local exists. */
+function foodHasDistance(raw) {
+  const km = foodDistKm(raw);
+  return km != null && km > 0;
+}
+
+/** 3–4 places that have a distance. A gap is filled by the next closest local. */
 export function festivalFoodPlaceLabels(values, locale = 'ko', limit = 4) {
   const facts = foodFactByName(values);
-  const ranked = rankFestivalRestaurants(values, Math.max(limit, 6));
+  const ranked = rankFestivalRestaurants(values, 24);
   const locals = ranked.filter((name) => !isFestivalChainRestaurant(name));
-  const names = (locals.length ? locals : ranked).slice(0, limit);
+  const pool = locals.length ? locals : ranked;
+  const measured = pool.filter((name) => foodHasDistance(facts.get(name)));
+  const names = (measured.length ? measured : pool)
+    .slice()
+    .sort((a, b) => {
+      if (!measured.length) return 0;
+      return foodDistKm(facts.get(a)) - foodDistKm(facts.get(b));
+    })
+    .slice(0, limit);
   return names.map((name) => {
     const tag = festivalFoodPlaceTag(name, foodDistKm(facts.get(name)), locale);
     return tag ? `${name}(${tag})` : name;
@@ -914,7 +927,7 @@ function softenNightHour(text) {
   });
 }
 
-const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|매력을 느끼며|특별한 순간을 경험해|The atmosphere is majestic|a variety of stays|feel the charm/i;
+const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|숙소가\s*자리하고|매력을 느끼며|인근으로[\s\S]{0,40}숙소를\s*찾을\s*수\s*있|특별한 순간을 경험해|The atmosphere is majestic|a variety of stays|feel the charm|find stays in the .* area/i;
 
 function dropFestivalFillerSentences(text) {
   const stripped = String(text || '').replace(/편안한 휴식을 위해\s*/g, '');
@@ -998,6 +1011,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   text = ensureFestivalFoodAnswer(text, options);
   text = appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
+  text = ensureFestivalLodgingAnswer(text, options);
   text = stripOffTopicLodgingNudge(text, options);
   text = settleFestivalNextAction(text, options);
   return dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
@@ -1032,6 +1046,68 @@ function festivalFactCorpus(options = {}) {
   return [options.overview, options.program, options.sceneOverview, options.parking, options.feeText]
     .map((value) => String(value || ''))
     .join('\n');
+}
+
+function stayDistanceTag(km) {
+  const n = Number(km);
+  if (!Number.isFinite(n) || n <= 0) return '';
+  if (n < 1) return `${Math.max(1, Math.round(n * 1000))}m`;
+  const one = Math.round(n * 10) / 10;
+  return Number.isInteger(one) ? `${one}km` : `${one.toFixed(1)}km`;
+}
+
+function lodgingStayRows(values) {
+  const rows = [];
+  for (const raw of Array.isArray(values) ? values : []) {
+    const name = String(raw?.name || raw?.itemName || '').replace(/\s+/g, ' ').trim();
+    const distKm = Number(raw?.distKm ?? raw?.distanceKm);
+    if (!name || !(distKm > 0)) continue;
+    rows.push({ name, distKm });
+  }
+  rows.sort((a, b) => a.distKm - b.distKm);
+  return rows.slice(0, 3);
+}
+
+function lodgingStayLead(values, locale = 'ko') {
+  const rows = lodgingStayRows(values);
+  if (!rows.length) return '';
+  const labels = rows.map((row) => `${row.name}(${stayDistanceTag(row.distKm)})`);
+  if (String(locale || 'ko').slice(0, 2) === 'en') return `Places to stay: ${labels.join(', ')}.`;
+  return `숙소는 ${labels.join(', ')}예요.`;
+}
+
+function lodgingCardLink(contentId, locale = 'ko') {
+  const url = gateoKoreaFestivalLodgingUrl(contentId);
+  if (!url) return '';
+  return String(locale || 'ko').slice(0, 2) === 'en'
+    ? `[lodging card](${url})`
+    : `[숙소 카드](${url})`;
+}
+
+/** Named stays from the lodging card replace area filler. An empty list keeps the area answer. */
+function ensureFestivalLodgingAnswer(text, options = {}) {
+  if (!isFestivalLodgingAsk(options)) return String(text || '');
+  const lead = lodgingStayLead(options.nearbyStays, options.locale);
+  const link = lodgingCardLink(options.contentId, options.locale);
+  if (!lead || !link) return String(text || '');
+  return `${lead}\n\n${link}`;
+}
+
+function parkingGuide(options = {}) {
+  const homepage = String(options.homepage || '').trim();
+  const tel = String(options.tel || '').trim();
+  const homeOk = /^https?:\/\//i.test(homepage);
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  if (en) {
+    if (homeOk && tel) return `Parking is on the [official site](${homepage}). Call ${tel}.`;
+    if (homeOk) return `Parking is on the [official site](${homepage}).`;
+    if (tel) return `For parking, call ${tel}.`;
+    return 'Parking is on the official site.';
+  }
+  if (homeOk && tel) return `주차 안내는 [공식 홈페이지](${homepage})에 있어요. 문의 ${tel}`;
+  if (homeOk) return `주차 안내는 [공식 홈페이지](${homepage})에 있어요.`;
+  if (tel) return `주차 안내는 문의 ${tel}에 있어요.`;
+  return '주차 안내는 공식 홈페이지에 있어요.';
 }
 
 function officialPracticalCheck(options = {}) {
@@ -1072,6 +1148,9 @@ function redirectMissingPracticalCheck(text, options = {}) {
     topic.kind === 'parking' ? /주차|parking/i.test(corpus) : /셔틀|shuttle/i.test(corpus)
   );
   if (asked.every(covered)) return String(text || '');
+  if (asked.some((topic) => topic.kind === 'parking' && !covered(topic))) {
+    return parkingGuide(options);
+  }
   const replacement = officialPracticalCheck(options);
   const next = filterPreservingBreaks(text, (part) => (
     FESTIVAL_PAGE_CHECK_RE.test(part)
@@ -1417,8 +1496,8 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
       ? `- Nearby restaurants (GATEO 주변 맛집): ${restaurants.join(', ')}`
       : `- 주변 맛집(GATEO): ${restaurants.join(', ')}`);
     lines.push(isEn
-      ? '- Where to eat: name 3 or 4 of these places, each with the type or distance in parentheses. Do not say to look for restaurants. Do not write filler such as a variety of restaurants, a culinary trip, or well-known spots. Do not invent a place that is not on this list, including a central market. Do not add a "next action" label, an unlinked getting-there line, or a lodging link. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
-      : '- 근처 먹을 곳·맛집 질문: 위 이름 3~4곳만 말한다. 괄호의 한 단어 유형이나 거리(돈가스·제과·방앗간·도보 N분·N m)를 그대로 붙인다. «주변의 맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다양한 맛집», «미식 여행», «소문난»은 쓰지 않는다. 목록에 없는 장소는 만들지 않는다. 중앙시장은 목록에 있을 때만 말한다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 링크 없는 가는 법 문장과 숙소 링크, «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
+      ? '- Where to eat: name 3 or 4 of these places, each with the type or distance in parentheses. Every named place must have a distance. If one does not, use the next closest local place that does. Do not say to look for restaurants. Do not write filler such as a variety of restaurants, a culinary trip, or well-known spots. Do not invent a place that is not on this list, including a central market. Do not add a "next action" label, an unlinked getting-there line, or a lodging link. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
+      : '- 근처 먹을 곳·맛집 질문: 위 이름 3~4곳만 말한다. 괄호의 한 단어 유형이나 거리(돈가스·제과·방앗간·도보 N분·N m)를 그대로 붙인다. 거리가 없는 곳은 빼고, 거리가 있는 다음으로 가까운 곳을 말한다. «주변의 맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다양한 맛집», «미식 여행», «소문난»은 쓰지 않는다. 목록에 없는 장소는 만들지 않는다. 중앙시장은 목록에 있을 때만 말한다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 링크 없는 가는 법 문장과 숙소 링크, «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
   }
 
   const gateoUrl =
@@ -1441,9 +1520,12 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   if (parking) {
     lines.push(isEn ? `- Parking: ${parking}` : `- 주차: ${parking}`);
   } else if (!/주차|parking/i.test(parkingCorpus)) {
+    const telBit = tel
+      ? (isEn ? ` Call ${tel}.` : ` 전화번호가 있으면 «문의 ${tel}»를 붙인다.`)
+      : (isEn ? ' Do not mention a contact number.' : ' 전화번호가 없으면 문의 문장을 쓰지 않는다.');
     lines.push(isEn
-      ? '- Parking is not in the festival data. Do not say to check the festival page for parking. Point to the official site or the contact phone, and link the official page when a URL is listed.'
-      : '- 주차 정보가 이 데이터에 없다. 주차를 «축제 페이지에서 확인»하라고 하지 않는다. 공식 홈페이지나 문의처로 안내하고, URL이 있으면 링크하고 전화번호가 있으면 적는다.');
+      ? `- Parking is not in the festival data. Write only "Parking is on the [official site](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})."${telBit} Do not repeat "check". Do not say "through the contact" without a number. Do not tell the user to look at the festival page.`
+      : `- 주차 정보가 이 데이터에 없다. 답은 «주차 안내는 [공식 홈페이지](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})에 있어요.»만 쓴다.${telBit} «확인»을 반복하지 않는다. 번호 없는 «문의처를 통해»와 «축제 페이지에서 살펴보세요»는 쓰지 않는다.`);
   }
 
   return `\n${lines.join('\n')}`;
@@ -1551,20 +1633,30 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
         .join('\n');
       if (lodgingUrl) {
         const placeName = String(festivalContext.hubLabel || '').trim();
-        const areas = lodgingAreaNames({
-          venue: festivalContext.venue,
-          placeName,
-          stayAreas: festivalContext.stayAreas,
-          lat: festivalContext.lat,
-          lng: festivalContext.lng,
-        });
-        const label = festivalLodgingLinkLabel(placeName, input.locale);
-        const areaLine = areas.length
-          ? (en ? ` Stay areas: ${areas.join(', ')}.` : ` 숙소 권역: ${areas.join(', ')}.`)
-          : '';
-        hint += en
-          ? `\n- Lodging answer: name 2 or 3 stay areas within about 20 km of the venue, then end with [${label}](${lodgingUrl}). Do not name the next city. Do not write filler such as "for a comfortable rest", "a variety of stays", or "feel the charm". If the hint lists one stay area, name only that one. Do not answer with only a link. Do not use "here", "this link", or "this place" as the link text. No other stay URL.${areaLine}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate the festival dates, a countdown, or a long calendar date. This overrides the festival date-comparison rule.`
-          : `\n- 숙소 답: 축제장에서 약 20km 안의 숙소 권역 2~3곳만 말한 뒤 [${label}](${lodgingUrl})로 끝낸다. 속초처럼 옆 도시는 말하지 않는다. «편안한 휴식을 위해», «다양한 숙소가 자리하고 있어요», «매력을 느끼며» 같은 채움은 쓰지 않는다. 권역이 한 곳이면 그곳만 말한다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 행사 기간을 다시 말하지 않는다. «현재 시작까지 N일 남았습니다»와 «2026년 10월 15일부터» 같은 긴 날짜도 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
+        const stayLabels = lodgingStayRows(festivalContext.nearbyStays).map((row) => (
+          `${row.name}(${stayDistanceTag(row.distKm)})`
+        ));
+        const cardLabel = en ? 'lodging card' : '숙소 카드';
+        if (stayLabels.length) {
+          hint += en
+            ? `\n- Lodging answer: name only these stays with their distance: ${stayLabels.join(', ')}. End with one [${cardLabel}](${lodgingUrl}) link. Do not add area filler such as "find stays in the area" or "a variety of stays are located".`
+            : `\n- 숙소 답: 숙소 카드의 이 곳만 거리와 함께 말한다: ${stayLabels.join(', ')}. 마지막은 [${cardLabel}](${lodgingUrl}) 한 번만. «인근으로 … 권역에서 숙소를 찾을 수 있어요», «숙소가 자리하고 있어요», «다양한 숙소가 자리하고 있어요», «매력을 느끼며»는 쓰지 않는다.`;
+        } else {
+          const areas = lodgingAreaNames({
+            venue: festivalContext.venue,
+            placeName,
+            stayAreas: festivalContext.stayAreas,
+            lat: festivalContext.lat,
+            lng: festivalContext.lng,
+          });
+          const label = festivalLodgingLinkLabel(placeName, input.locale);
+          const areaLine = areas.length
+            ? (en ? ` Stay areas: ${areas.join(', ')}.` : ` 숙소 권역: ${areas.join(', ')}.`)
+            : '';
+          hint += en
+            ? `\n- Lodging answer: the stay list is empty. Name 2 or 3 stay areas within about 20 km of the venue, then end with [${label}](${lodgingUrl}). Do not name the next city. Do not write filler such as "for a comfortable rest", "a variety of stays", or "feel the charm". If the hint lists one stay area, name only that one. Do not answer with only a link. Do not use "here", "this link", or "this place" as the link text. No other stay URL.${areaLine}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate the festival dates, a countdown, or a long calendar date. This overrides the festival date-comparison rule.`
+            : `\n- 숙소 답: 숙소 목록이 없다. 축제장에서 약 20km 안의 숙소 권역 2~3곳만 말한 뒤 [${label}](${lodgingUrl})로 끝낸다. 속초처럼 옆 도시는 말하지 않는다. «편안한 휴식을 위해», «다양한 숙소가 자리하고 있어요», «매력을 느끼며», «인근으로 … 권역에서 숙소를 찾을 수 있어요», «숙소가 자리하고 있어요» 같은 채움은 쓰지 않는다. 권역이 한 곳이면 그곳만 말한다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 행사 기간을 다시 말하지 않는다. «현재 시작까지 N일 남았습니다»와 «2026년 10월 15일부터» 같은 긴 날짜도 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
+        }
       }
     }
     return { hint, candidates: [] };

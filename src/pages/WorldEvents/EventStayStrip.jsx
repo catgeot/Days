@@ -11,6 +11,7 @@ import {
   getTripcomPackageLinkTarget,
   shouldShowTripcomPackageFlightHotelLink,
 } from '../../components/PlaceCard/common/partnerNavigation';
+import { publishFestivalLodgingStays } from '../Korea/lib/festivalStayLoad.js';
 import {
   GuestStepper,
   StayRangeCalendar,
@@ -164,6 +165,8 @@ function StayCard({ item, price, large = false }) {
  *   stayAreas?: Array<{ name?: string, mrtKeyword?: string, hubId?: string }>,
  *   title?: string,
  *   hint?: string,
+ *   contentId?: string,
+ *   stayOrigin?: { lat?: number, lng?: number } | null,
  * }} props
  */
 export default function EventStayStrip({
@@ -178,6 +181,8 @@ export default function EventStayStrip({
   stayAreas: stayAreasOverride,
   title,
   hint,
+  contentId = '',
+  stayOrigin = null,
 }) {
   const { t, i18n } = useTranslation();
   const rootRef = useRef(null);
@@ -187,6 +192,11 @@ export default function EventStayStrip({
   const [guests, setGuests] = useState(() => normalizeMrtGuestCounts(2, 0));
   const [items, setItems] = useState(null);
   const [status, setStatus] = useState('idle');
+
+  useEffect(() => {
+    if (!contentId || (status !== 'ready' && status !== 'empty')) return;
+    publishFestivalLodgingStays(contentId, items || [], stayOrigin);
+  }, [contentId, status, items, stayOrigin]);
   const [listLarge, setListLarge] = useState(false);
   const fetchedKeyRef = useRef('');
 

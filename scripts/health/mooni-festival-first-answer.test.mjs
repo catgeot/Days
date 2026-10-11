@@ -43,6 +43,11 @@ import {
   waitForFestivalRestaurantNames,
 } from '../../src/pages/Korea/lib/festivalRestaurantLoad.js';
 import {
+  publishFestivalLodgingStays,
+  resetFestivalLodgingStays,
+  waitForFestivalLodgingStays,
+} from '../../src/pages/Korea/lib/festivalStayLoad.js';
+import {
   appendFestivalLodgingNextStep,
   buildMooniBoundFestivalSystemHint,
   FESTIVAL_CHAIN_RE,
@@ -1612,6 +1617,18 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.deepEqual(timedOut, []);
   resetFestivalRestaurantLoad();
 
+  resetFestivalLodgingStays('2930716');
+  const stayWait = waitForFestivalLodgingStays('2930716', { timeoutMs: 400 });
+  publishFestivalLodgingStays('2930716', [
+    { itemName: '강릉 씨사이드', lat: 37.756, lng: 128.898 },
+  ], { lat: 37.755777, lng: 128.897602 });
+  const stayed = await stayWait;
+  assert.equal(stayed[0].name, '강릉 씨사이드');
+  assert.ok(stayed[0].distKm > 0);
+  resetFestivalLodgingStays('2930716');
+  const stayMiss = await waitForFestivalLodgingStays('2930716', { timeoutMs: 30 });
+  assert.deepEqual(stayMiss, []);
+
   const tagged = polishFestivalModelReply(
     '강릉 중앙시장과 지역 특색을 살린 식당이 많아요. 다양한 맛집이 있어요. 미식 여행을 즐겨보세요. 주변의 소문난 지역 식당이에요. 가는 법을 알아보세요.',
     {
@@ -1632,6 +1649,21 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(tagged, /100년임당방앗간\(방앗간\)/);
   assert.match(tagged, /월화엔\(도보 3분\)/);
   assert.doesNotMatch(tagged, /배니닭강정|다양한 맛집|미식|소문난|중앙시장|가는 법/);
+  const swappedFood = polishFestivalModelReply('주변의 맛집을 찾아보세요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '근처 먹을 곳?',
+    nearbyRestaurants: [
+      { name: '만동제과', distKm: 0.4 },
+      { name: '거리없는국수집', distKm: null },
+      { name: '월화엔', distKm: 0.5 },
+      { name: '100년임당방앗간', distKm: 0.8 },
+      { name: '가까운집', distKm: 0.15 },
+    ],
+  });
+  assert.match(swappedFood, /가까운집/);
+  assert.match(swappedFood, /만동제과\(제과\)/);
+  assert.doesNotMatch(swappedFood, /거리없는국수집/);
 
   const page = 'https://visitgangneung.net/pub/gnfestival/4748.do';
   const parking = polishFestivalModelReply('주차는 축제 페이지에서 확인해요.', {
@@ -1641,8 +1673,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     homepage: page,
     tel: '033-640-4531',
   });
-  assert.match(parking, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)나 문의처 033-640-4531에서 확인해요/);
-  assert.doesNotMatch(parking, /축제 페이지에서 확인/);
+  assert.equal(parking, '주차 안내는 [공식 홈페이지](https://visitgangneung.net/pub/gnfestival/4748.do)에 있어요. 문의 033-640-4531');
+  assert.doesNotMatch(parking, /확인|살펴|문의처를 통해|축제 페이지/);
 
   const homeOnly = polishFestivalModelReply('주차는 축제 페이지에서 확인해요.', {
     contentId: '2930716',
@@ -1650,7 +1682,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     userText: '주차는요?',
     homepage: page,
   });
-  assert.match(homeOnly, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)나 문의처에서 확인해요/);
+  assert.equal(homeOnly, '주차 안내는 [공식 홈페이지](https://visitgangneung.net/pub/gnfestival/4748.do)에 있어요.');
+  assert.doesNotMatch(homeOnly, /문의|확인|축제 페이지/);
 
   const shuttle = polishFestivalModelReply(
     '셔틀은 [축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 확인해요.',
@@ -1681,22 +1714,35 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     locale: 'ko',
     userText: '주차?',
   });
-  assert.match(bareParking, /공식 홈페이지나 문의처에서 확인해요/);
+  assert.equal(bareParking, '주차 안내는 공식 홈페이지에 있어요.');
+  assert.doesNotMatch(bareParking, /확인|문의처|축제 페이지/);
 
   const parkedHome = polishFestivalModelReply(
     `강릉 국수 축제 주차 정보는 공식 홈페이지(${page})에서 확인할 수 있어요.`,
     { contentId: '2930716', locale: 'ko', userText: '주차', homepage: page, tel: '033-640-4531' },
   );
-  assert.match(parkedHome, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)/);
-  assert.doesNotMatch(parkedHome, /공식 홈페이지\(\)|홈페이지\(\)|\(\s*\)|  /);
-  assert.equal(parkedHome.includes(`${page})`), true);
+  assert.equal(parkedHome, `주차 안내는 [공식 홈페이지](${page})에 있어요. 문의 033-640-4531`);
+  assert.doesNotMatch(parkedHome, /확인|살펴|공식 홈페이지\(\)|  /);
 
   const parkedOther = polishFestivalModelReply(
     '강릉 국수 축제 주차 정보는 공식 홈페이지(https://example.com/not-official)에서 확인할 수 있어요.',
     { contentId: '2930716', locale: 'ko', userText: '주차', homepage: page, tel: '033-640-4531' },
   );
-  assert.doesNotMatch(parkedOther, /example\.com|\(\s*\)|\[\s*\]|（\s*）|  /);
-  assert.match(parkedOther, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)/);
+  assert.equal(parkedOther, `주차 안내는 [공식 홈페이지](${page})에 있어요. 문의 033-640-4531`);
+  assert.doesNotMatch(parkedOther, /example\.com|확인|살펴|축제 페이지|  /);
+  const noisyParking = polishFestivalModelReply(
+    '주차는 [축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 살펴보세요. 문의처를 통해 확인할 수 있어요.',
+    { contentId: '2930716', locale: 'ko', userText: '주차 정보', homepage: page, tel: '033-640-4531' },
+  );
+  assert.equal(noisyParking, `주차 안내는 [공식 홈페이지](${page})에 있어요. 문의 033-640-4531`);
+  const telOnly = polishFestivalModelReply('주차는 축제 페이지에서 살펴보세요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '주차',
+    tel: '033-640-4531',
+  });
+  assert.equal(telOnly, '주차 안내는 문의 033-640-4531에 있어요.');
+  assert.doesNotMatch(telOnly, /문의처를 통해|축제 페이지|확인/);
   assert.match(
     stripDisallowedFestivalLinks('안내 [https://example.com/bracket] 끝', { homepage: page }),
     /^안내 끝$/,
@@ -1743,6 +1789,44 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(stayHint.hint, /다양한 숙소가 자리하고 있어요/);
   assert.match(stayHint.hint, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)/);
   assert.match(stayHint.hint, /033-640-4531/);
+  const namedStays = polishFestivalModelReply(
+    '월화거리 인근으로 교동 권역에서 숙소를 찾을 수 있어요. 다양한 숙소가 자리하고 있어요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '어디서 자요?',
+      placeName: '강릉',
+      stayAreas: ['월화거리', '교동', '안목'],
+      lat: 37.755777,
+      lng: 128.897602,
+      nearbyStays: [
+        { name: '강릉 씨사이드', distKm: 0.35 },
+        { name: '교동 스테이', distKm: 1.2 },
+        { name: '경포 호텔', distKm: 8 },
+        { name: '먼 호텔', distKm: 12 },
+      ],
+    },
+  );
+  assert.match(namedStays, /강릉 씨사이드\(350m\)/);
+  assert.match(namedStays, /교동 스테이\(1\.2km\)/);
+  assert.match(namedStays, /경포 호텔\(8km\)/);
+  assert.doesNotMatch(namedStays, /먼 호텔|인근으로|숙소가 자리|다양한 숙소|월화거리/);
+  assert.match(namedStays, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
+  assert.equal((namedStays.match(/#festival-lodging/g) || []).length, 1);
+  const namedHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '어디서 자요?',
+    locale: 'ko',
+    festivalContext: {
+      title: '강릉 국수 축제',
+      contentId: '2930716',
+      nearbyStays: [
+        { name: '강릉 씨사이드', distKm: 0.35 },
+        { name: '교동 스테이', distKm: 1.2 },
+      ],
+    },
+  });
+  assert.match(namedHint.hint, /강릉 씨사이드\(350m\)/);
+  assert.match(namedHint.hint, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
 
   const fromIntro = buildFestivalMooniContext({
     item: { title: '강릉 국수 축제', contentId: '2930716' },
@@ -1792,7 +1876,9 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.equal(many.nearbyPlaces.length, 8);
 
   const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
-  assert.equal((chat.match(/loadFestivalRestaurantsForAsk/g) || []).length >= 3, true);
+  assert.equal((chat.match(/loadFestivalAskContext/g) || []).length >= 3, true);
+  assert.match(chat, /loadFestivalRestaurantsForAsk/);
+  assert.match(chat, /waitForFestivalLodgingStays/);
   const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
   assert.match(sheet, /beginFestivalRestaurantLoad/);
 });
