@@ -1,0 +1,22 @@
+{
+  "response": {
+    "header": { "resultCode": "00", "resultMsg": "NORMAL SERVICE." },
+    "body": {
+      "numOfRows": 100,
+      "pageNo": 1,
+      "totalCount": 8,
+      "items": {
+        "item": [
+          { "trainno": "1921", "traingradename": "무궁화", "depplacename": "광주송정", "arrplacename": "함평", "depplandtime": "20261024071900", "arrplandtime": "20261024073900", "adultcharge": "2600" },
+          { "trainno": "1923", "traingradename": "무궁화", "depplacename": "광주송정", "arrplacename": "함평", "depplandtime": "20261024090000", "arrplandtime": "20261024092000", "adultcharge": "2600" },
+          { "trainno": "1925", "traingradename": "무궁화", "depplacename": "광주송정", "arrplacename": "함평", "depplandtime": "20261024110000", "arrplandtime": "20261024112200", "adultcharge": "2600" },
+          { "trainno": "1927", "traingradename": "무궁화", "depplacename": "광주송정", "arrplacename": "함평", "depplandtime": "20261024130000", "arrplandtime": "20261024132100", "adultcharge": "4800" },
+          { "trainno": "1929", "traingradename": "무궁화", "depplacename": "광주송정", "arrplacename": "함평", "depplandtime": "20261024150000", "arrplandtime": "20261024152400", "adultcharge": "4800" },
+          { "trainno": "1931", "traingradename": "무궁화", "depplacename": "광주송정", "arrplacename": "함평", "depplandtime": "20261024170000", "arrplandtime": "20261024172500", "adultcharge": "4800" },
+          { "trainno": "1933", "traingradename": "무궁화", "depplacename": "광주송정", "arrplacename": "함평", "depplandtime": "20261024190000", "arrplandtime": "20261024192500", "adultcharge": "2600" },
+          { "trainno": "1935", "traingradename": "무궁화", "depplacename": "광주송정", "arrplacename": "함평", "depplandtime": "20261024231300", "arrplandtime": "20261024233800", "adultcharge": "4800" }
+        ]
+      }
+    }
+  }
+}

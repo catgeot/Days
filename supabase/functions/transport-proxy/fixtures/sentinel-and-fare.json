@@ -1,0 +1,88 @@
+{
+  "sentinelMix": {
+    "response": {
+      "header": { "resultCode": "00", "resultMsg": "NORMAL SERVICE." },
+      "body": {
+        "totalCount": 3,
+        "items": {
+          "item": [
+            { "routeId": "BOGUS1", "gradeNm": "우등", "depPlaceNm": "함평", "arrPlaceNm": "광주(유·스퀘어)", "depPlandTime": "20261011235900", "arrPlandTime": "20261012003400", "charge": "5000" },
+            { "routeId": "BOGUS2", "gradeNm": "우등", "depPlaceNm": "함평", "arrPlaceNm": "광주(유·스퀘어)", "depPlandTime": "20261011235900", "arrPlandTime": "20261012003400", "charge": "5000" },
+            { "routeId": "REAL", "gradeNm": "우등", "depPlaceNm": "광주(유·스퀘어)", "arrPlaceNm": "함평", "depPlandTime": "20261011080000", "arrPlandTime": "20261011090000", "charge": "4300" }
+          ]
+        }
+      }
+    }
+  },
+  "fareZero": {
+    "response": {
+      "header": { "resultCode": "00", "resultMsg": "NORMAL SERVICE." },
+      "body": {
+        "totalCount": 1,
+        "items": {
+          "item": {
+            "trainno": "1081",
+            "traingradename": "새마을",
+            "depplacename": "부산",
+            "arrplacename": "마산",
+            "depplandtime": "20261024083300",
+            "arrplandtime": "20261024094600",
+            "adultcharge": "0"
+          }
+        }
+      }
+    }
+  },
+  "fareZeroMixed": {
+    "response": {
+      "header": { "resultCode": "00", "resultMsg": "NORMAL SERVICE." },
+      "body": {
+        "totalCount": 2,
+        "items": {
+          "item": [
+            { "gradeNm": "일반", "depPlaceNm": "부산동부", "arrPlaceNm": "마산", "depPlandTime": "20261011055000", "arrPlandTime": "20261011065000", "charge": "0" },
+            { "gradeNm": "일반", "depPlaceNm": "부산동부", "arrPlaceNm": "마산", "depPlandTime": "20261011232000", "arrPlandTime": "20261012002000", "charge": "6600" }
+          ]
+        }
+      }
+    }
+  },
+  "lastBus2400": {
+    "response": {
+      "header": { "resultCode": "00", "resultMsg": "NORMAL SERVICE." },
+      "body": {
+        "totalCount": 1,
+        "items": {
+          "item": {
+            "gradeNm": "고속",
+            "depPlaceNm": "센트럴시티",
+            "arrPlaceNm": "광주(유·스퀘어)",
+            "depPlandTime": "20261011240000",
+            "arrPlandTime": "20261012032000",
+            "charge": "22700"
+          }
+        }
+      }
+    }
+  },
+  "empty": {
+    "response": {
+      "header": { "resultCode": "00", "resultMsg": "NORMAL SERVICE." },
+      "body": { "items": "", "totalCount": 0 }
+    }
+  },
+  "suseo": {
+    "response": {
+      "header": { "resultCode": "00", "resultMsg": "NORMAL SERVICE." },
+      "body": {
+        "totalCount": 2,
+        "items": {
+          "item": [
+            { "trainno": "601", "traingradename": "KTX-산천", "depplacename": "수서", "arrplacename": "광주송정", "depplandtime": "20261024050800", "arrplandtime": "20261024064400", "adultcharge": "39900" },
+            { "trainno": "618", "traingradename": "KTX-산천", "depplacename": "수서", "arrplacename": "광주송정", "depplandtime": "20261024225500", "arrplandtime": "20261025003900", "adultcharge": "40700" }
+          ]
+        }
+      }
+    }
+  }
+}
