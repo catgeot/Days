@@ -38,6 +38,20 @@ function recordedPayloadForAction(action, contentId, festivalId) {
   const cid = String(contentId || '').trim();
   if (action === 'festivalWindow') return RECORDED_WINDOW_EMPTY;
   if (action === 'festivalDetail' && (!cid || cid === id)) return RECORDED_DETAIL;
+  if (action === 'festivalDetail' && cid) {
+    return {
+      ok: true,
+      contentId: cid,
+      fromCache: true,
+      intro: {
+        contentId: cid,
+        contentTypeId: '15',
+        eventStartDate: '20260101',
+        eventEndDate: '20260102',
+      },
+      common: { contentId: cid, title: `stub ${cid}` },
+    };
+  }
   if (action === 'detailIntro') return { ok: true, intro: RECORDED_DETAIL.intro };
   if (action === 'detailCommon') return { ok: true, common: RECORDED_DETAIL.common };
   return { ok: true, items: [], fromCache: true };

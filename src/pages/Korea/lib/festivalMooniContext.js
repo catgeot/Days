@@ -441,6 +441,14 @@ function koDateSentence(ctx, today) {
   return when ? `${ctx.title}${topic} ${when}.` : '';
 }
 
+function englishNextEdition(text) {
+  const src = String(text || '');
+  if (/내년(?:에도)?/.test(src)) return 'The next edition is next year.';
+  const year = src.match(/다음\s*(?:회|개최)[^.\n]{0,24}(20\d{2})/);
+  if (year) return `The next edition is in ${year[1]}.`;
+  return '';
+}
+
 function enDateSentence(ctx, today, phrase) {
   const range = briefDateRange(ctx.eventStartDate, ctx.eventEndDate, true);
   const status = festivalTimingStatus(ctx.eventStartDate, ctx.eventEndDate, today);
@@ -451,7 +459,9 @@ function enDateSentence(ctx, today, phrase) {
     return `${phrase} runs ${when}.`;
   }
   if (status === 'ended') {
-    return range ? `${phrase} ran ${range} and has ended.` : `${phrase} has ended.`;
+    const base = range ? `${phrase} ran ${range} and has ended.` : `${phrase} has ended.`;
+    const next = englishNextEdition(ctx.sceneOverview || ctx.overview);
+    return next ? `${base} ${next}` : base;
   }
   if (status === 'ongoing') {
     return range ? `${phrase} runs ${range} and is underway.` : `${phrase} is underway.`;
@@ -1002,12 +1012,46 @@ export function unsupportedFestivalFactMentions(answer, corpus) {
  * @param {ReturnType<typeof buildFestivalFirstAnswerFacts>} facts
  * @param {string[]} [banned]
  */
+const UNSOURCED_EN_ATMOSPHERE_RE = /visitors engage with various hands-on programs|the lively atmosphere continues into the evening/i;
+
+function dropUnsourcedEnglishAtmosphere(raw) {
+  const parts = String(raw || '').split(/(?<=[.!?])\s+/).map((part) => part.trim()).filter(Boolean);
+  return parts.filter((part) => !UNSOURCED_EN_ATMOSPHERE_RE.test(part)).join(' ');
+}
+
+/** Ended festivals lead with has ended, and any next edition, before nearby stops. */
+function leadEndedBeforeNearby(raw, facts) {
+  if (!/has ended/i.test(String(facts?.dateLine || ''))) return raw;
+  const parts = String(raw || '').split(/(?<=[.!?])\s+/).map((part) => part.trim()).filter(Boolean);
+  const ended = [];
+  const nearby = [];
+  const rest = [];
+  for (const part of parts) {
+    if (/has ended|next edition/i.test(part)) ended.push(part);
+    else if (/\bnearby\b|you can walk to/i.test(part)) nearby.push(part);
+    else rest.push(part);
+  }
+  if (!ended.length) {
+    const line = String(facts.dateLine || '').trim();
+    ended.push(/[.!?]$/.test(line) ? line : `${line}.`);
+  }
+  if (!ended.some((part) => /next edition/i.test(part))) {
+    const next = String(facts.dateLine || '').match(/The next edition is [^.]+\.?/);
+    if (next) ended.push(/\.$/.test(next[0]) ? next[0] : `${next[0]}.`);
+  }
+  return [...ended, ...rest, ...nearby].join(' ');
+}
+
 export function acceptFestivalModelOpening(text, facts, banned = []) {
   let raw = stripLeadingFactsEcho(text);
   raw = raw.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, ' ').trim();
   raw = dedupeRepeatedTitle(raw, facts);
   raw = expandDateOnlyFragments(raw, facts);
   raw = stripTheBeforeFactNoun(raw, facts).trim();
+  if (facts?.locale === 'en') {
+    raw = dropUnsourcedEnglishAtmosphere(raw);
+    raw = leadEndedBeforeNearby(raw, facts);
+  }
   if (facts?.locale !== 'en') raw = rewriteFestivalFormalEndings(raw).trim();
   if (!raw || !facts?.title) return '';
   if (!startsWithFestivalTitle(raw, facts)) return '';

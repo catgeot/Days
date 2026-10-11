@@ -120,6 +120,7 @@ import {
   getMooniModelRawText,
 } from '../lib/mooniModelMessageText';
 import { MooniChatMarkdownBoundary } from '../../../components/chat/MooniChatMarkdownBoundary.jsx';
+import { mooniUserBubbleText } from '../lib/mooniChipBubbleText.js';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
 
@@ -1058,9 +1059,12 @@ const ChatModal = ({
       !placeBound;
 
     const turnAt = Date.now();
+    const bubbleText = mooniUserBubbleText(cleanText);
+    const promptText = bubbleText !== cleanText ? cleanText : '';
     const userMsg = {
       role: 'user',
-      text: cleanText,
+      text: bubbleText,
+      ...(promptText ? { mooniPromptText: promptText } : {}),
       mooniAt: turnAt,
       ...(chipDestination ? { confirmedDestination: chipDestination } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
@@ -1103,7 +1107,8 @@ const ChatModal = ({
             ? (resolution.lng ?? chatDraft.lng)
             : chatDraft.lng,
         persona: personaToUse,
-        firstUserText: cleanText
+        firstUserText: bubbleText,
+        mooniPromptText: promptText,
       });
       if (!created?.id) {
         setIsLoading(false);
@@ -1125,7 +1130,10 @@ const ChatModal = ({
           : sessionDest);
       const priorTurns = newMessages
         .slice(0, -1)
-        .map((m) => ({ role: m.role, text: m.text }));
+        .map((m) => ({
+          role: m.role,
+          text: m.role === 'user' ? messageTextPlain(m) : m.text,
+        }));
 
       const slug =
         placeBound?.slug ||
@@ -1753,7 +1761,7 @@ const ChatModal = ({
                   ? getMooniModelMarkdownForRender(rawMsgText, {
                       stripPhantomTicketMention: stripPhantomOnRender,
                     })
-                  : rawMsgText;
+                  : mooniUserBubbleText(rawMsgText);
                 const { hadBracketLinks } = isModelMsg
                   ? sanitizeMooniModelReply(rawMsgText, {
                       stripPhantomTicketMention: stripPhantomOnRender,

@@ -233,6 +233,29 @@ test('model opening keeps ordinary Korean and rejects invented names', () => {
     acceptFestivalModelOpening('강릉 국수 축제 runs 10/15–18. Nearby, 경포해변.', enFacts),
     '',
   );
+
+  const endedCtx = buildFestivalMooniContext({
+    item: {
+      title: '봄꽃 축제',
+      contentId: '1',
+      titleEn: 'Spring Flower Festival',
+      eventStartDate: '20260101',
+      eventEndDate: '20260103',
+    },
+    overview: '내년에도 개최합니다. 개막 공연이 있어요.',
+    program: '개막 공연',
+    nearbyPlaces: ['경포해변'],
+  });
+  const endedFacts = buildFestivalFirstAnswerFacts(endedCtx, { locale: 'en', now: NOW });
+  assert.match(endedFacts.dateLine, /has ended/);
+  assert.match(endedFacts.dateLine, /The next edition is next year/);
+  const messy = acceptFestivalModelOpening(
+    'Nearby, you can walk to Gyeongpo Beach (경포해변). Visitors engage with various hands-on programs. The lively atmosphere continues into the evening. Spring Flower Festival (봄꽃 축제) ran 1/1–3 and has ended.',
+    endedFacts,
+  );
+  assert.doesNotMatch(messy, /hands-on programs|lively atmosphere/i);
+  assert.ok(messy.indexOf('has ended') < messy.toLowerCase().indexOf('nearby'));
+  assert.match(messy, /next year|next edition/i);
 });
 
 test('captured fixtures explain the scene without passes or bare English Hangul', () => {
@@ -981,6 +1004,8 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   assert.match(rendered.system, /해요체/);
   assert.match(rendered.system, /2~3문장/);
   assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /Hampyeong Expo Park \(함평엑스포공원\)/);
+  assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /Visitors engage with various hands-on programs/);
+  assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /has ended/);
   assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /not the Wolhwa Street/);
   assert.match(rendered.userText, /경포해변/);
   assert.doesNotMatch(rendered.userText, /\{/);

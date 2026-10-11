@@ -4,11 +4,10 @@ import {
 } from '../../../utils/mooniTruncatedContinue.js';
 import { prepareMooniGeminiHistory } from '../../../utils/mooniGeminiHistoryPayload.js';
 import { getMooniModelMarkdownForRender } from './mooniModelMessageText.js';
+import { mooniUserPromptText } from './mooniChipBubbleText.js';
 
 export function messageTextPlain(msg) {
-  if (!msg) return '';
-  if (typeof msg.text === 'object') return String(msg.text?.text ?? '');
-  return String(msg.text ?? '');
+  return mooniUserPromptText(msg);
 }
 
 /**
