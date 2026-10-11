@@ -115,19 +115,14 @@ const GENERAL_DISCOVERY_CHIP_DEFS = [
   },
 ];
 
-/** Domestic cities and airports for festival 「가는 법」. Default IATA is ICN (서울 / ICN). */
-export const FESTIVAL_DOMESTIC_ORIGINS = [
-  { iata: 'ICN', ko: '서울', en: 'ICN' },
-  { iata: 'GMP', ko: '김포', en: 'GMP' },
-  { iata: 'PUS', ko: '부산', en: 'PUS' },
-  { iata: 'TAE', ko: '대구', en: 'TAE' },
-  { iata: 'CJJ', ko: '청주', en: 'CJJ' },
-  { iata: 'KWJ', ko: '광주', en: 'KWJ' },
-  { iata: 'CJU', ko: '제주', en: 'CJU' },
-  { iata: 'WJU', ko: '원주', en: 'WJU' },
-  { iata: 'KAG', ko: '강릉', en: 'KAG' },
-  { iata: 'RSU', ko: '여수', en: 'RSU' },
-];
+export {
+  FESTIVAL_DOMESTIC_ORIGINS,
+  findFestivalDomesticOrigin,
+  normalizeFestivalCityToken,
+  visibleFestivalDomesticOrigins,
+  festivalOriginLabel,
+  buildFestivalAccessAskText,
+} from './festivalDomesticOrigins.js';
 
 export const FESTIVAL_ACCESS_PARENT = 'festival_access';
 export const FESTIVAL_OVERSEAS_PARENT = 'festival_overseas';
@@ -152,21 +147,6 @@ export function festivalQuickReplyOrder(locale = 'ko') {
   const en = String(locale || '').slice(0, 2) === 'en';
   const core = FESTIVAL_CORE_L1.map((def) => def.id);
   return en ? [FESTIVAL_OVERSEAS_L1.id, ...core] : [...core, FESTIVAL_OVERSEAS_L1.id];
-}
-
-export function festivalOriginLabel(iata, locale = 'ko') {
-  const code = String(iata || 'ICN').trim().toUpperCase();
-  const row = FESTIVAL_DOMESTIC_ORIGINS.find((item) => item.iata === code);
-  const en = String(locale || '').slice(0, 2) === 'en';
-  if (!row) return en ? code : code;
-  return en ? row.en : row.ko;
-}
-
-export function buildFestivalAccessAskText(iata, locale = 'ko') {
-  const place = festivalOriginLabel(iata, locale);
-  const en = String(locale || '').slice(0, 2) === 'en';
-  if (en) return `How do I get from ${place} to this festival by public transit and by car?`;
-  return `${place}에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘`;
 }
 
 export function withGroupChipCaret(label, drillDown) {
