@@ -18,10 +18,11 @@ export {
  *   overview?: string,
  *   program?: string,
  *   nearbyPlaces?: string[],
+ *   nearbyRestaurants?: string[],
  * }} input
  */
 export function buildFestivalMooniBoundSpot(input = {}) {
-  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, stayAreas } = input;
+  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas } = input;
   const festivalContext = buildFestivalMooniContext({
     item,
     intro,
@@ -31,6 +32,7 @@ export function buildFestivalMooniBoundSpot(input = {}) {
     overview,
     program,
     nearbyPlaces,
+    nearbyRestaurants,
     stayAreas,
   });
   const title = festivalContext?.title || '';

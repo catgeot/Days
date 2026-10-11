@@ -481,9 +481,14 @@ export function rewriteFestivalFormalEndings(text) {
   ));
 }
 
-/** «자리에요» after a vowel-ending syllable is «자리예요». Keep batchim «이에요». */
+/** «자리에요» and «10/15~18이예요» after a digit or no-batchim syllable become «예요». */
 function fixNoBatchimEyeyo(text) {
-  return String(text || '').replace(/([가-힣])에요(?=$|[\s.!?。,，])/g, (full, prev, offset, source) => {
+  const out = String(text || '')
+    .replace(/(\d|[가-힣])이예요/g, (full, prev) => (
+      syllableHasBatchim(prev) ? `${prev}이에요` : `${prev}예요`
+    ))
+    .replace(/(\d)이에요/g, '$1예요');
+  return out.replace(/([가-힣])에요(?=$|[\s.!?。,，])/g, (full, prev, offset, source) => {
     if (syllableHasBatchim(prev)) return full;
     if (prev === '이') {
       const before = source.charAt(offset - 1);
@@ -491,6 +496,71 @@ function fixNoBatchimEyeyo(text) {
     }
     return `${prev}예요`;
   });
+}
+
+const NON_RESTAURANT_PLACE_RE = /사우나|찜질|목욕|복지|노인회|생활문화|주민센터|경로당|행정복지|노인정|마을회관|주민자치|터널/;
+const FESTIVAL_FOOD_ASK_RE = /먹을\s*곳|맛집|뭐\s*먹|어디서\s*먹|where\s+to\s+eat|what\s+(?:can|should)\s+i\s+eat|\brestaurants?\b/i;
+const FESTIVAL_PAGE_URL = 'https:\\/\\/www\\.gateo\\.kr\\/korea\\/\\?festival=\\d+';
+
+function isFestivalFoodAsk(input = {}) {
+  if (String(input.chipId || '') === 'festival_nearby') return true;
+  return FESTIVAL_FOOD_ASK_RE.test(String(input.userText || ''));
+}
+
+function listedPlaceNames(values) {
+  const out = [];
+  for (const raw of Array.isArray(values) ? values : []) {
+    const name = String(raw || '').replace(/\s+/g, ' ').trim();
+    if (!name || NON_RESTAURANT_PLACE_RE.test(name) || out.includes(name)) continue;
+    out.push(name);
+    if (out.length >= 6) break;
+  }
+  return out;
+}
+
+/**
+ * «[강릉 국수 축제](url) 강릉 국수 축제 가는 법» → «[강릉 국수 축제 페이지](url)에서 가는 법을 알아보세요.»
+ * @param {string} text
+ * @param {string} [title]
+ */
+function collapseDoubledFestivalCloser(text, title = '') {
+  const rewrite = (label, href) => {
+    if (!href || href.includes('#')) return '';
+    const place = String(label || '').replace(/\s*페이지\s*$/, '').replace(/\s+/g, ' ').trim();
+    if (!place) return '';
+    return `[${place} 페이지](${href})에서 가는 법을 알아보세요.`;
+  };
+  let out = String(text || '').replace(
+    new RegExp(`\\[([^\\]\\n]+)\\]\\((${FESTIVAL_PAGE_URL})\\)\\s*(?:에서\\s*)?\\1\\s*가는\\s*법[^\\n.。]*[.。]?`, 'g'),
+    (full, label, href) => rewrite(label, href) || full,
+  );
+  const name = String(title || '').replace(/\s+/g, ' ').trim();
+  if (!name) return out;
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  out = out.replace(
+    new RegExp(`\\[([^\\]\\n]+)\\]\\((${FESTIVAL_PAGE_URL})\\)[^\\n.。]{0,80}${escaped}[^\\n.。]{0,40}가는\\s*법[^\\n.。]*[.。]?`, 'g'),
+    (full, label, href) => rewrite(name, href) || rewrite(label, href) || full,
+  );
+  return out;
+}
+
+function restaurantLead(names) {
+  const shown = names.slice(0, 3);
+  if (!shown.length) return '';
+  const last = shown[shown.length - 1];
+  const copula = syllableHasBatchim(last.slice(-1)) ? '이에요' : '예요';
+  return `주변 맛집은 ${shown.join(', ')}${copula}.`;
+}
+
+/** Food answers keep 주변 맛집 names and drop community, welfare, bath, and tunnel lines. */
+function ensureFestivalFoodAnswer(text, options = {}) {
+  if (!isFestivalFoodAsk(options)) return String(text || '');
+  const next = filterPreservingBreaks(text, (part) => NON_RESTAURANT_PLACE_RE.test(part));
+  if (String(options.locale || 'ko').slice(0, 2) === 'en') return next;
+  const restaurants = listedPlaceNames(options.nearbyRestaurants);
+  if (!restaurants.length || restaurants.some((name) => next.includes(name))) return next;
+  const lead = restaurantLead(restaurants);
+  return lead ? (next ? `${lead}\n\n${next}` : lead) : next;
 }
 
 const DATE_LINK_FRAGMENT_RE = /^\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?\s*[,，]\s*\[[^\]]*상세\s*안내[^\]]*\]\([^)]+\)[.。]?$/;
@@ -585,6 +655,8 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   text = softenNightHour(text);
   text = dropFestivalFillerSentences(text);
+  text = collapseDoubledFestivalCloser(text, options.festivalTitle);
+  text = ensureFestivalFoodAnswer(text, options);
   return appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
 }
 
@@ -914,11 +986,18 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const program = clipFact(ctx?.program, 500);
   if (program) lines.push(isEn ? `- Program: ${program}` : `- 프로그램: ${program}`);
 
-  const nearby = Array.isArray(ctx?.nearbyPlaces)
-    ? ctx.nearbyPlaces.map((name) => String(name || '').trim()).filter(Boolean).slice(0, 6)
-    : [];
+  const nearby = listedPlaceNames(ctx?.nearbyPlaces);
   if (nearby.length) {
     lines.push(isEn ? `- Nearby (GATEO): ${nearby.join(', ')}` : `- 근처(GATEO): ${nearby.join(', ')}`);
+  }
+  const restaurants = listedPlaceNames(ctx?.nearbyRestaurants);
+  if (restaurants.length) {
+    lines.push(isEn
+      ? `- Nearby restaurants (GATEO 주변 맛집): ${restaurants.join(', ')}`
+      : `- 주변 맛집(GATEO): ${restaurants.join(', ')}`);
+    lines.push(isEn
+      ? '- Where to eat: name only these nearby restaurants. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
+      : '- 근처 먹을 곳·맛집 질문: 위 주변 맛집 이름만 말한다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
   }
 
   const gateoUrl =

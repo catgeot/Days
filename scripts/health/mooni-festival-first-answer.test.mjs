@@ -1137,6 +1137,64 @@ test('festival follow-up keeps facts, lodging areas, and the chat session', asyn
   assert.match(doubled, /spicy hand-cut noodles \(장칼국수\)/);
 });
 
+test('festival food stays on the restaurant list and the closer does not repeat the title', async () => {
+  const pageUrl = 'https://www.gateo.kr/korea/?festival=2930716';
+  const closer = polishFestivalModelReply(
+    `월화거리에서 국수를 먹어요. [강릉 국수 축제](${pageUrl}) 강릉 국수 축제 가는 법을 알아보세요.`,
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      chipId: 'festival_access',
+      userText: '가는 법',
+      festivalTitle: '강릉 국수 축제',
+    },
+  );
+  assert.match(closer, /\[강릉 국수 축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 가는 법을 알아보세요\./);
+  assert.equal((closer.match(/강릉 국수 축제/g) || []).length, 1);
+
+  const spelled = polishFestivalModelReply('축제는 10/15~18이예요. 집이예요. 자리에요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '일정',
+  });
+  assert.match(spelled, /10\/15~18예요/);
+  assert.match(spelled, /집이에요/);
+  assert.match(spelled, /자리예요/);
+  assert.doesNotMatch(spelled, /이예요/);
+
+  const food = polishFestivalModelReply(
+    '임당생활문화센터와 노암터널에서 먹을 수 있어요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      chipId: 'festival_nearby',
+      userText: '근처 먹을 곳?',
+      nearbyRestaurants: ['강릉 오금집', '이쉐프의돈까스', '임당생활문화센터'],
+    },
+  );
+  assert.match(food, /주변 맛집은 강릉 오금집, 이쉐프의돈까스예요/);
+  assert.doesNotMatch(food, /임당생활문화센터|노암터널/);
+
+  const hint = await resolveMooniChatKoreaFestivalHint({
+    userText: '근처 먹을 곳?',
+    festivalContext: {
+      title: '강릉 국수 축제',
+      contentId: '2930716',
+      nearbyPlaces: ['임당생활문화센터', '노암터널', '강릉향교'],
+      nearbyRestaurants: ['강릉 오금집', '이쉐프의돈까스'],
+    },
+    locale: 'ko',
+  });
+  assert.match(hint.hint, /주변 맛집\(GATEO\): 강릉 오금집, 이쉐프의돈까스/);
+  assert.match(hint.hint, /근처\(GATEO\): 강릉향교/);
+  assert.doesNotMatch(hint.hint, /임당생활문화센터|노암터널/);
+  assert.match(KO.festivalAnswerRules, /주변 맛집 목록만/);
+  assert.match(KO.festivalAnswerRules, /10\/15~18예요/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /주변 맛집/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /터널/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이예요/);
+});
+
 test('desktop and mobile place entry open bound MOONi', () => {
   const home = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
   const openIdx = home.indexOf('onOpenChat={(p) => {');

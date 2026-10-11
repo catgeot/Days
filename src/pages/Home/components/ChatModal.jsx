@@ -1093,6 +1093,9 @@ const ChatModal = ({
         placeName: mooniPlaceContext?.festivalContext?.hubLabel,
         venue: mooniPlaceContext?.festivalContext?.venue,
         stayAreas: mooniPlaceContext?.festivalContext?.stayAreas,
+        festivalTitle: mooniPlaceContext?.festivalContext?.title,
+        nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
+        nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
       };
       const displayReply = polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {
@@ -1205,6 +1208,9 @@ const ChatModal = ({
           locale: i18n.language,
           chipId: msg.bookingMeta?.chipId,
           userText: messageTextPlain(priorUser),
+          festivalTitle: mooniPlaceContext?.festivalContext?.title,
+          nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
+          nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
         };
         const continuedRaw = polishFestivalModelReply(mergedRaw, lodgingOptions);
         const continuedDisplay = polishFestivalModelReply(displayText, lodgingOptions);

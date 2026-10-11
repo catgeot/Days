@@ -24,10 +24,11 @@ import { festivalLngLat } from '../koreaFestivalCorridors.js';
  *   overview?: string,
  *   program?: string,
  *   nearbyPlaces?: string[],
+ *   nearbyRestaurants?: string[],
  * }} input
  */
 export function buildFestivalMooniContext(input = {}) {
-  const { item, intro, homepage, summaryFields, location, overview, program, nearbyPlaces } = input;
+  const { item, intro, homepage, summaryFields, location, overview, program, nearbyPlaces, nearbyRestaurants } = input;
   const hubLabel = String(location?.name || location?.parentCity || '').trim();
   const title = String(item?.title || '').trim();
   const contentId = String(item?.contentId || '').trim();
@@ -66,6 +67,7 @@ export function buildFestivalMooniContext(input = {}) {
       .replace(/<[^>]+>/g, ' ')
       .trim(),
     nearbyPlaces: uniqueNames(nearbyPlaces),
+    nearbyRestaurants: uniqueNames(nearbyRestaurants),
     stayAreas: stayAreaNames(input.stayAreas),
   };
 }
@@ -212,7 +214,7 @@ function uniqueNames(values) {
 const KO_AHEAD = ['', '하루', '이틀', '사흘', '나흘', '닷새', '엿새', '이레', '여드레', '아흐레', '열흘'];
 
 /** Sauna, welfare, senior, and community facilities are not nearby sights. */
-const NEARBY_FACILITY_RE = /사우나|찜질|목욕|복지|노인회|생활문화|주민센터|경로당|행정복지|노인정|마을회관|주민자치/;
+const NEARBY_FACILITY_RE = /사우나|찜질|목욕|복지|노인회|생활문화|주민센터|경로당|행정복지|노인정|마을회관|주민자치|터널/;
 
 export function isFestivalOpeningNearbyName(name) {
   const text = String(name || '').trim();
