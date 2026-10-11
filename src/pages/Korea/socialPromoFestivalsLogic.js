@@ -199,9 +199,19 @@ export function shouldShowSocialPromoHomeRow(searchActive) {
   return !searchActive;
 }
 
-/** Session pin row hidden during search (same as promo). */
-export function shouldShowSessionPinnedHomeRow(searchActive) {
-  return !searchActive;
+/**
+ * Session pin row: default 전국 list only (no search, no sido/city chip).
+ * @param {boolean} searchActive
+ * @param {string | undefined} areaCode
+ * @param {string | undefined} cityName
+ */
+export function shouldShowSessionPinnedHomeRow(
+  searchActive,
+  areaCode,
+  cityName,
+) {
+  if (searchActive) return false;
+  return isNationwideRegionFilter(areaCode, cityName);
 }
 
 /**

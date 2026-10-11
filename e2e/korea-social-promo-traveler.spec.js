@@ -123,6 +123,42 @@ async function waitForViewportListThumbs(page, { timeout = 120_000 } = {}) {
   }).toPass({ timeout });
 }
 
+async function expectSubregionChipMatchesGroup(page, cityLabel) {
+  await expect(async () => {
+    const result = await page.evaluate((label) => {
+      const chipBtn = [...document.querySelectorAll('button')].find((btn) => {
+        const text = btn.textContent?.replace(/\s+/g, ' ') || '';
+        return text.startsWith(label) && /\d/.test(text);
+      });
+      const chipCount = Number.parseInt(
+        chipBtn?.textContent?.match(/(\d+)\s*$/)?.[1] || '0',
+        10,
+      );
+      const header = [...document.querySelectorAll('main p')].find((p) => {
+        const text = p.textContent?.replace(/\s+/g, ' ') || '';
+        return text.startsWith(label) && /\d/.test(text);
+      });
+      const groupCount = Number.parseInt(
+        header?.textContent?.match(/(\d+)\s*$/)?.[1] || '0',
+        10,
+      );
+      return {
+        label,
+        chipCount,
+        groupCount,
+        ok: chipCount > 0 && chipCount === groupCount,
+      };
+    }, cityLabel);
+    expect(result.ok, JSON.stringify(result)).toBe(true);
+  }).toPass({ timeout: 30_000 });
+}
+
+async function selectSidoChip(page, namePattern) {
+  const chip = page.getByRole('button', { name: namePattern }).first();
+  await chip.scrollIntoViewIfNeeded();
+  await chip.click();
+}
+
 async function waitForPromoReady(page) {
   const promoRow = page.locator('[data-social-promo-festival-row]');
   await expect(promoRow).toBeVisible({ timeout: 120_000 });
@@ -230,13 +266,26 @@ test.describe('korea social promo traveler @390', () => {
 
     await page.getByRole('button', { name: /검색 닫기|Close search/i }).click();
     await waitForPromoReady(page);
-
-    const gangwon = page.getByRole('button', { name: /강원/ }).first();
-    await gangwon.scrollIntoViewIfNeeded();
-    await gangwon.click();
-    await expect(promoRow).toHaveCount(0, { timeout: 30_000 });
+    await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(1);
     await waitForViewportListThumbs(page);
-    paths.push(await shot(page, '05-region-gangwon-no-promo'));
+    paths.push(await shot(page, '06-nationwide-pinned-row'));
+
+    await selectSidoChip(page, /강원/);
+    await expect(promoRow).toHaveCount(0, { timeout: 30_000 });
+    await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(0);
+    await expectSubregionChipMatchesGroup(page, '강릉시');
+    await waitForViewportListThumbs(page);
+    paths.push(await shot(page, '05-region-gangwon-chip-counts'));
+
+    await selectSidoChip(page, /서울/);
+    await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(0);
+    await waitForViewportListThumbs(page);
+    paths.push(await shot(page, '07-region-seoul'));
+
+    await selectSidoChip(page, /경남/);
+    await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(0);
+    await waitForViewportListThumbs(page);
+    paths.push(await shot(page, '08-region-gyeongnam'));
 
     const logPath = join(OUT_DIR, 'image-urls.json');
     await writeFile(logPath, JSON.stringify(imageLog, null, 2), 'utf8');

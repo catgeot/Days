@@ -62,7 +62,6 @@ import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
 import { fetchTourApiFestivalDetail } from '../../utils/fetchTourApiFestivals';
 import { projectFestivalDeepLink } from './festivalDeepLinkItem';
 import {
-  excludePinnedFromPanelItems,
   festivalItemForSessionPin,
 } from './festivalSessionPin';
 import { festivalItemThumbSrc } from './festivalListThumb';
@@ -1324,28 +1323,17 @@ export default function KoreaFestivalHub() {
 
   const showSessionPinnedRow = useMemo(
     () =>
-      shouldShowSessionPinnedHomeRow(searchActive) &&
+      shouldShowSessionPinnedHomeRow(searchActive, areaCode, cityName) &&
       sessionPinnedDisplay &&
       shouldShowSessionPinnedRow(
         sessionPinnedDisplay.contentId,
-        socialPromoRow.status === 'ready'
-          ? filterSocialPromoCardsByRegion(socialPromoRow.cards, {
-              areaCode,
-              cityName,
-            })
-          : [],
+        socialPromoRow.status === 'ready' ? socialPromoRow.cards : [],
       ),
     [searchActive, sessionPinnedDisplay, socialPromoRow, areaCode, cityName],
   );
 
-  const panelItemsForList = useMemo(
-    () =>
-      excludePinnedFromPanelItems(
-        panelItems,
-        showSessionPinnedRow ? sessionPinnedDisplay : null,
-      ),
-    [panelItems, sessionPinnedDisplay, showSessionPinnedRow],
-  );
+  /** Pin row is a duplicate on 전국 only — never remove the festival from region groups. */
+  const panelItemsForList = panelItems;
 
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
