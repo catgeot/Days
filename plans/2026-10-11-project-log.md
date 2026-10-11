@@ -71,6 +71,13 @@
 - **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` 6 pass
 - **다음** `카이로 장소 카드 #4, Preview OK면 PR 병합`
 
+## 카이로 장소 카드 #4, 문장 다듬기
+
+- **세션** `카이로 장소 카드 #4, 문장 다듬기` · branch `cursor/cairo-place-facts-8e40` · tip `1c0bee5e` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 사실 숫자·시간·출처는 유지하고 해요체와 줄바꿈만. 공항 출처에서 «접속 불가»를 뺌. 동선 «(위 칸)»은 «공항→시내 참고».
+- **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` 6 pass
+- **다음** `카이로 장소 카드 #5, Preview OK면 PR 병합`
+
 ## 축제 가는 법 #1, TAGO Edge
 
 - **세션** `축제 가는 법 #1, TAGO Edge` · branch `cursor/transport-proxy-e06e` · tip `44f3f94c` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지

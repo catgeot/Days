@@ -84,7 +84,8 @@ import {
 import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
-import { extractMooniChipPromptFacts, MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
+import { MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
+import { prepareFestivalMooniChatPayload } from '../lib/festivalMooniRequest';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
@@ -93,10 +94,8 @@ import {
   resolveDefaultFlightOriginIata,
 } from '../lib/flightOriginPreference';
 import {
-  extractMooniTripFacts,
   hasMooniTripSessionFacts,
   hydrateMooniTripSession,
-  mergeMooniTripSession,
   persistMooniTripSession,
 } from '../lib/mooniTripSession';
 import {
@@ -977,34 +976,27 @@ const ChatModal = ({
           : destForPrompt);
       const essentialGuide = await ensureChatEssentialGuide(slug, destName);
 
-      const nextSession = mergeMooniTripSession(
-        tripSessionRef.current,
-        extractMooniTripFacts(cleanText, {
-          destinationName: destName,
-          slug,
-        }),
-      );
-      nextSession.destinationName = destName || nextSession.destinationName;
-      nextSession.slug = slug || nextSession.slug;
+      const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
+      const prepared = prepareFestivalMooniChatPayload({
+        baseSession: tripSessionRef.current,
+        festivalContext: Boolean(mooniPlaceContext?.festivalContext),
+        userText: cleanText,
+        departureLabel: explicitDeparture,
+        chipId,
+        slug,
+        destinationName: destName,
+        chatHistory: priorTurns,
+        essentialGuide,
+        locale: i18n.language,
+      });
+      const nextSession = prepared.session;
+      const chipFacts = prepared.chipFacts;
       tripSessionRef.current = nextSession;
       persistMooniTripSession(nextSession, { slug, destinationName: destName });
       if (nextSession.departureIata) persistFlightOriginIata(nextSession.departureIata);
       const sessionExtras = hasMooniTripSessionFacts(nextSession)
         ? { mooniSession: nextSession }
         : undefined;
-
-      const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
-
-      const chipFacts = extractMooniChipPromptFacts({
-        chipId,
-        userText: cleanText,
-        slug,
-        destinationName: destName,
-        chatHistory: priorTurns,
-        essentialGuide,
-        locale: i18n.language,
-        tripSession: nextSession,
-      });
       const cta = resolveChatCtaCode({
         userText: cleanText,
         slug,
@@ -1065,12 +1057,13 @@ const ChatModal = ({
         showPlannerHeader,
       };
 
+      const modelUserText = prepared.modelUserText;
       const geminiResult = await invokeMooniChatToleratingChip(
         (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
         {
           ...geminiParams,
           history,
-          userText: cleanText,
+          userText: modelUserText,
         },
       );
       const aiReply = geminiResult.text;
@@ -1277,13 +1270,15 @@ const ChatModal = ({
     handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
   }, [accessOriginIata, handleSend]);
 
-  const handleFestivalAccessOrigin = useCallback((originId) => {
-    const row = FESTIVAL_DOMESTIC_ORIGINS.find((item) => item.id === originId);
+  const handleFestivalAccessOrigin = useCallback((origin) => {
+    const row = typeof origin === 'string'
+      ? FESTIVAL_DOMESTIC_ORIGINS.find((item) => item.id === origin)
+      : origin;
     if (!row) return;
     setFestivalAccessId(row.id);
-    const label = festivalOriginLabel(row.id, i18n.language);
+    const label = festivalOriginLabel(row, i18n.language);
     handleSend(
-      buildFestivalAccessAskText(row.id, i18n.language),
+      buildFestivalAccessAskText(row, i18n.language),
       PERSONA_TYPES.PLANNER,
       { chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS, departureLabel: label },
     );
@@ -1871,14 +1866,14 @@ const ChatModal = ({
                           data-festival-origin={row.id}
                           disabled={isLoading}
                           aria-pressed={selected}
-                          onClick={() => handleFestivalAccessOrigin(row.id)}
+                          onClick={() => handleFestivalAccessOrigin(row)}
                           className={tone(
                             fresh,
                             `inline-flex shrink-0 items-center justify-center min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-300 bg-cyan-500/30 text-cyan-50' : 'border-cyan-500/35 bg-cyan-950/30 text-cyan-100'}`,
                             `inline-flex shrink-0 items-center justify-center min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-400 bg-cyan-50 text-cyan-800' : 'border-cyan-200 bg-white text-cyan-700'}`,
                           )}
                         >
-                          {festivalOriginLabel(row.id, i18n.language)}
+                          {festivalOriginLabel(row, i18n.language)}
                         </button>
                       );
                     })}
