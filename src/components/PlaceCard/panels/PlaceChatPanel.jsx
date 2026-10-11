@@ -225,7 +225,7 @@ const PlaceChatPanel = React.memo(({
                 <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <div
-                className={`flex flex-col flex-1 min-w-0 justify-center ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
+                className={`flex flex-col flex-1 justify-center ${locale === 'en' ? 'min-w-[11rem]' : 'min-w-0'} ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
                 onClick={handleHeaderScrollTap}
                 onKeyDown={(event) => {
                     if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
@@ -242,7 +242,7 @@ const PlaceChatPanel = React.memo(({
                      <button
                         type="button"
                         onClick={(event) => handleCopyName(event, primaryName || location.name, 'primary')}
-                        className="text-left text-[clamp(0.8125rem,3.8vw,1rem)] font-black tracking-tighter text-white leading-tight line-clamp-2 whitespace-normal [word-break:keep-all] [overflow-wrap:anywhere] drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0 flex-1"
+                        className="text-left text-[clamp(0.8125rem,3.8vw,1rem)] font-black tracking-tighter text-white leading-tight line-clamp-2 whitespace-normal [word-break:keep-all] [overflow-wrap:break-word] drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0 flex-1"
                         title={t('place.nav.copyPrimary')}
                      >
                         {primaryName || location.name}
@@ -255,7 +255,7 @@ const PlaceChatPanel = React.memo(({
                      <button
                         type="button"
                         onClick={(event) => handleCopyName(event, secondaryName, 'secondary')}
-                        className="mt-1 w-fit text-left text-xs leading-none text-gray-200/90 font-semibold tracking-normal truncate hover:text-white"
+                        className="mt-1 block w-full min-w-0 text-left text-xs leading-snug text-gray-200/90 font-semibold tracking-normal line-clamp-2 whitespace-normal [word-break:keep-all] [overflow-wrap:break-word] hover:text-white"
                         title={t('place.nav.copySecondary')}
                      >
                         ({secondaryName})
@@ -267,7 +267,7 @@ const PlaceChatPanel = React.memo(({
                     </span>
                  )}
              </div>
-             <div className="shrink-0 flex items-center gap-1.5 md:gap-2">
+             <div className={`${locale === 'en' ? 'min-w-0 shrink' : 'shrink-0'} flex items-center gap-1.5 md:gap-2`}>
                  <button
                     type="button"
                     onClick={openMooni}
@@ -294,10 +294,10 @@ const PlaceChatPanel = React.memo(({
                  ) : (
                     <button
                         onClick={() => setMediaMode('PLANNER')}
-                        className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 shrink-0"
+                        className={`px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 ${locale === 'en' ? 'min-w-0 shrink' : 'shrink-0'}`}
                     >
                         <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
-                        <span className="text-xs font-bold whitespace-nowrap">{t('place.nav.planner')}</span>
+                        <span className={`text-xs font-bold ${locale === 'en' ? 'whitespace-normal leading-tight text-left' : 'whitespace-nowrap'}`}>{t('place.nav.planner')}</span>
                     </button>
                  )}
              </div>

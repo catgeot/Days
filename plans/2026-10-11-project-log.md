@@ -35,6 +35,7 @@
 - **Preview** `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716`
 - **이어서** `1d88a15a`. main `#427` `48a3efc2` · `#430` `d28d7c4f`를 머지한 뒤, 첫 답에 «강릉 국수 축제 페이지» 링크가 두 번 나오면 마지막 «자세한 내용은 … 페이지에서 볼 수 있어요»만 남긴다. 숙소 앵커는 유지. `npm run test:health` 236 pass.
 - **이어서** `6626601b` (client `9b68a7b6`). staging v22 주차 답이 `공식 홈페이지()`로 비었다. 공식 홈페이지와 같은 날 URL은 `[공식 홈페이지](url)`로 바꾸고, 다른 URL은 괄호까지 지운다. 숙소가 한 곳이면 «다양한 숙소가 자리하고 있어요», «매력을 느끼며»를 뺀다. Edge 파일은 프롬프트 커밋에서 바뀜(`templates.js`, 서버 번들). 주차 수정은 클라이언트라 gemini-proxy 재배포 없이 Preview에 있다. 배포·머지 안 함.
+- **이어서** tip `6a1954d4` (client `9e2eadc8`). 주차 데이터가 없으면 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 전화번호»만 남기고 축제 페이지 문장을 뺀다. 숙소는 카드의 이름·거리 2~3곳과 `[숙소 카드]` 한 번, 목록이 없으면 20km 권역. 맛집은 거리 없는 곳을 빼고 거리 있는 다음 곳을 넣는다. `mooni_chat`은 v27과 이 브랜치 모두 기본 FAST `gemini-3.1-flash-lite`. Edge는 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 242 pass. 배포·머지 안 함.
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
@@ -133,3 +134,12 @@
 - **사진** 깨진 썸네일은 `display = 'none'` 뒤 아이콘. health `festival-photo-frame` PASS.
 - **조치** 일반 목록은 거리순이고 팔경 멤버를 빼다. 2곳 이상인 팔경은 «함평 팔경» 소제목 아래 경 번호순. 1곳뿐인 다른 시·군(함안 5경)은 뱃지만 달아 일반 목록에 둔다. 표시 이름 끝 시군을 빼고, 사진이 없으면 회색 칸 대신 아이콘. 국향·마산 썸네일은 전부 사진이 있고 이전 회색은 로드 전 캡처.
 - **VERIFY** nearby health 15 pass · `npx vite build` PASS
+
+## 카이로 동선 #1, 장소 링크·영문 제목·축제장
+
+- **세션** `카이로 동선 #1, 장소 링크·영문 제목·축제장` · branch `cursor/cairo-follow-8e40` · tip `482874e8` · draft PR [#432](https://github.com/catgeot/Days/pull/432) · 병합 금지
+- **앞선 병합** #428 squash `ea2b3730`. PROD 번들 `index-Blpy8VZ_.js`.
+- **조치** 동선 D2/D3의 GEM·술탄 하산 모스크만 장소 카드로 연결. 영문 GEM 제목은 390에서 `Grand Egyptian` / `Museum`. 팔경 멤버가 축제장이면 소제목 옆에 «2경 함평엑스포공원은 축제장이에요».
+- **VERIFY** `npm run test:health` 241 pass · CI run `38145911493` success
+- **Preview** `https://days-git-cursor-cairo-follow-8e40-catgeots-projects.vercel.app/place/cairo` · `?lang=en` GEM · `/korea?festival=638576`
+- **다음** `카이로 동선 #2, 피드백 반영`

@@ -1848,9 +1848,19 @@ export default function FestivalDetailSheet({
                         if (block.kind === 'heading') {
                           return (
                             <li key={`heading-${block.listId}`} className="list-none pt-3">
-                              <p className="text-base font-bold text-stone-800 break-keep">
-                                {block.title}
-                              </p>
+                              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                <p className="text-base font-bold text-stone-800 break-keep">
+                                  {block.title}
+                                </p>
+                                {block.venueNote ? (
+                                  <p
+                                    data-scenic-venue-note=""
+                                    className="min-w-0 text-[11px] leading-snug text-stone-500 break-keep whitespace-pre-line"
+                                  >
+                                    {block.venueNote}
+                                  </p>
+                                ) : null}
+                              </div>
                             </li>
                           );
                         }

@@ -20,6 +20,7 @@ import {
   unverifiedItemsLabel,
   UNVERIFIED_LABEL,
 } from '../../src/data/placeVerifiedFacts/schema.js';
+import { splitItineraryPlaceMentions } from '../../src/data/placeVerifiedFacts/itineraryLinks.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -113,8 +114,22 @@ test('public source labels and one unverified line', () => {
   assert.match(factsUi, /data-unverified-items/);
   assert.match(header, /line-clamp-2/);
   assert.match(header, /\[word-break:keep-all\]/);
-  assert.match(header, /\[overflow-wrap:anywhere\]/);
+  assert.match(header, /\[overflow-wrap:break-word\]/);
+  assert.equal(header.includes('[overflow-wrap:anywhere]'), false);
+  assert.match(header, /line-clamp-2 whitespace-normal/);
+  assert.match(factsUi, /data-itinerary-place/);
   assert.match(header, /clamp\(0\.8125rem,3\.8vw,1rem\)/);
+
+  const links = splitItineraryPlaceMentions(itinerary.value).filter((part) => part.type === 'link');
+  assert.deepEqual(
+    links.map((part) => [part.text, part.href]),
+    [
+      ['GEM', '/place/grand-egyptian-museum'],
+      ['술탄 하산 모스크', '/place/sultan-hassan-mosque'],
+    ],
+  );
+  assert.equal(itinerary.value.includes('GEM은'), true);
+  assert.equal(itinerary.value.includes('술탄 하산 모스크에'), true);
 });
 
 test('pilot booking and map links are used and search buttons are not', () => {
