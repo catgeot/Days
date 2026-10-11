@@ -5,6 +5,7 @@ import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { FESTIVAL_DETAIL_BOTTOM_SECTION_ORDER } from '../../src/pages/Korea/lib/festivalDetailBottomSectionOrder.js';
 import { nearbyLocalScenicRestGroupTitle } from '../../src/pages/Home/lib/koreaLocalScenicLists.js';
+import { mergeFestivalNearbySights } from '../../src/pages/Korea/lib/festivalNearbySights.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -51,12 +52,77 @@ test('festival detail bottom section order SSOT', () => {
   }
 });
 
-test('팔경 rest subgroup title', () => {
+test('festival nearby sights merge into one section', () => {
   assert.equal(nearbyLocalScenicRestGroupTitle('ko'), '가까운 곳');
-  assert.match(
-    readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8'),
-    /nearbyLocalScenicRestGroupTitle/,
+  const sheet = readFileSync(
+    join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),
+    'utf8',
   );
+  assert.match(sheet, /nearbySights/);
+  assert.match(sheet, /mergeFestivalNearbySights/);
+  assert.doesNotMatch(sheet, /nearbyLocalScenicRestGroupTitle/);
+  assert.match(sheet, /variant="solid"/);
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [
+      { name: '함평엑스포공원', contentId: '130864', lat: 35.05916, lng: 126.5222 },
+      { name: '돌머리해수욕장', contentId: '126291', lat: 35.08655, lng: 126.44191 },
+    ],
+    grouped: {
+      groups: [
+        {
+          title: '함평 팔경',
+          listId: 'hampyeong-palgyeong',
+          items: [
+            {
+              name: '함평엑스포공원',
+              contentId: '130864',
+              lat: 35.05916,
+              lng: 126.5222,
+              rankBlurb: '함평 2경',
+            },
+            {
+              name: '돌머리 해수욕장',
+              contentId: '126291',
+              rankBlurb: '함평 4경',
+              localScenicListId: 'hampyeong-palgyeong',
+            },
+            {
+              name: '백제고도',
+              rankBlurb: '함평 5경',
+              lat: 35.0654,
+              lng: 126.5166,
+            },
+            {
+              name: '모악산',
+              rankBlurb: '함평 6경',
+              lat: 35.0654,
+              lng: 126.5166,
+            },
+          ],
+        },
+      ],
+      rest: [
+        { name: '기린사우나', contentId: '1', lat: 35.07, lng: 126.53 },
+        { name: '보광사', contentId: '999', lat: 35.08, lng: 126.5 },
+        { name: '돌머리해수욕장', contentId: '126291', lat: 35.08655, lng: 126.44191 },
+      ],
+    },
+    origin: { lat: 35.061, lng: 126.52 },
+    venue: { contentIds: ['130864'], eventPlace: '함평엑스포공원', addr: '' },
+    fallbackCenters: [{ lat: 35.0654, lng: 126.5166 }],
+  });
+  const names = merged.items.map((spot) => spot.name);
+  assert.equal(names.filter((name) => name.includes('돌머리')).length, 1);
+  assert.ok(!names.some((name) => name.includes('엑스포')));
+  assert.ok(!names.includes('기린사우나'));
+  assert.ok(merged.groups.some((group) => group.title === '함평 팔경'));
+  const baekje = merged.items.find((spot) => spot.name === '백제고도');
+  assert.equal(baekje?.distKm, null);
+  const finite = merged.items
+    .map((spot) => spot.distKm)
+    .filter((km) => Number.isFinite(km));
+  const sorted = [...finite].sort((a, b) => a - b);
+  assert.deepEqual(finite, sorted);
 });
 
 test('flight origin chat-header contrast tokens', () => {

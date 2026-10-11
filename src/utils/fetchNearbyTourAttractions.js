@@ -28,7 +28,7 @@ export async function fetchNearbyTourAttractions(opts) {
   const { data, error } = await supabase
     .from('tourapi_attraction')
     .select(
-      'content_id, title, addr1, addr2, area_code, mapx, mapy, first_image, active',
+      'content_id, title, addr1, addr2, area_code, mapx, mapy, first_image, active, cat1, cat2, cat3',
     )
     .eq('active', true)
     .eq('content_type_id', '12')
