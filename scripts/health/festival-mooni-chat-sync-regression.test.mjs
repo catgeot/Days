@@ -11,12 +11,19 @@ test('stale savedTrips row (user-only) would clobber model reply under legacy hy
   const tripMessageCount = 1;
   const localMessageCount = 2;
   assert.equal(legacyAlwaysHydrateTrip({ tripMessageCount, localMessageCount }), true);
+  const trip = [{ role: 'user', text: 'chip' }];
+  const local = [
+    { role: 'user', text: 'chip' },
+    { role: 'model', text: 'answer' },
+  ];
   assert.equal(
     shouldHydrateTripMessages({
       activeChatId: 't1',
       lastSyncedChatId: 't1',
       tripMessageCount,
       localMessageCount,
+      tripMessages: trip,
+      localMessages: local,
     }),
     false,
   );

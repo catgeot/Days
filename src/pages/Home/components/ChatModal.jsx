@@ -58,6 +58,7 @@ import {
   writeFestivalMooniSession,
 } from '../lib/festivalMooniSessionCache.js';
 import {
+  shouldHydrateDraftCacheFallback,
   shouldHydrateDraftMessages,
   shouldHydrateTripMessages,
 } from '../lib/festivalMooniChatSync.js';
@@ -708,13 +709,16 @@ const ChatModal = ({
         || festivalTripMatchesLocale(targetTrip, i18n.language);
       if (targetTrip && festivalLocaleOk) {
         const tripMsgs = targetTrip.messages || [];
-        const localLen = messagesRef.current?.length ?? 0;
+        const localMsgs = messagesRef.current || [];
+        const localLen = localMsgs.length ?? 0;
         if (
           shouldHydrateTripMessages({
             activeChatId,
             lastSyncedChatId: lastTripSyncChatIdRef.current,
             tripMessageCount: tripMsgs.length,
             localMessageCount: localLen,
+            tripMessages: tripMsgs,
+            localMessages: localMsgs,
           })
         ) {
           lastTripSyncChatIdRef.current = String(activeChatId);
@@ -726,6 +730,20 @@ const ChatModal = ({
             slug: targetTrip.curation_data?.slug || '',
             destinationName: targetTrip.destination || '',
           });
+        }
+      } else if (
+        shouldHydrateDraftCacheFallback({
+          activeChatId,
+          hasTripRow: Boolean(targetTrip),
+          localMessageCount: messagesRef.current?.length ?? 0,
+          isLoading,
+        })
+      ) {
+        const cached = festivalMooniContext?.contentId
+          ? readFestivalMooniSession(festivalMooniContext.contentId, i18n.language)
+          : null;
+        if (cached?.messages?.length) {
+          setMessages(cached.messages);
         }
       }
       return;
@@ -928,9 +946,11 @@ const ChatModal = ({
       !(ferryRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
       !placeBound;
 
+    const turnAt = Date.now();
     const userMsg = {
       role: 'user',
       text: cleanText,
+      mooniAt: turnAt,
       ...(chipDestination ? { confirmedDestination: chipDestination } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
       // name-bound uiPlace(슬러그 없음)도 목적지로 확정 — 「역사」키워드 오탐 후보 칩 숨김
@@ -1176,6 +1196,7 @@ const ChatModal = ({
           role: 'model',
           text: displayReply,
           mooniRawReply: rawWithLodging,
+          mooniAt: Date.now(),
           truncated: geminiResult.truncated,
           finishReason: geminiResult.finishReason,
           continueAttempts: 0,

@@ -57,11 +57,12 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       fetchData,
       setSavedTrips,
       getState: () => ({ activeChatId, savedTrips, chatDraft }),
+      setLanguage: (lng) => i18n.changeLanguage(lng),
     };
     return () => {
       delete window.__gateoMooniE2e;
     };
-  }, [fetchData, setSavedTrips, activeChatId, savedTrips, chatDraft]);
+  }, [fetchData, setSavedTrips, activeChatId, savedTrips, chatDraft, i18n]);
 
   const resetSession = useCallback(() => {
     setChatDraft(null);

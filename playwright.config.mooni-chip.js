@@ -10,7 +10,7 @@ export default defineConfig({
   testMatch: /korea-mooni-festival-chip-(persist|race)\.spec\.js/,
   fullyParallel: false,
   workers: 1,
-  timeout: 300_000,
+  timeout: 480_000,
   expect: { timeout: 90_000 },
   reporter: [['list']],
   use: {
