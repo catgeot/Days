@@ -80,14 +80,12 @@ import {
   festivalOriginLabel,
   buildFestivalAccessAskText,
   visibleFestivalDomesticOrigins,
-  domesticFestivalGroundOrigin,
-  clearDomesticAirportDeparture,
-  domesticGroundModelSuffix,
 } from '../lib/mooniQuickReplies';
 import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
-import { extractMooniChipPromptFacts, MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
+import { MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
+import { prepareFestivalMooniChatPayload } from '../lib/festivalMooniRequest';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
@@ -96,10 +94,8 @@ import {
   resolveDefaultFlightOriginIata,
 } from '../lib/flightOriginPreference';
 import {
-  extractMooniTripFacts,
   hasMooniTripSessionFacts,
   hydrateMooniTripSession,
-  mergeMooniTripSession,
   persistMooniTripSession,
 } from '../lib/mooniTripSession';
 import {
@@ -980,38 +976,27 @@ const ChatModal = ({
           : destForPrompt);
       const essentialGuide = await ensureChatEssentialGuide(slug, destName);
 
-      const nextSession = mergeMooniTripSession(
-        tripSessionRef.current,
-        extractMooniTripFacts(cleanText, {
-          destinationName: destName,
-          slug,
-        }),
-      );
-      nextSession.destinationName = destName || nextSession.destinationName;
-      nextSession.slug = slug || nextSession.slug;
-      const groundOrigin = mooniPlaceContext?.festivalContext
-        ? domesticFestivalGroundOrigin(cleanText, explicitDeparture)
-        : null;
-      if (groundOrigin) clearDomesticAirportDeparture(nextSession);
+      const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
+      const prepared = prepareFestivalMooniChatPayload({
+        baseSession: tripSessionRef.current,
+        festivalContext: Boolean(mooniPlaceContext?.festivalContext),
+        userText: cleanText,
+        departureLabel: explicitDeparture,
+        chipId,
+        slug,
+        destinationName: destName,
+        chatHistory: priorTurns,
+        essentialGuide,
+        locale: i18n.language,
+      });
+      const nextSession = prepared.session;
+      const chipFacts = prepared.chipFacts;
       tripSessionRef.current = nextSession;
       persistMooniTripSession(nextSession, { slug, destinationName: destName });
       if (nextSession.departureIata) persistFlightOriginIata(nextSession.departureIata);
       const sessionExtras = hasMooniTripSessionFacts(nextSession)
         ? { mooniSession: nextSession }
         : undefined;
-
-      const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
-
-      const chipFacts = extractMooniChipPromptFacts({
-        chipId,
-        userText: cleanText,
-        slug,
-        destinationName: destName,
-        chatHistory: priorTurns,
-        essentialGuide,
-        locale: i18n.language,
-        tripSession: nextSession,
-      });
       const cta = resolveChatCtaCode({
         userText: cleanText,
         slug,
@@ -1072,12 +1057,7 @@ const ChatModal = ({
         showPlannerHeader,
       };
 
-      const groundSuffix = groundOrigin ? domesticGroundModelSuffix(groundOrigin, i18n.language) : '';
-      const stationsAlreadyNamed = groundOrigin
-        && (cleanText.includes(groundOrigin.stationsKo) || cleanText.includes(groundOrigin.stationsEn));
-      const modelUserText = groundSuffix && !stationsAlreadyNamed
-        ? `${cleanText} ${groundSuffix}`
-        : cleanText;
+      const modelUserText = prepared.modelUserText;
       const geminiResult = await invokeMooniChatToleratingChip(
         (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
         {

@@ -186,20 +186,24 @@ export function domesticFestivalGroundOrigin(text, explicitLabel = '') {
   return originByLabel(head?.[1] || '') || null;
 }
 
-/** Drop airport fields so a domestic chip does not send IATA to Edge. */
+/** Drop airport fields so a domestic festival leg does not send IATA to Edge. */
 export function clearDomesticAirportDeparture(session) {
   if (!session || typeof session !== 'object') return session;
   session.departureIata = '';
   session.departureAirportLabel = '';
+  session.arrivalIata = '';
+  session.arrivalAirportLabel = '';
+  session.flightNumber = '';
   return session;
 }
 
+/** Same station token the departure chip puts in its question. */
 export function domesticGroundModelSuffix(row, locale = 'ko') {
   if (!row) return '';
   if (isEnglishLocale(locale)) {
-    return `Use rail and bus from ${row.stationsEn}. Do not use an airport code.`;
+    return `Departure is ${row.en} (${row.stationsEn}).`;
   }
-  return `출발 역·터미널은 ${row.stationsKo}이다. 공항 코드는 쓰지 않는다.`;
+  return `출발은 ${row.ko}(${row.stationsKo})이다.`;
 }
 
 export function festivalDomesticLabelsAreCities(rows = FESTIVAL_DOMESTIC_ORIGINS) {

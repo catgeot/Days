@@ -73,7 +73,10 @@ import {
 } from '../../src/pages/Home/lib/mooniChipEdgeFallback.js';
 import { GeminiProxyError } from '../../src/pages/Home/lib/geminiProxyError.js';
 import { getMooniModelMarkdownForRender } from '../../src/pages/Home/lib/mooniModelMessageText.js';
-import { renderFestivalFirstAnswer, renderMooniSystem } from '../../supabase/functions/_shared/gemini/templates.js';
+import { renderChipHint, renderFestivalFirstAnswer, renderMooniSystem } from '../../supabase/functions/_shared/gemini/templates.js';
+import { extractMooniChipPromptFacts } from '../../src/pages/Home/lib/mooniChipPrompts.js';
+import { prepareFestivalMooniChatPayload } from '../../src/pages/Home/lib/festivalMooniRequest.js';
+import { hasMooniTripSessionFacts } from '../../src/pages/Home/lib/mooniTripSession.js';
 import { countMooniPlannerHeaderGuidance } from '../../supabase/functions/_shared/gemini/mooniChatPlannerHeaderPrompt.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -479,6 +482,84 @@ test('festival departure chips are 17 cities, swap the host city, and stay off a
     resolveDepartureLabelFromChat('서울에서 어떻게 가?', history, { departureLabel: '여수' }),
     '여수',
   );
+});
+
+test('domestic festival origin payload drops airports; overseas chip keeps them', () => {
+  const guide = {
+    primary_arrival_airports_iata: ['ICN', 'GMP'],
+    categories: {
+      pre_travel: [{ title: 'K-ETA 신청' }],
+      flight: { advice: '인천국제공항(ICN) 또는 김포국제공항(GMP).' },
+    },
+  };
+  const place = {
+    festivalContext: true,
+    slug: 'festival-probe-no-spot',
+    destinationName: '강릉 국수 축제',
+    essentialGuide: guide,
+    locale: 'ko',
+  };
+  const air = /ICN|GMP|K-ETA|공항|airport/i;
+  const requestBody = (prepared) => JSON.stringify({
+    chipId: prepared.chipFacts?.chipId ?? null,
+    facts: prepared.chipFacts?.facts ?? null,
+    tripSession: hasMooniTripSessionFacts(prepared.session) ? prepared.session : null,
+    userText: prepared.modelUserText,
+  });
+
+  const beforeFacts = extractMooniChipPromptFacts({
+    userText: '서울에서 가요',
+    slug: place.slug,
+    destinationName: place.destinationName,
+    essentialGuide: guide,
+    locale: 'ko',
+  });
+  const beforeHint = renderChipHint('ko', beforeFacts.chipId, beforeFacts.facts, false);
+  assert.match(beforeHint, /대화에서 추정한 출발 공항: 인천국제공항\(ICN\) \(서울\)/);
+  assert.match(beforeHint, /K-ETA/);
+  assert.match(beforeHint, /GMP/);
+
+  const typed = prepareFestivalMooniChatPayload({ ...place, userText: '서울에서 가요', chipId: null });
+  const seoulChip = prepareFestivalMooniChatPayload({
+    ...place,
+    userText: buildFestivalAccessAskText('seoul', 'ko'),
+    chipId: 'festival_access',
+    departureLabel: '서울',
+  });
+  assert.equal(typed.chipFacts.chipId, 'festival_access');
+  assert.equal(seoulChip.chipFacts.chipId, 'festival_access');
+  assert.doesNotMatch(requestBody(typed), air);
+  assert.doesNotMatch(requestBody(seoulChip), air);
+  assert.match(typed.modelUserText, /서울\(서울역·용산역·수서역\)/);
+  assert.match(seoulChip.modelUserText, /서울\(서울역·용산역·수서역\)/);
+
+  const overseas = prepareFestivalMooniChatPayload({
+    ...place,
+    userText: '공항에서 이 축제장까지 가는 법을 알려줘. 확인되지 않은 셔틀은 말하지 마.',
+    chipId: 'festival_overseas_airport',
+  });
+  const overseasBody = requestBody(overseas);
+  assert.equal(overseas.chipFacts.chipId, 'festival_overseas_airport');
+  assert.match(overseasBody, /ICN/);
+  assert.match(overseasBody, /GMP/);
+  assert.match(overseasBody, /K-ETA/);
+  assert.match(overseasBody, /공항|airport/);
+
+  const incheonAirport = prepareFestivalMooniChatPayload({
+    ...place,
+    userText: '인천공항에서 가요',
+    chipId: null,
+  });
+  assert.match(requestBody(incheonAirport), /ICN/);
+  assert.match(requestBody(incheonAirport), /공항/);
+
+  const outsideFestival = prepareFestivalMooniChatPayload({
+    ...place,
+    festivalContext: false,
+    userText: '서울에서 가요',
+    chipId: null,
+  });
+  assert.match(requestBody(outsideFestival), /인천국제공항\(ICN\)/);
 });
 
 test('general chips drop duplicate why-go and flights, and rename local transport', () => {
