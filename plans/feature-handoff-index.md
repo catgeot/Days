@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `482874e8` · draft PR [#432](https://github.com/catgeot/Days/pull/432) · **병합 금지** · #428은 `ea2b3730`로 main 반영 |
-| **브랜치** | `cursor/cairo-follow-8e40` |
+| **상태** | **#2 push** · tip `5d31e0d8` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · **병합 금지** · #432 squash `44a75df5` · #428 `ea2b3730` |
+| **브랜치** | `cursor/cairo-qa-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
-| **Preview** | git `https://days-git-cursor-cairo-follow-8e40-catgeots-projects.vercel.app/place/cairo` · 영문 GEM `?lang=en` · 국향대전 `/korea?festival=638576` (Vercel SSO) |
-| **금지** | 사실 숫자·출처 변경 · feature에 `plans/**` 커밋 · PR 병합 |
+| **Preview** | git `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · 영문 GEM `/place/grand-egyptian-museum?lang=en` · 마산 `/korea?festival=637693` (Vercel SSO) |
+| **금지** | 사실 숫자·출처 변경 · feature에 `plans/**` 커밋 · PR 병합 · #432 수정 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 390에서 D2 링크, 영문 GEM 두 줄, 국향대전 축제장 한 줄을 사람이 본다 |
+| **남은 일** | 390에서 카이로 뒤로가기 스크롤, 영문 사실 제목·Planner, 마산 주변 볼거리 먼저 표시를 사람이 본다 |
 
 **다음 제시어**:
 
 ```
-카이로 동선 #2, 피드백 반영
+카이로 동선 #3, 피드백 반영
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/cairo-follow-8e40 · draft PR #432 · tip 482874e8
-금지: 사실 숫자·출처 변경 · feature에 plans 커밋 · PR 병합
-작업: Preview 390에서 D2 GEM·술탄 하산 링크, ?lang=en GEM이 Grand Egyptian / Museum, 국향대전 638576 «2경 함평엑스포공원은 축제장이에요». 어긋난 곳만 고친다.
+브랜치 cursor/cairo-qa-8e40 · draft PR #433 · tip 5d31e0d8
+금지: 사실 숫자·출처 변경 · feature에 plans 커밋 · PR 병합 · #432 수정
+작업: Preview 390에서 카이로→GEM/술탄 하산 뒤로가기가 스크롤을 유지하는지, ?lang=en 제목이 Verified facts/Hours이고 값이 한글인지, 버튼이 Planner인지, /korea?festival=637693 주변 볼거리가 상세보다 먼저 보이는지. 어긋난 곳만 고친다.
 검증: npm run test:health
 ```
 
