@@ -36,6 +36,7 @@
 - **이어서** `1d88a15a`. main `#427` `48a3efc2` · `#430` `d28d7c4f`를 머지한 뒤, 첫 답에 «강릉 국수 축제 페이지» 링크가 두 번 나오면 마지막 «자세한 내용은 … 페이지에서 볼 수 있어요»만 남긴다. 숙소 앵커는 유지. `npm run test:health` 236 pass.
 - **이어서** `6626601b` (client `9b68a7b6`). staging v22 주차 답이 `공식 홈페이지()`로 비었다. 공식 홈페이지와 같은 날 URL은 `[공식 홈페이지](url)`로 바꾸고, 다른 URL은 괄호까지 지운다. 숙소가 한 곳이면 «다양한 숙소가 자리하고 있어요», «매력을 느끼며»를 뺀다. Edge 파일은 프롬프트 커밋에서 바뀜(`templates.js`, 서버 번들). 주차 수정은 클라이언트라 gemini-proxy 재배포 없이 Preview에 있다. 배포·머지 안 함.
 - **이어서** tip `6a1954d4` (client `9e2eadc8`). 주차 데이터가 없으면 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 전화번호»만 남기고 축제 페이지 문장을 뺀다. 숙소는 카드의 이름·거리 2~3곳과 `[숙소 카드]` 한 번, 목록이 없으면 20km 권역. 맛집은 거리 없는 곳을 빼고 거리 있는 다음 곳을 넣는다. `mooni_chat`은 v27과 이 브랜치 모두 기본 FAST `gemini-3.1-flash-lite`. Edge는 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 243 pass. 배포·머지 안 함.
+- **이어서** `축제 MOONi #3, 칩 말풍선` · tip `b13bc4f9` (client `5975fb91`). main `#431` `daf8eca4`와 같이 둔다. 칩 말풍선은 «볼거리·분위기 알려 줘»(영문 `Tell me the sights and atmosphere`)이고 지시문은 서버·복원 스레드의 프롬프트로만 남는다. 영어 첫 답은 English (한글), 종료와 다음 회가 근처보다 앞, 출처 없는 분위기 문장은 뺀다. 이번 Edge 파일은 `templates.js`. 주차·숙소·맛집 수정은 유지. `npm run test:health` 249 pass. 배포·머지 안 함.
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
@@ -148,9 +149,21 @@
 
 ## 카이로 동선 #2, 복귀 스크롤·영문 제목·마산
 
-- **세션** `카이로 동선 #2, 피드백 반영` · branch `cursor/cairo-qa-8e40` · tip `676deb4a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · 병합 금지 · #432는 수정하지 않음
+- **세션** `카이로 동선 #2, 피드백 반영` · branch `cursor/cairo-qa-8e40` · tip `d1c0157a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · 병합 금지 · #432는 수정하지 않음
 - **우선** (c) 영문 헤더 버튼 `Planner` · (a) 뒤로 가기 갤러리 스크롤 복원 · (b) 영문 사실 제목만 번역, 값은 한글
-- **마산 637693** LIVE 390, 수정 없음. 제목 3009ms, «주변 볼거리» 4338ms(15곳). `festivalWindow` 1213→2578ms. 이어서 TourAPI 7건과 Supabase bbox가 병렬(supabase 3282ms, 상세 3883–4393ms). 순차 대기가 아니라 정보 탭이 `detailLoading`에 묶여 목록이 상세 뒤에 나왔다. 목록 캐시가 차가우면 시트가 열리기 전에 6초를 넘길 수 있다. 게이트는 유지하고 분리는 #3.
-- **VERIFY** `npm run test:health` 243 pass · CI run `38148670067` success
+- **헤더** QA에서 (a)(b) 통과. (c)는 제목 `min-w-[11rem]` 때문에 390에서 행이 396px, 버튼이 320–408px였다. 제목 칸을 `min-w-0 flex-1`로 줄임. WebKit 390/360 카이로·GEM 한·영에서 버튼 오른쪽은 378·348.
+- **마산 637693** LIVE 390, 수정 없음. 제목 3009ms, «주변 볼거리» 4338ms(15곳). `festivalWindow` 1213→2578ms. 이어서 TourAPI 7건과 Supabase bbox가 병렬(supabase 3282ms, 상세 3883–4393ms). 순차 대기가 아니라 정보 탭이 `detailLoading`에 묶여 목록이 상세 뒤에 나왔다. 목록 캐시가 차가우면 시트가 열리기 전에 6초를 넘길 수 있다. 게이트는 유지하고 분리는 #3. 영문 링크 이름·Checked는 이 PR 밖.
+- **VERIFY** `npm run test:health` 243 pass · CI run `38182752936` success
 - **Preview** `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/grand-egyptian-museum?lang=en` · `/korea?festival=637693`
 - **다음** `카이로 동선 #3, 마산 주변 볼거리`
+- **QA** #433 tip `e2fdf3d5` PASS. 그 브랜치에 추가 커밋 없음. squash `a3b06706`.
+
+## 마산 주변 볼거리 #1, 상세와 분리
+
+- **세션** `카이로 동선 #3, 마산 주변 볼거리` · branch `cursor/masan-nearby-8e40` · tip `7be4d452` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지 · 헤더 미변경
+- **원인** 주변 조회는 상세와 병렬인데 정보 탭 전체가 `detailLoading`에 묶여 상세·사진이 끝나야 목록이 그려졌다.
+- **조치** 주변 목록만 상세 로딩 중에도 그린다. 상세 행·숙소·맛집은 그대로 상세 뒤에 둔다.
+- **WebKit 390** 목록 `li`까지. 수정 전 cold 4796ms · warm 2796ms. 수정 후 cold 3542ms · warm 1359ms. 수정 후 cold는 목록 뒤에도 tourapi-proxy가 6.9s까지 이어졌다.
+- **VERIFY** `npm run test:health` 247 pass · CI run `38183479322` success
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693`
+- **다음** `마산 주변 볼거리 #2, 피드백 반영`

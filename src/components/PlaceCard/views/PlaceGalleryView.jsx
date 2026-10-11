@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigationType } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp, Trash2, EyeOff, Flag } from 'lucide-react';
 import { i18n } from '../../../i18n/config';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
+import { placeGalleryScrollToRestore, rememberPlaceGalleryScroll } from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
@@ -330,6 +332,8 @@ const PlaceGalleryView = React.memo(({
   const [reportToast, setReportToast] = useState('');
   const [reportLoginPrompt, setReportLoginPrompt] = useState(false);
   const pendingPlaceScrollResetRef = useRef(false);
+  const pendingPlaceScrollRestoreRef = useRef(0);
+  const navigationType = useNavigationType();
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -367,6 +371,8 @@ const PlaceGalleryView = React.memo(({
     () => location?.slug || location?.id || location?.name || '',
     [location?.slug, location?.id, location?.name],
   );
+  const galleryPlaceKeyRef = useRef(galleryPlaceKey);
+  galleryPlaceKeyRef.current = galleryPlaceKey;
   const paintTarget = Math.min(2, images?.length || 0);
   const hasImages = images.length > 0;
   /** 초기 로드만 전체 스켈레톤 — 더보기(isRefreshing) 중에는 기존 그리드 유지 */
@@ -386,17 +392,52 @@ const PlaceGalleryView = React.memo(({
     setGalleryVisuallyReady(false);
   }, [galleryPlaceKey]);
 
+  const navigationTypeRef = useRef(navigationType);
+  navigationTypeRef.current = navigationType;
+
   useLayoutEffect(() => {
+    const el = scrollContainerRef.current;
+    const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationTypeRef.current);
+    if (restore > 0) {
+      pendingPlaceScrollResetRef.current = false;
+      pendingPlaceScrollRestoreRef.current = restore;
+      if (el) el.scrollTop = restore;
+      const raf = window.requestAnimationFrame(() => {
+        const node = scrollContainerRef.current;
+        const top = pendingPlaceScrollRestoreRef.current;
+        if (node && top > 0) node.scrollTop = top;
+      });
+      return () => {
+        window.cancelAnimationFrame(raf);
+        const node = scrollContainerRef.current;
+        if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
+      };
+    }
+    pendingPlaceScrollRestoreRef.current = 0;
     pendingPlaceScrollResetRef.current = true;
-    resetPlaceMediaScrollInstant(scrollContainerRef.current);
+    resetPlaceMediaScrollInstant(el);
     setShowScrollToTop(false);
     const raf = window.requestAnimationFrame(() => {
       resetPlaceMediaScrollInstant(scrollContainerRef.current);
     });
-    return () => window.cancelAnimationFrame(raf);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      const node = scrollContainerRef.current;
+      if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
+    };
   }, [galleryPlaceKey]);
 
   useLayoutEffect(() => {
+    const restore = pendingPlaceScrollRestoreRef.current;
+    if (restore > 0) {
+      if (isImgLoading || isRefreshing) return;
+      const el = scrollContainerRef.current;
+      if (el) el.scrollTop = restore;
+      const applied = !el || el.scrollTop >= restore - 2;
+      if (applied) pendingPlaceScrollRestoreRef.current = 0;
+      setShowScrollToTop(restore > 280);
+      return;
+    }
     if (!pendingPlaceScrollResetRef.current || isImgLoading || isRefreshing) return;
     resetPlaceMediaScrollInstant(scrollContainerRef.current);
     pendingPlaceScrollResetRef.current = false;
@@ -598,7 +639,10 @@ const PlaceGalleryView = React.memo(({
     const el = scrollContainerRef.current;
     if (!el) return;
     const threshold = 280;
-    const onScroll = () => setShowScrollToTop(el.scrollTop > threshold);
+    const onScroll = () => {
+      rememberPlaceGalleryScroll(galleryPlaceKeyRef.current, el.scrollTop);
+      setShowScrollToTop(el.scrollTop > threshold);
+    };
     el.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => el.removeEventListener('scroll', onScroll);
