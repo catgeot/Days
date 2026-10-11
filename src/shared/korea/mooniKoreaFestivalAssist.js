@@ -785,7 +785,72 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = collapseDoubledFestivalCloser(text, options.festivalTitle);
   }
   text = ensureFestivalFoodAnswer(text, options);
-  return appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
+  text = appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
+  text = stripOffTopicLodgingNudge(text, options);
+  return redirectMissingPracticalCheck(text, options);
+}
+
+const LODGING_NUDGE_RE = /숙소\s*정보|숙소\s*(?:도|를|카드|안내)|#festival-lodging|묵기\s*좋|where\s+to\s+stay|lodging\s+(?:card|guide)|stays?\s+for\s+this\s+festival/i;
+
+/** A lodging closer stays only on a lodging question. */
+function stripOffTopicLodgingNudge(text, options = {}) {
+  if (isFestivalLodgingAsk(options)) return String(text || '');
+  return filterPreservingBreaks(text, (part) => LODGING_NUDGE_RE.test(part));
+}
+
+const PRACTICAL_TOPICS = [
+  { ask: /주차|주차장|\bparking\b/i, fact: /주차|주차장|\bparking\b/i },
+  { ask: /셔틀|\bshuttle\b/i, fact: /셔틀|\bshuttle\b/i },
+];
+
+function festivalFactCorpus(options = {}) {
+  return [options.overview, options.program, options.sceneOverview, options.parking, options.feeText]
+    .map((part) => String(part || ''))
+    .join('\n');
+}
+
+function officialPracticalCheck(options = {}) {
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const homepage = String(options.homepage || '').trim();
+  const tel = String(options.tel || '').replace(/\s+/g, ' ').trim();
+  const homeOk = /^https?:\/\//i.test(homepage);
+  if (en) {
+    if (homeOk && tel) return `Check the [official homepage](${homepage}) or the contact number ${tel}.`;
+    if (homeOk) return `Check the [official homepage](${homepage}) or the contact desk.`;
+    if (tel) return `Check the contact number ${tel}.`;
+    return 'Check the official homepage or the contact desk.';
+  }
+  if (homeOk && tel) return `[공식 홈페이지](${homepage})나 문의처 ${tel}에서 확인해요.`;
+  if (homeOk) return `[공식 홈페이지](${homepage})나 문의처에서 확인해요.`;
+  if (tel) return `문의처 ${tel}에서 확인해요.`;
+  return '공식 홈페이지나 문의처에서 확인해요.';
+}
+
+/** Parking and shuttle answers point at the festival page only when that fact is in the data. */
+function redirectMissingPracticalCheck(text, options = {}) {
+  const asked = PRACTICAL_TOPICS.filter((topic) => topic.ask.test(String(options.userText || '')));
+  if (!asked.length) return String(text || '');
+  const corpus = festivalFactCorpus(options);
+  if (asked.every((topic) => topic.fact.test(corpus))) return String(text || '');
+  const guidance = officialPracticalCheck(options);
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  let out = String(text || '');
+  if (en) {
+    out = out.replace(/\b(?:check|see)\s+the\s+festival\s+page\b[. ]*/gi, `${guidance} `);
+  } else {
+    out = out.replace(
+      /\[([^\]]*)\]\((https:\/\/www\.gateo\.kr\/korea\/\?festival=\d+(?:#[^)\s]*)?)\)\s*에서\s*확인(?:해\s*보세요|해요|하세요)?[.。]?/g,
+      guidance,
+    );
+    out = out.replace(/축제\s*페이지에서\s*확인(?:해\s*보세요|해요|하세요)?[.。]?/g, guidance);
+  }
+  const homepage = String(options.homepage || '').trim();
+  const tel = String(options.tel || '').trim();
+  const already = (homepage && out.includes(homepage))
+    || (tel && out.includes(tel))
+    || /공식 홈페이지나 문의처|official homepage/i.test(out);
+  if (!already) out = out.trim() ? `${out.trim()}\n\n${guidance}` : guidance;
+  return out.replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 /**
@@ -1124,8 +1189,8 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
       ? `- Nearby restaurants (GATEO 주변 맛집): ${restaurants.join(', ')}`
       : `- 주변 맛집(GATEO): ${restaurants.join(', ')}`);
     lines.push(isEn
-      ? '- Where to eat: name markets and local restaurants from this list first. Leave out fast food and national chains, or put them last. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
-      : '- 근처 먹을 곳·맛집 질문: 위 주변 맛집만 말한다. 시장·지역 식당을 먼저 말하고, 맥도날드·롯데리아·버거킹·맘스터치·스타벅스·파리바게뜨·배스킨라빈스 같은 전국 체인은 빼거나 맨 뒤에 둔다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
+      ? '- Where to eat: name markets and local restaurants from this list first. Leave out fast food and national chains, or put them last. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat. Stop after the restaurants. Do not add a lodging nudge.'
+      : '- 근처 먹을 곳·맛집 질문: 위 주변 맛집만 말한다. 시장·지역 식당을 먼저 말하고, 맥도날드·롯데리아·버거킹·맘스터치·스타벅스·파리바게뜨·배스킨라빈스 같은 전국 체인은 빼거나 맨 뒤에 둔다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다. 끝은 주변 맛집이면 충분하다. «숙소 정보도 함께 알아보세요»와 숙소 안내를 붙이지 않는다.');
   }
 
   const gateoUrl =
@@ -1138,6 +1203,13 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   if (/^https?:\/\//i.test(homepage)) {
     lines.push(isEn ? `- Official page URL: ${homepage}` : `- 공식 안내 URL: ${homepage}`);
   }
+  const tel = String(ctx?.tel || '').replace(/\s+/g, ' ').trim();
+  if (tel) lines.push(isEn ? `- Contact: ${tel}` : `- 문의처: ${tel}`);
+  const parkingFact = String(ctx?.parking || '').trim();
+  if (parkingFact) lines.push(isEn ? `- Parking: ${clipFact(parkingFact, 180)}` : `- 주차: ${clipFact(parkingFact, 180)}`);
+  lines.push(isEn
+    ? '- Parking, shuttles, and similar practical questions: say to check the festival page only when that fact is written above. Otherwise say to check the official homepage or the contact number, link the official page, and include the phone when it is listed. Do not invent a lot, a fee, or a shuttle.'
+    : '- 주차·셔틀처럼 위에 없는 실무 안내는 «축제 페이지에서 확인»이라고 하지 않는다. 그 내용이 위에 있을 때만 축제 페이지를 안내한다. 없으면 «공식 홈페이지나 문의처에서 확인»이라고 하고, 공식 홈페이지는 마크다운 링크로, 전화번호가 있으면 그 번호를 적는다. 주차장·요금·셔틀을 지어내지 않는다.');
 
   return `\n${lines.join('\n')}`;
 }

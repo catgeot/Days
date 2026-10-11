@@ -1098,6 +1098,11 @@ const ChatModal = ({
         festivalTitle: mooniPlaceContext?.festivalContext?.title,
         nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
         nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
+        homepage: mooniPlaceContext?.festivalContext?.homepage,
+        tel: mooniPlaceContext?.festivalContext?.tel,
+        parking: mooniPlaceContext?.festivalContext?.parking,
+        overview: mooniPlaceContext?.festivalContext?.sceneOverview || mooniPlaceContext?.festivalContext?.overview,
+        program: mooniPlaceContext?.festivalContext?.program,
       };
       const displayReply = polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {
@@ -1218,6 +1223,11 @@ const ChatModal = ({
           festivalTitle: mooniPlaceContext?.festivalContext?.title,
           nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
           nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
+          homepage: mooniPlaceContext?.festivalContext?.homepage,
+          tel: mooniPlaceContext?.festivalContext?.tel,
+          parking: mooniPlaceContext?.festivalContext?.parking,
+          overview: mooniPlaceContext?.festivalContext?.sceneOverview || mooniPlaceContext?.festivalContext?.overview,
+          program: mooniPlaceContext?.festivalContext?.program,
         };
         const continuedRaw = polishFestivalModelReply(mergedRaw, lodgingOptions);
         const continuedDisplay = polishFestivalModelReply(displayText, lodgingOptions);

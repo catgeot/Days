@@ -54,7 +54,9 @@ export function buildFestivalMooniContext(input = {}) {
     address,
     lat: pt?.lat ?? null,
     lng: pt?.lng ?? null,
-    homepage: String(homepage || '').trim(),
+    homepage: String(homepage || intro?.eventhomepage || '').trim(),
+    tel: String(intro?.sponsor1tel || intro?.sponsor1Tel || intro?.tel || item?.tel || '').replace(/\s+/g, ' ').trim(),
+    parking: plainFact(intro?.parking || ''),
     hubLabel,
     titleEn: String(item?.titleEn || '').trim(),
     overview: filterOverviewFacts(

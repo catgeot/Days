@@ -1178,6 +1178,29 @@ test('festival food stays on the restaurant list and the closer does not repeat 
   assert.match(food, /주변 맛집은 강릉 오금집, 이쉐프의돈까스예요/);
   assert.doesNotMatch(food, /임당생활문화센터|노암터널/);
 
+  const foodCloser = polishFestivalModelReply(
+    '중앙시장에서 국수를 먹어요. 숙소 정보도 함께 알아보세요. [강릉 숙소 안내](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      chipId: 'festival_nearby',
+      userText: '근처 먹을 곳?',
+      nearbyRestaurants: ['중앙시장'],
+    },
+  );
+  assert.match(foodCloser, /중앙시장/);
+  assert.doesNotMatch(foodCloser, /숙소|festival-lodging/);
+  const stayCloser = polishFestivalModelReply('교동에서 묵어요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '어디서 자요?',
+    placeName: '강릉',
+    stayAreas: ['교동', '월화거리'],
+  });
+  assert.match(stayCloser, /#festival-lodging/);
+  assert.match(KO.festivalAnswerRules, /숙소 정보도 함께 알아보세요/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /숙소 정보·숙소 안내를 붙이지 않는다/);
+
   const hint = await resolveMooniChatKoreaFestivalHint({
     userText: '근처 먹을 곳?',
     festivalContext: {
@@ -1301,6 +1324,93 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   assert.match(KO.festivalAnswerRules, /약 20km/);
   assert.match(KO.festivalAnswerRules, /배스킨라빈스/);
   assert.match(KO.festivalPriorityLine, /행사 기간을 반복하지 않는다/);
+});
+
+test('parking follow-up uses the festival page only when the data has parking', async () => {
+  const home = 'https://visitgangneung.net/pub/gnfestival/4748.do';
+  const tel = '033-640-4531';
+  const missing = polishFestivalModelReply(
+    '주차는 축제 페이지에서 확인해요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '주차는 어디에 해요?',
+      homepage: home,
+      tel,
+      overview: '월화거리에서 국수를 맛봐요.',
+      program: '국수존',
+    },
+  );
+  assert.match(missing, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)/);
+  assert.match(missing, /문의처 033-640-4531에서 확인해요/);
+  assert.doesNotMatch(missing, /축제 페이지에서 확인/);
+
+  const pageOnly = polishFestivalModelReply('주차 안내는 축제 페이지에서 확인해 보세요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '주차장 있어요?',
+    homepage: home,
+  });
+  assert.match(pageOnly, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)나 문의처에서 확인해요/);
+  assert.doesNotMatch(pageOnly, /033-640-4531/);
+  assert.doesNotMatch(pageOnly, /축제 페이지에서 확인/);
+
+  const phoneOnly = polishFestivalModelReply('셔틀은 [축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 확인해요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '셔틀 있나요?',
+    tel,
+    overview: '월화거리',
+  });
+  assert.match(phoneOnly, /문의처 033-640-4531에서 확인해요/);
+  assert.doesNotMatch(phoneOnly, /축제 페이지/);
+  assert.doesNotMatch(phoneOnly, /gateo\.kr/);
+
+  const known = polishFestivalModelReply('주차는 축제 페이지에서 확인해요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '주차는요?',
+    homepage: home,
+    tel,
+    overview: '주차는 월화거리 공영주차장을 이용해요.',
+  });
+  assert.match(known, /축제 페이지에서 확인해요/);
+  assert.doesNotMatch(known, /공식 홈페이지/);
+
+  const access = polishFestivalModelReply('가는 법은 축제 페이지에서 확인해요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '가는 법',
+    homepage: home,
+    tel,
+  });
+  assert.match(access, /축제 페이지에서 확인해요/);
+
+  const neither = polishFestivalModelReply('주차 정보는 없어요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: 'parking?',
+    overview: '국수',
+  });
+  assert.match(neither, /공식 홈페이지나 문의처에서 확인해요/);
+
+  const ctx = buildFestivalMooniContext({
+    item: { contentId: '2930716', title: '강릉 국수 축제', tel: '02-000-0000' },
+    intro: { sponsor1tel: tel, parking: '월화거리 공영주차장', eventhomepage: home },
+    overview: '국수를 맛봐요.',
+  });
+  assert.equal(ctx.tel, tel);
+  assert.equal(ctx.parking, '월화거리 공영주차장');
+  assert.equal(ctx.homepage, home);
+  const hint = buildMooniBoundFestivalSystemHint(ctx, 'ko');
+  assert.match(hint, /문의처: 033-640-4531/);
+  assert.match(hint, /주차: 월화거리 공영주차장/);
+  assert.match(hint, /공식 홈페이지나 문의처에서 확인/);
+  assert.match(KO.festivalAnswerRules, /축제 페이지에서 확인/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /공식 홈페이지나 문의처에서 확인/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이예요/);
+  const edge = readFileSync(join(root, 'supabase/functions/_shared/gemini/templates.js'), 'utf8');
+  assert.match(edge, /공식 홈페이지나 문의처에서 확인/);
 });
 
 test('desktop and mobile place entry open bound MOONi', () => {
