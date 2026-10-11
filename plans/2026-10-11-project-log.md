@@ -40,3 +40,11 @@
 - **③** 상세 닫기 세션 핀 + 딥링크 `pushViewed` · **②** `socialPromoFestivals.json` 상단 카드(638576·637693) · **①** 목록/검색 병합(`국향`→638576)
 - **VERIFY** `npm run test:health` 207 pass · e2e 여행자 경로(로컬 `vite preview` HTTPS, TourAPI LIVE)
 - **Preview** `https://days-git-cursor-social-entry-festival-946b77-catgeots-projects.vercel.app/korea/` (Vercel SSO — 사람 QA) · `/qa/` 미등록
+
+## 축제 MOONi 축제 페이지 링크, 라이브 무한 스피너 (긴급)
+
+- **세션** `축제 MOONi 축제 페이지 #1, 라이브 스피너` · branch `cursor/mooni-festival-page-link-4768` · tip `56b15595` · draft PR [#424](https://github.com/catgeot/Days/pull/424)
+- **원인** MOONi «축제 페이지»가 인앱이 아닌 외부 네비게이션 + 딥링크 fetch generation 취소 시 `loading` 고착; #422 supplemental ID가 `projectFestivalDeepLink` `items`에 없음
+- **조치** `FESTIVAL_PAGE_EVENT` · supplemental 병합 · fetch orphan 복구 · 링크 시 전국 칩 복귀
+- **VERIFY** `npm run test:health` 221 pass · e2e `korea-mooni-festival-page-link.spec.js` (preview HTTPS, TourAPI LIVE)
+- **Preview** Vercel git `cursor/mooni-festival-page-link-4768` → `/korea` (배포 후 MOONi 638576 경로 QA)
