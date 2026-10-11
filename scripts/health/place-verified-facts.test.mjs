@@ -193,5 +193,7 @@ test('english fact headings are localized and values stay Korean', async () => {
   assert.match(factsUi, /place\.facts\.slots\./);
   const header = readFileSync(join(root, 'src/components/PlaceCard/panels/PlaceChatPanel.jsx'), 'utf8');
   assert.match(header, /whitespace-nowrap">\{t\('place\.nav\.planner'\)\}/);
+  assert.match(header, /flex flex-col flex-1 min-w-0 justify-center overflow-hidden/);
+  assert.equal(header.includes('min-w-[11rem]'), false);
   assert.equal(header.includes("locale === 'en' ? 'min-w-0 shrink'"), false);
 });

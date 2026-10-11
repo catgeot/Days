@@ -225,7 +225,7 @@ const PlaceChatPanel = React.memo(({
                 <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <div
-                className={`flex flex-col flex-1 justify-center ${locale === 'en' ? 'min-w-[11rem]' : 'min-w-0'} ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
+                className={`flex flex-col flex-1 min-w-0 justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
                 onClick={handleHeaderScrollTap}
                 onKeyDown={(event) => {
                     if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
