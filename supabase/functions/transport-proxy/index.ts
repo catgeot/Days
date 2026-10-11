@@ -23,7 +23,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const UPSTREAM_CONCURRENCY = 4;
+const UPSTREAM_CONCURRENCY = 8;
 const PAGE_ROWS = 100;
 const IP_PER_MINUTE = 6;
 const GLOBAL_PER_MINUTE = 30;
@@ -78,41 +78,54 @@ type RouteRow = {
   resultMsg?: string;
 };
 
-async function readCache(sb: NonNullable<ReturnType<typeof serviceClient>>, key: string, mode: string, serviceDate: string) {
+type CacheQuery = { key: string; mode: string; depId: string; arrId: string; date: string };
+
+async function readCacheBatch(
+  sb: NonNullable<ReturnType<typeof serviceClient>>,
+  queries: CacheQuery[],
+) {
+  const hits = new Map<string, RouteRow>();
+  if (!queries.length) return hits;
   const { data, error } = await sb
     .from("tago_route_cache")
-    .select("payload, fetched_at")
-    .eq("cache_key", key)
-    .maybeSingle();
-  if (error || !data) return null;
-  if (!cacheFresh(mode, data.fetched_at, serviceDate)) return null;
-  const payload = data.payload as { items?: unknown; totalCount?: number; resultCode?: string } | null;
-  const items = Array.isArray(payload?.items) ? payload.items as Record<string, unknown>[] : [];
-  return {
-    queried: true,
-    ok: true,
-    items,
-    totalCount: Number(payload?.totalCount ?? items.length),
-    rawCount: items.length,
-    fromCache: true,
-    resultCode: String(payload?.resultCode ?? "00"),
-  } satisfies RouteRow;
+    .select("cache_key, payload, fetched_at")
+    .in("cache_key", queries.map((query) => query.key));
+  if (error || !data) return hits;
+  const byKey = new Map(queries.map((query) => [query.key, query]));
+  for (const row of data) {
+    const query = byKey.get(String(row.cache_key));
+    if (!query) continue;
+    if (!cacheFresh(query.mode, String(row.fetched_at), query.date)) continue;
+    const payload = row.payload as { items?: unknown; totalCount?: number; resultCode?: string } | null;
+    const items = Array.isArray(payload?.items) ? payload.items as Record<string, unknown>[] : [];
+    hits.set(query.key, {
+      queried: true,
+      ok: true,
+      items,
+      totalCount: Number(payload?.totalCount ?? items.length),
+      rawCount: items.length,
+      fromCache: true,
+      resultCode: String(payload?.resultCode ?? "00"),
+    });
+  }
+  return hits;
 }
 
-async function writeCache(
+async function writeCacheBatch(
   sb: NonNullable<ReturnType<typeof serviceClient>>,
-  query: { key: string; mode: string; depId: string; arrId: string; date: string },
-  row: RouteRow,
+  rows: Array<{ query: CacheQuery; row: RouteRow }>,
 ) {
-  const { error } = await sb.from("tago_route_cache").upsert({
+  if (!rows.length) return;
+  const fetchedAt = new Date().toISOString();
+  const { error } = await sb.from("tago_route_cache").upsert(rows.map(({ query, row }) => ({
     cache_key: query.key,
     mode: query.mode,
     dep_id: query.depId,
     arr_id: query.arrId,
     service_date: query.date,
     payload: { items: row.items, totalCount: row.totalCount, resultCode: row.resultCode },
-    fetched_at: new Date().toISOString(),
-  }, { onConflict: "cache_key" });
+    fetched_at: fetchedAt,
+  })), { onConflict: "cache_key" });
   if (error) console.error("[transport-proxy] cache write", error.message);
 }
 
@@ -212,25 +225,31 @@ serve(async (req) => {
     let cacheHits = 0;
     const results: Record<string, RouteRow> = {};
     const queryMeta: Array<Record<string, unknown>> = [];
+    const pendingWrites: Array<{ query: CacheQuery; row: RouteRow }> = [];
 
-    await mapPool(plan.queries, UPSTREAM_CONCURRENCY, async (query) => {
-      const cached = await readCache(sb, query.key, query.mode, query.date);
-      if (cached) {
-        cacheHits += 1;
-        results[query.key] = cached;
-        const sentinel = splitSentinel(cached.items);
-        queryMeta.push({
-          key: query.key,
-          mode: query.mode,
-          date: query.date,
-          fromCache: true,
-          resultCode: cached.resultCode,
-          itemCount: sentinel.kept.length,
-          droppedSentinel: sentinel.droppedSentinel,
-        });
-        return;
+    const cached = await readCacheBatch(sb, plan.queries);
+    const misses = [];
+    for (const query of plan.queries) {
+      const hit = cached.get(query.key);
+      if (!hit) {
+        misses.push(query);
+        continue;
       }
+      cacheHits += 1;
+      results[query.key] = hit;
+      const sentinel = splitSentinel(hit.items);
+      queryMeta.push({
+        key: query.key,
+        mode: query.mode,
+        date: query.date,
+        fromCache: true,
+        resultCode: hit.resultCode,
+        itemCount: sentinel.kept.length,
+        droppedSentinel: sentinel.droppedSentinel,
+      });
+    }
 
+    await mapPool(misses, UPSTREAM_CONCURRENCY, async (query) => {
       if (upstreamCalls >= MAX_UPSTREAM_PER_REQUEST) {
         results[query.key] = {
           queried: false,
@@ -290,7 +309,7 @@ serve(async (req) => {
         resultMsg: page.resultMsg,
       };
       results[query.key] = row;
-      if (page.ok) await writeCache(sb, query, row);
+      if (page.ok) pendingWrites.push({ query, row });
       const sentinel = splitSentinel(row.items);
       queryMeta.push({
         key: query.key,
@@ -303,6 +322,7 @@ serve(async (req) => {
         truncated: page.ok && page.totalCount > items.length,
       });
     });
+    await writeCacheBatch(sb, pendingWrites);
 
     const card = buildFestivalTransportCard({
       destination,

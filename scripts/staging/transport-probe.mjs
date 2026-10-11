@@ -131,8 +131,10 @@ async function runOne(spec) {
     const yeosu = card.origins.find((origin) => origin.originId === 'yeosu');
     if (yeosu?.direct !== false) problems.push(`yeosu direct=${yeosu?.direct}`);
     const airport = card.origins.find((origin) => origin.originId === 'incheon-airport');
-    const arex = airport?.suggestedTransfer?.legs?.find((leg) => leg.mode === 'arex');
-    if (!arex || arex.verified !== false) problems.push('AREX leg missing or marked verified');
+    if (airport && airport.direct !== true) {
+      const arex = airport.suggestedTransfer?.legs?.find((leg) => leg.mode === 'arex');
+      if (!arex || arex.verified !== false) problems.push('AREX leg missing or marked verified');
+    }
   }
   if (spec.contentId === '638576') {
     const withHop = card.origins.find((origin) =>

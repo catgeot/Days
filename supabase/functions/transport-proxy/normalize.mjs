@@ -199,7 +199,7 @@ function bookingFor(mode, depId) {
   };
 }
 
-export function summarizeRoute(pair, items, { serviceDate, totalCount = null, pageItemCount = null } = {}) {
+export function summarizeRoute(pair, items, { serviceDate, checkedAt = null, totalCount = null, pageItemCount = null } = {}) {
   const { kept, droppedSentinel } = splitSentinel(Array.isArray(items) ? items : []);
   const groups = new Map();
   for (const item of kept) {
@@ -252,7 +252,8 @@ export function summarizeRoute(pair, items, { serviceDate, totalCount = null, pa
       reportedTotal: truncated ? Number(totalCount) : null,
       firstDeparture: first.dep.hhmm,
       lastDeparture: last.dep.hhmm,
-      checkedAt: serviceDate,
+      checkedAt,
+      serviceDate,
       source: SOURCE,
       verified: true,
       ...bookingFor(pair.mode, pair.depId),
@@ -280,7 +281,7 @@ export function planQueries(destination, { trainDate, busDate }) {
   };
 }
 
-function materializeLeg(leg, results, trainDate, busDate) {
+function materializeLeg(leg, results, trainDate, busDate, checkedAt) {
   if (leg.mode === "arex" || leg.verified === false && !leg.depId) {
     return { ...leg, verified: false };
   }
@@ -300,7 +301,7 @@ function materializeLeg(leg, results, trainDate, busDate) {
   const summary = summarizeRoute(
     { mode: leg.mode, depId: leg.depId, arrId: leg.arrId, role: "transfer" },
     row.items,
-    { serviceDate: date, totalCount: row.totalCount, pageItemCount: row.rawCount },
+    { serviceDate: date, checkedAt, totalCount: row.totalCount, pageItemCount: row.rawCount },
   );
   const dailyCount = summary.options.reduce((sum, option) => sum + option.dailyCount, 0);
   return {
@@ -312,20 +313,36 @@ function materializeLeg(leg, results, trainDate, busDate) {
   };
 }
 
-function buildTransfer(destination, originId, results, trainDate, busDate) {
+function buildTransfer(destination, originId, results, trainDate, busDate, checkedAt) {
   if (originId === "incheon-airport" && destination.incheonTransfer) {
     const spec = destination.incheonTransfer;
     const legs = [
       { ...AREX_LEG },
-      ...(spec.legs || []).map((leg) => materializeLeg(leg, results, trainDate, busDate)),
+      ...(spec.legs || []).map((leg) => materializeLeg(leg, results, trainDate, busDate, checkedAt)),
     ];
     return { summary: spec.summary, legs };
   }
   const transfer = destination.transfer;
   if (!transfer) return null;
   if (Array.isArray(transfer.forOrigins) && !transfer.forOrigins.includes(originId)) return null;
-  const legs = (transfer.legs || []).map((leg) => materializeLeg(leg, results, trainDate, busDate));
+  const legs = (transfer.legs || []).map((leg) => materializeLeg(leg, results, trainDate, busDate, checkedAt));
   if (originId === "incheon-airport") legs.unshift({ ...AREX_LEG });
+  return { summary: transfer.summary, legs };
+}
+
+function positiveLeg(leg) {
+  return leg.verified === true && Number(leg.dailyCount) > 0;
+}
+
+function pruneTransfer(transfer, originId, pairs, options) {
+  if (!transfer) return null;
+  const legs = (transfer.legs || []).filter((leg) => leg.mode === "arex" || positiveLeg(leg));
+  if (!legs.length) return null;
+  const depIds = new Set(pairs.map((pair) => pair.depId));
+  const departsHere = legs.some((leg) => leg.depStationId && depIds.has(leg.depStationId));
+  const arexPath = originId === "incheon-airport" && legs.some((leg) => leg.mode === "arex");
+  const continues = options.length > 0 && legs.some(positiveLeg);
+  if (!departsHere && !arexPath && !continues) return null;
   return { summary: transfer.summary, legs };
 }
 
@@ -356,6 +373,7 @@ export function buildFestivalTransportCard({
       }
       const summary = summarizeRoute(pair, row.items, {
         serviceDate: date,
+        checkedAt,
         totalCount: row.totalCount,
         pageItemCount: row.rawCount,
       });
@@ -372,7 +390,13 @@ export function buildFestivalTransportCard({
 
     const suggestedTransfer = direct === true
       ? null
-      : buildTransfer(destination, originId, results, trainDate, busDate);
+      : pruneTransfer(
+        buildTransfer(destination, originId, results, trainDate, busDate, checkedAt),
+        originId,
+        pairs,
+        options,
+      );
+    if (options.length === 0 && !suggestedTransfer) return null;
 
     return {
       originId,
@@ -381,7 +405,7 @@ export function buildFestivalTransportCard({
       options,
       suggestedTransfer,
     };
-  });
+  }).filter(Boolean);
 
   return {
     ok: true,

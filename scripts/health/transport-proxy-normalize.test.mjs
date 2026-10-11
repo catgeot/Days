@@ -113,15 +113,46 @@ test('광주송정→함평역 fixture matches the promo transfer range', () => 
   assert.equal(option.verified, true);
 });
 
+function oneRow(item) {
+  return {
+    queried: true,
+    ok: true,
+    items: [item],
+    totalCount: 1,
+    rawCount: 1,
+  };
+}
+
+test('option checkedAt is the query date and serviceDate is the timetable date', () => {
+  const summary = summarizeRoute(
+    { mode: 'train', depId: 'NAT031857', arrId: 'NAT032212', role: 'transfer' },
+    itemsFromTagoBody(transferRaw).items,
+    { serviceDate: TRAIN, checkedAt: BUS, totalCount: 8, pageItemCount: 8 },
+  );
+  assert.equal(summary.options[0].checkedAt, BUS);
+  assert.equal(summary.options[0].serviceDate, TRAIN);
+  assert.equal(summary.options[0].checkedAt === summary.options[0].serviceDate, false);
+});
+
 test('함평 card uses that transfer when Seoul has no direct train', () => {
   const transfer = okResult(transferRaw);
   const results = {
     [routeKey('train', 'NAT010000', 'NAT032212', TRAIN)]: emptyResult(),
-    [routeKey('train', 'NAT010000', 'NAT031857', TRAIN)]: emptyResult(),
+    [routeKey('train', 'NAT010000', 'NAT031857', TRAIN)]: oneRow({
+      trainno: '401',
+      traingradename: 'KTX',
+      depplacename: '서울',
+      arrplacename: '광주송정',
+      depplandtime: '20261024062200',
+      arrplandtime: '20261024082500',
+      adultcharge: '41200',
+    }),
     [routeKey('train', 'NAT031857', 'NAT032212', TRAIN)]: transfer,
     [routeKey('train', 'NAT883012', 'NAT032212', TRAIN)]: emptyResult(),
     [routeKey('expBus', 'NAEK500', 'NAEK581', BUS)]: emptyResult(),
     [routeKey('suburbsBus', 'NAI6193701', 'NAI5715301', BUS)]: emptyResult(),
+    [routeKey('expBus', 'NAEK010', 'NAEK581', BUS)]: emptyResult(),
+    [routeKey('expBus', 'NAEK010', 'NAEK500', BUS)]: emptyResult(),
   };
   const card = buildFestivalTransportCard({
     destination: DESTINATIONS['638576'],
@@ -130,18 +161,23 @@ test('함평 card uses that transfer when Seoul has no direct train', () => {
     checkedAt: BUS,
     results,
   });
+  assert.equal(card.checkedAt, BUS);
   assert.equal(card.flags.busSameDayOnly, true);
   assert.equal(card.flags.fareScope, 'adult only');
   const seoul = card.origins.find((origin) => origin.originId === 'seoul-station');
   assert.equal(seoul.direct, false);
+  assert.equal(seoul.options[0].checkedAt, BUS);
+  assert.equal(seoul.options[0].serviceDate, TRAIN);
   const hop = seoul.suggestedTransfer.legs.find((leg) => leg.depStationId === 'NAT031857');
   assert.equal(hop.verified, true);
   assert.equal(hop.dailyCount, 8);
   assert.equal(hop.options[0].durationMin, 20);
   assert.equal(hop.options[0].durationMax, 25);
-  const busHop = seoul.suggestedTransfer.legs.find((leg) => leg.mode === 'expBus');
-  assert.equal(busHop.verified, true);
-  assert.equal(busHop.dailyCount, 0);
+  assert.equal(hop.options[0].checkedAt, BUS);
+  assert.equal(hop.options[0].serviceDate, TRAIN);
+  assert.equal(seoul.suggestedTransfer.legs.some((leg) => leg.dailyCount === 0), false);
+  assert.equal(seoul.suggestedTransfer.legs.some((leg) => leg.mode === 'expBus'), false);
+  assert.equal(card.origins.some((origin) => origin.originId === 'seoul-gyeongbu'), false);
 });
 
 test('23:59 sentinel rows are dropped and 24:00 last buses stay', () => {
@@ -230,7 +266,7 @@ test('수서 departures book SR without relabeling the TAGO grade', () => {
   assert.equal(seoul.options[0].bookingUrl, 'https://www.letskorail.com/');
 });
 
-test('인천공항 AREX leg is unverified and 여수→강릉 0 is a transfer', () => {
+test('여수 transfer keeps a positive first hop and drops 0-count legs', () => {
   const card = buildFestivalTransportCard({
     destination: DESTINATIONS['2930716'],
     trainDate: '2026-10-16',
@@ -240,10 +276,20 @@ test('인천공항 AREX leg is unverified and 여수→강릉 0 is a transfer', 
       [routeKey('train', 'NAT041993', 'NAT601936', '2026-10-16')]: emptyResult(),
       [routeKey('expBus', 'NAEK510', 'NAEK200', BUS)]: emptyResult(),
       [routeKey('suburbsBus', 'NAI5971501', 'NAI2551901', BUS)]: emptyResult(),
-      [routeKey('train', 'NAT041993', 'NAT010000', '2026-10-16')]: emptyResult(),
+      [routeKey('train', 'NAT041993', 'NAT010000', '2026-10-16')]: oneRow({
+        trainno: '111',
+        traingradename: 'KTX',
+        depplacename: '여수EXPO',
+        arrplacename: '서울',
+        depplandtime: '20261016070000',
+        arrplandtime: '20261016103000',
+        adultcharge: '30000',
+      }),
       [routeKey('train', 'NAT010000', 'NAT601936', '2026-10-16')]: okResult(transferRaw),
       [routeKey('train', 'NAT130126', 'NAT601936', '2026-10-16')]: emptyResult(),
       [routeKey('train', 'NAT010032', 'NAT601936', '2026-10-16')]: emptyResult(),
+      [routeKey('train', 'NATH30000', 'NAT601936', '2026-10-16')]: emptyResult(),
+      [routeKey('expBus', 'NAEK021', 'NAEK200', BUS)]: emptyResult(),
       [routeKey('expBus', 'NAEK117', 'NAEK200', BUS)]: emptyResult(),
       [routeKey('suburbsBus', 'NAI2238202', 'NAI2551901', BUS)]: emptyResult(),
     },
@@ -253,9 +299,17 @@ test('인천공항 AREX leg is unverified and 여수→강릉 0 is a transfer', 
   assert.match(yeosu.suggestedTransfer.summary, /여수EXPO/);
   const seoulLeg = yeosu.suggestedTransfer.legs.find((leg) => leg.depStationId === 'NAT010000' && leg.arrStationId === 'NAT601936');
   assert.equal(seoulLeg.verified, true);
+  assert.ok(seoulLeg.dailyCount > 0);
   const yeosuLeg = yeosu.suggestedTransfer.legs.find((leg) => leg.depStationId === 'NAT041993');
   assert.equal(yeosuLeg.verified, true);
-  assert.equal(yeosuLeg.dailyCount, 0);
+  assert.equal(yeosuLeg.dailyCount, 1);
+  assert.equal(yeosuLeg.options[0].checkedAt, BUS);
+  assert.equal(yeosuLeg.options[0].serviceDate, '2026-10-16');
+  assert.equal(yeosu.suggestedTransfer.legs.some((leg) => leg.depStationId === 'NAT010032'), false);
+  assert.equal(yeosu.suggestedTransfer.legs.some((leg) => leg.dailyCount === 0), false);
+  for (const id of ['yongsan', 'suseo', 'central-city']) {
+    assert.equal(card.origins.some((origin) => origin.originId === id), false, id);
+  }
 
   const airport = card.origins.find((origin) => origin.originId === 'incheon-airport');
   assert.equal(airport.direct, false);
@@ -264,6 +318,31 @@ test('인천공항 AREX leg is unverified and 여수→강릉 0 is a transfer', 
   const body = JSON.stringify(airport);
   assert.equal(body.includes('13000'), false);
   assert.equal(body.includes('43분'), false);
+});
+
+test('a direct airport bus does not add an AREX fallback', () => {
+  const card = buildFestivalTransportCard({
+    destination: DESTINATIONS['2930716'],
+    trainDate: '2026-10-16',
+    busDate: BUS,
+    checkedAt: BUS,
+    results: {
+      [routeKey('expBus', 'NAEK117', 'NAEK200', BUS)]: emptyResult(),
+      [routeKey('suburbsBus', 'NAI2238202', 'NAI2551901', BUS)]: oneRow({
+        depPlandTime: '20261011090000',
+        arrPlandTime: '20261011140000',
+        charge: '41000',
+        gradeNm: '우등',
+      }),
+    },
+  });
+  const airport = card.origins.find((origin) => origin.originId === 'incheon-airport');
+  assert.equal(airport.direct, true);
+  assert.equal(airport.suggestedTransfer, null);
+  assert.equal(airport.options[0].dailyCount, 1);
+  assert.equal(airport.options[0].checkedAt, BUS);
+  assert.equal(airport.options[0].serviceDate, BUS);
+  assert.equal(JSON.stringify(card).includes('"mode":"arex"'), false);
 });
 
 test('single-object TAGO item, empty items, and secret redaction', () => {
