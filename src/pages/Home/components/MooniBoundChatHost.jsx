@@ -24,6 +24,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
   const [user, setUser] = useState(null);
   const {
     savedTrips,
+    setSavedTrips,
     activeChatId,
     setActiveChatId,
     fetchData,
@@ -49,6 +50,18 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (import.meta.env.VITE_MOONI_E2E !== '1') return undefined;
+    window.__gateoMooniE2e = {
+      fetchData,
+      setSavedTrips,
+      getState: () => ({ activeChatId, savedTrips, chatDraft }),
+    };
+    return () => {
+      delete window.__gateoMooniE2e;
+    };
+  }, [fetchData, setSavedTrips, activeChatId, savedTrips, chatDraft]);
 
   const resetSession = useCallback(() => {
     setChatDraft(null);

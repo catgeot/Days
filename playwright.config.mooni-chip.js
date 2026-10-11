@@ -7,7 +7,7 @@ const siteUrl =
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /korea-mooni-festival-chip-persist\.spec\.js/,
+  testMatch: /korea-mooni-festival-chip-(persist|race)\.spec\.js/,
   fullyParallel: false,
   workers: 1,
   timeout: 300_000,
