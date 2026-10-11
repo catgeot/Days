@@ -890,11 +890,18 @@ export default function KoreaFestivalHub() {
       const id = String(entry.contentId);
       const windowItem = items.find((row) => String(row?.contentId || '') === id);
       const detailItem = socialPromoById.get(id);
+      if (
+        id === festivalId &&
+        deepLinkPhaseForId !== 'ok' &&
+        !detailItem
+      ) {
+        continue;
+      }
       if (!windowItem && !detailItem) continue;
       rows.push(mergeFestivalRowItem(windowItem, detailItem));
     }
     return rows;
-  }, [items, socialPromoById]);
+  }, [items, socialPromoById, festivalId, deepLinkPhaseForId]);
 
   const festivalDeepLink = useMemo(
     () =>
@@ -916,6 +923,30 @@ export default function KoreaFestivalHub() {
     ],
   );
   const selected = festivalDeepLink.selected;
+  const promoDeeplinkIdSet = useMemo(
+    () => new Set(socialPromoFestivals.map((entry) => String(entry.contentId))),
+    [],
+  );
+  const selectedForSheet = useMemo(() => {
+    if (!selected || !festivalId) return selected;
+    const id = String(selected.contentId || '');
+    if (festivalId !== id || !promoDeeplinkIdSet.has(id)) return selected;
+    const listedInWindow = items.some(
+      (row) => String(row?.contentId || '') === id,
+    );
+    if (listedInWindow) return selected;
+    if (deepLinkPhaseForId === 'ok' && deepLinkDetail) return selected;
+    if (socialPromoById.get(id)) return selected;
+    return null;
+  }, [
+    selected,
+    festivalId,
+    promoDeeplinkIdSet,
+    items,
+    deepLinkPhaseForId,
+    deepLinkDetail,
+    socialPromoById,
+  ]);
 
   const clearFestivalFromUrl = useCallback(() => {
     festivalDetailPushedRef.current = false;
@@ -975,52 +1006,79 @@ export default function KoreaFestivalHub() {
       return undefined;
     }
 
-    const needsDetailFetch =
-      festivalDeepLink.fetch ||
-      (festivalDeepLink.sheet === 'loading' &&
-        deepLinkInflightRef.current !== festivalId);
-
-    if (needsDetailFetch) {
-      const requestedId = festivalId;
-      if (
-        deepLinkForId === requestedId &&
-        deepLinkPhase === 'ok' &&
-        deepLinkDetail
-      ) {
-        deepLinkInflightRef.current = requestedId;
-        return undefined;
-      }
-      const gen = ++deepLinkGenRef.current;
-      deepLinkInflightRef.current = requestedId;
-      setDeepLinkForId(requestedId);
-      setDeepLinkPhase('loading');
-      setDeepLinkDetail(null);
-      fetchTourApiFestivalDetail({ contentId: requestedId })
-        .then((detail) => {
-          if (deepLinkGenRef.current !== gen) return;
-          deepLinkInflightRef.current = '';
-          setDeepLinkForId(requestedId);
-          setDeepLinkDetail(detail);
-          setDeepLinkPhase(detail ? 'ok' : 'miss');
-        })
-        .catch(() => {
-          if (deepLinkGenRef.current !== gen) return;
-          deepLinkInflightRef.current = '';
-          setDeepLinkForId(requestedId);
-          setDeepLinkDetail(null);
-          setDeepLinkPhase('miss');
-        });
+    if (loading) {
       return undefined;
     }
+
+    const promoOutOfWindow =
+      promoDeeplinkIdSet.has(festivalId) &&
+      !items.some((row) => String(row?.contentId || '') === festivalId);
+    const needsPromoDetailFetch =
+      promoOutOfWindow &&
+      deepLinkPhaseForId !== 'ok' &&
+      !deepLinkDetail &&
+      deepLinkInflightRef.current !== festivalId;
+
+    if (
+      festivalDeepLink.selected &&
+      festivalDeepLink.sheet === 'open' &&
+      !festivalDeepLink.fetch &&
+      !needsPromoDetailFetch
+    ) {
+      deepLinkInflightRef.current = '';
+      return undefined;
+    }
+
+    if (!festivalDeepLink.fetch && !needsPromoDetailFetch) {
+      return undefined;
+    }
+
+    if (deepLinkInflightRef.current === festivalId) {
+      return undefined;
+    }
+
+    const requestedId = festivalId;
+    const gen = ++deepLinkGenRef.current;
+    deepLinkInflightRef.current = requestedId;
+    setDeepLinkForId(requestedId);
+    setDeepLinkPhase('loading');
+
+    fetchTourApiFestivalDetail({ contentId: requestedId })
+      .then((detail) => {
+        if (deepLinkGenRef.current !== gen) return;
+        deepLinkInflightRef.current = '';
+        setDeepLinkForId(requestedId);
+        setDeepLinkDetail(detail);
+        setDeepLinkPhase(detail ? 'ok' : 'miss');
+        const built = festivalItemFromDetailWithAsOf(detail);
+        if (!built) return;
+        setSocialPromoById((prev) => {
+          if (prev.get(requestedId)) return prev;
+          const next = new Map(prev);
+          next.set(requestedId, built);
+          socialPromoByIdRef.current = next;
+          return next;
+        });
+      })
+      .catch(() => {
+        if (deepLinkGenRef.current !== gen) return;
+        deepLinkInflightRef.current = '';
+        setDeepLinkForId(requestedId);
+        setDeepLinkDetail(null);
+        setDeepLinkPhase('miss');
+      });
 
     return undefined;
   }, [
     festivalId,
+    loading,
+    items,
+    promoDeeplinkIdSet,
+    deepLinkPhaseForId,
+    deepLinkDetail,
     festivalDeepLink.fetch,
     festivalDeepLink.sheet,
-    deepLinkForId,
-    deepLinkPhase,
-    deepLinkDetail,
+    festivalDeepLink.selected,
   ]);
 
   useEffect(() => {
@@ -1162,7 +1220,15 @@ export default function KoreaFestivalHub() {
 
   useEffect(() => {
     if (loading) return undefined;
+    if (
+      festivalId &&
+      festivalDeepLink.sheet !== 'open' &&
+      !festivalDeepLink.clearUrl
+    ) {
+      return undefined;
+    }
     let cancelled = false;
+    const skipPromoDetailForId = String(festivalId || '').trim();
 
     const pump = async () => {
       while (!cancelled) {
@@ -1170,7 +1236,9 @@ export default function KoreaFestivalHub() {
           items,
           socialPromoFestivals,
           socialPromoByIdRef.current,
-        ).filter((id) => !socialPromoDetailInflightRef.current.has(id));
+        )
+          .filter((id) => id !== skipPromoDetailForId)
+          .filter((id) => !socialPromoDetailInflightRef.current.has(id));
         if (!needFetch.length) break;
         for (const id of needFetch) socialPromoDetailInflightRef.current.add(id);
         await Promise.all(
@@ -1200,7 +1268,13 @@ export default function KoreaFestivalHub() {
     return () => {
       cancelled = true;
     };
-  }, [loading, items]);
+  }, [
+    loading,
+    items,
+    festivalId,
+    festivalDeepLink.sheet,
+    festivalDeepLink.clearUrl,
+  ]);
 
   const socialPromoItemById = useMemo(() => {
     const map = new Map();
@@ -3037,12 +3111,19 @@ export default function KoreaFestivalHub() {
         </div>
       ) : null}
 
-      {(selected || festivalDeepLink.sheet === 'loading') && (
+      {(selectedForSheet || selected || festivalDeepLink.sheet === 'loading') && (
         <FestivalDetailSheet
-          item={selected}
-          pending={festivalDeepLink.sheet === 'loading'}
+          item={selectedForSheet}
+          pending={
+            festivalDeepLink.sheet === 'loading' ||
+            (Boolean(festivalId) &&
+              !selectedForSheet &&
+              promoDeeplinkIdSet.has(festivalId))
+          }
           prefetchedTourDetail={
-            deepLinkPhaseForId === 'ok' ? deepLinkDetailForId : null
+            deepLinkForId === festivalId && deepLinkDetail
+              ? deepLinkDetail
+              : null
           }
           favorited={Boolean(selected) && favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
