@@ -93,24 +93,24 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `6626601b` · client `9b68a7b6` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · #420 병합 `e3f4e19a` · main `#427` `48a3efc2` · `#430` `d28d7c4f` · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
+| **상태** | **#2 push** · tip `6a1954d4` · client `9e2eadc8` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · #420 병합 `e3f4e19a` · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
 | **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
 | **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). 주차 `공식 홈페이지()`는 클라이언트 `9b68a7b6`라 Preview만으로 고친다. Edge 파일은 `6626601b`에서 바뀌었다(`templates.js`, 서버 `mooniPromptBundleData.js`). 서버 채움 금지를 staging에 넣으려면 `qeqszwxjvhnbzhkchera` 재배포가 필요하다. 배포·PR 머지는 하지 않는다. `npm run test:health` 236 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 주차 없는 답·숙소 카드 목록·맛집 거리 보강은 클라이언트 `9e2eadc8`라 Preview에 있다. Edge 파일은 `6a1954d4`에서 바뀌었다(`templates.js`, 서버 `mooniPromptBundleData.js`). staging `qeqszwxjvhnbzhkchera` 재배포는 내일 09:00+ KST. 배포·PR 머지는 하지 않는다. `npm run test:health` 242 pass. |
 
 **다음 제시어**:
 
 ```
-축제 MOONi #3, staging 검증
+축제 MOONi #3, staging 재확인
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip 6626601b
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip 6a1954d4
 금지: 에이전트 gemini-proxy 배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push
-작업: 2930716 «주차»는 [공식 홈페이지](https://visitgangneung.net/...)이고 `공식 홈페이지()`가 아니다. 숙소가 월화거리 한 곳이면 «다양한 숙소가 자리하고 있어요», «매력을 느끼며»가 없다. 주차 빈 괄호는 클라이언트 9b68a7b6라 Preview만으로 본다. 서버 채움 금지(haeyoLock·서버 번들)는 6626601b Edge 파일이 바뀌었으므로 staging qeqszwxjvhnbzhkchera 재배포 후에 서버 프롬프트에 있다. prod는 v27(2c7a3c95).
+작업: staging qeqszwxjvhnbzhkchera를 6a1954d4 Edge 파일로 재배포한 뒤에만 2930716을 본다. «주차»는 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 033-…»이고 축제 페이지 문장·확인 반복·번호 없는 문의처는 없다. «어디서 자요?»는 숙소 카드의 이름·거리 2~3곳과 [숙소 카드] 한 번이다. 거리 없는 맛집은 빠지고 거리 있는 다음 곳이 들어간다. 목록이 비면 20km 권역이다. prod는 v27(2c7a3c95), mooni_chat 기본은 gemini-3.1-flash-lite.
 검증: npm run test:health
 ```
 
