@@ -78,6 +78,13 @@
 - **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` 6 pass
 - **다음** `카이로 장소 카드 #5, Preview OK면 PR 병합`
 
+## 카이로 장소 카드 #5, 제목 칸
+
+- **세션** `카이로 장소 카드 #5, 제목 칸` · branch `cursor/cairo-place-facts-8e40` · tip `2dc2ddf4` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 표시 이름 «대이집트 박물관»과 헤더 `clamp`. 360·390에서 단어 중간 줄바꿈 없음. D1 문장, CAI 첫 줄 제거. 파일럿 단수 25$·복수 60$는 25달러·60달러. GEM 성인 1,590 EGP 유지.
+- **VERIFY** facts health 6 pass · hub audit 0 · 360/390 제목 측정
+- **다음** `카이로 장소 카드 #6, Preview OK면 PR 병합`
+
 ## 축제 가는 법 #1, TAGO Edge
 
 - **세션** `축제 가는 법 #1, TAGO Edge` · branch `cursor/transport-proxy-e06e` · tip `44f3f94c` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지
