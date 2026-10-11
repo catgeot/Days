@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `dde83ecd` · draft PR [#420](https://github.com/catgeot/Days/pull/420) · **에이전트 Edge 배포 금지** |
-| **브랜치** | `cursor/mooni-festival-edge-7c65` |
+| **상태** | **#2 push** · tip `fb489241` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · #420 병합 `e3f4e19a` · **에이전트 Edge 배포 금지** |
+| **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
-| **Preview** | git `https://days-git-cursor-mooni-festival-edge-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트. Edge 파일은 v27 `2c7a3c95`와 같음. Vercel SSO) |
-| **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 |
+| **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
+| **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). 이 tip의 Edge 파일은 그 스냅샷과 같다. 주차 문구는 다음 PR. 2930716 근처 먹을 곳(자유 입력·칩)은 시트 주변 맛집 이름을 보내고, «다음 행동으로»를 빼며, 숙소 링크와 «맛집을 찾아보세요»를 붙이지 않는다. `npm run test:health` 204 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). 이 tip의 `templates.js`와 서버 프롬프트 번들은 staging `qeqszwxjvhnbzhkchera` 배포가 필요하다. 클라이언트는 먹을 곳 질문 전에 주변 맛집을 최대 3초 기다리고, 3~4곳에 유형·거리를 붙이며, 주차는 데이터가 있을 때만 축제 페이지를 가리킨다. `npm run test:health` 218 pass. |
 
 **다음 제시어**:
 
 ```
-축제 MOONi Edge #2, staging 검증
+축제 MOONi #3, staging 검증
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-edge-7c65 · draft PR #420 · tip dde83ecd
-금지: 에이전트 gemini-proxy 배포 · 모델 변경 · feature에 plans 커밋 · main 코드 push · supabase/functions 변경
-작업: 2930716 «근처 먹을 곳?» 자유 입력과 칩이 시트 주변 맛집 이름을 말하는지 확인. «다음 행동으로»·숙소 링크·«맛집을 찾아보세요»가 없어야 한다. prod gemini-proxy는 v27(2c7a3c95)이고 이 tip의 Edge 파일은 그 스냅샷과 같다. 주차 문구는 다음 PR.
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip fb489241
+금지: 에이전트 gemini-proxy 배포 · 모델 변경 · feature에 plans 커밋 · main 코드 push
+작업: box ops가 이 tip의 templates.js와 서버 프롬프트를 staging qeqszwxjvhnbzhkchera에 배포한 뒤 2930716을 본다. 근처 먹을 곳은 시트가 늦게 와도 3~4곳 이름과 유형·거리. 주차는 데이터가 없으면 공식 홈페이지. 링크 없는 가는 법과 «안내해 드릴까요?»는 없다. prod는 v27(2c7a3c95)이고 이 Edge 문장은 아직 prod에 없다. 클라이언트 대기·폴백은 Preview에 있다.
 검증: npm run test:health
 ```
 

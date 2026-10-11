@@ -23,6 +23,16 @@
 - **원인** main 클라이언트는 시트 주변 맛집 이름을 `festivalContext`에 넣지 않아 자유 입력과 칩 모두 목록 없이 묻는다.
 - **조치** 먹을 곳 질문(자유 입력·칩)은 주변 맛집 이름을 힌트에 넣고, 목록이 늦게 와도 열린 채팅에 복사한다. «다음 행동으로/다음 행동:»를 빼고, 이름이 있으면 «맛집을 찾아보세요»를 빼며, 숙소 링크는 숙소 질문에만 둔다. Edge 프롬프트 파일은 v27 스냅샷 `2c7a3c95`로 되돌렸다. 주차 문구는 다음 PR.
 - **VERIFY** `npm run test:health` 204 pass. 로컬 390px에서 prod gemini-proxy로 2930716 «근처 먹을 곳?»이 100년임당방앗간·만동제과·월화엔을 말했다.
+- **병합** #420 squash `e3f4e19a`. prod gemini-proxy는 v27 (`2c7a3c95`).
+
+## 축제 MOONi #2, 라이브 마찰
+
+- **세션** `축제 MOONi #2, 라이브 마찰` · branch `cursor/mooni-festival-live-7c65` · client `b8d24a35` · prompt `fb489241` · draft PR [#423](https://github.com/catgeot/Days/pull/423)
+- **원인** MOONi를 연 직후 «근처 먹을 곳?»은 주변 맛집 fetch가 끝나기 전에 나가 이름을 빼거나 중앙시장을 만든다.
+- **조치** 먹을 곳 질문은 목록을 최대 3초 기다린다. 답은 시트의 3~4곳에 유형이나 도보 거리를 붙인다. 주차는 데이터가 있을 때만 축제 페이지를 가리키고, 없으면 공식 홈페이지·문의처. 링크 없는 다음 행동과 «안내해 드릴까요?»는 뺀다. 첫 답은 근처 이름이 3곳이면 3곳을 말한다.
+- **범위** 클라이언트와 Edge 프롬프트를 커밋만 분리. **에이전트는 gemini-proxy를 배포하지 않음.** staging `qeqszwxjvhnbzhkchera`가 필요한 것은 `templates.js`와 서버 프롬프트 번들. 클라이언트 대기·폴백·힌트는 Preview에서 적용. prod는 v27 (`2c7a3c95`).
+- **VERIFY** `npm run test:health` 218 pass.
+- **Preview** `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716`
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
