@@ -133,3 +133,12 @@
 - **사진** 깨진 썸네일은 `display = 'none'` 뒤 아이콘. health `festival-photo-frame` PASS.
 - **조치** 일반 목록은 거리순이고 팔경 멤버를 빼다. 2곳 이상인 팔경은 «함평 팔경» 소제목 아래 경 번호순. 1곳뿐인 다른 시·군(함안 5경)은 뱃지만 달아 일반 목록에 둔다. 표시 이름 끝 시군을 빼고, 사진이 없으면 회색 칸 대신 아이콘. 국향·마산 썸네일은 전부 사진이 있고 이전 회색은 로드 전 캡처.
 - **VERIFY** nearby health 15 pass · `npx vite build` PASS
+
+## 카이로 동선 #1, 장소 링크·영문 제목·축제장
+
+- **세션** `카이로 동선 #1, 장소 링크·영문 제목·축제장` · branch `cursor/cairo-follow-8e40` · tip `482874e8` · draft PR [#432](https://github.com/catgeot/Days/pull/432) · 병합 금지
+- **앞선 병합** #428 squash `ea2b3730`. PROD 번들 `index-Blpy8VZ_.js`.
+- **조치** 동선 D2/D3의 GEM·술탄 하산 모스크만 장소 카드로 연결. 영문 GEM 제목은 390에서 `Grand Egyptian` / `Museum`. 팔경 멤버가 축제장이면 소제목 옆에 «2경 함평엑스포공원은 축제장이에요».
+- **VERIFY** `npm run test:health` 241 pass · CI run `38145911493` success
+- **Preview** `https://days-git-cursor-cairo-follow-8e40-catgeots-projects.vercel.app/place/cairo` · `?lang=en` GEM · `/korea?festival=638576`
+- **다음** `카이로 동선 #2, 피드백 반영`
