@@ -176,3 +176,24 @@ test('GEM and Sultan Hassan hub cards exist', () => {
   assert.equal(resolveVerifiedFacts('Grand Egyptian Museum')?.slug, 'grand-egyptian-museum');
   assert.equal(resolveVerifiedFacts('Sultan Hassan Mosque')?.kind, 'attraction');
 });
+
+test('english fact headings are localized and values stay Korean', async () => {
+  const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
+  const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
+  assert.equal(en.place.facts.title, 'Verified facts');
+  assert.equal(en.place.facts.slots.hours, 'Hours');
+  assert.equal(en.place.facts.slots.entry, 'Entry');
+  assert.equal(ko.place.facts.title, '확인된 사실');
+  assert.equal(ko.place.facts.slots.hours, '운영시간');
+  assert.equal(en.place.nav.planner, 'Planner');
+  const entry = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'entry');
+  assert.match(entry.value, /25달러, 복수 60달러/);
+  const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
+  assert.match(factsUi, /place\.facts\.title/);
+  assert.match(factsUi, /place\.facts\.slots\./);
+  const header = readFileSync(join(root, 'src/components/PlaceCard/panels/PlaceChatPanel.jsx'), 'utf8');
+  assert.match(header, /whitespace-nowrap">\{t\('place\.nav\.planner'\)\}/);
+  assert.match(header, /flex flex-col flex-1 min-w-0 justify-center overflow-hidden/);
+  assert.equal(header.includes('min-w-[11rem]'), false);
+  assert.equal(header.includes("locale === 'en' ? 'min-w-0 shrink'"), false);
+});

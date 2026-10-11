@@ -225,7 +225,7 @@ const PlaceChatPanel = React.memo(({
                 <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <div
-                className={`flex flex-col flex-1 justify-center ${locale === 'en' ? 'min-w-[11rem]' : 'min-w-0'} ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
+                className={`flex flex-col flex-1 min-w-0 justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
                 onClick={handleHeaderScrollTap}
                 onKeyDown={(event) => {
                     if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
@@ -267,7 +267,7 @@ const PlaceChatPanel = React.memo(({
                     </span>
                  )}
              </div>
-             <div className={`${locale === 'en' ? 'min-w-0 shrink' : 'shrink-0'} flex items-center gap-1.5 md:gap-2`}>
+             <div className="shrink-0 flex items-center gap-1.5 md:gap-2">
                  <button
                     type="button"
                     onClick={openMooni}
@@ -294,10 +294,10 @@ const PlaceChatPanel = React.memo(({
                  ) : (
                     <button
                         onClick={() => setMediaMode('PLANNER')}
-                        className={`px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 ${locale === 'en' ? 'min-w-0 shrink' : 'shrink-0'}`}
+                        className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 shrink-0"
                     >
                         <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
-                        <span className={`text-xs font-bold ${locale === 'en' ? 'whitespace-normal leading-tight text-left' : 'whitespace-nowrap'}`}>{t('place.nav.planner')}</span>
+                        <span className="text-xs font-bold whitespace-nowrap">{t('place.nav.planner')}</span>
                     </button>
                  )}
              </div>
