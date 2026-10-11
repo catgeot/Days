@@ -62,6 +62,23 @@ import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
 import { fetchTourApiFestivalDetail } from '../../utils/fetchTourApiFestivals';
 import { projectFestivalDeepLink } from './festivalDeepLinkItem';
 import {
+  festivalItemForSessionPin,
+} from './festivalSessionPin';
+import { festivalItemThumbSrc } from './festivalListThumb';
+import SocialPromoFestivalRow from './SocialPromoFestivalRow';
+import {
+  festivalItemFromDetailWithAsOf,
+  mergeFestivalRowItem,
+  mergeSocialPromoIntoFestivalItems,
+  filterSocialPromoCardsByRegion,
+  resolveSocialPromoPresentation,
+  resolveSocialPromoRow,
+  shouldShowSessionPinnedHomeRow,
+  shouldShowSessionPinnedRow,
+  socialPromoFestivals,
+  socialPromoIdsNeedingDetailFetch,
+} from './socialPromoFestivals';
+import {
   DEFAULT_AREA_CODE,
   NEAR_FESTIVAL_KM,
 } from './koreaFestivalDefaults';
@@ -248,8 +265,7 @@ function formatYmdLabel(ymd) {
 }
 
 function festivalImage(item) {
-  const raw = item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
-  return resolveListImageUrl(raw, { role: 'list' });
+  return festivalItemThumbSrc(item);
 }
 
 function festivalKey(item) {
@@ -568,6 +584,7 @@ function RelatedChipFlap({
 function FestivalThumbFallback({ large = false }) {
   return (
     <div
+      data-thumb-fallback="1"
       className="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-amber-800/50"
       aria-hidden="true"
     >
@@ -655,6 +672,7 @@ function FestivalRow({
               className="w-full h-full object-cover"
               loading="lazy"
               decoding="async"
+              referrerPolicy="no-referrer"
               onError={() => setImgFailed(true)}
               {...koText}
             />
@@ -756,6 +774,13 @@ export default function KoreaFestivalHub() {
   const festivalId = festivalIdFromSearchParams(searchParams);
   const festivalDetailPushedRef = useRef(false);
   const festivalDeepLinkSeededForRef = useRef('');
+  const festivalViewedPushedRef = useRef('');
+  const socialPromoDetailInflightRef = useRef(
+    /** @type {Set<string>} */ (new Set()),
+  );
+  const socialPromoByIdRef = useRef(
+    /** @type {Map<string, Record<string, unknown>>} */ (new Map()),
+  );
   const now = useMemo(() => new Date(), []);
 
   const goHome = useCallback(() => {
@@ -821,6 +846,14 @@ export default function KoreaFestivalHub() {
   const [searchSuggestOpen, setSearchSuggestOpen] = useState(false);
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
+  /** 상세를 닫은 뒤 세션 동안 목록 맨 위에 유지 */
+  const [sessionPinnedItem, setSessionPinnedItem] = useState(
+    /** @type {Record<string, unknown> | null} */ (null),
+  );
+  const [socialPromoById, setSocialPromoById] = useState(
+    () => new Map(),
+  );
+  socialPromoByIdRef.current = socialPromoById;
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
     isHintDismissed(
       typeof localStorage !== 'undefined' ? localStorage : null,
@@ -872,13 +905,15 @@ export default function KoreaFestivalHub() {
 
   const closeFestivalDetail = useCallback(() => {
     resetIosZoomAfterInput();
+    const pin = festivalItemForSessionPin(selected);
+    if (pin) setSessionPinnedItem(pin);
     if (festivalDetailPushedRef.current) {
       festivalDetailPushedRef.current = false;
       navigate(-1);
       return;
     }
     clearFestivalFromUrl();
-  }, [clearFestivalFromUrl, navigate]);
+  }, [clearFestivalFromUrl, navigate, selected]);
 
   // 테마「이 지역 축제」— 같은 /korea 안에서도 지역·목록으로 복귀 (상세 시트 유지 방지)
   useEffect(() => {
@@ -999,6 +1034,16 @@ export default function KoreaFestivalHub() {
   const [favoriteList, setFavoriteList] = useState(() => loadFavorites());
   const [viewedList, setViewedList] = useState(() => loadViewed());
 
+  useEffect(() => {
+    if (!festivalId || festivalDeepLink.sheet !== 'open' || !selected?.contentId) {
+      return;
+    }
+    const id = String(selected.contentId);
+    if (festivalViewedPushedRef.current === id) return;
+    festivalViewedPushedRef.current = id;
+    setViewedList(pushViewed(selected));
+  }, [festivalId, festivalDeepLink.sheet, selected]);
+
   const loadFestivals = useCallback(async (force = false) => {
     setLoading(true);
     setError('');
@@ -1017,14 +1062,90 @@ export default function KoreaFestivalHub() {
     loadFestivals(false);
   }, [loadFestivals]);
 
+  useEffect(() => {
+    if (loading) return undefined;
+    let cancelled = false;
+
+    const pump = async () => {
+      while (!cancelled) {
+        const needFetch = socialPromoIdsNeedingDetailFetch(
+          items,
+          socialPromoFestivals,
+          socialPromoByIdRef.current,
+        ).filter((id) => !socialPromoDetailInflightRef.current.has(id));
+        if (!needFetch.length) break;
+        for (const id of needFetch) socialPromoDetailInflightRef.current.add(id);
+        await Promise.all(
+          needFetch.map(async (contentId) => {
+            const id = String(contentId);
+            try {
+              const detail = await fetchTourApiFestivalDetail({ contentId: id });
+              if (cancelled) return;
+              const built = festivalItemFromDetailWithAsOf(detail);
+              if (!built) return;
+              setSocialPromoById((prev) => {
+                if (prev.get(id)) return prev;
+                const next = new Map(prev);
+                next.set(id, built);
+                socialPromoByIdRef.current = next;
+                return next;
+              });
+            } finally {
+              socialPromoDetailInflightRef.current.delete(id);
+            }
+          }),
+        );
+      }
+    };
+
+    pump();
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, items]);
+
+  const socialPromoItemById = useMemo(() => {
+    const map = new Map();
+    for (const entry of socialPromoFestivals) {
+      const id = String(entry.contentId);
+      const windowItem = items.find((row) => String(row?.contentId || '') === id);
+      const detailItem = socialPromoById.get(id);
+      if (!windowItem && !detailItem) continue;
+      map.set(id, mergeFestivalRowItem(windowItem, detailItem));
+    }
+    return map;
+  }, [items, socialPromoById]);
+
+  const socialPromoRow = useMemo(
+    () => resolveSocialPromoRow(socialPromoFestivals, socialPromoItemById, now, 2),
+    [socialPromoItemById, now],
+  );
+
+  const itemsWithSocialPromo = useMemo(() => {
+    const promoIds = new Set(
+      socialPromoFestivals.map((entry) => String(entry.contentId)),
+    );
+    const merged = mergeSocialPromoIntoFestivalItems(
+      items,
+      socialPromoFestivals,
+      socialPromoItemById,
+      now,
+    );
+    return merged.map((item) => {
+      const id = String(item?.contentId || '');
+      if (!promoIds.has(id)) return item;
+      return mergeFestivalRowItem(item, socialPromoItemById.get(id));
+    });
+  }, [items, socialPromoItemById, now]);
+
   const timeTabs = useMemo(
     () => localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now)),
     [now, t],
   );
 
   const timedItems = useMemo(
-    () => filterByTimeTab(timeTab, items, now),
-    [timeTab, items, now],
+    () => filterByTimeTab(timeTab, itemsWithSocialPromo, now),
+    [timeTab, itemsWithSocialPromo, now],
   );
 
   const sidoChips = useMemo(() => buildSidoTags(timedItems), [timedItems]);
@@ -1086,11 +1207,23 @@ export default function KoreaFestivalHub() {
   const searchFilter = searchDraft.trim() || searchApplied.trim();
   const searchActive = searchFilter.length > 0;
 
+  const socialPromoPresentation = useMemo(
+    () =>
+      resolveSocialPromoPresentation(socialPromoRow, {
+        searchActive,
+        areaCode,
+        cityName,
+      }),
+    [socialPromoRow, searchActive, areaCode, cityName],
+  );
+
+  const showSocialPromoRow = socialPromoPresentation.show;
+
   /** 검색 중에는 시간·지역·테마 칩을 넘어 롤링 12개월 전체에서 매칭 */
   const searchPoolItems = useMemo(() => {
     if (!searchActive) return tastedItems;
-    return items;
-  }, [searchActive, tastedItems, items]);
+    return itemsWithSocialPromo;
+  }, [searchActive, tastedItems, itemsWithSocialPromo]);
 
   const filteredItems = useMemo(
     () => filterBySearchQuery(searchPoolItems, searchFilter),
@@ -1134,18 +1267,18 @@ export default function KoreaFestivalHub() {
 
   const byContentId = useMemo(() => {
     const map = new Map();
-    for (const item of items) {
+    for (const item of itemsWithSocialPromo) {
       if (item?.contentId != null) map.set(String(item.contentId), item);
     }
     return map;
-  }, [items]);
+  }, [itemsWithSocialPromo]);
 
   /**
    * 내 주변: 좌표·반경 유지 · 시간·테마 칩에 맞춰 재계산 (지역 칩만 내 주변 해제)
    */
   const nearRanked = useMemo(() => {
     if (!nearOrigin) return null;
-    const timed = filterByTimeTab(timeTab, items, now);
+    const timed = filterByTimeTab(timeTab, itemsWithSocialPromo, now);
     const tasted = filterByTaste(timed, tasteId);
     return rankFestivalsByDistance(
       festivalsWithinKm(
@@ -1157,7 +1290,7 @@ export default function KoreaFestivalHub() {
       nearOrigin.lat,
       nearOrigin.lng,
     );
-  }, [nearOrigin, items, now, timeTab, tasteId]);
+  }, [nearOrigin, itemsWithSocialPromo, now, timeTab, tasteId]);
 
   const nearBaseItems = useMemo(
     () => (nearRanked ? nearRanked.map((row) => row.item) : null),
@@ -1181,20 +1314,44 @@ export default function KoreaFestivalHub() {
     );
   }, [nearBaseItems, filteredItems, now]);
 
+  const sessionPinnedDisplay = useMemo(() => {
+    if (!sessionPinnedItem?.contentId) return null;
+    const id = String(sessionPinnedItem.contentId);
+    const live = byContentId.get(id) || socialPromoItemById.get(id) || sessionPinnedItem;
+    return mergeFestivalRowItem(live, socialPromoItemById.get(id));
+  }, [sessionPinnedItem, byContentId, socialPromoItemById]);
+
+  const showSessionPinnedRow = useMemo(
+    () =>
+      shouldShowSessionPinnedHomeRow(searchActive, areaCode, cityName) &&
+      sessionPinnedDisplay &&
+      shouldShowSessionPinnedRow(
+        sessionPinnedDisplay.contentId,
+        socialPromoRow.status === 'ready' ? socialPromoRow.cards : [],
+      ),
+    [searchActive, sessionPinnedDisplay, socialPromoRow, areaCode, cityName],
+  );
+
+  /** Pin row is a duplicate on 전국 only — never remove the festival from region groups. */
+  const panelItemsForList = panelItems;
+
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
     const counts = {};
-    const regionBase = filterByRegion(items, { areaCode, cityName });
+    const regionBase = filterByRegion(itemsWithSocialPromo, {
+      areaCode,
+      cityName,
+    });
     const pool = filterByTaste(regionBase, tasteId);
     for (const t of timeTabs) {
       counts[t.id] = filterByTimeTab(t.id, pool, now).length;
     }
     return counts;
-  }, [items, areaCode, cityName, tasteId, timeTabs, now]);
+  }, [itemsWithSocialPromo, areaCode, cityName, tasteId, timeTabs, now]);
 
   const panelGroups = useMemo(() => {
     if (nearBaseItems) {
-      const groups = groupFestivalsByCity(panelItems, {});
+      const groups = groupFestivalsByCity(panelItemsForList, {});
       return groups
         .map((g) => {
           const items = [...g.items].sort((a, b) => {
@@ -1224,10 +1381,10 @@ export default function KoreaFestivalHub() {
         );
     }
     return sortFestivalGroupsByOpenDate(
-      groupFestivalsForList(panelItems, { areaCode }),
+      groupFestivalsForList(panelItemsForList, { areaCode }),
       now,
     );
-  }, [nearBaseItems, panelItems, areaCode, nearKmByContentId, now]);
+  }, [nearBaseItems, panelItemsForList, areaCode, nearKmByContentId, now]);
 
   const localizedPanelGroups = useMemo(
     () =>
@@ -1299,10 +1456,12 @@ export default function KoreaFestivalHub() {
    * 검색 중에는 칩 필터 없이 롤링 12개월 전체에서 매칭.
    */
   const mapScopeItems = useMemo(() => {
-    if (searchActive) return filterBySearchQuery(items, searchFilter);
+    if (searchActive) {
+      return filterBySearchQuery(itemsWithSocialPromo, searchFilter);
+    }
     const tasted = filterByTaste(timedItems, tasteId);
     return filterBySearchQuery(tasted, searchFilter);
-  }, [searchActive, items, timedItems, tasteId, searchFilter]);
+  }, [searchActive, itemsWithSocialPromo, timedItems, tasteId, searchFilter]);
 
   const mapItems = useMemo(() => {
     if (personalTab != null) return personalItems;
@@ -2586,7 +2745,7 @@ export default function KoreaFestivalHub() {
                     </div>
                   ))
                 )
-              ) : panelItems.length === 0 ? (
+              ) : panelItemsForList.length === 0 && !showSessionPinnedRow ? (
                 loading ? (
                   <div
                     className={listLarge ? 'space-y-3' : 'space-y-2'}
@@ -2614,7 +2773,45 @@ export default function KoreaFestivalHub() {
                   </div>
                 )
               ) : (
-                localizedPanelGroups.map((group) => (
+                <>
+                  {showSocialPromoRow ? (
+                    <SocialPromoFestivalRow
+                      cards={socialPromoPresentation.cards}
+                      loading={socialPromoPresentation.loading}
+                      onSelect={openItem}
+                    />
+                  ) : null}
+                  {showSessionPinnedRow ? (
+                    <div
+                      className="mb-2 space-y-2"
+                      data-session-pinned-festival=""
+                    >
+                      <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
+                        {t('korea.festival.sessionPinnedSectionTitle')}
+                        <span className="ml-1 font-normal opacity-70">1</span>
+                      </p>
+                      <FestivalRow
+                        item={sessionPinnedDisplay}
+                        large={listLarge}
+                        active={
+                          selected?.contentId != null &&
+                          String(selected.contentId) ===
+                            String(sessionPinnedDisplay.contentId)
+                        }
+                        favorited={favoriteIds.has(
+                          String(sessionPinnedDisplay.contentId),
+                        )}
+                        onToggleFavorite={handleToggleFavorite}
+                        onSelect={openItem}
+                        distanceKm={
+                          nearKmByContentId.get(
+                            String(sessionPinnedDisplay.contentId),
+                          ) ?? undefined
+                        }
+                      />
+                    </div>
+                  ) : null}
+                  {localizedPanelGroups.map((group) => (
                   <div key={group.id} className="space-y-2">
                     <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
                       {group.label}
@@ -2642,7 +2839,8 @@ export default function KoreaFestivalHub() {
                       />
                     ))}
                   </div>
-                ))
+                ))}
+                </>
               )}
               </div>
               {mapSplitActive && (
