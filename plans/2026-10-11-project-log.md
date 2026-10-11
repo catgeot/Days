@@ -48,3 +48,17 @@
 - **조치** `FESTIVAL_PAGE_EVENT` · supplemental 병합 · fetch orphan 복구 · 링크 시 전국 칩 복귀 · listLoading 무시·명승 `?festival=` only · 시트 prefetch·fetch gen
 - **VERIFY** `npm run test:health` 221 pass · e2e 4경로 @390 본문 10s 이내(국향 MOONi·2930716·서울·가리산→산천어)
 - **Preview** `https://days-git-cursor-mooni-festival-page-link-4768-catgeots-projects.vercel.app/korea`
+
+## 카이로 장소 카드 #1, 확인된 사실
+
+- **세션** `카이로 장소 카드 #1, 확인된 사실` · branch `cursor/cairo-place-facts-8e40` · tip `24e72e9d` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 도시 6칸·명소 7칸을 카드 맨 위에 두고 빈칸은 «확인 안 됨». AI 구간은 «AI 생성 · 출처 없음». 표에 있는 공식 예매·지도만. GEM·술탄 하산 허브 카드. Edge 코드·DB 실행 없음. 영상 허용 목록 JSON만 두 슬러그 추가.
+- **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` · `audit:city-attraction-hubs` 0 · vite build
+- **Preview** `https://days-git-cursor-cairo-place-facts-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/cairo/wiki` · `/place/grand-egyptian-museum` · `/place/sultan-hassan-mosque`
+
+## 축제 가는 법 #1, TAGO Edge
+
+- **세션** `축제 가는 법 #1, TAGO Edge` · branch `cursor/transport-proxy-e06e` · tip `44f3f94c` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지
+- **조치** `transport-proxy`가 국향 638576 · 마산 637693 · 강릉 2930716을 contentId로 정규화. 실측 ID만 호출. AREX는 unverified, 수서 출발은 SR 예매(등급명 유지), 23:59 제거, 운임 0은 null. 광주송정→함평역은 조회 환승.
+- **VERIFY** `npm run test:health` 233 pass. 라이브 TAGO 없음.
+- **배포** 스테이징만. 함수 `transport-proxy`, 마이그레이션 `20261011160000_tago_route_cache.sql`, 시크릿은 기존 `TOUR_API_SERVICE_KEY`. 프로브 `node scripts/staging/transport-probe.mjs`. Cos GO 전 prod 금지.
