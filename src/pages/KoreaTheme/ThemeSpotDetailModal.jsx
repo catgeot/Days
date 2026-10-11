@@ -1736,12 +1736,7 @@ export default function ThemeSpotDetailModal({
   const openFestival = (fest) => {
     const festId = String(fest?.contentId || '').trim();
     if (!festId) return;
-    const areaCode = String(
-      spot.areaCode || resolveThemeSpotAreaCode(spot) || '',
-    ).trim();
     const params = new URLSearchParams();
-    params.set('from', 'theme');
-    if (areaCode) params.set('area', areaCode);
     params.set('festival', festId);
     if (isEnglish) params.set('lang', 'en');
     const backEntry = themeNavBackEntryForSpot(spot, returnTo);

@@ -61,6 +61,7 @@ import { filterBySearchQuery } from './festivalSearch';
 import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
 import { fetchTourApiFestivalDetail } from '../../utils/fetchTourApiFestivals';
 import { projectFestivalDeepLink } from './festivalDeepLinkItem';
+import { FESTIVAL_PAGE_EVENT } from '../../shared/korea/mooniKoreaFestivalAssist.js';
 import {
   festivalItemForSessionPin,
 } from './festivalSessionPin';
@@ -878,20 +879,41 @@ export default function KoreaFestivalHub() {
   const [deepLinkDetail, setDeepLinkDetail] = useState(/** @type {object | null} */ (null));
   const [festivalToast, setFestivalToast] = useState('');
   const deepLinkGenRef = useRef(0);
+  const deepLinkInflightRef = useRef('');
   const deepLinkDetailForId =
     deepLinkForId === festivalId ? deepLinkDetail : null;
   const deepLinkPhaseForId =
     deepLinkForId === festivalId ? deepLinkPhase : 'idle';
+  const deepLinkSupplementalItems = useMemo(() => {
+    const rows = [];
+    for (const entry of socialPromoFestivals) {
+      const id = String(entry.contentId);
+      const windowItem = items.find((row) => String(row?.contentId || '') === id);
+      const detailItem = socialPromoById.get(id);
+      if (!windowItem && !detailItem) continue;
+      rows.push(mergeFestivalRowItem(windowItem, detailItem));
+    }
+    return rows;
+  }, [items, socialPromoById]);
+
   const festivalDeepLink = useMemo(
     () =>
       projectFestivalDeepLink({
         festivalId,
         items,
+        supplementalItems: deepLinkSupplementalItems,
         listLoading: loading,
         phase: deepLinkPhaseForId,
         detail: deepLinkDetailForId,
       }),
-    [festivalId, items, loading, deepLinkPhaseForId, deepLinkDetailForId],
+    [
+      festivalId,
+      items,
+      deepLinkSupplementalItems,
+      loading,
+      deepLinkPhaseForId,
+      deepLinkDetailForId,
+    ],
   );
   const selected = festivalDeepLink.selected;
 
@@ -915,9 +937,17 @@ export default function KoreaFestivalHub() {
     clearFestivalFromUrl();
   }, [clearFestivalFromUrl, navigate, selected]);
 
-  // 테마「이 지역 축제」— 같은 /korea 안에서도 지역·목록으로 복귀 (상세 시트 유지 방지)
+  // 테마「이 지역 축제」— festival 딥링크가 있으면 상세를 열고 URL을 지우지 않음
   useEffect(() => {
-    if (!fromTheme || !themeAreaParam || themeAreaParam === 'all') return;
+    if (!fromTheme) return;
+    if (festivalId) {
+      userRegionOverrideRef.current = false;
+      setAreaCode(DEFAULT_AREA_CODE);
+      setCityName('all');
+      setChipPanel('region');
+      return;
+    }
+    if (!themeAreaParam || themeAreaParam === 'all') return;
     if (!/^\d{1,2}$/.test(themeAreaParam)) return;
     userRegionOverrideRef.current = true;
     setAreaCode(themeAreaParam);
@@ -930,7 +960,7 @@ export default function KoreaFestivalHub() {
     setNearLabel('');
     setNearMsg('');
     mainScrollRef.current?.scrollTo({ top: 0 });
-  }, [fromTheme, themeAreaParam, location.key, clearFestivalFromUrl]);
+  }, [fromTheme, themeAreaParam, festivalId, location.key, clearFestivalFromUrl]);
 
   useEffect(() => {
     if (!festivalToast) return undefined;
@@ -939,33 +969,75 @@ export default function KoreaFestivalHub() {
   }, [festivalToast]);
 
   useEffect(() => {
-    if (loading) return undefined;
     if (!festivalId) {
       festivalDeepLinkSeededForRef.current = '';
+      deepLinkInflightRef.current = '';
       return undefined;
     }
 
-    if (festivalDeepLink.fetch) {
-      const gen = ++deepLinkGenRef.current;
+    const needsDetailFetch =
+      festivalDeepLink.fetch ||
+      (festivalDeepLink.sheet === 'loading' &&
+        deepLinkInflightRef.current !== festivalId);
+
+    if (needsDetailFetch) {
       const requestedId = festivalId;
+      if (
+        deepLinkForId === requestedId &&
+        deepLinkPhase === 'ok' &&
+        deepLinkDetail
+      ) {
+        deepLinkInflightRef.current = requestedId;
+        return undefined;
+      }
+      const gen = ++deepLinkGenRef.current;
+      deepLinkInflightRef.current = requestedId;
       setDeepLinkForId(requestedId);
       setDeepLinkPhase('loading');
       setDeepLinkDetail(null);
-      fetchTourApiFestivalDetail({ contentId: requestedId }).then((detail) => {
-        if (deepLinkGenRef.current !== gen) return;
-        setDeepLinkForId(requestedId);
-        setDeepLinkDetail(detail);
-        setDeepLinkPhase(detail ? 'ok' : 'miss');
-      });
+      fetchTourApiFestivalDetail({ contentId: requestedId })
+        .then((detail) => {
+          if (deepLinkGenRef.current !== gen) return;
+          deepLinkInflightRef.current = '';
+          setDeepLinkForId(requestedId);
+          setDeepLinkDetail(detail);
+          setDeepLinkPhase(detail ? 'ok' : 'miss');
+        })
+        .catch(() => {
+          if (deepLinkGenRef.current !== gen) return;
+          deepLinkInflightRef.current = '';
+          setDeepLinkForId(requestedId);
+          setDeepLinkDetail(null);
+          setDeepLinkPhase('miss');
+        });
       return undefined;
     }
 
+    return undefined;
+  }, [
+    festivalId,
+    festivalDeepLink.fetch,
+    festivalDeepLink.sheet,
+    deepLinkForId,
+    deepLinkPhase,
+    deepLinkDetail,
+  ]);
+
+  useEffect(() => {
+    if (!festivalId || !festivalDeepLink.clearUrl) return undefined;
+    if (festivalDeepLinkSeededForRef.current !== '__invalid__') {
+      festivalDeepLinkSeededForRef.current = '__invalid__';
+      setFestivalToast(t('korea.festival.notFound'));
+      clearFestivalFromUrl();
+    }
+    return undefined;
+  }, [festivalId, festivalDeepLink.clearUrl, clearFestivalFromUrl, t]);
+
+  useEffect(() => {
+    if (loading) return undefined;
+    if (!festivalId) return undefined;
+
     if (festivalDeepLink.clearUrl) {
-      if (festivalDeepLinkSeededForRef.current !== '__invalid__') {
-        festivalDeepLinkSeededForRef.current = '__invalid__';
-        setFestivalToast(t('korea.festival.notFound'));
-        clearFestivalFromUrl();
-      }
       return undefined;
     }
 
@@ -1010,7 +1082,6 @@ export default function KoreaFestivalHub() {
     loading,
     items,
     festivalId,
-    festivalDeepLink.fetch,
     festivalDeepLink.clearUrl,
     festivalDeepLink.sheet,
     festivalDeepLink.selected,
@@ -1020,6 +1091,33 @@ export default function KoreaFestivalHub() {
     clearFestivalFromUrl,
     t,
   ]);
+
+  useEffect(() => {
+    const onFestivalPageLink = (event) => {
+      const id = String(event.detail?.contentId || '').trim();
+      if (!/^\d+$/.test(id)) return;
+      if (event.detail?.nationwide) {
+        userRegionOverrideRef.current = false;
+        setAreaCode(DEFAULT_AREA_CODE);
+        setCityName('all');
+        setChipPanel('region');
+        setPersonalTab(null);
+        setNearIds(null);
+        setNearOrigin(null);
+        setNearLabel('');
+        setNearMsg('');
+      }
+      if (id === festivalId && festivalDeepLink.sheet === 'open') {
+        return;
+      }
+      const hadOpen = Boolean(festivalId);
+      const next = searchParamsWithFestival(searchParams, id);
+      festivalDetailPushedRef.current = true;
+      setSearchParams(next, { replace: hadOpen });
+    };
+    window.addEventListener(FESTIVAL_PAGE_EVENT, onFestivalPageLink);
+    return () => window.removeEventListener(FESTIVAL_PAGE_EVENT, onFestivalPageLink);
+  }, [festivalId, festivalDeepLink.sheet, searchParams, setSearchParams]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
@@ -2943,6 +3041,9 @@ export default function KoreaFestivalHub() {
         <FestivalDetailSheet
           item={selected}
           pending={festivalDeepLink.sheet === 'loading'}
+          prefetchedTourDetail={
+            deepLinkPhaseForId === 'ok' ? deepLinkDetailForId : null
+          }
           favorited={Boolean(selected) && favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
           onClose={closeFestivalDetail}

@@ -224,11 +224,29 @@ export function FestivalEndedBadge({ label = ENDED_FESTIVAL_BADGE }) {
 }
 
 /**
+ * TourAPI list rows plus supplemental promo/detail rows for deeplink resolution.
+ * @param {object[]} [baseItems]
+ * @param {object[]} [supplementalItems]
+ */
+export function mergeDeepLinkListItems(baseItems, supplementalItems) {
+  const list = Array.isArray(baseItems) ? [...baseItems] : [];
+  const seen = new Set(list.map((row) => String(row?.contentId || '')));
+  for (const row of supplementalItems || []) {
+    const id = String(row?.contentId || '').trim();
+    if (!id || seen.has(id)) continue;
+    list.push(row);
+    seen.add(id);
+  }
+  return list;
+}
+
+/**
  * Deeplink view while the list is the only resolver.
  * List hit wins. A miss stays on the URL until detail fails.
  * @param {{
  *   festivalId?: string,
  *   items?: object[],
+ *   supplementalItems?: object[],
  *   listLoading?: boolean,
  *   phase?: 'idle' | 'loading' | 'ok' | 'miss',
  *   detail?: object | null,
@@ -237,7 +255,7 @@ export function FestivalEndedBadge({ label = ENDED_FESTIVAL_BADGE }) {
  */
 export function projectFestivalDeepLink(state) {
   const festivalId = String(state?.festivalId || '').trim();
-  const items = Array.isArray(state?.items) ? state.items : [];
+  const items = mergeDeepLinkListItems(state?.items, state?.supplementalItems);
   const listItem = festivalId
     ? items.find((row) => String(row?.contentId || '') === festivalId) || null
     : null;
@@ -256,6 +274,7 @@ export function projectFestivalDeepLink(state) {
 
   if (listItem) {
     const ended = isFestivalEnded(listItem.eventEndDate, state?.now);
+    const detailAsOf = listItem.detailAsOf || null;
     return {
       selected: listItem,
       sheet: 'open',
@@ -264,19 +283,7 @@ export function projectFestivalDeepLink(state) {
       fetch: false,
       ended,
       badge: ended ? ENDED_FESTIVAL_BADGE : '',
-      detailAsOf: null,
-    };
-  }
-
-  if (state?.listLoading) {
-    return {
-      selected: null,
-      sheet: 'closed',
-      clearUrl: false,
-      toast: null,
-      fetch: false,
-      ended: false,
-      badge: '',
+      detailAsOf,
     };
   }
 

@@ -26,6 +26,31 @@ export const FESTIVAL_LODGING_SECTION_ID = 'festival-lodging';
 
 export const FESTIVAL_LODGING_EVENT = 'gateo-festival-lodging';
 
+/** In-app open for MOONi «축제 페이지» / festival detail links on /korea. */
+export const FESTIVAL_PAGE_EVENT = 'gateo-festival-page';
+
+/**
+ * @param {string} href
+ * @returns {string}
+ */
+export function festivalContentIdFromGateoHref(href) {
+  try {
+    const raw = String(href || '').trim();
+    if (!raw) return '';
+    const url = new URL(raw, GATEO_KOREA_FESTIVAL_BASE);
+    if (/^https?:\/\//i.test(raw)) {
+      const host = String(url.hostname || '').toLowerCase();
+      if (host !== 'www.gateo.kr' && host !== 'gateo.kr') return '';
+    }
+    const path = String(url.pathname || '').replace(/\/$/, '');
+    if (!path.endsWith('/korea')) return '';
+    const id = String(url.searchParams.get('festival') || '');
+    return /^\d+$/.test(id) ? id : '';
+  } catch {
+    return '';
+  }
+}
+
 /** @param {string} contentId */
 export function gateoKoreaFestivalLodgingUrl(contentId) {
   const base = gateoKoreaFestivalDetailUrl(contentId);

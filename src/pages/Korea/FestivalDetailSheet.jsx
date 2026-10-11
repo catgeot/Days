@@ -516,6 +516,7 @@ function FestivalDetailPending({ label, onClose }) {
  * @param {{
  *   item?: Record<string, unknown> | null,
  *   pending?: boolean,
+ *   prefetchedTourDetail?: object | null,
  *   favorited?: boolean,
  *   onToggleFavorite?: (item: Record<string, unknown>) => void,
  *   onClose: () => void,
@@ -524,6 +525,7 @@ function FestivalDetailPending({ label, onClose }) {
 export default function FestivalDetailSheet({
   item,
   pending = false,
+  prefetchedTourDetail = null,
   favorited = false,
   onToggleFavorite,
   onClose,
@@ -601,6 +603,7 @@ export default function FestivalDetailSheet({
   const lightboxSwipeStartRef = useRef(null);
   const suppressHeroTapRef = useRef(false);
   const tabListRef = useRef(null);
+  const detailFetchGenRef = useRef(0);
 
   const festivalAreaCode = useMemo(() => {
     // searchFestival2 응답에 areaCode가 비는 경우가 많아 addr1 시도 감지 폴백
@@ -781,12 +784,10 @@ export default function FestivalDetailSheet({
       return undefined;
     }
 
-    let cancelled = false;
+    const gen = ++detailFetchGenRef.current;
     const seed = festivalImage(item);
-    setIntro(null);
-    setCommon(null);
-    setInfoItems([]);
-    setImageUrls(seed ? [toHttps(seed)].filter(Boolean) : []);
+    const contentId = item.contentId;
+    const contentTypeId = item.contentTypeId || '15';
     setActiveImage(0);
     setLightboxOpen(false);
     setActiveTab(TAB_INFO);
@@ -809,15 +810,19 @@ export default function FestivalDetailSheet({
     setCourseDetail(null);
     setCourseDetailLoading(false);
 
-    (async () => {
-      const contentId = item.contentId;
-      const contentTypeId = item.contentTypeId || '15';
-      const [detailData, imageData] = await Promise.all([
-        fetchTourApiFestivalDetail({ contentId, contentTypeId }),
-        fetchTourApiFestivalImages({ contentId, numOfRows: 12 }),
-      ]);
-      if (cancelled) return;
+    const prefetchMatches =
+      prefetchedTourDetail &&
+      prefetchedTourDetail.ok !== false &&
+      String(
+        prefetchedTourDetail.contentId ||
+          prefetchedTourDetail.intro?.contentId ||
+          prefetchedTourDetail.intro?.contentid ||
+          prefetchedTourDetail.common?.contentId ||
+          prefetchedTourDetail.common?.contentid ||
+          '',
+      ) === String(contentId);
 
+    const applyDetailPayload = (detailData, imageData) => {
       const introHit = detailData?.intro || pickFirst(detailData) || null;
       const commonHit = detailData?.common || null;
       const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
@@ -828,7 +833,6 @@ export default function FestivalDetailSheet({
         setCommon(null);
         setInfoItems([]);
         setDetailError(t('korea.festival.detail.detailLoadError'));
-        setDetailLoading(false);
         return;
       }
 
@@ -837,13 +841,37 @@ export default function FestivalDetailSheet({
       setInfoItems(infoRows);
       setImageUrls(urls);
       setActiveImage(0);
-      setDetailLoading(false);
+      setDetailError('');
+    };
+
+    if (prefetchMatches) {
+      applyDetailPayload(prefetchedTourDetail, { ok: true, images: [] });
+    } else {
+      setIntro(null);
+      setCommon(null);
+      setInfoItems([]);
+      setImageUrls(seed ? [toHttps(seed)].filter(Boolean) : []);
+    }
+
+    (async () => {
+      try {
+        const [detailData, imageData] = await Promise.all([
+          prefetchMatches ? prefetchedTourDetail : fetchTourApiFestivalDetail({ contentId, contentTypeId }),
+          fetchTourApiFestivalImages({ contentId, numOfRows: 12 }),
+        ]);
+        if (detailFetchGenRef.current !== gen) return;
+        applyDetailPayload(detailData, imageData);
+      } finally {
+        if (detailFetchGenRef.current === gen) {
+          setDetailLoading(false);
+        }
+      }
     })();
 
     return () => {
-      cancelled = true;
+      detailFetchGenRef.current += 1;
     };
-  }, [item?.contentId, item?.contentTypeId, t]);
+  }, [item?.contentId, item?.contentTypeId, prefetchedTourDetail, t]);
 
   const {
     transformStyle: lightboxTransformStyle,
