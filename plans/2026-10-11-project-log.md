@@ -176,3 +176,11 @@
 - **VERIFY** `npm run test:health` 249 pass · CI run `38184077920` success
 - **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · `/place/grand-egyptian-museum?lang=en`
 - **다음** `카이로 동선 #5, 영문 사실 피드백`
+
+## 카이로 동선 #5, 영문 사실 피드백
+
+- **세션** `카이로 동선 #5, 영문 사실 피드백` · branch `cursor/cairo-facts-en-8e40` · tip `9864e282` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 영문 문장의 단위만 영어. `25달러`·`60달러`는 `USD 25`·`USD 60`, `6개월`은 `6 months`, `1시간`은 `1 hour`, `6세`는 `6 years`. EGP·km는 유지. health는 숫자·통화 코드를 맞추고, 영문 값의 한글은 영어 고유명사 뒤 괄호 안에만 허용. 한글 저장 문장은 그대로다.
+- **VERIFY** `npm run test:health` 249 pass · CI run `38185463753` success
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · `/place/grand-egyptian-museum?lang=en`
+- **다음** `카이로 동선 #6, 영문 단위 확인`

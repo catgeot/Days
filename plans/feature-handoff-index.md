@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#4 push** · tip `5d52ce39` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · **병합 금지** · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
+| **상태** | **#5 push** · tip `9864e282` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · **병합 금지** · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
 | **브랜치** | `cursor/cairo-facts-en-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · GEM `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
-| **금지** | 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 국적 목록 추가 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
+| **금지** | 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 단위를 한글로 되돌리기 · 국적 목록 추가 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | `?lang=en` 카이로·GEM 확인된 사실이 영문 문장이고 숫자·시간·금액·URL이 한글과 같은지, GEM·술탄 하산 링크가 살아 있는지 |
+| **남은 일** | `?lang=en`에서 `USD 25`·`6 months`·`1 hour`·`6 years`와 EGP가 보이고 한글 단위가 없는지 |
 
 **다음 제시어**:
 
 ```
-카이로 동선 #5, 영문 사실 피드백
+카이로 동선 #6, 영문 단위 확인
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/cairo-facts-en-8e40 · draft PR #436 · tip 5d52ce39
-금지: 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 국적 목록 추가 · cairo-qa-8e40 push · feature에 plans 커밋 · PR 병합
-작업: ?lang=en 카이로·GEM 확인된 사실이 영문 문장이고 숫자·시간·금액·URL이 한글과 같은지, GEM·술탄 하산 링크가 살아 있는지. 어긋난 곳만 고친다.
+브랜치 cursor/cairo-facts-en-8e40 · draft PR #436 · tip 9864e282
+금지: 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 단위를 한글로 되돌리기 · 국적 목록 추가 · cairo-qa-8e40 push · feature에 plans 커밋 · PR 병합
+작업: ?lang=en 카이로·GEM에서 USD 25·USD 60·6 months·1 hour·6 years와 EGP가 보이고 한글 단위가 없는지, GEM·술탄 하산 링크가 살아 있는지. 어긋난 곳만 고친다.
 검증: npm run test:health
 ```
 
