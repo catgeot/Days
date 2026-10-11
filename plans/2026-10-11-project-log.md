@@ -43,8 +43,8 @@
 
 ## 축제 MOONi 축제 페이지 링크, 라이브 무한 스피너 (긴급)
 
-- **세션** `축제 MOONi 축제 페이지 #1, 라이브 스피너` · branch `cursor/mooni-festival-page-link-4768` · tip `56b15595` · draft PR [#424](https://github.com/catgeot/Days/pull/424)
-- **원인** MOONi «축제 페이지»가 인앱이 아닌 외부 네비게이션 + 딥링크 fetch generation 취소 시 `loading` 고착; #422 supplemental ID가 `projectFestivalDeepLink` `items`에 없음
-- **조치** `FESTIVAL_PAGE_EVENT` · supplemental 병합 · fetch orphan 복구 · 링크 시 전국 칩 복귀
-- **VERIFY** `npm run test:health` 221 pass · e2e `korea-mooni-festival-page-link.spec.js` (preview HTTPS, TourAPI LIVE)
-- **Preview** Vercel git `cursor/mooni-festival-page-link-4768` → `/korea` (배포 후 MOONi 638576 경로 QA)
+- **세션** `축제 MOONi 축제 페이지 #1, 라이브 스피너` · branch `cursor/mooni-festival-page-link-4768` · tip `95f2d1d1` · draft PR [#424](https://github.com/catgeot/Days/pull/424)
+- **원인** MOONi «축제 페이지»가 인앱이 아닌 외부 네비게이션 + 딥링크 fetch generation 취소 시 `loading` 고착; #422 supplemental ID가 `projectFestivalDeepLink` `items`에 없음; **#2** listLoading·`from=theme&area`가 명승 인근 축제 딥링크를 막거나 URL 삭제
+- **조치** `FESTIVAL_PAGE_EVENT` · supplemental 병합 · fetch orphan 복구 · 링크 시 전국 칩 복귀 · listLoading 무시·명승 `?festival=` only · 시트 prefetch·fetch gen
+- **VERIFY** `npm run test:health` 221 pass · e2e 4경로 @390 본문 10s 이내(국향 MOONi·2930716·서울·가리산→산천어)
+- **Preview** `https://days-git-cursor-mooni-festival-page-link-4768-catgeots-projects.vercel.app/korea`
