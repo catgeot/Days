@@ -42,6 +42,7 @@ import {
 } from '../../../utils/mooniReplySanitizer';
 import {
   FESTIVAL_LODGING_EVENT,
+  FESTIVAL_PAGE_EVENT,
   mergeMooniKoreaFestivalReply,
   polishFestivalModelReply,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
@@ -354,8 +355,13 @@ const ChatModal = ({
   useEffect(() => {
     if (!festivalMooniContext) return undefined;
     const closeForLodging = () => onClose();
+    const closeForFestivalPage = () => onClose();
     window.addEventListener(FESTIVAL_LODGING_EVENT, closeForLodging);
-    return () => window.removeEventListener(FESTIVAL_LODGING_EVENT, closeForLodging);
+    window.addEventListener(FESTIVAL_PAGE_EVENT, closeForFestivalPage);
+    return () => {
+      window.removeEventListener(FESTIVAL_LODGING_EVENT, closeForLodging);
+      window.removeEventListener(FESTIVAL_PAGE_EVENT, closeForFestivalPage);
+    };
   }, [festivalMooniContext, onClose]);
 
   const festivalMooniHeaderSubtitle = useMemo(() => {

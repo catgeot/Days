@@ -11,8 +11,15 @@ import {
 import { mooniMarkdownLinkLabelText } from './mooniMarkdownLinkLabel.js';
 import {
   FESTIVAL_LODGING_EVENT,
+  FESTIVAL_PAGE_EVENT,
+  festivalContentIdFromGateoHref,
   festivalLodgingContentIdFromHref,
 } from '../../shared/korea/mooniKoreaFestivalAssist.js';
+
+function isKoreaFestivalPath(pathname) {
+  const path = String(pathname || '').replace(/\/$/, '');
+  return path === '/korea' || path.endsWith('/korea');
+}
 
 function mooniChatUrlTransform(url) {
   const value = String(url).trim();
@@ -58,27 +65,39 @@ function createMooniMarkdownComponents(variant) {
         return <span className="break-keep">{children}</span>;
       }
       const lodgingId = festivalLodgingContentIdFromHref(href);
+      const festivalPageId = festivalContentIdFromGateoHref(href);
       const here = typeof window !== 'undefined' ? window.location : null;
-      const sameFestival =
+      const onKorea = here && isKoreaFestivalPath(here.pathname);
+      const sameFestivalLodging =
         lodgingId &&
-        here &&
-        String(here.pathname || '').replace(/\/$/, '').endsWith('/korea') &&
+        onKorea &&
         new URLSearchParams(here.search || '').get('festival') === lodgingId;
+      const inAppFestivalPage = festivalPageId && onKorea && !lodgingId;
+      const inApp = sameFestivalLodging || inAppFestivalPage;
       return (
         <a
           href={href}
-          target={sameFestival ? undefined : '_blank'}
-          rel={sameFestival ? undefined : 'noopener noreferrer'}
+          target={inApp ? undefined : '_blank'}
+          rel={inApp ? undefined : 'noopener noreferrer'}
           className={linkClass}
           onClick={
-            sameFestival
+            sameFestivalLodging
               ? (event) => {
                   event.preventDefault();
                   window.dispatchEvent(
                     new CustomEvent(FESTIVAL_LODGING_EVENT, { detail: { contentId: lodgingId } }),
                   );
                 }
-              : undefined
+              : inAppFestivalPage
+                ? (event) => {
+                    event.preventDefault();
+                    window.dispatchEvent(
+                      new CustomEvent(FESTIVAL_PAGE_EVENT, {
+                        detail: { contentId: festivalPageId, nationwide: true },
+                      }),
+                    );
+                  }
+                : undefined
           }
         >
           {children}
