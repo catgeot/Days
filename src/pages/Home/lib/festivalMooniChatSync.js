@@ -79,20 +79,14 @@ export function shouldHydrateDraftMessages({ localMessageCount, isLoading }) {
   return (Number(localMessageCount) || 0) === 0;
 }
 
-/**
- * Session cache when trip row missing, or trip locale ≠ UI (activeChatId kept).
- * Never when local thread is non-empty (caller must check).
- */
+/** Session cache when trip row missing from chatHistory (same locale bucket only). */
 export function shouldHydrateDraftCacheFallback({
   activeChatId,
   hasTripRow,
-  tripLocaleMatches,
   localMessageCount,
   isLoading,
 }) {
   if (!activeChatId || isLoading) return false;
   if ((Number(localMessageCount) || 0) > 0) return false;
-  if (!hasTripRow) return true;
-  if (hasTripRow && tripLocaleMatches === false) return true;
-  return false;
+  return !hasTripRow;
 }

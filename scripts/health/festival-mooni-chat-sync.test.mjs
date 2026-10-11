@@ -71,7 +71,6 @@ test('draft cache fallback only without trip row and empty local', () => {
     shouldHydrateDraftCacheFallback({
       activeChatId: 't1',
       hasTripRow: false,
-      tripLocaleMatches: undefined,
       localMessageCount: 0,
       isLoading: false,
     }),
@@ -81,7 +80,6 @@ test('draft cache fallback only without trip row and empty local', () => {
     shouldHydrateDraftCacheFallback({
       activeChatId: 't1',
       hasTripRow: false,
-      tripLocaleMatches: undefined,
       localMessageCount: 2,
       isLoading: false,
     }),
@@ -91,20 +89,9 @@ test('draft cache fallback only without trip row and empty local', () => {
     shouldHydrateDraftCacheFallback({
       activeChatId: 't1',
       hasTripRow: true,
-      tripLocaleMatches: true,
       localMessageCount: 0,
       isLoading: false,
     }),
     false,
-  );
-  assert.equal(
-    shouldHydrateDraftCacheFallback({
-      activeChatId: 't1',
-      hasTripRow: true,
-      tripLocaleMatches: false,
-      localMessageCount: 0,
-      isLoading: false,
-    }),
-    true,
   );
 });
