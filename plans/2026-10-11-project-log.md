@@ -87,3 +87,11 @@
 - **조치** branch `cursor/safari-mooni-chip-reset-4768` tip `b075b0db` · draft PR [#431](https://github.com/catgeot/Days/pull/431) · 병합 금지
 - **VERIFY** `node --test scripts/health/festival-mooni-chat-sync.test.mjs` · WebKit headless LIVE probe `2989642` 30s 무회귀
 - **QA** 배포 후 iPhone Safari: 칩 → 10초 후 user+MOONi 유지
+
+## 축제 상세 #1, 주변 볼거리 QA 수정
+
+- **세션** `축제 상세 #1, 주변 볼거리 합치기` QA 후속 · branch `cursor/festival-nearby-9654` · tip `1780fc9d` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 기준 `5c17a3b8` · 병합 금지
+- **조치** 팔경 소제목을 없애고 거리순 목록에 «함평 N경» 뱃지만 둔다. 이름 줄기가 겹치고 300m 안이면 한 행으로 합치며 뱃지와 거리를 유지한다. 축제·행사 행(진해군항제, type 15)은 뺀다. MOONi 근처 볼 곳만 팔경·관광 명소가 체험·상업보다 앞이다.
+- **함안 구경** SSOT 9곳. 마산 축제의 가까운 허브는 창원이라 좌표 없는 6곳은 넣지 않고, 악양·입곡은 22.3km로 20km 밖이다. 연꽃테마파크 17.4km만 남는다.
+- **VERIFY** nearby health 13 pass · `npx vite build` PASS
+- **Preview** `https://days-git-cursor-festival-nearby-9654-catgeots-projects.vercel.app/korea?festival=638576`
