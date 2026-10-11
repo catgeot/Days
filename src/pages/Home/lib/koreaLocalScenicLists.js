@@ -742,48 +742,69 @@ export function enrichSearchCandidateScenicMedia(item, locale = 'ko') {
   return next;
 }
 
-function memberLngLat(member, attraction, hub) {
-  const lat = Number(member?.lat ?? attraction?.lat ?? hub?.lat);
-  const lng = Number(member?.lng ?? attraction?.lng ?? hub?.lng);
+function ownMemberLngLat(member, attraction, curated) {
+  const lat = Number(member?.lat ?? attraction?.lat ?? curated?.lat);
+  const lng = Number(member?.lng ?? attraction?.lng ?? curated?.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (lat < 32 || lat > 44 || lng < 123 || lng > 133) return null;
   return { lat, lng };
 }
 
-function pickNearbyHitForMember(member, attraction, hub, nearbyHit, originLat, originLng) {
+function pickNearbyHitForMember(member, attraction, curated, nearbyHit, originLat, originLng) {
   if (!nearbyHit) return null;
-  const memberPt = memberLngLat(member, attraction, hub);
+  const memberPt = ownMemberLngLat(member, attraction, curated);
   const hitLat = Number(nearbyHit.lat);
   const hitLng = Number(nearbyHit.lng);
-  if (memberPt && Number.isFinite(hitLat) && Number.isFinite(hitLng)) {
+  const hitHasPoint = Number.isFinite(hitLat) && Number.isFinite(hitLng);
+  if (memberPt && hitHasPoint) {
     const gap = haversineKm(memberPt.lat, memberPt.lng, hitLat, hitLng);
     return gap <= LOCAL_SCENIC_NEARBY_HIT_COORD_KM ? nearbyHit : null;
   }
+  if (!memberPt && hitHasPoint) {
+    if (!Number.isFinite(originLat) || !Number.isFinite(originLng)) return nearbyHit;
+    const hitDist = haversineKm(originLat, originLng, hitLat, hitLng);
+    return hitDist <= LOCAL_SCENIC_NEARBY_HIT_MAX_KM ? nearbyHit : null;
+  }
   const hitDist = Number(nearbyHit.distKm);
   if (!Number.isFinite(hitDist) || hitDist > LOCAL_SCENIC_NEARBY_HIT_MAX_KM) return null;
-  if (memberPt && Number.isFinite(originLat) && Number.isFinite(originLng)) {
-    const memberDist = haversineKm(originLat, originLng, memberPt.lat, memberPt.lng);
-    if (Math.abs(memberDist - hitDist) > LOCAL_SCENIC_NEARBY_HIT_COORD_KM + 1) return null;
-    return nearbyHit;
-  }
   if (Number.isFinite(originLat) && Number.isFinite(originLng)) return null;
   return nearbyHit;
 }
 
-function memberDistKmFromOrigin(member, attraction, hub, originLat, originLng) {
+function memberDistKmFromOrigin(member, attraction, curated, originLat, originLng) {
   if (!Number.isFinite(originLat) || !Number.isFinite(originLng)) return null;
-  const pt = memberLngLat(member, attraction, hub);
+  const pt = ownMemberLngLat(member, attraction, curated);
   if (!pt) return null;
   return haversineKm(originLat, originLng, pt.lat, pt.lng);
 }
 
-function memberWithinFestivalRadius(member, attraction, hub, originLat, originLng, nearbyHit) {
+function memberWithinFestivalRadius(
+  member,
+  attraction,
+  hub,
+  curated,
+  originLat,
+  originLng,
+  nearbyHit,
+  includeUnlocated,
+) {
   if (!Number.isFinite(originLat) || !Number.isFinite(originLng)) return true;
-  const dist = memberDistKmFromOrigin(member, attraction, hub, originLat, originLng);
+  const dist = memberDistKmFromOrigin(member, attraction, curated, originLat, originLng);
   if (dist != null) return dist <= LOCAL_SCENIC_MEMBER_NEAR_KM;
+  // 요청한 시군의 팔경만 — 좌표 없는 멤버를 옆 도시 허브 거리로 넣지 않는다.
+  if (includeUnlocated) {
+    const hubLat = Number(hub?.lat);
+    const hubLng = Number(hub?.lng);
+    if (Number.isFinite(hubLat) && Number.isFinite(hubLng)) {
+      if (haversineKm(originLat, originLng, hubLat, hubLng) <= LOCAL_SCENIC_MEMBER_NEAR_KM) {
+        return true;
+      }
+    }
+  }
   const hit = pickNearbyHitForMember(
     member,
     attraction,
-    hub,
+    curated,
     nearbyHit,
     originLat,
     originLng,
@@ -812,15 +833,15 @@ export function localScenicMemberToNearbyItem(
   const attraction = resolveMemberAttraction(h, member);
   const originLat = Number(ctx.originLat);
   const originLng = Number(ctx.originLng);
+  const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
   const hit = pickNearbyHitForMember(
     member,
     attraction,
-    h,
+    curated,
     nearbyHit,
     originLat,
     originLng,
   );
-  const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
   const fromCurated = scenicThumbFromCurated(curated);
   const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
   const overlay = lookupLocalScenicMemberOverlay(spotId);
@@ -842,10 +863,18 @@ export function localScenicMemberToNearbyItem(
     fromTourThumb?.imageUrl ||
     fromCurated.imageUrl ||
     null;
-  const memberPt = memberLngLat(member, attraction, h);
+  const memberPt = ownMemberLngLat(member, attraction, curated);
+  const hitLat = Number(hit?.lat);
+  const hitLng = Number(hit?.lng);
+  const point =
+    memberPt ||
+    (Number.isFinite(hitLat) && Number.isFinite(hitLng)
+      ? { lat: hitLat, lng: hitLng }
+      : null);
   const distKm =
-    memberDistKmFromOrigin(member, attraction, h, originLat, originLng) ??
-    (hit ? Number(hit.distKm) : null);
+    point && Number.isFinite(originLat) && Number.isFinite(originLng)
+      ? haversineKm(originLat, originLng, point.lat, point.lng)
+      : null;
   return {
     ...(hit || {}),
     id:
@@ -854,8 +883,8 @@ export function localScenicMemberToNearbyItem(
       `local-scenic-member-${list.listId}-${normalizeKey(name)}`,
     name: hit?.name || name,
     contentId,
-    lat: memberPt?.lat ?? hit?.lat ?? null,
-    lng: memberPt?.lng ?? hit?.lng ?? null,
+    lat: point?.lat ?? null,
+    lng: point?.lng ?? null,
     hubId: list.hubId,
     locality: hit?.locality || h?.name,
     firstImage: thumb,
@@ -901,12 +930,18 @@ export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
   const incoming = Array.isArray(spots) ? spots : [];
   const originLat = Number(opts.lat);
   const originLng = Number(opts.lng);
+  const requestedHubId = String(opts.hubId || '').trim();
   const hubId = resolveLocalScenicHubId({
     hubId: opts.hubId,
     lat: opts.lat,
     lng: opts.lng,
     areaCode: opts.areaCode,
   });
+  const requestedResolved =
+    resolveCityAttractionHub(requestedHubId)?.hubId || requestedHubId;
+  const includeUnlocated = Boolean(
+    hubId && requestedResolved === hubId && listsForHub(hubId).length,
+  );
   const lists = listsForHub(hubId);
   if (!lists.length) return { groups: [], rest: incoming };
 
@@ -926,14 +961,17 @@ export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
       const k = normalizeKey(member.attractionName);
       if (!k || used.has(k)) continue;
       const attraction = resolveMemberAttraction(hub, member);
+      const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
       if (
         !memberWithinFestivalRadius(
           member,
           attraction,
           hub,
+          curated,
           originLat,
           originLng,
           byName.get(k) || null,
+          includeUnlocated,
         )
       ) {
         continue;
@@ -951,11 +989,12 @@ export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
       );
     }
     if (items.length) {
-      items.sort(
-        (a, b) =>
-          (Number.isFinite(a.distKm) ? a.distKm : Infinity) -
-          (Number.isFinite(b.distKm) ? b.distKm : Infinity),
-      );
+      items.sort((a, b) => {
+        const da = Number.isFinite(a.distKm) ? a.distKm : Infinity;
+        const db = Number.isFinite(b.distKm) ? b.distKm : Infinity;
+        if (da === db) return 0;
+        return da - db;
+      });
       groups.push({
         title: localScenicListDisplayTitle(list, hub, opts.locale),
         listId: list.listId,

@@ -7,6 +7,13 @@
 const AMENITY_TITLE_RE =
   /화장실|공중변소|공중화장실|장애인\s*화장실|소변기|공영주차장|노상주차장|임시주차장|버스정류장|관리사무소|매표소$|안내소$/u;
 
+/** 복지·목욕·생활문화 — 관광 볼거리가 아닌 시설 */
+const FACILITY_TITLE_RE =
+  /사우나|찜질|해수찜|목욕탕|목욕|복지관|사회복지|복지센터|노인회|생활문화|주민센터|경로당|행정복지|노인정|마을회관|주민자치/u;
+
+/** TourAPI cat3 — 이색찜질방·터널 */
+const NON_TOURIST_CAT3 = new Set(['A02020400', 'A02050500']);
+
 /** 일반 교회·성당 (사찰·성지는 별도) */
 const CHRISTIAN_TITLE_RE =
   /교회|성당|성결교회|감리교회|침례교회/u;
@@ -26,6 +33,7 @@ export function isNearbyTourAttractionTitle(title) {
   const t = String(title || '').trim();
   if (!t) return false;
   if (AMENITY_TITLE_RE.test(t)) return false;
+  if (FACILITY_TITLE_RE.test(t)) return false;
   if (CHRISTIAN_TITLE_RE.test(t) && !CHRISTIAN_LANDMARK_RE.test(t)) {
     return false;
   }
@@ -33,9 +41,18 @@ export function isNearbyTourAttractionTitle(title) {
 }
 
 /**
+ * @param {string | null | undefined} cat3
+ */
+export function isNonTouristFacilityCat3(cat3) {
+  const code = String(cat3 || '').trim().toUpperCase();
+  return NON_TOURIST_CAT3.has(code);
+}
+
+/**
  * @param {{ name?: string, title?: string } | null | undefined} spotOrRow
  */
 export function isNearbyTourAttractionCandidate(spotOrRow) {
   if (!spotOrRow) return false;
+  if (isNonTouristFacilityCat3(spotOrRow.cat3)) return false;
   return isNearbyTourAttractionTitle(spotOrRow.name || spotOrRow.title);
 }

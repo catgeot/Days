@@ -10,6 +10,8 @@ const VARIANT_CLASS = {
     'border-gray-600/55 bg-white/15 text-gray-800 hover:bg-white/35 hover:border-gray-700/70',
   onDark:
     'border-white/55 bg-white/15 text-white hover:bg-white/30 hover:border-white/75',
+  solid:
+    'border-stone-200 bg-white text-stone-800 shadow-[0_2px_10px_rgba(28,25,23,0.22)] hover:bg-stone-50 hover:border-stone-300',
 };
 
 /**
