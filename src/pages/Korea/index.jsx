@@ -936,6 +936,7 @@ export default function KoreaFestivalHub() {
     );
     if (listedInWindow) return selected;
     if (deepLinkPhaseForId === 'ok' && deepLinkDetail) return selected;
+    if (socialPromoById.get(id)) return selected;
     return null;
   }, [
     selected,
@@ -944,6 +945,7 @@ export default function KoreaFestivalHub() {
     items,
     deepLinkPhaseForId,
     deepLinkDetail,
+    socialPromoById,
   ]);
 
   const clearFestivalFromUrl = useCallback(() => {
@@ -1008,16 +1010,26 @@ export default function KoreaFestivalHub() {
       return undefined;
     }
 
+    const promoOutOfWindow =
+      promoDeeplinkIdSet.has(festivalId) &&
+      !items.some((row) => String(row?.contentId || '') === festivalId);
+    const needsPromoDetailFetch =
+      promoOutOfWindow &&
+      deepLinkPhaseForId !== 'ok' &&
+      !deepLinkDetail &&
+      deepLinkInflightRef.current !== festivalId;
+
     if (
       festivalDeepLink.selected &&
       festivalDeepLink.sheet === 'open' &&
-      !festivalDeepLink.fetch
+      !festivalDeepLink.fetch &&
+      !needsPromoDetailFetch
     ) {
       deepLinkInflightRef.current = '';
       return undefined;
     }
 
-    if (!festivalDeepLink.fetch) {
+    if (!festivalDeepLink.fetch && !needsPromoDetailFetch) {
       return undefined;
     }
 
@@ -1060,6 +1072,10 @@ export default function KoreaFestivalHub() {
   }, [
     festivalId,
     loading,
+    items,
+    promoDeeplinkIdSet,
+    deepLinkPhaseForId,
+    deepLinkDetail,
     festivalDeepLink.fetch,
     festivalDeepLink.sheet,
     festivalDeepLink.selected,
