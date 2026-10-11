@@ -1383,6 +1383,16 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   assert.match(KO.festivalAnswerRules, /약 20km/);
   assert.match(KO.festivalAnswerRules, /배스킨라빈스/);
   assert.match(KO.festivalPriorityLine, /행사 기간을 반복하지 않는다/);
+  assert.match(KO.festivalAnswerRules, /3~4곳/);
+  assert.match(KO.festivalAnswerRules, /공식 홈페이지나 문의처/);
+  assert.match(KO.festivalAnswerRules, /안내해 드릴까요/);
+  assert.match(KO.festivalAnswerRules, /이름이 3곳이면 첫 답에 3곳/);
+  assert.match(EN.festivalAnswerRules, /3 or 4 places/);
+  assert.match(EN.festivalAnswerRules, /only when it is a markdown link/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /도보 N분/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /축제 페이지에서 확인/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이름이 3곳이면 3곳을 말한다/);
+  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /다양한 맛집/);
 });
 
 test('food wait, tagged places, parking, closers, and three nearby names', async () => {
