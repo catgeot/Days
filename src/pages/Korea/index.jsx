@@ -68,6 +68,7 @@ import {
 import SocialPromoFestivalRow from './SocialPromoFestivalRow';
 import {
   festivalItemFromDetailWithAsOf,
+  mergeSocialPromoIntoFestivalItems,
   pickVisibleSocialPromoCards,
   socialPromoFestivals,
   socialPromoIdsMissingFromWindow,
@@ -1093,14 +1094,25 @@ export default function KoreaFestivalHub() {
     [socialPromoItemById, now],
   );
 
+  const itemsWithSocialPromo = useMemo(
+    () =>
+      mergeSocialPromoIntoFestivalItems(
+        items,
+        socialPromoFestivals,
+        socialPromoItemById,
+        now,
+      ),
+    [items, socialPromoItemById, now],
+  );
+
   const timeTabs = useMemo(
     () => localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now)),
     [now, t],
   );
 
   const timedItems = useMemo(
-    () => filterByTimeTab(timeTab, items, now),
-    [timeTab, items, now],
+    () => filterByTimeTab(timeTab, itemsWithSocialPromo, now),
+    [timeTab, itemsWithSocialPromo, now],
   );
 
   const sidoChips = useMemo(() => buildSidoTags(timedItems), [timedItems]);
@@ -1165,8 +1177,8 @@ export default function KoreaFestivalHub() {
   /** 검색 중에는 시간·지역·테마 칩을 넘어 롤링 12개월 전체에서 매칭 */
   const searchPoolItems = useMemo(() => {
     if (!searchActive) return tastedItems;
-    return items;
-  }, [searchActive, tastedItems, items]);
+    return itemsWithSocialPromo;
+  }, [searchActive, tastedItems, itemsWithSocialPromo]);
 
   const filteredItems = useMemo(
     () => filterBySearchQuery(searchPoolItems, searchFilter),
@@ -1210,18 +1222,18 @@ export default function KoreaFestivalHub() {
 
   const byContentId = useMemo(() => {
     const map = new Map();
-    for (const item of items) {
+    for (const item of itemsWithSocialPromo) {
       if (item?.contentId != null) map.set(String(item.contentId), item);
     }
     return map;
-  }, [items]);
+  }, [itemsWithSocialPromo]);
 
   /**
    * 내 주변: 좌표·반경 유지 · 시간·테마 칩에 맞춰 재계산 (지역 칩만 내 주변 해제)
    */
   const nearRanked = useMemo(() => {
     if (!nearOrigin) return null;
-    const timed = filterByTimeTab(timeTab, items, now);
+    const timed = filterByTimeTab(timeTab, itemsWithSocialPromo, now);
     const tasted = filterByTaste(timed, tasteId);
     return rankFestivalsByDistance(
       festivalsWithinKm(
@@ -1233,7 +1245,7 @@ export default function KoreaFestivalHub() {
       nearOrigin.lat,
       nearOrigin.lng,
     );
-  }, [nearOrigin, items, now, timeTab, tasteId]);
+  }, [nearOrigin, itemsWithSocialPromo, now, timeTab, tasteId]);
 
   const nearBaseItems = useMemo(
     () => (nearRanked ? nearRanked.map((row) => row.item) : null),
@@ -1271,13 +1283,16 @@ export default function KoreaFestivalHub() {
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
     const counts = {};
-    const regionBase = filterByRegion(items, { areaCode, cityName });
+    const regionBase = filterByRegion(itemsWithSocialPromo, {
+      areaCode,
+      cityName,
+    });
     const pool = filterByTaste(regionBase, tasteId);
     for (const t of timeTabs) {
       counts[t.id] = filterByTimeTab(t.id, pool, now).length;
     }
     return counts;
-  }, [items, areaCode, cityName, tasteId, timeTabs, now]);
+  }, [itemsWithSocialPromo, areaCode, cityName, tasteId, timeTabs, now]);
 
   const panelGroups = useMemo(() => {
     if (nearBaseItems) {
@@ -1386,10 +1401,12 @@ export default function KoreaFestivalHub() {
    * 검색 중에는 칩 필터 없이 롤링 12개월 전체에서 매칭.
    */
   const mapScopeItems = useMemo(() => {
-    if (searchActive) return filterBySearchQuery(items, searchFilter);
+    if (searchActive) {
+      return filterBySearchQuery(itemsWithSocialPromo, searchFilter);
+    }
     const tasted = filterByTaste(timedItems, tasteId);
     return filterBySearchQuery(tasted, searchFilter);
-  }, [searchActive, items, timedItems, tasteId, searchFilter]);
+  }, [searchActive, itemsWithSocialPromo, timedItems, tasteId, searchFilter]);
 
   const mapItems = useMemo(() => {
     if (personalTab != null) return personalItems;

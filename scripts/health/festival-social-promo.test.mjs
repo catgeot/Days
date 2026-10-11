@@ -1,0 +1,139 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { filterBySearchQuery } from '../../src/pages/Korea/festivalSearch.js';
+import {
+  excludePinnedFromPanelItems,
+  festivalItemForSessionPin,
+} from '../../src/pages/Korea/festivalSessionPin.js';
+import {
+  isSocialPromoEntryInWindow,
+  isYmdWithinInclusive,
+  mergeSocialPromoIntoFestivalItems,
+  pickVisibleSocialPromoCards,
+  shouldShowSocialPromoItem,
+} from '../../src/pages/Korea/socialPromoFestivalsLogic.js';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
+const socialPromoFestivals = JSON.parse(
+  readFileSync(
+    join(root, 'src/pages/Korea/data/socialPromoFestivals.json'),
+    'utf8',
+  ),
+);
+const NOW = new Date('2026-10-10T03:00:00Z');
+
+const GUKHYANG = {
+  contentId: '638576',
+  title: '대한민국 국향대전',
+  eventStartDate: '20261023',
+  eventEndDate: '20261108',
+  addr1: '전라남도 함평군 함평읍 곤재로 27',
+  detailAsOf: { fromDetailDeepLink: true, asOfDate: '2026.10.01' },
+};
+
+test('session pin helpers dedupe list row and keep contentId', () => {
+  const pin = festivalItemForSessionPin({
+    ...GUKHYANG,
+    detailAsOf: GUKHYANG.detailAsOf,
+  });
+  assert.equal(pin.contentId, '638576');
+  assert.equal(pin.detailAsOf, undefined);
+  const panel = [
+    GUKHYANG,
+    { contentId: '637693', title: '마산가고파국화축제' },
+  ];
+  assert.equal(excludePinnedFromPanelItems(panel, pin).length, 1);
+  assert.equal(
+    excludePinnedFromPanelItems(panel, pin)[0].contentId,
+    '637693',
+  );
+});
+
+test('promo window and ended festival auto-hide', () => {
+  const entry = socialPromoFestivals[0];
+  assert.equal(isSocialPromoEntryInWindow(entry, NOW), true);
+  assert.equal(isYmdWithinInclusive('20261010', '20261001', '20261115'), true);
+  assert.equal(isYmdWithinInclusive('20260930', '20261001', '20261115'), false);
+  assert.equal(
+    shouldShowSocialPromoItem(
+      { ...GUKHYANG, eventEndDate: '20261009' },
+      entry,
+      NOW,
+    ),
+    false,
+  );
+  assert.equal(shouldShowSocialPromoItem(GUKHYANG, entry, NOW), true);
+  const afterShowUntil = new Date('2026-11-20T03:00:00Z');
+  assert.equal(isSocialPromoEntryInWindow(entry, afterShowUntil), false);
+});
+
+test('promo row caps at two cards', () => {
+  const map = new Map([
+    ['638576', GUKHYANG],
+    [
+      '637693',
+      {
+        contentId: '637693',
+        title: '마산가고파국화축제',
+        eventStartDate: '20261031',
+        eventEndDate: '20261108',
+      },
+    ],
+    [
+      '999',
+      {
+        contentId: '999',
+        title: '세 번째',
+        eventStartDate: '20261201',
+        eventEndDate: '20261210',
+      },
+    ],
+  ]);
+  const cards = pickVisibleSocialPromoCards(socialPromoFestivals, map, NOW, 2);
+  assert.equal(cards.length, 2);
+  assert.equal(cards[0].item.contentId, '638576');
+  assert.equal(cards[1].item.contentId, '637693');
+});
+
+test('merge adds configured IDs once and search finds 국향', () => {
+  const base = [
+    { contentId: '637693', title: '마산가고파국화축제', eventStartDate: '20261031', eventEndDate: '20261108' },
+  ];
+  const supplemental = new Map([['638576', GUKHYANG]]);
+  const merged = mergeSocialPromoIntoFestivalItems(
+    base,
+    socialPromoFestivals,
+    supplemental,
+    NOW,
+  );
+  assert.equal(merged.length, 2);
+  const ids = merged.map((row) => row.contentId);
+  assert.deepEqual(ids.sort(), ['637693', '638576']);
+  assert.equal(merged.find((r) => r.contentId === '638576').detailAsOf.asOfDate, '2026.10.01');
+
+  const mergedAgain = mergeSocialPromoIntoFestivalItems(
+    merged,
+    socialPromoFestivals,
+    supplemental,
+    NOW,
+  );
+  assert.equal(mergedAgain.length, 2);
+
+  const hits = filterBySearchQuery(merged, '국향');
+  assert.equal(hits.length, 1);
+  assert.equal(hits[0].contentId, '638576');
+});
+
+test('hub wires session pin, promo row, and merge', () => {
+  const hub = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
+  assert.match(hub, /sessionPinnedDisplay/);
+  assert.match(hub, /data-session-pinned-festival/);
+  assert.match(hub, /SocialPromoFestivalRow/);
+  assert.match(hub, /itemsWithSocialPromo/);
+  assert.match(hub, /mergeSocialPromoIntoFestivalItems/);
+  assert.match(hub, /festivalViewedPushedRef/);
+  assert.match(hub, /festivalItemForSessionPin/);
+});
