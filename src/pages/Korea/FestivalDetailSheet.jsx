@@ -57,7 +57,10 @@ import {
   missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
-import { mergeFestivalNearbySights } from './lib/festivalNearbySights.js';
+import {
+  mergeFestivalNearbySights,
+  rankMooniNearbySights,
+} from './lib/festivalNearbySights.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
   peekKoreaTourAttractionFirstImagesByIds,
@@ -1157,13 +1160,12 @@ export default function FestivalDetailSheet({
 
   const mooniNearbyPlaces = useMemo(() => {
     const names = [];
-    const push = (spot) => {
+    for (const spot of rankMooniNearbySights(nearbySights.items, 6)) {
       const name = String(spot?.name || '').trim();
-      if (!name || names.includes(name)) return;
+      if (!name || names.includes(name)) continue;
       names.push(name);
-    };
-    for (const spot of nearbySights.items) push(spot);
-    return names.slice(0, 6);
+    }
+    return names;
   }, [nearbySights]);
 
   const mooniNearbyRestaurants = useMemo(() => {
@@ -1819,18 +1821,7 @@ export default function FestivalDetailSheet({
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
                     >
-                      {nearbySights.blocks.map((block) => {
-                        if (block.kind === 'heading') {
-                          return (
-                            <li key={`heading-${block.listId}`} className="list-none pt-0.5">
-                              <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
-                                {block.title}
-                              </p>
-                            </li>
-                          );
-                        }
-                        const spot = block.spot;
-                        return (
+                      {nearbySights.items.map((spot) => (
                           <NearbyAttractionRow
                             key={spot.contentId || spot.id || spot.name}
                             spot={spot}
@@ -1845,8 +1836,7 @@ export default function FestivalDetailSheet({
                               }
                             }}
                           />
-                        );
-                      })}
+                      ))}
                     </ul>
                   )}
                   {scenicRegion ? (

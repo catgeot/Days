@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  isFestivalOrEventSight,
   isFestivalVenueSight,
   mergeFestivalNearbySights,
   normalizeNearbySightName,
+  rankMooniNearbySights,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
 import { isNearbyTourAttractionTitle } from '../../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
 
@@ -84,7 +86,7 @@ test('sort by distance and hide missing or fallback coordinates', () => {
   assert.equal(merged.items.find((spot) => spot.name === '중심B').distKm, null);
 });
 
-test('팔경 group stays as a subheading', () => {
+test('팔경 stays a flat distance list with a per-item badge', () => {
   const merged = mergeFestivalNearbySights({
     scenicSpots: [],
     grouped: {
@@ -104,9 +106,153 @@ test('팔경 group stays as a subheading', () => {
   });
   assert.equal(merged.groups.length, 1);
   assert.equal(merged.groups[0].title, '함평 팔경');
-  assert.equal(merged.groups[0].items[0].rankBlurb, '함평 8경');
-  assert.equal(merged.groups[0].items[1].distKm, null);
-  assert.ok(merged.blocks.some((block) => block.kind === 'heading' && block.title === '함평 팔경'));
+  assert.deepEqual(
+    merged.items.map((spot) => spot.name),
+    ['보광사', '청계산', '삼호천'],
+  );
+  assert.equal(merged.items[0].rankBlurb, '');
+  assert.equal(merged.items[1].rankBlurb, '함평 8경');
+  assert.equal(merged.items[2].distKm, null);
+  assert.equal(merged.blocks.some((block) => block.kind === 'heading'), false);
+});
+
+test('merge same place within 300m and borrow coords onto the 팔경 row', () => {
+  const near = mergeFestivalNearbySights({
+    scenicSpots: [
+      { name: '함안 연꽃테마파크', contentId: '2754745', lat: 35.29, lng: 128.42 },
+    ],
+    grouped: {
+      groups: [
+        {
+          title: '함안 구경',
+          listId: 'haman-gugyeong',
+          items: [
+            {
+              name: '연꽃테마파크의 아라홍련',
+              rankBlurb: '함안 5경',
+              localScenicListId: 'haman-gugyeong',
+              lat: 35.2902,
+              lng: 128.4202,
+            },
+          ],
+        },
+      ],
+      rest: [],
+    },
+    origin: { lat: 35.1867, lng: 128.5639 },
+  });
+  assert.equal(near.items.length, 1);
+  assert.equal(near.items[0].rankBlurb, '함안 5경');
+  assert.ok(near.items[0].distKm > 10);
+
+  const borrowed = mergeFestivalNearbySights({
+    scenicSpots: [
+      { name: '함안 연꽃테마파크', contentId: '2754745', lat: 35.29, lng: 128.42 },
+    ],
+    grouped: {
+      groups: [
+        {
+          title: '함안 구경',
+          listId: 'haman-gugyeong',
+          items: [
+            {
+              name: '연꽃테마파크의 아라홍련',
+              rankBlurb: '함안 5경',
+              localScenicListId: 'haman-gugyeong',
+            },
+          ],
+        },
+      ],
+      rest: [],
+    },
+    origin: { lat: 35.1867, lng: 128.5639 },
+  });
+  assert.equal(borrowed.items.length, 1);
+  assert.equal(borrowed.items[0].name, '연꽃테마파크의 아라홍련');
+  assert.equal(borrowed.items[0].rankBlurb, '함안 5경');
+  assert.equal(borrowed.items[0].contentId, '2754745');
+  assert.ok(borrowed.items[0].distKm > 10);
+
+  const neighbors = mergeFestivalNearbySights({
+    scenicSpots: [
+      {
+        name: '돌머리해수욕장',
+        contentId: '126291',
+        lat: 35.0865542912,
+        lng: 126.4419067904,
+        rankBlurb: '함평 4경',
+        localScenicListId: 'hampyeong-palgyeong',
+      },
+    ],
+    grouped: {
+      groups: [],
+      rest: [
+        {
+          name: '돌머리어촌체험마을',
+          contentId: '129113',
+          lat: 35.0864514985,
+          lng: 126.4402986018,
+        },
+      ],
+    },
+    origin,
+  });
+  assert.deepEqual(
+    neighbors.items.map((spot) => spot.name).sort(),
+    ['돌머리어촌체험마을', '돌머리해수욕장'],
+  );
+  assert.equal(neighbors.items.find((spot) => spot.name === '돌머리해수욕장').rankBlurb, '함평 4경');
+  assert.equal(neighbors.items.find((spot) => spot.name === '돌머리어촌체험마을').rankBlurb, '');
+});
+
+test('exclude festival and event sights', () => {
+  assert.equal(isFestivalOrEventSight({ name: '창원 진해군항제' }), true);
+  assert.equal(
+    isFestivalOrEventSight({
+      name: '낙동강유채축제와 남지개비리',
+      localScenicListId: 'changnyeong-gugyeong',
+    }),
+    false,
+  );
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [
+      {
+        name: '창원 진해군항제',
+        blurb: '진해군항제 — 창원 벚꽃 축제',
+        lat: 35.149,
+        lng: 128.66,
+      },
+      { name: '제황산공원', contentId: '1', lat: 35.15, lng: 128.66 },
+    ],
+    grouped: {
+      groups: [],
+      rest: [{ name: '봄꽃축제', contentTypeId: '15', contentId: '2', lat: 35.16, lng: 128.67 }],
+    },
+    origin: { lat: 35.1867, lng: 128.5639 },
+  });
+  assert.deepEqual(
+    merged.items.map((spot) => spot.name),
+    ['제황산공원'],
+  );
+});
+
+test('MOONi prefers 팔경 and tourist sights over commercial venues', () => {
+  const ranked = rankMooniNearbySights([
+    { name: '리고엠', distKm: 2, cat2: 'A0204', cat3: 'A02040600' },
+    { name: '수상한마법학교', distKm: 3.2, cat2: 'A0203' },
+    { name: '경포대', distKm: 4.4, cat2: 'A0201' },
+    { name: '안목해변', distKm: 4.8, cat1: 'A01', cat2: 'A0101' },
+    {
+      name: '돌머리해수욕장',
+      distKm: 8,
+      rankBlurb: '함평 4경',
+      localScenicListId: 'hampyeong-palgyeong',
+    },
+  ]);
+  assert.deepEqual(
+    ranked.map((spot) => spot.name),
+    ['돌머리해수욕장', '경포대', '안목해변', '리고엠', '수상한마법학교'],
+  );
 });
 
 test('drop non-tourist facilities from nearby sights', () => {

@@ -9,6 +9,17 @@ export const VENUE_EXCLUDE_KM = 0.5;
 
 const COORD_IDENTICAL_EPS = 0.0001;
 
+/** 이름이 달라도 이 거리 안이면 같은 장소 */
+export const SAME_PLACE_KM = 0.3;
+
+const FESTIVAL_EVENT_NAME_RE = /축제|군항제|문화제|페스티벌/;
+
+const TOURIST_NAME_RE =
+  /해수욕|해변|해안|향교|서원|오죽헌|사찰|폭포|계곡|전망대|박물관|고분|산성|등대|경포/;
+
+const COMMERCIAL_NAME_RE =
+  /마법|카페|체험관|체험학교|테마파크|아트센터|공연장|키즈/;
+
 /**
  * @param {unknown} name
  */
@@ -71,6 +82,18 @@ export function isFestivalVenueSight(spot, venue, distKm) {
     if (nameKey && nameKey.length >= 2 && hay.includes(nameKey)) return true;
   }
   return false;
+}
+
+/**
+ * 축제·행사 행은 주변 볼거리에서 뺀다. 팔경 멤버는 유지.
+ * @param {object | null | undefined} spot
+ */
+export function isFestivalOrEventSight(spot) {
+  if (!spot) return false;
+  if (String(spot.localScenicListId || '').trim()) return false;
+  const type = String(spot.contentTypeId || spot.contenttypeid || '').trim();
+  if (type === '15') return true;
+  return FESTIVAL_EVENT_NAME_RE.test(String(spot.name || ''));
 }
 
 function pointForSpot(spot, fallbackCenters) {
@@ -152,6 +175,51 @@ function absorb(pool, record) {
   else pool[idx] = mergeSight(pool[idx], record);
 }
 
+function sharedPlaceStem(nameA, nameB) {
+  const a = normalizeNearbySightName(nameA);
+  const b = normalizeNearbySightName(nameB);
+  if (!a || !b || a === b) return '';
+  const maxLen = Math.min(a.length, b.length);
+  for (let len = maxLen; len >= 5; len -= 1) {
+    for (let i = 0; i + len <= a.length; i += 1) {
+      const slice = a.slice(i, i + len);
+      if (b.includes(slice)) return slice;
+    }
+  }
+  return '';
+}
+
+function withinSamePlace(a, b) {
+  if (sharedPlaceStem(a?.name, b?.name).length < 5) return false;
+  if (a?.point && b?.point) {
+    const km = haversineKm(a.point.lat, a.point.lng, b.point.lat, b.point.lng);
+    return Number.isFinite(km) && km <= SAME_PLACE_KM;
+  }
+  const scenic = a?.localScenicListId ? a : b?.localScenicListId ? b : null;
+  if (!scenic) return false;
+  const other = scenic === a ? b : a;
+  return Boolean(scenic.point) !== Boolean(other.point);
+}
+
+function mergeByProximity(pool) {
+  /** @type {object[]} */
+  const next = [];
+  const used = new Set();
+  for (let i = 0; i < pool.length; i += 1) {
+    if (used.has(i)) continue;
+    let row = pool[i];
+    for (let j = i + 1; j < pool.length; j += 1) {
+      if (used.has(j)) continue;
+      if (!withinSamePlace(row, pool[j])) continue;
+      row = mergeSight(row, pool[j]);
+      used.add(j);
+    }
+    next.push(row);
+  }
+  pool.length = 0;
+  for (const row of next) pool.push(row);
+}
+
 function hideIdenticalCoordClusters(records) {
   /** @type {Map<string, object[]>} */
   const buckets = new Map();
@@ -204,8 +272,9 @@ function toOutput(row, distKm) {
 }
 
 /**
- * 인근 명소 · 주변 관광지(팔경) · 가까운 곳을 한 목록으로.
- * 거리 없는 행·시군 중심 폴백·동일 좌표 묶음은 distKm 를 비운다.
+ * 인근 명소 · 팔경 · 가까운 곳을 거리순 한 목록으로.
+ * 팔경은 행 뱃지(rankBlurb)만 달고 소제목은 만들지 않는다.
+ * 거리 없는 행·시군 중심 폴백·서로 다른 장소의 동일 좌표 묶음은 distKm 를 비운다.
  *
  * @param {{
  *   scenicSpots?: object[],
@@ -256,11 +325,16 @@ export function mergeFestivalNearbySights(input = {}) {
     if (row) absorb(pool, row);
   }
 
+  for (let i = pool.length - 1; i >= 0; i -= 1) {
+    if (isFestivalOrEventSight(pool[i])) pool.splice(i, 1);
+  }
+  mergeByProximity(pool);
   hideIdenticalCoordClusters(pool);
 
   const kept = [];
   for (const row of pool) {
     if (isNonTouristNearbyFacility(row)) continue;
+    if (isFestivalOrEventSight(row)) continue;
     const distKm = distOf(row, originPt);
     if (isFestivalVenueSight(row, venue, distKm)) continue;
     kept.push(toOutput(row, distKm));
@@ -290,20 +364,49 @@ export function mergeFestivalNearbySights(input = {}) {
   const groups = [...groupMap.values()];
   for (const group of groups) group.items.sort(byDistance);
 
-  const blocks = [];
-  const seenGroups = new Set();
-  for (const spot of kept) {
-    const listId = String(spot.localScenicListId || '').trim();
-    if (listId && !seenGroups.has(listId)) {
-      seenGroups.add(listId);
-      blocks.push({
-        kind: 'heading',
-        title: String(spot.groupTitle || '').trim() || listId,
-        listId,
-      });
-    }
-    blocks.push({ kind: 'spot', spot });
-  }
+  const blocks = kept.map((spot) => ({ kind: 'spot', spot }));
 
   return { groups, rest, items: kept, blocks };
+}
+
+/**
+ * MOONi 「근처 볼 곳」우선순위. 0 팔경 · 1 관광 명소 · 2 그 외 · 3 체험·상업.
+ * @param {object | null | undefined} spot
+ */
+export function mooniNearbySightTier(spot) {
+  if (String(spot?.localScenicListId || '').trim() || String(spot?.rankBlurb || '').trim()) {
+    return 0;
+  }
+  const cat1 = String(spot?.cat1 || '').toUpperCase();
+  const cat2 = String(spot?.cat2 || '').toUpperCase();
+  const cat3 = String(spot?.cat3 || '').toUpperCase();
+  const name = String(spot?.name || '');
+  const touristCat =
+    cat1 === 'A01' ||
+    cat2.startsWith('A0101') ||
+    cat2.startsWith('A0102') ||
+    cat2.startsWith('A0201') ||
+    cat3 === 'A02020700';
+  if (touristCat || TOURIST_NAME_RE.test(name)) return 1;
+  const commercialCat =
+    cat2.startsWith('A0203') ||
+    cat2.startsWith('A0204') ||
+    cat3 === 'A02020600' ||
+    cat3 === 'A02050600';
+  if (commercialCat || COMMERCIAL_NAME_RE.test(name)) return 3;
+  return 2;
+}
+
+/**
+ * 시트 거리순은 유지하고, MOONi에 넘기는 이름만 재정렬한다.
+ * @param {object[]} items
+ * @param {number} [limit]
+ */
+export function rankMooniNearbySights(items, limit = 6) {
+  const cap = Math.max(0, Number(limit) || 0);
+  return (Array.isArray(items) ? items : [])
+    .map((spot, index) => ({ spot, index, tier: mooniNearbySightTier(spot) }))
+    .sort((a, b) => a.tier - b.tier || a.index - b.index)
+    .slice(0, cap)
+    .map((row) => row.spot);
 }
