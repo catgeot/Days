@@ -627,6 +627,29 @@
       "plannerTop": "플래너 맨 위로",
       "scrollTopShort": "맨 위"
     },
+    "facts": {
+      "title": "확인된 사실",
+      "source": "출처",
+      "checked": "확인일 {{date}}",
+      "unverified": "확인 안 된 항목: {{items}}",
+      "aiGenerated": "AI 생성 · 출처 없음",
+      "aiGeneratedDated": "AI 생성 · 출처 없음 · {{date}}",
+      "slots": {
+        "entry": "입국",
+        "airport": "공항→시내",
+        "stay-area": "머물 지역",
+        "itinerary": "1·2·3일 동선",
+        "money-safety": "돈·치안",
+        "season": "시즌",
+        "hours": "운영시간",
+        "fee": "요금",
+        "booking": "예매 링크",
+        "map": "지도 링크",
+        "duration": "소요 시간",
+        "nearby-food": "주변 식당",
+        "notes": "주의사항"
+      }
+    },
     "tab": {
       "wiki": {
         "suffix": "여행 스케치",

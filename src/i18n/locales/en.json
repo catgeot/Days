@@ -844,7 +844,7 @@
       "copiedPrimary": "Place name copied",
       "copiedSecondary": "Alternate name copied",
       "askMooni": "Ask MOONi",
-      "planner": "Travel planner",
+      "planner": "Planner",
       "galleryBack": "Back to gallery",
       "travelSketch": "Travel sketch",
       "youtube": "YouTube videos",
@@ -856,6 +856,29 @@
       "scrollTopReviews": "Tap to scroll reviews to top",
       "plannerTop": "Scroll planner to top",
       "scrollTopShort": "Top"
+    },
+    "facts": {
+      "title": "Verified facts",
+      "source": "Source",
+      "checked": "Checked {{date}}",
+      "unverified": "Unverified: {{items}}",
+      "aiGenerated": "AI-generated · no source",
+      "aiGeneratedDated": "AI-generated · no source · {{date}}",
+      "slots": {
+        "entry": "Entry",
+        "airport": "Airport to city",
+        "stay-area": "Where to stay",
+        "itinerary": "Days 1–3",
+        "money-safety": "Money and safety",
+        "season": "Season",
+        "hours": "Hours",
+        "fee": "Admission",
+        "booking": "Tickets",
+        "map": "Map",
+        "duration": "Time needed",
+        "nearby-food": "Nearby food",
+        "notes": "Notes"
+      }
     },
     "tab": {
       "wiki": {

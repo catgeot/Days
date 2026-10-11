@@ -1726,7 +1726,7 @@ export default function FestivalDetailSheet({
             </div>
           )}
 
-          {!detailLoading && activeTab === TAB_INFO && (
+          {activeTab === TAB_INFO && (
             <div className="space-y-3">
               {(intro || scenicRegion) && (
                 <div className="space-y-3">
