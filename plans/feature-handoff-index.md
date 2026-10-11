@@ -18,24 +18,49 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `d1c0157a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · **병합 금지** · #432 squash `44a75df5` · PROD `index-NmcBva9f.js` |
-| **브랜치** | `cursor/cairo-qa-8e40` |
+| **상태** | **#433 QA PASS** · 브랜치 tip `e2fdf3d5` · squash `a3b06706` · **이 브랜치에 추가 push 금지** |
+| **브랜치** | `cursor/cairo-qa-8e40` (동결) |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
-| **Preview** | git `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · 영문 GEM `/place/grand-egyptian-museum?lang=en` · 마산 `/korea?festival=637693` (Vercel SSO) |
-| **금지** | 사실 숫자·출처 변경 · feature에 `plans/**` 커밋 · PR 병합 · #432 수정 |
+| **Preview** | PROD 반영 대기 · 마지막 Preview `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` |
+| **금지** | `cursor/cairo-qa-8e40` push · 사실 숫자·출처 변경 · 헤더 `min-w-0` 되돌리기 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 390·360에서 Planner 전체가 보이는지 사람이 다시 본다. 마산 목록이 상세 뒤에 나오는 수정은 #3. 영문 링크 이름·Checked는 그 다음 |
+| **남은 일** | 영문 예매·지도 링크 이름과 Checked 라벨. 새 브랜치 |
 
 **다음 제시어**:
 
 ```
-카이로 동선 #3, 마산 주변 볼거리
+카이로 동선 #4, 영문 링크·확인일
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/cairo-qa-8e40 · draft PR #433 · tip d1c0157a
-금지: 사실 숫자·출처 변경 · feature에 plans 커밋 · PR 병합 · #432 수정 · 제목 min-w-0 되돌리기
-작업: 637693 정보 탭이 detailLoading에 묶여 주변 볼거리가 상세 응답 뒤에 나온다. 주변 목록만 상세와 따로 그린다.
+새 브랜치 from origin/main · cursor/cairo-qa-8e40 push 금지 · tip e2fdf3d5 동결
+금지: 사실 숫자·출처 변경 · 헤더 min-w-0 되돌리기 · feature에 plans 커밋
+작업: 영문 UI에서 예매·지도 링크 이름과 Checked 라벨만 번역한다. 본문 값과 헤더는 유지.
+검증: npm run test:health
+```
+
+### 마산 주변 볼거리
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `7be4d452` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
+| **브랜치** | `cursor/masan-nearby-8e40` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | git `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` (Vercel SSO) |
+| **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
+| **VERIFY** | `npm run test:health` |
+| **남은 일** | 390에서 주변 목록이 상세 로딩 중에 보이는지 사람이 본다 |
+
+**다음 제시어**:
+
+```
+마산 주변 볼거리 #2, 피드백 반영
+@plans/feature-handoff-index.md
+@plans/2026-10-11-project-log.md
+브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip 7be4d452
+금지: 헤더 수정 · cairo-qa-8e40 push · feature에 plans 커밋 · PR 병합
+작업: /korea?festival=637693 주변 볼거리가 상세 로딩 중에 보이는지. 어긋난 곳만 고친다.
 검증: npm run test:health
 ```
 
