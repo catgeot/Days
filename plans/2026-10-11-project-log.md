@@ -138,7 +138,7 @@
 ## 카이로 동선 #1, 장소 링크·영문 제목·축제장
 
 - **세션** `카이로 동선 #1, 장소 링크·영문 제목·축제장` · branch `cursor/cairo-follow-8e40` · tip `482874e8` · draft PR [#432](https://github.com/catgeot/Days/pull/432) · 병합 금지
-- **앞선 병합** #428 squash `ea2b3730`. PROD 번들 `index-Blpy8VZ_.js`.
+- **앞선 병합** #428 squash `ea2b3730`. 당시 PROD 번들 `index-Blpy8VZ_.js`. #432 배포 후 PROD는 `index-NmcBva9f.js`(장소 청크 `index-Dh-1myli.js`). 라이브 `/place/cairo` D2의 GEM은 `/place/grand-egyptian-museum`.
 - **조치** 동선 D2/D3의 GEM·술탄 하산 모스크만 장소 카드로 연결. 영문 GEM 제목은 390에서 `Grand Egyptian` / `Museum`. 팔경 멤버가 축제장이면 소제목 옆에 «2경 함평엑스포공원은 축제장이에요».
 - **VERIFY** `npm run test:health` 241 pass · CI run `38145911493` success
 - **Preview** `https://days-git-cursor-cairo-follow-8e40-catgeots-projects.vercel.app/place/cairo` · `?lang=en` GEM · `/korea?festival=638576`
@@ -147,9 +147,9 @@
 
 ## 카이로 동선 #2, 복귀 스크롤·영문 제목·마산
 
-- **세션** `카이로 동선 #2, 피드백 반영` · branch `cursor/cairo-qa-8e40` · tip `5d31e0d8` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · 병합 금지 · #432는 수정하지 않음
-- **조치** 장소 카드에서 뒤로 오면 갤러리 스크롤을 되돌린다(POP, 같은 키 재진입은 0으로 덮지 않음). 영문은 사실 블록 제목만 번역하고 값은 한글. 헤더 버튼은 `Planner`. 축제 정보 탭은 상세 로딩과 따로 주변 볼거리를 보여 준다.
-- **마산 637693 (LIVE, 수정 전)** 390. 제목 3009ms, «주변 볼거리» 4338ms(15곳). `festivalWindow` 1213→2578ms. 그 뒤 tourapi 상세 7건과 supabase bbox가 병렬(supabase 3282ms, 상세 3883–4393ms). 순차 호출이 아니라 정보 탭이 `detailLoading`에 묶여 목록이 상세 응답 뒤에 나왔다. 콜드 `festivalWindow`면 시트가 열리기 전에 6초를 넘길 수 있다. 수정 후 로컬은 목록 fetch(2751ms)만 끝난 3526ms에 팔경 행이 보였다.
-- **VERIFY** `npm run test:health` 244 pass · CI run `38147876052` success
+- **세션** `카이로 동선 #2, 피드백 반영` · branch `cursor/cairo-qa-8e40` · tip `676deb4a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · 병합 금지 · #432는 수정하지 않음
+- **우선** (c) 영문 헤더 버튼 `Planner` · (a) 뒤로 가기 갤러리 스크롤 복원 · (b) 영문 사실 제목만 번역, 값은 한글
+- **마산 637693** LIVE 390, 수정 없음. 제목 3009ms, «주변 볼거리» 4338ms(15곳). `festivalWindow` 1213→2578ms. 이어서 TourAPI 7건과 Supabase bbox가 병렬(supabase 3282ms, 상세 3883–4393ms). 순차 대기가 아니라 정보 탭이 `detailLoading`에 묶여 목록이 상세 뒤에 나왔다. 목록 캐시가 차가우면 시트가 열리기 전에 6초를 넘길 수 있다. 게이트는 유지하고 분리는 #3.
+- **VERIFY** `npm run test:health` 243 pass · CI run `38148670067` success
 - **Preview** `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/grand-egyptian-museum?lang=en` · `/korea?festival=637693`
-- **다음** `카이로 동선 #3, 피드백 반영`
+- **다음** `카이로 동선 #3, 마산 주변 볼거리`
