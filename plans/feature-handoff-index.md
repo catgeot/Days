@@ -100,7 +100,7 @@
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
 | **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 주차 없는 답·숙소 카드 목록·맛집 거리 보강은 클라이언트 `9e2eadc8`라 Preview에 있다. Edge 파일은 `6a1954d4`에서 바뀌었다(`templates.js`, 서버 `mooniPromptBundleData.js`). staging `qeqszwxjvhnbzhkchera` 재배포는 내일 09:00+ KST. 배포·PR 머지는 하지 않는다. `npm run test:health` 242 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 주차 없는 답·숙소 카드 목록·맛집 거리 보강은 클라이언트 `9e2eadc8`라 Preview에 있다. Edge 파일은 `6a1954d4`에서 바뀌었다(`templates.js`, 서버 `mooniPromptBundleData.js`). staging `qeqszwxjvhnbzhkchera` 재배포는 내일 09:00+ KST. 배포·PR 머지는 하지 않는다. `npm run test:health` 243 pass. |
 
 **다음 제시어**:
 
