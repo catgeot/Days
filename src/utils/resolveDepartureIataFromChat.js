@@ -9,11 +9,23 @@ const DEPARTURE_IATA = {
   인천: 'ICN',
   김포: 'GMP',
   부산: 'PUS',
+  대구: 'TAE',
+  광주: 'KWJ',
+  청주: 'CJJ',
   제주: 'CJU',
+  강릉: 'KAG',
+  여수: 'RSU',
+  울산: 'USN',
   seoul: 'ICN',
   incheon: 'ICN',
   busan: 'PUS',
+  daegu: 'TAE',
+  gwangju: 'KWJ',
+  cheongju: 'CJJ',
   jeju: 'CJU',
+  gangneung: 'KAG',
+  yeosu: 'RSU',
+  ulsan: 'USN',
 };
 
 /**
@@ -146,6 +158,8 @@ export function resolveDepartureIataFromChat(userText, chatHistory = [], options
  * @param {Array<{ text?: string, departureLabel?: string, role?: string }>} [chatHistory]
  * @returns {string | null}
  */
-export function resolveDepartureLabelFromChat(userText, chatHistory = []) {
-  return resolveDepartureFromChat(userText, chatHistory)?.label ?? null;
+export function resolveDepartureLabelFromChat(userText, chatHistory = [], options = {}) {
+  const explicit = String(options?.departureLabel || '').trim();
+  if (explicit) return explicit;
+  return resolveDepartureFromChat(userText, chatHistory, options)?.label ?? null;
 }

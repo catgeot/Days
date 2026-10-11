@@ -79,6 +79,7 @@ import {
   FESTIVAL_DOMESTIC_ORIGINS,
   festivalOriginLabel,
   buildFestivalAccessAskText,
+  visibleFestivalDomesticOrigins,
 } from '../lib/mooniQuickReplies';
 import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
@@ -150,7 +151,7 @@ const ChatModal = ({
   /** 모바일 주제 독: 입력 포커스·타이핑 시 칩 숨기고 검색바 확장 */
   const [mobileDockInputFocused, setMobileDockInputFocused] = useState(false);
   const [accessOriginIata, setAccessOriginIata] = useState(() => resolveDefaultFlightOriginIata());
-  const [festivalAccessIata, setFestivalAccessIata] = useState('ICN');
+  const [festivalAccessId, setFestivalAccessId] = useState('incheon');
   const [accessOriginSearchOpen, setAccessOriginSearchOpen] = useState(false);
   const [accessOriginSearchActive, setAccessOriginSearchActive] = useState(false);
 
@@ -860,7 +861,10 @@ const ChatModal = ({
       : null;
     const accessRoute = isAccessRouteQuery(cleanText);
     const ferryRoute = isFerryRouteQuery(cleanText);
-    const departureLabel = accessRoute ? resolveDepartureLabelFromChat(cleanText, messages) : null;
+    const explicitDeparture = String(sendOptions?.departureLabel || '').trim();
+    const departureLabel = (explicitDeparture || accessRoute)
+      ? resolveDepartureLabelFromChat(cleanText, messages, { departureLabel: explicitDeparture })
+      : null;
 
     let resolution = resolveDestinationFromChat(cleanText, messages, currentDest);
 
@@ -1273,13 +1277,15 @@ const ChatModal = ({
     handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
   }, [accessOriginIata, handleSend]);
 
-  const handleFestivalAccessOrigin = useCallback((iata) => {
-    const code = String(iata || 'ICN').trim().toUpperCase();
-    setFestivalAccessIata(code);
+  const handleFestivalAccessOrigin = useCallback((originId) => {
+    const row = FESTIVAL_DOMESTIC_ORIGINS.find((item) => item.id === originId);
+    if (!row) return;
+    setFestivalAccessId(row.id);
+    const label = festivalOriginLabel(row.id, i18n.language);
     handleSend(
-      buildFestivalAccessAskText(code, i18n.language),
+      buildFestivalAccessAskText(row.id, i18n.language),
       PERSONA_TYPES.PLANNER,
-      { chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS },
+      { chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS, departureLabel: label },
     );
   }, [handleSend, i18n.language]);
 
@@ -1853,23 +1859,26 @@ const ChatModal = ({
                     </span>
                   </div>
                   <div className="flex w-full max-w-full gap-2 flex-nowrap overflow-x-auto overscroll-x-contain pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {FESTIVAL_DOMESTIC_ORIGINS.map((row) => {
-                      const selected = festivalAccessIata === row.iata;
+                    {visibleFestivalDomesticOrigins(
+                      festivalMooniContext?.hubLabel,
+                      festivalMooniContext?.address,
+                    ).map((row) => {
+                      const selected = festivalAccessId === row.id;
                       return (
                         <button
-                          key={row.iata}
+                          key={row.id}
                           type="button"
-                          data-festival-origin={row.iata}
+                          data-festival-origin={row.id}
                           disabled={isLoading}
                           aria-pressed={selected}
-                          onClick={() => handleFestivalAccessOrigin(row.iata)}
+                          onClick={() => handleFestivalAccessOrigin(row.id)}
                           className={tone(
                             fresh,
                             `inline-flex shrink-0 items-center justify-center min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-300 bg-cyan-500/30 text-cyan-50' : 'border-cyan-500/35 bg-cyan-950/30 text-cyan-100'}`,
                             `inline-flex shrink-0 items-center justify-center min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-400 bg-cyan-50 text-cyan-800' : 'border-cyan-200 bg-white text-cyan-700'}`,
                           )}
                         >
-                          {festivalOriginLabel(row.iata, i18n.language)}
+                          {festivalOriginLabel(row.id, i18n.language)}
                         </button>
                       );
                     })}

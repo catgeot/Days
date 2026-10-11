@@ -17,9 +17,9 @@ import { buildFestivalMooniContext } from '../../src/pages/Korea/lib/festivalMoo
 import { buildMooniBoundFestivalSystemHint } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
-const repliesSrc = readFileSync(join(root, 'src/pages/Home/lib/mooniQuickReplies.js'), 'utf8');
+const repliesSrc = readFileSync(join(root, 'src/pages/Home/lib/festivalDomesticOrigins.js'), 'utf8');
 if (!repliesSrc.includes('에서 이 축제장까지 대중교통과 차로 가는 법')) {
-  throw new Error('Korean festival access ask text drifted from mooniQuickReplies.js');
+  throw new Error('Korean festival access ask text drifted from festivalDomesticOrigins.js');
 }
 if (!repliesSrc.includes('to this festival by public transit and by car')) {
   throw new Error('English festival access ask text drifted from mooniQuickReplies.js');
@@ -46,8 +46,8 @@ function chipAsks(locale) {
   const chips = pack.mooni.chips.festival;
   const access =
     locale === 'en'
-      ? 'How do I get from ICN to this festival by public transit and by car?'
-      : '서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘';
+      ? 'How do I get from Incheon to this festival by public transit and by car?'
+      : '인천에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘';
   return [
     ['festival_sights', chips.festival_sights.sendText],
     ['festival_access', access],

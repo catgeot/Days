@@ -630,29 +630,48 @@ function listedPlaceNames(values) {
 }
 
 /**
- * «[강릉 국수 축제](url) 강릉 국수 축제 가는 법» → «[강릉 국수 축제 페이지](url)에서 가는 법을 알아보세요.»
+ * Festival page links stay festival info. No «페이지에서 가는 법을 알아보세요» until a transport card exists.
+ * @param {string} label
+ * @param {string} href
+ * @param {string} [title]
+ */
+function festivalInfoPageLink(label, href, title = '') {
+  if (!href || String(href).includes('#')) return '';
+  const raw = String(title || label || '').replace(/\s+/g, ' ').trim();
+  const place = raw.replace(/\s*페이지\s*$/u, '').replace(/\s+page\s*$/i, '').trim();
+  if (!place) return '';
+  return /[가-힣]/.test(place) ? `[${place} 페이지](${href})` : `[${place} page](${href})`;
+}
+
+/**
+ * «[강릉 국수 축제](url) 강릉 국수 축제 가는 법» and the prod Edge closer
+ * «[강릉 국수 축제 페이지](url)에서 가는 법을 알아보세요» → «[강릉 국수 축제 페이지](url)».
  * @param {string} text
  * @param {string} [title]
  */
 function collapseDoubledFestivalCloser(text, title = '') {
-  const rewrite = (label, href) => {
-    if (!href || href.includes('#')) return '';
-    const place = String(label || '').replace(/\s*페이지\s*$/, '').replace(/\s+/g, ' ').trim();
-    if (!place) return '';
-    return `[${place} 페이지](${href})에서 가는 법을 알아보세요.`;
-  };
+  const rewrite = (label, href) => festivalInfoPageLink(label, href, title) || festivalInfoPageLink(label, href);
   let out = String(text || '').replace(
     new RegExp(`\\[([^\\]\\n]+)\\]\\((${FESTIVAL_PAGE_URL})\\)\\s*(?:에서\\s*)?\\1\\s*가는\\s*법[^\\n.。]*[.。]?`, 'g'),
     (full, label, href) => rewrite(label, href) || full,
   );
   const name = String(title || '').replace(/\s+/g, ' ').trim();
-  if (!name) return out;
-  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (name) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    out = out.replace(
+      new RegExp(`\\[([^\\]\\n]+)\\]\\((${FESTIVAL_PAGE_URL})\\)[^\\n.。]{0,80}${escaped}[^\\n.。]{0,40}가는\\s*법[^\\n.。]*[.。]?`, 'g'),
+      (full, label, href) => rewrite(name, href) || rewrite(label, href) || full,
+    );
+  }
   out = out.replace(
-    new RegExp(`\\[([^\\]\\n]+)\\]\\((${FESTIVAL_PAGE_URL})\\)[^\\n.。]{0,80}${escaped}[^\\n.。]{0,40}가는\\s*법[^\\n.。]*[.。]?`, 'g'),
-    (full, label, href) => rewrite(name, href) || rewrite(label, href) || full,
+    new RegExp(`\\[([^\\]\\n]+)\\]\\((${FESTIVAL_PAGE_URL})\\)\\s*에서\\s*가는\\s*법[^\\n.。]*[.。]?`, 'g'),
+    (full, label, href) => rewrite(label, href) || full,
   );
-  return out;
+  out = out.replace(
+    new RegExp(`\\[([^\\]\\n]+)\\]\\((${FESTIVAL_PAGE_URL})\\)[^\\n.。]{0,48}(?:how\\s+to\\s+get\\s+there|getting\\s+there)[^\\n.。]*[.!?]?`, 'gi'),
+    (full, label, href) => rewrite(label, href) || full,
+  );
+  return out.replace(/페이지에서\s*가는\s*법을\s*알아\s*보세요[.。]?/g, '').replace(/[ \t]{2,}/g, ' ').trim();
 }
 
 function restaurantLead(names) {
