@@ -148,9 +148,10 @@
 
 ## 카이로 동선 #2, 복귀 스크롤·영문 제목·마산
 
-- **세션** `카이로 동선 #2, 피드백 반영` · branch `cursor/cairo-qa-8e40` · tip `676deb4a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · 병합 금지 · #432는 수정하지 않음
+- **세션** `카이로 동선 #2, 피드백 반영` · branch `cursor/cairo-qa-8e40` · tip `d1c0157a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · 병합 금지 · #432는 수정하지 않음
 - **우선** (c) 영문 헤더 버튼 `Planner` · (a) 뒤로 가기 갤러리 스크롤 복원 · (b) 영문 사실 제목만 번역, 값은 한글
-- **마산 637693** LIVE 390, 수정 없음. 제목 3009ms, «주변 볼거리» 4338ms(15곳). `festivalWindow` 1213→2578ms. 이어서 TourAPI 7건과 Supabase bbox가 병렬(supabase 3282ms, 상세 3883–4393ms). 순차 대기가 아니라 정보 탭이 `detailLoading`에 묶여 목록이 상세 뒤에 나왔다. 목록 캐시가 차가우면 시트가 열리기 전에 6초를 넘길 수 있다. 게이트는 유지하고 분리는 #3.
-- **VERIFY** `npm run test:health` 243 pass · CI run `38148670067` success
+- **헤더** QA에서 (a)(b) 통과. (c)는 제목 `min-w-[11rem]` 때문에 390에서 행이 396px, 버튼이 320–408px였다. 제목 칸을 `min-w-0 flex-1`로 줄임. WebKit 390/360 카이로·GEM 한·영에서 버튼 오른쪽은 378·348.
+- **마산 637693** LIVE 390, 수정 없음. 제목 3009ms, «주변 볼거리» 4338ms(15곳). `festivalWindow` 1213→2578ms. 이어서 TourAPI 7건과 Supabase bbox가 병렬(supabase 3282ms, 상세 3883–4393ms). 순차 대기가 아니라 정보 탭이 `detailLoading`에 묶여 목록이 상세 뒤에 나왔다. 목록 캐시가 차가우면 시트가 열리기 전에 6초를 넘길 수 있다. 게이트는 유지하고 분리는 #3. 영문 링크 이름·Checked는 이 PR 밖.
+- **VERIFY** `npm run test:health` 243 pass · CI run `38182752936` success
 - **Preview** `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/grand-egyptian-museum?lang=en` · `/korea?festival=637693`
 - **다음** `카이로 동선 #3, 마산 주변 볼거리`

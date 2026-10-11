@@ -18,14 +18,14 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `676deb4a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · **병합 금지** · #432 squash `44a75df5` · PROD `index-NmcBva9f.js` |
+| **상태** | **#2 push** · tip `d1c0157a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · **병합 금지** · #432 squash `44a75df5` · PROD `index-NmcBva9f.js` |
 | **브랜치** | `cursor/cairo-qa-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · 영문 GEM `/place/grand-egyptian-museum?lang=en` · 마산 `/korea?festival=637693` (Vercel SSO) |
 | **금지** | 사실 숫자·출처 변경 · feature에 `plans/**` 커밋 · PR 병합 · #432 수정 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 390에서 뒤로가기 스크롤·영문 사실 제목·Planner를 사람이 본다. 마산 목록이 상세 뒤에 나오는 수정은 #3 |
+| **남은 일** | 390·360에서 Planner 전체가 보이는지 사람이 다시 본다. 마산 목록이 상세 뒤에 나오는 수정은 #3. 영문 링크 이름·Checked는 그 다음 |
 
 **다음 제시어**:
 
@@ -33,8 +33,8 @@
 카이로 동선 #3, 마산 주변 볼거리
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/cairo-qa-8e40 · draft PR #433 · tip 676deb4a
-금지: 사실 숫자·출처 변경 · feature에 plans 커밋 · PR 병합 · #432 수정 · 스크롤·영문 제목·Planner 되돌리기
+브랜치 cursor/cairo-qa-8e40 · draft PR #433 · tip d1c0157a
+금지: 사실 숫자·출처 변경 · feature에 plans 커밋 · PR 병합 · #432 수정 · 제목 min-w-0 되돌리기
 작업: 637693 정보 탭이 detailLoading에 묶여 주변 볼거리가 상세 응답 뒤에 나온다. 주변 목록만 상세와 따로 그린다.
 검증: npm run test:health
 ```
