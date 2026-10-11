@@ -11,8 +11,13 @@ import {
 import {
   isSocialPromoEntryInWindow,
   isYmdWithinInclusive,
+  mergeFestivalRowItem,
   mergeSocialPromoIntoFestivalItems,
+  normalizeFestivalItemImages,
   pickVisibleSocialPromoCards,
+  resolveSocialPromoRow,
+  shouldShowSessionPinnedRow,
+  shouldShowSocialPromoHomeRow,
   shouldShowSocialPromoItem,
 } from '../../src/pages/Korea/socialPromoFestivalsLogic.js';
 
@@ -31,6 +36,8 @@ const GUKHYANG = {
   eventStartDate: '20261023',
   eventEndDate: '20261108',
   addr1: '전라남도 함평군 함평읍 곤재로 27',
+  firstimage: 'http://example.test/gukhyang.jpg',
+  imageUrl: 'http://example.test/gukhyang.jpg',
   detailAsOf: { fromDetailDeepLink: true, asOfDate: '2026.10.01' },
 };
 
@@ -70,6 +77,43 @@ test('promo window and ended festival auto-hide', () => {
   assert.equal(isSocialPromoEntryInWindow(entry, afterShowUntil), false);
 });
 
+test('promo row stays loading until every configured slot resolves (JSON order)', () => {
+  const partial = new Map([
+    [
+      '637693',
+      {
+        contentId: '637693',
+        title: '마산가고파국화축제',
+        eventStartDate: '20261031',
+        eventEndDate: '20261108',
+      },
+    ],
+  ]);
+  const loading = resolveSocialPromoRow(socialPromoFestivals, partial, NOW, 2);
+  assert.equal(loading.status, 'loading');
+  assert.equal(loading.cards.length, 2);
+  assert.equal(loading.cards[0].entry.contentId, '638576');
+  assert.equal(loading.cards[1].entry.contentId, '637693');
+  assert.equal(pickVisibleSocialPromoCards(socialPromoFestivals, partial, NOW, 2).length, 0);
+
+  const full = new Map([
+    ['638576', GUKHYANG],
+    [
+      '637693',
+      {
+        contentId: '637693',
+        title: '마산가고파국화축제',
+        eventStartDate: '20261031',
+        eventEndDate: '20261108',
+      },
+    ],
+  ]);
+  const ready = resolveSocialPromoRow(socialPromoFestivals, full, NOW, 2);
+  assert.equal(ready.status, 'ready');
+  assert.equal(ready.cards[0].item.contentId, '638576');
+  assert.equal(ready.cards[1].item.contentId, '637693');
+});
+
 test('promo row caps at two cards', () => {
   const map = new Map([
     ['638576', GUKHYANG],
@@ -96,6 +140,28 @@ test('promo row caps at two cards', () => {
   assert.equal(cards.length, 2);
   assert.equal(cards[0].item.contentId, '638576');
   assert.equal(cards[1].item.contentId, '637693');
+});
+
+test('normalizeFestivalItemImages upgrades http list URLs', () => {
+  const normalized = normalizeFestivalItemImages({
+    contentId: '638576',
+    firstimage: 'http://example.test/a.jpg',
+  });
+  assert.equal(normalized.firstimage, 'https://example.test/a.jpg');
+  assert.equal(normalized.imageUrl, 'https://example.test/a.jpg');
+  const merged = mergeFestivalRowItem(
+    { contentId: '638576', title: '목록' },
+    GUKHYANG,
+  );
+  assert.equal(merged.firstimage, 'https://example.test/gukhyang.jpg');
+});
+
+test('session pin hidden when festival is already on promo row; promo hidden on search', () => {
+  const promoCards = [{ item: { contentId: '638576' } }];
+  assert.equal(shouldShowSessionPinnedRow('638576', promoCards), false);
+  assert.equal(shouldShowSessionPinnedRow('638576', []), true);
+  assert.equal(shouldShowSocialPromoHomeRow(false), true);
+  assert.equal(shouldShowSocialPromoHomeRow(true), false);
 });
 
 test('merge adds configured IDs once and search finds 국향', () => {
@@ -136,4 +202,12 @@ test('hub wires session pin, promo row, and merge', () => {
   assert.match(hub, /mergeSocialPromoIntoFestivalItems/);
   assert.match(hub, /festivalViewedPushedRef/);
   assert.match(hub, /festivalItemForSessionPin/);
+  assert.match(hub, /resolveSocialPromoRow/);
+  assert.match(hub, /shouldShowSocialPromoHomeRow/);
+  assert.match(hub, /shouldShowSessionPinnedRow/);
+  const promoRow = readFileSync(
+    join(root, 'src/pages/Korea/SocialPromoFestivalRow.jsx'),
+    'utf8',
+  );
+  assert.match(promoRow, /data-social-promo-loading/);
 });

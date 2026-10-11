@@ -5,6 +5,78 @@ import {
   todayYmdKst,
 } from './festivalDeepLinkItem.js';
 
+function pickStr(...values) {
+  for (const value of values) {
+    const text = String(value ?? '').trim();
+    if (text) return text;
+  }
+  return '';
+}
+
+/**
+ * @param {Record<string, unknown> | null | undefined} item
+ */
+export function hasFestivalThumbnail(item) {
+  return Boolean(
+    pickStr(item?.firstimage, item?.firstImage, item?.imageUrl, item?.firstimage2),
+  );
+}
+
+/**
+ * @param {Record<string, unknown> | null | undefined} item
+ */
+export function normalizeFestivalItemImages(item) {
+  if (!item || item.contentId == null) return item;
+  let firstimage = pickStr(item.firstimage, item.firstImage, item.imageUrl);
+  let imageUrl = pickStr(item.imageUrl, item.firstimage, item.firstimage2);
+  if (!firstimage && imageUrl) firstimage = imageUrl;
+  if (!imageUrl && firstimage) imageUrl = firstimage;
+  if (firstimage.startsWith('http://')) {
+    firstimage = firstimage.replace(/^http:\/\//i, 'https://');
+  }
+  if (imageUrl.startsWith('http://')) {
+    imageUrl = imageUrl.replace(/^http:\/\//i, 'https://');
+  }
+  return { ...item, firstimage, imageUrl };
+}
+
+/**
+ * @param {Record<string, unknown> | null | undefined} primary
+ * @param {Record<string, unknown> | null | undefined} overlay
+ */
+export function mergeFestivalRowItem(primary, overlay) {
+  if (!primary) return overlay ? normalizeFestivalItemImages(overlay) : null;
+  if (!overlay) return normalizeFestivalItemImages(primary);
+  const firstimage = pickStr(
+    primary.firstimage,
+    primary.firstImage,
+    overlay.firstimage,
+    overlay.firstImage,
+    primary.imageUrl,
+    overlay.imageUrl,
+  );
+  const imageUrl = pickStr(
+    primary.imageUrl,
+    overlay.imageUrl,
+    primary.firstimage,
+    overlay.firstimage,
+    primary.firstimage2,
+    overlay.firstimage2,
+  );
+  return normalizeFestivalItemImages({
+    ...primary,
+    ...overlay,
+    title: pickStr(overlay.title, primary.title),
+    firstimage,
+    imageUrl,
+    eventStartDate: pickStr(overlay.eventStartDate, primary.eventStartDate),
+    eventEndDate: pickStr(overlay.eventEndDate, primary.eventEndDate),
+    addr1: pickStr(overlay.addr1, primary.addr1),
+    detailAsOf: overlay.detailAsOf || primary.detailAsOf,
+    contentId: String(overlay.contentId || primary.contentId),
+  });
+}
+
 function ymdFromKstDateString(value) {
   const digits = String(value ?? '').replace(/\D/g, '');
   return digits.length >= 8 ? digits.slice(0, 8) : '';
@@ -53,8 +125,8 @@ export function festivalItemFromDetailWithAsOf(detail) {
   const built = festivalItemFromDetail(detail);
   if (!built) return null;
   const detailAsOf = festivalDetailAsOf(detail);
-  if (!detailAsOf) return built;
-  return { ...built, detailAsOf };
+  const withAsOf = detailAsOf ? { ...built, detailAsOf } : built;
+  return normalizeFestivalItemImages(withAsOf);
 }
 
 /**
@@ -80,15 +152,61 @@ export function pickVisibleSocialPromoCards(
   now = new Date(),
   maxCards = 2,
 ) {
+  const row = resolveSocialPromoRow(entries, itemById, now, maxCards);
+  return row.status === 'ready' ? row.cards : [];
+}
+
+/**
+ * Promo home row — JSON order, no partial card list while loading.
+ * @returns {{ status: 'loading' | 'ready' | 'empty', cards: Array<{ entry: object, item: object | null }> }}
+ */
+export function resolveSocialPromoRow(
+  entries,
+  itemById,
+  now = new Date(),
+  maxCards = 2,
+) {
+  const configured = (entries || []).slice(0, maxCards);
+  if (!configured.length) return { status: 'empty', cards: [] };
+
+  const allResolved = configured.every((entry) =>
+    resolveSocialPromoItem(itemById, entry.contentId),
+  );
+  if (!allResolved) {
+    return {
+      status: 'loading',
+      cards: configured.map((entry) => ({ entry, item: null })),
+    };
+  }
+
   const cards = [];
-  for (const entry of entries || []) {
-    if (cards.length >= maxCards) break;
-    const item = resolveSocialPromoItem(itemById, entry.contentId);
-    if (!item) continue;
+  for (const entry of configured) {
+    const item = normalizeFestivalItemImages(
+      resolveSocialPromoItem(itemById, entry.contentId),
+    );
     if (!shouldShowSocialPromoItem(item, entry, now)) continue;
     cards.push({ entry, item });
   }
-  return cards;
+  if (!cards.length) return { status: 'empty', cards: [] };
+  return { status: 'ready', cards };
+}
+
+/** Promo strip only on default festival home (not search results). */
+export function shouldShowSocialPromoHomeRow(searchActive) {
+  return !searchActive;
+}
+
+/**
+ * Skip session pin when the same festival is already in the promo row.
+ * @param {string | null | undefined} pinnedId
+ * @param {Array<{ item?: { contentId?: unknown } }>} promoCards
+ */
+export function shouldShowSessionPinnedRow(pinnedId, promoCards) {
+  const id = String(pinnedId || '').trim();
+  if (!id) return false;
+  return !(promoCards || []).some(
+    (card) => String(card?.item?.contentId || '') === id,
+  );
 }
 
 /**
@@ -113,7 +231,7 @@ export function mergeSocialPromoIntoFestivalItems(
 
     const fromList = list.find((row) => String(row?.contentId || '') === id);
     const supplemental = resolveSocialPromoItem(supplementalById, id);
-    const candidate = fromList || supplemental;
+    const candidate = mergeFestivalRowItem(fromList, supplemental);
     if (!candidate) continue;
     if (!shouldShowSocialPromoItem(candidate, entry, now)) continue;
 
@@ -135,4 +253,26 @@ export function socialPromoIdsMissingFromWindow(baseItems, entries) {
   return (entries || [])
     .map((entry) => String(entry?.contentId || '').trim())
     .filter((id) => id && !seen.has(id));
+}
+
+/**
+ * Configured promo IDs that still need a detail fetch (missing from window or thumbnail).
+ * @param {object[]} baseItems
+ * @param {Array<{ contentId: string }>} entries
+ * @param {Map<string, Record<string, unknown>>} detailById
+ */
+export function socialPromoIdsNeedingDetailFetch(baseItems, entries, detailById) {
+  const ids = [];
+  for (const entry of entries || []) {
+    const id = String(entry?.contentId || '').trim();
+    if (!id) continue;
+    const windowItem = (baseItems || []).find(
+      (row) => String(row?.contentId || '') === id,
+    );
+    const detailItem = detailById?.get?.(id) || null;
+    if (detailItem) continue;
+    if (windowItem && hasFestivalThumbnail(windowItem)) continue;
+    ids.push(id);
+  }
+  return ids;
 }

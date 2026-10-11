@@ -68,10 +68,13 @@ import {
 import SocialPromoFestivalRow from './SocialPromoFestivalRow';
 import {
   festivalItemFromDetailWithAsOf,
+  mergeFestivalRowItem,
   mergeSocialPromoIntoFestivalItems,
-  pickVisibleSocialPromoCards,
+  resolveSocialPromoRow,
+  shouldShowSessionPinnedRow,
+  shouldShowSocialPromoHomeRow,
   socialPromoFestivals,
-  socialPromoIdsMissingFromWindow,
+  socialPromoIdsNeedingDetailFetch,
 } from './socialPromoFestivals';
 import {
   DEFAULT_AREA_CODE,
@@ -769,6 +772,9 @@ export default function KoreaFestivalHub() {
   const festivalDetailPushedRef = useRef(false);
   const festivalDeepLinkSeededForRef = useRef('');
   const festivalViewedPushedRef = useRef('');
+  const socialPromoDetailAttemptedRef = useRef(
+    /** @type {Set<string>} */ (new Set()),
+  );
   const now = useMemo(() => new Date(), []);
 
   const goHome = useCallback(() => {
@@ -1051,59 +1057,67 @@ export default function KoreaFestivalHub() {
 
   useEffect(() => {
     if (loading) return undefined;
-    const missing = socialPromoIdsMissingFromWindow(items, socialPromoFestivals);
-    if (!missing.length) return undefined;
+    const needFetch = socialPromoIdsNeedingDetailFetch(
+      items,
+      socialPromoFestivals,
+      socialPromoById,
+    ).filter((id) => !socialPromoDetailAttemptedRef.current.has(id));
+    if (!needFetch.length) return undefined;
+    for (const id of needFetch) socialPromoDetailAttemptedRef.current.add(id);
     let cancelled = false;
     (async () => {
-      for (const contentId of missing) {
-        const detail = await fetchTourApiFestivalDetail({ contentId });
-        if (cancelled) return;
-        const built = festivalItemFromDetailWithAsOf(detail);
-        if (!built) continue;
-        setSocialPromoById((prev) => {
-          const next = new Map(prev);
-          next.set(String(contentId), built);
-          return next;
-        });
-      }
+      await Promise.all(
+        needFetch.map(async (contentId) => {
+          const detail = await fetchTourApiFestivalDetail({ contentId });
+          if (cancelled) return;
+          const built = festivalItemFromDetailWithAsOf(detail);
+          if (!built) return;
+          setSocialPromoById((prev) => {
+            const next = new Map(prev);
+            next.set(String(contentId), built);
+            return next;
+          });
+        }),
+      );
     })();
     return () => {
       cancelled = true;
     };
-  }, [loading, items]);
+  }, [loading, items, socialPromoById]);
 
   const socialPromoItemById = useMemo(() => {
     const map = new Map();
-    for (const item of items) {
-      if (item?.contentId != null) map.set(String(item.contentId), item);
-    }
-    for (const [id, item] of socialPromoById) {
-      if (!map.has(id)) map.set(id, item);
+    for (const entry of socialPromoFestivals) {
+      const id = String(entry.contentId);
+      const windowItem = items.find((row) => String(row?.contentId || '') === id);
+      const detailItem = socialPromoById.get(id);
+      const merged = mergeFestivalRowItem(windowItem, detailItem);
+      if (merged) map.set(id, merged);
     }
     return map;
   }, [items, socialPromoById]);
 
-  const socialPromoCards = useMemo(
-    () =>
-      pickVisibleSocialPromoCards(
-        socialPromoFestivals,
-        socialPromoItemById,
-        now,
-        2,
-      ),
+  const socialPromoRow = useMemo(
+    () => resolveSocialPromoRow(socialPromoFestivals, socialPromoItemById, now, 2),
     [socialPromoItemById, now],
   );
 
-  const itemsWithSocialPromo = useMemo(
-    () =>
-      mergeSocialPromoIntoFestivalItems(
-        items,
-        socialPromoFestivals,
-        socialPromoItemById,
-        now,
-      ),
-    [items, socialPromoItemById, now],
-  );
+  const itemsWithSocialPromo = useMemo(() => {
+    const promoIds = new Set(
+      socialPromoFestivals.map((entry) => String(entry.contentId)),
+    );
+    const merged = mergeSocialPromoIntoFestivalItems(
+      items,
+      socialPromoFestivals,
+      socialPromoItemById,
+      now,
+    );
+    return merged.map((item) => {
+      const id = String(item?.contentId || '');
+      if (!promoIds.has(id)) return item;
+      return mergeFestivalRowItem(item, socialPromoItemById.get(id));
+    });
+  }, [items, socialPromoItemById, now]);
 
   const timeTabs = useMemo(
     () => localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now)),
@@ -1173,6 +1187,10 @@ export default function KoreaFestivalHub() {
 
   const searchFilter = searchDraft.trim() || searchApplied.trim();
   const searchActive = searchFilter.length > 0;
+
+  const showSocialPromoRow =
+    shouldShowSocialPromoHomeRow(searchActive) &&
+    (socialPromoRow.status === 'loading' || socialPromoRow.status === 'ready');
 
   /** 검색 중에는 시간·지역·테마 칩을 넘어 롤링 12개월 전체에서 매칭 */
   const searchPoolItems = useMemo(() => {
@@ -1272,12 +1290,27 @@ export default function KoreaFestivalHub() {
   const sessionPinnedDisplay = useMemo(() => {
     if (!sessionPinnedItem?.contentId) return null;
     const id = String(sessionPinnedItem.contentId);
-    return byContentId.get(id) || sessionPinnedItem;
-  }, [sessionPinnedItem, byContentId]);
+    const live = byContentId.get(id) || socialPromoItemById.get(id) || sessionPinnedItem;
+    return mergeFestivalRowItem(live, socialPromoItemById.get(id));
+  }, [sessionPinnedItem, byContentId, socialPromoItemById]);
+
+  const showSessionPinnedRow = useMemo(
+    () =>
+      sessionPinnedDisplay &&
+      shouldShowSessionPinnedRow(
+        sessionPinnedDisplay.contentId,
+        socialPromoRow.status === 'ready' ? socialPromoRow.cards : [],
+      ),
+    [sessionPinnedDisplay, socialPromoRow],
+  );
 
   const panelItemsForList = useMemo(
-    () => excludePinnedFromPanelItems(panelItems, sessionPinnedDisplay),
-    [panelItems, sessionPinnedDisplay],
+    () =>
+      excludePinnedFromPanelItems(
+        panelItems,
+        showSessionPinnedRow ? sessionPinnedDisplay : null,
+      ),
+    [panelItems, sessionPinnedDisplay, showSessionPinnedRow],
   );
 
   const timeChipCounts = useMemo(() => {
@@ -2690,7 +2723,7 @@ export default function KoreaFestivalHub() {
                     </div>
                   ))
                 )
-              ) : panelItemsForList.length === 0 && !sessionPinnedDisplay ? (
+              ) : panelItemsForList.length === 0 && !showSessionPinnedRow ? (
                 loading ? (
                   <div
                     className={listLarge ? 'space-y-3' : 'space-y-2'}
@@ -2719,13 +2752,14 @@ export default function KoreaFestivalHub() {
                 )
               ) : (
                 <>
-                  {socialPromoCards.length > 0 ? (
+                  {showSocialPromoRow ? (
                     <SocialPromoFestivalRow
-                      cards={socialPromoCards}
+                      cards={socialPromoRow.cards}
+                      loading={socialPromoRow.status === 'loading'}
                       onSelect={openItem}
                     />
                   ) : null}
-                  {sessionPinnedDisplay ? (
+                  {showSessionPinnedRow ? (
                     <div
                       className="mb-2 space-y-2"
                       data-session-pinned-festival=""

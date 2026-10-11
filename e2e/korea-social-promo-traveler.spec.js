@@ -43,6 +43,15 @@ test.describe('korea social promo traveler @390', () => {
 
     const promoRow = page.locator('[data-social-promo-festival-row]');
     await expect(promoRow).toBeVisible({ timeout: 120_000 });
+    await expect(promoRow).toHaveAttribute('data-social-promo-loading', 'false', {
+      timeout: 120_000,
+    });
+    await expect(
+      promoRow.locator('[data-social-promo-card][data-festival-id="638576"]'),
+    ).toBeVisible();
+    await expect(
+      promoRow.locator('[data-social-promo-card][data-festival-id="637693"]'),
+    ).toBeVisible();
     const paths = [];
     paths.push(await shot(page, '01-home-promo-row'));
 
@@ -63,12 +72,11 @@ test.describe('korea social promo traveler @390', () => {
     await closeDetail.click();
     await expect(page).not.toHaveURL(/festival=638576/, { timeout: 30_000 });
 
-    const pinned = page.locator('[data-session-pinned-festival]');
-    await expect(pinned).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(0);
     await expect(
-      pinned.locator('[data-festival-id="638576"]'),
+      promoRow.locator('[data-social-promo-card][data-festival-id="638576"]'),
     ).toBeVisible();
-    paths.push(await shot(page, '03-pinned-after-close'));
+    paths.push(await shot(page, '03-after-close-no-duplicate-pin'));
 
     const searchToggle = page.getByRole('button', {
       name: /축제 검색|Search festivals/i,
@@ -77,9 +85,12 @@ test.describe('korea social promo traveler @390', () => {
     const searchInput = page.getByRole('searchbox').first();
     await searchInput.fill('국향');
     await searchInput.press('Enter');
-    await expect(
-      page.getByRole('main').locator('[data-festival-id="638576"]').first(),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(promoRow).toHaveCount(0);
+    const hit = page.getByRole('main').locator('[data-festival-id="638576"]').first();
+    await expect(hit).toBeVisible({ timeout: 30_000 });
+    const thumb = hit.locator('img');
+    await expect(thumb).toBeVisible();
+    await expect(thumb).toHaveAttribute('src', /https:\/\//);
     paths.push(await shot(page, '04-search-gukhyang'));
 
     await test.info().attach('screenshot-paths.txt', {
