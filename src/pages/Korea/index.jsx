@@ -71,9 +71,11 @@ import {
   festivalItemFromDetailWithAsOf,
   mergeFestivalRowItem,
   mergeSocialPromoIntoFestivalItems,
+  filterSocialPromoCardsByRegion,
+  resolveSocialPromoPresentation,
   resolveSocialPromoRow,
+  shouldShowSessionPinnedHomeRow,
   shouldShowSessionPinnedRow,
-  shouldShowSocialPromoHomeRow,
   socialPromoFestivals,
   socialPromoIdsNeedingDetailFetch,
 } from './socialPromoFestivals';
@@ -1206,9 +1208,17 @@ export default function KoreaFestivalHub() {
   const searchFilter = searchDraft.trim() || searchApplied.trim();
   const searchActive = searchFilter.length > 0;
 
-  const showSocialPromoRow =
-    shouldShowSocialPromoHomeRow(searchActive) &&
-    (socialPromoRow.status === 'loading' || socialPromoRow.status === 'ready');
+  const socialPromoPresentation = useMemo(
+    () =>
+      resolveSocialPromoPresentation(socialPromoRow, {
+        searchActive,
+        areaCode,
+        cityName,
+      }),
+    [socialPromoRow, searchActive, areaCode, cityName],
+  );
+
+  const showSocialPromoRow = socialPromoPresentation.show;
 
   /** 검색 중에는 시간·지역·테마 칩을 넘어 롤링 12개월 전체에서 매칭 */
   const searchPoolItems = useMemo(() => {
@@ -1314,12 +1324,18 @@ export default function KoreaFestivalHub() {
 
   const showSessionPinnedRow = useMemo(
     () =>
+      shouldShowSessionPinnedHomeRow(searchActive) &&
       sessionPinnedDisplay &&
       shouldShowSessionPinnedRow(
         sessionPinnedDisplay.contentId,
-        socialPromoRow.status === 'ready' ? socialPromoRow.cards : [],
+        socialPromoRow.status === 'ready'
+          ? filterSocialPromoCardsByRegion(socialPromoRow.cards, {
+              areaCode,
+              cityName,
+            })
+          : [],
       ),
-    [sessionPinnedDisplay, socialPromoRow],
+    [searchActive, sessionPinnedDisplay, socialPromoRow, areaCode, cityName],
   );
 
   const panelItemsForList = useMemo(
@@ -2772,8 +2788,8 @@ export default function KoreaFestivalHub() {
                 <>
                   {showSocialPromoRow ? (
                     <SocialPromoFestivalRow
-                      cards={socialPromoRow.cards}
-                      loading={socialPromoRow.status === 'loading'}
+                      cards={socialPromoPresentation.cards}
+                      loading={socialPromoPresentation.loading}
                       onSelect={openItem}
                     />
                   ) : null}

@@ -26,7 +26,7 @@ export default function SocialPromoFestivalRow({ cards, loading = false, onSelec
       <h3 className="px-0.5 text-[11px] font-bold tracking-wide text-amber-950 break-keep">
         {t('korea.festival.socialPromoTitle')}
       </h3>
-      <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="mt-2 flex flex-col gap-1.5">
         {cards.map(({ item, entry }) =>
           loading || !item ? (
             <SocialPromoCardSkeleton
@@ -48,14 +48,14 @@ export default function SocialPromoFestivalRow({ cards, loading = false, onSelec
 function SocialPromoCardSkeleton() {
   return (
     <div
-      className="flex min-w-[min(100%,14.5rem)] max-w-[14.5rem] flex-1 items-center gap-2 rounded-xl border border-amber-100 bg-white p-2"
+      className="flex w-full items-center gap-2 rounded-xl border border-amber-100 bg-white p-2"
       data-social-promo-card-skeleton=""
       aria-hidden="true"
     >
-      <div className="h-12 w-12 shrink-0 animate-pulse rounded-lg bg-stone-200" />
-      <div className="min-w-0 flex-1 space-y-1.5">
-        <div className="h-3.5 w-4/5 animate-pulse rounded bg-stone-200" />
-        <div className="h-2.5 w-1/2 animate-pulse rounded bg-amber-100" />
+      <div className="h-10 w-10 shrink-0 animate-pulse rounded-lg bg-stone-200" />
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="h-3.5 w-full max-w-[14rem] animate-pulse rounded bg-stone-200" />
+        <div className="h-2.5 w-20 animate-pulse rounded bg-amber-100" />
       </div>
     </div>
   );
@@ -80,9 +80,9 @@ function SocialPromoCard({ item, onSelect }) {
       data-social-promo-card=""
       data-festival-id={String(item?.contentId || '')}
       onClick={() => onSelect(item)}
-      className="flex min-w-[min(100%,14.5rem)] max-w-[14.5rem] flex-1 items-center gap-2 rounded-xl border border-amber-100 bg-white p-2 text-left shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40"
+      className="flex w-full min-w-0 items-center gap-2 rounded-xl border border-amber-100 bg-white p-2 text-left shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40"
     >
-      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-stone-100">
+      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-stone-100">
         {img && !imgFailed ? (
           <img
             src={img}
@@ -105,16 +105,16 @@ function SocialPromoCard({ item, onSelect }) {
           </div>
         )}
       </div>
-      <div className="min-w-0 flex-1 space-y-0.5">
+      <div className="min-w-0 flex-1">
         <p
-          className="text-[12px] font-bold leading-snug text-stone-900 line-clamp-2 break-keep"
+          className="text-[12px] font-bold leading-tight text-stone-900 truncate break-keep"
           {...koText}
         >
           {item.title}
         </p>
         {range ? (
-          <p className="flex items-center gap-1 text-[10px] font-bold text-amber-800">
-            <CalendarDays size={10} aria-hidden="true" />
+          <p className="mt-0.5 flex items-center gap-1 text-[10px] font-bold text-amber-800">
+            <CalendarDays size={10} className="shrink-0" aria-hidden="true" />
             <span className="truncate">{range}</span>
           </p>
         ) : null}

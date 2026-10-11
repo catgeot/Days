@@ -90,6 +90,25 @@ async function shot(page, name) {
   return path;
 }
 
+async function waitForPromoReady(page) {
+  const promoRow = page.locator('[data-social-promo-festival-row]');
+  await expect(promoRow).toBeVisible({ timeout: 120_000 });
+  await expect(promoRow).toHaveAttribute('data-social-promo-loading', 'false', {
+    timeout: 120_000,
+  });
+  await waitForVisibleThumbs(promoRow);
+  return promoRow;
+}
+
+async function closeDetailSheet(page) {
+  const closeDetail = page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^닫기$|^Close$/i })
+    .first();
+  await expect(closeDetail).toBeVisible({ timeout: 30_000 });
+  await closeDetail.click();
+}
+
 test.describe('korea social promo traveler @390', () => {
   test.use({
     viewport: { width: 390, height: 844 },
@@ -97,53 +116,38 @@ test.describe('korea social promo traveler @390', () => {
   });
   test.setTimeout(180_000);
 
-  test('utm profile → promo → detail → close pin → search 국향', async ({
-    page,
-  }) => {
+  test('promo title, pin+search, region chip, screenshots', async ({ page }) => {
     const imageLog = [];
+    const paths = [];
 
-    await page.goto('/korea/?utm_source=instagram&utm_medium=profile');
+    await page.goto('/korea/');
     await expect(
       page.getByRole('heading', { name: /한국의 축제|Korea festivals/i }),
     ).toBeVisible({ timeout: 90_000 });
     await dismissLocHint(page);
 
-    const promoRow = page.locator('[data-social-promo-festival-row]');
-    await expect(promoRow).toBeVisible({ timeout: 120_000 });
-    await expect(promoRow).toHaveAttribute('data-social-promo-loading', 'false', {
-      timeout: 120_000,
-    });
-    await waitForVisibleThumbs(promoRow);
+    await expect(
+      page.getByText('GATEO가 소개하는 축제', { exact: true }),
+    ).toBeVisible({ timeout: 120_000 });
+
+    const promoRow = await waitForPromoReady(page);
+    await expect(promoRow.locator('[data-social-promo-card]')).toHaveCount(2);
     imageLog.push({
       step: '01-home-promo',
       thumbs: await collectThumbUrls(promoRow),
     });
-
-    const paths = [];
     paths.push(await shot(page, '01-home-promo-row'));
 
     const gukhyangCard = promoRow
       .locator('[data-social-promo-card][data-festival-id="638576"]')
       .first();
     await gukhyangCard.click();
-
     await expect(page).toHaveURL(/festival=638576/, { timeout: 60_000 });
     paths.push(await shot(page, '02-detail-sheet'));
-
-    const closeDetail = page
-      .getByRole('dialog')
-      .getByRole('button', { name: /^닫기$|^Close$/i })
-      .first();
-    await expect(closeDetail).toBeVisible({ timeout: 30_000 });
-    await closeDetail.click();
+    await closeDetailSheet(page);
     await expect(page).not.toHaveURL(/festival=638576/, { timeout: 30_000 });
-
     await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(0);
-    await waitForVisibleThumbs(promoRow);
-    imageLog.push({
-      step: '03-after-close',
-      thumbs: await collectThumbUrls(page.getByRole('main')),
-    });
+    await waitForPromoReady(page);
     paths.push(await shot(page, '03-after-close-no-duplicate-pin'));
 
     const searchToggle = page.getByRole('button', {
@@ -151,17 +155,48 @@ test.describe('korea social promo traveler @390', () => {
     });
     await searchToggle.click();
     const searchInput = page.getByRole('searchbox').first();
+    await searchInput.fill('강릉 국수');
+    await searchInput.press('Enter');
+    const gangneungHit = page
+      .getByRole('main')
+      .locator('[data-festival-id]')
+      .filter({ hasText: /강릉/ })
+      .first();
+    await expect(gangneungHit).toBeVisible({ timeout: 60_000 });
+    await gangneungHit.click();
+    await expect(page).toHaveURL(/festival=\d+/, { timeout: 60_000 });
+    await closeDetailSheet(page);
+    await page.getByRole('button', { name: /검색 닫기|Close search/i }).click();
+    await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(1, {
+      timeout: 30_000,
+    });
+
+    await searchToggle.click();
+    await expect(searchInput).toBeVisible();
     await searchInput.fill('국향');
     await searchInput.press('Enter');
     await expect(promoRow).toHaveCount(0);
-    const hit = page.getByRole('main').locator('[data-festival-id="638576"]').first();
-    await expect(hit).toBeVisible({ timeout: 30_000 });
-    await waitForVisibleThumbs(hit);
+    await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(0);
+    const gukhyangHit = page
+      .getByRole('main')
+      .locator('[data-festival-id="638576"]')
+      .first();
+    await expect(gukhyangHit).toBeVisible({ timeout: 30_000 });
+    await waitForVisibleThumbs(gukhyangHit);
     imageLog.push({
-      step: '04-search-gukhyang',
-      thumbs: await collectThumbUrls(hit),
+      step: '04-search-gukhyang-no-pin',
+      thumbs: await collectThumbUrls(gukhyangHit),
     });
-    paths.push(await shot(page, '04-search-gukhyang'));
+    paths.push(await shot(page, '04-search-gukhyang-prior-viewed'));
+
+    await page.getByRole('button', { name: /검색 닫기|Close search/i }).click();
+    await waitForPromoReady(page);
+
+    const gangwon = page.getByRole('button', { name: /강원/ }).first();
+    await gangwon.scrollIntoViewIfNeeded();
+    await gangwon.click();
+    await expect(promoRow).toHaveCount(0, { timeout: 30_000 });
+    paths.push(await shot(page, '05-region-gangwon-no-promo'));
 
     const logPath = join(OUT_DIR, 'image-urls.json');
     await writeFile(logPath, JSON.stringify(imageLog, null, 2), 'utf8');
@@ -169,10 +204,6 @@ test.describe('korea social promo traveler @390', () => {
     await test.info().attach('screenshot-paths.txt', {
       body: paths.join('\n'),
       contentType: 'text/plain',
-    });
-    await test.info().attach('image-urls.json', {
-      body: JSON.stringify(imageLog, null, 2),
-      contentType: 'application/json',
     });
   });
 });

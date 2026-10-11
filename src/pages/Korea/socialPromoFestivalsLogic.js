@@ -4,6 +4,7 @@ import {
   isFestivalEnded,
   todayYmdKst,
 } from './festivalDeepLinkItem.js';
+import { filterByRegion } from './festivalRegionTags.js';
 
 function pickStr(...values) {
   for (const value of values) {
@@ -196,6 +197,70 @@ export function resolveSocialPromoRow(
 /** Promo strip only on default festival home (not search results). */
 export function shouldShowSocialPromoHomeRow(searchActive) {
   return !searchActive;
+}
+
+/** Session pin row hidden during search (same as promo). */
+export function shouldShowSessionPinnedHomeRow(searchActive) {
+  return !searchActive;
+}
+
+/**
+ * @param {string | undefined} areaCode
+ * @param {string | undefined} cityName
+ */
+export function isNationwideRegionFilter(areaCode, cityName) {
+  const area = String(areaCode ?? 'all').trim() || 'all';
+  const city = String(cityName ?? 'all').trim() || 'all';
+  return area === 'all' && city === 'all';
+}
+
+/**
+ * @param {Array<{ entry: object, item: object | null }>} cards
+ * @param {{ areaCode?: string, cityName?: string }} regionFilter
+ */
+export function filterSocialPromoCardsByRegion(cards, regionFilter = {}) {
+  if (!Array.isArray(cards) || !cards.length) return [];
+  if (
+    isNationwideRegionFilter(regionFilter.areaCode, regionFilter.cityName)
+  ) {
+    return cards;
+  }
+  return cards.filter(({ item }) =>
+    filterByRegion([item], regionFilter).length > 0,
+  );
+}
+
+/**
+ * @param {{ status: string, cards: Array<{ entry: object, item: object | null }> }} row
+ * @param {{ searchActive?: boolean, areaCode?: string, cityName?: string }} ctx
+ */
+export function resolveSocialPromoPresentation(row, ctx = {}) {
+  const searchActive = Boolean(ctx.searchActive);
+  const regionFilter = {
+    areaCode: ctx.areaCode,
+    cityName: ctx.cityName,
+  };
+  if (!shouldShowSocialPromoHomeRow(searchActive)) {
+    return { show: false, cards: [], loading: false };
+  }
+  if (!row || row.status === 'empty') {
+    return { show: false, cards: [], loading: false };
+  }
+  const nationwide = isNationwideRegionFilter(
+    regionFilter.areaCode,
+    regionFilter.cityName,
+  );
+  if (row.status === 'loading') {
+    if (!nationwide) {
+      return { show: false, cards: [], loading: false };
+    }
+    return { show: true, cards: row.cards, loading: true };
+  }
+  if (row.status === 'ready') {
+    const cards = filterSocialPromoCardsByRegion(row.cards, regionFilter);
+    return { show: cards.length > 0, cards, loading: false };
+  }
+  return { show: false, cards: [], loading: false };
 }
 
 /**

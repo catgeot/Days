@@ -15,8 +15,11 @@ import {
   mergeFestivalRowItem,
   mergeSocialPromoIntoFestivalItems,
   normalizeFestivalItemImages,
+  filterSocialPromoCardsByRegion,
   pickVisibleSocialPromoCards,
+  resolveSocialPromoPresentation,
   resolveSocialPromoRow,
+  shouldShowSessionPinnedHomeRow,
   shouldShowSessionPinnedRow,
   shouldShowSocialPromoHomeRow,
   shouldShowSocialPromoItem,
@@ -174,6 +177,52 @@ test('session pin hidden when festival is already on promo row; promo hidden on 
   assert.equal(shouldShowSessionPinnedRow('638576', []), true);
   assert.equal(shouldShowSocialPromoHomeRow(false), true);
   assert.equal(shouldShowSocialPromoHomeRow(true), false);
+  assert.equal(shouldShowSessionPinnedHomeRow(false), true);
+  assert.equal(shouldShowSessionPinnedHomeRow(true), false);
+});
+
+test('promo row filters by region chip; hidden when no match', () => {
+  const ready = resolveSocialPromoRow(
+    socialPromoFestivals,
+    new Map([
+      ['638576', GUKHYANG],
+      [
+        '637693',
+        {
+          contentId: '637693',
+          title: '마산가고파국화축제',
+          eventStartDate: '20261031',
+          eventEndDate: '20261108',
+          addr1: '경상남도 창원시',
+        },
+      ],
+    ]),
+    NOW,
+    2,
+  );
+  assert.equal(ready.status, 'ready');
+  const nationwide = resolveSocialPromoPresentation(ready, {
+    searchActive: false,
+    areaCode: 'all',
+    cityName: 'all',
+  });
+  assert.equal(nationwide.show, true);
+  assert.equal(nationwide.cards.length, 2);
+
+  const gangwon = resolveSocialPromoPresentation(ready, {
+    searchActive: false,
+    areaCode: '32',
+    cityName: 'all',
+  });
+  assert.equal(gangwon.show, false);
+  assert.equal(gangwon.cards.length, 0);
+
+  const jeonnam = filterSocialPromoCardsByRegion(ready.cards, {
+    areaCode: '38',
+    cityName: 'all',
+  });
+  assert.equal(jeonnam.length, 1);
+  assert.equal(jeonnam[0].item.contentId, '638576');
 });
 
 test('merge adds configured IDs once and search finds 국향', () => {
@@ -215,11 +264,24 @@ test('hub wires session pin, promo row, and merge', () => {
   assert.match(hub, /festivalViewedPushedRef/);
   assert.match(hub, /festivalItemForSessionPin/);
   assert.match(hub, /resolveSocialPromoRow/);
-  assert.match(hub, /shouldShowSocialPromoHomeRow/);
+  assert.match(hub, /resolveSocialPromoPresentation/);
+  assert.match(hub, /shouldShowSessionPinnedHomeRow/);
   assert.match(hub, /shouldShowSessionPinnedRow/);
   const promoRow = readFileSync(
     join(root, 'src/pages/Korea/SocialPromoFestivalRow.jsx'),
     'utf8',
   );
   assert.match(promoRow, /data-social-promo-loading/);
+  assert.match(promoRow, /flex-col/);
+});
+
+test('promo title copy (GATEO, all visitors)', () => {
+  const ko = JSON.parse(
+    readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'),
+  );
+  const en = JSON.parse(
+    readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'),
+  );
+  assert.equal(ko.korea.festival.socialPromoTitle, 'GATEO가 소개하는 축제');
+  assert.equal(en.korea.festival.socialPromoTitle, 'Festivals featured by GATEO');
 });
