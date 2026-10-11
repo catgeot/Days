@@ -56,6 +56,14 @@
 - **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` · `audit:city-attraction-hubs` 0 · vite build
 - **Preview** `https://days-git-cursor-cairo-place-facts-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/cairo/wiki` · `/place/grand-egyptian-museum` · `/place/sultan-hassan-mosque`
 
+## 카이로 장소 카드 #2, QA 수정
+
+- **세션** `카이로 장소 카드 #2, QA 수정` · branch `cursor/cairo-place-facts-8e40` · tip `635e9dde` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 출처에서 저장소 경로를 빼고 «GATEO 로그북 (2026-10-03)» (공개 글 URL 없음). 빈 칸은 «확인 안 된 항목» 한 줄. 공항 교통 페이지는 접속 불가라 링크만 제거. 지도 출처·링크는 Google 지도, GEM 예매 문구는 사이트 이름. 헤더 제목은 두 줄. GEM·술탄 하산 표시 이름을 줄임.
+- **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` 6 pass · `audit:city-attraction-hubs` 0 · `check:place-video-catalog` · eslint.ci
+- **Preview** 같은 git Preview · `/place/cairo` · `/place/grand-egyptian-museum` · `/place/sultan-hassan-mosque` · `/place/egyptian-museum-cairo` · `/place/cairo/wiki` · `/explore`에서 카이로
+- **다음** `카이로 장소 카드 #3, Preview OK면 PR 병합`
+
 ## 축제 가는 법 #1, TAGO Edge
 
 - **세션** `축제 가는 법 #1, TAGO Edge` · branch `cursor/transport-proxy-e06e` · tip `44f3f94c` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지
@@ -95,3 +103,9 @@
 - **함안 구경** SSOT 9곳. 마산 축제의 가까운 허브는 창원이라 좌표 없는 6곳은 넣지 않고, 악양·입곡은 22.3km로 20km 밖이다. 연꽃테마파크 17.4km만 남는다.
 - **VERIFY** nearby health 13 pass · `npx vite build` PASS
 - **Preview** `https://days-git-cursor-festival-nearby-9654-catgeots-projects.vercel.app/korea?festival=638576`
+
+## 축제 상세 #1, 팔경 소제목 복구
+
+- **세션** 같은 브랜치 `cursor/festival-nearby-9654` · tip `783c6234` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지
+- **조치** 일반 목록은 거리순이고 팔경 멤버를 빼다. 2곳 이상인 팔경은 «함평 팔경» 소제목 아래 경 번호순. 1곳뿐인 다른 시·군(함안 5경)은 뱃지만 달아 일반 목록에 둔다. 표시 이름 끝 시군을 빼고, 사진이 없으면 회색 칸 대신 아이콘. 국향·마산 썸네일은 전부 사진이 있고 이전 회색은 로드 전 캡처.
+- **VERIFY** nearby health 15 pass · `npx vite build` PASS

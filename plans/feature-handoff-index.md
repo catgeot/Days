@@ -14,18 +14,43 @@
 
 ## 활성 목록
 
+### 카이로 장소 카드
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `635e9dde` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · **병합 금지** |
+| **브랜치** | `cursor/cairo-place-facts-8e40` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | git `https://days-git-cursor-cairo-place-facts-8e40-catgeots-projects.vercel.app/place/cairo` (Vercel SSO) |
+| **금지** | 표에 없는 사실 채우기 · 저장소 경로를 출처로 렌더 · Edge·prod SQL · feature에 `plans/**` 커밋 · PR 병합 |
+| **VERIFY** | `node --test scripts/health/place-verified-facts.test.mjs` · `npm run audit:city-attraction-hubs` · `npm run check:place-video-catalog` |
+| **남은 일** | Preview에서 출처명·빈 칸 한 줄·GEM/술탄 하산 제목·타흐리르·AI 라벨 확인 후 PR #428 병합 |
+
+**다음 제시어**:
+
+```
+카이로 장소 카드 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-10-11-project-log.md
+브랜치 cursor/cairo-place-facts-8e40 · draft PR #428 · tip 635e9dde
+금지: 표에 없는 사실 · 저장소 경로 출처 · Edge·prod SQL · feature에 plans 커밋 · 사람 확인 전 병합
+작업: /place/cairo · /place/grand-egyptian-museum · /place/sultan-hassan-mosque · /place/egyptian-museum-cairo · /place/cairo/wiki · /explore 에서 카이로. 출처는 GATEO 로그북 (2026-10-03), 빈 칸은 한 줄, 제목은 두 줄. OK면 PR #428 병합
+검증: node --test scripts/health/place-verified-facts.test.mjs
+```
+
 ### 축제 상세 주변 볼거리
 
 | | |
 |--|--|
-| **상태** | **#1 QA 수정 push** · tip `1780fc9d` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지 |
+| **상태** | **#1 소제목 복구 push** · tip `783c6234` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지 |
 | **브랜치** | `cursor/festival-nearby-9654` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | `https://days-git-cursor-festival-nearby-9654-catgeots-projects.vercel.app/korea?festival=638576` · `/qa` 슬러그 없음 |
-| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 팔경 소제목 부활 |
+| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 팔경을 일반 목록에 다시 섞기 |
 | **VERIFY** | `node --test scripts/health/festival-nearby-sights.test.mjs scripts/health/festival-detail-ux.test.mjs` · `npx vite build` |
-| **남은 일** | 사람이 638576·637693·2930716을 다시 본 뒤 병합. 함안 구경은 9곳 중 연꽃테마파크만 20km 안이라 1곳이다. 반경을 늘리는 변경은 하지 않았다. |
+| **남은 일** | 사람이 638576(일반 목록 + 함평 팔경 경 번호)과 637693(연꽃 뱃지만, 소제목 없음)을 본 뒤 병합. 함안 구경은 9곳 중 1곳만 20km 안이다. |
 
 **다음 제시어**:
 
@@ -33,9 +58,9 @@
 축제 상세 #2, 주변 볼거리 재확인
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/festival-nearby-9654 · draft PR #430 · tip 1780fc9d
-금지: PR 병합 · main 코드 push · feature에 plans 커밋 · 팔경 소제목 부활
-작업: Preview에서 국향대전은 소제목 없이 함평 N경 뱃지만, 마산은 연꽃테마파크 한 행과 17km, 강릉 국수는 거리순인지 본다. 통과하면 사람 병합.
+브랜치 cursor/festival-nearby-9654 · draft PR #430 · tip 783c6234
+금지: PR 병합 · main 코드 push · feature에 plans 커밋 · 팔경을 일반 목록에 섞기
+작업: Preview에서 국향대전은 거리순 일반 목록 아래 «함평 팔경»이 1경부터인지, 마산 연꽃테마파크는 소제목 없이 뱃지와 17km인지 본다. 통과하면 사람 병합.
 검증: node --test scripts/health/festival-nearby-sights.test.mjs scripts/health/festival-detail-ux.test.mjs
 ```
 
