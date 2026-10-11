@@ -33,17 +33,30 @@ export async function enableMooniE2eLoggedIn(page) {
   });
 }
 
-export async function openFestivalMooni(page, festivalId = E2E_FESTIVAL_ID) {
+export async function openFestivalMooni(page, festivalId = E2E_FESTIVAL_ID, opts = {}) {
+  const { reuseFestivalSheet = false } = opts;
+  const mooniBtn = page.locator('[data-festival-mooni-inline]').first();
+  if (reuseFestivalSheet) {
+    try {
+      await mooniBtn.waitFor({ state: 'visible', timeout: 8_000 });
+      await mooniBtn.scrollIntoViewIfNeeded();
+      await mooniBtn.click({ timeout: 30_000 });
+      await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({
+        timeout: 120_000,
+      });
+      return;
+    } catch {
+      /* sheet closed — full deep link */
+    }
+  }
   await page.goto(`/korea/?festival=${festivalId}`, {
     waitUntil: 'domcontentloaded',
     timeout: 120_000,
   });
   await dismissLocHint(page);
-  const mooniBtn = page
-    .locator('[data-festival-mooni-inline]')
-    .or(page.getByRole('button', { name: /무니에게 이 축제 물어보기/i }))
-    .first();
-  await expect(mooniBtn).toBeVisible({ timeout: 90_000 });
+  await mooniBtn.waitFor({ state: 'attached', timeout: 90_000 });
+  await mooniBtn.scrollIntoViewIfNeeded();
+  await expect(mooniBtn).toBeVisible({ timeout: 60_000 });
   await mooniBtn.click({ timeout: 60_000 });
   await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({
     timeout: 120_000,

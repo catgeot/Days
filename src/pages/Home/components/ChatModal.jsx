@@ -53,7 +53,9 @@ import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js
 import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
 import {
   festivalTripMatchesLocale,
+  readFestivalMooniOpeningAnyLocale,
   readFestivalMooniSession,
+  readFestivalMooniSessionMessages,
   showFestivalOpeningInThread,
   writeFestivalMooniSession,
 } from '../lib/festivalMooniSessionCache.js';
@@ -400,7 +402,16 @@ const ChatModal = ({
   useEffect(() => {
     if (!festivalMooniContext?.title) return undefined;
     const contentId = festivalMooniContext.contentId;
+    const resumedMsgs = readFestivalMooniSessionMessages(contentId, i18n.language);
+    const anyOpening = readFestivalMooniOpeningAnyLocale(contentId);
     const cached = readFestivalMooniSession(contentId, i18n.language);
+    if (anyOpening || resumedMsgs.length) {
+      const text = anyOpening || cached?.opening || '';
+      if (text) {
+        setFestivalModelOpening({ key: festivalOpeningKey, text });
+        return undefined;
+      }
+    }
     if (cached?.opening) {
       setFestivalModelOpening({ key: festivalOpeningKey, text: cached.opening });
       return undefined;
@@ -706,11 +717,13 @@ const ChatModal = ({
       );
       const festivalLocaleOk = !festivalMooniContext?.contentId
         || festivalTripMatchesLocale(targetTrip, i18n.language);
-      if (targetTrip && festivalLocaleOk) {
+      if (targetTrip) {
         const tripMsgs = targetTrip.messages || [];
         const localMsgs = messagesRef.current || [];
         const localLen = localMsgs.length ?? 0;
+        const maySyncTrip = festivalLocaleOk || localLen === 0;
         if (
+          maySyncTrip &&
           shouldHydrateTripMessages({
             activeChatId,
             lastSyncedChatId: lastTripSyncChatIdRef.current,
@@ -730,19 +743,22 @@ const ChatModal = ({
             destinationName: targetTrip.destination || '',
           });
         }
-      } else if (
+      }
+      if (
         shouldHydrateDraftCacheFallback({
           activeChatId,
           hasTripRow: Boolean(targetTrip),
+          tripLocaleMatches: targetTrip ? festivalLocaleOk : undefined,
           localMessageCount: messagesRef.current?.length ?? 0,
           isLoading,
         })
       ) {
-        const cached = festivalMooniContext?.contentId
-          ? readFestivalMooniSession(festivalMooniContext.contentId, i18n.language)
-          : null;
-        if (cached?.messages?.length) {
-          setMessages(cached.messages);
+        const contentId = festivalMooniContext?.contentId;
+        const cachedMsgs = contentId
+          ? readFestivalMooniSessionMessages(contentId, i18n.language)
+          : [];
+        if (cachedMsgs.length) {
+          setMessages(cachedMsgs);
         }
       }
       return;
@@ -751,10 +767,10 @@ const ChatModal = ({
     if (chatDraft) {
       const localLen = messagesRef.current?.length ?? 0;
       if (!shouldHydrateDraftMessages({ localMessageCount: localLen, isLoading })) return;
-      const cached = festivalMooniContext?.contentId
-        ? readFestivalMooniSession(festivalMooniContext.contentId, i18n.language)
-        : null;
-      setMessages(cached?.messages?.length ? cached.messages : []);
+      const cachedMsgs = festivalMooniContext?.contentId
+        ? readFestivalMooniSessionMessages(festivalMooniContext.contentId, i18n.language)
+        : [];
+      setMessages(cachedMsgs.length ? cachedMsgs : []);
       if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
       tripSessionRef.current = hydrateMooniTripSession({
         messages: [],

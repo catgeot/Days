@@ -20,7 +20,11 @@ const OUT_DIR =
 
 async function shot(page, name) {
   await mkdir(OUT_DIR, { recursive: true });
-  await page.screenshot({ path: join(OUT_DIR, name), fullPage: false });
+  try {
+    await page.screenshot({ path: join(OUT_DIR, name), fullPage: false });
+  } catch (err) {
+    if (err?.code !== 'EAGAIN') throw err;
+  }
 }
 
 test.describe('festival MOONi logged-in race (a) stale PATCH @390', () => {
@@ -106,18 +110,19 @@ test.describe('festival MOONi logged-in race (b) locale + missing trip @390', ()
     await page.waitForTimeout(400);
     await expect(page.getByText(FESTIVAL_CHIP_MOCK_MARKER)).toBeVisible();
 
-    const closeBtn = page.getByRole('button', { name: /채팅 닫기|Close chat|닫기/i }).first();
+    const closeBtn = page.getByRole('button', { name: /^(채팅 닫기|Close chat)$/i });
     await closeBtn.click({ timeout: 15_000 });
     await expect(page.getByTestId('mooni-festival-opening')).toHaveCount(0, {
       timeout: 15_000,
     });
 
     savedTripsMock.setOmitFromGet(false);
-    await openFestivalMooni(page);
+    await openFestivalMooni(page, undefined, { reuseFestivalSheet: true });
     await expect(page.getByText(FESTIVAL_CHIP_MOCK_MARKER)).toBeVisible({
       timeout: 90_000,
     });
     await expect(page.getByTestId('mooni-festival-opening')).toHaveCount(1);
     await expect(page.getByRole('button', { name: /볼거리·분위기|Sights/i })).toBeVisible();
+    await shot(page, 'webkit-iphone-race-b-03-after-reopen.png');
   });
 });

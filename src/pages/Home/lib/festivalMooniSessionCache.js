@@ -14,6 +14,33 @@ export function readFestivalMooniSession(contentId, locale) {
   return sessions.get(key) || null;
 }
 
+/** Messages from locale bucket, then ko/en fallbacks (locale switch + reopen). */
+export function readFestivalMooniSessionMessages(contentId, locale) {
+  const id = String(contentId || '').trim();
+  if (!id) return [];
+  const primary = String(locale || 'ko').slice(0, 2) || 'ko';
+  const tryLangs = [primary, 'ko', 'en'];
+  const seen = new Set();
+  for (const lang of tryLangs) {
+    if (!lang || seen.has(lang)) continue;
+    seen.add(lang);
+    const msgs = readFestivalMooniSession(id, lang)?.messages;
+    if (Array.isArray(msgs) && msgs.length) return msgs;
+  }
+  return [];
+}
+
+/** Opening text from any locale bucket for this festival (avoid EN re-fetch after ko thread). */
+export function readFestivalMooniOpeningAnyLocale(contentId) {
+  const id = String(contentId || '').trim();
+  if (!id) return '';
+  for (const lang of ['ko', 'en']) {
+    const opening = readFestivalMooniSession(id, lang)?.opening;
+    if (String(opening || '').trim()) return String(opening).trim();
+  }
+  return '';
+}
+
 /**
  * @param {string} contentId
  * @param {string} [locale]

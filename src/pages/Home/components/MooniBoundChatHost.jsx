@@ -78,13 +78,21 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       if (!label) return;
       setMooniPlaceContext(spot);
 
-      const placeTrip = savedTrips.find(
+      let placeTrip = savedTrips.find(
         (t) =>
           !t.is_hidden &&
           (t.destination === label || t.destination === spot?.name) &&
           tripHasPersistedDialogue(t) &&
           (!spot?.festivalContext || festivalTripMatchesLocale(t, i18n.language)),
       );
+      if (!placeTrip && spot?.festivalContext) {
+        placeTrip = savedTrips.find(
+          (t) =>
+            !t.is_hidden &&
+            (t.destination === label || t.destination === spot?.name) &&
+            tripHasPersistedDialogue(t),
+        );
+      }
       if (placeTrip) {
         setChatDraft(null);
         setActiveChatId(placeTrip.id);
