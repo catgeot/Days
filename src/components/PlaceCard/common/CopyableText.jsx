@@ -4,6 +4,7 @@ import { resolveAffiliateHomeFromBrandText } from '../../../utils/affiliateBrand
 import { openPartnerExternalUrl } from './partnerNavigation';
 import { isMobileDevice } from './device';
 import { normalizePlannerSmartLinkPhrases } from '../tabs/planner/plannerSmartLinkPhrases';
+import { resolveOfficialMention } from '../../../data/placeVerifiedFacts/cairo.js';
 
 export const CopyableWord = ({ word, koreanName, locationName, type }) => {
     const { t } = useTranslation();
@@ -11,6 +12,9 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
         locationName,
         campaign: 'copyable-smart-link',
     });
+    const officialMention = affiliateHomeUrl
+        ? null
+        : resolveOfficialMention([word, koreanName].filter(Boolean), locationName);
 
     const handleSmartLink = (e) => {
         e.preventDefault();
@@ -20,6 +24,8 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
             openPartnerExternalUrl(affiliateHomeUrl, { placeLabel: locationName });
             return;
         }
+
+        if (officialMention) return;
 
         const searchTarget = word;
 
@@ -43,6 +49,36 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
 
         window.open(url, isMobileDevice() ? '_self' : '_blank');
     };
+
+    if (officialMention?.plain) {
+        return (
+            <span className="inline align-middle">
+                {koreanName && <span className="font-bold mr-0.5">{koreanName}</span>}
+                <span>{word}</span>
+            </span>
+        );
+    }
+
+    if (officialMention?.links?.length) {
+        return (
+            <span className="inline align-middle">
+                {koreanName && <span className="font-bold mr-0.5">{koreanName}</span>}
+                <span className="font-bold">{word}</span>
+                {officialMention.links.map((link) => (
+                    <a
+                        key={link.url}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-official-link={String(link.label || '').includes('지도') ? 'map' : 'booking'}
+                        className={`ml-1 inline-flex items-center font-bold underline underline-offset-2 ${type === 'wiki' ? 'text-sky-300 hover:text-sky-200' : 'text-sky-700 hover:text-sky-900'}`}
+                    >
+                        {link.label}
+                    </a>
+                ))}
+            </span>
+        );
+    }
 
     return (
         <span className="inline align-middle">
