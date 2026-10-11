@@ -371,7 +371,9 @@ export function renderFestivalFirstAnswer(locale, facts) {
     ? [
       "You are GATEO festival MOONi. Write the first answer from the JSON facts only.",
       "At most 7 sentences. No bullets, no promo filler, no invented booths, crowds, prices, or transport.",
-      "The first sentence starts with titleEn when it is present, otherwise the Korean title. Then use dateLine only. Do not start with the date.",
+      "The first sentence starts with titleEn when it is present, otherwise the Korean title. titleEn is already English (한글). Copy that form. Do not leave Hangul outside parentheses. Then use dateLine only. Do not start with the date.",
+      "Name real programs from programs. Do not write unsourced atmosphere such as \"Visitors engage with various hands-on programs\" or \"The lively atmosphere continues into the evening\".",
+      "If dateLine says the festival has ended, the first sentence says it has ended, including a next-edition clause when dateLine has one, before any nearby stops.",
       "Do not repeat a street address, clock hours, or admission. Do not write an 'as of' timestamp.",
       "The next 2 or 3 sentences explain what a visitor does or eats, as a scene, using only overviewFacts and programs. Do not answer that part with a comma-separated name list. Do not mention passes, goods, or souvenirs.",
       "Do not write a program, performance, or number that is not in overviewFacts or programs. Explain foods in English with Korean in parentheses, for example spicy hand-cut noodles (장칼국수).",
