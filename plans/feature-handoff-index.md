@@ -93,14 +93,14 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `1d88a15a` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · #420 병합 `e3f4e19a` · main `#427` `48a3efc2` · `#430` `d28d7c4f` · **에이전트 Edge 배포 금지** |
+| **상태** | **#2 push** · tip `6626601b` · client `9b68a7b6` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · #420 병합 `e3f4e19a` · main `#427` `48a3efc2` · `#430` `d28d7c4f` · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
 | **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
 | **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). 이 tip의 `templates.js`와 서버 프롬프트 번들은 staging `qeqszwxjvhnbzhkchera` 배포가 필요하다. 클라이언트는 먹을 곳 질문 전에 주변 맛집을 최대 3초 기다리고, 3~4곳에 유형·거리를 붙이며, 주차는 데이터가 있을 때만 축제 페이지를 가리킨다. 첫 답의 축제 페이지 링크는 마지막 하나만 남긴다. `npm run test:health` 236 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). 주차 `공식 홈페이지()`는 클라이언트 `9b68a7b6`라 Preview만으로 고친다. Edge 파일은 `6626601b`에서 바뀌었다(`templates.js`, 서버 `mooniPromptBundleData.js`). 서버 채움 금지를 staging에 넣으려면 `qeqszwxjvhnbzhkchera` 재배포가 필요하다. 배포·PR 머지는 하지 않는다. `npm run test:health` 236 pass. |
 
 **다음 제시어**:
 
@@ -108,9 +108,9 @@
 축제 MOONi #3, staging 검증
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip 1d88a15a
-금지: 에이전트 gemini-proxy 배포 · 모델 변경 · feature에 plans 커밋 · main 코드 push
-작업: box ops가 이 tip의 templates.js와 서버 프롬프트를 staging qeqszwxjvhnbzhkchera에 배포한 뒤 2930716을 본다. 근처 먹을 곳은 시트가 늦게 와도 3~4곳 이름과 유형·거리. 주차는 데이터가 없으면 공식 홈페이지. 첫 답의 축제 페이지 링크는 한 번. 링크 없는 가는 법과 «안내해 드릴까요?»는 없다. prod는 v27(2c7a3c95)이고 이 Edge 문장은 아직 prod에 없다. 클라이언트 대기·폴백은 Preview에 있다.
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip 6626601b
+금지: 에이전트 gemini-proxy 배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push
+작업: 2930716 «주차»는 [공식 홈페이지](https://visitgangneung.net/...)이고 `공식 홈페이지()`가 아니다. 숙소가 월화거리 한 곳이면 «다양한 숙소가 자리하고 있어요», «매력을 느끼며»가 없다. 주차 빈 괄호는 클라이언트 9b68a7b6라 Preview만으로 본다. 서버 채움 금지(haeyoLock·서버 번들)는 6626601b Edge 파일이 바뀌었으므로 staging qeqszwxjvhnbzhkchera 재배포 후에 서버 프롬프트에 있다. prod는 v27(2c7a3c95).
 검증: npm run test:health
 ```
 
