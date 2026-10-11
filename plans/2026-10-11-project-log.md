@@ -155,3 +155,14 @@
 - **VERIFY** `npm run test:health` 243 pass · CI run `38182752936` success
 - **Preview** `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/grand-egyptian-museum?lang=en` · `/korea?festival=637693`
 - **다음** `카이로 동선 #3, 마산 주변 볼거리`
+- **QA** #433 tip `e2fdf3d5` PASS. 그 브랜치에 추가 커밋 없음. squash `a3b06706`.
+
+## 마산 주변 볼거리 #1, 상세와 분리
+
+- **세션** `카이로 동선 #3, 마산 주변 볼거리` · branch `cursor/masan-nearby-8e40` · tip `7be4d452` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지 · 헤더 미변경
+- **원인** 주변 조회는 상세와 병렬인데 정보 탭 전체가 `detailLoading`에 묶여 상세·사진이 끝나야 목록이 그려졌다.
+- **조치** 주변 목록만 상세 로딩 중에도 그린다. 상세 행·숙소·맛집은 그대로 상세 뒤에 둔다.
+- **WebKit 390** 목록 `li`까지. 수정 전 cold 4796ms · warm 2796ms. 수정 후 cold 3542ms · warm 1359ms. 수정 후 cold는 목록 뒤에도 tourapi-proxy가 6.9s까지 이어졌다.
+- **VERIFY** `npm run test:health` 247 pass · CI run `38183479322` success
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693`
+- **다음** `마산 주변 볼거리 #2, 피드백 반영`
