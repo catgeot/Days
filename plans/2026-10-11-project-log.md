@@ -64,6 +64,13 @@
 - **Preview** 같은 git Preview · `/place/cairo` · `/place/grand-egyptian-museum` · `/place/sultan-hassan-mosque` · `/place/egyptian-museum-cairo` · `/place/cairo/wiki` · `/explore`에서 카이로
 - **다음** `카이로 장소 카드 #3, Preview OK면 PR 병합`
 
+## 카이로 장소 카드 #3, 제목 줄바꿈
+
+- **세션** `카이로 장소 카드 #3, 제목 줄바꿈` · branch `cursor/cairo-place-facts-8e40` · tip `3d7a4792` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 장소 헤더 제목에 `word-break: keep-all`, 긴 한 토큰만 `overflow-wrap: anywhere`.
+- **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` 6 pass
+- **다음** `카이로 장소 카드 #4, Preview OK면 PR 병합`
+
 ## 축제 가는 법 #1, TAGO Edge
 
 - **세션** `축제 가는 법 #1, TAGO Edge` · branch `cursor/transport-proxy-e06e` · tip `44f3f94c` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지
