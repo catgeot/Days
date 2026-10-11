@@ -27,11 +27,14 @@ async function shot(page, name) {
   }
 }
 
-/** User/model bubbles only (not the festival opening intro). */
+/** Hangul in chat dialogue only (MOONi modal), not the festival list behind the sheet. */
 async function festivalDialogueHangul(page) {
-  return page.evaluate(() => {
-    const opening = document.querySelector('[data-testid="mooni-festival-opening"]');
-    const scroll = document.querySelector('.flex-1.overflow-y-auto');
+  const chatRoot = page.locator('div.fixed.inset-0.z-\\[9999\\]').filter({
+    has: page.getByRole('button', { name: /^(채팅 닫기|Close chat)$/i }),
+  });
+  return chatRoot.evaluate((root) => {
+    const opening = root.querySelector('[data-testid="mooni-festival-opening"]');
+    const scroll = root.querySelector('.flex-1.overflow-y-auto');
     if (!scroll) return 0;
     let text = scroll.innerText || '';
     if (opening) text = text.replace(opening.innerText || '', '');
