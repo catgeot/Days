@@ -2798,6 +2798,10 @@ export default function KoreaFestivalHub() {
                       className="mb-2 space-y-2"
                       data-session-pinned-festival=""
                     >
+                      <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
+                        {t('korea.festival.sessionPinnedSectionTitle')}
+                        <span className="ml-1 font-normal opacity-70">1</span>
+                      </p>
                       <FestivalRow
                         item={sessionPinnedDisplay}
                         large={listLarge}

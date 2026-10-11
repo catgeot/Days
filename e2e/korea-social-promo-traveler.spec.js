@@ -90,6 +90,39 @@ async function shot(page, name) {
   return path;
 }
 
+/** Wait for thumbnails on festival rows visible in the viewport (lazy-load). */
+async function waitForViewportListThumbs(page, { timeout = 120_000 } = {}) {
+  const main = page.getByRole('main');
+  await expect(main).toBeVisible({ timeout });
+  await expect(async () => {
+    const state = await main.evaluate(() => {
+      const vh = window.innerHeight;
+      const boxes = [...document.querySelectorAll('[data-festival-id]')].filter(
+        (el) => {
+          const r = el.getBoundingClientRect();
+          return r.bottom > 0 && r.top < vh && r.width > 8 && r.height > 8;
+        },
+      );
+      if (!boxes.length) return { ok: false, reason: 'no-visible-rows' };
+      const targets = boxes.slice(0, 12);
+      for (const box of targets) {
+        const img = box.querySelector('img');
+        const fallback = box.querySelector('[data-thumb-fallback]');
+        if (img) {
+          if (!img.complete) return { ok: false, reason: 'img-loading' };
+          if (img.naturalWidth <= 0) {
+            return { ok: false, reason: 'img-zero', src: img.src };
+          }
+        } else if (!fallback) {
+          return { ok: false, reason: 'no-img-or-fallback' };
+        }
+      }
+      return { ok: true, checked: targets.length };
+    });
+    expect(state.ok, JSON.stringify(state)).toBe(true);
+  }).toPass({ timeout });
+}
+
 async function waitForPromoReady(page) {
   const promoRow = page.locator('[data-social-promo-festival-row]');
   await expect(promoRow).toBeVisible({ timeout: 120_000 });
@@ -148,6 +181,7 @@ test.describe('korea social promo traveler @390', () => {
     await expect(page).not.toHaveURL(/festival=638576/, { timeout: 30_000 });
     await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(0);
     await waitForPromoReady(page);
+    await waitForViewportListThumbs(page);
     paths.push(await shot(page, '03-after-close-no-duplicate-pin'));
 
     const searchToggle = page.getByRole('button', {
@@ -170,6 +204,11 @@ test.describe('korea social promo traveler @390', () => {
     await expect(page.locator('[data-session-pinned-festival]')).toHaveCount(1, {
       timeout: 30_000,
     });
+    await expect(
+      page
+        .locator('[data-session-pinned-festival]')
+        .getByText('최근 본 축제'),
+    ).toBeVisible();
 
     await searchToggle.click();
     await expect(searchInput).toBeVisible();
@@ -196,6 +235,7 @@ test.describe('korea social promo traveler @390', () => {
     await gangwon.scrollIntoViewIfNeeded();
     await gangwon.click();
     await expect(promoRow).toHaveCount(0, { timeout: 30_000 });
+    await waitForViewportListThumbs(page);
     paths.push(await shot(page, '05-region-gangwon-no-promo'));
 
     const logPath = join(OUT_DIR, 'image-urls.json');

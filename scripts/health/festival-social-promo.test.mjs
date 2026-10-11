@@ -284,4 +284,12 @@ test('promo title copy (GATEO, all visitors)', () => {
   );
   assert.equal(ko.korea.festival.socialPromoTitle, 'GATEO가 소개하는 축제');
   assert.equal(en.korea.festival.socialPromoTitle, 'Festivals featured by GATEO');
+  assert.equal(ko.korea.festival.sessionPinnedSectionTitle, '최근 본 축제');
+  assert.equal(en.korea.festival.sessionPinnedSectionTitle, 'Recently viewed');
+});
+
+test('session pin section label in hub', () => {
+  const hub = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
+  assert.match(hub, /sessionPinnedSectionTitle/);
+  assert.match(hub, /data-session-pinned-festival/);
 });

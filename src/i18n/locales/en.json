@@ -1521,6 +1521,7 @@
       "notFound": "We couldn't find that festival.",
       "loadingSchedule": "Loading festival schedule…",
       "socialPromoTitle": "Festivals featured by GATEO",
+      "sessionPinnedSectionTitle": "Recently viewed",
       "listAria": "Festival list",
       "myListAria": "My festivals",
       "nearLoad": "Load festivals near me",
