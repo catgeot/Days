@@ -32565,6 +32565,22 @@
         "kind": "viewpoint",
         "lat": 30.0445,
         "lng": 31.2285
+      },
+      {
+        "name": "대이집트 박물관",
+        "name_en": "Grand Egyptian Museum",
+        "kind": "museum",
+        "lat": 29.9964,
+        "lng": 31.1203,
+        "aliases": ["GEM", "대이집트박물관", "카이로 대이집트박물관", "Grand Egyptian Museum"]
+      },
+      {
+        "name": "술탄 하산 모스크",
+        "name_en": "Sultan Hassan Mosque",
+        "kind": "landmark",
+        "lat": 30.0325,
+        "lng": 31.2567,
+        "aliases": ["카이로 술탄하산모스크", "술탄하산", "Sultan Hassan", "Mosque-Madrasa of Sultan Hassan"]
       }
     ]
   },
