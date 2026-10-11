@@ -65,6 +65,7 @@ import {
   excludePinnedFromPanelItems,
   festivalItemForSessionPin,
 } from './festivalSessionPin';
+import { festivalItemThumbSrc } from './festivalListThumb';
 import SocialPromoFestivalRow from './SocialPromoFestivalRow';
 import {
   festivalItemFromDetailWithAsOf,
@@ -263,8 +264,7 @@ function formatYmdLabel(ymd) {
 }
 
 function festivalImage(item) {
-  const raw = item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
-  return resolveListImageUrl(raw, { role: 'list' });
+  return festivalItemThumbSrc(item);
 }
 
 function festivalKey(item) {
@@ -583,6 +583,7 @@ function RelatedChipFlap({
 function FestivalThumbFallback({ large = false }) {
   return (
     <div
+      data-thumb-fallback="1"
       className="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-amber-800/50"
       aria-hidden="true"
     >
@@ -670,6 +671,7 @@ function FestivalRow({
               className="w-full h-full object-cover"
               loading="lazy"
               decoding="async"
+              referrerPolicy="no-referrer"
               onError={() => setImgFailed(true)}
               {...koText}
             />
@@ -772,8 +774,11 @@ export default function KoreaFestivalHub() {
   const festivalDetailPushedRef = useRef(false);
   const festivalDeepLinkSeededForRef = useRef('');
   const festivalViewedPushedRef = useRef('');
-  const socialPromoDetailAttemptedRef = useRef(
+  const socialPromoDetailInflightRef = useRef(
     /** @type {Set<string>} */ (new Set()),
+  );
+  const socialPromoByIdRef = useRef(
+    /** @type {Map<string, Record<string, unknown>>} */ (new Map()),
   );
   const now = useMemo(() => new Date(), []);
 
@@ -847,6 +852,7 @@ export default function KoreaFestivalHub() {
   const [socialPromoById, setSocialPromoById] = useState(
     () => new Map(),
   );
+  socialPromoByIdRef.current = socialPromoById;
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
     isHintDismissed(
       typeof localStorage !== 'undefined' ? localStorage : null,
@@ -1057,33 +1063,45 @@ export default function KoreaFestivalHub() {
 
   useEffect(() => {
     if (loading) return undefined;
-    const needFetch = socialPromoIdsNeedingDetailFetch(
-      items,
-      socialPromoFestivals,
-      socialPromoById,
-    ).filter((id) => !socialPromoDetailAttemptedRef.current.has(id));
-    if (!needFetch.length) return undefined;
-    for (const id of needFetch) socialPromoDetailAttemptedRef.current.add(id);
     let cancelled = false;
-    (async () => {
-      await Promise.all(
-        needFetch.map(async (contentId) => {
-          const detail = await fetchTourApiFestivalDetail({ contentId });
-          if (cancelled) return;
-          const built = festivalItemFromDetailWithAsOf(detail);
-          if (!built) return;
-          setSocialPromoById((prev) => {
-            const next = new Map(prev);
-            next.set(String(contentId), built);
-            return next;
-          });
-        }),
-      );
-    })();
+
+    const pump = async () => {
+      while (!cancelled) {
+        const needFetch = socialPromoIdsNeedingDetailFetch(
+          items,
+          socialPromoFestivals,
+          socialPromoByIdRef.current,
+        ).filter((id) => !socialPromoDetailInflightRef.current.has(id));
+        if (!needFetch.length) break;
+        for (const id of needFetch) socialPromoDetailInflightRef.current.add(id);
+        await Promise.all(
+          needFetch.map(async (contentId) => {
+            const id = String(contentId);
+            try {
+              const detail = await fetchTourApiFestivalDetail({ contentId: id });
+              if (cancelled) return;
+              const built = festivalItemFromDetailWithAsOf(detail);
+              if (!built) return;
+              setSocialPromoById((prev) => {
+                if (prev.get(id)) return prev;
+                const next = new Map(prev);
+                next.set(id, built);
+                socialPromoByIdRef.current = next;
+                return next;
+              });
+            } finally {
+              socialPromoDetailInflightRef.current.delete(id);
+            }
+          }),
+        );
+      }
+    };
+
+    pump();
     return () => {
       cancelled = true;
     };
-  }, [loading, items, socialPromoById]);
+  }, [loading, items]);
 
   const socialPromoItemById = useMemo(() => {
     const map = new Map();
@@ -1091,8 +1109,8 @@ export default function KoreaFestivalHub() {
       const id = String(entry.contentId);
       const windowItem = items.find((row) => String(row?.contentId || '') === id);
       const detailItem = socialPromoById.get(id);
-      const merged = mergeFestivalRowItem(windowItem, detailItem);
-      if (merged) map.set(id, merged);
+      if (!windowItem && !detailItem) continue;
+      map.set(id, mergeFestivalRowItem(windowItem, detailItem));
     }
     return map;
   }, [items, socialPromoById]);

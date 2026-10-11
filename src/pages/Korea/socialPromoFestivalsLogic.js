@@ -31,6 +31,8 @@ export function normalizeFestivalItemImages(item) {
   let imageUrl = pickStr(item.imageUrl, item.firstimage, item.firstimage2);
   if (!firstimage && imageUrl) firstimage = imageUrl;
   if (!imageUrl && firstimage) imageUrl = firstimage;
+  if (firstimage.startsWith('//')) firstimage = `https:${firstimage}`;
+  if (imageUrl.startsWith('//')) imageUrl = `https:${imageUrl}`;
   if (firstimage.startsWith('http://')) {
     firstimage = firstimage.replace(/^http:\/\//i, 'https://');
   }
@@ -262,17 +264,17 @@ export function socialPromoIdsMissingFromWindow(baseItems, entries) {
  * @param {Map<string, Record<string, unknown>>} detailById
  */
 export function socialPromoIdsNeedingDetailFetch(baseItems, entries, detailById) {
-  const ids = [];
-  for (const entry of entries || []) {
-    const id = String(entry?.contentId || '').trim();
-    if (!id) continue;
-    const windowItem = (baseItems || []).find(
-      (row) => String(row?.contentId || '') === id,
-    );
-    const detailItem = detailById?.get?.(id) || null;
-    if (detailItem) continue;
-    if (windowItem && hasFestivalThumbnail(windowItem)) continue;
-    ids.push(id);
+  const windowById = new Map();
+  for (const row of baseItems || []) {
+    const id = String(row?.contentId || '').trim();
+    if (id) windowById.set(id, row);
   }
-  return ids;
+  return (entries || [])
+    .map((entry) => String(entry?.contentId || '').trim())
+    .filter((id) => {
+      if (!id || detailById?.get?.(id)) return false;
+      const windowItem = windowById.get(id);
+      if (windowItem && hasFestivalThumbnail(windowItem)) return false;
+      return true;
+    });
 }

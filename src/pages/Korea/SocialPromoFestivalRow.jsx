@@ -3,17 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { CalendarDays } from 'lucide-react';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
-import { resolveListImageUrl } from '../../utils/listImageUrl';
+import { festivalItemThumbSrc } from './festivalListThumb';
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
   if (!/^\d{8}$/.test(s)) return '';
   return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
-}
-
-function festivalImage(item) {
-  const raw = item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
-  return resolveListImageUrl(raw, { role: 'list' }) || '';
 }
 
 export default function SocialPromoFestivalRow({ cards, loading = false, onSelect }) {
@@ -69,7 +64,7 @@ function SocialPromoCardSkeleton() {
 function SocialPromoCard({ item, onSelect }) {
   const { isEnglish } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
-  const img = festivalImage(item);
+  const img = festivalItemThumbSrc(item);
   const [imgFailed, setImgFailed] = useState(false);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
@@ -93,13 +88,16 @@ function SocialPromoCard({ item, onSelect }) {
             src={img}
             alt=""
             className="h-full w-full object-cover"
-            loading="lazy"
+            loading="eager"
+            fetchPriority="high"
             decoding="async"
+            referrerPolicy="no-referrer"
             onError={() => setImgFailed(true)}
             {...koText}
           />
         ) : (
           <div
+            data-thumb-fallback="1"
             className="flex h-full w-full items-center justify-center bg-stone-100 text-[9px] font-bold text-stone-400"
             aria-hidden="true"
           >

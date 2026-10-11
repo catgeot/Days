@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { filterBySearchQuery } from '../../src/pages/Korea/festivalSearch.js';
+import { festivalItemThumbSrc } from '../../src/pages/Korea/festivalListThumb.js';
 import {
   excludePinnedFromPanelItems,
   festivalItemForSessionPin,
@@ -140,6 +141,17 @@ test('promo row caps at two cards', () => {
   assert.equal(cards.length, 2);
   assert.equal(cards[0].item.contentId, '638576');
   assert.equal(cards[1].item.contentId, '637693');
+});
+
+test('festivalItemThumbSrc normalizes protocol-relative VisitKorea URLs', () => {
+  const src = festivalItemThumbSrc({
+    contentId: '638576',
+    firstimage: '//tong.visitkorea.or.kr/cms/resource/06/4114406_image2_1.JPG',
+  });
+  assert.equal(
+    src,
+    'https://tong.visitkorea.or.kr/cms/resource/06/4114406_image2_1.JPG',
+  );
 });
 
 test('normalizeFestivalItemImages upgrades http list URLs', () => {
