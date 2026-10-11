@@ -60,6 +60,7 @@ import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
 import {
   mergeFestivalNearbySights,
   rankMooniNearbySights,
+  stripTrailingHubName,
 } from './lib/festivalNearbySights.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
@@ -298,37 +299,52 @@ function nearbyThumbUrls(spot, extraThumb) {
   return out;
 }
 
+function NearbyThumbPlaceholder() {
+  return (
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+      <Landmark size={18} aria-hidden="true" />
+    </div>
+  );
+}
+
 function NearbyRowThumb({ spot, extraThumb }) {
   const urls = nearbyThumbUrls(spot, extraThumb);
   const [thumbIndex, setThumbIndex] = useState(0);
+  const [ready, setReady] = useState(false);
   const thumb = urls[thumbIndex] || '';
-  if (!thumb) {
-    return (
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-        <Landmark size={18} aria-hidden="true" />
-      </div>
-    );
-  }
+  if (!thumb) return <NearbyThumbPlaceholder />;
   return (
-    <img
-      key={thumb}
-      src={thumb}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      onError={(event) => {
-        if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
-        setThumbIndex((i) => i + 1);
-      }}
-      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-    />
+    <span className="relative block h-14 w-14 shrink-0">
+      {ready ? null : <NearbyThumbPlaceholder />}
+      <img
+        key={thumb}
+        src={thumb}
+        alt=""
+        loading="eager"
+        decoding="async"
+        onLoad={() => setReady(true)}
+        onError={() => {
+          setReady(false);
+          setThumbIndex((i) => i + 1);
+        }}
+        className={`h-14 w-14 rounded-xl object-cover ${
+          ready ? 'relative' : 'absolute inset-0 opacity-0'
+        }`}
+      />
+    </span>
   );
+}
+
+function nearbySightTitle(spot) {
+  const hubName = spot?.hubId ? resolveCityAttractionHub(spot.hubId)?.name : '';
+  return stripTrailingHubName(spot?.name, hubName);
 }
 
 function NearbyAttractionRow({ spot, extraThumb, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = nearbyPlaceLabel(spot);
   const rankBlurb = String(spot?.rankBlurb || '').trim();
+  const title = nearbySightTitle(spot);
   const clickable =
     Boolean(spot?.placeSlug) || isNearbyAttractionRowClickable(spot);
   const Inner = clickable ? 'button' : 'div';
@@ -350,7 +366,7 @@ function NearbyAttractionRow({ spot, extraThumb, onSelect }) {
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-              {spot.name}
+              {title}
             </span>
             {rankBlurb ? (
               <span className="text-[11px] font-semibold text-stone-500 break-keep">
@@ -1821,7 +1837,18 @@ export default function FestivalDetailSheet({
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
                     >
-                      {nearbySights.items.map((spot) => (
+                      {nearbySights.blocks.map((block) => {
+                        if (block.kind === 'heading') {
+                          return (
+                            <li key={`heading-${block.listId}`} className="list-none pt-3">
+                              <p className="text-base font-bold text-stone-800 break-keep">
+                                {block.title}
+                              </p>
+                            </li>
+                          );
+                        }
+                        const spot = block.spot;
+                        return (
                           <NearbyAttractionRow
                             key={spot.contentId || spot.id || spot.name}
                             spot={spot}
@@ -1836,7 +1863,8 @@ export default function FestivalDetailSheet({
                               }
                             }}
                           />
-                      ))}
+                        );
+                      })}
                     </ul>
                   )}
                   {scenicRegion ? (

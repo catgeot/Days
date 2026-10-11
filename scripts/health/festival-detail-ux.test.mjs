@@ -61,8 +61,9 @@ test('festival nearby sights merge into one section', () => {
   assert.match(sheet, /nearbySights/);
   assert.match(sheet, /mergeFestivalNearbySights/);
   assert.match(sheet, /rankMooniNearbySights/);
+  assert.match(sheet, /kind === 'heading'/);
+  assert.match(sheet, /text-base font-bold text-stone-800/);
   assert.doesNotMatch(sheet, /nearbyLocalScenicRestGroupTitle/);
-  assert.doesNotMatch(sheet, /kind === 'heading'/);
   assert.match(sheet, /variant="solid"/);
   const merged = mergeFestivalNearbySights({
     scenicSpots: [

@@ -261,6 +261,29 @@ function byDistance(a, b) {
   return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
 }
 
+function byRank(a, b) {
+  const ra = rankNumber(a);
+  const rb = rankNumber(b);
+  if (ra != null && rb != null && ra !== rb) return ra - rb;
+  if (ra != null && rb == null) return -1;
+  if (ra == null && rb != null) return 1;
+  return byDistance(a, b);
+}
+
+/**
+ * «용천사 함평» → «용천사». 앞쪽 시군 이름(«함안 연꽃테마파크»)은 둔다.
+ * @param {unknown} name
+ * @param {unknown} hubName
+ */
+export function stripTrailingHubName(name, hubName) {
+  const text = String(name || '').trim();
+  const hub = String(hubName || '').trim();
+  if (!text || hub.length < 2) return text;
+  const suffix = ` ${hub}`;
+  if (!text.endsWith(suffix) || text.length <= suffix.length) return text;
+  return text.slice(0, -suffix.length).trim() || text;
+}
+
 function toOutput(row, distKm) {
   const { point, ...rest } = row;
   return {
@@ -272,8 +295,8 @@ function toOutput(row, distKm) {
 }
 
 /**
- * 인근 명소 · 팔경 · 가까운 곳을 거리순 한 목록으로.
- * 팔경은 행 뱃지(rankBlurb)만 달고 소제목은 만들지 않는다.
+ * 인근 명소는 거리순. 팔경이 2곳 이상이면 그 아래에 소제목과 경 번호순.
+ * 다른 시·군 팔경이 1곳뿐이면 소제목 없이 일반 목록에 뱃지만 둔다.
  * 거리 없는 행·시군 중심 폴백·서로 다른 장소의 동일 좌표 묶음은 distKm 를 비운다.
  *
  * @param {{
@@ -361,12 +384,33 @@ export function mergeFestivalNearbySights(input = {}) {
     }
     group.items.push(spot);
   }
-  const groups = [...groupMap.values()];
-  for (const group of groups) group.items.sort(byDistance);
+  const sectionGroups = [];
+  for (const group of groupMap.values()) {
+    group.items.sort(byRank);
+    if (group.items.length >= 2) sectionGroups.push(group);
+    else rest.push(...group.items);
+  }
+  rest.sort(byDistance);
+  sectionGroups.sort((a, b) => {
+    const ra = rankNumber(a.items[0]);
+    const rb = rankNumber(b.items[0]);
+    if (ra != null && rb != null && ra !== rb) return ra - rb;
+    if (ra != null && rb == null) return -1;
+    if (ra == null && rb != null) return 1;
+    return String(a.title || '').localeCompare(String(b.title || ''), 'ko');
+  });
 
-  const blocks = kept.map((spot) => ({ kind: 'spot', spot }));
+  const blocks = rest.map((spot) => ({ kind: 'spot', spot }));
+  for (const group of sectionGroups) {
+    blocks.push({
+      kind: 'heading',
+      title: group.title,
+      listId: group.listId,
+    });
+    for (const spot of group.items) blocks.push({ kind: 'spot', spot });
+  }
 
-  return { groups, rest, items: kept, blocks };
+  return { groups: sectionGroups, rest, items: kept, blocks };
 }
 
 /**

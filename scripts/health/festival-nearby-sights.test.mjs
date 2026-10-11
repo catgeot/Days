@@ -6,6 +6,7 @@ import {
   mergeFestivalNearbySights,
   normalizeNearbySightName,
   rankMooniNearbySights,
+  stripTrailingHubName,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
 import { isNearbyTourAttractionTitle } from '../../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
 
@@ -86,7 +87,7 @@ test('sort by distance and hide missing or fallback coordinates', () => {
   assert.equal(merged.items.find((spot) => spot.name === '중심B').distKm, null);
 });
 
-test('팔경 stays a flat distance list with a per-item badge', () => {
+test('multi-member 팔경 sits under a subheading in number order', () => {
   const merged = mergeFestivalNearbySights({
     scenicSpots: [],
     grouped: {
@@ -97,6 +98,7 @@ test('팔경 stays a flat distance list with a per-item badge', () => {
           items: [
             { name: '청계산', rankBlurb: '함평 8경', lat: 35.1, lng: 126.48 },
             { name: '삼호천', rankBlurb: '함평 7경' },
+            { name: '함평자연생태공원', rankBlurb: '함평 1경', lat: 35.08, lng: 126.5 },
           ],
         },
       ],
@@ -105,15 +107,58 @@ test('팔경 stays a flat distance list with a per-item badge', () => {
     origin,
   });
   assert.equal(merged.groups.length, 1);
-  assert.equal(merged.groups[0].title, '함평 팔경');
   assert.deepEqual(
-    merged.items.map((spot) => spot.name),
-    ['보광사', '청계산', '삼호천'],
+    merged.rest.map((spot) => spot.name),
+    ['보광사'],
   );
-  assert.equal(merged.items[0].rankBlurb, '');
-  assert.equal(merged.items[1].rankBlurb, '함평 8경');
-  assert.equal(merged.items[2].distKm, null);
+  assert.deepEqual(
+    merged.groups[0].items.map((spot) => spot.rankBlurb),
+    ['함평 1경', '함평 7경', '함평 8경'],
+  );
+  assert.deepEqual(
+    merged.blocks.map((block) => (block.kind === 'heading' ? block.title : block.spot.name)),
+    ['보광사', '함평 팔경', '함평자연생태공원', '삼호천', '청계산'],
+  );
+  assert.equal(merged.groups[0].items[1].distKm, null);
+});
+
+test('a single foreign 팔경 item stays in the general list', () => {
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [{ name: '마산항', contentId: '1', lat: 35.19, lng: 128.57 }],
+    grouped: {
+      groups: [
+        {
+          title: '함안 구경',
+          listId: 'haman-gugyeong',
+          items: [
+            {
+              name: '연꽃테마파크의 아라홍련',
+              rankBlurb: '함안 5경',
+              localScenicListId: 'haman-gugyeong',
+              lat: 35.29,
+              lng: 128.42,
+            },
+          ],
+        },
+      ],
+      rest: [],
+    },
+    origin: { lat: 35.1867, lng: 128.5639 },
+  });
+  assert.equal(merged.groups.length, 0);
   assert.equal(merged.blocks.some((block) => block.kind === 'heading'), false);
+  assert.deepEqual(
+    merged.rest.map((spot) => spot.name),
+    ['마산항', '연꽃테마파크의 아라홍련'],
+  );
+  assert.equal(merged.rest[1].rankBlurb, '함안 5경');
+});
+
+test('strip a trailing hub name from a display title', () => {
+  assert.equal(stripTrailingHubName('용천사 함평', '함평'), '용천사');
+  assert.equal(stripTrailingHubName('법천사 무안', '무안'), '법천사');
+  assert.equal(stripTrailingHubName('함안 연꽃테마파크', '함안'), '함안 연꽃테마파크');
+  assert.equal(stripTrailingHubName('돌머리해수욕장', '함평'), '돌머리해수욕장');
 });
 
 test('merge same place within 300m and borrow coords onto the 팔경 row', () => {
