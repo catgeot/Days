@@ -13,6 +13,9 @@ const FLIGHT_CHIPS = new Set([
   "from_busan",
   "from_incheon",
   "ferry",
+  "festival_overseas_visa",
+  "festival_overseas_flight",
+  "festival_overseas_airport",
 ]);
 
 const PROFILE_CHIPS = new Set(["prep_transport", "prep_hotel", "visa_docs"]);
