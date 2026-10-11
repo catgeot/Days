@@ -33,6 +33,7 @@
 - **범위** 클라이언트와 Edge 프롬프트를 커밋만 분리. **에이전트는 gemini-proxy를 배포하지 않음.** staging `qeqszwxjvhnbzhkchera`가 필요한 것은 `templates.js`와 서버 프롬프트 번들. 클라이언트 대기·폴백·힌트는 Preview에서 적용. prod는 v27 (`2c7a3c95`).
 - **VERIFY** `npm run test:health` 218 pass.
 - **Preview** `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716`
+- **이어서** `1d88a15a`. main `#427` `48a3efc2` · `#430` `d28d7c4f`를 머지한 뒤, 첫 답에 «강릉 국수 축제 페이지» 링크가 두 번 나오면 마지막 «자세한 내용은 … 페이지에서 볼 수 있어요»만 남긴다. 숙소 앵커는 유지. `npm run test:health` 236 pass.
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
