@@ -60,7 +60,7 @@ function FactValue({ slot, light }) {
     );
   }
   return (
-    <p data-fact-value="" className={light ? 'text-sm leading-relaxed text-gray-900 break-keep' : 'text-sm leading-relaxed text-white/95 break-keep'}>
+    <p data-fact-value="" className={light ? 'text-sm leading-relaxed text-gray-900 break-keep whitespace-pre-line' : 'text-sm leading-relaxed text-white/95 break-keep whitespace-pre-line'}>
       {text}
     </p>
   );
