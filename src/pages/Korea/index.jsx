@@ -62,6 +62,10 @@ import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
 import { fetchTourApiFestivalDetail } from '../../utils/fetchTourApiFestivals';
 import { projectFestivalDeepLink } from './festivalDeepLinkItem';
 import {
+  excludePinnedFromPanelItems,
+  festivalItemForSessionPin,
+} from './festivalSessionPin';
+import {
   DEFAULT_AREA_CODE,
   NEAR_FESTIVAL_KM,
 } from './koreaFestivalDefaults';
@@ -756,6 +760,7 @@ export default function KoreaFestivalHub() {
   const festivalId = festivalIdFromSearchParams(searchParams);
   const festivalDetailPushedRef = useRef(false);
   const festivalDeepLinkSeededForRef = useRef('');
+  const festivalViewedPushedRef = useRef('');
   const now = useMemo(() => new Date(), []);
 
   const goHome = useCallback(() => {
@@ -821,6 +826,10 @@ export default function KoreaFestivalHub() {
   const [searchSuggestOpen, setSearchSuggestOpen] = useState(false);
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
+  /** 상세를 닫은 뒤 세션 동안 목록 맨 위에 유지 */
+  const [sessionPinnedItem, setSessionPinnedItem] = useState(
+    /** @type {Record<string, unknown> | null} */ (null),
+  );
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
     isHintDismissed(
       typeof localStorage !== 'undefined' ? localStorage : null,
@@ -872,13 +881,15 @@ export default function KoreaFestivalHub() {
 
   const closeFestivalDetail = useCallback(() => {
     resetIosZoomAfterInput();
+    const pin = festivalItemForSessionPin(selected);
+    if (pin) setSessionPinnedItem(pin);
     if (festivalDetailPushedRef.current) {
       festivalDetailPushedRef.current = false;
       navigate(-1);
       return;
     }
     clearFestivalFromUrl();
-  }, [clearFestivalFromUrl, navigate]);
+  }, [clearFestivalFromUrl, navigate, selected]);
 
   // 테마「이 지역 축제」— 같은 /korea 안에서도 지역·목록으로 복귀 (상세 시트 유지 방지)
   useEffect(() => {
@@ -998,6 +1009,16 @@ export default function KoreaFestivalHub() {
   );
   const [favoriteList, setFavoriteList] = useState(() => loadFavorites());
   const [viewedList, setViewedList] = useState(() => loadViewed());
+
+  useEffect(() => {
+    if (!festivalId || festivalDeepLink.sheet !== 'open' || !selected?.contentId) {
+      return;
+    }
+    const id = String(selected.contentId);
+    if (festivalViewedPushedRef.current === id) return;
+    festivalViewedPushedRef.current = id;
+    setViewedList(pushViewed(selected));
+  }, [festivalId, festivalDeepLink.sheet, selected]);
 
   const loadFestivals = useCallback(async (force = false) => {
     setLoading(true);
@@ -1181,6 +1202,17 @@ export default function KoreaFestivalHub() {
     );
   }, [nearBaseItems, filteredItems, now]);
 
+  const sessionPinnedDisplay = useMemo(() => {
+    if (!sessionPinnedItem?.contentId) return null;
+    const id = String(sessionPinnedItem.contentId);
+    return byContentId.get(id) || sessionPinnedItem;
+  }, [sessionPinnedItem, byContentId]);
+
+  const panelItemsForList = useMemo(
+    () => excludePinnedFromPanelItems(panelItems, sessionPinnedDisplay),
+    [panelItems, sessionPinnedDisplay],
+  );
+
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
     const counts = {};
@@ -1194,7 +1226,7 @@ export default function KoreaFestivalHub() {
 
   const panelGroups = useMemo(() => {
     if (nearBaseItems) {
-      const groups = groupFestivalsByCity(panelItems, {});
+      const groups = groupFestivalsByCity(panelItemsForList, {});
       return groups
         .map((g) => {
           const items = [...g.items].sort((a, b) => {
@@ -1224,10 +1256,10 @@ export default function KoreaFestivalHub() {
         );
     }
     return sortFestivalGroupsByOpenDate(
-      groupFestivalsForList(panelItems, { areaCode }),
+      groupFestivalsForList(panelItemsForList, { areaCode }),
       now,
     );
-  }, [nearBaseItems, panelItems, areaCode, nearKmByContentId, now]);
+  }, [nearBaseItems, panelItemsForList, areaCode, nearKmByContentId, now]);
 
   const localizedPanelGroups = useMemo(
     () =>
@@ -2586,7 +2618,7 @@ export default function KoreaFestivalHub() {
                     </div>
                   ))
                 )
-              ) : panelItems.length === 0 ? (
+              ) : panelItemsForList.length === 0 && !sessionPinnedDisplay ? (
                 loading ? (
                   <div
                     className={listLarge ? 'space-y-3' : 'space-y-2'}
@@ -2614,7 +2646,34 @@ export default function KoreaFestivalHub() {
                   </div>
                 )
               ) : (
-                localizedPanelGroups.map((group) => (
+                <>
+                  {sessionPinnedDisplay ? (
+                    <div
+                      className="mb-2 space-y-2"
+                      data-session-pinned-festival=""
+                    >
+                      <FestivalRow
+                        item={sessionPinnedDisplay}
+                        large={listLarge}
+                        active={
+                          selected?.contentId != null &&
+                          String(selected.contentId) ===
+                            String(sessionPinnedDisplay.contentId)
+                        }
+                        favorited={favoriteIds.has(
+                          String(sessionPinnedDisplay.contentId),
+                        )}
+                        onToggleFavorite={handleToggleFavorite}
+                        onSelect={openItem}
+                        distanceKm={
+                          nearKmByContentId.get(
+                            String(sessionPinnedDisplay.contentId),
+                          ) ?? undefined
+                        }
+                      />
+                    </div>
+                  ) : null}
+                  {localizedPanelGroups.map((group) => (
                   <div key={group.id} className="space-y-2">
                     <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
                       {group.label}
@@ -2642,7 +2701,8 @@ export default function KoreaFestivalHub() {
                       />
                     ))}
                   </div>
-                ))
+                ))}
+                </>
               )}
               </div>
               {mapSplitActive && (
