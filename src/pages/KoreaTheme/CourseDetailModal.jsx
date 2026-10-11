@@ -178,8 +178,6 @@ export default function CourseDetailModal({
     const festId = String(fest?.contentId || '').trim();
     if (!festId) return;
     const params = new URLSearchParams();
-    params.set('from', 'theme');
-    if (areaCode) params.set('area', areaCode);
     params.set('festival', festId);
     pushThemeNavBack('/korea/theme/courses');
     onClose();

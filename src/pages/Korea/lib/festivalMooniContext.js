@@ -611,10 +611,11 @@ function fitFestivalCard(parts, closing) {
 
 function koClosingSentence(ctx, ended) {
   const url = ctx.gateoUrl;
-  const linked = url ? `[축제 페이지](${url})` : '';
-  const next = ended ? '다음으로 근처에서 들를 곳을 볼 수 있어요' : '다음으로 가는 법을 정할 수 있어요';
-  if (linked) return `자세한 내용은 ${linked}에서 볼 수 있고, ${next}.`;
-  return `${next}.`;
+  const title = String(ctx.title || '').replace(/\s+/g, ' ').trim();
+  const linked = url && title ? `[${title} 페이지](${url})` : (url ? `[축제 페이지](${url})` : '');
+  if (!linked) return ended ? '다음으로 근처에서 들를 곳을 볼 수 있어요.' : '';
+  if (ended) return `자세한 내용은 ${linked}에서 볼 수 있고, 다음으로 근처에서 들를 곳을 볼 수 있어요.`;
+  return `자세한 내용은 ${linked}에서 볼 수 있어요.`;
 }
 
 /**
@@ -684,13 +685,11 @@ export function buildFestivalMooniSentenceAnswer(festivalContext, options = {}) 
 
 function enClosingSentence(ctx, ended) {
   const url = ctx.gateoUrl;
-  const linked = url ? `[the festival page](${url})` : '';
-  const next = ended
-    ? 'next you can look at nearby stops from ICN'
-    : 'next you can plan how to get there from ICN';
-  return linked
-    ? `Details are on ${linked}, and ${next}.`
-    : `${next.charAt(0).toUpperCase()}${next.slice(1)}.`;
+  const phrase = String(englishTitleBits(ctx).phrase || ctx.title || 'festival').replace(/\s+/g, ' ').trim();
+  const linked = url ? `[${phrase} page](${url})` : '';
+  if (!linked) return 'Details are on the festival page.';
+  if (ended) return `Details are on ${linked}, and next you can look at nearby stops.`;
+  return `Details are on ${linked}.`;
 }
 
 /**

@@ -3,17 +3,31 @@ import { aliasMatchesHay } from './rentalAirportMatch.js';
 
 const MIN_ALIAS_LEN = 4;
 
-/** 한국 도시·공항 단축 (허브 aliases와 병합 — 김포→GMP 등 세분화 우선) */
+/** 한국 도시·공항 단축 (허브 aliases와 병합 — 김포→GMP 등 세분화 우선).
+ * 강릉공항(KAG)은 민항이 없다. 강원 공항이 필요할 때만 양양(YNY).
+ * 국내 축제 칩은 이 코드를 Edge에 보내지 않는다. */
 const DEPARTURE_IATA = {
   서울: 'ICN',
   인천: 'ICN',
   김포: 'GMP',
   부산: 'PUS',
+  대구: 'TAE',
+  광주: 'KWJ',
+  청주: 'CJJ',
   제주: 'CJU',
+  강릉: 'YNY',
+  여수: 'RSU',
+  울산: 'USN',
   seoul: 'ICN',
   incheon: 'ICN',
   busan: 'PUS',
+  daegu: 'TAE',
+  gwangju: 'KWJ',
+  cheongju: 'CJJ',
   jeju: 'CJU',
+  gangneung: 'YNY',
+  yeosu: 'RSU',
+  ulsan: 'USN',
 };
 
 /**
@@ -146,6 +160,8 @@ export function resolveDepartureIataFromChat(userText, chatHistory = [], options
  * @param {Array<{ text?: string, departureLabel?: string, role?: string }>} [chatHistory]
  * @returns {string | null}
  */
-export function resolveDepartureLabelFromChat(userText, chatHistory = []) {
-  return resolveDepartureFromChat(userText, chatHistory)?.label ?? null;
+export function resolveDepartureLabelFromChat(userText, chatHistory = [], options = {}) {
+  const explicit = String(options?.departureLabel || '').trim();
+  if (explicit) return explicit;
+  return resolveDepartureFromChat(userText, chatHistory, options)?.label ?? null;
 }

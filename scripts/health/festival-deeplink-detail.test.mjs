@@ -12,6 +12,7 @@ import {
   FestivalEndedBadge,
   festivalItemFromDetail,
   isFestivalEnded,
+  mergeDeepLinkListItems,
   projectFestivalDeepLink,
 } from '../../src/pages/Korea/festivalDeepLinkItem.js';
 
@@ -74,6 +75,24 @@ test('festivalItemFromDetail fails closed when detail is unusable', () => {
   assert.equal(festivalItemFromDetail({ ok: true, intro: {}, common: {} }), null);
 });
 
+test('supplemental rows count as list hits for deeplink resolution', () => {
+  const supplemental = [
+    { contentId: '638576', title: '대한민국 국향대전', eventEndDate: '20261108' },
+  ];
+  const items = [{ contentId: '637693', title: '마산', eventEndDate: '20261108' }];
+  assert.equal(mergeDeepLinkListItems(items, supplemental).length, 2);
+  const hit = projectFestivalDeepLink({
+    festivalId: '638576',
+    items,
+    supplementalItems: supplemental,
+    listLoading: false,
+    phase: 'idle',
+    now: NOW,
+  });
+  assert.equal(hit.sheet, 'open');
+  assert.equal(hit.fetch, false);
+});
+
 test('deeplink id missing from the list opens the sheet and keeps the URL', () => {
   const items = [
     { contentId: '637693', title: '마산가고파국화축제', eventEndDate: '20261108' },
@@ -88,8 +107,8 @@ test('deeplink id missing from the list opens the sheet and keeps the URL', () =
     now: NOW,
   });
   assert.equal(whileListLoads.clearUrl, false);
-  assert.equal(whileListLoads.fetch, false);
-  assert.equal(whileListLoads.sheet, 'closed');
+  assert.equal(whileListLoads.fetch, true);
+  assert.equal(whileListLoads.sheet, 'loading');
 
   const inFlight = projectFestivalDeepLink({
     festivalId: '638576',

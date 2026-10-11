@@ -53,11 +53,16 @@ import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import FestivalDetailProse from './FestivalDetailProse';
 import {
   groupNearbySpotsWithLocalScenic,
-  nearbyLocalScenicRestGroupTitle,
   isNearbyAttractionRowClickable,
   mergeNearbyRowWithLocalScenicDetail,
   missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
+import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
+import {
+  mergeFestivalNearbySights,
+  rankMooniNearbySights,
+  stripTrailingHubName,
+} from './lib/festivalNearbySights.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
   peekKoreaTourAttractionFirstImagesByIds,
@@ -87,10 +92,7 @@ import {
 import { buildFestivalDetailSummary } from './lib/festivalDetailSummary.js';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
-import {
-  formatDistanceKm,
-  rankSpotsByDistance,
-} from '../KoreaTheme/nearbyScenicRank';
+import { rankSpotsByDistance } from '../KoreaTheme/nearbyScenicRank';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
 import {
@@ -298,38 +300,55 @@ function nearbyThumbUrls(spot, extraThumb) {
   return out;
 }
 
+function NearbyThumbPlaceholder() {
+  return (
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+      <Landmark size={18} aria-hidden="true" />
+    </div>
+  );
+}
+
 function NearbyRowThumb({ spot, extraThumb }) {
   const urls = nearbyThumbUrls(spot, extraThumb);
   const [thumbIndex, setThumbIndex] = useState(0);
+  const [ready, setReady] = useState(false);
   const thumb = urls[thumbIndex] || '';
-  if (!thumb) {
-    return (
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-        <Landmark size={18} aria-hidden="true" />
-      </div>
-    );
-  }
+  if (!thumb) return <NearbyThumbPlaceholder />;
   return (
-    <img
-      key={thumb}
-      src={thumb}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      onError={(event) => {
-        if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
-        setThumbIndex((i) => i + 1);
-      }}
-      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-    />
+    <span className="relative block h-14 w-14 shrink-0">
+      {ready ? null : <NearbyThumbPlaceholder />}
+      <img
+        key={thumb}
+        src={thumb}
+        alt=""
+        loading="eager"
+        decoding="async"
+        onLoad={() => setReady(true)}
+        onError={(event) => {
+          if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
+          setReady(false);
+          setThumbIndex((i) => i + 1);
+        }}
+        className={`h-14 w-14 rounded-xl object-cover ${
+          ready ? 'relative' : 'absolute inset-0 opacity-0'
+        }`}
+      />
+    </span>
   );
+}
+
+function nearbySightTitle(spot) {
+  const hubName = spot?.hubId ? resolveCityAttractionHub(spot.hubId)?.name : '';
+  return stripTrailingHubName(spot?.name, hubName);
 }
 
 function NearbyAttractionRow({ spot, extraThumb, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = nearbyPlaceLabel(spot);
   const rankBlurb = String(spot?.rankBlurb || '').trim();
-  const clickable = isNearbyAttractionRowClickable(spot);
+  const title = nearbySightTitle(spot);
+  const clickable =
+    Boolean(spot?.placeSlug) || isNearbyAttractionRowClickable(spot);
   const Inner = clickable ? 'button' : 'div';
   const innerProps = clickable
     ? {
@@ -349,74 +368,26 @@ function NearbyAttractionRow({ spot, extraThumb, onSelect }) {
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-              {spot.name}
+              {title}
             </span>
             {rankBlurb ? (
               <span className="text-[11px] font-semibold text-stone-500 break-keep">
                 {rankBlurb}
               </span>
             ) : null}
-          </span>
-          <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-            {[rankBlurb ? null : place, dist].filter(Boolean).join(' · ')}
-          </span>
-        </span>
-      </Inner>
-    </li>
-  );
-}
-
-function FestivalNearScenicRow({ spot, km, locale, onSelect }) {
-  const distanceLabel = formatDistanceKm(km);
-  const urls = nearbyThumbUrls(spot);
-  const [thumbIndex, setThumbIndex] = useState(0);
-  const thumb = urls[thumbIndex] || '';
-  return (
-    <li>
-      <button
-        type="button"
-        onClick={() => onSelect(spot)}
-        className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-      >
-        {thumb ? (
-          <img
-            key={thumb}
-            src={thumb}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            onError={(event) => {
-              if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
-              setThumbIndex((i) => i + 1);
-            }}
-            className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-          />
-        ) : (
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-            <Landmark size={18} aria-hidden="true" />
-          </div>
-        )}
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-              {spot.name}
-            </span>
-            {distanceLabel ? (
+            {dist ? (
               <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
-                {distanceLabel}
+                {dist}
               </span>
             ) : null}
           </span>
-          <span className="mt-0.5 block text-[11px] text-stone-500 break-keep">
-            {[
-              localizedScenicMajorRegion(locale, spot.region) || spot.region,
-              spot.blurb,
-            ]
-              .filter(Boolean)
-              .join(' · ')}
-          </span>
+          {!rankBlurb && place ? (
+            <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+              {place}
+            </span>
+          ) : null}
         </span>
-      </button>
+      </Inner>
     </li>
   );
 }
@@ -517,6 +488,7 @@ function FestivalDetailPending({ label, onClose }) {
  * @param {{
  *   item?: Record<string, unknown> | null,
  *   pending?: boolean,
+ *   prefetchedTourDetail?: object | null,
  *   favorited?: boolean,
  *   onToggleFavorite?: (item: Record<string, unknown>) => void,
  *   onClose: () => void,
@@ -525,6 +497,7 @@ function FestivalDetailPending({ label, onClose }) {
 export default function FestivalDetailSheet({
   item,
   pending = false,
+  prefetchedTourDetail = null,
   favorited = false,
   onToggleFavorite,
   onClose,
@@ -602,6 +575,7 @@ export default function FestivalDetailSheet({
   const lightboxSwipeStartRef = useRef(null);
   const suppressHeroTapRef = useRef(false);
   const tabListRef = useRef(null);
+  const detailFetchGenRef = useRef(0);
 
   const festivalAreaCode = useMemo(() => {
     // searchFestival2 응답에 areaCode가 비는 경우가 많아 addr1 시도 감지 폴백
@@ -666,7 +640,47 @@ export default function FestivalDetailSheet({
       areaCode: festivalAreaCode || undefined,
     });
   }, [nearbySpots, nearestHub?.hubId, item?.mapx, item?.mapy, locale, festivalAreaCode]);
-  const nearbyHasLocalScenic = nearbyGrouped.groups.some((g) => g.items.length);
+  const nearbyFallbackCenters = useMemo(() => {
+    const hub = nearestHub?.hubId ? resolveCityAttractionHub(nearestHub.hubId) : null;
+    const lat = Number(hub?.lat);
+    const lng = Number(hub?.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return [];
+    return [{ lat, lng }];
+  }, [nearestHub?.hubId]);
+  const nearbySights = useMemo(() => {
+    const origin = festivalLngLat(item?.mapx, item?.mapy);
+    return mergeFestivalNearbySights({
+      scenicSpots: scenicSpotsRanked.map(({ spot }) => ({
+        ...spot,
+        locality:
+          spot.locality ||
+          [localizedScenicMajorRegion(locale, spot.region) || spot.region, spot.blurb]
+            .filter(Boolean)
+            .join(' · '),
+      })),
+      grouped: nearbyGrouped,
+      origin,
+      venue: {
+        contentIds: [item?.venueContentId, intro?.venueContentId],
+        eventPlace: String(intro?.eventplace || item?.eventplace || ''),
+        addr: String(item?.addr1 || intro?.addr1 || ''),
+      },
+      fallbackCenters: nearbyFallbackCenters,
+    });
+  }, [
+    scenicSpotsRanked,
+    nearbyGrouped,
+    nearbyFallbackCenters,
+    item?.mapx,
+    item?.mapy,
+    item?.addr1,
+    item?.eventplace,
+    item?.venueContentId,
+    intro?.eventplace,
+    intro?.addr1,
+    intro?.venueContentId,
+    locale,
+  ]);
   const nearbyMissingThumbIds = useMemo(
     () => missingNearbyThumbContentIds(nearbyGrouped),
     [nearbyGrouped],
@@ -782,12 +796,10 @@ export default function FestivalDetailSheet({
       return undefined;
     }
 
-    let cancelled = false;
+    const gen = ++detailFetchGenRef.current;
     const seed = festivalImage(item);
-    setIntro(null);
-    setCommon(null);
-    setInfoItems([]);
-    setImageUrls(seed ? [toHttps(seed)].filter(Boolean) : []);
+    const contentId = item.contentId;
+    const contentTypeId = item.contentTypeId || '15';
     setActiveImage(0);
     setLightboxOpen(false);
     setActiveTab(TAB_INFO);
@@ -810,15 +822,19 @@ export default function FestivalDetailSheet({
     setCourseDetail(null);
     setCourseDetailLoading(false);
 
-    (async () => {
-      const contentId = item.contentId;
-      const contentTypeId = item.contentTypeId || '15';
-      const [detailData, imageData] = await Promise.all([
-        fetchTourApiFestivalDetail({ contentId, contentTypeId }),
-        fetchTourApiFestivalImages({ contentId, numOfRows: 12 }),
-      ]);
-      if (cancelled) return;
+    const prefetchMatches =
+      prefetchedTourDetail &&
+      prefetchedTourDetail.ok !== false &&
+      String(
+        prefetchedTourDetail.contentId ||
+          prefetchedTourDetail.intro?.contentId ||
+          prefetchedTourDetail.intro?.contentid ||
+          prefetchedTourDetail.common?.contentId ||
+          prefetchedTourDetail.common?.contentid ||
+          '',
+      ) === String(contentId);
 
+    const applyDetailPayload = (detailData, imageData) => {
       const introHit = detailData?.intro || pickFirst(detailData) || null;
       const commonHit = detailData?.common || null;
       const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
@@ -829,7 +845,6 @@ export default function FestivalDetailSheet({
         setCommon(null);
         setInfoItems([]);
         setDetailError(t('korea.festival.detail.detailLoadError'));
-        setDetailLoading(false);
         return;
       }
 
@@ -838,13 +853,37 @@ export default function FestivalDetailSheet({
       setInfoItems(infoRows);
       setImageUrls(urls);
       setActiveImage(0);
-      setDetailLoading(false);
+      setDetailError('');
+    };
+
+    if (prefetchMatches) {
+      applyDetailPayload(prefetchedTourDetail, { ok: true, images: [] });
+    } else {
+      setIntro(null);
+      setCommon(null);
+      setInfoItems([]);
+      setImageUrls(seed ? [toHttps(seed)].filter(Boolean) : []);
+    }
+
+    (async () => {
+      try {
+        const [detailData, imageData] = await Promise.all([
+          prefetchMatches ? prefetchedTourDetail : fetchTourApiFestivalDetail({ contentId, contentTypeId }),
+          fetchTourApiFestivalImages({ contentId, numOfRows: 12 }),
+        ]);
+        if (detailFetchGenRef.current !== gen) return;
+        applyDetailPayload(detailData, imageData);
+      } finally {
+        if (detailFetchGenRef.current === gen) {
+          setDetailLoading(false);
+        }
+      }
     })();
 
     return () => {
-      cancelled = true;
+      detailFetchGenRef.current += 1;
     };
-  }, [item?.contentId, item?.contentTypeId, t]);
+  }, [item?.contentId, item?.contentTypeId, prefetchedTourDetail, t]);
 
   const {
     transformStyle: lightboxTransformStyle,
@@ -1141,14 +1180,13 @@ export default function FestivalDetailSheet({
 
   const mooniNearbyPlaces = useMemo(() => {
     const names = [];
-    const push = (spot) => {
+    for (const spot of rankMooniNearbySights(nearbySights.items, 6)) {
       const name = String(spot?.name || '').trim();
-      if (!name || names.includes(name)) return;
+      if (!name || names.includes(name)) continue;
       names.push(name);
-    };
-    for (const spot of nearbySpots) push(spot);
-    return names.slice(0, 12);
-  }, [nearbySpots]);
+    }
+    return names;
+  }, [nearbySights]);
 
   const mooniNearbyRestaurants = useMemo(() => {
     const rows = [];
@@ -1420,6 +1458,7 @@ export default function FestivalDetailSheet({
       {showViewportClose ? (
         <AppOutlineBackButton
           icon="close"
+          variant="solid"
           onClick={onClose}
           ariaLabel={t('korea.common.close')}
           title={t('korea.common.close')}
@@ -1772,109 +1811,81 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {scenicRegion && (
-                <div className="space-y-2 pt-1">
-                  <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    {t('korea.festival.detail.nearScenic')}
-                  </p>
-                  {scenicSpotsRanked.length > 0 && (
-                    <ul
-                      className="space-y-2"
-                      aria-label={t('korea.festival.detail.nearScenicAria', {
-                        region: scenicRegionLabel || scenicRegion,
-                      })}
-                    >
-                      {scenicSpotsRanked.map(({ spot, km }) => (
-                        <FestivalNearScenicRow
-                          key={spot.id || spot.contentId}
-                          spot={spot}
-                          km={km}
-                          locale={locale}
-                          onSelect={setSelectedScenic}
-                        />
-                      ))}
-                    </ul>
-                  )}
-                  <button
-                    type="button"
-                    onClick={openScenicPage}
-                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
-                  >
-                    {t('korea.festival.detail.nearScenicMore', {
-                      region: scenicRegionLabel || scenicRegion,
-                    })}
-                    <ExternalLink size={14} aria-hidden="true" />
-                  </button>
-                </div>
-              )}
-
-              {nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords' && (
+              {(scenicRegion ||
+                nearbySights.items.length > 0 ||
+                (nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords')) && (
                 <div
                   className="space-y-2 pt-1"
                   data-festival-section="nearAttractions"
                 >
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    {t('korea.festival.detail.nearAttractions')}
+                    {t('korea.festival.detail.nearbySights')}
                   </p>
                   {nearbyStatus === 'loading' && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.festival.detail.nearAttractionsLoading')}
+                      {t('korea.festival.detail.nearbySightsLoading')}
                     </div>
                   )}
-                  {nearbyStatus === 'error' && nearbySpots.length === 0 && (
+                  {nearbyStatus === 'error' && nearbySights.items.length === 0 && (
                     <p className="text-xs text-stone-500">
-                      {t('korea.festival.detail.nearAttractionsError')}
+                      {t('korea.festival.detail.nearbySightsError')}
                     </p>
                   )}
-                  {nearbyStatus === 'empty' && !nearbyHasLocalScenic && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.festival.detail.nearAttractionsEmpty')}
-                    </p>
-                  )}
-                  {(nearbySpots.length > 0 || nearbyHasLocalScenic) && (
+                  {nearbyStatus !== 'loading' &&
+                    nearbyStatus !== 'error' &&
+                    nearbySights.items.length === 0 && (
+                      <p className="text-xs text-stone-500">
+                        {t('korea.festival.detail.nearbySightsEmpty')}
+                      </p>
+                    )}
+                  {nearbySights.items.length > 0 && (
                     <ul
                       className="space-y-2"
-                      aria-label={t('korea.festival.detail.nearAttractionsAria')}
+                      aria-label={t('korea.festival.detail.nearbySightsAria')}
                     >
-                      {nearbyGrouped.groups.map((group) => (
-                        <React.Fragment key={group.listId}>
-                          <li className="list-none pt-0.5">
-                            <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
-                              {group.title}
-                            </p>
-                          </li>
-                          {group.items.map((spot) => (
-                            <NearbyAttractionRow
-                              key={spot.contentId || spot.id}
-                              spot={spot}
-                              extraThumb={nearbyThumbById.get(
-                                String(spot.contentId || '').trim(),
-                              )}
-                              onSelect={setSelectedNearby}
-                            />
-                          ))}
-                        </React.Fragment>
-                      ))}
-                      {nearbyGrouped.rest.length > 0 && nearbyGrouped.groups.length > 0 ? (
-                        <li className="list-none pt-0.5">
-                          <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
-                            {nearbyLocalScenicRestGroupTitle(locale)}
-                          </p>
-                        </li>
-                      ) : null}
-                      {nearbyGrouped.rest.map((spot) => (
-                        <NearbyAttractionRow
-                          key={spot.contentId || spot.id}
-                          spot={spot}
-                          extraThumb={nearbyThumbById.get(
-                            String(spot.contentId || '').trim(),
-                          )}
-                          onSelect={setSelectedNearby}
-                        />
-                      ))}
+                      {nearbySights.blocks.map((block) => {
+                        if (block.kind === 'heading') {
+                          return (
+                            <li key={`heading-${block.listId}`} className="list-none pt-3">
+                              <p className="text-base font-bold text-stone-800 break-keep">
+                                {block.title}
+                              </p>
+                            </li>
+                          );
+                        }
+                        const spot = block.spot;
+                        return (
+                          <NearbyAttractionRow
+                            key={spot.contentId || spot.id || spot.name}
+                            spot={spot}
+                            extraThumb={nearbyThumbById.get(
+                              String(spot.contentId || '').trim(),
+                            )}
+                            onSelect={(row) => {
+                              if (row?.placeSlug && !row?.localScenicListId) {
+                                setSelectedScenic(row);
+                              } else {
+                                setSelectedNearby(row);
+                              }
+                            }}
+                          />
+                        );
+                      })}
                     </ul>
                   )}
+                  {scenicRegion ? (
+                    <button
+                      type="button"
+                      onClick={openScenicPage}
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                    >
+                      {t('korea.festival.detail.nearScenicMore', {
+                        region: scenicRegionLabel || scenicRegion,
+                      })}
+                      <ExternalLink size={14} aria-hidden="true" />
+                    </button>
+                  ) : null}
                 </div>
               )}
 
