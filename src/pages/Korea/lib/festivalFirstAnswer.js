@@ -33,6 +33,7 @@ export async function requestFestivalFirstAnswer(festivalContext, options = {}) 
       homepage: festivalContext?.homepage,
       tel: festivalContext?.tel,
       parking: festivalContext?.parking,
+      venue: festivalContext?.venue,
       overview: festivalContext?.sceneOverview || festivalContext?.overview,
       program: festivalContext?.program,
       sceneOverview: festivalContext?.sceneOverview,

@@ -3,6 +3,7 @@ import {
   festivalTimingStatus,
   filterFestivalStayAreaNames,
   gateoKoreaFestivalDetailUrl,
+  hasFestivalParkingData,
   kstTodayYmd,
   rankFestivalRestaurantRows,
   rewriteFestivalFormalEndings,
@@ -28,6 +29,7 @@ import { festivalLngLat } from '../koreaFestivalCorridors.js';
  *   program?: string,
  *   nearbyPlaces?: string[],
  *   nearbyRestaurants?: string[],
+ *   info?: Array<{ infoname?: string, name?: string, infotext?: string, text?: string }>,
  * }} input
  */
 export function buildFestivalMooniContext(input = {}) {
@@ -57,7 +59,7 @@ export function buildFestivalMooniContext(input = {}) {
     lng: pt?.lng ?? null,
     homepage: String(homepage || intro?.eventhomepage || '').trim(),
     tel: plainFact(intro?.sponsor1tel || intro?.sponsor1Tel || intro?.tel || item?.tel || ''),
-    parking: plainFact(intro?.parking || ''),
+    parking: plainFact(intro?.parking || '') || parkingFromInfoRows(input.info),
     hubLabel,
     titleEn: String(item?.titleEn || '').trim(),
     overview: filterOverviewFacts(
@@ -84,9 +86,22 @@ function plainFact(value) {
     .trim();
 }
 
+function parkingFromInfoRows(info) {
+  const bits = [];
+  for (const row of Array.isArray(info) ? info : []) {
+    const name = String(row?.infoname || row?.name || '').trim();
+    const text = plainFact(row?.infotext || row?.text || '');
+    if (!hasFestivalParkingData({ info: [{ infoname: name, infotext: text }] })) continue;
+    const bit = [name, text].filter(Boolean).join(' ').trim();
+    if (bit && !bits.includes(bit)) bits.push(bit);
+  }
+  return bits.join(' ').trim();
+}
+
 /** Promo, superlative, and renaming sentences. Concrete noun phrases in the same sentence go with them. */
 const OVERVIEW_FILLER_RE =
-  /사랑을 받|대표|마음껏|황금빛|다양한 즐길거리|친숙하게|행사명이 변경|제\s*\d+\s*회|그 어느|많은 사랑|더욱|다채|풍성|잊지 못|최고의|유일|명품|감동|힐링|정취|내려놓|분주|느끼|낭만|추억/;
+  /사랑을 받|대표|마음껏|황금빛|다양한 즐길거리|친숙하게|행사명이 변경|제\s*\d+\s*회|그 어느|많은 사랑|더욱|다채|풍성|잊지 못|최고의|유일|명품|감동|힐링|정취|내려놓|분주|느끼|낭만|추억|과거와\s*현재|미래가\s*만나|만나는\s*무대/;
+const OVERVIEW_SLOGAN_RE = /과거와\s*현재|미래가\s*만나|만나는\s*무대/;
 
 /** Overview lines we can say in 해요. Press endings such as 열린다 stay out. */
 const OVERVIEW_SAYABLE_RE = /(?:입니다|이다|합니다|있다|해요|이에요|예요|있어요)[.!?。]?\s*$/;
@@ -270,19 +285,28 @@ function openingNearby(names) {
   return out;
 }
 
+function speakableProgramLabel(name) {
+  const labeled = String(name || '').match(/^(.{1,20}?)\s*[:：]\s*(.+)$/);
+  if (!labeled || !/프로그램/.test(labeled[1])) return String(name || '').trim();
+  const kind = labeled[1].replace(/프로그램/g, '').replace(/\s+/g, '').trim();
+  const value = labeled[2].replace(/\s+/g, ' ').trim();
+  if (kind && value && kind !== value) return `${value} ${kind}`.trim();
+  return (value || kind).trim();
+}
+
 function programNames(program) {
   const flat = dropHanjaParentheticals(String(program || ''))
     .replace(/<[^>]+>/g, ' ')
     .replace(/\([^)]*\)/g, ' ');
   const names = [];
   for (const piece of flat.split(/[\n,/·]| 및 /)) {
-    const name = piece
+    const name = speakableProgramLabel(piece
       .replace(/^\s*\d+[.)]\s*/, '')
       .replace(/^[-•]\s*/, '')
       .replace(/[()]/g, '')
       .replace(/^\s*(?:(?:메인|주요|부대|소비자\s*참여)\s*)?프로그램\s*[:：]\s*/, '')
       .replace(/\s+/g, ' ')
-      .trim();
+      .trim());
     if (!name || name.length > 24) continue;
     if (OVERVIEW_FILLER_RE.test(name)) continue;
     if (/방청|공개\s*방송|시청자/.test(name)) continue;
@@ -1042,17 +1066,40 @@ function leadEndedBeforeNearby(raw, facts) {
   return [...ended, ...rest, ...nearby].join(' ');
 }
 
+function dropFestivalSloganSentences(raw) {
+  return String(raw || '')
+    .split(/(?<=[.!?。])\s+/)
+    .map((part) => part.trim())
+    .filter((part) => part && !OVERVIEW_SLOGAN_RE.test(part))
+    .join(' ');
+}
+
+/** «11일 뒤 시작해요» keeps the short date from dateLine. */
+function ensureCountdownIncludesDates(raw, facts) {
+  if (String(facts?.locale || 'ko').slice(0, 2) === 'en') return raw;
+  const dateLine = String(facts?.dateLine || '');
+  const range = dateLine.match(/\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?/);
+  if (!range || String(raw || '').includes(range[0])) return raw;
+  return String(raw || '').replace(
+    /((?:\d{1,3}일|하루|이틀|사흘|나흘|닷새|엿새|이레|여드레|아흐레|열흘)\s*뒤\s*시작해요)/,
+    `${range[0]}, $1`,
+  );
+}
+
 export function acceptFestivalModelOpening(text, facts, banned = []) {
   let raw = stripLeadingFactsEcho(text);
   raw = raw.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, ' ').trim();
+  raw = dropFestivalSloganSentences(raw);
   raw = dedupeRepeatedTitle(raw, facts);
   raw = expandDateOnlyFragments(raw, facts);
   raw = stripTheBeforeFactNoun(raw, facts).trim();
+  raw = ensureCountdownIncludesDates(raw, facts);
   if (facts?.locale === 'en') {
     raw = dropUnsourcedEnglishAtmosphere(raw);
     raw = leadEndedBeforeNearby(raw, facts);
   }
   if (facts?.locale !== 'en') raw = rewriteFestivalFormalEndings(raw).trim();
+  if (/프로그램\s*[:：]/.test(raw)) return '';
   if (!raw || !facts?.title) return '';
   if (!startsWithFestivalTitle(raw, facts)) return '';
   if (countFestivalCardSentences(raw) > MODEL_OPENING_SENTENCE_CAP) return '';

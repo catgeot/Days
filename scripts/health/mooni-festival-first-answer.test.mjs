@@ -50,6 +50,8 @@ import {
 import {
   appendFestivalLodgingNextStep,
   buildMooniBoundFestivalSystemHint,
+  hasFestivalParkingData,
+  stripFestivalPageParkingPointers,
   FESTIVAL_CHAIN_RE,
   filterFestivalStayAreaNames,
   gateoKoreaFestivalLodgingUrl,
@@ -1609,6 +1611,12 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /다양한 맛집/);
   assert.match(KO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
   assert.match(KO.festivalAnswerRules, /축제 페이지에서 살펴보세요/);
+  assert.match(KO.festivalAnswerRules, /찾아볼 수 있어요/);
+  assert.match(KO.festivalAnswerRules, /장소 이름 안의 «주차장»만으로는 주차 정보가 아니다/);
+  assert.match(EN.festivalAnswerRules, /see or find parking on the festival page/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /과거와 현재/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /N일 뒤 시작해요/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /경연프로그램 : 청소년 페스타/);
   assert.match(KO.festivalAnswerRules, /숙소 카드에 이름과 거리/);
   assert.match(EN.festivalAnswerRules, /next closest local place/);
   assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /축제 페이지에서 살펴보세요/);
@@ -1772,6 +1780,109 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   });
   assert.equal(telOnly, '주차 안내는 문의 033-640-4531에 있어요.');
   assert.doesNotMatch(telOnly, /문의처를 통해|축제 페이지|확인/);
+
+  const seogwipoParking = {
+    contentId: '506616',
+    locale: 'ko',
+    userText: '주차',
+    homepage: 'https://www.seogwipo.go.kr/festival/506616',
+    tel: '064-760-3030',
+    venue: '천지연 주차장',
+    overview: '천지연폭포와 천지연 주차장 일원에서 열립니다. 과거와 현재, 미래가 만나는 무대입니다.',
+    program: '경연프로그램 : 청소년 페스타',
+  };
+  assert.equal(hasFestivalParkingData(seogwipoParking), false);
+  assert.equal(hasFestivalParkingData({
+    overview: '주차는 월화거리 공영주차장을 이용해요.',
+  }), true);
+  assert.equal(hasFestivalParkingData({
+    overview: '주차 가능. 주차요금 2,000원. 주차 대수 200대.',
+  }), true);
+  assert.equal(hasFestivalParkingData({
+    parking: '월화거리 공영주차장',
+  }), true);
+  assert.equal(hasFestivalParkingData({
+    info: [{ infoname: '주차시설', infotext: '주차요금 1,000원' }],
+  }), true);
+  assert.equal(hasFestivalParkingData({
+    info: [{ infoname: '행사장소', infotext: '천지연 주차장' }],
+    venue: '천지연 주차장',
+  }), false);
+  const pagePointers = [
+    '[강릉 국수 축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서도 관련 정보를 찾아볼 수 있어요.',
+    '[축제 페이지](https://www.gateo.kr/korea/?festival=506616)에서 살펴볼 수 있어요.',
+    '주차는 [서귀포칠십리축제 페이지](https://www.gateo.kr/korea/?festival=506616)에서 알아볼 수 있어요.',
+    '[서귀포칠십리축제 페이지](https://www.gateo.kr/korea/?festival=506616)에서 볼 수 있어요.',
+    'You can find parking on the [festival page](https://www.gateo.kr/korea/?festival=506616).',
+    'See the festival page for parking.',
+  ];
+  for (const line of pagePointers) {
+    assert.equal(stripFestivalPageParkingPointers(line), '');
+  }
+  const guide = '주차 안내는 [공식 홈페이지](https://www.seogwipo.go.kr/festival/506616)에 있어요. 문의 064-760-3030';
+  for (const line of pagePointers.slice(0, 4)) {
+    const polished = polishFestivalModelReply(line, seogwipoParking);
+    assert.equal(polished, guide);
+    assert.doesNotMatch(polished, /축제 페이지|찾아볼|살펴볼|알아볼|볼 수 있어요/);
+  }
+  const enParking = polishFestivalModelReply(pagePointers[4], {
+    ...seogwipoParking,
+    locale: 'en',
+    userText: 'parking',
+  });
+  assert.equal(enParking, 'Parking is on the [official site](https://www.seogwipo.go.kr/festival/506616). Call 064-760-3030.');
+  assert.doesNotMatch(enParking, /festival page|\bfind\b|\bsee\b/i);
+  const lotHint = buildMooniBoundFestivalSystemHint({
+    title: '서귀포칠십리축제',
+    contentId: '506616',
+    venue: '천지연 주차장',
+    sceneOverview: seogwipoParking.overview,
+    homepage: seogwipoParking.homepage,
+    tel: seogwipoParking.tel,
+  }, 'ko');
+  assert.match(lotHint, /주차 정보가 이 데이터에 없다/);
+  assert.match(lotHint, /찾아볼 수 있어요/);
+  assert.doesNotMatch(lotHint, /- 주차:/);
+
+  const seogwipo = buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      eventStartDate: '20261020',
+      eventEndDate: '20261022',
+    },
+    intro: { eventplace: '천지연 주차장' },
+    overview: '천지연폭포와 천지연 주차장 일원에서 열립니다. 과거와 현재, 미래가 만나는 무대입니다.',
+    program: '경연프로그램 : 청소년 페스타',
+    info: [{ infoname: '행사장소', infotext: '천지연 주차장' }],
+  });
+  assert.equal(seogwipo.parking, '');
+  const seogwipoKo = buildFestivalMooniSentenceAnswer(seogwipo, { locale: 'ko', now: NOW });
+  assert.match(seogwipoKo, /서귀포칠십리축제는 10\/20~22, 11일 뒤 시작해요/);
+  assert.match(seogwipoKo, /청소년 페스타 경연이 있어요/);
+  assert.doesNotMatch(seogwipoKo, /과거와 현재|미래가 만나|프로그램\s*[:：]/);
+  const seogwipoFacts = buildFestivalFirstAnswerFacts(seogwipo, { locale: 'ko', now: NOW });
+  assert.match(seogwipoFacts.dateLine, /10\/20~22, 11일 뒤 시작해요/);
+  assert.deepEqual(seogwipoFacts.programs, ['청소년 페스타 경연']);
+  assert.equal(acceptFestivalModelOpening(
+    '서귀포칠십리축제는 11일 뒤 시작해요. 과거와 현재, 미래가 만나는 무대예요. 경연프로그램 : 청소년 페스타가 있어요.',
+    seogwipoFacts,
+  ), '');
+  const datedCountdown = acceptFestivalModelOpening(
+    `서귀포칠십리축제는 11일 뒤 시작해요. 청소년 페스타 경연이 있어요. 자세한 내용은 [서귀포칠십리축제 페이지](${seogwipo.gateoUrl})에서 볼 수 있어요.`,
+    seogwipoFacts,
+  );
+  assert.match(datedCountdown, /10\/20~22, 11일 뒤 시작해요/);
+  assert.match(datedCountdown, /청소년 페스타 경연이 있어요/);
+  assert.doesNotMatch(datedCountdown, /과거와 현재/);
+  const withFee = buildFestivalMooniContext({
+    item: { contentId: '506616', title: '서귀포칠십리축제' },
+    intro: { eventplace: '천지연 주차장' },
+    overview: '천지연 주차장 일원에서 열립니다.',
+    info: [{ infoname: '주차시설', infotext: '주차 가능. 주차요금 2,000원. 주차 대수 200대' }],
+  });
+  assert.match(withFee.parking, /주차요금/);
+  assert.equal(hasFestivalParkingData(withFee), true);
   assert.match(
     stripDisallowedFestivalLinks('안내 [https://example.com/bracket] 끝', { homepage: page }),
     /^안내 끝$/,

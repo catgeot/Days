@@ -19,10 +19,11 @@ export {
  *   program?: string,
  *   nearbyPlaces?: string[],
  *   nearbyRestaurants?: string[],
+ *   info?: Array<{ infoname?: string, name?: string, infotext?: string, text?: string }>,
  * }} input
  */
 export function buildFestivalMooniBoundSpot(input = {}) {
-  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas } = input;
+  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas, info } = input;
   const festivalContext = buildFestivalMooniContext({
     item,
     intro,
@@ -34,6 +35,7 @@ export function buildFestivalMooniBoundSpot(input = {}) {
     nearbyPlaces,
     nearbyRestaurants,
     stayAreas,
+    info,
   });
   const title = festivalContext?.title || '';
   const loc = location && typeof location === 'object' ? location : null;
@@ -67,9 +69,12 @@ function sameNameList(left, right) {
 /** Keep an open chat, and copy 주변 맛집 names in when the sheet list arrives. */
 export function patchFestivalBoundSpot(prev, next) {
   if (!prev?.festivalContext || !next?.festivalContext) return prev;
+  const prevParking = String(prev.festivalContext.parking || '');
+  const nextParking = String(next.festivalContext.parking || '');
   if (
     sameNameList(prev.festivalContext.nearbyRestaurants, next.festivalContext.nearbyRestaurants)
     && sameNameList(prev.festivalContext.nearbyPlaces, next.festivalContext.nearbyPlaces)
+    && prevParking === nextParking
   ) return prev;
   return {
     ...prev,
@@ -77,6 +82,7 @@ export function patchFestivalBoundSpot(prev, next) {
       ...prev.festivalContext,
       nearbyRestaurants: next.festivalContext.nearbyRestaurants || [],
       nearbyPlaces: next.festivalContext.nearbyPlaces || [],
+      parking: next.festivalContext.parking ?? prev.festivalContext.parking,
     },
   };
 }

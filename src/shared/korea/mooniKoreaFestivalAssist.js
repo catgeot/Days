@@ -1043,9 +1043,58 @@ const PRACTICAL_TOPIC_RE = [
 ];
 
 function festivalFactCorpus(options = {}) {
-  return [options.overview, options.program, options.sceneOverview, options.parking, options.feeText]
+  return [options.overview, options.program, options.sceneOverview, options.parking, options.feeText, options.venue]
     .map((value) => String(value || ''))
     .join('\n');
+}
+
+const PARKING_FACT_RE =
+  /주차\s*가능|주차가\s*가능|주차요금|주차\s*대수|주차비|주차료|무료\s*주차|유료\s*주차|주차\s*공간|주차장(?:을|를)?\s*이용|parking\s*(?:is\s+)?(?:available|fee)|parking\s+fees?/i;
+const PARKING_FIELD_NAME_RE =
+  /주차\s*(?:시설|요금|대수|안내|정보|가능)|parking\s*(?:fee|info|information|available|capacity)/i;
+
+function infoRowIsParkingFact(name, text) {
+  const blob = `${name}\n${text}`;
+  if (PARKING_FACT_RE.test(blob)) return true;
+  if (!PARKING_FIELD_NAME_RE.test(name)) return false;
+  const rest = String(text || '')
+    .replace(/[0-9A-Za-z가-힣]*주차장/g, ' ')
+    .replace(/\bparking\s+lots?\b/gi, ' ')
+    .trim();
+  return rest.length > 0;
+}
+
+/**
+ * Parking data is a TourAPI parking field or an availability, fee, or capacity fact.
+ * A lot name such as «천지연 주차장» in a description or venue is not parking data.
+ * @param {string | {
+ *   parking?: string,
+ *   overview?: string,
+ *   program?: string,
+ *   sceneOverview?: string,
+ *   venue?: string,
+ *   feeText?: string,
+ *   text?: string,
+ *   info?: Array<{ infoname?: string, name?: string, infotext?: string, text?: string }>,
+ * }} input
+ */
+export function hasFestivalParkingData(input = {}) {
+  const src = typeof input === 'string' ? { text: input } : (input || {});
+  if (String(src.parking || '').trim()) return true;
+  const rows = Array.isArray(src.info) ? src.info : [];
+  for (const row of rows) {
+    const name = String(row?.infoname || row?.name || '').trim();
+    const text = String(row?.infotext || row?.text || '').trim();
+    if (infoRowIsParkingFact(name, text)) return true;
+  }
+  const corpus = [src.overview, src.program, src.sceneOverview, src.venue, src.feeText, src.text]
+    .map((value) => String(value || ''))
+    .join('\n');
+  if (PARKING_FACT_RE.test(corpus)) return true;
+  const withoutLots = corpus
+    .replace(/[0-9A-Za-z가-힣]*주차장/g, ' ')
+    .replace(/\bparking\s+lots?\b/gi, ' ');
+  return /주차(?:는|가|을|를|요금|가능|안내|정보|공간)|(?<![A-Za-z])parking(?!\s+lot)\b/i.test(withoutLots);
 }
 
 function stayDistanceTag(km) {
@@ -1138,6 +1187,19 @@ function alreadyLinksOfficialContact(text, options = {}) {
 
 const FESTIVAL_PAGE_CHECK_RE = /축제\s*페이지에서\s*확인|check the festival page/i;
 const GATEO_FESTIVAL_MD_RE = /\[[^\]]+\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=[^)]+\)/;
+const FESTIVAL_PAGE_POINTER_RE =
+  /확인|check|살펴\s*보|알아\s*보|찾아\s*볼|볼\s*수\s*있|\bsee\b|\bfind\b/i;
+
+function isFestivalPageParkingPointer(part) {
+  const body = String(part || '');
+  if (!/축제\s*페이지|festival\s+page|gateo\.kr\/korea\/\?festival=/i.test(body)) return false;
+  return FESTIVAL_PAGE_POINTER_RE.test(body);
+}
+
+/** Drop a festival-page sentence that sends the user there for parking. */
+export function stripFestivalPageParkingPointers(text) {
+  return filterPreservingBreaks(text, isFestivalPageParkingPointer);
+}
 
 /** «축제 페이지에서 확인» stays only when the asked parking or shuttle fact is in the data. */
 function redirectMissingPracticalCheck(text, options = {}) {
@@ -1145,7 +1207,18 @@ function redirectMissingPracticalCheck(text, options = {}) {
   if (!asked.length) return String(text || '');
   const corpus = festivalFactCorpus(options);
   const covered = (topic) => (
-    topic.kind === 'parking' ? /주차|parking/i.test(corpus) : /셔틀|shuttle/i.test(corpus)
+    topic.kind === 'parking'
+      ? hasFestivalParkingData({
+        parking: options.parking,
+        overview: options.overview,
+        program: options.program,
+        sceneOverview: options.sceneOverview,
+        venue: options.venue,
+        feeText: options.feeText,
+        info: options.info,
+        text: corpus,
+      })
+      : /셔틀|shuttle/i.test(corpus)
   );
   if (asked.every(covered)) return String(text || '');
   if (asked.some((topic) => topic.kind === 'parking' && !covered(topic))) {
@@ -1516,16 +1589,24 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const tel = String(ctx?.tel || '').trim();
   if (tel) lines.push(isEn ? `- Contact phone: ${tel}` : `- 문의처: ${tel}`);
   const parking = String(ctx?.parking || '').trim();
-  const parkingCorpus = [parking, ctx?.overview, ctx?.sceneOverview, ctx?.program].map((value) => String(value || '')).join('\n');
-  if (parking) {
+  const parkingKnown = hasFestivalParkingData({
+    parking,
+    overview: ctx?.overview,
+    sceneOverview: ctx?.sceneOverview,
+    program: ctx?.program,
+    venue: ctx?.venue,
+    feeText: ctx?.feeText,
+    info: ctx?.info,
+  });
+  if (parking && parkingKnown) {
     lines.push(isEn ? `- Parking: ${parking}` : `- 주차: ${parking}`);
-  } else if (!/주차|parking/i.test(parkingCorpus)) {
+  } else if (!parkingKnown) {
     const telBit = tel
       ? (isEn ? ` Call ${tel}.` : ` 전화번호가 있으면 «문의 ${tel}»를 붙인다.`)
       : (isEn ? ' Do not mention a contact number.' : ' 전화번호가 없으면 문의 문장을 쓰지 않는다.');
     lines.push(isEn
-      ? `- Parking is not in the festival data. Write only "Parking is on the [official site](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})."${telBit} Do not repeat "check". Do not say "through the contact" without a number. Do not tell the user to look at the festival page.`
-      : `- 주차 정보가 이 데이터에 없다. 답은 «주차 안내는 [공식 홈페이지](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})에 있어요.»만 쓴다.${telBit} «확인»을 반복하지 않는다. 번호 없는 «문의처를 통해»와 «축제 페이지에서 살펴보세요»는 쓰지 않는다.`);
+      ? `- Parking is not in the festival data. Write only "Parking is on the [official site](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})."${telBit} Do not repeat "check". Do not say "through the contact" without a number. Do not tell the user to see or find parking on the festival page. A parking-lot place name is not parking data.`
+      : `- 주차 정보가 이 데이터에 없다. 답은 «주차 안내는 [공식 홈페이지](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})에 있어요.»만 쓴다.${telBit} «확인»을 반복하지 않는다. 번호 없는 «문의처를 통해»와 «축제 페이지에서 살펴보세요»는 쓰지 않는다. «찾아볼 수 있어요», «알아볼», «볼 수 있어요»처럼 축제 페이지로 보내는 문장도 쓰지 않는다. 장소 이름의 «주차장»은 주차 정보가 아니다.`);
   }
 
   return `\n${lines.join('\n')}`;
