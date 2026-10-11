@@ -18,14 +18,14 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `372a848f` · draft PR [#420](https://github.com/catgeot/Days/pull/420) · **에이전트 Edge 배포 금지** |
+| **상태** | **#1 push** · tip `dde83ecd` · draft PR [#420](https://github.com/catgeot/Days/pull/420) · **에이전트 Edge 배포 금지** |
 | **브랜치** | `cursor/mooni-festival-edge-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
-| **Preview** | git `https://days-git-cursor-mooni-festival-edge-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 폴백만. Edge 프롬프트는 staging 배포 후) |
+| **Preview** | git `https://days-git-cursor-mooni-festival-edge-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트. Edge 파일은 v27 `2c7a3c95`와 같음. Vercel SSO) |
 | **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | box ops가 staging `qeqszwxjvhnbzhkchera`에만 `gemini-proxy` 배포 → Cos → prod. 2930716: `이에요`/`예요`는 유지하고 `이예요`만 수정(`10/15~18이에요`). 숙소는 행사장 약 20km 안(속초 제외, «편안한 휴식을 위해» 없음)이고 `#festival-lodging`으로 끝남. 근처 먹을 곳은 중앙시장 등 지역이 체인보다 앞. 이어지는 답은 날짜를 반복하지 않음. prod는 v25 (`05679653`) |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). 이 tip의 Edge 파일은 그 스냅샷과 같다. 주차 문구는 다음 PR. 2930716 근처 먹을 곳(자유 입력·칩)은 시트 주변 맛집 이름을 보내고, «다음 행동으로»를 빼며, 숙소 링크와 «맛집을 찾아보세요»를 붙이지 않는다. `npm run test:health` 204 pass. |
 
 **다음 제시어**:
 
@@ -33,9 +33,9 @@
 축제 MOONi Edge #2, staging 검증
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-edge-7c65 · draft PR #420 · tip 372a848f
-금지: 에이전트 gemini-proxy 배포 · 모델 변경 · feature에 plans 커밋 · main 코드 push
-작업: box ops가 staging qeqszwxjvhnbzhkchera에 gemini-proxy를 배포한 뒤 2930716 확인. 이에요/예요는 그대로 두고 이예요만 고친다(10/15~18이에요). 숙소는 축제장 20km 안(속초 제외, 편안한 휴식을 위해 없음)이고 숙소 링크로 끝난다. 근처 먹을 곳은 중앙시장 등 지역이 체인보다 앞. 이어지는 답은 날짜를 반복하지 않는다. prod는 v25(05679653)
+브랜치 cursor/mooni-festival-edge-7c65 · draft PR #420 · tip dde83ecd
+금지: 에이전트 gemini-proxy 배포 · 모델 변경 · feature에 plans 커밋 · main 코드 push · supabase/functions 변경
+작업: 2930716 «근처 먹을 곳?» 자유 입력과 칩이 시트 주변 맛집 이름을 말하는지 확인. «다음 행동으로»·숙소 링크·«맛집을 찾아보세요»가 없어야 한다. prod gemini-proxy는 v27(2c7a3c95)이고 이 tip의 Edge 파일은 그 스냅샷과 같다. 주차 문구는 다음 PR.
 검증: npm run test:health
 ```
 
