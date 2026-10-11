@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#4 push** · tip `1c0bee5e` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · **병합 금지** |
+| **상태** | **#5 push** · tip `2dc2ddf4` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · **병합 금지** |
 | **브랜치** | `cursor/cairo-place-facts-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-cairo-place-facts-8e40-catgeots-projects.vercel.app/place/cairo` (Vercel SSO) |
 | **금지** | 표에 없는 사실 채우기 · 저장소 경로를 출처로 렌더 · Edge·prod SQL · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `node --test scripts/health/place-verified-facts.test.mjs` · `npm run audit:city-attraction-hubs` · `npm run check:place-video-catalog` |
-| **남은 일** | 해요체·줄바꿈 Preview 확인 후 PR #428 병합. 숫자·출처는 그대로 |
+| **남은 일** | 360·390에서 «대이집트 / 박물관»인지 본 뒤 PR #428 병합 |
 
 **다음 제시어**:
 
 ```
-카이로 장소 카드 #5, Preview OK면 PR 병합
+카이로 장소 카드 #6, Preview OK면 PR 병합
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/cairo-place-facts-8e40 · draft PR #428 · tip 1c0bee5e
+브랜치 cursor/cairo-place-facts-8e40 · draft PR #428 · tip 2dc2ddf4
 금지: 사실 숫자·출처 변경 · feature에 plans 커밋 · 사람 확인 전 병합
-작업: /place/cairo · /place/grand-egyptian-museum · /place/sultan-hassan-mosque. 해요체와 줄바꿈. OK면 PR #428 병합
+작업: /place/grand-egyptian-museum 헤더가 대이집트 / 박물관. /place/cairo D1·25달러. OK면 PR #428 병합
 검증: node --test scripts/health/place-verified-facts.test.mjs
 ```
 
