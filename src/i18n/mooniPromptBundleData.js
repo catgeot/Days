@@ -214,8 +214,8 @@ export const KO = {
     "festival_access": {
       "title": "축제장 가는 법",
       "rules": [
-        "사용자가 고른 국내 출발지에서 축제장까지 대중교통과 차로 가는 법만 말한다.",
-        "한국어는 도시명, 영어는 공항 코드 기준으로 안내한다.",
+        "사용자가 고른 국내 출발지에서 축제장까지 열차·고속버스와 차로 가는 법만 말한다. 출발 역·터미널 이름을 문장에 넣는다.",
+        "국내 구간에서는 공항 코드(ICN, GMP, KAG 등)를 쓰지 않는다. 공항 코드는 해외 항공 질문에서만 쓴다.",
         "힌트에 없는 셔틀·주차·소요 시간은 단정하지 않는다.",
         "글머리표 없이 문장만 쓴다. 행사 기간은 다시 말하지 않는다. GATEO ?festival= 링크, 다음 행동 한 문장을 넣는다."
       ]
@@ -505,8 +505,8 @@ export const EN = {
     "festival_access": {
       "title": "Getting to the festival",
       "rules": [
-        "Explain public transit and driving from the domestic origin the user chose.",
-        "Korean answers use the city name. English answers use the airport code.",
+        "Explain rail, express bus, and driving from the domestic origin the user chose. Name the departure station or terminal.",
+        "Do not use airport codes (ICN, GMP, KAG) on a domestic leg. Airport codes are only for an overseas flight.",
         "Do not assert shuttles, parking, or travel times that are not in the hint.",
         "No bullet lists. Do not restate the festival dates. End with the GATEO ?festival= link, and one next action."
       ]

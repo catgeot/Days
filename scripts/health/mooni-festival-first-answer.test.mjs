@@ -28,10 +28,14 @@ import { festivalResolutionLabel } from '../../src/pages/Home/lib/mooniPlaceChat
 import {
   FESTIVAL_DOMESTIC_ORIGINS,
   buildFestivalAccessAskText,
+  clearDomesticAirportDeparture,
+  domesticFestivalGroundOrigin,
+  domesticGroundModelSuffix,
+  festivalDomesticLabelsAreCities,
   festivalOriginLabel,
   visibleFestivalDomesticOrigins,
 } from '../../src/pages/Home/lib/festivalDomesticOrigins.js';
-import { resolveDepartureLabelFromChat } from '../../src/utils/resolveDepartureIataFromChat.js';
+import { resolveDepartureIataFromChat, resolveDepartureLabelFromChat } from '../../src/utils/resolveDepartureIataFromChat.js';
 import { patchFestivalBoundSpot } from '../../src/pages/Korea/lib/festivalMooniBoundSpot.js';
 import {
   appendFestivalLodgingNextStep,
@@ -386,8 +390,9 @@ test('festival chips: four answers plus overseas group, English puts overseas fi
   const origins = readFileSync(join(root, 'src/pages/Home/lib/festivalDomesticOrigins.js'), 'utf8');
   assert.match(origins, /축제장까지 대중교통과 차로 가는 법/);
   assert.match(origins, /to this festival by public transit and by car/);
-  assert.match(origins, /iata: 'ICN', ko: '인천'/);
-  assert.match(origins, /id: 'yeosu', iata: 'RSU', ko: '여수'/);
+  assert.match(origins, /id: 'incheon', ko: '인천'/);
+  assert.match(origins, /id: 'jeonnam', ko: '여수'/);
+  assert.doesNotMatch(origins, /iata:/);
   assert.match(chips, /withGroupChipCaret\(chip\.label, chip\.drillDown\)/);
 
   const koFest = koLocale.mooni.chips.festival;
@@ -411,39 +416,63 @@ test('festival chips: four answers plus overseas group, English puts overseas fi
   }
 });
 
-test('festival departure chips cover 17 provinces, hide the festival city, and keep 여수', () => {
+test('festival departure chips are 17 cities, swap the host city, and stay off airports', () => {
   const provinces = [
     '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종',
     '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주',
   ];
+  const provinceOnly = ['경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남'];
   assert.equal(FESTIVAL_DOMESTIC_ORIGINS.length, 17);
+  assert.equal(festivalDomesticLabelsAreCities(), true);
   assert.deepEqual(
     [...FESTIVAL_DOMESTIC_ORIGINS.map((row) => row.province)].sort(),
     [...provinces].sort(),
   );
   const labels = FESTIVAL_DOMESTIC_ORIGINS.map((row) => row.ko);
   assert.equal(new Set(labels).size, labels.length);
+  for (const name of provinceOnly) assert.equal(labels.includes(name), false, name);
   for (const row of FESTIVAL_DOMESTIC_ORIGINS) {
     assert.equal(festivalOriginLabel(row.id, 'ko'), row.ko, row.id);
+    assert.equal(row.iata, undefined, row.id);
   }
-  const iatas = FESTIVAL_DOMESTIC_ORIGINS.map((row) => row.iata).filter(Boolean);
-  assert.equal(new Set(iatas).size, iatas.length);
-  assert.equal(FESTIVAL_DOMESTIC_ORIGINS.find((row) => row.iata === 'ICN')?.ko, '인천');
-  assert.equal(FESTIVAL_DOMESTIC_ORIGINS.find((row) => row.id === 'seoul')?.iata, 'GMP');
-  assert.equal(labels.includes('김포'), false);
-  assert.equal(labels.includes('원주'), false);
+  assert.equal(labels.includes('수원'), true);
+  assert.equal(labels.includes('천안'), true);
+  assert.equal(labels.includes('전주'), true);
+  assert.equal(labels.includes('포항'), true);
+  assert.equal(labels.includes('창원'), true);
+  const originsSrc = readFileSync(join(root, 'src/pages/Home/lib/festivalDomesticOrigins.js'), 'utf8');
+  assert.doesNotMatch(originsSrc, /KAG|HIN|KPO|KUV|ICN|GMP/);
+  assert.equal(resolveDepartureIataFromChat('강릉 공항'), 'YNY');
+  assert.notEqual(resolveDepartureIataFromChat('강릉에서 가자'), 'KAG');
 
   const gangneung = visibleFestivalDomesticOrigins('강릉', '강원특별자치도 강릉시 경강로 2111');
+  assert.equal(gangneung.length, 17);
   assert.equal(gangneung.some((row) => row.ko === '강릉'), false);
-  assert.equal(gangneung.length, 16);
-  for (const name of ['인천', '대전', '울산', '세종', '경기', '충남', '전북', '경북', '경남', '여수', '서울']) {
-    assert.equal(gangneung.some((row) => row.ko === name), true, name);
-  }
+  assert.equal(gangneung.some((row) => row.ko === '원주'), true);
+  assert.equal(gangneung.some((row) => row.ko === '서울'), true);
 
-  assert.equal(buildFestivalAccessAskText('yeosu', 'ko'), '여수에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘');
+  const masan = visibleFestivalDomesticOrigins('마산', '경상남도 창원시 마산합포구 3·15대로');
+  assert.equal(masan.length, 17);
+  assert.equal(masan.some((row) => row.ko === '경남' || row.ko === '창원'), false);
+  assert.equal(masan.some((row) => row.ko === '진주'), true);
+
+  const yeosuAsk = buildFestivalAccessAskText('jeonnam', 'ko');
+  assert.match(yeosuAsk, /여수\(여수EXPO역·여수종합버스터미널\)에서 이 축제장까지/);
+  const seoulAsk = buildFestivalAccessAskText('seoul', 'ko');
+  assert.match(seoulAsk, /용산역/);
+  assert.match(seoulAsk, /수서역/);
+  const seoulRow = domesticFestivalGroundOrigin('서울에서 이 축제장까지 어떻게 가?', '');
+  assert.equal(seoulRow?.ko, '서울');
+  assert.match(domesticGroundModelSuffix(seoulRow, 'ko'), /용산역·수서역/);
+  const session = { departureIata: 'ICN', departureAirportLabel: '서울' };
+  clearDomesticAirportDeparture(session);
+  assert.equal(session.departureIata, '');
+  assert.equal(session.departureAirportLabel, '');
+  assert.equal(domesticFestivalGroundOrigin('서울에서 비행기로 가', '서울'), null);
+
   const history = [{ text: '서울에서 어떻게 가?', departureLabel: '서울', role: 'user' }];
   assert.equal(
-    resolveDepartureLabelFromChat('여수에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘', history),
+    resolveDepartureLabelFromChat(yeosuAsk, history),
     '여수',
   );
   assert.equal(

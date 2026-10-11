@@ -3,7 +3,9 @@ import { aliasMatchesHay } from './rentalAirportMatch.js';
 
 const MIN_ALIAS_LEN = 4;
 
-/** 한국 도시·공항 단축 (허브 aliases와 병합 — 김포→GMP 등 세분화 우선) */
+/** 한국 도시·공항 단축 (허브 aliases와 병합 — 김포→GMP 등 세분화 우선).
+ * 강릉공항(KAG)은 민항이 없다. 강원 공항이 필요할 때만 양양(YNY).
+ * 국내 축제 칩은 이 코드를 Edge에 보내지 않는다. */
 const DEPARTURE_IATA = {
   서울: 'ICN',
   인천: 'ICN',
@@ -13,7 +15,7 @@ const DEPARTURE_IATA = {
   광주: 'KWJ',
   청주: 'CJJ',
   제주: 'CJU',
-  강릉: 'KAG',
+  강릉: 'YNY',
   여수: 'RSU',
   울산: 'USN',
   seoul: 'ICN',
@@ -23,7 +25,7 @@ const DEPARTURE_IATA = {
   gwangju: 'KWJ',
   cheongju: 'CJJ',
   jeju: 'CJU',
-  gangneung: 'KAG',
+  gangneung: 'YNY',
   yeosu: 'RSU',
   ulsan: 'USN',
 };

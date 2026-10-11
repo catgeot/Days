@@ -122,6 +122,9 @@ export {
   visibleFestivalDomesticOrigins,
   festivalOriginLabel,
   buildFestivalAccessAskText,
+  domesticFestivalGroundOrigin,
+  clearDomesticAirportDeparture,
+  domesticGroundModelSuffix,
 } from './festivalDomesticOrigins.js';
 
 export const FESTIVAL_ACCESS_PARENT = 'festival_access';
