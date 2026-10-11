@@ -30,6 +30,13 @@ export async function requestFestivalFirstAnswer(festivalContext, options = {}) 
     const text = polishFestivalModelReply(String(raw?.text || ''), {
       contentId: festivalContext?.contentId,
       locale: facts.locale,
+      homepage: festivalContext?.homepage,
+      tel: festivalContext?.tel,
+      parking: festivalContext?.parking,
+      overview: festivalContext?.sceneOverview || festivalContext?.overview,
+      program: festivalContext?.program,
+      sceneOverview: festivalContext?.sceneOverview,
+      feeText: festivalContext?.feeText,
     });
     return acceptFestivalModelOpening(text, facts, banned);
   } catch {

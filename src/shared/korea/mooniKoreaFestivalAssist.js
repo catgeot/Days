@@ -320,17 +320,71 @@ const EN_MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
-/** Keep festival and lodging links. Drop every other model-written link. */
-export function stripDisallowedFestivalLinks(text) {
+function looseUrlKey(url) {
+  return String(url || '')
+    .trim()
+    .replace(/[.,;]+$/g, '')
+    .replace(/\/+$/, '')
+    .replace(/^https?:\/\//i, '')
+    .toLowerCase();
+}
+
+function officialHomepageMarkdown(options = {}) {
+  const homepage = String(options.homepage || '').trim();
+  if (!/^https?:\/\//i.test(homepage)) return '';
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  return en ? `[official site](${homepage})` : `[공식 홈페이지](${homepage})`;
+}
+
+function sameOfficialUrl(url, homepage) {
+  if (!/^https?:\/\//i.test(String(homepage || ''))) return false;
+  const key = looseUrlKey(url);
+  return Boolean(key) && key === looseUrlKey(homepage);
+}
+
+/** Keep festival and lodging links. An official homepage bare URL becomes a markdown link. */
+export function stripDisallowedFestivalLinks(text, options = {}) {
+  const homepage = String(options.homepage || '').trim();
+  const tel = String(options.tel || '').trim();
+  const telUrl = /^https?:\/\//i.test(tel) ? tel : '';
+  const kept = [];
+  const stash = (value) => {
+    const token = `\u0000L${kept.length}\u0000`;
+    kept.push(value);
+    return token;
+  };
+  const linkedOfficial = (url) => {
+    if (sameOfficialUrl(url, homepage)) return officialHomepageMarkdown(options);
+    if (telUrl && sameOfficialUrl(url, telUrl)) {
+      return officialHomepageMarkdown({ ...options, homepage: telUrl });
+    }
+    return '';
+  };
   let next = String(text || '').replace(
     /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g,
-    (full, _label, url) => (ALLOWED_FESTIVAL_URL.test(url) ? full : ''),
+    (full, _label, url) => {
+      if (ALLOWED_FESTIVAL_URL.test(url)) return stash(full);
+      const linked = linkedOfficial(url);
+      return linked ? stash(linked) : '';
+    },
   );
-  next = next.replace(/https?:\/\/[^\s)]+/g, (url) => {
-    const clean = url.replace(/[.,]+$/, '');
-    return ALLOWED_FESTIVAL_URL.test(clean) ? url : '';
-  });
-  return next.replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  next = next.replace(
+    /(공식\s*홈페이지|official\s+site)?[ \t]*([(\[（「])?[ \t]*(https?:\/\/[^\s)\]）」]+)([.,;]+)?[ \t]*([)\]）」])?/gi,
+    (full, label, _open, url) => {
+      const clean = url.replace(/[.,;]+$/, '');
+      if (ALLOWED_FESTIVAL_URL.test(clean)) return full;
+      const linked = linkedOfficial(clean);
+      if (linked) return linked;
+      return label ? String(label).trim() : '';
+    },
+  );
+  next = next.replace(/\u0000L(\d+)\u0000/g, (_full, index) => kept[Number(index)] || '');
+  return next
+    .replace(/[(\[（「][ \t]*[)\]）」]/g, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
 function stripCtaLine(line) {
@@ -860,10 +914,12 @@ function softenNightHour(text) {
   });
 }
 
+const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|매력을 느끼며|특별한 순간을 경험해|The atmosphere is majestic|a variety of stays|feel the charm/i;
+
 function dropFestivalFillerSentences(text) {
   const stripped = String(text || '').replace(/편안한 휴식을 위해\s*/g, '');
-  if (!/특별한 순간을 경험해|The atmosphere is majestic/i.test(stripped)) return stripped;
-  return filterPreservingBreaks(stripped, (part) => /특별한 순간을 경험해\s*보세요|The atmosphere is majestic/i.test(part));
+  if (!FESTIVAL_FILLER_SENTENCE_RE.test(stripped)) return stripped;
+  return filterPreservingBreaks(stripped, (part) => FESTIVAL_FILLER_SENTENCE_RE.test(part));
 }
 
 const TRAILING_DATE_ONLY_RE =
@@ -913,7 +969,7 @@ export function stripLodgingCalendarEcho(text) {
 export function polishFestivalModelReply(reply, options = {}) {
   let text = String(reply || '').trim();
   if (String(options.locale || 'ko').slice(0, 2) !== 'en') text = dropFestivalPlannerSentences(text);
-  text = stripDisallowedFestivalLinks(text);
+  text = stripDisallowedFestivalLinks(text, options);
   text = stripMooniUiChipLabels(text);
   text = expandCompactDates(text, options.locale);
   if (options.contentId) {
@@ -995,6 +1051,15 @@ function officialPracticalCheck(options = {}) {
   return '공식 홈페이지나 문의처에서 확인해요.';
 }
 
+function alreadyLinksOfficialContact(text, options = {}) {
+  const body = String(text || '');
+  const homepage = String(options.homepage || '').trim();
+  if (/^https?:\/\//i.test(homepage)) return body.includes(homepage);
+  const tel = String(options.tel || '').replace(/\D/g, '');
+  if (tel.length >= 8) return body.replace(/\D/g, '').includes(tel);
+  return /공식 홈페이지나 문의처|official site or the listed contact|Check with the contact/i.test(body);
+}
+
 const FESTIVAL_PAGE_CHECK_RE = /축제\s*페이지에서\s*확인|check the festival page/i;
 const GATEO_FESTIVAL_MD_RE = /\[[^\]]+\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=[^)]+\)/;
 
@@ -1012,7 +1077,7 @@ function redirectMissingPracticalCheck(text, options = {}) {
     FESTIVAL_PAGE_CHECK_RE.test(part)
     || (GATEO_FESTIVAL_MD_RE.test(part) && /확인|check/i.test(part))
   ));
-  if (/공식 홈페이지|문의처|official site|listed contact/i.test(next)) return next;
+  if (alreadyLinksOfficialContact(next, options)) return next;
   return next ? `${next} ${replacement}` : replacement;
 }
 
@@ -1365,6 +1430,9 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const homepage = String(ctx?.homepage || '').trim();
   if (/^https?:\/\//i.test(homepage)) {
     lines.push(isEn ? `- Official page URL: ${homepage}` : `- 공식 안내 URL: ${homepage}`);
+    lines.push(isEn
+      ? `- Write that official page only as [official site](${homepage}). Do not put the bare URL in parentheses.`
+      : `- 그 공식 홈페이지는 [공식 홈페이지](${homepage})로만 쓴다. 괄호 안에 날 URL을 넣지 않는다.`);
   }
   const tel = String(ctx?.tel || '').trim();
   if (tel) lines.push(isEn ? `- Contact phone: ${tel}` : `- 문의처: ${tel}`);
@@ -1495,8 +1563,8 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
           ? (en ? ` Stay areas: ${areas.join(', ')}.` : ` 숙소 권역: ${areas.join(', ')}.`)
           : '';
         hint += en
-          ? `\n- Lodging answer: name 2 or 3 stay areas within about 20 km of the venue, then end with [${label}](${lodgingUrl}). Do not name the next city. Do not write filler such as "for a comfortable rest". Do not answer with only a link. Do not use "here", "this link", or "this place" as the link text. No other stay URL.${areaLine}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate the festival dates, a countdown, or a long calendar date. This overrides the festival date-comparison rule.`
-          : `\n- 숙소 답: 축제장에서 약 20km 안의 숙소 권역 2~3곳만 말한 뒤 [${label}](${lodgingUrl})로 끝낸다. 속초처럼 옆 도시는 말하지 않는다. «편안한 휴식을 위해» 같은 채움은 쓰지 않는다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 행사 기간을 다시 말하지 않는다. «현재 시작까지 N일 남았습니다»와 «2026년 10월 15일부터» 같은 긴 날짜도 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
+          ? `\n- Lodging answer: name 2 or 3 stay areas within about 20 km of the venue, then end with [${label}](${lodgingUrl}). Do not name the next city. Do not write filler such as "for a comfortable rest", "a variety of stays", or "feel the charm". If the hint lists one stay area, name only that one. Do not answer with only a link. Do not use "here", "this link", or "this place" as the link text. No other stay URL.${areaLine}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate the festival dates, a countdown, or a long calendar date. This overrides the festival date-comparison rule.`
+          : `\n- 숙소 답: 축제장에서 약 20km 안의 숙소 권역 2~3곳만 말한 뒤 [${label}](${lodgingUrl})로 끝낸다. 속초처럼 옆 도시는 말하지 않는다. «편안한 휴식을 위해», «다양한 숙소가 자리하고 있어요», «매력을 느끼며» 같은 채움은 쓰지 않는다. 권역이 한 곳이면 그곳만 말한다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 행사 기간을 다시 말하지 않는다. «현재 시작까지 N일 남았습니다»와 «2026년 10월 15일부터» 같은 긴 날짜도 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
       }
     }
     return { hint, candidates: [] };

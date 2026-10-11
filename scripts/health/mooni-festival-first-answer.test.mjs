@@ -1679,6 +1679,67 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   });
   assert.match(bareParking, /공식 홈페이지나 문의처에서 확인해요/);
 
+  const parkedHome = polishFestivalModelReply(
+    `강릉 국수 축제 주차 정보는 공식 홈페이지(${page})에서 확인할 수 있어요.`,
+    { contentId: '2930716', locale: 'ko', userText: '주차', homepage: page, tel: '033-640-4531' },
+  );
+  assert.match(parkedHome, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)/);
+  assert.doesNotMatch(parkedHome, /공식 홈페이지\(\)|홈페이지\(\)|\(\s*\)|  /);
+  assert.equal(parkedHome.includes(`${page})`), true);
+
+  const parkedOther = polishFestivalModelReply(
+    '강릉 국수 축제 주차 정보는 공식 홈페이지(https://example.com/not-official)에서 확인할 수 있어요.',
+    { contentId: '2930716', locale: 'ko', userText: '주차', homepage: page, tel: '033-640-4531' },
+  );
+  assert.doesNotMatch(parkedOther, /example\.com|\(\s*\)|\[\s*\]|（\s*）|  /);
+  assert.match(parkedOther, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)/);
+  assert.match(
+    stripDisallowedFestivalLinks('안내 [https://example.com/bracket] 끝', { homepage: page }),
+    /^안내 끝$/,
+  );
+  assert.match(
+    stripDisallowedFestivalLinks(`공식 홈페이지（https://example.com/wide）에서`, { homepage: page }),
+    /^공식 홈페이지에서$/,
+  );
+  assert.match(
+    stripDisallowedFestivalLinks(`공식 홈페이지(${page}/)에서`, { homepage: page }),
+    /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)에서/,
+  );
+
+  const oneStay = polishFestivalModelReply(
+    '강릉 월화거리에서 묵어요. 다양한 숙소가 자리하고 있어요. 강릉의 매력을 느끼며 쉬어요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '어디서 자요?',
+      placeName: '강릉',
+      stayAreas: ['월화거리'],
+      lat: 37.755777,
+      lng: 128.897602,
+      festivalTitle: '강릉 국수 축제',
+    },
+  );
+  assert.match(oneStay, /월화거리/);
+  assert.match(oneStay, /#festival-lodging/);
+  assert.doesNotMatch(oneStay, /다양한 숙소가 자리|매력을 느끼며/);
+  const stayHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '어디서 자요?',
+    locale: 'ko',
+    festivalContext: {
+      title: '강릉 국수 축제',
+      contentId: '2930716',
+      hubLabel: '강릉',
+      stayAreas: ['월화거리'],
+      lat: 37.755777,
+      lng: 128.897602,
+      homepage: page,
+      tel: '033-640-4531',
+    },
+  });
+  assert.match(stayHint.hint, /다양한 숙소가 자리하고 있어요/);
+  assert.match(stayHint.hint, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)/);
+  assert.match(stayHint.hint, /033-640-4531/);
+
   const fromIntro = buildFestivalMooniContext({
     item: { title: '강릉 국수 축제', contentId: '2930716' },
     intro: {
