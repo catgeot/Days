@@ -323,7 +323,8 @@ function NearbyRowThumb({ spot, extraThumb }) {
         loading="eager"
         decoding="async"
         onLoad={() => setReady(true)}
-        onError={() => {
+        onError={(event) => {
+          if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
           setReady(false);
           setThumbIndex((i) => i + 1);
         }}
