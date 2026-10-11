@@ -27,7 +27,10 @@ async function shot(page, name) {
 }
 
 test.describe('korea social promo traveler @390', () => {
-  test.use({ viewport: { width: 390, height: 844 } });
+  test.use({
+    viewport: { width: 390, height: 844 },
+    ignoreHTTPSErrors: true,
+  });
 
   test('utm profile → promo → detail → close pin → search 국향', async ({
     page,
