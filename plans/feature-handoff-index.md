@@ -14,6 +14,31 @@
 
 ## 활성 목록
 
+### 카이로 장소 카드
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `635e9dde` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · **병합 금지** |
+| **브랜치** | `cursor/cairo-place-facts-8e40` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | git `https://days-git-cursor-cairo-place-facts-8e40-catgeots-projects.vercel.app/place/cairo` (Vercel SSO) |
+| **금지** | 표에 없는 사실 채우기 · 저장소 경로를 출처로 렌더 · Edge·prod SQL · feature에 `plans/**` 커밋 · PR 병합 |
+| **VERIFY** | `node --test scripts/health/place-verified-facts.test.mjs` · `npm run audit:city-attraction-hubs` · `npm run check:place-video-catalog` |
+| **남은 일** | Preview에서 출처명·빈 칸 한 줄·GEM/술탄 하산 제목·타흐리르·AI 라벨 확인 후 PR #428 병합 |
+
+**다음 제시어**:
+
+```
+카이로 장소 카드 #3, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-10-11-project-log.md
+브랜치 cursor/cairo-place-facts-8e40 · draft PR #428 · tip 635e9dde
+금지: 표에 없는 사실 · 저장소 경로 출처 · Edge·prod SQL · feature에 plans 커밋 · 사람 확인 전 병합
+작업: /place/cairo · /place/grand-egyptian-museum · /place/sultan-hassan-mosque · /place/egyptian-museum-cairo · /place/cairo/wiki · /explore 에서 카이로. 출처는 GATEO 로그북 (2026-10-03), 빈 칸은 한 줄, 제목은 두 줄. OK면 PR #428 병합
+검증: node --test scripts/health/place-verified-facts.test.mjs
+```
+
 ### 축제 상세 주변 볼거리
 
 | | |
