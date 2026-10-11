@@ -62,3 +62,12 @@
 - **조치** `transport-proxy`가 국향 638576 · 마산 637693 · 강릉 2930716을 contentId로 정규화. 실측 ID만 호출. AREX는 unverified, 수서 출발은 SR 예매(등급명 유지), 23:59 제거, 운임 0은 null. 광주송정→함평역은 조회 환승.
 - **VERIFY** `npm run test:health` 233 pass. 라이브 TAGO 없음.
 - **배포** 스테이징만. 함수 `transport-proxy`, 마이그레이션 `20261011160000_tago_route_cache.sql`, 시크릿은 기존 `TOUR_API_SERVICE_KEY`. 프로브 `node scripts/staging/transport-probe.mjs`. Cos GO 전 prod 금지.
+
+## 축제 가는 법 #2, 프로브 수정
+
+- **세션** `축제 가는 법 #2, 프로브 수정` · branch `cursor/transport-proxy-e06e` · tip `9e9abaa0` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지
+- **프로브** `430827b1` 스테이징은 수치·캐시·SR·운임 0·국향 환승 8회는 PASS. 강릉 인천은 시외 직결 9회라 AREX가 비는 것이 맞는데 프로브가 AREX를 항상 요구했다.
+- **조치** AREX 확인은 직결이 없을 때만. `checkedAt`는 KST 조회일, `serviceDate`는 운행일. 옵션 0건 출발지와 0회 환승 다리는 제거. 서울경부처럼 그 출발에서 확인되지 않은 단독 환승 힌트는 내지 않음. 캐시는 키 일괄 SELECT, 미스는 동시 8.
+- **추정** warm 200–400ms(이전 2.5–3.5s, 건별 SELECT). cold 4–6s(이전 6–9s, 동시 4→8, TAGO가 하한). 스테이징 재실측 전.
+- **VERIFY** `npm run test:health` 235 pass. 라이브 TAGO 없음.
+- **다음** 사람이 `transport-proxy`만 재배포 후 프로브. 마이그레이션 변경 없음.

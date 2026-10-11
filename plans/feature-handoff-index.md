@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `44f3f94c` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지 |
+| **상태** | **#2 push** · tip `9e9abaa0` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지 |
 | **브랜치** | `cursor/transport-proxy-e06e` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | 없음. UI 없음. 스테이징 배포 후 `scripts/staging/transport-probe.mjs` |
 | **금지** | 에이전트 Edge 배포 · prod 배포 · `tourapi-proxy`에 TAGO op 합치기 · 실측 밖 역 ID 창작 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `npm run test:health` 233 pass |
-| **남은 일** | 사람이 스테이징에 마이그레이션·`transport-proxy` 배포 → 프로브(638576·637693·2930716) → Cos GO → 별도 배포. 카드 UI는 그 다음. |
+| **VERIFY** | `npm run test:health` 235 pass |
+| **남은 일** | 사람이 스테이징에 `transport-proxy`만 재배포(마이그레이션 변경 없음) → 프로브 재실행. 기대: 강릉 인천 직결이면 AREX 없음, checkedAt=조회일·serviceDate=운행일, 용산·수서·센트럴·서울경부(0건) 행 없음, 0회 다리 없음. warm 추정 200–400ms · cold 추정 4–6s(실측은 재배포 후). Cos GO 전 prod 금지. 카드 UI는 그 다음. |
 
 **다음 제시어**:
 
 ```
-축제 가는 법 #2, 스테이징 프로브
+축제 가는 법 #3, 스테이징 재프로브
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/transport-proxy-e06e · draft PR #429 · tip 44f3f94c
-금지: 에이전트 Edge 배포 · prod 배포 · 역 ID 창작 · feature에 plans 커밋 · main 코드 push
-작업: 스테이징 배포가 끝난 뒤 transport-probe 결과로 카드 수치를 맞춘다. UI는 Cos GO 전이다.
+브랜치 cursor/transport-proxy-e06e · draft PR #429 · tip 9e9abaa0
+금지: 에이전트 Edge 배포 · prod 배포 · 역 ID 창작 · feature에 plans 커밋 · main 코드 push · PR 병합
+작업: 스테이징 재배포 후 transport-probe 결과만 반영한다. UI는 Cos GO 전이다.
 검증: npm run test:health
 ```
 
