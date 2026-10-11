@@ -680,6 +680,40 @@ function collapseDoubledFestivalCloser(text, title = '') {
   return out.replace(/페이지에서\s*가는\s*법을\s*알아\s*보세요[.。]?/g, '').replace(/[ \t]{2,}/g, ' ').trim();
 }
 
+function isPlainFestivalPageUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (!/^(?:www\.)?gateo\.kr$/i.test(parsed.hostname)) return false;
+    if (parsed.pathname !== '/korea/' && parsed.pathname !== '/korea') return false;
+    if (!/^\d+$/.test(parsed.searchParams.get('festival') || '')) return false;
+    return parsed.hash === '' || parsed.hash === '#';
+  } catch {
+    return false;
+  }
+}
+
+/** Keep the last festival-page markdown link. A #festival-lodging link stays. */
+export function dedupeFestivalPageLinks(text) {
+  const src = String(text || '');
+  const matches = [...src.matchAll(/\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g)]
+    .filter((match) => isPlainFestivalPageUrl(match[2]));
+  if (matches.length < 2) return src;
+  const keep = matches[matches.length - 1];
+  let result = '';
+  let cursor = 0;
+  for (const match of matches) {
+    if (match === keep) continue;
+    result += src.slice(cursor, match.index);
+    cursor = match.index + match[0].length;
+  }
+  result += src.slice(cursor);
+  return result
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 const FOOD_TYPE_TAGS = [
   { label: '돈가스', en: 'cutlet', re: /돈가스|돈까스/ },
   { label: '제과', en: 'bakery', re: /제과|베이커리/ },
@@ -910,7 +944,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
   text = stripOffTopicLodgingNudge(text, options);
   text = settleFestivalNextAction(text, options);
-  return redirectMissingPracticalCheck(text, options);
+  return dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
 }
 
 const LODGING_NUDGE_RE = /숙소\s*정보|숙소\s*(?:도|를|카드|안내)|#festival-lodging|묵기\s*좋|where\s+to\s+stay|lodging\s+(?:card|guide)|stays?\s+for\s+this\s+festival/i;

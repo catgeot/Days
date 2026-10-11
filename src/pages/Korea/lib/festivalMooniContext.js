@@ -1,4 +1,5 @@
 import {
+  dedupeFestivalPageLinks,
   festivalTimingStatus,
   filterFestivalStayAreaNames,
   gateoKoreaFestivalDetailUrl,
@@ -1034,7 +1035,7 @@ export function acceptFestivalModelOpening(text, facts, banned = []) {
     if (!facts.closing || countFestivalCardSentences(next) > MODEL_OPENING_SENTENCE_CAP) return '';
     raw = next;
   }
-  return ensureOpeningNearby(raw, facts);
+  return dedupeFestivalPageLinks(ensureOpeningNearby(raw, facts));
 }
 
 /** When the nearby list has 3 names, an accepted opening names all 3. */

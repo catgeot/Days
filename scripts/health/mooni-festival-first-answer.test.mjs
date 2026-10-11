@@ -50,6 +50,7 @@ import {
   gateoKoreaFestivalLodgingUrl,
   isFestivalLodgingAsk,
   linkifyBareGateoFestivalUrls,
+  dedupeFestivalPageLinks,
   polishFestivalModelReply,
   rankFestivalRestaurants,
   resolveMooniChatKoreaFestivalHint,
@@ -1729,6 +1730,39 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.equal((chat.match(/loadFestivalRestaurantsForAsk/g) || []).length >= 3, true);
   const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
   assert.match(sheet, /beginFestivalRestaurantLoad/);
+});
+
+test('festival page link appears once and the closing link stays', () => {
+  const pageUrl = 'https://www.gateo.kr/korea/?festival=2930716';
+  const bare = 'https://gateo.kr/korea/?festival=2930716';
+  const doubled = `[강릉 국수 축제 페이지](${pageUrl}) 자세한 내용은 [축제 페이지](${pageUrl})에서 볼 수 있어요.`;
+  const once = dedupeFestivalPageLinks(doubled);
+  assert.equal((once.match(/festival=2930716/g) || []).length, 1);
+  assert.match(once, /^자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요\.$/);
+
+  const withStay = `${doubled} [강릉 숙소 안내](${pageUrl}#festival-lodging)`;
+  const stayed = dedupeFestivalPageLinks(withStay);
+  assert.equal((stayed.match(/festival=2930716\)/g) || []).length, 1);
+  assert.match(stayed, /#festival-lodging/);
+
+  const polished = polishFestivalModelReply(
+    `월화거리에서 국수를 먹어요. [강릉 국수 축제 페이지](${bare}) 자세한 내용은 [축제 페이지](${pageUrl})에서 볼 수 있어요.`,
+    { contentId: '2930716', locale: 'ko', userText: '일정' },
+  );
+  assert.equal((polished.match(/festival=2930716/g) || []).length, 1);
+  assert.match(polished, /자세한 내용은 \[축제 페이지\]/);
+  assert.doesNotMatch(polished, /강릉 국수 축제 페이지\]/);
+
+  const gangneung = JSON.parse(readFileSync(join(root, 'scripts/staging/fixtures/festival-opening/2930716.json'), 'utf8'));
+  const facts = buildFestivalFirstAnswerFacts(buildFestivalMooniContext(gangneung), { now: NOW });
+  const opening = acceptFestivalModelOpening(
+    `강릉 국수 축제는 10/15~18, 엿새 뒤 시작해요. 장칼국수를 맛볼 수 있는 자리예요. [강릉 국수 축제 페이지](${pageUrl}) 자세한 내용은 [축제 페이지](${pageUrl})에서 볼 수 있어요.`,
+    facts,
+    [],
+  );
+  assert.equal((opening.match(/festival=2930716/g) || []).length, 1);
+  assert.match(opening, /자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요/);
+  assert.doesNotMatch(opening, /강릉 국수 축제 페이지\]/);
 });
 
 test('desktop and mobile place entry open bound MOONi', () => {
