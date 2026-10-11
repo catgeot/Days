@@ -65,6 +65,29 @@ export function cacheFresh(mode, fetchedAt, serviceDate, now = new Date()) {
   return kstYmd(new Date(fetched)) === today;
 }
 
+export function cardCacheKey(contentId, busDate, trainDate) {
+  return `card:${contentId}:${compactDate(busDate)}:${compactDate(trainDate)}`;
+}
+
+/** Assembled card is valid until the next KST midnight (bus day). */
+export function cardCacheFresh(fetchedAt, busDate, now = new Date()) {
+  const fetched = Date.parse(fetchedAt);
+  if (!Number.isFinite(fetched)) return false;
+  if (now.getTime() < fetched) return false;
+  const today = kstYmd(now);
+  if (busDate !== today) return false;
+  return kstYmd(new Date(fetched)) === today;
+}
+
+export function serverTimingHeader(parts, { cacheDesc = "" } = {}) {
+  return ["rl", "cache", "upstream", "build"].map((name) => {
+    const ms = Number(parts?.[name]);
+    const dur = Number.isFinite(ms) && ms > 0 ? ms : 0;
+    const desc = name === "cache" && cacheDesc ? `;desc="${cacheDesc}"` : "";
+    return `${name};dur=${dur.toFixed(1)}${desc}`;
+  }).join(", ");
+}
+
 export function redactSecrets(text, secret) {
   let out = text == null ? "" : String(text);
   if (!secret) return out;

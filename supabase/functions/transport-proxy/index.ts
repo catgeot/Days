@@ -8,11 +8,14 @@ import {
   MAX_UPSTREAM_PER_REQUEST,
   buildFestivalTransportCard,
   cacheFresh,
+  cardCacheFresh,
+  cardCacheKey,
   itemsFromTagoBody,
   kstYmd,
   parseDateInput,
   planQueries,
   redactSecrets,
+  serverTimingHeader,
   splitSentinel,
   trainDateAllowed,
 } from "./normalize.mjs";
@@ -21,6 +24,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Expose-Headers": "Server-Timing",
 };
 
 const UPSTREAM_CONCURRENCY = 8;
@@ -54,16 +58,19 @@ async function allowRequest(sb: ReturnType<typeof serviceClient>, ip: string) {
     [`transport:ip:${ip}:m`, 60, IP_PER_MINUTE],
     ["transport:global:m", 60, GLOBAL_PER_MINUTE],
   ];
-  for (const [key, windowSeconds, limit] of gates) {
-    const hit = await sb!.rpc("edge_rate_limit_hit", {
+  let hits;
+  try {
+    hits = await Promise.all(gates.map(([key, windowSeconds, limit]) => sb!.rpc("edge_rate_limit_hit", {
       p_key: key,
       p_window_seconds: windowSeconds,
       p_limit: limit,
       p_cost: 1,
-    });
-    if (hit.error) return "unavailable" as const;
-    if (hit.data !== true) return "limited" as const;
+    })));
+  } catch {
+    return "unavailable" as const;
   }
+  if (hits.some((hit) => hit.error)) return "unavailable" as const;
+  if (hits.some((hit) => hit.data !== true)) return "limited" as const;
   return "ok" as const;
 }
 
@@ -129,6 +136,48 @@ async function writeCacheBatch(
   if (error) console.error("[transport-proxy] cache write", error.message);
 }
 
+type StoredCard = {
+  card: Record<string, unknown>;
+  queries: Array<Record<string, unknown>>;
+  legCount: number;
+};
+
+async function readCardCache(
+  sb: NonNullable<ReturnType<typeof serviceClient>>,
+  key: string,
+  busDate: string,
+) {
+  try {
+    const { data, error } = await sb
+      .from("tago_card_cache")
+      .select("payload, fetched_at")
+      .eq("cache_key", key)
+      .maybeSingle();
+    if (error || !data) return null;
+    if (!cardCacheFresh(String(data.fetched_at), busDate)) return null;
+    const payload = data.payload as StoredCard | null;
+    if (!payload?.card || payload.card.ok !== true) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+async function writeCardCache(
+  sb: NonNullable<ReturnType<typeof serviceClient>>,
+  row: { key: string; contentId: string; busDate: string; trainDate: string; payload: StoredCard },
+) {
+  const { error } = await sb.from("tago_card_cache").upsert({
+    cache_key: row.key,
+    content_id: row.contentId,
+    bus_date: row.busDate,
+    train_date: row.trainDate,
+    payload: row.payload,
+    fetched_at: new Date().toISOString(),
+  }, { onConflict: "cache_key" });
+  if (error) console.error("[transport-proxy] card cache", error.message);
+}
+
 async function fetchPage(serviceKey: string, query: { mode: string; depId: string; arrId: string; date: string }, pageNo: number) {
   const spec = TAGO_OPS[query.mode as keyof typeof TAGO_OPS];
   const qs = new URLSearchParams({
@@ -175,22 +224,37 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return jsonResponse({ ok: false, error: "POST required" }, 405);
 
+  const marks = { rl: 0, cache: 0, upstream: 0, build: 0 };
+  let cacheDesc = "";
+  const respond = (body: unknown, status = 200, extra: Record<string, string> = {}) => jsonResponse(body, status, {
+    "Server-Timing": serverTimingHeader(marks, { cacheDesc }),
+    ...extra,
+  });
+  async function span<T>(name: keyof typeof marks, fn: () => Promise<T>): Promise<T> {
+    const started = performance.now();
+    try {
+      return await fn();
+    } finally {
+      marks[name] += performance.now() - started;
+    }
+  }
+
   try {
     const declared = Number(req.headers.get("content-length") || "0");
-    if (declared > 8000) return jsonResponse({ ok: false, error: "body too large" }, 400);
+    if (declared > 8000) return respond({ ok: false, error: "body too large" }, 400);
 
     const body = await req.json().catch(() => null) as Record<string, unknown> | null;
     if (!body || typeof body !== "object" || Array.isArray(body)) {
-      return jsonResponse({ ok: false, error: "Invalid JSON body" }, 400);
+      return respond({ ok: false, error: "Invalid JSON body" }, 400);
     }
 
     const contentId = String(body.contentId ?? body.festivalId ?? "").trim();
     if (!/^\d{1,12}$/.test(contentId)) {
-      return jsonResponse({ ok: false, error: "contentId required" }, 400);
+      return respond({ ok: false, error: "contentId required" }, 400);
     }
     const destination = DESTINATIONS[contentId as keyof typeof DESTINATIONS];
     if (!destination) {
-      return jsonResponse({
+      return respond({
         ok: false,
         error: "unknown contentId",
         knownContentIds: DESTINATION_ORDER,
@@ -202,24 +266,46 @@ serve(async (req) => {
       ? today
       : parseDateInput(body.trainDate);
     if (!requestedTrain || !trainDateAllowed(requestedTrain, today)) {
-      return jsonResponse({ ok: false, error: "trainDate must be today through +60 days (KST)" }, 400);
+      return respond({ ok: false, error: "trainDate must be today through +60 days (KST)" }, 400);
     }
     const busDateIgnored = body.busDate != null && body.busDate !== "";
     const plan = planQueries(destination, { trainDate: requestedTrain, busDate: today });
 
     const serviceKey = Deno.env.get("TOUR_API_SERVICE_KEY")?.trim();
     if (!serviceKey) {
-      return jsonResponse({ ok: false, error: "TOUR_API_SERVICE_KEY is not configured" }, 500);
+      return respond({ ok: false, error: "TOUR_API_SERVICE_KEY is not configured" }, 500);
     }
     const sb = serviceClient();
-    if (!sb) return jsonResponse({ ok: false, error: "rate_limit_unavailable" }, 503);
-    const gate = await allowRequest(sb, clientIp(req));
+    if (!sb) return respond({ ok: false, error: "rate_limit_unavailable" }, 503);
+
+    const cardKey = cardCacheKey(contentId, today, requestedTrain);
+    const [gate, stored] = await Promise.all([
+      span("rl", () => allowRequest(sb, clientIp(req))),
+      span("cache", () => readCardCache(sb, cardKey, today)),
+    ]);
     if (gate === "limited") {
-      return jsonResponse({ ok: false, error: "rate_limited" }, 429, { "Retry-After": "60" });
+      return respond({ ok: false, error: "rate_limited" }, 429, { "Retry-After": "60" });
     }
     if (gate === "unavailable") {
-      return jsonResponse({ ok: false, error: "rate_limit_unavailable" }, 503);
+      return respond({ ok: false, error: "rate_limit_unavailable" }, 503);
     }
+    if (
+      stored
+      && stored.card.trainDate === requestedTrain
+      && stored.card.busDate === today
+      && stored.card.contentId === contentId
+    ) {
+      cacheDesc = "card";
+      const queries = Array.isArray(stored.queries) ? stored.queries : [];
+      return respond({
+        ...stored.card,
+        busDateIgnored,
+        upstreamCalls: 0,
+        cacheHits: Number(stored.legCount) || plan.queries.length,
+        queries: queries.map((query) => ({ ...query, fromCache: true })),
+      });
+    }
+    cacheDesc = "legs";
 
     let upstreamCalls = 0;
     let cacheHits = 0;
@@ -227,7 +313,7 @@ serve(async (req) => {
     const queryMeta: Array<Record<string, unknown>> = [];
     const pendingWrites: Array<{ query: CacheQuery; row: RouteRow }> = [];
 
-    const cached = await readCacheBatch(sb, plan.queries);
+    const cached = await span("cache", () => readCacheBatch(sb, plan.queries));
     const misses = [];
     for (const query of plan.queries) {
       const hit = cached.get(query.key);
@@ -249,7 +335,7 @@ serve(async (req) => {
       });
     }
 
-    await mapPool(misses, UPSTREAM_CONCURRENCY, async (query) => {
+    await span("upstream", () => mapPool(misses, UPSTREAM_CONCURRENCY, async (query) => {
       if (upstreamCalls >= MAX_UPSTREAM_PER_REQUEST) {
         results[query.key] = {
           queried: false,
@@ -321,9 +407,10 @@ serve(async (req) => {
         droppedSentinel: sentinel.droppedSentinel,
         truncated: page.ok && page.totalCount > items.length,
       });
-    });
-    await writeCacheBatch(sb, pendingWrites);
+    }));
+    await span("cache", () => writeCacheBatch(sb, pendingWrites));
 
+    const buildStarted = performance.now();
     const card = buildFestivalTransportCard({
       destination,
       trainDate: requestedTrain,
@@ -331,7 +418,23 @@ serve(async (req) => {
       checkedAt: today,
       results,
     });
-    return jsonResponse({
+    marks.build += performance.now() - buildStarted;
+
+    const complete = !plan.truncatedPlan && plan.queries.every((query) => {
+      const row = results[query.key];
+      return row?.queried === true && row.ok === true;
+    });
+    if (complete) {
+      await span("cache", () => writeCardCache(sb, {
+        key: cardKey,
+        contentId,
+        busDate: today,
+        trainDate: requestedTrain,
+        payload: { card, queries: queryMeta, legCount: plan.queries.length },
+      }));
+    }
+
+    return respond({
       ...card,
       busDateIgnored,
       upstreamCalls,
@@ -340,6 +443,6 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("[transport-proxy]", (error as Error)?.message || "error");
-    return jsonResponse({ ok: false, error: "transport proxy failed" }, 500);
+    return respond({ ok: false, error: "transport proxy failed" }, 500);
   }
 });

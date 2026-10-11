@@ -14,12 +14,15 @@ import {
   assertCatalogQueryable,
   buildFestivalTransportCard,
   cacheFresh,
+  cardCacheFresh,
+  cardCacheKey,
   itemsFromTagoBody,
   kstYmd,
   parsePlanTime,
   planQueries,
   redactSecrets,
   routeKey,
+  serverTimingHeader,
   summarizeRoute,
 } from '../../supabase/functions/transport-proxy/normalize.mjs';
 
@@ -356,6 +359,9 @@ test('single-object TAGO item, empty items, and secret redaction', () => {
   const src = readFileSync(join(root, 'supabase/functions/transport-proxy/index.ts'), 'utf8');
   assert.equal(/console\.(log|error|warn)\([^;\n]*\burl\b/.test(src), false);
   assert.equal(/console\.(log|error|warn)\([^;\n]*serviceKey/.test(src), false);
+  assert.match(src, /Promise\.all\(gates\.map/);
+  assert.match(src, /tago_card_cache/);
+  assert.match(src, /Server-Timing/);
 });
 
 test('train cache lasts about a day and bus cache dies after that KST date', () => {
@@ -368,4 +374,36 @@ test('train cache lasts about a day and bus cache dies after that KST date', () 
   assert.equal(cacheFresh('expBus', fresh, '2026-10-11', now), true);
   assert.equal(cacheFresh('expBus', fresh, '2026-10-16', now), false);
   assert.equal(cacheFresh('suburbsBus', old, '2026-10-11', now), false);
+});
+
+test('assembled card cache key includes the bus day and train date, and dies at KST midnight', () => {
+  assert.equal(cardCacheKey('638576', '2026-10-11', '2026-10-24'), 'card:638576:20261011:20261024');
+  assert.notEqual(
+    cardCacheKey('638576', '2026-10-11', '2026-10-24'),
+    cardCacheKey('638576', '2026-10-12', '2026-10-24'),
+  );
+  assert.notEqual(
+    cardCacheKey('638576', '2026-10-11', '2026-10-24'),
+    cardCacheKey('2930716', '2026-10-11', '2026-10-16'),
+  );
+  const beforeMidnight = new Date('2026-10-11T14:59:00.000Z');
+  const midnight = new Date('2026-10-11T15:00:00.000Z');
+  assert.equal(kstYmd(beforeMidnight), '2026-10-11');
+  assert.equal(kstYmd(midnight), '2026-10-12');
+  const fetched = '2026-10-11T03:00:00.000Z';
+  assert.equal(cardCacheFresh(fetched, '2026-10-11', beforeMidnight), true);
+  assert.equal(cardCacheFresh(fetched, '2026-10-11', midnight), false);
+  assert.equal(cardCacheFresh(fetched, '2026-10-10', beforeMidnight), false);
+  assert.equal(cardCacheFresh('2026-10-11T16:00:00.000Z', '2026-10-11', beforeMidnight), false);
+});
+
+test('Server-Timing lists rl, cache, upstream, and build', () => {
+  assert.equal(
+    serverTimingHeader({ rl: 12.34, cache: 5, upstream: 0, build: 1.2 }, { cacheDesc: 'card' }),
+    'rl;dur=12.3, cache;dur=5.0;desc="card", upstream;dur=0.0, build;dur=1.2',
+  );
+  assert.equal(
+    serverTimingHeader({}),
+    'rl;dur=0.0, cache;dur=0.0, upstream;dur=0.0, build;dur=0.0',
+  );
 });

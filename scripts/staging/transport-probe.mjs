@@ -110,13 +110,18 @@ async function runOne(spec) {
     console.error(`${spec.contentId} non-json HTTP ${res.status}`);
     return 1;
   }
+  const timing = res.headers.get('server-timing') || '';
   console.log(`\n== ${spec.label} ${spec.contentId} HTTP ${res.status} upstream=${card.upstreamCalls} cache=${card.cacheHits}`);
+  console.log(`timing ${timing || '(none)'}`);
   if (!card.ok) {
     console.error(card.error || 'not ok');
     return 1;
   }
   const today = kstToday();
   const problems = [];
+  if (!/\brl;dur=/.test(timing) || !/\bcache;dur=/.test(timing) || !/\bupstream;dur=/.test(timing) || !/\bbuild;dur=/.test(timing)) {
+    problems.push(`Server-Timing ${timing || 'missing'}`);
+  }
   if (card.flags?.busSameDayOnly !== true) problems.push('busSameDayOnly');
   if (card.flags?.fareScope !== 'adult only') problems.push('fareScope');
   if (card.source !== '국토교통부 TAGO') problems.push('source');
