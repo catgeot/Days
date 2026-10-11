@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#433 QA PASS** · 브랜치 tip `e2fdf3d5` · squash `a3b06706` · **이 브랜치에 추가 push 금지** |
-| **브랜치** | `cursor/cairo-qa-8e40` (동결) |
+| **상태** | **#4 push** · tip `5d52ce39` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · **병합 금지** · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
+| **브랜치** | `cursor/cairo-facts-en-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
-| **Preview** | PROD 반영 대기 · 마지막 Preview `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` |
-| **금지** | `cursor/cairo-qa-8e40` push · 사실 숫자·출처 변경 · 헤더 `min-w-0` 되돌리기 |
+| **Preview** | git `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · GEM `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
+| **금지** | 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 국적 목록 추가 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 영문 예매·지도 링크 이름과 Checked 라벨. 새 브랜치 |
+| **남은 일** | `?lang=en` 카이로·GEM 확인된 사실이 영문 문장이고 숫자·시간·금액·URL이 한글과 같은지, GEM·술탄 하산 링크가 살아 있는지 |
 
 **다음 제시어**:
 
 ```
-카이로 동선 #4, 영문 링크·확인일
+카이로 동선 #5, 영문 사실 피드백
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-새 브랜치 from origin/main · cursor/cairo-qa-8e40 push 금지 · tip e2fdf3d5 동결
-금지: 사실 숫자·출처 변경 · 헤더 min-w-0 되돌리기 · feature에 plans 커밋
-작업: 영문 UI에서 예매·지도 링크 이름과 Checked 라벨만 번역한다. 본문 값과 헤더는 유지.
+브랜치 cursor/cairo-facts-en-8e40 · draft PR #436 · tip 5d52ce39
+금지: 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 국적 목록 추가 · cairo-qa-8e40 push · feature에 plans 커밋 · PR 병합
+작업: ?lang=en 카이로·GEM 확인된 사실이 영문 문장이고 숫자·시간·금액·URL이 한글과 같은지, GEM·술탄 하산 링크가 살아 있는지. 어긋난 곳만 고친다.
 검증: npm run test:health
 ```
 

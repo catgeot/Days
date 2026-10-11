@@ -167,3 +167,11 @@
 - **VERIFY** `npm run test:health` 247 pass · CI run `38183479322` success
 - **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693`
 - **다음** `마산 주변 볼거리 #2, 피드백 반영`
+
+## 카이로 동선 #4, 영문 링크·확인일
+
+- **세션** `카이로 동선 #4, 영문 링크·확인일` · branch `cursor/cairo-facts-en-8e40` · tip `5d52ce39` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 카이로 시·GEM·술탄 하산 확인된 사실의 문장만 영문. 숫자·시간·금액·URL은 한글 값과 같다. 출처 이름, `(시간)`·`(동선)`, 예매·지도 링크 이름을 영문으로 보여 준다. 영문 입국은 국적에 따라 e-Visa가 다르고 visa2egypt.gov.eg를 본다. 국적 목록은 없다. D1–D3도 같고 GEM·Sultan Hassan Mosque 장소 링크는 유지. 한글 UI는 그대로다.
+- **VERIFY** `npm run test:health` 249 pass · CI run `38184077920` success
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · `/place/grand-egyptian-museum?lang=en`
+- **다음** `카이로 동선 #5, 영문 사실 피드백`
