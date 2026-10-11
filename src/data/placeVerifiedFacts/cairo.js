@@ -12,8 +12,8 @@ const VISA = {
   url: 'https://www.visa2egypt.gov.eg/eVisa/FAQ?VISTK=',
 };
 const AIRPORT = {
-  name: 'cairo-airport.com',
-  url: 'https://www.cairo-airport.com/en-us/Services/Passenger-Guide/Move-From-To-Airport',
+  name: '카이로국제공항 교통 안내 (접속 불가)',
+  url: '',
 };
 const UBER_CAI = {
   name: 'Uber CAI pickup',
@@ -63,16 +63,8 @@ const EMBASSY_NOTICES = {
   name: '대사관 공지',
   url: 'https://www.0404.go.kr/bbs/embsyNtc/list?ntnCd=178',
 };
-const LOGBOOK_CURRENCY = {
-  name: 'drafts/blog-2026-cairo-travelogue.md',
-  url: '',
-};
-const LOGBOOK_ITINERARY = {
-  name: 'drafts/blog-2026-cairo-travelogue.md «사흘의 윤곽»',
-  url: '',
-};
-const LOGBOOK_PLACE = {
-  name: 'drafts/blog-2026-cairo-travelogue.md',
+const LOGBOOK = {
+  name: 'GATEO 로그북 (2026-10-03)',
   url: '',
 };
 
@@ -108,14 +100,14 @@ export const CAIRO_CITY_FACTS = {
     verifiedSlot(
       '1·2·3일 동선',
       'D1 도착 → 공항→시내(위 칸) · 시내 휴식. D2 기자 고원 07:00 개장에 맞춰 이른 아침 → GEM(시간대 지정 예매 필수, 전시관 수·토 21:00·그 외 18:00까지, 마지막 입장 마감 1시간 전) → 저녁 코샤리 아부 타렉(다운타운). D3 09:00 타흐리르 이집트 박물관(매표 16:00 마감) → 오후 술탄 하산 모스크(마지막 입장 16:00)',
-      [LOGBOOK_ITINERARY],
+      [LOGBOOK],
       '2026-10-11(시간) · 2026-10-03(동선)',
       { id: 'itinerary' },
     ),
     verifiedSlot(
       '돈·치안',
       '통화 이집트 파운드(EGP). 외교부 여행경보: 카이로 등 나일강 유역 도시지역 = 여행유의(서부사막·시나이 남부 일부 = 여행자제, 중·북부 시나이·리비아 국경 30km = 출국권고). 대사관 최근 공지(2026-09-22): 중동 군사적 긴장 관련 안전 유의 · 개인 간 환전 거래 사기 주의. 영사콜센터 +82-2-3210-0404',
-      [LOGBOOK_CURRENCY, SAFETY, EMBASSY_NOTICES],
+      [LOGBOOK, SAFETY, EMBASSY_NOTICES],
       DAY,
       { id: 'money-safety' },
     ),
@@ -134,6 +126,7 @@ function attractionCard({
   feeSources,
   bookingUrl,
   bookingSource,
+  bookingLinkLabel,
   mapUrl,
   mapSource,
   notes,
@@ -147,12 +140,21 @@ function attractionCard({
     nameEn,
     aliases,
     bookingUrl,
+    bookingLinkLabel,
     mapUrl,
     slots: [
       verifiedSlot('운영시간', hours, hourSources, DAY, { id: 'hours' }),
       verifiedSlot('요금', fee, feeSources, DAY, { id: 'fee' }),
-      verifiedSlot('예매 링크', bookingUrl, [bookingSource], DAY, { id: 'booking', linkRole: 'booking' }),
-      verifiedSlot('지도 링크', mapUrl, [mapSource], DAY, { id: 'map', linkRole: 'map' }),
+      verifiedSlot('예매 링크', bookingUrl, [bookingSource], DAY, {
+        id: 'booking',
+        linkRole: 'booking',
+        linkLabel: bookingLinkLabel,
+      }),
+      verifiedSlot('지도 링크', mapUrl, [mapSource], DAY, {
+        id: 'map',
+        linkRole: 'map',
+        linkLabel: 'Google 지도',
+      }),
       emptySlot('duration', '소요 시간'),
       emptySlot('nearby-food', '주변 식당'),
       verifiedSlot('주의사항', notes, noteSources, notesCheckedAt, { id: 'notes' }),
@@ -180,8 +182,9 @@ export const CAIRO_ATTRACTION_FACTS = [
     feeSources: [PYRAMIDS_TICKET, GIZA_INFO],
     bookingUrl: PYRAMIDS_TICKET.url,
     bookingSource: { name: '관광유물부 예매(egymonuments.com)', url: PYRAMIDS_TICKET.url },
+    bookingLinkLabel: '관광유물부 공식 예매',
     mapUrl: GIZA_MAP,
-    mapSource: { name: 'LogBook 링크표', url: GIZA_MAP },
+    mapSource: { name: 'Google 지도', url: GIZA_MAP },
     notes: '마감 1시간 전까지 도착 · 표는 끝까지 소지 · 휴대폰 촬영 무료 · 학생 할인은 유효 학생증·24세 이하',
     noteSources: [PYRAMIDS_TICKET],
   }),
@@ -203,8 +206,9 @@ export const CAIRO_ATTRACTION_FACTS = [
     feeSources: [GEM_ADMISSION],
     bookingUrl: 'https://tickets.gem.eg/',
     bookingSource: GEM_TICKETS,
+    bookingLinkLabel: 'GEM 공식 예매',
     mapUrl: GEM_MAP,
-    mapSource: { name: 'LogBook 링크표', url: GEM_MAP },
+    mapSource: { name: 'Google 지도', url: GEM_MAP },
     notes: '환불 불가 · 지정 날짜·시간만 유효 · 1회 입장(재입장 불가) · 기명·양도 불가 / 40×40cm 넘는 가방·우산은 보관소 / 외부 음식·음료 반입 불가(전시관 안 작은 물병만) · 삼각대·셀카봉·드론·외부 조명·플래시 금지',
     noteSources: [{ name: 'tickets.gem.eg (약관)', url: 'https://tickets.gem.eg/' }],
   }),
@@ -227,8 +231,9 @@ export const CAIRO_ATTRACTION_FACTS = [
     feeSources: [EM_INFO, EM_TICKET],
     bookingUrl: EM_TICKET.url,
     bookingSource: EM_TICKET,
+    bookingLinkLabel: '관광유물부 공식 예매',
     mapUrl: EM_MAP,
-    mapSource: { name: 'LogBook 링크표', url: EM_MAP },
+    mapSource: { name: 'Google 지도', url: EM_MAP },
     notes: '휴대폰 촬영 무료 · 플래시 금지 · 손전등·레이저 포인터 금지 · 전시실 안 음식·음료 불가(작은 물병만) · 마감 1시간 전까지 도착',
     noteSources: [EM_INFO, EM_TICKET],
   }),
@@ -251,10 +256,11 @@ export const CAIRO_ATTRACTION_FACTS = [
     feeSources: [SH_INFO, SH_TICKET],
     bookingUrl: SH_TICKET.url,
     bookingSource: SH_TICKET,
+    bookingLinkLabel: '관광유물부 공식 예매',
     mapUrl: SH_MAP,
-    mapSource: { name: 'LogBook 링크표', url: SH_MAP },
+    mapSource: { name: 'Google 지도', url: SH_MAP },
     notes: '휴대폰 촬영 무료 · 마감 1시간 전까지 도착 · 위치: 살라딘 광장, 알리파이 모스크 맞은편',
-    noteSources: [SH_TICKET, LOGBOOK_PLACE],
+    noteSources: [SH_TICKET, LOGBOOK],
     notesCheckedAt: '2026-10-11 / 2026-10-03',
   }),
 ];
@@ -330,8 +336,8 @@ export function resolveOfficialMention(mention, locationOrName) {
   }
   if (!best) return { plain: true };
   const links = [];
-  if (best.bookingUrl) links.push({ label: '공식 예매', url: best.bookingUrl });
-  if (best.mapUrl) links.push({ label: '지도', url: best.mapUrl });
+  if (best.bookingUrl) links.push({ label: best.bookingLinkLabel || '공식 예매', url: best.bookingUrl });
+  if (best.mapUrl) links.push({ label: 'Google 지도', url: best.mapUrl });
   if (!links.length) return { plain: true };
   return { links, slug: best.slug };
 }

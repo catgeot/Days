@@ -14,8 +14,10 @@ import {
   ATTRACTION_SLOT_IDS,
   CITY_SLOT_IDS,
   presentFactText,
+  publicSourceName,
   renderAiGeneratedLabel,
   slotLooksEmpty,
+  unverifiedItemsLabel,
   UNVERIFIED_LABEL,
 } from '../../src/data/placeVerifiedFacts/schema.js';
 
@@ -34,6 +36,8 @@ function assertSlotSchema(slot) {
     assert.equal(typeof source.name, 'string');
     assert.equal(typeof source.url, 'string');
     assert.equal(source.url.includes('google.com/search'), false);
+    assert.equal(/drafts\/|\.md\b/.test(source.name), false);
+    assert.equal(/drafts\/|\.md\b/.test(source.url), false);
   }
 }
 
@@ -68,6 +72,36 @@ test('empty cells stay empty and render as unverified', () => {
   }
 });
 
+test('public source labels and one unverified line', () => {
+  assert.equal(publicSourceName('drafts/blog-2026-cairo-travelogue.md «사흘의 윤곽»'), 'GATEO 로그북 (2026-10-03)');
+  const citySources = CAIRO_CITY_FACTS.slots.flatMap((slot) => slot.sources);
+  assert.ok(citySources.some((source) => source.name === 'GATEO 로그북 (2026-10-03)' && source.url === ''));
+  const airport = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport');
+  assert.match(airport.value, /미터 있는 흰색 택시/);
+  assert.equal(airport.sources[0].url, '');
+  assert.match(airport.sources[0].name, /접속 불가/);
+  assert.equal(airport.sources[1].url, 'https://www.uber.com/global/en/r/airports/cai/pickup/');
+  assert.equal(unverifiedItemsLabel(CAIRO_CITY_FACTS.slots), '확인 안 된 항목: 머물 지역, 시즌');
+
+  const gem = resolveVerifiedFacts('grand-egyptian-museum');
+  const booking = gem.slots.find((slot) => slot.id === 'booking');
+  const map = gem.slots.find((slot) => slot.id === 'map');
+  assert.equal(booking.linkLabel, 'GEM 공식 예매');
+  assert.equal(map.source.name, 'Google 지도');
+  assert.equal(map.linkLabel, 'Google 지도');
+  assert.equal(unverifiedItemsLabel(gem.slots), '확인 안 된 항목: 소요 시간, 주변 식당');
+
+  const hassan = resolveVerifiedFacts('sultan-hassan-mosque');
+  const notes = hassan.slots.find((slot) => slot.id === 'notes');
+  assert.ok(notes.sources.some((source) => source.name === 'GATEO 로그북 (2026-10-03)'));
+  assert.equal(notes.sources.some((source) => /drafts\/|\.md/.test(source.name)), false);
+
+  const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
+  const header = readFileSync(join(root, 'src/components/PlaceCard/panels/PlaceChatPanel.jsx'), 'utf8');
+  assert.match(factsUi, /data-unverified-items/);
+  assert.match(header, /line-clamp-2/);
+});
+
 test('pilot booking and map links are used and search buttons are not', () => {
   const gem = resolveVerifiedFacts('grand-egyptian-museum');
   assert.equal(gem.bookingUrl, 'https://tickets.gem.eg/');
@@ -77,7 +111,9 @@ test('pilot booking and map links are used and search buttons are not', () => {
   assert.match(hassan.mapUrl, /query_place_id=ChIJdRfpCqxAWBQR5IwPTJC5xnQ/);
 
   const giza = resolveOfficialMention('기자 피라미드', '카이로');
+  assert.equal(giza.links[0].label, '관광유물부 공식 예매');
   assert.equal(giza.links[0].url, 'https://egymonuments.com/details/Pyramids');
+  assert.equal(giza.links[1].label, 'Google 지도');
   assert.match(giza.links[1].url, /query_place_id=ChIJ1-7Ki31PWBQRbbfEc4MNCJk/);
   assert.equal(giza.links.some((link) => link.url.includes('google.com/search')), false);
 

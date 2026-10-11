@@ -70,7 +70,7 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        data-official-link={link.label === '지도' ? 'map' : 'booking'}
+                        data-official-link={String(link.label || '').includes('지도') ? 'map' : 'booking'}
                         className={`ml-1 inline-flex items-center font-bold underline underline-offset-2 ${type === 'wiki' ? 'text-sky-300 hover:text-sky-200' : 'text-sky-700 hover:text-sky-900'}`}
                     >
                         {link.label}

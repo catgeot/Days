@@ -3,18 +3,17 @@ import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js'
 import {
   AI_GENERATED_LABEL,
   presentFactText,
+  publicSourceName,
   renderAiGeneratedLabel,
-  UNVERIFIED_LABEL,
+  slotLooksEmpty,
+  unverifiedItemsLabel,
 } from '../../../data/placeVerifiedFacts/schema.js';
 
 function SourceLine({ sources }) {
-  if (!sources?.length) {
-    return <span data-fact-source="">{UNVERIFIED_LABEL}</span>;
-  }
   return (
     <span data-fact-source="">
       {sources.map((source, index) => {
-        const name = source.name || source.url || UNVERIFIED_LABEL;
+        const name = publicSourceName(source.name || source.url);
         const node = source.url ? (
           <a
             key={`${source.url}-${index}`}
@@ -41,12 +40,9 @@ function SourceLine({ sources }) {
 
 function FactValue({ slot, light }) {
   const text = presentFactText(slot.value);
-  const isEmpty = text === UNVERIFIED_LABEL;
-  if (isEmpty) {
-    return <p data-fact-value="" className={light ? 'text-sm text-gray-500' : 'text-sm text-white/55'}>{text}</p>;
-  }
   if ((slot.linkRole === 'booking' || slot.linkRole === 'map') && /^https?:\/\//.test(slot.value)) {
-    const label = slot.linkRole === 'booking' ? '공식 예매' : '지도';
+    const label = slot.linkLabel
+      || (slot.linkRole === 'booking' ? '공식 예매' : 'Google 지도');
     return (
       <p data-fact-value="" className="text-sm">
         <a
@@ -74,6 +70,11 @@ export default function PlaceVerifiedFacts({ location, variant = 'dark' }) {
   const card = resolveVerifiedFacts(location);
   if (!card) return null;
   const light = variant === 'light';
+  const filled = card.slots.filter((slot) => !slotLooksEmpty(slot));
+  const unverified = unverifiedItemsLabel(card.slots);
+  const metaClass = light
+    ? 'mt-0.5 text-[11px] leading-snug text-gray-600 break-all'
+    : 'mt-0.5 text-[11px] leading-snug text-white/60 break-all';
 
   return (
     <section
@@ -90,24 +91,29 @@ export default function PlaceVerifiedFacts({ location, variant = 'dark' }) {
         확인된 사실
       </h2>
       <ol className="mt-2 space-y-3">
-        {card.slots.map((slot) => (
+        {filled.map((slot) => (
           <li key={slot.id} data-fact-slot={slot.id} className="min-w-0">
             <p className={light ? 'text-[11px] font-semibold text-emerald-800' : 'text-[11px] font-semibold text-emerald-200/90'}>
               {slot.label}
             </p>
             <FactValue slot={slot} light={light} />
-            <p className={light ? 'mt-0.5 text-[11px] leading-snug text-gray-600 break-all' : 'mt-0.5 text-[11px] leading-snug text-white/60 break-all'}>
+            <p className={metaClass}>
               출처 <SourceLine sources={slot.sources} />
             </p>
             <p
               data-fact-checked-at=""
               className={light ? 'text-[11px] text-gray-500' : 'text-[11px] text-white/45'}
             >
-              확인일 {presentFactText(slot.checkedAt)}
+              확인일 {slot.checkedAt}
             </p>
           </li>
         ))}
       </ol>
+      {unverified ? (
+        <p data-unverified-items="" className={metaClass}>
+          {unverified}
+        </p>
+      ) : null}
     </section>
   );
 }
