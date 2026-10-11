@@ -1,9 +1,9 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import mooniChar from '../../assets/MOONI_transparent.webp';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import FestivalMooniInlineButton from './FestivalMooniInlineButton.jsx';
-import { buildFestivalMooniBoundSpot } from './lib/festivalMooniBoundSpot.js';
+import { buildFestivalMooniBoundSpot, patchFestivalBoundSpot } from './lib/festivalMooniBoundSpot.js';
 import { shouldShowFestivalMooniFab } from './lib/festivalMooniFabVisibility.js';
 
 /**
@@ -101,6 +101,24 @@ export function useFestivalMooniEntry({
     },
     [item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas, onOpenChange, onOpenTrack],
   );
+
+  useEffect(() => {
+    if (!open) return;
+    const next = buildFestivalMooniBoundSpot({
+      item,
+      intro,
+      location,
+      homepage,
+      summaryFields,
+      overview,
+      program,
+      nearbyPlaces,
+      nearbyRestaurants,
+      stayAreas,
+    });
+    if (!next) return;
+    setBoundSpot((prev) => patchFestivalBoundSpot(prev, next));
+  }, [open, item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas]);
 
   const closeMooni = useCallback(() => {
     setOpen(false);

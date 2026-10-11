@@ -11,6 +11,7 @@ import {
   tripHasPersistedDialogue,
 } from '../lib/tripChatUtils';
 import { buildMooniBoundSpotFromLocation } from '../lib/placeChatIntro';
+import { patchFestivalBoundSpot } from '../../Korea/lib/festivalMooniBoundSpot.js';
 
 const THEME_CHAT_CATEGORY = 'korea-theme';
 
@@ -104,6 +105,11 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
     openedKeyRef.current = key;
     openBound(boundSpot);
   }, [isOpen, boundSpot, initialQuery, openBound]);
+
+  useEffect(() => {
+    if (!isOpen || !boundSpot?.festivalContext) return;
+    setMooniPlaceContext((prev) => patchFestivalBoundSpot(prev, boundSpot));
+  }, [isOpen, boundSpot]);
 
   const createTripOnFirstUserMessage = useCallback(
     async ({ destination, lat, lng, persona, firstUserText }) => {

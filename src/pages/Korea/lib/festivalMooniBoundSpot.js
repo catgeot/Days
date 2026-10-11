@@ -51,3 +51,26 @@ export function buildFestivalMooniBoundSpot(input = {}) {
     festivalContext,
   });
 }
+
+function sameNameList(left, right) {
+  const a = Array.isArray(left) ? left : [];
+  const b = Array.isArray(right) ? right : [];
+  return a.length === b.length && a.every((name, index) => name === b[index]);
+}
+
+/** Keep an open chat, and copy 주변 맛집 names in when the sheet list arrives. */
+export function patchFestivalBoundSpot(prev, next) {
+  if (!prev?.festivalContext || !next?.festivalContext) return prev;
+  if (
+    sameNameList(prev.festivalContext.nearbyRestaurants, next.festivalContext.nearbyRestaurants)
+    && sameNameList(prev.festivalContext.nearbyPlaces, next.festivalContext.nearbyPlaces)
+  ) return prev;
+  return {
+    ...prev,
+    festivalContext: {
+      ...prev.festivalContext,
+      nearbyRestaurants: next.festivalContext.nearbyRestaurants || [],
+      nearbyPlaces: next.festivalContext.nearbyPlaces || [],
+    },
+  };
+}
