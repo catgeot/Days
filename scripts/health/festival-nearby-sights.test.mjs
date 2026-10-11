@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import {
   isFestivalOrEventSight,
@@ -373,4 +376,18 @@ test('drop non-tourist facilities from nearby sights', () => {
     merged.items.map((spot) => spot.name),
     ['경포대'],
   );
+});
+
+test('nearby sights render without waiting for festival detail', () => {
+  const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+  const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
+  assert.equal(sheet.includes('!detailLoading && activeTab === TAB_INFO'), false);
+  const infoAt = sheet.indexOf('{activeTab === TAB_INFO && (');
+  const nearbyAt = sheet.indexOf('data-festival-section="nearAttractions"');
+  const lodgingAt = sheet.indexOf('data-festival-section="lodging"');
+  assert.ok(infoAt >= 0 && nearbyAt > infoAt && lodgingAt > nearbyAt);
+  const nearbyBlock = sheet.slice(infoAt, nearbyAt);
+  assert.match(nearbyBlock, /!detailLoading && \(intro \|\| scenicRegion\)/);
+  const afterNearby = sheet.slice(nearbyAt, lodgingAt);
+  assert.match(afterNearby, /!detailLoading && \(/);
 });

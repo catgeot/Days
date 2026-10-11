@@ -1726,9 +1726,9 @@ export default function FestivalDetailSheet({
             </div>
           )}
 
-          {!detailLoading && activeTab === TAB_INFO && (
+          {activeTab === TAB_INFO && (
             <div className="space-y-3">
-              {(intro || scenicRegion) && (
+              {!detailLoading && (intro || scenicRegion) && (
                 <div className="space-y-3">
                   {!summaryFields.placeText && (
                     <DetailRow label={t('korea.festival.detail.labelVenue')}>
@@ -1893,6 +1893,8 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
+              {!detailLoading && (
+              <>
               {!festivalEnded && showFestivalStayStrip ? (
                 <div
                   className="scroll-mt-4 pt-1"
@@ -2244,6 +2246,8 @@ export default function FestivalDetailSheet({
                     date: earliestBookingVerifiedDate(bookingLinks),
                   })}
                 </p>
+              )}
+              </>
               )}
             </div>
           )}
