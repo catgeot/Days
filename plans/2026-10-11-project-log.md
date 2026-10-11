@@ -10,6 +10,13 @@
 - **VERIFY** `npm run test:health` 203 pass.
 - **Preview** `https://days-git-cursor-mooni-festival-edge-7c65-catgeots-projects.vercel.app/korea?festival=2930716` — 클라이언트 폴백만. Edge 문장은 staging 배포 후.
 
+## 축제 MOONi Edge #1, QA 마찰 후속
+
+- **세션** 같은 브랜치 `cursor/mooni-festival-edge-7c65` · tip `372a848f` · draft PR [#420](https://github.com/catgeot/Days/pull/420)
+- **조치** `이에요`/`예요`는 고치지 않고 `이예요`만 끝자리·받침으로 고친다(`10/15~18이에요`). 숙소 권역은 행사장 약 20km(속초 제외, «편안한 휴식을 위해» 삭제)이고 숙소 링크로 끝낸다. 근처 먹을 곳은 시장·지역 식당이 전국 체인보다 앞. 이어지는 답의 날짜만 있는 끝문장은 뺀다. 첫 답 날짜는 유지.
+- **범위** Edge 프롬프트 + 클라이언트. **에이전트는 gemini-proxy를 배포하지 않음.** staging `qeqszwxjvhnbzhkchera` → Cos → prod가 다시 필요. prod는 v25 (`05679653`).
+- **VERIFY** `npm run test:health` 204 pass.
+
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
 - **세션** `소셜 축제 입구 #1, pin·프로모·병합` · branch `cursor/social-entry-festival-pin-4768` · tip `0289b88a` · draft PR [#422](https://github.com/catgeot/Days/pull/422)
