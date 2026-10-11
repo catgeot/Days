@@ -24,6 +24,7 @@ import { splitItineraryPlaceMentions } from '../../src/data/placeVerifiedFacts/i
 import {
   checkedAtForLocale,
   extractFactTokens,
+  hangulOutsideEnglishProperNounParens,
   factValueForLocale,
   linkLabelForLocale,
   sourceNameForLocale,
@@ -217,6 +218,7 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
       const en = factValueForLocale(card.slug, slot, 'en');
       assert.equal(ko, slot.value);
       assert.deepEqual(extractFactTokens(en), extractFactTokens(ko));
+      assert.deepEqual(hangulOutsideEnglishProperNounParens(en), []);
       for (const source of slot.sources || []) {
         assert.equal(sourceNameForLocale(source.name, 'ko'), source.name);
         const enName = sourceNameForLocale(source.name, 'en');
@@ -269,4 +271,10 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
   assert.equal(sourceNameForLocale('GATEO 로그북 (2026-10-03)', 'en'), 'GATEO logbook (2026-10-03)');
   assert.equal(sourceNameForLocale('외교부 여행경보', 'en'), 'MOFA travel alert');
   assert.equal(sourceNameForLocale('대사관 공지', 'en'), 'Embassy notice');
+  assert.deepEqual(hangulOutsideEnglishProperNounParens('See Cairo (카이로).'), []);
+  assert.ok(hangulOutsideEnglishProperNounParens('25달러').length > 0);
+  assert.ok(hangulOutsideEnglishProperNounParens('(한국)').length > 0);
+  assert.match(entry, /USD 25/);
+  assert.match(entry, /USD 60/);
+  assert.match(entry, /6 months/);
 });

@@ -1,18 +1,18 @@
-/** English sentences for the Cairo pilot cards. Fact tokens stay as in the Korean value. */
+/** English sentences for the Cairo pilot cards. Numbers match the Korean value; unit words are English. */
 
 const EN_VALUES = {
   'cairo:entry':
-    'e-Visa eligibility depends on nationality. Check visa2egypt.gov.eg.\nApply on the government portal and pay by card.\nA tourist single entry is 25달러, and a multiple entry is 60달러.\nYour passport must have at least 6개월 left on the arrival date. Bring a printed e-Visa, your travel itinerary, and your accommodation booking.',
+    'e-Visa eligibility depends on nationality. Check visa2egypt.gov.eg.\nApply on the government portal and pay by card.\nA tourist single entry is USD 25, and a multiple entry is USD 60.\nYour passport must have at least 6 months left on the arrival date. Bring a printed e-Visa, your travel itinerary, and your accommodation booking.',
   'cairo:airport':
     'Take a white taxi that has a meter.\nOlder black-and-white taxis have no meter, so agree the fare before you ride.\nBe careful of drivers who solicit in the arrivals hall.\nThe curbside limousine in front of the terminal is a flat fare by destination and car class A~D.\nCity buses depart only from the bus stop in the parking lot in front of Terminal 1.\nThere is a ride-hailing app (Uber) CAI pickup guide page.',
   'cairo:itinerary':
-    'D1 When you arrive, use the airport-to-city way above to get into the city and rest.\nD2 Go to the Giza Plateau early for the 07:00 opening. GEM requires a timed ticket. Galleries are open until 21:00 on Wed and Sat, and until 18:00 on other days. Last entry is 1시간 before closing. Dinner is Koshary Abou Tarek downtown.\nD3 At 09:00 go to the Egyptian Museum in Tahrir. Ticket sales end at 16:00. In the afternoon go to the Sultan Hassan Mosque, and last entry is 16:00.',
+    'D1 When you arrive, use the airport-to-city way above to get into the city and rest.\nD2 Go to the Giza Plateau early for the 07:00 opening. GEM requires a timed ticket. Galleries are open until 21:00 on Wed and Sat, and until 18:00 on other days. Last entry is 1 hour before closing. Dinner is Koshary Abou Tarek downtown.\nD3 At 09:00 go to the Egyptian Museum in Tahrir. Ticket sales end at 16:00. In the afternoon go to the Sultan Hassan Mosque, and last entry is 16:00.',
   'cairo:money-safety':
     'The currency is the Egyptian pound (EGP).\nOn the MOFA travel alert, Nile-valley cities such as Cairo are at the exercise-caution level.\nParts of the Western Desert and southern Sinai are at the reconsider-travel level, and central and northern Sinai plus the area within 30km of the Libya border are at the leave-the-country advisory.\nA recent embassy notice (2026-09-22) says to be careful amid military tension in the Middle East and to watch out for private currency-exchange scams.\nThe consular call center is +82-2-3210-0404.',
   'grand-egyptian-museum:hours':
     'Sun, Mon, Tue, Thu, and Fri: galleries 09:00~18:00 (complex 08:30~19:00), last entry 17:00.\nWed and Sat: galleries 09:00~21:00 (complex 08:30~22:00), last entry 20:00.',
   'grand-egyptian-museum:fee':
-    'Foreign adults 1,590 EGP, children and students 800 EGP.\nUnder 6세 is free.\nPick an entry window: 08:30–11:00, 11:00–13:00, 13:00–15:00, or 15:00–17:00.',
+    'Foreign adults 1,590 EGP, children and students 800 EGP.\nUnder 6 years old is free.\nPick an entry window: 08:30–11:00, 11:00–13:00, 13:00–15:00, or 15:00–17:00.',
   'grand-egyptian-museum:notes':
     'No refunds.\nValid only on the booked date and time.\nYou can enter only once and cannot come back in.\nThe ticket cannot be put in another person\'s name or transferred.\nBags larger than 40×40cm and umbrellas must be left at the cloakroom.\nOutside food and drinks are not allowed. Inside the galleries, only a small water bottle is allowed.\nTripods, selfie sticks, drones, external lights, and flash are not allowed.',
   'sultan-hassan-mosque:hours':
@@ -20,7 +20,7 @@ const EN_VALUES = {
   'sultan-hassan-mosque:fee':
     'Foreign adults 220 EGP, students 110 EGP.\nAdmission to the mosque across the street is included.',
   'sultan-hassan-mosque:notes':
-    'Phone photos are free.\nArrive at least 1시간 before closing.\nIt is on Salah al-Din Square, across from the mosque opposite.',
+    'Phone photos are free.\nArrive at least 1 hour before closing.\nIt is on Salah al-Din Square, across from the mosque opposite.',
 };
 
 const SOURCE_EN = {
@@ -45,10 +45,61 @@ const LINK_EN = {
   '공식 예매': 'Official tickets',
 };
 
-const TOKEN_RE = /https?:\/\/[^\s)]+|\+\d{2}-\d-\d{4}-\d{4}|\d{4}-\d{2}-\d{2}|\d{1,2}:\d{2}(?:[~–-]\d{1,2}:\d{2})?|\d{1,3}(?:,\d{3})+\s*EGP|\d+\s*EGP|\d+달러|\d+개월|\d+km|\d+×\d+cm|\d+세|\d+시간|(?<![A-Za-z])\d+(?![A-Za-z])/g;
+const CURRENCY = { 달러: 'USD', USD: 'USD', $: 'USD', 원: 'KRW', KRW: 'KRW', '₩': 'KRW', EGP: 'EGP' };
+const UNIT = {
+  개월: 'months', month: 'months', months: 'months',
+  시간: 'hours', hour: 'hours', hours: 'hours',
+  세: 'years', year: 'years', years: 'years',
+  시: 'oclock',
+  분: 'minutes', minute: 'minutes', minutes: 'minutes',
+  일: 'days', day: 'days', days: 'days',
+};
 
+const TOKEN_RE = new RegExp(
+  [
+    String.raw`https?:\/\/[^\s)]+`,
+    String.raw`\+\d{2}-\d-\d{4}-\d{4}`,
+    String.raw`\d{4}-\d{2}-\d{2}`,
+    String.raw`\d{1,2}:\d{2}(?:[~–-]\d{1,2}:\d{2})?`,
+    String.raw`\d+×\d+cm`,
+    String.raw`\d+km`,
+    String.raw`(?:USD|KRW|\$|₩)\s*\d{1,3}(?:,\d{3})*`,
+    String.raw`\d{1,3}(?:,\d{3})*\s*(?:개월|시간|달러|months?|hours?|years?|minutes?|days?|EGP|세|시|분|일|원)`,
+    String.raw`(?<![A-Za-z])\d+(?![A-Za-z])`,
+  ].join('|'),
+  'g',
+);
+
+const PROPER_NOUN_PAREN = /(?:[A-Z][A-Za-z0-9'’.-]*)(?:\s+[A-Z][A-Za-z0-9'’.-]*)*\s*\([^)]*\)/g;
+
+function normalizeToken(raw) {
+  if (/^https?:\/\//.test(raw)) return `url:${raw}`;
+  if (/^\+\d/.test(raw)) return `phone:${raw}`;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return `date:${raw}`;
+  if (/^\d{1,2}:\d{2}/.test(raw)) return `time:${raw}`;
+  if (/^\d+×\d+cm$/.test(raw)) return `size:${raw}`;
+  const km = raw.match(/^(\d+)km$/);
+  if (km) return `km:${km[1]}`;
+  const prefixed = raw.match(/^(USD|KRW|\$|₩)\s*(\d{1,3}(?:,\d{3})*)$/);
+  if (prefixed) return `amount:${prefixed[2].replaceAll(',', '')}:${CURRENCY[prefixed[1]]}`;
+  const suffixed = raw.match(/^(\d{1,3}(?:,\d{3})*)\s*(개월|시간|달러|month|months|hour|hours|year|years|minute|minutes|day|days|EGP|세|시|분|일|원)$/);
+  if (suffixed) {
+    const n = suffixed[1].replaceAll(',', '');
+    const code = CURRENCY[suffixed[2]] || UNIT[suffixed[2]];
+    return CURRENCY[suffixed[2]] ? `amount:${n}:${code}` : `unit:${n}:${code}`;
+  }
+  return `num:${raw}`;
+}
+
+/** Numbers, times, amounts, and URLs. 달러↔USD/$, 개월↔months, EGP stays EGP. */
 export function extractFactTokens(text) {
-  return (String(text || '').match(TOKEN_RE) || []).slice().sort();
+  return (String(text || '').match(TOKEN_RE) || []).map(normalizeToken).sort();
+}
+
+/** Hangul is allowed only inside parentheses that follow an English proper noun. */
+export function hangulOutsideEnglishProperNounParens(text) {
+  const stripped = String(text || '').replace(PROPER_NOUN_PAREN, ' ');
+  return stripped.match(/[가-힣]/g) || [];
 }
 
 export function factValueForLocale(slug, slot, locale) {
