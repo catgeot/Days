@@ -14,30 +14,39 @@
 
 ## 활성 목록
 
-### 축제 MOONi 후속
+### 축제 MOONi Edge
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `3bdddf01` · draft PR [#419](https://github.com/catgeot/Days/pull/419) · **병합·Edge 배포 금지** |
-| **브랜치** | `cursor/mooni-festival-followup` |
+| **상태** | **#1 push** · tip `63b3a78d` · draft PR [#420](https://github.com/catgeot/Days/pull/420) · **에이전트 Edge 배포 금지** |
+| **브랜치** | `cursor/mooni-festival-edge-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
-| **일지** | [`2026-10-10-project-log.md`](./2026-10-10-project-log.md) |
-| **Preview** | git `https://days-git-cursor-mooni-festival-followup-catgeots-projects.vercel.app/korea?festival=2930716` |
-| **금지** | 이 세션에서 Edge 배포 · PR 병합 · feature에 `plans/**` 커밋 · 모델 변경(현재 `gemini-3.1-flash-lite`, Fast off) |
-| **VERIFY** | `npm run test:health` · `npm run build` · `node scripts/audit-festival-answer-facts.mjs` |
-| **남은 일** | Preview에서 첫 답이 질문·재오픈 뒤에도 맨 위인지, `?lang=en`이 한국어 대화를 안 여는지. Edge 배포는 사람 요청 후 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | git `https://days-git-cursor-mooni-festival-edge-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 폴백만. Edge 프롬프트는 staging 배포 후) |
+| **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run test:health` |
+| **남은 일** | box ops가 staging `qeqszwxjvhnbzhkchera`에만 `gemini-proxy` 배포한 뒤 2930716 숙소 끝줄·`10/15~18예요`·근처 먹을 곳=주변 맛집 확인. prod는 v25 (`05679653`) |
 
 **다음 제시어**:
 
 ```
-축제 MOONi 후속 #3, Preview 재확인
+축제 MOONi Edge #2, staging 검증
 @plans/feature-handoff-index.md
-@plans/2026-10-10-project-log.md
-브랜치 cursor/mooni-festival-followup · draft PR #419 · tip 3bdddf01
-금지: Edge 배포 · PR 병합 · feature에 plans 커밋 · 모델 변경
-작업: /korea?festival=2930716 첫 답은 질문·재오픈 뒤에도 맨 위. ?lang=en 은 한국어 숙소 답을 열지 않고 영어 첫 답을 보이며 Destination 줄은 Gangneung Noodle Festival. 영어 제목은 한 번
+@plans/2026-10-11-project-log.md
+브랜치 cursor/mooni-festival-edge-7c65 · draft PR #420 · tip 63b3a78d
+금지: 에이전트 gemini-proxy 배포 · 모델 변경 · feature에 plans 커밋 · main 코드 push
+작업: box ops가 staging qeqszwxjvhnbzhkchera에 gemini-proxy를 배포한 뒤, 2930716 숙소 끝줄은 [강릉 국수 축제 페이지]에서 가는 법, 날짜는 10/15~18예요, 근처 먹을 곳은 주변 맛집만. prod는 v25(05679653)
 검증: npm run test:health
 ```
+
+### 축제 MOONi 후속
+
+| | |
+|--|--|
+| **상태** | **병합됨** · main `c60b2b5b` · PR [#419](https://github.com/catgeot/Days/pull/419) · active: false |
+| **브랜치** | `cursor/mooni-festival-followup` (재사용 금지) |
+| **일지** | [`2026-10-10-project-log.md`](./2026-10-10-project-log.md) · 후속은 위 Edge 행 |
+| **남은 일** | 없음. 프롬프트 파일은 main에 있으나 prod gemini-proxy는 v25. 배포·QA 마찰은 Edge 행 |
 
 ---
 
