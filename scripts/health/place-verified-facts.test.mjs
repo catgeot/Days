@@ -21,6 +21,13 @@ import {
   UNVERIFIED_LABEL,
 } from '../../src/data/placeVerifiedFacts/schema.js';
 import { splitItineraryPlaceMentions } from '../../src/data/placeVerifiedFacts/itineraryLinks.js';
+import {
+  checkedAtForLocale,
+  extractFactTokens,
+  factValueForLocale,
+  linkLabelForLocale,
+  sourceNameForLocale,
+} from '../../src/data/placeVerifiedFacts/cairoEn.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -196,4 +203,70 @@ test('english fact headings are localized and values stay Korean', async () => {
   assert.match(header, /flex flex-col flex-1 min-w-0 justify-center overflow-hidden/);
   assert.equal(header.includes('min-w-[11rem]'), false);
   assert.equal(header.includes("locale === 'en' ? 'min-w-0 shrink'"), false);
+});
+
+test('english fact values keep Korean numbers, times, amounts, and URLs', () => {
+  const cards = [
+    CAIRO_CITY_FACTS,
+    CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'grand-egyptian-museum'),
+    CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'sultan-hassan-mosque'),
+  ];
+  for (const card of cards) {
+    for (const slot of card.slots) {
+      const ko = factValueForLocale(card.slug, slot, 'ko');
+      const en = factValueForLocale(card.slug, slot, 'en');
+      assert.equal(ko, slot.value);
+      assert.deepEqual(extractFactTokens(en), extractFactTokens(ko));
+      for (const source of slot.sources || []) {
+        assert.equal(sourceNameForLocale(source.name, 'ko'), source.name);
+        const enName = sourceNameForLocale(source.name, 'en');
+        if (/[가-힣]/.test(source.name)) assert.equal(/[가-힣]/.test(enName), false);
+        else assert.equal(enName, source.name);
+      }
+      if (slot.linkLabel) {
+        assert.equal(linkLabelForLocale(slot.linkLabel, 'ko'), slot.linkLabel);
+        if (/[가-힣]/.test(slot.linkLabel)) {
+          assert.equal(/[가-힣]/.test(linkLabelForLocale(slot.linkLabel, 'en')), false);
+        }
+      }
+      assert.equal(checkedAtForLocale(slot.checkedAt, 'ko'), slot.checkedAt);
+      assert.deepEqual(
+        extractFactTokens(checkedAtForLocale(slot.checkedAt, 'en')),
+        extractFactTokens(slot.checkedAt),
+      );
+    }
+  }
+
+  const entry = factValueForLocale('cairo', CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'entry'), 'en');
+  assert.match(CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'entry').value, /한국 여권은 전자비자/);
+  assert.equal(entry.includes('한국'), false);
+  assert.equal(/Korean passport/i.test(entry), false);
+  assert.match(entry, /depends on nationality/i);
+  assert.match(entry, /visa2egypt\.gov\.eg/);
+  assert.equal(entry.includes('United States'), false);
+  assert.equal(entry.includes('British'), false);
+
+  const itinerary = factValueForLocale(
+    'cairo',
+    CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'itinerary'),
+    'en',
+  );
+  const links = splitItineraryPlaceMentions(itinerary).filter((part) => part.type === 'link');
+  assert.deepEqual(
+    links.map((part) => [part.text, part.href]),
+    [
+      ['GEM', '/place/grand-egyptian-museum'],
+      ['Sultan Hassan Mosque', '/place/sultan-hassan-mosque'],
+    ],
+  );
+  assert.equal(
+    checkedAtForLocale('2026-10-11(시간) · 2026-10-03(동선)', 'en'),
+    '2026-10-11(hours) · 2026-10-03(itinerary)',
+  );
+  assert.equal(linkLabelForLocale('GEM 공식 예매', 'en'), 'Official GEM tickets');
+  assert.equal(linkLabelForLocale('Google 지도', 'en'), 'Google Maps');
+  assert.equal(sourceNameForLocale('카이로국제공항 교통 안내', 'en'), 'Cairo International Airport transport guide');
+  assert.equal(sourceNameForLocale('GATEO 로그북 (2026-10-03)', 'en'), 'GATEO logbook (2026-10-03)');
+  assert.equal(sourceNameForLocale('외교부 여행경보', 'en'), 'MOFA travel alert');
+  assert.equal(sourceNameForLocale('대사관 공지', 'en'), 'Embassy notice');
 });

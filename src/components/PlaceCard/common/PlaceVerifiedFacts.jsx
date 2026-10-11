@@ -1,7 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../../i18n/LocaleProvider';
 import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
+import {
+  checkedAtForLocale,
+  factValueForLocale,
+  linkLabelForLocale,
+  sourceNameForLocale,
+} from '../../../data/placeVerifiedFacts/cairoEn.js';
 import { splitItineraryPlaceMentions } from '../../../data/placeVerifiedFacts/itineraryLinks.js';
 import {
   AI_GENERATED_LABEL,
@@ -23,11 +30,11 @@ function unverifiedLine(slots, t) {
   return t('place.facts.unverified', { items: labels.join(', ') });
 }
 
-function SourceLine({ sources }) {
+function SourceLine({ sources, locale }) {
   return (
     <span data-fact-source="">
       {sources.map((source, index) => {
-        const name = publicSourceName(source.name || source.url);
+        const name = sourceNameForLocale(publicSourceName(source.name || source.url), locale);
         const node = source.url ? (
           <a
             key={`${source.url}-${index}`}
@@ -52,11 +59,13 @@ function SourceLine({ sources }) {
   );
 }
 
-function FactValue({ slot, light }) {
-  const text = presentFactText(slot.value);
+function FactValue({ slot, slug, locale, light }) {
+  const text = presentFactText(factValueForLocale(slug, slot, locale));
   if ((slot.linkRole === 'booking' || slot.linkRole === 'map') && /^https?:\/\//.test(slot.value)) {
-    const label = slot.linkLabel
-      || (slot.linkRole === 'booking' ? '공식 예매' : 'Google 지도');
+    const label = linkLabelForLocale(
+      slot.linkLabel || (slot.linkRole === 'booking' ? '공식 예매' : 'Google 지도'),
+      locale,
+    );
     return (
       <p data-fact-value="" className="text-sm">
         <a
@@ -108,6 +117,7 @@ function FactValue({ slot, light }) {
 
 export default function PlaceVerifiedFacts({ location, variant = 'dark' }) {
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const card = resolveVerifiedFacts(location);
   if (!card) return null;
   const light = variant === 'light';
@@ -137,15 +147,15 @@ export default function PlaceVerifiedFacts({ location, variant = 'dark' }) {
             <p className={light ? 'text-[11px] font-semibold text-emerald-800' : 'text-[11px] font-semibold text-emerald-200/90'}>
               {slotHeading(slot, t)}
             </p>
-            <FactValue slot={slot} light={light} />
+            <FactValue slot={slot} slug={card.slug} locale={locale} light={light} />
             <p className={metaClass}>
-              {t('place.facts.source')} <SourceLine sources={slot.sources} />
+              {t('place.facts.source')} <SourceLine sources={slot.sources} locale={locale} />
             </p>
             <p
               data-fact-checked-at=""
               className={light ? 'text-[11px] text-gray-500' : 'text-[11px] text-white/45'}
             >
-              {t('place.facts.checked', { date: slot.checkedAt })}
+              {t('place.facts.checked', { date: checkedAtForLocale(slot.checkedAt, locale) })}
             </p>
           </li>
         ))}
