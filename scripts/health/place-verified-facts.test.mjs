@@ -100,6 +100,8 @@ test('public source labels and one unverified line', () => {
   const header = readFileSync(join(root, 'src/components/PlaceCard/panels/PlaceChatPanel.jsx'), 'utf8');
   assert.match(factsUi, /data-unverified-items/);
   assert.match(header, /line-clamp-2/);
+  assert.match(header, /\[word-break:keep-all\]/);
+  assert.match(header, /\[overflow-wrap:anywhere\]/);
 });
 
 test('pilot booking and map links are used and search buttons are not', () => {
