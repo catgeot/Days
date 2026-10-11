@@ -57,6 +57,11 @@ import {
   showFestivalOpeningInThread,
   writeFestivalMooniSession,
 } from '../lib/festivalMooniSessionCache.js';
+import {
+  shouldHydrateDraftCacheFallback,
+  shouldHydrateDraftMessages,
+  shouldHydrateTripMessages,
+} from '../lib/festivalMooniChatSync.js';
 import { festivalResolutionLabel } from '../lib/mooniPlaceChatLabel.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
@@ -138,6 +143,8 @@ const ChatModal = ({
   const [messages, setMessages] = useState([]);
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
+  const lastTripSyncChatIdRef = useRef(null);
+  const festivalUiLocaleRef = useRef(i18n.language);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mooniContinuingIdx, setMooniContinuingIdx] = useState(null);
@@ -688,31 +695,91 @@ const ChatModal = ({
     if (!isOpen) {
       setMessages([]);
       tripSessionRef.current = null;
+      lastTripSyncChatIdRef.current = null;
+      festivalUiLocaleRef.current = i18n.language;
       return;
     }
+    // Parent savedTrips refresh (auth/fetchData) must not clobber an in-flight chip turn.
+    if (isLoading) return;
+
     if (activeChatId) {
       const targetTrip = chatHistory.find(
         (t) => String(t.id) === String(activeChatId)
       );
       const festivalLocaleOk = !festivalMooniContext?.contentId
         || festivalTripMatchesLocale(targetTrip, i18n.language);
+      if (
+        festivalMooniContext?.contentId &&
+        targetTrip &&
+        !festivalTripMatchesLocale(targetTrip, i18n.language)
+      ) {
+        const bucket = readFestivalMooniSession(
+          festivalMooniContext.contentId,
+          i18n.language,
+        )?.messages;
+        setMessages(Array.isArray(bucket) ? bucket : []);
+        return;
+      }
       if (targetTrip && festivalLocaleOk) {
-        setMessages(targetTrip.messages || []);
-        if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
+        const tripMsgs = targetTrip.messages || [];
+        const localMsgs = messagesRef.current || [];
+        const localLen = localMsgs.length ?? 0;
+        if (
+          shouldHydrateTripMessages({
+            activeChatId,
+            lastSyncedChatId: lastTripSyncChatIdRef.current,
+            tripMessageCount: tripMsgs.length,
+            localMessageCount: localLen,
+            tripMessages: tripMsgs,
+            localMessages: localMsgs,
+          })
+        ) {
+          lastTripSyncChatIdRef.current = String(activeChatId);
+          setMessages(tripMsgs);
+          if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
+          tripSessionRef.current = hydrateMooniTripSession({
+            messages: tripMsgs,
+            stored: targetTrip.curation_data?.mooniSession ?? null,
+            slug: targetTrip.curation_data?.slug || '',
+            destinationName: targetTrip.destination || '',
+          });
+        }
+      } else if (
+        shouldHydrateDraftCacheFallback({
+          activeChatId,
+          hasTripRow: Boolean(targetTrip),
+          localMessageCount: messagesRef.current?.length ?? 0,
+          isLoading,
+        })
+      ) {
+        const contentId = festivalMooniContext?.contentId;
+        const cachedMsgs = contentId
+          ? readFestivalMooniSession(contentId, i18n.language)?.messages
+          : null;
+        if (cachedMsgs?.length) {
+          setMessages(cachedMsgs);
+        }
+      }
+      return;
+    }
+    lastTripSyncChatIdRef.current = null;
+    if (chatDraft) {
+      const contentId = festivalMooniContext?.contentId;
+      if (contentId) {
+        const bucket = readFestivalMooniSession(contentId, i18n.language)?.messages;
+        setMessages(Array.isArray(bucket) ? bucket : []);
+        if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
         tripSessionRef.current = hydrateMooniTripSession({
-          messages: targetTrip.messages || [],
-          stored: targetTrip.curation_data?.mooniSession ?? null,
-          slug: targetTrip.curation_data?.slug || '',
-          destinationName: targetTrip.destination || '',
+          messages: [],
+          stored: null,
+          slug: '',
+          destinationName: chatDraft.destination || '',
         });
         return;
       }
-    }
-    if (chatDraft) {
-      const cached = festivalMooniContext?.contentId
-        ? readFestivalMooniSession(festivalMooniContext.contentId, i18n.language)
-        : null;
-      setMessages(cached?.messages?.length ? cached.messages : []);
+      const localLen = messagesRef.current?.length ?? 0;
+      if (!shouldHydrateDraftMessages({ localMessageCount: localLen, isLoading })) return;
+      setMessages([]);
       if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
       tripSessionRef.current = hydrateMooniTripSession({
         messages: [],
@@ -721,7 +788,35 @@ const ChatModal = ({
         destinationName: chatDraft.destination || '',
       });
     }
-  }, [activeChatId, isOpen, chatHistory, chatDraft, festivalMooniContext?.contentId, i18n.language]);
+  }, [
+    activeChatId,
+    isOpen,
+    isLoading,
+    chatHistory,
+    chatDraft,
+    festivalMooniContext?.contentId,
+    i18n.language,
+  ]);
+
+  useEffect(() => {
+    if (!isOpen || !festivalMooniContext?.contentId) return;
+    const lang = i18n.language;
+    if (festivalUiLocaleRef.current === lang) return;
+    festivalUiLocaleRef.current = lang;
+    const contentId = festivalMooniContext.contentId;
+    const targetTrip = activeChatId
+      ? chatHistory.find((t) => String(t.id) === String(activeChatId))
+      : null;
+    if (targetTrip && festivalTripMatchesLocale(targetTrip, lang)) return;
+    const cached = readFestivalMooniSession(contentId, lang)?.messages;
+    setMessages(Array.isArray(cached) ? cached : []);
+  }, [
+    isOpen,
+    festivalMooniContext?.contentId,
+    i18n.language,
+    activeChatId,
+    chatHistory,
+  ]);
 
   const applyDestinationBinding = useCallback(async (chatId, draft, candidate) => {
     if (!candidate?.name) return;
@@ -895,9 +990,11 @@ const ChatModal = ({
       !(ferryRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
       !placeBound;
 
+    const turnAt = Date.now();
     const userMsg = {
       role: 'user',
       text: cleanText,
+      mooniAt: turnAt,
       ...(chipDestination ? { confirmedDestination: chipDestination } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
       // name-bound uiPlace(슬러그 없음)도 목적지로 확정 — 「역사」키워드 오탐 후보 칩 숨김
@@ -1137,6 +1234,7 @@ const ChatModal = ({
           role: 'model',
           text: displayReply,
           mooniRawReply: rawWithLodging,
+          mooniAt: Date.now(),
           truncated: geminiResult.truncated,
           finishReason: geminiResult.finishReason,
           continueAttempts: 0,

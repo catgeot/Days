@@ -19,19 +19,26 @@ function preferConcreteCountry(primary, fallback) {
   return primary || fallback || undefined;
 }
 
+function resolveE2eForceUser() {
+  if (import.meta.env.VITE_MOONI_E2E !== '1') return null;
+  if (typeof window === 'undefined') return null;
+  return window.__gateoMooniE2eForceUser || null;
+}
+
 export const useTravelData = (user) => {
   const [savedTrips, setSavedTrips] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
+  const effectiveUser = resolveE2eForceUser() || user;
 
   const syncLocalStorage = (data) => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
   };
 
   const fetchData = useCallback(async () => {
-    if (user) {
+    if (effectiveUser) {
       const { data, error } = await supabase.from('saved_trips')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', effectiveUser.id)
         .or('is_hidden.eq.false,is_bookmarked.eq.true')
         .order('created_at', { ascending: false });
         
@@ -44,11 +51,11 @@ export const useTravelData = (user) => {
       const localData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
       setSavedTrips(localData);
     }
-  }, [user]);
+  }, [effectiveUser]);
 
   const saveNewTrip = useCallback(async (newTrip) => {
-    if (user) {
-      const tripWithUser = { ...newTrip, user_id: user.id };
+    if (effectiveUser) {
+      const tripWithUser = { ...newTrip, user_id: effectiveUser.id };
       const { data, error } = await supabase.from('saved_trips').insert([tripWithUser]).select();
       
       if (!error && data && data.length > 0) {
@@ -68,7 +75,7 @@ export const useTravelData = (user) => {
       });
       return tempTrip;
     }
-  }, [user]);
+  }, [effectiveUser]);
 
   const saveCurationData = useCallback(async (curationData, userObj) => {
     const targetUser = user || userObj;
