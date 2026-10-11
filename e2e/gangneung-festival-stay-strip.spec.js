@@ -111,14 +111,14 @@ async function screenshotLodgingViewport(page, dialog, path) {
     }
   });
   await page.waitForTimeout(500);
-  await expect(nearAttractions.getByText(/주변 관광지/)).toBeVisible();
+  await expect(nearAttractions.getByText(/주변 볼거리/)).toBeVisible();
   await expect(lodging.getByText(/강릉 숙소/).first()).toBeVisible();
   await expect(stayCardImg).toBeVisible();
   await page.screenshot({ path, fullPage: false });
 }
 
 test.describe('Gangneung festival stay strip', () => {
-  test('mobile 390 — traveler route, 주변 관광지 then 강릉 숙소', async ({ page }) => {
+  test('mobile 390 — traveler route, 주변 볼거리 then 강릉 숙소', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const dialog = await openFestivalDetailTraveler(page);
 

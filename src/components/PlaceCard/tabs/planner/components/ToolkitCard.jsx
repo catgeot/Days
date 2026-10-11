@@ -2,6 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
+import { AiGeneratedBanner } from '../../../common/PlaceVerifiedFacts';
+import { resolveVerifiedFacts } from '../../../../../data/placeVerifiedFacts/cairo.js';
 import { isMobileDevice } from '../../../common/device';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
 import TripcomFlightBannerWidget from './TripcomFlightBannerWidget';
@@ -83,9 +85,12 @@ const ToolkitCard = ({
             </div>
 
             {showFerryAdviceBlock && (
-                <p className="text-sm text-gray-700 leading-[1.7] mb-5 flex-1 select-text break-keep">
-                    <CopyableText text={ferryAdviceText} locationName={location?.name} type={type} />
-                </p>
+                <div className="mb-5 flex-1">
+                    {resolveVerifiedFacts(location) && ferryAdviceText ? <AiGeneratedBanner light /> : null}
+                    <p className="text-sm text-gray-700 leading-[1.7] select-text break-keep">
+                        <CopyableText text={ferryAdviceText} locationName={location?.name || location?.name_en || location?.slug} type={type} />
+                    </p>
+                </div>
             )}
 
             {links.length > 0 && (

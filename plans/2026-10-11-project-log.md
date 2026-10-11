@@ -33,6 +33,9 @@
 - **범위** 클라이언트와 Edge 프롬프트를 커밋만 분리. **에이전트는 gemini-proxy를 배포하지 않음.** staging `qeqszwxjvhnbzhkchera`가 필요한 것은 `templates.js`와 서버 프롬프트 번들. 클라이언트 대기·폴백·힌트는 Preview에서 적용. prod는 v27 (`2c7a3c95`).
 - **VERIFY** `npm run test:health` 218 pass.
 - **Preview** `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716`
+- **이어서** `1d88a15a`. main `#427` `48a3efc2` · `#430` `d28d7c4f`를 머지한 뒤, 첫 답에 «강릉 국수 축제 페이지» 링크가 두 번 나오면 마지막 «자세한 내용은 … 페이지에서 볼 수 있어요»만 남긴다. 숙소 앵커는 유지. `npm run test:health` 236 pass.
+- **이어서** `6626601b` (client `9b68a7b6`). staging v22 주차 답이 `공식 홈페이지()`로 비었다. 공식 홈페이지와 같은 날 URL은 `[공식 홈페이지](url)`로 바꾸고, 다른 URL은 괄호까지 지운다. 숙소가 한 곳이면 «다양한 숙소가 자리하고 있어요», «매력을 느끼며»를 뺀다. Edge 파일은 프롬프트 커밋에서 바뀜(`templates.js`, 서버 번들). 주차 수정은 클라이언트라 gemini-proxy 재배포 없이 Preview에 있다. 배포·머지 안 함.
+- **이어서** tip `6a1954d4` (client `9e2eadc8`). 주차 데이터가 없으면 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 전화번호»만 남기고 축제 페이지 문장을 뺀다. 숙소는 카드의 이름·거리 2~3곳과 `[숙소 카드]` 한 번, 목록이 없으면 20km 권역. 맛집은 거리 없는 곳을 빼고 거리 있는 다음 곳을 넣는다. `mooni_chat`은 v27과 이 브랜치 모두 기본 FAST `gemini-3.1-flash-lite`. Edge는 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 243 pass. 배포·머지 안 함.
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
@@ -55,6 +58,35 @@
 - **조치** 도시 6칸·명소 7칸을 카드 맨 위에 두고 빈칸은 «확인 안 됨». AI 구간은 «AI 생성 · 출처 없음». 표에 있는 공식 예매·지도만. GEM·술탄 하산 허브 카드. Edge 코드·DB 실행 없음. 영상 허용 목록 JSON만 두 슬러그 추가.
 - **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` · `audit:city-attraction-hubs` 0 · vite build
 - **Preview** `https://days-git-cursor-cairo-place-facts-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/cairo/wiki` · `/place/grand-egyptian-museum` · `/place/sultan-hassan-mosque`
+
+## 카이로 장소 카드 #2, QA 수정
+
+- **세션** `카이로 장소 카드 #2, QA 수정` · branch `cursor/cairo-place-facts-8e40` · tip `635e9dde` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 출처에서 저장소 경로를 빼고 «GATEO 로그북 (2026-10-03)» (공개 글 URL 없음). 빈 칸은 «확인 안 된 항목» 한 줄. 공항 교통 페이지는 접속 불가라 링크만 제거. 지도 출처·링크는 Google 지도, GEM 예매 문구는 사이트 이름. 헤더 제목은 두 줄. GEM·술탄 하산 표시 이름을 줄임.
+- **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` 6 pass · `audit:city-attraction-hubs` 0 · `check:place-video-catalog` · eslint.ci
+- **Preview** 같은 git Preview · `/place/cairo` · `/place/grand-egyptian-museum` · `/place/sultan-hassan-mosque` · `/place/egyptian-museum-cairo` · `/place/cairo/wiki` · `/explore`에서 카이로
+- **다음** `카이로 장소 카드 #3, Preview OK면 PR 병합`
+
+## 카이로 장소 카드 #3, 제목 줄바꿈
+
+- **세션** `카이로 장소 카드 #3, 제목 줄바꿈` · branch `cursor/cairo-place-facts-8e40` · tip `3d7a4792` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 장소 헤더 제목에 `word-break: keep-all`, 긴 한 토큰만 `overflow-wrap: anywhere`.
+- **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` 6 pass
+- **다음** `카이로 장소 카드 #4, Preview OK면 PR 병합`
+
+## 카이로 장소 카드 #4, 문장 다듬기
+
+- **세션** `카이로 장소 카드 #4, 문장 다듬기` · branch `cursor/cairo-place-facts-8e40` · tip `1c0bee5e` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 사실 숫자·시간·출처는 유지하고 해요체와 줄바꿈만. 공항 출처에서 «접속 불가»를 뺌. 동선 «(위 칸)»은 «공항→시내 참고».
+- **VERIFY** `node --test scripts/health/place-verified-facts.test.mjs` 6 pass
+- **다음** `카이로 장소 카드 #5, Preview OK면 PR 병합`
+
+## 카이로 장소 카드 #5, 제목 칸
+
+- **세션** `카이로 장소 카드 #5, 제목 칸` · branch `cursor/cairo-place-facts-8e40` · tip `2dc2ddf4` · draft PR [#428](https://github.com/catgeot/Days/pull/428) · 병합 금지
+- **조치** 표시 이름 «대이집트 박물관»과 헤더 `clamp`. 360·390에서 단어 중간 줄바꿈 없음. D1 문장, CAI 첫 줄 제거. 파일럿 단수 25$·복수 60$는 25달러·60달러. GEM 성인 1,590 EGP 유지.
+- **VERIFY** facts health 6 pass · hub audit 0 · 360/390 제목 측정
+- **다음** `카이로 장소 카드 #6, Preview OK면 PR 병합`
 
 ## 축제 가는 법 #1, TAGO Edge
 
@@ -84,6 +116,41 @@
 
 - **세션** LIVE Safari only: 축제 MOONi 첫 답변 후 칩 탭 시 답이 잠깐 보이고 첫 화면으로 복귀 (K-Drone · `2989642`).
 - **원인** `ChatModal.jsx` ~L688 `savedTrips`/`chatDraft` 동기화 effect가 칩 턴 중 stale `messages`·빈 festival cache로 로컬 thread 덮어씀 (WebKit 타이밍). #425 이후 `fetchData` 갱신과 겹침. #426 칩 UI는 부차.
-- **조치** branch `cursor/safari-mooni-chip-reset-4768` tip `b075b0db` · draft PR [#431](https://github.com/catgeot/Days/pull/431) · 병합 금지
-- **VERIFY** `node --test scripts/health/festival-mooni-chat-sync.test.mjs` · WebKit headless LIVE probe `2989642` 30s 무회귀
-- **QA** 배포 후 iPhone Safari: 칩 → 10초 후 user+MOONi 유지
+- **조치** branch `cursor/safari-mooni-chip-reset-4768` tip `523dd3be` · draft PR [#431](https://github.com/catgeot/Days/pull/431) · 병합 금지
+- **VERIFY** `node --test scripts/health/festival-mooni-chat-sync*.test.mjs` · e2e `(a)` logged-in mock: main `8f6c730e` WebKit+Chromium **FAIL**, fix WebKit **PASS** (`korea-mooni-festival-chip-race.spec.js` gate stale refresh in-flight)
+- **(b)** tail fingerprint + draft-cache fallback when trip row missing; e2e locale/reopen — Preview/CI에서 재확인
+- **QA** Cos conditional PASS `f7778b1c` logged-out WebKit · gate **(a)** merge 전 필수
+
+## 축제 상세 #1, 주변 볼거리 QA 수정
+
+- **세션** `축제 상세 #1, 주변 볼거리 합치기` QA 후속 · branch `cursor/festival-nearby-9654` · tip `1780fc9d` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 기준 `5c17a3b8` · 병합 금지
+- **조치** 팔경 소제목을 없애고 거리순 목록에 «함평 N경» 뱃지만 둔다. 이름 줄기가 겹치고 300m 안이면 한 행으로 합치며 뱃지와 거리를 유지한다. 축제·행사 행(진해군항제, type 15)은 뺀다. MOONi 근처 볼 곳만 팔경·관광 명소가 체험·상업보다 앞이다.
+- **함안 구경** SSOT 9곳. 마산 축제의 가까운 허브는 창원이라 좌표 없는 6곳은 넣지 않고, 악양·입곡은 22.3km로 20km 밖이다. 연꽃테마파크 17.4km만 남는다.
+- **VERIFY** nearby health 13 pass · `npx vite build` PASS
+- **Preview** `https://days-git-cursor-festival-nearby-9654-catgeots-projects.vercel.app/korea?festival=638576`
+
+## 축제 상세 #1, 팔경 소제목 복구
+
+- **세션** 같은 브랜치 `cursor/festival-nearby-9654` · tip `7abc831f` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지
+- **사진** 깨진 썸네일은 `display = 'none'` 뒤 아이콘. health `festival-photo-frame` PASS.
+- **조치** 일반 목록은 거리순이고 팔경 멤버를 빼다. 2곳 이상인 팔경은 «함평 팔경» 소제목 아래 경 번호순. 1곳뿐인 다른 시·군(함안 5경)은 뱃지만 달아 일반 목록에 둔다. 표시 이름 끝 시군을 빼고, 사진이 없으면 회색 칸 대신 아이콘. 국향·마산 썸네일은 전부 사진이 있고 이전 회색은 로드 전 캡처.
+- **VERIFY** nearby health 15 pass · `npx vite build` PASS
+
+## 카이로 동선 #1, 장소 링크·영문 제목·축제장
+
+- **세션** `카이로 동선 #1, 장소 링크·영문 제목·축제장` · branch `cursor/cairo-follow-8e40` · tip `482874e8` · draft PR [#432](https://github.com/catgeot/Days/pull/432) · 병합 금지
+- **앞선 병합** #428 squash `ea2b3730`. 당시 PROD 번들 `index-Blpy8VZ_.js`. #432 배포 후 PROD는 `index-NmcBva9f.js`(장소 청크 `index-Dh-1myli.js`). 라이브 `/place/cairo` D2의 GEM은 `/place/grand-egyptian-museum`.
+- **조치** 동선 D2/D3의 GEM·술탄 하산 모스크만 장소 카드로 연결. 영문 GEM 제목은 390에서 `Grand Egyptian` / `Museum`. 팔경 멤버가 축제장이면 소제목 옆에 «2경 함평엑스포공원은 축제장이에요».
+- **VERIFY** `npm run test:health` 241 pass · CI run `38145911493` success
+- **Preview** `https://days-git-cursor-cairo-follow-8e40-catgeots-projects.vercel.app/place/cairo` · `?lang=en` GEM · `/korea?festival=638576`
+- **다음** `카이로 동선 #2, 피드백 반영`
+- **병합** #432 squash `44a75df5`
+
+## 카이로 동선 #2, 복귀 스크롤·영문 제목·마산
+
+- **세션** `카이로 동선 #2, 피드백 반영` · branch `cursor/cairo-qa-8e40` · tip `676deb4a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · 병합 금지 · #432는 수정하지 않음
+- **우선** (c) 영문 헤더 버튼 `Planner` · (a) 뒤로 가기 갤러리 스크롤 복원 · (b) 영문 사실 제목만 번역, 값은 한글
+- **마산 637693** LIVE 390, 수정 없음. 제목 3009ms, «주변 볼거리» 4338ms(15곳). `festivalWindow` 1213→2578ms. 이어서 TourAPI 7건과 Supabase bbox가 병렬(supabase 3282ms, 상세 3883–4393ms). 순차 대기가 아니라 정보 탭이 `detailLoading`에 묶여 목록이 상세 뒤에 나왔다. 목록 캐시가 차가우면 시트가 열리기 전에 6초를 넘길 수 있다. 게이트는 유지하고 분리는 #3.
+- **VERIFY** `npm run test:health` 243 pass · CI run `38148670067` success
+- **Preview** `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/grand-egyptian-museum?lang=en` · `/korea?festival=637693`
+- **다음** `카이로 동선 #3, 마산 주변 볼거리`

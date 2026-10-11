@@ -14,6 +14,56 @@
 
 ## 활성 목록
 
+### 카이로 동선
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `676deb4a` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · **병합 금지** · #432 squash `44a75df5` · PROD `index-NmcBva9f.js` |
+| **브랜치** | `cursor/cairo-qa-8e40` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | git `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · 영문 GEM `/place/grand-egyptian-museum?lang=en` · 마산 `/korea?festival=637693` (Vercel SSO) |
+| **금지** | 사실 숫자·출처 변경 · feature에 `plans/**` 커밋 · PR 병합 · #432 수정 |
+| **VERIFY** | `npm run test:health` |
+| **남은 일** | 390에서 뒤로가기 스크롤·영문 사실 제목·Planner를 사람이 본다. 마산 목록이 상세 뒤에 나오는 수정은 #3 |
+
+**다음 제시어**:
+
+```
+카이로 동선 #3, 마산 주변 볼거리
+@plans/feature-handoff-index.md
+@plans/2026-10-11-project-log.md
+브랜치 cursor/cairo-qa-8e40 · draft PR #433 · tip 676deb4a
+금지: 사실 숫자·출처 변경 · feature에 plans 커밋 · PR 병합 · #432 수정 · 스크롤·영문 제목·Planner 되돌리기
+작업: 637693 정보 탭이 detailLoading에 묶여 주변 볼거리가 상세 응답 뒤에 나온다. 주변 목록만 상세와 따로 그린다.
+검증: npm run test:health
+```
+
+### 축제 상세 주변 볼거리
+
+| | |
+|--|--|
+| **상태** | **#1 소제목 복구 push** · tip `7abc831f` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지 |
+| **브랜치** | `cursor/festival-nearby-9654` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **Preview** | `https://days-git-cursor-festival-nearby-9654-catgeots-projects.vercel.app/korea?festival=638576` · `/qa` 슬러그 없음 |
+| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 팔경을 일반 목록에 다시 섞기 |
+| **VERIFY** | `node --test scripts/health/festival-nearby-sights.test.mjs scripts/health/festival-detail-ux.test.mjs` · `npx vite build` |
+| **남은 일** | 사람이 638576(일반 목록 + 함평 팔경 경 번호)과 637693(연꽃 뱃지만, 소제목 없음)을 본 뒤 병합. 함안 구경은 9곳 중 1곳만 20km 안이다. |
+
+**다음 제시어**:
+
+```
+축제 상세 #2, 주변 볼거리 재확인
+@plans/feature-handoff-index.md
+@plans/2026-10-11-project-log.md
+브랜치 cursor/festival-nearby-9654 · draft PR #430 · tip 7abc831f
+금지: PR 병합 · main 코드 push · feature에 plans 커밋 · 팔경을 일반 목록에 섞기
+작업: Preview에서 국향대전은 거리순 일반 목록 아래 «함평 팔경»이 1경부터인지, 마산 연꽃테마파크는 소제목 없이 뱃지와 17km인지 본다. 통과하면 사람 병합.
+검증: node --test scripts/health/festival-nearby-sights.test.mjs scripts/health/festival-detail-ux.test.mjs
+```
+
 ### 축제 가는 법
 
 | | |
@@ -43,24 +93,24 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `fb489241` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · #420 병합 `e3f4e19a` · **에이전트 Edge 배포 금지** |
+| **상태** | **#2 push** · tip `6a1954d4` · client `9e2eadc8` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · #420 병합 `e3f4e19a` · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
 | **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
 | **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). 이 tip의 `templates.js`와 서버 프롬프트 번들은 staging `qeqszwxjvhnbzhkchera` 배포가 필요하다. 클라이언트는 먹을 곳 질문 전에 주변 맛집을 최대 3초 기다리고, 3~4곳에 유형·거리를 붙이며, 주차는 데이터가 있을 때만 축제 페이지를 가리킨다. `npm run test:health` 218 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 주차 없는 답·숙소 카드 목록·맛집 거리 보강은 클라이언트 `9e2eadc8`라 Preview에 있다. Edge 파일은 `6a1954d4`에서 바뀌었다(`templates.js`, 서버 `mooniPromptBundleData.js`). staging `qeqszwxjvhnbzhkchera` 재배포는 내일 09:00+ KST. 배포·PR 머지는 하지 않는다. `npm run test:health` 243 pass. |
 
 **다음 제시어**:
 
 ```
-축제 MOONi #3, staging 검증
+축제 MOONi #3, staging 재확인
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip fb489241
-금지: 에이전트 gemini-proxy 배포 · 모델 변경 · feature에 plans 커밋 · main 코드 push
-작업: box ops가 이 tip의 templates.js와 서버 프롬프트를 staging qeqszwxjvhnbzhkchera에 배포한 뒤 2930716을 본다. 근처 먹을 곳은 시트가 늦게 와도 3~4곳 이름과 유형·거리. 주차는 데이터가 없으면 공식 홈페이지. 링크 없는 가는 법과 «안내해 드릴까요?»는 없다. prod는 v27(2c7a3c95)이고 이 Edge 문장은 아직 prod에 없다. 클라이언트 대기·폴백은 Preview에 있다.
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip 6a1954d4
+금지: 에이전트 gemini-proxy 배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push
+작업: staging qeqszwxjvhnbzhkchera를 6a1954d4 Edge 파일로 재배포한 뒤에만 2930716을 본다. «주차»는 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 033-…»이고 축제 페이지 문장·확인 반복·번호 없는 문의처는 없다. «어디서 자요?»는 숙소 카드의 이름·거리 2~3곳과 [숙소 카드] 한 번이다. 거리 없는 맛집은 빠지고 거리 있는 다음 곳이 들어간다. 목록이 비면 20km 권역이다. prod는 v27(2c7a3c95), mooni_chat 기본은 gemini-3.1-flash-lite.
 검증: npm run test:health
 ```
 

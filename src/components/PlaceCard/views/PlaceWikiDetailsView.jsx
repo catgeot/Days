@@ -37,6 +37,8 @@ import {
   resolveGalleryPlaceKey,
 } from '../common/galleryAttributionNavigation';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
+import PlaceVerifiedFacts, { AiGeneratedBanner } from '../common/PlaceVerifiedFacts';
+import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
 import { ensurePlaceChatIntroForLocation } from '../../../pages/Home/lib/placeChatIntro';
 import { resolveHubAttractionParentSketch } from '../../../pages/Home/lib/placeWikiParentSketch';
 import { fetchPlaceWikiBestRow } from '../hooks/useWikiData';
@@ -721,6 +723,10 @@ const PlaceWikiDetailsView = ({
             </div>
         )}
 
+        <div className="max-w-3xl mx-auto w-full px-6 md:px-0 pt-4">
+            <PlaceVerifiedFacts location={location} />
+        </div>
+
         {/* Hero Section */}
         {heroImage && (
             <div className="relative w-full overflow-hidden flex-shrink-0">
@@ -752,6 +758,8 @@ const PlaceWikiDetailsView = ({
                     {placeName || wikiData?.title}
                 </h1>
             )}
+
+            {resolveVerifiedFacts(location) ? <AiGeneratedBanner /> : null}
 
             {/* 소제목 */}
             <div className="flex items-center gap-3 text-amber-400 text-lg md:text-xl font-bold mb-4 pb-4 border-b border-white/10">
@@ -972,6 +980,9 @@ const PlaceWikiDetailsView = ({
                 {isAiExpanded && (
                     <div ref={aiSectionRef} className="mt-16 bg-[#0F1115] border border-blue-500/20 rounded-3xl p-6 md:p-10 animate-fade-in-up shadow-2xl scroll-mt-6 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                        {resolveVerifiedFacts(location) ? (
+                            <AiGeneratedBanner generatedAt={wikiData?.ai_info_updated_at ? String(wikiData.ai_info_updated_at).slice(0, 10) : ''} />
+                        ) : null}
                         <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/5">
                             <div className="flex items-center gap-4">
                                 <div className="p-3 bg-blue-500/10 rounded-2xl">
@@ -1044,7 +1055,7 @@ const PlaceWikiDetailsView = ({
                                                     : localAiResponse,
                                             ).wikiContent || localAiResponse
                                         }
-                                        locationName={placeName || wikiData?.title}
+                                        locationName={location?.slug || location?.name || placeName || wikiData?.title}
                                         type="wiki"
                                     />
                                 </div>

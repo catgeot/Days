@@ -13,6 +13,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildFestivalAccessAskText } from '../../src/pages/Home/lib/festivalDomesticOrigins.js';
 import { buildFestivalMooniContext } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 import { buildMooniBoundFestivalSystemHint } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 
@@ -44,10 +45,7 @@ if (!base || !anon) {
 function chipAsks(locale) {
   const pack = locale === 'en' ? en : ko;
   const chips = pack.mooni.chips.festival;
-  const access =
-    locale === 'en'
-      ? 'How do I get from Incheon to this festival by public transit and by car?'
-      : '인천에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘';
+  const access = buildFestivalAccessAskText('incheon', locale);
   return [
     ['festival_sights', chips.festival_sights.sendText],
     ['festival_access', access],

@@ -12,6 +12,8 @@ import { mobilePlaceHeaderScrollPadding, mobilePlaceHeaderSpacerClass, mobilePla
 import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
+import PlaceVerifiedFacts, { AiGeneratedBanner } from '../common/PlaceVerifiedFacts';
+import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
@@ -464,6 +466,7 @@ const PlannerTab = ({
                     </div>
                 )}
                 <div className="w-full max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto flex-1 flex flex-col mt-2 md:mt-0">
+                    <PlaceVerifiedFacts location={location} variant="light" />
                     {showFlightCinemaNotice ? (
                         <FlightCinemaPlannerNotice
                             cinemaOriginIata={flightCinemaEntry?.cinemaOriginIata ?? null}
@@ -543,6 +546,7 @@ const PlannerTab = ({
 
                 {/* 섹션 1: 출발 전 필수 준비 */}
                 <div id="planner-prep" className="mb-8 scroll-mt-24">
+                    {resolveVerifiedFacts(location) ? <AiGeneratedBanner light /> : null}
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
                         <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionPrep')}</h3>
