@@ -116,9 +116,10 @@
 
 - **세션** LIVE Safari only: 축제 MOONi 첫 답변 후 칩 탭 시 답이 잠깐 보이고 첫 화면으로 복귀 (K-Drone · `2989642`).
 - **원인** `ChatModal.jsx` ~L688 `savedTrips`/`chatDraft` 동기화 effect가 칩 턴 중 stale `messages`·빈 festival cache로 로컬 thread 덮어씀 (WebKit 타이밍). #425 이후 `fetchData` 갱신과 겹침. #426 칩 UI는 부차.
-- **조치** branch `cursor/safari-mooni-chip-reset-4768` tip `b075b0db` · draft PR [#431](https://github.com/catgeot/Days/pull/431) · 병합 금지
-- **VERIFY** `node --test scripts/health/festival-mooni-chat-sync.test.mjs` · WebKit headless LIVE probe `2989642` 30s 무회귀
-- **QA** 배포 후 iPhone Safari: 칩 → 10초 후 user+MOONi 유지
+- **조치** branch `cursor/safari-mooni-chip-reset-4768` tip `523dd3be` · draft PR [#431](https://github.com/catgeot/Days/pull/431) · 병합 금지
+- **VERIFY** `node --test scripts/health/festival-mooni-chat-sync*.test.mjs` · e2e `(a)` logged-in mock: main `8f6c730e` WebKit+Chromium **FAIL**, fix WebKit **PASS** (`korea-mooni-festival-chip-race.spec.js` gate stale refresh in-flight)
+- **(b)** tail fingerprint + draft-cache fallback when trip row missing; e2e locale/reopen — Preview/CI에서 재확인
+- **QA** Cos conditional PASS `f7778b1c` logged-out WebKit · gate **(a)** merge 전 필수
 
 ## 축제 상세 #1, 주변 볼거리 QA 수정
 
