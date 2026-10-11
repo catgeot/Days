@@ -65,6 +65,13 @@ import {
   excludePinnedFromPanelItems,
   festivalItemForSessionPin,
 } from './festivalSessionPin';
+import SocialPromoFestivalRow from './SocialPromoFestivalRow';
+import {
+  festivalItemFromDetailWithAsOf,
+  pickVisibleSocialPromoCards,
+  socialPromoFestivals,
+  socialPromoIdsMissingFromWindow,
+} from './socialPromoFestivals';
 import {
   DEFAULT_AREA_CODE,
   NEAR_FESTIVAL_KM,
@@ -830,6 +837,9 @@ export default function KoreaFestivalHub() {
   const [sessionPinnedItem, setSessionPinnedItem] = useState(
     /** @type {Record<string, unknown> | null} */ (null),
   );
+  const [socialPromoById, setSocialPromoById] = useState(
+    () => new Map(),
+  );
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
     isHintDismissed(
       typeof localStorage !== 'undefined' ? localStorage : null,
@@ -1037,6 +1047,51 @@ export default function KoreaFestivalHub() {
   useEffect(() => {
     loadFestivals(false);
   }, [loadFestivals]);
+
+  useEffect(() => {
+    if (loading) return undefined;
+    const missing = socialPromoIdsMissingFromWindow(items, socialPromoFestivals);
+    if (!missing.length) return undefined;
+    let cancelled = false;
+    (async () => {
+      for (const contentId of missing) {
+        const detail = await fetchTourApiFestivalDetail({ contentId });
+        if (cancelled) return;
+        const built = festivalItemFromDetailWithAsOf(detail);
+        if (!built) continue;
+        setSocialPromoById((prev) => {
+          const next = new Map(prev);
+          next.set(String(contentId), built);
+          return next;
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, items]);
+
+  const socialPromoItemById = useMemo(() => {
+    const map = new Map();
+    for (const item of items) {
+      if (item?.contentId != null) map.set(String(item.contentId), item);
+    }
+    for (const [id, item] of socialPromoById) {
+      if (!map.has(id)) map.set(id, item);
+    }
+    return map;
+  }, [items, socialPromoById]);
+
+  const socialPromoCards = useMemo(
+    () =>
+      pickVisibleSocialPromoCards(
+        socialPromoFestivals,
+        socialPromoItemById,
+        now,
+        2,
+      ),
+    [socialPromoItemById, now],
+  );
 
   const timeTabs = useMemo(
     () => localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now)),
@@ -2647,6 +2702,12 @@ export default function KoreaFestivalHub() {
                 )
               ) : (
                 <>
+                  {socialPromoCards.length > 0 ? (
+                    <SocialPromoFestivalRow
+                      cards={socialPromoCards}
+                      onSelect={openItem}
+                    />
+                  ) : null}
                   {sessionPinnedDisplay ? (
                     <div
                       className="mb-2 space-y-2"
