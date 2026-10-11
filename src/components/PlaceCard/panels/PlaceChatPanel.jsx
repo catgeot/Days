@@ -242,7 +242,7 @@ const PlaceChatPanel = React.memo(({
                      <button
                         type="button"
                         onClick={(event) => handleCopyName(event, primaryName || location.name, 'primary')}
-                        className="text-left text-base font-black tracking-tighter text-white leading-tight line-clamp-2 whitespace-normal [word-break:keep-all] [overflow-wrap:anywhere] drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0 flex-1"
+                        className="text-left text-[clamp(0.8125rem,3.8vw,1rem)] font-black tracking-tighter text-white leading-tight line-clamp-2 whitespace-normal [word-break:keep-all] [overflow-wrap:anywhere] drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0 flex-1"
                         title={t('place.nav.copyPrimary')}
                      >
                         {primaryName || location.name}

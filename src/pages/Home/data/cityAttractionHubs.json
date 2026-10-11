@@ -32567,12 +32567,12 @@
         "lng": 31.2285
       },
       {
-        "name": "대이집트박물관",
+        "name": "대이집트 박물관",
         "name_en": "Grand Egyptian Museum",
         "kind": "museum",
         "lat": 29.9964,
         "lng": 31.1203,
-        "aliases": ["GEM", "카이로 대이집트박물관", "Grand Egyptian Museum"]
+        "aliases": ["GEM", "대이집트박물관", "카이로 대이집트박물관", "Grand Egyptian Museum"]
       },
       {
         "name": "술탄 하산 모스크",

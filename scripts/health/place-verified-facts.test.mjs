@@ -78,13 +78,15 @@ test('public source labels and one unverified line', () => {
   assert.ok(citySources.some((source) => source.name === 'GATEO 로그북 (2026-10-03)' && source.url === ''));
   const entry = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'entry');
   assert.match(entry.value, /^한국 여권은 전자비자\(e-Visa\) 대상이에요/);
+  assert.match(entry.value, /25달러, 복수 60달러/);
   const airport = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport');
   assert.match(airport.value, /흰색 택시/);
   assert.equal(airport.sources[0].url, '');
   assert.equal(airport.sources[0].name, '카이로국제공항 교통 안내');
   assert.equal(/접속 불가/.test(airport.sources[0].name), false);
   const itinerary = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'itinerary');
-  assert.match(itinerary.value, /공항→시내 참고/);
+  assert.equal(airport.value.startsWith('CAI 공식 안내예요'), false);
+  assert.match(itinerary.value, /^D1 도착하면 위 ‘공항→시내’ 방법으로 시내에 들어가 쉬어요/);
   assert.equal(itinerary.value.includes('(위 칸)'), false);
   assert.equal(itinerary.value.split('\n').filter((line) => /^D[123] /.test(line)).length, 3);
   assert.equal(airport.sources[1].url, 'https://www.uber.com/global/en/r/airports/cai/pickup/');
@@ -93,6 +95,7 @@ test('public source labels and one unverified line', () => {
   const gem = resolveVerifiedFacts('grand-egyptian-museum');
   const booking = gem.slots.find((slot) => slot.id === 'booking');
   const map = gem.slots.find((slot) => slot.id === 'map');
+  assert.match(gem.slots.find((slot) => slot.id === 'fee').value, /^외국인 성인은 1,590 EGP/);
   assert.equal(gem.slots.find((slot) => slot.id === 'hours').value.split('\n').length, 2);
   assert.ok(gem.slots.find((slot) => slot.id === 'notes').value.includes('\n'));
   assert.equal(booking.linkLabel, 'GEM 공식 예매');
@@ -111,6 +114,7 @@ test('public source labels and one unverified line', () => {
   assert.match(header, /line-clamp-2/);
   assert.match(header, /\[word-break:keep-all\]/);
   assert.match(header, /\[overflow-wrap:anywhere\]/);
+  assert.match(header, /clamp\(0\.8125rem,3\.8vw,1rem\)/);
 });
 
 test('pilot booking and map links are used and search buttons are not', () => {
