@@ -71,3 +71,11 @@
 - **추정** warm 200–400ms(이전 2.5–3.5s, 건별 SELECT). cold 4–6s(이전 6–9s, 동시 4→8, TAGO가 하한). 스테이징 재실측 전.
 - **VERIFY** `npm run test:health` 235 pass. 라이브 TAGO 없음.
 - **다음** 사람이 `transport-proxy`만 재배포 후 프로브. 마이그레이션 변경 없음.
+
+## 축제 가는 법 #3, warm 카드 캐시
+
+- **세션** `축제 가는 법 #3, warm 카드 캐시` · branch `cursor/transport-proxy-e06e` · tip `26f09934` · draft PR [#429](https://github.com/catgeot/Days/pull/429) · **Edge 미배포** · 병합 금지
+- **프로브** r2 `eeb544c8`는 기능·cold 4.7–6.0s PASS. warm 1.3–2.1s. 잘못된 contentId 400은 약 0.19s라 나머지 1.1–1.9s는 함수 안.
+- **조치** 레이트 리밋 두 RPC와 카드 캐시 SELECT를 병렬. 조립 카드는 `tago_card_cache` (contentId + KST 날짜 + 열차일), KST 자정에 무효, 없으면 노선 캐시. `Server-Timing`: rl, cache, upstream, build. warm 히트는 upstream 0·build 0·cacheHits는 노선 수.
+- **VERIFY** `npm run test:health` 237 pass. 라이브 TAGO 없음.
+- **배포** 마이그레이션 `20261011180000_tago_card_cache.sql` 후 함수만 재배포. 테이블이 없으면 노선 캐시로 동작한다.
