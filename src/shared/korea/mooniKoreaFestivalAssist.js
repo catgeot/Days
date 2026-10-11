@@ -525,7 +525,7 @@ export function isFestivalChainRestaurant(name) {
 }
 
 /** Markets, then other local names, then chains. Chains drop off once six locals exist. */
-export function rankFestivalRestaurants(values, limit = 6) {
+export function rankFestivalRestaurantRows(values, limit = 6) {
   const markets = [];
   const locals = [];
   const chains = [];
@@ -534,15 +534,21 @@ export function rankFestivalRestaurants(values, limit = 6) {
     const name = String(raw?.name || raw || '').replace(/\s+/g, ' ').trim();
     if (!name || NON_RESTAURANT_PLACE_RE.test(name) || seen.has(name)) continue;
     seen.add(name);
-    if (isFestivalChainRestaurant(name)) chains.push(name);
-    else if (/시장/.test(name)) markets.push(name);
-    else locals.push(name);
+    const distKm = Number(raw?.distKm);
+    const row = { name, distKm: Number.isFinite(distKm) ? distKm : null };
+    if (isFestivalChainRestaurant(name)) chains.push(row);
+    else if (/시장/.test(name)) markets.push(row);
+    else locals.push(row);
   }
   const localCount = markets.length + locals.length;
   const ranked = localCount >= limit
     ? [...markets, ...locals]
     : [...markets, ...locals, ...chains];
   return ranked.slice(0, limit);
+}
+
+export function rankFestivalRestaurants(values, limit = 6) {
+  return rankFestivalRestaurantRows(values, limit).map((row) => row.name);
 }
 
 const FESTIVAL_STAY_RADIUS_KM = 20;
@@ -588,7 +594,7 @@ const NON_RESTAURANT_PLACE_RE = /사우나|찜질|목욕|복지|노인회|생활
 const FESTIVAL_FOOD_ASK_RE = /먹을\s*곳|맛집|뭐\s*먹|어디서\s*먹|where\s+to\s+eat|what\s+(?:can|should)\s+i\s+eat|\brestaurants?\b/i;
 const FESTIVAL_PAGE_URL = 'https:\\/\\/www\\.gateo\\.kr\\/korea\\/\\?festival=\\d+';
 
-function isFestivalFoodAsk(input = {}) {
+export function isFestivalFoodAsk(input = {}) {
   if (String(input.chipId || '') === 'festival_nearby') return true;
   return FESTIVAL_FOOD_ASK_RE.test(String(input.userText || ''));
 }
@@ -630,17 +636,72 @@ function collapseDoubledFestivalCloser(text, title = '') {
   return out;
 }
 
-function restaurantLead(names) {
-  const ranked = rankFestivalRestaurants(names, 6);
+const FOOD_TYPE_TAGS = [
+  { label: '돈가스', en: 'cutlet', re: /돈가스|돈까스/ },
+  { label: '제과', en: 'bakery', re: /제과|베이커리/ },
+  { label: '방앗간', en: 'mill', re: /방앗간/ },
+  { label: '치킨', en: 'chicken', re: /치킨|닭강정/ },
+  { label: '카페', en: 'cafe', re: /카페|커피/ },
+  { label: '국수', en: 'noodles', re: /국수|막국수/ },
+  { label: '횟집', en: 'sashimi', re: /횟집|회집/ },
+];
+
+function foodDistKm(raw) {
+  const distKm = Number(raw?.distKm);
+  return Number.isFinite(distKm) ? distKm : null;
+}
+
+/** One-word type from the name, otherwise a walk time or meters from the sheet. */
+export function festivalFoodPlaceTag(name, distKm, locale = 'ko') {
+  const text = String(name || '');
+  const type = FOOD_TYPE_TAGS.find((row) => row.re.test(text));
+  if (type) return String(locale || 'ko').slice(0, 2) === 'en' ? type.en : type.label;
+  const km = Number(distKm);
+  if (distKm == null || !Number.isFinite(km) || km <= 0) return '';
+  const meters = Math.round(km * 1000);
+  if (meters >= 80) {
+    const minutes = Math.max(1, Math.round(meters / 80));
+    return String(locale || 'ko').slice(0, 2) === 'en' ? `${minutes}-min walk` : `도보 ${minutes}분`;
+  }
+  const near = Math.max(1, meters);
+  return String(locale || 'ko').slice(0, 2) === 'en' ? `${near} m` : `${near}m`;
+}
+
+function foodFactByName(values) {
+  const map = new Map();
+  for (const raw of Array.isArray(values) ? values : []) {
+    const name = String(raw?.name || raw || '').replace(/\s+/g, ' ').trim();
+    if (!name || map.has(name)) continue;
+    map.set(name, raw);
+  }
+  return map;
+}
+
+/** 3–4 sheet places. Markets and locals first; chains drop when any local exists. */
+export function festivalFoodPlaceLabels(values, locale = 'ko', limit = 4) {
+  const facts = foodFactByName(values);
+  const ranked = rankFestivalRestaurants(values, Math.max(limit, 6));
   const locals = ranked.filter((name) => !isFestivalChainRestaurant(name));
-  const shown = (locals.length ? locals : ranked).slice(0, 3);
+  const names = (locals.length ? locals : ranked).slice(0, limit);
+  return names.map((name) => {
+    const tag = festivalFoodPlaceTag(name, foodDistKm(facts.get(name)), locale);
+    return tag ? `${name}(${tag})` : name;
+  });
+}
+
+function restaurantLead(names, locale = 'ko') {
+  const shown = festivalFoodPlaceLabels(names, locale, 4);
   if (!shown.length) return '';
+  if (String(locale || 'ko').slice(0, 2) === 'en') {
+    return `Nearby places to eat: ${shown.join(', ')}.`;
+  }
   const last = shown[shown.length - 1];
   const copula = syllableHasBatchim(last.slice(-1)) ? '이에요' : '예요';
   return `주변 맛집은 ${shown.join(', ')}${copula}.`;
 }
 
 const FOOD_DEFLECTION_RE = /맛집(?:을|를)\s*찾아\s*보|find\s+(?:nearby\s+)?restaurants|look\s+for\s+(?:nearby\s+)?restaurants/i;
+const FOOD_FILLER_RE = /다양한\s*맛집|미식\s*여행|소문난|a variety of restaurants|culinary trip|well-known local/i;
 
 /** «다음 행동으로» / «다음 행동:» is a prompt label, not part of the answer. */
 function stripNextActionLabel(text) {
@@ -650,25 +711,27 @@ function stripNextActionLabel(text) {
   );
 }
 
-/** Food answers keep 주변 맛집 names and drop community, welfare, bath, and tunnel lines. */
+function restaurantNameBlob(values) {
+  return (Array.isArray(values) ? values : [])
+    .map((raw) => String(raw?.name || raw || ''))
+    .join('\n');
+}
+
+/** With sheet names, the food answer is that list. Otherwise drop filler and invented markets. */
 function ensureFestivalFoodAnswer(text, options = {}) {
   if (!isFestivalFoodAsk(options)) return String(text || '');
+  const locale = String(options.locale || 'ko').slice(0, 2) === 'en' ? 'en' : 'ko';
+  const lead = restaurantLead(options.nearbyRestaurants, locale);
+  if (lead) return lead;
+  const blob = restaurantNameBlob(options.nearbyRestaurants);
   let next = stripNextActionLabel(text);
-  next = filterPreservingBreaks(next, (part) => NON_RESTAURANT_PLACE_RE.test(part));
-  const restaurants = rankFestivalRestaurants(options.nearbyRestaurants);
-  const locals = restaurants.filter((name) => !isFestivalChainRestaurant(name));
-  if (restaurants.length) {
-    next = filterPreservingBreaks(next, (part) => FOOD_DEFLECTION_RE.test(part));
-  }
-  if (locals.length) {
-    next = filterPreservingBreaks(next, (part) => (
-      isFestivalChainRestaurant(part) && !locals.some((name) => part.includes(name))
-    ));
-  }
-  if (String(options.locale || 'ko').slice(0, 2) === 'en') return next;
-  if (!restaurants.length || locals.some((name) => next.includes(name))) return next;
-  const lead = restaurantLead(restaurants);
-  return lead ? (next ? `${lead}\n\n${next}` : lead) : next;
+  next = filterPreservingBreaks(next, (part) => (
+    NON_RESTAURANT_PLACE_RE.test(part)
+    || FOOD_DEFLECTION_RE.test(part)
+    || FOOD_FILLER_RE.test(part)
+    || (/중앙시장/.test(part) && !blob.includes('중앙시장'))
+  ));
+  return next;
 }
 
 const DATE_LINK_FRAGMENT_RE = /^\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?\s*[,，]\s*\[[^\]]*상세\s*안내[^\]]*\]\([^)]+\)[.。]?$/;
@@ -802,7 +865,8 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = ensureFestivalFoodAnswer(text, options);
   text = appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
   text = stripOffTopicLodgingNudge(text, options);
-  return text;
+  text = settleFestivalNextAction(text, options);
+  return redirectMissingPracticalCheck(text, options);
 }
 
 const LODGING_NUDGE_RE = /숙소\s*정보|숙소\s*(?:도|를|카드|안내)|#festival-lodging|묵기\s*좋|where\s+to\s+stay|lodging\s+(?:card|guide)|stays?\s+for\s+this\s+festival/i;
@@ -811,6 +875,67 @@ const LODGING_NUDGE_RE = /숙소\s*정보|숙소\s*(?:도|를|카드|안내)|#fe
 function stripOffTopicLodgingNudge(text, options = {}) {
   if (isFestivalLodgingAsk(options)) return String(text || '');
   return filterPreservingBreaks(text, (part) => LODGING_NUDGE_RE.test(part));
+}
+
+/** Unlinked getting-there closers drop. Food drops them even when linked. No «안내해 드릴까요». */
+function settleFestivalNextAction(text, options = {}) {
+  const food = isFestivalFoodAsk(options);
+  return filterPreservingBreaks(text, (part) => {
+    if (/안내해\s*드릴까요/.test(part)) return true;
+    if (/다음에는/.test(part) && /안내/.test(part)) return true;
+    if (!/가는\s*법/.test(part)) return false;
+    if (food) return true;
+    return !/\[[^\]]+\]\(https?:\/\//.test(part);
+  });
+}
+
+const PRACTICAL_TOPIC_RE = [
+  { kind: 'parking', re: /주차|parking/i },
+  { kind: 'shuttle', re: /셔틀|shuttle/i },
+];
+
+function festivalFactCorpus(options = {}) {
+  return [options.overview, options.program, options.sceneOverview, options.parking, options.feeText]
+    .map((value) => String(value || ''))
+    .join('\n');
+}
+
+function officialPracticalCheck(options = {}) {
+  const homepage = String(options.homepage || '').trim();
+  const tel = String(options.tel || '').trim();
+  const homeOk = /^https?:\/\//i.test(homepage);
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  if (en) {
+    if (homeOk && tel) return `Check the [official site](${homepage}) or call ${tel}.`;
+    if (homeOk) return `Check the [official site](${homepage}) or the listed contact.`;
+    if (tel) return `Check with the contact at ${tel}.`;
+    return 'Check the official site or the listed contact.';
+  }
+  if (homeOk && tel) return `[공식 홈페이지](${homepage})나 문의처 ${tel}에서 확인해요.`;
+  if (homeOk) return `[공식 홈페이지](${homepage})나 문의처에서 확인해요.`;
+  if (tel) return `문의처 ${tel}에서 확인해요.`;
+  return '공식 홈페이지나 문의처에서 확인해요.';
+}
+
+const FESTIVAL_PAGE_CHECK_RE = /축제\s*페이지에서\s*확인|check the festival page/i;
+const GATEO_FESTIVAL_MD_RE = /\[[^\]]+\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=[^)]+\)/;
+
+/** «축제 페이지에서 확인» stays only when the asked parking or shuttle fact is in the data. */
+function redirectMissingPracticalCheck(text, options = {}) {
+  const asked = PRACTICAL_TOPIC_RE.filter((topic) => topic.re.test(String(options.userText || '')));
+  if (!asked.length) return String(text || '');
+  const corpus = festivalFactCorpus(options);
+  const covered = (topic) => (
+    topic.kind === 'parking' ? /주차|parking/i.test(corpus) : /셔틀|shuttle/i.test(corpus)
+  );
+  if (asked.every(covered)) return String(text || '');
+  const replacement = officialPracticalCheck(options);
+  const next = filterPreservingBreaks(text, (part) => (
+    FESTIVAL_PAGE_CHECK_RE.test(part)
+    || (GATEO_FESTIVAL_MD_RE.test(part) && /확인|check/i.test(part))
+  ));
+  if (/공식 홈페이지|문의처|official site|listed contact/i.test(next)) return next;
+  return next ? `${next} ${replacement}` : replacement;
 }
 
 /**
@@ -1143,14 +1268,14 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   if (nearby.length) {
     lines.push(isEn ? `- Nearby (GATEO): ${nearby.join(', ')}` : `- 근처(GATEO): ${nearby.join(', ')}`);
   }
-  const restaurants = rankFestivalRestaurants(ctx?.nearbyRestaurants);
+  const restaurants = festivalFoodPlaceLabels(ctx?.nearbyRestaurants, isEn ? 'en' : 'ko', 4);
   if (restaurants.length) {
     lines.push(isEn
       ? `- Nearby restaurants (GATEO 주변 맛집): ${restaurants.join(', ')}`
       : `- 주변 맛집(GATEO): ${restaurants.join(', ')}`);
     lines.push(isEn
-      ? '- Where to eat: name these restaurants. Do not say to look for restaurants, and do not add a "next action" label or a lodging link. Markets and local places come first. Leave out fast food and national chains, or put them last. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
-      : '- 근처 먹을 곳·맛집 질문: 위 주변 맛집 이름을 그대로 말한다. «주변의 맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 숙소 링크와 «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 시장·지역 식당을 먼저 말하고, 맥도날드·롯데리아·버거킹·맘스터치·스타벅스·파리바게뜨·배스킨라빈스 같은 전국 체인은 빼거나 맨 뒤에 둔다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
+      ? '- Where to eat: name 3 or 4 of these places, each with the type or distance in parentheses. Do not say to look for restaurants. Do not write filler such as a variety of restaurants, a culinary trip, or well-known spots. Do not invent a place that is not on this list, including a central market. Do not add a "next action" label, an unlinked getting-there line, or a lodging link. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
+      : '- 근처 먹을 곳·맛집 질문: 위 이름 3~4곳만 말한다. 괄호의 한 단어 유형이나 거리(돈가스·제과·방앗간·도보 N분·N m)를 그대로 붙인다. «주변의 맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다양한 맛집», «미식 여행», «소문난»은 쓰지 않는다. 목록에 없는 장소는 만들지 않는다. 중앙시장은 목록에 있을 때만 말한다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 링크 없는 가는 법 문장과 숙소 링크, «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
   }
 
   const gateoUrl =
@@ -1162,6 +1287,17 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const homepage = String(ctx?.homepage || '').trim();
   if (/^https?:\/\//i.test(homepage)) {
     lines.push(isEn ? `- Official page URL: ${homepage}` : `- 공식 안내 URL: ${homepage}`);
+  }
+  const tel = String(ctx?.tel || '').trim();
+  if (tel) lines.push(isEn ? `- Contact phone: ${tel}` : `- 문의처: ${tel}`);
+  const parking = String(ctx?.parking || '').trim();
+  const parkingCorpus = [parking, ctx?.overview, ctx?.sceneOverview, ctx?.program].map((value) => String(value || '')).join('\n');
+  if (parking) {
+    lines.push(isEn ? `- Parking: ${parking}` : `- 주차: ${parking}`);
+  } else if (!/주차|parking/i.test(parkingCorpus)) {
+    lines.push(isEn
+      ? '- Parking is not in the festival data. Do not say to check the festival page for parking. Point to the official site or the contact phone, and link the official page when a URL is listed.'
+      : '- 주차 정보가 이 데이터에 없다. 주차를 «축제 페이지에서 확인»하라고 하지 않는다. 공식 홈페이지나 문의처로 안내하고, URL이 있으면 링크하고 전화번호가 있으면 적는다.');
   }
 
   return `\n${lines.join('\n')}`;
@@ -1253,12 +1389,12 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
   const festivalContext = input.festivalContext;
   if (festivalContext && String(festivalContext.title || '').trim()) {
     let hint = buildMooniBoundFestivalSystemHint(festivalContext, input.locale, input.now);
-    const foodNames = rankFestivalRestaurants(festivalContext.nearbyRestaurants);
+    const enFood = String(input.locale || '').slice(0, 2) === 'en';
+    const foodNames = festivalFoodPlaceLabels(festivalContext.nearbyRestaurants, enFood ? 'en' : 'ko', 4);
     if (foodNames.length && isFestivalFoodAsk({ userText, chipId: input.chipId })) {
-      const en = String(input.locale || '').slice(0, 2) === 'en';
-      hint += en
-        ? `\n- This question is where to eat. Name these places: ${foodNames.join(', ')}. Do not tell the user to look for restaurants. Do not write a "next action" label or a lodging link. This overrides a generic next-action rule.`
-        : `\n- 이번 질문은 근처 먹을 곳이다. 주변 맛집 이름을 그대로 말한다: ${foodNames.join(', ')}. «맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 숙소 링크와 «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 다른 다음 행동 규칙보다 이 문장이 우선한다.`;
+      hint += enFood
+        ? `\n- This question is where to eat. Name these 3 or 4 places with their type or distance: ${foodNames.join(', ')}. Do not tell the user to look for restaurants. Do not invent a place, and do not write a "next action" label, an unlinked getting-there line, or a lodging link. This overrides a generic next-action rule.`
+        : `\n- 이번 질문은 근처 먹을 곳이다. 3~4곳만 유형이나 거리와 함께 말한다: ${foodNames.join(', ')}. «맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다양한 맛집», «미식 여행», «소문난»은 쓰지 않는다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 숙소 링크와 «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 다른 다음 행동 규칙보다 이 문장이 우선한다.`;
     }
     if (isFestivalLodgingAsk({ userText, chipId: input.chipId })) {
       const lodgingUrl = gateoKoreaFestivalLodgingUrl(festivalContext.contentId);

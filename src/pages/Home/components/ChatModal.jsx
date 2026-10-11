@@ -42,9 +42,12 @@ import {
 } from '../../../utils/mooniReplySanitizer';
 import {
   FESTIVAL_LODGING_EVENT,
+  isFestivalFoodAsk,
   mergeMooniKoreaFestivalReply,
   polishFestivalModelReply,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { fetchNearbyTourRestaurants } from '../../../utils/fetchNearbyTourRestaurants';
+import { waitForFestivalRestaurantNames } from '../../Korea/lib/festivalRestaurantLoad.js';
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
@@ -111,6 +114,44 @@ import {
 import { MooniChatMarkdownBoundary } from '../../../components/chat/MooniChatMarkdownBoundary.jsx';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
+
+async function loadFestivalRestaurantsForAsk(festivalContext, ask) {
+  if (!festivalContext || !isFestivalFoodAsk(ask)) return festivalContext ?? null;
+  const loaded = await waitForFestivalRestaurantNames(festivalContext.contentId, {
+    names: festivalContext.nearbyRestaurants,
+    timeoutMs: 3000,
+    trigger: () => fetchNearbyTourRestaurants({
+      lat: festivalContext.lat,
+      lng: festivalContext.lng,
+      radiusKm: 3,
+      limit: 8,
+    }),
+  });
+  if (!loaded.length) return festivalContext;
+  return { ...festivalContext, nearbyRestaurants: loaded };
+}
+
+function festivalReplyOptions(festivalContext, extra = {}) {
+  return {
+    contentId: festivalContext?.contentId,
+    placeName: festivalContext?.hubLabel,
+    venue: festivalContext?.venue,
+    stayAreas: festivalContext?.stayAreas,
+    lat: festivalContext?.lat,
+    lng: festivalContext?.lng,
+    festivalTitle: festivalContext?.title,
+    nearbyPlaces: festivalContext?.nearbyPlaces,
+    nearbyRestaurants: festivalContext?.nearbyRestaurants,
+    homepage: festivalContext?.homepage,
+    tel: festivalContext?.tel,
+    parking: festivalContext?.parking,
+    overview: festivalContext?.sceneOverview || festivalContext?.overview,
+    program: festivalContext?.program,
+    sceneOverview: festivalContext?.sceneOverview,
+    feeText: festivalContext?.feeText,
+    ...extra,
+  };
+}
 
 const ChatModal = ({
   isOpen,
@@ -1023,11 +1064,15 @@ const ChatModal = ({
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
+      const festivalContext = await loadFestivalRestaurantsForAsk(
+        mooniPlaceContext?.festivalContext ?? null,
+        { chipId, userText: cleanText },
+      );
       try {
         const festHint = await resolvePlaceChatKoreaFestivalHint({
           userText: cleanText,
           chipId,
-          festivalContext: mooniPlaceContext?.festivalContext ?? null,
+          festivalContext,
           boundPlaceName: destName,
           locale: i18n.language,
         });
@@ -1086,20 +1131,11 @@ const ChatModal = ({
         candidates: mooniFestivalCandidates,
       });
       const stripPhantomTicketMention = !hasTransportCta;
-      const lodgingOptions = {
-        contentId: mooniPlaceContext?.festivalContext?.contentId,
+      const lodgingOptions = festivalReplyOptions(festivalContext, {
         locale: i18n.language,
         chipId,
         userText: cleanText,
-        placeName: mooniPlaceContext?.festivalContext?.hubLabel,
-        venue: mooniPlaceContext?.festivalContext?.venue,
-        stayAreas: mooniPlaceContext?.festivalContext?.stayAreas,
-        lat: mooniPlaceContext?.festivalContext?.lat,
-        lng: mooniPlaceContext?.festivalContext?.lng,
-        festivalTitle: mooniPlaceContext?.festivalContext?.title,
-        nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
-        nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
-      };
+      });
       const displayReply = polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {
           stripPhantomTicketMention,
@@ -1206,20 +1242,15 @@ const ChatModal = ({
           stripPhantomTicketMention: ctx.stripPhantomTicketMention,
         });
         const priorUser = [...messages.slice(0, modelIdx)].reverse().find((m) => m.role === 'user');
-        const lodgingOptions = {
-          contentId: mooniPlaceContext?.festivalContext?.contentId,
+        const festivalContext = await loadFestivalRestaurantsForAsk(
+          mooniPlaceContext?.festivalContext ?? null,
+          { chipId: msg.bookingMeta?.chipId, userText: messageTextPlain(priorUser) },
+        );
+        const lodgingOptions = festivalReplyOptions(festivalContext, {
           locale: i18n.language,
           chipId: msg.bookingMeta?.chipId,
           userText: messageTextPlain(priorUser),
-          placeName: mooniPlaceContext?.festivalContext?.hubLabel,
-          venue: mooniPlaceContext?.festivalContext?.venue,
-          stayAreas: mooniPlaceContext?.festivalContext?.stayAreas,
-          lat: mooniPlaceContext?.festivalContext?.lat,
-          lng: mooniPlaceContext?.festivalContext?.lng,
-          festivalTitle: mooniPlaceContext?.festivalContext?.title,
-          nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
-          nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
-        };
+        });
         const continuedRaw = polishFestivalModelReply(mergedRaw, lodgingOptions);
         const continuedDisplay = polishFestivalModelReply(displayText, lodgingOptions);
         const nextMessages = messages.map((m, i) =>

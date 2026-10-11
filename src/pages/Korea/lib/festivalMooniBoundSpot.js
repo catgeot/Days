@@ -52,10 +52,16 @@ export function buildFestivalMooniBoundSpot(input = {}) {
   });
 }
 
+function listKey(value) {
+  return (Array.isArray(value) ? value : []).map((raw) => {
+    const name = String(raw?.name || raw || '').trim();
+    const dist = Number(raw?.distKm);
+    return `${name}|${Number.isFinite(dist) ? dist : ''}`;
+  }).join('\n');
+}
+
 function sameNameList(left, right) {
-  const a = Array.isArray(left) ? left : [];
-  const b = Array.isArray(right) ? right : [];
-  return a.length === b.length && a.every((name, index) => name === b[index]);
+  return listKey(left) === listKey(right);
 }
 
 /** Keep an open chat, and copy 주변 맛집 names in when the sheet list arrives. */

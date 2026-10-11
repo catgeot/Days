@@ -3,7 +3,7 @@ import {
   filterFestivalStayAreaNames,
   gateoKoreaFestivalDetailUrl,
   kstTodayYmd,
-  rankFestivalRestaurants,
+  rankFestivalRestaurantRows,
   rewriteFestivalFormalEndings,
   ymdDayDelta,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
@@ -54,7 +54,9 @@ export function buildFestivalMooniContext(input = {}) {
     address,
     lat: pt?.lat ?? null,
     lng: pt?.lng ?? null,
-    homepage: String(homepage || '').trim(),
+    homepage: String(homepage || intro?.eventhomepage || '').trim(),
+    tel: plainFact(intro?.sponsor1tel || intro?.sponsor1Tel || intro?.tel || item?.tel || ''),
+    parking: plainFact(intro?.parking || ''),
     hubLabel,
     titleEn: String(item?.titleEn || '').trim(),
     overview: filterOverviewFacts(
@@ -69,7 +71,7 @@ export function buildFestivalMooniContext(input = {}) {
       .replace(/<[^>]+>/g, ' ')
       .trim(),
     nearbyPlaces: uniqueNames(nearbyPlaces),
-    nearbyRestaurants: rankFestivalRestaurants(nearbyRestaurants),
+    nearbyRestaurants: rankFestivalRestaurantRows(nearbyRestaurants),
     stayAreas: filterFestivalStayAreaNames(input.stayAreas, pt?.lat, pt?.lng),
   };
 }
@@ -196,7 +198,7 @@ function uniqueNames(values) {
     const name = String(raw || '').trim();
     if (!name || out.includes(name)) continue;
     out.push(name);
-    if (out.length >= 6) break;
+    if (out.length >= 12) break;
   }
   return out;
 }
@@ -1033,7 +1035,25 @@ export function acceptFestivalModelOpening(text, facts, banned = []) {
     if (!facts.closing || countFestivalCardSentences(next) > MODEL_OPENING_SENTENCE_CAP) return '';
     raw = next;
   }
-  return raw;
+  return ensureOpeningNearby(raw, facts);
+}
+
+/** When the nearby list has 3 names, an accepted opening names all 3. */
+function ensureOpeningNearby(raw, facts) {
+  const names = (Array.isArray(facts?.nearby) ? facts.nearby : []).filter(Boolean);
+  if (names.length < 3 || names.every((name) => raw.includes(name))) return raw;
+  const kept = raw
+    .split(/(?<=[.!?。])\s+/)
+    .map((part) => part.trim())
+    .filter((part) => part && !/둘러볼 수 있어요|you can walk to/i.test(part))
+    .join(' ');
+  const sentence = facts.locale === 'en'
+    ? `Nearby, you can walk to ${enList(names)}.`
+    : koNearbySentence(names, facts.title, false);
+  if (!sentence) return raw;
+  const next = `${kept} ${sentence}`.trim();
+  if (countFestivalCardSentences(next) > MODEL_OPENING_SENTENCE_CAP) return raw;
+  return next;
 }
 
 /** @param {ReturnType<typeof buildFestivalMooniContext>} festivalContext */

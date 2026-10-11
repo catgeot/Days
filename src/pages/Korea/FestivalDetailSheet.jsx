@@ -37,6 +37,7 @@ import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
 } from '../../utils/fetchNearbyTourRestaurants';
+import { beginFestivalRestaurantLoad } from './lib/festivalRestaurantLoad.js';
 import {
   CULTURE_CONTENT_TYPE_ID,
   fetchNearbyTourCulture,
@@ -991,13 +992,15 @@ export default function FestivalDetailSheet({
         else if (!spots.length) setNearbyStatus('empty');
         else setNearbyStatus('ok');
       });
-      fetchNearbyTourRestaurants({
+      const foodPromise = fetchNearbyTourRestaurants({
         lat: pt.lat,
         lng: pt.lng,
         radiusKm: 3,
         limit: 8,
         areaCode: festivalAreaCode,
-      }).then((res) => {
+      });
+      beginFestivalRestaurantLoad(item.contentId, foodPromise);
+      foodPromise.then((res) => {
         if (cancelled) return;
         const spots = Array.isArray(res?.spots) ? res.spots : [];
         setNearbyFood(spots);
@@ -1144,18 +1147,21 @@ export default function FestivalDetailSheet({
       names.push(name);
     };
     for (const spot of nearbySpots) push(spot);
-    return names.slice(0, 6);
+    return names.slice(0, 12);
   }, [nearbySpots]);
 
   const mooniNearbyRestaurants = useMemo(() => {
-    const names = [];
+    const rows = [];
+    const seen = new Set();
     for (const spot of nearbyFood) {
       const name = String(spot?.name || '').trim();
-      if (!name || names.includes(name)) continue;
-      names.push(name);
-      if (names.length >= 24) break;
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      const distKm = Number(spot?.distKm);
+      rows.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
+      if (rows.length >= 24) break;
     }
-    return names;
+    return rows;
   }, [nearbyFood]);
 
   const festivalMooni = useFestivalMooniEntry({
