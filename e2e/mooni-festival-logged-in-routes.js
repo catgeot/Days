@@ -8,6 +8,15 @@ export function createLoggedInSavedTripsMock({ persistPatch = false } = {}) {
     setOmitFromGet(value) {
       state.omitFromGet = Boolean(value);
     },
+    /** DB still has user-only row (model reply not PATCHed) — Safari race repro. */
+    forceStaleUserOnlyMessages() {
+      if (!state.tripRow) return;
+      const users = (state.tripRow.messages || []).filter((m) => m?.role === 'user');
+      state.tripRow = {
+        ...state.tripRow,
+        messages: users.length ? [users[users.length - 1]] : [],
+      };
+    },
     setTripMessages(messages) {
       if (state.tripRow) state.tripRow = { ...state.tripRow, messages };
     },

@@ -5,7 +5,12 @@ import {
   FESTIVAL_CHIP_MOCK_MARKER,
   installFestivalChipGeminiMock,
 } from './mooni-festival-chip-mock.js';
-import { openFestivalMooni, tapFestivalSightsChip } from './mooni-festival-chip-helpers.js';
+import {
+  clearFestivalListSessionCache,
+  openFestivalMooni,
+  tapFestivalSightsChip,
+} from './mooni-festival-chip-helpers.js';
+import { installFestivalTourApiFixtures } from './mooni-festival-tourapi-fixture.js';
 
 const OUT_DIR =
   process.env.MOONI_CHIP_SCREENSHOT_DIR ||
@@ -28,7 +33,12 @@ test.describe('festival MOONi chip reply persists @390', () => {
   });
   test.setTimeout(300_000);
 
-  test.beforeEach(async ({ context }) => {
+  test.beforeEach(async ({ context, page }, testInfo) => {
+    await clearFestivalListSessionCache(page);
+    if (testInfo.project.name === 'chromium-mobile') {
+      process.env.MOONI_TOURAPI_STUB_ONLY = '1';
+      await installFestivalTourApiFixtures(context);
+    }
     await installFestivalChipGeminiMock(context, { delayMs: 200 });
   });
 

@@ -15,7 +15,19 @@ export async function dismissLocHint(page) {
   }
 }
 
+export async function clearFestivalListSessionCache(page) {
+  await page.addInitScript(() => {
+    try {
+      sessionStorage.removeItem('gateo:korea-festivals:v2:rolling12:ko');
+      sessionStorage.removeItem('gateo:korea-festivals:v2:rolling12:en');
+    } catch {
+      /* ignore */
+    }
+  });
+}
+
 export async function enableMooniE2eLoggedIn(page) {
+  await clearFestivalListSessionCache(page);
   await page.addInitScript(() => {
     window.__gateoMooniE2eForceUser = { id: 'e2e-mooni-logged-in' };
   });
@@ -31,7 +43,7 @@ export async function openFestivalMooni(page, festivalId = E2E_FESTIVAL_ID) {
     .locator('[data-festival-mooni-inline]')
     .or(page.getByRole('button', { name: /무니에게 이 축제 물어보기/i }))
     .first();
-  await expect(mooniBtn).toBeVisible({ timeout: 150_000 });
+  await expect(mooniBtn).toBeVisible({ timeout: 90_000 });
   await mooniBtn.click({ timeout: 60_000 });
   await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({
     timeout: 120_000,

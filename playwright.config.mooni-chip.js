@@ -7,7 +7,7 @@ const siteUrl =
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /korea-mooni-festival-chip-(persist|race)\.spec\.js/,
+  testMatch: /korea-mooni-festival-chip-(persist|race|main-baseline)\.spec\.js/,
   fullyParallel: false,
   workers: 1,
   timeout: 480_000,
@@ -23,7 +23,11 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium-mobile',
-      use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 } },
+      timeout: 600_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+      },
     },
     {
       name: 'webkit-iphone',

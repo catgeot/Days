@@ -12,6 +12,7 @@ import {
   tapFestivalSightsChip,
 } from './mooni-festival-chip-helpers.js';
 import { createLoggedInSavedTripsMock } from './mooni-festival-logged-in-routes.js';
+import { installFestivalTourApiFixtures } from './mooni-festival-tourapi-fixture.js';
 
 const OUT_DIR =
   process.env.MOONI_CHIP_SCREENSHOT_DIR ||
@@ -23,15 +24,21 @@ async function shot(page, name) {
 }
 
 test.describe('festival MOONi logged-in race (a) stale PATCH @390', () => {
+  let savedTripsMock;
   test.use({
     viewport: { width: 390, height: 844 },
     ignoreHTTPSErrors: true,
   });
-  test.setTimeout(480_000);
+  test.setTimeout(300_000);
 
-  test.beforeEach(async ({ context, page }) => {
+  test.beforeEach(async ({ context, page }, testInfo) => {
+    if (testInfo.project.name === 'chromium-mobile') {
+      process.env.MOONI_TOURAPI_STUB_ONLY = '1';
+      await installFestivalTourApiFixtures(context);
+    }
     await enableMooniE2eLoggedIn(page);
-    await createLoggedInSavedTripsMock({ persistPatch: false }).attach(context);
+    savedTripsMock = createLoggedInSavedTripsMock({ persistPatch: false });
+    await savedTripsMock.attach(context);
     await installFestivalChipGeminiMock(context, { delayMs: 2800 });
   });
 
@@ -42,6 +49,7 @@ test.describe('festival MOONi logged-in race (a) stale PATCH @390', () => {
 
     await tapFestivalSightsChip(page);
     await page.waitForTimeout(350);
+    savedTripsMock.forceStaleUserOnlyMessages();
     await simulateStaleSavedTripsRefresh(page);
 
     await expect(page.getByText(FESTIVAL_CHIP_MOCK_MARKER)).toBeVisible({
@@ -65,7 +73,11 @@ test.describe('festival MOONi logged-in race (b) locale + missing trip @390', ()
 
   let savedTripsMock;
 
-  test.beforeEach(async ({ context, page }) => {
+  test.beforeEach(async ({ context, page }, testInfo) => {
+    if (testInfo.project.name === 'chromium-mobile') {
+      process.env.MOONI_TOURAPI_STUB_ONLY = '1';
+      await installFestivalTourApiFixtures(context);
+    }
     await enableMooniE2eLoggedIn(page);
     savedTripsMock = createLoggedInSavedTripsMock({ persistPatch: true });
     await savedTripsMock.attach(context);
@@ -76,6 +88,7 @@ test.describe('festival MOONi logged-in race (b) locale + missing trip @390', ()
     page,
   }) => {
     await openFestivalMooni(page);
+    const openingBefore = await page.getByTestId('mooni-festival-opening').innerText();
 
     await tapFestivalSightsChip(page);
     await expect(page.getByText(FESTIVAL_CHIP_MOCK_MARKER)).toBeVisible({
