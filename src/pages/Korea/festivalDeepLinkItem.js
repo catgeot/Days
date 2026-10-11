@@ -274,6 +274,7 @@ export function projectFestivalDeepLink(state) {
 
   if (listItem) {
     const ended = isFestivalEnded(listItem.eventEndDate, state?.now);
+    const detailAsOf = listItem.detailAsOf || null;
     return {
       selected: listItem,
       sheet: 'open',
@@ -282,19 +283,7 @@ export function projectFestivalDeepLink(state) {
       fetch: false,
       ended,
       badge: ended ? ENDED_FESTIVAL_BADGE : '',
-      detailAsOf: null,
-    };
-  }
-
-  if (state?.listLoading) {
-    return {
-      selected: null,
-      sheet: 'closed',
-      clearUrl: false,
-      toast: null,
-      fetch: false,
-      ended: false,
-      badge: '',
+      detailAsOf,
     };
   }
 

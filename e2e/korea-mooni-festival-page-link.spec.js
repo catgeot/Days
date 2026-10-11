@@ -6,6 +6,9 @@ const OUT_DIR =
   process.env.MOONI_FESTIVAL_PAGE_SCREENSHOT_DIR ||
   '/opt/cursor/artifacts/screenshots/korea-mooni-festival-page-link';
 
+const LOADING_DETAIL_RE = /상세 불러오는 중|Loading detail/i;
+const LOADING_SCHEDULE_RE = /축제 일정을 불러오는 중|Loading festival schedule/i;
+
 async function dismissLocHint(page) {
   const close = page
     .getByRole('main')
@@ -43,6 +46,19 @@ async function waitForPromoReady(page) {
   return promo;
 }
 
+async function waitForFestivalDetailBody(page, { timeout = 10_000 } = {}) {
+  const dialog = page.getByRole('dialog').first();
+  await expect(dialog).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByText(LOADING_SCHEDULE_RE)).toHaveCount(0, { timeout });
+  await expect(dialog.getByText(LOADING_DETAIL_RE)).toHaveCount(0, { timeout });
+  const loaded = dialog
+    .getByRole('tab', { name: /정보|Info/i })
+    .or(dialog.getByText(/개요|Overview/i))
+    .or(dialog.locator('[data-festival-detail-asof]'));
+  await expect(loaded.first()).toBeVisible({ timeout });
+  return dialog;
+}
+
 async function openPromoGukhyang(page) {
   const promo = await waitForPromoReady(page);
   await promo
@@ -50,11 +66,8 @@ async function openPromoGukhyang(page) {
     .first()
     .click();
   await expect(page).toHaveURL(/festival=638576/, { timeout: 60_000 });
-  const dialog = page.getByRole('dialog').first();
-  await expect(dialog.getByRole('heading', { name: /국향대전/i })).toBeVisible({
-    timeout: 90_000,
-  });
-  return dialog;
+  await waitForFestivalDetailBody(page, { timeout: 15_000 });
+  return page.getByRole('dialog').first();
 }
 
 async function openMooniFromDetail(page) {
@@ -83,14 +96,33 @@ async function selectSidoChip(page, pattern) {
   await chip.click();
 }
 
-test.describe('korea MOONi festival page link @390', () => {
+async function openFestivalFromSearch(page, query, festivalId) {
+  await waitForKoreaHome(page);
+  const searchToggle = page.getByRole('button', {
+    name: /축제 검색|Search festivals/i,
+  });
+  await searchToggle.click();
+  const searchInput = page.getByRole('searchbox').first();
+  await searchInput.fill(query);
+  await searchInput.press('Enter');
+  const hit = page.locator(`[data-festival-id="${festivalId}"]`).first();
+  await expect(hit).toBeVisible({ timeout: 60_000 });
+  await hit.click();
+  await expect(page).toHaveURL(new RegExp(`festival=${festivalId}`), {
+    timeout: 60_000,
+  });
+  await waitForFestivalDetailBody(page, { timeout: 15_000 });
+  return page.getByRole('dialog').first();
+}
+
+test.describe('korea festival deeplink entries @390', () => {
   test.use({
     viewport: { width: 390, height: 844 },
     ignoreHTTPSErrors: true,
   });
   test.setTimeout(300_000);
 
-  test('promo 638576: MOONi 축제 페이지 opens detail after stale 강원 chip', async ({
+  test('638576 MOONi 축제 페이지 — body loaded, 전국 after 강원 chip', async ({
     page,
   }) => {
     await waitForKoreaHome(page);
@@ -113,42 +145,88 @@ test.describe('korea MOONi festival page link @390', () => {
     await expect(page.getByTestId('mooni-festival-opening')).toHaveCount(0, {
       timeout: 30_000,
     });
-    const sheet = page.getByRole('dialog').first();
-    await expect(sheet.getByRole('heading', { name: /국향대전/i })).toBeVisible({
-      timeout: 90_000,
-    });
-    await expect(page.locator('[data-festival-detail-asof]').first()).toBeVisible({
-      timeout: 30_000,
-    });
+    const dialog = await waitForFestivalDetailBody(page, { timeout: 10_000 });
+    await expect(dialog.getByRole('heading', { name: /국향대전/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /^전국/ })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
-    await shot(page, '03-gukhyang-detail-after-mooni-link');
+    await shot(page, '03-gukhyang-detail-after-mooni-link-loaded');
   });
 
-  test('in-window 2930716: MOONi 축제 페이지 reopens detail', async ({ page }) => {
-    await waitForKoreaHome(page);
-    const searchToggle = page.getByRole('button', {
-      name: /축제 검색|Search festivals/i,
-    });
-    await searchToggle.click();
-    const searchInput = page.getByRole('searchbox').first();
-    await searchInput.fill('강릉 국수');
-    await searchInput.press('Enter');
-    const hit = page.locator('[data-festival-id="2930716"]').first();
-    await expect(hit).toBeVisible({ timeout: 60_000 });
-    await hit.click();
-    await expect(page).toHaveURL(/festival=2930716/, { timeout: 60_000 });
-    const dialog = page.getByRole('dialog').first();
-    await expect(dialog.getByRole('heading', { name: /강릉 국수/i })).toBeVisible({
-      timeout: 90_000,
-    });
+  test('2930716 in-window — MOONi 축제 페이지 body loaded', async ({ page }) => {
+    const dialog = await openFestivalFromSearch(page, '강릉 국수', '2930716');
+    await expect(dialog.getByRole('heading', { name: /강릉 국수/i })).toBeVisible();
     await openMooniFromDetail(page);
     await clickFestivalPageLinkInMooni(page);
-    await expect(dialog.getByRole('heading', { name: /강릉 국수/i })).toBeVisible({
+    await waitForFestivalDetailBody(page, { timeout: 10_000 });
+    await expect(dialog.getByRole('heading', { name: /강릉 국수/i })).toBeVisible();
+    await shot(page, '04-gangneung-after-mooni-link-loaded');
+  });
+
+  test('서울 in-window — MOONi 축제 페이지 body loaded', async ({ page }) => {
+    await waitForKoreaHome(page);
+    await selectSidoChip(page, /서울/);
+    const firstCard = page
+      .getByRole('main')
+      .locator('[data-festival-id]')
+      .first();
+    await expect(firstCard).toBeVisible({ timeout: 60_000 });
+    const festivalId = await firstCard.getAttribute('data-festival-id');
+    expect(festivalId).toMatch(/^\d+$/);
+    await firstCard.click();
+    await expect(page).toHaveURL(new RegExp(`festival=${festivalId}`), {
       timeout: 60_000,
     });
-    await shot(page, '04-gangneung-after-mooni-link');
+    const dialog = await waitForFestivalDetailBody(page, { timeout: 15_000 });
+    await openMooniFromDetail(page);
+    await clickFestivalPageLinkInMooni(page);
+    await waitForFestivalDetailBody(page, { timeout: 10_000 });
+    await shot(page, '05-seoul-in-window-mooni-link-loaded');
+  });
+
+  test('가리산 인근 축제 산천어 — out-of-window deeplink body loaded', async ({
+    page,
+  }) => {
+    await page.goto('/korea/theme/scenic?hub=hongcheon');
+    await expect(
+      page.getByRole('heading', { name: /한국의 명승|Korea scenic/i }),
+    ).toBeVisible({ timeout: 90_000 });
+
+    const garisan = page
+      .getByRole('button', { name: /가리산/ })
+      .filter({ hasNotText: /자연휴양림/ })
+      .first();
+    await expect(garisan).toBeVisible({ timeout: 60_000 });
+    await garisan.click();
+
+    const spotDialog = page.getByRole('dialog').last();
+    await expect(spotDialog).toBeVisible({ timeout: 30_000 });
+    const nearFestHeading = spotDialog.getByRole('heading', { name: /인근 축제/i });
+    await nearFestHeading.scrollIntoViewIfNeeded();
+    await expect(nearFestHeading).toBeVisible({ timeout: 60_000 });
+    await expect(spotDialog.getByText(/인근 축제 불러오는 중/i)).toHaveCount(0, {
+      timeout: 90_000,
+    });
+
+    const sancheoneo = spotDialog
+      .getByRole('button', { name: /산천어|화천/i })
+      .first();
+    await expect(sancheoneo).toBeVisible({ timeout: 90_000 });
+    await sancheoneo.click();
+
+    await expect(page).toHaveURL(/\/korea\?.*festival=\d+/, { timeout: 60_000 });
+    await expect(page.getByText(LOADING_SCHEDULE_RE)).toHaveCount(0, {
+      timeout: 10_000,
+    });
+    const festDialog = await waitForFestivalDetailBody(page, { timeout: 15_000 });
+    await expect(
+      festDialog.getByRole('heading', { name: /얼음나라화천 산천어축제/i }),
+    ).toBeVisible();
+    await expect(page.getByRole('button', { name: /^전국/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await shot(page, '06-garisan-sancheoneo-detail-loaded');
   });
 });

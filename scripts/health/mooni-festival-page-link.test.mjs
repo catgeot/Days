@@ -66,6 +66,18 @@ test('MOONi markdown and Korea hub wire in-app festival page links', () => {
   assert.match(hub, /FESTIVAL_PAGE_EVENT/);
   assert.match(hub, /supplementalItems: deepLinkSupplementalItems/);
   assert.match(hub, /deepLinkInflightRef/);
+  assert.match(hub, /prefetchedTourDetail/);
+  const deeplink = readFileSync(
+    join(root, 'src/pages/Korea/festivalDeepLinkItem.js'),
+    'utf8',
+  );
+  assert.equal(deeplink.includes("if (state?.listLoading)"), false);
+
+  const scenic = readFileSync(
+    join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'),
+    'utf8',
+  );
+  assert.doesNotMatch(scenic, /openFestival[\s\S]*params\.set\('from', 'theme'\)/);
 
   const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
   assert.match(chat, /FESTIVAL_PAGE_EVENT/);

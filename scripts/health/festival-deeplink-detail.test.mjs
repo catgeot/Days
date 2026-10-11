@@ -107,8 +107,8 @@ test('deeplink id missing from the list opens the sheet and keeps the URL', () =
     now: NOW,
   });
   assert.equal(whileListLoads.clearUrl, false);
-  assert.equal(whileListLoads.fetch, false);
-  assert.equal(whileListLoads.sheet, 'closed');
+  assert.equal(whileListLoads.fetch, true);
+  assert.equal(whileListLoads.sheet, 'loading');
 
   const inFlight = projectFestivalDeepLink({
     festivalId: '638576',
