@@ -35,6 +35,7 @@
 - **Preview** `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716`
 - **이어서** `1d88a15a`. main `#427` `48a3efc2` · `#430` `d28d7c4f`를 머지한 뒤, 첫 답에 «강릉 국수 축제 페이지» 링크가 두 번 나오면 마지막 «자세한 내용은 … 페이지에서 볼 수 있어요»만 남긴다. 숙소 앵커는 유지. `npm run test:health` 236 pass.
 - **이어서** `6626601b` (client `9b68a7b6`). staging v22 주차 답이 `공식 홈페이지()`로 비었다. 공식 홈페이지와 같은 날 URL은 `[공식 홈페이지](url)`로 바꾸고, 다른 URL은 괄호까지 지운다. 숙소가 한 곳이면 «다양한 숙소가 자리하고 있어요», «매력을 느끼며»를 뺀다. Edge 파일은 프롬프트 커밋에서 바뀜(`templates.js`, 서버 번들). 주차 수정은 클라이언트라 gemini-proxy 재배포 없이 Preview에 있다. 배포·머지 안 함.
+- **이어서** tip `6a1954d4` (client `9e2eadc8`). 주차 데이터가 없으면 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 전화번호»만 남기고 축제 페이지 문장을 뺀다. 숙소는 카드의 이름·거리 2~3곳과 `[숙소 카드]` 한 번, 목록이 없으면 20km 권역. 맛집은 거리 없는 곳을 빼고 거리 있는 다음 곳을 넣는다. `mooni_chat`은 v27과 이 브랜치 모두 기본 FAST `gemini-3.1-flash-lite`. Edge는 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 243 pass. 배포·머지 안 함.
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
@@ -142,3 +143,13 @@
 - **VERIFY** `npm run test:health` 241 pass · CI run `38145911493` success
 - **Preview** `https://days-git-cursor-cairo-follow-8e40-catgeots-projects.vercel.app/place/cairo` · `?lang=en` GEM · `/korea?festival=638576`
 - **다음** `카이로 동선 #2, 피드백 반영`
+- **병합** #432 squash `44a75df5`
+
+## 카이로 동선 #2, 복귀 스크롤·영문 제목·마산
+
+- **세션** `카이로 동선 #2, 피드백 반영` · branch `cursor/cairo-qa-8e40` · tip `5d31e0d8` · draft PR [#433](https://github.com/catgeot/Days/pull/433) · 병합 금지 · #432는 수정하지 않음
+- **조치** 장소 카드에서 뒤로 오면 갤러리 스크롤을 되돌린다(POP, 같은 키 재진입은 0으로 덮지 않음). 영문은 사실 블록 제목만 번역하고 값은 한글. 헤더 버튼은 `Planner`. 축제 정보 탭은 상세 로딩과 따로 주변 볼거리를 보여 준다.
+- **마산 637693 (LIVE, 수정 전)** 390. 제목 3009ms, «주변 볼거리» 4338ms(15곳). `festivalWindow` 1213→2578ms. 그 뒤 tourapi 상세 7건과 supabase bbox가 병렬(supabase 3282ms, 상세 3883–4393ms). 순차 호출이 아니라 정보 탭이 `detailLoading`에 묶여 목록이 상세 응답 뒤에 나왔다. 콜드 `festivalWindow`면 시트가 열리기 전에 6초를 넘길 수 있다. 수정 후 로컬은 목록 fetch(2751ms)만 끝난 3526ms에 팔경 행이 보였다.
+- **VERIFY** `npm run test:health` 244 pass · CI run `38147876052` success
+- **Preview** `https://days-git-cursor-cairo-qa-8e40-catgeots-projects.vercel.app/place/cairo` · `/place/grand-egyptian-museum?lang=en` · `/korea?festival=637693`
+- **다음** `카이로 동선 #3, 피드백 반영`
