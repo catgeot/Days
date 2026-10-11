@@ -43,7 +43,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 소제목 복구 push** · tip `783c6234` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지 |
+| **상태** | **#1 소제목 복구 push** · tip `7abc831f` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지 |
 | **브랜치** | `cursor/festival-nearby-9654` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
@@ -58,7 +58,7 @@
 축제 상세 #2, 주변 볼거리 재확인
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/festival-nearby-9654 · draft PR #430 · tip 783c6234
+브랜치 cursor/festival-nearby-9654 · draft PR #430 · tip 7abc831f
 금지: PR 병합 · main 코드 push · feature에 plans 커밋 · 팔경을 일반 목록에 섞기
 작업: Preview에서 국향대전은 거리순 일반 목록 아래 «함평 팔경»이 1경부터인지, 마산 연꽃테마파크는 소제목 없이 뱃지와 17km인지 본다. 통과하면 사람 병합.
 검증: node --test scripts/health/festival-nearby-sights.test.mjs scripts/health/festival-detail-ux.test.mjs

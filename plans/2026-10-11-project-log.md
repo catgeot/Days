@@ -106,6 +106,7 @@
 
 ## 축제 상세 #1, 팔경 소제목 복구
 
-- **세션** 같은 브랜치 `cursor/festival-nearby-9654` · tip `783c6234` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지
+- **세션** 같은 브랜치 `cursor/festival-nearby-9654` · tip `7abc831f` · draft PR [#430](https://github.com/catgeot/Days/pull/430) · 병합 금지
+- **사진** 깨진 썸네일은 `display = 'none'` 뒤 아이콘. health `festival-photo-frame` PASS.
 - **조치** 일반 목록은 거리순이고 팔경 멤버를 빼다. 2곳 이상인 팔경은 «함평 팔경» 소제목 아래 경 번호순. 1곳뿐인 다른 시·군(함안 5경)은 뱃지만 달아 일반 목록에 둔다. 표시 이름 끝 시군을 빼고, 사진이 없으면 회색 칸 대신 아이콘. 국향·마산 썸네일은 전부 사진이 있고 이전 회색은 로드 전 캡처.
 - **VERIFY** nearby health 15 pass · `npx vite build` PASS
