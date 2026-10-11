@@ -12,6 +12,7 @@ import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
+import PlaceVerifiedFacts from '../common/PlaceVerifiedFacts';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
@@ -1062,6 +1063,7 @@ const PlaceGalleryView = React.memo(({
           )}
 
           <div className="px-6 max-md:landscape:px-3">
+            <PlaceVerifiedFacts location={location} />
             {hasPlaceOverview && (
               <div className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}>
                 <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-4 backdrop-blur-md shadow-inner space-y-3.5">
