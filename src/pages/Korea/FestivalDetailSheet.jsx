@@ -1153,7 +1153,7 @@ export default function FestivalDetailSheet({
       const name = String(spot?.name || '').trim();
       if (!name || names.includes(name)) continue;
       names.push(name);
-      if (names.length >= 6) break;
+      if (names.length >= 24) break;
     }
     return names;
   }, [nearbyFood]);

@@ -1,4 +1,5 @@
 import { KO, EN } from '../../i18n/mooniPromptBundleData.js';
+import { listCityAttractionHubs, resolveCityAttractionHub } from '../../pages/Home/lib/cityAttractionHubs.js';
 import { englishLodgingAreaLabel, englishLodgingPlaceName } from './englishPlaceLabel.js';
 import { ensureItineraryMarkdownLineBreaks } from '../../utils/mooniTruncatedContinue.js';
 import { filterBySearchQuery, normalizeFestivalQuery } from '../../pages/Korea/festivalSearch.js';
@@ -72,15 +73,19 @@ export function festivalLodgingNextStep(contentId, locale = 'ko', placeName = ''
 }
 
 function lodgingAreaNames(options = {}) {
+  const lat = Number(options.lat);
+  const lng = Number(options.lng);
   const names = [];
   const push = (value) => {
-    const text = String(value || '').replace(/\s*(?:일원|일대|부근)$/g, '').replace(/\s+/g, ' ').trim();
+    const text = String(value?.name || value || '').replace(/\s*(?:일원|일대|부근)$/g, '').replace(/\s+/g, ' ').trim();
     if (!text || names.includes(text)) return;
+    if (festivalStayLabelIsDistant(value?.hubId || text, lat, lng)) return;
+    if (value?.hubId && festivalStayLabelIsDistant(text, lat, lng)) return;
     names.push(text);
   };
   push(options.venue);
   push(options.placeName);
-  for (const area of options.stayAreas || []) push(area?.name || area);
+  for (const area of options.stayAreas || []) push(area);
   return names.slice(0, 3);
 }
 
@@ -481,21 +486,102 @@ export function rewriteFestivalFormalEndings(text) {
   ));
 }
 
-/** «자리에요» and «10/15~18이예요» after a digit or no-batchim syllable become «예요». */
+/** Last digit of the number, as read: 0·1·3·6·7·8 and 10·100·1000 take 이에요. 2·4·5·9 take 예요. */
+const DIGIT_READS_WITH_BATCHIM = new Set(['0', '1', '3', '6', '7', '8']);
+
+function digitTokenReadsWithBatchim(source, endIndex) {
+  let i = endIndex;
+  while (i >= 0 && /\d/.test(source.charAt(i))) i -= 1;
+  const digits = source.slice(i + 1, endIndex + 1);
+  if (!digits) return false;
+  return DIGIT_READS_WITH_BATCHIM.has(digits.slice(-1));
+}
+
+/**
+ * Only the always-wrong «이예요» is rewritten.
+ * A model's «이에요» or «예요» stays as written. «자리에요» still becomes «자리예요».
+ */
 function fixNoBatchimEyeyo(text) {
-  const out = String(text || '')
-    .replace(/(\d|[가-힣])이예요/g, (full, prev) => (
-      syllableHasBatchim(prev) ? `${prev}이에요` : `${prev}예요`
-    ))
-    .replace(/(\d)이에요/g, '$1예요');
-  return out.replace(/([가-힣])에요(?=$|[\s.!?。,，])/g, (full, prev, offset, source) => {
-    if (syllableHasBatchim(prev)) return full;
-    if (prev === '이') {
-      const before = source.charAt(offset - 1);
-      if (before && syllableHasBatchim(before)) return full;
-    }
+  const fixed = String(text || '').replace(/이예요/g, (full, offset, source) => {
+    let i = offset - 1;
+    while (i >= 0 && /\s/.test(source.charAt(i))) i -= 1;
+    const prev = source.charAt(i);
+    if (/\d/.test(prev)) return digitTokenReadsWithBatchim(source, i) ? '이에요' : '예요';
+    if (/[가-힣]/.test(prev)) return syllableHasBatchim(prev) ? '이에요' : '예요';
+    return '예요';
+  });
+  return fixed.replace(/([가-힣])에요(?=$|[\s.!?。,，])/g, (full, prev) => {
+    if (prev === '이' || syllableHasBatchim(prev)) return full;
     return `${prev}예요`;
   });
+}
+
+/** Fast food and national chains. Locals and markets stay ahead of these. */
+export const FESTIVAL_CHAIN_RE =
+  /맥도날드|롯데리아|버거킹|버거\s*킹|맘스터치|스타벅스|파리바게뜨|배스킨라빈스|베스킨라빈스|케이에프씨|서브웨이|도미노피자|도미노\s*피자|피자헛|미스터피자|던킨|mcdonald|lotteria|burger\s*king|mom'?s\s*touch|starbucks|paris\s*baguette|baskin|\bkfc\b/i;
+
+export function isFestivalChainRestaurant(name) {
+  return FESTIVAL_CHAIN_RE.test(String(name || ''));
+}
+
+/** Markets, then other local names, then chains. Chains drop off once six locals exist. */
+export function rankFestivalRestaurants(values, limit = 6) {
+  const markets = [];
+  const locals = [];
+  const chains = [];
+  const seen = new Set();
+  for (const raw of Array.isArray(values) ? values : []) {
+    const name = String(raw?.name || raw || '').replace(/\s+/g, ' ').trim();
+    if (!name || NON_RESTAURANT_PLACE_RE.test(name) || seen.has(name)) continue;
+    seen.add(name);
+    if (isFestivalChainRestaurant(name)) chains.push(name);
+    else if (/시장/.test(name)) markets.push(name);
+    else locals.push(name);
+  }
+  const localCount = markets.length + locals.length;
+  const ranked = localCount >= limit
+    ? [...markets, ...locals]
+    : [...markets, ...locals, ...chains];
+  return ranked.slice(0, limit);
+}
+
+const FESTIVAL_STAY_RADIUS_KM = 20;
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2
+    + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function festivalHubKm(label, lat, lng) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const hub = resolveCityAttractionHub(label);
+  const hLat = Number(hub?.lat);
+  const hLng = Number(hub?.lng);
+  if (!hub || !Number.isFinite(hLat) || !Number.isFinite(hLng)) return null;
+  return haversineKm(lat, lng, hLat, hLng);
+}
+
+/** A resolved city hub farther than ~20 km. Neighborhood strings with no hub stay. */
+export function festivalStayLabelIsDistant(label, lat, lng) {
+  const km = festivalHubKm(label, lat, lng);
+  return km != null && km > FESTIVAL_STAY_RADIUS_KM;
+}
+
+export function filterFestivalStayAreaNames(values, lat, lng, limit = 3) {
+  const names = [];
+  for (const raw of Array.isArray(values) ? values : []) {
+    const text = String(raw?.name || raw || '').replace(/\s*(?:일원|일대|부근)$/g, '').replace(/\s+/g, ' ').trim();
+    if (!text || names.includes(text)) continue;
+    if (festivalStayLabelIsDistant(raw?.hubId || text, lat, lng)) continue;
+    if (raw?.hubId && festivalStayLabelIsDistant(text, lat, lng)) continue;
+    names.push(text);
+    if (names.length >= limit) break;
+  }
+  return names;
 }
 
 const NON_RESTAURANT_PLACE_RE = /사우나|찜질|목욕|복지|노인회|생활문화|주민센터|경로당|행정복지|노인정|마을회관|주민자치|터널/;
@@ -545,7 +631,9 @@ function collapseDoubledFestivalCloser(text, title = '') {
 }
 
 function restaurantLead(names) {
-  const shown = names.slice(0, 3);
+  const ranked = rankFestivalRestaurants(names, 6);
+  const locals = ranked.filter((name) => !isFestivalChainRestaurant(name));
+  const shown = (locals.length ? locals : ranked).slice(0, 3);
   if (!shown.length) return '';
   const last = shown[shown.length - 1];
   const copula = syllableHasBatchim(last.slice(-1)) ? '이에요' : '예요';
@@ -555,10 +643,16 @@ function restaurantLead(names) {
 /** Food answers keep 주변 맛집 names and drop community, welfare, bath, and tunnel lines. */
 function ensureFestivalFoodAnswer(text, options = {}) {
   if (!isFestivalFoodAsk(options)) return String(text || '');
-  const next = filterPreservingBreaks(text, (part) => NON_RESTAURANT_PLACE_RE.test(part));
+  let next = filterPreservingBreaks(text, (part) => NON_RESTAURANT_PLACE_RE.test(part));
+  const restaurants = rankFestivalRestaurants(options.nearbyRestaurants);
+  const locals = restaurants.filter((name) => !isFestivalChainRestaurant(name));
+  if (locals.length) {
+    next = filterPreservingBreaks(next, (part) => (
+      isFestivalChainRestaurant(part) && !locals.some((name) => part.includes(name))
+    ));
+  }
   if (String(options.locale || 'ko').slice(0, 2) === 'en') return next;
-  const restaurants = listedPlaceNames(options.nearbyRestaurants);
-  if (!restaurants.length || restaurants.some((name) => next.includes(name))) return next;
+  if (!restaurants.length || locals.some((name) => next.includes(name))) return next;
   const lead = restaurantLead(restaurants);
   return lead ? (next ? `${lead}\n\n${next}` : lead) : next;
 }
@@ -612,8 +706,38 @@ function softenNightHour(text) {
 }
 
 function dropFestivalFillerSentences(text) {
-  if (!/특별한 순간을 경험해|The atmosphere is majestic/i.test(String(text || ''))) return String(text || '');
-  return filterPreservingBreaks(text, (part) => /특별한 순간을 경험해\s*보세요|The atmosphere is majestic/i.test(part));
+  const stripped = String(text || '').replace(/편안한 휴식을 위해\s*/g, '');
+  if (!/특별한 순간을 경험해|The atmosphere is majestic/i.test(stripped)) return stripped;
+  return filterPreservingBreaks(stripped, (part) => /특별한 순간을 경험해\s*보세요|The atmosphere is majestic/i.test(part));
+}
+
+const TRAILING_DATE_ONLY_RE =
+  /^(?:[가-힣0-9A-Za-z·\s]{0,40}?(?:은|는)\s*)?\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?(?:\s*(?:이예요|이에요|예요|에요))?[.。]?$/;
+
+/** Follow-ups drop a last sentence that is only the festival dates. */
+function stripTrailingFestivalDateSentence(text) {
+  const parts = String(text || '')
+    .split(/(?<=[.!?。])\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length < 2) return String(text || '').trim();
+  const last = parts[parts.length - 1].replace(/\s+/g, ' ').trim();
+  if (!TRAILING_DATE_ONLY_RE.test(last)) return String(text || '').trim();
+  return parts.slice(0, -1).join(' ').trim();
+}
+
+function stripDistantStaySentences(text, options = {}) {
+  if (!isFestivalLodgingAsk(options)) return String(text || '');
+  const lat = Number(options.lat);
+  const lng = Number(options.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return String(text || '');
+  const distant = listCityAttractionHubs().filter((hub) => {
+    const name = String(hub?.name || '').trim();
+    const km = festivalHubKm(name, lat, lng);
+    return name.length >= 2 && km != null && km > FESTIVAL_STAY_RADIUS_KM;
+  });
+  if (!distant.length) return String(text || '');
+  return filterPreservingBreaks(text, (part) => distant.some((hub) => part.includes(hub.name)));
 }
 
 /** Festival answers drop the countdown clause and long calendar dates without flattening lists. */
@@ -645,17 +769,21 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   if (isFestivalLodgingAsk(options)) {
     text = stripNonStayFacilities(text, options.userText);
+    text = stripDistantStaySentences(text, options);
   }
   if (String(options.locale || 'ko').slice(0, 2) !== 'en') {
     text = rewriteFestivalFormalEndings(text);
     text = softenDapnida(text);
     text = fixNoBatchimEyeyo(text);
+    text = stripTrailingFestivalDateSentence(text);
     text = dropDateLinkFragmentSentences(text);
     text = dedupeStaySearchLinks(text);
   }
   text = softenNightHour(text);
   text = dropFestivalFillerSentences(text);
-  text = collapseDoubledFestivalCloser(text, options.festivalTitle);
+  if (!isFestivalLodgingAsk(options)) {
+    text = collapseDoubledFestivalCloser(text, options.festivalTitle);
+  }
   text = ensureFestivalFoodAnswer(text, options);
   return appendFestivalLodgingNextStep(ensureItineraryMarkdownLineBreaks(text), options);
 }
@@ -990,14 +1118,14 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   if (nearby.length) {
     lines.push(isEn ? `- Nearby (GATEO): ${nearby.join(', ')}` : `- 근처(GATEO): ${nearby.join(', ')}`);
   }
-  const restaurants = listedPlaceNames(ctx?.nearbyRestaurants);
+  const restaurants = rankFestivalRestaurants(ctx?.nearbyRestaurants);
   if (restaurants.length) {
     lines.push(isEn
       ? `- Nearby restaurants (GATEO 주변 맛집): ${restaurants.join(', ')}`
       : `- 주변 맛집(GATEO): ${restaurants.join(', ')}`);
     lines.push(isEn
-      ? '- Where to eat: name only these nearby restaurants. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
-      : '- 근처 먹을 곳·맛집 질문: 위 주변 맛집 이름만 말한다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
+      ? '- Where to eat: name markets and local restaurants from this list first. Leave out fast food and national chains, or put them last. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
+      : '- 근처 먹을 곳·맛집 질문: 위 주변 맛집만 말한다. 시장·지역 식당을 먼저 말하고, 맥도날드·롯데리아·버거킹·맘스터치·스타벅스·파리바게뜨·배스킨라빈스 같은 전국 체인은 빼거나 맨 뒤에 둔다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
   }
 
   const gateoUrl =
@@ -1113,14 +1241,16 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
           venue: festivalContext.venue,
           placeName,
           stayAreas: festivalContext.stayAreas,
+          lat: festivalContext.lat,
+          lng: festivalContext.lng,
         });
         const label = festivalLodgingLinkLabel(placeName, input.locale);
         const areaLine = areas.length
           ? (en ? ` Stay areas: ${areas.join(', ')}.` : ` 숙소 권역: ${areas.join(', ')}.`)
           : '';
         hint += en
-          ? `\n- Lodging answer: name 2 or 3 of these stay areas in sentences, then end with [${label}](${lodgingUrl}). Do not answer with only a link. Do not use "here", "this link", or "this place" as the link text. No other stay URL.${areaLine}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate a countdown or a long calendar date (no "N days left", no "October 15, 2026 through"). This overrides the festival date-comparison rule.`
-          : `\n- 숙소 답: 숙소 권역 2~3곳을 문장으로 말한 뒤 [${label}](${lodgingUrl})로 끝낸다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 「현재 시작까지 N일 남았습니다」와 「2026년 10월 15일부터」 같은 긴 날짜를 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
+          ? `\n- Lodging answer: name 2 or 3 stay areas within about 20 km of the venue, then end with [${label}](${lodgingUrl}). Do not name the next city. Do not write filler such as "for a comfortable rest". Do not answer with only a link. Do not use "here", "this link", or "this place" as the link text. No other stay URL.${areaLine}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate the festival dates, a countdown, or a long calendar date. This overrides the festival date-comparison rule.`
+          : `\n- 숙소 답: 축제장에서 약 20km 안의 숙소 권역 2~3곳만 말한 뒤 [${label}](${lodgingUrl})로 끝낸다. 속초처럼 옆 도시는 말하지 않는다. «편안한 휴식을 위해» 같은 채움은 쓰지 않는다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 행사 기간을 다시 말하지 않는다. «현재 시작까지 N일 남았습니다»와 «2026년 10월 15일부터» 같은 긴 날짜도 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
       }
     }
     return { hint, candidates: [] };

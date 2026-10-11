@@ -1,7 +1,9 @@
 import {
   festivalTimingStatus,
+  filterFestivalStayAreaNames,
   gateoKoreaFestivalDetailUrl,
   kstTodayYmd,
+  rankFestivalRestaurants,
   rewriteFestivalFormalEndings,
   ymdDayDelta,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
@@ -67,21 +69,9 @@ export function buildFestivalMooniContext(input = {}) {
       .replace(/<[^>]+>/g, ' ')
       .trim(),
     nearbyPlaces: uniqueNames(nearbyPlaces),
-    nearbyRestaurants: uniqueNames(nearbyRestaurants),
-    stayAreas: stayAreaNames(input.stayAreas),
+    nearbyRestaurants: rankFestivalRestaurants(nearbyRestaurants),
+    stayAreas: filterFestivalStayAreaNames(input.stayAreas, pt?.lat, pt?.lng),
   };
-}
-
-function stayAreaNames(value) {
-  const list = Array.isArray(value) ? value : [];
-  const names = [];
-  for (const item of list) {
-    const name = String(item?.name || item || '').replace(/\s+/g, ' ').trim();
-    if (!name || names.includes(name)) continue;
-    names.push(name);
-    if (names.length >= 3) break;
-  }
-  return names;
 }
 
 function plainFact(value) {
