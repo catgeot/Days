@@ -1583,6 +1583,10 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이름이 3곳이면 3곳을 말한다/);
   assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /다양한 맛집/);
   assert.match(KO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
+  assert.match(KO.festivalAnswerRules, /축제 페이지에서 살펴보세요/);
+  assert.match(KO.festivalAnswerRules, /숙소 카드에 이름과 거리/);
+  assert.match(EN.festivalAnswerRules, /next closest local place/);
+  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /축제 페이지에서 살펴보세요/);
   assert.match(ServerKO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
   assert.match(EN.festivalAnswerRules, /a variety of stays/);
   assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /다양한 숙소가 자리하고 있어요/);
