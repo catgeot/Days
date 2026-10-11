@@ -60,6 +60,56 @@ test('exclude the festival venue', () => {
   );
 });
 
+test('a venue member excluded from a 팔경 group is noted beside the subheading', () => {
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [
+        {
+          title: '함평 팔경',
+          listId: 'hampyeong-palgyeong',
+          items: [
+            {
+              name: '함평엑스포공원',
+              contentId: '130864',
+              rankBlurb: '함평 2경',
+              localScenicListId: 'hampyeong-palgyeong',
+              lat: 35.0592,
+              lng: 126.5222,
+            },
+            {
+              name: '함평자연생태공원',
+              rankBlurb: '함평 1경',
+              localScenicListId: 'hampyeong-palgyeong',
+              lat: 35.08,
+              lng: 126.5,
+            },
+            {
+              name: '돌머리해수욕장',
+              rankBlurb: '함평 3경',
+              localScenicListId: 'hampyeong-palgyeong',
+              lat: 35.15,
+              lng: 126.4,
+            },
+          ],
+        },
+      ],
+      rest: [],
+    },
+    origin: { lat: 35.0592, lng: 126.5222 },
+    venue: {
+      contentIds: ['130864'],
+      eventPlace: '함평엑스포공원',
+      addr: '전라남도 함평군',
+    },
+  });
+  assert.equal(merged.items.some((spot) => spot.name === '함평엑스포공원'), false);
+  const heading = merged.blocks.find((block) => block.kind === 'heading');
+  assert.equal(heading?.title, '함평 팔경');
+  assert.equal(heading?.venueNote, '2경 함평엑스포공원은 축제장이에요');
+  assert.equal(merged.groups[0].items.length, 2);
+});
+
 test('sort by distance and hide missing or fallback coordinates', () => {
   const merged = mergeFestivalNearbySights({
     scenicSpots: [

@@ -251,6 +251,25 @@ function rankNumber(spot) {
   return match ? Number(match[1]) : null;
 }
 
+function hasBatchim(name) {
+  const chars = [...String(name || '').trim()];
+  const ch = chars[chars.length - 1];
+  if (!ch) return false;
+  const code = ch.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return false;
+  return (code - 0xac00) % 28 !== 0;
+}
+
+/** «2경 함평엑스포공원은 축제장이에요» */
+function venueExcludedNote(row) {
+  const name = String(row?.name || '').trim();
+  if (!name) return '';
+  const n = rankNumber(row);
+  const particle = hasBatchim(name) ? '은' : '는';
+  const rank = n != null ? `${n}경 ` : '';
+  return `${rank}${name}${particle} 축제장이에요`;
+}
+
 function byDistance(a, b) {
   const da = Number.isFinite(a.distKm) ? a.distKm : Infinity;
   const db = Number.isFinite(b.distKm) ? b.distKm : Infinity;
@@ -355,11 +374,21 @@ export function mergeFestivalNearbySights(input = {}) {
   hideIdenticalCoordClusters(pool);
 
   const kept = [];
+  /** @type {Map<string, object[]>} */
+  const venueExcludedByList = new Map();
   for (const row of pool) {
     if (isNonTouristNearbyFacility(row)) continue;
     if (isFestivalOrEventSight(row)) continue;
     const distKm = distOf(row, originPt);
-    if (isFestivalVenueSight(row, venue, distKm)) continue;
+    if (isFestivalVenueSight(row, venue, distKm)) {
+      const listId = String(row.localScenicListId || '').trim();
+      if (listId) {
+        const list = venueExcludedByList.get(listId) || [];
+        list.push(row);
+        venueExcludedByList.set(listId, list);
+      }
+      continue;
+    }
     kept.push(toOutput(row, distKm));
   }
   kept.sort(byDistance);
@@ -402,10 +431,15 @@ export function mergeFestivalNearbySights(input = {}) {
 
   const blocks = rest.map((spot) => ({ kind: 'spot', spot }));
   for (const group of sectionGroups) {
+    const venueNote = (venueExcludedByList.get(group.listId) || [])
+      .map(venueExcludedNote)
+      .filter(Boolean)
+      .join('\n');
     blocks.push({
       kind: 'heading',
       title: group.title,
       listId: group.listId,
+      ...(venueNote ? { venueNote } : {}),
     });
     for (const spot of group.items) blocks.push({ kind: 'spot', spot });
   }

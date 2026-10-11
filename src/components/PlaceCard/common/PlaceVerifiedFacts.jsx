@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
+import { splitItineraryPlaceMentions } from '../../../data/placeVerifiedFacts/itineraryLinks.js';
 import {
   AI_GENERATED_LABEL,
   presentFactText,
@@ -59,8 +61,34 @@ function FactValue({ slot, light }) {
       </p>
     );
   }
+  const valueClass = light
+    ? 'text-sm leading-relaxed text-gray-900 break-keep whitespace-pre-line'
+    : 'text-sm leading-relaxed text-white/95 break-keep whitespace-pre-line';
+  if (slot.id === 'itinerary') {
+    const linkClass = light
+      ? 'font-semibold text-sky-800 underline underline-offset-2'
+      : 'font-semibold text-sky-200 underline underline-offset-2';
+    return (
+      <p data-fact-value="" className={valueClass}>
+        {splitItineraryPlaceMentions(text).map((part, index) => (
+          part.type === 'link' ? (
+            <Link
+              key={`${part.href}-${index}`}
+              to={part.href}
+              data-itinerary-place={part.href}
+              className={linkClass}
+            >
+              {part.text}
+            </Link>
+          ) : (
+            <React.Fragment key={`t-${index}`}>{part.text}</React.Fragment>
+          )
+        ))}
+      </p>
+    );
+  }
   return (
-    <p data-fact-value="" className={light ? 'text-sm leading-relaxed text-gray-900 break-keep whitespace-pre-line' : 'text-sm leading-relaxed text-white/95 break-keep whitespace-pre-line'}>
+    <p data-fact-value="" className={valueClass}>
       {text}
     </p>
   );
