@@ -2742,7 +2742,7 @@
         },
         "festival_nearby": {
           "label": "🍜 Food & nearby",
-          "sendText": "What can I eat and where else can I stop near this festival? Use only nearby places confirmed on GATEO. Do not invent restaurants."
+          "sendText": "What can I eat and where else can I stop near this festival? For food, use only the nearby restaurant list on this festival page. Do not mention community centers, welfare centers, bathhouses, or tunnels. Do not invent restaurants."
         },
         "festival_day": {
           "label": "🗺️ One-day route",

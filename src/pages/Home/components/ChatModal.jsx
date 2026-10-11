@@ -1026,6 +1026,7 @@ const ChatModal = ({
       try {
         const festHint = await resolvePlaceChatKoreaFestivalHint({
           userText: cleanText,
+          chipId,
           festivalContext: mooniPlaceContext?.festivalContext ?? null,
           boundPlaceName: destName,
           locale: i18n.language,
@@ -1093,6 +1094,11 @@ const ChatModal = ({
         placeName: mooniPlaceContext?.festivalContext?.hubLabel,
         venue: mooniPlaceContext?.festivalContext?.venue,
         stayAreas: mooniPlaceContext?.festivalContext?.stayAreas,
+        lat: mooniPlaceContext?.festivalContext?.lat,
+        lng: mooniPlaceContext?.festivalContext?.lng,
+        festivalTitle: mooniPlaceContext?.festivalContext?.title,
+        nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
+        nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
       };
       const displayReply = polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {
@@ -1205,6 +1211,14 @@ const ChatModal = ({
           locale: i18n.language,
           chipId: msg.bookingMeta?.chipId,
           userText: messageTextPlain(priorUser),
+          placeName: mooniPlaceContext?.festivalContext?.hubLabel,
+          venue: mooniPlaceContext?.festivalContext?.venue,
+          stayAreas: mooniPlaceContext?.festivalContext?.stayAreas,
+          lat: mooniPlaceContext?.festivalContext?.lat,
+          lng: mooniPlaceContext?.festivalContext?.lng,
+          festivalTitle: mooniPlaceContext?.festivalContext?.title,
+          nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
+          nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
         };
         const continuedRaw = polishFestivalModelReply(mergedRaw, lodgingOptions);
         const continuedDisplay = polishFestivalModelReply(displayText, lodgingOptions);

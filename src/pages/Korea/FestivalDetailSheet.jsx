@@ -1144,9 +1144,19 @@ export default function FestivalDetailSheet({
       names.push(name);
     };
     for (const spot of nearbySpots) push(spot);
-    for (const spot of nearbyFood) push(spot);
     return names.slice(0, 6);
-  }, [nearbySpots, nearbyFood]);
+  }, [nearbySpots]);
+
+  const mooniNearbyRestaurants = useMemo(() => {
+    const names = [];
+    for (const spot of nearbyFood) {
+      const name = String(spot?.name || '').trim();
+      if (!name || names.includes(name)) continue;
+      names.push(name);
+      if (names.length >= 24) break;
+    }
+    return names;
+  }, [nearbyFood]);
 
   const festivalMooni = useFestivalMooniEntry({
     item: item || {},
@@ -1157,6 +1167,7 @@ export default function FestivalDetailSheet({
     overview,
     program: stripHtml(intro?.program || ''),
     nearbyPlaces: mooniNearbyPlaces,
+    nearbyRestaurants: mooniNearbyRestaurants,
     stayAreas: festivalCross?.stayAreas,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
