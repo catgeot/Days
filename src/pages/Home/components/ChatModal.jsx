@@ -57,6 +57,10 @@ import {
   showFestivalOpeningInThread,
   writeFestivalMooniSession,
 } from '../lib/festivalMooniSessionCache.js';
+import {
+  shouldHydrateDraftMessages,
+  shouldHydrateTripMessages,
+} from '../lib/festivalMooniChatSync.js';
 import { festivalResolutionLabel } from '../lib/mooniPlaceChatLabel.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
 import {
@@ -139,6 +143,7 @@ const ChatModal = ({
   const [messages, setMessages] = useState([]);
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
+  const lastTripSyncChatIdRef = useRef(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mooniContinuingIdx, setMooniContinuingIdx] = useState(null);
@@ -689,8 +694,12 @@ const ChatModal = ({
     if (!isOpen) {
       setMessages([]);
       tripSessionRef.current = null;
+      lastTripSyncChatIdRef.current = null;
       return;
     }
+    // Parent savedTrips refresh (auth/fetchData) must not clobber an in-flight chip turn.
+    if (isLoading) return;
+
     if (activeChatId) {
       const targetTrip = chatHistory.find(
         (t) => String(t.id) === String(activeChatId)
@@ -698,18 +707,33 @@ const ChatModal = ({
       const festivalLocaleOk = !festivalMooniContext?.contentId
         || festivalTripMatchesLocale(targetTrip, i18n.language);
       if (targetTrip && festivalLocaleOk) {
-        setMessages(targetTrip.messages || []);
-        if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
-        tripSessionRef.current = hydrateMooniTripSession({
-          messages: targetTrip.messages || [],
-          stored: targetTrip.curation_data?.mooniSession ?? null,
-          slug: targetTrip.curation_data?.slug || '',
-          destinationName: targetTrip.destination || '',
-        });
-        return;
+        const tripMsgs = targetTrip.messages || [];
+        const localLen = messagesRef.current?.length ?? 0;
+        if (
+          shouldHydrateTripMessages({
+            activeChatId,
+            lastSyncedChatId: lastTripSyncChatIdRef.current,
+            tripMessageCount: tripMsgs.length,
+            localMessageCount: localLen,
+          })
+        ) {
+          lastTripSyncChatIdRef.current = String(activeChatId);
+          setMessages(tripMsgs);
+          if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
+          tripSessionRef.current = hydrateMooniTripSession({
+            messages: tripMsgs,
+            stored: targetTrip.curation_data?.mooniSession ?? null,
+            slug: targetTrip.curation_data?.slug || '',
+            destinationName: targetTrip.destination || '',
+          });
+        }
       }
+      return;
     }
+    lastTripSyncChatIdRef.current = null;
     if (chatDraft) {
+      const localLen = messagesRef.current?.length ?? 0;
+      if (!shouldHydrateDraftMessages({ localMessageCount: localLen, isLoading })) return;
       const cached = festivalMooniContext?.contentId
         ? readFestivalMooniSession(festivalMooniContext.contentId, i18n.language)
         : null;
@@ -722,7 +746,15 @@ const ChatModal = ({
         destinationName: chatDraft.destination || '',
       });
     }
-  }, [activeChatId, isOpen, chatHistory, chatDraft, festivalMooniContext?.contentId, i18n.language]);
+  }, [
+    activeChatId,
+    isOpen,
+    isLoading,
+    chatHistory,
+    chatDraft,
+    festivalMooniContext?.contentId,
+    i18n.language,
+  ]);
 
   const applyDestinationBinding = useCallback(async (chatId, draft, candidate) => {
     if (!candidate?.name) return;
