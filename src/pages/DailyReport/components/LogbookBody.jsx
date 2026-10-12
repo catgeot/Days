@@ -9,6 +9,29 @@ import {
 } from '../utils/logbookMarkdownSnippet.js';
 import { resolveLogbookDisplaySrc } from '../../../utils/logbookImageSrc.js';
 import EditorialLogbookImageCredits from './EditorialLogbookImageCredits.jsx';
+import { splitFactTimeRanges, TIME_RANGE_CLASS } from '../../../data/placeVerifiedFacts/cairoEn.js';
+
+function wrapTimeRanges(children) {
+  return React.Children.map(children, (child) => {
+    if (typeof child === 'string' || typeof child === 'number') {
+      const parts = splitFactTimeRanges(String(child));
+      if (parts.every((part) => part.type === 'text')) return child;
+      return parts.map((part, index) => (
+        part.type === 'time' ? (
+          <span key={`time-${index}`} className={TIME_RANGE_CLASS}>{part.text}</span>
+        ) : (
+          <React.Fragment key={`text-${index}`}>{part.text}</React.Fragment>
+        )
+      ));
+    }
+    if (React.isValidElement(child) && child.props?.children != null) {
+      return React.cloneElement(child, {
+        children: wrapTimeRanges(child.props.children),
+      });
+    }
+    return child;
+  });
+}
 
 const sanitizeSchema = {
   ...defaultSchema,
@@ -37,7 +60,7 @@ function createMarkdownComponents(readerTypography) {
       ),
       p: ({ children }) => (
         <p className="text-base sm:text-[17px] leading-[1.8] text-gray-800 font-normal mb-7 last:mb-0 break-keep">
-          {children}
+          {wrapTimeRanges(children)}
         </p>
       ),
       a: ({ href, children }) => (
@@ -63,7 +86,7 @@ function createMarkdownComponents(readerTypography) {
           {children}
         </ol>
       ),
-      li: ({ children }) => <li className="leading-[1.75]">{children}</li>,
+      li: ({ children }) => <li className="leading-[1.75]">{wrapTimeRanges(children)}</li>,
       blockquote: ({ children }) => (
         <blockquote className="border-l-2 border-gray-200 pl-4 my-8 text-gray-600 italic">{children}</blockquote>
       ),
@@ -105,7 +128,7 @@ function createMarkdownComponents(readerTypography) {
       <h3 className="text-xl font-bold text-gray-900 mt-6 mb-3">{children}</h3>
     ),
     p: ({ children }) => (
-      <p className="text-lg leading-[1.8] text-gray-800 font-medium mb-6 last:mb-0">{children}</p>
+      <p className="text-lg leading-[1.8] text-gray-800 font-medium mb-6 last:mb-0 break-keep">{wrapTimeRanges(children)}</p>
     ),
     a: ({ href, children }) => (
       <a
@@ -122,7 +145,7 @@ function createMarkdownComponents(readerTypography) {
     hr: () => <hr className="my-8 border-0 border-t border-gray-200" />,
     ul: ({ children }) => <ul className="list-disc pl-6 mb-6 space-y-2 text-lg text-gray-800">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal pl-6 mb-6 space-y-2 text-lg text-gray-800">{children}</ol>,
-    li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+    li: ({ children }) => <li className="leading-relaxed break-keep">{wrapTimeRanges(children)}</li>,
     blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-blue-200 pl-4 my-6 text-gray-600 italic bg-slate-50/80 py-3 pr-3 rounded-r-lg">
         {children}
