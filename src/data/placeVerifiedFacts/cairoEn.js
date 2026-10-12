@@ -9,8 +9,12 @@ const EN_VALUES = {
     'D1 When you arrive, use the airport-to-city way above to get into the city and rest.\nD2 Go to the Giza Plateau early for the 07:00 opening. GEM requires a timed ticket. Galleries are open until 21:00 on Wed and Sat, and until 18:00 on other days. Last entry is 1 hour before closing. For dinner, try Koshary Abou Tarek downtown.\nD3 At 09:00 go to the Egyptian Museum in Tahrir. Ticket sales end at 16:00. In the afternoon go to the Sultan Hassan Mosque, and last entry is 16:00.',
   'cairo:money-safety':
     'The currency is the Egyptian pound (EGP).\nOn the MOFA travel alert, Nile-valley cities such as Cairo are at the exercise-caution level.\nParts of the Western Desert and southern Sinai are at the reconsider-travel level, and central and northern Sinai plus the area within 30km of the Libya border have a \'leave the country\' advisory.\nA recent embassy notice (2026-09-22) says to be careful amid military tension in the Middle East and to watch out for private currency-exchange scams.\nThe consular call center is +82-2-3210-0404.',
+  'giza-pyramids:hours':
+    'Open daily at 07:00; last entry is 16:00.\nDuring Ramadan, opening is 08:00 and last entry is 15:30.\nThe Ministry page lists 08:00–16:00.',
   'grand-egyptian-museum:hours':
     'Sun, Mon, Tue, Thu, and Fri: galleries 09:00–18:00 (complex 08:30–19:00), last entry 17:00.\nWed and Sat: galleries 09:00–21:00 (complex 08:30–22:00), last entry 20:00.',
+  'egyptian-museum-cairo:hours':
+    'Open daily 09:00–17:00.\nTicket sales end at 16:00.\nLast entry in Ramadan is 15:00.',
   'grand-egyptian-museum:fee':
     'Foreign adults 1,590 EGP, children and students 800 EGP.\nChildren under 6 enter free.\nPick an entry window: 08:30–11:00, 11:00–13:00, 13:00–15:00, or 15:00–17:00.',
   'grand-egyptian-museum:notes':
@@ -125,7 +129,8 @@ export function factValueForLocale(slug, slot, locale) {
   const value = String(slot?.value || '');
   if (locale !== 'en') return value;
   const translated = EN_VALUES[`${slug}:${slot?.id}`];
-  return translated == null ? value : translated;
+  const out = translated == null ? value : translated;
+  return out.replace(/~/g, '–');
 }
 
 export function sourceNameForLocale(name, locale) {
