@@ -1369,7 +1369,12 @@ export default function KoreaFestivalHub() {
       const windowItem = items.find((row) => String(row?.contentId || '') === id);
       const detailItem = socialPromoById.get(id);
       if (!windowItem && !detailItem) continue;
-      map.set(id, mergeFestivalRowItem(windowItem, detailItem));
+      const entryTitleEn = String(entry?.titleEn || '').trim();
+      const merged = mergeFestivalRowItem(windowItem, detailItem);
+      map.set(
+        id,
+        entryTitleEn ? { ...merged, titleEn: entryTitleEn } : merged,
+      );
     }
     return map;
   }, [items, socialPromoById]);
