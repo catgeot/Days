@@ -20,6 +20,8 @@ export async function clearFestivalListSessionCache(page) {
     try {
       sessionStorage.removeItem('gateo:korea-festivals:v2:rolling12:ko');
       sessionStorage.removeItem('gateo:korea-festivals:v2:rolling12:en');
+      localStorage.removeItem('gateo:korea-festivals:v2:rolling12:ko');
+      localStorage.removeItem('gateo:korea-festivals:v2:rolling12:en');
     } catch {
       /* ignore */
     }

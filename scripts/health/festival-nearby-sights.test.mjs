@@ -12,6 +12,16 @@ import {
   stripTrailingHubName,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
 import { isNearbyTourAttractionTitle } from '../../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
+import {
+  nearbyAttractionCacheKey,
+  readNearbyAttractionCache,
+  writeNearbyAttractionCache,
+} from '../../src/pages/Korea/lib/nearbyAttractionCache.js';
+import {
+  readFestivalOpenDetail,
+  slimFestivalOpenDetail,
+  writeFestivalOpenDetail,
+} from '../../src/pages/Korea/lib/festivalOpenDetailCache.js';
 
 const origin = { lat: 35.06, lng: 126.52 };
 
@@ -397,6 +407,50 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.match(section, /nearbyPending &&/);
   assert.match(section, /!nearbyPending && nearbySights\.items\.length > 0/);
   assert.match(sheet, /fetchNearbyTourAttractions\(/);
+  assert.match(sheet, /readNearbyAttractionCache\(/);
+  const cachedBlock = sheet.slice(sheet.indexOf('const cachedSpots = readNearbyAttractionCache'));
+  assert.ok(cachedBlock.indexOf('if (!cachedSpots)') >= 0);
+  assert.ok(
+    cachedBlock.indexOf('if (!cachedSpots)') < cachedBlock.indexOf('fetchNearbyTourAttractions({'),
+  );
   const afterNearby = sheet.slice(nearbyAt, lodgingAt);
   assert.match(afterNearby, /!detailLoading && \(/);
+});
+
+test('nearby attraction cache round-trips in the given store', () => {
+  const store = new Map();
+  const storage = {
+    getItem: (key) => (store.has(key) ? store.get(key) : null),
+    setItem: (key, value) => store.set(key, value),
+  };
+  const opts = { lat: 35.198, lng: 128.567, radiusKm: 8, limit: 8 };
+  assert.equal(readNearbyAttractionCache(opts, [storage]), null);
+  writeNearbyAttractionCache(opts, [{ name: '임항선 그린웨이', distKm: 0.29 }], [storage]);
+  const hit = readNearbyAttractionCache(opts, [storage]);
+  assert.equal(hit[0].name, '임항선 그린웨이');
+  assert.equal(
+    nearbyAttractionCacheKey({ ...opts, lat: 35.1984 }),
+    nearbyAttractionCacheKey(opts),
+  );
+});
+
+test('out-of-window festival detail opens again from the client cache', () => {
+  const store = new Map();
+  const storage = {
+    getItem: (key) => (store.has(key) ? store.get(key) : null),
+    setItem: (key, value) => store.set(key, value),
+  };
+  const detail = {
+    ok: true,
+    contentId: '638576',
+    common: { contentid: '638576', title: '국향대전', mapx: '126.5', mapy: '35.1', firstimage: 'https://img.example/a.jpg' },
+    intro: { eventstartdate: '20261023', eventenddate: '20261108' },
+  };
+  assert.equal(readFestivalOpenDetail('638576', [storage]), null);
+  writeFestivalOpenDetail('638576', detail, [storage]);
+  const slim = slimFestivalOpenDetail(detail);
+  const hit = readFestivalOpenDetail('638576', [storage]);
+  assert.equal(hit.contentId, '638576');
+  assert.equal(hit.common.mapx, slim.common.mapx);
+  assert.equal(hit.common.mapy, '35.1');
 });

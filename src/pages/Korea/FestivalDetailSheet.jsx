@@ -33,6 +33,7 @@ import {
 import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
+import { readNearbyAttractionCache } from './lib/nearbyAttractionCache';
 import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
@@ -554,6 +555,27 @@ export default function FestivalDetailSheet({
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
+  const nearbyCacheOwnerRef = useRef('');
+  const nearbyCacheKey = `${item?.contentId || ''}:${item?.mapx || ''}:${item?.mapy || ''}`;
+  if (nearbyCacheOwnerRef.current !== nearbyCacheKey) {
+    nearbyCacheOwnerRef.current = nearbyCacheKey;
+    const cachedPt = festivalLngLat(item?.mapx, item?.mapy);
+    const cachedSpots = cachedPt
+      ? readNearbyAttractionCache({
+        lat: cachedPt.lat,
+        lng: cachedPt.lng,
+        radiusKm: 8,
+        limit: 8,
+      })
+      : null;
+    if (cachedSpots) {
+      setNearbySpots(cachedSpots);
+      setNearbyStatus(cachedSpots.length ? 'ok' : 'empty');
+    } else if (nearbyCacheKey) {
+      setNearbySpots([]);
+      setNearbyStatus(cachedPt ? 'idle' : 'nocoords');
+    }
+  }
   const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
   const [scenicFavoriteVersion, setScenicFavoriteVersion] = useState(0);
   const scenicFavoriteIds = useMemo(
@@ -1075,23 +1097,36 @@ export default function FestivalDetailSheet({
       setNearbyCultureStatus('nocoords');
     } else {
       let cancelled = false;
-      setNearbyStatus('loading');
-      setNearbyFoodStatus('loading');
-      setNearbyLeportsStatus('loading');
-      setNearbyCultureStatus('loading');
-      fetchNearbyTourAttractions({
+      const cachedSpots = readNearbyAttractionCache({
         lat: pt.lat,
         lng: pt.lng,
         radiusKm: 8,
         limit: 8,
-      }).then((res) => {
-        if (cancelled) return;
-        const spots = Array.isArray(res?.spots) ? res.spots : [];
-        setNearbySpots(spots);
-        if (res?.error) setNearbyStatus('error');
-        else if (!spots.length) setNearbyStatus('empty');
-        else setNearbyStatus('ok');
       });
+      if (cachedSpots) {
+        setNearbySpots(cachedSpots);
+        setNearbyStatus(cachedSpots.length ? 'ok' : 'empty');
+      } else {
+        setNearbyStatus('loading');
+      }
+      setNearbyFoodStatus('loading');
+      setNearbyLeportsStatus('loading');
+      setNearbyCultureStatus('loading');
+      if (!cachedSpots) {
+        fetchNearbyTourAttractions({
+          lat: pt.lat,
+          lng: pt.lng,
+          radiusKm: 8,
+          limit: 8,
+        }).then((res) => {
+          if (cancelled) return;
+          const spots = Array.isArray(res?.spots) ? res.spots : [];
+          setNearbySpots(spots);
+          if (res?.error) setNearbyStatus('error');
+          else if (!spots.length) setNearbyStatus('empty');
+          else setNearbyStatus('ok');
+        });
+      }
       fetchNearbyTourRestaurants({
         lat: pt.lat,
         lng: pt.lng,
