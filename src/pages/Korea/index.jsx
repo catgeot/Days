@@ -168,6 +168,9 @@ function buildIndexListHeadline({
   return t('korea.festival.headlineGeneral', { time, tasteSuffix });
 }
 
+/** NBSP before · stays inside nowrap; breakable space follows each span. */
+const PANEL_META_MIDDOT_SUFFIX = '\u00A0·';
+
 /**
  * @param {{ segments: { id: string, text: string, wrap?: boolean, nowrap?: boolean }[] }} p
  */
@@ -177,19 +180,21 @@ function FestivalPanelListMetaLine({ segments }) {
   return (
     <>
       {segments.map((seg, i) => (
-        <span
-          key={seg.id || String(i)}
-          className={
-            seg.nowrap
-              ? 'whitespace-nowrap'
-              : seg.wrap
-                ? 'min-w-0 break-keep'
-                : 'whitespace-nowrap'
-          }
-        >
-          {seg.text}
-          {i < last ? ' · ' : ''}
-        </span>
+        <React.Fragment key={seg.id || String(i)}>
+          <span
+            className={
+              seg.nowrap
+                ? 'whitespace-nowrap'
+                : seg.wrap
+                  ? 'min-w-0 break-keep'
+                  : 'whitespace-nowrap'
+            }
+          >
+            {seg.text}
+            {i < last ? PANEL_META_MIDDOT_SUFFIX : null}
+          </span>
+          {i < last ? ' ' : null}
+        </React.Fragment>
       ))}
     </>
   );

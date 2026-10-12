@@ -97,9 +97,8 @@ export function buildFestivalPanelListMetaSegments({
  */
 export function formatFestivalPanelListMetaPlain(segments) {
   const list = segments || [];
+  const last = list.length - 1;
   return list
-    .map((seg, i) =>
-      i < list.length - 1 ? `${seg.text} · ` : seg.text,
-    )
+    .map((seg, i) => (i < last ? `${seg.text} · ` : seg.text))
     .join('');
 }

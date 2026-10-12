@@ -172,6 +172,10 @@ assert(
   'EN Gwangju integrated meta',
 );
 
+const plainJeonnam = formatFestivalPanelListMetaPlain(jeonnamSegs);
+assert(plainJeonnam.includes('13건 · 시·군별 · '), 'plain meta space after mid-dot');
+assert(!plainJeonnam.includes('13건 ·시'), 'plain meta no collapsed space after dot');
+
 if (failed) {
   console.error(`\n${failed} assertion(s) failed`);
   process.exit(1);
