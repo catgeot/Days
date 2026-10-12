@@ -38,6 +38,7 @@
 - **이어서** tip `6a1954d4` (client `9e2eadc8`). 주차 데이터가 없으면 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 전화번호»만 남기고 축제 페이지 문장을 뺀다. 숙소는 카드의 이름·거리 2~3곳과 `[숙소 카드]` 한 번, 목록이 없으면 20km 권역. 맛집은 거리 없는 곳을 빼고 거리 있는 다음 곳을 넣는다. `mooni_chat`은 v27과 이 브랜치 모두 기본 FAST `gemini-3.1-flash-lite`. Edge는 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 243 pass. 배포·머지 안 함.
 - **이어서** `축제 MOONi #3, 칩 말풍선` · tip `b13bc4f9` (client `5975fb91`). main `#431` `daf8eca4`와 같이 둔다. 칩 말풍선은 «볼거리·분위기 알려 줘»(영문 `Tell me the sights and atmosphere`)이고 지시문은 서버·복원 스레드의 프롬프트로만 남는다. 영어 첫 답은 English (한글), 종료와 다음 회가 근처보다 앞, 출처 없는 분위기 문장은 뺀다. 이번 Edge 파일은 `templates.js`. 주차·숙소·맛집 수정은 유지. `npm run test:health` 249 pass. 배포·머지 안 함.
 - **이어서** `축제 MOONi #4, 주차·첫답` · tip `99935127`. 주차 데이터는 요금·대수·가능·TourAPI 주차 필드만 인정하고 설명·장소의 «천지연 주차장»은 제외한다. 데이터가 없으면 찾아볼·알아볼·볼 수 있어요·see/find 축제 페이지 문장도 공식 안내로 바꾼다. 서귀포 506616 첫답은 홍보 구호를 빼고 «청소년 페스타 경연이 있어요»이며 «10/20~22, 11일 뒤 시작해요»다. Edge 파일은 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 251 pass. 배포·머지 안 함.
+- **이어서** `축제 MOONi #5, 숙소 목록` · tip `abc109da`. staging v24(tip `c130c4a8`)에서 숙소 요청에 카드 이름이 없었다. 숙소 질문은 카드 fetch를 최대 3초 기다리고, 가까운 3곳의 이름·거리·유형을 힌트에 넣는다. 목록이 없으면 «권역에서 숙소를 찾을 수 있어요»를 뺀다. 근처 «용천사 함평»은 «용천사»다. 이번 Edge 파일은 없다. `npm run test:health` 251 pass. 배포·머지 안 함.
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
