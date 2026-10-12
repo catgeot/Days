@@ -2,13 +2,23 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 카이로 동선 #8, 줄바꿈
+
+- **세션** `카이로 동선 #8, 줄바꿈` · branch `cursor/cairo-facts-en-8e40` · tip `fb7767d1` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 사실 값의 시각 범위는 nowrap + word-break normal. 출처·링크의 break-all을 제거했다. 블로그 본문 `/blog/e/cairo-travelogue` GEM 요금 줄에도 같은 nowrap. 한글 break-keep은 유지.
+- **VERIFY** `npm run test:health` 264 pass · CI run `38194968204` success. WebKit 390에서 GEM 영문·한글 입장 시간, 공항 출처 «CAI», 블로그 `11:00~13:00`이 각 1줄.
+- **대기** `giza-plateau`·`egyptian-museum` 출처 조각은 #436 병합 후 `origin/main` PR. 영문 `~`→`–`, 헤더 «(카이로)»는 하지 않음.
+- **다음** 제시어 없음
+
 ## 카이로 동선 #7, 영문 문장
 
 - **세션** `카이로 동선 #7, 영문 문장` · branch `cursor/cairo-facts-en-8e40` · tip `3eb6d978` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
 - **조치** 영문만 다듬는다. 술탄 하산은 Al-Rifa'i Mosque가 포함·맞은편이라고 적는다. Uber 안내, leave the country 경보, 코샤리 저녁, GEM «Children under 6 enter free.» 출처 이름은 «관광유물부» / «Ministry of Tourism and Antiquities»이고 주소의 sultan-hasan은 그대로다. 시간 범위는 nowrap.
 - **VERIFY** `npm run test:health` 264 pass · CI run `38193826525` success (lint-and-build, e2e-youtube-session). WebKit 390에서 GEM 입장 시간 4줄은 각 1줄.
 - **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/sultan-hassan-mosque?lang=en` · GEM `.../place/grand-egyptian-museum?lang=en`
-- **다음** 제시어 없음
+- **QA** Site QA PASS at `8adf8f05`. `cursor/cairo-facts-en-8e40` push 금지(동결).
+- **대기** #436 병합 후, 사람이 시키면 `origin/main`에서 작은 PR. 출처 라벨에서 `giza-plateau`·`egyptian-museum` 조각만 제거(영문 «Ministry of Tourism and Antiquities …», 한글 «관광유물부 …»). URL은 그대로. 술탄 하산과 같은 방식. 병합 전에는 시작하지 않는다.
+- **다음** 제시어 없음. #435 QA 결과를 기다린다.
 
 ## 마산 주변 볼거리 #5, 숙소와 분리
 
