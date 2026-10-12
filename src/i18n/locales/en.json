@@ -1562,9 +1562,9 @@
       "nearPanelMeta": "Within {{km}} km · {{count}}",
       "nearEmptyNow": "No festivals now within {{km}} km. Try another time tab.",
       "nearEmpty": "No festivals within {{km}} km. Try another time tab.",
-      "headlineWithPlace": "{{place}} · \"{{time}}\"{{tasteSuffix}} festival list",
-      "headlineGeneral": "\"{{time}}\"{{tasteSuffix}} festival list",
-      "headlineTasteSuffix": " · \"{{taste}}\" themed",
+      "headlineWithPlace": "{{place}} · {{time}}{{tasteSuffix}} festival list",
+      "headlineGeneral": "{{time}}{{tasteSuffix}} festival list",
+      "headlineTasteSuffix": " · {{taste}} themed",
       "panelBySubregion": "By {{unit}}",
       "panelAddrListedAs": "Address listed as {{legalName}}",
       "timeTab": {

@@ -15,6 +15,7 @@ import {
   KOREA_SIDO_SHORT_EN,
   KOREA_TOUR_CAT_EN,
 } from './koreaRegionEn.js';
+import { romanizeKoreanAdminSubregion } from './koreaSubregionRomanize.js';
 
 function isEnLocale(locale) {
   return String(locale || '').startsWith('en');
@@ -128,16 +129,29 @@ export function localizedFestivalCityListLabel(locale, areaCode, cityName) {
  * @param {string | null | undefined} locale
  * @param {string | null | undefined} labelKo
  */
+function hubEnWithAdminSuffix(ko, hubEn) {
+  const en = String(hubEn || '').trim();
+  if (!en) return '';
+  const m = ko.match(/(시|군|구)$/u);
+  if (!m) return en;
+  if (/-(si|gun|gu)$/i.test(en)) return en;
+  const suf = m[0] === '시' ? 'si' : m[0] === '군' ? 'gun' : 'gu';
+  return `${en}-${suf}`;
+}
+
 export function localizedSubregionLabel(locale, labelKo) {
   const ko = String(labelKo || '').trim();
   if (!ko) return '';
   if (ko === '광주시' && isEnLocale(locale)) return 'Gwangju-si';
   if (!isEnLocale(locale)) return ko;
   const fromHub = hubKoToEnMap().get(ko);
-  if (fromHub) return fromHub;
+  if (fromHub) return hubEnWithAdminSuffix(ko, fromHub);
   const bare = ko.replace(/(시|군|구)$/u, '');
-  const fromBare = hubKoToEnMap().get(bare) || hubKoToEnMap().get(`${bare}시`);
-  if (fromBare) return fromBare;
+  const fromBare =
+    hubKoToEnMap().get(bare) || hubKoToEnMap().get(`${bare}시`);
+  if (fromBare) return hubEnWithAdminSuffix(ko, fromBare);
+  const roman = romanizeKoreanAdminSubregion(ko);
+  if (roman && !/[가-힣]/u.test(roman)) return roman;
   return KOREA_SIDO_SHORT_EN[ko] || KOREA_SIDO_SHORT_EN[bare] || bare || ko;
 }
 
