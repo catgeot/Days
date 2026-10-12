@@ -194,3 +194,13 @@
 - **VERIFY** `npm run test:health` 249 pass · CI run `38187602895` success
 - **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
 - **다음** `마산 주변 볼거리 #3, 피드백 반영`
+
+## 마산 주변 볼거리 #3, warm 캐시
+
+- **세션** `마산 주변 볼거리 #3, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `2a8dbde0` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
+- **원인** 합본은 근처 bbox(Supabase)가 끝나야 그려지는데 그 응답은 캐시가 없다. 축제 목록 캐시는 sessionStorage라 새 탭 warm은 창 조회를 다시 한다. 국향(638576)은 목록 창 밖 프로모션이라 시트가 상세를 기다린다. 상세·프로모 펌프는 목록 페인트의 게이트가 아니다.
+- **조치** 근처 명소·축제 목록·창 밖 좌표를 sessionStorage와 localStorage에 둔다. 같은 탭에서 다시 열면 네트워크 없이 합본을 그린다. 상세 본문은 그대로 다시 받는다.
+- **WebKit 390** 같은 하네스·같은 런, 같은 탭 warm. 합본 ms PR cold/warm · main cold/warm: 마산 3847/1393 · 3800/2246. 국향 5625/1335 · 5365/4539. 강릉 3601/1491 · 4665/2780. warm은 근처 재요청 0. 제목 이동 마산 1px · 국향 1px · 강릉 0–1px. 첫 항목은 임항선 그린웨이 · 보광사(함평) · 강릉 오금집.
+- **VERIFY** `npm run test:health` 251 pass · CI run `38189434670`
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
+- **다음** `마산 주변 볼거리 #4, 피드백 반영`
