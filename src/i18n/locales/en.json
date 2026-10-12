@@ -1645,6 +1645,7 @@
         "nearbySightsLoading": "Loading things to see nearby…",
         "nearbySightsError": "Could not load things to see nearby.",
         "nearbySightsEmpty": "No things to see registered nearby.",
+        "nearSectionsLoading": "Loading nearby sections…",
         "stayTour": "Stays · tours",
         "stayKeyword": "Stays · {{keyword}}",
         "stayStripTitle": "Your trip dates",
