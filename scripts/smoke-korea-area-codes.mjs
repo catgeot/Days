@@ -6,6 +6,7 @@
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { auditAllSidoCityChipSumsMatchList } from '../src/pages/Korea/festivalListChipGroupSync.js';
 import {
   areaCodeForHubId,
   hubIdsForArea,
@@ -19,12 +20,17 @@ import {
   buildSidoTags,
   detectSidoCode,
   extractCityLabels,
+  extractSubregionLabels,
   filterByRegion,
 } from '../src/pages/Korea/festivalRegionTags.js';
 import { areaCodeFromJeonnamGwangjuIntegratedAddr } from '../src/pages/Home/lib/koreaTourAddrNormalize.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const JSON_PATH = join(__dirname, '../src/pages/Home/data/koreaAreaCodes.json');
+const FESTIVAL_ADDR_FIXTURE_PATH = join(
+  __dirname,
+  'data/korea-festival-region-addr-fixture.json',
+);
 
 let failed = 0;
 function assert(cond, msg) {
@@ -96,7 +102,15 @@ assert(matchSido('광주광역시 북구', '5'), '레거시 광주광역시');
 assert(matchSido('전라남도 순천시', '38'), '레거시 전라남도');
 
 assert(
-  extractCityLabels(integratedJeonnamSi).includes('여수시'),
+  extractSubregionLabels('경기도 광주시 남한산성로 1', '31').includes('광주시'),
+  '경기 광주시 city chip',
+);
+assert(
+  !extractSubregionLabels('광주광역시 북구 하서로', '5').includes('광주시'),
+  '광주광역 북구 no 광주시 chip',
+);
+assert(
+  extractCityLabels(integratedJeonnamSi, '38').includes('여수시'),
   'extractCityLabels 여수시',
 );
 assert(
@@ -131,6 +145,23 @@ assert(
   resolveFestivalItemSidoCode({ areacode: '38', addr1: integratedGwangjuGu }) === '38',
   'item areacode wins over addr',
 );
+
+const festivalAddrFixture = JSON.parse(
+  readFileSync(FESTIVAL_ADDR_FIXTURE_PATH, 'utf8'),
+);
+const fixtureItems = festivalAddrFixture.items || [];
+assert(fixtureItems.length >= 100, 'festival addr fixture size');
+const chipSumAudit = auditAllSidoCityChipSumsMatchList(fixtureItems);
+if (!chipSumAudit.ok) {
+  for (const m of chipSumAudit.mismatches) {
+    assert(
+      false,
+      `city chip sum ≠ list ${m.label}(${m.areaCode}) list=${m.list} chipSum=${m.chipSum} unlabeled=${m.unlabeled}`,
+    );
+  }
+} else {
+  assert(true, 'all sido city-chip sums match list (fixture)');
+}
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);

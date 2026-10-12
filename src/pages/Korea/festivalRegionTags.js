@@ -44,10 +44,34 @@ export function detectSidoCode(addr) {
 }
 
 /**
+ * @param {string} name
+ * @param {string | number | null | undefined} areaCode
+ */
+function shouldSkipMetroCityToken(name, areaCode) {
+  const code = String(areaCode || '');
+  if (
+    /^(서울특별시|세종특별자치시|(?:부산|대구|인천|광주|대전|울산)광역시)$/u.test(name)
+  ) {
+    return true;
+  }
+  if (name === '광주시') {
+    return code !== '31';
+  }
+  if (name === '세종시') {
+    return code !== '8';
+  }
+  if (/^(서울|부산|대구|인천|대전|울산)시$/u.test(name)) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * @param {string} addr
+ * @param {string | number | null | undefined} [areaCode]
  * @returns {string[]} 시/군 라벨 (구 제외)
  */
-export function extractCityLabels(addr) {
+export function extractCityLabels(addr, areaCode) {
   const body = stripKoreaTourAddrSidoPrefixes(String(addr || ''));
   if (!body) return [];
   const out = [];
@@ -55,13 +79,7 @@ export function extractCityLabels(addr) {
   for (const token of body.split(/\s+/)) {
     const name = String(token || '').trim();
     if (!name || !CITY_TOKEN_SUFFIX_RE.test(name) || seen.has(name)) continue;
-    // 광역 본명·공식 접미사 스킵 (서울시·서울특별시·부산광역시 등)
-    if (
-      /^(서울|부산|대구|인천|광주|대전|울산|세종)시$/u.test(name) ||
-      /^(서울특별시|세종특별자치시|(?:부산|대구|인천|광주|대전|울산)광역시)$/u.test(name)
-    ) {
-      continue;
-    }
+    if (shouldSkipMetroCityToken(name, areaCode)) continue;
     seen.add(name);
     out.push(name);
   }
@@ -94,7 +112,11 @@ export function extractDistrictLabels(addr) {
  * @returns {string[]}
  */
 export function extractSubregionLabels(addr, areaCode) {
-  const cities = extractCityLabels(addr);
+  const raw = String(addr || '');
+  const cities = extractCityLabels(addr, areaCode);
+  if (String(areaCode) === '8' && !cities.length && /세종특별자치시/u.test(raw)) {
+    return ['세종시'];
+  }
   if (!isMetroArea(areaCode)) return cities;
   const districts = extractDistrictLabels(addr);
   if (!cities.length) return districts;
