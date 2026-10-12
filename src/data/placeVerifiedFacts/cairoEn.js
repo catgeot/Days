@@ -78,7 +78,10 @@ function normalizeToken(raw) {
   if (/^https?:\/\//.test(raw)) return `url:${raw}`;
   if (/^\+\d/.test(raw)) return `phone:${raw}`;
   if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return `date:${raw}`;
-  if (/^\d{1,2}:\d{2}/.test(raw)) return `time:${raw.replace(/[~–—-]/g, '–')}`;
+  if (/^\d{1,2}:\d{2}/.test(raw)) {
+    const canon = raw.replace(/\s*[\u2013\u2014\-~]\s*/g, '~');
+    return `time:${canon}`;
+  }
   if (/^\d+×\d+cm$/.test(raw)) return `size:${raw}`;
   const km = raw.match(/^(\d+)km$/);
   if (km) return `km:${km[1]}`;
