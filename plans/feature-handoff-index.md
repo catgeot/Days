@@ -18,14 +18,14 @@
 
 | | |
 |--|--|
-| **상태** | **#1 cursor 빌드 생략** · tip `e4b61cc6` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · **병합 금지** |
+| **상태** | **#1 cursor 배포 안 만듦** · tip `14fc605c` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · **병합 금지** |
 | **브랜치** | `cursor/vercel-skip-previews-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
-| **Preview** | 없음. 이 브랜치는 `cursor/*`라 병합 뒤에는 Vercel이 빌드를 건너뛴다 |
-| **금지** | `main`·production 빌드 생략 · `git.deploymentEnabled`로 전체 배포 끄기 · feature에 `plans/**` 커밋 · PR 병합 |
+| **Preview** | 없음. 병합 후 `cursor/*`는 배포 자체가 생기지 않는다 |
+| **금지** | `main`·production 배포 끄기 · `deploymentEnabled: false` 전체 끄기 · `ignoreCommand` 재도입 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | ignoreCommand만. exit 0은 건너뜀, exit 1은 빌드. CANCELED도 Hobby 할당량에 들어갈 수 있음 |
+| **남은 일** | `git.deploymentEnabled["cursor/*"]=false`. `main`은 기본값 true. ignoreCommand는 없음 |
 
 **다음 제시어 없음**.
 
@@ -113,24 +113,24 @@
 
 | | |
 |--|--|
-| **상태** | **#10 push** · tip `fade0c3d` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · staging gemini-proxy **v25** (롤백 v24) · prod v27 · **PR 머지 금지** |
+| **상태** | **#11 push** · tip `deb525b7` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · staging gemini-proxy **v26** (롤백 v24) · prod v27 · **PR 머지 금지** |
 | **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
 | **금지** | prod `gemini-proxy` 배포 · staging 재배포는 사람 요청 때만 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). staging gemini-proxy는 v25, 롤백은 v24. 모델은 바꾸지 않았다. 첫 답 순서는 날짜, 행사장·프로그램, 개요의 분위기, 근처, 페이지다. 서귀포 분위기 문장은 남고 «축제 분위기가 저녁까지 이어져요»가 근처보다 앞이다. «일대 및»은 «일대와»다. 근처 문장은 이름 토큰만 바꾸고 문장 전체를 지우지 않는다. 강릉 첫 답은 5문장이고 «월화거리에서 축제 분위기가 저녁까지 이어져요»가 있다. 로컬 390 Chromium, staging v25. 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다. `npm run test:health` 271 pass. PR 머지 안 함. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). staging gemini-proxy는 v26, 롤백은 v24. 모델은 바꾸지 않았다. 서귀포 506616 첫 답은 날짜, 천지연 일대·서귀포 원도심, 함께 걷는 퍼레이드와 «축제 분위기가 저녁까지 이어져요», 근처, 페이지다. 강릉 2930716은 «장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요»이고 월화거리는 앞 문장에만 있다. 저녁 문장은 운영 시각이 저녁일 때만 쓴다. 로컬 390 Chromium, staging v26. 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다. `npm run test:health` 273 pass. PR 머지 안 함. |
 
 **다음 제시어**:
 
 ```
-축제 MOONi #11, 숙소 좌표는 별도
+축제 MOONi #12, 숙소 좌표는 별도
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip fade0c3d
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip deb525b7
 금지: prod gemini-proxy 배포 · staging 재배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push · 이 PR에서 MRT 좌표
-작업: 첫 답 순서와 분위기 문장은 tip fade0c3d, staging gemini-proxy v25(롤백 v24)다. prod는 v27. MRT 숙소 좌표와 숙소 카드 거리순은 새 PR이다. Cos가 문장을 더 고치면 그 문장만 이 브랜치에서 고친다.
+작업: 강릉 음식·저녁 문장과 서귀포 첫 답은 tip deb525b7, staging gemini-proxy v26(롤백 v24)다. prod는 v27. MRT 숙소 좌표와 숙소 카드 거리순은 새 PR이다. Cos가 문장을 더 고치면 그 문장만 이 브랜치에서 고친다.
 검증: npm run test:health
 ```
 
