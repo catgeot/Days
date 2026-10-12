@@ -1197,6 +1197,35 @@ export function stripLodgingCalendarEcho(text) {
   return stripFestivalCalendarEcho(text);
 }
 
+/**
+ * «A를 맛보며 월화거리에서 축제 분위기가 저녁까지 이어져요» joins as one subject.
+ * The venue already named in the previous sentence is not repeated.
+ */
+function rewriteFoodEveningJoin(text) {
+  return String(text || '').replace(
+    /([^\n.!?。]+?)(을|를)\s*맛보며(?:\s+(?:[가-힣0-9·]+\s+){0,2}[가-힣0-9·]+에서)?\s*축제 분위기가 저녁까지 이어져요/g,
+    '$1$2 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요',
+  );
+}
+
+/** Drop the evening clause when playtime and overview do not run into the evening. */
+function stripUnverifiedEveningClause(text) {
+  const parts = String(text || '').split(/(?<=[.!?。])\s+/);
+  return parts.map((sentence) => {
+    if (!/저녁까지 이어/.test(sentence)) return sentence;
+    let next = sentence
+      .replace(/,?\s*축제 분위기가 저녁까지 이어져요\.?/g, '')
+      .replace(/(?:^|\s)(?:[가-힣0-9·]+\s+){0,2}[가-힣0-9·]+에서\s*저녁까지 이어져요\.?/g, '')
+      .replace(/저녁까지 이어져요\.?/g, '')
+      .trim();
+    next = next.replace(/맛볼 수 있고,?$/g, '맛볼 수 있어요');
+    next = next.replace(/[,，]\s*$/g, '').trim();
+    if (!next) return '';
+    if (!/[.!?。]$/.test(next)) next = `${next}.`;
+    return next;
+  }).filter(Boolean).join(' ');
+}
+
 export function polishFestivalModelReply(reply, options = {}) {
   let text = String(reply || '').trim();
   if (String(options.locale || 'ko').slice(0, 2) !== 'en') text = dropFestivalPlannerSentences(text);
@@ -1220,6 +1249,8 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteVenueParkingLotPhrases(text, options);
     text = stripVenueAreaNearbyRepeat(text, options);
     text = polishWaAndGeurigoList(text);
+    text = rewriteFoodEveningJoin(text);
+    if (options.evening === false) text = stripUnverifiedEveningClause(text);
     text = stripTrailingFestivalDateSentence(text);
     text = dropDateLinkFragmentSentences(text);
     text = dedupeStaySearchLinks(text);

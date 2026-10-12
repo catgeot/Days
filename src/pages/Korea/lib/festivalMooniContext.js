@@ -284,13 +284,18 @@ function shortVenue(venue) {
   return parts.join(' ');
 }
 
-function runsIntoEvening(ctx) {
-  const blob = `${ctx?.title || ''} ${ctx?.venue || ''} ${ctx?.program || ''} ${ctx?.overview || ''}`;
+/** Evening only when playtime ends at 19:00 or later, or the overview says so. */
+export function festivalRunsIntoEvening(ctx) {
+  const blob = `${ctx?.title || ''} ${ctx?.venue || ''} ${ctx?.program || ''} ${ctx?.sceneOverview || ''} ${ctx?.overview || ''}`;
   if (/야간|야시장|밤시장|나이트/.test(blob)) return true;
   const times = [...String(ctx?.timeText || '').matchAll(/(\d{1,2})\s*:\s*\d{2}/g)];
   if (!times.length) return false;
   const hour = Number(times[times.length - 1][1]);
   return hour >= 19 || hour < 6;
+}
+
+function runsIntoEvening(ctx) {
+  return festivalRunsIntoEvening(ctx);
 }
 
 function openingNearby(names) {
@@ -662,6 +667,16 @@ function enAtmosphere(ctx) {
   return '';
 }
 
+/** «A를 맛보는 자리예요» plus evening becomes one grammatical sentence, without a second venue. */
+function koFoodEveningSentence(foodSentence) {
+  const body = String(foodSentence || '').replace(/\.$/, '').trim();
+  const match = body.match(/^(.+?)(?:을|를)\s*맛보는 자리(?:예요|이에요)?$/);
+  if (!match) return '';
+  const foods = match[1];
+  const particle = hangulHasBatchim(foods) ? '을' : '를';
+  return `${foods}${particle} 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요.`;
+}
+
 function mergeKo(atmosphere, program) {
   if (atmosphere && program) {
     const head = atmosphere.replace(/져요\.$/, '지고').replace(/요\.$/, '고');
@@ -757,8 +772,14 @@ function openingPieces(ctx, today, isEn) {
   }
   const extraProgram = overviewSentences[0] ? program : '';
   let extra = isEn ? mergeEn(atmosphere, extraProgram) : mergeKo(atmosphere, extraProgram);
+  const foodJoin = !isEn && runsIntoEvening(ctx) ? koFoodEveningSentence(overviewSentences[0] || '') : '';
   if (parade) extra = parade;
-  else if (lotPhrase && runsIntoEvening(ctx)) extra = '축제 분위기가 저녁까지 이어져요.';
+  else if (foodJoin && !lotPhrase) {
+    const where = streetName(ctx.venue);
+    if (where && names.length) primary = koVenueProgramSentence(where, names);
+    else primary = foodJoin;
+    extra = where && names.length ? foodJoin : '';
+  } else if (lotPhrase && runsIntoEvening(ctx)) extra = '축제 분위기가 저녁까지 이어져요.';
   const second = !extra && overviewSentences[1] ? overviewSentences[1] : '';
   const leadNearby = !date && !primary;
   const nearbySentence = isEn

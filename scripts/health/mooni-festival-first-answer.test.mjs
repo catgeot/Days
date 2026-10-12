@@ -120,10 +120,12 @@ test('festival opening is sentences with dates, link, and no filler', () => {
   const en = buildFestivalMooniSentenceAnswer(ctx, { locale: 'en', now: NOW });
 
   assert.match(ko, /강릉 국수 축제는 10\/15~18, 엿새 뒤 시작해요/);
-  assert.match(ko, /장칼국수와 막국수를 맛보는 자리예요/);
-  assert.match(ko, /먹거리존과 누들 경연대회도 있어요/);
-  assert.match(ko, /월화거리에서 저녁까지 이어지고/);
-  assert.ok(ko.indexOf('월화거리에서 저녁까지') < ko.indexOf('근처에서는'));
+  assert.match(ko, /월화거리에서 먹거리존과 누들 경연대회가 열려요/);
+  assert.match(ko, /장칼국수와 막국수를 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요/);
+  assert.doesNotMatch(ko, /맛보며|월화거리에서 저녁까지/);
+  assert.equal(ko.split('월화거리').length - 1, 1);
+  assert.ok(ko.indexOf('월화거리') < ko.indexOf('맛볼 수 있고'));
+  assert.ok(ko.indexOf('축제 분위기가 저녁까지') < ko.indexOf('근처에서는'));
   assert.match(ko, /근처에서는 경포해변, 오죽헌을 둘러볼 수 있어요/);
   assert.doesNotMatch(ko, /하나예요|합니다|입니다|기준|경강로|12:00|입장료|사우나|복지|노인회|주민센터/);
   assert.match(ko, /\[강릉 국수 축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)/);
@@ -170,6 +172,40 @@ test('festival opening is sentences with dates, link, and no filler', () => {
   assert.doesNotMatch(en, /welcome/i);
   assert.doesNotMatch(en, /사랑을 받/);
   assert.ok(countFestivalCardSentences(en) <= 5, en);
+});
+
+test('food evening join keeps one subject and daytime drops the evening clause', () => {
+  const broken = '강릉 국수 축제는 10/15~18, 사흘 뒤 시작해요. 월화거리 일대에서 메인 먹거리존과 국수존, 페어링존이 열려요. 장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛보며 월화거리에서 축제 분위기가 저녁까지 이어져요. 강릉 오금집과 강릉향교, 오죽헌이 근처에 있어요.';
+  const fixed = polishFestivalModelReply(broken, {
+    contentId: '2930716',
+    locale: 'ko',
+    venue: '강릉 월화거리 일원',
+    evening: true,
+  });
+  assert.match(fixed, /장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요/);
+  assert.doesNotMatch(fixed, /맛보며/);
+  const foodAt = fixed.indexOf('맛볼 수 있고');
+  assert.ok(fixed.indexOf('월화거리 일대') >= 0 && fixed.indexOf('월화거리 일대') < foodAt);
+  assert.equal(fixed.slice(foodAt).includes('월화거리'), false);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /맛볼 수 있고/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /맛보며/);
+
+  const day = buildFestivalMooniContext({
+    ...GANGNEUNG,
+    intro: { eventplace: '강릉 월화거리 일원', playtime: '10:00~17:00' },
+    summaryFields: { timeText: '10:00~17:00', fee: { text: '입장료 무료' } },
+  });
+  const dayKo = buildFestivalMooniSentenceAnswer(day, { locale: 'ko', now: NOW });
+  assert.doesNotMatch(dayKo, /저녁까지/);
+  assert.match(dayKo, /장칼국수와 막국수/);
+  const dayPolished = polishFestivalModelReply(broken, {
+    contentId: '2930716',
+    locale: 'ko',
+    venue: '강릉 월화거리 일원',
+    evening: false,
+  });
+  assert.doesNotMatch(dayPolished, /저녁까지|맛보며/);
+  assert.match(dayPolished, /장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있어요/);
 });
 
 test('captured festival fixtures keep real nearby names and drop the info card', () => {
