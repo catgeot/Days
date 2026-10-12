@@ -11,7 +11,7 @@ import {
   getTripcomPackageLinkTarget,
   shouldShowTripcomPackageFlightHotelLink,
 } from '../../components/PlaceCard/common/partnerNavigation';
-import { publishFestivalLodgingStays } from '../Korea/lib/festivalStayLoad.js';
+import { beginFestivalLodgingLoad, publishFestivalLodgingStays } from '../Korea/lib/festivalStayLoad.js';
 import {
   GuestStepper,
   StayRangeCalendar,
@@ -279,7 +279,7 @@ export default function EventStayStrip({
     setStatus('loading');
     setMrtListMeta(null);
 
-    (async () => {
+    const job = (async () => {
       const siblingAlts = stayAreas
         .map((area) => String(area.mrtKeyword || area.name || '').trim())
         .filter((k) => k && k !== stayKeyword);
@@ -297,7 +297,9 @@ export default function EventStayStrip({
           const listed = Array.isArray(partial?.items) ? partial.items : [];
           const bookable = filterBookableMrtStays(listed);
           if (bookable.length === 0) return;
-          setItems(bookable.slice(0, MRT_STAY_PAGE_SIZE));
+          const shown = bookable.slice(0, MRT_STAY_PAGE_SIZE);
+          publishFestivalLodgingStays(contentId, shown, stayOrigin);
+          setItems(shown);
           setMrtListMeta({
             regionId: partial.region?.regionId ?? null,
             keyword: partial.usedKeyword || stayKeyword || placeMeta.label,
@@ -319,10 +321,12 @@ export default function EventStayStrip({
             const retryListed = Array.isArray(partial?.items) ? partial.items : [];
             const retryBookable = filterBookableMrtStays(retryListed);
             if (retryBookable.length === 0 && retryListed.length === 0) return;
-            setItems((retryBookable.length > 0 ? retryBookable : retryListed).slice(
+            const shown = (retryBookable.length > 0 ? retryBookable : retryListed).slice(
               0,
               MRT_STAY_PAGE_SIZE,
-            ));
+            );
+            publishFestivalLodgingStays(contentId, shown, stayOrigin);
+            setItems(shown);
             setMrtListMeta({
               regionId: partial.region?.regionId ?? null,
               keyword: partial.usedKeyword || siblingAlts[0] || stayKeyword,
@@ -366,7 +370,10 @@ export default function EventStayStrip({
         );
         setStatus('empty');
       }
+      publishFestivalLodgingStays(contentId, displayItems, stayOrigin);
+      return displayItems;
     })();
+    beginFestivalLodgingLoad(contentId, job);
 
     return () => {
       cancelled = true;

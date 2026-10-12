@@ -303,6 +303,15 @@ export function stripTrailingHubName(name, hubName) {
   return text.slice(0, -suffix.length).trim() || text;
 }
 
+/** «용천사 함평» with hub «함평» or «함평군» → «용천사». A leading place name stays. */
+export function stripTrailingRegionLabel(name, hubName) {
+  const hub = String(hubName || '').trim();
+  const once = stripTrailingHubName(name, hub);
+  const bare = hub.replace(/(특별자치시|특별자치도|특별시|광역시|시|군)$/, '');
+  if (!bare || bare === hub || bare.length < 2) return once;
+  return stripTrailingHubName(once, bare);
+}
+
 function toOutput(row, distKm) {
   const { point, ...rest } = row;
   return {

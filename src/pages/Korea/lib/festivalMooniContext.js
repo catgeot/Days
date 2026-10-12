@@ -17,6 +17,7 @@ import {
 } from '../../../shared/korea/englishPlaceLabel.js';
 import { parseEngFestivalTitle } from '../festivalTitleEnMerge.js';
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
+import { stripTrailingRegionLabel } from './festivalNearbySights.js';
 
 /**
  * @param {{
@@ -73,7 +74,7 @@ export function buildFestivalMooniContext(input = {}) {
     program: String(program || intro?.program || '')
       .replace(/<[^>]+>/g, ' ')
       .trim(),
-    nearbyPlaces: uniqueNames(nearbyPlaces),
+    nearbyPlaces: uniqueNames(nearbyPlaces).map((name) => stripTrailingRegionLabel(name, hubLabel)),
     nearbyRestaurants: rankFestivalRestaurantRows(nearbyRestaurants),
     stayAreas: filterFestivalStayAreaNames(input.stayAreas, pt?.lat, pt?.lng),
   };

@@ -43,6 +43,7 @@ import {
   waitForFestivalRestaurantNames,
 } from '../../src/pages/Korea/lib/festivalRestaurantLoad.js';
 import {
+  loadFestivalLodgingForAsk,
   publishFestivalLodgingStays,
   resetFestivalLodgingStays,
   waitForFestivalLodgingStays,
@@ -799,6 +800,15 @@ test('English place names lead and Korean stays in parentheses', () => {
   const ko = buildFestivalMooniSentenceAnswer(ctx, { locale: 'ko', now: NOW });
   const en = buildFestivalMooniSentenceAnswer(ctx, { locale: 'en', now: NOW });
   assert.match(ko, /함평 나비축제 근처에서는 함평엑스포공원, 월화거리를 둘러볼 수 있어요/);
+  const yongcheon = buildFestivalMooniContext({
+    item: { contentId: '2', title: '함평 나비축제' },
+    location: { name: '함평군' },
+    nearbyPlaces: ['용천사 함평', '함평엑스포공원'],
+  });
+  assert.deepEqual(yongcheon.nearbyPlaces, ['용천사', '함평엑스포공원']);
+  const yongcheonKo = buildFestivalMooniSentenceAnswer(yongcheon, { locale: 'ko', now: NOW });
+  assert.match(yongcheonKo, /용천사/);
+  assert.doesNotMatch(yongcheonKo, /용천사 함평/);
   assert.doesNotMatch(ko, /하나예요/);
   assert.match(en, /Hampyeong Expo Park \(함평엑스포공원\)/);
   assert.match(en, /Wolhwa Street \(월화거리\)/);
@@ -1666,6 +1676,66 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   const stayMiss = await waitForFestivalLodgingStays('2930716', { timeoutMs: 30 });
   assert.deepEqual(stayMiss, []);
 
+  publishFestivalLodgingStays('2930716', [
+    { itemName: '강릉 세인트존스호텔', lat: 37.7562, lng: 128.8765, categoryName: '호텔' },
+    { itemName: '신라모노그램', lat: 37.7701, lng: 128.9512 },
+    { itemName: '강릉 스카이베이', lat: 37.78, lng: 128.9 },
+    { itemName: '먼 호텔', lat: 37.9, lng: 129.3 },
+  ], { lat: 37.755777, lng: 128.897602 });
+  const lodgingCtx = await loadFestivalLodgingForAsk({
+    title: '강릉 국수 축제',
+    contentId: '2930716',
+    lat: 37.755777,
+    lng: 128.897602,
+  }, { userText: '어디서 자요?' });
+  assert.equal(lodgingCtx.nearbyStays.length, 3);
+  assert.equal(lodgingCtx.nearbyStays[0].name, '강릉 세인트존스호텔');
+  assert.equal(lodgingCtx.nearbyStays[0].type, '호텔');
+  assert.ok(lodgingCtx.nearbyStays.every((row) => row.distKm > 0));
+  const lodgingPayload = await resolveMooniChatKoreaFestivalHint({
+    userText: '어디서 자요?',
+    locale: 'ko',
+    festivalContext: lodgingCtx,
+  });
+  assert.match(lodgingPayload.hint, /강릉 세인트존스호텔/);
+  assert.match(lodgingPayload.hint, /신라모노그램/);
+  assert.match(lodgingPayload.hint, /강릉 스카이베이/);
+  assert.match(lodgingPayload.hint, /호텔/);
+  assert.match(lodgingPayload.hint, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
+  assert.doesNotMatch(lodgingPayload.hint, /먼 호텔/);
+  resetFestivalLodgingStays('506616');
+  const seogwipoStay = loadFestivalLodgingForAsk({
+    title: '서귀포칠십리축제',
+    contentId: '506616',
+    lat: 33.247,
+    lng: 126.56,
+  }, { userText: '숙소', timeoutMs: 400 });
+  publishFestivalLodgingStays('506616', [
+    { itemName: '신화관 제주신화월드', lat: 33.306, lng: 126.317 },
+  ], { lat: 33.247, lng: 126.56 });
+  const seogwipoCtx = await seogwipoStay;
+  assert.equal(seogwipoCtx.nearbyStays[0].name, '신화관 제주신화월드');
+  assert.ok(seogwipoCtx.nearbyStays[0].distKm > 0);
+  publishFestivalLodgingStays('129000', [
+    { itemName: '스톤델리아' },
+    { itemName: '해밀펜션' },
+  ]);
+  const nameOnly = await loadFestivalLodgingForAsk({
+    title: '함평 나비축제',
+    contentId: '129000',
+  }, { userText: '숙소' });
+  assert.deepEqual(nameOnly.nearbyStays.map((row) => row.name), ['스톤델리아', '해밀펜션']);
+  const namePayload = await resolveMooniChatKoreaFestivalHint({
+    userText: '숙소',
+    locale: 'ko',
+    festivalContext: nameOnly,
+  });
+  assert.match(namePayload.hint, /스톤델리아/);
+  assert.match(namePayload.hint, /해밀펜션/);
+  resetFestivalLodgingStays('2930716');
+  resetFestivalLodgingStays('506616');
+  resetFestivalLodgingStays('129000');
+
   const tagged = polishFestivalModelReply(
     '강릉 중앙시장과 지역 특색을 살린 식당이 많아요. 다양한 맛집이 있어요. 미식 여행을 즐겨보세요. 주변의 소문난 지역 식당이에요. 가는 법을 알아보세요.',
     {
@@ -1953,6 +2023,17 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.doesNotMatch(namedStays, /먼 호텔|인근으로|숙소가 자리|다양한 숙소|월화거리/);
   assert.match(namedStays, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
   assert.equal((namedStays.match(/#festival-lodging/g) || []).length, 1);
+  const areaSearch = polishFestivalModelReply(
+    '교동 권역에서 숙소를 찾을 수 있어요. [강릉 숙소 안내](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '어디서 자요?',
+      placeName: '강릉',
+    },
+  );
+  assert.doesNotMatch(areaSearch, /권역에서 숙소를 찾을 수 있어요/);
+  assert.match(areaSearch, /#festival-lodging/);
   const namedHint = await resolveMooniChatKoreaFestivalHint({
     userText: '어디서 자요?',
     locale: 'ko',
@@ -2018,9 +2099,12 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
   assert.equal((chat.match(/loadFestivalAskContext/g) || []).length >= 3, true);
   assert.match(chat, /loadFestivalRestaurantsForAsk/);
-  assert.match(chat, /waitForFestivalLodgingStays/);
+  assert.match(chat, /loadFestivalLodgingForAsk/);
   const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
   assert.match(sheet, /beginFestivalRestaurantLoad/);
+  const stayStrip = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
+  assert.match(stayStrip, /beginFestivalLodgingLoad/);
+  assert.match(stayStrip, /publishFestivalLodgingStays/);
 });
 
 test('festival page link appears once and the closing link stays', () => {

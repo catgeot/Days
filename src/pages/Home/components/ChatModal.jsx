@@ -50,7 +50,7 @@ import {
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 import { fetchNearbyTourRestaurants } from '../../../utils/fetchNearbyTourRestaurants';
 import { waitForFestivalRestaurantNames } from '../../Korea/lib/festivalRestaurantLoad.js';
-import { waitForFestivalLodgingStays } from '../../Korea/lib/festivalStayLoad.js';
+import { loadFestivalLodgingForAsk } from '../../Korea/lib/festivalStayLoad.js';
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
@@ -141,13 +141,7 @@ async function loadFestivalRestaurantsForAsk(festivalContext, ask) {
 }
 
 async function loadFestivalStaysForAsk(festivalContext, ask) {
-  if (!festivalContext || !isFestivalLodgingAsk(ask)) return festivalContext ?? null;
-  const loaded = await waitForFestivalLodgingStays(festivalContext.contentId, {
-    stays: festivalContext.nearbyStays,
-    timeoutMs: 3000,
-  });
-  if (!loaded.length) return festivalContext;
-  return { ...festivalContext, nearbyStays: loaded };
+  return loadFestivalLodgingForAsk(festivalContext, { ...ask, timeoutMs: 3000 });
 }
 
 async function loadFestivalAskContext(festivalContext, ask) {

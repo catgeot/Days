@@ -62,6 +62,7 @@ import {
   mergeFestivalNearbySights,
   rankMooniNearbySights,
   stripTrailingHubName,
+  stripTrailingRegionLabel,
 } from './lib/festivalNearbySights.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
@@ -1179,14 +1180,17 @@ export default function FestivalDetailSheet({
   );
 
   const mooniNearbyPlaces = useMemo(() => {
+    const festivalHub = String(
+      mooniEntryLocation?.name || mooniEntryLocation?.parentCity || '',
+    ).trim();
     const names = [];
     for (const spot of rankMooniNearbySights(nearbySights.items, 6)) {
-      const name = String(spot?.name || '').trim();
+      const name = stripTrailingRegionLabel(nearbySightTitle(spot), festivalHub);
       if (!name || names.includes(name)) continue;
       names.push(name);
     }
     return names;
-  }, [nearbySights]);
+  }, [nearbySights, mooniEntryLocation]);
 
   const mooniNearbyRestaurants = useMemo(() => {
     const rows = [];

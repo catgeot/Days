@@ -1110,17 +1110,35 @@ function lodgingStayRows(values) {
   for (const raw of Array.isArray(values) ? values : []) {
     const name = String(raw?.name || raw?.itemName || '').replace(/\s+/g, ' ').trim();
     const distKm = Number(raw?.distKm ?? raw?.distanceKm);
-    if (!name || !(distKm > 0)) continue;
-    rows.push({ name, distKm });
+    const type = String(raw?.type || '').replace(/\s+/g, ' ').trim();
+    if (!name) continue;
+    rows.push({
+      name,
+      distKm: Number.isFinite(distKm) && distKm > 0 ? distKm : null,
+      ...(type ? { type } : {}),
+    });
   }
-  rows.sort((a, b) => a.distKm - b.distKm);
-  return rows.slice(0, 3);
+  rows.sort((a, b) => {
+    const da = a.distKm > 0 ? a.distKm : Number.POSITIVE_INFINITY;
+    const db = b.distKm > 0 ? b.distKm : Number.POSITIVE_INFINITY;
+    return da - db;
+  });
+  const withDist = rows.filter((row) => row.distKm > 0);
+  return (withDist.length ? withDist : rows).slice(0, 3);
+}
+
+function lodgingStayLabel(row) {
+  const bits = [];
+  if (row.type) bits.push(row.type);
+  const dist = stayDistanceTag(row.distKm);
+  if (dist) bits.push(dist);
+  return bits.length ? `${row.name}(${bits.join(', ')})` : row.name;
 }
 
 function lodgingStayLead(values, locale = 'ko') {
   const rows = lodgingStayRows(values);
   if (!rows.length) return '';
-  const labels = rows.map((row) => `${row.name}(${stayDistanceTag(row.distKm)})`);
+  const labels = rows.map((row) => lodgingStayLabel(row));
   if (String(locale || 'ko').slice(0, 2) === 'en') return `Places to stay: ${labels.join(', ')}.`;
   return `숙소는 ${labels.join(', ')}예요.`;
 }
@@ -1133,12 +1151,21 @@ function lodgingCardLink(contentId, locale = 'ko') {
     : `[숙소 카드](${url})`;
 }
 
-/** Named stays from the lodging card replace area filler. An empty list keeps the area answer. */
+const LODGING_AREA_SEARCH_RE = /권역에서\s*숙소를\s*찾을\s*수\s*있어요/;
+
+function stripLodgingAreaSearchSentence(text) {
+  const stripped = filterPreservingBreaks(text, (part) => (
+    LODGING_AREA_SEARCH_RE.test(part) && !/\[[^\]]+\]\(https?:\/\//.test(part)
+  ));
+  return stripped.replace(/[^[\n]*권역에서\s*숙소를\s*찾을\s*수\s*있어요[.!]?\s*/g, '').trim();
+}
+
+/** Named stays from the lodging card replace area filler. An empty list drops the area-search sentence. */
 function ensureFestivalLodgingAnswer(text, options = {}) {
   if (!isFestivalLodgingAsk(options)) return String(text || '');
   const lead = lodgingStayLead(options.nearbyStays, options.locale);
   const link = lodgingCardLink(options.contentId, options.locale);
-  if (!lead || !link) return String(text || '');
+  if (!lead || !link) return stripLodgingAreaSearchSentence(text);
   return `${lead}\n\n${link}`;
 }
 
@@ -1714,9 +1741,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
         .join('\n');
       if (lodgingUrl) {
         const placeName = String(festivalContext.hubLabel || '').trim();
-        const stayLabels = lodgingStayRows(festivalContext.nearbyStays).map((row) => (
-          `${row.name}(${stayDistanceTag(row.distKm)})`
-        ));
+        const stayLabels = lodgingStayRows(festivalContext.nearbyStays).map((row) => lodgingStayLabel(row));
         const cardLabel = en ? 'lodging card' : '숙소 카드';
         if (stayLabels.length) {
           hint += en
@@ -1736,7 +1761,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
             : '';
           hint += en
             ? `\n- Lodging answer: the stay list is empty. Name 2 or 3 stay areas within about 20 km of the venue, then end with [${label}](${lodgingUrl}). Do not name the next city. Do not write filler such as "for a comfortable rest", "a variety of stays", or "feel the charm". If the hint lists one stay area, name only that one. Do not answer with only a link. Do not use "here", "this link", or "this place" as the link text. No other stay URL.${areaLine}\n- Do not name non-stay facilities such as saunas, jjimjilbang, or bathhouses.\n- Lodging answer: do not restate the festival dates, a countdown, or a long calendar date. This overrides the festival date-comparison rule.`
-            : `\n- 숙소 답: 숙소 목록이 없다. 축제장에서 약 20km 안의 숙소 권역 2~3곳만 말한 뒤 [${label}](${lodgingUrl})로 끝낸다. 속초처럼 옆 도시는 말하지 않는다. «편안한 휴식을 위해», «다양한 숙소가 자리하고 있어요», «매력을 느끼며», «인근으로 … 권역에서 숙소를 찾을 수 있어요», «숙소가 자리하고 있어요» 같은 채움은 쓰지 않는다. 권역이 한 곳이면 그곳만 말한다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 행사 기간을 다시 말하지 않는다. «현재 시작까지 N일 남았습니다»와 «2026년 10월 15일부터» 같은 긴 날짜도 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
+            : `\n- 숙소 답: 숙소 목록이 없다. 짧게 답하고 [${label}](${lodgingUrl})로 끝낸다. «권역에서 숙소를 찾을 수 있어요»는 쓰지 않는다. 속초처럼 옆 도시는 말하지 않는다. «편안한 휴식을 위해», «다양한 숙소가 자리하고 있어요», «매력을 느끼며», «인근으로 … 권역에서 숙소를 찾을 수 있어요», «숙소가 자리하고 있어요» 같은 채움은 쓰지 않는다. 숙소 권역이 힌트에 있으면 그 이름만 짧게 말한다. 권역이 한 곳이면 그곳만 말한다. 링크만 두지 않는다. 「이곳」「여기」「이 링크」로 링크하지 않는다. 다른 숙소 URL은 쓰지 않는다.${areaLine}\n- 사우나·찜질방·목욕탕처럼 숙소가 아닌 시설은 말하지 않는다.\n- 숙소 답에는 행사 기간을 다시 말하지 않는다. «현재 시작까지 N일 남았습니다»와 «2026년 10월 15일부터» 같은 긴 날짜도 쓰지 않는다. 위의 기간 비교 규칙보다 이 문장이 우선한다.`;
         }
       }
     }
