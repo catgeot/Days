@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -531,6 +531,14 @@ export default function FestivalDetailSheet({
   const [infoItems, setInfoItems] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [heroReady, setHeroReady] = useState(false);
+  const [heroBox, setHeroBox] = useState(0);
+  const heroColRef = useRef(null);
+  const heroColMin = useRef(0);
+  const detailSlotRef = useRef(null);
+  const detailMinPx = useRef(0);
+  const detailMinOwner = useRef('');
+  const imageOwnerRef = useRef('');
   const [detailError, setDetailError] = useState('');
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -850,18 +858,34 @@ export default function FestivalDetailSheet({
       setIntro(introHit);
       setCommon(commonHit);
       setInfoItems(infoRows);
-      setImageUrls(urls);
+      setImageUrls((prev) => {
+        if (imageOwnerRef.current === String(contentId) && prev.length > urls.length && urls.length <= 1) {
+          return prev;
+        }
+        return urls;
+      });
       setActiveImage(0);
       setDetailError('');
     };
 
+    const seeded = seed ? [toHttps(seed)].filter(Boolean) : [];
+    const isNewFestival = imageOwnerRef.current !== String(contentId);
+    if (isNewFestival) {
+      imageOwnerRef.current = String(contentId);
+      setImageUrls(seeded);
+      setHeroReady(seeded.length === 0);
+      setHeroBox(0);
+      if (!prefetchMatches) {
+        setIntro(null);
+        setCommon(null);
+        setInfoItems([]);
+      }
+    } else {
+      setImageUrls((prev) => (prev.length > 1 ? prev : seeded));
+    }
+
     if (prefetchMatches) {
       applyDetailPayload(prefetchedTourDetail, { ok: true, images: [] });
-    } else {
-      setIntro(null);
-      setCommon(null);
-      setInfoItems([]);
-      setImageUrls(seed ? [toHttps(seed)].filter(Boolean) : []);
     }
 
     (async () => {
@@ -883,6 +907,44 @@ export default function FestivalDetailSheet({
       detailFetchGenRef.current += 1;
     };
   }, [item?.contentId, item?.contentTypeId, prefetchedTourDetail, t]);
+
+  useEffect(() => {
+    const seed = toHttps(festivalImage(item));
+    if (!item?.contentId || !seed) return undefined;
+    let cancelled = false;
+    const img = new Image();
+    const done = () => {
+      if (!cancelled) setHeroReady(true);
+    };
+    img.onload = done;
+    img.onerror = done;
+    img.src = seed;
+    if (img.complete) done();
+    return () => {
+      cancelled = true;
+    };
+  }, [item?.contentId, item?.firstimage, item?.imageUrl, item?.firstimage2]);
+
+  if (detailMinOwner.current !== String(item?.contentId || '')) {
+    detailMinOwner.current = String(item?.contentId || '');
+    detailMinPx.current = 0;
+    heroColMin.current = 0;
+  }
+
+  useLayoutEffect(() => {
+    const el = detailSlotRef.current;
+    if (!el || !detailLoading) return;
+    const height = Math.ceil(el.getBoundingClientRect().height);
+    if (height > 0) detailMinPx.current = height;
+  }, [detailLoading, item?.contentId]);
+
+  useLayoutEffect(() => {
+    const heading = document.querySelector('[data-nearby-heading]');
+    const col = heroColRef.current;
+    if (!heading || !col) return;
+    const height = Math.ceil(col.getBoundingClientRect().height);
+    if (height > heroColMin.current) heroColMin.current = height;
+  }, [heroReady, detailLoading, imageUrls.length, heroBox, item?.contentId]);
 
   const {
     transformStyle: lightboxTransformStyle,
@@ -1265,8 +1327,14 @@ export default function FestivalDetailSheet({
 
   const showProgram = Boolean(programText);
   const hasProgramTab = showProgram || detailSections.length > 0;
-  const hasPhotoTab = imageUrls.length > 1;
+  const photoLatchRef = useRef({ id: '', on: false });
+  if (photoLatchRef.current.id !== String(item?.contentId || '')) {
+    photoLatchRef.current = { id: String(item?.contentId || ''), on: false };
+  }
+  if (imageUrls.length > 1) photoLatchRef.current.on = true;
+  const hasPhotoTab = imageUrls.length > 1 || photoLatchRef.current.on;
   const showTabs = true;
+  const nearbyPending = nearbyStatus === 'loading' || nearbyStatus === 'idle';
 
   useEffect(() => {
     if (activeTab === TAB_PROGRAM && !hasProgramTab) {
@@ -1475,7 +1543,11 @@ export default function FestivalDetailSheet({
         aria-labelledby="korea-festival-sheet-title"
       >
         {hero ? (
-          <div className="relative flex shrink-0 flex-col md:w-[46%] lg:w-1/2 md:min-h-0 md:self-stretch bg-stone-100">
+          <div
+            ref={heroColRef}
+            className="relative flex shrink-0 flex-col md:w-[46%] lg:w-1/2 md:min-h-0 md:self-stretch bg-stone-100"
+            style={heroColMin.current > 0 ? { minHeight: heroColMin.current } : undefined}
+          >
             <button
               type="button"
               onClick={() => {
@@ -1488,7 +1560,8 @@ export default function FestivalDetailSheet({
               onTouchStart={onHeroTouchStart}
               onTouchEnd={onHeroTouchEnd}
               onTouchCancel={onHeroTouchCancel}
-              className="group relative flex w-full items-center justify-center bg-stone-200/70 text-left touch-pan-y md:min-h-0 md:flex-1 md:overflow-hidden"
+              className="group relative flex w-full items-center justify-center overflow-hidden bg-stone-200/70 text-left touch-pan-y md:min-h-0 md:flex-1 md:overflow-hidden"
+              style={heroBox ? { height: heroBox } : undefined}
               aria-label={
                 imageUrls.length > 1
                   ? t('korea.festival.detail.heroExpandSwipe')
@@ -1502,9 +1575,16 @@ export default function FestivalDetailSheet({
                   draggable={false}
                   fetchPriority="high"
                   decoding="async"
+                  onLoad={(event) => {
+                    setHeroReady(true);
+                    const button = event.currentTarget.closest('button');
+                    const height = Math.round(button?.getBoundingClientRect().height || 0);
+                    if (height > 0) setHeroBox((prev) => prev || height);
+                  }}
                   onError={(event) => {
                     if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
                     setHeroImageBroken(true);
+                    setHeroReady(true);
                   }}
                   className="h-auto w-full max-h-[min(52vh,28rem)] object-contain pointer-events-none select-none md:max-h-full md:h-full md:w-full"
                 />
@@ -1526,6 +1606,22 @@ export default function FestivalDetailSheet({
                 </span>
               )}
             </button>
+            {detailLoading && imageUrls.length <= 1 && (
+              <div
+                className="flex gap-2 overflow-x-auto px-4 py-2.5 border-b border-stone-100 bg-white"
+                data-festival-photo-reserve=""
+                aria-hidden="true"
+              >
+                <div className="h-14 w-14 shrink-0" />
+              </div>
+            )}
+            {!detailLoading && imageUrls.length <= 1 && heroColMin.current > 0 && heroBox > 0 && (
+              <div
+                className="shrink-0 bg-white"
+                style={{ height: Math.max(0, heroColMin.current - heroBox) }}
+                aria-hidden="true"
+              />
+            )}
             {imageUrls.length > 1 && (
               <div
                 className="flex gap-2 overflow-x-auto px-4 md:px-4 py-2.5 md:py-3 border-b border-stone-100 md:border-b-0 md:border-t md:border-stone-200/80 bg-white md:bg-stone-50 custom-scrollbar"
@@ -1650,6 +1746,7 @@ export default function FestivalDetailSheet({
               )
             }
             mooniSlot={mooniSummaryCardWillRender ? festivalMooni.inlineButton : null}
+            reserveDetail={detailLoading}
           />
 
           {overview ? (
@@ -1658,6 +1755,12 @@ export default function FestivalDetailSheet({
               overviewLabel={t('korea.festival.detail.labelOverview')}
               expandLabel={t('korea.festival.detail.overviewExpand')}
               collapseLabel={t('korea.festival.detail.overviewCollapse')}
+            />
+          ) : detailLoading ? (
+            <div
+              className="h-[157px] animate-pulse rounded-2xl bg-stone-100/80"
+              data-festival-overview-reserve=""
+              aria-hidden="true"
             />
           ) : null}
 
@@ -1677,18 +1780,11 @@ export default function FestivalDetailSheet({
             </div>
           )}
 
-          {detailLoading && (
-            <div className="flex items-center gap-2 text-sm text-stone-500 py-2">
-              <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-              {t('korea.festival.detail.loadingDetail')}
-            </div>
-          )}
-
           {!detailLoading && detailError && (
             <p className="text-xs text-stone-500">{detailError}</p>
           )}
 
-          {!detailLoading && showTabs && (
+          {showTabs && (
             <div
               ref={tabListRef}
               className="flex gap-1.5 overflow-x-auto border-b border-stone-200 pb-2 custom-scrollbar"
@@ -1728,7 +1824,24 @@ export default function FestivalDetailSheet({
 
           {activeTab === TAB_INFO && (
             <div className="space-y-3">
-              {!detailLoading && (intro || scenicRegion) && (
+              <div
+                ref={detailSlotRef}
+                className="space-y-3"
+                data-festival-detail-slot=""
+                style={detailMinPx.current > 0 ? { minHeight: detailMinPx.current } : undefined}
+              >
+              {detailLoading ? (
+                <div data-festival-detail-skeleton="" aria-hidden="true" className="space-y-3">
+                  {[0, 1, 2].map((key) => (
+                    <div key={key} className="space-y-0.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-transparent">주최</p>
+                      <div className="text-sm leading-relaxed">
+                        <span className="inline-block h-5 w-36 animate-pulse rounded bg-stone-200" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (intro || scenicRegion) ? (
                 <div className="space-y-3">
                   {!summaryFields.placeText && (
                     <DetailRow label={t('korea.festival.detail.labelVenue')}>
@@ -1803,37 +1916,42 @@ export default function FestivalDetailSheet({
                     {stripHtml(intro?.subevent || '') || null}
                   </DetailRow>
                 </div>
-              )}
+              ) : null}
+              </div>
 
-              {(scenicRegion ||
+              {heroReady && (scenicRegion ||
                 nearbySights.items.length > 0 ||
+                nearbyPending ||
                 (nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords')) && (
                 <div
                   className="space-y-2 pt-1"
                   data-festival-section="nearAttractions"
                 >
-                  <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                  <p
+                    className="text-[11px] font-bold tracking-widest text-stone-400 uppercase"
+                    data-nearby-heading=""
+                  >
                     {t('korea.festival.detail.nearbySights')}
                   </p>
-                  {nearbyStatus === 'loading' && (
+                  {nearbyPending && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
                       {t('korea.festival.detail.nearbySightsLoading')}
                     </div>
                   )}
-                  {nearbyStatus === 'error' && nearbySights.items.length === 0 && (
+                  {!nearbyPending && nearbyStatus === 'error' && nearbySights.items.length === 0 && (
                     <p className="text-xs text-stone-500">
                       {t('korea.festival.detail.nearbySightsError')}
                     </p>
                   )}
-                  {nearbyStatus !== 'loading' &&
+                  {!nearbyPending &&
                     nearbyStatus !== 'error' &&
                     nearbySights.items.length === 0 && (
                       <p className="text-xs text-stone-500">
                         {t('korea.festival.detail.nearbySightsEmpty')}
                       </p>
                     )}
-                  {nearbySights.items.length > 0 && (
+                  {!nearbyPending && nearbySights.items.length > 0 && (
                     <ul
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
