@@ -80,6 +80,9 @@ assert(
 const tKo = (key, opts = {}) => {
   if (key === 'korea.common.countUnit') return `${opts.count}건`;
   if (key === 'korea.festival.panelBySubregion') return `${opts.unit}별`;
+  if (key === 'korea.festival.panelAddrListedAs') {
+    return `주소 표기: ${opts.legalName}`;
+  }
   if (key === 'korea.common.regionGroup') return '지역별';
   if (key === 'korea.region.unit.cityCounty') return '시·군';
   if (key === 'korea.region.unit.district') return '구';
@@ -88,6 +91,9 @@ const tKo = (key, opts = {}) => {
 const tEn = (key, opts = {}) => {
   if (key === 'korea.common.countUnit') return String(opts.count);
   if (key === 'korea.festival.panelBySubregion') return `By ${opts.unit}`;
+  if (key === 'korea.festival.panelAddrListedAs') {
+    return `Address listed as ${opts.legalName}`;
+  }
   if (key === 'korea.common.regionGroup') return 'By region';
   if (key === 'korea.region.unit.cityCounty') return 'City/county';
   if (key === 'korea.region.unit.district') return 'District';
@@ -102,13 +108,33 @@ const jeonnamSegs = buildFestivalPanelListMetaSegments({
   locale: 'ko',
 });
 assert(jeonnamSegs.length === 3, '전남 meta 3 segments');
+assert(jeonnamSegs[0].text === '13건', '전남 count first');
+assert(jeonnamSegs[1].text === '시·군별', '전남 grouping second');
 assert(
-  jeonnamSegs[2].text === '시·군별' && jeonnamSegs[2].nowrap === true,
-  '전남 grouping segment intact',
+  jeonnamSegs[2].text === '주소 표기: 전남광주통합특별시',
+  '전남 address footnote',
 );
 assert(
-  !formatFestivalPanelListMetaPlain(jeonnamSegs).includes('시·\n'),
-  '전남 plain meta no broken 시·',
+  formatFestivalPanelListMetaPlain(jeonnamSegs) ===
+    '13건 · 시·군별 · 주소 표기: 전남광주통합특별시',
+  '전남 meta plain format',
+);
+
+const gwangjuSegs = buildFestivalPanelListMetaSegments({
+  areaCode: '5',
+  cityName: 'all',
+  count: 8,
+  t: tKo,
+  locale: 'ko',
+});
+assert(
+  formatFestivalPanelListMetaPlain(gwangjuSegs) ===
+    '8건 · 구별 · 주소 표기: 전남광주통합특별시',
+  '광주 meta plain format',
+);
+assert(
+  !formatFestivalPanelListMetaPlain(jeonnamSegs).includes('전남('),
+  'no 전남(…) prefix in meta',
 );
 
 const gyeonggiCitySegs = buildFestivalPanelListMetaSegments({
@@ -128,8 +154,22 @@ const enJeonnamSegs = buildFestivalPanelListMetaSegments({
   locale: 'en',
 });
 assert(
-  enJeonnamSegs[2].text === 'By City/county',
-  'EN grouping single segment',
+  formatFestivalPanelListMetaPlain(enJeonnamSegs) ===
+    '13 · By City/county · Address listed as Jeonnam-Gwangju Special City',
+  'EN Jeonnam integrated meta',
+);
+
+const enGwangjuSegs = buildFestivalPanelListMetaSegments({
+  areaCode: '5',
+  cityName: 'all',
+  count: 8,
+  t: tEn,
+  locale: 'en',
+});
+assert(
+  formatFestivalPanelListMetaPlain(enGwangjuSegs) ===
+    '8 · By District · Address listed as Jeonnam-Gwangju Special City',
+  'EN Gwangju integrated meta',
 );
 
 if (failed) {

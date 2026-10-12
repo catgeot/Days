@@ -1329,6 +1329,7 @@
       "headlineGeneral": "\"{{time}}\"{{tasteSuffix}} 축제 리스트",
       "headlineTasteSuffix": " \"{{taste}}\" 관련",
       "panelBySubregion": "{{unit}}별",
+      "panelAddrListedAs": "주소 표기: {{legalName}}",
       "timeTab": {
         "now": "지금",
         "weekend": "이번 주말",

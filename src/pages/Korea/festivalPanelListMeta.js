@@ -1,12 +1,17 @@
 import {
   localizedFestivalCityListLabel,
-  localizedSidoPanelHeadingPhrase,
   localizedSidoListPhrase,
   localizedSubregionUnitLabel,
 } from '../../i18n/koreaRegionLabels.js';
+import { JEONNAM_GWANGJU_INTEGRATED_SIDO_LEGAL_NAME } from '../Home/lib/koreaTourAddrNormalize.js';
+import { JEONNAM_GWANGJU_INTEGRATED_LEGAL_EN } from '../../i18n/koreaRegionEn.js';
 import { sidoListPhrase } from './festivalRegionTags.js';
 
 const INTEGRATED_PANEL_SIDO = new Set(['5', '38']);
+
+function isEnLocale(locale) {
+  return String(locale || '').startsWith('en');
+}
 
 /**
  * @param {{ areaCode: string, cityName: string, count: number, t: import('i18next').TFunction, locale?: string }} p
@@ -19,22 +24,48 @@ export function buildFestivalPanelListMetaSegments({
   t,
   locale = 'ko',
 }) {
-  const sido = localizedSidoPanelHeadingPhrase(
+  const code = String(areaCode || '');
+  const city = localizedFestivalCityListLabel(locale, areaCode, cityName);
+  const sidoPhrase = localizedSidoListPhrase(
     locale,
     areaCode,
     sidoListPhrase(areaCode),
   );
-  const city = localizedFestivalCityListLabel(locale, areaCode, cityName);
   const segments = [];
-  const sidoWrap = INTEGRATED_PANEL_SIDO.has(String(areaCode));
+
+  const integratedSidoLevel =
+    INTEGRATED_PANEL_SIDO.has(code) && !city && sidoPhrase;
+
+  if (integratedSidoLevel) {
+    segments.push({
+      id: 'count',
+      text: t('korea.common.countUnit', { count }),
+      nowrap: true,
+    });
+    const unit = localizedSubregionUnitLabel(locale, areaCode, t);
+    segments.push({
+      id: 'bySubregion',
+      text: t('korea.festival.panelBySubregion', { unit }),
+      nowrap: true,
+    });
+    const legalName = isEnLocale(locale)
+      ? JEONNAM_GWANGJU_INTEGRATED_LEGAL_EN
+      : JEONNAM_GWANGJU_INTEGRATED_SIDO_LEGAL_NAME;
+    segments.push({
+      id: 'addrListedAs',
+      text: t('korea.festival.panelAddrListedAs', { legalName }),
+      wrap: true,
+    });
+    return segments;
+  }
 
   if (city) {
-    if (sido) {
-      segments.push({ id: 'sido', text: sido, wrap: sidoWrap });
+    if (sidoPhrase) {
+      segments.push({ id: 'sido', text: sidoPhrase, nowrap: true });
     }
     segments.push({ id: 'city', text: city, nowrap: true });
-  } else if (sido) {
-    segments.push({ id: 'place', text: sido, wrap: sidoWrap });
+  } else if (sidoPhrase) {
+    segments.push({ id: 'place', text: sidoPhrase, nowrap: true });
   }
 
   segments.push({
@@ -43,14 +74,14 @@ export function buildFestivalPanelListMetaSegments({
     nowrap: true,
   });
 
-  if ((sido || city) && !city) {
+  if ((sidoPhrase || city) && !city) {
     const unit = localizedSubregionUnitLabel(locale, areaCode, t);
     segments.push({
       id: 'bySubregion',
       text: t('korea.festival.panelBySubregion', { unit }),
       nowrap: true,
     });
-  } else if (!sido && !city) {
+  } else if (!sidoPhrase && !city) {
     segments.push({
       id: 'regionGroup',
       text: t('korea.common.regionGroup'),
@@ -65,8 +96,10 @@ export function buildFestivalPanelListMetaSegments({
  * @param {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} segments
  */
 export function formatFestivalPanelListMetaPlain(segments) {
-  return (segments || [])
-    .map((seg) => seg.text)
-    .filter(Boolean)
-    .join(' · ');
+  const list = segments || [];
+  return list
+    .map((seg, i) =>
+      i < list.length - 1 ? `${seg.text} · ` : seg.text,
+    )
+    .join('');
 }

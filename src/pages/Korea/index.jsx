@@ -173,6 +173,7 @@ function buildIndexListHeadline({
  */
 function FestivalPanelListMetaLine({ segments }) {
   if (!segments?.length) return null;
+  const last = segments.length - 1;
   return (
     <>
       {segments.map((seg, i) => (
@@ -186,8 +187,8 @@ function FestivalPanelListMetaLine({ segments }) {
                 : 'whitespace-nowrap'
           }
         >
-          {i > 0 ? ' · ' : ''}
           {seg.text}
+          {i < last ? ' · ' : ''}
         </span>
       ))}
     </>
