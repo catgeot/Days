@@ -1,6 +1,13 @@
 import { supabase } from '../shared/api/supabase';
 import { mapTourAttractionRow } from '../pages/Home/lib/koreaTourAttractionMap';
 import { isNearbyTourAttractionCandidate } from '../pages/Home/lib/koreaTourAttractionNearbyFilter';
+import {
+  nearbyAttractionCacheKey,
+  readNearbyAttractionCache,
+  writeNearbyAttractionCache,
+} from '../pages/Korea/lib/nearbyAttractionCache';
+
+const inflight = new Map();
 
 /**
  * 축제장 등 좌표 기준 주변 type12 (DB) — 목록 bbox 근사.
@@ -21,6 +28,23 @@ export async function fetchNearbyTourAttractions(opts) {
   }
   const radiusKm = Math.min(Math.max(Number(opts?.radiusKm) || 5, 0.5), 50);
   const limit = Math.min(Math.max(Number(opts?.limit) || 12, 1), 40);
+  const cacheOpts = { lat, lng, radiusKm, limit };
+  if (!opts?.force) {
+    const hit = readNearbyAttractionCache(cacheOpts);
+    if (hit) return { spots: hit, error: null, fromCache: true };
+    const pending = inflight.get(nearbyAttractionCacheKey(cacheOpts));
+    if (pending) return pending;
+  }
+  const job = queryNearbyTourAttractions({ lat, lng, radiusKm, limit, cacheOpts });
+  if (!opts?.force) inflight.set(nearbyAttractionCacheKey(cacheOpts), job);
+  return job.finally(() => {
+    if (inflight.get(nearbyAttractionCacheKey(cacheOpts)) === job) {
+      inflight.delete(nearbyAttractionCacheKey(cacheOpts));
+    }
+  });
+}
+
+async function queryNearbyTourAttractions({ lat, lng, radiusKm, limit, cacheOpts }) {
   const dLat = radiusKm / 111;
   const cos = Math.cos((lat * Math.PI) / 180);
   const dLng = radiusKm / (111 * Math.max(Math.abs(cos), 0.2));
@@ -56,8 +80,7 @@ export async function fetchNearbyTourAttractions(opts) {
     scored.push({ spot, distKm: Math.sqrt(dist2) });
   }
   scored.sort((a, b) => a.distKm - b.distKm);
-  return {
-    spots: scored.slice(0, limit).map((s) => ({ ...s.spot, distKm: s.distKm })),
-    error: null,
-  };
+  const spots = scored.slice(0, limit).map((s) => ({ ...s.spot, distKm: s.distKm }));
+  writeNearbyAttractionCache(cacheOpts, spots);
+  return { spots, error: null, fromCache: false };
 }

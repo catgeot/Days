@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import {
   isFestivalOrEventSight,
@@ -8,7 +11,27 @@ import {
   rankMooniNearbySights,
   stripTrailingHubName,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
+import {
+  mergeNearbyItemImages,
+  missingNearbySightImageIds,
+  nearbySightImagePending,
+} from '../../src/pages/Korea/lib/nearbySightImages.js';
 import { isNearbyTourAttractionTitle } from '../../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
+import {
+  nearbyAttractionCacheKey,
+  readNearbyAttractionCache,
+  writeNearbyAttractionCache,
+} from '../../src/pages/Korea/lib/nearbyAttractionCache.js';
+import {
+  readFestivalOpenDetail,
+  slimFestivalOpenDetail,
+  writeFestivalOpenDetail,
+} from '../../src/pages/Korea/lib/festivalOpenDetailCache.js';
+import {
+  readTourApiProxyCache,
+  tourApiProxyCacheKey,
+  writeTourApiProxyCache,
+} from '../../src/utils/tourApiProxyCache.js';
 
 const origin = { lat: 35.06, lng: 126.52 };
 
@@ -372,5 +395,169 @@ test('drop non-tourist facilities from nearby sights', () => {
   assert.deepEqual(
     merged.items.map((spot) => spot.name),
     ['경포대'],
+  );
+});
+
+test('nearby sights render without waiting for festival detail', () => {
+  const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+  const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
+  assert.equal(sheet.includes('!detailLoading && activeTab === TAB_INFO'), false);
+  assert.equal(sheet.includes('!detailLoading && showTabs'), false);
+  assert.match(sheet, /data-festival-detail-skeleton/);
+  assert.match(sheet, /data-festival-photo-reserve/);
+  assert.match(sheet, /prev.length > urls.length && urls.length <= 1/);
+  const infoAt = sheet.indexOf('{activeTab === TAB_INFO && (');
+  const nearbyAt = sheet.indexOf('data-festival-section="nearAttractions"');
+  const lodgingAt = sheet.indexOf('data-festival-section="lodging"');
+  assert.ok(infoAt >= 0 && nearbyAt > infoAt && lodgingAt > nearbyAt);
+  const nearbyBlock = sheet.slice(infoAt, nearbyAt);
+  assert.match(nearbyBlock, /detailLoading \?/);
+  assert.equal(nearbyBlock.includes('heroReady'), false);
+  const section = sheet.slice(nearbyAt, lodgingAt);
+  assert.match(section, /nearbyPending &&/);
+  assert.match(section, /!nearbyPending && nearbySights\.items\.length > 0/);
+  assert.match(sheet, /fetchNearbyTourAttractions\(/);
+  assert.match(sheet, /readNearbyAttractionCache\(/);
+  const cachedBlock = sheet.slice(sheet.indexOf('const cachedSpots = readNearbyAttractionCache'));
+  assert.ok(cachedBlock.indexOf('if (!cachedSpots)') >= 0);
+  assert.ok(
+    cachedBlock.indexOf('if (!cachedSpots)') < cachedBlock.indexOf('fetchNearbyTourAttractions({'),
+  );
+  const sightsEffectEnd = sheet.indexOf('nearbySectionsWaitForSights');
+  const sightsEffect = sheet.slice(
+    sheet.indexOf('const cachedSpots = readNearbyAttractionCache'),
+    sightsEffectEnd,
+  );
+  assert.equal(sightsEffect.includes('fetchNearbyTourRestaurants'), false);
+  assert.equal(sightsEffect.includes('fetchNearbyTourLeports'), false);
+  assert.equal(sightsEffect.includes('fetchNearbyTourCulture'), false);
+  const restaurantsAt = sheet.indexOf('fetchNearbyTourRestaurants({');
+  assert.ok(sightsEffectEnd >= 0 && restaurantsAt > sightsEffectEnd);
+  const coursesAt = sheet.indexOf('fetchNearbyTourCourses({');
+  const coursesGate = sheet.lastIndexOf(
+    "nearbyStatus === 'loading' || nearbyStatus === 'idle'",
+    coursesAt,
+  );
+  assert.ok(coursesGate >= 0 && coursesGate < coursesAt);
+  const afterNearby = sheet.slice(nearbyAt, lodgingAt);
+  assert.match(afterNearby, /!detailLoading && \(/);
+  assert.match(sheet, /data-festival-lodging-reserve/);
+  assert.match(sheet, /mergeNearbyItemImages\(/);
+  assert.match(sheet, /missingNearbySightImageIds\(nearbySights\.items\)/);
+  const imageKeyAt = sheet.indexOf('const nearbyMissingImageKey');
+  assert.match(
+    sheet.slice(imageKeyAt, imageKeyAt + 280),
+    /nearbyStatus === 'loading' \|\| nearbyStatus === 'idle'/,
+  );
+  assert.match(sheet, /fetchTourApiFirstImage\(/);
+  assert.match(sheet, /data-nearby-thumb-pending/);
+  assert.match(sheet, /if \(imagePending\) return <NearbyThumbSkeleton/);
+  const skeletonFn = sheet.slice(
+    sheet.indexOf('function NearbyThumbSkeleton'),
+    sheet.indexOf('function NearbyRowThumb'),
+  );
+  assert.equal(skeletonFn.includes('Landmark'), false);
+  const stayAt = sheet.indexOf('<FestivalStayStrip');
+  const stayGate = sheet.lastIndexOf('!nearbyPending', stayAt);
+  assert.ok(stayGate > nearbyAt && stayGate < stayAt);
+});
+
+test('early nearby rows pick up images without reordering', () => {
+  const early = [
+    { contentId: '1', name: '임항선 그린웨이', firstImage: null },
+    { contentId: '2', name: '창동예술촌', firstImage: 'https://already.example/a.jpg' },
+    { contentId: '', name: '좌표만' },
+  ];
+  const merged = mergeNearbyItemImages(
+    early,
+    new Map([
+      ['1', 'https://later.example/b.jpg'],
+      ['2', 'https://ignored.example/c.jpg'],
+    ]),
+  );
+  assert.equal(merged[0].name, '임항선 그린웨이');
+  assert.equal(merged[0].firstImage, 'https://later.example/b.jpg');
+  assert.equal(merged[1], early[1]);
+  assert.equal(merged[1].firstImage, 'https://already.example/a.jpg');
+  assert.equal(merged[2], early[2]);
+  assert.deepEqual(missingNearbySightImageIds(early), ['1']);
+  assert.equal(nearbySightImagePending(early[0], new Set()), true);
+  assert.equal(nearbySightImagePending(early[0], new Set(['1'])), false);
+  assert.equal(nearbySightImagePending(merged[0], new Set()), false);
+  assert.equal(nearbySightImagePending({ name: '좌표만' }, new Set()), false);
+});
+
+test('nearby attraction cache round-trips in the given store', () => {
+  const store = new Map();
+  const storage = {
+    getItem: (key) => (store.has(key) ? store.get(key) : null),
+    setItem: (key, value) => store.set(key, value),
+  };
+  const opts = { lat: 35.198, lng: 128.567, radiusKm: 8, limit: 8 };
+  assert.equal(readNearbyAttractionCache(opts, [storage]), null);
+  writeNearbyAttractionCache(opts, [{ name: '임항선 그린웨이', distKm: 0.29 }], [storage]);
+  const hit = readNearbyAttractionCache(opts, [storage]);
+  assert.equal(hit[0].name, '임항선 그린웨이');
+  assert.equal(
+    nearbyAttractionCacheKey({ ...opts, lat: 35.1984 }),
+    nearbyAttractionCacheKey(opts),
+  );
+});
+
+test('out-of-window festival detail opens again from the client cache', () => {
+  const store = new Map();
+  const storage = {
+    getItem: (key) => (store.has(key) ? store.get(key) : null),
+    setItem: (key, value) => store.set(key, value),
+  };
+  const detail = {
+    ok: true,
+    contentId: '638576',
+    common: { contentid: '638576', title: '국향대전', mapx: '126.5', mapy: '35.1', firstimage: 'https://img.example/a.jpg' },
+    intro: { eventstartdate: '20261023', eventenddate: '20261108' },
+  };
+  assert.equal(readFestivalOpenDetail('638576', [storage]), null);
+  writeFestivalOpenDetail('638576', detail, [storage]);
+  const slim = slimFestivalOpenDetail(detail);
+  const hit = readFestivalOpenDetail('638576', [storage]);
+  assert.equal(hit.contentId, '638576');
+  assert.equal(hit.common.mapx, slim.common.mapx);
+  assert.equal(hit.common.mapy, '35.1');
+});
+
+test('locationBasedList for the same coords reopens from the client cache', () => {
+  const store = new Map();
+  const storage = {
+    getItem: (key) => (store.has(key) ? store.get(key) : null),
+    setItem: (key, value) => store.set(key, value),
+  };
+  const body = {
+    action: 'locationBasedList',
+    locale: 'ko',
+    contentTypeId: '39',
+    mapX: 128.5674,
+    mapY: 35.1981,
+    radius: 3000,
+    numOfRows: 8,
+    pageNo: 1,
+    arrange: 'E',
+  };
+  assert.equal(readTourApiProxyCache(body, [storage]), null);
+  writeTourApiProxyCache(body, { ok: false, items: [] }, [storage]);
+  assert.equal(readTourApiProxyCache(body, [storage]), null);
+  writeTourApiProxyCache(body, { ok: true, items: [{ contentId: '1' }] }, [storage]);
+  const hit = readTourApiProxyCache(
+    { ...body, mapX: 128.5671, mapY: 35.1984 },
+    [storage],
+  );
+  assert.equal(hit.ok, true);
+  assert.equal(hit.items[0].contentId, '1');
+  assert.equal(
+    tourApiProxyCacheKey(body),
+    tourApiProxyCacheKey({ ...body, mapX: 128.5671, mapY: 35.1984 }),
+  );
+  assert.notEqual(
+    tourApiProxyCacheKey(body),
+    tourApiProxyCacheKey({ ...body, contentTypeId: '28' }),
   );
 });

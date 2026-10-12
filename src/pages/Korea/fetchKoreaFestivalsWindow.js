@@ -11,34 +11,50 @@ let inflight = null;
 /**
  * @returns {{ items: object[], fetchedAt: number } | null}
  */
-function readCache() {
-  if (typeof sessionStorage === 'undefined') return null;
+function festivalListStores() {
+  const stores = [];
   try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed || !Array.isArray(parsed.items) || typeof parsed.fetchedAt !== 'number') {
-      return null;
-    }
-    if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) return null;
-    return parsed;
+    if (typeof sessionStorage !== 'undefined') stores.push(sessionStorage);
   } catch {
-    return null;
+    /* private mode */
   }
+  try {
+    if (typeof localStorage !== 'undefined') stores.push(localStorage);
+  } catch {
+    /* private mode */
+  }
+  return stores;
+}
+
+function readCache() {
+  for (const store of festivalListStores()) {
+    try {
+      const raw = store.getItem(CACHE_KEY);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.items) || typeof parsed.fetchedAt !== 'number') {
+        continue;
+      }
+      if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) continue;
+      return parsed;
+    } catch {
+      /* opaque */
+    }
+  }
+  return null;
 }
 
 /**
  * @param {object[]} items
  */
 function writeCache(items) {
-  if (typeof sessionStorage === 'undefined') return;
-  try {
-    sessionStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ items, fetchedAt: Date.now() }),
-    );
-  } catch {
-    /* quota */
+  const raw = JSON.stringify({ items, fetchedAt: Date.now() });
+  for (const store of festivalListStores()) {
+    try {
+      store.setItem(CACHE_KEY, raw);
+    } catch {
+      /* quota */
+    }
   }
 }
 
