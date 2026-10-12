@@ -18,16 +18,16 @@
 
 | | |
 |--|--|
-| **상태** | **#6 확인** · 코드 tip `9864e282` · 브랜치 tip `6c572b24` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · **병합 금지** · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
+| **상태** | **#7 문장** · 코드 tip `3eb6d978` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · **병합 금지** · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
 | **브랜치** | `cursor/cairo-facts-en-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
-| **Preview** | git `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · GEM `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
+| **Preview** | git `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/sultan-hassan-mosque?lang=en` · GEM `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
 | **금지** | 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 단위를 한글로 되돌리기 · 국적 목록 추가 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 영문 단위 확인 끝. `USD 25`·`USD 60`·`6 months`·`1 hour`·`6 years`·EGP. 초안 PR은 사람이 본다. |
+| **남은 일** | 지정된 영문 문장과 시간 범위 nowrap 반영. 출처 이름은 «관광유물부» / «Ministry of Tourism and Antiquities», URL의 sultan-hasan은 유지. 사람이 다른 문장을 집어 주기 전에는 문장을 더 고치지 않는다. |
 
-**다음 제시어 없음** (영문 단위 확인 끝). 확인은 `?lang=en` 카이로·GEM Preview.
+**다음 제시어 없음** (이번 문장 패스 끝). 확인은 `?lang=en` 술탄 하산·GEM Preview.
 
 ### 마산 주변 볼거리
 

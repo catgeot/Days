@@ -2,6 +2,14 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 카이로 동선 #7, 영문 문장
+
+- **세션** `카이로 동선 #7, 영문 문장` · branch `cursor/cairo-facts-en-8e40` · tip `3eb6d978` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 영문만 다듬는다. 술탄 하산은 Al-Rifa'i Mosque가 포함·맞은편이라고 적는다. Uber 안내, leave the country 경보, 코샤리 저녁, GEM «Children under 6 enter free.» 출처 이름은 «관광유물부» / «Ministry of Tourism and Antiquities»이고 주소의 sultan-hasan은 그대로다. 시간 범위는 nowrap.
+- **VERIFY** `npm run test:health` 264 pass · CI run `38193826525` success (lint-and-build, e2e-youtube-session). WebKit 390에서 GEM 입장 시간 4줄은 각 1줄.
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/sultan-hassan-mosque?lang=en` · GEM `.../place/grand-egyptian-museum?lang=en`
+- **다음** 제시어 없음
+
 ## 마산 주변 볼거리 #5, 숙소와 분리
 
 - **세션** `마산 주변 볼거리 #5, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `d3449b4b` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
