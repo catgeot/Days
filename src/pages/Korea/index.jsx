@@ -168,8 +168,8 @@ function buildIndexListHeadline({
   return t('korea.festival.headlineGeneral', { time, tasteSuffix });
 }
 
-/** NBSP before · stays inside nowrap; breakable space follows each span. */
-const PANEL_META_MIDDOT_SUFFIX = '\u00A0·';
+/** Visible gap after · uses margin (flex parent collapses inter-span whitespace). */
+const PANEL_META_MIDDOT_SUFFIX = ' ·';
 
 /**
  * @param {{ segments: { id: string, text: string, wrap?: boolean, nowrap?: boolean }[] }} p
@@ -180,21 +180,20 @@ function FestivalPanelListMetaLine({ segments }) {
   return (
     <>
       {segments.map((seg, i) => (
-        <React.Fragment key={seg.id || String(i)}>
-          <span
-            className={
-              seg.nowrap
-                ? 'whitespace-nowrap'
-                : seg.wrap
-                  ? 'min-w-0 break-keep'
-                  : 'whitespace-nowrap'
-            }
-          >
-            {seg.text}
-            {i < last ? PANEL_META_MIDDOT_SUFFIX : null}
-          </span>
-          {i < last ? ' ' : null}
-        </React.Fragment>
+        <span
+          key={seg.id || String(i)}
+          className={
+            seg.nowrap
+              ? 'whitespace-nowrap'
+              : seg.wrap
+                ? 'min-w-0 break-keep'
+                : 'whitespace-nowrap'
+          }
+          style={i < last ? { marginRight: '0.25em' } : undefined}
+        >
+          {seg.text}
+          {i < last ? PANEL_META_MIDDOT_SUFFIX : null}
+        </span>
       ))}
     </>
   );
@@ -2709,7 +2708,7 @@ export default function KoreaFestivalHub() {
                       : t('korea.common.viewed')
                     : indexTitle}
                 </h2>
-                <p className="text-[11px] text-stone-500 leading-snug flex flex-wrap items-baseline">
+                <p className="text-[11px] text-stone-500 leading-snug">
                   {personalTab != null
                     ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
                     : panelListMetaSegments
