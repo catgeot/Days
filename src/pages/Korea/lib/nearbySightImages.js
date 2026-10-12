@@ -1,3 +1,5 @@
+import { resolveListImageUrl } from '../../../utils/listImageUrl.js';
+
 /**
  * Early nearby rows often have no first_image. Later thumb URLs merge in place.
  * @param {unknown} value
@@ -9,13 +11,63 @@ export function usableNearbyImageUrl(value) {
   return raw.replace(/^http:\/\//i, 'https://');
 }
 
+function toHttps(raw) {
+  const s = String(raw || '').trim();
+  if (s.startsWith('//')) return `https:${s}`;
+  return s.replace(/^http:\/\//i, 'https://');
+}
+
+/**
+ * Same URL candidates as the nearby row thumbnail (list role).
+ * @param {object | null | undefined} spot
+ * @param {unknown} [extraThumb]
+ * @returns {string[]}
+ */
+export function nearbyRowThumbCandidateUrls(spot, extraThumb = '') {
+  const out = [];
+  const seen = new Set();
+  for (const raw of [spot?.firstImage, spot?.imageUrl, extraThumb]) {
+    const url = resolveListImageUrl(toHttps(raw), { role: 'list' });
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push(url);
+  }
+  return out;
+}
+
 /**
  * @param {object | null | undefined} item
+ * @param {unknown} [extraThumb]
  */
-export function nearbyItemHasImage(item) {
-  return Boolean(
-    usableNearbyImageUrl(item?.firstImage) || usableNearbyImageUrl(item?.imageUrl),
-  );
+export function nearbyItemHasImage(item, extraThumb = '') {
+  return nearbyRowThumbCandidateUrls(item, extraThumb).length > 0;
+}
+
+/**
+ * After DB/live lookup, ids that still have no displayable thumb → landmark icon.
+ * @param {string[]} ids
+ * @param {Map<string, object>} spotById
+ * @param {Map<string, string>} thumbById
+ * @returns {string[]}
+ */
+export function nearbySightIdsWithoutDisplayableThumb(ids, spotById, thumbById) {
+  const spots = spotById instanceof Map ? spotById : new Map();
+  const thumbs = thumbById instanceof Map ? thumbById : new Map();
+  /** @type {string[]} */
+  const miss = [];
+  for (const id of ids || []) {
+    const key = String(id || '').trim();
+    if (!/^\d{1,32}$/.test(key)) continue;
+    const spot = spots.get(key);
+    const extra = thumbs.get(key);
+    if (!spot) {
+      if (!nearbyRowThumbCandidateUrls({ firstImage: extra }, '').length) miss.push(key);
+      continue;
+    }
+    const merged = mergeNearbyItemImages([spot], thumbs)[0];
+    if (!nearbyRowThumbCandidateUrls(merged, extra).length) miss.push(key);
+  }
+  return miss;
 }
 
 /**
@@ -49,11 +101,13 @@ export function mergeNearbyItemImages(items, urlById) {
     const id = String(item.contentId || '').trim();
     const url = usableNearbyImageUrl(map.get(id));
     if (!url) return item;
-    return {
+    const merged = {
       ...item,
       firstImage: url,
       imageUrl: usableNearbyImageUrl(item.imageUrl) || url,
     };
+    if (!nearbyRowThumbCandidateUrls(merged).length) return item;
+    return merged;
   });
 }
 

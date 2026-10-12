@@ -67,11 +67,14 @@ import {
   fetchKoreaTourAttractionFirstImagesByIds,
   peekKoreaTourAttractionFirstImagesByIds,
   rememberKoreaTourAttractionFirstImage,
+  rememberKoreaTourAttractionFirstImageMiss,
 } from '../Home/lib/koreaTourAttractions';
 import { fetchTourApiFirstImage } from '../../utils/fetchTourApiAttractionDetail';
 import {
   mergeNearbyItemImages,
   missingNearbySightImageIds,
+  nearbyRowThumbCandidateUrls,
+  nearbySightIdsWithoutDisplayableThumb,
   nearbySightImagePending,
   usableNearbyImageUrl,
 } from './lib/nearbySightImages.js';
@@ -297,15 +300,7 @@ function nearbyPlaceLabel(spot) {
 }
 
 function nearbyThumbUrls(spot, extraThumb) {
-  const out = [];
-  const seen = new Set();
-  for (const raw of [spot?.firstImage, spot?.imageUrl, extraThumb]) {
-    const url = resolveListImageUrl(toHttps(raw), { role: 'list' });
-    if (!url || seen.has(url)) continue;
-    seen.add(url);
-    out.push(url);
-  }
-  return out;
+  return nearbyRowThumbCandidateUrls(spot, extraThumb);
 }
 
 function NearbyThumbPlaceholder() {
@@ -345,8 +340,9 @@ function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
   const noteLoaded = (img) => {
     if (img?.complete && img.naturalWidth > 0) setReady(true);
   };
-  if (!thumb) {
-    if (imagePending) return <NearbyThumbSkeleton />;
+  const exhausted = urls.length > 0 && thumbIndex >= urls.length;
+  if (!thumb || exhausted) {
+    if (imagePending && !exhausted) return <NearbyThumbSkeleton />;
     return <NearbyThumbPlaceholder />;
   }
   return (
@@ -769,9 +765,35 @@ export default function FestivalDetailSheet({
   }, [nearbySights.items, nearbyStatus]);
 
   useEffect(() => {
-    const ids = nearbyMissingImageKey ? nearbyMissingImageKey.split(',') : [];
+    const ids = nearbyMissingImageKey ? nearbyMissingImageKey.split(',').filter(Boolean) : [];
     if (!ids.length) return undefined;
     let cancelled = false;
+    const spotById = new Map();
+    for (const spot of nearbySights.items || []) {
+      const id = String(spot?.contentId || '').trim();
+      if (id) spotById.set(id, spot);
+    }
+    /** @type {Map<string, string>} */
+    const localThumbById = new Map();
+    const commitMisses = (missIds) => {
+      const unique = [
+        ...new Set(
+          missIds.map((id) => String(id || '').trim()).filter((id) => /^\d{1,32}$/.test(id)),
+        ),
+      ];
+      if (!unique.length) return;
+      setNearbyImageMiss((prev) => {
+        const next = new Set(prev);
+        let changed = false;
+        for (const id of unique) {
+          if (next.has(id)) continue;
+          next.add(id);
+          changed = true;
+          rememberKoreaTourAttractionFirstImageMiss(id);
+        }
+        return changed ? next : prev;
+      });
+    };
     const applyUrls = (entries) => {
       const usable = [];
       for (const [key, url] of entries) {
@@ -780,6 +802,9 @@ export default function FestivalDetailSheet({
         usable.push([String(key), image]);
       }
       if (!usable.length) return;
+      for (const [key, image] of usable) {
+        localThumbById.set(key, image);
+      }
       setNearbyThumbById((prev) => {
         const next = new Map(prev);
         for (const [key, image] of usable) {
@@ -795,8 +820,16 @@ export default function FestivalDetailSheet({
         return next;
       });
     };
+    const liveTargetsFrom = (thumbMap) =>
+      ids.filter(
+        (id) =>
+          nearbySightIdsWithoutDisplayableThumb([id], spotById, thumbMap).includes(id),
+      );
     const peeked = peekKoreaTourAttractionFirstImagesByIds(ids);
     applyUrls([...peeked.entries()]);
+    for (const [key, image] of peeked.entries()) {
+      if (image) localThumbById.set(key, image);
+    }
     (async () => {
       let dbMap = new Map();
       try {
@@ -806,8 +839,14 @@ export default function FestivalDetailSheet({
       }
       if (cancelled) return;
       applyUrls([...dbMap.entries()]);
-      const liveTargets = ids.filter((id) => !peeked.get(id) && !dbMap.get(id));
-      if (!liveTargets.length) return;
+      for (const [key, image] of dbMap.entries()) {
+        if (image) localThumbById.set(key, image);
+      }
+      const liveTargets = liveTargetsFrom(localThumbById);
+      if (!liveTargets.length) {
+        commitMisses(nearbySightIdsWithoutDisplayableThumb(ids, spotById, localThumbById));
+        return;
+      }
       const liveHits = await Promise.all(
         liveTargets.map(async (id) => {
           try {
@@ -829,22 +868,18 @@ export default function FestivalDetailSheet({
         }),
       );
       if (cancelled) return;
+      for (const [id, url] of liveHits) {
+        const image = usableNearbyImageUrl(url);
+        if (image) localThumbById.set(String(id), image);
+        else rememberKoreaTourAttractionFirstImageMiss(id);
+      }
       applyUrls(liveHits);
-      setNearbyImageMiss((prev) => {
-        const next = new Set(prev);
-        let changed = false;
-        for (const [id, url] of liveHits) {
-          if (usableNearbyImageUrl(url) || next.has(id)) continue;
-          next.add(id);
-          changed = true;
-        }
-        return changed ? next : prev;
-      });
+      commitMisses(nearbySightIdsWithoutDisplayableThumb(ids, spotById, localThumbById));
     })();
     return () => {
       cancelled = true;
     };
-  }, [nearbyMissingImageKey]);
+  }, [nearbyMissingImageKey, nearbySights.items]);
   const tnaDisplayKeyword =
     localizedHubLabel(locale, {
       hubId: nearestHub?.hubId,
