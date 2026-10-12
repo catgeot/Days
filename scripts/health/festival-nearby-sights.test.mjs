@@ -444,6 +444,11 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.match(sheet, /data-festival-lodging-reserve/);
   assert.match(sheet, /mergeNearbyItemImages\(/);
   assert.match(sheet, /missingNearbySightImageIds\(nearbySights\.items\)/);
+  const imageKeyAt = sheet.indexOf('const nearbyMissingImageKey');
+  assert.match(
+    sheet.slice(imageKeyAt, imageKeyAt + 280),
+    /nearbyStatus === 'loading' \|\| nearbyStatus === 'idle'/,
+  );
   assert.match(sheet, /fetchTourApiFirstImage\(/);
   assert.match(sheet, /data-nearby-thumb-pending/);
   assert.match(sheet, /if \(imagePending\) return <NearbyThumbSkeleton/);

@@ -751,10 +751,10 @@ export default function FestivalDetailSheet({
     intro?.venueContentId,
     locale,
   ]);
-  const nearbyMissingImageKey = useMemo(
-    () => missingNearbySightImageIds(nearbySights.items).join(','),
-    [nearbySights.items],
-  );
+  const nearbyMissingImageKey = useMemo(() => {
+    if (nearbyStatus === 'loading' || nearbyStatus === 'idle') return '';
+    return missingNearbySightImageIds(nearbySights.items).join(',');
+  }, [nearbySights.items, nearbyStatus]);
 
   useEffect(() => {
     const ids = nearbyMissingImageKey ? nearbyMissingImageKey.split(',') : [];
