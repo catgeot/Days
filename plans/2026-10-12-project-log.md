@@ -2,6 +2,14 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 카이로 동선 #9, 한글 출처
+
+- **세션** `카이로 동선 #9, 한글 출처 줄바꿈` · branch `cursor/cairo-facts-en-8e40` · tip `e516f770` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 사실 블록 출처·링크에 `break-keep`. 공백 없는 URL만 `overflow-wrap: anywhere`. 카이로 «대사관 공지»가 음절 중간에서 끊기지 않는다. 블로그 줄 끝 «(»는 건드리지 않음.
+- **VERIFY** `npm run test:health` 264 pass · CI run `38197969167` success. WebKit 390 돈·치안 출처는 `word-break: keep-all`, «공지» 1줄.
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=ko`
+- **다음** 제시어 없음
+
 ## 마산 주변 볼거리 #6, 사진 채움
 
 - **세션** `마산 주변 볼거리 #6, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `bb90379f` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
