@@ -2,6 +2,26 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 카이로 동선 #7, 영문 문장
+
+- **세션** `카이로 동선 #7, 영문 문장` · branch `cursor/cairo-facts-en-8e40` · tip `3eb6d978` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 영문만 다듬는다. 술탄 하산은 Al-Rifa'i Mosque가 포함·맞은편이라고 적는다. Uber 안내, leave the country 경보, 코샤리 저녁, GEM «Children under 6 enter free.» 출처 이름은 «관광유물부» / «Ministry of Tourism and Antiquities»이고 주소의 sultan-hasan은 그대로다. 시간 범위는 nowrap.
+- **VERIFY** `npm run test:health` 264 pass · CI run `38193826525` success (lint-and-build, e2e-youtube-session). WebKit 390에서 GEM 입장 시간 4줄은 각 1줄.
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/sultan-hassan-mosque?lang=en` · GEM `.../place/grand-egyptian-museum?lang=en`
+- **QA** Site QA PASS at `8adf8f05`. `cursor/cairo-facts-en-8e40` push 금지(동결).
+- **대기** #436 병합 후, 사람이 시키면 `origin/main`에서 작은 PR. 출처 라벨에서 `giza-plateau`·`egyptian-museum` 조각만 제거(영문 «Ministry of Tourism and Antiquities …», 한글 «관광유물부 …»). URL은 그대로. 술탄 하산과 같은 방식. 병합 전에는 시작하지 않는다.
+- **다음** 제시어 없음. #435 QA 결과를 기다린다.
+
+## 마산 주변 볼거리 #5, 숙소와 분리
+
+- **세션** `마산 주변 볼거리 #5, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `d3449b4b` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
+- **원인** QA r2(tip `21192a6d`)는 제목 이동 0px였으나 합본이 늦었다. 목록이 `heroReady`에 묶여 히어로 이미지가 느린 `fetch-mrt-stays`와 같이 끝난 뒤에야 숙소·음식·레포츠·문화와 한 번에 그려졌다. 클라우드 MRT가 빨라 이전 측정에서는 안 보였다. `tourapi_attraction` 4.75초는 locationBasedList 뒤로 미뤄서가 아니다. 직접 열기에서는 좌표가 생긴 뒤에 요청이 나가고, 그 시각은 main과 같다.
+- **조치** DB 주변+팔경이 정해지면 합본을 그린다. 숙소 스트립은 그 다음에 마운트하고, 음식·레포츠·문화는 자리를 유지한 채 따로 채운다. DB 조회는 상세·이미지보다 먼저 보낸다. 거리순·팔경 소제목·장소 메모·마산 연꽃공원 병합은 그대로다.
+- **WebKit 390** `fetch-mrt-stays` 10초, `locationBasedList` 6초. 목록 ms PR/main: 마산 직접 5454/5680, 카드 1802/2645. 국향 7224/7639. 강릉 4475/5333. 목록 뒤 3초 제목 이동 −1·0·−1·+2px. 첫 항목 임항선 그린웨이 290m · 보광사(함평) 1.4km · 강릉 오금집 320m. DB 시작은 카드 마산 PR 977 / main 960.
+- **VERIFY** `npm run test:health` 267 pass · CI run `38193155520` success (lint-and-build, e2e-youtube-session)
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
+- **다음** `마산 주변 볼거리 #6, 피드백 반영`
+
 ## 마산 주변 볼거리 #4, locationBasedList 분리
 
 - **세션** `마산 주변 볼거리 #4, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `b8775173` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
