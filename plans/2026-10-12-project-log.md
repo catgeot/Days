@@ -2,6 +2,16 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 마산 주변 볼거리 #5, 숙소와 분리
+
+- **세션** `마산 주변 볼거리 #5, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `d3449b4b` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
+- **원인** QA r2(tip `21192a6d`)는 제목 이동 0px였으나 합본이 늦었다. 목록이 `heroReady`에 묶여 히어로 이미지가 느린 `fetch-mrt-stays`와 같이 끝난 뒤에야 숙소·음식·레포츠·문화와 한 번에 그려졌다. 클라우드 MRT가 빨라 이전 측정에서는 안 보였다. `tourapi_attraction` 4.75초는 locationBasedList 뒤로 미뤄서가 아니다. 직접 열기에서는 좌표가 생긴 뒤에 요청이 나가고, 그 시각은 main과 같다.
+- **조치** DB 주변+팔경이 정해지면 합본을 그린다. 숙소 스트립은 그 다음에 마운트하고, 음식·레포츠·문화는 자리를 유지한 채 따로 채운다. DB 조회는 상세·이미지보다 먼저 보낸다. 거리순·팔경 소제목·장소 메모·마산 연꽃공원 병합은 그대로다.
+- **WebKit 390** `fetch-mrt-stays` 10초, `locationBasedList` 6초. 목록 ms PR/main: 마산 직접 5454/5680, 카드 1802/2645. 국향 7224/7639. 강릉 4475/5333. 목록 뒤 3초 제목 이동 −1·0·−1·+2px. 첫 항목 임항선 그린웨이 290m · 보광사(함평) 1.4km · 강릉 오금집 320m. DB 시작은 카드 마산 PR 977 / main 960.
+- **VERIFY** `npm run test:health` 267 pass · CI run `38193155520` success (lint-and-build, e2e-youtube-session)
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
+- **다음** `마산 주변 볼거리 #6, 피드백 반영`
+
 ## 마산 주변 볼거리 #4, locationBasedList 분리
 
 - **세션** `마산 주변 볼거리 #4, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `b8775173` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
