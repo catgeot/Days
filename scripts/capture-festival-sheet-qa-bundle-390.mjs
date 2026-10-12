@@ -11,6 +11,27 @@ const OUT = '/opt/cursor/artifacts/screenshots';
 const PORT = Number(process.env.COS_QA_PREVIEW_PORT || 4174);
 const BASE = `https://127.0.0.1:${PORT}`;
 
+async function dismissLocationPrompt(page) {
+  const hint = page.locator('p').filter({
+    hasText: /위치 허용이 없어|Showing nationwide festivals without location/i,
+  });
+  if (!(await hint.count())) return;
+  const banner = hint.first().locator('xpath=ancestor::div[1]');
+  const close = banner.getByRole('button', { name: /^(닫기|Close)$/i });
+  if (await close.count()) {
+    await close.first().click({ timeout: 5000 }).catch(() => {});
+    await page.waitForTimeout(300);
+  }
+}
+
+async function waitNationwideHeading(page) {
+  await page
+    .locator('h2')
+    .filter({ hasText: /Nationwide|전국/ })
+    .first()
+    .waitFor({ state: 'visible', timeout: 90_000 });
+}
+
 async function waitPreview() {
   for (let i = 0; i < 120; i++) {
     try {
@@ -29,13 +50,15 @@ async function main() {
   const browser = await chromium.launch();
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await context.newPage();
+  page.setDefaultNavigationTimeout(120_000);
+  page.setDefaultTimeout(90_000);
   await page.setViewportSize({ width: 390, height: 900 });
 
   await page.goto(`${BASE}/korea/?lang=en&bust=${Date.now()}`, {
     waitUntil: 'domcontentloaded',
   });
-  await page.waitForLoadState('networkidle', { timeout: 120_000 }).catch(() => {});
-  await page.locator('h2').first().waitFor({ state: 'visible', timeout: 60_000 });
+  await dismissLocationPrompt(page);
+  await waitNationwideHeading(page);
   await page.screenshot({
     path: path.join(OUT, 'bundle-en-nationwide-heading-390.png'),
     clip: { x: 0, y: 0, width: 390, height: 200 },
@@ -61,16 +84,17 @@ async function main() {
   await page.goto(`${BASE}/korea/?lang=ko&bust=${Date.now()}`, {
     waitUntil: 'domcontentloaded',
   });
-  await page.waitForLoadState('networkidle', { timeout: 120_000 }).catch(() => {});
-  await page.locator('h2').first().waitFor({ state: 'visible', timeout: 60_000 });
+  await dismissLocationPrompt(page);
+  await waitNationwideHeading(page);
   await page.screenshot({
     path: path.join(OUT, 'bundle-ko-nationwide-heading-390.png'),
     clip: { x: 0, y: 0, width: 390, height: 200 },
   });
 
   await page.goto(`${BASE}/korea/?festival=2930716&lang=ko&bust=${Date.now()}`, {
-    waitUntil: 'domcontentloaded',
+    waitUntil: 'commit',
   });
+  await page.waitForLoadState('domcontentloaded', { timeout: 120_000 }).catch(() => {});
   const nearbyHeading = page.locator('[data-nearby-heading]');
   await nearbyHeading.waitFor({ state: 'visible', timeout: 120_000 });
   await nearbyHeading.scrollIntoViewIfNeeded();
