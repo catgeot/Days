@@ -18,14 +18,14 @@
 
 | | |
 |--|--|
-| **상태** | **#1 cursor 빌드 생략** · tip `e4b61cc6` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · **병합 금지** |
+| **상태** | **#1 cursor 배포 안 만듦** · tip `14fc605c` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · **병합 금지** |
 | **브랜치** | `cursor/vercel-skip-previews-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
-| **Preview** | 없음. 이 브랜치는 `cursor/*`라 병합 뒤에는 Vercel이 빌드를 건너뛴다 |
-| **금지** | `main`·production 빌드 생략 · `git.deploymentEnabled`로 전체 배포 끄기 · feature에 `plans/**` 커밋 · PR 병합 |
+| **Preview** | 없음. 병합 후 `cursor/*`는 배포 자체가 생기지 않는다 |
+| **금지** | `main`·production 배포 끄기 · `deploymentEnabled: false` 전체 끄기 · `ignoreCommand` 재도입 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | ignoreCommand만. exit 0은 건너뜀, exit 1은 빌드. CANCELED도 Hobby 할당량에 들어갈 수 있음 |
+| **남은 일** | `git.deploymentEnabled["cursor/*"]=false`. `main`은 기본값 true. ignoreCommand는 없음 |
 
 **다음 제시어 없음**.
 

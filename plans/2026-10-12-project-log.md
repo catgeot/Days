@@ -4,9 +4,9 @@
 
 ## Vercel 프리뷰 #1, cursor 빌드 생략
 
-- **세션** `Vercel 프리뷰 #1, cursor 빌드 생략` · branch `cursor/vercel-skip-previews-8e40` · tip `e4b61cc6` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · 병합 금지
-- **조치** `ignoreCommand`가 `bash scripts/vercel-ignore-build.sh`를 호출한다. production이거나 ref가 `main`이면 exit 1(빌드). `cursor/*` 프리뷰만 exit 0(건너뜀). 빈 ref·`feature/*`는 빌드.
-- **VERIFY** `npm run test:health` 270 pass · CI run `38199762474` success. 종료 코드: production/main 1, preview/main 1, preview/cursor/foo 0, preview/feature/x 1, 빈 env 1.
+- **세션** `Vercel 프리뷰 #1, cursor 빌드 생략` · branch `cursor/vercel-skip-previews-8e40` · tip `14fc605c` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · 병합 금지
+- **조치** `git.deploymentEnabled`의 `cursor/*`만 false. 적지 않은 브랜치(main)는 문서 기본값 true. ignoreCommand는 같이 써도 된다는 문서가 없어 스크립트와 함께 제거.
+- **VERIFY** `npm run test:health` 270 pass · CI run `38200174915` success.
 - **다음** 제시어 없음
 
 ## 마산 주변 볼거리 #7, 빈 사진·스피너
