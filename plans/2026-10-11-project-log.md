@@ -184,3 +184,13 @@
 - **VERIFY** `npm run test:health` 249 pass · CI run `38185463753` success
 - **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · `/place/grand-egyptian-museum?lang=en`
 - **다음** `카이로 동선 #6, 영문 단위 확인`
+
+## 마산 주변 볼거리 #2, 제목 고정
+
+- **세션** `마산 주변 볼거리 #2, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `6b5eb2fc` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지 · 헤더 미변경
+- **원인** 합본 전에 팔경만 그려지고, 상세가 오면 주최·탭이 목록 위에 끼고 더 가까운 TourAPI 행이 맨 위에 들어왔다. WebKit은 스크롤 앵커가 없어 「주변 볼거리」가 내려갔다.
+- **조치** 상세·개요·탭·사진 줄 높이를 로딩 중에 잡아 둔다. 목록은 큐레이션+근처 합본이 된 뒤에만 그린다. 근처 조회는 상세와 병렬이다. 사진 탭은 한 번 열리면 갤러리가 한 장으로 줄어도 유지한다. 거리순·함평 팔경 소제목·장소 메모·중복 제거는 그대로다.
+- **WebKit 390** scrollTop 0. 제목 이동 마산 1px · 국향 0px · 강릉 1px. 첫 항목은 처음부터 임항선 그린웨이 290m · 보광사(함평) 1.4km · 강릉 오금집 320m. 합본까지 cold/warm ms: 마산 4222/4518 · 국향 5787/5825 · 강릉 3936/3613. 목록은 상세 스켈레톤이 있을 때 보인다.
+- **VERIFY** `npm run test:health` 249 pass · CI run `38187602895` success
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
+- **다음** `마산 주변 볼거리 #3, 피드백 반영`

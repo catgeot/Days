@@ -43,24 +43,24 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `7be4d452` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
+| **상태** | **#2 push** · tip `6b5eb2fc` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
 | **브랜치** | `cursor/masan-nearby-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
-| **Preview** | git `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` (Vercel SSO) |
-| **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
+| **Preview** | git `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716` (Vercel SSO) |
+| **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 390에서 주변 목록이 상세 로딩 중에 보이는지 사람이 본다 |
+| **남은 일** | 390 WebKit에서 제목 이동이 8px 안이고 첫 항목이 그대로인지 사람이 본다 |
 
 **다음 제시어**:
 
 ```
-마산 주변 볼거리 #2, 피드백 반영
+마산 주변 볼거리 #3, 피드백 반영
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip 7be4d452
-금지: 헤더 수정 · cairo-qa-8e40 push · feature에 plans 커밋 · PR 병합
-작업: /korea?festival=637693 주변 볼거리가 상세 로딩 중에 보이는지. 어긋난 곳만 고친다.
+브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip 6b5eb2fc
+금지: 헤더 수정 · cairo-qa-8e40 push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 plans 커밋 · PR 병합
+작업: 637693·638576·2930716에서 주변 볼거리 제목이 로딩 중 8px 넘게 움직이는지, 첫 항목이 바뀌는지. 어긋난 곳만 고친다.
 검증: npm run test:health
 ```
 
