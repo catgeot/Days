@@ -33,24 +33,24 @@
 
 | | |
 |--|--|
-| **상태** | **#4 push** · tip `b8775173` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
+| **상태** | **#5 push** · tip `d3449b4b` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
 | **브랜치** | `cursor/masan-nearby-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
 | **Preview** | git `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716` (Vercel SSO) |
 | **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 합본은 locationBasedList보다 먼저 보인다. 마산·국향 같은 탭 warm이 1.5초를 넘는다. 제목 이동은 1px 안. |
+| **남은 일** | 합본은 DB+팔경이 정해지면 숙소·locationBasedList보다 먼저 보인다. 지연 측정(숙소 10초, locationBasedList 6초)에서 PR 목록이 main 이하다. 팔경 소제목·거리순은 유지. |
 
 **다음 제시어**:
 
 ```
-마산 주변 볼거리 #5, 피드백 반영
+마산 주변 볼거리 #6, 피드백 반영
 @plans/feature-handoff-index.md
 @plans/2026-10-12-project-log.md
-브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip b8775173
+브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip d3449b4b
 금지: 헤더 수정 · cairo-qa-8e40 push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 plans 커밋 · PR 병합
-작업: 637693·638576·2930716에서 주변 볼거리 합본이 locationBasedList(맛집·레포츠·문화)보다 먼저 보이는지, 같은 탭 warm이 1.5초 안인지. 어긋난 곳만 고친다.
+작업: 박스에서 637693·638576·2930716 합본이 아직 main보다 늦거나 제목이 8px 넘게 움직이면 그 경로만 고친다. 합본을 fetch-mrt-stays나 locationBasedList 응답 뒤로 다시 묶지 않는다. tip d3449b4b의 10초/6초 측정은 통과했으니 그대로 다시 돌리지 않는다.
 검증: npm run test:health
 ```
 
