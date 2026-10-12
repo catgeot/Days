@@ -30,6 +30,10 @@ export const KOREA_AREA_CODE_EN = {
   39: 'Jeju',
 };
 
+/** Panel list heading parenthetical (area 5·38) — keep short for ~390px wrap. */
+export const JEONNAM_GWANGJU_INTEGRATED_LEGAL_EN =
+  'Jeonnam-Gwangju Special City';
+
 export const KOREA_SIDO_PHRASE_EN = {
   1: 'Seoul',
   2: 'Incheon',

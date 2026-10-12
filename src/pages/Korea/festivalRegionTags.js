@@ -291,6 +291,20 @@ export function cityListPhrase(cityName) {
 }
 
 /**
+ * 리스트 제목·패널 메타용 시·군 표기 (경기 광주시는 접미 유지).
+ * @param {string} cityName
+ * @param {string | number | null | undefined} areaCode
+ */
+export function festivalCityListDisplayPhrase(cityName, areaCode) {
+  if (!cityName || cityName === 'all') return '';
+  const name = String(cityName).trim();
+  if (String(areaCode) === '31' && name === '광주시') {
+    return '광주시';
+  }
+  return cityListPhrase(cityName);
+}
+
+/**
  * UI용 하위 단위 라벨 (시·군 / 구).
  * @param {string | number | null | undefined} areaCode
  */
