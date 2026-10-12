@@ -609,9 +609,19 @@ function lotVenuePhrase(ctx) {
     const label = `${downtown[1].replace(/의$/, '')} 원도심`;
     if (!areas.includes(label)) areas.push(label);
   }
+  return joinVenueAreas(areas);
+}
+
+/** Two venue areas share one trailing «일대»: «천지연과 서귀포 원도심 일대». */
+function joinVenueAreas(areas) {
+  if (!areas.length) return '';
   if (areas.length === 1) return areas[0];
-  const particle = hangulHasBatchim(areas[0]) ? '과' : '와';
-  return `${areas[0]}${particle} ${areas.slice(1).join(', ')}`;
+  const stems = areas
+    .map((area) => String(area || '').replace(/\s*일대$/, '').trim())
+    .filter(Boolean);
+  if (stems.length <= 1) return areas[0];
+  const particle = hangulHasBatchim(stems[0]) ? '과' : '와';
+  return `${stems[0]}${particle} ${stems.slice(1).join(', ')} 일대`;
 }
 
 function joinVenuePrograms(names) {
@@ -1238,6 +1248,38 @@ export function acceptFestivalModelOpening(text, facts, banned = []) {
   return dedupeFestivalPageLinks(ensureOpeningNearby(raw, facts));
 }
 
+function normalizePlaceKey(name) {
+  return stripParentheticals(String(name || ''))
+    .replace(/[\s·ㆍ,，、.!?。'"“”「」『』()（）[\]{}<>~～]/g, '');
+}
+
+function isNearbyOpeningSentence(part) {
+  return /근처에서는|근처에는|근처에 있|둘러볼 수 있어요|you can walk to/i.test(part);
+}
+
+function isFestivalPageLinkSentence(part, facts) {
+  const url = String(facts?.gateoUrl || '');
+  if (url && part.includes(url)) return true;
+  return /\[(?:[^\]]*)\]\(https?:\/\/[^)\s]*[?&]festival=\d+/.test(part);
+}
+
+function nearbyKeysInSentence(part, names) {
+  const key = normalizePlaceKey(part);
+  return names
+    .map((name) => normalizePlaceKey(name))
+    .filter((token) => token.length >= 2 && key.includes(token));
+}
+
+function placePageLinkLast(parts, facts) {
+  const list = [...parts];
+  const linkAt = list.findIndex((part) => isFestivalPageLinkSentence(part, facts));
+  if (linkAt >= 0 && linkAt < list.length - 1) {
+    const [link] = list.splice(linkAt, 1);
+    list.push(link);
+  }
+  return list;
+}
+
 function splitOpeningSentences(raw) {
   return String(raw || '').split(/(?<=[.!?。])\s+/).map((part) => part.trim()).filter(Boolean);
 }
@@ -1273,22 +1315,37 @@ function moveParadeAtmosphereBeforeNearby(raw, facts) {
   return parts.join(' ');
 }
 
-/** When the nearby list has 3 names, an accepted opening names all 3. */
+/** When the nearby list has 3 names, an accepted opening names all 3. A later nearby sentence whose places were already said is dropped. The page link stays last. */
 function ensureOpeningNearby(raw, facts) {
   const names = (Array.isArray(facts?.nearby) ? facts.nearby : []).filter(Boolean);
-  if (names.length < 3 || names.every((name) => raw.includes(name))) return raw;
-  const kept = raw
-    .split(/(?<=[.!?。])\s+/)
-    .map((part) => part.trim())
-    .filter((part) => part && !/둘러볼 수 있어요|you can walk to/i.test(part))
-    .join(' ');
-  const sentence = facts.locale === 'en'
-    ? `Nearby, you can walk to ${enList(names)}.`
-    : koNearbySentence(names, facts.title, false);
-  if (!sentence) return raw;
-  const next = `${kept} ${sentence}`.trim();
-  if (countFestivalCardSentences(next) > MODEL_OPENING_SENTENCE_CAP) return raw;
-  return next;
+  const seen = new Set();
+  let parts = splitOpeningSentences(raw).filter((part) => {
+    if (!isNearbyOpeningSentence(part)) return true;
+    const hits = nearbyKeysInSentence(part, names);
+    if (hits.length && hits.every((hit) => seen.has(hit))) return false;
+    hits.forEach((hit) => seen.add(hit));
+    return true;
+  });
+  const covered = names.length >= 3 && names.every((name) => {
+    const token = normalizePlaceKey(name);
+    return token.length >= 2 && parts.some((part) => normalizePlaceKey(part).includes(token));
+  });
+  if (names.length >= 3 && !covered) {
+    const sentence = facts.locale === 'en'
+      ? `Nearby, you can walk to ${enList(names)}.`
+      : koNearbySentence(names, facts.title, false);
+    if (sentence) {
+      const withoutWalk = parts.filter((part) => !/둘러볼 수 있어요|you can walk to/i.test(part));
+      const nextCount = withoutWalk.length + 1;
+      if (nextCount <= MODEL_OPENING_SENTENCE_CAP) {
+        const linkAt = withoutWalk.findIndex((part) => isFestivalPageLinkSentence(part, facts));
+        if (linkAt >= 0) withoutWalk.splice(linkAt, 0, sentence);
+        else withoutWalk.push(sentence);
+        parts = withoutWalk;
+      }
+    }
+  }
+  return placePageLinkLast(parts, facts).join(' ');
 }
 
 /** @param {ReturnType<typeof buildFestivalMooniContext>} festivalContext */

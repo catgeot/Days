@@ -626,7 +626,6 @@ function venueLotStems(options = {}) {
 function rewriteVenueParkingLotPhrases(text, options = {}) {
   if (isFestivalParkingAsk(options)) return String(text || '');
   const stems = venueLotStems(options);
-  if (!stems.length) return String(text || '');
   let out = String(text || '');
   for (const stem of stems) {
     const body = stem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -636,10 +635,23 @@ function rewriteVenueParkingLotPhrases(text, options = {}) {
     );
     out = out.replace(re, `${stem} 일대`);
   }
-  return out
+  return sayJoinedVenueAreaOnce(out
     .replace(/일대\s*일대/g, '일대')
     .replace(/일대과(?![가-힣])/g, '일대와')
-    .replace(/일대\s*및\s*/g, '일대와 ');
+    .replace(/일대\s*및\s*/g, '일대와 '));
+}
+
+/** «A 일대와 B 일대» says 일대 once: «A와 B 일대». */
+function sayJoinedVenueAreaOnce(text) {
+  return String(text || '').replace(
+    /([가-힣0-9]{2,12})\s*일대\s*(?:와|과)\s*((?:[가-힣0-9]+\s+){0,3}[가-힣0-9]+)\s*일대/g,
+    (_, first, second) => {
+      const stem = String(second).replace(/\s+/g, ' ').trim();
+      const last = [...first].reverse().find((ch) => /[가-힣]/.test(ch)) || '';
+      const particle = syllableHasBatchim(last) ? '과' : '와';
+      return `${first}${particle} ${stem} 일대`;
+    },
+  );
 }
 
 /** A nearby sight this close to the venue is the venue area, not the next stop. */

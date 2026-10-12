@@ -213,6 +213,42 @@ test('food evening join keeps one subject and daytime drops the evening clause',
   assert.match(dayPolished, /장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있어요/);
 });
 
+test('nearby parenthetical does not append a second sentence after the page link', () => {
+  const ctx = buildFestivalMooniContext({
+    item: {
+      contentId: '2870929',
+      title: '연천 국화축제',
+      eventStartDate: '20261015',
+      eventEndDate: '20261018',
+    },
+    intro: { eventplace: '연천역' },
+    nearbyPlaces: [
+      '전곡선사박물관',
+      '은대리 판상절리와 습곡구조 (한탄강 유네스코 세계지질공원)',
+      '열두개울',
+    ],
+  });
+  const facts = buildFestivalFirstAnswerFacts(ctx, { locale: 'ko', now: NOW });
+  const once = acceptFestivalModelOpening(
+    `연천 국화축제는 10/15~18에 열려요. 전곡선사박물관과 은대리 판상절리와 습곡구조, 열두개울이 근처에 있어요. ${facts.closing}`,
+    facts,
+  );
+  assert.match(once, /전곡선사박물관과 은대리 판상절리와 습곡구조, 열두개울이 근처에 있어요/);
+  assert.doesNotMatch(once, /둘러볼 수 있어요|한탄강 유네스코/);
+  assert.equal((once.match(/근처/g) || []).length, 1);
+  assert.ok(once.indexOf('근처에 있어요') < once.indexOf(facts.gateoUrl));
+  assert.equal(once.slice(once.indexOf(facts.gateoUrl)).includes('근처'), false);
+
+  const duplicated = acceptFestivalModelOpening(
+    `연천 국화축제는 10/15~18에 열려요. 전곡선사박물관과 은대리 판상절리와 습곡구조, 열두개울이 근처에 있어요. ${facts.closing} 근처에서는 전곡선사박물관, 은대리 판상절리와 습곡구조 (한탄강 유네스코 세계지질공원), 열두개울을 둘러볼 수 있어요.`,
+    facts,
+  );
+  assert.doesNotMatch(duplicated, /둘러볼 수 있어요/);
+  assert.equal((duplicated.match(/근처/g) || []).length, 1);
+  assert.ok(duplicated.indexOf('근처에 있어요') < duplicated.indexOf(facts.gateoUrl));
+  assert.equal(duplicated.slice(duplicated.indexOf(facts.gateoUrl)).includes('근처'), false);
+});
+
 test('captured festival fixtures keep real nearby names and drop the info card', () => {
   for (const contentId of ['2930716', '1998564', '2855626']) {
     const input = JSON.parse(readFileSync(join(root, `scripts/staging/fixtures/festival-opening/${contentId}.json`), 'utf8'));
@@ -2151,8 +2187,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
       address: '제주특별자치도 서귀포시 남성중로 23',
     },
   );
-  assert.match(lotSentence, /천지연 일대와 서귀포 원도심 일대에서/);
-  assert.doesNotMatch(lotSentence, /주차장|일대 일대/);
+  assert.match(lotSentence, /천지연과 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(lotSentence, /주차장|일대 일대|천지연 일대와/);
   const lotAnd = polishFestivalModelReply(
     '천지연폭포 주차장 및 서귀포 원도심 일대에서 열려요.',
     {
@@ -2162,8 +2198,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
       address: '제주특별자치도 서귀포시 서홍동',
     },
   );
-  assert.match(lotAnd, /천지연 일대와 서귀포 원도심 일대에서/);
-  assert.doesNotMatch(lotAnd, /주차장|일대 및/);
+  assert.match(lotAnd, /천지연과 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(lotAnd, /주차장|일대 및|천지연 일대와/);
   const lotParen = polishFestivalModelReply(
     '천지연 주차장 (일대)에서 저녁까지 이어져요.',
     {
@@ -2258,8 +2294,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     '서귀포칠십리축제는 천지연 일대와 서귀포 원도심 일대 그리고 이중섭거리에서 열려요.',
     { contentId: '506616', locale: 'ko', venue: '천지연 주차장 (일대)' },
   );
-  assert.match(geurigo, /천지연 일대와 서귀포 원도심 일대, 이중섭거리에서 열려요/);
-  assert.doesNotMatch(geurigo, /그리고/);
+  assert.match(geurigo, /천지연과 서귀포 원도심 일대, 이중섭거리에서 열려요/);
+  assert.doesNotMatch(geurigo, /그리고|천지연 일대와/);
   const geurigoClause = polishFestivalModelReply(
     '축제가 열리고 그리고 저녁에는 불이 켜져요.',
     { contentId: '506616', locale: 'ko', venue: '천지연 주차장 (일대)' },
@@ -2300,7 +2336,7 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     now: new Date('2026-10-12T03:00:00Z'),
   });
   assert.match(paradeKo, /10\/23~25, 11일 뒤 시작해요/);
-  assert.match(paradeKo, /천지연 일대와 서귀포 원도심에서 길거리 퍼레이드와 개막식, 청소년 페스타 경연이 열려요/);
+  assert.match(paradeKo, /천지연과 서귀포 원도심 일대에서 길거리 퍼레이드와 개막식, 청소년 페스타 경연이 열려요/);
   assert.doesNotMatch(paradeKo, /서귀포의/);
   const ofDowntown = buildFestivalMooniSentenceAnswer(buildFestivalMooniContext({
     item: {
@@ -2315,7 +2351,7 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     program: '길거리 퍼레이드\n개막식\n경연프로그램 : 청소년 페스타',
     nearbyPlaces: ['황우지해안열두굴', '이중섭 거주지', '새섬공원'],
   }), { locale: 'ko', now: new Date('2026-10-12T03:00:00Z') });
-  assert.match(ofDowntown, /천지연 일대와 서귀포 원도심에서/);
+  assert.match(ofDowntown, /천지연과 서귀포 원도심 일대에서/);
   assert.doesNotMatch(ofDowntown, /서귀포의/);
   assert.match(paradeKo, /시민과 단체가 함께 걷는 퍼레이드로 활기가 넘치고, 축제 분위기가 저녁까지 이어져요/);
   assert.match(paradeKo, /근처에서는 황우지해안열두굴, 이중섭 거주지, 새섬공원을 둘러볼 수 있어요/);
@@ -2346,8 +2382,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.equal(countFestivalCardSentences(paradePolished), countFestivalCardSentences(paradeModel));
   assert.match(paradePolished, /시민과 단체/);
   assert.match(paradePolished, /활기/);
-  assert.match(paradePolished, /천지연 일대와/);
-  assert.doesNotMatch(paradePolished, /주차장/);
+  assert.match(paradePolished, /천지연과 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(paradePolished, /주차장|천지연 일대와/);
   const paradeAccepted = acceptFestivalModelOpening(paradePolished, paradeFacts);
   assert.match(paradeAccepted, /시민과 단체/);
   assert.match(paradeAccepted, /활기/);
