@@ -35,6 +35,7 @@ export async function requestFestivalFirstAnswer(festivalContext, options = {}) 
       parking: festivalContext?.parking,
       venue: festivalContext?.venue,
       address: festivalContext?.address,
+      nearbyPlaces: festivalContext?.nearbyPlaces,
       overview: festivalContext?.sceneOverview || festivalContext?.overview,
       program: festivalContext?.program,
       sceneOverview: festivalContext?.sceneOverview,

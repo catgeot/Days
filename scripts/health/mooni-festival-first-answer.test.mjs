@@ -2133,6 +2133,91 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   );
   assert.match(lotParking, /천지연폭포 주차장/);
   assert.doesNotMatch(lotParking, /천지연 일대/);
+  const venueNearby = buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      addr1: '제주특별자치도 서귀포시 남성중로 23',
+    },
+    intro: { eventplace: '천지연 주차장 (일대)' },
+    nearbyPlaces: [
+      { name: '천지연폭포', distKm: 0.12 },
+      '이중섭거리',
+      '서귀포매일올레시장',
+      { name: '천지연계곡', distKm: 0.2 },
+      { name: '정방폭포', distKm: 2 },
+    ],
+  });
+  assert.deepEqual(venueNearby.nearbyPlaces, ['이중섭거리', '서귀포매일올레시장', '정방폭포']);
+  const farStem = buildFestivalMooniContext({
+    item: { contentId: '506616', title: '서귀포칠십리축제' },
+    intro: { eventplace: '천지연 주차장 (일대)' },
+    nearbyPlaces: [{ name: '천지연계곡', distKm: 1.5 }, '이중섭거리'],
+  });
+  assert.deepEqual(farStem.nearbyPlaces, ['천지연계곡', '이중섭거리']);
+  const venueNearbyFacts = buildFestivalFirstAnswerFacts(venueNearby, { locale: 'ko', now: NOW });
+  assert.equal(venueNearbyFacts.nearby[0], '이중섭거리');
+  assert.ok(!venueNearbyFacts.nearby.some((name) => /천지연/.test(name)));
+  const venueNearbyHint = buildMooniBoundFestivalSystemHint(venueNearby, 'ko');
+  assert.match(venueNearbyHint, /근처\(GATEO\): 이중섭거리, 서귀포매일올레시장, 정방폭포/);
+  assert.doesNotMatch(venueNearbyHint, /천지연폭포|천지연계곡/);
+  assert.match(venueNearbyHint, /이름 줄기가 같은 명소는 근처로 다시 말하지 않는다/);
+  assert.match(venueNearbyHint, /«A와 B, C»/);
+  const nearbyStrip = polishFestivalModelReply(
+    '서귀포칠십리축제는 천지연 일대에서 저녁까지 이어져요. 근처에서는 천지연폭포, 이중섭거리, 서귀포매일올레시장을 둘러볼 수 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 남성중로 23',
+      nearbyPlaces: ['이중섭거리', '서귀포매일올레시장', '정방폭포'],
+    },
+  );
+  assert.match(nearbyStrip, /천지연 일대에서 저녁까지 이어져요/);
+  assert.match(nearbyStrip, /근처에서는 이중섭거리, 서귀포매일올레시장, 정방폭포를 둘러볼 수 있어요/);
+  assert.doesNotMatch(nearbyStrip, /천지연폭포|주차장/);
+  const nearbyOnly = polishFestivalModelReply(
+    '근처에서는 천지연폭포를 둘러볼 수 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 (일대)',
+      nearbyPlaces: ['이중섭거리', '정방폭포'],
+    },
+  );
+  assert.match(nearbyOnly, /근처에서는 이중섭거리, 정방폭포를 둘러볼 수 있어요/);
+  assert.doesNotMatch(nearbyOnly, /천지연/);
+  const nearbyCopied = polishFestivalModelReply(
+    '서귀포칠십리축제는 천지연 일대에서 저녁까지 이어져요. 황우지해안열두굴, 천지연폭포, 이중섭 거주지가 근처에 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 일대',
+      nearbyPlaces: ['황우지해안열두굴', '이중섭 거주지', '새섬공원'],
+    },
+  );
+  assert.match(nearbyCopied, /천지연 일대에서 저녁까지 이어져요/);
+  assert.match(nearbyCopied, /황우지해안열두굴, 이중섭 거주지, 새섬공원이 근처에 있어요/);
+  assert.doesNotMatch(nearbyCopied, /천지연폭포/);
+  const geurigo = polishFestivalModelReply(
+    '서귀포칠십리축제는 천지연 일대와 서귀포 원도심 일대 그리고 이중섭거리에서 열려요.',
+    { contentId: '506616', locale: 'ko', venue: '천지연 주차장 (일대)' },
+  );
+  assert.match(geurigo, /천지연 일대와 서귀포 원도심 일대, 이중섭거리에서 열려요/);
+  assert.doesNotMatch(geurigo, /그리고/);
+  const geurigoClause = polishFestivalModelReply(
+    '축제가 열리고 그리고 저녁에는 불이 켜져요.',
+    { contentId: '506616', locale: 'ko', venue: '천지연 주차장 (일대)' },
+  );
+  assert.match(geurigoClause, /열리고 그리고 저녁에는 불이 켜져요/);
+  const geurigoComma = polishFestivalModelReply(
+    '이중섭거리와 올레시장, 그리고 정방폭포를 둘러볼 수 있어요.',
+    { contentId: '2930716', locale: 'ko' },
+  );
+  assert.match(geurigoComma, /올레시장, 그리고 정방폭포를 둘러볼 수 있어요/);
+  assert.match(KO.festivalAnswerRules, /이름 줄기가 같은 근처 장소는 다시 말하지 않는다/);
+  assert.match(KO.festivalAnswerRules, /«A와 B, C»/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /«A와 B, C»/);
   const seogwipoFacts = buildFestivalFirstAnswerFacts(seogwipo, { locale: 'ko', now: NOW });
   assert.match(seogwipoFacts.dateLine, /10\/20~22, 11일 뒤 시작해요/);
   assert.deepEqual(seogwipoFacts.programs, ['청소년 페스타 경연']);

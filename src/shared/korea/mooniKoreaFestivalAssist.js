@@ -641,6 +641,162 @@ function rewriteVenueParkingLotPhrases(text, options = {}) {
     .replace(/일대과(?![가-힣])/g, '일대와');
 }
 
+/** A nearby sight this close to the venue is the venue area, not the next stop. */
+const VENUE_AREA_NEAR_KM = 0.3;
+
+function compactPlace(value) {
+  return String(value || '').replace(/\s+/g, '');
+}
+
+/** «천지연 일대» → 천지연. Also the lot stem in «천지연폭포 주차장». */
+function venueAreaTokens(options = {}) {
+  const tokens = [];
+  const push = (stem) => {
+    const text = compactPlace(stem).replace(/폭포$/, '').replace(/(?:일대|일원)$/, '');
+    if (text.length < 2 || text.length > 12 || tokens.includes(text)) return;
+    if (/주차장|공영|민영|부설|노상|임시/.test(text)) return;
+    tokens.push(text);
+  };
+  const spoken = festivalSpokenVenue(options.venue);
+  const area = spoken.match(/^(.+?)\s*(?:일대|일원)\s*$/);
+  if (area) push(area[1]);
+  for (const stem of venueLotStems(options)) push(stem);
+  return tokens.sort((a, b) => b.length - a.length);
+}
+
+/**
+ * Nearby names whose stem equals the venue-area token are not repeated.
+ * Within ~300m, a longer name that starts with that token is the same place.
+ * @param {string} name
+ * @param {{ venue?: string, address?: string }} [options]
+ * @param {number | null} [distKm]
+ */
+export function nearbyRepeatsVenueArea(name, options = {}, distKm = null) {
+  const tokens = venueAreaTokens(options);
+  const raw = compactPlace(name);
+  if (!raw || !tokens.length) return false;
+  const stem = raw.replace(/폭포$/, '').replace(/(?:일대|일원)$/, '');
+  const km = Number(distKm);
+  const near = Number.isFinite(km) && km <= VENUE_AREA_NEAR_KM;
+  return tokens.some((token) => {
+    if (!token || stem === token) return Boolean(token) && stem === token;
+    if (!near) return false;
+    return raw.startsWith(token) && raw.length > token.length;
+  });
+}
+
+function nearbyNameOf(raw) {
+  if (raw && typeof raw === 'object') return String(raw.name || '').trim();
+  return String(raw || '').trim();
+}
+
+/** Drop venue-area repeats before the nearby list is capped for the first answer. */
+export function filterVenueAreaNearbyNames(values, options = {}) {
+  const out = [];
+  for (const raw of Array.isArray(values) ? values : []) {
+    const name = nearbyNameOf(raw);
+    if (!name || out.includes(name)) continue;
+    const distKm = raw && typeof raw === 'object' ? Number(raw.distKm) : NaN;
+    if (nearbyRepeatsVenueArea(name, options, Number.isFinite(distKm) ? distKm : null)) continue;
+    out.push(name);
+  }
+  return out;
+}
+
+function splitKoreanPlaceList(body) {
+  return String(body || '')
+    .replace(/\s*(?:을|를)\s*$/, '')
+    .split(/\s*,\s*|\s+그리고\s+|(?<=[가-힣])(?:와|과)\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function objectParticle(name) {
+  const compact = compactPlace(name);
+  const last = compact.slice(-1);
+  return syllableHasBatchim(last) ? '을' : '를';
+}
+
+function rewriteNearbyVenueRepeatSentence(sentence, options, pool) {
+  const patterns = [
+    /^(.*?(?:근처에서는|근처)\s+)(.+?)(\s*(?:을|를)\s*둘러볼 수 있어요[.]?)$/,
+    /^(.*?)(.+?)((?:이|가)\s*근처에 있어요[.]?)$/,
+  ];
+  for (const pattern of patterns) {
+    const match = sentence.match(pattern);
+    if (!match) continue;
+    const items = splitKoreanPlaceList(match[2]);
+    if (items.length < 1) continue;
+    const kept = items.filter((item) => !nearbyRepeatsVenueArea(item, options));
+    if (kept.length === items.length) continue;
+    for (const name of pool) {
+      if (kept.includes(name)) continue;
+      kept.push(name);
+      if (kept.length >= 3) break;
+    }
+    if (!kept.length) return '';
+    if (pattern === patterns[0]) {
+      return `${match[1]}${kept.join(', ')}${objectParticle(kept[kept.length - 1])} 둘러볼 수 있어요.`;
+    }
+    const last = kept[kept.length - 1];
+    const particle = syllableHasBatchim(compactPlace(last).slice(-1)) ? '이' : '가';
+    return `${match[1]}${kept.join(', ')}${particle} 근처에 있어요.`;
+  }
+  return sentence;
+}
+
+/**
+ * If the model still names the venue as a nearby stop, the next place leads the list.
+ * «천지연 일대에서» stays. Parking answers stay.
+ */
+function stripVenueAreaNearbyRepeat(text, options = {}) {
+  if (isFestivalParkingAsk(options)) return String(text || '');
+  if (!venueAreaTokens(options).length) return String(text || '');
+  const pool = filterVenueAreaNearbyNames(options.nearbyPlaces, options);
+  const parts = String(text || '').split(/(?<=[.!?。])\s+/);
+  return parts.map((sentence) => {
+    if (!/근처|둘러볼/.test(sentence)) return sentence;
+    return rewriteNearbyVenueRepeatSentence(sentence, options, pool);
+  }).filter(Boolean).join(' ');
+}
+
+const LIST_NOUN = '[가-힣A-Za-z0-9·]{2,18}(?:\\s+[가-힣A-Za-z0-9·]{1,18}){0,2}';
+const WA_GEURIGO_LIST_RE = new RegExp(
+  `(${LIST_NOUN})(와|과)\\s+(${LIST_NOUN})\\s+그리고\\s+(${LIST_NOUN})`,
+  'g',
+);
+
+function peelListTail(text) {
+  const trimmed = String(text || '').trim();
+  const match = trimmed.match(/^(.*?)(에서|으로|부터|까지|을|를|은|는|도)$/);
+  if (!match || match[1].length < 2) return { noun: trimmed, tail: '' };
+  return { noun: match[1], tail: match[2] };
+}
+
+/** A place-name chunk. Verbs and clause starters stay out of the list rewrite. */
+function isSafeListNoun(text) {
+  const noun = String(text || '').trim();
+  if (noun.length < 2 || noun.length > 24) return false;
+  if (/[,.!?。]|그리고|에는|이면|해요|예요|이에요|습니다|입니다|아요|어요|죠|까요|열리|만나|시작/.test(noun)) {
+    return false;
+  }
+  if (/(?:에서|으로|부터|까지|에는)$/.test(noun)) return false;
+  return /[가-힣]/.test(noun);
+}
+
+/**
+ * «A와 B 그리고 C» (no comma) → «A와 B, C».
+ * A comma already in the list, or «그리고» opening a new clause, is left as written.
+ */
+function polishWaAndGeurigoList(text) {
+  return String(text || '').replace(WA_GEURIGO_LIST_RE, (full, left, particle, mid, right) => {
+    const tail = peelListTail(right);
+    if (!isSafeListNoun(left) || !isSafeListNoun(mid) || !isSafeListNoun(tail.noun)) return full;
+    if (/에는|이면/.test(right)) return full;
+    return `${left}${particle} ${mid}, ${tail.noun}${tail.tail}`;
+  });
+}
+
 function fixNoBatchimEyeyo(text) {
   const fixed = String(text || '').replace(/이예요/g, (full, offset, source) => {
     let i = offset - 1;
@@ -1061,6 +1217,8 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = softenDapnida(text);
     text = fixNoBatchimEyeyo(text);
     text = rewriteVenueParkingLotPhrases(text, options);
+    text = stripVenueAreaNearbyRepeat(text, options);
+    text = polishWaAndGeurigoList(text);
     text = stripTrailingFestivalDateSentence(text);
     text = dropDateLinkFragmentSentences(text);
     text = dedupeStaySearchLinks(text);
@@ -1881,9 +2039,18 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const program = speakVenuePhrases(clipFact(ctx?.program, 500));
   if (program) lines.push(isEn ? `- Program: ${program}` : `- 프로그램: ${program}`);
 
-  const nearby = listedPlaceNames(ctx?.nearbyPlaces);
+  const nearby = filterVenueAreaNearbyNames(
+    listedPlaceNames(ctx?.nearbyPlaces),
+    { venue: ctx?.venue, address: ctx?.address },
+  );
   if (nearby.length) {
     lines.push(isEn ? `- Nearby (GATEO): ${nearby.join(', ')}` : `- 근처(GATEO): ${nearby.join(', ')}`);
+    if (!isEn) {
+      lines.push('- 근처 장소는 «A, B, C» 또는 «A와 B, C»로 잇는다. «A와 B 그리고 C»처럼 쉼표 없이 «그리고»로 잇지 않는다.');
+      if (venueAreaTokens({ venue: ctx?.venue, address: ctx?.address }).length) {
+        lines.push(`- 장소 «${venue}»와 이름 줄기가 같은 명소는 근처로 다시 말하지 않는다.`);
+      }
+    }
   }
   const restaurants = festivalFoodPlaceLabels(ctx?.nearbyRestaurants, isEn ? 'en' : 'ko', 4);
   if (restaurants.length) {

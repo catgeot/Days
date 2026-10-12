@@ -1183,13 +1183,14 @@ export default function FestivalDetailSheet({
     const festivalHub = String(
       mooniEntryLocation?.name || mooniEntryLocation?.parentCity || '',
     ).trim();
-    const names = [];
-    for (const spot of rankMooniNearbySights(nearbySights.items, 6)) {
+    const rows = [];
+    for (const spot of rankMooniNearbySights(nearbySights.items, 12)) {
       const name = stripTrailingRegionLabel(nearbySightTitle(spot), festivalHub);
-      if (!name || names.includes(name)) continue;
-      names.push(name);
+      if (!name || rows.some((row) => row.name === name)) continue;
+      const distKm = Number(spot?.distKm);
+      rows.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
     }
-    return names;
+    return rows;
   }, [nearbySights, mooniEntryLocation]);
 
   const mooniNearbyRestaurants = useMemo(() => {

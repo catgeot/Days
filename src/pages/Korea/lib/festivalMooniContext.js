@@ -2,6 +2,7 @@ import {
   dedupeFestivalPageLinks,
   festivalTimingStatus,
   filterFestivalStayAreaNames,
+  filterVenueAreaNearbyNames,
   festivalSpokenVenue,
   gateoKoreaFestivalDetailUrl,
   hasFestivalParkingData,
@@ -75,7 +76,7 @@ export function buildFestivalMooniContext(input = {}) {
     program: String(program || intro?.program || '')
       .replace(/<[^>]+>/g, ' ')
       .trim(),
-    nearbyPlaces: uniqueNames(nearbyPlaces).map((name) => stripTrailingRegionLabel(name, hubLabel)),
+    nearbyPlaces: collectFestivalNearbyNames(nearbyPlaces, hubLabel, venue, address),
     nearbyRestaurants: rankFestivalRestaurantRows(nearbyRestaurants),
     stayAreas: filterFestivalStayAreaNames(input.stayAreas, pt?.lat, pt?.lng),
   };
@@ -219,6 +220,18 @@ function uniqueNames(values) {
     if (out.length >= 12) break;
   }
   return out;
+}
+
+function collectFestivalNearbyNames(values, hubLabel, venue, address) {
+  const labeled = [];
+  for (const raw of Array.isArray(values) ? values : []) {
+    const source = raw && typeof raw === 'object' ? raw : { name: raw };
+    const name = stripTrailingRegionLabel(String(source.name || '').trim(), hubLabel);
+    if (!name) continue;
+    const distKm = Number(source.distKm);
+    labeled.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
+  }
+  return uniqueNames(filterVenueAreaNearbyNames(labeled, { venue, address }));
 }
 
 const KO_AHEAD = ['', '하루', '이틀', '사흘', '나흘', '닷새', '엿새', '이레', '여드레', '아흐레', '열흘'];
