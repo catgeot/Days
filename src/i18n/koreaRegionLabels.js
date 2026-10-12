@@ -131,6 +131,7 @@ export function localizedFestivalCityListLabel(locale, areaCode, cityName) {
 export function localizedSubregionLabel(locale, labelKo) {
   const ko = String(labelKo || '').trim();
   if (!ko) return '';
+  if (ko === '광주시' && isEnLocale(locale)) return 'Gwangju-si';
   if (!isEnLocale(locale)) return ko;
   const fromHub = hubKoToEnMap().get(ko);
   if (fromHub) return fromHub;

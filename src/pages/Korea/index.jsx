@@ -46,6 +46,7 @@ import {
   sidoLabel,
   sidoListPhrase,
 } from './festivalRegionTags';
+import { buildFestivalPanelListMetaSegments } from './festivalPanelListMeta.js';
 import {
   groupFestivalsByCity,
   groupFestivalsBySido,
@@ -109,10 +110,8 @@ import {
   localizeSidoChips,
   localizedAreaCodeLabel,
   localizedSidoListPhrase,
-  localizedSidoPanelHeadingPhrase,
   localizedSubregionLabel,
   localizedFestivalCityListLabel,
-  localizedSubregionUnitLabel,
   localizeFestivalGroupLabel,
 } from '../../i18n/koreaRegionLabels';
 import {
@@ -170,33 +169,29 @@ function buildIndexListHeadline({
 }
 
 /**
- * @param {{
- *   areaCode: string,
- *   cityName: string,
- *   count: number,
- *   t: import('i18next').TFunction,
- *   locale?: string,
- * }} p
+ * @param {{ segments: { id: string, text: string, wrap?: boolean, nowrap?: boolean }[] }} p
  */
-function buildPanelListMeta({ areaCode, cityName, count, t, locale = 'ko' }) {
-  const sido = localizedSidoPanelHeadingPhrase(
-    locale,
-    areaCode,
-    sidoListPhrase(areaCode),
+function FestivalPanelListMetaLine({ segments }) {
+  if (!segments?.length) return null;
+  return (
+    <>
+      {segments.map((seg, i) => (
+        <span
+          key={seg.id || String(i)}
+          className={
+            seg.nowrap
+              ? 'whitespace-nowrap'
+              : seg.wrap
+                ? 'min-w-0 break-keep'
+                : 'whitespace-nowrap'
+          }
+        >
+          {i > 0 ? ' · ' : ''}
+          {seg.text}
+        </span>
+      ))}
+    </>
   );
-  const city = localizedFestivalCityListLabel(locale, areaCode, cityName);
-  const place = [sido, city].filter(Boolean).join(' · ');
-  const bits = [];
-  if (place) bits.push(place);
-  bits.push(t('korea.common.countUnit', { count }));
-  if (place && !city) {
-    bits.push(
-      t('korea.festival.panelBySubregion', {
-        unit: localizedSubregionUnitLabel(locale, areaCode, t),
-      }),
-    );
-  } else if (!place) bits.push(t('korea.common.regionGroup'));
-  return bits.join(' · ');
 }
 
 /** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
@@ -1946,7 +1941,7 @@ export default function KoreaFestivalHub() {
     searchActive,
   });
 
-  const panelListMeta = useMemo(() => {
+  const panelListMetaText = useMemo(() => {
     if (nearBaseItems && nearLabel) {
       return t('korea.festival.nearPanelMeta', {
         km: NEAR_KM,
@@ -1954,7 +1949,12 @@ export default function KoreaFestivalHub() {
       });
     }
     if (nearActive && nearMsg) return nearMsg;
-    return buildPanelListMeta({
+    return null;
+  }, [nearBaseItems, nearLabel, nearActive, nearMsg, panelItems.length, t]);
+
+  const panelListMetaSegments = useMemo(() => {
+    if (panelListMetaText != null) return null;
+    return buildFestivalPanelListMetaSegments({
       areaCode,
       cityName,
       count: panelItems.length,
@@ -1962,10 +1962,7 @@ export default function KoreaFestivalHub() {
       locale,
     });
   }, [
-    nearBaseItems,
-    nearLabel,
-    nearActive,
-    nearMsg,
+    panelListMetaText,
     areaCode,
     cityName,
     panelItems.length,
@@ -2706,10 +2703,16 @@ export default function KoreaFestivalHub() {
                       : t('korea.common.viewed')
                     : indexTitle}
                 </h2>
-                <p className="text-[11px] text-stone-500 break-keep leading-snug [overflow-wrap:anywhere]">
+                <p className="text-[11px] text-stone-500 leading-snug flex flex-wrap items-baseline">
                   {personalTab != null
                     ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
-                    : panelListMeta}
+                    : panelListMetaSegments
+                      ? (
+                          <FestivalPanelListMetaLine
+                            segments={panelListMetaSegments}
+                          />
+                        )
+                      : panelListMetaText}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1.5">
