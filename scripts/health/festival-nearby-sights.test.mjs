@@ -11,6 +11,11 @@ import {
   rankMooniNearbySights,
   stripTrailingHubName,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
+import {
+  mergeNearbyItemImages,
+  missingNearbySightImageIds,
+  nearbySightImagePending,
+} from '../../src/pages/Korea/lib/nearbySightImages.js';
 import { isNearbyTourAttractionTitle } from '../../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
 import {
   nearbyAttractionCacheKey,
@@ -437,9 +442,44 @@ test('nearby sights render without waiting for festival detail', () => {
   const afterNearby = sheet.slice(nearbyAt, lodgingAt);
   assert.match(afterNearby, /!detailLoading && \(/);
   assert.match(sheet, /data-festival-lodging-reserve/);
+  assert.match(sheet, /mergeNearbyItemImages\(/);
+  assert.match(sheet, /missingNearbySightImageIds\(nearbySights\.items\)/);
+  assert.match(sheet, /fetchTourApiFirstImage\(/);
+  assert.match(sheet, /data-nearby-thumb-pending/);
+  assert.match(sheet, /if \(imagePending\) return <NearbyThumbSkeleton/);
+  const skeletonFn = sheet.slice(
+    sheet.indexOf('function NearbyThumbSkeleton'),
+    sheet.indexOf('function NearbyRowThumb'),
+  );
+  assert.equal(skeletonFn.includes('Landmark'), false);
   const stayAt = sheet.indexOf('<FestivalStayStrip');
   const stayGate = sheet.lastIndexOf('!nearbyPending', stayAt);
   assert.ok(stayGate > nearbyAt && stayGate < stayAt);
+});
+
+test('early nearby rows pick up images without reordering', () => {
+  const early = [
+    { contentId: '1', name: '임항선 그린웨이', firstImage: null },
+    { contentId: '2', name: '창동예술촌', firstImage: 'https://already.example/a.jpg' },
+    { contentId: '', name: '좌표만' },
+  ];
+  const merged = mergeNearbyItemImages(
+    early,
+    new Map([
+      ['1', 'https://later.example/b.jpg'],
+      ['2', 'https://ignored.example/c.jpg'],
+    ]),
+  );
+  assert.equal(merged[0].name, '임항선 그린웨이');
+  assert.equal(merged[0].firstImage, 'https://later.example/b.jpg');
+  assert.equal(merged[1], early[1]);
+  assert.equal(merged[1].firstImage, 'https://already.example/a.jpg');
+  assert.equal(merged[2], early[2]);
+  assert.deepEqual(missingNearbySightImageIds(early), ['1']);
+  assert.equal(nearbySightImagePending(early[0], new Set()), true);
+  assert.equal(nearbySightImagePending(early[0], new Set(['1'])), false);
+  assert.equal(nearbySightImagePending(merged[0], new Set()), false);
+  assert.equal(nearbySightImagePending({ name: '좌표만' }, new Set()), false);
 });
 
 test('nearby attraction cache round-trips in the given store', () => {

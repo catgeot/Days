@@ -55,7 +55,6 @@ import {
   groupNearbySpotsWithLocalScenic,
   isNearbyAttractionRowClickable,
   mergeNearbyRowWithLocalScenicDetail,
-  missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
 import {
@@ -66,7 +65,15 @@ import {
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
   peekKoreaTourAttractionFirstImagesByIds,
+  rememberKoreaTourAttractionFirstImage,
 } from '../Home/lib/koreaTourAttractions';
+import { fetchTourApiFirstImage } from '../../utils/fetchTourApiAttractionDetail';
+import {
+  mergeNearbyItemImages,
+  missingNearbySightImageIds,
+  nearbySightImagePending,
+  usableNearbyImageUrl,
+} from './lib/nearbySightImages.js';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
 import {
   festivalMapTitle,
@@ -302,36 +309,69 @@ function nearbyThumbUrls(spot, extraThumb) {
 
 function NearbyThumbPlaceholder() {
   return (
-    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+    <div
+      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800"
+      data-nearby-thumb="empty"
+    >
       <Landmark size={18} aria-hidden="true" />
     </div>
   );
 }
 
-function NearbyRowThumb({ spot, extraThumb }) {
+function NearbyThumbSkeleton() {
+  return (
+    <div
+      className="h-14 w-14 shrink-0 rounded-xl bg-stone-200 animate-pulse"
+      data-nearby-thumb="pending"
+      data-nearby-thumb-pending=""
+      aria-hidden="true"
+    />
+  );
+}
+
+function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
   const urls = nearbyThumbUrls(spot, extraThumb);
+  const urlKey = urls.join('\n');
   const [thumbIndex, setThumbIndex] = useState(0);
   const [ready, setReady] = useState(false);
+  const [seenKey, setSeenKey] = useState(urlKey);
+  if (seenKey !== urlKey) {
+    setSeenKey(urlKey);
+    setThumbIndex(0);
+    setReady(false);
+  }
   const thumb = urls[thumbIndex] || '';
-  if (!thumb) return <NearbyThumbPlaceholder />;
+  const noteLoaded = (img) => {
+    if (img?.complete && img.naturalWidth > 0) setReady(true);
+  };
+  if (!thumb) {
+    if (imagePending) return <NearbyThumbSkeleton />;
+    return <NearbyThumbPlaceholder />;
+  }
   return (
-    <span className="relative block h-14 w-14 shrink-0">
-      {ready ? null : <NearbyThumbPlaceholder />}
+    <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200">
+      {ready ? null : (
+        <span
+          className="absolute inset-0 animate-pulse bg-stone-200"
+          data-nearby-thumb="pending"
+          data-nearby-thumb-pending=""
+        />
+      )}
       <img
         key={thumb}
         src={thumb}
         alt=""
         loading="eager"
         decoding="async"
-        onLoad={() => setReady(true)}
+        ref={noteLoaded}
+        onLoad={(event) => noteLoaded(event.currentTarget)}
         onError={(event) => {
           if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
           setReady(false);
           setThumbIndex((i) => i + 1);
         }}
-        className={`h-14 w-14 rounded-xl object-cover ${
-          ready ? 'relative' : 'absolute inset-0 opacity-0'
-        }`}
+        className="relative h-14 w-14 object-cover"
+        data-nearby-thumb={ready ? 'photo' : 'pending'}
       />
     </span>
   );
@@ -342,7 +382,7 @@ function nearbySightTitle(spot) {
   return stripTrailingHubName(spot?.name, hubName);
 }
 
-function NearbyAttractionRow({ spot, extraThumb, onSelect }) {
+function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = nearbyPlaceLabel(spot);
   const rankBlurb = String(spot?.rankBlurb || '').trim();
@@ -364,7 +404,7 @@ function NearbyAttractionRow({ spot, extraThumb, onSelect }) {
           clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
         }`}
       >
-        <NearbyRowThumb spot={spot} extraThumb={extraThumb} />
+        <NearbyRowThumb spot={spot} extraThumb={extraThumb} imagePending={imagePending} />
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
@@ -577,6 +617,7 @@ export default function FestivalDetailSheet({
     }
   }
   const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
+  const [nearbyImageMiss, setNearbyImageMiss] = useState(() => new Set());
   const [scenicFavoriteVersion, setScenicFavoriteVersion] = useState(0);
   const scenicFavoriteIds = useMemo(
     () => new Set(loadScenicFavorites().map((r) => String(r.id))),
@@ -710,35 +751,78 @@ export default function FestivalDetailSheet({
     intro?.venueContentId,
     locale,
   ]);
-  const nearbyMissingThumbIds = useMemo(
-    () => missingNearbyThumbContentIds(nearbyGrouped),
-    [nearbyGrouped],
+  const nearbyMissingImageKey = useMemo(
+    () => missingNearbySightImageIds(nearbySights.items).join(','),
+    [nearbySights.items],
   );
 
   useEffect(() => {
-    const ids = nearbyMissingThumbIds;
+    const ids = nearbyMissingImageKey ? nearbyMissingImageKey.split(',') : [];
     if (!ids.length) return undefined;
     let cancelled = false;
+    const applyUrls = (entries) => {
+      const usable = [];
+      for (const [key, url] of entries) {
+        const image = usableNearbyImageUrl(url);
+        if (!image) continue;
+        usable.push([String(key), image]);
+      }
+      if (!usable.length) return;
+      setNearbyThumbById((prev) => {
+        const next = new Map(prev);
+        for (const [key, image] of usable) {
+          next.set(key, image);
+          rememberKoreaTourAttractionFirstImage(key, image);
+        }
+        return next;
+      });
+      setNearbyImageMiss((prev) => {
+        if (![...prev].some((id) => usable.some(([key]) => key === id))) return prev;
+        const next = new Set(prev);
+        for (const [key] of usable) next.delete(key);
+        return next;
+      });
+    };
     const peeked = peekKoreaTourAttractionFirstImagesByIds(ids);
-    if (peeked.size) {
-      setNearbyThumbById((prev) => {
-        const next = new Map(prev);
-        for (const [key, url] of peeked) next.set(key, url);
-        return next;
+    applyUrls([...peeked.entries()]);
+    (async () => {
+      let dbMap = new Map();
+      try {
+        dbMap = (await fetchKoreaTourAttractionFirstImagesByIds(ids)) || new Map();
+      } catch {
+        dbMap = new Map();
+      }
+      if (cancelled) return;
+      applyUrls([...dbMap.entries()]);
+      const liveTargets = ids.filter((id) => !peeked.get(id) && !dbMap.get(id));
+      if (!liveTargets.length) return;
+      const liveHits = await Promise.all(
+        liveTargets.map(async (id) => {
+          try {
+            const url = await fetchTourApiFirstImage(id);
+            return [id, url];
+          } catch {
+            return [id, ''];
+          }
+        }),
+      );
+      if (cancelled) return;
+      applyUrls(liveHits);
+      setNearbyImageMiss((prev) => {
+        const next = new Set(prev);
+        let changed = false;
+        for (const [id, url] of liveHits) {
+          if (usableNearbyImageUrl(url) || next.has(id)) continue;
+          next.add(id);
+          changed = true;
+        }
+        return changed ? next : prev;
       });
-    }
-    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
-      if (cancelled || !dbMap?.size) return;
-      setNearbyThumbById((prev) => {
-        const next = new Map(prev);
-        for (const [key, url] of dbMap) next.set(key, url);
-        return next;
-      });
-    });
+    })();
     return () => {
       cancelled = true;
     };
-  }, [nearbyMissingThumbIds]);
+  }, [nearbyMissingImageKey]);
   const tnaDisplayKeyword =
     localizedHubLabel(locale, {
       hubId: nearestHub?.hubId,
@@ -2047,11 +2131,12 @@ export default function FestivalDetailSheet({
                             </li>
                           );
                         }
-                        const spot = block.spot;
+                        const spot = mergeNearbyItemImages([block.spot], nearbyThumbById)[0];
                         return (
                           <NearbyAttractionRow
                             key={spot.contentId || spot.id || spot.name}
                             spot={spot}
+                            imagePending={nearbySightImagePending(spot, nearbyImageMiss)}
                             extraThumb={nearbyThumbById.get(
                               String(spot.contentId || '').trim(),
                             )}
