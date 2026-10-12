@@ -2301,6 +2301,22 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   });
   assert.match(paradeKo, /10\/23~25, 11일 뒤 시작해요/);
   assert.match(paradeKo, /천지연 일대와 서귀포 원도심에서 길거리 퍼레이드와 개막식, 청소년 페스타 경연이 열려요/);
+  assert.doesNotMatch(paradeKo, /서귀포의/);
+  const ofDowntown = buildFestivalMooniSentenceAnswer(buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      eventStartDate: '20261023',
+      eventEndDate: '20261025',
+      addr1: '제주특별자치도 서귀포시 서홍동',
+    },
+    intro: { eventplace: '천지연 주차장 일대', playtime: '10:00~22:00' },
+    overview: paradeOverview.replace('서귀포 원도심', '서귀포의 원도심'),
+    program: '길거리 퍼레이드\n개막식\n경연프로그램 : 청소년 페스타',
+    nearbyPlaces: ['황우지해안열두굴', '이중섭 거주지', '새섬공원'],
+  }), { locale: 'ko', now: new Date('2026-10-12T03:00:00Z') });
+  assert.match(ofDowntown, /천지연 일대와 서귀포 원도심에서/);
+  assert.doesNotMatch(ofDowntown, /서귀포의/);
   assert.match(paradeKo, /시민과 단체가 함께 걷는 퍼레이드로 활기가 넘치고, 축제 분위기가 저녁까지 이어져요/);
   assert.match(paradeKo, /근처에서는 황우지해안열두굴, 이중섭 거주지, 새섬공원을 둘러볼 수 있어요/);
   assert.ok(paradeKo.indexOf('길거리 퍼레이드와 개막식') < paradeKo.indexOf('시민과 단체'));

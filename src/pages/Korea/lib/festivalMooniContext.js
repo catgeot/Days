@@ -604,9 +604,9 @@ function lotVenuePhrase(ctx) {
   const spoken = festivalSpokenVenue(raw);
   if (!spoken || spoken === raw) return '';
   const areas = [spoken];
-  const downtown = String(ctx.sceneOverview || '').match(/([가-힣]{2,6})\s*원도심/);
+  const downtown = String(ctx.sceneOverview || '').match(/([가-힣]{2,6})(?:의)?\s*원도심/);
   if (downtown) {
-    const label = `${downtown[1]} 원도심`;
+    const label = `${downtown[1].replace(/의$/, '')} 원도심`;
     if (!areas.includes(label)) areas.push(label);
   }
   if (areas.length === 1) return areas[0];
