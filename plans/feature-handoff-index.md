@@ -14,6 +14,21 @@
 
 ## 활성 목록
 
+### Vercel 프리뷰
+
+| | |
+|--|--|
+| **상태** | **#1 cursor 빌드 생략** · tip `e4b61cc6` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · **병합 금지** |
+| **브랜치** | `cursor/vercel-skip-previews-8e40` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
+| **Preview** | 없음. 이 브랜치는 `cursor/*`라 병합 뒤에는 Vercel이 빌드를 건너뛴다 |
+| **금지** | `main`·production 빌드 생략 · `git.deploymentEnabled`로 전체 배포 끄기 · feature에 `plans/**` 커밋 · PR 병합 |
+| **VERIFY** | `npm run test:health` |
+| **남은 일** | ignoreCommand만. exit 0은 건너뜀, exit 1은 빌드. CANCELED도 Hobby 할당량에 들어갈 수 있음 |
+
+**다음 제시어 없음**.
+
 ### 카이로 동선
 
 | | |
