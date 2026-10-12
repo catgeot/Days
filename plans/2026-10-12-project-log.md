@@ -2,6 +2,14 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 카이로 동선 #8, 줄바꿈
+
+- **세션** `카이로 동선 #8, 줄바꿈` · branch `cursor/cairo-facts-en-8e40` · tip `fb7767d1` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 사실 값의 시각 범위는 nowrap + word-break normal. 출처·링크의 break-all을 제거했다. 블로그 본문 `/blog/e/cairo-travelogue` GEM 요금 줄에도 같은 nowrap. 한글 break-keep은 유지.
+- **VERIFY** `npm run test:health` 264 pass · CI run `38194968204` success. WebKit 390에서 GEM 영문·한글 입장 시간, 공항 출처 «CAI», 블로그 `11:00~13:00`이 각 1줄.
+- **대기** `giza-plateau`·`egyptian-museum` 출처 조각은 #436 병합 후 `origin/main` PR. 영문 `~`→`–`, 헤더 «(카이로)»는 하지 않음.
+- **다음** 제시어 없음
+
 ## 카이로 동선 #7, 영문 문장
 
 - **세션** `카이로 동선 #7, 영문 문장` · branch `cursor/cairo-facts-en-8e40` · tip `3eb6d978` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지

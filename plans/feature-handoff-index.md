@@ -18,16 +18,16 @@
 
 | | |
 |--|--|
-| **상태** | **#7 Site QA PASS** · 브랜치 tip `8adf8f05` **동결** · draft PR [#436](https://github.com/catgeot/Days/pull/436) · **이 브랜치 push 금지** · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
+| **상태** | **#8 줄바꿈** · tip `fb7767d1` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · GO 전 · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
 | **브랜치** | `cursor/cairo-facts-en-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
 | **Preview** | git `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/sultan-hassan-mosque?lang=en` · GEM `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
-| **금지** | `cursor/cairo-facts-en-8e40` push · 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 단위를 한글로 되돌리기 · 국적 목록 추가 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
+| **금지** | 사람 지시 없는 `cursor/cairo-facts-en-8e40` push · 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 `~`를 `–`로 바꾸기 · 헤더 보조명 변경 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | Site QA PASS (`8adf8f05`). 브랜치는 동결. **#436 병합 후에만**, 사람이 시키면 `origin/main`에서 작은 PR: 출처 라벨 «Ministry of Tourism and Antiquities giza-plateau», «… egyptian-museum»와 한글 «관광유물부 giza-plateau», «… egyptian-museum»에서 조각만 뺀다. 술탄 하산과 같이 라벨은 «Ministry of Tourism and Antiquities» / «관광유물부», URL은 그대로. 병합 전에는 시작하지 않는다. |
+| **남은 일** | 시각 범위 nowrap과 출처 `break-all` 제거는 tip `fb7767d1`. **#436 병합 후에만**, 사람이 시키면 `origin/main`에서 작은 PR: 출처 라벨 «Ministry of Tourism and Antiquities giza-plateau», «… egyptian-museum»와 한글 «관광유물부 giza-plateau», «… egyptian-museum»에서 조각만 뺀다. URL은 그대로. |
 
-**다음 제시어 없음** (#436 병합 대기). 조각 제거는 그 뒤에 `origin/main`에서 새 PR.
+**다음 제시어 없음** (GO 대기). 조각 제거는 병합 뒤에 `origin/main`에서 새 PR.
 
 ### 마산 주변 볼거리
 
