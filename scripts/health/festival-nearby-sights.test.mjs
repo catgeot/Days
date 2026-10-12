@@ -407,7 +407,7 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.ok(infoAt >= 0 && nearbyAt > infoAt && lodgingAt > nearbyAt);
   const nearbyBlock = sheet.slice(infoAt, nearbyAt);
   assert.match(nearbyBlock, /detailLoading \?/);
-  assert.match(nearbyBlock, /heroReady &&/);
+  assert.equal(nearbyBlock.includes('heroReady'), false);
   const section = sheet.slice(nearbyAt, lodgingAt);
   assert.match(section, /nearbyPending &&/);
   assert.match(section, /!nearbyPending && nearbySights\.items\.length > 0/);
@@ -436,6 +436,10 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.ok(coursesGate >= 0 && coursesGate < coursesAt);
   const afterNearby = sheet.slice(nearbyAt, lodgingAt);
   assert.match(afterNearby, /!detailLoading && \(/);
+  assert.match(sheet, /data-festival-lodging-reserve/);
+  const stayAt = sheet.indexOf('<FestivalStayStrip');
+  const stayGate = sheet.lastIndexOf('!nearbyPending', stayAt);
+  assert.ok(stayGate > nearbyAt && stayGate < stayAt);
 });
 
 test('nearby attraction cache round-trips in the given store', () => {

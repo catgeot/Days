@@ -839,12 +839,6 @@ export default function FestivalDetailSheet({
     setVideosError('');
     setVideosLoadedFor('');
     setVideosExpanded(false);
-    setNearbySpots([]);
-    setNearbyStatus('idle');
-    setNearbyFood([]);
-    setNearbyFoodStatus('idle');
-    setNearbyCourses([]);
-    setNearbyCoursesStatus('idle');
     setSelectedNearby(null);
     setSelectedScenic(null);
     setSelectedCourse(null);
@@ -908,6 +902,24 @@ export default function FestivalDetailSheet({
 
     if (prefetchMatches) {
       applyDetailPayload(prefetchedTourDetail, { ok: true, images: [] });
+    }
+
+    const nearbyPt = festivalLngLat(item?.mapx, item?.mapy);
+    if (
+      nearbyPt &&
+      !readNearbyAttractionCache({
+        lat: nearbyPt.lat,
+        lng: nearbyPt.lng,
+        radiusKm: 8,
+        limit: 8,
+      })
+    ) {
+      fetchNearbyTourAttractions({
+        lat: nearbyPt.lat,
+        lng: nearbyPt.lng,
+        radiusKm: 8,
+        limit: 8,
+      });
     }
 
     (async () => {
@@ -1620,7 +1632,7 @@ export default function FestivalDetailSheet({
               onTouchEnd={onHeroTouchEnd}
               onTouchCancel={onHeroTouchCancel}
               className="group relative flex w-full items-center justify-center overflow-hidden bg-stone-200/70 text-left touch-pan-y md:min-h-0 md:flex-1 md:overflow-hidden"
-              style={heroBox ? { height: heroBox } : undefined}
+              style={heroBox ? { height: heroBox } : { minHeight: 'min(40vh, 18rem)' }}
               aria-label={
                 imageUrls.length > 1
                   ? t('korea.festival.detail.heroExpandSwipe')
@@ -1978,7 +1990,7 @@ export default function FestivalDetailSheet({
               ) : null}
               </div>
 
-              {heroReady && (scenicRegion ||
+              {(scenicRegion ||
                 nearbySights.items.length > 0 ||
                 nearbyPending ||
                 (nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords')) && (
@@ -2070,9 +2082,24 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
+              {!festivalEnded && showFestivalStayStrip && (detailLoading || nearbyPending) ? (
+                <div
+                  className="h-28 rounded-2xl bg-stone-100"
+                  data-festival-lodging-reserve=""
+                  aria-hidden="true"
+                />
+              ) : null}
+              {(detailLoading || nearbyPending) && (
+                <div className="space-y-3" data-festival-below-reserve="" aria-hidden="true">
+                  <div className="h-16 rounded-2xl bg-stone-100" data-festival-food-reserve="" />
+                  <div className="h-16 rounded-2xl bg-stone-100" data-festival-leports-reserve="" />
+                  <div className="h-16 rounded-2xl bg-stone-100" data-festival-culture-reserve="" />
+                </div>
+              )}
+
               {!detailLoading && (
               <>
-              {!festivalEnded && showFestivalStayStrip ? (
+              {!festivalEnded && showFestivalStayStrip && !nearbyPending ? (
                 <div
                   className="scroll-mt-4 pt-1"
                   id={FESTIVAL_LODGING_SECTION_ID}
