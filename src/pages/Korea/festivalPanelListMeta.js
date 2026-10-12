@@ -6,6 +6,7 @@ import {
 import { JEONNAM_GWANGJU_INTEGRATED_SIDO_LEGAL_NAME } from '../Home/lib/koreaTourAddrNormalize.js';
 import { JEONNAM_GWANGJU_INTEGRATED_LEGAL_EN } from '../../i18n/koreaRegionEn.js';
 import { sidoListPhrase } from './festivalRegionTags.js';
+import { isNationwideRegionFilter } from './socialPromoFestivalsLogic.js';
 
 const INTEGRATED_PANEL_SIDO = new Set(['5', '38']);
 
@@ -25,13 +26,38 @@ export function buildFestivalPanelListMetaSegments({
   locale = 'ko',
 }) {
   const code = String(areaCode || '');
+  /** @type {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} */
+  const segments = [];
+
+  if (isNationwideRegionFilter(code, cityName)) {
+    segments.push({
+      id: 'scope',
+      text: isEnLocale(locale)
+        ? t('korea.festival.panelNationwideScope', { defaultValue: 'All of Korea' })
+        : t('korea.common.nationwide'),
+      nowrap: true,
+    });
+    segments.push({
+      id: 'count',
+      text: t('korea.common.countUnit', { count }),
+      nowrap: true,
+    });
+    segments.push({
+      id: 'regionGroup',
+      text: isEnLocale(locale)
+        ? t('korea.festival.panelNationwideGroup', { defaultValue: 'By region' })
+        : t('korea.common.regionGroup'),
+      nowrap: true,
+    });
+    return segments;
+  }
+
   const city = localizedFestivalCityListLabel(locale, areaCode, cityName);
   const sidoPhrase = localizedSidoListPhrase(
     locale,
     areaCode,
     sidoListPhrase(areaCode),
   );
-  const segments = [];
 
   const integratedSidoLevel =
     INTEGRATED_PANEL_SIDO.has(code) && !city && sidoPhrase;

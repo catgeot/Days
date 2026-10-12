@@ -4,6 +4,8 @@ import { CalendarDays } from 'lucide-react';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { festivalItemThumbSrc } from './festivalListThumb';
+import { festivalListDisplayTitle } from './festivalDisplayTitle.js';
+import { normalizeFestivalItemImages } from './socialPromoFestivalsLogic.js';
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
@@ -62,9 +64,11 @@ function SocialPromoCardSkeleton() {
 }
 
 function SocialPromoCard({ item, onSelect }) {
-  const { isEnglish } = useLocale();
+  const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
-  const img = festivalItemThumbSrc(item);
+  const rowItem = normalizeFestivalItemImages(item);
+  const img = festivalItemThumbSrc(rowItem);
+  const title = festivalListDisplayTitle(rowItem, locale);
   const [imgFailed, setImgFailed] = useState(false);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
@@ -106,11 +110,8 @@ function SocialPromoCard({ item, onSelect }) {
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <p
-          className="text-[12px] font-bold leading-tight text-stone-900 truncate break-keep"
-          {...koText}
-        >
-          {item.title}
+        <p className="text-[12px] font-bold leading-tight text-stone-900 truncate break-keep">
+          {title}
         </p>
         {range ? (
           <p className="mt-0.5 flex items-center gap-1 text-[10px] font-bold text-amber-800">

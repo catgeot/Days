@@ -52,6 +52,7 @@ import {
   sidoListPhrase,
 } from './festivalRegionTags';
 import { buildFestivalPanelListMetaSegments } from './festivalPanelListMeta.js';
+import { isNationwideRegionFilter } from './socialPromoFestivalsLogic.js';
 import {
   groupFestivalsByCity,
   groupFestivalsBySido,
@@ -135,7 +136,10 @@ import {
   writeLocationSuccess,
 } from './festivalLocationHint.js';
 import { useFestivalLocationBoot } from './useFestivalLocationBoot.js';
-import { buildFestivalIndexHeadlineContent } from './festivalIndexHeadline.js';
+import {
+  buildFestivalIndexHeadlineContent,
+  festivalIndexTimePhrase,
+} from './festivalIndexHeadline.js';
 
 /**
  * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction, locale?: string }} p
@@ -149,9 +153,7 @@ function buildIndexListHeadline({
   t,
   locale = 'ko',
 }) {
-  const time =
-    timeTabs.find((tab) => tab.id === timeTab)?.label ||
-    t('korea.festival.timeTab.now');
+  const time = festivalIndexTimePhrase(locale, timeTab, timeTabs, t);
   const sido = localizedSidoListPhrase(
     locale,
     areaCode,
@@ -167,8 +169,22 @@ function buildIndexListHeadline({
     : '';
   const place = [sido, city].filter(Boolean).join(' ');
 
+  if (isNationwideRegionFilter(areaCode, cityName)) {
+    const scope = t('korea.festival.panelNationwideScope', {
+      defaultValue: 'Nationwide',
+    });
+    const text = t('korea.festival.headlineNationwide', {
+      time,
+      scope,
+      tasteSuffix,
+      defaultValue: `${scope} · ${time}${tasteSuffix}`,
+    });
+    return { kind: 'text', text };
+  }
+
   return buildFestivalIndexHeadlineContent({
     locale,
+    timeTab,
     place: place || undefined,
     time,
     tasteSuffix,
