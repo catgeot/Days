@@ -43,6 +43,7 @@ import {
   waitForFestivalRestaurantNames,
 } from '../../src/pages/Korea/lib/festivalRestaurantLoad.js';
 import {
+  beginFestivalLodgingLoad,
   loadFestivalLodgingForAsk,
   publishFestivalLodgingStays,
   resetFestivalLodgingStays,
@@ -1732,6 +1733,55 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   });
   assert.match(namePayload.hint, /스톤델리아/);
   assert.match(namePayload.hint, /해밀펜션/);
+  const nameLodgingLine = namePayload.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
+  assert.match(nameLodgingLine, /이름만 말한다: 스톤델리아, 해밀펜션/);
+  assert.match(nameLodgingLine, /km를 붙이지 않는다/);
+  assert.doesNotMatch(nameLodgingLine, /거리와 함께 말한다/);
+  assert.doesNotMatch(nameLodgingLine, /\d+(?:\.\d+)?\s*km/);
+  resetFestivalLodgingStays('2930716');
+  let releaseTopsTen;
+  const topsTenLoad = new Promise((resolve) => {
+    releaseTopsTen = resolve;
+  });
+  beginFestivalLodgingLoad('2930716', topsTenLoad);
+  publishFestivalLodgingStays('2930716', [{ itemName: '이름만호텔' }]);
+  const topsTenAsk = loadFestivalLodgingForAsk({
+    title: '강릉 국수 축제',
+    contentId: '2930716',
+    lat: 37.755777,
+    lng: 128.897602,
+  }, { userText: '숙소', timeoutMs: 400 });
+  releaseTopsTen([
+    { itemName: '호텔 탑스텐 강릉', lat: 37.766, lng: 128.9 },
+  ]);
+  const topsTenCtx = await topsTenAsk;
+  assert.equal(topsTenCtx.nearbyStays[0].name, '호텔 탑스텐 강릉');
+  assert.ok(topsTenCtx.nearbyStays[0].distKm > 0);
+  assert.ok(topsTenCtx.nearbyStays[0].distKm < 2);
+  const topsTenHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '숙소',
+    locale: 'ko',
+    festivalContext: topsTenCtx,
+  });
+  assert.match(topsTenHint.hint, /호텔 탑스텐 강릉\(\d+(?:\.\d+)?km\)/);
+  assert.match(topsTenHint.hint, /거리와 함께/);
+  assert.doesNotMatch(topsTenHint.hint, /이름만호텔/);
+  resetFestivalLodgingStays('506616');
+  publishFestivalLodgingStays('506616', [
+    { itemName: '신화관 제주신화월드', lat: 33.306, lng: 126.317 },
+    { itemName: '랜딩관 제주신화월드', lat: 33.307, lng: 126.318 },
+    { itemName: '서머셋 제주신화월드', lat: 33.308, lng: 126.319 },
+    { itemName: '롯데호텔 제주', lat: 33.248, lng: 126.41 },
+  ], { lat: 33.247, lng: 126.56 });
+  const deduped = await loadFestivalLodgingForAsk({
+    title: '서귀포칠십리축제',
+    contentId: '506616',
+    lat: 33.247,
+    lng: 126.56,
+  }, { userText: '숙소' });
+  const dedupedNames = deduped.nearbyStays.map((row) => row.name);
+  assert.equal(dedupedNames.filter((name) => name.includes('제주신화월드')).length, 1);
+  assert.ok(dedupedNames.includes('롯데호텔 제주'));
   resetFestivalLodgingStays('2930716');
   resetFestivalLodgingStays('506616');
   resetFestivalLodgingStays('129000');
@@ -2022,7 +2072,97 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(namedStays, /경포 호텔\(8km\)/);
   assert.doesNotMatch(namedStays, /먼 호텔|인근으로|숙소가 자리|다양한 숙소|월화거리/);
   assert.match(namedStays, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
+  assert.match(namedStays, /가까운 숙소로 .*경포 호텔\(8km\)이 있어요/);
+  assert.doesNotMatch(namedStays, /예요|이에요/);
   assert.equal((namedStays.match(/#festival-lodging/g) || []).length, 1);
+  const batchimLead = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '어디서 자요?',
+    lat: 37.755777,
+    lng: 128.897602,
+    nearbyStays: [
+      { name: '호텔 탑스텐 강릉', distKm: 1.2 },
+      { name: '다온한옥펜션', distKm: 2 },
+      { name: '서머셋 제주신화월드', distKm: 3.4 },
+    ],
+  });
+  assert.match(batchimLead, /가까운 숙소로 호텔 탑스텐 강릉\(1\.2km\), 다온한옥펜션\(2km\), 서머셋 제주신화월드\(3\.4km\)가 있어요/);
+  assert.doesNotMatch(batchimLead, /강릉예요|펜션예요|월드예요|예요|이에요/);
+  const gangneungOnly = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소',
+    nearbyStays: [{ name: '호텔 탑스텐 강릉', distKm: 1.2 }],
+  });
+  assert.match(gangneungOnly, /호텔 탑스텐 강릉\(1\.2km\)이 있어요/);
+  const pensionOnly = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소',
+    nearbyStays: [{ name: '다온한옥펜션', distKm: 2 }],
+  });
+  assert.match(pensionOnly, /다온한옥펜션\(2km\)이 있어요/);
+  const worldOnly = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소',
+    nearbyStays: [{ name: '서머셋 제주신화월드', distKm: 3.4 }],
+  });
+  assert.match(worldOnly, /서머셋 제주신화월드\(3\.4km\)가 있어요/);
+  const noBatchimLead = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소',
+    nearbyStays: [{ name: '강릉 스카이베이', distKm: 1 }],
+  });
+  assert.match(noBatchimLead, /가까운 숙소로 강릉 스카이베이\(1km\)가 있어요/);
+  const inventedKm = polishFestivalModelReply(
+    '호텔 탑스텐 강릉은 1.2km이고 신라모노그램은 99km예요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '숙소',
+      lat: 37.755777,
+      lng: 128.897602,
+      nearbyStays: [
+        { name: '호텔 탑스텐 강릉', lat: 37.766, lng: 128.9 },
+        { name: '신라모노그램' },
+      ],
+    },
+  );
+  assert.match(inventedKm, /호텔 탑스텐 강릉\(\d+(?:\.\d+)?km\)/);
+  assert.match(inventedKm, /신라모노그램/);
+  assert.doesNotMatch(inventedKm, /99\s*km|신라모노그램\(\d/);
+  const mixedHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '숙소',
+    locale: 'ko',
+    festivalContext: {
+      title: '강릉 국수 축제',
+      contentId: '2930716',
+      lat: 37.755777,
+      lng: 128.897602,
+      nearbyStays: [
+        { name: '호텔 탑스텐 강릉', lat: 37.766, lng: 128.9 },
+        { name: '신라모노그램' },
+      ],
+    },
+  });
+  const mixedLine = mixedHint.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
+  assert.match(mixedLine, /호텔 탑스텐 강릉\(\d+(?:\.\d+)?km\)/);
+  assert.match(mixedLine, /신라모노그램/);
+  assert.doesNotMatch(mixedLine, /거리와 함께 말한다/);
+  assert.doesNotMatch(mixedLine, /신라모노그램\(\d/);
+  const bareKm = polishFestivalModelReply(
+    '호텔 탑스텐 강릉까지 4km예요. [강릉 숙소 안내](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '숙소',
+    },
+  );
+  assert.doesNotMatch(bareKm, /4\s*km/);
+  assert.match(bareKm, /#festival-lodging/);
   const areaSearch = polishFestivalModelReply(
     '교동 권역에서 숙소를 찾을 수 있어요. [강릉 숙소 안내](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)',
     {

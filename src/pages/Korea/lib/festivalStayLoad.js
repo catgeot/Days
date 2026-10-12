@@ -1,5 +1,8 @@
-import { attachMrtStayDistances } from '../../../utils/mrtStayDistance.js';
-import { isFestivalLodgingAsk } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { attachMrtStayDistances, parseStayCoordPair } from '../../../utils/mrtStayDistance.js';
+import {
+  isFestivalLodgingAsk,
+  pickDiverseLodgingStays,
+} from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 
 const published = new Map();
 const waiters = new Map();
@@ -24,17 +27,23 @@ function stayRows(items, origin) {
     seen.add(name);
     const distKm = Number(item?.distanceKm ?? item?.distKm ?? item?.distance);
     const type = stayTypeLabel(item);
+    const pt = parseStayCoordPair(item);
     rows.push({
       name,
       distKm: Number.isFinite(distKm) && distKm > 0 ? distKm : null,
+      ...(pt ? { lat: pt.lat, lng: pt.lng } : {}),
       ...(type ? { type } : {}),
     });
-    if (rows.length >= 12) break;
+    if (rows.length >= 20) break;
   }
   return rows;
 }
 
-/** Closest stays with a distance. Names still go out when every stay lacks one. */
+function stayListHasDistance(rows) {
+  return rows.some((row) => row.distKm > 0 || (Number.isFinite(row.lat) && Number.isFinite(row.lng)));
+}
+
+/** Closest stays. A stay without coordinates keeps its name and no distance. */
 export function topFestivalLodgingStays(items, origin, limit = 3) {
   const rows = stayRows(items, origin);
   rows.sort((a, b) => {
@@ -42,8 +51,7 @@ export function topFestivalLodgingStays(items, origin, limit = 3) {
     const db = b.distKm > 0 ? b.distKm : Number.POSITIVE_INFINITY;
     return da - db;
   });
-  const withDist = rows.filter((row) => row.distKm > 0);
-  return (withDist.length ? withDist : rows).slice(0, Math.max(1, limit));
+  return pickDiverseLodgingStays(rows, Math.max(1, limit));
 }
 
 /** Lodging-card stays for a festival, so a lodging question can name them. */
@@ -87,33 +95,45 @@ export function resetFestivalLodgingStays(contentId) {
  */
 export function waitForFestivalLodgingStays(contentId, options = {}) {
   const origin = options.origin || null;
-  const ready = topFestivalLodgingStays(options.stays, origin);
-  if (ready.length) return Promise.resolve(ready);
+  const fromContext = topFestivalLodgingStays(options.stays, origin);
+  if (stayListHasDistance(fromContext)) return Promise.resolve(fromContext);
   const key = String(contentId || '').trim();
-  if (!key) return Promise.resolve([]);
+  if (!key) return Promise.resolve(fromContext);
+  const pending = loads.get(key);
   if (published.has(key)) {
     const rows = topFestivalLodgingStays(published.get(key) || [], origin);
-    if (rows.length) return Promise.resolve(rows);
+    if (rows.length && (stayListHasDistance(rows) || !pending)) return Promise.resolve(rows);
   }
+  if (!pending && fromContext.length) return Promise.resolve(fromContext);
   const timeoutMs = Number(options.timeoutMs) > 0 ? Number(options.timeoutMs) : 3000;
-  const pending = loads.get(key);
   const publishedWait = new Promise((resolve) => {
     const timer = setTimeout(() => {
       const left = (waiters.get(key) || []).filter((fn) => fn !== finish);
       if (left.length) waiters.set(key, left);
       else waiters.delete(key);
-      resolve(topFestivalLodgingStays(published.get(key) || [], origin));
+      const rows = topFestivalLodgingStays(published.get(key) || [], origin);
+      resolve(rows.length ? rows : fromContext);
     }, timeoutMs);
     const finish = (rows) => {
+      const topped = topFestivalLodgingStays(rows, origin);
+      if (loads.get(key) && !stayListHasDistance(topped)) return;
       clearTimeout(timer);
-      resolve(topFestivalLodgingStays(rows, origin));
+      resolve(topped.length ? topped : fromContext);
     };
     const list = waiters.get(key) || [];
     list.push(finish);
     waiters.set(key, list);
   });
   if (!pending) return publishedWait;
-  const fromLoad = Promise.resolve(pending).then((items) => topFestivalLodgingStays(items, origin));
+  const fromLoad = Promise.resolve(pending).then((items) => {
+    const rows = topFestivalLodgingStays(items, origin);
+    if (stayListHasDistance(rows)) return rows;
+    const publishedRows = topFestivalLodgingStays(published.get(key) || [], origin);
+    if (stayListHasDistance(publishedRows)) return publishedRows;
+    if (rows.length) return rows;
+    if (publishedRows.length) return publishedRows;
+    return fromContext;
+  });
   return Promise.race([fromLoad, publishedWait]);
 }
 

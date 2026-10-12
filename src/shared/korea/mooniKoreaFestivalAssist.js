@@ -2,6 +2,7 @@ import { KO, EN } from '../../i18n/mooniPromptBundleData.js';
 import { listCityAttractionHubs, resolveCityAttractionHub } from '../../pages/Home/lib/cityAttractionHubs.js';
 import { englishLodgingAreaLabel, englishLodgingPlaceName } from './englishPlaceLabel.js';
 import { ensureItineraryMarkdownLineBreaks } from '../../utils/mooniTruncatedContinue.js';
+import { haversineKm as stayHaversineKm, parseStayCoordPair } from '../../utils/mrtStayDistance.js';
 import { filterBySearchQuery, normalizeFestivalQuery } from '../../pages/Korea/festivalSearch.js';
 import {
   compareFestivalsByOpenDate,
@@ -1105,16 +1106,65 @@ function stayDistanceTag(km) {
   return Number.isInteger(one) ? `${one}km` : `${one.toFixed(1)}km`;
 }
 
-function lodgingStayRows(values) {
+const STAY_GENERIC_TOKEN_RE =
+  /^(호텔|리조트|펜션|모텔|게스트하우스|게하|한옥|스테이|풀빌라|콘도|호스텔|여관|민박|호텔스|스위트|스위츠)$/;
+
+function stayComplexKeys(name) {
+  const tokens = String(name || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .filter((token) => token.length >= 4 && !STAY_GENERIC_TOKEN_RE.test(token));
+  const keys = tokens.filter((token) => token.length >= 5);
+  const last = tokens[tokens.length - 1];
+  if (last && last.length >= 4) keys.push(last);
+  return [...new Set(keys)];
+}
+
+/** «신화관 제주신화월드» and «서머셋 제주신화월드» share one complex. A leading place name stays apart. */
+export function sameFestivalStayComplex(a, b) {
+  const left = String(a || '').replace(/\s+/g, ' ').trim();
+  const right = String(b || '').replace(/\s+/g, ' ').trim();
+  if (!left || !right) return false;
+  if (left === right) return true;
+  if (stayComplexKeys(left).some((key) => right.includes(key))) return true;
+  return stayComplexKeys(right).some((key) => left.includes(key));
+}
+
+/** Closest stays, one per complex. */
+export function pickDiverseLodgingStays(rows, limit = 3) {
+  const picked = [];
+  for (const row of Array.isArray(rows) ? rows : []) {
+    if (picked.some((kept) => sameFestivalStayComplex(kept.name, row.name))) continue;
+    picked.push(row);
+    if (picked.length >= limit) break;
+  }
+  return picked;
+}
+
+function lodgingOriginKm(raw, origin) {
+  const lat = Number(origin?.lat);
+  const lng = Number(origin?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const pt = parseStayCoordPair(raw);
+  if (!pt) return null;
+  const km = stayHaversineKm(lat, lng, pt.lat, pt.lng);
+  return Number.isFinite(km) && km > 0 ? km : null;
+}
+
+function lodgingStayRows(values, origin) {
   const rows = [];
   for (const raw of Array.isArray(values) ? values : []) {
     const name = String(raw?.name || raw?.itemName || '').replace(/\s+/g, ' ').trim();
-    const distKm = Number(raw?.distKm ?? raw?.distanceKm);
+    let distKm = Number(raw?.distKm ?? raw?.distanceKm);
+    if (!(Number.isFinite(distKm) && distKm > 0)) distKm = lodgingOriginKm(raw, origin);
     const type = String(raw?.type || '').replace(/\s+/g, ' ').trim();
     if (!name) continue;
+    const pt = parseStayCoordPair(raw);
     rows.push({
       name,
       distKm: Number.isFinite(distKm) && distKm > 0 ? distKm : null,
+      ...(pt ? { lat: pt.lat, lng: pt.lng } : {}),
       ...(type ? { type } : {}),
     });
   }
@@ -1123,8 +1173,7 @@ function lodgingStayRows(values) {
     const db = b.distKm > 0 ? b.distKm : Number.POSITIVE_INFINITY;
     return da - db;
   });
-  const withDist = rows.filter((row) => row.distKm > 0);
-  return (withDist.length ? withDist : rows).slice(0, 3);
+  return pickDiverseLodgingStays(rows, 3);
 }
 
 function lodgingStayLabel(row) {
@@ -1135,12 +1184,63 @@ function lodgingStayLabel(row) {
   return bits.length ? `${row.name}(${bits.join(', ')})` : row.name;
 }
 
-function lodgingStayLead(values, locale = 'ko') {
-  const rows = lodgingStayRows(values);
+function lastHangulSyllable(label) {
+  const text = String(label || '');
+  let last = '';
+  for (const ch of text) {
+    if (ch >= '가' && ch <= '힣') last = ch;
+  }
+  return last;
+}
+
+function lodgingStayLead(values, locale = 'ko', origin) {
+  const rows = lodgingStayRows(values, origin);
   if (!rows.length) return '';
   const labels = rows.map((row) => lodgingStayLabel(row));
   if (String(locale || 'ko').slice(0, 2) === 'en') return `Places to stay: ${labels.join(', ')}.`;
-  return `숙소는 ${labels.join(', ')}예요.`;
+  const particle = syllableHasBatchim(lastHangulSyllable(labels[labels.length - 1])) ? '이' : '가';
+  return `가까운 숙소로 ${labels.join(', ')}${particle} 있어요.`;
+}
+
+function lodgingDistanceClause(rows, en) {
+  const labels = rows.map((row) => lodgingStayLabel(row));
+  const withDist = rows.filter((row) => stayDistanceTag(row.distKm));
+  const list = labels.join(', ');
+  if (en) {
+    if (withDist.length === rows.length) {
+      return `name only these stays with the distance written here: ${list}. Do not invent a kilometer value.`;
+    }
+    if (withDist.length) {
+      return `name only these stays: ${list}. Attach a distance only where one is written. Do not invent a kilometer value.`;
+    }
+    return `name only these stays, with no distances: ${list}. Do not write kilometers or meters. This overrides a line that says to include distance.`;
+  }
+  if (withDist.length === rows.length) {
+    return `숙소 카드의 이 곳만 적힌 거리와 함께 말한다: ${list}. 여기 없는 km는 쓰지 않는다.`;
+  }
+  if (withDist.length) {
+    return `숙소 카드의 이 곳만 말한다: ${list}. 거리가 적힌 곳에만 그 거리를 붙인다. 거리 없는 곳에는 km를 붙이지 않는다. 위의 «거리와 함께»보다 이 문장이 우선한다.`;
+  }
+  return `숙소 카드의 이 곳만 이름만 말한다: ${list}. km를 붙이지 않는다. 위의 «거리와 함께»보다 이 문장이 우선한다.`;
+}
+
+function allowedStayDistanceTags(values, origin) {
+  const tags = new Set();
+  for (const row of lodgingStayRows(values, origin)) {
+    const tag = stayDistanceTag(row.distKm);
+    if (tag) tags.add(tag.toLowerCase());
+  }
+  return tags;
+}
+
+function stripUnhintedStayDistances(text, values, origin) {
+  const allowed = allowedStayDistanceTags(values, origin);
+  return String(text || '').replace(/\s*(\d+(?:\.\d+)?)\s*(km|m)\b/gi, (full, num, unit) => {
+    const n = Number(num);
+    const km = String(unit).toLowerCase() === 'm' ? n / 1000 : n;
+    const tag = stayDistanceTag(km).toLowerCase();
+    return tag && allowed.has(tag) ? full : '';
+  }).replace(/[ \t]{2,}/g, ' ').replace(/\s+([.!?。])/g, '$1').trim();
 }
 
 function lodgingCardLink(contentId, locale = 'ko') {
@@ -1163,10 +1263,11 @@ function stripLodgingAreaSearchSentence(text) {
 /** Named stays from the lodging card replace area filler. An empty list drops the area-search sentence. */
 function ensureFestivalLodgingAnswer(text, options = {}) {
   if (!isFestivalLodgingAsk(options)) return String(text || '');
-  const lead = lodgingStayLead(options.nearbyStays, options.locale);
+  const origin = { lat: options.lat, lng: options.lng };
+  const lead = lodgingStayLead(options.nearbyStays, options.locale, origin);
   const link = lodgingCardLink(options.contentId, options.locale);
-  if (!lead || !link) return stripLodgingAreaSearchSentence(text);
-  return `${lead}\n\n${link}`;
+  const body = !lead || !link ? stripLodgingAreaSearchSentence(text) : `${lead}\n\n${link}`;
+  return stripUnhintedStayDistances(body, options.nearbyStays, origin);
 }
 
 function parkingGuide(options = {}) {
@@ -1741,12 +1842,13 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
         .join('\n');
       if (lodgingUrl) {
         const placeName = String(festivalContext.hubLabel || '').trim();
-        const stayLabels = lodgingStayRows(festivalContext.nearbyStays).map((row) => lodgingStayLabel(row));
+        const stayOrigin = { lat: festivalContext.lat, lng: festivalContext.lng };
+        const stayRows = lodgingStayRows(festivalContext.nearbyStays, stayOrigin);
         const cardLabel = en ? 'lodging card' : '숙소 카드';
-        if (stayLabels.length) {
+        if (stayRows.length) {
           hint += en
-            ? `\n- Lodging answer: name only these stays with their distance: ${stayLabels.join(', ')}. End with one [${cardLabel}](${lodgingUrl}) link. Do not add area filler such as "find stays in the area" or "a variety of stays are located".`
-            : `\n- 숙소 답: 숙소 카드의 이 곳만 거리와 함께 말한다: ${stayLabels.join(', ')}. 마지막은 [${cardLabel}](${lodgingUrl}) 한 번만. «인근으로 … 권역에서 숙소를 찾을 수 있어요», «숙소가 자리하고 있어요», «다양한 숙소가 자리하고 있어요», «매력을 느끼며»는 쓰지 않는다.`;
+            ? `\n- Lodging answer: ${lodgingDistanceClause(stayRows, true)} End with one [${cardLabel}](${lodgingUrl}) link. Do not add area filler such as "find stays in the area" or "a variety of stays are located".`
+            : `\n- 숙소 답: ${lodgingDistanceClause(stayRows, false)} 마지막은 [${cardLabel}](${lodgingUrl}) 한 번만. «인근으로 … 권역에서 숙소를 찾을 수 있어요», «숙소가 자리하고 있어요», «다양한 숙소가 자리하고 있어요», «매력을 느끼며»는 쓰지 않는다.`;
         } else {
           const areas = lodgingAreaNames({
             venue: festivalContext.venue,
