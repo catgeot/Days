@@ -108,24 +108,24 @@
 
 | | |
 |--|--|
-| **상태** | **#5 push** · tip `abc109da` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · main `#431` `daf8eca4` 유지 · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
+| **상태** | **#6 push** · tip `e577311a` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · main `#431` `daf8eca4` 유지 · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
 | **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
 | **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 숙소 질문은 카드 목록을 최대 3초 기다린 뒤 가까운 3곳의 이름·거리·유형을 `koreaFestivalHint`에 넣는다. 답이 2~3곳과 `[숙소 카드]` 한 번이 아니면 «권역에서 숙소를 찾을 수 있어요»를 뺀다. 근처 «용천사 함평»은 «용천사»다. 이번 Edge 파일은 없다. gemini-proxy는 재배포하지 않는다. 주차·첫답·칩·맛집·영어 첫 답은 유지. 배포·PR 머지는 하지 않는다. `npm run test:health` 251 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 숙소 좌표가 있으면 축제 mapx/mapy와의 거리를 힌트에 넣는다. 좌표가 없으면 그 숙소의 km와 «거리와 함께 말한다»를 빼고, 힌트에 없는 km는 답에서 지운다. 답은 «가까운 숙소로 A(1.2km), …이/가 있어요»다. 같은 단지(제주신화월드)는 한 곳만. 이번 Edge 파일은 없다. gemini-proxy는 재배포하지 않는다. 배포·PR 머지는 하지 않는다. `npm run test:health` 266 pass. |
 
 **다음 제시어**:
 
 ```
-축제 MOONi #6, staging 재확인
+축제 MOONi #7, staging 재확인
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip abc109da
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip e577311a
 금지: 에이전트 gemini-proxy 배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push
-작업: Edge 파일은 없다. gemini-proxy는 재배포하지 않고 Preview 클라이언트만 본다. «어디서 자요?» 요청 본문에 강릉 세인트존스호텔·신라모노그램, 서귀포 신화관 제주신화월드, 함평 스톤델리아·해밀펜션이 있고, 답은 이름·거리 2~3곳과 [숙소 카드] 한 번이며 «권역에서 숙소를 찾을 수 있어요»는 없다. 함평 첫답 근처는 «용천사»이고 «용천사 함평»은 없다. 2930716 칩 말풍선은 «볼거리·분위기 알려 줘»이고 지시문은 없다. «주차»는 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 033-…»이고 찾아볼·알아볼·볼 수 있어요 축제 페이지 문장은 없다. 거리 없는 맛집은 빠진다. 506616은 «천지연 주차장»만으로 주차 데이터가 아니고, 첫답은 홍보 구호가 없으며 «청소년 페스타 경연이 있어요»와 «10/20~22, 11일 뒤 시작해요»다. 영어 첫 답은 English (한글), 끝난 축제는 has ended와 다음 회가 근처보다 앞이고 Visitors engage / lively atmosphere 문장은 없다. prod는 v27(2c7a3c95), mooni_chat 기본은 gemini-3.1-flash-lite.
+작업: Edge 파일은 없다. gemini-proxy는 재배포하지 않고 Preview 클라이언트만 본다. 좌표 있는 숙소는 «호텔 탑스텐 강릉(1.2km)»처럼 힌트에 거리가 있고, 좌표 없는 숙소는 km가 없으며 숙소 답 줄은 «거리와 함께 말한다»가 아니다. 답은 «가까운 숙소로 …이/가 있어요»와 [숙소 카드] 한 번이고, 힌트에 없는 km는 없다. 강릉·펜션은 이, 월드(받침 없음)는 가. 서귀포는 제주신화월드가 한 곳만이다. «권역에서 숙소를 찾을 수 있어요»는 없다. 함평 첫답 근처는 «용천사»다. 2930716 칩 말풍선은 «볼거리·분위기 알려 줘»다. «주차»는 공식 홈페이지 문장만이고 506616은 «천지연 주차장»만으로 주차 데이터가 아니다. 첫답은 «청소년 페스타 경연이 있어요»와 «10/20~22, 11일 뒤 시작해요»다. prod는 v27(2c7a3c95), mooni_chat 기본은 gemini-3.1-flash-lite.
 검증: npm run test:health
 ```
 
