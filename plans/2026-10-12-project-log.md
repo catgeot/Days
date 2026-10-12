@@ -11,3 +11,11 @@
 - **VERIFY** `npm run test:health` 267 pass · CI run `38190266499` success (lint-and-build, e2e-youtube-session)
 - **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
 - **다음** `마산 주변 볼거리 #5, 피드백 반영`
+
+## 카이로 동선 #6, 영문 단위 확인
+
+- **세션** `카이로 동선 #6, 영문 단위 확인` · branch `cursor/cairo-facts-en-8e40` · 코드 tip `9864e282` · 브랜치 tip `6c572b24` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지 · 한글 `cairo.js` 미변경 · #435 푸시 없음
+- **확인** 영문 값은 `USD 25` / `USD 60` / `6 months` / `1 hour` / `6 years`. EGP는 EGP. 건강 검사는 토큰을 `amount:25:USD`처럼 맞추고, 영문 값의 한글은 영어 고유명사 뒤 괄호 안에서만 허용한다. `place-verified-facts.test.mjs` 8 pass. 화면 텍스트에 한글 없음.
+- **CI** run `38185463753` (`9864e282`) success · run `38185699479` (`6c572b24`) success. lint-and-build, e2e-youtube-session.
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · GEM `.../place/grand-egyptian-museum?lang=en`
+- **다음** 제시어 없음. 초안 PR은 사람이 본다.
