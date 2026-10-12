@@ -1,4 +1,9 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "cursor/*": false
+    }
+  },
   "redirects": [
     {
       "source": "/korea/theme/packages",
