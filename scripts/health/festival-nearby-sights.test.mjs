@@ -22,6 +22,11 @@ import {
   slimFestivalOpenDetail,
   writeFestivalOpenDetail,
 } from '../../src/pages/Korea/lib/festivalOpenDetailCache.js';
+import {
+  readTourApiProxyCache,
+  tourApiProxyCacheKey,
+  writeTourApiProxyCache,
+} from '../../src/utils/tourApiProxyCache.js';
 
 const origin = { lat: 35.06, lng: 126.52 };
 
@@ -413,6 +418,22 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.ok(
     cachedBlock.indexOf('if (!cachedSpots)') < cachedBlock.indexOf('fetchNearbyTourAttractions({'),
   );
+  const sightsEffectEnd = sheet.indexOf('nearbySectionsWaitForSights');
+  const sightsEffect = sheet.slice(
+    sheet.indexOf('const cachedSpots = readNearbyAttractionCache'),
+    sightsEffectEnd,
+  );
+  assert.equal(sightsEffect.includes('fetchNearbyTourRestaurants'), false);
+  assert.equal(sightsEffect.includes('fetchNearbyTourLeports'), false);
+  assert.equal(sightsEffect.includes('fetchNearbyTourCulture'), false);
+  const restaurantsAt = sheet.indexOf('fetchNearbyTourRestaurants({');
+  assert.ok(sightsEffectEnd >= 0 && restaurantsAt > sightsEffectEnd);
+  const coursesAt = sheet.indexOf('fetchNearbyTourCourses({');
+  const coursesGate = sheet.lastIndexOf(
+    "nearbyStatus === 'loading' || nearbyStatus === 'idle'",
+    coursesAt,
+  );
+  assert.ok(coursesGate >= 0 && coursesGate < coursesAt);
   const afterNearby = sheet.slice(nearbyAt, lodgingAt);
   assert.match(afterNearby, /!detailLoading && \(/);
 });
@@ -453,4 +474,41 @@ test('out-of-window festival detail opens again from the client cache', () => {
   assert.equal(hit.contentId, '638576');
   assert.equal(hit.common.mapx, slim.common.mapx);
   assert.equal(hit.common.mapy, '35.1');
+});
+
+test('locationBasedList for the same coords reopens from the client cache', () => {
+  const store = new Map();
+  const storage = {
+    getItem: (key) => (store.has(key) ? store.get(key) : null),
+    setItem: (key, value) => store.set(key, value),
+  };
+  const body = {
+    action: 'locationBasedList',
+    locale: 'ko',
+    contentTypeId: '39',
+    mapX: 128.5674,
+    mapY: 35.1981,
+    radius: 3000,
+    numOfRows: 8,
+    pageNo: 1,
+    arrange: 'E',
+  };
+  assert.equal(readTourApiProxyCache(body, [storage]), null);
+  writeTourApiProxyCache(body, { ok: false, items: [] }, [storage]);
+  assert.equal(readTourApiProxyCache(body, [storage]), null);
+  writeTourApiProxyCache(body, { ok: true, items: [{ contentId: '1' }] }, [storage]);
+  const hit = readTourApiProxyCache(
+    { ...body, mapX: 128.5671, mapY: 35.1984 },
+    [storage],
+  );
+  assert.equal(hit.ok, true);
+  assert.equal(hit.items[0].contentId, '1');
+  assert.equal(
+    tourApiProxyCacheKey(body),
+    tourApiProxyCacheKey({ ...body, mapX: 128.5671, mapY: 35.1984 }),
+  );
+  assert.notEqual(
+    tourApiProxyCacheKey(body),
+    tourApiProxyCacheKey({ ...body, contentTypeId: '28' }),
+  );
 });

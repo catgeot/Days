@@ -1109,9 +1109,6 @@ export default function FestivalDetailSheet({
       } else {
         setNearbyStatus('loading');
       }
-      setNearbyFoodStatus('loading');
-      setNearbyLeportsStatus('loading');
-      setNearbyCultureStatus('loading');
       if (!cachedSpots) {
         fetchNearbyTourAttractions({
           lat: pt.lat,
@@ -1127,6 +1124,28 @@ export default function FestivalDetailSheet({
           else setNearbyStatus('ok');
         });
       }
+
+      return () => {
+        cancelled = true;
+      };
+    }
+    return undefined;
+  }, [item?.contentId, item?.mapx, item?.mapy]);
+
+  useEffect(() => {
+    if (!item?.contentId) return undefined;
+    const pt = festivalLngLat(item?.mapx, item?.mapy);
+    if (!pt) return undefined;
+    const nearbySectionsWaitForSights =
+      nearbyStatus === 'loading' || nearbyStatus === 'idle';
+    if (nearbySectionsWaitForSights) return undefined;
+
+    let cancelled = false;
+    const startDeferredNearbySections = () => {
+      if (cancelled) return;
+      setNearbyFoodStatus('loading');
+      setNearbyLeportsStatus('loading');
+      setNearbyCultureStatus('loading');
       fetchNearbyTourRestaurants({
         lat: pt.lat,
         lng: pt.lng,
@@ -1169,13 +1188,13 @@ export default function FestivalDetailSheet({
         else if (!spots.length) setNearbyCultureStatus('empty');
         else setNearbyCultureStatus('ok');
       });
-
-      return () => {
-        cancelled = true;
-      };
-    }
-    return undefined;
-  }, [item?.contentId, item?.mapx, item?.mapy, festivalAreaCode]);
+    };
+    const deferredTimer = window.setTimeout(startDeferredNearbySections, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(deferredTimer);
+    };
+  }, [item?.contentId, item?.mapx, item?.mapy, nearbyStatus, festivalAreaCode]);
 
   useEffect(() => {
     if (!item?.contentId) return undefined;
@@ -1184,29 +1203,34 @@ export default function FestivalDetailSheet({
       setNearbyCoursesStatus('noarea');
       return undefined;
     }
+    if (nearbyStatus === 'loading' || nearbyStatus === 'idle') return undefined;
 
     const pt = festivalLngLat(item?.mapx, item?.mapy);
     let cancelled = false;
-    setNearbyCoursesStatus('loading');
-    fetchNearbyTourCourses({
-      lat: pt?.lat,
-      lng: pt?.lng,
-      areaCode: festivalAreaCode,
-      radiusKm: 80,
-      limit: 6,
-    }).then((res) => {
+    const deferredTimer = window.setTimeout(() => {
       if (cancelled) return;
-      const spots = Array.isArray(res?.spots) ? res.spots : [];
-      setNearbyCourses(spots);
-      if (res?.error) setNearbyCoursesStatus('error');
-      else if (!spots.length) setNearbyCoursesStatus('empty');
-      else setNearbyCoursesStatus('ok');
-    });
+      setNearbyCoursesStatus('loading');
+      fetchNearbyTourCourses({
+        lat: pt?.lat,
+        lng: pt?.lng,
+        areaCode: festivalAreaCode,
+        radiusKm: 80,
+        limit: 6,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyCourses(spots);
+        if (res?.error) setNearbyCoursesStatus('error');
+        else if (!spots.length) setNearbyCoursesStatus('empty');
+        else setNearbyCoursesStatus('ok');
+      });
+    }, 0);
 
     return () => {
       cancelled = true;
+      window.clearTimeout(deferredTimer);
     };
-  }, [item?.contentId, item?.mapx, item?.mapy, festivalAreaCode]);
+  }, [item?.contentId, item?.mapx, item?.mapy, festivalAreaCode, nearbyStatus]);
 
   const overview = useMemo(
     () => stripHtml(common?.overview || ''),
