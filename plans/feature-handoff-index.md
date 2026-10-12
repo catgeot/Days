@@ -18,41 +18,31 @@
 
 | | |
 |--|--|
-| **상태** | **#9 한글 출처** · tip `e516f770` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · GO 전 · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
-| **브랜치** | `cursor/cairo-facts-en-8e40` |
+| **상태** | **#10 출처 조각** · tip `05556608` · draft PR [#441](https://github.com/catgeot/Days/pull/441) · #436 squash `c8bbf7d7` · #433 브랜치 `e2fdf3d5` 동결 |
+| **브랜치** | `cursor/cairo-source-tidy-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
-| **Preview** | git `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=ko` · GEM `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
-| **금지** | 사람 지시 없는 `cursor/cairo-facts-en-8e40` push · 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 `~`를 `–`로 바꾸기 · 헤더 보조명 변경 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
+| **Preview** | git `https://days-git-cursor-cairo-source-tidy-8e40-catgeots-projects.vercel.app/place/giza-pyramids?lang=ko` · GEM `https://days-git-cursor-cairo-source-tidy-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
+| **금지** | `cursor/cairo-facts-en-8e40` · `cursor/cairo-qa-8e40` push · 한글 사실 문장 변경 · 숫자·금액·URL 변경 · 헤더 보조명 코드 변경 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 한글 출처는 `break-keep`. 긴 URL만 `overflow-wrap: anywhere`. 블로그 줄 끝 «(»는 이번엔 안 고침. **#436 병합 후에만**, 사람이 시키면 `origin/main`에서 작은 PR: 출처 라벨 «Ministry of Tourism and Antiquities giza-plateau», «… egyptian-museum»와 한글 «관광유물부 giza-plateau», «… egyptian-museum»에서 조각만 뺀다. URL은 그대로. |
+| **남은 일** | 출처 조각과 영문 시간 `–`는 #441. 헤더 `(카이로)`는 비우기를 제안만 했고 코드는 없다. 블로그 줄 끝 «(»는 안 고침. |
 
-**다음 제시어 없음** (GO 대기). 조각 제거는 병합 뒤에 `origin/main`에서 새 PR.
+**다음 제시어 없음**. 헤더 보조명을 비울지는 사람이 정한다.
 
 ### 마산 주변 볼거리
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `bb90379f` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
-| **브랜치** | `cursor/masan-nearby-8e40` |
+| **상태** | **#7 빈 사진·스피너** · tip `e1024118` · draft PR [#442](https://github.com/catgeot/Days/pull/442) · **병합 금지** |
+| **브랜치** | `cursor/nearby-settle-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
-| **Preview** | git `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716` (Vercel SSO) |
-| **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 `plans/**` 커밋 · PR 병합 |
+| **Preview** | git `https://days-git-cursor-nearby-settle-8e40-catgeots-projects.vercel.app/korea?festival=2930716` · `637693` · `638576` (Vercel SSO) |
+| **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · 주변 목록 순서·팔경 소제목·거리순·마산 연꽃공원 병합 변경 · 합본을 MRT·locationBasedList 뒤로 다시 묶기 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | Site QA 결과를 기다린다. 결과가 오기 전에는 코드를 고치지 않는다. 사진이 없는 동안은 스켈레톤이고, 조회가 끝나도 없으면 아이콘이다. 합본은 숙소·locationBasedList보다 먼저 보인다. |
+| **남은 일** | 빈 detailImage는 바로 아이콘. 하단 스피너는 하나. #435 브랜치 `cursor/masan-nearby-8e40`에는 더 푸시하지 않는다. |
 
-**다음 제시어**:
-
-```
-마산 주변 볼거리 #7, 피드백 반영
-@plans/feature-handoff-index.md
-@plans/2026-10-12-project-log.md
-브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip bb90379f
-금지: 헤더 수정 · cairo-qa-8e40 push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 plans 커밋 · PR 병합
-작업: Site QA 결과가 오기 전에는 시작하지 않는다. 결과가 오면 637693·638576·2930716에서 어긋난 곳만 고친다. 합본을 fetch-mrt-stays나 locationBasedList 응답 뒤로 다시 묶지 않는다. 사진 조회를 목록보다 앞으로 당기지 않는다.
-검증: npm run test:health
-```
+**다음 제시어 없음**.
 
 ### 축제 상세 주변 볼거리
 
