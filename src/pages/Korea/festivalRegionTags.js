@@ -5,8 +5,13 @@
  */
 
 import koreaAreaCodes from '../Home/data/koreaAreaCodes.json' with { type: 'json' };
-import { areaCodeFromJeonnamGwangjuIntegratedAddr } from '../Home/lib/koreaTourAddrNormalize.js';
-import { matchSido, matchSigungu, SIDO_ADDR_HINTS } from './koreaAreaFilter.js';
+import {
+  matchSigungu,
+  resolveFestivalItemSidoCode,
+  detectSidoFromAddr,
+  SIDO_ADDR_HINTS,
+} from './koreaAreaFilter.js';
+import { stripKoreaTourAddrSidoPrefixes } from '../Home/lib/koreaTourAddrNormalize.js';
 const MIN_COUNT = 2;
 /** 시·군·구 칩 — 시도로 이미 좁힌 뒤라 1건도 노출 */
 const CITY_MIN_COUNT = 1;
@@ -20,8 +25,8 @@ const SIDO_ORDER = Object.entries(koreaAreaCodes?.areas || {}).map(([id, entry])
   label: String(entry?.name || id),
 }));
 
-const CITY_TOKEN_RE = /([가-힣]{2,12}(?:시|군))/gu;
-const DISTRICT_TOKEN_RE = /([가-힣]{1,10}구)/gu;
+const CITY_TOKEN_SUFFIX_RE = /^[가-힣]{2,12}(?:시|군)$/u;
+const DISTRICT_TOKEN_SUFFIX_RE = /^[가-힣]{1,10}구$/u;
 
 /**
  * @param {string | number | null | undefined} areaCode
@@ -35,14 +40,7 @@ export function isMetroArea(areaCode) {
  * @returns {string | null} areaCode
  */
 export function detectSidoCode(addr) {
-  const a = String(addr || '');
-  if (!a) return null;
-  const integrated = areaCodeFromJeonnamGwangjuIntegratedAddr(a);
-  if (integrated) return integrated;
-  for (const { id } of SIDO_ORDER) {
-    if (matchSido(a, id)) return id;
-  }
-  return null;
+  return detectSidoFromAddr(addr);
 }
 
 /**
@@ -50,13 +48,13 @@ export function detectSidoCode(addr) {
  * @returns {string[]} 시/군 라벨 (구 제외)
  */
 export function extractCityLabels(addr) {
-  const a = String(addr || '');
-  if (!a) return [];
+  const body = stripKoreaTourAddrSidoPrefixes(String(addr || ''));
+  if (!body) return [];
   const out = [];
   const seen = new Set();
-  for (const m of a.matchAll(CITY_TOKEN_RE)) {
-    const name = String(m[1] || '').trim();
-    if (!name || seen.has(name)) continue;
+  for (const token of body.split(/\s+/)) {
+    const name = String(token || '').trim();
+    if (!name || !CITY_TOKEN_SUFFIX_RE.test(name) || seen.has(name)) continue;
     // 광역 본명·공식 접미사 스킵 (서울시·서울특별시·부산광역시 등)
     if (
       /^(서울|부산|대구|인천|광주|대전|울산|세종)시$/u.test(name) ||
@@ -75,14 +73,13 @@ export function extractCityLabels(addr) {
  * @returns {string[]} 구 라벨 (광역시 하위용)
  */
 export function extractDistrictLabels(addr) {
-  const a = String(addr || '');
-  if (!a) return [];
+  const body = stripKoreaTourAddrSidoPrefixes(String(addr || ''));
+  if (!body) return [];
   const out = [];
   const seen = new Set();
-  for (const m of a.matchAll(DISTRICT_TOKEN_RE)) {
-    const name = String(m[1] || '').trim();
-    if (!name || seen.has(name)) continue;
-    // 공식 광역 표기 조각 오탐 방지
+  for (const token of body.split(/\s+/)) {
+    const name = String(token || '').trim();
+    if (!name || !DISTRICT_TOKEN_SUFFIX_RE.test(name) || seen.has(name)) continue;
     if (/^(특별|광역|자치)/u.test(name)) continue;
     seen.add(name);
     out.push(name);
@@ -122,9 +119,7 @@ export function buildSidoTags(items, opts = {}) {
   /** @type {Map<string, { id: string, label: string, count: number }>} */
   const counts = new Map();
   for (const item of items || []) {
-    const code =
-      (item?.areaCode != null && String(item.areaCode)) ||
-      detectSidoCode(item?.addr1);
+    const code = resolveFestivalItemSidoCode(item);
     if (!code) continue;
     const meta = SIDO_ORDER.find((s) => s.id === code);
     const label = meta?.label || SIDO_ADDR_HINTS[code]?.[0] || code;
@@ -174,8 +169,8 @@ export function filterByRegion(items, filter = {}) {
 
   return list.filter((item) => {
     const addr = item?.addr1 || '';
-    if (areaCode && areaCode !== 'all' && !matchSido(addr, areaCode)) {
-      return false;
+    if (areaCode && areaCode !== 'all') {
+      if (resolveFestivalItemSidoCode(item) !== String(areaCode)) return false;
     }
     if (cityName && cityName !== 'all') {
       return matchSigungu(addr, cityName);
