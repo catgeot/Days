@@ -108,24 +108,24 @@
 
 | | |
 |--|--|
-| **상태** | **#8 push** · tip `ede0be35` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · main `#431` `daf8eca4` 유지 · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
+| **상태** | **#9 push** · tip `d65f5d3e` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · main `#431` `daf8eca4` 유지 · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
 | **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
 | **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 좌표가 없으면 숙소 이름을 말하지 않고, 주소·장소에서 뽑은 시군구·장소 한 문장과 숙소 카드만 쓴다. 좌표가 있으면 20km 안만 가까운 순으로 2~3곳이다. «천지연 주차장 (일대)»는 «천지연 일대»다. 이번 Edge 파일은 없다. 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다. gemini-proxy는 재배포하지 않는다. 배포·PR 머지는 하지 않는다. `npm run test:health` 266 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 좌표가 없으면 숙소 이름을 말하지 않는다. 첫 답을 포함한 축제 답은 장소의 «천지연폭포 주차장»을 «천지연 일대»로 고친다. «주차장과»는 «일대와»이고 «일대 일대»는 없다. 주차 질문의 주차장 이름은 그대로다. 이번 Edge 파일은 없다. 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다. gemini-proxy는 재배포하지 않는다. 배포·PR 머지는 하지 않는다. `npm run test:health` 266 pass. |
 
 **다음 제시어**:
 
 ```
-축제 MOONi #9, staging 재확인
+축제 MOONi #10, staging 재확인
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip ede0be35
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip d65f5d3e
 금지: 에이전트 gemini-proxy 배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push · MRT 좌표·카드 정렬은 이번 PR 아님
-작업: Edge 파일은 없다. gemini-proxy는 재배포하지 않고 Preview 클라이언트만 본다. withCoords=0이면 숙소 이름을 말하지 않는다. 답은 장소 한 문장과 카드 하나, 또는 «축제장 근처 숙소는 [○○ 숙소 카드]에서 볼 수 있어요»다. «권역에서 숙소를 찾을 수 있어요»는 없다. 좌표가 있으면 20km 안만, 가까운 순, 2~3곳에 거리가 있다. 장소 «천지연 주차장 (일대)»는 «천지연 일대»다. 서귀포는 제주신화월드가 한 곳만이다. 함평 첫답 근처는 «용천사»다. 2930716 칩 말풍선은 «볼거리·분위기 알려 줘»다. «주차»는 공식 홈페이지 문장만이고 506616은 «천지연 주차장»만으로 주차 데이터가 아니다. 첫답은 «청소년 페스타 경연이 있어요»와 «10/20~22, 11일 뒤 시작해요»다. prod는 v27(2c7a3c95), mooni_chat 기본은 gemini-3.1-flash-lite. 그 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다.
+작업: Edge 파일은 없다. gemini-proxy는 재배포하지 않고 Preview 클라이언트만 본다. 서귀포 첫 답 «천지연폭포 주차장과 서귀포 원도심 일대에서»는 «천지연 일대와 서귀포 원도심 일대에서»다. «일대 일대»는 없다. 주차 칩의 주차장 이름은 그대로다. withCoords=0이면 숙소 이름을 말하지 않는다. 답은 장소 한 문장과 카드 하나, 또는 «축제장 근처 숙소는 [○○ 숙소 카드]에서 볼 수 있어요»다. «권역에서 숙소를 찾을 수 있어요»는 없다. 좌표가 있으면 20km 안만, 가까운 순, 2~3곳에 거리가 있다. 서귀포는 제주신화월드가 한 곳만이다. 함평 첫답 근처는 «용천사»다. 2930716 칩 말풍선은 «볼거리·분위기 알려 줘»다. «주차»는 공식 홈페이지 문장만이고 506616은 «천지연 주차장»만으로 주차 데이터가 아니다. 첫답은 «청소년 페스타 경연이 있어요»와 «10/20~22, 11일 뒤 시작해요»다. prod는 v27(2c7a3c95), mooni_chat 기본은 gemini-3.1-flash-lite. 그 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다.
 검증: npm run test:health
 ```
 
