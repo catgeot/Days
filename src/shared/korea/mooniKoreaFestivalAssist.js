@@ -1193,35 +1193,37 @@ function lastHangulSyllable(label) {
   return last;
 }
 
-function lodgingStayLead(values, locale = 'ko', origin) {
-  const rows = lodgingStayRows(values, origin);
-  if (!rows.length) return '';
+function lodgingStaySentence(rows, locale = 'ko') {
   const labels = rows.map((row) => lodgingStayLabel(row));
-  if (String(locale || 'ko').slice(0, 2) === 'en') return `Places to stay: ${labels.join(', ')}.`;
+  const allDist = rows.length > 0 && rows.every((row) => stayDistanceTag(row.distKm));
+  if (String(locale || 'ko').slice(0, 2) === 'en') {
+    return allDist
+      ? `Closest stays: ${labels.join(', ')}.`
+      : `Places to stay: ${labels.join(', ')}.`;
+  }
   const particle = syllableHasBatchim(lastHangulSyllable(labels[labels.length - 1])) ? '이' : '가';
-  return `가까운 숙소로 ${labels.join(', ')}${particle} 있어요.`;
+  const head = allDist ? '가까운 숙소로' : '숙소 카드에는';
+  return `${head} ${labels.join(', ')}${particle} 있어요.`;
 }
 
 function lodgingDistanceClause(rows, en) {
-  const labels = rows.map((row) => lodgingStayLabel(row));
   const withDist = rows.filter((row) => stayDistanceTag(row.distKm));
-  const list = labels.join(', ');
   if (en) {
     if (withDist.length === rows.length) {
-      return `name only these stays with the distance written here: ${list}. Do not invent a kilometer value.`;
+      return `Write only: ${lodgingStaySentence(rows, 'en')} Do not invent a kilometer value.`;
     }
     if (withDist.length) {
-      return `name only these stays: ${list}. Attach a distance only where one is written. Do not invent a kilometer value.`;
+      return `Write only: ${lodgingStaySentence(rows, 'en')} Attach a distance only where one is written. Do not call the whole list the closest.`;
     }
-    return `name only these stays, with no distances: ${list}. Do not write kilometers or meters. This overrides a line that says to include distance.`;
+    return `Write only: ${lodgingStaySentence(rows, 'en')} Do not call them the closest or nearby. Do not write kilometers or meters. This overrides a line that says to include distance.`;
   }
   if (withDist.length === rows.length) {
-    return `숙소 카드의 이 곳만 적힌 거리와 함께 말한다: ${list}. 여기 없는 km는 쓰지 않는다.`;
+    return `이 문장만 쓴다: ${lodgingStaySentence(rows, 'ko')} 가까운 순이다. 적힌 거리만 쓴다. 여기 없는 km는 쓰지 않는다.`;
   }
   if (withDist.length) {
-    return `숙소 카드의 이 곳만 말한다: ${list}. 거리가 적힌 곳에만 그 거리를 붙인다. 거리 없는 곳에는 km를 붙이지 않는다. 위의 «거리와 함께»보다 이 문장이 우선한다.`;
+    return `이 문장만 쓴다: ${lodgingStaySentence(rows, 'ko')} 거리가 적힌 곳에만 그 거리를 붙인다. «가까운»은 쓰지 않는다. 위의 «거리와 함께»보다 이 문장이 우선한다.`;
   }
-  return `숙소 카드의 이 곳만 이름만 말한다: ${list}. km를 붙이지 않는다. 위의 «거리와 함께»보다 이 문장이 우선한다.`;
+  return `이 문장만 쓴다: ${lodgingStaySentence(rows, 'ko')} «가까운»은 쓰지 않는다. km를 붙이지 않는다. 위의 «거리와 함께»보다 이 문장이 우선한다.`;
 }
 
 function allowedStayDistanceTags(values, origin) {
@@ -1260,14 +1262,23 @@ function stripLodgingAreaSearchSentence(text) {
   return stripped.replace(/[^[\n]*권역에서\s*숙소를\s*찾을\s*수\s*있어요[.!]?\s*/g, '').trim();
 }
 
+function dropUnverifiedCloseStayWording(text, rows) {
+  if (rows.some((row) => stayDistanceTag(row.distKm))) return String(text || '');
+  return String(text || '').replace(/가까운\s*숙소로/g, '숙소 카드에는');
+}
+
 /** Named stays from the lodging card replace area filler. An empty list drops the area-search sentence. */
 function ensureFestivalLodgingAnswer(text, options = {}) {
   if (!isFestivalLodgingAsk(options)) return String(text || '');
   const origin = { lat: options.lat, lng: options.lng };
-  const lead = lodgingStayLead(options.nearbyStays, options.locale, origin);
+  const rows = lodgingStayRows(options.nearbyStays, origin);
+  const lead = rows.length ? lodgingStaySentence(rows, options.locale) : '';
   const link = lodgingCardLink(options.contentId, options.locale);
   const body = !lead || !link ? stripLodgingAreaSearchSentence(text) : `${lead}\n\n${link}`;
-  return stripUnhintedStayDistances(body, options.nearbyStays, origin);
+  return dropUnverifiedCloseStayWording(
+    stripUnhintedStayDistances(body, options.nearbyStays, origin),
+    rows,
+  );
 }
 
 function parkingGuide(options = {}) {

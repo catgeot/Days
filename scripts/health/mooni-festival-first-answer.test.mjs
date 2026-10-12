@@ -1734,10 +1734,38 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(namePayload.hint, /스톤델리아/);
   assert.match(namePayload.hint, /해밀펜션/);
   const nameLodgingLine = namePayload.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
-  assert.match(nameLodgingLine, /이름만 말한다: 스톤델리아, 해밀펜션/);
-  assert.match(nameLodgingLine, /km를 붙이지 않는다/);
-  assert.doesNotMatch(nameLodgingLine, /거리와 함께 말한다/);
+  assert.match(nameLodgingLine, /숙소 카드에는 스톤델리아, 해밀펜션이 있어요/);
+  assert.match(nameLodgingLine, /«가까운»은 쓰지 않는다/);
+  assert.doesNotMatch(nameLodgingLine, /가까운 숙소로/);
   assert.doesNotMatch(nameLodgingLine, /\d+(?:\.\d+)?\s*km/);
+  const nameAnswer = polishFestivalModelReply(
+    '가까운 숙소로 스톤델리아, 해밀펜션이 있어요.',
+    {
+      contentId: '129000',
+      locale: 'ko',
+      userText: '숙소',
+      nearbyStays: nameOnly.nearbyStays,
+    },
+  );
+  assert.match(nameAnswer, /숙소 카드에는 스톤델리아, 해밀펜션이 있어요/);
+  assert.doesNotMatch(nameAnswer, /가까운/);
+  const farCard = polishFestivalModelReply(
+    '가까운 숙소로 더 베스트 제주 성산, 신화관 제주신화월드, 해밀펜션이 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '숙소',
+      lat: 33.247,
+      lng: 126.56,
+      nearbyStays: [
+        { name: '더 베스트 제주 성산' },
+        { name: '신화관 제주신화월드' },
+        { name: '해밀펜션' },
+      ],
+    },
+  );
+  assert.match(farCard, /숙소 카드에는 더 베스트 제주 성산, 신화관 제주신화월드, 해밀펜션이 있어요/);
+  assert.doesNotMatch(farCard, /가까운/);
   resetFestivalLodgingStays('2930716');
   let releaseTopsTen;
   const topsTenLoad = new Promise((resolve) => {
