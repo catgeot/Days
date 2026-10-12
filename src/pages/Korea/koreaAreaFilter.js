@@ -3,6 +3,8 @@
  * 힌트는 「포함」매칭 (강원특별자치도 ⊂ 강원, 전북특별자치도 ⊂ 전북…).
  */
 
+import { areaCodeFromJeonnamGwangjuIntegratedAddr } from '../Home/lib/koreaTourAddrNormalize.js';
+
 /** @type {Record<string, string[]>} */
 export const SIDO_ADDR_HINTS = {
   1: ['서울특별시', '서울'],
@@ -14,7 +16,7 @@ export const SIDO_ADDR_HINTS = {
   5: ['광주광역시'],
   6: ['부산광역시', '부산'],
   7: ['울산광역시', '울산'],
-  8: ['세종특별자치시', '세종시', '세종'],
+  8: ['세종특별자치시', '세종시'],
   31: ['경기도', '경기'],
   32: ['강원특별자치도', '강원도', '강원'],
   33: ['충청북도', '충북'],
@@ -48,9 +50,37 @@ function addrHasSidoHint(addr, hint) {
 export function matchSido(addr, areaCode) {
   const a = String(addr || '');
   if (!a) return false;
-  const hints = SIDO_ADDR_HINTS[String(areaCode)];
+  const target = String(areaCode);
+  const integrated = areaCodeFromJeonnamGwangjuIntegratedAddr(a);
+  if (integrated) return target === integrated;
+  const hints = SIDO_ADDR_HINTS[target];
   if (!hints?.length) return false;
   return hints.some((h) => addrHasSidoHint(a, h));
+}
+
+/**
+ * @param {string} addr
+ * @returns {string | null}
+ */
+export function detectSidoFromAddr(addr) {
+  const a = String(addr || '');
+  if (!a) return null;
+  const integrated = areaCodeFromJeonnamGwangjuIntegratedAddr(a);
+  if (integrated) return integrated;
+  for (const code of Object.keys(SIDO_ADDR_HINTS)) {
+    if (matchSido(a, code)) return code;
+  }
+  return null;
+}
+
+/**
+ * @param {Record<string, unknown> | null | undefined} item
+ * @returns {string | null}
+ */
+export function resolveFestivalItemSidoCode(item) {
+  const raw = item?.areaCode ?? item?.areacode;
+  if (raw != null && String(raw).trim() !== '') return String(raw).trim();
+  return detectSidoFromAddr(String(item?.addr1 || ''));
 }
 
 /**
@@ -108,7 +138,7 @@ export function filterFestivalsByAddr(items, filter = {}) {
 
   return list.filter((item) => {
     const addr = item?.addr1 || '';
-    if (!matchSido(addr, areaCode)) return false;
+    if (resolveFestivalItemSidoCode(item) !== String(areaCode)) return false;
     if (sigunguName && sigunguName !== 'all') {
       return matchSigungu(addr, sigunguName);
     }
