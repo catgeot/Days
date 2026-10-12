@@ -8,7 +8,9 @@
 - **조치** 영문만 다듬는다. 술탄 하산은 Al-Rifa'i Mosque가 포함·맞은편이라고 적는다. Uber 안내, leave the country 경보, 코샤리 저녁, GEM «Children under 6 enter free.» 출처 이름은 «관광유물부» / «Ministry of Tourism and Antiquities»이고 주소의 sultan-hasan은 그대로다. 시간 범위는 nowrap.
 - **VERIFY** `npm run test:health` 264 pass · CI run `38193826525` success (lint-and-build, e2e-youtube-session). WebKit 390에서 GEM 입장 시간 4줄은 각 1줄.
 - **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/sultan-hassan-mosque?lang=en` · GEM `.../place/grand-egyptian-museum?lang=en`
-- **다음** 제시어 없음
+- **QA** Site QA PASS at `8adf8f05`. `cursor/cairo-facts-en-8e40` push 금지(동결).
+- **대기** #436 병합 후, 사람이 시키면 `origin/main`에서 작은 PR. 출처 라벨에서 `giza-plateau`·`egyptian-museum` 조각만 제거(영문 «Ministry of Tourism and Antiquities …», 한글 «관광유물부 …»). URL은 그대로. 술탄 하산과 같은 방식. 병합 전에는 시작하지 않는다.
+- **다음** 제시어 없음. #435 QA 결과를 기다린다.
 
 ## 마산 주변 볼거리 #5, 숙소와 분리
 

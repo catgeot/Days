@@ -18,16 +18,16 @@
 
 | | |
 |--|--|
-| **상태** | **#7 문장** · 코드 tip `3eb6d978` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · **병합 금지** · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
+| **상태** | **#7 Site QA PASS** · 브랜치 tip `8adf8f05` **동결** · draft PR [#436](https://github.com/catgeot/Days/pull/436) · **이 브랜치 push 금지** · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
 | **브랜치** | `cursor/cairo-facts-en-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
 | **Preview** | git `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/sultan-hassan-mosque?lang=en` · GEM `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
-| **금지** | 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 단위를 한글로 되돌리기 · 국적 목록 추가 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
+| **금지** | `cursor/cairo-facts-en-8e40` push · 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 단위를 한글로 되돌리기 · 국적 목록 추가 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 지정된 영문 문장과 시간 범위 nowrap 반영. 출처 이름은 «관광유물부» / «Ministry of Tourism and Antiquities», URL의 sultan-hasan은 유지. 사람이 다른 문장을 집어 주기 전에는 문장을 더 고치지 않는다. |
+| **남은 일** | Site QA PASS (`8adf8f05`). 브랜치는 동결. **#436 병합 후에만**, 사람이 시키면 `origin/main`에서 작은 PR: 출처 라벨 «Ministry of Tourism and Antiquities giza-plateau», «… egyptian-museum»와 한글 «관광유물부 giza-plateau», «… egyptian-museum»에서 조각만 뺀다. 술탄 하산과 같이 라벨은 «Ministry of Tourism and Antiquities» / «관광유물부», URL은 그대로. 병합 전에는 시작하지 않는다. |
 
-**다음 제시어 없음** (이번 문장 패스 끝). 확인은 `?lang=en` 술탄 하산·GEM Preview.
+**다음 제시어 없음** (#436 병합 대기). 조각 제거는 그 뒤에 `origin/main`에서 새 PR.
 
 ### 마산 주변 볼거리
 
@@ -40,7 +40,7 @@
 | **Preview** | git `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716` (Vercel SSO) |
 | **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 합본은 DB+팔경이 정해지면 숙소·locationBasedList보다 먼저 보인다. 지연 측정(숙소 10초, locationBasedList 6초)에서 PR 목록이 main 이하다. 팔경 소제목·거리순은 유지. |
+| **남은 일** | Site QA 결과를 기다린다. 결과가 오기 전에는 코드를 고치지 않는다. 합본은 DB+팔경이 정해지면 숙소·locationBasedList보다 먼저 보인다. |
 
 **다음 제시어**:
 
@@ -50,7 +50,7 @@
 @plans/2026-10-12-project-log.md
 브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip d3449b4b
 금지: 헤더 수정 · cairo-qa-8e40 push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 plans 커밋 · PR 병합
-작업: 박스에서 637693·638576·2930716 합본이 아직 main보다 늦거나 제목이 8px 넘게 움직이면 그 경로만 고친다. 합본을 fetch-mrt-stays나 locationBasedList 응답 뒤로 다시 묶지 않는다. tip d3449b4b의 10초/6초 측정은 통과했으니 그대로 다시 돌리지 않는다.
+작업: Site QA 결과가 오기 전에는 시작하지 않는다. 결과가 오면 637693·638576·2930716에서 어긋난 곳만 고친다. 합본을 fetch-mrt-stays나 locationBasedList 응답 뒤로 다시 묶지 않는다. tip d3449b4b의 10초/6초 측정은 통과했으니 그대로 다시 돌리지 않는다.
 검증: npm run test:health
 ```
 
