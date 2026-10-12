@@ -321,6 +321,9 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
   assert.match(factsUi, /splitFactTimeRanges/);
   assert.match(factsUi, /TIME_RANGE_CLASS/);
   assert.equal(factsUi.includes('break-all'), false);
+  assert.equal(factsUi.includes('[word-break:normal]'), false);
+  assert.match(factsUi, /break-keep \[overflow-wrap:anywhere\]/);
+  assert.match(factsUi, /break-keep \[overflow-wrap:normal\]/);
   assert.equal(TIME_RANGE_CLASS.includes('whitespace-nowrap'), true);
   assert.equal(TIME_RANGE_CLASS.includes('break-normal'), true);
   const logbook = readFileSync(join(root, 'src/pages/DailyReport/components/LogbookBody.jsx'), 'utf8');

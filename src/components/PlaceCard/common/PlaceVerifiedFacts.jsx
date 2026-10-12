@@ -35,9 +35,9 @@ function unverifiedLine(slots, t) {
 function sourceLabelClass(text) {
   const value = String(text || '').trim();
   if (!/\s/.test(value) && (value.includes('.') || /^https?:/i.test(value))) {
-    return '[word-break:normal] [overflow-wrap:anywhere]';
+    return 'break-keep [overflow-wrap:anywhere]';
   }
-  return '[word-break:normal] [overflow-wrap:normal]';
+  return 'break-keep [overflow-wrap:normal]';
 }
 
 function SourceLine({ sources, locale }) {
