@@ -598,6 +598,49 @@ function digitTokenReadsWithBatchim(source, endIndex) {
  * Only the always-wrong «이예요» is rewritten.
  * A model's «이에요» or «예요» stays as written. «자리에요» still becomes «자리예요».
  */
+function isFestivalParkingAsk(options = {}) {
+  if (/park/i.test(String(options.chipId || ''))) return true;
+  return /주차|parking/i.test(String(options.userText || ''));
+}
+
+/** Place stems in the festival venue or address that are written as a lot: «천지연 주차장», «천지연폭포 주차장». */
+function venueLotStems(options = {}) {
+  const stems = [];
+  const push = (stem) => {
+    const text = String(stem || '').replace(/\s+/g, '').replace(/폭포$/, '');
+    if (text.length < 2 || text.length > 12 || stems.includes(text)) return;
+    if (/주차장|공영|민영|부설|노상|임시/.test(text)) return;
+    stems.push(text);
+  };
+  const blob = `${options.venue || ''}\n${options.address || ''}`;
+  for (const match of blob.matchAll(/([가-힣]{2,12})\s*폭포\s*주차장|([가-힣]{2,12})\s+주차장/g)) {
+    push(match[1] || match[2]);
+  }
+  return stems.sort((a, b) => b.length - a.length);
+}
+
+/**
+ * A venue lot in a festival answer reads as the place, not as parking.
+ * Parking-chip answers keep «주차장». «주차장과» becomes «일대와». «일대 일대» collapses.
+ */
+function rewriteVenueParkingLotPhrases(text, options = {}) {
+  if (isFestivalParkingAsk(options)) return String(text || '');
+  const stems = venueLotStems(options);
+  if (!stems.length) return String(text || '');
+  let out = String(text || '');
+  for (const stem of stems) {
+    const body = stem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(
+      `${body}(?:\\s*폭포\\s*주차장|\\s+주차장)(?:\\s*\\(\\s*(?:일대|일원)\\s*\\)|\\s*(?:일대|일원))?`,
+      'g',
+    );
+    out = out.replace(re, `${stem} 일대`);
+  }
+  return out
+    .replace(/일대\s*일대/g, '일대')
+    .replace(/일대과(?![가-힣])/g, '일대와');
+}
+
 function fixNoBatchimEyeyo(text) {
   const fixed = String(text || '').replace(/이예요/g, (full, offset, source) => {
     let i = offset - 1;
@@ -1017,6 +1060,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteFestivalFormalEndings(text);
     text = softenDapnida(text);
     text = fixNoBatchimEyeyo(text);
+    text = rewriteVenueParkingLotPhrases(text, options);
     text = stripTrailingFestivalDateSentence(text);
     text = dropDateLinkFragmentSentences(text);
     text = dedupeStaySearchLinks(text);

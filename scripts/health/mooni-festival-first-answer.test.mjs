@@ -2098,6 +2098,41 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(lotSpoken, /장소: 천지연 일대/);
   assert.match(lotSpoken, /«주차장»은 붙이지 않는다/);
   assert.doesNotMatch(lotSpoken, /천지연 주차장/);
+  const lotSentence = polishFestivalModelReply(
+    '서귀포칠십리축제는 천지연폭포 주차장과 서귀포 원도심 일대에서 열려요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 남성중로 23',
+    },
+  );
+  assert.match(lotSentence, /천지연 일대와 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(lotSentence, /주차장|일대 일대/);
+  const lotParen = polishFestivalModelReply(
+    '천지연 주차장 (일대)에서 저녁까지 이어져요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '볼거리',
+      venue: '천지연폭포 주차장',
+    },
+  );
+  assert.match(lotParen, /천지연 일대에서 저녁까지 이어져요/);
+  assert.doesNotMatch(lotParen, /주차장|일대 일대/);
+  const lotParking = polishFestivalModelReply(
+    '주차는 천지연폭포 주차장을 이용해요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '주차',
+      venue: '천지연 주차장 (일대)',
+      parking: '천지연폭포 주차장',
+      overview: '주차는 천지연폭포 주차장을 이용해요.',
+    },
+  );
+  assert.match(lotParking, /천지연폭포 주차장/);
+  assert.doesNotMatch(lotParking, /천지연 일대/);
   const seogwipoFacts = buildFestivalFirstAnswerFacts(seogwipo, { locale: 'ko', now: NOW });
   assert.match(seogwipoFacts.dateLine, /10\/20~22, 11일 뒤 시작해요/);
   assert.deepEqual(seogwipoFacts.programs, ['청소년 페스타 경연']);
