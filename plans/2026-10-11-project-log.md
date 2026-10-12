@@ -36,6 +36,8 @@
 - **이어서** `1d88a15a`. main `#427` `48a3efc2` · `#430` `d28d7c4f`를 머지한 뒤, 첫 답에 «강릉 국수 축제 페이지» 링크가 두 번 나오면 마지막 «자세한 내용은 … 페이지에서 볼 수 있어요»만 남긴다. 숙소 앵커는 유지. `npm run test:health` 236 pass.
 - **이어서** `6626601b` (client `9b68a7b6`). staging v22 주차 답이 `공식 홈페이지()`로 비었다. 공식 홈페이지와 같은 날 URL은 `[공식 홈페이지](url)`로 바꾸고, 다른 URL은 괄호까지 지운다. 숙소가 한 곳이면 «다양한 숙소가 자리하고 있어요», «매력을 느끼며»를 뺀다. Edge 파일은 프롬프트 커밋에서 바뀜(`templates.js`, 서버 번들). 주차 수정은 클라이언트라 gemini-proxy 재배포 없이 Preview에 있다. 배포·머지 안 함.
 - **이어서** tip `6a1954d4` (client `9e2eadc8`). 주차 데이터가 없으면 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 전화번호»만 남기고 축제 페이지 문장을 뺀다. 숙소는 카드의 이름·거리 2~3곳과 `[숙소 카드]` 한 번, 목록이 없으면 20km 권역. 맛집은 거리 없는 곳을 빼고 거리 있는 다음 곳을 넣는다. `mooni_chat`은 v27과 이 브랜치 모두 기본 FAST `gemini-3.1-flash-lite`. Edge는 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 243 pass. 배포·머지 안 함.
+- **이어서** `축제 MOONi #3, 칩 말풍선` · tip `b13bc4f9` (client `5975fb91`). main `#431` `daf8eca4`와 같이 둔다. 칩 말풍선은 «볼거리·분위기 알려 줘»(영문 `Tell me the sights and atmosphere`)이고 지시문은 서버·복원 스레드의 프롬프트로만 남는다. 영어 첫 답은 English (한글), 종료와 다음 회가 근처보다 앞, 출처 없는 분위기 문장은 뺀다. 이번 Edge 파일은 `templates.js`. 주차·숙소·맛집 수정은 유지. `npm run test:health` 249 pass. 배포·머지 안 함.
+- **이어서** `축제 MOONi #4, 주차·첫답` · tip `99935127`. 주차 데이터는 요금·대수·가능·TourAPI 주차 필드만 인정하고 설명·장소의 «천지연 주차장»은 제외한다. 데이터가 없으면 찾아볼·알아볼·볼 수 있어요·see/find 축제 페이지 문장도 공식 안내로 바꾼다. 서귀포 506616 첫답은 홍보 구호를 빼고 «청소년 페스타 경연이 있어요»이며 «10/20~22, 11일 뒤 시작해요»다. Edge 파일은 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 251 pass. 배포·머지 안 함.
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
@@ -166,3 +168,29 @@
 - **VERIFY** `npm run test:health` 247 pass · CI run `38183479322` success
 - **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693`
 - **다음** `마산 주변 볼거리 #2, 피드백 반영`
+
+## 카이로 동선 #4, 영문 링크·확인일
+
+- **세션** `카이로 동선 #4, 영문 링크·확인일` · branch `cursor/cairo-facts-en-8e40` · tip `5d52ce39` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 카이로 시·GEM·술탄 하산 확인된 사실의 문장만 영문. 숫자·시간·금액·URL은 한글 값과 같다. 출처 이름, `(시간)`·`(동선)`, 예매·지도 링크 이름을 영문으로 보여 준다. 영문 입국은 국적에 따라 e-Visa가 다르고 visa2egypt.gov.eg를 본다. 국적 목록은 없다. D1–D3도 같고 GEM·Sultan Hassan Mosque 장소 링크는 유지. 한글 UI는 그대로다.
+- **VERIFY** `npm run test:health` 249 pass · CI run `38184077920` success
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · `/place/grand-egyptian-museum?lang=en`
+- **다음** `카이로 동선 #5, 영문 사실 피드백`
+
+## 카이로 동선 #5, 영문 사실 피드백
+
+- **세션** `카이로 동선 #5, 영문 사실 피드백` · branch `cursor/cairo-facts-en-8e40` · tip `9864e282` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 영문 문장의 단위만 영어. `25달러`·`60달러`는 `USD 25`·`USD 60`, `6개월`은 `6 months`, `1시간`은 `1 hour`, `6세`는 `6 years`. EGP·km는 유지. health는 숫자·통화 코드를 맞추고, 영문 값의 한글은 영어 고유명사 뒤 괄호 안에만 허용. 한글 저장 문장은 그대로다.
+- **VERIFY** `npm run test:health` 249 pass · CI run `38185463753` success
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · `/place/grand-egyptian-museum?lang=en`
+- **다음** `카이로 동선 #6, 영문 단위 확인`
+
+## 마산 주변 볼거리 #2, 제목 고정
+
+- **세션** `마산 주변 볼거리 #2, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `6b5eb2fc` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지 · 헤더 미변경
+- **원인** 합본 전에 팔경만 그려지고, 상세가 오면 주최·탭이 목록 위에 끼고 더 가까운 TourAPI 행이 맨 위에 들어왔다. WebKit은 스크롤 앵커가 없어 「주변 볼거리」가 내려갔다.
+- **조치** 상세·개요·탭·사진 줄 높이를 로딩 중에 잡아 둔다. 목록은 큐레이션+근처 합본이 된 뒤에만 그린다. 근처 조회는 상세와 병렬이다. 사진 탭은 한 번 열리면 갤러리가 한 장으로 줄어도 유지한다. 거리순·함평 팔경 소제목·장소 메모·중복 제거는 그대로다.
+- **WebKit 390** scrollTop 0. 제목 이동 마산 1px · 국향 0px · 강릉 1px. 첫 항목은 처음부터 임항선 그린웨이 290m · 보광사(함평) 1.4km · 강릉 오금집 320m. 합본까지 cold/warm ms: 마산 4222/4518 · 국향 5787/5825 · 강릉 3936/3613. 목록은 상세 스켈레톤이 있을 때 보인다.
+- **VERIFY** `npm run test:health` 249 pass · CI run `38187602895` success
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
+- **다음** `마산 주변 볼거리 #3, 피드백 반영`
