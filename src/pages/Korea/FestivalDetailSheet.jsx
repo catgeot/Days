@@ -333,47 +333,34 @@ function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
   const urls = nearbyThumbUrls(spot, extraThumb);
   const urlKey = urls.join('\n');
   const [thumbIndex, setThumbIndex] = useState(0);
-  const [ready, setReady] = useState(false);
   const [seenKey, setSeenKey] = useState(urlKey);
   if (seenKey !== urlKey) {
     setSeenKey(urlKey);
     setThumbIndex(0);
-    setReady(false);
   }
   const thumb = urls[thumbIndex] || '';
-  const noteLoaded = (img) => {
-    if (img?.complete && img.naturalWidth > 0) setReady(true);
-  };
   if (!thumb) {
     if (imagePending) return <NearbyThumbSkeleton />;
     return <NearbyThumbPlaceholder />;
   }
+  const tryNextUrl = () => setThumbIndex((i) => i + 1);
+  const lastUrl = thumbIndex + 1 >= urls.length;
   return (
-    <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200">
-      {ready ? null : (
-        <span
-          className="absolute inset-0 animate-pulse bg-stone-200"
-          data-nearby-thumb="pending"
-          data-nearby-thumb-pending=""
-        />
-      )}
-      <img
-        key={thumb}
-        src={thumb}
-        alt=""
-        loading="eager"
-        decoding="async"
-        ref={noteLoaded}
-        onLoad={(event) => noteLoaded(event.currentTarget)}
-        onError={(event) => {
-          if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
-          setReady(false);
-          setThumbIndex((i) => i + 1);
-        }}
-        className="relative h-14 w-14 object-cover"
-        data-nearby-thumb={ready ? 'photo' : 'pending'}
-      />
-    </span>
+    <FestivalPhotoFrame
+      key={thumb}
+      src={thumb}
+      alt=""
+      loading="eager"
+      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+      fallback={
+        imagePending && lastUrl ? (
+          <NearbyThumbSkeleton />
+        ) : (
+          <NearbyThumbPlaceholder />
+        )
+      }
+      onFailed={tryNextUrl}
+    />
   );
 }
 

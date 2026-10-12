@@ -1,4 +1,4 @@
-import { createElement, useEffect, useState } from 'react';
+import { createElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 /**
  * Festival photo that never leaves the browser broken-image glyph on screen.
@@ -13,6 +13,7 @@ import { createElement, useEffect, useState } from 'react';
  *   draggable?: boolean,
  *   fetchPriority?: 'high' | 'low' | 'auto',
  *   style?: import('react').CSSProperties,
+ *   onFailed?: () => void,
  * }} props
  */
 export function FestivalPhotoFrame({
@@ -25,16 +26,33 @@ export function FestivalPhotoFrame({
   draggable,
   fetchPriority,
   style,
+  onFailed,
 }) {
   const [failed, setFailed] = useState(false);
+  const imgRef = useRef(null);
 
   useEffect(() => {
     setFailed(false);
   }, [src]);
 
+  const markBroken = (el) => {
+    if (el?.style) el.style.display = 'none';
+    if (onFailed) onFailed();
+    setFailed(true);
+  };
+
+  useLayoutEffect(() => {
+    if (!src || failed) return;
+    const img = imgRef.current;
+    if (!img?.complete) return;
+    if (img.naturalWidth > 0) return;
+    markBroken(img);
+  }, [src, failed]);
+
   if (!src || failed) return fallback;
 
   return createElement('img', {
+    ref: imgRef,
     src,
     alt,
     className,
@@ -44,10 +62,12 @@ export function FestivalPhotoFrame({
     fetchPriority,
     style,
     'data-festival-photo': '',
-    onError(event) {
+    onLoad(event) {
       const el = event?.currentTarget;
-      if (el?.style) el.style.display = 'none';
-      setFailed(true);
+      if (el?.complete && el.naturalWidth === 0) markBroken(el);
+    },
+    onError(event) {
+      markBroken(event?.currentTarget);
     },
   });
 }
