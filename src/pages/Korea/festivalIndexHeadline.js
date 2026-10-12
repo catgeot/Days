@@ -56,18 +56,6 @@ export function enFestivalListHeadlineTail(timeTab, timeLabel) {
 }
 
 /**
- * @param {string} timeTab
- * @param {string} timeLabel
- */
-export function enFestivalListTimePhrase(timeTab, timeLabel) {
-  if (timeTab === 'thisMonth') return "This month's festivals";
-  const label = String(timeLabel || '').trim();
-  if (!label) return 'Festivals';
-  if (/festivals?$/i.test(label)) return label;
-  return `${label} festivals`;
-}
-
-/**
  * @param {{
  *   locale?: string,
  *   timeTab: string,
