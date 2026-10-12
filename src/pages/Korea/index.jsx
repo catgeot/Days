@@ -110,6 +110,7 @@ import {
   localizeSidoChips,
   localizedAreaCodeLabel,
   localizedSidoListPhrase,
+  localizedSidoPanelHeadingPhrase,
   localizedSubregionLabel,
   localizedSubregionUnitLabel,
   localizeFestivalGroupLabel,
@@ -178,7 +179,7 @@ function buildIndexListHeadline({
  * }} p
  */
 function buildPanelListMeta({ areaCode, cityName, count, t, locale = 'ko' }) {
-  const sido = localizedSidoListPhrase(
+  const sido = localizedSidoPanelHeadingPhrase(
     locale,
     areaCode,
     sidoListPhrase(areaCode),
@@ -2705,7 +2706,7 @@ export default function KoreaFestivalHub() {
                       : t('korea.common.viewed')
                     : indexTitle}
                 </h2>
-                <p className="truncate text-[11px] text-stone-500">
+                <p className="text-[11px] text-stone-500 break-keep leading-snug [overflow-wrap:anywhere]">
                   {personalTab != null
                     ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
                     : panelListMeta}
