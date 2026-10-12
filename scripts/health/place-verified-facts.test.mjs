@@ -28,6 +28,7 @@ import {
   factValueForLocale,
   linkLabelForLocale,
   sourceNameForLocale,
+  splitFactTimeRanges,
 } from '../../src/data/placeVerifiedFacts/cairoEn.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -217,7 +218,11 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
       const ko = factValueForLocale(card.slug, slot, 'ko');
       const en = factValueForLocale(card.slug, slot, 'en');
       assert.equal(ko, slot.value);
-      assert.deepEqual(extractFactTokens(en), extractFactTokens(ko));
+      const enTokens = extractFactTokens(en);
+      const comparable = (card.slug === 'grand-egyptian-museum' && slot.id === 'fee'
+        ? enTokens.map((token) => (token === 'num:6' ? 'unit:6:years' : token))
+        : enTokens).slice().sort();
+      assert.deepEqual(comparable, extractFactTokens(ko));
       assert.deepEqual(hangulOutsideEnglishProperNounParens(en), []);
       for (const source of slot.sources || []) {
         assert.equal(sourceNameForLocale(source.name, 'ko'), source.name);
@@ -277,4 +282,41 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
   assert.match(entry, /USD 25/);
   assert.match(entry, /USD 60/);
   assert.match(entry, /6 months/);
+
+  const airport = factValueForLocale(
+    'cairo',
+    CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'),
+    'en',
+  );
+  assert.match(airport, /Uber has a CAI pickup guide page/);
+  const safety = factValueForLocale(
+    'cairo',
+    CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'money-safety'),
+    'en',
+  );
+  assert.match(safety, /have a 'leave the country' advisory/);
+  assert.match(itinerary, /For dinner, try Koshary Abou Tarek downtown/);
+
+  const gem = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'grand-egyptian-museum');
+  const gemFee = factValueForLocale('grand-egyptian-museum', gem.slots.find((slot) => slot.id === 'fee'), 'en');
+  assert.match(gemFee, /Children under 6 enter free/);
+  assert.match(gemFee, /11:00–13:00/);
+
+  const sultan = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'sultan-hassan-mosque');
+  const sultanFee = factValueForLocale('sultan-hassan-mosque', sultan.slots.find((slot) => slot.id === 'fee'), 'en');
+  const sultanNotes = factValueForLocale('sultan-hassan-mosque', sultan.slots.find((slot) => slot.id === 'notes'), 'en');
+  assert.match(sultanFee, /Admission includes the Al-Rifa'i Mosque across the street/);
+  assert.match(sultanNotes, /It is on Salah al-Din Square, opposite the Al-Rifa'i Mosque/);
+  const sultanInfo = sultan.slots.find((slot) => slot.id === 'fee').sources.find((source) => source.url.includes('sultan-hasan'));
+  assert.equal(sultanInfo.name, '관광유물부');
+  assert.equal(sourceNameForLocale(sultanInfo.name, 'en'), 'Ministry of Tourism and Antiquities');
+  assert.match(sultanInfo.url, /mosque-and-madrasa-of-sultan-hasan/);
+
+  assert.deepEqual(
+    splitFactTimeRanges('windows 08:30–11:00, 11:00–13:00 and 09:00~18:00').filter((part) => part.type === 'time').map((part) => part.text),
+    ['08:30–11:00', '11:00–13:00', '09:00~18:00'],
+  );
+  const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
+  assert.match(factsUi, /splitFactTimeRanges/);
+  assert.match(factsUi, /whitespace-nowrap/);
 });

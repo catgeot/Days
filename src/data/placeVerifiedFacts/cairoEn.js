@@ -4,23 +4,23 @@ const EN_VALUES = {
   'cairo:entry':
     'e-Visa eligibility depends on nationality. Check visa2egypt.gov.eg.\nApply on the government portal and pay by card.\nA tourist single entry is USD 25, and a multiple entry is USD 60.\nYour passport must have at least 6 months left on the arrival date. Bring a printed e-Visa, your travel itinerary, and your accommodation booking.',
   'cairo:airport':
-    'Take a white taxi that has a meter.\nOlder black-and-white taxis have no meter, so agree the fare before you ride.\nBe careful of drivers who solicit in the arrivals hall.\nThe curbside limousine in front of the terminal is a flat fare by destination and car class A~D.\nCity buses depart only from the bus stop in the parking lot in front of Terminal 1.\nThere is a ride-hailing app (Uber) CAI pickup guide page.',
+    'Take a white taxi that has a meter.\nOlder black-and-white taxis have no meter, so agree the fare before you ride.\nBe careful of drivers who solicit in the arrivals hall.\nThe curbside limousine in front of the terminal is a flat fare by destination and car class A~D.\nCity buses depart only from the bus stop in the parking lot in front of Terminal 1.\nUber has a CAI pickup guide page.',
   'cairo:itinerary':
-    'D1 When you arrive, use the airport-to-city way above to get into the city and rest.\nD2 Go to the Giza Plateau early for the 07:00 opening. GEM requires a timed ticket. Galleries are open until 21:00 on Wed and Sat, and until 18:00 on other days. Last entry is 1 hour before closing. Dinner is Koshary Abou Tarek downtown.\nD3 At 09:00 go to the Egyptian Museum in Tahrir. Ticket sales end at 16:00. In the afternoon go to the Sultan Hassan Mosque, and last entry is 16:00.',
+    'D1 When you arrive, use the airport-to-city way above to get into the city and rest.\nD2 Go to the Giza Plateau early for the 07:00 opening. GEM requires a timed ticket. Galleries are open until 21:00 on Wed and Sat, and until 18:00 on other days. Last entry is 1 hour before closing. For dinner, try Koshary Abou Tarek downtown.\nD3 At 09:00 go to the Egyptian Museum in Tahrir. Ticket sales end at 16:00. In the afternoon go to the Sultan Hassan Mosque, and last entry is 16:00.',
   'cairo:money-safety':
-    'The currency is the Egyptian pound (EGP).\nOn the MOFA travel alert, Nile-valley cities such as Cairo are at the exercise-caution level.\nParts of the Western Desert and southern Sinai are at the reconsider-travel level, and central and northern Sinai plus the area within 30km of the Libya border are at the leave-the-country advisory.\nA recent embassy notice (2026-09-22) says to be careful amid military tension in the Middle East and to watch out for private currency-exchange scams.\nThe consular call center is +82-2-3210-0404.',
+    'The currency is the Egyptian pound (EGP).\nOn the MOFA travel alert, Nile-valley cities such as Cairo are at the exercise-caution level.\nParts of the Western Desert and southern Sinai are at the reconsider-travel level, and central and northern Sinai plus the area within 30km of the Libya border have a \'leave the country\' advisory.\nA recent embassy notice (2026-09-22) says to be careful amid military tension in the Middle East and to watch out for private currency-exchange scams.\nThe consular call center is +82-2-3210-0404.',
   'grand-egyptian-museum:hours':
     'Sun, Mon, Tue, Thu, and Fri: galleries 09:00~18:00 (complex 08:30~19:00), last entry 17:00.\nWed and Sat: galleries 09:00~21:00 (complex 08:30~22:00), last entry 20:00.',
   'grand-egyptian-museum:fee':
-    'Foreign adults 1,590 EGP, children and students 800 EGP.\nUnder 6 years old is free.\nPick an entry window: 08:30–11:00, 11:00–13:00, 13:00–15:00, or 15:00–17:00.',
+    'Foreign adults 1,590 EGP, children and students 800 EGP.\nChildren under 6 enter free.\nPick an entry window: 08:30–11:00, 11:00–13:00, 13:00–15:00, or 15:00–17:00.',
   'grand-egyptian-museum:notes':
     'No refunds.\nValid only on the booked date and time.\nYou can enter only once and cannot come back in.\nThe ticket cannot be put in another person\'s name or transferred.\nBags larger than 40×40cm and umbrellas must be left at the cloakroom.\nOutside food and drinks are not allowed. Inside the galleries, only a small water bottle is allowed.\nTripods, selfie sticks, drones, external lights, and flash are not allowed.',
   'sultan-hassan-mosque:hours':
     'Open daily 09:00~17:00.\nLast entry is 16:00.\nLast entry in Ramadan is 15:00.',
   'sultan-hassan-mosque:fee':
-    'Foreign adults 220 EGP, students 110 EGP.\nAdmission to the mosque across the street is included.',
+    'Foreign adults 220 EGP, students 110 EGP.\nAdmission includes the Al-Rifa\'i Mosque across the street.',
   'sultan-hassan-mosque:notes':
-    'Phone photos are free.\nArrive at least 1 hour before closing.\nIt is on Salah al-Din Square, across from the mosque opposite.',
+    'Phone photos are free.\nArrive at least 1 hour before closing.\nIt is on Salah al-Din Square, opposite the Al-Rifa\'i Mosque.',
 };
 
 const SOURCE_EN = {
@@ -31,7 +31,7 @@ const SOURCE_EN = {
   'GEM 공식 예매처': 'GEM official ticket office',
   '관광유물부 giza-plateau': 'Ministry of Tourism and Antiquities giza-plateau',
   '관광유물부 egyptian-museum': 'Ministry of Tourism and Antiquities egyptian-museum',
-  '관광유물부 sultan-hasan': 'Ministry of Tourism and Antiquities sultan-hasan',
+  '관광유물부': 'Ministry of Tourism and Antiquities',
   '관광유물부 예매': 'Ministry of Tourism and Antiquities tickets',
   '관광유물부 예매(egymonuments.com)': 'Ministry of Tourism and Antiquities tickets (egymonuments.com)',
   'Google 지도': 'Google Maps',
@@ -100,6 +100,24 @@ export function extractFactTokens(text) {
 export function hangulOutsideEnglishProperNounParens(text) {
   const stripped = String(text || '').replace(PROPER_NOUN_PAREN, ' ');
   return stripped.match(/[가-힣]/g) || [];
+}
+
+const TIME_RANGE_RE = /\d{1,2}:\d{2}\s*[~\u2013\u2014-]\s*\d{1,2}:\d{2}/g;
+
+/** Keep a clock range on one line so 11:00–13:00 does not break after the colon. */
+export function splitFactTimeRanges(text) {
+  const value = String(text || '');
+  const parts = [];
+  let last = 0;
+  for (const match of value.matchAll(TIME_RANGE_RE)) {
+    const index = match.index ?? 0;
+    if (index > last) parts.push({ type: 'text', text: value.slice(last, index) });
+    parts.push({ type: 'time', text: match[0] });
+    last = index + match[0].length;
+  }
+  if (last < value.length) parts.push({ type: 'text', text: value.slice(last) });
+  if (!parts.length && value) parts.push({ type: 'text', text: value });
+  return parts;
 }
 
 export function factValueForLocale(slug, slot, locale) {

@@ -8,6 +8,7 @@ import {
   factValueForLocale,
   linkLabelForLocale,
   sourceNameForLocale,
+  splitFactTimeRanges,
 } from '../../../data/placeVerifiedFacts/cairoEn.js';
 import { splitItineraryPlaceMentions } from '../../../data/placeVerifiedFacts/itineraryLinks.js';
 import {
@@ -59,6 +60,16 @@ function SourceLine({ sources, locale }) {
   );
 }
 
+function FactRuns({ text }) {
+  return splitFactTimeRanges(text).map((part, index) => (
+    part.type === 'time' ? (
+      <span key={`time-${index}`} className="whitespace-nowrap">{part.text}</span>
+    ) : (
+      <React.Fragment key={`text-${index}`}>{part.text}</React.Fragment>
+    )
+  ));
+}
+
 function FactValue({ slot, slug, locale, light }) {
   const text = presentFactText(factValueForLocale(slug, slot, locale));
   if ((slot.linkRole === 'booking' || slot.linkRole === 'map') && /^https?:\/\//.test(slot.value)) {
@@ -102,7 +113,7 @@ function FactValue({ slot, slug, locale, light }) {
               {part.text}
             </Link>
           ) : (
-            <React.Fragment key={`t-${index}`}>{part.text}</React.Fragment>
+            <FactRuns key={`t-${index}`} text={part.text} />
           )
         ))}
       </p>
@@ -110,7 +121,7 @@ function FactValue({ slot, slug, locale, light }) {
   }
   return (
     <p data-fact-value="" className={valueClass}>
-      {text}
+      <FactRuns text={text} />
     </p>
   );
 }
