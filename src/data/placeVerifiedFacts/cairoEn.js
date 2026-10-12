@@ -104,6 +104,9 @@ export function hangulOutsideEnglishProperNounParens(text) {
 
 const TIME_RANGE_RE = /\d{1,2}:\d{2}\s*[~\u2013\u2014-]\s*\d{1,2}:\d{2}/g;
 
+/** nowrap plus normal word-break, so an ancestor keep-all/break-all cannot split 11:00–13:00. */
+export const TIME_RANGE_CLASS = 'whitespace-nowrap break-normal';
+
 /** Keep a clock range on one line so 11:00–13:00 does not break after the colon. */
 export function splitFactTimeRanges(text) {
   const value = String(text || '');

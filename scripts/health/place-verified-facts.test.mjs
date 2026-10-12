@@ -29,6 +29,7 @@ import {
   linkLabelForLocale,
   sourceNameForLocale,
   splitFactTimeRanges,
+  TIME_RANGE_CLASS,
 } from '../../src/data/placeVerifiedFacts/cairoEn.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -318,5 +319,12 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
   );
   const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
   assert.match(factsUi, /splitFactTimeRanges/);
-  assert.match(factsUi, /whitespace-nowrap/);
+  assert.match(factsUi, /TIME_RANGE_CLASS/);
+  assert.equal(factsUi.includes('break-all'), false);
+  assert.equal(TIME_RANGE_CLASS.includes('whitespace-nowrap'), true);
+  assert.equal(TIME_RANGE_CLASS.includes('break-normal'), true);
+  const logbook = readFileSync(join(root, 'src/pages/DailyReport/components/LogbookBody.jsx'), 'utf8');
+  assert.match(logbook, /splitFactTimeRanges/);
+  assert.match(logbook, /wrapTimeRanges/);
+  assert.equal(logbook.includes('break-all'), false);
 });
