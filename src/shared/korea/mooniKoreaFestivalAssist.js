@@ -734,7 +734,7 @@ function rewriteNearbyVenueRepeatSentence(sentence, options, pool) {
       kept.push(name);
       if (kept.length >= 3) break;
     }
-    if (!kept.length) return '';
+    if (!kept.length) return sentence;
     if (pattern === patterns[0]) {
       return `${match[1]}${kept.join(', ')}${objectParticle(kept[kept.length - 1])} 둘러볼 수 있어요.`;
     }
