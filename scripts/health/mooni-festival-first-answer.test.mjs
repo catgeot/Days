@@ -184,6 +184,11 @@ test('food evening join keeps one subject and daytime drops the evening clause',
   });
   assert.match(fixed, /장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요/);
   assert.doesNotMatch(fixed, /맛보며/);
+  const missingComma = polishFestivalModelReply(
+    '장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있고 축제 분위기가 저녁까지 이어져요.',
+    { contentId: '2930716', locale: 'ko', evening: true },
+  );
+  assert.match(missingComma, /맛볼 수 있고, 축제 분위기가 저녁까지 이어져요/);
   const foodAt = fixed.indexOf('맛볼 수 있고');
   assert.ok(fixed.indexOf('월화거리 일대') >= 0 && fixed.indexOf('월화거리 일대') < foodAt);
   assert.equal(fixed.slice(foodAt).includes('월화거리'), false);
@@ -2331,6 +2336,11 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(paradeAccepted, /시민과 단체/);
   assert.match(paradeAccepted, /활기/);
   assert.ok(paradeAccepted.indexOf('활기') < paradeAccepted.indexOf('근처에는'));
+  const jaguri = acceptFestivalModelOpening(
+    `서귀포칠십리축제는 10/23~25, 11일 뒤 시작해요. 서귀포 자구리공원 일대에서 퍼레이드와 시민 참여 프로그램이 열려요. 축제 분위기가 활기차요. 근처에서는 황우지해안열두굴, 이중섭 거주지, 새섬공원을 둘러볼 수 있어요. ${paradeFacts.closing}`,
+    paradeFacts,
+  );
+  assert.equal(jaguri, '');
   const listOnly = acceptFestivalModelOpening(
     `서귀포칠십리축제는 10/23~25, 11일 뒤 시작해요. 길거리 퍼레이드, 개막식, 청소년 페스타 경연이 있어요. 근처에서는 황우지해안열두굴, 이중섭 거주지, 새섬공원을 둘러볼 수 있어요. ${paradeFacts.closing}`,
     paradeFacts,

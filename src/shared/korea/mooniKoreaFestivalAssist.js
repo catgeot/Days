@@ -1202,10 +1202,12 @@ export function stripLodgingCalendarEcho(text) {
  * The venue already named in the previous sentence is not repeated.
  */
 function rewriteFoodEveningJoin(text) {
-  return String(text || '').replace(
-    /([^\n.!?。]+?)(을|를)\s*맛보며(?:\s+(?:[가-힣0-9·]+\s+){0,2}[가-힣0-9·]+에서)?\s*축제 분위기가 저녁까지 이어져요/g,
-    '$1$2 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요',
-  );
+  return String(text || '')
+    .replace(
+      /([^\n.!?。]+?)(을|를)\s*맛보며(?:\s+(?:[가-힣0-9·]+\s+){0,2}[가-힣0-9·]+에서)?\s*축제 분위기가 저녁까지 이어져요/g,
+      '$1$2 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요',
+    )
+    .replace(/맛볼 수 있고\s+축제 분위기가/g, '맛볼 수 있고, 축제 분위기가');
 }
 
 /** Drop the evening clause when playtime and overview do not run into the evening. */

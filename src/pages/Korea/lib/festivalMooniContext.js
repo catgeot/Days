@@ -870,7 +870,7 @@ const FEE_RE = /입장료|입장\s*무료|admission is|the listed fee|hours are|
 const PROMO_RE = /사랑을 받|황금빛|오신 것을 환영|welcome to/i;
 const GOODS_RE = /굿즈|기념품|상품권|궁패스/;
 const MODEL_OPENING_SENTENCE_CAP = 7;
-const NAME_SUFFIX_RE = /[가-힣A-Za-z0-9]{0,18}(?:커피거리|해수욕장|거리|해변|시장|궁궐|향교|광장|박물관|미술관|식물원|전망대|열차|마을|정원|대회|체험관)/g;
+const NAME_SUFFIX_RE = /[가-힣A-Za-z0-9]{0,18}(?:커피거리|해수욕장|거리|해변|시장|궁궐|향교|광장|박물관|미술관|식물원|전망대|열차|마을|정원|대회|체험관|공원)/g;
 const GENERIC_NAME = new Set(['맛집', '술집', '커피집']);
 
 function corpusText(facts) {
@@ -1257,7 +1257,7 @@ function placeBareLotEveningBeforeNearby(raw) {
 }
 
 function overviewHasParadeAtmosphere(facts) {
-  const blob = (facts?.overviewFacts || []).join(' ');
+  const blob = [...(facts?.overviewFacts || []), ...(facts?.atmosphere || [])].join(' ');
   return /시민/.test(blob) && /단체/.test(blob) && /퍼레이드/.test(blob) && /활기/.test(blob);
 }
 
