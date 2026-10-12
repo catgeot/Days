@@ -2112,6 +2112,17 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   );
   assert.match(lotSentence, /천지연 일대와 서귀포 원도심 일대에서/);
   assert.doesNotMatch(lotSentence, /주차장|일대 일대/);
+  const lotAnd = polishFestivalModelReply(
+    '천지연폭포 주차장 및 서귀포 원도심 일대에서 열려요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 일대',
+      address: '제주특별자치도 서귀포시 서홍동',
+    },
+  );
+  assert.match(lotAnd, /천지연 일대와 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(lotAnd, /주차장|일대 및/);
   const lotParen = polishFestivalModelReply(
     '천지연 주차장 (일대)에서 저녁까지 이어져요.',
     {

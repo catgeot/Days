@@ -638,7 +638,8 @@ function rewriteVenueParkingLotPhrases(text, options = {}) {
   }
   return out
     .replace(/일대\s*일대/g, '일대')
-    .replace(/일대과(?![가-힣])/g, '일대와');
+    .replace(/일대과(?![가-힣])/g, '일대와')
+    .replace(/일대\s*및\s*/g, '일대와 ');
 }
 
 /** A nearby sight this close to the venue is the venue area, not the next stop. */
