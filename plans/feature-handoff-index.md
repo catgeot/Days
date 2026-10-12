@@ -43,24 +43,24 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `2a8dbde0` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
+| **상태** | **#4 push** · tip `b8775173` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
 | **브랜치** | `cursor/masan-nearby-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
-| **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
+| **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
 | **Preview** | git `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716` (Vercel SSO) |
 | **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 같은 탭에서 다시 열 때 합본이 1.5초 안이고, 제목 이동은 8px 안인지 사람이 본다 |
+| **남은 일** | 합본은 locationBasedList보다 먼저 보인다. 마산·국향 같은 탭 warm이 1.5초를 넘는다. 제목 이동은 1px 안. |
 
 **다음 제시어**:
 
 ```
-마산 주변 볼거리 #4, 피드백 반영
+마산 주변 볼거리 #5, 피드백 반영
 @plans/feature-handoff-index.md
-@plans/2026-10-11-project-log.md
-브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip 2a8dbde0
+@plans/2026-10-12-project-log.md
+브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip b8775173
 금지: 헤더 수정 · cairo-qa-8e40 push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 plans 커밋 · PR 병합
-작업: 637693·638576·2930716을 같은 탭에서 다시 열 때 합본이 1.5초를 넘거나 제목이 8px 넘게 움직이는지. 어긋난 곳만 고친다.
+작업: 637693·638576·2930716에서 주변 볼거리 합본이 locationBasedList(맛집·레포츠·문화)보다 먼저 보이는지, 같은 탭 warm이 1.5초 안인지. 어긋난 곳만 고친다.
 검증: npm run test:health
 ```
 
