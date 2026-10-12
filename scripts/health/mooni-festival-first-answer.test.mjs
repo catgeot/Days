@@ -1731,12 +1731,11 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     locale: 'ko',
     festivalContext: nameOnly,
   });
-  assert.match(namePayload.hint, /스톤델리아/);
-  assert.match(namePayload.hint, /해밀펜션/);
+  assert.doesNotMatch(namePayload.hint, /스톤델리아|해밀펜션/);
   const nameLodgingLine = namePayload.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
-  assert.match(nameLodgingLine, /숙소 카드에는 스톤델리아, 해밀펜션이 있어요/);
-  assert.match(nameLodgingLine, /«가까운»은 쓰지 않는다/);
-  assert.doesNotMatch(nameLodgingLine, /가까운 숙소로/);
+  assert.match(nameLodgingLine, /축제장 근처 숙소는 \[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=129000#festival-lodging\)에서 볼 수 있어요/);
+  assert.match(nameLodgingLine, /숙소 이름은 쓰지 않는다/);
+  assert.doesNotMatch(nameLodgingLine.split('숙소 이름은')[0], /가까운 숙소로|권역에서 숙소를 찾을 수 있어요/);
   assert.doesNotMatch(nameLodgingLine, /\d+(?:\.\d+)?\s*km/);
   const nameAnswer = polishFestivalModelReply(
     '가까운 숙소로 스톤델리아, 해밀펜션이 있어요.',
@@ -1747,8 +1746,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
       nearbyStays: nameOnly.nearbyStays,
     },
   );
-  assert.match(nameAnswer, /숙소 카드에는 스톤델리아, 해밀펜션이 있어요/);
-  assert.doesNotMatch(nameAnswer, /가까운/);
+  assert.match(nameAnswer, /축제장 근처 숙소는 \[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=129000#festival-lodging\)에서 볼 수 있어요/);
+  assert.doesNotMatch(nameAnswer, /스톤델리아|해밀펜션|가까운|권역에서 숙소를 찾을 수 있어요/);
   const farCard = polishFestivalModelReply(
     '가까운 숙소로 더 베스트 제주 성산, 신화관 제주신화월드, 해밀펜션이 있어요.',
     {
@@ -1764,8 +1763,78 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
       ],
     },
   );
-  assert.match(farCard, /숙소 카드에는 더 베스트 제주 성산, 신화관 제주신화월드, 해밀펜션이 있어요/);
-  assert.doesNotMatch(farCard, /가까운/);
+  assert.match(farCard, /축제장 근처 숙소는 \[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=506616#festival-lodging\)에서 볼 수 있어요/);
+  assert.doesNotMatch(farCard, /성산|신화월드|해밀펜션|가까운|권역에서 숙소를 찾을 수 있어요/);
+  const areaCard = polishFestivalModelReply(
+    '가까운 숙소로 더 베스트 제주 성산, 신화관 제주신화월드가 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '숙소',
+      placeName: '서귀포시',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 이중섭거리',
+      nearbyStays: [
+        { name: '더 베스트 제주 성산', distKm: 35 },
+        { name: '신화관 제주신화월드', lat: 33.306, lng: 126.317 },
+        { name: '서귀포 호텔', distKm: 1.4 },
+        { name: '이중섭 펜션', distKm: 4 },
+        { name: '올레 호텔', distKm: 21 },
+      ],
+    },
+  );
+  assert.match(areaCard, /가까운 숙소로 서귀포 호텔\(1\.4km\), 이중섭 펜션\(4km\)이 있어요/);
+  assert.doesNotMatch(areaCard, /성산|신화월드|올레 호텔|권역에서 숙소를 찾을 수 있어요/);
+  const areaOnly = polishFestivalModelReply(
+    '가까운 숙소로 더 베스트 제주 성산, 신화관 제주신화월드가 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '숙소',
+      placeName: '서귀포시',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 이중섭거리',
+      lat: 33.247,
+      lng: 126.56,
+      nearbyStays: [
+        { name: '더 베스트 제주 성산' },
+        { name: '신화관 제주신화월드' },
+      ],
+    },
+  );
+  assert.match(areaOnly, /축제장이 있는 서귀포 시내\(천지연·이중섭거리 일대\)에 잡으면 걸어서 다니기 좋아요/);
+  assert.match(areaOnly, /\[서귀포 숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=506616#festival-lodging\)/);
+  assert.doesNotMatch(areaOnly, /성산|신화월드|권역에서 숙소를 찾을 수 있어요|주차장/);
+  const enNameless = polishFestivalModelReply('Closest stays: Shinhwa World.', {
+    contentId: '506616',
+    locale: 'en',
+    userText: 'where to stay',
+    nearbyStays: [
+      { name: '신화관 제주신화월드' },
+      { name: '더 베스트 제주 성산' },
+    ],
+  });
+  assert.match(enNameless, /Stays near the venue are on \[lodging card\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=506616#festival-lodging\)/);
+  assert.doesNotMatch(enNameless, /신화|성산|Shinhwa|Closest/);
+  const areaHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '숙소',
+    locale: 'ko',
+    festivalContext: {
+      title: '서귀포칠십리축제',
+      contentId: '506616',
+      hubLabel: '서귀포시',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 이중섭거리',
+      nearbyStays: [
+        { name: '더 베스트 제주 성산' },
+        { name: '신화관 제주신화월드' },
+      ],
+    },
+  });
+  const areaLine = areaHint.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
+  assert.match(areaLine, /축제장이 있는 서귀포 시내\(천지연·이중섭거리 일대\)에 잡으면 걸어서 다니기 좋아요/);
+  assert.match(areaLine, /\[서귀포 숙소 카드\]/);
+  assert.doesNotMatch(areaLine.split('숙소 이름은')[0], /성산|신화월드|가까운 숙소로|권역에서 숙소를 찾을 수 있어요/);
   resetFestivalLodgingStays('2930716');
   let releaseTopsTen;
   const topsTenLoad = new Promise((resolve) => {
@@ -2009,6 +2078,26 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(seogwipoKo, /서귀포칠십리축제는 10\/20~22, 11일 뒤 시작해요/);
   assert.match(seogwipoKo, /청소년 페스타 경연이 있어요/);
   assert.doesNotMatch(seogwipoKo, /과거와 현재|미래가 만나|프로그램\s*[:：]/);
+  const lotVenue = buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      eventStartDate: '20261020',
+      eventEndDate: '20261022',
+      addr1: '제주특별자치도 서귀포시 중정로 1',
+    },
+    intro: { eventplace: '천지연 주차장 (일대)', playtime: '10:00~21:00' },
+    location: { name: '서귀포' },
+    overview: '천지연 주차장 일원에서 열립니다.',
+  });
+  const lotKo = buildFestivalMooniSentenceAnswer(lotVenue, { locale: 'ko', now: NOW });
+  assert.match(lotKo, /천지연 일대에서 저녁까지 이어/);
+  assert.doesNotMatch(lotKo, /주차장/);
+  assert.equal(hasFestivalParkingData(lotVenue), false);
+  const lotSpoken = buildMooniBoundFestivalSystemHint(lotVenue, 'ko');
+  assert.match(lotSpoken, /장소: 천지연 일대/);
+  assert.match(lotSpoken, /«주차장»은 붙이지 않는다/);
+  assert.doesNotMatch(lotSpoken, /천지연 주차장/);
   const seogwipoFacts = buildFestivalFirstAnswerFacts(seogwipo, { locale: 'ko', now: NOW });
   assert.match(seogwipoFacts.dateLine, /10\/20~22, 11일 뒤 시작해요/);
   assert.deepEqual(seogwipoFacts.programs, ['청소년 페스타 경연']);
@@ -2160,8 +2249,7 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     },
   );
   assert.match(inventedKm, /호텔 탑스텐 강릉\(\d+(?:\.\d+)?km\)/);
-  assert.match(inventedKm, /신라모노그램/);
-  assert.doesNotMatch(inventedKm, /99\s*km|신라모노그램\(\d/);
+  assert.doesNotMatch(inventedKm, /신라모노그램|99\s*km/);
   const mixedHint = await resolveMooniChatKoreaFestivalHint({
     userText: '숙소',
     locale: 'ko',
@@ -2178,9 +2266,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   });
   const mixedLine = mixedHint.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
   assert.match(mixedLine, /호텔 탑스텐 강릉\(\d+(?:\.\d+)?km\)/);
-  assert.match(mixedLine, /신라모노그램/);
+  assert.doesNotMatch(mixedLine, /신라모노그램/);
   assert.doesNotMatch(mixedLine, /거리와 함께 말한다/);
-  assert.doesNotMatch(mixedLine, /신라모노그램\(\d/);
   const bareKm = polishFestivalModelReply(
     '호텔 탑스텐 강릉까지 4km예요. [강릉 숙소 안내](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)',
     {

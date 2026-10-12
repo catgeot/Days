@@ -98,6 +98,23 @@ export function festivalLodgingNextStep(contentId, locale = 'ko', placeName = ''
   return `다음으로 [${label}](${url})에서 볼 수 있어요.`;
 }
 
+/** «천지연 주차장 (일대)» is the place around 천지연, not a parking answer. */
+export function festivalSpokenVenue(venue) {
+  const raw = String(venue || '').replace(/\s+/g, ' ').trim();
+  const match = raw.match(/^(.+?)\s*주차장\s*(?:\(\s*(일대|일원)\s*\)|\s+(일대|일원))\s*$/);
+  if (!match) return raw;
+  const place = match[1].replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!place) return raw;
+  return `${place} ${match[2] || match[3]}`;
+}
+
+function speakVenuePhrases(text) {
+  return String(text || '').replace(
+    /([가-힣]{2,12})\s*주차장\s*(?:\(\s*(일대|일원)\s*\)|\s+(일대|일원))/g,
+    (_, place, paren, loose) => `${place} ${paren || loose}`,
+  );
+}
+
 function lodgingAreaNames(options = {}) {
   const lat = Number(options.lat);
   const lng = Number(options.lng);
@@ -1152,6 +1169,16 @@ function lodgingOriginKm(raw, origin) {
   return Number.isFinite(km) && km > 0 ? km : null;
 }
 
+function lodgingStayNames(values) {
+  const names = [];
+  for (const raw of Array.isArray(values) ? values : []) {
+    const name = String(raw?.name || raw?.itemName || '').replace(/\s+/g, ' ').trim();
+    if (name && !names.includes(name)) names.push(name);
+  }
+  return names;
+}
+
+/** Named stays need a measured distance inside 20km. A name with no coordinates stays off the list. */
 function lodgingStayRows(values, origin) {
   const rows = [];
   for (const raw of Array.isArray(values) ? values : []) {
@@ -1159,20 +1186,16 @@ function lodgingStayRows(values, origin) {
     let distKm = Number(raw?.distKm ?? raw?.distanceKm);
     if (!(Number.isFinite(distKm) && distKm > 0)) distKm = lodgingOriginKm(raw, origin);
     const type = String(raw?.type || '').replace(/\s+/g, ' ').trim();
-    if (!name) continue;
+    if (!name || !(Number.isFinite(distKm) && distKm > 0) || distKm > FESTIVAL_STAY_RADIUS_KM) continue;
     const pt = parseStayCoordPair(raw);
     rows.push({
       name,
-      distKm: Number.isFinite(distKm) && distKm > 0 ? distKm : null,
+      distKm,
       ...(pt ? { lat: pt.lat, lng: pt.lng } : {}),
       ...(type ? { type } : {}),
     });
   }
-  rows.sort((a, b) => {
-    const da = a.distKm > 0 ? a.distKm : Number.POSITIVE_INFINITY;
-    const db = b.distKm > 0 ? b.distKm : Number.POSITIVE_INFINITY;
-    return da - db;
-  });
+  rows.sort((a, b) => a.distKm - b.distKm);
   return pickDiverseLodgingStays(rows, 3);
 }
 
@@ -1194,36 +1217,144 @@ function lastHangulSyllable(label) {
 }
 
 function lodgingStaySentence(rows, locale = 'ko') {
-  const labels = rows.map((row) => lodgingStayLabel(row));
-  const allDist = rows.length > 0 && rows.every((row) => stayDistanceTag(row.distKm));
+  const labels = rows.map((row) => lodgingStayLabel(row)).filter(Boolean);
+  if (!labels.length) return '';
   if (String(locale || 'ko').slice(0, 2) === 'en') {
-    return allDist
-      ? `Closest stays: ${labels.join(', ')}.`
-      : `Places to stay: ${labels.join(', ')}.`;
+    return `Closest stays: ${labels.join(', ')}.`;
   }
   const particle = syllableHasBatchim(lastHangulSyllable(labels[labels.length - 1])) ? '이' : '가';
-  const head = allDist ? '가까운 숙소로' : '숙소 카드에는';
-  return `${head} ${labels.join(', ')}${particle} 있어요.`;
+  return `가까운 숙소로 ${labels.join(', ')}${particle} 있어요.`;
 }
 
 function lodgingDistanceClause(rows, en) {
-  const withDist = rows.filter((row) => stayDistanceTag(row.distKm));
   if (en) {
-    if (withDist.length === rows.length) {
-      return `Write only: ${lodgingStaySentence(rows, 'en')} Do not invent a kilometer value.`;
+    return `Write only: ${lodgingStaySentence(rows, 'en')} These are the closest, already in distance order. Do not invent a kilometer value. Do not name a stay that is not in this sentence.`;
+  }
+  return `이 문장만 쓴다: ${lodgingStaySentence(rows, 'ko')} 가까운 순이다. 적힌 거리만 쓴다. 여기 없는 km와 여기 없는 숙소 이름은 쓰지 않는다.`;
+}
+
+function displaySigunguName(raw) {
+  const text = String(raw || '').replace(/\s+/g, ' ').trim();
+  if (!text || /구$/.test(text)) return text;
+  const stripped = text.replace(/(?:시|군)$/, '');
+  return stripped.length >= 2 ? stripped : text;
+}
+
+function lodgingPlaceBits(options = {}) {
+  const parts = String(options.address || '').split(/\s+/).filter(Boolean);
+  let raw = '';
+  let kind = '';
+  const rest = [];
+  for (const part of parts) {
+    if (/(?:특별자치도|특별자치시|특별시|광역시)$/.test(part) || /도$/.test(part)) continue;
+    if (!raw && /^[가-힣]{1,8}(?:시|군|구)$/.test(part)) {
+      raw = part;
+      kind = part.endsWith('구') ? 'gu' : part.endsWith('군') ? 'gun' : 'si';
+      continue;
     }
-    if (withDist.length) {
-      return `Write only: ${lodgingStaySentence(rows, 'en')} Attach a distance only where one is written. Do not call the whole list the closest.`;
+    rest.push(part);
+  }
+  if (!raw) {
+    const hub = String(options.placeName || '').replace(/\s+/g, ' ').trim();
+    if (/^[가-힣]{2,8}(?:시|군|구)?$/.test(hub)) {
+      raw = hub;
+      kind = hub.endsWith('구') ? 'gu' : hub.endsWith('군') ? 'gun' : hub.endsWith('시') ? 'si' : '';
     }
-    return `Write only: ${lodgingStaySentence(rows, 'en')} Do not call them the closest or nearby. Do not write kilometers or meters. This overrides a line that says to include distance.`;
   }
-  if (withDist.length === rows.length) {
-    return `이 문장만 쓴다: ${lodgingStaySentence(rows, 'ko')} 가까운 순이다. 적힌 거리만 쓴다. 여기 없는 km는 쓰지 않는다.`;
+  return { raw, kind, display: displaySigunguName(raw), addressRest: rest.join(' ') };
+}
+
+function lodgingVenueTokens(options, place) {
+  const spoken = festivalSpokenVenue(options.venue);
+  const blob = `${spoken} ${place.addressRest}`;
+  const streets = [];
+  const admins = [];
+  for (const match of blob.matchAll(/([가-힣]{2,12}거리)/g)) {
+    if (!streets.includes(match[1])) streets.push(match[1]);
   }
-  if (withDist.length) {
-    return `이 문장만 쓴다: ${lodgingStaySentence(rows, 'ko')} 거리가 적힌 곳에만 그 거리를 붙인다. «가까운»은 쓰지 않는다. 위의 «거리와 함께»보다 이 문장이 우선한다.`;
+  for (const match of blob.matchAll(/([가-힣]{2,8}(?:읍|면|동|리))(?![가-힣])/g)) {
+    if (!admins.includes(match[1]) && match[1] !== place.display && match[1] !== place.raw) admins.push(match[1]);
   }
-  return `이 문장만 쓴다: ${lodgingStaySentence(rows, 'ko')} «가까운»은 쓰지 않는다. km를 붙이지 않는다. 위의 «거리와 함께»보다 이 문장이 우선한다.`;
+  let landmark = spoken
+    .replace(/\s*(?:일대|일원|부근|인근|주변)$/g, '')
+    .replace(/[()]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (place.display && landmark.startsWith(`${place.display} `)) landmark = landmark.slice(place.display.length).trim();
+  landmark = landmark.replace(/^[가-힣]{1,8}(?:시|군|구)\s+/, '').trim();
+  if (!landmark || landmark.length < 2 || /주차장|거리$/.test(landmark) || /(?:로|길)\s*\d/.test(landmark)) landmark = '';
+  if (landmark === place.display || landmark === place.raw) landmark = '';
+  const tokens = [];
+  for (const token of [landmark, ...streets, ...admins]) {
+    if (token && !tokens.includes(token)) tokens.push(token);
+    if (tokens.length >= 3) break;
+  }
+  return tokens;
+}
+
+function lodgingAreaCardLabel(place, locale = 'ko') {
+  const en = String(locale || 'ko').slice(0, 2) === 'en';
+  if (en) {
+    const english = englishLodgingPlaceName(place.display) || englishLodgingPlaceName(place.raw);
+    return english ? `${english} lodging card` : 'lodging card';
+  }
+  return place.display ? `${place.display} 숙소 카드` : '숙소 카드';
+}
+
+function lodgingAreaCardLink(contentId, place, locale = 'ko') {
+  const url = gateoKoreaFestivalLodgingUrl(contentId);
+  if (!url) return '';
+  return `[${lodgingAreaCardLabel(place, locale)}](${url})`;
+}
+
+/** No measured stay: one venue-area sentence, or the card fallback. Never a hotel name. */
+function lodgingUnmeasuredStayAnswer(options = {}) {
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const place = lodgingPlaceBits(options);
+  const tokens = lodgingVenueTokens(options, place);
+  const link = lodgingAreaCardLink(options.contentId, place, options.locale);
+  if (!link) return '';
+  const cityCenter = place.kind === 'si' && tokens.length > 0 && tokens.every((token) => !/(?:읍|면)$/.test(token));
+  if (en) {
+    const city = englishLodgingPlaceName(place.display) || englishLodgingPlaceName(place.raw);
+    const tokenEn = tokens.map((token) => englishLodgingAreaLabel(token, place.display)).filter(Boolean);
+    if (city && cityCenter && tokenEn.length) {
+      return `Staying in downtown ${city} (${tokenEn.join(', ')}) keeps the venue walkable. ${link}`;
+    }
+    if (city && (tokens.length || place.display)) {
+      return `Staying in ${city} keeps you near the venue. ${link}`;
+    }
+    if (tokenEn.length) return `Staying around ${tokenEn.join(', ')} keeps you near the venue. ${link}`;
+    return `Stays near the venue are on ${link}.`;
+  }
+  if (cityCenter) {
+    return `축제장이 있는 ${place.display} 시내(${tokens.join('·')} 일대)에 잡으면 걸어서 다니기 좋아요. ${link}`;
+  }
+  if (place.display && tokens.length) {
+    return `축제장이 있는 ${place.display} ${tokens.join('·')} 일대에 잡으면 걸어서 다니기 좋아요. ${link}`;
+  }
+  if (tokens.length) {
+    return `축제장이 있는 ${tokens.join('·')} 일대에 잡으면 걸어서 다니기 좋아요. ${link}`;
+  }
+  if (place.display) {
+    return `축제장이 있는 ${place.display}에 잡으면 걸어서 다니기 좋아요. ${link}`;
+  }
+  return `축제장 근처 숙소는 ${link}에서 볼 수 있어요.`;
+}
+
+function stripStayNames(text, values) {
+  let out = String(text || '');
+  const names = lodgingStayNames(values).sort((a, b) => b.length - a.length);
+  for (const name of names) {
+    out = out.replace(new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '');
+  }
+  return out
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\(\s*\)/g, '')
+    .replace(/\s+,/g, ',')
+    .replace(/,\s*,/g, ',')
+    .replace(/\s+([.!?。])/g, '$1')
+    .trim();
 }
 
 function allowedStayDistanceTags(values, origin) {
@@ -1262,23 +1393,25 @@ function stripLodgingAreaSearchSentence(text) {
   return stripped.replace(/[^[\n]*권역에서\s*숙소를\s*찾을\s*수\s*있어요[.!]?\s*/g, '').trim();
 }
 
-function dropUnverifiedCloseStayWording(text, rows) {
-  if (rows.some((row) => stayDistanceTag(row.distKm))) return String(text || '');
-  return String(text || '').replace(/가까운\s*숙소로/g, '숙소 카드에는');
-}
-
-/** Named stays from the lodging card replace area filler. An empty list drops the area-search sentence. */
+/** Measured stays name distance. A card with no coordinates names none of them. */
 function ensureFestivalLodgingAnswer(text, options = {}) {
   if (!isFestivalLodgingAsk(options)) return String(text || '');
   const origin = { lat: options.lat, lng: options.lng };
+  const names = lodgingStayNames(options.nearbyStays);
   const rows = lodgingStayRows(options.nearbyStays, origin);
-  const lead = rows.length ? lodgingStaySentence(rows, options.locale) : '';
   const link = lodgingCardLink(options.contentId, options.locale);
-  const body = !lead || !link ? stripLodgingAreaSearchSentence(text) : `${lead}\n\n${link}`;
-  return dropUnverifiedCloseStayWording(
-    stripUnhintedStayDistances(body, options.nearbyStays, origin),
-    rows,
-  );
+  let body;
+  if (rows.length && link) {
+    body = `${lodgingStaySentence(rows, options.locale)}\n\n${link}`;
+  } else if (names.length) {
+    body = stripStayNames(
+      lodgingUnmeasuredStayAnswer(options) || stripLodgingAreaSearchSentence(text),
+      options.nearbyStays,
+    );
+  } else {
+    body = stripLodgingAreaSearchSentence(text);
+  }
+  return stripUnhintedStayDistances(body, options.nearbyStays, origin);
 }
 
 function parkingGuide(options = {}) {
@@ -1686,16 +1819,22 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const feeText = String(ctx?.feeText || '').trim();
   if (feeText) lines.push(isEn ? `- Fee: ${feeText}` : `- 요금: ${feeText}`);
 
-  const venue = String(ctx?.venue || '').trim();
+  const venueRaw = String(ctx?.venue || '').replace(/\s+/g, ' ').trim();
+  const venue = festivalSpokenVenue(venueRaw);
   if (venue) lines.push(isEn ? `- Venue: ${venue}` : `- 장소: ${venue}`);
+  if (venue && venue !== venueRaw) {
+    lines.push(isEn
+      ? `- Call this place "${venue}". Do not describe the venue as a parking lot.`
+      : `- 장소는 «${venue}»로 말한다. «주차장»은 붙이지 않는다.`);
+  }
 
   const address = String(ctx?.address || '').trim();
   if (address) lines.push(isEn ? `- Address: ${address}` : `- 주소: ${address}`);
 
-  const overview = clipFact(ctx?.overview, 700);
+  const overview = speakVenuePhrases(clipFact(ctx?.overview, 700));
   if (overview && !isEn) lines.push(`- 개요: ${overview}`);
 
-  const program = clipFact(ctx?.program, 500);
+  const program = speakVenuePhrases(clipFact(ctx?.program, 500));
   if (program) lines.push(isEn ? `- Program: ${program}` : `- 프로그램: ${program}`);
 
   const nearby = listedPlaceNames(ctx?.nearbyPlaces);
@@ -1860,6 +1999,17 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
           hint += en
             ? `\n- Lodging answer: ${lodgingDistanceClause(stayRows, true)} End with one [${cardLabel}](${lodgingUrl}) link. Do not add area filler such as "find stays in the area" or "a variety of stays are located".`
             : `\n- 숙소 답: ${lodgingDistanceClause(stayRows, false)} 마지막은 [${cardLabel}](${lodgingUrl}) 한 번만. «인근으로 … 권역에서 숙소를 찾을 수 있어요», «숙소가 자리하고 있어요», «다양한 숙소가 자리하고 있어요», «매력을 느끼며»는 쓰지 않는다.`;
+        } else if (lodgingStayNames(festivalContext.nearbyStays).length) {
+          const sentence = lodgingUnmeasuredStayAnswer({
+            contentId: festivalContext.contentId,
+            locale: input.locale,
+            venue: festivalContext.venue,
+            address: festivalContext.address,
+            placeName,
+          });
+          hint += en
+            ? `\n- Lodging answer: Write only this: ${sentence} Do not name a hotel, pension, or resort. Do not say a stay is closest. Do not write kilometers. Do not tell the user to find stays in the area.`
+            : `\n- 숙소 답: 이 문장만 쓴다: ${sentence} 숙소 이름은 쓰지 않는다. «가까운»은 쓰지 않는다. km를 붙이지 않는다. «권역에서 숙소를 찾을 수 있어요»는 쓰지 않는다.`;
         } else {
           const areas = lodgingAreaNames({
             venue: festivalContext.venue,

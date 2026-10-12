@@ -2,6 +2,7 @@ import {
   dedupeFestivalPageLinks,
   festivalTimingStatus,
   filterFestivalStayAreaNames,
+  festivalSpokenVenue,
   gateoKoreaFestivalDetailUrl,
   hasFestivalParkingData,
   kstTodayYmd,
@@ -259,8 +260,11 @@ function isPostalAddress(text) {
 }
 
 function shortVenue(venue) {
+  const spoken = festivalSpokenVenue(venue);
+  const raw = String(venue || '').replace(/\s+/g, ' ').trim();
+  if (spoken && spoken !== raw) return spoken;
   if (streetName(venue)) return streetName(venue);
-  let text = String(venue || '').replace(/(?:\s*(?:일원|일대|부근|인근|주변))+$/g, '').trim();
+  let text = raw.replace(/(?:\s*(?:일원|일대|부근|인근|주변))+$/g, '').trim();
   if (!text || isPostalAddress(text)) return '';
   const parts = text.split(/\s+/).filter(Boolean);
   while (parts.length > 1 && /(?:특별시|광역시|특별자치도|시|군|구)$/.test(parts[0])) parts.shift();

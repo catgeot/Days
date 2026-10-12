@@ -162,6 +162,7 @@ function festivalReplyOptions(festivalContext, extra = {}) {
     contentId: festivalContext?.contentId,
     placeName: festivalContext?.hubLabel,
     venue: festivalContext?.venue,
+    address: festivalContext?.address,
     stayAreas: festivalContext?.stayAreas,
     lat: festivalContext?.lat,
     lng: festivalContext?.lng,
