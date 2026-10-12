@@ -2,6 +2,38 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## Vercel 프리뷰 #1, cursor 빌드 생략
+
+- **세션** `Vercel 프리뷰 #1, cursor 빌드 생략` · branch `cursor/vercel-skip-previews-8e40` · tip `e4b61cc6` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · 병합 금지
+- **조치** `ignoreCommand`가 `bash scripts/vercel-ignore-build.sh`를 호출한다. production이거나 ref가 `main`이면 exit 1(빌드). `cursor/*` 프리뷰만 exit 0(건너뜀). 빈 ref·`feature/*`는 빌드.
+- **VERIFY** `npm run test:health` 270 pass · CI run `38199762474` success. 종료 코드: production/main 1, preview/main 1, preview/cursor/foo 0, preview/feature/x 1, 빈 env 1.
+- **다음** 제시어 없음
+
+## 마산 주변 볼거리 #7, 빈 사진·스피너
+
+- **세션** `마산 주변 볼거리 #7, 빈 사진·스피너` · branch `cursor/nearby-settle-8e40` · tip `e1024118` · draft PR [#442](https://github.com/catgeot/Days/pull/442) · 병합 금지
+- **조치** detailImage가 빈 갤러리면 회색을 기다리지 않고 아이콘. searchPhoto가 사진을 찾으면 그 칸에 채운다. 맛집·레포츠·문화·코스 스피너는 `주변 정보를 불러오는 중…` 하나.
+- **VERIFY** `npm run test:health` 270 pass · CI run `38199101000` success. WebKit 390 강릉 2930716: searchPhoto를 6초 붙잡은 동안 리고엠이 아이콘. 스피너 1개.
+- **Preview** `https://days-git-cursor-nearby-settle-8e40-catgeots-projects.vercel.app/korea?festival=2930716`
+- **다음** 제시어 없음
+
+## 카이로 동선 #10, 출처 조각
+
+- **세션** `카이로 동선 #10, 출처 조각` · branch `cursor/cairo-source-tidy-8e40` · tip `05556608` · draft PR [#441](https://github.com/catgeot/Days/pull/441) · #436은 `c8bbf7d7`로 main
+- **조치** 기자·이집트박물관 출처 이름은 `관광유물부` / `Ministry of Tourism and Antiquities`. URL의 `giza-plateau`·`egyptian-museum`은 그대로. 카이로·GEM·술탄 하산 영문 시간 범위는 `–`. `A~D`와 한글 본문은 그대로.
+- **제안** 해외 영문 제목 아래 `(카이로)`는 비운다. 현지 이름이 아니라 영어 제목의 한글 풀이다. 코드는 안 바꿈.
+- **VERIFY** `npm run test:health` 269 pass · CI run `38198811374` success. WebKit 390 GEM `09:00–18:00` 1줄.
+- **Preview** `https://days-git-cursor-cairo-source-tidy-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en`
+- **다음** 제시어 없음
+
+## 카이로 동선 #9, 한글 출처
+
+- **세션** `카이로 동선 #9, 한글 출처 줄바꿈` · branch `cursor/cairo-facts-en-8e40` · tip `e516f770` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지
+- **조치** 사실 블록 출처·링크에 `break-keep`. 공백 없는 URL만 `overflow-wrap: anywhere`. 카이로 «대사관 공지»가 음절 중간에서 끊기지 않는다. 블로그 줄 끝 «(»는 건드리지 않음.
+- **VERIFY** `npm run test:health` 264 pass · CI run `38197969167` success. WebKit 390 돈·치안 출처는 `word-break: keep-all`, «공지» 1줄.
+- **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=ko`
+- **다음** 제시어 없음
+
 ## 마산 주변 볼거리 #6, 사진 채움
 
 - **세션** `마산 주변 볼거리 #6, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `bb90379f` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지

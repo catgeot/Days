@@ -1,7 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../../i18n/LocaleProvider';
 import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
+import {
+  checkedAtForLocale,
+  factValueForLocale,
+  linkLabelForLocale,
+  sourceNameForLocale,
+  splitFactTimeRanges,
+  TIME_RANGE_CLASS,
+} from '../../../data/placeVerifiedFacts/cairoEn.js';
 import { splitItineraryPlaceMentions } from '../../../data/placeVerifiedFacts/itineraryLinks.js';
 import {
   AI_GENERATED_LABEL,
@@ -23,23 +32,32 @@ function unverifiedLine(slots, t) {
   return t('place.facts.unverified', { items: labels.join(', ') });
 }
 
-function SourceLine({ sources }) {
+function sourceLabelClass(text) {
+  const value = String(text || '').trim();
+  if (!/\s/.test(value) && (value.includes('.') || /^https?:/i.test(value))) {
+    return 'break-keep [overflow-wrap:anywhere]';
+  }
+  return 'break-keep [overflow-wrap:normal]';
+}
+
+function SourceLine({ sources, locale }) {
   return (
     <span data-fact-source="">
       {sources.map((source, index) => {
-        const name = publicSourceName(source.name || source.url);
+        const name = sourceNameForLocale(publicSourceName(source.name || source.url), locale);
+        const wrap = sourceLabelClass(name);
         const node = source.url ? (
           <a
             key={`${source.url}-${index}`}
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline decoration-white/30 underline-offset-2 hover:decoration-white"
+            className={`underline decoration-white/30 underline-offset-2 hover:decoration-white ${wrap}`}
           >
             {name}
           </a>
         ) : (
-          <span key={`${name}-${index}`}>{name}</span>
+          <span key={`${name}-${index}`} className={wrap}>{name}</span>
         );
         return (
           <React.Fragment key={`${name}-${index}`}>
@@ -52,11 +70,23 @@ function SourceLine({ sources }) {
   );
 }
 
-function FactValue({ slot, light }) {
-  const text = presentFactText(slot.value);
+function FactRuns({ text }) {
+  return splitFactTimeRanges(text).map((part, index) => (
+    part.type === 'time' ? (
+      <span key={`time-${index}`} className={TIME_RANGE_CLASS}>{part.text}</span>
+    ) : (
+      <React.Fragment key={`text-${index}`}>{part.text}</React.Fragment>
+    )
+  ));
+}
+
+function FactValue({ slot, slug, locale, light }) {
+  const text = presentFactText(factValueForLocale(slug, slot, locale));
   if ((slot.linkRole === 'booking' || slot.linkRole === 'map') && /^https?:\/\//.test(slot.value)) {
-    const label = slot.linkLabel
-      || (slot.linkRole === 'booking' ? '공식 예매' : 'Google 지도');
+    const label = linkLabelForLocale(
+      slot.linkLabel || (slot.linkRole === 'booking' ? '공식 예매' : 'Google 지도'),
+      locale,
+    );
     return (
       <p data-fact-value="" className="text-sm">
         <a
@@ -64,9 +94,9 @@ function FactValue({ slot, light }) {
           target="_blank"
           rel="noopener noreferrer"
           data-official-link={slot.linkRole}
-          className={light
+          className={`${sourceLabelClass(label)} ${light
             ? 'font-semibold text-sky-800 underline underline-offset-2'
-            : 'font-semibold text-sky-200 underline underline-offset-2'}
+            : 'font-semibold text-sky-200 underline underline-offset-2'}`}
         >
           {label}
         </a>
@@ -93,7 +123,7 @@ function FactValue({ slot, light }) {
               {part.text}
             </Link>
           ) : (
-            <React.Fragment key={`t-${index}`}>{part.text}</React.Fragment>
+            <FactRuns key={`t-${index}`} text={part.text} />
           )
         ))}
       </p>
@@ -101,21 +131,22 @@ function FactValue({ slot, light }) {
   }
   return (
     <p data-fact-value="" className={valueClass}>
-      {text}
+      <FactRuns text={text} />
     </p>
   );
 }
 
 export default function PlaceVerifiedFacts({ location, variant = 'dark' }) {
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const card = resolveVerifiedFacts(location);
   if (!card) return null;
   const light = variant === 'light';
   const filled = card.slots.filter((slot) => !slotLooksEmpty(slot));
   const unverified = unverifiedLine(card.slots, t);
   const metaClass = light
-    ? 'mt-0.5 text-[11px] leading-snug text-gray-600 break-all'
-    : 'mt-0.5 text-[11px] leading-snug text-white/60 break-all';
+    ? 'mt-0.5 min-w-0 text-[11px] leading-snug text-gray-600 break-keep [overflow-wrap:normal]'
+    : 'mt-0.5 min-w-0 text-[11px] leading-snug text-white/60 break-keep [overflow-wrap:normal]';
 
   return (
     <section
@@ -137,15 +168,15 @@ export default function PlaceVerifiedFacts({ location, variant = 'dark' }) {
             <p className={light ? 'text-[11px] font-semibold text-emerald-800' : 'text-[11px] font-semibold text-emerald-200/90'}>
               {slotHeading(slot, t)}
             </p>
-            <FactValue slot={slot} light={light} />
+            <FactValue slot={slot} slug={card.slug} locale={locale} light={light} />
             <p className={metaClass}>
-              {t('place.facts.source')} <SourceLine sources={slot.sources} />
+              {t('place.facts.source')} <SourceLine sources={slot.sources} locale={locale} />
             </p>
             <p
               data-fact-checked-at=""
               className={light ? 'text-[11px] text-gray-500' : 'text-[11px] text-white/45'}
             >
-              {t('place.facts.checked', { date: slot.checkedAt })}
+              {t('place.facts.checked', { date: checkedAtForLocale(slot.checkedAt, locale) })}
             </p>
           </li>
         ))}

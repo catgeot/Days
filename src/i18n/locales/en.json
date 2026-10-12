@@ -1566,6 +1566,7 @@
       "headlineGeneral": "\"{{time}}\"{{tasteSuffix}} festival list",
       "headlineTasteSuffix": " · \"{{taste}}\" themed",
       "panelBySubregion": "By {{unit}}",
+      "panelAddrListedAs": "Address listed as {{legalName}}",
       "timeTab": {
         "now": "Now",
         "weekend": "Weekend",

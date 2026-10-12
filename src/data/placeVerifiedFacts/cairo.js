@@ -48,7 +48,7 @@ const EM_TICKET = {
   url: 'https://egymonuments.com/details/EgyptianMuseum',
 };
 const SH_INFO = {
-  name: '관광유물부 sultan-hasan',
+  name: '관광유물부',
   url: 'https://egymonuments.gov.eg/en/monuments/mosque-and-madrasa-of-sultan-hasan/',
 };
 const SH_TICKET = {

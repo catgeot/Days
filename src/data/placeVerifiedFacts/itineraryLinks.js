@@ -1,10 +1,11 @@
 /** In-app place cards mentioned in the Cairo day-by-day line. Longer phrase first. */
 const ITINERARY_PLACE_LINKS = [
+  ['Sultan Hassan Mosque', '/place/sultan-hassan-mosque'],
   ['술탄 하산 모스크', '/place/sultan-hassan-mosque'],
   ['GEM', '/place/grand-egyptian-museum'],
 ];
 
-const ITINERARY_PLACE_RE = /(술탄 하산 모스크|GEM)/g;
+const ITINERARY_PLACE_RE = /(Sultan Hassan Mosque|술탄 하산 모스크|GEM)/g;
 
 /**
  * @param {unknown} text

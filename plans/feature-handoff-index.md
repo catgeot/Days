@@ -14,45 +14,50 @@
 
 ## 활성 목록
 
+### Vercel 프리뷰
+
+| | |
+|--|--|
+| **상태** | **#1 cursor 빌드 생략** · tip `e4b61cc6` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · **병합 금지** |
+| **브랜치** | `cursor/vercel-skip-previews-8e40` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
+| **Preview** | 없음. 이 브랜치는 `cursor/*`라 병합 뒤에는 Vercel이 빌드를 건너뛴다 |
+| **금지** | `main`·production 빌드 생략 · `git.deploymentEnabled`로 전체 배포 끄기 · feature에 `plans/**` 커밋 · PR 병합 |
+| **VERIFY** | `npm run test:health` |
+| **남은 일** | ignoreCommand만. exit 0은 건너뜀, exit 1은 빌드. CANCELED도 Hobby 할당량에 들어갈 수 있음 |
+
+**다음 제시어 없음**.
+
 ### 카이로 동선
 
 | | |
 |--|--|
-| **상태** | **#8 줄바꿈** · tip `fb7767d1` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · GO 전 · #433 브랜치 `e2fdf3d5` 동결 (squash `a3b06706`) |
-| **브랜치** | `cursor/cairo-facts-en-8e40` |
+| **상태** | **#10 출처 조각** · tip `05556608` · draft PR [#441](https://github.com/catgeot/Days/pull/441) · #436 squash `c8bbf7d7` · #433 브랜치 `e2fdf3d5` 동결 |
+| **브랜치** | `cursor/cairo-source-tidy-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
-| **Preview** | git `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/sultan-hassan-mosque?lang=en` · GEM `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
-| **금지** | 사람 지시 없는 `cursor/cairo-facts-en-8e40` push · 한글 사실 문장 변경 · 숫자·시간·금액·URL 변경 · 영문 `~`를 `–`로 바꾸기 · 헤더 보조명 변경 · `cursor/cairo-qa-8e40` push · feature에 `plans/**` 커밋 · PR 병합 |
+| **Preview** | git `https://days-git-cursor-cairo-source-tidy-8e40-catgeots-projects.vercel.app/place/giza-pyramids?lang=ko` · GEM `https://days-git-cursor-cairo-source-tidy-8e40-catgeots-projects.vercel.app/place/grand-egyptian-museum?lang=en` |
+| **금지** | `cursor/cairo-facts-en-8e40` · `cursor/cairo-qa-8e40` push · 한글 사실 문장 변경 · 숫자·금액·URL 변경 · 헤더 보조명 코드 변경 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 시각 범위 nowrap과 출처 `break-all` 제거는 tip `fb7767d1`. **#436 병합 후에만**, 사람이 시키면 `origin/main`에서 작은 PR: 출처 라벨 «Ministry of Tourism and Antiquities giza-plateau», «… egyptian-museum»와 한글 «관광유물부 giza-plateau», «… egyptian-museum»에서 조각만 뺀다. URL은 그대로. |
+| **남은 일** | 출처 조각과 영문 시간 `–`는 #441. 헤더 `(카이로)`는 비우기를 제안만 했고 코드는 없다. 블로그 줄 끝 «(»는 안 고침. |
 
-**다음 제시어 없음** (GO 대기). 조각 제거는 병합 뒤에 `origin/main`에서 새 PR.
+**다음 제시어 없음**. 헤더 보조명을 비울지는 사람이 정한다.
 
 ### 마산 주변 볼거리
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `bb90379f` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · **병합 금지** |
-| **브랜치** | `cursor/masan-nearby-8e40` |
+| **상태** | **#7 빈 사진·스피너** · tip `e1024118` · draft PR [#442](https://github.com/catgeot/Days/pull/442) · **병합 금지** |
+| **브랜치** | `cursor/nearby-settle-8e40` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
-| **Preview** | git `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716` (Vercel SSO) |
-| **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 `plans/**` 커밋 · PR 병합 |
+| **Preview** | git `https://days-git-cursor-nearby-settle-8e40-catgeots-projects.vercel.app/korea?festival=2930716` · `637693` · `638576` (Vercel SSO) |
+| **금지** | 헤더 수정 · `cursor/cairo-qa-8e40` push · 주변 목록 순서·팔경 소제목·거리순·마산 연꽃공원 병합 변경 · 합본을 MRT·locationBasedList 뒤로 다시 묶기 · feature에 `plans/**` 커밋 · PR 병합 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | Site QA 결과를 기다린다. 결과가 오기 전에는 코드를 고치지 않는다. 사진이 없는 동안은 스켈레톤이고, 조회가 끝나도 없으면 아이콘이다. 합본은 숙소·locationBasedList보다 먼저 보인다. |
+| **남은 일** | 빈 detailImage는 바로 아이콘. 하단 스피너는 하나. #435 브랜치 `cursor/masan-nearby-8e40`에는 더 푸시하지 않는다. |
 
-**다음 제시어**:
-
-```
-마산 주변 볼거리 #7, 피드백 반영
-@plans/feature-handoff-index.md
-@plans/2026-10-12-project-log.md
-브랜치 cursor/masan-nearby-8e40 · draft PR #435 · tip bb90379f
-금지: 헤더 수정 · cairo-qa-8e40 push · 주변 목록 순서·팔경 소제목·거리순 변경 · feature에 plans 커밋 · PR 병합
-작업: Site QA 결과가 오기 전에는 시작하지 않는다. 결과가 오면 637693·638576·2930716에서 어긋난 곳만 고친다. 합본을 fetch-mrt-stays나 locationBasedList 응답 뒤로 다시 묶지 않는다. 사진 조회를 목록보다 앞으로 당기지 않는다.
-검증: npm run test:health
-```
+**다음 제시어 없음**.
 
 ### 축제 상세 주변 볼거리
 
@@ -108,24 +113,24 @@
 
 | | |
 |--|--|
-| **상태** | **#9 push** · tip `1d21c020` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · main `#431` `daf8eca4` 유지 · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
+| **상태** | **#10 push** · tip `fade0c3d` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · staging gemini-proxy **v25** (롤백 v24) · prod v27 · **PR 머지 금지** |
 | **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
-| **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
+| **금지** | prod `gemini-proxy` 배포 · staging 재배포는 사람 요청 때만 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). staging gemini-proxy는 v24. `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 좌표가 없으면 숙소 이름을 말하지 않는다. 첫 답을 포함한 축제 답은 장소의 «천지연폭포 주차장»을 «천지연 일대»로 고친다. «주차장과»는 «일대와»이고 «일대 일대»는 없다. 장소 «천지연 일대»와 이름 줄기가 같은 근처(천지연폭포)와 약 300m 안의 같은 줄기는 첫 답 근처 목록에서 빼고, 모델이 다시 말하면 다음 장소가 앞이다. «A와 B 그리고 C»는 명사 나열일 때만 «A와 B, C»다. 절을 잇는 «그리고»와 이미 쉼표가 있는 목록은 그대로다. 주차 질문의 주차장 이름은 그대로다. 이번 Edge 파일은 `templates.js`와 서버 `mooniPromptBundleData.js`이고 배포하지 않는다. 로컬 390 Chromium에서 staging v24 첫 답은 «천지연 일대»이고 근처는 황우지해안열두굴·이중섭 거주지·새섬공원이다. 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다. gemini-proxy는 재배포하지 않는다. 배포·PR 머지는 하지 않는다. `npm run test:health` 266 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). staging gemini-proxy는 v25, 롤백은 v24. 모델은 바꾸지 않았다. 첫 답 순서는 날짜, 행사장·프로그램, 개요의 분위기, 근처, 페이지다. 서귀포 분위기 문장은 남고 «축제 분위기가 저녁까지 이어져요»가 근처보다 앞이다. «일대 및»은 «일대와»다. 근처 문장은 이름 토큰만 바꾸고 문장 전체를 지우지 않는다. 강릉 첫 답은 5문장이고 «월화거리에서 축제 분위기가 저녁까지 이어져요»가 있다. 로컬 390 Chromium, staging v25. 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다. `npm run test:health` 271 pass. PR 머지 안 함. |
 
 **다음 제시어**:
 
 ```
-축제 MOONi #10, staging 재확인
+축제 MOONi #11, 숙소 좌표는 별도
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip 1d21c020
-금지: 에이전트 gemini-proxy 배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push · MRT 좌표·카드 정렬은 이번 PR 아님
-작업: gemini-proxy는 재배포하지 않는다. 프롬프트 문구는 `templates.js`와 서버 번들에만 있고 staging v24에는 아직 없다. 서귀포 첫 답 «천지연폭포 주차장과 서귀포 원도심 일대에서»는 «천지연 일대와 서귀포 원도심 일대에서»다. «일대 일대»는 없다. 근처 첫 이름은 천지연폭포가 아니다. «A와 B 그리고 C»는 «A와 B, C»이고, 절을 잇는 «그리고»는 그대로다. 주차 칩의 주차장 이름은 그대로다. withCoords=0이면 숙소 이름을 말하지 않는다. 답은 장소 한 문장과 카드 하나, 또는 «축제장 근처 숙소는 [○○ 숙소 카드]에서 볼 수 있어요»다. «권역에서 숙소를 찾을 수 있어요»는 없다. 좌표가 있으면 20km 안만, 가까운 순, 2~3곳에 거리가 있다. 서귀포는 제주신화월드가 한 곳만이다. 함평 첫답 근처는 «용천사»다. 2930716 칩 말풍선은 «볼거리·분위기 알려 줘»다. «주차»는 공식 홈페이지 문장만이고 506616은 «천지연 주차장»만으로 주차 데이터가 아니다. 첫답은 «청소년 페스타 경연이 있어요»와 «10/20~22, 11일 뒤 시작해요»다. prod는 v27(2c7a3c95), mooni_chat 기본은 gemini-3.1-flash-lite. 그 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다.
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip fade0c3d
+금지: prod gemini-proxy 배포 · staging 재배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push · 이 PR에서 MRT 좌표
+작업: 첫 답 순서와 분위기 문장은 tip fade0c3d, staging gemini-proxy v25(롤백 v24)다. prod는 v27. MRT 숙소 좌표와 숙소 카드 거리순은 새 PR이다. Cos가 문장을 더 고치면 그 문장만 이 브랜치에서 고친다.
 검증: npm run test:health
 ```
 
