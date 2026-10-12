@@ -41,7 +41,6 @@ import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
   buildSidoTags,
-  cityListPhrase,
   filterByRegion,
   neighborSidoTags,
   sidoLabel,
@@ -112,6 +111,7 @@ import {
   localizedSidoListPhrase,
   localizedSidoPanelHeadingPhrase,
   localizedSubregionLabel,
+  localizedFestivalCityListLabel,
   localizedSubregionUnitLabel,
   localizeFestivalGroupLabel,
 } from '../../i18n/koreaRegionLabels';
@@ -152,7 +152,7 @@ function buildIndexListHeadline({
     areaCode,
     sidoListPhrase(areaCode),
   );
-  const city = localizedSubregionLabel(locale, cityListPhrase(cityName));
+  const city = localizedFestivalCityListLabel(locale, areaCode, cityName);
   const taste =
     tasteId && tasteId !== 'all'
       ? localizedTasteLabel(t, tasteId, tasteLabel(tasteId))
@@ -184,7 +184,7 @@ function buildPanelListMeta({ areaCode, cityName, count, t, locale = 'ko' }) {
     areaCode,
     sidoListPhrase(areaCode),
   );
-  const city = localizedSubregionLabel(locale, cityListPhrase(cityName));
+  const city = localizedFestivalCityListLabel(locale, areaCode, cityName);
   const place = [sido, city].filter(Boolean).join(' · ');
   const bits = [];
   if (place) bits.push(place);
@@ -2038,7 +2038,7 @@ export default function KoreaFestivalHub() {
     t('korea.festival.timeTab.now');
   const regionMajorLabel =
     cityName !== 'all'
-      ? localizedSubregionLabel(locale, cityName)
+      ? localizedFestivalCityListLabel(locale, areaCode, cityName)
       : areaCode !== 'all'
         ? localizedAreaCodeLabel(locale, areaCode, sidoLabel(areaCode)) ||
           t('korea.common.region')

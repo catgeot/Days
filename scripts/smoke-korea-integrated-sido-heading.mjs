@@ -3,8 +3,12 @@
  *
  *   npm run smoke:korea-integrated-sido-heading
  */
-import { localizedSidoPanelHeadingPhrase } from '../src/i18n/koreaRegionLabels.js';
-import { localizedSidoListPhrase } from '../src/i18n/koreaRegionLabels.js';
+import {
+  localizedFestivalCityListLabel,
+  localizedSidoPanelHeadingPhrase,
+  localizedSidoListPhrase,
+} from '../src/i18n/koreaRegionLabels.js';
+import { festivalCityListDisplayPhrase } from '../src/pages/Korea/festivalRegionTags.js';
 
 let failed = 0;
 function assert(cond, msg) {
@@ -45,6 +49,23 @@ assert(
   localizedSidoPanelHeadingPhrase('en', '31', '경기도') ===
     localizedSidoListPhrase('en', '31', '경기도'),
   'non-integrated EN unchanged',
+);
+
+assert(
+  festivalCityListDisplayPhrase('광주시', '31') === '광주시',
+  '경기 광주시 display phrase keeps 시',
+);
+assert(
+  festivalCityListDisplayPhrase('광주시', '5') === '광주',
+  'metro filter still strips 광주시 chip label',
+);
+assert(
+  localizedFestivalCityListLabel('ko', '31', '광주시') === '광주시',
+  'KO 경기 광주시 list label',
+);
+assert(
+  localizedFestivalCityListLabel('en', '31', '광주시') === 'Gwangju-si',
+  'EN Gyeonggi Gwangju-si list label',
 );
 
 if (failed) {

@@ -1,5 +1,9 @@
 import { listCityAttractionHubs } from '../pages/Home/lib/cityAttractionHubs.js';
-import { isMetroArea, sidoLabel } from '../pages/Korea/festivalRegionTags.js';
+import {
+  festivalCityListDisplayPhrase,
+  isMetroArea,
+  sidoLabel,
+} from '../pages/Korea/festivalRegionTags.js';
 import { JEONNAM_GWANGJU_INTEGRATED_SIDO_LEGAL_NAME } from '../pages/Home/lib/koreaTourAddrNormalize.js';
 import {
   KOREA_AREA_CODE_EN,
@@ -102,6 +106,22 @@ export function localizedSidoPanelHeadingPhrase(
   }
   const shortEn = KOREA_AREA_CODE_EN[code] || shortKo;
   return `${shortEn} (${JEONNAM_GWANGJU_INTEGRATED_LEGAL_EN})`;
+}
+
+/**
+ * Festival list title / panel meta city segment (경기 광주시 ≠ 광주광역시).
+ * @param {string | null | undefined} locale
+ * @param {string | number | null | undefined} areaCode
+ * @param {string | null | undefined} cityName
+ */
+export function localizedFestivalCityListLabel(locale, areaCode, cityName) {
+  const name = String(cityName || '').trim();
+  if (!name || name === 'all') return '';
+  if (String(areaCode) === '31' && name === '광주시') {
+    return isEnLocale(locale) ? 'Gwangju-si' : '광주시';
+  }
+  const phraseKo = festivalCityListDisplayPhrase(cityName, areaCode);
+  return localizedSubregionLabel(locale, phraseKo);
 }
 
 /**
