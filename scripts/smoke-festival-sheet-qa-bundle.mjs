@@ -16,8 +16,8 @@ function ok(msg) {
 
 function t(key, opts = {}) {
   if (key === 'korea.common.countUnit') return String(opts.count);
-  if (key === 'korea.festival.panelNationwideScope') return 'All of Korea';
-  if (key === 'korea.festival.panelNationwideGroup') return 'By region';
+  if (key === 'korea.festival.panelNationwideScope') return 'Nationwide';
+  if (key === 'korea.festival.panelNationwideGroup') return 'By province';
   if (key === 'korea.common.nationwide') return 'Nationwide';
   if (key === 'korea.common.regionGroup') return 'By region';
   return opts.defaultValue || key;
@@ -31,8 +31,13 @@ const meta = buildFestivalPanelListMetaSegments({
   locale: 'en',
 });
 const metaPlain = meta.map((s) => s.text).join(' · ');
-assert.equal(metaPlain.includes('all'), false);
+assert.equal(metaPlain, 'Nationwide · 182 · By province');
 ok(`EN nationwide meta: ${metaPlain}`);
+
+const monthScope = 'Nationwide';
+const monthTime = festivalIndexTimePhrase('en', 'thisMonth', [], t);
+assert.equal(`${monthScope} · ${monthTime}`, 'Nationwide · This month\'s festivals');
+ok(`EN nationwide headline parts: ${monthScope} · ${monthTime}`);
 
 const monthHeadline = festivalIndexTimePhrase('en', 'thisMonth', [], t);
 assert.equal(monthHeadline, "This month's festivals");

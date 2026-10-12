@@ -33,7 +33,7 @@ export function buildFestivalPanelListMetaSegments({
     segments.push({
       id: 'scope',
       text: isEnLocale(locale)
-        ? t('korea.festival.panelNationwideScope', { defaultValue: 'All of Korea' })
+        ? t('korea.festival.panelNationwideScope', { defaultValue: 'Nationwide' })
         : t('korea.common.nationwide'),
       nowrap: true,
     });
@@ -44,9 +44,9 @@ export function buildFestivalPanelListMetaSegments({
     });
     segments.push({
       id: 'regionGroup',
-      text: isEnLocale(locale)
-        ? t('korea.festival.panelNationwideGroup', { defaultValue: 'By region' })
-        : t('korea.common.regionGroup'),
+      text: t('korea.festival.panelNationwideGroup', {
+        defaultValue: isEnLocale(locale) ? 'By province' : '시·도별',
+      }),
       nowrap: true,
     });
     return segments;

@@ -1,5 +1,5 @@
 /**
- * 390px screenshots — EN nationwide list + social promo row.
+ * 390px screenshots — nationwide EN/KO, EN promo, Gangneung nearby list.
  */
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -27,20 +27,20 @@ async function main() {
   await mkdir(OUT, { recursive: true });
   await waitPreview();
   const browser = await chromium.launch();
-  const page = await (
-    await browser.newContext({ ignoreHTTPSErrors: true, locale: 'en-US' })
-  ).newPage();
+  const context = await browser.newContext({ ignoreHTTPSErrors: true });
+  const page = await context.newPage();
   await page.setViewportSize({ width: 390, height: 900 });
+
   await page.goto(`${BASE}/korea/?lang=en&bust=${Date.now()}`, {
     waitUntil: 'domcontentloaded',
   });
   await page.waitForLoadState('networkidle', { timeout: 120_000 }).catch(() => {});
-  const header = page.locator('h2').first();
-  await header.waitFor({ state: 'visible', timeout: 60_000 });
+  await page.locator('h2').first().waitFor({ state: 'visible', timeout: 60_000 });
   await page.screenshot({
     path: path.join(OUT, 'bundle-en-nationwide-heading-390.png'),
     clip: { x: 0, y: 0, width: 390, height: 200 },
   });
+
   const promo = page.locator('[data-social-promo-festival-row]');
   if (await promo.count()) {
     await promo.first().scrollIntoViewIfNeeded();
@@ -57,27 +57,45 @@ async function main() {
       });
     }
   }
+
+  await page.goto(`${BASE}/korea/?lang=ko&bust=${Date.now()}`, {
+    waitUntil: 'domcontentloaded',
+  });
+  await page.waitForLoadState('networkidle', { timeout: 120_000 }).catch(() => {});
+  await page.locator('h2').first().waitFor({ state: 'visible', timeout: 60_000 });
+  await page.screenshot({
+    path: path.join(OUT, 'bundle-ko-nationwide-heading-390.png'),
+    clip: { x: 0, y: 0, width: 390, height: 200 },
+  });
+
   await page.goto(`${BASE}/korea/?festival=2930716&lang=ko&bust=${Date.now()}`, {
     waitUntil: 'domcontentloaded',
   });
-  await page.locator('[data-nearby-heading]').waitFor({ state: 'visible', timeout: 120_000 });
-  await page.waitForTimeout(500);
-  const below = page.locator('[data-festival-below-loading]');
-  if (await below.count()) {
-    await below.first().scrollIntoViewIfNeeded();
-    const box = await below.first().boundingBox();
-    if (box) {
-      await page.screenshot({
-        path: path.join(OUT, 'bundle-ko-near-sections-loading-390.png'),
-        clip: {
-          x: 0,
-          y: Math.max(0, box.y - 40),
-          width: 390,
-          height: 120,
-        },
-      });
-    }
+  const nearbyHeading = page.locator('[data-nearby-heading]');
+  await nearbyHeading.waitFor({ state: 'visible', timeout: 120_000 });
+  await nearbyHeading.scrollIntoViewIfNeeded();
+  const ojuk = page.locator('li', { hasText: '오죽헌' }).first();
+  await ojuk.waitFor({ state: 'visible', timeout: 120_000 }).catch(() => {});
+  if (await ojuk.count()) {
+    await ojuk.click({ force: true });
+    await page.waitForTimeout(200);
+    await ojuk.evaluate((el) => {
+      if (el instanceof HTMLElement) el.blur();
+      const btn = el.querySelector('button');
+      btn?.blur();
+    });
   }
+  const list = nearbyHeading.locator('xpath=ancestor::div[1]').locator('ul').first();
+  const listBox = await list.boundingBox();
+  const headBox = await nearbyHeading.boundingBox();
+  if (listBox && headBox) {
+    const y = Math.max(0, headBox.y - 4);
+    await page.screenshot({
+      path: path.join(OUT, 'bundle-gangneung-nearby-390.png'),
+      clip: { x: 0, y, width: 390, height: Math.min(520, listBox.y + listBox.height - y) },
+    });
+  }
+
   await browser.close();
   console.log('saved bundle screenshots to', OUT);
 }

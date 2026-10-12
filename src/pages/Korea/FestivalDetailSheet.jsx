@@ -382,6 +382,10 @@ function nearbySightTitle(spot) {
   return stripTrailingHubName(spot?.name, hubName);
 }
 
+const NEARBY_ATTRACTION_ROW_BASE =
+  'flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left';
+const NEARBY_ATTRACTION_ROW_CLICKABLE = `${NEARBY_ATTRACTION_ROW_BASE} focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90 focus-visible:ring-offset-1 [@media(hover:hover)]:hover:bg-amber-50 [@media(hover:hover)]:hover:border-amber-300 transition-colors`;
+
 function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = nearbyPlaceLabel(spot);
@@ -393,16 +397,17 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
   const innerProps = clickable
     ? {
         type: 'button',
-        onClick: () => onSelect?.(mergeNearbyRowWithLocalScenicDetail(spot)),
+        onClick: (event) => {
+          onSelect?.(mergeNearbyRowWithLocalScenicDetail(spot));
+          event.currentTarget.blur();
+        },
       }
     : {};
   return (
     <li>
       <Inner
         {...innerProps}
-        className={`flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left ${
-          clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
-        }`}
+        className={clickable ? NEARBY_ATTRACTION_ROW_CLICKABLE : NEARBY_ATTRACTION_ROW_BASE}
       >
         <NearbyRowThumb spot={spot} extraThumb={extraThumb} imagePending={imagePending} />
         <span className="min-w-0 flex-1">
