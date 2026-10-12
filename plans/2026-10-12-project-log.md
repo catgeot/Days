@@ -2,6 +2,16 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 마산 주변 볼거리 #6, 사진 채움
+
+- **세션** `마산 주변 볼거리 #6, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `bb90379f` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
+- **원인** QA r3는 합본 카드가 8초 뒤에도 기념비 아이콘만 보였다. DB `first_image`가 비면 팔경 그룹만 DB를 다시 보고, TourAPI detailImage는 붙지 않았다. 썸네일 로딩 중에도 같은 아이콘을 썼다.
+- **조치** 목록은 그대로 먼저 그린다. 사진이 없는 contentId는 목록 뒤에 DB와 detailImage로 채워 칸(h-14)에 넣는다. 기다리는 동안은 회색 스켈레톤이고, 조회가 끝나도 없을 때만 아이콘이다. 거리순·팔경 소제목·장소 메모는 그대로다.
+- **WebKit 390** 목록은 `tourapi_attraction` 응답 뒤 100–140ms. 사진(img.complete·naturalWidth>0): 마산 15/15, 국향 18/18, 강릉 13장과 아이콘 2(리고엠·허균 허난설헌 기념공원). 첫 항목 임항선 그린웨이 290m · 보광사(함평) 1.4km · 강릉 오금집 320m.
+- **VERIFY** `npm run test:health` 268 pass · CI run `38196288989` success (lint-and-build, e2e-youtube-session)
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
+- **다음** `마산 주변 볼거리 #7, 피드백 반영`
+
 ## 카이로 동선 #8, 줄바꿈
 
 - **세션** `카이로 동선 #8, 줄바꿈` · branch `cursor/cairo-facts-en-8e40` · tip `fb7767d1` · draft PR [#436](https://github.com/catgeot/Days/pull/436) · 병합 금지

@@ -31,6 +31,11 @@ import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
+import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
+import {
+  readFestivalOpenDetail,
+  writeFestivalOpenDetail,
+} from './lib/festivalOpenDetailCache';
 import {
   buildFestivalTimeTabs,
   compareFestivalsByOpenDate,
@@ -948,6 +953,18 @@ export default function KoreaFestivalHub() {
     socialPromoById,
   ]);
 
+  useEffect(() => {
+    const pt = festivalLngLat(selectedForSheet?.mapx, selectedForSheet?.mapy);
+    if (!pt) return undefined;
+    fetchNearbyTourAttractions({
+      lat: pt.lat,
+      lng: pt.lng,
+      radiusKm: 8,
+      limit: 8,
+    });
+    return undefined;
+  }, [selectedForSheet?.contentId, selectedForSheet?.mapx, selectedForSheet?.mapy]);
+
   const clearFestivalFromUrl = useCallback(() => {
     festivalDetailPushedRef.current = false;
     const next = searchParamsWithoutFestival(searchParams);
@@ -1006,6 +1023,24 @@ export default function KoreaFestivalHub() {
       return undefined;
     }
 
+    const inFestivalList = items.some(
+      (row) => String(row?.contentId || '') === festivalId,
+    );
+    if (!inFestivalList && deepLinkPhaseForId !== 'ok' && !socialPromoById.get(festivalId)) {
+      const cachedOpen = readFestivalOpenDetail(festivalId);
+      const built = cachedOpen ? festivalItemFromDetailWithAsOf(cachedOpen) : null;
+      if (built) {
+        setSocialPromoById((prev) => {
+          if (prev.get(festivalId)) return prev;
+          const next = new Map(prev);
+          next.set(festivalId, built);
+          socialPromoByIdRef.current = next;
+          return next;
+        });
+        return undefined;
+      }
+    }
+
     if (loading) {
       return undefined;
     }
@@ -1017,6 +1052,7 @@ export default function KoreaFestivalHub() {
       promoOutOfWindow &&
       deepLinkPhaseForId !== 'ok' &&
       !deepLinkDetail &&
+      !socialPromoById.get(festivalId) &&
       deepLinkInflightRef.current !== festivalId;
 
     if (
@@ -1050,6 +1086,7 @@ export default function KoreaFestivalHub() {
         setDeepLinkForId(requestedId);
         setDeepLinkDetail(detail);
         setDeepLinkPhase(detail ? 'ok' : 'miss');
+        if (detail) writeFestivalOpenDetail(requestedId, detail);
         const built = festivalItemFromDetailWithAsOf(detail);
         if (!built) return;
         setSocialPromoById((prev) => {

@@ -1,6 +1,11 @@
 import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 import { i18n } from '../i18n/config';
 import { normalizeAppLocale } from '../i18n/constants';
+import {
+  isPersistedTourApiAction,
+  readTourApiProxyCache,
+  writeTourApiProxyCache,
+} from './tourApiProxyCache';
 
 const DEFAULT_INVOKE_TIMEOUT_MS = 12_000;
 
@@ -51,10 +56,15 @@ export function withTourApiTimeout(promise, ms, label) {
 export async function invokeTourApiProxy(action, payload = {}, opts = {}) {
   const timeoutMs = opts.timeoutMs ?? DEFAULT_INVOKE_TIMEOUT_MS;
   const locale = resolveTourApiLocale(opts.locale ?? getTourApiLocale());
+  const cacheBody = { action, locale, ...payload };
+  if (!opts.force && isPersistedTourApiAction(action)) {
+    const hit = readTourApiProxyCache(cacheBody);
+    if (hit) return hit;
+  }
   try {
     const { data, error } = await withTourApiTimeout(
       invokeSupabaseFunctionDeduped('tourapi-proxy', {
-        body: { action, locale, ...payload },
+        body: cacheBody,
       }),
       timeoutMs,
       `tourapi:${action}`,
@@ -70,6 +80,7 @@ export async function invokeTourApiProxy(action, payload = {}, opts = {}) {
       );
       return opts.returnRawOnFail ? data ?? null : null;
     }
+    if (isPersistedTourApiAction(action)) writeTourApiProxyCache(cacheBody, data);
     return data;
   } catch (err) {
     console.warn(`[tourapi] ${action} failed:`, err?.message || err);
