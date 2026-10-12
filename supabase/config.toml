@@ -434,6 +434,12 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/gallery-moderate/index.ts"
 
+# Public POST like tourapi-proxy (--no-verify-jwt). Do not put the service key in logs.
+[functions.transport-proxy]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/transport-proxy/index.ts"
+
 # Staging XFF check only. Committed disabled so a bulk deploy skips it.
 # On staging, in a working copy only: set enabled = true, set secret
 # STAGING_IP_ECHO_ALLOW=1, deploy by name, run verify.sh, delete the function.
