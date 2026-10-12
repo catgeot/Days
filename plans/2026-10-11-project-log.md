@@ -38,6 +38,7 @@
 - **이어서** tip `6a1954d4` (client `9e2eadc8`). 주차 데이터가 없으면 «주차 안내는 [공식 홈페이지](url)에 있어요. 문의 전화번호»만 남기고 축제 페이지 문장을 뺀다. 숙소는 카드의 이름·거리 2~3곳과 `[숙소 카드]` 한 번, 목록이 없으면 20km 권역. 맛집은 거리 없는 곳을 빼고 거리 있는 다음 곳을 넣는다. `mooni_chat`은 v27과 이 브랜치 모두 기본 FAST `gemini-3.1-flash-lite`. Edge는 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 243 pass. 배포·머지 안 함.
 - **이어서** `축제 MOONi #3, 칩 말풍선` · tip `b13bc4f9` (client `5975fb91`). main `#431` `daf8eca4`와 같이 둔다. 칩 말풍선은 «볼거리·분위기 알려 줘»(영문 `Tell me the sights and atmosphere`)이고 지시문은 서버·복원 스레드의 프롬프트로만 남는다. 영어 첫 답은 English (한글), 종료와 다음 회가 근처보다 앞, 출처 없는 분위기 문장은 뺀다. 이번 Edge 파일은 `templates.js`. 주차·숙소·맛집 수정은 유지. `npm run test:health` 249 pass. 배포·머지 안 함.
 - **이어서** `축제 MOONi #4, 주차·첫답` · tip `99935127`. 주차 데이터는 요금·대수·가능·TourAPI 주차 필드만 인정하고 설명·장소의 «천지연 주차장»은 제외한다. 데이터가 없으면 찾아볼·알아볼·볼 수 있어요·see/find 축제 페이지 문장도 공식 안내로 바꾼다. 서귀포 506616 첫답은 홍보 구호를 빼고 «청소년 페스타 경연이 있어요»이며 «10/20~22, 11일 뒤 시작해요»다. Edge 파일은 `templates.js`와 서버 `mooniPromptBundleData.js`. `npm run test:health` 251 pass. 배포·머지 안 함.
+- **이어서** `축제 MOONi #5, 숙소 목록` · tip `abc109da`. staging v24(tip `c130c4a8`)에서 숙소 요청에 카드 이름이 없었다. 숙소 질문은 카드 fetch를 최대 3초 기다리고, 가까운 3곳의 이름·거리·유형을 힌트에 넣는다. 목록이 없으면 «권역에서 숙소를 찾을 수 있어요»를 뺀다. 근처 «용천사 함평»은 «용천사»다. 이번 Edge 파일은 없다. `npm run test:health` 251 pass. 배포·머지 안 함.
 
 ## 소셜 축제 입구 #1, 클라 pin·프로모·병합
 
@@ -184,3 +185,23 @@
 - **VERIFY** `npm run test:health` 249 pass · CI run `38185463753` success
 - **Preview** `https://days-git-cursor-cairo-facts-en-8e40-catgeots-projects.vercel.app/place/cairo?lang=en` · `/place/grand-egyptian-museum?lang=en`
 - **다음** `카이로 동선 #6, 영문 단위 확인`
+
+## 마산 주변 볼거리 #2, 제목 고정
+
+- **세션** `마산 주변 볼거리 #2, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `6b5eb2fc` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지 · 헤더 미변경
+- **원인** 합본 전에 팔경만 그려지고, 상세가 오면 주최·탭이 목록 위에 끼고 더 가까운 TourAPI 행이 맨 위에 들어왔다. WebKit은 스크롤 앵커가 없어 「주변 볼거리」가 내려갔다.
+- **조치** 상세·개요·탭·사진 줄 높이를 로딩 중에 잡아 둔다. 목록은 큐레이션+근처 합본이 된 뒤에만 그린다. 근처 조회는 상세와 병렬이다. 사진 탭은 한 번 열리면 갤러리가 한 장으로 줄어도 유지한다. 거리순·함평 팔경 소제목·장소 메모·중복 제거는 그대로다.
+- **WebKit 390** scrollTop 0. 제목 이동 마산 1px · 국향 0px · 강릉 1px. 첫 항목은 처음부터 임항선 그린웨이 290m · 보광사(함평) 1.4km · 강릉 오금집 320m. 합본까지 cold/warm ms: 마산 4222/4518 · 국향 5787/5825 · 강릉 3936/3613. 목록은 상세 스켈레톤이 있을 때 보인다.
+- **VERIFY** `npm run test:health` 249 pass · CI run `38187602895` success
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
+- **다음** `마산 주변 볼거리 #3, 피드백 반영`
+
+## 마산 주변 볼거리 #3, warm 캐시
+
+- **세션** `마산 주변 볼거리 #3, 피드백 반영` · branch `cursor/masan-nearby-8e40` · tip `2a8dbde0` · draft PR [#435](https://github.com/catgeot/Days/pull/435) · 병합 금지
+- **원인** 합본은 근처 bbox(Supabase)가 끝나야 그려지는데 그 응답은 캐시가 없다. 축제 목록 캐시는 sessionStorage라 새 탭 warm은 창 조회를 다시 한다. 국향(638576)은 목록 창 밖 프로모션이라 시트가 상세를 기다린다. 상세·프로모 펌프는 목록 페인트의 게이트가 아니다.
+- **조치** 근처 명소·축제 목록·창 밖 좌표를 sessionStorage와 localStorage에 둔다. 같은 탭에서 다시 열면 네트워크 없이 합본을 그린다. 상세 본문은 그대로 다시 받는다.
+- **WebKit 390** 같은 하네스·같은 런, 같은 탭 warm. 합본 ms PR cold/warm · main cold/warm: 마산 3847/1393 · 3800/2246. 국향 5625/1335 · 5365/4539. 강릉 3601/1491 · 4665/2780. warm은 근처 재요청 0. 제목 이동 마산 1px · 국향 1px · 강릉 0–1px. 첫 항목은 임항선 그린웨이 · 보광사(함평) · 강릉 오금집.
+- **VERIFY** `npm run test:health` 251 pass · CI run `38189491894` success
+- **Preview** `https://days-git-cursor-masan-nearby-8e40-catgeots-projects.vercel.app/korea?festival=637693` · `638576` · `2930716`
+- **다음** `마산 주변 볼거리 #4, 피드백 반영`
