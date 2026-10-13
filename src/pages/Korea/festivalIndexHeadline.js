@@ -48,6 +48,13 @@ export function festivalIndexTimePhrase(locale, timeTab, timeTabs, t) {
   return label;
 }
 
+/** EN tail after time phrase — omit when tab phrase already ends with «festivals». */
+export function enFestivalListHeadlineTail(timeTab, timeLabel) {
+  const phrase = enFestivalListTimePhrase(timeTab, timeLabel);
+  if (/\bfestivals\s*$/i.test(phrase.trim())) return '';
+  return ' festival list';
+}
+
 /**
  * @param {{
  *   locale?: string,
@@ -68,8 +75,9 @@ export function formatFestivalIndexHeadlinePlain({
 }) {
   if (isEnLocale(locale)) {
     const core = `${enFestivalListTimePhrase(timeTab, time)}${tasteSuffix}`;
-    if (place) return `${place} · ${core} festival list`;
-    return `${core} festival list`;
+    const tail = enFestivalListHeadlineTail(timeTab, time);
+    if (place) return `${place} · ${core}${tail}`;
+    return `${core}${tail}`;
   }
   if (place) {
     return t('korea.festival.headlineWithPlace', { place, time, tasteSuffix });
@@ -97,15 +105,16 @@ export function buildFestivalIndexHeadlineContent({
 }) {
   if (isEnLocale(locale)) {
     const core = `${enFestivalListTimePhrase(timeTab, time)}${tasteSuffix}`;
+    const tail = enFestivalListHeadlineTail(timeTab, time);
     if (place) {
       return {
         kind: 'en',
         place,
         nowrap: core,
-        tail: ' festival list',
+        tail,
       };
     }
-    return { kind: 'en', nowrap: core, tail: ' festival list' };
+    return { kind: 'en', nowrap: core, tail };
   }
   return {
     kind: 'text',

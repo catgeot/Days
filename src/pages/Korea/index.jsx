@@ -199,19 +199,16 @@ function renderIndexListHeadline(headline) {
     if (headline.place) {
       return (
         <>
-          {headline.place} ·{' '}
-          <span className="whitespace-nowrap">
-            {headline.nowrap}
-            {headline.tail}
-          </span>
+          {headline.place} · {headline.nowrap}
+          {headline.tail}
         </>
       );
     }
     return (
-      <span className="whitespace-nowrap">
+      <>
         {headline.nowrap}
         {headline.tail}
-      </span>
+      </>
     );
   }
   return headline.text;
@@ -2788,31 +2785,20 @@ export default function KoreaFestivalHub() {
             }`}
           >
             <div
-              className={`shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5 ${
+              className={`shrink-0 flex-col gap-1.5 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5 ${
                 mapSplitActive ? 'hidden lg:flex' : mapOpen ? 'hidden' : 'flex'
               }`}
+              data-festival-list-heading=""
             >
-              <div className="min-w-0">
-                <h2 className="text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
+              <div className="flex min-w-0 items-start justify-between gap-2">
+                <h2 className="min-w-0 flex-1 text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
                   {personalTab != null
                     ? personalTab === 'favorites'
                       ? t('korea.common.favorites')
                       : t('korea.common.viewed')
                     : renderIndexListHeadline(indexTitle)}
                 </h2>
-                <p className="text-[11px] text-stone-500 leading-snug">
-                  {personalTab != null
-                    ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
-                    : panelListMetaSegments
-                      ? (
-                          <FestivalPanelListMetaLine
-                            segments={panelListMetaSegments}
-                          />
-                        )
-                      : panelListMetaText}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-1.5">
+                <div className="flex shrink-0 items-center gap-1.5">
                 {personalTab != null ? (
                   <button
                     type="button"
@@ -2889,6 +2875,21 @@ export default function KoreaFestivalHub() {
                   {mapOpen ? t('korea.common.list') : t('korea.common.map')}
                 </button>
               </div>
+              </div>
+              <p
+                className="w-full min-w-0 text-[11px] text-stone-500 leading-snug"
+                data-festival-list-meta=""
+              >
+                {personalTab != null
+                  ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
+                  : panelListMetaSegments
+                    ? (
+                        <FestivalPanelListMetaLine
+                          segments={panelListMetaSegments}
+                        />
+                      )
+                    : panelListMetaText}
+              </p>
             </div>
             {showDefaultLocHint && !mapOpen && (
               <div className="shrink-0 border-b border-amber-100 bg-amber-50/90 px-4 py-2.5">
