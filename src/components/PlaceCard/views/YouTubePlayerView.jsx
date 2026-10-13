@@ -432,7 +432,7 @@ const YouTubePlayerView = forwardRef(({
 
       {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreLimitCode || loadMoreNoNew) && (
         <div
-          className={`absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
+          className={`hidden md:block absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
             isPlaying
               ? 'bottom-3 md:bottom-4'
               : 'bottom-28 md:bottom-[13.5rem]'
@@ -468,12 +468,13 @@ const YouTubePlayerView = forwardRef(({
         <div className={`md:hidden absolute bottom-32 right-4 z-[210] flex flex-col gap-3 transition-all duration-300
             ${(showUI || !isPlaying || isPaused) ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}>
 
-            {!showEmpty && !showFetchError && !showNoPlayable && videoList.length > 1 && (
+            {!showEmpty && !showFetchError && !showNoPlayable && videoList.length > 0 && (
               <button
+                  type="button"
                   onClick={(e) => { e.stopPropagation(); setIsMobileListOpen(true); }}
-                  className="p-4 bg-white/10 text-white rounded-full shadow-2xl backdrop-blur-md border border-white/20 active:scale-90 transition-all"
+                  className="px-4 py-2.5 bg-white/10 text-white text-sm font-semibold rounded-full shadow-2xl backdrop-blur-md border border-white/20 active:scale-95 transition-all"
               >
-                  <List size={24} strokeWidth={2.5} />
+                  {t('place.video.openPlaylist')}
               </button>
             )}
 
@@ -490,7 +491,7 @@ const YouTubePlayerView = forwardRef(({
         </div>
       )}
 
-      {isMobileListOpen && videoList.length > 1 && (
+      {isMobileListOpen && videoList.length > 0 && (
         <div
             className="md:hidden fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in"
             onClick={() => setIsMobileListOpen(false)}
@@ -535,6 +536,34 @@ const YouTubePlayerView = forwardRef(({
                         </button>
                     ))}
                 </div>
+
+                {!isLoading && (canLoadMore || loadMoreError || loadMoreLimitCode || loadMoreNoNew) && (
+                  <div className="shrink-0 p-4 pt-3 border-t border-white/10 bg-black/50 space-y-2">
+                    {canLoadMore && (
+                      <button
+                        type="button"
+                        disabled={isLoadingMore}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onLoadMore?.();
+                        }}
+                        className="w-full px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold disabled:opacity-50 transition-all"
+                      >
+                        {isLoadingMore ? t('place.video.loading') : t('place.video.loadMore')}
+                      </button>
+                    )}
+                    {(loadMoreLimitCode || loadMoreError) && (
+                      <p className="text-center text-xs text-red-400/90">
+                        {limitMessage(loadMoreLimitCode)}
+                      </p>
+                    )}
+                    {loadMoreNoNew && !loadMoreError && (
+                      <p className="text-center text-xs text-white/50">
+                        {t('place.video.loadMoreNoNew')}
+                      </p>
+                    )}
+                  </div>
+                )}
             </div>
         </div>
       )}

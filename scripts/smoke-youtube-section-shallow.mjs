@@ -88,13 +88,35 @@ async function runViewport(browserType, name, viewport) {
   const shot = path.join(OUT_DIR, `${name}-paris-video.png`);
   await page.screenshot({ path: shot, fullPage: false });
 
+  const shots = [shot];
+  if (name === 'webkit-390') {
+    const closed = path.join(OUT_DIR, `${name}-paris-video-closed.png`);
+    await page.screenshot({ path: closed, fullPage: false });
+    shots.push(closed);
+
+    await page.getByRole('button', { name: /영상 더 보기|More videos/i }).click({ timeout: 15000 });
+    await page.waitForTimeout(500);
+    const open = path.join(OUT_DIR, `${name}-paris-video-playlist-open.png`);
+    await page.screenshot({ path: open, fullPage: false });
+    shots.push(open);
+
+    const seeMore = page.getByRole('button', { name: /^더 보기$|^See more$/i });
+    if (await seeMore.isVisible().catch(() => false)) {
+      await seeMore.click({ timeout: 10000 });
+      await page.waitForTimeout(800);
+    }
+    const afterMore = path.join(OUT_DIR, `${name}-paris-video-after-see-more.png`);
+    await page.screenshot({ path: afterMore, fullPage: false });
+    shots.push(afterMore);
+  }
+
   await page.getByRole('button', { name: /GALLERY|갤러리/i }).first().click({ timeout: 15000 }).catch(() => {});
   await page.waitForTimeout(500);
   await page.getByRole('button', { name: /VIDEO|영상/i }).first().click({ timeout: 15000 }).catch(() => {});
   await page.waitForTimeout(500);
 
   await browser.close();
-  return { errors, shot };
+  return { errors, shot, shots };
 }
 
 async function runErrorState(browserType, name, viewport) {

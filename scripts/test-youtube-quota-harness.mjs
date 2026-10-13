@@ -41,6 +41,18 @@ async function withGuardedPage(context) {
   return page;
 }
 
+async function clickLoadMore(page) {
+  const seeMore = () => page.getByRole('button', { name: /^더 보기$|^See more$/i });
+  if (!(await seeMore().first().isVisible().catch(() => false))) {
+    const openPlaylist = page.getByRole('button', { name: /영상 더 보기|More videos/i });
+    if (await openPlaylist.isVisible().catch(() => false)) {
+      await openPlaylist.click({ timeout: 10000 });
+      await page.waitForTimeout(300);
+    }
+  }
+  await seeMore().first().click({ timeout: 10000 });
+}
+
 const edgeSrc = readFileSync('supabase/functions/fetch-place-videos/index.ts', 'utf8');
 assert(!edgeSrc.includes('maxFollowPages'), 'edge: no follow-page loop');
 assert(!edgeSrc.includes('mayFollowPages'), 'edge: no mayFollowPages');
@@ -150,12 +162,9 @@ async function loadMoreSessionCap() {
   });
   await page.goto(`${base}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.waitForTimeout(1500);
-  const btn = page.getByRole('button', { name: /영상 더 보기|More videos/i });
   for (let c = 0; c < 5; c += 1) {
-    if (await btn.isVisible().catch(() => false)) {
-      await btn.click({ timeout: 5000 }).catch(() => {});
-      await page.waitForTimeout(400);
-    }
+    await clickLoadMore(page).catch(() => {});
+    await page.waitForTimeout(400);
   }
   await browser.close();
   return edgeCalls;
@@ -208,7 +217,7 @@ async function loadMoreNoNewUi() {
   });
   await page.goto(`${base}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.waitForTimeout(1500);
-  await page.getByRole('button', { name: /영상 더 보기|More videos/i }).click({ timeout: 10000 });
+  await clickLoadMore(page);
   await page.waitForTimeout(800);
   const noNew = await page.getByText('더 볼 영상이 없어요.').isVisible();
   await browser.close();
@@ -249,12 +258,9 @@ async function loadMoreFailureMessageAfterCap() {
   });
   await page.goto(`${base}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.waitForTimeout(1500);
-  const btn = page.getByRole('button', { name: /영상 더 보기|More videos/i });
   for (let c = 0; c < 3; c += 1) {
-    if (await btn.isVisible().catch(() => false)) {
-      await btn.click({ timeout: 5000 }).catch(() => {});
-      await page.waitForTimeout(500);
-    }
+    await clickLoadMore(page).catch(() => {});
+    await page.waitForTimeout(500);
   }
   const visible = await page.getByText(/추가 영상을 불러오지 못했어요/).isVisible();
   await browser.close();
