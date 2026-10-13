@@ -6,7 +6,11 @@ import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
-import { FestivalPhotoFrame } from '../../src/pages/Korea/festivalPhotoFrame.js';
+import {
+  FESTIVAL_PHOTO_LOAD_TIMEOUT_MS,
+  FestivalPhotoFrame,
+  isFestivalPhotoDecoded,
+} from '../../src/pages/Korea/festivalPhotoFrame.js';
 import { FestivalHeroPhoto } from '../../src/pages/Korea/festivalHeroPhoto.js';
 import {
   FestivalHeroThumbStrip,
@@ -63,6 +67,80 @@ function mount(props) {
     root.render(React.createElement(FestivalPhotoFrame, props));
   });
 }
+
+test('isFestivalPhotoDecoded treats cached complete images as loaded', () => {
+  const img = { complete: true, naturalWidth: 120 };
+  assert.equal(isFestivalPhotoDecoded(img), true);
+  assert.equal(isFestivalPhotoDecoded({ complete: true, naturalWidth: 0 }), false);
+  assert.equal(isFestivalPhotoDecoded({ complete: false, naturalWidth: 0 }), false);
+});
+
+test('cached complete image is treated as loaded on layout sync', async () => {
+  let loaded = false;
+  const props = {
+    src: 'https://example.test/cached.jpg',
+    alt: '',
+    onLoaded: () => {
+      loaded = true;
+    },
+    fallback: React.createElement('div', { 'data-festival-photo-fallback': '' }),
+  };
+  await mount(props);
+
+  const img = container.querySelector('img[data-festival-photo]');
+  assert.ok(img);
+  Object.defineProperty(img, 'complete', { value: true, configurable: true });
+  Object.defineProperty(img, 'naturalWidth', { value: 200, configurable: true });
+  await act(async () => {
+    root.render(React.createElement(FestivalPhotoFrame, props));
+  });
+  assert.equal(loaded, true);
+  assert.ok(container.querySelector('img[data-festival-photo]'));
+});
+
+test('load then load-timeout does not swap to fallback', async () => {
+  const originalSetTimeout = globalThis.setTimeout;
+  const originalClearTimeout = globalThis.clearTimeout;
+  const timers = [];
+  globalThis.setTimeout = (fn, ms) => {
+    const id = originalSetTimeout(fn, ms);
+    timers.push({ id, ms, fn });
+    return id;
+  };
+  globalThis.clearTimeout = originalClearTimeout;
+
+  try {
+    await mount({
+      src: 'https://example.test/slow.jpg',
+      alt: '',
+      fallback: React.createElement('div', { 'data-festival-photo-fallback': '' }),
+    });
+
+    const img = container.querySelector('img[data-festival-photo]');
+    assert.ok(img);
+    Object.defineProperty(img, 'complete', { value: true, configurable: true });
+    Object.defineProperty(img, 'naturalWidth', { value: 180, configurable: true });
+    await act(async () => {
+      img.dispatchEvent(new window.Event('load'));
+    });
+    assert.ok(container.querySelector('img[data-festival-photo]'));
+
+    const timeoutTimer = timers.find((t) => t.ms === FESTIVAL_PHOTO_LOAD_TIMEOUT_MS);
+    assert.ok(timeoutTimer, 'expected festival photo load timeout to be scheduled');
+    await act(async () => {
+      timeoutTimer.fn();
+    });
+
+    assert.ok(
+      container.querySelector('img[data-festival-photo]'),
+      'loaded photo must stay after timeout callback',
+    );
+    assert.equal(container.querySelector('[data-festival-photo-fallback]'), null);
+  } finally {
+    globalThis.setTimeout = originalSetTimeout;
+    globalThis.clearTimeout = originalClearTimeout;
+  }
+});
 
 test('cached zero-width festival photo swaps to fallback at mount', async () => {
   await mount({

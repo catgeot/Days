@@ -1,8 +1,19 @@
 import { createElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+/** Generous load window before pin/placeholder fallback (slow mobile Safari + VisitKorea CDN). */
+export const FESTIVAL_PHOTO_LOAD_TIMEOUT_MS = 15_000;
+
+/**
+ * @param {HTMLImageElement | null | undefined} img
+ */
+export function isFestivalPhotoDecoded(img) {
+  return Boolean(img && img.complete && img.naturalWidth > 0);
+}
+
 /**
  * Festival photo that never leaves the browser broken-image glyph on screen.
  * A failed or empty src renders `fallback` (empty slot or neutral placeholder).
+ * Once decoded (naturalWidth>0), the image is never swapped for fallback.
  * @param {{
  *   src?: string,
  *   alt?: string,
@@ -36,34 +47,75 @@ export function FestivalPhotoFrame({
   onLoaded,
   onFailed,
 }) {
-  const [failed, setFailed] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
+  const loadedRef = useRef(false);
   const imgRef = useRef(null);
+  const timeoutRef = useRef(null);
+  const onLoadedRef = useRef(onLoaded);
+  const onFailedRef = useRef(onFailed);
+  onLoadedRef.current = onLoaded;
+  onFailedRef.current = onFailed;
 
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
-
-  const markBroken = (el) => {
-    if (el?.style) el.style.display = 'none';
-    if (onFailed) onFailed();
-    setFailed(true);
+  const clearLoadTimeout = () => {
+    if (timeoutRef.current != null) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   };
 
-  useLayoutEffect(() => {
-    if (!src || failed) return;
-    const img = imgRef.current;
-    if (!img?.complete) return;
-    if (img.naturalWidth > 0) {
-      if (onLoaded) onLoaded();
+  const markLoaded = (el) => {
+    if (loadedRef.current) return;
+    if (!isFestivalPhotoDecoded(el)) return;
+    loadedRef.current = true;
+    clearLoadTimeout();
+    setUseFallback(false);
+    if (onLoadedRef.current) onLoadedRef.current();
+  };
+
+  const markBroken = (el) => {
+    if (loadedRef.current) return;
+    if (el?.style) el.style.display = 'none';
+    clearLoadTimeout();
+    setUseFallback(true);
+    if (onFailedRef.current) onFailedRef.current();
+  };
+
+  const syncFromImg = (img) => {
+    if (!img || loadedRef.current) return;
+    if (isFestivalPhotoDecoded(img)) {
+      markLoaded(img);
       return;
     }
-    markBroken(img);
-  }, [src, failed]);
+    if (img.complete && img.naturalWidth === 0) markBroken(img);
+  };
 
-  if (!src || failed) return fallback;
+  useEffect(() => {
+    loadedRef.current = false;
+    setUseFallback(false);
+    clearLoadTimeout();
+    if (!src) return undefined;
+    timeoutRef.current = setTimeout(() => {
+      if (!loadedRef.current) {
+        setUseFallback(true);
+        if (onFailedRef.current) onFailedRef.current();
+      }
+    }, FESTIVAL_PHOTO_LOAD_TIMEOUT_MS);
+    return () => clearLoadTimeout();
+  }, [src]);
+
+  useLayoutEffect(() => {
+    if (!src || useFallback) return;
+    syncFromImg(imgRef.current);
+  }, [src, useFallback]);
+
+  if (!src) return fallback;
+  if (useFallback && !loadedRef.current) return fallback;
 
   return createElement('img', {
-    ref: imgRef,
+    ref: (el) => {
+      imgRef.current = el;
+      syncFromImg(el);
+    },
     src,
     alt,
     className,
@@ -76,15 +128,17 @@ export function FestivalPhotoFrame({
     translate,
     style,
     'data-festival-photo': '',
+    'data-festival-photo-loaded': loadedRef.current ? 'true' : undefined,
     onLoad(event) {
       const el = event?.currentTarget;
-      if (el?.naturalWidth > 0) {
-        if (onLoaded) onLoaded();
+      if (isFestivalPhotoDecoded(el)) {
+        markLoaded(el);
         return;
       }
       if (el?.complete && el.naturalWidth === 0) markBroken(el);
     },
     onError(event) {
+      if (loadedRef.current) return;
       markBroken(event?.currentTarget);
     },
   });

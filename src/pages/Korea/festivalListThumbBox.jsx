@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { MapPin } from 'lucide-react';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { festivalItemThumbSrc } from './festivalListThumb';
@@ -25,20 +25,12 @@ export function FestivalListThumbBox({ item, isEnglish = false, className = '' }
   const koText = koreanApiTextProps(isEnglish);
   const src = festivalItemThumbSrc(item);
   const canTryImage = Boolean(src) && hasFestivalThumbnail(item);
-  const [giveUp, setGiveUp] = useState(false);
-
-  useEffect(() => {
-    setGiveUp(false);
-    if (!canTryImage) return undefined;
-    const timer = window.setTimeout(() => setGiveUp(true), 5000);
-    return () => window.clearTimeout(timer);
-  }, [src, item?.contentId, canTryImage]);
 
   return (
     <div
       className={`h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-stone-100 ${className}`.trim()}
     >
-      {canTryImage && !giveUp ? (
+      {canTryImage ? (
         <FestivalPhotoFrame
           src={src}
           alt=""
