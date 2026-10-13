@@ -14,12 +14,20 @@ const OUT_DIR =
 
 const LOADING_DETAIL_RE = /상세 불러오는 중|Loading detail/i;
 
-async function openKoreaFestivalsFromHome(page) {
+async function openKoreaFestivalsFromHome(page, shotPrefix = '') {
   await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 120_000 });
   await expect(page.locator('#root')).toBeVisible({ timeout: 90_000 });
-  const koreaLink = page.locator('a[href*="/korea"]').first();
-  await expect(koreaLink).toBeVisible({ timeout: 90_000 });
-  await koreaLink.click();
+  await expect(page.locator('.mapboxgl-map, .mapboxgl-canvas').first()).toBeVisible({
+    timeout: 120_000,
+  });
+  if (shotPrefix) {
+    await page.screenshot({
+      path: join(OUT_DIR, `${shotPrefix}-00-home.png`),
+      fullPage: false,
+    });
+  }
+  const koreaHref = page.locator('a[href="/korea"], a[href="/korea/"]').first();
+  await koreaHref.evaluate((el) => el.click());
   await expect(
     page.getByRole('heading', { name: /한국의 축제|Korea festivals/i }),
   ).toBeVisible({ timeout: 120_000 });
@@ -75,7 +83,7 @@ test.describe('MOONi access — Vercel preview live (WebKit 390)', () => {
     test(`${flow.slug} — origin dock`, async ({ page }) => {
       test.setTimeout(360_000);
       await enableMooniE2eLoggedIn(page);
-      await openKoreaFestivalsFromHome(page);
+      await openKoreaFestivalsFromHome(page, `preview-${flow.slug}-${flow.festivalId}`);
       await openFestivalPromoCard(page, flow.festivalId);
       await openMooni(page);
       await page.getByRole('button', { name: /🚆\s*가는 법/ }).first().click({ force: true });
@@ -92,7 +100,7 @@ test.describe('MOONi access — Vercel preview live (WebKit 390)', () => {
       test(`${flow.slug} — ${originId} reply + booking footer`, async ({ page }) => {
         test.setTimeout(420_000);
         await enableMooniE2eLoggedIn(page);
-        await openKoreaFestivalsFromHome(page);
+        await openKoreaFestivalsFromHome(page, `preview-${flow.slug}-${flow.festivalId}`);
         await openFestivalPromoCard(page, flow.festivalId);
         await openMooni(page);
         await page.getByRole('button', { name: /🚆\s*가는 법/ }).first().click({ force: true });
