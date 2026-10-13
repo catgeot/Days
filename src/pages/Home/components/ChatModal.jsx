@@ -187,6 +187,9 @@ function festivalReplyOptions(festivalContext, extra = {}) {
     sceneOverview: festivalContext?.sceneOverview,
     feeText: festivalContext?.feeText,
     timeText: festivalContext?.timeText,
+    eventStartDate: festivalContext?.eventStartDate,
+    eventEndDate: festivalContext?.eventEndDate,
+    dateLabel: festivalContext?.dateLabel,
     ...extra,
   };
 }

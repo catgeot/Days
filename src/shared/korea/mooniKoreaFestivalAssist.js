@@ -484,7 +484,9 @@ export function stripDisallowedFestivalLinks(text, options = {}) {
       }
       if (isAllowedFestivalMarkdownUrl(clean, homepage)) return stash(full);
       const linked = linkedOfficial(clean);
-      return linked ? stash(linked) : '';
+      if (linked) return stash(linked);
+      const plain = String(label || '').trim();
+      return plain || '';
     },
   );
   next = next.replace(
@@ -506,19 +508,25 @@ export function stripDisallowedFestivalLinks(text, options = {}) {
     .trim());
 }
 
-/** Dangling 과/와/및 and commas after a markdown link was stripped or deduped. */
+const LINK_GLUE_PARTICLES = '(?:과|와|및|이나|나|또는| 또는)';
+
+/** Dangling 조사·접속 after a markdown link was stripped, deduped, or plain-text substituted. */
 export function cleanOrphanLinkConjunctions(text) {
   let out = String(text || '');
-  for (let pass = 0; pass < 5; pass += 1) {
+  for (let pass = 0; pass < 6; pass += 1) {
     const prev = out;
     out = out
-      .replace(/\]\s*(?:과|와|및)\s*,\s*(?=\[)/g, '] ')
-      .replace(/\]\s*(?:과|와|및)\s*[,，]?\s*(?=[,，.!?。\s]|$)/g, '] ')
-      .replace(/\s*(?:과|와|및)\s*[,，](?=\s*[,，.!?。]|\s*$)/g, '')
-      .replace(/[,，]\s*(?:과|와|및)(?=\s*[,，.!?。]|\s*$)/g, '')
-      .replace(/(?:^|[\s「『(「])(?:과|와|및)\s*[,，]/gm, (lead) => lead || '')
-      .replace(/^(?:과|와|및)\s*[,，]?\s*/gm, '')
-      .replace(/\s+(?:과|와|및)\s*$/gm, '')
+      .replace(new RegExp(`\\]\\s*${LINK_GLUE_PARTICLES}\\s*,\\s*(?=\\[)`, 'g'), '] ')
+      .replace(new RegExp(`\\]\\s*${LINK_GLUE_PARTICLES}\\s*[,，]?\\s*(?=[,，.!?。\\s]|$)`, 'g'), '] ')
+      .replace(new RegExp(`\\]\\s*${LINK_GLUE_PARTICLES}\\s+(?=에서\\b)`, 'g'), ']')
+      .replace(new RegExp(`(?:^|[\\s「『(「])${LINK_GLUE_PARTICLES}\\s+(?=에서\\b)`, 'gm'), (lead) => lead || '')
+      .replace(new RegExp(`${LINK_GLUE_PARTICLES}\\s+(?=에서\\b)`, 'g'), '')
+      .replace(/\s+(?=에서\b)/g, '')
+      .replace(new RegExp(`\\s*${LINK_GLUE_PARTICLES}\\s*[,，](?=\\s*[,，.!?。]|\\s*$)`, 'g'), '')
+      .replace(new RegExp(`[,，]\\s*${LINK_GLUE_PARTICLES}(?=\\s*[,，.!?。]|\\s*$)`, 'g'), '')
+      .replace(new RegExp(`(?:^|[\\s「『(「])${LINK_GLUE_PARTICLES}\\s*[,，]`, 'gm'), (lead) => lead || '')
+      .replace(new RegExp(`^${LINK_GLUE_PARTICLES}\\s*[,，]?\\s*`, 'gm'), '')
+      .replace(new RegExp(`\\s+${LINK_GLUE_PARTICLES}\\s*$`, 'gm'), '')
       .replace(/[,，]\s*[,，]+/g, ',')
       .replace(/\s+([,.!?。])/g, '$1')
       .replace(/[ \t]{2,}/g, ' ');
@@ -1300,11 +1308,26 @@ const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|숙소가\s*자�
 const MOONI_GUIDE_FILLER_RE = /안내해\s*드릴게요|안내해\s*드리겠습니다|도와\s*드릴게요/;
 
 function stripMooniGuideFiller(text) {
-  return String(text || '')
-    .replace(MOONI_GUIDE_FILLER_RE, '')
-    .replace(/[ \t]{2,}/g, ' ')
-    .replace(/\s+([.!?。])/g, '$1')
-    .trim();
+  return filterPreservingBreaks(text, (part) => MOONI_GUIDE_FILLER_RE.test(part));
+}
+
+function ensureFestivalAccessPeriodLine(text, options = {}) {
+  if (String(options.chipId || '') !== 'festival_access') return String(text || '').trim();
+  const short = briefFestivalDate(
+    String(options.eventStartDate || '').trim(),
+    String(options.eventEndDate || '').trim(),
+  ) || String(options.dateLabel || '').trim();
+  if (!short || !/\d{1,2}\/\d{1,2}/.test(short)) return String(text || '').trim();
+  let body = String(text || '').trim();
+  if (body.includes(short)) return body;
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const line = en ? `The festival runs ${short}.` : `행사 기간은 ${short}이에요.`;
+  const footerRe = /\n\n(?:열차·버스 시각은|Check train and bus schedules)/;
+  const footerIdx = body.search(footerRe);
+  if (footerIdx > 0) {
+    return `${body.slice(0, footerIdx).trim()}\n\n${line}${body.slice(footerIdx)}`.trim();
+  }
+  return `${body}\n\n${line}`.trim();
 }
 
 function dropFestivalFillerSentences(text) {
@@ -1413,7 +1436,9 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = polishWaAndGeurigoList(text);
     text = rewriteFoodEveningJoin(text);
     if (options.evening === false) text = stripUnverifiedEveningClause(text);
-    text = stripTrailingFestivalDateSentence(text);
+    if (String(options.chipId || '') !== 'festival_access') {
+      text = stripTrailingFestivalDateSentence(text);
+    }
     text = dropDateLinkFragmentSentences(text);
     text = dedupeStaySearchLinks(text);
     text = stripNextActionLabel(text);
@@ -1434,6 +1459,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = stripMooniGuideFiller(text);
   }
   if (String(options.chipId || '') === 'festival_access') {
+    text = ensureFestivalAccessPeriodLine(text, options);
     text = appendFestivalAccessBookingLinks(text, options.locale);
   }
   return text;

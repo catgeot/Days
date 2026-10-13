@@ -1070,7 +1070,7 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   );
 
   assert.equal(expandCompactDates('기간은 20261015부터예요.', 'en'), '기간은 October 15, 2026부터예요.');
-  assert.equal(stripDisallowedFestivalLinks('[이동](https://www.gateo.kr/)'), '');
+  assert.equal(stripDisallowedFestivalLinks('[이동](https://www.gateo.kr/)'), '이동');
   assert.match(
     stripDisallowedFestivalLinks('[숙소 카드](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)'),
     /festival-lodging/,
@@ -2812,10 +2812,25 @@ test('festival page link appears once and the closing link stays', () => {
     '[국향대전](https://www.gateo.kr/korea/?festival=638576) 확인',
   );
   assert.match(rewriteFestivalFormalEndings('열차에 탑승하십시오.'), /탑승해요/);
-  assert.doesNotMatch(
-    polishFestivalModelReply('KTX로 갑니다. 안내해 드릴게요.', { chipId: 'festival_access', locale: 'ko' }),
-    /안내해\s*드릴게요/,
+  const srtStrip = stripDisallowedFestivalLinks(
+    '[코레일](https://www.letskorail.com/)이나 [SRT](https://example.com/srt)에서 확인하세요',
   );
+  assert.match(srtStrip, /letskorail\.com/);
+  assert.doesNotMatch(srtStrip, /이나\s+에서/);
+  assert.match(srtStrip, /SRT에서 확인하세요|에서 확인하세요/);
+  const fillerOnly = polishFestivalModelReply('허심청브로이 옥토버페스트까지 가는 길을 안내해 드릴게요.', {
+    chipId: 'festival_access',
+    locale: 'ko',
+  });
+  assert.doesNotMatch(fillerOnly, /가는 길을/);
+  assert.doesNotMatch(fillerOnly, /안내해\s*드릴게요/);
+  const accessPeriod = polishFestivalModelReply('서울역에서 KTX로 출발해요.', {
+    chipId: 'festival_access',
+    locale: 'ko',
+    eventStartDate: '20261010',
+    eventEndDate: '20261012',
+  });
+  assert.match(accessPeriod, /행사 기간은 10\/10~12이에요/);
   const once = dedupeFestivalPageLinks(doubled);
   assert.equal((once.match(/festival=2930716/g) || []).length, 1);
   assert.match(once, /^자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요\.$/);
