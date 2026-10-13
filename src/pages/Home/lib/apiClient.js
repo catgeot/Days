@@ -9,7 +9,10 @@ import {
   classifyGeminiProxyFailure,
   GeminiProxyError,
 } from './geminiProxyError';
-import { parseGeminiProxySuccess } from './geminiProxyResult.js';
+import {
+  invokeGeminiProxyWithSession,
+  resolveGeminiProxyAccessToken,
+} from './geminiProxyInvoke.js';
 
 async function readInvokeFailure(error) {
   const ctx = error && typeof error === 'object' ? error.context : null;
@@ -31,18 +34,30 @@ async function readInvokeFailure(error) {
 export const apiClient = {
   invokeGeminiTask: async (task, params) => {
     try {
-      const { data, error } = await supabase.functions.invoke('gemini-proxy', {
-        body: { task, params },
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const accessToken = await resolveGeminiProxyAccessToken(supabase);
+      return await invokeGeminiProxyWithSession({
+        anonKey,
+        accessToken,
+        task,
+        params,
+        invoke: async ({ authorization }) => {
+          const { data, error } = await supabase.functions.invoke('gemini-proxy', {
+            body: { task, params },
+            headers: { Authorization: authorization },
+          });
+          if (error || !data?.success) {
+            const extra = error ? await readInvokeFailure(error) : { httpStatus: null, data: null };
+            return {
+              ok: false,
+              status: extra.httpStatus,
+              data: data ?? extra.data,
+              error,
+            };
+          }
+          return { ok: true, status: 200, data };
+        },
       });
-      if (error || !data?.success) {
-        const extra = error ? await readInvokeFailure(error) : { httpStatus: null, data: null };
-        throw new GeminiProxyError(classifyGeminiProxyFailure({
-          error,
-          data: data ?? extra.data,
-          httpStatus: extra.httpStatus,
-        }));
-      }
-      return parseGeminiProxySuccess(data);
     } catch (error) {
       console.error('[API Proxy] Fetch Error:', error);
       if (error instanceof GeminiProxyError) throw error;

@@ -74,6 +74,18 @@ export function shouldHydrateTripMessages({
   );
 }
 
+/**
+ * A turn in flight already belongs to activeChatId. Remember it so the
+ * saved_trips echo (often user-only) is not treated as a different chat
+ * and does not wipe the answer that just arrived.
+ */
+export function rememberInFlightChatId(lastSyncedChatId, activeChatId, isLoading) {
+  if (isLoading && activeChatId != null && String(activeChatId) !== '') {
+    return String(activeChatId);
+  }
+  return lastSyncedChatId ?? null;
+}
+
 export function shouldHydrateDraftMessages({ localMessageCount, isLoading }) {
   if (isLoading) return false;
   return (Number(localMessageCount) || 0) === 0;
