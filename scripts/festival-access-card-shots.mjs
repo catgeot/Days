@@ -101,16 +101,36 @@ async function openFestival(page, target) {
   await page.getByRole('button', { name: '채팅 닫기' }).waitFor({ timeout: 20_000 });
   await page.getByTestId('mooni-festival-opening').waitFor({ timeout: 20_000 });
   await shot(page, `${target.id}-03-mooni`);
-  await page.getByRole('button', { name: '🚆 가는 법' }).click();
+  if (target.id === 'hampyeong') {
+    const box = page.locator('input[enterkeyhint="send"]:visible');
+    await box.waitFor({ timeout: 15_000 });
+    await box.fill('용산역에서 어떻게 가요? 시각과 요금도 알려줘');
+    await box.press('Enter');
+    await page.getByText(/출발\s*·\s*용산/).waitFor({ timeout: 15_000 });
+  } else {
+    await page.getByRole('button', { name: '🚆 가는 법' }).click();
+  }
   const answer = page.getByTestId('mooni-model-reply').last();
-  await answer.waitFor({ timeout: 25_000 });
+  await answer.waitFor({ timeout: 20_000 });
   const answerText = (await answer.innerText()).replace(/\s+/g, ' ');
   console.log(`${target.id} mooni ${answerText.slice(0, 400)}`);
   const clockBits = clock.split('~');
   if (!answerText.includes(marks.fare) || clockBits.some((bit) => bit && !answerText.includes(bit))) {
     throw new Error(`${target.id} MOONi answer missed ${marks.clock} / ${marks.fare}`);
   }
-  await answer.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+  if (clock.includes('~') && !answerText.includes('~')) {
+    throw new Error(`${target.id} answer dropped tildes`);
+  }
+  const answerHtml = await answer.innerHTML();
+  if (/<del\b|<s\b/.test(answerHtml)) {
+    throw new Error(`${target.id} strikethrough ate a range`);
+  }
+  if (target.id === 'hampyeong') {
+    const asked = page.getByText('용산역에서 어떻게 가요');
+    await asked.evaluate((node) => node.scrollIntoView({ block: 'start' }));
+  } else {
+    await answer.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+  }
   await shot(page, `${target.id}-04-mooni-access`);
   await page.getByRole('button', { name: '채팅 닫기' }).click();
   const suseo = card.locator('[data-festival-access-origin="suseo"]');

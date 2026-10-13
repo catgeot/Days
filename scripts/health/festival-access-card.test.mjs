@@ -9,6 +9,8 @@ import {
   bookingLink,
   buildAccessView,
   composeFestivalAccessReply,
+  departureCoversStation,
+  festivalAccessAskFragment,
   preferredOriginId,
   selectAccessCards,
   formatClockRange,
@@ -225,7 +227,34 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
     origins: [],
   };
   const reply = composeFestivalAccessReply(facts, { useSelected: true });
-  assert.match(reply, /08:44–19:11/);
+  assert.match(reply, /08:44~19:11/);
+  assert.equal(festivalAccessAskFragment('용산역에서 어떻게 가요? 시각과 요금도 알려줘'), '용산역');
+  assert.equal(departureCoversStation('용산역', '용산'), true);
+  const yongsanReply = composeFestivalAccessReply({
+    selected: { label: '서울역', segments: [] },
+    origins: [
+      {
+        label: '용산',
+        segments: [{
+          dep: '용산',
+          arr: '함평',
+          rows: [{ grade: 'ITX-새마을', clock: '08:44~19:11', duration: '4시간 23분', fare: '36,300원', count: '3회' }],
+        }],
+      },
+      {
+        label: '서울역',
+        segments: [{
+          dep: '서울',
+          arr: '함평',
+          rows: [{ grade: '무궁화호', clock: '07:00', fare: '1,000원', count: '1회' }],
+        }],
+      },
+    ],
+  }, { stations: '용산역' });
+  assert.match(yongsanReply, /용산에서 함평까지/);
+  assert.match(yongsanReply, /08:44~19:11/);
+  assert.match(yongsanReply, /36,300원/);
+  assert.doesNotMatch(yongsanReply, /1,000원/);
   assert.match(reply, /36,300원/);
   assert.doesNotMatch(reply, /가는 법/);
 });

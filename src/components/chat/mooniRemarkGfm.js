@@ -21,7 +21,7 @@ import {
 /** GFM without autolink literals — bare URLs stay plain text in model bubbles. */
 export default function mooniRemarkGfm(options) {
   const self = this;
-  const settings = options || {};
+  const settings = { singleTilde: false, ...(options || {}) };
   const data = self.data();
 
   const micromarkExtensions = data.micromarkExtensions || (data.micromarkExtensions = []);

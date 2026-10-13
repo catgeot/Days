@@ -55,7 +55,12 @@ import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
-import { composeFestivalAccessReply } from '../../Korea/lib/festivalTransportCard.js';
+import {
+  composeFestivalAccessReply,
+  festivalAccessAskFragment,
+  festivalAccessAskIsRoute,
+  transportForFestivalAsk,
+} from '../../Korea/lib/festivalTransportCard.js';
 import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
 import {
   festivalTripMatchesLocale,
@@ -1020,9 +1025,13 @@ const ChatModal = ({
     const accessRoute = isAccessRouteQuery(cleanText);
     const ferryRoute = isFerryRouteQuery(cleanText);
     const explicitDeparture = String(sendOptions?.departureLabel || '').trim();
-    const departureLabel = (explicitDeparture || accessRoute)
+    const stationAsk = festivalAccessAskFragment(cleanText);
+    const festivalRouteAsk = Boolean(mooniPlaceContext?.festivalContext)
+      && (accessRoute || festivalAccessAskIsRoute(cleanText));
+    const airportDeparture = (explicitDeparture || accessRoute)
       ? resolveDepartureLabelFromChat(cleanText, messages, { departureLabel: explicitDeparture })
       : null;
+    const departureLabel = airportDeparture || (festivalRouteAsk && stationAsk ? stationAsk : null);
 
     let resolution = resolveDestinationFromChat(cleanText, messages, currentDest);
 
@@ -1212,11 +1221,17 @@ const ChatModal = ({
       }
 
       const showPlannerHeader = mooniChatShowsPlannerHeaderButton(boundDestinationSlug);
-      const groundedReply = chipId === MOONI_CHIP_IDS.FESTIVAL_ACCESS
-        ? composeFestivalAccessReply(festivalContext?.transport, {
+      const cardTransport = chipId === MOONI_CHIP_IDS.FESTIVAL_ACCESS
+        || festivalAccessAskIsRoute(cleanText);
+      const transport = cardTransport
+        ? await transportForFestivalAsk(festivalContext, i18n.language)
+        : festivalContext?.transport;
+      const askFragment = festivalAccessAskFragment(cleanText);
+      const groundedReply = cardTransport
+        ? composeFestivalAccessReply(transport, {
           locale: i18n.language,
-          useSelected: sendOptions?.useCardTransport === true,
-          stations: prepared.groundOrigin?.stationsKo || '',
+          useSelected: sendOptions?.useCardTransport === true || !askFragment,
+          stations: askFragment || prepared.groundOrigin?.stationsKo || '',
         })
         : '';
 
