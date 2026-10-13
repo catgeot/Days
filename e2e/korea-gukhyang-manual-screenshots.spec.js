@@ -128,7 +128,7 @@ function summarizeBuckets(audit) {
   };
 }
 
-async function writeImageAuditReport(summary, audit) {
+async function writeImageAuditReport(summary, audit, filename = 'image-audit-r5.txt') {
   const lines = [
     '국향대전 638576 — image naturalWidth audit (WebKit 390)',
     JSON.stringify(summary, null, 2),
@@ -136,7 +136,7 @@ async function writeImageAuditReport(summary, audit) {
     'samples:',
     JSON.stringify(audit, null, 2),
   ];
-  const path = join(OUT_DIR, 'image-audit-r5.txt');
+  const path = join(OUT_DIR, filename);
   await writeFile(path, `${lines.join('\n')}\n`, 'utf8');
   return path;
 }
@@ -319,7 +319,7 @@ test.describe('gukhyang manual — real TourAPI @390 webkit', () => {
     const audit = await collectImageAudit(page);
     const summary = summarizeBuckets(audit);
     expect(summary.hero.loaded).toBe(0);
-    await writeImageAuditReport(summary, audit);
+    await writeImageAuditReport(summary, audit, 'image-audit-r5-blocked-visitkorea.txt');
     await shot(page, 'r5-blocked-visitkorea-hero-no-credit-390', { fullPage: false });
   });
 
