@@ -1,7 +1,7 @@
 /**
  * One domestic departure chip per 시·도 (17).
  * Every label is a city. 도 names are not mixed with city names.
- * `ktx*` = KTX·ITX 등 장거리 열차 출발 역. `srt*` = SRT만 (수서·동탄·평택지제 등, 광명·용산 아님).
+ * `ktx*` / `srt*` = 출발 칩 힌트용. 수도권만 KTX·SRT 역이 다르고, 그 외는 같은 역이면 한 줄로 안내한다.
  * `bus*` = 고속·시외버스 터미널. `flight*` = 제주 등 항공 안내.
  */
 export const FESTIVAL_DOMESTIC_ORIGINS = [
@@ -14,11 +14,13 @@ export const FESTIVAL_DOMESTIC_ORIGINS = [
   {
     id: 'busan', ko: '부산', en: 'Busan', province: '부산',
     ktxKo: '부산역', ktxEn: 'Busan Station',
+    srtKo: '부산역', srtEn: 'Busan Station',
     busKo: '부산종합버스터미널', busEn: 'Busan Central Bus Terminal',
   },
   {
     id: 'daegu', ko: '대구', en: 'Daegu', province: '대구',
     ktxKo: '동대구역', ktxEn: 'Dongdaegu Station',
+    srtKo: '동대구역', srtEn: 'Dongdaegu Station',
     busKo: '대구고속버스터미널', busEn: 'Daegu Express Bus Terminal',
   },
   {
@@ -30,21 +32,25 @@ export const FESTIVAL_DOMESTIC_ORIGINS = [
   {
     id: 'gwangju', ko: '광주', en: 'Gwangju', province: '광주',
     ktxKo: '광주송정역', ktxEn: 'Gwangju Songjeong Station',
+    srtKo: '광주송정역', srtEn: 'Gwangju Songjeong Station',
     busKo: '유스퀘어', busEn: 'U-Square terminal',
   },
   {
     id: 'daejeon', ko: '대전', en: 'Daejeon', province: '대전',
     ktxKo: '대전역', ktxEn: 'Daejeon Station',
+    srtKo: '대전역', srtEn: 'Daejeon Station',
     busKo: '대전복합터미널', busEn: 'Daejeon Complex Terminal',
   },
   {
     id: 'ulsan', ko: '울산', en: 'Ulsan', province: '울산',
     ktxKo: '태화강역', ktxEn: 'Taehwagang Station',
+    srtKo: '울산역', srtEn: 'Ulsan Station',
     busKo: '울산고속버스터미널', busEn: 'Ulsan Express Bus Terminal',
   },
   {
     id: 'sejong', ko: '세종', en: 'Sejong', province: '세종',
     ktxKo: '오송역', ktxEn: 'Osong Station',
+    srtKo: '오송역', srtEn: 'Osong Station',
     busKo: '세종고속시외버스터미널', busEn: 'Sejong Express Bus Terminal',
   },
   {
@@ -72,6 +78,7 @@ export const FESTIVAL_DOMESTIC_ORIGINS = [
   {
     id: 'chungbuk', ko: '청주', en: 'Cheongju', province: '충북',
     ktxKo: '오송역', ktxEn: 'Osong Station',
+    srtKo: '오송역', srtEn: 'Osong Station',
     busKo: '청주고속버스터미널', busEn: 'Cheongju Express Bus Terminal',
     alt: {
       ko: '충주', en: 'Chungju',
@@ -82,21 +89,24 @@ export const FESTIVAL_DOMESTIC_ORIGINS = [
   {
     id: 'chungnam', ko: '천안', en: 'Cheonan', province: '충남',
     ktxKo: '천안아산역', ktxEn: 'Cheonan-Asan Station',
-    srtKo: '수서역·평택지제역', srtEn: 'Suseo Station and Pyeongtaek Jije Station',
+    srtKo: '천안아산역', srtEn: 'Cheonan-Asan Station',
     busKo: '천안종합터미널', busEn: 'Cheonan Terminal',
     alt: {
       ko: '공주', en: 'Gongju',
       ktxKo: '오송역', ktxEn: 'Osong Station',
+      srtKo: '오송역', srtEn: 'Osong Station',
       busKo: '공주종합버스터미널', busEn: 'Gongju Bus Terminal',
     },
   },
   {
     id: 'jeonbuk', ko: '전주', en: 'Jeonju', province: '전북',
     ktxKo: '익산역·전주역', ktxEn: 'Iksan Station and Jeonju Station',
+    srtKo: '익산역', srtEn: 'Iksan Station',
     busKo: '전주고속버스터미널', busEn: 'Jeonju Express Bus Terminal',
     alt: {
       ko: '익산', en: 'Iksan',
       ktxKo: '익산역', ktxEn: 'Iksan Station',
+      srtKo: '익산역', srtEn: 'Iksan Station',
       busKo: '익산버스터미널', busEn: 'Iksan bus terminal',
     },
   },
@@ -107,6 +117,7 @@ export const FESTIVAL_DOMESTIC_ORIGINS = [
     alt: {
       ko: '목포', en: 'Mokpo',
       ktxKo: '목포역', ktxEn: 'Mokpo Station',
+      srtKo: '목포역', srtEn: 'Mokpo Station',
       busKo: '목포종합버스터미널', busEn: 'Mokpo Bus Terminal',
     },
   },
@@ -172,20 +183,43 @@ export function originHubStationBlob(row) {
   return [row.ktxKo, row.srtKo, row.busKo].filter(Boolean).join('·');
 }
 
+const CAPITAL_ORIGIN_IDS = new Set(['seoul', 'incheon', 'gyeonggi']);
+
 export function formatOriginHubGuidance(row, locale = 'ko') {
   if (!row) return '';
   const en = isEnglishLocale(locale);
+  const capital = CAPITAL_ORIGIN_IDS.has(row.id);
   if (en) {
     const bits = [];
-    if (row.ktxEn) bits.push(`Guide KTX from ${row.ktxEn}`);
-    if (row.srtEn) bits.push(`SRT only from ${row.srtEn} (not Gwangmyeong or Yongsan)`);
+    if (capital) {
+      bits.push('Guide KTX from Seoul Station, Yongsan Station, and Gwangmyeong Station');
+      bits.push('Guide SRT from Suseo Station (also Dongtan and Pyeongtaek Jije when relevant). No SRT from Gwangmyeong or Yongsan');
+    } else if (row.ktxEn && row.srtEn) {
+      const same = row.ktxEn === row.srtEn;
+      if (same) bits.push(`Guide KTX and SRT from ${row.ktxEn}`);
+      else {
+        bits.push(`Guide KTX from ${row.ktxEn}`);
+        bits.push(`Guide SRT from ${row.srtEn}`);
+      }
+    } else if (row.ktxEn) bits.push(`Guide KTX from ${row.ktxEn}`);
+    else if (row.srtEn) bits.push(`Guide SRT from ${row.srtEn}`);
     if (row.busEn) bits.push(`express and intercity buses from ${row.busEn}`);
     if (row.flightEn) bits.push(`flights from ${row.flightEn}`);
     return bits.join('. ') + (bits.length ? '.' : '');
   }
   const bits = [];
-  if (row.ktxKo) bits.push(`KTX는 ${row.ktxKo}에서 출발하도록 안내해 주세요`);
-  if (row.srtKo) bits.push(`SRT는 ${row.srtKo}에서만 출발한다고 안내해 주세요(광명·용산에서 SRT는 없음)`);
+  if (capital) {
+    bits.push('KTX는 서울역·용산역·광명역에서 출발하도록 안내해 주세요');
+    bits.push('SRT는 수서역(동탄·평택지제도 가능)에서 출발하도록 안내해 주세요. 광명·용산에서는 SRT가 없습니다');
+  } else if (row.ktxKo && row.srtKo) {
+    const same = row.ktxKo === row.srtKo;
+    if (same) bits.push(`KTX·SRT는 ${row.ktxKo}에서 출발하도록 안내해 주세요`);
+    else {
+      bits.push(`KTX는 ${row.ktxKo}에서 출발하도록 안내해 주세요`);
+      bits.push(`SRT는 ${row.srtKo}에서 출발하도록 안내해 주세요`);
+    }
+  } else if (row.ktxKo) bits.push(`KTX는 ${row.ktxKo}에서 출발하도록 안내해 주세요`);
+  else if (row.srtKo) bits.push(`SRT는 ${row.srtKo}에서 출발하도록 안내해 주세요`);
   if (row.busKo) bits.push(`고속·시외버스는 ${row.busKo}에서 출발하도록 안내해 주세요`);
   if (row.flightKo) bits.push(`항공은 ${row.flightKo}을 이용하도록 안내해 주세요`);
   return bits.join('. ') + (bits.length ? '.' : '');
@@ -266,11 +300,10 @@ export function buildFestivalAccessAskText(rowOrId, locale = 'ko') {
   if (!row) return '';
   const en = isEnglishLocale(locale);
   const place = en ? row.en : row.ko;
-  const guidance = formatOriginHubGuidance(row, locale);
   if (en) {
-    return `How do I get from ${place} to this festival by public transit and by car? ${guidance}`;
+    return `How do I get from ${place} to this festival by public transit and by car?`;
   }
-  return `${place}에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘. ${guidance}`;
+  return `${place}에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘`;
 }
 
 function originByLabel(label) {

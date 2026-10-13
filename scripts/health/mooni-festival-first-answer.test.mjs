@@ -33,6 +33,8 @@ import {
   domesticGroundModelSuffix,
   festivalDomesticLabelsAreCities,
   festivalOriginLabel,
+  findFestivalDomesticOrigin,
+  formatOriginHubGuidance,
   visibleFestivalDomesticOrigins,
 } from '../../src/pages/Home/lib/festivalDomesticOrigins.js';
 import { resolveDepartureIataFromChat, resolveDepartureLabelFromChat } from '../../src/utils/resolveDepartureIataFromChat.js';
@@ -114,6 +116,15 @@ const GANGNEUNG = {
   nearbyPlaces: ['경포해변', '오죽헌', '기린사우나', '강릉시 행정복지센터', '대한노인회 강릉지회', '중앙동 주민센터'],
   homepage: 'https://visitgangneung.net/pub/gnfestival/4748.do',
 };
+
+test('promo festival mooni context uses social promo dates when API lags', () => {
+  const masan = buildFestivalMooniContext({
+    item: { contentId: '637693', title: '마산가고파국화축제', eventStartDate: '20261026', eventEndDate: '20261103' },
+    intro: { eventplace: '마산' },
+  });
+  assert.equal(masan.eventStartDate, '20261031');
+  assert.equal(masan.eventEndDate, '20261108');
+});
 
 test('festival opening is sentences with dates, link, and no filler', () => {
   const ctx = buildFestivalMooniContext(GANGNEUNG);
@@ -549,7 +560,7 @@ test('festival access drill-down opens origin chips without auto-sending Seoul',
 test('festival access hint urges real routes when TAGO times are missing', () => {
   const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalAssist.js'), 'utf8');
   assert.match(assist, /isFestivalAccessAsk/);
-  assert.match(assist, /시각은 없어요»만으로 답을 끝내지 않는다/);
+  assert.match(assist, /도착 역에서 끝내지 말고 축제장까지/);
   assert.match(assist, /bustago\.or\.kr/);
   assert.match(assist, /appendFestivalAccessBookingLinks/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 갑니다/);
@@ -600,19 +611,18 @@ test('festival departure chips are 17 cities, swap the host city, and stay off a
 
   const yeosuAsk = buildFestivalAccessAskText('jeonnam', 'ko');
   assert.match(yeosuAsk, /여수에서 이 축제장까지/);
-  assert.match(yeosuAsk, /여수EXPO역/);
-  assert.match(yeosuAsk, /여수종합버스터미널/);
+  assert.doesNotMatch(yeosuAsk, /안내해 주세요|여수EXPO역|여수종합버스터미널/);
   const seoulAsk = buildFestivalAccessAskText('seoul', 'ko');
-  assert.match(seoulAsk, /용산역/);
-  assert.match(seoulAsk, /KTX는.*서울역/);
-  assert.match(seoulAsk, /SRT는.*수서역/);
-  assert.doesNotMatch(seoulAsk, /KTX·SRT는/);
+  assert.equal(seoulAsk, '서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘');
+  assert.doesNotMatch(seoulAsk, /KTX|SRT|안내해 주세요|용산역/);
   const incheonAsk = buildFestivalAccessAskText('incheon', 'ko');
-  assert.match(incheonAsk, /KTX는.*광명역/);
-  assert.match(incheonAsk, /SRT는.*수서역/);
-  assert.doesNotMatch(incheonAsk, /SRT는[^.]*광명역/);
-  assert.match(incheonAsk, /인천종합버스터미널/);
-  assert.doesNotMatch(incheonAsk, /부평/);
+  assert.equal(incheonAsk, '인천에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘');
+  assert.doesNotMatch(incheonAsk, /KTX|SRT|안내해|부평/);
+  const cheonanRow = findFestivalDomesticOrigin('chungnam');
+  assert.match(formatOriginHubGuidance(cheonanRow, 'ko'), /천안아산역/);
+  assert.doesNotMatch(formatOriginHubGuidance(cheonanRow, 'ko'), /수서|평택지제/);
+  const daeguRow = findFestivalDomesticOrigin('daegu');
+  assert.match(formatOriginHubGuidance(daeguRow, 'ko'), /KTX·SRT는 동대구역/);
   const seoulRow = domesticFestivalGroundOrigin('서울에서 이 축제장까지 어떻게 가?', '');
   assert.equal(seoulRow?.ko, '서울');
   assert.match(domesticGroundModelSuffix(seoulRow, 'ko'), /용산역/);
@@ -679,10 +689,9 @@ test('domestic festival origin payload drops airports; overseas chip keeps them'
   assert.equal(seoulChip.chipFacts.chipId, 'festival_access');
   assert.doesNotMatch(requestBody(typed), air);
   assert.doesNotMatch(requestBody(seoulChip), air);
-  assert.match(typed.modelUserText, /KTX는.*서울역·용산역·광명역/);
-  assert.match(typed.modelUserText, /SRT는.*수서역/);
-  assert.match(seoulChip.modelUserText, /KTX는.*서울역·용산역·광명역/);
-  assert.match(seoulChip.modelUserText, /SRT는.*수서역/);
+  assert.equal(typed.modelUserText, '서울에서 가요');
+  assert.equal(seoulChip.modelUserText, buildFestivalAccessAskText('seoul', 'ko'));
+  assert.doesNotMatch(seoulChip.modelUserText, /KTX는|안내해 주세요/);
 
   const overseas = prepareFestivalMooniChatPayload({
     ...place,
@@ -2503,6 +2512,23 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(accessFooter, /bustago\.or\.kr/);
   assert.match(accessFooter, /letskorail\.com/);
   assert.match(accessFooter, /kobus\.co\.kr/);
+  const accessFooterPartial = appendFestivalAccessBookingLinks(
+    '대구에서 KTX로 가요. [코레일](https://www.letskorail.com/)',
+    'ko',
+  );
+  assert.doesNotMatch(accessFooterPartial, /\[코레일\].*\[코레일\]/);
+  assert.match(accessFooterPartial, /버스타고/);
+  assert.match(accessFooterPartial, /고속버스/);
+  const accessFooterFull = appendFestivalAccessBookingLinks(
+    `[코레일](https://www.letskorail.com/) [버스타고](https://www.bustago.or.kr/) [고속버스](https://www.kobus.co.kr/)`,
+    'ko',
+  );
+  assert.equal(accessFooterFull, '[코레일](https://www.letskorail.com/) [버스타고](https://www.bustago.or.kr/) [고속버스](https://www.kobus.co.kr/)');
+  const typedRouteFooter = polishFestivalModelReply('서울에서 열차로 갑니다.', {
+    locale: 'ko',
+    userText: '서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+  });
+  assert.doesNotMatch(typedRouteFooter, /버스타고/);
   const accessPolished = polishFestivalModelReply('서울에서 열차로 갑니다.', {
     chipId: 'festival_access',
     locale: 'ko',

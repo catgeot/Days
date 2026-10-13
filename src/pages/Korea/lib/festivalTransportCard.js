@@ -600,9 +600,25 @@ export function composeFestivalAccessReply(transport, {
   return lines.filter(Boolean).join('\n\n');
 }
 
+/** Hint block when TAGO rows exist — model still answers (last leg + car). */
+export function festivalAccessTagoModelHint(tagoLead, locale = 'ko') {
+  const lead = String(tagoLead || '').trim();
+  if (!lead) return '';
+  const en = String(locale || '').slice(0, 2) === 'en';
+  if (en) {
+    return [
+      '- Confirmed TAGO segment (quote only these times and fares; do not stop at the arrival station — continue with the last leg to the festival venue, name the transfer stop, bus/taxi when known, and an encouraging driving option with only confirmed numbers):',
+      lead,
+    ].join('\n');
+  }
+  return [
+    '- 확인된 TAGO 구간(아래 시각·요금만 쓰고, 도착 역에서 끝내지 말고 축제장까지 마지막 구간·갈아타는 곳·버스·택시와 자가용 옵션을 따뜻하게 이어서 안내):',
+    lead,
+  ].join('\n');
+}
+
 /**
- * Card facts answer a route question locally. Any other question still calls the model.
- * A local reply must not leave the send gate busy.
+ * Route questions always call the model. TAGO lead goes in the festival hint only.
  */
 export function planFestivalMooniModelCall({
   chipId = null,
@@ -613,14 +629,14 @@ export function planFestivalMooniModelCall({
   stations = '',
 } = {}) {
   const route = chipId === 'festival_access' || festivalAccessAskIsRoute(userText);
-  if (!route) return { callModel: true, reply: '' };
+  if (!route) return { callModel: true, reply: '', tagoLead: '' };
   const askFragment = festivalAccessAskFragment(userText);
-  const reply = composeFestivalAccessReply(transport, {
+  const tagoLead = composeFestivalAccessReply(transport, {
     locale,
     useSelected: useCardTransport || !askFragment,
     stations: askFragment || stations,
   });
-  return { callModel: reply === '', reply };
+  return { callModel: true, reply: '', tagoLead };
 }
 
 /** Synchronous send lock. end() runs on every exit, including a local card answer. */

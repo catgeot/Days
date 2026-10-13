@@ -1,7 +1,6 @@
 import {
   clearDomesticAirportDeparture,
   domesticFestivalGroundOrigin,
-  domesticGroundModelSuffix,
 } from './festivalDomesticOrigins.js';
 import { extractMooniChipPromptFacts } from './mooniChipPrompts.js';
 import {
@@ -47,17 +46,8 @@ function stripDomesticAirFacts(chipFacts) {
   return { chipId, facts: { profile } };
 }
 
-function alignGroundUserText(userText, groundOrigin, locale) {
-  const suffix = domesticGroundModelSuffix(groundOrigin, locale);
-  if (!suffix) return userText;
-  const hubBlob = [
-    groundOrigin.ktxKo,
-    groundOrigin.srtKo,
-    groundOrigin.busKo,
-    groundOrigin.flightKo,
-  ].filter(Boolean).join('·');
-  if (hubBlob && hubBlob.split('·').some((part) => part && userText.includes(part))) return userText;
-  return `${userText} ${suffix}`;
+function alignGroundUserText(userText) {
+  return String(userText || '').trim();
 }
 
 /**
@@ -105,9 +95,7 @@ export function prepareFestivalMooniChatPayload({
   return {
     session: nextSession,
     chipFacts,
-    modelUserText: groundOrigin
-      ? alignGroundUserText(cleanText, groundOrigin, locale)
-      : cleanText,
+    modelUserText: alignGroundUserText(cleanText),
     groundOrigin,
   };
 }

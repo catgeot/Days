@@ -297,13 +297,30 @@ function isAllowedFestivalBareUrl(url) {
 export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
   const body = String(text || '').trim();
   const en = String(locale || '').slice(0, 2) === 'en';
-  const hasAll = /letskorail\.com/i.test(body)
-    && /bustago\.or\.kr/i.test(body)
-    && /kobus\.co\.kr/i.test(body);
-  if (hasAll) return body;
+  const hasKorail = /letskorail\.com/i.test(body);
+  const hasBustago = /bustago\.or\.kr/i.test(body);
+  const hasKobus = /kobus\.co\.kr/i.test(body);
+  if (hasKorail && hasBustago && hasKobus) return body;
+  const links = [];
+  if (!hasKorail) {
+    links.push(en
+      ? `[Korail](${FESTIVAL_ACCESS_KORAIL_URL})`
+      : `[코레일](${FESTIVAL_ACCESS_KORAIL_URL})`);
+  }
+  if (!hasBustago) {
+    links.push(en
+      ? `[BUSTAGO](${FESTIVAL_ACCESS_BUSTAGO_URL})`
+      : `[버스타고](${FESTIVAL_ACCESS_BUSTAGO_URL})`);
+  }
+  if (!hasKobus) {
+    links.push(en
+      ? `[KOBUS](${FESTIVAL_ACCESS_KOBUS_URL})`
+      : `[고속버스](${FESTIVAL_ACCESS_KOBUS_URL})`);
+  }
+  if (!links.length) return body;
   const footer = en
-    ? `\n\nCheck train and bus schedules on [Korail](${FESTIVAL_ACCESS_KORAIL_URL}), [BUSTAGO](${FESTIVAL_ACCESS_BUSTAGO_URL}), and [KOBUS](${FESTIVAL_ACCESS_KOBUS_URL}).`
-    : `\n\n열차·버스 시각은 [코레일](${FESTIVAL_ACCESS_KORAIL_URL}), [버스타고](${FESTIVAL_ACCESS_BUSTAGO_URL}), [고속버스](${FESTIVAL_ACCESS_KOBUS_URL})에서 편하게 확인할 수 있어요.`;
+    ? `\n\nCheck train and bus schedules on ${links.join(', ')}.`
+    : `\n\n열차·버스 시각은 ${links.join(', ')}에서 편하게 확인할 수 있어요.`;
   return body ? `${body}${footer}` : footer.trim();
 }
 
@@ -1381,7 +1398,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = stripOffTopicLodgingNudge(text, options);
   text = settleFestivalNextAction(text, options);
   text = dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
-  if (isFestivalAccessAsk(options)) {
+  if (String(options.chipId || '') === 'festival_access') {
     text = appendFestivalAccessBookingLinks(text, options.locale);
   }
   return text;
@@ -2415,7 +2432,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       if (!festivalTransportHasTagoRows(festivalContext.transport)) {
         hint += enFood
           ? '\n- Getting there: GATEO has no confirmed train or bus times for this departure. Describe real routes (rail, express bus, driving) from the hubs above. Use only confirmed numbers for times and fares; otherwise link [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/). Never end with only a line that there are no confirmed times.'
-          : '\n- 가는 법: GATEO에 이 출발지의 확인된 열차·버스 시각이 없다. 사용자는 당신을 믿고 이 축제에 갑니다. 위 출발 역·터미널에서 실제 열차·고속버스·차 경로를 안내한다. 시각·요금은 확인된 숫자만 말하고, 없으면 [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/)에서 확인하라고 링크와 함께 안내한다. «이 출발지의 확인된 열차·버스 시각은 없어요»만으로 답을 끝내지 않는다.';
+          : '\n- 가는 법: GATEO에 이 출발지의 확인된 열차·버스 시각이 없을 수 있어요. 사용자는 당신을 믿고 이 축제에 갑니다. 위 출발 역·터미널에서 실제 열차·고속버스·차 경로를 이어서 안내해 주세요. 시각·요금은 확인된 숫자만 말하고, 없으면 [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요. 도착 역에서 끝내지 말고 축제장까지 마지막 구간과 자가용 옵션도 함께 안내해 주세요.';
       }
     }
     const foodNames = festivalFoodPlaceLabels(festivalContext.nearbyRestaurants, enFood ? 'en' : 'ko', 4);

@@ -310,15 +310,16 @@ test('a typed station ask renders each grade once, then a normal question calls 
     userText: '서울역에서 어떻게 가요? 시각과 요금도 알려줘',
     transport,
   });
-  assert.equal(access.callModel, false);
-  assert.equal(access.reply.split('KTX-산천').length - 1, 1);
-  assert.doesNotMatch(access.reply, /ITX-새마을/);
-  assert.match(access.reply, /^서울→마산/);
-  assert.match(access.reply, /05:03\u2060~\u206020:38/);
-  assert.match(access.reply, /48,\u2060100원/);
-  assert.match(access.reply, /가는 법 카드/);
-  assert.match(access.reply, /48,\u2060100원이에요/);
-  assert.doesNotMatch(access.reply, /(?<!이)예요/);
+  assert.equal(access.callModel, true);
+  assert.equal(access.reply, '');
+  assert.equal(access.tagoLead.split('KTX-산천').length - 1, 1);
+  assert.doesNotMatch(access.tagoLead, /ITX-새마을/);
+  assert.match(access.tagoLead, /^서울→마산/);
+  assert.match(access.tagoLead, /05:03\u2060~\u206020:38/);
+  assert.match(access.tagoLead, /48,\u2060100원/);
+  assert.match(access.tagoLead, /가는 법 카드/);
+  assert.match(access.tagoLead, /48,\u2060100원이에요/);
+  assert.doesNotMatch(access.tagoLead, /(?<!이)예요/);
   gate.end();
   assert.equal(gate.busy, false);
   assert.equal(gate.tryBegin(), true);
