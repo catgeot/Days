@@ -2,6 +2,15 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 국향대전 manual #2, 사진·썸네일 COS
+
+- **세션** `국향대전 manual #2, 사진·썸네일 COS` · branch `cursor/hampyeong-gukhyang-manual-ff66` · tip `bcfa5881` · draft PR [#451](https://github.com/catgeot/Days/pull/451)
+- **원인** VisitKorea CMS(`4114406_image2_1.JPG`)는 GET 200이지만 WebKit에서 referrer 때문에 `<img>`가 실패해도 `출처: 한국관광공사`가 남아 회색 히어로처럼 보였다. 스크린샷은 decode 전에 찍혀 promo·목록 썸네일이 빈 것처럼 보였다.
+- **조치** `FestivalPhotoFrame` 기본 `referrerPolicy=no-referrer` · 히어로 동일 · 크레딧은 `heroPhotoDecoded`일 때만 · `toHttps`가 `//` 지원 · e2e는 `naturalWidth>0` 후 캡처(home→전남→638576→MOONi).
+- **VERIFY** `npm run test:health` 301 pass · `playwright.config.gukhyang-screenshots.js` 4 pass · 스크린샷 `/opt/cursor/artifacts/screenshots/gukhyang-manual-638576/`
+- **Preview** git `https://days-git-cursor-hampyeong-gukhyang-manual-ff66-catgeots-projects.vercel.app/korea?festival=638576`
+- **다음** Preview에서 전남 14·promo 썸네일·국향 히어로+크레딧 확인 후 PR #451 병합
+
 ## Vercel 프리뷰 #1, cursor 빌드 생략
 
 - **세션** `Vercel 프리뷰 #1, cursor 빌드 생략` · branch `cursor/vercel-skip-previews-8e40` · tip `14fc605c` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · 병합 금지
