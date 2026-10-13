@@ -70,6 +70,7 @@ import {
   writeFestivalMooniSession,
 } from '../lib/festivalMooniSessionCache.js';
 import {
+  rememberInFlightChatId,
   shouldHydrateDraftCacheFallback,
   shouldHydrateDraftMessages,
   shouldHydrateTripMessages,
@@ -773,7 +774,14 @@ const ChatModal = ({
       return;
     }
     // Parent savedTrips refresh (auth/fetchData) must not clobber an in-flight chip turn.
-    if (isLoading) return;
+    if (isLoading) {
+      lastTripSyncChatIdRef.current = rememberInFlightChatId(
+        lastTripSyncChatIdRef.current,
+        activeChatId,
+        true,
+      );
+      return;
+    }
 
     if (activeChatId) {
       const targetTrip = chatHistory.find(

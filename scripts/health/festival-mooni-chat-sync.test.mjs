@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   isTripThreadStaleVersusLocal,
+  rememberInFlightChatId,
   shouldHydrateDraftCacheFallback,
   shouldHydrateDraftMessages,
   shouldHydrateTripMessages,
@@ -91,6 +92,28 @@ test('draft cache fallback only without trip row and empty local', () => {
       hasTripRow: true,
       localMessageCount: 0,
       isLoading: false,
+    }),
+    false,
+  );
+});
+
+test('in-flight chat id keeps a shorter saved_trips row from wiping the answer', () => {
+  const last = rememberInFlightChatId(null, 'trip-1', true);
+  assert.equal(last, 'trip-1');
+  assert.equal(rememberInFlightChatId('keep', null, true), 'keep');
+  const local = [
+    { role: 'user', text: '이 축제 알려줘' },
+    { role: 'model', text: '국향대전은 함평 국화 축제예요.', mooniRawReply: '국향대전은 함평 국화 축제예요.' },
+  ];
+  const trip = [{ role: 'user', text: '이 축제 알려줘' }];
+  assert.equal(
+    shouldHydrateTripMessages({
+      activeChatId: 'trip-1',
+      lastSyncedChatId: last,
+      tripMessageCount: trip.length,
+      localMessageCount: local.length,
+      tripMessages: trip,
+      localMessages: local,
     }),
     false,
   );
