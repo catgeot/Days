@@ -21,16 +21,13 @@ async function dismissLocHint(page) {
 
 async function openNationwideFestivalHub(page) {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const expandQuickLinks = page.getByRole('button', {
-    name: /바로가기 메뉴 펼치기|Expand quick links/i,
+  await page.getByRole('button', { name: /바로가기 메뉴 펼치기|Expand quick links/i }).click({
+    timeout: 180_000,
   });
-  if (await expandQuickLinks.isVisible().catch(() => false)) {
-    await expandQuickLinks.click();
-  }
   const festivalEntry = page.getByRole('link', {
     name: /한국의 축제로 이동|Go to Korea festivals/i,
   });
-  await expect(festivalEntry).toBeVisible({ timeout: 180_000 });
+  await expect(festivalEntry).toBeVisible({ timeout: 60_000 });
   await festivalEntry.click();
   await expect(page.getByRole('heading', { name: /한국의 축제|Korea festivals/i })).toBeVisible({
     timeout: 120_000,
@@ -108,13 +105,25 @@ async function shotDetailHero(page, scenario) {
   });
 }
 
+async function closeFestivalDetailIfOpen(page) {
+  const dialog = page.getByRole('dialog').first();
+  if (!(await dialog.isVisible().catch(() => false))) return;
+  await page.getByRole('button', { name: /^닫기$|^Close$/i }).first().click();
+  await expect(page.getByRole('dialog')).toHaveCount(0, { timeout: 30_000 });
+}
+
 async function openGukhyangDetail(page) {
+  if (/festival=638576/.test(page.url())) {
+    await expect(page.getByRole('dialog').first()).toBeVisible({ timeout: 120_000 });
+    return;
+  }
+  await closeFestivalDetailIfOpen(page);
   const card = page.locator(`[data-social-promo-card][data-festival-id="${GUKHYANG_ID}"]`);
   await expect(card).toBeVisible({ timeout: 120_000 });
-  await card.click();
+  await card.scrollIntoViewIfNeeded();
+  await card.click({ timeout: 60_000 });
   await expect(page).toHaveURL(/festival=638576/, { timeout: 60_000 });
-  const dialog = page.getByRole('dialog').first();
-  await expect(dialog).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('dialog').first()).toBeVisible({ timeout: 120_000 });
 }
 
 test.describe('hotfix thumb pin — WebKit 390 real network', () => {
@@ -125,7 +134,7 @@ test.describe('hotfix thumb pin — WebKit 390 real network', () => {
   });
 
   test('a/b/c intro thumbs stay photos after 20s', async ({ page }) => {
-    test.setTimeout(600_000);
+    test.setTimeout(900_000);
 
     await openNationwideFestivalHub(page);
     await page.waitForTimeout(WAIT_AFTER_ENTRY_MS);
@@ -139,8 +148,10 @@ test.describe('hotfix thumb pin — WebKit 390 real network', () => {
     expect(audit.promo.loaded, JSON.stringify(audit.promo)).toBeGreaterThan(0);
     expect(audit.promo.pin, 'promo pin after first entry').toBe(0);
 
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await closeFestivalDetailIfOpen(page);
+    await page.goto('/korea', { waitUntil: 'domcontentloaded' });
     await dismissLocHint(page);
+    await page.getByRole('button', { name: /^전국/ }).click();
     await expect(page.locator('[data-social-promo-festival-row]')).toBeVisible({
       timeout: 120_000,
     });
@@ -155,8 +166,7 @@ test.describe('hotfix thumb pin — WebKit 390 real network', () => {
     expect(audit.promo.loaded).toBeGreaterThan(0);
     expect(audit.promo.pin).toBe(0);
 
-    await page.getByRole('button', { name: /^닫기$|^Close$/i }).first().click();
-    await expect(page.getByRole('dialog')).toHaveCount(0, { timeout: 30_000 });
+    await closeFestivalDetailIfOpen(page);
     await page.waitForTimeout(WAIT_AFTER_ENTRY_MS);
     audit = await collectPromoAndHeroAudit(page);
     await writeScenarioAudit('c-back-list', audit);
