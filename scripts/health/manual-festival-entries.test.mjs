@@ -33,8 +33,11 @@ test('638576 manual entry has official fields and as-of line', () => {
   const detail = manualFestivalTourDetail(entry);
   assert.equal(detail.ok, true);
   assert.equal(detail.manual, true);
-  assert.equal(detail.intro.playtime, '09:00~18:00');
+  assert.equal(detail.intro.playtime, '');
   assert.match(detail.intro.usetimefestival, /7,000원/);
+  assert.match(detail.intro.usetimefestival, /사전예매 10% 할인\(9\.23~10\.22\)/);
+  assert.match(detail.intro.usetimefestival, /함평군민/);
+  assert.match(detail.intro.usetimefestival, /만 4세 미만/);
 
   const html = renderToStaticMarkup(
     createElement(FestivalDetailAsOfLine, {

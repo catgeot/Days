@@ -129,6 +129,12 @@ test.describe('gukhyang manual promo screenshots @390', () => {
     await expect(page.locator('[data-festival-photo-credit]')).toBeVisible({
       timeout: 30_000,
     });
+    await expect(page.locator('[data-festival-summary-fee]')).toContainText('사전예매 10%');
+    await expect(page.locator('[data-festival-summary-fee]')).toContainText('함평군민');
+    const summary = page.locator('[data-festival-summary-fee]').locator('..').locator('..');
+    await summary.screenshot({
+      path: join(OUT_DIR, 'gukhyang-detail-fee-hours-390.png'),
+    });
     await shot(page, 'gukhyang-detail-asof-credit-390');
   });
 });
