@@ -220,6 +220,56 @@ const YouTubePlayerView = forwardRef(({
   const showEmpty = !isLoading && !fetchError && isEmptyResult && videoList.length === 0;
   const showNoPlayable = !isLoading && !fetchError && !isEmptyResult && videoList.length === 0;
 
+  const primaryCtaClass =
+    'group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]';
+  const secondaryCtaClass =
+    'group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10';
+
+  const watchOnYouTubeButton = watchOnYouTubeUrl ? (
+    <a
+      href={watchOnYouTubeUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={primaryCtaClass}
+    >
+      {t('place.video.openOnYouTube')}
+      <ExternalLink size={14} className="opacity-50" />
+    </a>
+  ) : null;
+
+  const retryButton = onRetry ? (
+    <button
+      type="button"
+      onClick={() => onRetry?.()}
+      disabled={isLoading}
+      className={`${secondaryCtaClass} disabled:opacity-40`}
+    >
+      <RotateCcw size={18} />
+      {t('place.video.retry')}
+    </button>
+  ) : null;
+
+  const recommendFormButton = (
+    <a
+      href={googleFormUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={secondaryCtaClass}
+    >
+      <Sparkles size={18} />
+      {t('place.video.recommend')}
+      <ExternalLink size={14} className="opacity-50" />
+    </a>
+  );
+
+  const emptyOrUnplayableActions = (
+    <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+      {watchOnYouTubeButton}
+      {retryButton}
+      {recommendFormButton}
+    </div>
+  );
+
   return (
     <div
       className={`flex flex-col flex-1 w-full h-full bg-[#05070a] md:rounded-[2rem] md:border md:border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
@@ -247,28 +297,17 @@ const YouTubePlayerView = forwardRef(({
             <p className="text-white/60 text-sm mb-4 max-w-sm">
               {quotaWithoutVideos ? emptyQuotaMessage(fetchLimitCode) : limitMessage(fetchLimitCode)}
             </p>
-          ) : null}
-          {quotaWithoutVideos && watchOnYouTubeUrl ? (
-            <a
-              href={watchOnYouTubeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-            >
-              {t('place.video.openOnYouTube')}
-              <ExternalLink size={14} className="opacity-50" />
-            </a>
-          ) : onRetry ? (
-          <button
-            type="button"
-            onClick={() => onRetry?.()}
-            disabled={isLoading}
-            className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 disabled:opacity-40 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
-          >
-            <RotateCcw size={18} />
-            {t('place.video.retry')}
-          </button>
-          ) : null}
+          ) : (
+            <p className="text-white/50 text-sm mb-6 max-w-xs">{t('place.video.errorBody')}</p>
+          )}
+          {quotaWithoutVideos ? (
+            watchOnYouTubeButton
+          ) : (
+            <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+              {watchOnYouTubeButton}
+              {retryButton}
+            </div>
+          )}
         </div>
       ) : (showEmpty || showNoPlayable) ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
@@ -281,55 +320,7 @@ const YouTubePlayerView = forwardRef(({
           <p className="text-white/50 text-sm max-w-xs mb-8">
             {showNoPlayable ? t('place.video.noPlayableBody') : t('place.video.emptyBody')}
           </p>
-          {showEmpty ? (
-            <div className="flex flex-col items-center gap-3">
-              {watchOnYouTubeUrl ? (
-                <a
-                  href={watchOnYouTubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-                >
-                  {t('place.video.openOnYouTube')}
-                  <ExternalLink size={14} className="opacity-50" />
-                </a>
-              ) : null}
-              <a
-                href={googleFormUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-              >
-                <Sparkles size={18} />
-                {t('place.video.recommend')}
-                <ExternalLink size={14} className="opacity-50" />
-              </a>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-3">
-              {watchOnYouTubeUrl ? (
-                <a
-                  href={watchOnYouTubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-                >
-                  {t('place.video.openOnYouTube')}
-                  <ExternalLink size={14} className="opacity-50" />
-                </a>
-              ) : null}
-              {onRetry ? (
-              <button
-                type="button"
-                onClick={() => onRetry()}
-                className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
-              >
-                <RotateCcw size={18} />
-                {t('place.video.retry')}
-              </button>
-              ) : null}
-            </div>
-          )}
+          {emptyOrUnplayableActions}
         </div>
       ) : isPlaying ? (
         <div className="relative w-full h-full flex items-center justify-center bg-black">
@@ -478,16 +469,6 @@ const YouTubePlayerView = forwardRef(({
               </button>
             )}
 
-            {showEmpty && (
-              <a
-                href={googleFormUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-red-600/20 text-red-500 rounded-full shadow-2xl backdrop-blur-md border border-red-500/30 active:scale-90 transition-all"
-              >
-                <Sparkles size={24} strokeWidth={2.5} />
-              </a>
-            )}
         </div>
       )}
 
