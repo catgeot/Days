@@ -43,9 +43,14 @@ import {
 import {
   FESTIVAL_LODGING_EVENT,
   FESTIVAL_PAGE_EVENT,
+  isFestivalFoodAsk,
+  isFestivalLodgingAsk,
   mergeMooniKoreaFestivalReply,
   polishFestivalModelReply,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { fetchNearbyTourRestaurants } from '../../../utils/fetchNearbyTourRestaurants';
+import { waitForFestivalRestaurantNames } from '../../Korea/lib/festivalRestaurantLoad.js';
+import { loadFestivalLodgingForAsk } from '../../Korea/lib/festivalStayLoad.js';
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
@@ -115,8 +120,66 @@ import {
   getMooniModelRawText,
 } from '../lib/mooniModelMessageText';
 import { MooniChatMarkdownBoundary } from '../../../components/chat/MooniChatMarkdownBoundary.jsx';
+import { mooniUserBubbleText } from '../lib/mooniChipBubbleText.js';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
+
+async function loadFestivalRestaurantsForAsk(festivalContext, ask) {
+  if (!festivalContext || !isFestivalFoodAsk(ask)) return festivalContext ?? null;
+  const loaded = await waitForFestivalRestaurantNames(festivalContext.contentId, {
+    names: festivalContext.nearbyRestaurants,
+    timeoutMs: 3000,
+    trigger: () => fetchNearbyTourRestaurants({
+      lat: festivalContext.lat,
+      lng: festivalContext.lng,
+      radiusKm: 3,
+      limit: 8,
+    }),
+  });
+  if (!loaded.length) return festivalContext;
+  return { ...festivalContext, nearbyRestaurants: loaded };
+}
+
+async function loadFestivalStaysForAsk(festivalContext, ask) {
+  return loadFestivalLodgingForAsk(festivalContext, { ...ask, timeoutMs: 3000 });
+}
+
+async function loadFestivalAskContext(festivalContext, ask) {
+  if (!festivalContext) return null;
+  const [withFood, withStays] = await Promise.all([
+    loadFestivalRestaurantsForAsk(festivalContext, ask),
+    loadFestivalStaysForAsk(festivalContext, ask),
+  ]);
+  return {
+    ...festivalContext,
+    nearbyRestaurants: withFood?.nearbyRestaurants ?? festivalContext.nearbyRestaurants,
+    nearbyStays: withStays?.nearbyStays ?? festivalContext.nearbyStays,
+  };
+}
+
+function festivalReplyOptions(festivalContext, extra = {}) {
+  return {
+    contentId: festivalContext?.contentId,
+    placeName: festivalContext?.hubLabel,
+    venue: festivalContext?.venue,
+    address: festivalContext?.address,
+    stayAreas: festivalContext?.stayAreas,
+    lat: festivalContext?.lat,
+    lng: festivalContext?.lng,
+    festivalTitle: festivalContext?.title,
+    nearbyPlaces: festivalContext?.nearbyPlaces,
+    nearbyRestaurants: festivalContext?.nearbyRestaurants,
+    nearbyStays: festivalContext?.nearbyStays,
+    homepage: festivalContext?.homepage,
+    tel: festivalContext?.tel,
+    parking: festivalContext?.parking,
+    overview: festivalContext?.sceneOverview || festivalContext?.overview,
+    program: festivalContext?.program,
+    sceneOverview: festivalContext?.sceneOverview,
+    feeText: festivalContext?.feeText,
+    ...extra,
+  };
+}
 
 const ChatModal = ({
   isOpen,
@@ -991,9 +1054,12 @@ const ChatModal = ({
       !placeBound;
 
     const turnAt = Date.now();
+    const bubbleText = mooniUserBubbleText(cleanText);
+    const promptText = bubbleText !== cleanText ? cleanText : '';
     const userMsg = {
       role: 'user',
-      text: cleanText,
+      text: bubbleText,
+      ...(promptText ? { mooniPromptText: promptText } : {}),
       mooniAt: turnAt,
       ...(chipDestination ? { confirmedDestination: chipDestination } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
@@ -1036,7 +1102,8 @@ const ChatModal = ({
             ? (resolution.lng ?? chatDraft.lng)
             : chatDraft.lng,
         persona: personaToUse,
-        firstUserText: cleanText
+        firstUserText: bubbleText,
+        mooniPromptText: promptText,
       });
       if (!created?.id) {
         setIsLoading(false);
@@ -1058,7 +1125,10 @@ const ChatModal = ({
           : sessionDest);
       const priorTurns = newMessages
         .slice(0, -1)
-        .map((m) => ({ role: m.role, text: m.text }));
+        .map((m) => ({
+          role: m.role,
+          text: m.role === 'user' ? messageTextPlain(m) : m.text,
+        }));
 
       const slug =
         placeBound?.slug ||
@@ -1122,11 +1192,15 @@ const ChatModal = ({
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
+      const festivalContext = await loadFestivalAskContext(
+        mooniPlaceContext?.festivalContext ?? null,
+        { chipId, userText: cleanText },
+      );
       try {
         const festHint = await resolvePlaceChatKoreaFestivalHint({
           userText: cleanText,
           chipId,
-          festivalContext: mooniPlaceContext?.festivalContext ?? null,
+          festivalContext,
           boundPlaceName: destName,
           locale: i18n.language,
         });
@@ -1186,20 +1260,11 @@ const ChatModal = ({
         candidates: mooniFestivalCandidates,
       });
       const stripPhantomTicketMention = !hasTransportCta;
-      const lodgingOptions = {
-        contentId: mooniPlaceContext?.festivalContext?.contentId,
+      const lodgingOptions = festivalReplyOptions(festivalContext, {
         locale: i18n.language,
         chipId,
         userText: cleanText,
-        placeName: mooniPlaceContext?.festivalContext?.hubLabel,
-        venue: mooniPlaceContext?.festivalContext?.venue,
-        stayAreas: mooniPlaceContext?.festivalContext?.stayAreas,
-        lat: mooniPlaceContext?.festivalContext?.lat,
-        lng: mooniPlaceContext?.festivalContext?.lng,
-        festivalTitle: mooniPlaceContext?.festivalContext?.title,
-        nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
-        nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
-      };
+      });
       const displayReply = polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {
           stripPhantomTicketMention,
@@ -1307,20 +1372,15 @@ const ChatModal = ({
           stripPhantomTicketMention: ctx.stripPhantomTicketMention,
         });
         const priorUser = [...messages.slice(0, modelIdx)].reverse().find((m) => m.role === 'user');
-        const lodgingOptions = {
-          contentId: mooniPlaceContext?.festivalContext?.contentId,
+        const festivalContext = await loadFestivalAskContext(
+          mooniPlaceContext?.festivalContext ?? null,
+          { chipId: msg.bookingMeta?.chipId, userText: messageTextPlain(priorUser) },
+        );
+        const lodgingOptions = festivalReplyOptions(festivalContext, {
           locale: i18n.language,
           chipId: msg.bookingMeta?.chipId,
           userText: messageTextPlain(priorUser),
-          placeName: mooniPlaceContext?.festivalContext?.hubLabel,
-          venue: mooniPlaceContext?.festivalContext?.venue,
-          stayAreas: mooniPlaceContext?.festivalContext?.stayAreas,
-          lat: mooniPlaceContext?.festivalContext?.lat,
-          lng: mooniPlaceContext?.festivalContext?.lng,
-          festivalTitle: mooniPlaceContext?.festivalContext?.title,
-          nearbyPlaces: mooniPlaceContext?.festivalContext?.nearbyPlaces,
-          nearbyRestaurants: mooniPlaceContext?.festivalContext?.nearbyRestaurants,
-        };
+        });
         const continuedRaw = polishFestivalModelReply(mergedRaw, lodgingOptions);
         const continuedDisplay = polishFestivalModelReply(displayText, lodgingOptions);
         const nextMessages = messages.map((m, i) =>
@@ -1696,7 +1756,7 @@ const ChatModal = ({
                   ? getMooniModelMarkdownForRender(rawMsgText, {
                       stripPhantomTicketMention: stripPhantomOnRender,
                     })
-                  : rawMsgText;
+                  : mooniUserBubbleText(rawMsgText);
                 const { hadBracketLinks } = isModelMsg
                   ? sanitizeMooniModelReply(rawMsgText, {
                       stripPhantomTicketMention: stripPhantomOnRender,

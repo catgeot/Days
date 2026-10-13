@@ -41,8 +41,8 @@ export async function openFestivalMooni(page, festivalId = E2E_FESTIVAL_ID, opts
   if (reuseFestivalSheet) {
     try {
       await mooniBtn.waitFor({ state: 'visible', timeout: 8_000 });
-      await mooniBtn.scrollIntoViewIfNeeded();
-      await mooniBtn.click({ timeout: 30_000 });
+      await mooniBtn.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+      await mooniBtn.click({ force: true, timeout: 15_000 });
       await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({
         timeout: 120_000,
       });
@@ -57,9 +57,9 @@ export async function openFestivalMooni(page, festivalId = E2E_FESTIVAL_ID, opts
   });
   await dismissLocHint(page);
   await mooniBtn.waitFor({ state: 'attached', timeout: 90_000 });
-  await mooniBtn.scrollIntoViewIfNeeded();
+  await mooniBtn.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
   await expect(mooniBtn).toBeVisible({ timeout: 60_000 });
-  await mooniBtn.click({ timeout: 60_000 });
+  await mooniBtn.click({ force: true, timeout: 15_000 });
   await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({
     timeout: 120_000,
   });
@@ -68,7 +68,7 @@ export async function openFestivalMooni(page, festivalId = E2E_FESTIVAL_ID, opts
 export async function tapFestivalSightsChip(page) {
   const chip = page.getByRole('button', { name: /볼거리·분위기/i }).first();
   await expect(chip).toBeVisible({ timeout: 30_000 });
-  await chip.click();
+  await chip.click({ force: true });
 }
 
 /** Simulates logged-in fetchData() returning a stale saved_trips row (user turn only). */

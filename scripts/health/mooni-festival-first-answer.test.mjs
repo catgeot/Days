@@ -38,13 +38,28 @@ import {
 import { resolveDepartureIataFromChat, resolveDepartureLabelFromChat } from '../../src/utils/resolveDepartureIataFromChat.js';
 import { patchFestivalBoundSpot } from '../../src/pages/Korea/lib/festivalMooniBoundSpot.js';
 import {
+  beginFestivalRestaurantLoad,
+  resetFestivalRestaurantLoad,
+  waitForFestivalRestaurantNames,
+} from '../../src/pages/Korea/lib/festivalRestaurantLoad.js';
+import {
+  beginFestivalLodgingLoad,
+  loadFestivalLodgingForAsk,
+  publishFestivalLodgingStays,
+  resetFestivalLodgingStays,
+  waitForFestivalLodgingStays,
+} from '../../src/pages/Korea/lib/festivalStayLoad.js';
+import {
   appendFestivalLodgingNextStep,
   buildMooniBoundFestivalSystemHint,
+  hasFestivalParkingData,
+  stripFestivalPageParkingPointers,
   FESTIVAL_CHAIN_RE,
   filterFestivalStayAreaNames,
   gateoKoreaFestivalLodgingUrl,
   isFestivalLodgingAsk,
   linkifyBareGateoFestivalUrls,
+  dedupeFestivalPageLinks,
   polishFestivalModelReply,
   rankFestivalRestaurants,
   resolveMooniChatKoreaFestivalHint,
@@ -105,9 +120,12 @@ test('festival opening is sentences with dates, link, and no filler', () => {
   const en = buildFestivalMooniSentenceAnswer(ctx, { locale: 'en', now: NOW });
 
   assert.match(ko, /강릉 국수 축제는 10\/15~18, 엿새 뒤 시작해요/);
-  assert.match(ko, /장칼국수와 막국수를 맛보는 자리예요/);
-  assert.match(ko, /먹거리존과 누들 경연대회도 있어요/);
-  assert.match(ko, /월화거리에서 저녁까지 이어지고/);
+  assert.match(ko, /월화거리에서 먹거리존과 누들 경연대회가 열려요/);
+  assert.match(ko, /장칼국수와 막국수를 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요/);
+  assert.doesNotMatch(ko, /맛보며|월화거리에서 저녁까지/);
+  assert.equal(ko.split('월화거리').length - 1, 1);
+  assert.ok(ko.indexOf('월화거리') < ko.indexOf('맛볼 수 있고'));
+  assert.ok(ko.indexOf('축제 분위기가 저녁까지') < ko.indexOf('근처에서는'));
   assert.match(ko, /근처에서는 경포해변, 오죽헌을 둘러볼 수 있어요/);
   assert.doesNotMatch(ko, /하나예요|합니다|입니다|기준|경강로|12:00|입장료|사우나|복지|노인회|주민센터/);
   assert.match(ko, /\[강릉 국수 축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)/);
@@ -154,6 +172,81 @@ test('festival opening is sentences with dates, link, and no filler', () => {
   assert.doesNotMatch(en, /welcome/i);
   assert.doesNotMatch(en, /사랑을 받/);
   assert.ok(countFestivalCardSentences(en) <= 5, en);
+});
+
+test('food evening join keeps one subject and daytime drops the evening clause', () => {
+  const broken = '강릉 국수 축제는 10/15~18, 사흘 뒤 시작해요. 월화거리 일대에서 메인 먹거리존과 국수존, 페어링존이 열려요. 장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛보며 월화거리에서 축제 분위기가 저녁까지 이어져요. 강릉 오금집과 강릉향교, 오죽헌이 근처에 있어요.';
+  const fixed = polishFestivalModelReply(broken, {
+    contentId: '2930716',
+    locale: 'ko',
+    venue: '강릉 월화거리 일원',
+    evening: true,
+  });
+  assert.match(fixed, /장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요/);
+  assert.doesNotMatch(fixed, /맛보며/);
+  const missingComma = polishFestivalModelReply(
+    '장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있고 축제 분위기가 저녁까지 이어져요.',
+    { contentId: '2930716', locale: 'ko', evening: true },
+  );
+  assert.match(missingComma, /맛볼 수 있고, 축제 분위기가 저녁까지 이어져요/);
+  const foodAt = fixed.indexOf('맛볼 수 있고');
+  assert.ok(fixed.indexOf('월화거리 일대') >= 0 && fixed.indexOf('월화거리 일대') < foodAt);
+  assert.equal(fixed.slice(foodAt).includes('월화거리'), false);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /맛볼 수 있고/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /맛보며/);
+
+  const day = buildFestivalMooniContext({
+    ...GANGNEUNG,
+    intro: { eventplace: '강릉 월화거리 일원', playtime: '10:00~17:00' },
+    summaryFields: { timeText: '10:00~17:00', fee: { text: '입장료 무료' } },
+  });
+  const dayKo = buildFestivalMooniSentenceAnswer(day, { locale: 'ko', now: NOW });
+  assert.doesNotMatch(dayKo, /저녁까지/);
+  assert.match(dayKo, /장칼국수와 막국수/);
+  const dayPolished = polishFestivalModelReply(broken, {
+    contentId: '2930716',
+    locale: 'ko',
+    venue: '강릉 월화거리 일원',
+    evening: false,
+  });
+  assert.doesNotMatch(dayPolished, /저녁까지|맛보며/);
+  assert.match(dayPolished, /장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있어요/);
+});
+
+test('nearby parenthetical does not append a second sentence after the page link', () => {
+  const ctx = buildFestivalMooniContext({
+    item: {
+      contentId: '2870929',
+      title: '연천 국화축제',
+      eventStartDate: '20261015',
+      eventEndDate: '20261018',
+    },
+    intro: { eventplace: '연천역' },
+    nearbyPlaces: [
+      '전곡선사박물관',
+      '은대리 판상절리와 습곡구조 (한탄강 유네스코 세계지질공원)',
+      '열두개울',
+    ],
+  });
+  const facts = buildFestivalFirstAnswerFacts(ctx, { locale: 'ko', now: NOW });
+  const once = acceptFestivalModelOpening(
+    `연천 국화축제는 10/15~18에 열려요. 전곡선사박물관과 은대리 판상절리와 습곡구조, 열두개울이 근처에 있어요. ${facts.closing}`,
+    facts,
+  );
+  assert.match(once, /전곡선사박물관과 은대리 판상절리와 습곡구조, 열두개울이 근처에 있어요/);
+  assert.doesNotMatch(once, /둘러볼 수 있어요|한탄강 유네스코/);
+  assert.equal((once.match(/근처/g) || []).length, 1);
+  assert.ok(once.indexOf('근처에 있어요') < once.indexOf(facts.gateoUrl));
+  assert.equal(once.slice(once.indexOf(facts.gateoUrl)).includes('근처'), false);
+
+  const duplicated = acceptFestivalModelOpening(
+    `연천 국화축제는 10/15~18에 열려요. 전곡선사박물관과 은대리 판상절리와 습곡구조, 열두개울이 근처에 있어요. ${facts.closing} 근처에서는 전곡선사박물관, 은대리 판상절리와 습곡구조 (한탄강 유네스코 세계지질공원), 열두개울을 둘러볼 수 있어요.`,
+    facts,
+  );
+  assert.doesNotMatch(duplicated, /둘러볼 수 있어요/);
+  assert.equal((duplicated.match(/근처/g) || []).length, 1);
+  assert.ok(duplicated.indexOf('근처에 있어요') < duplicated.indexOf(facts.gateoUrl));
+  assert.equal(duplicated.slice(duplicated.indexOf(facts.gateoUrl)).includes('근처'), false);
 });
 
 test('captured festival fixtures keep real nearby names and drop the info card', () => {
@@ -222,6 +315,29 @@ test('model opening keeps ordinary Korean and rejects invented names', () => {
     acceptFestivalModelOpening('강릉 국수 축제 runs 10/15–18. Nearby, 경포해변.', enFacts),
     '',
   );
+
+  const endedCtx = buildFestivalMooniContext({
+    item: {
+      title: '봄꽃 축제',
+      contentId: '1',
+      titleEn: 'Spring Flower Festival',
+      eventStartDate: '20260101',
+      eventEndDate: '20260103',
+    },
+    overview: '내년에도 개최합니다. 개막 공연이 있어요.',
+    program: '개막 공연',
+    nearbyPlaces: ['경포해변'],
+  });
+  const endedFacts = buildFestivalFirstAnswerFacts(endedCtx, { locale: 'en', now: NOW });
+  assert.match(endedFacts.dateLine, /has ended/);
+  assert.match(endedFacts.dateLine, /The next edition is next year/);
+  const messy = acceptFestivalModelOpening(
+    'Nearby, you can walk to Gyeongpo Beach (경포해변). Visitors engage with various hands-on programs. The lively atmosphere continues into the evening. Spring Flower Festival (봄꽃 축제) ran 1/1–3 and has ended.',
+    endedFacts,
+  );
+  assert.doesNotMatch(messy, /hands-on programs|lively atmosphere/i);
+  assert.ok(messy.indexOf('has ended') < messy.toLowerCase().indexOf('nearby'));
+  assert.match(messy, /next year|next edition/i);
 });
 
 test('captured fixtures explain the scene without passes or bare English Hangul', () => {
@@ -763,6 +879,15 @@ test('English place names lead and Korean stays in parentheses', () => {
   const ko = buildFestivalMooniSentenceAnswer(ctx, { locale: 'ko', now: NOW });
   const en = buildFestivalMooniSentenceAnswer(ctx, { locale: 'en', now: NOW });
   assert.match(ko, /함평 나비축제 근처에서는 함평엑스포공원, 월화거리를 둘러볼 수 있어요/);
+  const yongcheon = buildFestivalMooniContext({
+    item: { contentId: '2', title: '함평 나비축제' },
+    location: { name: '함평군' },
+    nearbyPlaces: ['용천사 함평', '함평엑스포공원'],
+  });
+  assert.deepEqual(yongcheon.nearbyPlaces, ['용천사', '함평엑스포공원']);
+  const yongcheonKo = buildFestivalMooniSentenceAnswer(yongcheon, { locale: 'ko', now: NOW });
+  assert.match(yongcheonKo, /용천사/);
+  assert.doesNotMatch(yongcheonKo, /용천사 함평/);
   assert.doesNotMatch(ko, /하나예요/);
   assert.match(en, /Hampyeong Expo Park \(함평엑스포공원\)/);
   assert.match(en, /Wolhwa Street \(월화거리\)/);
@@ -970,6 +1095,8 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   assert.match(rendered.system, /해요체/);
   assert.match(rendered.system, /2~3문장/);
   assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /Hampyeong Expo Park \(함평엑스포공원\)/);
+  assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /Visitors engage with various hands-on programs/);
+  assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /has ended/);
   assert.match(renderFestivalFirstAnswer('en', { title: '강릉 국수 축제' }).system, /not the Wolhwa Street/);
   assert.match(rendered.userText, /경포해변/);
   assert.doesNotMatch(rendered.userText, /\{/);
@@ -1359,7 +1486,7 @@ test('festival food stays on the restaurant list and the closer does not repeat 
       nearbyRestaurants: ['강릉 오금집', '이쉐프의돈까스', '임당생활문화센터'],
     },
   );
-  assert.match(food, /주변 맛집은 강릉 오금집, 이쉐프의돈까스예요/);
+  assert.match(food, /주변 맛집은 강릉 오금집, 이쉐프의돈까스\(돈가스\)예요/);
   assert.doesNotMatch(food, /임당생활문화센터|노암터널/);
 
   const foodCloser = polishFestivalModelReply(
@@ -1399,7 +1526,7 @@ test('festival food stays on the restaurant list and the closer does not repeat 
     },
     locale: 'ko',
   });
-  assert.match(foodHint.hint, /100년임당방앗간, 만동제과, 월화엔/);
+  assert.match(foodHint.hint, /100년임당방앗간\(방앗간\), 만동제과\(제과\), 월화엔/);
   assert.match(foodHint.hint, /맛집을 찾아보세요/);
   assert.match(foodHint.hint, /다음 행동으로/);
   assert.match(foodHint.hint, /숙소 정보도 함께 알아보세요/);
@@ -1507,9 +1634,9 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
     nearbyRestaurants: ['맥도날드', '중앙시장', '강릉 오금집', '롯데리아', '교동식당', '경포횟집', '안목커피', '강문포차', '버거킹'],
   });
   assert.deepEqual(ctx.stayAreas, ['강릉', '교동', '월화거리']);
-  assert.equal(ctx.nearbyRestaurants[0], '중앙시장');
-  assert.equal(ctx.nearbyRestaurants.includes('맥도날드'), false);
-  assert.equal(ctx.nearbyRestaurants.includes('버거킹'), false);
+  assert.equal(ctx.nearbyRestaurants[0].name, '중앙시장');
+  assert.equal(ctx.nearbyRestaurants.some((row) => row.name === '맥도날드'), false);
+  assert.equal(ctx.nearbyRestaurants.some((row) => row.name === '버거킹'), false);
   assert.deepEqual(
     rankFestivalRestaurants(['맥도날드', '중앙시장', '강릉 오금집']),
     ['중앙시장', '강릉 오금집', '맥도날드'],
@@ -1561,6 +1688,1025 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   assert.match(KO.festivalAnswerRules, /약 20km/);
   assert.match(KO.festivalAnswerRules, /배스킨라빈스/);
   assert.match(KO.festivalPriorityLine, /행사 기간을 반복하지 않는다/);
+  assert.match(KO.festivalAnswerRules, /3~4곳/);
+  assert.match(KO.festivalAnswerRules, /공식 홈페이지나 문의처/);
+  assert.match(KO.festivalAnswerRules, /안내해 드릴까요/);
+  assert.match(KO.festivalAnswerRules, /이름이 3곳이면 첫 답에 3곳/);
+  assert.match(EN.festivalAnswerRules, /3 or 4 places/);
+  assert.match(EN.festivalAnswerRules, /only when it is a markdown link/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /도보 N분/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /축제 페이지에서 확인/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이름이 3곳이면 3곳을 말한다/);
+  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /다양한 맛집/);
+  assert.match(KO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
+  assert.match(KO.festivalAnswerRules, /축제 페이지에서 살펴보세요/);
+  assert.match(KO.festivalAnswerRules, /찾아볼 수 있어요/);
+  assert.match(KO.festivalAnswerRules, /장소 이름 안의 «주차장»만으로는 주차 정보가 아니다/);
+  assert.match(EN.festivalAnswerRules, /see or find parking on the festival page/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /과거와 현재/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /N일 뒤 시작해요/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /경연프로그램 : 청소년 페스타/);
+  assert.match(KO.festivalAnswerRules, /숙소 카드에 이름과 거리/);
+  assert.match(EN.festivalAnswerRules, /next closest local place/);
+  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /축제 페이지에서 살펴보세요/);
+  assert.match(ServerKO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
+  assert.match(EN.festivalAnswerRules, /a variety of stays/);
+  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /다양한 숙소가 자리하고 있어요/);
+});
+
+test('food wait, tagged places, parking, closers, and three nearby names', async () => {
+  resetFestivalRestaurantLoad();
+  let triggered = 0;
+  const ready = await waitForFestivalRestaurantNames('2930716', {
+    names: [{ name: '만동제과', distKm: 0.2 }],
+    trigger: async () => {
+      triggered += 1;
+      return { spots: [] };
+    },
+  });
+  assert.equal(triggered, 0);
+  assert.equal(ready[0].name, '만동제과');
+  assert.equal(ready[0].distKm, 0.2);
+
+  beginFestivalRestaurantLoad('2930716', new Promise((resolve) => {
+    setTimeout(() => resolve({ spots: [{ name: '월화엔', distKm: 0.24 }] }), 20);
+  }));
+  const waited = await waitForFestivalRestaurantNames('2930716', { timeoutMs: 200 });
+  assert.equal(waited[0].name, '월화엔');
+  assert.equal(waited[0].distKm, 0.24);
+
+  resetFestivalRestaurantLoad('2930716');
+  beginFestivalRestaurantLoad('2930716', new Promise((resolve) => {
+    setTimeout(() => resolve({ spots: [{ name: '늦은집', distKm: 1 }] }), 150);
+  }));
+  const timedOut = await waitForFestivalRestaurantNames('2930716', { timeoutMs: 40 });
+  assert.deepEqual(timedOut, []);
+  resetFestivalRestaurantLoad();
+
+  resetFestivalLodgingStays('2930716');
+  const stayWait = waitForFestivalLodgingStays('2930716', { timeoutMs: 400 });
+  publishFestivalLodgingStays('2930716', [
+    { itemName: '강릉 씨사이드', lat: 37.756, lng: 128.898 },
+  ], { lat: 37.755777, lng: 128.897602 });
+  const stayed = await stayWait;
+  assert.equal(stayed[0].name, '강릉 씨사이드');
+  assert.ok(stayed[0].distKm > 0);
+  resetFestivalLodgingStays('2930716');
+  const stayMiss = await waitForFestivalLodgingStays('2930716', { timeoutMs: 30 });
+  assert.deepEqual(stayMiss, []);
+
+  publishFestivalLodgingStays('2930716', [
+    { itemName: '강릉 세인트존스호텔', lat: 37.7562, lng: 128.8765, categoryName: '호텔' },
+    { itemName: '신라모노그램', lat: 37.7701, lng: 128.9512 },
+    { itemName: '강릉 스카이베이', lat: 37.78, lng: 128.9 },
+    { itemName: '먼 호텔', lat: 37.9, lng: 129.3 },
+  ], { lat: 37.755777, lng: 128.897602 });
+  const lodgingCtx = await loadFestivalLodgingForAsk({
+    title: '강릉 국수 축제',
+    contentId: '2930716',
+    lat: 37.755777,
+    lng: 128.897602,
+  }, { userText: '어디서 자요?' });
+  assert.equal(lodgingCtx.nearbyStays.length, 3);
+  assert.equal(lodgingCtx.nearbyStays[0].name, '강릉 세인트존스호텔');
+  assert.equal(lodgingCtx.nearbyStays[0].type, '호텔');
+  assert.ok(lodgingCtx.nearbyStays.every((row) => row.distKm > 0));
+  const lodgingPayload = await resolveMooniChatKoreaFestivalHint({
+    userText: '어디서 자요?',
+    locale: 'ko',
+    festivalContext: lodgingCtx,
+  });
+  assert.match(lodgingPayload.hint, /강릉 세인트존스호텔/);
+  assert.match(lodgingPayload.hint, /신라모노그램/);
+  assert.match(lodgingPayload.hint, /강릉 스카이베이/);
+  assert.match(lodgingPayload.hint, /호텔/);
+  assert.match(lodgingPayload.hint, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
+  assert.doesNotMatch(lodgingPayload.hint, /먼 호텔/);
+  resetFestivalLodgingStays('506616');
+  const seogwipoStay = loadFestivalLodgingForAsk({
+    title: '서귀포칠십리축제',
+    contentId: '506616',
+    lat: 33.247,
+    lng: 126.56,
+  }, { userText: '숙소', timeoutMs: 400 });
+  publishFestivalLodgingStays('506616', [
+    { itemName: '신화관 제주신화월드', lat: 33.306, lng: 126.317 },
+  ], { lat: 33.247, lng: 126.56 });
+  const seogwipoCtx = await seogwipoStay;
+  assert.equal(seogwipoCtx.nearbyStays[0].name, '신화관 제주신화월드');
+  assert.ok(seogwipoCtx.nearbyStays[0].distKm > 0);
+  publishFestivalLodgingStays('129000', [
+    { itemName: '스톤델리아' },
+    { itemName: '해밀펜션' },
+  ]);
+  const nameOnly = await loadFestivalLodgingForAsk({
+    title: '함평 나비축제',
+    contentId: '129000',
+  }, { userText: '숙소' });
+  assert.deepEqual(nameOnly.nearbyStays.map((row) => row.name), ['스톤델리아', '해밀펜션']);
+  const namePayload = await resolveMooniChatKoreaFestivalHint({
+    userText: '숙소',
+    locale: 'ko',
+    festivalContext: nameOnly,
+  });
+  assert.doesNotMatch(namePayload.hint, /스톤델리아|해밀펜션/);
+  const nameLodgingLine = namePayload.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
+  assert.match(nameLodgingLine, /축제장 근처 숙소는 \[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=129000#festival-lodging\)에서 볼 수 있어요/);
+  assert.match(nameLodgingLine, /숙소 이름은 쓰지 않는다/);
+  assert.doesNotMatch(nameLodgingLine.split('숙소 이름은')[0], /가까운 숙소로|권역에서 숙소를 찾을 수 있어요/);
+  assert.doesNotMatch(nameLodgingLine, /\d+(?:\.\d+)?\s*km/);
+  const nameAnswer = polishFestivalModelReply(
+    '가까운 숙소로 스톤델리아, 해밀펜션이 있어요.',
+    {
+      contentId: '129000',
+      locale: 'ko',
+      userText: '숙소',
+      nearbyStays: nameOnly.nearbyStays,
+    },
+  );
+  assert.match(nameAnswer, /축제장 근처 숙소는 \[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=129000#festival-lodging\)에서 볼 수 있어요/);
+  assert.doesNotMatch(nameAnswer, /스톤델리아|해밀펜션|가까운|권역에서 숙소를 찾을 수 있어요/);
+  const farCard = polishFestivalModelReply(
+    '가까운 숙소로 더 베스트 제주 성산, 신화관 제주신화월드, 해밀펜션이 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '숙소',
+      lat: 33.247,
+      lng: 126.56,
+      nearbyStays: [
+        { name: '더 베스트 제주 성산' },
+        { name: '신화관 제주신화월드' },
+        { name: '해밀펜션' },
+      ],
+    },
+  );
+  assert.match(farCard, /축제장 근처 숙소는 \[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=506616#festival-lodging\)에서 볼 수 있어요/);
+  assert.doesNotMatch(farCard, /성산|신화월드|해밀펜션|가까운|권역에서 숙소를 찾을 수 있어요/);
+  const areaCard = polishFestivalModelReply(
+    '가까운 숙소로 더 베스트 제주 성산, 신화관 제주신화월드가 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '숙소',
+      placeName: '서귀포시',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 이중섭거리',
+      nearbyStays: [
+        { name: '더 베스트 제주 성산', distKm: 35 },
+        { name: '신화관 제주신화월드', lat: 33.306, lng: 126.317 },
+        { name: '서귀포 호텔', distKm: 1.4 },
+        { name: '이중섭 펜션', distKm: 4 },
+        { name: '올레 호텔', distKm: 21 },
+      ],
+    },
+  );
+  assert.match(areaCard, /가까운 숙소로 서귀포 호텔\(1\.4km\), 이중섭 펜션\(4km\)이 있어요/);
+  assert.doesNotMatch(areaCard, /성산|신화월드|올레 호텔|권역에서 숙소를 찾을 수 있어요/);
+  const areaOnly = polishFestivalModelReply(
+    '가까운 숙소로 더 베스트 제주 성산, 신화관 제주신화월드가 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '숙소',
+      placeName: '서귀포시',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 이중섭거리',
+      lat: 33.247,
+      lng: 126.56,
+      nearbyStays: [
+        { name: '더 베스트 제주 성산' },
+        { name: '신화관 제주신화월드' },
+      ],
+    },
+  );
+  assert.match(areaOnly, /축제장이 있는 서귀포 시내\(천지연·이중섭거리 일대\)에 잡으면 걸어서 다니기 좋아요/);
+  assert.match(areaOnly, /\[서귀포 숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=506616#festival-lodging\)/);
+  assert.doesNotMatch(areaOnly, /성산|신화월드|권역에서 숙소를 찾을 수 있어요|주차장/);
+  const enNameless = polishFestivalModelReply('Closest stays: Shinhwa World.', {
+    contentId: '506616',
+    locale: 'en',
+    userText: 'where to stay',
+    nearbyStays: [
+      { name: '신화관 제주신화월드' },
+      { name: '더 베스트 제주 성산' },
+    ],
+  });
+  assert.match(enNameless, /Stays near the venue are on \[lodging card\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=506616#festival-lodging\)/);
+  assert.doesNotMatch(enNameless, /신화|성산|Shinhwa|Closest/);
+  const areaHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '숙소',
+    locale: 'ko',
+    festivalContext: {
+      title: '서귀포칠십리축제',
+      contentId: '506616',
+      hubLabel: '서귀포시',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 이중섭거리',
+      nearbyStays: [
+        { name: '더 베스트 제주 성산' },
+        { name: '신화관 제주신화월드' },
+      ],
+    },
+  });
+  const areaLine = areaHint.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
+  assert.match(areaLine, /축제장이 있는 서귀포 시내\(천지연·이중섭거리 일대\)에 잡으면 걸어서 다니기 좋아요/);
+  assert.match(areaLine, /\[서귀포 숙소 카드\]/);
+  assert.doesNotMatch(areaLine.split('숙소 이름은')[0], /성산|신화월드|가까운 숙소로|권역에서 숙소를 찾을 수 있어요/);
+  resetFestivalLodgingStays('2930716');
+  let releaseTopsTen;
+  const topsTenLoad = new Promise((resolve) => {
+    releaseTopsTen = resolve;
+  });
+  beginFestivalLodgingLoad('2930716', topsTenLoad);
+  publishFestivalLodgingStays('2930716', [{ itemName: '이름만호텔' }]);
+  const topsTenAsk = loadFestivalLodgingForAsk({
+    title: '강릉 국수 축제',
+    contentId: '2930716',
+    lat: 37.755777,
+    lng: 128.897602,
+  }, { userText: '숙소', timeoutMs: 400 });
+  releaseTopsTen([
+    { itemName: '호텔 탑스텐 강릉', lat: 37.766, lng: 128.9 },
+  ]);
+  const topsTenCtx = await topsTenAsk;
+  assert.equal(topsTenCtx.nearbyStays[0].name, '호텔 탑스텐 강릉');
+  assert.ok(topsTenCtx.nearbyStays[0].distKm > 0);
+  assert.ok(topsTenCtx.nearbyStays[0].distKm < 2);
+  const topsTenHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '숙소',
+    locale: 'ko',
+    festivalContext: topsTenCtx,
+  });
+  assert.match(topsTenHint.hint, /호텔 탑스텐 강릉\(\d+(?:\.\d+)?km\)/);
+  assert.match(topsTenHint.hint, /거리와 함께/);
+  assert.doesNotMatch(topsTenHint.hint, /이름만호텔/);
+  resetFestivalLodgingStays('506616');
+  publishFestivalLodgingStays('506616', [
+    { itemName: '신화관 제주신화월드', lat: 33.306, lng: 126.317 },
+    { itemName: '랜딩관 제주신화월드', lat: 33.307, lng: 126.318 },
+    { itemName: '서머셋 제주신화월드', lat: 33.308, lng: 126.319 },
+    { itemName: '롯데호텔 제주', lat: 33.248, lng: 126.41 },
+  ], { lat: 33.247, lng: 126.56 });
+  const deduped = await loadFestivalLodgingForAsk({
+    title: '서귀포칠십리축제',
+    contentId: '506616',
+    lat: 33.247,
+    lng: 126.56,
+  }, { userText: '숙소' });
+  const dedupedNames = deduped.nearbyStays.map((row) => row.name);
+  assert.equal(dedupedNames.filter((name) => name.includes('제주신화월드')).length, 1);
+  assert.ok(dedupedNames.includes('롯데호텔 제주'));
+  resetFestivalLodgingStays('2930716');
+  resetFestivalLodgingStays('506616');
+  resetFestivalLodgingStays('129000');
+
+  const tagged = polishFestivalModelReply(
+    '강릉 중앙시장과 지역 특색을 살린 식당이 많아요. 다양한 맛집이 있어요. 미식 여행을 즐겨보세요. 주변의 소문난 지역 식당이에요. 가는 법을 알아보세요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '근처 먹을 곳?',
+      nearbyRestaurants: [
+        { name: '만동제과', distKm: 0.1 },
+        { name: '이쉐프의돈까스', distKm: 0.2 },
+        { name: '100년임당방앗간', distKm: 0.3 },
+        { name: '월화엔', distKm: 0.24 },
+        { name: '배니닭강정', distKm: 0.5 },
+      ],
+    },
+  );
+  assert.match(tagged, /만동제과\(제과\)/);
+  assert.match(tagged, /이쉐프의돈까스\(돈가스\)/);
+  assert.match(tagged, /100년임당방앗간\(방앗간\)/);
+  assert.match(tagged, /월화엔\(도보 3분\)/);
+  assert.doesNotMatch(tagged, /배니닭강정|다양한 맛집|미식|소문난|중앙시장|가는 법/);
+  const swappedFood = polishFestivalModelReply('주변의 맛집을 찾아보세요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '근처 먹을 곳?',
+    nearbyRestaurants: [
+      { name: '만동제과', distKm: 0.4 },
+      { name: '거리없는국수집', distKm: null },
+      { name: '월화엔', distKm: 0.5 },
+      { name: '100년임당방앗간', distKm: 0.8 },
+      { name: '가까운집', distKm: 0.15 },
+    ],
+  });
+  assert.match(swappedFood, /가까운집/);
+  assert.match(swappedFood, /만동제과\(제과\)/);
+  assert.doesNotMatch(swappedFood, /거리없는국수집/);
+
+  const page = 'https://visitgangneung.net/pub/gnfestival/4748.do';
+  const parking = polishFestivalModelReply('주차는 축제 페이지에서 확인해요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '주차',
+    homepage: page,
+    tel: '033-640-4531',
+  });
+  assert.equal(parking, '주차 안내는 [공식 홈페이지](https://visitgangneung.net/pub/gnfestival/4748.do)에 있어요. 문의 033-640-4531');
+  assert.doesNotMatch(parking, /확인|살펴|문의처를 통해|축제 페이지/);
+
+  const homeOnly = polishFestivalModelReply('주차는 축제 페이지에서 확인해요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '주차는요?',
+    homepage: page,
+  });
+  assert.equal(homeOnly, '주차 안내는 [공식 홈페이지](https://visitgangneung.net/pub/gnfestival/4748.do)에 있어요.');
+  assert.doesNotMatch(homeOnly, /문의|확인|축제 페이지/);
+
+  const shuttle = polishFestivalModelReply(
+    '셔틀은 [축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 확인해요.',
+    { contentId: '2930716', locale: 'ko', userText: '셔틀', tel: '033-640-4531' },
+  );
+  assert.match(shuttle, /문의처 033-640-4531에서 확인해요/);
+  assert.doesNotMatch(shuttle, /gateo\.kr/);
+
+  const keptParking = polishFestivalModelReply('주차는 축제 페이지에서 확인해요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '주차',
+    overview: '주차는 월화거리 공영주차장을 이용해요.',
+    homepage: page,
+  });
+  assert.match(keptParking, /축제 페이지에서 확인/);
+  assert.doesNotMatch(keptParking, /공식 홈페이지/);
+
+  const access = polishFestivalModelReply(
+    '[축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 가는 법을 확인해요.',
+    { contentId: '2930716', locale: 'ko', userText: '가는 법', homepage: page, tel: '033-640-4531' },
+  );
+  assert.match(access, /gateo\.kr/);
+  assert.doesNotMatch(access, /공식 홈페이지/);
+
+  const bareParking = polishFestivalModelReply('주차 안내는 아직 없어요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '주차?',
+  });
+  assert.equal(bareParking, '주차 안내는 공식 홈페이지에 있어요.');
+  assert.doesNotMatch(bareParking, /확인|문의처|축제 페이지/);
+
+  const parkedHome = polishFestivalModelReply(
+    `강릉 국수 축제 주차 정보는 공식 홈페이지(${page})에서 확인할 수 있어요.`,
+    { contentId: '2930716', locale: 'ko', userText: '주차', homepage: page, tel: '033-640-4531' },
+  );
+  assert.equal(parkedHome, `주차 안내는 [공식 홈페이지](${page})에 있어요. 문의 033-640-4531`);
+  assert.doesNotMatch(parkedHome, /확인|살펴|공식 홈페이지\(\)|  /);
+
+  const parkedOther = polishFestivalModelReply(
+    '강릉 국수 축제 주차 정보는 공식 홈페이지(https://example.com/not-official)에서 확인할 수 있어요.',
+    { contentId: '2930716', locale: 'ko', userText: '주차', homepage: page, tel: '033-640-4531' },
+  );
+  assert.equal(parkedOther, `주차 안내는 [공식 홈페이지](${page})에 있어요. 문의 033-640-4531`);
+  assert.doesNotMatch(parkedOther, /example\.com|확인|살펴|축제 페이지|  /);
+  const noisyParking = polishFestivalModelReply(
+    '주차는 [축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 살펴보세요. 문의처를 통해 확인할 수 있어요.',
+    { contentId: '2930716', locale: 'ko', userText: '주차 정보', homepage: page, tel: '033-640-4531' },
+  );
+  assert.equal(noisyParking, `주차 안내는 [공식 홈페이지](${page})에 있어요. 문의 033-640-4531`);
+  const telOnly = polishFestivalModelReply('주차는 축제 페이지에서 살펴보세요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '주차',
+    tel: '033-640-4531',
+  });
+  assert.equal(telOnly, '주차 안내는 문의 033-640-4531에 있어요.');
+  assert.doesNotMatch(telOnly, /문의처를 통해|축제 페이지|확인/);
+
+  const seogwipoParking = {
+    contentId: '506616',
+    locale: 'ko',
+    userText: '주차',
+    homepage: 'https://www.seogwipo.go.kr/festival/506616',
+    tel: '064-760-3030',
+    venue: '천지연 주차장',
+    overview: '천지연폭포와 천지연 주차장 일원에서 열립니다. 과거와 현재, 미래가 만나는 무대입니다.',
+    program: '경연프로그램 : 청소년 페스타',
+  };
+  assert.equal(hasFestivalParkingData(seogwipoParking), false);
+  assert.equal(hasFestivalParkingData({
+    overview: '주차는 월화거리 공영주차장을 이용해요.',
+  }), true);
+  assert.equal(hasFestivalParkingData({
+    overview: '주차 가능. 주차요금 2,000원. 주차 대수 200대.',
+  }), true);
+  assert.equal(hasFestivalParkingData({
+    parking: '월화거리 공영주차장',
+  }), true);
+  assert.equal(hasFestivalParkingData({
+    info: [{ infoname: '주차시설', infotext: '주차요금 1,000원' }],
+  }), true);
+  assert.equal(hasFestivalParkingData({
+    info: [{ infoname: '행사장소', infotext: '천지연 주차장' }],
+    venue: '천지연 주차장',
+  }), false);
+  const pagePointers = [
+    '[강릉 국수 축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서도 관련 정보를 찾아볼 수 있어요.',
+    '[축제 페이지](https://www.gateo.kr/korea/?festival=506616)에서 살펴볼 수 있어요.',
+    '주차는 [서귀포칠십리축제 페이지](https://www.gateo.kr/korea/?festival=506616)에서 알아볼 수 있어요.',
+    '[서귀포칠십리축제 페이지](https://www.gateo.kr/korea/?festival=506616)에서 볼 수 있어요.',
+    'You can find parking on the [festival page](https://www.gateo.kr/korea/?festival=506616).',
+    'See the festival page for parking.',
+  ];
+  for (const line of pagePointers) {
+    assert.equal(stripFestivalPageParkingPointers(line), '');
+  }
+  const guide = '주차 안내는 [공식 홈페이지](https://www.seogwipo.go.kr/festival/506616)에 있어요. 문의 064-760-3030';
+  for (const line of pagePointers.slice(0, 4)) {
+    const polished = polishFestivalModelReply(line, seogwipoParking);
+    assert.equal(polished, guide);
+    assert.doesNotMatch(polished, /축제 페이지|찾아볼|살펴볼|알아볼|볼 수 있어요/);
+  }
+  const enParking = polishFestivalModelReply(pagePointers[4], {
+    ...seogwipoParking,
+    locale: 'en',
+    userText: 'parking',
+  });
+  assert.equal(enParking, 'Parking is on the [official site](https://www.seogwipo.go.kr/festival/506616). Call 064-760-3030.');
+  assert.doesNotMatch(enParking, /festival page|\bfind\b|\bsee\b/i);
+  const lotHint = buildMooniBoundFestivalSystemHint({
+    title: '서귀포칠십리축제',
+    contentId: '506616',
+    venue: '천지연 주차장',
+    sceneOverview: seogwipoParking.overview,
+    homepage: seogwipoParking.homepage,
+    tel: seogwipoParking.tel,
+  }, 'ko');
+  assert.match(lotHint, /주차 정보가 이 데이터에 없다/);
+  assert.match(lotHint, /찾아볼 수 있어요/);
+  assert.doesNotMatch(lotHint, /- 주차:/);
+
+  const seogwipo = buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      eventStartDate: '20261020',
+      eventEndDate: '20261022',
+    },
+    intro: { eventplace: '천지연 주차장' },
+    overview: '천지연폭포와 천지연 주차장 일원에서 열립니다. 과거와 현재, 미래가 만나는 무대입니다.',
+    program: '경연프로그램 : 청소년 페스타',
+    info: [{ infoname: '행사장소', infotext: '천지연 주차장' }],
+  });
+  assert.equal(seogwipo.parking, '');
+  const seogwipoKo = buildFestivalMooniSentenceAnswer(seogwipo, { locale: 'ko', now: NOW });
+  assert.match(seogwipoKo, /서귀포칠십리축제는 10\/20~22, 11일 뒤 시작해요/);
+  assert.match(seogwipoKo, /청소년 페스타 경연이 있어요/);
+  assert.doesNotMatch(seogwipoKo, /과거와 현재|미래가 만나|프로그램\s*[:：]/);
+  const lotVenue = buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      eventStartDate: '20261020',
+      eventEndDate: '20261022',
+      addr1: '제주특별자치도 서귀포시 중정로 1',
+    },
+    intro: { eventplace: '천지연 주차장 (일대)', playtime: '10:00~21:00' },
+    location: { name: '서귀포' },
+    overview: '천지연 주차장 일원에서 열립니다.',
+  });
+  const lotKo = buildFestivalMooniSentenceAnswer(lotVenue, { locale: 'ko', now: NOW });
+  assert.match(lotKo, /천지연 일대에서 열려요/);
+  assert.match(lotKo, /축제 분위기가 저녁까지 이어져요/);
+  assert.ok(lotKo.indexOf('축제 분위기가 저녁까지') < (lotKo.indexOf('근처에서는') === -1 ? lotKo.length : lotKo.indexOf('근처에서는')));
+  assert.doesNotMatch(lotKo, /주차장/);
+  assert.equal(hasFestivalParkingData(lotVenue), false);
+  const lotSpoken = buildMooniBoundFestivalSystemHint(lotVenue, 'ko');
+  assert.match(lotSpoken, /장소: 천지연 일대/);
+  assert.match(lotSpoken, /«주차장»은 붙이지 않는다/);
+  assert.doesNotMatch(lotSpoken, /천지연 주차장/);
+  const lotSentence = polishFestivalModelReply(
+    '서귀포칠십리축제는 천지연폭포 주차장과 서귀포 원도심 일대에서 열려요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 남성중로 23',
+    },
+  );
+  assert.match(lotSentence, /천지연과 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(lotSentence, /주차장|일대 일대|천지연 일대와/);
+  const lotAnd = polishFestivalModelReply(
+    '천지연폭포 주차장 및 서귀포 원도심 일대에서 열려요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 일대',
+      address: '제주특별자치도 서귀포시 서홍동',
+    },
+  );
+  assert.match(lotAnd, /천지연과 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(lotAnd, /주차장|일대 및|천지연 일대와/);
+  const lotParen = polishFestivalModelReply(
+    '천지연 주차장 (일대)에서 저녁까지 이어져요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '볼거리',
+      venue: '천지연폭포 주차장',
+    },
+  );
+  assert.match(lotParen, /천지연 일대에서 저녁까지 이어져요/);
+  assert.doesNotMatch(lotParen, /주차장|일대 일대/);
+  const lotParking = polishFestivalModelReply(
+    '주차는 천지연폭포 주차장을 이용해요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      userText: '주차',
+      venue: '천지연 주차장 (일대)',
+      parking: '천지연폭포 주차장',
+      overview: '주차는 천지연폭포 주차장을 이용해요.',
+    },
+  );
+  assert.match(lotParking, /천지연폭포 주차장/);
+  assert.doesNotMatch(lotParking, /천지연 일대/);
+  const venueNearby = buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      addr1: '제주특별자치도 서귀포시 남성중로 23',
+    },
+    intro: { eventplace: '천지연 주차장 (일대)' },
+    nearbyPlaces: [
+      { name: '천지연폭포', distKm: 0.12 },
+      '이중섭거리',
+      '서귀포매일올레시장',
+      { name: '천지연계곡', distKm: 0.2 },
+      { name: '정방폭포', distKm: 2 },
+    ],
+  });
+  assert.deepEqual(venueNearby.nearbyPlaces, ['이중섭거리', '서귀포매일올레시장', '정방폭포']);
+  const farStem = buildFestivalMooniContext({
+    item: { contentId: '506616', title: '서귀포칠십리축제' },
+    intro: { eventplace: '천지연 주차장 (일대)' },
+    nearbyPlaces: [{ name: '천지연계곡', distKm: 1.5 }, '이중섭거리'],
+  });
+  assert.deepEqual(farStem.nearbyPlaces, ['천지연계곡', '이중섭거리']);
+  const venueNearbyFacts = buildFestivalFirstAnswerFacts(venueNearby, { locale: 'ko', now: NOW });
+  assert.equal(venueNearbyFacts.nearby[0], '이중섭거리');
+  assert.ok(!venueNearbyFacts.nearby.some((name) => /천지연/.test(name)));
+  const venueNearbyHint = buildMooniBoundFestivalSystemHint(venueNearby, 'ko');
+  assert.match(venueNearbyHint, /근처\(GATEO\): 이중섭거리, 서귀포매일올레시장, 정방폭포/);
+  assert.doesNotMatch(venueNearbyHint, /천지연폭포|천지연계곡/);
+  assert.match(venueNearbyHint, /이름 줄기가 같은 명소는 근처로 다시 말하지 않는다/);
+  assert.match(venueNearbyHint, /«A와 B, C»/);
+  const nearbyStrip = polishFestivalModelReply(
+    '서귀포칠십리축제는 천지연 일대에서 저녁까지 이어져요. 근처에서는 천지연폭포, 이중섭거리, 서귀포매일올레시장을 둘러볼 수 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 (일대)',
+      address: '제주특별자치도 서귀포시 남성중로 23',
+      nearbyPlaces: ['이중섭거리', '서귀포매일올레시장', '정방폭포'],
+    },
+  );
+  assert.match(nearbyStrip, /천지연 일대에서 저녁까지 이어져요/);
+  assert.match(nearbyStrip, /근처에서는 이중섭거리, 서귀포매일올레시장, 정방폭포를 둘러볼 수 있어요/);
+  assert.doesNotMatch(nearbyStrip, /천지연폭포|주차장/);
+  const nearbyOnly = polishFestivalModelReply(
+    '근처에서는 천지연폭포를 둘러볼 수 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 (일대)',
+      nearbyPlaces: ['이중섭거리', '정방폭포'],
+    },
+  );
+  assert.match(nearbyOnly, /근처에서는 이중섭거리, 정방폭포를 둘러볼 수 있어요/);
+  assert.doesNotMatch(nearbyOnly, /천지연/);
+  const nearbyCopied = polishFestivalModelReply(
+    '서귀포칠십리축제는 천지연 일대에서 저녁까지 이어져요. 황우지해안열두굴, 천지연폭포, 이중섭 거주지가 근처에 있어요.',
+    {
+      contentId: '506616',
+      locale: 'ko',
+      venue: '천지연 주차장 일대',
+      nearbyPlaces: ['황우지해안열두굴', '이중섭 거주지', '새섬공원'],
+    },
+  );
+  assert.match(nearbyCopied, /천지연 일대에서 저녁까지 이어져요/);
+  assert.match(nearbyCopied, /황우지해안열두굴, 이중섭 거주지, 새섬공원이 근처에 있어요/);
+  assert.doesNotMatch(nearbyCopied, /천지연폭포/);
+  const geurigo = polishFestivalModelReply(
+    '서귀포칠십리축제는 천지연 일대와 서귀포 원도심 일대 그리고 이중섭거리에서 열려요.',
+    { contentId: '506616', locale: 'ko', venue: '천지연 주차장 (일대)' },
+  );
+  assert.match(geurigo, /천지연과 서귀포 원도심 일대, 이중섭거리에서 열려요/);
+  assert.doesNotMatch(geurigo, /그리고|천지연 일대와/);
+  const geurigoClause = polishFestivalModelReply(
+    '축제가 열리고 그리고 저녁에는 불이 켜져요.',
+    { contentId: '506616', locale: 'ko', venue: '천지연 주차장 (일대)' },
+  );
+  assert.match(geurigoClause, /열리고 그리고 저녁에는 불이 켜져요/);
+  const geurigoComma = polishFestivalModelReply(
+    '이중섭거리와 올레시장, 그리고 정방폭포를 둘러볼 수 있어요.',
+    { contentId: '2930716', locale: 'ko' },
+  );
+  assert.match(geurigoComma, /올레시장, 그리고 정방폭포를 둘러볼 수 있어요/);
+  assert.match(KO.festivalAnswerRules, /이름 줄기가 같은 근처 장소는 다시 말하지 않는다/);
+  assert.match(KO.festivalAnswerRules, /«A와 B, C»/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /«A와 B, C»/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /축제 분위기가 저녁까지 이어져요/);
+  assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /문장 순서는 dateLine/);
+  assert.match(KO.festivalAnswerRules, /분위기 문장을 이름 목록으로 바꾸지 않는다|볼거리와 분위기 문장을 이름 목록으로 바꾸지 않는다/);
+  const paradeOverview = '보통 천지연폭포 주차장 및 서귀포 원도심(구 시가지) 일대에서 진행되며, 거리 전체가 무대가 되는 거리 퍼레이드, 다양한 장르의 공연·버스킹, 지역 예술인 참여 무대, 먹거리·플리마켓 등으로 축제 분위기를 더한다. 특히 퍼레이드는 시민과 단체가 함께 참여해 서귀포의 정체성과 활기를 보여주는 핵심 프로그램으로, 축제 기간 원도심 일대를 걸으며 볼거리와 즐길 거리를 동시에 체험할 수 있다는 점이 특징이다.';
+  const paradeCtx = buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      eventStartDate: '20261023',
+      eventEndDate: '20261025',
+      addr1: '제주특별자치도 서귀포시 서홍동',
+    },
+    intro: { eventplace: '천지연 주차장 일대', playtime: '10:00~22:00' },
+    overview: paradeOverview,
+    program: '길거리 퍼레이드\n개막식\n경연프로그램 : 청소년 페스타',
+    nearbyPlaces: [
+      { name: '천지연폭포', distKm: 0.1 },
+      '황우지해안열두굴',
+      '이중섭 거주지',
+      '새섬공원',
+    ],
+  });
+  const paradeKo = buildFestivalMooniSentenceAnswer(paradeCtx, {
+    locale: 'ko',
+    now: new Date('2026-10-12T03:00:00Z'),
+  });
+  assert.match(paradeKo, /10\/23~25, 11일 뒤 시작해요/);
+  assert.match(paradeKo, /천지연과 서귀포 원도심 일대에서 길거리 퍼레이드와 개막식, 청소년 페스타 경연이 열려요/);
+  assert.doesNotMatch(paradeKo, /서귀포의/);
+  const ofDowntown = buildFestivalMooniSentenceAnswer(buildFestivalMooniContext({
+    item: {
+      contentId: '506616',
+      title: '서귀포칠십리축제',
+      eventStartDate: '20261023',
+      eventEndDate: '20261025',
+      addr1: '제주특별자치도 서귀포시 서홍동',
+    },
+    intro: { eventplace: '천지연 주차장 일대', playtime: '10:00~22:00' },
+    overview: paradeOverview.replace('서귀포 원도심', '서귀포의 원도심'),
+    program: '길거리 퍼레이드\n개막식\n경연프로그램 : 청소년 페스타',
+    nearbyPlaces: ['황우지해안열두굴', '이중섭 거주지', '새섬공원'],
+  }), { locale: 'ko', now: new Date('2026-10-12T03:00:00Z') });
+  assert.match(ofDowntown, /천지연과 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(ofDowntown, /서귀포의/);
+  assert.match(paradeKo, /시민과 단체가 함께 걷는 퍼레이드로 활기가 넘치고, 축제 분위기가 저녁까지 이어져요/);
+  assert.match(paradeKo, /근처에서는 황우지해안열두굴, 이중섭 거주지, 새섬공원을 둘러볼 수 있어요/);
+  assert.ok(paradeKo.indexOf('길거리 퍼레이드와 개막식') < paradeKo.indexOf('시민과 단체'));
+  assert.ok(paradeKo.indexOf('축제 분위기가 저녁까지') < paradeKo.indexOf('근처에서는'));
+  assert.ok(paradeKo.indexOf('근처에서는') < paradeKo.indexOf('페이지'));
+  assert.equal(countFestivalCardSentences(paradeKo), 5);
+  assert.doesNotMatch(paradeKo, /주차장|천지연폭포/);
+  const paradeFacts = buildFestivalFirstAnswerFacts(paradeCtx, {
+    locale: 'ko',
+    now: new Date('2026-10-12T03:00:00Z'),
+  });
+  assert.match(paradeFacts.atmosphere.join(' '), /시민과 단체가 함께 걷는 퍼레이드/);
+  const paradeModel = [
+    '서귀포칠십리축제는 10/23~25, 11일 뒤 시작해요.',
+    '천지연폭포 주차장과 서귀포 원도심 일대에서 거리 퍼레이드를 즐기고 지역 예술인의 버스킹과 공연을 보며 먹거리와 플리마켓을 구경해요.',
+    '시민과 단체가 함께하는 길거리 퍼레이드와 개막식 그리고 청소년 페스타 경연이 저녁까지 이어져 활기찬 분위기를 만들어요.',
+    '근처에는 황우지해안열두굴, 이중섭 거주지, 새섬공원이 있어요.',
+    paradeFacts.closing,
+  ].join(' ');
+  const paradePolished = polishFestivalModelReply(paradeModel, {
+    contentId: '506616',
+    locale: 'ko',
+    venue: paradeCtx.venue,
+    address: paradeCtx.address,
+    nearbyPlaces: paradeCtx.nearbyPlaces,
+  });
+  assert.equal(countFestivalCardSentences(paradePolished), countFestivalCardSentences(paradeModel));
+  assert.match(paradePolished, /시민과 단체/);
+  assert.match(paradePolished, /활기/);
+  assert.match(paradePolished, /천지연과 서귀포 원도심 일대에서/);
+  assert.doesNotMatch(paradePolished, /주차장|천지연 일대와/);
+  const paradeAccepted = acceptFestivalModelOpening(paradePolished, paradeFacts);
+  assert.match(paradeAccepted, /시민과 단체/);
+  assert.match(paradeAccepted, /활기/);
+  assert.ok(paradeAccepted.indexOf('활기') < paradeAccepted.indexOf('근처에는'));
+  const jaguri = acceptFestivalModelOpening(
+    `서귀포칠십리축제는 10/23~25, 11일 뒤 시작해요. 서귀포 자구리공원 일대에서 퍼레이드와 시민 참여 프로그램이 열려요. 축제 분위기가 활기차요. 근처에서는 황우지해안열두굴, 이중섭 거주지, 새섬공원을 둘러볼 수 있어요. ${paradeFacts.closing}`,
+    paradeFacts,
+  );
+  assert.equal(jaguri, '');
+  const listOnly = acceptFestivalModelOpening(
+    `서귀포칠십리축제는 10/23~25, 11일 뒤 시작해요. 길거리 퍼레이드, 개막식, 청소년 페스타 경연이 있어요. 근처에서는 황우지해안열두굴, 이중섭 거주지, 새섬공원을 둘러볼 수 있어요. ${paradeFacts.closing}`,
+    paradeFacts,
+  );
+  assert.equal(listOnly, '');
+  const eveningAfter = acceptFestivalModelOpening(
+    `서귀포칠십리축제는 10/23~25, 11일 뒤 시작해요. 근처에서는 황우지해안열두굴, 이중섭 거주지, 새섬공원을 둘러볼 수 있어요. 천지연 일대에서 저녁까지 이어져요. 시민과 단체가 함께 걷는 퍼레이드로 활기가 넘쳐요. ${paradeFacts.closing}`,
+    paradeFacts,
+  );
+  assert.match(eveningAfter, /축제 분위기가 저녁까지 이어져요/);
+  assert.ok(eveningAfter.indexOf('축제 분위기가 저녁까지') < eveningAfter.indexOf('근처에서는'));
+  assert.ok(eveningAfter.indexOf('시민과 단체') < eveningAfter.indexOf('근처에서는'));
+  const droppedNearby = polishFestivalModelReply(
+    '시민과 단체가 함께 걷는 퍼레이드로 활기가 넘쳐요. 근처에서는 천지연폭포를 둘러볼 수 있어요.',
+    { contentId: '506616', locale: 'ko', venue: '천지연 주차장 일대', nearbyPlaces: [] },
+  );
+  assert.equal(countFestivalCardSentences(droppedNearby), 2);
+  assert.match(droppedNearby, /시민과 단체가 함께 걷는 퍼레이드/);
+  assert.match(droppedNearby, /근처에서는/);
+  const seogwipoFacts = buildFestivalFirstAnswerFacts(seogwipo, { locale: 'ko', now: NOW });
+  assert.match(seogwipoFacts.dateLine, /10\/20~22, 11일 뒤 시작해요/);
+  assert.deepEqual(seogwipoFacts.programs, ['청소년 페스타 경연']);
+  assert.equal(acceptFestivalModelOpening(
+    '서귀포칠십리축제는 11일 뒤 시작해요. 과거와 현재, 미래가 만나는 무대예요. 경연프로그램 : 청소년 페스타가 있어요.',
+    seogwipoFacts,
+  ), '');
+  const datedCountdown = acceptFestivalModelOpening(
+    `서귀포칠십리축제는 11일 뒤 시작해요. 청소년 페스타 경연이 있어요. 자세한 내용은 [서귀포칠십리축제 페이지](${seogwipo.gateoUrl})에서 볼 수 있어요.`,
+    seogwipoFacts,
+  );
+  assert.match(datedCountdown, /10\/20~22, 11일 뒤 시작해요/);
+  assert.match(datedCountdown, /청소년 페스타 경연이 있어요/);
+  assert.doesNotMatch(datedCountdown, /과거와 현재/);
+  const withFee = buildFestivalMooniContext({
+    item: { contentId: '506616', title: '서귀포칠십리축제' },
+    intro: { eventplace: '천지연 주차장' },
+    overview: '천지연 주차장 일원에서 열립니다.',
+    info: [{ infoname: '주차시설', infotext: '주차 가능. 주차요금 2,000원. 주차 대수 200대' }],
+  });
+  assert.match(withFee.parking, /주차요금/);
+  assert.equal(hasFestivalParkingData(withFee), true);
+  assert.match(
+    stripDisallowedFestivalLinks('안내 [https://example.com/bracket] 끝', { homepage: page }),
+    /^안내 끝$/,
+  );
+  assert.match(
+    stripDisallowedFestivalLinks(`공식 홈페이지（https://example.com/wide）에서`, { homepage: page }),
+    /^공식 홈페이지에서$/,
+  );
+  assert.match(
+    stripDisallowedFestivalLinks(`공식 홈페이지(${page}/)에서`, { homepage: page }),
+    /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)에서/,
+  );
+
+  const oneStay = polishFestivalModelReply(
+    '강릉 월화거리에서 묵어요. 다양한 숙소가 자리하고 있어요. 강릉의 매력을 느끼며 쉬어요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '어디서 자요?',
+      placeName: '강릉',
+      stayAreas: ['월화거리'],
+      lat: 37.755777,
+      lng: 128.897602,
+      festivalTitle: '강릉 국수 축제',
+    },
+  );
+  assert.match(oneStay, /월화거리/);
+  assert.match(oneStay, /#festival-lodging/);
+  assert.doesNotMatch(oneStay, /다양한 숙소가 자리|매력을 느끼며/);
+  const stayHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '어디서 자요?',
+    locale: 'ko',
+    festivalContext: {
+      title: '강릉 국수 축제',
+      contentId: '2930716',
+      hubLabel: '강릉',
+      stayAreas: ['월화거리'],
+      lat: 37.755777,
+      lng: 128.897602,
+      homepage: page,
+      tel: '033-640-4531',
+    },
+  });
+  assert.match(stayHint.hint, /다양한 숙소가 자리하고 있어요/);
+  assert.match(stayHint.hint, /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)/);
+  assert.match(stayHint.hint, /033-640-4531/);
+  const namedStays = polishFestivalModelReply(
+    '월화거리 인근으로 교동 권역에서 숙소를 찾을 수 있어요. 다양한 숙소가 자리하고 있어요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '어디서 자요?',
+      placeName: '강릉',
+      stayAreas: ['월화거리', '교동', '안목'],
+      lat: 37.755777,
+      lng: 128.897602,
+      nearbyStays: [
+        { name: '강릉 씨사이드', distKm: 0.35 },
+        { name: '교동 스테이', distKm: 1.2 },
+        { name: '경포 호텔', distKm: 8 },
+        { name: '먼 호텔', distKm: 12 },
+      ],
+    },
+  );
+  assert.match(namedStays, /강릉 씨사이드\(350m\)/);
+  assert.match(namedStays, /교동 스테이\(1\.2km\)/);
+  assert.match(namedStays, /경포 호텔\(8km\)/);
+  assert.doesNotMatch(namedStays, /먼 호텔|인근으로|숙소가 자리|다양한 숙소|월화거리/);
+  assert.match(namedStays, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
+  assert.match(namedStays, /가까운 숙소로 .*경포 호텔\(8km\)이 있어요/);
+  assert.doesNotMatch(namedStays, /예요|이에요/);
+  assert.equal((namedStays.match(/#festival-lodging/g) || []).length, 1);
+  const batchimLead = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '어디서 자요?',
+    lat: 37.755777,
+    lng: 128.897602,
+    nearbyStays: [
+      { name: '호텔 탑스텐 강릉', distKm: 1.2 },
+      { name: '다온한옥펜션', distKm: 2 },
+      { name: '서머셋 제주신화월드', distKm: 3.4 },
+    ],
+  });
+  assert.match(batchimLead, /가까운 숙소로 호텔 탑스텐 강릉\(1\.2km\), 다온한옥펜션\(2km\), 서머셋 제주신화월드\(3\.4km\)가 있어요/);
+  assert.doesNotMatch(batchimLead, /강릉예요|펜션예요|월드예요|예요|이에요/);
+  const gangneungOnly = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소',
+    nearbyStays: [{ name: '호텔 탑스텐 강릉', distKm: 1.2 }],
+  });
+  assert.match(gangneungOnly, /호텔 탑스텐 강릉\(1\.2km\)이 있어요/);
+  const pensionOnly = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소',
+    nearbyStays: [{ name: '다온한옥펜션', distKm: 2 }],
+  });
+  assert.match(pensionOnly, /다온한옥펜션\(2km\)이 있어요/);
+  const worldOnly = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소',
+    nearbyStays: [{ name: '서머셋 제주신화월드', distKm: 3.4 }],
+  });
+  assert.match(worldOnly, /서머셋 제주신화월드\(3\.4km\)가 있어요/);
+  const noBatchimLead = polishFestivalModelReply('숙소예요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '숙소',
+    nearbyStays: [{ name: '강릉 스카이베이', distKm: 1 }],
+  });
+  assert.match(noBatchimLead, /가까운 숙소로 강릉 스카이베이\(1km\)가 있어요/);
+  const inventedKm = polishFestivalModelReply(
+    '호텔 탑스텐 강릉은 1.2km이고 신라모노그램은 99km예요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '숙소',
+      lat: 37.755777,
+      lng: 128.897602,
+      nearbyStays: [
+        { name: '호텔 탑스텐 강릉', lat: 37.766, lng: 128.9 },
+        { name: '신라모노그램' },
+      ],
+    },
+  );
+  assert.match(inventedKm, /호텔 탑스텐 강릉\(\d+(?:\.\d+)?km\)/);
+  assert.doesNotMatch(inventedKm, /신라모노그램|99\s*km/);
+  const mixedHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '숙소',
+    locale: 'ko',
+    festivalContext: {
+      title: '강릉 국수 축제',
+      contentId: '2930716',
+      lat: 37.755777,
+      lng: 128.897602,
+      nearbyStays: [
+        { name: '호텔 탑스텐 강릉', lat: 37.766, lng: 128.9 },
+        { name: '신라모노그램' },
+      ],
+    },
+  });
+  const mixedLine = mixedHint.hint.split('\n').find((line) => line.includes('숙소 답:')) || '';
+  assert.match(mixedLine, /호텔 탑스텐 강릉\(\d+(?:\.\d+)?km\)/);
+  assert.doesNotMatch(mixedLine, /신라모노그램/);
+  assert.doesNotMatch(mixedLine, /거리와 함께 말한다/);
+  const bareKm = polishFestivalModelReply(
+    '호텔 탑스텐 강릉까지 4km예요. [강릉 숙소 안내](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '숙소',
+    },
+  );
+  assert.doesNotMatch(bareKm, /4\s*km/);
+  assert.match(bareKm, /#festival-lodging/);
+  const areaSearch = polishFestivalModelReply(
+    '교동 권역에서 숙소를 찾을 수 있어요. [강릉 숙소 안내](https://www.gateo.kr/korea/?festival=2930716#festival-lodging)',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '어디서 자요?',
+      placeName: '강릉',
+    },
+  );
+  assert.doesNotMatch(areaSearch, /권역에서 숙소를 찾을 수 있어요/);
+  assert.match(areaSearch, /#festival-lodging/);
+  const namedHint = await resolveMooniChatKoreaFestivalHint({
+    userText: '어디서 자요?',
+    locale: 'ko',
+    festivalContext: {
+      title: '강릉 국수 축제',
+      contentId: '2930716',
+      nearbyStays: [
+        { name: '강릉 씨사이드', distKm: 0.35 },
+        { name: '교동 스테이', distKm: 1.2 },
+      ],
+    },
+  });
+  assert.match(namedHint.hint, /강릉 씨사이드\(350m\)/);
+  assert.match(namedHint.hint, /\[숙소 카드\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716#festival-lodging\)/);
+
+  const fromIntro = buildFestivalMooniContext({
+    item: { title: '강릉 국수 축제', contentId: '2930716' },
+    intro: {
+      sponsor1tel: '033-640-4531',
+      eventhomepage: page,
+      parking: '월화거리 공영주차장',
+    },
+  });
+  assert.equal(fromIntro.tel, '033-640-4531');
+  assert.equal(fromIntro.homepage, page);
+  assert.match(fromIntro.parking, /월화거리 공영주차장/);
+
+  const unlinked = polishFestivalModelReply('월화거리에서 국수를 먹어요. 가는 법을 알아보세요.', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '일정',
+  });
+  assert.doesNotMatch(unlinked, /가는 법/);
+  const nudge = polishFestivalModelReply('국수를 먹어요. 다음에는 숙소를 안내해 드릴까요?', {
+    contentId: '2930716',
+    locale: 'ko',
+    userText: '일정',
+  });
+  assert.doesNotMatch(nudge, /안내해 드릴까요|다음에는/);
+
+  const gangneung = JSON.parse(readFileSync(join(root, 'scripts/staging/fixtures/festival-opening/2930716.json'), 'utf8'));
+  const threeCtx = buildFestivalMooniContext({
+    ...gangneung,
+    nearbyPlaces: ['기린사우나', '강릉시 행정복지센터', '경포해변', '오죽헌', '강릉향교'],
+  });
+  const threeFacts = buildFestivalFirstAnswerFacts(threeCtx, { now: NOW });
+  assert.deepEqual(threeFacts.nearby, ['경포해변', '오죽헌', '강릉향교']);
+  const thin = acceptFestivalModelOpening(
+    '강릉 국수 축제는 10/15~18, 엿새 뒤 시작해요. 장칼국수를 맛볼 수 있는 자리예요. 근처에서는 경포해변을 둘러볼 수 있어요.',
+    threeFacts,
+    [threeCtx.address, threeCtx.timeText, threeCtx.feeText],
+  );
+  assert.match(thin, /경포해변/);
+  assert.match(thin, /오죽헌/);
+  assert.match(thin, /강릉향교/);
+
+  const many = buildFestivalMooniContext({
+    item: { title: '테스트 축제', contentId: '1' },
+    nearbyPlaces: Array.from({ length: 8 }, (_, index) => `장소${index}`),
+  });
+  assert.equal(many.nearbyPlaces.length, 8);
+
+  const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
+  assert.equal((chat.match(/loadFestivalAskContext/g) || []).length >= 3, true);
+  assert.match(chat, /loadFestivalRestaurantsForAsk/);
+  assert.match(chat, /loadFestivalLodgingForAsk/);
+  const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
+  assert.match(sheet, /beginFestivalRestaurantLoad/);
+  const stayStrip = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
+  assert.match(stayStrip, /beginFestivalLodgingLoad/);
+  assert.match(stayStrip, /publishFestivalLodgingStays/);
+});
+
+test('festival page link appears once and the closing link stays', () => {
+  const pageUrl = 'https://www.gateo.kr/korea/?festival=2930716';
+  const bare = 'https://gateo.kr/korea/?festival=2930716';
+  const doubled = `[강릉 국수 축제 페이지](${pageUrl}) 자세한 내용은 [축제 페이지](${pageUrl})에서 볼 수 있어요.`;
+  const once = dedupeFestivalPageLinks(doubled);
+  assert.equal((once.match(/festival=2930716/g) || []).length, 1);
+  assert.match(once, /^자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요\.$/);
+
+  const withStay = `${doubled} [강릉 숙소 안내](${pageUrl}#festival-lodging)`;
+  const stayed = dedupeFestivalPageLinks(withStay);
+  assert.equal((stayed.match(/festival=2930716\)/g) || []).length, 1);
+  assert.match(stayed, /#festival-lodging/);
+
+  const polished = polishFestivalModelReply(
+    `월화거리에서 국수를 먹어요. [강릉 국수 축제 페이지](${bare}) 자세한 내용은 [축제 페이지](${pageUrl})에서 볼 수 있어요.`,
+    { contentId: '2930716', locale: 'ko', userText: '일정' },
+  );
+  assert.equal((polished.match(/festival=2930716/g) || []).length, 1);
+  assert.match(polished, /자세한 내용은 \[축제 페이지\]/);
+  assert.doesNotMatch(polished, /강릉 국수 축제 페이지\]/);
+
+  const gangneung = JSON.parse(readFileSync(join(root, 'scripts/staging/fixtures/festival-opening/2930716.json'), 'utf8'));
+  const facts = buildFestivalFirstAnswerFacts(buildFestivalMooniContext(gangneung), { now: NOW });
+  const opening = acceptFestivalModelOpening(
+    `강릉 국수 축제는 10/15~18, 엿새 뒤 시작해요. 장칼국수를 맛볼 수 있는 자리예요. [강릉 국수 축제 페이지](${pageUrl}) 자세한 내용은 [축제 페이지](${pageUrl})에서 볼 수 있어요.`,
+    facts,
+    [],
+  );
+  assert.equal((opening.match(/festival=2930716/g) || []).length, 1);
+  assert.match(opening, /자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요/);
+  assert.doesNotMatch(opening, /강릉 국수 축제 페이지\]/);
 });
 
 test('desktop and mobile place entry open bound MOONi', () => {

@@ -1,9 +1,13 @@
 import {
+  dedupeFestivalPageLinks,
   festivalTimingStatus,
   filterFestivalStayAreaNames,
+  filterVenueAreaNearbyNames,
+  festivalSpokenVenue,
   gateoKoreaFestivalDetailUrl,
+  hasFestivalParkingData,
   kstTodayYmd,
-  rankFestivalRestaurants,
+  rankFestivalRestaurantRows,
   rewriteFestivalFormalEndings,
   ymdDayDelta,
 } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
@@ -15,6 +19,7 @@ import {
 } from '../../../shared/korea/englishPlaceLabel.js';
 import { parseEngFestivalTitle } from '../festivalTitleEnMerge.js';
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
+import { stripTrailingRegionLabel } from './festivalNearbySights.js';
 
 /**
  * @param {{
@@ -27,6 +32,7 @@ import { festivalLngLat } from '../koreaFestivalCorridors.js';
  *   program?: string,
  *   nearbyPlaces?: string[],
  *   nearbyRestaurants?: string[],
+ *   info?: Array<{ infoname?: string, name?: string, infotext?: string, text?: string }>,
  * }} input
  */
 export function buildFestivalMooniContext(input = {}) {
@@ -54,7 +60,9 @@ export function buildFestivalMooniContext(input = {}) {
     address,
     lat: pt?.lat ?? null,
     lng: pt?.lng ?? null,
-    homepage: String(homepage || '').trim(),
+    homepage: String(homepage || intro?.eventhomepage || '').trim(),
+    tel: plainFact(intro?.sponsor1tel || intro?.sponsor1Tel || intro?.tel || item?.tel || ''),
+    parking: plainFact(intro?.parking || '') || parkingFromInfoRows(input.info),
     hubLabel,
     titleEn: String(item?.titleEn || '').trim(),
     overview: filterOverviewFacts(
@@ -68,8 +76,8 @@ export function buildFestivalMooniContext(input = {}) {
     program: String(program || intro?.program || '')
       .replace(/<[^>]+>/g, ' ')
       .trim(),
-    nearbyPlaces: uniqueNames(nearbyPlaces),
-    nearbyRestaurants: rankFestivalRestaurants(nearbyRestaurants),
+    nearbyPlaces: collectFestivalNearbyNames(nearbyPlaces, hubLabel, venue, address),
+    nearbyRestaurants: rankFestivalRestaurantRows(nearbyRestaurants),
     stayAreas: filterFestivalStayAreaNames(input.stayAreas, pt?.lat, pt?.lng),
   };
 }
@@ -81,9 +89,22 @@ function plainFact(value) {
     .trim();
 }
 
+function parkingFromInfoRows(info) {
+  const bits = [];
+  for (const row of Array.isArray(info) ? info : []) {
+    const name = String(row?.infoname || row?.name || '').trim();
+    const text = plainFact(row?.infotext || row?.text || '');
+    if (!hasFestivalParkingData({ info: [{ infoname: name, infotext: text }] })) continue;
+    const bit = [name, text].filter(Boolean).join(' ').trim();
+    if (bit && !bits.includes(bit)) bits.push(bit);
+  }
+  return bits.join(' ').trim();
+}
+
 /** Promo, superlative, and renaming sentences. Concrete noun phrases in the same sentence go with them. */
 const OVERVIEW_FILLER_RE =
-  /사랑을 받|대표|마음껏|황금빛|다양한 즐길거리|친숙하게|행사명이 변경|제\s*\d+\s*회|그 어느|많은 사랑|더욱|다채|풍성|잊지 못|최고의|유일|명품|감동|힐링|정취|내려놓|분주|느끼|낭만|추억/;
+  /사랑을 받|대표|마음껏|황금빛|다양한 즐길거리|친숙하게|행사명이 변경|제\s*\d+\s*회|그 어느|많은 사랑|더욱|다채|풍성|잊지 못|최고의|유일|명품|감동|힐링|정취|내려놓|분주|느끼|낭만|추억|과거와\s*현재|미래가\s*만나|만나는\s*무대/;
+const OVERVIEW_SLOGAN_RE = /과거와\s*현재|미래가\s*만나|만나는\s*무대/;
 
 /** Overview lines we can say in 해요. Press endings such as 열린다 stay out. */
 const OVERVIEW_SAYABLE_RE = /(?:입니다|이다|합니다|있다|해요|이에요|예요|있어요)[.!?。]?\s*$/;
@@ -196,9 +217,21 @@ function uniqueNames(values) {
     const name = String(raw || '').trim();
     if (!name || out.includes(name)) continue;
     out.push(name);
-    if (out.length >= 6) break;
+    if (out.length >= 12) break;
   }
   return out;
+}
+
+function collectFestivalNearbyNames(values, hubLabel, venue, address) {
+  const labeled = [];
+  for (const raw of Array.isArray(values) ? values : []) {
+    const source = raw && typeof raw === 'object' ? raw : { name: raw };
+    const name = stripTrailingRegionLabel(String(source.name || '').trim(), hubLabel);
+    if (!name) continue;
+    const distKm = Number(source.distKm);
+    labeled.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
+  }
+  return uniqueNames(filterVenueAreaNearbyNames(labeled, { venue, address }));
 }
 
 const KO_AHEAD = ['', '하루', '이틀', '사흘', '나흘', '닷새', '엿새', '이레', '여드레', '아흐레', '열흘'];
@@ -240,21 +273,29 @@ function isPostalAddress(text) {
 }
 
 function shortVenue(venue) {
+  const spoken = festivalSpokenVenue(venue);
+  const raw = String(venue || '').replace(/\s+/g, ' ').trim();
+  if (spoken && spoken !== raw) return spoken;
   if (streetName(venue)) return streetName(venue);
-  let text = String(venue || '').replace(/(?:\s*(?:일원|일대|부근|인근|주변))+$/g, '').trim();
+  let text = raw.replace(/(?:\s*(?:일원|일대|부근|인근|주변))+$/g, '').trim();
   if (!text || isPostalAddress(text)) return '';
   const parts = text.split(/\s+/).filter(Boolean);
   while (parts.length > 1 && /(?:특별시|광역시|특별자치도|시|군|구)$/.test(parts[0])) parts.shift();
   return parts.join(' ');
 }
 
-function runsIntoEvening(ctx) {
-  const blob = `${ctx?.title || ''} ${ctx?.venue || ''} ${ctx?.program || ''} ${ctx?.overview || ''}`;
+/** Evening only when playtime ends at 19:00 or later, or the overview says so. */
+export function festivalRunsIntoEvening(ctx) {
+  const blob = `${ctx?.title || ''} ${ctx?.venue || ''} ${ctx?.program || ''} ${ctx?.sceneOverview || ''} ${ctx?.overview || ''}`;
   if (/야간|야시장|밤시장|나이트/.test(blob)) return true;
   const times = [...String(ctx?.timeText || '').matchAll(/(\d{1,2})\s*:\s*\d{2}/g)];
   if (!times.length) return false;
   const hour = Number(times[times.length - 1][1]);
   return hour >= 19 || hour < 6;
+}
+
+function runsIntoEvening(ctx) {
+  return festivalRunsIntoEvening(ctx);
 }
 
 function openingNearby(names) {
@@ -267,19 +308,28 @@ function openingNearby(names) {
   return out;
 }
 
+function speakableProgramLabel(name) {
+  const labeled = String(name || '').match(/^(.{1,20}?)\s*[:：]\s*(.+)$/);
+  if (!labeled || !/프로그램/.test(labeled[1])) return String(name || '').trim();
+  const kind = labeled[1].replace(/프로그램/g, '').replace(/\s+/g, '').trim();
+  const value = labeled[2].replace(/\s+/g, ' ').trim();
+  if (kind && value && kind !== value) return `${value} ${kind}`.trim();
+  return (value || kind).trim();
+}
+
 function programNames(program) {
   const flat = dropHanjaParentheticals(String(program || ''))
     .replace(/<[^>]+>/g, ' ')
     .replace(/\([^)]*\)/g, ' ');
   const names = [];
   for (const piece of flat.split(/[\n,/·]| 및 /)) {
-    const name = piece
+    const name = speakableProgramLabel(piece
       .replace(/^\s*\d+[.)]\s*/, '')
       .replace(/^[-•]\s*/, '')
       .replace(/[()]/g, '')
       .replace(/^\s*(?:(?:메인|주요|부대|소비자\s*참여)\s*)?프로그램\s*[:：]\s*/, '')
       .replace(/\s+/g, ' ')
-      .trim();
+      .trim());
     if (!name || name.length > 24) continue;
     if (OVERVIEW_FILLER_RE.test(name)) continue;
     if (/방청|공개\s*방송|시청자/.test(name)) continue;
@@ -438,6 +488,14 @@ function koDateSentence(ctx, today) {
   return when ? `${ctx.title}${topic} ${when}.` : '';
 }
 
+function englishNextEdition(text) {
+  const src = String(text || '');
+  if (/내년(?:에도)?/.test(src)) return 'The next edition is next year.';
+  const year = src.match(/다음\s*(?:회|개최)[^.\n]{0,24}(20\d{2})/);
+  if (year) return `The next edition is in ${year[1]}.`;
+  return '';
+}
+
 function enDateSentence(ctx, today, phrase) {
   const range = briefDateRange(ctx.eventStartDate, ctx.eventEndDate, true);
   const status = festivalTimingStatus(ctx.eventStartDate, ctx.eventEndDate, today);
@@ -448,7 +506,9 @@ function enDateSentence(ctx, today, phrase) {
     return `${phrase} runs ${when}.`;
   }
   if (status === 'ended') {
-    return range ? `${phrase} ran ${range} and has ended.` : `${phrase} has ended.`;
+    const base = range ? `${phrase} ran ${range} and has ended.` : `${phrase} has ended.`;
+    const next = englishNextEdition(ctx.sceneOverview || ctx.overview);
+    return next ? `${base} ${next}` : base;
   }
   if (status === 'ongoing') {
     return range ? `${phrase} runs ${range} and is underway.` : `${phrase} is underway.`;
@@ -538,14 +598,70 @@ function enSceneFacts(sentences, raw) {
   return out.filter((line) => line.length <= 160).slice(0, 2);
 }
 
+/** Parking-lot venue spoken as «천지연 일대», plus «서귀포 원도심» when the overview names it. */
+function lotVenuePhrase(ctx) {
+  const raw = String(ctx.venue || '').replace(/\s+/g, ' ').trim();
+  const spoken = festivalSpokenVenue(raw);
+  if (!spoken || spoken === raw) return '';
+  const areas = [spoken];
+  const downtown = String(ctx.sceneOverview || '').match(/([가-힣]{2,6})(?:의)?\s*원도심/);
+  if (downtown) {
+    const label = `${downtown[1].replace(/의$/, '')} 원도심`;
+    if (!areas.includes(label)) areas.push(label);
+  }
+  return joinVenueAreas(areas);
+}
+
+/** Two venue areas share one trailing «일대»: «천지연과 서귀포 원도심 일대». */
+function joinVenueAreas(areas) {
+  if (!areas.length) return '';
+  if (areas.length === 1) return areas[0];
+  const stems = areas
+    .map((area) => String(area || '').replace(/\s*일대$/, '').trim())
+    .filter(Boolean);
+  if (stems.length <= 1) return areas[0];
+  const particle = hangulHasBatchim(stems[0]) ? '과' : '와';
+  return `${stems[0]}${particle} ${stems.slice(1).join(', ')} 일대`;
+}
+
+function joinVenuePrograms(names) {
+  const shown = names.slice(0, 3);
+  if (shown.length <= 1) return shown[0] || '';
+  const particle = hangulHasBatchim(shown[0]) ? '과' : '와';
+  if (shown.length === 2) return `${shown[0]}${particle} ${shown[1]}`;
+  return `${shown[0]}${particle} ${shown[1]}, ${shown.slice(2).join(', ')}`;
+}
+
+function koVenueProgramSentence(phrase, names) {
+  if (!phrase || !names.length) return '';
+  const shown = names.slice(0, 3);
+  const last = shown[shown.length - 1];
+  const particle = hangulHasBatchim(last) ? '이' : '가';
+  return `${phrase}에서 ${joinVenuePrograms(shown)}${particle} 열려요.`;
+}
+
+/** Overview sentence about citizens walking the parade. Not a program list. */
+function koParadeAtmosphere(ctx) {
+  const src = String(ctx.sceneOverview || '');
+  if (!/시민/.test(src) || !/단체/.test(src) || !/퍼레이드/.test(src) || !/활기/.test(src)) return '';
+  const walking = /걷|걸으/.test(src);
+  const head = walking
+    ? '시민과 단체가 함께 걷는 퍼레이드로 활기가 넘치고'
+    : '시민과 단체가 함께하는 퍼레이드로 활기가 넘치고';
+  if (runsIntoEvening(ctx)) return `${head}, 축제 분위기가 저녁까지 이어져요.`;
+  return walking
+    ? '시민과 단체가 함께 걷는 퍼레이드로 활기가 넘쳐요.'
+    : '시민과 단체가 함께하는 퍼레이드로 활기가 넘쳐요.';
+}
+
 function koAtmosphere(ctx) {
   const street = streetName(ctx.venue);
   const evening = runsIntoEvening(ctx);
   const place = shortVenue(ctx.venue);
   if (street && evening) return `${street}에서 저녁까지 이어져요.`;
   if (street) return `${street}에서 거리 축제로 열려요.`;
-  if (evening && place) return `${place}에서 저녁까지 이어져요.`;
-  if (evening) return '저녁까지 이어져요.';
+  if (evening && place && !lotVenuePhrase(ctx)) return `${place}에서 저녁까지 이어져요.`;
+  if (evening && !lotVenuePhrase(ctx)) return '저녁까지 이어져요.';
   return '';
 }
 
@@ -559,6 +675,16 @@ function enAtmosphere(ctx) {
   if (evening && place) return `It continues into the evening at ${label(place)}.`;
   if (evening) return 'It continues into the evening.';
   return '';
+}
+
+/** «A를 맛보는 자리예요» plus evening becomes one grammatical sentence, without a second venue. */
+function koFoodEveningSentence(foodSentence) {
+  const body = String(foodSentence || '').replace(/\.$/, '').trim();
+  const match = body.match(/^(.+?)(?:을|를)\s*맛보는 자리(?:예요|이에요)?$/);
+  if (!match) return '';
+  const foods = match[1];
+  const particle = hangulHasBatchim(foods) ? '을' : '를';
+  return `${foods}${particle} 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요.`;
 }
 
 function mergeKo(atmosphere, program) {
@@ -641,8 +767,13 @@ function openingPieces(ctx, today, isEn) {
     ? enProgramSentence(names, overviewSentences.length > 0)
     : koProgramSentence(names, overviewSentences.length > 0);
   const atmosphere = isEn ? enAtmosphere(ctx) : koAtmosphere(ctx);
+  const lotPhrase = isEn ? '' : lotVenuePhrase(ctx);
+  const parade = isEn ? '' : koParadeAtmosphere(ctx);
+  const venueProgram = lotPhrase && names.length ? koVenueProgramSentence(lotPhrase, names) : '';
   let primary = overviewSentences[0] || '';
-  if (!primary && program) {
+  if (!primary && venueProgram) primary = venueProgram;
+  else if (!primary && lotPhrase) primary = `${lotPhrase}에서 열려요.`;
+  else if (!primary && program) {
     if (date) primary = program;
     else if (isEn) {
       const list = program.replace(/^It includes /, '').replace(/\.$/, '');
@@ -650,7 +781,15 @@ function openingPieces(ctx, today, isEn) {
     } else primary = `${ctx.title}에서는 ${program}`;
   }
   const extraProgram = overviewSentences[0] ? program : '';
-  const extra = isEn ? mergeEn(atmosphere, extraProgram) : mergeKo(atmosphere, extraProgram);
+  let extra = isEn ? mergeEn(atmosphere, extraProgram) : mergeKo(atmosphere, extraProgram);
+  const foodJoin = !isEn && runsIntoEvening(ctx) ? koFoodEveningSentence(overviewSentences[0] || '') : '';
+  if (parade) extra = parade;
+  else if (foodJoin && !lotPhrase) {
+    const where = streetName(ctx.venue);
+    if (where && names.length) primary = koVenueProgramSentence(where, names);
+    else primary = foodJoin;
+    extra = where && names.length ? foodJoin : '';
+  } else if (lotPhrase && runsIntoEvening(ctx)) extra = '축제 분위기가 저녁까지 이어져요.';
   const second = !extra && overviewSentences[1] ? overviewSentences[1] : '';
   const leadNearby = !date && !primary;
   const nearbySentence = isEn
@@ -661,7 +800,7 @@ function openingPieces(ctx, today, isEn) {
     nearby,
     overview,
     date,
-    slots: [date, primary, nearbySentence, extra || second],
+    slots: [date, primary, extra || second, nearbySentence],
   };
 }
 
@@ -708,6 +847,10 @@ export function buildFestivalFirstAnswerFacts(festivalContext, options = {}) {
     atmosphere.push(isEn ? (englishParenPair(street, formatEnglishThenKorean(street)) || street) : street);
   }
   if (runsIntoEvening(festivalContext)) atmosphere.push(isEn ? 'continues into the evening' : '저녁까지 이어짐');
+  if (!isEn) {
+    const parade = koParadeAtmosphere(festivalContext);
+    if (parade) atmosphere.unshift(parade.replace(/\.$/, ''));
+  }
   const sceneSource = festivalContext.sceneOverview || festivalContext.overview;
   const scene = sceneOverviewFacts(sceneSource, festivalContext.title);
   const overviewFacts = (isEn
@@ -737,7 +880,7 @@ const FEE_RE = /입장료|입장\s*무료|admission is|the listed fee|hours are|
 const PROMO_RE = /사랑을 받|황금빛|오신 것을 환영|welcome to/i;
 const GOODS_RE = /굿즈|기념품|상품권|궁패스/;
 const MODEL_OPENING_SENTENCE_CAP = 7;
-const NAME_SUFFIX_RE = /[가-힣A-Za-z0-9]{0,18}(?:커피거리|해수욕장|거리|해변|시장|궁궐|향교|광장|박물관|미술관|식물원|전망대|열차|마을|정원|대회|체험관)/g;
+const NAME_SUFFIX_RE = /[가-힣A-Za-z0-9]{0,18}(?:커피거리|해수욕장|거리|해변|시장|궁궐|향교|광장|박물관|미술관|식물원|전망대|열차|마을|정원|대회|체험관|공원)/g;
 const GENERIC_NAME = new Set(['맛집', '술집', '커피집']);
 
 function corpusText(facts) {
@@ -976,7 +1119,7 @@ export function unsupportedFestivalFactMentions(answer, corpus) {
   };
   for (const match of text.matchAll(PERFORMANCE_PHRASE_RE)) {
     const phrase = match[0].replace(/\s+/g, '');
-    const stem = phrase.replace(/(?:공연|퍼포먼스)$/, '');
+    const stem = phrase.replace(/(?:공연|퍼포먼스)$/, '').replace(/(?:과|와|의|및)$/, '');
     if (!stem || body.includes(phrase) || body.includes(stem)) continue;
     add(match[0]);
   }
@@ -999,13 +1142,70 @@ export function unsupportedFestivalFactMentions(answer, corpus) {
  * @param {ReturnType<typeof buildFestivalFirstAnswerFacts>} facts
  * @param {string[]} [banned]
  */
+const UNSOURCED_EN_ATMOSPHERE_RE = /visitors engage with various hands-on programs|the lively atmosphere continues into the evening/i;
+
+function dropUnsourcedEnglishAtmosphere(raw) {
+  const parts = String(raw || '').split(/(?<=[.!?])\s+/).map((part) => part.trim()).filter(Boolean);
+  return parts.filter((part) => !UNSOURCED_EN_ATMOSPHERE_RE.test(part)).join(' ');
+}
+
+/** Ended festivals lead with has ended, and any next edition, before nearby stops. */
+function leadEndedBeforeNearby(raw, facts) {
+  if (!/has ended/i.test(String(facts?.dateLine || ''))) return raw;
+  const parts = String(raw || '').split(/(?<=[.!?])\s+/).map((part) => part.trim()).filter(Boolean);
+  const ended = [];
+  const nearby = [];
+  const rest = [];
+  for (const part of parts) {
+    if (/has ended|next edition/i.test(part)) ended.push(part);
+    else if (/\bnearby\b|you can walk to/i.test(part)) nearby.push(part);
+    else rest.push(part);
+  }
+  if (!ended.length) {
+    const line = String(facts.dateLine || '').trim();
+    ended.push(/[.!?]$/.test(line) ? line : `${line}.`);
+  }
+  if (!ended.some((part) => /next edition/i.test(part))) {
+    const next = String(facts.dateLine || '').match(/The next edition is [^.]+\.?/);
+    if (next) ended.push(/\.$/.test(next[0]) ? next[0] : `${next[0]}.`);
+  }
+  return [...ended, ...rest, ...nearby].join(' ');
+}
+
+function dropFestivalSloganSentences(raw) {
+  return String(raw || '')
+    .split(/(?<=[.!?。])\s+/)
+    .map((part) => part.trim())
+    .filter((part) => part && !OVERVIEW_SLOGAN_RE.test(part))
+    .join(' ');
+}
+
+/** «11일 뒤 시작해요» keeps the short date from dateLine. */
+function ensureCountdownIncludesDates(raw, facts) {
+  if (String(facts?.locale || 'ko').slice(0, 2) === 'en') return raw;
+  const dateLine = String(facts?.dateLine || '');
+  const range = dateLine.match(/\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?/);
+  if (!range || String(raw || '').includes(range[0])) return raw;
+  return String(raw || '').replace(
+    /((?:\d{1,3}일|하루|이틀|사흘|나흘|닷새|엿새|이레|여드레|아흐레|열흘)\s*뒤\s*시작해요)/,
+    `${range[0]}, $1`,
+  );
+}
+
 export function acceptFestivalModelOpening(text, facts, banned = []) {
   let raw = stripLeadingFactsEcho(text);
   raw = raw.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, ' ').trim();
+  raw = dropFestivalSloganSentences(raw);
   raw = dedupeRepeatedTitle(raw, facts);
   raw = expandDateOnlyFragments(raw, facts);
   raw = stripTheBeforeFactNoun(raw, facts).trim();
+  raw = ensureCountdownIncludesDates(raw, facts);
+  if (facts?.locale === 'en') {
+    raw = dropUnsourcedEnglishAtmosphere(raw);
+    raw = leadEndedBeforeNearby(raw, facts);
+  }
   if (facts?.locale !== 'en') raw = rewriteFestivalFormalEndings(raw).trim();
+  if (/프로그램\s*[:：]/.test(raw)) return '';
   if (!raw || !facts?.title) return '';
   if (!startsWithFestivalTitle(raw, facts)) return '';
   if (countFestivalCardSentences(raw) > MODEL_OPENING_SENTENCE_CAP) return '';
@@ -1026,13 +1226,126 @@ export function acceptFestivalModelOpening(text, facts, banned = []) {
     if (!HAEYO_RE.test(raw)) return '';
   }
   if (inventedFactToken(raw, facts)) return '';
-  if (unsupportedFestivalFactMentions(raw, corpusText(facts)).length) return '';
+  const corpus = corpusText(facts);
+  if (unsupportedFestivalFactMentions(raw, corpus).length) {
+    raw = raw
+      .split(/(?<=[.!?。])\s+/)
+      .map((part) => part.trim())
+      .filter((part) => part && unsupportedFestivalFactMentions(part, corpus).length === 0)
+      .join(' ');
+    if (!raw || !startsWithFestivalTitle(raw, facts)) return '';
+  }
   if (facts.gateoUrl && !raw.includes(facts.gateoUrl)) {
     const next = `${raw} ${facts.closing || ''}`.trim();
     if (!facts.closing || countFestivalCardSentences(next) > MODEL_OPENING_SENTENCE_CAP) return '';
     raw = next;
   }
-  return raw;
+  if (facts.locale !== 'en') {
+    raw = placeBareLotEveningBeforeNearby(raw);
+    raw = moveParadeAtmosphereBeforeNearby(raw, facts);
+    if (overviewHasParadeAtmosphere(facts) && (!/시민과 단체/.test(raw) || !/활기/.test(raw))) return '';
+  }
+  return dedupeFestivalPageLinks(ensureOpeningNearby(raw, facts));
+}
+
+function normalizePlaceKey(name) {
+  return stripParentheticals(String(name || ''))
+    .replace(/[\s·ㆍ,，、.!?。'"“”「」『』()（）[\]{}<>~～]/g, '');
+}
+
+function isNearbyOpeningSentence(part) {
+  return /근처에서는|근처에는|근처에 있|둘러볼 수 있어요|you can walk to/i.test(part);
+}
+
+function isFestivalPageLinkSentence(part, facts) {
+  const url = String(facts?.gateoUrl || '');
+  if (url && part.includes(url)) return true;
+  return /\[(?:[^\]]*)\]\(https?:\/\/[^)\s]*[?&]festival=\d+/.test(part);
+}
+
+function nearbyKeysInSentence(part, names) {
+  const key = normalizePlaceKey(part);
+  return names
+    .map((name) => normalizePlaceKey(name))
+    .filter((token) => token.length >= 2 && key.includes(token));
+}
+
+function placePageLinkLast(parts, facts) {
+  const list = [...parts];
+  const linkAt = list.findIndex((part) => isFestivalPageLinkSentence(part, facts));
+  if (linkAt >= 0 && linkAt < list.length - 1) {
+    const [link] = list.splice(linkAt, 1);
+    list.push(link);
+  }
+  return list;
+}
+
+function splitOpeningSentences(raw) {
+  return String(raw || '').split(/(?<=[.!?。])\s+/).map((part) => part.trim()).filter(Boolean);
+}
+
+/** «천지연 일대에서 저녁까지 이어져요» gets a subject and sits before nearby. */
+function placeBareLotEveningBeforeNearby(raw) {
+  const parts = splitOpeningSentences(raw);
+  const idx = parts.findIndex((part) => /^.{2,24}일대에서 저녁까지 이어져요\.?$/.test(part));
+  if (idx < 0) return raw;
+  parts[idx] = '축제 분위기가 저녁까지 이어져요.';
+  const near = parts.findIndex((part) => /근처에서는|근처에는|근처에 있/.test(part));
+  if (near >= 0 && idx > near) {
+    const [sentence] = parts.splice(idx, 1);
+    parts.splice(near, 0, sentence);
+  }
+  return parts.join(' ');
+}
+
+function overviewHasParadeAtmosphere(facts) {
+  const blob = [...(facts?.overviewFacts || []), ...(facts?.atmosphere || [])].join(' ');
+  return /시민/.test(blob) && /단체/.test(blob) && /퍼레이드/.test(blob) && /활기/.test(blob);
+}
+
+/** A grounded parade sentence stays before the nearby sentence. */
+function moveParadeAtmosphereBeforeNearby(raw, facts) {
+  if (!overviewHasParadeAtmosphere(facts)) return raw;
+  const parts = splitOpeningSentences(raw);
+  const atmo = parts.findIndex((part) => /시민과 단체|활기가 넘치/.test(part));
+  const near = parts.findIndex((part) => /근처에서는|근처에는|근처에 있/.test(part));
+  if (atmo < 0 || near < 0 || atmo < near) return raw;
+  const [sentence] = parts.splice(atmo, 1);
+  parts.splice(near, 0, sentence);
+  return parts.join(' ');
+}
+
+/** When the nearby list has 3 names, an accepted opening names all 3. A later nearby sentence whose places were already said is dropped. The page link stays last. */
+function ensureOpeningNearby(raw, facts) {
+  const names = (Array.isArray(facts?.nearby) ? facts.nearby : []).filter(Boolean);
+  const seen = new Set();
+  let parts = splitOpeningSentences(raw).filter((part) => {
+    if (!isNearbyOpeningSentence(part)) return true;
+    const hits = nearbyKeysInSentence(part, names);
+    if (hits.length && hits.every((hit) => seen.has(hit))) return false;
+    hits.forEach((hit) => seen.add(hit));
+    return true;
+  });
+  const covered = names.length >= 3 && names.every((name) => {
+    const token = normalizePlaceKey(name);
+    return token.length >= 2 && parts.some((part) => normalizePlaceKey(part).includes(token));
+  });
+  if (names.length >= 3 && !covered) {
+    const sentence = facts.locale === 'en'
+      ? `Nearby, you can walk to ${enList(names)}.`
+      : koNearbySentence(names, facts.title, false);
+    if (sentence) {
+      const withoutWalk = parts.filter((part) => !/둘러볼 수 있어요|you can walk to/i.test(part));
+      const nextCount = withoutWalk.length + 1;
+      if (nextCount <= MODEL_OPENING_SENTENCE_CAP) {
+        const linkAt = withoutWalk.findIndex((part) => isFestivalPageLinkSentence(part, facts));
+        if (linkAt >= 0) withoutWalk.splice(linkAt, 0, sentence);
+        else withoutWalk.push(sentence);
+        parts = withoutWalk;
+      }
+    }
+  }
+  return placePageLinkLast(parts, facts).join(' ');
 }
 
 /** @param {ReturnType<typeof buildFestivalMooniContext>} festivalContext */

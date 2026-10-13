@@ -877,7 +877,7 @@ function Home() {
     recalibrateHomeChromeAfterNav();
   }, [navigate, routeLocation.state, setSelectedLocation, recalibrateHomeChromeAfterNav]);
 
-  const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
+  const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText, mooniPromptText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
     const newTrip = {
       destination,
@@ -885,7 +885,11 @@ function Home() {
       lng: lng ?? 0,
       date: new Date().toLocaleDateString(),
       prompt_summary: systemPrompt,
-      messages: [{ role: 'user', text: firstUserText }],
+      messages: [{
+        role: 'user',
+        text: firstUserText,
+        ...(mooniPromptText ? { mooniPromptText } : {}),
+      }],
       is_bookmarked: false,
       is_hidden: false,
       persona,

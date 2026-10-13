@@ -19,10 +19,11 @@ export {
  *   program?: string,
  *   nearbyPlaces?: string[],
  *   nearbyRestaurants?: string[],
+ *   info?: Array<{ infoname?: string, name?: string, infotext?: string, text?: string }>,
  * }} input
  */
 export function buildFestivalMooniBoundSpot(input = {}) {
-  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas } = input;
+  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas, info } = input;
   const festivalContext = buildFestivalMooniContext({
     item,
     intro,
@@ -34,6 +35,7 @@ export function buildFestivalMooniBoundSpot(input = {}) {
     nearbyPlaces,
     nearbyRestaurants,
     stayAreas,
+    info,
   });
   const title = festivalContext?.title || '';
   const loc = location && typeof location === 'object' ? location : null;
@@ -52,18 +54,27 @@ export function buildFestivalMooniBoundSpot(input = {}) {
   });
 }
 
+function listKey(value) {
+  return (Array.isArray(value) ? value : []).map((raw) => {
+    const name = String(raw?.name || raw || '').trim();
+    const dist = Number(raw?.distKm);
+    return `${name}|${Number.isFinite(dist) ? dist : ''}`;
+  }).join('\n');
+}
+
 function sameNameList(left, right) {
-  const a = Array.isArray(left) ? left : [];
-  const b = Array.isArray(right) ? right : [];
-  return a.length === b.length && a.every((name, index) => name === b[index]);
+  return listKey(left) === listKey(right);
 }
 
 /** Keep an open chat, and copy 주변 맛집 names in when the sheet list arrives. */
 export function patchFestivalBoundSpot(prev, next) {
   if (!prev?.festivalContext || !next?.festivalContext) return prev;
+  const prevParking = String(prev.festivalContext.parking || '');
+  const nextParking = String(next.festivalContext.parking || '');
   if (
     sameNameList(prev.festivalContext.nearbyRestaurants, next.festivalContext.nearbyRestaurants)
     && sameNameList(prev.festivalContext.nearbyPlaces, next.festivalContext.nearbyPlaces)
+    && prevParking === nextParking
   ) return prev;
   return {
     ...prev,
@@ -71,6 +82,7 @@ export function patchFestivalBoundSpot(prev, next) {
       ...prev.festivalContext,
       nearbyRestaurants: next.festivalContext.nearbyRestaurants || [],
       nearbyPlaces: next.festivalContext.nearbyPlaces || [],
+      parking: next.festivalContext.parking ?? prev.festivalContext.parking,
     },
   };
 }

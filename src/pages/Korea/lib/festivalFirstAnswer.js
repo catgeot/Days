@@ -3,6 +3,7 @@ import { polishFestivalModelReply } from '../../../shared/korea/mooniKoreaFestiv
 import {
   acceptFestivalModelOpening,
   buildFestivalFirstAnswerFacts,
+  festivalRunsIntoEvening,
 } from './festivalMooniContext.js';
 
 const FIRST_ANSWER_TIMEOUT_MS = 8000;
@@ -30,6 +31,18 @@ export async function requestFestivalFirstAnswer(festivalContext, options = {}) 
     const text = polishFestivalModelReply(String(raw?.text || ''), {
       contentId: festivalContext?.contentId,
       locale: facts.locale,
+      homepage: festivalContext?.homepage,
+      tel: festivalContext?.tel,
+      parking: festivalContext?.parking,
+      venue: festivalContext?.venue,
+      address: festivalContext?.address,
+      nearbyPlaces: festivalContext?.nearbyPlaces,
+      overview: festivalContext?.sceneOverview || festivalContext?.overview,
+      program: festivalContext?.program,
+      sceneOverview: festivalContext?.sceneOverview,
+      feeText: festivalContext?.feeText,
+      timeText: festivalContext?.timeText,
+      evening: festivalRunsIntoEvening(festivalContext),
     });
     return acceptFestivalModelOpening(text, facts, banned);
   } catch {

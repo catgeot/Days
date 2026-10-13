@@ -38,6 +38,7 @@ import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
 } from '../../utils/fetchNearbyTourRestaurants';
+import { beginFestivalRestaurantLoad } from './lib/festivalRestaurantLoad.js';
 import {
   CULTURE_CONTENT_TYPE_ID,
   fetchNearbyTourCulture,
@@ -61,6 +62,7 @@ import {
   mergeFestivalNearbySights,
   rankMooniNearbySights,
   stripTrailingHubName,
+  stripTrailingRegionLabel,
 } from './lib/festivalNearbySights.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
@@ -1244,13 +1246,15 @@ export default function FestivalDetailSheet({
       setNearbyFoodStatus('loading');
       setNearbyLeportsStatus('loading');
       setNearbyCultureStatus('loading');
-      fetchNearbyTourRestaurants({
+      const foodPromise = fetchNearbyTourRestaurants({
         lat: pt.lat,
         lng: pt.lng,
         radiusKm: 3,
         limit: 8,
         areaCode: festivalAreaCode,
-      }).then((res) => {
+      });
+      beginFestivalRestaurantLoad(item.contentId, foodPromise);
+      foodPromise.then((res) => {
         if (cancelled) return;
         const spots = Array.isArray(res?.spots) ? res.spots : [];
         setNearbyFood(spots);
@@ -1395,24 +1399,31 @@ export default function FestivalDetailSheet({
   );
 
   const mooniNearbyPlaces = useMemo(() => {
-    const names = [];
-    for (const spot of rankMooniNearbySights(nearbySights.items, 6)) {
-      const name = String(spot?.name || '').trim();
-      if (!name || names.includes(name)) continue;
-      names.push(name);
+    const festivalHub = String(
+      mooniEntryLocation?.name || mooniEntryLocation?.parentCity || '',
+    ).trim();
+    const rows = [];
+    for (const spot of rankMooniNearbySights(nearbySights.items, 12)) {
+      const name = stripTrailingRegionLabel(nearbySightTitle(spot), festivalHub);
+      if (!name || rows.some((row) => row.name === name)) continue;
+      const distKm = Number(spot?.distKm);
+      rows.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
     }
-    return names;
-  }, [nearbySights]);
+    return rows;
+  }, [nearbySights, mooniEntryLocation]);
 
   const mooniNearbyRestaurants = useMemo(() => {
-    const names = [];
+    const rows = [];
+    const seen = new Set();
     for (const spot of nearbyFood) {
       const name = String(spot?.name || '').trim();
-      if (!name || names.includes(name)) continue;
-      names.push(name);
-      if (names.length >= 24) break;
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      const distKm = Number(spot?.distKm);
+      rows.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
+      if (rows.length >= 24) break;
     }
-    return names;
+    return rows;
   }, [nearbyFood]);
 
   const festivalMooni = useFestivalMooniEntry({
@@ -1426,6 +1437,7 @@ export default function FestivalDetailSheet({
     nearbyPlaces: mooniNearbyPlaces,
     nearbyRestaurants: mooniNearbyRestaurants,
     stayAreas: festivalCross?.stayAreas,
+    info: infoItems,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {

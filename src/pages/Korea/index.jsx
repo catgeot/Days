@@ -1295,6 +1295,7 @@ export default function KoreaFestivalHub() {
     }
     let cancelled = false;
     const skipPromoDetailForId = String(festivalId || '').trim();
+    const failedPromoIds = new Set();
 
     const pump = async () => {
       while (!cancelled) {
@@ -1304,7 +1305,8 @@ export default function KoreaFestivalHub() {
           socialPromoByIdRef.current,
         )
           .filter((id) => id !== skipPromoDetailForId)
-          .filter((id) => !socialPromoDetailInflightRef.current.has(id));
+          .filter((id) => !socialPromoDetailInflightRef.current.has(id))
+          .filter((id) => !failedPromoIds.has(id));
         if (!needFetch.length) break;
         for (const id of needFetch) socialPromoDetailInflightRef.current.add(id);
         await Promise.all(
@@ -1314,14 +1316,16 @@ export default function KoreaFestivalHub() {
               const detail = await fetchTourApiFestivalDetail({ contentId: id });
               if (cancelled) return;
               const built = festivalItemFromDetailWithAsOf(detail);
-              if (!built) return;
-              setSocialPromoById((prev) => {
-                if (prev.get(id)) return prev;
-                const next = new Map(prev);
-                next.set(id, built);
-                socialPromoByIdRef.current = next;
-                return next;
-              });
+              if (!built) {
+                failedPromoIds.add(id);
+                return;
+              }
+              const prev = socialPromoByIdRef.current;
+              if (prev.get(id)) return;
+              const next = new Map(prev);
+              next.set(id, built);
+              socialPromoByIdRef.current = next;
+              setSocialPromoById(next);
             } finally {
               socialPromoDetailInflightRef.current.delete(id);
             }

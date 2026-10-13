@@ -50,6 +50,9 @@ test.describe('festival MOONi chip reply persists @390', () => {
     await shot(page, `${tag}-00-open`);
 
     await tapFestivalSightsChip(page);
+    await expect(page.getByText('볼거리·분위기 알려 줘')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText('데이터에 없는 붐비는 시간은 지어내지 마')).toHaveCount(0);
+    await shot(page, `${tag}-00b-chip-bubble`);
     await expect(page.getByText(FESTIVAL_CHIP_MOCK_MARKER)).toBeVisible({
       timeout: 120_000,
     });

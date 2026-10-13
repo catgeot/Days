@@ -126,7 +126,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
   }, [isOpen, boundSpot]);
 
   const createTripOnFirstUserMessage = useCallback(
-    async ({ destination, lat, lng, persona, firstUserText }) => {
+    async ({ destination, lat, lng, persona, firstUserText, mooniPromptText }) => {
       const systemPrompt = getSystemPrompt(persona, destination);
       const newTrip = {
         destination,
@@ -134,7 +134,11 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
         lng: lng ?? 0,
         date: new Date().toLocaleDateString(),
         prompt_summary: systemPrompt,
-        messages: [{ role: 'user', text: firstUserText }],
+        messages: [{
+          role: 'user',
+          text: firstUserText,
+          ...(mooniPromptText ? { mooniPromptText } : {}),
+        }],
         is_bookmarked: false,
         is_hidden: false,
         persona,

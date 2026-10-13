@@ -10,6 +10,7 @@ import {
   normalizeNearbySightName,
   rankMooniNearbySights,
   stripTrailingHubName,
+  stripTrailingRegionLabel,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
 import {
   mergeNearbyItemImages,
@@ -233,6 +234,8 @@ test('strip a trailing hub name from a display title', () => {
   assert.equal(stripTrailingHubName('법천사 무안', '무안'), '법천사');
   assert.equal(stripTrailingHubName('함안 연꽃테마파크', '함안'), '함안 연꽃테마파크');
   assert.equal(stripTrailingHubName('돌머리해수욕장', '함평'), '돌머리해수욕장');
+  assert.equal(stripTrailingRegionLabel('용천사 함평', '함평군'), '용천사');
+  assert.equal(stripTrailingRegionLabel('함안 연꽃테마파크', '함안군'), '함안 연꽃테마파크');
 });
 
 test('merge same place within 300m and borrow coords onto the 팔경 row', () => {
