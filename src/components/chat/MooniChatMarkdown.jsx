@@ -119,7 +119,7 @@ export default function MooniChatMarkdown({ text, variant = 'dark' }) {
   return (
     <div className="mooni-chat-markdown min-w-0 break-words">
       <ReactMarkdown
-        remarkPlugins={[mooniRemarkGfm, remarkCjkFriendly]}
+        remarkPlugins={[[mooniRemarkGfm, { singleTilde: false }], remarkCjkFriendly]}
         rehypePlugins={[[rehypeSanitize, mooniChatMarkdownSanitizeSchema]]}
         urlTransform={mooniChatUrlTransform}
         components={components}

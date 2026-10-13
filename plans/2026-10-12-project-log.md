@@ -2,6 +2,13 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## 국향대전 manual #3, 근처 썸네일·QA r5
+
+- **세션** `국향대전 manual #3, 근처 썸네일·QA r5` · branch `cursor/hampyeong-gukhyang-manual-ff66` · tip `3a7be3b1` · draft PR [#451](https://github.com/catgeot/Days/pull/451)
+- **조치** 시트 하단 56px 근처 명소 `NearbyRowThumb` → `FestivalPhotoFrame` + `referrerPolicy=no-referrer` · e2e QA r5(WebKit 390) 이미지 audit·route abort(히어로 플레이스홀더·크레딧 없음).
+- **VERIFY** health 301 · gukhyang screenshots 6 pass · audit `promo 1/1` `list 14/14` `hero 1/1` `nearby 17/17` (blocked: hero 0/1, credit 0).
+- **다음** Preview QA r5 후 PR #451 병합
+
 ## 국향대전 manual #2, 사진·썸네일 COS
 
 - **세션** `국향대전 manual #2, 사진·썸네일 COS` · branch `cursor/hampyeong-gukhyang-manual-ff66` · tip `bcfa5881` · draft PR [#451](https://github.com/catgeot/Days/pull/451)
