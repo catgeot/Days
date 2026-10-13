@@ -48,10 +48,10 @@ const page = await context.newPage();
 
 for (const { testId, file } of CASES) {
   await page.goto(`${baseURL}/qa/mooni-festival-access-polish`, { waitUntil: 'networkidle' });
-  await page.locator(`[data-testid="${testId}"]`).waitFor({ state: 'visible', timeout: 60_000 });
-  await page.screenshot({
+  const panel = page.locator(`[data-testid="${testId}"]`);
+  await panel.waitFor({ state: 'visible', timeout: 60_000 });
+  await panel.screenshot({
     path: path.join(outDir, file),
-    fullPage: true,
   });
 }
 
