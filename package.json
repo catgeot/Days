@@ -237,7 +237,7 @@
     "test:gemini-proxy-error": "node scripts/test-gemini-proxy-error.mjs",
     "smoke:health:local": "set SMOKE_SITE_URL=https://localhost:5173&& node scripts/smoke-health.mjs",
     "smoke:health:ci": "node scripts/smoke-health.mjs",
-    "test": "node --import ./scripts/register-youtube-hook-test.mjs --test scripts/useYouTubeSearch.session.test.mjs",
+    "test": "node --import ./scripts/register-src-esm.mjs --import ./scripts/register-youtube-hook-test.mjs --test scripts/useYouTubeSearch.session.test.mjs scripts/test-youtube-retry-probe-errors.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

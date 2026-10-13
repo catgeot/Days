@@ -57,6 +57,12 @@ const YouTubePlayerView = forwardRef(({
   const isPlayingRef = useRef(false);
   const preservePlaybackRef = useRef(false);
   const prevVideoIdRef = useRef(videoId);
+  const retryProbeActiveRef = useRef(false);
+  const retryProbeSuccessTimerRef = useRef(null);
+  const [unplayableRetryExhausted, setUnplayableRetryExhausted] = useState(false);
+
+  const retryExhaustedStorageKey =
+    typeof window !== 'undefined' ? `gateo.yt.retryExhausted:${window.location.pathname}` : '';
 
   const videoList = videos || [];
   const currentVideo = videoList[currentVideoIndex];
@@ -85,11 +91,47 @@ const YouTubePlayerView = forwardRef(({
     }
   }, []);
 
+  const markRetryExhausted = useCallback(() => {
+    setUnplayableRetryExhausted(true);
+    if (retryExhaustedStorageKey) {
+      try {
+        sessionStorage.setItem(retryExhaustedStorageKey, '1');
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [retryExhaustedStorageKey]);
+
+  const clearRetryExhausted = useCallback(() => {
+    setUnplayableRetryExhausted(false);
+    if (retryExhaustedStorageKey) {
+      try {
+        sessionStorage.removeItem(retryExhaustedStorageKey);
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [retryExhaustedStorageKey]);
+
   const advanceToNextVideo = useCallback((wasPlaying) => {
     const list = videos || [];
     const idx = currentVideoIndexRef.current;
     const failedId = list[idx]?.id;
     if (!failedId) return;
+
+    if (retryProbeActiveRef.current) {
+      retryProbeActiveRef.current = false;
+      if (retryProbeSuccessTimerRef.current) {
+        clearTimeout(retryProbeSuccessTimerRef.current);
+        retryProbeSuccessTimerRef.current = null;
+      }
+      if (onVideoUnplayable) onVideoUnplayable(failedId);
+      markRetryExhausted();
+      preservePlaybackRef.current = false;
+      setIsPlaying(false);
+      setIsPaused(true);
+      return;
+    }
 
     const afterFilter = list.filter((v) => v.id !== failedId);
     if (afterFilter.length === 0 || idx >= afterFilter.length) {
@@ -109,7 +151,7 @@ const YouTubePlayerView = forwardRef(({
       setIsPlaying(true);
       setIsPaused(false);
     }
-  }, [videos, onVideoSelect, onVideoUnplayable]);
+  }, [videos, onVideoSelect, onVideoUnplayable, markRetryExhausted]);
 
   useImperativeHandle(ref, () => ({
     seekTo: (seconds) => {
@@ -149,6 +191,14 @@ const YouTubePlayerView = forwardRef(({
               const state = data.info.playerState;
               const isActive = state === 1 || state === 3;
               setIsPaused(!isActive);
+              if (retryProbeActiveRef.current && state === 1) {
+                if (!retryProbeSuccessTimerRef.current) {
+                  retryProbeSuccessTimerRef.current = setTimeout(() => {
+                    retryProbeActiveRef.current = false;
+                    retryProbeSuccessTimerRef.current = null;
+                  }, 2000);
+                }
+              }
           }
 
           if (data?.event === 'onError' && typeof data.info === 'number') {
@@ -158,7 +208,13 @@ const YouTubePlayerView = forwardRef(({
           }
       };
       window.addEventListener('message', handleMessage);
-      return () => window.removeEventListener('message', handleMessage);
+      return () => {
+        window.removeEventListener('message', handleMessage);
+        if (retryProbeSuccessTimerRef.current) {
+          clearTimeout(retryProbeSuccessTimerRef.current);
+          retryProbeSuccessTimerRef.current = null;
+        }
+      };
   }, [advanceToNextVideo, isPlaying]);
 
   useEffect(() => {
@@ -221,6 +277,38 @@ const YouTubePlayerView = forwardRef(({
   const showEmpty = !isLoading && !fetchError && isEmptyResult && videoList.length === 0;
   const showNoPlayable = !isLoading && !fetchError && !isEmptyResult && videoList.length === 0;
 
+  useEffect(() => {
+    if (!showNoPlayable || !retryExhaustedStorageKey) return;
+    try {
+      if (sessionStorage.getItem(retryExhaustedStorageKey) === '1') {
+        setUnplayableRetryExhausted(true);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [showNoPlayable, retryExhaustedStorageKey]);
+
+  useEffect(() => {
+    if (showNoPlayable || showEmpty) {
+      setIsPlaying(false);
+      setIsPaused(true);
+      preservePlaybackRef.current = false;
+    }
+  }, [showNoPlayable, showEmpty]);
+
+  const handleRetryUnplayable = useCallback(() => {
+    clearRetryExhausted();
+    if (retryProbeSuccessTimerRef.current) {
+      clearTimeout(retryProbeSuccessTimerRef.current);
+      retryProbeSuccessTimerRef.current = null;
+    }
+    retryProbeActiveRef.current = true;
+    preservePlaybackRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(true);
+    onRetryUnplayable?.();
+  }, [clearRetryExhausted, onRetryUnplayable]);
+
   const primaryCtaClass =
     'group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]';
   const secondaryCtaClass =
@@ -263,10 +351,10 @@ const YouTubePlayerView = forwardRef(({
     </a>
   );
 
-  const retryUnplayableButton = onRetryUnplayable ? (
+  const retryUnplayableButton = onRetryUnplayable && !unplayableRetryExhausted ? (
     <button
       type="button"
-      onClick={() => onRetryUnplayable?.()}
+      onClick={handleRetryUnplayable}
       disabled={isLoading}
       className={`${secondaryCtaClass} disabled:opacity-40`}
     >
@@ -278,8 +366,8 @@ const YouTubePlayerView = forwardRef(({
   const emptyOrUnplayableActions = (
     <div className="flex flex-col items-center gap-3 w-full max-w-sm">
       {watchOnYouTubeButton}
-      {showNoPlayable ? retryUnplayableButton : retryButton}
-      {recommendFormButton}
+      {showNoPlayable && unplayableRetryExhausted ? null : showNoPlayable ? retryUnplayableButton : retryButton}
+      {showNoPlayable && unplayableRetryExhausted ? null : recommendFormButton}
     </div>
   );
 

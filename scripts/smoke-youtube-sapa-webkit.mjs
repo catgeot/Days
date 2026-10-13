@@ -126,7 +126,36 @@ if (stillEmpty) {
   process.exit(1);
 }
 console.log('OK    unplayable retry restores videos');
+
 await browser2.close();
+
+const browser2b = await webkit.launch({ headless: true });
+const context2b = await browser2b.newContext({
+  viewport: VIEWPORT,
+  ignoreHTTPSErrors: true,
+  locale: 'ko-KR',
+});
+await context2b.addInitScript(() => {
+  window.localStorage.setItem('gateo.locale', 'ko');
+});
+await context2b.addInitScript((ids) => {
+  sessionStorage.setItem('gateo.yt.retryExhausted:/place/sapa/video', '1');
+  localStorage.setItem(
+    'gateo.yt.unplayable.v1',
+    JSON.stringify({ ids, updatedAt: Date.now() }),
+  );
+}, videoIds);
+const page2b = await context2b.newPage();
+await waitVideoReady(page2b);
+await page2b.getByRole('heading', { name: '재생 가능한 영상이 없어요' }).waitFor({ timeout: 30000 });
+await page2b.waitForTimeout(400);
+const retryAfterExhausted = page2b.getByRole('button', { name: '다시 시도' });
+if (await retryAfterExhausted.isVisible().catch(() => false)) {
+  console.error('FAIL  retry still visible after probe exhausted');
+  process.exit(1);
+}
+await shot(page2b, 'webkit-390-sapa-unplayable-after-retry.png');
+await browser2b.close();
 
 const browser3 = await webkit.launch({ headless: true });
 const context3 = await browser3.newContext({
@@ -147,8 +176,13 @@ const page3 = await context3.newPage();
 await waitVideoReady(page3);
 await page3.getByRole('heading', { name: 'No playable videos' }).waitFor({ timeout: 30000 });
 const href = await page3.getByRole('link', { name: /Watch on YouTube/i }).first().getAttribute('href');
-if (!href || !decodeURIComponent(href).includes('Sapa')) {
+const decodedHref = href ? decodeURIComponent(href) : '';
+if (!decodedHref.includes('Sapa')) {
   console.error('FAIL  EN YouTube link missing Sapa:', href);
+  process.exit(1);
+}
+if (!decodedHref.includes('Vietnam')) {
+  console.error('FAIL  EN YouTube link missing Vietnam:', href);
   process.exit(1);
 }
 if (decodeURIComponent(href).includes('사파')) {
