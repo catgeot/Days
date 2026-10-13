@@ -19,6 +19,11 @@ export function isManualFestivalContentId(contentId) {
   return Boolean(getManualFestivalEntry(contentId));
 }
 
+/** Official manual SSOT — do not show TourAPI/cache playtime in UI or MOONi. */
+export function festivalOmitsOfficialEventHours(item) {
+  return Boolean(item?.detailAsOf?.fromManualOfficial);
+}
+
 /**
  * @param {ReturnType<typeof getManualFestivalEntry>} entry
  */
@@ -73,7 +78,7 @@ export function manualFestivalTourDetail(entry) {
       contentId: entry.contentId,
       eventStartDate: entry.eventStartDate,
       eventEndDate: entry.eventEndDate,
-      playtime: entry.playtime || '',
+      playtime: '',
       usetimefestival: entry.usetimefestival || '',
       eventplace: entry.eventplace || '',
       eventhomepage: entry.officialHomepage || '',

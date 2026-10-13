@@ -124,7 +124,9 @@ import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
 import {
+  festivalOmitsOfficialEventHours,
   getManualFestivalEntry,
+  isManualFestivalContentId,
   manualFestivalTourDetail,
 } from './manualFestivalEntries';
 
@@ -557,7 +559,7 @@ export default function FestivalDetailSheet({
   onOpenHub: _onOpenHub,
 }) {
   const { t } = useTranslation();
-  useTrustBarOverlayLockEffect(Boolean(item) || pending);
+  useTrustBarOverlayLockEffect(true);
   const navigate = useNavigate();
   const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
@@ -1033,6 +1035,15 @@ export default function FestivalDetailSheet({
       setImageUrls((prev) => (prev.length > 1 ? prev : seeded));
     }
 
+    const manualEntry = getManualFestivalEntry(contentId);
+    if (manualEntry) {
+      applyDetailPayload(manualFestivalTourDetail(manualEntry), { ok: true });
+      setDetailLoading(false);
+      return () => {
+        detailFetchGenRef.current += 1;
+      };
+    }
+
     if (prefetchMatches) {
       applyDetailPayload(prefetchedTourDetail, { ok: true, images: [] });
     }
@@ -1053,20 +1064,6 @@ export default function FestivalDetailSheet({
         radiusKm: 8,
         limit: 8,
       });
-    }
-
-    const manualEntry = getManualFestivalEntry(contentId);
-    const manualDetail =
-      manualEntry && (!prefetchMatches || prefetchedTourDetail?.manual)
-        ? manualFestivalTourDetail(manualEntry)
-        : null;
-
-    if (manualDetail) {
-      applyDetailPayload(manualDetail, { ok: true });
-      setDetailLoading(false);
-      return () => {
-        detailFetchGenRef.current += 1;
-      };
     }
 
     (async () => {
@@ -1427,19 +1424,23 @@ export default function FestivalDetailSheet({
   );
   const hideOfficialHomepage = shouldHideOfficialHomepage(homepage, bookingLinks);
 
+  const omitEventHours = festivalOmitsOfficialEventHours(item);
+
   const summaryFields = useMemo(() => {
     const start = formatYmdLabel(item?.eventStartDate || intro?.eventStartDate);
     const end = formatYmdLabel(item?.eventEndDate || intro?.eventEndDate);
     const dateRange = [start, end].filter(Boolean).join(' – ');
-    return buildFestivalDetailSummary({
+    const base = buildFestivalDetailSummary({
       item,
-      intro,
+      intro: omitEventHours && intro ? { ...intro, playtime: '' } : intro,
       range: dateRange,
       freeLabel: t('korea.festival.detail.feeFree'),
     });
+    return omitEventHours ? { ...base, timeText: '' } : base;
   }, [
     item,
     intro,
+    omitEventHours,
     t,
     item?.eventStartDate,
     item?.eventEndDate,
@@ -1842,7 +1843,9 @@ export default function FestivalDetailSheet({
                 {imageCredits[activeImage]}
               </p>
             ) : null}
-            {detailLoading && imageUrls.length <= 1 && (
+            {detailLoading &&
+              imageUrls.length <= 1 &&
+              !isManualFestivalContentId(item?.contentId) && (
               <div
                 className="flex gap-2 overflow-x-auto px-4 py-2.5 border-b border-stone-100 bg-white"
                 data-festival-photo-reserve=""
@@ -1950,6 +1953,7 @@ export default function FestivalDetailSheet({
             }
             mooniSlot={mooniSummaryCardWillRender ? festivalMooni.inlineButton : null}
             reserveDetail={detailLoading}
+            hideEventHours={omitEventHours}
           />
 
           {overview ? (
@@ -2051,7 +2055,7 @@ export default function FestivalDetailSheet({
                       {showEventPlace ? eventplace : null}
                     </DetailRow>
                   )}
-                  {!summaryFields.timeText && (
+                  {!omitEventHours && !summaryFields.timeText && (
                     <DetailRow label={t('korea.festival.detail.labelTime')}>
                       {stripHtml(intro?.playtime || '') || null}
                     </DetailRow>

@@ -47,6 +47,7 @@ const officialLinkClass =
  *   bookingSlot?: React.ReactNode,
  *   mooniSlot?: React.ReactNode,
  *   footnote?: React.ReactNode,
+ *   hideEventHours?: boolean,
  * }} props
  */
 export function FestivalDetailFirstSummary({
@@ -65,9 +66,10 @@ export function FestivalDetailFirstSummary({
   mooniSlot,
   footnote = null,
   reserveDetail = false,
+  hideEventHours = false,
 }) {
   const showOfficial = Boolean(homepage) && !hideOfficialHomepage;
-  const reserveTime = reserveDetail && !timeText;
+  const reserveTime = reserveDetail && !timeText && !hideEventHours;
   const reserveFee = reserveDetail && !feeText;
   const reservePlaceLine = reserveDetail && placeText && !String(placeText).includes('\n');
   const reserveOfficial = reserveDetail && !showOfficial;
@@ -96,9 +98,11 @@ export function FestivalDetailFirstSummary({
         <SummaryRow label={dateLabel} dataKey="date">
           {dateText}
         </SummaryRow>
-        <SummaryRow label={timeLabel} dataKey="time">
-          {timeText || (reserveTime ? <ReserveLine /> : null)}
-        </SummaryRow>
+        {hideEventHours && !timeText ? null : (
+          <SummaryRow label={timeLabel} dataKey="time">
+            {timeText || (reserveTime ? <ReserveLine /> : null)}
+          </SummaryRow>
+        )}
         <SummaryRow label={feeLabel} dataKey="fee">
           {feeText || (reserveFee ? <ReserveLine /> : null)}
         </SummaryRow>

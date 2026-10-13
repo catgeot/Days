@@ -5,7 +5,9 @@ import {
   manualFestivalDetailAsOf,
   manualFestivalListItem,
   manualFestivalTourDetail,
+  festivalOmitsOfficialEventHours,
 } from '../../src/pages/Korea/manualFestivalEntries.js';
+import { buildFestivalMooniContext } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 import { FestivalDetailAsOfLine } from '../../src/pages/Korea/festivalDeepLinkItem.js';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -39,6 +41,16 @@ test('638576 manual entry has official fields and as-of line', () => {
   assert.match(detail.intro.usetimefestival, /함평군민/);
   assert.match(detail.intro.usetimefestival, /만 4세 미만/);
   assert.match(detail.intro.usetimefestival, /장애인\(중증은 보호자 1인 동반 무료\)/);
+  assert.equal(detail.intro.playtime, '');
+  assert.equal(festivalOmitsOfficialEventHours(item), true);
+
+  const mooni = buildFestivalMooniContext({
+    item,
+    intro: detail.intro,
+    summaryFields: { dateText: '10.23 – 11.08', timeText: '', fee: { text: '7,000원' } },
+  });
+  assert.equal(mooni.timeText, '');
+  assert.doesNotMatch(mooni.overview, /09:00|10:00~18:00/);
 
   const html = renderToStaticMarkup(
     createElement(FestivalDetailAsOfLine, {

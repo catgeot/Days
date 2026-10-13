@@ -82,6 +82,7 @@ import {
   resolveSocialPromoPresentation,
   resolveSocialPromoRow,
   shouldShowSessionPinnedHomeRow,
+  shouldShowSocialPromoHomeRow,
   shouldShowSessionPinnedRow,
   socialPromoFestivals,
   socialPromoIdsNeedingDetailFetch,
@@ -1498,15 +1499,14 @@ export default function KoreaFestivalHub() {
   const showSocialPromoRow = socialPromoPresentation.show;
 
   const visiblePromoContentIds = useMemo(() => {
-    if (!showSocialPromoRow || socialPromoPresentation.loading) {
+    if (!shouldShowSocialPromoHomeRow(searchActive)) {
       return new Set();
     }
-    return contentIdsFromPromoCards(socialPromoPresentation.cards);
-  }, [
-    showSocialPromoRow,
-    socialPromoPresentation.loading,
-    socialPromoPresentation.cards,
-  ]);
+    if (socialPromoRow.status !== 'ready') {
+      return new Set();
+    }
+    return contentIdsFromPromoCards(socialPromoRow.cards);
+  }, [searchActive, socialPromoRow.status, socialPromoRow.cards]);
 
   const itemsForChipCounts = useMemo(
     () => excludeFestivalsByContentId(itemsWithSocialPromo, visiblePromoContentIds),
@@ -3302,10 +3302,10 @@ export default function KoreaFestivalHub() {
               promoDeeplinkIdSet.has(festivalId))
           }
           prefetchedTourDetail={
-            deepLinkForId === festivalId && deepLinkDetail
-              ? deepLinkDetail
-              : isManualFestivalContentId(festivalId)
-                ? manualFestivalTourDetail(getManualFestivalEntry(festivalId))
+            isManualFestivalContentId(festivalId)
+              ? manualFestivalTourDetail(getManualFestivalEntry(festivalId))
+              : deepLinkForId === festivalId && deepLinkDetail
+                ? deepLinkDetail
                 : null
           }
           favorited={Boolean(selected) && favoriteIds.has(String(selected.contentId))}

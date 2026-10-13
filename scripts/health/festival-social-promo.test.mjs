@@ -341,6 +341,32 @@ test('merge adds configured IDs once and search finds 국향', () => {
   assert.equal(hits[0].contentId, '638576');
 });
 
+test('chip pool excludes all configured promo IDs while a regional chip is active', () => {
+  const panel = [
+    GUKHYANG,
+    {
+      contentId: '637693',
+      title: '마산가고파국화축제',
+      eventStartDate: '20261031',
+      eventEndDate: '20261108',
+      addr1: '경상남도 창원시',
+    },
+    { contentId: '999', title: '기타 축제', eventStartDate: '20261101', eventEndDate: '20261102' },
+  ];
+  const allPromoCards = [{ item: GUKHYANG }, { item: { contentId: '637693' } }];
+  const ids = contentIdsFromPromoCards(allPromoCards);
+  assert.equal(ids.has('638576'), true);
+  assert.equal(ids.has('637693'), true);
+  const jeonnamFilteredPromo = filterSocialPromoCardsByRegion(allPromoCards, {
+    areaCode: '38',
+    cityName: 'all',
+  });
+  assert.equal(jeonnamFilteredPromo.length, 1);
+  const pool = excludeFestivalsByContentId(panel, ids);
+  assert.equal(pool.some((r) => r.contentId === '637693'), false);
+  assert.equal(pool.some((r) => r.contentId === '638576'), false);
+});
+
 test('visible promo cards are excluded from list rows and chip pool', () => {
   const panel = [
     GUKHYANG,
