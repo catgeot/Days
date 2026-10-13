@@ -56,9 +56,10 @@ import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaF
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import {
-  composeFestivalAccessReply,
+  createMooniSendGate,
   festivalAccessAskFragment,
   festivalAccessAskIsRoute,
+  planFestivalMooniModelCall,
   transportForFestivalAsk,
 } from '../../Korea/lib/festivalTransportCard.js';
 import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
@@ -239,6 +240,8 @@ const ChatModal = ({
   const lastInitialQueryTextRef = useRef('');
   const mobileDockBlurTimerRef = useRef(null);
   const tripSessionRef = useRef(null);
+  const sendGateRef = useRef(null);
+  if (!sendGateRef.current) sendGateRef.current = createMooniSendGate();
 
   const collapseMobileDockInput = useCallback(() => {
     if (mobileDockBlurTimerRef.current) {
@@ -981,8 +984,10 @@ const ChatModal = ({
   ]);
 
   const handleSend = useCallback(async (text, personaOverride = null, sendOptions = null) => {
-    if (!text?.trim() || isLoading) return;
+    if (!text?.trim()) return;
+    if (!sendGateRef.current.tryBegin()) return;
 
+    try {
     const rawText = typeof text === 'object' ? (text.text || t('mooni.chat.questionUnreadable')) : text;
     const sessionBoundEarly = activeSessionPlace?.name
       ? {
@@ -1116,7 +1121,6 @@ const ChatModal = ({
         mooniPromptText: promptText,
       });
       if (!created?.id) {
-        setIsLoading(false);
         setMessages((prev) => (prev.length > 0 ? prev.slice(0, -1) : []));
         return;
       }
@@ -1127,7 +1131,6 @@ const ChatModal = ({
 
     onUpdateChat(effectiveChatId, newMessages);
 
-    try {
       const destForPrompt =
         placeBound?.name ||
         (sessionDest === 'MOONi'
@@ -1226,14 +1229,15 @@ const ChatModal = ({
       const transport = cardTransport
         ? await transportForFestivalAsk(festivalContext, i18n.language)
         : festivalContext?.transport;
-      const askFragment = festivalAccessAskFragment(cleanText);
-      const groundedReply = cardTransport
-        ? composeFestivalAccessReply(transport, {
-          locale: i18n.language,
-          useSelected: sendOptions?.useCardTransport === true || !askFragment,
-          stations: askFragment || prepared.groundOrigin?.stationsKo || '',
-        })
-        : '';
+      const planned = planFestivalMooniModelCall({
+        chipId,
+        userText: cleanText,
+        transport,
+        useCardTransport: sendOptions?.useCardTransport === true,
+        locale: i18n.language,
+        stations: prepared.groundOrigin?.stationsKo || '',
+      });
+      const groundedReply = planned.reply;
 
       const geminiParams = {
         locale: i18n.language,
@@ -1252,16 +1256,16 @@ const ChatModal = ({
       };
 
       const modelUserText = prepared.modelUserText;
-      const geminiResult = groundedReply
-        ? { text: groundedReply, truncated: false, finishReason: 'stop' }
-        : await invokeMooniChatToleratingChip(
+      const geminiResult = planned.callModel
+        ? await invokeMooniChatToleratingChip(
           (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
           {
             ...geminiParams,
             history,
             userText: modelUserText,
           },
-        );
+        )
+        : { text: groundedReply, truncated: false, finishReason: 'stop' };
       const aiReply = groundedReply || geminiResult.text;
 
       const booking = groundedReply
@@ -1359,10 +1363,10 @@ const ChatModal = ({
       const role = error instanceof GeminiProxyError && error.kind === 'budget' ? 'model' : 'error';
       setMessages((prev) => [...prev, { role, text }]);
     } finally {
+      sendGateRef.current.end();
       setIsLoading(false);
     }
   }, [
-    isLoading,
     currentPersona,
     messages,
     activeChatId,

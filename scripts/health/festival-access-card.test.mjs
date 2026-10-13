@@ -9,6 +9,8 @@ import {
   bookingLink,
   buildAccessView,
   composeFestivalAccessReply,
+  createMooniSendGate,
+  planFestivalMooniModelCall,
   departureCoversStation,
   festivalAccessAskFragment,
   preferredOriginId,
@@ -228,6 +230,10 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
   };
   const reply = composeFestivalAccessReply(facts, { useSelected: true });
   assert.match(reply, /08:44~19:11/);
+  assert.match(reply, /용산→함평/);
+  assert.match(reply, /36,\u2060300원/);
+  assert.match(reply, /\n/);
+  assert.doesNotMatch(reply, /까지/);
   assert.equal(festivalAccessAskFragment('용산역에서 어떻게 가요? 시각과 요금도 알려줘'), '용산역');
   assert.equal(departureCoversStation('용산역', '용산'), true);
   const yongsanReply = composeFestivalAccessReply({
@@ -251,12 +257,51 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
       },
     ],
   }, { stations: '용산역' });
-  assert.match(yongsanReply, /용산에서 함평까지/);
+  assert.match(yongsanReply, /용산→함평/);
+  assert.doesNotMatch(yongsanReply, /까지/);
   assert.match(yongsanReply, /08:44~19:11/);
-  assert.match(yongsanReply, /36,300원/);
-  assert.doesNotMatch(yongsanReply, /1,000원/);
-  assert.match(reply, /36,300원/);
+  assert.match(yongsanReply, /36,\u2060300원/);
+  assert.doesNotMatch(yongsanReply, /1,[\u2060]?000원/);
   assert.doesNotMatch(reply, /가는 법/);
+});
+
+test('a typed station ask renders each grade once, then a normal question calls the model', () => {
+  const grades = [
+    { grade: 'KTX-산천', clock: '05:03~20:38', duration: '3시간 4분~3시간 12분', fare: '48,100원', count: '6회' },
+    { grade: 'ITX-새마을', clock: '07:15~19:40', duration: '4시간', fare: '27,600원', count: '4회' },
+  ];
+  const segment = { dep: '서울', arr: '마산', mode: 'train', rows: grades };
+  const transport = {
+    selected: { segments: [segment] },
+    origins: [
+      { label: '서울역', segments: [segment] },
+      { label: '인천공항', segments: [segment] },
+    ],
+  };
+  const gate = createMooniSendGate();
+  assert.equal(gate.tryBegin(), true);
+  const access = planFestivalMooniModelCall({
+    userText: '서울역에서 어떻게 가요? 시각과 요금도 알려줘',
+    transport,
+  });
+  assert.equal(access.callModel, false);
+  assert.equal(access.reply.split('KTX-산천').length - 1, 1);
+  assert.equal(access.reply.split('ITX-새마을').length - 1, 1);
+  assert.match(access.reply, /^서울→마산/);
+  assert.match(access.reply, /48,\u2060100원/);
+  assert.doesNotMatch(access.reply, /까지/);
+  gate.end();
+  assert.equal(gate.busy, false);
+  assert.equal(gate.tryBegin(), true);
+  const food = planFestivalMooniModelCall({
+    userText: '근처 맛집 추천해줘',
+    transport,
+  });
+  assert.equal(food.callModel, true);
+  assert.equal(food.reply, '');
+  gate.end();
+  assert.equal(gate.tryBegin(), true);
+  gate.end();
 });
 
 test('국향대전 defaults to 용산 when that origin is present', () => {

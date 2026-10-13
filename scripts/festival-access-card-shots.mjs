@@ -101,19 +101,37 @@ async function openFestival(page, target) {
   await page.getByRole('button', { name: '채팅 닫기' }).waitFor({ timeout: 20_000 });
   await page.getByTestId('mooni-festival-opening').waitFor({ timeout: 20_000 });
   await shot(page, `${target.id}-03-mooni`);
+  const box = page.locator('input[enterkeyhint="send"]:visible');
   if (target.id === 'hampyeong') {
-    const box = page.locator('input[enterkeyhint="send"]:visible');
     await box.waitFor({ timeout: 15_000 });
     await box.fill('용산역에서 어떻게 가요? 시각과 요금도 알려줘');
     await box.press('Enter');
     await page.getByText(/출발\s*·\s*용산/).waitFor({ timeout: 15_000 });
+  } else if (target.id === 'masan') {
+    await box.waitFor({ timeout: 15_000 });
+    await box.fill('서울역에서 어떻게 가요? 시각과 요금도 알려줘');
+    await box.press('Enter');
+    await page.getByText(/출발\s*·\s*서울/).waitFor({ timeout: 15_000 });
   } else {
     await page.getByRole('button', { name: '🚆 가는 법' }).click();
   }
   const answer = page.getByTestId('mooni-model-reply').last();
   await answer.waitFor({ timeout: 20_000 });
-  const answerText = (await answer.innerText()).replace(/\s+/g, ' ');
+  const answerRaw = await answer.innerText();
+  const answerText = answerRaw.replace(/\u2060/g, '').replace(/\s+/g, ' ');
   console.log(`${target.id} mooni ${answerText.slice(0, 400)}`);
+  if (target.id === 'masan') {
+    if ((answerRaw.match(/05:03~20:38/g) || []).length !== 1) {
+      throw new Error(`masan answer repeated a grade: ${answerText.slice(0, 500)}`);
+    }
+    if ((answerRaw.match(/서울→마산/g) || []).length !== 1) {
+      throw new Error('masan answer repeated the route');
+    }
+    const blocks = await answer.locator('p').count();
+    if (!/\n/.test(answerRaw) && blocks < 5) throw new Error('masan answer is not line-broken');
+    if (answerRaw.includes('까지')) throw new Error('masan answer still repeats 까지');
+    console.log(`masan lines=${blocks} sample=${JSON.stringify(answerRaw.slice(0, 80))}`);
+  }
   const clockBits = clock.split('~');
   if (!answerText.includes(marks.fare) || clockBits.some((bit) => bit && !answerText.includes(bit))) {
     throw new Error(`${target.id} MOONi answer missed ${marks.clock} / ${marks.fare}`);
@@ -132,6 +150,43 @@ async function openFestival(page, target) {
     await answer.evaluate((node) => node.scrollIntoView({ block: 'center' }));
   }
   await shot(page, `${target.id}-04-mooni-access`);
+  if (target.id === 'masan') {
+    // gemini-proxy allows www.gateo.kr, not the vite host. Relay the app's own POST.
+    await page.route('**/functions/v1/gemini-proxy', async (route) => {
+      const req = route.request();
+      if (req.method() !== 'POST') {
+        await route.continue();
+        return;
+      }
+      const headers = { ...req.headers(), origin: 'https://www.gateo.kr' };
+      delete headers['content-length'];
+      const upstream = await fetch(req.url(), {
+        method: 'POST',
+        headers,
+        body: req.postDataBuffer(),
+      });
+      const body = Buffer.from(await upstream.arrayBuffer());
+      const posted = req.postData() || '';
+      console.log(`masan food upstream=${upstream.status} foodAsk=${posted.includes('맛집')} bytes=${body.length}`);
+      await route.fulfill({
+        status: upstream.status,
+        contentType: upstream.headers.get('content-type') || 'application/json',
+        body,
+      });
+    });
+    await box.fill('근처 맛집 추천해줘');
+    await box.press('Enter');
+    await page.waitForFunction(() => {
+      const nodes = [...document.querySelectorAll('[data-testid="mooni-model-reply"]')];
+      const text = (nodes[nodes.length - 1]?.innerText || '').replace(/\s+/g, ' ');
+      return text.length > 12 && !text.includes('KTX-산천') && !text.includes('서울→');
+    }, null, { timeout: 70_000 });
+    const food = page.getByTestId('mooni-model-reply').last();
+    const foodText = (await food.innerText()).replace(/\s+/g, ' ');
+    console.log(`masan food ${foodText.slice(0, 300)}`);
+    await food.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+    await shot(page, 'masan-05-mooni-food');
+  }
   await page.getByRole('button', { name: '채팅 닫기' }).click();
   const suseo = card.locator('[data-festival-access-origin="suseo"]');
   if (await suseo.count()) {
@@ -189,11 +244,13 @@ const page = await browser.newPage({
 });
 page.setDefaultTimeout(30_000);
 try {
+  const only = String(process.env.SHOT_ONLY || '').trim();
   for (const target of targets) {
+    if (only && target.id !== only) continue;
     await openKoreaFromHome(page, { captureHome: true, label: target.id });
     await openFestival(page, target);
   }
-  await openUnsupported(page);
+  if (!only) await openUnsupported(page);
   console.log('shots ok');
 } finally {
   await browser.close();

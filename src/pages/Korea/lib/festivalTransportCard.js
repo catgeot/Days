@@ -427,8 +427,51 @@ export function departureCoversStation(stations, depStation) {
   return String(stations || '').split('·').some((part) => stationToken(part) === dep);
 }
 
+function segmentFactKey(segment) {
+  return `${stationToken(segment?.dep)}|${stationToken(segment?.arr)}|${segment?.mode || ''}`;
+}
+
+function rowFactKey(segment, row) {
+  return [
+    segmentFactKey(segment),
+    row?.grade || '',
+    row?.clock || '',
+    row?.duration || '',
+    row?.fare || '',
+    row?.count || '',
+  ].join('|');
+}
+
+/** Transfer hops can repeat a direct segment. Keep one copy of each grade. */
+function dedupeAccessSegments(segments) {
+  const seenRows = new Set();
+  const merged = new Map();
+  const order = [];
+  for (const segment of segments || []) {
+    const key = segmentFactKey(segment);
+    let bucket = merged.get(key);
+    if (!bucket) {
+      bucket = { ...segment, rows: [] };
+      merged.set(key, bucket);
+      order.push(bucket);
+    }
+    for (const row of segment.rows || []) {
+      const rowKey = rowFactKey(segment, row);
+      if (seenRows.has(rowKey)) continue;
+      seenRows.add(rowKey);
+      bucket.rows.push(row);
+    }
+  }
+  return order.filter((segment) => segment.rows.length > 0);
+}
+
+/** Keep a fare's thousands separator on the same line as the digits. */
+function protectGroupedNumber(value) {
+  return String(value || '').replace(/(\d),(\d)/g, '$1,\u2060$2');
+}
+
 /**
- * Sentences that repeat the card clocks and fares. Empty when the selected tab has none.
+ * One block per segment, one line per grade. Empty when the selected tab has none.
  * @param {{ selected?: { segments?: object[] }, origins?: Array<{ segments?: object[] }> } | null} transport
  */
 export function composeFestivalAccessReply(transport, {
@@ -446,8 +489,9 @@ export function composeFestivalAccessReply(transport, {
         if (!stations || departureCoversStation(stations, segment.dep)) segments.push(segment);
       }
     }
-    segments = segments.slice(0, ACCESS_CARD_CAP);
   }
+  segments = dedupeAccessSegments(segments);
+  if (!useSelected) segments = segments.slice(0, ACCESS_CARD_CAP);
   if (!segments.length) {
     if (useSelected) return '';
     return englishLocale(locale)
@@ -455,19 +499,59 @@ export function composeFestivalAccessReply(transport, {
       : '이 출발지의 확인된 열차·버스 시각은 없어요.';
   }
   const en = englishLocale(locale);
-  const sentences = [];
+  const blocks = [];
   for (const segment of segments) {
+    const lines = [en ? `${segment.dep} → ${segment.arr}` : `${segment.dep}→${segment.arr}`];
     for (const row of segment.rows || []) {
-      const bits = [row.grade, row.clock, row.duration, row.fare, row.count]
+      const bits = [row.grade, row.clock, row.duration, protectGroupedNumber(row.fare), row.count]
         .filter(Boolean)
         .map((bit) => String(bit));
-      if (!bits.length) continue;
-      sentences.push(en
-        ? `${segment.dep} to ${segment.arr}: ${bits.join(', ')}.`
-        : `${segment.dep}에서 ${segment.arr}까지 ${bits.join(', ')}예요.`);
+      if (bits.length) lines.push(bits.join(' · '));
     }
+    if (lines.length > 1) blocks.push(lines.join('\n\n'));
   }
-  return sentences.join(' ');
+  return blocks.join('\n\n');
+}
+
+/**
+ * Card facts answer a route question locally. Any other question still calls the model.
+ * A local reply must not leave the send gate busy.
+ */
+export function planFestivalMooniModelCall({
+  chipId = null,
+  userText = '',
+  transport = null,
+  useCardTransport = false,
+  locale = 'ko',
+  stations = '',
+} = {}) {
+  const route = chipId === 'festival_access' || festivalAccessAskIsRoute(userText);
+  if (!route) return { callModel: true, reply: '' };
+  const askFragment = festivalAccessAskFragment(userText);
+  const reply = composeFestivalAccessReply(transport, {
+    locale,
+    useSelected: useCardTransport || !askFragment,
+    stations: askFragment || stations,
+  });
+  return { callModel: reply === '', reply };
+}
+
+/** Synchronous send lock. end() runs on every exit, including a local card answer. */
+export function createMooniSendGate() {
+  let busy = false;
+  return {
+    tryBegin() {
+      if (busy) return false;
+      busy = true;
+      return true;
+    },
+    end() {
+      busy = false;
+    },
+    get busy() {
+      return busy;
+    },
+  };
 }
 
 export function groupOptionsByMode(options) {
