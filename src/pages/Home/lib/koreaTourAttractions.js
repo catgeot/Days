@@ -562,6 +562,14 @@ export function rememberKoreaTourAttractionFirstImage(contentId, url) {
   firstImageMiss.delete(id);
 }
 
+/** Live/DB settled with no usable first image — skip repeat lookups this session. */
+export function rememberKoreaTourAttractionFirstImageMiss(contentId) {
+  const id = String(contentId || '').trim();
+  if (!/^\d{1,32}$/.test(id)) return;
+  firstImageCache.delete(id);
+  firstImageMiss.add(id);
+}
+
 /**
  * @param {string[]} ids
  * @returns {Promise<void>}

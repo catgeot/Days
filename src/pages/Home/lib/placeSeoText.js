@@ -37,6 +37,19 @@ function getCategory(location) {
   return location?.primaryCategory || location?.category || location?.categories?.[0] || '';
 }
 
+function buildSyntheticPlaceDescEn(location) {
+  const name =
+    getLocalizedPlaceName(location, 'en') ||
+    location?.name_en ||
+    location?.name ||
+    'this destination';
+  const country = getLocalizedCountryName(location, 'en');
+  const category = getCategory(location);
+  const categoryLabel = CATEGORY_LABEL_EN[category] || 'travel destination';
+  const article = /^[aeiou]/i.test(categoryLabel) ? 'an' : 'a';
+  return `Discover ${name}${country ? `, ${country}` : ''} — ${article} ${categoryLabel} with photos, videos, and trip planning on GATEO.`;
+}
+
 /**
  * External search — tab-aware page title (before "| GATEO").
  * Matches queries like 「푸켓 여행」「푸켓 갤러리」「Phuket travel photos」.
@@ -68,12 +81,7 @@ export function getLocalizedPlaceDesc(location, locale = 'ko') {
     return koDesc;
   }
 
-  const name = getLocalizedPlaceName(location, 'en') || location?.name_en || location?.name || 'this destination';
-  const country = getLocalizedCountryName(location, 'en');
-  const category = getCategory(location);
-  const categoryLabel = CATEGORY_LABEL_EN[category] || 'travel destination';
-
-  return `Discover ${name}${country ? `, ${country}` : ''} — a ${categoryLabel} with photos, videos, and trip planning on GATEO.`;
+  return '';
 }
 
 export function isPlaceDescKoreanOnly(location) {
@@ -110,9 +118,14 @@ export function getLocalizedPlaceKeywords(location, locale = 'ko') {
  */
 export function getPlaceTabSeoDescription(location, locale, tabKey, t) {
   const name = getLocalizedPlaceName(location, locale) || t('place.fallback.destination');
-  const richDesc = getLocalizedPlaceDesc(location, locale);
+  let richDesc = getLocalizedPlaceDesc(location, locale);
+  const metaSyntheticEn =
+    locale === 'en' && !richDesc ? buildSyntheticPlaceDescEn(location) : '';
+  if (metaSyntheticEn) richDesc = metaSyntheticEn;
   const hasRichDesc =
-    Boolean(richDesc) && !isSyntheticOrEmptyPlaceDesc({ ...location, desc: richDesc });
+    Boolean(richDesc) &&
+    (Boolean(metaSyntheticEn) ||
+      !isSyntheticOrEmptyPlaceDesc({ ...location, desc: richDesc }));
 
   if (hasRichDesc) {
     const koName = getLocalizedPlaceName(location, 'ko') || location?.name || '';

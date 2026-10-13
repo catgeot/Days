@@ -15,6 +15,8 @@ import {
 import {
   mergeNearbyItemImages,
   missingNearbySightImageIds,
+  nearbyRowThumbCandidateUrls,
+  nearbySightIdsWithoutDisplayableThumb,
   nearbySightImagePending,
 } from '../../src/pages/Korea/lib/nearbySightImages.js';
 import { isNearbyTourAttractionTitle } from '../../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
@@ -466,7 +468,17 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.ok(thumbFn.indexOf('onConfirmedEmpty') >= 0);
   assert.ok(thumbFn.indexOf('onConfirmedEmpty') < thumbFn.indexOf("invokeTourApi('searchPhoto'"));
   assert.match(sheet, /data-nearby-thumb-pending/);
-  assert.match(sheet, /if \(imagePending\) return <NearbyThumbSkeleton/);
+  const rowThumbBlock = sheet.slice(
+    sheet.indexOf('function NearbyRowThumb'),
+    sheet.indexOf('function nearbySightTitle'),
+  );
+  assert.match(rowThumbBlock, /if \(!urls\.length\)[\s\S]*if \(imagePending\) return <NearbyThumbSkeleton/);
+  assert.match(
+    rowThumbBlock,
+    /thumbIndex >= urls\.length[\s\S]*if \(imagePending\) return <NearbyThumbSkeleton/,
+  );
+  assert.match(rowThumbBlock, /FestivalPhotoFrame/);
+  assert.match(rowThumbBlock, /referrerPolicy="no-referrer"/);
   const skeletonFn = sheet.slice(
     sheet.indexOf('function NearbyThumbSkeleton'),
     sheet.indexOf('function NearbyRowThumb'),
@@ -482,6 +494,45 @@ test('empty detailImage is confirmed only when the gallery response has no photo
   assert.equal(isConfirmedEmptyDetailImage({ items: [{ originimgurl: '' }] }), true);
   assert.equal(isConfirmedEmptyDetailImage({ items: [{ originimgurl: 'https://cdn.example/a.jpg' }] }), false);
   assert.equal(isConfirmedEmptyDetailImage(null), false);
+});
+
+test('settled no-photo nearby ids use landmark icon not grey pending', () => {
+  const rigo = { contentId: '128772', name: '리고엠', firstImage: '' };
+  const heo = { contentId: '128773', name: '허균·허난설헌 기념공원', imageUrl: '' };
+  const ids = missingNearbySightImageIds([rigo, heo]);
+  assert.deepEqual(ids.sort(), ['128772', '128773']);
+  assert.equal(nearbySightImagePending(rigo, new Set()), true);
+  assert.equal(nearbySightImagePending(rigo, new Set(['128772'])), false);
+  const spotById = new Map([
+    ['128772', rigo],
+    ['128773', heo],
+  ]);
+  const settled = nearbySightIdsWithoutDisplayableThumb(ids, spotById, new Map());
+  assert.deepEqual(settled.sort(), ['128772', '128773']);
+  assert.equal(nearbyRowThumbCandidateUrls(rigo).length, 0);
+  const sheet = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../../src/pages/Korea/FestivalDetailSheet.jsx'),
+    'utf8',
+  );
+  assert.match(sheet, /rememberKoreaTourAttractionFirstImageMiss/);
+  assert.match(sheet, /nearbySightIdsWithoutDisplayableThumb/);
+  const rowThumb = sheet.slice(
+    sheet.indexOf('function NearbyRowThumb'),
+    sheet.indexOf('function nearbySightTitle'),
+  );
+  assert.match(
+    rowThumb,
+    /thumbIndex >= urls\.length[\s\S]*if \(imagePending\) return <NearbyThumbSkeleton/,
+  );
+  assert.match(rowThumb, /return <NearbyThumbPlaceholder \/>/);
+  assert.match(rowThumb, /FestivalPhotoFrame/);
+  assert.match(rowThumb, /onFailed/);
+  const placeholderFn = sheet.slice(
+    sheet.indexOf('function NearbyThumbPlaceholder'),
+    sheet.indexOf('function NearbyThumbSkeleton'),
+  );
+  assert.match(placeholderFn, /data-nearby-thumb="empty"/);
+  assert.match(placeholderFn, /Landmark/);
 });
 
 test('early nearby rows pick up images without reordering', () => {
