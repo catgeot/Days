@@ -1,12 +1,14 @@
 // src/pages/Home/hooks/useYouTubeSearch.js
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { resolvePlaceVideoQueries } from '../lib/uiPlaceAssetQuery.js';
 import {
   filterPlayableVideos,
   markYoutubeIdUnplayable,
+  clearYoutubeIdsUnplayable,
 } from '../../../utils/youtubeUnplayableStorage.js';
 import { shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
 import {
@@ -104,6 +106,7 @@ function liveFromSession(mem) {
 }
 
 export const useYouTubeSearch = (location, mediaMode) => {
+  const { i18n } = useTranslation();
   const boot = peekSession(location);
   const [rawVideos, setRawVideos] = useState(() => boot?.rawVideos ?? []);
   const [isLoading, setIsLoading] = useState(() => !boot);
@@ -183,10 +186,13 @@ export const useYouTubeSearch = (location, mediaMode) => {
   );
 
   const placeYouTubeUrl = useMemo(
-    () => freeSearchYouTubeUrl(location),
+    () => freeSearchYouTubeUrl(location, { locale: i18n.language }),
     [
+      i18n.language,
       location?.name,
       location?.name_en,
+      location?.country,
+      location?.country_en,
       location?.city,
       location?.parentCity,
     ],
@@ -484,6 +490,12 @@ export const useYouTubeSearch = (location, mediaMode) => {
     }
   }, [freeSearch, mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.name_en, runInitialFetch]);
 
+  const retryUnplayable = useCallback(() => {
+    const ids = liveRef.current.rawVideos.map((v) => v.id).filter(Boolean);
+    clearYoutubeIdsUnplayable(ids);
+    setUnplayableBump((n) => n + 1);
+  }, []);
+
   const loadMore = useCallback(async () => {
     if (freeSearch) return;
     const ctx = fetchContextRef.current;
@@ -609,6 +621,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     error: fetchError,
     isEmpty: !isLoading && !fetchError && rawVideos.length === 0 && isEmptyResult,
     retry,
+    retryUnplayable,
     loadMore,
     canLoadMore,
     isLoadingMore,

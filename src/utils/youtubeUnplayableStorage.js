@@ -34,6 +34,18 @@ export function markYoutubeIdUnplayable(id) {
   );
 }
 
+export function clearYoutubeIdsUnplayable(idsToClear) {
+  const drop = new Set((idsToClear || []).filter(Boolean));
+  if (drop.size === 0) return;
+  const store = readStore();
+  const next = store.ids.filter((id) => !drop.has(id));
+  if (next.length === store.ids.length) return;
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({ ids: next, updatedAt: store.updatedAt || Date.now() }),
+  );
+}
+
 export function filterPlayableVideos(videos) {
   const hidden = getUnplayableYoutubeIds();
   return (videos || []).filter((v) => v?.id && !hidden.has(v.id));

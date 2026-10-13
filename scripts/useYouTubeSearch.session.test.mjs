@@ -363,6 +363,45 @@ test('named free-search pin without a cache row is link-only', async () => {
   assert.match(decodeURIComponent(hook.externalYouTubeUrl), /화곡리/);
 });
 
+test('retryUnplayable clears flags without wiping session load-more list', async () => {
+  setYouTubeMock({
+    db: async () => ({
+      data: { videos: mk('sapa', 5), next_retry_at: null },
+    }),
+    edge: async () => ({
+      data: {
+        success: true,
+        videos: mk('sapa-more', 5),
+        nextPageToken: 'T1',
+        paginationSource: 'primary',
+      },
+    }),
+  });
+  mount();
+  await render(sapa, 'VIDEO');
+  assert.equal(hook.videos.length, 5);
+  await act(async () => {
+    await hook.loadMore();
+  });
+  assert.equal(hook.videos.length, 10);
+  const allIds = [...ids()];
+  await act(async () => {
+    for (const id of allIds) {
+      hook.markUnplayable(id);
+    }
+    await new Promise((r) => setTimeout(r, 0));
+  });
+  assert.equal(hook.videos.length, 0);
+
+  const edgeBefore = calls.edge.length;
+  await act(async () => {
+    hook.retryUnplayable();
+    await new Promise((r) => setTimeout(r, 0));
+  });
+  assert.equal(calls.edge.length, edgeBefore, 'retryUnplayable must not refetch edge');
+  assert.equal(hook.videos.length, 10, 'restores playable list including load-more');
+});
+
 test('quota refusal sets fetchLimitCode and does not clear a later retry path', async () => {
   setYouTubeMock({
     db: async () => ({ data: null }),

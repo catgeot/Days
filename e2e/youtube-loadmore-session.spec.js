@@ -93,17 +93,30 @@ function playlistHeading(page) {
 async function openPlaylist(page) {
   const heading = playlistHeading(page);
   if (!(await heading.isVisible().catch(() => false))) {
-    await page.locator('.bottom-32.right-4 button').first().click();
+    await page.getByRole('button', { name: '영상 더 보기' }).click();
   }
   await expect(heading).toBeVisible();
   const text = await heading.innerText();
   return Number(text.match(/\((\d+)\)/)?.[1]);
 }
 
+function playlistSheet(page) {
+  return page.locator('div.fixed.inset-0').filter({ hasText: '재생 목록' }).last();
+}
+
+async function clickPlaylistLoadMore(page) {
+  const heading = playlistHeading(page);
+  if (!(await heading.isVisible().catch(() => false))) {
+    await openPlaylist(page);
+  }
+  const sheet = playlistSheet(page);
+  await sheet.getByRole('button', { name: '더 보기', exact: true }).click();
+}
+
 async function closePlaylist(page) {
   const heading = playlistHeading(page);
   if (!(await heading.isVisible().catch(() => false))) return;
-  const sheet = page.locator('div.fixed.inset-0').filter({ hasText: '재생 목록' }).last();
+  const sheet = playlistSheet(page);
   await sheet.getByRole('button').first().click();
   await expect(heading).toBeHidden();
 }
@@ -131,7 +144,7 @@ test.describe('YouTube load-more session', () => {
     expect(edgeAfterOpen).toBe(0);
 
     const more = page.waitForResponse((res) => res.url().includes('fetch-place-videos'));
-    await page.getByRole('button', { name: '영상 더 보기' }).click();
+    await clickPlaylistLoadMore(page);
     await more;
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);
@@ -182,7 +195,7 @@ test.describe('YouTube load-more session', () => {
     await installVideoMocks(page, state);
     await openPlaceVideo(page, 'sapa', '사파');
     const more = page.waitForResponse((res) => res.url().includes('fetch-place-videos'));
-    await page.getByRole('button', { name: '영상 더 보기' }).click();
+    await clickPlaylistLoadMore(page);
     await more;
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);
@@ -198,7 +211,7 @@ test.describe('YouTube load-more session', () => {
     await closePlaylist(page);
     expect(state.db).toBe(dbAfter);
     expect(state.edge).toBe(edgeAfter);
-    await expect(page.getByRole('button', { name: '영상 더 보기' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '영상 더 보기' }).first()).toBeVisible();
   });
 
   test('switching place clears the previous playlist', async ({ page }) => {
@@ -206,7 +219,7 @@ test.describe('YouTube load-more session', () => {
     await installVideoMocks(page, state);
     await openPlaceVideo(page, 'sapa', '사파');
     const more = page.waitForResponse((res) => res.url().includes('fetch-place-videos'));
-    await page.getByRole('button', { name: '영상 더 보기' }).click();
+    await clickPlaylistLoadMore(page);
     await more;
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);
@@ -231,7 +244,7 @@ test.describe('YouTube load-more session', () => {
     await installVideoMocks(page, state);
     await openPlaceVideo(page, 'sapa', '사파');
     const more = page.waitForResponse((res) => res.url().includes('fetch-place-videos'));
-    await page.getByRole('button', { name: '영상 더 보기' }).click();
+    await clickPlaylistLoadMore(page);
     await more;
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);

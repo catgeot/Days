@@ -8,6 +8,9 @@ import {
   YOUTUBE_ALLOWED_MESSAGE_ORIGINS,
   YOUTUBE_UNPLAYABLE_ERROR_CODES,
 } from '../../../utils/youtubePlayerMessaging';
+import { isYoutubeForceEmbedErrorEnabled } from '../../../utils/youtubeEmbedQaHook';
+
+const MAX_CONSECUTIVE_EMBED_FAILURES = 3;
 
 const YouTubePlayerView = forwardRef(({
   videoId,
@@ -21,6 +24,7 @@ const YouTubePlayerView = forwardRef(({
   mobileSecondaryNav = null,
   fetchError = false,
   onRetry,
+  onRetryUnplayable,
   isEmptyResult = false,
   onLoadMore,
   canLoadMore = false,
@@ -56,9 +60,27 @@ const YouTubePlayerView = forwardRef(({
   const isPlayingRef = useRef(false);
   const preservePlaybackRef = useRef(false);
   const prevVideoIdRef = useRef(videoId);
+  const retrySessionNoAdvanceRef = useRef(false);
+  const lastPlayViaPlaylistRef = useRef(false);
+  const consecutiveEmbedFailuresRef = useRef(0);
+  const lastEmbedErrorRef = useRef({ id: null, at: 0 });
+  const [failedPickVideo, setFailedPickVideo] = useState(null);
+  const failedPickVideoRef = useRef(null);
+  const [unplayableRetryExhausted, setUnplayableRetryExhausted] = useState(false);
+  const [retrySessionYoutubeCta, setRetrySessionYoutubeCta] = useState(false);
+
+  const retryExhaustedStorageKey =
+    typeof window !== 'undefined' ? `gateo.yt.retryExhausted:${window.location.pathname}` : '';
+  const retrySessionStorageKey =
+    typeof window !== 'undefined' ? `gateo.yt.retrySession:${window.location.pathname}` : '';
 
   const videoList = videos || [];
   const currentVideo = videoList[currentVideoIndex];
+  const uiVideo = failedPickVideo || currentVideo;
+
+  useEffect(() => {
+    failedPickVideoRef.current = failedPickVideo;
+  }, [failedPickVideo]);
 
   useEffect(() => {
     currentVideoIndexRef.current = currentVideoIndex;
@@ -84,22 +106,107 @@ const YouTubePlayerView = forwardRef(({
     }
   }, []);
 
+  const markRetryExhausted = useCallback(() => {
+    setUnplayableRetryExhausted(true);
+    if (retryExhaustedStorageKey) {
+      try {
+        sessionStorage.setItem(retryExhaustedStorageKey, '1');
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [retryExhaustedStorageKey]);
+
+  const clearRetryExhausted = useCallback(() => {
+    setUnplayableRetryExhausted(false);
+    setRetrySessionYoutubeCta(false);
+    setFailedPickVideo(null);
+    lastPlayViaPlaylistRef.current = false;
+    retrySessionNoAdvanceRef.current = false;
+    consecutiveEmbedFailuresRef.current = 0;
+    if (retryExhaustedStorageKey) {
+      try {
+        sessionStorage.removeItem(retryExhaustedStorageKey);
+      } catch {
+        /* ignore */
+      }
+    }
+    if (retrySessionStorageKey) {
+      try {
+        sessionStorage.removeItem(retrySessionStorageKey);
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [retryExhaustedStorageKey, retrySessionStorageKey]);
+
+  const isRetrySessionNoAdvance = useCallback(() => {
+    if (retrySessionNoAdvanceRef.current) return true;
+    if (!retrySessionStorageKey) return false;
+    try {
+      return sessionStorage.getItem(retrySessionStorageKey) === '1';
+    } catch {
+      return false;
+    }
+  }, [retrySessionStorageKey]);
+
+  const handleEmbedErrorInRetrySession = useCallback((failedId) => {
+    if (onVideoUnplayable) onVideoUnplayable(failedId);
+    markRetryExhausted();
+    preservePlaybackRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(true);
+    setRetrySessionYoutubeCta(true);
+  }, [onVideoUnplayable, markRetryExhausted]);
+
+  const handleUserPickEmbedError = useCallback((failedVideo) => {
+    lastPlayViaPlaylistRef.current = false;
+    if (!failedVideo?.id) return;
+    const snapshot = { id: failedVideo.id, title: failedVideo.title };
+    failedPickVideoRef.current = snapshot;
+    setFailedPickVideo(snapshot);
+    if (onVideoUnplayable) onVideoUnplayable(failedVideo.id);
+    preservePlaybackRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(true);
+    setRetrySessionYoutubeCta(true);
+  }, [onVideoUnplayable]);
+
+  const stopAfterEmbedFailures = useCallback(() => {
+    preservePlaybackRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(true);
+    setRetrySessionYoutubeCta(true);
+  }, []);
+
   const advanceToNextVideo = useCallback((wasPlaying) => {
+    lastPlayViaPlaylistRef.current = false;
     const list = videos || [];
     const idx = currentVideoIndexRef.current;
     const failedId = list[idx]?.id;
     if (!failedId) return;
 
+    if (isRetrySessionNoAdvance()) {
+      handleEmbedErrorInRetrySession(failedId);
+      return;
+    }
+
+    if (onVideoUnplayable) onVideoUnplayable(failedId);
+    consecutiveEmbedFailuresRef.current += 1;
+
+    if (consecutiveEmbedFailuresRef.current >= MAX_CONSECUTIVE_EMBED_FAILURES) {
+      stopAfterEmbedFailures();
+      return;
+    }
+
     const afterFilter = list.filter((v) => v.id !== failedId);
     if (afterFilter.length === 0 || idx >= afterFilter.length) {
-      if (onVideoUnplayable) onVideoUnplayable(failedId);
       setIsPlaying(false);
       setIsPaused(true);
       return;
     }
 
     const nextVideo = afterFilter[idx];
-    if (onVideoUnplayable) onVideoUnplayable(failedId);
 
     preservePlaybackRef.current = wasPlaying;
     setCurrentVideoIndex(idx);
@@ -108,7 +215,7 @@ const YouTubePlayerView = forwardRef(({
       setIsPlaying(true);
       setIsPaused(false);
     }
-  }, [videos, onVideoSelect, onVideoUnplayable]);
+  }, [videos, onVideoSelect, onVideoUnplayable, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession, stopAfterEmbedFailures]);
 
   useImperativeHandle(ref, () => ({
     seekTo: (seconds) => {
@@ -152,13 +259,32 @@ const YouTubePlayerView = forwardRef(({
 
           if (data?.event === 'onError' && typeof data.info === 'number') {
             if (YOUTUBE_UNPLAYABLE_ERROR_CODES.has(data.info)) {
-              advanceToNextVideo(isPlayingRef.current);
+              if (failedPickVideoRef.current?.id) return;
+              const list = videos || [];
+              const failedId = list[currentVideoIndexRef.current]?.id;
+              if (!failedId) return;
+              const now = Date.now();
+              if (
+                lastEmbedErrorRef.current.id === failedId
+                && now - lastEmbedErrorRef.current.at < 900
+              ) {
+                return;
+              }
+              lastEmbedErrorRef.current = { id: failedId, at: now };
+              if (lastPlayViaPlaylistRef.current) {
+                const picked = list[currentVideoIndexRef.current];
+                if (picked) handleUserPickEmbedError(picked);
+              } else if (isRetrySessionNoAdvance()) {
+                handleEmbedErrorInRetrySession(failedId);
+              } else {
+                advanceToNextVideo(isPlayingRef.current);
+              }
             }
           }
       };
       window.addEventListener('message', handleMessage);
       return () => window.removeEventListener('message', handleMessage);
-  }, [advanceToNextVideo, isPlaying]);
+  }, [advanceToNextVideo, isPlaying, videos, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession, handleUserPickEmbedError]);
 
   useEffect(() => {
     if (!isPlaying || !currentVideo?.id) return;
@@ -169,8 +295,30 @@ const YouTubePlayerView = forwardRef(({
   }, [isPlaying, currentVideo?.id, postToPlayer]);
 
   useEffect(() => {
+    if (!isPlaying || !currentVideo?.id || !isYoutubeForceEmbedErrorEnabled()) return;
+    const timer = setTimeout(() => {
+      if (lastPlayViaPlaylistRef.current && currentVideo) {
+        handleUserPickEmbedError(currentVideo);
+      } else if (isRetrySessionNoAdvance()) {
+        handleEmbedErrorInRetrySession(currentVideo.id);
+      } else {
+        advanceToNextVideo(isPlayingRef.current);
+      }
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [isPlaying, currentVideo, advanceToNextVideo, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession, handleUserPickEmbedError]);
+
+  useEffect(() => {
     queueMicrotask(() => {
       const list = videos || [];
+      if (failedPickVideo?.id) {
+        if (videoId && videoId !== failedPickVideo.id && list.some((v) => v.id === videoId)) {
+          setFailedPickVideo(null);
+        } else {
+          prevVideoIdRef.current = videoId;
+          return;
+        }
+      }
       let targetIndex = 0;
       if (videoId && list.length > 0) {
         const found = list.findIndex((v) => v.id === videoId);
@@ -190,35 +338,163 @@ const YouTubePlayerView = forwardRef(({
         setIsPaused(true);
       }
     });
-  }, [videoId, videos]);
+  }, [videoId, videos, failedPickVideo]);
 
   useEffect(() => {
-    if (currentVideo) {
+    if (uiVideo?.id) {
       queueMicrotask(() => {
-        setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`);
+        setThumbnailUrl(`https://img.youtube.com/vi/${uiVideo.id}/hqdefault.jpg`);
       });
     }
-  }, [currentVideo]);
+  }, [uiVideo]);
 
   const handleImageError = () => {
-    if (currentVideo && thumbnailUrl && !thumbnailUrl.includes('mqdefault')) {
-      setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/mqdefault.jpg`);
+    if (uiVideo && thumbnailUrl && !thumbnailUrl.includes('mqdefault')) {
+      setThumbnailUrl(`https://img.youtube.com/vi/${uiVideo.id}/mqdefault.jpg`);
     }
   };
 
-  const handlePlay = () => {
-      if (!currentVideo) return;
-      setIsPlaying(true);
-      setIsPaused(false);
-  };
+  const handlePlay = useCallback(() => {
+    lastPlayViaPlaylistRef.current = false;
+    if (!currentVideo) return;
+    setFailedPickVideo(null);
+    setRetrySessionYoutubeCta(false);
+    consecutiveEmbedFailuresRef.current = 0;
+    lastEmbedErrorRef.current = { id: null, at: 0 };
+    setIsPlaying(true);
+    setIsPaused(false);
+  }, [currentVideo]);
 
-  const watchOnYouTubeUrl = externalYouTubeUrl || placeYouTubeUrl;
+  const selectVideoAndPlay = useCallback((video, idx) => {
+    setFailedPickVideo(null);
+    lastPlayViaPlaylistRef.current = true;
+    setRetrySessionYoutubeCta(false);
+    consecutiveEmbedFailuresRef.current = 0;
+    lastEmbedErrorRef.current = { id: null, at: 0 };
+    preservePlaybackRef.current = true;
+    setCurrentVideoIndex(idx);
+    if (onVideoSelect) onVideoSelect(video.id);
+    setIsPlaying(true);
+    setIsPaused(false);
+  }, [onVideoSelect]);
+
+  const watchOnYouTubeUrl = failedPickVideo
+    ? `https://www.youtube.com/watch?v=${encodeURIComponent(failedPickVideo.id)}`
+    : (externalYouTubeUrl || placeYouTubeUrl);
   const showFetchError = !isLoading && fetchError;
   const quotaWithoutVideos = showFetchError
     && (fetchLimitCode === 'ip_quota' || fetchLimitCode === 'global_quota')
     && videoList.length === 0;
   const showEmpty = !isLoading && !fetchError && isEmptyResult && videoList.length === 0;
   const showNoPlayable = !isLoading && !fetchError && !isEmptyResult && videoList.length === 0;
+
+  useEffect(() => {
+    if (!showNoPlayable || !retryExhaustedStorageKey) return;
+    try {
+      if (sessionStorage.getItem(retryExhaustedStorageKey) === '1') {
+        setUnplayableRetryExhausted(true);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [showNoPlayable, retryExhaustedStorageKey]);
+
+  useEffect(() => {
+    if (showNoPlayable || showEmpty) {
+      setIsPlaying(false);
+      setIsPaused(true);
+      preservePlaybackRef.current = false;
+    }
+  }, [showNoPlayable, showEmpty]);
+
+  const handleRetryUnplayable = useCallback(() => {
+    clearRetryExhausted();
+    retrySessionNoAdvanceRef.current = true;
+    if (retrySessionStorageKey) {
+      try {
+        sessionStorage.setItem(retrySessionStorageKey, '1');
+      } catch {
+        /* ignore */
+      }
+    }
+    preservePlaybackRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(true);
+    onRetryUnplayable?.();
+  }, [clearRetryExhausted, onRetryUnplayable, retrySessionStorageKey]);
+
+  useEffect(() => {
+    if (!retrySessionStorageKey) return;
+    try {
+      if (sessionStorage.getItem(retrySessionStorageKey) === '1') {
+        retrySessionNoAdvanceRef.current = true;
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [retrySessionStorageKey]);
+
+  const primaryCtaClass =
+    'group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]';
+  const secondaryCtaClass =
+    'group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10';
+
+  const watchOnYouTubeButton = watchOnYouTubeUrl ? (
+    <a
+      href={watchOnYouTubeUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={primaryCtaClass}
+    >
+      {t('place.video.openOnYouTube')}
+      <ExternalLink size={14} className="opacity-50" />
+    </a>
+  ) : null;
+
+  const retryButton = onRetry ? (
+    <button
+      type="button"
+      onClick={() => onRetry?.()}
+      disabled={isLoading}
+      className={`${secondaryCtaClass} disabled:opacity-40`}
+    >
+      <RotateCcw size={18} />
+      {t('place.video.retry')}
+    </button>
+  ) : null;
+
+  const recommendFormButton = (
+    <a
+      href={googleFormUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={secondaryCtaClass}
+    >
+      <Sparkles size={18} />
+      {t('place.video.recommend')}
+      <ExternalLink size={14} className="opacity-50" />
+    </a>
+  );
+
+  const retryUnplayableButton = onRetryUnplayable && !unplayableRetryExhausted ? (
+    <button
+      type="button"
+      onClick={handleRetryUnplayable}
+      disabled={isLoading}
+      className={`${secondaryCtaClass} disabled:opacity-40`}
+    >
+      <RotateCcw size={18} />
+      {t('place.video.retry')}
+    </button>
+  ) : null;
+
+  const emptyOrUnplayableActions = (
+    <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+      {watchOnYouTubeButton}
+      {showNoPlayable && unplayableRetryExhausted ? null : showNoPlayable ? retryUnplayableButton : retryButton}
+      {showNoPlayable && unplayableRetryExhausted ? null : recommendFormButton}
+    </div>
+  );
 
   return (
     <div
@@ -247,28 +523,17 @@ const YouTubePlayerView = forwardRef(({
             <p className="text-white/60 text-sm mb-4 max-w-sm">
               {quotaWithoutVideos ? emptyQuotaMessage(fetchLimitCode) : limitMessage(fetchLimitCode)}
             </p>
-          ) : null}
-          {quotaWithoutVideos && watchOnYouTubeUrl ? (
-            <a
-              href={watchOnYouTubeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-            >
-              {t('place.video.openOnYouTube')}
-              <ExternalLink size={14} className="opacity-50" />
-            </a>
-          ) : onRetry ? (
-          <button
-            type="button"
-            onClick={() => onRetry?.()}
-            disabled={isLoading}
-            className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 disabled:opacity-40 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
-          >
-            <RotateCcw size={18} />
-            {t('place.video.retry')}
-          </button>
-          ) : null}
+          ) : (
+            <p className="text-white/50 text-sm mb-6 max-w-xs">{t('place.video.errorBody')}</p>
+          )}
+          {quotaWithoutVideos ? (
+            watchOnYouTubeButton
+          ) : (
+            <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+              {watchOnYouTubeButton}
+              {retryButton}
+            </div>
+          )}
         </div>
       ) : (showEmpty || showNoPlayable) ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
@@ -281,55 +546,7 @@ const YouTubePlayerView = forwardRef(({
           <p className="text-white/50 text-sm max-w-xs mb-8">
             {showNoPlayable ? t('place.video.noPlayableBody') : t('place.video.emptyBody')}
           </p>
-          {showEmpty ? (
-            <div className="flex flex-col items-center gap-3">
-              {watchOnYouTubeUrl ? (
-                <a
-                  href={watchOnYouTubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-                >
-                  {t('place.video.openOnYouTube')}
-                  <ExternalLink size={14} className="opacity-50" />
-                </a>
-              ) : null}
-              <a
-                href={googleFormUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-              >
-                <Sparkles size={18} />
-                {t('place.video.recommend')}
-                <ExternalLink size={14} className="opacity-50" />
-              </a>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-3">
-              {watchOnYouTubeUrl ? (
-                <a
-                  href={watchOnYouTubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
-                >
-                  {t('place.video.openOnYouTube')}
-                  <ExternalLink size={14} className="opacity-50" />
-                </a>
-              ) : null}
-              {onRetry ? (
-              <button
-                type="button"
-                onClick={() => onRetry()}
-                className="group flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-2xl font-bold transition-all active:scale-95 border border-white/10"
-              >
-                <RotateCcw size={18} />
-                {t('place.video.retry')}
-              </button>
-              ) : null}
-            </div>
-          )}
+          {emptyOrUnplayableActions}
         </div>
       ) : isPlaying ? (
         <div className="relative w-full h-full flex items-center justify-center bg-black">
@@ -349,7 +566,10 @@ const YouTubePlayerView = forwardRef(({
           </div>
         </div>
       ) : (
-        <div className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer group" onClick={handlePlay}>
+        <div
+          className={`absolute inset-0 z-10 flex items-center justify-center group ${retrySessionYoutubeCta ? '' : 'cursor-pointer'}`}
+          onClick={retrySessionYoutubeCta ? undefined : handlePlay}
+        >
           <div
             className="absolute inset-0 bg-cover bg-center opacity-40 blur-2xl scale-110 transition-transform duration-700 group-hover:scale-125"
             style={{ backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : 'none' }}
@@ -369,9 +589,17 @@ const YouTubePlayerView = forwardRef(({
              </div>
           </div>
           <div className="absolute bottom-12 text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-             <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{displayTitle(currentVideo?.title)}</p>
+             <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{displayTitle(uiVideo?.title)}</p>
              <p className="text-[10px] md:text-xs text-white/60 tracking-wider uppercase mt-1">Click to Play</p>
           </div>
+          {retrySessionYoutubeCta && watchOnYouTubeButton ? (
+            <div
+              className="absolute inset-0 z-40 flex items-center justify-center bg-black/75 backdrop-blur-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {watchOnYouTubeButton}
+            </div>
+          ) : null}
         </div>
       )}
 
@@ -397,9 +625,7 @@ const YouTubePlayerView = forwardRef(({
                       key={video.id + idx}
                       onClick={(e) => {
                           e.stopPropagation();
-                          if (onVideoSelect) onVideoSelect(video.id);
-                          setCurrentVideoIndex(idx);
-                          handlePlay();
+                          selectVideoAndPlay(video, idx);
                       }}
                       className={`relative flex-shrink-0 w-36 h-24 rounded-xl overflow-hidden border-2 transition-all duration-300 snap-center group/item ${currentVideoIndex === idx ? 'border-red-500 scale-105 shadow-[0_0_20px_rgba(220,38,38,0.5)] z-10' : 'border-transparent opacity-60 hover:opacity-100 hover:border-white/50'}`}
                   >
@@ -432,7 +658,7 @@ const YouTubePlayerView = forwardRef(({
 
       {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreLimitCode || loadMoreNoNew) && (
         <div
-          className={`absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
+          className={`hidden md:block absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
             isPlaying
               ? 'bottom-3 md:bottom-4'
               : 'bottom-28 md:bottom-[13.5rem]'
@@ -468,29 +694,20 @@ const YouTubePlayerView = forwardRef(({
         <div className={`md:hidden absolute bottom-32 right-4 z-[210] flex flex-col gap-3 transition-all duration-300
             ${(showUI || !isPlaying || isPaused) ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}>
 
-            {!showEmpty && !showFetchError && !showNoPlayable && videoList.length > 1 && (
+            {!showEmpty && !showFetchError && !showNoPlayable && videoList.length > 0 && (
               <button
+                  type="button"
                   onClick={(e) => { e.stopPropagation(); setIsMobileListOpen(true); }}
-                  className="p-4 bg-white/10 text-white rounded-full shadow-2xl backdrop-blur-md border border-white/20 active:scale-90 transition-all"
+                  className="px-4 py-2.5 bg-white/10 text-white text-sm font-semibold rounded-full shadow-2xl backdrop-blur-md border border-white/20 active:scale-95 transition-all"
               >
-                  <List size={24} strokeWidth={2.5} />
+                  {t('place.video.openPlaylist')}
               </button>
             )}
 
-            {showEmpty && (
-              <a
-                href={googleFormUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-red-600/20 text-red-500 rounded-full shadow-2xl backdrop-blur-md border border-red-500/30 active:scale-90 transition-all"
-              >
-                <Sparkles size={24} strokeWidth={2.5} />
-              </a>
-            )}
         </div>
       )}
 
-      {isMobileListOpen && videoList.length > 1 && (
+      {isMobileListOpen && videoList.length > 0 && (
         <div
             className="md:hidden fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in"
             onClick={() => setIsMobileListOpen(false)}
@@ -514,9 +731,7 @@ const YouTubePlayerView = forwardRef(({
                         <button
                             key={video.id + idx}
                             onClick={() => {
-                                if (onVideoSelect) onVideoSelect(video.id);
-                                setCurrentVideoIndex(idx);
-                                handlePlay();
+                                selectVideoAndPlay(video, idx);
                                 setIsMobileListOpen(false);
                             }}
                             className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all mb-2 ${currentVideoIndex === idx ? 'bg-red-500/20 border border-red-500/50' : 'hover:bg-white/5 border border-transparent'}`}
@@ -535,6 +750,34 @@ const YouTubePlayerView = forwardRef(({
                         </button>
                     ))}
                 </div>
+
+                {!isLoading && (canLoadMore || loadMoreError || loadMoreLimitCode || loadMoreNoNew) && (
+                  <div className="shrink-0 p-4 pt-3 border-t border-white/10 bg-black/50 space-y-2">
+                    {canLoadMore && (
+                      <button
+                        type="button"
+                        disabled={isLoadingMore}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onLoadMore?.();
+                        }}
+                        className="w-full px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold disabled:opacity-50 transition-all"
+                      >
+                        {isLoadingMore ? t('place.video.loading') : t('place.video.loadMore')}
+                      </button>
+                    )}
+                    {(loadMoreLimitCode || loadMoreError) && (
+                      <p className="text-center text-xs text-red-400/90">
+                        {limitMessage(loadMoreLimitCode)}
+                      </p>
+                    )}
+                    {loadMoreNoNew && !loadMoreError && (
+                      <p className="text-center text-xs text-white/50">
+                        {t('place.video.loadMoreNoNew')}
+                      </p>
+                    )}
+                  </div>
+                )}
             </div>
         </div>
       )}

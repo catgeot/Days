@@ -30,6 +30,7 @@ const PlaceMediaPanel = React.memo(({
     videoFetchError,
     isVideoEmptyResult,
     onRetryVideoFetch,
+    onRetryUnplayableVideos,
     onLoadMoreVideos,
     canLoadMoreVideos,
     isLoadingMoreVideos,
@@ -102,6 +103,7 @@ const PlaceMediaPanel = React.memo(({
                 googleFormUrl={googleFormUrl}
                 fetchError={videoFetchError}
                 onRetry={onRetryVideoFetch}
+                onRetryUnplayable={onRetryUnplayableVideos}
                 isEmptyResult={isVideoEmptyResult}
                 onLoadMore={onLoadMoreVideos}
                 canLoadMore={canLoadMoreVideos}
