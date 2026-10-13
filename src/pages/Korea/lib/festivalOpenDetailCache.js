@@ -1,4 +1,5 @@
 import { festivalItemFromDetail } from '../festivalDeepLinkItem.js';
+import { isManualFestivalContentId } from '../manualFestivalEntries.js';
 
 const CACHE_PREFIX = 'gateo:festival-open-detail:v1:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
@@ -51,6 +52,7 @@ export function slimFestivalOpenDetail(detail) {
 }
 
 export function readFestivalOpenDetail(contentId, storeList = stores()) {
+  if (isManualFestivalContentId(contentId)) return null;
   const key = cacheKey(contentId);
   const now = Date.now();
   const mem = memory.get(key);

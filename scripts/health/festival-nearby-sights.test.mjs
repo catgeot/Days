@@ -571,17 +571,17 @@ test('out-of-window festival detail opens again from the client cache', () => {
   };
   const detail = {
     ok: true,
-    contentId: '638576',
-    common: { contentid: '638576', title: '국향대전', mapx: '126.5', mapy: '35.1', firstimage: 'https://img.example/a.jpg' },
-    intro: { eventstartdate: '20261023', eventenddate: '20261108' },
+    contentId: '2930716',
+    common: { contentid: '2930716', title: '강릉단오제', mapx: '128.9', mapy: '37.8', firstimage: 'https://img.example/a.jpg' },
+    intro: { eventstartdate: '20260505', eventenddate: '20260508' },
   };
-  assert.equal(readFestivalOpenDetail('638576', [storage]), null);
-  writeFestivalOpenDetail('638576', detail, [storage]);
+  assert.equal(readFestivalOpenDetail('2930716', [storage]), null);
+  writeFestivalOpenDetail('2930716', detail, [storage]);
   const slim = slimFestivalOpenDetail(detail);
-  const hit = readFestivalOpenDetail('638576', [storage]);
-  assert.equal(hit.contentId, '638576');
+  const hit = readFestivalOpenDetail('2930716', [storage]);
+  assert.equal(hit.contentId, '2930716');
   assert.equal(hit.common.mapx, slim.common.mapx);
-  assert.equal(hit.common.mapy, '35.1');
+  assert.equal(hit.common.mapy, '37.8');
 });
 
 test('locationBasedList for the same coords reopens from the client cache', () => {

@@ -18,3 +18,7 @@ test('festival list heading reserves space beside Large/Map controls', () => {
   assert.match(block, /min-w-0 flex-1/);
   assert.doesNotMatch(block, /whitespace-nowrap/);
 });
+
+test('list meta count uses promo-excluded panel rows', () => {
+  assert.match(index, /count: panelItemsForList\.length/);
+});

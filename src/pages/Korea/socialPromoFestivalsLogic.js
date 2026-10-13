@@ -354,3 +354,29 @@ export function socialPromoIdsNeedingDetailFetch(baseItems, entries, detailById)
       return true;
     });
 }
+
+/**
+ * Promo strip duplicates the same festivals in the list below — hide those rows when the strip is visible.
+ * @param {object[]} items
+ * @param {Set<string> | string[]} excludeIds
+ */
+export function excludeFestivalsByContentId(items, excludeIds) {
+  const set =
+    excludeIds instanceof Set
+      ? excludeIds
+      : new Set((excludeIds || []).map((id) => String(id)));
+  if (!set.size) return Array.isArray(items) ? items : [];
+  return (items || []).filter((row) => !set.has(String(row?.contentId || '')));
+}
+
+/**
+ * @param {Array<{ item?: { contentId?: unknown } }>} cards
+ */
+export function contentIdsFromPromoCards(cards) {
+  const ids = new Set();
+  for (const card of cards || []) {
+    const id = String(card?.item?.contentId || '').trim();
+    if (id) ids.add(id);
+  }
+  return ids;
+}
