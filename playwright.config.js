@@ -42,5 +42,10 @@ export default defineConfig({
       testMatch: /youtube-loadmore-session\.spec\.js/,
       use: { ...devices['iPhone 13'] },
     },
+    {
+      name: 'webkit-iphone-nearby',
+      testMatch: /gangneung-nearby-thumb-fallback\.spec\.js/,
+      use: { ...devices['iPhone 13'] },
+    },
   ],
 });

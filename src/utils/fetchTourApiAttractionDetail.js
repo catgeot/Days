@@ -28,6 +28,16 @@ function pickImageUrl(...candidates) {
   return null;
 }
 
+function galleryImageUrl(item) {
+  return pickImageUrl(item?.imageUrl, item?.originimgurl, item?.smallimageurl, item?.firstimage);
+}
+
+/** detailImage 응답이 왔고 쓸 사진이 없을 때만 true. 오류·미응답은 false. */
+export function isConfirmedEmptyDetailImage(images) {
+  if (!images || !Array.isArray(images.items)) return false;
+  return !images.items.some((item) => galleryImageUrl(item));
+}
+
 /** contentId → detailCommon item. 썸네일과 상세가 같은 호출을 두 번 하지 않게 한다. */
 const detailCommonCache = new Map();
 
@@ -161,28 +171,26 @@ export async function fetchTourApiAttractionDetail(opts) {
  * @param {string | number | null | undefined} contentId
  * @returns {Promise<string | null>}
  */
-export async function fetchTourApiFirstImage(contentId) {
+export async function fetchTourApiFirstImage(contentId, hooks = {}) {
   const id = String(contentId ?? '').trim();
   if (!/^\d{1,32}$/.test(id)) return null;
-  const [item, images] = await Promise.all([
-    detailCommonItem(id),
-    invokeTourApi('detailImage', { contentId: id, numOfRows: 8, pageNo: 1 }),
-  ]);
+  const imagesPromise = invokeTourApi('detailImage', { contentId: id, numOfRows: 8, pageNo: 1 });
+  const itemPromise = detailCommonItem(id);
+  const images = await imagesPromise;
+  let galleryImage = null;
+  for (const it of images?.items || []) {
+    galleryImage = galleryImageUrl(it);
+    if (galleryImage) break;
+  }
+  if (galleryImage) return galleryImage;
+  if (isConfirmedEmptyDetailImage(images)) await hooks.onConfirmedEmpty?.();
+  const item = await itemPromise;
   const directImage = pickImageUrl(
     item?.imageUrl,
     item?.firstimage,
     item?.firstimage2,
   );
   if (directImage) return directImage;
-  for (const it of images?.items || []) {
-    const fromGallery = pickImageUrl(
-      it?.imageUrl,
-      it?.originimgurl,
-      it?.smallimageurl,
-      it?.firstimage,
-    );
-    if (fromGallery) return fromGallery;
-  }
   const title = String(item?.title || '').replace(/\(.*?\)/g, '').trim();
   if (!title) return null;
   try {

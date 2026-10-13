@@ -32,6 +32,7 @@ import {
   tourApiProxyCacheKey,
   writeTourApiProxyCache,
 } from '../../src/utils/tourApiProxyCache.js';
+import { isConfirmedEmptyDetailImage } from '../../src/utils/fetchTourApiAttractionDetail.js';
 
 const origin = { lat: 35.06, lng: 126.52 };
 
@@ -450,6 +451,17 @@ test('nearby sights render without waiting for festival detail', () => {
     /nearbyStatus === 'loading' \|\| nearbyStatus === 'idle'/,
   );
   assert.match(sheet, /fetchTourApiFirstImage\(/);
+  assert.match(sheet, /onConfirmedEmpty/);
+  assert.match(sheet, /data-festival-below-loading/);
+  assert.match(sheet, /nearSectionsLoading/);
+  assert.equal(sheet.includes('nearFoodLoading'), false);
+  assert.equal(sheet.includes('nearLeportsLoading'), false);
+  assert.equal(sheet.includes('nearCultureLoading'), false);
+  assert.equal(sheet.includes('nearCoursesLoading'), false);
+  const thumbSrc = readFileSync(join(root, 'src/utils/fetchTourApiAttractionDetail.js'), 'utf8');
+  const thumbFn = thumbSrc.slice(thumbSrc.indexOf('export async function fetchTourApiFirstImage'));
+  assert.ok(thumbFn.indexOf('onConfirmedEmpty') >= 0);
+  assert.ok(thumbFn.indexOf('onConfirmedEmpty') < thumbFn.indexOf("invokeTourApi('searchPhoto'"));
   assert.match(sheet, /data-nearby-thumb-pending/);
   assert.match(sheet, /if \(imagePending\) return <NearbyThumbSkeleton/);
   const skeletonFn = sheet.slice(
@@ -460,6 +472,13 @@ test('nearby sights render without waiting for festival detail', () => {
   const stayAt = sheet.indexOf('<FestivalStayStrip');
   const stayGate = sheet.lastIndexOf('!nearbyPending', stayAt);
   assert.ok(stayGate > nearbyAt && stayGate < stayAt);
+});
+
+test('empty detailImage is confirmed only when the gallery response has no photo', () => {
+  assert.equal(isConfirmedEmptyDetailImage({ items: [] }), true);
+  assert.equal(isConfirmedEmptyDetailImage({ items: [{ originimgurl: '' }] }), true);
+  assert.equal(isConfirmedEmptyDetailImage({ items: [{ originimgurl: 'https://cdn.example/a.jpg' }] }), false);
+  assert.equal(isConfirmedEmptyDetailImage(null), false);
 });
 
 test('early nearby rows pick up images without reordering', () => {

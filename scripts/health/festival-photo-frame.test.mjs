@@ -59,6 +59,26 @@ function mount(props) {
   });
 }
 
+test('cached zero-width festival photo swaps to fallback at mount', async () => {
+  await mount({
+    src: 'https://example.test/zero.jpg',
+    alt: '',
+    className: 'h-14 w-14',
+    fallback: React.createElement('div', { 'data-festival-photo-fallback': '' }),
+  });
+
+  const img = container.querySelector('img[data-festival-photo]');
+  assert.ok(img);
+  Object.defineProperty(img, 'complete', { value: true, configurable: true });
+  Object.defineProperty(img, 'naturalWidth', { value: 0, configurable: true });
+  await act(async () => {
+    img.dispatchEvent(new window.Event('load'));
+  });
+
+  assert.equal(container.querySelector('img'), null);
+  assert.ok(container.querySelector('[data-festival-photo-fallback]'));
+});
+
 test('broken festival photo hides the image and shows the empty slot', async () => {
   await mount({
     src: 'https://example.test/broken.jpg',
@@ -84,7 +104,11 @@ test('festival detail photo surfaces use the frame that hides a broken image', (
   const uses = sheet.split('FestivalPhotoFrame').length - 1;
   assert.ok(uses >= 7, `expected filmstrip, photo tab, lightbox, and nearby frames (got ${uses})`);
   assert.match(sheet, /data-festival-photo-fallback/);
-  assert.match(readFileSync(join(rootDir, 'src/pages/Korea/festivalPhotoFrame.js'), 'utf8'), /setFailed\(true\)/);
+  assert.match(
+    readFileSync(join(rootDir, 'src/pages/Korea/festivalPhotoFrame.js'), 'utf8'),
+    /naturalWidth/,
+  );
+  assert.match(sheet, /NearbyRowThumb[\s\S]*?FestivalPhotoFrame/);
 
   const rawImgs = [...sheet.matchAll(/<img\b[\s\S]*?\/>/g)];
   assert.ok(rawImgs.length > 0);

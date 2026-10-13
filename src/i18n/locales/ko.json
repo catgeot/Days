@@ -1409,6 +1409,7 @@
         "nearbySightsLoading": "주변 볼거리 불러오는 중…",
         "nearbySightsError": "주변 볼거리를 불러오지 못했습니다.",
         "nearbySightsEmpty": "주변에 등록된 볼거리가 없습니다.",
+        "nearSectionsLoading": "주변 정보를 불러오는 중…",
         "stayTour": "숙소 · 투어",
         "stayKeyword": "숙소 · {{keyword}}",
         "stayStripTitle": "내 여행 일정",

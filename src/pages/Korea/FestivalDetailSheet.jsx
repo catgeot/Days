@@ -333,47 +333,34 @@ function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
   const urls = nearbyThumbUrls(spot, extraThumb);
   const urlKey = urls.join('\n');
   const [thumbIndex, setThumbIndex] = useState(0);
-  const [ready, setReady] = useState(false);
   const [seenKey, setSeenKey] = useState(urlKey);
   if (seenKey !== urlKey) {
     setSeenKey(urlKey);
     setThumbIndex(0);
-    setReady(false);
   }
   const thumb = urls[thumbIndex] || '';
-  const noteLoaded = (img) => {
-    if (img?.complete && img.naturalWidth > 0) setReady(true);
-  };
   if (!thumb) {
     if (imagePending) return <NearbyThumbSkeleton />;
     return <NearbyThumbPlaceholder />;
   }
+  const tryNextUrl = () => setThumbIndex((i) => i + 1);
+  const lastUrl = thumbIndex + 1 >= urls.length;
   return (
-    <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200">
-      {ready ? null : (
-        <span
-          className="absolute inset-0 animate-pulse bg-stone-200"
-          data-nearby-thumb="pending"
-          data-nearby-thumb-pending=""
-        />
-      )}
-      <img
-        key={thumb}
-        src={thumb}
-        alt=""
-        loading="eager"
-        decoding="async"
-        ref={noteLoaded}
-        onLoad={(event) => noteLoaded(event.currentTarget)}
-        onError={(event) => {
-          if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
-          setReady(false);
-          setThumbIndex((i) => i + 1);
-        }}
-        className="relative h-14 w-14 object-cover"
-        data-nearby-thumb={ready ? 'photo' : 'pending'}
-      />
-    </span>
+    <FestivalPhotoFrame
+      key={thumb}
+      src={thumb}
+      alt=""
+      loading="eager"
+      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+      fallback={
+        imagePending && lastUrl ? (
+          <NearbyThumbSkeleton />
+        ) : (
+          <NearbyThumbPlaceholder />
+        )
+      }
+      onFailed={tryNextUrl}
+    />
   );
 }
 
@@ -799,7 +786,17 @@ export default function FestivalDetailSheet({
       const liveHits = await Promise.all(
         liveTargets.map(async (id) => {
           try {
-            const url = await fetchTourApiFirstImage(id);
+            const url = await fetchTourApiFirstImage(id, {
+              onConfirmedEmpty: () => {
+                if (cancelled) return;
+                setNearbyImageMiss((prev) => {
+                  if (prev.has(id)) return prev;
+                  const next = new Set(prev);
+                  next.add(id);
+                  return next;
+                });
+              },
+            });
             return [id, url];
           } catch {
             return [id, ''];
@@ -835,6 +832,11 @@ export default function FestivalDetailSheet({
     (festivalCross?.tna?.location || festivalCross?.stay?.location) &&
       festivalCross?.tna?.keyword,
   );
+  const belowSectionsLoading =
+    nearbyFoodStatus === 'loading' ||
+    nearbyLeportsStatus === 'loading' ||
+    nearbyCultureStatus === 'loading' ||
+    nearbyCoursesStatus === 'loading';
 
   const openScenicPage = () => {
     const back = {
@@ -2254,17 +2256,23 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {nearbyFoodStatus !== 'idle' && nearbyFoodStatus !== 'nocoords' && (
+              {belowSectionsLoading ? (
+                <div
+                  className="flex items-center gap-2 py-1 text-sm text-stone-500"
+                  data-festival-below-loading=""
+                >
+                  <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                  {t('korea.festival.detail.nearSectionsLoading')}
+                </div>
+              ) : null}
+
+              {nearbyFoodStatus !== 'idle' &&
+                nearbyFoodStatus !== 'nocoords' &&
+                nearbyFoodStatus !== 'loading' && (
                 <div className="space-y-2 pt-1" data-festival-section="nearFood">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                     {t('korea.festival.detail.nearFood')}
                   </p>
-                  {nearbyFoodStatus === 'loading' && (
-                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.festival.detail.nearFoodLoading')}
-                    </div>
-                  )}
                   {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
                     <p className="text-xs text-stone-500">
                       {t('korea.festival.detail.nearFoodError')}
@@ -2319,21 +2327,12 @@ export default function FestivalDetailSheet({
               )}
 
               {nearbyLeportsStatus !== 'idle' &&
-                nearbyLeportsStatus !== 'nocoords' && (
+                nearbyLeportsStatus !== 'nocoords' &&
+                nearbyLeportsStatus !== 'loading' && (
                   <div className="space-y-2 pt-1" data-festival-section="nearLeports">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearLeports')}
                     </p>
-                    {nearbyLeportsStatus === 'loading' && (
-                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                          aria-hidden="true"
-                        />
-                        {t('korea.festival.detail.nearLeportsLoading')}
-                      </div>
-                    )}
                     {nearbyLeportsStatus === 'error' &&
                       nearbyLeports.length === 0 && (
                         <p className="text-xs text-stone-500">
@@ -2389,21 +2388,12 @@ export default function FestivalDetailSheet({
                 )}
 
               {nearbyCultureStatus !== 'idle' &&
-                nearbyCultureStatus !== 'nocoords' && (
+                nearbyCultureStatus !== 'nocoords' &&
+                nearbyCultureStatus !== 'loading' && (
                   <div className="space-y-2 pt-1" data-festival-section="nearCulture">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearCulture')}
                     </p>
-                    {nearbyCultureStatus === 'loading' && (
-                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                          aria-hidden="true"
-                        />
-                        {t('korea.festival.detail.nearCultureLoading')}
-                      </div>
-                    )}
                     {nearbyCultureStatus === 'error' &&
                       nearbyCulture.length === 0 && (
                         <p className="text-xs text-stone-500">
@@ -2459,21 +2449,12 @@ export default function FestivalDetailSheet({
                 )}
 
               {nearbyCoursesStatus !== 'idle' &&
-                nearbyCoursesStatus !== 'noarea' && (
+                nearbyCoursesStatus !== 'noarea' &&
+                nearbyCoursesStatus !== 'loading' && (
                   <div className="space-y-2 pt-1" data-festival-section="nearCourses">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearCourses')}
                     </p>
-                    {nearbyCoursesStatus === 'loading' && (
-                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                          aria-hidden="true"
-                        />
-                        {t('korea.festival.detail.nearCoursesLoading')}
-                      </div>
-                    )}
                     {nearbyCoursesStatus === 'error' &&
                       nearbyCourses.length === 0 && (
                         <p className="text-xs text-stone-500">
