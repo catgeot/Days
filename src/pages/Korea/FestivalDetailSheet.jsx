@@ -125,6 +125,7 @@ import {
   isFestivalEnded,
 } from './festivalDeepLinkItem';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
+import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
 import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
 import {
@@ -1759,6 +1760,10 @@ export default function FestivalDetailSheet({
     imageUrls.length,
   );
   const loadedPhotoIndex = heroStrip.loadedUrls.indexOf(hero);
+  const activePhotoCredit = formatFestivalPhotoCreditLine(
+    imageCredits[activeImage],
+    locale,
+  );
   const koTitle = String(item?.title || common?.title || '').trim();
   const displayTitle =
     festivalMapTitle(item, locale) ||
@@ -1903,12 +1908,12 @@ export default function FestivalDetailSheet({
                 </span>
               )}
             </button>
-            {imageCredits[activeImage] && heroPhotoDecoded ? (
+            {activePhotoCredit && heroPhotoDecoded ? (
               <p
                 className="px-4 py-1.5 text-[10px] leading-snug text-stone-500 bg-white border-b border-stone-100"
                 data-festival-photo-credit=""
               >
-                {imageCredits[activeImage]}
+                {activePhotoCredit}
               </p>
             ) : null}
             {detailLoading &&
