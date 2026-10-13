@@ -21,7 +21,9 @@ async function dismissLocHint(page) {
 
 async function openNationwideFestivalHub(page) {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page.getByRole('link', { name: /한국의 축제/ }).click();
+  const festivalEntry = page.locator('a[href="/korea"]').filter({ visible: true }).first();
+  await expect(festivalEntry).toBeVisible({ timeout: 180_000 });
+  await festivalEntry.click();
   await expect(page.getByRole('heading', { name: /한국의 축제|Korea festivals/i })).toBeVisible({
     timeout: 120_000,
   });
@@ -158,5 +160,23 @@ test.describe('hotfix thumb pin — WebKit 390 real network', () => {
     expect(audit.promo.loaded).toBeGreaterThan(0);
     expect(audit.promo.pin).toBe(0);
     expect(audit.hero.loaded, JSON.stringify(audit.hero)).toBe(1);
+
+    const combined = [
+      'hotfix-thumb-pin image audit (WebKit 390, 20s wait per list step)',
+      '',
+      ...(await Promise.all(
+        ['a-first-entry', 'a-first-entry-detail', 'b-reload', 'b-reload-detail', 'c-back-list', 'c-reenter-detail'].map(
+          async (name) => {
+            const { readFile } = await import('node:fs/promises');
+            try {
+              return await readFile(join(OUT_DIR, `image-audit-${name}.txt`), 'utf8');
+            } catch {
+              return `${name}: (missing)`;
+            }
+          },
+        ),
+      )),
+    ];
+    await writeFile(join(OUT_DIR, 'image-audit.txt'), combined.join('\n'), 'utf8');
   });
 });
