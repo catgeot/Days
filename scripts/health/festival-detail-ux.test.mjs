@@ -171,5 +171,7 @@ test('trust bar hides under modal overlay lock', () => {
   assert.match(sheet, /useTrustBarOverlayLockEffect\(Boolean\(item\) \|\| pending\)/);
   assert.match(sheet, /data-festival-photo-strip=/);
   assert.doesNotMatch(sheet, /heroColMin\.current - heroBox/);
-  assert.match(sheet, /imageUrls\.length > 1 && heroColMin\.current > 0/);
+  assert.match(sheet, /loadedCount > 1 && heroColMin\.current > 0/);
+  assert.doesNotMatch(sheet, /imageUrls\.length > 1 && heroColMin\.current > 0/);
+  assert.match(sheet, /FestivalHeroThumbStrip/);
 });

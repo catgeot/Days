@@ -13,6 +13,7 @@ import { createElement, useEffect, useLayoutEffect, useRef, useState } from 'rea
  *   draggable?: boolean,
  *   fetchPriority?: 'high' | 'low' | 'auto',
  *   style?: import('react').CSSProperties,
+ *   onLoaded?: () => void,
  *   onFailed?: () => void,
  * }} props
  */
@@ -26,6 +27,7 @@ export function FestivalPhotoFrame({
   draggable,
   fetchPriority,
   style,
+  onLoaded,
   onFailed,
 }) {
   const [failed, setFailed] = useState(false);
@@ -45,7 +47,10 @@ export function FestivalPhotoFrame({
     if (!src || failed) return;
     const img = imgRef.current;
     if (!img?.complete) return;
-    if (img.naturalWidth > 0) return;
+    if (img.naturalWidth > 0) {
+      if (onLoaded) onLoaded();
+      return;
+    }
     markBroken(img);
   }, [src, failed]);
 
@@ -64,6 +69,10 @@ export function FestivalPhotoFrame({
     'data-festival-photo': '',
     onLoad(event) {
       const el = event?.currentTarget;
+      if (el?.naturalWidth > 0) {
+        if (onLoaded) onLoaded();
+        return;
+      }
       if (el?.complete && el.naturalWidth === 0) markBroken(el);
     },
     onError(event) {
