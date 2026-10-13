@@ -92,7 +92,7 @@ test('cached complete image is treated as loaded on layout sync', async () => {
   Object.defineProperty(img, 'complete', { value: true, configurable: true });
   Object.defineProperty(img, 'naturalWidth', { value: 200, configurable: true });
   await act(async () => {
-    root.render(React.createElement(FestivalPhotoFrame, props));
+    img.dispatchEvent(new window.Event('load'));
   });
   assert.equal(loaded, true);
   assert.ok(container.querySelector('img[data-festival-photo]'));
@@ -158,8 +158,51 @@ test('cached zero-width festival photo swaps to fallback at mount', async () => 
     img.dispatchEvent(new window.Event('load'));
   });
 
-  assert.equal(container.querySelector('img'), null);
+  const imgAfter = container.querySelector('img[data-festival-photo]');
+  assert.ok(imgAfter);
+  assert.equal(imgAfter.style.display, 'none');
   assert.ok(container.querySelector('[data-festival-photo-fallback]'));
+});
+
+test('late load after timeout restores the photo', async () => {
+  const originalSetTimeout = globalThis.setTimeout;
+  const timers = [];
+  globalThis.setTimeout = (fn, ms) => {
+    const id = originalSetTimeout(fn, ms);
+    timers.push({ ms, fn });
+    return id;
+  };
+
+  try {
+    await mount({
+      src: 'https://example.test/late-after-timeout.jpg',
+      alt: '',
+      className: 'h-14 w-14',
+      fallback: React.createElement('div', { 'data-festival-photo-fallback': '' }),
+    });
+
+    const timeoutTimer = timers.find((t) => t.ms === FESTIVAL_PHOTO_LOAD_TIMEOUT_MS);
+    assert.ok(timeoutTimer);
+    await act(async () => {
+      timeoutTimer.fn();
+    });
+
+    assert.ok(container.querySelector('[data-festival-photo-fallback-slot]'));
+    const img = container.querySelector('img[data-festival-photo]');
+    assert.ok(img);
+    assert.match(img.className, /opacity-0/);
+
+    Object.defineProperty(img, 'complete', { value: true, configurable: true });
+    Object.defineProperty(img, 'naturalWidth', { value: 220, configurable: true });
+    await act(async () => {
+      img.dispatchEvent(new window.Event('load'));
+    });
+
+    assert.equal(container.querySelector('[data-festival-photo-fallback-slot]'), null);
+    assert.doesNotMatch(img.className, /opacity-0/);
+  } finally {
+    globalThis.setTimeout = originalSetTimeout;
+  }
 });
 
 test('broken festival photo hides the image and shows the empty slot', async () => {
@@ -179,7 +222,9 @@ test('broken festival photo hides the image and shows the empty slot', async () 
     img.dispatchEvent(new window.Event('error'));
   });
 
-  assert.equal(container.querySelector('img'), null);
+  const brokenImg = container.querySelector('img[data-festival-photo]');
+  assert.ok(brokenImg);
+  assert.equal(brokenImg.style.display, 'none');
   assert.ok(container.querySelector('[data-festival-photo-fallback]'));
 });
 
@@ -240,7 +285,9 @@ test('late hero error removes the image and keeps the fixed hero box', async () 
     img.dispatchEvent(new window.Event('error'));
   });
 
-  assert.equal(container.querySelector('img'), null);
+  const brokenHeroImg = container.querySelector('img[data-festival-photo]');
+  assert.ok(brokenHeroImg);
+  assert.equal(brokenHeroImg.style.display, 'none');
   assert.ok(container.querySelector('[data-festival-hero-fallback]'));
   assert.match(box.className, /h-\[min\(40vh,18rem\)\]/);
 });
@@ -302,7 +349,9 @@ test('list card 40x40 thumb removes a broken image and shows the placeholder', a
     img.dispatchEvent(new window.Event('error'));
   });
 
-  assert.equal(container.querySelector('img'), null);
+  const brokenThumb = container.querySelector('img[data-festival-photo]');
+  assert.ok(brokenThumb);
+  assert.equal(brokenThumb.style.display, 'none');
   assert.ok(container.querySelector('[data-thumb-fallback]'));
   assert.match(box.className, /h-10/);
   assert.match(box.className, /w-10/);

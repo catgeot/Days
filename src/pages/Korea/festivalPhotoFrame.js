@@ -14,6 +14,7 @@ export function isFestivalPhotoDecoded(img) {
  * Festival photo that never leaves the browser broken-image glyph on screen.
  * A failed or empty src renders `fallback` (empty slot or neutral placeholder).
  * Once decoded (naturalWidth>0), the image is never swapped for fallback.
+ * Timeout shows fallback while the <img> keeps loading; a late decode restores the photo.
  * @param {{
  *   src?: string,
  *   alt?: string,
@@ -47,8 +48,11 @@ export function FestivalPhotoFrame({
   onLoaded,
   onFailed,
 }) {
-  const [useFallback, setUseFallback] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
+  const [broken, setBroken] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const loadedRef = useRef(false);
+  const brokenRef = useRef(false);
   const imgRef = useRef(null);
   const timeoutRef = useRef(null);
   const onLoadedRef = useRef(onLoaded);
@@ -64,82 +68,97 @@ export function FestivalPhotoFrame({
   };
 
   const markLoaded = (el) => {
-    if (loadedRef.current) return;
+    if (loadedRef.current || brokenRef.current) return;
     if (!isFestivalPhotoDecoded(el)) return;
     loadedRef.current = true;
     clearLoadTimeout();
-    setUseFallback(false);
+    setTimedOut(false);
+    setLoaded(true);
     if (onLoadedRef.current) onLoadedRef.current();
   };
 
   const markBroken = (el) => {
-    if (loadedRef.current) return;
-    if (el?.style) el.style.display = 'none';
+    if (loadedRef.current || brokenRef.current) return;
+    brokenRef.current = true;
     clearLoadTimeout();
-    setUseFallback(true);
+    setBroken(true);
+    setTimedOut(false);
     if (onFailedRef.current) onFailedRef.current();
   };
 
   const syncFromImg = (img) => {
-    if (!img || loadedRef.current) return;
-    if (isFestivalPhotoDecoded(img)) {
-      markLoaded(img);
-      return;
-    }
-    if (img.complete && img.naturalWidth === 0) markBroken(img);
+    if (!img || loadedRef.current || brokenRef.current) return;
+    if (isFestivalPhotoDecoded(img)) markLoaded(img);
   };
 
   useEffect(() => {
     loadedRef.current = false;
-    setUseFallback(false);
+    brokenRef.current = false;
+    setTimedOut(false);
+    setBroken(false);
+    setLoaded(false);
     clearLoadTimeout();
     if (!src) return undefined;
     timeoutRef.current = setTimeout(() => {
-      if (!loadedRef.current) {
-        setUseFallback(true);
-        if (onFailedRef.current) onFailedRef.current();
-      }
+      if (!loadedRef.current && !brokenRef.current) setTimedOut(true);
     }, FESTIVAL_PHOTO_LOAD_TIMEOUT_MS);
     return () => clearLoadTimeout();
   }, [src]);
 
   useLayoutEffect(() => {
-    if (!src || useFallback) return;
+    if (!src) return;
     syncFromImg(imgRef.current);
-  }, [src, useFallback]);
+  }, [src, timedOut, broken]);
 
   if (!src) return fallback;
-  if (useFallback && !loadedRef.current) return fallback;
 
-  return createElement('img', {
-    ref: (el) => {
-      imgRef.current = el;
-      syncFromImg(el);
+  const showFallback = !loaded && (timedOut || broken);
+
+  return createElement(
+    'span',
+    {
+      className: 'relative block h-full w-full',
+      'data-festival-photo-wrap': '',
     },
-    src,
-    alt,
-    className,
-    loading,
-    decoding,
-    draggable,
-    fetchPriority,
-    referrerPolicy,
-    lang,
-    translate,
-    style,
-    'data-festival-photo': '',
-    'data-festival-photo-loaded': loadedRef.current ? 'true' : undefined,
-    onLoad(event) {
-      const el = event?.currentTarget;
-      if (isFestivalPhotoDecoded(el)) {
-        markLoaded(el);
-        return;
-      }
-      if (el?.complete && el.naturalWidth === 0) markBroken(el);
-    },
-    onError(event) {
-      if (loadedRef.current) return;
-      markBroken(event?.currentTarget);
-    },
-  });
+    createElement('img', {
+      ref: (el) => {
+        imgRef.current = el;
+      },
+      src,
+      alt,
+      className: `${className}${showFallback ? ' opacity-0' : ''}`.trim(),
+      loading,
+      decoding,
+      draggable,
+      fetchPriority,
+      referrerPolicy,
+      lang,
+      translate,
+      style: broken ? { ...style, display: 'none' } : style,
+      'data-festival-photo': '',
+      'data-festival-photo-loaded': loaded ? 'true' : undefined,
+      onLoad(event) {
+        const el = event?.currentTarget;
+        if (isFestivalPhotoDecoded(el)) {
+          markLoaded(el);
+          return;
+        }
+        if (el?.complete && el.naturalWidth === 0) markBroken(el);
+      },
+      onError(event) {
+        if (loadedRef.current) return;
+        markBroken(event?.currentTarget);
+      },
+    }),
+    showFallback
+      ? createElement(
+          'span',
+          {
+            className: 'absolute inset-0',
+            'data-festival-photo-fallback-slot': '',
+          },
+          fallback,
+        )
+      : null,
+  );
 }
