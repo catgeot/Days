@@ -4,6 +4,10 @@ import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { FESTIVAL_DETAIL_BOTTOM_SECTION_ORDER } from '../../src/pages/Korea/lib/festivalDetailBottomSectionOrder.js';
+import {
+  isTrustBarOverlayLocked,
+  pushTrustBarOverlayLock,
+} from '../../src/shared/lib/trustBarOverlayLock.js';
 import { nearbyLocalScenicRestGroupTitle } from '../../src/pages/Home/lib/koreaLocalScenicLists.js';
 import { mergeFestivalNearbySights } from '../../src/pages/Korea/lib/festivalNearbySights.js';
 
@@ -141,11 +145,33 @@ test('flight origin chat-header contrast tokens', () => {
   assert.ok(contrastRatio(chipTextOnLight, chipBgOnLight) >= 4.5);
 });
 
+test('trust bar lock is readable after the sheet locks first', () => {
+  assert.equal(isTrustBarOverlayLocked(), false);
+  const release = pushTrustBarOverlayLock();
+  try {
+    assert.equal(isTrustBarOverlayLocked(), true);
+  } finally {
+    release();
+  }
+  assert.equal(isTrustBarOverlayLocked(), false);
+});
+
 test('trust bar hides under modal overlay lock', () => {
   const main = readFileSync(join(root, 'src/shared/layout/MainLayout.jsx'), 'utf8');
   assert.match(main, /useTrustBarOverlayHidden/);
   assert.match(
+    readFileSync(join(root, 'src/shared/hooks/useTrustBarOverlayHidden.js'), 'utf8'),
+    /isTrustBarOverlayLocked\(\)/,
+  );
+  assert.match(
     readFileSync(join(root, 'src/pages/KoreaTheme/CourseDetailModal.jsx'), 'utf8'),
     /useTrustBarOverlayLockEffect/,
   );
+  const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
+  assert.match(sheet, /useTrustBarOverlayLockEffect\(true\)/);
+  assert.match(sheet, /data-festival-photo-strip=/);
+  assert.doesNotMatch(sheet, /heroColMin\.current - heroBox/);
+  assert.match(sheet, /loadedCount > 1 && heroColMin\.current > 0/);
+  assert.doesNotMatch(sheet, /imageUrls\.length > 1 && heroColMin\.current > 0/);
+  assert.match(sheet, /FestivalHeroThumbStrip/);
 });

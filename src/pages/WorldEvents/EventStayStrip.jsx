@@ -11,7 +11,10 @@ import {
   getTripcomPackageLinkTarget,
   shouldShowTripcomPackageFlightHotelLink,
 } from '../../components/PlaceCard/common/partnerNavigation';
-import { beginFestivalLodgingLoad, publishFestivalLodgingStays } from '../Korea/lib/festivalStayLoad.js';
+import {
+  beginFestivalLodgingLoad,
+  publishFestivalLodgingStays,
+} from '../Korea/lib/festivalStayLoad.js';
 import {
   GuestStepper,
   StayRangeCalendar,
@@ -167,6 +170,8 @@ function StayCard({ item, price, large = false }) {
  *   hint?: string,
  *   contentId?: string,
  *   stayOrigin?: { lat?: number, lng?: number } | null,
+ *   onFetchStatusChange?: (status: string) => void,
+ *   suppressInlineStayLoading?: boolean,
  * }} props
  */
 export default function EventStayStrip({
@@ -183,6 +188,8 @@ export default function EventStayStrip({
   hint,
   contentId = '',
   stayOrigin = null,
+  onFetchStatusChange,
+  suppressInlineStayLoading = false,
 }) {
   const { t, i18n } = useTranslation();
   const rootRef = useRef(null);
@@ -192,13 +199,13 @@ export default function EventStayStrip({
   const [guests, setGuests] = useState(() => normalizeMrtGuestCounts(2, 0));
   const [items, setItems] = useState(null);
   const [status, setStatus] = useState('idle');
+  const [listLarge, setListLarge] = useState(false);
+  const fetchedKeyRef = useRef('');
 
   useEffect(() => {
     if (!contentId || (status !== 'ready' && status !== 'empty')) return;
     publishFestivalLodgingStays(contentId, items || [], stayOrigin);
   }, [contentId, status, items, stayOrigin]);
-  const [listLarge, setListLarge] = useState(false);
-  const fetchedKeyRef = useRef('');
 
   const placeMeta = placeLabelOverride
     ? { label: placeLabelOverride }
@@ -265,6 +272,10 @@ export default function EventStayStrip({
       document.removeEventListener('touchstart', onPointer);
     };
   }, [calendarOpen]);
+
+  useEffect(() => {
+    onFetchStatusChange?.(status);
+  }, [status, onFetchStatusChange]);
 
   useEffect(() => {
     if (!eligible) {
@@ -378,7 +389,7 @@ export default function EventStayStrip({
     return () => {
       cancelled = true;
     };
-  }, [eligible, fetchKey, location, checkIn, checkOut, guests, stayKeyword, stayAreas, placeMeta.label]);
+  }, [eligible, fetchKey, location, checkIn, checkOut, guests, stayKeyword, stayAreas, placeMeta.label, contentId, stayOrigin]);
 
   const flightArrivalIata = getPlannerFlightArrivalIata(location);
   const departureIata = resolveFlightDepartureIataForTrip('ICN');
@@ -571,7 +582,7 @@ export default function EventStayStrip({
           </div>
         </div>
 
-        {status === 'loading' ? (
+        {status === 'loading' && !suppressInlineStayLoading ? (
           <div className="flex items-center justify-center gap-2 py-8 text-sm text-stone-500">
             <Loader2 size={18} className="animate-spin text-amber-600" aria-hidden />
             {t('home.stayStrip.loadingStays')}

@@ -10,9 +10,17 @@ import EventTnaStrip from '../WorldEvents/EventTnaStrip';
  *   item: Record<string, unknown>,
  *   festivalCross: ReturnType<import('../Home/lib/koreaThemeCrossLinks').resolveFestivalThemeCrossLinks>,
  *   locale?: string,
+ *   onFetchStatusChange?: (status: string) => void,
+ *   suppressInlineLoading?: boolean,
  * }} props
  */
-export default function FestivalTnaStrip({ item, festivalCross, locale = 'ko' }) {
+export default function FestivalTnaStrip({
+  item,
+  festivalCross,
+  locale = 'ko',
+  onFetchStatusChange,
+  suppressInlineLoading = false,
+}) {
   const { t } = useTranslation();
   const location = festivalCross?.tna?.location || festivalCross?.stay?.location;
   const tna = festivalCross?.tna;
@@ -40,6 +48,8 @@ export default function FestivalTnaStrip({ item, festivalCross, locale = 'ko' })
       placeLabel={placeLabel}
       title={t('korea.festival.detail.tnaStripTitle')}
       hint={t('korea.festival.detail.tnaStripHint')}
+      onFetchStatusChange={onFetchStatusChange}
+      suppressInlineLoading={suppressInlineLoading}
     />
   );
 }

@@ -1306,6 +1306,10 @@ function settleFestivalNextAction(text, options = {}) {
 const PRACTICAL_TOPIC_RE = [
   { kind: 'parking', re: /주차|parking/i },
   { kind: 'shuttle', re: /셔틀|shuttle/i },
+  {
+    kind: 'hours',
+    re: /운영\s*시간|행사\s*시간|개장|폐장|몇\s*시|opening\s*hours|what\s+time|hours\s+(?:are|of)/i,
+  },
 ];
 
 function festivalFactCorpus(options = {}) {
@@ -1679,6 +1683,27 @@ function parkingGuide(options = {}) {
   return '주차 안내는 공식 홈페이지에 있어요.';
 }
 
+function hoursGuide(options = {}) {
+  const homepage = String(options.homepage || '').trim();
+  const tel = String(options.tel || '').trim();
+  const homeOk = /^https?:\/\//i.test(homepage);
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  if (en) {
+    if (homeOk && tel) {
+      return `Hours are on the [official site](${homepage}). Call ${tel}.`;
+    }
+    if (homeOk) return `Hours are on the [official site](${homepage}).`;
+    if (tel) return `For hours, call ${tel}.`;
+    return 'Hours are on the official site.';
+  }
+  if (homeOk && tel) {
+    return `운영 시간은 [공식 홈페이지](${homepage})에 있고, 문의는 ${tel}로 해요.`;
+  }
+  if (homeOk) return `운영 시간은 [공식 홈페이지](${homepage})에 있어요.`;
+  if (tel) return `운영 시간은 문의 ${tel}로 해요.`;
+  return '운영 시간은 공식 홈페이지에 있어요.';
+}
+
 function officialPracticalCheck(options = {}) {
   const homepage = String(options.homepage || '').trim();
   const tel = String(options.tel || '').trim();
@@ -1726,9 +1751,9 @@ function redirectMissingPracticalCheck(text, options = {}) {
   const asked = PRACTICAL_TOPIC_RE.filter((topic) => topic.re.test(String(options.userText || '')));
   if (!asked.length) return String(text || '');
   const corpus = festivalFactCorpus(options);
-  const covered = (topic) => (
-    topic.kind === 'parking'
-      ? hasFestivalParkingData({
+  const covered = (topic) => {
+    if (topic.kind === 'parking') {
+      return hasFestivalParkingData({
         parking: options.parking,
         overview: options.overview,
         program: options.program,
@@ -1737,12 +1762,19 @@ function redirectMissingPracticalCheck(text, options = {}) {
         feeText: options.feeText,
         info: options.info,
         text: corpus,
-      })
-      : /셔틀|shuttle/i.test(corpus)
-  );
+      });
+    }
+    if (topic.kind === 'hours') {
+      return Boolean(String(options.timeText || '').trim());
+    }
+    return /셔틀|shuttle/i.test(corpus);
+  };
   if (asked.every(covered)) return String(text || '');
   if (asked.some((topic) => topic.kind === 'parking' && !covered(topic))) {
     return parkingGuide(options);
+  }
+  if (asked.some((topic) => topic.kind === 'hours' && !covered(topic))) {
+    return hoursGuide(options);
   }
   const replacement = officialPracticalCheck(options);
   const next = filterPreservingBreaks(text, (part) => (
@@ -2061,8 +2093,35 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
       : '- 국내 축제다. 사용자가 비자·입국을 묻지 않으면 입국 증빙·입국 심사를 말하지 않는다.',
   );
 
+  const transportLines = [];
+  for (const origin of ctx?.transport?.origins || []) {
+    for (const segment of origin.segments || []) {
+      for (const row of segment.rows || []) {
+        const bits = [row.grade, row.clock, row.duration, row.fare, row.count].filter(Boolean);
+        if (!bits.length) continue;
+        transportLines.push(`${segment.dep}→${segment.arr} ${bits.join(' ')}`);
+      }
+    }
+  }
+  if (transportLines.length) {
+    lines.push(isEn
+      ? `- Confirmed trains and buses. Say only these times and fares: ${transportLines.join(' | ')}`
+      : `- 확인된 열차·버스. 이 시각과 요금만 말한다: ${transportLines.join(' | ')}`);
+  }
+
   const timeText = String(ctx?.timeText || '').trim();
-  if (timeText) lines.push(isEn ? `- Hours: ${timeText}` : `- 시간: ${timeText}`);
+  if (timeText) {
+    lines.push(isEn ? `- Hours: ${timeText}` : `- 시간: ${timeText}`);
+  } else {
+    const homepage = String(ctx?.homepage || '').trim();
+    const tel = String(ctx?.tel || '').trim();
+    const homeUrl = /^https?:\/\//i.test(homepage) ? homepage : 'url';
+    lines.push(
+      isEn
+        ? `- Event hours are not in the festival data. For hours questions, use only the [official site](${homeUrl})${tel ? ` and ${tel}` : ''}. Do not send users to the GATEO detail page for hours.`
+        : `- 행사 운영 시간이 이 데이터에 없다. 운영 시간 질문에는 GATEO 상세 링크 대신 [공식 홈페이지](${homeUrl})${tel ? `와 문의 ${tel}` : ''}만 안내한다.`,
+    );
+  }
 
   const feeText = String(ctx?.feeText || '').trim();
   if (feeText) lines.push(isEn ? `- Fee: ${feeText}` : `- 요금: ${feeText}`);

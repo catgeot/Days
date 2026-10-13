@@ -57,13 +57,14 @@ const tEn = (key, opts = {}) => {
 
 const jeonnamTitle = formatFestivalIndexHeadlinePlain({
   locale: 'en',
+  timeTab: 'thisMonth',
   place: 'South Jeolla',
   time: 'This Month',
   tasteSuffix: '',
   t: tEn,
 });
 assert(
-  jeonnamTitle === 'South Jeolla · This Month festival list',
+  jeonnamTitle === "South Jeolla · This month's festivals",
   'EN Jeonnam headline plain',
 );
 assert(!jeonnamTitle.includes('"'), 'EN headline has no ASCII quotes');
@@ -74,13 +75,14 @@ assert(
 
 const gwangjuTitle = formatFestivalIndexHeadlinePlain({
   locale: 'en',
+  timeTab: 'thisMonth',
   place: 'Gwangju',
   time: 'Month',
   tasteSuffix: '',
   t: tEn,
 });
 assert(
-  gwangjuTitle === 'Gwangju · Month festival list',
+  gwangjuTitle === "Gwangju · This month's festivals",
   'EN Gwangju headline plain',
 );
 

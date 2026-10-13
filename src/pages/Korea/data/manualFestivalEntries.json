@@ -1,0 +1,40 @@
+{
+  "638576": {
+    "contentId": "638576",
+    "title": "대한민국 국향대전",
+    "titleEn": "Korea Chrysanthemum Festival",
+    "officialHomepage": "https://www.hpftf.or.kr/",
+    "checkedOn": "2026-10-13",
+    "eventStartDate": "20261023",
+    "eventEndDate": "20261108",
+    "addr1": "전남광주통합특별시 함평군 함평읍 곤재로 27",
+    "eventplace": "함평 엑스포공원 일원",
+    "mapx": "126.5221985649",
+    "mapy": "35.0591629478",
+    "tel": "061-320-2247",
+    "playtime": "",
+    "usetimefestival": "현장(개인): 어른 7,000원·청소년·군인 5,000원·유치원·어린이·경로 3,000원\n사전예매 10% 할인(9.23~10.22): 어른 6,300원·청소년·군인 4,500원·유치원·어린이·경로 2,700원\n무료: 함평군민·만 4세 미만·장애인(중증은 보호자 1인 동반 무료)·국가보훈대상자",
+    "overview": "‘신화의 국화동산’을 주제로 대형 국화 기획작품과 국화 분재 작품을 전시하고, 문화·공연·체험 콘텐츠를 운영하는 가을 축제입니다.",
+    "program": "개장식·개막식·폐막식, 국향 가을음악회, 브라스밴드 거리공연, 국향 마술버블쇼, 지역 문화예술·체험·먹거리 부스 등",
+    "images": [
+      {
+        "url": "https://tong.visitkorea.or.kr/cms/resource/06/4114406_image2_1.JPG",
+        "credit": "출처: 한국관광공사(공공누리 제3유형)"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.hpftf.or.kr/contentsView.do?pageId=www252",
+        "note": "기간·장소·행사 개요"
+      },
+      {
+        "url": "https://www.hpftf.or.kr/contentsView.do?pageId=www225",
+        "note": "주요 프로그램 일정"
+      },
+      {
+        "url": "https://www.hpftf.or.kr/contentsView.do?pageId=www231",
+        "note": "입장료·사전예매·무료입장"
+      }
+    ]
+  }
+}

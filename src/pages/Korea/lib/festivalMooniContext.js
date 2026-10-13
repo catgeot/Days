@@ -20,6 +20,7 @@ import {
 import { parseEngFestivalTitle } from '../festivalTitleEnMerge.js';
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
 import { stripTrailingRegionLabel } from './festivalNearbySights.js';
+import { festivalOmitsOfficialEventHours } from '../manualFestivalEntries.js';
 
 /**
  * @param {{
@@ -46,6 +47,7 @@ export function buildFestivalMooniContext(input = {}) {
   const pt = festivalLngLat(item?.mapx, item?.mapy);
   const venue = String(intro?.eventplace || '').trim();
   const address = String(item?.addr1 || '').trim();
+  const omitEventHours = festivalOmitsOfficialEventHours(item);
 
   return {
     contentId,
@@ -54,7 +56,9 @@ export function buildFestivalMooniContext(input = {}) {
     eventStartDate: String(item?.eventStartDate || intro?.eventstartdate || intro?.eventStartDate || '').trim(),
     eventEndDate: String(item?.eventEndDate || intro?.eventenddate || intro?.eventEndDate || '').trim(),
     dateLabel: String(summaryFields?.dateText || '').trim(),
-    timeText: String(summaryFields?.timeText || intro?.playtime || '').trim(),
+    timeText: omitEventHours
+      ? ''
+      : String(summaryFields?.timeText || intro?.playtime || '').trim(),
     feeText: String(summaryFields?.fee?.text || '').trim(),
     venue,
     address,
@@ -68,7 +72,15 @@ export function buildFestivalMooniContext(input = {}) {
     overview: filterOverviewFacts(
       rawOverview,
       title,
-      [title, venue, address, summaryFields?.fee?.text, summaryFields?.timeText, intro?.playtime, program || intro?.program]
+      [
+        title,
+        venue,
+        address,
+        summaryFields?.fee?.text,
+        omitEventHours ? '' : summaryFields?.timeText,
+        omitEventHours ? '' : intro?.playtime,
+        program || intro?.program,
+      ]
         .filter(Boolean)
         .join(' '),
     ).join(' '),
@@ -79,6 +91,7 @@ export function buildFestivalMooniContext(input = {}) {
     nearbyPlaces: collectFestivalNearbyNames(nearbyPlaces, hubLabel, venue, address),
     nearbyRestaurants: rankFestivalRestaurantRows(nearbyRestaurants),
     stayAreas: filterFestivalStayAreaNames(input.stayAreas, pt?.lat, pt?.lng),
+    transport: input.transport || null,
   };
 }
 

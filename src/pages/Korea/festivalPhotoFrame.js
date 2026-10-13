@@ -12,7 +12,11 @@ import { createElement, useEffect, useLayoutEffect, useRef, useState } from 'rea
  *   decoding?: 'async' | 'auto' | 'sync',
  *   draggable?: boolean,
  *   fetchPriority?: 'high' | 'low' | 'auto',
+ *   referrerPolicy?: string,
+ *   lang?: string,
+ *   translate?: 'yes' | 'no',
  *   style?: import('react').CSSProperties,
+ *   onLoaded?: () => void,
  *   onFailed?: () => void,
  * }} props
  */
@@ -25,7 +29,11 @@ export function FestivalPhotoFrame({
   decoding = 'async',
   draggable,
   fetchPriority,
+  referrerPolicy = 'no-referrer',
+  lang,
+  translate,
   style,
+  onLoaded,
   onFailed,
 }) {
   const [failed, setFailed] = useState(false);
@@ -45,7 +53,10 @@ export function FestivalPhotoFrame({
     if (!src || failed) return;
     const img = imgRef.current;
     if (!img?.complete) return;
-    if (img.naturalWidth > 0) return;
+    if (img.naturalWidth > 0) {
+      if (onLoaded) onLoaded();
+      return;
+    }
     markBroken(img);
   }, [src, failed]);
 
@@ -60,10 +71,17 @@ export function FestivalPhotoFrame({
     decoding,
     draggable,
     fetchPriority,
+    referrerPolicy,
+    lang,
+    translate,
     style,
     'data-festival-photo': '',
     onLoad(event) {
       const el = event?.currentTarget;
+      if (el?.naturalWidth > 0) {
+        if (onLoaded) onLoaded();
+        return;
+      }
       if (el?.complete && el.naturalWidth === 0) markBroken(el);
     },
     onError(event) {

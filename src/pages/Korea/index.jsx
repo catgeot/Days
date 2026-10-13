@@ -52,6 +52,7 @@ import {
   sidoListPhrase,
 } from './festivalRegionTags';
 import { buildFestivalPanelListMetaSegments } from './festivalPanelListMeta.js';
+import { isNationwideRegionFilter } from './socialPromoFestivalsLogic.js';
 import {
   groupFestivalsByCity,
   groupFestivalsBySido,
@@ -71,6 +72,7 @@ import {
   festivalItemForSessionPin,
 } from './festivalSessionPin';
 import { festivalItemThumbSrc } from './festivalListThumb';
+import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import SocialPromoFestivalRow from './SocialPromoFestivalRow';
 import {
   festivalItemFromDetailWithAsOf,
@@ -80,10 +82,21 @@ import {
   resolveSocialPromoPresentation,
   resolveSocialPromoRow,
   shouldShowSessionPinnedHomeRow,
+  shouldShowSocialPromoHomeRow,
   shouldShowSessionPinnedRow,
   socialPromoFestivals,
   socialPromoIdsNeedingDetailFetch,
+  excludeFestivalsByContentId,
+  contentIdsFromPromoCards,
 } from './socialPromoFestivals';
+import {
+  buildInitialManualPromoMap,
+  getManualFestivalEntry,
+  isManualFestivalContentId,
+  listManualFestivalContentIds,
+  manualFestivalListItem,
+  manualFestivalTourDetail,
+} from './manualFestivalEntries';
 import {
   DEFAULT_AREA_CODE,
   NEAR_FESTIVAL_KM,
@@ -135,7 +148,10 @@ import {
   writeLocationSuccess,
 } from './festivalLocationHint.js';
 import { useFestivalLocationBoot } from './useFestivalLocationBoot.js';
-import { buildFestivalIndexHeadlineContent } from './festivalIndexHeadline.js';
+import {
+  buildFestivalIndexHeadlineContent,
+  festivalIndexTimePhrase,
+} from './festivalIndexHeadline.js';
 
 /**
  * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction, locale?: string }} p
@@ -149,9 +165,7 @@ function buildIndexListHeadline({
   t,
   locale = 'ko',
 }) {
-  const time =
-    timeTabs.find((tab) => tab.id === timeTab)?.label ||
-    t('korea.festival.timeTab.now');
+  const time = festivalIndexTimePhrase(locale, timeTab, timeTabs, t);
   const sido = localizedSidoListPhrase(
     locale,
     areaCode,
@@ -167,8 +181,22 @@ function buildIndexListHeadline({
     : '';
   const place = [sido, city].filter(Boolean).join(' ');
 
+  if (isNationwideRegionFilter(areaCode, cityName)) {
+    const scope = t('korea.festival.panelNationwideScope', {
+      defaultValue: 'Nationwide',
+    });
+    const text = t('korea.festival.headlineNationwide', {
+      time,
+      scope,
+      tasteSuffix,
+      defaultValue: `${scope} · ${time}${tasteSuffix}`,
+    });
+    return { kind: 'text', text };
+  }
+
   return buildFestivalIndexHeadlineContent({
     locale,
+    timeTab,
     place: place || undefined,
     time,
     tasteSuffix,
@@ -183,19 +211,16 @@ function renderIndexListHeadline(headline) {
     if (headline.place) {
       return (
         <>
-          {headline.place} ·{' '}
-          <span className="whitespace-nowrap">
-            {headline.nowrap}
-            {headline.tail}
-          </span>
+          {headline.place} · {headline.nowrap}
+          {headline.tail}
         </>
       );
     }
     return (
-      <span className="whitespace-nowrap">
+      <>
         {headline.nowrap}
         {headline.tail}
-      </span>
+      </>
     );
   }
   return headline.text;
@@ -667,15 +692,10 @@ function FestivalRow({
   const { isEnglish } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const img = festivalImage(item);
-  const [imgFailed, setImgFailed] = useState(false);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
   const range = start && end ? `${start} – ${end}` : start || end;
   const distanceLabel = formatDistanceKm(distanceKm);
-
-  useEffect(() => {
-    setImgFailed(false);
-  }, [img]);
 
   return (
     <div
@@ -700,20 +720,17 @@ function FestivalRow({
             large ? 'h-24 w-24 sm:h-28 sm:w-28' : 'h-14 w-14'
           }`}
         >
-          {img && !imgFailed ? (
-            <img
-              src={img}
-              alt={item.title || ''}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-              referrerPolicy="no-referrer"
-              onError={() => setImgFailed(true)}
-              {...koText}
-            />
-          ) : (
-            <FestivalThumbFallback large={large} />
-          )}
+          <FestivalPhotoFrame
+            src={img}
+            alt={item.title || ''}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            lang={koText.lang}
+            translate={koText.translate}
+            fallback={<FestivalThumbFallback large={large} />}
+          />
         </div>
         <div className={`min-w-0 flex-1 ${large ? 'space-y-1' : 'space-y-0.5'}`}>
           <div className="flex min-w-0 items-start justify-between gap-2">
@@ -886,7 +903,7 @@ export default function KoreaFestivalHub() {
     /** @type {Record<string, unknown> | null} */ (null),
   );
   const [socialPromoById, setSocialPromoById] = useState(
-    () => new Map(),
+    () => buildInitialManualPromoMap(),
   );
   socialPromoByIdRef.current = socialPromoById;
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
@@ -933,6 +950,11 @@ export default function KoreaFestivalHub() {
       }
       if (!windowItem && !detailItem) continue;
       rows.push(mergeFestivalRowItem(windowItem, detailItem));
+    }
+    for (const id of listManualFestivalContentIds()) {
+      if (rows.some((row) => String(row?.contentId || '') === id)) continue;
+      const manual = manualFestivalListItem(getManualFestivalEntry(id));
+      if (manual) rows.push(manual);
     }
     return rows;
   }, [items, socialPromoById, festivalId, deepLinkPhaseForId]);
@@ -1055,7 +1077,12 @@ export default function KoreaFestivalHub() {
     const inFestivalList = items.some(
       (row) => String(row?.contentId || '') === festivalId,
     );
-    if (!inFestivalList && deepLinkPhaseForId !== 'ok' && !socialPromoById.get(festivalId)) {
+    if (
+      !inFestivalList &&
+      deepLinkPhaseForId !== 'ok' &&
+      !socialPromoById.get(festivalId) &&
+      !isManualFestivalContentId(festivalId)
+    ) {
       const cachedOpen = readFestivalOpenDetail(festivalId);
       const built = cachedOpen ? festivalItemFromDetailWithAsOf(cachedOpen) : null;
       if (built) {
@@ -1108,23 +1135,35 @@ export default function KoreaFestivalHub() {
     setDeepLinkForId(requestedId);
     setDeepLinkPhase('loading');
 
+    const applyDeepLinkDetail = (detail) => {
+      if (deepLinkGenRef.current !== gen) return;
+      deepLinkInflightRef.current = '';
+      setDeepLinkForId(requestedId);
+      setDeepLinkDetail(detail);
+      setDeepLinkPhase(detail ? 'ok' : 'miss');
+      if (detail && !detail.manual) writeFestivalOpenDetail(requestedId, detail);
+      const built =
+        detail?.manual
+          ? manualFestivalListItem(getManualFestivalEntry(requestedId))
+          : festivalItemFromDetailWithAsOf(detail);
+      if (!built) return;
+      setSocialPromoById((prev) => {
+        if (prev.get(requestedId)) return prev;
+        const next = new Map(prev);
+        next.set(requestedId, built);
+        socialPromoByIdRef.current = next;
+        return next;
+      });
+    };
+
+    if (isManualFestivalContentId(requestedId)) {
+      applyDeepLinkDetail(manualFestivalTourDetail(getManualFestivalEntry(requestedId)));
+      return undefined;
+    }
+
     fetchTourApiFestivalDetail({ contentId: requestedId })
       .then((detail) => {
-        if (deepLinkGenRef.current !== gen) return;
-        deepLinkInflightRef.current = '';
-        setDeepLinkForId(requestedId);
-        setDeepLinkDetail(detail);
-        setDeepLinkPhase(detail ? 'ok' : 'miss');
-        if (detail) writeFestivalOpenDetail(requestedId, detail);
-        const built = festivalItemFromDetailWithAsOf(detail);
-        if (!built) return;
-        setSocialPromoById((prev) => {
-          if (prev.get(requestedId)) return prev;
-          const next = new Map(prev);
-          next.set(requestedId, built);
-          socialPromoByIdRef.current = next;
-          return next;
-        });
+        applyDeepLinkDetail(detail);
       })
       .catch(() => {
         if (deepLinkGenRef.current !== gen) return;
@@ -1304,6 +1343,7 @@ export default function KoreaFestivalHub() {
           socialPromoFestivals,
           socialPromoByIdRef.current,
         )
+          .filter((id) => !isManualFestivalContentId(id))
           .filter((id) => id !== skipPromoDetailForId)
           .filter((id) => !socialPromoDetailInflightRef.current.has(id))
           .filter((id) => !failedPromoIds.has(id));
@@ -1353,7 +1393,12 @@ export default function KoreaFestivalHub() {
       const windowItem = items.find((row) => String(row?.contentId || '') === id);
       const detailItem = socialPromoById.get(id);
       if (!windowItem && !detailItem) continue;
-      map.set(id, mergeFestivalRowItem(windowItem, detailItem));
+      const entryTitleEn = String(entry?.titleEn || '').trim();
+      const merged = mergeFestivalRowItem(windowItem, detailItem);
+      map.set(
+        id,
+        entryTitleEn ? { ...merged, titleEn: entryTitleEn } : merged,
+      );
     }
     return map;
   }, [items, socialPromoById]);
@@ -1391,10 +1436,6 @@ export default function KoreaFestivalHub() {
   );
 
   const sidoChips = useMemo(() => buildSidoTags(timedItems), [timedItems]);
-  const localizedSidoChips = useMemo(
-    () => localizeSidoChips(locale, sidoChips),
-    [locale, sidoChips],
-  );
 
   useEffect(() => {
     if (areaCode === 'all') return;
@@ -1415,10 +1456,6 @@ export default function KoreaFestivalHub() {
     () =>
       areaCode === 'all' ? [] : buildCityTags(afterSido, { areaCode }),
     [areaCode, afterSido],
-  );
-  const localizedCityChips = useMemo(
-    () => localizeCityChips(locale, cityChips),
-    [locale, cityChips],
   );
 
   useEffect(() => {
@@ -1460,6 +1497,57 @@ export default function KoreaFestivalHub() {
   );
 
   const showSocialPromoRow = socialPromoPresentation.show;
+
+  const visiblePromoContentIds = useMemo(() => {
+    if (!shouldShowSocialPromoHomeRow(searchActive)) {
+      return new Set();
+    }
+    if (socialPromoRow.status !== 'ready') {
+      return new Set();
+    }
+    return contentIdsFromPromoCards(socialPromoRow.cards);
+  }, [searchActive, socialPromoRow.status, socialPromoRow.cards]);
+
+  const itemsForChipCounts = useMemo(
+    () => excludeFestivalsByContentId(itemsWithSocialPromo, visiblePromoContentIds),
+    [itemsWithSocialPromo, visiblePromoContentIds],
+  );
+
+  const sidoChipsForDisplay = useMemo(() => {
+    if (!visiblePromoContentIds.size) return sidoChips;
+    const timed = filterByTimeTab(timeTab, itemsForChipCounts, now);
+    return buildSidoTags(timed);
+  }, [
+    visiblePromoContentIds,
+    sidoChips,
+    timeTab,
+    itemsForChipCounts,
+    now,
+  ]);
+
+  const cityChipsForDisplay = useMemo(() => {
+    if (!visiblePromoContentIds.size) return cityChips;
+    const timed = filterByTimeTab(timeTab, itemsForChipCounts, now);
+    const after = filterByRegion(timed, { areaCode });
+    return areaCode === 'all' ? [] : buildCityTags(after, { areaCode });
+  }, [
+    visiblePromoContentIds,
+    cityChips,
+    timeTab,
+    itemsForChipCounts,
+    areaCode,
+    now,
+  ]);
+
+  const localizedSidoChips = useMemo(
+    () => localizeSidoChips(locale, sidoChipsForDisplay),
+    [locale, sidoChipsForDisplay],
+  );
+
+  const localizedCityChips = useMemo(
+    () => localizeCityChips(locale, cityChipsForDisplay),
+    [locale, cityChipsForDisplay],
+  );
 
   /** 검색 중에는 시간·지역·테마 칩을 넘어 롤링 12개월 전체에서 매칭 */
   const searchPoolItems = useMemo(() => {
@@ -1574,13 +1662,16 @@ export default function KoreaFestivalHub() {
     [searchActive, sessionPinnedDisplay, socialPromoRow, areaCode, cityName],
   );
 
-  /** Pin row is a duplicate on 전국 only — never remove the festival from region groups. */
-  const panelItemsForList = panelItems;
+  /** Promo strip already surfaces these festivals — keep them out of the list and chip counts on this screen. */
+  const panelItemsForList = useMemo(
+    () => excludeFestivalsByContentId(panelItems, visiblePromoContentIds),
+    [panelItems, visiblePromoContentIds],
+  );
 
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
     const counts = {};
-    const regionBase = filterByRegion(itemsWithSocialPromo, {
+    const regionBase = filterByRegion(itemsForChipCounts, {
       areaCode,
       cityName,
     });
@@ -1589,7 +1680,7 @@ export default function KoreaFestivalHub() {
       counts[t.id] = filterByTimeTab(t.id, pool, now).length;
     }
     return counts;
-  }, [itemsWithSocialPromo, areaCode, cityName, tasteId, timeTabs, now]);
+  }, [itemsForChipCounts, areaCode, cityName, tasteId, timeTabs, now]);
 
   const panelGroups = useMemo(() => {
     if (nearBaseItems) {
@@ -2019,29 +2110,31 @@ export default function KoreaFestivalHub() {
     if (nearBaseItems && nearLabel) {
       return t('korea.festival.nearPanelMeta', {
         km: NEAR_KM,
-        count: panelItems.length,
+        count: panelItemsForList.length,
       });
     }
     if (nearActive && nearMsg) return nearMsg;
     return null;
-  }, [nearBaseItems, nearLabel, nearActive, nearMsg, panelItems.length, t]);
+  }, [nearBaseItems, nearLabel, nearActive, nearMsg, panelItemsForList.length, t]);
 
   const panelListMetaSegments = useMemo(() => {
     if (panelListMetaText != null) return null;
     return buildFestivalPanelListMetaSegments({
       areaCode,
       cityName,
-      count: panelItems.length,
+      count: panelItemsForList.length,
       t,
       locale,
+      listLoading: loading,
     });
   }, [
     panelListMetaText,
     areaCode,
     cityName,
-    panelItems.length,
+    panelItemsForList.length,
     t,
     locale,
+    loading,
   ]);
 
   const resetListFilters = () => {
@@ -2248,7 +2341,13 @@ export default function KoreaFestivalHub() {
   }, [mapOpen]);
 
   return (
-    <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
+    <div
+      className={`relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900 ${
+        mapOpen
+          ? ''
+          : 'pb-[calc(1.5rem+max(0.4rem,env(safe-area-inset-bottom,0px)))]'
+      }`}
+    >
       <SEO
         title={t('korea.festival.title')}
         description={t('korea.festival.seoDescription')}
@@ -2765,31 +2864,20 @@ export default function KoreaFestivalHub() {
             }`}
           >
             <div
-              className={`shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5 ${
+              className={`shrink-0 flex-col gap-1.5 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5 ${
                 mapSplitActive ? 'hidden lg:flex' : mapOpen ? 'hidden' : 'flex'
               }`}
+              data-festival-list-heading=""
             >
-              <div className="min-w-0">
-                <h2 className="text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
+              <div className="flex min-w-0 items-start justify-between gap-2">
+                <h2 className="min-w-0 flex-1 text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
                   {personalTab != null
                     ? personalTab === 'favorites'
                       ? t('korea.common.favorites')
                       : t('korea.common.viewed')
                     : renderIndexListHeadline(indexTitle)}
                 </h2>
-                <p className="text-[11px] text-stone-500 leading-snug">
-                  {personalTab != null
-                    ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
-                    : panelListMetaSegments
-                      ? (
-                          <FestivalPanelListMetaLine
-                            segments={panelListMetaSegments}
-                          />
-                        )
-                      : panelListMetaText}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-1.5">
+                <div className="flex shrink-0 items-center gap-1.5">
                 {personalTab != null ? (
                   <button
                     type="button"
@@ -2866,6 +2954,21 @@ export default function KoreaFestivalHub() {
                   {mapOpen ? t('korea.common.list') : t('korea.common.map')}
                 </button>
               </div>
+              </div>
+              <p
+                className="w-full min-w-0 text-[11px] text-stone-500 leading-snug"
+                data-festival-list-meta=""
+              >
+                {personalTab != null
+                  ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
+                  : panelListMetaSegments
+                    ? (
+                        <FestivalPanelListMetaLine
+                          segments={panelListMetaSegments}
+                        />
+                      )
+                    : panelListMetaText}
+              </p>
             </div>
             {showDefaultLocHint && !mapOpen && (
               <div className="shrink-0 border-b border-amber-100 bg-amber-50/90 px-4 py-2.5">
@@ -3199,9 +3302,11 @@ export default function KoreaFestivalHub() {
               promoDeeplinkIdSet.has(festivalId))
           }
           prefetchedTourDetail={
-            deepLinkForId === festivalId && deepLinkDetail
-              ? deepLinkDetail
-              : null
+            isManualFestivalContentId(festivalId)
+              ? manualFestivalTourDetail(getManualFestivalEntry(festivalId))
+              : deepLinkForId === festivalId && deepLinkDetail
+                ? deepLinkDetail
+                : null
           }
           favorited={Boolean(selected) && favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
