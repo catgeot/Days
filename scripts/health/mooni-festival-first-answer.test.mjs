@@ -87,6 +87,8 @@ import {
   stripDisallowedFestivalLinks,
   stripDomesticEntryDocLines,
   stripMooniUiChipLabels,
+  stripInlineChipLabelPhrases,
+  stripRedundantBookingLinkOnlyLines,
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 import {
   invokeMooniChatToleratingChip,
@@ -2945,6 +2947,64 @@ test('festival page link appears once and the closing link stays', () => {
   assert.equal((opening.match(/festival=2930716/g) || []).length, 1);
   assert.match(opening, /자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요/);
   assert.doesNotMatch(opening, /강릉 국수 축제 페이지\]/);
+});
+
+test('round 8 polish drops redundant booking link lines and chip labels', () => {
+  const korail = 'https://www.letskorail.com/';
+  const kobus = 'https://www.kobus.co.kr/';
+  const daeguBody = [
+    `동대구역에서 KTX로 마산역에 도착해요. 시각은 [코레일](${korail})에서 확인하세요.`,
+    '',
+    `[코레일](${korail})`,
+    `[고속버스](${kobus})`,
+  ].join('\n');
+  const daeguPolished = polishFestivalModelReply(daeguBody, {
+    contentId: '637693',
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: buildFestivalAccessAskText('daegu', 'ko'),
+    eventStartDate: '20261031',
+    eventEndDate: '20261108',
+  });
+  assert.match(daeguPolished, /동대구역에서 KTX로 마산역에 도착해요\.\s*시각은 \[코레일\]/);
+  assert.doesNotMatch(daeguPolished, /\n\[코레일\]\(/);
+  assert.doesNotMatch(daeguPolished, /\n\[고속버스\]\(/);
+  assert.equal(
+    stripRedundantBookingLinkOnlyLines(daeguBody),
+    `동대구역에서 KTX로 마산역에 도착해요. 시각은 [코레일](${korail})에서 확인하세요.`,
+  );
+
+  const cheonanBody = [
+    '천안에서 출발해 마산역까지 KTX로 갈 수 있어요.',
+    '',
+    '* **교통 · 티켓**',
+    '* **출발 전 준비**',
+  ].join('\n');
+  const cheonanPolished = polishFestivalModelReply(cheonanBody, {
+    contentId: '637693',
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: buildFestivalAccessAskText('chungnam', 'ko'),
+    eventStartDate: '20261031',
+    eventEndDate: '20261108',
+  });
+  assert.match(cheonanPolished, /^천안에서 출발해 마산역까지 KTX로 갈 수 있어요\./);
+  assert.doesNotMatch(cheonanPolished, /교통\s*·\s*티켓|출발 전 준비/);
+  assert.match(cheonanPolished, /행사 기간은 10\/31~11\/8이에요/);
+  assert.equal(stripInlineChipLabelPhrases('* **교통 · 티켓**'), '');
+  assert.equal(stripInlineChipLabelPhrases('답. 교통 · 티켓 출발 전 준비'), '답.');
+
+  const dated = polishFestivalModelReply('마산역까지 KTX로 가요. 행사는 10/31~11/8이에요.', {
+    contentId: '637693',
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: buildFestivalAccessAskText('daegu', 'ko'),
+    eventStartDate: '20261031',
+    eventEndDate: '20261108',
+  });
+  assert.doesNotMatch(dated, /행사 기간은 10\/31~11\/8이에요\.\s*\n\n행사 기간은/);
+  assert.equal((dated.match(/행사 기간은/g) || []).length, 0);
+  assert.match(dated, /10\/31~11\/8/);
 });
 
 test('festival access polish path adds 행사 기간 from real mooni context', () => {

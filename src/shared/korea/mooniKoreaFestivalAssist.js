@@ -412,7 +412,7 @@ const FESTIVAL_ACCESS_STEP_LEAD_RE =
 export function ensureFestivalAccessStepLineBreaks(text) {
   let s = String(text || '').replace(/\r\n/g, '\n').trim();
   if (!s) return s;
-  s = s.replace(/([.!?。])\s+(?=[^\n])/g, '$1\n');
+  if (/\n\n/.test(s)) return s.replace(/\n{3,}/g, '\n\n').trim();
   const lines = s.split('\n').map((line) => line.trim()).filter(Boolean);
   if (lines.length >= 2) return lines.join('\n\n');
   const sentences = s.split(/(?<=[.!?。])\s+/).map((part) => part.trim()).filter(Boolean);
@@ -638,8 +638,16 @@ export function cleanOrphanLinkConjunctions(text) {
   return out.replace(/\n{3,}/g, '\n\n').trim();
 }
 
+function chipLabelDecoratedLine(line) {
+  return String(line || '')
+    .replace(/^\s*[*#\-–—•🚆🚌🎫|｜\s]+/g, '')
+    .replace(/^\*\*|\*\*$/g, '')
+    .trim();
+}
+
 function stripCtaLine(line) {
   let s = String(line || '').replace(/\[([^\]\n]+)\](?!\()/g, '');
+  if (isCtaSequence(normalizeCta(chipLabelDecoratedLine(s)))) return '';
   s = s.replace(/(^|\s)#{1,6}[ \t]*([^#\n]*)/g, (_full, lead, body) => (
     isCtaSequence(body) ? lead : `${lead}${String(body || '').trim()}`
   ));
@@ -732,11 +740,71 @@ function stripChipLabelSentencesInLine(line) {
     if (!s) return '';
     if (isCtaSequence(normalizeCta(s))) return '';
     s = stripTrailingChipLabelSuffix(s);
+    s = stripInlineChipLabelPhrases(s);
     if (!s.trim()) return '';
     if (isCtaSequence(normalizeCta(s))) return '';
     return s;
   }).filter(Boolean);
   return kept.join(' ');
+}
+
+function chipLabelInlineRegExp(label) {
+  const segments = String(label || '').split(/[·・‧]/).map((seg) => (
+    seg.trim().split(/\s+/).filter(Boolean)
+      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('\\s+')
+  )).filter(Boolean);
+  if (!segments.length) return null;
+  const core = segments.join('\\s*[·・‧\\s]+');
+  return new RegExp(
+    `(?:^|[\\s\\n,，|｜])[*#\\-–—•\\s🚆🚌🎫]*(?:\\*\\*)?${core}(?:\\*\\*)?(?=$|[\\s\\n,，|｜.!?。])`,
+    'gi',
+  );
+}
+
+/** Chip CTA titles anywhere in a line (bullets, bold, emoji, or plain). */
+export function stripInlineChipLabelPhrases(text) {
+  let s = String(text || '');
+  for (const label of SECTION_CTA_LABELS) {
+    const re = chipLabelInlineRegExp(label);
+    if (!re) continue;
+    s = s.replace(re, (match) => (/^\s/.test(match) ? ' ' : ''));
+  }
+  return s
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\s+([,.!?。])/g, '$1')
+    .replace(/^[|｜·\s]+/g, '')
+    .replace(/[|｜·\s]+$/g, '')
+    .trim();
+}
+
+const BOOKING_LINK_ONLY_LINE_RE = /^\s*(?:[*#\-–—•🚆🚌🎫|｜\s]|(?:\*\*)?)*((?:\[[^\]]+\]\([^)]+\)\s*)+)\s*$/;
+
+/** Drop stray link-only lines when that booking domain already appears above. */
+export function stripRedundantBookingLinkOnlyLines(text) {
+  const lines = String(text || '').replace(/\r\n/g, '\n').split('\n');
+  const kept = [];
+  let prior = '';
+  let priorProseHasBookingLink = false;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      kept.push('');
+      continue;
+    }
+    const linkOnly = BOOKING_LINK_ONLY_LINE_RE.test(trimmed)
+      || (/\[[^\]]+\]\([^)]+\)/.test(trimmed) && !trimmed.replace(/\[[^\]]+\]\([^)]+\)/g, '').replace(/[*#\-–—•🚆🚌🎫|｜\s]/g, '').trim());
+    const lineDomains = festivalAccessBookingDomainsInText(trimmed);
+    if (linkOnly && lineDomains.size > 0) {
+      if (priorProseHasBookingLink) continue;
+      const priorDomains = festivalAccessBookingDomainsInText(prior);
+      if ([...lineDomains].every((id) => priorDomains.has(id))) continue;
+    }
+    if (!linkOnly && lineDomains.size > 0) priorProseHasBookingLink = true;
+    kept.push(line);
+    prior = `${prior}\n${trimmed}`;
+  }
+  return kept.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 /** Chip headings, CTA labels, separator leftovers, and bracket phrases with no URL. */
@@ -746,7 +814,8 @@ export function stripMooniUiChipLabels(text) {
     .split('\n')
     .map((line) => {
       if (!line.trim()) return '';
-      const stripped = stripPlannerResidueLine(stripCtaLine(line));
+      let stripped = stripPlannerResidueLine(stripCtaLine(line));
+      stripped = stripInlineChipLabelPhrases(stripped);
       if (!stripped) return '';
       return stripChipLabelSentencesInLine(stripped);
     });
@@ -1448,6 +1517,25 @@ function shortDateFromDateLabel(label) {
   return match ? match[1] : '';
 }
 
+function festivalAccessDatesAlreadyInText(body, short) {
+  const text = String(body || '');
+  const range = String(short || '').trim();
+  if (!range || !/\d{1,2}\/\d{1,2}/.test(range)) return false;
+  if (text.includes(range)) return true;
+  const m = range.match(/^(\d{1,2})\/(\d{1,2})(?:~(\d{1,2})(?:\/(\d{1,2}))?)?$/);
+  if (!m) return false;
+  const [, sm, sd, em, ey] = m;
+  const start = `${Number(sm)}/${Number(sd)}`;
+  const altStart = `${sm}/${sd}`;
+  if (!text.includes(start) && !text.includes(altStart)) return false;
+  if (!em) return /행사\s*기간/.test(text) || text.includes(start) || text.includes(altStart);
+  const endPart = ey ? `${Number(em)}/${Number(ey)}` : `~${Number(em)}`;
+  const full = ey ? `${start}~${endPart}` : `${altStart}~${em}`;
+  if (text.includes(full) || text.includes(`${altStart}~${em}`)) return true;
+  if (/행사\s*기간/.test(text) && (text.includes(start) || text.includes(altStart))) return true;
+  return false;
+}
+
 function ensureFestivalAccessPeriodLine(text, options = {}) {
   if (!isBoundFestivalAccessPolish(options)) return String(text || '').trim();
   const startYmd = normalizeEventYmdForPolish(options.eventStartDate);
@@ -1457,7 +1545,7 @@ function ensureFestivalAccessPeriodLine(text, options = {}) {
     || String(options.dateLabel || '').trim();
   if (!short || !/\d{1,2}\/\d{1,2}/.test(short)) return String(text || '').trim();
   let body = String(text || '').trim();
-  if (body.includes(short)) return body;
+  if (festivalAccessDatesAlreadyInText(body, short)) return body;
   const en = String(options.locale || 'ko').slice(0, 2) === 'en';
   const line = en ? `The festival runs ${short}.` : `행사 기간은 ${short}이에요.`;
   const footerRe = /\n\n(?:열차·버스 시각은|Check train and bus schedules)/;
@@ -1597,11 +1685,13 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = stripMooniGuideFiller(text);
   }
   if (isBoundFestivalAccessPolish(options)) {
+    text = stripRedundantBookingLinkOnlyLines(text);
     text = ensureFestivalAccessStepLineBreaks(text);
     text = ensureFestivalAccessPeriodLine(text, options);
     text = appendFestivalAccessBookingLinks(text, options.locale);
     text = dedupeFestivalAccessBookingFooters(text, options.locale);
   }
+  text = stripMooniUiChipLabels(text);
   return text;
 }
 
