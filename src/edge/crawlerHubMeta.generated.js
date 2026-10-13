@@ -3,8 +3,8 @@ export default {
   "/": {
     "ko": {
       "title": "AI 도슨트와 함께하는 3D 세계 여행",
-      "description": "당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트제로)",
-      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트제로, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
+      "description": "당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트오)",
+      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트오, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
       "canonicalUrl": "https://www.gateo.kr/",
       "hreflangAlternates": [
         {
@@ -46,7 +46,7 @@ export default {
     "ko": {
       "title": "한국의 축제",
       "description": "GATEO 국내 축제 허브. TourAPI 일정으로 시간·지역·테마별 축제를 찾고, 지도로 위치·동선을 확인하세요.",
-      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트제로, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
+      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트오, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
       "canonicalUrl": "https://www.gateo.kr/korea",
       "hreflangAlternates": [
         {
@@ -88,7 +88,7 @@ export default {
     "ko": {
       "title": "한국의 명승",
       "description": "GATEO 명승 허브. 국가유산 지정 명승·선정 명소·관광지를 권역별로 보고, 주변 맛집·숙소·투어로 이어갑니다.",
-      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트제로, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
+      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트오, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
       "canonicalUrl": "https://www.gateo.kr/korea/theme/scenic",
       "hreflangAlternates": [
         {
@@ -129,8 +129,8 @@ export default {
   "/explore": {
     "ko": {
       "title": "AI 도슨트와 함께하는 3D 세계 여행",
-      "description": "당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트제로)",
-      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트제로, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
+      "description": "당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트오)",
+      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트오, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
       "canonicalUrl": "https://www.gateo.kr/explore",
       "hreflangAlternates": [
         {
@@ -256,7 +256,7 @@ export default {
     "ko": {
       "title": "세계 행사 일정 — GATEO",
       "description": "유럽·아시아·아메리카·오세아니아·니치 도시의 대표 축제·시즌 행사를 모아 보고, 여행지 카드·행사 맞춤 플래너로 이어갑니다.",
-      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트제로, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
+      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트오, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
       "canonicalUrl": "https://www.gateo.kr/world-events",
       "hreflangAlternates": [
         {
@@ -298,7 +298,7 @@ export default {
     "ko": {
       "title": "아시아 휴양·호캉스 여행지",
       "description": "GATEO 3D 지구본에서 아시아 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아시아, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아시아, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/asia/paradise",
       "hreflangAlternates": [
         {
@@ -340,7 +340,7 @@ export default {
     "ko": {
       "title": "아시아 랜드마크·문화 여행지",
       "description": "GATEO 3D 지구본에서 아시아 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아시아, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아시아, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/asia/culture",
       "hreflangAlternates": [
         {
@@ -382,7 +382,7 @@ export default {
     "ko": {
       "title": "아시아 대도시·쇼핑 여행지",
       "description": "GATEO 3D 지구본에서 아시아 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아시아, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아시아, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/asia/urban",
       "hreflangAlternates": [
         {
@@ -424,7 +424,7 @@ export default {
     "ko": {
       "title": "아시아 대자연 여행지",
       "description": "GATEO 3D 지구본에서 아시아 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아시아, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아시아, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/asia/nature",
       "hreflangAlternates": [
         {
@@ -466,7 +466,7 @@ export default {
     "ko": {
       "title": "아시아 모험·액티비티 여행지",
       "description": "GATEO 3D 지구본에서 아시아 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아시아, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아시아, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/asia/adventure",
       "hreflangAlternates": [
         {
@@ -508,7 +508,7 @@ export default {
     "ko": {
       "title": "유럽 휴양·호캉스 여행지",
       "description": "GATEO 3D 지구본에서 유럽 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "유럽, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "유럽, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/europe/paradise",
       "hreflangAlternates": [
         {
@@ -550,7 +550,7 @@ export default {
     "ko": {
       "title": "유럽 랜드마크·문화 여행지",
       "description": "GATEO 3D 지구본에서 유럽 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "유럽, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "유럽, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/europe/culture",
       "hreflangAlternates": [
         {
@@ -592,7 +592,7 @@ export default {
     "ko": {
       "title": "유럽 대도시·쇼핑 여행지",
       "description": "GATEO 3D 지구본에서 유럽 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "유럽, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "유럽, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/europe/urban",
       "hreflangAlternates": [
         {
@@ -634,7 +634,7 @@ export default {
     "ko": {
       "title": "유럽 대자연 여행지",
       "description": "GATEO 3D 지구본에서 유럽 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "유럽, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "유럽, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/europe/nature",
       "hreflangAlternates": [
         {
@@ -676,7 +676,7 @@ export default {
     "ko": {
       "title": "유럽 모험·액티비티 여행지",
       "description": "GATEO 3D 지구본에서 유럽 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "유럽, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "유럽, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/europe/adventure",
       "hreflangAlternates": [
         {
@@ -718,7 +718,7 @@ export default {
     "ko": {
       "title": "북미 휴양·호캉스 여행지",
       "description": "GATEO 3D 지구본에서 북미 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "북미, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "북미, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/north_america/paradise",
       "hreflangAlternates": [
         {
@@ -760,7 +760,7 @@ export default {
     "ko": {
       "title": "북미 랜드마크·문화 여행지",
       "description": "GATEO 3D 지구본에서 북미 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "북미, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "북미, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/north_america/culture",
       "hreflangAlternates": [
         {
@@ -802,7 +802,7 @@ export default {
     "ko": {
       "title": "북미 대도시·쇼핑 여행지",
       "description": "GATEO 3D 지구본에서 북미 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "북미, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "북미, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/north_america/urban",
       "hreflangAlternates": [
         {
@@ -844,7 +844,7 @@ export default {
     "ko": {
       "title": "북미 대자연 여행지",
       "description": "GATEO 3D 지구본에서 북미 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "북미, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "북미, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/north_america/nature",
       "hreflangAlternates": [
         {
@@ -886,7 +886,7 @@ export default {
     "ko": {
       "title": "북미 모험·액티비티 여행지",
       "description": "GATEO 3D 지구본에서 북미 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "북미, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "북미, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/north_america/adventure",
       "hreflangAlternates": [
         {
@@ -928,7 +928,7 @@ export default {
     "ko": {
       "title": "남미 휴양·호캉스 여행지",
       "description": "GATEO 3D 지구본에서 남미 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "남미, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "남미, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/south_america/paradise",
       "hreflangAlternates": [
         {
@@ -970,7 +970,7 @@ export default {
     "ko": {
       "title": "남미 랜드마크·문화 여행지",
       "description": "GATEO 3D 지구본에서 남미 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "남미, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "남미, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/south_america/culture",
       "hreflangAlternates": [
         {
@@ -1012,7 +1012,7 @@ export default {
     "ko": {
       "title": "남미 대도시·쇼핑 여행지",
       "description": "GATEO 3D 지구본에서 남미 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "남미, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "남미, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/south_america/urban",
       "hreflangAlternates": [
         {
@@ -1054,7 +1054,7 @@ export default {
     "ko": {
       "title": "남미 대자연 여행지",
       "description": "GATEO 3D 지구본에서 남미 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "남미, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "남미, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/south_america/nature",
       "hreflangAlternates": [
         {
@@ -1096,7 +1096,7 @@ export default {
     "ko": {
       "title": "남미 모험·액티비티 여행지",
       "description": "GATEO 3D 지구본에서 남미 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "남미, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "남미, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/south_america/adventure",
       "hreflangAlternates": [
         {
@@ -1138,7 +1138,7 @@ export default {
     "ko": {
       "title": "오세아니아 휴양·호캉스 여행지",
       "description": "GATEO 3D 지구본에서 오세아니아 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "오세아니아, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "오세아니아, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/oceania/paradise",
       "hreflangAlternates": [
         {
@@ -1180,7 +1180,7 @@ export default {
     "ko": {
       "title": "오세아니아 랜드마크·문화 여행지",
       "description": "GATEO 3D 지구본에서 오세아니아 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "오세아니아, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "오세아니아, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/oceania/culture",
       "hreflangAlternates": [
         {
@@ -1222,7 +1222,7 @@ export default {
     "ko": {
       "title": "오세아니아 대도시·쇼핑 여행지",
       "description": "GATEO 3D 지구본에서 오세아니아 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "오세아니아, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "오세아니아, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/oceania/urban",
       "hreflangAlternates": [
         {
@@ -1264,7 +1264,7 @@ export default {
     "ko": {
       "title": "오세아니아 대자연 여행지",
       "description": "GATEO 3D 지구본에서 오세아니아 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "오세아니아, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "오세아니아, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/oceania/nature",
       "hreflangAlternates": [
         {
@@ -1306,7 +1306,7 @@ export default {
     "ko": {
       "title": "오세아니아 모험·액티비티 여행지",
       "description": "GATEO 3D 지구본에서 오세아니아 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "오세아니아, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "오세아니아, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/oceania/adventure",
       "hreflangAlternates": [
         {
@@ -1348,7 +1348,7 @@ export default {
     "ko": {
       "title": "아프리카 휴양·호캉스 여행지",
       "description": "GATEO 3D 지구본에서 아프리카 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아프리카, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아프리카, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/africa/paradise",
       "hreflangAlternates": [
         {
@@ -1390,7 +1390,7 @@ export default {
     "ko": {
       "title": "아프리카 랜드마크·문화 여행지",
       "description": "GATEO 3D 지구본에서 아프리카 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아프리카, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아프리카, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/africa/culture",
       "hreflangAlternates": [
         {
@@ -1432,7 +1432,7 @@ export default {
     "ko": {
       "title": "아프리카 대도시·쇼핑 여행지",
       "description": "GATEO 3D 지구본에서 아프리카 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아프리카, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아프리카, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/africa/urban",
       "hreflangAlternates": [
         {
@@ -1474,7 +1474,7 @@ export default {
     "ko": {
       "title": "아프리카 대자연 여행지",
       "description": "GATEO 3D 지구본에서 아프리카 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아프리카, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아프리카, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/africa/nature",
       "hreflangAlternates": [
         {
@@ -1516,7 +1516,7 @@ export default {
     "ko": {
       "title": "아프리카 모험·액티비티 여행지",
       "description": "GATEO 3D 지구본에서 아프리카 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
-      "keywords": "아프리카, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "keywords": "아프리카, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트오, 여행지 탐색, 3D 지구본, AI 도슨트",
       "canonicalUrl": "https://www.gateo.kr/explore/africa/adventure",
       "hreflangAlternates": [
         {

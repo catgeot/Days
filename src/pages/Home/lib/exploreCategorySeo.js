@@ -93,7 +93,7 @@ const CATEGORY_SEO = {
 };
 
 const SITE_KEYWORDS = {
-  ko: ['GATEO', '게이트제로', '여행지 탐색', '3D 지구본', 'AI 도슨트'],
+  ko: ['GATEO', '게이트오', '여행지 탐색', '3D 지구본', 'AI 도슨트'],
   en: ['GATEO', 'travel destinations', '3D globe', 'AI docent', 'explore'],
 };
 
