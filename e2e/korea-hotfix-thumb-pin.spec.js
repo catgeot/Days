@@ -21,7 +21,15 @@ async function dismissLocHint(page) {
 
 async function openNationwideFestivalHub(page) {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const festivalEntry = page.locator('a[href="/korea"]').filter({ visible: true }).first();
+  const expandQuickLinks = page.getByRole('button', {
+    name: /바로가기 메뉴 펼치기|Expand quick links/i,
+  });
+  if (await expandQuickLinks.isVisible().catch(() => false)) {
+    await expandQuickLinks.click();
+  }
+  const festivalEntry = page.getByRole('link', {
+    name: /한국의 축제로 이동|Go to Korea festivals/i,
+  });
   await expect(festivalEntry).toBeVisible({ timeout: 180_000 });
   await festivalEntry.click();
   await expect(page.getByRole('heading', { name: /한국의 축제|Korea festivals/i })).toBeVisible({
