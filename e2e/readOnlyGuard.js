@@ -4,6 +4,7 @@ const READ_ONLY_EDGE_FUNCTIONS = [
   'fetch-mrt-tnas',
   'pexels-proxy',
   'tourapi-proxy', // service-role read-through cache upsert (same as visitor)
+  'transport-proxy', // TAGO card read; server cache upsert only (same as visitor)
   'fetch-place-videos', // service-role read-through cache upsert (same as visitor)
 ];
 

@@ -23,7 +23,7 @@ export {
  * }} input
  */
 export function buildFestivalMooniBoundSpot(input = {}) {
-  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas, info } = input;
+  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas, info, transport } = input;
   const festivalContext = buildFestivalMooniContext({
     item,
     intro,
@@ -36,6 +36,7 @@ export function buildFestivalMooniBoundSpot(input = {}) {
     nearbyRestaurants,
     stayAreas,
     info,
+    transport,
   });
   const title = festivalContext?.title || '';
   const loc = location && typeof location === 'object' ? location : null;
@@ -71,10 +72,13 @@ export function patchFestivalBoundSpot(prev, next) {
   if (!prev?.festivalContext || !next?.festivalContext) return prev;
   const prevParking = String(prev.festivalContext.parking || '');
   const nextParking = String(next.festivalContext.parking || '');
+  const prevTransport = JSON.stringify(prev.festivalContext.transport || null);
+  const nextTransport = JSON.stringify(next.festivalContext.transport || null);
   if (
     sameNameList(prev.festivalContext.nearbyRestaurants, next.festivalContext.nearbyRestaurants)
     && sameNameList(prev.festivalContext.nearbyPlaces, next.festivalContext.nearbyPlaces)
     && prevParking === nextParking
+    && prevTransport === nextTransport
   ) return prev;
   return {
     ...prev,
@@ -83,6 +87,7 @@ export function patchFestivalBoundSpot(prev, next) {
       nearbyRestaurants: next.festivalContext.nearbyRestaurants || [],
       nearbyPlaces: next.festivalContext.nearbyPlaces || [],
       parking: next.festivalContext.parking ?? prev.festivalContext.parking,
+      transport: next.festivalContext.transport ?? prev.festivalContext.transport ?? null,
     },
   };
 }
