@@ -61,6 +61,7 @@ import {
   gateoKoreaFestivalLodgingUrl,
   isFestivalLodgingAsk,
   linkifyBareGateoFestivalUrls,
+  cleanOrphanLinkConjunctions,
   dedupeFestivalPageLinks,
   polishFestivalModelReply,
   rankFestivalRestaurants,
@@ -80,6 +81,7 @@ import {
 import {
   expandCompactDates,
   appendFestivalAccessBookingLinks,
+  rewriteFestivalFormalEndings,
   stripDisallowedFestivalLinks,
   stripDomesticEntryDocLines,
   stripMooniUiChipLabels,
@@ -557,10 +559,45 @@ test('festival access drill-down opens origin chips without auto-sending Seoul',
   assert.match(chatModal, /polishFestivalModelReply\(festivalMergedReply/);
 });
 
-test('festival access hint urges real routes when TAGO times are missing', () => {
+test('festival access hint urges real routes when TAGO times are missing', async () => {
   const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalAssist.js'), 'utf8');
   assert.match(assist, /isFestivalAccessAsk/);
-  assert.match(assist, /도착 역에서 끝내지 말고 축제장까지/);
+  assert.match(assist, /festivalAccessVenueGuidanceLines/);
+  assert.match(assist, /역에서 축제장까지/);
+  const gukhyang = await resolveMooniChatKoreaFestivalHint({
+    chipId: 'festival_access',
+    userText: '서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+    departureLabel: '서울',
+    locale: 'ko',
+    festivalContext: {
+      contentId: '638576',
+      title: '국향대전',
+      venue: '함평엑스포공원',
+      address: '전라남도 함평군 함평읍 수호리',
+      eventStartDate: '20261023',
+      eventEndDate: '20261108',
+      overview: '국화가 만개하는 축제입니다.',
+      program: '개막식',
+    },
+  });
+  assert.doesNotMatch(gukhyang.hint, /^- 개요:/m);
+  assert.match(gukhyang.hint, /함평역/);
+  assert.match(gukhyang.hint, /역에서 축제장까지/);
+  const masan = await resolveMooniChatKoreaFestivalHint({
+    chipId: 'festival_access',
+    userText: '부산에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+    locale: 'ko',
+    festivalContext: {
+      contentId: '637693',
+      title: '마산가고파국화축제',
+      venue: '3·15해양누리공원',
+      address: '경상남도 창원시 마산합포구',
+      eventStartDate: '20261031',
+      eventEndDate: '20261108',
+    },
+  });
+  assert.match(masan.hint, /마산역/);
+  assert.match(masan.hint, /창원중앙역은 보조/);
   assert.match(assist, /bustago\.or\.kr/);
   assert.match(assist, /appendFestivalAccessBookingLinks/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 갑니다/);
@@ -2769,6 +2806,16 @@ test('festival page link appears once and the closing link stays', () => {
   const pageUrl = 'https://www.gateo.kr/korea/?festival=2930716';
   const bare = 'https://gateo.kr/korea/?festival=2930716';
   const doubled = `[강릉 국수 축제 페이지](${pageUrl}) 자세한 내용은 [축제 페이지](${pageUrl})에서 볼 수 있어요.`;
+  const gukhyangDup = '[국향대전](https://www.gateo.kr/korea/?festival=638576)과, [국향대전](https://www.gateo.kr/korea/?festival=638576) 확인';
+  assert.equal(
+    cleanOrphanLinkConjunctions(dedupeFestivalPageLinks(gukhyangDup)),
+    '[국향대전](https://www.gateo.kr/korea/?festival=638576) 확인',
+  );
+  assert.match(rewriteFestivalFormalEndings('열차에 탑승하십시오.'), /탑승해요/);
+  assert.doesNotMatch(
+    polishFestivalModelReply('KTX로 갑니다. 안내해 드릴게요.', { chipId: 'festival_access', locale: 'ko' }),
+    /안내해\s*드릴게요/,
+  );
   const once = dedupeFestivalPageLinks(doubled);
   assert.equal((once.match(/festival=2930716/g) || []).length, 1);
   assert.match(once, /^자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요\.$/);

@@ -498,12 +498,33 @@ export function stripDisallowedFestivalLinks(text, options = {}) {
     },
   );
   next = next.replace(/\u0000L(\d+)\u0000/g, (_full, index) => kept[Number(index)] || '');
-  return next
+  return cleanOrphanLinkConjunctions(next
     .replace(/[(\[（「][ \t]*[)\]）」]/g, '')
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
-    .trim();
+    .trim());
+}
+
+/** Dangling 과/와/및 and commas after a markdown link was stripped or deduped. */
+export function cleanOrphanLinkConjunctions(text) {
+  let out = String(text || '');
+  for (let pass = 0; pass < 5; pass += 1) {
+    const prev = out;
+    out = out
+      .replace(/\]\s*(?:과|와|및)\s*,\s*(?=\[)/g, '] ')
+      .replace(/\]\s*(?:과|와|및)\s*[,，]?\s*(?=[,，.!?。\s]|$)/g, '] ')
+      .replace(/\s*(?:과|와|및)\s*[,，](?=\s*[,，.!?。]|\s*$)/g, '')
+      .replace(/[,，]\s*(?:과|와|및)(?=\s*[,，.!?。]|\s*$)/g, '')
+      .replace(/(?:^|[\s「『(「])(?:과|와|및)\s*[,，]/gm, (lead) => lead || '')
+      .replace(/^(?:과|와|및)\s*[,，]?\s*/gm, '')
+      .replace(/\s+(?:과|와|및)\s*$/gm, '')
+      .replace(/[,，]\s*[,，]+/g, ',')
+      .replace(/\s+([,.!?。])/g, '$1')
+      .replace(/[ \t]{2,}/g, ' ');
+    if (out === prev) break;
+  }
+  return out.replace(/\n{3,}/g, '\n\n').trim();
 }
 
 function stripCtaLine(line) {
@@ -678,6 +699,7 @@ function syllableHasBatchim(ch) {
  */
 export function rewriteFestivalFormalEndings(text) {
   let out = String(text || '');
+  out = out.replace(/([가-힣]+)하십시오(?=$|[\s.!?。,，])/g, '$1해요');
   for (const [from, to] of FORMAL_ENDING_TABLE) {
     out = out.replace(new RegExp(`${from}(?=$|[\\s.!?。,，])`, 'g'), to);
   }
@@ -1108,11 +1130,11 @@ export function dedupeFestivalPageLinks(text) {
     cursor = match.index + match[0].length;
   }
   result += src.slice(cursor);
-  return result
+  return cleanOrphanLinkConjunctions(result
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
-    .trim();
+    .trim());
 }
 
 const FOOD_TYPE_TAGS = [
@@ -1245,11 +1267,11 @@ function dedupeStaySearchLinks(text) {
     seen.add(key);
     return full;
   });
-  return next
+  return cleanOrphanLinkConjunctions(next
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
-    .trim();
+    .trim());
 }
 
 /** Narrative -답니다 endings are not 해요체. Specific forms first, then a boundary-safe generic. */
@@ -1275,6 +1297,15 @@ function softenNightHour(text) {
 }
 
 const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|숙소가\s*자리하고|매력을 느끼며|인근으로[\s\S]{0,40}숙소를\s*찾을\s*수\s*있|특별한 순간을 경험해|The atmosphere is majestic|a variety of stays|feel the charm|find stays in the .* area/i;
+const MOONI_GUIDE_FILLER_RE = /안내해\s*드릴게요|안내해\s*드리겠습니다|도와\s*드릴게요/;
+
+function stripMooniGuideFiller(text) {
+  return String(text || '')
+    .replace(MOONI_GUIDE_FILLER_RE, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\s+([.!?。])/g, '$1')
+    .trim();
+}
 
 function dropFestivalFillerSentences(text) {
   const stripped = String(text || '').replace(/편안한 휴식을 위해\s*/g, '');
@@ -1398,10 +1429,44 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = stripOffTopicLodgingNudge(text, options);
   text = settleFestivalNextAction(text, options);
   text = dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
+  text = cleanOrphanLinkConjunctions(text);
+  if (String(options.locale || 'ko').slice(0, 2) !== 'en') {
+    text = stripMooniGuideFiller(text);
+  }
   if (String(options.chipId || '') === 'festival_access') {
     text = appendFestivalAccessBookingLinks(text, options.locale);
   }
   return text;
+}
+
+function trimBoundFestivalHintForAccess(hint, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const drop = en
+    ? /^- (?:Overview|Program|Nearby|Nearby restaurants|Where to eat)/
+    : /^- (?:개요|프로그램|근처|주변 맛집|근처 먹을 곳)/;
+  return String(hint || '')
+    .split('\n')
+    .filter((line) => !drop.test(line.trim()))
+    .join('\n');
+}
+
+function festivalAccessVenueGuidanceLines(ctx, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const id = String(ctx?.contentId || '').trim();
+  const blob = `${ctx?.title || ''} ${ctx?.venue || ''} ${ctx?.address || ''}`;
+  const lines = [];
+  if (id === '638576' || /함평|국향/.test(blob)) {
+    const addr = String(ctx?.address || '').trim();
+    lines.push(en
+      ? `- Last leg: travelers care most about the hop from the station to the venue. The festival is at Hampyeong Expo Park${addr ? ` (${addr})` : ''}. After KTX/SRT to Gwangju Songjeong or Hampyeong Station, continue with local bus or taxi to the park, name the transfer point, and add a driving option. Hampyeong Station and Hampyeong public bus terminal are the usual local hops; say rough time as "about N minutes" only when helpful.`
+      : `- 마지막 구간: 여행자는 역에서 축제장까지 어떻게 가는지가 가장 궁금해요. 축제장은 함평엑스포공원${addr ? `(${addr})` : ''}이에요. 광주송정·함평역 등에 도착한 뒤 함평엑스포공원까지 버스·택시로 이어 주세요. 함평역·함평공용버스터미널에서 시내버스나 택시로 가는 경로를 짧게 안내하고, 자가용 옵션도 함께 말해 주세요. 대략 10~20분대(교통에 따라 다름)처럼만 말하고, 확인된 요금·시각만 쓰세요.`);
+  }
+  if (id === '637693' || /해양누리|3·15|마산가고파|마산/.test(blob)) {
+    lines.push(en
+      ? '- Arrival station: for 3·15 Marine Nuri Park, guide KTX/SRT to Masan Station first (closest to the venue). Mention Changwon Jungang Station only as a backup.'
+      : '- 도착 역: 3·15해양누리공원에는 KTX·SRT 도착은 마산역이 축제장에 가장 가까워요. 마산역을 먼저 안내하고, 창원중앙역은 보조로만 말해 주세요.');
+  }
+  return lines;
 }
 
 const LODGING_NUDGE_RE = /숙소\s*정보|숙소\s*(?:도|를|카드|안내)|#festival-lodging|묵기\s*좋|where\s+to\s+stay|lodging\s+(?:card|guide)|stays?\s+for\s+this\s+festival/i;
@@ -2422,6 +2487,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     let hint = buildMooniBoundFestivalSystemHint(festivalContext, input.locale, input.now);
     const enFood = String(input.locale || '').slice(0, 2) === 'en';
     if (isFestivalAccessAsk({ userText, chipId: input.chipId })) {
+      hint = trimBoundFestivalHintForAccess(hint, input.locale);
       const originRow = domesticFestivalGroundOrigin(userText, input.departureLabel);
       if (originRow) {
         const hubLine = formatOriginHubGuidance(originRow, input.locale);
@@ -2429,10 +2495,16 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
           ? `\n- Departure hubs for this chip: ${hubLine}`
           : `\n- 출발 칩 안내: ${hubLine}`;
       }
+      for (const line of festivalAccessVenueGuidanceLines(festivalContext, input.locale)) {
+        hint += `\n${line}`;
+      }
+      hint += enFood
+        ? '\n- This turn is only getting there. Do not repeat the festival welcome, overview, or program from the opening message — go straight from the chosen origin to the venue.'
+        : '\n- 이번 답은 가는 법만이에요. 채팅 첫 인사·개요·프로그램 소개는 반복하지 말고, 고른 출발지에서 축제장까지 교통만 짧게 이어 주세요.';
       if (!festivalTransportHasTagoRows(festivalContext.transport)) {
         hint += enFood
-          ? '\n- Getting there: GATEO has no confirmed train or bus times for this departure. Describe real routes (rail, express bus, driving) from the hubs above. Use only confirmed numbers for times and fares; otherwise link [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/). Never end with only a line that there are no confirmed times.'
-          : '\n- 가는 법: GATEO에 이 출발지의 확인된 열차·버스 시각이 없을 수 있어요. 사용자는 당신을 믿고 이 축제에 갑니다. 위 출발 역·터미널에서 실제 열차·고속버스·차 경로를 이어서 안내해 주세요. 시각·요금은 확인된 숫자만 말하고, 없으면 [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요. 도착 역에서 끝내지 말고 축제장까지 마지막 구간과 자가용 옵션도 함께 안내해 주세요.';
+          ? '\n- Getting there: when GATEO has no confirmed train or bus times for this departure, still describe real rail, express bus, and driving from the hubs above. Use only confirmed numbers; otherwise link [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/).'
+          : '\n- 가는 법: GATEO에 이 출발지의 확인된 열차·버스 시각이 없을 수 있어요. 그래도 위 출발 역·터미널에서 실제 열차·고속버스·차 경로를 이어서 안내해 주세요. 시각·요금은 확인된 숫자만 말하고, 없으면 [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요.';
       }
     }
     const foodNames = festivalFoodPlaceLabels(festivalContext.nearbyRestaurants, enFood ? 'en' : 'ko', 4);
