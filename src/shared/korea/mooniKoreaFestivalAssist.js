@@ -333,6 +333,7 @@ function ctaLabelList() {
 function normalizeCta(value) {
   return String(value || '')
     .replace(/[\u{1F1E6}-\u{1F1FF}\u{1F300}-\u{1FAFF}\u2600-\u27BF]/gu, '')
+    .replace(/[|｜]/g, ' ')
     .replace(/[·・‧]/g, '·')
     .replace(/#{1,6}/g, ' ')
     .replace(/-{3,}/g, ' ')
@@ -370,7 +371,42 @@ function trailingSectionRegExp(label) {
     part.trim().split(/\s+/).filter(Boolean).map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+')
   ));
   const body = chunks.join('\\s*[·・‧]\\s*');
-  return new RegExp(`(?:\\s*[-–—•]+\\s*)?${body}\\s*$`, 'i');
+  return new RegExp(`(?:\\s*[-–—•|｜]+\\s*)?${body}\\s*[|｜]?\\s*$`, 'i');
+}
+
+function trailingChipLabelSuffixRegExp(normalizedLabel) {
+  const segments = String(normalizedLabel || '')
+    .split('·')
+    .filter(Boolean)
+    .map((part) => part.trim().split(/\s+/).filter(Boolean)
+      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('\\s+'));
+  if (!segments.length) return null;
+  const body = segments.join('\\s*[·・‧]\\s*');
+  return new RegExp(
+    `(?:[.!?。]\\s*|\\s*[-–—•|｜]+\\s*|\\s+)${body}(?:\\s*[·・‧|｜]\\s*${body})*\\s*[|｜]?\\s*$`,
+    'i',
+  );
+}
+
+function stripTrailingChipLabelSuffix(line) {
+  let s = String(line || '').trimEnd();
+  if (!s) return '';
+  const labels = [...new Set([...SECTION_LABELS, ...CTA_LABELS])].sort((a, b) => b.length - a.length);
+  let guard = 0;
+  while (guard < 24) {
+    guard += 1;
+    const prev = s;
+    s = s.replace(/[|｜]\s*$/, '').trimEnd();
+    if (isCtaSequence(s)) return '';
+    for (const label of labels) {
+      const re = trailingChipLabelSuffixRegExp(label);
+      if (!re) continue;
+      s = s.replace(re, '').trimEnd();
+    }
+    if (s === prev) break;
+  }
+  return s.trimEnd();
 }
 
 const ENTRY_DOC_RE = /입국\s*증빙|입국\s*심사|입국\s*서류|비자\s*서류|여행\s*증빙|예약\s*확인서|숙소\s*예약\s*확인|proof-of-stay|entry document|immigration document/i;
@@ -471,6 +507,8 @@ function stripCtaLine(line) {
     if (!next || next === s) break;
     s = next;
   }
+  if (isCtaSequence(s)) return '';
+  s = stripTrailingChipLabelSuffix(s);
   if (isCtaSequence(s)) return '';
   return s.replace(/[ \t]{2,}/g, ' ').replace(/\s+([.!?])/g, '$1').trim();
 }

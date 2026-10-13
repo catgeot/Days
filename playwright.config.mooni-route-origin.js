@@ -2,7 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /mooni-route-origin-screenshots\.spec\.js/,
+  testMatch: process.env.MOONI_ROUTE_ORIGIN_LIVE === '1'
+    ? /mooni-route-origin-vercel-live\.spec\.js/
+    : /mooni-route-origin-screenshots\.spec\.js/,
   fullyParallel: false,
   workers: 1,
   timeout: 240_000,

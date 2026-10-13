@@ -1034,6 +1034,17 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   assert.equal(stripMooniUiChipLabels('### 교통 · 티켓 - ### 출발 전 준비 -'), '');
   assert.equal(stripMooniUiChipLabels('교통 · 티켓 출발 전 준비'), '');
   assert.equal(
+    stripMooniUiChipLabels('인천에서 갑니다.\n\n열차·버스 시각은 링크예요. 교통 · 티켓 |'),
+    '인천에서 갑니다.\n\n열차·버스 시각은 링크예요.',
+  );
+  const accessChipTail = polishFestivalModelReply(
+    'KTX로 광명에서 출발해요.\n\n열차·버스 시각은 [코레일](https://www.letskorail.com/)에서 확인할 수 있어요. 교통 · 티켓 |',
+    { chipId: 'festival_access', locale: 'ko', userText: '인천에서 가는 법' },
+  );
+  assert.match(accessChipTail, /KTX로 광명에서 출발해요/);
+  assert.doesNotMatch(accessChipTail, /교통\s*·\s*티켓/);
+  assert.match(accessChipTail, /bustago\.or\.kr/);
+  assert.equal(
     stripMooniUiChipLabels('[강릉행 KTX 노선 확인] [강릉 숙소 추천 리스트]'),
     '',
   );
