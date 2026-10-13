@@ -34,6 +34,7 @@ import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import { readNearbyAttractionCache } from './lib/nearbyAttractionCache';
+import { beginFestivalRestaurantLoad } from './lib/festivalRestaurantLoad.js';
 import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
@@ -810,7 +811,17 @@ export default function FestivalDetailSheet({
       const liveHits = await Promise.all(
         liveTargets.map(async (id) => {
           try {
-            const url = await fetchTourApiFirstImage(id);
+            const url = await fetchTourApiFirstImage(id, {
+              onConfirmedEmpty: () => {
+                if (cancelled) return;
+                setNearbyImageMiss((prev) => {
+                  if (prev.has(id)) return prev;
+                  const next = new Set(prev);
+                  next.add(id);
+                  return next;
+                });
+              },
+            });
             return [id, url];
           } catch {
             return [id, ''];
@@ -1260,13 +1271,15 @@ export default function FestivalDetailSheet({
       setNearbyFoodStatus('loading');
       setNearbyLeportsStatus('loading');
       setNearbyCultureStatus('loading');
-      fetchNearbyTourRestaurants({
+      const foodPromise = fetchNearbyTourRestaurants({
         lat: pt.lat,
         lng: pt.lng,
         radiusKm: 3,
         limit: 8,
         areaCode: festivalAreaCode,
-      }).then((res) => {
+      });
+      beginFestivalRestaurantLoad(item.contentId, foodPromise);
+      foodPromise.then((res) => {
         if (cancelled) return;
         const spots = Array.isArray(res?.spots) ? res.spots : [];
         setNearbyFood(spots);
@@ -2288,17 +2301,13 @@ export default function FestivalDetailSheet({
                 </div>
               ) : null}
 
-              {nearbyFoodStatus !== 'idle' && nearbyFoodStatus !== 'nocoords' && (
+              {nearbyFoodStatus !== 'idle' &&
+                nearbyFoodStatus !== 'nocoords' &&
+                nearbyFoodStatus !== 'loading' && (
                 <div className="space-y-2 pt-1" data-festival-section="nearFood">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                     {t('korea.festival.detail.nearFood')}
                   </p>
-                  {nearbyFoodStatus === 'loading' && !belowSectionsLoading && (
-                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.festival.detail.nearFoodLoading')}
-                    </div>
-                  )}
                   {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
                     <p className="text-xs text-stone-500">
                       {t('korea.festival.detail.nearFoodError')}
@@ -2353,21 +2362,12 @@ export default function FestivalDetailSheet({
               )}
 
               {nearbyLeportsStatus !== 'idle' &&
-                nearbyLeportsStatus !== 'nocoords' && (
+                nearbyLeportsStatus !== 'nocoords' &&
+                nearbyLeportsStatus !== 'loading' && (
                   <div className="space-y-2 pt-1" data-festival-section="nearLeports">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearLeports')}
                     </p>
-                    {nearbyLeportsStatus === 'loading' && !belowSectionsLoading && (
-                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                          aria-hidden="true"
-                        />
-                        {t('korea.festival.detail.nearLeportsLoading')}
-                      </div>
-                    )}
                     {nearbyLeportsStatus === 'error' &&
                       nearbyLeports.length === 0 && (
                         <p className="text-xs text-stone-500">
@@ -2423,21 +2423,12 @@ export default function FestivalDetailSheet({
                 )}
 
               {nearbyCultureStatus !== 'idle' &&
-                nearbyCultureStatus !== 'nocoords' && (
+                nearbyCultureStatus !== 'nocoords' &&
+                nearbyCultureStatus !== 'loading' && (
                   <div className="space-y-2 pt-1" data-festival-section="nearCulture">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearCulture')}
                     </p>
-                    {nearbyCultureStatus === 'loading' && !belowSectionsLoading && (
-                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                          aria-hidden="true"
-                        />
-                        {t('korea.festival.detail.nearCultureLoading')}
-                      </div>
-                    )}
                     {nearbyCultureStatus === 'error' &&
                       nearbyCulture.length === 0 && (
                         <p className="text-xs text-stone-500">
@@ -2493,21 +2484,12 @@ export default function FestivalDetailSheet({
                 )}
 
               {nearbyCoursesStatus !== 'idle' &&
-                nearbyCoursesStatus !== 'noarea' && (
+                nearbyCoursesStatus !== 'noarea' &&
+                nearbyCoursesStatus !== 'loading' && (
                   <div className="space-y-2 pt-1" data-festival-section="nearCourses">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearCourses')}
                     </p>
-                    {nearbyCoursesStatus === 'loading' && !belowSectionsLoading && (
-                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                          aria-hidden="true"
-                        />
-                        {t('korea.festival.detail.nearCoursesLoading')}
-                      </div>
-                    )}
                     {nearbyCoursesStatus === 'error' &&
                       nearbyCourses.length === 0 && (
                         <p className="text-xs text-stone-500">
