@@ -519,7 +519,6 @@ test('settled no-photo nearby ids use landmark icon not grey pending', () => {
   );
   assert.match(placeholderFn, /data-nearby-thumb="empty"/);
   assert.match(placeholderFn, /Landmark/);
->>>>>>> 820b1831 (fix(site-qa): nearby no-photo rows show landmark icon after lookup)
 });
 
 test('early nearby rows pick up images without reordering', () => {
