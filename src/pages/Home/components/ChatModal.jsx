@@ -104,7 +104,10 @@ import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
-import { prepareFestivalMooniChatPayload } from '../lib/festivalMooniRequest';
+import {
+  buildFestivalMooniPolishOptions,
+  prepareFestivalMooniChatPayload,
+} from '../lib/festivalMooniRequest';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
@@ -163,34 +166,6 @@ async function loadFestivalAskContext(festivalContext, ask) {
     ...festivalContext,
     nearbyRestaurants: withFood?.nearbyRestaurants ?? festivalContext.nearbyRestaurants,
     nearbyStays: withStays?.nearbyStays ?? festivalContext.nearbyStays,
-  };
-}
-
-function festivalReplyOptions(festivalContext, extra = {}) {
-  return {
-    contentId: festivalContext?.contentId,
-    placeName: festivalContext?.hubLabel,
-    venue: festivalContext?.venue,
-    address: festivalContext?.address,
-    stayAreas: festivalContext?.stayAreas,
-    lat: festivalContext?.lat,
-    lng: festivalContext?.lng,
-    festivalTitle: festivalContext?.title,
-    nearbyPlaces: festivalContext?.nearbyPlaces,
-    nearbyRestaurants: festivalContext?.nearbyRestaurants,
-    nearbyStays: festivalContext?.nearbyStays,
-    homepage: festivalContext?.homepage,
-    tel: festivalContext?.tel,
-    parking: festivalContext?.parking,
-    overview: festivalContext?.sceneOverview || festivalContext?.overview,
-    program: festivalContext?.program,
-    sceneOverview: festivalContext?.sceneOverview,
-    feeText: festivalContext?.feeText,
-    timeText: festivalContext?.timeText,
-    eventStartDate: festivalContext?.eventStartDate,
-    eventEndDate: festivalContext?.eventEndDate,
-    dateLabel: festivalContext?.dateLabel,
-    ...extra,
   };
 }
 
@@ -1310,7 +1285,7 @@ const ChatModal = ({
         candidates: mooniFestivalCandidates,
       });
       const stripPhantomTicketMention = !hasTransportCta;
-      const lodgingOptions = festivalReplyOptions(festivalContext, {
+      const lodgingOptions = buildFestivalMooniPolishOptions(festivalContext, {
         locale: i18n.language,
         chipId,
         userText: cleanText,
@@ -1424,7 +1399,7 @@ const ChatModal = ({
           mooniPlaceContext?.festivalContext ?? null,
           { chipId: msg.bookingMeta?.chipId, userText: messageTextPlain(priorUser) },
         );
-        const lodgingOptions = festivalReplyOptions(festivalContext, {
+        const lodgingOptions = buildFestivalMooniPolishOptions(festivalContext, {
           locale: i18n.language,
           chipId: msg.bookingMeta?.chipId,
           userText: messageTextPlain(priorUser),

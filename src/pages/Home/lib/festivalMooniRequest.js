@@ -2,6 +2,7 @@ import {
   clearDomesticAirportDeparture,
   domesticFestivalGroundOrigin,
 } from './festivalDomesticOrigins.js';
+import { resolveFestivalMooniEventDates } from '../../Korea/lib/festivalMooniContext.js';
 import { extractMooniChipPromptFacts } from './mooniChipPrompts.js';
 import {
   extractMooniTripFacts,
@@ -97,5 +98,35 @@ export function prepareFestivalMooniChatPayload({
     chipFacts,
     modelUserText: alignGroundUserText(cleanText),
     groundOrigin,
+  };
+}
+
+/** Real chat polish options — SSOT dates and festival fields for `polishFestivalModelReply`. */
+export function buildFestivalMooniPolishOptions(festivalContext, extra = {}) {
+  const dates = festivalContext ? resolveFestivalMooniEventDates(festivalContext) : {};
+  return {
+    contentId: festivalContext?.contentId,
+    placeName: festivalContext?.hubLabel,
+    venue: festivalContext?.venue,
+    address: festivalContext?.address,
+    stayAreas: festivalContext?.stayAreas,
+    lat: festivalContext?.lat,
+    lng: festivalContext?.lng,
+    festivalTitle: festivalContext?.title,
+    nearbyPlaces: festivalContext?.nearbyPlaces,
+    nearbyRestaurants: festivalContext?.nearbyRestaurants,
+    nearbyStays: festivalContext?.nearbyStays,
+    homepage: festivalContext?.homepage,
+    tel: festivalContext?.tel,
+    parking: festivalContext?.parking,
+    overview: festivalContext?.sceneOverview || festivalContext?.overview,
+    program: festivalContext?.program,
+    sceneOverview: festivalContext?.sceneOverview,
+    feeText: festivalContext?.feeText,
+    timeText: festivalContext?.timeText,
+    eventStartDate: dates.eventStartDate,
+    eventEndDate: dates.eventEndDate,
+    dateLabel: dates.dateLabel,
+    ...extra,
   };
 }

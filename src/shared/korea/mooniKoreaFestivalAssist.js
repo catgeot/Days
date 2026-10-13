@@ -212,7 +212,33 @@ const NON_STAY_RE = /사우나|찜질|목욕탕|목욕|스파|sauna|jjimjilbang|
 const NON_STAY_ASK_RE = /사우나|찜질|목욕|스파|sauna|jjimjilbang|bathhouse/i;
 const BROADCAST_RE = /방청|공개\s*방송|시청자/;
 const BROADCAST_ASK_RE = /방청|공개\s*방송|시청자|KBS|MBC|SBS/;
-const TWELVE_GO_CTA_RE = /12\s*Go[^\n]{0,48}바로\s*가기|바로\s*가기[^\n]{0,48}12\s*Go|12go\.asia/i;
+const TWELVE_GO_CTA_RE =
+  /12\s*Go[^\n]{0,80}|12go\.asia|교통편\s*검색\s*\(?\s*12\s*Go\s*\)?|바로\s*가기[^\n]{0,48}12\s*Go|12\s*Go[^\n]{0,48}바로\s*가기/i;
+
+const FESTIVAL_OVERSEAS_AIR_CHIPS = new Set([
+  'festival_overseas_visa',
+  'festival_overseas_flight',
+  'festival_overseas_airport',
+]);
+
+function normalizeEventYmdForPolish(value) {
+  const raw = String(value || '').trim();
+  if (/^\d{8}$/.test(raw)) return raw;
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return `${iso[1]}${iso[2]}${iso[3]}`;
+  const digits = raw.replace(/\D/g, '');
+  return /^\d{8}$/.test(digits) ? digits : '';
+}
+
+function shouldPolishDomesticKoreaFestival(options = {}) {
+  const chipId = String(options.chipId || '');
+  if (FESTIVAL_OVERSEAS_AIR_CHIPS.has(chipId)) return false;
+  if (/인천\s*공항|인천국제공항|incheon airport/i.test(String(options.userText || ''))) return false;
+  return Boolean(
+    String(options.contentId || '').trim()
+    || String(options.festivalTitle || '').trim(),
+  );
+}
 
 /**
  * Lodging answers drop saunas and other non-stay facilities unless the user asked.
@@ -622,12 +648,31 @@ function dropFestivalPlannerSentences(text) {
   });
 }
 
+function stripChipLabelSentencesInLine(line) {
+  const parts = String(line || '').split(/(?<=[.!?。])\s+/);
+  const kept = parts.map((sentence) => {
+    let s = String(sentence || '').trim();
+    if (!s) return '';
+    if (isCtaSequence(normalizeCta(s))) return '';
+    s = stripTrailingChipLabelSuffix(s);
+    if (!s.trim()) return '';
+    if (isCtaSequence(normalizeCta(s))) return '';
+    return s;
+  }).filter(Boolean);
+  return kept.join(' ');
+}
+
 /** Chip headings, CTA labels, separator leftovers, and bracket phrases with no URL. */
 export function stripMooniUiChipLabels(text) {
   const lines = promoteDashListMarkers(text)
     .replace(/\[([^\]\n]+)\](?!\()/g, '')
     .split('\n')
-    .map((line) => (line.trim() ? stripPlannerResidueLine(stripCtaLine(line)) : ''));
+    .map((line) => {
+      if (!line.trim()) return '';
+      const stripped = stripPlannerResidueLine(stripCtaLine(line));
+      if (!stripped) return '';
+      return stripChipLabelSentencesInLine(stripped);
+    });
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
@@ -1046,6 +1091,15 @@ export function isFestivalAccessAsk(input = {}) {
   return festivalAccessAskIsRoute(String(input.userText || ''));
 }
 
+/** Access polish (행사 기간·booking footer) only when a Korea festival is bound in chat. */
+function isBoundFestivalAccessPolish(options = {}) {
+  if (!isFestivalAccessAsk(options)) return false;
+  return Boolean(
+    String(options.contentId || '').trim()
+    || String(options.festivalTitle || '').trim(),
+  );
+}
+
 function festivalTransportHasTagoRows(transport) {
   for (const origin of transport?.origins || []) {
     for (const segment of origin.segments || []) {
@@ -1305,18 +1359,25 @@ function softenNightHour(text) {
 }
 
 const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|숙소가\s*자리하고|매력을 느끼며|인근으로[\s\S]{0,40}숙소를\s*찾을\s*수\s*있|특별한 순간을 경험해|The atmosphere is majestic|a variety of stays|feel the charm|find stays in the .* area/i;
-const MOONI_GUIDE_FILLER_RE = /안내해\s*드릴게요|안내해\s*드리겠습니다|도와\s*드릴게요/;
+const MOONI_GUIDE_FILLER_RE =
+  /안내해\s*드릴게요|안내해\s*드리겠습니다|안내할게요|알려\s*드릴게요|알려드릴게요|도와\s*드릴게요/;
 
 function stripMooniGuideFiller(text) {
   return filterPreservingBreaks(text, (part) => MOONI_GUIDE_FILLER_RE.test(part));
 }
 
+function shortDateFromDateLabel(label) {
+  const match = String(label || '').trim().match(/(\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?)/);
+  return match ? match[1] : '';
+}
+
 function ensureFestivalAccessPeriodLine(text, options = {}) {
-  if (String(options.chipId || '') !== 'festival_access') return String(text || '').trim();
-  const short = briefFestivalDate(
-    String(options.eventStartDate || '').trim(),
-    String(options.eventEndDate || '').trim(),
-  ) || String(options.dateLabel || '').trim();
+  if (!isBoundFestivalAccessPolish(options)) return String(text || '').trim();
+  const startYmd = normalizeEventYmdForPolish(options.eventStartDate);
+  const endYmd = normalizeEventYmdForPolish(options.eventEndDate);
+  const short = briefFestivalDate(startYmd, endYmd)
+    || shortDateFromDateLabel(options.dateLabel)
+    || String(options.dateLabel || '').trim();
   if (!short || !/\d{1,2}\/\d{1,2}/.test(short)) return String(text || '').trim();
   let body = String(text || '').trim();
   if (body.includes(short)) return body;
@@ -1417,7 +1478,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = stripDisallowedFestivalLinks(text, options);
   text = stripMooniUiChipLabels(text);
   text = expandCompactDates(text, options.locale);
-  if (options.contentId) {
+  if (shouldPolishDomesticKoreaFestival(options)) {
     text = stripUnaskedBroadcastLines(text, options.userText);
     text = stripDomesticTwelveGoMention(text);
     text = stripDomesticEntryDocLines(text, options);
@@ -1436,7 +1497,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = polishWaAndGeurigoList(text);
     text = rewriteFoodEveningJoin(text);
     if (options.evening === false) text = stripUnverifiedEveningClause(text);
-    if (String(options.chipId || '') !== 'festival_access') {
+    if (!isBoundFestivalAccessPolish(options)) {
       text = stripTrailingFestivalDateSentence(text);
     }
     text = dropDateLinkFragmentSentences(text);
@@ -1458,7 +1519,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   if (String(options.locale || 'ko').slice(0, 2) !== 'en') {
     text = stripMooniGuideFiller(text);
   }
-  if (String(options.chipId || '') === 'festival_access') {
+  if (isBoundFestivalAccessPolish(options)) {
     text = ensureFestivalAccessPeriodLine(text, options);
     text = appendFestivalAccessBookingLinks(text, options.locale);
   }
@@ -1484,8 +1545,8 @@ function festivalAccessVenueGuidanceLines(ctx, locale = 'ko') {
   if (id === '638576' || /함평|국향/.test(blob)) {
     const addr = String(ctx?.address || '').trim();
     lines.push(en
-      ? `- Last leg: travelers care most about the hop from the station to the venue. The festival is at Hampyeong Expo Park${addr ? ` (${addr})` : ''}. After KTX/SRT to Gwangju Songjeong or Hampyeong Station, continue with local bus or taxi to the park, name the transfer point, and add a driving option. Hampyeong Station and Hampyeong public bus terminal are the usual local hops; say rough time as "about N minutes" only when helpful.`
-      : `- 마지막 구간: 여행자는 역에서 축제장까지 어떻게 가는지가 가장 궁금해요. 축제장은 함평엑스포공원${addr ? `(${addr})` : ''}이에요. 광주송정·함평역 등에 도착한 뒤 함평엑스포공원까지 버스·택시로 이어 주세요. 함평역·함평공용버스터미널에서 시내버스나 택시로 가는 경로를 짧게 안내하고, 자가용 옵션도 함께 말해 주세요. 대략 10~20분대(교통에 따라 다름)처럼만 말하고, 확인된 요금·시각만 쓰세요.`);
+      ? `- Last leg: travelers care most about the hop from the station to the venue. The festival is at Hampyeong Expo Park${addr ? ` (${addr})` : ''}. Do not say a direct KTX from Seoul or Yongsan to Hampyeong Station — long-distance KTX usually ends at Gwangju Songjeong (or Naju), then ITX/Mugunghwa to Hampyeong Station. Continue with local bus or taxi to the park, name the transfer point, and add a driving option. Hampyeong Station and Hampyeong public bus terminal are the usual local hops; say rough time as "about N minutes" only when helpful.`
+      : `- 마지막 구간: 여행자는 역에서 축제장까지 어떻게 가는지가 가장 궁금해요. 축제장은 함평엑스포공원${addr ? `(${addr})` : ''}이에요. 서울·용산에서 함평역까지 KTX 직행이라고 말하지 마세요. 장거리 KTX는 보통 광주송정(또는 나주)에서 내리고, 광주송정·나주에서 ITX·무궁화 등으로 함평역에 이어져요. 함평역·함평공용버스터미널에서 함평엑스포공원까지 시내버스·택시를 짧게 안내하고, 자가용 옵션도 함께 말해 주세요. 대략 10~20분대(교통에 따라 다름)처럼만 말하고, 확인된 요금·시각만 쓰세요.`);
   }
   if (id === '637693' || /해양누리|3·15|마산가고파|마산/.test(blob)) {
     lines.push(en

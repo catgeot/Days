@@ -28,6 +28,36 @@ const FESTIVAL_MOONI_EVENT_DATE_OVERRIDES = {
   638576: { eventStartDate: '20261023', eventEndDate: '20261108' },
 };
 
+/** API / promo strings → `YYYYMMDD` for mooni polish and hints. */
+export function normalizeFestivalEventYmd(value) {
+  const raw = String(value || '').trim();
+  if (/^\d{8}$/.test(raw)) return raw;
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return `${iso[1]}${iso[2]}${iso[3]}`;
+  const dotted = raw.match(/^(\d{4})\.(\d{2})\.(\d{2})/);
+  if (dotted) return `${dotted[1]}${dotted[2]}${dotted[3]}`;
+  const digits = raw.replace(/\D/g, '');
+  if (/^\d{8}$/.test(digits)) return digits;
+  return '';
+}
+
+/** Promo overrides win; values are normalized to `YYYYMMDD`. */
+export function resolveFestivalMooniEventDates(ctx = {}) {
+  const contentId = String(ctx.contentId || '').trim();
+  const override = FESTIVAL_MOONI_EVENT_DATE_OVERRIDES[contentId];
+  const eventStartDate = normalizeFestivalEventYmd(
+    override?.eventStartDate || ctx.eventStartDate,
+  );
+  const eventEndDate = normalizeFestivalEventYmd(
+    override?.eventEndDate || ctx.eventEndDate || eventStartDate,
+  );
+  return {
+    eventStartDate,
+    eventEndDate,
+    dateLabel: String(ctx.dateLabel || '').trim(),
+  };
+}
+
 /**
  * @param {{
  *   item?: Record<string, unknown>,

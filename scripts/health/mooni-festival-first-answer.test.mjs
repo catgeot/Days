@@ -95,7 +95,11 @@ import { GeminiProxyError } from '../../src/pages/Home/lib/geminiProxyError.js';
 import { getMooniModelMarkdownForRender } from '../../src/pages/Home/lib/mooniModelMessageText.js';
 import { renderChipHint, renderFestivalFirstAnswer, renderMooniSystem } from '../../supabase/functions/_shared/gemini/templates.js';
 import { extractMooniChipPromptFacts } from '../../src/pages/Home/lib/mooniChipPrompts.js';
-import { prepareFestivalMooniChatPayload } from '../../src/pages/Home/lib/festivalMooniRequest.js';
+import {
+  buildFestivalMooniPolishOptions,
+  prepareFestivalMooniChatPayload,
+} from '../../src/pages/Home/lib/festivalMooniRequest.js';
+import { normalizeFestivalEventYmd } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 import { hasMooniTripSessionFacts } from '../../src/pages/Home/lib/mooniTripSession.js';
 import { countMooniPlannerHeaderGuidance } from '../../supabase/functions/_shared/gemini/mooniChatPlannerHeaderPrompt.js';
 
@@ -126,6 +130,12 @@ test('promo festival mooni context uses social promo dates when API lags', () =>
   });
   assert.equal(masan.eventStartDate, '20261031');
   assert.equal(masan.eventEndDate, '20261108');
+});
+
+test('normalizeFestivalEventYmd accepts ISO and compact API strings', () => {
+  assert.equal(normalizeFestivalEventYmd('20261031'), '20261031');
+  assert.equal(normalizeFestivalEventYmd('2026-10-31'), '20261031');
+  assert.equal(normalizeFestivalEventYmd(''), '');
 });
 
 test('festival opening is sentences with dates, link, and no filler', () => {
@@ -583,6 +593,8 @@ test('festival access hint urges real routes when TAGO times are missing', async
   assert.doesNotMatch(gukhyang.hint, /^- 개요:/m);
   assert.match(gukhyang.hint, /함평역/);
   assert.match(gukhyang.hint, /역에서 축제장까지/);
+  assert.match(gukhyang.hint, /KTX 직행이라고 말하지 마세요/);
+  assert.match(gukhyang.hint, /광주송정/);
   const masan = await resolveMooniChatKoreaFestivalHint({
     chipId: 'festival_access',
     userText: '부산에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
@@ -1047,6 +1059,14 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   const twelve = stripDomesticTwelveGoMention('버스가 있어요. 12Go 바로가기로 예매하세요.');
   assert.match(twelve, /버스/);
   assert.doesNotMatch(twelve, /12Go/);
+  const twelveSearch = polishFestivalModelReply('버스도 있어요. 교통편 검색(12Go)에서 확인하세요.', {
+    contentId: '637693',
+    locale: 'ko',
+    chipId: 'festival_access',
+    userText: buildFestivalAccessAskText('daegu', 'ko'),
+  });
+  assert.match(twelveSearch, /버스/);
+  assert.doesNotMatch(twelveSearch, /12Go|12go/i);
   const invented = polishFestivalModelReply(
     '버스가 있어요. [강릉행 교통편 확인](https://www.gateo.kr/) [출발 전 준비] [교통 · 티켓]',
     { contentId: '2930716', locale: 'ko', userText: '근처' },
@@ -1085,7 +1105,14 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   );
   const accessChipTail = polishFestivalModelReply(
     'KTX로 광명에서 출발해요.\n\n열차·버스 시각은 [코레일](https://www.letskorail.com/)에서 확인할 수 있어요. 교통 · 티켓 |',
-    { chipId: 'festival_access', locale: 'ko', userText: '인천에서 가는 법' },
+    {
+      chipId: 'festival_access',
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '인천에서 가는 법',
+      eventStartDate: '20261015',
+      eventEndDate: '20261018',
+    },
   );
   assert.match(accessChipTail, /KTX로 광명에서 출발해요/);
   assert.doesNotMatch(accessChipTail, /교통\s*·\s*티켓/);
@@ -2566,10 +2593,22 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     userText: '서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
   });
   assert.doesNotMatch(typedRouteFooter, /버스타고/);
+  const typedRouteBound = polishFestivalModelReply('서울에서 열차로 갑니다.', {
+    locale: 'ko',
+    contentId: '2930716',
+    userText: '서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+    eventStartDate: '20261015',
+    eventEndDate: '20261018',
+  });
+  assert.match(typedRouteBound, /버스타고/);
+  assert.match(typedRouteBound, /행사 기간은 10\/15~18/);
   const accessPolished = polishFestivalModelReply('서울에서 열차로 갑니다.', {
     chipId: 'festival_access',
+    contentId: '2930716',
     locale: 'ko',
     userText: '서울에서 가는 법',
+    eventStartDate: '20261015',
+    eventEndDate: '20261018',
   });
   assert.match(accessPolished, /버스타고/);
 
@@ -2793,6 +2832,7 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
 
   const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
   assert.equal((chat.match(/loadFestivalAskContext/g) || []).length >= 3, true);
+  assert.match(chat, /buildFestivalMooniPolishOptions/);
   assert.match(chat, /loadFestivalRestaurantsForAsk/);
   assert.match(chat, /loadFestivalLodgingForAsk/);
   const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
@@ -2824,8 +2864,28 @@ test('festival page link appears once and the closing link stays', () => {
   });
   assert.doesNotMatch(fillerOnly, /가는 길을/);
   assert.doesNotMatch(fillerOnly, /안내해\s*드릴게요/);
+  const fillerAnnye = polishFestivalModelReply('대구에서 마산역까지 경로를 안내할게요.', {
+    chipId: 'festival_access',
+    locale: 'ko',
+    contentId: '637693',
+  });
+  assert.doesNotMatch(fillerAnnye, /안내할게요/);
+  const chipLeak = polishFestivalModelReply(
+    '동대구역에서 KTX로 마산역에 도착해요. 교통 · 티켓 출발 전 준비',
+    {
+      contentId: '637693',
+      locale: 'ko',
+      chipId: null,
+      userText: buildFestivalAccessAskText('daegu', 'ko'),
+      eventStartDate: '20261031',
+      eventEndDate: '20261108',
+    },
+  );
+  assert.match(chipLeak, /마산역/);
+  assert.doesNotMatch(chipLeak, /교통\s*·\s*티켓|출발 전 준비/);
   const accessPeriod = polishFestivalModelReply('서울역에서 KTX로 출발해요.', {
     chipId: 'festival_access',
+    contentId: '2930716',
     locale: 'ko',
     eventStartDate: '20261010',
     eventEndDate: '20261012',
@@ -2858,6 +2918,54 @@ test('festival page link appears once and the closing link stays', () => {
   assert.equal((opening.match(/festival=2930716/g) || []).length, 1);
   assert.match(opening, /자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요/);
   assert.doesNotMatch(opening, /강릉 국수 축제 페이지\]/);
+});
+
+test('festival access polish path adds 행사 기간 from real mooni context', () => {
+  const busanFixture = JSON.parse(
+    readFileSync(join(root, 'scripts/staging/fixtures/festival-opening/2855626.json'), 'utf8'),
+  );
+  const cases = [
+    buildFestivalMooniContext({
+      item: {
+        contentId: '637693',
+        title: '마산가고파국화축제',
+        eventStartDate: '2026-10-26',
+        eventEndDate: '2026-11-03',
+      },
+      intro: { eventplace: '3·15해양누리공원' },
+    }),
+    buildFestivalMooniContext({
+      item: {
+        contentId: '638576',
+        title: '국향대전',
+        eventStartDate: '20261023',
+        eventEndDate: '20261108',
+        addr1: '전라남도 함평군 함평읍 수호리',
+      },
+      intro: { eventplace: '함평엑스포공원' },
+    }),
+    buildFestivalMooniContext(busanFixture),
+  ];
+  for (const ctx of cases) {
+    const prepared = prepareFestivalMooniChatPayload({
+      festivalContext: true,
+      userText: buildFestivalAccessAskText('daegu', 'ko'),
+      chipId: null,
+      destinationName: ctx.title,
+    });
+    const polishOpts = buildFestivalMooniPolishOptions(ctx, {
+      locale: 'ko',
+      chipId: prepared.chipFacts?.chipId ?? null,
+      userText: prepared.modelUserText,
+    });
+    assert.ok(polishOpts.eventStartDate, `start date for ${ctx.contentId}`);
+    const polished = polishFestivalModelReply('대중교통으로 갈 수 있어요.', polishOpts);
+    assert.match(
+      polished,
+      /행사 기간은 \d{1,2}\/\d{1,2}/,
+      `행사 기간 line missing for ${ctx.contentId}: ${polished}`,
+    );
+  }
 });
 
 test('desktop and mobile place entry open bound MOONi', () => {
