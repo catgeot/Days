@@ -22,6 +22,7 @@ import {
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
@@ -120,6 +121,8 @@ import {
   isFestivalEnded,
 } from './festivalDeepLinkItem';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
+import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
+import { FestivalHeroPhoto } from './festivalHeroPhoto';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -550,6 +553,7 @@ export default function FestivalDetailSheet({
   onOpenHub: _onOpenHub,
 }) {
   const { t } = useTranslation();
+  useTrustBarOverlayLockEffect(Boolean(item) || pending);
   const navigate = useNavigate();
   const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
@@ -577,9 +581,9 @@ export default function FestivalDetailSheet({
   const [common, setCommon] = useState(null);
   const [infoItems, setInfoItems] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
+  const [heroStrip, setHeroStrip] = useState({ loadedCount: 0, loadedUrls: [] });
   const [detailLoading, setDetailLoading] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
-  const [heroBox, setHeroBox] = useState(0);
   const heroColRef = useRef(null);
   const heroColMin = useRef(0);
   const detailSlotRef = useRef(null);
@@ -596,7 +600,6 @@ export default function FestivalDetailSheet({
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [heroImageBroken, setHeroImageBroken] = useState(false);
   const [mooniOpen, setMooniOpen] = useState(false);
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
@@ -1003,7 +1006,6 @@ export default function FestivalDetailSheet({
       imageOwnerRef.current = String(contentId);
       setImageUrls(seeded);
       setHeroReady(seeded.length === 0);
-      setHeroBox(0);
       if (!prefetchMatches) {
         setIntro(null);
         setCommon(null);
@@ -1072,11 +1074,24 @@ export default function FestivalDetailSheet({
     };
   }, [item?.contentId, item?.firstimage, item?.imageUrl, item?.firstimage2]);
 
+  const onHeroStripChange = useCallback((next) => {
+    setHeroStrip((prev) => {
+      const prevKey = prev.loadedUrls.join('\n');
+      const nextKey = next.loadedUrls.join('\n');
+      if (prev.loadedCount === next.loadedCount && prevKey === nextKey) return prev;
+      return { loadedCount: next.loadedCount, loadedUrls: next.loadedUrls };
+    });
+  }, []);
+
   if (detailMinOwner.current !== String(item?.contentId || '')) {
     detailMinOwner.current = String(item?.contentId || '');
     detailMinPx.current = 0;
     heroColMin.current = 0;
+    if (heroStrip.loadedCount !== 0 || heroStrip.loadedUrls.length) {
+      setHeroStrip({ loadedCount: 0, loadedUrls: [] });
+    }
   }
+  if (heroStrip.loadedCount <= 1) heroColMin.current = 0;
 
   useLayoutEffect(() => {
     const el = detailSlotRef.current;
@@ -1086,12 +1101,16 @@ export default function FestivalDetailSheet({
   }, [detailLoading, item?.contentId]);
 
   useLayoutEffect(() => {
+    if (heroStrip.loadedCount <= 1) {
+      heroColMin.current = 0;
+      return;
+    }
     const heading = document.querySelector('[data-nearby-heading]');
     const col = heroColRef.current;
     if (!heading || !col) return;
     const height = Math.ceil(col.getBoundingClientRect().height);
     if (height > heroColMin.current) heroColMin.current = height;
-  }, [heroReady, detailLoading, imageUrls.length, heroBox, item?.contentId]);
+  }, [heroReady, detailLoading, imageUrls.length, item?.contentId, heroStrip.loadedCount]);
 
   const {
     transformStyle: lightboxTransformStyle,
@@ -1622,10 +1641,6 @@ export default function FestivalDetailSheet({
     };
   }, [item?.contentId, showFestivalStayStrip]);
 
-  useEffect(() => {
-    setHeroImageBroken(false);
-  }, [activeImage, imageUrls]);
-
   const festivalEnded = isFestivalEnded(item?.eventEndDate || intro?.eventEndDate);
 
   if (!item) {
@@ -1644,6 +1659,12 @@ export default function FestivalDetailSheet({
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
+  const photoStripMode = festivalHeroStripMode(
+    heroStrip.loadedCount,
+    detailLoading,
+    imageUrls.length,
+  );
+  const loadedPhotoIndex = heroStrip.loadedUrls.indexOf(hero);
   const koTitle = String(item?.title || common?.title || '').trim();
   const displayTitle =
     festivalMapTitle(item, locale) ||
@@ -1732,7 +1753,12 @@ export default function FestivalDetailSheet({
           <div
             ref={heroColRef}
             className="relative flex shrink-0 flex-col md:w-[46%] lg:w-1/2 md:min-h-0 md:self-stretch bg-stone-100"
-            style={heroColMin.current > 0 ? { minHeight: heroColMin.current } : undefined}
+            data-festival-photo-strip={photoStripMode}
+            style={
+              heroStrip.loadedCount > 1 && heroColMin.current > 0
+                ? { minHeight: heroColMin.current }
+                : undefined
+            }
           >
             <button
               type="button"
@@ -1746,49 +1772,33 @@ export default function FestivalDetailSheet({
               onTouchStart={onHeroTouchStart}
               onTouchEnd={onHeroTouchEnd}
               onTouchCancel={onHeroTouchCancel}
-              className="group relative flex w-full items-center justify-center overflow-hidden bg-stone-200/70 text-left touch-pan-y md:min-h-0 md:flex-1 md:overflow-hidden"
-              style={heroBox ? { height: heroBox } : { minHeight: 'min(40vh, 18rem)' }}
+              className="group relative flex h-[min(40vh,18rem)] w-full shrink-0 items-center justify-center overflow-hidden bg-stone-200/70 text-left touch-pan-y md:h-auto md:min-h-[12rem] md:flex-1 md:overflow-hidden"
               aria-label={
                 imageUrls.length > 1
                   ? t('korea.festival.detail.heroExpandSwipe')
                   : t('korea.festival.detail.heroExpand')
               }
             >
-              {hero && !heroImageBroken ? (
-                <img
-                  src={hero}
-                  alt=""
-                  draggable={false}
-                  fetchPriority="high"
-                  decoding="async"
-                  onLoad={(event) => {
-                    setHeroReady(true);
-                    const button = event.currentTarget.closest('button');
-                    const height = Math.round(button?.getBoundingClientRect().height || 0);
-                    if (height > 0) setHeroBox((prev) => prev || height);
-                  }}
-                  onError={(event) => {
-                    if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
-                    setHeroImageBroken(true);
-                    setHeroReady(true);
-                  }}
-                  className="h-auto w-full max-h-[min(52vh,28rem)] object-contain pointer-events-none select-none md:max-h-full md:h-full md:w-full"
-                />
-              ) : (
-                <div
-                  className="flex h-[min(40vh,18rem)] w-full items-center justify-center bg-stone-200/80 text-stone-500 md:h-full md:min-h-[12rem]"
-                  aria-hidden="true"
-                >
-                  <Star size={32} strokeWidth={1.5} className="opacity-40" />
-                </div>
-              )}
+              <FestivalHeroPhoto
+                src={hero}
+                onSettled={() => setHeroReady(true)}
+                fallback={(
+                  <div
+                    className="absolute inset-0 flex items-center justify-center bg-stone-200/80 text-stone-500"
+                    data-festival-hero-fallback=""
+                    aria-hidden="true"
+                  >
+                    <Star size={32} strokeWidth={1.5} className="opacity-40" />
+                  </div>
+                )}
+              />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
                 <Expand size={13} aria-hidden="true" />
                 {t('korea.festival.detail.expandView')}
               </span>
-              {imageUrls.length > 1 && (
+              {photoStripMode === 'open' && (
                 <span className="absolute bottom-3 right-3 rounded-full bg-stone-900/55 px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
-                  {activeImage + 1}/{imageUrls.length}
+                  {(loadedPhotoIndex >= 0 ? loadedPhotoIndex : 0) + 1}/{heroStrip.loadedCount}
                 </span>
               )}
             </button>
@@ -1801,56 +1811,16 @@ export default function FestivalDetailSheet({
                 <div className="h-14 w-14 shrink-0" />
               </div>
             )}
-            {!detailLoading && imageUrls.length <= 1 && heroColMin.current > 0 && heroBox > 0 && (
-              <div
-                className="shrink-0 bg-white"
-                style={{ height: Math.max(0, heroColMin.current - heroBox) }}
-                aria-hidden="true"
-              />
-            )}
-            {imageUrls.length > 1 && (
-              <div
-                className="flex gap-2 overflow-x-auto px-4 md:px-4 py-2.5 md:py-3 border-b border-stone-100 md:border-b-0 md:border-t md:border-stone-200/80 bg-white md:bg-stone-50 custom-scrollbar"
-                role="listbox"
-                aria-label={t('korea.festival.detail.photosAria')}
-              >
-                {imageUrls.map((url, index) => {
-                  const selected = index === activeImage;
-                  return (
-                    <button
-                      key={`${url}-${index}`}
-                      type="button"
-                      role="option"
-                      aria-selected={selected}
-                      onClick={() => setActiveImage(index)}
-                      onDoubleClick={() => {
-                        setActiveImage(index);
-                        setLightboxOpen(true);
-                      }}
-                      className={[
-                        'relative h-14 w-14 md:h-16 md:w-16 shrink-0 overflow-hidden rounded-xl border bg-stone-200 transition-colors',
-                        selected
-                          ? 'border-amber-500 ring-2 ring-amber-200'
-                          : 'border-stone-200 opacity-85 hover:opacity-100',
-                      ].join(' ')}
-                    >
-                      <FestivalPhotoFrame
-                        src={resolveListImageUrl(url, { role: 'list' })}
-                        alt=""
-                        className="absolute inset-0 h-full w-full object-cover"
-                        fallback={
-                          <div
-                            className="absolute inset-0 bg-stone-200"
-                            data-festival-photo-fallback=""
-                            aria-hidden="true"
-                          />
-                        }
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            <FestivalHeroThumbStrip
+              urls={imageUrls}
+              detailLoading={detailLoading}
+              activeIndex={activeImage}
+              onSelect={setActiveImage}
+              onOpen={() => setLightboxOpen(true)}
+              resolveSrc={(url) => resolveListImageUrl(url, { role: 'list' })}
+              photosAria={t('korea.festival.detail.photosAria')}
+              onStripChange={onHeroStripChange}
+            />
           </div>
         ) : null}
 
