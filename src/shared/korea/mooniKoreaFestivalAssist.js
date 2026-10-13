@@ -2061,6 +2061,22 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
       : '- 국내 축제다. 사용자가 비자·입국을 묻지 않으면 입국 증빙·입국 심사를 말하지 않는다.',
   );
 
+  const transportLines = [];
+  for (const origin of ctx?.transport?.origins || []) {
+    for (const segment of origin.segments || []) {
+      for (const row of segment.rows || []) {
+        const bits = [row.grade, row.clock, row.duration, row.fare, row.count].filter(Boolean);
+        if (!bits.length) continue;
+        transportLines.push(`${segment.dep}→${segment.arr} ${bits.join(' ')}`);
+      }
+    }
+  }
+  if (transportLines.length) {
+    lines.push(isEn
+      ? `- Confirmed trains and buses. Say only these times and fares: ${transportLines.join(' | ')}`
+      : `- 확인된 열차·버스. 이 시각과 요금만 말한다: ${transportLines.join(' | ')}`);
+  }
+
   const timeText = String(ctx?.timeText || '').trim();
   if (timeText) lines.push(isEn ? `- Hours: ${timeText}` : `- 시간: ${timeText}`);
 

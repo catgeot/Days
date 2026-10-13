@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { micromark } from 'micromark';
 import { gfm, gfmHtml } from 'micromark-extension-gfm';
+import mooniRemarkGfm, { mooniRemarkGfmHtml } from '../../src/components/chat/mooniRemarkGfm.js';
 import { getMooniModelMarkdownForRender } from '../../src/pages/Home/lib/mooniModelMessageText.js';
 import { mergeMooniContinuation } from '../../src/utils/mooniTruncatedContinue.js';
 
@@ -113,6 +114,24 @@ test('paragraph after a bullet list stays out of the last bullet', () => {
   const html = renderMooniMarkdownHtml(md);
   assert.match(html, /<\/ul>\s*<p>다음으로/);
   assert.doesNotMatch(html, /<li>[^<]*다음으로/);
+});
+
+function renderWithMooniGfm(markdown) {
+  const store = {};
+  mooniRemarkGfm.call({ data: () => store });
+  return micromark(markdown, {
+    extensions: store.micromarkExtensions,
+    htmlExtensions: [mooniRemarkGfmHtml({ singleTilde: false })],
+  });
+}
+
+test('train ranges keep single tildes and do not strikethrough', () => {
+  const line = '서울에서 마산까지 KTX-산천, 05:03~20:38, 3시간 4분~3시간 12분, 48,100원, 6회예요.';
+  const html = renderWithMooniGfm(line);
+  assert.match(html, /05:03~20:38/);
+  assert.match(html, /3시간 4분~3시간 12분/);
+  assert.doesNotMatch(html, /<del/);
+  assert.match(renderWithMooniGfm('~~취소~~'), /<del>취소<\/del>/);
 });
 
 test('ensureItineraryMarkdownLineBreaks — non-itinerary reply unchanged', () => {

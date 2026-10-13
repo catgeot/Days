@@ -55,6 +55,13 @@ import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
+import {
+  createMooniSendGate,
+  festivalAccessAskFragment,
+  festivalAccessAskIsRoute,
+  planFestivalMooniModelCall,
+  transportForFestivalAsk,
+} from '../../Korea/lib/festivalTransportCard.js';
 import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
 import {
   festivalTripMatchesLocale,
@@ -233,6 +240,8 @@ const ChatModal = ({
   const lastInitialQueryTextRef = useRef('');
   const mobileDockBlurTimerRef = useRef(null);
   const tripSessionRef = useRef(null);
+  const sendGateRef = useRef(null);
+  if (!sendGateRef.current) sendGateRef.current = createMooniSendGate();
 
   const collapseMobileDockInput = useCallback(() => {
     if (mobileDockBlurTimerRef.current) {
@@ -975,8 +984,10 @@ const ChatModal = ({
   ]);
 
   const handleSend = useCallback(async (text, personaOverride = null, sendOptions = null) => {
-    if (!text?.trim() || isLoading) return;
+    if (!text?.trim()) return;
+    if (!sendGateRef.current.tryBegin()) return;
 
+    try {
     const rawText = typeof text === 'object' ? (text.text || t('mooni.chat.questionUnreadable')) : text;
     const sessionBoundEarly = activeSessionPlace?.name
       ? {
@@ -1019,9 +1030,13 @@ const ChatModal = ({
     const accessRoute = isAccessRouteQuery(cleanText);
     const ferryRoute = isFerryRouteQuery(cleanText);
     const explicitDeparture = String(sendOptions?.departureLabel || '').trim();
-    const departureLabel = (explicitDeparture || accessRoute)
+    const stationAsk = festivalAccessAskFragment(cleanText);
+    const festivalRouteAsk = Boolean(mooniPlaceContext?.festivalContext)
+      && (accessRoute || festivalAccessAskIsRoute(cleanText));
+    const airportDeparture = (explicitDeparture || accessRoute)
       ? resolveDepartureLabelFromChat(cleanText, messages, { departureLabel: explicitDeparture })
       : null;
+    const departureLabel = airportDeparture || (festivalRouteAsk && stationAsk ? stationAsk : null);
 
     let resolution = resolveDestinationFromChat(cleanText, messages, currentDest);
 
@@ -1106,7 +1121,6 @@ const ChatModal = ({
         mooniPromptText: promptText,
       });
       if (!created?.id) {
-        setIsLoading(false);
         setMessages((prev) => (prev.length > 0 ? prev.slice(0, -1) : []));
         return;
       }
@@ -1117,7 +1131,6 @@ const ChatModal = ({
 
     onUpdateChat(effectiveChatId, newMessages);
 
-    try {
       const destForPrompt =
         placeBound?.name ||
         (sessionDest === 'MOONi'
@@ -1211,6 +1224,20 @@ const ChatModal = ({
       }
 
       const showPlannerHeader = mooniChatShowsPlannerHeaderButton(boundDestinationSlug);
+      const cardTransport = chipId === MOONI_CHIP_IDS.FESTIVAL_ACCESS
+        || festivalAccessAskIsRoute(cleanText);
+      const transport = cardTransport
+        ? await transportForFestivalAsk(festivalContext, i18n.language)
+        : festivalContext?.transport;
+      const planned = planFestivalMooniModelCall({
+        chipId,
+        userText: cleanText,
+        transport,
+        useCardTransport: sendOptions?.useCardTransport === true,
+        locale: i18n.language,
+        stations: prepared.groundOrigin?.stationsKo || '',
+      });
+      const groundedReply = planned.reply;
 
       const geminiParams = {
         locale: i18n.language,
@@ -1229,17 +1256,21 @@ const ChatModal = ({
       };
 
       const modelUserText = prepared.modelUserText;
-      const geminiResult = await invokeMooniChatToleratingChip(
-        (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
-        {
-          ...geminiParams,
-          history,
-          userText: modelUserText,
-        },
-      );
-      const aiReply = geminiResult.text;
+      const geminiResult = planned.callModel
+        ? await invokeMooniChatToleratingChip(
+          (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
+          {
+            ...geminiParams,
+            history,
+            userText: modelUserText,
+          },
+        )
+        : { text: groundedReply, truncated: false, finishReason: 'stop' };
+      const aiReply = groundedReply || geminiResult.text;
 
-      const booking = resolveChatBookingActions({
+      const booking = groundedReply
+        ? { show: false, actions: [], plannerUrl: null, slug: null, itineraryBookingCompact: false }
+        : resolveChatBookingActions({
         userText: cleanText,
         destinationName: destName,
         slug,
@@ -1256,22 +1287,24 @@ const ChatModal = ({
           a.provider
         )
       );
-      const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
-        candidates: mooniFestivalCandidates,
-      });
+      const festivalMergedReply = groundedReply
+        ? groundedReply
+        : mergeMooniKoreaFestivalReply(aiReply, {
+          candidates: mooniFestivalCandidates,
+        });
       const stripPhantomTicketMention = !hasTransportCta;
       const lodgingOptions = festivalReplyOptions(festivalContext, {
         locale: i18n.language,
         chipId,
         userText: cleanText,
       });
-      const displayReply = polishFestivalModelReply(
+      const displayReply = groundedReply || polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {
           stripPhantomTicketMention,
         }),
         lodgingOptions,
       );
-      const rawWithLodging = polishFestivalModelReply(festivalMergedReply, lodgingOptions);
+      const rawWithLodging = groundedReply || polishFestivalModelReply(festivalMergedReply, lodgingOptions);
       const { hadBracketLinks } = sanitizeMooniModelReply(rawWithLodging, {
         stripPhantomTicketMention,
       });
@@ -1330,10 +1363,10 @@ const ChatModal = ({
       const role = error instanceof GeminiProxyError && error.kind === 'budget' ? 'model' : 'error';
       setMessages((prev) => [...prev, { role, text }]);
     } finally {
+      sendGateRef.current.end();
       setIsLoading(false);
     }
   }, [
-    isLoading,
     currentPersona,
     messages,
     activeChatId,
@@ -1448,7 +1481,21 @@ const ChatModal = ({
       chips: dockChips,
       onSelect: (text, persona, chip) =>
         handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
-      onDrillDown: (parentId) => setTopicDockParent(parentId),
+      onDrillDown: (parentId) => {
+        setTopicDockParent(parentId);
+        if (parentId !== FESTIVAL_ACCESS_PARENT) return;
+        const label = String(festivalMooniContext?.transport?.selected?.label || '').trim();
+        if (!label) return;
+        handleSend(
+          `${label}에서 이 축제장까지 확인된 열차와 버스 시각을 알려줘`,
+          PERSONA_TYPES.PLANNER,
+          {
+            chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS,
+            useCardTransport: true,
+            departureLabel: label,
+          },
+        );
+      },
       onBack: topicDockParent ? () => setTopicDockParent(null) : undefined,
       parentL1Label: topicDockParent
         ? getMooniL1ChipLabel(topicDockParent, { mobile: true })
@@ -1472,6 +1519,7 @@ const ChatModal = ({
       topicDockPrompt,
       showTopicDockPrompt,
       isMooniUi,
+      festivalMooniContext,
     ]
   );
 
@@ -1811,7 +1859,9 @@ const ChatModal = ({
                     ) : null}
                     {msg.role === 'user' ? 'Me' : 'MOONi'}
                   </span>
-                  <div className={`p-4 rounded-2xl text-base shadow-md w-full ${
+                  <div
+                    data-testid={isModelMsg ? 'mooni-model-reply' : undefined}
+                    className={`p-4 rounded-2xl text-base shadow-md w-full ${
                     msg.role === 'user'
                       ? tone(fresh, 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm', 'max-w-full md:max-w-[80%] bg-gradient-to-br from-sky-500 to-cyan-500 text-white rounded-tr-sm')
                       : msg.role === 'error'
