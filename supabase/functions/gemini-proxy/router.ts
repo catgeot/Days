@@ -23,6 +23,7 @@ import {
 } from "../_shared/gemini/origin.ts";
 import { GEMINI_FAST } from "../_shared/geminiModels.ts";
 import { acceptProxyParts, buildLegacy, buildTask, estimatePromptTokens } from "../_shared/gemini/tasks.ts";
+import { loadProjectJwks, resolveRateLimitIdentity } from "../_shared/gemini/userJwt.js";
 
 const ALLOW_HEADERS = "authorization, x-client-info, apikey, content-type";
 const GENERAL_MAX = 64 * 1024;
@@ -33,6 +34,8 @@ export type ProxyDeps = {
   env?: ProxyEnv;
   fetchImpl?: typeof fetch;
   now?: () => number;
+  /** Test override. Production loads the project JWKS. */
+  jwks?: Array<Record<string, string>>;
 };
 
 function envOf(deps: ProxyDeps): ProxyEnv {
@@ -156,7 +159,30 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     return jsonResponse(403, { success: false, error: "origin_not_allowed" }, origin, false);
   }
 
-  const claims = readJwtClaims(req);
+  const gatewayClaims = readJwtClaims(req);
+  const presentedUserJwt = typeof body.userJwt === "string" ? body.userJwt : "";
+  let jwksError = false;
+  let jwks = deps.jwks;
+  if (presentedUserJwt && !jwks) {
+    try {
+      jwks = await loadProjectJwks(fetchImpl, env.SUPABASE_URL ?? "", deps.now?.() ?? Date.now());
+    } catch {
+      jwksError = true;
+      jwks = [];
+    }
+  }
+  const identity = await resolveRateLimitIdentity({
+    authorizationRole: gatewayClaims.role,
+    authorizationSub: gatewayClaims.sub,
+    userJwt: jwksError ? "" : presentedUserJwt,
+    jwks: jwks ?? [],
+    nowSec: Math.floor((deps.now?.() ?? Date.now()) / 1000),
+  });
+  const claims = { role: identity.role, sub: identity.sub };
+  const userJwtState = jwksError ? "jwks_unavailable" : identity.userJwt;
+  if (userJwtState === "rejected" || userJwtState === "jwks_unavailable") {
+    logLine({ task: taskName || "legacy", userJwt: userJwtState });
+  }
   const legacyEnabled = env.GEMINI_PROXY_LEGACY !== "off";
   const built = isTask
     ? buildTask(taskName, body.params, claims.role)
