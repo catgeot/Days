@@ -4,6 +4,8 @@ import { join } from 'node:path';
 
 const OUT_DIR = '/opt/cursor/artifacts/screenshots/gukhyang-manual-638576';
 const GUKHYANG_ID = '638576';
+const LOADING_DETAIL_RE = /상세 불러오는 중|Loading detail/i;
+const LOADING_SCHEDULE_RE = /축제 일정을 불러오는 중|Loading festival schedule/i;
 
 async function dismissLocHint(page) {
   const close = page
@@ -41,6 +43,46 @@ async function ensureFestivalWindowLoaded(page) {
   });
 }
 
+async function waitForDecodedFestivalPhoto(page, locator, { timeout = 120_000 } = {}) {
+  await expect(locator).toBeVisible({ timeout });
+  await expect(async () => {
+    const nw = await locator.evaluate((el) => el.naturalWidth);
+    expect(nw, 'festival photo naturalWidth').toBeGreaterThan(0);
+  }).toPass({ timeout });
+}
+
+async function waitForFestivalDetailBody(page, { timeout = 120_000 } = {}) {
+  const dialog = page.getByRole('dialog').first();
+  await expect(dialog).toBeVisible({ timeout });
+  await expect(page.getByText(LOADING_SCHEDULE_RE)).toHaveCount(0, { timeout });
+  await expect(dialog.getByText(LOADING_DETAIL_RE)).toHaveCount(0, { timeout });
+  const loaded = dialog
+    .getByRole('tab', { name: /정보|Info/i })
+    .or(dialog.getByText(/개요|Overview/i))
+    .or(dialog.locator('[data-festival-detail-asof]'));
+  await expect(loaded.first()).toBeVisible({ timeout });
+  return dialog;
+}
+
+async function waitForPromoThumbDecoded(page, contentId = GUKHYANG_ID) {
+  const card = page.locator(`[data-social-promo-card][data-festival-id="${contentId}"]`);
+  await expect(card).toBeVisible({ timeout: 120_000 });
+  const img = card.locator('img[data-festival-photo]');
+  await waitForDecodedFestivalPhoto(page, img);
+}
+
+async function openMooniFromDetail(page) {
+  const mooniBtn = page
+    .locator('[data-festival-mooni-inline]')
+    .or(page.getByRole('button', { name: /무니에게 이 축제 물어보기/i }))
+    .first();
+  await expect(mooniBtn).toBeVisible({ timeout: 60_000 });
+  await mooniBtn.click();
+  await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({
+    timeout: 120_000,
+  });
+}
+
 test.describe('gukhyang manual — real TourAPI @390 webkit', () => {
   test.use({
     viewport: { width: 390, height: 844 },
@@ -64,6 +106,7 @@ test.describe('gukhyang manual — real TourAPI @390 webkit', () => {
     await expect(page.locator(`[data-social-promo-card][data-festival-id="${GUKHYANG_ID}"]`)).toBeVisible({
       timeout: 60_000,
     });
+    await waitForPromoThumbDecoded(page);
     await expect(async () => {
       const count = await page.locator(`[data-festival-id="${GUKHYANG_ID}"]`).count();
       expect(count).toBe(1);
@@ -81,16 +124,50 @@ test.describe('gukhyang manual — real TourAPI @390 webkit', () => {
     await shot(page, 'gyeongnam-list-single-promo-390');
   });
 
-  test('국향 detail — no event hours, layout, trust bar', async ({ page }) => {
+  test('home → 전남 → 국향 detail photo + MOONi @390', async ({ page }) => {
     test.setTimeout(300_000);
-    await page.goto(`/korea?festival=${GUKHYANG_ID}`, { waitUntil: 'commit' });
+    await page.goto('/korea', { waitUntil: 'domcontentloaded' });
     await dismissLocHint(page);
+    await ensureFestivalWindowLoaded(page);
+
+    const jeonnam = sidoChipButton(page, '전남');
+    await jeonnam.click();
+    await waitForPromoThumbDecoded(page);
+    await page.locator(`[data-social-promo-card][data-festival-id="${GUKHYANG_ID}"]`).click();
+    await expect(page).toHaveURL(/festival=638576/, { timeout: 60_000 });
     await expect(page.locator('#korea-festival-sheet-title')).toContainText('국향대전', {
       timeout: 180_000,
+    });
+
+    const heroImg = page.locator('[data-festival-hero] img[data-festival-photo]').first();
+    await waitForDecodedFestivalPhoto(page, heroImg);
+    await expect(page.locator('[data-festival-photo-credit]')).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.locator('[data-festival-photo-credit]')).toContainText('한국관광공사');
+
+    await shot(page, 'gukhyang-detail-hero-decoded-390', { fullPage: false });
+
+    await openMooniFromDetail(page);
+    await shot(page, 'gukhyang-mooni-from-jeonnam-flow-390', { fullPage: false });
+  });
+
+  test('국향 detail — no event hours, layout, trust bar', async ({ page }) => {
+    test.setTimeout(300_000);
+    await page.goto('/korea', { waitUntil: 'domcontentloaded' });
+    await dismissLocHint(page);
+    await ensureFestivalWindowLoaded(page);
+    await page.goto(`/korea?festival=${GUKHYANG_ID}`, { waitUntil: 'domcontentloaded' });
+    await waitForFestivalDetailBody(page, { timeout: 180_000 });
+    await expect(page.locator('#korea-festival-sheet-title')).toContainText('국향대전', {
+      timeout: 60_000,
     });
     await expect(page.getByText(/2026\.10\.13 확인/)).toBeVisible({
       timeout: 30_000,
     });
+
+    const heroImg = page.locator('[data-festival-hero] img[data-festival-photo]').first();
+    await waitForDecodedFestivalPhoto(page, heroImg);
     await expect(page.locator('[data-festival-photo-credit]')).toBeVisible({
       timeout: 30_000,
     });

@@ -114,6 +114,8 @@ test('festival detail photo surfaces use the frame that hides a broken image', (
   assert.doesNotMatch(sheet, /setHeroBox/);
   assert.match(sheet, /data-festival-photo-fallback/);
   assert.match(sheet, /data-festival-hero-fallback/);
+  assert.match(sheet, /heroPhotoDecoded/);
+  assert.match(sheet, /imageCredits\[activeImage\] && heroPhotoDecoded/);
   assert.match(
     readFileSync(join(rootDir, 'src/pages/Korea/festivalPhotoFrame.js'), 'utf8'),
     /naturalWidth/,

@@ -155,6 +155,7 @@ function pickFirst(data) {
 function toHttps(url) {
   const s = String(url || '').trim();
   if (!s) return '';
+  if (s.startsWith('//')) return `https:${s}`;
   if (!/^https?:\/\//i.test(s)) return '';
   return s.replace(/^http:\/\//i, 'https://');
 }
@@ -591,6 +592,7 @@ export default function FestivalDetailSheet({
   const [imageCredits, setImageCredits] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
+  const [heroPhotoDecoded, setHeroPhotoDecoded] = useState(false);
   const heroColRef = useRef(null);
   const heroColMin = useRef(0);
   const detailSlotRef = useRef(null);
@@ -998,6 +1000,7 @@ export default function FestivalDetailSheet({
         }
       }
       setImageCredits(credits);
+      setHeroPhotoDecoded(false);
 
       if (!detailData?.ok && !imageData?.ok) {
         setIntro(null);
@@ -1026,6 +1029,7 @@ export default function FestivalDetailSheet({
       imageOwnerRef.current = String(contentId);
       setImageUrls(seeded);
       setHeroReady(seeded.length === 0);
+      setHeroPhotoDecoded(false);
       if (!prefetchMatches) {
         setIntro(null);
         setCommon(null);
@@ -1085,6 +1089,10 @@ export default function FestivalDetailSheet({
       detailFetchGenRef.current += 1;
     };
   }, [item?.contentId, item?.contentTypeId, prefetchedTourDetail, t]);
+
+  useEffect(() => {
+    setHeroPhotoDecoded(false);
+  }, [item?.contentId, activeImage, imageUrls[activeImage]]);
 
   useEffect(() => {
     const seed = toHttps(festivalImage(item));
@@ -1814,7 +1822,14 @@ export default function FestivalDetailSheet({
             >
               <FestivalHeroPhoto
                 src={hero}
-                onSettled={() => setHeroReady(true)}
+                onLoaded={() => {
+                  setHeroPhotoDecoded(true);
+                  setHeroReady(true);
+                }}
+                onFailed={() => {
+                  setHeroPhotoDecoded(false);
+                  setHeroReady(true);
+                }}
                 fallback={(
                   <div
                     className="absolute inset-0 flex items-center justify-center bg-stone-200/80 text-stone-500"
@@ -1835,7 +1850,7 @@ export default function FestivalDetailSheet({
                 </span>
               )}
             </button>
-            {imageCredits[activeImage] ? (
+            {imageCredits[activeImage] && heroPhotoDecoded ? (
               <p
                 className="px-4 py-1.5 text-[10px] leading-snug text-stone-500 bg-white border-b border-stone-100"
                 data-festival-photo-credit=""
