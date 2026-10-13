@@ -48,10 +48,10 @@ export function festivalIndexTimePhrase(locale, timeTab, timeTabs, t) {
   return label;
 }
 
-/** EN tail after time phrase — omit when tab phrase already ends with «festivals». */
+/** EN tail after time phrase — omit when phrase already includes «Festivals». */
 export function enFestivalListHeadlineTail(timeTab, timeLabel) {
   const phrase = enFestivalListTimePhrase(timeTab, timeLabel);
-  if (/\bfestivals\s*$/i.test(phrase.trim())) return '';
+  if (/\bfestivals\b/i.test(phrase)) return '';
   return ' festival list';
 }
 

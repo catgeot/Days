@@ -19,35 +19,35 @@ const PROVINCES = [
   ['South Jeolla', '38'],
 ];
 
-test('EN tab headlines do not duplicate «festivals festival list»', () => {
+const FOUR_TABS = ['now', 'weekend', 'thisMonth', 'autumn'];
+
+const EXPECTED_PROVINCE = {
+  now: (place) => `${place} · Festivals on now`,
+  weekend: (place) => `${place} · This weekend's festivals`,
+  thisMonth: (place) => `${place} · This month's festivals`,
+  autumn: (place) => `${place} · Autumn festivals`,
+};
+
+const EXPECTED_NATIONWIDE = {
+  now: 'Festivals on now',
+  weekend: "This weekend's festivals",
+  thisMonth: "This month's festivals",
+  autumn: 'Autumn festivals',
+};
+
+test('EN standard time tabs never append «festival list»', () => {
   for (const [id, phrase] of Object.entries(listEnFestivalTimeTabHeadlines())) {
-    const tail = enFestivalListHeadlineTail(id, phrase);
-    const plain = formatFestivalIndexHeadlinePlain({
-      locale: 'en',
-      timeTab: id,
-      place: 'Gyeonggi Province',
-      time: phrase,
-      tasteSuffix: '',
-      t: tEn,
-    });
     assert.equal(
-      /\bfestivals\s+festival\s+list\b/i.test(plain),
-      false,
-      `duplicate tail for tab ${id}: ${plain}`,
+      enFestivalListHeadlineTail(id, phrase),
+      '',
+      `tail for tab ${id}`,
     );
-    if (/\bfestivals\s*$/i.test(phrase)) {
-      assert.equal(tail, '', `tab ${id} should omit list tail`);
-      assert.match(plain, /Gyeonggi Province · .+festivals$/);
-    } else if (id === 'now') {
-      assert.equal(tail, ' festival list');
-      assert.match(plain, /Festivals on now festival list$/);
-    }
+    assert.equal(/\bfestivals\b/i.test(phrase), true, `tab ${id} uses Festivals wording`);
   }
 });
 
-test('EN province headlines for month, weekend, autumn, and nationwide scope', () => {
-  const tabs = ['thisMonth', 'weekend', 'autumn', 'now'];
-  for (const timeTab of tabs) {
+test('EN headlines — 4 tabs × provinces and nationwide', () => {
+  for (const timeTab of FOUR_TABS) {
     for (const [place] of PROVINCES) {
       const plain = formatFestivalIndexHeadlinePlain({
         locale: 'en',
@@ -57,16 +57,31 @@ test('EN province headlines for month, weekend, autumn, and nationwide scope', (
         tasteSuffix: '',
         t: tEn,
       });
+      assert.equal(plain, EXPECTED_PROVINCE[timeTab](place), timeTab);
+      assert.equal(/\bfestival\s+list\b/i.test(plain), false, plain);
       assert.equal(/\bfestivals\s+festival\b/i.test(plain), false, plain);
     }
+    const nationwide = formatFestivalIndexHeadlinePlain({
+      locale: 'en',
+      timeTab,
+      place: '',
+      time: 'unused',
+      tasteSuffix: '',
+      t: tEn,
+    });
+    assert.equal(nationwide, EXPECTED_NATIONWIDE[timeTab], timeTab);
+    assert.equal(/\bfestival\s+list\b/i.test(nationwide), false, nationwide);
   }
-  const nationwide = formatFestivalIndexHeadlinePlain({
+});
+
+test('EN fallback label adds festivals word without «festival list» tail', () => {
+  const plain = formatFestivalIndexHeadlinePlain({
     locale: 'en',
-    timeTab: 'thisMonth',
-    place: '',
-    time: 'unused',
+    timeTab: 'unknown-tab',
+    place: 'Jeju',
+    time: 'Harvest',
     tasteSuffix: '',
     t: tEn,
   });
-  assert.match(nationwide, /^This month's festivals$/);
+  assert.equal(plain, 'Jeju · Harvest festivals');
 });
