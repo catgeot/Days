@@ -468,7 +468,17 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.ok(thumbFn.indexOf('onConfirmedEmpty') >= 0);
   assert.ok(thumbFn.indexOf('onConfirmedEmpty') < thumbFn.indexOf("invokeTourApi('searchPhoto'"));
   assert.match(sheet, /data-nearby-thumb-pending/);
-  assert.match(sheet, /if \(imagePending && !exhausted\) return <NearbyThumbSkeleton/);
+  const rowThumbBlock = sheet.slice(
+    sheet.indexOf('function NearbyRowThumb'),
+    sheet.indexOf('function nearbySightTitle'),
+  );
+  assert.match(rowThumbBlock, /if \(!urls\.length\)[\s\S]*if \(imagePending\) return <NearbyThumbSkeleton/);
+  assert.match(
+    rowThumbBlock,
+    /thumbIndex >= urls\.length[\s\S]*if \(imagePending\) return <NearbyThumbSkeleton/,
+  );
+  assert.match(rowThumbBlock, /FestivalPhotoFrame/);
+  assert.match(rowThumbBlock, /referrerPolicy="no-referrer"/);
   const skeletonFn = sheet.slice(
     sheet.indexOf('function NearbyThumbSkeleton'),
     sheet.indexOf('function NearbyRowThumb'),
@@ -510,9 +520,13 @@ test('settled no-photo nearby ids use landmark icon not grey pending', () => {
     sheet.indexOf('function NearbyRowThumb'),
     sheet.indexOf('function nearbySightTitle'),
   );
-  assert.match(rowThumb, /exhausted/);
-  assert.match(rowThumb, /if \(imagePending && !exhausted\)/);
+  assert.match(
+    rowThumb,
+    /thumbIndex >= urls\.length[\s\S]*if \(imagePending\) return <NearbyThumbSkeleton/,
+  );
   assert.match(rowThumb, /return <NearbyThumbPlaceholder \/>/);
+  assert.match(rowThumb, /FestivalPhotoFrame/);
+  assert.match(rowThumb, /onFailed/);
   const placeholderFn = sheet.slice(
     sheet.indexOf('function NearbyThumbPlaceholder'),
     sheet.indexOf('function NearbyThumbSkeleton'),
