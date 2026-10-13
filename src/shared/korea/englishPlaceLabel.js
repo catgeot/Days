@@ -10,6 +10,8 @@ const JONG = ['', 'k', 'k', 'k', 'n', 'n', 'n', 't', 'l', 'k', 'm', 'l', 'l', 'l
 const EXACT = new Map([
   ['월화거리', 'Wolhwa Street'],
   ['함평엑스포공원', 'Hampyeong Expo Park'],
+  ['함평 엑스포공원 일원', 'Hampyeong Expo Park area'],
+  ['함평 엑스포공원 일원', 'Hampyeong Expo Park area'],
   ['경포해변', 'Gyeongpo Beach'],
   ['오죽헌', 'Ojukheon'],
   ['탑동광장', 'Tapdong Plaza'],
@@ -40,6 +42,7 @@ const ADMIN = new Map([
   ['전라북도', 'Jeonbuk'],
   ['전북특별자치도', 'Jeonbuk'],
   ['전라남도', 'Jeonnam'],
+  ['전남광주통합특별시', 'Jeonnam'],
   ['경상북도', 'Gyeongbuk'],
   ['경상남도', 'Gyeongnam'],
   ['강릉시', 'Gangneung'],

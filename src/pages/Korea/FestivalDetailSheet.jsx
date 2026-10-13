@@ -102,7 +102,10 @@ import {
   getVisibleBookingLinks,
   shouldHideOfficialHomepage,
 } from './lib/festivalBookingLinks.js';
-import { buildFestivalDetailSummary } from './lib/festivalDetailSummary.js';
+import {
+  buildFestivalDetailSummary,
+  localizeFestivalDetailField,
+} from './lib/festivalDetailSummary.js';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
 import { rankSpotsByDistance } from '../KoreaTheme/nearbyScenicRank';
@@ -1496,12 +1499,14 @@ export default function FestivalDetailSheet({
       intro: omitEventHours && intro ? { ...intro, playtime: '' } : intro,
       range: dateRange,
       freeLabel: t('korea.festival.detail.feeFree'),
+      locale,
     });
     return omitEventHours ? { ...base, timeText: '' } : base;
   }, [
     item,
     intro,
     omitEventHours,
+    locale,
     t,
     item?.eventStartDate,
     item?.eventEndDate,
@@ -1901,10 +1906,12 @@ export default function FestivalDetailSheet({
                   </div>
                 )}
               />
-              <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
-                <Expand size={13} aria-hidden="true" />
-                {t('korea.festival.detail.expandView')}
-              </span>
+              {heroPhotoDecoded ? (
+                <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
+                  <Expand size={13} aria-hidden="true" />
+                  {t('korea.festival.detail.expandView')}
+                </span>
+              ) : null}
               {photoStripMode === 'open' && (
                 <span className="absolute bottom-3 right-3 rounded-full bg-stone-900/55 px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
                   {(loadedPhotoIndex >= 0 ? loadedPhotoIndex : 0) + 1}/{heroStrip.loadedCount}
@@ -2137,7 +2144,9 @@ export default function FestivalDetailSheet({
                 <div className="space-y-3">
                   {!summaryFields.placeText && (
                     <DetailRow label={t('korea.festival.detail.labelVenue')}>
-                      {showEventPlace ? eventplace : null}
+                      {showEventPlace
+                        ? localizeFestivalDetailField(eventplace, locale)
+                        : null}
                     </DetailRow>
                   )}
                   {!omitEventHours && !summaryFields.timeText && (
@@ -2147,7 +2156,7 @@ export default function FestivalDetailSheet({
                   )}
                   {!summaryFields.fee?.text && (
                     <DetailRow label={t('korea.festival.detail.labelFee')}>
-                      {stripHtml(intro?.usetimefestival || '') || null}
+                      {localizeFestivalDetailField(intro?.usetimefestival || '', locale) || null}
                     </DetailRow>
                   )}
                   <DetailRow label={t('korea.festival.detail.labelAge')}>
