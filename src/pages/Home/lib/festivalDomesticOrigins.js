@@ -1,127 +1,132 @@
 /**
  * One domestic departure chip per 시·도 (17).
  * Every label is a city. 도 names are not mixed with city names.
- * `rail*` = KTX·SRT·ITX 등 장거리 열차가 실제로 서는 역.
+ * `ktx*` = KTX·ITX 등 장거리 열차 출발 역. `srt*` = SRT만 (수서·동탄·평택지제 등, 광명·용산 아님).
  * `bus*` = 고속·시외버스 터미널. `flight*` = 제주 등 항공 안내.
  */
 export const FESTIVAL_DOMESTIC_ORIGINS = [
   {
     id: 'seoul', ko: '서울', en: 'Seoul', province: '서울',
-    railKo: '서울역·용산역·수서역', railEn: 'Seoul Station, Yongsan Station, and Suseo Station',
+    ktxKo: '서울역·용산역·광명역', ktxEn: 'Seoul Station, Yongsan Station, and Gwangmyeong Station',
+    srtKo: '수서역', srtEn: 'Suseo Station',
     busKo: '서울고속버스터미널·동서울종합터미널', busEn: 'Seoul Express Bus Terminal and Dong Seoul Bus Terminal',
   },
   {
     id: 'busan', ko: '부산', en: 'Busan', province: '부산',
-    railKo: '부산역', railEn: 'Busan Station',
+    ktxKo: '부산역', ktxEn: 'Busan Station',
     busKo: '부산종합버스터미널', busEn: 'Busan Central Bus Terminal',
   },
   {
     id: 'daegu', ko: '대구', en: 'Daegu', province: '대구',
-    railKo: '동대구역', railEn: 'Dongdaegu Station',
+    ktxKo: '동대구역', ktxEn: 'Dongdaegu Station',
     busKo: '대구고속버스터미널', busEn: 'Daegu Express Bus Terminal',
   },
   {
     id: 'incheon', ko: '인천', en: 'Incheon', province: '인천',
-    railKo: '광명역·용산역', railEn: 'Gwangmyeong Station and Yongsan Station',
+    ktxKo: '광명역·용산역', ktxEn: 'Gwangmyeong Station and Yongsan Station',
+    srtKo: '수서역', srtEn: 'Suseo Station',
     busKo: '인천종합버스터미널', busEn: 'Incheon Bus Terminal',
   },
   {
     id: 'gwangju', ko: '광주', en: 'Gwangju', province: '광주',
-    railKo: '광주송정역', railEn: 'Gwangju Songjeong Station',
+    ktxKo: '광주송정역', ktxEn: 'Gwangju Songjeong Station',
     busKo: '유스퀘어', busEn: 'U-Square terminal',
   },
   {
     id: 'daejeon', ko: '대전', en: 'Daejeon', province: '대전',
-    railKo: '대전역', railEn: 'Daejeon Station',
+    ktxKo: '대전역', ktxEn: 'Daejeon Station',
     busKo: '대전복합터미널', busEn: 'Daejeon Complex Terminal',
   },
   {
     id: 'ulsan', ko: '울산', en: 'Ulsan', province: '울산',
-    railKo: '태화강역', railEn: 'Taehwagang Station',
+    ktxKo: '태화강역', ktxEn: 'Taehwagang Station',
     busKo: '울산고속버스터미널', busEn: 'Ulsan Express Bus Terminal',
   },
   {
     id: 'sejong', ko: '세종', en: 'Sejong', province: '세종',
-    railKo: '오송역', railEn: 'Osong Station',
+    ktxKo: '오송역', ktxEn: 'Osong Station',
     busKo: '세종고속시외버스터미널', busEn: 'Sejong Express Bus Terminal',
   },
   {
     id: 'gyeonggi', ko: '수원', en: 'Suwon', province: '경기',
-    railKo: '수원역·광명역', railEn: 'Suwon Station and Gwangmyeong Station',
+    ktxKo: '수원역·광명역', ktxEn: 'Suwon Station and Gwangmyeong Station',
+    srtKo: '수서역', srtEn: 'Suseo Station',
     busKo: '수원종합버스터미널', busEn: 'Suwon Bus Terminal',
     alt: {
       ko: '성남', en: 'Seongnam',
-      railKo: '광명역·수서역', railEn: 'Gwangmyeong Station and Suseo Station',
+      ktxKo: '광명역', ktxEn: 'Gwangmyeong Station',
+      srtKo: '수서역', srtEn: 'Suseo Station',
       busKo: '성남종합버스터미널', busEn: 'Seongnam Bus Terminal',
     },
   },
   {
     id: 'gangwon', ko: '강릉', en: 'Gangneung', province: '강원',
-    railKo: '강릉역', railEn: 'Gangneung Station',
+    ktxKo: '강릉역', ktxEn: 'Gangneung Station',
     busKo: '강릉고속버스터미널·동서울종합터미널', busEn: 'Gangneung Express Bus Terminal and Dong Seoul Bus Terminal',
     alt: {
       ko: '원주', en: 'Wonju',
-      railKo: '원주역·만종역', railEn: 'Wonju Station and Manjong Station',
+      ktxKo: '원주역·만종역', ktxEn: 'Wonju Station and Manjong Station',
       busKo: '원주시외버스터미널', busEn: 'Wonju intercity bus terminal',
     },
   },
   {
     id: 'chungbuk', ko: '청주', en: 'Cheongju', province: '충북',
-    railKo: '오송역', railEn: 'Osong Station',
+    ktxKo: '오송역', ktxEn: 'Osong Station',
     busKo: '청주고속버스터미널', busEn: 'Cheongju Express Bus Terminal',
     alt: {
       ko: '충주', en: 'Chungju',
-      railKo: '충주역', railEn: 'Chungju Station',
+      ktxKo: '충주역', ktxEn: 'Chungju Station',
       busKo: '충주고속버스터미널', busEn: 'Chungju Express Bus Terminal',
     },
   },
   {
     id: 'chungnam', ko: '천안', en: 'Cheonan', province: '충남',
-    railKo: '천안아산역', railEn: 'Cheonan-Asan Station',
+    ktxKo: '천안아산역', ktxEn: 'Cheonan-Asan Station',
+    srtKo: '수서역·평택지제역', srtEn: 'Suseo Station and Pyeongtaek Jije Station',
     busKo: '천안종합터미널', busEn: 'Cheonan Terminal',
     alt: {
       ko: '공주', en: 'Gongju',
-      railKo: '오송역', railEn: 'Osong Station',
+      ktxKo: '오송역', ktxEn: 'Osong Station',
       busKo: '공주종합버스터미널', busEn: 'Gongju Bus Terminal',
     },
   },
   {
     id: 'jeonbuk', ko: '전주', en: 'Jeonju', province: '전북',
-    railKo: '익산역·전주역', railEn: 'Iksan Station and Jeonju Station',
+    ktxKo: '익산역·전주역', ktxEn: 'Iksan Station and Jeonju Station',
     busKo: '전주고속버스터미널', busEn: 'Jeonju Express Bus Terminal',
     alt: {
       ko: '익산', en: 'Iksan',
-      railKo: '익산역', railEn: 'Iksan Station',
+      ktxKo: '익산역', ktxEn: 'Iksan Station',
       busKo: '익산버스터미널', busEn: 'Iksan bus terminal',
     },
   },
   {
     id: 'jeonnam', ko: '여수', en: 'Yeosu', province: '전남',
-    railKo: '여수EXPO역', railEn: 'Yeosu EXPO Station',
+    ktxKo: '여수EXPO역', ktxEn: 'Yeosu EXPO Station',
     busKo: '여수종합버스터미널', busEn: 'Yeosu Bus Terminal',
     alt: {
       ko: '목포', en: 'Mokpo',
-      railKo: '목포역', railEn: 'Mokpo Station',
+      ktxKo: '목포역', ktxEn: 'Mokpo Station',
       busKo: '목포종합버스터미널', busEn: 'Mokpo Bus Terminal',
     },
   },
   {
     id: 'gyeongbuk', ko: '포항', en: 'Pohang', province: '경북',
-    railKo: '포항역·동대구역', railEn: 'Pohang Station and Dongdaegu Station',
+    ktxKo: '포항역·동대구역', ktxEn: 'Pohang Station and Dongdaegu Station',
     busKo: '포항고속버스터미널', busEn: 'Pohang Express Bus Terminal',
     alt: {
       ko: '안동', en: 'Andong',
-      railKo: '안동역', railEn: 'Andong Station',
+      ktxKo: '안동역', ktxEn: 'Andong Station',
       busKo: '안동터미널', busEn: 'Andong Terminal',
     },
   },
   {
     id: 'gyeongnam', ko: '창원', en: 'Changwon', province: '경남', also: ['마산'],
-    railKo: '마산역·창원중앙역', railEn: 'Masan Station and Changwon Jungang Station',
+    ktxKo: '마산역·창원중앙역', ktxEn: 'Masan Station and Changwon Jungang Station',
     busKo: '창원·마산 시외버스터미널', busEn: 'Changwon and Masan bus terminals',
     alt: {
       ko: '진주', en: 'Jinju',
-      railKo: '진주역', railEn: 'Jinju Station',
+      ktxKo: '진주역', ktxEn: 'Jinju Station',
       busKo: '진주종합버스터미널', busEn: 'Jinju Bus Terminal',
     },
   },
@@ -145,8 +150,10 @@ function isEnglishLocale(locale) {
 
 function mergeAltHub(row, alt) {
   return {
-    railKo: alt.railKo ?? row.railKo,
-    railEn: alt.railEn ?? row.railEn,
+    ktxKo: alt.ktxKo ?? row.ktxKo,
+    ktxEn: alt.ktxEn ?? row.ktxEn,
+    srtKo: alt.srtKo ?? row.srtKo,
+    srtEn: alt.srtEn ?? row.srtEn,
     busKo: alt.busKo ?? row.busKo,
     busEn: alt.busEn ?? row.busEn,
     flightKo: alt.flightKo ?? row.flightKo,
@@ -160,10 +167,9 @@ export function findFestivalDomesticOrigin(id) {
   return FESTIVAL_DOMESTIC_ORIGINS.find((item) => item.id === key) || null;
 }
 
-/** @deprecated — use originHubStationBlob for TAGO station matching */
 export function originHubStationBlob(row) {
   if (!row) return '';
-  return [row.railKo, row.busKo].filter(Boolean).join('·');
+  return [row.ktxKo, row.srtKo, row.busKo].filter(Boolean).join('·');
 }
 
 export function formatOriginHubGuidance(row, locale = 'ko') {
@@ -171,13 +177,15 @@ export function formatOriginHubGuidance(row, locale = 'ko') {
   const en = isEnglishLocale(locale);
   if (en) {
     const bits = [];
-    if (row.railEn) bits.push(`Guide KTX/SRT from ${row.railEn}`);
+    if (row.ktxEn) bits.push(`Guide KTX from ${row.ktxEn}`);
+    if (row.srtEn) bits.push(`SRT only from ${row.srtEn} (not Gwangmyeong or Yongsan)`);
     if (row.busEn) bits.push(`express and intercity buses from ${row.busEn}`);
     if (row.flightEn) bits.push(`flights from ${row.flightEn}`);
     return bits.join('. ') + (bits.length ? '.' : '');
   }
   const bits = [];
-  if (row.railKo) bits.push(`KTX·SRT는 ${row.railKo}에서 출발하도록 안내해 주세요`);
+  if (row.ktxKo) bits.push(`KTX는 ${row.ktxKo}에서 출발하도록 안내해 주세요`);
+  if (row.srtKo) bits.push(`SRT는 ${row.srtKo}에서만 출발한다고 안내해 주세요(광명·용산에서 SRT는 없음)`);
   if (row.busKo) bits.push(`고속·시외버스는 ${row.busKo}에서 출발하도록 안내해 주세요`);
   if (row.flightKo) bits.push(`항공은 ${row.flightKo}을 이용하도록 안내해 주세요`);
   return bits.join('. ') + (bits.length ? '.' : '');

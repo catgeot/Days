@@ -269,6 +269,44 @@ export function appendFestivalLodgingNextStep(reply, options = {}) {
 const ALLOWED_FESTIVAL_URL =
   /^https:\/\/(?:www\.)?gateo\.kr\/korea\/\?festival=\d+(?:#festival-lodging)?$/i;
 
+const FESTIVAL_BOOKING_URL =
+  /^https:\/\/(?:www\.)?(?:letskorail\.com|korail\.com|bustago\.or\.kr|kobus\.co\.kr|txbus\.t-money\.co\.kr)\/?/i;
+
+const OFFICIAL_SITE_LABEL_RE = /^(?:공식\s*홈페이지|official\s+site)$/i;
+
+export const FESTIVAL_ACCESS_KORAIL_URL = 'https://www.letskorail.com/';
+export const FESTIVAL_ACCESS_BUSTAGO_URL = 'https://www.bustago.or.kr/';
+export const FESTIVAL_ACCESS_KOBUS_URL = 'https://www.kobus.co.kr/';
+
+function isAllowedFestivalMarkdownUrl(url, homepage = '') {
+  const clean = String(url || '').trim();
+  if (ALLOWED_FESTIVAL_URL.test(clean)) return true;
+  if (FESTIVAL_BOOKING_URL.test(clean)) return true;
+  if (sameOfficialUrl(clean, homepage)) return true;
+  return false;
+}
+
+function isAllowedFestivalBareUrl(url) {
+  const clean = String(url || '').trim();
+  if (ALLOWED_FESTIVAL_URL.test(clean)) return true;
+  if (FESTIVAL_BOOKING_URL.test(clean)) return true;
+  return false;
+}
+
+/** Client footer for festival_access — booking links the model may omit. */
+export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
+  const body = String(text || '').trim();
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const hasAll = /letskorail\.com/i.test(body)
+    && /bustago\.or\.kr/i.test(body)
+    && /kobus\.co\.kr/i.test(body);
+  if (hasAll) return body;
+  const footer = en
+    ? `\n\nCheck train and bus schedules on [Korail](${FESTIVAL_ACCESS_KORAIL_URL}), [BUSTAGO](${FESTIVAL_ACCESS_BUSTAGO_URL}), and [KOBUS](${FESTIVAL_ACCESS_KOBUS_URL}).`
+    : `\n\n열차·버스 시각은 [코레일](${FESTIVAL_ACCESS_KORAIL_URL}), [버스타고](${FESTIVAL_ACCESS_BUSTAGO_URL}), [고속버스](${FESTIVAL_ACCESS_KOBUS_URL})에서 편하게 확인할 수 있어요.`;
+  return body ? `${body}${footer}` : footer.trim();
+}
+
 const SECTION_CTA_LABELS = [
   '교통 · 티켓',
   '출발 전 준비',
@@ -385,9 +423,14 @@ export function stripDisallowedFestivalLinks(text, options = {}) {
   };
   let next = String(text || '').replace(
     /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g,
-    (full, _label, url) => {
-      if (ALLOWED_FESTIVAL_URL.test(url)) return stash(full);
-      const linked = linkedOfficial(url);
+    (full, label, url) => {
+      const clean = String(url || '').trim();
+      if (OFFICIAL_SITE_LABEL_RE.test(String(label || '').trim()) && !sameOfficialUrl(clean, homepage)) {
+        const linked = linkedOfficial(homepage);
+        return linked ? stash(linked) : String(label || '').trim();
+      }
+      if (isAllowedFestivalMarkdownUrl(clean, homepage)) return stash(full);
+      const linked = linkedOfficial(clean);
       return linked ? stash(linked) : '';
     },
   );
@@ -395,7 +438,7 @@ export function stripDisallowedFestivalLinks(text, options = {}) {
     /(공식\s*홈페이지|official\s+site)?[ \t]*([(\[（「])?[ \t]*(https?:\/\/[^\s)\]）」]+)([.,;]+)?[ \t]*([)\]）」])?/gi,
     (full, label, _open, url) => {
       const clean = url.replace(/[.,;]+$/, '');
-      if (ALLOWED_FESTIVAL_URL.test(clean)) return full;
+      if (isAllowedFestivalBareUrl(clean)) return full;
       const linked = linkedOfficial(clean);
       if (linked) return linked;
       return label ? String(label).trim() : '';
@@ -1299,7 +1342,11 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = ensureFestivalLodgingAnswer(text, options);
   text = stripOffTopicLodgingNudge(text, options);
   text = settleFestivalNextAction(text, options);
-  return dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
+  text = dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
+  if (isFestivalAccessAsk(options)) {
+    text = appendFestivalAccessBookingLinks(text, options.locale);
+  }
+  return text;
 }
 
 const LODGING_NUDGE_RE = /숙소\s*정보|숙소\s*(?:도|를|카드|안내)|#festival-lodging|묵기\s*좋|where\s+to\s+stay|lodging\s+(?:card|guide)|stays?\s+for\s+this\s+festival/i;
@@ -2198,6 +2245,13 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
     lines.push(isEn
       ? `- Write that official page only as [official site](${homepage}). Do not put the bare URL in parentheses.`
       : `- 그 공식 홈페이지는 [공식 홈페이지](${homepage})로만 쓴다. 괄호 안에 날 URL을 넣지 않는다.`);
+    lines.push(isEn
+      ? `- Encourage users to use that official page for parking, hours, and shuttles when those details are not listed below. Do not label a GATEO page as the official site.`
+      : `- 주차·운영 시간·셔틀 등이 아래에 없으면, 위 [공식 홈페이지](${homepage})에서 최신 안내를 확인하도록 따뜻하게 안내해 주세요. GATEO 상세 페이지를 공식 홈페이지라고 부르지 않는다.`);
+  } else {
+    lines.push(isEn
+      ? `- No verified official URL in the data. Do not invent domains (for example guessing go.kr hosts). Name the organizer and suggest finding their official site without a made-up link.`
+      : `- 확인된 공식 URL이 없다. hp.go.kr 등 URL을 지어내지 않는다. 주관 기관 이름으로 공식 사이트를 찾도록 안내한다.`);
   }
   const tel = String(ctx?.tel || '').trim();
   if (tel) lines.push(isEn ? `- Contact phone: ${tel}` : `- 문의처: ${tel}`);

@@ -51,7 +51,8 @@ function alignGroundUserText(userText, groundOrigin, locale) {
   const suffix = domesticGroundModelSuffix(groundOrigin, locale);
   if (!suffix) return userText;
   const hubBlob = [
-    groundOrigin.railKo,
+    groundOrigin.ktxKo,
+    groundOrigin.srtKo,
     groundOrigin.busKo,
     groundOrigin.flightKo,
   ].filter(Boolean).join('·');

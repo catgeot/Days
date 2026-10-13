@@ -77,6 +77,7 @@ import {
 } from '../../src/shared/korea/englishPlaceLabel.js';
 import {
   expandCompactDates,
+  appendFestivalAccessBookingLinks,
   stripDisallowedFestivalLinks,
   stripDomesticEntryDocLines,
   stripMooniUiChipLabels,
@@ -542,6 +543,7 @@ test('festival access drill-down opens origin chips without auto-sending Seoul',
   assert.doesNotMatch(chatModal, /useCardTransport:\s*true/);
   assert.doesNotMatch(chatModal, /확인된 열차와 버스 시각을 알려줘/);
   assert.match(chatModal, /onDrillDown:\s*\(parentId\)\s*=>\s*\{\s*setTopicDockParent\(parentId\);/);
+  assert.match(chatModal, /polishFestivalModelReply\(festivalMergedReply/);
 });
 
 test('festival access hint urges real routes when TAGO times are missing', () => {
@@ -549,8 +551,10 @@ test('festival access hint urges real routes when TAGO times are missing', () =>
   assert.match(assist, /isFestivalAccessAsk/);
   assert.match(assist, /시각은 없어요»만으로 답을 끝내지 않는다/);
   assert.match(assist, /bustago\.or\.kr/);
+  assert.match(assist, /appendFestivalAccessBookingLinks/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 갑니다/);
-  assert.match(KO.chips.festival_access.rules.join('\n'), /KTX·SRT가 서는 역/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /KTX 역과 SRT 역/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /광명·용산에서는 SRT가 없다/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /버스타고/);
 });
 
@@ -600,10 +604,13 @@ test('festival departure chips are 17 cities, swap the host city, and stay off a
   assert.match(yeosuAsk, /여수종합버스터미널/);
   const seoulAsk = buildFestivalAccessAskText('seoul', 'ko');
   assert.match(seoulAsk, /용산역/);
-  assert.match(seoulAsk, /수서역/);
-  assert.match(seoulAsk, /KTX·SRT는/);
+  assert.match(seoulAsk, /KTX는.*서울역/);
+  assert.match(seoulAsk, /SRT는.*수서역/);
+  assert.doesNotMatch(seoulAsk, /KTX·SRT는/);
   const incheonAsk = buildFestivalAccessAskText('incheon', 'ko');
-  assert.match(incheonAsk, /광명역/);
+  assert.match(incheonAsk, /KTX는.*광명역/);
+  assert.match(incheonAsk, /SRT는.*수서역/);
+  assert.doesNotMatch(incheonAsk, /SRT는[^.]*광명역/);
   assert.match(incheonAsk, /인천종합버스터미널/);
   assert.doesNotMatch(incheonAsk, /부평/);
   const seoulRow = domesticFestivalGroundOrigin('서울에서 이 축제장까지 어떻게 가?', '');
@@ -672,8 +679,10 @@ test('domestic festival origin payload drops airports; overseas chip keeps them'
   assert.equal(seoulChip.chipFacts.chipId, 'festival_access');
   assert.doesNotMatch(requestBody(typed), air);
   assert.doesNotMatch(requestBody(seoulChip), air);
-  assert.match(typed.modelUserText, /서울역·용산역·수서역/);
-  assert.match(seoulChip.modelUserText, /서울역·용산역·수서역/);
+  assert.match(typed.modelUserText, /KTX는.*서울역·용산역·광명역/);
+  assert.match(typed.modelUserText, /SRT는.*수서역/);
+  assert.match(seoulChip.modelUserText, /KTX는.*서울역·용산역·광명역/);
+  assert.match(seoulChip.modelUserText, /SRT는.*수서역/);
 
   const overseas = prepareFestivalMooniChatPayload({
     ...place,
@@ -2472,6 +2481,23 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     stripDisallowedFestivalLinks(`공식 홈페이지(${page}/)에서`, { homepage: page }),
     /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net\/pub\/gnfestival\/4748\.do\)에서/,
   );
+  assert.match(
+    stripDisallowedFestivalLinks(
+      '[공식 홈페이지](https://www.gateo.kr/korea/?festival=2930716)에서 주차를 확인하세요.',
+      { homepage: page },
+    ),
+    /\[공식 홈페이지\]\(https:\/\/visitgangneung\.net/,
+  );
+  const accessFooter = appendFestivalAccessBookingLinks('대구에서 KTX로 가요.', 'ko');
+  assert.match(accessFooter, /bustago\.or\.kr/);
+  assert.match(accessFooter, /letskorail\.com/);
+  assert.match(accessFooter, /kobus\.co\.kr/);
+  const accessPolished = polishFestivalModelReply('서울에서 열차로 갑니다.', {
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '서울에서 가는 법',
+  });
+  assert.match(accessPolished, /버스타고/);
 
   const oneStay = polishFestivalModelReply(
     '강릉 월화거리에서 묵어요. 다양한 숙소가 자리하고 있어요. 강릉의 매력을 느끼며 쉬어요.',

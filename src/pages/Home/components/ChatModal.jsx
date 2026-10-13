@@ -1245,8 +1245,12 @@ const ChatModal = ({
         transport,
         useCardTransport: sendOptions?.useCardTransport === true,
         locale: i18n.language,
-        stations: prepared.groundOrigin
-          ? [prepared.groundOrigin.railKo, prepared.groundOrigin.busKo].filter(Boolean).join('·')
+        stations:         prepared.groundOrigin
+          ? [
+            prepared.groundOrigin.ktxKo,
+            prepared.groundOrigin.srtKo,
+            prepared.groundOrigin.busKo,
+          ].filter(Boolean).join('·')
           : '',
       });
       const groundedReply = planned.reply;
@@ -1310,13 +1314,11 @@ const ChatModal = ({
         chipId,
         userText: cleanText,
       });
-      const displayReply = groundedReply || polishFestivalModelReply(
-        getMooniModelMarkdownForRender(festivalMergedReply, {
-          stripPhantomTicketMention,
-        }),
-        lodgingOptions,
-      );
-      const rawWithLodging = groundedReply || polishFestivalModelReply(festivalMergedReply, lodgingOptions);
+      const polishedFestivalReply = polishFestivalModelReply(festivalMergedReply, lodgingOptions);
+      const displayReply = getMooniModelMarkdownForRender(polishedFestivalReply, {
+        stripPhantomTicketMention,
+      });
+      const rawWithLodging = polishedFestivalReply;
       const { hadBracketLinks } = sanitizeMooniModelReply(rawWithLodging, {
         stripPhantomTicketMention,
       });
