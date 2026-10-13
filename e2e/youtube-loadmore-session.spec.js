@@ -100,18 +100,23 @@ async function openPlaylist(page) {
   return Number(text.match(/\((\d+)\)/)?.[1]);
 }
 
+function playlistSheet(page) {
+  return page.locator('div.fixed.inset-0').filter({ hasText: '재생 목록' }).last();
+}
+
 async function clickPlaylistLoadMore(page) {
   const heading = playlistHeading(page);
   if (!(await heading.isVisible().catch(() => false))) {
     await openPlaylist(page);
   }
-  await page.getByRole('button', { name: '더 보기' }).click();
+  const sheet = playlistSheet(page);
+  await sheet.getByRole('button', { name: '더 보기', exact: true }).click();
 }
 
 async function closePlaylist(page) {
   const heading = playlistHeading(page);
   if (!(await heading.isVisible().catch(() => false))) return;
-  const sheet = page.locator('div.fixed.inset-0').filter({ hasText: '재생 목록' }).last();
+  const sheet = playlistSheet(page);
   await sheet.getByRole('button').first().click();
   await expect(heading).toBeHidden();
 }
