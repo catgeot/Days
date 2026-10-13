@@ -118,10 +118,21 @@ test('festival detail photo surfaces use the frame that hides a broken image', (
     readFileSync(join(rootDir, 'src/pages/Korea/festivalPhotoFrame.js'), 'utf8'),
     /naturalWidth/,
   );
-  assert.match(sheet, /NearbyRowThumb[\s\S]*?FestivalPhotoFrame/);
+  const nearbyFn = sheet.slice(
+    sheet.indexOf('function NearbyRowThumb'),
+    sheet.indexOf('function nearbySightTitle'),
+  );
+  assert.match(nearbyFn, /setThumbIndex/);
+  assert.match(nearbyFn, /display = 'none'/);
 
   const rawImgs = [...sheet.matchAll(/<img\b[\s\S]*?\/>/g)];
-  assert.equal(rawImgs.length, 0, 'hero must not keep a raw img that can show the broken glyph');
+  assert.equal(rawImgs.length, 1, 'only the nearby-row thumb may stay a raw img');
+  const nearbyImg = rawImgs[0];
+  assert.ok(nearbyImg.index > sheet.indexOf('function NearbyRowThumb'));
+  assert.ok(nearbyImg.index < sheet.indexOf('function nearbySightTitle'));
+  assert.match(nearbyImg[0], /display = 'none'/);
+  assert.doesNotMatch(nearbyImg[0], /h-auto/);
+  assert.doesNotMatch(sheet, /heroImageBroken/);
 });
 
 test('late hero error removes the image and keeps the fixed hero box', async () => {
