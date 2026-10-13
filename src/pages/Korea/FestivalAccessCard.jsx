@@ -24,7 +24,7 @@ const MODE_LABEL = {
 const askClass =
   'flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-bold text-stone-800 transition-colors hover:border-amber-300 hover:bg-amber-50';
 
-function OptionRow({ option, locale }) {
+function OptionRow({ option, locale, t }) {
   const clock = formatClockRange(option.firstDeparture, option.lastDeparture, locale);
   const duration = formatDurationRange(option.durationMin, option.durationMax, locale);
   const fare = formatFareRange(option.fareAdultMin, option.fareAdultMax, locale);
@@ -47,14 +47,22 @@ function OptionRow({ option, locale }) {
         <p className="mt-0.5 text-xs leading-snug text-stone-600 break-keep">{facts.join(' · ')}</p>
       ) : null}
       {book ? (
-        <a
-          href={book.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-1 inline-flex text-xs font-bold text-amber-800 hover:text-amber-950"
-        >
-          {book.text}
-        </a>
+        <>
+          <a
+            href={book.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-flex text-xs font-bold text-amber-800 hover:text-amber-950"
+            data-festival-access-book=""
+          >
+            {book.text}
+          </a>
+          {book.segment ? (
+            <p className="mt-0.5 text-xs leading-snug text-stone-600 break-keep" data-festival-access-pick="">
+              {t('korea.festival.detail.accessPickSegment', book.segment)}
+            </p>
+          ) : null}
+        </>
       ) : null}
     </li>
   );
@@ -72,6 +80,7 @@ function OptionGroups({ options, locale, t }) {
             key={`${option.mode}|${option.depStationId}|${option.arrStationId}|${option.grade}|${option.firstDeparture}`}
             option={option}
             locale={locale}
+            t={t}
           />
         ))}
       </ul>
@@ -128,7 +137,7 @@ export default function FestivalAccessCard({
       }
       const next = buildAccessView(result.card);
       setView(next);
-      setOriginId(preferredOriginId(next.origins));
+      setOriginId(preferredOriginId(next.origins, contentId));
       setPhase(next.status);
     });
     return () => {

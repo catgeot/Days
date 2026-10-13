@@ -8,6 +8,7 @@ import {
   FESTIVAL_TRANSPORT_CONTENT_IDS,
   bookingLink,
   buildAccessView,
+  preferredOriginId,
   formatClockRange,
   formatDurationRange,
   formatFareRange,
@@ -76,8 +77,38 @@ test('display keeps real train and bus values and drops blanks', () => {
   assert.equal(formatRunCount(option(), 'ko'), '18회');
   assert.equal(formatRunCount(option({ truncated: true }), 'en'), '18 confirmed');
   assert.equal(formatRunCount(option({ dailyCount: 0 }), 'ko'), '');
-  assert.equal(bookingLink(option()).text, 'Korail 예매');
+  const korail = bookingLink(option());
+  assert.equal(korail.text, 'Korail 예매');
+  assert.equal(korail.href, 'https://www.letskorail.com/');
+  assert.deepEqual(korail.segment, { dep: '서울역', arr: '강릉역', particle: '을' });
   assert.equal(bookingLink(option({ bookingUrl: 'http://example.com' })), null);
+  assert.equal(bookingLink(option({ mode: 'expBus', bookingOperator: null, bookingUrl: 'https://www.kobus.co.kr/' })).text, '고속버스 예매');
+  assert.equal(bookingLink(option({ mode: 'suburbsBus', bookingOperator: null, bookingUrl: 'https://txbus.t-money.co.kr/' }), 'en').text, 'Book intercity bus');
+  const sr = bookingLink(option({
+    bookingOperator: 'SR',
+    bookingUrl: 'https://etk.srail.kr/',
+    depStation: '수서',
+    arrStation: '강릉역',
+    serviceDate: '2026-10-16',
+  }));
+  assert.equal(sr.segment, null);
+  assert.match(sr.href, /^https:\/\/etk\.srail\.kr\/hpg\/hra\/01\/selectScheduleList\.do\?/);
+  const srUrl = new URL(sr.href);
+  assert.equal(srUrl.searchParams.get('dptRsStnCd'), '0551');
+  assert.equal(srUrl.searchParams.get('arvRsStnCd'), '0115');
+  assert.equal(srUrl.searchParams.get('dptDt'), '20261016');
+  assert.equal(srUrl.searchParams.get('dptTm'), '000000');
+  const srUnknown = bookingLink(option({
+    bookingOperator: 'SR',
+    bookingUrl: 'https://etk.srail.kr/',
+    depStation: '수서',
+    arrStation: '함평역',
+    serviceDate: '2026-10-16',
+  }));
+  assert.equal(srUnknown.href, 'https://etk.srail.kr/');
+  assert.equal(srUnknown.segment.arr, '함평역');
+  assert.equal(bookingLink(option({ arrStation: '대구' })).segment.particle, '를');
+  assert.equal(bookingLink(option({ arrStation: '광주(유·스퀘어)' })).segment.particle, '를');
 });
 
 test('access view uses verified rows only', () => {
@@ -140,4 +171,15 @@ test('festival sheet mounts the access card above the bottom rail', () => {
   assert.match(ko, /"accessTitle": "가는 법"/);
   assert.match(en, /"accessTitle": "How to get there"/);
   assert.match(ko, /"accessUnavailable": "지금은 열차·버스 시각을 불러오지 못했어요."/);
+  assert.match(ko, /"accessPickSegment": "\{\{dep\}\}→\{\{arr\}\}\{\{particle\}\} 고르세요"/);
+});
+
+test('국향대전 defaults to 용산 when that origin is present', () => {
+  const origins = [
+    { originId: 'seoul-station', label: '서울역' },
+    { originId: 'yongsan', label: '용산' },
+  ];
+  assert.equal(preferredOriginId(origins, '638576'), 'yongsan');
+  assert.equal(preferredOriginId(origins, '2930716'), 'seoul-station');
+  assert.equal(preferredOriginId([{ originId: 'seoul-station' }], '638576'), 'seoul-station');
 });

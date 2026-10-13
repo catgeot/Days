@@ -1482,6 +1482,7 @@
         "accessBusDate": "버스 {{date}}",
         "accessBusSameDay": "버스는 조회 당일",
         "accessArex": "공항철도 시각은 이 조회에 없어요.",
+        "accessPickSegment": "{{dep}}→{{arr}}{{particle}} 고르세요",
         "accessAskMooni": "무니에게 가는 법 물어보기",
         "askMooniAboutFestival": "무니에게 이 축제 물어보기",
         "askMooniFab": "무니에게 묻기",

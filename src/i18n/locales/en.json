@@ -1719,6 +1719,7 @@
         "accessBusDate": "Bus {{date}}",
         "accessBusSameDay": "Buses are for the day of the lookup",
         "accessArex": "Airport railroad times are not in this lookup.",
+        "accessPickSegment": "Choose {{dep}} → {{arr}}",
         "accessAskMooni": "Ask MOONi how to get there",
         "askMooniAboutFestival": "Ask MOONi about this festival",
         "askMooniFab": "Ask MOONi",

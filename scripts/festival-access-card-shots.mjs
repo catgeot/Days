@@ -72,6 +72,12 @@ async function openFestival(page, target) {
   if (state !== 'ready') throw new Error(`${target.id} access status ${state}`);
   if (!/\d{2}:\d{2}/.test(text)) throw new Error(`${target.id} has no clock`);
   if (/무료|(^|[^\d,])0원/.test(text)) throw new Error(`${target.id} shows a zero fare`);
+  if (!/고르세요/.test(text)) throw new Error(`${target.id} has no segment hint`);
+  const pressed = await card.locator('[data-festival-access-origin][aria-pressed="true"]').getAttribute('data-festival-access-origin');
+  console.log(`${target.id} origin=${pressed}`);
+  if (target.id === 'hampyeong' && pressed !== 'yongsan') {
+    throw new Error(`hampyeong origin ${pressed}`);
+  }
   await page.evaluate(() => {
     document.querySelector('[data-flight-debug-panel]')?.remove();
     document.querySelector('[data-cloud-preview-work-log]')?.remove();
@@ -80,6 +86,20 @@ async function openFestival(page, target) {
   await trainRow.scrollIntoViewIfNeeded();
   await trainRow.evaluate((node) => node.scrollIntoView({ block: 'center' }));
   await shot(page, `${target.id}-02-access`);
+  const suseo = card.locator('[data-festival-access-origin="suseo"]');
+  if (await suseo.count()) {
+    await suseo.click();
+    const srLink = card.locator('[data-festival-access-mode="train"] a[data-festival-access-book]').first();
+    await srLink.waitFor({ timeout: 10_000 });
+    const srHref = await srLink.getAttribute('href');
+    const srPick = await card.locator('[data-festival-access-mode="train"] [data-festival-access-pick]').count();
+    console.log(`${target.id} sr href=${srHref} pickRows=${srPick}`);
+    if (!srHref?.includes('selectScheduleList.do') || !srHref.includes('dptRsStnCd=0551')) {
+      throw new Error(`${target.id} SR link is not a prefilled search`);
+    }
+    await srLink.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+    await shot(page, `${target.id}-02c-sr`);
+  }
   const busChip = card.getByRole('button', { name: /동서울|서울경부/ }).first();
   if (await busChip.count()) {
     await busChip.click();
@@ -87,7 +107,7 @@ async function openFestival(page, target) {
     await busRow.waitFor({ timeout: 10_000 });
     await busRow.evaluate((node) => node.scrollIntoView({ block: 'center' }));
     const busText = (await card.innerText()).replace(/\s+/g, ' ');
-    if (!/고속버스|시외버스/.test(busText)) throw new Error(`${target.id} bus origin has no bus label`);
+    if (!/고속버스 예매|시외버스 예매/.test(busText)) throw new Error(`${target.id} bus booking label missing`);
     console.log(`${target.id} bus ${busText.slice(0, 280)}`);
     await shot(page, `${target.id}-02b-bus`);
   }

@@ -159,16 +159,82 @@ export function formatRunCount(option, locale = 'ko') {
   return partial ? `확인 ${count}회` : `${count}회`;
 }
 
-export function bookingLink(option, locale = 'ko') {
-  const href = String(option?.bookingUrl || '');
-  if (!/^https:\/\//.test(href)) return null;
-  const operator = String(option?.bookingOperator || '').trim();
-  const named = operator === 'SR' || operator === 'Korail';
+/**
+ * SR station codes returned by POST /hpg/hra/01/selectStnCdInfo.do.
+ * GET selectScheduleList.do applies dptRsStnCd, arvRsStnCd, and dptDt.
+ * Korail's ticket page and the bus booking forms do not.
+ */
+const SR_STATION_CODES = {
+  수서: '0551',
+  서울: '0001',
+  광주송정: '0036',
+  마산: '0059',
+  강릉: '0115',
+};
+
+function srStationCode(name) {
+  const compact = String(name || '').trim().replace(/\s+/g, '');
+  const key = compact.endsWith('역') ? compact.slice(0, -1) : compact;
+  return SR_STATION_CODES[key] || '';
+}
+
+function compactServiceDate(value) {
+  const raw = String(value || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw.replace(/-/g, '');
+  if (/^\d{8}$/.test(raw)) return raw;
+  return '';
+}
+
+function objectParticle(word) {
+  const chars = Array.from(String(word || '').trim());
+  for (let i = chars.length - 1; i >= 0; i -= 1) {
+    const code = chars[i].codePointAt(0);
+    if (code >= 0xac00 && code <= 0xd7a3) {
+      return (code - 0xac00) % 28 === 0 ? '를' : '을';
+    }
+  }
+  return '을';
+}
+
+function srSearchHref(option) {
+  if (String(option?.bookingOperator || '').trim() !== 'SR') return '';
+  const depCode = srStationCode(option?.depStation);
+  const arrCode = srStationCode(option?.arrStation);
+  const date = compactServiceDate(option?.serviceDate);
+  if (!depCode || !arrCode || !date || depCode === arrCode) return '';
+  const params = new URLSearchParams({
+    pageId: 'TK0101010000',
+    dptRsStnCd: depCode,
+    arvRsStnCd: arrCode,
+    dptRsStnCdNm: String(option.depStation).trim(),
+    arvRsStnCdNm: String(option.arrStation).trim(),
+    dptDt: date,
+    dptTm: '000000',
+    isRequest: 'Y',
+  });
+  return `https://etk.srail.kr/hpg/hra/01/selectScheduleList.do?${params.toString()}`;
+}
+
+function bookingText(option, locale) {
   const en = englishLocale(locale);
-  const text = named
-    ? (en ? `Book · ${operator}` : `${operator} 예매`)
-    : (en ? 'Book' : '예매');
-  return { href, text };
+  const operator = String(option?.bookingOperator || '').trim();
+  if (operator === 'SR' || operator === 'Korail') {
+    return en ? `Book · ${operator}` : `${operator} 예매`;
+  }
+  if (option?.mode === 'expBus') return en ? 'Book express bus' : '고속버스 예매';
+  if (option?.mode === 'suburbsBus') return en ? 'Book intercity bus' : '시외버스 예매';
+  return en ? 'Book' : '예매';
+}
+
+export function bookingLink(option, locale = 'ko') {
+  const home = String(option?.bookingUrl || '');
+  const deep = srSearchHref(option);
+  const href = deep || home;
+  if (!/^https:\/\//.test(href)) return null;
+  const dep = String(option?.depStation || '').trim();
+  const arr = String(option?.arrStation || '').trim();
+  const segment = deep || !dep || !arr ? null : { dep, arr, particle: objectParticle(arr) };
+  return { href, text: bookingText(option, locale), segment };
 }
 
 function sourceMeta(card) {
@@ -220,8 +286,12 @@ export function buildAccessView(card) {
   return { status: 'ready', origins, source };
 }
 
-export function preferredOriginId(origins) {
+export function preferredOriginId(origins, contentId) {
   if (!origins?.length) return '';
+  if (String(contentId || '') === '638576') {
+    const yongsan = origins.find((origin) => origin.originId === 'yongsan');
+    if (yongsan) return yongsan.originId;
+  }
   const seoul = origins.find((origin) => origin.originId === 'seoul-station');
   return (seoul || origins[0]).originId;
 }
