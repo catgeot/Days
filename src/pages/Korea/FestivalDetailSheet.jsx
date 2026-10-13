@@ -1143,7 +1143,7 @@ export default function FestivalDetailSheet({
 
   useEffect(() => {
     setHeroPhotoDecoded(false);
-  }, [item?.contentId, activeImage, imageUrls[activeImage]]);
+  }, [item?.contentId, activeImage]);
 
   useEffect(() => {
     const seed = toHttps(festivalImage(item));
