@@ -590,7 +590,6 @@ const YouTubePlayerView = forwardRef(({
           </div>
           <div className="absolute bottom-12 text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
              <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{displayTitle(uiVideo?.title)}</p>
-             <p className="text-[10px] md:text-xs text-white/60 tracking-wider uppercase mt-1">Click to Play</p>
           </div>
           {retrySessionYoutubeCta && watchOnYouTubeButton ? (
             <div
