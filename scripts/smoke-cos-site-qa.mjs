@@ -73,7 +73,7 @@ assert(
     time: 'Month',
     tasteSuffix: '',
     t: tEn,
-  }) === "Gyeonggi Province · This month's festivals festival list",
+  }) === "Gyeonggi Province · This month's festivals",
   'EN Gyeonggi headline',
 );
 

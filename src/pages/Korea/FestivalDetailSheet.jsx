@@ -306,7 +306,7 @@ function nearbyThumbUrls(spot, extraThumb) {
 function NearbyThumbPlaceholder() {
   return (
     <div
-      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800"
+      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-stone-200 text-stone-600"
       data-nearby-thumb="empty"
     >
       <Landmark size={18} aria-hidden="true" />
@@ -404,7 +404,12 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
     <li>
       <Inner
         {...innerProps}
-        className={clickable ? NEARBY_ATTRACTION_ROW_CLICKABLE : NEARBY_ATTRACTION_ROW_BASE}
+        tabIndex={clickable ? undefined : -1}
+        className={
+          clickable
+            ? NEARBY_ATTRACTION_ROW_CLICKABLE
+            : `${NEARBY_ATTRACTION_ROW_BASE} outline-none`
+        }
       >
         <NearbyRowThumb spot={spot} extraThumb={extraThumb} imagePending={imagePending} />
         <span className="min-w-0 flex-1">

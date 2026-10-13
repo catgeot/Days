@@ -330,7 +330,7 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
       assert.equal(/\d{1,2}:\d{2}~/.test(en), false);
     }
   }
-  assert.match(factValueForLocale('cairo', CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'), 'en'), /A~D/);
+  assert.match(factValueForLocale('cairo', CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'), 'en'), /A–D/);
 
   assert.deepEqual(
     splitFactTimeRanges('windows 08:30–11:00, 11:00–13:00 and 09:00~18:00').filter((part) => part.type === 'time').map((part) => part.text),
