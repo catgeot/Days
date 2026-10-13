@@ -157,6 +157,8 @@ function TnaStripCard({ item, locale, t, large = false }) {
  *   title?: string,
  *   hint?: string,
  *   hideWhenEmpty?: boolean,
+ *   onFetchStatusChange?: (status: string) => void,
+ *   suppressInlineLoading?: boolean,
  * }} props
  */
 export default function EventTnaStrip({
@@ -169,6 +171,8 @@ export default function EventTnaStrip({
   title,
   hint,
   hideWhenEmpty = false,
+  onFetchStatusChange,
+  suppressInlineLoading = false,
 }) {
   const { t } = useTranslation();
   const [items, setItems] = useState(null);
@@ -192,6 +196,10 @@ export default function EventTnaStrip({
 
   const effectiveKeyword = resolvedQuery?.keyword || '';
   const fetchKey = `${location?.slug || ''}|${effectiveKeyword}|${(resolvedQuery?.nearbyKeywords || []).join(',')}`;
+
+  useEffect(() => {
+    onFetchStatusChange?.(status);
+  }, [status, onFetchStatusChange]);
 
   useEffect(() => {
     if (!eligible || !effectiveKeyword) {
@@ -295,7 +303,7 @@ export default function EventTnaStrip({
         </div>
       </div>
 
-      {status === 'loading' ? (
+      {status === 'loading' && !suppressInlineLoading ? (
         <div className="flex items-center justify-center gap-2 py-8 text-sm text-stone-500">
           <Loader2 size={18} className="animate-spin text-amber-600" aria-hidden />
           {t('worldEventDetail.tnaStrip.loading')}

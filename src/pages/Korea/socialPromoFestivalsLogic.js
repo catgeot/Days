@@ -70,6 +70,7 @@ export function mergeFestivalRowItem(primary, overlay) {
     ...primary,
     ...overlay,
     title: pickStr(overlay.title, primary.title),
+    titleEn: pickStr(overlay.titleEn, primary.titleEn),
     firstimage,
     imageUrl,
     eventStartDate: pickStr(overlay.eventStartDate, primary.eventStartDate),

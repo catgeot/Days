@@ -6,6 +6,7 @@ import {
 import { JEONNAM_GWANGJU_INTEGRATED_SIDO_LEGAL_NAME } from '../Home/lib/koreaTourAddrNormalize.js';
 import { JEONNAM_GWANGJU_INTEGRATED_LEGAL_EN } from '../../i18n/koreaRegionEn.js';
 import { sidoListPhrase } from './festivalRegionTags.js';
+import { isNationwideRegionFilter } from './socialPromoFestivalsLogic.js';
 
 const INTEGRATED_PANEL_SIDO = new Set(['5', '38']);
 
@@ -23,25 +24,57 @@ export function buildFestivalPanelListMetaSegments({
   count,
   t,
   locale = 'ko',
+  listLoading = false,
 }) {
   const code = String(areaCode || '');
+  /** @type {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} */
+  const segments = [];
+
+  const showCount = !(listLoading && count === 0);
+
+  if (isNationwideRegionFilter(code, cityName)) {
+    segments.push({
+      id: 'scope',
+      text: isEnLocale(locale)
+        ? t('korea.festival.panelNationwideScope', { defaultValue: 'Nationwide' })
+        : t('korea.common.nationwide'),
+      nowrap: true,
+    });
+    if (showCount) {
+      segments.push({
+        id: 'count',
+        text: t('korea.common.countUnit', { count }),
+        nowrap: true,
+      });
+    }
+    segments.push({
+      id: 'regionGroup',
+      text: t('korea.festival.panelNationwideGroup', {
+        defaultValue: isEnLocale(locale) ? 'By province' : '시·도별',
+      }),
+      nowrap: true,
+    });
+    return segments;
+  }
+
   const city = localizedFestivalCityListLabel(locale, areaCode, cityName);
   const sidoPhrase = localizedSidoListPhrase(
     locale,
     areaCode,
     sidoListPhrase(areaCode),
   );
-  const segments = [];
 
   const integratedSidoLevel =
     INTEGRATED_PANEL_SIDO.has(code) && !city && sidoPhrase;
 
   if (integratedSidoLevel) {
-    segments.push({
-      id: 'count',
-      text: t('korea.common.countUnit', { count }),
-      nowrap: true,
-    });
+    if (showCount) {
+      segments.push({
+        id: 'count',
+        text: t('korea.common.countUnit', { count }),
+        nowrap: true,
+      });
+    }
     const unit = localizedSubregionUnitLabel(locale, areaCode, t);
     segments.push({
       id: 'bySubregion',
@@ -68,11 +101,13 @@ export function buildFestivalPanelListMetaSegments({
     segments.push({ id: 'place', text: sidoPhrase, nowrap: true });
   }
 
-  segments.push({
-    id: 'count',
-    text: t('korea.common.countUnit', { count }),
-    nowrap: true,
-  });
+  if (showCount) {
+    segments.push({
+      id: 'count',
+      text: t('korea.common.countUnit', { count }),
+      nowrap: true,
+    });
+  }
 
   if ((sidoPhrase || city) && !city) {
     const unit = localizedSubregionUnitLabel(locale, areaCode, t);

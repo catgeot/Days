@@ -34,11 +34,11 @@ import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import { readNearbyAttractionCache } from './lib/nearbyAttractionCache';
+import { beginFestivalRestaurantLoad } from './lib/festivalRestaurantLoad.js';
 import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
 } from '../../utils/fetchNearbyTourRestaurants';
-import { beginFestivalRestaurantLoad } from './lib/festivalRestaurantLoad.js';
 import {
   CULTURE_CONTENT_TYPE_ID,
   fetchNearbyTourCulture,
@@ -62,7 +62,6 @@ import {
   mergeFestivalNearbySights,
   rankMooniNearbySights,
   stripTrailingHubName,
-  stripTrailingRegionLabel,
 } from './lib/festivalNearbySights.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
@@ -335,34 +334,47 @@ function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
   const urls = nearbyThumbUrls(spot, extraThumb);
   const urlKey = urls.join('\n');
   const [thumbIndex, setThumbIndex] = useState(0);
+  const [ready, setReady] = useState(false);
   const [seenKey, setSeenKey] = useState(urlKey);
   if (seenKey !== urlKey) {
     setSeenKey(urlKey);
     setThumbIndex(0);
+    setReady(false);
   }
   const thumb = urls[thumbIndex] || '';
+  const noteLoaded = (img) => {
+    if (img?.complete && img.naturalWidth > 0) setReady(true);
+  };
   if (!thumb) {
     if (imagePending) return <NearbyThumbSkeleton />;
     return <NearbyThumbPlaceholder />;
   }
-  const tryNextUrl = () => setThumbIndex((i) => i + 1);
-  const lastUrl = thumbIndex + 1 >= urls.length;
   return (
-    <FestivalPhotoFrame
-      key={thumb}
-      src={thumb}
-      alt=""
-      loading="eager"
-      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-      fallback={
-        imagePending && lastUrl ? (
-          <NearbyThumbSkeleton />
-        ) : (
-          <NearbyThumbPlaceholder />
-        )
-      }
-      onFailed={tryNextUrl}
-    />
+    <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200">
+      {ready ? null : (
+        <span
+          className="absolute inset-0 animate-pulse bg-stone-200"
+          data-nearby-thumb="pending"
+          data-nearby-thumb-pending=""
+        />
+      )}
+      <img
+        key={thumb}
+        src={thumb}
+        alt=""
+        loading="eager"
+        decoding="async"
+        ref={noteLoaded}
+        onLoad={(event) => noteLoaded(event.currentTarget)}
+        onError={(event) => {
+          if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
+          setReady(false);
+          setThumbIndex((i) => i + 1);
+        }}
+        className="relative h-14 w-14 object-cover"
+        data-nearby-thumb={ready ? 'photo' : 'pending'}
+      />
+    </span>
   );
 }
 
@@ -370,6 +382,10 @@ function nearbySightTitle(spot) {
   const hubName = spot?.hubId ? resolveCityAttractionHub(spot.hubId)?.name : '';
   return stripTrailingHubName(spot?.name, hubName);
 }
+
+const NEARBY_ATTRACTION_ROW_BASE =
+  'flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left';
+const NEARBY_ATTRACTION_ROW_CLICKABLE = `${NEARBY_ATTRACTION_ROW_BASE} focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90 focus-visible:ring-offset-1 [@media(hover:hover)]:hover:bg-amber-50 [@media(hover:hover)]:hover:border-amber-300 transition-colors`;
 
 function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect }) {
   const dist = formatDistKm(spot.distKm);
@@ -382,16 +398,17 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
   const innerProps = clickable
     ? {
         type: 'button',
-        onClick: () => onSelect?.(mergeNearbyRowWithLocalScenicDetail(spot)),
+        onClick: (event) => {
+          onSelect?.(mergeNearbyRowWithLocalScenicDetail(spot));
+          event.currentTarget.blur();
+        },
       }
     : {};
   return (
     <li>
       <Inner
         {...innerProps}
-        className={`flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left ${
-          clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
-        }`}
+        className={clickable ? NEARBY_ATTRACTION_ROW_CLICKABLE : NEARBY_ATTRACTION_ROW_BASE}
       >
         <NearbyRowThumb spot={spot} extraThumb={extraThumb} imagePending={imagePending} />
         <span className="min-w-0 flex-1">
@@ -624,6 +641,12 @@ export default function FestivalDetailSheet({
   const [nearbyCultureStatus, setNearbyCultureStatus] = useState('idle');
   const [nearbyCourses, setNearbyCourses] = useState([]);
   const [nearbyCoursesStatus, setNearbyCoursesStatus] = useState('idle');
+  const [stayStripStatus, setStayStripStatus] = useState('idle');
+  const [tnaStripStatus, setTnaStripStatus] = useState('idle');
+  useEffect(() => {
+    setStayStripStatus('idle');
+    setTnaStripStatus('idle');
+  }, [item?.contentId]);
   const [selectedNearby, setSelectedNearby] = useState(null);
   const [selectedScenic, setSelectedScenic] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -838,7 +861,9 @@ export default function FestivalDetailSheet({
     nearbyFoodStatus === 'loading' ||
     nearbyLeportsStatus === 'loading' ||
     nearbyCultureStatus === 'loading' ||
-    nearbyCoursesStatus === 'loading';
+    nearbyCoursesStatus === 'loading' ||
+    (showFestivalStayStrip && stayStripStatus === 'loading') ||
+    (showFestivalTnaStrip && tnaStripStatus === 'loading');
 
   const openScenicPage = () => {
     const back = {
@@ -1399,31 +1424,24 @@ export default function FestivalDetailSheet({
   );
 
   const mooniNearbyPlaces = useMemo(() => {
-    const festivalHub = String(
-      mooniEntryLocation?.name || mooniEntryLocation?.parentCity || '',
-    ).trim();
-    const rows = [];
-    for (const spot of rankMooniNearbySights(nearbySights.items, 12)) {
-      const name = stripTrailingRegionLabel(nearbySightTitle(spot), festivalHub);
-      if (!name || rows.some((row) => row.name === name)) continue;
-      const distKm = Number(spot?.distKm);
-      rows.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
+    const names = [];
+    for (const spot of rankMooniNearbySights(nearbySights.items, 6)) {
+      const name = String(spot?.name || '').trim();
+      if (!name || names.includes(name)) continue;
+      names.push(name);
     }
-    return rows;
-  }, [nearbySights, mooniEntryLocation]);
+    return names;
+  }, [nearbySights]);
 
   const mooniNearbyRestaurants = useMemo(() => {
-    const rows = [];
-    const seen = new Set();
+    const names = [];
     for (const spot of nearbyFood) {
       const name = String(spot?.name || '').trim();
-      if (!name || seen.has(name)) continue;
-      seen.add(name);
-      const distKm = Number(spot?.distKm);
-      rows.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
-      if (rows.length >= 24) break;
+      if (!name || names.includes(name)) continue;
+      names.push(name);
+      if (names.length >= 24) break;
     }
-    return rows;
+    return names;
   }, [nearbyFood]);
 
   const festivalMooni = useFestivalMooniEntry({
@@ -1437,7 +1455,6 @@ export default function FestivalDetailSheet({
     nearbyPlaces: mooniNearbyPlaces,
     nearbyRestaurants: mooniNearbyRestaurants,
     stayAreas: festivalCross?.stayAreas,
-    info: infoItems,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {
@@ -2181,7 +2198,9 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {!festivalEnded && showFestivalStayStrip && (detailLoading || nearbyPending) ? (
+              {!festivalEnded &&
+              showFestivalStayStrip &&
+              (detailLoading || nearbyPending || stayStripStatus === 'loading') ? (
                 <div
                   className="h-28 rounded-2xl bg-stone-100"
                   data-festival-lodging-reserve=""
@@ -2208,6 +2227,8 @@ export default function FestivalDetailSheet({
                     item={item}
                     festivalCross={festivalCross}
                     locale={locale}
+                    onFetchStatusChange={setStayStripStatus}
+                    suppressInlineStayLoading={belowSectionsLoading}
                   />
                 </div>
               ) : null}
@@ -2218,6 +2239,8 @@ export default function FestivalDetailSheet({
                     item={item}
                     festivalCross={festivalCross}
                     locale={locale}
+                    onFetchStatusChange={setTnaStripStatus}
+                    suppressInlineLoading={belowSectionsLoading}
                   />
                 </div>
               ) : null}

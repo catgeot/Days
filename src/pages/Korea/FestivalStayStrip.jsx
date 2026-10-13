@@ -10,9 +10,17 @@ import { festivalLngLat } from './koreaFestivalCorridors.js';
  *   item: Record<string, unknown>,
  *   festivalCross: ReturnType<import('../Home/lib/koreaThemeCrossLinks').resolveFestivalThemeCrossLinks>,
  *   locale?: string,
+ *   onFetchStatusChange?: (status: string) => void,
+ *   suppressInlineStayLoading?: boolean,
  * }} props
  */
-export default function FestivalStayStrip({ item, festivalCross, locale = 'ko' }) {
+export default function FestivalStayStrip({
+  item,
+  festivalCross,
+  locale = 'ko',
+  onFetchStatusChange,
+  suppressInlineStayLoading = false,
+}) {
   const event = useMemo(() => worldEventFromTourApiFestival(item), [item]);
   const location = festivalCross?.stay?.location;
   const stayHubId = location?.hubId || festivalCross?.stayAreas?.[0]?.hubId;
@@ -64,6 +72,8 @@ export default function FestivalStayStrip({ item, festivalCross, locale = 'ko' }
       stayAreas={stayAreas}
       contentId={String(item?.contentId || '')}
       stayOrigin={stayOrigin}
+      onFetchStatusChange={onFetchStatusChange}
+      suppressInlineStayLoading={suppressInlineStayLoading}
     />
   );
 }
