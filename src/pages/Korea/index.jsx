@@ -3294,7 +3294,7 @@ export default function KoreaFestivalHub() {
 
       {(selectedForSheet || selected || festivalDeepLink.sheet === 'loading') && (
         <FestivalDetailSheet
-          key={`${festivalId || 'sheet'}-${locale}`}
+          key={festivalId || 'sheet'}
           item={selectedForSheet}
           pending={
             festivalDeepLink.sheet === 'loading' ||

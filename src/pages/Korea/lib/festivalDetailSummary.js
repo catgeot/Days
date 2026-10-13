@@ -70,11 +70,13 @@ function localizeFestivalTextLine(raw, { descriptive = false } = {}) {
   if (!text || !hasHangul(text)) return text;
   if (descriptive) {
     const described = translateDescriptiveKorean(text);
-    if (described && !hasHangul(described)) return `${described} (${text})`;
+    if (described && !hasHangul(described)) return described;
+    return `Admission details (${text})`;
   }
   const labeled = formatEnglishThenKorean(text);
   if (labeled && labeled !== text) return labeled;
-  return text;
+  if (descriptive) return `Admission details (${text})`;
+  return `Venue (${text})`;
 }
 
 /**

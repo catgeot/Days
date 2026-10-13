@@ -129,6 +129,7 @@ import {
 } from './festivalDeepLinkItem';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
+import { isFestivalPhotoDecoded } from './festivalPhotoFrame.js';
 import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
 import {
@@ -1744,6 +1745,15 @@ export default function FestivalDetailSheet({
   }, [item?.contentId, showFestivalStayStrip]);
 
   const festivalEnded = isFestivalEnded(item?.eventEndDate || intro?.eventEndDate);
+  const heroUrlForDecode = imageUrls[activeImage] || imageUrls[0] || '';
+
+  useLayoutEffect(() => {
+    if (!heroUrlForDecode) return;
+    const img = document.querySelector('[data-festival-hero] img[data-festival-photo]');
+    if (isFestivalPhotoDecoded(img)) {
+      setHeroPhotoDecoded(true);
+    }
+  }, [heroUrlForDecode, locale]);
 
   if (!item) {
     if (!pending) return null;
@@ -1886,7 +1896,7 @@ export default function FestivalDetailSheet({
               }
             >
               <FestivalHeroPhoto
-                key={`${hero}-${locale}`}
+                key={hero || 'hero'}
                 src={hero}
                 onLoaded={() => {
                   setHeroPhotoDecoded(true);

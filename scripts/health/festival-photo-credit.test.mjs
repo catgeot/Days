@@ -35,9 +35,24 @@ test('EN credit generalizes 출처 prefix and KOGL types', () => {
 
 test('festival detail sheet gates credit on heroPhotoDecoded with locale formatter', () => {
   const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
+  const index = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
   assert.match(sheet, /formatFestivalPhotoCreditLine/);
   assert.match(sheet, /activePhotoCredit && heroPhotoDecoded/);
   assert.doesNotMatch(sheet, /\{imageCredits\[activeImage\]\}/);
   assert.match(sheet, /onSelectHeroImage/);
-  assert.match(sheet, /key=\{`\$\{hero\}-\$\{locale\}`\}/);
+  assert.doesNotMatch(sheet, /key=\{`\$\{hero\}-\$\{locale\}`\}/);
+  assert.match(sheet, /isFestivalPhotoDecoded/);
+  assert.match(index, /key=\{festivalId \|\| 'sheet'\}/);
+  assert.doesNotMatch(index, /key=\{`\$\{festivalId.*\}-\$\{locale\}`\}/);
+});
+
+test('?lang=en deep link — boot reads URL lang before storage (EN credit path)', () => {
+  const localeProvider = readFileSync(
+    join(root, 'src/i18n/LocaleProvider.jsx'),
+    'utf8',
+  );
+  const browserHint = readFileSync(join(root, 'src/i18n/browserLocaleHint.js'), 'utf8');
+  assert.match(browserHint, /if \(isAppLocale\(urlLang\)\) return urlLang/);
+  assert.match(localeProvider, /resolveBootLocaleFromSearchParams/);
+  assert.match(localeProvider, /resolveLocaleFromUrl\(searchParams\)/);
 });

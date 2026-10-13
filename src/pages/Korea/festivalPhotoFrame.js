@@ -123,6 +123,7 @@ export function FestivalPhotoFrame({
     createElement('img', {
       ref: (el) => {
         imgRef.current = el;
+        syncFromImg(el);
       },
       src,
       alt,
