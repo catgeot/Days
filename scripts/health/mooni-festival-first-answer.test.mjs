@@ -81,6 +81,8 @@ import {
 import {
   expandCompactDates,
   appendFestivalAccessBookingLinks,
+  dedupeFestivalAccessBookingFooters,
+  ensureFestivalAccessStepLineBreaks,
   rewriteFestivalFormalEndings,
   stripDisallowedFestivalLinks,
   stripDomesticEntryDocLines,
@@ -593,7 +595,8 @@ test('festival access hint urges real routes when TAGO times are missing', async
   assert.doesNotMatch(gukhyang.hint, /^- 개요:/m);
   assert.match(gukhyang.hint, /함평역/);
   assert.match(gukhyang.hint, /역에서 축제장까지/);
-  assert.match(gukhyang.hint, /KTX 직행이라고 말하지 마세요/);
+  assert.match(gukhyang.hint, /KTX는 평소 함평역에 정차하지 않/);
+  assert.match(gukhyang.hint, /무궁화·ITX-새마을/);
   assert.match(gukhyang.hint, /광주송정/);
   const masan = await resolveMooniChatKoreaFestivalHint({
     chipId: 'festival_access',
@@ -2576,6 +2579,30 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(accessFooter, /bustago\.or\.kr/);
   assert.match(accessFooter, /letskorail\.com/);
   assert.match(accessFooter, /kobus\.co\.kr/);
+  assert.match(accessFooter, /txbus\.t-money\.co\.kr/);
+  const modelFooterDup = polishFestivalModelReply(
+    [
+      '동대구역에서 KTX로 마산역에 도착해요.',
+      '',
+      '열차·버스 시각은 [코레일](https://www.letskorail.com/), [고속버스](https://www.kobus.co.kr/), [시외버스](https://txbus.t-money.co.kr/)에서 확인할 수 있어요.',
+      '',
+      '열차·버스 시각은 [코레일](https://www.letskorail.com/), [고속버스](https://www.kobus.co.kr/), [시외버스](https://txbus.t-money.co.kr/)에서 편하게 확인할 수 있어요.',
+    ].join('\n'),
+    {
+      contentId: '637693',
+      chipId: 'festival_access',
+      locale: 'ko',
+      userText: buildFestivalAccessAskText('daegu', 'ko'),
+      eventStartDate: '20261031',
+      eventEndDate: '20261108',
+    },
+  );
+  assert.equal((modelFooterDup.match(/열차·버스 시각은/g) || []).length, 1);
+  const accessSteps = ensureFestivalAccessStepLineBreaks(
+    '용산역에서 ITX-새마을로 함평역까지 가요. KTX는 광주송정에서 내린 뒤 ITX로 이어요. 함평역에서 택시로 함평엑스포공원까지 가면 돼요.',
+  );
+  assert.ok(accessSteps.includes('\n\n'));
+  assert.match(accessSteps, /KTX는 광주송정/);
   const accessFooterPartial = appendFestivalAccessBookingLinks(
     '대구에서 KTX로 가요. [코레일](https://www.letskorail.com/)',
     'ko',

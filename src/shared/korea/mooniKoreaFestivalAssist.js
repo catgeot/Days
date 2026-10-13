@@ -303,6 +303,58 @@ const OFFICIAL_SITE_LABEL_RE = /^(?:공식\s*홈페이지|official\s+site)$/i;
 export const FESTIVAL_ACCESS_KORAIL_URL = 'https://www.letskorail.com/';
 export const FESTIVAL_ACCESS_BUSTAGO_URL = 'https://www.bustago.or.kr/';
 export const FESTIVAL_ACCESS_KOBUS_URL = 'https://www.kobus.co.kr/';
+export const FESTIVAL_ACCESS_TXBUS_URL = 'https://txbus.t-money.co.kr/';
+
+const BOOKING_SITE_CHECKS = [
+  { id: 'korail', re: /(?:lets)?korail\.com/i },
+  { id: 'kobus', re: /kobus\.co\.kr/i },
+  { id: 'bustago', re: /bustago\.or\.kr/i },
+  { id: 'txbus', re: /txbus\.t-money\.co\.kr/i },
+];
+
+function festivalAccessBookingDomainsInText(text) {
+  const found = new Set();
+  for (const { id, re } of BOOKING_SITE_CHECKS) {
+    if (re.test(String(text || ''))) found.add(id);
+  }
+  return found;
+}
+
+function hasFestivalAccessBookingFooterParagraph(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const startRe = en ? /^Check train and bus schedules on\b/i : /^열차·버스 시각은\b/;
+  return String(text || '')
+    .split(/\n\n/)
+    .some((block) => startRe.test(block.trim()));
+}
+
+/** Keep one booking footer block when the model already echoed the client footer. */
+export function dedupeFestivalAccessBookingFooters(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const footerRe = en
+    ? /\n\nCheck train and bus schedules on[\s\S]*?(?=\n\n|$)/gi
+    : /\n\n열차·버스 시각은[\s\S]*?(?=\n\n|$)/g;
+  const body = String(text || '').trim();
+  const matches = [...body.matchAll(footerRe)];
+  if (matches.length <= 1) return body;
+  const keep = matches[matches.length - 1][0];
+  let out = body;
+  for (const match of matches.slice(0, -1)) {
+    out = out.replace(match[0], '');
+  }
+  if (!out.includes(keep.trim())) out = `${out.trim()}${keep}`.trim();
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function shouldSkipFestivalAccessBookingFooterAppend(body) {
+  const domains = festivalAccessBookingDomainsInText(body);
+  if (hasFestivalAccessBookingFooterParagraph(body) && domains.has('korail')) return true;
+  if (!domains.has('korail')) return false;
+  const busSites = (domains.has('kobus') ? 1 : 0)
+    + (domains.has('bustago') ? 1 : 0)
+    + (domains.has('txbus') ? 1 : 0);
+  return busSites >= 2;
+}
 
 function isAllowedFestivalMarkdownUrl(url, homepage = '') {
   const clean = String(url || '').trim();
@@ -321,33 +373,58 @@ function isAllowedFestivalBareUrl(url) {
 
 /** Client footer for festival_access — booking links the model may omit. */
 export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
-  const body = String(text || '').trim();
+  const body = dedupeFestivalAccessBookingFooters(String(text || '').trim(), locale);
+  if (shouldSkipFestivalAccessBookingFooterAppend(body)) return body;
   const en = String(locale || '').slice(0, 2) === 'en';
-  const hasKorail = /letskorail\.com/i.test(body);
-  const hasBustago = /bustago\.or\.kr/i.test(body);
-  const hasKobus = /kobus\.co\.kr/i.test(body);
-  if (hasKorail && hasBustago && hasKobus) return body;
+  const domains = festivalAccessBookingDomainsInText(body);
   const links = [];
-  if (!hasKorail) {
+  if (!domains.has('korail')) {
     links.push(en
       ? `[Korail](${FESTIVAL_ACCESS_KORAIL_URL})`
       : `[코레일](${FESTIVAL_ACCESS_KORAIL_URL})`);
   }
-  if (!hasBustago) {
+  if (!domains.has('bustago')) {
     links.push(en
       ? `[BUSTAGO](${FESTIVAL_ACCESS_BUSTAGO_URL})`
       : `[버스타고](${FESTIVAL_ACCESS_BUSTAGO_URL})`);
   }
-  if (!hasKobus) {
+  if (!domains.has('kobus')) {
     links.push(en
       ? `[KOBUS](${FESTIVAL_ACCESS_KOBUS_URL})`
       : `[고속버스](${FESTIVAL_ACCESS_KOBUS_URL})`);
+  }
+  if (!domains.has('txbus')) {
+    links.push(en
+      ? `[intercity bus](${FESTIVAL_ACCESS_TXBUS_URL})`
+      : `[시외버스](${FESTIVAL_ACCESS_TXBUS_URL})`);
   }
   if (!links.length) return body;
   const footer = en
     ? `\n\nCheck train and bus schedules on ${links.join(', ')}.`
     : `\n\n열차·버스 시각은 ${links.join(', ')}에서 편하게 확인할 수 있어요.`;
   return body ? `${body}${footer}` : footer.trim();
+}
+
+const FESTIVAL_ACCESS_STEP_LEAD_RE =
+  /^(?:먼저|다음|그다음|그\s*다음|이어서|마지막으로|마지막|KTX|SRT|ITX|무궁화|버스|자가용|택시|광주|나주|용산|서울역)/;
+
+/** Preserve model newlines; insert breaks between route steps when the reply is one block. */
+export function ensureFestivalAccessStepLineBreaks(text) {
+  let s = String(text || '').replace(/\r\n/g, '\n').trim();
+  if (!s) return s;
+  s = s.replace(/([.!?。])\s+(?=[^\n])/g, '$1\n');
+  const lines = s.split('\n').map((line) => line.trim()).filter(Boolean);
+  if (lines.length >= 2) return lines.join('\n\n');
+  const sentences = s.split(/(?<=[.!?。])\s+/).map((part) => part.trim()).filter(Boolean);
+  if (sentences.length < 2) return s;
+  const parts = [];
+  for (let i = 0; i < sentences.length; i += 1) {
+    const sent = sentences[i];
+    if (i > 0 && FESTIVAL_ACCESS_STEP_LEAD_RE.test(sent)) parts.push('\n\n');
+    else if (i > 0) parts.push(' ');
+    parts.push(sent);
+  }
+  return parts.join('').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 const SECTION_CTA_LABELS = [
@@ -1520,8 +1597,10 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = stripMooniGuideFiller(text);
   }
   if (isBoundFestivalAccessPolish(options)) {
+    text = ensureFestivalAccessStepLineBreaks(text);
     text = ensureFestivalAccessPeriodLine(text, options);
     text = appendFestivalAccessBookingLinks(text, options.locale);
+    text = dedupeFestivalAccessBookingFooters(text, options.locale);
   }
   return text;
 }
@@ -1545,8 +1624,8 @@ function festivalAccessVenueGuidanceLines(ctx, locale = 'ko') {
   if (id === '638576' || /함평|국향/.test(blob)) {
     const addr = String(ctx?.address || '').trim();
     lines.push(en
-      ? `- Last leg: travelers care most about the hop from the station to the venue. The festival is at Hampyeong Expo Park${addr ? ` (${addr})` : ''}. Do not say a direct KTX from Seoul or Yongsan to Hampyeong Station — long-distance KTX usually ends at Gwangju Songjeong (or Naju), then ITX/Mugunghwa to Hampyeong Station. Continue with local bus or taxi to the park, name the transfer point, and add a driving option. Hampyeong Station and Hampyeong public bus terminal are the usual local hops; say rough time as "about N minutes" only when helpful.`
-      : `- 마지막 구간: 여행자는 역에서 축제장까지 어떻게 가는지가 가장 궁금해요. 축제장은 함평엑스포공원${addr ? `(${addr})` : ''}이에요. 서울·용산에서 함평역까지 KTX 직행이라고 말하지 마세요. 장거리 KTX는 보통 광주송정(또는 나주)에서 내리고, 광주송정·나주에서 ITX·무궁화 등으로 함평역에 이어져요. 함평역·함평공용버스터미널에서 함평엑스포공원까지 시내버스·택시를 짧게 안내하고, 자가용 옵션도 함께 말해 주세요. 대략 10~20분대(교통에 따라 다름)처럼만 말하고, 확인된 요금·시각만 쓰세요.`);
+      ? `- Routes: KTX does not normally stop at Hampyeong Station (only occasional butterfly-festival extras). From Yongsan, Mugunghwa or ITX-Saemaul direct to Hampyeong takes about 4h10–50m with no transfer — present that alongside KTX to Gwangju Songjeong then a local train or bus. Do not claim Seoul–Hampyeong KTX. Last leg: after Hampyeong Station or the bus terminal, continue to Hampyeong Expo Park${addr ? ` (${addr})` : ''} by local bus or taxi (~10–20 min when helpful). Add a driving option. Use only confirmed fares and times.`
+      : `- 경로: KTX는 평소 함평역에 정차하지 않아요(나비축제 등 일시 운행만 예외). 용산에서 무궁화·ITX-새마을로 함평역까지 환승 없이 가는 편도 약 4시간 10분~50분대가 있어요 — KTX 광주송정 하차 후 환승과 함께 선택지로 짧게 비교해 주세요. 서울·용산→함평 KTX 직행이라고 말하지 마세요. 마지막 구간: 여행자는 역에서 축제장까지 어떻게 가는지가 가장 궁금해요. 함평역·함평공용버스터미널에서 함평엑스포공원${addr ? `(${addr})` : ''}까지 시내버스·택시, 자가용도 함께 안내해 주세요. 대략 10~20분대(교통에 따라 다름)처럼만 말하고, 확인된 요금·시각만 쓰세요.`);
   }
   if (id === '637693' || /해양누리|3·15|마산가고파|마산/.test(blob)) {
     lines.push(en
