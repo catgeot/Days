@@ -90,7 +90,7 @@ export function FestivalDetailFirstSummary({
       ref={sectionRef}
       data-festival-detail-summary=""
       className="rounded-2xl border border-stone-200/90 bg-gradient-to-b from-stone-50/90 to-white px-3.5 py-3 shadow-sm"
-      style={sectionMin.current > 0 ? { minHeight: sectionMin.current } : undefined}
+      style={reserveDetail && sectionMin.current > 0 ? { minHeight: sectionMin.current } : undefined}
     >
       <dl className="space-y-2">
         <SummaryRow label={dateLabel} dataKey="date">

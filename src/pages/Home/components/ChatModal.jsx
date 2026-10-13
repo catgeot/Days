@@ -55,6 +55,7 @@ import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
+import { composeFestivalAccessReply } from '../../Korea/lib/festivalTransportCard.js';
 import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
 import {
   festivalTripMatchesLocale,
@@ -1211,6 +1212,13 @@ const ChatModal = ({
       }
 
       const showPlannerHeader = mooniChatShowsPlannerHeaderButton(boundDestinationSlug);
+      const groundedReply = chipId === MOONI_CHIP_IDS.FESTIVAL_ACCESS
+        ? composeFestivalAccessReply(festivalContext?.transport, {
+          locale: i18n.language,
+          useSelected: sendOptions?.useCardTransport === true,
+          stations: prepared.groundOrigin?.stationsKo || '',
+        })
+        : '';
 
       const geminiParams = {
         locale: i18n.language,
@@ -1229,17 +1237,21 @@ const ChatModal = ({
       };
 
       const modelUserText = prepared.modelUserText;
-      const geminiResult = await invokeMooniChatToleratingChip(
-        (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
-        {
-          ...geminiParams,
-          history,
-          userText: modelUserText,
-        },
-      );
-      const aiReply = geminiResult.text;
+      const geminiResult = groundedReply
+        ? { text: groundedReply, truncated: false, finishReason: 'stop' }
+        : await invokeMooniChatToleratingChip(
+          (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
+          {
+            ...geminiParams,
+            history,
+            userText: modelUserText,
+          },
+        );
+      const aiReply = groundedReply || geminiResult.text;
 
-      const booking = resolveChatBookingActions({
+      const booking = groundedReply
+        ? { show: false, actions: [], plannerUrl: null, slug: null, itineraryBookingCompact: false }
+        : resolveChatBookingActions({
         userText: cleanText,
         destinationName: destName,
         slug,
@@ -1256,22 +1268,24 @@ const ChatModal = ({
           a.provider
         )
       );
-      const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
-        candidates: mooniFestivalCandidates,
-      });
+      const festivalMergedReply = groundedReply
+        ? groundedReply
+        : mergeMooniKoreaFestivalReply(aiReply, {
+          candidates: mooniFestivalCandidates,
+        });
       const stripPhantomTicketMention = !hasTransportCta;
       const lodgingOptions = festivalReplyOptions(festivalContext, {
         locale: i18n.language,
         chipId,
         userText: cleanText,
       });
-      const displayReply = polishFestivalModelReply(
+      const displayReply = groundedReply || polishFestivalModelReply(
         getMooniModelMarkdownForRender(festivalMergedReply, {
           stripPhantomTicketMention,
         }),
         lodgingOptions,
       );
-      const rawWithLodging = polishFestivalModelReply(festivalMergedReply, lodgingOptions);
+      const rawWithLodging = groundedReply || polishFestivalModelReply(festivalMergedReply, lodgingOptions);
       const { hadBracketLinks } = sanitizeMooniModelReply(rawWithLodging, {
         stripPhantomTicketMention,
       });
@@ -1448,7 +1462,21 @@ const ChatModal = ({
       chips: dockChips,
       onSelect: (text, persona, chip) =>
         handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
-      onDrillDown: (parentId) => setTopicDockParent(parentId),
+      onDrillDown: (parentId) => {
+        setTopicDockParent(parentId);
+        if (parentId !== FESTIVAL_ACCESS_PARENT) return;
+        const label = String(festivalMooniContext?.transport?.selected?.label || '').trim();
+        if (!label) return;
+        handleSend(
+          `${label}에서 이 축제장까지 확인된 열차와 버스 시각을 알려줘`,
+          PERSONA_TYPES.PLANNER,
+          {
+            chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS,
+            useCardTransport: true,
+            departureLabel: label,
+          },
+        );
+      },
       onBack: topicDockParent ? () => setTopicDockParent(null) : undefined,
       parentL1Label: topicDockParent
         ? getMooniL1ChipLabel(topicDockParent, { mobile: true })
@@ -1472,6 +1500,7 @@ const ChatModal = ({
       topicDockPrompt,
       showTopicDockPrompt,
       isMooniUi,
+      festivalMooniContext,
     ]
   );
 
@@ -1811,7 +1840,9 @@ const ChatModal = ({
                     ) : null}
                     {msg.role === 'user' ? 'Me' : 'MOONi'}
                   </span>
-                  <div className={`p-4 rounded-2xl text-base shadow-md w-full ${
+                  <div
+                    data-testid={isModelMsg ? 'mooni-model-reply' : undefined}
+                    className={`p-4 rounded-2xl text-base shadow-md w-full ${
                     msg.role === 'user'
                       ? tone(fresh, 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm', 'max-w-full md:max-w-[80%] bg-gradient-to-br from-sky-500 to-cyan-500 text-white rounded-tr-sm')
                       : msg.role === 'error'

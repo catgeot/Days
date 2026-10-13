@@ -296,6 +296,148 @@ export function preferredOriginId(origins, contentId) {
   return (seoul || origins[0]).originId;
 }
 
+const ACCESS_CARD_CAP = 3;
+
+function segmentCount(segment) {
+  return segment.rows.reduce((sum, row) => sum + (Number(row.dailyCount) || 0), 0);
+}
+
+/** One card per mode + departure + arrival. Grades stay as rows. */
+export function groupAccessSegments(options, { transfer = false } = {}) {
+  const segments = [];
+  const byKey = new Map();
+  for (const option of options || []) {
+    const depStation = String(option?.depStation || '').trim();
+    const arrStation = String(option?.arrStation || '').trim();
+    const mode = String(option?.mode || '');
+    if (!depStation || !arrStation || !mode) continue;
+    const key = `${mode}|${option.depStationId || depStation}|${option.arrStationId || arrStation}`;
+    let segment = byKey.get(key);
+    if (!segment) {
+      segment = {
+        key,
+        mode,
+        depStation,
+        arrStation,
+        venue: false,
+        transfer,
+        rows: [],
+      };
+      byKey.set(key, segment);
+      segments.push(segment);
+    }
+    if (option.venue === true || option.role === 'venue') segment.venue = true;
+    segment.rows.push(option);
+  }
+  for (const segment of segments) {
+    segment.rows.sort((a, b) => (
+      String(a.firstDeparture || '').localeCompare(String(b.firstDeparture || ''))
+      || String(a.grade || '').localeCompare(String(b.grade || ''))
+    ));
+  }
+  segments.sort((a, b) => {
+    if (a.venue !== b.venue) return a.venue ? -1 : 1;
+    return segmentCount(b) - segmentCount(a);
+  });
+  return segments;
+}
+
+/** At most three cards: direct venue, then other directs, then transfers. */
+export function selectAccessCards(origin) {
+  const direct = groupAccessSegments(origin?.direct, { transfer: false });
+  const hops = groupAccessSegments(origin?.hops, { transfer: true });
+  return [...direct, ...hops].slice(0, ACCESS_CARD_CAP);
+}
+
+function rowFact(option, locale) {
+  return {
+    grade: String(option.grade || '').trim(),
+    clock: formatClockRange(option.firstDeparture, option.lastDeparture, locale),
+    duration: formatDurationRange(option.durationMin, option.durationMax, locale),
+    fare: formatFareRange(option.fareAdultMin, option.fareAdultMax, locale),
+    count: formatRunCount(option, locale),
+  };
+}
+
+function factsForOrigin(origin, locale) {
+  return selectAccessCards(origin).map((card) => ({
+    key: card.key,
+    mode: card.mode,
+    dep: card.depStation,
+    arr: card.arrStation,
+    transfer: card.transfer === true,
+    rows: card.rows.map((row) => rowFact(row, locale)).filter((row) => row.clock && row.fare),
+  })).filter((segment) => segment.rows.length > 0);
+}
+
+/** Selected tab plus every origin, already capped, for the MOONi hint. */
+export function transportFactsFromView(view, origin, locale = 'ko') {
+  if (!origin) return null;
+  const origins = (view?.origins || [])
+    .map((row) => ({
+      originId: row.originId,
+      label: row.label,
+      segments: factsForOrigin(row, locale),
+    }))
+    .filter((row) => row.segments.length > 0);
+  const selected = origins.find((row) => row.originId === origin.originId) || null;
+  if (!selected) return null;
+  return { selected, origins };
+}
+
+function stationToken(name) {
+  return String(name || '').replace(/\s+/g, '').replace(/역$/, '').replace(/터미널$/, '');
+}
+
+export function departureCoversStation(stations, depStation) {
+  const dep = stationToken(depStation);
+  if (!dep) return false;
+  return String(stations || '').split('·').some((part) => stationToken(part) === dep);
+}
+
+/**
+ * Sentences that repeat the card clocks and fares. Empty when the selected tab has none.
+ * @param {{ selected?: { segments?: object[] }, origins?: Array<{ segments?: object[] }> } | null} transport
+ */
+export function composeFestivalAccessReply(transport, {
+  useSelected = false,
+  stations = '',
+  locale = 'ko',
+} = {}) {
+  if (!transport) return '';
+  let segments = [];
+  if (useSelected) {
+    segments = transport.selected?.segments || [];
+  } else {
+    for (const origin of transport.origins || []) {
+      for (const segment of origin.segments || []) {
+        if (!stations || departureCoversStation(stations, segment.dep)) segments.push(segment);
+      }
+    }
+    segments = segments.slice(0, ACCESS_CARD_CAP);
+  }
+  if (!segments.length) {
+    if (useSelected) return '';
+    return englishLocale(locale)
+      ? 'There are no confirmed train or bus times for this departure.'
+      : '이 출발지의 확인된 열차·버스 시각은 없어요.';
+  }
+  const en = englishLocale(locale);
+  const sentences = [];
+  for (const segment of segments) {
+    for (const row of segment.rows || []) {
+      const bits = [row.grade, row.clock, row.duration, row.fare, row.count]
+        .filter(Boolean)
+        .map((bit) => String(bit).replaceAll('~', '–'));
+      if (!bits.length) continue;
+      sentences.push(en
+        ? `${segment.dep} to ${segment.arr}: ${bits.join(', ')}.`
+        : `${segment.dep}에서 ${segment.arr}까지 ${bits.join(', ')}예요.`);
+    }
+  }
+  return sentences.join(' ');
+}
+
 export function groupOptionsByMode(options) {
   const groups = MODE_ORDER.map((mode) => ({
     mode,

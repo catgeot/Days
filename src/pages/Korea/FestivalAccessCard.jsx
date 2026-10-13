@@ -11,6 +11,8 @@ import {
   formatRunCount,
   groupOptionsByMode,
   preferredOriginId,
+  selectAccessCards,
+  transportFactsFromView,
   resolveFestivalTrainDate,
   shouldQueryFestivalTransport,
 } from './lib/festivalTransportCard.js';
@@ -24,28 +26,44 @@ const MODE_LABEL = {
 const askClass =
   'flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-bold text-stone-800 transition-colors hover:border-amber-300 hover:bg-amber-50';
 
-function OptionRow({ option, locale, t }) {
+function GradeLine({ option, locale }) {
   const clock = formatClockRange(option.firstDeparture, option.lastDeparture, locale);
   const duration = formatDurationRange(option.durationMin, option.durationMax, locale);
   const fare = formatFareRange(option.fareAdultMin, option.fareAdultMax, locale);
   const count = formatRunCount(option, locale);
   const grade = String(option.grade || '').trim();
   const facts = [grade, clock, duration, fare, count].filter(Boolean);
-  const book = bookingLink(option, locale);
+  if (!facts.length) return null;
+  return (
+    <li className="text-xs leading-snug text-stone-600 break-keep" data-festival-access-grade="">
+      {facts.join(' · ')}
+    </li>
+  );
+}
+
+function SegmentCard({ segment, locale, t }) {
+  const book = bookingLink(segment.rows[0], locale);
   return (
     <li
       className="rounded-xl border border-stone-200 bg-white px-3 py-2"
       data-festival-access-row=""
-      data-festival-access-mode={option.mode}
+      data-festival-access-segment={`${segment.depStation}|${segment.arrStation}|${segment.mode}`}
+      data-festival-access-mode={segment.mode}
     >
       <p className="text-sm font-bold leading-snug text-stone-900 break-keep">
-        {option.depStation}
+        {segment.depStation}
         <span aria-hidden="true"> → </span>
-        {option.arrStation}
+        {segment.arrStation}
       </p>
-      {facts.length > 0 ? (
-        <p className="mt-0.5 text-xs leading-snug text-stone-600 break-keep">{facts.join(' · ')}</p>
-      ) : null}
+      <ul className="mt-1 space-y-0.5">
+        {segment.rows.map((option) => (
+          <GradeLine
+            key={`${option.grade}|${option.firstDeparture}|${option.fareAdultMin}`}
+            option={option}
+            locale={locale}
+          />
+        ))}
+      </ul>
       {book ? (
         <>
           <a
@@ -68,20 +86,15 @@ function OptionRow({ option, locale, t }) {
   );
 }
 
-function OptionGroups({ options, locale, t }) {
-  const groups = groupOptionsByMode(options);
+function SegmentGroups({ cards, locale, t }) {
+  const groups = groupOptionsByMode(cards);
   if (!groups.length) return null;
   return groups.map((group) => (
     <div key={group.mode} className="space-y-1.5">
       <p className="text-[11px] font-bold text-stone-500">{t(MODE_LABEL[group.mode])}</p>
       <ul className="space-y-1.5">
-        {group.options.map((option) => (
-          <OptionRow
-            key={`${option.mode}|${option.depStationId}|${option.arrStationId}|${option.grade}|${option.firstDeparture}`}
-            option={option}
-            locale={locale}
-            t={t}
-          />
+        {group.options.map((segment) => (
+          <SegmentCard key={segment.key} segment={segment} locale={locale} t={t} />
         ))}
       </ul>
     </div>
@@ -96,6 +109,7 @@ function OptionGroups({ options, locale, t }) {
  *   eventEndDate?: string,
  *   detailSettled?: boolean,
  *   onAskMooni?: ((event: React.MouseEvent) => void) | null,
+ *   onTransportFacts?: (facts: Record<string, unknown> | null) => void,
  * }} props
  */
 export default function FestivalAccessCard({
@@ -104,6 +118,7 @@ export default function FestivalAccessCard({
   eventEndDate,
   detailSettled = false,
   onAskMooni = null,
+  onTransportFacts = null,
 }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
@@ -145,10 +160,23 @@ export default function FestivalAccessCard({
     };
   }, [supported, contentId, trainDate, detailSettled, eventStartDate, eventEndDate]);
 
+  const origin = view?.origins?.find((row) => row.originId === originId) || view?.origins?.[0] || null;
+
+  useEffect(() => {
+    if (!onTransportFacts) return;
+    if (phase !== 'ready' || !origin) {
+      onTransportFacts(null);
+      return;
+    }
+    onTransportFacts(transportFactsFromView(view, origin, locale));
+  }, [onTransportFacts, phase, origin, view, locale]);
+
   if (!supported) return null;
 
-  const origin = view?.origins?.find((row) => row.originId === originId) || view?.origins?.[0] || null;
   const source = phase === 'ready' ? view?.source : null;
+  const cards = phase === 'ready' && origin ? selectAccessCards(origin) : [];
+  const directCards = cards.filter((card) => !card.transfer);
+  const transferCards = cards.filter((card) => card.transfer);
 
   return (
     <section className="space-y-2 pt-1" id="festival-access" data-festival-section="access">
@@ -201,11 +229,11 @@ export default function FestivalAccessCard({
             ) : (
               <p className="text-xs font-bold text-stone-700">{origin.label}</p>
             )}
-            <OptionGroups options={origin.direct} locale={locale} t={t} />
-            {origin.hops.length > 0 ? (
+            <SegmentGroups cards={directCards} locale={locale} t={t} />
+            {transferCards.length > 0 ? (
               <div className="space-y-1.5">
                 <p className="text-[11px] font-bold text-stone-500">{t('korea.festival.detail.accessTransfer')}</p>
-                <OptionGroups options={origin.hops} locale={locale} t={t} />
+                <SegmentGroups cards={transferCards} locale={locale} t={t} />
               </div>
             ) : null}
             {origin.arexUnverified ? (

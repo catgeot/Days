@@ -67,14 +67,23 @@ async function openFestival(page, target) {
     return node && node.getAttribute('data-festival-access-status') !== 'loading';
   }, null, { timeout: 45_000 });
   const state = await status.getAttribute('data-festival-access-status');
-  const text = (await card.innerText()).replace(/\s+/g, ' ').slice(0, 500);
-  console.log(`${target.id} status=${state} text=${text}`);
+  const text = (await card.innerText()).replace(/\s+/g, ' ');
+  console.log(`${target.id} status=${state} text=${text.slice(0, 500)}`);
   if (state !== 'ready') throw new Error(`${target.id} access status ${state}`);
   if (!/\d{2}:\d{2}/.test(text)) throw new Error(`${target.id} has no clock`);
   if (/무료|(^|[^\d,])0원/.test(text)) throw new Error(`${target.id} shows a zero fare`);
   if (!/고르세요/.test(text)) throw new Error(`${target.id} has no segment hint`);
+  await page.waitForFunction(() => (
+    !document.querySelector('[data-festival-summary-reserve]')
+    && !document.querySelector('[data-festival-overview-reserve]')
+    && !document.querySelector('[data-festival-detail-skeleton]')
+  ), null, { timeout: 45_000 });
   const pressed = await card.locator('[data-festival-access-origin][aria-pressed="true"]').getAttribute('data-festival-access-origin');
-  console.log(`${target.id} origin=${pressed}`);
+  const segments = await card.locator('[data-festival-access-segment]').count();
+  const books = await card.locator('[data-festival-access-book]').count();
+  console.log(`${target.id} origin=${pressed} segments=${segments} books=${books}`);
+  if (segments < 1 || segments > 3) throw new Error(`${target.id} segment cards ${segments}`);
+  if (books !== segments) throw new Error(`${target.id} booking links ${books} for ${segments} cards`);
   if (target.id === 'hampyeong' && pressed !== 'yongsan') {
     throw new Error(`hampyeong origin ${pressed}`);
   }
@@ -82,10 +91,28 @@ async function openFestival(page, target) {
     document.querySelector('[data-flight-debug-panel]')?.remove();
     document.querySelector('[data-cloud-preview-work-log]')?.remove();
   });
-  const trainRow = card.locator('[data-festival-access-mode="train"]').first();
-  await trainRow.scrollIntoViewIfNeeded();
-  await trainRow.evaluate((node) => node.scrollIntoView({ block: 'center' }));
-  await shot(page, `${target.id}-02-access`);
+  await card.evaluate((node) => node.scrollIntoView({ block: 'start' }));
+  await card.screenshot({ path: `${outDir}/${target.id}-02-access.png` });
+  const fare = text.match(/\d{1,3}(?:,\d{3})+원/)?.[0] || '';
+  const clock = text.match(/\d{2}:\d{2}(?:~\d{2}:\d{2})?/)?.[0] || '';
+  if (!fare || !clock) throw new Error(`${target.id} missing fare or clock`);
+  const marks = { fare, clock };
+  await page.locator('[data-festival-access-mooni]').click();
+  await page.getByRole('button', { name: '채팅 닫기' }).waitFor({ timeout: 20_000 });
+  await page.getByTestId('mooni-festival-opening').waitFor({ timeout: 20_000 });
+  await shot(page, `${target.id}-03-mooni`);
+  await page.getByRole('button', { name: '🚆 가는 법' }).click();
+  const answer = page.getByTestId('mooni-model-reply').last();
+  await answer.waitFor({ timeout: 25_000 });
+  const answerText = (await answer.innerText()).replace(/\s+/g, ' ');
+  console.log(`${target.id} mooni ${answerText.slice(0, 400)}`);
+  const clockBits = clock.split('~');
+  if (!answerText.includes(marks.fare) || clockBits.some((bit) => bit && !answerText.includes(bit))) {
+    throw new Error(`${target.id} MOONi answer missed ${marks.clock} / ${marks.fare}`);
+  }
+  await answer.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+  await shot(page, `${target.id}-04-mooni-access`);
+  await page.getByRole('button', { name: '채팅 닫기' }).click();
   const suseo = card.locator('[data-festival-access-origin="suseo"]');
   if (await suseo.count()) {
     await suseo.click();
@@ -106,19 +133,16 @@ async function openFestival(page, target) {
     const busRow = card.locator('[data-festival-access-mode="expBus"], [data-festival-access-mode="suburbsBus"]').first();
     await busRow.waitFor({ timeout: 10_000 });
     await busRow.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+    const busSegments = await card.locator('[data-festival-access-segment]').count();
+    const busBooks = await card.locator('[data-festival-access-book]').count();
+    if (busSegments < 1 || busSegments > 3 || busBooks !== busSegments) {
+      throw new Error(`${target.id} bus cards ${busSegments} links ${busBooks}`);
+    }
     const busText = (await card.innerText()).replace(/\s+/g, ' ');
     if (!/고속버스 예매|시외버스 예매/.test(busText)) throw new Error(`${target.id} bus booking label missing`);
     console.log(`${target.id} bus ${busText.slice(0, 280)}`);
     await shot(page, `${target.id}-02b-bus`);
   }
-  await page.locator('[data-festival-access-mooni]').click();
-  await page.getByRole('button', { name: '채팅 닫기' }).waitFor({ timeout: 20_000 });
-  await page.getByTestId('mooni-festival-opening').waitFor({ timeout: 20_000 });
-  await shot(page, `${target.id}-03-mooni`);
-  await page.getByRole('button', { name: '🚆 가는 법' }).click();
-  await page.getByTestId('mooni-festival-access-dock').waitFor({ timeout: 15_000 });
-  await shot(page, `${target.id}-04-mooni-access`);
-  await page.getByRole('button', { name: '채팅 닫기' }).click();
 }
 
 async function openUnsupported(page) {

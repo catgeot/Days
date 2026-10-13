@@ -1464,6 +1464,7 @@ export default function FestivalDetailSheet({
     return names;
   }, [nearbyFood]);
 
+  const [accessFacts, setAccessFacts] = useState(null);
   const festivalMooni = useFestivalMooniEntry({
     item: item || {},
     intro,
@@ -1475,6 +1476,8 @@ export default function FestivalDetailSheet({
     nearbyPlaces: mooniNearbyPlaces,
     nearbyRestaurants: mooniNearbyRestaurants,
     stayAreas: festivalCross?.stayAreas,
+    info: infoItems,
+    transportFacts: accessFacts,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {
@@ -1912,6 +1915,7 @@ export default function FestivalDetailSheet({
             eventEndDate={item?.eventEndDate || intro?.eventEndDate || intro?.eventenddate}
             detailSettled={!detailLoading}
             onAskMooni={festivalMooni.enabled ? festivalMooni.openInline : null}
+            onTransportFacts={setAccessFacts}
           />
 
           {overview ? (

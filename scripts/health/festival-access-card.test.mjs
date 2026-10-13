@@ -8,7 +8,9 @@ import {
   FESTIVAL_TRANSPORT_CONTENT_IDS,
   bookingLink,
   buildAccessView,
+  composeFestivalAccessReply,
   preferredOriginId,
+  selectAccessCards,
   formatClockRange,
   formatDurationRange,
   formatFareRange,
@@ -172,6 +174,60 @@ test('festival sheet mounts the access card above the bottom rail', () => {
   assert.match(en, /"accessTitle": "How to get there"/);
   assert.match(ko, /"accessUnavailable": "지금은 열차·버스 시각을 불러오지 못했어요."/);
   assert.match(ko, /"accessPickSegment": "\{\{dep\}\}→\{\{arr\}\}\{\{particle\}\} 고르세요"/);
+});
+
+test('one card per segment, at most three, and MOONi repeats those fares', () => {
+  const hampyeong = option({
+    depStation: '용산', arrStation: '함평', depStationId: 'yongsan', arrStationId: 'hampyeong',
+    grade: 'ITX-새마을', role: 'venue', venue: true,
+  });
+  const cards = selectAccessCards({
+    direct: [
+      hampyeong,
+      option({
+        depStation: '용산', arrStation: '함평', depStationId: 'yongsan', arrStationId: 'hampyeong',
+        grade: 'ITX-마음', firstDeparture: '09:47', role: 'venue', venue: true,
+      }),
+      option({
+        depStation: '용산', arrStation: '함평', depStationId: 'yongsan', arrStationId: 'hampyeong',
+        grade: '무궁화호', firstDeparture: '18:10', role: 'venue', venue: true,
+      }),
+      option({
+        depStation: '용산', arrStation: '광주송정', depStationId: 'yongsan', arrStationId: 'songjeong',
+        grade: 'KTX', role: 'hub', fareAdultMin: 41000, fareAdultMax: 41900,
+      }),
+    ],
+    hops: [
+      option({
+        depStation: '광주송정', arrStation: '함평', depStationId: 'songjeong', arrStationId: 'hampyeong',
+        grade: '무궁화호', role: 'transfer', fareAdultMin: 2600, fareAdultMax: 4800,
+      }),
+      option({
+        depStation: '다른곳', arrStation: '함평', depStationId: 'other', arrStationId: 'hampyeong',
+        grade: '무궁화호', role: 'transfer', fareAdultMin: 1000, fareAdultMax: 1000,
+      }),
+    ],
+  });
+  assert.equal(cards.length, 3);
+  assert.equal(cards[0].depStation, '용산');
+  assert.equal(cards[0].arrStation, '함평');
+  assert.equal(cards[0].rows.length, 3);
+  assert.equal(cards.filter((card) => card.depStation === '다른곳').length, 0);
+  const facts = {
+    selected: {
+      label: '용산',
+      segments: [{
+        dep: '용산',
+        arr: '함평',
+        rows: [{ grade: 'ITX-새마을', clock: '08:44~19:11', duration: '4시간 23분', fare: '36,300원', count: '3회' }],
+      }],
+    },
+    origins: [],
+  };
+  const reply = composeFestivalAccessReply(facts, { useSelected: true });
+  assert.match(reply, /08:44–19:11/);
+  assert.match(reply, /36,300원/);
+  assert.doesNotMatch(reply, /가는 법/);
 });
 
 test('국향대전 defaults to 용산 when that origin is present', () => {
