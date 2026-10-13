@@ -8,6 +8,7 @@ import {
   YOUTUBE_ALLOWED_MESSAGE_ORIGINS,
   YOUTUBE_UNPLAYABLE_ERROR_CODES,
 } from '../../../utils/youtubePlayerMessaging';
+import { isYoutubeForceEmbedErrorEnabled } from '../../../utils/youtubeEmbedQaHook';
 
 const YouTubePlayerView = forwardRef(({
   videoId,
@@ -57,12 +58,14 @@ const YouTubePlayerView = forwardRef(({
   const isPlayingRef = useRef(false);
   const preservePlaybackRef = useRef(false);
   const prevVideoIdRef = useRef(videoId);
-  const retryProbeActiveRef = useRef(false);
-  const retryProbeSuccessTimerRef = useRef(null);
+  const retrySessionNoAdvanceRef = useRef(false);
   const [unplayableRetryExhausted, setUnplayableRetryExhausted] = useState(false);
+  const [retrySessionYoutubeCta, setRetrySessionYoutubeCta] = useState(false);
 
   const retryExhaustedStorageKey =
     typeof window !== 'undefined' ? `gateo.yt.retryExhausted:${window.location.pathname}` : '';
+  const retrySessionStorageKey =
+    typeof window !== 'undefined' ? `gateo.yt.retrySession:${window.location.pathname}` : '';
 
   const videoList = videos || [];
   const currentVideo = videoList[currentVideoIndex];
@@ -104,6 +107,8 @@ const YouTubePlayerView = forwardRef(({
 
   const clearRetryExhausted = useCallback(() => {
     setUnplayableRetryExhausted(false);
+    setRetrySessionYoutubeCta(false);
+    retrySessionNoAdvanceRef.current = false;
     if (retryExhaustedStorageKey) {
       try {
         sessionStorage.removeItem(retryExhaustedStorageKey);
@@ -111,7 +116,33 @@ const YouTubePlayerView = forwardRef(({
         /* ignore */
       }
     }
-  }, [retryExhaustedStorageKey]);
+    if (retrySessionStorageKey) {
+      try {
+        sessionStorage.removeItem(retrySessionStorageKey);
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [retryExhaustedStorageKey, retrySessionStorageKey]);
+
+  const isRetrySessionNoAdvance = useCallback(() => {
+    if (retrySessionNoAdvanceRef.current) return true;
+    if (!retrySessionStorageKey) return false;
+    try {
+      return sessionStorage.getItem(retrySessionStorageKey) === '1';
+    } catch {
+      return false;
+    }
+  }, [retrySessionStorageKey]);
+
+  const handleEmbedErrorInRetrySession = useCallback((failedId) => {
+    if (onVideoUnplayable) onVideoUnplayable(failedId);
+    markRetryExhausted();
+    preservePlaybackRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(true);
+    setRetrySessionYoutubeCta(true);
+  }, [onVideoUnplayable, markRetryExhausted]);
 
   const advanceToNextVideo = useCallback((wasPlaying) => {
     const list = videos || [];
@@ -119,17 +150,8 @@ const YouTubePlayerView = forwardRef(({
     const failedId = list[idx]?.id;
     if (!failedId) return;
 
-    if (retryProbeActiveRef.current) {
-      retryProbeActiveRef.current = false;
-      if (retryProbeSuccessTimerRef.current) {
-        clearTimeout(retryProbeSuccessTimerRef.current);
-        retryProbeSuccessTimerRef.current = null;
-      }
-      if (onVideoUnplayable) onVideoUnplayable(failedId);
-      markRetryExhausted();
-      preservePlaybackRef.current = false;
-      setIsPlaying(false);
-      setIsPaused(true);
+    if (isRetrySessionNoAdvance()) {
+      handleEmbedErrorInRetrySession(failedId);
       return;
     }
 
@@ -151,7 +173,7 @@ const YouTubePlayerView = forwardRef(({
       setIsPlaying(true);
       setIsPaused(false);
     }
-  }, [videos, onVideoSelect, onVideoUnplayable, markRetryExhausted]);
+  }, [videos, onVideoSelect, onVideoUnplayable, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession]);
 
   useImperativeHandle(ref, () => ({
     seekTo: (seconds) => {
@@ -191,14 +213,6 @@ const YouTubePlayerView = forwardRef(({
               const state = data.info.playerState;
               const isActive = state === 1 || state === 3;
               setIsPaused(!isActive);
-              if (retryProbeActiveRef.current && state === 1) {
-                if (!retryProbeSuccessTimerRef.current) {
-                  retryProbeSuccessTimerRef.current = setTimeout(() => {
-                    retryProbeActiveRef.current = false;
-                    retryProbeSuccessTimerRef.current = null;
-                  }, 2000);
-                }
-              }
           }
 
           if (data?.event === 'onError' && typeof data.info === 'number') {
@@ -208,13 +222,7 @@ const YouTubePlayerView = forwardRef(({
           }
       };
       window.addEventListener('message', handleMessage);
-      return () => {
-        window.removeEventListener('message', handleMessage);
-        if (retryProbeSuccessTimerRef.current) {
-          clearTimeout(retryProbeSuccessTimerRef.current);
-          retryProbeSuccessTimerRef.current = null;
-        }
-      };
+      return () => window.removeEventListener('message', handleMessage);
   }, [advanceToNextVideo, isPlaying]);
 
   useEffect(() => {
@@ -224,6 +232,14 @@ const YouTubePlayerView = forwardRef(({
     }, 300);
     return () => clearTimeout(timer);
   }, [isPlaying, currentVideo?.id, postToPlayer]);
+
+  useEffect(() => {
+    if (!isPlaying || !currentVideo?.id || !isYoutubeForceEmbedErrorEnabled()) return;
+    const timer = setTimeout(() => {
+      advanceToNextVideo(isPlayingRef.current);
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [isPlaying, currentVideo?.id, advanceToNextVideo]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -263,11 +279,20 @@ const YouTubePlayerView = forwardRef(({
     }
   };
 
-  const handlePlay = () => {
-      if (!currentVideo) return;
-      setIsPlaying(true);
-      setIsPaused(false);
-  };
+  const handlePlay = useCallback(() => {
+    if (!currentVideo) return;
+    setRetrySessionYoutubeCta(false);
+    setIsPlaying(true);
+    setIsPaused(false);
+  }, [currentVideo]);
+
+  const selectVideoAndPlay = useCallback((video, idx) => {
+    setRetrySessionYoutubeCta(false);
+    if (onVideoSelect) onVideoSelect(video.id);
+    setCurrentVideoIndex(idx);
+    setIsPlaying(true);
+    setIsPaused(false);
+  }, [onVideoSelect]);
 
   const watchOnYouTubeUrl = externalYouTubeUrl || placeYouTubeUrl;
   const showFetchError = !isLoading && fetchError;
@@ -298,16 +323,30 @@ const YouTubePlayerView = forwardRef(({
 
   const handleRetryUnplayable = useCallback(() => {
     clearRetryExhausted();
-    if (retryProbeSuccessTimerRef.current) {
-      clearTimeout(retryProbeSuccessTimerRef.current);
-      retryProbeSuccessTimerRef.current = null;
+    retrySessionNoAdvanceRef.current = true;
+    if (retrySessionStorageKey) {
+      try {
+        sessionStorage.setItem(retrySessionStorageKey, '1');
+      } catch {
+        /* ignore */
+      }
     }
-    retryProbeActiveRef.current = true;
     preservePlaybackRef.current = false;
     setIsPlaying(false);
     setIsPaused(true);
     onRetryUnplayable?.();
-  }, [clearRetryExhausted, onRetryUnplayable]);
+  }, [clearRetryExhausted, onRetryUnplayable, retrySessionStorageKey]);
+
+  useEffect(() => {
+    if (!retrySessionStorageKey) return;
+    try {
+      if (sessionStorage.getItem(retrySessionStorageKey) === '1') {
+        retrySessionNoAdvanceRef.current = true;
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [retrySessionStorageKey]);
 
   const primaryCtaClass =
     'group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]';
@@ -441,7 +480,10 @@ const YouTubePlayerView = forwardRef(({
           </div>
         </div>
       ) : (
-        <div className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer group" onClick={handlePlay}>
+        <div
+          className={`absolute inset-0 z-10 flex items-center justify-center group ${retrySessionYoutubeCta ? '' : 'cursor-pointer'}`}
+          onClick={retrySessionYoutubeCta ? undefined : handlePlay}
+        >
           <div
             className="absolute inset-0 bg-cover bg-center opacity-40 blur-2xl scale-110 transition-transform duration-700 group-hover:scale-125"
             style={{ backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : 'none' }}
@@ -464,6 +506,14 @@ const YouTubePlayerView = forwardRef(({
              <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{displayTitle(currentVideo?.title)}</p>
              <p className="text-[10px] md:text-xs text-white/60 tracking-wider uppercase mt-1">Click to Play</p>
           </div>
+          {retrySessionYoutubeCta && watchOnYouTubeButton ? (
+            <div
+              className="absolute inset-0 z-40 flex items-center justify-center bg-black/75 backdrop-blur-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {watchOnYouTubeButton}
+            </div>
+          ) : null}
         </div>
       )}
 
@@ -489,9 +539,7 @@ const YouTubePlayerView = forwardRef(({
                       key={video.id + idx}
                       onClick={(e) => {
                           e.stopPropagation();
-                          if (onVideoSelect) onVideoSelect(video.id);
-                          setCurrentVideoIndex(idx);
-                          handlePlay();
+                          selectVideoAndPlay(video, idx);
                       }}
                       className={`relative flex-shrink-0 w-36 h-24 rounded-xl overflow-hidden border-2 transition-all duration-300 snap-center group/item ${currentVideoIndex === idx ? 'border-red-500 scale-105 shadow-[0_0_20px_rgba(220,38,38,0.5)] z-10' : 'border-transparent opacity-60 hover:opacity-100 hover:border-white/50'}`}
                   >
@@ -597,9 +645,7 @@ const YouTubePlayerView = forwardRef(({
                         <button
                             key={video.id + idx}
                             onClick={() => {
-                                if (onVideoSelect) onVideoSelect(video.id);
-                                setCurrentVideoIndex(idx);
-                                handlePlay();
+                                selectVideoAndPlay(video, idx);
                                 setIsMobileListOpen(false);
                             }}
                             className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all mb-2 ${currentVideoIndex === idx ? 'bg-red-500/20 border border-red-500/50' : 'hover:bg-white/5 border border-transparent'}`}

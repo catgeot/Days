@@ -2,6 +2,7 @@
  * WebKit 390 — Sapa video tab with live place_videos (no mock thumbnails).
  * Usage: npm run build && npx vite preview … then
  *   node scripts/smoke-youtube-sapa-webkit.mjs --base https://127.0.0.1:4173
+ * QA embed errors (Preview/dev): ?ytForceError=1 or localStorage gateo.yt.forceEmbedError=1
  */
 import { webkit } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
