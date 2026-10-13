@@ -14,6 +14,21 @@
 
 ## 활성 목록
 
+### Vercel 프리뷰
+
+| | |
+|--|--|
+| **상태** | **#1 cursor 배포 안 만듦** · tip `14fc605c` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · **병합 금지** |
+| **브랜치** | `cursor/vercel-skip-previews-8e40` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-12-project-log.md`](./2026-10-12-project-log.md) |
+| **Preview** | 없음. 병합 후 `cursor/*`는 배포 자체가 생기지 않는다 |
+| **금지** | `main`·production 배포 끄기 · `deploymentEnabled: false` 전체 끄기 · `ignoreCommand` 재도입 · feature에 `plans/**` 커밋 · PR 병합 |
+| **VERIFY** | `npm run test:health` |
+| **남은 일** | `git.deploymentEnabled["cursor/*"]=false`. `main`은 기본값 true. ignoreCommand는 없음 |
+
+**다음 제시어 없음**.
+
 ### 카이로 동선
 
 | | |
@@ -98,24 +113,24 @@
 
 | | |
 |--|--|
-| **상태** | **#9 push** · tip `1d21c020` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · main `#431` `daf8eca4` 유지 · **에이전트 Edge 배포 금지** · **PR 머지 금지** |
+| **상태** | **#11 push** · tip `deb525b7` · draft PR [#423](https://github.com/catgeot/Days/pull/423) · staging gemini-proxy **v26** (롤백 v24) · prod v27 · **PR 머지 금지** |
 | **브랜치** | `cursor/mooni-festival-live-7c65` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-11-project-log.md`](./2026-10-11-project-log.md) |
 | **Preview** | git `https://days-git-cursor-mooni-festival-live-7c65-catgeots-projects.vercel.app/korea?festival=2930716` (클라이언트 대기·폴백·힌트. Vercel SSO) |
-| **금지** | 에이전트가 `gemini-proxy` 배포 · prod 배포 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
+| **금지** | prod `gemini-proxy` 배포 · staging 재배포는 사람 요청 때만 · 모델 변경(`gemini-3.1-flash-lite`, Fast off) · feature에 `plans/**` 커밋 · `cursor/mooni-festival-edge-7c65` 재사용 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). staging gemini-proxy는 v24. `mooni_chat` 기본은 FAST `gemini-3.1-flash-lite`이고, `gemini-3.8-flash`는 QUALITY·WRITE다. 모델은 바꾸지 않았다. 좌표가 없으면 숙소 이름을 말하지 않는다. 첫 답을 포함한 축제 답은 장소의 «천지연폭포 주차장»을 «천지연 일대»로 고친다. «주차장과»는 «일대와»이고 «일대 일대»는 없다. 장소 «천지연 일대»와 이름 줄기가 같은 근처(천지연폭포)와 약 300m 안의 같은 줄기는 첫 답 근처 목록에서 빼고, 모델이 다시 말하면 다음 장소가 앞이다. «A와 B 그리고 C»는 명사 나열일 때만 «A와 B, C»다. 절을 잇는 «그리고»와 이미 쉼표가 있는 목록은 그대로다. 주차 질문의 주차장 이름은 그대로다. 이번 Edge 파일은 `templates.js`와 서버 `mooniPromptBundleData.js`이고 배포하지 않는다. 로컬 390 Chromium에서 staging v24 첫 답은 «천지연 일대»이고 근처는 황우지해안열두굴·이중섭 거주지·새섬공원이다. 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다. gemini-proxy는 재배포하지 않는다. 배포·PR 머지는 하지 않는다. `npm run test:health` 266 pass. |
+| **남은 일** | prod gemini-proxy는 v27 (`2c7a3c95`). staging gemini-proxy는 v26, 롤백은 v24. 모델은 바꾸지 않았다. 서귀포 506616 첫 답은 날짜, 천지연 일대·서귀포 원도심, 함께 걷는 퍼레이드와 «축제 분위기가 저녁까지 이어져요», 근처, 페이지다. 강릉 2930716은 «장칼국수와 막국수, 짬뽕, 감자옹심이칼국수를 맛볼 수 있고, 축제 분위기가 저녁까지 이어져요»이고 월화거리는 앞 문장에만 있다. 저녁 문장은 운영 시각이 저녁일 때만 쓴다. 로컬 390 Chromium, staging v26. 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다. `npm run test:health` 273 pass. PR 머지 안 함. |
 
 **다음 제시어**:
 
 ```
-축제 MOONi #10, staging 재확인
+축제 MOONi #12, 숙소 좌표는 별도
 @plans/feature-handoff-index.md
 @plans/2026-10-11-project-log.md
-브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip 1d21c020
-금지: 에이전트 gemini-proxy 배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push · MRT 좌표·카드 정렬은 이번 PR 아님
-작업: gemini-proxy는 재배포하지 않는다. 프롬프트 문구는 `templates.js`와 서버 번들에만 있고 staging v24에는 아직 없다. 서귀포 첫 답 «천지연폭포 주차장과 서귀포 원도심 일대에서»는 «천지연 일대와 서귀포 원도심 일대에서»다. «일대 일대»는 없다. 근처 첫 이름은 천지연폭포가 아니다. «A와 B 그리고 C»는 «A와 B, C»이고, 절을 잇는 «그리고»는 그대로다. 주차 칩의 주차장 이름은 그대로다. withCoords=0이면 숙소 이름을 말하지 않는다. 답은 장소 한 문장과 카드 하나, 또는 «축제장 근처 숙소는 [○○ 숙소 카드]에서 볼 수 있어요»다. «권역에서 숙소를 찾을 수 있어요»는 없다. 좌표가 있으면 20km 안만, 가까운 순, 2~3곳에 거리가 있다. 서귀포는 제주신화월드가 한 곳만이다. 함평 첫답 근처는 «용천사»다. 2930716 칩 말풍선은 «볼거리·분위기 알려 줘»다. «주차»는 공식 홈페이지 문장만이고 506616은 «천지연 주차장»만으로 주차 데이터가 아니다. 첫답은 «청소년 페스타 경연이 있어요»와 «10/20~22, 11일 뒤 시작해요»다. prod는 v27(2c7a3c95), mooni_chat 기본은 gemini-3.1-flash-lite. 그 다음 우선은 별도 PR로 MRT 숙소 좌표와 숙소 카드 거리순이다.
+브랜치 cursor/mooni-festival-live-7c65 · draft PR #423 · tip deb525b7
+금지: prod gemini-proxy 배포 · staging 재배포 · PR 머지 · 모델 변경 · feature에 plans 커밋 · main 코드 push · 이 PR에서 MRT 좌표
+작업: 강릉 음식·저녁 문장과 서귀포 첫 답은 tip deb525b7, staging gemini-proxy v26(롤백 v24)다. prod는 v27. MRT 숙소 좌표와 숙소 카드 거리순은 새 PR이다. Cos가 문장을 더 고치면 그 문장만 이 브랜치에서 고친다.
 검증: npm run test:health
 ```
 

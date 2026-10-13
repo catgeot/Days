@@ -1,7 +1,13 @@
 import { listCityAttractionHubs } from '../pages/Home/lib/cityAttractionHubs.js';
-import { isMetroArea } from '../pages/Korea/festivalRegionTags.js';
+import {
+  festivalCityListDisplayPhrase,
+  isMetroArea,
+  sidoLabel,
+} from '../pages/Korea/festivalRegionTags.js';
+import { JEONNAM_GWANGJU_INTEGRATED_SIDO_LEGAL_NAME } from '../pages/Home/lib/koreaTourAddrNormalize.js';
 import {
   KOREA_AREA_CODE_EN,
+  JEONNAM_GWANGJU_INTEGRATED_LEGAL_EN,
   KOREA_HERITAGE_CATEGORY_EN,
   KOREA_SCENIC_CLUSTER_EN,
   KOREA_SCENIC_MAJOR_EN,
@@ -9,6 +15,7 @@ import {
   KOREA_SIDO_SHORT_EN,
   KOREA_TOUR_CAT_EN,
 } from './koreaRegionEn.js';
+import { romanizeKoreanAdminSubregion } from './koreaSubregionRomanize.js';
 
 function isEnLocale(locale) {
   return String(locale || '').startsWith('en');
@@ -77,19 +84,74 @@ export function localizedSidoListPhrase(locale, areaCode, phraseKo = '') {
   return localizedAreaCodeLabel(locale, code, fallback);
 }
 
+const INTEGRATED_SIDO_PANEL_HEADING_CODES = new Set(['5', '38']);
+
+/**
+ * Festival list panel meta only — chips stay short (광주/전남).
+ * @param {string | null | undefined} locale
+ * @param {string | number | null | undefined} areaCode
+ * @param {string} [listPhraseKo] — fallback when not integrated
+ */
+export function localizedSidoPanelHeadingPhrase(
+  locale,
+  areaCode,
+  listPhraseKo = '',
+) {
+  const code = String(areaCode || '').trim();
+  if (!INTEGRATED_SIDO_PANEL_HEADING_CODES.has(code)) {
+    return localizedSidoListPhrase(locale, code, listPhraseKo);
+  }
+  const shortKo = sidoLabel(code) || listPhraseKo;
+  if (!isEnLocale(locale)) {
+    return `${shortKo}(${JEONNAM_GWANGJU_INTEGRATED_SIDO_LEGAL_NAME})`;
+  }
+  const shortEn = KOREA_AREA_CODE_EN[code] || shortKo;
+  return `${shortEn} (${JEONNAM_GWANGJU_INTEGRATED_LEGAL_EN})`;
+}
+
+/**
+ * Festival list title / panel meta city segment (경기 광주시 ≠ 광주광역시).
+ * @param {string | null | undefined} locale
+ * @param {string | number | null | undefined} areaCode
+ * @param {string | null | undefined} cityName
+ */
+export function localizedFestivalCityListLabel(locale, areaCode, cityName) {
+  const name = String(cityName || '').trim();
+  if (!name || name === 'all') return '';
+  if (String(areaCode) === '31' && name === '광주시') {
+    return isEnLocale(locale) ? 'Gwangju-si' : '광주시';
+  }
+  const phraseKo = festivalCityListDisplayPhrase(cityName, areaCode);
+  return localizedSubregionLabel(locale, phraseKo);
+}
+
 /**
  * @param {string | null | undefined} locale
  * @param {string | null | undefined} labelKo
  */
+function hubEnWithAdminSuffix(ko, hubEn) {
+  const en = String(hubEn || '').trim();
+  if (!en) return '';
+  const m = ko.match(/(시|군|구)$/u);
+  if (!m) return en;
+  if (/-(si|gun|gu)$/i.test(en)) return en;
+  const suf = m[0] === '시' ? 'si' : m[0] === '군' ? 'gun' : 'gu';
+  return `${en}-${suf}`;
+}
+
 export function localizedSubregionLabel(locale, labelKo) {
   const ko = String(labelKo || '').trim();
   if (!ko) return '';
+  if (ko === '광주시' && isEnLocale(locale)) return 'Gwangju-si';
   if (!isEnLocale(locale)) return ko;
   const fromHub = hubKoToEnMap().get(ko);
-  if (fromHub) return fromHub;
+  if (fromHub) return hubEnWithAdminSuffix(ko, fromHub);
   const bare = ko.replace(/(시|군|구)$/u, '');
-  const fromBare = hubKoToEnMap().get(bare) || hubKoToEnMap().get(`${bare}시`);
-  if (fromBare) return fromBare;
+  const fromBare =
+    hubKoToEnMap().get(bare) || hubKoToEnMap().get(`${bare}시`);
+  if (fromBare) return hubEnWithAdminSuffix(ko, fromBare);
+  const roman = romanizeKoreanAdminSubregion(ko);
+  if (roman && !/[가-힣]/u.test(roman)) return roman;
   return KOREA_SIDO_SHORT_EN[ko] || KOREA_SIDO_SHORT_EN[bare] || bare || ko;
 }
 

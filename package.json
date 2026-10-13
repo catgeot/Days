@@ -53,6 +53,8 @@
     "generate:korea-area-codes": "node scripts/generate-korea-area-codes.mjs",
     "audit:korea-area-codes": "node scripts/audit-korea-area-codes.mjs",
     "smoke:korea-area-codes": "node scripts/smoke-korea-area-codes.mjs",
+    "smoke:korea-integrated-sido-heading": "node scripts/smoke-korea-integrated-sido-heading.mjs",
+    "smoke:korea-en-festival-ui": "node scripts/smoke-korea-en-festival-ui.mjs",
     "generate:korea-scenic-clusters": "node scripts/generate-korea-scenic-clusters.mjs",
     "audit:korea-scenic-clusters": "node scripts/audit-korea-scenic-clusters.mjs",
     "smoke:korea-scenic-clusters": "node scripts/smoke-korea-scenic-clusters.mjs",

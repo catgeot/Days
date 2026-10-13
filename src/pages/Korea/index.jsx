@@ -46,12 +46,12 @@ import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
   buildSidoTags,
-  cityListPhrase,
   filterByRegion,
   neighborSidoTags,
   sidoLabel,
   sidoListPhrase,
 } from './festivalRegionTags';
+import { buildFestivalPanelListMetaSegments } from './festivalPanelListMeta.js';
 import {
   groupFestivalsByCity,
   groupFestivalsBySido,
@@ -116,7 +116,7 @@ import {
   localizedAreaCodeLabel,
   localizedSidoListPhrase,
   localizedSubregionLabel,
-  localizedSubregionUnitLabel,
+  localizedFestivalCityListLabel,
   localizeFestivalGroupLabel,
 } from '../../i18n/koreaRegionLabels';
 import {
@@ -135,6 +135,7 @@ import {
   writeLocationSuccess,
 } from './festivalLocationHint.js';
 import { useFestivalLocationBoot } from './useFestivalLocationBoot.js';
+import { buildFestivalIndexHeadlineContent } from './festivalIndexHeadline.js';
 
 /**
  * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction, locale?: string }} p
@@ -156,7 +157,7 @@ function buildIndexListHeadline({
     areaCode,
     sidoListPhrase(areaCode),
   );
-  const city = localizedSubregionLabel(locale, cityListPhrase(cityName));
+  const city = localizedFestivalCityListLabel(locale, areaCode, cityName);
   const taste =
     tasteId && tasteId !== 'all'
       ? localizedTasteLabel(t, tasteId, tasteLabel(tasteId))
@@ -166,41 +167,69 @@ function buildIndexListHeadline({
     : '';
   const place = [sido, city].filter(Boolean).join(' ');
 
-  if (place) {
-    return t('korea.festival.headlineWithPlace', { place, time, tasteSuffix });
-  }
-
-  return t('korea.festival.headlineGeneral', { time, tasteSuffix });
+  return buildFestivalIndexHeadlineContent({
+    locale,
+    place: place || undefined,
+    time,
+    tasteSuffix,
+    t,
+  });
 }
 
-/**
- * @param {{
- *   areaCode: string,
- *   cityName: string,
- *   count: number,
- *   t: import('i18next').TFunction,
- *   locale?: string,
- * }} p
- */
-function buildPanelListMeta({ areaCode, cityName, count, t, locale = 'ko' }) {
-  const sido = localizedSidoListPhrase(
-    locale,
-    areaCode,
-    sidoListPhrase(areaCode),
-  );
-  const city = localizedSubregionLabel(locale, cityListPhrase(cityName));
-  const place = [sido, city].filter(Boolean).join(' · ');
-  const bits = [];
-  if (place) bits.push(place);
-  bits.push(t('korea.common.countUnit', { count }));
-  if (place && !city) {
-    bits.push(
-      t('korea.festival.panelBySubregion', {
-        unit: localizedSubregionUnitLabel(locale, areaCode, t),
-      }),
+/** @param {ReturnType<typeof buildFestivalIndexHeadlineContent>} headline */
+function renderIndexListHeadline(headline) {
+  if (!headline) return null;
+  if (headline.kind === 'en') {
+    if (headline.place) {
+      return (
+        <>
+          {headline.place} ·{' '}
+          <span className="whitespace-nowrap">
+            {headline.nowrap}
+            {headline.tail}
+          </span>
+        </>
+      );
+    }
+    return (
+      <span className="whitespace-nowrap">
+        {headline.nowrap}
+        {headline.tail}
+      </span>
     );
-  } else if (!place) bits.push(t('korea.common.regionGroup'));
-  return bits.join(' · ');
+  }
+  return headline.text;
+}
+
+/** Visible gap after · uses margin (flex parent collapses inter-span whitespace). */
+const PANEL_META_MIDDOT_SUFFIX = ' ·';
+
+/**
+ * @param {{ segments: { id: string, text: string, wrap?: boolean, nowrap?: boolean }[] }} p
+ */
+function FestivalPanelListMetaLine({ segments }) {
+  if (!segments?.length) return null;
+  const last = segments.length - 1;
+  return (
+    <>
+      {segments.map((seg, i) => (
+        <span
+          key={seg.id || String(i)}
+          className={
+            seg.nowrap
+              ? 'whitespace-nowrap'
+              : seg.wrap
+                ? 'min-w-0 break-keep'
+                : 'whitespace-nowrap'
+          }
+          style={i < last ? { marginRight: '0.25em' } : undefined}
+        >
+          {seg.text}
+          {i < last ? PANEL_META_MIDDOT_SUFFIX : null}
+        </span>
+      ))}
+    </>
+  );
 }
 
 /** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
@@ -1982,7 +2011,7 @@ export default function KoreaFestivalHub() {
     searchActive,
   });
 
-  const panelListMeta = useMemo(() => {
+  const panelListMetaText = useMemo(() => {
     if (nearBaseItems && nearLabel) {
       return t('korea.festival.nearPanelMeta', {
         km: NEAR_KM,
@@ -1990,7 +2019,12 @@ export default function KoreaFestivalHub() {
       });
     }
     if (nearActive && nearMsg) return nearMsg;
-    return buildPanelListMeta({
+    return null;
+  }, [nearBaseItems, nearLabel, nearActive, nearMsg, panelItems.length, t]);
+
+  const panelListMetaSegments = useMemo(() => {
+    if (panelListMetaText != null) return null;
+    return buildFestivalPanelListMetaSegments({
       areaCode,
       cityName,
       count: panelItems.length,
@@ -1998,10 +2032,7 @@ export default function KoreaFestivalHub() {
       locale,
     });
   }, [
-    nearBaseItems,
-    nearLabel,
-    nearActive,
-    nearMsg,
+    panelListMetaText,
     areaCode,
     cityName,
     panelItems.length,
@@ -2074,7 +2105,7 @@ export default function KoreaFestivalHub() {
     t('korea.festival.timeTab.now');
   const regionMajorLabel =
     cityName !== 'all'
-      ? localizedSubregionLabel(locale, cityName)
+      ? localizedFestivalCityListLabel(locale, areaCode, cityName)
       : areaCode !== 'all'
         ? localizedAreaCodeLabel(locale, areaCode, sidoLabel(areaCode)) ||
           t('korea.common.region')
@@ -2740,12 +2771,18 @@ export default function KoreaFestivalHub() {
                     ? personalTab === 'favorites'
                       ? t('korea.common.favorites')
                       : t('korea.common.viewed')
-                    : indexTitle}
+                    : renderIndexListHeadline(indexTitle)}
                 </h2>
-                <p className="truncate text-[11px] text-stone-500">
+                <p className="text-[11px] text-stone-500 leading-snug">
                   {personalTab != null
                     ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
-                    : panelListMeta}
+                    : panelListMetaSegments
+                      ? (
+                          <FestivalPanelListMetaLine
+                            segments={panelListMetaSegments}
+                          />
+                        )
+                      : panelListMetaText}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1.5">
