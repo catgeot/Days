@@ -123,6 +123,10 @@ import {
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
+import {
+  getManualFestivalEntry,
+  manualFestivalTourDetail,
+} from './manualFestivalEntries';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -582,6 +586,7 @@ export default function FestivalDetailSheet({
   const [infoItems, setInfoItems] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
   const [heroStrip, setHeroStrip] = useState({ loadedCount: 0, loadedUrls: [] });
+  const [imageCredits, setImageCredits] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
   const heroColRef = useRef(null);
@@ -917,6 +922,7 @@ export default function FestivalDetailSheet({
       setCommon(null);
       setInfoItems([]);
       setImageUrls([]);
+      setImageCredits([]);
       setDetailError('');
       setDetailLoading(false);
       setActiveImage(0);
@@ -977,7 +983,19 @@ export default function FestivalDetailSheet({
       const introHit = detailData?.intro || pickFirst(detailData) || null;
       const commonHit = detailData?.common || null;
       const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
-      const urls = collectImageUrls(imageData, seed);
+      let urls = collectImageUrls(imageData, seed);
+      let credits = [];
+      if (Array.isArray(detailData?.manualImages) && detailData.manualImages.length) {
+        urls = [];
+        credits = [];
+        for (const row of detailData.manualImages) {
+          const url = toHttps(row?.url);
+          if (!url) continue;
+          urls.push(url);
+          credits.push(String(row?.credit || '').trim());
+        }
+      }
+      setImageCredits(credits);
 
       if (!detailData?.ok && !imageData?.ok) {
         setIntro(null);
@@ -1035,6 +1053,20 @@ export default function FestivalDetailSheet({
         radiusKm: 8,
         limit: 8,
       });
+    }
+
+    const manualEntry = getManualFestivalEntry(contentId);
+    const manualDetail =
+      manualEntry && (!prefetchMatches || prefetchedTourDetail?.manual)
+        ? manualFestivalTourDetail(manualEntry)
+        : null;
+
+    if (manualDetail) {
+      applyDetailPayload(manualDetail, { ok: true });
+      setDetailLoading(false);
+      return () => {
+        detailFetchGenRef.current += 1;
+      };
     }
 
     (async () => {
@@ -1802,6 +1834,14 @@ export default function FestivalDetailSheet({
                 </span>
               )}
             </button>
+            {imageCredits[activeImage] ? (
+              <p
+                className="px-4 py-1.5 text-[10px] leading-snug text-stone-500 bg-white border-b border-stone-100"
+                data-festival-photo-credit=""
+              >
+                {imageCredits[activeImage]}
+              </p>
+            ) : null}
             {detailLoading && imageUrls.length <= 1 && (
               <div
                 className="flex gap-2 overflow-x-auto px-4 py-2.5 border-b border-stone-100 bg-white"
@@ -1876,13 +1916,20 @@ export default function FestivalDetailSheet({
             homepage={homepage}
             hideOfficialHomepage={hideOfficialHomepage}
             officialLabel={t('korea.festival.detail.officialSite')}
-            footnote={
+              footnote={
               item.detailAsOf?.fromDetailDeepLink ? (
                 <FestivalDetailAsOfLine
                   asOf={item.detailAsOf}
                   datedLabel={t('korea.festival.detail.asOfDated', {
                     date: item.detailAsOf.asOfDate,
                   })}
+                  officialHomepageLabel={
+                    item.detailAsOf.fromManualOfficial
+                      ? t('korea.festival.detail.asOfOfficialHomepage', {
+                          date: item.detailAsOf.checkedOnDate,
+                        })
+                      : undefined
+                  }
                   genericLabel={t('korea.festival.detail.asOfGeneric')}
                   linkLabel={t('korea.festival.detail.officialSite')}
                 />

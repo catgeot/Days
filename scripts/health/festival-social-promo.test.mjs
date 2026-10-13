@@ -28,7 +28,10 @@ import {
   shouldShowSessionPinnedRow,
   shouldShowSocialPromoHomeRow,
   shouldShowSocialPromoItem,
+  excludeFestivalsByContentId,
+  contentIdsFromPromoCards,
 } from '../../src/pages/Korea/socialPromoFestivalsLogic.js';
+import { manualFestivalListItem, getManualFestivalEntry } from '../../src/pages/Korea/manualFestivalEntries.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const socialPromoFestivals = JSON.parse(
@@ -39,16 +42,7 @@ const socialPromoFestivals = JSON.parse(
 );
 const NOW = new Date('2026-10-10T03:00:00Z');
 
-const GUKHYANG = {
-  contentId: '638576',
-  title: '대한민국 국향대전',
-  eventStartDate: '20261023',
-  eventEndDate: '20261108',
-  addr1: '전라남도 함평군 함평읍 곤재로 27',
-  firstimage: 'http://example.test/gukhyang.jpg',
-  imageUrl: 'http://example.test/gukhyang.jpg',
-  detailAsOf: { fromDetailDeepLink: true, asOfDate: '2026.10.01' },
-};
+const GUKHYANG = manualFestivalListItem(getManualFestivalEntry('638576'));
 
 test('session pin helpers dedupe list row and keep contentId', () => {
   const pin = festivalItemForSessionPin({
@@ -173,7 +167,10 @@ test('normalizeFestivalItemImages upgrades http list URLs', () => {
     { contentId: '638576', title: '목록' },
     GUKHYANG,
   );
-  assert.equal(merged.firstimage, 'https://example.test/gukhyang.jpg');
+  assert.equal(
+    merged.firstimage,
+    'https://tong.visitkorea.or.kr/cms/resource/06/4114406_image2_1.JPG',
+  );
 });
 
 test('session pin hidden when festival is already on promo row; promo hidden on search', () => {
@@ -326,7 +323,10 @@ test('merge adds configured IDs once and search finds 국향', () => {
   assert.equal(merged.length, 2);
   const ids = merged.map((row) => row.contentId);
   assert.deepEqual(ids.sort(), ['637693', '638576']);
-  assert.equal(merged.find((r) => r.contentId === '638576').detailAsOf.asOfDate, '2026.10.01');
+  assert.equal(
+    merged.find((r) => r.contentId === '638576').detailAsOf.checkedOnDate,
+    '2026.10.13',
+  );
 
   const mergedAgain = mergeSocialPromoIntoFestivalItems(
     merged,
@@ -339,6 +339,25 @@ test('merge adds configured IDs once and search finds 국향', () => {
   const hits = filterBySearchQuery(merged, '국향');
   assert.equal(hits.length, 1);
   assert.equal(hits[0].contentId, '638576');
+});
+
+test('visible promo cards are excluded from list rows and chip pool', () => {
+  const panel = [
+    GUKHYANG,
+    {
+      contentId: '637693',
+      title: '마산가고파국화축제',
+      eventStartDate: '20261031',
+      eventEndDate: '20261108',
+    },
+    { contentId: '999', title: '기타 축제', eventStartDate: '20261101', eventEndDate: '20261102' },
+  ];
+  const promoCards = [{ item: GUKHYANG }];
+  const ids = contentIdsFromPromoCards(promoCards);
+  assert.equal(ids.has('638576'), true);
+  const list = excludeFestivalsByContentId(panel, ids);
+  assert.equal(list.length, 2);
+  assert.equal(list.some((r) => r.contentId === '638576'), false);
 });
 
 test('hub wires session pin, promo row, and merge', () => {
@@ -354,6 +373,9 @@ test('hub wires session pin, promo row, and merge', () => {
   assert.match(hub, /resolveSocialPromoPresentation/);
   assert.match(hub, /shouldShowSessionPinnedHomeRow/);
   assert.match(hub, /shouldShowSessionPinnedRow/);
+  assert.match(hub, /excludeFestivalsByContentId/);
+  assert.match(hub, /panelItemsForList/);
+  assert.match(hub, /manualFestivalEntries/);
   const promoRow = readFileSync(
     join(root, 'src/pages/Korea/SocialPromoFestivalRow.jsx'),
     'utf8',
