@@ -58,6 +58,8 @@ assert(playerSrc.includes('rel="noopener noreferrer"'), 'YouTube link uses rel=n
 assert(playerSrc.includes('place.video.ipQuotaEmpty'), 'empty ip quota copy');
 assert(playerSrc.includes('place.video.retry'), 'retry copy remains for other errors');
 assert(playerSrc.includes('retrySessionNoAdvanceRef'), 'retry session blocks embed-error auto-advance');
+assert(playerSrc.includes('lastPlayViaPlaylistRef'), 'playlist tap blocks embed-error auto-advance');
+assert(playerSrc.includes('failedPickVideo'), 'tap-fail fallback pins tapped video metadata');
 assert(playerSrc.includes('unplayableRetryExhausted'), 'retry exhausted hides secondary CTAs');
 assert(readFileSync('src/i18n/locales/ko.json', 'utf8').includes('YouTube에서 보기'), 'Korean YouTube link label');
 const ko = readFileSync('src/i18n/locales/ko.json', 'utf8');

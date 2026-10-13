@@ -61,8 +61,11 @@ const YouTubePlayerView = forwardRef(({
   const preservePlaybackRef = useRef(false);
   const prevVideoIdRef = useRef(videoId);
   const retrySessionNoAdvanceRef = useRef(false);
+  const lastPlayViaPlaylistRef = useRef(false);
   const consecutiveEmbedFailuresRef = useRef(0);
   const lastEmbedErrorRef = useRef({ id: null, at: 0 });
+  const [failedPickVideo, setFailedPickVideo] = useState(null);
+  const failedPickVideoRef = useRef(null);
   const [unplayableRetryExhausted, setUnplayableRetryExhausted] = useState(false);
   const [retrySessionYoutubeCta, setRetrySessionYoutubeCta] = useState(false);
 
@@ -73,6 +76,11 @@ const YouTubePlayerView = forwardRef(({
 
   const videoList = videos || [];
   const currentVideo = videoList[currentVideoIndex];
+  const uiVideo = failedPickVideo || currentVideo;
+
+  useEffect(() => {
+    failedPickVideoRef.current = failedPickVideo;
+  }, [failedPickVideo]);
 
   useEffect(() => {
     currentVideoIndexRef.current = currentVideoIndex;
@@ -112,6 +120,8 @@ const YouTubePlayerView = forwardRef(({
   const clearRetryExhausted = useCallback(() => {
     setUnplayableRetryExhausted(false);
     setRetrySessionYoutubeCta(false);
+    setFailedPickVideo(null);
+    lastPlayViaPlaylistRef.current = false;
     retrySessionNoAdvanceRef.current = false;
     consecutiveEmbedFailuresRef.current = 0;
     if (retryExhaustedStorageKey) {
@@ -149,6 +159,19 @@ const YouTubePlayerView = forwardRef(({
     setRetrySessionYoutubeCta(true);
   }, [onVideoUnplayable, markRetryExhausted]);
 
+  const handleUserPickEmbedError = useCallback((failedVideo) => {
+    lastPlayViaPlaylistRef.current = false;
+    if (!failedVideo?.id) return;
+    const snapshot = { id: failedVideo.id, title: failedVideo.title };
+    failedPickVideoRef.current = snapshot;
+    setFailedPickVideo(snapshot);
+    if (onVideoUnplayable) onVideoUnplayable(failedVideo.id);
+    preservePlaybackRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(true);
+    setRetrySessionYoutubeCta(true);
+  }, [onVideoUnplayable]);
+
   const stopAfterEmbedFailures = useCallback(() => {
     preservePlaybackRef.current = false;
     setIsPlaying(false);
@@ -157,6 +180,7 @@ const YouTubePlayerView = forwardRef(({
   }, []);
 
   const advanceToNextVideo = useCallback((wasPlaying) => {
+    lastPlayViaPlaylistRef.current = false;
     const list = videos || [];
     const idx = currentVideoIndexRef.current;
     const failedId = list[idx]?.id;
@@ -235,6 +259,7 @@ const YouTubePlayerView = forwardRef(({
 
           if (data?.event === 'onError' && typeof data.info === 'number') {
             if (YOUTUBE_UNPLAYABLE_ERROR_CODES.has(data.info)) {
+              if (failedPickVideoRef.current?.id) return;
               const list = videos || [];
               const failedId = list[currentVideoIndexRef.current]?.id;
               if (!failedId) return;
@@ -246,7 +271,10 @@ const YouTubePlayerView = forwardRef(({
                 return;
               }
               lastEmbedErrorRef.current = { id: failedId, at: now };
-              if (isRetrySessionNoAdvance()) {
+              if (lastPlayViaPlaylistRef.current) {
+                const picked = list[currentVideoIndexRef.current];
+                if (picked) handleUserPickEmbedError(picked);
+              } else if (isRetrySessionNoAdvance()) {
                 handleEmbedErrorInRetrySession(failedId);
               } else {
                 advanceToNextVideo(isPlayingRef.current);
@@ -256,7 +284,7 @@ const YouTubePlayerView = forwardRef(({
       };
       window.addEventListener('message', handleMessage);
       return () => window.removeEventListener('message', handleMessage);
-  }, [advanceToNextVideo, isPlaying, videos, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession]);
+  }, [advanceToNextVideo, isPlaying, videos, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession, handleUserPickEmbedError]);
 
   useEffect(() => {
     if (!isPlaying || !currentVideo?.id) return;
@@ -269,18 +297,28 @@ const YouTubePlayerView = forwardRef(({
   useEffect(() => {
     if (!isPlaying || !currentVideo?.id || !isYoutubeForceEmbedErrorEnabled()) return;
     const timer = setTimeout(() => {
-      if (isRetrySessionNoAdvance()) {
+      if (lastPlayViaPlaylistRef.current && currentVideo) {
+        handleUserPickEmbedError(currentVideo);
+      } else if (isRetrySessionNoAdvance()) {
         handleEmbedErrorInRetrySession(currentVideo.id);
       } else {
         advanceToNextVideo(isPlayingRef.current);
       }
     }, 450);
     return () => clearTimeout(timer);
-  }, [isPlaying, currentVideo?.id, advanceToNextVideo, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession]);
+  }, [isPlaying, currentVideo, advanceToNextVideo, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession, handleUserPickEmbedError]);
 
   useEffect(() => {
     queueMicrotask(() => {
       const list = videos || [];
+      if (failedPickVideo?.id) {
+        if (videoId && videoId !== failedPickVideo.id && list.some((v) => v.id === videoId)) {
+          setFailedPickVideo(null);
+        } else {
+          prevVideoIdRef.current = videoId;
+          return;
+        }
+      }
       let targetIndex = 0;
       if (videoId && list.length > 0) {
         const found = list.findIndex((v) => v.id === videoId);
@@ -300,24 +338,26 @@ const YouTubePlayerView = forwardRef(({
         setIsPaused(true);
       }
     });
-  }, [videoId, videos]);
+  }, [videoId, videos, failedPickVideo]);
 
   useEffect(() => {
-    if (currentVideo) {
+    if (uiVideo?.id) {
       queueMicrotask(() => {
-        setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`);
+        setThumbnailUrl(`https://img.youtube.com/vi/${uiVideo.id}/hqdefault.jpg`);
       });
     }
-  }, [currentVideo]);
+  }, [uiVideo]);
 
   const handleImageError = () => {
-    if (currentVideo && thumbnailUrl && !thumbnailUrl.includes('mqdefault')) {
-      setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/mqdefault.jpg`);
+    if (uiVideo && thumbnailUrl && !thumbnailUrl.includes('mqdefault')) {
+      setThumbnailUrl(`https://img.youtube.com/vi/${uiVideo.id}/mqdefault.jpg`);
     }
   };
 
   const handlePlay = useCallback(() => {
+    lastPlayViaPlaylistRef.current = false;
     if (!currentVideo) return;
+    setFailedPickVideo(null);
     setRetrySessionYoutubeCta(false);
     consecutiveEmbedFailuresRef.current = 0;
     lastEmbedErrorRef.current = { id: null, at: 0 };
@@ -326,6 +366,8 @@ const YouTubePlayerView = forwardRef(({
   }, [currentVideo]);
 
   const selectVideoAndPlay = useCallback((video, idx) => {
+    setFailedPickVideo(null);
+    lastPlayViaPlaylistRef.current = true;
     setRetrySessionYoutubeCta(false);
     consecutiveEmbedFailuresRef.current = 0;
     lastEmbedErrorRef.current = { id: null, at: 0 };
@@ -336,7 +378,9 @@ const YouTubePlayerView = forwardRef(({
     setIsPaused(false);
   }, [onVideoSelect]);
 
-  const watchOnYouTubeUrl = externalYouTubeUrl || placeYouTubeUrl;
+  const watchOnYouTubeUrl = failedPickVideo
+    ? `https://www.youtube.com/watch?v=${encodeURIComponent(failedPickVideo.id)}`
+    : (externalYouTubeUrl || placeYouTubeUrl);
   const showFetchError = !isLoading && fetchError;
   const quotaWithoutVideos = showFetchError
     && (fetchLimitCode === 'ip_quota' || fetchLimitCode === 'global_quota')
@@ -545,7 +589,7 @@ const YouTubePlayerView = forwardRef(({
              </div>
           </div>
           <div className="absolute bottom-12 text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-             <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{displayTitle(currentVideo?.title)}</p>
+             <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{displayTitle(uiVideo?.title)}</p>
              <p className="text-[10px] md:text-xs text-white/60 tracking-wider uppercase mt-1">Click to Play</p>
           </div>
           {retrySessionYoutubeCta && watchOnYouTubeButton ? (

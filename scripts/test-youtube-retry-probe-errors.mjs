@@ -110,6 +110,20 @@ async function setupParisCache(page, harnessNetwork, videos = PARIS_VIDEOS) {
   });
 }
 
+async function tapPlaylistVideo(page, videoId) {
+  await page.waitForFunction(
+    (id) => Boolean(document.querySelector(`img[src*="/vi/${id}/"]`)),
+    videoId,
+    { timeout: 20000 },
+  );
+  await page.evaluate((id) => {
+    const img = document.querySelector(`img[src*="/vi/${id}/"]`);
+    const btn = img?.closest('button');
+    if (!btn) throw new Error(`playlist item not found: ${id}`);
+    btn.click();
+  }, videoId);
+}
+
 async function injectEmbedError150(page) {
   await page.evaluate(() => {
     const iframe = document.querySelector('iframe[src*="youtube.com/embed"]');
@@ -256,7 +270,7 @@ test('embed errors stop after three consecutive failures without marking the res
     await page.waitForSelector('iframe[src*="youtube.com/embed"]', { timeout: 25000 });
     const beforeSrc = await page.locator('iframe[src*="youtube.com/embed"]').first().getAttribute('src');
     await injectEmbedError150(page);
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(2200);
     if (i < 2) {
       await page.waitForFunction(
         (prev) => {
@@ -348,12 +362,7 @@ test('retry session: manual second-video tap embed error does not chain', async 
     await openList.click({ timeout: 10000 });
     await page.getByRole('heading', { name: /재생 목록/ }).waitFor({ timeout: 15000 });
   }
-  await page.evaluate(() => {
-    const img = document.querySelector('img[src*="RSgPFcRdWig"]');
-    const btn = img?.closest('button');
-    if (!btn) throw new Error('second playlist item not found');
-    btn.click();
-  });
+  await tapPlaylistVideo(page, 'RSgPFcRdWig');
   await page.waitForSelector('iframe[src*="youtube.com/embed/RSgPFcRdWig"]', { timeout: 20000 });
   await injectEmbedError150(page);
   await page.waitForTimeout(2000);
@@ -371,4 +380,58 @@ test('retry session: manual second-video tap embed error does not chain', async 
   assert.ok(parsed.ids.includes('my_7f-tY1tA'));
   assert.ok(parsed.ids.includes('RSgPFcRdWig'));
   assert.ok(!parsed.ids.includes('lBrg_Y8vVkQ'), 'must not chain-mark third video');
+});
+
+test('playlist tap embed error marks only tapped video (no retry session)', async () => {
+  await ensurePreview();
+  const { createHarnessNetworkState } = await harnessGuard();
+  const harnessNetwork = createHarnessNetworkState();
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1280, height: 800 } });
+  const page = await context.newPage();
+  await context.addInitScript(() => {
+    localStorage.removeItem('gateo.yt.unplayable.v1');
+    localStorage.removeItem('gateo.yt.forceEmbedError');
+    sessionStorage.clear();
+  });
+  await setupParisCache(page, harnessNetwork, PARIS_FIVE_VIDEOS);
+  await page.goto(`${PREVIEW_BASE}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await page.waitForTimeout(1200);
+  const secondId = 'RSgPFcRdWig';
+  await tapPlaylistVideo(page, secondId);
+  await page.waitForSelector(`iframe[src*="youtube.com/embed/${secondId}"]`, { timeout: 20000 });
+  await injectEmbedError150(page);
+  await page.waitForTimeout(2000);
+  const iframeCount = await page.locator('iframe[src*="youtube.com/embed"]').count();
+  const unplayableRaw = await page.evaluate(() => localStorage.getItem('gateo.yt.unplayable.v1'));
+  const fallbackThumb = await page.locator(`img[src*="/vi/${secondId}/"]`).first().isVisible();
+  const ytHref = await page.getByRole('link', { name: /YouTube/ }).first().getAttribute('href');
+  await browser.close();
+
+  const parsed = JSON.parse(unplayableRaw || '{}');
+  assert.equal(parsed.ids?.length, 1, 'only tapped video marked unplayable');
+  assert.ok(parsed.ids.includes(secondId));
+  assert.ok(!parsed.ids.includes('my_7f-tY1tA'), 'must not mark first video');
+  assert.equal(iframeCount, 0, 'no auto-advance embed after tap failure');
+  assert.ok(fallbackThumb, 'fallback thumbnail shows tapped video');
+  assert.ok(ytHref?.includes(secondId), 'YouTube CTA links to tapped video');
+});
+
+test('playlist tap success starts the tapped embed', async () => {
+  await ensurePreview();
+  const { createHarnessNetworkState } = await harnessGuard();
+  const harnessNetwork = createHarnessNetworkState();
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1280, height: 800 } });
+  const page = await context.newPage();
+  await context.addInitScript(() => {
+    localStorage.removeItem('gateo.yt.unplayable.v1');
+    sessionStorage.clear();
+  });
+  await setupParisCache(page, harnessNetwork);
+  await page.goto(`${PREVIEW_BASE}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await page.waitForTimeout(1200);
+  await tapPlaylistVideo(page, 'RSgPFcRdWig');
+  await page.waitForSelector('iframe[src*="youtube.com/embed/RSgPFcRdWig"]', { timeout: 20000 });
+  await browser.close();
 });
