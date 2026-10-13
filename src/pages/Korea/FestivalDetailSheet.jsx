@@ -1141,9 +1141,10 @@ export default function FestivalDetailSheet({
     };
   }, [item?.contentId, item?.contentTypeId, prefetchedTourDetail, t]);
 
-  useEffect(() => {
+  const onSelectHeroImage = useCallback((index) => {
+    setActiveImage(index);
     setHeroPhotoDecoded(false);
-  }, [item?.contentId, activeImage]);
+  }, []);
 
   useEffect(() => {
     const seed = toHttps(festivalImage(item));
@@ -1224,6 +1225,7 @@ export default function FestivalDetailSheet({
   const stepLightbox = useCallback((delta) => {
     if (imageUrls.length < 2) return;
     setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
+    setHeroPhotoDecoded(false);
   }, [imageUrls.length]);
 
   const consumeHorizontalSwipe = useCallback((start, endX, endY) => {
@@ -1931,7 +1933,7 @@ export default function FestivalDetailSheet({
               urls={imageUrls}
               detailLoading={detailLoading}
               activeIndex={activeImage}
-              onSelect={setActiveImage}
+              onSelect={onSelectHeroImage}
               onOpen={() => setLightboxOpen(true)}
               resolveSrc={(url) => resolveListImageUrl(url, { role: 'list' })}
               photosAria={t('korea.festival.detail.photosAria')}
@@ -2697,6 +2699,7 @@ export default function FestivalDetailSheet({
                     type="button"
                     onClick={() => {
                       setActiveImage(index);
+                      setHeroPhotoDecoded(false);
                       setLightboxOpen(true);
                     }}
                     className="relative aspect-square overflow-hidden rounded-xl border border-stone-200 bg-stone-100"
