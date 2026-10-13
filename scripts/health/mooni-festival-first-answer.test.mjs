@@ -614,7 +614,8 @@ test('festival access hint urges real routes when TAGO times are missing', async
     },
   });
   assert.match(masan.hint, /마산역/);
-  assert.match(masan.hint, /창원중앙역은 보조/);
+  assert.match(masan.hint, /창원중앙역은 보조|창원중앙역은 같은 대중교통/);
+  assert.match(masan.hint, /자가용.*창원중앙역을 다시 넣지|자가용 문단 뒤에 창원중앙역/);
   assert.match(assist, /bustago\.or\.kr/);
   assert.match(assist, /appendFestivalAccessBookingLinks/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 갑니다/);
@@ -2947,6 +2948,22 @@ test('festival page link appears once and the closing link stays', () => {
   assert.equal((opening.match(/festival=2930716/g) || []).length, 1);
   assert.match(opening, /자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요/);
   assert.doesNotMatch(opening, /강릉 국수 축제 페이지\]/);
+});
+
+test('round 9 strips standalone 교통편 검색 after domestic 12Go CTA removal', () => {
+  const remnant = [
+    '허심청브로이 옥토버페스트까지 버스로 갈 수 있어요.',
+    '교통편 검색(12Go)',
+    '교통편 검색',
+  ].join('\n');
+  assert.equal(stripDomesticTwelveGoMention(remnant), '허심청브로이 옥토버페스트까지 버스로 갈 수 있어요.');
+  const polished = polishFestivalModelReply(remnant, {
+    contentId: '2855626',
+    locale: 'ko',
+    userText: '부산에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+  });
+  assert.match(polished, /옥토버페스트/);
+  assert.doesNotMatch(polished, /교통편\s*검색|12\s*Go/i);
 });
 
 test('round 8 polish drops redundant booking link lines and chip labels', () => {

@@ -213,7 +213,16 @@ const NON_STAY_ASK_RE = /사우나|찜질|목욕|스파|sauna|jjimjilbang|bathho
 const BROADCAST_RE = /방청|공개\s*방송|시청자/;
 const BROADCAST_ASK_RE = /방청|공개\s*방송|시청자|KBS|MBC|SBS/;
 const TWELVE_GO_CTA_RE =
-  /12\s*Go[^\n]{0,80}|12go\.asia|교통편\s*검색\s*\(?\s*12\s*Go\s*\)?|바로\s*가기[^\n]{0,48}12\s*Go|12\s*Go[^\n]{0,48}바로\s*가기/i;
+  /12\s*Go[^\n]{0,80}|12go\.asia|교통편\s*검색(?:\s*\([^)]*\))?(?:\s*[|｜])?|바로\s*가기[^\n]{0,48}12\s*Go|12\s*Go[^\n]{0,48}바로\s*가기/i;
+
+function isDomesticTwelveGoCtaFragment(part) {
+  const t = String(part || '').trim();
+  if (!t) return false;
+  if (TWELVE_GO_CTA_RE.test(t)) return true;
+  if (/^교통편\s*검색\s*[.。!?\s]*$/i.test(t)) return true;
+  if (/^교통편\s*검색$/i.test(normalizeCta(t))) return true;
+  return false;
+}
 
 const FESTIVAL_OVERSEAS_AIR_CHIPS = new Set([
   'festival_overseas_visa',
@@ -264,8 +273,14 @@ export function stripUnaskedBroadcastLines(text, userText = '') {
 export function stripDomesticTwelveGoMention(text) {
   const withoutLinks = String(text || '')
     .replace(/\[[^\]]*12\s*Go[^\]]*\]\([^)]+\)/gi, '')
+    .replace(/\[[^\]]*교통편\s*검색[^\]]*\]\([^)]+\)/gi, '')
     .replace(/https?:\/\/(?:www\.)?12go\.asia\S*/gi, '');
-  return filterPreservingBreaks(withoutLinks, (part) => TWELVE_GO_CTA_RE.test(part));
+  let next = filterPreservingBreaks(withoutLinks, (part) => isDomesticTwelveGoCtaFragment(part));
+  next = next
+    .split('\n')
+    .filter((line) => !/^[\s*#\-–—•|｜]*교통편\s*검색\s*[.。!?\s]*$/i.test(String(line || '').trim()))
+    .join('\n');
+  return next.replace(/\n{3,}/g, '\n\n').trim();
 }
 
 export function appendFestivalLodgingNextStep(reply, options = {}) {
@@ -1719,8 +1734,8 @@ function festivalAccessVenueGuidanceLines(ctx, locale = 'ko') {
   }
   if (id === '637693' || /해양누리|3·15|마산가고파|마산/.test(blob)) {
     lines.push(en
-      ? '- Arrival station: for 3·15 Marine Nuri Park, guide KTX/SRT to Masan Station first (closest to the venue). Mention Changwon Jungang Station only as a backup.'
-      : '- 도착 역: 3·15해양누리공원에는 KTX·SRT 도착은 마산역이 축제장에 가장 가까워요. 마산역을 먼저 안내하고, 창원중앙역은 보조로만 말해 주세요.');
+      ? '- Arrival station (inside the public-transit section only): for 3·15 Marine Nuri Park, guide KTX/SRT to Masan Station first, then the hop to the venue. Mention Changwon Jungang Station only as a backup in that same transit section — not again after the driving paragraph.'
+      : '- 도착 역(대중교통 단락 안에서만): 3·15해양누리공원에는 KTX·SRT는 마산역이 가장 가까워요. 마산역→축제장 경로를 먼저 쓰고, 창원중앙역은 같은 대중교통·역→축제장 설명 안에서만 보조로 말해 주세요. 자가용 안내 **다음에** 창원중앙역을 다시 넣지 마세요.');
   }
   return lines;
 }
@@ -2753,6 +2768,11 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       }
       for (const line of festivalAccessVenueGuidanceLines(festivalContext, input.locale)) {
         hint += `\n${line}`;
+      }
+      if (String(festivalContext.contentId || '') === '637693') {
+        hint += enFood
+          ? '\n- Order: public transit and station-to-venue hops (including Changwon Jungang as backup) first, then driving. Do not mention Changwon Jungang after the car paragraph.'
+          : '\n- 순서: 열차·버스·역→축제장(창원중앙역 보조 포함) 안내를 먼저 쓰고, 그 다음에 자가용. 자가용 문단 뒤에 창원중앙역을 쓰지 않는다.';
       }
       hint += enFood
         ? '\n- This turn is only getting there. Do not repeat the festival welcome, overview, or program from the opening message — go straight from the chosen origin to the venue.'
