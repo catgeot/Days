@@ -79,8 +79,20 @@ async function waitPromoReady(page) {
     .locator('[data-social-promo-title-ko]')
     .first()
     .waitFor({ state: 'visible', timeout: 120_000 });
-  const thumb = promo.locator('[data-social-promo-card]').first().locator('img, [data-thumb-fallback]');
-  await thumb.first().waitFor({ state: 'visible', timeout: 60_000 });
+  await page.waitForFunction(
+    () => {
+      const cards = [...document.querySelectorAll('[data-social-promo-card]')];
+      if (cards.length < 2) return false;
+      return cards.every((card) => {
+        const fallback = card.querySelector('[data-thumb-fallback]');
+        if (fallback) return true;
+        const img = card.querySelector('img');
+        return Boolean(img?.complete && img.naturalWidth > 0);
+      });
+    },
+    undefined,
+    { timeout: 60_000 },
+  );
   await page.waitForTimeout(400);
 }
 

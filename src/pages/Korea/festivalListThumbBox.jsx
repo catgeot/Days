@@ -28,7 +28,10 @@ export function FestivalListThumbBox({ item, isEnglish = false, className = '' }
 
   useEffect(() => {
     setImgFailed(false);
-  }, [src, item?.contentId]);
+    if (!canTryImage) return undefined;
+    const timer = window.setTimeout(() => setImgFailed(true), 5000);
+    return () => window.clearTimeout(timer);
+  }, [src, item?.contentId, canTryImage]);
 
   const showImage = canTryImage && !imgFailed;
 
@@ -46,6 +49,10 @@ export function FestivalListThumbBox({ item, isEnglish = false, className = '' }
           decoding="async"
           referrerPolicy="no-referrer"
           onError={() => setImgFailed(true)}
+          onLoad={(event) => {
+            const el = event.currentTarget;
+            if (!el.naturalWidth || !el.naturalHeight) setImgFailed(true);
+          }}
           {...koText}
         />
       ) : (
