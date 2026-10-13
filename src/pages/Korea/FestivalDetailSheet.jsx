@@ -351,38 +351,48 @@ function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
     setThumbIndex(0);
     setReady(false);
   }
-  const thumb = urls[thumbIndex] || '';
-  const noteLoaded = (img) => {
-    if (img?.complete && img.naturalWidth > 0) setReady(true);
-  };
-  if (!thumb) {
+  if (!urls.length) {
     if (imagePending) return <NearbyThumbSkeleton />;
     return <NearbyThumbPlaceholder />;
   }
+  if (thumbIndex >= urls.length) {
+    if (imagePending) return <NearbyThumbSkeleton />;
+    return <NearbyThumbPlaceholder />;
+  }
+  const thumb = urls[thumbIndex];
   return (
-    <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200">
+    <span
+      className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200"
+      data-nearby-thumb={ready ? 'photo' : 'pending'}
+    >
       {ready ? null : (
         <span
-          className="absolute inset-0 animate-pulse bg-stone-200"
+          className="absolute inset-0 z-[1] animate-pulse bg-stone-200"
           data-nearby-thumb="pending"
           data-nearby-thumb-pending=""
+          aria-hidden="true"
         />
       )}
-      <img
+      <FestivalPhotoFrame
         key={thumb}
         src={thumb}
         alt=""
         loading="eager"
         decoding="async"
-        ref={noteLoaded}
-        onLoad={(event) => noteLoaded(event.currentTarget)}
-        onError={(event) => {
-          if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
+        referrerPolicy="no-referrer"
+        className="relative h-14 w-14 object-cover"
+        fallback={
+          thumbIndex + 1 < urls.length ? (
+            <NearbyThumbSkeleton />
+          ) : (
+            <NearbyThumbPlaceholder />
+          )
+        }
+        onLoaded={() => setReady(true)}
+        onFailed={() => {
           setReady(false);
           setThumbIndex((i) => i + 1);
         }}
-        className="relative h-14 w-14 object-cover"
-        data-nearby-thumb={ready ? 'photo' : 'pending'}
       />
     </span>
   );

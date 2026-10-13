@@ -125,15 +125,11 @@ test('festival detail photo surfaces use the frame that hides a broken image', (
     sheet.indexOf('function nearbySightTitle'),
   );
   assert.match(nearbyFn, /setThumbIndex/);
-  assert.match(nearbyFn, /display = 'none'/);
+  assert.match(nearbyFn, /FestivalPhotoFrame/);
+  assert.match(nearbyFn, /referrerPolicy="no-referrer"/);
 
   const rawImgs = [...sheet.matchAll(/<img\b[\s\S]*?\/>/g)];
-  assert.equal(rawImgs.length, 1, 'only the nearby-row thumb may stay a raw img');
-  const nearbyImg = rawImgs[0];
-  assert.ok(nearbyImg.index > sheet.indexOf('function NearbyRowThumb'));
-  assert.ok(nearbyImg.index < sheet.indexOf('function nearbySightTitle'));
-  assert.match(nearbyImg[0], /display = 'none'/);
-  assert.doesNotMatch(nearbyImg[0], /h-auto/);
+  assert.equal(rawImgs.length, 0, 'festival detail sheet uses FestivalPhotoFrame, not raw img');
   assert.doesNotMatch(sheet, /heroImageBroken/);
 });
 
