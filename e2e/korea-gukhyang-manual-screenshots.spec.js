@@ -252,6 +252,7 @@ test.describe('gukhyang manual — real TourAPI @390 webkit', () => {
     await jeonnam.click();
     await waitForPromoThumbDecoded(page);
     let audit = await collectImageAudit(page);
+    const promoSnapshot = audit.promo;
     let summary = summarizeBuckets(audit);
     expect(
       summary.promo.loaded,
@@ -281,8 +282,10 @@ test.describe('gukhyang manual — real TourAPI @390 webkit', () => {
     await shot(page, 'r5-gukhyang-nearby-thumbs-390', { fullPage: false });
 
     audit = await collectImageAudit(page);
+    audit.promo = promoSnapshot;
     summary = summarizeBuckets(audit);
     expect(summary.hero.loaded).toBe(1);
+    expect(summary.promo.loaded).toBeGreaterThan(0);
     const auditPath = await writeImageAuditReport(summary, audit);
     test.info().annotations.push({
       type: 'image-audit-r5',
