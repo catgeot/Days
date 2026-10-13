@@ -38,6 +38,7 @@ test('638576 manual entry has official fields and as-of line', () => {
   assert.match(detail.intro.usetimefestival, /사전예매 10% 할인\(9\.23~10\.22\)/);
   assert.match(detail.intro.usetimefestival, /함평군민/);
   assert.match(detail.intro.usetimefestival, /만 4세 미만/);
+  assert.match(detail.intro.usetimefestival, /장애인\(중증은 보호자 1인 동반 무료\)/);
 
   const html = renderToStaticMarkup(
     createElement(FestivalDetailAsOfLine, {
