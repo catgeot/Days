@@ -21,6 +21,7 @@ const YouTubePlayerView = forwardRef(({
   mobileSecondaryNav = null,
   fetchError = false,
   onRetry,
+  onRetryUnplayable,
   isEmptyResult = false,
   onLoadMore,
   canLoadMore = false,
@@ -262,10 +263,22 @@ const YouTubePlayerView = forwardRef(({
     </a>
   );
 
+  const retryUnplayableButton = onRetryUnplayable ? (
+    <button
+      type="button"
+      onClick={() => onRetryUnplayable?.()}
+      disabled={isLoading}
+      className={`${secondaryCtaClass} disabled:opacity-40`}
+    >
+      <RotateCcw size={18} />
+      {t('place.video.retry')}
+    </button>
+  ) : null;
+
   const emptyOrUnplayableActions = (
     <div className="flex flex-col items-center gap-3 w-full max-w-sm">
       {watchOnYouTubeButton}
-      {retryButton}
+      {showNoPlayable ? retryUnplayableButton : retryButton}
       {recommendFormButton}
     </div>
   );

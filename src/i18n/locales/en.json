@@ -1299,7 +1299,7 @@
       "playlist": "Playlist ({{count}})",
       "insightsLoading": "Searching video insights...",
       "insightsEmpty": "No video insights",
-      "insightsEmptyBody": "We do not have enough video data for this place yet. Use the player panel on the right to be the first to recommend one.",
+      "insightsEmptyBody": "Search on YouTube or recommend a video for this place.",
       "errorTitle": "Couldn't load videos",
       "retry": "Try again",
       "openOnYouTube": "Watch on YouTube",

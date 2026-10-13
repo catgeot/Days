@@ -106,4 +106,8 @@ assert.equal(
   '경복궁',
 );
 
+const sapaLoc = { name: '사파', name_en: 'Sapa', country: '베트남', country_en: 'Vietnam' };
+assert.match(freeSearchYouTubeQuery(sapaLoc, { locale: 'en' }), /^Sapa/);
+assert.doesNotMatch(freeSearchYouTubeQuery(sapaLoc, { locale: 'en' }), /사파/);
+
 console.log('free-search catalog checks passed');

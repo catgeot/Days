@@ -1,5 +1,6 @@
 import { citiesData } from '../data/citiesData.js';
 import { shouldRefreshPlaceVideoCache } from './placeVideoCache.js';
+import { pickLatinPlaceName } from './uiPlaceAssetQuery.js';
 
 const FREE_SEARCH_ID_RE = /^(loc|search|city|label)-/i;
 const PLACEHOLDER_NAME = /^(알 수 없는 지역|알 수 없는 도시|좌표 탐색)$/;
@@ -77,8 +78,23 @@ export function narrowCityLabel(location) {
   return '';
 }
 
+function isEnglishLocale(locale) {
+  return String(locale || '').toLowerCase().startsWith('en');
+}
+
 /** YouTube 결과 검색어. 자리표시 지명이면 빈 문자열(링크를 만들지 않음). */
-export function freeSearchYouTubeQuery(location) {
+export function freeSearchYouTubeQuery(location, options = {}) {
+  const locale = options.locale;
+  if (isEnglishLocale(locale)) {
+    const latin = pickLatinPlaceName(location);
+    const country = pickLatinPlaceName({
+      name_en: location?.country_en,
+      name: location?.country,
+    });
+    if (latin && country) return `${latin} ${country}`;
+    if (latin) return latin;
+  }
+
   const rawName = String(location?.name || '').trim();
   const name = PLACEHOLDER_NAME.test(rawName)
     ? usableLabel(location?.name_en) || usableLabel(location?.region) || usableLabel(location?.country)
@@ -90,8 +106,8 @@ export function freeSearchYouTubeQuery(location) {
   return `${name} ${city}`;
 }
 
-export function freeSearchYouTubeUrl(location) {
-  const q = freeSearchYouTubeQuery(location);
+export function freeSearchYouTubeUrl(location, options = {}) {
+  const q = freeSearchYouTubeQuery(location, options);
   if (!q) return '';
   return `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
 }
