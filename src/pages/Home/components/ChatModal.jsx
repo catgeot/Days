@@ -1492,18 +1492,6 @@ const ChatModal = ({
         handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
       onDrillDown: (parentId) => {
         setTopicDockParent(parentId);
-        if (parentId !== FESTIVAL_ACCESS_PARENT) return;
-        const label = String(festivalMooniContext?.transport?.selected?.label || '').trim();
-        if (!label) return;
-        handleSend(
-          `${label}에서 이 축제장까지 확인된 열차와 버스 시각을 알려줘`,
-          PERSONA_TYPES.PLANNER,
-          {
-            chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS,
-            useCardTransport: true,
-            departureLabel: label,
-          },
-        );
       },
       onBack: topicDockParent ? () => setTopicDockParent(null) : undefined,
       parentL1Label: topicDockParent
@@ -1528,7 +1516,6 @@ const ChatModal = ({
       topicDockPrompt,
       showTopicDockPrompt,
       isMooniUi,
-      festivalMooniContext,
     ]
   );
 

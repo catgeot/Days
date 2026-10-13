@@ -214,9 +214,10 @@ export const KO = {
     "festival_access": {
       "title": "축제장 가는 법",
       "rules": [
-        "사용자가 고른 국내 출발지에서 축제장까지 열차·고속버스와 차로 가는 법만 말한다. 출발 역·터미널 이름을 문장에 넣는다.",
+        "사용자는 당신을 믿고 이 축제에 갑니다. 고른 국내 출발지에서 축제장까지 실제로 다니는 열차·고속버스·차 경로를 안내해 주세요. 출발 역·터미널 이름을 문장에 넣는다.",
+        "힌트에 확인된 열차·버스 시각·요금이 있으면 그 숫자만 말한다. 없으면 시각·요금 숫자는 만들지 않고, [코레일](https://www.letskorail.com/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/)에서 확인하라고 링크와 함께 안내한다. «이 출발지의 확인된 열차·버스 시각은 없어요»만으로 답을 끝내지 않는다.",
         "국내 구간에서는 공항 코드(ICN, GMP, KAG 등)를 쓰지 않는다. 공항 코드는 해외 항공 질문에서만 쓴다.",
-        "힌트에 없는 셔틀·주차·소요 시간은 단정하지 않는다. 주차·셔틀이 힌트에 없으면 «축제 페이지에서 확인»이라고 하지 않고, 공식 홈페이지나 문의처로 안내한다. 홈페이지는 링크하고 전화번호가 있으면 적는다.",
+        "힌트에 없는 셔틀·주차는 단정하지 않는다. 주차·셔틀이 힌트에 없으면 «축제 페이지에서 확인»이라고 하지 않고, 공식 홈페이지나 문의처로 안내한다. 홈페이지는 링크하고 전화번호가 있으면 적는다. 자가용은 고속도로·대략 소요만 말하고, 확인되지 않은 통행료·정확한 분 단위 시간은 만들지 않는다.",
         "글머리표 없이 문장만 쓴다. 행사 기간은 다시 말하지 않는다. GATEO ?festival= 링크는 축제 안내로 넣는다. 그 링크를 «가는 법»으로 안내하지 않는다. 다음 행동은 마크다운 링크가 있을 때만 남긴다."
       ]
     },
@@ -505,9 +506,10 @@ export const EN = {
     "festival_access": {
       "title": "Getting to the festival",
       "rules": [
-        "Explain rail, express bus, and driving from the domestic origin the user chose. Name the departure station or terminal.",
+        "The user is counting on you to help them reach this festival. From the domestic origin they chose, explain real rail, express bus, and driving routes. Name the departure station or terminal.",
+        "When the hint lists confirmed train or bus times and fares, use only those numbers. Otherwise do not invent times or fares; point to [Korail](https://www.letskorail.com/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/) with links. Never end with only a line that there are no confirmed times.",
         "Do not use airport codes (ICN, GMP, KAG) on a domestic leg. Airport codes are only for an overseas flight.",
-        "Do not assert shuttles, parking, or travel times that are not in the hint. If parking or a shuttle is not in the hint, do not say to check the festival page. Point to the official site or the contact phone, link the homepage, and include the phone when it is present.",
+        "Do not assert shuttles or parking that are not in the hint. If parking or a shuttle is not in the hint, do not say to check the festival page. Point to the official site or the contact phone, link the homepage, and include the phone when it is present. For driving, name highways and rough duration only; do not invent tolls or exact minutes.",
         "No bullet lists. Do not restate the festival dates. End with the GATEO ?festival= link as festival information. Do not frame that link as how to get there. Keep a next action only when it is a markdown link."
       ]
     },

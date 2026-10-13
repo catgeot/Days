@@ -578,12 +578,7 @@ export function composeFestivalAccessReply(transport, {
   }
   segments = dedupeAccessSegments(segments);
   if (!useSelected) segments = segments.slice(0, ACCESS_CARD_CAP);
-  if (!segments.length) {
-    if (useSelected) return '';
-    return englishLocale(locale)
-      ? 'There are no confirmed train or bus times for this departure.'
-      : '이 출발지의 확인된 열차·버스 시각은 없어요.';
-  }
+  if (!segments.length) return '';
   const en = englishLocale(locale);
   const hops = segments.filter((segment) => segment.transfer === true);
   const hopDeps = new Set(hops.map((segment) => stationToken(segment.dep)));

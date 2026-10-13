@@ -535,6 +535,22 @@ test('festival chips: four answers plus overseas group, English puts overseas fi
   }
 });
 
+test('festival access drill-down opens origin chips without auto-sending Seoul', () => {
+  const chatModal = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
+  assert.match(chatModal, /showFestivalAccessDock/);
+  assert.match(chatModal, /data-testid="mooni-festival-access-dock"/);
+  assert.doesNotMatch(chatModal, /useCardTransport:\s*true/);
+  assert.doesNotMatch(chatModal, /확인된 열차와 버스 시각을 알려줘/);
+  assert.match(chatModal, /onDrillDown:\s*\(parentId\)\s*=>\s*\{\s*setTopicDockParent\(parentId\);/);
+});
+
+test('festival access hint urges real routes when TAGO times are missing', () => {
+  const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalAssist.js'), 'utf8');
+  assert.match(assist, /isFestivalAccessAsk/);
+  assert.match(assist, /시각은 없어요»만으로 답을 끝내지 않는다/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 갑니다/);
+});
+
 test('festival departure chips are 17 cities, swap the host city, and stay off airports', () => {
   const provinces = [
     '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종',

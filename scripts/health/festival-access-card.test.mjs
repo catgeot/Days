@@ -379,6 +379,26 @@ test('a direct ride and a transfer summary, not one line per class', () => {
   assert.doesNotMatch(reply, /(?<!이)예요/);
 });
 
+test('missing TAGO rows call the model instead of a lone no-times line', () => {
+  const empty = composeFestivalAccessReply(
+    { origins: [{ label: '대구', segments: [] }] },
+    { stations: '동대구역·대구역', locale: 'ko' },
+  );
+  assert.equal(empty, '');
+  const planned = planFestivalMooniModelCall({
+    chipId: 'festival_access',
+    userText: '대구(동대구역·대구역)에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+    transport: {
+      origins: [{ label: '대구', segments: [] }],
+      selected: { segments: [] },
+    },
+    stations: '동대구역·대구역',
+    locale: 'ko',
+  });
+  assert.equal(planned.callModel, true);
+  assert.equal(planned.reply, '');
+});
+
 test('국향대전 defaults to 용산 when that origin is present', () => {
   const origins = [
     { originId: 'seoul-station', label: '서울역' },
