@@ -72,6 +72,7 @@ import {
   festivalItemForSessionPin,
 } from './festivalSessionPin';
 import { festivalItemThumbSrc } from './festivalListThumb';
+import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import SocialPromoFestivalRow from './SocialPromoFestivalRow';
 import {
   festivalItemFromDetailWithAsOf,
@@ -680,15 +681,10 @@ function FestivalRow({
   const { isEnglish } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const img = festivalImage(item);
-  const [imgFailed, setImgFailed] = useState(false);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
   const range = start && end ? `${start} – ${end}` : start || end;
   const distanceLabel = formatDistanceKm(distanceKm);
-
-  useEffect(() => {
-    setImgFailed(false);
-  }, [img]);
 
   return (
     <div
@@ -713,20 +709,17 @@ function FestivalRow({
             large ? 'h-24 w-24 sm:h-28 sm:w-28' : 'h-14 w-14'
           }`}
         >
-          {img && !imgFailed ? (
-            <img
-              src={img}
-              alt={item.title || ''}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-              referrerPolicy="no-referrer"
-              onError={() => setImgFailed(true)}
-              {...koText}
-            />
-          ) : (
-            <FestivalThumbFallback large={large} />
-          )}
+          <FestivalPhotoFrame
+            src={img}
+            alt={item.title || ''}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            lang={koText.lang}
+            translate={koText.translate}
+            fallback={<FestivalThumbFallback large={large} />}
+          />
         </div>
         <div className={`min-w-0 flex-1 ${large ? 'space-y-1' : 'space-y-0.5'}`}>
           <div className="flex min-w-0 items-start justify-between gap-2">

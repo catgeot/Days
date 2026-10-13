@@ -192,6 +192,46 @@ async function settleProbe(ok) {
   });
 }
 
+test('list card 40x40 thumb removes a broken image and shows the placeholder', async () => {
+  const indexSrc = readFileSync(join(rootDir, 'src/pages/Korea/index.jsx'), 'utf8');
+  const row = indexSrc.slice(
+    indexSrc.indexOf('function FestivalRow('),
+    indexSrc.indexOf('export default function KoreaFestivalHub'),
+  );
+  assert.equal([...row.matchAll(/<img\b/g)].length, 0);
+  assert.match(row, /FestivalPhotoFrame/);
+  assert.match(row, /FestivalThumbFallback/);
+
+  const { FestivalListThumbBox } = await import('../../src/pages/Korea/festivalListThumbBox.jsx');
+  container = document.createElement('div');
+  document.body.appendChild(container);
+  root = createRoot(container);
+  await act(async () => {
+    root.render(React.createElement(FestivalListThumbBox, {
+      item: {
+        contentId: '4114954',
+        firstimage: 'https://tong.visitkorea.or.kr/cms/resource/54/4114954_image2_1.jpg',
+      },
+    }));
+  });
+
+  const box = container.querySelector('div');
+  assert.match(box.className, /h-10/);
+  assert.match(box.className, /w-10/);
+  const img = container.querySelector('img[data-festival-photo]');
+  assert.ok(img, '40x40 thumb renders before an error');
+  assert.equal(container.querySelector('[data-thumb-fallback]'), null);
+
+  await act(async () => {
+    img.dispatchEvent(new window.Event('error'));
+  });
+
+  assert.equal(container.querySelector('img'), null);
+  assert.ok(container.querySelector('[data-thumb-fallback]'));
+  assert.match(box.className, /h-10/);
+  assert.match(box.className, /w-10/);
+});
+
 test('hero strip mode follows successful loads, not URL count', () => {
   assert.equal(festivalHeroStripMode(0, false, 11), 'collapsed');
   assert.equal(festivalHeroStripMode(1, false, 11), 'collapsed');

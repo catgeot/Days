@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { festivalItemThumbSrc } from './festivalListThumb';
+import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { hasFestivalThumbnail } from './socialPromoFestivalsLogic.js';
 
 export function FestivalListThumbFallback({ size = 'sm' }) {
@@ -24,23 +25,21 @@ export function FestivalListThumbBox({ item, isEnglish = false, className = '' }
   const koText = koreanApiTextProps(isEnglish);
   const src = festivalItemThumbSrc(item);
   const canTryImage = Boolean(src) && hasFestivalThumbnail(item);
-  const [imgFailed, setImgFailed] = useState(false);
+  const [giveUp, setGiveUp] = useState(false);
 
   useEffect(() => {
-    setImgFailed(false);
+    setGiveUp(false);
     if (!canTryImage) return undefined;
-    const timer = window.setTimeout(() => setImgFailed(true), 5000);
+    const timer = window.setTimeout(() => setGiveUp(true), 5000);
     return () => window.clearTimeout(timer);
   }, [src, item?.contentId, canTryImage]);
-
-  const showImage = canTryImage && !imgFailed;
 
   return (
     <div
       className={`h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-stone-100 ${className}`.trim()}
     >
-      {showImage ? (
-        <img
+      {canTryImage && !giveUp ? (
+        <FestivalPhotoFrame
           src={src}
           alt=""
           className="h-full w-full object-cover"
@@ -48,12 +47,9 @@ export function FestivalListThumbBox({ item, isEnglish = false, className = '' }
           fetchPriority="high"
           decoding="async"
           referrerPolicy="no-referrer"
-          onError={() => setImgFailed(true)}
-          onLoad={(event) => {
-            const el = event.currentTarget;
-            if (!el.naturalWidth || !el.naturalHeight) setImgFailed(true);
-          }}
-          {...koText}
+          lang={koText.lang}
+          translate={koText.translate}
+          fallback={<FestivalListThumbFallback size="sm" />}
         />
       ) : (
         <FestivalListThumbFallback size="sm" />
