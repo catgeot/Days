@@ -2110,19 +2110,19 @@ export default function KoreaFestivalHub() {
     if (nearBaseItems && nearLabel) {
       return t('korea.festival.nearPanelMeta', {
         km: NEAR_KM,
-        count: panelItems.length,
+        count: panelItemsForList.length,
       });
     }
     if (nearActive && nearMsg) return nearMsg;
     return null;
-  }, [nearBaseItems, nearLabel, nearActive, nearMsg, panelItems.length, t]);
+  }, [nearBaseItems, nearLabel, nearActive, nearMsg, panelItemsForList.length, t]);
 
   const panelListMetaSegments = useMemo(() => {
     if (panelListMetaText != null) return null;
     return buildFestivalPanelListMetaSegments({
       areaCode,
       cityName,
-      count: panelItems.length,
+      count: panelItemsForList.length,
       t,
       locale,
       listLoading: loading,
@@ -2131,7 +2131,7 @@ export default function KoreaFestivalHub() {
     panelListMetaText,
     areaCode,
     cityName,
-    panelItems.length,
+    panelItemsForList.length,
     t,
     locale,
     loading,

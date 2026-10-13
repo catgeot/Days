@@ -7,7 +7,9 @@ import { filterBySearchQuery } from '../../src/pages/Korea/festivalSearch.js';
 import { festivalItemThumbSrc } from '../../src/pages/Korea/festivalListThumb.js';
 import {
   auditCityChipCountsMatchGroups,
+  auditListHeadingMatchesSidoChip,
   auditSidoChipCountsMatchGroups,
+  festivalListHeadingCount,
 } from '../../src/pages/Korea/festivalListChipGroupSync.js';
 import { buildCityTags } from '../../src/pages/Korea/festivalRegionTags.js';
 import {
@@ -386,6 +388,46 @@ test('visible promo cards are excluded from list rows and chip pool', () => {
   assert.equal(list.some((r) => r.contentId === '638576'), false);
 });
 
+test('list heading count matches sido chip when promo rows are excluded', () => {
+  const panel = [
+    GUKHYANG,
+    {
+      contentId: '637693',
+      title: '마산가고파국화축제',
+      eventStartDate: '20261031',
+      eventEndDate: '20261108',
+      addr1: '경상남도 창원시',
+    },
+    {
+      contentId: 'j1',
+      title: '전남 축제 A',
+      eventStartDate: '20261101',
+      eventEndDate: '20261103',
+      addr1: '전라남도 나주시',
+    },
+    {
+      contentId: 'j2',
+      title: '전남 축제 B',
+      eventStartDate: '20261104',
+      eventEndDate: '20261106',
+      addr1: '전라남도 목포시',
+    },
+  ];
+  const promoIds = contentIdsFromPromoCards([{ item: GUKHYANG }, { item: { contentId: '637693' } }]);
+  const chipPool = excludeFestivalsByContentId(panel, promoIds);
+  const jeonnamPanel = panel.filter((row) => String(row.addr1).includes('전라남도'));
+  assert.equal(festivalListHeadingCount(jeonnamPanel, promoIds), chipPool.filter((r) => r.addr1.includes('전라남도')).length);
+  const jeonnamAudit = auditListHeadingMatchesSidoChip(jeonnamPanel, promoIds, chipPool, '38');
+  assert.equal(jeonnamAudit.ok, true, JSON.stringify(jeonnamAudit));
+
+  const withPromoInList = [...jeonnamPanel, GUKHYANG];
+  assert.equal(
+    festivalListHeadingCount(withPromoInList, promoIds),
+    festivalListHeadingCount(jeonnamPanel, promoIds),
+    'promo duplicate in panel must not inflate heading count',
+  );
+});
+
 test('hub wires session pin, promo row, and merge', () => {
   const hub = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
   assert.match(hub, /sessionPinnedDisplay/);
@@ -401,6 +443,7 @@ test('hub wires session pin, promo row, and merge', () => {
   assert.match(hub, /shouldShowSessionPinnedRow/);
   assert.match(hub, /excludeFestivalsByContentId/);
   assert.match(hub, /panelItemsForList/);
+  assert.match(hub, /count: panelItemsForList\.length/);
   assert.match(hub, /manualFestivalEntries/);
   const promoRow = readFileSync(
     join(root, 'src/pages/Korea/SocialPromoFestivalRow.jsx'),

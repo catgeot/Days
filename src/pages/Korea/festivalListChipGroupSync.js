@@ -6,6 +6,39 @@ import {
   isMetroArea,
 } from './festivalRegionTags.js';
 import { groupFestivalsForList } from './festivalPersonalStore.js';
+import { excludeFestivalsByContentId } from './socialPromoFestivalsLogic.js';
+
+/**
+ * List heading «N건» — same pool as list rows (promo duplicates excluded).
+ * @param {object[]} panelItems
+ * @param {Set<string>} promoContentIds
+ */
+export function festivalListHeadingCount(panelItems, promoContentIds) {
+  return excludeFestivalsByContentId(panelItems || [], promoContentIds).length;
+}
+
+/**
+ * @param {object[]} panelItems — region/time filtered rows (may still include promo)
+ * @param {Set<string>} promoContentIds
+ * @param {object[]} chipPoolItems — itemsForChipCounts after the same time filter
+ * @param {string} areaCode — sido id
+ */
+export function auditListHeadingMatchesSidoChip(
+  panelItems,
+  promoContentIds,
+  chipPoolItems,
+  areaCode,
+) {
+  const heading = festivalListHeadingCount(panelItems, promoContentIds);
+  const chip = buildSidoTags(chipPoolItems || []).find(
+    (c) => String(c.id) === String(areaCode),
+  );
+  const chipCount = chip?.count ?? null;
+  if (chipCount == null || heading !== chipCount) {
+    return { ok: false, heading, chip: chipCount, areaCode };
+  }
+  return { ok: true };
+}
 
 /**
  * @param {object[]} panelItems

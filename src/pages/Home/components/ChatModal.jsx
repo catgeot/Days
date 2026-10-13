@@ -177,6 +177,7 @@ function festivalReplyOptions(festivalContext, extra = {}) {
     program: festivalContext?.program,
     sceneOverview: festivalContext?.sceneOverview,
     feeText: festivalContext?.feeText,
+    timeText: festivalContext?.timeText,
     ...extra,
   };
 }

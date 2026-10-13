@@ -63,3 +63,35 @@ test('638576 manual entry has official fields and as-of line', () => {
   assert.match(html, /2026\.10\.13 확인/);
   assert.match(html, /href="https:\/\/www\.hpftf\.or\.kr\/"/);
 });
+
+test('638576 MOONi hours question points to official site, not GATEO detail', async () => {
+  const { polishFestivalModelReply, buildMooniBoundFestivalSystemHint } = await import(
+    '../../src/shared/korea/mooniKoreaFestivalAssist.js'
+  );
+  const entry = getManualFestivalEntry('638576');
+  const item = manualFestivalListItem(entry);
+  const detail = manualFestivalTourDetail(entry);
+  const mooni = buildFestivalMooniContext({
+    item,
+    intro: detail.intro,
+    homepage: entry.officialHomepage,
+    summaryFields: { dateText: '10.23 – 11.08', timeText: '', fee: { text: '7,000원' } },
+  });
+  const hint = buildMooniBoundFestivalSystemHint(mooni, 'ko');
+  assert.match(hint, /운영 시간이 이 데이터에 없/);
+  assert.match(hint, /hpftf\.or\.kr/);
+  assert.match(hint, /061-320-2247/);
+  assert.match(hint, /GATEO 상세 링크 대신/);
+
+  const polished = polishFestivalModelReply('운영 시간은 상세 페이지에서 확인해요.', {
+    contentId: '638576',
+    locale: 'ko',
+    userText: '운영 시간 알려줘',
+    homepage: entry.officialHomepage,
+    tel: entry.tel,
+    timeText: '',
+  });
+  assert.match(polished, /\[공식 홈페이지\]\(https:\/\/www\.hpftf\.or\.kr\/\)/);
+  assert.match(polished, /061-320-2247/);
+  assert.doesNotMatch(polished, /상세 페이지|gateo\.kr/);
+});

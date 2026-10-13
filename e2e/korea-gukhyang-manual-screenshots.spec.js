@@ -60,6 +60,7 @@ test.describe('gukhyang manual — real TourAPI @390 webkit', () => {
     await expect(jeonnam).toBeVisible({ timeout: 60_000 });
     await expect(jeonnam).toContainText('14');
     await jeonnam.click();
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('14');
     await expect(page.locator(`[data-social-promo-card][data-festival-id="${GUKHYANG_ID}"]`)).toBeVisible({
       timeout: 60_000,
     });
@@ -73,6 +74,7 @@ test.describe('gukhyang manual — real TourAPI @390 webkit', () => {
     await expect(gyeongnam).toBeVisible({ timeout: 60_000 });
     await expect(gyeongnam).toContainText('10');
     await gyeongnam.click();
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('10');
     await expect(page.locator('[data-social-promo-card][data-festival-id="637693"]')).toBeVisible({
       timeout: 60_000,
     });
