@@ -172,7 +172,13 @@ export function useFestivalMooniEntry({
     <MooniBoundChatHost isOpen={open} boundSpot={boundSpot} onClose={closeMooni} />
   );
 
-  return { inlineButton, fabNode, chatNode, enabled };
+  return {
+    inlineButton,
+    fabNode,
+    chatNode,
+    enabled,
+    openInline: openMooni('festival_detail_inline'),
+  };
 }
 
 /** @deprecated use useFestivalMooniEntry — kept for smoke import stability */

@@ -1,0 +1,143 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { DESTINATION_ORDER } from '../../supabase/functions/transport-proxy/catalog.mjs';
+import {
+  FESTIVAL_TRANSPORT_CONTENT_IDS,
+  bookingLink,
+  buildAccessView,
+  formatClockRange,
+  formatDurationRange,
+  formatFareRange,
+  formatRunCount,
+  optionIsDisplayable,
+  resolveFestivalTrainDate,
+  shouldQueryFestivalTransport,
+} from '../../src/pages/Korea/lib/festivalTransportCard.js';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
+
+function option(overrides = {}) {
+  return {
+    mode: 'train',
+    verified: true,
+    grade: 'KTX-이음',
+    depStation: '서울역',
+    arrStation: '강릉역',
+    depStationId: 'NAT010000',
+    arrStationId: 'NAT601936',
+    firstDeparture: '05:06',
+    lastDeparture: '22:14',
+    durationMin: 111,
+    durationMax: 140,
+    fareAdultMin: 27600,
+    fareAdultMax: 27600,
+    dailyCount: 18,
+    truncated: false,
+    bookingUrl: 'https://www.letskorail.com/',
+    bookingOperator: 'Korail',
+    ...overrides,
+  };
+}
+
+test('festival transport allowlist matches the server catalog order', () => {
+  assert.deepEqual(FESTIVAL_TRANSPORT_CONTENT_IDS, DESTINATION_ORDER);
+  assert.equal(shouldQueryFestivalTransport('2930716'), true);
+  assert.equal(shouldQueryFestivalTransport('999999'), false);
+  assert.equal(shouldQueryFestivalTransport(''), false);
+});
+
+test('train date stays inside the proxy window', () => {
+  const now = new Date('2026-10-13T03:00:00Z');
+  assert.equal(resolveFestivalTrainDate('20261016', '20261018', now), '2026-10-16');
+  assert.equal(resolveFestivalTrainDate('2026-10-10', '2026-10-20', now), '2026-10-13');
+  assert.equal(resolveFestivalTrainDate('2026-12-20', '2026-12-22', now), null);
+  assert.equal(resolveFestivalTrainDate('2026-09-01', '2026-09-03', now), '2026-10-13');
+});
+
+test('display keeps real train and bus values and drops blanks', () => {
+  assert.equal(optionIsDisplayable(option()), true);
+  assert.equal(optionIsDisplayable(option({ verified: false })), false);
+  assert.equal(optionIsDisplayable(option({ mode: 'arex', firstDeparture: '' })), false);
+  assert.equal(optionIsDisplayable(option({ firstDeparture: '23:59', lastDeparture: '23:59' })), true);
+  assert.equal(optionIsDisplayable(option({ lastDeparture: '24:00' })), true);
+  assert.equal(optionIsDisplayable(option({ fareAdultMin: null })), true);
+  assert.equal(formatFareRange(null, null), '');
+  assert.equal(formatFareRange(0, 0), '');
+  assert.equal(formatFareRange(27600, 27600), '27,600원');
+  assert.equal(formatFareRange(24300, 26800), '24,300~26,800원');
+  assert.equal(formatFareRange(27600, 27600, 'en'), '₩27,600');
+  assert.equal(formatClockRange('05:06', '22:14'), '05:06~22:14');
+  assert.equal(formatClockRange('05:06', '22:14', 'en'), '05:06–22:14');
+  assert.equal(formatDurationRange(111, 111), '1시간 51분');
+  assert.equal(formatDurationRange(111, 140, 'en'), '1 hr 51 min–2 hr 20 min');
+  assert.equal(formatRunCount(option(), 'ko'), '18회');
+  assert.equal(formatRunCount(option({ truncated: true }), 'en'), '18 confirmed');
+  assert.equal(formatRunCount(option({ dailyCount: 0 }), 'ko'), '');
+  assert.equal(bookingLink(option()).text, 'Korail 예매');
+  assert.equal(bookingLink(option({ bookingUrl: 'http://example.com' })), null);
+});
+
+test('access view uses verified rows only', () => {
+  const view = buildAccessView({
+    ok: true,
+    source: '국토교통부 TAGO',
+    trainDate: '2026-10-16',
+    busDate: '2026-10-13',
+    flags: { busSameDayOnly: true },
+    origins: [
+      {
+        originId: 'seoul-station',
+        label: '서울역',
+        options: [option(), option({ verified: false, grade: '가짜', fareAdultMin: 1 })],
+      },
+      {
+        originId: 'incheon-airport',
+        label: '인천공항',
+        options: [],
+        suggestedTransfer: {
+          legs: [
+            { mode: 'arex', verified: false, reason: 'no times' },
+            {
+              mode: 'train',
+              verified: true,
+              options: [option({ depStation: '청량리', arrStation: '강릉역', grade: 'KTX' })],
+            },
+          ],
+        },
+      },
+      {
+        originId: 'yongsan',
+        label: '용산',
+        options: [],
+        suggestedTransfer: { legs: [{ mode: 'train', verified: false, options: [option()] }] },
+      },
+    ],
+  });
+  assert.equal(view.status, 'ready');
+  assert.equal(view.origins.length, 2);
+  assert.equal(view.origins[0].direct.length, 1);
+  assert.equal(view.origins[0].direct[0].fareAdultMin, 27600);
+  assert.equal(view.origins[1].arexUnverified, true);
+  assert.equal(view.origins[1].hops.length, 1);
+  assert.equal(view.origins[1].hops[0].depStation, '청량리');
+  assert.equal(view.source.busSameDayOnly, true);
+  assert.equal(buildAccessView({ ok: false }).status, 'unavailable');
+  assert.equal(buildAccessView({ ok: true, origins: [] }).status, 'empty');
+});
+
+test('festival sheet mounts the access card above the bottom rail', () => {
+  const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
+  const accessAt = sheet.indexOf('data-festival-section="access"');
+  const nearbyAt = sheet.indexOf('data-festival-section="nearAttractions"');
+  assert.ok(sheet.includes('FestivalAccessCard'));
+  assert.ok(accessAt > 0 || sheet.includes('<FestivalAccessCard'));
+  assert.ok(nearbyAt > sheet.indexOf('<FestivalAccessCard'));
+  const ko = readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8');
+  const en = readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8');
+  assert.match(ko, /"accessTitle": "가는 법"/);
+  assert.match(en, /"accessTitle": "How to get there"/);
+  assert.match(ko, /"accessUnavailable": "지금은 열차·버스 시각을 불러오지 못했어요."/);
+});

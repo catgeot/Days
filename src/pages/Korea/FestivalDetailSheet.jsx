@@ -92,6 +92,7 @@ import { festivalDetailSummaryWillRender } from './lib/festivalMooniFabVisibilit
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { FestivalBookingActions } from './FestivalBookingActions.jsx';
 import { FestivalDetailFirstSummary } from './FestivalDetailFirstSummary.jsx';
+import FestivalAccessCard from './FestivalAccessCard.jsx';
 import { FestivalDetailOverviewCollapse } from './FestivalDetailOverviewCollapse.jsx';
 import {
   earliestBookingVerifiedDate,
@@ -1903,6 +1904,14 @@ export default function FestivalDetailSheet({
             }
             mooniSlot={mooniSummaryCardWillRender ? festivalMooni.inlineButton : null}
             reserveDetail={detailLoading}
+          />
+
+          <FestivalAccessCard
+            contentId={item?.contentId}
+            eventStartDate={item?.eventStartDate || intro?.eventStartDate || intro?.eventstartdate}
+            eventEndDate={item?.eventEndDate || intro?.eventEndDate || intro?.eventenddate}
+            detailSettled={!detailLoading}
+            onAskMooni={festivalMooni.enabled ? festivalMooni.openInline : null}
           />
 
           {overview ? (
