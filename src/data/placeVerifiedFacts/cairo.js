@@ -24,7 +24,7 @@ const PYRAMIDS_TICKET = {
   url: 'https://egymonuments.com/details/Pyramids',
 };
 const GIZA_INFO = {
-  name: '관광유물부 giza-plateau',
+  name: '관광유물부',
   url: 'https://egymonuments.gov.eg/en/archaeological-sites/giza-plateau',
 };
 const GEM_HOURS = {
@@ -40,7 +40,7 @@ const GEM_ADMISSION = {
   url: 'https://tickets.gem.eg/en/AdmissionTkt',
 };
 const EM_INFO = {
-  name: '관광유물부 egyptian-museum',
+  name: '관광유물부',
   url: 'https://egymonuments.gov.eg/en/museums/egyptian-museum/',
 };
 const EM_TICKET = {

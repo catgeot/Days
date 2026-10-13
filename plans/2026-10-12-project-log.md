@@ -2,6 +2,13 @@
 
 직전: [`2026-10-11-project-log.md`](./2026-10-11-project-log.md)
 
+## Vercel 프리뷰 #1, cursor 빌드 생략
+
+- **세션** `Vercel 프리뷰 #1, cursor 빌드 생략` · branch `cursor/vercel-skip-previews-8e40` · tip `14fc605c` · draft PR [#444](https://github.com/catgeot/Days/pull/444) · 병합 금지
+- **조치** `git.deploymentEnabled`의 `cursor/*`만 false. 적지 않은 브랜치(main)는 문서 기본값 true. ignoreCommand는 같이 써도 된다는 문서가 없어 스크립트와 함께 제거.
+- **VERIFY** `npm run test:health` 270 pass · CI run `38200174915` success.
+- **다음** 제시어 없음
+
 ## 마산 주변 볼거리 #7, 빈 사진·스피너
 
 - **세션** `마산 주변 볼거리 #7, 빈 사진·스피너` · branch `cursor/nearby-settle-8e40` · tip `e1024118` · draft PR [#442](https://github.com/catgeot/Days/pull/442) · 병합 금지
