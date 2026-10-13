@@ -85,7 +85,7 @@ assert(
     time: 'Now',
     tasteSuffix: '',
     t: tEn,
-  }) === 'Festivals on now festival list',
+  }) === 'Festivals on now',
   'EN nationwide now headline',
 );
 
