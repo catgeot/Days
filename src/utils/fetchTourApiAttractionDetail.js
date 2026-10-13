@@ -1,4 +1,4 @@
-import { invokeTourApiProxy, TOUR_API_BODY_LOCALE } from './tourApiProxy';
+import { invokeTourApiProxy, TOUR_API_BODY_LOCALE } from './tourApiProxy.js';
 
 const ATTRACTION_CONTENT_TYPE_ID = '12';
 const RESTAURANT_CONTENT_TYPE_ID = '39';

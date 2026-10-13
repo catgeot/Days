@@ -7,7 +7,9 @@ import { chromium } from 'playwright';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-const OUT = '/opt/cursor/artifacts/screenshots';
+const OUT =
+  process.env.COS_QA_SCREENSHOT_DIR ||
+  '/workspace/.qa-artifacts/cos-site-qa-445';
 const PORT = Number(process.env.COS_QA_PREVIEW_PORT || 4174);
 const BASE = `https://127.0.0.1:${PORT}`;
 const FESTIVAL = '2930716';
