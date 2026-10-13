@@ -39,4 +39,5 @@ test('festival detail sheet gates credit on heroPhotoDecoded with locale formatt
   assert.match(sheet, /activePhotoCredit && heroPhotoDecoded/);
   assert.doesNotMatch(sheet, /\{imageCredits\[activeImage\]\}/);
   assert.match(sheet, /onSelectHeroImage/);
+  assert.match(sheet, /key=\{`\$\{hero\}-\$\{locale\}`\}/);
 });

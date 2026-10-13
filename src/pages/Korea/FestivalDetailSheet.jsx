@@ -1881,6 +1881,7 @@ export default function FestivalDetailSheet({
               }
             >
               <FestivalHeroPhoto
+                key={`${hero}-${locale}`}
                 src={hero}
                 onLoaded={() => {
                   setHeroPhotoDecoded(true);
