@@ -9,6 +9,10 @@ function emit() {
   );
 }
 
+export function isTrustBarOverlayLocked() {
+  return depth > 0;
+}
+
 /** Hide global TrustLinkBar while detail/modal overlays are open. */
 export function pushTrustBarOverlayLock() {
   depth += 1;
