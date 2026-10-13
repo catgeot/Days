@@ -22,6 +22,7 @@ import {
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
@@ -550,6 +551,7 @@ export default function FestivalDetailSheet({
   onOpenHub: _onOpenHub,
 }) {
   const { t } = useTranslation();
+  useTrustBarOverlayLockEffect(Boolean(item) || pending);
   const navigate = useNavigate();
   const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
@@ -1732,7 +1734,14 @@ export default function FestivalDetailSheet({
           <div
             ref={heroColRef}
             className="relative flex shrink-0 flex-col md:w-[46%] lg:w-1/2 md:min-h-0 md:self-stretch bg-stone-100"
-            style={heroColMin.current > 0 ? { minHeight: heroColMin.current } : undefined}
+            data-festival-photo-strip={
+              imageUrls.length > 1 ? 'open' : detailLoading ? 'reserve' : 'collapsed'
+            }
+            style={
+              imageUrls.length > 1 && heroColMin.current > 0
+                ? { minHeight: heroColMin.current }
+                : undefined
+            }
           >
             <button
               type="button"
@@ -1800,13 +1809,6 @@ export default function FestivalDetailSheet({
               >
                 <div className="h-14 w-14 shrink-0" />
               </div>
-            )}
-            {!detailLoading && imageUrls.length <= 1 && heroColMin.current > 0 && heroBox > 0 && (
-              <div
-                className="shrink-0 bg-white"
-                style={{ height: Math.max(0, heroColMin.current - heroBox) }}
-                aria-hidden="true"
-              />
             )}
             {imageUrls.length > 1 && (
               <div
