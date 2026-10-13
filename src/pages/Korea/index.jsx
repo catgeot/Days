@@ -2268,7 +2268,13 @@ export default function KoreaFestivalHub() {
   }, [mapOpen]);
 
   return (
-    <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
+    <div
+      className={`relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900 ${
+        mapOpen
+          ? ''
+          : 'pb-[calc(1.5rem+max(0.4rem,env(safe-area-inset-bottom,0px)))]'
+      }`}
+    >
       <SEO
         title={t('korea.festival.title')}
         description={t('korea.festival.seoDescription')}
