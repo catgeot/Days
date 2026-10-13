@@ -135,6 +135,7 @@ import {
   writeLocationSuccess,
 } from './festivalLocationHint.js';
 import { useFestivalLocationBoot } from './useFestivalLocationBoot.js';
+import { buildFestivalIndexHeadlineContent } from './festivalIndexHeadline.js';
 
 /**
  * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction, locale?: string }} p
@@ -166,11 +167,38 @@ function buildIndexListHeadline({
     : '';
   const place = [sido, city].filter(Boolean).join(' ');
 
-  if (place) {
-    return t('korea.festival.headlineWithPlace', { place, time, tasteSuffix });
-  }
+  return buildFestivalIndexHeadlineContent({
+    locale,
+    place: place || undefined,
+    time,
+    tasteSuffix,
+    t,
+  });
+}
 
-  return t('korea.festival.headlineGeneral', { time, tasteSuffix });
+/** @param {ReturnType<typeof buildFestivalIndexHeadlineContent>} headline */
+function renderIndexListHeadline(headline) {
+  if (!headline) return null;
+  if (headline.kind === 'en') {
+    if (headline.place) {
+      return (
+        <>
+          {headline.place} ·{' '}
+          <span className="whitespace-nowrap">
+            {headline.nowrap}
+            {headline.tail}
+          </span>
+        </>
+      );
+    }
+    return (
+      <span className="whitespace-nowrap">
+        {headline.nowrap}
+        {headline.tail}
+      </span>
+    );
+  }
+  return headline.text;
 }
 
 /** Visible gap after · uses margin (flex parent collapses inter-span whitespace). */
@@ -2743,7 +2771,7 @@ export default function KoreaFestivalHub() {
                     ? personalTab === 'favorites'
                       ? t('korea.common.favorites')
                       : t('korea.common.viewed')
-                    : indexTitle}
+                    : renderIndexListHeadline(indexTitle)}
                 </h2>
                 <p className="text-[11px] text-stone-500 leading-snug">
                   {personalTab != null
