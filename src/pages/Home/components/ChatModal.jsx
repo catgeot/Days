@@ -1225,6 +1225,7 @@ const ChatModal = ({
           festivalContext,
           boundPlaceName: destName,
           locale: i18n.language,
+          departureLabel: explicitDeparture || departureLabel || '',
         });
         koreaFestivalHint = festHint.hint;
         mooniFestivalCandidates = festHint.candidates;
@@ -1244,7 +1245,9 @@ const ChatModal = ({
         transport,
         useCardTransport: sendOptions?.useCardTransport === true,
         locale: i18n.language,
-        stations: prepared.groundOrigin?.stationsKo || '',
+        stations: prepared.groundOrigin
+          ? [prepared.groundOrigin.railKo, prepared.groundOrigin.busKo].filter(Boolean).join('·')
+          : '',
       });
       const groundedReply = planned.reply;
 

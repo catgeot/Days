@@ -50,10 +50,12 @@ function stripDomesticAirFacts(chipFacts) {
 function alignGroundUserText(userText, groundOrigin, locale) {
   const suffix = domesticGroundModelSuffix(groundOrigin, locale);
   if (!suffix) return userText;
-  const stations = String(locale || '').slice(0, 2) === 'en'
-    ? groundOrigin.stationsEn
-    : groundOrigin.stationsKo;
-  if (stations && userText.includes(stations)) return userText;
+  const hubBlob = [
+    groundOrigin.railKo,
+    groundOrigin.busKo,
+    groundOrigin.flightKo,
+  ].filter(Boolean).join('·');
+  if (hubBlob && hubBlob.split('·').some((part) => part && userText.includes(part))) return userText;
   return `${userText} ${suffix}`;
 }
 

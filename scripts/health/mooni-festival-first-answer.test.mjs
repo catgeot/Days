@@ -548,7 +548,10 @@ test('festival access hint urges real routes when TAGO times are missing', () =>
   const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalAssist.js'), 'utf8');
   assert.match(assist, /isFestivalAccessAsk/);
   assert.match(assist, /시각은 없어요»만으로 답을 끝내지 않는다/);
+  assert.match(assist, /bustago\.or\.kr/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 갑니다/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /KTX·SRT가 서는 역/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /버스타고/);
 });
 
 test('festival departure chips are 17 cities, swap the host city, and stay off airports', () => {
@@ -592,13 +595,20 @@ test('festival departure chips are 17 cities, swap the host city, and stay off a
   assert.equal(masan.some((row) => row.ko === '진주'), true);
 
   const yeosuAsk = buildFestivalAccessAskText('jeonnam', 'ko');
-  assert.match(yeosuAsk, /여수\(여수EXPO역·여수종합버스터미널\)에서 이 축제장까지/);
+  assert.match(yeosuAsk, /여수에서 이 축제장까지/);
+  assert.match(yeosuAsk, /여수EXPO역/);
+  assert.match(yeosuAsk, /여수종합버스터미널/);
   const seoulAsk = buildFestivalAccessAskText('seoul', 'ko');
   assert.match(seoulAsk, /용산역/);
   assert.match(seoulAsk, /수서역/);
+  assert.match(seoulAsk, /KTX·SRT는/);
+  const incheonAsk = buildFestivalAccessAskText('incheon', 'ko');
+  assert.match(incheonAsk, /광명역/);
+  assert.match(incheonAsk, /인천종합버스터미널/);
+  assert.doesNotMatch(incheonAsk, /부평/);
   const seoulRow = domesticFestivalGroundOrigin('서울에서 이 축제장까지 어떻게 가?', '');
   assert.equal(seoulRow?.ko, '서울');
-  assert.match(domesticGroundModelSuffix(seoulRow, 'ko'), /용산역·수서역/);
+  assert.match(domesticGroundModelSuffix(seoulRow, 'ko'), /용산역/);
   const session = { departureIata: 'ICN', departureAirportLabel: '서울' };
   clearDomesticAirportDeparture(session);
   assert.equal(session.departureIata, '');
@@ -662,8 +672,8 @@ test('domestic festival origin payload drops airports; overseas chip keeps them'
   assert.equal(seoulChip.chipFacts.chipId, 'festival_access');
   assert.doesNotMatch(requestBody(typed), air);
   assert.doesNotMatch(requestBody(seoulChip), air);
-  assert.match(typed.modelUserText, /서울\(서울역·용산역·수서역\)/);
-  assert.match(seoulChip.modelUserText, /서울\(서울역·용산역·수서역\)/);
+  assert.match(typed.modelUserText, /서울역·용산역·수서역/);
+  assert.match(seoulChip.modelUserText, /서울역·용산역·수서역/);
 
   const overseas = prepareFestivalMooniChatPayload({
     ...place,
