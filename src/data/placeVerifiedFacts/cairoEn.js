@@ -10,13 +10,13 @@ const EN_VALUES = {
   'cairo:money-safety':
     'The currency is the Egyptian pound (EGP).\nOn the MOFA travel alert, Nile-valley cities such as Cairo are at the exercise-caution level.\nParts of the Western Desert and southern Sinai are at the reconsider-travel level, and central and northern Sinai plus the area within 30km of the Libya border have a \'leave the country\' advisory.\nA recent embassy notice (2026-09-22) says to be careful amid military tension in the Middle East and to watch out for private currency-exchange scams.\nThe consular call center is +82-2-3210-0404.',
   'grand-egyptian-museum:hours':
-    'Sun, Mon, Tue, Thu, and Fri: galleries 09:00~18:00 (complex 08:30~19:00), last entry 17:00.\nWed and Sat: galleries 09:00~21:00 (complex 08:30~22:00), last entry 20:00.',
+    'Sun, Mon, Tue, Thu, and Fri: galleries 09:00–18:00 (complex 08:30–19:00), last entry 17:00.\nWed and Sat: galleries 09:00–21:00 (complex 08:30–22:00), last entry 20:00.',
   'grand-egyptian-museum:fee':
     'Foreign adults 1,590 EGP, children and students 800 EGP.\nChildren under 6 enter free.\nPick an entry window: 08:30–11:00, 11:00–13:00, 13:00–15:00, or 15:00–17:00.',
   'grand-egyptian-museum:notes':
     'No refunds.\nValid only on the booked date and time.\nYou can enter only once and cannot come back in.\nThe ticket cannot be put in another person\'s name or transferred.\nBags larger than 40×40cm and umbrellas must be left at the cloakroom.\nOutside food and drinks are not allowed. Inside the galleries, only a small water bottle is allowed.\nTripods, selfie sticks, drones, external lights, and flash are not allowed.',
   'sultan-hassan-mosque:hours':
-    'Open daily 09:00~17:00.\nLast entry is 16:00.\nLast entry in Ramadan is 15:00.',
+    'Open daily 09:00–17:00.\nLast entry is 16:00.\nLast entry in Ramadan is 15:00.',
   'sultan-hassan-mosque:fee':
     'Foreign adults 220 EGP, students 110 EGP.\nAdmission includes the Al-Rifa\'i Mosque across the street.',
   'sultan-hassan-mosque:notes':
@@ -29,8 +29,6 @@ const SOURCE_EN = {
   '외교부 여행경보': 'MOFA travel alert',
   '대사관 공지': 'Embassy notice',
   'GEM 공식 예매처': 'GEM official ticket office',
-  '관광유물부 giza-plateau': 'Ministry of Tourism and Antiquities giza-plateau',
-  '관광유물부 egyptian-museum': 'Ministry of Tourism and Antiquities egyptian-museum',
   '관광유물부': 'Ministry of Tourism and Antiquities',
   '관광유물부 예매': 'Ministry of Tourism and Antiquities tickets',
   '관광유물부 예매(egymonuments.com)': 'Ministry of Tourism and Antiquities tickets (egymonuments.com)',
@@ -76,7 +74,7 @@ function normalizeToken(raw) {
   if (/^https?:\/\//.test(raw)) return `url:${raw}`;
   if (/^\+\d/.test(raw)) return `phone:${raw}`;
   if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return `date:${raw}`;
-  if (/^\d{1,2}:\d{2}/.test(raw)) return `time:${raw}`;
+  if (/^\d{1,2}:\d{2}/.test(raw)) return `time:${raw.replace(/[~–—-]/g, '–')}`;
   if (/^\d+×\d+cm$/.test(raw)) return `size:${raw}`;
   const km = raw.match(/^(\d+)km$/);
   if (km) return `km:${km[1]}`;

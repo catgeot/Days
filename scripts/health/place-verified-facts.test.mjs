@@ -313,6 +313,25 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
   assert.equal(sourceNameForLocale(sultanInfo.name, 'en'), 'Ministry of Tourism and Antiquities');
   assert.match(sultanInfo.url, /mosque-and-madrasa-of-sultan-hasan/);
 
+  const giza = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'giza-pyramids');
+  const gizaInfo = giza.slots.find((slot) => slot.id === 'hours').sources.find((source) => source.url.includes('giza-plateau'));
+  assert.equal(gizaInfo.name, '관광유물부');
+  assert.equal(sourceNameForLocale(gizaInfo.name, 'en'), 'Ministry of Tourism and Antiquities');
+  assert.equal(gizaInfo.url, 'https://egymonuments.gov.eg/en/archaeological-sites/giza-plateau');
+  const museum = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'egyptian-museum-cairo');
+  const museumInfo = museum.slots.find((slot) => slot.id === 'hours').sources.find((source) => source.url.includes('egyptian-museum'));
+  assert.equal(museumInfo.name, '관광유물부');
+  assert.equal(sourceNameForLocale(museumInfo.name, 'en'), 'Ministry of Tourism and Antiquities');
+  assert.equal(museumInfo.url, 'https://egymonuments.gov.eg/en/museums/egyptian-museum/');
+
+  for (const card of cards) {
+    for (const slot of card.slots) {
+      const en = factValueForLocale(card.slug, slot, 'en');
+      assert.equal(/\d{1,2}:\d{2}~/.test(en), false);
+    }
+  }
+  assert.match(factValueForLocale('cairo', CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'), 'en'), /A~D/);
+
   assert.deepEqual(
     splitFactTimeRanges('windows 08:30–11:00, 11:00–13:00 and 09:00~18:00').filter((part) => part.type === 'time').map((part) => part.text),
     ['08:30–11:00', '11:00–13:00', '09:00~18:00'],
