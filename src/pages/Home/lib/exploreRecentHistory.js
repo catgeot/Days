@@ -1,7 +1,7 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve';
-import { isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
+import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -196,6 +196,28 @@ export function removeKeywordVisit(keyword, destination = null) {
 export function clearKeywordVisits() {
   localStorage.setItem(RECENT_KEYWORD_VISITS_KEY, JSON.stringify([]));
   return [];
+}
+
+const STABLE_PLACE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * 홈·탐색 검색 결과 탭.
+ * 안정 slug(사파→sapa, 카이로→cairo, 속초→sokcho)는 `/place/<slug>`.
+ * 좌표만 있는 임시 핀은 지구본 홈 써머리.
+ * @param {object | null | undefined} spot
+ * @returns {{ type: 'place', spot: object, param: string } | { type: 'home', spot: object } | null}
+ */
+export function resolveSearchResultSelect(spot) {
+  if (!spot || typeof spot !== 'object') return null;
+  const lat = Number(spot.lat);
+  const lng = Number(spot.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const pin = { ...spot, lat, lng };
+  const param = getPlaceUrlParam(pin);
+  if (param && !isEphemeralSlug(param) && STABLE_PLACE_SLUG.test(param)) {
+    return { type: 'place', spot: pin, param };
+  }
+  return { type: 'home', spot: pin };
 }
 
 /** SSOT 카탈로그 여행지 — `/place/` 카드 직행. 그 외(uiPlace·도시 등)는 지구본 홈. */
