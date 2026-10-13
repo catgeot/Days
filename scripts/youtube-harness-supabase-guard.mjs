@@ -78,7 +78,7 @@ export async function installSupabaseHarnessGuard(page, state) {
     }
     if (isProdOrLiveSupabaseHost(u.hostname, mockHost)) {
       state.externalRequests.push({ method: req.method(), url: req.url() });
-      return route.abort('blocked');
+      return route.abort('failed');
     }
     if (u.hostname === mockHost) {
       state.unmockedSupabase.push({

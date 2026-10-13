@@ -10,6 +10,8 @@ import {
 } from '../../../utils/youtubePlayerMessaging';
 import { isYoutubeForceEmbedErrorEnabled } from '../../../utils/youtubeEmbedQaHook';
 
+const MAX_CONSECUTIVE_EMBED_FAILURES = 3;
+
 const YouTubePlayerView = forwardRef(({
   videoId,
   videos,
@@ -59,6 +61,8 @@ const YouTubePlayerView = forwardRef(({
   const preservePlaybackRef = useRef(false);
   const prevVideoIdRef = useRef(videoId);
   const retrySessionNoAdvanceRef = useRef(false);
+  const consecutiveEmbedFailuresRef = useRef(0);
+  const lastEmbedErrorRef = useRef({ id: null, at: 0 });
   const [unplayableRetryExhausted, setUnplayableRetryExhausted] = useState(false);
   const [retrySessionYoutubeCta, setRetrySessionYoutubeCta] = useState(false);
 
@@ -109,6 +113,7 @@ const YouTubePlayerView = forwardRef(({
     setUnplayableRetryExhausted(false);
     setRetrySessionYoutubeCta(false);
     retrySessionNoAdvanceRef.current = false;
+    consecutiveEmbedFailuresRef.current = 0;
     if (retryExhaustedStorageKey) {
       try {
         sessionStorage.removeItem(retryExhaustedStorageKey);
@@ -144,6 +149,13 @@ const YouTubePlayerView = forwardRef(({
     setRetrySessionYoutubeCta(true);
   }, [onVideoUnplayable, markRetryExhausted]);
 
+  const stopAfterEmbedFailures = useCallback(() => {
+    preservePlaybackRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(true);
+    setRetrySessionYoutubeCta(true);
+  }, []);
+
   const advanceToNextVideo = useCallback((wasPlaying) => {
     const list = videos || [];
     const idx = currentVideoIndexRef.current;
@@ -155,16 +167,22 @@ const YouTubePlayerView = forwardRef(({
       return;
     }
 
+    if (onVideoUnplayable) onVideoUnplayable(failedId);
+    consecutiveEmbedFailuresRef.current += 1;
+
+    if (consecutiveEmbedFailuresRef.current >= MAX_CONSECUTIVE_EMBED_FAILURES) {
+      stopAfterEmbedFailures();
+      return;
+    }
+
     const afterFilter = list.filter((v) => v.id !== failedId);
     if (afterFilter.length === 0 || idx >= afterFilter.length) {
-      if (onVideoUnplayable) onVideoUnplayable(failedId);
       setIsPlaying(false);
       setIsPaused(true);
       return;
     }
 
     const nextVideo = afterFilter[idx];
-    if (onVideoUnplayable) onVideoUnplayable(failedId);
 
     preservePlaybackRef.current = wasPlaying;
     setCurrentVideoIndex(idx);
@@ -173,7 +191,7 @@ const YouTubePlayerView = forwardRef(({
       setIsPlaying(true);
       setIsPaused(false);
     }
-  }, [videos, onVideoSelect, onVideoUnplayable, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession]);
+  }, [videos, onVideoSelect, onVideoUnplayable, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession, stopAfterEmbedFailures]);
 
   useImperativeHandle(ref, () => ({
     seekTo: (seconds) => {
@@ -217,13 +235,28 @@ const YouTubePlayerView = forwardRef(({
 
           if (data?.event === 'onError' && typeof data.info === 'number') {
             if (YOUTUBE_UNPLAYABLE_ERROR_CODES.has(data.info)) {
-              advanceToNextVideo(isPlayingRef.current);
+              const list = videos || [];
+              const failedId = list[currentVideoIndexRef.current]?.id;
+              if (!failedId) return;
+              const now = Date.now();
+              if (
+                lastEmbedErrorRef.current.id === failedId
+                && now - lastEmbedErrorRef.current.at < 900
+              ) {
+                return;
+              }
+              lastEmbedErrorRef.current = { id: failedId, at: now };
+              if (isRetrySessionNoAdvance()) {
+                handleEmbedErrorInRetrySession(failedId);
+              } else {
+                advanceToNextVideo(isPlayingRef.current);
+              }
             }
           }
       };
       window.addEventListener('message', handleMessage);
       return () => window.removeEventListener('message', handleMessage);
-  }, [advanceToNextVideo, isPlaying]);
+  }, [advanceToNextVideo, isPlaying, videos, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession]);
 
   useEffect(() => {
     if (!isPlaying || !currentVideo?.id) return;
@@ -236,10 +269,14 @@ const YouTubePlayerView = forwardRef(({
   useEffect(() => {
     if (!isPlaying || !currentVideo?.id || !isYoutubeForceEmbedErrorEnabled()) return;
     const timer = setTimeout(() => {
-      advanceToNextVideo(isPlayingRef.current);
+      if (isRetrySessionNoAdvance()) {
+        handleEmbedErrorInRetrySession(currentVideo.id);
+      } else {
+        advanceToNextVideo(isPlayingRef.current);
+      }
     }, 450);
     return () => clearTimeout(timer);
-  }, [isPlaying, currentVideo?.id, advanceToNextVideo]);
+  }, [isPlaying, currentVideo?.id, advanceToNextVideo, isRetrySessionNoAdvance, handleEmbedErrorInRetrySession]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -282,14 +319,19 @@ const YouTubePlayerView = forwardRef(({
   const handlePlay = useCallback(() => {
     if (!currentVideo) return;
     setRetrySessionYoutubeCta(false);
+    consecutiveEmbedFailuresRef.current = 0;
+    lastEmbedErrorRef.current = { id: null, at: 0 };
     setIsPlaying(true);
     setIsPaused(false);
   }, [currentVideo]);
 
   const selectVideoAndPlay = useCallback((video, idx) => {
     setRetrySessionYoutubeCta(false);
-    if (onVideoSelect) onVideoSelect(video.id);
+    consecutiveEmbedFailuresRef.current = 0;
+    lastEmbedErrorRef.current = { id: null, at: 0 };
+    preservePlaybackRef.current = true;
     setCurrentVideoIndex(idx);
+    if (onVideoSelect) onVideoSelect(video.id);
     setIsPlaying(true);
     setIsPaused(false);
   }, [onVideoSelect]);

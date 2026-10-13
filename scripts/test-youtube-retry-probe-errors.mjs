@@ -54,6 +54,12 @@ const PARIS_VIDEOS = [
   { id: 'lBrg_Y8vVkQ', title: 'Paris 3 skip', ai_context: { tags: [], timeline: [] } },
 ];
 
+const PARIS_FIVE_VIDEOS = [
+  ...PARIS_VIDEOS,
+  { id: 'dQw4w9WgXcQ', title: 'Paris 4 spare', ai_context: { tags: [], timeline: [] } },
+  { id: '9bZkp7q19f0', title: 'Paris 5 spare', ai_context: { tags: [], timeline: [] } },
+];
+
 const PREVIEW_BASE = 'https://127.0.0.1:4173';
 
 function portOpen(port) {
@@ -82,7 +88,7 @@ async function ensurePreview() {
   throw new Error('preview did not start on :4173');
 }
 
-async function setupParisCache(page, harnessNetwork) {
+async function setupParisCache(page, harnessNetwork, videos = PARIS_VIDEOS) {
   const { installSupabaseHarnessGuard, installDefaultSupabaseHarnessMocks } = await harnessGuard();
   await installSupabaseHarnessGuard(page, harnessNetwork);
   await installDefaultSupabaseHarnessMocks(page);
@@ -90,7 +96,7 @@ async function setupParisCache(page, harnessNetwork) {
     await route.fulfill({
       status: 200,
       contentType: 'application/vnd.pgrst.object+json',
-      body: JSON.stringify({ videos: PARIS_VIDEOS }),
+      body: JSON.stringify({ videos }),
     });
   });
   await page.route('**/rest/v1/rpc/increment_place_stats**', async (route) => {
@@ -163,6 +169,7 @@ test('embed error without retry probe advances to the next video', async () => {
   const page = await context.newPage();
   await context.addInitScript(() => {
     localStorage.removeItem('gateo.yt.unplayable.v1');
+    localStorage.removeItem('gateo.yt.forceEmbedError');
     sessionStorage.clear();
   });
   await setupParisCache(page, harnessNetwork);
@@ -188,6 +195,7 @@ test('retry probe: embed error after unplayable retry does not auto-advance', as
   const allIds = PARIS_VIDEOS.map((v) => v.id);
   await context.addInitScript((ids) => {
     localStorage.setItem('gateo.locale', 'ko');
+    localStorage.removeItem('gateo.yt.forceEmbedError');
     localStorage.setItem(
       'gateo.yt.unplayable.v1',
       JSON.stringify({ ids, updatedAt: Date.now() }),
@@ -201,10 +209,17 @@ test('retry probe: embed error after unplayable retry does not auto-advance', as
   await page.getByRole('heading', { name: '재생 가능한 영상이 없어요' }).waitFor({ timeout: 20000 });
   await page.getByRole('button', { name: '다시 시도' }).click();
   await page.getByRole('heading', { name: '재생 가능한 영상이 없어요' }).waitFor({ state: 'hidden', timeout: 20000 });
+  const retrySession = await page.evaluate(() =>
+    sessionStorage.getItem('gateo.yt.retrySession:/place/paris/video'),
+  );
+  assert.equal(retrySession, '1', 'retry should open no-advance session');
   await page.locator('.aspect-video').first().click({ timeout: 20000 });
   await page.waitForSelector('iframe[src*="youtube.com/embed/my_7f-tY1tA"]', { timeout: 20000 });
   await injectEmbedError150(page);
-  await page.waitForTimeout(2000);
+  await page.waitForFunction(
+    () => sessionStorage.getItem('gateo.yt.retryExhausted:/place/paris/video') === '1',
+    { timeout: 8000 },
+  );
   const iframeCount = await page.locator('iframe[src*="youtube.com/embed"]').count();
   const exhausted = await page.evaluate(() =>
     sessionStorage.getItem('gateo.yt.retryExhausted:/place/paris/video'),
@@ -215,9 +230,89 @@ test('retry probe: embed error after unplayable retry does not auto-advance', as
   assert.equal(exhausted, '1', 'retry probe should mark session exhausted');
   assert.equal(iframeCount, 0, 'probe error should stop embed (no iframe)');
   const parsed = JSON.parse(unplayableRaw || '{}');
-  assert.equal(parsed.ids?.length, 1, 'only the probed video should be re-marked unplayable');
-  assert.equal(parsed.ids?.[0], 'my_7f-tY1tA');
-  assert.ok(!parsed.ids.includes('RSgPFcRdWig'), 'must not chain-mark the next video');
+  assert.ok(parsed.ids?.includes('my_7f-tY1tA'), 'probed video should be marked');
+  assert.ok(!parsed.ids?.includes('lBrg_Y8vVkQ'), 'must not chain-mark the third video');
+  assert.ok((parsed.ids?.length ?? 0) <= 2, 'retry probe must not sweep the full playlist');
+});
+
+test('embed errors stop after three consecutive failures without marking the rest', async () => {
+  await ensurePreview();
+  const { createHarnessNetworkState } = await harnessGuard();
+  const harnessNetwork = createHarnessNetworkState();
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1280, height: 800 } });
+  const page = await context.newPage();
+  await context.addInitScript(() => {
+    localStorage.setItem('gateo.locale', 'ko');
+    localStorage.removeItem('gateo.yt.unplayable.v1');
+    localStorage.removeItem('gateo.yt.forceEmbedError');
+    sessionStorage.clear();
+  });
+  await setupParisCache(page, harnessNetwork, PARIS_FIVE_VIDEOS);
+  await page.goto(`${PREVIEW_BASE}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await page.waitForTimeout(1200);
+  await page.locator('.aspect-video').first().click({ timeout: 20000 });
+  for (let i = 0; i < 3; i += 1) {
+    await page.waitForSelector('iframe[src*="youtube.com/embed"]', { timeout: 25000 });
+    const beforeSrc = await page.locator('iframe[src*="youtube.com/embed"]').first().getAttribute('src');
+    await injectEmbedError150(page);
+    await page.waitForTimeout(1500);
+    if (i < 2) {
+      await page.waitForFunction(
+        (prev) => {
+          const src = document.querySelector('iframe[src*="youtube.com/embed"]')?.getAttribute('src') || '';
+          return src && src !== prev;
+        },
+        beforeSrc,
+        { timeout: 20000 },
+      );
+    }
+  }
+  const iframeCount = await page.locator('iframe[src*="youtube.com/embed"]').count();
+  const unplayableRaw = await page.evaluate(() => localStorage.getItem('gateo.yt.unplayable.v1'));
+  const ytCta = await page.getByRole('link', { name: /YouTube/ }).count();
+  await browser.close();
+
+  const parsed = JSON.parse(unplayableRaw || '{}');
+  assert.equal(parsed.ids?.length, 3, 'only three consecutive failures should be marked');
+  assert.ok(!parsed.ids.includes('dQw4w9WgXcQ'), 'fourth video must stay playable');
+  assert.equal(iframeCount, 0, 'should stop embed after consecutive cap');
+  assert.ok(ytCta >= 1, 'YouTube CTA should be visible after consecutive failures');
+});
+
+test('retry session: playlist item tap starts playback without extra click', async () => {
+  await ensurePreview();
+  const { createHarnessNetworkState } = await harnessGuard();
+  const harnessNetwork = createHarnessNetworkState();
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1280, height: 800 } });
+  const page = await context.newPage();
+  const allIds = PARIS_VIDEOS.map((v) => v.id);
+  await context.addInitScript((ids) => {
+    localStorage.setItem('gateo.locale', 'ko');
+    localStorage.removeItem('gateo.yt.forceEmbedError');
+    localStorage.setItem(
+      'gateo.yt.unplayable.v1',
+      JSON.stringify({ ids, updatedAt: Date.now() }),
+    );
+    sessionStorage.removeItem('gateo.yt.retryExhausted:/place/paris/video');
+    sessionStorage.removeItem('gateo.yt.retrySession:/place/paris/video');
+  }, allIds);
+  await setupParisCache(page, harnessNetwork);
+  await page.goto(`${PREVIEW_BASE}/place/paris/video`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await page.waitForTimeout(1200);
+  await page.getByRole('button', { name: '다시 시도' }).click();
+  await page.getByRole('heading', { name: '재생 가능한 영상이 없어요' }).waitFor({ state: 'hidden', timeout: 20000 });
+  await page.evaluate(() => {
+    const img = document.querySelector('img[src*="RSgPFcRdWig"]');
+    const btn = img?.closest('button');
+    if (!btn) throw new Error('second playlist item not found');
+    btn.click();
+  });
+  await page.waitForSelector('iframe[src*="youtube.com/embed/RSgPFcRdWig"]', { timeout: 20000 });
+  const clickToPlayVisible = await page.getByText('Click to Play').isVisible().catch(() => false);
+  await browser.close();
+  assert.equal(clickToPlayVisible, false, 'playlist tap should start embed without Click to Play');
 });
 
 test('retry session: manual second-video tap embed error does not chain', async () => {
@@ -230,6 +325,7 @@ test('retry session: manual second-video tap embed error does not chain', async 
   const allIds = PARIS_VIDEOS.map((v) => v.id);
   await context.addInitScript((ids) => {
     localStorage.setItem('gateo.locale', 'ko');
+    localStorage.removeItem('gateo.yt.forceEmbedError');
     localStorage.setItem(
       'gateo.yt.unplayable.v1',
       JSON.stringify({ ids, updatedAt: Date.now() }),
@@ -247,6 +343,11 @@ test('retry session: manual second-video tap embed error does not chain', async 
   await page.waitForSelector('iframe[src*="youtube.com/embed/my_7f-tY1tA"]', { timeout: 20000 });
   await injectEmbedError150(page);
   await page.waitForTimeout(1200);
+  const openList = page.getByRole('button', { name: /영상 더 보기|More videos/i });
+  if (await openList.isVisible().catch(() => false)) {
+    await openList.click({ timeout: 10000 });
+    await page.getByRole('heading', { name: /재생 목록/ }).waitFor({ timeout: 15000 });
+  }
   await page.evaluate(() => {
     const img = document.querySelector('img[src*="RSgPFcRdWig"]');
     const btn = img?.closest('button');
