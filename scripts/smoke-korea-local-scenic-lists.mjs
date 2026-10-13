@@ -5874,6 +5874,133 @@ assert.ok(
   String(deogyuSuggest?.imageUrl || deogyuSuggest?.thumbUrl || '').includes('GC072P02448'),
   '덕유운해 suggestion 썸네일',
 );
+
+const hapcheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hapcheon');
+const hapcheonEight = hapcheonMerged.filter((s) => s.localScenicListId === 'hapcheon-palgyeong');
+assert.equal(hapcheonEight.length, 8, '합천8경 8명');
+const okjeonCloud = hapcheonEight.find((s) => s.attractionName === '옥전고분군');
+assert.ok(okjeonCloud?.overview && okjeonCloud?.imageUrl, '옥전고분군 overlay 사진·개요');
+assert.ok(!okjeonCloud?.contentId, '옥전고분군 JSON contentId 없음 유지');
+assert.ok(okjeonCloud?.overview?.includes('제7경'), '옥전고분군 overlay 제7경');
+assert.ok(okjeonCloud?.overview?.includes('황강옥전로 1558'), '옥전고분군 overlay 박물관 주소');
+assert.ok(okjeonCloud?.overview?.includes('사적 제326호'), '옥전고분군 overlay 사적');
+assert.ok(okjeonCloud?.overview?.includes('1666-003'), '옥전고분군 overlay 유네스코 구성요소');
+assert.equal(okjeonCloud?.galleryUrls?.length, 3, '옥전고분군 공식 사진 3장');
+assert.ok(
+  okjeonCloud?.galleryUrls?.every((u) => u.includes('devin.aks.ac.kr/image/')),
+  '옥전고분군 한국민족문화대백과 사진',
+);
+assert.equal(
+  new Set(okjeonCloud?.galleryUrls).size,
+  okjeonCloud?.galleryUrls?.length,
+  '옥전고분군 갤러리 URL 중복 없음',
+);
+assert.ok(okjeonCloud?.homepage?.includes('hc.go.kr'), '옥전고분군 합천박물관 홈');
+const hapcheonGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '합천', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  hapcheonGlobe.find((s) => s.attractionName === '옥전고분군')?.imageUrl?.includes('dbb074b6'),
+  '합천 검색 옥전고분군 썸네일',
+);
+const hapcheonList = lists.find((l) => l.listId === 'hapcheon-palgyeong');
+const hapcheonHub = resolveCityAttractionHub('hapcheon');
+const okjeonSuggest = localScenicMemberToSuggestion(
+  hapcheonList,
+  hapcheonHub,
+  hapcheonList?.members?.find((m) => m.attractionName === '옥전고분군'),
+);
+assert.ok(
+  okjeonSuggest?.searchOverlayDesc?.includes('제7경') &&
+    okjeonSuggest.searchOverlayDesc.includes('황강옥전로 1558'),
+  '탐색 검색 옥전고분군 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(okjeonSuggest?.desc || '').includes('제7경'),
+  '옥전고분군 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(okjeonSuggest),
+  true,
+  '옥전고분군 suggestion은 intro hydrate 대상',
+);
+assert.ok(
+  String(okjeonSuggest?.imageUrl || okjeonSuggest?.thumbUrl || '').includes('dbb074b6'),
+  '옥전고분군 suggestion 썸네일',
+);
+const wandoMerged = mergeLocalScenicMembersIntoScenicSpots([], 'wando');
+const wandoEight = wandoMerged.filter((s) => s.localScenicListId === 'wando-palgyeong');
+assert.equal(wandoEight.length, 8, '완도8경 8명');
+const sangwangCloud = wandoEight.find((s) => s.attractionName === '상왕봉');
+assert.ok(sangwangCloud?.overview && sangwangCloud?.imageUrl, '상왕봉 overlay 사진·개요');
+assert.ok(!sangwangCloud?.contentId, '상왕봉 JSON contentId 없음 유지');
+assert.ok(sangwangCloud?.overview?.includes('제5경'), '상왕봉 overlay 제5경');
+assert.ok(sangwangCloud?.overview?.includes('상왕봉'), '상왕봉 overlay 상왕봉');
+assert.ok(sangwangCloud?.overview?.includes('644m'), '상왕봉 overlay 해발');
+assert.ok(sangwangCloud?.overview?.includes('죽청리'), '상왕봉 overlay 제2코스 들머리');
+assert.ok(sangwangCloud?.addr1?.includes('완도읍'), '상왕봉 overlay 주소');
+assert.equal(sangwangCloud?.galleryUrls?.length, 3, '상왕봉 공식 사진 3장');
+assert.ok(
+  sangwangCloud?.galleryUrls?.every((u) => u.includes('wando.go.kr/contents/2510/sanghwangbong')),
+  '상왕봉 완도군 문화관광 사진',
+);
+assert.equal(
+  new Set(sangwangCloud?.galleryUrls).size,
+  sangwangCloud?.galleryUrls?.length,
+  '상왕봉 갤러리 URL 중복 없음',
+);
+assert.ok(sangwangCloud?.homepage?.includes('wando.go.kr/tour/sub.cs?m=130'), '상왕봉 안내');
+const wandoGlobe = filterScenicSpotsByQuery(listKoreaScenicSpots(), '완도', {
+  injectLocalScenic: true,
+});
+assert.ok(
+  wandoGlobe.find((s) => s.attractionName === '상왕봉')?.imageUrl?.includes('sanghwangbong1'),
+  '완도 검색 상왕봉 썸네일',
+);
+const wandoList = lists.find((l) => l.listId === 'wando-palgyeong');
+const wandoHub = resolveCityAttractionHub('wando');
+const sangwangSuggest = localScenicMemberToSuggestion(
+  wandoList,
+  wandoHub,
+  wandoList?.members?.find((m) => m.attractionName === '상왕봉'),
+);
+assert.ok(
+  sangwangSuggest?.searchOverlayDesc?.includes('제5경') &&
+    sangwangSuggest.searchOverlayDesc.includes('상왕봉'),
+  '탐색 검색 상왕봉 표시 = 멤버 오버레이 overview',
+);
+assert.ok(
+  !String(sangwangSuggest?.desc || '').includes('제5경'),
+  '상왕봉 desc에 오버레이 overview 없음',
+);
+assert.equal(
+  needsPlaceChatIntroHydration(sangwangSuggest),
+  true,
+  '상왕봉 suggestion은 intro hydrate 대상',
+);
+assert.ok(
+  String(sangwangSuggest?.imageUrl || sangwangSuggest?.thumbUrl || '').includes('sanghwangbong1'),
+  '상왕봉 suggestion 썸네일',
+);
+assert.equal(sangwangSuggest?.name, '상왕봉', '상왕봉 명칭');
+assert.equal(sangwangSuggest?.name_en, 'Sangwangbong Peak', '상왕봉 영문명');
+assert.equal(sangwangSuggest?.parentCity, '완도', '상왕봉 suggestion parentCity 완도');
+assert.ok(
+  Math.abs(Number(sangwangSuggest?.lat) - 34.34829) < 0.001 &&
+    Math.abs(Number(sangwangSuggest?.lng) - 126.693023) < 0.001,
+  '상왕봉 핀 좌표',
+);
+const heogulThumb = lookupLocalScenicPhotoByContentId('1914603');
+assert.ok(heogulThumb?.imageUrl?.includes('idx=21260'), '허굴산 Tour 1914603 빈 썸네일');
+assert.equal(heogulThumb?.galleryUrls?.length, 2, '허굴산 공식 전경·안내도');
+assert.ok(
+  heogulThumb?.galleryUrls?.every((u) => u.includes('web.archive.org') && u.includes('MF00001900')),
+  '허굴산 합천군 문화관광 사진',
+);
+assert.ok(
+  !String(lookupLocalScenicPhotoByContentId('126698')?.imageUrl || '').includes('idx=21260'),
+  '허굴산 썸네일 ≠ 황계폭포 126698',
+);
 const gibackThumb = lookupLocalScenicPhotoByContentId('126033');
 assert.ok(gibackThumb?.imageUrl?.includes('GC072P02944'), '기백산 Tour 126033 빈 썸네일');
 assert.equal(gibackThumb?.galleryUrls?.length, 3, '기백산 공식 사진 3장');

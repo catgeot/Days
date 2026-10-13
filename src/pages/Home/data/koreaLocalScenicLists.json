@@ -5051,9 +5051,11 @@
         "contentId": "2824813"
       },
       {
-        "attractionName": "국화섬",
-        "name_en": "National Flower Island",
+        "attractionName": "상왕봉",
+        "name_en": "Sangwangbong Peak",
         "kind": "viewpoint",
+        "lat": 34.34829,
+        "lng": 126.693023,
         "linkStatus": "pending_coord"
       }
     ]

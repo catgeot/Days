@@ -125,6 +125,8 @@ import {
   resolveLocalScenicListSpotById,
 } from '../Home/lib/koreaLocalScenicLists';
 import { fetchTourApiFirstImage } from '../../utils/fetchTourApiAttractionDetail';
+import { useTourListSummaryByContentId } from '../Home/hooks/useTourListSummaryByContentId';
+import { blurbWithListSummary } from '../Home/lib/tourListSummary';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
@@ -1545,6 +1547,13 @@ export default function KoreaThemeScenicPage() {
       };
     });
   }, [dbSpots, curatedImageByContentId]);
+
+  const hapcheonTourSearch =
+    searchActive && scenicTourSearchQuery(searchFilter) === '합천';
+  const tourListSummaryById = useTourListSummaryByContentId(
+    dbSpotsWithThumbs,
+    hapcheonTourSearch,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -5578,10 +5587,20 @@ export default function KoreaThemeScenicPage() {
               <ul
                 className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
               >
-                {dbSpotsWithThumbs.map((spot) => (
+                {dbSpotsWithThumbs.map((spot) => {
+                  const summary = hapcheonTourSearch
+                    ? tourListSummaryById[String(spot.contentId || '').trim()]
+                    : '';
+                  const rowSpot = summary
+                    ? {
+                        ...spot,
+                        blurb: blurbWithListSummary(spot.blurb, spot.addr1, summary),
+                      }
+                    : spot;
+                  return (
                   <li key={`d-${spot.id}`} className="[overflow-anchor:none]">
                     <ScenicListRow
-                      spot={spot}
+                      spot={rowSpot}
                       large={listLarge}
                       distanceKm={dbKmById.get(String(spot.id))}
                       onOpen={openSpot}
@@ -5590,7 +5609,8 @@ export default function KoreaThemeScenicPage() {
                       locale={locale}
                     />
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             ) : null}
 
