@@ -2055,6 +2055,7 @@ export default function KoreaFestivalHub() {
       count: panelItems.length,
       t,
       locale,
+      listLoading: loading,
     });
   }, [
     panelListMetaText,
@@ -2063,6 +2064,7 @@ export default function KoreaFestivalHub() {
     panelItems.length,
     t,
     locale,
+    loading,
   ]);
 
   const resetListFilters = () => {

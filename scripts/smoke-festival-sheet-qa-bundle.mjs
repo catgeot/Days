@@ -49,7 +49,8 @@ assert.match(sheet, /stayStripStatus === 'loading'/);
 ok('lodging reserve through stay fetch');
 
 const promo = readFileSync(join(root, 'src/pages/Korea/SocialPromoFestivalRow.jsx'), 'utf8');
-assert.match(promo, /festivalListDisplayTitle/);
+assert.match(promo, /festivalListDisplayTitleLines/);
+assert.match(promo, /FestivalListThumbBox/);
 assert.match(promo, /normalizeFestivalItemImages/);
 ok('social promo EN title + image normalize');
 

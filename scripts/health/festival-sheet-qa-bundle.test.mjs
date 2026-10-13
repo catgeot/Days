@@ -5,7 +5,10 @@ import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import { buildFestivalPanelListMetaSegments } from '../../src/pages/Korea/festivalPanelListMeta.js';
 import { festivalIndexTimePhrase } from '../../src/pages/Korea/festivalIndexHeadline.js';
-import { festivalListDisplayTitle } from '../../src/pages/Korea/festivalDisplayTitle.js';
+import {
+  festivalListDisplayTitle,
+  festivalListDisplayTitleLines,
+} from '../../src/pages/Korea/festivalDisplayTitle.js';
 import { normalizeFestivalItemImages } from '../../src/pages/Korea/socialPromoFestivalsLogic.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -21,6 +24,20 @@ function tMock(key, opts = {}) {
   };
   return map[key] || opts.defaultValue || key;
 }
+
+test('nationwide panel meta omits zero count while list is loading', () => {
+  const segments = buildFestivalPanelListMetaSegments({
+    areaCode: 'all',
+    cityName: 'all',
+    count: 0,
+    listLoading: true,
+    t: tMock,
+    locale: 'en',
+  });
+  const text = segments.map((s) => s.text).join(' · ');
+  assert.equal(text, 'Nationwide · By province');
+  assert.equal(text.includes('0'), false);
+});
 
 test('EN nationwide panel meta avoids raw all and city/county grouping', () => {
   const segments = buildFestivalPanelListMetaSegments({
@@ -60,6 +77,14 @@ test('EN nationwide time headline uses natural month phrase', () => {
 });
 
 test('social promo EN title uses English (한글) and normalizes thumb fields', () => {
+  const lines = festivalListDisplayTitleLines(
+    { title: '대한민국 국향대전', titleEn: 'Korea Chrysanthemum Festival' },
+    'en',
+  );
+  assert.deepEqual(lines, {
+    primary: 'Korea Chrysanthemum Festival',
+    secondary: '대한민국 국향대전',
+  });
   const title = festivalListDisplayTitle(
     { title: '대한민국 국향대전', titleEn: 'Korea Chrysanthemum Festival' },
     'en',

@@ -24,10 +24,13 @@ export function buildFestivalPanelListMetaSegments({
   count,
   t,
   locale = 'ko',
+  listLoading = false,
 }) {
   const code = String(areaCode || '');
   /** @type {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} */
   const segments = [];
+
+  const showCount = !(listLoading && count === 0);
 
   if (isNationwideRegionFilter(code, cityName)) {
     segments.push({
@@ -37,11 +40,13 @@ export function buildFestivalPanelListMetaSegments({
         : t('korea.common.nationwide'),
       nowrap: true,
     });
-    segments.push({
-      id: 'count',
-      text: t('korea.common.countUnit', { count }),
-      nowrap: true,
-    });
+    if (showCount) {
+      segments.push({
+        id: 'count',
+        text: t('korea.common.countUnit', { count }),
+        nowrap: true,
+      });
+    }
     segments.push({
       id: 'regionGroup',
       text: t('korea.festival.panelNationwideGroup', {
@@ -63,11 +68,13 @@ export function buildFestivalPanelListMetaSegments({
     INTEGRATED_PANEL_SIDO.has(code) && !city && sidoPhrase;
 
   if (integratedSidoLevel) {
-    segments.push({
-      id: 'count',
-      text: t('korea.common.countUnit', { count }),
-      nowrap: true,
-    });
+    if (showCount) {
+      segments.push({
+        id: 'count',
+        text: t('korea.common.countUnit', { count }),
+        nowrap: true,
+      });
+    }
     const unit = localizedSubregionUnitLabel(locale, areaCode, t);
     segments.push({
       id: 'bySubregion',
@@ -94,11 +101,13 @@ export function buildFestivalPanelListMetaSegments({
     segments.push({ id: 'place', text: sidoPhrase, nowrap: true });
   }
 
-  segments.push({
-    id: 'count',
-    text: t('korea.common.countUnit', { count }),
-    nowrap: true,
-  });
+  if (showCount) {
+    segments.push({
+      id: 'count',
+      text: t('korea.common.countUnit', { count }),
+      nowrap: true,
+    });
+  }
 
   if ((sidoPhrase || city) && !city) {
     const unit = localizedSubregionUnitLabel(locale, areaCode, t);
