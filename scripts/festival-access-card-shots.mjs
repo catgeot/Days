@@ -120,17 +120,22 @@ async function openFestival(page, target) {
   const answerRaw = await answer.innerText();
   const answerText = answerRaw.replace(/\u2060/g, '').replace(/\s+/g, ' ');
   console.log(`${target.id} mooni ${answerText.slice(0, 400)}`);
+  if ((answerText.match(/ · /g) || []).length > 2) {
+    throw new Error(`${target.id} answer is still a class list: ${answerText.slice(0, 400)}`);
+  }
+  if (!answerText.includes('가는 법 카드')) {
+    throw new Error(`${target.id} answer does not point at the card`);
+  }
   if (target.id === 'masan') {
-    if ((answerRaw.match(/05:03~20:38/g) || []).length !== 1) {
+    if ((answerText.match(/05:03~20:38/g) || []).length !== 1) {
       throw new Error(`masan answer repeated a grade: ${answerText.slice(0, 500)}`);
     }
-    if ((answerRaw.match(/서울→마산/g) || []).length !== 1) {
-      throw new Error('masan answer repeated the route');
+    if (answerText.includes('(A-type)') || answerText.includes('ITX-새마을')) {
+      throw new Error(`masan answer listed every class: ${answerText.slice(0, 400)}`);
     }
-    const blocks = await answer.locator('p').count();
-    if (!/\n/.test(answerRaw) && blocks < 5) throw new Error('masan answer is not line-broken');
-    if (answerRaw.includes('까지')) throw new Error('masan answer still repeats 까지');
-    console.log(`masan lines=${blocks} sample=${JSON.stringify(answerRaw.slice(0, 80))}`);
+  }
+  if (target.id === 'hampyeong' && !/광주송정까지 가서 갈아타는/.test(answerText)) {
+    throw new Error(`hampyeong answer missed the transfer: ${answerText.slice(0, 400)}`);
   }
   const clockBits = clock.split('~');
   if (!answerText.includes(marks.fare) || clockBits.some((bit) => bit && !answerText.includes(bit))) {

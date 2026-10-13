@@ -10,6 +10,7 @@ import {
   buildAccessView,
   composeFestivalAccessReply,
   createMooniSendGate,
+  glueAccessUnit,
   planFestivalMooniModelCall,
   departureCoversStation,
   festivalAccessAskFragment,
@@ -229,11 +230,11 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
     origins: [],
   };
   const reply = composeFestivalAccessReply(facts, { useSelected: true });
-  assert.match(reply, /08:44~19:11/);
+  assert.match(reply, /08:44\u2060~\u206019:11/);
   assert.match(reply, /용산→함평/);
   assert.match(reply, /36,\u2060300원/);
-  assert.match(reply, /\n/);
-  assert.doesNotMatch(reply, /까지/);
+  assert.match(reply, /가는 법 카드/);
+  assert.doesNotMatch(reply, /ITX-마음/);
   assert.equal(festivalAccessAskFragment('용산역에서 어떻게 가요? 시각과 요금도 알려줘'), '용산역');
   assert.equal(departureCoversStation('용산역', '용산'), true);
   const yongsanReply = composeFestivalAccessReply({
@@ -241,11 +242,18 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
     origins: [
       {
         label: '용산',
-        segments: [{
-          dep: '용산',
-          arr: '함평',
-          rows: [{ grade: 'ITX-새마을', clock: '08:44~19:11', duration: '4시간 23분', fare: '36,300원', count: '3회' }],
-        }],
+        segments: [
+          {
+            dep: '용산',
+            arr: '함평',
+            rows: [{ grade: 'ITX-새마을', clock: '08:44~19:11', duration: '4시간 23분', fare: '36,300원', count: '3회' }],
+          },
+          {
+            dep: '용산',
+            arr: '광주송정',
+            rows: [{ grade: 'KTX', clock: '06:29~21:18', duration: '1시간 36분~2시간 54분', fare: '38,600~41,900원', count: '11회' }],
+          },
+        ],
       },
       {
         label: '서울역',
@@ -258,11 +266,29 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
     ],
   }, { stations: '용산역' });
   assert.match(yongsanReply, /용산→함평/);
-  assert.doesNotMatch(yongsanReply, /까지/);
-  assert.match(yongsanReply, /08:44~19:11/);
+  assert.match(yongsanReply, /08:44\u2060~\u206019:11/);
   assert.match(yongsanReply, /36,\u2060300원/);
+  assert.match(yongsanReply, /광주송정까지 가서 갈아타는/);
+  assert.equal((yongsanReply.match(/바로 갈 수 있어요/g) || []).length, 1);
   assert.doesNotMatch(yongsanReply, /1,[\u2060]?000원/);
-  assert.doesNotMatch(reply, /가는 법/);
+  assert.match(reply, /가는 법 카드/);
+});
+
+test('fare, clock, and duration stay one unbreakable unit', () => {
+  assert.equal(glueAccessUnit('38,600~41,900원'), '38,\u2060600\u2060~\u206041,\u2060900원');
+  assert.equal(glueAccessUnit('33,100원'), '33,\u2060100원');
+  assert.equal(glueAccessUnit('48,100원'), '48,\u2060100원');
+  assert.equal(glueAccessUnit('05:03~20:38'), '05:03\u2060~\u206020:38');
+  assert.equal(
+    glueAccessUnit('3시간 4분~3시간 12분'),
+    '3시간\u00A04분\u2060~\u20603시간\u00A012분',
+  );
+  assert.equal(glueAccessUnit('3시간 4분~3시간 12분').includes(' '), false);
+  const card = readFileSync(join(root, 'src/pages/Korea/FestivalAccessCard.jsx'), 'utf8');
+  assert.match(card, /function Nowrap[\s\S]*whitespace-nowrap/);
+  assert.match(card, /<Nowrap>\{clock\}<\/Nowrap>/);
+  assert.match(card, /<Nowrap>\{duration\}<\/Nowrap>/);
+  assert.match(card, /<Nowrap>\{fare\}<\/Nowrap>/);
 });
 
 test('a typed station ask renders each grade once, then a normal question calls the model', () => {
@@ -286,10 +312,13 @@ test('a typed station ask renders each grade once, then a normal question calls 
   });
   assert.equal(access.callModel, false);
   assert.equal(access.reply.split('KTX-산천').length - 1, 1);
-  assert.equal(access.reply.split('ITX-새마을').length - 1, 1);
+  assert.doesNotMatch(access.reply, /ITX-새마을/);
   assert.match(access.reply, /^서울→마산/);
+  assert.match(access.reply, /05:03\u2060~\u206020:38/);
   assert.match(access.reply, /48,\u2060100원/);
-  assert.doesNotMatch(access.reply, /까지/);
+  assert.match(access.reply, /가는 법 카드/);
+  assert.match(access.reply, /48,\u2060100원이에요/);
+  assert.doesNotMatch(access.reply, /(?<!이)예요/);
   gate.end();
   assert.equal(gate.busy, false);
   assert.equal(gate.tryBegin(), true);
@@ -302,6 +331,52 @@ test('a typed station ask renders each grade once, then a normal question calls 
   gate.end();
   assert.equal(gate.tryBegin(), true);
   gate.end();
+});
+
+test('a direct ride and a transfer summary, not one line per class', () => {
+  const reply = composeFestivalAccessReply({
+    selected: {
+      segments: [
+        {
+          dep: '용산',
+          arr: '함평',
+          rows: [
+            { grade: 'ITX-새마을', clock: '08:44~19:11', duration: '4시간 23분', fare: '36,300원', count: '3회' },
+            { grade: 'ITX-마음', clock: '09:47', duration: '4시간 5분', fare: '36,300원', count: '1회' },
+            { grade: '무궁화호', clock: '18:10', duration: '4시간 49분', fare: '36,300원', count: '1회' },
+          ],
+        },
+        {
+          dep: '용산',
+          arr: '광주송정',
+          rows: [
+            { grade: 'KTX', clock: '06:29~21:18', duration: '1시간 36분~2시간 54분', fare: '38,600~41,900원', count: '11회' },
+            { grade: 'KTX-산천', clock: '07:13~22:23', duration: '1시간 52분~2시간 47분', fare: '37,800~41,900원', count: '8회' },
+          ],
+        },
+        {
+          dep: '광주송정',
+          arr: '함평',
+          transfer: true,
+          rows: [
+            { grade: '무궁화호', clock: '07:19~22:39', duration: '20분~25분', fare: '2,600~4,800원', count: '2회' },
+          ],
+        },
+      ],
+    },
+  }, { useSelected: true });
+  assert.match(reply, /용산→함평은 ITX-새마을로/);
+  assert.match(reply, /08:44\u2060~\u206019:11/);
+  assert.match(reply, /36,\u2060300원/);
+  assert.doesNotMatch(reply, /ITX-마음/);
+  assert.doesNotMatch(reply, /무궁화호/);
+  assert.match(reply, /KTX로 광주송정까지 가서 갈아타는 방법도 있어요/);
+  assert.match(reply, /1시간\u00A036분\u2060~\u20602시간\u00A054분/);
+  assert.match(reply, /38,\u2060600\u2060~\u206041,\u2060900원/);
+  assert.doesNotMatch(reply, /KTX-산천/);
+  assert.match(reply, /36,\u2060300원이에요/);
+  assert.match(reply, /가는 법 카드/);
+  assert.doesNotMatch(reply, /(?<!이)예요/);
 });
 
 test('국향대전 defaults to 용산 when that origin is present', () => {

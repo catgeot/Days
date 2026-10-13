@@ -465,13 +465,94 @@ function dedupeAccessSegments(segments) {
   return order.filter((segment) => segment.rows.length > 0);
 }
 
-/** Keep a fare's thousands separator on the same line as the digits. */
-function protectGroupedNumber(value) {
-  return String(value || '').replace(/(\d),(\d)/g, '$1,\u2060$2');
+/**
+ * One unbreakable unit: fare commas, spaces inside a duration, and the range mark.
+ * @param {unknown} value
+ */
+export function glueAccessUnit(value) {
+  return String(value || '')
+    .replace(/(\d),(\d)/g, '$1,\u2060$2')
+    .replace(/~/g, '\u2060~\u2060')
+    .replace(/–/g, '\u2060–\u2060')
+    .replace(/ /g, '\u00A0');
+}
+
+function hangulJong(word) {
+  const chars = Array.from(String(word || '').trim());
+  for (let i = chars.length - 1; i >= 0; i -= 1) {
+    const code = chars[i].codePointAt(0);
+    if (code >= 0xac00 && code <= 0xd7a3) return (code - 0xac00) % 28;
+  }
+  return null;
+}
+
+function topicParticle(word) {
+  const jong = hangulJong(word);
+  if (jong == null) return '는';
+  return jong === 0 ? '는' : '은';
+}
+
+function instrumentalParticle(word) {
+  const jong = hangulJong(word);
+  if (jong == null || jong === 0 || jong === 8) return '로';
+  return '으로';
+}
+
+function copula(word) {
+  const jong = hangulJong(word);
+  if (jong == null || jong === 0) return '예요';
+  return '이에요';
+}
+
+function runCount(row) {
+  const match = String(row?.count || '').match(/(\d+)/);
+  return match ? Number(match[1]) : 0;
+}
+
+function bestRow(rows) {
+  let best = rows[0];
+  let bestCount = runCount(best);
+  for (const row of rows.slice(1)) {
+    const count = runCount(row);
+    if (count > bestCount) {
+      best = row;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
+function directSentence(segment, en) {
+  const row = bestRow(segment.rows || []);
+  if (!row) return '';
+  const clock = glueAccessUnit(row.clock);
+  const fare = glueAccessUnit(row.fare);
+  if (en) {
+    return `${segment.dep} → ${segment.arr} direct on ${row.grade}: ${clock}, ${fare}.`;
+  }
+  return `${segment.dep}→${segment.arr}${topicParticle(segment.arr)} ${row.grade}${instrumentalParticle(row.grade)} ${clock}에 바로 갈 수 있어요. 요금은 ${fare}${copula(row.fare)}.`
+}
+
+function transferSentence(trunk, en) {
+  const row = bestRow(trunk.rows || []);
+  if (!row) return '';
+  const bits = [glueAccessUnit(row.duration), glueAccessUnit(row.fare)].filter(Boolean);
+  const detail = bits.join(', ');
+  if (en) {
+    return `A more frequent ${row.grade} to ${trunk.arr}, then a change, also works${detail ? ` (${detail})` : ''}.`;
+  }
+  return `더 자주 다니는 ${row.grade}${instrumentalParticle(row.grade)} ${trunk.arr}까지 가서 갈아타는 방법도 있어요${detail ? `(${detail})` : ''}.`;
+}
+
+function cardPointer(en) {
+  return en
+    ? 'The full timetable is on the access card on this screen.'
+    : '전체 시각표는 화면의 가는 법 카드에 있어요.';
 }
 
 /**
- * One block per segment, one line per grade. Empty when the selected tab has none.
+ * One or two direct sentences, an optional transfer summary, then the on-screen card.
+ * Empty when the selected tab has none.
  * @param {{ selected?: { segments?: object[] }, origins?: Array<{ segments?: object[] }> } | null} transport
  */
 export function composeFestivalAccessReply(transport, {
@@ -485,8 +566,13 @@ export function composeFestivalAccessReply(transport, {
     segments = transport.selected?.segments || [];
   } else {
     for (const origin of transport.origins || []) {
-      for (const segment of origin.segments || []) {
-        if (!stations || departureCoversStation(stations, segment.dep)) segments.push(segment);
+      const rows = origin.segments || [];
+      const asked = rows.some((segment) => !stations || departureCoversStation(stations, segment.dep));
+      if (!asked) continue;
+      for (const segment of rows) {
+        if (!stations || segment.transfer === true || departureCoversStation(stations, segment.dep)) {
+          segments.push(segment);
+        }
       }
     }
   }
@@ -499,18 +585,24 @@ export function composeFestivalAccessReply(transport, {
       : '이 출발지의 확인된 열차·버스 시각은 없어요.';
   }
   const en = englishLocale(locale);
-  const blocks = [];
-  for (const segment of segments) {
-    const lines = [en ? `${segment.dep} → ${segment.arr}` : `${segment.dep}→${segment.arr}`];
-    for (const row of segment.rows || []) {
-      const bits = [row.grade, row.clock, row.duration, protectGroupedNumber(row.fare), row.count]
-        .filter(Boolean)
-        .map((bit) => String(bit));
-      if (bits.length) lines.push(bits.join(' · '));
-    }
-    if (lines.length > 1) blocks.push(lines.join('\n\n'));
+  const hops = segments.filter((segment) => segment.transfer === true);
+  const hopDeps = new Set(hops.map((segment) => stationToken(segment.dep)));
+  const directs = segments.filter((segment) => segment.transfer !== true);
+  const trunks = [];
+  const recommended = [];
+  for (const segment of directs) {
+    const arrival = stationToken(segment.arr);
+    const changePoint = hopDeps.has(arrival) || (
+      recommended.length > 0 && arrival !== stationToken(recommended[0].arr)
+    );
+    if (changePoint) trunks.push(segment);
+    else recommended.push(segment);
   }
-  return blocks.join('\n\n');
+  const lead = recommended.length ? recommended : directs;
+  const lines = lead.slice(0, 2).map((segment) => directSentence(segment, en)).filter(Boolean);
+  if (trunks.length) lines.push(transferSentence(trunks[0], en));
+  lines.push(cardPointer(en));
+  return lines.filter(Boolean).join('\n\n');
 }
 
 /**

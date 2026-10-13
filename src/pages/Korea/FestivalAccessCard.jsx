@@ -26,17 +26,32 @@ const MODE_LABEL = {
 const askClass =
   'flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-bold text-stone-800 transition-colors hover:border-amber-300 hover:bg-amber-50';
 
+function Nowrap({ children }) {
+  return <span className="whitespace-nowrap">{children}</span>;
+}
+
 function GradeLine({ option, locale }) {
   const clock = formatClockRange(option.firstDeparture, option.lastDeparture, locale);
   const duration = formatDurationRange(option.durationMin, option.durationMax, locale);
   const fare = formatFareRange(option.fareAdultMin, option.fareAdultMax, locale);
   const count = formatRunCount(option, locale);
   const grade = String(option.grade || '').trim();
-  const facts = [grade, clock, duration, fare, count].filter(Boolean);
-  if (!facts.length) return null;
+  const pieces = [
+    grade,
+    clock ? <Nowrap>{clock}</Nowrap> : '',
+    duration ? <Nowrap>{duration}</Nowrap> : '',
+    fare ? <Nowrap>{fare}</Nowrap> : '',
+    count,
+  ].filter(Boolean);
+  if (!pieces.length) return null;
   return (
     <li className="text-xs leading-snug text-stone-600 break-keep" data-festival-access-grade="">
-      {facts.join(' · ')}
+      {pieces.map((piece, index) => (
+        <span key={index}>
+          {index > 0 ? ' · ' : null}
+          {piece}
+        </span>
+      ))}
     </li>
   );
 }
