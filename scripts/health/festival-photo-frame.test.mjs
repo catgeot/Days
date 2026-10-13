@@ -7,6 +7,7 @@ import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { FestivalPhotoFrame } from '../../src/pages/Korea/festivalPhotoFrame.js';
+import { FestivalHeroPhoto } from '../../src/pages/Korea/festivalHeroPhoto.js';
 import {
   FestivalHeroThumbStrip,
   festivalHeroStripMode,
@@ -106,8 +107,13 @@ test('broken festival photo hides the image and shows the empty slot', async () 
 
 test('festival detail photo surfaces use the frame that hides a broken image', () => {
   const uses = sheet.split('FestivalPhotoFrame').length - 1;
-  assert.ok(uses >= 7, `expected filmstrip, photo tab, lightbox, and nearby frames (got ${uses})`);
+  assert.ok(uses >= 6, `expected photo tab, lightbox, and nearby frames (got ${uses})`);
+  assert.match(sheet, /FestivalHeroPhoto/);
+  assert.match(sheet, /h-\[min\(40vh,18rem\)\]/);
+  assert.doesNotMatch(sheet, /minHeight: 'min\(40vh, 18rem\)'/);
+  assert.doesNotMatch(sheet, /setHeroBox/);
   assert.match(sheet, /data-festival-photo-fallback/);
+  assert.match(sheet, /data-festival-hero-fallback/);
   assert.match(
     readFileSync(join(rootDir, 'src/pages/Korea/festivalPhotoFrame.js'), 'utf8'),
     /naturalWidth/,
@@ -115,11 +121,41 @@ test('festival detail photo surfaces use the frame that hides a broken image', (
   assert.match(sheet, /NearbyRowThumb[\s\S]*?FestivalPhotoFrame/);
 
   const rawImgs = [...sheet.matchAll(/<img\b[\s\S]*?\/>/g)];
-  assert.ok(rawImgs.length > 0);
-  for (const match of rawImgs) {
-    assert.match(match[0], /onError=/, `img without onError:\n${match[0].slice(0, 180)}`);
-    assert.match(match[0], /display = 'none'/);
-  }
+  assert.equal(rawImgs.length, 0, 'hero must not keep a raw img that can show the broken glyph');
+});
+
+test('late hero error removes the image and keeps the fixed hero box', async () => {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+  root = createRoot(container);
+  await act(async () => {
+    root.render(React.createElement(FestivalHeroPhoto, {
+      src: 'https://example.test/late-hero.jpg',
+      fallback: React.createElement('div', { 'data-festival-hero-fallback': '' }),
+    }));
+  });
+
+  const box = container.querySelector('[data-festival-hero]');
+  assert.ok(box);
+  assert.match(box.className, /h-\[min\(40vh,18rem\)\]/);
+  const img = container.querySelector('img[data-festival-photo]');
+  assert.ok(img, 'hero image stays mounted until the late error');
+  assert.equal(container.querySelector('[data-festival-hero-fallback]'), null);
+
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 30));
+  });
+  assert.equal(container.querySelector('img[data-festival-photo]'), img);
+
+  Object.defineProperty(img, 'complete', { value: true, configurable: true });
+  Object.defineProperty(img, 'naturalWidth', { value: 0, configurable: true });
+  await act(async () => {
+    img.dispatchEvent(new window.Event('error'));
+  });
+
+  assert.equal(container.querySelector('img'), null);
+  assert.ok(container.querySelector('[data-festival-hero-fallback]'));
+  assert.match(box.className, /h-\[min\(40vh,18rem\)\]/);
 });
 
 function mountStrip(props) {
