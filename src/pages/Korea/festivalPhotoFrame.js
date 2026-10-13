@@ -29,7 +29,7 @@ export function FestivalPhotoFrame({
   decoding = 'async',
   draggable,
   fetchPriority,
-  referrerPolicy,
+  referrerPolicy = 'no-referrer',
   lang,
   translate,
   style,

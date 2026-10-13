@@ -1612,6 +1612,7 @@
         "loadingDetail": "Loading details…",
         "endedBadge": "Ended festival",
         "asOfDated": "Dates and place are as of {{date}}.",
+        "asOfOfficialHomepage": "Dates and place follow the official site (checked {{date}}).",
         "asOfGeneric": "Check the official website for the latest schedule.",
         "heroExpandSwipe": "Expand photo · swipe left or right",
         "heroExpand": "Expand photo",

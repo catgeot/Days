@@ -168,7 +168,7 @@ test('trust bar hides under modal overlay lock', () => {
     /useTrustBarOverlayLockEffect/,
   );
   const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
-  assert.match(sheet, /useTrustBarOverlayLockEffect\(Boolean\(item\) \|\| pending\)/);
+  assert.match(sheet, /useTrustBarOverlayLockEffect\(true\)/);
   assert.match(sheet, /data-festival-photo-strip=/);
   assert.doesNotMatch(sheet, /heroColMin\.current - heroBox/);
   assert.match(sheet, /loadedCount > 1 && heroColMin\.current > 0/);

@@ -124,6 +124,12 @@ import {
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
+import {
+  festivalOmitsOfficialEventHours,
+  getManualFestivalEntry,
+  isManualFestivalContentId,
+  manualFestivalTourDetail,
+} from './manualFestivalEntries';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -150,6 +156,7 @@ function pickFirst(data) {
 function toHttps(url) {
   const s = String(url || '').trim();
   if (!s) return '';
+  if (s.startsWith('//')) return `https:${s}`;
   if (!/^https?:\/\//i.test(s)) return '';
   return s.replace(/^http:\/\//i, 'https://');
 }
@@ -345,38 +352,48 @@ function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
     setThumbIndex(0);
     setReady(false);
   }
-  const thumb = urls[thumbIndex] || '';
-  const noteLoaded = (img) => {
-    if (img?.complete && img.naturalWidth > 0) setReady(true);
-  };
-  if (!thumb) {
+  if (!urls.length) {
     if (imagePending) return <NearbyThumbSkeleton />;
     return <NearbyThumbPlaceholder />;
   }
+  if (thumbIndex >= urls.length) {
+    if (imagePending) return <NearbyThumbSkeleton />;
+    return <NearbyThumbPlaceholder />;
+  }
+  const thumb = urls[thumbIndex];
   return (
-    <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200">
+    <span
+      className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200"
+      data-nearby-thumb={ready ? 'photo' : 'pending'}
+    >
       {ready ? null : (
         <span
-          className="absolute inset-0 animate-pulse bg-stone-200"
+          className="absolute inset-0 z-[1] animate-pulse bg-stone-200"
           data-nearby-thumb="pending"
           data-nearby-thumb-pending=""
+          aria-hidden="true"
         />
       )}
-      <img
+      <FestivalPhotoFrame
         key={thumb}
         src={thumb}
         alt=""
         loading="eager"
         decoding="async"
-        ref={noteLoaded}
-        onLoad={(event) => noteLoaded(event.currentTarget)}
-        onError={(event) => {
-          if (event.currentTarget?.style) event.currentTarget.style.display = 'none';
+        referrerPolicy="no-referrer"
+        className="relative h-14 w-14 object-cover"
+        fallback={
+          thumbIndex + 1 < urls.length ? (
+            <NearbyThumbSkeleton />
+          ) : (
+            <NearbyThumbPlaceholder />
+          )
+        }
+        onLoaded={() => setReady(true)}
+        onFailed={() => {
           setReady(false);
           setThumbIndex((i) => i + 1);
         }}
-        className="relative h-14 w-14 object-cover"
-        data-nearby-thumb={ready ? 'photo' : 'pending'}
       />
     </span>
   );
@@ -554,7 +571,7 @@ export default function FestivalDetailSheet({
   onOpenHub: _onOpenHub,
 }) {
   const { t } = useTranslation();
-  useTrustBarOverlayLockEffect(Boolean(item) || pending);
+  useTrustBarOverlayLockEffect(true);
   const navigate = useNavigate();
   const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
@@ -583,8 +600,10 @@ export default function FestivalDetailSheet({
   const [infoItems, setInfoItems] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
   const [heroStrip, setHeroStrip] = useState({ loadedCount: 0, loadedUrls: [] });
+  const [imageCredits, setImageCredits] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
+  const [heroPhotoDecoded, setHeroPhotoDecoded] = useState(false);
   const heroColRef = useRef(null);
   const heroColMin = useRef(0);
   const detailSlotRef = useRef(null);
@@ -918,6 +937,7 @@ export default function FestivalDetailSheet({
       setCommon(null);
       setInfoItems([]);
       setImageUrls([]);
+      setImageCredits([]);
       setDetailError('');
       setDetailLoading(false);
       setActiveImage(0);
@@ -978,7 +998,20 @@ export default function FestivalDetailSheet({
       const introHit = detailData?.intro || pickFirst(detailData) || null;
       const commonHit = detailData?.common || null;
       const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
-      const urls = collectImageUrls(imageData, seed);
+      let urls = collectImageUrls(imageData, seed);
+      let credits = [];
+      if (Array.isArray(detailData?.manualImages) && detailData.manualImages.length) {
+        urls = [];
+        credits = [];
+        for (const row of detailData.manualImages) {
+          const url = toHttps(row?.url);
+          if (!url) continue;
+          urls.push(url);
+          credits.push(String(row?.credit || '').trim());
+        }
+      }
+      setImageCredits(credits);
+      setHeroPhotoDecoded(false);
 
       if (!detailData?.ok && !imageData?.ok) {
         setIntro(null);
@@ -1007,6 +1040,7 @@ export default function FestivalDetailSheet({
       imageOwnerRef.current = String(contentId);
       setImageUrls(seeded);
       setHeroReady(seeded.length === 0);
+      setHeroPhotoDecoded(false);
       if (!prefetchMatches) {
         setIntro(null);
         setCommon(null);
@@ -1014,6 +1048,15 @@ export default function FestivalDetailSheet({
       }
     } else {
       setImageUrls((prev) => (prev.length > 1 ? prev : seeded));
+    }
+
+    const manualEntry = getManualFestivalEntry(contentId);
+    if (manualEntry) {
+      applyDetailPayload(manualFestivalTourDetail(manualEntry), { ok: true });
+      setDetailLoading(false);
+      return () => {
+        detailFetchGenRef.current += 1;
+      };
     }
 
     if (prefetchMatches) {
@@ -1057,6 +1100,10 @@ export default function FestivalDetailSheet({
       detailFetchGenRef.current += 1;
     };
   }, [item?.contentId, item?.contentTypeId, prefetchedTourDetail, t]);
+
+  useEffect(() => {
+    setHeroPhotoDecoded(false);
+  }, [item?.contentId, activeImage, imageUrls[activeImage]]);
 
   useEffect(() => {
     const seed = toHttps(festivalImage(item));
@@ -1396,19 +1443,23 @@ export default function FestivalDetailSheet({
   );
   const hideOfficialHomepage = shouldHideOfficialHomepage(homepage, bookingLinks);
 
+  const omitEventHours = festivalOmitsOfficialEventHours(item);
+
   const summaryFields = useMemo(() => {
     const start = formatYmdLabel(item?.eventStartDate || intro?.eventStartDate);
     const end = formatYmdLabel(item?.eventEndDate || intro?.eventEndDate);
     const dateRange = [start, end].filter(Boolean).join(' – ');
-    return buildFestivalDetailSummary({
+    const base = buildFestivalDetailSummary({
       item,
-      intro,
+      intro: omitEventHours && intro ? { ...intro, playtime: '' } : intro,
       range: dateRange,
       freeLabel: t('korea.festival.detail.feeFree'),
     });
+    return omitEventHours ? { ...base, timeText: '' } : base;
   }, [
     item,
     intro,
+    omitEventHours,
     t,
     item?.eventStartDate,
     item?.eventEndDate,
@@ -1785,7 +1836,14 @@ export default function FestivalDetailSheet({
             >
               <FestivalHeroPhoto
                 src={hero}
-                onSettled={() => setHeroReady(true)}
+                onLoaded={() => {
+                  setHeroPhotoDecoded(true);
+                  setHeroReady(true);
+                }}
+                onFailed={() => {
+                  setHeroPhotoDecoded(false);
+                  setHeroReady(true);
+                }}
                 fallback={(
                   <div
                     className="absolute inset-0 flex items-center justify-center bg-stone-200/80 text-stone-500"
@@ -1806,7 +1864,17 @@ export default function FestivalDetailSheet({
                 </span>
               )}
             </button>
-            {detailLoading && imageUrls.length <= 1 && (
+            {imageCredits[activeImage] && heroPhotoDecoded ? (
+              <p
+                className="px-4 py-1.5 text-[10px] leading-snug text-stone-500 bg-white border-b border-stone-100"
+                data-festival-photo-credit=""
+              >
+                {imageCredits[activeImage]}
+              </p>
+            ) : null}
+            {detailLoading &&
+              imageUrls.length <= 1 &&
+              !isManualFestivalContentId(item?.contentId) && (
               <div
                 className="flex gap-2 overflow-x-auto px-4 py-2.5 border-b border-stone-100 bg-white"
                 data-festival-photo-reserve=""
@@ -1880,13 +1948,20 @@ export default function FestivalDetailSheet({
             homepage={homepage}
             hideOfficialHomepage={hideOfficialHomepage}
             officialLabel={t('korea.festival.detail.officialSite')}
-            footnote={
+              footnote={
               item.detailAsOf?.fromDetailDeepLink ? (
                 <FestivalDetailAsOfLine
                   asOf={item.detailAsOf}
                   datedLabel={t('korea.festival.detail.asOfDated', {
                     date: item.detailAsOf.asOfDate,
                   })}
+                  officialHomepageLabel={
+                    item.detailAsOf.fromManualOfficial
+                      ? t('korea.festival.detail.asOfOfficialHomepage', {
+                          date: item.detailAsOf.checkedOnDate,
+                        })
+                      : undefined
+                  }
                   genericLabel={t('korea.festival.detail.asOfGeneric')}
                   linkLabel={t('korea.festival.detail.officialSite')}
                 />
@@ -1907,6 +1982,7 @@ export default function FestivalDetailSheet({
             }
             mooniSlot={mooniSummaryCardWillRender ? festivalMooni.inlineButton : null}
             reserveDetail={detailLoading}
+            hideEventHours={omitEventHours}
           />
 
           <FestivalAccessCard
@@ -2017,7 +2093,7 @@ export default function FestivalDetailSheet({
                       {showEventPlace ? eventplace : null}
                     </DetailRow>
                   )}
-                  {!summaryFields.timeText && (
+                  {!omitEventHours && !summaryFields.timeText && (
                     <DetailRow label={t('korea.festival.detail.labelTime')}>
                       {stripHtml(intro?.playtime || '') || null}
                     </DetailRow>

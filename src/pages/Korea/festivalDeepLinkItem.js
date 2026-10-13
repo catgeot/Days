@@ -172,8 +172,39 @@ export function festivalDetailAsOf(detail) {
   };
 }
 
-export function FestivalDetailAsOfLine({ asOf, datedLabel, genericLabel, linkLabel }) {
+export function FestivalDetailAsOfLine({
+  asOf,
+  datedLabel,
+  genericLabel,
+  linkLabel,
+  officialHomepageLabel,
+}) {
   if (!asOf?.fromDetailDeepLink) return null;
+  if (asOf.fromManualOfficial && asOf.checkedOnDate && asOf.homepage) {
+    const label =
+      officialHomepageLabel ||
+      `일정·장소는 공식 홈페이지 기준 (${asOf.checkedOnDate} 확인)`;
+    return React.createElement(
+      'p',
+      {
+        'data-festival-detail-asof': 'official-homepage',
+        className: 'mt-2 text-[11px] leading-snug text-stone-400 break-keep',
+      },
+      label,
+      ' ',
+      React.createElement(
+        'a',
+        {
+          href: asOf.homepage,
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          'data-festival-detail-asof-home': '',
+          className: 'font-semibold text-stone-500 underline',
+        },
+        linkLabel,
+      ),
+    );
+  }
   if (asOf.asOfDate) {
     return React.createElement(
       'p',
