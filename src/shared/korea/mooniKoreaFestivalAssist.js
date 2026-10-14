@@ -21,6 +21,13 @@ import {
   domesticFestivalGroundOrigin,
   formatOriginHubGuidance,
 } from '../../pages/Home/lib/festivalDomesticOrigins.js';
+import { fitMooniKoreaFestivalHint } from './mooniKoreaFestivalHintBudget.js';
+
+export {
+  MOONI_KOREA_FESTIVAL_HINT_BUDGET,
+  MOONI_KOREA_FESTIVAL_HINT_MAX,
+  fitMooniKoreaFestivalHint,
+} from './mooniKoreaFestivalHintBudget.js';
 
 export const GATEO_KOREA_FESTIVAL_BASE = 'https://www.gateo.kr/korea/';
 
@@ -3244,7 +3251,13 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
         }
       }
     }
-    return { hint, candidates: [] };
+    return {
+      hint: fitMooniKoreaFestivalHint(hint, undefined, {
+        userText,
+        chipId: input.chipId,
+      }),
+      candidates: [],
+    };
   }
 
   if (!isMooniKoreaFestivalQuery(userText)) {
@@ -3277,7 +3290,13 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     now: input.now,
   });
 
-  return { hint, candidates: picked.candidates };
+  return {
+    hint: fitMooniKoreaFestivalHint(hint, undefined, {
+      userText,
+      chipId: input.chipId,
+    }),
+    candidates: picked.candidates,
+  };
 }
 
 export { NO_MATCH_KO, NO_MATCH_KO_DETAIL };

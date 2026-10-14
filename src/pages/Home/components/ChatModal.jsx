@@ -53,6 +53,7 @@ import { waitForFestivalRestaurantNames } from '../../Korea/lib/festivalRestaura
 import { loadFestivalLodgingForAsk } from '../../Korea/lib/festivalStayLoad.js';
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
+import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import {
@@ -1236,6 +1237,10 @@ const ChatModal = ({
       if (tagoLead) {
         koreaFestivalHint = `${koreaFestivalHint}\n${festivalAccessTagoModelHint(tagoLead, i18n.language)}`.trim();
       }
+      koreaFestivalHint = fitMooniKoreaFestivalHint(koreaFestivalHint, undefined, {
+        chipId,
+        userText: cleanText,
+      });
 
       const geminiParams = {
         locale: i18n.language,
