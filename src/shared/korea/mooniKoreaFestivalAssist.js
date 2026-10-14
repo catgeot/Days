@@ -1376,13 +1376,19 @@ const ACCESS_VAGUE_HWANSUNG_SENTENCE_RE =
 const GUKHYANG_ACCESS_INTRO_SENTENCE_RE =
   /[^.!?。]*이동하는\s*방법이에요[^.!?。]*[.。]/;
 
+function accessSentenceHasConcreteTransferPath(sentence) {
+  const t = String(sentence || '');
+  if (!/환승을\s*거쳐/.test(t)) return true;
+  return /서울역·청량리역|KTX-이음|무궁화|ITX|SRT|KTX/.test(t);
+}
+
 function rewriteVagueAccessTransferWithoutNamedStation(text, options = {}) {
   const festId = String(options.contentId || '').trim();
   if (festId !== GUKHYANG_FESTIVAL_ID && festId !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
   if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
   let out = String(text || '');
   out = out.replace(ACCESS_VAGUE_HWANSUNG_SENTENCE_RE, (sentence) =>
-    ACCESS_NAMED_INTERMEDIATE_TRANSFER_RE.test(sentence) ? sentence : '',
+    accessSentenceHasConcreteTransferPath(sentence) ? sentence : '',
   );
   if (festId === GUKHYANG_FESTIVAL_ID) {
     out = out.replace(
@@ -1538,6 +1544,10 @@ function rewriteGangneungDaeguAccessNamedRail(text, options = {}) {
     } else if (/강릉고속버스터미널/.test(out)) {
       out = `${GANGNEUNG_DAEGU_RAIL_KO} ${out}`;
     }
+  }
+  if (/KTX-이음/.test(out)) {
+    out = out.replace(/열차를\s*이용할\s*경우[^.!?。]*환승을\s*거쳐[^.!?。]*[.。]\s*/g, '');
+    out = rewriteVagueAccessTransferWithoutNamedStation(out, options);
   }
   return out.replace(/\s{2,}/g, ' ').trim();
 }
