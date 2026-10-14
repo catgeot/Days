@@ -39,23 +39,27 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Festival hero credit E2E (WebKit, built dist)
+      - name: Festival hero credit E2E (WebKit)
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
         run: |
           npx playwright install --with-deps webkit
-          npx serve -s dist -l 4180 > /tmp/serve-festival.log 2>&1 &
+          npx vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival.log 2>&1 &
           ready=0
-          for _ in $(seq 1 45); do
-            if curl -sf -o /dev/null http://127.0.0.1:4180/; then
+          for _ in $(seq 1 90); do
+            if curl -sf -o /dev/null http://127.0.0.1:5173/; then
               ready=1
               break
             fi
-            sleep 1
+            sleep 2
           done
           if [ "$ready" != 1 ]; then
-            cat /tmp/serve-festival.log
+            cat /tmp/vite-festival.log
             exit 1
           fi
-          SMOKE_SITE_URL=http://127.0.0.1:4180 npx playwright test e2e/korea-festival-hero-credit-en.spec.js --project=webkit-festival-hero-credit -g "direct \\?lang=en" --reporter=line
+          SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/korea-festival-hero-credit-en.spec.js --project=webkit-festival-hero-credit -g "direct \\?lang=en" --reporter=line
 
   # YouTube 탭 세션(더 보기). 프로덕션 일일 헬스(e2e-health)에서는 제외.
   e2e-youtube-session:
