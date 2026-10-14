@@ -5,7 +5,7 @@
  * MOONI_STAGING_COMBO_QA=1 PLAYWRIGHT_BASE_URL=http://localhost:5173 \
  *   npx playwright test -c playwright.config.mooni-food-names.js
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test, expect } from './fixtures.js';
 import { dismissLocHint } from './mooni-festival-chip-helpers.js';
@@ -273,7 +273,15 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
   });
 
   test.afterAll(async () => {
-    if (!manifest.length) return;
+    const byId = new Map();
+    for (const name of readdirSync(OUT_DIR).filter((file) => file.endsWith('.result.json'))) {
+      const row = JSON.parse(readFileSync(join(OUT_DIR, name), 'utf8'));
+      if (row?.festivalId) byId.set(String(row.festivalId), row);
+    }
+    for (const row of manifest) byId.set(String(row.festivalId), row);
+    const rows = FESTIVALS.map((fest) => byId.get(fest.festivalId)).filter(Boolean);
+    if (!rows.length) return;
+    manifest.splice(0, manifest.length, ...rows);
     const cache = new Map();
     for (const row of manifest) {
       for (const link of row.places) {
@@ -343,9 +351,9 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
         const hint = captured.hintRestaurants.find((item) => item.name === row.name)
           || captured.hintRestaurants.find((item) => item.name.includes(row.name) || row.name.includes(item.name));
         const meta = String(hint?.meta || '');
-        const distance = (meta.match(/도보\s*\d+분|\d+m|\d+-min walk/) || [])[0]
+        const distance = (meta.match(/도보\s*\d+분|차로\s*\d+분|\d+m|\d+-min walk|\d+-min drive/) || [])[0]
           || '';
-        const type = (meta.split('·').map((part) => part.trim()).find((part) => part && !/도보|\d+m|walk/.test(part))) || '';
+        const type = (meta.split('·').map((part) => part.trim()).find((part) => part && !/도보|차로|drive|\d+m|walk/.test(part))) || '';
         unique.push({
           name: row.name,
           url: row.url || hint?.url || '',
@@ -361,7 +369,7 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
         .filter((name) => !hintNames.some((hintName) => hintName.includes(name) || name.includes(hintName)));
       const file = `${fest.slug}-${festivalId}.png`;
       await page.screenshot({ path: join(OUT_DIR, file), fullPage: false });
-      manifest.push({
+      const row = {
         file,
         region: fest.region,
         query: fest.query,
@@ -373,7 +381,9 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
         places: unique,
         invented,
         answerText: captured.answerText,
-      });
+      };
+      manifest.push(row);
+      writeFileSync(join(OUT_DIR, `${festivalId}.result.json`), `${JSON.stringify(row)}\n`, 'utf8');
       expect(invented).toEqual([]);
       expect(unique.length).toBe(hintNames.length);
       expect(unique.length).toBeLessThanOrEqual(4);
