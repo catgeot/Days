@@ -52,6 +52,20 @@ export function inferFestivalThreadLocale(messages) {
   return '';
 }
 
+/** Persist locale on the JSON column. `saved_trips` has no mooniLocale column. */
+export function stampFestivalMooniLocale(curation, locale) {
+  const lang = String(locale || 'ko').slice(0, 2) || 'ko';
+  const base = curation && typeof curation === 'object' && !Array.isArray(curation) ? curation : {};
+  return { ...base, mooniLocale: lang };
+}
+
+/** Attach mooniLocale when this save is a festival thread. */
+export function festivalSaveExtras(locale, extras) {
+  const lang = String(locale || '').slice(0, 2);
+  if (lang !== 'ko' && lang !== 'en') return extras;
+  return { ...(extras || {}), mooniLocale: lang };
+}
+
 /** A festival trip from another language is not this chat. */
 export function festivalTripMatchesLocale(trip, locale) {
   const lang = String(locale || 'ko').slice(0, 2) || 'ko';

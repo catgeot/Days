@@ -194,13 +194,23 @@ export const useTravelData = (user) => {
 
     const sessionPatch = extras?.mooniSession;
     const hasSession = sessionPatch && typeof sessionPatch === 'object';
+    const localeRaw = String(extras?.mooniLocale || '').slice(0, 2);
+    const hasLocale = localeRaw === 'ko' || localeRaw === 'en';
+
+    const nextCuration = (prev) => {
+      if (!hasSession && !hasLocale) return prev;
+      const next = { ...(prev || {}) };
+      if (hasSession) next.mooniSession = sessionPatch;
+      if (hasLocale) next.mooniLocale = localeRaw;
+      return next;
+    };
 
     setSavedTrips(prev => {
       const updated = prev.map(t => {
         if (String(t.id) !== String(id)) return t;
         const next = { ...t, messages };
-        if (hasSession) {
-          next.curation_data = { ...(t.curation_data || {}), mooniSession: sessionPatch };
+        if (hasSession || hasLocale) {
+          next.curation_data = nextCuration(t.curation_data);
         }
         return next;
       });
@@ -210,8 +220,8 @@ export const useTravelData = (user) => {
     
     if (user) {
       const dbPatch = { messages };
-      if (hasSession) {
-        dbPatch.curation_data = { ...(trip?.curation_data || {}), mooniSession: sessionPatch };
+      if (hasSession || hasLocale) {
+        dbPatch.curation_data = nextCuration(trip?.curation_data);
       }
       const { error } = await supabase.from('saved_trips').update(dbPatch).eq('id', id);
       if (error) console.warn("🚨 [DB Error] updateMessages:", error);

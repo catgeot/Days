@@ -52,6 +52,34 @@ export function isTripThreadStaleVersusLocal(tripMessages, localMessages) {
   return false;
 }
 
+/** Model answer or guidance bubble that the DB row does not contain yet. */
+export function localProtectedTailMissing(localMessages, tripMessages) {
+  const local = Array.isArray(localMessages) ? localMessages : [];
+  if (!local.length) return false;
+  const last = local[local.length - 1];
+  const protectedTail = last?.role === 'model' || last?.role === 'error' || last?.mooniGuidance === true;
+  if (!protectedTail) return false;
+  const key = mooniMessageStableKey(last);
+  if (!key) return false;
+  const trip = Array.isArray(tripMessages) ? tripMessages : [];
+  return !trip.some((message) => mooniMessageStableKey(message) === key);
+}
+
+function tripIsPrefixOfLocal(tripMessages, localMessages) {
+  const trip = Array.isArray(tripMessages) ? tripMessages : [];
+  const local = Array.isArray(localMessages) ? localMessages : [];
+  if (trip.length > local.length) return false;
+  for (let i = 0; i < trip.length; i += 1) {
+    if (mooniMessageStableKey(trip[i]) !== mooniMessageStableKey(local[i])) return false;
+  }
+  return true;
+}
+
+/** Locale bucket swap only when the open thread is still empty. */
+export function shouldReplaceMessagesOnLocaleMismatch(localMessageCount) {
+  return (Number(localMessageCount) || 0) === 0;
+}
+
 export function shouldHydrateTripMessages({
   activeChatId,
   lastSyncedChatId,
@@ -62,6 +90,10 @@ export function shouldHydrateTripMessages({
 }) {
   if (!activeChatId) return false;
   const chatChanged = String(lastSyncedChatId ?? '') !== String(activeChatId);
+  if (localProtectedTailMissing(localMessages, tripMessages)) {
+    const staleSameThread = tripIsPrefixOfLocal(tripMessages, localMessages) || !chatChanged;
+    if (staleSameThread) return false;
+  }
   const tripCount = Number(tripMessageCount) || 0;
   const localCount = Number(localMessageCount) || 0;
   if (chatChanged) return true;
