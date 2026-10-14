@@ -316,12 +316,13 @@ export function PlaceLocalInfoInline({
   slotId = '',
   toolkitType = '',
   presentation = 'sketch',
+  defaultOpen = false,
   className = '',
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const panelId = useId();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const card = resolveVerifiedFacts(location);
   if (!card) return null;
   const light = presentation === 'planner';

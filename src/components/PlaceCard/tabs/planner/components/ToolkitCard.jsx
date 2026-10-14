@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { AiGeneratedBanner, PlaceLocalInfoInline } from '../../../common/PlaceVerifiedFacts';
 import { resolveVerifiedFacts } from '../../../../../data/placeVerifiedFacts/cairo.js';
+import { plannerSlotForToolkit } from '../../../../../data/placeVerifiedFacts/localInfoLayout.js';
 import { isMobileDevice } from '../../../common/device';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
 import TripcomFlightBannerWidget from './TripcomFlightBannerWidget';
@@ -41,6 +42,7 @@ const ToolkitCard = ({
     className = '',
 }) => {
     const { t, i18n } = useTranslation();
+    const [adviceExpanded, setAdviceExpanded] = useState(false);
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
@@ -51,6 +53,10 @@ const ToolkitCard = ({
         type === 'visa' ? replaceEtiasClaims(cleanedAdviceText, i18n?.language) : cleanedAdviceText;
     const ferryHasSsot = type === 'ferry_booking' && shouldShowFerryCard(location?.slug);
     const showFerryAdviceBlock = ferryAdviceText || !ferryHasSsot;
+    const verifiedPlannerFirst = Boolean(plannerSlotForToolkit(resolveVerifiedFacts(location), type));
+    const shortenVerifiedAi = verifiedPlannerFirst
+        && typeof ferryAdviceText === 'string'
+        && ferryAdviceText.length > 120;
     const useMrtTna = type === 'map_poi' && canShowMrtTnaStrip(location);
     const gygActivitiesQuery =
         type === 'map_poi' && !useMrtTna ? buildGygActivitiesSearchQuery(location) : null;
@@ -84,12 +90,31 @@ const ToolkitCard = ({
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>
             </div>
 
+            {verifiedPlannerFirst ? (
+                <PlaceLocalInfoInline
+                    location={location}
+                    toolkitType={type}
+                    presentation="planner"
+                    defaultOpen
+                    className="mb-4"
+                />
+            ) : null}
+
             {showFerryAdviceBlock && (
                 <div className="mb-5 flex-1">
                     {resolveVerifiedFacts(location) && ferryAdviceText ? <AiGeneratedBanner light /> : null}
-                    <p className="text-sm text-gray-700 leading-[1.7] select-text break-keep">
+                    <p className={`text-sm text-gray-700 leading-[1.7] select-text break-keep ${shortenVerifiedAi && !adviceExpanded ? 'line-clamp-3' : ''}`}>
                         <CopyableText text={ferryAdviceText} locationName={location?.name || location?.name_en || location?.slug} type={type} />
                     </p>
+                    {shortenVerifiedAi ? (
+                        <button
+                            type="button"
+                            onClick={() => setAdviceExpanded((value) => !value)}
+                            className="text-blue-500 font-medium text-xs mt-1 hover:underline"
+                        >
+                            {adviceExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}
+                        </button>
+                    ) : null}
                 </div>
             )}
 
@@ -203,12 +228,14 @@ const ToolkitCard = ({
                         )
                         : <KlookTourBannerWidget key={mapPoiWidgetKey} targetUrl={klookTourDeepLink} />
             )}
-            <PlaceLocalInfoInline
-                location={location}
-                toolkitType={type}
-                presentation="planner"
-                className="mt-4"
-            />
+            {verifiedPlannerFirst ? null : (
+                <PlaceLocalInfoInline
+                    location={location}
+                    toolkitType={type}
+                    presentation="planner"
+                    className="mt-4"
+                />
+            )}
         </div>
     );
 };
