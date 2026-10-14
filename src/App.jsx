@@ -21,6 +21,9 @@ import { isQaMooniMarkdownFixtureEnabled } from './shared/cloudPreview/isQaMooni
 const MooniChatMarkdownFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniChatMarkdownFixturePage.jsx'))
   : null;
+const MooniFestivalAccessPolishFixturePage = isQaMooniMarkdownFixtureEnabled
+  ? lazy(() => import('./pages/Qa/MooniFestivalAccessPolishFixturePage.jsx'))
+  : null;
 const galleryWriterHarnessOn = import.meta.env.VITE_GALLERY_WRITER_HARNESS === '1';
 const GallerySingleWriterHarness = galleryWriterHarnessOn
   ? lazy(() => import('./pages/Qa/GallerySingleWriterHarness.jsx'))
@@ -137,6 +140,12 @@ function App() {
               <Route path="/en/world-events/:eventId" element={<EnWorldEventDetailRedirect />} />
               {isQaMooniMarkdownFixtureEnabled && MooniChatMarkdownFixturePage ? (
                 <Route path="/qa/mooni-markdown-fixture" element={<MooniChatMarkdownFixturePage />} />
+              ) : null}
+              {isQaMooniMarkdownFixtureEnabled && MooniFestivalAccessPolishFixturePage ? (
+                <Route
+                  path="/qa/mooni-festival-access-polish"
+                  element={<MooniFestivalAccessPolishFixturePage />}
+                />
               ) : null}
               {GallerySingleWriterHarness ? (
                 <Route

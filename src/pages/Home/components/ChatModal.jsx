@@ -59,6 +59,7 @@ import {
   createMooniSendGate,
   festivalAccessAskFragment,
   festivalAccessAskIsRoute,
+  festivalAccessTagoModelHint,
   planFestivalMooniModelCall,
   transportForFestivalAsk,
 } from '../../Korea/lib/festivalTransportCard.js';
@@ -103,7 +104,10 @@ import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
-import { prepareFestivalMooniChatPayload } from '../lib/festivalMooniRequest';
+import {
+  buildFestivalMooniPolishOptions,
+  prepareFestivalMooniChatPayload,
+} from '../lib/festivalMooniRequest';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
@@ -162,31 +166,6 @@ async function loadFestivalAskContext(festivalContext, ask) {
     ...festivalContext,
     nearbyRestaurants: withFood?.nearbyRestaurants ?? festivalContext.nearbyRestaurants,
     nearbyStays: withStays?.nearbyStays ?? festivalContext.nearbyStays,
-  };
-}
-
-function festivalReplyOptions(festivalContext, extra = {}) {
-  return {
-    contentId: festivalContext?.contentId,
-    placeName: festivalContext?.hubLabel,
-    venue: festivalContext?.venue,
-    address: festivalContext?.address,
-    stayAreas: festivalContext?.stayAreas,
-    lat: festivalContext?.lat,
-    lng: festivalContext?.lng,
-    festivalTitle: festivalContext?.title,
-    nearbyPlaces: festivalContext?.nearbyPlaces,
-    nearbyRestaurants: festivalContext?.nearbyRestaurants,
-    nearbyStays: festivalContext?.nearbyStays,
-    homepage: festivalContext?.homepage,
-    tel: festivalContext?.tel,
-    parking: festivalContext?.parking,
-    overview: festivalContext?.sceneOverview || festivalContext?.overview,
-    program: festivalContext?.program,
-    sceneOverview: festivalContext?.sceneOverview,
-    feeText: festivalContext?.feeText,
-    timeText: festivalContext?.timeText,
-    ...extra,
   };
 }
 
@@ -1225,6 +1204,7 @@ const ChatModal = ({
           festivalContext,
           boundPlaceName: destName,
           locale: i18n.language,
+          departureLabel: explicitDeparture || departureLabel || '',
         });
         koreaFestivalHint = festHint.hint;
         mooniFestivalCandidates = festHint.candidates;
@@ -1244,9 +1224,18 @@ const ChatModal = ({
         transport,
         useCardTransport: sendOptions?.useCardTransport === true,
         locale: i18n.language,
-        stations: prepared.groundOrigin?.stationsKo || '',
+        stations:         prepared.groundOrigin
+          ? [
+            prepared.groundOrigin.ktxKo,
+            prepared.groundOrigin.srtKo,
+            prepared.groundOrigin.busKo,
+          ].filter(Boolean).join('·')
+          : '',
       });
-      const groundedReply = planned.reply;
+      const tagoLead = planned.tagoLead || '';
+      if (tagoLead) {
+        koreaFestivalHint = `${koreaFestivalHint}\n${festivalAccessTagoModelHint(tagoLead, i18n.language)}`.trim();
+      }
 
       const geminiParams = {
         locale: i18n.language,
@@ -1265,21 +1254,17 @@ const ChatModal = ({
       };
 
       const modelUserText = prepared.modelUserText;
-      const geminiResult = planned.callModel
-        ? await invokeMooniChatToleratingChip(
-          (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
-          {
-            ...geminiParams,
-            history,
-            userText: modelUserText,
-          },
-        )
-        : { text: groundedReply, truncated: false, finishReason: 'stop' };
-      const aiReply = groundedReply || geminiResult.text;
+      const geminiResult = await invokeMooniChatToleratingChip(
+        (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
+        {
+          ...geminiParams,
+          history,
+          userText: modelUserText,
+        },
+      );
+      const aiReply = geminiResult.text;
 
-      const booking = groundedReply
-        ? { show: false, actions: [], plannerUrl: null, slug: null, itineraryBookingCompact: false }
-        : resolveChatBookingActions({
+      const booking = resolveChatBookingActions({
         userText: cleanText,
         destinationName: destName,
         slug,
@@ -1296,24 +1281,21 @@ const ChatModal = ({
           a.provider
         )
       );
-      const festivalMergedReply = groundedReply
-        ? groundedReply
-        : mergeMooniKoreaFestivalReply(aiReply, {
-          candidates: mooniFestivalCandidates,
-        });
+      const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
+        candidates: mooniFestivalCandidates,
+      });
       const stripPhantomTicketMention = !hasTransportCta;
-      const lodgingOptions = festivalReplyOptions(festivalContext, {
+      const lodgingOptions = buildFestivalMooniPolishOptions(festivalContext, {
         locale: i18n.language,
         chipId,
         userText: cleanText,
+        departureOriginId: prepared.groundOrigin?.id || null,
       });
-      const displayReply = groundedReply || polishFestivalModelReply(
-        getMooniModelMarkdownForRender(festivalMergedReply, {
-          stripPhantomTicketMention,
-        }),
-        lodgingOptions,
-      );
-      const rawWithLodging = groundedReply || polishFestivalModelReply(festivalMergedReply, lodgingOptions);
+      const polishedFestivalReply = polishFestivalModelReply(festivalMergedReply, lodgingOptions);
+      const displayReply = getMooniModelMarkdownForRender(polishedFestivalReply, {
+        stripPhantomTicketMention,
+      });
+      const rawWithLodging = polishedFestivalReply;
       const { hadBracketLinks } = sanitizeMooniModelReply(rawWithLodging, {
         stripPhantomTicketMention,
       });
@@ -1418,7 +1400,7 @@ const ChatModal = ({
           mooniPlaceContext?.festivalContext ?? null,
           { chipId: msg.bookingMeta?.chipId, userText: messageTextPlain(priorUser) },
         );
-        const lodgingOptions = festivalReplyOptions(festivalContext, {
+        const lodgingOptions = buildFestivalMooniPolishOptions(festivalContext, {
           locale: i18n.language,
           chipId: msg.bookingMeta?.chipId,
           userText: messageTextPlain(priorUser),
@@ -1492,18 +1474,6 @@ const ChatModal = ({
         handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
       onDrillDown: (parentId) => {
         setTopicDockParent(parentId);
-        if (parentId !== FESTIVAL_ACCESS_PARENT) return;
-        const label = String(festivalMooniContext?.transport?.selected?.label || '').trim();
-        if (!label) return;
-        handleSend(
-          `${label}에서 이 축제장까지 확인된 열차와 버스 시각을 알려줘`,
-          PERSONA_TYPES.PLANNER,
-          {
-            chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS,
-            useCardTransport: true,
-            departureLabel: label,
-          },
-        );
       },
       onBack: topicDockParent ? () => setTopicDockParent(null) : undefined,
       parentL1Label: topicDockParent
@@ -1528,7 +1498,6 @@ const ChatModal = ({
       topicDockPrompt,
       showTopicDockPrompt,
       isMooniUi,
-      festivalMooniContext,
     ]
   );
 
@@ -2070,30 +2039,48 @@ const ChatModal = ({
                       {getMooniL1ChipLabel(FESTIVAL_ACCESS_PARENT, { mobile: true })}
                     </span>
                   </div>
-                  <div className="flex w-full max-w-full gap-2 flex-nowrap overflow-x-auto overscroll-x-contain pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {visibleFestivalDomesticOrigins(
-                      festivalMooniContext?.hubLabel,
-                      festivalMooniContext?.address,
-                    ).map((row) => {
-                      const selected = festivalAccessId === row.id;
-                      return (
-                        <button
-                          key={row.id}
-                          type="button"
-                          data-festival-origin={row.id}
-                          disabled={isLoading}
-                          aria-pressed={selected}
-                          onClick={() => handleFestivalAccessOrigin(row)}
-                          className={tone(
-                            fresh,
-                            `inline-flex shrink-0 items-center justify-center min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-300 bg-cyan-500/30 text-cyan-50' : 'border-cyan-500/35 bg-cyan-950/30 text-cyan-100'}`,
-                            `inline-flex shrink-0 items-center justify-center min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-400 bg-cyan-50 text-cyan-800' : 'border-cyan-200 bg-white text-cyan-700'}`,
-                          )}
-                        >
-                          {festivalOriginLabel(row, i18n.language)}
-                        </button>
-                      );
-                    })}
+                  <div className="relative w-full max-w-full">
+                    <div
+                      className={tone(
+                        fresh,
+                        'pointer-events-none absolute left-0 top-0 bottom-0.5 z-[1] w-5 bg-gradient-to-r from-gray-950 via-gray-950/80 to-transparent',
+                        'pointer-events-none absolute left-0 top-0 bottom-0.5 z-[1] w-5 bg-gradient-to-r from-white via-white/85 to-transparent',
+                      )}
+                      aria-hidden
+                    />
+                    <div
+                      className={tone(
+                        fresh,
+                        'pointer-events-none absolute right-0 top-0 bottom-0.5 z-[1] w-5 bg-gradient-to-l from-gray-950 via-gray-950/80 to-transparent',
+                        'pointer-events-none absolute right-0 top-0 bottom-0.5 z-[1] w-5 bg-gradient-to-l from-white via-white/85 to-transparent',
+                      )}
+                      aria-hidden
+                    />
+                    <div className="flex w-full max-w-full gap-2 flex-nowrap overflow-x-auto overscroll-x-contain pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                      {visibleFestivalDomesticOrigins(
+                        festivalMooniContext?.hubLabel,
+                        festivalMooniContext?.address,
+                      ).map((row) => {
+                        const selected = festivalAccessId === row.id;
+                        return (
+                          <button
+                            key={row.id}
+                            type="button"
+                            data-festival-origin={row.id}
+                            disabled={isLoading}
+                            aria-pressed={selected}
+                            onClick={() => handleFestivalAccessOrigin(row)}
+                            className={tone(
+                              fresh,
+                              `inline-flex shrink-0 items-center justify-center min-h-[44px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-300 bg-cyan-500/30 text-cyan-50' : 'border-cyan-500/35 bg-cyan-950/30 text-cyan-100'}`,
+                              `inline-flex shrink-0 items-center justify-center min-h-[44px] rounded-full border px-3 py-1.5 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-400 bg-cyan-50 text-cyan-800' : 'border-cyan-200 bg-white text-cyan-700'}`,
+                            )}
+                          >
+                            {festivalOriginLabel(row, i18n.language)}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               ) : showMooniChipDock ? (

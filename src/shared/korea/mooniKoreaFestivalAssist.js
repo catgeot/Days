@@ -12,6 +12,15 @@ import {
   rolling30DayRangeYmd,
   toYmd,
 } from '../../pages/Korea/festivalTimeFilter.js';
+import {
+  composeFestivalAccessReply,
+  festivalAccessAskIsRoute,
+  glueAccessNumbersInProse,
+} from '../../pages/Korea/lib/festivalTransportCard.js';
+import {
+  domesticFestivalGroundOrigin,
+  formatOriginHubGuidance,
+} from '../../pages/Home/lib/festivalDomesticOrigins.js';
 
 export const GATEO_KOREA_FESTIVAL_BASE = 'https://www.gateo.kr/korea/';
 
@@ -207,7 +216,42 @@ const NON_STAY_RE = /사우나|찜질|목욕탕|목욕|스파|sauna|jjimjilbang|
 const NON_STAY_ASK_RE = /사우나|찜질|목욕|스파|sauna|jjimjilbang|bathhouse/i;
 const BROADCAST_RE = /방청|공개\s*방송|시청자/;
 const BROADCAST_ASK_RE = /방청|공개\s*방송|시청자|KBS|MBC|SBS/;
-const TWELVE_GO_CTA_RE = /12\s*Go[^\n]{0,48}바로\s*가기|바로\s*가기[^\n]{0,48}12\s*Go|12go\.asia/i;
+const TWELVE_GO_CTA_RE =
+  /12\s*Go[^\n]{0,80}|12go\.asia|교통편\s*검색(?:\s*\([^)]*\))?(?:\s*[|｜])?|바로\s*가기[^\n]{0,48}12\s*Go|12\s*Go[^\n]{0,48}바로\s*가기/i;
+
+function isDomesticTwelveGoCtaFragment(part) {
+  const t = String(part || '').trim();
+  if (!t) return false;
+  if (TWELVE_GO_CTA_RE.test(t)) return true;
+  if (/^교통편\s*검색\s*[.。!?\s]*$/i.test(t)) return true;
+  if (/^교통편\s*검색$/i.test(normalizeCta(t))) return true;
+  return false;
+}
+
+const FESTIVAL_OVERSEAS_AIR_CHIPS = new Set([
+  'festival_overseas_visa',
+  'festival_overseas_flight',
+  'festival_overseas_airport',
+]);
+
+function normalizeEventYmdForPolish(value) {
+  const raw = String(value || '').trim();
+  if (/^\d{8}$/.test(raw)) return raw;
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return `${iso[1]}${iso[2]}${iso[3]}`;
+  const digits = raw.replace(/\D/g, '');
+  return /^\d{8}$/.test(digits) ? digits : '';
+}
+
+function shouldPolishDomesticKoreaFestival(options = {}) {
+  const chipId = String(options.chipId || '');
+  if (FESTIVAL_OVERSEAS_AIR_CHIPS.has(chipId)) return false;
+  if (/인천\s*공항|인천국제공항|incheon airport/i.test(String(options.userText || ''))) return false;
+  return Boolean(
+    String(options.contentId || '').trim()
+    || String(options.festivalTitle || '').trim(),
+  );
+}
 
 /**
  * Lodging answers drop saunas and other non-stay facilities unless the user asked.
@@ -233,8 +277,14 @@ export function stripUnaskedBroadcastLines(text, userText = '') {
 export function stripDomesticTwelveGoMention(text) {
   const withoutLinks = String(text || '')
     .replace(/\[[^\]]*12\s*Go[^\]]*\]\([^)]+\)/gi, '')
+    .replace(/\[[^\]]*교통편\s*검색[^\]]*\]\([^)]+\)/gi, '')
     .replace(/https?:\/\/(?:www\.)?12go\.asia\S*/gi, '');
-  return filterPreservingBreaks(withoutLinks, (part) => TWELVE_GO_CTA_RE.test(part));
+  let next = filterPreservingBreaks(withoutLinks, (part) => isDomesticTwelveGoCtaFragment(part));
+  next = next
+    .split('\n')
+    .filter((line) => !/^[\s*#\-–—•|｜]*교통편\s*검색\s*[.。!?\s]*$/i.test(String(line || '').trim()))
+    .join('\n');
+  return next.replace(/\n{3,}/g, '\n\n').trim();
 }
 
 export function appendFestivalLodgingNextStep(reply, options = {}) {
@@ -264,6 +314,138 @@ export function appendFestivalLodgingNextStep(reply, options = {}) {
 const ALLOWED_FESTIVAL_URL =
   /^https:\/\/(?:www\.)?gateo\.kr\/korea\/\?festival=\d+(?:#festival-lodging)?$/i;
 
+const FESTIVAL_BOOKING_URL =
+  /^https:\/\/(?:www\.)?(?:letskorail\.com|korail\.com|bustago\.or\.kr|kobus\.co\.kr|txbus\.t-money\.co\.kr)\/?/i;
+
+const OFFICIAL_SITE_LABEL_RE = /^(?:공식\s*홈페이지|official\s+site)$/i;
+
+export const FESTIVAL_ACCESS_KORAIL_URL = 'https://www.letskorail.com/';
+export const FESTIVAL_ACCESS_BUSTAGO_URL = 'https://www.bustago.or.kr/';
+export const FESTIVAL_ACCESS_KOBUS_URL = 'https://www.kobus.co.kr/';
+export const FESTIVAL_ACCESS_TXBUS_URL = 'https://txbus.t-money.co.kr/';
+
+const BOOKING_SITE_CHECKS = [
+  { id: 'korail', re: /(?:lets)?korail\.com/i },
+  { id: 'kobus', re: /kobus\.co\.kr/i },
+  { id: 'bustago', re: /bustago\.or\.kr/i },
+  { id: 'txbus', re: /txbus\.t-money\.co\.kr/i },
+];
+
+function festivalAccessBookingDomainsInText(text) {
+  const found = new Set();
+  for (const { id, re } of BOOKING_SITE_CHECKS) {
+    if (re.test(String(text || ''))) found.add(id);
+  }
+  return found;
+}
+
+function hasFestivalAccessBookingFooterParagraph(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const startRe = en ? /^Check train and bus schedules on\b/i : /^열차·버스 시각은\b/;
+  return String(text || '')
+    .split(/\n\n/)
+    .some((block) => startRe.test(block.trim()));
+}
+
+/** Keep one booking footer block when the model already echoed the client footer. */
+export function dedupeFestivalAccessBookingFooters(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const footerRe = en
+    ? /\n\nCheck train and bus schedules on[\s\S]*?(?=\n\n|$)/gi
+    : /\n\n열차·버스 시각은[\s\S]*?(?=\n\n|$)/g;
+  const body = String(text || '').trim();
+  const matches = [...body.matchAll(footerRe)];
+  if (matches.length <= 1) return body;
+  const keep = matches[matches.length - 1][0];
+  let out = body;
+  for (const match of matches.slice(0, -1)) {
+    out = out.replace(match[0], '');
+  }
+  if (!out.includes(keep.trim())) out = `${out.trim()}${keep}`.trim();
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function shouldSkipFestivalAccessBookingFooterAppend(body) {
+  const domains = festivalAccessBookingDomainsInText(body);
+  if (hasFestivalAccessBookingFooterParagraph(body) && domains.has('korail')) return true;
+  if (!domains.has('korail')) return false;
+  const busSites = (domains.has('kobus') ? 1 : 0)
+    + (domains.has('bustago') ? 1 : 0)
+    + (domains.has('txbus') ? 1 : 0);
+  return busSites >= 2;
+}
+
+function isAllowedFestivalMarkdownUrl(url, homepage = '') {
+  const clean = String(url || '').trim();
+  if (ALLOWED_FESTIVAL_URL.test(clean)) return true;
+  if (FESTIVAL_BOOKING_URL.test(clean)) return true;
+  if (sameOfficialUrl(clean, homepage)) return true;
+  return false;
+}
+
+function isAllowedFestivalBareUrl(url) {
+  const clean = String(url || '').trim();
+  if (ALLOWED_FESTIVAL_URL.test(clean)) return true;
+  if (FESTIVAL_BOOKING_URL.test(clean)) return true;
+  return false;
+}
+
+/** Client footer for festival_access — booking links the model may omit. */
+export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
+  const body = dedupeFestivalAccessBookingFooters(String(text || '').trim(), locale);
+  if (shouldSkipFestivalAccessBookingFooterAppend(body)) return body;
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const domains = festivalAccessBookingDomainsInText(body);
+  const links = [];
+  if (!domains.has('korail')) {
+    links.push(en
+      ? `[Korail](${FESTIVAL_ACCESS_KORAIL_URL})`
+      : `[코레일](${FESTIVAL_ACCESS_KORAIL_URL})`);
+  }
+  if (!domains.has('bustago')) {
+    links.push(en
+      ? `[BUSTAGO](${FESTIVAL_ACCESS_BUSTAGO_URL})`
+      : `[버스타고](${FESTIVAL_ACCESS_BUSTAGO_URL})`);
+  }
+  if (!domains.has('kobus')) {
+    links.push(en
+      ? `[KOBUS](${FESTIVAL_ACCESS_KOBUS_URL})`
+      : `[고속버스](${FESTIVAL_ACCESS_KOBUS_URL})`);
+  }
+  if (!domains.has('txbus')) {
+    links.push(en
+      ? `[intercity bus](${FESTIVAL_ACCESS_TXBUS_URL})`
+      : `[시외버스](${FESTIVAL_ACCESS_TXBUS_URL})`);
+  }
+  if (!links.length) return body;
+  const footer = en
+    ? `\n\nCheck train and bus schedules on ${links.join(', ')}.`
+    : `\n\n열차·버스 시각은 ${links.join(', ')}에서 편하게 확인할 수 있어요.`;
+  return body ? `${body}${footer}` : footer.trim();
+}
+
+const FESTIVAL_ACCESS_STEP_LEAD_RE =
+  /^(?:먼저|다음|그다음|그\s*다음|이어서|마지막으로|마지막|KTX|SRT|ITX|무궁화|버스|자가용|택시|광주|나주|용산|서울역)/;
+
+/** Preserve model newlines; insert breaks between route steps when the reply is one block. */
+export function ensureFestivalAccessStepLineBreaks(text) {
+  let s = String(text || '').replace(/\r\n/g, '\n').trim();
+  if (!s) return s;
+  if (/\n\n/.test(s)) return s.replace(/\n{3,}/g, '\n\n').trim();
+  const lines = s.split('\n').map((line) => line.trim()).filter(Boolean);
+  if (lines.length >= 2) return lines.join('\n\n');
+  const sentences = s.split(/(?<=[.!?。])\s+/).map((part) => part.trim()).filter(Boolean);
+  if (sentences.length < 2) return s;
+  const parts = [];
+  for (let i = 0; i < sentences.length; i += 1) {
+    const sent = sentences[i];
+    if (i > 0 && FESTIVAL_ACCESS_STEP_LEAD_RE.test(sent)) parts.push('\n\n');
+    else if (i > 0) parts.push(' ');
+    parts.push(sent);
+  }
+  return parts.join('').replace(/\n{3,}/g, '\n\n').trim();
+}
+
 const SECTION_CTA_LABELS = [
   '교통 · 티켓',
   '출발 전 준비',
@@ -290,6 +472,7 @@ function ctaLabelList() {
 function normalizeCta(value) {
   return String(value || '')
     .replace(/[\u{1F1E6}-\u{1F1FF}\u{1F300}-\u{1FAFF}\u2600-\u27BF]/gu, '')
+    .replace(/[|｜]/g, ' ')
     .replace(/[·・‧]/g, '·')
     .replace(/#{1,6}/g, ' ')
     .replace(/-{3,}/g, ' ')
@@ -327,7 +510,42 @@ function trailingSectionRegExp(label) {
     part.trim().split(/\s+/).filter(Boolean).map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+')
   ));
   const body = chunks.join('\\s*[·・‧]\\s*');
-  return new RegExp(`(?:\\s*[-–—•]+\\s*)?${body}\\s*$`, 'i');
+  return new RegExp(`(?:\\s*[-–—•|｜]+\\s*)?${body}\\s*[|｜]?\\s*$`, 'i');
+}
+
+function trailingChipLabelSuffixRegExp(normalizedLabel) {
+  const segments = String(normalizedLabel || '')
+    .split('·')
+    .filter(Boolean)
+    .map((part) => part.trim().split(/\s+/).filter(Boolean)
+      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('\\s+'));
+  if (!segments.length) return null;
+  const body = segments.join('\\s*[·・‧]\\s*');
+  return new RegExp(
+    `(?:[.!?。]\\s*|\\s*[-–—•|｜]+\\s*|\\s+)${body}(?:\\s*[·・‧|｜]\\s*${body})*\\s*[|｜]?\\s*$`,
+    'i',
+  );
+}
+
+function stripTrailingChipLabelSuffix(line) {
+  let s = String(line || '').trimEnd();
+  if (!s) return '';
+  const labels = [...new Set([...SECTION_LABELS, ...CTA_LABELS])].sort((a, b) => b.length - a.length);
+  let guard = 0;
+  while (guard < 24) {
+    guard += 1;
+    const prev = s;
+    s = s.replace(/[|｜]\s*$/, '').trimEnd();
+    if (isCtaSequence(s)) return '';
+    for (const label of labels) {
+      const re = trailingChipLabelSuffixRegExp(label);
+      if (!re) continue;
+      s = s.replace(re, '').trimEnd();
+    }
+    if (s === prev) break;
+  }
+  return s.trimEnd();
 }
 
 const ENTRY_DOC_RE = /입국\s*증빙|입국\s*심사|입국\s*서류|비자\s*서류|여행\s*증빙|예약\s*확인서|숙소\s*예약\s*확인|proof-of-stay|entry document|immigration document/i;
@@ -380,33 +598,75 @@ export function stripDisallowedFestivalLinks(text, options = {}) {
   };
   let next = String(text || '').replace(
     /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g,
-    (full, _label, url) => {
-      if (ALLOWED_FESTIVAL_URL.test(url)) return stash(full);
-      const linked = linkedOfficial(url);
-      return linked ? stash(linked) : '';
+    (full, label, url) => {
+      const clean = String(url || '').trim();
+      if (OFFICIAL_SITE_LABEL_RE.test(String(label || '').trim()) && !sameOfficialUrl(clean, homepage)) {
+        const linked = linkedOfficial(homepage);
+        return linked ? stash(linked) : String(label || '').trim();
+      }
+      if (isAllowedFestivalMarkdownUrl(clean, homepage)) return stash(full);
+      const linked = linkedOfficial(clean);
+      if (linked) return stash(linked);
+      const plain = String(label || '').trim();
+      return plain || '';
     },
   );
   next = next.replace(
     /(공식\s*홈페이지|official\s+site)?[ \t]*([(\[（「])?[ \t]*(https?:\/\/[^\s)\]）」]+)([.,;]+)?[ \t]*([)\]）」])?/gi,
     (full, label, _open, url) => {
       const clean = url.replace(/[.,;]+$/, '');
-      if (ALLOWED_FESTIVAL_URL.test(clean)) return full;
+      if (isAllowedFestivalBareUrl(clean)) return full;
       const linked = linkedOfficial(clean);
       if (linked) return linked;
       return label ? String(label).trim() : '';
     },
   );
   next = next.replace(/\u0000L(\d+)\u0000/g, (_full, index) => kept[Number(index)] || '');
-  return next
+  return cleanOrphanLinkConjunctions(next
     .replace(/[(\[（「][ \t]*[)\]）」]/g, '')
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
+    .trim());
+}
+
+const LINK_GLUE_PARTICLES = '(?:과|와|및|이나|나|또는| 또는)';
+
+/** Dangling 조사·접속 after a markdown link was stripped, deduped, or plain-text substituted. */
+export function cleanOrphanLinkConjunctions(text) {
+  let out = String(text || '');
+  for (let pass = 0; pass < 6; pass += 1) {
+    const prev = out;
+    out = out
+      .replace(new RegExp(`\\]\\s*${LINK_GLUE_PARTICLES}\\s*,\\s*(?=\\[)`, 'g'), '] ')
+      .replace(new RegExp(`\\]\\s*${LINK_GLUE_PARTICLES}\\s*[,，]?\\s*(?=[,，.!?。\\s]|$)`, 'g'), '] ')
+      .replace(new RegExp(`\\]\\s*${LINK_GLUE_PARTICLES}\\s+(?=에서\\b)`, 'g'), ']')
+      .replace(new RegExp(`(?:^|[\\s「『(「])${LINK_GLUE_PARTICLES}\\s+(?=에서\\b)`, 'gm'), (lead) => lead || '')
+      .replace(new RegExp(`${LINK_GLUE_PARTICLES}\\s+(?=에서\\b)`, 'g'), '')
+      .replace(/\s+(?=에서\b)/g, '')
+      .replace(new RegExp(`\\s*${LINK_GLUE_PARTICLES}\\s*[,，](?=\\s*[,，.!?。]|\\s*$)`, 'g'), '')
+      .replace(new RegExp(`[,，]\\s*${LINK_GLUE_PARTICLES}(?=\\s*[,，.!?。]|\\s*$)`, 'g'), '')
+      .replace(new RegExp(`(?:^|[\\s「『(「])${LINK_GLUE_PARTICLES}\\s*[,，]`, 'gm'), (lead) => lead || '')
+      .replace(new RegExp(`^${LINK_GLUE_PARTICLES}\\s*[,，]?\\s*`, 'gm'), '')
+      .replace(new RegExp(`\\s+${LINK_GLUE_PARTICLES}\\s*$`, 'gm'), '')
+      .replace(/[,，]\s*[,，]+/g, ',')
+      .replace(/\s+([,.!?。])/g, '$1')
+      .replace(/[ \t]{2,}/g, ' ');
+    if (out === prev) break;
+  }
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function chipLabelDecoratedLine(line) {
+  return String(line || '')
+    .replace(/^\s*[*#\-–—•🚆🚌🎫|｜\s]+/g, '')
+    .replace(/^\*\*|\*\*$/g, '')
     .trim();
 }
 
 function stripCtaLine(line) {
   let s = String(line || '').replace(/\[([^\]\n]+)\](?!\()/g, '');
+  if (isCtaSequence(normalizeCta(chipLabelDecoratedLine(s)))) return '';
   s = s.replace(/(^|\s)#{1,6}[ \t]*([^#\n]*)/g, (_full, lead, body) => (
     isCtaSequence(body) ? lead : `${lead}${String(body || '').trim()}`
   ));
@@ -423,6 +683,8 @@ function stripCtaLine(line) {
     if (!next || next === s) break;
     s = next;
   }
+  if (isCtaSequence(s)) return '';
+  s = stripTrailingChipLabelSuffix(s);
   if (isCtaSequence(s)) return '';
   return s.replace(/[ \t]{2,}/g, ' ').replace(/\s+([.!?])/g, '$1').trim();
 }
@@ -490,12 +752,92 @@ function dropFestivalPlannerSentences(text) {
   });
 }
 
+function stripChipLabelSentencesInLine(line) {
+  const parts = String(line || '').split(/(?<=[.!?。])\s+/);
+  const kept = parts.map((sentence) => {
+    let s = String(sentence || '').trim();
+    if (!s) return '';
+    if (isCtaSequence(normalizeCta(s))) return '';
+    s = stripTrailingChipLabelSuffix(s);
+    s = stripInlineChipLabelPhrases(s);
+    if (!s.trim()) return '';
+    if (isCtaSequence(normalizeCta(s))) return '';
+    return s;
+  }).filter(Boolean);
+  return kept.join(' ');
+}
+
+function chipLabelInlineRegExp(label) {
+  const segments = String(label || '').split(/[·・‧]/).map((seg) => (
+    seg.trim().split(/\s+/).filter(Boolean)
+      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('\\s+')
+  )).filter(Boolean);
+  if (!segments.length) return null;
+  const core = segments.join('\\s*[·・‧\\s]+');
+  return new RegExp(
+    `(?:^|[\\s\\n,，|｜])[*#\\-–—•\\s🚆🚌🎫]*(?:\\*\\*)?${core}(?:\\*\\*)?(?=$|[\\s\\n,，|｜.!?。])`,
+    'gi',
+  );
+}
+
+/** Chip CTA titles anywhere in a line (bullets, bold, emoji, or plain). */
+export function stripInlineChipLabelPhrases(text) {
+  let s = String(text || '');
+  for (const label of SECTION_CTA_LABELS) {
+    const re = chipLabelInlineRegExp(label);
+    if (!re) continue;
+    s = s.replace(re, (match) => (/^\s/.test(match) ? ' ' : ''));
+  }
+  return s
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\s+([,.!?。])/g, '$1')
+    .replace(/^[|｜·\s]+/g, '')
+    .replace(/[|｜·\s]+$/g, '')
+    .trim();
+}
+
+const BOOKING_LINK_ONLY_LINE_RE = /^\s*(?:[*#\-–—•🚆🚌🎫|｜\s]|(?:\*\*)?)*((?:\[[^\]]+\]\([^)]+\)\s*)+)\s*$/;
+
+/** Drop stray link-only lines when that booking domain already appears above. */
+export function stripRedundantBookingLinkOnlyLines(text) {
+  const lines = String(text || '').replace(/\r\n/g, '\n').split('\n');
+  const kept = [];
+  let prior = '';
+  let priorProseHasBookingLink = false;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      kept.push('');
+      continue;
+    }
+    const linkOnly = BOOKING_LINK_ONLY_LINE_RE.test(trimmed)
+      || (/\[[^\]]+\]\([^)]+\)/.test(trimmed) && !trimmed.replace(/\[[^\]]+\]\([^)]+\)/g, '').replace(/[*#\-–—•🚆🚌🎫|｜\s]/g, '').trim());
+    const lineDomains = festivalAccessBookingDomainsInText(trimmed);
+    if (linkOnly && lineDomains.size > 0) {
+      if (priorProseHasBookingLink) continue;
+      const priorDomains = festivalAccessBookingDomainsInText(prior);
+      if ([...lineDomains].every((id) => priorDomains.has(id))) continue;
+    }
+    if (!linkOnly && lineDomains.size > 0) priorProseHasBookingLink = true;
+    kept.push(line);
+    prior = `${prior}\n${trimmed}`;
+  }
+  return kept.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
 /** Chip headings, CTA labels, separator leftovers, and bracket phrases with no URL. */
 export function stripMooniUiChipLabels(text) {
   const lines = promoteDashListMarkers(text)
     .replace(/\[([^\]\n]+)\](?!\()/g, '')
     .split('\n')
-    .map((line) => (line.trim() ? stripPlannerResidueLine(stripCtaLine(line)) : ''));
+    .map((line) => {
+      if (!line.trim()) return '';
+      let stripped = stripPlannerResidueLine(stripCtaLine(line));
+      stripped = stripInlineChipLabelPhrases(stripped);
+      if (!stripped) return '';
+      return stripChipLabelSentencesInLine(stripped);
+    });
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
@@ -575,6 +917,7 @@ function syllableHasBatchim(ch) {
  */
 export function rewriteFestivalFormalEndings(text) {
   let out = String(text || '');
+  out = out.replace(/([가-힣]+)하십시오(?=$|[\s.!?。,，])/g, '$1해요');
   for (const [from, to] of FORMAL_ENDING_TABLE) {
     out = out.replace(new RegExp(`${from}(?=$|[\\s.!?。,，])`, 'g'), to);
   }
@@ -908,6 +1251,224 @@ export function isFestivalFoodAsk(input = {}) {
   return FESTIVAL_FOOD_ASK_RE.test(String(input.userText || ''));
 }
 
+export function isFestivalAccessAsk(input = {}) {
+  if (String(input.chipId || '') === 'festival_access') return true;
+  return festivalAccessAskIsRoute(String(input.userText || ''));
+}
+
+/** Access polish (행사 기간·booking footer) only when a Korea festival is bound in chat. */
+function isBoundFestivalAccessPolish(options = {}) {
+  if (!isFestivalAccessAsk(options)) return false;
+  return Boolean(
+    String(options.contentId || '').trim()
+    || String(options.festivalTitle || '').trim(),
+  );
+}
+
+function festivalTransportHasTagoRows(transport) {
+  for (const origin of transport?.origins || []) {
+    for (const segment of origin.segments || []) {
+      if ((segment.rows || []).length > 0) return true;
+    }
+  }
+  return false;
+}
+
+const GUKHYANG_FESTIVAL_ID = '638576';
+const CAPITAL_ORIGIN_IDS = new Set(['seoul', 'incheon', 'gyeonggi']);
+
+function festivalOriginTransportRows(transport, originRow) {
+  const needle = String(originRow?.ko || '').trim();
+  if (!needle) return [];
+  const out = [];
+  for (const origin of transport?.origins || []) {
+    const label = String(origin.label || '').trim();
+    if (label !== needle && !label.includes(needle) && !needle.includes(label)) continue;
+    for (const segment of origin.segments || []) {
+      if ((segment.rows || []).length > 0) out.push(segment);
+    }
+  }
+  return out;
+}
+
+function originHasVerifiedRailToGwangjuSongjeong(transport, originRow) {
+  for (const segment of festivalOriginTransportRows(transport, originRow)) {
+    if (segment.transfer) continue;
+    if (/광주송정/.test(String(segment.arr || '')) && (segment.rows || []).length > 0) return true;
+  }
+  return false;
+}
+
+/** 국향대전 — non-capital origins without TAGO direct rail to 광주송정: bus-first chip hint. */
+function formatGukhyangAccessOriginGuidance(originRow, transport, locale = 'ko') {
+  if (!originRow || CAPITAL_ORIGIN_IDS.has(originRow.id)) return '';
+  if (originHasVerifiedRailToGwangjuSongjeong(transport, originRow)) return '';
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const place = en ? originRow.en : originRow.ko;
+  const busTerminals = originRow.id === 'daegu'
+    ? (en ? 'Daegu Express Bus Terminal (Seobu and Dongdaegu)' : '대구고속버스터미널(서부·동대구)')
+    : (en ? (originRow.busEn || '') : (originRow.busKo || ''));
+  if (en) {
+    return `Readers leave from ${place} using only this answer — pick routes that really run. If there is no confirmed direct train to Gwangju Songjeong, say so honestly, then lead with express or intercity bus from ${busTerminals} to Gwangju, then Gwangju to Hampyeong and the venue, plus driving. Do not open with Dongdaegu KTX or SRT straight to Gwangju Songjeong.`;
+  }
+  const gwangjuBusHub = en ? 'Gwangju U-Square' : '광주(유·스퀘어)';
+  const daeguBusFirst = originRow.id === 'daegu'
+    ? (en
+      ? `Lead with express or intercity bus from ${busTerminals} to ${gwangjuBusHub}, then a Hampyeong-bound bus toward the venue — like the Incheon answer pattern. Only after that, mention Dongdaegu KTX/SRT via Gwangju Songjeong as a secondary option if it really runs.`
+      : `인천 답변처럼 ${busTerminals}→${gwangjuBusHub} 고속·시외버스를 먼저 쓰고, 광주에서 함평행 버스로 축제장 방향을 이어 주세요. 그 다음에만 동대구역→광주송정 열차 환승을 선택지로 넣어 주세요.`)
+    : (en
+      ? `Then bus from ${busTerminals} to Gwangju and on to Hampyeong and the venue.`
+      : `${busTerminals}에서 광주 고속·시외버스 → 광주에서 함평행 버스 → 축제장 순으로 먼저 안내해 주세요.`);
+  return `사용자는 ${place}에서 이 안내만 보고 출발해요. 실제로 운행하는 노선만 골라 안내해 주세요. TAGO·카드에 확인된 ${place}→광주송정 직통 열차가 없으면 «확인된 직통 열차는 없어요»라고 말하고, ${daeguBusFirst} 자가용도 함께 넣어 주세요.`;
+}
+
+const GANGNEUNG_FESTIVAL_ID = '2930716';
+
+/** 강릉 국수 축제 — avoid vague «환승 경로»; bus-first from non-capital when TAGO supports it. */
+function formatGangneungAccessOriginGuidance(originRow, transport, locale = 'ko') {
+  if (!originRow || String(originRow.id || '') !== 'daegu') return '';
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const tagoLead = composeFestivalAccessReply(transport, {
+    locale,
+    useSelected: false,
+    stations: en ? 'Dongdaegu Station' : '동대구역',
+  });
+  const tagoHint = tagoLead
+    ? (en
+      ? `Confirmed TAGO rows for this departure (quote only these times and fares in the answer): ${tagoLead.replace(/\n/g, ' ')}`
+      : `이 출발지 TAGO·카드 확인 구간(아래 시각·요금만 인용): ${tagoLead.replace(/\n/g, ' ')}`)
+    : (en
+      ? 'No confirmed TAGO train or bus rows for this departure — say so honestly, then describe Daegu Express Bus Terminal to Gangneung express bus with only numbers you can verify, or name the real transfer station and train if TAGO shows one. Never write only «via a transfer route». '
+      : 'TAGO·카드에 이 출발지 확인 시각이 없으면 솔직히 말하고, 대구고속버스터미널→강릉행 고속·시외버스를 구체적으로 안내해 주세요. 열차는 «환승 경로를 거쳐»처럼 뭉뚱그리지 말고 확인된 환승 역·편명만 써 주세요. ');
+  return en
+    ? `Readers leave from Daegu. Lead with express bus from Daegu Express Bus Terminal to Gangneung when times exist; trains from Dongdaegu only with named transfer stations. ${tagoHint}`
+    : `대구에서 출발해요. 대구고속버스터미널→강릉고속버스터미널 고속·시외버스를 먼저 안내하고, 열차는 동대구역에서 강릉역까지 확인된 환승 역·편명을 써 주세요. ${tagoHint}`;
+}
+
+const FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE =
+  /동대구(?:역)?에서\s+(?:(?:KTX|SRT)(?:나\s+|·|와\s+)?(?:SRT|KTX)?\s*)?(?:을|를)?\s*(?:타고\s*)?광주송정/;
+
+function rewriteFalseDongdaeguGwangjuSongjeongLead(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (!FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE.test(text)) return String(text || '');
+  return String(text || '').replace(
+    FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE,
+    '확인된 동대구→광주송정 직통 열차는 없어요. 대구고속버스터미널(서부·동대구)에서 광주(유·스퀘어)까지 고속·시외버스를 타고, 광주에서 함평행 버스로 이어 가면 돼요',
+  );
+}
+
+const GUKHYANG_DAEGU_BUS_LEAD_KO =
+  '대중교통을 이용할 때는 동대구터미널이나 서대구터미널에서 광주(유·스퀘어)로 가는 고속버스를 타고 광주에서 함평행 버스로 갈아타는 방법이 편해요.';
+
+/** Named intermediate hub — not only «동대구→환승→광주송정». */
+const GUKHYANG_NAMED_INTERMEDIATE_TRANSFER_RE =
+  /(?:서울역|용산역|청량리역|대전역|오송역|천안아산역|김천구미역|수원역|평택역|전주역|나주역|순천역|광주역|정읍역|익산역|대전|오송|천안|김천)/;
+
+const GUKHYANG_VAGUE_HWANSUNG_SENTENCE_RE =
+  /[^.!?。]*환승을\s*거쳐[^.!?。]*[.。]\s*/g;
+
+function rewriteVagueGukhyangTransferWithoutNamedStation(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  let out = String(text || '');
+  out = out.replace(GUKHYANG_VAGUE_HWANSUNG_SENTENCE_RE, (sentence) =>
+    GUKHYANG_NAMED_INTERMEDIATE_TRANSFER_RE.test(sentence) ? sentence : '',
+  );
+  out = out.replace(
+    /열차는[^.!?。]*(?:직통|확인된)[^.!?。]*(?:환승을\s*거쳐|광주송정)[^.!?。]*[.。]\s*/g,
+    '',
+  );
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+function cleanupGukhyangAccessOrphanRailTails(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  let out = String(text || '');
+  out = out.replace(/돼요\s*역으로\s*이동한\s*뒤[^.!?。]*[.。]\s*/g, '');
+  out = out.replace(/이어\s*가면\s*돼요\s*역으로[^.!?。]*[.。]\s*/g, '');
+  if (String(options.departureOriginId || '') === 'daegu') {
+    out = out.replace(
+      /열차를\s*이용한다면[^.!?。]*광주송정[^.!?。]*[.。]\s*/g,
+      '열차는 확인된 동대구→광주송정 직통 편이 없어서, 버스 경로를 먼저 보시는 편이 좋아요. ',
+    );
+    const dupPhrase =
+      '대구고속버스터미널(서부·동대구)에서 광주(유·스퀘어)까지 고속·시외버스를 타고, 광주에서 함평행 버스로 이어 가면 돼요';
+    const firstDup = out.indexOf(dupPhrase);
+    if (firstDup >= 0) {
+      const secondDup = out.indexOf(dupPhrase, firstDup + dupPhrase.length);
+      if (secondDup >= 0) {
+        out = `${out.slice(0, secondDup)}${out.slice(secondDup + dupPhrase.length).replace(/^\.\s*/, '')}`;
+      }
+    }
+  }
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+function ensureGukhyangDaeguBusFirstLead(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  const lead = GUKHYANG_DAEGU_BUS_LEAD_KO;
+  let out = String(text || '').trim();
+  if (!/유·스퀘어|유ㆍ스퀘어/.test(out)) {
+    return `${lead} ${out}`;
+  }
+  const leadIdx = out.indexOf(lead);
+  if (leadIdx >= 0 && leadIdx <= 80) return out;
+  const busSentence = out.match(
+    /[^.!?。]*동대구터미널이나 서대구터미널에서 광주\(유·스퀘어\)[^.!?。]*[.。]/,
+  );
+  if (busSentence) {
+    const rest = out.replace(busSentence[0], '').trim();
+    return `${busSentence[0]} ${rest}`.trim();
+  }
+  return `${lead} ${out}`;
+}
+
+const ACCESS_TIMETABLE_WINDOW_MISREAD_RE =
+  /(\d{1,2}:\d{2}(?:\u2060?~\u2060?\d{1,2}:\d{2})?)\s*(?:사이에\s*)?바로\s*갈\s*수/g;
+
+const ACCESS_TIMETABLE_WINDOW_LEGACY_RE =
+  /(\d{1,2}:\u2060?\d{2}(?:\u2060?~\u2060?\d{1,2}:\u2060?\d{2})?|\d{1,2}:\d{2}~\d{1,2}:\d{2})\s*출발편\s*기준으로\s*바로\s*갈\s*수/g;
+
+const VAGUE_GANGNEUNG_TRANSFER_RE =
+  /[^.!?。]*환승\s*경로를\s*거쳐[^.!?。]*[.。]?/g;
+
+function accessTimetableExamplePhrase(clock) {
+  const glued = glueAccessNumbersInProse(clock);
+  return `조회한 시간대(${glued})에 운행하는 출발편 예시로 바로 갈 수`;
+}
+
+function rewriteFestivalAccessTimetableWindowPhrase(text) {
+  let out = String(text || '').replace(
+    ACCESS_TIMETABLE_WINDOW_MISREAD_RE,
+    (full, clock) => accessTimetableExamplePhrase(clock),
+  );
+  out = out.replace(
+    ACCESS_TIMETABLE_WINDOW_LEGACY_RE,
+    (full, clock) => accessTimetableExamplePhrase(clock),
+  );
+  return out;
+}
+
+function rewriteVagueGangneungTransferRoute(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (!/환승\s*경로/.test(text)) return String(text || '');
+  const tagoLead = composeFestivalAccessReply(options.transport, {
+    locale: options.locale || 'ko',
+    useSelected: false,
+    stations: '동대구역',
+  });
+  const replacement = tagoLead
+    ? `${tagoLead.split(/\n/).filter(Boolean)[0]} `
+    : '대구고속버스터미널에서 강릉행 고속·시외버스 시간·요금이 확인되면 그걸 먼저 알려 주세요. 동대구역에서 강릉역까지는 확인된 환승 역과 편명만 써 주세요. ';
+  return String(text || '').replace(VAGUE_GANGNEUNG_TRANSFER_RE, replacement);
+}
+
+export {
+  rewriteFalseDongdaeguGwangjuSongjeongLead,
+  rewriteFestivalAccessTimetableWindowPhrase,
+  glueAccessNumbersInProse as glueMooniAccessNumbersInProse,
+};
+
 function listedPlaceNames(values) {
   const out = [];
   for (const raw of Array.isArray(values) ? values : []) {
@@ -991,11 +1552,11 @@ export function dedupeFestivalPageLinks(text) {
     cursor = match.index + match[0].length;
   }
   result += src.slice(cursor);
-  return result
+  return cleanOrphanLinkConjunctions(result
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
-    .trim();
+    .trim());
 }
 
 const FOOD_TYPE_TAGS = [
@@ -1128,11 +1689,11 @@ function dedupeStaySearchLinks(text) {
     seen.add(key);
     return full;
   });
-  return next
+  return cleanOrphanLinkConjunctions(next
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
-    .trim();
+    .trim());
 }
 
 /** Narrative -답니다 endings are not 해요체. Specific forms first, then a boundary-safe generic. */
@@ -1158,6 +1719,56 @@ function softenNightHour(text) {
 }
 
 const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|숙소가\s*자리하고|매력을 느끼며|인근으로[\s\S]{0,40}숙소를\s*찾을\s*수\s*있|특별한 순간을 경험해|The atmosphere is majestic|a variety of stays|feel the charm|find stays in the .* area/i;
+const MOONI_GUIDE_FILLER_RE =
+  /안내해\s*드릴게요|안내해\s*드리겠습니다|안내할게요|알려\s*드릴게요|알려드릴게요|도와\s*드릴게요/;
+
+function stripMooniGuideFiller(text) {
+  return filterPreservingBreaks(text, (part) => MOONI_GUIDE_FILLER_RE.test(part));
+}
+
+function shortDateFromDateLabel(label) {
+  const match = String(label || '').trim().match(/(\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?)/);
+  return match ? match[1] : '';
+}
+
+function festivalAccessDatesAlreadyInText(body, short) {
+  const text = String(body || '');
+  const range = String(short || '').trim();
+  if (!range || !/\d{1,2}\/\d{1,2}/.test(range)) return false;
+  if (text.includes(range)) return true;
+  const m = range.match(/^(\d{1,2})\/(\d{1,2})(?:~(\d{1,2})(?:\/(\d{1,2}))?)?$/);
+  if (!m) return false;
+  const [, sm, sd, em, ey] = m;
+  const start = `${Number(sm)}/${Number(sd)}`;
+  const altStart = `${sm}/${sd}`;
+  if (!text.includes(start) && !text.includes(altStart)) return false;
+  if (!em) return /행사\s*기간/.test(text) || text.includes(start) || text.includes(altStart);
+  const endPart = ey ? `${Number(em)}/${Number(ey)}` : `~${Number(em)}`;
+  const full = ey ? `${start}~${endPart}` : `${altStart}~${em}`;
+  if (text.includes(full) || text.includes(`${altStart}~${em}`)) return true;
+  if (/행사\s*기간/.test(text) && (text.includes(start) || text.includes(altStart))) return true;
+  return false;
+}
+
+function ensureFestivalAccessPeriodLine(text, options = {}) {
+  if (!isBoundFestivalAccessPolish(options)) return String(text || '').trim();
+  const startYmd = normalizeEventYmdForPolish(options.eventStartDate);
+  const endYmd = normalizeEventYmdForPolish(options.eventEndDate);
+  const short = briefFestivalDate(startYmd, endYmd)
+    || shortDateFromDateLabel(options.dateLabel)
+    || String(options.dateLabel || '').trim();
+  if (!short || !/\d{1,2}\/\d{1,2}/.test(short)) return String(text || '').trim();
+  let body = String(text || '').trim();
+  if (festivalAccessDatesAlreadyInText(body, short)) return body;
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const line = en ? `The festival runs ${short}.` : `행사 기간은 ${short}이에요.`;
+  const footerRe = /\n\n(?:열차·버스 시각은|Check train and bus schedules)/;
+  const footerIdx = body.search(footerRe);
+  if (footerIdx > 0) {
+    return `${body.slice(0, footerIdx).trim()}\n\n${line}${body.slice(footerIdx)}`.trim();
+  }
+  return `${body}\n\n${line}`.trim();
+}
 
 function dropFestivalFillerSentences(text) {
   const stripped = String(text || '').replace(/편안한 휴식을 위해\s*/g, '');
@@ -1246,7 +1857,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = stripDisallowedFestivalLinks(text, options);
   text = stripMooniUiChipLabels(text);
   text = expandCompactDates(text, options.locale);
-  if (options.contentId) {
+  if (shouldPolishDomesticKoreaFestival(options)) {
     text = stripUnaskedBroadcastLines(text, options.userText);
     text = stripDomesticTwelveGoMention(text);
     text = stripDomesticEntryDocLines(text, options);
@@ -1265,7 +1876,9 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = polishWaAndGeurigoList(text);
     text = rewriteFoodEveningJoin(text);
     if (options.evening === false) text = stripUnverifiedEveningClause(text);
-    text = stripTrailingFestivalDateSentence(text);
+    if (!isBoundFestivalAccessPolish(options)) {
+      text = stripTrailingFestivalDateSentence(text);
+    }
     text = dropDateLinkFragmentSentences(text);
     text = dedupeStaySearchLinks(text);
     text = stripNextActionLabel(text);
@@ -1280,7 +1893,57 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = ensureFestivalLodgingAnswer(text, options);
   text = stripOffTopicLodgingNudge(text, options);
   text = settleFestivalNextAction(text, options);
-  return dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
+  text = dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
+  text = cleanOrphanLinkConjunctions(text);
+  if (String(options.locale || 'ko').slice(0, 2) !== 'en') {
+    text = stripMooniGuideFiller(text);
+  }
+  if (isBoundFestivalAccessPolish(options)) {
+    text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
+    text = rewriteVagueGukhyangTransferWithoutNamedStation(text, options);
+    text = ensureGukhyangDaeguBusFirstLead(text, options);
+    text = cleanupGukhyangAccessOrphanRailTails(text, options);
+    text = rewriteVagueGangneungTransferRoute(text, options);
+    text = rewriteFestivalAccessTimetableWindowPhrase(text);
+    text = glueAccessNumbersInProse(text);
+    text = stripRedundantBookingLinkOnlyLines(text);
+    text = ensureFestivalAccessStepLineBreaks(text);
+    text = ensureFestivalAccessPeriodLine(text, options);
+    text = appendFestivalAccessBookingLinks(text, options.locale);
+    text = dedupeFestivalAccessBookingFooters(text, options.locale);
+  }
+  text = stripMooniUiChipLabels(text);
+  return text;
+}
+
+function trimBoundFestivalHintForAccess(hint, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const drop = en
+    ? /^- (?:Overview|Program|Nearby|Nearby restaurants|Where to eat)/
+    : /^- (?:개요|프로그램|근처|주변 맛집|근처 먹을 곳)/;
+  return String(hint || '')
+    .split('\n')
+    .filter((line) => !drop.test(line.trim()))
+    .join('\n');
+}
+
+function festivalAccessVenueGuidanceLines(ctx, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const id = String(ctx?.contentId || '').trim();
+  const blob = `${ctx?.title || ''} ${ctx?.venue || ''} ${ctx?.address || ''}`;
+  const lines = [];
+  if (id === '638576' || /함평|국향/.test(blob)) {
+    const addr = String(ctx?.address || '').trim();
+    lines.push(en
+      ? `- Routes: KTX does not normally stop at Hampyeong Station (only occasional butterfly-festival extras). From Yongsan, Mugunghwa or ITX-Saemaul direct to Hampyeong takes about 4h10–50m with no transfer — present that alongside KTX to Gwangju Songjeong then a local train or bus. Do not claim Seoul–Hampyeong KTX. Last leg: after Hampyeong Station or the bus terminal, continue to Hampyeong Expo Park${addr ? ` (${addr})` : ''} by local bus or taxi (~10–20 min when helpful). Add a driving option. Use only confirmed fares and times.`
+      : `- 경로: KTX는 평소 함평역에 정차하지 않아요(나비축제 등 일시 운행만 예외). 용산에서 무궁화·ITX-새마을로 함평역까지 환승 없이 가는 편도 약 4시간 10분~50분대가 있어요 — KTX 광주송정 하차 후 환승과 함께 선택지로 짧게 비교해 주세요. 서울·용산→함평 KTX 직행이라고 말하지 마세요. 마지막 구간: 여행자는 역에서 축제장까지 어떻게 가는지가 가장 궁금해요. 함평역·함평공용버스터미널에서 함평엑스포공원${addr ? `(${addr})` : ''}까지 시내버스·택시, 자가용도 함께 안내해 주세요. 대략 10~20분대(교통에 따라 다름)처럼만 말하고, 확인된 요금·시각만 쓰세요.`);
+  }
+  if (id === '637693' || /해양누리|3·15|마산가고파|마산/.test(blob)) {
+    lines.push(en
+      ? '- Arrival station (inside the public-transit section only): for 3·15 Marine Nuri Park, guide KTX/SRT to Masan Station first, then the hop to the venue. Mention Changwon Jungang Station only as a backup in that same transit section — not again after the driving paragraph.'
+      : '- 도착 역(대중교통 단락 안에서만): 3·15해양누리공원에는 KTX·SRT는 마산역이 가장 가까워요. 마산역→축제장 경로를 먼저 쓰고, 창원중앙역은 같은 대중교통·역→축제장 설명 안에서만 보조로 말해 주세요. 자가용 안내 **다음에** 창원중앙역을 다시 넣지 마세요.');
+  }
+  return lines;
 }
 
 const LODGING_NUDGE_RE = /숙소\s*정보|숙소\s*(?:도|를|카드|안내)|#festival-lodging|묵기\s*좋|where\s+to\s+stay|lodging\s+(?:card|guide)|stays?\s+for\s+this\s+festival/i;
@@ -2179,6 +2842,13 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
     lines.push(isEn
       ? `- Write that official page only as [official site](${homepage}). Do not put the bare URL in parentheses.`
       : `- 그 공식 홈페이지는 [공식 홈페이지](${homepage})로만 쓴다. 괄호 안에 날 URL을 넣지 않는다.`);
+    lines.push(isEn
+      ? `- Encourage users to use that official page for parking, hours, and shuttles when those details are not listed below. Do not label a GATEO page as the official site.`
+      : `- 주차·운영 시간·셔틀 등이 아래에 없으면, 위 [공식 홈페이지](${homepage})에서 최신 안내를 확인하도록 따뜻하게 안내해 주세요. GATEO 상세 페이지를 공식 홈페이지라고 부르지 않는다.`);
+  } else {
+    lines.push(isEn
+      ? `- No verified official URL in the data. Do not invent domains (for example guessing go.kr hosts). Name the organizer and suggest finding their official site without a made-up link.`
+      : `- 확인된 공식 URL이 없다. hp.go.kr 등 URL을 지어내지 않는다. 주관 기관 이름으로 공식 사이트를 찾도록 안내한다.`);
   }
   const tel = String(ctx?.tel || '').trim();
   if (tel) lines.push(isEn ? `- Contact phone: ${tel}` : `- 문의처: ${tel}`);
@@ -2293,6 +2963,39 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
   if (festivalContext && String(festivalContext.title || '').trim()) {
     let hint = buildMooniBoundFestivalSystemHint(festivalContext, input.locale, input.now);
     const enFood = String(input.locale || '').slice(0, 2) === 'en';
+    if (isFestivalAccessAsk({ userText, chipId: input.chipId })) {
+      hint = trimBoundFestivalHintForAccess(hint, input.locale);
+      const originRow = domesticFestivalGroundOrigin(userText, input.departureLabel);
+      if (originRow) {
+        const festId = String(festivalContext.contentId || '').trim();
+        const gukhyangChip = festId === GUKHYANG_FESTIVAL_ID
+          ? formatGukhyangAccessOriginGuidance(originRow, festivalContext.transport, input.locale)
+          : '';
+        const gangneungChip = festId === GANGNEUNG_FESTIVAL_ID
+          ? formatGangneungAccessOriginGuidance(originRow, festivalContext.transport, input.locale)
+          : '';
+        const hubLine = gukhyangChip || gangneungChip || formatOriginHubGuidance(originRow, input.locale);
+        hint += enFood
+          ? `\n- Departure hubs for this chip: ${hubLine}`
+          : `\n- 출발 칩 안내: ${hubLine}`;
+      }
+      for (const line of festivalAccessVenueGuidanceLines(festivalContext, input.locale)) {
+        hint += `\n${line}`;
+      }
+      if (String(festivalContext.contentId || '') === '637693') {
+        hint += enFood
+          ? '\n- Order: public transit and station-to-venue hops (including Changwon Jungang as backup) first, then driving. Do not mention Changwon Jungang after the car paragraph.'
+          : '\n- 순서: 열차·버스·역→축제장(창원중앙역 보조 포함) 안내를 먼저 쓰고, 그 다음에 자가용. 자가용 문단 뒤에 창원중앙역을 쓰지 않는다.';
+      }
+      hint += enFood
+        ? '\n- This turn is only getting there. Do not repeat the festival welcome, overview, or program from the opening message — go straight from the chosen origin to the venue.'
+        : '\n- 이번 답은 가는 법만이에요. 채팅 첫 인사·개요·프로그램 소개는 반복하지 말고, 고른 출발지에서 축제장까지 교통만 짧게 이어 주세요.';
+      if (!festivalTransportHasTagoRows(festivalContext.transport)) {
+        hint += enFood
+          ? '\n- Getting there: when GATEO has no confirmed train or bus times for this departure, still describe real rail, express bus, and driving from the hubs above. Use only confirmed numbers; otherwise link [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/).'
+          : '\n- 가는 법: GATEO에 이 출발지의 확인된 열차·버스 시각이 없을 수 있어요. 그래도 위 출발 역·터미널에서 실제 열차·고속버스·차 경로를 이어서 안내해 주세요. 시각·요금은 확인된 숫자만 말하고, 없으면 [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요.';
+      }
+    }
     const foodNames = festivalFoodPlaceLabels(festivalContext.nearbyRestaurants, enFood ? 'en' : 'ko', 4);
     if (foodNames.length && isFestivalFoodAsk({ userText, chipId: input.chipId })) {
       hint += enFood

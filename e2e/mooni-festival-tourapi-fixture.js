@@ -12,6 +12,50 @@ const RECORDED_WINDOW_EMPTY = JSON.parse(
   readFileSync(join(__dir, 'fixtures/festival-2989642-window-item.json'), 'utf8'),
 );
 
+/** Deep-link sheet open (mapx/mapy required) — MOONi staging QA + offline E2E. */
+const TRANSPORT_FESTIVAL_DETAIL_STUBS = {
+  '637693': {
+    ok: true,
+    contentId: '637693',
+    intro: {
+      contentId: '637693',
+      contentTypeId: '15',
+      eventStartDate: '20261031',
+      eventEndDate: '20261108',
+      eventplace: '3·15해양누리공원',
+      mapx: '128.489574',
+      mapy: '35.194419',
+    },
+    common: {
+      contentId: '637693',
+      title: '마산가고파국화축제',
+      addr1: '경상남도 창원시 마산합포구',
+      mapx: '128.489574',
+      mapy: '35.194419',
+    },
+  },
+  '2930716': {
+    ok: true,
+    contentId: '2930716',
+    intro: {
+      contentId: '2930716',
+      contentTypeId: '15',
+      eventStartDate: '20261015',
+      eventEndDate: '20261018',
+      eventplace: '강릉 월화거리 일원',
+      mapx: '128.8976016584',
+      mapy: '37.7557770169',
+    },
+    common: {
+      contentId: '2930716',
+      title: '강릉 국수 축제',
+      addr1: '강원특별자치도 강릉시 경강로 2111 (임당동)',
+      mapx: '128.8976016584',
+      mapy: '37.7557770169',
+    },
+  },
+};
+
 const CORS = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'POST, OPTIONS',
@@ -27,18 +71,23 @@ function jsonFulfill(route, payload) {
   });
 }
 
-/** @deprecated */
 export function buildFestivalDetailFixture(contentId = E2E_FESTIVAL_ID) {
-  if (String(contentId) === E2E_FESTIVAL_ID) return { ...RECORDED_DETAIL };
-  return { ok: true, contentId: String(contentId), intro: {}, common: {} };
+  const id = String(contentId);
+  const transportStub = TRANSPORT_FESTIVAL_DETAIL_STUBS[id];
+  if (transportStub) return { ...transportStub };
+  if (id === E2E_FESTIVAL_ID) return { ...RECORDED_DETAIL };
+  return { ok: true, contentId: id, intro: {}, common: {} };
 }
 
 function recordedPayloadForAction(action, contentId, festivalId) {
   const id = String(festivalId);
   const cid = String(contentId || '').trim();
   if (action === 'festivalWindow') return RECORDED_WINDOW_EMPTY;
-  if (action === 'festivalDetail' && (!cid || cid === id)) return RECORDED_DETAIL;
-  if (action === 'festivalDetail' && cid) {
+  if (action === 'festivalDetail') {
+    const key = cid || id;
+    const transportStub = TRANSPORT_FESTIVAL_DETAIL_STUBS[key];
+    if (transportStub) return transportStub;
+    if (!cid || cid === id) return RECORDED_DETAIL;
     return {
       ok: true,
       contentId: cid,

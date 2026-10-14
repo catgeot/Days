@@ -214,9 +214,10 @@ export const KO = {
     "festival_access": {
       "title": "축제장 가는 법",
       "rules": [
-        "사용자가 고른 국내 출발지에서 축제장까지 열차·고속버스와 차로 가는 법만 말한다. 출발 역·터미널 이름을 문장에 넣는다.",
+        "사용자는 당신을 믿고 이 축제에 갑니다. 고른 국내 출발지에서 축제장까지 실제로 다니는 열차·고속버스·차 경로를 해요체로 안내해 주세요(「하십시오」「습니다」 금지). KTX 역과 SRT 역은 출발 칩 힌트에 따로 적혀 있다. 수도권 SRT는 수서(동탄·평택지제도 가능), 수도권 KTX는 서울·용산·광명에서 출발한다. 광명·용산에서는 SRT가 없다. 그 외 지역은 힌트의 지역 역(예: 대구 동대구, 충남 천안아산, 광주송정, 부산, 대전, 오송 등)에서 KTX·SRT를 안내한다. 힌트의 도착 역·마지막 구간 안내가 있으면 그 역을 먼저 쓴다. 고속·시외버스 터미널도 힌트를 따르고, 지역 일반 역(예: 부평역)을 장거리 열차 출발역으로 말하지 않는다.",
+        "힌트에 확인된 열차·버스 시각·요금이 있으면 그 숫자만 말하고, 도착 역에서 끝내지 말고 축제장까지 마지막 구간·갈아타는 곳·버스·택시와 자가용 옵션을 이어서 안내해 주세요. 채팅 첫 인사·개요·프로그램 소개는 반복하지 말고 교통만 짧게 쓴다. «안내해 드릴게요» 같은 맺음말은 쓰지 않는다. 없으면 시각·요금 숫자는 만들지 않고, [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요.",
         "국내 구간에서는 공항 코드(ICN, GMP, KAG 등)를 쓰지 않는다. 공항 코드는 해외 항공 질문에서만 쓴다.",
-        "힌트에 없는 셔틀·주차·소요 시간은 단정하지 않는다. 주차·셔틀이 힌트에 없으면 «축제 페이지에서 확인»이라고 하지 않고, 공식 홈페이지나 문의처로 안내한다. 홈페이지는 링크하고 전화번호가 있으면 적는다.",
+        "힌트에 없는 셔틀·주차는 단정하지 않는다. 주차·셔틀이 힌트에 없으면 «축제 페이지에서 확인»이라고 하지 않고, 공식 홈페이지나 문의처로 안내한다. 홈페이지는 링크하고 전화번호가 있으면 적는다. 자가용은 고속도로·대략 소요만 말하고, 확인되지 않은 통행료·정확한 분 단위 시간은 만들지 않는다.",
         "글머리표 없이 문장만 쓴다. 행사 기간은 다시 말하지 않는다. GATEO ?festival= 링크는 축제 안내로 넣는다. 그 링크를 «가는 법»으로 안내하지 않는다. 다음 행동은 마크다운 링크가 있을 때만 남긴다."
       ]
     },
@@ -505,9 +506,10 @@ export const EN = {
     "festival_access": {
       "title": "Getting to the festival",
       "rules": [
-        "Explain rail, express bus, and driving from the domestic origin the user chose. Name the departure station or terminal.",
+        "The user is counting on you to help them reach this festival. From the domestic origin they chose, explain real rail, express bus, and driving routes in plain friendly sentences (no formal -십시오 endings). KTX stations and SRT stations are listed separately in the departure-chip hint. Seoul-area SRT departs from Suseo (also Dongtan and Pyeongtaek Jije when relevant); Seoul-area KTX from Seoul Station, Yongsan, and Gwangmyeong. There is no SRT from Gwangmyeong or Yongsan. Elsewhere, use the regional stations in the hint (e.g. Dongdaegu, Cheonan-Asan, Gwangju Songjeong, Busan, Daejeon, Osong). When the hint names an arrival station or last leg, follow it first. Use the bus terminals named in the hint—not a local metro-only station as a long-distance rail origin.",
+        "When the hint lists confirmed train or bus times and fares, use only those numbers, then continue with the last leg to the festival venue, the transfer point, bus/taxi when known, and an encouraging driving option. Do not repeat the festival welcome, overview, or program from the opening message. Do not end with filler such as \"I will guide you\". Otherwise do not invent times or fares; point to [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/) with links.",
         "Do not use airport codes (ICN, GMP, KAG) on a domestic leg. Airport codes are only for an overseas flight.",
-        "Do not assert shuttles, parking, or travel times that are not in the hint. If parking or a shuttle is not in the hint, do not say to check the festival page. Point to the official site or the contact phone, link the homepage, and include the phone when it is present.",
+        "Do not assert shuttles or parking that are not in the hint. If parking or a shuttle is not in the hint, do not say to check the festival page. Point to the official site or the contact phone, link the homepage, and include the phone when it is present. For driving, name highways and rough duration only; do not invent tolls or exact minutes.",
         "No bullet lists. Do not restate the festival dates. End with the GATEO ?festival= link as festival information. Do not frame that link as how to get there. Keep a next action only when it is a markdown link."
       ]
     },

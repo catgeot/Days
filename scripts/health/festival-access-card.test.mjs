@@ -11,6 +11,7 @@ import {
   composeFestivalAccessReply,
   createMooniSendGate,
   glueAccessUnit,
+  glueAccessNumbersInProse,
   planFestivalMooniModelCall,
   departureCoversStation,
   festivalAccessAskFragment,
@@ -232,6 +233,7 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
   const reply = composeFestivalAccessReply(facts, { useSelected: true });
   assert.match(reply, /08:44\u2060~\u206019:11/);
   assert.match(reply, /용산→함평/);
+  assert.match(reply, /조회한 시간대\(08:44\u2060~\u206019:11\)에 운행하는 출발편 예시로 바로 갈 수 있어요/);
   assert.match(reply, /36,\u2060300원/);
   assert.match(reply, /가는 법 카드/);
   assert.doesNotMatch(reply, /ITX-마음/);
@@ -266,7 +268,7 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
     ],
   }, { stations: '용산역' });
   assert.match(yongsanReply, /용산→함평/);
-  assert.match(yongsanReply, /08:44\u2060~\u206019:11/);
+  assert.match(yongsanReply, /조회한 시간대\(08:44\u2060~\u206019:11\)에 운행하는 출발편 예시로 바로 갈 수 있어요/);
   assert.match(yongsanReply, /36,\u2060300원/);
   assert.match(yongsanReply, /광주송정까지 가서 갈아타는/);
   assert.equal((yongsanReply.match(/바로 갈 수 있어요/g) || []).length, 1);
@@ -284,6 +286,13 @@ test('fare, clock, and duration stay one unbreakable unit', () => {
     '3시간\u00A04분\u2060~\u20603시간\u00A012분',
   );
   assert.equal(glueAccessUnit('3시간 4분~3시간 12분').includes(' '), false);
+  assert.equal(glueAccessNumbersInProse('2,600원에서 4,800원'), '2,\u2060600원에서 4,\u2060800원');
+  assert.equal(
+    glueAccessNumbersInProse('16:29~19:29 사이'),
+    '16:\u206029\u2060~\u206019:\u206029 사이',
+  );
+  assert.equal(glueAccessNumbersInProse('07:19 출발'), '07:\u206019 출발');
+  assert.doesNotMatch(glueAccessNumbersInProse('4,800원'), /4,\n/);
   const card = readFileSync(join(root, 'src/pages/Korea/FestivalAccessCard.jsx'), 'utf8');
   assert.match(card, /function Nowrap[\s\S]*whitespace-nowrap/);
   assert.match(card, /<Nowrap>\{clock\}<\/Nowrap>/);
@@ -310,15 +319,16 @@ test('a typed station ask renders each grade once, then a normal question calls 
     userText: '서울역에서 어떻게 가요? 시각과 요금도 알려줘',
     transport,
   });
-  assert.equal(access.callModel, false);
-  assert.equal(access.reply.split('KTX-산천').length - 1, 1);
-  assert.doesNotMatch(access.reply, /ITX-새마을/);
-  assert.match(access.reply, /^서울→마산/);
-  assert.match(access.reply, /05:03\u2060~\u206020:38/);
-  assert.match(access.reply, /48,\u2060100원/);
-  assert.match(access.reply, /가는 법 카드/);
-  assert.match(access.reply, /48,\u2060100원이에요/);
-  assert.doesNotMatch(access.reply, /(?<!이)예요/);
+  assert.equal(access.callModel, true);
+  assert.equal(access.reply, '');
+  assert.equal(access.tagoLead.split('KTX-산천').length - 1, 1);
+  assert.doesNotMatch(access.tagoLead, /ITX-새마을/);
+  assert.match(access.tagoLead, /^서울→마산/);
+  assert.match(access.tagoLead, /05:03\u2060~\u206020:38/);
+  assert.match(access.tagoLead, /48,\u2060100원/);
+  assert.match(access.tagoLead, /가는 법 카드/);
+  assert.match(access.tagoLead, /48,\u2060100원이에요/);
+  assert.doesNotMatch(access.tagoLead, /(?<!이)예요/);
   gate.end();
   assert.equal(gate.busy, false);
   assert.equal(gate.tryBegin(), true);
@@ -377,6 +387,26 @@ test('a direct ride and a transfer summary, not one line per class', () => {
   assert.match(reply, /36,\u2060300원이에요/);
   assert.match(reply, /가는 법 카드/);
   assert.doesNotMatch(reply, /(?<!이)예요/);
+});
+
+test('missing TAGO rows call the model instead of a lone no-times line', () => {
+  const empty = composeFestivalAccessReply(
+    { origins: [{ label: '대구', segments: [] }] },
+    { stations: '동대구역·대구역', locale: 'ko' },
+  );
+  assert.equal(empty, '');
+  const planned = planFestivalMooniModelCall({
+    chipId: 'festival_access',
+    userText: '대구(동대구역·대구역)에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+    transport: {
+      origins: [{ label: '대구', segments: [] }],
+      selected: { segments: [] },
+    },
+    stations: '동대구역·대구역',
+    locale: 'ko',
+  });
+  assert.equal(planned.callModel, true);
+  assert.equal(planned.reply, '');
 });
 
 test('국향대전 defaults to 용산 when that origin is present', () => {
