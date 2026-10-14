@@ -218,7 +218,7 @@ export default {
       },
       "en": {
         "title": "Aconcagua travel photos · gallery",
-        "description": "Browse Aconcagua travel photos and gallery images. Discover Aconcagua, Argentina — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Aconcagua travel photos and gallery images. Discover Aconcagua, Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Aconcagua, Argentina, Aconcagua travel, adventure, outdoors, hiking, GATEO, Aconcagua photos, Aconcagua gallery, Aconcagua pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/aconcagua/gallery?lang=en",
         "hreflangAlternates": [
@@ -280,7 +280,7 @@ export default {
       },
       "en": {
         "title": "Aconcagua travel · trip planner",
-        "description": "Flight route ICN→DFW·SCL→MDZ via DFW, SCL. About 23 hours. Plan independent travel to Aconcagua — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Aconcagua, Argentina — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→DFW·SCL→MDZ via DFW, SCL. About 23 hours. Plan independent travel to Aconcagua — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Aconcagua, Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Aconcagua, Argentina, Aconcagua travel, adventure, outdoors, hiking, GATEO, Aconcagua trip planner, Aconcagua plan a trip, Aconcagua trip planning, Aconcagua free travel, Aconcagua independent travel, Aconcagua backpacking, Aconcagua flights, Aconcagua flight route, Aconcagua air route, Aconcagua nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MDZ, ICN MDZ, ICN→DFW·SCL→MDZ, Aconcagua connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/aconcagua/planner?lang=en",
         "hreflangAlternates": [
@@ -334,7 +334,7 @@ export default {
       },
       "en": {
         "title": "Aconcagua travel sketch · guide",
-        "description": "Aconcagua travel sketch, Local Watson tips, and independent travel guide. Discover Aconcagua, Argentina — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Aconcagua travel sketch, Local Watson tips, and independent travel guide. Discover Aconcagua, Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Aconcagua, Argentina, Aconcagua travel, adventure, outdoors, hiking, GATEO, Aconcagua travel guide, Aconcagua travel sketch, Aconcagua free travel, Aconcagua local tips, Aconcagua independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/aconcagua/wiki?lang=en",
         "hreflangAlternates": [
@@ -2018,7 +2018,7 @@ export default {
       },
       "en": {
         "title": "Antarctica travel photos · gallery",
-        "description": "Browse Antarctica travel photos and gallery images. Discover Antarctica, Antarctica — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Antarctica travel photos and gallery images. Discover Antarctica, Antarctica — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Antarctica, Antarctica travel, adventure, outdoors, hiking, GATEO, Antarctica photos, Antarctica gallery, Antarctica pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/antarctica/gallery?lang=en",
         "hreflangAlternates": [
@@ -2080,7 +2080,7 @@ export default {
       },
       "en": {
         "title": "Antarctica travel · trip planner",
-        "description": "Flight route ICN→LHR·EZE→USH via LHR, EZE. About 27 hours. Plan independent travel to Antarctica — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Antarctica, Antarctica — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→LHR·EZE→USH via LHR, EZE. About 27 hours. Plan independent travel to Antarctica — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Antarctica, Antarctica — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Antarctica, Antarctica travel, adventure, outdoors, hiking, GATEO, Antarctica trip planner, Antarctica plan a trip, Antarctica trip planning, Antarctica free travel, Antarctica independent travel, Antarctica backpacking, Antarctica flights, Antarctica flight route, Antarctica air route, Antarctica nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to USH, ICN USH, ICN→LHR·EZE→USH, Antarctica connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/antarctica/planner?lang=en",
         "hreflangAlternates": [
@@ -2134,7 +2134,7 @@ export default {
       },
       "en": {
         "title": "Antarctica travel sketch · guide",
-        "description": "Antarctica travel sketch, Local Watson tips, and independent travel guide. Discover Antarctica, Antarctica — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Antarctica travel sketch, Local Watson tips, and independent travel guide. Discover Antarctica, Antarctica — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Antarctica, Antarctica travel, adventure, outdoors, hiking, GATEO, Antarctica travel guide, Antarctica travel sketch, Antarctica free travel, Antarctica local tips, Antarctica independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/antarctica/wiki?lang=en",
         "hreflangAlternates": [
@@ -2198,7 +2198,7 @@ export default {
       },
       "en": {
         "title": "Arequipa travel photos · gallery",
-        "description": "Browse Arequipa travel photos and gallery images. Discover Arequipa, Peru — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Arequipa travel photos and gallery images. Discover Arequipa, Peru — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Arequipa, Peru, Arequipa travel, adventure, outdoors, hiking, GATEO, Arequipa photos, Arequipa gallery, Arequipa pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/arequipa/gallery?lang=en",
         "hreflangAlternates": [
@@ -2260,7 +2260,7 @@ export default {
       },
       "en": {
         "title": "Arequipa travel · trip planner",
-        "description": "Flight route ICN→LAX·LIM→AQP via LAX, LIM. About 21 hours. Plan independent travel to Arequipa — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Arequipa, Peru — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→LAX·LIM→AQP via LAX, LIM. About 21 hours. Plan independent travel to Arequipa — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Arequipa, Peru — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Arequipa, Peru, Arequipa travel, adventure, outdoors, hiking, GATEO, Arequipa trip planner, Arequipa plan a trip, Arequipa trip planning, Arequipa free travel, Arequipa independent travel, Arequipa backpacking, Arequipa flights, Arequipa flight route, Arequipa air route, Arequipa nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to AQP, ICN AQP, ICN→LAX·LIM→AQP, Arequipa connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/arequipa/planner?lang=en",
         "hreflangAlternates": [
@@ -2314,7 +2314,7 @@ export default {
       },
       "en": {
         "title": "Arequipa travel sketch · guide",
-        "description": "Arequipa travel sketch, Local Watson tips, and independent travel guide. Discover Arequipa, Peru — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Arequipa travel sketch, Local Watson tips, and independent travel guide. Discover Arequipa, Peru — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Arequipa, Peru, Arequipa travel, adventure, outdoors, hiking, GATEO, Arequipa travel guide, Arequipa travel sketch, Arequipa free travel, Arequipa local tips, Arequipa independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/arequipa/wiki?lang=en",
         "hreflangAlternates": [
@@ -7958,7 +7958,7 @@ export default {
       },
       "en": {
         "title": "Carstensz Pyramid travel photos · gallery",
-        "description": "Browse Carstensz Pyramid travel photos and gallery images. Discover Carstensz Pyramid, Indonesia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Carstensz Pyramid travel photos and gallery images. Discover Carstensz Pyramid, Indonesia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Carstensz Pyramid, Indonesia, Carstensz Pyramid travel, adventure, outdoors, hiking, GATEO, Carstensz Pyramid photos, Carstensz Pyramid gallery, Carstensz Pyramid pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/carstensz-pyramid/gallery?lang=en",
         "hreflangAlternates": [
@@ -8020,7 +8020,7 @@ export default {
       },
       "en": {
         "title": "Carstensz Pyramid travel · trip planner",
-        "description": "Flight route ICN→DPS→TIM via DPS. About 10 hours. Plan independent travel to Carstensz Pyramid — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Carstensz Pyramid, Indonesia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→DPS→TIM via DPS. About 10 hours. Plan independent travel to Carstensz Pyramid — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Carstensz Pyramid, Indonesia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Carstensz Pyramid, Indonesia, Carstensz Pyramid travel, adventure, outdoors, hiking, GATEO, Carstensz Pyramid trip planner, Carstensz Pyramid plan a trip, Carstensz Pyramid trip planning, Carstensz Pyramid free travel, Carstensz Pyramid independent travel, Carstensz Pyramid backpacking, Carstensz Pyramid flights, Carstensz Pyramid flight route, Carstensz Pyramid air route, Carstensz Pyramid nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TIM, ICN TIM, ICN→DPS→TIM, Carstensz Pyramid connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/carstensz-pyramid/planner?lang=en",
         "hreflangAlternates": [
@@ -8074,7 +8074,7 @@ export default {
       },
       "en": {
         "title": "Carstensz Pyramid travel sketch · guide",
-        "description": "Carstensz Pyramid travel sketch, Local Watson tips, and independent travel guide. Discover Carstensz Pyramid, Indonesia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Carstensz Pyramid travel sketch, Local Watson tips, and independent travel guide. Discover Carstensz Pyramid, Indonesia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Carstensz Pyramid, Indonesia, Carstensz Pyramid travel, adventure, outdoors, hiking, GATEO, Carstensz Pyramid travel guide, Carstensz Pyramid travel sketch, Carstensz Pyramid free travel, Carstensz Pyramid local tips, Carstensz Pyramid independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/carstensz-pyramid/wiki?lang=en",
         "hreflangAlternates": [
@@ -10838,7 +10838,7 @@ export default {
       },
       "en": {
         "title": "Denali travel photos · gallery",
-        "description": "Browse Denali travel photos and gallery images. Discover Denali, United States — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Denali travel photos and gallery images. Discover Denali, United States — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Denali, United States, Denali travel, adventure, outdoors, hiking, GATEO, Denali photos, Denali gallery, Denali pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/denali/gallery?lang=en",
         "hreflangAlternates": [
@@ -10900,7 +10900,7 @@ export default {
       },
       "en": {
         "title": "Denali travel · trip planner",
-        "description": "Flight route ICN→SEA→ANC via SEA. About 13 hours. Plan independent travel to Denali — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Denali, United States — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→SEA→ANC via SEA. About 13 hours. Plan independent travel to Denali — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Denali, United States — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Denali, United States, Denali travel, adventure, outdoors, hiking, GATEO, Denali trip planner, Denali plan a trip, Denali trip planning, Denali free travel, Denali independent travel, Denali backpacking, Denali flights, Denali flight route, Denali air route, Denali nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ANC, ICN ANC, ICN→SEA→ANC, Denali connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/denali/planner?lang=en",
         "hreflangAlternates": [
@@ -10954,7 +10954,7 @@ export default {
       },
       "en": {
         "title": "Denali travel sketch · guide",
-        "description": "Denali travel sketch, Local Watson tips, and independent travel guide. Discover Denali, United States — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Denali travel sketch, Local Watson tips, and independent travel guide. Discover Denali, United States — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Denali, United States, Denali travel, adventure, outdoors, hiking, GATEO, Denali travel guide, Denali travel sketch, Denali free travel, Denali local tips, Denali independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/denali/wiki?lang=en",
         "hreflangAlternates": [
@@ -20918,7 +20918,7 @@ export default {
       },
       "en": {
         "title": "Kala Patthar travel photos · gallery",
-        "description": "Browse Kala Patthar travel photos and gallery images. Discover Kala Patthar, Nepal — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Kala Patthar travel photos and gallery images. Discover Kala Patthar, Nepal — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kala Patthar, Nepal, Kala Patthar travel, adventure, outdoors, hiking, GATEO, Kala Patthar photos, Kala Patthar gallery, Kala Patthar pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/kala-patthar/gallery?lang=en",
         "hreflangAlternates": [
@@ -20980,7 +20980,7 @@ export default {
       },
       "en": {
         "title": "Kala Patthar travel · trip planner",
-        "description": "Flight route ICN→KTM, nonstop. About 5 hours. Plan independent travel to Kala Patthar — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kala Patthar, Nepal — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→KTM, nonstop. About 5 hours. Plan independent travel to Kala Patthar — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kala Patthar, Nepal — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kala Patthar, Nepal, Kala Patthar travel, adventure, outdoors, hiking, GATEO, Kala Patthar trip planner, Kala Patthar plan a trip, Kala Patthar trip planning, Kala Patthar free travel, Kala Patthar independent travel, Kala Patthar backpacking, Kala Patthar flights, Kala Patthar flight route, Kala Patthar air route, Kala Patthar nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to KTM, ICN KTM, ICN→KTM, Kala Patthar nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/kala-patthar/planner?lang=en",
         "hreflangAlternates": [
@@ -21034,7 +21034,7 @@ export default {
       },
       "en": {
         "title": "Kala Patthar travel sketch · guide",
-        "description": "Kala Patthar travel sketch, Local Watson tips, and independent travel guide. Discover Kala Patthar, Nepal — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Kala Patthar travel sketch, Local Watson tips, and independent travel guide. Discover Kala Patthar, Nepal — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kala Patthar, Nepal, Kala Patthar travel, adventure, outdoors, hiking, GATEO, Kala Patthar travel guide, Kala Patthar travel sketch, Kala Patthar free travel, Kala Patthar local tips, Kala Patthar independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/kala-patthar/wiki?lang=en",
         "hreflangAlternates": [
@@ -21278,7 +21278,7 @@ export default {
       },
       "en": {
         "title": "Kamchatka Peninsula travel photos · gallery",
-        "description": "Browse Kamchatka Peninsula travel photos and gallery images. Discover Kamchatka Peninsula, Russia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Kamchatka Peninsula travel photos and gallery images. Discover Kamchatka Peninsula, Russia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kamchatka Peninsula, Russia, Kamchatka Peninsula travel, adventure, outdoors, hiking, GATEO, Kamchatka Peninsula photos, Kamchatka Peninsula gallery, Kamchatka Peninsula pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/kamchatka-peninsula/gallery?lang=en",
         "hreflangAlternates": [
@@ -21340,7 +21340,7 @@ export default {
       },
       "en": {
         "title": "Kamchatka Peninsula travel · trip planner",
-        "description": "Flight route ICN→VVO→PKC via VVO. About 4 hours. Plan independent travel to Kamchatka Peninsula — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kamchatka Peninsula, Russia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→VVO→PKC via VVO. About 4 hours. Plan independent travel to Kamchatka Peninsula — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kamchatka Peninsula, Russia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kamchatka Peninsula, Russia, Kamchatka Peninsula travel, adventure, outdoors, hiking, GATEO, Kamchatka Peninsula trip planner, Kamchatka Peninsula plan a trip, Kamchatka Peninsula trip planning, Kamchatka Peninsula free travel, Kamchatka Peninsula independent travel, Kamchatka Peninsula backpacking, Kamchatka Peninsula flights, Kamchatka Peninsula flight route, Kamchatka Peninsula air route, Kamchatka Peninsula nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to PKC, ICN PKC, ICN→VVO→PKC, Kamchatka Peninsula connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/kamchatka-peninsula/planner?lang=en",
         "hreflangAlternates": [
@@ -21394,7 +21394,7 @@ export default {
       },
       "en": {
         "title": "Kamchatka Peninsula travel sketch · guide",
-        "description": "Kamchatka Peninsula travel sketch, Local Watson tips, and independent travel guide. Discover Kamchatka Peninsula, Russia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Kamchatka Peninsula travel sketch, Local Watson tips, and independent travel guide. Discover Kamchatka Peninsula, Russia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kamchatka Peninsula, Russia, Kamchatka Peninsula travel, adventure, outdoors, hiking, GATEO, Kamchatka Peninsula travel guide, Kamchatka Peninsula travel sketch, Kamchatka Peninsula free travel, Kamchatka Peninsula local tips, Kamchatka Peninsula independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/kamchatka-peninsula/wiki?lang=en",
         "hreflangAlternates": [
@@ -21638,7 +21638,7 @@ export default {
       },
       "en": {
         "title": "Kerguelen Islands travel photos · gallery",
-        "description": "Browse Kerguelen Islands travel photos and gallery images. Discover Kerguelen Islands, French Southern and Antarctic Lands — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Kerguelen Islands travel photos and gallery images. Discover Kerguelen Islands, French Southern and Antarctic Lands — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kerguelen Islands, French Southern and Antarctic Lands, Kerguelen Islands travel, adventure, outdoors, hiking, GATEO, Kerguelen Islands photos, Kerguelen Islands gallery, Kerguelen Islands pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/kerguelen-islands/gallery?lang=en",
         "hreflangAlternates": [
@@ -21700,7 +21700,7 @@ export default {
       },
       "en": {
         "title": "Kerguelen Islands travel · trip planner",
-        "description": "Flight route ICN→BKK·MAA→RUN via BKK, MAA. About 13 hours. Plan independent travel to Kerguelen Islands — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kerguelen Islands, French Southern and Antarctic Lands — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→BKK·MAA→RUN via BKK, MAA. About 13 hours. Plan independent travel to Kerguelen Islands — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kerguelen Islands, French Southern and Antarctic Lands — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kerguelen Islands, French Southern and Antarctic Lands, Kerguelen Islands travel, adventure, outdoors, hiking, GATEO, Kerguelen Islands trip planner, Kerguelen Islands plan a trip, Kerguelen Islands trip planning, Kerguelen Islands free travel, Kerguelen Islands independent travel, Kerguelen Islands backpacking, Kerguelen Islands flights, Kerguelen Islands flight route, Kerguelen Islands air route, Kerguelen Islands nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to RUN, ICN RUN, ICN→BKK·MAA→RUN, Kerguelen Islands connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/kerguelen-islands/planner?lang=en",
         "hreflangAlternates": [
@@ -21754,7 +21754,7 @@ export default {
       },
       "en": {
         "title": "Kerguelen Islands travel sketch · guide",
-        "description": "Kerguelen Islands travel sketch, Local Watson tips, and independent travel guide. Discover Kerguelen Islands, French Southern and Antarctic Lands — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Kerguelen Islands travel sketch, Local Watson tips, and independent travel guide. Discover Kerguelen Islands, French Southern and Antarctic Lands — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Kerguelen Islands, French Southern and Antarctic Lands, Kerguelen Islands travel, adventure, outdoors, hiking, GATEO, Kerguelen Islands travel guide, Kerguelen Islands travel sketch, Kerguelen Islands free travel, Kerguelen Islands local tips, Kerguelen Islands independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/kerguelen-islands/wiki?lang=en",
         "hreflangAlternates": [
@@ -25778,7 +25778,7 @@ export default {
       },
       "en": {
         "title": "Los Angeles travel photos · gallery",
-        "description": "Browse Los Angeles travel photos and gallery images. Discover Los Angeles, USA — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Los Angeles travel photos and gallery images. Discover Los Angeles, USA — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Los Angeles, USA, Los Angeles travel, adventure, outdoors, hiking, GATEO, Los Angeles photos, Los Angeles gallery, Los Angeles pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/los-angeles/gallery?lang=en",
         "hreflangAlternates": [
@@ -25840,7 +25840,7 @@ export default {
       },
       "en": {
         "title": "Los Angeles travel · trip planner",
-        "description": "Flight route ICN→SFO→LAX via SFO. About 12 hours. Plan independent travel to Los Angeles — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Los Angeles, USA — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→SFO→LAX via SFO. About 12 hours. Plan independent travel to Los Angeles — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Los Angeles, USA — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Los Angeles, USA, Los Angeles travel, adventure, outdoors, hiking, GATEO, Los Angeles trip planner, Los Angeles plan a trip, Los Angeles trip planning, Los Angeles free travel, Los Angeles independent travel, Los Angeles backpacking, Los Angeles flights, Los Angeles flight route, Los Angeles air route, Los Angeles nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to LAX, ICN LAX, ICN→SFO→LAX, Los Angeles connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/los-angeles/planner?lang=en",
         "hreflangAlternates": [
@@ -25894,7 +25894,7 @@ export default {
       },
       "en": {
         "title": "Los Angeles travel sketch · guide",
-        "description": "Los Angeles travel sketch, Local Watson tips, and independent travel guide. Discover Los Angeles, USA — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Los Angeles travel sketch, Local Watson tips, and independent travel guide. Discover Los Angeles, USA — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Los Angeles, USA, Los Angeles travel, adventure, outdoors, hiking, GATEO, Los Angeles travel guide, Los Angeles travel sketch, Los Angeles free travel, Los Angeles local tips, Los Angeles independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/los-angeles/wiki?lang=en",
         "hreflangAlternates": [
@@ -26678,7 +26678,7 @@ export default {
       },
       "en": {
         "title": "Madagascar travel photos · gallery",
-        "description": "Browse Madagascar travel photos and gallery images. Discover Madagascar, Madagascar — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Madagascar travel photos and gallery images. Discover Madagascar, Madagascar — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Madagascar, Madagascar travel, adventure, outdoors, hiking, GATEO, Madagascar photos, Madagascar gallery, Madagascar pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/madagascar/gallery?lang=en",
         "hreflangAlternates": [
@@ -26740,7 +26740,7 @@ export default {
       },
       "en": {
         "title": "Madagascar travel · trip planner",
-        "description": "Flight route ICN→BKK→TNR via BKK. About 13 hours. Plan independent travel to Madagascar — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Madagascar, Madagascar — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→BKK→TNR via BKK. About 13 hours. Plan independent travel to Madagascar — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Madagascar, Madagascar — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Madagascar, Madagascar travel, adventure, outdoors, hiking, GATEO, Madagascar trip planner, Madagascar plan a trip, Madagascar trip planning, Madagascar free travel, Madagascar independent travel, Madagascar backpacking, Madagascar flights, Madagascar flight route, Madagascar air route, Madagascar nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TNR, ICN TNR, ICN→BKK→TNR, Madagascar connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/madagascar/planner?lang=en",
         "hreflangAlternates": [
@@ -26794,7 +26794,7 @@ export default {
       },
       "en": {
         "title": "Madagascar travel sketch · guide",
-        "description": "Madagascar travel sketch, Local Watson tips, and independent travel guide. Discover Madagascar, Madagascar — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Madagascar travel sketch, Local Watson tips, and independent travel guide. Discover Madagascar, Madagascar — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Madagascar, Madagascar travel, adventure, outdoors, hiking, GATEO, Madagascar travel guide, Madagascar travel sketch, Madagascar free travel, Madagascar local tips, Madagascar independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/madagascar/wiki?lang=en",
         "hreflangAlternates": [
@@ -33338,7 +33338,7 @@ export default {
       },
       "en": {
         "title": "Peninsula Valdes travel photos · gallery",
-        "description": "Browse Peninsula Valdes travel photos and gallery images. Discover Peninsula Valdes, Argentina — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Peninsula Valdes travel photos and gallery images. Discover Peninsula Valdes, Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Peninsula Valdes, Argentina, Peninsula Valdes travel, adventure, outdoors, hiking, GATEO, Peninsula Valdes photos, Peninsula Valdes gallery, Peninsula Valdes pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/peninsula-valdes/gallery?lang=en",
         "hreflangAlternates": [
@@ -33400,7 +33400,7 @@ export default {
       },
       "en": {
         "title": "Peninsula Valdes travel · trip planner",
-        "description": "Flight route ICN→LAX·EZE·AEP→PMY via LAX, EZE, AEP. About 25 hours. Plan independent travel to Peninsula Valdes — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Peninsula Valdes, Argentina — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→LAX·EZE·AEP→PMY via LAX, EZE, AEP. About 25 hours. Plan independent travel to Peninsula Valdes — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Peninsula Valdes, Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Peninsula Valdes, Argentina, Peninsula Valdes travel, adventure, outdoors, hiking, GATEO, Peninsula Valdes trip planner, Peninsula Valdes plan a trip, Peninsula Valdes trip planning, Peninsula Valdes free travel, Peninsula Valdes independent travel, Peninsula Valdes backpacking, Peninsula Valdes flights, Peninsula Valdes flight route, Peninsula Valdes air route, Peninsula Valdes nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to PMY, ICN PMY, ICN→LAX·EZE·AEP→PMY, Peninsula Valdes connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/peninsula-valdes/planner?lang=en",
         "hreflangAlternates": [
@@ -33454,7 +33454,7 @@ export default {
       },
       "en": {
         "title": "Peninsula Valdes travel sketch · guide",
-        "description": "Peninsula Valdes travel sketch, Local Watson tips, and independent travel guide. Discover Peninsula Valdes, Argentina — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Peninsula Valdes travel sketch, Local Watson tips, and independent travel guide. Discover Peninsula Valdes, Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Peninsula Valdes, Argentina, Peninsula Valdes travel, adventure, outdoors, hiking, GATEO, Peninsula Valdes travel guide, Peninsula Valdes travel sketch, Peninsula Valdes free travel, Peninsula Valdes local tips, Peninsula Valdes independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/peninsula-valdes/wiki?lang=en",
         "hreflangAlternates": [
@@ -36038,7 +36038,7 @@ export default {
       },
       "en": {
         "title": "Raja Ampat travel photos · gallery",
-        "description": "Browse Raja Ampat travel photos and gallery images. Discover Raja Ampat, Indonesia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Raja Ampat travel photos and gallery images. Discover Raja Ampat, Indonesia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Raja Ampat, Indonesia, Raja Ampat travel, adventure, outdoors, hiking, GATEO, Raja Ampat photos, Raja Ampat gallery, Raja Ampat pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/raja-ampat/gallery?lang=en",
         "hreflangAlternates": [
@@ -36100,7 +36100,7 @@ export default {
       },
       "en": {
         "title": "Raja Ampat travel · trip planner",
-        "description": "Flight route ICN→DPS·UPG→SOQ via DPS, UPG. About 9 hours. Plan independent travel to Raja Ampat — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Raja Ampat, Indonesia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→DPS·UPG→SOQ via DPS, UPG. About 9 hours. Plan independent travel to Raja Ampat — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Raja Ampat, Indonesia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Raja Ampat, Indonesia, Raja Ampat travel, adventure, outdoors, hiking, GATEO, Raja Ampat trip planner, Raja Ampat plan a trip, Raja Ampat trip planning, Raja Ampat free travel, Raja Ampat independent travel, Raja Ampat backpacking, Raja Ampat flights, Raja Ampat flight route, Raja Ampat air route, Raja Ampat nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SOQ, ICN SOQ, ICN→DPS·UPG→SOQ, Raja Ampat connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/raja-ampat/planner?lang=en",
         "hreflangAlternates": [
@@ -36154,7 +36154,7 @@ export default {
       },
       "en": {
         "title": "Raja Ampat travel sketch · guide",
-        "description": "Raja Ampat travel sketch, Local Watson tips, and independent travel guide. Discover Raja Ampat, Indonesia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Raja Ampat travel sketch, Local Watson tips, and independent travel guide. Discover Raja Ampat, Indonesia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Raja Ampat, Indonesia, Raja Ampat travel, adventure, outdoors, hiking, GATEO, Raja Ampat travel guide, Raja Ampat travel sketch, Raja Ampat free travel, Raja Ampat local tips, Raja Ampat independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/raja-ampat/wiki?lang=en",
         "hreflangAlternates": [
@@ -41792,7 +41792,7 @@ export default {
       },
       "en": {
         "title": "Svalbard travel photos · gallery",
-        "description": "Browse Svalbard travel photos and gallery images. Discover Svalbard, Norway — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Svalbard travel photos and gallery images. Discover Svalbard, Norway — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Svalbard, Norway, Svalbard travel, adventure, outdoors, hiking, GATEO, Svalbard photos, Svalbard gallery, Svalbard pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/svalbard/gallery?lang=en",
         "hreflangAlternates": [
@@ -41854,7 +41854,7 @@ export default {
       },
       "en": {
         "title": "Svalbard travel · trip planner",
-        "description": "Flight route ICN→LAX→LYR via LAX. About 20 hours. Plan independent travel to Svalbard — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Svalbard, Norway — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→LAX→LYR via LAX. About 20 hours. Plan independent travel to Svalbard — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Svalbard, Norway — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Svalbard, Norway, Svalbard travel, adventure, outdoors, hiking, GATEO, Svalbard trip planner, Svalbard plan a trip, Svalbard trip planning, Svalbard free travel, Svalbard independent travel, Svalbard backpacking, Svalbard flights, Svalbard flight route, Svalbard air route, Svalbard nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to LYR, ICN LYR, ICN→LAX→LYR, Svalbard connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/svalbard/planner?lang=en",
         "hreflangAlternates": [
@@ -41908,7 +41908,7 @@ export default {
       },
       "en": {
         "title": "Svalbard travel sketch · guide",
-        "description": "Svalbard travel sketch, Local Watson tips, and independent travel guide. Discover Svalbard, Norway — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Svalbard travel sketch, Local Watson tips, and independent travel guide. Discover Svalbard, Norway — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Svalbard, Norway, Svalbard travel, adventure, outdoors, hiking, GATEO, Svalbard travel guide, Svalbard travel sketch, Svalbard free travel, Svalbard local tips, Svalbard independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/svalbard/wiki?lang=en",
         "hreflangAlternates": [
@@ -43412,7 +43412,7 @@ export default {
       },
       "en": {
         "title": "Tonga travel photos · gallery",
-        "description": "Browse Tonga travel photos and gallery images. Discover Tonga, Tonga — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Tonga travel photos and gallery images. Discover Tonga, Tonga — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Tonga, Tonga travel, adventure, outdoors, hiking, GATEO, Tonga photos, Tonga gallery, Tonga pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/tonga/gallery?lang=en",
         "hreflangAlternates": [
@@ -43474,7 +43474,7 @@ export default {
       },
       "en": {
         "title": "Tonga travel · trip planner",
-        "description": "Flight route ICN→NAN→TBU via NAN. About 11 hours. Plan independent travel to Tonga — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Tonga, Tonga — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→NAN→TBU via NAN. About 11 hours. Plan independent travel to Tonga — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Tonga, Tonga — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Tonga, Tonga travel, adventure, outdoors, hiking, GATEO, Tonga trip planner, Tonga plan a trip, Tonga trip planning, Tonga free travel, Tonga independent travel, Tonga backpacking, Tonga flights, Tonga flight route, Tonga air route, Tonga nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TBU, ICN TBU, ICN→NAN→TBU, Tonga connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/tonga/planner?lang=en",
         "hreflangAlternates": [
@@ -43528,7 +43528,7 @@ export default {
       },
       "en": {
         "title": "Tonga travel sketch · guide",
-        "description": "Tonga travel sketch, Local Watson tips, and independent travel guide. Discover Tonga, Tonga — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Tonga travel sketch, Local Watson tips, and independent travel guide. Discover Tonga, Tonga — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Tonga, Tonga travel, adventure, outdoors, hiking, GATEO, Tonga travel guide, Tonga travel sketch, Tonga free travel, Tonga local tips, Tonga independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/tonga/wiki?lang=en",
         "hreflangAlternates": [
@@ -44492,7 +44492,7 @@ export default {
       },
       "en": {
         "title": "Uluru travel photos · gallery",
-        "description": "Browse Uluru travel photos and gallery images. Discover Uluru, Australia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Uluru travel photos and gallery images. Discover Uluru, Australia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Uluru, Australia, Uluru travel, adventure, outdoors, hiking, GATEO, Uluru photos, Uluru gallery, Uluru pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/uluru/gallery?lang=en",
         "hreflangAlternates": [
@@ -44554,7 +44554,7 @@ export default {
       },
       "en": {
         "title": "Uluru travel · trip planner",
-        "description": "Flight route ICN→SYD→AYQ via SYD. About 13 hours. Plan independent travel to Uluru — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Uluru, Australia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→SYD→AYQ via SYD. About 13 hours. Plan independent travel to Uluru — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Uluru, Australia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Uluru, Australia, Uluru travel, adventure, outdoors, hiking, GATEO, Uluru trip planner, Uluru plan a trip, Uluru trip planning, Uluru free travel, Uluru independent travel, Uluru backpacking, Uluru flights, Uluru flight route, Uluru air route, Uluru nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to AYQ, ICN AYQ, ICN→SYD→AYQ, Uluru connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/uluru/planner?lang=en",
         "hreflangAlternates": [
@@ -44608,7 +44608,7 @@ export default {
       },
       "en": {
         "title": "Uluru travel sketch · guide",
-        "description": "Uluru travel sketch, Local Watson tips, and independent travel guide. Discover Uluru, Australia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Uluru travel sketch, Local Watson tips, and independent travel guide. Discover Uluru, Australia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Uluru, Australia, Uluru travel, adventure, outdoors, hiking, GATEO, Uluru travel guide, Uluru travel sketch, Uluru free travel, Uluru local tips, Uluru independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/uluru/wiki?lang=en",
         "hreflangAlternates": [
@@ -45212,7 +45212,7 @@ export default {
       },
       "en": {
         "title": "Vang Vieng travel photos · gallery",
-        "description": "Browse Vang Vieng travel photos and gallery images. Discover Vang Vieng, Laos — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Vang Vieng travel photos and gallery images. Discover Vang Vieng, Laos — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Vang Vieng, Laos, Vang Vieng travel, adventure, outdoors, hiking, GATEO, Vang Vieng photos, Vang Vieng gallery, Vang Vieng pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/vang-vieng/gallery?lang=en",
         "hreflangAlternates": [
@@ -45274,7 +45274,7 @@ export default {
       },
       "en": {
         "title": "Vang Vieng travel · trip planner",
-        "description": "Flight route ICN→VTE, nonstop. About 4 hours. Plan independent travel to Vang Vieng — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Vang Vieng, Laos — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→VTE, nonstop. About 4 hours. Plan independent travel to Vang Vieng — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Vang Vieng, Laos — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Vang Vieng, Laos, Vang Vieng travel, adventure, outdoors, hiking, GATEO, Vang Vieng trip planner, Vang Vieng plan a trip, Vang Vieng trip planning, Vang Vieng free travel, Vang Vieng independent travel, Vang Vieng backpacking, Vang Vieng flights, Vang Vieng flight route, Vang Vieng air route, Vang Vieng nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to VTE, ICN VTE, ICN→VTE, Vang Vieng nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/vang-vieng/planner?lang=en",
         "hreflangAlternates": [
@@ -45328,7 +45328,7 @@ export default {
       },
       "en": {
         "title": "Vang Vieng travel sketch · guide",
-        "description": "Vang Vieng travel sketch, Local Watson tips, and independent travel guide. Discover Vang Vieng, Laos — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Vang Vieng travel sketch, Local Watson tips, and independent travel guide. Discover Vang Vieng, Laos — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Vang Vieng, Laos, Vang Vieng travel, adventure, outdoors, hiking, GATEO, Vang Vieng travel guide, Vang Vieng travel sketch, Vang Vieng free travel, Vang Vieng local tips, Vang Vieng independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/vang-vieng/wiki?lang=en",
         "hreflangAlternates": [
@@ -45392,7 +45392,7 @@ export default {
       },
       "en": {
         "title": "Vanuatu travel photos · gallery",
-        "description": "Browse Vanuatu travel photos and gallery images. Discover Vanuatu, Vanuatu — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Vanuatu travel photos and gallery images. Discover Vanuatu, Vanuatu — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Vanuatu, Vanuatu travel, adventure, outdoors, hiking, GATEO, Vanuatu photos, Vanuatu gallery, Vanuatu pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/vanuatu/gallery?lang=en",
         "hreflangAlternates": [
@@ -45454,7 +45454,7 @@ export default {
       },
       "en": {
         "title": "Vanuatu travel · trip planner",
-        "description": "Flight route ICN→SYD→VLI via SYD. About 13 hours. Plan independent travel to Vanuatu — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Vanuatu, Vanuatu — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→SYD→VLI via SYD. About 13 hours. Plan independent travel to Vanuatu — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Vanuatu, Vanuatu — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Vanuatu, Vanuatu travel, adventure, outdoors, hiking, GATEO, Vanuatu trip planner, Vanuatu plan a trip, Vanuatu trip planning, Vanuatu free travel, Vanuatu independent travel, Vanuatu backpacking, Vanuatu flights, Vanuatu flight route, Vanuatu air route, Vanuatu nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to VLI, ICN VLI, ICN→SYD→VLI, Vanuatu connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/vanuatu/planner?lang=en",
         "hreflangAlternates": [
@@ -45508,7 +45508,7 @@ export default {
       },
       "en": {
         "title": "Vanuatu travel sketch · guide",
-        "description": "Vanuatu travel sketch, Local Watson tips, and independent travel guide. Discover Vanuatu, Vanuatu — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Vanuatu travel sketch, Local Watson tips, and independent travel guide. Discover Vanuatu, Vanuatu — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Vanuatu, Vanuatu travel, adventure, outdoors, hiking, GATEO, Vanuatu travel guide, Vanuatu travel sketch, Vanuatu free travel, Vanuatu local tips, Vanuatu independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/vanuatu/wiki?lang=en",
         "hreflangAlternates": [
@@ -47552,7 +47552,7 @@ export default {
       },
       "en": {
         "title": "Yakutsk travel photos · gallery",
-        "description": "Browse Yakutsk travel photos and gallery images. Discover Yakutsk, Russia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Browse Yakutsk travel photos and gallery images. Discover Yakutsk, Russia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Yakutsk, Russia, Yakutsk travel, adventure, outdoors, hiking, GATEO, Yakutsk photos, Yakutsk gallery, Yakutsk pictures, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/yakutsk/gallery?lang=en",
         "hreflangAlternates": [
@@ -47614,7 +47614,7 @@ export default {
       },
       "en": {
         "title": "Yakutsk travel · trip planner",
-        "description": "Flight route ICN→PEK→YKS via PEK. About 5 hours. Plan independent travel to Yakutsk — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Yakutsk, Russia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Flight route ICN→PEK→YKS via PEK. About 5 hours. Plan independent travel to Yakutsk — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Yakutsk, Russia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Yakutsk, Russia, Yakutsk travel, adventure, outdoors, hiking, GATEO, Yakutsk trip planner, Yakutsk plan a trip, Yakutsk trip planning, Yakutsk free travel, Yakutsk independent travel, Yakutsk backpacking, Yakutsk flights, Yakutsk flight route, Yakutsk air route, Yakutsk nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to YKS, ICN YKS, ICN→PEK→YKS, Yakutsk connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/yakutsk/planner?lang=en",
         "hreflangAlternates": [
@@ -47668,7 +47668,7 @@ export default {
       },
       "en": {
         "title": "Yakutsk travel sketch · guide",
-        "description": "Yakutsk travel sketch, Local Watson tips, and independent travel guide. Discover Yakutsk, Russia — an adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "description": "Yakutsk travel sketch, Local Watson tips, and independent travel guide. Discover Yakutsk, Russia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
         "keywords": "Yakutsk, Russia, Yakutsk travel, adventure, outdoors, hiking, GATEO, Yakutsk travel guide, Yakutsk travel sketch, Yakutsk free travel, Yakutsk local tips, Yakutsk independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/yakutsk/wiki?lang=en",
         "hreflangAlternates": [
