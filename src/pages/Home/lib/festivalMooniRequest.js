@@ -115,6 +115,7 @@ export function buildFestivalMooniPolishOptions(festivalContext, extra = {}) {
     festivalTitle: festivalContext?.title,
     nearbyPlaces: festivalContext?.nearbyPlaces,
     nearbyRestaurants: festivalContext?.nearbyRestaurants,
+    nearbyParking: festivalContext?.nearbyParking,
     nearbyStays: festivalContext?.nearbyStays,
     homepage: festivalContext?.homepage,
     tel: festivalContext?.tel,

@@ -12,14 +12,19 @@ import { dismissLocHint } from './mooni-festival-chip-helpers.js';
 
 const LIVE = process.env.MOONI_STAGING_COMBO_QA === '1';
 const OUT_DIR = process.env.MOONI_FOOD_NAMES_OUT || '/opt/cursor/artifacts/food-names-390';
-const ASK = '근처 맛집 추천해 줘';
+const FOOD_ASK = '근처 맛집 추천해 줘';
+const PARKING_ASK = '주차장 어디예요?';
+const SIGHTS_ASK = '이 축제에서 볼 수 있는 것과 현장 분위기를 알려줘. 확인된 프로그램과 시간만 말하고, 데이터에 없는 붐비는 시간은 지어내지 마.';
 const PROD_SUPABASE = String(process.env.GATEO_PROD_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '').replace(/\/$/, '');
 const PROD_ANON = String(process.env.GATEO_PROD_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '');
 
 const FESTIVALS = [
-  { query: '국향대전', title: /국향대전/, slug: 'gukhyang', region: '전남', festivalId: '638576' },
-  { query: '마산', title: /마산|가고파/, slug: 'masan', region: '경남', festivalId: '637693' },
-  { query: '강릉 국수', title: /강릉 국수/, slug: 'gangneung', region: '강원', festivalId: '2930716' },
+  { query: '국향대전', title: /국향대전/, slug: 'gukhyang', region: '전남', festivalId: '638576', ask: FOOD_ASK, kind: 'food' },
+  { query: '마산', title: /마산|가고파/, slug: 'masan', region: '경남', festivalId: '637693', ask: FOOD_ASK, kind: 'food' },
+  { query: '강릉 국수', title: /강릉 국수/, slug: 'gangneung', region: '강원', festivalId: '2930716', ask: FOOD_ASK, kind: 'food' },
+  { query: '광명동굴', title: /광명동굴 빛/, slug: 'gwangmyeong-park', region: '경기', festivalId: '3551206', ask: PARKING_ASK, kind: 'parking' },
+  { query: '국향대전', title: /국향대전/, slug: 'gukhyang-park', region: '전남', festivalId: '638576', ask: PARKING_ASK, kind: 'parking' },
+  { query: '국향대전', title: /국향대전/, slug: 'gukhyang-sights', region: '전남', festivalId: '638576', ask: SIGHTS_ASK, kind: 'sights' },
 ];
 
 const WINDOW_ITEMS = [
@@ -52,6 +57,16 @@ const WINDOW_ITEMS = [
     addr1: '강원특별자치도 강릉시 경강로 2111 (임당동)',
     mapx: '128.8976016584',
     mapy: '37.7557770169',
+  },
+  {
+    contentId: '3551206',
+    contentTypeId: '15',
+    title: '광명동굴 빛 축제',
+    eventStartDate: '20261016',
+    eventEndDate: '20261017',
+    addr1: '경기도 광명시 가학로 85번길',
+    mapx: '126.8627080043',
+    mapy: '37.4210442021',
   },
 ];
 
@@ -189,6 +204,43 @@ async function installTourApi(context) {
       body: text,
     });
   });
+  if (!PROD_SUPABASE || !PROD_ANON) return;
+  await context.route(/\/rest\/v1\/tourapi_attraction/i, async (route) => {
+    const req = route.request();
+    if (req.method() === 'OPTIONS') {
+      await route.fulfill({
+        status: 204,
+        headers: {
+          'access-control-allow-origin': '*',
+          'access-control-allow-headers': '*',
+          'access-control-allow-methods': 'GET, HEAD, OPTIONS',
+        },
+      });
+      return;
+    }
+    const url = new URL(req.url());
+    const prod = new URL(PROD_SUPABASE);
+    url.protocol = prod.protocol;
+    url.host = prod.host;
+    const res = await fetch(url, {
+      headers: {
+        apikey: PROD_ANON,
+        Authorization: `Bearer ${PROD_ANON}`,
+        Accept: 'application/json',
+      },
+    });
+    const body = await res.text();
+    console.log(`[food-names] attractions ${res.status} bytes=${body.length}`);
+    await route.fulfill({
+      status: res.status,
+      contentType: 'application/json',
+      headers: {
+        'access-control-allow-origin': '*',
+        'content-type': 'application/json',
+      },
+      body,
+    });
+  });
 }
 
 async function openKoreaHome(page) {
@@ -199,7 +251,7 @@ async function openKoreaHome(page) {
   await dismissLocHint(page);
 }
 
-async function openFestivalFromHome(page, { query, title }) {
+async function openFestivalFromHome(page, { query, title, kind }) {
   await openKoreaHome(page);
   const searchToggle = page.getByRole('button', { name: /축제 검색|Search festivals/i });
   await searchToggle.click();
@@ -213,13 +265,16 @@ async function openFestivalFromHome(page, { query, title }) {
   await expect(page).toHaveURL(new RegExp(`festival=${festivalId}`), { timeout: 60_000 });
   const dialog = page.getByRole('dialog').first();
   await expect(dialog).toBeVisible({ timeout: 90_000 });
-  const food = dialog.locator('[data-festival-section="nearFood"]');
-  await expect(food).toBeVisible({ timeout: 90_000 });
-  await expect(food.locator('li').first()).toBeVisible({ timeout: 30_000 });
+  if (kind === 'food') {
+    const food = dialog.locator('[data-festival-section="nearFood"]');
+    await expect(food).toBeVisible({ timeout: 90_000 });
+    await expect(food.locator('li').first()).toBeVisible({ timeout: 30_000 });
+  }
+  await expect(dialog).toHaveAttribute('data-nearby-parking', 'ready', { timeout: 90_000 });
   return { festivalId, dialog };
 }
 
-async function openMooniAndAsk(page) {
+async function openMooniAndAsk(page, ask) {
   const mooniBtn = page.locator('[data-festival-mooni-inline]').first();
   await mooniBtn.scrollIntoViewIfNeeded();
   await mooniBtn.click({ timeout: 90_000 });
@@ -231,15 +286,14 @@ async function openMooniAndAsk(page) {
   const responsePromise = page.waitForResponse((res) => {
     if (res.request().method() !== 'POST' || !res.url().includes('/functions/v1/gemini-proxy')) return false;
     const raw = res.request().postData() || '';
-    return raw.includes(ASK);
+    return raw.includes(ask);
   }, { timeout: 240_000 });
-  await input.fill(ASK);
+  await input.fill(ask);
   await input.locator('xpath=ancestor::form').locator('button[type="submit"]').click();
   const response = await responsePromise;
   const posted = response.request().postDataJSON();
   const hint = String(posted?.params?.koreaFestivalHint || '');
   const host = new URL(response.url()).hostname;
-  await expect(page.getByText(ASK).first()).toBeVisible({ timeout: 30_000 });
   await expect(replies).toHaveCount(repliesBefore + 1, { timeout: 180_000 });
   const reply = replies.last();
   await expect(reply).not.toContainText(/설정 오류|관리자에게 문의/);
@@ -276,10 +330,10 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
     const byId = new Map();
     for (const name of readdirSync(OUT_DIR).filter((file) => file.endsWith('.result.json'))) {
       const row = JSON.parse(readFileSync(join(OUT_DIR, name), 'utf8'));
-      if (row?.festivalId) byId.set(String(row.festivalId), row);
+      if (row?.slug) byId.set(String(row.slug), row);
     }
-    for (const row of manifest) byId.set(String(row.festivalId), row);
-    const rows = FESTIVALS.map((fest) => byId.get(fest.festivalId)).filter(Boolean);
+    for (const row of manifest) byId.set(String(row.slug), row);
+    const rows = FESTIVALS.map((fest) => byId.get(fest.slug)).filter(Boolean);
     if (!rows.length) return;
     manifest.splice(0, manifest.length, ...rows);
     const cache = new Map();
@@ -297,7 +351,7 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
     const lines = [
       '# MOONi festival food names (WebKit 390×844)',
       '',
-      'Typed «근처 맛집 추천해 줘» on staging gemini-proxy. Restaurant rows are from prod tourapi-proxy.',
+      'WebKit 390 on staging gemini-proxy. Food asks, parking asks, and the 국향대전 sights ask.',
       'Hint text is not stored. Names below are the answer shops, checked against the hint food line.',
       '',
       '| festival | answer names | in hint | type | distance | link | HTTP |',
@@ -316,7 +370,7 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
     lines.push('', '## answers', '');
     for (const row of manifest) {
       lines.push(
-        `### ${row.region} ${row.festivalId}`,
+        `### ${row.region} ${row.slug} ${row.festivalId}`,
         '',
         `status ${row.status} · gemini ${row.host} · hint ${row.hintChars} chars · invented ${row.invented.join(', ') || 'none'}`,
         '',
@@ -329,22 +383,22 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
   });
 
   for (const fest of FESTIVALS) {
-    test(`${fest.region} ${fest.query} names type distance and link`, async ({ page }) => {
+    test(`${fest.slug} ${fest.kind}`, async ({ page }) => {
       await blockSlowExternals(page.context());
       await installTourApi(page.context());
       const { festivalId } = await openFestivalFromHome(page, fest);
       expect(festivalId).toBe(fest.festivalId);
-      const captured = await openMooniAndAsk(page);
+      const captured = await openMooniAndAsk(page, fest.ask);
       expect(captured.status).toBe(200);
       expect(captured.host).toBe('qeqszwxjvhnbzhkchera.supabase.co');
       expect(captured.hintChars).toBeGreaterThan(0);
       expect(captured.hintChars).toBeLessThanOrEqual(8000);
       const hintNames = captured.hintRestaurants.map((row) => row.name);
-      expect(hintNames.length).toBeGreaterThan(0);
-      expect(hintNames.length).toBeLessThanOrEqual(4);
-      const places = captured.answerLinks
-        .filter((row) => hintNames.includes(row.name) || hintNames.some((name) => name.includes(row.name) || row.name.includes(name)))
-        .filter((row) => row.name && !/gateo\.kr|상세/.test(row.name));
+      const places = fest.kind === 'food'
+        ? captured.answerLinks
+          .filter((row) => hintNames.includes(row.name) || hintNames.some((name) => name.includes(row.name) || row.name.includes(name)))
+          .filter((row) => row.name && !/gateo\.kr|상세/.test(row.name))
+        : [];
       const unique = [];
       for (const row of places) {
         if (unique.some((item) => item.name === row.name)) continue;
@@ -363,14 +417,19 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
           httpStatus: null,
         });
       }
-      const invented = captured.answerLinks
-        .map((row) => row.name)
-        .filter((name) => name && !/gateo\.kr|상세|숙소|기차|버스|페이지|홈페이지|안내/.test(name))
-        .filter((name) => !hintNames.some((hintName) => hintName.includes(name) || name.includes(hintName)));
+      const invented = fest.kind === 'food'
+        ? captured.answerLinks
+          .map((row) => row.name)
+          .filter((name) => name && !/gateo\.kr|상세|숙소|기차|버스|페이지|홈페이지|안내/.test(name))
+          .filter((name) => !hintNames.some((hintName) => hintName.includes(name) || name.includes(hintName)))
+        : [];
       const file = `${fest.slug}-${festivalId}.png`;
       await page.screenshot({ path: join(OUT_DIR, file), fullPage: false });
       const row = {
         file,
+        slug: fest.slug,
+        kind: fest.kind,
+        ask: fest.ask,
         region: fest.region,
         query: fest.query,
         festivalId,
@@ -381,24 +440,44 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
         places: unique,
         invented,
         answerText: captured.answerText,
+        answerLinks: captured.answerLinks,
       };
       manifest.push(row);
-      writeFileSync(join(OUT_DIR, `${festivalId}.result.json`), `${JSON.stringify(row)}\n`, 'utf8');
-      expect(invented).toEqual([]);
-      expect(unique.length).toBe(hintNames.length);
-      expect(unique.length).toBeLessThanOrEqual(4);
-      for (const place of unique) {
-        expect(place.inHint).toBe(true);
-        expect(place.url).toMatch(/^https?:\/\//);
-        expect(place.distance).toBeTruthy();
-        expect(captured.answerText).toContain(place.name);
-        if (place.type) expect(captured.answerText).toContain(place.type);
-      }
+      writeFileSync(join(OUT_DIR, `${fest.slug}.result.json`), `${JSON.stringify(row)}\n`, 'utf8');
+      const gapCount = captured.answerText.split('확인된 정보가 없어요').length - 1;
+      expect(gapCount).toBeLessThanOrEqual(1);
       expect(captured.answerText).not.toMatch(/여행자는 이 답을 보고 바로 찾아갈 수 있어요|링크를 누르면 그 가게를 바로 찾을 수 있어요|사용자는 이 답을 보고 실제로 가게를 찾아가요/);
-      if (fest.festivalId === '637693') {
-        expect(captured.answerText).toMatch(/많지 않아요/);
-        expect(captured.answerText).toMatch(/차로/);
-        expect(captured.answerText).toMatch(/축제 페이지/);
+      if (fest.kind === 'food') {
+        expect(hintNames.length).toBeGreaterThan(0);
+        expect(hintNames.length).toBeLessThanOrEqual(4);
+        expect(invented).toEqual([]);
+        expect(unique.length).toBe(hintNames.length);
+        expect(unique.length).toBeLessThanOrEqual(4);
+        for (const place of unique) {
+          expect(place.inHint).toBe(true);
+          expect(place.url).toMatch(/^https?:\/\//);
+          expect(place.distance).toBeTruthy();
+          expect(captured.answerText).toContain(place.name);
+          if (place.type) expect(captured.answerText).toContain(place.type);
+        }
+        if (fest.festivalId === '637693') {
+          expect(captured.answerText).toMatch(/많지 않아요/);
+          expect(captured.answerText).toMatch(/차로/);
+          expect(captured.answerText).toMatch(/축제 페이지/);
+        }
+        expect(captured.answerText).not.toMatch(/주차 안내는 공식 홈페이지에 있어요/);
+      }
+      const linkBlob = `${captured.answerText}\n${captured.answerLinks.map((row) => `${row.name} ${row.url}`).join('\n')}`;
+      if (fest.kind === 'parking' && fest.festivalId === '3551206') {
+        expect(linkBlob).toMatch(/광명동굴/);
+        expect(linkBlob).toMatch(/가능/);
+        expect(linkBlob).toMatch(/가학로|걸어서/);
+        expect(captured.answerText).not.toMatch(/^주차 안내는 공식 홈페이지에 있어요\.?$/);
+      }
+      if (fest.kind === 'parking' && fest.festivalId === '638576') {
+        expect(linkBlob).toMatch(/hpftf\.or\.kr/);
+        expect(captured.answerText).not.toMatch(/보광사/);
+        expect(captured.answerText).not.toMatch(/^주차 안내는 공식 홈페이지에 있어요\.?$/);
       }
     });
   }

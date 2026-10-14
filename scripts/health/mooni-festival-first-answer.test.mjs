@@ -2184,11 +2184,12 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     contentId: '2930716',
     locale: 'ko',
     userText: '주차',
+    festivalTitle: '강릉 국수 축제',
     overview: '주차는 월화거리 공영주차장을 이용해요.',
     homepage: page,
   });
-  assert.match(keptParking, /축제 페이지에서 확인/);
-  assert.doesNotMatch(keptParking, /공식 홈페이지/);
+  assert.match(keptParking, /월화거리 공영주차장/);
+  assert.doesNotMatch(keptParking, /축제 페이지에서 확인|주차 안내는 공식 홈페이지에 있어요/);
 
   const access = polishFestivalModelReply(
     '[축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 가는 법을 확인해요.',
@@ -2231,6 +2232,82 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   });
   assert.equal(telOnly, '주차 안내는 문의 033-640-4531에 있어요.');
   assert.doesNotMatch(telOnly, /문의처를 통해|축제 페이지|확인/);
+
+  const doubledGap = polishFestivalModelReply(
+    '확인된 정보가 없어요. 국화 전시가 있어요. 확인된 정보가 없어요.',
+    { contentId: '638576', locale: 'ko', userText: '볼거리와 분위기', festivalTitle: '대한민국 국향대전' },
+  );
+  assert.equal(doubledGap.split('확인된 정보가 없어요').length - 1, 1);
+  assert.match(doubledGap, /국화 전시/);
+  assert.doesNotMatch(KO.chips.festival_sights.rules.join('\n'), /확인된 정보가 없다고 말하고/);
+  assert.doesNotMatch(KO.festivalAnswerRules, /주차 안내는 \[공식 홈페이지\]\(url\)에 있어요/);
+
+  const caveParking = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
+    contentId: '3551206',
+    locale: 'ko',
+    userText: '주차장 어디예요?',
+    festivalTitle: '광명동굴 빛 축제',
+    venue: '광명동굴 일원',
+    homepage: 'https://www.gm.go.kr/',
+    tel: '02-2090-1414',
+    nearbyParking: [{ name: '광명동굴', text: '가능', distKm: 0.2, addr1: '경기도 광명시 가학로 85번길' }],
+  });
+  assert.match(caveParking, /광명동굴은 주차가 가능해요/);
+  assert.match(caveParking, /가학로 85번길/);
+  assert.match(caveParking, /걸어서 3분/);
+  assert.match(caveParking, /https:\/\/www\.gm\.go\.kr/);
+  const inventedCave = polishFestivalModelReply(
+    '광명동굴 주차장은 경기도 광명시 가학로85번길 142에 마련되어 있어요. 걸어서 5분이에요.',
+    {
+      contentId: '3551206',
+      locale: 'ko',
+      userText: '주차장 어디예요?',
+      festivalTitle: '광명동굴 빛 축제',
+      venue: '광명동굴 일원',
+      homepage: 'https://www.gm.go.kr/',
+      tel: '02-2090-1414',
+      nearbyParking: [{ name: '광명동굴', text: '가능', distKm: 0.2, addr1: '경기도 광명시 가학로 85번길' }],
+    },
+  );
+  assert.match(inventedCave, /주차가 가능해요/);
+  assert.match(inventedCave, /가학로 85번길/);
+  assert.doesNotMatch(inventedCave, /142/);
+  const numberedLot = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
+    contentId: '3551206',
+    locale: 'ko',
+    userText: '주차장 어디예요?',
+    festivalTitle: '광명동굴 빛 축제',
+    homepage: 'https://www.gm.go.kr/',
+    nearbyParking: [{ name: '광명동굴', text: '가능', distKm: 0.4, addr1: '경기도 광명시 가학로85번길 142' }],
+  });
+  assert.match(numberedLot, /142예요/);
+  assert.doesNotMatch(numberedLot, /142이에요/);
+  const foodParkingTail = polishFestivalModelReply(
+    '내마음에찜 강릉본점은 한식, 도보 1분이에요. 주차 등 기타 상세 안내는 공식 홈페이지를 참고해 주세요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '근처 맛집 추천해 줘',
+      festivalTitle: '강릉 국수 축제',
+      nearbyRestaurants: [{ name: '내마음에찜 강릉본점', cat3: '한식', distKm: 0.08, url: 'https://search.naver.com/search.naver?query=내마음에찜' }],
+    },
+  );
+  assert.match(foodParkingTail, /내마음에찜 강릉본점/);
+  assert.doesNotMatch(foodParkingTail, /주차/);
+
+  const homeParking = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
+    contentId: '638576',
+    locale: 'ko',
+    userText: '주차장 어디예요?',
+    festivalTitle: '대한민국 국향대전',
+    venue: '함평 엑스포공원 일원',
+    homepage: 'https://www.hpftf.or.kr/',
+    tel: '061-320-2247',
+    nearbyParking: [{ name: '보광사(함평)', text: '가능', distKm: 1.3 }],
+  });
+  assert.match(homeParking, /https:\/\/www\.hpftf\.or\.kr/);
+  assert.match(homeParking, /061-320-2247/);
+  assert.doesNotMatch(homeParking, /보광사|확인된 정보가 없어요/);
 
   const seogwipoParking = {
     contentId: '506616',

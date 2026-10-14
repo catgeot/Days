@@ -2292,6 +2292,10 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = stripOffTopicLodgingNudge(text, options);
   text = settleFestivalNextAction(text, options);
   text = dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
+  text = ensureFestivalParkingAnswer(text, options);
+  text = stripUnaskedParkingEcho(text, options);
+  text = stripPromptEchoSentences(text);
+  text = collapseUnconfirmedMentions(text);
   text = cleanOrphanLinkConjunctions(text);
   if (String(options.locale || 'ko').slice(0, 2) !== 'en') {
     text = stripMooniGuideFiller(text);
@@ -2537,6 +2541,13 @@ function lastHangulSyllable(label) {
   return last;
 }
 
+/** Copula follows the spoken ending. A trailing digit is read in Korean, not the hangul before it. */
+function trailingLabelHasBatchim(label) {
+  const digit = String(label || '').trim().match(/(\d)\s*$/);
+  if (digit) return '013678'.includes(digit[1]);
+  return syllableHasBatchim(lastHangulSyllable(label));
+}
+
 function lodgingStaySentence(rows, locale = 'ko') {
   const labels = rows.map((row) => lodgingStayLabel(row)).filter(Boolean);
   if (!labels.length) return '';
@@ -2735,6 +2746,160 @@ function ensureFestivalLodgingAnswer(text, options = {}) {
   return stripUnhintedStayDistances(body, options.nearbyStays, origin);
 }
 
+const THIN_PARKING_RE = /^(?:가능|있음|없음|불가|주차\s*가능)$/;
+const UNCONFIRMED_GAP_RE = /확인된 정보가 없|no confirmed (?:information|facts)|confirmed information is not/i;
+const PROMPT_ECHO_RE = /사용자는 이 답을 보고|The user will actually visit/i;
+const PARKING_HOMEPAGE_ECHO_RE = /주차 안내는|Parking is on the official/i;
+
+function cleanParkingText(value) {
+  return String(value || '')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function corpusParkingSentences(options) {
+  return [options.overview, options.program, options.sceneOverview]
+    .map((value) => String(value || ''))
+    .join('\n')
+    .split(/(?<=[.!?。])\s+|\n+/)
+    .map((part) => part.trim())
+    .filter((part) => PARKING_FACT_RE.test(part));
+}
+
+function parkingPlaceMatchesFestival(name, options) {
+  const clean = String(name || '').replace(/\s+/g, '');
+  if (clean.length < 2) return false;
+  const blob = `${options.festivalTitle || ''} ${options.venue || ''}`.replace(/\s+/g, '');
+  return blob.includes(clean);
+}
+
+function parkingWalkLabel(km) {
+  const n = Number(km);
+  if (!Number.isFinite(n) || n < 0.08 || n > WALK_NEAR_KM) return '';
+  const minutes = Math.max(1, Math.round((n * 1000) / 80));
+  return `걸어서 ${minutes}분`;
+}
+
+/** Festival parking field, a parking fact sentence, or a nearby sight that is this festival. */
+function parkingLotsForAnswer(options = {}) {
+  const lots = [];
+  const field = cleanParkingText(options.parking);
+  if (field) lots.push({ name: '', text: field, distKm: null, addr: '' });
+  for (const sentence of corpusParkingSentences(options)) {
+    lots.push({ name: '', text: sentence, distKm: null, addr: '' });
+  }
+  for (const row of Array.isArray(options.nearbyParking) ? options.nearbyParking : []) {
+    const name = String(row?.name || '').trim();
+    const text = cleanParkingText(row?.text || row?.parking);
+    if (!text || !parkingPlaceMatchesFestival(name, options)) continue;
+    const distKm = Number(row?.distKm);
+    lots.push({
+      name,
+      text,
+      distKm: Number.isFinite(distKm) ? distKm : null,
+      addr: cleanParkingText(row?.addr1 || row?.addr || ''),
+    });
+  }
+  return lots.slice(0, 2);
+}
+
+function parkingLotLabel(lot) {
+  const bits = [lot.text, lot.addr, parkingWalkLabel(lot.distKm)].filter(Boolean);
+  return lot.name ? `${lot.name}(${bits.join(' · ')})` : bits.join(' · ');
+}
+
+function finishParkingSentence(text) {
+  const body = String(text || '').trim();
+  if (!body) return '';
+  return /[.!?。]$/.test(body) ? body : `${body}.`;
+}
+
+function composeParkingAnswer(lots, options = {}) {
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const sentences = [];
+  for (const lot of lots) {
+    const thin = THIN_PARKING_RE.test(lot.text);
+    if (en) {
+      if (lot.name && thin) sentences.push(`${lot.name} parking: ${lot.text}.`);
+      else if (lot.name) sentences.push(`${lot.name} parking: ${lot.text}.`);
+      else sentences.push(finishParkingSentence(lot.text));
+      if (lot.addr) sentences.push(`Location: ${lot.addr}.`);
+      continue;
+    }
+    if (lot.name && thin) {
+      const particle = syllableHasBatchim(lastHangulSyllable(lot.name)) ? '은' : '는';
+      const possible = /없|불가/.test(lot.text) ? '주차가 어려워요' : '주차가 가능해요';
+      sentences.push(`${lot.name}${particle} ${possible}.`);
+    } else if (lot.name) {
+      sentences.push(`${lot.name} 주차는 ${lot.text.replace(/[.。]$/, '')}예요.`);
+    } else if (/해요|이에요|예요|어요/.test(lot.text)) {
+      sentences.push(finishParkingSentence(lot.text));
+    } else {
+      sentences.push(`주차는 ${lot.text.replace(/[.。]$/, '')}이에요.`);
+    }
+    if (lot.addr && !sentences.join(' ').includes(lot.addr)) {
+      const particle = trailingLabelHasBatchim(lot.addr) ? '이에요' : '예요';
+      sentences.push(`위치는 ${lot.addr}${particle}.`);
+    }
+    const walk = parkingWalkLabel(lot.distKm);
+    if (walk) sentences.push(`${walk} 거리예요.`);
+  }
+  const rich = lots.some((lot) => !THIN_PARKING_RE.test(lot.text));
+  if (!rich && /^https?:\/\//i.test(String(options.homepage || ''))) {
+    sentences.push(parkingGuide(options));
+  }
+  return sentences.filter(Boolean).join(' ');
+}
+
+function parkingAnswerCovers(text, lots) {
+  const body = String(text || '');
+  return lots.every((lot) => {
+    if (lot.name && !body.includes(lot.name)) return false;
+    if (lot.addr && !body.includes(lot.addr)) return false;
+    const walk = parkingWalkLabel(lot.distKm);
+    if (walk && !body.includes(walk)) return false;
+    if (THIN_PARKING_RE.test(lot.text)) {
+      const negative = /없|불가/.test(lot.text);
+      if (negative ? !/어렵|불가|없/.test(body) : !/가능/.test(body)) return false;
+    } else {
+      const token = lot.text.replace(/\s+/g, '').slice(0, 8);
+      if (token && !body.replace(/\s+/g, '').includes(token)) return false;
+    }
+    return true;
+  });
+}
+
+function ensureFestivalParkingAnswer(text, options = {}) {
+  const asked = PRACTICAL_TOPIC_RE.some((topic) => topic.kind === 'parking' && topic.re.test(String(options.userText || '')));
+  if (!asked) return String(text || '');
+  const lots = parkingLotsForAnswer(options);
+  if (!lots.length) return parkingGuide(options);
+  if (parkingAnswerCovers(text, lots)) return String(text || '');
+  return composeParkingAnswer(lots, options);
+}
+
+function stripUnaskedParkingEcho(text, options = {}) {
+  if (/주차|parking/i.test(String(options.userText || ''))) return String(text || '');
+  return filterPreservingBreaks(text, (part) => /주차|parking/i.test(part) || PARKING_HOMEPAGE_ECHO_RE.test(part));
+}
+
+function stripPromptEchoSentences(text) {
+  return filterPreservingBreaks(text, (part) => PROMPT_ECHO_RE.test(part));
+}
+
+/** An unconfirmed gap is one short sentence. Later copies drop. */
+function collapseUnconfirmedMentions(text) {
+  let seen = false;
+  return filterPreservingBreaks(text, (part) => {
+    if (!UNCONFIRMED_GAP_RE.test(part)) return false;
+    if (seen) return true;
+    seen = true;
+    return false;
+  });
+}
+
 function parkingGuide(options = {}) {
   const homepage = String(options.homepage || '').trim();
   const tel = String(options.tel || '').trim();
@@ -2831,7 +2996,7 @@ function redirectMissingPracticalCheck(text, options = {}) {
         feeText: options.feeText,
         info: options.info,
         text: corpus,
-      });
+      }) || parkingLotsForAnswer(options).length > 0;
     }
     if (topic.kind === 'hours') {
       return Boolean(String(options.timeText || '').trim());
@@ -3257,6 +3422,16 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const tel = String(ctx?.tel || '').trim();
   if (tel) lines.push(isEn ? `- Contact phone: ${tel}` : `- 문의처: ${tel}`);
   const parking = String(ctx?.parking || '').trim();
+  const parkingLots = parkingLotsForAnswer({
+    parking,
+    overview: ctx?.overview,
+    sceneOverview: ctx?.sceneOverview,
+    program: ctx?.program,
+    venue: ctx?.venue,
+    feeText: ctx?.feeText,
+    nearbyParking: ctx?.nearbyParking,
+    festivalTitle: ctx?.title,
+  });
   const parkingKnown = hasFestivalParkingData({
     parking,
     overview: ctx?.overview,
@@ -3265,16 +3440,27 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
     venue: ctx?.venue,
     feeText: ctx?.feeText,
     info: ctx?.info,
-  });
+  }) || parkingLots.length > 0;
   if (parking && parkingKnown) {
     lines.push(isEn ? `- Parking: ${parking}` : `- 주차: ${parking}`);
+  }
+  const namedLots = parkingLots.filter((lot) => lot.name);
+  if (namedLots.length) {
+    lines.push(isEn
+      ? `- Nearby parking: ${namedLots.map(parkingLotLabel).join(', ')}`
+      : `- 근처 주차: ${namedLots.map(parkingLotLabel).join(', ')}`);
+  }
+  if (parkingLots.length) {
+    lines.push(isEn
+      ? '- For a parking question, introduce the lot name, place, fee, and walking time from the lines above in a natural sentence.'
+      : '- 주차 질문에는 위 주차의 이름, 위치, 요금, 걸어가는 시간을 자연스러운 문장으로 소개한다.');
   } else if (!parkingKnown) {
     const telBit = tel
       ? (isEn ? ` Call ${tel}.` : ` 전화번호가 있으면 «문의 ${tel}»를 붙인다.`)
       : (isEn ? ' Do not mention a contact number.' : ' 전화번호가 없으면 문의 문장을 쓰지 않는다.');
     lines.push(isEn
-      ? `- Parking is not in the festival data. Write only "Parking is on the [official site](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})."${telBit} Do not repeat "check". Do not say "through the contact" without a number. Do not tell the user to see or find parking on the festival page. A parking-lot place name is not parking data.`
-      : `- 주차 정보가 이 데이터에 없다. 답은 «주차 안내는 [공식 홈페이지](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})에 있어요.»만 쓴다.${telBit} «확인»을 반복하지 않는다. 번호 없는 «문의처를 통해»와 «축제 페이지에서 살펴보세요»는 쓰지 않는다. «찾아볼 수 있어요», «알아볼», «볼 수 있어요»처럼 축제 페이지로 보내는 문장도 쓰지 않는다. 장소 이름의 «주차장»은 주차 정보가 아니다.`);
+      ? `- Parking is not in the festival data. When that is the case, link the official site${/^https?:\/\//i.test(homepage) ? ` (${homepage})` : ''}.${telBit} Do not repeat "check". Do not say "through the contact" without a number. Do not tell the user to see or find parking on the festival page. A parking-lot place name is not parking data.`
+      : `- 주차 정보가 이 데이터에 없다. 그때는 공식 홈페이지 링크로 안내한다.${telBit} «확인»을 반복하지 않는다. 번호 없는 «문의처를 통해»와 «축제 페이지에서 살펴보세요»는 쓰지 않는다. «찾아볼 수 있어요», «알아볼», «볼 수 있어요»처럼 축제 페이지로 보내는 문장도 쓰지 않는다. 장소 이름의 «주차장»은 주차 정보가 아니다.`);
   }
 
   return `\n${lines.join('\n')}`;

@@ -130,6 +130,7 @@ import {
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
 import { useFestivalHeroPhotoDecoded } from './useFestivalHeroPhotoDecoded.js';
+import { loadNearbyParkingFacts } from './lib/festivalNearbyParking.js';
 import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
 import {
@@ -630,6 +631,8 @@ export default function FestivalDetailSheet({
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
+  const [nearbyParking, setNearbyParking] = useState([]);
+  const [nearbyParkingReady, setNearbyParkingReady] = useState(false);
   const nearbyCacheOwnerRef = useRef('');
   const nearbyCacheKey = `${item?.contentId || ''}:${item?.mapx || ''}:${item?.mapy || ''}`;
   if (nearbyCacheOwnerRef.current !== nearbyCacheKey) {
@@ -1572,6 +1575,36 @@ export default function FestivalDetailSheet({
   }, [nearbyFood]);
 
   const [accessFacts, setAccessFacts] = useState(null);
+
+  useEffect(() => {
+    const id = String(item?.contentId || '');
+    if (!id) return undefined;
+    if (nearbyStatus === 'nocoords' || nearbyStatus === 'empty' || nearbyStatus === 'error') {
+      setNearbyParking([]);
+      setNearbyParkingReady(true);
+      return undefined;
+    }
+    if (nearbyStatus !== 'ok') {
+      setNearbyParkingReady(false);
+      return undefined;
+    }
+    let cancelled = false;
+    setNearbyParkingReady(false);
+    const matchBlob = `${item?.title || ''} ${intro?.eventplace || ''}`;
+    loadNearbyParkingFacts(nearbySpots, { matchBlob }).then((facts) => {
+      if (cancelled) return;
+      setNearbyParking(facts);
+      setNearbyParkingReady(true);
+    }).catch(() => {
+      if (cancelled) return;
+      setNearbyParking([]);
+      setNearbyParkingReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [item?.contentId, item?.title, intro?.eventplace, nearbyStatus, nearbySpots]);
+
   const festivalMooni = useFestivalMooniEntry({
     item: item || {},
     intro,
@@ -1582,6 +1615,7 @@ export default function FestivalDetailSheet({
     program: stripHtml(intro?.program || ''),
     nearbyPlaces: mooniNearbyPlaces,
     nearbyRestaurants: mooniNearbyRestaurants,
+    nearbyParking,
     stayAreas: festivalCross?.stayAreas,
     info: infoItems,
     transportFacts: accessFacts,
@@ -1863,6 +1897,7 @@ export default function FestivalDetailSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="korea-festival-sheet-title"
+        data-nearby-parking={nearbyParkingReady ? 'ready' : 'loading'}
       >
         {hero ? (
           <div
