@@ -243,6 +243,7 @@
     "test:poi-admin-slug": "node --import ./scripts/register-src-esm.mjs --test scripts/poi-admin-slug.test.mjs",
     "test:e2e:poi-slug": "playwright test --config=playwright.config.poi-slug.js",
     "test:e2e:poi-slug-v2": "playwright test --config=playwright.config.poi-slug-v2.js",
+    "test:e2e:poi-slug-v3": "playwright test --config=playwright.config.poi-slug-v3.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

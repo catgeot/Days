@@ -19,6 +19,9 @@ import { resolveSearchResultSelect } from '../src/pages/Home/lib/exploreRecentHi
 import { getLocalizedCountryName } from '../src/components/PlaceCard/common/locationDisplay.js';
 import { formatPlaceChatLabel } from '../src/pages/Home/lib/mooniPlaceChatLabel.js';
 import { pickKoreanNameGallery } from '../src/utils/placeStatsNameGallery.js';
+import { resolveLegacyMishealPlace } from '../src/pages/Home/lib/legacyMishealPlaceSlugs.js';
+import { resolvePlaceTargetFromSlug } from '../src/pages/Home/lib/placeRouteHydrate.js';
+import { buildPlaceDbIdCandidates } from '../src/utils/travelSpotResolve.js';
 import { pickTourKeywordContentId } from '../src/utils/tourKeywordPick.js';
 import { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from '../src/utils/tourApiPhotoRank.js';
 
@@ -199,6 +202,60 @@ test('same Korean name gallery skips the county hub row', () => {
     '흥정계곡',
   );
   assert.equal(picked?.place_id, 'herbnara-farm');
+});
+
+test('shared latin mis-heal URLs open the Korean attraction card', () => {
+  const cases = [
+    ['herbnara-farm', '흥정계곡'],
+    ['woljeong-ri', '월정리해변'],
+    ['seolma-ri', '감악산 운계폭포'],
+  ];
+  for (const [slug, name] of cases) {
+    const pin = resolvePlaceTargetFromSlug(slug);
+    assert.ok(pin, slug);
+    assert.equal(pin.name, name);
+    assert.equal(getPlaceUrlParam(pin), slug);
+    assert.equal(pin.poiAttraction, true);
+    assert.ok(Number.isFinite(pin.lat) && Number.isFinite(pin.lng));
+  }
+  const valley = resolveLegacyMishealPlace('herbnara-farm');
+  assert.ok(buildPlaceDbIdCandidates(valley).includes('herbnara-farm'));
+  assert.equal(resolvePlaceTargetFromSlug('not-a-shared-slug'), null);
+});
+
+test('same Korean name keeps all 21 herbnara-farm photos', () => {
+  const photos = Array.from({ length: 21 }, (_, i) => ({
+    id: `tourapi-detail-${i}`,
+    urls: {
+      small: `https://tong.visitkorea.or.kr/cms/resource/${i}.jpg`,
+      regular: `https://tong.visitkorea.or.kr/cms/resource/${i}.jpg`,
+    },
+    source: 'tourApi',
+    width: 1024,
+    height: 768,
+  }));
+  const picked = pickKoreanNameGallery(
+    [
+      {
+        place_id: 'pyeongchang',
+        name_ko: '평창',
+        gallery_urls: photos.slice(0, 20),
+      },
+      {
+        place_id: '흥정계곡',
+        name_ko: '흥정계곡',
+        gallery_urls: [],
+      },
+      {
+        place_id: 'herbnara-farm',
+        name_ko: '흥정계곡',
+        gallery_urls: photos,
+      },
+    ],
+    '흥정계곡',
+  );
+  assert.equal(picked?.place_id, 'herbnara-farm');
+  assert.equal(picked?.gallery_urls?.length, 21);
 });
 
 test('Tour keyword pick prefers the exact title and a contained waterfall name', () => {
