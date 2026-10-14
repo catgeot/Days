@@ -242,6 +242,9 @@ test.describe('MOONi staging combo — 가는 법 origins (WebKit 390)', () => {
         await mooniBubble.scrollIntoViewIfNeeded();
         await scrollChatToEnd(page);
         const answerText = (await mooniBubble.innerText()).trim();
+        expect(answerText).toMatch(
+          /KTX|SRT|고속버스|시외버스|버스타고|열차·버스 시각|광주송정|함평|강릉역|강릉고속/,
+        );
         assertAccessAnswerPolished(answerText, {
           festivalId: fest.festivalId,
           originId,
