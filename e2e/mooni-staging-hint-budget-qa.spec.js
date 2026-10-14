@@ -178,10 +178,11 @@ async function openMooniAndAsk(page) {
   const reply = replies.last();
   await expect(reply).not.toContainText(/설정 오류|관리자에게 문의/);
   const scrollArea = page.locator('div.flex-1.overflow-y-auto.custom-scrollbar').last();
+  await reply.scrollIntoViewIfNeeded();
   await scrollArea.evaluate((el) => {
     el.scrollTop = el.scrollHeight;
   });
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(600);
   const probes = await page.evaluate(() => (
     Array.isArray(window.__GATEO_HINT_BUDGET_PROBE__) ? window.__GATEO_HINT_BUDGET_PROBE__ : []
   ));
