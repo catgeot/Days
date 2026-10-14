@@ -4,7 +4,9 @@ import {
   isFestivalEnded,
   todayYmdKst,
 } from './festivalDeepLinkItem.js';
-import { filterByRegion } from './festivalRegionTags.js';
+import { filterByRegion, extractSubregionLabels } from './festivalRegionTags.js';
+import { resolveFestivalItemSidoCode } from './koreaAreaFilter.js';
+import { festivalLngLat } from './koreaFestivalCorridors.js';
 
 function pickStr(...values) {
   for (const value of values) {
@@ -241,37 +243,101 @@ export function filterSocialPromoCardsByRegion(cards, regionFilter = {}) {
   );
 }
 
+function promoKm(origin, item) {
+  const point = festivalLngLat(item?.mapx, item?.mapy);
+  if (!origin || !point) return null;
+  const lat = Number(origin.lat);
+  const lng = Number(origin.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = toRad(point.lat - lat);
+  const dLng = toRad(point.lng - lng);
+  const a = Math.sin(dLat / 2) ** 2
+    + Math.cos(toRad(lat)) * Math.cos(toRad(point.lat)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/** Short place for the one-line recommendation. 함평군 → 함평. */
+export function socialPromoPlaceLabel(item) {
+  const areaCode = resolveFestivalItemSidoCode(item);
+  const labels = extractSubregionLabels(item?.addr1, areaCode);
+  const raw = String(labels[0] || '').trim();
+  if (!raw) return '';
+  return raw.replace(/(특별자치시|광역시|특별시|자치시|시|군|구)$/u, '') || raw;
+}
+
 /**
+ * Nearest in-window promo festival. No distance → earliest start.
+ * If that festival is already in the nearby list, return null.
+ * @param {Array<{ item?: object }>} cards
+ * @param {{ origin?: { lat: number, lng: number } | null, listedIds?: Iterable<string> }} [opts]
+ */
+export function pickSocialPromoNearRecommendation(cards, opts = {}) {
+  const pool = (cards || []).filter((card) => card?.item?.contentId);
+  if (!pool.length) return null;
+  const ranked = [...pool].sort((a, b) => {
+    const kmA = promoKm(opts.origin, a.item);
+    const kmB = promoKm(opts.origin, b.item);
+    if (kmA != null && kmB != null && kmA !== kmB) return kmA - kmB;
+    if (kmA != null && kmB == null) return -1;
+    if (kmA == null && kmB != null) return 1;
+    return String(a.item.eventStartDate || '').localeCompare(String(b.item.eventStartDate || ''));
+  });
+  const best = ranked[0];
+  const listed = opts.listedIds instanceof Set
+    ? opts.listedIds
+    : new Set([...(opts.listedIds || [])].map((id) => String(id)));
+  if (listed.has(String(best.item.contentId))) return null;
+  return best;
+}
+
+function hiddenPromo() {
+  return { show: false, cards: [], loading: false, nearLine: null };
+}
+
+/**
+ * Featured strip: this month, not searching, not 내 주변.
+ * 내 주변 sets the sido chip too, so the region filter would drop the strip.
  * @param {{ status: string, cards: Array<{ entry: object, item: object | null }> }} row
- * @param {{ searchActive?: boolean, areaCode?: string, cityName?: string }} ctx
+ * @param {{ searchActive?: boolean, areaCode?: string, cityName?: string, timeTab?: string, nearActive?: boolean, nearOrigin?: { lat: number, lng: number } | null, nearListIds?: Iterable<string> }} ctx
  */
 export function resolveSocialPromoPresentation(row, ctx = {}) {
   const searchActive = Boolean(ctx.searchActive);
+  const nearActive = Boolean(ctx.nearActive);
+  const timeTab = ctx.timeTab == null || ctx.timeTab === '' ? 'thisMonth' : String(ctx.timeTab);
   const regionFilter = {
     areaCode: ctx.areaCode,
     cityName: ctx.cityName,
   };
-  if (!shouldShowSocialPromoHomeRow(searchActive)) {
-    return { show: false, cards: [], loading: false };
+  if (!shouldShowSocialPromoHomeRow(searchActive) || timeTab !== 'thisMonth') {
+    return hiddenPromo();
   }
-  if (!row || row.status === 'empty') {
-    return { show: false, cards: [], loading: false };
+  if (!row || row.status === 'empty') return hiddenPromo();
+  if (nearActive) {
+    if (row.status !== 'ready') return hiddenPromo();
+    return {
+      show: false,
+      cards: [],
+      loading: false,
+      nearLine: pickSocialPromoNearRecommendation(row.cards, {
+        origin: ctx.nearOrigin,
+        listedIds: ctx.nearListIds,
+      }),
+    };
   }
   const nationwide = isNationwideRegionFilter(
     regionFilter.areaCode,
     regionFilter.cityName,
   );
   if (row.status === 'loading') {
-    if (!nationwide) {
-      return { show: false, cards: [], loading: false };
-    }
-    return { show: true, cards: row.cards, loading: true };
+    if (!nationwide) return hiddenPromo();
+    return { show: true, cards: row.cards, loading: true, nearLine: null };
   }
   if (row.status === 'ready') {
     const cards = filterSocialPromoCardsByRegion(row.cards, regionFilter);
-    return { show: cards.length > 0, cards, loading: false };
+    return { show: cards.length > 0, cards, loading: false, nearLine: null };
   }
-  return { show: false, cards: [], loading: false };
+  return hiddenPromo();
 }
 
 /**

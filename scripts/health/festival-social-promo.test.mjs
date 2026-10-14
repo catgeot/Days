@@ -23,9 +23,11 @@ import {
   mergeSocialPromoIntoFestivalItems,
   normalizeFestivalItemImages,
   filterSocialPromoCardsByRegion,
+  pickSocialPromoNearRecommendation,
   pickVisibleSocialPromoCards,
   resolveSocialPromoPresentation,
   resolveSocialPromoRow,
+  socialPromoPlaceLabel,
   shouldShowSessionPinnedHomeRow,
   shouldShowSessionPinnedRow,
   shouldShowSocialPromoHomeRow,
@@ -309,6 +311,88 @@ test('promo row filters by region chip; hidden when no match', () => {
   });
   assert.equal(jeonnam.length, 1);
   assert.equal(jeonnam[0].item.contentId, '638576');
+
+  const liveLike = resolveSocialPromoPresentation({
+    status: 'ready',
+    cards: [
+      { item: GUKHYANG },
+      {
+        item: {
+          contentId: '637693',
+          title: '마산가고파국화축제',
+          eventStartDate: '20261031',
+          eventEndDate: '20261108',
+          addr1: '경상남도 창원시 마산합포구 월남동1가',
+          mapx: '128.5639269000',
+          mapy: '35.1867289000',
+        },
+      },
+    ],
+  }, { searchActive: false, areaCode: '32', cityName: 'all', timeTab: 'thisMonth' });
+  assert.equal(liveLike.show, false, '강원 chip must not keep 함평·마산');
+  assert.equal(socialPromoPlaceLabel(GUKHYANG), '함평');
+});
+
+test('promo strip is this month only; 내 주변 is one nearest line', () => {
+  const ready = resolveSocialPromoRow(
+    socialPromoFestivals,
+    new Map([
+      ['638576', GUKHYANG],
+      [
+        '637693',
+        {
+          contentId: '637693',
+          title: '마산가고파국화축제',
+          eventStartDate: '20261031',
+          eventEndDate: '20261108',
+          addr1: '경상남도 창원시 마산합포구 월남동1가',
+          mapx: '128.5639',
+          mapy: '35.1867',
+        },
+      ],
+    ]),
+    NOW,
+    2,
+  );
+  const otherTab = resolveSocialPromoPresentation(ready, {
+    searchActive: false,
+    areaCode: 'all',
+    cityName: 'all',
+    timeTab: 'weekend',
+  });
+  assert.equal(otherTab.show, false);
+  assert.equal(otherTab.nearLine, null);
+
+  const searching = resolveSocialPromoPresentation(ready, {
+    searchActive: true,
+    timeTab: 'thisMonth',
+    nearActive: true,
+    nearOrigin: { lat: 35.06, lng: 126.52 },
+  });
+  assert.equal(searching.show, false);
+  assert.equal(searching.nearLine, null);
+
+  const nearHampyeong = resolveSocialPromoPresentation(ready, {
+    searchActive: false,
+    timeTab: 'thisMonth',
+    nearActive: true,
+    areaCode: '32',
+    cityName: 'all',
+    nearOrigin: { lat: 35.059, lng: 126.522 },
+  });
+  assert.equal(nearHampyeong.show, false);
+  assert.equal(nearHampyeong.nearLine.item.contentId, '638576');
+
+  const nearMasan = pickSocialPromoNearRecommendation(ready.cards, {
+    origin: { lat: 35.186, lng: 128.564 },
+  });
+  assert.equal(nearMasan.item.contentId, '637693');
+
+  const listed = pickSocialPromoNearRecommendation(ready.cards, {
+    origin: { lat: 35.059, lng: 126.522 },
+    listedIds: ['638576'],
+  });
+  assert.equal(listed, null);
 });
 
 test('merge adds configured IDs once and search finds 국향', () => {
@@ -433,6 +517,9 @@ test('hub wires session pin, promo row, and merge', () => {
   assert.match(hub, /sessionPinnedDisplay/);
   assert.match(hub, /data-session-pinned-festival/);
   assert.match(hub, /SocialPromoFestivalRow/);
+  assert.match(hub, /SocialPromoNearLine/);
+  assert.match(hub, /timeTab/);
+  assert.match(hub, /nearActive/);
   assert.match(hub, /itemsWithSocialPromo/);
   assert.match(hub, /mergeSocialPromoIntoFestivalItems/);
   assert.match(hub, /festivalViewedPushedRef/);

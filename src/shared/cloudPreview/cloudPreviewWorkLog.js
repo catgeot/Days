@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 93,
-  sessionPhase: '기백산 검색 중복',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'palgyeong-use',
+  title: '축제 카드',
+  sessionNo: 1,
+  sessionPhase: '열차 문장·소개 축제',
+  branch: 'cursor/festival-access-promo-5b7f',
+  previewPath: '/korea',
+  qaShareSlug: 'festival-card',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-10-14-festival-card-1-train-promo',
+    session: '축제 카드 #1, 열차 문장·소개 축제',
+    title: '열차 세 문장·소개 축제 한 줄',
+    detail:
+      '가는 법 열차 카드는 가장 빠른 열차, 가장 싼 열차, 하루 횟수, 코레일 예매, Trip.com입니다. 나머지 등급은 «열차 시간 더 보기»입니다. 소개 축제는 이번 달·전국 또는 그 지역에 있을 때만 섹션으로 보입니다. 강원처럼 없으면 섹션을 숨깁니다. 내 주변은 섹션 대신 가장 가까운 소개 축제 한 줄입니다. Preview /qa/festival-card — /korea.',
+    at: '2026-10-14T10:40:00.000Z',
+  },
   {
     id: '2026-10-01-palgyeong-use-93-giback-search-dedupe',
     session: '팔경 활용 #93, 기백산 검색 중복',
