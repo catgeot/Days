@@ -14,6 +14,21 @@
 
 ## 활성 목록
 
+### 축제 카드
+
+| | |
+|--|--|
+| **상태** | **#1 열차 문장·소개 축제** · tip `f6b622bf` · draft PR [#462](https://github.com/catgeot/Days/pull/462) · **병합 금지** · Edge 미배포 |
+| **브랜치** | `cursor/festival-access-promo-5b7f` |
+| **플랜** | 대표 승인안 2026-10-14 (업로드). 신규 `plans/` 기획서 없음 |
+| **일지** | [`2026-10-14-project-log.md`](./2026-10-14-project-log.md) |
+| **Preview** | git `https://days-git-cursor-festival-access-promo-5b7f-catgeots-projects.vercel.app/korea` · `/qa/festival-card` 는 이 브랜치 `vercel.json` 병합 후에만 prod에서 열린다 |
+| **금지** | prod 병합 · Edge `transport-proxy` 배포 · 운송 허용 목록에 강릉커피 추가 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `node --import ./scripts/register-src-esm.mjs --test scripts/health/festival-access-card.test.mjs scripts/health/festival-social-promo.test.mjs` 30 pass · `npx vite build` |
+| **남은 일** | 사람이 Preview에서 전국 두 장·강원 숨김·내 주변 한 줄·용산→광주송정 문장·수서 SR을 본다. 강원 칩에 함평·마산이 남는 버그는 main `149d0f36` WebKit 390에서 재현되지 않았다. |
+
+**다음 제시어 없음**. 승인안 구현은 이 드래프트에 있다. 문구를 바꿀 피드백이 있으면 같은 브랜치에서 이어서 한다.
+
 ### Vercel 프리뷰
 
 | | |
