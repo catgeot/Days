@@ -52,5 +52,10 @@ export default defineConfig({
       testMatch: /home-search-place-nav\.spec\.js/,
       use: { ...devices['iPhone 13'] },
     },
+    {
+      name: 'webkit-festival-hero-credit',
+      testMatch: /korea-festival-hero-credit-en\.spec\.js/,
+      use: { ...devices['iPhone 13'] },
+    },
   ],
 });
