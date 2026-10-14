@@ -117,7 +117,7 @@ export default function MooniChatMarkdown({ text, variant = 'dark' }) {
   if (!markdown) return null;
 
   return (
-    <div className="mooni-chat-markdown min-w-0 break-words">
+    <div className="mooni-chat-markdown min-w-0 break-words [word-break:keep-all]">
       <ReactMarkdown
         remarkPlugins={[[mooniRemarkGfm, { singleTilde: false }], remarkCjkFriendly]}
         rehypePlugins={[[rehypeSanitize, mooniChatMarkdownSanitizeSchema]]}

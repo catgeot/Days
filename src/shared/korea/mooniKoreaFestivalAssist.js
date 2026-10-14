@@ -12,7 +12,10 @@ import {
   rolling30DayRangeYmd,
   toYmd,
 } from '../../pages/Korea/festivalTimeFilter.js';
-import { festivalAccessAskIsRoute } from '../../pages/Korea/lib/festivalTransportCard.js';
+import {
+  festivalAccessAskIsRoute,
+  glueAccessNumbersInProse,
+} from '../../pages/Korea/lib/festivalTransportCard.js';
 import {
   domesticFestivalGroundOrigin,
   formatOriginHubGuidance,
@@ -1270,6 +1273,77 @@ function festivalTransportHasTagoRows(transport) {
   return false;
 }
 
+const GUKHYANG_FESTIVAL_ID = '638576';
+const CAPITAL_ORIGIN_IDS = new Set(['seoul', 'incheon', 'gyeonggi']);
+
+function festivalOriginTransportRows(transport, originRow) {
+  const needle = String(originRow?.ko || '').trim();
+  if (!needle) return [];
+  const out = [];
+  for (const origin of transport?.origins || []) {
+    const label = String(origin.label || '').trim();
+    if (label !== needle && !label.includes(needle) && !needle.includes(label)) continue;
+    for (const segment of origin.segments || []) {
+      if ((segment.rows || []).length > 0) out.push(segment);
+    }
+  }
+  return out;
+}
+
+function originHasVerifiedRailToGwangjuSongjeong(transport, originRow) {
+  for (const segment of festivalOriginTransportRows(transport, originRow)) {
+    if (segment.transfer) continue;
+    if (/광주송정/.test(String(segment.arr || '')) && (segment.rows || []).length > 0) return true;
+  }
+  return false;
+}
+
+/** 국향대전 — non-capital origins without TAGO direct rail to 광주송정: bus-first chip hint. */
+function formatGukhyangAccessOriginGuidance(originRow, transport, locale = 'ko') {
+  if (!originRow || CAPITAL_ORIGIN_IDS.has(originRow.id)) return '';
+  if (originHasVerifiedRailToGwangjuSongjeong(transport, originRow)) return '';
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const place = en ? originRow.en : originRow.ko;
+  const busTerminals = originRow.id === 'daegu'
+    ? (en ? 'Daegu Express Bus Terminal (Seobu and Dongdaegu)' : '대구고속버스터미널(서부·동대구)')
+    : (en ? (originRow.busEn || '') : (originRow.busKo || ''));
+  if (en) {
+    return `Readers leave from ${place} using only this answer — pick routes that really run. If there is no confirmed direct train to Gwangju Songjeong, say so honestly, then lead with express or intercity bus from ${busTerminals} to Gwangju, then Gwangju to Hampyeong and the venue, plus driving. Do not open with Dongdaegu KTX or SRT straight to Gwangju Songjeong.`;
+  }
+  return `사용자는 ${place}에서 이 안내만 보고 출발해요. 실제로 운행하는 노선만 골라 안내해 주세요. TAGO·카드에 확인된 ${place}→광주송정 직통 열차가 없으면 «확인된 직통 열차는 없어요»라고 말하고, ${busTerminals}에서 광주 고속·시외버스 → 광주에서 함평·축제장 순으로 먼저 안내해 주세요. 자가용도 함께 넣어 주세요.`;
+}
+
+const FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE =
+  /동대구(?:역)?에서\s+(?:(?:KTX|SRT)(?:나\s+|·|와\s+)?(?:SRT|KTX)?\s*)?(?:을|를)?\s*(?:타고\s*)?광주송정/;
+
+function rewriteFalseDongdaeguGwangjuSongjeongLead(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (!FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE.test(text)) return String(text || '');
+  return String(text || '').replace(
+    FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE,
+    '확인된 동대구→광주송정 직통 열차는 없어요. 대구고속버스터미널(서부·동대구)에서 광주 고속·시외버스를 타고 광주에서 함평으로 이어 가면 돼요',
+  );
+}
+
+const ACCESS_TIMETABLE_WINDOW_MISREAD_RE =
+  /(\d{1,2}:\d{2}(?:\u2060?~\u2060?\d{1,2}:\d{2})?)\s*(?:사이에\s*)?바로\s*갈\s*수/g;
+
+function rewriteFestivalAccessTimetableWindowPhrase(text) {
+  return String(text || '').replace(
+    ACCESS_TIMETABLE_WINDOW_MISREAD_RE,
+    (full, clock) => {
+      const glued = glueAccessNumbersInProse(clock);
+      return `${glued} 출발편 기준으로 바로 갈 수`;
+    },
+  );
+}
+
+export {
+  rewriteFalseDongdaeguGwangjuSongjeongLead,
+  rewriteFestivalAccessTimetableWindowPhrase,
+  glueAccessNumbersInProse as glueMooniAccessNumbersInProse,
+};
+
 function listedPlaceNames(values) {
   const out = [];
   for (const raw of Array.isArray(values) ? values : []) {
@@ -1700,6 +1774,9 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = stripMooniGuideFiller(text);
   }
   if (isBoundFestivalAccessPolish(options)) {
+    text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
+    text = rewriteFestivalAccessTimetableWindowPhrase(text);
+    text = glueAccessNumbersInProse(text);
     text = stripRedundantBookingLinkOnlyLines(text);
     text = ensureFestivalAccessStepLineBreaks(text);
     text = ensureFestivalAccessPeriodLine(text, options);
@@ -2761,7 +2838,10 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       hint = trimBoundFestivalHintForAccess(hint, input.locale);
       const originRow = domesticFestivalGroundOrigin(userText, input.departureLabel);
       if (originRow) {
-        const hubLine = formatOriginHubGuidance(originRow, input.locale);
+        const gukhyangChip = String(festivalContext.contentId || '').trim() === GUKHYANG_FESTIVAL_ID
+          ? formatGukhyangAccessOriginGuidance(originRow, festivalContext.transport, input.locale)
+          : '';
+        const hubLine = gukhyangChip || formatOriginHubGuidance(originRow, input.locale);
         hint += enFood
           ? `\n- Departure hubs for this chip: ${hubLine}`
           : `\n- 출발 칩 안내: ${hubLine}`;

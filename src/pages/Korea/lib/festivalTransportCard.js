@@ -477,6 +477,22 @@ export function glueAccessUnit(value) {
     .replace(/ /g, '\u00A0');
 }
 
+/** MOONi access prose — keep fare commas and clock/fare ranges intact (not calendar 10/31~11/8). */
+export function glueAccessNumbersInProse(value) {
+  let out = String(value || '');
+  for (let i = 0; i < 6; i += 1) {
+    const next = out.replace(/(\d),(\d)/g, '$1,\u2060$2');
+    if (next === out) break;
+    out = next;
+  }
+  return out
+    .replace(/(\d{1,2}:\d{2})\s*~\s*(\d{1,2}:\d{2})/g, '$1\u2060~\u2060$2')
+    .replace(
+      /(\d{1,3}(?:,\u2060?\d{3})*원)\s*~\s*(\d{1,3}(?:,\u2060?\d{3})*원)/g,
+      '$1\u2060~\u2060$2',
+    );
+}
+
 function hangulJong(word) {
   const chars = Array.from(String(word || '').trim());
   for (let i = chars.length - 1; i >= 0; i -= 1) {
@@ -528,9 +544,17 @@ function directSentence(segment, en) {
   const clock = glueAccessUnit(row.clock);
   const fare = glueAccessUnit(row.fare);
   if (en) {
+    const range = /~|–/.test(String(row.clock || ''));
+    if (range) {
+      return `${segment.dep} → ${segment.arr} direct on ${row.grade}: departures ${clock}, ${fare}.`;
+    }
     return `${segment.dep} → ${segment.arr} direct on ${row.grade}: ${clock}, ${fare}.`;
   }
-  return `${segment.dep}→${segment.arr}${topicParticle(segment.arr)} ${row.grade}${instrumentalParticle(row.grade)} ${clock}에 바로 갈 수 있어요. 요금은 ${fare}${copula(row.fare)}.`
+  const range = /~|–/.test(String(row.clock || ''));
+  const when = range
+    ? `${clock} 출발편 기준으로 바로 갈 수 있어요`
+    : `${clock}에 바로 갈 수 있어요`;
+  return `${segment.dep}→${segment.arr}${topicParticle(segment.arr)} ${row.grade}${instrumentalParticle(row.grade)} ${when}. 요금은 ${fare}${copula(row.fare)}.`
 }
 
 function transferSentence(trunk, en) {

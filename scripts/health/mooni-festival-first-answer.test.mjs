@@ -600,6 +600,25 @@ test('festival access hint urges real routes when TAGO times are missing', async
   assert.match(gukhyang.hint, /KTX는 평소 함평역에 정차하지 않/);
   assert.match(gukhyang.hint, /무궁화·ITX-새마을/);
   assert.match(gukhyang.hint, /광주송정/);
+  const daeguGukhyang = await resolveMooniChatKoreaFestivalHint({
+    chipId: 'festival_access',
+    userText: buildFestivalAccessAskText('daegu', 'ko'),
+    departureLabel: '대구',
+    locale: 'ko',
+    festivalContext: {
+      contentId: '638576',
+      title: '국향대전',
+      venue: '함평엑스포공원',
+      address: '전라남도 함평군 함평읍 수호리',
+      eventStartDate: '20261023',
+      eventEndDate: '20261108',
+      transport: { origins: [{ label: '대구', segments: [] }], selected: { segments: [] } },
+    },
+  });
+  assert.match(daeguGukhyang.hint, /이 안내만 보고 출발해요/);
+  assert.match(daeguGukhyang.hint, /확인된 직통 열차/);
+  assert.match(daeguGukhyang.hint, /서부·동대구/);
+  assert.doesNotMatch(daeguGukhyang.hint, /KTX·SRT는 동대구역에서 출발하도록/);
   const masan = await resolveMooniChatKoreaFestivalHint({
     chipId: 'festival_access',
     userText: '부산에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
@@ -2948,6 +2967,38 @@ test('festival page link appears once and the closing link stays', () => {
   assert.equal((opening.match(/festival=2930716/g) || []).length, 1);
   assert.match(opening, /자세한 내용은 \[축제 페이지\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=2930716\)에서 볼 수 있어요/);
   assert.doesNotMatch(opening, /강릉 국수 축제 페이지\]/);
+});
+
+test('gukhyang access polish guards dongdaegu–gwangju songjeong direct rail and glues fares', () => {
+  const misleading = polishFestivalModelReply(
+    '동대구에서 KTX나 SRT를 타고 광주송정으로 가요. 요금은 2,600원에서 4,800원이에요.',
+    {
+      contentId: '638576',
+      chipId: 'festival_access',
+      locale: 'ko',
+      userText: buildFestivalAccessAskText('daegu', 'ko'),
+      eventStartDate: '20261023',
+      eventEndDate: '20261108',
+    },
+  );
+  assert.doesNotMatch(misleading, /동대구에서\s+KTX나\s+SRT를\s+타고\s+광주송정/);
+  assert.match(misleading, /직통 열차는 없어요/);
+  assert.match(misleading, /2,\u2060600원에서 4,\u2060800원/);
+  const seoulWindow = polishFestivalModelReply(
+    '용산→함평은 ITX로 16:29~19:29 사이에 바로 갈 수 있고 요금은 36,300원이에요.',
+    {
+      contentId: '638576',
+      chipId: 'festival_access',
+      locale: 'ko',
+      userText: buildFestivalAccessAskText('seoul', 'ko'),
+      eventStartDate: '20261023',
+      eventEndDate: '20261108',
+    },
+  );
+  assert.match(seoulWindow, /16:29\u2060~\u206019:29 출발편 기준으로 바로 갈 수/);
+  assert.doesNotMatch(seoulWindow, /사이에 바로/);
+  const markdown = readFileSync(join(root, 'src/components/chat/MooniChatMarkdown.jsx'), 'utf8');
+  assert.match(markdown, /word-break:keep-all/);
 });
 
 test('round 9 strips standalone 교통편 검색 after domestic 12Go CTA removal', () => {

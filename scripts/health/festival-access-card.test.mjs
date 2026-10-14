@@ -11,6 +11,7 @@ import {
   composeFestivalAccessReply,
   createMooniSendGate,
   glueAccessUnit,
+  glueAccessNumbersInProse,
   planFestivalMooniModelCall,
   departureCoversStation,
   festivalAccessAskFragment,
@@ -232,6 +233,7 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
   const reply = composeFestivalAccessReply(facts, { useSelected: true });
   assert.match(reply, /08:44\u2060~\u206019:11/);
   assert.match(reply, /용산→함평/);
+  assert.match(reply, /08:44\u2060~\u206019:11 출발편 기준으로 바로 갈 수 있어요/);
   assert.match(reply, /36,\u2060300원/);
   assert.match(reply, /가는 법 카드/);
   assert.doesNotMatch(reply, /ITX-마음/);
@@ -266,7 +268,7 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
     ],
   }, { stations: '용산역' });
   assert.match(yongsanReply, /용산→함평/);
-  assert.match(yongsanReply, /08:44\u2060~\u206019:11/);
+  assert.match(yongsanReply, /08:44\u2060~\u206019:11 출발편 기준으로 바로 갈 수 있어요/);
   assert.match(yongsanReply, /36,\u2060300원/);
   assert.match(yongsanReply, /광주송정까지 가서 갈아타는/);
   assert.equal((yongsanReply.match(/바로 갈 수 있어요/g) || []).length, 1);
@@ -284,6 +286,8 @@ test('fare, clock, and duration stay one unbreakable unit', () => {
     '3시간\u00A04분\u2060~\u20603시간\u00A012분',
   );
   assert.equal(glueAccessUnit('3시간 4분~3시간 12분').includes(' '), false);
+  assert.equal(glueAccessNumbersInProse('2,600원에서 4,800원'), '2,\u2060600원에서 4,\u2060800원');
+  assert.equal(glueAccessNumbersInProse('16:29~19:29 사이'), '16:29\u2060~\u206019:29 사이');
   const card = readFileSync(join(root, 'src/pages/Korea/FestivalAccessCard.jsx'), 'utf8');
   assert.match(card, /function Nowrap[\s\S]*whitespace-nowrap/);
   assert.match(card, /<Nowrap>\{clock\}<\/Nowrap>/);
