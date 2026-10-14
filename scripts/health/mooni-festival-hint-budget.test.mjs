@@ -99,7 +99,10 @@ test('saved 400 body trims under the cap and keeps verified lines', () => {
   const before = SAVED.params.koreaFestivalHint;
   assert.equal(before.length, 8166);
   assert.ok(before.length > MOONI_KOREA_FESTIVAL_HINT_MAX);
-  const hint = fitMooniKoreaFestivalHint(before);
+  const hint = fitMooniKoreaFestivalHint(before, undefined, {
+    chipId: 'food',
+    userText: FOOD_ASK,
+  });
   assert.ok(hint.length <= MOONI_KOREA_FESTIVAL_HINT_BUDGET, String(hint.length));
   assert.match(hint, /서울→광주송정 KTX 06:22 2시간 6분 42,100원 1회/);
   assert.match(hint, /7,000원/);
@@ -111,6 +114,56 @@ test('saved 400 body trims under the cap and keeps verified lines', () => {
   assert.doesNotMatch(hint, /근처\(GATEO\):/);
   assert.doesNotMatch(hint, /^- 프로그램:/m);
   assert.match(hint, /해요체/);
+});
+
+test('food ask keeps restaurant names, distance, and links ahead of other nearby places', () => {
+  const before = SAVED.params.koreaFestivalHint;
+  const scenic = Array.from({ length: 40 }, (_, i) => `풍경${String(i).padStart(3, '0')}`);
+  const restaurants = '장안식당(도보 12분), 키친205(도보 8분), [목포식당](https://example.com/mokpo)';
+  let hint = [
+    '',
+    '[GATEO 한국 축제 — 이 세션의 확인된 사실]',
+    '- 확인된 열차·버스. 이 시각과 요금만 말한다: 서울→광주송정 KTX 06:22 2시간 6분 42,100원 1회',
+    `- 근처(GATEO): ${scenic.join(', ')}, ${restaurants}`,
+    '- 프로그램: 개장식, 폐막식',
+    '- 주변 맛집(GATEO): 장안식당, 키친205, 목포식당, 화랑식당',
+    '- 요금: 어른 7,000원',
+    '- 공식 안내 URL: https://www.hpftf.or.kr/',
+    '- 이번 질문은 근처 먹을 곳이다. 3~4곳만 유형이나 거리와 함께 말한다: 장안식당, 키친205, 목포식당, 화랑식당.',
+    `- 축제 답 규칙: ${'확인된 사실만 말한다. '.repeat(520)}`,
+  ].join('\n');
+  const pad = '확인된 사실만 말한다. ';
+  while (hint.length < MOONI_KOREA_FESTIVAL_HINT_BUDGET + 90) hint += pad;
+  assert.ok(hint.length > MOONI_KOREA_FESTIVAL_HINT_BUDGET);
+  const fitted = fitMooniKoreaFestivalHint(hint, undefined, {
+    chipId: SAVED.params.chipId,
+    userText: FOOD_ASK,
+  });
+  assert.ok(fitted.length <= MOONI_KOREA_FESTIVAL_HINT_BUDGET, String(fitted.length));
+  assert.match(fitted, /장안식당\(도보 12분\)/);
+  assert.match(fitted, /키친205\(도보 8분\)/);
+  assert.match(fitted, /\[목포식당\]\(https:\/\/example\.com\/mokpo\)/);
+  assert.match(fitted, /화랑식당/);
+  assert.match(fitted, /서울→광주송정 KTX 06:22/);
+  assert.match(fitted, /42,100원/);
+  assert.match(fitted, /7,000원/);
+  assert.match(fitted, /https:\/\/www\.hpftf\.or\.kr\//);
+  assert.match(before, /장안식당/);
+  assert.match(fitted, /장안식당, 키친205, 목포식당, 화랑식당/);
+  assert.doesNotMatch(fitted, /풍경039/);
+  assert.match(fitted, /풍경000/);
+
+  const saved = fitMooniKoreaFestivalHint(before, undefined, {
+    chipId: 'food',
+    userText: FOOD_ASK,
+  });
+  assert.ok(saved.length <= MOONI_KOREA_FESTIVAL_HINT_BUDGET, String(saved.length));
+  for (const name of ['장안식당', '키친205', '목포식당', '화랑식당']) {
+    assert.match(saved, new RegExp(name));
+  }
+  assert.match(saved, /서울→광주송정 KTX 06:22 2시간 6분 42,100원 1회/);
+  assert.match(saved, /7,000원/);
+  assert.match(saved, /https:\/\/www\.hpftf\.or\.kr\//);
 });
 
 test('a long nearby list shrinks before repeated timetable rows collapse', () => {
@@ -164,9 +217,9 @@ test('ChatModal refits after the TAGO append; usePlaceChat uses the shared build
     'utf8',
   );
   const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalAssist.js'), 'utf8');
-  assert.match(chatModal, /fitMooniKoreaFestivalHint\(koreaFestivalHint\)/);
-  assert.match(usePlaceChat, /fitMooniKoreaFestivalHint\(festHint\.hint\)/);
-  assert.match(assist, /fitMooniKoreaFestivalHint\(hint\)/);
+  assert.match(chatModal, /fitMooniKoreaFestivalHint\(koreaFestivalHint,/);
+  assert.match(usePlaceChat, /fitMooniKoreaFestivalHint\(festHint\.hint,/);
+  assert.match(assist, /fitMooniKoreaFestivalHint\(hint,/);
   assert.equal(MOONI_KOREA_FESTIVAL_HINT_MAX, 8000);
   assert.equal(MOONI_KOREA_FESTIVAL_HINT_BUDGET, 7900);
 });

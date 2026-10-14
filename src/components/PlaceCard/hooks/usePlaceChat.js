@@ -85,7 +85,10 @@ export const usePlaceChat = (options = {}) => {
           boundPlaceName: params.boundPlaceName || destinationName || '',
           locale: params.locale || locale,
         });
-        koreaFestivalHint = fitMooniKoreaFestivalHint(festHint.hint);
+        koreaFestivalHint = fitMooniKoreaFestivalHint(festHint.hint, undefined, {
+          chipId: params.chipId,
+          userText,
+        });
       } catch {
         koreaFestivalHint = '';
       }

@@ -3139,7 +3139,13 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
         }
       }
     }
-    return { hint: fitMooniKoreaFestivalHint(hint), candidates: [] };
+    return {
+      hint: fitMooniKoreaFestivalHint(hint, undefined, {
+        userText,
+        chipId: input.chipId,
+      }),
+      candidates: [],
+    };
   }
 
   if (!isMooniKoreaFestivalQuery(userText)) {
@@ -3172,7 +3178,13 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     now: input.now,
   });
 
-  return { hint: fitMooniKoreaFestivalHint(hint), candidates: picked.candidates };
+  return {
+    hint: fitMooniKoreaFestivalHint(hint, undefined, {
+      userText,
+      chipId: input.chipId,
+    }),
+    candidates: picked.candidates,
+  };
 }
 
 export { NO_MATCH_KO, NO_MATCH_KO_DETAIL };

@@ -1237,7 +1237,10 @@ const ChatModal = ({
       if (tagoLead) {
         koreaFestivalHint = `${koreaFestivalHint}\n${festivalAccessTagoModelHint(tagoLead, i18n.language)}`.trim();
       }
-      koreaFestivalHint = fitMooniKoreaFestivalHint(koreaFestivalHint);
+      koreaFestivalHint = fitMooniKoreaFestivalHint(koreaFestivalHint, undefined, {
+        chipId,
+        userText: cleanText,
+      });
 
       const geminiParams = {
         locale: i18n.language,
