@@ -4,7 +4,16 @@
  */
 import { formatUrlName, isUrlSafeEnglishLabel } from './formatUrlName.js';
 import { getPlaceStatsId, isPlaceholderCountry } from '../../../utils/travelSpotResolve.js';
-import { pickLatinPlaceName, samePlaceCenter } from './uiPlaceAssetQuery.js';
+import {
+  placeUrlSlug,
+  resolveCityAttractionHub,
+  resolveHubPlaceFromSlug,
+} from './cityAttractionHubs.js';
+import {
+  latinNameIsAdminArea,
+  pickLatinPlaceName,
+  samePlaceCenter,
+} from './uiPlaceAssetQuery.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 const SKIP_STATS_IDS = new Set(['New Session', 'Scanning...', 'Searching...', '위치 탐색 중...']);
@@ -82,12 +91,15 @@ export function visitedRowToSearchSpot(row, extras = {}) {
   if (!name) return null;
 
   const desc = String(extras.desc || '').trim();
-  const latinName = pickLatinPlaceNameFromLocation({ name_en: nameEn, name });
+  const identity = visitedIdentityForRow(placeId, nameKo, nameEn);
+  const latinName = identity.nameEn
+    ? pickLatinPlaceNameFromLocation({ name_en: identity.nameEn, name })
+    : '';
   const country = concreteCountry(extras.country, extras.country_en);
   const countryEn = concreteCountry(extras.country_en, extras.country);
   return {
     id: `visited-${placeId || `${lat}-${lng}`}`,
-    slug: placeId || undefined,
+    slug: identity.slug,
     kind: 'city',
     badge: '장소',
     name,
@@ -101,7 +113,54 @@ export function visitedRowToSearchSpot(row, extras = {}) {
     uiPlace: true,
     desc,
     image_url: row.image_url || '',
+    ...(identity.parentCity
+      ? { parentCity: identity.parentCity, poiAttraction: true }
+      : {}),
   };
+}
+
+/**
+ * place_stats.place_id가 시군 허브여도 표시명이 그 시군이 아니면 슬러그를 옮기지 않는다.
+ * 평창 통계 행은 그대로 두고, 흥정계곡 카드만 한글 이름 슬러그를 쓴다.
+ */
+function visitedIdentityForRow(placeId, nameKo, nameEn) {
+  const id = String(placeId || '').trim();
+  const ko = String(nameKo || '').trim();
+  if (resolveCityAttractionHub(ko)) {
+    return { slug: id || placeUrlSlug(nameEn, ko), nameEn, parentCity: '' };
+  }
+  const known = id ? resolveHubPlaceFromSlug(id) : null;
+  if (known) {
+    const knownTokens = [known.name, known.name_en, known.slug].map(normalizeVisitedSearchKey);
+    const koToken = normalizeVisitedSearchKey(ko);
+    if (koToken && !knownTokens.includes(koToken)) {
+      const enIsCounty = knownTokens.includes(normalizeVisitedSearchKey(nameEn));
+      return {
+        slug: placeUrlSlug(enIsCounty ? '' : nameEn, ko),
+        nameEn: enIsCounty ? '' : nameEn,
+        parentCity: known.name || '',
+      };
+    }
+  }
+  return { slug: id || undefined, nameEn, parentCity: '' };
+}
+
+function geoHitIsForeignAdmin(visited, geo) {
+  if (!geo) return false;
+  if (resolveCityAttractionHub(visited?.name_ko) || resolveCityAttractionHub(visited?.name)) {
+    return false;
+  }
+  const latin = pickLatinPlaceName(geo);
+  const latinHub = latin ? resolveCityAttractionHub(latin) : null;
+  const visitedToken = normalizeVisitedSearchKey(visited?.name_ko || visited?.name);
+  if (latinHub) {
+    const known = [latinHub.name, latinHub.name_en, latinHub.hubId].map(normalizeVisitedSearchKey);
+    return Boolean(visitedToken) && !known.includes(visitedToken);
+  }
+  const geoName = normalizeVisitedSearchKey(geo.name);
+  if (!geoName || !visitedToken || geoName === visitedToken) return false;
+  const kind = String(geo.kind || '').toLowerCase();
+  return kind === 'city' || geo.badge === '도시';
 }
 
 export function visitedSpotNeedsGeoCountry(spot) {
@@ -136,13 +195,22 @@ export function overlayGeoFieldsOnVisitedSpot(visited, geoHits) {
   if (!visited) return visited;
   const list = Array.isArray(geoHits) ? geoHits : [];
   const geo = list.find((hit) => geoHitMatchesVisited(visited, hit));
-  const latin = pickLatinPlaceName(visited) || pickLatinPlaceName(geo);
+  const rejectAdmin = geoHitIsForeignAdmin(visited, geo);
+  const ownLatin = pickLatinPlaceName(visited);
+  const ownIsAdmin = latinNameIsAdminArea(ownLatin, visited?.parentCity) ||
+    (geo && geoHitIsForeignAdmin(visited, { ...geo, name: ownLatin, name_en: ownLatin }));
+  const latin = rejectAdmin || ownIsAdmin
+    ? ''
+    : (ownLatin || pickLatinPlaceName(geo));
   const country = concreteCountry(visited.country, geo?.country);
   const countryEn = concreteCountry(visited.country_en, geo?.country_en) ||
     (isUrlSafeEnglishLabel(geo?.country) ? String(geo.country).trim() : '');
+  const parentCity = visited.parentCity ||
+    (rejectAdmin ? String(geo?.name || '').trim() : '');
   return {
     ...visited,
-    ...(latin ? { name_en: latin } : {}),
+    ...(latin ? { name_en: latin } : rejectAdmin || ownIsAdmin ? { name_en: '' } : {}),
+    ...(parentCity ? { parentCity } : {}),
     country,
     country_en: countryEn,
   };

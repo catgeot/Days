@@ -485,7 +485,10 @@ export function useHomeHandlers({
             next.country = address.country;
             next.country_en = address.country_en || address.country;
           }
-          if (stillNeedsName && healedNameEn) {
+          const poiNameLocked = Boolean(
+            prev.poiAttraction || prev.kind === 'attraction' || prev.kind === 'poi',
+          );
+          if (stillNeedsName && healedNameEn && !poiNameLocked) {
             next.name_en = healedNameEn;
             if (!next.slug || isEphemeralSlug(next.slug)) {
               next.slug = formatUrlName(healedNameEn) || next.slug;

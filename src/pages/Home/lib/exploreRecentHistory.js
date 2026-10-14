@@ -1,7 +1,7 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve';
-import { resolveHubPlaceFromSlug } from './cityAttractionHubs';
+import { placeUrlSlug, resolveHubPlaceFromSlug } from './cityAttractionHubs';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
 
@@ -200,6 +200,50 @@ export function clearKeywordVisits() {
   return [];
 }
 
+function normalizePlaceToken(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, '');
+}
+
+function knownPlaceForParam(param) {
+  const hub = resolveHubPlaceFromSlug(param);
+  if (hub) return hub;
+  const catalog = resolveCatalogPlaceSlug(param);
+  if (catalog) {
+    return TRAVEL_SPOTS.find((spot) => String(spot.slug).toLowerCase() === catalog) || null;
+  }
+  return (
+    (citiesData || []).find(
+      (row) => String(row?.slug || '').toLowerCase() === String(param || '').toLowerCase(),
+    ) || null
+  );
+}
+
+function pinNameOwnsPlace(pin, place) {
+  if (!place) return true;
+  const names = [pin?.name, pin?.name_ko].map(normalizePlaceToken).filter(Boolean);
+  if (!names.length) return true;
+  const known = [place.name, place.name_en, place.slug, place.hubId, ...(place.aliases || [])]
+    .map(normalizePlaceToken)
+    .filter(Boolean);
+  return names.some((token) => known.includes(token));
+}
+
+function detachCountySlug(pin, known) {
+  const name = String(pin?.name_ko || pin?.name || '').trim();
+  const knownTokens = [known?.name, known?.name_en, known?.slug].map(normalizePlaceToken);
+  const nameEn = String(pin?.name_en || '').trim();
+  const enIsCounty = Boolean(nameEn) && knownTokens.includes(normalizePlaceToken(nameEn));
+  return {
+    ...pin,
+    slug: placeUrlSlug(enIsCounty ? '' : nameEn, name),
+    name_en: enIsCounty ? '' : pin?.name_en,
+    parentCity: pin?.parentCity || known?.name || undefined,
+  };
+}
+
 function isMapboxOrGeocodePin(spot) {
   const id = String(spot?.id ?? '').trim().toLowerCase();
   if (id.startsWith('mapbox-') || id.startsWith('geocode-')) return true;
@@ -234,8 +278,11 @@ export function resolveSearchResultSelect(spot) {
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   const pin = { ...spot, lat, lng };
-  if (isMapboxOrGeocodePin(pin)) return { type: 'home', spot: pin };
   const param = knownPlaceSlug(getPlaceUrlParam(pin));
+  const known = param ? knownPlaceForParam(param) : null;
+  const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);
+  const spotForOpen = countyMismatch ? detachCountySlug(pin, known) : pin;
+  if (isMapboxOrGeocodePin(pin) || countyMismatch) return { type: 'home', spot: spotForOpen };
   if (param) return { type: 'place', spot: pin, param };
   return { type: 'home', spot: pin };
 }

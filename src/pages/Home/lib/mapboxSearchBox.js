@@ -5,9 +5,11 @@
 import { isIslandPlaceQuery } from './exploreSearchAliases.js';
 import { geocodeForwardSuggestionHits } from './mapboxGeocodeSuggestions.js';
 import { shouldSupplementGeocodeHits } from './travelSearchHomonyms.js';
+import { placeUrlSlug } from './cityAttractionHubs.js';
 import {
   ensureLatinPlaceSlug,
   isLatinPlaceName,
+  latinNameIsAdminArea,
   mergeLatinPlaceFields,
   mergeSearchBoxEnglishHits,
   mergeSearchBoxWithGeocodeHits,
@@ -108,7 +110,36 @@ async function parseJsonOrNull(response) {
   }
 }
 
-function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } = {}) {
+/** Search Box context.place · place_formatted 첫 토큰. 국가(맨 끝)는 쓰지 않는다. */
+export function searchBoxAdminPlaceName(props = {}) {
+  const ctx = props.context;
+  if (ctx && typeof ctx === 'object' && !Array.isArray(ctx)) {
+    const place = String(ctx.place?.name || '').trim();
+    if (place) return place;
+  }
+  if (Array.isArray(ctx)) {
+    const row = ctx.find((entry) => String(entry?.id || '').startsWith('place.'));
+    const text = String(row?.text || row?.name || '').trim();
+    if (text) return text;
+  }
+  const formatted = String(props.place_formatted || '').trim();
+  if (formatted.includes(',')) {
+    const head = formatted.split(',')[0].trim();
+    if (head && !/^\d+$/.test(head)) return head;
+  }
+  return '';
+}
+
+function poiCountyLabel(explicitParent, adminPlace, poiName) {
+  if (explicitParent) return explicitParent;
+  if (!adminPlace) return '';
+  if (latinNameIsAdminArea(poiName, adminPlace) || latinNameIsAdminArea(adminPlace, poiName)) {
+    return '';
+  }
+  return adminPlace;
+}
+
+export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } = {}) {
   if (!feature) return null;
   const props = feature.properties || {};
   const coords = feature.geometry?.coordinates;
@@ -131,10 +162,17 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
   const poiCats = props.poi_category_ids || props.poi_category || [];
   const firstCat = Array.isArray(poiCats) ? poiCats[0] : '';
   const preferred = String(props.name_preferred || props.name || name).trim();
-  const latinName = isLatinPlaceName(preferred)
+  const rawLatin = isLatinPlaceName(preferred)
     ? preferred
     : isLatinPlaceName(name)
       ? name
+      : '';
+  const adminPlace = searchBoxAdminPlaceName(props);
+  const county = isPoi ? poiCountyLabel(parentCity, adminPlace, name) : parentCity;
+  // POI 영문명은 기능 자신의 라틴 이름만. context.place / place_formatted(평창)는 parentCity.
+  const latinName =
+    rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))
+      ? rawLatin
       : '';
   const latinCountry = isLatinPlaceName(country) ? country : '';
 
@@ -151,7 +189,8 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
     lng,
     mapboxId: props.mapbox_id,
     hubId,
-    parentCity,
+    parentCity: county || undefined,
+    ...(isPoi ? { slug: placeUrlSlug(latinName, name), poiAttraction: true } : {}),
     attractionKind: firstCat || undefined,
     source,
     uiPlace: true,
@@ -304,12 +343,20 @@ export async function searchBoxSuggest(query, opts = {}) {
       const featureType = String(s.feature_type || '').toLowerCase();
       const isPoi = featureType === 'poi';
       const country = countryFromSearchBoxProperties(s);
+      const suggestName = String(s.name || '').trim();
+      const adminPlace = searchBoxAdminPlaceName(s);
+      const county = isPoi ? poiCountyLabel('', adminPlace, suggestName) : '';
+      const rawLatin = isLatinPlaceName(s.name) ? suggestName : '';
+      const latinName =
+        rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))
+          ? rawLatin
+          : '';
       return {
         id: `suggest-${s.mapbox_id}`,
         kind: isPoi ? 'attraction' : featureType === 'place' || featureType === 'city' ? 'city' : 'poi',
         badge: isPoi ? '명소' : featureType === 'place' || featureType === 'city' ? '도시' : '장소',
-        name: String(s.name || '').trim(),
-        name_en: isLatinPlaceName(s.name) ? String(s.name).trim() : '',
+        name: suggestName,
+        name_en: latinName,
         country,
         country_en: isLatinPlaceName(country) ? country : '',
         mapboxId: s.mapbox_id,
@@ -317,6 +364,8 @@ export async function searchBoxSuggest(query, opts = {}) {
         sessionToken,
         source: 'mapbox',
         uiPlace: true,
+        ...(county ? { parentCity: county } : {}),
+        ...(isPoi ? { slug: placeUrlSlug(latinName, suggestName), poiAttraction: true } : {}),
         desc: s.full_address || s.place_formatted || s.name,
         lat: null,
         lng: null,
