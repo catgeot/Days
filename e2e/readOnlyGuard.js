@@ -11,6 +11,9 @@ const READ_ONLY_EDGE_FUNCTIONS = [
 /** Smoke uses anon REST only (no direct Edge POST). E2E uses READ_ONLY_EDGE_FUNCTIONS. */
 export const SMOKE_PROBE_EDGE_FUNCTIONS = [];
 
+/** Staging project only — never prod. Used by MOONi combo QA against live gemini-proxy. */
+const STAGING_SUPABASE_PROJECT_HOST = 'qeqszwxjvhnbzhkchera.supabase.co';
+
 export function classifySupabaseRequest(method, url, options = {}) {
   const edgeAllowlist = options.edgeAllowlist ?? READ_ONLY_EDGE_FUNCTIONS;
   let parsed;
@@ -32,6 +35,13 @@ export function classifySupabaseRequest(method, url, options = {}) {
   const fnMatch = parsed.pathname.match(/^\/functions\/v1\/([^/]+)/);
   if (fnMatch) {
     const name = fnMatch[1];
+    if (
+      process.env.MOONI_STAGING_COMBO_QA === '1'
+      && name === 'gemini-proxy'
+      && parsed.hostname === STAGING_SUPABASE_PROJECT_HOST
+    ) {
+      return 'allow';
+    }
     return edgeAllowlist.includes(name) ? 'allow' : 'reject';
   }
 

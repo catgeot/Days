@@ -11,7 +11,7 @@ export default defineConfig({
   expect: { timeout: 90_000 },
   reporter: [['list']],
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://127.0.0.1:4173',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173',
     ignoreHTTPSErrors: true,
     locale: 'ko-KR',
     timezoneId: 'Asia/Seoul',
