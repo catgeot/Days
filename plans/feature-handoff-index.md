@@ -14,6 +14,29 @@
 
 ## 활성 목록
 
+### 자유검색 영상
+
+| | |
+|--|--|
+| **상태** | **#1 서버 쿼리** · 코드 `654a8805` · draft PR [#468](https://github.com/catgeot/Days/pull/468) · **병합 금지** · Edge 미배포 |
+| **브랜치** | `cursor/free-search-place-videos-2159` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-14-project-log.md`](./2026-10-14-project-log.md) |
+| **Preview** | 없음. `vercel.json` `cursor/*` 배포 꺼짐. 사람이 스테이징에 Edge만 배포 |
+| **금지** | Edge 배포(에이전트) · prod 병합 · 클라이언트 `query` 수용 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `lint:ci` · `test:health` · `check:place-video-catalog` · `vite build` · Deno `fetch-place-videos/index_test.ts` |
+| **남은 일** | 사람이 `supabase/functions/fetch-place-videos`를 스테이징에 배포한 뒤, Romblon·상투메 프린시페·파미르·티니안 영상 탭을 본다 |
+
+**다음 제시어**
+
+```
+자유검색 영상 #2, 스테이징 영상 탭
+@plans/feature-handoff-index.md
+@plans/2026-10-14-project-log.md
+브랜치 cursor/free-search-place-videos-2159 · PR #468 · Preview 없음(cursor/* 미배포) · Edge supabase/functions/fetch-place-videos 는 사람이 스테이징 배포 후
+금지: 에이전트 Edge 배포 · prod 병합 · 클라이언트 query 수용
+```
+
 ### 축제 카드
 
 | | |
