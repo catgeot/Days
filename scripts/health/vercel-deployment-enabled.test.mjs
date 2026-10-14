@@ -9,6 +9,9 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 test('cursor branches do not auto-deploy and main stays at the Vercel default', () => {
   const vercel = JSON.parse(readFileSync(join(root, 'vercel.json'), 'utf8'));
   assert.equal(vercel.git.deploymentEnabled['cursor/*'], false);
+  assert.equal(vercel.git.deploymentEnabled['cursor/festival-access-promo-5b7f'], true);
+  const allowed = Object.entries(vercel.git.deploymentEnabled).filter(([, on]) => on === true);
+  assert.deepEqual(allowed, [['cursor/festival-access-promo-5b7f', true]]);
   assert.equal(Object.hasOwn(vercel.git.deploymentEnabled, 'main'), false);
   assert.equal(vercel.git.deploymentEnabled !== false, true);
   assert.equal(vercel.ignoreCommand, undefined);
