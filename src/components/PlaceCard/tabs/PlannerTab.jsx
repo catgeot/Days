@@ -12,7 +12,7 @@ import { mobilePlaceHeaderScrollPadding, mobilePlaceHeaderSpacerClass, mobilePla
 import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
-import PlaceVerifiedFacts, { AiGeneratedBanner } from '../common/PlaceVerifiedFacts';
+import { AiGeneratedBanner } from '../common/PlaceVerifiedFacts';
 import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
@@ -466,7 +466,6 @@ const PlannerTab = ({
                     </div>
                 )}
                 <div className="w-full max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto flex-1 flex flex-col mt-2 md:mt-0">
-                    <PlaceVerifiedFacts location={location} variant="light" />
                     {showFlightCinemaNotice ? (
                         <FlightCinemaPlannerNotice
                             cinemaOriginIata={flightCinemaEntry?.cinemaOriginIata ?? null}

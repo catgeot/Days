@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
-import { AiGeneratedBanner } from '../../../common/PlaceVerifiedFacts';
+import { AiGeneratedBanner, PlaceLocalInfoInline } from '../../../common/PlaceVerifiedFacts';
 import { resolveVerifiedFacts } from '../../../../../data/placeVerifiedFacts/cairo.js';
 import { isMobileDevice } from '../../../common/device';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
@@ -203,6 +203,12 @@ const ToolkitCard = ({
                         )
                         : <KlookTourBannerWidget key={mapPoiWidgetKey} targetUrl={klookTourDeepLink} />
             )}
+            <PlaceLocalInfoInline
+                location={location}
+                toolkitType={type}
+                presentation="planner"
+                className="mt-4"
+            />
         </div>
     );
 };

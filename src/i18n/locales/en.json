@@ -859,6 +859,19 @@
     },
     "facts": {
       "title": "Verified facts",
+      "localTitle": "Local info",
+      "topicCount": "{{count}} topics",
+      "inlineTitle": "Local info · {{label}}",
+      "storiesTitle": "Trip notes",
+      "storyCount": "{{count}}",
+      "logbookLink": "Logbook",
+      "reviewLink": "Reviews",
+      "confirmed": {
+        "entry": "Verified entry info",
+        "airport": "Verified airport-to-city info",
+        "moneySafety": "Verified money and safety info",
+        "stayArea": "Verified where-to-stay info"
+      },
       "source": "Source",
       "checked": "Checked {{date}}",
       "unverified": "Unverified: {{items}}",

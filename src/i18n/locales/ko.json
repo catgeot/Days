@@ -629,6 +629,19 @@
     },
     "facts": {
       "title": "확인된 사실",
+      "localTitle": "현지 정보",
+      "topicCount": "{{count}}개 주제",
+      "inlineTitle": "현지 정보 · {{label}}",
+      "storiesTitle": "다녀온 이야기",
+      "storyCount": "{{count}}건",
+      "logbookLink": "로그북",
+      "reviewLink": "리뷰",
+      "confirmed": {
+        "entry": "확인된 입국 정보",
+        "airport": "확인된 공항→시내 정보",
+        "moneySafety": "확인된 돈·치안 정보",
+        "stayArea": "확인된 머물 지역 정보"
+      },
       "source": "출처",
       "checked": "확인일 {{date}}",
       "unverified": "확인 안 된 항목: {{items}}",

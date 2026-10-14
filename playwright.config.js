@@ -29,6 +29,7 @@ export default defineConfig({
       testIgnore: [
         /youtube-loadmore-session\.spec\.js/,
         /gallery-single-writer\.spec\.js/,
+        /place-local-info\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
@@ -51,6 +52,15 @@ export default defineConfig({
       name: 'webkit-390',
       testMatch: /home-search-place-nav\.spec\.js/,
       use: { ...devices['iPhone 13'] },
+    },
+    {
+      name: 'webkit-place-local-info',
+      testMatch: /place-local-info\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+      },
     },
     {
       name: 'webkit-festival-hero-credit',
