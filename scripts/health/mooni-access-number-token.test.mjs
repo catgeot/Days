@@ -92,6 +92,46 @@ test('gangneung daegu access — bus lead and no data-disclaimer noise', () => {
   assert.doesNotMatch(polished, /열차편\s*역시/);
 });
 
+test('gukhyang daegu access drops duplicate bus route after summary lead', () => {
+  const raw = [
+    '대중교통을 이용할 때는 동대구터미널이나 서대구터미널에서 광주(유·스퀘어)로 가는 고속버스를 타고, 유·스퀘어에서 함평공용버스터미널행 버스로 이어 택시·시내버스로 약 10~20분이면 함평 엑스포공원까지 편해요.',
+    '고속버스를 이용할 때는 동대구터미널이나 대구고속버스터미널에서 광주(유·스퀘어)행 고속버스를 타고 유·스퀘어에서 함평공용버스터미널행 버스로 갈아타면 됩니다.',
+    '확인된 대구→광주송정 직통 열차는 없어요. 열차로 가시려면 광주송정역에서 함평역 방면 열차로 갈아타야 해요.',
+  ].join(' ');
+  const polished = polishFestivalModelReply(raw, {
+    contentId: '638576',
+    chipId: 'festival_access',
+    locale: 'ko',
+    departureOriginId: 'daegu',
+    userText: buildFestivalAccessAskText('daegu', 'ko'),
+    eventStartDate: '20261023',
+    eventEndDate: '20261108',
+  });
+  assert.doesNotMatch(polished, /고속버스를\s*이용할\s*때는/);
+  assert.equal((polished.match(/함평 엑스포공원까지 편해요/g) || []).length, 1);
+  assert.match(polished, /광주송정역에서/);
+});
+
+test('gangneung daegu access drops duplicate terminal bus sentence', () => {
+  const raw = [
+    '대구고속버스터미널에서 강릉고속버스터미널로 가는 고속버스가 가장 편해요. 시간과 요금은 아래 버스타고·고속버스에서 바로 볼 수 있어요.',
+    '고속버스를 이용할 때는 동대구터미널에서 강릉고속버스터미널행 고속버스를 타면 됩니다.',
+    '승용차로 갈 때는 강릉 월화거리로 이동하면 돼요.',
+  ].join(' ');
+  const polished = polishFestivalModelReply(raw, {
+    contentId: '2930716',
+    chipId: 'festival_access',
+    locale: 'ko',
+    departureOriginId: 'daegu',
+    userText: buildFestivalAccessAskText('daegu', 'ko'),
+    eventStartDate: '20261015',
+    eventEndDate: '20261018',
+  });
+  assert.doesNotMatch(polished, /고속버스를\s*이용할\s*때는/);
+  assert.equal((polished.match(/강릉고속버스터미널/g) || []).length, 1);
+  assert.match(polished, /버스타고·고속버스에서 바로 볼 수 있어요/);
+});
+
 test('gukhyang access adds period after festival tel', () => {
   const polished = polishFestivalModelReply(
     '주차 안내는 공식 홈페이지에 있어요. 문의 061-320-2247 더 자세한 축제 내용은 대한민국 국향대전 페이지에서 확인할 수 있어요.',

@@ -1442,6 +1442,77 @@ function gangneungAccessSentenceIsTravelerNoise(sentence) {
   return true;
 }
 
+function splitAccessPolishSentences(text) {
+  return String(text || '')
+    .split(/(?<=[.!?。])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function isGukhyangDaeguBusRouteSentence(sentence) {
+  const t = String(sentence || '');
+  if (!/(동대구|서대구|대구고속).*버스|고속버스를\s*이용|유·스퀘어|유ㆍ스퀘어/.test(t)) return false;
+  return /(동대구|서대구|대구고속|서부)/.test(t) && /버스|고속/.test(t);
+}
+
+function isGukhyangDaeguBusSummarySentence(sentence) {
+  const t = String(sentence || '');
+  return isGukhyangDaeguBusRouteSentence(t) && /함평공용버스터미널/.test(t) && /편해요/.test(t);
+}
+
+function dedupeGukhyangDaeguAccessBusRouteRepeat(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  const sentences = splitAccessPolishSentences(text);
+  if (!sentences.length) return String(text || '');
+  const summaryIdx = sentences.findIndex((s) => isGukhyangDaeguBusSummarySentence(s));
+  if (summaryIdx < 0) return String(text || '').replace(/\s{2,}/g, ' ').trim();
+  const kept = sentences.filter((sentence, index) => {
+    if (index === summaryIdx) return true;
+    if (index > summaryIdx && isGukhyangDaeguBusRouteSentence(sentence)) return false;
+    if (/가는\s*길을\s*안내|안내해\s*드려요/.test(sentence)) return false;
+    if (/대구에서[^.]*확인된\s*직통\s*열차는\s*없어요/.test(sentence)) return false;
+    return true;
+  });
+  let out = kept.join(' ');
+  const lead = GUKHYANG_DAEGU_BUS_LEAD_KO;
+  if (!out.startsWith(lead.slice(0, 24))) {
+    out = `${lead} ${out.replace(lead, '').trim()}`.trim();
+  }
+  out = out.replace(
+    /(함평\s*엑스포공원까지\s*편해요\.)(?:\s*[^.]{0,120}?함평\s*엑스포공원까지\s*편해요\.)/g,
+    '$1',
+  );
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+function isGangneungDaeguBusRouteSentence(sentence) {
+  const t = String(sentence || '');
+  return /대구고속버스터미널|동대구터미널/.test(t) && /강릉고속버스터미널/.test(t) && /버스|고속/.test(t);
+}
+
+function dedupeGangneungDaeguAccessBusRouteRepeat(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  const sentences = splitAccessPolishSentences(text);
+  if (!sentences.length) return String(text || '');
+  const summaryIdx = sentences.findIndex(
+    (s) => /가장\s*편해요/.test(s) && /강릉고속버스터미널/.test(s) && /대구고속버스터미널/.test(s),
+  );
+  if (summaryIdx < 0) return String(text || '').replace(/\s{2,}/g, ' ').trim();
+  const kept = sentences.filter((sentence, index) => {
+    if (index === summaryIdx) return true;
+    if (index > summaryIdx && isGangneungDaeguBusRouteSentence(sentence)) return false;
+    return true;
+  });
+  const lead = GANGNEUNG_DAEGU_BUS_BOOKING_LEAD_KO;
+  let out = kept.join(' ').trim();
+  if (out.indexOf(lead) > 60) {
+    out = `${lead} ${out.replace(lead, '').trim()}`.trim();
+  }
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
 function rewriteGangneungDaeguAccessTravelerCopy(text, options = {}) {
   if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
   if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
@@ -1988,6 +2059,8 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = cleanupGukhyangAccessOrphanRailTails(text, options);
     text = rewriteVagueGangneungTransferRoute(text, options);
     text = rewriteGangneungDaeguAccessTravelerCopy(text, options);
+    text = dedupeGukhyangDaeguAccessBusRouteRepeat(text, options);
+    text = dedupeGangneungDaeguAccessBusRouteRepeat(text, options);
     text = ensureGukhyangFestivalTelPeriod(text, options);
     text = rewriteFestivalAccessTimetableWindowPhrase(text);
     text = glueAccessNumbersInProse(text);
