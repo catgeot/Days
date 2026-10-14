@@ -1315,7 +1315,7 @@ function formatGukhyangAccessOriginGuidance(originRow, transport, locale = 'ko')
   const daeguBusFirst = originRow.id === 'daegu'
     ? (en
       ? `Lead with express or intercity bus from ${busTerminals} to ${gwangjuBusHub}, then a Hampyeong-bound bus toward the venue — like the Incheon answer pattern. Only after that, mention Dongdaegu KTX/SRT via Gwangju Songjeong as a secondary option if it really runs.`
-      : `인천 답변처럼 ${busTerminals}→${gwangjuBusHub} 고속·시외버스를 먼저 쓰고, 광주에서 함평행 버스로 축제장 방향을 이어 주세요. 그 다음에만 동대구역→광주송정 열차 환승을 선택지로 넣어 주세요.`)
+      : `인천 답변처럼 ${busTerminals}→${gwangjuBusHub} 고속·시외버스를 먼저 쓰고, 유·스퀘어에서 함평공용버스터미널행 버스로 이어 택시·시내버스 10~20분이면 축제장이에요. 열차는 «광주송정역에서 함평역 방면으로 갈아타야 해요»처럼 광주송정 환승만 짧게 넣어 주세요. «함평역으로 이동하여 기차» 같은 문장은 넣지 마세요.`)
     : (en
       ? `Then bus from ${busTerminals} to Gwangju and on to Hampyeong and the venue.`
       : `${busTerminals}에서 광주 고속·시외버스 → 광주에서 함평행 버스 → 축제장 순으로 먼저 안내해 주세요.`);
@@ -1358,7 +1358,10 @@ function rewriteFalseDongdaeguGwangjuSongjeongLead(text, options = {}) {
 }
 
 const GUKHYANG_DAEGU_BUS_LEAD_KO =
-  '대중교통을 이용할 때는 동대구터미널이나 서대구터미널에서 광주(유·스퀘어)로 가는 고속버스를 타고 광주에서 함평행 버스로 갈아타는 방법이 편해요.';
+  '대중교통을 이용할 때는 동대구터미널이나 서대구터미널에서 광주(유·스퀘어)로 가는 고속버스를 타고, 유·스퀘어에서 함평공용버스터미널행 버스로 이어 택시·시내버스로 약 10~20분이면 함평 엑스포공원까지 편해요.';
+
+const GUKHYANG_DAEGU_RAIL_SECONDARY_KO =
+  '열차로 가시려면 광주송정역에서 함평역 방면 열차로 갈아타야 해요.';
 
 /** Named intermediate hub — not only «동대구→환승→광주송정». */
 const GUKHYANG_NAMED_INTERMEDIATE_TRANSFER_RE =
@@ -1380,6 +1383,62 @@ function rewriteVagueGukhyangTransferWithoutNamedStation(text, options = {}) {
   return out.replace(/\s{2,}/g, ' ').trim();
 }
 
+function rewriteGukhyangDaeguAccessBusRailOrder(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  let out = String(text || '');
+  out = out.replace(/[^.!?。]*함평역으로\s*이동하여\s*기차[^.!?。]*[.。]\s*/g, '');
+  out = out.replace(
+    /광주\s*도착\s*후에는[^.!?。]*(?:함평역으로\s*이동|기차를\s*이용)[^.!?。]*[.。]\s*/g,
+    '',
+  );
+  out = out.replace(
+    /함평행\s*버스로\s*함평역에서\s*축제장까지는\s*/g,
+    '함평공용버스터미널 쪽에서 택시·시내버스로 약 10~20분이면 ',
+  );
+  out = out.replace(
+    /열차를\s*이용할\s*경우[^.!?。]*직통[^.!?。]*[.。]\s*/g,
+    `확인된 대구→광주송정 직통 열차는 없어요. ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO} `,
+  );
+  out = out.replace(
+    /확인된\s*동대구→광주송정\s*직통\s*열차는\s*없어요\.\s*대구고속버스터미널[^.!?。]*이어\s*가면\s*돼요\.?\s*/g,
+    '',
+  );
+  if (!/함평공용버스터미널/.test(out) && /유·스퀘어|유ㆍ스퀘어/.test(out)) {
+    out = out.replace(
+      /(유·스퀘어|유ㆍ스퀘어)[^.!?。]*[.。]\s*/,
+      (sent) =>
+        `${sent.trim()} 유·스퀘어에서 함평공용버스터미널행 버스를 타고, 터미널이나 인근에서 택시·시내버스로 약 10~20분이면 함평 엑스포공원까지 편해요. `,
+    );
+  }
+  if (/직통\s*열차는\s*없어요/.test(out) && !/광주송정역에서/.test(out)) {
+    out = out.replace(
+      /(확인된\s*대구→광주송정\s*직통\s*열차는\s*없어요\.?)/,
+      `$1 ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO}`,
+    );
+  }
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+function ensureGukhyangFestivalTelPeriod(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (!isBoundFestivalAccessPolish(options)) return String(text || '');
+  return String(text || '')
+    .replace(/(061-320-2247)(?!\s*[.。])(?=\s)/g, '$1.')
+    .replace(/061-320-2247\.{2,}/g, '061-320-2247.');
+}
+
+function rewriteGangneungDaeguMissingTimetablePhrase(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  const noDataRe =
+    /[^.!?。]*(?:데이터는\s*제공되지|확인된\s*운행\s*시각\s*정보는\s*제공되지|직통\s*열차의\s*확인된\s*운행\s*시각\s*정보는)[^.!?。]*[.。]\s*/g;
+  return String(text || '').replace(
+    noDataRe,
+    '대구 출발 직통 열차 시각은 이 답변 카드에 없어서, 아래 코레일·버스타고·고속버스 링크에서 편도 일정을 먼저 확인해 보시면 좋아요. ',
+  );
+}
+
 function cleanupGukhyangAccessOrphanRailTails(text, options = {}) {
   if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
   let out = String(text || '');
@@ -1388,7 +1447,7 @@ function cleanupGukhyangAccessOrphanRailTails(text, options = {}) {
   if (String(options.departureOriginId || '') === 'daegu') {
     out = out.replace(
       /열차를\s*이용한다면[^.!?。]*광주송정[^.!?。]*[.。]\s*/g,
-      '열차는 확인된 동대구→광주송정 직통 편이 없어서, 버스 경로를 먼저 보시는 편이 좋아요. ',
+      `확인된 대구→광주송정 직통 열차는 없어요. ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO} `,
     );
     const dupPhrase =
       '대구고속버스터미널(서부·동대구)에서 광주(유·스퀘어)까지 고속·시외버스를 타고, 광주에서 함평행 버스로 이어 가면 돼요';
@@ -1902,8 +1961,11 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
     text = rewriteVagueGukhyangTransferWithoutNamedStation(text, options);
     text = ensureGukhyangDaeguBusFirstLead(text, options);
+    text = rewriteGukhyangDaeguAccessBusRailOrder(text, options);
     text = cleanupGukhyangAccessOrphanRailTails(text, options);
     text = rewriteVagueGangneungTransferRoute(text, options);
+    text = rewriteGangneungDaeguMissingTimetablePhrase(text, options);
+    text = ensureGukhyangFestivalTelPeriod(text, options);
     text = rewriteFestivalAccessTimetableWindowPhrase(text);
     text = glueAccessNumbersInProse(text);
     text = stripRedundantBookingLinkOnlyLines(text);
