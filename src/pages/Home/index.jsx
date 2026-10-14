@@ -32,6 +32,7 @@ import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLo
 import {
   pushRecentVisited,
   pushKeywordVisit,
+  resolveSearchResultSelect,
 } from './lib/exploreRecentHistory';
 import {
   hydrateLocationFromSavedTrip,
@@ -1800,11 +1801,13 @@ function Home() {
             navigate('/');
           }}
           onSelect={(spot) => {
-            // 검색 선택(카탈로그 포함) → 홈 써머리 장소카드 (/place 직행 금지)
-            const lat = Number(spot?.lat);
-            const lng = Number(spot?.lng);
-            if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-            const pin = { ...spot, lat, lng };
+            const decision = resolveSearchResultSelect(spot);
+            if (!decision) return;
+            if (decision.type === 'place') {
+              navigateToPlace(decision.spot);
+              return;
+            }
+            const pin = decision.spot;
             // Explore→홈 race: path effect가 selectedLocation 반영 전에 돌 수 있어 동기 SSOT
             pendingGlobeHomeFocusRef.current = pin;
             rememberGlobeFocus(pin);

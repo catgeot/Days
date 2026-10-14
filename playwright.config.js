@@ -47,5 +47,10 @@ export default defineConfig({
       testMatch: /gangneung-nearby-thumb-fallback\.spec\.js/,
       use: { ...devices['iPhone 13'] },
     },
+    {
+      name: 'webkit-390',
+      testMatch: /home-search-place-nav\.spec\.js/,
+      use: { ...devices['iPhone 13'] },
+    },
   ],
 });
