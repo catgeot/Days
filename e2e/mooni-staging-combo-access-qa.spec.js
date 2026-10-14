@@ -221,6 +221,8 @@ test.describe('MOONi staging combo — 가는 법 origins (WebKit 390)', () => {
         const mooniBubble = accessAnswerRow(page).last().locator('div.rounded-2xl').last();
         await expect(mooniBubble).toBeVisible({ timeout: 300_000 });
         await scrollChatToEnd(page);
+        await mooniBubble.scrollIntoViewIfNeeded();
+        await scrollChatToEnd(page);
         const answerText = (await mooniBubble.innerText()).trim();
         assertAccessAnswerPolished(answerText);
         const file = `${fest.slug}-${fest.festivalId}-from-${originId}-end.png`;
