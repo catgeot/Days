@@ -31,6 +31,17 @@ test('gukhyang daegu polish drops vague 환승을 거쳐 and leads with bus', ()
   });
   assert.doesNotMatch(polished, /환승을\s*거쳐/);
   assert.doesNotMatch(polished, /동대구역에서 환승/);
+  const orphan = polishFestivalModelReply(
+    '버스로 이어 가면 돼요역으로 이동한 뒤, 함평역까지 ITX로 갈아타요.',
+    {
+      contentId: '638576',
+      chipId: 'festival_access',
+      locale: 'ko',
+      departureOriginId: 'daegu',
+      userText: buildFestivalAccessAskText('daegu', 'ko'),
+    },
+  );
+  assert.doesNotMatch(orphan, /돼요\s*역으로/);
   const busIdx = polished.indexOf('동대구터미널이나 서대구터미널');
   assert.ok(busIdx >= 0 && busIdx < 200, `bus lead too late: ${busIdx}`);
   assert.match(polished, /함평행 버스/);

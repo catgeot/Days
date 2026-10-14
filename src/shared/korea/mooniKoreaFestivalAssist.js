@@ -1380,6 +1380,29 @@ function rewriteVagueGukhyangTransferWithoutNamedStation(text, options = {}) {
   return out.replace(/\s{2,}/g, ' ').trim();
 }
 
+function cleanupGukhyangAccessOrphanRailTails(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  let out = String(text || '');
+  out = out.replace(/돼요\s*역으로\s*이동한\s*뒤[^.!?。]*[.。]\s*/g, '');
+  out = out.replace(/이어\s*가면\s*돼요\s*역으로[^.!?。]*[.。]\s*/g, '');
+  if (String(options.departureOriginId || '') === 'daegu') {
+    out = out.replace(
+      /열차를\s*이용한다면[^.!?。]*광주송정[^.!?。]*[.。]\s*/g,
+      '열차는 확인된 동대구→광주송정 직통 편이 없어서, 버스 경로를 먼저 보시는 편이 좋아요. ',
+    );
+    const dupPhrase =
+      '대구고속버스터미널(서부·동대구)에서 광주(유·스퀘어)까지 고속·시외버스를 타고, 광주에서 함평행 버스로 이어 가면 돼요';
+    const firstDup = out.indexOf(dupPhrase);
+    if (firstDup >= 0) {
+      const secondDup = out.indexOf(dupPhrase, firstDup + dupPhrase.length);
+      if (secondDup >= 0) {
+        out = `${out.slice(0, secondDup)}${out.slice(secondDup + dupPhrase.length).replace(/^\.\s*/, '')}`;
+      }
+    }
+  }
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
 function ensureGukhyangDaeguBusFirstLead(text, options = {}) {
   if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
   if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
@@ -1879,6 +1902,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
     text = rewriteVagueGukhyangTransferWithoutNamedStation(text, options);
     text = ensureGukhyangDaeguBusFirstLead(text, options);
+    text = cleanupGukhyangAccessOrphanRailTails(text, options);
     text = rewriteVagueGangneungTransferRoute(text, options);
     text = rewriteFestivalAccessTimetableWindowPhrase(text);
     text = glueAccessNumbersInProse(text);

@@ -77,6 +77,7 @@ function assertAccessAnswerPolished(answerText, { festivalId, originId } = {}) {
   expect(answerText).not.toMatch(/출발 전 준비/);
   if (festivalId === '638576' && originId === 'daegu') {
     expect(answerText).not.toMatch(/환승을\s*거쳐/);
+    expect(answerText).not.toMatch(/돼요\s*역으로/);
     expect(answerText).toMatch(/유·스퀘어|유ㆍ스퀘어/);
     expect(answerText).toMatch(/함평행 버스|함평행/);
   }
