@@ -1,6 +1,6 @@
 /**
- * Catalog cities keep the video grid. Uncataloged pins stay link-only,
- * except when a place_videos row already has videos.
+ * Catalog cities are not free-search pins. Free-search pins call the edge
+ * with a server-built query; these checks cover the link helper and that query.
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -13,6 +13,7 @@ import {
   isPlaceholderPlaceName,
   shouldShowFreeSearchLink,
 } from '../src/pages/Home/lib/freeSearchYouTubeLink.js';
+import { buildFreeSearchVideo } from '../supabase/functions/_shared/freeSearchPlaceVideo.js';
 
 function cityLocation(slug) {
   const city = citiesData.find((row) => row.slug === slug);
@@ -109,5 +110,32 @@ assert.equal(
 const sapaLoc = { name: '사파', name_en: 'Sapa', country: '베트남', country_en: 'Vietnam' };
 assert.match(freeSearchYouTubeQuery(sapaLoc, { locale: 'en' }), /^Sapa/);
 assert.doesNotMatch(freeSearchYouTubeQuery(sapaLoc, { locale: 'en' }), /사파/);
+
+const romblon = buildFreeSearchVideo({
+  label: 'Romblon',
+  labelEn: 'San Jose',
+  country: 'Philippines',
+});
+assert.equal(romblon.query, 'Romblon Philippines');
+assert.equal(romblon.cacheId, 'free:romblon:philippines');
+assert.doesNotMatch(romblon.query, /San Jose/i);
+
+const tinian = buildFreeSearchVideo({
+  label: 'Tinian',
+  labelEn: 'San Jose (Tinian)',
+  country: 'Northern Mariana Islands',
+});
+assert.equal(tinian.name, 'Tinian');
+assert.equal(tinian.cacheId, 'free:tinian:northern-mariana-islands');
+
+const korean = buildFreeSearchVideo({
+  label: '롬블론',
+  labelEn: 'San Jose',
+  country: '필리핀',
+});
+assert.equal(korean.name, '롬블론');
+assert.equal(korean.cacheId, 'free:롬블론:필리핀');
+assert.equal(korean.query, '롬블론 필리핀');
+assert.doesNotMatch(korean.query, /San Jose/i);
 
 console.log('free-search catalog checks passed');

@@ -668,18 +668,70 @@ Deno.test("a live TourAPI content id is accepted from the attraction cache or th
   assertEquals(store.has("scenic:555"), false);
 });
 
-Deno.test("free-search ids never spend quota, even if the old env flag is set", async () => {
+Deno.test("free-search without a tapped label never calls YouTube", async () => {
   reset();
   Deno.env.set("FETCH_PLACE_VIDEOS_ALLOW_FREE_SEARCH", "1");
   for (const placeId of ["search-37.5-127.0", "loc-abc", "city-12-34", "label-busan"]) {
-    const res = await post({ query: "클라이언트 지명", placeId });
+    const res = await post({ query: "San Jose", fallbackQuery: "San Jose travel vlog", placeId });
     assertEquals(res.status, 400);
     assertEquals((await res.json()).error, "bad_place_id");
   }
+  const placeholder = await post({ placeId: "label-1-2", label: "좌표 탐색", country: "Philippines" });
+  assertEquals(placeholder.status, 400);
+  assertEquals((await placeholder.json()).error, "bad_place_id");
   assertEquals(ytCalls, 0);
   assertEquals(proxyCalls, 0);
   assertEquals(counts.size, 0);
   assertEquals(store.size, 0);
+});
+
+Deno.test("free-search query is the tapped label, cached under free:", async () => {
+  reset();
+  const body = {
+    placeId: "label-12.57-122.27",
+    query: "San Jose",
+    fallbackQuery: "San Jose travel vlog",
+    label: "Romblon",
+    labelEn: "San Jose",
+    country: "Philippines",
+  };
+  const res = await post(body);
+  assertEquals(res.status, 200);
+  const q = youtubeQuery();
+  assert(q.includes("Romblon"), q);
+  assert(q.includes("Philippines"), q);
+  assert(!q.toLowerCase().includes("san jose"), q);
+  assertEquals([...store.keys()], ["free:romblon:philippines"]);
+  assertEquals(ytCalls, 1);
+  const again = await post({ ...body, placeId: "label-12.58-122.26" });
+  assertEquals(again.status, 200);
+  assertEquals(ytCalls, 1);
+  assertEquals(store.size, 1);
+});
+
+Deno.test("an empty free-search result waits 3 days before another YouTube call", async () => {
+  reset();
+  state.yt = "empty";
+  const res = await post({
+    placeId: "label-12.57-122.27",
+    query: "San Jose",
+    label: "Romblon",
+    country: "Philippines",
+  });
+  assertEquals(res.status, 200);
+  assertEquals(ytCalls, 2);
+  const row = store.get("free:romblon:philippines")!;
+  assertEquals(row.videos, []);
+  const retryIn = Date.parse(row.next_retry_at!) - Date.now();
+  const day = 24 * 60 * 60 * 1000;
+  assert(retryIn > 2.5 * day && retryIn < 3.5 * day, `empty ttl not ~3 days (${retryIn})`);
+  const second = await post({
+    placeId: "label-12.58-122.26",
+    label: "Romblon",
+    country: "Philippines",
+  });
+  assertEquals(second.status, 200);
+  assertEquals(ytCalls, 2);
 });
 
 Deno.test("default ip daily cap is 1000 units", async () => {
