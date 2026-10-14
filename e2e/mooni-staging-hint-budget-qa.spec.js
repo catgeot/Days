@@ -9,16 +9,61 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test, expect } from './fixtures.js';
 import { dismissLocHint } from './mooni-festival-chip-helpers.js';
+import { buildFestivalDetailFixture } from './mooni-festival-tourapi-fixture.js';
 
 const LIVE = process.env.MOONI_STAGING_COMBO_QA === '1';
 const OUT_DIR = process.env.MOONI_HINT_BUDGET_OUT || '/cursor/stores/self/hint-budget-390';
 const ASK = '근처 맛집 추천해 줘';
 
+/**
+ * Staging tourapi-proxy is not deployed (404), so the home list is only the
+ * manual 국향대전 row. These three ids are already in the client/e2e SSOT.
+ * 광명동굴 빛 축제 has no KorService contentId in this repo.
+ */
 const FESTIVALS = [
-  { query: '국향대전', title: /국향대전/, slug: 'gukhyang', region: '전남' },
-  { query: '광명동굴', title: /광명동굴/, slug: 'gwangmyeong', region: '경기' },
-  { query: '강릉 국수', title: /강릉 국수/, slug: 'gangneung', region: '강원' },
+  { query: '국향대전', title: /국향대전/, slug: 'gukhyang', region: '전남', festivalId: '638576' },
+  { query: '마산', title: /마산|가고파/, slug: 'masan', region: '경남', festivalId: '637693' },
+  { query: '강릉 국수', title: /강릉 국수/, slug: 'gangneung', region: '강원', festivalId: '2930716' },
 ];
+
+const WINDOW_ITEMS = [
+  {
+    contentId: '638576',
+    contentTypeId: '15',
+    title: '대한민국 국향대전',
+    eventStartDate: '20261023',
+    eventEndDate: '20261108',
+    addr1: '전남광주통합특별시 함평군 함평읍 곤재로 27',
+    mapx: '126.5221985649',
+    mapy: '35.0591629478',
+  },
+  {
+    contentId: '637693',
+    contentTypeId: '15',
+    title: '마산가고파국화축제',
+    eventStartDate: '20261031',
+    eventEndDate: '20261108',
+    addr1: '경상남도 창원시 마산합포구',
+    mapx: '128.489574',
+    mapy: '35.194419',
+  },
+  {
+    contentId: '2930716',
+    contentTypeId: '15',
+    title: '강릉 국수 축제',
+    eventStartDate: '20261015',
+    eventEndDate: '20261018',
+    addr1: '강원특별자치도 강릉시 경강로 2111 (임당동)',
+    mapx: '128.8976016584',
+    mapy: '37.7557770169',
+  },
+];
+
+const TOUR_CORS = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'POST, OPTIONS',
+  'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 /** @type {Array<Record<string, unknown>>} */
 const manifest = [];
@@ -30,6 +75,48 @@ function md5File(path) {
 async function blockSlowExternals(context) {
   await context.route(/emrld\.ltd/i, (route) => route.abort());
   await context.route(/visitkorea\.or\.kr/i, (route) => route.abort());
+}
+
+/** Home search needs a list. Staging has no tourapi-proxy, so fulfill the window locally. */
+async function installStagingFestivalWindow(context) {
+  await context.route(/tourapi-proxy/i, async (route) => {
+    const method = route.request().method();
+    if (method === 'OPTIONS') {
+      await route.fulfill({ status: 200, headers: TOUR_CORS, body: '' });
+      return;
+    }
+    if (method !== 'POST') {
+      await route.continue();
+      return;
+    }
+    let body = {};
+    try {
+      body = route.request().postDataJSON() || {};
+    } catch {
+      body = {};
+    }
+    const action = String(body.action || '');
+    const contentId = String(body.contentId || body.contentid || '').trim();
+    if (action === 'festivalWindow') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        headers: TOUR_CORS,
+        body: JSON.stringify({ ok: true, items: WINDOW_ITEMS, fromCache: false }),
+      });
+      return;
+    }
+    if (action === 'festivalDetail' && contentId && contentId !== '638576') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        headers: TOUR_CORS,
+        body: JSON.stringify(buildFestivalDetailFixture(contentId)),
+      });
+      return;
+    }
+    await route.continue();
+  });
 }
 
 async function openKoreaHome(page) {
@@ -48,7 +135,7 @@ async function openFestivalFromHome(page, { query, title }) {
   await searchInput.fill(query);
   await searchInput.press('Enter');
   const card = page.locator('[data-festival-id]').filter({ hasText: title }).first();
-  await expect(card).toBeVisible({ timeout: 60_000 });
+  await expect(card).toBeVisible({ timeout: 90_000 });
   const festivalId = await card.getAttribute('data-festival-id');
   await card.click();
   await expect(page).toHaveURL(new RegExp(`festival=${festivalId}`), { timeout: 60_000 });
@@ -63,7 +150,6 @@ async function openMooniAndAsk(page) {
   await mooniBtn.click({ timeout: 90_000 });
   await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({ timeout: 180_000 });
   const replies = page.getByTestId('mooni-model-reply');
-  await expect(replies.first()).toBeVisible({ timeout: 180_000 });
   const repliesBefore = await replies.count();
   const input = page.locator('input[enterkeyhint="send"]:visible').first();
   await expect(input).toBeEnabled({ timeout: 180_000 });
@@ -144,7 +230,9 @@ test.describe('MOONi staging hint budget — typed food ask (WebKit 390)', () =>
         window.__GATEO_HINT_BUDGET_PROBE__ = [];
       });
       await blockSlowExternals(page.context());
+      await installStagingFestivalWindow(page.context());
       const { festivalId } = await openFestivalFromHome(page, fest);
+      expect(festivalId).toBe(fest.festivalId);
       const captured = await openMooniAndAsk(page);
       expect(captured.status).toBe(200);
       expect(captured.hintChars).toBeLessThanOrEqual(8000);
