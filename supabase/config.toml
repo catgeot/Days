@@ -410,6 +410,9 @@ entrypoint = "./functions/fetch-place-videos/index.ts"
 
 [functions.gemini-proxy]
 enabled = true
+# verify_jwt stays true. ES256 sessions keep the anon key in Authorization.
+# Per-user limits use body.userJwt, verified with the project JWKS inside
+# this function. Deploy to gateo-staging-temp before production.
 verify_jwt = true
 import_map = "./functions/gemini-proxy/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.

@@ -41,9 +41,11 @@ export const apiClient = {
         accessToken,
         task,
         params,
-        invoke: async ({ authorization }) => {
+        invoke: async ({ authorization, userJwt }) => {
+          const body = { task, params };
+          if (userJwt) body.userJwt = userJwt;
           const { data, error } = await supabase.functions.invoke('gemini-proxy', {
-            body: { task, params },
+            body,
             headers: { Authorization: authorization },
           });
           if (error || !data?.success) {

@@ -18,6 +18,7 @@ export async function resolvePlaceChatKoreaFestivalHint(input = {}) {
     chipId: input.chipId ?? null,
     festivalContext: input.festivalContext ?? null,
     boundPlaceName: input.boundPlaceName,
+    departureLabel: input.departureLabel ?? '',
     locale,
     loadFestivalItems: async () => {
       const festWindow = await fetchKoreaFestivalsRolling12({ locale });

@@ -774,6 +774,25 @@ export function glueAccessUnit(value) {
     .replace(/ /g, '\u00A0');
 }
 
+/** MOONi access prose — keep fare commas and clock/fare ranges intact (not calendar 10/31~11/8). */
+export function glueAccessNumbersInProse(value) {
+  let out = String(value || '');
+  for (let i = 0; i < 6; i += 1) {
+    const next = out.replace(/(\d),(\d)/g, '$1,\u2060$2');
+    if (next === out) break;
+    out = next;
+  }
+  out = out.replace(
+    /(\d{1,3}(?:,\u2060?\d{3})*원)\s*~\s*(\d{1,3}(?:,\u2060?\d{3})*원)/g,
+    '$1\u2060~\u2060$2',
+  );
+  out = out.replace(
+    /(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})/g,
+    '$1:\u2060$2\u2060~\u2060$3:\u2060$4',
+  );
+  return out.replace(/(?<![/\d])(\d{1,2}):(\d{2})(?!\d)/g, '$1:\u2060$2');
+}
+
 function hangulJong(word) {
   const chars = Array.from(String(word || '').trim());
   for (let i = chars.length - 1; i >= 0; i -= 1) {
@@ -825,9 +844,17 @@ function directSentence(segment, en) {
   const clock = glueAccessUnit(row.clock);
   const fare = glueAccessUnit(row.fare);
   if (en) {
+    const range = /~|–/.test(String(row.clock || ''));
+    if (range) {
+      return `${segment.dep} → ${segment.arr} direct on ${row.grade}: departures ${clock}, ${fare}.`;
+    }
     return `${segment.dep} → ${segment.arr} direct on ${row.grade}: ${clock}, ${fare}.`;
   }
-  return `${segment.dep}→${segment.arr}${topicParticle(segment.arr)} ${row.grade}${instrumentalParticle(row.grade)} ${clock}에 바로 갈 수 있어요. 요금은 ${fare}${copula(row.fare)}.`
+  const range = /~|–/.test(String(row.clock || ''));
+  const when = range
+    ? `조회한 시간대(${clock})에 운행하는 출발편 예시로 바로 갈 수 있어요`
+    : `${clock}에 바로 갈 수 있어요`;
+  return `${segment.dep}→${segment.arr}${topicParticle(segment.arr)} ${row.grade}${instrumentalParticle(row.grade)} ${when}. 요금은 ${fare}${copula(row.fare)}.`
 }
 
 function transferSentence(trunk, en) {
@@ -875,12 +902,7 @@ export function composeFestivalAccessReply(transport, {
   }
   segments = dedupeAccessSegments(segments);
   if (!useSelected) segments = segments.slice(0, ACCESS_CARD_CAP);
-  if (!segments.length) {
-    if (useSelected) return '';
-    return englishLocale(locale)
-      ? 'There are no confirmed train or bus times for this departure.'
-      : '이 출발지의 확인된 열차·버스 시각은 없어요.';
-  }
+  if (!segments.length) return '';
   const en = englishLocale(locale);
   const hops = segments.filter((segment) => segment.transfer === true);
   const hopDeps = new Set(hops.map((segment) => stationToken(segment.dep)));
@@ -902,9 +924,25 @@ export function composeFestivalAccessReply(transport, {
   return lines.filter(Boolean).join('\n\n');
 }
 
+/** Hint block when TAGO rows exist — model still answers (last leg + car). */
+export function festivalAccessTagoModelHint(tagoLead, locale = 'ko') {
+  const lead = String(tagoLead || '').trim();
+  if (!lead) return '';
+  const en = String(locale || '').slice(0, 2) === 'en';
+  if (en) {
+    return [
+      '- Confirmed TAGO segment (quote only these times and fares; do not stop at the arrival station — continue with the last leg to the festival venue, name the transfer stop, bus/taxi when known, and an encouraging driving option with only confirmed numbers):',
+      lead,
+    ].join('\n');
+  }
+  return [
+    '- 확인된 TAGO 구간(아래 시각·요금만 쓰고, 도착 역에서 끝내지 말고 축제장까지 마지막 구간·갈아타는 곳·버스·택시와 자가용 옵션을 따뜻하게 이어서 안내):',
+    lead,
+  ].join('\n');
+}
+
 /**
- * Card facts answer a route question locally. Any other question still calls the model.
- * A local reply must not leave the send gate busy.
+ * Route questions always call the model. TAGO lead goes in the festival hint only.
  */
 export function planFestivalMooniModelCall({
   chipId = null,
@@ -915,14 +953,14 @@ export function planFestivalMooniModelCall({
   stations = '',
 } = {}) {
   const route = chipId === 'festival_access' || festivalAccessAskIsRoute(userText);
-  if (!route) return { callModel: true, reply: '' };
+  if (!route) return { callModel: true, reply: '', tagoLead: '' };
   const askFragment = festivalAccessAskFragment(userText);
-  const reply = composeFestivalAccessReply(transport, {
+  const tagoLead = composeFestivalAccessReply(transport, {
     locale,
     useSelected: useCardTransport || !askFragment,
     stations: askFragment || stations,
   });
-  return { callModel: reply === '', reply };
+  return { callModel: true, reply: '', tagoLead };
 }
 
 /** Synchronous send lock. end() runs on every exit, including a local card answer. */

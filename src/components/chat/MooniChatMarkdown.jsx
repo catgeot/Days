@@ -4,6 +4,7 @@ import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import rehypeSanitize from 'rehype-sanitize';
 import mooniRemarkGfm from './mooniRemarkGfm.js';
 import { mooniChatMarkdownSanitizeSchema } from './mooniChatMarkdownSchema.js';
+import { rehypeMooniWrapAccessNumberTokens } from './mooniAccessNumberToken.js';
 import {
   isUnsafeMooniLinkUrl,
   shouldStripMooniMarkdownLink,
@@ -117,10 +118,13 @@ export default function MooniChatMarkdown({ text, variant = 'dark' }) {
   if (!markdown) return null;
 
   return (
-    <div className="mooni-chat-markdown min-w-0 break-words">
+    <div className="mooni-chat-markdown min-w-0 break-words [word-break:keep-all]">
       <ReactMarkdown
         remarkPlugins={[[mooniRemarkGfm, { singleTilde: false }], remarkCjkFriendly]}
-        rehypePlugins={[[rehypeSanitize, mooniChatMarkdownSanitizeSchema]]}
+        rehypePlugins={[
+          rehypeMooniWrapAccessNumberTokens,
+          [rehypeSanitize, mooniChatMarkdownSanitizeSchema],
+        ]}
         urlTransform={mooniChatUrlTransform}
         components={components}
       >
