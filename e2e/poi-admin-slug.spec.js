@@ -22,7 +22,7 @@ const PLACES = [
   },
   {
     file: 'gamaksan-ungye',
-    query: '감악산 운계폭포',
+    query: '운계폭포',
     name: '감악산 운계폭포',
     forbidSlug: 'paju',
   },
@@ -42,11 +42,21 @@ function assertPreviewHost(baseURL) {
 }
 
 async function openHomeSearch(page) {
-  await page.goto('/');
   const search = page
-    .getByRole('button', { name: /여행지 검색|여행지 탐색|Search destinations/i })
+    .getByRole('button', { name: /여행지 검색|여행지 탐색|Search destinations|Search on 3D globe/i })
     .first();
-  await expect(search).toBeVisible({ timeout: 60_000 });
+  let opened = false;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await page.goto('/', { waitUntil: 'commit', timeout: 30_000 });
+    try {
+      await expect(search).toBeVisible({ timeout: 20_000 });
+      opened = true;
+      break;
+    } catch {
+      /* Vite module graph sometimes misses the first paint */
+    }
+  }
+  expect(opened, 'home search button').toBe(true);
   await search.click();
   await expect(page).toHaveURL(/\/explore/, { timeout: 30_000 });
   const input = page.locator('input[placeholder]:visible').first();
@@ -54,21 +64,26 @@ async function openHomeSearch(page) {
   return input;
 }
 
+async function openFullPlaceCard(page) {
+  if (/\/place\//.test(page.url())) return;
+  const more = page.getByRole('button', { name: /^더보기$/ }).first();
+  await expect(more).toBeVisible({ timeout: 20_000 });
+  await more.click();
+  await page.waitForURL(/\/place\//, { timeout: 30_000 });
+}
+
 async function scrollCardToEnd(page) {
-  await page.evaluate(() => {
-    const nodes = [...document.querySelectorAll('div')].filter((el) => {
-      const style = getComputedStyle(el);
-      const scrollable = style.overflowY === 'auto' || style.overflowY === 'scroll';
-      return scrollable && el.scrollHeight > el.clientHeight + 24;
+  const scroller = page.locator('.custom-scrollbar-blue').first();
+  await expect(scroller).toBeAttached({ timeout: 20_000 });
+  await expect(async () => {
+    const state = await scroller.evaluate((el) => {
+      const extra = el.scrollHeight - el.clientHeight;
+      if (extra <= 8) return 'fits';
+      el.scrollTop = el.scrollHeight;
+      return el.scrollTop + el.clientHeight >= el.scrollHeight - 12 ? 'end' : 'pending';
     });
-    nodes.sort((a, b) => b.scrollHeight - a.scrollHeight);
-    const target = nodes[0];
-    if (target) {
-      target.scrollTop = target.scrollHeight;
-      return;
-    }
-    window.scrollTo(0, document.body.scrollHeight);
-  });
+    expect(state === 'end' || state === 'fits').toBe(true);
+  }).toPass({ timeout: 12_000 });
 }
 
 test.describe('POI search does not open the admin slug', () => {
@@ -99,10 +114,7 @@ test.describe('POI search does not open the admin slug', () => {
       await expect(page).not.toHaveURL(/\/explore/, { timeout: 45_000 });
       await expect(page.getByText(place.name, { exact: true }).first()).toBeVisible();
 
-      if (!/\/place\//.test(page.url())) {
-        await page.locator('span.text-2xl').filter({ hasText: place.name }).first().click();
-        await page.waitForURL(/\/place\//, { timeout: 30_000 });
-      }
+      await openFullPlaceCard(page);
 
       const path = decodeURIComponent(new URL(page.url()).pathname);
       if (place.expectSlug) {
@@ -111,10 +123,14 @@ test.describe('POI search does not open the admin slug', () => {
       if (place.forbidSlug) {
         expect(path).not.toMatch(new RegExp(`/place/${place.forbidSlug}(?:/|$)`));
         expect(path.toLowerCase()).not.toContain(place.forbidSlug);
+        expect(path.replace(/\s+/g, '')).toContain(place.name.replace(/\s+/g, ''));
       }
       await expect(page.getByText(place.name, { exact: true }).first()).toBeVisible();
 
       await scrollCardToEnd(page);
+      await page.locator('.custom-scrollbar-blue').first().evaluate((el) => {
+        el.scrollTop = el.scrollHeight;
+      });
       await page.screenshot({ path: join(OUT_DIR, `${place.file}.png`) });
 
       for (const write of writes) {

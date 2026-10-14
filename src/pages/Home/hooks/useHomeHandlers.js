@@ -486,7 +486,10 @@ export function useHomeHandlers({
             next.country_en = address.country_en || address.country;
           }
           const poiNameLocked = Boolean(
-            prev.poiAttraction || prev.kind === 'attraction' || prev.kind === 'poi',
+            prev.poiAttraction ||
+            prev.kind === 'attraction' ||
+            prev.kind === 'poi' ||
+            prev.badge === '명소',
           );
           if (stillNeedsName && healedNameEn && !poiNameLocked) {
             next.name_en = healedNameEn;

@@ -22,5 +22,14 @@ export default defineConfig({
     video: 'off',
     trace: 'off',
   },
-  projects: [{ name: 'webkit-390', use: { ...devices['iPhone 13'] } }],
+  projects: [
+    {
+      name: 'webkit-390',
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        locale: 'ko-KR',
+      },
+    },
+  ],
 });
