@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import test from 'node:test';
-import { MOONI_ACCESS_NUMBER_TOKEN_RE } from '../../src/components/chat/mooniAccessNumberToken.js';
+import {
+  MOONI_ACCESS_NUMBER_TOKEN_RE,
+  splitCardAccessNumberTokens,
+  splitMooniAccessNumberTokens,
+} from '../../src/components/chat/mooniAccessNumberToken.js';
 import { polishFestivalModelReply } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 import { buildFestivalAccessAskText } from '../../src/pages/Home/lib/festivalDomesticOrigins.js';
 
@@ -12,6 +16,14 @@ test('MOONI access number token regex matches clock and fare units', () => {
   const sample = '05:06부터 22:34까지 27,600원이고 1시간 51분';
   const hits = [...sample.matchAll(MOONI_ACCESS_NUMBER_TOKEN_RE)].map((m) => m[0]);
   assert.deepEqual(hits, ['05:06', '22:34', '27,600원', '51분']);
+  assert.deepEqual(
+    splitMooniAccessNumberTokens(sample).filter((part) => part.accessNumber).map((part) => part.text),
+    ['05:06', '22:34', '27,600원', '51분'],
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens(sample).filter((part) => part.accessNumber).map((part) => part.text),
+    ['05:06', '22:34', '27,600원', '1시간 51분'],
+  );
 });
 
 test('gukhyang daegu polish drops vague 환승을 거쳐 and leads with bus', () => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { splitCardAccessNumberTokens } from '../../components/chat/mooniAccessNumberToken.js';
 import {
   bookingLink,
   buildAccessView,
@@ -30,7 +31,30 @@ const askClass =
   'flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-bold text-stone-800 transition-colors hover:border-amber-300 hover:bg-amber-50';
 
 function Nowrap({ children }) {
-  return <span className="whitespace-nowrap">{children}</span>;
+  return (
+    <span className="whitespace-nowrap break-normal" data-mooni-access-number="true">
+      {children}
+    </span>
+  );
+}
+
+/** MOONi answer span. word-break:normal blocks ancestor break-keep from splitting 46,600원 in WebKit. */
+function AccessNumberText({ text }) {
+  const parts = splitCardAccessNumberTokens(text);
+  if (parts.length === 1 && !parts[0].accessNumber) return parts[0].text;
+  return parts.map((part, index) => (
+    part.accessNumber
+      ? (
+        <span
+          key={index}
+          style={{ whiteSpace: 'nowrap', wordBreak: 'normal' }}
+          data-mooni-access-number="true"
+        >
+          {part.text}
+        </span>
+      )
+      : <span key={index}>{part.text}</span>
+  ));
 }
 
 function GradeLine({ option, locale }) {
@@ -64,8 +88,8 @@ function SummaryLine({ line }) {
     <p className="text-sm leading-snug text-stone-800 break-keep" data-festival-access-summary-line="">
       {(line.parts || []).map((part, index) => (
         part.strong
-          ? <strong key={index} className="font-bold text-stone-950">{part.text}</strong>
-          : <span key={index}>{part.text}</span>
+          ? <strong key={index} className="font-bold text-stone-950"><AccessNumberText text={part.text} /></strong>
+          : <span key={index}><AccessNumberText text={part.text} /></span>
       ))}
     </p>
   );
@@ -126,11 +150,11 @@ function TrainGradeDetails({ rows, locale }) {
           >
             <div className="min-w-0">
               <p className="text-sm font-bold leading-snug text-stone-900 break-keep">{detail.grade}</p>
-              <p className="text-xs leading-snug text-stone-500">{detail.clock}</p>
+              <p className="text-xs leading-snug text-stone-500"><AccessNumberText text={detail.clock} /></p>
             </div>
             <div className="shrink-0 text-right">
-              <p className="text-xs leading-snug text-stone-700">{detail.durationText}</p>
-              <p className="text-xs leading-snug text-stone-500">{detail.aside}</p>
+              <p className="text-xs leading-snug text-stone-700"><AccessNumberText text={detail.durationText} /></p>
+              <p className="text-xs leading-snug text-stone-500"><AccessNumberText text={detail.aside} /></p>
             </div>
           </li>
         );

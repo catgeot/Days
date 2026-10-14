@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { splitCardAccessNumberTokens } from '../../src/components/chat/mooniAccessNumberToken.js';
 import { DESTINATION_ORDER } from '../../supabase/functions/transport-proxy/catalog.mjs';
 import {
   FESTIVAL_TRANSPORT_CONTENT_IDS,
@@ -316,6 +317,38 @@ test('fare, clock, and duration stay one unbreakable unit', () => {
   assert.match(card, /<Nowrap>\{clock\}<\/Nowrap>/);
   assert.match(card, /<Nowrap>\{duration\}<\/Nowrap>/);
   assert.match(card, /<Nowrap>\{fare\}<\/Nowrap>/);
+  assert.match(card, /data-mooni-access-number="true"/);
+  assert.match(card, /whiteSpace:\s*'nowrap'/);
+  assert.match(card, /wordBreak:\s*'normal'/);
+  assert.match(card, /function SummaryLine[\s\S]*<AccessNumberText text=\{part\.text\} \/>/);
+  assert.match(card, /function TrainGradeDetails[\s\S]*<AccessNumberText text=\{detail\.clock\} \/>/);
+  assert.match(card, /<AccessNumberText text=\{detail\.durationText\} \/>/);
+  assert.match(card, /<AccessNumberText text=\{detail\.aside\} \/>/);
+  const summary = '가장 빠르고 싼 열차는 SRT, 약 2시간 53분 · 46,600원이에요.';
+  assert.deepEqual(
+    splitCardAccessNumberTokens(summary).filter((part) => part.accessNumber).map((part) => part.text),
+    ['2시간 53분', '46,600원'],
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens('첫차 05:06 · 막차 22:34').filter((part) => part.accessNumber).map((part) => part.text),
+    ['05:06', '22:34'],
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens('2시간 53분부터').filter((part) => part.accessNumber).map((part) => part.text),
+    ['2시간 53분'],
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens('46,600원부터 · 하루 10회').filter((part) => part.accessNumber).map((part) => part.text),
+    ['46,600원', '10회'],
+  );
+  assert.equal(
+    splitCardAccessNumberTokens('46,600원').some((part) => part.text === '46,' || part.text === '600원'),
+    false,
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens('(10월 23일 기준)').filter((part) => part.accessNumber),
+    [],
+  );
 });
 
 test('a typed station ask renders each grade once, then a normal question calls the model', () => {
