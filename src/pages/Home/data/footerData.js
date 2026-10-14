@@ -4,7 +4,7 @@ export const FOOTER_CONTENT = {
   about: {
     title: 'About Us (우리에 대해서)',
     titleEn: 'About Us',
-    content: `GATEO(게이트제로, gateo.kr)는 3D 지구본과 AI 도슨트를 결합한 여행 탐색·계획 웹 서비스입니다.
+    content: `GATEO(게이트오, gateo.kr)는 3D 지구본과 AI 도슨트를 결합한 여행 탐색·계획 웹 서비스입니다.
 
 운영
 본 서비스는 GATEO가 독립적으로 운영합니다. 여행사·항공사·숙박업체가 아니며, 항공권·호텔·투어 등을 직접 판매·예약·결제하지 않습니다.

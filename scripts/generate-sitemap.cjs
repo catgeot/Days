@@ -231,7 +231,7 @@ function generateRSS(locale = 'ko', overrides = {}) {
     : 'GATEO | AI 도슨트와 함께하는 3D 세계 여행';
   const channelDescription = isEn
     ? 'Plan and record your travels with GATEO — AI docent and 3D globe travel guides for destinations worldwide.'
-    : '당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트제로)';
+    : '당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트오)';
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

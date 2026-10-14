@@ -238,7 +238,7 @@ assert(injectedHome.includes('<!-- crawler-meta-injected -->'), 'home injection 
 assert(injectedHome.includes(`${homeKo.title} | GATEO`), 'home title injected in head');
 assert(!injectedHome.includes('AI 도슨트와 함께하는 3D 세계 여행</title>'), 'default SPA title removed on home');
 assert(!injectedHome.includes('id="crawler-place-body"'), 'home crawler keeps hub body (no place article)');
-assert(injectedHome.includes('GATEO (게이트제로)'), 'home crawler still has home body copy');
+assert(injectedHome.includes('GATEO (게이트오)'), 'home crawler still has home body copy');
 
 const injectedTokyo = injectCrawlerMetaIntoHtml(indexHtml, tokyoGalleryKo);
 assert(injectedTokyo.includes(`${tokyoGalleryKo.title} | GATEO`), 'tokyo title injected in head');
@@ -265,7 +265,7 @@ assert(/<h1>[^<]*도쿄[^<]*<\/h1>/.test(injectedTokyo), 'tokyo body h1 includes
 assert(injectedTokyo.includes('여행 가이드'), 'tokyo body h1 includes travel-guide wording');
 assert(injectedTokyo.includes('/place/tokyo/planner'), 'tokyo body nav includes planner');
 assert(injectedTokyo.includes('/place/tokyo/wiki'), 'tokyo body nav includes wiki');
-assert(!injectedTokyo.includes('GATEO (게이트제로) - 전 세계 100여 개 도시'), 'tokyo body replaces home duplicate copy');
+assert(!injectedTokyo.includes('GATEO (게이트오) - 전 세계 100여 개 도시'), 'tokyo body replaces home duplicate copy');
 assert(injectedTokyo.includes('type="module"'), 'tokyo crawler HTML still loads SPA bundle');
 
 const injectedSantorini = injectCrawlerMetaIntoHtml(indexHtml, santoriniGalleryKo);
