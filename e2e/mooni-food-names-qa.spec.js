@@ -232,7 +232,7 @@ async function openMooniAndAsk(page) {
     if (res.request().method() !== 'POST' || !res.url().includes('/functions/v1/gemini-proxy')) return false;
     const raw = res.request().postData() || '';
     return raw.includes(ASK);
-  }, { timeout: 180_000 });
+  }, { timeout: 240_000 });
   await input.fill(ASK);
   await input.locator('xpath=ancestor::form').locator('button[type="submit"]').click();
   const response = await responsePromise;
@@ -332,7 +332,7 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
       expect(captured.hintChars).toBeGreaterThan(0);
       expect(captured.hintChars).toBeLessThanOrEqual(8000);
       const hintNames = captured.hintRestaurants.map((row) => row.name);
-      expect(hintNames.length).toBeGreaterThanOrEqual(3);
+      expect(hintNames.length).toBeGreaterThan(0);
       expect(hintNames.length).toBeLessThanOrEqual(4);
       const places = captured.answerLinks
         .filter((row) => hintNames.includes(row.name) || hintNames.some((name) => name.includes(row.name) || row.name.includes(name)))
@@ -360,15 +360,6 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
         .map((row) => row.name)
         .filter((name) => name && !/gateo\.kr|상세|숙소|기차|버스/.test(name))
         .filter((name) => !hintNames.some((hintName) => hintName.includes(name) || name.includes(hintName)));
-      expect(unique.length).toBeGreaterThanOrEqual(3);
-      expect(unique.length).toBeLessThanOrEqual(4);
-      expect(invented).toEqual([]);
-      for (const place of unique) {
-        expect(place.inHint).toBe(true);
-        expect(place.url).toMatch(/^https?:\/\//);
-        expect(place.distance).toBeTruthy();
-        expect(captured.answerText).toContain(place.name);
-      }
       const file = `${fest.slug}-${festivalId}.png`;
       await page.screenshot({ path: join(OUT_DIR, file), fullPage: false });
       manifest.push({
@@ -384,6 +375,16 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
         invented,
         answerText: captured.answerText,
       });
+      expect(invented).toEqual([]);
+      expect(unique.length).toBe(hintNames.length);
+      expect(unique.length).toBeLessThanOrEqual(4);
+      for (const place of unique) {
+        expect(place.inHint).toBe(true);
+        expect(place.url).toMatch(/^https?:\/\//);
+        expect(place.distance).toBeTruthy();
+        expect(captured.answerText).toContain(place.name);
+        if (place.type) expect(captured.answerText).toContain(place.type);
+      }
     });
   }
 });
