@@ -127,6 +127,7 @@ export function buildFestivalMooniPolishOptions(festivalContext, extra = {}) {
     eventStartDate: dates.eventStartDate,
     eventEndDate: dates.eventEndDate,
     dateLabel: dates.dateLabel,
+    transport: festivalContext?.transport ?? null,
     ...extra,
   };
 }

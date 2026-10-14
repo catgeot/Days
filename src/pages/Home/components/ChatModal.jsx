@@ -1289,6 +1289,7 @@ const ChatModal = ({
         locale: i18n.language,
         chipId,
         userText: cleanText,
+        departureOriginId: prepared.groundOrigin?.id || null,
       });
       const polishedFestivalReply = polishFestivalModelReply(festivalMergedReply, lodgingOptions);
       const displayReply = getMooniModelMarkdownForRender(polishedFestivalReply, {

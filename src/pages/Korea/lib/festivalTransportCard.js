@@ -555,7 +555,7 @@ function directSentence(segment, en) {
   }
   const range = /~|–/.test(String(row.clock || ''));
   const when = range
-    ? `${clock} 출발편 기준으로 바로 갈 수 있어요`
+    ? `조회한 시간대(${clock})에 운행하는 출발편 예시로 바로 갈 수 있어요`
     : `${clock}에 바로 갈 수 있어요`;
   return `${segment.dep}→${segment.arr}${topicParticle(segment.arr)} ${row.grade}${instrumentalParticle(row.grade)} ${when}. 요금은 ${fare}${copula(row.fare)}.`
 }

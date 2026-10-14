@@ -233,7 +233,7 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
   const reply = composeFestivalAccessReply(facts, { useSelected: true });
   assert.match(reply, /08:44\u2060~\u206019:11/);
   assert.match(reply, /용산→함평/);
-  assert.match(reply, /08:44\u2060~\u206019:11 출발편 기준으로 바로 갈 수 있어요/);
+  assert.match(reply, /조회한 시간대\(08:44\u2060~\u206019:11\)에 운행하는 출발편 예시로 바로 갈 수 있어요/);
   assert.match(reply, /36,\u2060300원/);
   assert.match(reply, /가는 법 카드/);
   assert.doesNotMatch(reply, /ITX-마음/);
@@ -268,7 +268,7 @@ test('one card per segment, at most three, and MOONi repeats those fares', () =>
     ],
   }, { stations: '용산역' });
   assert.match(yongsanReply, /용산→함평/);
-  assert.match(yongsanReply, /08:44\u2060~\u206019:11 출발편 기준으로 바로 갈 수 있어요/);
+  assert.match(yongsanReply, /조회한 시간대\(08:44\u2060~\u206019:11\)에 운행하는 출발편 예시로 바로 갈 수 있어요/);
   assert.match(yongsanReply, /36,\u2060300원/);
   assert.match(yongsanReply, /광주송정까지 가서 갈아타는/);
   assert.equal((yongsanReply.match(/바로 갈 수 있어요/g) || []).length, 1);

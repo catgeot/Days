@@ -2983,6 +2983,8 @@ test('gukhyang access polish guards dongdaegu–gwangju songjeong direct rail an
   );
   assert.doesNotMatch(misleading, /동대구에서\s+KTX나\s+SRT를\s+타고\s+광주송정/);
   assert.match(misleading, /직통 열차는 없어요/);
+  assert.match(misleading, /광주\(유·스퀘어\)/);
+  assert.match(misleading, /함평행 버스/);
   assert.match(misleading, /2,\u2060600원에서 4,\u2060800원/);
   const seoulWindow = polishFestivalModelReply(
     '용산→함평은 ITX로 16:29~19:29 사이에 바로 갈 수 있고 요금은 36,300원이에요.',
@@ -2995,8 +2997,22 @@ test('gukhyang access polish guards dongdaegu–gwangju songjeong direct rail an
       eventEndDate: '20261108',
     },
   );
-  assert.match(seoulWindow, /16:\u206029\u2060~\u206019:\u206029 출발편 기준으로 바로 갈 수/);
+  assert.match(seoulWindow, /조회한 시간대\(16:\u206029\u2060~\u206019:\u206029\)에 운행하는 출발편 예시로 바로 갈 수/);
   assert.doesNotMatch(seoulWindow, /사이에 바로/);
+  assert.doesNotMatch(seoulWindow, /출발편 기준/);
+  const gangneungVague = polishFestivalModelReply(
+    '열차를 이용할 때는 동대구역에서 출발해 환승 경로를 거쳐 강릉역으로 이동할 수 있어요.',
+    {
+      contentId: '2930716',
+      chipId: 'festival_access',
+      locale: 'ko',
+      userText: buildFestivalAccessAskText('daegu', 'ko'),
+      eventStartDate: '20261015',
+      eventEndDate: '20261018',
+    },
+  );
+  assert.doesNotMatch(gangneungVague, /환승\s*경로를\s*거쳐/);
+  assert.match(gangneungVague, /대구고속버스터미널|동대구/);
   const markdown = readFileSync(join(root, 'src/components/chat/MooniChatMarkdown.jsx'), 'utf8');
   assert.match(markdown, /word-break:keep-all/);
 });

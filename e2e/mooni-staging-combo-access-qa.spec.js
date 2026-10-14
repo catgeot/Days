@@ -164,14 +164,19 @@ test.describe('MOONi staging combo — 가는 법 origins (WebKit 390)', () => {
 
   test.afterAll(() => {
     if (!manifest.length) return;
+    const tip = process.env.MOONI_STAGING_QA_GIT_TIP || '';
     const lines = [
       '# MOONi staging combo QA (390×844 WebKit)',
       '',
+      tip ? `**#453 git tip:** \`${tip}\` (staging gemini-proxy; never prod)` : '',
+      tip ? '' : null,
       `Base URL: ${process.env.PLAYWRIGHT_BASE_URL || '(unset)'}`,
+    ].filter((line) => line !== null);
+    lines.push(
       '',
       '| file | md5 | festival | origin | answer (excerpt) |',
       '|------|-----|----------|--------|----------------|',
-    ];
+    );
     for (const row of manifest) {
       const excerpt = row.answerText.replace(/\s+/g, ' ').slice(0, 120);
       lines.push(

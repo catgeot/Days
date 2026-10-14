@@ -13,6 +13,7 @@ import {
   toYmd,
 } from '../../pages/Korea/festivalTimeFilter.js';
 import {
+  composeFestivalAccessReply,
   festivalAccessAskIsRoute,
   glueAccessNumbersInProse,
 } from '../../pages/Korea/lib/festivalTransportCard.js';
@@ -1310,7 +1311,38 @@ function formatGukhyangAccessOriginGuidance(originRow, transport, locale = 'ko')
   if (en) {
     return `Readers leave from ${place} using only this answer — pick routes that really run. If there is no confirmed direct train to Gwangju Songjeong, say so honestly, then lead with express or intercity bus from ${busTerminals} to Gwangju, then Gwangju to Hampyeong and the venue, plus driving. Do not open with Dongdaegu KTX or SRT straight to Gwangju Songjeong.`;
   }
-  return `사용자는 ${place}에서 이 안내만 보고 출발해요. 실제로 운행하는 노선만 골라 안내해 주세요. TAGO·카드에 확인된 ${place}→광주송정 직통 열차가 없으면 «확인된 직통 열차는 없어요»라고 말하고, ${busTerminals}에서 광주 고속·시외버스 → 광주에서 함평·축제장 순으로 먼저 안내해 주세요. 자가용도 함께 넣어 주세요.`;
+  const gwangjuBusHub = en ? 'Gwangju U-Square' : '광주(유·스퀘어)';
+  const daeguBusFirst = originRow.id === 'daegu'
+    ? (en
+      ? `Lead with express or intercity bus from ${busTerminals} to ${gwangjuBusHub}, then a Hampyeong-bound bus toward the venue — like the Incheon answer pattern. Only after that, mention Dongdaegu KTX/SRT via Gwangju Songjeong as a secondary option if it really runs.`
+      : `인천 답변처럼 ${busTerminals}→${gwangjuBusHub} 고속·시외버스를 먼저 쓰고, 광주에서 함평행 버스로 축제장 방향을 이어 주세요. 그 다음에만 동대구역→광주송정 열차 환승을 선택지로 넣어 주세요.`)
+    : (en
+      ? `Then bus from ${busTerminals} to Gwangju and on to Hampyeong and the venue.`
+      : `${busTerminals}에서 광주 고속·시외버스 → 광주에서 함평행 버스 → 축제장 순으로 먼저 안내해 주세요.`);
+  return `사용자는 ${place}에서 이 안내만 보고 출발해요. 실제로 운행하는 노선만 골라 안내해 주세요. TAGO·카드에 확인된 ${place}→광주송정 직통 열차가 없으면 «확인된 직통 열차는 없어요»라고 말하고, ${daeguBusFirst} 자가용도 함께 넣어 주세요.`;
+}
+
+const GANGNEUNG_FESTIVAL_ID = '2930716';
+
+/** 강릉 국수 축제 — avoid vague «환승 경로»; bus-first from non-capital when TAGO supports it. */
+function formatGangneungAccessOriginGuidance(originRow, transport, locale = 'ko') {
+  if (!originRow || String(originRow.id || '') !== 'daegu') return '';
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const tagoLead = composeFestivalAccessReply(transport, {
+    locale,
+    useSelected: false,
+    stations: en ? 'Dongdaegu Station' : '동대구역',
+  });
+  const tagoHint = tagoLead
+    ? (en
+      ? `Confirmed TAGO rows for this departure (quote only these times and fares in the answer): ${tagoLead.replace(/\n/g, ' ')}`
+      : `이 출발지 TAGO·카드 확인 구간(아래 시각·요금만 인용): ${tagoLead.replace(/\n/g, ' ')}`)
+    : (en
+      ? 'No confirmed TAGO train or bus rows for this departure — say so honestly, then describe Daegu Express Bus Terminal to Gangneung express bus with only numbers you can verify, or name the real transfer station and train if TAGO shows one. Never write only «via a transfer route». '
+      : 'TAGO·카드에 이 출발지 확인 시각이 없으면 솔직히 말하고, 대구고속버스터미널→강릉행 고속·시외버스를 구체적으로 안내해 주세요. 열차는 «환승 경로를 거쳐»처럼 뭉뚱그리지 말고 확인된 환승 역·편명만 써 주세요. ');
+  return en
+    ? `Readers leave from Daegu. Lead with express bus from Daegu Express Bus Terminal to Gangneung when times exist; trains from Dongdaegu only with named transfer stations. ${tagoHint}`
+    : `대구에서 출발해요. 대구고속버스터미널→강릉고속버스터미널 고속·시외버스를 먼저 안내하고, 열차는 동대구역에서 강릉역까지 확인된 환승 역·편명을 써 주세요. ${tagoHint}`;
 }
 
 const FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE =
@@ -1321,21 +1353,48 @@ function rewriteFalseDongdaeguGwangjuSongjeongLead(text, options = {}) {
   if (!FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE.test(text)) return String(text || '');
   return String(text || '').replace(
     FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE,
-    '확인된 동대구→광주송정 직통 열차는 없어요. 대구고속버스터미널(서부·동대구)에서 광주 고속·시외버스를 타고 광주에서 함평으로 이어 가면 돼요',
+    '확인된 동대구→광주송정 직통 열차는 없어요. 대구고속버스터미널(서부·동대구)에서 광주(유·스퀘어)까지 고속·시외버스를 타고, 광주에서 함평행 버스로 이어 가면 돼요',
   );
 }
 
 const ACCESS_TIMETABLE_WINDOW_MISREAD_RE =
   /(\d{1,2}:\d{2}(?:\u2060?~\u2060?\d{1,2}:\d{2})?)\s*(?:사이에\s*)?바로\s*갈\s*수/g;
 
+const ACCESS_TIMETABLE_WINDOW_LEGACY_RE =
+  /(\d{1,2}:\u2060?\d{2}(?:\u2060?~\u2060?\d{1,2}:\u2060?\d{2})?|\d{1,2}:\d{2}~\d{1,2}:\d{2})\s*출발편\s*기준으로\s*바로\s*갈\s*수/g;
+
+const VAGUE_GANGNEUNG_TRANSFER_RE =
+  /[^.!?。]*환승\s*경로를\s*거쳐[^.!?。]*[.。]?/g;
+
+function accessTimetableExamplePhrase(clock) {
+  const glued = glueAccessNumbersInProse(clock);
+  return `조회한 시간대(${glued})에 운행하는 출발편 예시로 바로 갈 수`;
+}
+
 function rewriteFestivalAccessTimetableWindowPhrase(text) {
-  return String(text || '').replace(
+  let out = String(text || '').replace(
     ACCESS_TIMETABLE_WINDOW_MISREAD_RE,
-    (full, clock) => {
-      const glued = glueAccessNumbersInProse(clock);
-      return `${glued} 출발편 기준으로 바로 갈 수`;
-    },
+    (full, clock) => accessTimetableExamplePhrase(clock),
   );
+  out = out.replace(
+    ACCESS_TIMETABLE_WINDOW_LEGACY_RE,
+    (full, clock) => accessTimetableExamplePhrase(clock),
+  );
+  return out;
+}
+
+function rewriteVagueGangneungTransferRoute(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (!/환승\s*경로/.test(text)) return String(text || '');
+  const tagoLead = composeFestivalAccessReply(options.transport, {
+    locale: options.locale || 'ko',
+    useSelected: false,
+    stations: '동대구역',
+  });
+  const replacement = tagoLead
+    ? `${tagoLead.split(/\n/).filter(Boolean)[0]} `
+    : '대구고속버스터미널에서 강릉행 고속·시외버스 시간·요금이 확인되면 그걸 먼저 알려 주세요. 동대구역에서 강릉역까지는 확인된 환승 역과 편명만 써 주세요. ';
+  return String(text || '').replace(VAGUE_GANGNEUNG_TRANSFER_RE, replacement);
 }
 
 export {
@@ -1775,6 +1834,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   if (isBoundFestivalAccessPolish(options)) {
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
+    text = rewriteVagueGangneungTransferRoute(text, options);
     text = rewriteFestivalAccessTimetableWindowPhrase(text);
     text = glueAccessNumbersInProse(text);
     text = stripRedundantBookingLinkOnlyLines(text);
@@ -2838,10 +2898,14 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       hint = trimBoundFestivalHintForAccess(hint, input.locale);
       const originRow = domesticFestivalGroundOrigin(userText, input.departureLabel);
       if (originRow) {
-        const gukhyangChip = String(festivalContext.contentId || '').trim() === GUKHYANG_FESTIVAL_ID
+        const festId = String(festivalContext.contentId || '').trim();
+        const gukhyangChip = festId === GUKHYANG_FESTIVAL_ID
           ? formatGukhyangAccessOriginGuidance(originRow, festivalContext.transport, input.locale)
           : '';
-        const hubLine = gukhyangChip || formatOriginHubGuidance(originRow, input.locale);
+        const gangneungChip = festId === GANGNEUNG_FESTIVAL_ID
+          ? formatGangneungAccessOriginGuidance(originRow, festivalContext.transport, input.locale)
+          : '';
+        const hubLine = gukhyangChip || gangneungChip || formatOriginHubGuidance(originRow, input.locale);
         hint += enFood
           ? `\n- Departure hubs for this chip: ${hubLine}`
           : `\n- 출발 칩 안내: ${hubLine}`;
