@@ -79,7 +79,7 @@ function assertAccessAnswerPolished(answerText, { festivalId, originId } = {}) {
     expect(answerText).not.toMatch(/환승을\s*거쳐/);
     expect(answerText).not.toMatch(/돼요\s*역으로/);
     expect(answerText).toMatch(/유·스퀘어|유ㆍ스퀘어/);
-    expect(answerText).toMatch(/함평행 버스|함평행/);
+    expect(answerText).toMatch(/함평공용버스터미널|함평행 버스|함평행/);
   }
 }
 
@@ -186,7 +186,7 @@ test.describe('MOONi staging combo — 가는 법 origins (WebKit 390)', () => {
     const lines = [
       '# MOONi staging combo QA (390×844 WebKit)',
       '',
-      tip ? `**#453 git tip:** \`${tip}\` (staging gemini-proxy; never prod)` : '',
+      tip ? `**#460 git tip:** \`${tip}\` (staging gemini-proxy; never prod)` : '',
       tip ? '' : null,
       `Base URL: ${process.env.PLAYWRIGHT_BASE_URL || '(unset)'}`,
     ].filter((line) => line !== null);
@@ -242,6 +242,9 @@ test.describe('MOONi staging combo — 가는 법 origins (WebKit 390)', () => {
         await mooniBubble.scrollIntoViewIfNeeded();
         await scrollChatToEnd(page);
         const answerText = (await mooniBubble.innerText()).trim();
+        expect(answerText).toMatch(
+          /KTX|SRT|고속버스|시외버스|버스타고|열차·버스 시각|광주송정|함평|강릉역|강릉고속/,
+        );
         assertAccessAnswerPolished(answerText, {
           festivalId: fest.festivalId,
           originId,

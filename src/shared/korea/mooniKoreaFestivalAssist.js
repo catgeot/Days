@@ -1315,7 +1315,7 @@ function formatGukhyangAccessOriginGuidance(originRow, transport, locale = 'ko')
   const daeguBusFirst = originRow.id === 'daegu'
     ? (en
       ? `Lead with express or intercity bus from ${busTerminals} to ${gwangjuBusHub}, then a Hampyeong-bound bus toward the venue — like the Incheon answer pattern. Only after that, mention Dongdaegu KTX/SRT via Gwangju Songjeong as a secondary option if it really runs.`
-      : `인천 답변처럼 ${busTerminals}→${gwangjuBusHub} 고속·시외버스를 먼저 쓰고, 광주에서 함평행 버스로 축제장 방향을 이어 주세요. 그 다음에만 동대구역→광주송정 열차 환승을 선택지로 넣어 주세요.`)
+      : `인천 답변처럼 ${busTerminals}→${gwangjuBusHub} 고속·시외버스를 먼저 쓰고, 유·스퀘어에서 함평공용버스터미널행 버스로 이어 택시·시내버스 10~20분이면 축제장이에요. 열차는 «광주송정역에서 함평역 방면으로 갈아타야 해요»처럼 광주송정 환승만 짧게 넣어 주세요. «함평역으로 이동하여 기차» 같은 문장은 넣지 마세요.`)
     : (en
       ? `Then bus from ${busTerminals} to Gwangju and on to Hampyeong and the venue.`
       : `${busTerminals}에서 광주 고속·시외버스 → 광주에서 함평행 버스 → 축제장 순으로 먼저 안내해 주세요.`);
@@ -1338,11 +1338,11 @@ function formatGangneungAccessOriginGuidance(originRow, transport, locale = 'ko'
       ? `Confirmed TAGO rows for this departure (quote only these times and fares in the answer): ${tagoLead.replace(/\n/g, ' ')}`
       : `이 출발지 TAGO·카드 확인 구간(아래 시각·요금만 인용): ${tagoLead.replace(/\n/g, ' ')}`)
     : (en
-      ? 'No confirmed TAGO train or bus rows for this departure — say so honestly, then describe Daegu Express Bus Terminal to Gangneung express bus with only numbers you can verify, or name the real transfer station and train if TAGO shows one. Never write only «via a transfer route». '
-      : 'TAGO·카드에 이 출발지 확인 시각이 없으면 솔직히 말하고, 대구고속버스터미널→강릉행 고속·시외버스를 구체적으로 안내해 주세요. 열차는 «환승 경로를 거쳐»처럼 뭉뚱그리지 말고 확인된 환승 역·편명만 써 주세요. ');
+      ? 'No confirmed TAGO rows — skip «no data» disclaimers. Lead with Daegu Express Bus Terminal to Gangneung Express Bus Terminal; point times and fares to the booking links below. Name transfer stations only when TAGO shows them. '
+      : 'TAGO·카드에 시각이 없어도 «데이터/정보 없음» 문장은 쓰지 말고, 대구고속버스터미널→강릉고속버스터미널 고속버스를 먼저 쓰고 시각·요금은 아래 버스타고·고속버스 링크로 안내해 주세요. 열차는 확인된 환승 역·편명만 짧게 덧붙여 주세요.');
   return en
-    ? `Readers leave from Daegu. Lead with express bus from Daegu Express Bus Terminal to Gangneung when times exist; trains from Dongdaegu only with named transfer stations. ${tagoHint}`
-    : `대구에서 출발해요. 대구고속버스터미널→강릉고속버스터미널 고속·시외버스를 먼저 안내하고, 열차는 동대구역에서 강릉역까지 확인된 환승 역·편명을 써 주세요. ${tagoHint}`;
+    ? `Readers leave using only this answer — give a route they can take now and where to book. ${tagoHint}`
+    : `여행자는 이 답만 보고 출발해요. 바로 탈 수 있는 경로와 예매처를 짧게 알려 주세요. ${tagoHint}`;
 }
 
 const FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE =
@@ -1358,7 +1358,10 @@ function rewriteFalseDongdaeguGwangjuSongjeongLead(text, options = {}) {
 }
 
 const GUKHYANG_DAEGU_BUS_LEAD_KO =
-  '대중교통을 이용할 때는 동대구터미널이나 서대구터미널에서 광주(유·스퀘어)로 가는 고속버스를 타고 광주에서 함평행 버스로 갈아타는 방법이 편해요.';
+  '대중교통을 이용할 때는 동대구터미널이나 서대구터미널에서 광주(유·스퀘어)로 가는 고속버스를 타고, 유·스퀘어에서 함평공용버스터미널행 버스로 이어 택시·시내버스로 약 10~20분이면 함평 엑스포공원까지 편해요.';
+
+const GUKHYANG_DAEGU_RAIL_SECONDARY_KO =
+  '열차로 가시려면 광주송정역에서 함평역 방면 열차로 갈아타야 해요.';
 
 /** Named intermediate hub — not only «동대구→환승→광주송정». */
 const GUKHYANG_NAMED_INTERMEDIATE_TRANSFER_RE =
@@ -1380,6 +1383,85 @@ function rewriteVagueGukhyangTransferWithoutNamedStation(text, options = {}) {
   return out.replace(/\s{2,}/g, ' ').trim();
 }
 
+function rewriteGukhyangDaeguAccessBusRailOrder(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  let out = String(text || '');
+  out = out.replace(/[^.!?。]*함평역으로\s*이동하여\s*기차[^.!?。]*[.。]\s*/g, '');
+  out = out.replace(
+    /광주\s*도착\s*후에는[^.!?。]*(?:함평역으로\s*이동|기차를\s*이용)[^.!?。]*[.。]\s*/g,
+    '',
+  );
+  out = out.replace(
+    /함평행\s*버스로\s*함평역에서\s*축제장까지는\s*/g,
+    '함평공용버스터미널 쪽에서 택시·시내버스로 약 10~20분이면 ',
+  );
+  out = out.replace(
+    /열차를\s*이용할\s*경우[^.!?。]*직통[^.!?。]*[.。]\s*/g,
+    `확인된 대구→광주송정 직통 열차는 없어요. ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO} `,
+  );
+  out = out.replace(
+    /확인된\s*동대구→광주송정\s*직통\s*열차는\s*없어요\.\s*대구고속버스터미널[^.!?。]*이어\s*가면\s*돼요\.?\s*/g,
+    '',
+  );
+  if (!/함평공용버스터미널/.test(out) && /유·스퀘어|유ㆍ스퀘어/.test(out)) {
+    out = out.replace(
+      /(유·스퀘어|유ㆍ스퀘어)[^.!?。]*[.。]\s*/,
+      (sent) =>
+        `${sent.trim()} 유·스퀘어에서 함평공용버스터미널행 버스를 타고, 터미널이나 인근에서 택시·시내버스로 약 10~20분이면 함평 엑스포공원까지 편해요. `,
+    );
+  }
+  if (/직통\s*열차는\s*없어요/.test(out) && !/광주송정역에서/.test(out)) {
+    out = out.replace(
+      /(확인된\s*대구→광주송정\s*직통\s*열차는\s*없어요\.?)/,
+      `$1 ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO}`,
+    );
+  }
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+function ensureGukhyangFestivalTelPeriod(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (!isBoundFestivalAccessPolish(options)) return String(text || '');
+  return String(text || '')
+    .replace(/(061-320-2247)(?!\s*[.。])/g, '$1.')
+    .replace(/061-320-2247\.{2,}/g, '061-320-2247.');
+}
+
+const GANGNEUNG_DAEGU_BUS_BOOKING_LEAD_KO =
+  '대구고속버스터미널에서 강릉고속버스터미널로 가는 고속버스가 가장 편해요. 시간과 요금은 아래 버스타고·고속버스에서 바로 볼 수 있어요.';
+
+const GANGNEUNG_ACCESS_NOISE_SENTENCE_RE =
+  /(?:데이터|정보가\s*없|준비되어\s*있지\s*않|제공되지\s*않|등록되어\s*있지|확인된\s*정보가\s*없|터미널\s*예매\s*시스템)/;
+
+function gangneungAccessSentenceIsTravelerNoise(sentence) {
+  const t = String(sentence || '').trim();
+  if (!t) return true;
+  if (!GANGNEUNG_ACCESS_NOISE_SENTENCE_RE.test(t)) return false;
+  if (/버스타고·고속버스에서\s*바로\s*볼\s*수\s*있어요/.test(t)) return false;
+  return true;
+}
+
+function rewriteGangneungDaeguAccessTravelerCopy(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  const chunks = String(text || '')
+    .split(/(?<=[.!?。])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .filter((sentence) => !gangneungAccessSentenceIsTravelerNoise(sentence));
+  let out = chunks.join(' ').replace(/\s{2,}/g, ' ').trim();
+  const lead = GANGNEUNG_DAEGU_BUS_BOOKING_LEAD_KO;
+  if (!/강릉고속버스터미널/.test(out) || !/가장\s*편해요/.test(out)) {
+    out = `${lead} ${out}`.trim();
+  } else if (out.indexOf(lead) < 0) {
+    out = `${lead} ${out}`.trim();
+  } else if (out.indexOf(lead) > 60) {
+    out = `${lead} ${out.replace(lead, '').trim()}`.trim();
+  }
+  return out;
+}
+
 function cleanupGukhyangAccessOrphanRailTails(text, options = {}) {
   if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
   let out = String(text || '');
@@ -1388,7 +1470,7 @@ function cleanupGukhyangAccessOrphanRailTails(text, options = {}) {
   if (String(options.departureOriginId || '') === 'daegu') {
     out = out.replace(
       /열차를\s*이용한다면[^.!?。]*광주송정[^.!?。]*[.。]\s*/g,
-      '열차는 확인된 동대구→광주송정 직통 편이 없어서, 버스 경로를 먼저 보시는 편이 좋아요. ',
+      `확인된 대구→광주송정 직통 열차는 없어요. ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO} `,
     );
     const dupPhrase =
       '대구고속버스터미널(서부·동대구)에서 광주(유·스퀘어)까지 고속·시외버스를 타고, 광주에서 함평행 버스로 이어 가면 돼요';
@@ -1902,8 +1984,11 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
     text = rewriteVagueGukhyangTransferWithoutNamedStation(text, options);
     text = ensureGukhyangDaeguBusFirstLead(text, options);
+    text = rewriteGukhyangDaeguAccessBusRailOrder(text, options);
     text = cleanupGukhyangAccessOrphanRailTails(text, options);
     text = rewriteVagueGangneungTransferRoute(text, options);
+    text = rewriteGangneungDaeguAccessTravelerCopy(text, options);
+    text = ensureGukhyangFestivalTelPeriod(text, options);
     text = rewriteFestivalAccessTimetableWindowPhrase(text);
     text = glueAccessNumbersInProse(text);
     text = stripRedundantBookingLinkOnlyLines(text);
