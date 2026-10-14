@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../shared/api/supabase';
 import { resolveSessionBoundSpot } from '../../../utils/resolveDestinationFromChat';
-import { festivalTripMatchesLocale } from '../lib/festivalMooniSessionCache.js';
+import {
+  festivalTripMatchesLocale,
+  stampFestivalMooniLocale,
+} from '../lib/festivalMooniSessionCache.js';
 import ChatModal from './ChatModal';
 import { useTravelData } from '../hooks/useTravelData';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
@@ -143,7 +146,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
         is_hidden: false,
         persona,
         category: THEME_CHAT_CATEGORY,
-        mooniLocale: String(i18n.language || 'ko').slice(0, 2) || 'ko',
+        curation_data: stampFestivalMooniLocale(null, i18n.language),
       };
       const created = await saveNewTrip(newTrip);
       if (created) {
@@ -159,7 +162,9 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
   useEffect(() => {
     if (!isOpen || !mooniPlaceContext?.festivalContext || !activeChatId) return;
     const trip = savedTrips.find((item) => String(item.id) === String(activeChatId));
-    if (!trip || festivalTripMatchesLocale(trip, i18n.language)) return;
+    const stored = String(trip?.curation_data?.mooniLocale || trip?.mooniLocale || '').slice(0, 2);
+    const lang = String(i18n.language || 'ko').slice(0, 2) || 'ko';
+    if (!trip || !stored || stored === lang) return;
     const label = String(mooniPlaceContext.displayLabel || mooniPlaceContext.name || '').trim();
     setActiveChatId(null);
     setChatDraft({

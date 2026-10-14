@@ -36,12 +36,13 @@ export function createLoggedInSavedTripsMock({ persistPatch = false } = {}) {
         if (method === 'POST') {
           const payload = route.request().postDataJSON();
           const row = Array.isArray(payload) ? payload[0] : payload;
+          const stored = { ...row };
+          delete stored.mooniLocale;
           state.tripRow = {
-            ...row,
+            ...stored,
             id: 'e2e-trip-stale-race',
             created_at: new Date().toISOString(),
             messages: row.messages || [],
-            mooniLocale: row.mooniLocale || 'ko',
           };
           await route.fulfill({
             status: 201,

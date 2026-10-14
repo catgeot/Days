@@ -2,11 +2,18 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   isTripThreadStaleVersusLocal,
+  localProtectedTailMissing,
   rememberInFlightChatId,
   shouldHydrateDraftCacheFallback,
   shouldHydrateDraftMessages,
   shouldHydrateTripMessages,
+  shouldReplaceMessagesOnLocaleMismatch,
 } from '../../src/pages/Home/lib/festivalMooniChatSync.js';
+import {
+  festivalSaveExtras,
+  festivalTripMatchesLocale,
+  stampFestivalMooniLocale,
+} from '../../src/pages/Home/lib/festivalMooniSessionCache.js';
 
 test('shouldHydrateTripMessages keeps local thread when trip row is stale', () => {
   const local = [
@@ -34,7 +41,68 @@ test('shouldHydrateTripMessages keeps local thread when trip row is stale', () =
       tripMessages: [],
       localMessages: local,
     }),
+    false,
+  );
+  assert.equal(
+    shouldHydrateTripMessages({
+      activeChatId: 't2',
+      lastSyncedChatId: 't1',
+      tripMessageCount: 1,
+      localMessageCount: 0,
+      tripMessages: [{ role: 'user', text: '다른 채팅' }],
+      localMessages: [],
+    }),
     true,
+  );
+});
+
+test('logged-in saved_trips update keeps a model answer missing from the row', () => {
+  const local = [
+    { role: 'user', text: '볼거리·분위기 알려 줘' },
+    { role: 'model', text: '함평 국향대전은 국화 전시예요.', mooniAt: 50 },
+  ];
+  const longer = [
+    { role: 'user', text: 'Tell me the sights and atmosphere in English.' },
+    { role: 'model', text: 'A different English answer.', mooniAt: 10 },
+    { role: 'model', text: 'More English that is not the local answer.', mooniAt: 11 },
+  ];
+  assert.equal(localProtectedTailMissing(local, longer), true);
+  assert.equal(
+    shouldHydrateTripMessages({
+      activeChatId: 'trip-1',
+      lastSyncedChatId: 'trip-1',
+      tripMessageCount: longer.length,
+      localMessageCount: local.length,
+      tripMessages: longer,
+      localMessages: local,
+    }),
+    false,
+  );
+  assert.equal(shouldReplaceMessagesOnLocaleMismatch(local.length), false);
+  assert.equal(shouldReplaceMessagesOnLocaleMismatch(0), true);
+  const unstamped = { messages: longer };
+  assert.equal(festivalTripMatchesLocale(unstamped, 'ko'), false);
+  const stamped = {
+    messages: longer,
+    curation_data: stampFestivalMooniLocale(null, 'ko'),
+  };
+  assert.equal(festivalTripMatchesLocale(stamped, 'ko'), true);
+  assert.equal(festivalSaveExtras('ko', { mooniSession: { slug: 'x' } }).mooniLocale, 'ko');
+  assert.equal(stampFestivalMooniLocale({ country: 'KR' }, 'en').mooniLocale, 'en');
+});
+
+test('guidance bubble missing from the DB row is not hydrated away', () => {
+  const local = [{ role: 'error', text: '질문이 잠시 몰렸어요. 잠시 후에 다시 물어봐 주세요.', mooniGuidance: true }];
+  assert.equal(
+    shouldHydrateTripMessages({
+      activeChatId: 'trip-1',
+      lastSyncedChatId: null,
+      tripMessageCount: 0,
+      localMessageCount: 1,
+      tripMessages: [],
+      localMessages: local,
+    }),
+    false,
   );
 });
 

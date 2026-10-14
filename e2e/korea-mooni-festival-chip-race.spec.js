@@ -58,8 +58,8 @@ test.describe('festival MOONi logged-in race (a) stale PATCH @390', () => {
   test.beforeEach(async ({ context, page }, testInfo) => {
     if (testInfo.project.name === 'chromium-mobile') {
       process.env.MOONI_TOURAPI_STUB_ONLY = '1';
-      await installFestivalTourApiFixtures(context);
     }
+    await installFestivalTourApiFixtures(context);
     await enableMooniE2eLoggedIn(page);
     savedTripsMock = createLoggedInSavedTripsMock({ persistPatch: false });
     await savedTripsMock.attach(context);
@@ -100,8 +100,8 @@ test.describe('festival MOONi logged-in race (b) locale + missing trip @390', ()
   test.beforeEach(async ({ context, page }, testInfo) => {
     if (testInfo.project.name === 'chromium-mobile') {
       process.env.MOONI_TOURAPI_STUB_ONLY = '1';
-      await installFestivalTourApiFixtures(context);
     }
+    await installFestivalTourApiFixtures(context);
     await enableMooniE2eLoggedIn(page);
     savedTripsMock = createLoggedInSavedTripsMock({ persistPatch: true });
     await savedTripsMock.attach(context);
@@ -149,5 +149,66 @@ test.describe('festival MOONi logged-in race (b) locale + missing trip @390', ()
       timeout: 90_000,
     });
     await shot(page, 'webkit-iphone-race-b-ko-reopen.png');
+  });
+});
+
+test.describe('festival MOONi logged-in saved_trips keeps the answer @390', () => {
+  test.use({
+    viewport: { width: 390, height: 844 },
+    ignoreHTTPSErrors: true,
+  });
+  test.setTimeout(300_000);
+
+  let savedTripsMock;
+
+  test.beforeEach(async ({ context, page }, testInfo) => {
+    if (testInfo.project.name === 'chromium-mobile') {
+      process.env.MOONI_TOURAPI_STUB_ONLY = '1';
+    }
+    await installFestivalTourApiFixtures(context);
+    await enableMooniE2eLoggedIn(page);
+    savedTripsMock = createLoggedInSavedTripsMock({ persistPatch: false });
+    await savedTripsMock.attach(context);
+    await installFestivalChipGeminiMock(context, { delayMs: 200 });
+  });
+
+  test('(c) saved_trips refresh keeps the chip answer', async ({ page }) => {
+    await openFestivalMooni(page);
+    await tapFestivalSightsChip(page);
+    await expect(page.getByText(FESTIVAL_CHIP_MOCK_MARKER)).toBeVisible({
+      timeout: 120_000,
+    });
+
+    const stamped = await page.evaluate(() => {
+      const trips = window.__gateoMooniE2e?.getState?.().savedTrips || [];
+      return trips[0]?.curation_data?.mooniLocale || trips[0]?.mooniLocale || '';
+    });
+    expect(stamped).toBe('ko');
+
+    savedTripsMock.setTripMessages([
+      { role: 'user', text: '볼거리·분위기 알려 줘' },
+      { role: 'model', text: 'A different English answer without the marker.' },
+      { role: 'model', text: 'Another longer English row that should not replace the chip answer.' },
+    ]);
+    await simulateStaleSavedTripsRefresh(page);
+    await page.waitForTimeout(600);
+    await expect(page.getByText(FESTIVAL_CHIP_MOCK_MARKER)).toBeVisible();
+
+    savedTripsMock.setTripMessages([
+      { role: 'user', text: 'Tell me the sights and atmosphere in English only please.' },
+      { role: 'model', text: 'English thread that infers en and must not wipe the Korean answer.' },
+    ]);
+    if (savedTripsMock.state.tripRow) {
+      const curation = { ...(savedTripsMock.state.curation_data || savedTripsMock.state.tripRow.curation_data || {}) };
+      delete curation.mooniLocale;
+      delete savedTripsMock.state.tripRow.mooniLocale;
+      savedTripsMock.state.tripRow = {
+        ...savedTripsMock.state.tripRow,
+        curation_data: curation,
+      };
+    }
+    await simulateStaleSavedTripsRefresh(page);
+    await page.waitForTimeout(600);
+    await expect(page.getByText(FESTIVAL_CHIP_MOCK_MARKER)).toBeVisible();
   });
 });

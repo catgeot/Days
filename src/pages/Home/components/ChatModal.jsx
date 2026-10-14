@@ -66,6 +66,7 @@ import {
 } from '../../Korea/lib/festivalTransportCard.js';
 import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
 import {
+  festivalSaveExtras,
   festivalTripMatchesLocale,
   readFestivalMooniSession,
   showFestivalOpeningInThread,
@@ -76,6 +77,7 @@ import {
   shouldHydrateDraftCacheFallback,
   shouldHydrateDraftMessages,
   shouldHydrateTripMessages,
+  shouldReplaceMessagesOnLocaleMismatch,
 } from '../lib/festivalMooniChatSync.js';
 import { festivalResolutionLabel } from '../lib/mooniPlaceChatLabel.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
@@ -461,10 +463,26 @@ const ChatModal = ({
       return undefined;
     }
     let cancelled = false;
-    requestFestivalFirstAnswer(festivalMooniContext, { locale: i18n.language }).then((text) => {
-      if (!text) return;
-      writeFestivalMooniSession(contentId, i18n.language, { opening: text });
-      if (!cancelled) setFestivalModelOpening({ key: festivalOpeningKey, text });
+    requestFestivalFirstAnswer(festivalMooniContext, { locale: i18n.language }).then((result) => {
+      if (cancelled) return;
+      const text = typeof result === 'string' ? result : String(result?.text || '');
+      const guidance = typeof result === 'string' ? '' : String(result?.guidance || '').trim();
+      if (text) {
+        writeFestivalMooniSession(contentId, i18n.language, { opening: text });
+        setFestivalModelOpening({ key: festivalOpeningKey, text });
+        return;
+      }
+      if (!guidance) return;
+      const bubble = {
+        role: 'error',
+        text: guidance,
+        mooniGuidance: true,
+        mooniAt: Date.now(),
+      };
+      const cached = readFestivalMooniSession(contentId, i18n.language)?.messages;
+      const next = Array.isArray(cached) && cached.length ? cached : [bubble];
+      writeFestivalMooniSession(contentId, i18n.language, { messages: next });
+      setMessages((prev) => (Array.isArray(prev) && prev.length ? prev : next));
     });
     return () => {
       cancelled = true;
@@ -774,6 +792,8 @@ const ChatModal = ({
         targetTrip &&
         !festivalTripMatchesLocale(targetTrip, i18n.language)
       ) {
+        const localLen = messagesRef.current?.length ?? 0;
+        if (!shouldReplaceMessagesOnLocaleMismatch(localLen)) return;
         const bucket = readFestivalMooniSession(
           festivalMooniContext.contentId,
           i18n.language,
@@ -827,6 +847,8 @@ const ChatModal = ({
     if (chatDraft) {
       const contentId = festivalMooniContext?.contentId;
       if (contentId) {
+        const localLen = messagesRef.current?.length ?? 0;
+        if (!shouldReplaceMessagesOnLocaleMismatch(localLen)) return;
         const bucket = readFestivalMooniSession(contentId, i18n.language)?.messages;
         setMessages(Array.isArray(bucket) ? bucket : []);
         if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
@@ -958,7 +980,13 @@ const ChatModal = ({
     ];
 
     setMessages(finalMessages);
-    if (effectiveChatId) onUpdateChat(effectiveChatId, finalMessages);
+    if (effectiveChatId) {
+      onUpdateChat(
+        effectiveChatId,
+        finalMessages,
+        festivalSaveExtras(mooniPlaceContext?.festivalContext ? i18n.language : '', undefined),
+      );
+    }
   }, [
     isLoading,
     activeChatId,
@@ -1084,7 +1112,13 @@ const ChatModal = ({
       const newMessages = [...messages, userMsg];
       setMessages(newMessages);
       setInput('');
-      if (activeChatId) onUpdateChat(activeChatId, newMessages);
+      if (activeChatId) {
+        onUpdateChat(
+          activeChatId,
+          newMessages,
+          festivalSaveExtras(mooniPlaceContext?.festivalContext ? i18n.language : '', undefined),
+        );
+      }
       return;
     }
 
@@ -1118,7 +1152,11 @@ const ChatModal = ({
       await applyDestinationBinding(effectiveChatId, chatDraft, resolution);
     }
 
-    onUpdateChat(effectiveChatId, newMessages);
+    onUpdateChat(
+      effectiveChatId,
+      newMessages,
+      festivalSaveExtras(mooniPlaceContext?.festivalContext ? i18n.language : '', undefined),
+    );
 
       const destForPrompt =
         placeBound?.name ||
@@ -1163,9 +1201,10 @@ const ChatModal = ({
       tripSessionRef.current = nextSession;
       persistMooniTripSession(nextSession, { slug, destinationName: destName });
       if (nextSession.departureIata) persistFlightOriginIata(nextSession.departureIata);
-      const sessionExtras = hasMooniTripSessionFacts(nextSession)
-        ? { mooniSession: nextSession }
-        : undefined;
+      const sessionExtras = festivalSaveExtras(
+        mooniPlaceContext?.festivalContext ? i18n.language : '',
+        hasMooniTripSessionFacts(nextSession) ? { mooniSession: nextSession } : undefined,
+      );
       const cta = resolveChatCtaCode({
         userText: cleanText,
         slug,
@@ -1375,6 +1414,7 @@ const ChatModal = ({
     boundDestinationSlug,
     mooniPlaceContext,
     topicDockParent,
+    i18n.language,
   ]);
 
   const handleMooniContinueReading = useCallback(
@@ -1425,7 +1465,13 @@ const ChatModal = ({
             : m,
         );
         setMessages(nextMessages);
-        if (activeChatId) onUpdateChat(activeChatId, nextMessages);
+        if (activeChatId) {
+          onUpdateChat(
+            activeChatId,
+            nextMessages,
+            festivalSaveExtras(mooniPlaceContext?.festivalContext ? i18n.language : '', undefined),
+          );
+        }
       } catch (error) {
         const text = getGeminiProxyErrorMessage(error);
         setMessages((prev) => [...prev, { role: 'error', text }]);
