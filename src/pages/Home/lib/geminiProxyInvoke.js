@@ -6,22 +6,22 @@ import { parseGeminiProxySuccess } from './geminiProxyResult.js';
 import {
   isAccessTokenExpired,
   isJwtGatewayRejection,
-  readJwtAlg,
   selectGeminiProxyBearer,
 } from './geminiProxyAuth.js';
 
 /**
- * Refresh only a legacy HS256 session that is about to expire.
- * ES256 access tokens stay rejected by verify_jwt even after refresh.
+ * Refresh an expired session before the call.
+ * The ES256 token is not the Authorization bearer. A fresh one can still
+ * be verified from the request body for the per-user limit.
  * @param {{ auth: { getSession: () => Promise<{ data?: { session?: { access_token?: string } | null } }>, refreshSession: () => Promise<{ data?: { session?: { access_token?: string } | null } }> } }} client
  */
 export async function resolveGeminiProxyAccessToken(client) {
   const { data } = await client.auth.getSession();
   let token = data?.session?.access_token || null;
   if (!token) return null;
-  if (readJwtAlg(token) === 'HS256' && isAccessTokenExpired(token)) {
+  if (isAccessTokenExpired(token)) {
     const refreshed = await client.auth.refreshSession();
-    token = refreshed?.data?.session?.access_token || null;
+    token = refreshed?.data?.session?.access_token || token;
   }
   return token;
 }
@@ -33,7 +33,7 @@ export async function resolveGeminiProxyAccessToken(client) {
  *   task: string,
  *   params: object,
  *   nowSec?: number,
- *   invoke: (args: { authorization: string, task: string, params: object }) => Promise<{
+ *   invoke: (args: { authorization: string, userJwt: string | null, task: string, params: object }) => Promise<{
  *     ok: boolean,
  *     status: number | null,
  *     data: Record<string, unknown> | null,
@@ -52,6 +52,7 @@ export async function invokeGeminiProxyWithSession({
   const first = selectGeminiProxyBearer({ anonKey, accessToken, nowSec });
   const call = (bearer) => invoke({
     authorization: `Bearer ${bearer}`,
+    userJwt: first.userJwt,
     task,
     params,
   });

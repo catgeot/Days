@@ -1,6 +1,7 @@
 import { assert, assertEquals } from "@std/assert";
 import { resetRateMemory } from "../_shared/gemini/limits.ts";
 import { estimatePromptTokens } from "../_shared/gemini/tasks.ts";
+import { resetUserJwtCache } from "../_shared/gemini/userJwt.js";
 import { handleGeminiProxy } from "./router.ts";
 
 const ORIGIN = "https://www.gateo.kr";
@@ -84,6 +85,7 @@ function post(
   headers: Record<string, string>,
   fetchImpl: typeof fetch,
   extraEnv: Record<string, string> = {},
+  extraDeps: { jwks?: Array<Record<string, string>>; now?: () => number } = {},
 ) {
   resetRateMemory();
   const req = new Request("https://example.supabase.co/functions/v1/gemini-proxy", {
@@ -91,7 +93,7 @@ function post(
     headers: { "Content-Type": "application/json", ...headers },
     body: JSON.stringify(body),
   });
-  return handleGeminiProxy(req, { env: { ...env, ...extraEnv }, fetchImpl });
+  return handleGeminiProxy(req, { env: { ...env, ...extraEnv }, fetchImpl, ...extraDeps });
 }
 
 function routedFetch(gemini: (call: Call) => Response, admitBody: unknown = { ok: true }) {
@@ -714,4 +716,118 @@ Deno.test("legacy allowlist accepts new ids and aliases old ids onto them", asyn
     assert(!url.includes("gemini-3.5-flash"));
     assert(!url.includes("pro-preview"));
   }
+});
+
+function b64urlJson(value: unknown) {
+  return btoa(JSON.stringify(value)).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+}
+
+function b64urlBytes(bytes: Uint8Array) {
+  let bin = "";
+  for (const byte of bytes) bin += String.fromCharCode(byte);
+  return btoa(bin).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+}
+
+async function signedEs256User(sub = "00000000-0000-4000-8000-0000000000aa") {
+  const pair = await crypto.subtle.generateKey(
+    { name: "ECDSA", namedCurve: "P-256" },
+    true,
+    ["sign", "verify"],
+  );
+  const jwk = await crypto.subtle.exportKey("jwk", pair.publicKey);
+  const kid = "test-kid";
+  const now = Math.floor(Date.now() / 1000);
+  const header = b64urlJson({ alg: "ES256", typ: "JWT", kid });
+  const payload = b64urlJson({
+    role: "authenticated",
+    sub,
+    aud: "authenticated",
+    iat: now,
+    exp: now + 600,
+  });
+  const sig = await crypto.subtle.sign(
+    { name: "ECDSA", hash: "SHA-256" },
+    pair.privateKey,
+    new TextEncoder().encode(`${header}.${payload}`),
+  );
+  return {
+    token: `${header}.${payload}.${b64urlBytes(new Uint8Array(sig))}`,
+    jwks: [{ kty: "EC", crv: "P-256", alg: "ES256", kid, x: jwk.x ?? "", y: jwk.y ?? "", use: "sig" }],
+    sub,
+  };
+}
+
+function admitBuckets(calls: Call[]) {
+  const admit = admitCalls(calls)[0];
+  const payload = JSON.parse(String(admit.init?.body));
+  return payload.p_checks.map((check: { bucket: string }) => check.bucket as string);
+}
+
+Deno.test("verified body userJwt keys the uid bucket and is not sent to Gemini", async () => {
+  const { token, jwks, sub } = await signedEs256User();
+  const { fetchImpl, calls } = routedFetch(() => geminiOk("축제예요"));
+  const res = await post({
+    ...mooni,
+    userJwt: token,
+  }, {
+    Origin: ORIGIN,
+    Authorization: jwt({ role: "anon", sub: "" }),
+  }, fetchImpl, {}, { jwks });
+  assertEquals(res.status, 200);
+  const buckets = admitBuckets(calls);
+  assert(buckets.includes(`uid:${sub}:d`));
+  const sent = JSON.stringify(geminiCalls(calls)[0].init?.body ?? "");
+  assert(!sent.includes(token));
+  assert(!sent.includes(sub));
+});
+
+Deno.test("forged userJwt stays on the anon IP buckets and still answers", async () => {
+  const { token, jwks } = await signedEs256User();
+  const forged = `${token.slice(0, -4)}AAAA`;
+  const { fetchImpl, calls } = routedFetch(() => geminiOk("축제예요"));
+  const res = await post({
+    ...mooni,
+    userJwt: forged,
+  }, {
+    Origin: ORIGIN,
+    Authorization: jwt({ role: "anon", sub: "" }),
+  }, fetchImpl, {}, { jwks });
+  assertEquals(res.status, 200);
+  const buckets = admitBuckets(calls);
+  assert(!buckets.some((bucket: string) => bucket.startsWith("uid:")));
+  assertEquals((await res.json()).text, "축제예요");
+});
+
+Deno.test("verified userJwt satisfies login_required tasks", async () => {
+  const { token, jwks } = await signedEs256User();
+  const { fetchImpl, calls } = routedFetch(() => geminiOk());
+  const authed = await post({
+    task: "review_draft",
+    params: { placeName: "파리", rating: 5, draft: "좋았다" },
+    userJwt: token,
+  }, { Origin: ORIGIN, Authorization: jwt({ role: "anon", sub: "" }) }, fetchImpl, {}, { jwks });
+  assertEquals(authed.status, 200);
+  assertEquals(geminiCalls(calls).length, 1);
+
+  const forged = await post({
+    task: "review_draft",
+    params: { placeName: "파리", rating: 5, draft: "좋았다" },
+    userJwt: `${token.slice(0, -4)}AAAA`,
+  }, { Origin: ORIGIN, Authorization: jwt({ role: "anon", sub: "" }) }, fetchImpl, {}, { jwks });
+  assertEquals(forged.status, 403);
+  assertEquals((await forged.json()).error, "login_required");
+});
+
+Deno.test("JWKS fetch failure leaves the call on anon limits", async () => {
+  resetUserJwtCache();
+  const { token } = await signedEs256User();
+  const { fetchImpl, calls } = routedFetch(() => geminiOk("ok"));
+  const res = await post({
+    ...mooni,
+    userJwt: token,
+  }, { Origin: ORIGIN, Authorization: jwt({ role: "anon", sub: "" }) }, fetchImpl);
+  assertEquals(res.status, 200);
+  const buckets = admitBuckets(calls);
+  assert(!buckets.some((bucket: string) => bucket.startsWith("uid:")));
+  resetUserJwtCache();
 });

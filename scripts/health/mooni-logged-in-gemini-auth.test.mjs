@@ -52,6 +52,7 @@ test('ES256 logged-in session uses the anon bearer, not the user JWT', () => {
   assert.equal(choice.bearer, ANON);
   assert.equal(readJwtAlg(choice.bearer), 'HS256');
   assert.equal(readJwtRole(choice.bearer), 'anon');
+  assert.equal(choice.userJwt, USER_ES256);
   assert.notEqual(choice.bearer, USER_ES256);
 });
 
@@ -60,12 +61,22 @@ test('legacy HS256 user session still sends the user bearer', () => {
   assert.equal(choice.kind, 'user-hs256');
   assert.equal(choice.bearer, USER_HS256);
   assert.equal(readJwtRole(choice.bearer), 'authenticated');
+  assert.equal(choice.userJwt, null);
 });
 
 test('logged-out session sends the anon bearer', () => {
   const choice = selectGeminiProxyBearer({ anonKey: ANON, accessToken: null });
   assert.equal(choice.kind, 'anon');
   assert.equal(choice.bearer, ANON);
+  assert.equal(choice.userJwt, null);
+});
+
+test('expired ES256 session does not attach a user JWT', () => {
+  const expired = fakeJwt('ES256', 'authenticated', { exp: Math.floor(Date.now() / 1000) - 60 });
+  const choice = selectGeminiProxyBearer({ anonKey: ANON, accessToken: expired });
+  assert.equal(choice.kind, 'anon-fallback');
+  assert.equal(choice.bearer, ANON);
+  assert.equal(choice.userJwt, null);
 });
 
 test('logged-in ES256 mooni_chat returns a non-empty answer', async () => {
@@ -75,8 +86,11 @@ test('logged-in ES256 mooni_chat returns a non-empty answer', async () => {
     accessToken: USER_ES256,
     task: 'mooni_chat',
     params: { userText: '국향대전 한 줄로 알려줘', history: [] },
-    invoke: async ({ authorization }) => {
-      calls.push(readJwtAlg(authorization.replace(/^Bearer\s+/i, '')));
+    invoke: async ({ authorization, userJwt }) => {
+      calls.push({
+        alg: readJwtAlg(authorization.replace(/^Bearer\s+/i, '')),
+        userJwt: userJwt === USER_ES256,
+      });
       if (bearerRole(authorization) === 'authenticated') return gateway401();
       return {
         ok: true,
@@ -92,7 +106,8 @@ test('logged-in ES256 mooni_chat returns a non-empty answer', async () => {
     },
   });
   assert.equal(calls.length, 1);
-  assert.equal(calls[0], 'HS256');
+  assert.equal(calls[0].alg, 'HS256');
+  assert.equal(calls[0].userJwt, true);
   assert.equal(loggedInMooniAnswerOk(result.text), true);
   assert.match(result.text, /국향대전/);
 });
