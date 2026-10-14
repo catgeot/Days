@@ -288,6 +288,8 @@ test('fare, clock, and duration stay one unbreakable unit', () => {
   assert.equal(glueAccessUnit('3시간 4분~3시간 12분').includes(' '), false);
   assert.equal(glueAccessNumbersInProse('2,600원에서 4,800원'), '2,\u2060600원에서 4,\u2060800원');
   assert.equal(glueAccessNumbersInProse('16:29~19:29 사이'), '16:29\u2060~\u206019:29 사이');
+  assert.equal(glueAccessNumbersInProse('07:19 출발'), '07:\u206019 출발');
+  assert.doesNotMatch(glueAccessNumbersInProse('4,800원'), /4,\n/);
   const card = readFileSync(join(root, 'src/pages/Korea/FestivalAccessCard.jsx'), 'utf8');
   assert.match(card, /function Nowrap[\s\S]*whitespace-nowrap/);
   assert.match(card, /<Nowrap>\{clock\}<\/Nowrap>/);
