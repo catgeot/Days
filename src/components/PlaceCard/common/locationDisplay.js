@@ -76,12 +76,21 @@ export function getLocalizedPlaceName(location, locale = 'ko') {
   return normalizeText(location?.name) || '';
 }
 
+const KO_KOREA_RE = /^(한국|대한민국|korea|south\s*korea|republic of korea|kr)$/i;
+
+function isKoreaCountryLabel(value) {
+  return KO_KOREA_RE.test(normalizeText(value));
+}
+
 export function getLocalizedCountryName(location, locale = 'ko') {
+  const korean = normalizeText(location?.country);
+  const english = normalizeText(location?.country_en);
   if (locale === 'en') {
-    const english = normalizeText(location?.country_en);
     if (english) return english;
+    return korean;
   }
-  return normalizeText(location?.country) || '';
+  if (isKoreaCountryLabel(korean) || isKoreaCountryLabel(english)) return '대한민국';
+  return korean || '';
 }
 
 export function getPlaceTitleLinesForLocale(location, locale = 'ko') {

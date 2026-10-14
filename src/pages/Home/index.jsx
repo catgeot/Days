@@ -57,6 +57,8 @@ import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from './lib/placeChatIntro';
+import { isDomesticKoreaLocation } from '../../utils/tourApiMatch.js';
+import { fetchDomesticTourOverview } from '../../utils/tourKeywordPick.js';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
@@ -1055,24 +1057,34 @@ function Home() {
           if (needsPlaceChatIntroHydration(focusTarget)) {
             const pinId = focusTarget?.id;
             const pinName = focusTarget?.name;
+            const overviewPromise = isDomesticKoreaLocation(focusTarget)
+              ? fetchDomesticTourOverview(pinName)
+              : Promise.resolve('');
+            const applySummary = (summary) => {
+              if (!summary || syncId !== placeRouteSyncRef.current) return;
+              setSelectedLocation((prev) => {
+                if (!prev) return prev;
+                const same =
+                  (pinId && prev.id === pinId) ||
+                  (pinName && prev.name === pinName) ||
+                  isSameCanonicalPlace(prev, focusTarget);
+                if (!same || !needsPlaceChatIntroHydration(prev)) return prev;
+                const next = {
+                  ...prev,
+                  desc: summary,
+                  placeChatIntroApplied: true,
+                };
+                selectedLocationRef.current = next;
+                return next;
+              });
+            };
             ensurePlaceChatIntroForLocation(focusTarget, { generateIfMissing: true })
               .then((summary) => {
-                if (!summary || syncId !== placeRouteSyncRef.current) return;
-                setSelectedLocation((prev) => {
-                  if (!prev) return prev;
-                  const same =
-                    (pinId && prev.id === pinId) ||
-                    (pinName && prev.name === pinName) ||
-                    isSameCanonicalPlace(prev, focusTarget);
-                  if (!same || !needsPlaceChatIntroHydration(prev)) return prev;
-                  const next = {
-                    ...prev,
-                    desc: summary,
-                    placeChatIntroApplied: true,
-                  };
-                  selectedLocationRef.current = next;
-                  return next;
-                });
+                if (summary) {
+                  applySummary(summary);
+                  return;
+                }
+                return overviewPromise.then(applySummary);
               })
               .catch(() => {});
           }

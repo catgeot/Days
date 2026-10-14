@@ -126,13 +126,18 @@ export function scoreTourPhotoTitle(title, placeTitle, keyword) {
   const placeHit = place && t.includes(place);
   const kwCore = kw.split(/\s+/)[0] || kw;
   const kwHit = kwCore && t.includes(kwCore);
+  const tokens = `${place} ${kw}`
+    .split(/\s+/)
+    .map((part) => part.trim())
+    .filter((part) => part.length >= 3);
+  const tokenHit = tokens.some((part) => t.includes(part));
 
   if (TOURAPI_OFFTOPIC_TITLE_RE.test(t) && !placeHit) return -100;
 
   let score = 10;
   if (t === place || t === kw) score += 50;
   else if (placeHit) score += 35;
-  else if (kwHit) score += 20;
+  else if (kwHit || tokenHit) score += 20;
 
   if (TOURAPI_SCENIC_TITLE_RE.test(t)) score += 25;
   if (TOURAPI_OFFTOPIC_TITLE_RE.test(t)) score -= 45;

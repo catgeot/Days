@@ -16,6 +16,11 @@ import {
   visitedRowToSearchSpot,
 } from '../src/pages/Home/lib/visitedPlaceSearch.js';
 import { resolveSearchResultSelect } from '../src/pages/Home/lib/exploreRecentHistory.js';
+import { getLocalizedCountryName } from '../src/components/PlaceCard/common/locationDisplay.js';
+import { formatPlaceChatLabel } from '../src/pages/Home/lib/mooniPlaceChatLabel.js';
+import { pickKoreanNameGallery } from '../src/utils/placeStatsNameGallery.js';
+import { pickTourKeywordContentId } from '../src/utils/tourKeywordPick.js';
+import { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from '../src/utils/tourApiPhotoRank.js';
 
 const HEUNGJEONG_EN = {
   type: 'Feature',
@@ -153,4 +158,78 @@ test('/place/pyeongchang search pin still opens the county card', () => {
   });
   assert.equal(decision.type, 'place');
   assert.equal(decision.param, 'pyeongchang');
+});
+
+test('ko UI country label is 대한민국 for South Korea', () => {
+  const valley = openHeungjeong();
+  assert.equal(getLocalizedCountryName(valley, 'ko'), '대한민국');
+  assert.equal(getLocalizedCountryName({ country: '대한민국' }, 'ko'), '대한민국');
+  assert.equal(getLocalizedCountryName({ country: 'SOUTH KOREA' }, 'ko'), '대한민국');
+  assert.equal(
+    getLocalizedCountryName({ country: 'South Korea', country_en: 'South Korea' }, 'en'),
+    'South Korea',
+  );
+  assert.equal(formatPlaceChatLabel(valley, 'ko'), '대한민국 흥정계곡');
+});
+
+test('same Korean name gallery skips the county hub row', () => {
+  const photo = (id) => ({
+    id,
+    urls: { small: `https://example.com/${id}.jpg`, regular: `https://example.com/${id}.jpg` },
+    alt_description: 'valley landscape',
+  });
+  const picked = pickKoreanNameGallery(
+    [
+      {
+        place_id: 'pyeongchang',
+        name_ko: '평창',
+        gallery_urls: [photo('county'), photo('county-2')],
+      },
+      {
+        place_id: '흥정계곡',
+        name_ko: '흥정계곡',
+        gallery_urls: [],
+      },
+      {
+        place_id: 'herbnara-farm',
+        name_ko: '흥정계곡',
+        gallery_urls: [photo('valley'), photo('valley-2')],
+      },
+    ],
+    '흥정계곡',
+  );
+  assert.equal(picked?.place_id, 'herbnara-farm');
+});
+
+test('Tour keyword pick prefers the exact title and a contained waterfall name', () => {
+  assert.equal(
+    pickTourKeywordContentId(
+      [
+        { contentId: '2801527', title: '흥정계곡409' },
+        { contentId: '2761919', title: '흥정계곡오토캠핑장' },
+        { contentId: '126657', title: '흥정계곡' },
+      ],
+      '흥정계곡',
+    ),
+    '126657',
+  );
+  assert.equal(
+    pickTourKeywordContentId(
+      [{ contentId: '1918639', title: '월정리해변(월정리해수욕장)' }],
+      '월정리해변',
+    ),
+    '1918639',
+  );
+  assert.equal(
+    pickTourKeywordContentId([{ contentId: '125494', title: '운계폭포' }], '감악산 운계폭포'),
+    '125494',
+  );
+  assert.equal(
+    pickTourKeywordContentId([{ contentId: '1', title: '평창' }], '흥정계곡'),
+    '',
+  );
+  assert.ok(
+    scoreTourPhotoTitle('운계폭포 (2)', '감악산 운계폭포', '감악산 운계폭포') >=
+      TOURAPI_MIN_KEEP_SCORE,
+  );
 });
