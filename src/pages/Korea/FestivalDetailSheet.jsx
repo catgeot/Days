@@ -129,7 +129,7 @@ import {
 } from './festivalDeepLinkItem';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
-import { isFestivalPhotoDecoded } from './festivalPhotoFrame.js';
+import { useFestivalHeroPhotoDecoded } from './useFestivalHeroPhotoDecoded.js';
 import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
 import {
@@ -608,7 +608,6 @@ export default function FestivalDetailSheet({
   const [imageCredits, setImageCredits] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
-  const [heroPhotoDecoded, setHeroPhotoDecoded] = useState(false);
   const heroColRef = useRef(null);
   const heroColMin = useRef(0);
   const detailSlotRef = useRef(null);
@@ -617,6 +616,8 @@ export default function FestivalDetailSheet({
   const imageOwnerRef = useRef('');
   const [detailError, setDetailError] = useState('');
   const [activeImage, setActiveImage] = useState(0);
+  const heroUrlForDecodeProbe = imageUrls[activeImage] || imageUrls[0] || '';
+  const heroPhotoDecoded = useFestivalHeroPhotoDecoded(heroUrlForDecodeProbe, locale);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(TAB_INFO);
   const [videos, setVideos] = useState([]);
@@ -1055,7 +1056,6 @@ export default function FestivalDetailSheet({
         }
       }
       setImageCredits(credits);
-      setHeroPhotoDecoded(false);
 
       if (!detailData?.ok && !imageData?.ok) {
         setIntro(null);
@@ -1084,7 +1084,6 @@ export default function FestivalDetailSheet({
       imageOwnerRef.current = String(contentId);
       setImageUrls(seeded);
       setHeroReady(seeded.length === 0);
-      setHeroPhotoDecoded(false);
       if (!prefetchMatches) {
         setIntro(null);
         setCommon(null);
@@ -1147,7 +1146,6 @@ export default function FestivalDetailSheet({
 
   const onSelectHeroImage = useCallback((index) => {
     setActiveImage(index);
-    setHeroPhotoDecoded(false);
   }, []);
 
   useEffect(() => {
@@ -1229,7 +1227,6 @@ export default function FestivalDetailSheet({
   const stepLightbox = useCallback((delta) => {
     if (imageUrls.length < 2) return;
     setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
-    setHeroPhotoDecoded(false);
   }, [imageUrls.length]);
 
   const consumeHorizontalSwipe = useCallback((start, endX, endY) => {
@@ -1745,15 +1742,6 @@ export default function FestivalDetailSheet({
   }, [item?.contentId, showFestivalStayStrip]);
 
   const festivalEnded = isFestivalEnded(item?.eventEndDate || intro?.eventEndDate);
-  const heroUrlForDecode = imageUrls[activeImage] || imageUrls[0] || '';
-
-  useLayoutEffect(() => {
-    if (!heroUrlForDecode) return;
-    const img = document.querySelector('[data-festival-hero] img[data-festival-photo]');
-    if (isFestivalPhotoDecoded(img)) {
-      setHeroPhotoDecoded(true);
-    }
-  }, [heroUrlForDecode, locale]);
 
   if (!item) {
     if (!pending) return null;
@@ -1898,12 +1886,11 @@ export default function FestivalDetailSheet({
               <FestivalHeroPhoto
                 key={hero || 'hero'}
                 src={hero}
+                decoded={heroPhotoDecoded}
                 onLoaded={() => {
-                  setHeroPhotoDecoded(true);
                   setHeroReady(true);
                 }}
                 onFailed={() => {
-                  setHeroPhotoDecoded(false);
                   setHeroReady(true);
                 }}
                 fallback={(
@@ -2719,7 +2706,6 @@ export default function FestivalDetailSheet({
                     type="button"
                     onClick={() => {
                       setActiveImage(index);
-                      setHeroPhotoDecoded(false);
                       setLightboxOpen(true);
                     }}
                     className="relative aspect-square overflow-hidden rounded-xl border border-stone-200 bg-stone-100"

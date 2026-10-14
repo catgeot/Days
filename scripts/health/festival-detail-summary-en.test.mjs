@@ -62,6 +62,6 @@ test('FestivalDetailSheet hides expand badge until hero photo decodes', () => {
     'utf8',
   );
   assert.match(sheet, /heroPhotoDecoded \? \(/);
-  assert.match(sheet, /isFestivalPhotoDecoded/);
+  assert.match(sheet, /useFestivalHeroPhotoDecoded/);
   assert.doesNotMatch(sheet, /key=\{`\$\{hero\}-\$\{locale\}`\}/);
 });

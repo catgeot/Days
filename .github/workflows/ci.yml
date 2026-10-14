@@ -39,6 +39,24 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Festival hero credit E2E (WebKit, built dist)
+        run: |
+          npx playwright install --with-deps webkit
+          npx serve -s dist -l 4180 > /tmp/serve-festival.log 2>&1 &
+          ready=0
+          for _ in $(seq 1 45); do
+            if curl -sf -o /dev/null http://127.0.0.1:4180/; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" != 1 ]; then
+            cat /tmp/serve-festival.log
+            exit 1
+          fi
+          SMOKE_SITE_URL=http://127.0.0.1:4180 npx playwright test e2e/korea-festival-hero-credit-en.spec.js --project=webkit-festival-hero-credit -g "direct \\?lang=en" --reporter=line
+
   # YouTube 탭 세션(더 보기). 프로덕션 일일 헬스(e2e-health)에서는 제외.
   e2e-youtube-session:
     runs-on: ubuntu-latest

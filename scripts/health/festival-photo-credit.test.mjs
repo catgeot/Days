@@ -41,7 +41,9 @@ test('festival detail sheet gates credit on heroPhotoDecoded with locale formatt
   assert.doesNotMatch(sheet, /\{imageCredits\[activeImage\]\}/);
   assert.match(sheet, /onSelectHeroImage/);
   assert.doesNotMatch(sheet, /key=\{`\$\{hero\}-\$\{locale\}`\}/);
-  assert.match(sheet, /isFestivalPhotoDecoded/);
+  assert.match(sheet, /useFestivalHeroPhotoDecoded/);
+  const heroPhoto = readFileSync(join(root, 'src/pages/Korea/festivalHeroPhoto.js'), 'utf8');
+  assert.match(heroPhoto, /data-festival-hero-decoded/);
   assert.match(index, /key=\{festivalId \|\| 'sheet'\}/);
   assert.doesNotMatch(index, /key=\{`\$\{festivalId.*\}-\$\{locale\}`\}/);
 });

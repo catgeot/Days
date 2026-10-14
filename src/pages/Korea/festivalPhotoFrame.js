@@ -106,8 +106,30 @@ export function FestivalPhotoFrame({
   }, [src]);
 
   useLayoutEffect(() => {
-    if (!src) return;
+    if (!src) return undefined;
+    let cancelled = false;
+    const loop = () => {
+      if (cancelled) return;
+      const img = imgRef.current;
+      if (!img) {
+        requestAnimationFrame(loop);
+        return;
+      }
+      if (isFestivalPhotoDecoded(img)) {
+        markLoaded(img);
+        return;
+      }
+      if (img.complete && img.naturalWidth === 0) {
+        markBroken(img);
+        return;
+      }
+      requestAnimationFrame(loop);
+    };
     syncFromImg(imgRef.current);
+    loop();
+    return () => {
+      cancelled = true;
+    };
   }, [src, timedOut, broken]);
 
   if (!src) return fallback;

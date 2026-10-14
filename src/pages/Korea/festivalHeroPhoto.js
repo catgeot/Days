@@ -8,11 +8,12 @@ export const FESTIVAL_HERO_BOX_CLASS = 'h-[min(40vh,18rem)]';
  * Hero photo that cannot grow the sheet when the request fails.
  * onError unmounts the img and shows `fallback` inside the fixed box.
  */
-export function FestivalHeroPhoto({ src, onLoaded, onFailed, fallback = null }) {
+export function FestivalHeroPhoto({ src, onLoaded, onFailed, fallback = null, decoded = false }) {
   return createElement(
     'div',
     {
       'data-festival-hero': '',
+      'data-festival-hero-decoded': decoded ? 'true' : undefined,
       className: `relative w-full overflow-hidden bg-stone-200/70 ${FESTIVAL_HERO_BOX_CLASS} md:h-full md:min-h-[12rem]`,
     },
     createElement(FestivalPhotoFrame, {
