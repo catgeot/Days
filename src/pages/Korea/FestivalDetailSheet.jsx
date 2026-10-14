@@ -1550,14 +1550,25 @@ export default function FestivalDetailSheet({
   }, [nearbySights]);
 
   const mooniNearbyRestaurants = useMemo(() => {
-    const names = [];
+    const rows = [];
+    const seen = new Set();
     for (const spot of nearbyFood) {
       const name = String(spot?.name || '').trim();
-      if (!name || names.includes(name)) continue;
-      names.push(name);
-      if (names.length >= 24) break;
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      const distKm = Number(spot?.distKm);
+      const homepage = String(spot?.homepage || '').trim();
+      rows.push({
+        name,
+        distKm: Number.isFinite(distKm) ? distKm : null,
+        locality: String(spot?.locality || '').trim(),
+        addr1: String(spot?.addr1 || '').trim(),
+        cat3: String(spot?.cat3 || '').trim(),
+        url: /^https?:\/\//i.test(homepage) ? homepage : '',
+      });
+      if (rows.length >= 24) break;
     }
-    return names;
+    return rows;
   }, [nearbyFood]);
 
   const [accessFacts, setAccessFacts] = useState(null);

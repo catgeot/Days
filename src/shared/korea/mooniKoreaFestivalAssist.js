@@ -603,10 +603,17 @@ export function stripDisallowedFestivalLinks(text, options = {}) {
     }
     return '';
   };
+  const foodUrlKeys = new Set();
+  if (isFestivalFoodAsk(options)) {
+    for (const row of festivalFoodPlaceEntries(options.nearbyRestaurants, options.locale, 4)) {
+      if (row.url) foodUrlKeys.add(looseUrlKey(row.url));
+    }
+  }
   let next = String(text || '').replace(
     /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g,
     (full, label, url) => {
       const clean = String(url || '').trim();
+      if (foodUrlKeys.has(looseUrlKey(clean))) return stash(full);
       if (OFFICIAL_SITE_LABEL_RE.test(String(label || '').trim()) && !sameOfficialUrl(clean, homepage)) {
         const linked = linkedOfficial(homepage);
         return linked ? stash(linked) : String(label || '').trim();
@@ -1194,7 +1201,18 @@ export function rankFestivalRestaurantRows(values, limit = 6) {
     if (!name || NON_RESTAURANT_PLACE_RE.test(name) || seen.has(name)) continue;
     seen.add(name);
     const distKm = Number(raw?.distKm);
-    const row = { name, distKm: Number.isFinite(distKm) ? distKm : null };
+    const locality = String(raw?.locality || '').replace(/\s+/g, ' ').trim();
+    const addr1 = String(raw?.addr1 || '').replace(/\s+/g, ' ').trim();
+    const cat3 = String(raw?.cat3 || '').trim();
+    const homepage = String(raw?.url || raw?.homepage || '').trim();
+    const row = {
+      name,
+      distKm: Number.isFinite(distKm) ? distKm : null,
+      locality,
+      addr1,
+      cat3,
+      url: /^https?:\/\//i.test(homepage) ? homepage : '',
+    };
     if (isFestivalChainRestaurant(name)) chains.push(row);
     else if (/시장/.test(name)) markets.push(row);
     else locals.push(row);
@@ -1765,25 +1783,66 @@ const FOOD_TYPE_TAGS = [
   { label: '횟집', en: 'sashimi', re: /횟집|회집/ },
 ];
 
+/** TourAPI content type 39 cat3. A code that is not here stays unlabeled. */
+const FOOD_CAT3_LABELS = {
+  A05020100: { ko: '한식', en: 'Korean food' },
+  A05020200: { ko: '양식', en: 'Western food' },
+  A05020300: { ko: '일식', en: 'Japanese food' },
+  A05020400: { ko: '중식', en: 'Chinese food' },
+  A05020500: { ko: '이색음식', en: 'specialty food' },
+  A05020600: { ko: '카페', en: 'cafe' },
+  A05020700: { ko: '클럽', en: 'club' },
+  A05020900: { ko: '바', en: 'bar' },
+};
+
+const INVENTED_FOOD_NAME_RE = /[가-힣A-Za-z0-9]{2,18}(?:식당|횟집|제과|방앗간|국수집|돈까스|돈가스|비빔밥집|한식당)/g;
+
+function foodAnswerLocale(locale) {
+  return String(locale || 'ko').slice(0, 2) === 'en' ? 'en' : 'ko';
+}
+
 function foodDistKm(raw) {
   const distKm = Number(raw?.distKm);
   return Number.isFinite(distKm) ? distKm : null;
 }
 
-/** One-word type from the name, otherwise a walk time or meters from the sheet. */
-export function festivalFoodPlaceTag(name, distKm, locale = 'ko') {
-  const text = String(name || '');
-  const type = FOOD_TYPE_TAGS.find((row) => row.re.test(text));
-  if (type) return String(locale || 'ko').slice(0, 2) === 'en' ? type.en : type.label;
+function foodTypeLabel(name, cat3, locale = 'ko') {
+  const type = FOOD_TYPE_TAGS.find((row) => row.re.test(String(name || '')));
+  const en = foodAnswerLocale(locale) === 'en';
+  if (type) return en ? type.en : type.label;
+  const mapped = FOOD_CAT3_LABELS[String(cat3 || '').trim().toUpperCase()];
+  if (!mapped) return '';
+  return en ? mapped.en : mapped.ko;
+}
+
+function foodDistanceLabel(distKm, locale = 'ko') {
   const km = Number(distKm);
   if (distKm == null || !Number.isFinite(km) || km <= 0) return '';
   const meters = Math.round(km * 1000);
+  const en = foodAnswerLocale(locale) === 'en';
   if (meters >= 80) {
     const minutes = Math.max(1, Math.round(meters / 80));
-    return String(locale || 'ko').slice(0, 2) === 'en' ? `${minutes}-min walk` : `도보 ${minutes}분`;
+    return en ? `${minutes}-min walk` : `도보 ${minutes}분`;
   }
   const near = Math.max(1, meters);
-  return String(locale || 'ko').slice(0, 2) === 'en' ? `${near} m` : `${near}m`;
+  return en ? `${near} m` : `${near}m`;
+}
+
+/** One-word type from the name, otherwise a walk time or meters from the sheet. */
+export function festivalFoodPlaceTag(name, distKm, locale = 'ko') {
+  return foodTypeLabel(name, '', locale) || foodDistanceLabel(distKm, locale);
+}
+
+/** Homepage when the sheet has one, otherwise a Naver search for that shop. */
+export function festivalFoodPlaceUrl(raw) {
+  const explicit = String(raw?.url || raw?.homepage || '').trim();
+  if (/^https?:\/\//i.test(explicit)) return explicit;
+  const name = String(raw?.name || raw || '').replace(/\s+/g, ' ').trim();
+  if (!name) return '';
+  const locality = String(raw?.locality || '').replace(/\s+/g, ' ').trim();
+  const addr = String(raw?.addr1 || '').replace(/\s+/g, ' ').trim().split(/\s+/).slice(0, 2).join(' ');
+  const query = [locality || addr, name].filter(Boolean).join(' ');
+  return `https://search.naver.com/search.naver?query=${encodeURIComponent(query)}`;
 }
 
 function foodFactByName(values) {
@@ -1802,7 +1861,7 @@ function foodHasDistance(raw) {
 }
 
 /** 3–4 places that have a distance. A gap is filled by the next closest local. */
-export function festivalFoodPlaceLabels(values, locale = 'ko', limit = 4) {
+export function festivalFoodPlaceEntries(values, locale = 'ko', limit = 4) {
   const facts = foodFactByName(values);
   const ranked = rankFestivalRestaurants(values, 24);
   const locals = ranked.filter((name) => !isFestivalChainRestaurant(name));
@@ -1816,20 +1875,59 @@ export function festivalFoodPlaceLabels(values, locale = 'ko', limit = 4) {
     })
     .slice(0, limit);
   return names.map((name) => {
-    const tag = festivalFoodPlaceTag(name, foodDistKm(facts.get(name)), locale);
-    return tag ? `${name}(${tag})` : name;
+    const raw = facts.get(name);
+    const source = raw && typeof raw === 'object' ? raw : { name };
+    return {
+      name,
+      type: foodTypeLabel(name, source.cat3, locale),
+      distance: foodDistanceLabel(foodDistKm(source), locale),
+      url: festivalFoodPlaceUrl({ ...source, name }),
+    };
   });
 }
 
-function restaurantLead(names, locale = 'ko') {
-  const shown = festivalFoodPlaceLabels(names, locale, 4);
-  if (!shown.length) return '';
-  if (String(locale || 'ko').slice(0, 2) === 'en') {
-    return `Nearby places to eat: ${shown.join(', ')}.`;
-  }
-  const last = shown[shown.length - 1];
-  const copula = syllableHasBatchim(last.slice(-1)) ? '이에요' : '예요';
-  return `주변 맛집은 ${shown.join(', ')}${copula}.`;
+export function formatFestivalFoodHintItem(entry) {
+  const name = String(entry?.name || '').trim();
+  const url = String(entry?.url || '').trim();
+  const link = url ? `[${name}](${url})` : name;
+  const bits = [entry?.type, entry?.distance].filter(Boolean);
+  return bits.length ? `${link}(${bits.join(' · ')})` : link;
+}
+
+export function festivalFoodPlaceLabels(values, locale = 'ko', limit = 4) {
+  return festivalFoodPlaceEntries(values, locale, limit).map(formatFestivalFoodHintItem);
+}
+
+function warmFestivalFoodAnswer(entries, locale = 'ko') {
+  const en = foodAnswerLocale(locale) === 'en';
+  const intro = en
+    ? 'A traveler can head out from these shops.'
+    : '여행자는 이 답을 보고 바로 찾아갈 수 있어요.';
+  const lines = entries.map((row) => {
+    const label = row.url ? `[${row.name}](${row.url})` : row.name;
+    const bits = [row.type, row.distance].filter(Boolean);
+    return bits.length ? `${label} — ${bits.join(' · ')}.` : `${label}.`;
+  });
+  const close = en
+    ? 'Each link opens that shop.'
+    : '링크를 누르면 그 가게를 바로 찾을 수 있어요.';
+  return [intro, ...lines, close].join('\n');
+}
+
+function foodAnswerCoversHint(text, entries) {
+  const body = String(text || '');
+  return entries.length > 0 && entries.every((row) => (
+    body.includes(row.name)
+    && (!row.url || body.includes(row.url))
+    && (!row.distance || body.includes(row.distance))
+    && (!row.type || body.includes(row.type))
+  ));
+}
+
+function mentionsInventedFood(part, entries) {
+  const names = entries.map((row) => row.name);
+  const hits = String(part || '').match(INVENTED_FOOD_NAME_RE) || [];
+  return hits.some((hit) => !names.some((name) => name.includes(hit) || hit.includes(name)));
 }
 
 const FOOD_DEFLECTION_RE = /맛집(?:을|를)\s*찾아\s*보|find\s+(?:nearby\s+)?restaurants|look\s+for\s+(?:nearby\s+)?restaurants/i;
@@ -1849,21 +1947,32 @@ function restaurantNameBlob(values) {
     .join('\n');
 }
 
-/** With sheet names, the food answer is that list. Otherwise drop filler and invented markets. */
+/** Keep a warm answer that already carries the hint shops. Otherwise write those shops. */
 function ensureFestivalFoodAnswer(text, options = {}) {
   if (!isFestivalFoodAsk(options)) return String(text || '');
-  const locale = String(options.locale || 'ko').slice(0, 2) === 'en' ? 'en' : 'ko';
-  const lead = restaurantLead(options.nearbyRestaurants, locale);
-  if (lead) return lead;
-  const blob = restaurantNameBlob(options.nearbyRestaurants);
+  const locale = foodAnswerLocale(options.locale);
+  const entries = festivalFoodPlaceEntries(options.nearbyRestaurants, locale, 4);
+  if (!entries.length) {
+    const blob = restaurantNameBlob(options.nearbyRestaurants);
+    let next = stripNextActionLabel(text);
+    next = filterPreservingBreaks(next, (part) => (
+      NON_RESTAURANT_PLACE_RE.test(part)
+      || FOOD_DEFLECTION_RE.test(part)
+      || FOOD_FILLER_RE.test(part)
+      || (/중앙시장/.test(part) && !blob.includes('중앙시장'))
+    ));
+    return next;
+  }
   let next = stripNextActionLabel(text);
   next = filterPreservingBreaks(next, (part) => (
     NON_RESTAURANT_PLACE_RE.test(part)
     || FOOD_DEFLECTION_RE.test(part)
     || FOOD_FILLER_RE.test(part)
-    || (/중앙시장/.test(part) && !blob.includes('중앙시장'))
+    || mentionsInventedFood(part, entries)
+    || (/중앙시장/.test(part) && !entries.some((row) => row.name.includes('중앙시장')))
   ));
-  return next;
+  if (foodAnswerCoversHint(next, entries)) return next;
+  return warmFestivalFoodAnswer(entries, locale);
 }
 
 const DATE_LINK_FRAGMENT_RE = /^\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?\s*[,，]\s*\[[^\]]*상세\s*안내[^\]]*\]\([^)]+\)[.。]?$/;
@@ -3030,8 +3139,8 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
       ? `- Nearby restaurants (GATEO 주변 맛집): ${restaurants.join(', ')}`
       : `- 주변 맛집(GATEO): ${restaurants.join(', ')}`);
     lines.push(isEn
-      ? '- Where to eat: name 3 or 4 of these places, each with the type or distance in parentheses. Every named place must have a distance. If one does not, use the next closest local place that does. Do not say to look for restaurants. Do not write filler such as a variety of restaurants, a culinary trip, or well-known spots. Do not invent a place that is not on this list, including a central market. Do not add a "next action" label, an unlinked getting-there line, or a lodging link. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
-      : '- 근처 먹을 곳·맛집 질문: 위 이름 3~4곳만 말한다. 괄호의 한 단어 유형이나 거리(돈가스·제과·방앗간·도보 N분·N m)를 그대로 붙인다. 거리가 없는 곳은 빼고, 거리가 있는 다음으로 가까운 곳을 말한다. «주변의 맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다양한 맛집», «미식 여행», «소문난»은 쓰지 않는다. 목록에 없는 장소는 만들지 않는다. 중앙시장은 목록에 있을 때만 말한다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 링크 없는 가는 법 문장과 숙소 링크, «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
+      ? '- A traveler will head out from this answer. Share each restaurant name, type, distance, and link from the hint in a warm sentence. Introducing only the shops in the hint keeps them from a wasted trip.'
+      : '- 여행자는 이 답을 보고 바로 찾아갈 거예요. 힌트에 있는 식당 이름, 종류, 거리, 링크를 따뜻한 문장으로 그대로 알려 주세요. 힌트에 있는 가게만 소개하면 여행자가 헛걸음하지 않아요.');
   }
 
   const gateoUrl =
@@ -3203,8 +3312,8 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     const foodNames = festivalFoodPlaceLabels(festivalContext.nearbyRestaurants, enFood ? 'en' : 'ko', 4);
     if (foodNames.length && isFestivalFoodAsk({ userText, chipId: input.chipId })) {
       hint += enFood
-        ? `\n- This question is where to eat. Name these 3 or 4 places with their type or distance: ${foodNames.join(', ')}. Do not tell the user to look for restaurants. Do not invent a place, and do not write a "next action" label, an unlinked getting-there line, or a lodging link. This overrides a generic next-action rule.`
-        : `\n- 이번 질문은 근처 먹을 곳이다. 3~4곳만 유형이나 거리와 함께 말한다: ${foodNames.join(', ')}. «맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다양한 맛집», «미식 여행», «소문난»은 쓰지 않는다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 숙소 링크와 «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 다른 다음 행동 규칙보다 이 문장이 우선한다.`;
+        ? '\n- This question is where to eat. A traveler will head out from this answer. Share each restaurant name, type, distance, and link from the hint in a warm sentence. Introducing only the shops in the hint keeps them from a wasted trip.'
+        : '\n- 이번 질문은 근처 먹을 곳이다. 여행자는 이 답을 보고 바로 찾아갈 거예요. 힌트에 있는 식당 이름, 종류, 거리, 링크를 따뜻한 문장으로 그대로 알려 주세요. 힌트에 있는 가게만 소개하면 여행자가 헛걸음하지 않아요.';
     }
     if (isFestivalLodgingAsk({ userText, chipId: input.chipId })) {
       const lodgingUrl = gateoKoreaFestivalLodgingUrl(festivalContext.contentId);
