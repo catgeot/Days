@@ -19,6 +19,7 @@ import {
   useChatEssentialGuide,
 } from '../../../hooks/useChatEssentialGuide';
 import { resolvePlaceChatKoreaFestivalHint } from '../../../pages/Home/lib/resolvePlaceChatKoreaFestivalHint.js';
+import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
 import {
   buildMooniContinueUserText,
   buildMooniGeminiHistory,
@@ -84,7 +85,7 @@ export const usePlaceChat = (options = {}) => {
           boundPlaceName: params.boundPlaceName || destinationName || '',
           locale: params.locale || locale,
         });
-        koreaFestivalHint = festHint.hint;
+        koreaFestivalHint = fitMooniKoreaFestivalHint(festHint.hint);
       } catch {
         koreaFestivalHint = '';
       }
