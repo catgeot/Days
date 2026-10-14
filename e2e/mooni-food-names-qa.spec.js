@@ -343,8 +343,7 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
         const hint = captured.hintRestaurants.find((item) => item.name === row.name)
           || captured.hintRestaurants.find((item) => item.name.includes(row.name) || row.name.includes(item.name));
         const meta = String(hint?.meta || '');
-        const distance = (captured.answerText.match(new RegExp(`${row.name}[\\s\\S]{0,80}?(도보\\s*\\d+분|\\d+m|\\d+-min walk)`)) || [])[1]
-          || (meta.match(/도보\s*\d+분|\d+m|\d+-min walk/) || [])[0]
+        const distance = (meta.match(/도보\s*\d+분|\d+m|\d+-min walk/) || [])[0]
           || '';
         const type = (meta.split('·').map((part) => part.trim()).find((part) => part && !/도보|\d+m|walk/.test(part))) || '';
         unique.push({
@@ -358,7 +357,7 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
       }
       const invented = captured.answerLinks
         .map((row) => row.name)
-        .filter((name) => name && !/gateo\.kr|상세|숙소|기차|버스/.test(name))
+        .filter((name) => name && !/gateo\.kr|상세|숙소|기차|버스|페이지|홈페이지|안내/.test(name))
         .filter((name) => !hintNames.some((hintName) => hintName.includes(name) || name.includes(hintName)));
       const file = `${fest.slug}-${festivalId}.png`;
       await page.screenshot({ path: join(OUT_DIR, file), fullPage: false });
