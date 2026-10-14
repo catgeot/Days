@@ -199,7 +199,7 @@ test('english fact headings are localized and values stay Korean', async () => {
   const entry = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'entry');
   assert.match(entry.value, /25달러, 복수 60달러/);
   const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
-  assert.match(factsUi, /place\.facts\.title/);
+  assert.match(factsUi, /place\.facts\.localTitle/);
   assert.match(factsUi, /place\.facts\.slots\./);
   const header = readFileSync(join(root, 'src/components/PlaceCard/panels/PlaceChatPanel.jsx'), 'utf8');
   assert.match(header, /whitespace-nowrap">\{t\('place\.nav\.planner'\)\}/);

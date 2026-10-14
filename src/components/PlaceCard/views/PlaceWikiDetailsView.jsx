@@ -37,8 +37,9 @@ import {
   resolveGalleryPlaceKey,
 } from '../common/galleryAttributionNavigation';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
-import PlaceVerifiedFacts, { AiGeneratedBanner } from '../common/PlaceVerifiedFacts';
+import { AiGeneratedBanner, PlaceLocalInfoInline } from '../common/PlaceVerifiedFacts';
 import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
+import { assignSketchLocalInfo } from '../../../data/placeVerifiedFacts/localInfoLayout.js';
 import { ensurePlaceChatIntroForLocation } from '../../../pages/Home/lib/placeChatIntro';
 import { resolveHubAttractionParentSketch } from '../../../pages/Home/lib/placeWikiParentSketch';
 import { fetchPlaceWikiBestRow } from '../hooks/useWikiData';
@@ -703,6 +704,17 @@ const PlaceWikiDetailsView = ({
       return renderContentWithSubtitles(text);
   };
 
+  const sketchLocalInfo = useMemo(() => {
+      const card = resolveVerifiedFacts(location);
+      const sections = wikiData?.sections;
+      if (!card || !Array.isArray(sections)) return new Map();
+      const haystacks = sections.map((sec, idx) => ({
+          title: `${sec?.title || ''} ${getMagazineSectionTitle(idx, sec?.title, appLocale, t)}`,
+          content: sec?.content || '',
+      }));
+      return new Map(assignSketchLocalInfo(haystacks, card).map((row) => [row.index, row.slotId]));
+  }, [location, wikiData?.sections, appLocale, t]);
+
   return (
     <div className="w-full h-full flex flex-col relative bg-[#05070a]">
     <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
@@ -722,10 +734,6 @@ const PlaceWikiDetailsView = ({
                 {mobileSecondaryNav}
             </div>
         )}
-
-        <div className="max-w-3xl mx-auto w-full px-6 md:px-0 pt-4">
-            <PlaceVerifiedFacts location={location} />
-        </div>
 
         {/* Hero Section */}
         {heroImage && (
@@ -874,6 +882,14 @@ const PlaceWikiDetailsView = ({
                                         <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light md:px-2" {...magazineKoBodyProps}>
                                             {renderLocalizedMagazineContent(sec.content)}
                                         </div>
+                                        {sketchLocalInfo.get(idx) ? (
+                                            <PlaceLocalInfoInline
+                                                location={location}
+                                                slotId={sketchLocalInfo.get(idx)}
+                                                presentation="sketch"
+                                                className="mt-6"
+                                            />
+                                        ) : null}
                                     </section>
                                 );
                             })}
