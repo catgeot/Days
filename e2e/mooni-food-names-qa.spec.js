@@ -384,6 +384,12 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
         expect(captured.answerText).toContain(place.name);
         if (place.type) expect(captured.answerText).toContain(place.type);
       }
+      expect(captured.answerText).not.toMatch(/여행자는 이 답을 보고 바로 찾아갈 수 있어요|링크를 누르면 그 가게를 바로 찾을 수 있어요|사용자는 이 답을 보고 실제로 가게를 찾아가요/);
+      if (fest.festivalId === '637693') {
+        expect(captured.answerText).toMatch(/많지 않아요/);
+        expect(captured.answerText).toMatch(/차로/);
+        expect(captured.answerText).toMatch(/축제 페이지/);
+      }
     });
   }
 });
