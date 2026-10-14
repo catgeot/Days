@@ -4,12 +4,44 @@ import { CalendarDays } from 'lucide-react';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { festivalListDisplayTitleLines } from './festivalDisplayTitle.js';
 import { FestivalListThumbBox } from './festivalListThumbBox.jsx';
-import { normalizeFestivalItemImages } from './socialPromoFestivalsLogic.js';
+import {
+  normalizeFestivalItemImages,
+  socialPromoPlaceLabel,
+} from './socialPromoFestivalsLogic.js';
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
   if (!/^\d{8}$/.test(s)) return '';
   return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
+}
+
+export function SocialPromoNearLine({ card, onSelect }) {
+  const { t } = useTranslation();
+  const item = card?.item;
+  if (!item?.contentId) return null;
+  const title = String(item.title || '').trim();
+  const start = formatYmdLabel(item.eventStartDate);
+  const end = formatYmdLabel(item.eventEndDate);
+  const range = start && end ? `${start} – ${end}` : start || end;
+  const city = socialPromoPlaceLabel(item);
+  return (
+    <button
+      type="button"
+      data-social-promo-near-line=""
+      data-festival-id={String(item.contentId)}
+      onClick={() => onSelect?.(item)}
+      className="mb-2 flex h-9 w-full min-w-0 items-center gap-1 rounded-xl border border-dashed border-amber-400 bg-amber-50/70 px-2.5 text-left text-[12px] leading-none text-stone-800"
+    >
+      <span className="min-w-0 flex-1 truncate">
+        <span className="font-bold text-amber-950">{t('korea.festival.socialPromoNearLead')}</span>
+        <span className="text-stone-400"> · </span>
+        <span className="font-bold text-amber-950">{title}</span>
+        {range ? <span className="text-stone-700">{` ${range}`}</span> : null}
+        {city ? <span className="text-stone-600">{` (${city})`}</span> : null}
+      </span>
+      <span className="shrink-0 text-stone-400" aria-hidden="true">›</span>
+    </button>
+  );
 }
 
 export default function SocialPromoFestivalRow({ cards, loading = false, onSelect }) {

@@ -3,11 +3,21 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { splitCardAccessNumberTokens } from '../../src/components/chat/mooniAccessNumberToken.js';
 import { DESTINATION_ORDER } from '../../supabase/functions/transport-proxy/catalog.mjs';
 import {
   FESTIVAL_TRANSPORT_CONTENT_IDS,
   bookingLink,
   buildAccessView,
+  buildTrainGradeDetail,
+  buildTrainGradeSummary,
+  displayTrainGrade,
+  listCheapestTrainGrades,
+  pickCheapestTrainGrade,
+  pickFastestTrainGrade,
+  trainSummaryText,
+  tripComLink,
+  TRIP_COM_KORAIL_HREF,
   composeFestivalAccessReply,
   createMooniSendGate,
   glueAccessUnit,
@@ -86,8 +96,14 @@ test('display keeps real train and bus values and drops blanks', () => {
   assert.equal(formatRunCount(option({ truncated: true }), 'en'), '18 confirmed');
   assert.equal(formatRunCount(option({ dailyCount: 0 }), 'ko'), '');
   const korail = bookingLink(option());
-  assert.equal(korail.text, 'Korail 예매');
+  assert.equal(korail.text, '코레일에서 예매하기 ↗');
   assert.equal(korail.href, 'https://www.letskorail.com/');
+  assert.equal(bookingLink(option(), 'en').text, 'Book on Korail ↗');
+  const trip = tripComLink(option());
+  assert.equal(trip.href, TRIP_COM_KORAIL_HREF);
+  assert.equal(trip.text, '외국어 예매 (Trip.com) ↗');
+  assert.equal(tripComLink(option({ bookingOperator: 'SR' })), null);
+  assert.equal(tripComLink(option({ mode: 'expBus', bookingOperator: null })), null);
   assert.deepEqual(korail.segment, { dep: '서울역', arr: '강릉역', particle: '을' });
   assert.equal(bookingLink(option({ bookingUrl: 'http://example.com' })), null);
   assert.equal(bookingLink(option({ mode: 'expBus', bookingOperator: null, bookingUrl: 'https://www.kobus.co.kr/' })).text, '고속버스 예매');
@@ -99,7 +115,8 @@ test('display keeps real train and bus values and drops blanks', () => {
     arrStation: '강릉역',
     serviceDate: '2026-10-16',
   }));
-  assert.equal(sr.segment, null);
+  assert.equal(sr.text, 'SR에서 예매하기 ↗');
+  assert.deepEqual(sr.segment, { dep: '수서', arr: '강릉역', particle: '을' });
   assert.match(sr.href, /^https:\/\/etk\.srail\.kr\/hpg\/hra\/01\/selectScheduleList\.do\?/);
   const srUrl = new URL(sr.href);
   assert.equal(srUrl.searchParams.get('dptRsStnCd'), '0551');
@@ -179,7 +196,9 @@ test('festival sheet mounts the access card above the bottom rail', () => {
   assert.match(ko, /"accessTitle": "가는 법"/);
   assert.match(en, /"accessTitle": "How to get there"/);
   assert.match(ko, /"accessUnavailable": "지금은 열차·버스 시각을 불러오지 못했어요."/);
-  assert.match(ko, /"accessPickSegment": "\{\{dep\}\}→\{\{arr\}\}\{\{particle\}\} 고르세요"/);
+  assert.match(ko, /출발역 '\{\{dep\}\}', 도착역 '\{\{arr\}\}'\{\{particle\}\} 고르세요/);
+  assert.match(ko, /Trip\.com은 판매 대행사라 수수료·요금이 다를 수 있어요/);
+  assert.match(en, /Trip\.com is a reseller/);
 });
 
 test('one card per segment, at most three, and MOONi repeats those fares', () => {
@@ -298,6 +317,38 @@ test('fare, clock, and duration stay one unbreakable unit', () => {
   assert.match(card, /<Nowrap>\{clock\}<\/Nowrap>/);
   assert.match(card, /<Nowrap>\{duration\}<\/Nowrap>/);
   assert.match(card, /<Nowrap>\{fare\}<\/Nowrap>/);
+  assert.match(card, /data-mooni-access-number="true"/);
+  assert.match(card, /whiteSpace:\s*'nowrap'/);
+  assert.match(card, /wordBreak:\s*'normal'/);
+  assert.match(card, /function SummaryLine[\s\S]*<AccessNumberText text=\{part\.text\} \/>/);
+  assert.match(card, /function TrainGradeDetails[\s\S]*<AccessNumberText text=\{detail\.clock\} \/>/);
+  assert.match(card, /<AccessNumberText text=\{detail\.durationText\} \/>/);
+  assert.match(card, /<AccessNumberText text=\{detail\.aside\} \/>/);
+  const summary = '가장 빠르고 싼 열차는 SRT, 약 2시간 53분 · 46,600원이에요.';
+  assert.deepEqual(
+    splitCardAccessNumberTokens(summary).filter((part) => part.accessNumber).map((part) => part.text),
+    ['2시간 53분', '46,600원'],
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens('첫차 05:06 · 막차 22:34').filter((part) => part.accessNumber).map((part) => part.text),
+    ['05:06', '22:34'],
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens('2시간 53분부터').filter((part) => part.accessNumber).map((part) => part.text),
+    ['2시간 53분'],
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens('46,600원부터 · 하루 10회').filter((part) => part.accessNumber).map((part) => part.text),
+    ['46,600원', '10회'],
+  );
+  assert.equal(
+    splitCardAccessNumberTokens('46,600원').some((part) => part.text === '46,' || part.text === '600원'),
+    false,
+  );
+  assert.deepEqual(
+    splitCardAccessNumberTokens('(10월 23일 기준)').filter((part) => part.accessNumber),
+    [],
+  );
 });
 
 test('a typed station ask renders each grade once, then a normal question calls the model', () => {
@@ -417,4 +468,107 @@ test('국향대전 defaults to 용산 when that origin is present', () => {
   assert.equal(preferredOriginId(origins, '638576'), 'yongsan');
   assert.equal(preferredOriginId(origins, '2930716'), 'seoul-station');
   assert.equal(preferredOriginId([{ originId: 'seoul-station' }], '638576'), 'seoul-station');
+});
+
+function grade(overrides) {
+  return option({
+    depStation: '용산',
+    arrStation: '광주송정',
+    ...overrides,
+  });
+}
+
+test('train summary names every grade tied at the cheapest 용산→광주송정 fare', () => {
+  const rows = [
+    grade({ grade: 'KTX-산천(A-type)', firstDeparture: '05:08', lastDeparture: '20:09', durationMin: 115, durationMax: 159, fareAdultMin: 41000, fareAdultMax: 41900, dailyCount: 4 }),
+    grade({ grade: 'KTX-산천(B-type)', firstDeparture: '05:48', lastDeparture: '21:09', durationMin: 109, durationMax: 155, fareAdultMin: 41000, fareAdultMax: 41900, dailyCount: 6 }),
+    grade({ grade: 'KTX', firstDeparture: '06:29', lastDeparture: '21:18', durationMin: 96, durationMax: 174, fareAdultMin: 38600, fareAdultMax: 41900, dailyCount: 11 }),
+    grade({ grade: 'KTX-산천', firstDeparture: '07:13', lastDeparture: '22:23', durationMin: 112, durationMax: 167, fareAdultMin: 37800, fareAdultMax: 41900, dailyCount: 8 }),
+    grade({ grade: 'ITX-새마을', firstDeparture: '08:44', lastDeparture: '19:11', durationMin: 237, durationMax: 241, fareAdultMin: 33100, fareAdultMax: 33100, dailyCount: 3 }),
+    grade({ grade: 'ITX-마음', firstDeparture: '09:47', lastDeparture: '17:18', durationMin: 221, durationMax: 224, fareAdultMin: 33100, fareAdultMax: 33100, dailyCount: 2 }),
+    grade({ grade: '무궁화호', firstDeparture: '18:10', lastDeparture: '18:10', durationMin: 266, durationMax: 266, fareAdultMin: 33100, fareAdultMax: 33100, dailyCount: 1 }),
+  ];
+  assert.equal(pickFastestTrainGrade(rows).grade, 'KTX');
+  assert.equal(pickCheapestTrainGrade(rows).grade, 'ITX-마음');
+  assert.deepEqual(
+    listCheapestTrainGrades(rows).map((row) => row.grade),
+    ['ITX-마음', 'ITX-새마을', '무궁화호'],
+  );
+  const summary = buildTrainGradeSummary(rows, { locale: 'ko', trainDate: '2026-10-23' });
+  assert.equal(summary.expandable, true);
+  assert.equal(summary.gradeCount, 7);
+  assert.equal(
+    trainSummaryText(summary),
+    [
+      '가장 빠른 열차는 KTX, 약 1시간 36분이에요.',
+      '가장 싼 요금은 33,100원(ITX-마음·ITX-새마을·무궁화호)예요.',
+      '하루 35회 다녀요. (10월 23일 기준)',
+    ].join('\n'),
+  );
+  assert.doesNotMatch(trainSummaryText(summary), /가장 싼 열차는/);
+  const en = buildTrainGradeSummary(rows, { locale: 'en', trainDate: '2026-10-23' });
+  assert.match(trainSummaryText(en), /The cheapest fare is ₩33,100 \(ITX-마음·ITX-새마을·무궁화호\)\./);
+  const detail = buildTrainGradeDetail(rows[0], 'ko');
+  assert.equal(detail.clock, '첫차 05:08 · 막차 20:09');
+  assert.equal(detail.durationText, '1시간 55분부터');
+  assert.equal(detail.aside, '41,000원부터 · 하루 4회');
+  const once = buildTrainGradeDetail(rows[6], 'ko');
+  assert.equal(once.clock, '18:10 출발');
+  const partial = buildTrainGradeSummary(
+    [grade({ truncated: true, dailyCount: 4 }), grade({ grade: '무궁화호', durationMin: 200, fareAdultMin: 20000, dailyCount: 1 })],
+    { locale: 'ko', trainDate: '2026-10-23' },
+  );
+  assert.match(trainSummaryText(partial), /하루 5회 이상 다녀요/);
+  assert.doesNotMatch(trainSummaryText(partial), /10월 23일/);
+});
+
+test('Suseo departures say SRT and never pair a KTX grade with SR booking', () => {
+  const row = option({
+    grade: 'KTX-산천',
+    depStation: '수서',
+    arrStation: '마산역',
+    depStationId: 'NATH30000',
+    bookingOperator: 'SR',
+    bookingUrl: 'https://etk.srail.kr/',
+    serviceDate: '2026-10-16',
+    fareAdultMin: 48100,
+    fareAdultMax: 48100,
+    durationMin: 184,
+    durationMax: 192,
+    dailyCount: 6,
+    firstDeparture: '05:03',
+    lastDeparture: '20:38',
+  });
+  assert.equal(displayTrainGrade(row), 'SRT');
+  assert.equal(displayTrainGrade(option({ grade: 'KTX-산천' })), 'KTX-산천');
+  const summary = buildTrainGradeSummary([row], { locale: 'ko', trainDate: '2026-10-16' });
+  const text = trainSummaryText(summary);
+  assert.match(text, /가장 빠르고 싼 열차는 SRT/);
+  assert.doesNotMatch(text, /KTX/);
+  const book = bookingLink(row);
+  assert.equal(book.text, 'SR에서 예매하기 ↗');
+  assert.match(book.href, /etk\.srail\.kr/);
+  assert.equal(buildTrainGradeDetail(row, 'ko').grade, 'SRT');
+  const named = option({
+    grade: 'KTX-산천',
+    depStation: '수서역',
+    arrStation: '마산역',
+    bookingOperator: null,
+    bookingUrl: 'https://etk.srail.kr/',
+  });
+  assert.equal(displayTrainGrade(named), 'SRT');
+  assert.doesNotMatch(trainSummaryText(buildTrainGradeSummary([named], { locale: 'ko' })), /KTX/);
+});
+
+test('one train grade collapses to a single sentence and hides more', () => {
+  const summary = buildTrainGradeSummary([
+    option({ fareAdultMin: null, fareAdultMax: null }),
+  ], { locale: 'ko', trainDate: '2026-10-16' });
+  assert.equal(summary.expandable, false);
+  assert.match(trainSummaryText(summary), /가장 빠른 열차는 KTX-이음/);
+  assert.match(trainSummaryText(summary), /가장 싼 열차: 확인 안 됨/);
+  const priced = buildTrainGradeSummary([option()], { locale: 'en', trainDate: '2026-10-16' });
+  assert.equal(priced.expandable, false);
+  assert.match(trainSummaryText(priced), /The fastest and cheapest train is KTX-이음, about 1 hr 51 min · ₩27,600\./);
+  assert.match(trainSummaryText(priced), /18 departures a day\. \(as of 10\/16\)/);
 });

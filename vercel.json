@@ -1,7 +1,8 @@
 {
   "git": {
     "deploymentEnabled": {
-      "cursor/*": false
+      "cursor/*": false,
+      "cursor/festival-access-promo-5b7f": true
     }
   },
   "redirects": [
@@ -123,6 +124,11 @@
     {
       "source": "/qa/gallery-fresh",
       "destination": "https://days-git-cursor-gallery-swr-6b36-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
+      "source": "/qa/festival-card",
+      "destination": "https://days-git-cursor-festival-access-promo-5b7f-catgeots-projects.vercel.app/korea",
       "permanent": false
     },
     {

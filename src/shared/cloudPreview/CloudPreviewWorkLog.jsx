@@ -6,7 +6,7 @@ import {
   cloudPreviewWorkLog,
 } from './cloudPreviewWorkLog';
 import { cloudQaShareUrl } from './cloudQaShareLinks';
-import { isCloudPreviewSurface } from './isCloudPreviewSurface';
+import { previewDebugChromeAllowed } from './isCloudPreviewSurface';
 
 export default function CloudPreviewWorkLog() {
   const [visible, setVisible] = useState(false);
@@ -15,7 +15,7 @@ export default function CloudPreviewWorkLog() {
 
   useEffect(() => {
     setVisible(
-      isCloudPreviewSurface() &&
+      previewDebugChromeAllowed(window.location.hostname, { dev: import.meta.env.DEV === true }) &&
         cloudPreviewProject.active &&
         cloudPreviewWorkLog.length > 0,
     );

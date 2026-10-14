@@ -73,16 +73,14 @@ import {
 } from './festivalSessionPin';
 import { festivalItemThumbSrc } from './festivalListThumb';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
-import SocialPromoFestivalRow from './SocialPromoFestivalRow';
+import SocialPromoFestivalRow, { SocialPromoNearLine } from './SocialPromoFestivalRow';
 import {
   festivalItemFromDetailWithAsOf,
   mergeFestivalRowItem,
   mergeSocialPromoIntoFestivalItems,
-  filterSocialPromoCardsByRegion,
   resolveSocialPromoPresentation,
   resolveSocialPromoRow,
   shouldShowSessionPinnedHomeRow,
-  shouldShowSocialPromoHomeRow,
   shouldShowSessionPinnedRow,
   socialPromoFestivals,
   socialPromoIdsNeedingDetailFetch,
@@ -1485,6 +1483,7 @@ export default function KoreaFestivalHub() {
 
   const searchFilter = searchDraft.trim() || searchApplied.trim();
   const searchActive = searchFilter.length > 0;
+  const nearActive = Boolean(nearOrigin && nearLabel);
 
   const socialPromoPresentation = useMemo(
     () =>
@@ -1492,21 +1491,19 @@ export default function KoreaFestivalHub() {
         searchActive,
         areaCode,
         cityName,
+        timeTab,
+        nearActive,
+        nearOrigin,
       }),
-    [socialPromoRow, searchActive, areaCode, cityName],
+    [socialPromoRow, searchActive, areaCode, cityName, timeTab, nearActive, nearOrigin],
   );
 
   const showSocialPromoRow = socialPromoPresentation.show;
 
   const visiblePromoContentIds = useMemo(() => {
-    if (!shouldShowSocialPromoHomeRow(searchActive)) {
-      return new Set();
-    }
-    if (socialPromoRow.status !== 'ready') {
-      return new Set();
-    }
-    return contentIdsFromPromoCards(socialPromoRow.cards);
-  }, [searchActive, socialPromoRow.status, socialPromoRow.cards]);
+    if (!showSocialPromoRow || socialPromoPresentation.loading) return new Set();
+    return contentIdsFromPromoCards(socialPromoPresentation.cards);
+  }, [showSocialPromoRow, socialPromoPresentation.loading, socialPromoPresentation.cards]);
 
   const itemsForChipCounts = useMemo(
     () => excludeFestivalsByContentId(itemsWithSocialPromo, visiblePromoContentIds),
@@ -1626,6 +1623,14 @@ export default function KoreaFestivalHub() {
     () => (nearRanked ? nearRanked.map((row) => row.item) : null),
     [nearRanked],
   );
+
+  const socialPromoNearLine = useMemo(() => {
+    const line = socialPromoPresentation.nearLine;
+    if (!line?.item?.contentId) return null;
+    const id = String(line.item.contentId);
+    const listed = (nearBaseItems || []).some((item) => String(item?.contentId || '') === id);
+    return listed ? null : line;
+  }, [socialPromoPresentation.nearLine, nearBaseItems]);
 
   const nearKmByContentId = useMemo(() => {
     const map = new Map();
@@ -2085,8 +2090,6 @@ export default function KoreaFestivalHub() {
   const closeSearchSuggestionsSoon = () => {
     window.setTimeout(() => setSearchSuggestOpen(false), 120);
   };
-
-  const nearActive = Boolean(nearOrigin && nearLabel);
 
   const recentLocationSuccess = readLocationSuccess(
     typeof localStorage !== 'undefined' ? localStorage : null,
@@ -3064,6 +3067,9 @@ export default function KoreaFestivalHub() {
                       : 'md:custom-scrollbar md:min-h-0 md:flex-1 md:overflow-y-auto'
                 }`}
               >
+              {personalTab == null && socialPromoNearLine ? (
+                <SocialPromoNearLine card={socialPromoNearLine} onSelect={openItem} />
+              ) : null}
               {personalTab != null ? (
                 personalItems.length === 0 ? (
                   <p className="px-1 py-4 text-sm text-stone-500">

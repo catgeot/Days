@@ -7,3 +7,20 @@ export function isCloudPreviewSurface() {
   if (import.meta.env.DEV) return true;
   return host.endsWith('.vercel.app');
 }
+
+export function isProductionSiteHost(hostname) {
+  const host = String(hostname || '').trim().toLowerCase();
+  return host === 'gateo.kr' || host === 'www.gateo.kr';
+}
+
+/**
+ * 작업 로그·모바일 위젯 로그. Dev, localhost, or a Vercel git-branch preview.
+ * Production hosts stay hidden even when a debug query or localStorage flag is set.
+ */
+export function previewDebugChromeAllowed(hostname, { dev = false } = {}) {
+  if (isProductionSiteHost(hostname)) return false;
+  if (dev) return true;
+  const host = String(hostname || '').trim().toLowerCase();
+  if (host === 'localhost' || host === '127.0.0.1') return true;
+  return host.endsWith('.vercel.app') && host.includes('-git-');
+}

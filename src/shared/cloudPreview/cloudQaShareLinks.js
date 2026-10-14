@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'festival-card',
+    label: '축제 카드 — 열차 문장·소개 축제',
+    branch: 'cursor/festival-access-promo-5b7f',
+    destination:
+      'https://days-git-cursor-festival-access-promo-5b7f-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
     slug: 'planner-stages',
     label: '플래너 3단계 — 네이티브 검색 폼',
     branch: 'cursor/planner-stages-7ee0',

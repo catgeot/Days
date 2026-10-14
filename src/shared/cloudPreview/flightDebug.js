@@ -1,4 +1,4 @@
-import { isCloudPreviewSurface } from './isCloudPreviewSurface.js';
+import { isCloudPreviewSurface, previewDebugChromeAllowed } from './isCloudPreviewSurface.js';
 
 const MAX_LINES = 80;
 const SESSION_KEY = 'gateo:flight-debug-session';
@@ -47,12 +47,14 @@ export function armFlightDebugSession() {
 
 export function isFlightDebugEnabled() {
   if (typeof window === 'undefined') return false;
+  if (!previewDebugChromeAllowed(window.location.hostname, { dev: import.meta.env.DEV === true })) {
+    return false;
+  }
   try {
     const params = new URLSearchParams(window.location.search);
     if (params.get('debug') === 'flight' || params.get('debug') === '1') return true;
     if (localStorage.getItem(PERSIST_KEY) === '1') return true;
     if (sessionStorage.getItem(SESSION_KEY)) return true;
-    // Vercel Preview 또는 dev 환경에서는 기본 활성화
     if (isCloudPreviewSurface() || import.meta.env.DEV) return true;
     return false;
   } catch {
