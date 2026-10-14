@@ -2,6 +2,13 @@
 
 이전: [`2026-10-12-project-log.md`](./2026-10-12-project-log.md)
 
+## 자유검색 영상 #1, 서버 쿼리
+
+- **브랜치** `cursor/free-search-place-videos-2159` 코드 **`654a8805`** · draft PR [#468](https://github.com/catgeot/Days/pull/468) · **병합·Edge 배포 없음**.
+- `label-`/`loc-`/`search-`/`city-` 핀은 캐시 미스 때 `fetch-place-videos`를 호출한다. 쿼리는 탭한 지명으로 서버만 만들고, 캐시 id는 `free:<지명>[:<국가>]`. 클라이언트 `query`는 거부. IP·장소 캡 유지.
+- **배포 디렉터리** `supabase/functions/fetch-place-videos` (사람이 스테이징에 배포). `cursor/*` Preview 자동 배포는 꺼져 있다.
+- **검증:** `lint:ci` · `test:health` 390 · `check:place-video-catalog` · `vite build` · Deno `index_test.ts` 41 · 세션 훅 13. 라이브 YouTube 없음.
+
 ## 축제 카드 #1, 열차 문장·소개 축제
 
 - **브랜치** `cursor/festival-access-promo-5b7f` tip **`f6b622bf`** · draft PR [#462](https://github.com/catgeot/Days/pull/462) · **병합·Edge 배포 없음**. main `d283e814`를 머지해 MOONi 가는 법 문장 변경을 유지했다.
