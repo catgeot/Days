@@ -1630,7 +1630,10 @@ test('festival food stays on the restaurant list and the closer does not repeat 
       nearbyRestaurants: ['강릉 오금집', '이쉐프의돈까스', '임당생활문화센터'],
     },
   );
-  assert.match(food, /주변 맛집은 강릉 오금집, 이쉐프의돈까스\(돈가스\)예요/);
+  assert.match(food, /강릉 오금집/);
+  assert.match(food, /이쉐프의돈까스/);
+  assert.match(food, /돈가스/);
+  assert.match(food, /search\.naver\.com\/search\.naver\?query=/);
   assert.doesNotMatch(food, /임당생활문화센터|노암터널/);
 
   const foodCloser = polishFestivalModelReply(
@@ -1670,10 +1673,10 @@ test('festival food stays on the restaurant list and the closer does not repeat 
     },
     locale: 'ko',
   });
-  assert.match(foodHint.hint, /100년임당방앗간\(방앗간\), 만동제과\(제과\), 월화엔/);
-  assert.match(foodHint.hint, /맛집을 찾아보세요/);
-  assert.match(foodHint.hint, /다음 행동으로/);
-  assert.match(foodHint.hint, /숙소 정보도 함께 알아보세요/);
+  assert.match(foodHint.hint, /100년임당방앗간\]\(https:\/\/search\.naver\.com\/search\.naver\?query=[^)]+\)\(방앗간\)/);
+  assert.match(foodHint.hint, /만동제과\]\(https:\/\/search\.naver\.com\/search\.naver\?query=[^)]+\)\(제과\)/);
+  assert.match(foodHint.hint, /월화엔\]\(https:\/\/search\.naver\.com\/search\.naver\?query=/);
+  assert.match(foodHint.hint, /실제로 가게를 찾아가요/);
   const chipHint = await resolveMooniChatKoreaFestivalHint({
     userText: '먹을 곳',
     chipId: 'festival_nearby',
@@ -1719,12 +1722,14 @@ test('festival food stays on the restaurant list and the closer does not repeat 
     },
     locale: 'ko',
   });
-  assert.match(hint.hint, /주변 맛집\(GATEO\): 강릉 오금집, 이쉐프의돈까스/);
+  assert.match(hint.hint, /주변 맛집\(GATEO\): \[강릉 오금집\]\(https:\/\/search\.naver\.com\/search\.naver\?query=/);
+  assert.match(hint.hint, /이쉐프의돈까스\]\(https:\/\/search\.naver\.com\/search\.naver\?query=[^)]+\)\(돈가스\)/);
+  assert.match(hint.hint, /실제로 가게를 찾아가요/);
   assert.match(hint.hint, /근처\(GATEO\): 강릉향교/);
   assert.doesNotMatch(hint.hint, /임당생활문화센터|노암터널/);
-  assert.match(KO.festivalAnswerRules, /주변 맛집 목록만/);
+  assert.match(KO.festivalAnswerRules, /실제로 가게를 찾아가요/);
   assert.match(KO.festivalAnswerRules, /10\/15~18이에요/);
-  assert.match(KO.chips.festival_nearby.rules.join('\n'), /주변 맛집/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /실제로 가게를 찾아가요/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /터널/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이예요/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /10\/15~18이에요/);
@@ -1830,18 +1835,18 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   );
   assert.match(opening, /10\/15~18/);
   assert.match(KO.festivalAnswerRules, /약 20km/);
-  assert.match(KO.festivalAnswerRules, /배스킨라빈스/);
+  assert.match(KO.festivalAnswerRules, /실제로 가게를 찾아가요/);
   assert.match(KO.festivalPriorityLine, /행사 기간을 반복하지 않는다/);
   assert.match(KO.festivalAnswerRules, /3~4곳/);
   assert.match(KO.festivalAnswerRules, /공식 홈페이지나 문의처/);
   assert.match(KO.festivalAnswerRules, /안내해 드릴까요/);
   assert.match(KO.festivalAnswerRules, /이름이 3곳이면 첫 답에 3곳/);
-  assert.match(EN.festivalAnswerRules, /3 or 4 places/);
+  assert.match(EN.festivalAnswerRules, /3 or 4 restaurants/);
   assert.match(EN.festivalAnswerRules, /only when it is a markdown link/);
-  assert.match(KO.chips.festival_nearby.rules.join('\n'), /도보 N분/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /이름, 종류, 거리, 링크/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /축제 페이지에서 확인/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이름이 3곳이면 3곳을 말한다/);
-  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /다양한 맛집/);
+  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /실제로 가게를 찾아가요/);
   assert.match(KO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
   assert.match(KO.festivalAnswerRules, /축제 페이지에서 살펴보세요/);
   assert.match(KO.festivalAnswerRules, /찾아볼 수 있어요/);
@@ -1851,7 +1856,7 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /N일 뒤 시작해요/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /경연프로그램 : 청소년 페스타/);
   assert.match(KO.festivalAnswerRules, /숙소 카드에 이름과 거리/);
-  assert.match(EN.festivalAnswerRules, /next closest local place/);
+  assert.match(EN.festivalAnswerRules, /keeps them from a wasted trip/);
   assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /축제 페이지에서 살펴보세요/);
   assert.match(ServerKO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
   assert.match(EN.festivalAnswerRules, /a variety of stays/);
@@ -2120,10 +2125,15 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
       ],
     },
   );
-  assert.match(tagged, /만동제과\(제과\)/);
-  assert.match(tagged, /이쉐프의돈까스\(돈가스\)/);
-  assert.match(tagged, /100년임당방앗간\(방앗간\)/);
-  assert.match(tagged, /월화엔\(도보 3분\)/);
+  assert.match(tagged, /\[만동제과\]\(https:\/\/search\.naver\.com\/search\.naver\?query=/);
+  assert.match(tagged, /제과인 \[만동제과\]/);
+  assert.match(tagged, /도보 1분/);
+  assert.match(tagged, /이쉐프의돈까스/);
+  assert.match(tagged, /돈가스, 도보 3분/);
+  assert.match(tagged, /100년임당방앗간/);
+  assert.match(tagged, /방앗간, 도보 4분/);
+  assert.match(tagged, /월화엔/);
+  assert.match(tagged, /도보 3분/);
   assert.doesNotMatch(tagged, /배니닭강정|다양한 맛집|미식|소문난|중앙시장|가는 법/);
   const swappedFood = polishFestivalModelReply('주변의 맛집을 찾아보세요.', {
     contentId: '2930716',
@@ -2138,7 +2148,9 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     ],
   });
   assert.match(swappedFood, /가까운집/);
-  assert.match(swappedFood, /만동제과\(제과\)/);
+  assert.match(swappedFood, /만동제과/);
+  assert.match(swappedFood, /제과/);
+  assert.match(swappedFood, /search\.naver\.com\/search\.naver\?query=/);
   assert.doesNotMatch(swappedFood, /거리없는국수집/);
 
   const page = 'https://visitgangneung.net/pub/gnfestival/4748.do';
@@ -2172,11 +2184,12 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     contentId: '2930716',
     locale: 'ko',
     userText: '주차',
+    festivalTitle: '강릉 국수 축제',
     overview: '주차는 월화거리 공영주차장을 이용해요.',
     homepage: page,
   });
-  assert.match(keptParking, /축제 페이지에서 확인/);
-  assert.doesNotMatch(keptParking, /공식 홈페이지/);
+  assert.match(keptParking, /월화거리 공영주차장/);
+  assert.doesNotMatch(keptParking, /축제 페이지에서 확인|주차 안내는 공식 홈페이지에 있어요/);
 
   const access = polishFestivalModelReply(
     '[축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 가는 법을 확인해요.',
@@ -2219,6 +2232,90 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   });
   assert.equal(telOnly, '주차 안내는 문의 033-640-4531에 있어요.');
   assert.doesNotMatch(telOnly, /문의처를 통해|축제 페이지|확인/);
+
+  const doubledGap = polishFestivalModelReply(
+    '확인된 정보가 없어요. 국화 전시가 있어요. 확인된 정보가 없어요.',
+    { contentId: '638576', locale: 'ko', userText: '볼거리와 분위기', festivalTitle: '대한민국 국향대전' },
+  );
+  assert.equal(doubledGap.split('확인된 정보가 없어요').length - 1, 1);
+  assert.match(doubledGap, /국화 전시/);
+  assert.doesNotMatch(KO.chips.festival_sights.rules.join('\n'), /확인된 정보가 없다고 말하고/);
+  assert.doesNotMatch(KO.festivalAnswerRules, /주차 안내는 \[공식 홈페이지\]\(url\)에 있어요/);
+
+  const caveParking = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
+    contentId: '3551206',
+    locale: 'ko',
+    userText: '주차장 어디예요?',
+    festivalTitle: '광명동굴 빛 축제',
+    venue: '광명동굴 일원',
+    homepage: 'https://www.gm.go.kr/',
+    tel: '02-2090-1414',
+    nearbyParking: [{ name: '광명동굴', text: '가능', distKm: 0.2, addr1: '경기도 광명시 가학로 85번길' }],
+  });
+  assert.match(caveParking, /광명동굴은 주차가 가능해요/);
+  assert.match(caveParking, /가학로 85번길/);
+  assert.doesNotMatch(caveParking, /걸어서|도보/);
+  assert.match(caveParking, /https:\/\/www\.gm\.go\.kr/);
+  const timedLot = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
+    contentId: '3551206',
+    locale: 'ko',
+    userText: '주차장 어디예요?',
+    festivalTitle: '광명동굴 빛 축제',
+    nearbyParking: [{ name: '광명동굴', text: '도보 4분', distKm: 9, addr1: '경기도 광명시 가학로 85번길' }],
+  });
+  assert.match(timedLot, /도보 4분/);
+  const inventedCave = polishFestivalModelReply(
+    '광명동굴 주차장은 경기도 광명시 가학로85번길 142에 마련되어 있어요. 걸어서 5분이에요.',
+    {
+      contentId: '3551206',
+      locale: 'ko',
+      userText: '주차장 어디예요?',
+      festivalTitle: '광명동굴 빛 축제',
+      venue: '광명동굴 일원',
+      homepage: 'https://www.gm.go.kr/',
+      tel: '02-2090-1414',
+      nearbyParking: [{ name: '광명동굴', text: '가능', distKm: 0.2, addr1: '경기도 광명시 가학로 85번길' }],
+    },
+  );
+  assert.match(inventedCave, /주차가 가능해요/);
+  assert.match(inventedCave, /가학로 85번길/);
+  assert.doesNotMatch(inventedCave, /142|걸어서|도보/);
+  const numberedLot = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
+    contentId: '3551206',
+    locale: 'ko',
+    userText: '주차장 어디예요?',
+    festivalTitle: '광명동굴 빛 축제',
+    homepage: 'https://www.gm.go.kr/',
+    nearbyParking: [{ name: '광명동굴', text: '가능', distKm: 0.4, addr1: '경기도 광명시 가학로85번길 142' }],
+  });
+  assert.match(numberedLot, /142예요/);
+  assert.doesNotMatch(numberedLot, /142이에요|걸어서|도보/);
+  const foodParkingTail = polishFestivalModelReply(
+    '내마음에찜 강릉본점은 한식, 도보 1분이에요. 주차 등 기타 상세 안내는 공식 홈페이지를 참고해 주세요.',
+    {
+      contentId: '2930716',
+      locale: 'ko',
+      userText: '근처 맛집 추천해 줘',
+      festivalTitle: '강릉 국수 축제',
+      nearbyRestaurants: [{ name: '내마음에찜 강릉본점', cat3: '한식', distKm: 0.08, url: 'https://search.naver.com/search.naver?query=내마음에찜' }],
+    },
+  );
+  assert.match(foodParkingTail, /내마음에찜 강릉본점/);
+  assert.doesNotMatch(foodParkingTail, /주차/);
+
+  const homeParking = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
+    contentId: '638576',
+    locale: 'ko',
+    userText: '주차장 어디예요?',
+    festivalTitle: '대한민국 국향대전',
+    venue: '함평 엑스포공원 일원',
+    homepage: 'https://www.hpftf.or.kr/',
+    tel: '061-320-2247',
+    nearbyParking: [{ name: '보광사(함평)', text: '가능', distKm: 1.3 }],
+  });
+  assert.match(homeParking, /https:\/\/www\.hpftf\.or\.kr/);
+  assert.match(homeParking, /061-320-2247/);
+  assert.doesNotMatch(homeParking, /보광사|확인된 정보가 없어요/);
 
   const seogwipoParking = {
     contentId: '506616',

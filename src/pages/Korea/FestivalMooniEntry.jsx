@@ -36,6 +36,7 @@ export function useFestivalMooniEntry({
   program,
   nearbyPlaces,
   nearbyRestaurants,
+  nearbyParking,
   stayAreas,
   info,
   transportFacts = null,
@@ -94,6 +95,7 @@ export function useFestivalMooniEntry({
           program,
           nearbyPlaces,
           nearbyRestaurants,
+          nearbyParking,
           stayAreas,
           info,
           transport: transportFacts,
@@ -105,7 +107,7 @@ export function useFestivalMooniEntry({
         onOpenChange?.(true);
       };
     },
-    [item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas, info, transportFacts, onOpenChange, onOpenTrack],
+    [item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transportFacts, onOpenChange, onOpenTrack],
   );
 
   useEffect(() => {
@@ -120,13 +122,14 @@ export function useFestivalMooniEntry({
       program,
       nearbyPlaces,
       nearbyRestaurants,
+      nearbyParking,
       stayAreas,
       info,
       transport: transportFacts,
     });
     if (!next) return;
     setBoundSpot((prev) => patchFestivalBoundSpot(prev, next));
-  }, [open, item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas, info, transportFacts]);
+  }, [open, item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transportFacts]);
 
   const closeMooni = useCallback(() => {
     setOpen(false);

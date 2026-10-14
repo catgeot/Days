@@ -141,6 +141,7 @@ export function buildFestivalMooniContext(input = {}) {
       .trim(),
     nearbyPlaces: collectFestivalNearbyNames(nearbyPlaces, hubLabel, venue, address),
     nearbyRestaurants: rankFestivalRestaurantRows(nearbyRestaurants),
+    nearbyParking: Array.isArray(input.nearbyParking) ? input.nearbyParking : [],
     stayAreas: filterFestivalStayAreaNames(input.stayAreas, pt?.lat, pt?.lng),
     transport: input.transport || null,
   };

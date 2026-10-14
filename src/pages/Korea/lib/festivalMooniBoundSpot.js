@@ -23,7 +23,7 @@ export {
  * }} input
  */
 export function buildFestivalMooniBoundSpot(input = {}) {
-  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, stayAreas, info, transport } = input;
+  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transport } = input;
   const festivalContext = buildFestivalMooniContext({
     item,
     intro,
@@ -34,6 +34,7 @@ export function buildFestivalMooniBoundSpot(input = {}) {
     program,
     nearbyPlaces,
     nearbyRestaurants,
+    nearbyParking,
     stayAreas,
     info,
     transport,
@@ -77,6 +78,7 @@ export function patchFestivalBoundSpot(prev, next) {
   if (
     sameNameList(prev.festivalContext.nearbyRestaurants, next.festivalContext.nearbyRestaurants)
     && sameNameList(prev.festivalContext.nearbyPlaces, next.festivalContext.nearbyPlaces)
+    && sameNameList(prev.festivalContext.nearbyParking, next.festivalContext.nearbyParking)
     && prevParking === nextParking
     && prevTransport === nextTransport
   ) return prev;
@@ -86,6 +88,7 @@ export function patchFestivalBoundSpot(prev, next) {
       ...prev.festivalContext,
       nearbyRestaurants: next.festivalContext.nearbyRestaurants || [],
       nearbyPlaces: next.festivalContext.nearbyPlaces || [],
+      nearbyParking: next.festivalContext.nearbyParking || [],
       parking: next.festivalContext.parking ?? prev.festivalContext.parking,
       transport: next.festivalContext.transport ?? prev.festivalContext.transport ?? null,
     },

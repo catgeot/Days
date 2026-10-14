@@ -603,10 +603,17 @@ export function stripDisallowedFestivalLinks(text, options = {}) {
     }
     return '';
   };
+  const foodUrlKeys = new Set();
+  if (isFestivalFoodAsk(options)) {
+    for (const row of festivalFoodPlaceEntries(options.nearbyRestaurants, options.locale, 4)) {
+      if (row.url) foodUrlKeys.add(looseUrlKey(row.url));
+    }
+  }
   let next = String(text || '').replace(
     /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g,
     (full, label, url) => {
       const clean = String(url || '').trim();
+      if (foodUrlKeys.has(looseUrlKey(clean))) return stash(full);
       if (OFFICIAL_SITE_LABEL_RE.test(String(label || '').trim()) && !sameOfficialUrl(clean, homepage)) {
         const linked = linkedOfficial(homepage);
         return linked ? stash(linked) : String(label || '').trim();
@@ -1194,7 +1201,18 @@ export function rankFestivalRestaurantRows(values, limit = 6) {
     if (!name || NON_RESTAURANT_PLACE_RE.test(name) || seen.has(name)) continue;
     seen.add(name);
     const distKm = Number(raw?.distKm);
-    const row = { name, distKm: Number.isFinite(distKm) ? distKm : null };
+    const locality = String(raw?.locality || '').replace(/\s+/g, ' ').trim();
+    const addr1 = String(raw?.addr1 || '').replace(/\s+/g, ' ').trim();
+    const cat3 = String(raw?.cat3 || '').trim();
+    const homepage = String(raw?.url || raw?.homepage || '').trim();
+    const row = {
+      name,
+      distKm: Number.isFinite(distKm) ? distKm : null,
+      locality,
+      addr1,
+      cat3,
+      url: /^https?:\/\//i.test(homepage) ? homepage : '',
+    };
     if (isFestivalChainRestaurant(name)) chains.push(row);
     else if (/시장/.test(name)) markets.push(row);
     else locals.push(row);
@@ -1765,25 +1783,92 @@ const FOOD_TYPE_TAGS = [
   { label: '횟집', en: 'sashimi', re: /횟집|회집/ },
 ];
 
+/** TourAPI content type 39 cat3. A code that is not here stays unlabeled. */
+const FOOD_CAT3_LABELS = {
+  A05020100: { ko: '한식', en: 'Korean food' },
+  A05020200: { ko: '양식', en: 'Western food' },
+  A05020300: { ko: '일식', en: 'Japanese food' },
+  A05020400: { ko: '중식', en: 'Chinese food' },
+  A05020500: { ko: '이색음식', en: 'specialty food' },
+  A05020600: { ko: '카페', en: 'cafe' },
+  A05020700: { ko: '클럽', en: 'club' },
+  A05020900: { ko: '바', en: 'bar' },
+};
+
+const INVENTED_FOOD_NAME_RE = /[가-힣A-Za-z0-9]{2,18}(?:식당|횟집|제과|방앗간|국수집|돈까스|돈가스|비빔밥집|한식당)/g;
+
+function foodAnswerLocale(locale) {
+  return String(locale || 'ko').slice(0, 2) === 'en' ? 'en' : 'ko';
+}
+
 function foodDistKm(raw) {
   const distKm = Number(raw?.distKm);
   return Number.isFinite(distKm) ? distKm : null;
 }
 
-/** One-word type from the name, otherwise a walk time or meters from the sheet. */
-export function festivalFoodPlaceTag(name, distKm, locale = 'ko') {
-  const text = String(name || '');
-  const type = FOOD_TYPE_TAGS.find((row) => row.re.test(text));
-  if (type) return String(locale || 'ko').slice(0, 2) === 'en' ? type.en : type.label;
+function foodTypeLabel(name, cat3, locale = 'ko') {
+  const type = FOOD_TYPE_TAGS.find((row) => row.re.test(String(name || '')));
+  const en = foodAnswerLocale(locale) === 'en';
+  if (type) return en ? type.en : type.label;
+  const mapped = FOOD_CAT3_LABELS[String(cat3 || '').trim().toUpperCase()];
+  if (!mapped) return '';
+  if ((mapped.ko === '바' || mapped.ko === '클럽') && /식당|키친|분식|국수|한식/.test(String(name || ''))) {
+    return '';
+  }
+  return en ? mapped.en : mapped.ko;
+}
+
+const WALK_NEAR_KM = 1.2;
+const CAR_FEW_MIN_KM = 4.2;
+
+const FOOD_META_SENTENCE_RE = /여행자는 이 답을 보고 바로 찾아갈 수 있어요\.?|링크를 누르면 그 가게를 바로 찾을 수 있어요\.?|사용자는 이 답을 보고 실제로 가게를 찾아가요\.?|A traveler can head out from these shops\.?|Each link opens that shop\.?|The user will actually visit a shop from this answer\.?/g;
+
+function foodCarLabel(distKm, locale = 'ko') {
+  const minutes = Math.max(2, Math.round((Number(distKm) * 60) / 25));
+  return foodAnswerLocale(locale) === 'en' ? `${minutes}-min drive` : `차로 ${minutes}분`;
+}
+
+function foodTravel(distKm, locale = 'ko') {
+  const km = Number(distKm);
+  if (!Number.isFinite(km) || km <= 0) return { mode: '', label: '' };
+  if (km <= WALK_NEAR_KM) return { mode: 'walk', label: foodDistanceLabel(km, locale) };
+  return { mode: km <= CAR_FEW_MIN_KM ? 'car' : 'far', label: foodCarLabel(km, locale) };
+}
+
+function foodNameBatchim(name) {
+  const hangul = [...String(name || '')].reverse().find((ch) => /[가-힣]/.test(ch));
+  if (!hangul) return true;
+  return (hangul.codePointAt(0) - 0xac00) % 28 !== 0;
+}
+
+function foodDistanceLabel(distKm, locale = 'ko') {
   const km = Number(distKm);
   if (distKm == null || !Number.isFinite(km) || km <= 0) return '';
   const meters = Math.round(km * 1000);
+  const en = foodAnswerLocale(locale) === 'en';
   if (meters >= 80) {
     const minutes = Math.max(1, Math.round(meters / 80));
-    return String(locale || 'ko').slice(0, 2) === 'en' ? `${minutes}-min walk` : `도보 ${minutes}분`;
+    return en ? `${minutes}-min walk` : `도보 ${minutes}분`;
   }
   const near = Math.max(1, meters);
-  return String(locale || 'ko').slice(0, 2) === 'en' ? `${near} m` : `${near}m`;
+  return en ? `${near} m` : `${near}m`;
+}
+
+/** One-word type from the name, otherwise a walk time or meters from the sheet. */
+export function festivalFoodPlaceTag(name, distKm, locale = 'ko') {
+  return foodTypeLabel(name, '', locale) || foodDistanceLabel(distKm, locale);
+}
+
+/** Homepage when the sheet has one, otherwise a Naver search for that shop. */
+export function festivalFoodPlaceUrl(raw) {
+  const explicit = String(raw?.url || raw?.homepage || '').trim();
+  if (/^https?:\/\//i.test(explicit)) return explicit;
+  const name = String(raw?.name || raw || '').replace(/\s+/g, ' ').trim();
+  if (!name) return '';
+  const locality = String(raw?.locality || '').replace(/\s+/g, ' ').trim();
+  const addr = String(raw?.addr1 || '').replace(/\s+/g, ' ').trim().split(/\s+/).slice(0, 2).join(' ');
+  const query = [locality || addr, name].filter(Boolean).join(' ');
+  return `https://search.naver.com/search.naver?query=${encodeURIComponent(query)}`;
 }
 
 function foodFactByName(values) {
@@ -1802,7 +1887,7 @@ function foodHasDistance(raw) {
 }
 
 /** 3–4 places that have a distance. A gap is filled by the next closest local. */
-export function festivalFoodPlaceLabels(values, locale = 'ko', limit = 4) {
+export function festivalFoodPlaceEntries(values, locale = 'ko', limit = 4) {
   const facts = foodFactByName(values);
   const ranked = rankFestivalRestaurants(values, 24);
   const locals = ranked.filter((name) => !isFestivalChainRestaurant(name));
@@ -1813,23 +1898,129 @@ export function festivalFoodPlaceLabels(values, locale = 'ko', limit = 4) {
     .sort((a, b) => {
       if (!measured.length) return 0;
       return foodDistKm(facts.get(a)) - foodDistKm(facts.get(b));
-    })
-    .slice(0, limit);
-  return names.map((name) => {
-    const tag = festivalFoodPlaceTag(name, foodDistKm(facts.get(name)), locale);
-    return tag ? `${name}(${tag})` : name;
-  });
+    });
+  const rows = names.map((name) => {
+    const raw = facts.get(name);
+    const source = raw && typeof raw === 'object' ? raw : { name };
+    const travel = foodTravel(foodDistKm(source), locale);
+    return {
+      name,
+      type: foodTypeLabel(name, source.cat3, locale),
+      distance: travel.label,
+      mode: travel.mode,
+      url: festivalFoodPlaceUrl({ ...source, name }),
+    };
+  }).filter((row) => row.mode !== 'far');
+  const walk = rows.filter((row) => row.mode === 'walk');
+  const car = rows.filter((row) => row.mode === 'car');
+  const plain = rows.filter((row) => !row.mode);
+  if (walk.length >= 3) return walk.slice(0, limit);
+  if (walk.length || car.length) return [...walk, ...car].slice(0, limit);
+  return plain.slice(0, limit);
 }
 
-function restaurantLead(names, locale = 'ko') {
-  const shown = festivalFoodPlaceLabels(names, locale, 4);
-  if (!shown.length) return '';
-  if (String(locale || 'ko').slice(0, 2) === 'en') {
-    return `Nearby places to eat: ${shown.join(', ')}.`;
+export function formatFestivalFoodHintItem(entry) {
+  const name = String(entry?.name || '').trim();
+  const url = String(entry?.url || '').trim();
+  const link = url ? `[${name}](${url})` : name;
+  const bits = [entry?.type, entry?.distance].filter(Boolean);
+  return bits.length ? `${link}(${bits.join(' · ')})` : link;
+}
+
+export function festivalFoodPlaceLabels(values, locale = 'ko', limit = 4) {
+  return festivalFoodPlaceEntries(values, locale, limit).map(formatFestivalFoodHintItem);
+}
+
+function foodLink(row) {
+  const name = String(row?.name || '').trim();
+  const url = String(row?.url || '').trim();
+  return url ? `[${name}](${url})` : name;
+}
+
+function foodSparse(entries) {
+  if (!entries.length || entries.some((row) => !row.mode)) return false;
+  return entries.filter((row) => row.mode === 'walk').length < 3;
+}
+
+function festivalFoodCoach(locale, sparse) {
+  const en = foodAnswerLocale(locale) === 'en';
+  const base = en
+    ? 'The user will actually visit a shop from this answer. Introduce only the hint shops in natural sentences, each with its type, distance, and link, so they avoid a wasted trip.'
+    : '사용자는 이 답을 보고 실제로 가게를 찾아가요. 힌트에 있는 가게의 이름, 종류, 거리, 링크를 자연스러운 문장으로 소개해 주세요. 힌트에 있는 가게만 소개하면 사용자가 헛걸음하지 않아요.';
+  if (!sparse) return base;
+  return en
+    ? `${base} Walking options are few, so say that first, then mention hint shops a few minutes by car, or continue to the festival page's food notes.`
+    : `${base} 걸어서 갈 곳은 적으니 그 점을 먼저 말하고, 차로 몇 분인 힌트 가게를 이어서 소개하거나 축제 페이지의 먹을거리 안내로 이어 주세요.`;
+}
+
+function stripFoodMetaSentences(text) {
+  return String(text || '')
+    .replace(FOOD_META_SENTENCE_RE, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function koFoodClause(row, first) {
+  const link = foodLink(row);
+  const particle = first
+    ? (foodNameBatchim(row.name) ? '이' : '가')
+    : (foodNameBatchim(row.name) ? '은' : '는');
+  if (first && row.type && row.distance) return `${row.type}인 ${link}${particle} ${row.distance} 거리`;
+  if (row.type && row.distance) return `${link}${particle} ${row.type}, ${row.distance}`;
+  if (row.distance) return `${link}${particle} ${row.distance}${first ? ' 거리' : ''}`;
+  if (row.type) return `${row.type}인 ${link}`;
+  return link;
+}
+
+function warmFestivalFoodAnswer(entries, locale = 'ko', contentId = '') {
+  const en = foodAnswerLocale(locale) === 'en';
+  const sparse = foodSparse(entries);
+  const page = /^\d+$/.test(String(contentId || '')) ? gateoKoreaFestivalDetailUrl(contentId) : '';
+  if (en) {
+    const bits = entries.map((row) => {
+      const facts = [row.type, row.distance].filter(Boolean).join(', ');
+      return facts ? `${foodLink(row)} (${facts})` : foodLink(row);
+    });
+    const intro = sparse
+      ? 'Walking-distance restaurants are scarce around here.'
+      : 'Nearby meals are an easy stop.';
+    const shops = bits.length ? `${bits.join(', ')}.` : '';
+    const more = sparse && entries.length < 3 && page
+      ? `More food notes are on the [festival page](${page}).`
+      : '';
+    return [intro, shops, more].filter(Boolean).join(' ');
   }
-  const last = shown[shown.length - 1];
-  const copula = syllableHasBatchim(last.slice(-1)) ? '이에요' : '예요';
-  return `주변 맛집은 ${shown.join(', ')}${copula}.`;
+  const shopLine = entries.length
+    ? (sparse
+      ? `${entries.map((row) => koFoodClause(row, false)).join(', ')}이에요.`
+      : `가까운 곳으로는 ${koFoodClause(entries[0], true)}예요. ${entries.slice(1).map((row) => koFoodClause(row, false)).join(', ')}${entries.length > 1 ? '이에요.' : ''}`)
+    : '';
+  const intro = sparse ? '걸어서 갈 만한 맛집은 많지 않아요.' : '';
+  const more = sparse && entries.length < 3 && page
+    ? `더 많은 먹을거리는 [축제 페이지](${page})에서 볼 수 있어요.`
+    : '';
+  return [intro, shopLine, more].filter(Boolean).join(' ').replace(/\s+\./g, '.').trim();
+}
+
+function foodAnswerCoversHint(text, entries) {
+  const body = String(text || '');
+  const facts = entries.length > 0 && entries.every((row) => (
+    body.includes(row.name)
+    && (!row.url || body.includes(row.url))
+    && (!row.distance || body.includes(row.distance))
+    && (!row.type || body.includes(row.type))
+  ));
+  if (!facts) return false;
+  if (foodSparse(entries) && !/많지 않아요|scarce/.test(body)) return false;
+  if (/\]\(https?:\/\/[^)]+\) — /.test(body)) return false;
+  return true;
+}
+
+function mentionsInventedFood(part, entries) {
+  const names = entries.map((row) => row.name);
+  const hits = String(part || '').match(INVENTED_FOOD_NAME_RE) || [];
+  return hits.some((hit) => !names.some((name) => name.includes(hit) || hit.includes(name)));
 }
 
 const FOOD_DEFLECTION_RE = /맛집(?:을|를)\s*찾아\s*보|find\s+(?:nearby\s+)?restaurants|look\s+for\s+(?:nearby\s+)?restaurants/i;
@@ -1849,21 +2040,32 @@ function restaurantNameBlob(values) {
     .join('\n');
 }
 
-/** With sheet names, the food answer is that list. Otherwise drop filler and invented markets. */
+/** Keep a natural answer that already carries the hint shops. Otherwise write those shops. */
 function ensureFestivalFoodAnswer(text, options = {}) {
   if (!isFestivalFoodAsk(options)) return String(text || '');
-  const locale = String(options.locale || 'ko').slice(0, 2) === 'en' ? 'en' : 'ko';
-  const lead = restaurantLead(options.nearbyRestaurants, locale);
-  if (lead) return lead;
-  const blob = restaurantNameBlob(options.nearbyRestaurants);
-  let next = stripNextActionLabel(text);
+  const locale = foodAnswerLocale(options.locale);
+  const entries = festivalFoodPlaceEntries(options.nearbyRestaurants, locale, 4);
+  if (!entries.length) {
+    const blob = restaurantNameBlob(options.nearbyRestaurants);
+    let next = stripFoodMetaSentences(stripNextActionLabel(text));
+    next = filterPreservingBreaks(next, (part) => (
+      NON_RESTAURANT_PLACE_RE.test(part)
+      || FOOD_DEFLECTION_RE.test(part)
+      || FOOD_FILLER_RE.test(part)
+      || (/중앙시장/.test(part) && !blob.includes('중앙시장'))
+    ));
+    return next;
+  }
+  let next = stripFoodMetaSentences(stripNextActionLabel(text));
   next = filterPreservingBreaks(next, (part) => (
     NON_RESTAURANT_PLACE_RE.test(part)
     || FOOD_DEFLECTION_RE.test(part)
     || FOOD_FILLER_RE.test(part)
-    || (/중앙시장/.test(part) && !blob.includes('중앙시장'))
+    || mentionsInventedFood(part, entries)
+    || (/중앙시장/.test(part) && !entries.some((row) => row.name.includes('중앙시장')))
   ));
-  return next;
+  if (foodAnswerCoversHint(next, entries)) return next;
+  return warmFestivalFoodAnswer(entries, locale, options.contentId);
 }
 
 const DATE_LINK_FRAGMENT_RE = /^\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?\s*[,，]\s*\[[^\]]*상세\s*안내[^\]]*\]\([^)]+\)[.。]?$/;
@@ -2090,6 +2292,10 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = stripOffTopicLodgingNudge(text, options);
   text = settleFestivalNextAction(text, options);
   text = dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
+  text = ensureFestivalParkingAnswer(text, options);
+  text = stripUnaskedParkingEcho(text, options);
+  text = stripPromptEchoSentences(text);
+  text = collapseUnconfirmedMentions(text);
   text = cleanOrphanLinkConjunctions(text);
   if (String(options.locale || 'ko').slice(0, 2) !== 'en') {
     text = stripMooniGuideFiller(text);
@@ -2335,6 +2541,13 @@ function lastHangulSyllable(label) {
   return last;
 }
 
+/** Copula follows the spoken ending. A trailing digit is read in Korean, not the hangul before it. */
+function trailingLabelHasBatchim(label) {
+  const digit = String(label || '').trim().match(/(\d)\s*$/);
+  if (digit) return '013678'.includes(digit[1]);
+  return syllableHasBatchim(lastHangulSyllable(label));
+}
+
 function lodgingStaySentence(rows, locale = 'ko') {
   const labels = rows.map((row) => lodgingStayLabel(row)).filter(Boolean);
   if (!labels.length) return '';
@@ -2533,6 +2746,157 @@ function ensureFestivalLodgingAnswer(text, options = {}) {
   return stripUnhintedStayDistances(body, options.nearbyStays, origin);
 }
 
+const THIN_PARKING_RE = /^(?:가능|있음|없음|불가|주차\s*가능)$/;
+const UNCONFIRMED_GAP_RE = /확인된 정보가 없|no confirmed (?:information|facts)|confirmed information is not/i;
+const PROMPT_ECHO_RE = /사용자는 이 답을 보고|The user will actually visit/i;
+const PARKING_HOMEPAGE_ECHO_RE = /주차 안내는|Parking is on the official/i;
+
+function cleanParkingText(value) {
+  return String(value || '')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function corpusParkingSentences(options) {
+  return [options.overview, options.program, options.sceneOverview]
+    .map((value) => String(value || ''))
+    .join('\n')
+    .split(/(?<=[.!?。])\s+|\n+/)
+    .map((part) => part.trim())
+    .filter((part) => PARKING_FACT_RE.test(part));
+}
+
+function parkingPlaceMatchesFestival(name, options) {
+  const clean = String(name || '').replace(/\s+/g, '');
+  if (clean.length < 2) return false;
+  const blob = `${options.festivalTitle || ''} ${options.venue || ''}`.replace(/\s+/g, '');
+  return blob.includes(clean);
+}
+
+const PARKING_WALK_RE = /걸어서\s*\d+\s*분|도보\s*\d+\s*분|\d+\s*분\s*(?:거리|소요)/;
+
+/** A walk time counts only when the parking text itself states it. Sight distance does not. */
+function parkingTextStatesWalk(text) {
+  return PARKING_WALK_RE.test(String(text || ''));
+}
+
+/** Festival parking field, a parking fact sentence, or a nearby sight that is this festival. */
+function parkingLotsForAnswer(options = {}) {
+  const lots = [];
+  const field = cleanParkingText(options.parking);
+  if (field) lots.push({ name: '', text: field, distKm: null, addr: '' });
+  for (const sentence of corpusParkingSentences(options)) {
+    lots.push({ name: '', text: sentence, distKm: null, addr: '' });
+  }
+  for (const row of Array.isArray(options.nearbyParking) ? options.nearbyParking : []) {
+    const name = String(row?.name || '').trim();
+    const text = cleanParkingText(row?.text || row?.parking);
+    if (!text || !parkingPlaceMatchesFestival(name, options)) continue;
+    const distKm = Number(row?.distKm);
+    lots.push({
+      name,
+      text,
+      distKm: Number.isFinite(distKm) ? distKm : null,
+      addr: cleanParkingText(row?.addr1 || row?.addr || ''),
+    });
+  }
+  return lots.slice(0, 2);
+}
+
+function parkingLotLabel(lot) {
+  const bits = [lot.text, lot.addr].filter(Boolean);
+  return lot.name ? `${lot.name}(${bits.join(' · ')})` : bits.join(' · ');
+}
+
+function finishParkingSentence(text) {
+  const body = String(text || '').trim();
+  if (!body) return '';
+  return /[.!?。]$/.test(body) ? body : `${body}.`;
+}
+
+function composeParkingAnswer(lots, options = {}) {
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const sentences = [];
+  for (const lot of lots) {
+    const thin = THIN_PARKING_RE.test(lot.text);
+    if (en) {
+      if (lot.name && thin) sentences.push(`${lot.name} parking: ${lot.text}.`);
+      else if (lot.name) sentences.push(`${lot.name} parking: ${lot.text}.`);
+      else sentences.push(finishParkingSentence(lot.text));
+      if (lot.addr) sentences.push(`Location: ${lot.addr}.`);
+      continue;
+    }
+    if (lot.name && thin) {
+      const particle = syllableHasBatchim(lastHangulSyllable(lot.name)) ? '은' : '는';
+      const possible = /없|불가/.test(lot.text) ? '주차가 어려워요' : '주차가 가능해요';
+      sentences.push(`${lot.name}${particle} ${possible}.`);
+    } else if (lot.name) {
+      sentences.push(`${lot.name} 주차는 ${lot.text.replace(/[.。]$/, '')}예요.`);
+    } else if (/해요|이에요|예요|어요/.test(lot.text)) {
+      sentences.push(finishParkingSentence(lot.text));
+    } else {
+      sentences.push(`주차는 ${lot.text.replace(/[.。]$/, '')}이에요.`);
+    }
+    if (lot.addr && !sentences.join(' ').includes(lot.addr)) {
+      const particle = trailingLabelHasBatchim(lot.addr) ? '이에요' : '예요';
+      sentences.push(`위치는 ${lot.addr}${particle}.`);
+    }
+  }
+  const rich = lots.some((lot) => !THIN_PARKING_RE.test(lot.text));
+  if (!rich && /^https?:\/\//i.test(String(options.homepage || ''))) {
+    sentences.push(parkingGuide(options));
+  }
+  return sentences.filter(Boolean).join(' ');
+}
+
+function parkingAnswerCovers(text, lots) {
+  const body = String(text || '');
+  return lots.every((lot) => {
+    if (lot.name && !body.includes(lot.name)) return false;
+    if (lot.addr && !body.includes(lot.addr)) return false;
+    if (PARKING_WALK_RE.test(body) && !parkingTextStatesWalk(lot.text)) return false;
+    if (THIN_PARKING_RE.test(lot.text)) {
+      const negative = /없|불가/.test(lot.text);
+      if (negative ? !/어렵|불가|없/.test(body) : !/가능/.test(body)) return false;
+    } else {
+      const token = lot.text.replace(/\s+/g, '').slice(0, 8);
+      if (token && !body.replace(/\s+/g, '').includes(token)) return false;
+    }
+    return true;
+  });
+}
+
+function ensureFestivalParkingAnswer(text, options = {}) {
+  const asked = PRACTICAL_TOPIC_RE.some((topic) => topic.kind === 'parking' && topic.re.test(String(options.userText || '')));
+  if (!asked) return String(text || '');
+  const lots = parkingLotsForAnswer(options);
+  if (!lots.length) return parkingGuide(options);
+  if (parkingAnswerCovers(text, lots)) return String(text || '');
+  return composeParkingAnswer(lots, options);
+}
+
+function stripUnaskedParkingEcho(text, options = {}) {
+  if (/주차|parking/i.test(String(options.userText || ''))) return String(text || '');
+  return filterPreservingBreaks(text, (part) => /주차|parking/i.test(part) || PARKING_HOMEPAGE_ECHO_RE.test(part));
+}
+
+function stripPromptEchoSentences(text) {
+  return filterPreservingBreaks(text, (part) => PROMPT_ECHO_RE.test(part));
+}
+
+/** An unconfirmed gap is one short sentence. Later copies drop. */
+function collapseUnconfirmedMentions(text) {
+  let seen = false;
+  return filterPreservingBreaks(text, (part) => {
+    if (!UNCONFIRMED_GAP_RE.test(part)) return false;
+    if (seen) return true;
+    seen = true;
+    return false;
+  });
+}
+
 function parkingGuide(options = {}) {
   const homepage = String(options.homepage || '').trim();
   const tel = String(options.tel || '').trim();
@@ -2629,7 +2993,7 @@ function redirectMissingPracticalCheck(text, options = {}) {
         feeText: options.feeText,
         info: options.info,
         text: corpus,
-      });
+      }) || parkingLotsForAnswer(options).length > 0;
     }
     if (topic.kind === 'hours') {
       return Boolean(String(options.timeText || '').trim());
@@ -3024,14 +3388,12 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
       }
     }
   }
-  const restaurants = festivalFoodPlaceLabels(ctx?.nearbyRestaurants, isEn ? 'en' : 'ko', 4);
-  if (restaurants.length) {
+  const foodEntries = festivalFoodPlaceEntries(ctx?.nearbyRestaurants, isEn ? 'en' : 'ko', 4);
+  if (foodEntries.length) {
     lines.push(isEn
-      ? `- Nearby restaurants (GATEO 주변 맛집): ${restaurants.join(', ')}`
-      : `- 주변 맛집(GATEO): ${restaurants.join(', ')}`);
-    lines.push(isEn
-      ? '- Where to eat: name 3 or 4 of these places, each with the type or distance in parentheses. Every named place must have a distance. If one does not, use the next closest local place that does. Do not say to look for restaurants. Do not write filler such as a variety of restaurants, a culinary trip, or well-known spots. Do not invent a place that is not on this list, including a central market. Do not add a "next action" label, an unlinked getting-there line, or a lodging link. Do not call a community center, welfare center, bathhouse, sauna, or tunnel a place to eat.'
-      : '- 근처 먹을 곳·맛집 질문: 위 이름 3~4곳만 말한다. 괄호의 한 단어 유형이나 거리(돈가스·제과·방앗간·도보 N분·N m)를 그대로 붙인다. 거리가 없는 곳은 빼고, 거리가 있는 다음으로 가까운 곳을 말한다. «주변의 맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다양한 맛집», «미식 여행», «소문난»은 쓰지 않는다. 목록에 없는 장소는 만들지 않는다. 중앙시장은 목록에 있을 때만 말한다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 링크 없는 가는 법 문장과 숙소 링크, «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집으로 말하지 않는다.');
+      ? `- Nearby restaurants (GATEO 주변 맛집): ${foodEntries.map(formatFestivalFoodHintItem).join(', ')}`
+      : `- 주변 맛집(GATEO): ${foodEntries.map(formatFestivalFoodHintItem).join(', ')}`);
+    lines.push(`- ${festivalFoodCoach(isEn ? 'en' : 'ko', foodSparse(foodEntries))}`);
   }
 
   const gateoUrl =
@@ -3057,6 +3419,16 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const tel = String(ctx?.tel || '').trim();
   if (tel) lines.push(isEn ? `- Contact phone: ${tel}` : `- 문의처: ${tel}`);
   const parking = String(ctx?.parking || '').trim();
+  const parkingLots = parkingLotsForAnswer({
+    parking,
+    overview: ctx?.overview,
+    sceneOverview: ctx?.sceneOverview,
+    program: ctx?.program,
+    venue: ctx?.venue,
+    feeText: ctx?.feeText,
+    nearbyParking: ctx?.nearbyParking,
+    festivalTitle: ctx?.title,
+  });
   const parkingKnown = hasFestivalParkingData({
     parking,
     overview: ctx?.overview,
@@ -3065,16 +3437,27 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
     venue: ctx?.venue,
     feeText: ctx?.feeText,
     info: ctx?.info,
-  });
+  }) || parkingLots.length > 0;
   if (parking && parkingKnown) {
     lines.push(isEn ? `- Parking: ${parking}` : `- 주차: ${parking}`);
+  }
+  const namedLots = parkingLots.filter((lot) => lot.name);
+  if (namedLots.length) {
+    lines.push(isEn
+      ? `- Nearby parking: ${namedLots.map(parkingLotLabel).join(', ')}`
+      : `- 근처 주차: ${namedLots.map(parkingLotLabel).join(', ')}`);
+  }
+  if (parkingLots.length) {
+    lines.push(isEn
+      ? '- For a parking question, introduce the lot name, place, and fee written above. Mention a walking time only when that parking line itself gives a distance or minutes.'
+      : '- 주차 질문에는 위에 적힌 주차장 이름, 위치, 요금을 자연스러운 문장으로 소개한다. 걸어가는 시간은 그 줄에 거리나 분이 적혀 있을 때만 말한다.');
   } else if (!parkingKnown) {
     const telBit = tel
       ? (isEn ? ` Call ${tel}.` : ` 전화번호가 있으면 «문의 ${tel}»를 붙인다.`)
       : (isEn ? ' Do not mention a contact number.' : ' 전화번호가 없으면 문의 문장을 쓰지 않는다.');
     lines.push(isEn
-      ? `- Parking is not in the festival data. Write only "Parking is on the [official site](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})."${telBit} Do not repeat "check". Do not say "through the contact" without a number. Do not tell the user to see or find parking on the festival page. A parking-lot place name is not parking data.`
-      : `- 주차 정보가 이 데이터에 없다. 답은 «주차 안내는 [공식 홈페이지](${/^https?:\/\//i.test(homepage) ? homepage : 'url'})에 있어요.»만 쓴다.${telBit} «확인»을 반복하지 않는다. 번호 없는 «문의처를 통해»와 «축제 페이지에서 살펴보세요»는 쓰지 않는다. «찾아볼 수 있어요», «알아볼», «볼 수 있어요»처럼 축제 페이지로 보내는 문장도 쓰지 않는다. 장소 이름의 «주차장»은 주차 정보가 아니다.`);
+      ? `- Parking is not in the festival data. When that is the case, link the official site${/^https?:\/\//i.test(homepage) ? ` (${homepage})` : ''}.${telBit} Do not repeat "check". Do not say "through the contact" without a number. Do not tell the user to see or find parking on the festival page. A parking-lot place name is not parking data.`
+      : `- 주차 정보가 이 데이터에 없다. 그때는 공식 홈페이지 링크로 안내한다.${telBit} «확인»을 반복하지 않는다. 번호 없는 «문의처를 통해»와 «축제 페이지에서 살펴보세요»는 쓰지 않는다. «찾아볼 수 있어요», «알아볼», «볼 수 있어요»처럼 축제 페이지로 보내는 문장도 쓰지 않는다. 장소 이름의 «주차장»은 주차 정보가 아니다.`);
   }
 
   return `\n${lines.join('\n')}`;
@@ -3200,11 +3583,11 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
           : '\n- 가는 법: GATEO에 이 출발지의 확인된 열차·버스 시각이 없을 수 있어요. 그래도 위 출발 역·터미널에서 실제 열차·고속버스·차 경로를 이어서 안내해 주세요. 시각·요금은 확인된 숫자만 말하고, 없으면 [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요.';
       }
     }
-    const foodNames = festivalFoodPlaceLabels(festivalContext.nearbyRestaurants, enFood ? 'en' : 'ko', 4);
-    if (foodNames.length && isFestivalFoodAsk({ userText, chipId: input.chipId })) {
+    const foodEntries = festivalFoodPlaceEntries(festivalContext.nearbyRestaurants, enFood ? 'en' : 'ko', 4);
+    if (foodEntries.length && isFestivalFoodAsk({ userText, chipId: input.chipId })) {
       hint += enFood
-        ? `\n- This question is where to eat. Name these 3 or 4 places with their type or distance: ${foodNames.join(', ')}. Do not tell the user to look for restaurants. Do not invent a place, and do not write a "next action" label, an unlinked getting-there line, or a lodging link. This overrides a generic next-action rule.`
-        : `\n- 이번 질문은 근처 먹을 곳이다. 3~4곳만 유형이나 거리와 함께 말한다: ${foodNames.join(', ')}. «맛집을 찾아보세요»처럼 이름을 빼지 않는다. «다양한 맛집», «미식 여행», «소문난»은 쓰지 않는다. «다음 행동으로»와 «다음 행동:» 머리말을 쓰지 않는다. 숙소 링크와 «숙소 정보도 함께 알아보세요»를 붙이지 않는다. 다른 다음 행동 규칙보다 이 문장이 우선한다.`;
+        ? `\n- This question is where to eat. ${festivalFoodCoach('en', foodSparse(foodEntries))}`
+        : `\n- 이번 질문은 근처 먹을 곳이다. ${festivalFoodCoach('ko', foodSparse(foodEntries))}`;
     }
     if (isFestivalLodgingAsk({ userText, chipId: input.chipId })) {
       const lodgingUrl = gateoKoreaFestivalLodgingUrl(festivalContext.contentId);

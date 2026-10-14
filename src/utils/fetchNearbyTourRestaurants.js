@@ -67,6 +67,7 @@ function mapRestaurantItem(item, originLat, originLng) {
     firstImage: toHttps(item?.imageUrl || item?.firstimage),
     areaCode,
     tel: item?.tel != null ? String(item.tel) : null,
+    cat3: item?.cat3 != null ? String(item.cat3) : '',
     distKm,
     source: 'api',
   };

@@ -17,7 +17,7 @@ const RESTAURANT_LINE_RE = /^- (?:주변 맛집\(GATEO\)|Nearby restaurants)\b/;
 const FOOD_QUESTION_LINE_RE = /^- (?:이번 질문은 근처 먹을 곳|This question is where to eat)/;
 const FOOD_ASK_RE = /먹을\s*곳|맛집|뭐\s*먹|어디서\s*먹|where\s+to\s+eat|what\s+(?:can|should)\s+i\s+eat|\brestaurants?\b/i;
 const FOOD_NAME_RE = /식당|맛집|횟집|카페|제과|방앗간|치킨|국수|돈가스|돈까스|restaurant|cafe|bakery|sashimi|noodle|cutlet|\bmill\b/i;
-const FOOD_DISTANCE_RE = /\((?:도보\s*\d+\s*분|\d+\s*m|\d+-min walk|돈가스|제과|방앗간|치킨|카페|국수|횟집|cutlet|bakery|mill|chicken|cafe|noodles|sashimi)\)/;
+const FOOD_DISTANCE_RE = /\((?:도보\s*\d+\s*분|차로\s*\d+\s*분|\d+\s*m|\d+-min walk|\d+-min drive|한식|양식|일식|중식|돈가스|제과|방앗간|치킨|카페|국수|횟집|cutlet|bakery|mill|chicken|cafe|noodles|sashimi)\)/;
 
 function splitBlocks(hint) {
   const blocks = [];

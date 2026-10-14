@@ -25,7 +25,15 @@ function spotRows(value) {
     const name = String(spot?.name || spot || '').replace(/\s+/g, ' ').trim();
     if (!name) continue;
     const distKm = Number(spot?.distKm);
-    rows.push({ name, distKm: Number.isFinite(distKm) ? distKm : null });
+    const homepage = String(spot?.url || spot?.homepage || '').trim();
+    rows.push({
+      name,
+      distKm: Number.isFinite(distKm) ? distKm : null,
+      locality: String(spot?.locality || '').replace(/\s+/g, ' ').trim(),
+      addr1: String(spot?.addr1 || '').replace(/\s+/g, ' ').trim(),
+      cat3: String(spot?.cat3 || '').trim(),
+      url: /^https?:\/\//i.test(homepage) ? homepage : '',
+    });
     if (rows.length >= 24) break;
   }
   return rows;

@@ -130,6 +130,7 @@ import {
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
 import { useFestivalHeroPhotoDecoded } from './useFestivalHeroPhotoDecoded.js';
+import { loadNearbyParkingFacts } from './lib/festivalNearbyParking.js';
 import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
 import {
@@ -630,6 +631,8 @@ export default function FestivalDetailSheet({
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
+  const [nearbyParking, setNearbyParking] = useState([]);
+  const [nearbyParkingReady, setNearbyParkingReady] = useState(false);
   const nearbyCacheOwnerRef = useRef('');
   const nearbyCacheKey = `${item?.contentId || ''}:${item?.mapx || ''}:${item?.mapy || ''}`;
   if (nearbyCacheOwnerRef.current !== nearbyCacheKey) {
@@ -1550,17 +1553,58 @@ export default function FestivalDetailSheet({
   }, [nearbySights]);
 
   const mooniNearbyRestaurants = useMemo(() => {
-    const names = [];
+    const rows = [];
+    const seen = new Set();
     for (const spot of nearbyFood) {
       const name = String(spot?.name || '').trim();
-      if (!name || names.includes(name)) continue;
-      names.push(name);
-      if (names.length >= 24) break;
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      const distKm = Number(spot?.distKm);
+      const homepage = String(spot?.homepage || '').trim();
+      rows.push({
+        name,
+        distKm: Number.isFinite(distKm) ? distKm : null,
+        locality: String(spot?.locality || '').trim(),
+        addr1: String(spot?.addr1 || '').trim(),
+        cat3: String(spot?.cat3 || '').trim(),
+        url: /^https?:\/\//i.test(homepage) ? homepage : '',
+      });
+      if (rows.length >= 24) break;
     }
-    return names;
+    return rows;
   }, [nearbyFood]);
 
   const [accessFacts, setAccessFacts] = useState(null);
+
+  useEffect(() => {
+    const id = String(item?.contentId || '');
+    if (!id) return undefined;
+    if (nearbyStatus === 'nocoords' || nearbyStatus === 'empty' || nearbyStatus === 'error') {
+      setNearbyParking([]);
+      setNearbyParkingReady(true);
+      return undefined;
+    }
+    if (nearbyStatus !== 'ok') {
+      setNearbyParkingReady(false);
+      return undefined;
+    }
+    let cancelled = false;
+    setNearbyParkingReady(false);
+    const matchBlob = `${item?.title || ''} ${intro?.eventplace || ''}`;
+    loadNearbyParkingFacts(nearbySpots, { matchBlob }).then((facts) => {
+      if (cancelled) return;
+      setNearbyParking(facts);
+      setNearbyParkingReady(true);
+    }).catch(() => {
+      if (cancelled) return;
+      setNearbyParking([]);
+      setNearbyParkingReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [item?.contentId, item?.title, intro?.eventplace, nearbyStatus, nearbySpots]);
+
   const festivalMooni = useFestivalMooniEntry({
     item: item || {},
     intro,
@@ -1571,6 +1615,7 @@ export default function FestivalDetailSheet({
     program: stripHtml(intro?.program || ''),
     nearbyPlaces: mooniNearbyPlaces,
     nearbyRestaurants: mooniNearbyRestaurants,
+    nearbyParking,
     stayAreas: festivalCross?.stayAreas,
     info: infoItems,
     transportFacts: accessFacts,
@@ -1852,6 +1897,7 @@ export default function FestivalDetailSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="korea-festival-sheet-title"
+        data-nearby-parking={nearbyParkingReady ? 'ready' : 'loading'}
       >
         {hero ? (
           <div
