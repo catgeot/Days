@@ -1432,7 +1432,7 @@ function rewriteGangneungDaeguMissingTimetablePhrase(text, options = {}) {
   if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
   if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
   const noDataRe =
-    /[^.!?。]*(?:데이터는\s*(?:제공되지|없어요)|요금\s*데이터는\s*없어요|확인된\s*상세\s*배차\s*시각과\s*요금\s*데이터는\s*없어요|확인된\s*운행\s*시각\s*정보는\s*제공되지|직통\s*열차의\s*확인된\s*운행\s*시각\s*정보는)[^.!?。]*[.。]\s*/g;
+    /[^.!?。]*(?:제공된\s*데이터에는|데이터는\s*(?:제공되지|없어요)|요금\s*데이터는\s*없어요|확인된\s*상세\s*배차\s*시각과\s*요금\s*데이터는\s*없어요|확정\s*운행\s*시각과\s*요금\s*정보가\s*등록|확인된\s*운행\s*시각\s*정보는\s*제공되지|직통\s*열차의\s*확인된\s*운행\s*시각\s*정보는)[^.!?。]*[.。]\s*/g;
   return String(text || '').replace(
     noDataRe,
     '대구 출발 직통 열차 시각은 이 답변 카드에 없어서, 아래 코레일·버스타고·고속버스 링크에서 편도 일정을 먼저 확인해 보시면 좋아요. ',

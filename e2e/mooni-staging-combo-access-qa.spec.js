@@ -186,7 +186,7 @@ test.describe('MOONi staging combo — 가는 법 origins (WebKit 390)', () => {
     const lines = [
       '# MOONi staging combo QA (390×844 WebKit)',
       '',
-      tip ? `**#453 git tip:** \`${tip}\` (staging gemini-proxy; never prod)` : '',
+      tip ? `**#460 git tip:** \`${tip}\` (staging gemini-proxy; never prod)` : '',
       tip ? '' : null,
       `Base URL: ${process.env.PLAYWRIGHT_BASE_URL || '(unset)'}`,
     ].filter((line) => line !== null);
