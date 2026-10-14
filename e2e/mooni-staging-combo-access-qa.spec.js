@@ -68,13 +68,30 @@ async function installStagingFestivalDetailStub(context, festivalId) {
   });
 }
 
-function assertAccessAnswerPolished(answerText) {
+function assertAccessAnswerPolished(answerText, { festivalId, originId } = {}) {
   if (/설정 오류|관리자에게 문의/.test(answerText)) {
     throw new Error(`gemini-proxy failed in browser: ${answerText}`);
   }
   expect(answerText).not.toMatch(/12\s*Go|12Go|교통편\s*검색/i);
   expect(answerText).not.toMatch(/교통\s*·\s*티켓/);
   expect(answerText).not.toMatch(/출발 전 준비/);
+  if (festivalId === '638576' && originId === 'daegu') {
+    expect(answerText).not.toMatch(/환승을\s*거쳐/);
+    expect(answerText).toMatch(/유·스퀘어|유ㆍ스퀘어/);
+    expect(answerText).toMatch(/함평행 버스|함평행/);
+  }
+}
+
+async function assertAccessNumberTokensSingleLine(page, bubble) {
+  const broken = await bubble.locator('[data-mooni-access-number]').evaluateAll((els) =>
+    els
+      .filter((el) => el.getClientRects().length !== 1)
+      .map((el) => ({
+        text: el.textContent,
+        rects: el.getClientRects().length,
+      })),
+  );
+  expect(broken, `number token split across lines: ${JSON.stringify(broken)}`).toEqual([]);
 }
 
 async function clearClientAuthStorage(page) {
@@ -224,7 +241,11 @@ test.describe('MOONi staging combo — 가는 법 origins (WebKit 390)', () => {
         await mooniBubble.scrollIntoViewIfNeeded();
         await scrollChatToEnd(page);
         const answerText = (await mooniBubble.innerText()).trim();
-        assertAccessAnswerPolished(answerText);
+        assertAccessAnswerPolished(answerText, {
+          festivalId: fest.festivalId,
+          originId,
+        });
+        await assertAccessNumberTokensSingleLine(page, mooniBubble);
         const file = `${fest.slug}-${fest.festivalId}-from-${originId}-end.png`;
         const path = join(OUT_DIR, file);
         await page.screenshot({ path, fullPage: false });

@@ -1357,6 +1357,49 @@ function rewriteFalseDongdaeguGwangjuSongjeongLead(text, options = {}) {
   );
 }
 
+const GUKHYANG_DAEGU_BUS_LEAD_KO =
+  '대중교통을 이용할 때는 동대구터미널이나 서대구터미널에서 광주(유·스퀘어)로 가는 고속버스를 타고 광주에서 함평행 버스로 갈아타는 방법이 편해요.';
+
+/** Named intermediate hub — not only «동대구→환승→광주송정». */
+const GUKHYANG_NAMED_INTERMEDIATE_TRANSFER_RE =
+  /(?:서울역|용산역|청량리역|대전역|오송역|천안아산역|김천구미역|수원역|평택역|전주역|나주역|순천역|광주역|정읍역|익산역|대전|오송|천안|김천)/;
+
+const GUKHYANG_VAGUE_HWANSUNG_SENTENCE_RE =
+  /[^.!?。]*환승을\s*거쳐[^.!?。]*[.。]\s*/g;
+
+function rewriteVagueGukhyangTransferWithoutNamedStation(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  let out = String(text || '');
+  out = out.replace(GUKHYANG_VAGUE_HWANSUNG_SENTENCE_RE, (sentence) =>
+    GUKHYANG_NAMED_INTERMEDIATE_TRANSFER_RE.test(sentence) ? sentence : '',
+  );
+  out = out.replace(
+    /열차는[^.!?。]*(?:직통|확인된)[^.!?。]*(?:환승을\s*거쳐|광주송정)[^.!?。]*[.。]\s*/g,
+    '',
+  );
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+function ensureGukhyangDaeguBusFirstLead(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  const lead = GUKHYANG_DAEGU_BUS_LEAD_KO;
+  let out = String(text || '').trim();
+  if (!/유·스퀘어|유ㆍ스퀘어/.test(out)) {
+    return `${lead} ${out}`;
+  }
+  const leadIdx = out.indexOf(lead);
+  if (leadIdx >= 0 && leadIdx <= 80) return out;
+  const busSentence = out.match(
+    /[^.!?。]*동대구터미널이나 서대구터미널에서 광주\(유·스퀘어\)[^.!?。]*[.。]/,
+  );
+  if (busSentence) {
+    const rest = out.replace(busSentence[0], '').trim();
+    return `${busSentence[0]} ${rest}`.trim();
+  }
+  return `${lead} ${out}`;
+}
+
 const ACCESS_TIMETABLE_WINDOW_MISREAD_RE =
   /(\d{1,2}:\d{2}(?:\u2060?~\u2060?\d{1,2}:\d{2})?)\s*(?:사이에\s*)?바로\s*갈\s*수/g;
 
@@ -1834,6 +1877,8 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   if (isBoundFestivalAccessPolish(options)) {
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
+    text = rewriteVagueGukhyangTransferWithoutNamedStation(text, options);
+    text = ensureGukhyangDaeguBusFirstLead(text, options);
     text = rewriteVagueGangneungTransferRoute(text, options);
     text = rewriteFestivalAccessTimetableWindowPhrase(text);
     text = glueAccessNumbersInProse(text);
