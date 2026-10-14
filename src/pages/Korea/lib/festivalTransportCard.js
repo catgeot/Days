@@ -253,6 +253,22 @@ function fareValue(row) {
   return isRealFare(row?.fareAdultMin) ? row.fareAdultMin : null;
 }
 
+const SUSEO_STATION_ID = 'NATH30000';
+
+/** TAGO labels Suseo SRT stock as KTX. Never show that grade next to SR booking. */
+export function isSrtDeparture(option) {
+  if (String(option?.bookingOperator || '').trim() === 'SR') return true;
+  if (String(option?.depStationId || '').trim() === SUSEO_STATION_ID) return true;
+  const dep = String(option?.depStation || '').replace(/\s+/g, '').replace(/역$/, '');
+  return dep === '수서';
+}
+
+export function displayTrainGrade(option) {
+  const grade = String(option?.grade || '').trim();
+  if (isSrtDeparture(option)) return 'SRT';
+  return grade;
+}
+
 function durationValue(row) {
   return Number.isFinite(row?.durationMin) ? row.durationMin : null;
 }
@@ -310,22 +326,43 @@ export function pickFastestTrainGrade(rows) {
   })[0];
 }
 
+function compareCheapest(a, b) {
+  const fare = fareValue(a) - fareValue(b);
+  if (fare) return fare;
+  const duration = (durationValue(a) ?? Number.POSITIVE_INFINITY) - (durationValue(b) ?? Number.POSITIVE_INFINITY);
+  if (duration) return duration;
+  const count = countValue(b) - countValue(a);
+  if (count) return count;
+  return String(a.firstDeparture || '').localeCompare(String(b.firstDeparture || ''));
+}
+
+/**
+ * Every grade that shares the lowest adult fare, cheapest-sort order.
+ * @param {object[]} rows
+ */
+export function listCheapestTrainGrades(rows) {
+  const list = (rows || []).filter((row) => fareValue(row) != null);
+  if (!list.length) return [];
+  const sorted = [...list].sort(compareCheapest);
+  const min = fareValue(sorted[0]);
+  return sorted.filter((row) => fareValue(row) === min);
+}
+
 /**
  * Cheapest grade: lowest adult fare, then shorter duration, then more runs.
  * @param {object[]} rows
  */
 export function pickCheapestTrainGrade(rows) {
-  const list = (rows || []).filter((row) => fareValue(row) != null);
-  if (!list.length) return null;
-  return [...list].sort((a, b) => {
-    const fare = fareValue(a) - fareValue(b);
-    if (fare) return fare;
-    const duration = (durationValue(a) ?? Number.POSITIVE_INFINITY) - (durationValue(b) ?? Number.POSITIVE_INFINITY);
-    if (duration) return duration;
-    const count = countValue(b) - countValue(a);
-    if (count) return count;
-    return String(a.firstDeparture || '').localeCompare(String(b.firstDeparture || ''));
-  })[0];
+  return listCheapestTrainGrades(rows)[0] || null;
+}
+
+function cheapestDisplayNames(rows) {
+  const names = [];
+  for (const row of listCheapestTrainGrades(rows)) {
+    const name = displayTrainGrade(row);
+    if (name && !names.includes(name)) names.push(name);
+  }
+  return names;
 }
 
 /** Same grade name on one segment is one run total (transfer dupes). */
@@ -361,7 +398,7 @@ function unknownLine(locale, which) {
 
 function fastestParts(row, locale) {
   const en = englishLocale(locale);
-  const grade = String(row.grade || '').trim();
+  const grade = displayTrainGrade(row);
   const duration = formatDuration(row.durationMin, locale);
   if (en) {
     return [
@@ -383,7 +420,7 @@ function fastestParts(row, locale) {
 
 function cheapestParts(row, locale) {
   const en = englishLocale(locale);
-  const grade = String(row.grade || '').trim();
+  const grade = displayTrainGrade(row);
   const fare = formatFareAmount(row.fareAdultMin, locale);
   if (en) {
     return [
@@ -403,9 +440,31 @@ function cheapestParts(row, locale) {
   ];
 }
 
+function tiedCheapestParts(names, fareAmount, locale) {
+  const en = englishLocale(locale);
+  const list = names.join('·');
+  const fare = formatFareAmount(fareAmount, locale);
+  if (en) {
+    return [
+      textPart('The cheapest fare is '),
+      textPart(fare, true),
+      textPart(' ('),
+      textPart(list, true),
+      textPart(').'),
+    ];
+  }
+  return [
+    textPart('가장 싼 요금은 '),
+    textPart(fare, true),
+    textPart('('),
+    textPart(list, true),
+    textPart(`)${copula(list)}.`),
+  ];
+}
+
 function combinedParts(row, locale) {
   const en = englishLocale(locale);
-  const grade = String(row.grade || '').trim();
+  const grade = displayTrainGrade(row);
   const duration = formatDuration(row.durationMin, locale);
   const fare = formatFareAmount(row.fareAdultMin, locale);
   if (en) {
@@ -463,14 +522,17 @@ export function buildTrainGradeSummary(rows, opts = {}) {
   const runs = summarizeTrainRuns(rows);
   const fastest = pickFastestTrainGrade(rows);
   const cheapest = pickCheapestTrainGrade(rows);
+  const cheapestNames = cheapestDisplayNames(rows);
   const sameGrade = Boolean(
-    fastest && cheapest && String(fastest.grade || '').trim() === String(cheapest.grade || '').trim(),
+    fastest && cheapest && cheapestNames.length === 1
+    && String(fastest.grade || '').trim() === String(cheapest.grade || '').trim(),
   );
   const single = runs.gradeCount <= 1;
   const lines = [];
   if ((single || sameGrade) && fastest && cheapest) {
     lines.push({
       parts: combinedParts({
+        ...fastest,
         grade: fastest.grade,
         durationMin: fastest.durationMin,
         fareAdultMin: cheapest.fareAdultMin,
@@ -481,7 +543,11 @@ export function buildTrainGradeSummary(rows, opts = {}) {
     lines.push({ parts: unknownLine(locale, 'cheapest') });
   } else {
     lines.push({ parts: fastest ? fastestParts(fastest, locale) : unknownLine(locale, 'fastest') });
-    lines.push({ parts: cheapest ? cheapestParts(cheapest, locale) : unknownLine(locale, 'cheapest') });
+    if (cheapestNames.length > 1) {
+      lines.push({ parts: tiedCheapestParts(cheapestNames, cheapest.fareAdultMin, locale) });
+    } else {
+      lines.push({ parts: cheapest ? cheapestParts(cheapest, locale) : unknownLine(locale, 'cheapest') });
+    }
   }
   lines.push({ parts: runParts(runs, opts.trainDate, locale) });
   return {
@@ -527,7 +593,7 @@ export function buildTrainGradeDetail(option, locale = 'ko') {
   else if (countText) aside = countText;
   else aside = en ? 'not confirmed' : '확인 안 됨';
   return {
-    grade: String(option?.grade || '').trim(),
+    grade: displayTrainGrade(option),
     clock,
     durationText,
     aside,
@@ -648,7 +714,7 @@ export function selectAccessCards(origin) {
 
 function rowFact(option, locale) {
   return {
-    grade: String(option.grade || '').trim(),
+    grade: displayTrainGrade(option),
     clock: formatClockRange(option.firstDeparture, option.lastDeparture, locale),
     duration: formatDurationRange(option.durationMin, option.durationMax, locale),
     fare: formatFareRange(option.fareAdultMin, option.fareAdultMax, locale),

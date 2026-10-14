@@ -10,6 +10,8 @@ import {
   buildAccessView,
   buildTrainGradeDetail,
   buildTrainGradeSummary,
+  displayTrainGrade,
+  listCheapestTrainGrades,
   pickCheapestTrainGrade,
   pickFastestTrainGrade,
   trainSummaryText,
@@ -443,7 +445,7 @@ function grade(overrides) {
   });
 }
 
-test('train summary picks fastest, cheapest ITX-마음, and sums the day', () => {
+test('train summary names every grade tied at the cheapest 용산→광주송정 fare', () => {
   const rows = [
     grade({ grade: 'KTX-산천(A-type)', firstDeparture: '05:08', lastDeparture: '20:09', durationMin: 115, durationMax: 159, fareAdultMin: 41000, fareAdultMax: 41900, dailyCount: 4 }),
     grade({ grade: 'KTX-산천(B-type)', firstDeparture: '05:48', lastDeparture: '21:09', durationMin: 109, durationMax: 155, fareAdultMin: 41000, fareAdultMax: 41900, dailyCount: 6 }),
@@ -455,6 +457,10 @@ test('train summary picks fastest, cheapest ITX-마음, and sums the day', () =>
   ];
   assert.equal(pickFastestTrainGrade(rows).grade, 'KTX');
   assert.equal(pickCheapestTrainGrade(rows).grade, 'ITX-마음');
+  assert.deepEqual(
+    listCheapestTrainGrades(rows).map((row) => row.grade),
+    ['ITX-마음', 'ITX-새마을', '무궁화호'],
+  );
   const summary = buildTrainGradeSummary(rows, { locale: 'ko', trainDate: '2026-10-23' });
   assert.equal(summary.expandable, true);
   assert.equal(summary.gradeCount, 7);
@@ -462,10 +468,13 @@ test('train summary picks fastest, cheapest ITX-마음, and sums the day', () =>
     trainSummaryText(summary),
     [
       '가장 빠른 열차는 KTX, 약 1시간 36분이에요.',
-      '가장 싼 열차는 ITX-마음, 33,100원이에요.',
+      '가장 싼 요금은 33,100원(ITX-마음·ITX-새마을·무궁화호)예요.',
       '하루 35회 다녀요. (10월 23일 기준)',
     ].join('\n'),
   );
+  assert.doesNotMatch(trainSummaryText(summary), /가장 싼 열차는/);
+  const en = buildTrainGradeSummary(rows, { locale: 'en', trainDate: '2026-10-23' });
+  assert.match(trainSummaryText(en), /The cheapest fare is ₩33,100 \(ITX-마음·ITX-새마을·무궁화호\)\./);
   const detail = buildTrainGradeDetail(rows[0], 'ko');
   assert.equal(detail.clock, '첫차 05:08 · 막차 20:09');
   assert.equal(detail.durationText, '1시간 55분부터');
@@ -478,6 +487,44 @@ test('train summary picks fastest, cheapest ITX-마음, and sums the day', () =>
   );
   assert.match(trainSummaryText(partial), /하루 5회 이상 다녀요/);
   assert.doesNotMatch(trainSummaryText(partial), /10월 23일/);
+});
+
+test('Suseo departures say SRT and never pair a KTX grade with SR booking', () => {
+  const row = option({
+    grade: 'KTX-산천',
+    depStation: '수서',
+    arrStation: '마산역',
+    depStationId: 'NATH30000',
+    bookingOperator: 'SR',
+    bookingUrl: 'https://etk.srail.kr/',
+    serviceDate: '2026-10-16',
+    fareAdultMin: 48100,
+    fareAdultMax: 48100,
+    durationMin: 184,
+    durationMax: 192,
+    dailyCount: 6,
+    firstDeparture: '05:03',
+    lastDeparture: '20:38',
+  });
+  assert.equal(displayTrainGrade(row), 'SRT');
+  assert.equal(displayTrainGrade(option({ grade: 'KTX-산천' })), 'KTX-산천');
+  const summary = buildTrainGradeSummary([row], { locale: 'ko', trainDate: '2026-10-16' });
+  const text = trainSummaryText(summary);
+  assert.match(text, /가장 빠르고 싼 열차는 SRT/);
+  assert.doesNotMatch(text, /KTX/);
+  const book = bookingLink(row);
+  assert.equal(book.text, 'SR에서 예매하기 ↗');
+  assert.match(book.href, /etk\.srail\.kr/);
+  assert.equal(buildTrainGradeDetail(row, 'ko').grade, 'SRT');
+  const named = option({
+    grade: 'KTX-산천',
+    depStation: '수서역',
+    arrStation: '마산역',
+    bookingOperator: null,
+    bookingUrl: 'https://etk.srail.kr/',
+  });
+  assert.equal(displayTrainGrade(named), 'SRT');
+  assert.doesNotMatch(trainSummaryText(buildTrainGradeSummary([named], { locale: 'ko' })), /KTX/);
 });
 
 test('one train grade collapses to a single sentence and hides more', () => {
