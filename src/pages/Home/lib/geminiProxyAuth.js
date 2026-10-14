@@ -3,6 +3,9 @@
  * Logged-in access tokens are ES256. The gateway answers
  * 401 UNAUTHORIZED_ASYMMETRIC_JWT before the function runs, so MOONi
  * never receives a body. Send the anon key for those sessions.
+ * The ES256 token goes in the JSON body as `userJwt` so the function can
+ * key per-user limits after it verifies the signature. The old function
+ * ignores that field, so chat still works before the edge deploy.
  * Do not log token strings.
  */
 
@@ -48,16 +51,24 @@ export function isAccessTokenExpired(token, nowSec = Date.now() / 1000) {
 
 /**
  * @param {{ anonKey: string, accessToken?: string | null, nowSec?: number }} input
- * @returns {{ bearer: string, kind: 'anon' | 'anon-fallback' | 'user-hs256' }}
+ * @returns {{ bearer: string, kind: 'anon' | 'anon-fallback' | 'user-hs256', userJwt: string | null }}
  */
 export function selectGeminiProxyBearer({ anonKey, accessToken, nowSec }) {
+  const es256User = Boolean(
+    accessToken
+    && accessToken !== anonKey
+    && readJwtAlg(accessToken) === 'ES256'
+    && readJwtRole(accessToken) === 'authenticated'
+    && !isAccessTokenExpired(accessToken, nowSec),
+  );
+  const userJwt = es256User ? accessToken : null;
   if (!accessToken || accessToken === anonKey) {
-    return { bearer: anonKey, kind: 'anon' };
+    return { bearer: anonKey, kind: 'anon', userJwt };
   }
   if (readJwtAlg(accessToken) !== 'HS256' || isAccessTokenExpired(accessToken, nowSec)) {
-    return { bearer: anonKey, kind: 'anon-fallback' };
+    return { bearer: anonKey, kind: 'anon-fallback', userJwt };
   }
-  return { bearer: accessToken, kind: 'user-hs256' };
+  return { bearer: accessToken, kind: 'user-hs256', userJwt };
 }
 
 export function isJwtGatewayRejection(attempt) {
