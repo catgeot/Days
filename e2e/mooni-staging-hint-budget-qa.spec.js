@@ -141,6 +141,9 @@ async function openFestivalFromHome(page, { query, title }) {
   await expect(page).toHaveURL(new RegExp(`festival=${festivalId}`), { timeout: 60_000 });
   const dialog = page.getByRole('dialog').first();
   await expect(dialog).toBeVisible({ timeout: 90_000 });
+  if (festivalId === '638576') {
+    await expect(dialog.getByText('국토교통부 TAGO').first()).toBeVisible({ timeout: 90_000 });
+  }
   return { festivalId, dialog };
 }
 
@@ -207,6 +210,8 @@ test.describe('MOONi staging hint budget — typed food ask (WebKit 390)', () =>
       '# MOONi hint budget — typed food ask (WebKit 390×844)',
       '',
       'Staging gemini-proxy only. Typed «근처 맛집 추천해 줘» after festival home → festival → MOONi.',
+      'tourapi-proxy is not deployed on this staging project, so the home list is filled in the test from ids already in the client. 경기 광명동굴 빛 축제 has no KorService contentId here; 경남 마산가고파국화축제 is the third region.',
+      '국향대전 waits for the TAGO access card before MOONi so the typed hint includes verified times.',
       '',
       '| file | md5 | region | festival | status | hint before | hint after | wire |',
       '|------|-----|--------|----------|--------|-------------|------------|------|',
