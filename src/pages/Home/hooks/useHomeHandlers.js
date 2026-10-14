@@ -83,6 +83,8 @@ import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
+import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
+import { fetchDomesticTourOverview } from '../../../utils/tourKeywordPick.js';
 import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
 import {
   overlayGeoFieldsOnVisitedSpots,
@@ -485,7 +487,13 @@ export function useHomeHandlers({
             next.country = address.country;
             next.country_en = address.country_en || address.country;
           }
-          if (stillNeedsName && healedNameEn) {
+          const poiNameLocked = Boolean(
+            prev.poiAttraction ||
+            prev.kind === 'attraction' ||
+            prev.kind === 'poi' ||
+            prev.badge === '명소',
+          );
+          if (stillNeedsName && healedNameEn && !poiNameLocked) {
             next.name_en = healedNameEn;
             if (!next.slug || isEphemeralSlug(next.slug)) {
               next.slug = formatUrlName(healedNameEn) || next.slug;
@@ -502,26 +510,39 @@ export function useHomeHandlers({
      * place_chat_intro hydrate (SSOT 하드코딩 desc 포함 — 무니 인트로 통일).
      * 캐시 hit면 AI skip · miss면 생성·저장 후 반영 (무니 클릭 불필요).
      */
+    const applyPlaceIntro = (pin, pinId, pinName, summary) => {
+      if (!summary) return;
+      setSelectedLocation((prev) => {
+        if (!prev) return prev;
+        const same =
+          (pinId && prev.id === pinId) ||
+          (pinName && prev.name === pinName) ||
+          isSameCanonicalPlace(prev, pin);
+        if (!same) return prev;
+        if (!needsPlaceChatIntroHydration(prev)) return prev;
+        return prepareResolvedLocation({
+          ...prev,
+          desc: summary,
+          placeChatIntroApplied: true,
+        });
+      });
+    };
+
     const scheduleIntroHydrate = (pin) => {
       if (!needsPlaceChatIntroHydration(pin)) return;
       const pinId = pin?.id;
       const pinName = pin?.name;
+      const overviewPromise = isDomesticKoreaLocation(pin)
+        ? fetchDomesticTourOverview(pinName)
+        : Promise.resolve('');
       ensurePlaceChatIntroForLocation(pin, { generateIfMissing: true })
         .then((summary) => {
-          if (!summary) return;
-          setSelectedLocation((prev) => {
-            if (!prev) return prev;
-            const same =
-              (pinId && prev.id === pinId) ||
-              (pinName && prev.name === pinName) ||
-              isSameCanonicalPlace(prev, pin);
-            if (!same) return prev;
-            if (!needsPlaceChatIntroHydration(prev)) return prev;
-            return prepareResolvedLocation({
-              ...prev,
-              desc: summary,
-              placeChatIntroApplied: true,
-            });
+          if (summary) {
+            applyPlaceIntro(pin, pinId, pinName, summary);
+            return;
+          }
+          return overviewPromise.then((overview) => {
+            applyPlaceIntro(pin, pinId, pinName, overview);
           });
         })
         .catch(() => {});

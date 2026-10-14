@@ -32,13 +32,56 @@ export function needsLatinPlaceName(loc) {
   return !pickLatinPlaceName(loc);
 }
 
+function adminCore(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\s_-]+/g, '')
+    .replace(/(gun|si|gu|do|city|county)$/g, '');
+}
+
+/** Pyeongchang / Pyeongchang-gun — 군·시 접미만 무시. 더 긴 POI 이름은 행정구역이 아님. */
+export function latinNameIsAdminArea(latin, admin) {
+  const a = adminCore(latin);
+  const b = adminCore(admin);
+  if (!a || !b) return false;
+  return a === b;
+}
+
+export function isPoiAttractionPlace(place) {
+  if (!place || typeof place !== 'object') return false;
+  if (place.poiAttraction) return true;
+  const kind = String(place.kind || '').toLowerCase();
+  if (kind === 'attraction' || kind === 'poi') return true;
+  return String(place.badge || '') === '명소';
+}
+
+function hangulPlaceSlug(name) {
+  return String(name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+function rejectAdminLatin(place, latinName) {
+  if (!isPoiAttractionPlace(place) || !latinName) return latinName || '';
+  if (!latinNameIsAdminArea(latinName, place.parentCity)) return latinName;
+  return '';
+}
+
 /**
  * Mapbox ko 히트에 en 히트의 라틴 지명·국가를 붙인다.
  * 표시명(name)·한글 국가는 유지.
+ * POI의 라틴 후보는 상위 시군(parentCity)이면 버린다.
  */
 export function mergeLatinPlaceFields(base, english) {
   if (!base || typeof base !== 'object') return base;
-  const latinName = pickLatinPlaceName(english) || pickLatinPlaceName(base);
+  const latinName = rejectAdminLatin(
+    base,
+    pickLatinPlaceName(english) || pickLatinPlaceName(base),
+  );
   const latinCountry = pickLatinPlaceName({
     name_en: english?.country_en,
     name: english?.country,
@@ -75,7 +118,16 @@ export function samePlaceCenter(a, b, maxDeg = SAME_PLACE_CENTER_DEG) {
 /** 라틴 name_en이 있으면 uiPlace slug를 영문으로 — 한글 place_id 인물 갤러리 고착 방지 */
 export function ensureLatinPlaceSlug(place) {
   if (!place || typeof place !== 'object') return place;
-  const latin = pickLatinPlaceName(place);
+  const picked = pickLatinPlaceName(place);
+  if (isPoiAttractionPlace(place) && latinNameIsAdminArea(picked, place.parentCity)) {
+    const slug = hangulPlaceSlug(place.name_ko || place.name);
+    return {
+      ...place,
+      name_en: '',
+      ...(slug ? { slug } : {}),
+    };
+  }
+  const latin = picked;
   if (!latin) return place;
   const next = { ...place, name_en: latin };
   const slug = formatUrlName(latin);

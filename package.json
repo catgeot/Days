@@ -240,6 +240,10 @@
     "smoke:health:local": "set SMOKE_SITE_URL=https://localhost:5173&& node scripts/smoke-health.mjs",
     "smoke:health:ci": "node scripts/smoke-health.mjs",
     "test": "node --import ./scripts/register-src-esm.mjs --import ./scripts/register-youtube-hook-test.mjs --test scripts/useYouTubeSearch.session.test.mjs scripts/test-youtube-retry-probe-errors.mjs scripts/test-youtube-embed-qa-hook.mjs",
+    "test:poi-admin-slug": "node --import ./scripts/register-src-esm.mjs --test scripts/poi-admin-slug.test.mjs",
+    "test:e2e:poi-slug": "playwright test --config=playwright.config.poi-slug.js",
+    "test:e2e:poi-slug-v2": "playwright test --config=playwright.config.poi-slug-v2.js",
+    "test:e2e:poi-slug-v3": "playwright test --config=playwright.config.poi-slug-v3.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

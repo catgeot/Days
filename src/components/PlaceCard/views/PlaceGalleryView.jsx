@@ -109,12 +109,13 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         settleLoaded();
         return;
       }
-      // 6s 후에도 decode 실패(complete·0폭)만 드롭. 아직 로딩 중이면 chrome만 해제.
-      if (el?.complete && el.naturalWidth === 0) {
-        settleBroken();
-        return;
-      }
-      markPainted();
+      // 화면에 있는데 6초 뒤에도 decode가 없으면 빈 칸으로 남기지 않고 빼서 재배치한다.
+      const rect = el?.getBoundingClientRect();
+      const inView = Boolean(
+        rect && rect.width > 0 && rect.bottom > 0 && rect.top < window.innerHeight,
+      );
+      if (inView) settleBroken();
+      else markPainted();
     }, TILE_LOAD_HANG_MS);
 
     return () => {
@@ -161,15 +162,18 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
       <img
         ref={imgElRef}
         src={src}
-        className={`w-full transition-[opacity,transform] duration-500 group-hover:scale-105 ${
-          loaded ? 'opacity-100' : 'opacity-0'
-        } ${hasAspect ? 'h-full object-cover absolute inset-0' : 'h-auto object-cover relative'}`}
+        className={`w-full object-cover ${
+          hasAspect ? 'h-full absolute inset-0' : 'h-auto relative'
+        }`}
         alt={`place-img-${index}`}
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
         referrerPolicy="no-referrer"
         draggable={false}
-        style={enableLongPress ? { WebkitTouchCallout: 'none' } : undefined}
+        style={{
+          opacity: loaded ? 1 : 0,
+          ...(enableLongPress ? { WebkitTouchCallout: 'none' } : {}),
+        }}
         width={img.width || undefined}
         height={img.height || undefined}
         onLoad={settleLoaded}

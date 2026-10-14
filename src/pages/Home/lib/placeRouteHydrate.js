@@ -14,6 +14,7 @@ import {
 } from '../../../utils/travelSpotResolve.js';
 import { isSyntheticOrEmptyPlaceDesc } from './placeDescText.js';
 import { readCachedPlaceBySlug } from './placeLocationCache.js';
+import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
 
 function hasReusableSessionDesc(loc) {
   if (!loc || typeof loc !== 'object') return false;
@@ -239,6 +240,10 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
   if (aliasResolved?.spot) {
     return overlaySessionCuration(aliasResolved.spot, options);
   }
+
+  // 공유된 라틴 오탐 URL — 카탈로그에 없어도 빈 화면·홈 리다이렉트 금지
+  const legacyMisheal = resolveLegacyMishealPlace(normalized);
+  if (legacyMisheal) return overlaySessionCuration(legacyMisheal, options);
 
   if (
     selectedLocation &&

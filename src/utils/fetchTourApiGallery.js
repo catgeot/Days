@@ -22,7 +22,7 @@ const MAX_SEARCH_KEYWORDS = 3;
 const TARGET_GALLERY = 24;
 /** 깨진 URL 프로브 후보 상한 — 갤러리 기본은 skipProbe (UI onError) */
 const PROBE_CANDIDATES = 12;
-const PROBE_TIMEOUT_MS = 1500;
+const PROBE_TIMEOUT_MS = 4000;
 /** Edge invoke 단일 호출 상한 — 없으면 data.go.kr 지연에 수 분 hang */
 const INVOKE_TIMEOUT_MS = 12_000;
 /** fetchTourApiGallery 전체 상한 */

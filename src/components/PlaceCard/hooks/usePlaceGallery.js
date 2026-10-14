@@ -34,6 +34,8 @@ import {
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
+import { pickKoreanNameGallery } from '../../../utils/placeStatsNameGallery.js';
+import { lookupTourContentIdByName } from '../../../utils/tourKeywordPick.js';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
@@ -491,13 +493,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
 
     primaryQuery = primaryQuery.trim();
-    if (!primaryQuery) {
-      setIsImgLoading(false);
-      setIsRefreshing(false);
-      setLoadFailed(false);
-      return;
-    }
-
     const slugOverride =
       typeof targetSpot === 'object' && targetSpot?.slug
         ? GALLERY_QUERY_OVERRIDES[targetSpot.slug]
@@ -509,6 +504,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     if (slugOverride) {
       primaryQuery = slugOverride.primary;
       backupQuery = slugOverride.backup || backupQuery;
+    }
+
+    // 라틴 스톡 쿼리가 없어도 place_stats·TourAPI는 계속한다. 빈 쿼리 Unsplash는 인물 오탐.
+    if (!primaryQuery && !String(koreanName || '').trim()) {
+      setIsImgLoading(false);
+      setIsRefreshing(false);
+      setLoadFailed(false);
+      return;
     }
 
     const placeKey =
@@ -621,6 +624,21 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           hubId,
         });
         const foundId = String(row?.contentId || '').trim();
+        if (/^\d{1,32}$/.test(foundId)) {
+          tourMapping = {
+            slug: tourMapping?.slug || null,
+            photoKeyword: tourMapping?.photoKeyword || placeName.slice(0, 80),
+            photoKeywords: tourMapping?.photoKeywords || [
+              `${placeName} 전경`.slice(0, 80),
+            ],
+            contentId: foundId,
+            title: tourMapping?.title || placeName,
+            curated: Boolean(tourMapping?.curated),
+          };
+        }
+      }
+      if (!tourMapping?.contentId && placeName) {
+        const foundId = await lookupTourContentIdByName(placeName);
         if (/^\d{1,32}$/.test(foundId)) {
           tourMapping = {
             slug: tourMapping?.slug || null,
@@ -754,7 +772,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       ) {
         return;
       }
-      if (!ACCESS_KEY) {
+      if (!ACCESS_KEY || !primaryQuery) {
         writeGallerySwrAt(stablePlaceKey);
         return;
       }
@@ -875,7 +893,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             'place_stats gallery',
           );
 
-          const dbData = pickPlaceStatsGalleryRow(dbRows, dbStatsId);
+          let dbData = pickPlaceStatsGalleryRow(dbRows, dbStatsId);
+          if (!dbData?.gallery_urls?.length && koreanName) {
+            const { data: nameRows, error: nameError } = await withTimeout(
+              supabase
+                .from('place_stats')
+                .select(dbSelect)
+                .eq('name_ko', koreanName)
+                .limit(8),
+              PLACE_STATS_QUERY_MS,
+              'place_stats name_ko gallery',
+            );
+            if (!nameError) {
+              const named = pickKoreanNameGallery(nameRows, koreanName);
+              if (named?.gallery_urls?.length) dbData = named;
+            }
+          }
           if (dbData?.place_id) {
             loadedStatsPlaceIdRef.current = String(dbData.place_id).trim();
           }
@@ -1001,7 +1034,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     try {
       let results = [];
 
-      if (ACCESS_KEY) {
+      if (primaryQuery && ACCESS_KEY) {
         results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, unsplashPageRef.current);
         if (isStale()) return;
 
@@ -1016,7 +1049,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           }
         }
         if (isStale()) return;
-      } else {
+      } else if (primaryQuery) {
         console.warn('⚠️ VITE_UNSPLASH_ACCESS_KEY missing — Unsplash skipped (Pexels may still run)');
       }
 
