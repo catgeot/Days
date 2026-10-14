@@ -78,14 +78,17 @@ function assertAccessAnswerPolished(answerText, { festivalId, originId } = {}) {
   if (festivalId === '638576' && originId === 'daegu') {
     expect(answerText).not.toMatch(/환승을\s*거쳐/);
     expect(answerText).not.toMatch(/돼요\s*역으로/);
-    expect(answerText).not.toMatch(/고속버스를\s*이용할\s*때는/);
-    expect(answerText).toMatch(/유·스퀘어|유ㆍ스퀘어/);
-    expect(answerText).toMatch(/함평공용버스터미널|함평행 버스|함평행/);
-    expect((answerText.match(/함평 엑스포공원까지 편해요/g) || []).length).toBeLessThanOrEqual(1);
+    expect(answerText).not.toMatch(/동대구역\s*등에서/);
+    expect(answerText).not.toMatch(/이동하는\s*방법이에요/);
+    expect(answerText).toMatch(/동대구·서부정류장|유·스퀘어|유ㆍ스퀘어/);
+    expect(answerText).toMatch(/함평공용버스터미널/);
+    expect(answerText).toMatch(/광주송정역에서[^.]*갈아타/);
   }
   if (festivalId === '2930716' && originId === 'daegu') {
-    expect(answerText).not.toMatch(/고속버스를\s*이용할\s*때는/);
+    expect(answerText).not.toMatch(/환승을\s*거쳐/);
     expect(answerText).not.toMatch(/데이터|준비되어\s*있지\s*않|제공되지/);
+    expect(answerText).toMatch(/서울역·청량리역/);
+    expect(answerText).toMatch(/KTX-이음/);
   }
 }
 

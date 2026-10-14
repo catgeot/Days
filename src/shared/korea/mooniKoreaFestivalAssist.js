@@ -1358,29 +1358,43 @@ function rewriteFalseDongdaeguGwangjuSongjeongLead(text, options = {}) {
 }
 
 const GUKHYANG_DAEGU_BUS_LEAD_KO =
-  '대중교통을 이용할 때는 동대구터미널이나 서대구터미널에서 광주(유·스퀘어)로 가는 고속버스를 타고, 유·스퀘어에서 함평공용버스터미널행 버스로 이어 택시·시내버스로 약 10~20분이면 함평 엑스포공원까지 편해요.';
+  '동대구·서부정류장에서 광주 유·스퀘어로 가는 버스를 타고, 함평공용버스터미널행 버스로 갈아타는 길이 가장 편해요.';
 
 const GUKHYANG_DAEGU_RAIL_SECONDARY_KO =
   '열차로 가시려면 광주송정역에서 함평역 방면 열차로 갈아타야 해요.';
 
-/** Named intermediate hub — not only «동대구→환승→광주송정». */
-const GUKHYANG_NAMED_INTERMEDIATE_TRANSFER_RE =
-  /(?:서울역|용산역|청량리역|대전역|오송역|천안아산역|김천구미역|수원역|평택역|전주역|나주역|순천역|광주역|정읍역|익산역|대전|오송|천안|김천)/;
+const GANGNEUNG_DAEGU_RAIL_KO =
+  '열차로 가시려면 동대구역에서 서울역·청량리역으로 가서 KTX-이음으로 환승해 강릉역까지 가는 편이 있어요.';
 
-const GUKHYANG_VAGUE_HWANSUNG_SENTENCE_RE =
+/** Named hub in transfer copy — vague «환승을 거쳐» without these is dropped or rewritten. */
+const ACCESS_NAMED_INTERMEDIATE_TRANSFER_RE =
+  /(?:서울역|용산역|청량리역|대전역|오송역|천안아산역|김천구미역|수원역|평택역|전주역|나주역|순천역|광주역|정읍역|익산역|광주송정역|동대구역|강릉역|KTX|SRT|KTX-이음|대전|오송|천안|김천)/;
+
+const ACCESS_VAGUE_HWANSUNG_SENTENCE_RE =
   /[^.!?。]*환승을\s*거쳐[^.!?。]*[.。]\s*/g;
 
-function rewriteVagueGukhyangTransferWithoutNamedStation(text, options = {}) {
-  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+const GUKHYANG_ACCESS_INTRO_SENTENCE_RE =
+  /[^.!?。]*이동하는\s*방법이에요[^.!?。]*[.。]/;
+
+function rewriteVagueAccessTransferWithoutNamedStation(text, options = {}) {
+  const festId = String(options.contentId || '').trim();
+  if (festId !== GUKHYANG_FESTIVAL_ID && festId !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
   let out = String(text || '');
-  out = out.replace(GUKHYANG_VAGUE_HWANSUNG_SENTENCE_RE, (sentence) =>
-    GUKHYANG_NAMED_INTERMEDIATE_TRANSFER_RE.test(sentence) ? sentence : '',
+  out = out.replace(ACCESS_VAGUE_HWANSUNG_SENTENCE_RE, (sentence) =>
+    ACCESS_NAMED_INTERMEDIATE_TRANSFER_RE.test(sentence) ? sentence : '',
   );
-  out = out.replace(
-    /열차는[^.!?。]*(?:직통|확인된)[^.!?。]*(?:환승을\s*거쳐|광주송정)[^.!?。]*[.。]\s*/g,
-    '',
-  );
+  if (festId === GUKHYANG_FESTIVAL_ID) {
+    out = out.replace(
+      /열차는[^.!?。]*(?:직통|확인된)[^.!?。]*(?:환승을\s*거쳐|광주송정)[^.!?。]*[.。]\s*/g,
+      '',
+    );
+  }
   return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+function rewriteVagueGukhyangTransferWithoutNamedStation(text, options = {}) {
+  return rewriteVagueAccessTransferWithoutNamedStation(text, options);
 }
 
 function rewriteGukhyangDaeguAccessBusRailOrder(text, options = {}) {
@@ -1404,13 +1418,6 @@ function rewriteGukhyangDaeguAccessBusRailOrder(text, options = {}) {
     /확인된\s*동대구→광주송정\s*직통\s*열차는\s*없어요\.\s*대구고속버스터미널[^.!?。]*이어\s*가면\s*돼요\.?\s*/g,
     '',
   );
-  if (!/함평공용버스터미널/.test(out) && /유·스퀘어|유ㆍ스퀘어/.test(out)) {
-    out = out.replace(
-      /(유·스퀘어|유ㆍ스퀘어)[^.!?。]*[.。]\s*/,
-      (sent) =>
-        `${sent.trim()} 유·스퀘어에서 함평공용버스터미널행 버스를 타고, 터미널이나 인근에서 택시·시내버스로 약 10~20분이면 함평 엑스포공원까지 편해요. `,
-    );
-  }
   if (/직통\s*열차는\s*없어요/.test(out) && !/광주송정역에서/.test(out)) {
     out = out.replace(
       /(확인된\s*대구→광주송정\s*직통\s*열차는\s*없어요\.?)/,
@@ -1449,66 +1456,88 @@ function splitAccessPolishSentences(text) {
     .filter(Boolean);
 }
 
-function isGukhyangDaeguBusRouteSentence(sentence) {
-  const t = String(sentence || '');
-  if (!/(동대구|서대구|대구고속).*버스|고속버스를\s*이용|유·스퀘어|유ㆍ스퀘어/.test(t)) return false;
-  return /(동대구|서대구|대구고속|서부)/.test(t) && /버스|고속/.test(t);
+function normalizeAccessPolishSentence(sentence) {
+  return String(sentence || '').replace(/\s+/g, ' ').trim();
 }
 
-function isGukhyangDaeguBusSummarySentence(sentence) {
-  const t = String(sentence || '');
-  return isGukhyangDaeguBusRouteSentence(t) && /함평공용버스터미널/.test(t) && /편해요/.test(t);
+function dedupeExactAccessSentences(text) {
+  const seen = new Set();
+  const kept = [];
+  for (const sentence of splitAccessPolishSentences(text)) {
+    const key = normalizeAccessPolishSentence(sentence);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    kept.push(sentence);
+  }
+  return kept.join(' ').replace(/\s{2,}/g, ' ').trim();
+}
+
+function dedupeDaeguFestivalAccessExactRepeats(text, options = {}, festivalId) {
+  if (String(options.contentId || '').trim() !== festivalId) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  return dedupeExactAccessSentences(text);
 }
 
 function dedupeGukhyangDaeguAccessBusRouteRepeat(text, options = {}) {
-  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
-  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
-  const sentences = splitAccessPolishSentences(text);
-  if (!sentences.length) return String(text || '');
-  const summaryIdx = sentences.findIndex((s) => isGukhyangDaeguBusSummarySentence(s));
-  if (summaryIdx < 0) return String(text || '').replace(/\s{2,}/g, ' ').trim();
-  const kept = sentences.filter((sentence, index) => {
-    if (index === summaryIdx) return true;
-    if (index > summaryIdx && isGukhyangDaeguBusRouteSentence(sentence)) return false;
-    if (/가는\s*길을\s*안내|안내해\s*드려요/.test(sentence)) return false;
-    if (/대구에서[^.]*확인된\s*직통\s*열차는\s*없어요/.test(sentence)) return false;
-    return true;
-  });
-  let out = kept.join(' ');
-  const lead = GUKHYANG_DAEGU_BUS_LEAD_KO;
-  if (!out.startsWith(lead.slice(0, 24))) {
-    out = `${lead} ${out.replace(lead, '').trim()}`.trim();
-  }
-  out = out.replace(
-    /(함평\s*엑스포공원까지\s*편해요\.)(?:\s*[^.]{0,120}?함평\s*엑스포공원까지\s*편해요\.)/g,
-    '$1',
-  );
-  return out.replace(/\s{2,}/g, ' ').trim();
-}
-
-function isGangneungDaeguBusRouteSentence(sentence) {
-  const t = String(sentence || '');
-  return /대구고속버스터미널|동대구터미널/.test(t) && /강릉고속버스터미널/.test(t) && /버스|고속/.test(t);
+  return dedupeDaeguFestivalAccessExactRepeats(text, options, GUKHYANG_FESTIVAL_ID);
 }
 
 function dedupeGangneungDaeguAccessBusRouteRepeat(text, options = {}) {
-  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  return dedupeDaeguFestivalAccessExactRepeats(text, options, GANGNEUNG_FESTIVAL_ID);
+}
+
+function orderGukhyangDaeguAccessIntro(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
   if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
   const sentences = splitAccessPolishSentences(text);
-  if (!sentences.length) return String(text || '');
-  const summaryIdx = sentences.findIndex(
-    (s) => /가장\s*편해요/.test(s) && /강릉고속버스터미널/.test(s) && /대구고속버스터미널/.test(s),
+  const introIdx = sentences.findIndex((s) => GUKHYANG_ACCESS_INTRO_SENTENCE_RE.test(s));
+  if (introIdx < 0) return String(text || '');
+  const intro = sentences[introIdx];
+  const rest = sentences.filter((_, index) => index !== introIdx);
+  const hasBusLead = rest.some(
+    (s) => /가장\s*편해요/.test(s) && /(함평공용버스터미널|유·스퀘어|유ㆍ스퀘어)/.test(s),
   );
-  if (summaryIdx < 0) return String(text || '').replace(/\s{2,}/g, ' ').trim();
-  const kept = sentences.filter((sentence, index) => {
-    if (index === summaryIdx) return true;
-    if (index > summaryIdx && isGangneungDaeguBusRouteSentence(sentence)) return false;
-    return true;
-  });
-  const lead = GANGNEUNG_DAEGU_BUS_BOOKING_LEAD_KO;
-  let out = kept.join(' ').trim();
-  if (out.indexOf(lead) > 60) {
-    out = `${lead} ${out.replace(lead, '').trim()}`.trim();
+  if (hasBusLead) return rest.join(' ').replace(/\s{2,}/g, ' ').trim();
+  if (introIdx === 0) return String(text || '');
+  return [intro, ...rest].join(' ').replace(/\s{2,}/g, ' ').trim();
+}
+
+function rewriteGukhyangDaeguAccessVagueRail(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GUKHYANG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  let out = String(text || '');
+  out = out.replace(
+    /[^.!?。]*(?:동대구역\s*등에서|기차를\s*타려면\s*동대구)[^.!?。]*광주송정[^.!?。]*(?:환승|방면)[^.!?。]*[.。]\s*/g,
+    `확인된 대구→광주송정 직통 열차는 없어요. ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO} `,
+  );
+  out = out.replace(
+    /[^.!?。]*광주송정역까지\s*확인된\s*직통\s*열차는\s*없[^.!?。]*동대구역\s*등[^.!?。]*[.。]\s*/g,
+    `확인된 대구→광주송정 직통 열차는 없어요. ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO} `,
+  );
+  if (/직통\s*열차는\s*없/.test(out) && !/광주송정역에서[^.]*갈아타/.test(out)) {
+    out = out.replace(
+      /(확인된\s*대구→광주송정\s*직통\s*열차는\s*없어요\.?)/,
+      `$1 ${GUKHYANG_DAEGU_RAIL_SECONDARY_KO}`,
+    );
+  }
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+function rewriteGangneungDaeguAccessNamedRail(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
+  let out = String(text || '');
+  out = out.replace(
+    /열차는[^.!?。]*환승을\s*거쳐[^.!?。]*[.。]\s*/g,
+    `${GANGNEUNG_DAEGU_RAIL_KO} `,
+  );
+  if (!/서울역·청량리역/.test(out) || !/KTX-이음/.test(out)) {
+    const lead = GANGNEUNG_DAEGU_BUS_BOOKING_LEAD_KO;
+    if (out.includes(lead)) {
+      out = out.replace(lead, `${lead} ${GANGNEUNG_DAEGU_RAIL_KO}`);
+    } else if (/강릉고속버스터미널/.test(out)) {
+      out = `${GANGNEUNG_DAEGU_RAIL_KO} ${out}`;
+    }
   }
   return out.replace(/\s{2,}/g, ' ').trim();
 }
@@ -1561,19 +1590,16 @@ function ensureGukhyangDaeguBusFirstLead(text, options = {}) {
   if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
   const lead = GUKHYANG_DAEGU_BUS_LEAD_KO;
   let out = String(text || '').trim();
-  if (!/유·스퀘어|유ㆍ스퀘어/.test(out)) {
-    return `${lead} ${out}`;
-  }
   const leadIdx = out.indexOf(lead);
   if (leadIdx >= 0 && leadIdx <= 80) return out;
-  const busSentence = out.match(
-    /[^.!?。]*동대구터미널이나 서대구터미널에서 광주\(유·스퀘어\)[^.!?。]*[.。]/,
+  const legacyBus = out.match(
+    /[^.!?。]*(?:동대구·서부정류장|동대구터미널이나 서대구터미널)[^.!?。]*(?:가장\s*편해요|편해요)[^.!?。]*[.。]/,
   );
-  if (busSentence) {
-    const rest = out.replace(busSentence[0], '').trim();
-    return `${busSentence[0]} ${rest}`.trim();
+  if (legacyBus && legacyBus[0].includes(lead.slice(0, 12))) {
+    const rest = out.replace(legacyBus[0], '').trim();
+    return `${legacyBus[0]} ${rest}`.trim();
   }
-  return `${lead} ${out}`;
+  return `${lead} ${out.replace(lead, '').trim()}`.trim();
 }
 
 const ACCESS_TIMETABLE_WINDOW_MISREAD_RE =
@@ -2053,12 +2079,15 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   if (isBoundFestivalAccessPolish(options)) {
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
-    text = rewriteVagueGukhyangTransferWithoutNamedStation(text, options);
+    text = rewriteVagueAccessTransferWithoutNamedStation(text, options);
     text = ensureGukhyangDaeguBusFirstLead(text, options);
     text = rewriteGukhyangDaeguAccessBusRailOrder(text, options);
+    text = orderGukhyangDaeguAccessIntro(text, options);
+    text = rewriteGukhyangDaeguAccessVagueRail(text, options);
     text = cleanupGukhyangAccessOrphanRailTails(text, options);
     text = rewriteVagueGangneungTransferRoute(text, options);
     text = rewriteGangneungDaeguAccessTravelerCopy(text, options);
+    text = rewriteGangneungDaeguAccessNamedRail(text, options);
     text = dedupeGukhyangDaeguAccessBusRouteRepeat(text, options);
     text = dedupeGangneungDaeguAccessBusRouteRepeat(text, options);
     text = ensureGukhyangFestivalTelPeriod(text, options);
