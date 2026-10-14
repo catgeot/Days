@@ -70,21 +70,26 @@ test('gukhyang daegu bus leg uses 함평공용버스터미널 and 광주송정 r
   assert.match(polished, /10~20분|10~20\s*분/);
 });
 
-test('gangneung daegu drops 제공되지 data phrase for booking links', () => {
-  const polished = polishFestivalModelReply(
-    '대구고속버스터미널에서 강릉으로 버스를 탈 수 있어요. 현재 대구 출발 직통 열차의 확인된 운행 시각 정보는 제공되지 않아서, 열차를 이용할 경우 동대구역에서 서울역으로 이동한 뒤 강릉행 KTX로 환승해야 해요.',
-    {
-      contentId: '2930716',
-      chipId: 'festival_access',
-      locale: 'ko',
-      departureOriginId: 'daegu',
-      userText: buildFestivalAccessAskText('daegu', 'ko'),
-      eventStartDate: '20261015',
-      eventEndDate: '20261018',
-    },
-  );
-  assert.doesNotMatch(polished, /데이터는\s*제공되지|제공되지\s*않아서/);
-  assert.match(polished, /코레일|버스타고|고속버스/);
+test('gangneung daegu access — bus lead and no data-disclaimer noise', () => {
+  const raw = [
+    '대구에서 강릉 월화거리 일원의 축제장까지 대중교통을 이용할 때는 대구고속버스터미널에서 강릉고속버스터미널로 이동하는 고속버스를 이용할 수 있어요.',
+    '현재 대구 출발 편의 확인된 상세 시간표와 운임 데이터는 준비되어 있지 않으니 터미널 예매 시스템을 참고해 주세요.',
+    '열차편 역시 동대구역에서 강릉역으로 가는 직통이나 환승 편명에 대한 확인된 정보가 없어서 대구고속버스터미널발 버스 이용을 권해 드려요.',
+    '승용차로 갈 때는 강릉 월화거리로 이동하면 돼요.',
+  ].join(' ');
+  const polished = polishFestivalModelReply(raw, {
+    contentId: '2930716',
+    chipId: 'festival_access',
+    locale: 'ko',
+    departureOriginId: 'daegu',
+    userText: buildFestivalAccessAskText('daegu', 'ko'),
+    eventStartDate: '20261015',
+    eventEndDate: '20261018',
+  });
+  assert.match(polished, /대구고속버스터미널에서 강릉고속버스터미널로 가는 고속버스가 가장 편해요/);
+  assert.match(polished, /버스타고·고속버스에서 바로 볼 수 있어요/);
+  assert.doesNotMatch(polished, /데이터|준비되어\s*있지\s*않|제공되지|정보가\s*없어서|터미널\s*예매\s*시스템/);
+  assert.doesNotMatch(polished, /열차편\s*역시/);
 });
 
 test('gukhyang access adds period after festival tel', () => {

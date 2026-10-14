@@ -1338,11 +1338,11 @@ function formatGangneungAccessOriginGuidance(originRow, transport, locale = 'ko'
       ? `Confirmed TAGO rows for this departure (quote only these times and fares in the answer): ${tagoLead.replace(/\n/g, ' ')}`
       : `이 출발지 TAGO·카드 확인 구간(아래 시각·요금만 인용): ${tagoLead.replace(/\n/g, ' ')}`)
     : (en
-      ? 'No confirmed TAGO train or bus rows for this departure — say so honestly, then describe Daegu Express Bus Terminal to Gangneung express bus with only numbers you can verify, or name the real transfer station and train if TAGO shows one. Never write only «via a transfer route». '
-      : 'TAGO·카드에 이 출발지 확인 시각이 없으면 솔직히 말하고, 대구고속버스터미널→강릉행 고속·시외버스를 구체적으로 안내해 주세요. 열차는 «환승 경로를 거쳐»처럼 뭉뚱그리지 말고 확인된 환승 역·편명만 써 주세요. ');
+      ? 'No confirmed TAGO rows — skip «no data» disclaimers. Lead with Daegu Express Bus Terminal to Gangneung Express Bus Terminal; point times and fares to the booking links below. Name transfer stations only when TAGO shows them. '
+      : 'TAGO·카드에 시각이 없어도 «데이터/정보 없음» 문장은 쓰지 말고, 대구고속버스터미널→강릉고속버스터미널 고속버스를 먼저 쓰고 시각·요금은 아래 버스타고·고속버스 링크로 안내해 주세요. 열차는 확인된 환승 역·편명만 짧게 덧붙여 주세요.');
   return en
-    ? `Readers leave from Daegu. Lead with express bus from Daegu Express Bus Terminal to Gangneung when times exist; trains from Dongdaegu only with named transfer stations. ${tagoHint}`
-    : `대구에서 출발해요. 대구고속버스터미널→강릉고속버스터미널 고속·시외버스를 먼저 안내하고, 열차는 동대구역에서 강릉역까지 확인된 환승 역·편명을 써 주세요. ${tagoHint}`;
+    ? `Readers leave using only this answer — give a route they can take now and where to book. ${tagoHint}`
+    : `여행자는 이 답만 보고 출발해요. 바로 탈 수 있는 경로와 예매처를 짧게 알려 주세요. ${tagoHint}`;
 }
 
 const FALSE_DONGDAEGU_GWANGJU_SONGJEONG_DIRECT_RE =
@@ -1428,15 +1428,38 @@ function ensureGukhyangFestivalTelPeriod(text, options = {}) {
     .replace(/061-320-2247\.{2,}/g, '061-320-2247.');
 }
 
-function rewriteGangneungDaeguMissingTimetablePhrase(text, options = {}) {
+const GANGNEUNG_DAEGU_BUS_BOOKING_LEAD_KO =
+  '대구고속버스터미널에서 강릉고속버스터미널로 가는 고속버스가 가장 편해요. 시간과 요금은 아래 버스타고·고속버스에서 바로 볼 수 있어요.';
+
+const GANGNEUNG_ACCESS_NOISE_SENTENCE_RE =
+  /(?:데이터|정보가\s*없|준비되어\s*있지\s*않|제공되지\s*않|등록되어\s*있지|확인된\s*정보가\s*없|터미널\s*예매\s*시스템)/;
+
+function gangneungAccessSentenceIsTravelerNoise(sentence) {
+  const t = String(sentence || '').trim();
+  if (!t) return true;
+  if (!GANGNEUNG_ACCESS_NOISE_SENTENCE_RE.test(t)) return false;
+  if (/버스타고·고속버스에서\s*바로\s*볼\s*수\s*있어요/.test(t)) return false;
+  return true;
+}
+
+function rewriteGangneungDaeguAccessTravelerCopy(text, options = {}) {
   if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
   if (String(options.departureOriginId || '') !== 'daegu') return String(text || '');
-  const noDataRe =
-    /[^.!?。]*(?:제공된\s*데이터에는|데이터는\s*(?:제공되지|없어요)|요금\s*데이터는\s*없어요|확인된\s*상세\s*배차\s*시각과\s*요금\s*데이터는\s*없어요|확정\s*운행\s*시각과\s*요금\s*정보가\s*등록|확인된\s*운행\s*시각\s*정보는\s*제공되지|직통\s*열차의\s*확인된\s*운행\s*시각\s*정보는)[^.!?。]*[.。]\s*/g;
-  return String(text || '').replace(
-    noDataRe,
-    '대구 출발 직통 열차 시각은 이 답변 카드에 없어서, 아래 코레일·버스타고·고속버스 링크에서 편도 일정을 먼저 확인해 보시면 좋아요. ',
-  );
+  const chunks = String(text || '')
+    .split(/(?<=[.!?。])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .filter((sentence) => !gangneungAccessSentenceIsTravelerNoise(sentence));
+  let out = chunks.join(' ').replace(/\s{2,}/g, ' ').trim();
+  const lead = GANGNEUNG_DAEGU_BUS_BOOKING_LEAD_KO;
+  if (!/강릉고속버스터미널/.test(out) || !/가장\s*편해요/.test(out)) {
+    out = `${lead} ${out}`.trim();
+  } else if (out.indexOf(lead) < 0) {
+    out = `${lead} ${out}`.trim();
+  } else if (out.indexOf(lead) > 60) {
+    out = `${lead} ${out.replace(lead, '').trim()}`.trim();
+  }
+  return out;
 }
 
 function cleanupGukhyangAccessOrphanRailTails(text, options = {}) {
@@ -1964,7 +1987,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteGukhyangDaeguAccessBusRailOrder(text, options);
     text = cleanupGukhyangAccessOrphanRailTails(text, options);
     text = rewriteVagueGangneungTransferRoute(text, options);
-    text = rewriteGangneungDaeguMissingTimetablePhrase(text, options);
+    text = rewriteGangneungDaeguAccessTravelerCopy(text, options);
     text = ensureGukhyangFestivalTelPeriod(text, options);
     text = rewriteFestivalAccessTimetableWindowPhrase(text);
     text = glueAccessNumbersInProse(text);
