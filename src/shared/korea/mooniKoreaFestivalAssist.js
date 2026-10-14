@@ -2775,11 +2775,11 @@ function parkingPlaceMatchesFestival(name, options) {
   return blob.includes(clean);
 }
 
-function parkingWalkLabel(km) {
-  const n = Number(km);
-  if (!Number.isFinite(n) || n < 0.08 || n > WALK_NEAR_KM) return '';
-  const minutes = Math.max(1, Math.round((n * 1000) / 80));
-  return `걸어서 ${minutes}분`;
+const PARKING_WALK_RE = /걸어서\s*\d+\s*분|도보\s*\d+\s*분|\d+\s*분\s*(?:거리|소요)/;
+
+/** A walk time counts only when the parking text itself states it. Sight distance does not. */
+function parkingTextStatesWalk(text) {
+  return PARKING_WALK_RE.test(String(text || ''));
 }
 
 /** Festival parking field, a parking fact sentence, or a nearby sight that is this festival. */
@@ -2806,7 +2806,7 @@ function parkingLotsForAnswer(options = {}) {
 }
 
 function parkingLotLabel(lot) {
-  const bits = [lot.text, lot.addr, parkingWalkLabel(lot.distKm)].filter(Boolean);
+  const bits = [lot.text, lot.addr].filter(Boolean);
   return lot.name ? `${lot.name}(${bits.join(' · ')})` : bits.join(' · ');
 }
 
@@ -2843,8 +2843,6 @@ function composeParkingAnswer(lots, options = {}) {
       const particle = trailingLabelHasBatchim(lot.addr) ? '이에요' : '예요';
       sentences.push(`위치는 ${lot.addr}${particle}.`);
     }
-    const walk = parkingWalkLabel(lot.distKm);
-    if (walk) sentences.push(`${walk} 거리예요.`);
   }
   const rich = lots.some((lot) => !THIN_PARKING_RE.test(lot.text));
   if (!rich && /^https?:\/\//i.test(String(options.homepage || ''))) {
@@ -2858,8 +2856,7 @@ function parkingAnswerCovers(text, lots) {
   return lots.every((lot) => {
     if (lot.name && !body.includes(lot.name)) return false;
     if (lot.addr && !body.includes(lot.addr)) return false;
-    const walk = parkingWalkLabel(lot.distKm);
-    if (walk && !body.includes(walk)) return false;
+    if (PARKING_WALK_RE.test(body) && !parkingTextStatesWalk(lot.text)) return false;
     if (THIN_PARKING_RE.test(lot.text)) {
       const negative = /없|불가/.test(lot.text);
       if (negative ? !/어렵|불가|없/.test(body) : !/가능/.test(body)) return false;
@@ -3452,8 +3449,8 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   }
   if (parkingLots.length) {
     lines.push(isEn
-      ? '- For a parking question, introduce the lot name, place, fee, and walking time from the lines above in a natural sentence.'
-      : '- 주차 질문에는 위 주차의 이름, 위치, 요금, 걸어가는 시간을 자연스러운 문장으로 소개한다.');
+      ? '- For a parking question, introduce the lot name, place, and fee written above. Mention a walking time only when that parking line itself gives a distance or minutes.'
+      : '- 주차 질문에는 위에 적힌 주차장 이름, 위치, 요금을 자연스러운 문장으로 소개한다. 걸어가는 시간은 그 줄에 거리나 분이 적혀 있을 때만 말한다.');
   } else if (!parkingKnown) {
     const telBit = tel
       ? (isEn ? ` Call ${tel}.` : ` 전화번호가 있으면 «문의 ${tel}»를 붙인다.`)

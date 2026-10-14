@@ -2254,8 +2254,16 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   });
   assert.match(caveParking, /광명동굴은 주차가 가능해요/);
   assert.match(caveParking, /가학로 85번길/);
-  assert.match(caveParking, /걸어서 3분/);
+  assert.doesNotMatch(caveParking, /걸어서|도보/);
   assert.match(caveParking, /https:\/\/www\.gm\.go\.kr/);
+  const timedLot = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
+    contentId: '3551206',
+    locale: 'ko',
+    userText: '주차장 어디예요?',
+    festivalTitle: '광명동굴 빛 축제',
+    nearbyParking: [{ name: '광명동굴', text: '도보 4분', distKm: 9, addr1: '경기도 광명시 가학로 85번길' }],
+  });
+  assert.match(timedLot, /도보 4분/);
   const inventedCave = polishFestivalModelReply(
     '광명동굴 주차장은 경기도 광명시 가학로85번길 142에 마련되어 있어요. 걸어서 5분이에요.',
     {
@@ -2271,7 +2279,7 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   );
   assert.match(inventedCave, /주차가 가능해요/);
   assert.match(inventedCave, /가학로 85번길/);
-  assert.doesNotMatch(inventedCave, /142/);
+  assert.doesNotMatch(inventedCave, /142|걸어서|도보/);
   const numberedLot = polishFestivalModelReply('주차 안내는 공식 홈페이지에 있어요.', {
     contentId: '3551206',
     locale: 'ko',
@@ -2281,7 +2289,7 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     nearbyParking: [{ name: '광명동굴', text: '가능', distKm: 0.4, addr1: '경기도 광명시 가학로85번길 142' }],
   });
   assert.match(numberedLot, /142예요/);
-  assert.doesNotMatch(numberedLot, /142이에요/);
+  assert.doesNotMatch(numberedLot, /142이에요|걸어서|도보/);
   const foodParkingTail = polishFestivalModelReply(
     '내마음에찜 강릉본점은 한식, 도보 1분이에요. 주차 등 기타 상세 안내는 공식 홈페이지를 참고해 주세요.',
     {

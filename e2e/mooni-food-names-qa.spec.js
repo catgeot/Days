@@ -471,7 +471,8 @@ test.describe('MOONi festival food names — typed ask (WebKit 390)', () => {
       if (fest.kind === 'parking' && fest.festivalId === '3551206') {
         expect(linkBlob).toMatch(/광명동굴/);
         expect(linkBlob).toMatch(/가능/);
-        expect(linkBlob).toMatch(/가학로|걸어서/);
+        expect(linkBlob).toMatch(/가학로/);
+        expect(captured.answerText).not.toMatch(/걸어서\s*\d+\s*분|도보\s*\d+\s*분/);
         expect(captured.answerText).not.toMatch(/^주차 안내는 공식 홈페이지에 있어요\.?$/);
       }
       if (fest.kind === 'parking' && fest.festivalId === '638576') {
