@@ -151,7 +151,7 @@ test.describe('YouTube load-more session', () => {
     expect(state.edge).toBe(edgeAfterOpen + 1);
     expect(state.db).toBe(dbAfterOpen);
 
-    await page.getByRole('button', { name: '갤러리 복귀' }).click();
+    await page.getByRole('button', { name: '사진 보기' }).click();
     await page.getByRole('button', { name: '유튜브 영상' }).click();
     await expect(page.getByRole('heading', { name: '아직 등록된 영상이 없습니다' })).toHaveCount(0);
     await expect(page.getByRole('heading', { name: '재생 가능한 영상이 없어요' })).toHaveCount(0);
@@ -159,13 +159,13 @@ test.describe('YouTube load-more session', () => {
     await closePlaylist(page);
 
     await page.getByRole('button', { name: '여행 스케치' }).click();
-    await page.getByRole('button', { name: '갤러리 복귀' }).click();
+    await page.getByRole('button', { name: '사진 보기' }).click();
     await page.getByRole('button', { name: '유튜브 영상' }).click();
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);
 
     await page.getByRole('button', { name: '리뷰' }).click();
-    await page.getByRole('button', { name: '갤러리 복귀' }).click();
+    await page.getByRole('button', { name: '사진 보기' }).click();
     await page.getByRole('button', { name: '유튜브 영상' }).click();
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);
@@ -181,7 +181,7 @@ test.describe('YouTube load-more session', () => {
     await closePlaylist(page);
     const dbAfterOpen = state.db;
 
-    await page.getByRole('button', { name: '갤러리 복귀' }).click();
+    await page.getByRole('button', { name: '사진 보기' }).click();
     await page.getByRole('button', { name: '유튜브 영상' }).click();
     await expect(page.getByRole('heading', { name: '아직 등록된 영상이 없습니다' })).toHaveCount(0);
     expect(await openPlaylist(page)).toBe(5);

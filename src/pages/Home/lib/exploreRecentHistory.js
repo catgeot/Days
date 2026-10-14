@@ -1,7 +1,9 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve';
-import { isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
+import { resolveHubPlaceFromSlug } from './cityAttractionHubs';
+import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
+import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -196,6 +198,46 @@ export function removeKeywordVisit(keyword, destination = null) {
 export function clearKeywordVisits() {
   localStorage.setItem(RECENT_KEYWORD_VISITS_KEY, JSON.stringify([]));
   return [];
+}
+
+function isMapboxOrGeocodePin(spot) {
+  const id = String(spot?.id ?? '').trim().toLowerCase();
+  if (id.startsWith('mapbox-') || id.startsWith('geocode-')) return true;
+  const source = String(spot?.source ?? '').trim().toLowerCase();
+  return source === 'mapbox' || source === 'mapbox-geocode';
+}
+
+/** 새로고침·공유가 홈으로 튕기지 않는 slug. 이름 kebab(hallstatt)는 제외. */
+function knownPlaceSlug(param) {
+  const catalog = resolveCatalogPlaceSlug(param);
+  if (catalog) return catalog;
+  const normalized = String(param ?? '').trim().toLowerCase();
+  if (!normalized || isEphemeralSlug(normalized)) return null;
+  const hub = resolveHubPlaceFromSlug(normalized);
+  if (hub?.slug && !isEphemeralSlug(String(hub.slug))) return String(hub.slug);
+  const settlement = resolveSettlementPlaceFromSlug(normalized);
+  if (settlement?.slug && !isEphemeralSlug(String(settlement.slug))) return String(settlement.slug);
+  const city = (citiesData || []).find((row) => String(row?.slug || '').toLowerCase() === normalized);
+  return city?.slug ? String(city.slug) : null;
+}
+
+/**
+ * 홈·탐색 검색 결과 탭.
+ * `/place`는 SSOT slug만 (카탈로그·허브·정착지·도시).
+ * mapbox-/geocode- 는 search- 핀과 같이 홈 써머리 — 이름 slug가 카탈로그와 겹쳐도.
+ * @param {object | null | undefined} spot
+ * @returns {{ type: 'place', spot: object, param: string } | { type: 'home', spot: object } | null}
+ */
+export function resolveSearchResultSelect(spot) {
+  if (!spot || typeof spot !== 'object') return null;
+  const lat = Number(spot.lat);
+  const lng = Number(spot.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const pin = { ...spot, lat, lng };
+  if (isMapboxOrGeocodePin(pin)) return { type: 'home', spot: pin };
+  const param = knownPlaceSlug(getPlaceUrlParam(pin));
+  if (param) return { type: 'place', spot: pin, param };
+  return { type: 'home', spot: pin };
 }
 
 /** SSOT 카탈로그 여행지 — `/place/` 카드 직행. 그 외(uiPlace·도시 등)는 지구본 홈. */
