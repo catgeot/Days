@@ -2995,7 +2995,7 @@ test('gukhyang access polish guards dongdaegu–gwangju songjeong direct rail an
       eventEndDate: '20261108',
     },
   );
-  assert.match(seoulWindow, /16:29\u2060~\u206019:29 출발편 기준으로 바로 갈 수/);
+  assert.match(seoulWindow, /16:\u206029\u2060~\u206019:\u206029 출발편 기준으로 바로 갈 수/);
   assert.doesNotMatch(seoulWindow, /사이에 바로/);
   const markdown = readFileSync(join(root, 'src/components/chat/MooniChatMarkdown.jsx'), 'utf8');
   assert.match(markdown, /word-break:keep-all/);

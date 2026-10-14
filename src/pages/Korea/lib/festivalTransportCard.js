@@ -485,13 +485,15 @@ export function glueAccessNumbersInProse(value) {
     if (next === out) break;
     out = next;
   }
-  return out
-    .replace(/(?<![/\d])(\d{1,2}):(\d{2})(?!\d)/g, '$1:\u2060$2')
-    .replace(/(\d{1,2}:\d{2})\s*~\s*(\d{1,2}:\d{2})/g, '$1\u2060~\u2060$2')
-    .replace(
-      /(\d{1,3}(?:,\u2060?\d{3})*원)\s*~\s*(\d{1,3}(?:,\u2060?\d{3})*원)/g,
-      '$1\u2060~\u2060$2',
-    );
+  out = out.replace(
+    /(\d{1,3}(?:,\u2060?\d{3})*원)\s*~\s*(\d{1,3}(?:,\u2060?\d{3})*원)/g,
+    '$1\u2060~\u2060$2',
+  );
+  out = out.replace(
+    /(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})/g,
+    '$1:\u2060$2\u2060~\u2060$3:\u2060$4',
+  );
+  return out.replace(/(?<![/\d])(\d{1,2}):(\d{2})(?!\d)/g, '$1:\u2060$2');
 }
 
 function hangulJong(word) {
