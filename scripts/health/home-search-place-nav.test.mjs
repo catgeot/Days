@@ -37,6 +37,57 @@ test('domestic home search rows still resolve a stable place slug', () => {
   }
 });
 
+test('mapbox and geocode hits stay on the home summary', () => {
+  const hallstatt = resolveSearchResultSelect({
+    id: 'mapbox-dXJuOm1ieHBsYzphYWxsc3RhdHQ',
+    name: 'Hallstatt',
+    name_en: 'Hallstatt',
+    slug: 'hallstatt',
+    lat: 47.5622,
+    lng: 13.6493,
+    source: 'mapbox',
+    uiPlace: true,
+  });
+  assert.equal(hallstatt?.type, 'home');
+
+  const see = resolveSearchResultSelect({
+    id: 'geocode-place.hallstattersee',
+    name: 'Hallstätter See',
+    name_en: 'Hallstätter See',
+    slug: 'hallstatter-see',
+    lat: 47.55,
+    lng: 13.65,
+    source: 'mapbox-geocode',
+    uiPlace: true,
+  });
+  assert.equal(see?.type, 'home');
+
+  const nameDerived = resolveSearchResultSelect({
+    id: 'mapbox-hallstatt-unnamed-slug',
+    name: 'Hallstatt',
+    name_en: 'Hallstatt',
+    lat: 47.5622,
+    lng: 13.6493,
+    source: 'mapbox',
+    uiPlace: true,
+  });
+  assert.equal(nameDerived?.type, 'home');
+});
+
+test('mapbox id does not reuse a catalog slug', () => {
+  const decision = resolveSearchResultSelect({
+    id: 'mapbox-sapa-poi',
+    name: 'Sapa',
+    name_en: 'Sapa',
+    slug: 'sapa',
+    lat: 22.3364,
+    lng: 103.8438,
+    source: 'mapbox',
+    uiPlace: true,
+  });
+  assert.equal(decision?.type, 'home');
+});
+
 test('coord-only search pins stay on the home summary', () => {
   const decision = resolveSearchResultSelect({
     name: '이름없는 핀',
