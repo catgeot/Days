@@ -1,7 +1,7 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve';
-import { placeUrlSlug, resolveHubPlaceFromSlug } from './cityAttractionHubs';
+import { placeUrlSlug, resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
 
@@ -225,7 +225,24 @@ function pinNameOwnsPlace(pin, place) {
   if (!place) return true;
   const names = [pin?.name, pin?.name_ko].map(normalizePlaceToken).filter(Boolean);
   if (!names.length) return true;
-  const known = [place.name, place.name_en, place.slug, place.hubId, ...(place.aliases || [])]
+  // hubToPlacePin은 aliases를 빼므로, 표시명(제주시)과 다른 공식 별칭(제주)도 그 도시다.
+  const hub = resolveCityAttractionHub(place?.hubId || place?.slug);
+  const catalogSlug = resolveCatalogPlaceSlug(place?.slug || place?.hubId);
+  const catalog = catalogSlug
+    ? TRAVEL_SPOTS.find((spot) => String(spot.slug).toLowerCase() === catalogSlug)
+    : null;
+  const known = [
+    place.name,
+    place.name_en,
+    place.slug,
+    place.hubId,
+    ...(place.aliases || []),
+    ...(hub?.aliases || []),
+    hub?.name,
+    hub?.name_en,
+    catalog?.name,
+    catalog?.name_en,
+  ]
     .map(normalizePlaceToken)
     .filter(Boolean);
   return names.some((token) => known.includes(token));
