@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
@@ -42,7 +42,6 @@ const ToolkitCard = ({
     className = '',
 }) => {
     const { t, i18n } = useTranslation();
-    const [adviceExpanded, setAdviceExpanded] = useState(false);
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
@@ -52,11 +51,8 @@ const ToolkitCard = ({
     const ferryAdviceText =
         type === 'visa' ? replaceEtiasClaims(cleanedAdviceText, i18n?.language) : cleanedAdviceText;
     const ferryHasSsot = type === 'ferry_booking' && shouldShowFerryCard(location?.slug);
-    const showFerryAdviceBlock = ferryAdviceText || !ferryHasSsot;
     const verifiedPlannerFirst = Boolean(plannerSlotForToolkit(resolveVerifiedFacts(location), type));
-    const shortenVerifiedAi = verifiedPlannerFirst
-        && typeof ferryAdviceText === 'string'
-        && ferryAdviceText.length > 120;
+    const showAdviceBlock = !verifiedPlannerFirst && (ferryAdviceText || !ferryHasSsot);
     const useMrtTna = type === 'map_poi' && canShowMrtTnaStrip(location);
     const gygActivitiesQuery =
         type === 'map_poi' && !useMrtTna ? buildGygActivitiesSearchQuery(location) : null;
@@ -100,21 +96,12 @@ const ToolkitCard = ({
                 />
             ) : null}
 
-            {showFerryAdviceBlock && (
+            {showAdviceBlock && (
                 <div className="mb-5 flex-1">
                     {resolveVerifiedFacts(location) && ferryAdviceText ? <AiGeneratedBanner light /> : null}
-                    <p className={`text-sm text-gray-700 leading-[1.7] select-text break-keep ${shortenVerifiedAi && !adviceExpanded ? 'line-clamp-3' : ''}`}>
+                    <p className="text-sm text-gray-700 leading-[1.7] select-text break-keep">
                         <CopyableText text={ferryAdviceText} locationName={location?.name || location?.name_en || location?.slug} type={type} />
                     </p>
-                    {shortenVerifiedAi ? (
-                        <button
-                            type="button"
-                            onClick={() => setAdviceExpanded((value) => !value)}
-                            className="text-blue-500 font-medium text-xs mt-1 hover:underline"
-                        >
-                            {adviceExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}
-                        </button>
-                    ) : null}
                 </div>
             )}
 

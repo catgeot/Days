@@ -54,10 +54,11 @@ test('no verified facts leaves the place card unchanged', () => {
 
   const toolkit = readFileSync(join(root, 'src/components/PlaceCard/tabs/planner/components/ToolkitCard.jsx'), 'utf8');
   const verifiedFirst = toolkit.indexOf('verifiedPlannerFirst ?');
-  const adviceBlock = toolkit.indexOf('{showFerryAdviceBlock &&');
+  const adviceBlock = toolkit.indexOf('{showAdviceBlock &&');
   assert.ok(verifiedFirst > 0 && verifiedFirst < adviceBlock);
+  assert.match(toolkit, /showAdviceBlock = !verifiedPlannerFirst &&/);
+  assert.equal(toolkit.includes('line-clamp-3'), false);
   assert.match(toolkit, /defaultOpen/);
-  assert.match(toolkit, /line-clamp-3/);
 });
 
 test('cairo gallery keeps filled topics only and planner skips the itinerary', () => {
