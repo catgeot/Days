@@ -34,6 +34,7 @@ import {
   pushKeywordVisit,
   resolveSearchResultSelect,
 } from './lib/exploreRecentHistory';
+import { siteSearchExploreEnterCommit } from './lib/siteSearchOpen.js';
 import {
   hydrateLocationFromSavedTrip,
   overlaySessionCuration,
@@ -1845,13 +1846,22 @@ function Home() {
               // Ignore localStorage errors in private mode, etc.
             }
 
-            if (hasValidCoords(selectedFromSearch)) {
-              pendingGlobeHomeFocusRef.current = selectedFromSearch;
-              rememberGlobeFocus(selectedFromSearch);
-              selectedLocationRef.current = selectedFromSearch;
+            const enterCommit = siteSearchExploreEnterCommit(selectedFromSearch);
+            const pinForHome = enterCommit.pin ?? selectedFromSearch;
+            if (enterCommit.mode === 'place') {
+              navigateToPlace(enterCommit.pin);
+              return enterCommit.pin;
+            }
+            if (hasValidCoords(pinForHome)) {
+              pendingGlobeHomeFocusRef.current = pinForHome;
+              rememberGlobeFocus(pinForHome);
+              selectedLocationRef.current = pinForHome;
+              if (enterCommit.mode === 'home') {
+                handleLocationSelect(pinForHome, { deferGlobeFocus: true });
+              }
             }
             navigate('/', { state: { fromSearch: true } });
-            return selectedFromSearch;
+            return pinForHome;
           }}
         />
       </div>

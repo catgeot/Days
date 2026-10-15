@@ -91,6 +91,7 @@ import {
   overlayGeoFieldsOnVisitedSpots,
   visitedSpotNeedsGeoCountry,
 } from '../lib/visitedPlaceSearch.js';
+import { siteSearchCatalogPlaceParam } from '../lib/siteSearchOpen.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -1697,7 +1698,7 @@ export function useHomeHandlers({
         const links = [];
         const seen = new Set();
         for (const item of local) {
-          const param = getPlaceUrlParam(item);
+          const param = siteSearchCatalogPlaceParam(item) || getPlaceUrlParam(item);
           const href = param ? `/place/${param}` : `/explore?q=${encodeURIComponent(item.name || query)}`;
           if (seen.has(href)) continue;
           seen.add(href);
