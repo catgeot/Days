@@ -74,7 +74,11 @@ import {
 import {
   collectKoreaPoiTypeSearchCandidates,
 } from '../lib/koreaPoiTypeSearch.js';
-import { preferEnterSuggestion, placeNameMatchesSearchQuery } from '../lib/searchEnterMatch.js';
+import {
+  preferEnterSuggestion,
+  placeNameMatchesSearchQuery,
+  pickEnterSuggestionMatches,
+} from '../lib/searchEnterMatch.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   overlayGeocodeLatinOnHits,
@@ -91,7 +95,11 @@ import {
   overlayGeoFieldsOnVisitedSpots,
   visitedSpotNeedsGeoCountry,
 } from '../lib/visitedPlaceSearch.js';
-import { siteSearchCatalogPlaceParam } from '../lib/siteSearchOpen.js';
+import {
+  isSiteSearchOpenEnabled,
+  resolveSiteSearchEnterSinglePoi,
+  siteSearchFallbackLinkHref,
+} from '../lib/siteSearchOpen.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -814,6 +822,14 @@ export function useHomeHandlers({
     if (requireChoice) {
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
+
+      if (isSiteSearchOpenEnabled()) {
+        const enterDirect = resolveSiteSearchEnterSinglePoi(
+          query,
+          buildLocalSearchSuggestions(query),
+        );
+        if (enterDirect) return enterDirect;
+      }
 
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;
@@ -1695,11 +1711,27 @@ export function useHomeHandlers({
 
       if (!isCorrected && aiLimitHit) {
         const local = buildLocalSearchSuggestions(query).slice(0, 8);
+        let hybridMatches = [];
+        try {
+          hybridMatches = pickEnterSuggestionMatches(query, await buildHybridSearchSuggestions(query)).slice(
+            0,
+            8,
+          );
+        } catch {
+          hybridMatches = [];
+        }
+        const linkItems = [];
+        const seenNames = new Set();
+        for (const item of [...local, ...hybridMatches]) {
+          const name = String(item?.name || '').trim();
+          if (!name || seenNames.has(name)) continue;
+          seenNames.add(name);
+          linkItems.push(item);
+        }
         const links = [];
         const seen = new Set();
-        for (const item of local) {
-          const param = siteSearchCatalogPlaceParam(item) || getPlaceUrlParam(item);
-          const href = param ? `/place/${param}` : `/explore?q=${encodeURIComponent(item.name || query)}`;
+        for (const item of linkItems) {
+          const href = siteSearchFallbackLinkHref(item, query);
           if (seen.has(href)) continue;
           seen.add(href);
           links.push({ href, label: item.name || query });
@@ -1709,9 +1741,9 @@ export function useHomeHandlers({
           links.push({ href: searchHref, label: `'${query}' 검색 결과` });
         }
         if (!requireChoice) window.alert(AI_FEATURE_LIMIT_MESSAGE);
-        if (local.length) {
+        if (linkItems.length) {
           return {
-            ...makeDisambiguationResult(query, local, { title: `'${query}' 검색 결과` }),
+            ...makeDisambiguationResult(query, linkItems, { title: `'${query}' 검색 결과` }),
             __aiLimit: true,
             limitMessage: AI_FEATURE_LIMIT_MESSAGE,
             links,
