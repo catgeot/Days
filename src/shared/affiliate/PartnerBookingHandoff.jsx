@@ -21,6 +21,19 @@ const THEME = {
   },
 };
 
+const EMPHASIS_BUTTON = {
+  light: {
+    default: THEME.light.button,
+    low:
+      'inline-flex min-h-[44px] w-full items-center justify-center gap-1 rounded-lg border border-stone-300 bg-transparent px-2 py-1 text-[13px] font-semibold text-stone-800 no-underline transition-colors hover:border-amber-400 hover:bg-amber-50/40 active:scale-[0.98]',
+  },
+  dark: {
+    default: THEME.dark.button,
+    low:
+      'inline-flex min-h-[44px] w-full items-center justify-center gap-1 rounded-md border border-white/25 bg-transparent px-2 py-1 text-[13px] font-medium text-amber-50/90 no-underline transition-colors hover:border-amber-300/50 hover:bg-white/5 active:scale-[0.98]',
+  },
+};
+
 /**
  * @param {{
  *   href: string,
@@ -31,6 +44,7 @@ const THEME = {
  *   showPartnerLabel?: boolean,
  *   showNotice?: boolean,
  *   ctaLabel?: string,
+ *   emphasis?: 'default' | 'low',
  *   className?: string,
  * }} props
  */
@@ -39,6 +53,7 @@ export default function PartnerBookingHandoff({
   kind,
   item,
   theme = 'light',
+  emphasis = 'default',
   partnerName,
   showPartnerLabel = true,
   showNotice = true,
@@ -57,6 +72,10 @@ export default function PartnerBookingHandoff({
     partnerName ||
     t('partnerBookingHandoff.partnerMyRealTrip', { defaultValue: '마이리얼트립' });
   const styles = THEME[theme] || THEME.light;
+  const emphasisKey = emphasis === 'low' ? 'low' : 'default';
+  const buttonClass =
+    (EMPHASIS_BUTTON[theme] || EMPHASIS_BUTTON.light)[emphasisKey] ||
+    styles.button;
 
   return (
     <div className={`space-y-1 ${className}`.trim()}>
@@ -72,11 +91,15 @@ export default function PartnerBookingHandoff({
         href={url}
         target="_blank"
         rel="noopener noreferrer sponsored"
-        className={styles.button}
+        className={buttonClass}
         data-partner-booking-handoff="cta"
       >
         <span className="min-w-0 break-keep text-center">{ctaLabel}</span>
-        <ExternalLink size={12} className="shrink-0 opacity-80" aria-hidden />
+        <ExternalLink
+          size={emphasis === 'low' ? 11 : 12}
+          className="shrink-0 opacity-80"
+          aria-hidden
+        />
       </a>
       {showPartnerLabel ? (
         <p className={styles.partner}>
