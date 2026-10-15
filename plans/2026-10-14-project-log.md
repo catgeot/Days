@@ -4,7 +4,8 @@
 
 ## 자유검색 영상 #1, 서버 쿼리
 
-- **브랜치** `cursor/free-search-place-videos-2159` 코드 **`654a8805`** · draft PR [#468](https://github.com/catgeot/Days/pull/468) · **병합·Edge 배포 없음**.
+- **브랜치** `cursor/free-search-place-videos-2159` 코드 **`778adc80`** · draft PR [#468](https://github.com/catgeot/Days/pull/468) · **병합·Edge 배포 없음**.
+- **즐겨찾기:** 한글 라벨(롬블론)을 저장하면 행 id 는 uuid, slug 는 `romblon` 이라 재오픈 시 카탈로그 조회가 되어 400 → 「영상을 불러오지 못했어요」. 재오픈은 `label-<위도>-<경도>` 와 탭한 한글 이름으로 자유검색 경로를 탄다. Edge 변경 없음.
 - `label-`/`loc-`/`search-`/`city-` 핀은 캐시 미스 때 `fetch-place-videos`를 호출한다. 쿼리는 탭한 지명으로 서버만 만들고, 캐시 id는 `free:<지명>[:<국가>]`. 클라이언트 `query`는 거부. IP·장소 캡 유지.
 - **배포 디렉터리** `supabase/functions/fetch-place-videos` (사람이 스테이징에 배포). `cursor/*` Preview 자동 배포는 꺼져 있다.
 - **검증:** `lint:ci` · `test:health` 390 · `check:place-video-catalog` · `vite build` · Deno `index_test.ts` 41 · 세션 훅 13. 라이브 YouTube 없음.

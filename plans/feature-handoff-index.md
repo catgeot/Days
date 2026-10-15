@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 서버 쿼리** · 코드 `654a8805` · draft PR [#468](https://github.com/catgeot/Days/pull/468) · **병합 금지** · Edge 미배포 |
+| **상태** | **#1 서버 쿼리** · 코드 `778adc80` · draft PR [#468](https://github.com/catgeot/Days/pull/468) · **병합 금지** · Edge 미배포 · 한글 즐겨찾기 재오픈은 클라이언트만 |
 | **브랜치** | `cursor/free-search-place-videos-2159` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-14-project-log.md`](./2026-10-14-project-log.md) |
