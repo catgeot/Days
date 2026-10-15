@@ -122,7 +122,20 @@ async function main() {
 
   let input = await openExplore(page);
   await input.fill('흥정계곡');
-  await page.waitForTimeout(900);
+  await page.waitForTimeout(1200);
+  await page.locator('[data-search-popover]').waitFor({ state: 'visible', timeout: 120_000 });
+  await page
+    .locator('[data-search-popover]')
+    .getByText('평창')
+    .first()
+    .waitFor({ state: 'visible', timeout: 120_000 });
+  const englishRegion = page.locator('[data-search-popover]:visible').getByText('Pyeongchang', {
+    exact: true,
+  });
+  if (await englishRegion.count()) {
+    throw new Error('Korean UI search popover still shows English region label Pyeongchang');
+  }
+  await shot(page, 'heungjeong-suggest-region-390.png', '흥정계곡 suggestions · 평창 region');
   await input.press('Enter');
   await page
     .getByRole('heading', { name: /^흥정계곡$/ })

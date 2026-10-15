@@ -16,7 +16,10 @@ import {
   visitedRowToSearchSpot,
 } from '../src/pages/Home/lib/visitedPlaceSearch.js';
 import { resolveSearchResultSelect } from '../src/pages/Home/lib/exploreRecentHistory.js';
-import { getLocalizedCountryName } from '../src/components/PlaceCard/common/locationDisplay.js';
+import {
+  getLocalizedCountryName,
+  getLocalizedParentCityLabel,
+} from '../src/components/PlaceCard/common/locationDisplay.js';
 import { formatPlaceChatLabel } from '../src/pages/Home/lib/mooniPlaceChatLabel.js';
 import { pickKoreanNameGallery } from '../src/utils/placeStatsNameGallery.js';
 import { resolveLegacyMishealPlace } from '../src/pages/Home/lib/legacyMishealPlaceSlugs.js';
@@ -175,6 +178,13 @@ test('/place/pyeongchang search pin still opens the county card', () => {
   });
   assert.equal(decision.type, 'place');
   assert.equal(decision.param, 'pyeongchang');
+});
+
+test('ko UI parentCity label uses Korean hub name (Pyeongchang → 평창)', () => {
+  assert.equal(getLocalizedParentCityLabel('Pyeongchang', 'ko'), '평창');
+  assert.equal(getLocalizedParentCityLabel('pyeongchang', 'ko'), '평창');
+  assert.equal(getLocalizedParentCityLabel('평창', 'ko'), '평창');
+  assert.equal(getLocalizedParentCityLabel('Pyeongchang', 'en'), 'Pyeongchang');
 });
 
 test('ko UI country label is 대한민국 for South Korea', () => {

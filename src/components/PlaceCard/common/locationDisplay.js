@@ -1,3 +1,6 @@
+import { resolveCityAttractionHub } from '../../../pages/Home/lib/cityAttractionHubs.js';
+import { citiesData } from '../../../pages/Home/data/citiesData.js';
+
 const HANGUL_REGEX = /[\u3131-\u318e\uac00-\ud7a3]/i;
 
 /** 시·군·구 등 행정 접미사 — 「구시로」vs「구시로시」중복 판별용 */
@@ -80,6 +83,31 @@ const KO_KOREA_RE = /^(한국|대한민국|korea|south\s*korea|republic of korea
 
 function isKoreaCountryLabel(value) {
   return KO_KOREA_RE.test(normalizeText(value));
+}
+
+/** 검색 제안·리스트의 상위 지역(parentCity) — ko UI에서 Pyeongchang → 평창 */
+export function getLocalizedParentCityLabel(parentCity, locale = 'ko') {
+  const raw = normalizeText(parentCity);
+  if (!raw) return '';
+  if (locale === 'en') {
+    if (hasLatin(raw) && !hasHangul(raw)) return raw;
+    const hub = resolveCityAttractionHub(raw);
+    if (hub?.name_en) return hub.name_en;
+    const city = (citiesData || []).find(
+      (c) => c.name === raw || String(c.name_en || '').toLowerCase() === raw.toLowerCase(),
+    );
+    return city?.name_en || raw;
+  }
+  if (hasHangul(raw)) return raw;
+  const hub = resolveCityAttractionHub(raw);
+  if (hub?.name) return hub.name;
+  const city = (citiesData || []).find(
+    (c) =>
+      String(c.name_en || '').toLowerCase() === raw.toLowerCase() ||
+      String(c.slug || '').toLowerCase() === raw.toLowerCase(),
+  );
+  if (city?.name) return city.name;
+  return raw;
 }
 
 export function getLocalizedCountryName(location, locale = 'ko') {
