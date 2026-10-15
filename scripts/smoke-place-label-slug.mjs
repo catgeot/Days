@@ -53,6 +53,26 @@ const LABEL_CASES = [
     featureNameEn: 'Manzini',
     expect: { slug: 'eswatini', name_en: 'Eswatini' },
   },
+  {
+    id: 'romblon-keeps-label-not-san-jose',
+    label: '롬블론 영문 라벨 — 역지오 San Jose를 name_en으로 쓰지 않음',
+    clickedLabel: 'Romblon',
+    clickedLabelEn: '',
+    lat: 12.57,
+    lng: 122.27,
+    addressEn: {
+      country: 'Philippines',
+      country_code: 'ph',
+      town: 'San Jose',
+    },
+    addressKo: {
+      country: '필리핀',
+      country_code: 'ph',
+      town: '산호세',
+    },
+    featureNameEn: 'San Jose',
+    expect: { slug: 'romblon', name_en: 'Romblon' },
+  },
 ];
 
 const MOONI_L2_HISTORY = '역사나 문화적으로 특징이 뭐야?';

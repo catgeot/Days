@@ -5,8 +5,8 @@
 import {
   formatUrlName,
   isUrlSafeEnglishLabel,
-  pickUrlSafeEnglishName,
 } from './formatUrlName.js';
+import { placeNamesConflict } from './freeSearchPlaceVideo.js';
 import { canonTravelCountryKey } from './travelRegionCountry.js';
 
 /**
@@ -57,14 +57,30 @@ export function resolveGlobeLabelPinFields({
       (countryEn && label.toLowerCase() === countryEn.toLowerCase()) ||
       (clickedLabelEn && countryEn && clickedLabelEn.toLowerCase() === countryEn.toLowerCase()));
 
-  const geoEnglish =
-    labelMatchesCountry && isUrlSafeEnglishLabel(countryEn)
-      ? countryEn
-      : pickUrlSafeEnglishName({
-          name_en: address?.name_en,
-          country_en: address?.country_en,
-        });
-  const slugBase = clickedLabelEn || geoEnglish || '';
+  const reverseEn = isUrlSafeEnglishLabel(address?.name_en)
+    ? String(address.name_en).trim()
+    : '';
+  let tappedEn = clickedLabelEn;
+  // labelEn that is only the reverse-geocoded municipality is not the label.
+  if (
+    tappedEn &&
+    reverseEn &&
+    !placeNamesConflict(tappedEn, reverseEn) &&
+    label &&
+    placeNamesConflict(label, tappedEn)
+  ) {
+    tappedEn = '';
+  }
+  const visibleLatin = isUrlSafeEnglishLabel(label) ? label : '';
+  if (visibleLatin && tappedEn && placeNamesConflict(visibleLatin, tappedEn)) {
+    tappedEn = visibleLatin;
+  } else if (!tappedEn && visibleLatin) {
+    tappedEn = visibleLatin;
+  }
+  const countryEnglish = labelMatchesCountry && isUrlSafeEnglishLabel(countryEn)
+    ? countryEn
+    : '';
+  const slugBase = tappedEn || countryEnglish || '';
   const slug = formatUrlName(slugBase) || `label-${lat}-${lng}`;
   const displayName = labelMatchesCountry ? countryKo || label : label;
 

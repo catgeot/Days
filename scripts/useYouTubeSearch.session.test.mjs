@@ -333,7 +333,7 @@ test('placeholder pin does not read or request the shared name cache', async () 
   assert.equal(calls.edge.length, 0);
   assert.equal(hook.videos.length, 0);
   assert.equal(hook.isEmpty, true);
-  assert.equal(hook.suppressVideoRetry, true);
+  assert.equal(hook.suppressVideoRetry, false);
 });
 
 test('named free-search pin shows a cached row and does not call the edge', async () => {
@@ -345,22 +345,25 @@ test('named free-search pin shows a cached row and does not call the edge', asyn
   mount();
   await render({ id: 'search-37.5-127', name: '화곡리' }, 'VIDEO');
   assert.equal(calls.edge.length, 0);
-  assert.ok(calls.db.length >= 1);
+  assert.deepEqual(calls.db[0], ['free:화곡리']);
   assert.deepEqual(ids(), ['hill0', 'hill1']);
   assert.equal(hook.externalYouTubeUrl, '');
-  assert.equal(hook.suppressVideoRetry, true);
+  assert.equal(hook.suppressVideoRetry, false);
 });
 
-test('named free-search pin without a cache row is link-only', async () => {
+test('named free-search pin calls the edge on a cache miss', async () => {
   setYouTubeMock({
     db: async () => ({ data: null }),
   });
   mount();
   await render({ id: 'search-37.5-127', name: '화곡리', city: '서울' }, 'VIDEO');
-  assert.equal(calls.edge.length, 0);
-  assert.equal(hook.videos.length, 0);
-  assert.match(hook.externalYouTubeUrl, /^https:\/\/www\.youtube\.com\/results\?search_query=/);
-  assert.match(decodeURIComponent(hook.externalYouTubeUrl), /화곡리/);
+  assert.equal(calls.edge.length, 1);
+  assert.equal(calls.edge[0].placeId, 'search-37.5-127');
+  assert.equal(calls.edge[0].label, '화곡리');
+  assert.equal(calls.edge[0].query, undefined);
+  assert.equal(hook.videos.length, 10);
+  assert.match(hook.placeYouTubeUrl, /^https:\/\/www\.youtube\.com\/results\?search_query=/);
+  assert.match(decodeURIComponent(hook.placeYouTubeUrl), /화곡리/);
 });
 
 test('retryUnplayable clears flags without wiping session load-more list', async () => {

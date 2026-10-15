@@ -15,8 +15,8 @@ import {
   freeSearchYouTubeUrl,
   isFreeSearchLocation,
   isPlaceholderPlaceName,
-  shouldShowFreeSearchLink,
 } from '../lib/freeSearchYouTubeLink.js';
+import { freeSearchVideoTarget } from '../lib/freeSearchPlaceVideo.js';
 
 const GOOGLE_FORM_URL = 'https://forms.gle/QgofLDzzYD6NfWYN7';
 const LOAD_MORE_SESSION_MAX = 3;
@@ -122,7 +122,6 @@ export const useYouTubeSearch = (location, mediaMode) => {
   const [fetchLimitCode, setFetchLimitCode] = useState(null);
   const [loadMoreNoNew, setLoadMoreNoNew] = useState(() => boot?.loadMoreNoNew ?? false);
   const [unplayableBump, setUnplayableBump] = useState(0);
-  const [freeSearchLinkOnly, setFreeSearchLinkOnly] = useState(false);
 
   const fetchContextRef = useRef(boot?.ctx ?? null);
   const completedInitialKeysRef = useRef(new Set());
@@ -159,7 +158,6 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setLoadMoreError(false);
       setLoadMoreLimitCode(null);
       setLoadMoreNoNew(mem.loadMoreNoNew);
-      setFreeSearchLinkOnly(false);
     } else {
       fetchContextRef.current = null;
       liveRef.current = emptyLive();
@@ -176,7 +174,6 @@ export const useYouTubeSearch = (location, mediaMode) => {
       setLoadMoreError(false);
       setLoadMoreLimitCode(null);
       setLoadMoreNoNew(false);
-      setFreeSearchLinkOnly(false);
     }
   }
 
@@ -200,7 +197,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
 
   const freeSearch = isFreeSearchLocation(location);
 
-  const externalYouTubeUrl = freeSearch && freeSearchLinkOnly ? placeYouTubeUrl : '';
+  const externalYouTubeUrl = '';
 
   const invokeEdge = useCallback(async (body) => {
     const { data: edgeData, error: edgeError } = await supabase.functions.invoke(
@@ -236,8 +233,18 @@ export const useYouTubeSearch = (location, mediaMode) => {
     const dbCandidates = buildPlaceDbIdCandidates(location);
     const statsId = getPlaceStatsId(location);
     const { query: searchQuery, fallbackQuery } = resolvePlaceVideoQueries(location);
-    const placeId = statsId || cacheKey;
+    const freeTarget = isFreeSearchLocation(location) ? freeSearchVideoTarget(location) : null;
+    const placeId = freeTarget?.built?.cacheId || statsId || cacheKey;
     const currentPlaceKey = placeKeyOnly(location);
+    const freeFields = freeTarget
+      ? {
+          freeSearch: true,
+          requestPlaceId: freeTarget.requestPlaceId,
+          label: freeTarget.label,
+          labelEn: freeTarget.labelEn,
+          country: freeTarget.country,
+        }
+      : { freeSearch: false };
 
     fetchContextRef.current = {
       searchQuery,
@@ -245,6 +252,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
       placeId,
       placeKey: currentPlaceKey,
       fromCache: false,
+      ...freeFields,
     };
 
     setFetchError(false);
@@ -259,13 +267,18 @@ export const useYouTubeSearch = (location, mediaMode) => {
     setLoadMoreNoNew(false);
     liveRef.current = emptyLive();
 
-    if (isPlaceholderPlaceName(location?.name)) {
+    if (
+      isPlaceholderPlaceName(location?.name)
+      || (freeTarget && (!freeTarget.built || !freeTarget.requestPlaceId))
+    ) {
       setRawVideos([]);
       setIsEmptyResult(true);
       return;
     }
 
-    const candidateIds = dbCandidates.length ? dbCandidates : [cacheKey];
+    const candidateIds = freeTarget?.built?.cacheId
+      ? [freeTarget.built.cacheId]
+      : (dbCandidates.length ? dbCandidates : [cacheKey]);
     let cachedData = null;
     const cachedRes = await supabase
       .from('place_videos')
@@ -295,6 +308,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
         placeId,
         placeKey: currentPlaceKey,
         fromCache: true,
+        ...freeFields,
       };
       liveRef.current = {
         ...emptyLive(),
@@ -308,12 +322,22 @@ export const useYouTubeSearch = (location, mediaMode) => {
     }
 
     console.log(`[L3] Calling YouTube API for: ${location.name}`);
-    const edgeData = await invokeEdge({
-      query: searchQuery,
-      fallbackQuery,
-      placeId,
-      maxResults: INITIAL_MAX_RESULTS,
-    });
+    const edgeData = await invokeEdge(
+      freeTarget?.built
+        ? {
+            placeId: freeTarget.requestPlaceId,
+            label: freeTarget.label,
+            labelEn: freeTarget.labelEn,
+            country: freeTarget.country,
+            maxResults: INITIAL_MAX_RESULTS,
+          }
+        : {
+            query: searchQuery,
+            fallbackQuery,
+            placeId,
+            maxResults: INITIAL_MAX_RESULTS,
+          },
+    );
 
     if (fetchGenRef.current !== gen) return;
 
@@ -338,7 +362,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
     location?.canonical_slug,
     location?.name,
     location?.country,
+    location?.country_en,
     location?.name_en,
+    location?.place_id,
+    location?.placeId,
     invokeEdge,
   ]);
 
@@ -350,71 +377,6 @@ export const useYouTubeSearch = (location, mediaMode) => {
     if (completedInitialKeysRef.current.has(key)) {
       queueMicrotask(() => setIsLoading(false));
       return;
-    }
-
-    if (freeSearch) {
-      if (isPlaceholderPlaceName(location?.name)) {
-        setFreeSearchLinkOnly(true);
-        setFetchError(false);
-        setFetchLimitCode(null);
-        liveRef.current = emptyLive();
-        setRawVideos([]);
-        setHasMorePages(false);
-        setIsEmptyResult(true);
-        completedInitialKeysRef.current.add(key);
-        queueMicrotask(() => setIsLoading(false));
-        return;
-      }
-      const gen = fetchGenRef.current;
-      let cancelled = false;
-      setIsLoading(true);
-      setFetchError(false);
-      setFetchLimitCode(null);
-      (async () => {
-        const cacheKey = getPlaceStableKey(location);
-        const dbCandidates = buildPlaceDbIdCandidates(location);
-        const candidateIds = dbCandidates.length ? dbCandidates : [cacheKey];
-        let cachedData = null;
-        const cachedRes = await supabase
-          .from('place_videos')
-          .select('videos, next_retry_at')
-          .in('place_id', candidateIds)
-          .limit(1)
-          .maybeSingle();
-        if (cachedRes.error) {
-          const legacy = await supabase
-            .from('place_videos')
-            .select('videos')
-            .in('place_id', candidateIds)
-            .limit(1)
-            .maybeSingle();
-          cachedData = legacy.data;
-        } else {
-          cachedData = cachedRes.data;
-        }
-        if (cancelled || fetchGenRef.current !== gen) return;
-        if (cachedData && !shouldShowFreeSearchLink(location, cachedData)) {
-          const list = cachedData.videos;
-          setFreeSearchLinkOnly(false);
-          liveRef.current = { ...emptyLive(), rawVideos: list };
-          setRawVideos(list);
-          setHasMorePages(false);
-          setIsEmptyResult(false);
-          completedInitialKeysRef.current.add(key);
-          setIsLoading(false);
-          return;
-        }
-        setFreeSearchLinkOnly(true);
-        liveRef.current = emptyLive();
-        setRawVideos([]);
-        setHasMorePages(false);
-        setIsEmptyResult(true);
-        completedInitialKeysRef.current.add(key);
-        setIsLoading(false);
-      })();
-      return () => {
-        cancelled = true;
-      };
     }
 
     const currentPlaceKey = placeKeyOnly(location);
@@ -464,7 +426,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
   }, [freeSearch, location?.id, location?.slug, location?.canonical_slug, location?.name, location?.country, location?.name_en, mediaMode, runInitialFetch]);
 
   const retry = useCallback(async () => {
-    if (freeSearch || mediaMode !== 'VIDEO' || !location?.name) return;
+    if (mediaMode !== 'VIDEO' || !location?.name) return;
     const currentPlaceKey = placeKeyOnly(location);
     sessionVideoCache.delete(currentPlaceKey);
     completedInitialKeysRef.current.delete(placeFetchKey(location, mediaMode));
@@ -488,7 +450,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     } finally {
       if (fetchGenRef.current === gen) setIsLoading(false);
     }
-  }, [freeSearch, mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.name_en, runInitialFetch]);
+  }, [mediaMode, location?.name, location?.id, location?.slug, location?.canonical_slug, location?.country, location?.country_en, location?.name_en, runInitialFetch]);
 
   const retryUnplayable = useCallback(() => {
     const ids = liveRef.current.rawVideos.map((v) => v.id).filter(Boolean);
@@ -497,7 +459,6 @@ export const useYouTubeSearch = (location, mediaMode) => {
   }, []);
 
   const loadMore = useCallback(async () => {
-    if (freeSearch) return;
     const ctx = fetchContextRef.current;
     const live = liveRef.current;
     if (
@@ -524,16 +485,29 @@ export const useYouTubeSearch = (location, mediaMode) => {
     try {
       const excludeVideoIds = snapshotVideos.map((v) => v.id).filter(Boolean);
       const isFirstFromCache = ctx.fromCache && !pageToken;
-      const edgeData = await invokeEdge({
-        query: ctx.searchQuery,
-        fallbackQuery: ctx.fallbackQuery,
-        placeId: ctx.placeId,
+      const pageFields = {
         maxResults: isFirstFromCache ? LOAD_MORE_FIRST_MAX_RESULTS : INITIAL_MAX_RESULTS,
         skipUpsert: true,
         pageToken: pageToken || undefined,
         paginationSource: pageToken && pageSource ? pageSource : undefined,
         excludeVideoIds,
-      });
+      };
+      const edgeData = await invokeEdge(
+        ctx.freeSearch
+          ? {
+              placeId: ctx.requestPlaceId,
+              label: ctx.label,
+              labelEn: ctx.labelEn,
+              country: ctx.country,
+              ...pageFields,
+            }
+          : {
+              query: ctx.searchQuery,
+              fallbackQuery: ctx.fallbackQuery,
+              placeId: ctx.placeId,
+              ...pageFields,
+            },
+      );
 
       if (fetchGenRef.current !== gen || placeKeyRef.current !== placeKeyAtStart) return;
 
@@ -599,7 +573,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
         }
       }
     }
-  }, [invokeEdge, freeSearch]);
+  }, [invokeEdge]);
 
   const markUnplayable = useCallback((videoId) => {
     markYoutubeIdUnplayable(videoId);
@@ -607,7 +581,6 @@ export const useYouTubeSearch = (location, mediaMode) => {
   }, []);
 
   const canLoadMore =
-    !freeSearch &&
     !isLoading &&
     !fetchError &&
     videos.length > 0 &&
@@ -630,7 +603,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     fetchLimitCode,
     externalYouTubeUrl,
     placeYouTubeUrl,
-    suppressVideoRetry: freeSearch,
+    suppressVideoRetry: false,
     loadMoreNoNew,
     markUnplayable,
     googleFormUrl: GOOGLE_FORM_URL,

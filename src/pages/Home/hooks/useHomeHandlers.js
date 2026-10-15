@@ -28,6 +28,7 @@ import {
   isGeminiFeatureLimitError,
 } from '../lib/geminiProxyError';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
+import { reopenSavedPlaceLocation } from '../lib/placeRouteHydrate.js';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
@@ -441,7 +442,8 @@ export function useHomeHandlers({
     }
   }, [globeRef, category, isPinVisible, addScoutPin, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, moveToLocation, processSearchKeywords]);
 
-  const handleLocationSelect = useCallback((loc, options = {}) => {
+  const handleLocationSelect = useCallback((rawLoc, options = {}) => {
+    const loc = reopenSavedPlaceLocation(rawLoc);
     if (!loc) return;
 
     // 지구본은 과거 onMarkerClick(loc, 'globe') 호출 — 문자열이면 옵션 무시

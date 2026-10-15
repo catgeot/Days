@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import catalog from "./placeVideoCatalog.json" with { type: "json" };
 import { clientIp } from "../_shared/placeVideoClientIp.ts";
+import { buildFreeSearchVideo } from "../_shared/freeSearchPlaceVideo.js";
 
 const corsBase = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -414,6 +415,20 @@ function primaryQuery(resolved: ResolvedPlace): string {
   return sanitizeQuery(`${resolved.query} 여행 브이로그`);
 }
 
+/** label-/loc-/search-/city- pins. body.query is never read. */
+function resolveFreeSearchPlace(body: Record<string, unknown>): ResolvedPlace | null {
+  const built = buildFreeSearchVideo({
+    label: typeof body.label === "string" ? body.label : "",
+    labelEn: typeof body.labelEn === "string" ? body.labelEn : "",
+    country: typeof body.country === "string" ? body.country : "",
+  });
+  if (!built) return null;
+  const resolved = placeMode(built.query);
+  if (!resolved || resolved.query !== built.query) return null;
+  resolved.placeId = built.cacheId;
+  return resolved;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     const origin = req.headers.get("Origin") ?? "";
@@ -434,9 +449,10 @@ serve(async (req) => {
   }
 
   const rawPlaceId = String(body.placeId ?? "").trim();
-  if (FREE_SEARCH_ID_RE.test(rawPlaceId) || PLACEHOLDER_PLACE_NAME.test(rawPlaceId)) {
+  if (PLACEHOLDER_PLACE_NAME.test(rawPlaceId)) {
     return json(req, { success: false, error: "bad_place_id" }, 400);
   }
+  const freeSearchPin = FREE_SEARCH_ID_RE.test(rawPlaceId);
   const festivalMatch = rawPlaceId.match(/^festival:(\d{1,32})$/);
   const scenicDigits = rawPlaceId.match(/^scenic:(\d{1,32})$/);
   const festivalId = festivalMatch ? festivalMatch[1] : "";
@@ -447,7 +463,12 @@ serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
   ) as unknown as AdminClient;
 
-  let resolved: ResolvedPlace | null = festivalId || scenicId ? null : resolveStaticPlace(rawPlaceId);
+  let resolved: ResolvedPlace | null = freeSearchPin
+    ? resolveFreeSearchPlace(body)
+    : festivalId || scenicId ? null : resolveStaticPlace(rawPlaceId);
+  if (freeSearchPin && !resolved) {
+    return json(req, { success: false, error: "bad_place_id" }, 400);
+  }
   try {
     if (festivalId && !resolved) {
       const hit = await festivalDetailHit(supabaseAdmin, festivalId);
@@ -781,7 +802,7 @@ serve(async (req) => {
   const paginationSourceOut = nextPageToken && paginationSource ? paginationSource : null;
 
   if (!skipUpsert && videosToCache.length === 0) {
-    const placeTabEmpty = mode !== "festival" && !placeId.includes(":");
+    const placeTabEmpty = mode !== "festival" && (!placeId.includes(":") || placeId.startsWith("free:"));
     await writeFailure("empty", placeTabEmpty);
     return json(req, {
       success: true,

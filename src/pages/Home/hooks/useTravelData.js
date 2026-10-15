@@ -9,6 +9,7 @@
 import { useState, useCallback } from 'react';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve.js';
+import { isFreeSearchPlaceId } from '../lib/freeSearchYouTubeLink.js';
 
 const LOCAL_STORAGE_KEY = 'days_guest_trips';
 
@@ -273,6 +274,9 @@ export const useTravelData = (user) => {
                 ...prevMeta,
                 locationEn: locationObj.name_en || locationObj.name || prevMeta.locationEn,
                 slug: locationObj.slug || prevMeta.slug,
+                placeId: isFreeSearchPlaceId(locationObj.id)
+                  ? String(locationObj.id)
+                  : (prevMeta.placeId || undefined),
                 country: preferConcreteCountry(locationObj.country, prevMeta.country),
                 country_en: preferConcreteCountry(locationObj.country_en, prevMeta.country_en),
                 uiPlace: Boolean(locationObj.uiPlace ?? prevMeta.uiPlace),
@@ -305,6 +309,7 @@ export const useTravelData = (user) => {
             curation_data: {
               locationEn: locationObj.name_en || locationObj.name,
               slug: locationObj.slug || undefined,
+              placeId: isFreeSearchPlaceId(locationObj.id) ? String(locationObj.id) : undefined,
               country: locationObj.country,
               country_en: locationObj.country_en,
               uiPlace: Boolean(locationObj.uiPlace),
