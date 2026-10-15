@@ -61,32 +61,41 @@ async function capture(fileName, flagLabel, title, location, flagOn) {
 }
 
 async function main() {
+  await import('./register-src-esm.mjs');
   await mkdir(OUT_DIR, { recursive: true });
-  const gangneung = { slug: 'gangneung', name: '강릉', country: '대한민국' };
-  const dubai = { slug: 'dubai', name: '두바이', country: 'United Arab Emirates' };
-  const shots = [
-    await capture(
-      'crosslink-gangneung-flag-off-390',
-      'VITE_GATEO_PLACE_CROSSLINK=0',
-      '강릉 · resolvePlaceCrossLinks',
-      gangneung,
-      false,
-    ),
-    await capture(
-      'crosslink-gangneung-flag-on-390',
-      'VITE_GATEO_PLACE_CROSSLINK=1',
-      '강릉 · resolvePlaceCrossLinks',
-      gangneung,
-      true,
-    ),
-    await capture(
-      'crosslink-dubai-flag-on-390',
-      'VITE_GATEO_PLACE_CROSSLINK=1',
-      '두바이 · resolvePlaceCrossLinks',
-      dubai,
-      true,
-    ),
+  const flagOn = true;
+  const flagLabel = 'VITE_GATEO_PLACE_CROSSLINK=1';
+  const places = [
+    {
+      fileName: 'crosslink-gangneung-flag-on-390',
+      title: '강릉 · cross-link buckets',
+      location: { slug: 'gangneung', name: '강릉', country: '대한민국' },
+    },
+    {
+      fileName: 'crosslink-pyeongchang-flag-on-390',
+      title: '평창 · cross-link buckets',
+      location: { slug: 'pyeongchang', name: '평창', country: '대한민국' },
+    },
+    {
+      fileName: 'crosslink-jeju-flag-on-390',
+      title: '제주 · cross-link buckets',
+      location: { slug: 'jeju', name: '제주', country: '대한민국' },
+    },
+    {
+      fileName: 'crosslink-dubai-flag-on-390',
+      title: '두바이 · cross-link buckets',
+      location: { slug: 'dubai', name: '두바이', country: 'United Arab Emirates' },
+    },
   ];
+  const shots = [];
+  for (const row of places) {
+    const bundle = await loadBundle(flagOn, row.location);
+    console.log(
+      row.location.slug,
+      `events=${bundle.events.length} festivals=${bundle.festivals.length} collections=${bundle.collections.length}`,
+    );
+    shots.push(await capture(row.fileName, flagLabel, row.title, row.location, flagOn));
+  }
   for (const path of shots) console.log('saved', path);
 }
 

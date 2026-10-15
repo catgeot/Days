@@ -41,6 +41,10 @@ test('domestic hubs expose scenic collections when flag on', () => {
     });
     assert.ok(gangneung.collections.length >= 1);
     assert.match(gangneung.collections[0].title, /강릉/);
+    assert.ok(
+      gangneung.festivals.length >= 3,
+      `gangneung festivals expected >=3 (seed+hub match), got ${gangneung.festivals.length}`,
+    );
 
     const pyeongchang = resolvePlaceCrossLinks({
       slug: 'pyeongchang',
@@ -74,7 +78,8 @@ test('overseas slugs attach world events only', () => {
     const dubai = pickTitles(
       resolvePlaceCrossLinks({ slug: 'dubai', name: '두바이', country: 'United Arab Emirates' }),
     );
-    assert.ok(dubai.events.length >= 1);
+    assert.equal(dubai.events.length, 1);
+    assert.match(dubai.events[0], /두바이 피트니스 챌린지/);
     assert.equal(dubai.festivals.length, 0);
     assert.equal(dubai.collections.length, 0);
 

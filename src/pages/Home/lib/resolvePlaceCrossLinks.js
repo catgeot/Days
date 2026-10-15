@@ -1,5 +1,8 @@
 import manualFestivalEntries from '../../Korea/data/manualFestivalEntries.json' with { type: 'json' };
+import festivalSeedJson from '../data/placeCrosslinkFestivalSeed.json' with { type: 'json' };
+import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
+import { nearbyHubsForFestival } from '../../Korea/nearbyFestivalHubs.js';
 import { getWorldEventsForSlug, getWorldEventTitle } from '../../../utils/worldEvents.js';
 import { isGateoPlaceCrosslinkEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs.js';
@@ -10,6 +13,39 @@ import { gateoKoreaFestivalDetailUrl } from '../../../shared/korea/mooniKoreaFes
 
 const SCENIC_SPOTS = Array.isArray(scenicJson?.spots) ? scenicJson.spots : [];
 const MANUAL_FESTIVALS = Object.values(manualFestivalEntries || {});
+const FESTIVAL_SEED = Array.isArray(festivalSeedJson?.items) ? festivalSeedJson.items : [];
+
+/** @type {Array<{ hubId: string, name: string, lat: number, lng: number }> | null} */
+let cachedKoreaHubList = null;
+
+function koreaHubListForFestivals() {
+  if (cachedKoreaHubList) return cachedKoreaHubList;
+  cachedKoreaHubList = (Array.isArray(hubsJson) ? hubsJson : [])
+    .filter(
+      (hub) =>
+        hub?.hubId && Number.isFinite(Number(hub.lat)) && Number.isFinite(Number(hub.lng)),
+    )
+    .map((hub) => ({
+      hubId: String(hub.hubId).toLowerCase(),
+      name: String(hub.name || hub.hubId),
+      lat: Number(hub.lat),
+      lng: Number(hub.lng),
+    }));
+  return cachedKoreaHubList;
+}
+
+function crosslinkFestivalCatalog() {
+  const byId = new Map();
+  for (const row of MANUAL_FESTIVALS) {
+    const id = String(row.contentId || '').trim();
+    if (id) byId.set(id, row);
+  }
+  for (const row of FESTIVAL_SEED) {
+    const id = String(row.contentId || '').trim();
+    if (id && !byId.has(id)) byId.set(id, row);
+  }
+  return [...byId.values()];
+}
 
 const KOREA_COUNTRY = new Set(['대한민국', '한국', 'south korea', 'korea', 'kr']);
 
@@ -81,12 +117,13 @@ function listEventsForSlug(slug) {
 function listFestivalsForHub(hubId) {
   const target = String(hubId || '').toLowerCase();
   if (!target) return [];
+  const hubs = koreaHubListForFestivals();
   const out = [];
-  for (const row of MANUAL_FESTIVALS) {
-    const region = matchKoreaAdminRegionFromAddr(row?.addr1);
-    if (!region || region.hubId !== target) continue;
+  for (const row of crosslinkFestivalCatalog()) {
     const contentId = String(row.contentId || '').trim();
     if (!contentId) continue;
+    const primary = nearbyHubsForFestival(row, hubs, { limit: 1 })[0];
+    if (String(primary?.hubId || '').toLowerCase() !== target) continue;
     out.push({
       id: `festival:${contentId}`,
       kind: 'festival',
