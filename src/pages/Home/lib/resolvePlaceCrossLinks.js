@@ -13,7 +13,10 @@ import {
   crosslinkFestivalDisplayTitle,
   isCrosslinkFestivalActive,
   festivalPrimaryHubMatchesPlaceHub,
+  crosslinkHubIdsForPlaceHub,
 } from './placeCrosslinkFestivals.js';
+
+const SCENIC_COLLECTION_SPOT_CAP = 6;
 
 const SCENIC_SPOTS = Array.isArray(scenicJson?.spots) ? scenicJson.spots : [];
 const MANUAL_FESTIVALS = Object.values(manualFestivalEntries || {});
@@ -138,14 +141,29 @@ function listFestivalsForHub(hubId, { now = new Date() } = {}) {
   return out;
 }
 
+function scenicSpotsForPlaceHub(targetHubId) {
+  const hubIds = crosslinkHubIdsForPlaceHub(targetHubId);
+  const seen = new Set();
+  const ordered = [];
+  for (const hubId of hubIds) {
+    for (const spot of SCENIC_SPOTS) {
+      if (String(spot?.hubId || '').toLowerCase() !== hubId) continue;
+      if (isScenicSpotHidden(spot)) continue;
+      const spotId = String(spot.id || '').trim();
+      if (!spotId || seen.has(spotId)) continue;
+      seen.add(spotId);
+      ordered.push({ spot, spotHubId: hubId });
+    }
+  }
+  return ordered;
+}
+
 function listScenicCollectionsForHub(hubId) {
   const target = String(hubId || '').toLowerCase();
   if (!target) return [];
   const hub = resolveCityAttractionHub(target);
   const hubName = hub?.name || target;
-  const spots = SCENIC_SPOTS.filter(
-    (spot) => String(spot?.hubId || '').toLowerCase() === target && !isScenicSpotHidden(spot),
-  );
+  const spots = scenicSpotsForPlaceHub(target);
   if (!spots.length) return [];
   const items = [
     {
@@ -155,10 +173,10 @@ function listScenicCollectionsForHub(hubId) {
       href: scenicHomePathForHubId(target),
     },
   ];
-  for (const spot of spots.slice(0, 6)) {
+  for (const { spot, spotHubId } of spots.slice(0, SCENIC_COLLECTION_SPOT_CAP)) {
     const spotId = String(spot.id || '').trim();
     if (!spotId) continue;
-    const base = scenicHomePathForHubId(target);
+    const base = scenicHomePathForHubId(spotHubId);
     items.push({
       id: `scenic:${spotId}`,
       kind: 'collection',
