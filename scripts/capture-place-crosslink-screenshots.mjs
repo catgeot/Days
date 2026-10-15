@@ -72,19 +72,9 @@ async function main() {
       location: { slug: 'gangneung', name: '강릉', country: '대한민국' },
     },
     {
-      fileName: 'crosslink-pyeongchang-flag-on-390',
-      title: '평창 · cross-link buckets',
-      location: { slug: 'pyeongchang', name: '평창', country: '대한민국' },
-    },
-    {
       fileName: 'crosslink-jeju-flag-on-390',
       title: '제주 · cross-link buckets',
       location: { slug: 'jeju', name: '제주', country: '대한민국' },
-    },
-    {
-      fileName: 'crosslink-dubai-flag-on-390',
-      title: '두바이 · cross-link buckets',
-      location: { slug: 'dubai', name: '두바이', country: 'United Arab Emirates' },
     },
   ];
   const shots = [];

@@ -1,8 +1,19 @@
 {
   "meta": {
-    "version": 1,
-    "source": "TourAPI rolling12 snapshot (contentId·addr1) for place crosslink — not live fetch",
-    "note": "Supplements manualFestivalEntries.json; sync when 강릉·제주 anchor festivals change."
+    "version": 2,
+    "generatedAt": "2026-10-15T04:13:15.329Z",
+    "source": "tourapi-proxy festivalDetail (ko)",
+    "anchorContentIds": [
+      "2930716",
+      "825295",
+      "4116994",
+      "506616"
+    ],
+    "note": "Supplements manualFestivalEntries.json; regenerate when anchor festivals change.",
+    "missingKoreanTitles": [
+      "4116994"
+    ],
+    "missingKoreanTitleReport": "TourAPI ko detail has no Hangul title for these contentIds"
   },
   "items": [
     {
@@ -11,31 +22,40 @@
       "addr1": "강원특별자치도 강릉시 경강로 2111 (임당동)",
       "mapx": "128.8976016584",
       "mapy": "37.7557770169",
-      "areaCode": "32"
+      "areaCode": "",
+      "eventStartDate": "20261015",
+      "eventEndDate": "20261018"
     },
     {
       "contentId": "825295",
       "title": "강릉커피축제",
       "addr1": "강원특별자치도 강릉시 창해로14번길 20-1 (견소동)",
-      "mapx": "128.8976016584",
-      "mapy": "37.7557770169",
-      "areaCode": "32"
+      "mapx": "128.9473094259",
+      "mapy": "37.7726104945",
+      "areaCode": "",
+      "eventStartDate": "20261021",
+      "eventEndDate": "20261025"
     },
     {
       "contentId": "4116994",
       "title": "K-Drone Festival",
-      "addr1": "강원특별자치도 강릉시",
-      "mapx": "128.8976016584",
-      "mapy": "37.7557770169",
-      "areaCode": "32"
+      "addr1": "강원특별자치도 강릉시 수리골길 102 (포남동)",
+      "mapx": "128.8970786519",
+      "mapy": "37.7793177794",
+      "areaCode": "",
+      "eventStartDate": "20261019",
+      "eventEndDate": "20261023",
+      "missingKoreanTitle": true
     },
     {
       "contentId": "506616",
-      "title": "서귀포 유채꽃 국제걷기대회",
+      "title": "서귀포칠십리축제",
       "addr1": "제주특별자치도 서귀포시 서홍동",
-      "mapx": "126.5600000000",
-      "mapy": "33.2500000000",
-      "areaCode": "39"
+      "mapx": "126.5605630000",
+      "mapy": "33.2438630000",
+      "areaCode": "",
+      "eventStartDate": "20261023",
+      "eventEndDate": "20261025"
     }
   ]
 }

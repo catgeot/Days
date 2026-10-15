@@ -61,6 +61,34 @@ test('domestic hubs expose scenic collections when flag on', () => {
     });
     assert.ok(jeju.collections.length >= 1);
     assert.match(jeju.collections[0].title, /제주/);
+    const jejuFestIds = jeju.festivals.map((row) => String(row.id || '').replace(/^festival:/, ''));
+    assert.ok(
+      jejuFestIds.includes('506616'),
+      `jeju bundle should include seogwipo-hub festival 506616, got ${jejuFestIds.join(',')}`,
+    );
+    assert.match(
+      jeju.festivals.find((row) => row.id === 'festival:506616')?.title || '',
+      /서귀포/,
+    );
+
+    const gangTitles = gangneung.festivals.map((row) => row.title);
+    assert.ok(gangTitles.some((t) => /국수/.test(t)));
+    assert.ok(gangTitles.some((t) => /커피/.test(t)));
+    assert.ok(gangTitles.includes('K-Drone Festival'), 'TourAPI has no KO title for 4116994');
+  });
+});
+
+test('ended seed festivals are dropped at runtime', () => {
+  withCrosslinkFlag(true, () => {
+    const afterSeason = resolvePlaceCrossLinks(
+      { slug: 'gangneung', name: '강릉', country: '대한민국' },
+      { now: new Date('2026-11-01T12:00:00+09:00') },
+    );
+    assert.equal(
+      afterSeason.festivals.length,
+      0,
+      'all anchor Gangneung festivals end before Nov 2026',
+    );
   });
 });
 
