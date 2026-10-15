@@ -22,7 +22,11 @@ import {
 } from '../src/components/PlaceCard/common/locationDisplay.js';
 import { formatPlaceChatLabel } from '../src/pages/Home/lib/mooniPlaceChatLabel.js';
 import { pickKoreanNameGallery } from '../src/utils/placeStatsNameGallery.js';
-import { resolveLegacyMishealPlace } from '../src/pages/Home/lib/legacyMishealPlaceSlugs.js';
+import {
+  resolveLegacyMishealPlace,
+  resolveLegacyMishealGalleryQuery,
+} from '../src/pages/Home/lib/legacyMishealPlaceSlugs.js';
+import { resolveGalleryStockQuery } from '../src/pages/Home/lib/uiPlaceAssetQuery.js';
 import { resolvePlaceTargetFromSlug } from '../src/pages/Home/lib/placeRouteHydrate.js';
 import { buildPlaceDbIdCandidates } from '../src/utils/travelSpotResolve.js';
 import { pickTourKeywordContentId } from '../src/utils/tourKeywordPick.js';
@@ -178,6 +182,21 @@ test('/place/pyeongchang search pin still opens the county card', () => {
   });
   assert.equal(decision.type, 'place');
   assert.equal(decision.param, 'pyeongchang');
+});
+
+test('legacy misheal gallery query ignores Herbnara Farm stock terms', () => {
+  const pin = resolveLegacyMishealPlace('herbnara-farm');
+  assert.ok(pin);
+  const polluted = { ...pin, name_en: 'Herbnara Farm' };
+  const override = resolveLegacyMishealGalleryQuery(polluted);
+  assert.ok(override?.primary);
+  assert.match(override.primary, /valley|stream|Heungjeong/i);
+  assert.doesNotMatch(override.primary, /farm|herb/i);
+  const stock = resolveGalleryStockQuery(polluted, {});
+  assert.equal(stock.primaryQuery, override.primary);
+  assert.doesNotMatch(stock.primaryQuery, /farm/i);
+  const koreanSlug = resolveLegacyMishealGalleryQuery({ name: '흥정계곡', slug: '흥정계곡' });
+  assert.ok(koreanSlug?.primary);
 });
 
 test('ko UI parentCity label uses Korean hub name (Pyeongchang → 평창)', () => {

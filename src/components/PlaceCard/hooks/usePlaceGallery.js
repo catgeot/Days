@@ -37,6 +37,7 @@ import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../
 import { pickKoreanNameGallery } from '../../../utils/placeStatsNameGallery.js';
 import { lookupTourContentIdByName } from '../../../utils/tourKeywordPick.js';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
+import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
   GALLERY_SWR_TTL_MS,
@@ -957,6 +958,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               } else if (isSparseTourApiGallery(gallerySlice)) {
                 console.warn(
                   '⚠️ place_stats sparse Tour facility gallery — live refetch',
+                );
+              } else if (
+                isLegacyMishealPlaceStatsId(dbData.place_id) &&
+                !tourDominant
+              ) {
+                console.warn(
+                  '⚠️ legacy misheal place_stats stock gallery — prefer TourAPI/stock valley query',
                 );
               } else {
                 processAndSetImages(gallerySlice);

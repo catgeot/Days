@@ -3,6 +3,14 @@
  * slug는 옛 주소를 유지하고, 표시명·좌표는 그 명소다.
  * 흥정계곡 21장(place_id herbnara-farm)은 slug 후보로 그대로 조회된다.
  */
+/** Unsplash/Pexels — farm/herb place_id·name_en 오탐 방지 (TourAPI는 place_id herbnara-farm 유지) */
+const LEGACY_MISHEAL_GALLERY_QUERIES = {
+  'herbnara-farm': {
+    primary: 'Heungjeonggyegok valley stream',
+    backup: 'Pyeongchang mountain valley creek Korea',
+  },
+};
+
 const LEGACY_MISHEAL_PLACES = {
   'herbnara-farm': {
     name: '흥정계곡',
@@ -69,4 +77,36 @@ export function resolveLegacyMishealPlace(slug) {
     }
   }
   return null;
+}
+
+function legacyMishealPlaceIdFromLocation(location) {
+  if (!location || typeof location !== 'object') return '';
+  const candidates = [
+    location.canonical_slug,
+    location.slug,
+    String(location.id || '')
+      .replace(/^legacy-/, '')
+      .replace(/^visited-/, ''),
+    location.name,
+    location.name_ko,
+  ]
+    .map((v) => String(v ?? '').trim())
+    .filter(Boolean);
+  for (const raw of candidates) {
+    const pin = resolveLegacyMishealPlace(raw);
+    if (pin?.slug) return String(pin.slug).toLowerCase();
+  }
+  return '';
+}
+
+/** @returns {{ primary: string, backup?: string } | null} */
+export function resolveLegacyMishealGalleryQuery(location) {
+  const placeId = legacyMishealPlaceIdFromLocation(location);
+  if (!placeId) return null;
+  return LEGACY_MISHEAL_GALLERY_QUERIES[placeId] || null;
+}
+
+export function isLegacyMishealPlaceStatsId(placeId) {
+  const key = String(placeId ?? '').trim().toLowerCase();
+  return Boolean(key && LEGACY_MISHEAL_PLACES[key]);
 }
