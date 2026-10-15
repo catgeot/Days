@@ -49,14 +49,7 @@ async function openExplore(page) {
   return input;
 }
 
-async function main() {
-  await mkdir(OUT, { recursive: true });
-  const browser = await chromium.launch({ headless: true, args: ['--ignore-certificate-errors'] });
-  const context = await browser.newContext({
-    viewport: { width: WIDTH, height: HEIGHT },
-    ignoreHTTPSErrors: true,
-    locale: 'ko-KR',
-  });
+async function installGeminiQuotaMock(context) {
   await context.route(/gemini-proxy/i, async (route) => {
     if (route.request().method() !== 'POST') return route.continue();
     await route.fulfill({
@@ -65,6 +58,60 @@ async function main() {
       body: JSON.stringify({ success: false, error: 'quota' }),
     });
   });
+}
+
+async function captureAiLimitHeungjeong(page) {
+  const input = await openExplore(page);
+  await input.fill('흥정계곡');
+  await page.waitForTimeout(400);
+  await input.press('Enter');
+  await page
+    .getByText(/오늘 AI 사용 한도/)
+    .first()
+    .waitFor({ state: 'attached', timeout: 180_000 });
+  await page.evaluate(() => {
+    const sc = document.querySelector('.modal-scroll-area');
+    if (sc) sc.scrollTop = 0;
+  });
+
+  // PC + mobile headers both render role=alert; at 390px only the mobile block is visible.
+  const placeLink = page
+    .locator('[role="alert"]:visible a[href*="/place/"]')
+    .filter({ hasText: /흥정계곡/ });
+  const linkCount = await placeLink.count();
+  if (linkCount < 1) {
+    const all = await page.locator('[role="alert"] a').evaluateAll((els) =>
+      els.map((e) => ({
+        href: e.getAttribute('href'),
+        text: e.textContent?.trim(),
+        visible: !!(e.offsetParent || e.getClientRects().length),
+      })),
+    );
+    throw new Error(
+      `AI-limit alert missing visible /place/흥정계곡 link. Found: ${JSON.stringify(all)} url=${page.url()}`,
+    );
+  }
+  const placeHref = await placeLink.first().getAttribute('href');
+  if (!placeHref || !placeHref.includes('흥정계곡')) {
+    throw new Error(`AI-limit link href unexpected: ${placeHref}`);
+  }
+
+  await shot(page, 'ai-limit-links-390.png', 'AI limit + /place/흥정계곡 link');
+  await placeLink.first().scrollIntoViewIfNeeded();
+  await placeLink.first().click({ timeout: 30_000 });
+  await page.waitForTimeout(2500);
+  await shot(page, 'ai-limit-place-open-390.png', `Clicked ${placeHref}`);
+}
+
+async function main() {
+  await mkdir(OUT, { recursive: true });
+  const browser = await chromium.launch({ headless: true, args: ['--ignore-certificate-errors'] });
+  const context = await browser.newContext({
+    viewport: { width: WIDTH, height: HEIGHT },
+    ignoreHTTPSErrors: true,
+    locale: 'ko-KR',
+  });
+  await installGeminiQuotaMock(context);
 
   const page = await context.newPage();
   page.on('dialog', (d) => d.accept().catch(() => {}));
@@ -76,57 +123,43 @@ async function main() {
   await page.waitForTimeout(3500);
   await shot(page, 'heungjeong-enter-390.png', '흥정계곡 Enter');
 
-  input = await openExplore(page);
-  await input.fill('기백');
-  await page.waitForTimeout(700);
-  await input.press('Enter');
-  await page.getByText(/오늘 AI 사용 한도/).first().waitFor({ state: 'attached', timeout: 180_000 });
-  await page.evaluate(() => {
-    const sc = document.querySelector('.modal-scroll-area');
-    if (sc) sc.scrollTop = 0;
+  const aiPage = await context.newPage();
+  await aiPage.addInitScript(() => {
+    sessionStorage.setItem('gateo-qa-site-search-ai-limit', '1');
   });
-  await shot(page, 'ai-limit-links-390.png', 'AI limit links');
-  const placeHref = await page
-    .locator('[role=alert] a[href^="/place/"]')
-    .first()
-    .getAttribute('href')
-    .catch(() => null);
-  const followHref =
-    placeHref || '/place/흥정계곡';
-  await page.goto(`${BASE}${followHref}`, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(2000);
-  await shot(page, 'ai-limit-place-open-390.png', `AI limit link → ${followHref}`);
+  await captureAiLimitHeungjeong(aiPage);
 
-  input = await openExplore(page);
+  const regionPage = await context.newPage();
+  input = await openExplore(regionPage);
   await input.fill('경포대');
-  await page.waitForTimeout(1000);
-  await page
+  await regionPage.waitForTimeout(1000);
+  await regionPage
     .locator('[data-search-popover] button')
     .filter({ hasNotText: 'MOONi' })
     .filter({ hasText: /경포대/ })
     .first()
     .click();
-  await page.waitForTimeout(2500);
-  await shot(page, 'gyeongpoda-390.png', '경포대');
+  await regionPage.waitForTimeout(2500);
+  await shot(regionPage, 'gyeongpoda-390.png', '경포대');
 
-  input = await openExplore(page);
+  input = await openExplore(regionPage);
   await input.fill('성산일출봉');
-  await page.waitForTimeout(1000);
-  await page
+  await regionPage.waitForTimeout(1000);
+  await regionPage
     .locator('[data-search-popover] button')
     .filter({ hasNotText: 'MOONi' })
     .filter({ hasText: '성산일출봉' })
     .first()
     .click();
-  await page.waitForTimeout(2500);
-  await shot(page, 'seongsan-ilchulbong-390.png', '성산일출봉');
+  await regionPage.waitForTimeout(2500);
+  await shot(regionPage, 'seongsan-ilchulbong-390.png', '성산일출봉');
 
-  input = await openExplore(page);
+  input = await openExplore(regionPage);
   await input.fill('평창');
-  await page.waitForTimeout(800);
+  await regionPage.waitForTimeout(800);
   await input.press('Enter');
-  await page.waitForTimeout(3000);
-  await shot(page, 'pyeongchang-county-390.png', '평창 Enter');
+  await regionPage.waitForTimeout(3000);
+  await shot(regionPage, 'pyeongchang-county-390.png', '평창 Enter');
 
   await browser.close();
 

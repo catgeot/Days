@@ -14,6 +14,7 @@ import {
   pickLatinPlaceName,
   samePlaceCenter,
 } from './uiPlaceAssetQuery.js';
+import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 const SKIP_STATS_IDS = new Set(['New Session', 'Scanning...', 'Searching...', '위치 탐색 중...']);
@@ -126,6 +127,14 @@ export function visitedRowToSearchSpot(row, extras = {}) {
 function visitedIdentityForRow(placeId, nameKo, nameEn) {
   const id = String(placeId || '').trim();
   const ko = String(nameKo || '').trim();
+  const legacy = id ? resolveLegacyMishealPlace(id) : null;
+  if (legacy && ko && normalizeVisitedSearchKey(legacy.name) === normalizeVisitedSearchKey(ko)) {
+    return {
+      slug: placeUrlSlug('', ko),
+      nameEn: '',
+      parentCity: legacy.parentCity || '',
+    };
+  }
   if (resolveCityAttractionHub(ko)) {
     return { slug: id || placeUrlSlug(nameEn, ko), nameEn, parentCity: '' };
   }

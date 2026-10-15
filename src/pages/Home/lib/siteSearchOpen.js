@@ -84,7 +84,7 @@ export function siteSearchFallbackLinkHref(item, query = '') {
     return q ? `/explore?q=${encodeURIComponent(q)}` : '/explore';
   }
   if (!isSiteSearchOpenEnabled()) {
-    const param = getPlaceUrlParam(item);
+    const param = siteSearchCatalogPlaceParam(item) || getPlaceUrlParam(item);
     return param ? `/place/${param}` : `/explore?q=${encodeURIComponent(q)}`;
   }
   const decision = resolveSearchResultSelect(item);

@@ -500,6 +500,7 @@ export function useHomeHandlers({
           }
           const poiNameLocked = Boolean(
             prev.poiAttraction ||
+            prev.parentCity ||
             prev.kind === 'attraction' ||
             prev.kind === 'poi' ||
             prev.badge === '명소',
@@ -819,7 +820,12 @@ export function useHomeHandlers({
       });
     };
 
-    if (requireChoice) {
+    const skipEnterDirectForQa =
+      import.meta.env?.DEV &&
+      typeof sessionStorage !== 'undefined' &&
+      sessionStorage.getItem('gateo-qa-site-search-ai-limit') === '1';
+
+    if (requireChoice && !skipEnterDirectForQa) {
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
 
@@ -1186,7 +1192,7 @@ export function useHomeHandlers({
       return commitLocation(seaSpotBeforeGeocode);
     }
 
-    if (!shouldSkipGeocodeForMood(query)) {
+    if (!skipEnterDirectForQa && !shouldSkipGeocodeForMood(query)) {
       try {
         const visitedHits = await lookupVisitedPlacesForSearch(query);
         if (visitedHits.length >= 1) {
@@ -1227,9 +1233,11 @@ export function useHomeHandlers({
       }
     }
 
-    let coords = shouldSkipGeocodeForMood(query)
+    let coords = skipEnterDirectForQa
       ? null
-      : await getCoordinatesFromAddress(query);
+      : shouldSkipGeocodeForMood(query)
+        ? null
+        : await getCoordinatesFromAddress(query);
     if (isWeakGeocodeHitForMood(query, coords)) {
       coords = null;
     }
@@ -1360,28 +1368,30 @@ export function useHomeHandlers({
       }, coords.lat, coords.lng);
       return commitLocation(normalizedLoc);
     } else {
-      // 지오코딩 실패여도 타이핑과 같은 Search Box 히트가 있으면 AI 교정(화암동굴)보다 우선
-      if (!shouldSkipGeocodeForMood(query)) {
-        try {
-          const namedHit = preferEnterSuggestion(query, await buildHybridSearchSuggestions(query));
-          if (namedHit) {
-            return commitLocation(namedHit, `'${query}' → 원하는 장소를 선택하세요`);
+      if (!skipEnterDirectForQa) {
+        // 지오코딩 실패여도 타이핑과 같은 Search Box 히트가 있으면 AI 교정(화암동굴)보다 우선
+        if (!shouldSkipGeocodeForMood(query)) {
+          try {
+            const namedHit = preferEnterSuggestion(query, await buildHybridSearchSuggestions(query));
+            if (namedHit) {
+              return commitLocation(namedHit, `'${query}' → 원하는 장소를 선택하세요`);
+            }
+          } catch {
+            // 로컬·Search Box 없으면 테마·AI
           }
-        } catch {
-          // 로컬·Search Box 없으면 테마·AI
         }
-      }
 
-      // 지오코딩 실패 시에만 테마 큐레이션 (반딧불·빙하 문장 등).
-      // 무드 결합(따뜻한 휴양지)은 테마 스냅 없이 AI 큐레이션으로.
-      if (!shouldSkipGeocodeForMood(query)) {
-        const themeSpot = pickThemeCurationSpot(query, category);
-        if (themeSpot) {
-          if (!requireChoice) {
-            setDraftInput(themeSpot.name);
-            processSearchKeywords(themeSpot);
+        // 지오코딩 실패 시에만 테마 큐레이션 (반딧불·빙하 문장 등).
+        // 무드 결합(따뜻한 휴양지)은 테마 스냅 없이 AI 큐레이션으로.
+        if (!shouldSkipGeocodeForMood(query)) {
+          const themeSpot = pickThemeCurationSpot(query, category);
+          if (themeSpot) {
+            if (!requireChoice) {
+              setDraftInput(themeSpot.name);
+              processSearchKeywords(themeSpot);
+            }
+            return commitLocation(themeSpot);
           }
-          return commitLocation(themeSpot);
         }
       }
 
@@ -1711,22 +1721,30 @@ export function useHomeHandlers({
 
       if (!isCorrected && aiLimitHit) {
         const local = buildLocalSearchSuggestions(query).slice(0, 8);
-        let hybridMatches = [];
-        try {
-          hybridMatches = pickEnterSuggestionMatches(query, await buildHybridSearchSuggestions(query)).slice(
-            0,
-            8,
-          );
-        } catch {
-          hybridMatches = [];
-        }
-        const linkItems = [];
-        const seenNames = new Set();
-        for (const item of [...local, ...hybridMatches]) {
-          const name = String(item?.name || '').trim();
-          if (!name || seenNames.has(name)) continue;
-          seenNames.add(name);
-          linkItems.push(item);
+        let linkItems = local;
+        if (isSiteSearchOpenEnabled()) {
+          let hybridMatches = [];
+          try {
+            hybridMatches = pickEnterSuggestionMatches(query, await buildHybridSearchSuggestions(query)).slice(
+              0,
+              8,
+            );
+          } catch {
+            hybridMatches = [];
+          }
+          const merged = [];
+          const seenNames = new Set();
+          for (const item of [...local, ...hybridMatches]) {
+            const name = String(item?.name || '').trim();
+            if (!name || seenNames.has(name)) continue;
+            seenNames.add(name);
+            merged.push(item);
+          }
+          const directPoi = resolveSiteSearchEnterSinglePoi(query, merged);
+          if (directPoi && !seenNames.has(String(directPoi.name || '').trim())) {
+            merged.unshift(directPoi);
+          }
+          linkItems = merged;
         }
         const links = [];
         const seen = new Set();

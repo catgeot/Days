@@ -11,6 +11,7 @@ import {
   siteSearchFallbackLinkHref,
 } from '../src/pages/Home/lib/siteSearchOpen.js';
 import { buildLocalSearchSuggestions } from '../src/pages/Home/lib/searchSuggestions.js';
+import { getPlaceUrlParam } from '../src/pages/Home/lib/formatUrlName.js';
 import { visitedRowToSearchSpot } from '../src/pages/Home/lib/visitedPlaceSearch.js';
 
 function withSiteSearchFlag(enabled, fn) {
@@ -107,6 +108,17 @@ test('flag on — AI limit fallback uses POI slug, not county pyeongchang', () =
     const href = siteSearchFallbackLinkHref(spot, '흥정계곡');
     assert.equal(href, '/place/흥정계곡');
     assert.notEqual(href, '/place/pyeongchang');
+  });
+});
+
+test('flag off — AI limit href matches legacy catalog param priority', () => {
+  withSiteSearchFlag(false, () => {
+    const spot = visitedRowToSearchSpot(heungjeongRow);
+    const legacyParam = siteSearchCatalogPlaceParam(spot) || getPlaceUrlParam(spot);
+    const legacyHref = legacyParam
+      ? `/place/${legacyParam}`
+      : `/explore?q=${encodeURIComponent('흥정계곡')}`;
+    assert.equal(siteSearchFallbackLinkHref(spot, '흥정계곡'), legacyHref);
   });
 });
 
