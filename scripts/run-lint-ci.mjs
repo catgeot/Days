@@ -32,4 +32,5 @@ if (eslintCode !== 0 || smokeCode !== 0) {
   );
   process.exit(1);
 }
+await run('node', ['scripts/warn-place-crosslink-festival-seed-age.mjs']);
 console.log('lint:ci PASS');

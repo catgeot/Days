@@ -243,6 +243,8 @@
     "test:poi-admin-slug": "node --import ./scripts/register-src-esm.mjs --test scripts/poi-admin-slug.test.mjs",
     "test:korea-admin-region": "node --import ./scripts/register-src-esm.mjs --test scripts/korea-admin-region-match.test.mjs",
     "test:place-cross-links": "node --import ./scripts/register-src-esm.mjs --test scripts/place-cross-links.test.mjs",
+    "generate:place-crosslink-festival-seed": "node --import ./scripts/register-src-esm.mjs scripts/generate-place-crosslink-festival-seed.mjs",
+    "warn:place-crosslink-festival-seed-age": "node scripts/warn-place-crosslink-festival-seed-age.mjs",
     "test:gateo-feature-flags": "node --import ./scripts/register-src-esm.mjs --test scripts/gateo-feature-flags.test.mjs",
     "test:e2e:poi-slug": "playwright test --config=playwright.config.poi-slug.js",
     "test:e2e:poi-slug-v2": "playwright test --config=playwright.config.poi-slug-v2.js",

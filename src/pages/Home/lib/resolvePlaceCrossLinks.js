@@ -2,7 +2,6 @@ import manualFestivalEntries from '../../Korea/data/manualFestivalEntries.json' 
 import festivalSeedJson from '../data/placeCrosslinkFestivalSeed.json' with { type: 'json' };
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
-import { nearbyHubsForFestival } from '../../Korea/nearbyFestivalHubs.js';
 import { getWorldEventsForSlug, getWorldEventTitle } from '../../../utils/worldEvents.js';
 import { isGateoPlaceCrosslinkEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs.js';
@@ -10,6 +9,11 @@ import { matchKoreaAdminRegionFromAddr } from './koreaAdminRegionMatch.js';
 import { scenicHomePathForHubId } from './koreaThemeCrossLinks.js';
 import { isScenicSpotHidden } from './koreaScenicSpotVisibility.js';
 import { gateoKoreaFestivalDetailUrl } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import {
+  crosslinkFestivalDisplayTitle,
+  isCrosslinkFestivalActive,
+  festivalPrimaryHubMatchesPlaceHub,
+} from './placeCrosslinkFestivals.js';
 
 const SCENIC_SPOTS = Array.isArray(scenicJson?.spots) ? scenicJson.spots : [];
 const MANUAL_FESTIVALS = Object.values(manualFestivalEntries || {});
@@ -114,7 +118,7 @@ function listEventsForSlug(slug) {
   }));
 }
 
-function listFestivalsForHub(hubId) {
+function listFestivalsForHub(hubId, { now = new Date() } = {}) {
   const target = String(hubId || '').toLowerCase();
   if (!target) return [];
   const hubs = koreaHubListForFestivals();
@@ -122,12 +126,12 @@ function listFestivalsForHub(hubId) {
   for (const row of crosslinkFestivalCatalog()) {
     const contentId = String(row.contentId || '').trim();
     if (!contentId) continue;
-    const primary = nearbyHubsForFestival(row, hubs, { limit: 1 })[0];
-    if (String(primary?.hubId || '').toLowerCase() !== target) continue;
+    if (!isCrosslinkFestivalActive(row, now)) continue;
+    if (!festivalPrimaryHubMatchesPlaceHub(row, target, hubs)) continue;
     out.push({
       id: `festival:${contentId}`,
       kind: 'festival',
-      title: String(row.title || row.titleEn || '').trim(),
+      title: crosslinkFestivalDisplayTitle(row),
       href: gateoKoreaFestivalDetailUrl(contentId),
     });
   }
@@ -169,10 +173,11 @@ function listScenicCollectionsForHub(hubId) {
  * @param {object | null | undefined} location
  * @returns {{ festivals: object[], events: object[], collections: object[] }}
  */
-export function resolvePlaceCrossLinks(location) {
+export function resolvePlaceCrossLinks(location, options = {}) {
   if (!isGateoPlaceCrosslinkEnabled()) return emptyBundle();
   if (!location || typeof location !== 'object') return emptyBundle();
 
+  const now = options.now instanceof Date ? options.now : new Date();
   const hubId = resolveHubIdForPlace(location);
   const slug = String(location.slug || location.canonical_slug || hubId || '').toLowerCase();
   const events = listEventsForSlug(slug);
@@ -181,7 +186,7 @@ export function resolvePlaceCrossLinks(location) {
     return { festivals: [], events, collections: [] };
   }
 
-  const festivals = listFestivalsForHub(hubId);
+  const festivals = listFestivalsForHub(hubId, { now });
   const collections = listScenicCollectionsForHub(hubId);
   return { festivals, events, collections };
 }
