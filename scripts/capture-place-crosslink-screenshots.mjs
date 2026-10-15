@@ -55,7 +55,7 @@ async function capture(fileName, flagLabel, title, location, flagOn) {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   await page.goto(`file://${htmlPath}`);
   const pngPath = join(OUT_DIR, `${fileName}.png`);
-  await page.screenshot({ path: pngPath });
+  await page.screenshot({ path: pngPath, fullPage: true });
   await browser.close();
   return pngPath;
 }

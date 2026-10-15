@@ -72,11 +72,15 @@ test('domestic hubs expose scenic collections when flag on', () => {
     );
     const jejuCollectionTitles = jeju.collections.map((row) => row.title);
     const jejuCollectionIds = jeju.collections.map((row) => row.id);
+    assert.ok(jejuCollectionIds.includes('scenic-hub:jeju'), 'jeju hub collection card');
+    assert.ok(jejuCollectionIds.includes('scenic-hub:seogwipo'), 'seogwipo hub collection card');
+    assert.match(
+      jejuCollectionTitles.find((t) => /서귀포/.test(t) && /명소 컬렉션/.test(t)) || '',
+      /서귀포/,
+    );
     assert.ok(
-      jejuCollectionTitles.some((t) => /성산일출봉|천지연폭포/.test(t)) ||
-        jejuCollectionIds.includes('scenic:seongsan-ilchulbong') ||
-        jejuCollectionIds.includes('scenic:cheonjiyeon'),
-      `jeju collections should include a seogwipo-hub scenic spot, got ${jejuCollectionTitles.join(', ')}`,
+      jejuCollectionIds.includes('scenic:seongsan-ilchulbong'),
+      `jeju bundle must include 성산일출봉, got spots: ${jejuCollectionTitles.join(', ')}`,
     );
 
     const gangTitles = gangneung.festivals.map((row) => row.title);
