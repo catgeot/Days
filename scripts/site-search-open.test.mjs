@@ -76,18 +76,18 @@ test('flag on — 평창 hub still opens catalog place', () => {
 test('flag on — Explore Enter picks one POI when duplicate exact Korean names', () => {
   withSiteSearchFlag(true, () => {
     const primary = visitedRowToSearchSpot({
-      place_id: 'herbnara-farm',
-      name_ko: '흥정계곡',
-      name_en: 'Herbnara Farm',
-      lat: 37.6270726091,
-      lng: 128.3518474417,
-    });
-    const duplicate = visitedRowToSearchSpot({
       place_id: '흥정계곡',
       name_ko: '흥정계곡',
-      name_en: '',
+      name_en: 'Heungjeong Valley',
       lat: 37.62466863,
       lng: 128.34930501,
+    });
+    const duplicate = visitedRowToSearchSpot({
+      place_id: '흥정계곡-alt',
+      name_ko: '흥정계곡',
+      name_en: '',
+      lat: 37.625,
+      lng: 128.35,
     });
     const local = [
       primary,
@@ -103,8 +103,7 @@ test('flag on — Explore Enter picks one POI when duplicate exact Korean names'
     const direct = resolveSiteSearchEnterSinglePoi('흥정계곡', local);
     assert.ok(direct);
     assert.equal(direct.name, '흥정계곡');
-    assert.equal(direct.id, 'visited-herbnara-farm');
-    assert.equal(direct.image_url, '');
+    assert.equal(direct.id, 'visited-흥정계곡');
   });
 });
 

@@ -98,13 +98,19 @@ async function captureAiLimitHeungjeong(page) {
   await shot(page, 'ai-limit-links-390.png', 'AI limit + /place/흥정계곡 link');
   await placeLink.first().scrollIntoViewIfNeeded();
   await placeLink.first().click({ timeout: 30_000 });
-  await page.waitForURL(/\/place\//, { timeout: 60_000 });
+  await page.waitForURL(/\/place\/.*%ED%9D%A5%EC%A0%95%EA%B3%84%EA%B3%A1|\/place\/흥정계곡/, {
+    timeout: 60_000,
+  });
+  const finalUrl = page.url();
+  if (finalUrl.includes('herbnara-farm')) {
+    throw new Error(`AI-limit place link redirected to herbnara-farm: ${finalUrl}`);
+  }
   await page
     .getByRole('heading', { name: /흥정계곡/ })
     .first()
     .waitFor({ state: 'visible', timeout: 120_000 });
-  await page.waitForTimeout(1500);
-  await shot(page, 'ai-limit-place-open-390.png', `Clicked ${placeHref}`);
+  await page.waitForTimeout(2000);
+  await shot(page, 'ai-limit-place-open-390.png', `Clicked ${placeHref} · ${finalUrl}`);
 }
 
 async function main() {

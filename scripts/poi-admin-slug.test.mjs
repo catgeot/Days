@@ -69,18 +69,27 @@ function openHeungjeong() {
   return ensureLatinPlaceSlug(mergeLatinPlaceFields(suggestion, adminHit));
 }
 
-test('visited herbnara-farm row drops misleading Herbnara Farm subtitle', () => {
-  const spot = visitedRowToSearchSpot({
+test('visited herbnara-farm row is separate from 흥정계곡 valley', () => {
+  const farm = visitedRowToSearchSpot({
     place_id: 'herbnara-farm',
-    name_ko: '흥정계곡',
+    name_ko: '허브나라 농원',
     name_en: 'Herbnara Farm',
     lat: 37.6270726091,
     lng: 128.3518474417,
+    image_url: 'https://example.com/farm.jpg',
   });
-  assert.equal(spot.name, '흥정계곡');
-  assert.equal(spot.name_en, '');
-  assert.equal(spot.image_url, '');
-  assert.equal(spot.parentCity, '평창');
+  assert.equal(farm.name, '허브나라 농원');
+  assert.equal(farm.name_en, 'Herbnara Farm');
+  assert.equal(farm.slug, 'herbnara-farm');
+  const valley = visitedRowToSearchSpot({
+    place_id: '흥정계곡',
+    name_ko: '흥정계곡',
+    name_en: 'Heungjeong Valley',
+    lat: 37.62466863,
+    lng: 128.34930501,
+  });
+  assert.equal(valley.slug, '흥정계곡');
+  assert.equal(getPlaceUrlParam(valley), '흥정계곡');
 });
 
 test('Mapbox en POI keeps 흥정계곡 and does not slug the county', () => {
@@ -184,19 +193,19 @@ test('/place/pyeongchang search pin still opens the county card', () => {
   assert.equal(decision.param, 'pyeongchang');
 });
 
-test('legacy misheal gallery query ignores Herbnara Farm stock terms', () => {
-  const pin = resolveLegacyMishealPlace('herbnara-farm');
-  assert.ok(pin);
-  const polluted = { ...pin, name_en: 'Herbnara Farm' };
-  const override = resolveLegacyMishealGalleryQuery(polluted);
-  assert.ok(override?.primary);
-  assert.match(override.primary, /valley|stream|Heungjeong/i);
-  assert.doesNotMatch(override.primary, /farm|herb/i);
-  const stock = resolveGalleryStockQuery(polluted, {});
-  assert.equal(stock.primaryQuery, override.primary);
-  assert.doesNotMatch(stock.primaryQuery, /farm/i);
-  const koreanSlug = resolveLegacyMishealGalleryQuery({ name: '흥정계곡', slug: '흥정계곡' });
-  assert.ok(koreanSlug?.primary);
+test('흥정계곡 place_stats row uses valley latin for stock gallery', () => {
+  assert.equal(resolveLegacyMishealPlace('herbnara-farm'), null);
+  assert.equal(resolveLegacyMishealGalleryQuery({ slug: 'herbnara-farm' }), null);
+  const valley = visitedRowToSearchSpot({
+    place_id: '흥정계곡',
+    name_ko: '흥정계곡',
+    name_en: 'Heungjeong Valley',
+    lat: 37.62466863,
+    lng: 128.34930501,
+  });
+  const stock = resolveGalleryStockQuery(valley, {});
+  assert.match(stock.primaryQuery, /Heungjeong Valley/i);
+  assert.doesNotMatch(stock.primaryQuery, /farm|herb/i);
 });
 
 test('ko UI parentCity label uses Korean hub name (Pyeongchang → 평창)', () => {
@@ -238,18 +247,22 @@ test('same Korean name gallery skips the county hub row', () => {
       },
       {
         place_id: 'herbnara-farm',
+        name_ko: '허브나라 농원',
+        gallery_urls: [photo('farm')],
+      },
+      {
+        place_id: '흥정계곡',
         name_ko: '흥정계곡',
         gallery_urls: [photo('valley'), photo('valley-2')],
       },
     ],
     '흥정계곡',
   );
-  assert.equal(picked?.place_id, 'herbnara-farm');
+  assert.equal(picked?.place_id, '흥정계곡');
 });
 
 test('shared latin mis-heal URLs open the Korean attraction card', () => {
   const cases = [
-    ['herbnara-farm', '흥정계곡'],
     ['woljeong-ri', '월정리해변'],
     ['seolma-ri', '감악산 운계폭포'],
   ];
@@ -261,16 +274,12 @@ test('shared latin mis-heal URLs open the Korean attraction card', () => {
     assert.equal(pin.poiAttraction, true);
     assert.ok(Number.isFinite(pin.lat) && Number.isFinite(pin.lng));
   }
-  const koreanSlugPin = resolvePlaceTargetFromSlug('흥정계곡');
-  assert.ok(koreanSlugPin);
-  assert.equal(koreanSlugPin.name, '흥정계곡');
-  assert.equal(koreanSlugPin.slug, 'herbnara-farm');
-  const valley = resolveLegacyMishealPlace('herbnara-farm');
-  assert.ok(buildPlaceDbIdCandidates(valley).includes('herbnara-farm'));
+  assert.equal(resolvePlaceTargetFromSlug('herbnara-farm'), null);
+  assert.equal(resolvePlaceTargetFromSlug('흥정계곡'), null);
   assert.equal(resolvePlaceTargetFromSlug('not-a-shared-slug'), null);
 });
 
-test('same Korean name keeps all 21 herbnara-farm photos', () => {
+test('same Korean name keeps all 21 흥정계곡 tour photos', () => {
   const photos = Array.from({ length: 21 }, (_, i) => ({
     id: `tourapi-detail-${i}`,
     urls: {
@@ -289,19 +298,19 @@ test('same Korean name keeps all 21 herbnara-farm photos', () => {
         gallery_urls: photos.slice(0, 20),
       },
       {
-        place_id: '흥정계곡',
-        name_ko: '흥정계곡',
-        gallery_urls: [],
+        place_id: 'herbnara-farm',
+        name_ko: '허브나라 농원',
+        gallery_urls: photos.slice(0, 1),
       },
       {
-        place_id: 'herbnara-farm',
+        place_id: '흥정계곡',
         name_ko: '흥정계곡',
         gallery_urls: photos,
       },
     ],
     '흥정계곡',
   );
-  assert.equal(picked?.place_id, 'herbnara-farm');
+  assert.equal(picked?.place_id, '흥정계곡');
   assert.equal(picked?.gallery_urls?.length, 21);
 });
 

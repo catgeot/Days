@@ -40,6 +40,10 @@ import {
   overlaySessionCuration,
   resolvePlaceTargetFromSlug,
 } from './lib/placeRouteHydrate';
+import {
+  fetchUiPlacePinFromPlaceStatsSlug,
+  isHangulPlaceStatsSlug,
+} from './lib/placeStatsSlugHydrate.js';
 import { isHiddenKoreaScenicPlaceSlug } from './lib/koreaScenicSpotVisibility.js';
 import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
@@ -1031,7 +1035,11 @@ function Home() {
           );
 
           const canonicalParam = getPlaceUrlParam(focusTarget);
-          if (canonicalParam && canonicalParam.toLowerCase() !== normalizedTargetSlug) {
+          if (
+            canonicalParam &&
+            canonicalParam.toLowerCase() !== normalizedTargetSlug &&
+            !isHangulPlaceStatsSlug(targetSlug)
+          ) {
             const tabSuffix = match.params.tab ? `/${match.params.tab}` : '';
             navigate(`/place/${canonicalParam}${tabSuffix}`, { replace: true });
             return;
@@ -1149,6 +1157,31 @@ function Home() {
               .catch(() => {});
           }
 
+          setIsCardExpanded(true);
+        });
+      } else if (isHangulPlaceStatsSlug(targetSlug)) {
+        const hangulSync = ++placeRouteSyncRef.current;
+        fetchUiPlacePinFromPlaceStatsSlug(targetSlug).then((pin) => {
+          if (!pin || hangulSync !== placeRouteSyncRef.current) return;
+          const focusTarget = overlaySessionCuration(
+            enrichLocationWithRentalAirport(
+              healPlaceholderCountry(
+                mergeCanonicalTravelSpot({
+                  ...pin,
+                  id: pin.id || pin.place_id || `loc-${pin.lat}-${pin.lng}`,
+                  type: pin.type || 'temp-base',
+                  category: pin.category || category,
+                }),
+              ),
+            ),
+            { selectedLocation: selectedLocationRef.current },
+          );
+          selectedLocationRef.current = focusTarget;
+          pendingGlobeHomeFocusRef.current = focusTarget;
+          rememberGlobeFocus(focusTarget);
+          addScoutPin(focusTarget);
+          moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
+          setSelectedLocation(focusTarget);
           setIsCardExpanded(true);
         });
       } else {
