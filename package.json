@@ -241,6 +241,8 @@
     "smoke:health:ci": "node scripts/smoke-health.mjs",
     "test": "node --import ./scripts/register-src-esm.mjs --import ./scripts/register-youtube-hook-test.mjs --test scripts/useYouTubeSearch.session.test.mjs scripts/test-youtube-retry-probe-errors.mjs scripts/test-youtube-embed-qa-hook.mjs",
     "test:poi-admin-slug": "node --import ./scripts/register-src-esm.mjs --test scripts/poi-admin-slug.test.mjs",
+    "test:korea-admin-region": "node --import ./scripts/register-src-esm.mjs --test scripts/korea-admin-region-match.test.mjs",
+    "test:place-cross-links": "node --import ./scripts/register-src-esm.mjs --test scripts/place-cross-links.test.mjs",
     "test:e2e:poi-slug": "playwright test --config=playwright.config.poi-slug.js",
     "test:e2e:poi-slug-v2": "playwright test --config=playwright.config.poi-slug-v2.js",
     "test:e2e:poi-slug-v3": "playwright test --config=playwright.config.poi-slug-v3.js",
