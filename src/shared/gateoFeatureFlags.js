@@ -6,11 +6,10 @@ export const GATEO_ENV_FLAG_NAMES = {
   SITE_SEARCH: 'VITE_GATEO_SITE_SEARCH',
 };
 
-function readGateoEnvFlag(name) {
-  const raw =
-    typeof import.meta !== 'undefined'
-      ? import.meta.env?.[name]
-      : globalThis.__VITE_ENV__?.[name];
+/** @param {string} name */
+export function readGateoEnvFlag(name) {
+  // ESM always has import.meta; Vite supplies import.meta.env. node --test rewrites env → __VITE_ENV__.
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
   return String(raw || '') === '1';
 }
 

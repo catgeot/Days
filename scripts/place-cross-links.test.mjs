@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { GATEO_ENV_FLAG_NAMES } from '../src/shared/gateoFeatureFlags.js';
-import { resolvePlaceCrossLinks } from '../src/pages/Home/lib/resolvePlaceCrossLinks.js';
+import {
+  isDomesticKoreaForCrosslink,
+  resolvePlaceCrossLinks,
+} from '../src/pages/Home/lib/resolvePlaceCrossLinks.js';
 
 function withCrosslinkFlag(enabled, fn) {
   const prev = globalThis.__VITE_ENV__[GATEO_ENV_FLAG_NAMES.PLACE_CROSSLINK];
@@ -55,6 +58,15 @@ test('domestic hubs expose scenic collections when flag on', () => {
     assert.ok(jeju.collections.length >= 1);
     assert.match(jeju.collections[0].title, /제주/);
   });
+});
+
+test('Japan coords inside coarse bbox are not domestic (Fukuoka, Tsushima)', () => {
+  assert.equal(isDomesticKoreaForCrosslink({ lat: 33.59, lng: 130.4 }), false);
+  assert.equal(isDomesticKoreaForCrosslink({ lat: 34.2, lng: 129.29 }), false);
+  assert.equal(
+    isDomesticKoreaForCrosslink({ lat: 37.57, lng: 126.98, country: '대한민국' }),
+    true,
+  );
 });
 
 test('overseas slugs attach world events only', () => {

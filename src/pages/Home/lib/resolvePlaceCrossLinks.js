@@ -13,16 +13,35 @@ const MANUAL_FESTIVALS = Object.values(manualFestivalEntries || {});
 
 const KOREA_COUNTRY = new Set(['대한민국', '한국', 'south korea', 'korea', 'kr']);
 
+/** Kyushu/Tsushima — inside the coarse Korea bbox but not domestic. */
+const JAPAN_NEAR_KOREA_BOXES = [
+  { minLat: 33.0, maxLat: 33.95, minLng: 130.0, maxLng: 131.3 },
+  { minLat: 33.9, maxLat: 34.65, minLng: 128.6, maxLng: 129.75 },
+];
+
 function emptyBundle() {
   return { festivals: [], events: [], collections: [] };
 }
 
-function isDomesticKorea(loc) {
+function inJapanNearKoreaExclusion(lat, lng) {
+  return JAPAN_NEAR_KOREA_BOXES.some(
+    (box) => lat >= box.minLat && lat <= box.maxLat && lng >= box.minLng && lng <= box.maxLng,
+  );
+}
+
+export function isDomesticKoreaForCrosslink(loc) {
   const c = String(loc?.country || loc?.country_en || '').trim().toLowerCase();
+  if (c && !KOREA_COUNTRY.has(c)) return false;
   if (KOREA_COUNTRY.has(c)) return true;
   const lat = Number(loc?.lat);
   const lng = Number(loc?.lng);
-  return Number.isFinite(lat) && Number.isFinite(lng) && lat >= 33 && lat <= 39 && lng >= 124.5 && lng <= 132;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+  if (inJapanNearKoreaExclusion(lat, lng)) return false;
+  return lat >= 33 && lat <= 38.9 && lng >= 124.5 && lng <= 132;
+}
+
+function isDomesticKorea(loc) {
+  return isDomesticKoreaForCrosslink(loc);
 }
 
 function resolveEventHref(event) {
