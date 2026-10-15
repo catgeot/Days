@@ -62,6 +62,19 @@ function openHeungjeong() {
   return ensureLatinPlaceSlug(mergeLatinPlaceFields(suggestion, adminHit));
 }
 
+test('visited herbnara-farm row drops misleading Herbnara Farm subtitle', () => {
+  const spot = visitedRowToSearchSpot({
+    place_id: 'herbnara-farm',
+    name_ko: '흥정계곡',
+    name_en: 'Herbnara Farm',
+    lat: 37.6270726091,
+    lng: 128.3518474417,
+  });
+  assert.equal(spot.name, '흥정계곡');
+  assert.equal(spot.name_en, '');
+  assert.equal(spot.parentCity, '평창');
+});
+
 test('Mapbox en POI keeps 흥정계곡 and does not slug the county', () => {
   const place = openHeungjeong();
   assert.equal(place.name, '흥정계곡');

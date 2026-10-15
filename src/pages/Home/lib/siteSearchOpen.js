@@ -1,6 +1,14 @@
 import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { getPlaceUrlParam } from './formatUrlName.js';
 import { resolveSearchResultSelect } from './exploreRecentHistory.js';
+import { resolveExploreCityHubExact } from './exploreHubResolve.js';
+import { shouldOfferKoreaHomonymDisambiguation } from './detectHomonymLocation.js';
+import {
+  normalizeSearchName,
+  pickEnterSuggestionMatches,
+  placeNameMatchesSearchQuery,
+  resolveEnterSearchCanonical,
+} from './searchEnterMatch.js';
 
 /**
  * Plan-2 sitewide search step 2 — county-safe open when flag ON.
@@ -41,6 +49,50 @@ export function siteSearchCatalogPlaceParam(spot) {
   if (!decision) return '';
   if (decision.type === 'place') return decision.param;
   return '';
+}
+
+/**
+ * Explore Enter (flag ON) — exact single POI like suggestion tap; skip multi-candidate lists.
+ * @param {string} query
+ * @param {object[]} suggestions
+ * @returns {object | null}
+ */
+export function resolveSiteSearchEnterSinglePoi(query, suggestions) {
+  if (!isSiteSearchOpenEnabled()) return null;
+  const q = String(query || '').trim();
+  if (!q) return null;
+  if (resolveExploreCityHubExact(q) || shouldOfferKoreaHomonymDisambiguation(q)) return null;
+
+  const matches = pickEnterSuggestionMatches(q, suggestions);
+  if (!matches.length) return null;
+
+  const canonical = normalizeSearchName(resolveEnterSearchCanonical(q));
+  const exactNameMatches = matches.filter((item) => normalizeSearchName(item.name) === canonical);
+  if (exactNameMatches.length === 1) return exactNameMatches[0];
+  if (matches.length === 1 && placeNameMatchesSearchQuery(q, matches[0])) return matches[0];
+  return null;
+}
+
+/**
+ * AI-limit · catalog fallback href (flag ON uses county-safe open, still deep-links POI slugs).
+ * @param {object | null | undefined} item
+ * @param {string} [query]
+ */
+export function siteSearchFallbackLinkHref(item, query = '') {
+  const q = String(query || item?.name || '').trim();
+  if (!item || typeof item !== 'object') {
+    return q ? `/explore?q=${encodeURIComponent(q)}` : '/explore';
+  }
+  if (!isSiteSearchOpenEnabled()) {
+    const param = siteSearchCatalogPlaceParam(item) || getPlaceUrlParam(item);
+    return param ? `/place/${param}` : `/explore?q=${encodeURIComponent(q)}`;
+  }
+  const decision = resolveSearchResultSelect(item);
+  if (!decision) return `/explore?q=${encodeURIComponent(q)}`;
+  if (decision.type === 'place') return `/place/${decision.param}`;
+  const slug = getPlaceUrlParam(decision.spot);
+  if (slug) return `/place/${slug}`;
+  return `/explore?q=${encodeURIComponent(decision.spot?.name || q)}`;
 }
 
 /**

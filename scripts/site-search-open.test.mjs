@@ -5,9 +5,13 @@ import { GATEO_ENV_FLAG_NAMES } from '../src/shared/gateoFeatureFlags.js';
 import {
   applySiteSearchOpenPin,
   isSiteSearchOpenEnabled,
+  resolveSiteSearchEnterSinglePoi,
   siteSearchCatalogPlaceParam,
   siteSearchExploreEnterCommit,
+  siteSearchFallbackLinkHref,
 } from '../src/pages/Home/lib/siteSearchOpen.js';
+import { buildLocalSearchSuggestions } from '../src/pages/Home/lib/searchSuggestions.js';
+import { getPlaceUrlParam } from '../src/pages/Home/lib/formatUrlName.js';
 import { visitedRowToSearchSpot } from '../src/pages/Home/lib/visitedPlaceSearch.js';
 
 function withSiteSearchFlag(enabled, fn) {
@@ -66,5 +70,69 @@ test('flag on — 평창 hub still opens catalog place', () => {
     const commit = siteSearchExploreEnterCommit(spot);
     assert.equal(commit.mode, 'place');
     assert.equal(commit.param, 'pyeongchang');
+  });
+});
+
+test('flag on — Explore Enter single POI skips disambiguation (흥정계곡)', () => {
+  withSiteSearchFlag(true, () => {
+    const spot = visitedRowToSearchSpot(heungjeongRow);
+    const local = [
+      spot,
+      {
+        name: '흥정계곡오토캠핑장',
+        name_en: 'Heungjeong Auto Camping',
+        lat: 37.62,
+        lng: 128.35,
+        country: '대한민국',
+      },
+    ];
+    const direct = resolveSiteSearchEnterSinglePoi('흥정계곡', local);
+    assert.ok(direct);
+    assert.equal(direct.name, '흥정계곡');
+    const commit = siteSearchExploreEnterCommit(direct);
+    assert.equal(commit.mode, 'home');
+    assert.equal(commit.pin.slug, '흥정계곡');
+  });
+});
+
+test('flag on — county hub query keeps disambiguation path (평창)', () => {
+  withSiteSearchFlag(true, () => {
+    const local = buildLocalSearchSuggestions('평창');
+    assert.equal(resolveSiteSearchEnterSinglePoi('평창', local), null);
+  });
+});
+
+test('flag on — AI limit fallback uses POI slug, not county pyeongchang', () => {
+  withSiteSearchFlag(true, () => {
+    const spot = visitedRowToSearchSpot(heungjeongRow);
+    const href = siteSearchFallbackLinkHref(spot, '흥정계곡');
+    assert.equal(href, '/place/흥정계곡');
+    assert.notEqual(href, '/place/pyeongchang');
+  });
+});
+
+test('flag off — AI limit href matches legacy catalog param priority', () => {
+  withSiteSearchFlag(false, () => {
+    const spot = visitedRowToSearchSpot(heungjeongRow);
+    const legacyParam = siteSearchCatalogPlaceParam(spot) || getPlaceUrlParam(spot);
+    const legacyHref = legacyParam
+      ? `/place/${legacyParam}`
+      : `/explore?q=${encodeURIComponent('흥정계곡')}`;
+    assert.equal(siteSearchFallbackLinkHref(spot, '흥정계곡'), legacyHref);
+  });
+});
+
+test('flag on — AI limit fallback uses catalog slug for 평창', () => {
+  withSiteSearchFlag(true, () => {
+    const spot = {
+      slug: 'pyeongchang',
+      name: '평창',
+      name_ko: '평창',
+      name_en: 'Pyeongchang',
+      lat: 37.37,
+      lng: 128.39,
+      country: '대한민국',
+    };
+    assert.equal(siteSearchFallbackLinkHref(spot, '평창'), '/place/pyeongchang');
   });
 });
