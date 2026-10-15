@@ -349,8 +349,27 @@ async function fetchTourApiGalleryInner(opts) {
     firstCommon?.firstimage || firstCommon?.imageUrl || '',
   ).trim();
 
-  if (detail?.items?.length) {
-    detail.items.forEach((it, i) => {
+  const detailItems = detail?.items || [];
+  const allDetailUntitled =
+    detailItems.length >= 2 &&
+    detailItems.every((it) => !tourApiPhotoCaption(it));
+
+  if (allDetailUntitled) {
+    detailItems.forEach((it, i) => {
+      const imageUrl = String(
+        it?.imageUrl || it?.originimgurl || it?.firstimage || '',
+      ).trim();
+      if (!imageUrl) return;
+      const img = toGalleryImage(
+        { ...it, title: placeTitle },
+        'detailImage',
+        i,
+        55,
+      );
+      if (img) detailImages.push(img);
+    });
+  } else if (detailItems.length) {
+    detailItems.forEach((it, i) => {
       const caption = tourApiPhotoCaption(it);
       const imageUrl = String(
         it?.imageUrl || it?.originimgurl || it?.firstimage || '',

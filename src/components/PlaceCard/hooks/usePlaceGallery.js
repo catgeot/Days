@@ -877,6 +877,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         console.warn('⚠️ session cache thin stock — live Unsplash/Pexels refetch');
       }
 
+      /** sparse/thin DB Tour — live refetch 실패 시 최소 1장 복구(흥정계곡 등) */
+      let dbGallerySliceFallback = null;
+
       // 2) DB 선조회 — 히트면 즉시 표시(LIVE 대기 없음). 갤러리 탭은 7일 스톡 SWR(hero·image_url 유지).
       // 더보기(append)는 DB 미반영. thumbnailOnly는 SWR/Pexels 없음.
       if (!GALLERY_DB_SKIP_SLUGS.has(spotSlugForDb) && dbCandidates.length) {
@@ -959,6 +962,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 console.warn(
                   '⚠️ place_stats sparse Tour facility gallery — live refetch',
                 );
+                if (gallerySlice.length > 0) {
+                  dbGallerySliceFallback = gallerySlice;
+                }
               } else if (
                 isLegacyMishealPlaceStatsId(dbData.place_id) &&
                 !tourDominant
@@ -1185,6 +1191,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (!forceRefresh) writeGallerySwrAt(stablePlaceKey);
       } else if (tourSeed.length > 0 && !forceRefresh) {
         console.warn('⚠️ 스톡 0 — Tour 선드롭 유지');
+      } else if (
+        !forceRefresh &&
+        dbGallerySliceFallback?.length &&
+        allImagesRef.current.length === 0 &&
+        !isStale()
+      ) {
+        console.warn('⚠️ live gallery miss — sparse place_stats Tour fallback');
+        processAndSetImages(dbGallerySliceFallback);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+        if (allImagesRef.current.length > 0) {
+          markFetchDone();
+          finishLoading();
+          afterInstantGallery();
+        } else {
+          setLoadFailed(true);
+        }
       } else {
         console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
         if (!isStale()) {
@@ -1431,6 +1453,25 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   const handleRetryLoad = useCallback(() => {
     lastFetchKeyRef.current = null;
+    allImagesRef.current = [];
+    const placeKey = currentPlaceKeyRef.current;
+    if (placeKey && typeof sessionStorage !== 'undefined') {
+      const encoded = encodeURIComponent(placeKey);
+      const prefixes = [
+        `days_gallery_${encoded}_`,
+        `days_gallery_thumb_${encoded}`,
+      ];
+      const keysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i += 1) {
+        const k = sessionStorage.key(i);
+        if (!k || !k.startsWith('days_gallery_')) continue;
+        if (k.includes(encoded) || prefixes.some((p) => k.startsWith(p))) {
+          keysToRemove.push(k);
+        }
+      }
+      keysToRemove.forEach((k) => sessionStorage.removeItem(k));
+    }
+    setLoadFailed(false);
     fetchImages(false);
   }, [fetchImages]);
 
