@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, us
 import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import { reopenSavedPlaceLocation } from '../lib/placeRouteHydrate.js';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceLegacyAltitude } from '../lib/globeCategoryFocus';
 import { OVERLAY_CLICK_GUARD_MS, isGlobeClickSuppressed, nextOverlayClickGuardUntil } from '../lib/globeOverlayClickGuard';
 
@@ -322,13 +323,15 @@ const HomeGlobe = React.memo(forwardRef(({
             if (hasMessageChat) result[idx].hasChat = true;
             result[idx].tripId = trip.id;
         } else {
+            const reopened = reopenSavedPlaceLocation(trip);
             result.push({
-                ...trip,
-                name: fixedName,
+                ...reopened,
+                name: reopened.name || fixedName,
                 type: 'temp-base',
                 priority: isBookmarked ? 4 : 3,
                 isBookmarked: isBookmarked,
-                hasChat: hasMessageChat
+                hasChat: hasMessageChat,
+                tripId: trip.id,
             });
         }
     });

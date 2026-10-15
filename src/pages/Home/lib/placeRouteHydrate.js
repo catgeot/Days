@@ -15,6 +15,7 @@ import {
 import { isSyntheticOrEmptyPlaceDesc } from './placeDescText.js';
 import { readCachedPlaceBySlug } from './placeLocationCache.js';
 import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
+import { isFreeSearchPlaceId } from './freeSearchYouTubeLink.js';
 
 function hasReusableSessionDesc(loc) {
   if (!loc || typeof loc !== 'object') return false;
@@ -177,6 +178,18 @@ export function hydrateLocationFromSavedTrip(trip, category = 'paradise') {
     desc: meta.description || trip.desc || '',
     galleryRegionSpot: meta.galleryRegionSpot || trip.galleryRegionSpot || undefined,
   };
+}
+
+/**
+ * 즐겨찾기 재오픈. saved_trips.id 는 uuid 이고 slug 는 영문(romblon)이라
+ * 그대로 두면 자유검색이 아니다. 한글 라벨(롬블론)과 label- 좌표 id 를 복원한다.
+ */
+export function reopenSavedPlaceLocation(loc) {
+  if (!loc || typeof loc !== 'object') return loc;
+  const meta = loc.curation_data;
+  if (!loc.destination || !meta || typeof meta !== 'object') return loc;
+  if (isFreeSearchPlaceId(loc.id) && loc.name) return loc;
+  return hydrateLocationFromSavedTrip(loc) || loc;
 }
 
 /**

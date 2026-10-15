@@ -13,6 +13,7 @@ import { PenTool } from 'lucide-react';
 import Map, { Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import { reopenSavedPlaceLocation } from '../lib/placeRouteHydrate.js';
 import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
 import { resetVisualViewportPageZoom } from '../../../shared/lib/mobileViewport';
 import {
@@ -1019,18 +1020,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         if (!result[idx].slug && meta.slug) result[idx].slug = meta.slug;
         if (!result[idx].name_en && meta.locationEn) result[idx].name_en = meta.locationEn;
       } else {
+        const reopened = reopenSavedPlaceLocation(trip);
         result.push({
-          ...trip,
-          name: fixedName,
-          name_en: trip.name_en || meta.locationEn,
-          slug: trip.slug || meta.slug,
-          country: tripCountry,
-          country_en: tripCountryEn,
-          galleryRegionSpot: trip.galleryRegionSpot || meta.galleryRegionSpot,
+          ...reopened,
+          name: reopened.name || fixedName,
           type: 'temp-base',
           priority: isBookmarked ? 4 : 3,
           isBookmarked,
-          hasChat: hasMessageChat
+          hasChat: hasMessageChat,
+          tripId: trip.id,
         });
       }
     });
