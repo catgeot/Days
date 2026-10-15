@@ -74,7 +74,6 @@ async function captureAiLimitHeungjeong(page) {
     if (sc) sc.scrollTop = 0;
   });
 
-  // PC + mobile headers both render role=alert; at 390px only the mobile block is visible.
   const placeLink = page
     .locator('[role="alert"]:visible a[href*="/place/"]')
     .filter({ hasText: /흥정계곡/ });
