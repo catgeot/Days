@@ -13,7 +13,10 @@ import {
   crosslinkFestivalDisplayTitle,
   isCrosslinkFestivalActive,
   festivalPrimaryHubMatchesPlaceHub,
+  crosslinkHubIdsForPlaceHub,
 } from './placeCrosslinkFestivals.js';
+
+const SCENIC_COLLECTION_SPOT_CAP = 6;
 
 const SCENIC_SPOTS = Array.isArray(scenicJson?.spots) ? scenicJson.spots : [];
 const MANUAL_FESTIVALS = Object.values(manualFestivalEntries || {});
@@ -138,33 +141,90 @@ function listFestivalsForHub(hubId, { now = new Date() } = {}) {
   return out;
 }
 
+function scenicSpotsForSingleHub(hubId) {
+  const key = String(hubId || '').toLowerCase();
+  const seen = new Set();
+  const ordered = [];
+  for (const spot of SCENIC_SPOTS) {
+    if (String(spot?.hubId || '').toLowerCase() !== key) continue;
+    if (isScenicSpotHidden(spot)) continue;
+    const spotId = String(spot.id || '').trim();
+    if (!spotId || seen.has(spotId)) continue;
+    seen.add(spotId);
+    ordered.push({ spot, spotHubId: key });
+  }
+  return ordered;
+}
+
+/**
+ * Round-robin across hub spot lists (e.g. 3 jeju + 3 seogwipo within cap).
+ * @param {Array<Array<{ spot: object, spotHubId: string }>>} hubSpotLists
+ * @param {number} cap
+ */
+export function interleaveScenicSpotRows(hubSpotLists, cap) {
+  const limit = Math.max(0, Number(cap) || 0);
+  if (!limit || !hubSpotLists?.length) return [];
+  const out = [];
+  for (let round = 0; out.length < limit; round += 1) {
+    let added = false;
+    for (const list of hubSpotLists) {
+      if (out.length >= limit) break;
+      const row = list[round];
+      if (row) {
+        out.push(row);
+        added = true;
+      }
+    }
+    if (!added) break;
+  }
+  return out;
+}
+
+function scenicHubCollectionItem(hubKey) {
+  const hub = resolveCityAttractionHub(hubKey);
+  const hubName = hub?.name || hubKey;
+  return {
+    id: `scenic-hub:${hubKey}`,
+    kind: 'collection',
+    title: `${hubName} 지역 명소 컬렉션`,
+    href: scenicHomePathForHubId(hubKey),
+  };
+}
+
+function scenicSpotCollectionItem({ spot, spotHubId }) {
+  const spotId = String(spot.id || '').trim();
+  const base = scenicHomePathForHubId(spotHubId);
+  return {
+    id: `scenic:${spotId}`,
+    kind: 'collection',
+    title: String(spot.name || spot.attractionName || '').trim(),
+    href: `${base}&spot=${encodeURIComponent(spotId)}`,
+  };
+}
+
 function listScenicCollectionsForHub(hubId) {
   const target = String(hubId || '').toLowerCase();
   if (!target) return [];
-  const hub = resolveCityAttractionHub(target);
-  const hubName = hub?.name || target;
-  const spots = SCENIC_SPOTS.filter(
-    (spot) => String(spot?.hubId || '').toLowerCase() === target && !isScenicSpotHidden(spot),
-  );
-  if (!spots.length) return [];
-  const items = [
-    {
-      id: `scenic-hub:${target}`,
-      kind: 'collection',
-      title: `${hubName} 지역 명소 컬렉션`,
-      href: scenicHomePathForHubId(target),
-    },
-  ];
-  for (const spot of spots.slice(0, 6)) {
-    const spotId = String(spot.id || '').trim();
-    if (!spotId) continue;
-    const base = scenicHomePathForHubId(target);
-    items.push({
-      id: `scenic:${spotId}`,
-      kind: 'collection',
-      title: String(spot.name || spot.attractionName || '').trim(),
-      href: `${base}&spot=${encodeURIComponent(spotId)}`,
-    });
+  const hubIds = crosslinkHubIdsForPlaceHub(target);
+  const lists = hubIds.map((hid) => scenicSpotsForSingleHub(hid));
+  const totalSpots = lists.reduce((n, list) => n + list.length, 0);
+  if (!totalSpots) return [];
+
+  const items = [];
+  if (hubIds.length > 1) {
+    for (let i = 0; i < hubIds.length; i += 1) {
+      if (lists[i].length) items.push(scenicHubCollectionItem(hubIds[i]));
+    }
+    const interleaved = interleaveScenicSpotRows(lists, SCENIC_COLLECTION_SPOT_CAP);
+    for (const row of interleaved) {
+      items.push(scenicSpotCollectionItem(row));
+    }
+    return items;
+  }
+
+  items.push(scenicHubCollectionItem(target));
+  for (const row of lists[0].slice(0, SCENIC_COLLECTION_SPOT_CAP)) {
+    items.push(scenicSpotCollectionItem(row));
   }
   return items;
 }

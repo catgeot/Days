@@ -1,10 +1,13 @@
 import { isFestivalEnded } from '../../Korea/festivalDeepLinkItem.js';
 import { nearbyHubsForFestival } from '../../Korea/nearbyFestivalHubs.js';
 
-/** Traveler-facing place slugs that aggregate multiple festival hubs. */
-export const PLACE_CROSSLINK_FESTIVAL_HUB_GROUPS = {
+/** Traveler-facing place hubs that aggregate sibling admin hubs (e.g. whole Jeju island). */
+export const PLACE_CROSSLINK_HUB_GROUPS = {
   jeju: ['jeju', 'seogwipo'],
 };
+
+/** @deprecated use PLACE_CROSSLINK_HUB_GROUPS */
+export const PLACE_CROSSLINK_FESTIVAL_HUB_GROUPS = PLACE_CROSSLINK_HUB_GROUPS;
 
 export function hasHangul(text) {
   return /[\uAC00-\uD7A3]/.test(String(text || ''));
@@ -27,11 +30,16 @@ export function crosslinkFestivalDisplayTitle(row) {
  * @param {string} hubId
  * @returns {string[]}
  */
-export function festivalHubIdsForPlaceHub(hubId) {
+export function crosslinkHubIdsForPlaceHub(hubId) {
   const key = String(hubId || '').trim().toLowerCase();
   if (!key) return [];
-  const group = PLACE_CROSSLINK_FESTIVAL_HUB_GROUPS[key];
+  const group = PLACE_CROSSLINK_HUB_GROUPS[key];
   return group ? [...group] : [key];
+}
+
+/** @deprecated use crosslinkHubIdsForPlaceHub */
+export function festivalHubIdsForPlaceHub(hubId) {
+  return crosslinkHubIdsForPlaceHub(hubId);
 }
 
 /**
@@ -50,7 +58,7 @@ export function isCrosslinkFestivalActive(row, now = new Date()) {
  * @param {Array<{ hubId: string, name: string, lat: number, lng: number }>} hubs
  */
 export function festivalPrimaryHubMatchesPlaceHub(row, targetHubId, hubs) {
-  const allowed = new Set(festivalHubIdsForPlaceHub(targetHubId));
+  const allowed = new Set(crosslinkHubIdsForPlaceHub(targetHubId));
   if (!allowed.size) return false;
   const primary = nearbyHubsForFestival(row, hubs, { limit: 1 })[0];
   const primaryId = String(primary?.hubId || '').toLowerCase();
