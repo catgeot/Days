@@ -72,6 +72,7 @@ test('visited herbnara-farm row drops misleading Herbnara Farm subtitle', () => 
   });
   assert.equal(spot.name, '흥정계곡');
   assert.equal(spot.name_en, '');
+  assert.equal(spot.image_url, '');
   assert.equal(spot.parentCity, '평창');
 });
 
@@ -231,6 +232,10 @@ test('shared latin mis-heal URLs open the Korean attraction card', () => {
     assert.equal(pin.poiAttraction, true);
     assert.ok(Number.isFinite(pin.lat) && Number.isFinite(pin.lng));
   }
+  const koreanSlugPin = resolvePlaceTargetFromSlug('흥정계곡');
+  assert.ok(koreanSlugPin);
+  assert.equal(koreanSlugPin.name, '흥정계곡');
+  assert.equal(koreanSlugPin.slug, 'herbnara-farm');
   const valley = resolveLegacyMishealPlace('herbnara-farm');
   assert.ok(buildPlaceDbIdCandidates(valley).includes('herbnara-farm'));
   assert.equal(resolvePlaceTargetFromSlug('not-a-shared-slug'), null);

@@ -93,6 +93,8 @@ export function visitedRowToSearchSpot(row, extras = {}) {
 
   const desc = String(extras.desc || '').trim();
   const identity = visitedIdentityForRow(placeId, nameKo, nameEn);
+  const legacyMisheal =
+    placeId && nameKo && resolveLegacyMishealPlace(placeId)?.name === nameKo;
   const latinName = identity.nameEn
     ? pickLatinPlaceNameFromLocation({ name_en: identity.nameEn, name })
     : '';
@@ -113,7 +115,8 @@ export function visitedRowToSearchSpot(row, extras = {}) {
     source: 'visited',
     uiPlace: true,
     desc,
-    image_url: row.image_url || '',
+    // herbnara-farm 행 image_url은 허브 농원 사진 — 명소 카드는 TourAPI·갤러리로 채운다
+    image_url: legacyMisheal ? '' : row.image_url || '',
     ...(identity.parentCity
       ? { parentCity: identity.parentCity, poiAttraction: true }
       : {}),

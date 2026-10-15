@@ -73,6 +73,41 @@ test('flag on — 평창 hub still opens catalog place', () => {
   });
 });
 
+test('flag on — Explore Enter picks one POI when duplicate exact Korean names', () => {
+  withSiteSearchFlag(true, () => {
+    const primary = visitedRowToSearchSpot({
+      place_id: 'herbnara-farm',
+      name_ko: '흥정계곡',
+      name_en: 'Herbnara Farm',
+      lat: 37.6270726091,
+      lng: 128.3518474417,
+    });
+    const duplicate = visitedRowToSearchSpot({
+      place_id: '흥정계곡',
+      name_ko: '흥정계곡',
+      name_en: '',
+      lat: 37.62466863,
+      lng: 128.34930501,
+    });
+    const local = [
+      primary,
+      duplicate,
+      {
+        name: '흥정계곡오토캠핑장',
+        name_en: 'Heungjeong Auto Camping',
+        lat: 37.62,
+        lng: 128.35,
+        country: '대한민국',
+      },
+    ];
+    const direct = resolveSiteSearchEnterSinglePoi('흥정계곡', local);
+    assert.ok(direct);
+    assert.equal(direct.name, '흥정계곡');
+    assert.equal(direct.id, 'visited-herbnara-farm');
+    assert.equal(direct.image_url, '');
+  });
+});
+
 test('flag on — Explore Enter single POI skips disambiguation (흥정계곡)', () => {
   withSiteSearchFlag(true, () => {
     const spot = visitedRowToSearchSpot(heungjeongRow);

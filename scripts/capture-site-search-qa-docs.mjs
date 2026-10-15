@@ -98,7 +98,12 @@ async function captureAiLimitHeungjeong(page) {
   await shot(page, 'ai-limit-links-390.png', 'AI limit + /place/흥정계곡 link');
   await placeLink.first().scrollIntoViewIfNeeded();
   await placeLink.first().click({ timeout: 30_000 });
-  await page.waitForTimeout(2500);
+  await page.waitForURL(/\/place\//, { timeout: 60_000 });
+  await page
+    .getByRole('heading', { name: /흥정계곡/ })
+    .first()
+    .waitFor({ state: 'visible', timeout: 120_000 });
+  await page.waitForTimeout(1500);
   await shot(page, 'ai-limit-place-open-390.png', `Clicked ${placeHref}`);
 }
 
@@ -119,7 +124,11 @@ async function main() {
   await input.fill('흥정계곡');
   await page.waitForTimeout(900);
   await input.press('Enter');
-  await page.waitForTimeout(3500);
+  await page
+    .getByRole('heading', { name: /^흥정계곡$/ })
+    .first()
+    .waitFor({ state: 'visible', timeout: 120_000 });
+  await page.waitForTimeout(1200);
   await shot(page, 'heungjeong-enter-390.png', '흥정계곡 Enter');
 
   const aiPage = await context.newPage();

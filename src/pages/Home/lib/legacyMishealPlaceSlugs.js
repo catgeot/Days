@@ -24,10 +24,16 @@ const LEGACY_MISHEAL_PLACES = {
   },
 };
 
-export function resolveLegacyMishealPlace(slug) {
-  const key = String(slug ?? '').trim().toLowerCase();
-  const row = LEGACY_MISHEAL_PLACES[key];
-  if (!row) return null;
+function compactPlaceSlugKey(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+function buildLegacyMishealPin(placeId, row) {
+  const key = String(placeId ?? '').trim().toLowerCase();
+  if (!key || !row) return null;
   return {
     id: `legacy-${key}`,
     slug: key,
@@ -46,4 +52,21 @@ export function resolveLegacyMishealPlace(slug) {
     badge: '명소',
     source: 'legacy-misheal',
   };
+}
+
+/** Latin legacy slug (herbnara-farm) or Korean display slug (/place/흥정계곡). */
+export function resolveLegacyMishealPlace(slug) {
+  const raw = String(slug ?? '').trim();
+  if (!raw) return null;
+  const key = raw.toLowerCase();
+  const byId = LEGACY_MISHEAL_PLACES[key];
+  if (byId) return buildLegacyMishealPin(key, byId);
+
+  const compact = compactPlaceSlugKey(raw);
+  for (const [placeId, row] of Object.entries(LEGACY_MISHEAL_PLACES)) {
+    if (compact && compactPlaceSlugKey(row.name) === compact) {
+      return buildLegacyMishealPin(placeId, row);
+    }
+  }
+  return null;
 }

@@ -9,6 +9,7 @@ import {
   placeNameMatchesSearchQuery,
   resolveEnterSearchCanonical,
 } from './searchEnterMatch.js';
+import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
 
 /**
  * Plan-2 sitewide search step 2 — county-safe open when flag ON.
@@ -17,6 +18,37 @@ import {
 
 export function isSiteSearchOpenEnabled() {
   return isGateoSiteSearchEnabled();
+}
+
+function visitedPlaceIdFromSpot(item) {
+  const id = String(item?.id ?? '').trim();
+  if (id.startsWith('visited-')) return id.slice('visited-'.length);
+  return id;
+}
+
+/** 동일 한글명(흥정계곡) 중복 행 — county 허브·캠핑장보다 명소(uiPlace) 우선 */
+function rankEnterExactPoiCandidate(item) {
+  let score = 0;
+  if (item?.poiAttraction) score += 12;
+  if (item?.parentCity) score += 8;
+  if (item?.uiPlace) score += 6;
+  const decision = resolveSearchResultSelect(item);
+  if (decision?.type === 'home') score += 4;
+  const placeId = visitedPlaceIdFromSpot(item);
+  if (placeId && resolveLegacyMishealPlace(placeId)) score += 16;
+  if (item?.source === 'legacy-misheal') score += 16;
+  return score;
+}
+
+function pickSingleEnterExactPoi(exactMatches) {
+  if (!exactMatches?.length) return null;
+  if (exactMatches.length === 1) return exactMatches[0];
+  const ranked = [...exactMatches].sort(
+    (a, b) => rankEnterExactPoiCandidate(b) - rankEnterExactPoiCandidate(a),
+  );
+  const topScore = rankEnterExactPoiCandidate(ranked[0]);
+  const tied = ranked.filter((item) => rankEnterExactPoiCandidate(item) === topScore);
+  return tied[0] || ranked[0];
 }
 
 /**
@@ -68,7 +100,10 @@ export function resolveSiteSearchEnterSinglePoi(query, suggestions) {
 
   const canonical = normalizeSearchName(resolveEnterSearchCanonical(q));
   const exactNameMatches = matches.filter((item) => normalizeSearchName(item.name) === canonical);
-  if (exactNameMatches.length === 1) return exactNameMatches[0];
+  if (exactNameMatches.length >= 1) {
+    const picked = pickSingleEnterExactPoi(exactNameMatches);
+    if (picked) return picked;
+  }
   if (matches.length === 1 && placeNameMatchesSearchQuery(q, matches[0])) return matches[0];
   return null;
 }
