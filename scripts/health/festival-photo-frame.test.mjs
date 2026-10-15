@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client';
 import {
   FESTIVAL_PHOTO_LOAD_TIMEOUT_MS,
   FestivalPhotoFrame,
+  festivalPhotoWrapClassName,
   isFestivalPhotoDecoded,
 } from '../../src/pages/Korea/festivalPhotoFrame.js';
 import { FestivalHeroPhoto } from '../../src/pages/Korea/festivalHeroPhoto.js';
@@ -67,6 +68,25 @@ function mount(props) {
     root.render(React.createElement(FestivalPhotoFrame, props));
   });
 }
+
+test('festivalPhotoWrapClassName avoids w-full on fixed-size flex thumbnails', () => {
+  assert.match(
+    festivalPhotoWrapClassName('h-14 w-14 shrink-0 rounded-xl object-cover'),
+    /shrink-0/,
+  );
+  assert.doesNotMatch(
+    festivalPhotoWrapClassName('h-14 w-14 shrink-0 rounded-xl object-cover'),
+    /\bw-full\b/,
+  );
+  assert.match(
+    festivalPhotoWrapClassName('absolute inset-0 h-full w-full object-cover'),
+    /\bh-full w-full\b/,
+  );
+  assert.match(
+    festivalPhotoWrapClassName('h-full w-full object-cover'),
+    /\bh-full w-full\b/,
+  );
+});
 
 test('isFestivalPhotoDecoded treats cached complete images as loaded', () => {
   const img = { complete: true, naturalWidth: 120 };
