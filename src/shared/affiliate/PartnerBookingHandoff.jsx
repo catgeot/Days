@@ -25,12 +25,12 @@ const EMPHASIS_BUTTON = {
   light: {
     default: THEME.light.button,
     low:
-      'inline-flex w-full items-center justify-center gap-1 rounded-lg border border-stone-300 bg-transparent px-2 py-1 text-[13px] font-semibold text-stone-800 no-underline transition-colors hover:border-amber-400 hover:bg-amber-50/40 active:scale-[0.98]',
+      'inline-flex min-h-[44px] w-full items-center justify-center gap-1 rounded-lg border border-stone-300 bg-transparent px-2 py-1 text-[13px] font-semibold text-stone-800 no-underline transition-colors hover:border-amber-400 hover:bg-amber-50/40 active:scale-[0.98]',
   },
   dark: {
     default: THEME.dark.button,
     low:
-      'inline-flex w-full items-center justify-center gap-1 rounded-md border border-white/25 bg-transparent px-2 py-1 text-[13px] font-medium text-amber-50/90 no-underline transition-colors hover:border-amber-300/50 hover:bg-white/5 active:scale-[0.98]',
+      'inline-flex min-h-[44px] w-full items-center justify-center gap-1 rounded-md border border-white/25 bg-transparent px-2 py-1 text-[13px] font-medium text-amber-50/90 no-underline transition-colors hover:border-amber-300/50 hover:bg-white/5 active:scale-[0.98]',
   },
 };
 
