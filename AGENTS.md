@@ -68,6 +68,8 @@ npm run audit:docs-handoff-sync   # Cloud feature — origin/main 핸드오프 m
 
 클라우드 VM은 Ubuntu. Windows PowerShell 전용 구문·로컬 `.env.local` 가정 금지.
 
+**UI 스크린샷 (before/after)**: 출력 PNG 너비는 **정확히 390px**이어야 한다. Playwright는 `viewport: { width: 390, height: 844 }` + `deviceScaleFactor: 1`을 쓰고, `locator.screenshot()`(요소 폭이 390을 넘을 수 있음) 대신 **`page.screenshot({ clip: { x: 0, width: 390, … } })`** 로 뷰포트 폭을 고정한다.
+
 운영 가이드(상세): [`plans/cloud-preview-continuity.md`](plans/cloud-preview-continuity.md)
 
 ### 세션 표기 · 고정 Preview · 작업 로그 (전 주제)

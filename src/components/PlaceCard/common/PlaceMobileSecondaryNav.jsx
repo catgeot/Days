@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ImageIcon, Play, PenTool, BookOpen, Briefcase } from 'lucide-react';
+import { ImageIcon, Play, PenTool, BookOpen, Briefcase, ArrowLeft } from 'lucide-react';
 
 /**
  * placement="header": 데스크톱 PlaceChatPanel 2행 (리뷰 탭 포함).
@@ -43,6 +43,10 @@ const PlaceMobileSecondaryNav = ({
     ? 'bg-blue-600 text-white font-bold border border-blue-600 shadow-md shadow-blue-600/20'
     : 'bg-blue-600/90 text-white font-bold border border-blue-500/50 shadow-lg shadow-blue-900/20';
 
+  const galleryBackGhostPill = isLightScrollChrome
+    ? 'bg-transparent text-gray-600 font-semibold border border-transparent hover:bg-gray-100 hover:text-gray-900'
+    : 'bg-transparent text-gray-300 font-medium border border-transparent hover:bg-white/10 hover:text-white';
+
   return (
     <div
       className={`items-center justify-center gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 px-2 overscroll-contain touch-pan-x flex ${
@@ -72,16 +76,20 @@ const PlaceMobileSecondaryNav = ({
       <button
         type="button"
         onClick={() => setMediaMode(mediaMode === 'VIDEO' ? 'GALLERY' : 'VIDEO')}
-        className={`px-3 py-1.5 rounded-full transition-all duration-300 flex items-center gap-1.5 group shrink-0 active:scale-95 ${
-          mediaMode === 'VIDEO' ? activePill : inactivePill
+        className={`py-1.5 transition-all duration-300 flex items-center group shrink-0 active:scale-95 ${
+          mediaMode === 'VIDEO'
+            ? `gap-1 rounded-lg px-2.5 ${galleryBackGhostPill}`
+            : `gap-1.5 rounded-full px-3 ${inactivePill}`
         }`}
       >
         {mediaMode === 'VIDEO' ? (
-          <ImageIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+          <ArrowLeft className="w-4 h-4 shrink-0 opacity-90" aria-hidden />
         ) : (
           <Play fill="currentColor" className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
         )}
-        <span className="text-xs font-bold whitespace-nowrap">
+        <span
+          className={`text-xs whitespace-nowrap ${mediaMode === 'VIDEO' ? 'font-medium' : 'font-bold'}`}
+        >
           {mediaMode === 'VIDEO' ? t('place.nav.galleryBack') : t('place.nav.youtube')}
         </span>
       </button>
