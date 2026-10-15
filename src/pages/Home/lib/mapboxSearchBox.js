@@ -21,6 +21,7 @@ import {
   resolveUniversitySearchHits,
   universityPlaceNeedsCampusSnap,
 } from '../../../utils/mrtStayQuery.js';
+import { isGateoPoiCountySlugSearchFixEnabled } from '../../../shared/gateoFeatureFlags.js';
 
 const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MAPBOX_TOKEN : '';
 const SEARCHBOX_BASE = 'https://api.mapbox.com/search/searchbox/v1';
@@ -168,12 +169,16 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
       ? name
       : '';
   const adminPlace = searchBoxAdminPlaceName(props);
-  const county = isPoi ? poiCountyLabel(parentCity, adminPlace, name) : parentCity;
-  // POI 영문명은 기능 자신의 라틴 이름만. context.place / place_formatted(평창)는 parentCity.
-  const latinName =
-    rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))
+  const county = isGateoPoiCountySlugSearchFixEnabled()
+    ? isPoi
+      ? poiCountyLabel(parentCity, adminPlace, name)
+      : parentCity
+    : parentCity;
+  const latinName = isGateoPoiCountySlugSearchFixEnabled()
+    ? rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))
       ? rawLatin
-      : '';
+      : ''
+    : rawLatin;
   const latinCountry = isLatinPlaceName(country) ? country : '';
 
   return {
@@ -190,7 +195,9 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
     mapboxId: props.mapbox_id,
     hubId,
     parentCity: county || undefined,
-    ...(isPoi ? { slug: placeUrlSlug(latinName, name), poiAttraction: true } : {}),
+    ...(isGateoPoiCountySlugSearchFixEnabled() && isPoi
+      ? { slug: placeUrlSlug(latinName, name), poiAttraction: true }
+      : {}),
     attractionKind: firstCat || undefined,
     source,
     uiPlace: true,
@@ -345,12 +352,17 @@ export async function searchBoxSuggest(query, opts = {}) {
       const country = countryFromSearchBoxProperties(s);
       const suggestName = String(s.name || '').trim();
       const adminPlace = searchBoxAdminPlaceName(s);
-      const county = isPoi ? poiCountyLabel('', adminPlace, suggestName) : '';
+      const county = isGateoPoiCountySlugSearchFixEnabled()
+        ? isPoi
+          ? poiCountyLabel('', adminPlace, suggestName)
+          : ''
+        : '';
       const rawLatin = isLatinPlaceName(s.name) ? suggestName : '';
-      const latinName =
-        rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))
+      const latinName = isGateoPoiCountySlugSearchFixEnabled()
+        ? rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))
           ? rawLatin
-          : '';
+          : ''
+        : rawLatin;
       return {
         id: `suggest-${s.mapbox_id}`,
         kind: isPoi ? 'attraction' : featureType === 'place' || featureType === 'city' ? 'city' : 'poi',
@@ -365,7 +377,9 @@ export async function searchBoxSuggest(query, opts = {}) {
         source: 'mapbox',
         uiPlace: true,
         ...(county ? { parentCity: county } : {}),
-        ...(isPoi ? { slug: placeUrlSlug(latinName, suggestName), poiAttraction: true } : {}),
+        ...(isGateoPoiCountySlugSearchFixEnabled() && isPoi
+          ? { slug: placeUrlSlug(latinName, suggestName), poiAttraction: true }
+          : {}),
         desc: s.full_address || s.place_formatted || s.name,
         lat: null,
         lng: null,

@@ -4,6 +4,7 @@ import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResol
 import { placeUrlSlug, resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
+import { isGateoPoiCountySlugSearchFixEnabled } from '../../../shared/gateoFeatureFlags.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -295,6 +296,12 @@ export function resolveSearchResultSelect(spot) {
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   const pin = { ...spot, lat, lng };
+  if (!isGateoPoiCountySlugSearchFixEnabled()) {
+    if (isMapboxOrGeocodePin(pin)) return { type: 'home', spot: pin };
+    const param = knownPlaceSlug(getPlaceUrlParam(pin));
+    if (param) return { type: 'place', spot: pin, param };
+    return { type: 'home', spot: pin };
+  }
   const param = knownPlaceSlug(getPlaceUrlParam(pin));
   const known = param ? knownPlaceForParam(param) : null;
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);

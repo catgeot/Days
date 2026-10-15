@@ -1,5 +1,6 @@
 import { formatUrlName, isEphemeralSlug, isUrlSafeEnglishLabel } from './formatUrlName.js';
 import { inferPlaceMatchCategory, PLACE_MATCH_CATEGORY } from './placeMatchCategory.js';
+import { isGateoPoiCountySlugSearchFixEnabled } from '../../../shared/gateoFeatureFlags.js';
 
 const PLACEHOLDER_COUNTRY = new Set([
   'Explore',
@@ -78,10 +79,10 @@ function rejectAdminLatin(place, latinName) {
  */
 export function mergeLatinPlaceFields(base, english) {
   if (!base || typeof base !== 'object') return base;
-  const latinName = rejectAdminLatin(
-    base,
-    pickLatinPlaceName(english) || pickLatinPlaceName(base),
-  );
+  const pickedLatin = pickLatinPlaceName(english) || pickLatinPlaceName(base);
+  const latinName = isGateoPoiCountySlugSearchFixEnabled()
+    ? rejectAdminLatin(base, pickedLatin)
+    : pickedLatin;
   const latinCountry = pickLatinPlaceName({
     name_en: english?.country_en,
     name: english?.country,
@@ -119,7 +120,11 @@ export function samePlaceCenter(a, b, maxDeg = SAME_PLACE_CENTER_DEG) {
 export function ensureLatinPlaceSlug(place) {
   if (!place || typeof place !== 'object') return place;
   const picked = pickLatinPlaceName(place);
-  if (isPoiAttractionPlace(place) && latinNameIsAdminArea(picked, place.parentCity)) {
+  if (
+    isGateoPoiCountySlugSearchFixEnabled() &&
+    isPoiAttractionPlace(place) &&
+    latinNameIsAdminArea(picked, place.parentCity)
+  ) {
     const slug = hangulPlaceSlug(place.name_ko || place.name);
     return {
       ...place,

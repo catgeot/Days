@@ -14,6 +14,7 @@ import {
   pickLatinPlaceName,
   samePlaceCenter,
 } from './uiPlaceAssetQuery.js';
+import { isGateoPoiCountySlugSearchFixEnabled } from '../../../shared/gateoFeatureFlags.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 const SKIP_STATS_IDS = new Set(['New Session', 'Scanning...', 'Searching...', '위치 탐색 중...']);
@@ -126,6 +127,13 @@ export function visitedRowToSearchSpot(row, extras = {}) {
 function visitedIdentityForRow(placeId, nameKo, nameEn) {
   const id = String(placeId || '').trim();
   const ko = String(nameKo || '').trim();
+  if (!isGateoPoiCountySlugSearchFixEnabled()) {
+    return {
+      slug: id || placeUrlSlug(nameEn, ko),
+      nameEn,
+      parentCity: '',
+    };
+  }
   if (resolveCityAttractionHub(ko)) {
     return { slug: id || placeUrlSlug(nameEn, ko), nameEn, parentCity: '' };
   }
@@ -195,6 +203,18 @@ export function overlayGeoFieldsOnVisitedSpot(visited, geoHits) {
   if (!visited) return visited;
   const list = Array.isArray(geoHits) ? geoHits : [];
   const geo = list.find((hit) => geoHitMatchesVisited(visited, hit));
+  if (!isGateoPoiCountySlugSearchFixEnabled()) {
+    const latin = pickLatinPlaceName(visited) || pickLatinPlaceName(geo);
+    const country = concreteCountry(visited.country, geo?.country);
+    const countryEn = concreteCountry(visited.country_en, geo?.country_en) ||
+      (isUrlSafeEnglishLabel(geo?.country) ? String(geo.country).trim() : '');
+    return {
+      ...visited,
+      ...(latin ? { name_en: latin } : {}),
+      country,
+      country_en: countryEn,
+    };
+  }
   const rejectAdmin = geoHitIsForeignAdmin(visited, geo);
   const ownLatin = pickLatinPlaceName(visited);
   const ownIsAdmin = latinNameIsAdminArea(ownLatin, visited?.parentCity) ||
