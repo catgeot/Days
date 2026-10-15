@@ -661,6 +661,7 @@ function StayCard({
           kind="lodging"
           item={item}
           theme="dark"
+          emphasis="low"
         />
       </div>
     </div>
