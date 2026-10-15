@@ -10,6 +10,21 @@ export function isFestivalPhotoDecoded(img) {
   return Boolean(img && img.complete && img.naturalWidth > 0);
 }
 
+/** Wrap must not use w-full in flex rows when the img has fixed Tailwind size (Safari squeezes labels). */
+export function festivalPhotoWrapClassName(imgClassName = '') {
+  const c = String(imgClassName);
+  if (/\b(?:w|h)-\d/.test(c) && !/\b(?:min-|max-)?(?:w|h)-full\b/.test(c)) {
+    return 'relative block shrink-0 overflow-hidden';
+  }
+  if (/\babsolute\b/.test(c) || /\binset-0\b/.test(c)) {
+    return 'relative block h-full w-full overflow-hidden';
+  }
+  if (/\bw-full\b/.test(c) && /\bh-full\b/.test(c)) {
+    return 'relative block h-full w-full overflow-hidden';
+  }
+  return 'relative block shrink-0 overflow-hidden';
+}
+
 /**
  * Festival photo that never leaves the browser broken-image glyph on screen.
  * A failed or empty src renders `fallback` (empty slot or neutral placeholder).
@@ -139,7 +154,7 @@ export function FestivalPhotoFrame({
   return createElement(
     'span',
     {
-      className: 'relative block h-full w-full',
+      className: festivalPhotoWrapClassName(className),
       'data-festival-photo-wrap': '',
     },
     createElement('img', {
