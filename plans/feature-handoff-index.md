@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 플래그** · tip `843a45f2` · draft PR [#482](https://github.com/catgeot/Days/pull/482) · **병합 금지** |
+| **상태** | **#1 플래그** · tip `041cbfe8` · draft PR [#482](https://github.com/catgeot/Days/pull/482) · **병합 금지** |
 | **브랜치** | `cursor/festival-date-chip-240f` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-16-project-log.md`](./2026-10-16-project-log.md) |

@@ -4,9 +4,9 @@
 
 ## 축제 기간 칩 #1, 플래그
 
-- **세션** 일회 · branch `cursor/festival-date-chip-240f` · tip `843a45f2` · draft PR [#482](https://github.com/catgeot/Days/pull/482) · **병합 금지**
-- `VITE_GATEO_FESTIVAL_DATE_CHIP` 기본 OFF. 켜면 «30일 안»(서울 오늘~+29)이 «이번 달»을 대신하고 «날짜» 시트로 하루·범위. 검색은 전체 기간. 0건은 «이 기간에는 축제가 없어요» · «기간 풀기» → 지금. 지역·테마는 유지. 이번 주말·Edge festivalWindow는 그대로.
-- **검증:** `lint:ci` · `test:health` 404 pass · `build` · WebKit 390 `docs/qa/date-chip/` (서울 43 · 강릉 3 · 제주 11 · LA 자정 직후 `~11.15` · flag OFF는 «이번 달»)
+- **세션** 일회 · branch `cursor/festival-date-chip-240f` · tip `041cbfe8` · draft PR [#482](https://github.com/catgeot/Days/pull/482) · **병합 금지**
+- `VITE_GATEO_FESTIVAL_DATE_CHIP` 기본 OFF. 켜면 «30일 안»(서울 오늘~+29)이 «이번 달»을 대신하고 «날짜» 시트로 하루·범위. 제목은 따옴표 없이 한 줄(`서울특별시 · 30일 안(~11.14)`, 고른 날은 `· 10.17–10.18`). 날짜를 고르기 전 개수는 숨김. 검색은 전체 기간. 0건은 «이 기간에는 축제가 없어요» · «기간 풀기» → 지금.
+- **검증:** `lint:ci` · `test:health` 406 pass · `build` · e2e 2 pass · WebKit 390 `docs/qa/date-chip/` (서울 43 · 제주 11 · 주말 10.17–10.18)
 
 ## 축제 탭 문구 #2, 안내로 돌아가기
 
