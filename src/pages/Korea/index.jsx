@@ -111,6 +111,7 @@ import {
 } from './koreaFestivalDefaults';
 import {
   KOREA_FILTER_CHIP_ACTIVE,
+  koreaFilterChipClass,
   koreaFilterChipCountClass,
 } from './koreaHubFilterChipStyles.js';
 import {
@@ -359,11 +360,7 @@ function festivalKey(item) {
 }
 
 function chipClass(active) {
-  return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 ${
-    active
-      ? KOREA_FILTER_CHIP_ACTIVE
-      : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50 hover:border-stone-300'
-  }`;
+  return koreaFilterChipClass(active);
 }
 
 /** 대분류: 항상 현재 선택 라벨 · 열린 패널만 강조 */
@@ -1492,9 +1489,10 @@ export default function KoreaFestivalHub() {
       range.eventEndDate,
       seoulToday,
     );
-    const rangeLabel = customRange?.start
-      ? formatFestivalRangeLabel(customRange.start, customRange.end, seoulToday)
-      : '';
+    const rangeLabel =
+      timeTab === 'date' && customRange?.start
+        ? formatFestivalRangeLabel(customRange.start, customRange.end, seoulToday)
+        : '';
     const dateChipFallback = t('korea.festival.dateChip');
     const datePeriodText = rangeLabel || dateChipFallback;
     return replaceMonthTabWithDateChips(base, {
@@ -1503,7 +1501,7 @@ export default function KoreaFestivalHub() {
       dateLabel: datePeriodText,
       dateHeadline: datePeriodText,
     });
-  }, [now, t, dateChipEnabled, seoulToday, customRange]);
+  }, [now, t, dateChipEnabled, seoulToday, customRange, timeTab]);
 
   const timedItems = useMemo(
     () => filterItemsByTime(timeTab, itemsWithSocialPromo),
@@ -2242,6 +2240,9 @@ export default function KoreaFestivalHub() {
       setDateSheetOpen(true);
       setChipPanel('time');
       return;
+    }
+    if (dateChipEnabled && id !== 'date') {
+      setCustomRange(null);
     }
     setTimeTab(id);
     setChipPanel('time');

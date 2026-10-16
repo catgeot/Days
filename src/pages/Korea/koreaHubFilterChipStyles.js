@@ -5,6 +5,16 @@ export const KOREA_FILTER_CHIP_ACTIVE_FILL =
 export const KOREA_FILTER_CHIP_ACTIVE =
   `${KOREA_FILTER_CHIP_ACTIVE_FILL} font-bold shadow-sm`;
 
+export const KOREA_FILTER_CHIP_IDLE =
+  'bg-white text-stone-700 border-stone-200 hover:bg-stone-50 hover:border-stone-300';
+
+/** Detail filter chips (time / region / theme rows on /korea). */
+export function koreaFilterChipClass(active) {
+  return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 ${
+    active ? KOREA_FILTER_CHIP_ACTIVE : KOREA_FILTER_CHIP_IDLE
+  }`;
+}
+
 export const KOREA_NEAR_ME_FILLED_ACTIVE =
   'border-amber-700 bg-amber-700 text-white hover:bg-amber-800';
 
