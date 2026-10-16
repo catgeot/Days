@@ -78,7 +78,7 @@ test('EN headlines — 4 tabs × provinces and nationwide', () => {
 test('compact period headlines stay one phrase without quotes or 축제 리스트', () => {
   const month = formatCompactPeriodHeadline({
     place: '서울특별시',
-    time: '30일 안',
+    time: '한 달 이내',
   });
   const unpicked = formatCompactPeriodHeadline({
     place: '제주도',
@@ -90,12 +90,12 @@ test('compact period headlines stay one phrase without quotes or 축제 리스�
   });
   const nationwide = formatCompactPeriodHeadline({
     place: '전국',
-    time: '30일 안',
+    time: '한 달 이내',
   });
-  assert.equal(month, '서울특별시 · 30일 안');
+  assert.equal(month, '서울특별시 · 한 달 이내');
   assert.equal(unpicked, '제주도 · 날짜📅');
   assert.equal(picked, '제주도 · 10.17\u201310.18');
-  assert.equal(nationwide, '전국 · 30일 안');
+  assert.equal(nationwide, '전국 · 한 달 이내');
   for (const line of [month, unpicked, picked, nationwide]) {
     assert.equal(line.includes('"'), false, line);
     assert.equal(line.includes('축제 리스트'), false, line);

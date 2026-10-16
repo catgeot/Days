@@ -163,18 +163,18 @@ export function formatFestivalRangeLabel(startYmd, endYmd, todayYmd) {
 }
 
 /**
- * List heading for «30일 안». Chip label stays `30일 안 ~11.14`.
+ * Subline range suffix for «한 달 이내» (e.g. `~11.14`).
  * @param {string} endMonthDay `11.14` or `2027.11.14`
  */
-export function formatWindow30HeadlinePhrase(endMonthDay) {
+export function formatWindow30RangeSuffix(endMonthDay) {
   const end = String(endMonthDay || '').replace(/^~/, '').trim();
   if (!end) return '';
-  return `30일 안(~${end})`;
+  return `~${end}`;
 }
 
 /**
  * «30일 안» replaces «이번 달»; «날짜» follows it. Weekend and seasons stay put.
- * Optional `headline` is the one-line list title, separate from the chip label.
+ * Optional `headline` is the one-line list title (chip label may differ).
  * @param {{ id: string, label: string }[]} tabs
  * @param {{ window30Label: string, window30Headline?: string, dateLabel: string, dateHeadline?: string }} labels
  */

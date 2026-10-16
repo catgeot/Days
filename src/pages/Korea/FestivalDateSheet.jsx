@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
+import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import {
   daysInMonth,
   eachMonthInYmdRange,
@@ -33,6 +34,8 @@ export default function FestivalDateSheet({
   const [draftEnd, setDraftEnd] = useState('');
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+
+  useTrustBarOverlayLockEffect(open);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -129,7 +132,9 @@ export default function FestivalDateSheet({
             ))}
           </div>
         </div>
-        <div className="border-t border-stone-200 px-4 py-3">
+        <div
+          className="shrink-0 border-t border-stone-200 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]"
+        >
           <button
             type="button"
             disabled={!draftStart}

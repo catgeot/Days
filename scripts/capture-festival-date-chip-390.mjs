@@ -214,8 +214,12 @@ for (const region of regions) {
   await openTime(page);
   await page.locator('[data-period-id="window30"]').click();
   await page.locator('[data-period-id="window30"][aria-pressed="true"]').waitFor();
-  await compareCount(page, 'window30', `${region.label} 30일 안`);
-  await assertOneLineHeading(page, /30일 안/);
+  const monthCards = await listCards(page).count();
+  console.log(`${region.label} 한 달 이내 cards=${monthCards}`);
+  if (await page.locator('[data-period-id="window30"] [data-period-count]').count()) {
+    throw new Error('window30 chip should not show count');
+  }
+  await assertOneLineHeading(page, /한 달 이내/);
   if ((await page.locator('[data-festival-list-heading] h2').innerText()).includes('~')) {
     throw new Error('heading still shows chip end date');
   }

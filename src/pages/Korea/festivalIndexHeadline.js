@@ -11,7 +11,7 @@ const EN_TIME_TAB_HEADLINE = {
   now: 'Festivals on now',
   weekend: "This weekend's festivals",
   thisMonth: "This month's festivals",
-  window30: 'Festivals within 30 days',
+  window30: 'Festivals within a month',
   spring: 'Spring festivals',
   summer: 'Summer festivals',
   autumn: 'Autumn festivals',
@@ -52,7 +52,7 @@ export function festivalIndexTimePhrase(locale, timeTab, timeTabs, t) {
 }
 
 /**
- * Flag-on period title: `서울특별시 · 30일 안(~11.14)` or `… · 10.17–10.18`.
+ * Flag-on period title: `서울특별시 · 한 달 이내` (range in meta) or `… · 10.17–10.18`.
  * No quotes and no «축제 리스트», so the line stays as short as the flag-off title.
  * @param {{ place?: string, time: string, tasteSuffix?: string }} p
  */
