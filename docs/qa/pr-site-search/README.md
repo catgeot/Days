@@ -6,8 +6,9 @@ Captured from `https://127.0.0.1:5173` · viewport **390px** clip (headless).
 
 | Region | Query | Browser | File | URL |
 |--------|-------|---------|------|-----|
-| 평창 (흥정계곡) | 흥정계곡 | Chromium | real-user-heungjeong-chromium-390.png | `/` (catalog pin; gallery must load) |
-| 평창 (흥정계곡) | 흥정계곡 | WebKit | real-user-heungjeong-webkit-390.png | `/` |
+| 평창 (흥정계곡) | 흥정계곡 | Chromium | real-user-heungjeong-chromium-390.png | `https://127.0.0.1:5173/` (Enter → catalog card) |
+| 평창 (흥정계곡) | 흥정계곡 | WebKit | real-user-heungjeong-webkit-390.png | `https://127.0.0.1:5173/` |
+| 평창 (흥정계곡) gallery | 흥정계곡 | WebKit | heungjeong-gallery-full-webkit-390.png | `/place/흥정계곡` · 6 KTO · 0 stock |
 | 강릉 | 경포대 | Chromium | real-user-gangneung-gyeongpodae-chromium-390.png | `/place/gyeongpodae` |
 | 강릉 | 경포대 | WebKit | real-user-gangneung-gyeongpodae-webkit-390.png | `/place/gyeongpodae` |
 | 제주 | 성산일출봉 | Chromium | real-user-jeju-seongsan-chromium-390.png | `/place/seongsan-ilchulbong` |

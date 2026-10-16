@@ -1,18 +1,21 @@
 /**
- * PR #477 real-user path: home/explore → search → place (390px).
+ * PR #477 real-user path: home → explore → search → place (390px).
  * Chromium + WebKit · VITE_GATEO_SITE_SEARCH=1 preview.
- *
- *   VITE_GATEO_SITE_SEARCH=1 npx vite --host 127.0.0.1 --port 5173
- *   node scripts/capture-site-search-real-user-477.mjs
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium, webkit } from 'playwright';
+import {
+  auditGalleryImages,
+  scrollToGallerySection,
+  waitForGalleryFullyLoaded,
+} from './lib/gallery-qa-wait.mjs';
 
 const BASE = process.env.PLAYWRIGHT_BASE_URL || 'https://127.0.0.1:5173';
 const OUT = join(process.cwd(), 'docs/qa/pr-site-search');
 const WIDTH = 390;
 const HEIGHT = 844;
+const ENTER_DELAY_MS = Number(process.env.QA_ENTER_DELAY_MS ?? '0');
 
 const PLACES = [
   {
@@ -20,23 +23,24 @@ const PLACES = [
     query: '흥정계곡',
     pick: 'enter',
     assertGallery: true,
-    heading: /^흥정계곡$/,
+    minGallery: 4,
+    valleyOnly: true,
   },
   {
     id: 'gangneung-gyeongpodae',
     query: '경포대',
     pick: 'suggestion',
     suggestionText: /경포대/,
-    assertGallery: false,
-    heading: /경포대/,
+    assertGallery: true,
+    minGallery: 1,
   },
   {
     id: 'jeju-seongsan',
     query: '성산일출봉',
     pick: 'suggestion',
     suggestionText: '성산일출봉',
-    assertGallery: false,
-    heading: /성산일출봉/,
+    assertGallery: true,
+    minGallery: 1,
   },
 ];
 
@@ -62,18 +66,23 @@ async function injectUrlBanner(page) {
   }, url);
 }
 
-async function shot(page, fileName, label, browserTag) {
-  await page.waitForTimeout(600);
+async function shot(page, fileName, label, browserTag, extra = '') {
+  await page.waitForTimeout(400);
   await injectUrlBanner(page);
   const path = join(OUT, fileName);
   await page.screenshot({ path, clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT } });
   if (await pngWidth(path) !== WIDTH) throw new Error(`width not 390: ${fileName}`);
-  manifest.push({ label, file: fileName, browser: browserTag, url: page.url() });
+  manifest.push({
+    label: extra ? `${label} (${extra})` : label,
+    file: fileName,
+    browser: browserTag,
+    url: page.url(),
+  });
 }
 
 async function openSearchFromHome(page) {
   await page.goto(`${BASE}/`, { waitUntil: 'commit', timeout: 60_000 });
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(200);
   await page.goto(`${BASE}/explore`, { waitUntil: 'commit', timeout: 60_000 });
   const input = page.getByRole('textbox', { name: /예: 속초|e\.g\. Sokcho/i }).first();
   await input.waitFor({ state: 'visible', timeout: 120_000 });
@@ -84,7 +93,7 @@ async function capturePlace(page, place, browserTag) {
   const input = await openSearchFromHome(page);
   await input.fill('');
   await input.fill(place.query);
-  await page.waitForTimeout(900);
+  if (ENTER_DELAY_MS > 0) await page.waitForTimeout(ENTER_DELAY_MS);
 
   if (place.pick === 'enter') {
     await input.press('Enter');
@@ -97,43 +106,85 @@ async function capturePlace(page, place, browserTag) {
         { timeout: 90_000 },
       )
       .catch(() => {});
+    const disambig = page.getByText('원하는 장소를 선택하세요');
+    if (await disambig.isVisible().catch(() => false)) {
+      throw new Error(`${place.id}: Enter opened disambiguation (${browserTag}) url=${page.url()}`);
+    }
   } else {
+    await page.waitForTimeout(120);
     await page
       .locator('[data-search-popover] button')
       .filter({ hasNotText: 'MOONi' })
       .filter({ hasText: place.suggestionText })
       .first()
       .click();
+    await page.waitForURL(/\/place\//, { timeout: 90_000 });
   }
 
-  await page.waitForTimeout(3500);
-  await page
-    .getByText(place.query, { exact: true })
-    .first()
-    .waitFor({ state: 'visible', timeout: 90_000 });
+  await page.getByText(place.query, { exact: true }).first().waitFor({
+    state: 'visible',
+    timeout: 90_000,
+  });
 
+  const enterShotUrl = page.url();
+  const fileName = `real-user-${place.id}-${browserTag}-390.png`;
+  let enterShotDone = false;
+  if (place.id === 'heungjeong' && !enterShotUrl.includes('/place/')) {
+    await shot(page, fileName, `${place.query} · ${browserTag} (Enter card)`, browserTag);
+    enterShotDone = true;
+  }
+
+  let galleryMeta = '';
   if (place.assertGallery) {
-    const failText = page.getByText('사진을 불러오지 못했습니다');
-    if (await failText.isVisible().catch(() => false)) {
-      throw new Error(`${place.id}: gallery load failed UI visible (${browserTag})`);
+    if (place.id === 'heungjeong' && !enterShotUrl.includes('/place/')) {
+      await page.goto(`${BASE}/place/${encodeURIComponent(place.query)}`, {
+        waitUntil: 'commit',
+        timeout: 90_000,
+      });
+      await page.getByText(place.query, { exact: true }).first().waitFor({
+        state: 'visible',
+        timeout: 90_000,
+      });
     }
-    await page.waitForTimeout(2000);
-    if (await failText.isVisible().catch(() => false)) {
-      throw new Error(`${place.id}: gallery load failed after wait (${browserTag})`);
+    await waitForGalleryFullyLoaded(page, { minImages: place.minGallery ?? 1 });
+    const audit = await auditGalleryImages(page);
+    if (audit.broken > 0) {
+      throw new Error(`${place.id}: ${audit.broken} broken gallery tiles (${browserTag})`);
     }
-    const anyImg = await page
-      .locator('img[src*="visitkorea"], img[src*="unsplash"], img[src*="pexels"], img[src*="tong.visitkorea"]')
-      .count();
-    if (anyImg < 1) {
-      const fallback = await page.locator('img').count();
-      if (fallback < 2) {
-        throw new Error(`${place.id}: no gallery images in DOM (${browserTag})`);
+    if (place.valleyOnly) {
+      if (audit.farmLike.length > 0) {
+        throw new Error(
+          `${place.id}: farm-like gallery URL(s): ${audit.farmLike.join(', ')}`,
+        );
+      }
+      if (audit.stockCount > 0 && audit.tourCount >= 4) {
+        throw new Error(`${place.id}: stock substitute when Tour available (${browserTag})`);
       }
     }
+    galleryMeta = `gallery=${audit.count} tour=${audit.tourCount}`;
+    if (place.id === 'heungjeong' && browserTag === 'webkit') {
+      await scrollToGallerySection(page);
+      await page.evaluate(() => {
+        const scroller = document.querySelector('.custom-scrollbar-blue');
+        if (scroller) scroller.scrollTop = scroller.scrollHeight;
+      });
+      await page.waitForTimeout(600);
+      await waitForGalleryFullyLoaded(page, { minImages: place.minGallery ?? 4 });
+      const fullAudit = await auditGalleryImages(page);
+      galleryMeta = `gallery=${fullAudit.count} tour=${fullAudit.tourCount}`;
+      await shot(
+        page,
+        'heungjeong-gallery-full-webkit-390.png',
+        `${place.query} gallery full`,
+        browserTag,
+        galleryMeta,
+      );
+    }
   }
 
-  const fileName = `real-user-${place.id}-${browserTag}-390.png`;
-  await shot(page, fileName, `${place.query} · ${browserTag}`, browserTag);
+  if (!enterShotDone) {
+    await shot(page, fileName, `${place.query} · ${browserTag}`, browserTag, galleryMeta);
+  }
 }
 
 async function runBrowser(browserType, tag) {
@@ -167,13 +218,11 @@ async function main() {
   const md = [
     '# PR #477 real-user captures (390px)',
     '',
-    `Base: \`${BASE}\` · viewport ${WIDTH}×${HEIGHT} clip`,
+    `Base: \`${BASE}\` · viewport ${WIDTH}×${HEIGHT} clip · Enter delay ${ENTER_DELAY_MS}ms`,
     '',
     '| Place | Browser | File | URL |',
     '|-------|---------|------|-----|',
-    ...manifest.map(
-      (r) => `| ${r.label} | ${r.browser} | ${r.file} | ${r.url} |`,
-    ),
+    ...manifest.map((r) => `| ${r.label} | ${r.browser} | ${r.file} | ${r.url} |`),
     '',
   ].join('\n');
   await writeFile(mdPath, md, 'utf8');
