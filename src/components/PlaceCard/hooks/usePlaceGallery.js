@@ -836,6 +836,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     };
 
     let tourSeed = [];
+    /** sparse/thin DB Tour — live refetch 실패 시 최소 1장 복구(흥정계곡 등) */
+    let dbGallerySliceFallback = null;
 
     if (!forceRefresh && localScenicOfficialGallery) {
       const officialImages = localScenicOfficialGallery.map((url, idx) => ({
@@ -888,9 +890,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       if (validCache?.length > 0 && isThinStockGallery(validCache)) {
         console.warn('⚠️ session cache thin stock — live Unsplash/Pexels refetch');
       }
-
-      /** sparse/thin DB Tour — live refetch 실패 시 최소 1장 복구(흥정계곡 등) */
-      let dbGallerySliceFallback = null;
 
       // 2) DB 선조회 — 히트면 즉시 표시(LIVE 대기 없음). 갤러리 탭은 7일 스톡 SWR(hero·image_url 유지).
       // 더보기(append)는 DB 미반영. thumbnailOnly는 SWR/Pexels 없음.
