@@ -1495,11 +1495,13 @@ export default function KoreaFestivalHub() {
     const rangeLabel = customRange?.start
       ? formatFestivalRangeLabel(customRange.start, customRange.end, seoulToday)
       : '';
+    const dateChipFallback = t('korea.festival.dateChip');
+    const datePeriodText = rangeLabel || dateChipFallback;
     return replaceMonthTabWithDateChips(base, {
       window30Label: t('korea.festival.window30Chip', { end: endLabel }),
       window30Headline: t('korea.festival.window30Short'),
-      dateLabel: rangeLabel || t('korea.festival.dateChip'),
-      dateHeadline: t('korea.festival.dateChip'),
+      dateLabel: datePeriodText,
+      dateHeadline: datePeriodText,
     });
   }, [now, t, dateChipEnabled, seoulToday, customRange]);
 

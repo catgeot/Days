@@ -146,6 +146,39 @@ if (!heading.includes('30일 안')) {
 }
 await shoot(page, 'flag-on-window30-dedupe.png');
 
+const pickedContext = await browser.newContext(baseContext);
+const pickedPage = await pickedContext.newPage();
+await pickedPage.clock.install({ time: new Date('2026-10-16T03:00:00.000Z') });
+await gotoKorea(pickedPage, onUrl);
+await pickedPage.getByRole('button', { name: /시간 대분류/ }).click();
+await pickedPage.locator('[data-period-id="date"]').click();
+const pickedSheet = pickedPage.locator('[data-festival-date-sheet]');
+await pickedSheet.waitFor();
+await pickedSheet.locator('[data-ymd="20261017"]').click();
+await pickedSheet.locator('[data-ymd="20261018"]').click();
+await pickedSheet.getByRole('button', { name: '이 기간 보기' }).click();
+await pickedPage.locator('[data-period-id="date"][aria-pressed="true"]').waitFor();
+const pickedMajor = (
+  await pickedPage.getByRole('button', { name: /시간 대분류/ }).innerText()
+)
+  .replace(/\s+/g, ' ')
+  .trim();
+if (!pickedMajor.includes('10.17')) {
+  throw new Error(`major time chip should show picked range: ${pickedMajor}`);
+}
+const pickedHeading = (
+  await pickedPage.locator('[data-festival-list-heading] h2').innerText()
+).trim();
+if (!pickedHeading.includes('10.17')) {
+  throw new Error(`heading should show picked range: ${pickedHeading}`);
+}
+if (pickedHeading.includes('날짜')) {
+  throw new Error(`heading should not show date placeholder: ${pickedHeading}`);
+}
+await pickedPage.locator('main [data-festival-id]').first().waitFor({ timeout: 30_000 });
+await shoot(pickedPage, 'flag-on-picked-range.png');
+await pickedContext.close();
+
 const satContext = await browser.newContext(baseContext);
 const satPage = await satContext.newPage();
 await satPage.clock.install({ time: new Date('2026-10-17T03:00:00.000Z') });

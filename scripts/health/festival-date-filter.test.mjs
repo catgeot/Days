@@ -130,7 +130,7 @@ test('date chips replace 이번 달 and leave the weekend chip alone', () => {
       window30Label: '30일 안 ~11.14',
       window30Headline: '30일 안',
       dateLabel: '10.17\u201310.18',
-      dateHeadline: '날짜📅',
+      dateHeadline: '10.17\u201310.18',
     },
   );
   assert.deepEqual(
@@ -140,7 +140,7 @@ test('date chips replace 이번 달 and leave the weekend chip alone', () => {
   assert.equal(tabs[1].label, '이번 주말');
   assert.equal(tabs[2].label, '30일 안 ~11.14');
   assert.equal(tabs[2].headline, '30일 안');
-  assert.equal(tabs[3].headline, '날짜📅');
+  assert.equal(tabs[3].headline, '10.17\u201310.18');
   assert.equal(tabs[3].label, '10.17\u201310.18');
 });
 

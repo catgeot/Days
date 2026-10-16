@@ -265,7 +265,7 @@ export function ymdFromParts(year, month, day) {
 
 /**
  * Upcoming weekend in Seoul calendar days.
- * Sat–Sun before the weekend; on Saturday Sat–Sun; on Sunday today only.
+ * Fri–Sun on weekdays; Sat: today–Sun; Sun: today only.
  * @param {Date} [now]
  * @returns {{ startYmd: string, endYmd: string }}
  */

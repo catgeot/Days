@@ -153,7 +153,10 @@ test.describe('Korea festival date chips', () => {
     await expect(dateChip).toHaveAttribute('aria-pressed', 'true');
     await expect(dateChip).toContainText('10.24\u201310.25');
     await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
-      '전국 · 날짜📅',
+      '전국 · 10.24\u201310.25',
+    );
+    await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText(
+      '10.24\u201310.25',
     );
     const count = await periodCount(page, 'date');
     await expect(listCards(page)).toHaveCount(count);
