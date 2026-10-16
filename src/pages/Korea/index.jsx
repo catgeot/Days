@@ -42,6 +42,16 @@ import {
   filterByTimeTab,
   sortFestivalGroupsByOpenDate,
 } from './festivalTimeFilter';
+import {
+  filterFestivalsByYmdRange,
+  formatFestivalRangeLabel,
+  loadedFestivalDataEndYmd,
+  replaceMonthTabWithDateChips,
+  seoulTodayYmd,
+  window30RangeYmd,
+} from './festivalDateFilter';
+import FestivalDateSheet from './FestivalDateSheet';
+import { isGateoFestivalDateChipEnabled } from '../../shared/gateoFeatureFlags';
 import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
@@ -853,7 +863,14 @@ export default function KoreaFestivalHub() {
     };
   }, []);
 
-  const [timeTab, setTimeTab] = useState('thisMonth');
+  const dateChipEnabled = isGateoFestivalDateChipEnabled();
+  const [timeTab, setTimeTab] = useState(() =>
+    isGateoFestivalDateChipEnabled() ? 'window30' : 'thisMonth',
+  );
+  const [customRange, setCustomRange] = useState(
+    /** @type {{ start: string, end: string } | null} */ (null),
+  );
+  const [dateSheetOpen, setDateSheetOpen] = useState(false);
   const [tasteId, setTasteId] = useState('all');
   const [areaCode, setAreaCode] = useState(DEFAULT_AREA_CODE);
   const [cityName, setCityName] = useState('all');
@@ -1423,19 +1440,58 @@ export default function KoreaFestivalHub() {
     });
   }, [items, socialPromoItemById, now]);
 
-  const timeTabs = useMemo(
-    () => localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now)),
-    [now, t],
+  const seoulToday = useMemo(() => seoulTodayYmd(now), [now]);
+  const dataEndYmd = useMemo(
+    () => loadedFestivalDataEndYmd(itemsWithSocialPromo, seoulToday),
+    [itemsWithSocialPromo, seoulToday],
   );
 
+  const filterItemsByTime = useCallback((timeId, source) => {
+    const list = source || [];
+    if (dateChipEnabled) {
+      if (timeId === 'window30') {
+        const range = window30RangeYmd(now);
+        return filterFestivalsByYmdRange(
+          list,
+          range.eventStartDate,
+          range.eventEndDate,
+        );
+      }
+      if (timeId === 'date') {
+        if (!customRange?.start || !customRange?.end) return [];
+        return filterFestivalsByYmdRange(list, customRange.start, customRange.end);
+      }
+    }
+    return filterByTimeTab(timeId, list, now);
+  }, [dateChipEnabled, now, customRange]);
+
+  const timeTabs = useMemo(() => {
+    const base = localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now));
+    if (!dateChipEnabled) return base;
+    const range = window30RangeYmd(now);
+    const endLabel = formatFestivalRangeLabel(
+      range.eventEndDate,
+      range.eventEndDate,
+      seoulToday,
+    );
+    const dateLabel = customRange?.start
+      ? formatFestivalRangeLabel(customRange.start, customRange.end, seoulToday)
+      : t('korea.festival.dateChip');
+    return replaceMonthTabWithDateChips(base, {
+      window30Label: t('korea.festival.window30Chip', { end: endLabel }),
+      dateLabel,
+    });
+  }, [now, t, dateChipEnabled, seoulToday, customRange]);
+
   const timedItems = useMemo(
-    () => filterByTimeTab(timeTab, itemsWithSocialPromo, now),
-    [timeTab, itemsWithSocialPromo, now],
+    () => filterItemsByTime(timeTab, itemsWithSocialPromo),
+    [filterItemsByTime, timeTab, itemsWithSocialPromo],
   );
 
   const sidoChips = useMemo(() => buildSidoTags(timedItems), [timedItems]);
 
   useEffect(() => {
+    if (dateChipEnabled) return;
     if (areaCode === 'all') return;
     if (sidoChips.length === 0) return;
     if (!sidoChips.some((s) => s.id === areaCode)) {
@@ -1443,7 +1499,7 @@ export default function KoreaFestivalHub() {
       setAreaCode(DEFAULT_AREA_CODE);
       setCityName('all');
     }
-  }, [areaCode, sidoChips]);
+  }, [areaCode, sidoChips, dateChipEnabled]);
 
   const afterSido = useMemo(
     () => filterByRegion(timedItems, { areaCode }),
@@ -1457,9 +1513,10 @@ export default function KoreaFestivalHub() {
   );
 
   useEffect(() => {
+    if (dateChipEnabled) return;
     if (cityName === 'all') return;
     if (!cityChips.some((c) => c.id === cityName)) setCityName('all');
-  }, [cityName, cityChips]);
+  }, [cityName, cityChips, dateChipEnabled]);
 
   const afterRegion = useMemo(
     () => filterByRegion(timedItems, { areaCode, cityName }),
@@ -1472,9 +1529,10 @@ export default function KoreaFestivalHub() {
   );
 
   useEffect(() => {
+    if (dateChipEnabled) return;
     if (tasteId === 'all') return;
-    if (!tasteChips.some((t) => t.id === tasteId)) setTasteId('all');
-  }, [tasteId, tasteChips]);
+    if (!tasteChips.some((chip) => chip.id === tasteId)) setTasteId('all');
+  }, [tasteId, tasteChips, dateChipEnabled]);
 
   const tastedItems = useMemo(
     () => filterByTaste(afterRegion, tasteId),
@@ -1512,19 +1570,19 @@ export default function KoreaFestivalHub() {
 
   const sidoChipsForDisplay = useMemo(() => {
     if (!visiblePromoContentIds.size) return sidoChips;
-    const timed = filterByTimeTab(timeTab, itemsForChipCounts, now);
+    const timed = filterItemsByTime(timeTab, itemsForChipCounts);
     return buildSidoTags(timed);
   }, [
     visiblePromoContentIds,
     sidoChips,
     timeTab,
     itemsForChipCounts,
-    now,
+    filterItemsByTime,
   ]);
 
   const cityChipsForDisplay = useMemo(() => {
     if (!visiblePromoContentIds.size) return cityChips;
-    const timed = filterByTimeTab(timeTab, itemsForChipCounts, now);
+    const timed = filterItemsByTime(timeTab, itemsForChipCounts);
     const after = filterByRegion(timed, { areaCode });
     return areaCode === 'all' ? [] : buildCityTags(after, { areaCode });
   }, [
@@ -1533,7 +1591,7 @@ export default function KoreaFestivalHub() {
     timeTab,
     itemsForChipCounts,
     areaCode,
-    now,
+    filterItemsByTime,
   ]);
 
   const localizedSidoChips = useMemo(
@@ -1562,6 +1620,9 @@ export default function KoreaFestivalHub() {
       return t('korea.common.nearAround', { label: nearLabel });
     }
     if (searchActive) {
+      if (dateChipEnabled) {
+        return { kind: 'text', text: t('korea.festival.searchAllPeriod') };
+      }
       return t('korea.common.searchPrefix', { query: searchFilter });
     }
     return buildIndexListHeadline({
@@ -1585,6 +1646,7 @@ export default function KoreaFestivalHub() {
     timeTabs,
     t,
     locale,
+    dateChipEnabled,
   ]);
 
   const indexNeighborChips = useMemo(
@@ -1605,7 +1667,7 @@ export default function KoreaFestivalHub() {
    */
   const nearRanked = useMemo(() => {
     if (!nearOrigin) return null;
-    const timed = filterByTimeTab(timeTab, itemsWithSocialPromo, now);
+    const timed = filterItemsByTime(timeTab, itemsWithSocialPromo);
     const tasted = filterByTaste(timed, tasteId);
     return rankFestivalsByDistance(
       festivalsWithinKm(
@@ -1617,7 +1679,7 @@ export default function KoreaFestivalHub() {
       nearOrigin.lat,
       nearOrigin.lng,
     );
-  }, [nearOrigin, itemsWithSocialPromo, now, timeTab, tasteId]);
+  }, [nearOrigin, itemsWithSocialPromo, filterItemsByTime, timeTab, tasteId]);
 
   const nearBaseItems = useMemo(
     () => (nearRanked ? nearRanked.map((row) => row.item) : null),
@@ -1681,11 +1743,11 @@ export default function KoreaFestivalHub() {
       cityName,
     });
     const pool = filterByTaste(regionBase, tasteId);
-    for (const t of timeTabs) {
-      counts[t.id] = filterByTimeTab(t.id, pool, now).length;
+    for (const tab of timeTabs) {
+      counts[tab.id] = filterItemsByTime(tab.id, pool).length;
     }
     return counts;
-  }, [itemsForChipCounts, areaCode, cityName, tasteId, timeTabs, now]);
+  }, [itemsForChipCounts, areaCode, cityName, tasteId, timeTabs, filterItemsByTime]);
 
   const panelGroups = useMemo(() => {
     if (nearBaseItems) {
@@ -1943,7 +2005,7 @@ export default function KoreaFestivalHub() {
       const label = hubResolved.hubName || '';
       const nearby = rankFestivalsByDistance(
         festivalsWithinKm(
-          filterByTimeTab(timeTab, sourceItems, now),
+          filterItemsByTime(timeTab, sourceItems),
           lat,
           lng,
           NEAR_KM,
@@ -1964,7 +2026,7 @@ export default function KoreaFestivalHub() {
       );
       return true;
     },
-    [items, now, timeTab, dismissLocHint, t],
+    [items, timeTab, dismissLocHint, t, filterItemsByTime],
   );
 
   useFestivalLocationBoot({
@@ -2154,10 +2216,31 @@ export default function KoreaFestivalHub() {
   };
 
   const selectTime = (id) => {
+    if (dateChipEnabled && id === 'date') {
+      setDateSheetOpen(true);
+      setChipPanel('time');
+      return;
+    }
     setTimeTab(id);
     setChipPanel('time');
     clearSearchFilter();
     clearFestivalFromUrl();
+  };
+
+  const applyCustomRange = (range) => {
+    setCustomRange(range);
+    setTimeTab('date');
+    setChipPanel('time');
+    setDateSheetOpen(false);
+    clearSearchFilter();
+    clearFestivalFromUrl();
+  };
+
+  const clearPeriod = () => {
+    setTimeTab('now');
+    setCustomRange(null);
+    setDateSheetOpen(false);
+    setChipPanel('time');
   };
 
   const selectTaste = (id) => {
@@ -2707,20 +2790,22 @@ export default function KoreaFestivalHub() {
                 activeKey={detailChipActiveKey}
               >
                 {chipPanel === 'time' &&
-                  timeTabs.map((t) => (
+                  timeTabs.map((tab) => (
                     <button
-                      key={t.id}
+                      key={tab.id}
                       type="button"
-                      onClick={() => selectTime(t.id)}
-                      className={chipClass(timeTab === t.id)}
-                      aria-pressed={timeTab === t.id}
+                      data-period-id={tab.id}
+                      onClick={() => selectTime(tab.id)}
+                      className={chipClass(timeTab === tab.id)}
+                      aria-pressed={timeTab === tab.id}
                     >
-                      <ChipPanelIcon panel="time" />
-                      {t.label}
+                      {tab.id === 'date' ? null : <ChipPanelIcon panel="time" />}
+                      {tab.label}
                       <span
-                        className={koreaFilterChipCountClass(timeTab === t.id)}
+                        data-period-count=""
+                        className={koreaFilterChipCountClass(timeTab === tab.id)}
                       >
-                        {timeChipCounts[t.id] ?? 0}
+                        {timeChipCounts[tab.id] ?? 0}
                       </span>
                     </button>
                   ))}
@@ -3115,6 +3200,19 @@ export default function KoreaFestivalHub() {
                       <FestivalRowSkeleton key={`sk-${i}`} large={listLarge} />
                     ))}
                   </div>
+                ) : dateChipEnabled && !searchActive ? (
+                  <div className="px-1 py-4" data-festival-period-empty="">
+                    <p className="text-sm text-stone-500">
+                      {t('korea.festival.emptyPeriod')}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={clearPeriod}
+                      className="mt-3 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+                    >
+                      {t('korea.festival.clearPeriod')}
+                    </button>
+                  </div>
                 ) : (
                   <div className="px-1 py-4">
                     <p className="text-sm text-stone-500">
@@ -3325,6 +3423,16 @@ export default function KoreaFestivalHub() {
           }}
         />
       )}
+
+      {dateChipEnabled ? (
+        <FestivalDateSheet
+          open={dateSheetOpen}
+          todayYmd={seoulToday}
+          maxYmd={dataEndYmd}
+          onApply={applyCustomRange}
+          onClose={() => setDateSheetOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }

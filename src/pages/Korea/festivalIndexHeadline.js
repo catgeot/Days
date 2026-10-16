@@ -11,6 +11,7 @@ const EN_TIME_TAB_HEADLINE = {
   now: 'Festivals on now',
   weekend: "This weekend's festivals",
   thisMonth: "This month's festivals",
+  window30: 'Festivals within 30 days',
   spring: 'Spring festivals',
   summer: 'Summer festivals',
   autumn: 'Autumn festivals',
