@@ -19,7 +19,11 @@ import {
   nearbySightIdsWithoutDisplayableThumb,
   nearbySightImagePending,
 } from '../../src/pages/Korea/lib/nearbySightImages.js';
-import { isNearbyTourAttractionTitle } from '../../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
+import {
+  isNearbyTourAttractionCandidate,
+  isNearbyTourAttractionTitle,
+  isNonTouristFacilityCat3,
+} from '../../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
 import {
   nearbyAttractionCacheKey,
   readNearbyAttractionCache,
@@ -401,6 +405,67 @@ test('drop non-tourist facilities from nearby sights', () => {
   assert.deepEqual(
     merged.items.map((spot) => spot.name),
     ['경포대'],
+  );
+});
+
+test('drop terminals, stations, and offices but keep heritage landmarks', () => {
+  assert.equal(isNearbyTourAttractionTitle('강릉항여객터미널'), false);
+  assert.equal(isNearbyTourAttractionTitle('강릉교회'), false);
+  assert.equal(isNearbyTourAttractionTitle('역사문화공원'), true);
+  assert.equal(isNearbyTourAttractionTitle('화랑대역'), true);
+  assert.equal(isNearbyTourAttractionTitle('구 서울역'), true);
+  assert.equal(isNearbyTourAttractionTitle('서울역'), false);
+  assert.equal(isNearbyTourAttractionTitle('강릉역'), false);
+  assert.equal(isNearbyTourAttractionTitle('기차역'), false);
+  assert.equal(isNearbyTourAttractionTitle('역사'), true);
+  assert.equal(isNearbyTourAttractionTitle('지역'), true);
+  assert.equal(isNearbyTourAttractionTitle('역사공원'), true);
+  assert.equal(isNearbyTourAttractionTitle('강원지역'), true);
+  assert.equal(isNearbyTourAttractionTitle('강릉시청'), false);
+  assert.equal(isNearbyTourAttractionTitle('평창군청'), false);
+  assert.equal(isNearbyTourAttractionTitle('중구청'), false);
+  assert.equal(isNearbyTourAttractionTitle('강원도청'), false);
+  assert.equal(isNearbyTourAttractionTitle('주문진읍사무소'), false);
+  assert.equal(isNearbyTourAttractionTitle('연곡면사무소'), false);
+  assert.equal(isNearbyTourAttractionTitle('강릉행정복지센터'), false);
+  assert.equal(isNearbyTourAttractionTitle('강릉경찰서'), false);
+  assert.equal(isNearbyTourAttractionTitle('강릉소방서'), false);
+  assert.equal(isNearbyTourAttractionTitle('강릉우체국'), false);
+  assert.equal(isNearbyTourAttractionTitle('춘천지방법원'), false);
+  assert.equal(isNearbyTourAttractionTitle('파주 법원리'), true);
+  assert.equal(isNearbyTourAttractionTitle('강릉세무서'), false);
+  assert.equal(isNearbyTourAttractionTitle('시흥시청소년수련관'), true);
+  assert.equal(isNearbyTourAttractionTitle('여객터미널 전망대'), true);
+  assert.equal(isNearbyTourAttractionTitle('낙산사'), true);
+  assert.equal(isNearbyTourAttractionTitle('구 철원제일교회'), true);
+  assert.equal(isNearbyTourAttractionTitle('서귀포유람선'), true);
+  assert.equal(isNonTouristFacilityCat3('A02020800'), false);
+  assert.equal(isNonTouristFacilityCat3('A02020400'), true);
+  assert.equal(
+    isNearbyTourAttractionCandidate({ name: '강릉항여객터미널', cat3: 'A02020800' }),
+    false,
+  );
+  assert.equal(
+    isNearbyTourAttractionCandidate({ name: '서귀포유람선', cat3: 'A02020800' }),
+    true,
+  );
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '강릉항여객터미널', contentId: '21', lat: 37.772, lng: 128.948, cat3: 'A02020800' },
+        { name: '역사문화공원', contentId: '22', lat: 37.78, lng: 128.95 },
+        { name: '화랑대역', contentId: '23', lat: 37.79, lng: 128.96 },
+        { name: '강릉교회', contentId: '24', lat: 37.8, lng: 128.97 },
+        { name: '낙산사', contentId: '25', lat: 37.81, lng: 128.98 },
+      ],
+    },
+    origin: { lat: 37.77, lng: 128.94 },
+  });
+  assert.deepEqual(
+    merged.items.map((spot) => spot.name),
+    ['역사문화공원', '화랑대역', '낙산사'],
   );
 });
 

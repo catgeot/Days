@@ -51,6 +51,10 @@ assert(
   isNearbyTourAttractionTitle('경포대'),
   'keep ordinary scenic name',
 );
+assert(!isNearbyTourAttractionTitle('강릉항여객터미널'), 'drop ferry terminal');
+assert(isNearbyTourAttractionTitle('역사문화공원'), 'keep history culture park');
+assert(isNearbyTourAttractionTitle('화랑대역'), 'keep heritage station');
+assert(isNearbyTourAttractionTitle('낙산사'), 'keep heritage temple');
 
 assert(
   formatTourAttractionLocality(
