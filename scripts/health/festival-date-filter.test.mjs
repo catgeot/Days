@@ -11,6 +11,9 @@ import {
   formatWindow30RangeSuffix,
   replaceMonthTabWithDateChips,
   seoulTodayYmd,
+  festivalDateSheetWeekRangeFromYmd,
+  festivalDateSheetWeekRangeYmd,
+  mondayYmdOfSeoulWeekContaining,
   upcomingWeekendRangeYmd,
   window30RangeFromYmd,
   window30RangeYmd,
@@ -154,6 +157,35 @@ test('window30 subline range suffix and a picked range is the label itself', () 
   assert.equal(picked, '10.17\u201310.18');
   assert.equal(formatWindow30RangeSuffix(end).includes('"'), false);
   assert.equal(picked.includes('"'), false);
+});
+
+test('date sheet week shortcuts — Mon–Sun blocks and Sunday edge', () => {
+  assert.equal(mondayYmdOfSeoulWeekContaining('20261016'), '20261012');
+  assert.equal(mondayYmdOfSeoulWeekContaining('20261018'), '20261012');
+
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(0, '20261016'), {
+    startYmd: '20261016',
+    endYmd: '20261018',
+  });
+
+  const sun = new Date('2026-10-18T03:00:00.000Z');
+  assert.deepEqual(festivalDateSheetWeekRangeYmd(0, sun), {
+    startYmd: '20261018',
+    endYmd: '20261018',
+  });
+  assert.deepEqual(festivalDateSheetWeekRangeYmd(1, sun), {
+    startYmd: '20261019',
+    endYmd: '20261025',
+  });
+  assert.deepEqual(festivalDateSheetWeekRangeYmd(2, sun), {
+    startYmd: '20261026',
+    endYmd: '20261101',
+  });
+
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(1, '20261016'), {
+    startYmd: '20261019',
+    endYmd: '20261025',
+  });
 });
 
 test('weekend window on Sat–Sun is today through Sunday (Seoul)', () => {

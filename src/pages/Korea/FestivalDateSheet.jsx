@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import {
+  clampYmdRangeToBounds,
   daysInMonth,
   eachMonthInYmdRange,
+  festivalDateSheetWeekRangeFromYmd,
   formatFestivalRangeLabel,
   weekdayIndexYmd,
   ymdFromParts,
@@ -58,6 +60,25 @@ export default function FestivalDateSheet({
     return Array.isArray(raw) && raw.length === 7 ? raw : WEEKDAY_FALLBACK;
   }, [t]);
 
+  const weekShortcuts = useMemo(
+    () => [
+      { id: 0, label: t('korea.festival.dateSheetWeekThis') },
+      { id: 1, label: t('korea.festival.dateSheetWeekNext') },
+      { id: 2, label: t('korea.festival.dateSheetWeekNext2') },
+    ],
+    [t],
+  );
+
+  const activeWeekShortcut = useMemo(() => {
+    if (!draftStart || !draftEnd) return null;
+    for (const weeksAhead of [0, 1, 2]) {
+      const raw = festivalDateSheetWeekRangeFromYmd(weeksAhead, todayYmd);
+      const { startYmd, endYmd } = clampYmdRangeToBounds(raw, todayYmd, maxYmd);
+      if (startYmd === draftStart && endYmd === draftEnd) return weeksAhead;
+    }
+    return null;
+  }, [draftStart, draftEnd, todayYmd, maxYmd]);
+
   if (!open) return null;
 
   const label = draftStart
@@ -76,6 +97,14 @@ export default function FestivalDateSheet({
       return;
     }
     setDraftEnd(ymd);
+  };
+
+  const pickWeekShortcut = (weeksAhead) => {
+    const raw = festivalDateSheetWeekRangeFromYmd(weeksAhead, todayYmd);
+    const { startYmd, endYmd } = clampYmdRangeToBounds(raw, todayYmd, maxYmd);
+    if (!startYmd || !endYmd) return;
+    setDraftStart(startYmd);
+    setDraftEnd(endYmd);
   };
 
   return (
@@ -111,6 +140,30 @@ export default function FestivalDateSheet({
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+          <div
+            className="mb-3 flex flex-wrap gap-2"
+            data-festival-date-week-shortcuts=""
+          >
+            {weekShortcuts.map((item) => {
+              const active = activeWeekShortcut === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  data-week-shortcut={item.id}
+                  aria-pressed={active}
+                  onClick={() => pickWeekShortcut(item.id)}
+                  className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${
+                    active
+                      ? 'border-amber-600 bg-amber-700 text-white'
+                      : 'border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
           <div className="mb-2 grid grid-cols-7 text-center text-[10px] font-bold text-stone-400">
             {weekdays.map((name) => (
               <span key={name}>{name}</span>

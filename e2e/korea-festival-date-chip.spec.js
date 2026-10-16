@@ -241,6 +241,58 @@ test.describe('Korea festival date chips', () => {
     await expect(dateChip).toContainText('날짜');
   });
 
+  test('date sheet week shortcuts highlight range and apply custom period', async ({
+    page,
+  }) => {
+    await page.getByRole('button', { name: /^서울\s+\d+$/ }).click();
+    await openTimeRow(page);
+    await page.locator('[data-period-id="date"]').click();
+    const sheet = page.locator('[data-festival-date-sheet]');
+    await expect(sheet).toBeVisible();
+
+    await sheet.locator('[data-week-shortcut="0"]').click();
+    await expect(sheet.locator('[data-ymd="20261016"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(sheet.locator('[data-ymd="20261018"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await sheet.getByRole('button', { name: '이 기간 보기' }).click();
+    const dateChip = page.locator('[data-period-id="date"]');
+    await expect(dateChip).toContainText('10.16\u201310.18');
+
+    await dateChip.click();
+    await sheet.locator('[data-week-shortcut="1"]').click();
+    await expect(sheet.locator('[data-ymd="20261019"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(sheet.locator('[data-ymd="20261025"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
+  test('date sheet this week on Sunday is today only', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-10-18T03:00:00.000Z'));
+    await page.reload();
+    await dismissLocHint(page);
+    await openTimeRow(page);
+    await page.locator('[data-period-id="date"]').click();
+    const sheet = page.locator('[data-festival-date-sheet]');
+    await sheet.locator('[data-week-shortcut="0"]').click();
+    await expect(sheet.locator('[data-ymd="20261018"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(sheet.locator('[data-ymd="20261019"]')).not.toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
   test('이번 주말 on Saturday is today through Sunday only', async ({ page }) => {
     await page.clock.setFixedTime(new Date('2026-10-17T03:00:00.000Z'));
     await page.reload();

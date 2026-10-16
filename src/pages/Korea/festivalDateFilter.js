@@ -286,3 +286,57 @@ export function upcomingWeekendRangeYmd(now = new Date()) {
     endYmd: addDaysYmd(todayYmd, endOffset),
   };
 }
+
+/**
+ * Monday (Asia/Seoul week) containing `ymd`.
+ * @param {string} ymd
+ */
+export function mondayYmdOfSeoulWeekContaining(ymd) {
+  if (!isYmd(ymd)) return '';
+  const dow = weekdayIndexYmd(ymd);
+  const daysFromMonday = dow === 0 ? 6 : dow - 1;
+  return addDaysYmd(ymd, -daysFromMonday);
+}
+
+/**
+ * Date-sheet week shortcuts — Mon–Sun weeks in Seoul.
+ * `weeksAhead` 0 = today through this Sunday; 1/2 = full next Mon–Sun blocks.
+ * @param {0 | 1 | 2} weeksAhead
+ * @param {Date} [now]
+ * @returns {{ startYmd: string, endYmd: string }}
+ */
+export function festivalDateSheetWeekRangeFromYmd(weeksAhead, todayYmd) {
+  if (!isYmd(todayYmd)) return { startYmd: '', endYmd: '' };
+  if (weeksAhead === 0) {
+    const dow = weekdayIndexYmd(todayYmd);
+    const endYmd = addDaysYmd(todayYmd, dow === 0 ? 0 : 7 - dow);
+    return { startYmd: todayYmd, endYmd };
+  }
+  const monThisWeek = mondayYmdOfSeoulWeekContaining(todayYmd);
+  const startYmd = addDaysYmd(monThisWeek, weeksAhead * 7);
+  const endYmd = addDaysYmd(startYmd, 6);
+  return { startYmd, endYmd };
+}
+
+/**
+ * @param {0 | 1 | 2} weeksAhead
+ * @param {Date} [now]
+ */
+export function festivalDateSheetWeekRangeYmd(weeksAhead, now = new Date()) {
+  return festivalDateSheetWeekRangeFromYmd(weeksAhead, seoulTodayYmd(now));
+}
+
+/**
+ * @param {{ startYmd: string, endYmd: string }} range
+ * @param {string} minYmd
+ * @param {string} maxYmd
+ */
+export function clampYmdRangeToBounds(range, minYmd, maxYmd) {
+  let start = range.startYmd;
+  let end = range.endYmd;
+  if (!isYmd(start) || !isYmd(end)) return { startYmd: '', endYmd: '' };
+  if (minYmd && start < minYmd) start = minYmd;
+  if (maxYmd && end > maxYmd) end = maxYmd;
+  if (end < start) return { startYmd: '', endYmd: '' };
+  return { startYmd: start, endYmd: end };
+}
