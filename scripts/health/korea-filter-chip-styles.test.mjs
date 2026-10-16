@@ -6,9 +6,10 @@ import {
   koreaFilterChipClass,
 } from '../../src/pages/Korea/koreaHubFilterChipStyles.js';
 
-test('koreaFilterChipClass: selected period uses amber-700 fill', () => {
+test('koreaFilterChipClass: selected period uses amber-700 fill without color transition', () => {
   const active = koreaFilterChipClass(true);
   assert.match(active, new RegExp(KOREA_FILTER_CHIP_ACTIVE_FILL.replace(/\s+/g, '\\s+')));
+  assert.match(active, /transition-none/);
   assert.doesNotMatch(active, /bg-white/);
 });
 

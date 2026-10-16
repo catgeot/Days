@@ -8,6 +8,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { webkit } from '@playwright/test';
+import { KOREA_FILTER_CHIP_ACTIVE_BG_RGB } from '../src/pages/Korea/koreaHubFilterChipStyles.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(root, 'docs/qa/date-chip-real');
@@ -80,6 +81,29 @@ async function waitListImages(page) {
   return photoNotes;
 }
 
+/** Wait until active/idle period chips match painted fill (class swap alone is not enough during CSS transition). */
+async function waitPeriodChipPaint(page, activeId, idleId) {
+  const activeSel = `[data-period-id="${activeId}"]`;
+  const idleSel = `[data-period-id="${idleId}"]`;
+  await page.locator(`${activeSel}[aria-pressed="true"]`).waitFor({ timeout: 15_000 });
+  await page.waitForFunction(
+    ({ activeSelector, idleSelector, activeRgb }) => {
+      const active = document.querySelector(activeSelector);
+      const idle = document.querySelector(idleSelector);
+      if (!active || !idle) return false;
+      const activeBg = getComputedStyle(active).backgroundColor;
+      const idleBg = getComputedStyle(idle).backgroundColor;
+      return activeBg === activeRgb && idleBg === 'rgb(255, 255, 255)';
+    },
+    {
+      activeSelector: activeSel,
+      idleSelector: idleSel,
+      activeRgb: KOREA_FILTER_CHIP_ACTIVE_BG_RGB,
+    },
+    { timeout: 8_000 },
+  );
+}
+
 async function shoot(page, name) {
   const path = join(outDir, name);
   await page.screenshot({
@@ -128,7 +152,7 @@ async function applyShortRange(page, todayYmd) {
   await sheet.locator(`[data-ymd="${start}"]`).click();
   await sheet.locator(`[data-ymd="${end}"]`).click();
   await sheet.getByRole('button', { name: '이 기간 보기' }).click();
-  await page.locator('[data-period-id="date"][aria-pressed="true"]').waitFor();
+  await waitPeriodChipPaint(page, 'date', 'window30');
   return { start, end };
 }
 
@@ -177,17 +201,7 @@ for (const region of regions) {
 
   const range = await applyShortRange(page, todayYmd);
   allNotes.push(`${region.slug} custom range ${range.start}–${range.end}`);
-  const dateChip = page.locator('[data-period-id="date"]');
-  const window30Chip = page.locator('[data-period-id="window30"]');
-  const dateActive = await dateChip.evaluate((el) => el.className.includes('bg-amber-700'));
-  const window30Active = await window30Chip.evaluate((el) =>
-    el.className.includes('bg-amber-700'),
-  );
-  if (!dateActive || window30Active) {
-    throw new Error(
-      `${region.slug}: date chip must be active fill; window30 must be idle (date=${dateActive}, window30=${window30Active})`,
-    );
-  }
+  await waitPeriodChipPaint(page, 'date', 'window30');
 
   const photoNotesRange = await waitListImages(page);
   await shoot(page, `${region.slug}-custom-range.png`);

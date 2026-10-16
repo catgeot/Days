@@ -1,5 +1,18 @@
 import { test, expect } from '@playwright/test';
 
+const FILTER_CHIP_ACTIVE_BG = 'rgb(180, 83, 9)';
+
+async function expectPeriodChipPainted(page, activeId, idleId) {
+  await expect(page.locator(`[data-period-id="${activeId}"]`)).toHaveCSS(
+    'background-color',
+    FILTER_CHIP_ACTIVE_BG,
+  );
+  await expect(page.locator(`[data-period-id="${idleId}"]`)).toHaveCSS(
+    'background-color',
+    'rgb(255, 255, 255)',
+  );
+}
+
 const FIXTURE = [
   {
     contentId: '1001',
@@ -163,8 +176,7 @@ test.describe('Korea festival date chips', () => {
     expect(count).toBeGreaterThan(0);
     await expect(listCards(page).filter({ hasText: '강릉 주말 축제' })).toHaveCount(1);
     const window30Chip = page.locator('[data-period-id="window30"]');
-    await expect(dateChip).toHaveClass(/bg-amber-700/);
-    await expect(window30Chip).toHaveClass(/bg-white/);
+    await expectPeriodChipPainted(page, 'date', 'window30');
     await expect(window30Chip).toHaveAttribute('aria-pressed', 'false');
 
     await dateChip.click();
@@ -196,10 +208,9 @@ test.describe('Korea festival date chips', () => {
     await sheet.getByRole('button', { name: '이 기간 보기' }).click();
     const dateChip = page.locator('[data-period-id="date"]');
     await expect(dateChip).toHaveAttribute('aria-pressed', 'true');
-    await expect(dateChip).toHaveClass(/bg-amber-700/);
+    await expectPeriodChipPainted(page, 'date', 'window30');
     await expect(dateChip).toContainText('10.17\u201310.18');
     await expect(window30Chip).toHaveAttribute('aria-pressed', 'false');
-    await expect(window30Chip).toHaveClass(/bg-white/);
   });
 
   test('switching back to 30-day clears custom range label on the date chip', async ({
@@ -215,8 +226,7 @@ test.describe('Korea festival date chips', () => {
     const window30Chip = page.locator('[data-period-id="window30"]');
     await expect(dateChip).toContainText('10.17\u201310.18');
     await window30Chip.click();
-    await expect(window30Chip).toHaveClass(/bg-amber-700/);
-    await expect(dateChip).toHaveClass(/bg-white/);
+    await expectPeriodChipPainted(page, 'window30', 'date');
     await expect(dateChip).not.toContainText('10.17');
     await expect(dateChip).toContainText('날짜');
   });
