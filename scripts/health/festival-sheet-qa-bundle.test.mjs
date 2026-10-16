@@ -3,7 +3,10 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
-import { buildFestivalPanelListMetaSegments } from '../../src/pages/Korea/festivalPanelListMeta.js';
+import {
+  buildFestivalPanelListMetaSegments,
+  insertWindow30MetaPeriodSegment,
+} from '../../src/pages/Korea/festivalPanelListMeta.js';
 import { festivalIndexTimePhrase } from '../../src/pages/Korea/festivalIndexHeadline.js';
 import {
   festivalListDisplayTitle,
@@ -50,6 +53,23 @@ test('EN nationwide panel meta avoids raw all and city/county grouping', () => {
   const text = segments.map((s) => s.text).join(' · ');
   assert.equal(text.includes('all'), false);
   assert.equal(text, 'Nationwide · 182 · By province');
+});
+
+test('window30 meta inserts until label after place, before count', () => {
+  const base = buildFestivalPanelListMetaSegments({
+    areaCode: '1',
+    cityName: 'all',
+    count: 43,
+    t: (key, opts = {}) =>
+      ({
+        'korea.common.countUnit': `${opts.count}건`,
+        'korea.festival.panelBySubregion': '구별',
+      })[key] || key,
+    locale: 'ko',
+  });
+  const merged = insertWindow30MetaPeriodSegment(base, '11.14까지');
+  const text = merged.map((s) => s.text).join(' · ');
+  assert.equal(text, '서울특별시 · 11.14까지 · 43건 · 구별');
 });
 
 test('KO nationwide panel meta uses 시·도별 grouping label', () => {

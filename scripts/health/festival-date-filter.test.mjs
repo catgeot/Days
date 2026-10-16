@@ -9,6 +9,7 @@ import {
   formatFestivalMonthDay,
   formatFestivalRangeLabel,
   formatWindow30RangeSuffix,
+  formatWindow30UntilMetaLabel,
   replaceMonthTabWithDateChips,
   seoulTodayYmd,
   upcomingWeekendRangeYmd,
@@ -154,6 +155,8 @@ test('window30 subline range suffix and a picked range is the label itself', () 
   assert.equal(picked, '10.17\u201310.18');
   assert.equal(formatWindow30RangeSuffix(end).includes('"'), false);
   assert.equal(picked.includes('"'), false);
+  assert.equal(formatWindow30UntilMetaLabel(end, 'ko'), '11.14까지');
+  assert.equal(formatWindow30UntilMetaLabel(end, 'en'), 'until 11.14');
 });
 
 test('weekend window on Sat–Sun is today through Sunday (Seoul)', () => {

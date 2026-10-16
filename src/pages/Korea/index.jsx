@@ -47,7 +47,7 @@ import {
   formatFestivalMonthDay,
   formatFestivalRangeLabel,
   loadedFestivalDataEndYmd,
-  formatWindow30RangeSuffix,
+  formatWindow30UntilMetaLabel,
   replaceMonthTabWithDateChips,
   seoulTodayYmd,
   window30RangeYmd,
@@ -63,7 +63,10 @@ import {
   sidoLabel,
   sidoListPhrase,
 } from './festivalRegionTags';
-import { buildFestivalPanelListMetaSegments } from './festivalPanelListMeta.js';
+import {
+  buildFestivalPanelListMetaSegments,
+  insertWindow30MetaPeriodSegment,
+} from './festivalPanelListMeta.js';
 import { isNationwideRegionFilter } from './socialPromoFestivalsLogic.js';
 import {
   groupFestivalsByCity,
@@ -2213,9 +2216,9 @@ export default function KoreaFestivalHub() {
     if (timeTab === 'window30') {
       const range = window30RangeYmd(now);
       const endLabel = formatFestivalMonthDay(range.eventEndDate, seoulToday);
-      const rangeSuffix = formatWindow30RangeSuffix(endLabel);
-      if (rangeSuffix) {
-        return [{ id: 'periodRange', text: rangeSuffix, nowrap: true }, ...base];
+      const untilLabel = formatWindow30UntilMetaLabel(endLabel, locale);
+      if (untilLabel) {
+        return insertWindow30MetaPeriodSegment(base, untilLabel);
       }
     }
     return base;
