@@ -2861,7 +2861,9 @@ export default function FestivalDetailSheet({
             }}
             className="w-full py-3 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"
           >
-            {t('korea.common.close')}
+            {activeTab === TAB_INFO
+              ? t('korea.common.close')
+              : t('korea.festival.detail.backToOverview')}
           </button>
         </div>
 
