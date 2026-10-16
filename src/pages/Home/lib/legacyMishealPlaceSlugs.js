@@ -1,15 +1,11 @@
 /**
  * Nominatim이 한글 명소를 근처 라틴 지명으로 굳힌 공유 URL.
  * slug는 옛 주소를 유지하고, 표시명·좌표는 그 명소다.
- * 흥정계곡 21장(place_id herbnara-farm)은 slug 후보로 그대로 조회된다.
+ * (흥정계곡 ↔ herbnara-farm 분리는 place_stats — /place/흥정계곡 은 placeStatsSlugHydrate)
  */
+const LEGACY_MISHEAL_GALLERY_QUERIES = {};
+
 const LEGACY_MISHEAL_PLACES = {
-  'herbnara-farm': {
-    name: '흥정계곡',
-    parentCity: '평창',
-    lat: 37.6270726091,
-    lng: 128.3518474417,
-  },
   'woljeong-ri': {
     name: '월정리해변',
     parentCity: '제주시',
@@ -24,10 +20,16 @@ const LEGACY_MISHEAL_PLACES = {
   },
 };
 
-export function resolveLegacyMishealPlace(slug) {
-  const key = String(slug ?? '').trim().toLowerCase();
-  const row = LEGACY_MISHEAL_PLACES[key];
-  if (!row) return null;
+function compactPlaceSlugKey(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+function buildLegacyMishealPin(placeId, row) {
+  const key = String(placeId ?? '').trim().toLowerCase();
+  if (!key || !row) return null;
   return {
     id: `legacy-${key}`,
     slug: key,
@@ -46,4 +48,46 @@ export function resolveLegacyMishealPlace(slug) {
     badge: '명소',
     source: 'legacy-misheal',
   };
+}
+
+/** Latin legacy mis-heal slug only (woljeong-ri, seolma-ri, …). */
+export function resolveLegacyMishealPlace(slug) {
+  const raw = String(slug ?? '').trim();
+  if (!raw) return null;
+  const key = raw.toLowerCase();
+  const byId = LEGACY_MISHEAL_PLACES[key];
+  if (byId) return buildLegacyMishealPin(key, byId);
+  return null;
+}
+
+function legacyMishealPlaceIdFromLocation(location) {
+  if (!location || typeof location !== 'object') return '';
+  const candidates = [
+    location.canonical_slug,
+    location.slug,
+    String(location.id || '')
+      .replace(/^legacy-/, '')
+      .replace(/^visited-/, ''),
+    location.name,
+    location.name_ko,
+  ]
+    .map((v) => String(v ?? '').trim())
+    .filter(Boolean);
+  for (const raw of candidates) {
+    const pin = resolveLegacyMishealPlace(raw);
+    if (pin?.slug) return String(pin.slug).toLowerCase();
+  }
+  return '';
+}
+
+/** @returns {{ primary: string, backup?: string } | null} */
+export function resolveLegacyMishealGalleryQuery(location) {
+  const placeId = legacyMishealPlaceIdFromLocation(location);
+  if (!placeId) return null;
+  return LEGACY_MISHEAL_GALLERY_QUERIES[placeId] || null;
+}
+
+export function isLegacyMishealPlaceStatsId(placeId) {
+  const key = String(placeId ?? '').trim().toLowerCase();
+  return Boolean(key && LEGACY_MISHEAL_PLACES[key]);
 }

@@ -4,12 +4,14 @@ import test from 'node:test';
 import { GATEO_ENV_FLAG_NAMES } from '../src/shared/gateoFeatureFlags.js';
 import {
   applySiteSearchOpenPin,
+  awaitSiteSearchEnterSinglePoi,
   isSiteSearchOpenEnabled,
   resolveSiteSearchEnterSinglePoi,
   siteSearchCatalogPlaceParam,
   siteSearchExploreEnterCommit,
   siteSearchFallbackLinkHref,
 } from '../src/pages/Home/lib/siteSearchOpen.js';
+import { awaitPreferEnterSuggestion } from '../src/pages/Home/lib/searchEnterMatch.js';
 import { buildLocalSearchSuggestions } from '../src/pages/Home/lib/searchSuggestions.js';
 import { getPlaceUrlParam } from '../src/pages/Home/lib/formatUrlName.js';
 import { visitedRowToSearchSpot } from '../src/pages/Home/lib/visitedPlaceSearch.js';
@@ -73,6 +75,40 @@ test('flag on — 평창 hub still opens catalog place', () => {
   });
 });
 
+test('flag on — Explore Enter picks one POI when duplicate exact Korean names', () => {
+  withSiteSearchFlag(true, () => {
+    const primary = visitedRowToSearchSpot({
+      place_id: '흥정계곡',
+      name_ko: '흥정계곡',
+      name_en: 'Heungjeong Valley',
+      lat: 37.62466863,
+      lng: 128.34930501,
+    });
+    const duplicate = visitedRowToSearchSpot({
+      place_id: '흥정계곡-alt',
+      name_ko: '흥정계곡',
+      name_en: '',
+      lat: 37.625,
+      lng: 128.35,
+    });
+    const local = [
+      primary,
+      duplicate,
+      {
+        name: '흥정계곡오토캠핑장',
+        name_en: 'Heungjeong Auto Camping',
+        lat: 37.62,
+        lng: 128.35,
+        country: '대한민국',
+      },
+    ];
+    const direct = resolveSiteSearchEnterSinglePoi('흥정계곡', local);
+    assert.ok(direct);
+    assert.equal(direct.name, '흥정계곡');
+    assert.equal(direct.id, 'visited-흥정계곡');
+  });
+});
+
 test('flag on — Explore Enter single POI skips disambiguation (흥정계곡)', () => {
   withSiteSearchFlag(true, () => {
     const spot = visitedRowToSearchSpot(heungjeongRow);
@@ -120,6 +156,37 @@ test('flag off — AI limit href matches legacy catalog param priority', () => {
       : `/explore?q=${encodeURIComponent('흥정계곡')}`;
     assert.equal(siteSearchFallbackLinkHref(spot, '흥정계곡'), legacyHref);
   });
+});
+
+test('flag on — awaitSiteSearchEnterSinglePoi resolves 흥정계곡 from cached suggestions (instant Enter)', async () => {
+  await withSiteSearchFlag(true, async () => {
+    const spot = visitedRowToSearchSpot({
+      place_id: '흥정계곡',
+      name_ko: '흥정계곡',
+      name_en: 'Heungjeong Valley',
+      lat: 37.62466863,
+      lng: 128.34930501,
+    });
+    const direct = await awaitSiteSearchEnterSinglePoi('흥정계곡', {
+      cachedSuggestions: [spot],
+      timeoutMs: 200,
+    });
+    assert.ok(direct);
+    assert.equal(direct.name, '흥정계곡');
+  });
+});
+
+test('awaitPreferEnterSuggestion picks exact name from local without delay', async () => {
+  const spot = {
+    name: '흥정계곡',
+    name_en: 'Heungjeong Valley',
+    lat: 37.62,
+    lng: 128.35,
+    country: '대한민국',
+  };
+  const pick = await awaitPreferEnterSuggestion('흥정계곡', [spot], { timeoutMs: 100 });
+  assert.ok(pick);
+  assert.equal(pick.name, '흥정계곡');
 });
 
 test('flag on — AI limit fallback uses catalog slug for 평창', () => {

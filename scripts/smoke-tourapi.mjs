@@ -246,6 +246,15 @@ async function mappingGuards() {
     }).keep === true,
     'untitled firstimage kept (http/https normalized)',
   );
+  const heungjeongDetail = [
+    { originimgurl: 'http://tong.visitkorea.or.kr/cms/resource/29/3376829_image2_1.JPG' },
+    { originimgurl: 'http://tong.visitkorea.or.kr/cms/resource/30/3376830_image2_1.JPG' },
+  ];
+  assert(
+    heungjeongDetail.length >= 2 &&
+      heungjeongDetail.every((it) => !tourApiPhotoCaption(it)),
+    '흥정계곡 detailImage rows are untitled batch (gallery adopts all)',
+  );
   assert(
     isSparseTourApiGallery([
       { source: 'tourapi', alt_description: '화장실' },
@@ -294,6 +303,12 @@ async function mappingGuards() {
   );
   assert(gallerySrc.includes('tourApiPhotoCaption'), 'gallery uses imgname caption');
   assert(gallerySrc.includes('keepTourDetailImage'), 'gallery applies facility keep');
+  assert(
+    gallerySrc.includes('resolveGalleryTourApiLocale') &&
+      gallerySrc.includes('TOUR_API_BODY_LOCALE') &&
+      /\\[\\uAC00-\\uD7A3\\]/.test(gallerySrc),
+    'gallery uses ko KorService for Hangul place keywords',
+  );
 
   const vercelSrc = readFileSync(
     join(dirname(fileURLToPath(import.meta.url)), '../vercel.json'),

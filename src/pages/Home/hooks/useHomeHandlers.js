@@ -97,6 +97,7 @@ import {
 } from '../lib/visitedPlaceSearch.js';
 import {
   isSiteSearchOpenEnabled,
+  awaitSiteSearchEnterSinglePoi,
   resolveSiteSearchEnterSinglePoi,
   siteSearchFallbackLinkHref,
 } from '../lib/siteSearchOpen.js';
@@ -830,10 +831,7 @@ export function useHomeHandlers({
       if (dictChoice) return dictChoice;
 
       if (isSiteSearchOpenEnabled()) {
-        const enterDirect = resolveSiteSearchEnterSinglePoi(
-          query,
-          buildLocalSearchSuggestions(query),
-        );
+        const enterDirect = await awaitSiteSearchEnterSinglePoi(query);
         if (enterDirect) return enterDirect;
       }
 

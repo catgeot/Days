@@ -74,7 +74,6 @@ async function captureAiLimitHeungjeong(page) {
     if (sc) sc.scrollTop = 0;
   });
 
-  // PC + mobile headers both render role=alert; at 390px only the mobile block is visible.
   const placeLink = page
     .locator('[role="alert"]:visible a[href*="/place/"]')
     .filter({ hasText: /흥정계곡/ });
@@ -99,8 +98,19 @@ async function captureAiLimitHeungjeong(page) {
   await shot(page, 'ai-limit-links-390.png', 'AI limit + /place/흥정계곡 link');
   await placeLink.first().scrollIntoViewIfNeeded();
   await placeLink.first().click({ timeout: 30_000 });
-  await page.waitForTimeout(2500);
-  await shot(page, 'ai-limit-place-open-390.png', `Clicked ${placeHref}`);
+  await page.waitForURL(/\/place\/.*%ED%9D%A5%EC%A0%95%EA%B3%84%EA%B3%A1|\/place\/흥정계곡/, {
+    timeout: 60_000,
+  });
+  const finalUrl = page.url();
+  if (finalUrl.includes('herbnara-farm')) {
+    throw new Error(`AI-limit place link redirected to herbnara-farm: ${finalUrl}`);
+  }
+  await page
+    .getByRole('heading', { name: /흥정계곡/ })
+    .first()
+    .waitFor({ state: 'visible', timeout: 120_000 });
+  await page.waitForTimeout(2000);
+  await shot(page, 'ai-limit-place-open-390.png', `Clicked ${placeHref} · ${finalUrl}`);
 }
 
 async function main() {
@@ -118,9 +128,26 @@ async function main() {
 
   let input = await openExplore(page);
   await input.fill('흥정계곡');
-  await page.waitForTimeout(900);
+  await page.waitForTimeout(1200);
+  await page.locator('[data-search-popover]').waitFor({ state: 'visible', timeout: 120_000 });
+  await page
+    .locator('[data-search-popover]')
+    .getByText('평창')
+    .first()
+    .waitFor({ state: 'visible', timeout: 120_000 });
+  const englishRegion = page.locator('[data-search-popover]:visible').getByText('Pyeongchang', {
+    exact: true,
+  });
+  if (await englishRegion.count()) {
+    throw new Error('Korean UI search popover still shows English region label Pyeongchang');
+  }
+  await shot(page, 'heungjeong-suggest-region-390.png', '흥정계곡 suggestions · 평창 region');
   await input.press('Enter');
-  await page.waitForTimeout(3500);
+  await page
+    .getByRole('heading', { name: /^흥정계곡$/ })
+    .first()
+    .waitFor({ state: 'visible', timeout: 120_000 });
+  await page.waitForTimeout(1200);
   await shot(page, 'heungjeong-enter-390.png', '흥정계곡 Enter');
 
   const aiPage = await context.newPage();

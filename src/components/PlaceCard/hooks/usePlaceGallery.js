@@ -37,6 +37,7 @@ import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../
 import { pickKoreanNameGallery } from '../../../utils/placeStatsNameGallery.js';
 import { lookupTourContentIdByName } from '../../../utils/tourKeywordPick.js';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
+import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
   GALLERY_SWR_TTL_MS,
@@ -54,7 +55,7 @@ import {
 } from '../common/galleryAttributionNavigation';
 
 /** v1.23 — Tour 시설 컷 후 스톡 보강 · 라틴 지명 스톡 · 단일 인물 제외 */
-const CACHE_VERSION = 'v1.23';
+const CACHE_VERSION = 'v1.24';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -609,7 +610,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       isDomesticKoreaLocation(
         typeof locationSource === 'object' && locationSource ? locationSource : null,
       ) ||
-      Boolean(resolvedTourMapping?.curated);
+      Boolean(resolvedTourMapping?.curated) ||
+      Boolean(koreanName && /[\uAC00-\uD7A3]/.test(koreanName));
     let tourMapping = isDomesticKorea ? resolvedTourMapping : null;
     if (isDomesticKorea && !tourMapping?.contentId) {
       const loc =
@@ -834,6 +836,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     };
 
     let tourSeed = [];
+    /** sparse/thin DB Tour — live refetch 실패 시 최소 1장 복구(흥정계곡 등) */
+    let dbGallerySliceFallback = null;
 
     if (!forceRefresh && localScenicOfficialGallery) {
       const officialImages = localScenicOfficialGallery.map((url, idx) => ({
@@ -854,11 +858,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       unsplashPageRef.current = 1;
       pexelsPageRef.current = 0;
       const validCache = loadFromSmartCache(CACHE_KEY);
+      const stockCacheBlocksOfficialTour =
+        validCache &&
+        validCache.length > 0 &&
+        hasOfficialTourContentId &&
+        !isTourApiDominantGallery(validCache);
+      if (stockCacheBlocksOfficialTour) {
+        console.warn(
+          '⚠️ session cache stock-only with official Tour contentId — live TourAPI refetch',
+        );
+      }
       if (
         validCache &&
         validCache.length > 0 &&
         !isThinStockGallery(validCache) &&
-        !isSparseTourApiGallery(validCache)
+        !isSparseTourApiGallery(validCache) &&
+        !stockCacheBlocksOfficialTour
       ) {
         if (isStale()) return;
         processAndSetImages(validCache);
@@ -950,6 +965,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 console.warn(
                   '⚠️ place_stats stock-heavy curated — prefer TourAPI (skip DB short-circuit)',
                 );
+              } else if (isDomesticKorea && hasOfficialTourContentId && !tourDominant) {
+                console.warn(
+                  '⚠️ place_stats stock gallery — official Tour contentId (skip DB short-circuit)',
+                );
               } else if (isThinStockGallery(gallerySlice)) {
                 console.warn(
                   '⚠️ place_stats thin stock-only gallery — live Unsplash/Pexels refetch',
@@ -957,6 +976,16 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               } else if (isSparseTourApiGallery(gallerySlice)) {
                 console.warn(
                   '⚠️ place_stats sparse Tour facility gallery — live refetch',
+                );
+                if (gallerySlice.length > 0) {
+                  dbGallerySliceFallback = gallerySlice;
+                }
+              } else if (
+                isLegacyMishealPlaceStatsId(dbData.place_id) &&
+                !tourDominant
+              ) {
+                console.warn(
+                  '⚠️ legacy misheal place_stats stock gallery — prefer TourAPI/stock valley query',
                 );
               } else {
                 processAndSetImages(gallerySlice);
@@ -996,6 +1025,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             contentId: tourMapping.contentId,
             page: 1,
             thumbnailOnly,
+            skipProbe: Boolean(tourMapping.contentId),
           });
           if (isStale()) return;
           if (tourImages.length > 0) {
@@ -1105,6 +1135,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             contentId: tourMapping.contentId,
             page: 1,
             thumbnailOnly,
+            skipProbe: Boolean(tourMapping.contentId),
           });
           if (isStale()) return;
           if (tourImages.length > 0) {
@@ -1177,6 +1208,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (!forceRefresh) writeGallerySwrAt(stablePlaceKey);
       } else if (tourSeed.length > 0 && !forceRefresh) {
         console.warn('⚠️ 스톡 0 — Tour 선드롭 유지');
+      } else if (
+        !forceRefresh &&
+        dbGallerySliceFallback?.length &&
+        allImagesRef.current.length === 0 &&
+        !isStale()
+      ) {
+        console.warn('⚠️ live gallery miss — sparse place_stats Tour fallback');
+        processAndSetImages(dbGallerySliceFallback);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+        if (allImagesRef.current.length > 0) {
+          markFetchDone();
+          finishLoading();
+          afterInstantGallery();
+        } else {
+          setLoadFailed(true);
+        }
       } else {
         console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
         if (!isStale()) {
@@ -1423,6 +1470,25 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   const handleRetryLoad = useCallback(() => {
     lastFetchKeyRef.current = null;
+    allImagesRef.current = [];
+    const placeKey = currentPlaceKeyRef.current;
+    if (placeKey && typeof sessionStorage !== 'undefined') {
+      const encoded = encodeURIComponent(placeKey);
+      const prefixes = [
+        `days_gallery_${encoded}_`,
+        `days_gallery_thumb_${encoded}`,
+      ];
+      const keysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i += 1) {
+        const k = sessionStorage.key(i);
+        if (!k || !k.startsWith('days_gallery_')) continue;
+        if (k.includes(encoded) || prefixes.some((p) => k.startsWith(p))) {
+          keysToRemove.push(k);
+        }
+      }
+      keysToRemove.forEach((k) => sessionStorage.removeItem(k));
+    }
+    setLoadFailed(false);
     fetchImages(false);
   }, [fetchImages]);
 

@@ -5,6 +5,7 @@
 import { resolveHubAttraction } from './cityAttractionHubs.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
+import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from './searchSuggestions.js';
 import {
   isKoreaHomonymChoiceSet,
   shouldOfferKoreaHomonymDisambiguation,
@@ -113,4 +114,53 @@ export function preferEnterSuggestion(query, suggestions) {
   const canonical = normalizeSearchName(resolveEnterSearchCanonical(query));
   const exact = matches.find((item) => normalizeSearchName(item.name) === canonical);
   return exact || matches[0];
+}
+
+function mergeSuggestionsByName(...lists) {
+  const seen = new Set();
+  const out = [];
+  for (const list of lists) {
+    for (const item of list || []) {
+      const name = String(item?.name || '').trim();
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      out.push(item);
+    }
+  }
+  return out;
+}
+
+/**
+ * Enter 직후 — hybrid 제안이 120ms 디바운스 중일 때 빈/로컬만으로 분기되는 race 방지.
+ * @param {string} query
+ * @param {object[]} [cachedSuggestions]
+ * @param {{ timeoutMs?: number }} [opts]
+ * @returns {Promise<object | null>}
+ */
+export async function awaitPreferEnterSuggestion(query, cachedSuggestions = [], opts = {}) {
+  const timeoutMs = opts.timeoutMs ?? 1400;
+  const pollMs = opts.pollMs ?? 45;
+  const q = String(query || '').trim();
+  if (!q) return null;
+
+  const pick = (list) => preferEnterSuggestion(q, list);
+  let pickHit = pick(cachedSuggestions);
+  if (pickHit) return pickHit;
+
+  const local = buildLocalSearchSuggestions(q);
+  pickHit = pick(mergeSuggestionsByName(cachedSuggestions, local));
+  if (pickHit) return pickHit;
+
+  const hybridPromise = buildHybridSearchSuggestions(q).catch(() => []);
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => {
+      setTimeout(resolve, pollMs);
+    });
+    pickHit = pick(mergeSuggestionsByName(cachedSuggestions, local));
+    if (pickHit) return pickHit;
+  }
+
+  const hybrid = await hybridPromise;
+  return pick(mergeSuggestionsByName(cachedSuggestions, local, hybrid));
 }

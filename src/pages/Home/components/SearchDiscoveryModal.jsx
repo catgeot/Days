@@ -34,7 +34,8 @@ import {
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
-import { preferEnterSuggestion } from '../lib/searchEnterMatch';
+import { awaitPreferEnterSuggestion, preferEnterSuggestion } from '../lib/searchEnterMatch';
+import { awaitSiteSearchEnterSinglePoi, isSiteSearchOpenEnabled } from '../lib/siteSearchOpen';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
 import {
@@ -456,7 +457,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const handleSearchSubmit = async (submitQuery) => {
     const finalQuery = (submitQuery ?? query).trim();
     if (finalQuery === '' || !onSearch) return;
-    const visiblePick = preferEnterSuggestion(finalQuery, hybridSuggestions);
+    let visiblePick = preferEnterSuggestion(finalQuery, hybridSuggestions);
+    if (!visiblePick && isSiteSearchOpenEnabled()) {
+      visiblePick = await awaitSiteSearchEnterSinglePoi(finalQuery, {
+        cachedSuggestions: hybridSuggestions,
+      });
+    }
+    if (!visiblePick) {
+      visiblePick = await awaitPreferEnterSuggestion(finalQuery, hybridSuggestions);
+    }
     if (visiblePick) {
       await handleSuggestionSelect(visiblePick);
       return;

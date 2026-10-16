@@ -1,5 +1,6 @@
 import { formatUrlName, isEphemeralSlug, isUrlSafeEnglishLabel } from './formatUrlName.js';
 import { inferPlaceMatchCategory, PLACE_MATCH_CATEGORY } from './placeMatchCategory.js';
+import { resolveLegacyMishealGalleryQuery } from './legacyMishealPlaceSlugs.js';
 
 const PLACEHOLDER_COUNTRY = new Set([
   'Explore',
@@ -209,6 +210,15 @@ export function resolveGalleryStockQuery(targetSpot, fallbackDictionary = {}) {
     typeof targetSpot === 'object'
       ? String(targetSpot?.name || '').trim()
       : String(targetSpot || '').trim();
+  const legacyGallery =
+    typeof targetSpot === 'object' ? resolveLegacyMishealGalleryQuery(targetSpot) : null;
+  if (legacyGallery?.primary) {
+    return {
+      primaryQuery: legacyGallery.primary,
+      backupQuery: legacyGallery.backup || '',
+      koreanName,
+    };
+  }
   const latin = typeof targetSpot === 'object' ? pickLatinPlaceName(targetSpot) : '';
   const fromDict =
     dictionaryEnglish(koreanName, fallbackDictionary) ||

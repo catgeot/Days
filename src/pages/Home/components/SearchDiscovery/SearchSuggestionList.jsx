@@ -16,6 +16,7 @@ import { fetchTourApiFirstImage } from '../../../../utils/fetchTourApiAttraction
 import { resolveSearchScenicMedia } from '../../lib/koreaLocalScenicLists';
 import {
   getLocalizedCountryName,
+  getLocalizedParentCityLabel,
   getLocalizedPlaceName,
   getPlaceTitleLinesForLocale,
 } from '../../../../components/PlaceCard/common/locationDisplay';
@@ -53,9 +54,21 @@ const normalizeCompare = (s) =>
     .replace(/[·・.,]/g, '');
 
 /** 위치 줄: 이름에 이미 포함된 상위 도시는 생략 */
+function localizeExploreGroupTitle(groupTitle, locale = 'ko') {
+  const raw = String(groupTitle || '').trim();
+  if (!raw) return '';
+  const suffix = ' 명소';
+  if (raw.endsWith(suffix)) {
+    const region = raw.slice(0, -suffix.length).trim();
+    const localized = getLocalizedParentCityLabel(region, locale);
+    return localized ? `${localized}${suffix}` : raw;
+  }
+  return getLocalizedParentCityLabel(raw, locale) || raw;
+}
+
 function buildLocationLine(item, locale = 'ko') {
   const name = getLocalizedPlaceName(item, locale) || String(item?.name || '').trim();
-  const parent = String(item?.parentCity || '').trim();
+  const parent = getLocalizedParentCityLabel(item?.parentCity, locale);
   const country = getLocalizedCountryName(item, locale) || String(item?.country || '').trim();
   const parts = [];
   if (parent && parent !== name && !name.includes(parent)) {
@@ -83,7 +96,7 @@ function placeFromSearchItem(item) {
   return rest;
 }
 
-function resolveCardDesc(item, locationLine) {
+function resolveCardDesc(item, locationLine, locale = 'ko') {
   const overlayDesc = scenicSearchOverlayDesc(item);
   if (overlayDesc) return overlayDesc;
   const desc = String(item?.desc || '').trim();
@@ -92,8 +105,8 @@ function resolveCardDesc(item, locationLine) {
   const d = normalizeCompare(desc);
   if (locationLine && d === normalizeCompare(locationLine)) return '';
 
-  const parent = String(item?.parentCity || '').trim();
-  const country = String(item?.country || '').trim();
+  const parent = getLocalizedParentCityLabel(item?.parentCity, locale);
+  const country = getLocalizedCountryName(item, locale) || String(item?.country || '').trim();
   const badge = String(item?.badge || '').trim();
   const name = String(item?.name || '').trim();
 
@@ -328,13 +341,13 @@ export function SearchSuggestionList({
             const displayName =
               getLocalizedPlaceName(item, i18n.language) || String(item?.name || '').trim();
             const locationLine = buildLocationLine(item, i18n.language);
-            const desc = resolveCardDesc(item, locationLine);
+            const desc = resolveCardDesc(item, locationLine, i18n.language);
             const subtitle = [locationLine, desc]
               .filter(Boolean)
               .filter((v, i, arr) => arr.indexOf(v) === i)
               .slice(0, 2)
               .join(' · ');
-            const groupTitle = String(item.groupTitle || '').trim();
+            const groupTitle = localizeExploreGroupTitle(item.groupTitle, i18n.language);
             const prevGroup = String(items[index - 1]?.groupTitle || '').trim();
             const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
             const rankBlurb = String(item.rankBlurb || '').trim();
@@ -552,10 +565,13 @@ export function SearchDisambiguationCards({
           const hydrated = introByKey[index]
             ? { ...item, desc: introByKey[index], placeChatIntroApplied: true }
             : item;
-          const desc = resolveCardDesc(hydrated, locationLine);
+          const desc = resolveCardDesc(hydrated, locationLine, i18n.language);
           const showIntroMore = Boolean(desc) && desc.length >= SEARCH_INTRO_MORE_MIN_LEN;
-          const groupTitle = String(item.groupTitle || '').trim();
-          const prevGroup = String(pageItems[index - 1]?.groupTitle || '').trim();
+          const groupTitle = localizeExploreGroupTitle(item.groupTitle, i18n.language);
+          const prevGroup = localizeExploreGroupTitle(
+            pageItems[index - 1]?.groupTitle,
+            i18n.language,
+          );
           const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
           const rankBlurb = String(item.rankBlurb || '').trim();
           const thumbItem = thumbByIndex[index]

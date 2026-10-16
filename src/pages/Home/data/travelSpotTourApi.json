@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-24T00:31:09.450Z",
-    "spotCount": 42,
-    "contentIdCount": 19,
+    "generatedAt": "2026-10-16T01:39:05.742Z",
+    "spotCount": 43,
+    "contentIdCount": 20,
     "source": "scripts/data/tourapi-content-id-overrides.mjs"
   },
   "spots": {
@@ -551,6 +551,21 @@
         "Changdeokgung"
       ],
       "verifiedAt": "2026-07-23"
+    },
+    "heungjeong-valley": {
+      "photoKeyword": "흥정계곡",
+      "photoKeywords": [
+        "흥정계곡 전경",
+        "흥정계곡 계곡"
+      ],
+      "title": "흥정계곡",
+      "contentId": "126657",
+      "aliases": [
+        "흥정계곡",
+        "Heungjeong Valley",
+        "Heungjeonggyeok"
+      ],
+      "verifiedAt": "2026-10-16"
     }
   },
   "byName": {
@@ -658,6 +673,9 @@
     "오죽헌": "ojukeon",
     "Ojukheon": "ojukeon",
     "창덕궁": "changdeokgung",
-    "Changdeokgung": "changdeokgung"
+    "Changdeokgung": "changdeokgung",
+    "흥정계곡": "heungjeong-valley",
+    "Heungjeong Valley": "heungjeong-valley",
+    "Heungjeonggyeok": "heungjeong-valley"
   }
 }

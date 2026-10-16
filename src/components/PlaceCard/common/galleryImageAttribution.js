@@ -59,3 +59,51 @@ export function getGalleryImageAttribution(image) {
     providerLabel: 'on Unsplash',
   };
 }
+
+/**
+ * @param {Array<{ id?: string, source?: string }> | null | undefined} images
+ * @returns {{ tourapi: boolean, unsplash: boolean, pexels: boolean }}
+ */
+export function summarizeGalleryDisplaySources(images) {
+  const out = { tourapi: false, unsplash: false, pexels: false };
+  for (const image of images || []) {
+    const source = getGalleryImageSource(image);
+    if (source === 'tourapi') out.tourapi = true;
+    else if (source === 'unsplash') out.unsplash = true;
+    else if (source === 'pexels') out.pexels = true;
+  }
+  return out;
+}
+
+/**
+ * 갤러리 하단 출처 — 실제 표시 중인 사진 기준 (더보기 버튼 문구는 별도 i18n).
+ * @param {Array<{ id?: string, source?: string }> | null | undefined} images
+ * @param {string} [locale]
+ * @param {{ refreshCooldownSec?: number }} [opts]
+ * @returns {string}
+ */
+export function formatGalleryDisplaySourcesAttribution(images, locale = 'ko', opts = {}) {
+  const refreshCooldownSec = opts.refreshCooldownSec ?? 30;
+  const flags = summarizeGalleryDisplaySources(images);
+  const isKo = !String(locale || '').toLowerCase().startsWith('en');
+  const tourLabel = isKo ? '한국관광공사' : 'Korea Tourism Organization';
+  const labels = [];
+  if (flags.tourapi) labels.push(tourLabel);
+  if (flags.unsplash) labels.push('Unsplash');
+  if (flags.pexels) labels.push('Pexels');
+  if (labels.length === 0) return '';
+
+  const hasStock = flags.unsplash || flags.pexels;
+  const rateSuffix = isKo
+    ? ` · ${refreshCooldownSec}초에 한 번`
+    : ` · once every ${refreshCooldownSec}s`;
+
+  if (!flags.tourapi && hasStock) {
+    return `${labels.join(' · ')}${rateSuffix}`;
+  }
+
+  const prefix = isKo ? '사진: ' : 'Photos: ';
+  let line = `${prefix}${labels.join(' · ')}`;
+  if (hasStock) line += rateSuffix;
+  return line;
+}
