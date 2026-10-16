@@ -14,6 +14,21 @@
 
 ## 활성 목록
 
+### 축제 기간 칩
+
+| | |
+|--|--|
+| **상태** | **#1 플래그** · tip `843a45f2` · draft PR [#482](https://github.com/catgeot/Days/pull/482) · **병합 금지** |
+| **브랜치** | `cursor/festival-date-chip-240f` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-16-project-log.md`](./2026-10-16-project-log.md) |
+| **Preview** | `vercel.json`에서 `cursor/*` 배포 꺼짐. 390px 증거는 PR의 `docs/qa/date-chip/` |
+| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 플래그 없이 PROD에 칩 노출 |
+| **VERIFY** | `npm run lint:ci` · `npm run test:health` · `npm run build` |
+| **남은 일** | 사람이 draft #482만 본다. 다음 에이전트 작업 없음 |
+
+**다음 제시어 없음**.
+
 ### 축제 탭 문구
 
 | | |

@@ -2,6 +2,12 @@
 
 이전: [`2026-10-14-project-log.md`](./2026-10-14-project-log.md)
 
+## 축제 기간 칩 #1, 플래그
+
+- **세션** 일회 · branch `cursor/festival-date-chip-240f` · tip `843a45f2` · draft PR [#482](https://github.com/catgeot/Days/pull/482) · **병합 금지**
+- `VITE_GATEO_FESTIVAL_DATE_CHIP` 기본 OFF. 켜면 «30일 안»(서울 오늘~+29)이 «이번 달»을 대신하고 «날짜» 시트로 하루·범위. 검색은 전체 기간. 0건은 «이 기간에는 축제가 없어요» · «기간 풀기» → 지금. 지역·테마는 유지. 이번 주말·Edge festivalWindow는 그대로.
+- **검증:** `lint:ci` · `test:health` 404 pass · `build` · WebKit 390 `docs/qa/date-chip/` (서울 43 · 강릉 3 · 제주 11 · LA 자정 직후 `~11.15` · flag OFF는 «이번 달»)
+
 ## 축제 탭 문구 #2, 안내로 돌아가기
 
 - **세션** 일회 · branch `cursor/festival-tab-back-label-0cf9` · tip `1f98a8b8` · draft PR [#481](https://github.com/catgeot/Days/pull/481) · **병합 금지**
