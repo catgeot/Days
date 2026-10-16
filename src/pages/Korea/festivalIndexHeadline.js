@@ -44,6 +44,7 @@ export function festivalIndexTimePhrase(locale, timeTab, timeTabs, t) {
   if (tab?.headline) return tab.headline;
   const label =
     tab?.label ||
+    (id === 'thisMonth' ? t('korea.festival.timeTab.thisMonth') : null) ||
     t('korea.festival.timeTab.now');
   if (String(locale || '').startsWith('en')) {
     return enFestivalListTimePhrase(id, label);
