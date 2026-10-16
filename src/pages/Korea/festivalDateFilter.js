@@ -262,3 +262,27 @@ export function ymdFromParts(year, month, day) {
   const ymd = `${year}${monthText}${dayText}`;
   return isYmd(ymd) ? ymd : '';
 }
+
+/**
+ * Upcoming weekend in Seoul calendar days.
+ * Sat–Sun before the weekend; on Saturday Sat–Sun; on Sunday today only.
+ * @param {Date} [now]
+ * @returns {{ startYmd: string, endYmd: string }}
+ */
+export function upcomingWeekendRangeYmd(now = new Date()) {
+  const todayYmd = seoulTodayYmd(now);
+  if (!isYmd(todayYmd)) return { startYmd: '', endYmd: '' };
+  const dow = weekdayIndexYmd(todayYmd);
+  if (dow === 0) {
+    return { startYmd: todayYmd, endYmd: todayYmd };
+  }
+  if (dow === 6) {
+    return { startYmd: todayYmd, endYmd: addDaysYmd(todayYmd, 1) };
+  }
+  const startOffset = dow === 5 ? 0 : 5 - dow;
+  const endOffset = startOffset + 2;
+  return {
+    startYmd: addDaysYmd(todayYmd, startOffset),
+    endYmd: addDaysYmd(todayYmd, endOffset),
+  };
+}

@@ -1497,9 +1497,9 @@ export default function KoreaFestivalHub() {
       : '';
     return replaceMonthTabWithDateChips(base, {
       window30Label: t('korea.festival.window30Chip', { end: endLabel }),
-      window30Headline: t('korea.festival.window30Headline', { end: endLabel }),
+      window30Headline: t('korea.festival.window30Short'),
       dateLabel: rangeLabel || t('korea.festival.dateChip'),
-      dateHeadline: rangeLabel,
+      dateHeadline: t('korea.festival.dateChip'),
     });
   }, [now, t, dateChipEnabled, seoulToday, customRange]);
 
@@ -2303,9 +2303,11 @@ export default function KoreaFestivalHub() {
     setChipPanel('taste');
   };
 
+  const activeTimeTab = timeTabs.find((tab) => tab.id === timeTab);
   const timeMajorLabel =
-    timeTabs.find((tab) => tab.id === timeTab)?.label ||
-    t('korea.festival.timeTab.now');
+    (dateChipEnabled && activeTimeTab?.headline
+      ? activeTimeTab.headline
+      : activeTimeTab?.label) || t('korea.festival.timeTab.now');
   const regionMajorLabel =
     cityName !== 'all'
       ? localizedFestivalCityListLabel(locale, areaCode, cityName)

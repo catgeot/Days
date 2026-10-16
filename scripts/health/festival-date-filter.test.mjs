@@ -11,6 +11,7 @@ import {
   formatWindow30HeadlinePhrase,
   replaceMonthTabWithDateChips,
   seoulTodayYmd,
+  upcomingWeekendRangeYmd,
   window30RangeFromYmd,
   window30RangeYmd,
 } from '../../src/pages/Korea/festivalDateFilter.js';
@@ -127,9 +128,9 @@ test('date chips replace 이번 달 and leave the weekend chip alone', () => {
     ],
     {
       window30Label: '30일 안 ~11.14',
-      window30Headline: '30일 안(~11.14)',
+      window30Headline: '30일 안',
       dateLabel: '10.17\u201310.18',
-      dateHeadline: '10.17\u201310.18',
+      dateHeadline: '날짜📅',
     },
   );
   assert.deepEqual(
@@ -138,8 +139,8 @@ test('date chips replace 이번 달 and leave the weekend chip alone', () => {
   );
   assert.equal(tabs[1].label, '이번 주말');
   assert.equal(tabs[2].label, '30일 안 ~11.14');
-  assert.equal(tabs[2].headline, '30일 안(~11.14)');
-  assert.equal(tabs[3].headline, '10.17\u201310.18');
+  assert.equal(tabs[2].headline, '30일 안');
+  assert.equal(tabs[3].headline, '날짜📅');
   assert.equal(tabs[3].label, '10.17\u201310.18');
 });
 
@@ -153,4 +154,23 @@ test('window30 heading uses parentheses and a picked range is the label itself',
   assert.equal(picked, '10.17\u201310.18');
   assert.equal(formatWindow30HeadlinePhrase(end).includes('"'), false);
   assert.equal(picked.includes('"'), false);
+});
+
+test('weekend window on Sat–Sun is today through Sunday (Seoul)', () => {
+  const sat = new Date('2026-10-17T03:00:00.000Z');
+  assert.equal(seoulTodayYmd(sat), '20261017');
+  assert.deepEqual(upcomingWeekendRangeYmd(sat), {
+    startYmd: '20261017',
+    endYmd: '20261018',
+  });
+  const sun = new Date('2026-10-18T03:00:00.000Z');
+  assert.deepEqual(upcomingWeekendRangeYmd(sun), {
+    startYmd: '20261018',
+    endYmd: '20261018',
+  });
+  const fri = new Date('2026-10-16T03:00:00.000Z');
+  assert.deepEqual(upcomingWeekendRangeYmd(fri), {
+    startYmd: '20261016',
+    endYmd: '20261018',
+  });
 });
