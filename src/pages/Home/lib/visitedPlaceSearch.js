@@ -96,8 +96,12 @@ export function visitedRowToSearchSpot(row, extras = {}) {
   const latinName = identity.nameEn
     ? pickLatinPlaceNameFromLocation({ name_en: identity.nameEn, name })
     : '';
-  const country = concreteCountry(extras.country, extras.country_en);
-  const countryEn = concreteCountry(extras.country_en, extras.country);
+  let country = concreteCountry(extras.country, extras.country_en);
+  let countryEn = concreteCountry(extras.country_en, extras.country);
+  if (!country && nameKo && HAS_HANGUL_RE.test(nameKo)) {
+    country = '대한민국';
+    countryEn = countryEn || 'South Korea';
+  }
   return {
     id: `visited-${placeId || `${lat}-${lng}`}`,
     slug: identity.slug,

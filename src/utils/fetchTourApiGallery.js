@@ -6,7 +6,12 @@ import {
   tourApiPhotoCaption,
   TOURAPI_MIN_KEEP_SCORE,
 } from './tourApiPhotoRank';
-import { invokeTourApiProxy } from './tourApiProxy';
+import {
+  getTourApiLocale,
+  invokeTourApiProxy,
+  TOUR_API_BODY_LOCALE,
+  resolveTourApiLocale,
+} from './tourApiProxy';
 
 export { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
 
@@ -48,11 +53,18 @@ function withTimeout(promise, ms, label) {
 }
 
 /**
- * @param {string} action
- * @param {Record<string, unknown>} payload
+ * KorService2 — 한글 키워드·contentId 갤러리는 UI가 en이어도 ko 고정 (EngService 빈 detailImage 방지).
+ * @param {Parameters<typeof fetchTourApiGallery>[0]} opts
+ * @returns {'ko' | 'en'}
  */
-async function invokeTourApi(action, payload) {
-  return invokeTourApiProxy(action, payload);
+export function resolveGalleryTourApiLocale(opts) {
+  if (opts?.locale) return resolveTourApiLocale(opts.locale);
+  const label = [opts?.photoKeyword, opts?.title, opts?.contentId]
+    .map((v) => String(v || '').trim())
+    .filter(Boolean)
+    .join(' ');
+  if (/[\uAC00-\uD7A3]/.test(label)) return TOUR_API_BODY_LOCALE;
+  return getTourApiLocale();
 }
 
 /**
@@ -278,6 +290,10 @@ export async function filterLoadableTourApiImages(images, opts = {}) {
 async function fetchTourApiGalleryInner(opts) {
   const keyword = String(opts?.photoKeyword || '').trim();
   if (!keyword) return [];
+
+  const tourLocale = resolveGalleryTourApiLocale(opts);
+  const invokeTourApi = (action, payload) =>
+    invokeTourApiProxy(action, payload, { locale: tourLocale });
 
   const placeTitle = String(opts?.title || keyword).trim();
   const page = Math.max(1, Math.floor(Number(opts?.page) || 1));

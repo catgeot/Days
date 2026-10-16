@@ -9,6 +9,7 @@ import {
   placeNameMatchesSearchQuery,
   resolveEnterSearchCanonical,
 } from './searchEnterMatch.js';
+import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from './searchSuggestions.js';
 import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
 
 /**
@@ -106,6 +107,57 @@ export function resolveSiteSearchEnterSinglePoi(query, suggestions) {
   }
   if (matches.length === 1 && placeNameMatchesSearchQuery(q, matches[0])) return matches[0];
   return null;
+}
+
+function mergeSuggestionsByName(...lists) {
+  const seen = new Set();
+  const out = [];
+  for (const list of lists) {
+    for (const item of list || []) {
+      const name = String(item?.name || '').trim();
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      out.push(item);
+    }
+  }
+  return out;
+}
+
+/**
+ * Explore Enter — 제안 로딩 race 시 hybrid를 기다린 뒤 exact single POI.
+ * @param {string} query
+ * @param {{ timeoutMs?: number, cachedSuggestions?: object[] }} [opts]
+ * @returns {Promise<object | null>}
+ */
+export async function awaitSiteSearchEnterSinglePoi(query, opts = {}) {
+  if (!isSiteSearchOpenEnabled()) return null;
+  const timeoutMs = opts.timeoutMs ?? 1400;
+  const pollMs = opts.pollMs ?? 45;
+  const q = String(query || '').trim();
+  if (!q) return null;
+
+  const tryResolve = (suggestions) => resolveSiteSearchEnterSinglePoi(q, suggestions);
+
+  let merged = mergeSuggestionsByName(
+    opts.cachedSuggestions || [],
+    buildLocalSearchSuggestions(q),
+  );
+  let hit = tryResolve(merged);
+  if (hit) return hit;
+
+  const hybridPromise = buildHybridSearchSuggestions(q).catch(() => []);
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => {
+      setTimeout(resolve, pollMs);
+    });
+    merged = mergeSuggestionsByName(merged, buildLocalSearchSuggestions(q));
+    hit = tryResolve(merged);
+    if (hit) return hit;
+  }
+
+  merged = mergeSuggestionsByName(merged, await hybridPromise);
+  return tryResolve(merged);
 }
 
 /**

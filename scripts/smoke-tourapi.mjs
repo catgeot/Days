@@ -303,6 +303,12 @@ async function mappingGuards() {
   );
   assert(gallerySrc.includes('tourApiPhotoCaption'), 'gallery uses imgname caption');
   assert(gallerySrc.includes('keepTourDetailImage'), 'gallery applies facility keep');
+  assert(
+    gallerySrc.includes('resolveGalleryTourApiLocale') &&
+      gallerySrc.includes('TOUR_API_BODY_LOCALE') &&
+      /\\[\\uAC00-\\uD7A3\\]/.test(gallerySrc),
+    'gallery uses ko KorService for Hangul place keywords',
+  );
 
   const vercelSrc = readFileSync(
     join(dirname(fileURLToPath(import.meta.url)), '../vercel.json'),
