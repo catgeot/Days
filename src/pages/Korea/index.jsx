@@ -44,8 +44,10 @@ import {
 } from './festivalTimeFilter';
 import {
   filterFestivalsByYmdRange,
+  formatFestivalMonthDay,
   formatFestivalRangeLabel,
   loadedFestivalDataEndYmd,
+  formatWindow30RangeSuffix,
   replaceMonthTabWithDateChips,
   seoulTodayYmd,
   window30RangeYmd,
@@ -1483,21 +1485,16 @@ export default function KoreaFestivalHub() {
   const timeTabs = useMemo(() => {
     const base = localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now));
     if (!dateChipEnabled) return base;
-    const range = window30RangeYmd(now);
-    const endLabel = formatFestivalRangeLabel(
-      range.eventEndDate,
-      range.eventEndDate,
-      seoulToday,
-    );
     const rangeLabel =
       timeTab === 'date' && customRange?.start
         ? formatFestivalRangeLabel(customRange.start, customRange.end, seoulToday)
         : '';
     const dateChipFallback = t('korea.festival.dateChip');
     const datePeriodText = rangeLabel || dateChipFallback;
+    const monthPhrase = t('korea.festival.window30Short');
     return replaceMonthTabWithDateChips(base, {
-      window30Label: t('korea.festival.window30Chip', { end: endLabel }),
-      window30Headline: t('korea.festival.window30Short'),
+      window30Label: monthPhrase,
+      window30Headline: monthPhrase,
       dateLabel: datePeriodText,
       dateHeadline: datePeriodText,
     });
@@ -2204,7 +2201,7 @@ export default function KoreaFestivalHub() {
 
   const panelListMetaSegments = useMemo(() => {
     if (panelListMetaText != null) return null;
-    return buildFestivalPanelListMetaSegments({
+    const base = buildFestivalPanelListMetaSegments({
       areaCode,
       cityName,
       count: panelItemsForList.length,
@@ -2212,6 +2209,16 @@ export default function KoreaFestivalHub() {
       locale,
       listLoading: loading,
     });
+    if (!dateChipEnabled || searchActive) return base;
+    if (timeTab === 'window30') {
+      const range = window30RangeYmd(now);
+      const endLabel = formatFestivalMonthDay(range.eventEndDate, seoulToday);
+      const rangeSuffix = formatWindow30RangeSuffix(endLabel);
+      if (rangeSuffix) {
+        return [{ id: 'periodRange', text: rangeSuffix, nowrap: true }, ...base];
+      }
+    }
+    return base;
   }, [
     panelListMetaText,
     areaCode,
@@ -2220,6 +2227,11 @@ export default function KoreaFestivalHub() {
     t,
     locale,
     loading,
+    dateChipEnabled,
+    searchActive,
+    timeTab,
+    now,
+    seoulToday,
   ]);
 
   const resetListFilters = () => {
@@ -2826,7 +2838,10 @@ export default function KoreaFestivalHub() {
                     >
                       {tab.id === 'date' ? null : <ChipPanelIcon panel="time" />}
                       {tab.label}
-                      {tab.id === 'date' && !customRange?.start ? null : (
+                      {tab.id === 'window30' ||
+                      (tab.id === 'date' && !customRange?.start)
+                        ? null
+                        : (
                         <span
                           data-period-count=""
                           className={koreaFilterChipCountClass(timeTab === tab.id)}
@@ -2913,7 +2928,7 @@ export default function KoreaFestivalHub() {
             ? 'pointer-events-none flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0'
             : mapOpen
               ? 'flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0 lg:max-w-6xl lg:px-8 lg:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:pt-3 xl:max-w-7xl'
-              : 'max-w-3xl overflow-y-auto overscroll-contain px-3 pb-[max(7.25rem,calc(env(safe-area-inset-bottom)+5.75rem))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 md:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:max-w-6xl lg:px-8 xl:max-w-7xl'
+              : 'max-w-3xl overflow-y-auto overscroll-contain px-3 pb-[max(8.25rem,calc(env(safe-area-inset-bottom)+6.75rem))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 md:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:max-w-6xl lg:px-8 xl:max-w-7xl'
         }`}
       >
         {loading && !mapOpen && (

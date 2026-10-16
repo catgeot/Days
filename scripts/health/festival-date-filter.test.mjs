@@ -8,7 +8,7 @@ import {
   filterFestivalsByYmdRange,
   formatFestivalMonthDay,
   formatFestivalRangeLabel,
-  formatWindow30HeadlinePhrase,
+  formatWindow30RangeSuffix,
   replaceMonthTabWithDateChips,
   seoulTodayYmd,
   upcomingWeekendRangeYmd,
@@ -127,8 +127,8 @@ test('date chips replace 이번 달 and leave the weekend chip alone', () => {
       { id: 'autumn', label: '가을' },
     ],
     {
-      window30Label: '30일 안 ~11.14',
-      window30Headline: '30일 안',
+      window30Label: '한 달 이내',
+      window30Headline: '한 달 이내',
       dateLabel: '10.17\u201310.18',
       dateHeadline: '10.17\u201310.18',
     },
@@ -138,21 +138,21 @@ test('date chips replace 이번 달 and leave the weekend chip alone', () => {
     ['now', 'weekend', 'window30', 'date', 'autumn'],
   );
   assert.equal(tabs[1].label, '이번 주말');
-  assert.equal(tabs[2].label, '30일 안 ~11.14');
-  assert.equal(tabs[2].headline, '30일 안');
+  assert.equal(tabs[2].label, '한 달 이내');
+  assert.equal(tabs[2].headline, '한 달 이내');
   assert.equal(tabs[3].headline, '10.17\u201310.18');
   assert.equal(tabs[3].label, '10.17\u201310.18');
 });
 
-test('window30 heading uses parentheses and a picked range is the label itself', () => {
+test('window30 subline range suffix and a picked range is the label itself', () => {
   const end = formatFestivalMonthDay('20261114', SEOUL_TODAY);
   assert.equal(end, '11.14');
-  assert.equal(formatWindow30HeadlinePhrase(end), '30일 안(~11.14)');
-  assert.equal(formatWindow30HeadlinePhrase('~11.14'), '30일 안(~11.14)');
-  assert.equal(formatWindow30HeadlinePhrase('2027.11.14'), '30일 안(~2027.11.14)');
+  assert.equal(formatWindow30RangeSuffix(end), '~11.14');
+  assert.equal(formatWindow30RangeSuffix('~11.14'), '~11.14');
+  assert.equal(formatWindow30RangeSuffix('2027.11.14'), '~2027.11.14');
   const picked = formatFestivalRangeLabel('20261017', '20261018', SEOUL_TODAY);
   assert.equal(picked, '10.17\u201310.18');
-  assert.equal(formatWindow30HeadlinePhrase(end).includes('"'), false);
+  assert.equal(formatWindow30RangeSuffix(end).includes('"'), false);
   assert.equal(picked.includes('"'), false);
 });
 

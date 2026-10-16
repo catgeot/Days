@@ -139,16 +139,18 @@ test.describe('Korea festival date chips', () => {
     await expect(page.getByRole('button', { name: /이번 달/ })).toHaveCount(0);
     await expect(page.getByRole('button', { name: /이번 주말/ })).toBeVisible();
     const windowChip = page.locator('[data-period-id="window30"]');
-    await expect(windowChip).toContainText('30일 안 ~11.14');
+    await expect(windowChip).toHaveText('한 달 이내');
+    await expect(windowChip).not.toContainText('~');
+    await expect(windowChip.locator('[data-period-count]')).toHaveCount(0);
     await windowChip.click();
     await expect(windowChip).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByRole('button', { name: /지역 대분류/ })).toContainText('서울');
-    const count = await periodCount(page, 'window30');
-    await expect(listCards(page)).toHaveCount(count);
-    expect(count).toBe(3);
+    await expect(listCards(page)).toHaveCount(3);
     await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
-      '서울특별시 · 30일 안',
+      '서울특별시 · 한 달 이내',
     );
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('~11.14');
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('3');
     await expect(page.locator('[data-period-id="date"] [data-period-count]')).toHaveCount(0);
     await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(1);
   });
@@ -159,6 +161,14 @@ test.describe('Korea festival date chips', () => {
     await page.locator('[data-period-id="date"]').click();
     const sheet = page.locator('[data-festival-date-sheet]');
     await expect(sheet).toBeVisible();
+    await expect(
+      page.getByRole('navigation', { name: 'GATEO 약관 및 출처' }),
+    ).toHaveCount(0);
+    const applyBtn = sheet.getByRole('button', { name: '이 기간 보기' });
+    const applyBox = await applyBtn.boundingBox();
+    const viewport = page.viewportSize();
+    expect(applyBox).toBeTruthy();
+    expect(applyBox.y + applyBox.height).toBeLessThanOrEqual(viewport.height + 1);
     await sheet.locator('[data-ymd="20261024"]').click();
     await sheet.locator('[data-ymd="20261025"]').click();
     await sheet.getByRole('button', { name: '이 기간 보기' }).click();

@@ -141,7 +141,7 @@ const heading = (await page.locator('[data-festival-list-heading] h2').innerText
 if (heading.includes('~11.14') || heading.includes('(~')) {
   throw new Error(`heading should be short period only: ${heading}`);
 }
-if (!heading.includes('30일 안')) {
+if (!heading.includes('한 달 이내')) {
   throw new Error(`heading missing short period: ${heading}`);
 }
 await shoot(page, 'flag-on-window30-dedupe.png');
