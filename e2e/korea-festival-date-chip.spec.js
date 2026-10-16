@@ -1,5 +1,18 @@
 import { test, expect } from '@playwright/test';
 
+const FILTER_CHIP_ACTIVE_BG = 'rgb(180, 83, 9)';
+
+async function expectPeriodChipPainted(page, activeId, idleId) {
+  await expect(page.locator(`[data-period-id="${activeId}"]`)).toHaveCSS(
+    'background-color',
+    FILTER_CHIP_ACTIVE_BG,
+  );
+  await expect(page.locator(`[data-period-id="${idleId}"]`)).toHaveCSS(
+    'background-color',
+    'rgb(255, 255, 255)',
+  );
+}
+
 const FIXTURE = [
   {
     contentId: '1001',
@@ -132,7 +145,7 @@ test.describe('Korea festival date chips', () => {
     await expect(page.getByRole('button', { name: /지역 대분류/ })).toContainText('서울');
     const count = await periodCount(page, 'window30');
     await expect(listCards(page)).toHaveCount(count);
-    expect(count).toBe(2);
+    expect(count).toBe(3);
     await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
       '서울특별시 · 30일 안',
     );
@@ -162,6 +175,9 @@ test.describe('Korea festival date chips', () => {
     await expect(listCards(page)).toHaveCount(count);
     expect(count).toBeGreaterThan(0);
     await expect(listCards(page).filter({ hasText: '강릉 주말 축제' })).toHaveCount(1);
+    const window30Chip = page.locator('[data-period-id="window30"]');
+    await expectPeriodChipPainted(page, 'date', 'window30');
+    await expect(window30Chip).toHaveAttribute('aria-pressed', 'false');
 
     await dateChip.click();
     await sheet.locator('[data-ymd="20270501"]').click();
@@ -175,6 +191,44 @@ test.describe('Korea festival date chips', () => {
     await page.locator('#korea-festival-search').fill('제주 먼');
     await expect(page.getByRole('heading', { name: '검색은 전체 기간' })).toBeVisible();
     await expect(listCards(page)).toContainText('제주 먼 축제');
+  });
+
+  test('custom range after 30-day chip highlights date chip not window30', async ({
+    page,
+  }) => {
+    await openTimeRow(page);
+    const window30Chip = page.locator('[data-period-id="window30"]');
+    await window30Chip.click();
+    await expect(window30Chip).toHaveAttribute('aria-pressed', 'true');
+    await expect(window30Chip).toHaveClass(/bg-amber-700/);
+    await page.locator('[data-period-id="date"]').click();
+    const sheet = page.locator('[data-festival-date-sheet]');
+    await sheet.locator('[data-ymd="20261017"]').click();
+    await sheet.locator('[data-ymd="20261018"]').click();
+    await sheet.getByRole('button', { name: '이 기간 보기' }).click();
+    const dateChip = page.locator('[data-period-id="date"]');
+    await expect(dateChip).toHaveAttribute('aria-pressed', 'true');
+    await expectPeriodChipPainted(page, 'date', 'window30');
+    await expect(dateChip).toContainText('10.17\u201310.18');
+    await expect(window30Chip).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('switching back to 30-day clears custom range label on the date chip', async ({
+    page,
+  }) => {
+    await openTimeRow(page);
+    await page.locator('[data-period-id="date"]').click();
+    const sheet = page.locator('[data-festival-date-sheet]');
+    await sheet.locator('[data-ymd="20261017"]').click();
+    await sheet.locator('[data-ymd="20261018"]').click();
+    await sheet.getByRole('button', { name: '이 기간 보기' }).click();
+    const dateChip = page.locator('[data-period-id="date"]');
+    const window30Chip = page.locator('[data-period-id="window30"]');
+    await expect(dateChip).toContainText('10.17\u201310.18');
+    await window30Chip.click();
+    await expectPeriodChipPainted(page, 'window30', 'date');
+    await expect(dateChip).not.toContainText('10.17');
+    await expect(dateChip).toContainText('날짜');
   });
 
   test('이번 주말 on Saturday is today through Sunday only', async ({ page }) => {
