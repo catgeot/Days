@@ -14,6 +14,21 @@
 
 ## 활성 목록
 
+### 주변 볼거리 교통
+
+| | |
+|--|--|
+| **상태** | **#1 터미널·역·관공서** · tip `ca377b57` · draft PR [#479](https://github.com/catgeot/Days/pull/479) · **병합 금지** |
+| **브랜치** | `cursor/nearby-transport-189d` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-16-project-log.md`](./2026-10-16-project-log.md) |
+| **Preview** | 390px before/after는 PR의 `docs/qa/nearby-transport/` |
+| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run lint:ci` · `npm run test:health` · `npm run build` |
+| **남은 일** | 사람이 draft #479만 본다. 다음 에이전트 작업 없음 |
+
+**다음 제시어 없음**.
+
 ### 자유검색 영상
 
 | | |
