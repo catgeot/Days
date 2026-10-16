@@ -26,10 +26,20 @@ test('festival detail bottom close returns sub-tabs to the overview', () => {
   const button = sliceAround(
     'className="w-full py-3 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"',
     900,
-    80,
+    500,
   );
   assert.match(button, /if \(activeTab === TAB_INFO\) \{\s*onClose\(\);/);
   assert.match(button, /setActiveTab\(TAB_INFO\)/);
   assert.match(button, /sheet\.scrollTop = 0/);
   assert.doesNotMatch(button, /onClick=\{onClose\}/);
+  assert.match(
+    button,
+    /activeTab === TAB_INFO\s*\?\s*t\('korea\.common\.close'\)\s*:\s*t\('korea\.festival\.detail\.backToOverview'\)/,
+  );
+  const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
+  const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
+  assert.equal(ko.korea.festival.detail.backToOverview, '안내로 돌아가기');
+  assert.equal(en.korea.festival.detail.backToOverview, 'Back to overview');
+  assert.equal(ko.korea.common.close, '닫기');
+  assert.equal(en.korea.common.close, 'Close');
 });
