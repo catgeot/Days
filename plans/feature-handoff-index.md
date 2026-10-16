@@ -14,6 +14,21 @@
 
 ## 활성 목록
 
+### 축제 탭 닫기
+
+| | |
+|--|--|
+| **상태** | **#1 안내로 복귀** · tip `2cd06f24` · draft PR [#480](https://github.com/catgeot/Days/pull/480) · **병합 금지** |
+| **브랜치** | `cursor/festival-tab-close-0cf9` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-16-project-log.md`](./2026-10-16-project-log.md) |
+| **Preview** | `vercel.json`에서 `cursor/*` 배포 꺼짐. 390px 증거는 PR의 `docs/qa/tab-close/` |
+| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run lint:ci` · `npm run test:health` · `npm run build` |
+| **남은 일** | 사람이 draft #480만 본다. 다음 에이전트 작업 없음 |
+
+**다음 제시어 없음**.
+
 ### 주변 볼거리 교통
 
 | | |
