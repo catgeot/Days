@@ -163,27 +163,44 @@ export function formatFestivalRangeLabel(startYmd, endYmd, todayYmd) {
 }
 
 /**
+ * List heading for «30일 안». Chip label stays `30일 안 ~11.14`.
+ * @param {string} endMonthDay `11.14` or `2027.11.14`
+ */
+export function formatWindow30HeadlinePhrase(endMonthDay) {
+  const end = String(endMonthDay || '').replace(/^~/, '').trim();
+  if (!end) return '';
+  return `30일 안(~${end})`;
+}
+
+/**
  * «30일 안» replaces «이번 달»; «날짜» follows it. Weekend and seasons stay put.
+ * Optional `headline` is the one-line list title, separate from the chip label.
  * @param {{ id: string, label: string }[]} tabs
- * @param {{ window30Label: string, dateLabel: string }} labels
+ * @param {{ window30Label: string, window30Headline?: string, dateLabel: string, dateHeadline?: string }} labels
  */
 export function replaceMonthTabWithDateChips(tabs, labels) {
-  /** @type {{ id: string, label: string }[]} */
+  /** @type {{ id: string, label: string, headline?: string }[]} */
   const out = [];
   let replaced = false;
+  const window30 = {
+    id: 'window30',
+    label: labels.window30Label,
+    ...(labels.window30Headline ? { headline: labels.window30Headline } : {}),
+  };
+  const date = {
+    id: 'date',
+    label: labels.dateLabel,
+    ...(labels.dateHeadline ? { headline: labels.dateHeadline } : {}),
+  };
   for (const tab of tabs || []) {
     if (tab?.id === 'thisMonth') {
-      out.push({ id: 'window30', label: labels.window30Label });
-      out.push({ id: 'date', label: labels.dateLabel });
+      out.push(window30, date);
       replaced = true;
     } else if (tab?.id) {
       out.push(tab);
     }
   }
-  if (!replaced) {
-    out.push({ id: 'window30', label: labels.window30Label });
-    out.push({ id: 'date', label: labels.dateLabel });
-  }
+  if (!replaced) out.push(window30, date);
   return out;
 }
 

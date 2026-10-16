@@ -159,6 +159,7 @@ import { useFestivalLocationBoot } from './useFestivalLocationBoot.js';
 import {
   buildFestivalIndexHeadlineContent,
   festivalIndexTimePhrase,
+  formatCompactPeriodHeadline,
 } from './festivalIndexHeadline.js';
 
 /**
@@ -174,6 +175,9 @@ function buildIndexListHeadline({
   locale = 'ko',
 }) {
   const time = festivalIndexTimePhrase(locale, timeTab, timeTabs, t);
+  const compactPeriod = Boolean(
+    timeTabs.find((tab) => tab.id === timeTab)?.headline,
+  );
   const sido = localizedSidoListPhrase(
     locale,
     areaCode,
@@ -188,6 +192,20 @@ function buildIndexListHeadline({
     ? t('korea.festival.headlineTasteSuffix', { taste })
     : '';
   const place = [sido, city].filter(Boolean).join(' ');
+
+  if (compactPeriod) {
+    const placeLabel = isNationwideRegionFilter(areaCode, cityName)
+      ? t('korea.festival.panelNationwideScope', { defaultValue: 'Nationwide' })
+      : place;
+    return {
+      kind: 'text',
+      text: formatCompactPeriodHeadline({
+        place: placeLabel,
+        time,
+        tasteSuffix,
+      }),
+    };
+  }
 
   if (isNationwideRegionFilter(areaCode, cityName)) {
     const scope = t('korea.festival.panelNationwideScope', {
@@ -1474,12 +1492,14 @@ export default function KoreaFestivalHub() {
       range.eventEndDate,
       seoulToday,
     );
-    const dateLabel = customRange?.start
+    const rangeLabel = customRange?.start
       ? formatFestivalRangeLabel(customRange.start, customRange.end, seoulToday)
-      : t('korea.festival.dateChip');
+      : '';
     return replaceMonthTabWithDateChips(base, {
       window30Label: t('korea.festival.window30Chip', { end: endLabel }),
-      dateLabel,
+      window30Headline: t('korea.festival.window30Headline', { end: endLabel }),
+      dateLabel: rangeLabel || t('korea.festival.dateChip'),
+      dateHeadline: rangeLabel,
     });
   }, [now, t, dateChipEnabled, seoulToday, customRange]);
 
@@ -2801,12 +2821,14 @@ export default function KoreaFestivalHub() {
                     >
                       {tab.id === 'date' ? null : <ChipPanelIcon panel="time" />}
                       {tab.label}
-                      <span
-                        data-period-count=""
-                        className={koreaFilterChipCountClass(timeTab === tab.id)}
-                      >
-                        {timeChipCounts[tab.id] ?? 0}
-                      </span>
+                      {tab.id === 'date' && !customRange?.start ? null : (
+                        <span
+                          data-period-count=""
+                          className={koreaFilterChipCountClass(timeTab === tab.id)}
+                        >
+                          {timeChipCounts[tab.id] ?? 0}
+                        </span>
+                      )}
                     </button>
                   ))}
                 {chipPanel === 'region' && (

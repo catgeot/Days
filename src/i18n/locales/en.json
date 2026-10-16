@@ -1576,6 +1576,7 @@
       "clearPeriod": "Clear period",
       "searchAllPeriod": "Search covers the full period",
       "window30Chip": "Within 30 days ~{{end}}",
+      "window30Headline": "Within 30 days (~{{end}})",
       "dateChip": "Date📅",
       "dateSheetTitle": "Date",
       "dateSheetHint": "Pick a day or a range",

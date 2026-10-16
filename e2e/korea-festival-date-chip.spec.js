@@ -125,11 +125,16 @@ test.describe('Korea festival date chips', () => {
     const count = await periodCount(page, 'window30');
     await expect(listCards(page)).toHaveCount(count);
     expect(count).toBe(2);
+    await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
+      '서울특별시 · 30일 안(~11.14)',
+    );
+    await expect(page.locator('[data-period-id="date"] [data-period-count]')).toHaveCount(0);
     await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(1);
   });
 
   test('date sheet weekend range, empty period, and search skip the period', async ({ page }) => {
     await openTimeRow(page);
+    await expect(page.locator('[data-period-id="date"] [data-period-count]')).toHaveCount(0);
     await page.locator('[data-period-id="date"]').click();
     const sheet = page.locator('[data-festival-date-sheet]');
     await expect(sheet).toBeVisible();
@@ -139,6 +144,9 @@ test.describe('Korea festival date chips', () => {
     const dateChip = page.locator('[data-period-id="date"]');
     await expect(dateChip).toHaveAttribute('aria-pressed', 'true');
     await expect(dateChip).toContainText('10.24\u201310.25');
+    await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
+      '전국 · 10.24\u201310.25',
+    );
     const count = await periodCount(page, 'date');
     await expect(listCards(page)).toHaveCount(count);
     expect(count).toBeGreaterThan(0);

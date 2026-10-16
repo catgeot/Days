@@ -1340,6 +1340,7 @@
       "clearPeriod": "기간 풀기",
       "searchAllPeriod": "검색은 전체 기간",
       "window30Chip": "30일 안 ~{{end}}",
+      "window30Headline": "30일 안(~{{end}})",
       "dateChip": "날짜📅",
       "dateSheetTitle": "날짜",
       "dateSheetHint": "하루 또는 기간을 고르세요",

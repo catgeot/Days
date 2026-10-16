@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   enFestivalListHeadlineTail,
+  formatCompactPeriodHeadline,
   formatFestivalIndexHeadlinePlain,
   listEnFestivalTimeTabHeadlines,
 } from '../../src/pages/Korea/festivalIndexHeadline.js';
@@ -71,6 +72,28 @@ test('EN headlines — 4 tabs × provinces and nationwide', () => {
     });
     assert.equal(nationwide, EXPECTED_NATIONWIDE[timeTab], timeTab);
     assert.equal(/\bfestival\s+list\b/i.test(nationwide), false, nationwide);
+  }
+});
+
+test('compact period headlines stay one phrase without quotes or 축제 리스트', () => {
+  const month = formatCompactPeriodHeadline({
+    place: '서울특별시',
+    time: '30일 안(~11.14)',
+  });
+  const picked = formatCompactPeriodHeadline({
+    place: '제주도',
+    time: '10.17\u201310.18',
+  });
+  const nationwide = formatCompactPeriodHeadline({
+    place: '전국',
+    time: '30일 안(~11.14)',
+  });
+  assert.equal(month, '서울특별시 · 30일 안(~11.14)');
+  assert.equal(picked, '제주도 · 10.17\u201310.18');
+  assert.equal(nationwide, '전국 · 30일 안(~11.14)');
+  for (const line of [month, picked, nationwide]) {
+    assert.equal(line.includes('"'), false, line);
+    assert.equal(line.includes('축제 리스트'), false, line);
   }
 });
 

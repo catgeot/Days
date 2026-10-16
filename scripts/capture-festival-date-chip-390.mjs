@@ -81,6 +81,25 @@ async function waitListImages(page) {
   });
 }
 
+async function assertOneLineHeading(page, pattern) {
+  const heading = page.locator('[data-festival-list-heading] h2');
+  await heading.waitFor();
+  const text = (await heading.innerText()).replace(/\s+/g, ' ').trim();
+  if (!pattern.test(text)) {
+    throw new Error(`heading ${JSON.stringify(text)} does not match ${pattern}`);
+  }
+  if (text.includes('"') || text.includes('축제 리스트')) {
+    throw new Error(`heading still quoted: ${text}`);
+  }
+  const lines = await heading.evaluate((el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return range.getClientRects().length;
+  });
+  if (lines !== 1) throw new Error(`heading wraps (${lines}): ${text}`);
+  console.log(`heading ${text}`);
+}
+
 async function shoot(page, name) {
   const path = join(outDir, name);
   await page.screenshot({
@@ -175,11 +194,14 @@ const onContext = await browser.newContext({
 });
 const page = await onContext.newPage();
 
+const regionFilter = new Set(
+  (process.env.CAPTURE_REGIONS || '').split(',').map((id) => id.trim()).filter(Boolean),
+);
 const regions = [
   { id: 'seoul', label: '서울', file: 'seoul-30d.png', weekend: 'seoul-weekend-back.png', district: '' },
   { id: 'gangwon', label: '강원', file: 'gangwon-gangneung-30d.png', weekend: 'gangwon-gangneung-weekend.png', district: '강릉' },
   { id: 'jeju', label: '제주', file: 'jeju-30d.png', weekend: 'jeju-weekend.png', district: '' },
-];
+].filter((region) => regionFilter.size === 0 || regionFilter.has(region.id));
 
 for (const region of regions) {
   await gotoKorea(page, onUrl);
@@ -193,20 +215,27 @@ for (const region of regions) {
   await page.locator('[data-period-id="window30"]').click();
   await page.locator('[data-period-id="window30"][aria-pressed="true"]').waitFor();
   await compareCount(page, 'window30', `${region.label} 30일 안`);
+  await assertOneLineHeading(page, /30일 안\(~11\.14\)/);
+  if (await page.locator('[data-period-id="date"] [data-period-count]').count()) {
+    throw new Error('date chip shows a count before a day is picked');
+  }
   await waitListImages(page);
   await shoot(page, region.file);
 
   await applyWeekend(page, seoulNow);
   await compareCount(page, 'date', `${region.label} weekend`);
+  await assertOneLineHeading(page, /10\.17\u201310\.18/);
   if ((await listCards(page).count()) > 0) {
     await waitListImages(page);
     await openFestivalAndBack(page);
     await page.locator('[data-period-id="date"][aria-pressed="true"]').waitFor();
   }
   await waitListImages(page);
+  await assertOneLineHeading(page, /10\.17\u201310\.18/);
   await shoot(page, region.weekend);
 }
 
+if (regionFilter.size === 0) {
 await gotoKorea(page, onUrl);
 await openTime(page);
 await page.locator('[data-period-id="date"]').click();
@@ -233,7 +262,6 @@ if (!emptyYmd) throw new Error('no far-future empty day in the loaded calendar')
 console.log(`empty day ${emptyYmd}`);
 await page.locator('[data-period-id="date"][aria-pressed="true"]').waitFor();
 await shoot(page, 'empty-far-future.png');
-await onContext.close();
 
 const tzContext = await browser.newContext({
   ...baseContext,
@@ -282,5 +310,7 @@ if (await offPage.locator('[data-period-id="window30"]').count()) {
 await waitListImages(offPage);
 await shoot(offPage, 'flag-off.png');
 await offContext.close();
+}
+await onContext.close();
 await browser.close();
 console.log('captures ok');
