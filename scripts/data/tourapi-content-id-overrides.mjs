@@ -344,4 +344,12 @@ export const TOURAPI_CONTENT_ID_OVERRIDES = {
     aliases: ['창덕궁', 'Changdeokgung'],
     verifiedAt: '2026-07-23',
   },
+  'heungjeong-valley': {
+    photoKeyword: '흥정계곡',
+    photoKeywords: ['흥정계곡 전경', '흥정계곡 계곡'],
+    title: '흥정계곡',
+    contentId: '126657',
+    aliases: ['흥정계곡', 'Heungjeong Valley', 'Heungjeonggyeok'],
+    verifiedAt: '2026-10-16',
+  },
 };
