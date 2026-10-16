@@ -2840,7 +2840,25 @@ export default function FestivalDetailSheet({
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={(event) => {
+              if (activeTab === TAB_INFO) {
+                onClose();
+                return;
+              }
+              const button = event.currentTarget;
+              setActiveTab(TAB_INFO);
+              const scrollOverviewTop = () => {
+                const sheet = sheetScrollRef.current;
+                if (sheet) sheet.scrollTop = 0;
+                let node = button?.parentElement;
+                while (node && node !== sheet) {
+                  node.scrollTop = 0;
+                  node = node.parentElement;
+                }
+              };
+              scrollOverviewTop();
+              requestAnimationFrame(scrollOverviewTop);
+            }}
             className="w-full py-3 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"
           >
             {t('korea.common.close')}
