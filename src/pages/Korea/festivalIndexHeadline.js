@@ -11,6 +11,7 @@ const EN_TIME_TAB_HEADLINE = {
   now: 'Festivals on now',
   weekend: "This weekend's festivals",
   thisMonth: "This month's festivals",
+  window30: 'Festivals within 30 days',
   spring: 'Spring festivals',
   summer: 'Summer festivals',
   autumn: 'Autumn festivals',
@@ -39,13 +40,27 @@ export function listEnFestivalTimeTabHeadlines() {
  */
 export function festivalIndexTimePhrase(locale, timeTab, timeTabs, t) {
   const id = String(timeTab || 'now');
+  const tab = timeTabs.find((item) => item.id === id);
+  if (tab?.headline) return tab.headline;
   const label =
-    timeTabs.find((tab) => tab.id === id)?.label ||
+    tab?.label ||
     t('korea.festival.timeTab.now');
   if (String(locale || '').startsWith('en')) {
     return enFestivalListTimePhrase(id, label);
   }
   return label;
+}
+
+/**
+ * Flag-on period title: `서울특별시 · 30일 안(~11.14)` or `… · 10.17–10.18`.
+ * No quotes and no «축제 리스트», so the line stays as short as the flag-off title.
+ * @param {{ place?: string, time: string, tasteSuffix?: string }} p
+ */
+export function formatCompactPeriodHeadline({ place, time, tasteSuffix = '' }) {
+  const period = String(time || '').trim();
+  const taste = tasteSuffix || '';
+  if (place) return `${place} · ${period}${taste}`;
+  return `${period}${taste}`;
 }
 
 /** EN tail after time phrase — omit when phrase already includes «Festivals». */

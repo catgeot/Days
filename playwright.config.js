@@ -30,6 +30,7 @@ export default defineConfig({
         /youtube-loadmore-session\.spec\.js/,
         /gallery-single-writer\.spec\.js/,
         /place-local-info\.spec\.js/,
+        /korea-festival-date-chip\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },

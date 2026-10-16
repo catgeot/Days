@@ -4,6 +4,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   POI_COUNTY_SLUG_SEARCH: 'VITE_GATEO_POI_COUNTY_SLUG_SEARCH',
   PLACE_CROSSLINK: 'VITE_GATEO_PLACE_CROSSLINK',
   SITE_SEARCH: 'VITE_GATEO_SITE_SEARCH',
+  FESTIVAL_DATE_CHIP: 'VITE_GATEO_FESTIVAL_DATE_CHIP',
 };
 
 /** @param {string} name */
@@ -23,4 +24,8 @@ export function isGateoPlaceCrosslinkEnabled() {
 
 export function isGateoSiteSearchEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SITE_SEARCH);
+}
+
+export function isGateoFestivalDateChipEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.FESTIVAL_DATE_CHIP);
 }
