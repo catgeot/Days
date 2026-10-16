@@ -9,7 +9,10 @@ import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common
 import { placeGalleryScrollToRestore, rememberPlaceGalleryScroll } from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
-import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
+import {
+  formatGalleryDisplaySourcesAttribution,
+  getGalleryImageAttribution,
+} from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
@@ -390,6 +393,13 @@ const PlaceGalleryView = React.memo(({
   );
   const showLoadingChrome = Boolean(showInitialSkeleton || isPaintPending);
   const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton && !galleryAtMax);
+  const gallerySourcesAttribution = useMemo(
+    () =>
+      formatGalleryDisplaySourcesAttribution(images, locale, {
+        refreshCooldownSec,
+      }),
+    [images, locale, refreshCooldownSec],
+  );
 
   useEffect(() => {
     setPaintedCount(0);
@@ -1188,38 +1198,42 @@ const PlaceGalleryView = React.memo(({
                 </div>
               )}
 
-              {showRefreshButton && (
+              {(showRefreshButton || gallerySourcesAttribution) && (
                 <div className="mt-8 mb-2 flex flex-col items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={onRefreshClick}
-                    disabled={isRefreshing || refreshCooldownLeft > 0}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/45 hover:bg-blue-500/10 hover:text-blue-300/90 hover:border-blue-500/30 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium"
-                    title={
-                      isRefreshing
-                        ? t('place.gallery.refreshLoadingTitle')
-                        : refreshCooldownLeft > 0
-                          ? t('place.gallery.refreshCooldownTitle', { seconds: refreshCooldownLeft })
-                          : t('place.gallery.refreshTitle')
-                    }
-                  >
-                    <RefreshCw
-                      size={14}
-                      className={
+                  {showRefreshButton ? (
+                    <button
+                      type="button"
+                      onClick={onRefreshClick}
+                      disabled={isRefreshing || refreshCooldownLeft > 0}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/45 hover:bg-blue-500/10 hover:text-blue-300/90 hover:border-blue-500/30 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium"
+                      title={
                         isRefreshing
-                          ? 'animate-spin'
+                          ? t('place.gallery.refreshLoadingTitle')
                           : refreshCooldownLeft > 0
-                            ? ''
-                            : 'group-hover:rotate-180 transition-transform duration-500'
+                            ? t('place.gallery.refreshCooldownTitle', { seconds: refreshCooldownLeft })
+                            : t('place.gallery.refreshTitle')
                       }
-                    />
-                    {isRefreshing
-                      ? t('place.gallery.refreshLoading')
-                      : refreshCooldownLeft > 0
-                        ? t('place.gallery.refreshCooldown', { seconds: refreshCooldownLeft })
-                        : t('place.gallery.refreshMore')}
-                  </button>
-                  <p className="text-[10px] text-white/25">{t('place.gallery.sourcesRateLimit', { seconds: refreshCooldownSec })}</p>
+                    >
+                      <RefreshCw
+                        size={14}
+                        className={
+                          isRefreshing
+                            ? 'animate-spin'
+                            : refreshCooldownLeft > 0
+                              ? ''
+                              : 'group-hover:rotate-180 transition-transform duration-500'
+                        }
+                      />
+                      {isRefreshing
+                        ? t('place.gallery.refreshLoading')
+                        : refreshCooldownLeft > 0
+                          ? t('place.gallery.refreshCooldown', { seconds: refreshCooldownLeft })
+                          : t('place.gallery.refreshMore')}
+                    </button>
+                  ) : null}
+                  {gallerySourcesAttribution ? (
+                    <p className="text-[10px] text-white/25">{gallerySourcesAttribution}</p>
+                  ) : null}
                 </div>
               )}
 
