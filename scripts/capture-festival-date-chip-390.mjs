@@ -215,7 +215,10 @@ for (const region of regions) {
   await page.locator('[data-period-id="window30"]').click();
   await page.locator('[data-period-id="window30"][aria-pressed="true"]').waitFor();
   await compareCount(page, 'window30', `${region.label} 30일 안`);
-  await assertOneLineHeading(page, /30일 안\(~11\.14\)/);
+  await assertOneLineHeading(page, /30일 안/);
+  if ((await page.locator('[data-festival-list-heading] h2').innerText()).includes('~')) {
+    throw new Error('heading still shows chip end date');
+  }
   if (await page.locator('[data-period-id="date"] [data-period-count]').count()) {
     throw new Error('date chip shows a count before a day is picked');
   }

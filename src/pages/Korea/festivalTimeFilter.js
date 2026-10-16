@@ -1,3 +1,5 @@
+import { upcomingWeekendRangeYmd } from './festivalDateFilter.js';
+
 function pad2(n) {
   return String(n).padStart(2, '0');
 }
@@ -40,33 +42,12 @@ export function rolling30DayRangeYmd(now = new Date()) {
 }
 
 /**
- * 다가오는 금~일 (이미 일요일이면 오늘까지).
+ * 다가오는 주말 — Asia/Seoul 날짜. 토·일이면 오늘부터 일요일까지만.
  * @param {Date} [now]
  * @returns {{ startYmd: string, endYmd: string }}
  */
 export function upcomingWeekendRange(now = new Date()) {
-  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const day = d.getDay(); // 0 Sun … 6 Sat
-  let startOffset;
-  let endOffset;
-  if (day === 0) {
-    startOffset = -2;
-    endOffset = 0;
-  } else if (day === 5) {
-    startOffset = 0;
-    endOffset = 2;
-  } else if (day === 6) {
-    startOffset = -1;
-    endOffset = 1;
-  } else {
-    startOffset = 5 - day;
-    endOffset = startOffset + 2;
-  }
-  const start = new Date(d);
-  start.setDate(d.getDate() + startOffset);
-  const end = new Date(d);
-  end.setDate(d.getDate() + endOffset);
-  return { startYmd: toYmd(start), endYmd: toYmd(end) };
+  return upcomingWeekendRangeYmd(now);
 }
 
 /** 기상학적 계절 — 봄(3–5) · 여름(6–8) · 가을(9–11) · 겨울(12–2) */

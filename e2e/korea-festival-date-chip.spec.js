@@ -41,6 +41,14 @@ const FIXTURE = [
     addr1: '서울특별시 중구 세종대로 2',
     areaCode: '1',
   },
+  {
+    contentId: '1006',
+    title: '토요일만 축제',
+    eventStartDate: '20261017',
+    eventEndDate: '20261017',
+    addr1: '서울특별시 용산구 이태원로 1',
+    areaCode: '1',
+  },
 ];
 
 async function dismissLocHint(page) {
@@ -126,7 +134,7 @@ test.describe('Korea festival date chips', () => {
     await expect(listCards(page)).toHaveCount(count);
     expect(count).toBe(2);
     await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
-      '서울특별시 · 30일 안(~11.14)',
+      '서울특별시 · 30일 안',
     );
     await expect(page.locator('[data-period-id="date"] [data-period-count]')).toHaveCount(0);
     await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(1);
@@ -147,6 +155,9 @@ test.describe('Korea festival date chips', () => {
     await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
       '전국 · 10.24\u201310.25',
     );
+    await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText(
+      '10.24\u201310.25',
+    );
     const count = await periodCount(page, 'date');
     await expect(listCards(page)).toHaveCount(count);
     expect(count).toBeGreaterThan(0);
@@ -164,5 +175,20 @@ test.describe('Korea festival date chips', () => {
     await page.locator('#korea-festival-search').fill('제주 먼');
     await expect(page.getByRole('heading', { name: '검색은 전체 기간' })).toBeVisible();
     await expect(listCards(page)).toContainText('제주 먼 축제');
+  });
+
+  test('이번 주말 on Saturday is today through Sunday only', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-10-17T03:00:00.000Z'));
+    await page.reload();
+    await dismissLocHint(page);
+    await expect(page.locator('main [data-festival-id]').first()).toBeVisible({
+      timeout: 30_000,
+    });
+    await openTimeRow(page);
+    const weekendChip = page.locator('[data-period-id="weekend"]');
+    await weekendChip.click();
+    await expect(weekendChip).toHaveAttribute('aria-pressed', 'true');
+    await expect(listCards(page).filter({ hasText: '토요일만 축제' })).toHaveCount(1);
+    await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(0);
   });
 });
