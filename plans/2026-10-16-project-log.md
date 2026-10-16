@@ -2,9 +2,15 @@
 
 이전: [`2026-10-14-project-log.md`](./2026-10-14-project-log.md)
 
+## 축제 탭 문구 #2, 안내로 돌아가기
+
+- **세션** 일회 · branch `cursor/festival-tab-back-label-0cf9` · tip `1f98a8b8` · draft PR [#481](https://github.com/catgeot/Days/pull/481) · **병합 금지**
+- 프로그램·사진·읽을거리 하단만 «안내로 돌아가기» / Back to overview. 안내 탭은 «닫기». LIVE #480 (`c9862596`, `index-CyZMXYLY.js`) WebKit 390에서 세 탭 «닫기»가 안내 맨 위로, X는 시트를 닫음. 사진 하단 캡처의 활성 칩은 사진.
+- **검증:** `lint:ci` · `test:health` 397 pass · `build` · WebKit 390 `docs/qa/tab-back-label/` (강릉커피 825295)
+
 ## 축제 탭 닫기 #1, 안내로 복귀
 
-- **세션** 일회 · branch `cursor/festival-tab-close-0cf9` · tip `2cd06f24` · draft PR [#480](https://github.com/catgeot/Days/pull/480) · **병합 금지**
+- **세션** 일회 · branch `cursor/festival-tab-close-0cf9` · tip `2cd06f24` · PR [#480](https://github.com/catgeot/Days/pull/480) 병합 `c9862596`
 - 축제 상세 프로그램·사진·읽을거리 하단 «닫기»는 시트를 닫지 않고 안내 탭 맨 위로 돌아간다. 우측 상단 X와 안내 탭 하단 닫기는 축제를 닫는다. 탭은 쿼리에 없고 `festival=` 은 유지된다.
 - **검증:** `lint:ci` · `test:health` 397 pass · `build` · Chromium·WebKit 390 `docs/qa/tab-close/` (강릉커피 825295 · 제주 3554702 · 서울 2862358)
 
