@@ -840,6 +840,22 @@ export function stripRedundantBookingLinkOnlyLines(text) {
   return kept.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+const TRAILING_BRACKET_CHIP_HEADER_RE =
+  /(?:\[\s*(?:교통\s*·\s*티켓|출발\s*전\s*준비|Transport\s*·\s*tickets|Before\s*you\s*go)\s*\]\s*)+$/gi;
+
+/** Trailing `[교통 · 티켓]`-style headers with no body. */
+export function stripTrailingBracketChipHeaders(text) {
+  let s = String(text || '').trimEnd();
+  let guard = 0;
+  while (guard < 8) {
+    guard += 1;
+    const next = s.replace(TRAILING_BRACKET_CHIP_HEADER_RE, '').trimEnd();
+    if (next === s) break;
+    s = next;
+  }
+  return s;
+}
+
 /** Chip headings, CTA labels, separator leftovers, and bracket phrases with no URL. */
 export function stripMooniUiChipLabels(text) {
   const lines = promoteDashListMarkers(text)
@@ -852,7 +868,7 @@ export function stripMooniUiChipLabels(text) {
       if (!stripped) return '';
       return stripChipLabelSentencesInLine(stripped);
     });
-  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  return stripTrailingBracketChipHeaders(lines.join('\n').replace(/\n{3,}/g, '\n\n').trim());
 }
 
 /**
@@ -1828,7 +1844,7 @@ const FOOD_CAT3_LABELS = {
   A05020900: { ko: '바', en: 'bar' },
 };
 
-const INVENTED_FOOD_NAME_RE = /[가-힣A-Za-z0-9]{2,18}(?:식당|횟집|제과|방앗간|국수집|돈까스|돈가스|비빔밥집|한식당)/g;
+const INVENTED_FOOD_NAME_RE = /[가-힣A-Za-z0-9]{2,18}(?:식당|횟집|제과|방앗간|국수집|돈까스|돈가스|비빔밥집|한식당|잔치집|국밥|삼계탕|탕집|뷔페|먹거리|카페|커피)/g;
 
 function foodAnswerLocale(locale) {
   return String(locale || 'ko').slice(0, 2) === 'en' ? 'en' : 'ko';
@@ -2070,6 +2086,17 @@ function mentionsInventedFood(part, entries) {
   return false;
 }
 
+function replyHasUnknownFoodName(text, entries) {
+  if (!entries.length) return false;
+  const names = entries.map((row) => row.name);
+  const hits = String(text || '').match(INVENTED_FOOD_NAME_RE) || [];
+  if (hits.some((hit) => !foodNameAllowed(hit, names))) return true;
+  for (const match of String(text || '').matchAll(/\[([^\]]+)\]\([^)]+\)/g)) {
+    if (!foodNameAllowed(match[1].trim(), names)) return true;
+  }
+  return false;
+}
+
 const FOOD_DEFLECTION_RE = /맛집(?:을|를)\s*찾아\s*보|find\s+(?:nearby\s+)?restaurants|look\s+for\s+(?:nearby\s+)?restaurants/i;
 const FOOD_FILLER_RE = /다양한\s*맛집|미식\s*여행|소문난|a variety of restaurants|culinary trip|well-known local/i;
 
@@ -2111,7 +2138,7 @@ function ensureFestivalFoodAnswer(text, options = {}) {
     || mentionsInventedFood(part, entries)
     || (/중앙시장/.test(part) && !entries.some((row) => row.name.includes('중앙시장')))
   ));
-  if (foodAnswerCoversHint(next, entries)) return next;
+  if (foodAnswerCoversHint(next, entries) && !replyHasUnknownFoodName(next, entries)) return next;
   return warmFestivalFoodAnswer(entries, locale, options.contentId);
 }
 
@@ -2167,7 +2194,7 @@ const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|숙소가\s*자�
 const FESTIVAL_SIGHTS_DECORATIVE_RE =
   /함께\s*즐겨\s*보세요|즐겨\s*보세요\.?$|느껴\s*보세요|만끽해\s*보세요|특별한\s*추억|정취를\s*느끼|계절의\s*정취|현장의\s*활기를\s*만끽|분위기를\s*만들어\s*보세요|enjoy the atmosphere together/i;
 const FOOD_UNASKED_TRANSPORT_RE =
-  /주차|parking|셔틀|공영\s*주차|주차장\s*이용|자가용으로\s*이용|차량\s*이용\s*시|drive\s+and\s+park/i;
+  /주차|parking|셔틀|공영\s*주차|주차장\s*이용|자가용으로\s*이용|차량\s*이용\s*시|drive\s+and\s+park|축제장\s*운영\s*시간|주차\s*정보는\s*\[(?:공식|official)/i;
 const MOONI_GUIDE_FILLER_RE =
   /안내해\s*드릴게요|안내해\s*드리겠습니다|안내할게요|알려\s*드릴게요|알려드릴게요|도와\s*드릴게요/;
 
@@ -3370,6 +3397,9 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
     lines.push(isEn ? '- Timing vs today: underway' : '- 오늘 기준 상태: 진행 중');
   } else if (status === 'ended') {
     lines.push(isEn ? '- Timing vs today: ended' : '- 오늘 기준 상태: 종료');
+    lines.push(isEn
+      ? '- The festival has ended. When you recall programs or atmosphere, use past tense (was open, ran, felt) rather than present tense.'
+      : '- 이미 지난 행사라면, 프로그램·분위기를 회상할 때 과거형(열렸어요·이어졌어요·느꼈어요)으로 전해 주세요.');
   }
 
   lines.push(isEn ? `- Title: ${title}` : `- 제목: ${title}`);

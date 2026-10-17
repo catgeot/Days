@@ -16,6 +16,7 @@ import {
   renderSearchIntent,
   wrapUserTurn,
 } from "./templates.js";
+import { parseFestivalPolishParams } from "./festivalMooniProxyPolish.mjs";
 
 export const AUTH_TASKS = new Set(["logbook_polish", "review_draft"]);
 export const PERSONAS = ["INSPIRER", "PLANNER", "ARCHITECT", "CONCIERGE", "GENERAL"];
@@ -69,6 +70,7 @@ export type TaskBuild =
     tier: string | null;
     /** Body-text tasks: thinkingConfigForBodyText (thinkingLevel low on 3.x). */
     limitThinking?: boolean;
+    festivalPolish?: Record<string, unknown> | null;
   }
   | { ok: false; status: number; error: string };
 
@@ -287,6 +289,10 @@ export function buildTask(task: string, params: unknown, role: string | null): T
     if (input.tripSession != null && !session) return { ok: false, status: 400, error: "bad_request" };
     const koreaFestivalHint = optStr(input.koreaFestivalHint, 8000);
     if (koreaFestivalHint == null) return { ok: false, status: 400, error: "bad_request" };
+    const festivalPolish = parseFestivalPolishParams(input.festivalPolish);
+    if (input.festivalPolish != null && festivalPolish == null) {
+      return { ok: false, status: 400, error: "bad_request" };
+    }
     const system = renderMooniSystem({
       locale: input.locale,
       persona,
@@ -311,6 +317,7 @@ export function buildTask(task: string, params: unknown, role: string | null): T
       limitThinking: tier === "quality",
       parts: [{ text: wrapUserTurn(system, history, userText) }],
       tier,
+      festivalPolish,
     };
   }
 

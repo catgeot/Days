@@ -68,6 +68,19 @@ function stripLeadingLeakLines(text) {
  * @param {string} text
  * @returns {string}
  */
+/**
+ * Strip U+FFFD from model text and repair a few known split-hangul artifacts.
+ * @param {string} text
+ * @returns {string}
+ */
+export function repairGeminiReplacementChars(text) {
+  if (text == null || typeof text !== "string") return "";
+  return String(text)
+    .replace(/\uFFFD{1,4}이브/g, "라이브")
+    .replace(/\uFFFD+/g, "")
+    .trim();
+}
+
 export function sanitizeGeminiUserText(text) {
   if (text == null || typeof text !== "string") return "";
   let out = text;
@@ -81,7 +94,7 @@ export function sanitizeGeminiUserText(text) {
   }
 
   out = stripLeadingLeakLines(out);
-  return out.trim();
+  return repairGeminiReplacementChars(out.trim());
 }
 
 /**

@@ -3,6 +3,7 @@ import {
   domesticFestivalGroundOrigin,
 } from './festivalDomesticOrigins.js';
 import { resolveFestivalMooniEventDates } from '../../Korea/lib/festivalMooniContext.js';
+import { todayYmd } from '../../Korea/festivalTimeFilter.js';
 import { extractMooniChipPromptFacts } from './mooniChipPrompts.js';
 import {
   extractMooniTripFacts,
@@ -128,6 +129,7 @@ export function buildFestivalMooniPolishOptions(festivalContext, extra = {}) {
     eventStartDate: dates.eventStartDate,
     eventEndDate: dates.eventEndDate,
     dateLabel: dates.dateLabel,
+    referenceYmd: extra.referenceYmd || todayYmd(),
     transport: festivalContext?.transport ?? null,
     ...extra,
   };

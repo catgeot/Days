@@ -1281,6 +1281,12 @@ const ChatModal = ({
         userText: cleanText,
       });
 
+      const lodgingOptions = buildFestivalMooniPolishOptions(festivalContext, {
+        locale: i18n.language,
+        chipId,
+        userText: cleanText,
+        departureOriginId: prepared.groundOrigin?.id || null,
+      });
       const geminiParams = {
         locale: i18n.language,
         persona: personaToUse,
@@ -1295,6 +1301,7 @@ const ChatModal = ({
         ctaPlace: cta.place,
         koreaFestivalHint,
         showPlannerHeader,
+        festivalPolish: festivalContext ? lodgingOptions : null,
       };
 
       const modelUserText = prepared.modelUserText;
@@ -1329,12 +1336,6 @@ const ChatModal = ({
         candidates: mooniFestivalCandidates,
       });
       const stripPhantomTicketMention = !hasTransportCta;
-      const lodgingOptions = buildFestivalMooniPolishOptions(festivalContext, {
-        locale: i18n.language,
-        chipId,
-        userText: cleanText,
-        departureOriginId: prepared.groundOrigin?.id || null,
-      });
       const polishedFestivalReply = polishFestivalModelReply(festivalMergedReply, lodgingOptions);
       const displayReply = getMooniModelMarkdownForRender(polishedFestivalReply, {
         stripPhantomTicketMention,
