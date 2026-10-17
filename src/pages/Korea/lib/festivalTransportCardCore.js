@@ -721,28 +721,6 @@ export function festivalAccessAskIsRoute(text) {
   return /어떻게\s*가|가는\s*(?:길|방법|법)|how\s*to\s*get/i.test(String(text || ''));
 }
 
-/**
- * Card facts already on the festival, or a fresh proxy read for the same content id.
- * Cache-opened sheets can open MOONi before the card has pushed its facts.
- */
-export async function transportForFestivalAsk(festivalContext, locale = 'ko') {
-  if (festivalContext?.transport?.origins?.length) return festivalContext.transport;
-  const contentId = String(festivalContext?.contentId || '').trim();
-  if (!shouldQueryFestivalTransport(contentId)) return festivalContext?.transport || null;
-  const trainDate = resolveFestivalTrainDate(
-    festivalContext?.eventStartDate,
-    festivalContext?.eventEndDate,
-  );
-  const { fetchFestivalTransportCard } = await import('./festivalTransportCardFetch.js');
-  const result = await fetchFestivalTransportCard({ contentId, trainDate });
-  if (result.status !== 'ready') return null;
-  const view = buildAccessView(result.card);
-  if (view.status !== 'ready') return null;
-  const originId = preferredOriginId(view.origins, contentId);
-  const origin = view.origins.find((row) => row.originId === originId) || view.origins[0];
-  return transportFactsFromView(view, origin, locale);
-}
-
 export function departureCoversStation(stations, depStation) {
   const dep = stationToken(depStation);
   if (!dep) return false;

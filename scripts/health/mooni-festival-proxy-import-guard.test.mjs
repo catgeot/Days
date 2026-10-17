@@ -35,8 +35,19 @@ function walkEsImports(file, seen = new Set()) {
     const next = resolveImport(abs, spec);
     if (next) walkEsImports(next, seen);
   }
+  for (const match of text.matchAll(/import\s*\(\s*['"]([^'"]+)['"]\s*\)/g)) {
+    const spec = match[1];
+    const next = resolveImport(abs, spec);
+    if (next) walkEsImports(next, seen);
+  }
   return seen;
 }
+
+const FORBIDDEN_DYNAMIC_SPECS = [
+  /festivalTransportCardFetch/,
+  /invokeSupabaseFunctionDeduped/,
+  /src\/shared\/api\//,
+];
 
 test('festivalMooniProxyPolish import graph avoids browser Supabase client', () => {
   const files = walkEsImports(entry);
@@ -55,4 +66,12 @@ test('festivalMooniProxyPolish import graph avoids browser Supabase client', () 
     !rel.some((p) => p.includes('festivalTransportCardFetch.js')),
     'fetch module must not be pulled into gemini-proxy polish',
   );
+  for (const file of files) {
+    const text = readFileSync(file, 'utf8');
+    for (const match of text.matchAll(/import\s*\(\s*['"]([^'"]+)['"]\s*\)/g)) {
+      for (const re of FORBIDDEN_DYNAMIC_SPECS) {
+        assert.ok(!re.test(match[1]), `forbidden dynamic import ${match[1]} in ${file.replace(`${root}/`, '')}`);
+      }
+    }
+  }
 });

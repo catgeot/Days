@@ -1,3 +1,4 @@
-/** Client barrel — Core has no static link to Supabase fetch (Edge-safe import path). */
+/** Client barrel — Core has no Supabase fetch (Edge-safe via compose-only imports). */
 export * from './festivalTransportCardCore.js';
 export { fetchFestivalTransportCard } from './festivalTransportCardFetch.js';
+export { transportForFestivalAsk } from './festivalTransportCardClient.js';
