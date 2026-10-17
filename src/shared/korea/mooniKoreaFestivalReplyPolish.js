@@ -1521,22 +1521,68 @@ const SEOUL_STATION_LINE3_WRONG_FRAG_RE =
 const SEOUL_STATION_LINE3_TRANSIT_FIX =
   '서울역에서 1호선을 타고 종로3가역에서 3호선으로 갈아타';
 
+const SEOUL_YONGSAN_LINE3_HUB_RE =
+  /(?:서울역이나\s*용산역|서울역\s*(?:이나|또는)\s*용산역)(?:으로|로)\s*이동하고,?\s*거기서\s*3\s*호선/g;
+
+const SEOUL_VIA_LINE1_TO_3_RE =
+  /서울역을\s*경유할\s*경우\s*1\s*호선에서\s*3\s*호선으로\s*환승하여/g;
+
+const PALACE_LINE3_BROAD_TRANSIT_FIX =
+  '서울역(또는 용산역)에서 1호선을 타고 종로3가역에서 3호선으로 갈아타';
+
 const PALACE_LINE3_MANGLED_FRAGMENT_RE = /가까워요에서/;
 
 function palaceAccessTextAlreadyNamesPalaceStations(text) {
   return /안국역|경복궁역/.test(String(text || ''));
 }
 
-function palaceAccessSentenceHasWrongSeoulStationLine3Fragment(sentence) {
-  return SEOUL_STATION_LINE3_WRONG_FRAG_RE.test(String(sentence || ''));
+function palaceAccessSentenceAlreadyHasJongno3gaTransfer(sentence) {
+  return /종로\s*3\s*가|종로3가역에서\s*3\s*호선으로\s*갈아타/.test(String(sentence || ''));
+}
+
+function palaceAccessSentenceIsKtxThenYongsanLine3(sentence) {
+  const t = String(sentence || '');
+  return /서울역에서\s*(?:KTX|SRT|ITX|무궁화)/.test(t)
+    && /용산역/.test(t)
+    && /3\s*호선/.test(t);
+}
+
+function palaceAccessSentenceNeedsLine3Correction(sentence) {
+  const t = String(sentence || '');
+  if (!/3\s*호선/.test(t)) return false;
+  if (!/(?:서울역|용산역)/.test(t)) return false;
+  if (palaceAccessSentenceAlreadyHasJongno3gaTransfer(t)) return false;
+  if (palaceAccessSentenceIsKtxThenYongsanLine3(t)) return false;
+  if (SEOUL_STATION_LINE3_WRONG_FRAG_RE.test(t)) return true;
+  if (SEOUL_YONGSAN_LINE3_HUB_RE.test(t)) return true;
+  if (SEOUL_VIA_LINE1_TO_3_RE.test(t)) return true;
+  const hubIdx = Math.min(
+    t.includes('서울역') ? t.indexOf('서울역') : Number.POSITIVE_INFINITY,
+    t.includes('용산역') ? t.indexOf('용산역') : Number.POSITIVE_INFINITY,
+  );
+  const line3Idx = t.search(/3\s*호선/);
+  return hubIdx < Number.POSITIVE_INFINITY && line3Idx > hubIdx;
 }
 
 function minimalFixPalaceSeoulLine3Sentence(sentence) {
   let s = String(sentence || '');
-  if (!palaceAccessSentenceHasWrongSeoulStationLine3Fragment(s)) return s;
-  return s
-    .replace(SEOUL_STATION_LINE3_WRONG_FRAG_RE, SEOUL_STATION_LINE3_TRANSIT_FIX)
-    .replace(/서울역에서\s*지하철\s*3\s*호선/g, SEOUL_STATION_LINE3_TRANSIT_FIX);
+  if (!palaceAccessSentenceNeedsLine3Correction(s)) return s;
+  if (SEOUL_STATION_LINE3_WRONG_FRAG_RE.test(s)) {
+    s = s.replace(SEOUL_STATION_LINE3_WRONG_FRAG_RE, SEOUL_STATION_LINE3_TRANSIT_FIX);
+  }
+  if (SEOUL_YONGSAN_LINE3_HUB_RE.test(s)) {
+    s = s.replace(SEOUL_YONGSAN_LINE3_HUB_RE, PALACE_LINE3_BROAD_TRANSIT_FIX);
+  }
+  if (SEOUL_VIA_LINE1_TO_3_RE.test(s)) {
+    s = s.replace(SEOUL_VIA_LINE1_TO_3_RE, PALACE_LINE3_BROAD_TRANSIT_FIX);
+  }
+  if (!palaceAccessSentenceAlreadyHasJongno3gaTransfer(s) && palaceAccessSentenceNeedsLine3Correction(s)) {
+    s = s.replace(
+      /(?:서울역|용산역)(?:이나\s*용산역|을\s*경유할\s*경우)?[^.!?。]{0,120}?(?=3\s*호선)/,
+      `${PALACE_LINE3_BROAD_TRANSIT_FIX} `,
+    );
+  }
+  return s.replace(/[ \t]{2,}/g, ' ').trim();
 }
 
 function fixPalaceAccessMangledLine3Fragment(sentence, fullText = '') {
@@ -2726,6 +2772,10 @@ export function stripNonTransportAccessContent(text, options = {}) {
     }
     if (ACCESS_NEARBY_LIST_RE.test(s)) return true;
     if (ACCESS_FESTIVAL_INTRO_RE.test(s)) return true;
+    if (/^\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?\s*(?:이에요|예요|이예요|에요)[.。]?$/.test(s)) {
+      return false;
+    }
+    if (title && s.includes(title) && /\d{1,2}\/\d{1,2}/.test(s)) return false;
     if (title && s.includes(title)) return true;
     return false;
   });
@@ -2847,7 +2897,12 @@ function ensureFestivalAccessPeriodLine(text, options = {}) {
   let body = stripDuplicateAccessPeriodLines(String(text || '').trim(), short);
   if (festivalAccessDatesAlreadyInText(accessPeriodMainBody(body), short)) return body;
   const en = String(options.locale || 'ko').slice(0, 2) === 'en';
-  const line = en ? `The festival runs ${short}.` : `행사 기간은 ${short}이에요.`;
+  const { stem, particle } = festivalSubjectCopula(options.festivalTitle);
+  const line = en
+    ? `The festival runs ${short}.`
+    : (stem && stem !== '축제')
+      ? `${stem}${particle} ${short}이에요.`
+      : `행사 기간은 ${short}이에요.`;
   const footerRe = /\n\n(?:열차·버스 시각은|Check train and bus schedules)/;
   const footerIdx = body.search(footerRe);
   if (footerIdx > 0) {
@@ -2868,9 +2923,10 @@ function festivalSubjectCopula(title) {
   return { stem: name, particle };
 }
 
-/** Sights answers should not open with a bare «10/15~18이에요.» */
+/** Sights/access answers should not open with a bare «10/15~18이에요.» */
 function rewriteLeadingBareFestivalPeriod(text, options = {}) {
-  if (!isFestivalSightsAsk(options)) return String(text || '');
+  const allow = isFestivalSightsAsk(options) || isBoundFestivalAccessPolish(options);
+  if (!allow) return String(text || '');
   let s = String(text || '').trim();
   const m = s.match(/^(\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?)\s*(?:이에요|예요|이예요|에요)[.。]?\s*/);
   if (!m) return String(text || '');
@@ -3057,6 +3113,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = stripMooniGuideFiller(text);
   }
   if (isBoundFestivalAccessPolish(options)) {
+    text = rewriteLeadingBareFestivalPeriod(text, options);
     text = stripNonTransportAccessContent(text, options);
     text = rewriteImpossibleSeoulStationLine3Access(text, options);
     text = stripGangneungAccessItxMentions(text, options);
@@ -3090,6 +3147,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = appendFestivalAccessBookingLinks(text, options.locale);
     text = dedupeFestivalAccessBookingFooters(text, options.locale);
     text = stripDuplicateAccessPeriodLines(text, periodShort);
+    text = rewriteLeadingBareFestivalPeriod(text, options);
     text = stripGangneungAccessItxMentions(text, options);
   }
   text = stripMooniUiChipLabels(text);

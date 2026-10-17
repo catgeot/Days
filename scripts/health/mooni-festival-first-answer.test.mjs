@@ -3233,8 +3233,8 @@ test('festival access polish path adds 행사 기간 from real mooni context', (
     const polished = polishFestivalModelReply('대중교통으로 갈 수 있어요.', polishOpts);
     assert.match(
       polished,
-      /행사 기간은 \d{1,2}\/\d{1,2}/,
-      `행사 기간 line missing for ${ctx.contentId}: ${polished}`,
+      /(?:행사 기간은|\S+(?:은|는)) \d{1,2}\/\d{1,2}/,
+      `festival period line missing for ${ctx.contentId}: ${polished}`,
     );
   }
 });

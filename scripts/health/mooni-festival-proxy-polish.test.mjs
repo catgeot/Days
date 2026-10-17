@@ -318,6 +318,36 @@ test('access polish rewrites impossible Seoul Station Line 3 to palace', () => {
   assert.match(out, /경복궁역까지/);
 });
 
+test('palace access rewrites 서울역·용산역 hub then line 3 without 종로3가', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw = '서울역이나 용산역으로 이동하고, 거기서 3호선 안국역 또는 경복궁역으로 환승하면 편해요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /종로3가역에서\s*3호선으로\s*갈아타/);
+  assert.match(out, /안국역\s*또는\s*경복궁역으로\s*환승/);
+});
+
+test('palace access rewrites 서울역 경유 1호선→3호선 without 종로3가', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw = '서울역을 경유할 경우 1호선에서 3호선으로 환승하여 안국역에 도착할 수 있어요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /종로3가역에서\s*3호선으로\s*갈아타/);
+  assert.match(out, /안국역에\s*도착/);
+});
+
 test('palace access keeps KTX route when only later leg uses line 3', () => {
   const polish = parseFestivalPolishParams({
     chipId: 'festival_access',
@@ -378,6 +408,23 @@ test('gangneung access strips ITX mentions', () => {
   assert.doesNotMatch(out, /ITX/);
   assert.match(out, /KTX/);
   assert.match(out, /강릉역/);
+});
+
+test('gangneung access prefixes festival name when answer opens with bare dates', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '서울에서 가는 법',
+    contentId: '2930716',
+    festivalTitle: '강릉 국수 축제',
+    eventStartDate: '20261015',
+    eventEndDate: '20261018',
+    departureOriginId: 'seoul',
+    nearbyRestaurants: [],
+  });
+  const raw = '10/15~18이에요. 서울역에서 KTX로 강릉역까지 가요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /^강릉 국수 축제(?:은|는)\s*10\/15~18/);
 });
 
 test('gangneung ITX strip preserves paragraph breaks', () => {
