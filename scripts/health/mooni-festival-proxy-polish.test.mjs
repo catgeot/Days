@@ -116,7 +116,29 @@ test('food fallback uses natural 이/가 있어요', () => {
   });
   const out = polishMooniFestivalProxyText('맛집을 찾아보세요.', polish);
   assert.match(out, /가까운 곳으로는.*만동제과.*[가이] .*있어요/);
+  assert.match(out, /돈까스|돈가스/);
+  assert.match(out, /도 있어요/);
   assert.doesNotMatch(out, /\]예요/);
+  assert.doesNotMatch(out, /있어요,\s*돈가스인/);
+});
+
+test('access polish keeps one timetable pointer when body already mentions korail times', () => {
+  const raw = [
+    '부산에서 KTX로 오면 편해요.',
+    '열차 시간과 요금은 [코레일](https://www.letskorail.com/)에서 확인할 수 있어요.',
+  ].join(' ');
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '2855626',
+    eventStartDate: '20261010',
+    eventEndDate: '20261019',
+    nearbyRestaurants: [],
+  });
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /열차\s*시간과\s*요금/);
+  assert.doesNotMatch(out, /열차·버스\s*시각은/);
 });
 
 test('sights polish gives festival subject to leading date sentence', () => {

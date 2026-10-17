@@ -382,8 +382,48 @@ function bodyMentionsFestivalBookingServices(text) {
   return rail && bus;
 }
 
+function accessAnswerMainBeforeFooter(body, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const splitRe = en ? /\n\nCheck train and bus schedules on\b/i : /\n\n열차·버스 시각은\b/;
+  const text = String(body || '');
+  const idx = text.search(splitRe);
+  return idx >= 0 ? text.slice(0, idx).trim() : text.trim();
+}
+
+function bodyHasAccessTimetablePointer(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const main = accessAnswerMainBeforeFooter(text, locale);
+  const domains = festivalAccessBookingDomainsInText(main);
+  const busSites = (domains.has('bustago') ? 1 : 0)
+    + (domains.has('kobus') ? 1 : 0)
+    + (domains.has('txbus') ? 1 : 0);
+  if (en) {
+    return /check train and bus schedules on/i.test(main)
+      || (/train (?:times|schedules)|bus schedules/i.test(main) && domains.size >= 2);
+  }
+  if (/열차\s*시간과\s*요금/.test(main) && (domains.has('korail') || /\[코레일\]/.test(main))) {
+    return true;
+  }
+  if (/열차·버스\s*시각/.test(main) && domains.has('korail') && busSites >= 1) return true;
+  if (/열차·버스\s*시각/.test(main) && busSites >= 2) return true;
+  return false;
+}
+
+/** One timetable pointer — drop the auto footer when the route body already points to booking sites. */
+export function reconcileAccessBookingPointers(text, locale = 'ko') {
+  let body = dedupeFestivalAccessBookingFooters(String(text || '').trim(), locale);
+  const main = accessAnswerMainBeforeFooter(body, locale);
+  if (!bodyHasAccessTimetablePointer(main, locale)) return body;
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const footerRe = en
+    ? /\n\nCheck train and bus schedules on[\s\S]*$/i
+    : /\n\n열차·버스 시각은[\s\S]*$/;
+  return footerRe.test(body) ? main : body;
+}
+
 function shouldSkipFestivalAccessBookingFooterAppend(body) {
   if (hasFestivalAccessBookingFooterParagraph(body)) return true;
+  if (bodyHasAccessTimetablePointer(body)) return true;
   if (bodyMentionsFestivalBookingServices(body)) return true;
   const domains = festivalAccessBookingDomainsInText(body);
   if (!domains.has('korail')) return false;
@@ -410,7 +450,7 @@ function isAllowedFestivalBareUrl(url) {
 
 /** Client footer for festival_access — booking links the model may omit. */
 export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
-  const body = dedupeFestivalAccessBookingFooters(String(text || '').trim(), locale);
+  const body = reconcileAccessBookingPointers(String(text || '').trim(), locale);
   if (shouldSkipFestivalAccessBookingFooterAppend(body)) return body;
   const en = String(locale || '').slice(0, 2) === 'en';
   const domains = festivalAccessBookingDomainsInText(body);
@@ -439,7 +479,7 @@ export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
   const footer = en
     ? `\n\nCheck train and bus schedules on ${links.join(', ')}.`
     : `\n\n열차·버스 시각은 ${links.join(', ')}에서 편하게 확인할 수 있어요.`;
-  return body ? `${body}${footer}` : footer.trim();
+  return reconcileAccessBookingPointers(body ? `${body}${footer}` : footer.trim(), locale);
 }
 
 const FESTIVAL_ACCESS_STEP_LEAD_RE =
@@ -2055,6 +2095,50 @@ function koFoodRestSentence(row) {
   return `${link}${topic} 있어요`;
 }
 
+function koFoodTypePhrase(type) {
+  const label = String(type || '').trim();
+  if (!label) return '';
+  if (label === '돈가스') return '돈가스집 ';
+  if (label === '제과') return '제과점 ';
+  if (label === '카페') return '카페 ';
+  if (label.endsWith('식')) return `${label} `;
+  return `${label} `;
+}
+
+function buildKoWarmFoodShopParagraph(entries, sparse) {
+  const pick = entries.slice(0, 4);
+  if (!pick.length) return '';
+  if (pick.length === 1) {
+    return sparse ? `${koFoodRestSentence(pick[0])}.` : koFoodLeadSentence(pick[0]);
+  }
+  if (sparse) {
+    const [first, ...rest] = pick;
+    const head = koFoodRestSentence(first);
+    const tail = rest.map((row, idx) => {
+      const link = foodLink(row);
+      const prefix = koFoodTypePhrase(row.type);
+      const dist = row.distance ? ` ${row.distance}` : '';
+      if (idx === rest.length - 1) return `${prefix}${link}${dist}도 있어요`;
+      return `${prefix}${link}${dist}`.trim();
+    });
+    return `${head}, ${tail.join(', ')}.`;
+  }
+  const [first, ...rest] = pick;
+  const link0 = foodLink(first);
+  const subj0 = foodNameBatchim(first.name) ? '이' : '가';
+  const lead = first.type && first.distance
+    ? `가까운 곳으로는 ${first.type}인 ${link0}${subj0} ${first.distance} 거리에 있어요`
+    : `가까운 곳으로는 ${link0}${subj0} 있어요`;
+  const tail = rest.map((row, idx) => {
+    const link = foodLink(row);
+    const prefix = koFoodTypePhrase(row.type);
+    if (idx === rest.length - 1) return `${prefix}${link}도 있어요`;
+    if (row.distance) return `${prefix}${link}(${row.distance})`;
+    return `${prefix}${link}`.trim();
+  });
+  return `${lead}. ${tail.join(', ')}.`;
+}
+
 function warmFestivalFoodAnswer(entries, locale = 'ko', contentId = '') {
   const en = foodAnswerLocale(locale) === 'en';
   const sparse = foodSparse(entries);
@@ -2073,11 +2157,7 @@ function warmFestivalFoodAnswer(entries, locale = 'ko', contentId = '') {
       : '';
     return [intro, shops, more].filter(Boolean).join(' ');
   }
-  const shopLine = entries.length
-    ? (sparse
-      ? `${entries.map((row) => koFoodRestSentence(row)).join(', ')}.`
-      : `${koFoodLeadSentence(entries[0])}${entries.length > 1 ? ` ${entries.slice(1).map((row) => koFoodRestSentence(row)).join(', ')}.` : ''}`)
-    : '';
+  const shopLine = entries.length ? buildKoWarmFoodShopParagraph(entries, sparse) : '';
   const intro = sparse ? '걸어서 갈 만한 맛집은 많지 않아요.' : '';
   const more = sparse && entries.length < 3 && page
     ? `더 많은 먹을거리는 [축제 페이지](${page})에서 볼 수 있어요.`
@@ -2518,6 +2598,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = ensureFestivalAccessStepLineBreaks(text);
     text = ensureFestivalAccessPeriodLine(text, options);
     text = appendFestivalAccessBookingLinks(text, options.locale);
+    text = reconcileAccessBookingPointers(text, options.locale);
     text = dedupeFestivalAccessBookingFooters(text, options.locale);
     const periodShort = briefFestivalDate(
       normalizeEventYmdForPolish(options.eventStartDate),

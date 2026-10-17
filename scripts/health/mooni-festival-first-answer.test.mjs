@@ -2130,9 +2130,9 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
   assert.match(tagged, /제과인 \[만동제과\]/);
   assert.match(tagged, /도보 1분/);
   assert.match(tagged, /이쉐프의돈까스/);
-  assert.match(tagged, /돈가스, 도보 3분/);
+  assert.match(tagged, /돈가스집 \[이쉐프의돈까스\]/);
   assert.match(tagged, /100년임당방앗간/);
-  assert.match(tagged, /방앗간, 도보 4분/);
+  assert.match(tagged, /방앗간 \[100년임당방앗간\]/);
   assert.match(tagged, /월화엔/);
   assert.match(tagged, /도보 3분/);
   assert.doesNotMatch(tagged, /배니닭강정|다양한 맛집|미식|소문난|중앙시장|가는 법/);
