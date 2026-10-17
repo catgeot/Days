@@ -226,7 +226,7 @@ export const KO = {
     "festival_nearby": {
       "title": "축제 근처",
       "rules": [
-        "여행자가 바로 찾아갈 수 있도록, 힌트 주변 맛집(TourAPI) 목록에 있는 실제 가게 이름만 알려 주세요. 목록이 2곳이면 2곳만, 4곳이면 그만큼 소개해 주세요. 목록에 없는 이름은 빼고, 힌트에 있는 가게만 소개해 주세요. 각 가게는 종류·거리·링크를 문장으로 전해 주세요. 걸어서 갈 곳이 적으면 그 점을 먼저 말하고, 차로 몇 분인 목록 가게나 축제 페이지 먹을거리 안내로 이어 주세요. 먹을 곳 답에는 주차·운영 시간 안내는 붙이지 않아요.",
+        "여행자가 바로 찾아갈 수 있도록, 힌트 주변 맛집(TourAPI) 목록에 있는 실제 가게 이름만 알려 주세요. 목록에 적힌 이름·거리·종류·링크만 문장으로 전해 주세요. 힌트에 없는 메뉴·요리 이름이나 «도보 거리» 같은 표현은 넣지 않아요. 목록이 2곳이면 2곳만, 4곳이면 그만큼 소개해 주세요. 걸어서 갈 곳이 적으면 그 점을 먼저 말하고, 차로 몇 분인 목록 가게나 축제 페이지 먹을거리 안내로 이어 주세요. 먹을 곳 답에는 주차·운영 시간 안내는 붙이지 않아요.",
         "생활문화센터·복지관·목욕탕·사우나·터널·주민센터는 맛집·들를 곳 안내가 아니니, 힌트의 근처 관광지 이름만 소개해 주세요.",
         "근처 관광 목록이 비어 있으면 그 점을 한 번만 짧게 말하거나 넘어가 주세요.",
         "글머리표 없이 문장만 이어 주세요. 행사 기간은 반복하지 않아요. GATEO ?festival= 링크와 다음 행동(마크다운 링크 있을 때)만 남기고, 축제 이름은 링크 안과 밖에 두 번 쓰지 않아요."
@@ -520,7 +520,7 @@ export const EN = {
     "festival_nearby": {
       "title": "Food and nearby stops",
       "rules": [
-        "So the traveler can head out right away, name only real restaurants from the nearby (TourAPI) list in the hint—fewer names when the list is shorter. Introduce each with type, distance, and link in natural sentences. When walking options are few, say so first, then mention list shops a few minutes by car or the festival page food notes.",
+        "So the traveler can head out right away, name only real restaurants from the nearby (TourAPI) list in the hint—fewer names when the list is shorter. Describe only names, distances, and types that appear on that list; skip invented menu labels or walking-distance phrases. When walking options are few, say so first, then mention list shops a few minutes by car or the festival page food notes.",
         "A community center, welfare center, bathhouse, sauna, tunnel, or residents' center is not food or a stop—stick to nearby sights named in the hint.",
         "When the nearby sight list is empty, mention that once, briefly, or move on.",
         "Keep to plain sentences. Skip restating festival dates. Include the GATEO ?festival= link and a next action only when it is a markdown link. Use the festival name once—not both inside and outside the link."

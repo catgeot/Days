@@ -1844,7 +1844,7 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   assert.match(KO.festivalAnswerRules, /이름이 3곳이면 첫 답에 3곳/);
   assert.match(EN.festivalAnswerRules, /3 or 4 when the list has that many/);
   assert.match(EN.festivalAnswerRules, /only when it is a markdown link/);
-  assert.match(KO.chips.festival_nearby.rules.join('\n'), /종류·거리·링크/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /이름·거리·종류·링크/);
   assert.match(KO.chips.festival_nearby.rules.join('\n'), /TourAPI/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /공식 홈페이지나 문의처/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이름이 3곳이면 3곳을 말한다/);

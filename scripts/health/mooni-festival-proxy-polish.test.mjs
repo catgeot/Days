@@ -316,6 +316,79 @@ test('access polish rewrites impossible Seoul Station Line 3 to palace', () => {
   assert.match(out, /서울역에는 3호선이 없어요|안국역|경복궁역/);
 });
 
+test('access polish replaces whole mangled palace subway sentence cleanly', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw = '서울역에는 3호선이 없어요. 궁역 인근은 지하철 3호선 안국역·경복궁역이 가까워요에서 내리면 편해요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.doesNotMatch(out, /가까워요에서/);
+  assert.match(out, /안국역이나 경복궁역에서 내리면/);
+});
+
+test('access polish drops footer for 열차 상세 시간과 요금은 [코레일]', () => {
+  const raw = '서울역에서 KTX를 타요. 열차 상세 시간과 요금은 [코레일](https://www.letskorail.com/)에서 확인할 수 있어요.';
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    nearbyRestaurants: [],
+  });
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /열차\s*상세\s*시간과\s*요금은\s*\[코레일\]/);
+  assert.doesNotMatch(out, /열차·버스\s*시각은/);
+});
+
+test('gangneung access strips ITX mentions', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '서울에서 가는 법',
+    contentId: '2930716',
+    departureOriginId: 'seoul',
+    nearbyRestaurants: [],
+  });
+  const raw = '서울역에서 KTX·ITX-이음으로 강릉역까지 가요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.doesNotMatch(out, /ITX/);
+  assert.match(out, /KTX/);
+  assert.match(out, /강릉역/);
+});
+
+test('sights polish dedupes consecutive festival subject sentences', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_sights',
+    locale: 'ko',
+    userText: '볼거리',
+    contentId: '2930716',
+    festivalTitle: '강릉 국수 축제',
+    nearbyPlaces: ['경포해변', '오죽헌'],
+    nearbyRestaurants: [],
+  });
+  const raw = '강릉 국수 축제는 국수 거리가 펼쳐져요. 강릉 국수 축제는 현장 분위기가 즐거워요.';
+  const out = polishMooniFestivalProxyText(raw, polish, {
+    chipId: 'festival_sights',
+    festivalTitle: '강릉 국수 축제',
+  });
+  assert.equal((out.match(/강릉 국수 축제는/g) || []).length, 1);
+});
+
+test('food baseline strips invented 도보 거리 and menu labels', () => {
+  const raw = '만동제과는 도보 거리에 있고 오리 요리도 맛있어요.';
+  const out = polishMooniFestivalProxyText(raw, null, {
+    chipId: 'festival_nearby',
+    locale: 'ko',
+    userText: '맛집',
+  });
+  assert.doesNotMatch(out, /도보\s*거리|오리\s*요리/);
+});
+
 test('sights polish appends nearbyPlaces line when model only describes program', () => {
   const nearby = ['경포해변', '오죽헌', '강릉향교', '중앙시장', '월화거리', '임당생활문화센터'];
   const polish = parseFestivalPolishParams({

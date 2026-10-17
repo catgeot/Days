@@ -403,8 +403,8 @@ function koAccessBookingDomainsInText(text) {
 function koAccessTimetableIntentInText(main) {
   const text = String(main || '');
   const { rail, bus } = koAccessBookingDomainsInText(text);
-  const trainScheduleFare = /열차\s*(?:시각|시간|시간표)(?:과|와)?\s*요금/;
-  const busScheduleFare = /버스\s*(?:시각|시간|시간표)(?:과|와)?\s*요금/;
+  const trainScheduleFare = /(?:열차|기차|KTX)(?:\s+[가-힣]{1,10})*\s*(?:시각|시간|시간표)(?:과|와)?\s*요금/;
+  const busScheduleFare = /버스(?:\s+[가-힣]{1,10})*\s*(?:시각|시간|시간표)(?:과|와)?\s*요금/;
   if (trainScheduleFare.test(text) && rail) return true;
   if (busScheduleFare.test(text) && bus) return true;
   if (/열차·버스\s*시각/.test(text) && rail && bus) return true;
@@ -1459,8 +1459,8 @@ const FESTIVAL_ACCESS_TRANSIT_GROUNDING = {
     en: 'Nearest subway for the palace venues: Line 3 Anguk or Gyeongbokgung. Line 3 does not serve Seoul Station.',
   },
   [GANGNEUNG_FESTIVAL_ID]: {
-    ko: '강릉 국수 축제 권역은 강릉역(KTX·ITX)이 가장 가까운 장거리 역이에요. 서울역·청량리에서 KTX·ITX-이음으로 강릉역까지 오는 편이 있어요.',
-    en: 'Gangneung Station (KTX/ITX) is the main rail stop for this festival. From Seoul Station or Cheongnyangni, KTX or ITX-Saemaul serves Gangneung.',
+    ko: '강릉 국수 축제 권역은 강릉역(KTX)이 가장 가까운 장거리 역이에요. 서울역·청량리에서 KTX(강릉선)로 강릉역까지 가는 편이 있어요.',
+    en: 'Gangneung Station (KTX on the Gangneung line) is the main rail stop. From Seoul Station or Cheongnyangni, KTX serves Gangneung.',
   },
 };
 
@@ -1472,20 +1472,39 @@ function festivalAccessTransitGroundingLine(ctx, locale = 'ko') {
   return en ? row.en : row.ko;
 }
 
-const SEOUL_STATION_LINE3_TO_PALACE_RE =
-  /서울역[^.!?。]{0,48}3\s*호선[^.!?。]{0,48}경복궁역/;
+const SEOUL_STATION_LINE3_BAD_SENTENCE_RE =
+  /[^.!?。\n]*(?:서울역[^.!?。]{0,96}3\s*호선[^.!?。]{0,96}경복궁역|궁역 인근은 지하철 3호선 안국역·경복궁역이 가까워요에서)[^.!?。\n]*[.!?。]?/g;
+
+const SEOUL_STATION_LINE3_CLEAN_SENTENCE =
+  '서울역에는 3호선이 없어요. 지하철 3호선 안국역이나 경복궁역에서 내리면 궁중문화축전 권역에 가까워요.';
 
 function rewriteImpossibleSeoulStationLine3Access(text, options = {}) {
   if (String(options.contentId || '').trim() !== PALACE_FESTIVAL_ID) return String(text || '');
-  if (!SEOUL_STATION_LINE3_TO_PALACE_RE.test(text)) return String(text || '');
-  return String(text || '').replace(
-    SEOUL_STATION_LINE3_TO_PALACE_RE,
-    '서울역에는 3호선이 없어요. 궁역 인근은 지하철 3호선 안국역·경복궁역이 가까워요',
-  ).replace(/\s{2,}/g, ' ').trim();
+  if (!SEOUL_STATION_LINE3_BAD_SENTENCE_RE.test(text)) return String(text || '');
+  return String(text || '')
+    .replace(SEOUL_STATION_LINE3_BAD_SENTENCE_RE, SEOUL_STATION_LINE3_CLEAN_SENTENCE)
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
 const GANGNEUNG_SEOUL_RAIL_KO =
-  '서울역이나 청량리역에서 KTX·ITX-이음으로 강릉역까지 가는 열차가 있어요.';
+  '서울역·청량리에서 KTX로 강릉역까지 가는 열차가 있어요.';
+
+/** 강릉선에는 ITX-이음이 없음 — access 답에서 ITX 표기를 제거·교정한다. */
+export function stripGangneungAccessItxMentions(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (!isFestivalAccessAsk(options) && !isBoundFestivalAccessPolish(options)) return String(text || '');
+  return String(text || '')
+    .replace(/KTX·ITX-이음/g, 'KTX')
+    .replace(/ITX-이음/g, 'KTX-이음')
+    .replace(/KTX·KTX-이음/g, 'KTX·KTX-이음')
+    .replace(/강릉역\s*\(\s*KTX·ITX\s*\)/g, '강릉역(KTX)')
+    .replace(/ITX(?:-새마을)?(?:으로|로)?\s*강릉/g, 'KTX로 강릉')
+    .replace(/\bITX\b/g, 'KTX')
+    .replace(/KTX·KTX/g, 'KTX')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
 
 function ensureGangneungSeoulAccessKtxMention(text, options = {}) {
   if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
@@ -1494,7 +1513,7 @@ function ensureGangneungSeoulAccessKtxMention(text, options = {}) {
   const ask = String(options.userText || '');
   const fromSeoul = origin === 'seoul' || /서울|청량리|수도권/.test(ask);
   if (!fromSeoul) return String(text || '');
-  if (/강릉역|KTX|ITX/.test(text)) return String(text || '');
+  if (/강릉역|KTX/.test(text)) return String(text || '');
   return `${GANGNEUNG_SEOUL_RAIL_KO} ${String(text || '').trim()}`.trim();
 }
 
@@ -2071,14 +2090,51 @@ function nearbyRestaurantsHaveDistance(values) {
 const FOOD_INVENTED_DISTANCE_RE =
   /차로\s*\d+\s*분|도보\s*\d+\s*분|\d+\s*m\b|\d+\s*분\s*거리|(?:^|[\s,，])(?:\d+)-min\s+(?:drive|walk)/i;
 
+const FOOD_UNVERIFIED_WALK_PHRASE_RE =
+  /도보\s*거리|걸어\s*(?:가|갈)\s*(?:기|만한)\s*(?:거리|곳)?|walking\s+distance/gi;
+
+function foodAllowedDetailBlob(entries) {
+  const bits = [];
+  for (const row of entries) {
+    bits.push(row.name, row.type, row.distance);
+  }
+  return bits.filter(Boolean).join(' ');
+}
+
+function foodAllowedDetailBlobFromOptions(options = {}) {
+  const entries = festivalFoodPlaceEntries(options.nearbyRestaurants, foodAnswerLocale(options.locale), 4);
+  const names = (Array.isArray(options.nearbyRestaurants) ? options.nearbyRestaurants : [])
+    .map((raw) => String(raw?.name || raw || '').trim())
+    .filter(Boolean);
+  return `${foodAllowedDetailBlob(entries)} ${names.join(' ')}`;
+}
+
 /** Drop drive/walk times when the restaurant sheet has no distances. */
 export function stripUnverifiedFoodDistanceClaims(text, options = {}) {
   if (!isFestivalFoodAsk(options)) return String(text || '');
   if (nearbyRestaurantsHaveDistance(options.nearbyRestaurants)) return String(text || '');
   return String(text || '')
     .replace(FOOD_INVENTED_DISTANCE_RE, '')
+    .replace(FOOD_UNVERIFIED_WALK_PHRASE_RE, '')
     .replace(/\(\s*[,·]\s*\)/g, '')
     .replace(/,\s*,/g, ',')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\s+([,.!?。])/g, '$1')
+    .trim();
+}
+
+/** Strip invented walk/menu phrasing when not present in the TourAPI list row. */
+export function stripUnverifiedFoodDetailClaims(text, options = {}) {
+  if (!isFestivalFoodAsk(options)) return String(text || '');
+  const blob = foodAllowedDetailBlobFromOptions(options);
+  let s = stripUnverifiedFoodDistanceClaims(text, options);
+  if (!nearbyRestaurantsHaveDistance(options.nearbyRestaurants)) {
+    s = s.replace(FOOD_UNVERIFIED_WALK_PHRASE_RE, '');
+  }
+  s = s.replace(/([가-힣A-Za-z]{2,12})\s*요리/g, (full, dish) => (
+    blob.includes(dish) ? full : ''
+  ));
+  return s
     .replace(/[ \t]{2,}/g, ' ')
     .replace(/\s+([,.!?。])/g, '$1')
     .trim();
@@ -2339,7 +2395,7 @@ function ensureFestivalFoodAnswer(text, options = {}) {
       || FOOD_FILLER_RE.test(part)
       || (/중앙시장/.test(part) && !blob.includes('중앙시장'))
     ));
-    return stripUnverifiedFoodDistanceClaims(next, options);
+    return stripUnverifiedFoodDetailClaims(next, options);
   }
   let next = stripFoodMetaSentences(stripNextActionLabel(text));
   next = filterPreservingBreaks(next, (part) => (
@@ -2349,7 +2405,7 @@ function ensureFestivalFoodAnswer(text, options = {}) {
     || mentionsInventedFood(part, entries)
     || (/중앙시장/.test(part) && !entries.some((row) => row.name.includes('중앙시장')))
   ));
-  next = stripUnverifiedFoodDistanceClaims(next, options);
+  next = stripUnverifiedFoodDetailClaims(next, options);
   if (foodAnswerCoversHint(next, entries) && !replyHasUnknownFoodName(next, entries)) return next;
   return warmFestivalFoodAnswer(entries, locale, options.contentId);
 }
@@ -2449,6 +2505,33 @@ export function ensureFestivalSightsNearbyLine(text, options = {}) {
     ? `Nearby you have ${names.join(', ')}.`
     : formatKoSightsNearbySentence(names);
   return `${String(text || '').trim()} ${line}`.trim();
+}
+
+function sightsSentenceFingerprint(sentence) {
+  const normalized = normalizeAccessPolishSentence(sentence)
+    .replace(/\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?/g, '')
+    .replace(/[.!?。]/g, '')
+    .trim();
+  const festLead = normalized.match(/^(.+?축제는)/);
+  if (festLead) return festLead[1].trim();
+  return normalized.slice(0, 48);
+}
+
+/** Drop back-to-back sentences that repeat the same festival subject line. */
+export function dedupeConsecutiveFestivalSightsSentences(text, options = {}) {
+  if (!isFestivalSightsAsk(options)) return String(text || '').trim();
+  const parts = splitAccessPolishSentences(text);
+  if (parts.length < 2) return String(text || '').trim();
+  const kept = [];
+  for (const sentence of parts) {
+    const key = sightsSentenceFingerprint(sentence);
+    const prevKey = kept.length ? sightsSentenceFingerprint(kept[kept.length - 1]) : '';
+    if (key && prevKey && key === prevKey) continue;
+    if (key && prevKey && key.length > 18 && prevKey.length > 18
+      && (key.includes(prevKey) || prevKey.includes(key))) continue;
+    kept.push(sentence);
+  }
+  return kept.join(' ').replace(/\s{2,}/g, ' ').trim();
 }
 
 function stripUnaskedFoodTransportSentences(text, options = {}) {
@@ -2768,6 +2851,7 @@ export function polishFestivalModelReplyBaseline(reply, options = {}) {
   }
   text = stripFestivalSightsDecorative(text, options);
   text = ensureFestivalSightsNearbyLine(text, options);
+  text = dedupeConsecutiveFestivalSightsSentences(text, options);
   const foodCtx = { chipId, locale, userText: options.userText || '' };
   if (chipId === 'festival_nearby' || isFestivalFoodAsk(foodCtx)) {
     text = stripUnaskedFoodTransportSentences(text, { ...foodCtx, chipId: 'festival_nearby' });
@@ -2785,7 +2869,7 @@ export function polishFestivalModelReplyBaseline(reply, options = {}) {
     text = dedupeFestivalAccessBookingFooters(text, locale);
   }
   if (chipId === 'festival_nearby' || isFestivalFoodAsk(foodCtx)) {
-    text = stripUnverifiedFoodDistanceClaims(text, options);
+    text = stripUnverifiedFoodDetailClaims(text, options);
   }
   text = stripMooniUiChipLabels(text);
   return text;
@@ -2827,6 +2911,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = dropFestivalFillerSentences(text);
   text = stripFestivalSightsDecorative(text, options);
   text = ensureFestivalSightsNearbyLine(text, options);
+  text = dedupeConsecutiveFestivalSightsSentences(text, options);
   text = rewriteLeadingBareFestivalPeriod(text, options);
   if (!isFestivalLodgingAsk(options)) {
     text = collapseDoubledFestivalCloser(text, options.festivalTitle);
@@ -2840,6 +2925,9 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = ensureFestivalParkingAnswer(text, options);
   text = stripUnaskedParkingEcho(text, options);
   text = stripUnaskedFoodTransportSentences(text, options);
+  if (isFestivalFoodAsk(options)) {
+    text = stripUnverifiedFoodDetailClaims(text, options);
+  }
   text = stripPromptEchoSentences(text);
   text = collapseUnconfirmedMentions(text);
   text = cleanOrphanLinkConjunctions(text);
@@ -2849,6 +2937,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   if (isBoundFestivalAccessPolish(options)) {
     text = stripNonTransportAccessContent(text, options);
     text = rewriteImpossibleSeoulStationLine3Access(text, options);
+    text = stripGangneungAccessItxMentions(text, options);
     text = ensureGangneungSeoulAccessKtxMention(text, options);
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
     text = rewriteVagueAccessTransferWithoutNamedStation(text, options);
@@ -2879,6 +2968,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = reconcileAccessBookingPointers(text, options.locale);
     text = dedupeFestivalAccessBookingFooters(text, options.locale);
     text = stripDuplicateAccessPeriodLines(text, periodShort);
+    text = stripGangneungAccessItxMentions(text, options);
   }
   text = stripMooniUiChipLabels(text);
   return text;
