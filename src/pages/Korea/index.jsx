@@ -44,12 +44,11 @@ import {
 } from './festivalTimeFilter';
 import {
   filterFestivalsByYmdRange,
-  formatFestivalRangeLabel,
   loadedFestivalDataEndYmd,
-  replaceMonthTabWithDateChips,
   seoulTodayYmd,
 } from './festivalDateFilter';
 import {
+  festivalHubFlagOnPeriodTabs,
   festivalHubFlagOnRangeYmd,
   festivalHubPeriodMetaLabel,
   festivalHubTimeMajorDisplay,
@@ -1503,20 +1502,13 @@ export default function KoreaFestivalHub() {
   const timeTabs = useMemo(() => {
     const base = localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now));
     if (!dateChipEnabled) return base;
-    const rangeLabel =
-      timeTab === 'date' && customRange?.start
-        ? formatFestivalRangeLabel(customRange.start, customRange.end, seoulToday)
-        : '';
-    const dateChipFallback = t('korea.festival.dateChip');
-    const datePeriodText = rangeLabel || dateChipFallback;
     const monthPhrase = t('korea.festival.window30Short');
-    return replaceMonthTabWithDateChips(base, {
+    return festivalHubFlagOnPeriodTabs(base, {
       window30Label: monthPhrase,
       window30Headline: monthPhrase,
-      dateLabel: datePeriodText,
-      dateHeadline: datePeriodText,
+      dateLabel: t('korea.festival.dateChip'),
     });
-  }, [now, t, dateChipEnabled, seoulToday, customRange, timeTab]);
+  }, [now, t, dateChipEnabled]);
 
   const timedItems = useMemo(
     () => filterItemsByTime(timeTab, itemsWithSocialPromo),
@@ -2871,10 +2863,9 @@ export default function KoreaFestivalHub() {
                       className={chipClass(timeTab === tab.id)}
                       aria-pressed={timeTab === tab.id}
                     >
-                      {tab.id === 'date' ? null : <ChipPanelIcon panel="time" />}
+                      <ChipPanelIcon panel="time" />
                       {tab.label}
-                      {tab.id === 'window30' ||
-                      (tab.id === 'date' && !customRange?.start)
+                      {tab.id === 'window30' || tab.id === 'date'
                         ? null
                         : (
                         <span
@@ -3121,7 +3112,11 @@ export default function KoreaFestivalHub() {
               </div>
               </div>
               <p
-                className="w-full min-w-0 text-[11px] text-stone-500 leading-snug"
+                className={`w-full min-w-0 leading-snug ${
+                  dateChipEnabled && timeTab === 'date'
+                    ? 'text-xs font-medium text-stone-700'
+                    : 'text-[11px] text-stone-500'
+                }`}
                 data-festival-list-meta=""
               >
                 {personalTab != null
@@ -3506,6 +3501,8 @@ export default function KoreaFestivalHub() {
           open={dateSheetOpen}
           todayYmd={seoulToday}
           maxYmd={dataEndYmd}
+          initialStart={timeTab === 'date' ? customRange?.start || '' : ''}
+          initialEnd={timeTab === 'date' ? customRange?.end || '' : ''}
           onApply={applyCustomRange}
           onClose={() => setDateSheetOpen(false)}
         />

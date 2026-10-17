@@ -12,8 +12,11 @@ import {
   formatWindow30UntilMetaLabel,
   replaceMonthTabWithDateChips,
   seoulTodayYmd,
+  festivalDateSheetAdjacentWeekRange,
+  festivalDateSheetWeekIndexFromYmd,
   festivalDateSheetWeekRangeFromYmd,
   festivalDateSheetWeekRangeYmd,
+  mondayFirstColumnYmd,
   mondayYmdOfSeoulWeekContaining,
   upcomingWeekendRangeYmd,
   window30RangeFromYmd,
@@ -189,6 +192,45 @@ test('date sheet week shortcuts — Mon–Sun blocks and Sunday edge', () => {
     startYmd: '20261019',
     endYmd: '20261025',
   });
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(2, '20261017'), {
+    startYmd: '20261026',
+    endYmd: '20261101',
+  });
+});
+
+test('date sheet week step moves Mon–Sun and never before this week', () => {
+  assert.equal(festivalDateSheetWeekIndexFromYmd('20261016', '20261016'), 0);
+  assert.equal(festivalDateSheetWeekIndexFromYmd('20261018', '20261016'), 0);
+  assert.equal(festivalDateSheetWeekIndexFromYmd('20261019', '20261016'), 1);
+  assert.equal(festivalDateSheetWeekIndexFromYmd('20261026', '20261016'), 2);
+  assert.equal(festivalDateSheetWeekIndexFromYmd('20261102', '20261016'), 3);
+  assert.equal(festivalDateSheetWeekIndexFromYmd('20261109', '20261016'), 4);
+
+  assert.deepEqual(festivalDateSheetAdjacentWeekRange('20261026', '20261016', 1), {
+    startYmd: '20261102',
+    endYmd: '20261108',
+  });
+  assert.deepEqual(festivalDateSheetAdjacentWeekRange('20261102', '20261016', 1), {
+    startYmd: '20261109',
+    endYmd: '20261115',
+  });
+  assert.deepEqual(festivalDateSheetAdjacentWeekRange('20261019', '20261016', -1), {
+    startYmd: '20261016',
+    endYmd: '20261018',
+  });
+  assert.deepEqual(festivalDateSheetAdjacentWeekRange('20261016', '20261016', -1), {
+    startYmd: '20261016',
+    endYmd: '20261018',
+  });
+  assert.deepEqual(festivalDateSheetAdjacentWeekRange('20261018', '20261018', 1), {
+    startYmd: '20261019',
+    endYmd: '20261025',
+  });
+
+  assert.equal(mondayFirstColumnYmd('20261012'), 0);
+  assert.equal(mondayFirstColumnYmd('20261001'), 3);
+  assert.equal(mondayFirstColumnYmd('20261018'), 6);
+  assert.equal(mondayFirstColumnYmd('20261101'), 6);
 });
 
 test('weekend window on Sat–Sun is today through Sunday (Seoul)', () => {
