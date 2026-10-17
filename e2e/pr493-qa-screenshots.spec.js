@@ -24,7 +24,7 @@ async function installPr493AccessGeminiMock(context) {
       return;
     }
     const text =
-      '서울역에서 KTX·ITX로 강릉역까지 이동할 수 있습니다. 출발편·시각은 코레일 앱에서 확인하세요.';
+      '서울역에서 KTX로 강릉역까지 이동할 수 있습니다. 출발편·시각은 코레일 앱에서 확인하세요.';
     await route.fulfill({
       status: 200,
       contentType: 'application/json',

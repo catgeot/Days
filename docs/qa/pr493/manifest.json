@@ -7,7 +7,7 @@
     "geminiNote": "Live gemini-proxy on local preview: 403 origin_not_allowed; on www.gateo.kr automated WebKit still showed CONFIG — mock used for stable QA capture.",
     "mooniCaptureBase": "https://127.0.0.1:4173",
     "mooniOrigin": "seoul",
-    "mooniAnswerExcerpt": "서울역에서 KTX·ITX로 강릉역까지 이동할 수 있어요. 출발편·시각은 코레일 앱에서 확인하세요. 행사 기간은 10/19~23이에요. 열차·버스 시각은 코레일, 버스타고, 고속버스, 시외버스에서 편하게 확인할 수 있어요.",
+    "mooniAnswerExcerpt": "서울역에서 KTX로 강릉역까지 이동할 수 있어요. 출발편·시각은 코레일 앱에서 확인하세요. 행사 기간은 10/19~23이에요. 열차·버스 시각은 코레일, 버스타고, 고속버스, 시외버스에서 편하게 확인할 수 있어요.",
     "mooniConfigCause": "MOONi «설정 오류 — 관리자에게 문의» = gemini-proxy CONFIG (HTTP 401 / Invalid JWT) when VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY were empty at vite build. With keys baked in, local https://127.0.0.1:4173 preview still cannot complete MOONi: gemini-proxy returns 403 origin_not_allowed (only www.gateo.kr, gateo.kr, and days-git-*-catgeots-projects.vercel.app). Automated shot 03 uses PR preview + Playwright gemini-proxy mock; humans verify live MOONi on www.gateo.kr or Vercel git preview (allowed Origin)."
   },
   {
@@ -26,7 +26,7 @@
     "heroNaturalWidth": 0,
     "heroComplete": false,
     "underlayVisible": true,
-    "fallbackSlotVisible": true
+    "fallbackSlotVisible": false
   },
   {
     "file": "04-seoul-detail-scroll.png",

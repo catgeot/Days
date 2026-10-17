@@ -2352,20 +2352,35 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {!festivalEnded &&
-              showFestivalStayStrip &&
-              (detailLoading || nearbyPending || stayStripStatus === 'loading') ? (
+              {!festivalEnded && showFestivalStayStrip && stayStripStatus === 'loading' ? (
                 <div
                   className="h-28 rounded-2xl bg-stone-100"
                   data-festival-lodging-reserve=""
                   aria-hidden="true"
                 />
               ) : null}
-              {(detailLoading || nearbyPending) && (
+              {(nearbyFoodStatus === 'loading' ||
+                nearbyLeportsStatus === 'loading' ||
+                nearbyCultureStatus === 'loading') && (
                 <div className="space-y-3" data-festival-below-reserve="" aria-hidden="true">
-                  <div className="h-16 rounded-2xl bg-stone-100" data-festival-food-reserve="" />
-                  <div className="h-16 rounded-2xl bg-stone-100" data-festival-leports-reserve="" />
-                  <div className="h-16 rounded-2xl bg-stone-100" data-festival-culture-reserve="" />
+                  {nearbyFoodStatus === 'loading' ? (
+                    <div
+                      className="h-16 rounded-2xl bg-stone-100"
+                      data-festival-food-reserve=""
+                    />
+                  ) : null}
+                  {nearbyLeportsStatus === 'loading' ? (
+                    <div
+                      className="h-16 rounded-2xl bg-stone-100"
+                      data-festival-leports-reserve=""
+                    />
+                  ) : null}
+                  {nearbyCultureStatus === 'loading' ? (
+                    <div
+                      className="h-16 rounded-2xl bg-stone-100"
+                      data-festival-culture-reserve=""
+                    />
+                  ) : null}
                 </div>
               )}
 

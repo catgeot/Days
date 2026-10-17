@@ -1,4 +1,5 @@
 import { createElement } from 'react';
+import { FestivalDetailPhotoFallback } from './festivalListThumbBox.jsx';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 
 /** Same box before load, after a successful decode, and after a late error. */
@@ -24,7 +25,7 @@ export function FestivalHeroPhoto({ src, onLoaded, onFailed, fallback = null, de
             'data-festival-hero-underlay': '',
             'aria-hidden': 'true',
           },
-          fallback,
+          createElement(FestivalDetailPhotoFallback, { size: 'lg' }),
         )
       : null,
     createElement(FestivalPhotoFrame, {
