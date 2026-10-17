@@ -127,6 +127,34 @@ export function buildFestivalPanelListMetaSegments({
   return segments;
 }
 
+const META_PLACE_SEGMENT_IDS = new Set(['scope', 'sido', 'city', 'place']);
+
+/**
+ * Insert window30 until label after region place segments, before count (e.g. 서울특별시 · 11.14까지 · 43건).
+ * @param {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} segments
+ * @param {string} untilLabel
+ */
+export function insertWindow30MetaPeriodSegment(segments, untilLabel) {
+  const label = String(untilLabel || '').trim();
+  if (!label || !segments?.length) return segments;
+  const list = [...segments];
+  let insertAt = -1;
+  for (let i = 0; i < list.length; i++) {
+    if (META_PLACE_SEGMENT_IDS.has(list[i].id)) insertAt = i;
+  }
+  if (insertAt >= 0) {
+    list.splice(insertAt + 1, 0, { id: 'periodUntil', text: label, nowrap: true });
+    return list;
+  }
+  const countIdx = list.findIndex((seg) => seg.id === 'count');
+  if (countIdx >= 0) {
+    list.splice(countIdx, 0, { id: 'periodUntil', text: label, nowrap: true });
+    return list;
+  }
+  list.unshift({ id: 'periodUntil', text: label, nowrap: true });
+  return list;
+}
+
 /**
  * @param {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} segments
  */
