@@ -1276,6 +1276,14 @@ export function isFestivalFoodAsk(input = {}) {
   return FESTIVAL_FOOD_ASK_RE.test(String(input.userText || ''));
 }
 
+const FESTIVAL_SIGHTS_ASK_RE = /볼\s*거리|분위기|볼\s*수\s*있|what\s+to\s+see|on[- ]site\s+atmosphere/i;
+
+export function isFestivalSightsAsk(input = {}) {
+  if (String(input.chipId || '') === 'festival_sights') return true;
+  if (isFestivalFoodAsk(input)) return false;
+  return FESTIVAL_SIGHTS_ASK_RE.test(String(input.userText || ''));
+}
+
 export function isFestivalAccessAsk(input = {}) {
   if (String(input.chipId || '') === 'festival_access') return true;
   return festivalAccessAskIsRoute(String(input.userText || ''));
@@ -1498,6 +1506,31 @@ function dedupeExactAccessSentences(text) {
     const key = normalizeAccessPolishSentence(sentence);
     if (!key || seen.has(key)) continue;
     seen.add(key);
+    kept.push(sentence);
+  }
+  return kept.join(' ').replace(/\s{2,}/g, ' ').trim();
+}
+
+function accessSentenceMeaningKey(sentence) {
+  return normalizeAccessPolishSentence(sentence)
+    .replace(/[.。!?]/g, '')
+    .replace(/\s+/g, '')
+    .replace(/(합니다|해요|돼요|됩니다|예요|이에요|세요)$/g, '');
+}
+
+/** Drop later sentences that repeat the same route guidance with different wording. */
+function dedupeAccessSentencesByMeaning(text) {
+  const seen = [];
+  const kept = [];
+  for (const sentence of splitAccessPolishSentences(text)) {
+    const key = accessSentenceMeaningKey(sentence);
+    if (!key) continue;
+    const duplicate = seen.some((prior) => (
+      prior === key
+      || (prior.length > 28 && key.length > 28 && (prior.includes(key) || key.includes(prior)))
+    ));
+    if (duplicate) continue;
+    seen.push(key);
     kept.push(sentence);
   }
   return kept.join(' ').replace(/\s{2,}/g, ' ').trim();
@@ -2117,8 +2150,23 @@ function softenNightHour(text) {
 }
 
 const FESTIVAL_FILLER_SENTENCE_RE = /다양한 숙소가 자리|숙소가\s*자리하고|매력을 느끼며|인근으로[\s\S]{0,40}숙소를\s*찾을\s*수\s*있|특별한 순간을 경험해|The atmosphere is majestic|a variety of stays|feel the charm|find stays in the .* area/i;
+const FESTIVAL_SIGHTS_DECORATIVE_RE =
+  /함께\s*즐겨\s*보세요|즐겨\s*보세요\.?$|느껴\s*보세요|만끽해\s*보세요|특별한\s*추억|정취를\s*느끼|계절의\s*정취|현장의\s*활기를\s*만끽|분위기를\s*만들어\s*보세요|enjoy the atmosphere together/i;
+const FOOD_UNASKED_TRANSPORT_RE =
+  /주차|parking|셔틀|공영\s*주차|주차장\s*이용|자가용으로\s*이용|차량\s*이용\s*시|drive\s+and\s+park/i;
 const MOONI_GUIDE_FILLER_RE =
   /안내해\s*드릴게요|안내해\s*드리겠습니다|안내할게요|알려\s*드릴게요|알려드릴게요|도와\s*드릴게요/;
+
+function stripFestivalSightsDecorative(text, options = {}) {
+  if (!isFestivalSightsAsk(options)) return String(text || '');
+  return filterPreservingBreaks(text, (part) => FESTIVAL_SIGHTS_DECORATIVE_RE.test(part));
+}
+
+function stripUnaskedFoodTransportSentences(text, options = {}) {
+  if (!isFestivalFoodAsk(options)) return String(text || '');
+  if (/주차|parking/i.test(String(options.userText || ''))) return String(text || '');
+  return filterPreservingBreaks(text, (part) => FOOD_UNASKED_TRANSPORT_RE.test(part));
+}
 
 function stripMooniGuideFiller(text) {
   return filterPreservingBreaks(text, (part) => MOONI_GUIDE_FILLER_RE.test(part));
@@ -2283,6 +2331,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   text = softenNightHour(text);
   text = dropFestivalFillerSentences(text);
+  text = stripFestivalSightsDecorative(text, options);
   if (!isFestivalLodgingAsk(options)) {
     text = collapseDoubledFestivalCloser(text, options.festivalTitle);
   }
@@ -2294,6 +2343,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = dedupeFestivalPageLinks(redirectMissingPracticalCheck(text, options));
   text = ensureFestivalParkingAnswer(text, options);
   text = stripUnaskedParkingEcho(text, options);
+  text = stripUnaskedFoodTransportSentences(text, options);
   text = stripPromptEchoSentences(text);
   text = collapseUnconfirmedMentions(text);
   text = cleanOrphanLinkConjunctions(text);
@@ -2313,6 +2363,8 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteGangneungDaeguAccessNamedRail(text, options);
     text = dedupeGukhyangDaeguAccessBusRouteRepeat(text, options);
     text = dedupeGangneungDaeguAccessBusRouteRepeat(text, options);
+    text = dedupeFestivalAccessBookingFooters(text, options.locale);
+    text = dedupeAccessSentencesByMeaning(dedupeExactAccessSentences(text));
     text = ensureGukhyangFestivalTelPeriod(text, options);
     text = rewriteFestivalAccessTimetableWindowPhrase(text);
     text = glueAccessNumbersInProse(text);
