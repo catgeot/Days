@@ -551,8 +551,7 @@ const PlaceCardSummary = ({
                   >
                     <Cuboid size={16} className="shrink-0 text-violet-200" strokeWidth={2.25} aria-hidden="true" />
                     <span className="min-w-0 truncate text-xs font-bold text-violet-50">
-                      <span className="tracking-tight text-violet-100">3D</span>
-                      <span className="text-violet-50/90"> {t('place.summary.tour3dLabel')}</span>
+                      {t('place.summary.tour3dLabel')}
                     </span>
                   </button>
                 )}

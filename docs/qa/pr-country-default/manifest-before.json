@@ -1,0 +1,66 @@
+[
+  {
+    "file": "romblon-search-before-webkit-390.png",
+    "slug": "romblon",
+    "phase": "before",
+    "surface": "explore search popover 390",
+    "query": "롬블론",
+    "baseUrl": "https://www.gateo.kr/"
+  },
+  {
+    "file": "romblon-card-before-webkit-390.png",
+    "slug": "romblon",
+    "phase": "before",
+    "surface": "home place summary card 390",
+    "query": "롬블론",
+    "baseUrl": "https://www.gateo.kr/"
+  },
+  {
+    "file": "pamir-search-before-webkit-390.png",
+    "slug": "pamir",
+    "phase": "before",
+    "surface": "explore search popover 390",
+    "query": "파미르 고원",
+    "baseUrl": "https://www.gateo.kr/"
+  },
+  {
+    "file": "pamir-card-before-webkit-390.png",
+    "slug": "pamir",
+    "phase": "before",
+    "surface": "home place summary card 390",
+    "query": "파미르 고원",
+    "baseUrl": "https://www.gateo.kr/"
+  },
+  {
+    "file": "sao-tome-and-principe-search-before-webkit-390.png",
+    "slug": "sao-tome-and-principe",
+    "phase": "before",
+    "surface": "explore search popover 390",
+    "query": "상투메 프린시페",
+    "baseUrl": "https://www.gateo.kr/"
+  },
+  {
+    "file": "sao-tome-and-principe-card-before-webkit-390.png",
+    "slug": "sao-tome-and-principe",
+    "phase": "before",
+    "surface": "home place summary card 390",
+    "query": "상투메 프린시페",
+    "baseUrl": "https://www.gateo.kr/"
+  },
+  {
+    "file": "tinian-search-before-webkit-390.png",
+    "slug": "tinian",
+    "phase": "before",
+    "surface": "explore search popover 390",
+    "query": "티니안",
+    "baseUrl": "https://www.gateo.kr/"
+  },
+  {
+    "file": "tinian-card-before-webkit-390.png",
+    "slug": "tinian",
+    "phase": "before",
+    "surface": "home place summary card 390",
+    "query": "티니안",
+    "baseUrl": "https://www.gateo.kr/"
+  }
+]

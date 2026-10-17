@@ -12,6 +12,7 @@ import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import { resetIosZoomAfterInput } from '../../../shared/lib/mobileViewport';
 import TripLinkModal from '../modals/TripLinkModal';
 import { getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
+import { isPlaceholderCountry } from '../../../utils/travelSpotResolve.js';
 import {
   getLocalizedPlaceDesc,
   getLocalizedPlaceKeywords,
@@ -156,7 +157,10 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         summary: localizedDesc || t('place.fallback.reviewEmpty'),
         tags: [
             t('place.fallback.travelTag'),
-            getLocalizedCountryName(location, locale) || t('place.fallback.unknownCountry'),
+            ...(() => {
+              const countryTag = getLocalizedCountryName(location, locale);
+              return countryTag && !isPlaceholderCountry(countryTag) ? [countryTag] : [];
+            })(),
             ...getLocalizedPlaceKeywords(location, locale),
         ],
         koreanGuideNotice: locale === 'en' && isPlaceDescKoreanOnly(location),
