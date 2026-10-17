@@ -45,6 +45,7 @@ export function festivalPhotoWrapClassName(imgClassName = '') {
  *   style?: import('react').CSSProperties,
  *   onLoaded?: () => void,
  *   onFailed?: () => void,
+ *   pendingShimmer?: boolean,
  * }} props
  */
 export function FestivalPhotoFrame({
@@ -62,6 +63,7 @@ export function FestivalPhotoFrame({
   style,
   onLoaded,
   onFailed,
+  pendingShimmer = false,
 }) {
   const [timedOut, setTimedOut] = useState(false);
   const [broken, setBroken] = useState(false);
@@ -150,6 +152,7 @@ export function FestivalPhotoFrame({
   if (!src) return fallback;
 
   const showFallback = !loaded && (timedOut || broken);
+  const showPending = Boolean(pendingShimmer) && !loaded && !showFallback;
 
   return createElement(
     'span',
@@ -164,7 +167,7 @@ export function FestivalPhotoFrame({
       },
       src,
       alt,
-      className: `${className}${showFallback ? ' opacity-0' : ''}`.trim(),
+      className: `${className}${showFallback || showPending ? ' opacity-0' : ''}`.trim(),
       loading,
       decoding,
       draggable,
@@ -188,6 +191,24 @@ export function FestivalPhotoFrame({
         markBroken(event?.currentTarget);
       },
     }),
+    showPending
+      ? createElement(
+          'span',
+          {
+            className: 'pointer-events-none absolute inset-0 overflow-hidden',
+            'data-festival-photo-pending': '',
+            'aria-hidden': 'true',
+          },
+          createElement('span', {
+            className:
+              'absolute inset-[-12%] bg-gradient-to-br from-amber-50 via-stone-200/80 to-orange-100 blur-md',
+          }),
+          createElement('span', {
+            className:
+              'absolute inset-0 animate-pulse bg-gradient-to-r from-white/0 via-white/80 to-white/0',
+          }),
+        )
+      : null,
     showFallback
       ? createElement(
           'span',

@@ -225,6 +225,50 @@ test('late load after timeout restores the photo', async () => {
   }
 });
 
+test('pending shimmer covers the thumb until decode, then the timeout fallback replaces it', async () => {
+  const originalSetTimeout = globalThis.setTimeout;
+  const timers = [];
+  globalThis.setTimeout = (fn, ms) => {
+    const id = originalSetTimeout(fn, ms);
+    timers.push({ ms, fn });
+    return id;
+  };
+  try {
+    await mount({
+      src: 'https://example.test/slow-thumb.jpg',
+      alt: '',
+      className: 'h-full w-full object-cover',
+      pendingShimmer: true,
+      fallback: React.createElement('div', { 'data-festival-photo-fallback': '' }),
+    });
+    const pending = container.querySelector('[data-festival-photo-pending]');
+    assert.ok(pending, 'shimmer shows before the image decodes');
+    assert.match(pending.innerHTML, /blur-md/);
+    const img = container.querySelector('img[data-festival-photo]');
+    assert.match(img.className, /opacity-0/);
+    assert.equal(container.querySelector('[data-festival-photo-fallback]'), null);
+
+    const timeoutTimer = timers.find((t) => t.ms === FESTIVAL_PHOTO_LOAD_TIMEOUT_MS);
+    assert.ok(timeoutTimer);
+    await act(async () => {
+      timeoutTimer.fn();
+    });
+    assert.equal(container.querySelector('[data-festival-photo-pending]'), null);
+    assert.ok(container.querySelector('[data-festival-photo-fallback]'));
+
+    Object.defineProperty(img, 'complete', { value: true, configurable: true });
+    Object.defineProperty(img, 'naturalWidth', { value: 80, configurable: true });
+    await act(async () => {
+      img.dispatchEvent(new window.Event('load'));
+    });
+    assert.equal(container.querySelector('[data-festival-photo-pending]'), null);
+    assert.equal(container.querySelector('[data-festival-photo-fallback]'), null);
+    assert.doesNotMatch(img.className, /opacity-0/);
+  } finally {
+    globalThis.setTimeout = originalSetTimeout;
+  }
+});
+
 test('broken festival photo hides the image and shows the empty slot', async () => {
   await mount({
     src: 'https://example.test/broken.jpg',

@@ -130,6 +130,27 @@ export function buildFestivalPanelListMetaSegments({
 const META_PLACE_SEGMENT_IDS = new Set(['scope', 'sido', 'city', 'place']);
 
 /**
+ * Drop leading place segments when they repeat the list heading
+ * (`전국` heading + `전국 · ~11.15 …`, or `강원도 강릉` + `강원도 · 강릉 · …`).
+ * A heading that only shares a prefix stays intact.
+ * @param {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} segments
+ * @param {string} heading
+ */
+export function omitFestivalMetaRegionDuplicatingHeading(segments, heading) {
+  const title = String(heading || '').replace(/\s+/g, ' ').trim();
+  if (!title || !segments?.length) return segments;
+  let taken = '';
+  for (let i = 0; i < segments.length; i += 1) {
+    if (!META_PLACE_SEGMENT_IDS.has(segments[i].id)) break;
+    const text = String(segments[i].text || '').replace(/\s+/g, ' ').trim();
+    if (!text) break;
+    taken = taken ? `${taken} ${text}` : text;
+    if (taken === title) return segments.slice(i + 1);
+  }
+  return segments;
+}
+
+/**
  * Insert window30 until label after region place segments, before count (e.g. 서울특별시 · 11.14까지 · 43건).
  * @param {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} segments
  * @param {string} untilLabel

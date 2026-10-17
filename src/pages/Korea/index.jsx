@@ -44,14 +44,17 @@ import {
 } from './festivalTimeFilter';
 import {
   filterFestivalsByYmdRange,
-  formatFestivalMonthDay,
   formatFestivalRangeLabel,
   loadedFestivalDataEndYmd,
-  formatWindow30UntilMetaLabel,
   replaceMonthTabWithDateChips,
   seoulTodayYmd,
-  window30RangeYmd,
 } from './festivalDateFilter';
+import {
+  festivalHubFlagOnRangeYmd,
+  festivalHubPeriodMetaLabel,
+  festivalHubTimeMajorDisplay,
+  festivalHubTimeMajorLabel,
+} from './festivalHubDefaultPeriod.js';
 import FestivalDateSheet from './FestivalDateSheet';
 import { isGateoFestivalDateChipEnabled } from '../../shared/gateoFeatureFlags';
 import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
@@ -67,6 +70,7 @@ import {
 import {
   buildFestivalPanelListMetaSegments,
   insertWindow30MetaPeriodSegment,
+  omitFestivalMetaRegionDuplicatingHeading,
 } from './festivalPanelListMeta.js';
 import { isNationwideRegionFilter } from './socialPromoFestivalsLogic.js';
 import {
@@ -165,12 +169,12 @@ import {
 import { useFestivalLocationBoot } from './useFestivalLocationBoot.js';
 import {
   buildFestivalIndexHeadlineContent,
+  festivalHubRegionHeading,
   festivalIndexTimePhrase,
-  formatCompactPeriodHeadline,
 } from './festivalIndexHeadline.js';
 
 /**
- * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction, locale?: string }} p
+ * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction, locale?: string, regionOnly?: boolean }} p
  */
 function buildIndexListHeadline({
   timeTab,
@@ -180,11 +184,9 @@ function buildIndexListHeadline({
   timeTabs,
   t,
   locale = 'ko',
+  regionOnly = false,
 }) {
   const time = festivalIndexTimePhrase(locale, timeTab, timeTabs, t);
-  const compactPeriod = Boolean(
-    timeTabs.find((tab) => tab.id === timeTab)?.headline,
-  );
   const sido = localizedSidoListPhrase(
     locale,
     areaCode,
@@ -200,17 +202,10 @@ function buildIndexListHeadline({
     : '';
   const place = [sido, city].filter(Boolean).join(' ');
 
-  if (compactPeriod) {
-    const placeLabel = isNationwideRegionFilter(areaCode, cityName)
-      ? t('korea.festival.panelNationwideScope', { defaultValue: 'Nationwide' })
-      : place;
+  if (regionOnly) {
     return {
       kind: 'text',
-      text: formatCompactPeriodHeadline({
-        place: placeLabel,
-        time,
-        tasteSuffix,
-      }),
+      text: festivalHubRegionHeading({ areaCode, cityName, place, t }),
     };
   }
 
@@ -257,6 +252,16 @@ function renderIndexListHeadline(headline) {
     );
   }
   return headline.text;
+}
+
+function festivalListHeadingPlain(headline) {
+  if (!headline) return '';
+  if (typeof headline === 'string') return headline.replace(/\s+/g, ' ').trim();
+  if (headline.kind === 'en') {
+    const core = [headline.place, headline.nowrap].filter(Boolean).join(' · ');
+    return `${core}${headline.tail || ''}`.replace(/\s+/g, ' ').trim();
+  }
+  return String(headline.text || '').replace(/\s+/g, ' ').trim();
 }
 
 /** Visible gap after · uses margin (flex parent collapses inter-span whitespace). */
@@ -758,6 +763,7 @@ function FestivalRow({
             referrerPolicy="no-referrer"
             lang={koText.lang}
             translate={koText.translate}
+            pendingShimmer={isGateoFestivalDateChipEnabled()}
             fallback={<FestivalThumbFallback large={large} />}
           />
         </div>
@@ -855,6 +861,7 @@ export default function KoreaFestivalHub() {
   const festivalId = festivalIdFromSearchParams(searchParams);
   const festivalDetailPushedRef = useRef(false);
   const festivalDeepLinkSeededForRef = useRef('');
+  const festivalHistoryTimerRef = useRef(null);
   const festivalViewedPushedRef = useRef('');
   const socialPromoDetailInflightRef = useRef(
     /** @type {Set<string>} */ (new Set()),
@@ -1261,7 +1268,13 @@ export default function KoreaFestivalHub() {
         { pathname: location.pathname, search: listQs ? `?${listQs}` : '' },
         { replace: true },
       );
-      const timer = window.setTimeout(() => {
+      // Replace updates searchParams and re-runs this effect. Clearing the timer
+      // there drops the history push, so only a later id change or unmount cancels it.
+      if (festivalHistoryTimerRef.current != null) {
+        window.clearTimeout(festivalHistoryTimerRef.current);
+      }
+      festivalHistoryTimerRef.current = window.setTimeout(() => {
+        festivalHistoryTimerRef.current = null;
         navigate(
           {
             pathname: location.pathname,
@@ -1271,7 +1284,6 @@ export default function KoreaFestivalHub() {
           { replace: false },
         );
       }, 0);
-      return () => window.clearTimeout(timer);
     }
 
     return undefined;
@@ -1288,6 +1300,13 @@ export default function KoreaFestivalHub() {
     clearFestivalFromUrl,
     t,
   ]);
+
+  useEffect(() => () => {
+    if (festivalHistoryTimerRef.current != null) {
+      window.clearTimeout(festivalHistoryTimerRef.current);
+      festivalHistoryTimerRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     const onFestivalPageLink = (event) => {
@@ -1468,17 +1487,14 @@ export default function KoreaFestivalHub() {
   const filterItemsByTime = useCallback((timeId, source) => {
     const list = source || [];
     if (dateChipEnabled) {
-      if (timeId === 'window30') {
-        const range = window30RangeYmd(now);
+      const range = festivalHubFlagOnRangeYmd(timeId, now, customRange);
+      if (range) {
+        if (!range.eventStartDate || !range.eventEndDate) return [];
         return filterFestivalsByYmdRange(
           list,
           range.eventStartDate,
           range.eventEndDate,
         );
-      }
-      if (timeId === 'date') {
-        if (!customRange?.start || !customRange?.end) return [];
-        return filterFestivalsByYmdRange(list, customRange.start, customRange.end);
       }
     }
     return filterByTimeTab(timeId, list, now);
@@ -1652,6 +1668,7 @@ export default function KoreaFestivalHub() {
       timeTabs,
       t,
       locale,
+      regionOnly: dateChipEnabled,
     });
   }, [
     nearOrigin,
@@ -2211,16 +2228,23 @@ export default function KoreaFestivalHub() {
       locale,
       listLoading: loading,
     });
-    if (!dateChipEnabled || searchActive) return base;
-    if (timeTab === 'window30') {
-      const range = window30RangeYmd(now);
-      const endLabel = formatFestivalMonthDay(range.eventEndDate, seoulToday);
-      const untilLabel = formatWindow30UntilMetaLabel(endLabel, locale);
-      if (untilLabel) {
-        return insertWindow30MetaPeriodSegment(base, untilLabel);
+    let segments = base;
+    if (dateChipEnabled && !searchActive) {
+      const periodLabel = festivalHubPeriodMetaLabel({
+        timeTab,
+        now,
+        seoulToday,
+        customRange,
+        locale,
+      });
+      if (periodLabel) {
+        segments = insertWindow30MetaPeriodSegment(base, periodLabel);
       }
     }
-    return base;
+    return omitFestivalMetaRegionDuplicatingHeading(
+      segments,
+      festivalListHeadingPlain(indexTitle),
+    );
   }, [
     panelListMetaText,
     areaCode,
@@ -2234,6 +2258,8 @@ export default function KoreaFestivalHub() {
     timeTab,
     now,
     seoulToday,
+    customRange,
+    indexTitle,
   ]);
 
   const resetListFilters = () => {
@@ -2321,13 +2347,13 @@ export default function KoreaFestivalHub() {
     setChipPanel('taste');
   };
 
-  const activeTimeTab = timeTabs.find((tab) => tab.id === timeTab);
-  const timeMajorLabel =
-    (dateChipEnabled && activeTimeTab?.headline
-      ? activeTimeTab.headline
-      : activeTimeTab?.label) ||
-    (timeTab === 'thisMonth' ? t('korea.festival.timeTab.thisMonth') : null) ||
-    t('korea.festival.timeTab.now');
+  const activeTimeTab = timeTabs.find((tab) => tab.id === timeTab) || null;
+  const timeMajorLabel = festivalHubTimeMajorLabel({
+    dateChipEnabled,
+    activeTab: activeTimeTab,
+    timeTab,
+    t,
+  });
   const regionMajorLabel =
     cityName !== 'all'
       ? localizedFestivalCityListLabel(locale, areaCode, cityName)
@@ -2339,8 +2365,12 @@ export default function KoreaFestivalHub() {
     localizedTasteLabel(t, tasteId, tasteLabel(tasteId)) ||
     t('korea.common.theme');
 
-  const majorTimeDisplay =
-    locale === 'en' ? t('korea.common.time') : timeMajorLabel;
+  const majorTimeDisplay = festivalHubTimeMajorDisplay({
+    dateChipEnabled,
+    locale,
+    timeMajorLabel,
+    t,
+  });
   const majorRegionDisplay =
     locale === 'en' ? t('korea.common.region') : regionMajorLabel;
   const majorTasteDisplay =

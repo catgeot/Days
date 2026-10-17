@@ -1578,6 +1578,7 @@
       "window30Chip": "Within a month",
       "window30Headline": "Within a month",
       "window30Short": "Within a month",
+      "periodCategory": "Dates",
       "dateChip": "Date📅",
       "dateSheetTitle": "Date",
       "dateSheetHint": "Pick a day or a range",

@@ -163,17 +163,22 @@ test.describe('Korea festival date chips', () => {
     await expect(page.locator('[data-social-promo-festival-row]')).toBeVisible({
       timeout: 30_000,
     });
-    await expect(page.locator('[data-festival-list-heading] h2')).not.toContainText(
-      '한 달 이내',
-    );
+    const heading = page.locator('[data-festival-list-heading] h2');
+    await expect(heading).toHaveText('전국');
+    await expect(heading).not.toContainText('"');
+    await expect(heading).not.toContainText('축제 리스트');
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('~11.14');
+    await expect(page.locator('[data-festival-list-meta]')).not.toContainText('전국');
+    const timeMajor = page.getByRole('button', { name: /시간 대분류/ });
+    await expect(timeMajor).toContainText('기간');
+    await expect(timeMajor).not.toContainText('이번 달');
     await openTimeRow(page);
     const window30Chip = page.locator('[data-period-id="window30"]');
     await expect(window30Chip).toHaveAttribute('aria-pressed', 'false');
     await window30Chip.click();
     await expect(window30Chip).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('[data-festival-list-heading] h2')).toContainText(
-      '한 달 이내',
-    );
+    await expect(heading).toHaveText('전국');
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('11.14까지');
   });
 
   test('festival deep link still opens detail on default landing', async ({ page }) => {
@@ -200,11 +205,12 @@ test.describe('Korea festival date chips', () => {
     await expect(page.getByRole('button', { name: /지역 대분류/ })).toContainText('서울');
     await expect(listCards(page)).toHaveCount(3);
     await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
-      '서울특별시 · 한 달 이내',
+      '서울특별시',
     );
     await expect(page.locator('[data-festival-list-meta]')).toHaveText(
-      /서울특별시\s*·\s*11\.14까지\s*·\s*3/,
+      /11\.14까지\s*·\s*3/,
     );
+    await expect(page.locator('[data-festival-list-meta]')).not.toContainText('서울');
     await expect(page.locator('[data-period-id="date"] [data-period-count]')).toHaveCount(0);
     await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(1);
   });
@@ -229,9 +235,8 @@ test.describe('Korea festival date chips', () => {
     const dateChip = page.locator('[data-period-id="date"]');
     await expect(dateChip).toHaveAttribute('aria-pressed', 'true');
     await expect(dateChip).toContainText('10.24\u201310.25');
-    await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
-      '전국 · 10.24\u201310.25',
-    );
+    await expect(page.locator('[data-festival-list-heading] h2')).toHaveText('전국');
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('10.24\u201310.25');
     await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText(
       '10.24\u201310.25',
     );
