@@ -92,6 +92,15 @@ const DMZ_NORTH_WEST = { lng: 126.5, lat: 37.77 };
 const DMZ_NORTH_MID = { lng: 127.25, lat: 38.28 };
 const DMZ_NORTH_EAST = { lng: 128.55, lat: 38.68 };
 
+/** West of DMZ west anchor — flat 37.77°N cuts ROK Yellow Sea islands; explicit pockets only */
+const VISITED_KOREA_INCLUSION_BOXES = [
+  { latMin: 37.88, latMax: 38.04, lngMin: 124.55, lngMax: 124.82 },
+  { latMin: 37.74, latMax: 37.92, lngMin: 124.58, lngMax: 124.88 },
+  { latMin: 37.58, latMax: 37.76, lngMin: 125.58, lngMax: 125.82 },
+  { latMin: 37.7, latMax: 37.88, lngMin: 126.15, lngMax: 126.38 },
+  { latMin: 37.72, latMax: 37.82, lngMin: 126.08, lngMax: 126.48 },
+];
+
 const VISITED_KOREA_EXCLUSION_BOXES = [
   { latMin: 34.05, latMax: 34.55, lngMin: 129.15, lngMax: 130.15 },
   { latMin: 33.0, latMax: 34.55, lngMin: 130.0, lngMax: 131.25 },
@@ -116,6 +125,16 @@ export function northBoundaryLatForVisitedKorea(lng) {
   return DMZ_NORTH_EAST.lat;
 }
 
+function inVisitedKoreaInclusionBox(lat, lng) {
+  return VISITED_KOREA_INCLUSION_BOXES.some(
+    (box) =>
+      lat >= box.latMin &&
+      lat <= box.latMax &&
+      lng >= box.lngMin &&
+      lng <= box.lngMax,
+  );
+}
+
 function inVisitedKoreaExclusionBox(lat, lng) {
   return VISITED_KOREA_EXCLUSION_BOXES.some(
     (box) =>
@@ -136,8 +155,9 @@ export function coordsInKorea(lat, lng) {
   ) {
     return false;
   }
-  if (lat > northBoundaryLatForVisitedKorea(lng)) return false;
   if (inVisitedKoreaExclusionBox(lat, lng)) return false;
+  if (inVisitedKoreaInclusionBox(lat, lng)) return true;
+  if (lat > northBoundaryLatForVisitedKorea(lng)) return false;
   return true;
 }
 

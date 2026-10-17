@@ -83,6 +83,8 @@ test('coordsInKorea excludes Japan and DPRK border false positives', () => {
     { name: 'Pyongyang', lat: 39.03, lng: 125.76 },
     { name: 'Kaesong', lat: 37.97, lng: 126.55 },
     { name: 'Kumgangsan', lat: 38.65, lng: 128.1 },
+    { name: 'Haeju', lat: 38.04, lng: 125.71 },
+    { name: 'DPRK Ongjin', lat: 37.93, lng: 125.36 },
   ];
   for (const { name, lat, lng } of notKorea) {
     assert.equal(coordsInKorea(lat, lng), false, name);
@@ -108,6 +110,10 @@ test('coordsInKorea excludes Japan and DPRK border false positives', () => {
     { name: 'Geoje Jangseungpo', lat: 34.87, lng: 128.72 },
     { name: 'Gadeokdo', lat: 35.03, lng: 128.83 },
     { name: 'Goseong Geojin', lat: 38.44, lng: 128.46 },
+    { name: 'Baengnyeongdo', lat: 37.96, lng: 124.69 },
+    { name: 'Daecheongdo', lat: 37.83, lng: 124.71 },
+    { name: 'Yeonpyeongdo', lat: 37.67, lng: 125.7 },
+    { name: 'Gyodongdo', lat: 37.79, lng: 126.27 },
   ];
   for (const { name, lat, lng } of korea) {
     assert.equal(coordsInKorea(lat, lng), true, name);
