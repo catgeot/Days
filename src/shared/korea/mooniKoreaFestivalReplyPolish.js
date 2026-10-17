@@ -1579,29 +1579,77 @@ function palaceAccessSentenceDropMangledFragment(sentence) {
 function palaceAccessSentenceIsVagueLine3Orphan(sentence) {
   const t = String(sentence || '');
   if (!/\d\s*호선/.test(t)) return false;
-  if (/(?:종로\s*3\s*가|안국역|경복궁역)/.test(t)) return false;
+  if (/(?:종로\s*3\s*가|종로3가|안국역|경복궁역)/.test(t)) return false;
   return /(?:까지\s*이동|하차하는\s*경로|가장\s*편리|환승하여\s*하차)/.test(t);
 }
 
-function palaceAccessTextHasNamedPalaceStationRoute(text) {
-  const t = String(text || '');
-  if (palaceAccessTextHasCanonicalLine3Sentence(t)) return true;
-  if (!/\d\s*호선/.test(t)) return false;
-  return /(?:종로\s*3\s*가|안국역|경복궁역)/.test(t);
+function palaceAccessTextContainsJongno3ga(text) {
+  return /종로\s*3\s*가|종로3가/.test(String(text || ''));
+}
+
+function palaceAccessHasExplicitAlternateTransferRoute(text) {
+  const sentences = String(text || '')
+    .split(/(?<=[.!?。])\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  return sentences.some((sentence) => {
+    if (palaceAccessSentenceIsKtxThenYongsanLine3(sentence)) return true;
+    return /용산역/.test(sentence)
+      && /3\s*호선/.test(sentence)
+      && /(?:안국역|경복궁역)/.test(sentence);
+  });
+}
+
+function palaceAccessSentenceNamesTransferStation(sentence) {
+  const t = String(sentence || '');
+  if (/(?:종로\s*3\s*가|종로3가)(?:역)?/.test(t)) return true;
+  if (/(?:갈아타|환승)[^.!?。]{0,24}(?:종로\s*3\s*가|종로3가)(?:역)?/.test(t)) return true;
+  const hubOnly = /^(?:서울역|용산역)$/;
+  const destOnly = /^(?:안국역|경복궁역)$/;
+  const transferLeadRe = /([가-힣]{2,10}역)(?:에서|으로)?\s*(?:갈아타|환승)/g;
+  for (const match of t.matchAll(transferLeadRe)) {
+    const name = match[1];
+    if (hubOnly.test(name) || destOnly.test(name)) continue;
+    return true;
+  }
+  return false;
+}
+
+function palaceAccessSentenceShouldDropAsVagueTransfer(sentence) {
+  if (palaceAccessSentenceIsVagueLine3Orphan(sentence)) return true;
+  const t = String(sentence || '');
+  if (palaceAccessSentenceIsKtxThenYongsanLine3(t)) return false;
+  if (palaceAccessTextContainsJongno3ga(t)) return false;
+  if (palaceAccessSentenceNamesTransferStation(t)) return false;
+  const lineTransfer = (
+    (/(?:1\s*호선|지하철\s*1\s*호선)/.test(t) && /3\s*호선/.test(t))
+    || (/3\s*호선/.test(t) && /(?:환승|갈아타)/.test(t) && /(?:이동한\s*뒤|시작해|타고)/.test(t))
+  );
+  if (!lineTransfer) return false;
+  if (/1\s*호선을\s*타고\s*이동한\s*뒤/.test(t)) return true;
+  if (/시작해\s*3\s*호선으로\s*환승/.test(t)) return true;
+  if (/3\s*호선으로\s*환승(?:해|하여)/.test(t)) return true;
+  return /(?:환승|갈아타)/.test(t);
+}
+
+function palaceAccessNeedsJongno3gaCanonical(text) {
+  if (palaceAccessTextContainsJongno3ga(text)) return false;
+  if (palaceAccessHasExplicitAlternateTransferRoute(text)) return false;
+  return true;
 }
 
 function ensurePalaceAccessCanonicalSubwayRoute(text, options = {}) {
   if (String(options.contentId || '').trim() !== PALACE_FESTIVAL_ID) return String(text || '');
   const source = String(text || '').trim();
   const hasCanonical = palaceAccessTextHasCanonicalLine3Sentence(source);
-  const needsCanonical = !palaceAccessTextHasNamedPalaceStationRoute(source);
+  const needsCanonical = palaceAccessNeedsJongno3gaCanonical(source);
   const paragraphs = source ? source.split(/\n{2,}/) : [];
   const cleaned = paragraphs.map((paragraph) => {
     const sentences = paragraph
       .split(/(?<=[.!?。])\s+/)
       .map((part) => part.trim())
       .filter(Boolean)
-      .filter((sentence) => !palaceAccessSentenceIsVagueLine3Orphan(sentence));
+      .filter((sentence) => !palaceAccessSentenceShouldDropAsVagueTransfer(sentence));
     return sentences.join(' ');
   }).filter((paragraph) => paragraph.trim());
   if (!needsCanonical) {

@@ -405,6 +405,36 @@ test('palace access canonical line is idempotent', () => {
   assert.match(out, /안국역이\s*가깝습니다/);
 });
 
+test('palace access r16 inserts canonical when 종로3가 missing (vague 1호선→3호선)', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw = '1호선을 타고 이동한 뒤, 3호선으로 환승해 안국역에서 내리면 됩니다.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, PALACE_ACCESS_CANONICAL_LINE3_RE);
+  assert.doesNotMatch(out, /이동한\s*뒤|환승해\s*안국역에서\s*내리면\s*됩니다/);
+});
+
+test('palace access r16 drops 시작해 3호선 환승 without transfer station', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw = '서울역에서 지하철을 시작해 3호선으로 환승하여 경복궁역에 도착할 수 있어요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, PALACE_ACCESS_CANONICAL_LINE3_RE);
+  assert.doesNotMatch(out, /시작해\s*3\s*호선으로\s*환승하여/);
+});
+
 test('palace access r15 inserts canonical when only vague line-3 orphan remains', () => {
   const polish = parseFestivalPolishParams({
     chipId: 'festival_access',
