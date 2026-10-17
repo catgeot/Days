@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
-  Building2,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -2577,9 +2576,7 @@ export default function FestivalDetailSheet({
                   </div>
                 )}
 
-              {nearbyCultureStatus !== 'idle' &&
-                nearbyCultureStatus !== 'nocoords' &&
-                nearbyCultureStatus !== 'loading' && (
+              {shouldShowFestivalNearbyListSection(nearbyCultureStatus, nearbyCulture.length) && (
                   <div className="space-y-2 pt-1" data-festival-section="nearCulture">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearCulture')}
@@ -2590,18 +2587,12 @@ export default function FestivalDetailSheet({
                           {t('korea.festival.detail.nearCultureError')}
                         </p>
                       )}
-                    {nearbyCultureStatus === 'empty' && (
-                      <p className="text-xs text-stone-500">
-                        {t('korea.festival.detail.nearCultureEmpty')}
-                      </p>
-                    )}
                     {nearbyCulture.length > 0 && (
                       <ul
                         className="space-y-2"
                         aria-label={t('korea.festival.detail.nearCultureAria')}
                       >
                         {nearbyCulture.map((spot) => {
-                          const thumb = toHttps(spot.firstImage);
                           const dist = formatDistKm(spot.distKm);
                           const place = nearbyPlaceLabel(spot);
                           return (
@@ -2611,16 +2602,7 @@ export default function FestivalDetailSheet({
                                 onClick={() => setSelectedNearby(spot)}
                                 className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
                               >
-                                <FestivalPhotoFrame
-                                  src={thumb}
-                                  alt=""
-                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-                                  fallback={
-                                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-800">
-                                      <Building2 size={18} aria-hidden="true" />
-                                    </div>
-                                  }
-                                />
+                                <NearbyRowThumb spot={spot} />
                                 <span className="min-w-0 flex-1">
                                   <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
                                     {spot.name}
