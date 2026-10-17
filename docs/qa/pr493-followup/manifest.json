@@ -1,0 +1,36 @@
+[
+  {
+    "file": "01-gangneung-settled-webkit.png",
+    "viewportWidth": 390,
+    "browser": "webkit",
+    "region": "강원·강릉",
+    "festivalId": "2930716",
+    "settled": true,
+    "cultureVisible": true,
+    "surface": "강릉 국수 축제 — 레포츠(관동하키센터)·문화(강릉시립미술관 교동) 정착",
+    "greyPlaceholderReport": {
+      "pendingNearby": 0,
+      "belowReserve": 0,
+      "belowLoading": 0,
+      "greyTileCount": 0
+    },
+    "greyTileCount": 0
+  },
+  {
+    "file": "03-yeongnam-settled-webkit.png",
+    "viewportWidth": 390,
+    "browser": "webkit",
+    "region": "영남·경북",
+    "festivalId": "4109218",
+    "settled": true,
+    "cultureVisible": false,
+    "surface": "군위 가족걷기 — 문화 섹션 없음, 코스 직전 영역",
+    "greyPlaceholderReport": {
+      "pendingNearby": 0,
+      "belowReserve": 0,
+      "belowLoading": 0,
+      "greyTileCount": 0
+    },
+    "greyTileCount": 0
+  }
+]

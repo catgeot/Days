@@ -89,6 +89,30 @@ export default defineConfig({
       },
     },
     {
+      name: 'chromium-pr493-followup',
+      testMatch: /pr493-followup-nearby-culture\.spec\.js/,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+        video: 'off',
+        trace: 'off',
+      },
+    },
+    {
+      name: 'webkit-pr493-followup',
+      testMatch: /pr493-followup-nearby-culture\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+        video: 'off',
+        trace: 'off',
+      },
+    },
+    {
       name: 'webkit-pr1-festival',
       testMatch: /pr1-festival-detail-screenshots\.spec\.js/,
       use: {
