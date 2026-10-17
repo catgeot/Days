@@ -8,6 +8,18 @@ import {
 } from '../../src/pages/Korea/lib/festivalRestaurantLoad.js';
 import { polishFestivalModelReply } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 import { buildFestivalAccessAskText } from '../../src/pages/Home/lib/festivalDomesticOrigins.js';
+import { KO } from '../../src/i18n/mooniPromptBundleData.js';
+
+test('festival sights, access, and food chip prompts avoid prohibition-style Korean', () => {
+  const blob = [
+    KO.chips.festival_sights.rules.join('\n'),
+    KO.chips.festival_access.rules.join('\n'),
+    KO.chips.festival_nearby.rules.join('\n'),
+  ].join('\n');
+  assert.doesNotMatch(blob, /금지/);
+  assert.doesNotMatch(blob, /하지\s*마/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /TourAPI/);
+});
 
 test('restaurant rows without distance are not mooni-ready', () => {
   assert.equal(festivalRestaurantRowsReadyForMooni([]), false);
@@ -58,6 +70,24 @@ test('sights chip drops decorative closing lines', () => {
   });
   assert.match(polished, /국수존/);
   assert.doesNotMatch(polished, /즐겨보세요/);
+});
+
+test('food answer strips shop names not in TourAPI nearby list', () => {
+  const polished = polishFestivalModelReply(
+    '근처에는 만동제과와 해랑초밥, 육회비빔밥집이 있어요.',
+    {
+      contentId: '2930716',
+      chipId: 'festival_nearby',
+      locale: 'ko',
+      userText: '근처 맛집 추천해 줘',
+      nearbyRestaurants: [
+        { name: '만동제과', distKm: 0.1, cat3: 'A05020300' },
+        { name: '이쉐프의돈까스', distKm: 0.2, cat3: 'A05020400' },
+      ],
+    },
+  );
+  assert.match(polished, /만동제과/);
+  assert.doesNotMatch(polished, /해랑초밥|육회비빔밥/);
 });
 
 test('food answer drops unasked parking tail and keeps shop names', () => {

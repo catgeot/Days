@@ -639,7 +639,7 @@ test('festival access hint urges real routes when TAGO times are missing', async
   assert.match(assist, /appendFestivalAccessBookingLinks/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 갑니다/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /KTX 역과 SRT 역/);
-  assert.match(KO.chips.festival_access.rules.join('\n'), /광명·용산에서는 SRT가 없다/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /광명·용산에서는 SRT가 없/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /버스타고/);
 });
 
@@ -1676,7 +1676,7 @@ test('festival food stays on the restaurant list and the closer does not repeat 
   assert.match(foodHint.hint, /100년임당방앗간\]\(https:\/\/search\.naver\.com\/search\.naver\?query=[^)]+\)\(방앗간\)/);
   assert.match(foodHint.hint, /만동제과\]\(https:\/\/search\.naver\.com\/search\.naver\?query=[^)]+\)\(제과\)/);
   assert.match(foodHint.hint, /월화엔\]\(https:\/\/search\.naver\.com\/search\.naver\?query=/);
-  assert.match(foodHint.hint, /실제로 가게를 찾아가요/);
+  assert.match(foodHint.hint, /바로 찾아갈 수 있도록/);
   const chipHint = await resolveMooniChatKoreaFestivalHint({
     userText: '먹을 곳',
     chipId: 'festival_nearby',
@@ -1724,12 +1724,12 @@ test('festival food stays on the restaurant list and the closer does not repeat 
   });
   assert.match(hint.hint, /주변 맛집\(GATEO\): \[강릉 오금집\]\(https:\/\/search\.naver\.com\/search\.naver\?query=/);
   assert.match(hint.hint, /이쉐프의돈까스\]\(https:\/\/search\.naver\.com\/search\.naver\?query=[^)]+\)\(돈가스\)/);
-  assert.match(hint.hint, /실제로 가게를 찾아가요/);
+  assert.match(hint.hint, /바로 찾아갈 수 있도록/);
   assert.match(hint.hint, /근처\(GATEO\): 강릉향교/);
   assert.doesNotMatch(hint.hint, /임당생활문화센터|노암터널/);
-  assert.match(KO.festivalAnswerRules, /실제로 가게를 찾아가요/);
+  assert.match(KO.festivalAnswerRules, /바로 찾아갈 수 있도록/);
   assert.match(KO.festivalAnswerRules, /10\/15~18이에요/);
-  assert.match(KO.chips.festival_nearby.rules.join('\n'), /실제로 가게를 찾아가요/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /바로 찾아갈 수 있도록/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /터널/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이예요/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /10\/15~18이에요/);
@@ -1835,18 +1835,19 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   );
   assert.match(opening, /10\/15~18/);
   assert.match(KO.festivalAnswerRules, /약 20km/);
-  assert.match(KO.festivalAnswerRules, /실제로 가게를 찾아가요/);
+  assert.match(KO.festivalAnswerRules, /바로 찾아갈 수 있도록/);
   assert.match(KO.festivalPriorityLine, /행사 기간을 반복하지 않는다/);
   assert.match(KO.festivalAnswerRules, /3~4곳/);
   assert.match(KO.festivalAnswerRules, /공식 홈페이지나 문의처/);
   assert.match(KO.festivalAnswerRules, /안내해 드릴까요/);
   assert.match(KO.festivalAnswerRules, /이름이 3곳이면 첫 답에 3곳/);
-  assert.match(EN.festivalAnswerRules, /3 or 4 restaurants/);
+  assert.match(EN.festivalAnswerRules, /3 or 4 when the list has that many/);
   assert.match(EN.festivalAnswerRules, /only when it is a markdown link/);
-  assert.match(KO.chips.festival_nearby.rules.join('\n'), /이름, 종류, 거리, 링크/);
-  assert.match(KO.chips.festival_access.rules.join('\n'), /축제 페이지에서 확인/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /종류·거리·링크/);
+  assert.match(KO.chips.festival_nearby.rules.join('\n'), /TourAPI/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /공식 홈페이지나 문의처/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제' }).system, /이름이 3곳이면 3곳을 말한다/);
-  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /실제로 가게를 찾아가요/);
+  assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /바로 찾아갈 수 있도록/);
   assert.match(KO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
   assert.match(KO.festivalAnswerRules, /축제 페이지에서 살펴보세요/);
   assert.match(KO.festivalAnswerRules, /찾아볼 수 있어요/);
@@ -1856,7 +1857,7 @@ test('festival follow-up keeps a correct copula, nearby stays, local food, and d
   assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /N일 뒤 시작해요/);
   assert.match(renderFestivalFirstAnswer('ko', { title: '서귀포칠십리축제' }).system, /경연프로그램 : 청소년 페스타/);
   assert.match(KO.festivalAnswerRules, /숙소 카드에 이름과 거리/);
-  assert.match(EN.festivalAnswerRules, /keeps them from a wasted trip/);
+  assert.match(EN.festivalAnswerRules, /head out right away/);
   assert.match(renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '강릉' }), /축제 페이지에서 살펴보세요/);
   assert.match(ServerKO.festivalAnswerRules, /다양한 숙소가 자리하고 있어요/);
   assert.match(EN.festivalAnswerRules, /a variety of stays/);

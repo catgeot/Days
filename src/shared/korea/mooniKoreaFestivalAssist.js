@@ -1854,7 +1854,7 @@ function foodTypeLabel(name, cat3, locale = 'ko') {
 const WALK_NEAR_KM = 1.2;
 const CAR_FEW_MIN_KM = 4.2;
 
-const FOOD_META_SENTENCE_RE = /여행자는 이 답을 보고 바로 찾아갈 수 있어요\.?|링크를 누르면 그 가게를 바로 찾을 수 있어요\.?|사용자는 이 답을 보고 실제로 가게를 찾아가요\.?|A traveler can head out from these shops\.?|Each link opens that shop\.?|The user will actually visit a shop from this answer\.?/g;
+const FOOD_META_SENTENCE_RE = /여행자는 이 답을 보고 바로 찾아갈 수 있어요\.?|여행자가 바로 찾아갈 수 있도록[^.!?。]{0,160}[.!?。]?|링크를 누르면 그 가게를 바로 찾을 수 있어요\.?|사용자는 이 답을 보고 실제로 가게를 찾아가요\.?|A traveler can head out from these shops\.?|Each link opens that shop\.?|The user will actually visit a shop from this answer\.?|So the traveler can head out right away[^.!?。]{0,160}[.!?。]?/g;
 
 function foodCarLabel(distKm, locale = 'ko') {
   const minutes = Math.max(2, Math.round((Number(distKm) * 60) / 25));
@@ -1978,8 +1978,8 @@ function foodSparse(entries) {
 function festivalFoodCoach(locale, sparse) {
   const en = foodAnswerLocale(locale) === 'en';
   const base = en
-    ? 'The user will actually visit a shop from this answer. Introduce only the hint shops in natural sentences, each with its type, distance, and link, so they avoid a wasted trip.'
-    : '사용자는 이 답을 보고 실제로 가게를 찾아가요. 힌트에 있는 가게의 이름, 종류, 거리, 링크를 자연스러운 문장으로 소개해 주세요. 힌트에 있는 가게만 소개하면 사용자가 헛걸음하지 않아요.';
+    ? 'The traveler will head out from this answer. Introduce only restaurant names from the nearby list in the hint—fewer names when the list is shorter—in natural sentences with type, distance, and link.'
+    : '여행자가 바로 찾아갈 수 있도록, 힌트 주변 맛집 목록에 있는 실제 가게 이름만 알려 주세요. 목록이 짧으면 그만큼만 소개하고, 각 가게는 종류·거리·링크를 문장으로 전해 주세요.';
   if (!sparse) return base;
   return en
     ? `${base} Walking options are few, so say that first, then mention hint shops a few minutes by car, or continue to the festival page's food notes.`
@@ -2050,10 +2050,24 @@ function foodAnswerCoversHint(text, entries) {
   return true;
 }
 
+function foodNameAllowed(hit, names) {
+  const token = String(hit || '').trim();
+  if (!token) return true;
+  return names.some((name) => name === token || name.includes(token) || token.includes(name));
+}
+
 function mentionsInventedFood(part, entries) {
   const names = entries.map((row) => row.name);
-  const hits = String(part || '').match(INVENTED_FOOD_NAME_RE) || [];
-  return hits.some((hit) => !names.some((name) => name.includes(hit) || hit.includes(name)));
+  const text = String(part || '');
+  for (const match of text.matchAll(/\[([^\]]+)\]\([^)]+\)/g)) {
+    if (!foodNameAllowed(match[1].trim(), names)) return true;
+  }
+  const hits = text.match(INVENTED_FOOD_NAME_RE) || [];
+  if (hits.some((hit) => !foodNameAllowed(hit, names))) return true;
+  for (const match of text.matchAll(/([가-힣A-Za-z0-9]{2,18})(?:와|과|랑|하고)\s*([가-힣A-Za-z0-9]{2,18})/g)) {
+    if (!foodNameAllowed(match[1], names) || !foodNameAllowed(match[2], names)) return true;
+  }
+  return false;
 }
 
 const FOOD_DEFLECTION_RE = /맛집(?:을|를)\s*찾아\s*보|find\s+(?:nearby\s+)?restaurants|look\s+for\s+(?:nearby\s+)?restaurants/i;
