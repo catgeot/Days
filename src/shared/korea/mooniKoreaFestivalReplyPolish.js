@@ -1515,25 +1515,14 @@ function festivalAccessTransitGroundingLine(ctx, locale = 'ko') {
   return en ? row.en : row.ko;
 }
 
-const SEOUL_STATION_LINE3_WRONG_FRAG_RE =
-  /서울역에서\s*(?:지하철\s*)?3\s*호선/g;
+const PALACE_ACCESS_CANONICAL_LINE3_SENTENCE =
+  '서울역에서 지하철 1호선을 타고 종로3가역에서 3호선으로 갈아타면 안국역·경복궁역에 내릴 수 있어요.';
 
-const SEOUL_STATION_LINE3_TRANSIT_FIX =
-  '서울역에서 1호선을 타고 종로3가역에서 3호선으로 갈아타';
+const PALACE_ACCESS_CANONICAL_LINE3_RE =
+  /서울역에서\s*지하철\s*1호선을\s*타고\s*종로3가역에서\s*3호선으로\s*갈아타면\s*안국역·경복궁역에\s*내릴\s*수\s*있어요/;
 
-const SEOUL_YONGSAN_LINE3_HUB_RE =
-  /(?:서울역이나\s*용산역|서울역\s*(?:이나|또는)\s*용산역)(?:으로|로)\s*이동하고,?\s*거기서\s*3\s*호선/g;
-
-const SEOUL_VIA_LINE1_TO_3_RE =
-  /서울역을\s*경유할\s*경우\s*1\s*호선에서\s*3\s*호선으로\s*환승하여/g;
-
-const PALACE_LINE3_BROAD_TRANSIT_FIX =
-  '서울역(또는 용산역)에서 1호선을 타고 종로3가역에서 3호선으로 갈아타';
-
-const PALACE_LINE3_MANGLED_FRAGMENT_RE = /가까워요에서/;
-
-function palaceAccessTextAlreadyNamesPalaceStations(text) {
-  return /안국역|경복궁역/.test(String(text || ''));
+function palaceAccessTextHasCanonicalLine3Sentence(text) {
+  return PALACE_ACCESS_CANONICAL_LINE3_RE.test(String(text || ''));
 }
 
 function palaceAccessSentenceAlreadyHasJongno3gaTransfer(sentence) {
@@ -1547,43 +1536,13 @@ function palaceAccessSentenceIsKtxThenYongsanLine3(sentence) {
     && /3\s*호선/.test(t);
 }
 
-function palaceAccessSentenceAlreadyMentionsLine1BeforeHub(sentence) {
-  const t = String(sentence || '');
-  return /(?:지하철\s*)?1\s*호선(?:을|으로)?\s*타고[^.!?。]{0,96}(?:서울역|용산역)/.test(t)
-    || /(?:서울역|용산역)[^.!?。]{0,48}1\s*호선(?:을|으로)?\s*타고/.test(t);
-}
-
-function collapsePalaceLine3DuplicatePhrasing(sentence) {
-  let s = String(sentence || '');
-  s = s.replace(/(1호선(?:을|으로)?\s*타고\s*){2,}/g, '1호선을 타고 ');
-  s = s.replace(
-    /지하철\s*1호선을\s*타고\s+서울역\(또는\s*용산역\)에서\s*1호선을\s*타고/g,
-    '지하철 1호선을 타고 서울역(또는 용산역)에서',
-  );
-  s = s.replace(/종로3가역에서\s*3호선으로\s*갈아타\s*3\s*호선으로\s*환승하여/g, '종로3가역에서 3호선으로 갈아타 ');
-  s = s.replace(/갈아타\s+3\s*호선으로\s*환승하여/g, '갈아타 ');
-  return s.replace(/[ \t]{2,}/g, ' ').trim();
-}
-
-function minimalInsertJongno3gaLine3Transfer(sentence) {
-  let s = String(sentence || '');
-  s = s.replace(/서울역을\s*경유할\s*경우\s*/g, '');
-  s = s.replace(/1\s*호선에서\s*3\s*호선으로\s*환승하여/g, '종로3가역에서 3호선으로 갈아타 ');
-  if (!/종로3가/.test(s)) {
-    s = s.replace(/3\s*호선으로\s*환승하여/g, '종로3가역에서 3호선으로 갈아타 ');
-  }
-  return s;
-}
-
-function palaceAccessSentenceNeedsLine3Correction(sentence) {
+function palaceAccessSentenceImpliesLine3AtHubWithoutJongno3ga(sentence) {
   const t = String(sentence || '');
   if (!/3\s*호선/.test(t)) return false;
   if (!/(?:서울역|용산역)/.test(t)) return false;
   if (palaceAccessSentenceAlreadyHasJongno3gaTransfer(t)) return false;
   if (palaceAccessSentenceIsKtxThenYongsanLine3(t)) return false;
-  if (SEOUL_STATION_LINE3_WRONG_FRAG_RE.test(t)) return true;
-  if (SEOUL_YONGSAN_LINE3_HUB_RE.test(t)) return true;
-  if (SEOUL_VIA_LINE1_TO_3_RE.test(t)) return true;
+  if (/서울역에서\s*(?:지하철\s*)?3\s*호선/.test(t)) return true;
   const hubIdx = Math.min(
     t.includes('서울역') ? t.indexOf('서울역') : Number.POSITIVE_INFINITY,
     t.includes('용산역') ? t.indexOf('용산역') : Number.POSITIVE_INFINITY,
@@ -1592,62 +1551,59 @@ function palaceAccessSentenceNeedsLine3Correction(sentence) {
   return hubIdx < Number.POSITIVE_INFINITY && line3Idx > hubIdx;
 }
 
-function minimalFixPalaceSeoulLine3Sentence(sentence) {
-  let s = String(sentence || '');
-  if (!palaceAccessSentenceNeedsLine3Correction(s)) {
-    return collapsePalaceLine3DuplicatePhrasing(s);
-  }
-  const line1BeforeHub = palaceAccessSentenceAlreadyMentionsLine1BeforeHub(s);
-  if (line1BeforeHub) {
-    s = minimalInsertJongno3gaLine3Transfer(s);
-    return collapsePalaceLine3DuplicatePhrasing(s);
-  }
-  if (SEOUL_STATION_LINE3_WRONG_FRAG_RE.test(s)) {
-    s = s.replace(SEOUL_STATION_LINE3_WRONG_FRAG_RE, SEOUL_STATION_LINE3_TRANSIT_FIX);
-  }
-  if (SEOUL_YONGSAN_LINE3_HUB_RE.test(s)) {
-    s = s.replace(SEOUL_YONGSAN_LINE3_HUB_RE, PALACE_LINE3_BROAD_TRANSIT_FIX);
-  }
-  if (SEOUL_VIA_LINE1_TO_3_RE.test(s)) {
-    s = s.replace(SEOUL_VIA_LINE1_TO_3_RE, PALACE_LINE3_BROAD_TRANSIT_FIX);
-  }
-  if (!palaceAccessSentenceAlreadyHasJongno3gaTransfer(s) && palaceAccessSentenceNeedsLine3Correction(s)) {
-    s = s.replace(
-      /(?:서울역|용산역)(?:이나\s*용산역|을\s*경유할\s*경우)?[^.!?。]{0,120}?(?=3\s*호선)/,
-      `${PALACE_LINE3_BROAD_TRANSIT_FIX} `,
-    );
-  }
-  return collapsePalaceLine3DuplicatePhrasing(s);
+function palaceAccessSentenceRestatesHubLine3Route(sentence) {
+  const t = String(sentence || '');
+  if (PALACE_ACCESS_CANONICAL_LINE3_RE.test(t)) return false;
+  if (!/3\s*호선/.test(t)) return false;
+  if (!/(?:안국역|경복궁역)/.test(t)) return false;
+  if (!/(?:서울역|용산역|거기서)/.test(t)) return false;
+  return true;
 }
 
-function fixPalaceAccessMangledLine3Fragment(sentence, fullText = '') {
-  let s = String(sentence || '');
-  if (!PALACE_LINE3_MANGLED_FRAGMENT_RE.test(s)) return s;
-  s = s.replace(/가까워요에서/g, '가까워요.');
-  if (palaceAccessTextAlreadyNamesPalaceStations(fullText)) {
-    return s.replace(
-      /궁역\s*인근은\s*지하철\s*3호선\s*(안국역·경복궁역|경복궁역·안국역)이\s*가까워요/g,
-      '$1이 가까워요',
-    );
-  }
-  return s;
+function palaceAccessSentenceIsLine3Disclaimer(sentence) {
+  return /직접\s*연결되지\s*않|서울역에는\s*3\s*호선이\s*없/.test(String(sentence || ''));
+}
+
+function palaceAccessSentenceDropForLine3Net(sentence) {
+  if (palaceAccessSentenceIsKtxThenYongsanLine3(sentence)) return false;
+  if (palaceAccessSentenceImpliesLine3AtHubWithoutJongno3ga(sentence)) return true;
+  if (palaceAccessSentenceRestatesHubLine3Route(sentence)) return true;
+  if (palaceAccessSentenceIsLine3Disclaimer(sentence)) return true;
+  return false;
+}
+
+function palaceAccessSentenceDropMangledFragment(sentence) {
+  return /가까워요에서/.test(String(sentence || ''));
 }
 
 function rewriteImpossibleSeoulStationLine3Access(text, options = {}) {
   if (String(options.contentId || '').trim() !== PALACE_FESTIVAL_ID) return String(text || '');
   const source = String(text || '');
+  const hasCanonical = palaceAccessTextHasCanonicalLine3Sentence(source);
   const paragraphs = source.split(/\n{2,}/);
   const fixed = paragraphs.map((paragraph) => {
     const sentences = paragraph
       .split(/(?<=[.!?。])\s+/)
       .map((part) => part.trim())
       .filter(Boolean);
-    const next = sentences.map((sentence) => {
-      let out = minimalFixPalaceSeoulLine3Sentence(sentence);
-      out = fixPalaceAccessMangledLine3Fragment(out, source);
-      return out;
+    const line3DropFlags = sentences.map((sentence) => palaceAccessSentenceDropForLine3Net(sentence));
+    const mangledDropFlags = sentences.map((sentence) => palaceAccessSentenceDropMangledFragment(sentence));
+    if (!line3DropFlags.some(Boolean) && !mangledDropFlags.some(Boolean)) {
+      return sentences.join(' ');
+    }
+    const kept = [];
+    let insertAt = null;
+    sentences.forEach((sentence, idx) => {
+      if (line3DropFlags[idx] || mangledDropFlags[idx]) {
+        if (line3DropFlags[idx] && insertAt === null) insertAt = kept.length;
+        return;
+      }
+      kept.push(sentence);
     });
-    return next.join(' ');
+    if (line3DropFlags.some(Boolean) && !hasCanonical) {
+      kept.splice(insertAt ?? 0, 0, PALACE_ACCESS_CANONICAL_LINE3_SENTENCE);
+    }
+    return kept.join(' ');
   });
   return collapseHorizontalWhitespace(fixed.join('\n\n').trim());
 }
@@ -2257,13 +2213,37 @@ const FOOD_INVENTED_DISTANCE_RE =
 const FOOD_UNVERIFIED_WALK_PHRASE_RE =
   /도보\s*거리|도보로\s*(?:이동|이동하기)?\s*(?:하기\s*)?가까운|걸어\s*(?:가|갈)\s*(?:기|만한)\s*(?:거리|곳)?|걸어서\s*\d+\s*분|가까운\s*거리에\s*위치|walking\s+distance/gi;
 
-const FOOD_INVENTED_WALK_DISTANCE_SENTENCE_RE =
+const FOOD_INVENTED_WALK_CLAUSE_RE =
   /(?:모두\s*)?(?:도보로|걸어서)[^.!?。]{0,120}?(?:가까운\s*거리|이동하기\s*가까운|도보\s*거리)|가까운\s*거리에\s*위치해\s*있/;
+
+function trimFoodSentenceInventedWalkClause(sentence) {
+  const s = String(sentence || '').trim();
+  if (!FOOD_INVENTED_WALK_CLAUSE_RE.test(s)) return s;
+  const parts = s.split(/,\s*(?=(?:모두\s*)?(?:도보로|걸어서))/);
+  if (parts.length > 1) {
+    const lead = parts[0].trim();
+    if (!lead) return '';
+    const closed = lead
+      .replace(/가\s*있고\s*$/u, '가 있어요.')
+      .replace(/[,，]\s*$/u, '');
+    if (/[.!?。]$/.test(closed)) return closed;
+    return `${closed}.`;
+  }
+  return '';
+}
 
 function stripInventedFoodWalkDistanceSentences(text, options = {}) {
   if (!isFestivalFoodAsk(options)) return String(text || '');
   if (nearbyRestaurantsHaveDistance(options.nearbyRestaurants)) return String(text || '');
-  return filterPreservingBreaks(text, (part) => FOOD_INVENTED_WALK_DISTANCE_SENTENCE_RE.test(part));
+  const paragraphs = String(text || '').split(/\n{2,}/);
+  const kept = paragraphs.map((paragraph) => {
+    const sentences = paragraph
+      .split(/(?<=[.!?。])\s+/)
+      .map((part) => trimFoodSentenceInventedWalkClause(part.trim()))
+      .filter(Boolean);
+    return sentences.join(' ');
+  }).filter((paragraph) => paragraph.trim());
+  return kept.join('\n\n').trim();
 }
 
 function foodAllowedDetailBlob(entries) {

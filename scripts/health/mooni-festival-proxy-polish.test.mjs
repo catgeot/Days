@@ -300,6 +300,9 @@ test('access hint includes nearest station grounding for palace festival', () =>
   assert.match(hint, /서울역에는 3호선이 없어요/);
 });
 
+const PALACE_ACCESS_CANONICAL_LINE3_RE =
+  /서울역에서\s*지하철\s*1호선을\s*타고\s*종로3가역에서\s*3호선으로\s*갈아타면\s*안국역·경복궁역에\s*내릴\s*수\s*있어요/;
+
 test('access polish rewrites impossible Seoul Station Line 3 to palace', () => {
   const polish = parseFestivalPolishParams({
     chipId: 'festival_access',
@@ -314,8 +317,8 @@ test('access polish rewrites impossible Seoul Station Line 3 to palace', () => {
   const raw = '서울역에서 지하철 3호선 경복궁역까지 가면 편해요.';
   const out = polishMooniFestivalProxyText(raw, polish);
   assert.doesNotMatch(out, /서울역에서\s*지하철\s*3\s*호선/);
-  assert.match(out, /1호선|종로3가역/);
-  assert.match(out, /경복궁역까지/);
+  assert.match(out, PALACE_ACCESS_CANONICAL_LINE3_RE);
+  assert.doesNotMatch(out, /용산역/);
 });
 
 test('palace access rewrites 서울역·용산역 hub then line 3 without 종로3가', () => {
@@ -329,11 +332,12 @@ test('palace access rewrites 서울역·용산역 hub then line 3 without 종로
   });
   const raw = '서울역이나 용산역으로 이동하고, 거기서 3호선 안국역 또는 경복궁역으로 환승하면 편해요.';
   const out = polishMooniFestivalProxyText(raw, polish);
-  assert.match(out, /종로3가역에서\s*3호선으로\s*갈아타/);
-  assert.match(out, /안국역\s*또는\s*경복궁역으로\s*환승/);
+  assert.match(out, PALACE_ACCESS_CANONICAL_LINE3_RE);
+  assert.doesNotMatch(out, /용산역|거기서\s*3\s*호선/);
+  assert.equal((out.match(/종로3가역에서/g) || []).length, 1);
 });
 
-test('palace access avoids duplicate 1호선 when model already rode line 1 to seoul hub', () => {
+test('palace access replaces 서울역 경유 1호선→3호선 with single canonical (r14)', () => {
   const polish = parseFestivalPolishParams({
     chipId: 'festival_access',
     locale: 'ko',
@@ -344,14 +348,12 @@ test('palace access avoids duplicate 1호선 when model already rode line 1 to s
   });
   const raw = '지하철 1호선을 타고 서울역을 경유할 경우 1호선에서 3호선으로 환승하여 안국역에 도착할 수 있어요.';
   const out = polishMooniFestivalProxyText(raw, polish);
-  assert.doesNotMatch(out, /1호선을\s*타고\s*1호선을\s*타고/);
-  assert.doesNotMatch(out, /갈아타\s*3호선으로\s*환승하여/);
-  assert.match(out, /종로3가역에서\s*3호선으로\s*갈아타/);
-  assert.match(out, /지하철\s*1호선을\s*타고/);
-  assert.match(out, /안국역에\s*도착/);
+  assert.match(out, PALACE_ACCESS_CANONICAL_LINE3_RE);
+  assert.doesNotMatch(out, /갈아타\s*3호선으로|안국역에\s*도착|경유할\s*경우/);
+  assert.equal((out.match(/지하철\s*1호선을\s*타고/g) || []).length, 1);
 });
 
-test('palace access rewrites 서울역 경유 1호선→3호선 without 종로3가', () => {
+test('palace access r14 drops duplicate hub routes and disclaimer once', () => {
   const polish = parseFestivalPolishParams({
     chipId: 'festival_access',
     locale: 'ko',
@@ -360,10 +362,47 @@ test('palace access rewrites 서울역 경유 1호선→3호선 without 종로3�
     festivalTitle: '궁중문화축전',
     nearbyRestaurants: [],
   });
-  const raw = '서울역을 경유할 경우 1호선에서 3호선으로 환승하여 안국역에 도착할 수 있어요.';
+  const raw =
+    '서울역에는 3호선이 없어 직접 연결되지 않으니 1호선을 타세요. '
+    + '서울역에서 3호선으로 경복궁역까지 가면 편해요. '
+    + '서울역이나 용산역에서 3호선 안국역으로 환승할 수 있어요.';
   const out = polishMooniFestivalProxyText(raw, polish);
-  assert.match(out, /종로3가역에서\s*3호선으로\s*갈아타/);
-  assert.match(out, /안국역에\s*도착/);
+  assert.match(out, PALACE_ACCESS_CANONICAL_LINE3_RE);
+  assert.doesNotMatch(out, /직접\s*연결|용산역|서울역에서\s*3\s*호선/);
+  assert.equal((out.match(/종로3가역에서/g) || []).length, 1);
+});
+
+test('palace access r14 replaces 갈아타 3호선으로 다시 환승 phrasing', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw =
+    '지하철 1호선을 타고 서울역을 경유할 경우 갈아타 3호선으로 다시 환승하여 안국역에 도착할 수 있어요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, PALACE_ACCESS_CANONICAL_LINE3_RE);
+  assert.doesNotMatch(out, /갈아타\s*3호선으로\s*다시\s*환승/);
+});
+
+test('palace access canonical line is idempotent', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw =
+    '안국역이 가깝습니다. 서울역에서 지하철 1호선을 타고 종로3가역에서 3호선으로 갈아타면 안국역·경복궁역에 내릴 수 있어요. '
+    + '서울역에서 지하철 3호선으로 가면 빠르다고 해요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.equal((out.match(/종로3가역에서\s*3호선으로\s*갈아타/g) || []).length, 1);
+  assert.match(out, /안국역이\s*가깝습니다/);
 });
 
 test('palace access keeps KTX route when only later leg uses line 3', () => {
@@ -544,6 +583,17 @@ test('food baseline without festivalPolish drops invented 도보로 가까운 �
   });
   assert.match(out, /만동제과|이쉐프의돈까스/);
   assert.doesNotMatch(out, /도보로\s*이동하기\s*가까운|가까운\s*거리에\s*위치/);
+});
+
+test('food baseline trims invented walk clause within one restaurant sentence (r14)', () => {
+  const raw = '만동제과와 이쉐프의돈까스가 있고, 모두 도보로 이동하기 가까운 거리에 위치해 있어요.';
+  const out = polishMooniFestivalProxyText(raw, null, {
+    chipId: 'festival_nearby',
+    locale: 'ko',
+    userText: '맛집',
+    nearbyRestaurants: [],
+  });
+  assert.equal(out, '만동제과와 이쉐프의돈까스가 있어요.');
 });
 
 test('sights polish appends nearbyPlaces line when model only describes program', () => {
