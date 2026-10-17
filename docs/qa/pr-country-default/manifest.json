@@ -129,6 +129,24 @@
       "surface": "home place summary card 390",
       "query": "티니안",
       "baseUrl": "https://127.0.0.1:4173/"
+    },
+    {
+      "file": "seongsan-ilchulbong-search-after-korea-control-webkit-390.png",
+      "slug": "seongsan-ilchulbong",
+      "phase": "after",
+      "surface": "explore search popover 390 — Korea control (subtitle must keep 대한민국)",
+      "query": "성산일출봉",
+      "baseUrl": "https://127.0.0.1:4173/",
+      "subtitleExcerpt": "서귀포 · 대한민국"
     }
-  ]
+  ],
+  "koreaControl": {
+    "file": "seongsan-ilchulbong-search-after-korea-control-webkit-390.png",
+    "slug": "seongsan-ilchulbong",
+    "phase": "after",
+    "surface": "explore search popover 390 — Korea control (subtitle must keep 대한민국)",
+    "query": "성산일출봉",
+    "baseUrl": "https://127.0.0.1:4173/",
+    "subtitleExcerpt": "서귀포 · 대한민국"
+  }
 }
