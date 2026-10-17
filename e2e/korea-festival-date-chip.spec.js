@@ -116,6 +116,31 @@ test.describe('Korea festival date chips', () => {
         });
         return;
       }
+      if (action === 'festivalDetail') {
+        const id = String(route.request().postDataJSON()?.contentId || '');
+        const row = FIXTURE.find((r) => String(r.contentId) === id);
+        if (row) {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              ok: true,
+              contentId: id,
+              intro: {
+                contentId: id,
+                eventStartDate: row.eventStartDate,
+                eventEndDate: row.eventEndDate,
+              },
+              common: {
+                contentId: id,
+                title: row.title,
+                addr1: row.addr1,
+              },
+            }),
+          });
+          return;
+        }
+      }
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -132,11 +157,39 @@ test.describe('Korea festival date chips', () => {
     });
   });
 
+  test('landing matches flag-off hub (recommended row, no window30 filter until tap)', async ({
+    page,
+  }) => {
+    await expect(page.locator('[data-social-promo-festival-row]')).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.locator('[data-festival-list-heading] h2')).not.toContainText(
+      '한 달 이내',
+    );
+    await openTimeRow(page);
+    const window30Chip = page.locator('[data-period-id="window30"]');
+    await expect(window30Chip).toHaveAttribute('aria-pressed', 'false');
+    await window30Chip.click();
+    await expect(window30Chip).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-festival-list-heading] h2')).toContainText(
+      '한 달 이내',
+    );
+  });
+
+  test('festival deep link still opens detail on default landing', async ({ page }) => {
+    const row = FIXTURE[0];
+    await page.goto('/korea/?festival=1001');
+    await expect(page).toHaveURL(/festival=1001/);
+    const dialog = page.getByRole('dialog').first();
+    await expect(dialog).toBeVisible({ timeout: 30_000 });
+    await expect(dialog.getByText(row.title)).toBeVisible({ timeout: 30_000 });
+  });
+
   test('30-day chip replaces this month and matches the card count', async ({ page }) => {
     await page.getByRole('button', { name: /^서울\s+\d+$/ }).click();
     await expect(page.getByRole('button', { name: /지역 대분류/ })).toContainText('서울');
     await openTimeRow(page);
-    await expect(page.getByRole('button', { name: /이번 달/ })).toHaveCount(0);
+    await expect(page.locator('[data-period-id="thisMonth"]')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /이번 주말/ })).toBeVisible();
     const windowChip = page.locator('[data-period-id="window30"]');
     await expect(windowChip).toHaveText('한 달 이내');
