@@ -390,23 +390,38 @@ function accessAnswerMainBeforeFooter(body, locale = 'ko') {
   return idx >= 0 ? text.slice(0, idx).trim() : text.trim();
 }
 
+function koAccessBookingDomainsInText(text) {
+  const domains = festivalAccessBookingDomainsInText(text);
+  return {
+    domains,
+    rail: domains.has('korail') || /\[코레일\]/i.test(text) || /\[SRT\]/i.test(text),
+    bus: domains.has('bustago') || domains.has('kobus') || domains.has('txbus')
+      || /\[버스타고\]|\[고속버스\]|\[시외버스\]|\[BUSTAGO\]|\[KOBUS\]/i.test(text),
+  };
+}
+
+function koAccessTimetableIntentInText(main) {
+  const text = String(main || '');
+  const { rail, bus } = koAccessBookingDomainsInText(text);
+  const trainScheduleFare = /열차\s*(?:시각|시간|시간표)(?:과|와)?\s*요금/;
+  const busScheduleFare = /버스\s*(?:시각|시간|시간표)(?:과|와)?\s*요금/;
+  if (trainScheduleFare.test(text) && rail) return true;
+  if (busScheduleFare.test(text) && bus) return true;
+  if (/열차·버스\s*시각/.test(text) && rail && bus) return true;
+  if (/시간표/.test(text) && rail && /(?:열차|기차|KTX|SRT)/.test(text)) return true;
+  if (/시간표/.test(text) && bus && /버스/.test(text)) return true;
+  return false;
+}
+
 function bodyHasAccessTimetablePointer(text, locale = 'ko') {
   const en = String(locale || '').slice(0, 2) === 'en';
   const main = accessAnswerMainBeforeFooter(text, locale);
-  const domains = festivalAccessBookingDomainsInText(main);
-  const busSites = (domains.has('bustago') ? 1 : 0)
-    + (domains.has('kobus') ? 1 : 0)
-    + (domains.has('txbus') ? 1 : 0);
   if (en) {
+    const domains = festivalAccessBookingDomainsInText(main);
     return /check train and bus schedules on/i.test(main)
       || (/train (?:times|schedules)|bus schedules/i.test(main) && domains.size >= 2);
   }
-  if (/열차\s*시간과\s*요금/.test(main) && (domains.has('korail') || /\[코레일\]/.test(main))) {
-    return true;
-  }
-  if (/열차·버스\s*시각/.test(main) && domains.has('korail') && busSites >= 1) return true;
-  if (/열차·버스\s*시각/.test(main) && busSites >= 2) return true;
-  return false;
+  return koAccessTimetableIntentInText(main);
 }
 
 /** One timetable pointer — drop the auto footer when the route body already points to booking sites. */
@@ -2438,17 +2453,34 @@ function firstGateoFestivalLinkIndex(body) {
   return match && match.index != null ? match.index : -1;
 }
 
+/** Start index of the sentence (or paragraph) that contains the first Gateo festival markdown link. */
+function accessPeriodInsertPoint(text) {
+  const s = String(text || '');
+  const linkIdx = firstGateoFestivalLinkIndex(s);
+  if (linkIdx < 0) return s.length;
+  for (let i = linkIdx - 1; i >= 0; i -= 1) {
+    if (s[i] === '\n' && i > 0 && s[i - 1] === '\n') return i + 1;
+    if (/[.!?。]/.test(s[i])) {
+      let j = i + 1;
+      while (j < linkIdx && /\s/.test(s[j])) j += 1;
+      return j;
+    }
+  }
+  return 0;
+}
+
 function insertAccessPeriodBeforeGateoLinks(body, line) {
   const text = String(body || '').trim();
   const blockStart = gateoFestivalLinkBlockStart(text);
-  if (blockStart < text.length) {
+  if (blockStart < text.length && blockStart > 0) {
     return `${text.slice(0, blockStart).trim()}\n\n${line}\n\n${text.slice(blockStart).trim()}`.trim();
   }
-  const linkIdx = firstGateoFestivalLinkIndex(text);
-  if (linkIdx > 0) {
-    return `${text.slice(0, linkIdx).trim()}\n\n${line}\n\n${text.slice(linkIdx).trim()}`.trim();
-  }
-  return `${text}\n\n${line}`.trim();
+  const insertAt = accessPeriodInsertPoint(text);
+  const before = text.slice(0, insertAt).trim();
+  const after = text.slice(insertAt).trim();
+  if (!after) return `${before}\n\n${line}`.trim();
+  if (!before) return `${line}\n\n${after}`.trim();
+  return `${before}\n\n${line}\n\n${after}`.trim();
 }
 
 function reorderAccessPeriodBeforeGateoLink(text, short) {
@@ -2466,11 +2498,11 @@ function reorderAccessPeriodBeforeGateoLink(text, short) {
     if (origLinkIdx < 0 || s.indexOf(periodMatch[0]) <= origLinkIdx) return s;
     const period = periodMatch[0].trim();
     const rest = s.replace(periodMatch[0], '').replace(/\s+/g, ' ').trim();
-    const linkIdx = firstGateoFestivalLinkIndex(rest);
-    if (linkIdx < 0) return s;
-    const before = rest.slice(0, linkIdx).trim();
-    const fromLink = rest.slice(linkIdx).trim();
-    return [before, period, fromLink].filter(Boolean).join(' ');
+    if (firstGateoFestivalLinkIndex(rest) < 0) return s;
+    const insertAt = accessPeriodInsertPoint(rest);
+    const before = rest.slice(0, insertAt).trim();
+    const linkSentence = rest.slice(insertAt).trim();
+    return [before, period, linkSentence].filter(Boolean).join('\n\n');
   });
   return next.filter(Boolean).join('\n\n').trim();
 }
@@ -2486,8 +2518,7 @@ function fixDanglingAccessPeriodAfterLinks(body, short) {
   if (!/\]\(https:\/\/www\.gateo\.kr/.test(beforePeriod)) return String(body || '').trim();
   let linkStart = gateoFestivalLinkBlockStart(beforePeriod);
   if (linkStart >= beforePeriod.length) {
-    const inlineIdx = firstGateoFestivalLinkIndex(beforePeriod);
-    linkStart = inlineIdx > 0 ? inlineIdx : beforePeriod.length;
+    linkStart = accessPeriodInsertPoint(beforePeriod);
   }
   const main = beforePeriod.slice(0, linkStart).trim();
   const links = beforePeriod.slice(linkStart).trim();

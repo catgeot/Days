@@ -107,8 +107,9 @@ test('access polish drops festival intro and nearby place lists', () => {
   assert.doesNotMatch(out, /국내\s*최대|둘러볼|한복남|북촌한옥마을/);
 });
 
-test('access polish places 행사 기간 before gateo page link', () => {
-  const raw = '서울역에서 KTX로 오면 편해요. [궁중문화축전 페이지](https://www.gateo.kr/korea/?festival=1998564)에서 확인할 수 있어요.';
+test('access polish places 행사 기간 before gateo link sentence without mid-sentence split', () => {
+  const pageUrl = 'https://www.gateo.kr/korea/?festival=1998564';
+  const raw = `서울역에서 KTX로 오면 편해요. 더욱 자세한 정보는 [궁중문화축전 상세 페이지](${pageUrl})에서 살펴보세요.`;
   const polish = parseFestivalPolishParams({
     chipId: 'festival_access',
     locale: 'ko',
@@ -120,10 +121,29 @@ test('access polish places 행사 기간 before gateo page link', () => {
     nearbyRestaurants: [],
   });
   const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /더욱 자세한 정보는 \[궁중문화축전 상세 페이지\]/);
+  assert.doesNotMatch(out, /더욱 자세한 정보는\s*\n\n행사\s*기간은/);
+  assert.doesNotMatch(out, /정보는\s*\n\n행사\s*기간은/);
   const periodIdx = out.indexOf('행사 기간은 10/7~11');
-  const linkIdx = out.indexOf('gateo.kr/korea/?festival=1998564');
-  if (periodIdx >= 0 && linkIdx >= 0) assert.ok(periodIdx < linkIdx);
-  assert.doesNotMatch(out, /gateo\.kr[^)]+\)[^\n]*행사\s*기간은/);
+  const detailIdx = out.indexOf('더욱 자세한 정보는');
+  if (periodIdx >= 0 && detailIdx >= 0) assert.ok(periodIdx < detailIdx);
+});
+
+test('access polish drops auto footer when body uses 열차 시각과 요금은 [코레일]', () => {
+  const raw = '서울역에서 KTX를 타고 오면 편해요. 열차 시각과 요금은 [코레일](https://www.letskorail.com/)에서 확인할 수 있어요.';
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    eventStartDate: '20261007',
+    eventEndDate: '20261011',
+    nearbyRestaurants: [],
+  });
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /열차\s*시각과\s*요금은\s*\[코레일\]/);
+  assert.doesNotMatch(out, /열차·버스\s*시각은/);
 });
 
 test('food polish without distances does not keep invented drive times', () => {
@@ -224,10 +244,7 @@ test('food fallback uses natural 이/가 있어요', () => {
 });
 
 test('access polish keeps one timetable pointer when body already mentions korail times', () => {
-  const raw = [
-    '부산에서 KTX로 오면 편해요.',
-    '열차 시간과 요금은 [코레일](https://www.letskorail.com/)에서 확인할 수 있어요.',
-  ].join(' ');
+  const raw = '부산에서 KTX로 오면 편해요. 열차 시간과 요금은 [코레일](https://www.letskorail.com/)에서 확인할 수 있어요.';
   const polish = parseFestivalPolishParams({
     chipId: 'festival_access',
     locale: 'ko',
