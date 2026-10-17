@@ -19,6 +19,7 @@ import {
   useChatEssentialGuide,
 } from '../../../hooks/useChatEssentialGuide';
 import { resolvePlaceChatKoreaFestivalHint } from '../../../pages/Home/lib/resolvePlaceChatKoreaFestivalHint.js';
+import { buildFestivalMooniPolishOptions } from '../../../pages/Home/lib/festivalMooniRequest.js';
 import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
 import {
   buildMooniContinueUserText,
@@ -96,6 +97,13 @@ export const usePlaceChat = (options = {}) => {
       const catalogSlug = resolveCatalogPlaceSlug(slug);
       const showPlannerHeader = mooniChatShowsPlannerHeaderButton(catalogSlug);
 
+      const festivalPolish = params.festivalContext
+        ? buildFestivalMooniPolishOptions(params.festivalContext, {
+          locale: params.locale || locale,
+          chipId: params.chipId,
+          userText,
+        })
+        : null;
       const geminiParams = {
         locale: params.locale || locale,
         persona: params.persona || 'GENERAL',
@@ -110,6 +118,7 @@ export const usePlaceChat = (options = {}) => {
         ctaPlace: cta.place || destinationName || '',
         koreaFestivalHint,
         showPlannerHeader,
+        festivalPolish,
       };
 
       const geminiResult = await invokeMooniChatToleratingChip(

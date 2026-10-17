@@ -22,6 +22,7 @@ import {
   type ProxyEnv,
 } from "../_shared/gemini/origin.ts";
 import { GEMINI_FAST } from "../_shared/geminiModels.ts";
+import { polishMooniFestivalProxyText } from "../_shared/gemini/festivalMooniProxyPolish.mjs";
 import { acceptProxyParts, buildLegacy, buildTask, estimatePromptTokens } from "../_shared/gemini/tasks.ts";
 import { loadProjectJwks, resolveRateLimitIdentity } from "../_shared/gemini/userJwt.js";
 
@@ -125,7 +126,7 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
 
   let body: Record<string, unknown>;
   try {
-    const parsed = JSON.parse(new TextDecoder().decode(raw));
+    const parsed = JSON.parse(new TextDecoder("utf-8", { fatal: false }).decode(raw));
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return jsonResponse(400, { success: false, error: "bad_request" }, origin, originAllowed);
     }
@@ -390,7 +391,17 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     return jsonResponse(status, { success: false, error }, origin, originAllowed);
   }
 
-  const answer = extractGeminiAnswer(upstream.data);
+  let answer = extractGeminiAnswer(upstream.data);
+  if (built.task === "mooni_chat") {
+    answer = {
+      ...answer,
+      text: polishMooniFestivalProxyText(
+        answer.text,
+        built.festivalPolish ?? null,
+        built.festivalPolishLite ?? {},
+      ),
+    };
+  }
   const truncatedIntro = built.task === "place_intro" && isPlaceIntroTruncated(answer);
 
   if (!health && reserved) {

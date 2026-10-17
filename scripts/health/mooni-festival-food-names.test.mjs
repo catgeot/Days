@@ -27,19 +27,19 @@ test('food hint carries name, type, distance, and a copyable link', async () => 
     },
     locale: 'ko',
   });
-  assert.match(hint, /실제로 가게를 찾아가요/);
+  assert.match(hint, /바로 찾아갈 수 있도록/);
   assert.match(hint, /\[장안식당\]\(https:\/\/search\.naver\.com\/search\.naver\?query=/);
   assert.match(hint, /한식 · 도보 5분/);
   assert.match(hint, /키친205/);
   assert.match(hint, /도보 3분/);
   assert.doesNotMatch(hint, /없는비빔밥집/);
-  assert.match(KO.festivalAnswerRules, /실제로 가게를 찾아가요/);
-  assert.match(ServerKO.festivalAnswerRules, /실제로 가게를 찾아가요/);
-  assert.match(EN.chips.festival_nearby.rules.join('\n'), /natural sentences/);
-  assert.match(ServerEN.chips.festival_nearby.rules.join('\n'), /natural sentences/);
+  assert.match(KO.festivalAnswerRules, /바로 찾아갈 수 있도록/);
+  assert.match(ServerKO.festivalAnswerRules, /바로 찾아갈 수 있도록/);
+  assert.match(EN.chips.festival_nearby.rules.join('\n'), /Describe only names, distances, and types/);
+  assert.match(ServerEN.chips.festival_nearby.rules.join('\n'), /Describe only names, distances, and types/);
   assert.match(
     renderMooniSystem({ locale: 'ko', persona: 'PLANNER', isMooni: true, locationName: '대한민국 국향대전' }),
-    /실제로 가게를 찾아가요/,
+    /바로 찾아갈 수 있도록/,
   );
 });
 

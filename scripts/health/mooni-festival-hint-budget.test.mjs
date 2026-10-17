@@ -216,7 +216,7 @@ test('ChatModal refits after the TAGO append; usePlaceChat uses the shared build
     join(root, 'src/components/PlaceCard/hooks/usePlaceChat.js'),
     'utf8',
   );
-  const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalAssist.js'), 'utf8');
+  const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalReplyPolish.js'), 'utf8');
   assert.match(chatModal, /fitMooniKoreaFestivalHint\(koreaFestivalHint,/);
   assert.match(usePlaceChat, /fitMooniKoreaFestivalHint\(festHint\.hint,/);
   assert.match(assist, /fitMooniKoreaFestivalHint\(hint,/);

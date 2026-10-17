@@ -25,7 +25,7 @@ export const FESTIVAL_DOMESTIC_ORIGINS = [
   },
   {
     id: 'incheon', ko: '인천', en: 'Incheon', province: '인천',
-    ktxKo: '광명역·용산역', ktxEn: 'Gwangmyeong Station and Yongsan Station',
+    ktxKo: '서울역·용산역·광명역', ktxEn: 'Seoul Station, Yongsan Station, and Gwangmyeong Station',
     srtKo: '수서역', srtEn: 'Suseo Station',
     busKo: '인천종합버스터미널', busEn: 'Incheon Bus Terminal',
   },
@@ -194,6 +194,9 @@ export function formatOriginHubGuidance(row, locale = 'ko') {
     if (capital) {
       bits.push('Guide KTX from Seoul Station, Yongsan Station, and Gwangmyeong Station');
       bits.push('Guide SRT from Suseo Station (also Dongtan and Pyeongtaek Jije when relevant). No SRT from Gwangmyeong or Yongsan');
+      if (row.id === 'incheon') {
+        bits.push('Incheon Station KTX is planned for the first half of 2027 — for now, lead with KTX from Seoul Station, Yongsan Station, or Gwangmyeong Station');
+      }
     } else if (row.ktxEn && row.srtEn) {
       const same = row.ktxEn === row.srtEn;
       if (same) bits.push(`Guide KTX and SRT from ${row.ktxEn}`);
@@ -211,6 +214,9 @@ export function formatOriginHubGuidance(row, locale = 'ko') {
   if (capital) {
     bits.push('KTX는 서울역·용산역·광명역에서 출발하도록 안내해 주세요');
     bits.push('SRT는 수서역(동탄·평택지제도 가능)에서 출발하도록 안내해 주세요. 광명·용산에서는 SRT가 없습니다');
+    if (row.id === 'incheon') {
+      bits.push('인천역 KTX는 2027년 상반기 예정이라, 지금은 서울역·용산역·광명역에서 KTX를 타는 경로를 먼저 자연스럽게 안내해 주세요');
+    }
   } else if (row.ktxKo && row.srtKo) {
     const same = row.ktxKo === row.srtKo;
     if (same) bits.push(`KTX·SRT는 ${row.ktxKo}에서 출발하도록 안내해 주세요`);

@@ -39,6 +39,14 @@ function spotRows(value) {
   return rows;
 }
 
+/** MOONi food hints need measured distances — name-only sheet rows still wait for the fetch. */
+export function festivalRestaurantRowsReadyForMooni(rows) {
+  if (!Array.isArray(rows) || !rows.length) return false;
+  const withDist = rows.filter((row) => Number.isFinite(row?.distKm));
+  const need = Math.min(3, rows.length);
+  return withDist.length >= need;
+}
+
 /**
  * Names already on the sheet win. Otherwise wait for the sheet fetch, or start one, up to timeoutMs.
  * @param {string} contentId
@@ -46,7 +54,7 @@ function spotRows(value) {
  */
 export async function waitForFestivalRestaurantNames(contentId, options = {}) {
   const ready = spotRows(options.names);
-  if (ready.length) return ready;
+  if (festivalRestaurantRowsReadyForMooni(ready)) return ready;
   const timeoutMs = Math.max(0, Number(options.timeoutMs) || 3000);
   const key = String(contentId || '').trim();
   let pending = key ? loads.get(key) : null;
@@ -60,7 +68,11 @@ export async function waitForFestivalRestaurantNames(contentId, options = {}) {
   });
   try {
     const result = await Promise.race([pending, timeout]);
-    return result ? spotRows(result) : [];
+    const loaded = result ? spotRows(result) : [];
+    if (festivalRestaurantRowsReadyForMooni(loaded)) return loaded;
+    const merged = loaded.length ? loaded : ready;
+    const withDist = merged.filter((row) => Number.isFinite(row.distKm));
+    return withDist.length ? withDist : merged;
   } finally {
     clearTimeout(timer);
   }
