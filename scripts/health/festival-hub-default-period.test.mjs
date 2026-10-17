@@ -16,6 +16,7 @@ import {
   buildFestivalPanelListMetaSegments,
   formatFestivalPanelListMetaPlain,
   insertWindow30MetaPeriodSegment,
+  omitFestivalMetaRegionDuplicatingHeading,
 } from '../../src/pages/Korea/festivalPanelListMeta.js';
 import { rolling30DayRangeYmd } from '../../src/pages/Korea/festivalTimeFilter.js';
 
@@ -80,6 +81,56 @@ test('default meta uses ~end; 한 달 이내 chip uses the until label in the sa
     ),
   );
   assert.equal(text, '전국 · ~11.15 · 221건 · 시·도별');
+  const dropped = formatFestivalPanelListMetaPlain(
+    omitFestivalMetaRegionDuplicatingHeading(
+      insertWindow30MetaPeriodSegment(
+        base,
+        festivalHubPeriodMetaLabel({ timeTab: 'thisMonth', now: SEOUL_NOON, locale: 'ko' }),
+      ),
+      '전국',
+    ),
+  );
+  assert.equal(dropped, '~11.15 · 221건 · 시·도별');
+});
+
+test('meta drops a region prefix only when it repeats the heading', () => {
+  const seoul = buildFestivalPanelListMetaSegments({
+    areaCode: '1',
+    cityName: 'all',
+    count: 43,
+    t: koT,
+    locale: 'ko',
+  });
+  const seoulMeta = formatFestivalPanelListMetaPlain(
+    omitFestivalMetaRegionDuplicatingHeading(
+      insertWindow30MetaPeriodSegment(seoul, '11.15까지'),
+      '서울특별시',
+    ),
+  );
+  assert.equal(seoulMeta, '11.15까지 · 43건 · 구별');
+
+  const gangneung = buildFestivalPanelListMetaSegments({
+    areaCode: '32',
+    cityName: '강릉시',
+    count: 4,
+    t: koT,
+    locale: 'ko',
+  });
+  const gangneungMeta = formatFestivalPanelListMetaPlain(
+    omitFestivalMetaRegionDuplicatingHeading(
+      insertWindow30MetaPeriodSegment(gangneung, '~11.15'),
+      '강원도 강릉',
+    ),
+  );
+  assert.equal(gangneungMeta, '~11.15 · 4건');
+
+  const kept = formatFestivalPanelListMetaPlain(
+    omitFestivalMetaRegionDuplicatingHeading(
+      insertWindow30MetaPeriodSegment(seoul, '11.15까지'),
+      '서울특별시 · "이번 달" 축제 리스트',
+    ),
+  );
+  assert.equal(kept, '서울특별시 · 11.15까지 · 43건 · 구별');
 });
 
 test('picked chip meta follows that range', () => {

@@ -146,6 +146,9 @@ for (const region of regions) {
   await waitSettled(page);
   const meta = (await page.locator('[data-festival-list-meta]').innerText()).replace(/\s+/g, ' ').trim();
   if (!/~11\.\d+/.test(meta)) throw new Error(`${region.slug} meta missing ~date: ${meta}`);
+  if (meta.startsWith(region.heading)) {
+    throw new Error(`${region.slug} meta repeats heading: ${meta}`);
+  }
   if (region.slug === 'nationwide') {
     const promo = await page.locator('[data-social-promo-festival-row]').count();
     if (!promo) throw new Error('recommended strip missing on default nationwide screen');

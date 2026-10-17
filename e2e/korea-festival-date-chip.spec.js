@@ -168,6 +168,7 @@ test.describe('Korea festival date chips', () => {
     await expect(heading).not.toContainText('"');
     await expect(heading).not.toContainText('축제 리스트');
     await expect(page.locator('[data-festival-list-meta]')).toContainText('~11.14');
+    await expect(page.locator('[data-festival-list-meta]')).not.toContainText('전국');
     const timeMajor = page.getByRole('button', { name: /시간 대분류/ });
     await expect(timeMajor).toContainText('기간');
     await expect(timeMajor).not.toContainText('이번 달');
@@ -207,8 +208,9 @@ test.describe('Korea festival date chips', () => {
       '서울특별시',
     );
     await expect(page.locator('[data-festival-list-meta]')).toHaveText(
-      /서울특별시\s*·\s*11\.14까지\s*·\s*3/,
+      /11\.14까지\s*·\s*3/,
     );
+    await expect(page.locator('[data-festival-list-meta]')).not.toContainText('서울');
     await expect(page.locator('[data-period-id="date"] [data-period-count]')).toHaveCount(0);
     await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(1);
   });

@@ -70,6 +70,7 @@ import {
 import {
   buildFestivalPanelListMetaSegments,
   insertWindow30MetaPeriodSegment,
+  omitFestivalMetaRegionDuplicatingHeading,
 } from './festivalPanelListMeta.js';
 import { isNationwideRegionFilter } from './socialPromoFestivalsLogic.js';
 import {
@@ -251,6 +252,16 @@ function renderIndexListHeadline(headline) {
     );
   }
   return headline.text;
+}
+
+function festivalListHeadingPlain(headline) {
+  if (!headline) return '';
+  if (typeof headline === 'string') return headline.replace(/\s+/g, ' ').trim();
+  if (headline.kind === 'en') {
+    const core = [headline.place, headline.nowrap].filter(Boolean).join(' · ');
+    return `${core}${headline.tail || ''}`.replace(/\s+/g, ' ').trim();
+  }
+  return String(headline.text || '').replace(/\s+/g, ' ').trim();
 }
 
 /** Visible gap after · uses margin (flex parent collapses inter-span whitespace). */
@@ -2217,16 +2228,23 @@ export default function KoreaFestivalHub() {
       locale,
       listLoading: loading,
     });
-    if (!dateChipEnabled || searchActive) return base;
-    const periodLabel = festivalHubPeriodMetaLabel({
-      timeTab,
-      now,
-      seoulToday,
-      customRange,
-      locale,
-    });
-    if (!periodLabel) return base;
-    return insertWindow30MetaPeriodSegment(base, periodLabel);
+    let segments = base;
+    if (dateChipEnabled && !searchActive) {
+      const periodLabel = festivalHubPeriodMetaLabel({
+        timeTab,
+        now,
+        seoulToday,
+        customRange,
+        locale,
+      });
+      if (periodLabel) {
+        segments = insertWindow30MetaPeriodSegment(base, periodLabel);
+      }
+    }
+    return omitFestivalMetaRegionDuplicatingHeading(
+      segments,
+      festivalListHeadingPlain(indexTitle),
+    );
   }, [
     panelListMetaText,
     areaCode,
@@ -2241,6 +2259,7 @@ export default function KoreaFestivalHub() {
     now,
     seoulToday,
     customRange,
+    indexTitle,
   ]);
 
   const resetListFilters = () => {
