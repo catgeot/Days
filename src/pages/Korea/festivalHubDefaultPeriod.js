@@ -53,7 +53,10 @@ export function festivalHubPeriodMetaLabel({
   const en = String(locale || '').startsWith('en');
   if (timeTab === 'thisMonth' || timeTab === 'window30') {
     const range = window30RangeYmd(now);
-    const end = formatFestivalMonthDay(range.eventEndDate, today);
+    const end = formatFestivalMonthDay(range.eventEndDate, today, {
+      rangeStart: range.eventStartDate,
+      rangeEnd: range.eventEndDate,
+    });
     if (!end) return '';
     if (timeTab === 'window30' || en) return formatWindow30UntilMetaLabel(end, locale);
     return formatWindow30RangeSuffix(end);

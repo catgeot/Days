@@ -68,7 +68,7 @@ test('festival nearby sights merge into one section', () => {
   assert.match(sheet, /kind === 'heading'/);
   assert.match(sheet, /text-base font-bold text-stone-800/);
   assert.doesNotMatch(sheet, /nearbyLocalScenicRestGroupTitle/);
-  assert.match(sheet, /variant="solid"/);
+  assert.match(sheet, /variant="onBrightPhoto"/);
   const merged = mergeFestivalNearbySights({
     scenicSpots: [
       { name: '함평엑스포공원', contentId: '130864', lat: 35.05916, lng: 126.5222 },
@@ -130,6 +130,12 @@ test('festival nearby sights merge into one section', () => {
     .filter((km) => Number.isFinite(km));
   const sorted = [...finite].sort((a, b) => a - b);
   assert.deepEqual(finite, sorted);
+});
+
+test('festival detail close button contrast on a bright photo', () => {
+  const icon = [28, 25, 23];
+  const bg = [255, 255, 255];
+  assert.ok(contrastRatio(icon, bg) >= 3);
 });
 
 test('flight origin chat-header contrast tokens', () => {

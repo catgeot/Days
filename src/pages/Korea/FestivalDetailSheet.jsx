@@ -139,6 +139,7 @@ import {
   isManualFestivalContentId,
   manualFestivalTourDetail,
 } from './manualFestivalEntries';
+import { formatFestivalDetailDateRange } from './festivalDateFilter.js';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -146,12 +147,6 @@ const FESTIVAL_RETURN = '/korea';
 const SCENIC_LIST_LIMIT = 8;
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
-
-function formatYmdLabel(ymd) {
-  const s = String(ymd || '');
-  if (!/^\d{8}$/.test(s)) return '';
-  return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
-}
 
 function festivalImage(item) {
   return item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
@@ -1492,9 +1487,10 @@ export default function FestivalDetailSheet({
   const omitEventHours = festivalOmitsOfficialEventHours(item);
 
   const summaryFields = useMemo(() => {
-    const start = formatYmdLabel(item?.eventStartDate || intro?.eventStartDate);
-    const end = formatYmdLabel(item?.eventEndDate || intro?.eventEndDate);
-    const dateRange = [start, end].filter(Boolean).join(' – ');
+    const dateRange = formatFestivalDetailDateRange(
+      item?.eventStartDate || intro?.eventStartDate,
+      item?.eventEndDate || intro?.eventEndDate,
+    );
     const base = buildFestivalDetailSummary({
       item,
       intro: omitEventHours && intro ? { ...intro, playtime: '' } : intro,
@@ -1798,9 +1794,10 @@ export default function FestivalDetailSheet({
     );
   }
 
-  const start = formatYmdLabel(item.eventStartDate || intro?.eventStartDate);
-  const end = formatYmdLabel(item.eventEndDate || intro?.eventEndDate);
-  const range = [start, end].filter(Boolean).join(' – ');
+  const range = formatFestivalDetailDateRange(
+    item.eventStartDate || intro?.eventStartDate,
+    item.eventEndDate || intro?.eventEndDate,
+  );
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
@@ -1876,7 +1873,7 @@ export default function FestivalDetailSheet({
       {showViewportClose ? (
         <AppOutlineBackButton
           icon="close"
-          variant="solid"
+          variant="onBrightPhoto"
           onClick={onClose}
           ariaLabel={t('korea.common.close')}
           title={t('korea.common.close')}

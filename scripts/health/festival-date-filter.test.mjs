@@ -25,14 +25,33 @@ import {
 
 const SEOUL_TODAY = '20261016';
 
-test('labels drop leading zeros: 10.3, 10.31, 12.15', () => {
+test('labels drop leading zeros in the Seoul month: 10.3, 10.31', () => {
   assert.equal(formatFestivalMonthDay('20261003', SEOUL_TODAY), '10.3');
   assert.equal(formatFestivalMonthDay('20261031', SEOUL_TODAY), '10.31');
-  assert.equal(formatFestivalMonthDay('20261215', SEOUL_TODAY), '12.15');
   assert.equal(
     formatFestivalRangeLabel('20261024', '20261025', SEOUL_TODAY),
     '10.24\u201310.25',
   );
+});
+
+test('range year policy — Oct→Nov span, future month, year-cross, past', () => {
+  assert.equal(
+    formatFestivalRangeLabel('20261023', '20261108', SEOUL_TODAY),
+    '10.23\u201311.8',
+  );
+  assert.equal(
+    formatFestivalRangeLabel('20260109', '20260131', SEOUL_TODAY),
+    '2026.1.9\u20131.31',
+  );
+  assert.equal(
+    formatFestivalRangeLabel('20261228', '20270104', SEOUL_TODAY),
+    '2026.12.28\u20132027.1.4',
+  );
+  assert.equal(
+    formatFestivalRangeLabel('20260801', '20260831', SEOUL_TODAY),
+    '2026.8.1\u20138.31',
+  );
+  assert.equal(formatFestivalMonthDay('20261215', SEOUL_TODAY), '2026.12.15');
 });
 
 test('leap day 2028.2.1 keeps the year prefix and a real 29 February', () => {
@@ -152,7 +171,11 @@ test('date chips replace 이번 달 and leave the weekend chip alone', () => {
 });
 
 test('window30 subline range suffix and a picked range is the label itself', () => {
-  const end = formatFestivalMonthDay('20261114', SEOUL_TODAY);
+  const window = window30RangeFromYmd(SEOUL_TODAY);
+  const end = formatFestivalMonthDay(window.eventEndDate, SEOUL_TODAY, {
+    rangeStart: window.eventStartDate,
+    rangeEnd: window.eventEndDate,
+  });
   assert.equal(end, '11.14');
   assert.equal(formatWindow30RangeSuffix(end), '~11.14');
   assert.equal(formatWindow30RangeSuffix('~11.14'), '~11.14');

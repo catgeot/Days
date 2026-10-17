@@ -44,6 +44,7 @@ import {
 } from './festivalTimeFilter';
 import {
   filterFestivalsByYmdRange,
+  formatFestivalDetailDateRange,
   loadedFestivalDataEndYmd,
   seoulTodayYmd,
 } from './festivalDateFilter';
@@ -353,12 +354,6 @@ function formatDistanceKm(km) {
   if (km < 1) return `${Math.max(0.1, Math.round(km * 10) / 10)}km`;
   if (km < 10) return `${(Math.round(km * 10) / 10).toFixed(1)}km`;
   return `${Math.round(km)}km`;
-}
-
-function formatYmdLabel(ymd) {
-  const s = String(ymd || '');
-  if (!/^\d{8}$/.test(s)) return '';
-  return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
 }
 
 function festivalImage(item) {
@@ -725,9 +720,7 @@ function FestivalRow({
   const { isEnglish } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const img = festivalImage(item);
-  const start = formatYmdLabel(item.eventStartDate);
-  const end = formatYmdLabel(item.eventEndDate);
-  const range = start && end ? `${start} – ${end}` : start || end;
+  const range = formatFestivalDetailDateRange(item.eventStartDate, item.eventEndDate);
   const distanceLabel = formatDistanceKm(distanceKm);
 
   return (

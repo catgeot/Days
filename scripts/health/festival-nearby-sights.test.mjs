@@ -389,6 +389,9 @@ test('drop non-tourist facilities from nearby sights', () => {
   assert.equal(isNearbyTourAttractionTitle('강릉종합사회복지관'), false);
   assert.equal(isNearbyTourAttractionTitle('임당생활문화센터'), false);
   assert.equal(isNearbyTourAttractionTitle('경포해변'), true);
+  assert.equal(isNearbyTourAttractionTitle('해수목욕장'), true);
+  assert.equal(isNearbyTourAttractionTitle('헌릉'), true);
+  assert.equal(isNearbyTourAttractionTitle('강릉향교'), true);
   const merged = mergeFestivalNearbySights({
     scenicSpots: [],
     grouped: {
