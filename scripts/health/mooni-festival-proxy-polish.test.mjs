@@ -405,6 +405,21 @@ test('palace access canonical line is idempotent', () => {
   assert.match(out, /안국역이\s*가깝습니다/);
 });
 
+test('palace access r15 inserts canonical when only vague line-3 orphan remains', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw = '3호선까지 이동하여 하차하는 경로가 가장 편리해요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, PALACE_ACCESS_CANONICAL_LINE3_RE);
+  assert.doesNotMatch(out, /3호선까지\s*이동하여\s*하차/);
+});
+
 test('palace access keeps KTX route when only later leg uses line 3', () => {
   const polish = parseFestivalPolishParams({
     chipId: 'festival_access',
@@ -449,6 +464,20 @@ test('access polish drops footer for 열차 상세 시간과 요금은 [코레�
   const out = polishMooniFestivalProxyText(raw, polish);
   assert.match(out, /열차\s*상세\s*시간과\s*요금은\s*\[코레일\]/);
   assert.doesNotMatch(out, /열차·버스\s*시각은/);
+});
+
+test('access polish rewrites false 인천역 KTX to 서울역 (busan festival)', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '서울에서 가는 법',
+    contentId: '2855626',
+    nearbyRestaurants: [],
+  });
+  const raw = '인천역이나 서울역에서 KTX를 타고 부산역까지 가요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /서울역에서\s*KTX/);
+  assert.doesNotMatch(out, /인천역/);
 });
 
 test('gangneung access strips ITX mentions', () => {
@@ -594,6 +623,18 @@ test('food baseline trims invented walk clause within one restaurant sentence (r
     nearbyRestaurants: [],
   });
   assert.equal(out, '만동제과와 이쉐프의돈까스가 있어요.');
+});
+
+test('food baseline drops whole sentence with 도보 when no distance data (r15)', () => {
+  const raw = '주변에는 도보로 방문하기 좋은 식당들이 있어요.';
+  const out = polishMooniFestivalProxyText(raw, null, {
+    chipId: 'festival_nearby',
+    locale: 'ko',
+    userText: '맛집',
+    nearbyRestaurants: [],
+  });
+  assert.equal(out, '');
+  assert.doesNotMatch(out, /도보|걸어서/);
 });
 
 test('sights polish appends nearbyPlaces line when model only describes program', () => {

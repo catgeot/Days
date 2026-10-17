@@ -1576,6 +1576,47 @@ function palaceAccessSentenceDropMangledFragment(sentence) {
   return /가까워요에서/.test(String(sentence || ''));
 }
 
+function palaceAccessSentenceIsVagueLine3Orphan(sentence) {
+  const t = String(sentence || '');
+  if (!/\d\s*호선/.test(t)) return false;
+  if (/(?:종로\s*3\s*가|안국역|경복궁역)/.test(t)) return false;
+  return /(?:까지\s*이동|하차하는\s*경로|가장\s*편리|환승하여\s*하차)/.test(t);
+}
+
+function palaceAccessTextHasNamedPalaceStationRoute(text) {
+  const t = String(text || '');
+  if (palaceAccessTextHasCanonicalLine3Sentence(t)) return true;
+  if (!/\d\s*호선/.test(t)) return false;
+  return /(?:종로\s*3\s*가|안국역|경복궁역)/.test(t);
+}
+
+function ensurePalaceAccessCanonicalSubwayRoute(text, options = {}) {
+  if (String(options.contentId || '').trim() !== PALACE_FESTIVAL_ID) return String(text || '');
+  const source = String(text || '').trim();
+  const hasCanonical = palaceAccessTextHasCanonicalLine3Sentence(source);
+  const needsCanonical = !palaceAccessTextHasNamedPalaceStationRoute(source);
+  const paragraphs = source ? source.split(/\n{2,}/) : [];
+  const cleaned = paragraphs.map((paragraph) => {
+    const sentences = paragraph
+      .split(/(?<=[.!?。])\s+/)
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .filter((sentence) => !palaceAccessSentenceIsVagueLine3Orphan(sentence));
+    return sentences.join(' ');
+  }).filter((paragraph) => paragraph.trim());
+  if (!needsCanonical) {
+    return collapseHorizontalWhitespace(cleaned.join('\n\n').trim());
+  }
+  if (!hasCanonical) {
+    if (cleaned.length) {
+      cleaned[0] = `${PALACE_ACCESS_CANONICAL_LINE3_SENTENCE} ${cleaned[0]}`.trim();
+    } else {
+      cleaned.push(PALACE_ACCESS_CANONICAL_LINE3_SENTENCE);
+    }
+  }
+  return collapseHorizontalWhitespace(cleaned.join('\n\n').trim());
+}
+
 function rewriteImpossibleSeoulStationLine3Access(text, options = {}) {
   if (String(options.contentId || '').trim() !== PALACE_FESTIVAL_ID) return String(text || '');
   const source = String(text || '');
@@ -1605,7 +1646,22 @@ function rewriteImpossibleSeoulStationLine3Access(text, options = {}) {
     }
     return kept.join(' ');
   });
-  return collapseHorizontalWhitespace(fixed.join('\n\n').trim());
+  return ensurePalaceAccessCanonicalSubwayRoute(
+    collapseHorizontalWhitespace(fixed.join('\n\n').trim()),
+    options,
+  );
+}
+
+/** 인천역 KTX는 미개통 — access 답에서 인천역 KTX 출발 표기를 서울역으로 교정한다. */
+export function rewriteFalseIncheonStationKtxAccess(text, options = {}) {
+  if (!isFestivalAccessAsk(options) && !isBoundFestivalAccessPolish(options)) return String(text || '');
+  const ask = String(options.userText || '');
+  if (/인천\s*공항|인천국제공항|incheon airport/i.test(ask)) return String(text || '');
+  let s = String(text || '');
+  s = s.replace(/인천역이나\s*서울역에서/g, '서울역에서');
+  s = s.replace(/인천역(?:이나|에서)\s*(?=(?:KTX|SRT|ITX|열차|기차))/g, '서울역에서 ');
+  s = s.replace(/서울역에서\s*서울역에서/g, '서울역에서');
+  return collapseHorizontalWhitespace(s).trim();
 }
 
 const GANGNEUNG_SEOUL_RAIL_KO =
@@ -2216,8 +2272,15 @@ const FOOD_UNVERIFIED_WALK_PHRASE_RE =
 const FOOD_INVENTED_WALK_CLAUSE_RE =
   /(?:모두\s*)?(?:도보로|걸어서)[^.!?。]{0,120}?(?:가까운\s*거리|이동하기\s*가까운|도보\s*거리)|가까운\s*거리에\s*위치해\s*있/;
 
+function foodSentenceMentionsUnverifiedWalk(sentence) {
+  return /도보|걸어서/.test(String(sentence || ''));
+}
+
 function trimFoodSentenceInventedWalkClause(sentence) {
   const s = String(sentence || '').trim();
+  if (foodSentenceMentionsUnverifiedWalk(s) && !FOOD_INVENTED_WALK_CLAUSE_RE.test(s)) {
+    return '';
+  }
   if (!FOOD_INVENTED_WALK_CLAUSE_RE.test(s)) return s;
   const parts = s.split(/,\s*(?=(?:모두\s*)?(?:도보로|걸어서))/);
   if (parts.length > 1) {
@@ -3141,6 +3204,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteLeadingBareFestivalPeriod(text, options);
     text = stripNonTransportAccessContent(text, options);
     text = rewriteImpossibleSeoulStationLine3Access(text, options);
+    text = rewriteFalseIncheonStationKtxAccess(text, options);
     text = stripGangneungAccessItxMentions(text, options);
     text = ensureGangneungSeoulAccessKtxMention(text, options);
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
