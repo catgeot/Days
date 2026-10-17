@@ -22,3 +22,15 @@ test('festival list heading reserves space beside Large/Map controls', () => {
 test('list meta count uses promo-excluded panel rows', () => {
   assert.match(index, /count: panelItemsForList\.length/);
 });
+
+test('flag-on list meta keeps the picked-dates weight in every state', () => {
+  const metaPos = index.indexOf('data-festival-list-meta=""');
+  assert.ok(metaPos > 0);
+  const block = index.slice(metaPos - 350, metaPos);
+  assert.match(
+    block,
+    /dateChipEnabled\s*\n\s*\?\s*'text-xs font-medium text-stone-700'/,
+  );
+  assert.match(block, /:\s*'text-\[11px\] text-stone-500'/);
+  assert.doesNotMatch(block, /timeTab === 'date'/);
+});

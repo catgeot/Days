@@ -3113,7 +3113,7 @@ export default function KoreaFestivalHub() {
               </div>
               <p
                 className={`w-full min-w-0 leading-snug ${
-                  dateChipEnabled && timeTab === 'date'
+                  dateChipEnabled
                     ? 'text-xs font-medium text-stone-700'
                     : 'text-[11px] text-stone-500'
                 }`}
