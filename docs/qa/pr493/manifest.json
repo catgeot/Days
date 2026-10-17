@@ -30,8 +30,10 @@
   },
   {
     "file": "04-seoul-detail-scroll.png",
-    "surface": "서울 권역 축제 상세 하단 스크롤",
+    "surface": "서울 권역 축제 상세 하단 스크롤 (주변 로딩 중 스냅)",
     "region": "서울",
+    "festivalId": "2740046",
+    "festivalTitle": "2026 한복문화주간",
     "greyPlaceholderReport": {
       "pendingNearby": 20,
       "emptyNearby": 0,
@@ -42,18 +44,56 @@
     }
   },
   {
+    "file": "04b-seoul-settled.png",
+    "surface": "서울 권역 — 명소 더보기 아래 food/leports/culture/stay 정착 후",
+    "region": "서울",
+    "festivalId": "2740046",
+    "festivalTitle": "2026 한복문화주간",
+    "settled": true,
+    "greyPlaceholderReport": {
+      "pendingNearby": 0,
+      "emptyNearby": 0,
+      "photoReserve": 0,
+      "heroPending": 0,
+      "belowLoading": 0
+    },
+    "belowReserveCount": 0,
+    "pendingNearbyCount": 0
+  },
+  {
     "file": "05-yeongnam-detail-empty-sections.png",
-    "surface": "영남·부산 권 축제 — 맛집/레포츠 0건이면 섹션 없음",
+    "surface": "영남·부산 권 축제 — 맛집/레포츠 0건이면 섹션 없음 (주변 로딩 중 스냅)",
     "region": "영남",
+    "festivalId": "4109218",
+    "festivalTitle": "「인각사」와 함께하는 제5회 군위 삼국유사 전국 가족걷기대회",
     "nearFoodVisible": false,
     "nearLeportsVisible": false,
     "greyPlaceholderReport": {
-      "pendingNearby": 15,
+      "pendingNearby": 14,
       "emptyNearby": 0,
       "photoReserve": 1,
       "heroPending": 0,
       "belowLoading": 0
     }
+  },
+  {
+    "file": "05b-yeongnam-settled.png",
+    "surface": "영남·부산 권 — 명소 더보기 아래 정착 후",
+    "region": "영남",
+    "festivalId": "4109218",
+    "festivalTitle": "「인각사」와 함께하는 제5회 군위 삼국유사 전국 가족걷기대회",
+    "settled": true,
+    "nearFoodVisible": 0,
+    "nearLeportsVisible": 0,
+    "greyPlaceholderReport": {
+      "pendingNearby": 0,
+      "emptyNearby": 1,
+      "photoReserve": 0,
+      "heroPending": 0,
+      "belowLoading": 0
+    },
+    "belowReserveCount": 0,
+    "pendingNearbyCount": 0
   },
   {
     "file": "06-abort-hero.png",

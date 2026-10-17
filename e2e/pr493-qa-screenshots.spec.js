@@ -119,6 +119,50 @@ async function waitNearbySectionsSettled(dialog) {
   });
 }
 
+async function waitDetailBottomFullySettled(page, dialog) {
+  await waitNearbySectionsSettled(dialog);
+  await expect(dialog.locator('[data-festival-below-loading]')).toHaveCount(0, {
+    timeout: 120_000,
+  });
+  await expect(dialog.locator('[data-festival-below-reserve]')).toHaveCount(0, {
+    timeout: 120_000,
+  });
+  await expect(dialog.locator('[data-festival-lodging-reserve]')).toHaveCount(0, {
+    timeout: 120_000,
+  });
+  await expect(dialog.locator('[data-festival-food-reserve]')).toHaveCount(0, {
+    timeout: 120_000,
+  });
+  await expect(dialog.locator('[data-festival-leports-reserve]')).toHaveCount(0, {
+    timeout: 120_000,
+  });
+  await expect(dialog.locator('[data-festival-culture-reserve]')).toHaveCount(0, {
+    timeout: 120_000,
+  });
+  await expect
+    .poll(
+      async () => await dialog.locator('[data-nearby-thumb-pending]').count(),
+      { timeout: 120_000 },
+    )
+    .toBe(0);
+  await page.waitForLoadState('networkidle', { timeout: 45_000 }).catch(() => {});
+  await page.waitForTimeout(500);
+}
+
+async function openFirstMatchingCardWithId(page, pattern) {
+  const cards = page.getByRole('main').locator('[data-festival-id]');
+  await expect(cards.first()).toBeVisible({ timeout: 120_000 });
+  const card = cards.filter({ hasText: pattern }).first();
+  await expect(card).toBeVisible({ timeout: 120_000 });
+  const festivalId = await card.getAttribute('data-festival-id');
+  const title = (await card.innerText()).split('\n')[0]?.trim();
+  await card.scrollIntoViewIfNeeded();
+  await card.click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible({ timeout: 120_000 });
+  return { dialog, festivalId, title };
+}
+
 async function closeDetail(page) {
   const dialog = page.getByRole('dialog');
   if (await dialog.count()) {
@@ -244,8 +288,8 @@ test.describe('PR493 festival detail follow-ups — WebKit 390 user flow', () =>
       '## MOONi config error (shot 03)',
       MOONI_CONFIG_CAUSE,
       '',
-      '## Grey boxes (shots 04–05)',
-      'Stone/grey blocks are loading placeholders (`data-nearby-thumb-pending`, `data-festival-photo-reserve`, `belowSectionsLoading` skeleton) — sections mount when fetches settle; minor pop-in possible below hero.',
+      '## Grey boxes (shots 04–05 vs 04b/05b)',
+      '04/05 = scroll snap while nearby thumbs still pending. 04b/05b = after `networkidle`, `[data-festival-below-reserve]` count 0, and `[data-nearby-thumb-pending]` count 0 (same festivalId as 04/05 in manifest).',
       '',
       'See `manifest.json` for per-file metadata.',
     ].join('\n');
@@ -302,24 +346,42 @@ test.describe('PR493 festival detail follow-ups — WebKit 390 user flow', () =>
 
     await openFestivalHubFromHome(page);
     await selectSidoChip(page, /서울/);
-    const seoulDialog = await openFirstMatchingCard(page, /서울|한강|문화|축제/i);
+    const seoulOpen = await openFirstMatchingCardWithId(page, /서울|한강|문화|축제/i);
+    const seoulDialog = seoulOpen.dialog;
     await waitNearbySectionsSettled(seoulDialog);
     const seoulGrey = await describeGreyPlaceholders(page, seoulDialog);
     await seoulDialog.evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
     await page.waitForTimeout(500);
     await shot(page, '04-seoul-detail-scroll.png', {
-      surface: '서울 권역 축제 상세 하단 스크롤',
+      surface: '서울 권역 축제 상세 하단 스크롤 (주변 로딩 중 스냅)',
       region: '서울',
+      festivalId: seoulOpen.festivalId,
+      festivalTitle: seoulOpen.title,
       greyPlaceholderReport: {
         ...seoulGrey,
         interpretation:
           'Grey tiles = nearby thumb pending shimmers / inline strip loading — not broken images. Sections appear when `belowSectionsLoading` clears.',
       },
     });
+    await waitDetailBottomFullySettled(page, seoulDialog);
+    const seoulSettledGrey = await describeGreyPlaceholders(page, seoulDialog);
+    await seoulDialog.evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
+    await page.waitForTimeout(500);
+    await shot(page, '04b-seoul-settled.png', {
+      surface: '서울 권역 — 명소 더보기 아래 food/leports/culture/stay 정착 후',
+      region: '서울',
+      festivalId: seoulOpen.festivalId,
+      festivalTitle: seoulOpen.title,
+      settled: true,
+      greyPlaceholderReport: seoulSettledGrey,
+      belowReserveCount: await seoulDialog.locator('[data-festival-below-reserve]').count(),
+      pendingNearbyCount: seoulSettledGrey.pendingNearby,
+    });
     await closeDetail(page);
 
     await selectSidoChip(page, /경남|부산|대구|울산|경북/);
-    const yeongnamDialog = await openFirstMatchingCard(page, /축제|페스티벌|문화|대회/i);
+    const yeongnamOpen = await openFirstMatchingCardWithId(page, /축제|페스티벌|문화|대회/i);
+    const yeongnamDialog = yeongnamOpen.dialog;
     await waitNearbySectionsSettled(yeongnamDialog);
     const foodVisible = await yeongnamDialog.locator('[data-festival-section="nearFood"]').count();
     const leportsVisible = await yeongnamDialog.locator('[data-festival-section="nearLeports"]').count();
@@ -329,11 +391,31 @@ test.describe('PR493 festival detail follow-ups — WebKit 390 user flow', () =>
     });
     await page.waitForTimeout(500);
     await shot(page, '05-yeongnam-detail-empty-sections.png', {
-      surface: '영남·부산 권 축제 — 맛집/레포츠 0건이면 섹션 없음',
+      surface: '영남·부산 권 축제 — 맛집/레포츠 0건이면 섹션 없음 (주변 로딩 중 스냅)',
       region: '영남',
+      festivalId: yeongnamOpen.festivalId,
+      festivalTitle: yeongnamOpen.title,
       nearFoodVisible: foodVisible > 0,
       nearLeportsVisible: leportsVisible > 0,
       greyPlaceholderReport: yeongnamGrey,
+    });
+    await waitDetailBottomFullySettled(page, yeongnamDialog);
+    const yeongnamSettledGrey = await describeGreyPlaceholders(page, yeongnamDialog);
+    await yeongnamDialog.evaluate((el) => {
+      el.scrollTo({ top: el.scrollHeight });
+    });
+    await page.waitForTimeout(500);
+    await shot(page, '05b-yeongnam-settled.png', {
+      surface: '영남·부산 권 — 명소 더보기 아래 정착 후',
+      region: '영남',
+      festivalId: yeongnamOpen.festivalId,
+      festivalTitle: yeongnamOpen.title,
+      settled: true,
+      nearFoodVisible: await yeongnamDialog.locator('[data-festival-section="nearFood"]').count(),
+      nearLeportsVisible: await yeongnamDialog.locator('[data-festival-section="nearLeports"]').count(),
+      greyPlaceholderReport: yeongnamSettledGrey,
+      belowReserveCount: await yeongnamDialog.locator('[data-festival-below-reserve]').count(),
+      pendingNearbyCount: yeongnamSettledGrey.pendingNearby,
     });
     await closeDetail(page);
   });
