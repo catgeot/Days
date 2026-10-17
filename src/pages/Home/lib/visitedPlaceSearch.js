@@ -81,18 +81,40 @@ function isKoreaCountryLabel(country, countryEn) {
   );
 }
 
-/** ROK-ish bbox minus Japan (Tsushima·北九州) and DPRK (평양·개성) false positives for visited infer */
+/** ROK-ish bbox minus Japan (Tsushima·北九州) and north of DMZ slant for visited infer */
 const VISITED_KOREA_LNG_MIN = 124.5;
 const VISITED_KOREA_LNG_MAX = 132.2;
 const VISITED_KOREA_LAT_MIN = 33.0;
 const VISITED_KOREA_LAT_MAX = 38.8;
-const VISITED_KOREA_DPRK_LAT_CUTOFF = 38.25;
+
+/** DMZ slants NE — west ~37.77 (개성) to east coast ~38.68 (고성·통일전망대) */
+const DMZ_NORTH_WEST = { lng: 126.5, lat: 37.77 };
+const DMZ_NORTH_MID = { lng: 127.25, lat: 38.28 };
+const DMZ_NORTH_EAST = { lng: 128.55, lat: 38.68 };
 
 const VISITED_KOREA_EXCLUSION_BOXES = [
-  { latMin: 33.0, latMax: 35.05, lngMin: 128.65, lngMax: 130.15 },
+  { latMin: 34.05, latMax: 34.55, lngMin: 129.15, lngMax: 130.15 },
   { latMin: 33.0, latMax: 34.55, lngMin: 130.0, lngMax: 131.25 },
-  { latMin: 37.88, latMax: 38.25, lngMin: 124.5, lngMax: 126.85 },
 ];
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+/** Max latitude treated as ROK at this longitude (north of line → DPRK / excluded). */
+export function northBoundaryLatForVisitedKorea(lng) {
+  if (!Number.isFinite(lng)) return DMZ_NORTH_WEST.lat;
+  if (lng <= DMZ_NORTH_WEST.lng) return DMZ_NORTH_WEST.lat;
+  if (lng <= DMZ_NORTH_MID.lng) {
+    const t = (lng - DMZ_NORTH_WEST.lng) / (DMZ_NORTH_MID.lng - DMZ_NORTH_WEST.lng);
+    return lerp(DMZ_NORTH_WEST.lat, DMZ_NORTH_MID.lat, t);
+  }
+  if (lng <= DMZ_NORTH_EAST.lng) {
+    const t = (lng - DMZ_NORTH_MID.lng) / (DMZ_NORTH_EAST.lng - DMZ_NORTH_MID.lng);
+    return lerp(DMZ_NORTH_MID.lat, DMZ_NORTH_EAST.lat, t);
+  }
+  return DMZ_NORTH_EAST.lat;
+}
 
 function inVisitedKoreaExclusionBox(lat, lng) {
   return VISITED_KOREA_EXCLUSION_BOXES.some(
@@ -114,7 +136,7 @@ export function coordsInKorea(lat, lng) {
   ) {
     return false;
   }
-  if (lat > VISITED_KOREA_DPRK_LAT_CUTOFF) return false;
+  if (lat > northBoundaryLatForVisitedKorea(lng)) return false;
   if (inVisitedKoreaExclusionBox(lat, lng)) return false;
   return true;
 }
