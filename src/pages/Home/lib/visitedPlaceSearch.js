@@ -81,9 +81,84 @@ function isKoreaCountryLabel(country, countryEn) {
   );
 }
 
-function coordsInKorea(lat, lng) {
+/** ROK-ish bbox minus Japan (Tsushima·北九州) and north of DMZ slant for visited infer */
+const VISITED_KOREA_LNG_MIN = 124.5;
+const VISITED_KOREA_LNG_MAX = 132.2;
+const VISITED_KOREA_LAT_MIN = 33.0;
+const VISITED_KOREA_LAT_MAX = 38.8;
+
+/** DMZ slants NE — west ~37.77 (개성) to east coast ~38.68 (고성·통일전망대) */
+const DMZ_NORTH_WEST = { lng: 126.5, lat: 37.77 };
+const DMZ_NORTH_MID = { lng: 127.25, lat: 38.28 };
+const DMZ_NORTH_EAST = { lng: 128.55, lat: 38.68 };
+
+/** West of DMZ west anchor — flat 37.77°N cuts ROK Yellow Sea islands; explicit pockets only */
+const VISITED_KOREA_INCLUSION_BOXES = [
+  { latMin: 37.88, latMax: 38.04, lngMin: 124.55, lngMax: 124.82 },
+  { latMin: 37.74, latMax: 37.92, lngMin: 124.58, lngMax: 124.88 },
+  { latMin: 37.58, latMax: 37.76, lngMin: 125.58, lngMax: 125.82 },
+  { latMin: 37.7, latMax: 37.88, lngMin: 126.15, lngMax: 126.38 },
+  { latMin: 37.72, latMax: 37.82, lngMin: 126.08, lngMax: 126.48 },
+];
+
+const VISITED_KOREA_EXCLUSION_BOXES = [
+  { latMin: 34.05, latMax: 34.55, lngMin: 129.15, lngMax: 130.15 },
+  { latMin: 33.0, latMax: 34.55, lngMin: 130.0, lngMax: 131.25 },
+];
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+/** Max latitude treated as ROK at this longitude (north of line → DPRK / excluded). */
+export function northBoundaryLatForVisitedKorea(lng) {
+  if (!Number.isFinite(lng)) return DMZ_NORTH_WEST.lat;
+  if (lng <= DMZ_NORTH_WEST.lng) return DMZ_NORTH_WEST.lat;
+  if (lng <= DMZ_NORTH_MID.lng) {
+    const t = (lng - DMZ_NORTH_WEST.lng) / (DMZ_NORTH_MID.lng - DMZ_NORTH_WEST.lng);
+    return lerp(DMZ_NORTH_WEST.lat, DMZ_NORTH_MID.lat, t);
+  }
+  if (lng <= DMZ_NORTH_EAST.lng) {
+    const t = (lng - DMZ_NORTH_MID.lng) / (DMZ_NORTH_EAST.lng - DMZ_NORTH_MID.lng);
+    return lerp(DMZ_NORTH_MID.lat, DMZ_NORTH_EAST.lat, t);
+  }
+  return DMZ_NORTH_EAST.lat;
+}
+
+function inVisitedKoreaInclusionBox(lat, lng) {
+  return VISITED_KOREA_INCLUSION_BOXES.some(
+    (box) =>
+      lat >= box.latMin &&
+      lat <= box.latMax &&
+      lng >= box.lngMin &&
+      lng <= box.lngMax,
+  );
+}
+
+function inVisitedKoreaExclusionBox(lat, lng) {
+  return VISITED_KOREA_EXCLUSION_BOXES.some(
+    (box) =>
+      lat >= box.latMin &&
+      lat <= box.latMax &&
+      lng >= box.lngMin &&
+      lng <= box.lngMax,
+  );
+}
+
+export function coordsInKorea(lat, lng) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
-  return lat >= 33.0 && lat <= 38.8 && lng >= 124.5 && lng <= 132.2;
+  if (
+    lat < VISITED_KOREA_LAT_MIN ||
+    lat > VISITED_KOREA_LAT_MAX ||
+    lng < VISITED_KOREA_LNG_MIN ||
+    lng > VISITED_KOREA_LNG_MAX
+  ) {
+    return false;
+  }
+  if (inVisitedKoreaExclusionBox(lat, lng)) return false;
+  if (inVisitedKoreaInclusionBox(lat, lng)) return true;
+  if (lat > northBoundaryLatForVisitedKorea(lng)) return false;
+  return true;
 }
 
 /** Hangul place_stats 행에 country가 없을 때만 — 해외 한글 표기는 대한민국으로 추정하지 않음 */

@@ -1,0 +1,16 @@
+{
+  "before": {
+    "file": "3d-tour-button-before-webkit-390.png",
+    "baseUrl": "https://www.gateo.kr/",
+    "query": "롬블론",
+    "surface": "place summary card — 3D tour CTA",
+    "buttonLabel": "3D 3D 투어"
+  },
+  "after": {
+    "file": "3d-tour-button-after-webkit-390.png",
+    "baseUrl": "https://127.0.0.1:4173/",
+    "query": "롬블론",
+    "surface": "place summary card — 3D tour CTA",
+    "buttonLabel": "3D 투어"
+  }
+}
