@@ -1,15 +1,15 @@
 /**
- * WebKit 390 — date sheet week shortcuts + applied list (서울, live data).
- * CAPTURE_BASE_URL — VITE_GATEO_FESTIVAL_DATE_CHIP=1 (default https://127.0.0.1:5194)
+ * WebKit 390 — date sheet week shortcuts + applied list.
+ * Regions: 전국 · 서울 · 강릉 · 제주. Flag-on server: CAPTURE_BASE_URL.
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { webkit } from '@playwright/test';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(root, 'docs/qa/date-chip-week-shortcuts');
-const onUrl = process.env.CAPTURE_BASE_URL || 'https://127.0.0.1:5194';
+const onUrl = process.env.CAPTURE_BASE_URL || 'http://127.0.0.1:5194';
 
 mkdirSync(outDir, { recursive: true });
 
@@ -34,20 +34,41 @@ async function dismissLocHint(page) {
   }
 }
 
-async function gotoKoreaSeoul(page) {
+async function gotoKorea(page) {
   await page.goto(`${onUrl}/korea/`, { waitUntil: 'domcontentloaded' });
   await page.getByRole('heading', { name: /한국의 축제/ }).waitFor({ timeout: 90_000 });
   await dismissLocHint(page);
-  await page.getByRole('button', { name: /지역 대분류/ }).click();
-  await page
-    .locator('[aria-label="세부 칩"]')
-    .getByRole('button', { name: /^서울/ })
-    .click();
-  await page
-    .locator('main [data-festival-id], [data-festival-period-empty]')
-    .first()
-    .waitFor({ timeout: 90_000 });
 }
+
+async function pickProvince(page, label) {
+  await page.getByRole('button', { name: /지역 대분류/ }).click();
+  const chip = page
+    .locator('[aria-label="세부 칩"]')
+    .getByRole('button', { name: new RegExp(`^${label}`) });
+  await chip.waitFor({ timeout: 30_000 });
+  await chip.click();
+}
+
+async function waitSettled(page) {
+  await page.waitForFunction(() => {
+    const imgs = [...document.querySelectorAll('main [data-festival-id] img')];
+    if (!imgs.length) return true;
+    return imgs.every((img) => img.complete && img.naturalWidth > 0);
+  }, null, { timeout: 20_000 }).catch(async () => {
+    await page.waitForFunction(() => {
+      const imgs = [...document.querySelectorAll('main [data-festival-id] img')];
+      return imgs.every((img) => img.complete);
+    }, null, { timeout: 8_000 }).catch(() => {});
+  });
+  await page.evaluate(() => document.fonts?.ready);
+}
+
+const regions = [
+  { slug: 'nationwide', province: '', district: '' },
+  { slug: 'seoul', province: '서울', district: '' },
+  { slug: 'gangneung', province: '강원', district: '강릉' },
+  { slug: 'jeju', province: '제주', district: '' },
+];
 
 const shortcuts = [
   { slug: 'this-week', shortcutId: '0' },
@@ -67,21 +88,52 @@ const context = await browser.newContext({
 });
 const page = await context.newPage();
 const notes = [`Capture base: ${onUrl}`];
+const written = new Set(['NOTES.md']);
 
-for (const item of shortcuts) {
-  await gotoKoreaSeoul(page);
-  await page.getByRole('button', { name: /시간 대분류/ }).click();
-  await page.locator('[data-period-id="date"]').click();
-  const sheet = page.locator('[data-festival-date-sheet]');
-  await sheet.waitFor();
-  await sheet.locator(`[data-week-shortcut="${item.shortcutId}"]`).click();
-  await shoot(page, `${item.slug}-sheet-selected.png`);
-  await sheet.getByRole('button', { name: '이 기간 보기' }).click();
-  await sheet.waitFor({ state: 'hidden', timeout: 15_000 });
-  await page.waitForTimeout(500);
-  await shoot(page, `${item.slug}-list-applied.png`);
-  const chip = await page.locator('[data-period-id="date"]').innerText();
-  notes.push(`${item.slug}: date chip → ${chip.trim()}`);
+for (const region of regions) {
+  for (const item of shortcuts) {
+    await gotoKorea(page);
+    if (region.province) await pickProvince(page, region.province);
+    else {
+      await page.getByRole('button', { name: /지역 대분류/ }).click();
+      const nationwide = page
+        .locator('[aria-label="세부 칩"]')
+        .getByRole('button', { name: /^전국/ });
+      await nationwide.waitFor({ timeout: 30_000 });
+      await nationwide.click();
+    }
+    if (region.district) {
+      const district = page
+        .locator('[aria-label="지역 구분 칩"]')
+        .getByRole('button', { name: new RegExp(region.district) });
+      await district.first().waitFor({ timeout: 30_000 });
+      await district.first().click();
+    }
+    await page
+      .locator('main [data-festival-id], [data-festival-period-empty]')
+      .first()
+      .waitFor({ timeout: 90_000 });
+    await page.getByRole('button', { name: /시간 대분류/ }).click();
+    await page.locator('[data-period-id="date"]').click();
+    const sheet = page.locator('[data-festival-date-sheet]');
+    await sheet.waitFor();
+    await sheet.locator(`[data-week-shortcut="${item.shortcutId}"]`).click();
+    const sheetName = `${region.slug}-${item.slug}-sheet-selected.png`;
+    await shoot(page, sheetName);
+    written.add(sheetName);
+    await sheet.getByRole('button', { name: '이 기간 보기' }).click();
+    await sheet.waitFor({ state: 'hidden', timeout: 15_000 });
+    await waitSettled(page);
+    const listName = `${region.slug}-${item.slug}-list-applied.png`;
+    await shoot(page, listName);
+    written.add(listName);
+    const chip = (await page.locator('[data-period-id="date"]').innerText()).replace(/\s+/g, ' ').trim();
+    notes.push(`${region.slug} ${item.slug}: date chip → ${chip}`);
+  }
+}
+
+for (const name of readdirSync(outDir)) {
+  if (!written.has(name)) unlinkSync(join(outDir, name));
 }
 
 writeFileSync(
