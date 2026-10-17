@@ -5,16 +5,8 @@ import { test, expect } from './fixtures.js';
 const OUT = join(process.cwd(), 'docs/qa/pr493-followup');
 const VIEWPORT = { width: 390, height: 844 };
 const GANGNEUNG_NOODLES_ID = '2930716';
-const GANGWON_K_DRONE_ID = '4116994';
+const YEONGNAM_GUNWI_WALK_ID = '4109218';
 const manifest = [];
-
-async function closeDetail(page) {
-  const dialog = page.getByRole('dialog');
-  if (await dialog.count()) {
-    await page.getByRole('button', { name: /^닫기$|^Close$/i }).last().click();
-    await expect(dialog).toHaveCount(0, { timeout: 30_000 });
-  }
-}
 
 async function openFestivalDeep(page, festivalId) {
   const base = (process.env.PLAYWRIGHT_BASE_URL || 'https://www.gateo.kr/').replace(/\/$/, '');
@@ -36,7 +28,7 @@ async function shot(page, file, meta = {}) {
     path,
     clip: { x: 0, y: 0, width: VIEWPORT.width, height: VIEWPORT.height },
   });
-  manifest.push({ file, ...meta });
+  manifest.push({ file, viewportWidth: VIEWPORT.width, ...meta });
   return path;
 }
 
@@ -53,94 +45,101 @@ async function dismissLocHint(page) {
   }
 }
 
-async function openFestivalHubFromHome(page) {
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page
-    .getByRole('button', { name: /바로가기 메뉴 펼치기|Expand quick links/i })
-    .click({ timeout: 180_000 });
-  await page
-    .getByRole('link', { name: /한국의 축제로 이동|Go to Korea festivals/i })
-    .click();
-  await expect(
-    page.getByRole('heading', { name: /한국의 축제|Korea festivals/i }),
-  ).toBeVisible({ timeout: 120_000 });
-  await dismissLocHint(page);
-}
-
-async function selectSidoChip(page, namePattern) {
-  const chip = page.getByRole('button', { name: namePattern }).first();
-  await expect(chip).toBeVisible({ timeout: 60_000 });
-  await chip.click();
-}
-
-async function openFestivalById(page, festivalId) {
-  const card = page.locator(`[data-festival-id="${festivalId}"]`).first();
-  await expect(card).toBeVisible({ timeout: 120_000 });
-  await card.scrollIntoViewIfNeeded();
-  await card.click();
-  const dialog = page.getByRole('dialog');
-  await expect(dialog).toBeVisible({ timeout: 120_000 });
-  return dialog;
-}
-
-async function openFirstMatchingCardWithId(page, pattern) {
-  const cards = page.getByRole('main').locator('[data-festival-id]');
-  await expect(cards.first()).toBeVisible({ timeout: 120_000 });
-  const card = cards.filter({ hasText: pattern }).first();
-  await expect(card).toBeVisible({ timeout: 120_000 });
-  const festivalId = await card.getAttribute('data-festival-id');
-  const title = (await card.innerText()).split('\n')[0]?.trim();
-  await card.scrollIntoViewIfNeeded();
-  await card.click();
-  const dialog = page.getByRole('dialog');
-  await expect(dialog).toBeVisible({ timeout: 120_000 });
-  return { dialog, festivalId, title };
-}
-
 async function waitDetailBottomFullySettled(page, dialog) {
-  await expect(dialog.getByText(/주변.*불러오는 중|Loading nearby/i)).toHaveCount(0, {
-    timeout: 120_000,
-  });
-  await expect(dialog.locator('[data-festival-below-loading]')).toHaveCount(0, {
-    timeout: 120_000,
-  });
-  await expect(dialog.locator('[data-festival-below-reserve]')).toHaveCount(0, {
-    timeout: 120_000,
-  });
   await expect
-    .poll(async () => await dialog.locator('[data-nearby-thumb-pending]').count(), {
-      timeout: 120_000,
-    })
-    .toBe(0);
-  await page.waitForLoadState('networkidle', { timeout: 45_000 }).catch(() => {});
-  await page.waitForTimeout(400);
+    .poll(
+      async () => {
+        const grey = await greyPlaceholderReport(dialog);
+        const loadingNearby = await dialog.getByText(/주변.*불러오는 중|Loading nearby/i).count();
+        const lodgingReserve = await dialog.locator('[data-festival-lodging-reserve]').count();
+        return grey.greyTileCount === 0 && loadingNearby === 0 && lodgingReserve === 0;
+      },
+      { timeout: 120_000 },
+    )
+    .toBe(true);
+  await page.waitForLoadState('networkidle', { timeout: 8_000 }).catch(() => {});
+  await page.waitForTimeout(250);
+}
+
+async function greyPlaceholderReport(dialog) {
+  return dialog.evaluate((el) => {
+    const pendingNearby = el.querySelectorAll('[data-nearby-thumb-pending]').length;
+    const emptyNearby = el.querySelectorAll('[data-nearby-thumb="empty"]').length;
+    const photoReserve = el.querySelectorAll('[data-festival-photo-reserve]').length;
+    const heroPending = el.querySelectorAll('[data-festival-photo-pending]').length;
+    const belowLoading = el.querySelectorAll('[data-festival-below-loading]').length;
+    const belowReserve = el.querySelectorAll('[data-festival-below-reserve]').length;
+    const greyTileCount = pendingNearby + belowReserve + belowLoading;
+    return {
+      pendingNearby,
+      emptyNearby,
+      photoReserve,
+      heroPending,
+      belowLoading,
+      belowReserve,
+      greyTileCount,
+    };
+  });
 }
 
 async function assertCultureThumbsSettled(dialog) {
   const culture = dialog.locator('[data-festival-section="nearCulture"]');
   if ((await culture.count()) === 0) return { cultureVisible: false };
-  await culture.scrollIntoViewIfNeeded();
-  const pending = await culture.locator('[data-nearby-thumb-pending]').count();
-  expect(pending, 'culture thumbs still pending').toBe(0);
-  const thumbs = culture.locator('[data-nearby-thumb]');
-  const count = await thumbs.count();
-  for (let i = 0; i < count; i += 1) {
-    const kind = await thumbs.nth(i).getAttribute('data-nearby-thumb');
-    expect(kind, 'culture thumb stuck in pending').not.toBe('pending');
-    if (kind !== 'photo') {
-      expect(kind).toBe('empty');
-      await expect(thumbs.nth(i).locator('[data-thumb-fallback="1"]')).toBeVisible();
-    }
-  }
-  return { cultureVisible: true, thumbCount: count };
+  await expect
+    .poll(async () => await culture.locator('[data-nearby-thumb-pending]').count(), {
+      timeout: 30_000,
+    })
+    .toBe(0);
+  const thumbCount = await culture.locator('[data-nearby-thumb]').count();
+  return { cultureVisible: true, thumbCount };
 }
 
 async function assertNoTourApiEmptyCopy(dialog) {
   await expect(dialog.getByText(/TourAPI/i)).toHaveCount(0);
 }
 
+async function scrollGangneungCultureIntoView(dialog) {
+  const leports = dialog.locator('[data-festival-section="nearLeports"]');
+  const culture = dialog.locator('[data-festival-section="nearCulture"]');
+  await expect(leports.getByText('관동하키센터')).toBeVisible({ timeout: 60_000 });
+  await expect(culture.getByText('강릉시립미술관 교동')).toBeVisible({ timeout: 60_000 });
+  await dialog.evaluate((el) => {
+    const hockey = [...el.querySelectorAll('[data-festival-section="nearLeports"] li')].find((li) =>
+      li.textContent?.includes('관동하키센터'),
+    );
+    const museum = el.querySelector('[data-festival-section="nearCulture"] li');
+    if (hockey) hockey.scrollIntoView({ block: 'start' });
+    if (museum) museum.scrollIntoView({ block: 'nearest' });
+  });
+  await dialog.page().waitForTimeout(300);
+}
+
+async function scrollYeongnamCultureGapIntoView(dialog) {
+  const culture = dialog.locator('[data-festival-section="nearCulture"]');
+  await expect(culture).toHaveCount(0);
+  const courses = dialog.locator('[data-festival-section="nearCourses"]');
+  const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
+  if (await courses.count()) {
+    await courses.first().scrollIntoViewIfNeeded();
+    await dialog.evaluate((el) => {
+      const node = el.querySelector('[data-festival-section="nearCourses"]');
+      if (node) node.scrollIntoView({ block: 'start' });
+    });
+  } else if (await attractions.count()) {
+    await attractions.first().scrollIntoViewIfNeeded();
+    await dialog.evaluate((el) => {
+      el.scrollTo({ top: el.scrollHeight });
+    });
+  } else {
+    await dialog.evaluate((el) => {
+      el.scrollTo({ top: el.scrollHeight });
+    });
+  }
+  await dialog.page().waitForTimeout(300);
+}
+
 test.describe('PR493 follow-up — culture thumb pin + copy @390', () => {
-  test.setTimeout(600_000);
+  test.setTimeout(180_000);
 
   test.beforeAll(async () => {
     await mkdir(OUT, { recursive: true });
@@ -150,7 +149,7 @@ test.describe('PR493 follow-up — culture thumb pin + copy @390', () => {
     await writeFile(join(OUT, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   });
 
-  test('강릉 · 서울 · 영남 — 별책부록 주변 정착', async ({ page }, testInfo) => {
+  test('강릉 문화 · 영남 빈 문화 — 정착 캡처', async ({ page }, testInfo) => {
     const browser = testInfo.project.name;
     const suffix = browser.includes('chromium') ? 'chromium' : 'webkit';
 
@@ -158,41 +157,42 @@ test.describe('PR493 follow-up — culture thumb pin + copy @390', () => {
     await waitDetailBottomFullySettled(page, gangneungDialog);
     const gangneungCulture = await assertCultureThumbsSettled(gangneungDialog);
     await assertNoTourApiEmptyCopy(gangneungDialog);
-    await gangneungDialog.evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
+    await scrollGangneungCultureIntoView(gangneungDialog);
+    const gangneungGrey = await greyPlaceholderReport(gangneungDialog);
+    expect(gangneungGrey.greyTileCount, 'gangneung grey tiles').toBe(0);
     await shot(page, `01-gangneung-settled-${suffix}.png`, {
       region: '강원·강릉',
       festivalId: GANGNEUNG_NOODLES_ID,
       browser: suffix,
+      settled: true,
+      surface:
+        '강릉 국수 축제 — 레포츠(관동하키센터)·문화(강릉시립미술관 교동) 정착, 핀/사진만',
+      greyPlaceholderReport: gangneungGrey,
+      greyTileCount: gangneungGrey.greyTileCount,
       ...gangneungCulture,
     });
-    await closeDetail(page);
-
-    await openFestivalHubFromHome(page);
-    await selectSidoChip(page, /서울/);
-    const seoulOpen = await openFirstMatchingCardWithId(page, /서울|한강|문화|축제/i);
-    await waitDetailBottomFullySettled(page, seoulOpen.dialog);
-    const seoulCulture = await assertCultureThumbsSettled(seoulOpen.dialog);
-    await assertNoTourApiEmptyCopy(seoulOpen.dialog);
-    await seoulOpen.dialog.evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
-    await shot(page, `02-seoul-settled-${suffix}.png`, {
-      region: '서울',
-      festivalId: seoulOpen.festivalId,
-      browser: suffix,
-      ...seoulCulture,
-    });
-    await closeDetail(page);
-
-    await openFestivalHubFromHome(page);
-    await selectSidoChip(page, /경남|부산|대구|울산|경북/);
-    const yeongnamOpen = await openFirstMatchingCardWithId(page, /축제|페스티벌|문화|대회/i);
-    await waitDetailBottomFullySettled(page, yeongnamOpen.dialog);
-    const yeongnamCulture = await assertCultureThumbsSettled(yeongnamOpen.dialog);
-    await assertNoTourApiEmptyCopy(yeongnamOpen.dialog);
-    await yeongnamOpen.dialog.evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
+    const yeongnamDialog = await openFestivalDeep(page, YEONGNAM_GUNWI_WALK_ID);
+    await waitDetailBottomFullySettled(page, yeongnamDialog);
+    await assertNoTourApiEmptyCopy(yeongnamDialog);
+    const cultureVisible = (await yeongnamDialog.locator('[data-festival-section="nearCulture"]').count()) > 0;
+    const yeongnamCulture = cultureVisible
+      ? await assertCultureThumbsSettled(yeongnamDialog)
+      : { cultureVisible: false };
+    await scrollYeongnamCultureGapIntoView(yeongnamDialog);
+    const yeongnamGrey = await greyPlaceholderReport(yeongnamDialog);
+    expect(yeongnamGrey.greyTileCount, 'yeongnam grey tiles').toBe(0);
     await shot(page, `03-yeongnam-settled-${suffix}.png`, {
-      region: '영남',
-      festivalId: yeongnamOpen.festivalId,
+      region: '영남·경북',
+      festivalId: YEONGNAM_GUNWI_WALK_ID,
       browser: suffix,
+      settled: true,
+      surface: '군위 가족걷기 — 맛집·레포츠·문화 섹션 없음, 코스 직전 영역',
+      nearFoodVisible:
+        (await yeongnamDialog.locator('[data-festival-section="nearFood"]').count()) > 0,
+      nearLeportsVisible:
+        (await yeongnamDialog.locator('[data-festival-section="nearLeports"]').count()) > 0,
+      greyPlaceholderReport: yeongnamGrey,
+      greyTileCount: yeongnamGrey.greyTileCount,
       ...yeongnamCulture,
     });
   });

@@ -96,6 +96,8 @@ export default defineConfig({
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,
+        video: 'off',
+        trace: 'off',
       },
     },
     {
@@ -106,6 +108,8 @@ export default defineConfig({
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,
+        video: 'off',
+        trace: 'off',
       },
     },
     {
