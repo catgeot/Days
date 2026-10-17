@@ -1,0 +1,43 @@
+[
+  {
+    "file": "01-social-promo-strip.png",
+    "surface": "recommended strip",
+    "dateShown": "10.23–11.8"
+  },
+  {
+    "file": "02-list-card-oct-nov-span.png",
+    "surface": "list card",
+    "dateShown": "10.18–11.29"
+  },
+  {
+    "file": "03-detail-oct-nov-dates.png",
+    "surface": "festival detail",
+    "dateShown": "10.18–11.29"
+  },
+  {
+    "file": "04-gangneung-list-card.png",
+    "surface": "list card (강릉)",
+    "dateShown": "10.15–10.18"
+  },
+  {
+    "file": "05-gangneung-close-x.png",
+    "surface": "detail close (X)",
+    "dateShown": "10.15–10.18"
+  },
+  {
+    "file": "06-gangneung-nearby-sights.png",
+    "surface": "nearby sights (강릉)",
+    "dateShown": "10.15–10.18"
+  },
+  {
+    "file": "07-different-month-festival.png",
+    "surface": "detail (off-month year)",
+    "listDate": "2026.11.6–11.8",
+    "dateShown": "2026.11.6–11.8"
+  },
+  {
+    "file": "08-scenic-near-festivals.png",
+    "surface": "명승 인근 축제",
+    "dateShown": "춘천시 삼천동 · 10.9–10.11"
+  }
+]

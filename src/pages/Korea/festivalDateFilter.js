@@ -131,53 +131,94 @@ export function loadedFestivalDataEndYmd(items, todayYmd) {
 }
 
 /**
- * Year prefix when the festival day is outside Seoul «today» month or calendar year.
- * @param {string} ymd
+ * Inclusive bounds of the Seoul calendar month containing `todayYmd`.
  * @param {string} todayYmd
+ * @returns {{ start: string, end: string }}
  */
-export function festivalDateShowsYear(ymd, todayYmd) {
-  if (!isYmd(ymd) || !isYmd(todayYmd)) return false;
-  if (ymd.slice(0, 4) !== todayYmd.slice(0, 4)) return true;
-  if (ymd.slice(4, 6) !== todayYmd.slice(4, 6)) return true;
-  return false;
+export function seoulMonthBoundsYmd(todayYmd) {
+  if (!isYmd(todayYmd)) return { start: '', end: '' };
+  const year = Number(todayYmd.slice(0, 4));
+  const month = Number(todayYmd.slice(4, 6));
+  const monthStart = `${todayYmd.slice(0, 6)}01`;
+  const last = daysInMonth(year, month);
+  const monthEnd = `${todayYmd.slice(0, 6)}${String(last).padStart(2, '0')}`;
+  return { start: monthStart, end: monthEnd };
 }
 
 /**
- * `10.3` in the Seoul month, `2026.1.9` when outside the current month/year.
- * @param {string} ymd
+ * @param {string} startYmd
+ * @param {string} endYmd
  * @param {string} todayYmd
- * @param {{ showYear?: boolean }} [opts]
  */
-export function formatFestivalMonthDay(ymd, todayYmd, opts = {}) {
-  if (!isYmd(ymd)) return '';
+export function festivalRangeOverlapsSeoulMonth(startYmd, endYmd, todayYmd) {
+  if (!isYmd(startYmd) || !isYmd(endYmd) || !isYmd(todayYmd)) return false;
+  const { start: monthStart, end: monthEnd } = seoulMonthBoundsYmd(todayYmd);
+  return startYmd <= monthEnd && endYmd >= monthStart;
+}
+
+/**
+ * When true, both ends of the range omit a year prefix (ongoing · starts this month · overlaps this month).
+ * @param {string} startYmd
+ * @param {string} endYmd
+ * @param {string} todayYmd
+ */
+export function festivalRangeOmitsYearPrefix(startYmd, endYmd, todayYmd) {
+  if (!isYmd(startYmd) || !isYmd(todayYmd)) return false;
+  const end = isYmd(endYmd) ? endYmd : startYmd;
+  if (todayYmd >= startYmd && todayYmd <= end) return true;
+  if (startYmd.slice(0, 6) === todayYmd.slice(0, 6)) return true;
+  return festivalRangeOverlapsSeoulMonth(startYmd, end, todayYmd);
+}
+
+/**
+ * @param {string} ymd
+ * @param {boolean} withYear
+ */
+function formatFestivalMonthDayPart(ymd, withYear) {
   const month = Number(ymd.slice(4, 6));
   const day = Number(ymd.slice(6, 8));
   const monthDay = `${month}.${day}`;
-  const showYear =
-    opts.showYear ?? festivalDateShowsYear(ymd, isYmd(todayYmd) ? todayYmd : '');
-  if (showYear) return `${ymd.slice(0, 4)}.${monthDay}`;
-  return monthDay;
+  return withYear ? `${ymd.slice(0, 4)}.${monthDay}` : monthDay;
 }
 
 /**
- * `10.24–10.25`, `2026.1.9–1.31`. A single day omits the dash.
+ * `10.3` when the range omits year; `2026.12.15` for a lone day outside the current month window.
+ * Pass `rangeStart`/`rangeEnd` when formatting one endpoint of a known interval (e.g. window30 end).
+ * @param {string} ymd
+ * @param {string} todayYmd
+ * @param {{ showYear?: boolean, rangeStart?: string, rangeEnd?: string }} [opts]
+ */
+export function formatFestivalMonthDay(ymd, todayYmd, opts = {}) {
+  if (!isYmd(ymd)) return '';
+  if (opts.showYear !== undefined) return formatFestivalMonthDayPart(ymd, opts.showYear);
+  const rangeStart = isYmd(opts.rangeStart) ? opts.rangeStart : ymd;
+  const rangeEnd = isYmd(opts.rangeEnd) ? opts.rangeEnd : ymd;
+  const omit = festivalRangeOmitsYearPrefix(rangeStart, rangeEnd, todayYmd);
+  return formatFestivalMonthDayPart(ymd, !omit);
+}
+
+/**
+ * `10.23–11.8` (overlaps Seoul month) · `2026.1.9–1.31` · `2026.12.28–2027.1.4`.
  * @param {string} startYmd
  * @param {string} endYmd
  * @param {string} todayYmd
  */
 export function formatFestivalRangeLabel(startYmd, endYmd, todayYmd) {
-  const start = formatFestivalMonthDay(startYmd, todayYmd);
-  if (!start) return '';
-  if (!endYmd || endYmd === startYmd) return start;
-  const startYearShown = /^\d{4}\./.test(start);
-  const sameYearAsStart =
-    isYmd(startYmd) && isYmd(endYmd) && startYmd.slice(0, 4) === endYmd.slice(0, 4);
-  const end = formatFestivalMonthDay(endYmd, todayYmd, {
-    showYear:
-      festivalDateShowsYear(endYmd, todayYmd) && !(startYearShown && sameYearAsStart),
-  });
-  if (!end) return start;
-  return `${start}\u2013${end}`;
+  const start = String(startYmd || '').trim();
+  if (!isYmd(start)) return '';
+  const end = isYmd(String(endYmd || '')) ? String(endYmd) : start;
+  if (end < start) return formatFestivalMonthDay(start, todayYmd);
+
+  if (festivalRangeOmitsYearPrefix(start, end, todayYmd)) {
+    const startLabel = formatFestivalMonthDayPart(start, false);
+    if (end === start) return startLabel;
+    return `${startLabel}\u2013${formatFestivalMonthDayPart(end, false)}`;
+  }
+
+  const startLabel = formatFestivalMonthDayPart(start, true);
+  if (end === start) return startLabel;
+  const endWithYear = end.slice(0, 4) !== start.slice(0, 4);
+  return `${startLabel}\u2013${formatFestivalMonthDayPart(end, endWithYear)}`;
 }
 
 /**

@@ -69,6 +69,16 @@ export default defineConfig({
       use: { ...devices['iPhone 13'] },
     },
     {
+      name: 'webkit-pr492-qa',
+      testMatch: /pr492-qa-screenshots\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'webkit-pr1-festival',
       testMatch: /pr1-festival-detail-screenshots\.spec\.js/,
       use: {

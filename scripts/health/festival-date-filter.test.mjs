@@ -34,13 +34,24 @@ test('labels drop leading zeros in the Seoul month: 10.3, 10.31', () => {
   );
 });
 
-test('outside the Seoul month keeps the year: 2026.12.15, 2026.1.9–1.31', () => {
-  assert.equal(formatFestivalMonthDay('20261215', SEOUL_TODAY), '2026.12.15');
-  assert.equal(formatFestivalMonthDay('20260109', SEOUL_TODAY), '2026.1.9');
+test('range year policy — Oct→Nov span, future month, year-cross, past', () => {
+  assert.equal(
+    formatFestivalRangeLabel('20261023', '20261108', SEOUL_TODAY),
+    '10.23\u201311.8',
+  );
   assert.equal(
     formatFestivalRangeLabel('20260109', '20260131', SEOUL_TODAY),
     '2026.1.9\u20131.31',
   );
+  assert.equal(
+    formatFestivalRangeLabel('20261228', '20270104', SEOUL_TODAY),
+    '2026.12.28\u20132027.1.4',
+  );
+  assert.equal(
+    formatFestivalRangeLabel('20260801', '20260831', SEOUL_TODAY),
+    '2026.8.1\u20138.31',
+  );
+  assert.equal(formatFestivalMonthDay('20261215', SEOUL_TODAY), '2026.12.15');
 });
 
 test('leap day 2028.2.1 keeps the year prefix and a real 29 February', () => {
@@ -160,17 +171,21 @@ test('date chips replace 이번 달 and leave the weekend chip alone', () => {
 });
 
 test('window30 subline range suffix and a picked range is the label itself', () => {
-  const end = formatFestivalMonthDay('20261114', SEOUL_TODAY);
-  assert.equal(end, '2026.11.14');
-  assert.equal(formatWindow30RangeSuffix(end), '~2026.11.14');
-  assert.equal(formatWindow30RangeSuffix('~2026.11.14'), '~2026.11.14');
+  const window = window30RangeFromYmd(SEOUL_TODAY);
+  const end = formatFestivalMonthDay(window.eventEndDate, SEOUL_TODAY, {
+    rangeStart: window.eventStartDate,
+    rangeEnd: window.eventEndDate,
+  });
+  assert.equal(end, '11.14');
+  assert.equal(formatWindow30RangeSuffix(end), '~11.14');
+  assert.equal(formatWindow30RangeSuffix('~11.14'), '~11.14');
   assert.equal(formatWindow30RangeSuffix('2027.11.14'), '~2027.11.14');
   const picked = formatFestivalRangeLabel('20261017', '20261018', SEOUL_TODAY);
   assert.equal(picked, '10.17\u201310.18');
   assert.equal(formatWindow30RangeSuffix(end).includes('"'), false);
   assert.equal(picked.includes('"'), false);
-  assert.equal(formatWindow30UntilMetaLabel(end, 'ko'), '2026.11.14까지');
-  assert.equal(formatWindow30UntilMetaLabel(end, 'en'), 'until 2026.11.14');
+  assert.equal(formatWindow30UntilMetaLabel(end, 'ko'), '11.14까지');
+  assert.equal(formatWindow30UntilMetaLabel(end, 'en'), 'until 11.14');
 });
 
 test('date sheet week shortcuts — Mon–Sun blocks and Sunday edge', () => {
