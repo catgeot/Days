@@ -6,17 +6,24 @@ import { festivalItemThumbSrc } from './festivalListThumb';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { hasFestivalThumbnail } from './socialPromoFestivalsLogic.js';
 
-export function FestivalListThumbFallback({ size = 'sm' }) {
-  const icon = size === 'sm' ? 16 : 22;
+const FALLBACK_ICON = { sm: 16, md: 22, lg: 32 };
+
+export function FestivalListThumbFallback({ size = 'sm', className = '' }) {
+  const icon = FALLBACK_ICON[size] ?? FALLBACK_ICON.sm;
   return (
     <div
       data-thumb-fallback="1"
-      className="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-amber-800/50"
+      className={`flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-amber-800/60 ${className}`.trim()}
       aria-hidden="true"
     >
       <MapPin size={icon} strokeWidth={1.75} />
     </div>
   );
+}
+
+/** Festival detail hero·필름스트립·탭·라이트박스·주변 카드 공통 핀 폴백 */
+export function FestivalDetailPhotoFallback({ size = 'md', className = '' }) {
+  return <FestivalListThumbFallback size={size} className={className} />;
 }
 
 /**

@@ -151,6 +151,18 @@ test('flight origin chat-header contrast tokens', () => {
   assert.ok(contrastRatio(chipTextOnLight, chipBgOnLight) >= 4.5);
 });
 
+test('MOONi festival departure chip contrast', () => {
+  const departureText = [248, 250, 252];
+  const departureBg = [30, 41, 59];
+  assert.ok(contrastRatio(departureText, departureBg) >= 4.5);
+  const dockLabelDark = [165, 243, 252];
+  const dockBgDark = [3, 7, 18];
+  assert.ok(contrastRatio(dockLabelDark, dockBgDark) >= 4.5);
+  const dockLabelLight = [22, 78, 99];
+  const dockBgLight = [255, 255, 255];
+  assert.ok(contrastRatio(dockLabelLight, dockBgLight) >= 4.5);
+});
+
 test('trust bar lock is readable after the sheet locks first', () => {
   assert.equal(isTrustBarOverlayLocked(), false);
   const release = pushTrustBarOverlayLock();
@@ -180,4 +192,6 @@ test('trust bar hides under modal overlay lock', () => {
   assert.match(sheet, /loadedCount > 1 && heroColMin\.current > 0/);
   assert.doesNotMatch(sheet, /imageUrls\.length > 1 && heroColMin\.current > 0/);
   assert.match(sheet, /FestivalHeroThumbStrip/);
+  assert.match(sheet, /shouldShowFestivalNearbyListSection/);
+  assert.match(sheet, /FestivalDetailPhotoFallback/);
 });

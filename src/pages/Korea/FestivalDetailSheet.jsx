@@ -3,18 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
-  Bike,
   Building2,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
   Expand,
-  Landmark,
   Loader2,
   Phone,
   Route,
   Star,
-  Utensils,
   X,
 } from 'lucide-react';
 import {
@@ -127,7 +124,9 @@ import {
   FestivalEndedBadge,
   isFestivalEnded,
 } from './festivalDeepLinkItem';
+import { FestivalDetailPhotoFallback } from './festivalListThumbBox.jsx';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
+import { shouldShowFestivalNearbyListSection } from './lib/festivalDetailSectionGate.js';
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
 import { useFestivalHeroPhotoDecoded } from './useFestivalHeroPhotoDecoded.js';
 import { loadNearbyParkingFacts } from './lib/festivalNearbyParking.js';
@@ -318,10 +317,10 @@ function nearbyThumbUrls(spot, extraThumb) {
 function NearbyThumbPlaceholder() {
   return (
     <div
-      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-stone-200 text-stone-600"
+      className="h-14 w-14 shrink-0 overflow-hidden rounded-xl"
       data-nearby-thumb="empty"
     >
-      <Landmark size={18} aria-hidden="true" />
+      <FestivalDetailPhotoFallback size="sm" />
     </div>
   );
 }
@@ -1938,11 +1937,11 @@ export default function FestivalDetailSheet({
                 }}
                 fallback={(
                   <div
-                    className="absolute inset-0 flex items-center justify-center bg-stone-200/80 text-stone-500"
+                    className="absolute inset-0"
                     data-festival-hero-fallback=""
                     aria-hidden="true"
                   >
-                    <Star size={32} strokeWidth={1.5} className="opacity-40" />
+                    <FestivalDetailPhotoFallback size="lg" />
                   </div>
                 )}
               />
@@ -2456,9 +2455,7 @@ export default function FestivalDetailSheet({
                 </div>
               ) : null}
 
-              {nearbyFoodStatus !== 'idle' &&
-                nearbyFoodStatus !== 'nocoords' &&
-                nearbyFoodStatus !== 'loading' && (
+              {shouldShowFestivalNearbyListSection(nearbyFoodStatus, nearbyFood.length) && (
                 <div className="space-y-2 pt-1" data-festival-section="nearFood">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                     {t('korea.festival.detail.nearFood')}
@@ -2466,11 +2463,6 @@ export default function FestivalDetailSheet({
                   {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
                     <p className="text-xs text-stone-500">
                       {t('korea.festival.detail.nearFoodError')}
-                    </p>
-                  )}
-                  {nearbyFoodStatus === 'empty' && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.festival.detail.nearFoodEmpty')}
                     </p>
                   )}
                   {nearbyFood.length > 0 && (
@@ -2494,8 +2486,8 @@ export default function FestivalDetailSheet({
                                 alt=""
                                 className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
                                 fallback={
-                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-800">
-                                    <Utensils size={18} aria-hidden="true" />
+                                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl">
+                                    <FestivalDetailPhotoFallback size="sm" />
                                   </div>
                                 }
                               />
@@ -2516,9 +2508,7 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {nearbyLeportsStatus !== 'idle' &&
-                nearbyLeportsStatus !== 'nocoords' &&
-                nearbyLeportsStatus !== 'loading' && (
+              {shouldShowFestivalNearbyListSection(nearbyLeportsStatus, nearbyLeports.length) && (
                   <div className="space-y-2 pt-1" data-festival-section="nearLeports">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                       {t('korea.festival.detail.nearLeports')}
@@ -2529,11 +2519,6 @@ export default function FestivalDetailSheet({
                           {t('korea.festival.detail.nearLeportsError')}
                         </p>
                       )}
-                    {nearbyLeportsStatus === 'empty' && (
-                      <p className="text-xs text-stone-500">
-                        {t('korea.festival.detail.nearLeportsEmpty')}
-                      </p>
-                    )}
                     {nearbyLeports.length > 0 && (
                       <ul
                         className="space-y-2"
@@ -2555,8 +2540,8 @@ export default function FestivalDetailSheet({
                                   alt=""
                                   className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
                                   fallback={
-                                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-800">
-                                      <Bike size={18} aria-hidden="true" />
+                                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl">
+                                      <FestivalDetailPhotoFallback size="sm" />
                                     </div>
                                   }
                                 />
@@ -2762,10 +2747,12 @@ export default function FestivalDetailSheet({
                       className="absolute inset-0 h-full w-full object-cover"
                       fallback={
                         <div
-                          className="absolute inset-0 bg-stone-200"
+                          className="absolute inset-0"
                           data-festival-photo-fallback=""
                           aria-hidden="true"
-                        />
+                        >
+                          <FestivalDetailPhotoFallback size="md" />
+                        </div>
                       }
                     />
                   </button>
@@ -2978,11 +2965,13 @@ export default function FestivalDetailSheet({
                   className="max-h-full max-w-full object-contain select-none"
                   fallback={
                     <div
-                      className="flex h-48 w-full items-center justify-center text-white/40"
+                      className="flex h-48 w-full items-center justify-center"
                       data-festival-photo-fallback=""
                       aria-hidden="true"
                     >
-                      <Star size={32} strokeWidth={1.5} />
+                      <div className="h-32 w-32 overflow-hidden rounded-2xl">
+                        <FestivalDetailPhotoFallback size="lg" />
+                      </div>
                     </div>
                   }
                 />

@@ -23,8 +23,8 @@ export default function DestinationResolutionChips({
     return (
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {departureLabel && (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-500/35 bg-slate-900/50 px-3 py-1.5 text-xs font-medium text-slate-300">
-            <PlaneTakeoff size={12} className="shrink-0 opacity-80" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-600/80 bg-slate-800/95 px-3 py-1.5 text-xs font-semibold text-slate-50">
+            <PlaneTakeoff size={12} className="shrink-0 opacity-90" aria-hidden="true" />
             {t('mooni.resolution.departure')} · {departureLabel}
           </span>
         )}
