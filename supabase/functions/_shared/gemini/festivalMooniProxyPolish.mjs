@@ -1,4 +1,7 @@
-import { polishFestivalModelReply } from "../../../../src/shared/korea/mooniKoreaFestivalReplyPolish.js";
+import {
+  polishFestivalModelReply,
+  polishFestivalModelReplyBaseline,
+} from "../../../../src/shared/korea/mooniKoreaFestivalReplyPolish.js";
 import { repairGeminiReplacementChars } from "./answerSanitize.mjs";
 
 function ymdDigits(raw) {
@@ -50,8 +53,28 @@ export function parseFestivalPolishParams(raw) {
   };
 }
 
-export function polishMooniFestivalProxyText(text, polish) {
+/** Lite context from mooni_chat when `festivalPolish` is omitted (legacy clients). */
+export function parseFestivalPolishLite(raw) {
+  if (raw == null || typeof raw !== "object" || Array.isArray(raw)) return {};
+  return {
+    chipId: raw.chipId == null || raw.chipId === "" ? "" : String(raw.chipId).slice(0, 48),
+    locale: raw.locale == null ? "ko" : String(raw.locale).slice(0, 8),
+    userText: raw.userText == null ? "" : String(raw.userText).slice(0, 1000),
+    festivalTitle: raw.festivalTitle == null ? "" : String(raw.festivalTitle).slice(0, 120),
+  };
+}
+
+export function polishMooniFestivalProxyText(text, polish, lite = {}) {
   const repaired = repairGeminiReplacementChars(text);
-  if (!polish) return repaired;
-  return polishFestivalModelReply(repaired, polish);
+  const merged = {
+    ...lite,
+    ...(polish || {}),
+    chipId: polish?.chipId || lite.chipId || "",
+    locale: polish?.locale || lite.locale || "ko",
+    userText: polish?.userText || lite.userText || "",
+    festivalTitle: polish?.festivalTitle || lite.festivalTitle || "",
+  };
+  let out = polishFestivalModelReplyBaseline(repaired, merged);
+  if (polish) out = polishFestivalModelReply(out, polish);
+  return out;
 }

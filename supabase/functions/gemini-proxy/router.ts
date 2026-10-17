@@ -392,10 +392,14 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
   }
 
   let answer = extractGeminiAnswer(upstream.data);
-  if (built.task === "mooni_chat" && built.festivalPolish) {
+  if (built.task === "mooni_chat") {
     answer = {
       ...answer,
-      text: polishMooniFestivalProxyText(answer.text, built.festivalPolish),
+      text: polishMooniFestivalProxyText(
+        answer.text,
+        built.festivalPolish ?? null,
+        built.festivalPolishLite ?? {},
+      ),
     };
   }
   const truncatedIntro = built.task === "place_intro" && isPlaceIntroTruncated(answer);

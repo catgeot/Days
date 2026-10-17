@@ -372,14 +372,25 @@ export function dedupeFestivalAccessBookingFooters(text, locale = 'ko') {
   return out.replace(/\n{3,}/g, '\n\n').trim();
 }
 
+function bodyMentionsFestivalBookingServices(text) {
+  const blob = String(text || '');
+  const domains = festivalAccessBookingDomainsInText(blob);
+  const rail = domains.has('korail') || /코레일|letskorail/i.test(blob);
+  const bus = domains.has('bustago') || /버스타고/i.test(blob)
+    || domains.has('kobus') || /고속버스/i.test(blob)
+    || domains.has('txbus') || /시외버스/i.test(blob);
+  return rail && bus;
+}
+
 function shouldSkipFestivalAccessBookingFooterAppend(body) {
+  if (hasFestivalAccessBookingFooterParagraph(body)) return true;
+  if (bodyMentionsFestivalBookingServices(body)) return true;
   const domains = festivalAccessBookingDomainsInText(body);
-  if (hasFestivalAccessBookingFooterParagraph(body) && domains.has('korail')) return true;
   if (!domains.has('korail')) return false;
   const busSites = (domains.has('kobus') ? 1 : 0)
     + (domains.has('bustago') ? 1 : 0)
     + (domains.has('txbus') ? 1 : 0);
-  return busSites >= 2;
+  return busSites >= 1;
 }
 
 function isAllowedFestivalMarkdownUrl(url, homepage = '') {
@@ -1785,7 +1796,11 @@ function collapseDoubledFestivalCloser(text, title = '') {
     new RegExp(`\\[([^\\]\\n]+)\\]\\((${FESTIVAL_PAGE_URL})\\)[^\\n.。]{0,48}(?:how\\s+to\\s+get\\s+there|getting\\s+there)[^\\n.。]*[.!?]?`, 'gi'),
     (full, label, href) => rewrite(label, href) || full,
   );
-  return out.replace(/페이지에서\s*가는\s*법을\s*알아\s*보세요[.。]?/g, '').replace(/[ \t]{2,}/g, ' ').trim();
+  return out
+    .replace(/페이지에서\s*가는\s*법을\s*알아\s*보세요[.。]?/g, '')
+    .replace(/에서\s*둘러\s*보세요[.。]?/g, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
 }
 
 function isPlainFestivalPageUrl(url) {
@@ -2022,6 +2037,24 @@ function koFoodClause(row, first) {
   return link;
 }
 
+function koFoodLeadSentence(row) {
+  const link = foodLink(row);
+  const subj = foodNameBatchim(row.name) ? '이' : '가';
+  if (row.type && row.distance) {
+    return `가까운 곳으로는 ${row.type}인 ${link}${subj} ${row.distance} 거리에 있어요.`;
+  }
+  return `가까운 곳으로는 ${link}${subj} 있어요.`;
+}
+
+function koFoodRestSentence(row) {
+  const link = foodLink(row);
+  const topic = foodNameBatchim(row.name) ? '은' : '는';
+  if (row.type && row.distance) return `${link}${topic} ${row.type}, ${row.distance} 거리에 있어요`;
+  if (row.distance) return `${link}${topic} ${row.distance} 거리에 있어요`;
+  if (row.type) return `${row.type}인 ${link}${topic} 있어요`;
+  return `${link}${topic} 있어요`;
+}
+
 function warmFestivalFoodAnswer(entries, locale = 'ko', contentId = '') {
   const en = foodAnswerLocale(locale) === 'en';
   const sparse = foodSparse(entries);
@@ -2042,8 +2075,8 @@ function warmFestivalFoodAnswer(entries, locale = 'ko', contentId = '') {
   }
   const shopLine = entries.length
     ? (sparse
-      ? `${entries.map((row) => koFoodClause(row, false)).join(', ')}이에요.`
-      : `가까운 곳으로는 ${koFoodClause(entries[0], true)}예요. ${entries.slice(1).map((row) => koFoodClause(row, false)).join(', ')}${entries.length > 1 ? '이에요.' : ''}`)
+      ? `${entries.map((row) => koFoodRestSentence(row)).join(', ')}.`
+      : `${koFoodLeadSentence(entries[0])}${entries.length > 1 ? ` ${entries.slice(1).map((row) => koFoodRestSentence(row)).join(', ')}.` : ''}`)
     : '';
   const intro = sparse ? '걸어서 갈 만한 맛집은 많지 않아요.' : '';
   const more = sparse && entries.length < 3 && page
@@ -2223,6 +2256,7 @@ function festivalAccessDatesAlreadyInText(body, short) {
   const range = String(short || '').trim();
   if (!range || !/\d{1,2}\/\d{1,2}/.test(range)) return false;
   if (text.includes(range)) return true;
+  if (new RegExp(`행사\\s*기간(?:은|이)?\\s*${range.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(text)) return true;
   const m = range.match(/^(\d{1,2})\/(\d{1,2})(?:~(\d{1,2})(?:\/(\d{1,2}))?)?$/);
   if (!m) return false;
   const [, sm, sd, em, ey] = m;
@@ -2237,6 +2271,27 @@ function festivalAccessDatesAlreadyInText(body, short) {
   return false;
 }
 
+function accessPeriodMainBody(body) {
+  return String(body || '').split(/\n\n행사\s*기간은/)[0].trim();
+}
+
+function stripDuplicateAccessPeriodLines(body, short) {
+  const range = String(short || '').trim();
+  if (!range) return String(body || '').trim();
+  const escaped = range.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const lineRe = new RegExp(`\\n\\n행사\\s*기간은\\s*${escaped}[^\\n]*`, 'g');
+  let out = String(body || '').trim();
+  if (festivalAccessDatesAlreadyInText(accessPeriodMainBody(out), range)) {
+    return out.replace(lineRe, '').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  const matches = [...out.matchAll(lineRe)];
+  if (matches.length <= 1) return out;
+  for (const match of matches.slice(0, -1)) {
+    out = out.replace(match[0], '');
+  }
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
 function ensureFestivalAccessPeriodLine(text, options = {}) {
   if (!isBoundFestivalAccessPolish(options)) return String(text || '').trim();
   const startYmd = normalizeEventYmdForPolish(options.eventStartDate);
@@ -2245,8 +2300,8 @@ function ensureFestivalAccessPeriodLine(text, options = {}) {
     || shortDateFromDateLabel(options.dateLabel)
     || String(options.dateLabel || '').trim();
   if (!short || !/\d{1,2}\/\d{1,2}/.test(short)) return String(text || '').trim();
-  let body = String(text || '').trim();
-  if (festivalAccessDatesAlreadyInText(body, short)) return body;
+  let body = stripDuplicateAccessPeriodLines(String(text || '').trim(), short);
+  if (festivalAccessDatesAlreadyInText(accessPeriodMainBody(body), short)) return body;
   const en = String(options.locale || 'ko').slice(0, 2) === 'en';
   const line = en ? `The festival runs ${short}.` : `행사 기간은 ${short}이에요.`;
   const footerRe = /\n\n(?:열차·버스 시각은|Check train and bus schedules)/;
@@ -2254,7 +2309,26 @@ function ensureFestivalAccessPeriodLine(text, options = {}) {
   if (footerIdx > 0) {
     return `${body.slice(0, footerIdx).trim()}\n\n${line}${body.slice(footerIdx)}`.trim();
   }
-  return `${body}\n\n${line}`.trim();
+  body = `${body}\n\n${line}`.trim();
+  return stripDuplicateAccessPeriodLines(body, short);
+}
+
+function festivalSubjectCopula(title) {
+  const name = String(title || '').trim();
+  if (!name) return { stem: '축제', particle: '는' };
+  const last = [...name].reverse().find((ch) => /[가-힣]/.test(ch)) || '제';
+  const particle = syllableHasBatchim(last) ? '은' : '는';
+  return { stem: name, particle };
+}
+
+/** Sights answers should not open with a bare «10/15~18이에요.» */
+function rewriteLeadingBareFestivalPeriod(text, options = {}) {
+  if (!isFestivalSightsAsk(options)) return String(text || '');
+  let s = String(text || '').trim();
+  const m = s.match(/^(\d{1,2}\/\d{1,2}(?:~\d{1,2}(?:\/\d{1,2})?)?)\s*(?:이에요|예요|이예요|에요)[.。]?\s*/);
+  if (!m) return String(text || '');
+  const { stem, particle } = festivalSubjectCopula(options.festivalTitle);
+  return s.replace(m[0], `${stem}${particle} ${m[1]}이에요. `);
 }
 
 function dropFestivalFillerSentences(text) {
@@ -2338,6 +2412,36 @@ function stripUnverifiedEveningClause(text) {
   }).filter(Boolean).join(' ');
 }
 
+/** Data-free polish for Edge + legacy clients (no TourAPI restaurant list required). */
+export function polishFestivalModelReplyBaseline(reply, options = {}) {
+  const chipId = String(options.chipId || '');
+  const locale = options.locale || 'ko';
+  let text = String(reply || '').trim();
+  text = stripMooniUiChipLabels(text);
+  text = rewriteLeadingBareFestivalPeriod(text, options);
+  if (!isFestivalLodgingAsk(options)) {
+    text = collapseDoubledFestivalCloser(text, options.festivalTitle);
+  }
+  text = stripFestivalSightsDecorative(text, options);
+  const foodCtx = { chipId, locale, userText: options.userText || '' };
+  if (chipId === 'festival_nearby' || isFestivalFoodAsk(foodCtx)) {
+    text = stripUnaskedFoodTransportSentences(text, { ...foodCtx, chipId: 'festival_nearby' });
+    const list = options.nearbyRestaurants;
+    if (Array.isArray(list) && list.length > 0) {
+      text = ensureFestivalFoodAnswer(text, {
+        ...options,
+        chipId: 'festival_nearby',
+        nearbyRestaurants: list,
+      });
+    }
+  }
+  if (chipId === 'festival_access' || isFestivalAccessAsk(options)) {
+    text = dedupeFestivalAccessBookingFooters(text, locale);
+  }
+  text = stripMooniUiChipLabels(text);
+  return text;
+}
+
 export function polishFestivalModelReply(reply, options = {}) {
   let text = String(reply || '').trim();
   if (String(options.locale || 'ko').slice(0, 2) !== 'en') text = dropFestivalPlannerSentences(text);
@@ -2373,6 +2477,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = softenNightHour(text);
   text = dropFestivalFillerSentences(text);
   text = stripFestivalSightsDecorative(text, options);
+  text = rewriteLeadingBareFestivalPeriod(text, options);
   if (!isFestivalLodgingAsk(options)) {
     text = collapseDoubledFestivalCloser(text, options.festivalTitle);
   }
@@ -2414,6 +2519,11 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = ensureFestivalAccessPeriodLine(text, options);
     text = appendFestivalAccessBookingLinks(text, options.locale);
     text = dedupeFestivalAccessBookingFooters(text, options.locale);
+    const periodShort = briefFestivalDate(
+      normalizeEventYmdForPolish(options.eventStartDate),
+      normalizeEventYmdForPolish(options.eventEndDate),
+    ) || shortDateFromDateLabel(options.dateLabel);
+    text = stripDuplicateAccessPeriodLines(text, periodShort);
   }
   text = stripMooniUiChipLabels(text);
   return text;
