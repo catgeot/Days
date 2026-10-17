@@ -1,0 +1,66 @@
+[
+  {
+    "file": "romblon-search-after-webkit-390.png",
+    "slug": "romblon",
+    "phase": "after",
+    "surface": "explore search popover 390",
+    "query": "롬블론",
+    "baseUrl": "https://127.0.0.1:4173/"
+  },
+  {
+    "file": "romblon-card-after-webkit-390.png",
+    "slug": "romblon",
+    "phase": "after",
+    "surface": "home place summary card 390",
+    "query": "롬블론",
+    "baseUrl": "https://127.0.0.1:4173/"
+  },
+  {
+    "file": "pamir-search-after-webkit-390.png",
+    "slug": "pamir",
+    "phase": "after",
+    "surface": "explore search popover 390",
+    "query": "파미르 고원",
+    "baseUrl": "https://127.0.0.1:4173/"
+  },
+  {
+    "file": "pamir-card-after-webkit-390.png",
+    "slug": "pamir",
+    "phase": "after",
+    "surface": "home place summary card 390",
+    "query": "파미르 고원",
+    "baseUrl": "https://127.0.0.1:4173/"
+  },
+  {
+    "file": "sao-tome-and-principe-search-after-webkit-390.png",
+    "slug": "sao-tome-and-principe",
+    "phase": "after",
+    "surface": "explore search popover 390",
+    "query": "상투메 프린시페",
+    "baseUrl": "https://127.0.0.1:4173/"
+  },
+  {
+    "file": "sao-tome-and-principe-card-after-webkit-390.png",
+    "slug": "sao-tome-and-principe",
+    "phase": "after",
+    "surface": "home place summary card 390",
+    "query": "상투메 프린시페",
+    "baseUrl": "https://127.0.0.1:4173/"
+  },
+  {
+    "file": "tinian-search-after-webkit-390.png",
+    "slug": "tinian",
+    "phase": "after",
+    "surface": "explore search popover 390",
+    "query": "티니안",
+    "baseUrl": "https://127.0.0.1:4173/"
+  },
+  {
+    "file": "tinian-card-after-webkit-390.png",
+    "slug": "tinian",
+    "phase": "after",
+    "surface": "home place summary card 390",
+    "query": "티니안",
+    "baseUrl": "https://127.0.0.1:4173/"
+  }
+]

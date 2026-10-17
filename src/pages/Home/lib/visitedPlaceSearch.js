@@ -69,6 +69,34 @@ function concreteCountry(primary, fallback) {
   return '';
 }
 
+function isKoreaCountryLabel(country, countryEn) {
+  const c = String(country || '').trim();
+  const ce = String(countryEn || '').trim().toLowerCase();
+  return (
+    c === '대한민국' ||
+    c === '한국' ||
+    ce === 'south korea' ||
+    ce === 'korea' ||
+    ce === 'republic of korea'
+  );
+}
+
+function coordsInKorea(lat, lng) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+  return lat >= 33.0 && lat <= 38.8 && lng >= 124.5 && lng <= 132.2;
+}
+
+/** Hangul place_stats 행에 country가 없을 때만 — 해외 한글 표기는 대한민국으로 추정하지 않음 */
+function shouldInferKoreaCountryForVisited({ nameKo, lat, lng }) {
+  const ko = String(nameKo || '').trim();
+  if (!ko || !HAS_HANGUL_RE.test(ko)) return false;
+  const hub = resolveCityAttractionHub(ko);
+  if (hub && isKoreaCountryLabel(hub.country, hub.country_en)) return true;
+  const legacy = resolveLegacyMishealPlace(ko);
+  if (legacy && isKoreaCountryLabel(legacy.country, legacy.country_en)) return true;
+  return coordsInKorea(lat, lng);
+}
+
 export function rowMatchesVisitedSearchQuery(row, query) {
   const q = normalizeVisitedSearchKey(query);
   if (q.length < 2) return false;
@@ -98,7 +126,7 @@ export function visitedRowToSearchSpot(row, extras = {}) {
     : '';
   let country = concreteCountry(extras.country, extras.country_en);
   let countryEn = concreteCountry(extras.country_en, extras.country);
-  if (!country && nameKo && HAS_HANGUL_RE.test(nameKo)) {
+  if (!country && shouldInferKoreaCountryForVisited({ nameKo, lat, lng })) {
     country = '대한민국';
     countryEn = countryEn || 'South Korea';
   }
