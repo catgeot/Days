@@ -2,6 +2,8 @@
  * Festival list panel title (h2) — EN avoids quoted time breaking across lines.
  */
 
+import { isNationwideRegionFilter } from './socialPromoFestivalsLogic.js';
+
 function isEnLocale(locale) {
   return String(locale || '').startsWith('en');
 }
@@ -62,6 +64,19 @@ export function formatCompactPeriodHeadline({ place, time, tasteSuffix = '' }) {
   const taste = tasteSuffix || '';
   if (place) return `${place} · ${period}${taste}`;
   return `${period}${taste}`;
+}
+
+/**
+ * Flag-on list title: region name only. Period stays on the meta line.
+ * @param {{ areaCode?: string, cityName?: string, place?: string, t: import('i18next').TFunction }} p
+ */
+export function festivalHubRegionHeading({ areaCode, cityName, place, t }) {
+  if (isNationwideRegionFilter(areaCode, cityName)) {
+    return String(
+      t('korea.festival.panelNationwideScope', { defaultValue: 'Nationwide' }) || '',
+    ).trim();
+  }
+  return String(place || '').trim();
 }
 
 /** EN tail after time phrase — omit when phrase already includes «Festivals». */

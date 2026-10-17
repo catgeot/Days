@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
+import { isGateoFestivalDateChipEnabled } from '../../shared/gateoFeatureFlags';
 import { festivalItemThumbSrc } from './festivalListThumb';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { hasFestivalThumbnail } from './socialPromoFestivalsLogic.js';
@@ -41,6 +42,7 @@ export function FestivalListThumbBox({ item, isEnglish = false, className = '' }
           referrerPolicy="no-referrer"
           lang={koText.lang}
           translate={koText.translate}
+          pendingShimmer={isGateoFestivalDateChipEnabled()}
           fallback={<FestivalListThumbFallback size="sm" />}
         />
       ) : (
