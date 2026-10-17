@@ -10,3 +10,4 @@
 - draft [#489](https://github.com/catgeot/Days/pull/489) `817e2733` — 플래그 on 기본 화면의 시간 대분류를 «기간»(en «Dates»). 칩을 고르면 그 라벨. 플래그 off는 «이번 달». `nationwide.png` 재캡처. CI PASS.
 - draft [#489](https://github.com/catgeot/Days/pull/489) `3dcbeeb5` — `main` `10fe3267`(#486·#487 squash) 위로 병합. 제목과 같은 지역 접두는 메타에서 뺌(`~11.15 · 219건 · 시·도별`). WebKit 390 전국·서울·강릉·제주 재캡처.
 - [#491](https://github.com/catgeot/Days/pull/491) `f9edabb1` → `main` `b8b54955`. 플래그 on 메타 줄은 모든 상태에서 `text-xs font-medium text-stone-700`. WebKit 390 전국·제주 기본. CI `lint-and-build` · `e2e-youtube-session` PASS.
+- draft [#494](https://github.com/catgeot/Days/pull/494) `cbb0be7e` — 축제 MOONi 볼거리 장식·맛집 주차·맛집 목록 대기·가는 법 중복. 클라 polish + prompt mirror(Edge 미배포). `test:health` 434 pass.

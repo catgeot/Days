@@ -192,6 +192,30 @@
 검증: npm run test:health
 ```
 
+### 축제 MOONi 답 품질
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `cbb0be7e` · draft PR [#494](https://github.com/catgeot/Days/pull/494) · **병합·prod Edge 배포 금지** |
+| **브랜치** | `cursor/mooni-festival-answer-quality-1e0b` |
+| **일지** | [`2026-10-17-project-log.md`](./2026-10-17-project-log.md) |
+| **Preview** | git `https://days-git-cursor-mooni-festival-answer-quality-1e0b-catgeots-projects.vercel.app/korea?festival=2930716` |
+| **금지** | prod `gemini-proxy` · PR 병합 |
+| **VERIFY** | `npm run test:health` · `lint:ci` · `build` |
+| **남은 일** | staging `qeqszwxjvhnbzhkchera` gemini-proxy 배포 후 `scripts/staging/mooni-festival-chip-probe.mjs` (Preview Origin). 사람 Preview 390 볼거리·맛집·가는 법 3축제. |
+
+**다음 제시어**:
+
+```
+축제 MOONi 답 품질 #2, staging Edge 배포 후 probe
+@plans/feature-handoff-index.md
+@plans/2026-10-17-project-log.md
+브랜치 cursor/mooni-festival-answer-quality-1e0b · draft PR #494 · tip cbb0be7e
+금지: prod gemini-proxy · PR 병합
+작업: staging gemini-proxy 배포 → probe → Preview QA(강릉·서울·영남) 볼거리·맛집·가는 법
+검증: npm run test:health
+```
+
 ### 축제 MOONi Edge
 
 | | |
