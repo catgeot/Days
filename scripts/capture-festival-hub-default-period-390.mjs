@@ -136,6 +136,12 @@ for (const region of regions) {
   if ((await window30.getAttribute('aria-pressed')) !== 'false') {
     throw new Error(`${region.slug} window30 chip should stay unselected`);
   }
+  const timeMajor = (await page.getByRole('button', { name: /시간 대분류/ }).innerText())
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (timeMajor !== '기간') {
+    throw new Error(`${region.slug} time category should be 기간, got ${timeMajor}`);
+  }
   await assertHeading(page, region.heading);
   await waitSettled(page);
   const meta = (await page.locator('[data-festival-list-meta]').innerText()).replace(/\s+/g, ' ').trim();

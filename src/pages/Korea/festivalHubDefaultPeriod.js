@@ -71,3 +71,56 @@ export function festivalHubPeriodMetaLabel({
   }
   return '';
 }
+
+/**
+ * Label stored on the top time category tab.
+ * Flag-on with no period chip selected uses «기간» / «Dates» so the 30-day
+ * default is not called «이번 달». A picked chip keeps that chip's label.
+ * Flag-off still resolves «이번 달» / the active tab.
+ * @param {{
+ *   dateChipEnabled?: boolean,
+ *   activeTab?: { label?: string, headline?: string } | null,
+ *   timeTab?: string,
+ *   t: (key: string, opts?: object) => string,
+ * }} p
+ */
+export function festivalHubTimeMajorLabel({
+  dateChipEnabled = false,
+  activeTab = null,
+  timeTab = '',
+  t,
+}) {
+  if (dateChipEnabled && activeTab?.headline) return String(activeTab.headline);
+  if (activeTab?.label) return String(activeTab.label);
+  if (dateChipEnabled) {
+    return String(t('korea.festival.periodCategory', { defaultValue: '기간' }) || '');
+  }
+  if (timeTab === 'thisMonth') return String(t('korea.festival.timeTab.thisMonth') || '');
+  return String(t('korea.festival.timeTab.now') || '');
+}
+
+/**
+ * Visible text on the top time category tab.
+ * English flag-on is the neutral «Dates». English flag-off stays «Time».
+ * Korean shows the resolved label («기간» until a chip is picked).
+ * @param {{
+ *   dateChipEnabled?: boolean,
+ *   locale?: string,
+ *   timeMajorLabel?: string,
+ *   t: (key: string, opts?: object) => string,
+ * }} p
+ */
+export function festivalHubTimeMajorDisplay({
+  dateChipEnabled = false,
+  locale = 'ko',
+  timeMajorLabel = '',
+  t,
+}) {
+  if (String(locale || '').startsWith('en')) {
+    if (dateChipEnabled) {
+      return String(t('korea.festival.periodCategory', { defaultValue: 'Dates' }) || '');
+    }
+    return String(t('korea.common.time') || '');
+  }
+  return String(timeMajorLabel || '');
+}

@@ -168,6 +168,9 @@ test.describe('Korea festival date chips', () => {
     await expect(heading).not.toContainText('"');
     await expect(heading).not.toContainText('축제 리스트');
     await expect(page.locator('[data-festival-list-meta]')).toContainText('~11.14');
+    const timeMajor = page.getByRole('button', { name: /시간 대분류/ });
+    await expect(timeMajor).toContainText('기간');
+    await expect(timeMajor).not.toContainText('이번 달');
     await openTimeRow(page);
     const window30Chip = page.locator('[data-period-id="window30"]');
     await expect(window30Chip).toHaveAttribute('aria-pressed', 'false');

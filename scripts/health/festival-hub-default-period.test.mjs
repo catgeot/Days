@@ -8,6 +8,8 @@ import {
 import {
   festivalHubFlagOnRangeYmd,
   festivalHubPeriodMetaLabel,
+  festivalHubTimeMajorDisplay,
+  festivalHubTimeMajorLabel,
 } from '../../src/pages/Korea/festivalHubDefaultPeriod.js';
 import { festivalHubRegionHeading } from '../../src/pages/Korea/festivalIndexHeadline.js';
 import {
@@ -97,6 +99,93 @@ test('picked chip meta follows that range', () => {
   assert.equal(
     festivalHubPeriodMetaLabel({ timeTab: 'now', now: SEOUL_NOON, seoulToday: '20261017', locale: 'ko' }),
     '10.17',
+  );
+});
+
+function periodT(locale) {
+  const ko = {
+    'korea.festival.periodCategory': '기간',
+    'korea.festival.timeTab.thisMonth': '이번 달',
+    'korea.festival.timeTab.now': '지금',
+    'korea.common.time': '시간',
+  };
+  const en = {
+    'korea.festival.periodCategory': 'Dates',
+    'korea.festival.timeTab.thisMonth': 'Month',
+    'korea.festival.timeTab.now': 'Now',
+    'korea.common.time': 'Time',
+  };
+  const table = locale === 'en' ? en : ko;
+  return (key) => table[key] || key;
+}
+
+test('flag-on default time category is 기간 / Dates, not 이번 달', () => {
+  const ko = periodT('ko');
+  const en = periodT('en');
+  const monthTab = { id: 'thisMonth', label: '이번 달' };
+  assert.equal(
+    festivalHubTimeMajorLabel({
+      dateChipEnabled: true,
+      activeTab: null,
+      timeTab: 'thisMonth',
+      t: ko,
+    }),
+    '기간',
+  );
+  assert.equal(
+    festivalHubTimeMajorDisplay({
+      dateChipEnabled: true,
+      locale: 'ko',
+      timeMajorLabel: '기간',
+      t: ko,
+    }),
+    '기간',
+  );
+  assert.equal(
+    festivalHubTimeMajorDisplay({
+      dateChipEnabled: true,
+      locale: 'en',
+      timeMajorLabel: 'Dates',
+      t: en,
+    }),
+    'Dates',
+  );
+  const picked = { id: 'date', label: '10.24–10.25', headline: '10.24–10.25' };
+  assert.equal(
+    festivalHubTimeMajorLabel({
+      dateChipEnabled: true,
+      activeTab: picked,
+      timeTab: 'date',
+      t: ko,
+    }),
+    '10.24–10.25',
+  );
+  assert.equal(
+    festivalHubTimeMajorLabel({
+      dateChipEnabled: false,
+      activeTab: monthTab,
+      timeTab: 'thisMonth',
+      t: ko,
+    }),
+    '이번 달',
+  );
+  assert.equal(
+    festivalHubTimeMajorDisplay({
+      dateChipEnabled: false,
+      locale: 'en',
+      timeMajorLabel: 'Month',
+      t: en,
+    }),
+    'Time',
+  );
+  assert.equal(
+    festivalHubTimeMajorDisplay({
+      dateChipEnabled: false,
+      locale: 'ko',
+      timeMajorLabel: '이번 달',
+      t: ko,
+    }),
+    '이번 달',
   );
 });
 

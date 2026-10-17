@@ -52,6 +52,8 @@ import {
 import {
   festivalHubFlagOnRangeYmd,
   festivalHubPeriodMetaLabel,
+  festivalHubTimeMajorDisplay,
+  festivalHubTimeMajorLabel,
 } from './festivalHubDefaultPeriod.js';
 import FestivalDateSheet from './FestivalDateSheet';
 import { isGateoFestivalDateChipEnabled } from '../../shared/gateoFeatureFlags';
@@ -2326,13 +2328,13 @@ export default function KoreaFestivalHub() {
     setChipPanel('taste');
   };
 
-  const activeTimeTab = timeTabs.find((tab) => tab.id === timeTab);
-  const timeMajorLabel =
-    (dateChipEnabled && activeTimeTab?.headline
-      ? activeTimeTab.headline
-      : activeTimeTab?.label) ||
-    (timeTab === 'thisMonth' ? t('korea.festival.timeTab.thisMonth') : null) ||
-    t('korea.festival.timeTab.now');
+  const activeTimeTab = timeTabs.find((tab) => tab.id === timeTab) || null;
+  const timeMajorLabel = festivalHubTimeMajorLabel({
+    dateChipEnabled,
+    activeTab: activeTimeTab,
+    timeTab,
+    t,
+  });
   const regionMajorLabel =
     cityName !== 'all'
       ? localizedFestivalCityListLabel(locale, areaCode, cityName)
@@ -2344,8 +2346,12 @@ export default function KoreaFestivalHub() {
     localizedTasteLabel(t, tasteId, tasteLabel(tasteId)) ||
     t('korea.common.theme');
 
-  const majorTimeDisplay =
-    locale === 'en' ? t('korea.common.time') : timeMajorLabel;
+  const majorTimeDisplay = festivalHubTimeMajorDisplay({
+    dateChipEnabled,
+    locale,
+    timeMajorLabel,
+    t,
+  });
   const majorRegionDisplay =
     locale === 'en' ? t('korea.common.region') : regionMajorLabel;
   const majorTasteDisplay =
