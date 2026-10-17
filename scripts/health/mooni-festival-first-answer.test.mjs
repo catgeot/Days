@@ -574,7 +574,7 @@ test('festival access drill-down opens origin chips without auto-sending Seoul',
 });
 
 test('festival access hint urges real routes when TAGO times are missing', async () => {
-  const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalAssist.js'), 'utf8');
+  const assist = readFileSync(join(root, 'src/shared/korea/mooniKoreaFestivalReplyPolish.js'), 'utf8');
   assert.match(assist, /isFestivalAccessAsk/);
   assert.match(assist, /festivalAccessVenueGuidanceLines/);
   assert.match(assist, /역에서 축제장까지/);

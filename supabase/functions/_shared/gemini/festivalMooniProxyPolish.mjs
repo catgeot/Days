@@ -1,4 +1,4 @@
-import { polishFestivalModelReply } from "../../../../src/shared/korea/mooniKoreaFestivalAssist.js";
+import { polishFestivalModelReply } from "../../../../src/shared/korea/mooniKoreaFestivalReplyPolish.js";
 import { repairGeminiReplacementChars } from "./answerSanitize.mjs";
 
 function ymdDigits(raw) {

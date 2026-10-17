@@ -183,7 +183,7 @@ function remember(before, after) {
     if (Array.isArray(probe)) probe.push(row);
     else probe.last = row;
   }
-  if (!import.meta.env?.DEV) return;
+  if (process.env.NODE_ENV !== 'development') return;
   console.info(
     `[mooni] koreaFestivalHint chars before=${before.length} after=${after.length}`,
   );
