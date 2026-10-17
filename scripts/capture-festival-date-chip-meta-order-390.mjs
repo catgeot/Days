@@ -63,7 +63,30 @@ async function selectMonthChip(page) {
   });
 }
 
+async function waitSettled(page) {
+  await page.waitForFunction(() => {
+    const imgs = [...document.querySelectorAll('main [data-festival-id] img')];
+    if (!imgs.length) return true;
+    return imgs.every((img) => img.complete && img.naturalWidth > 0);
+  }, null, { timeout: 20_000 }).catch(async () => {
+    await page.waitForFunction(() => {
+      const imgs = [...document.querySelectorAll('main [data-festival-id] img')];
+      return imgs.every((img) => img.complete);
+    }, null, { timeout: 8_000 }).catch(() => {});
+  });
+  await page.evaluate(() => document.fonts?.ready);
+  const meta = page.locator('[data-festival-list-meta]');
+  await meta.waitFor();
+  await page.waitForFunction(() => {
+    const el = document.querySelector('[data-festival-list-meta]');
+    if (!el) return false;
+    const cs = getComputedStyle(el);
+    return cs.visibility !== 'hidden' && Number.parseFloat(cs.fontSize) > 0;
+  });
+}
+
 const regions = [
+  { slug: 'nationwide', province: '', district: '' },
   { slug: 'seoul', province: '서울', district: '' },
   { slug: 'gangneung', province: '강원', district: '강릉' },
   { slug: 'jeju', province: '제주', district: '' },
@@ -84,7 +107,15 @@ const notes = [`Capture base: ${onUrl}`];
 
 for (const region of regions) {
   await gotoKorea(page);
-  await pickProvince(page, region.province);
+  if (region.province) await pickProvince(page, region.province);
+  else {
+    await page.getByRole('button', { name: /지역 대분류/ }).click();
+    const nationwide = page
+      .locator('[aria-label="세부 칩"]')
+      .getByRole('button', { name: /^전국/ });
+    await nationwide.waitFor({ timeout: 30_000 });
+    await nationwide.click();
+  }
   if (region.district) {
     const district = page
       .locator('[aria-label="지역 구분 칩"]')
@@ -93,6 +124,7 @@ for (const region of regions) {
     await district.first().click();
   }
   await selectMonthChip(page);
+  await waitSettled(page);
   const meta = (await page.locator('[data-festival-list-meta]').innerText()).trim();
   if (!/까지/.test(meta) || /^\s*~/.test(meta)) {
     throw new Error(`${region.slug} meta order unexpected: ${meta}`);
