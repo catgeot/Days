@@ -64,6 +64,85 @@ test('stripTrailingBracketChipHeaders removes empty access section labels', () =
   assert.doesNotMatch(out, /\[교통|출발\s*전\s*준비/);
 });
 
+test('stripTrailingBracketChipHeaders removes corner-bracket chip headers', () => {
+  const raw = '용산역에서 KTX를 타고 오세요.\n\n「출발 전 준비」';
+  const out = stripTrailingBracketChipHeaders(polishFestivalModelReply(raw, {
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+  }));
+  assert.match(out, /KTX/);
+  assert.doesNotMatch(out, /「출발\s*전\s*준비」/);
+});
+
+test('access polish drops festival intro and nearby place lists', () => {
+  const nearby = [
+    '한복남 경복궁점',
+    '북촌한옥마을 감고당길',
+    '아띠인력거',
+    'K-컬처 스크린(대한민국역사박물관)',
+    '세종마을 음식문화거리',
+    '세종로공원',
+  ];
+  const raw = [
+    '궁중문화축전은 서울 5대 궁궐에서 펼쳐지는 국내 최대 국가유산 축제예요.',
+    '근처에서는 한복남 경복궁점, 북촌한옥마을 감고당길, 아띠인력거를 둘러볼 수 있어요.',
+    '서울역에서 KTX로 용산역까지 가고 지하철 3호선 경복궁역에서 내려요.',
+  ].join(' ');
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    eventStartDate: '20261007',
+    eventEndDate: '20261011',
+    nearbyPlaces: nearby,
+    nearbyRestaurants: [],
+  });
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /KTX|지하철|경복궁역/);
+  assert.doesNotMatch(out, /국내\s*최대|둘러볼|한복남|북촌한옥마을/);
+});
+
+test('access polish places 행사 기간 before gateo page link', () => {
+  const raw = '서울역에서 KTX로 오면 편해요. [궁중문화축전 페이지](https://www.gateo.kr/korea/?festival=1998564)에서 확인할 수 있어요.';
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    eventStartDate: '20261007',
+    eventEndDate: '20261011',
+    nearbyRestaurants: [],
+  });
+  const out = polishMooniFestivalProxyText(raw, polish);
+  const periodIdx = out.indexOf('행사 기간은 10/7~11');
+  const linkIdx = out.indexOf('gateo.kr/korea/?festival=1998564');
+  if (periodIdx >= 0 && linkIdx >= 0) assert.ok(periodIdx < linkIdx);
+  assert.doesNotMatch(out, /gateo\.kr[^)]+\)[^\n]*행사\s*기간은/);
+});
+
+test('food polish without distances does not keep invented drive times', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_nearby',
+    locale: 'ko',
+    userText: '맛집',
+    contentId: '2930716',
+    nearbyRestaurants: [
+      { name: '만동제과', cat3: 'A05020300' },
+      { name: '이쉐프의돈까스', cat3: 'A05020400' },
+    ],
+  });
+  const raw = '만동제과는 차로 10분, 이쉐프의돈까스도 가까워요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.doesNotMatch(out, /차로\s*10\s*분/);
+  assert.match(out, /만동제과|이쉐프의돈까스/);
+});
+
 test('repairGeminiReplacementChars fixes split 라이브 artifact', () => {
   const broken = `부산 불꽃${'\uFFFD\uFFFD\uFFFD'}이브가 열려요`;
   assert.equal(repairGeminiReplacementChars(broken), '부산 불꽃라이브가 열려요');
@@ -85,6 +164,28 @@ test('access polish does not append booking footer when korail and bus links exi
   });
   const out = polishMooniFestivalProxyText(raw, polish);
   assert.doesNotMatch(out, /열차·버스 시각은/);
+});
+
+test('access polish moves dangling 행사 기간 off the tail after page link', () => {
+  const raw = [
+    '강릉역까지 KTX로 오면 편해요.',
+    '[강릉 국수 축제 페이지](https://www.gateo.kr/korea/?festival=2930716)에서 확인할 수 있어요.',
+    '행사 기간은 10/15~18이에요.',
+  ].join('\n\n');
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '2930716',
+    eventStartDate: '20261015',
+    eventEndDate: '20261018',
+    nearbyRestaurants: [],
+  });
+  const out = polishMooniFestivalProxyText(raw, polish);
+  const periodIdx = out.indexOf('행사 기간은 10/15~18');
+  const linkIdx = out.indexOf('gateo.kr/korea/?festival=2930716');
+  if (periodIdx >= 0 && linkIdx >= 0) assert.ok(periodIdx < linkIdx);
+  assert.doesNotMatch(out, /gateo\.kr[^)]+\)[^\n]*\n\n행사\s*기간은/);
 });
 
 test('access polish does not re-append 행사 기간 when dates already in body', () => {

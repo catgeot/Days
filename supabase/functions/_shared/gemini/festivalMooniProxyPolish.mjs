@@ -9,6 +9,20 @@ function ymdDigits(raw) {
   return /^\d{8}$/.test(s) ? s : "";
 }
 
+function nearbyPlaces(raw) {
+  if (raw == null) return [];
+  if (!Array.isArray(raw) || raw.length > 12) return null;
+  const out = [];
+  for (const row of raw) {
+    const name = row && typeof row === "object"
+      ? String(row.name ?? "").trim()
+      : String(row ?? "").trim();
+    if (!name || name.length > 80) return null;
+    out.push(name);
+  }
+  return out;
+}
+
 function nearbyRestaurants(raw) {
   if (raw == null) return [];
   if (!Array.isArray(raw) || raw.length > 16) return null;
@@ -37,12 +51,15 @@ export function parseFestivalPolishParams(raw) {
   if (typeof raw !== "object" || Array.isArray(raw)) return null;
   const restaurants = nearbyRestaurants(raw.nearbyRestaurants);
   if (restaurants == null) return null;
+  const places = nearbyPlaces(raw.nearbyPlaces);
+  if (places == null) return null;
   return {
     locale: raw.locale == null ? "ko" : String(raw.locale).slice(0, 8),
     userText: raw.userText == null ? "" : String(raw.userText).slice(0, 1000),
     chipId: raw.chipId == null || raw.chipId === "" ? "" : String(raw.chipId).slice(0, 48),
     contentId: raw.contentId == null ? "" : String(raw.contentId).slice(0, 16),
     nearbyRestaurants: restaurants,
+    nearbyPlaces: places,
     referenceYmd: ymdDigits(raw.referenceYmd),
     eventStartDate: ymdDigits(raw.eventStartDate),
     eventEndDate: ymdDigits(raw.eventEndDate),
