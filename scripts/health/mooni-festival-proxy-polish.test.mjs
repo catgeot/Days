@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import { repairGeminiReplacementChars } from '../../supabase/functions/_shared/gemini/answerSanitize.mjs';
 import { polishMooniFestivalProxyText, parseFestivalPolishParams } from '../../supabase/functions/_shared/gemini/festivalMooniProxyPolish.mjs';
 import {
+  buildMooniBoundFestivalSystemHint,
   polishFestivalModelReply,
   stripTrailingBracketChipHeaders,
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
@@ -283,6 +284,78 @@ test('proxy baseline without festivalPolish strips food parking tail', () => {
     userText: '맛집',
   });
   assert.doesNotMatch(out, /주차|운영\s*시간/);
+});
+
+test('access hint includes nearest station grounding for palace festival', () => {
+  const hint = buildMooniBoundFestivalSystemHint({
+    contentId: '1998564',
+    title: '궁중문화축전',
+    eventStartDate: '20261007',
+    eventEndDate: '20261011',
+    address: '서울특별시 종로구 사직로 161',
+  }, 'ko');
+  assert.match(hint, /가까운 역\(GATEO\)/);
+  assert.match(hint, /안국역|경복궁역/);
+  assert.match(hint, /서울역에는 3호선이 없어요/);
+});
+
+test('access polish rewrites impossible Seoul Station Line 3 to palace', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    eventStartDate: '20261007',
+    eventEndDate: '20261011',
+    nearbyRestaurants: [],
+  });
+  const raw = '서울역에서 지하철 3호선 경복궁역까지 가면 편해요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.doesNotMatch(out, /서울역에서 지하철 3호선 경복궁역/);
+  assert.match(out, /서울역에는 3호선이 없어요|안국역|경복궁역/);
+});
+
+test('sights polish appends nearbyPlaces line when model only describes program', () => {
+  const nearby = ['경포해변', '오죽헌', '강릉향교', '중앙시장', '월화거리', '임당생활문화센터'];
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_sights',
+    locale: 'ko',
+    userText: '볼거리',
+    contentId: '2930716',
+    festivalTitle: '강릉 국수 축제',
+    nearbyPlaces: nearby,
+    nearbyRestaurants: [],
+  });
+  const raw = '국수 거리와 체험 부스가 펼쳐져요. 현장 분위기가 즐거워요.';
+  const out = polishMooniFestivalProxyText(raw, polish, {
+    chipId: 'festival_sights',
+    festivalTitle: '강릉 국수 축제',
+  });
+  assert.match(out, /근처에는/);
+  assert.match(out, /경포해변|오죽헌/);
+});
+
+test('food polish uses at least three list shops when data has four', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_nearby',
+    locale: 'ko',
+    userText: '맛집',
+    contentId: '2930716',
+    nearbyRestaurants: [
+      { name: '강릉 오금집', distKm: 0.3, cat3: 'A05020100' },
+      { name: '만동제과', distKm: 0.1, cat3: 'A05020300' },
+      { name: '이쉐프의돈까스', distKm: 0.2, cat3: 'A05020400' },
+      { name: '월화엔', distKm: 0.25, cat3: 'A05020100' },
+    ],
+  });
+  const raw = '만동제과만 가까워요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /만동제과/);
+  assert.match(out, /이쉐프의돈까스|오금집/);
+  const names = ['강릉 오금집', '만동제과', '이쉐프의돈까스'];
+  const hit = names.filter((n) => out.includes(n)).length;
+  assert.ok(hit >= 3);
 });
 
 test('proxy baseline removes 둘러보세요 page closer', () => {

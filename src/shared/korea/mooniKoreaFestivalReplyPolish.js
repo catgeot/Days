@@ -1451,6 +1451,52 @@ function formatGukhyangAccessOriginGuidance(originRow, transport, locale = 'ko')
 }
 
 const GANGNEUNG_FESTIVAL_ID = '2930716';
+const PALACE_FESTIVAL_ID = '1998564';
+
+const FESTIVAL_ACCESS_TRANSIT_GROUNDING = {
+  [PALACE_FESTIVAL_ID]: {
+    ko: '궁중문화축전 권역(경복궁·창덕궁 등) 가까운 지하철역: 3호선 안국역·경복궁역. 서울역에는 3호선이 없어요.',
+    en: 'Nearest subway for the palace venues: Line 3 Anguk or Gyeongbokgung. Line 3 does not serve Seoul Station.',
+  },
+  [GANGNEUNG_FESTIVAL_ID]: {
+    ko: '강릉 국수 축제 권역은 강릉역(KTX·ITX)이 가장 가까운 장거리 역이에요. 서울역·청량리에서 KTX·ITX-이음으로 강릉역까지 오는 편이 있어요.',
+    en: 'Gangneung Station (KTX/ITX) is the main rail stop for this festival. From Seoul Station or Cheongnyangni, KTX or ITX-Saemaul serves Gangneung.',
+  },
+};
+
+function festivalAccessTransitGroundingLine(ctx, locale = 'ko') {
+  const id = String(ctx?.contentId || '').trim();
+  const row = FESTIVAL_ACCESS_TRANSIT_GROUNDING[id];
+  if (!row) return '';
+  const en = String(locale || '').slice(0, 2) === 'en';
+  return en ? row.en : row.ko;
+}
+
+const SEOUL_STATION_LINE3_TO_PALACE_RE =
+  /서울역[^.!?。]{0,48}3\s*호선[^.!?。]{0,48}경복궁역/;
+
+function rewriteImpossibleSeoulStationLine3Access(text, options = {}) {
+  if (String(options.contentId || '').trim() !== PALACE_FESTIVAL_ID) return String(text || '');
+  if (!SEOUL_STATION_LINE3_TO_PALACE_RE.test(text)) return String(text || '');
+  return String(text || '').replace(
+    SEOUL_STATION_LINE3_TO_PALACE_RE,
+    '서울역에는 3호선이 없어요. 궁역 인근은 지하철 3호선 안국역·경복궁역이 가까워요',
+  ).replace(/\s{2,}/g, ' ').trim();
+}
+
+const GANGNEUNG_SEOUL_RAIL_KO =
+  '서울역이나 청량리역에서 KTX·ITX-이음으로 강릉역까지 가는 열차가 있어요.';
+
+function ensureGangneungSeoulAccessKtxMention(text, options = {}) {
+  if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
+  if (!isBoundFestivalAccessPolish(options)) return String(text || '');
+  const origin = String(options.departureOriginId || '').trim();
+  const ask = String(options.userText || '');
+  const fromSeoul = origin === 'seoul' || /서울|청량리|수도권/.test(ask);
+  if (!fromSeoul) return String(text || '');
+  if (/강릉역|KTX|ITX/.test(text)) return String(text || '');
+  return `${GANGNEUNG_SEOUL_RAIL_KO} ${String(text || '').trim()}`.trim();
+}
 
 /** 강릉 국수 축제 — avoid vague «환승 경로»; bus-first from non-capital when TAGO supports it. */
 function formatGangneungAccessOriginGuidance(originRow, transport, locale = 'ko') {
@@ -2215,7 +2261,11 @@ function warmFestivalFoodAnswer(entries, locale = 'ko', contentId = '') {
 
 function foodAnswerCoversHint(text, entries) {
   const body = String(text || '');
-  const facts = entries.length > 0 && entries.every((row) => (
+  const minNames = Math.min(3, entries.length);
+  const namedCount = entries.filter((row) => body.includes(row.name)).length;
+  if (namedCount < minNames) return false;
+  const required = entries.slice(0, minNames);
+  const facts = required.length > 0 && required.every((row) => (
     body.includes(row.name)
     && (!row.url || body.includes(row.url))
     && (!row.distance || body.includes(row.distance))
@@ -2363,6 +2413,42 @@ const MOONI_GUIDE_FILLER_RE =
 function stripFestivalSightsDecorative(text, options = {}) {
   if (!isFestivalSightsAsk(options)) return String(text || '');
   return filterPreservingBreaks(text, (part) => FESTIVAL_SIGHTS_DECORATIVE_RE.test(part));
+}
+
+function festivalSightsNearbyPick(options = {}) {
+  return filterVenueAreaNearbyNames(options.nearbyPlaces, options).slice(0, 3);
+}
+
+function formatKoSightsNearbySentence(names) {
+  const pick = names.slice(0, 3).filter(Boolean);
+  if (!pick.length) return '';
+  if (pick.length === 1) {
+    const last = compactPlace(pick[0]).slice(-1);
+    const particle = syllableHasBatchim(last) ? '이' : '가';
+    return `근처에는 ${pick[0]}${particle} 있어요.`;
+  }
+  const tail = pick[pick.length - 1];
+  const tailKey = compactPlace(tail).slice(-1);
+  const particle = syllableHasBatchim(tailKey) ? '이' : '가';
+  return `근처에는 ${pick.slice(0, -1).join(', ')}, ${tail}${particle} 있어요.`;
+}
+
+function sightsAnswerIncludesNearby(text, names) {
+  if (!names.length) return true;
+  const hits = names.filter((name) => String(text || '').includes(name)).length;
+  return hits >= Math.min(2, names.length);
+}
+
+/** Append a nearby-sights line from GATEO nearbyPlaces when the model skipped them. */
+export function ensureFestivalSightsNearbyLine(text, options = {}) {
+  if (!isFestivalSightsAsk(options)) return String(text || '');
+  const names = festivalSightsNearbyPick(options);
+  if (!names.length || sightsAnswerIncludesNearby(text, names)) return String(text || '').trim();
+  const en = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const line = en
+    ? `Nearby you have ${names.join(', ')}.`
+    : formatKoSightsNearbySentence(names);
+  return `${String(text || '').trim()} ${line}`.trim();
 }
 
 function stripUnaskedFoodTransportSentences(text, options = {}) {
@@ -2681,6 +2767,7 @@ export function polishFestivalModelReplyBaseline(reply, options = {}) {
     text = collapseDoubledFestivalCloser(text, options.festivalTitle);
   }
   text = stripFestivalSightsDecorative(text, options);
+  text = ensureFestivalSightsNearbyLine(text, options);
   const foodCtx = { chipId, locale, userText: options.userText || '' };
   if (chipId === 'festival_nearby' || isFestivalFoodAsk(foodCtx)) {
     text = stripUnaskedFoodTransportSentences(text, { ...foodCtx, chipId: 'festival_nearby' });
@@ -2739,6 +2826,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = softenNightHour(text);
   text = dropFestivalFillerSentences(text);
   text = stripFestivalSightsDecorative(text, options);
+  text = ensureFestivalSightsNearbyLine(text, options);
   text = rewriteLeadingBareFestivalPeriod(text, options);
   if (!isFestivalLodgingAsk(options)) {
     text = collapseDoubledFestivalCloser(text, options.festivalTitle);
@@ -2760,6 +2848,8 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   if (isBoundFestivalAccessPolish(options)) {
     text = stripNonTransportAccessContent(text, options);
+    text = rewriteImpossibleSeoulStationLine3Access(text, options);
+    text = ensureGangneungSeoulAccessKtxMention(text, options);
     text = rewriteFalseDongdaeguGwangjuSongjeongLead(text, options);
     text = rewriteVagueAccessTransferWithoutNamedStation(text, options);
     text = ensureGukhyangDaeguBusFirstLead(text, options);
@@ -2820,6 +2910,12 @@ function festivalAccessVenueGuidanceLines(ctx, locale = 'ko') {
     lines.push(en
       ? '- Arrival station (inside the public-transit section only): for 3·15 Marine Nuri Park, guide KTX/SRT to Masan Station first, then the hop to the venue. Mention Changwon Jungang Station only as a backup in that same transit section — not again after the driving paragraph.'
       : '- 도착 역(대중교통 단락 안에서만): 3·15해양누리공원에는 KTX·SRT는 마산역이 가장 가까워요. 마산역→축제장 경로를 먼저 쓰고, 창원중앙역은 같은 대중교통·역→축제장 설명 안에서만 보조로 말해 주세요. 자가용 안내 **다음에** 창원중앙역을 다시 넣지 마세요.');
+  }
+  const transitGround = festivalAccessTransitGroundingLine(ctx, locale);
+  if (transitGround) {
+    lines.push(en
+      ? `- Transit grounding: ${transitGround}`
+      : `- 교통 기준역: ${transitGround}`);
   }
   return lines;
 }
@@ -3839,6 +3935,11 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
 
   const address = String(ctx?.address || '').trim();
   if (address) lines.push(isEn ? `- Address: ${address}` : `- 주소: ${address}`);
+
+  const transitGround = festivalAccessTransitGroundingLine(ctx, locale);
+  if (transitGround) {
+    lines.push(isEn ? `- Nearest station (GATEO): ${transitGround}` : `- 가까운 역(GATEO): ${transitGround}`);
+  }
 
   const overview = speakVenuePhrases(clipFact(ctx?.overview, 700));
   if (overview && !isEn) lines.push(`- 개요: ${overview}`);

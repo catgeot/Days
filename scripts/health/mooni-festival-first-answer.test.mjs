@@ -637,7 +637,8 @@ test('festival access hint urges real routes when TAGO times are missing', async
   assert.match(masan.hint, /자가용.*창원중앙역을 다시 넣지|자가용 문단 뒤에 창원중앙역/);
   assert.match(assist, /bustago\.or\.kr/);
   assert.match(assist, /appendFestivalAccessBookingLinks/);
-  assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 갑니다/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /당신을 믿고 이 축제에 가요/);
+  assert.match(KO.chips.festival_access.rules.join('\n'), /환승역과 노선은 실제로 다니는 것만/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /KTX 역과 SRT 역/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /광명·용산에서는 SRT가 없/);
   assert.match(KO.chips.festival_access.rules.join('\n'), /버스타고/);
