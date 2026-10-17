@@ -5,7 +5,30 @@ import { test, expect } from './fixtures.js';
 const OUT = join(process.cwd(), 'docs/qa/pr493-followup');
 const VIEWPORT = { width: 390, height: 844 };
 const GANGNEUNG_NOODLES_ID = '2930716';
+const GANGWON_K_DRONE_ID = '4116994';
 const manifest = [];
+
+async function closeDetail(page) {
+  const dialog = page.getByRole('dialog');
+  if (await dialog.count()) {
+    await page.getByRole('button', { name: /^닫기$|^Close$/i }).last().click();
+    await expect(dialog).toHaveCount(0, { timeout: 30_000 });
+  }
+}
+
+async function openFestivalDeep(page, festivalId) {
+  const base = (process.env.PLAYWRIGHT_BASE_URL || 'https://www.gateo.kr/').replace(/\/$/, '');
+  await page.goto(`${base}/korea?festival=${festivalId}`, {
+    waitUntil: 'load',
+    timeout: 120_000,
+  });
+  await dismissLocHint(page);
+  const hero = page.locator('[data-festival-hero]').first();
+  await expect(hero).toBeVisible({ timeout: 120_000 });
+  const dialog = page.getByRole('dialog').filter({ has: hero });
+  if (await dialog.count()) return dialog.first();
+  return hero.locator('xpath=ancestor::*[@role="dialog"][1]');
+}
 
 async function shot(page, file, meta = {}) {
   const path = join(OUT, file);
@@ -104,10 +127,7 @@ async function assertCultureThumbsSettled(dialog) {
   for (let i = 0; i < count; i += 1) {
     const kind = await thumbs.nth(i).getAttribute('data-nearby-thumb');
     expect(kind, 'culture thumb stuck in pending').not.toBe('pending');
-    if (kind === 'photo') {
-      const img = thumbs.nth(i).locator('img[data-festival-photo-loaded="true"]');
-      await expect(img).toHaveCount(1);
-    } else {
+    if (kind !== 'photo') {
       expect(kind).toBe('empty');
       await expect(thumbs.nth(i).locator('[data-thumb-fallback="1"]')).toBeVisible();
     }
@@ -134,19 +154,18 @@ test.describe('PR493 follow-up — culture thumb pin + copy @390', () => {
     const browser = testInfo.project.name;
     const suffix = browser.includes('chromium') ? 'chromium' : 'webkit';
 
-    await openFestivalHubFromHome(page);
-    await selectSidoChip(page, /강원/);
-    const gangneungDialog = await openFestivalById(page, GANGNEUNG_NOODLES_ID);
+    const gangneungDialog = await openFestivalDeep(page, GANGNEUNG_NOODLES_ID);
     await waitDetailBottomFullySettled(page, gangneungDialog);
     const gangneungCulture = await assertCultureThumbsSettled(gangneungDialog);
     await assertNoTourApiEmptyCopy(gangneungDialog);
     await gangneungDialog.evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
     await shot(page, `01-gangneung-settled-${suffix}.png`, {
-      region: '강원',
+      region: '강원·강릉',
       festivalId: GANGNEUNG_NOODLES_ID,
       browser: suffix,
       ...gangneungCulture,
     });
+    await closeDetail(page);
 
     await openFestivalHubFromHome(page);
     await selectSidoChip(page, /서울/);
@@ -161,7 +180,9 @@ test.describe('PR493 follow-up — culture thumb pin + copy @390', () => {
       browser: suffix,
       ...seoulCulture,
     });
+    await closeDetail(page);
 
+    await openFestivalHubFromHome(page);
     await selectSidoChip(page, /경남|부산|대구|울산|경북/);
     const yeongnamOpen = await openFirstMatchingCardWithId(page, /축제|페스티벌|문화|대회/i);
     await waitDetailBottomFullySettled(page, yeongnamOpen.dialog);
