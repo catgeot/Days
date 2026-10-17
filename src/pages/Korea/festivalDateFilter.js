@@ -311,27 +311,75 @@ export function mondayYmdOfSeoulWeekContaining(ymd) {
 }
 
 /**
- * Date-sheet week shortcuts — Mon–Sun weeks in Seoul.
- * `weeksAhead` 0 = today through this Sunday; 1/2 = full next Mon–Sun blocks.
- * @param {0 | 1 | 2} weeksAhead
- * @param {Date} [now]
+ * Monday-first grid column of `ymd` (Mon = 0 … Sun = 6).
+ * @param {string} ymd
+ */
+export function mondayFirstColumnYmd(ymd) {
+  if (!isYmd(ymd)) return 0;
+  const dow = weekdayIndexYmd(ymd);
+  return dow === 0 ? 6 : dow - 1;
+}
+
+/**
+ * Date-sheet week blocks — Mon–Sun weeks in Seoul.
+ * `weeksAhead` 0 = today through this Sunday; 1+ = that many full Mon–Sun blocks ahead.
+ * @param {number} weeksAhead
+ * @param {string} todayYmd
  * @returns {{ startYmd: string, endYmd: string }}
  */
 export function festivalDateSheetWeekRangeFromYmd(weeksAhead, todayYmd) {
   if (!isYmd(todayYmd)) return { startYmd: '', endYmd: '' };
-  if (weeksAhead === 0) {
+  const ahead = Math.max(0, Math.trunc(Number(weeksAhead) || 0));
+  if (ahead === 0) {
     const dow = weekdayIndexYmd(todayYmd);
     const endYmd = addDaysYmd(todayYmd, dow === 0 ? 0 : 7 - dow);
     return { startYmd: todayYmd, endYmd };
   }
   const monThisWeek = mondayYmdOfSeoulWeekContaining(todayYmd);
-  const startYmd = addDaysYmd(monThisWeek, weeksAhead * 7);
+  const startYmd = addDaysYmd(monThisWeek, ahead * 7);
   const endYmd = addDaysYmd(startYmd, 6);
   return { startYmd, endYmd };
 }
 
 /**
- * @param {0 | 1 | 2} weeksAhead
+ * Mon–Sun blocks between the week containing `todayYmd` and the week containing `startYmd`.
+ * 0 when the start falls in this week or earlier.
+ * @param {string} startYmd
+ * @param {string} todayYmd
+ */
+export function festivalDateSheetWeekIndexFromYmd(startYmd, todayYmd) {
+  if (!isYmd(startYmd) || !isYmd(todayYmd)) return 0;
+  const thisMonday = mondayYmdOfSeoulWeekContaining(todayYmd);
+  const startMonday = mondayYmdOfSeoulWeekContaining(startYmd);
+  if (!thisMonday || !startMonday || startMonday <= thisMonday) return 0;
+  const from = Date.UTC(
+    Number(thisMonday.slice(0, 4)),
+    Number(thisMonday.slice(4, 6)) - 1,
+    Number(thisMonday.slice(6, 8)),
+  );
+  const to = Date.UTC(
+    Number(startMonday.slice(0, 4)),
+    Number(startMonday.slice(4, 6)) - 1,
+    Number(startMonday.slice(6, 8)),
+  );
+  return Math.round((to - from) / (7 * 86400000));
+}
+
+/**
+ * Step the highlighted week. Back stops at this week (today through Sunday).
+ * @param {string} draftStart
+ * @param {string} todayYmd
+ * @param {number} direction 1 forward, -1 back
+ * @returns {{ startYmd: string, endYmd: string }}
+ */
+export function festivalDateSheetAdjacentWeekRange(draftStart, todayYmd, direction) {
+  const index = festivalDateSheetWeekIndexFromYmd(draftStart, todayYmd);
+  const next = direction < 0 ? Math.max(0, index - 1) : index + 1;
+  return festivalDateSheetWeekRangeFromYmd(next, todayYmd);
+}
+
+/**
+ * @param {number} weeksAhead
  * @param {Date} [now]
  */
 export function festivalDateSheetWeekRangeYmd(weeksAhead, now = new Date()) {

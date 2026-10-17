@@ -9,6 +9,7 @@ import {
   festivalHubFlagOnRangeYmd,
   festivalHubPeriodMetaLabel,
   festivalHubTimeMajorDisplay,
+  festivalHubFlagOnPeriodTabs,
   festivalHubTimeMajorLabel,
 } from '../../src/pages/Korea/festivalHubDefaultPeriod.js';
 import { festivalHubRegionHeading } from '../../src/pages/Korea/festivalIndexHeadline.js';
@@ -201,7 +202,7 @@ test('flag-on default time category is 기간 / Dates, not 이번 달', () => {
     }),
     'Dates',
   );
-  const picked = { id: 'date', label: '10.24–10.25', headline: '10.24–10.25' };
+  const picked = { id: 'date', label: '날짜 선택', headline: '10.24–10.25' };
   assert.equal(
     festivalHubTimeMajorLabel({
       dateChipEnabled: true,
@@ -209,7 +210,16 @@ test('flag-on default time category is 기간 / Dates, not 이번 달', () => {
       timeTab: 'date',
       t: ko,
     }),
-    '10.24–10.25',
+    '기간',
+  );
+  assert.equal(
+    festivalHubTimeMajorLabel({
+      dateChipEnabled: true,
+      activeTab: { id: 'window30', label: '한 달 이내', headline: '한 달 이내' },
+      timeTab: 'window30',
+      t: ko,
+    }),
+    '한 달 이내',
   );
   assert.equal(
     festivalHubTimeMajorLabel({
@@ -238,6 +248,30 @@ test('flag-on default time category is 기간 / Dates, not 이번 달', () => {
     }),
     '이번 달',
   );
+});
+
+test('flag-on period tabs drop weekend and keep the pick-dates label', () => {
+  const tabs = festivalHubFlagOnPeriodTabs(
+    [
+      { id: 'now', label: '지금' },
+      { id: 'weekend', label: '이번 주말' },
+      { id: 'thisMonth', label: '이번 달' },
+      { id: 'autumn', label: '가을' },
+    ],
+    {
+      window30Label: '한 달 이내',
+      window30Headline: '한 달 이내',
+      dateLabel: '날짜 선택',
+    },
+  );
+  assert.deepEqual(
+    tabs.map((tab) => tab.id),
+    ['now', 'window30', 'date', 'autumn'],
+  );
+  const date = tabs.find((tab) => tab.id === 'date');
+  assert.equal(date.label, '날짜 선택');
+  assert.equal(date.headline, undefined);
+  assert.equal(tabs.some((tab) => tab.id === 'weekend'), false);
 });
 
 test('flag-on heading is the region name only', () => {

@@ -78,13 +78,6 @@ async function openTimeRow(page) {
   await page.getByRole('button', { name: /시간 대분류/ }).click();
 }
 
-async function periodCount(page, id) {
-  const text = await page
-    .locator(`[data-period-id="${id}"] [data-period-count]`)
-    .innerText();
-  return Number(text.trim());
-}
-
 function listCards(page) {
   return page.locator('main [data-festival-id]');
 }
@@ -195,7 +188,11 @@ test.describe('Korea festival date chips', () => {
     await expect(page.getByRole('button', { name: /지역 대분류/ })).toContainText('서울');
     await openTimeRow(page);
     await expect(page.locator('[data-period-id="thisMonth"]')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: /이번 주말/ })).toBeVisible();
+    await expect(page.locator('[data-period-id="weekend"]')).toHaveCount(0);
+    const pickDates = page.locator('[data-period-id="date"]');
+    await expect(pickDates).toContainText('날짜 선택');
+    await expect(pickDates.locator('svg')).toHaveCount(1);
+    await expect(pickDates).not.toContainText('📅');
     const windowChip = page.locator('[data-period-id="window30"]');
     await expect(windowChip).toHaveText('한 달 이내');
     await expect(windowChip).not.toContainText('~');
@@ -234,15 +231,18 @@ test.describe('Korea festival date chips', () => {
     await sheet.getByRole('button', { name: '이 기간 보기' }).click();
     const dateChip = page.locator('[data-period-id="date"]');
     await expect(dateChip).toHaveAttribute('aria-pressed', 'true');
-    await expect(dateChip).toContainText('10.24\u201310.25');
+    await expect(dateChip).toContainText('날짜 선택');
+    await expect(dateChip).not.toContainText('10.24');
+    await expect(dateChip.locator('[data-period-count]')).toHaveCount(0);
     await expect(page.locator('[data-festival-list-heading] h2')).toHaveText('전국');
     await expect(page.locator('[data-festival-list-meta]')).toContainText('10.24\u201310.25');
-    await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText(
-      '10.24\u201310.25',
-    );
-    const count = await periodCount(page, 'date');
-    await expect(listCards(page)).toHaveCount(count);
-    expect(count).toBeGreaterThan(0);
+    await expect(page.locator('[data-festival-list-meta]')).toHaveCSS('font-size', '12px');
+    await expect(page.locator('[data-festival-list-meta]')).toHaveCSS('font-weight', '500');
+    await expect(page.locator('[data-festival-list-meta]')).toHaveCSS('color', 'rgb(68, 64, 60)');
+    const timeMajor = page.getByRole('button', { name: /시간 대분류/ });
+    await expect(timeMajor).toContainText('기간');
+    await expect(timeMajor).not.toContainText('10.24');
+    expect(await listCards(page).count()).toBeGreaterThan(0);
     await expect(listCards(page).filter({ hasText: '강릉 주말 축제' })).toHaveCount(1);
     const window30Chip = page.locator('[data-period-id="window30"]');
     await expectPeriodChipPainted(page, 'date', 'window30');
@@ -278,7 +278,10 @@ test.describe('Korea festival date chips', () => {
     const dateChip = page.locator('[data-period-id="date"]');
     await expect(dateChip).toHaveAttribute('aria-pressed', 'true');
     await expectPeriodChipPainted(page, 'date', 'window30');
-    await expect(dateChip).toContainText('10.17\u201310.18');
+    await expect(dateChip).toContainText('날짜 선택');
+    await expect(dateChip).not.toContainText('10.17');
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('10.17\u201310.18');
+    await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText('기간');
     await expect(window30Chip).toHaveAttribute('aria-pressed', 'false');
   });
 
@@ -293,14 +296,17 @@ test.describe('Korea festival date chips', () => {
     await sheet.getByRole('button', { name: '이 기간 보기' }).click();
     const dateChip = page.locator('[data-period-id="date"]');
     const window30Chip = page.locator('[data-period-id="window30"]');
-    await expect(dateChip).toContainText('10.17\u201310.18');
+    await expect(dateChip).toContainText('날짜 선택');
+    await expect(page.locator('[data-festival-list-meta]')).toContainText('10.17\u201310.18');
     await window30Chip.click();
     await expectPeriodChipPainted(page, 'window30', 'date');
     await expect(dateChip).not.toContainText('10.17');
-    await expect(dateChip).toContainText('날짜');
+    await expect(dateChip).toContainText('날짜 선택');
+    await expect(dateChip).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('[data-festival-list-meta]')).not.toContainText('10.17');
   });
 
-  test('date sheet week shortcuts highlight range and apply custom period', async ({
+  test('date sheet opens on this week and steps later Mon–Sun weeks', async ({
     page,
   }) => {
     await page.getByRole('button', { name: /^서울\s+\d+$/ }).click();
@@ -308,8 +314,26 @@ test.describe('Korea festival date chips', () => {
     await page.locator('[data-period-id="date"]').click();
     const sheet = page.locator('[data-festival-date-sheet]');
     await expect(sheet).toBeVisible();
-
-    await sheet.locator('[data-week-shortcut="0"]').click();
+    await expect(sheet.getByRole('button', { name: '이번 주' })).toHaveCount(0);
+    await expect(sheet.locator('[data-festival-date-week-shortcuts] button')).toHaveText([
+      '다음 주',
+      '다다음 주',
+      '‹',
+      '그다음 주 ›',
+    ]);
+    await expect(sheet.locator('[data-festival-date-weekdays] span')).toHaveText([
+      '월',
+      '화',
+      '수',
+      '목',
+      '금',
+      '토',
+      '일',
+    ]);
+    await expect(sheet.locator('[data-week-step="back"]')).toBeDisabled();
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
+      '10.16\u201310.18',
+    );
     await expect(sheet.locator('[data-ymd="20261016"]')).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -318,17 +342,90 @@ test.describe('Korea festival date chips', () => {
       'aria-pressed',
       'true',
     );
-    await sheet.getByRole('button', { name: '이 기간 보기' }).click();
-    const dateChip = page.locator('[data-period-id="date"]');
-    await expect(dateChip).toContainText('10.16\u201310.18');
+    const october = sheet.locator('[data-calendar-month="202610"]');
+    const octCells = october.locator('.grid > *');
+    await expect(octCells.nth(3)).toHaveAttribute('data-ymd', '20261001');
 
-    await dateChip.click();
     await sheet.locator('[data-week-shortcut="1"]').click();
+    await expect(sheet.locator('[data-week-shortcut="1"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
+      '10.19\u201310.25',
+    );
     await expect(sheet.locator('[data-ymd="20261019"]')).toHaveAttribute(
       'aria-pressed',
       'true',
     );
     await expect(sheet.locator('[data-ymd="20261025"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(sheet.locator('[data-week-step="back"]')).toBeEnabled();
+
+    await sheet.locator('[data-week-shortcut="2"]').click();
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
+      '10.26\u201311.1',
+    );
+    await expect(sheet.locator('[data-ymd="20261026"]')).toBeInViewport();
+    await expect(sheet.locator('[data-ymd="20261101"]')).toBeInViewport();
+
+    await sheet.locator('[data-week-step="forward"]').click();
+    await sheet.locator('[data-week-step="forward"]').click();
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
+      '11.9\u201311.15',
+    );
+    await expect(sheet.locator('[data-ymd="20261109"]')).toBeInViewport();
+    await expect(sheet.locator('[data-calendar-month="202611"]')).toBeInViewport();
+
+    for (let i = 0; i < 6; i += 1) {
+      if (await sheet.locator('[data-week-step="back"]').isDisabled()) break;
+      await sheet.locator('[data-week-step="back"]').click();
+    }
+    await expect(sheet.locator('[data-week-step="back"]')).toBeDisabled();
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
+      '10.16\u201310.18',
+    );
+
+    const applyBtn = sheet.getByRole('button', { name: '이 기간 보기' });
+    const applyBox = await applyBtn.boundingBox();
+    const viewport = page.viewportSize();
+    expect(applyBox).toBeTruthy();
+    expect(applyBox.y + applyBox.height).toBeLessThanOrEqual(viewport.height + 1);
+    await applyBtn.click();
+    const dateChip = page.locator('[data-period-id="date"]');
+    await expect(dateChip).toContainText('날짜 선택');
+    await expect(dateChip).toHaveAttribute('aria-pressed', 'true');
+    await expect(dateChip).not.toContainText('10.16');
+    await expect(dateChip.locator('[data-period-count]')).toHaveCount(0);
+    await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
+      '서울특별시',
+    );
+    await expect(page.locator('[data-festival-list-meta]')).toContainText(
+      '10.16\u201310.18',
+    );
+    await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText('기간');
+    await expect(page.getByRole('button', { name: /시간 대분류/ })).not.toContainText(
+      '10.16',
+    );
+    await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(1);
+
+    await dateChip.click();
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
+      '10.16\u201310.18',
+    );
+    await sheet.locator('[data-week-shortcut="1"]').click();
+    await sheet.getByRole('button', { name: '이 기간 보기' }).click();
+    await expect(dateChip).toContainText('날짜 선택');
+    await expect(page.locator('[data-festival-list-meta]')).toContainText(
+      '10.19\u201310.25',
+    );
+    await dateChip.click();
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
+      '10.19\u201310.25',
+    );
+    await expect(sheet.locator('[data-week-shortcut="1"]')).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -341,7 +438,8 @@ test.describe('Korea festival date chips', () => {
     await openTimeRow(page);
     await page.locator('[data-period-id="date"]').click();
     const sheet = page.locator('[data-festival-date-sheet]');
-    await sheet.locator('[data-week-shortcut="0"]').click();
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText('10.18');
+    await expect(sheet.locator('[data-week-step="back"]')).toBeDisabled();
     await expect(sheet.locator('[data-ymd="20261018"]')).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -350,20 +448,21 @@ test.describe('Korea festival date chips', () => {
       'aria-pressed',
       'true',
     );
+    await sheet.locator('[data-week-step="forward"]').click();
+    await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
+      '10.19\u201310.25',
+    );
   });
 
-  test('이번 주말 on Saturday is today through Sunday only', async ({ page }) => {
-    await page.clock.setFixedTime(new Date('2026-10-17T03:00:00.000Z'));
-    await page.reload();
-    await dismissLocHint(page);
-    await expect(page.locator('main [data-festival-id]').first()).toBeVisible({
-      timeout: 30_000,
-    });
+  test('period row has no weekend chip; pick-dates stays a short calendar chip', async ({
+    page,
+  }) => {
     await openTimeRow(page);
-    const weekendChip = page.locator('[data-period-id="weekend"]');
-    await weekendChip.click();
-    await expect(weekendChip).toHaveAttribute('aria-pressed', 'true');
-    await expect(listCards(page).filter({ hasText: '토요일만 축제' })).toHaveCount(1);
-    await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(0);
+    await expect(page.locator('[data-period-id="weekend"]')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '이번 주말' })).toHaveCount(0);
+    const pickDates = page.locator('[data-period-id="date"]');
+    await expect(pickDates).toContainText('날짜 선택');
+    await expect(pickDates.locator('svg')).toHaveCount(1);
+    await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText('기간');
   });
 });

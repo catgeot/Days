@@ -3,6 +3,7 @@ import {
   formatFestivalRangeLabel,
   formatWindow30RangeSuffix,
   formatWindow30UntilMetaLabel,
+  replaceMonthTabWithDateChips,
   seoulTodayYmd,
   upcomingWeekendRangeYmd,
   window30RangeYmd,
@@ -73,9 +74,25 @@ export function festivalHubPeriodMetaLabel({
 }
 
 /**
+ * Flag-on period row: no «이번 주말». «이번 달» becomes the 30-day chip plus
+ * a stable pick-dates chip. The applied range is not written onto that chip.
+ * @param {{ id: string, label: string }[]} tabs
+ * @param {{ window30Label: string, window30Headline?: string, dateLabel: string }} labels
+ */
+export function festivalHubFlagOnPeriodTabs(tabs, labels) {
+  const withoutWeekend = (tabs || []).filter((tab) => tab?.id !== 'weekend');
+  return replaceMonthTabWithDateChips(withoutWeekend, {
+    window30Label: labels.window30Label,
+    window30Headline: labels.window30Headline,
+    dateLabel: labels.dateLabel,
+  });
+}
+
+/**
  * Label stored on the top time category tab.
  * Flag-on with no period chip selected uses «기간» / «Dates» so the 30-day
- * default is not called «이번 달». A picked chip keeps that chip's label.
+ * default is not called «이번 달». A picked non-date chip keeps that chip's label.
+ * The date chip keeps the short «기간» — the range lives on the list meta line.
  * Flag-off still resolves «이번 달» / the active tab.
  * @param {{
  *   dateChipEnabled?: boolean,
@@ -90,6 +107,9 @@ export function festivalHubTimeMajorLabel({
   timeTab = '',
   t,
 }) {
+  if (dateChipEnabled && timeTab === 'date') {
+    return String(t('korea.festival.periodCategory', { defaultValue: '기간' }) || '');
+  }
   if (dateChipEnabled && activeTab?.headline) return String(activeTab.headline);
   if (activeTab?.label) return String(activeTab.label);
   if (dateChipEnabled) {
