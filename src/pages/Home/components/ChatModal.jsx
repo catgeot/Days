@@ -2015,7 +2015,7 @@ const ChatModal = ({
                       <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
                       {t('mooni.chat.backTopic')}
                     </button>
-                    <span className={`text-[11px] font-medium break-keep min-w-0 ${tone(fresh, 'text-cyan-400/75', 'text-cyan-600')}`}>
+                    <span className={`text-[11px] font-semibold break-keep min-w-0 ${tone(fresh, 'text-cyan-200', 'text-cyan-900')}`}>
                       {getMooniL1ChipLabel('access', { mobile: true })}
                     </span>
                   </div>
@@ -2086,7 +2086,7 @@ const ChatModal = ({
                       <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
                       {t('mooni.chat.backTopic')}
                     </button>
-                    <span className={`text-[11px] font-medium break-keep min-w-0 ${tone(fresh, 'text-cyan-400/75', 'text-cyan-600')}`}>
+                    <span className={`text-[11px] font-semibold break-keep min-w-0 ${tone(fresh, 'text-cyan-200', 'text-cyan-900')}`}>
                       {getMooniL1ChipLabel(FESTIVAL_ACCESS_PARENT, { mobile: true })}
                     </span>
                   </div>

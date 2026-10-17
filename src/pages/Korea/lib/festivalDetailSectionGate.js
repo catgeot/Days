@@ -204,3 +204,13 @@ export function sectionIsHiddenByGating(sectionEval) {
   if (sectionEval.content === 'hidden') return true;
   return false;
 }
+
+/** 맛집·레포츠 등 목록 섹션 — 항목 0건이면 헤더·빈 박스 없이 전체 숨김 (로딩·좌표 없음 제외). */
+export function shouldShowFestivalNearbyListSection(status, itemCount) {
+  const st = String(status || '').trim();
+  if (!st || st === 'idle' || st === 'nocoords' || st === 'loading') return false;
+  const count = Number(itemCount) || 0;
+  if (count > 0) return true;
+  if (st === 'error') return true;
+  return false;
+}

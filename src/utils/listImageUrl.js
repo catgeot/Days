@@ -16,8 +16,10 @@ function isVisitKoreaHost(hostname) {
  * @returns {string}
  */
 export function resolveListImageUrl(url, opts = {}) {
-  const raw = String(url || '').trim();
+  let raw = String(url || '').trim();
   if (!raw) return '';
+  if (raw.startsWith('//')) raw = `https:${raw}`;
+  else if (/^http:\/\//i.test(raw)) raw = raw.replace(/^http:\/\//i, 'https://');
   const role = opts.role || 'list';
   if (role === 'hero') return raw;
 

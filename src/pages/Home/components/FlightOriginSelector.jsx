@@ -479,7 +479,7 @@ export default function FlightOriginSelector({
         onClick={(event) => event.stopPropagation()}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-white/85 break-keep">
           {t('flightOrigin.departure')}
         </span>
         <button

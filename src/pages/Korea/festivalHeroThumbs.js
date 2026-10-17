@@ -1,4 +1,5 @@
 import { createElement, useCallback, useLayoutEffect, useState } from 'react';
+import { FestivalDetailPhotoFallback } from './festivalListThumbBox.jsx';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 
 /** Strip opens only after two photos decode. URL count never opens it. */
@@ -144,6 +145,7 @@ export function FestivalHeroThumbStrip({
                 src: resolveSrc(url),
                 alt: '',
                 className: 'absolute inset-0 h-full w-full object-cover',
+                fallback: createElement(FestivalDetailPhotoFallback, { size: 'sm' }),
                 onFailed: () => markFailed(url),
               }),
             );

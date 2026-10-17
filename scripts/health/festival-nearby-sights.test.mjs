@@ -600,7 +600,7 @@ test('settled no-photo nearby ids use landmark icon not grey pending', () => {
     sheet.indexOf('function NearbyThumbSkeleton'),
   );
   assert.match(placeholderFn, /data-nearby-thumb="empty"/);
-  assert.match(placeholderFn, /Landmark/);
+  assert.match(placeholderFn, /FestivalDetailPhotoFallback/);
 });
 
 test('early nearby rows pick up images without reordering', () => {
