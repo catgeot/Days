@@ -1,5 +1,4 @@
 import { mkdir } from 'node:fs/promises';
-import { devices } from '@playwright/test';
 import { test, expect } from './fixtures.js';
 
 const OUT = '/opt/cursor/artifacts/pr1';
@@ -65,12 +64,6 @@ async function nearbySightNames(dialog) {
 }
 
 test.describe('PR1 festival detail — WebKit 390 screenshots', () => {
-  test.use({
-    ...devices['iPhone 13'],
-    viewport: VIEWPORT,
-    deviceScaleFactor: 1,
-  });
-
   test.beforeAll(async () => {
     await mkdir(OUT, { recursive: true });
   });
