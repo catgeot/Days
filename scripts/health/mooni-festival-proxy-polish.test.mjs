@@ -7,6 +7,7 @@ import {
   polishFestivalModelReply,
   stripTrailingBracketChipHeaders,
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
+import { stripGangneungAccessItxMentions } from '../../src/shared/korea/mooniKoreaFestivalReplyPolish.js';
 
 const SHOPS = [
   { name: '만동제과', distKm: 0.1, cat3: 'A05020300' },
@@ -359,6 +360,64 @@ test('gangneung access strips ITX mentions', () => {
   assert.doesNotMatch(out, /ITX/);
   assert.match(out, /KTX/);
   assert.match(out, /강릉역/);
+});
+
+test('gangneung ITX strip preserves paragraph breaks', () => {
+  const options = {
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '서울에서 가는 법',
+    contentId: '2930716',
+    departureOriginId: 'seoul',
+  };
+  const raw = '서울역에서 KTX·ITX-이음으로 강릉역까지 가요.\n\n청량리에서도 KTX로 강릉역까지 갈 수 있어요.';
+  const out = stripGangneungAccessItxMentions(raw, options);
+  assert.match(out, /\n\n/);
+  assert.doesNotMatch(out, /ITX/);
+  assert.match(out, /청량리/);
+});
+
+test('palace access does not inject 서울역 line-3 line when model omitted 서울역', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw = '지하철 3호선 안국역에서 내리면 궁중문화축전 권역에 가까워요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.doesNotMatch(out, /서울역에는\s*3호선이\s*없어요/);
+});
+
+test('palace access rewrite keeps space after sentence period', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    festivalTitle: '궁중문화축전',
+    nearbyRestaurants: [],
+  });
+  const raw = '안국역에서 내리면 편리해요. 궁역 인근은 지하철 3호선 안국역·경복궁역이 가까워요에서 내리면 좋아요.';
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.doesNotMatch(out, /편리해요\.서울역/);
+  assert.doesNotMatch(out, /가까워요에서/);
+});
+
+test('access polish drops footer when body has generic 코레일 schedule link', () => {
+  const raw = '자세한 열차 시간과 노선은 [코레일](https://www.letskorail.com/)에서 확인해 보세요.';
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: '가는 법',
+    contentId: '1998564',
+    nearbyRestaurants: [],
+  });
+  const out = polishMooniFestivalProxyText(raw, polish);
+  assert.match(out, /\[코레일\]/);
+  assert.doesNotMatch(out, /열차·버스\s*시각은/);
 });
 
 test('sights polish dedupes consecutive festival subject sentences', () => {

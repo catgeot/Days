@@ -1143,6 +1143,7 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   assert.match(accessChipTail, /KTX로 광명에서 출발해요/);
   assert.doesNotMatch(accessChipTail, /교통\s*·\s*티켓/);
   assert.match(accessChipTail, /bustago\.or\.kr/);
+  assert.equal((accessChipTail.match(/열차·버스\s*시각은/g) || []).length, 1);
   assert.equal(
     stripMooniUiChipLabels('[강릉행 KTX 노선 확인] [강릉 숙소 추천 리스트]'),
     '',
@@ -2729,8 +2730,8 @@ test('food wait, tagged places, parking, closers, and three nearby names', async
     'ko',
   );
   assert.doesNotMatch(accessFooterPartial, /\[코레일\].*\[코레일\]/);
-  assert.match(accessFooterPartial, /버스타고/);
-  assert.match(accessFooterPartial, /고속버스/);
+  assert.doesNotMatch(accessFooterPartial, /열차·버스\s*시각은/);
+  assert.match(accessFooterPartial, /\[코레일\]/);
   const accessFooterFull = appendFestivalAccessBookingLinks(
     `[코레일](https://www.letskorail.com/) [버스타고](https://www.bustago.or.kr/) [고속버스](https://www.kobus.co.kr/)`,
     'ko',

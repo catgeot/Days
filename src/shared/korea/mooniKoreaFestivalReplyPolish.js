@@ -219,6 +219,14 @@ function filterPreservingBreaks(text, drop) {
   return kept.join('\n\n').trim();
 }
 
+/** Collapse runs of spaces/tabs only — keep paragraph and line breaks. */
+function collapseHorizontalWhitespace(text) {
+  return String(text || '')
+    .split('\n')
+    .map((line) => line.replace(/[ \t]{2,}/g, ' ').replace(/[ \t]+$/g, ''))
+    .join('\n');
+}
+
 const NON_STAY_RE = /사우나|찜질|목욕탕|목욕|스파|sauna|jjimjilbang|bathhouse/i;
 const NON_STAY_ASK_RE = /사우나|찜질|목욕|스파|sauna|jjimjilbang|bathhouse/i;
 const BROADCAST_RE = /방청|공개\s*방송|시청자/;
@@ -333,10 +341,20 @@ export const FESTIVAL_ACCESS_TXBUS_URL = 'https://txbus.t-money.co.kr/';
 
 const BOOKING_SITE_CHECKS = [
   { id: 'korail', re: /(?:lets)?korail\.com/i },
+  { id: 'srt', re: /(?:etk\.)?srail\.co\.kr/i },
   { id: 'kobus', re: /kobus\.co\.kr/i },
   { id: 'bustago', re: /bustago\.or\.kr/i },
   { id: 'txbus', re: /txbus\.t-money\.co\.kr/i },
 ];
+
+const FESTIVAL_ACCESS_BOOKING_MARKDOWN_LINK_RE =
+  /\[[^\]]+\]\(\s*https?:\/\/(?:www\.)?(?:letskorail\.com|korail\.com|etk\.srail\.co\.kr|srail\.co\.kr|bustago\.or\.kr|kobus\.co\.kr|txbus\.t-money\.co\.kr)[^)]*\)/i;
+
+function bodyHasFestivalAccessBookingMarkdownLink(text) {
+  const s = String(text || '');
+  if (FESTIVAL_ACCESS_BOOKING_MARKDOWN_LINK_RE.test(s)) return true;
+  return /\[(?:코레일|Korail|SRT|버스타고|BUSTAGO|고속버스|KOBUS|시외버스|intercity bus)\]\([^)]+\)/i.test(s);
+}
 
 function festivalAccessBookingDomainsInText(text) {
   const found = new Set();
@@ -382,12 +400,25 @@ function bodyMentionsFestivalBookingServices(text) {
   return rail && bus;
 }
 
-function accessAnswerMainBeforeFooter(body, locale = 'ko') {
+function splitAccessBodyAndAutoFooter(body, locale = 'ko') {
   const en = String(locale || '').slice(0, 2) === 'en';
-  const splitRe = en ? /\n\nCheck train and bus schedules on\b/i : /\n\n열차·버스 시각은\b/;
-  const text = String(body || '');
-  const idx = text.search(splitRe);
-  return idx >= 0 ? text.slice(0, idx).trim() : text.trim();
+  const text = String(body || '').trim();
+  const marker = en ? 'Check train and bus schedules on' : '열차·버스 시각은';
+  const blockIdx = text.indexOf(`\n\n${marker}`);
+  if (blockIdx >= 0) {
+    return { main: text.slice(0, blockIdx).trim(), footer: text.slice(blockIdx).trim() };
+  }
+  const inlineIdx = text.indexOf(marker);
+  if (inlineIdx > 0) {
+    let mainEnd = inlineIdx;
+    while (mainEnd > 0 && /\s/.test(text[mainEnd - 1])) mainEnd -= 1;
+    return { main: text.slice(0, mainEnd).trim(), footer: text.slice(inlineIdx).trim() };
+  }
+  return { main: text, footer: '' };
+}
+
+function accessAnswerMainBeforeFooter(body, locale = 'ko') {
+  return splitAccessBodyAndAutoFooter(body, locale).main;
 }
 
 function koAccessBookingDomainsInText(text) {
@@ -421,23 +452,35 @@ function bodyHasAccessTimetablePointer(text, locale = 'ko') {
     return /check train and bus schedules on/i.test(main)
       || (/train (?:times|schedules)|bus schedules/i.test(main) && domains.size >= 2);
   }
+  if (bodyHasFestivalAccessBookingMarkdownLink(main)) return true;
   return koAccessTimetableIntentInText(main);
+}
+
+/** Drop echoed auto footers before appending the client booking block. */
+function stripEchoedAccessAutoFooter(text, locale = 'ko') {
+  let body = dedupeFestivalAccessBookingFooters(String(text || '').trim(), locale);
+  const { main, footer } = splitAccessBodyAndAutoFooter(body, locale);
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const autoFooterLead = en ? /^Check train and bus schedules on/i : /^열차·버스\s*시각은/;
+  if (!footer || !autoFooterLead.test(footer)) return body;
+  if (
+    bodyHasFestivalAccessBookingMarkdownLink(main)
+    || bodyHasAccessTimetablePointer(main, locale)
+    || bodyHasFestivalAccessBookingMarkdownLink(footer)
+  ) {
+    return main.trim();
+  }
+  return body;
 }
 
 /** One timetable pointer — drop the auto footer when the route body already points to booking sites. */
 export function reconcileAccessBookingPointers(text, locale = 'ko') {
-  let body = dedupeFestivalAccessBookingFooters(String(text || '').trim(), locale);
-  const main = accessAnswerMainBeforeFooter(body, locale);
-  if (!bodyHasAccessTimetablePointer(main, locale)) return body;
-  const en = String(locale || '').slice(0, 2) === 'en';
-  const footerRe = en
-    ? /\n\nCheck train and bus schedules on[\s\S]*$/i
-    : /\n\n열차·버스 시각은[\s\S]*$/;
-  return footerRe.test(body) ? main : body;
+  return stripEchoedAccessAutoFooter(text, locale);
 }
 
 function shouldSkipFestivalAccessBookingFooterAppend(body) {
   if (hasFestivalAccessBookingFooterParagraph(body)) return true;
+  if (bodyHasFestivalAccessBookingMarkdownLink(body)) return true;
   if (bodyHasAccessTimetablePointer(body)) return true;
   if (bodyMentionsFestivalBookingServices(body)) return true;
   const domains = festivalAccessBookingDomainsInText(body);
@@ -465,7 +508,7 @@ function isAllowedFestivalBareUrl(url) {
 
 /** Client footer for festival_access — booking links the model may omit. */
 export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
-  const body = reconcileAccessBookingPointers(String(text || '').trim(), locale);
+  const body = stripEchoedAccessAutoFooter(String(text || '').trim(), locale);
   if (shouldSkipFestivalAccessBookingFooterAppend(body)) return body;
   const en = String(locale || '').slice(0, 2) === 'en';
   const domains = festivalAccessBookingDomainsInText(body);
@@ -494,7 +537,7 @@ export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
   const footer = en
     ? `\n\nCheck train and bus schedules on ${links.join(', ')}.`
     : `\n\n열차·버스 시각은 ${links.join(', ')}에서 편하게 확인할 수 있어요.`;
-  return reconcileAccessBookingPointers(body ? `${body}${footer}` : footer.trim(), locale);
+  return body ? `${body}${footer}` : footer.trim();
 }
 
 const FESTIVAL_ACCESS_STEP_LEAD_RE =
@@ -1472,19 +1515,50 @@ function festivalAccessTransitGroundingLine(ctx, locale = 'ko') {
   return en ? row.en : row.ko;
 }
 
-const SEOUL_STATION_LINE3_BAD_SENTENCE_RE =
-  /[^.!?。\n]*(?:서울역[^.!?。]{0,96}3\s*호선[^.!?。]{0,96}경복궁역|궁역 인근은 지하철 3호선 안국역·경복궁역이 가까워요에서)[^.!?。\n]*[.!?。]?/g;
-
 const SEOUL_STATION_LINE3_CLEAN_SENTENCE =
   '서울역에는 3호선이 없어요. 지하철 3호선 안국역이나 경복궁역에서 내리면 궁중문화축전 권역에 가까워요.';
 
+const PALACE_LINE3_MANGLED_SENTENCE_RE = /가까워요에서|궁역\s*인근은\s*지하철\s*3호선\s*안국역·경복궁역이\s*가까워요에서/;
+
+function palaceAccessSentencePairsSeoulStationWithLine3(sentence) {
+  const t = String(sentence || '');
+  return /서울역/.test(t) && /3\s*호선/.test(t);
+}
+
+function palaceAccessSentenceClaimsImpossibleSeoulLine3Route(sentence) {
+  const t = String(sentence || '');
+  if (!palaceAccessSentencePairsSeoulStationWithLine3(t)) return false;
+  if (/서울역에는\s*3호선이\s*없어요/.test(t) && !/서울역에서\s*(?:지하철\s*)?3\s*호선/.test(t)) {
+    return false;
+  }
+  return /서울역에서|서울역\s*에서|지하철\s*3\s*호선\s*경복궁|3\s*호선[^.!?。]{0,48}경복궁역/.test(t);
+}
+
+function fixPalaceAccessMangledLine3Sentence(sentence) {
+  if (!PALACE_LINE3_MANGLED_SENTENCE_RE.test(sentence)) return String(sentence || '');
+  return '지하철 3호선 안국역이나 경복궁역에서 내리면 궁중문화축전 권역에 가까워요.';
+}
+
 function rewriteImpossibleSeoulStationLine3Access(text, options = {}) {
   if (String(options.contentId || '').trim() !== PALACE_FESTIVAL_ID) return String(text || '');
-  if (!SEOUL_STATION_LINE3_BAD_SENTENCE_RE.test(text)) return String(text || '');
-  return String(text || '')
-    .replace(SEOUL_STATION_LINE3_BAD_SENTENCE_RE, SEOUL_STATION_LINE3_CLEAN_SENTENCE)
-    .replace(/\s{2,}/g, ' ')
-    .trim();
+  const paragraphs = String(text || '').split(/\n{2,}/);
+  const fixed = paragraphs.map((paragraph) => {
+    const sentences = paragraph
+      .split(/(?<=[.!?。])\s+/)
+      .map((part) => part.trim())
+      .filter(Boolean);
+    const next = sentences.map((sentence) => {
+      if (palaceAccessSentenceClaimsImpossibleSeoulLine3Route(sentence)) {
+        return SEOUL_STATION_LINE3_CLEAN_SENTENCE;
+      }
+      if (PALACE_LINE3_MANGLED_SENTENCE_RE.test(sentence)) {
+        return fixPalaceAccessMangledLine3Sentence(sentence);
+      }
+      return sentence;
+    });
+    return next.join(' ');
+  });
+  return collapseHorizontalWhitespace(fixed.join('\n\n').trim());
 }
 
 const GANGNEUNG_SEOUL_RAIL_KO =
@@ -1494,16 +1568,15 @@ const GANGNEUNG_SEOUL_RAIL_KO =
 export function stripGangneungAccessItxMentions(text, options = {}) {
   if (String(options.contentId || '').trim() !== GANGNEUNG_FESTIVAL_ID) return String(text || '');
   if (!isFestivalAccessAsk(options) && !isBoundFestivalAccessPolish(options)) return String(text || '');
-  return String(text || '')
+  const out = String(text || '')
     .replace(/KTX·ITX-이음/g, 'KTX')
     .replace(/ITX-이음/g, 'KTX-이음')
     .replace(/KTX·KTX-이음/g, 'KTX·KTX-이음')
     .replace(/강릉역\s*\(\s*KTX·ITX\s*\)/g, '강릉역(KTX)')
     .replace(/ITX(?:-새마을)?(?:으로|로)?\s*강릉/g, 'KTX로 강릉')
     .replace(/\bITX\b/g, 'KTX')
-    .replace(/KTX·KTX/g, 'KTX')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
+    .replace(/KTX·KTX/g, 'KTX');
+  return collapseHorizontalWhitespace(out).trim();
 }
 
 function ensureGangneungSeoulAccessKtxMention(text, options = {}) {
@@ -2964,8 +3037,8 @@ export function polishFestivalModelReply(reply, options = {}) {
     ) || shortDateFromDateLabel(options.dateLabel);
     text = ensureFestivalAccessPeriodLine(text, options);
     text = reorderAccessPeriodBeforeGateoLink(text, periodShort);
+    text = stripEchoedAccessAutoFooter(text, options.locale);
     text = appendFestivalAccessBookingLinks(text, options.locale);
-    text = reconcileAccessBookingPointers(text, options.locale);
     text = dedupeFestivalAccessBookingFooters(text, options.locale);
     text = stripDuplicateAccessPeriodLines(text, periodShort);
     text = stripGangneungAccessItxMentions(text, options);
