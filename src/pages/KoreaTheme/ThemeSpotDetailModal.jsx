@@ -38,6 +38,7 @@ import {
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
+import { formatFestivalDetailDateRange } from '../Korea/festivalDateFilter.js';
 import mooniChar from '../../assets/MOONI_transparent.webp';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
@@ -102,12 +103,6 @@ function localizedSpotModalSubtitle(spot, locale) {
 /** 본문·확대보기 — 가로 스와이프 vs 세로 스크롤·탭 */
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
-
-function formatYmdLabel(ymd) {
-  const s = String(ymd || '');
-  if (!/^\d{8}$/.test(s)) return '';
-  return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
-}
 
 function appendLocaleQuery(path, locale) {
   const raw = String(path || '').trim();
@@ -2439,12 +2434,10 @@ export default function ThemeSpotDetailModal({
                       {nearbyFestivals.map((fest) => {
                         const thumbFest = toHttps(fest.firstImage);
                         const dist = formatDistKm(fest.distKm);
-                        const when = [
-                          formatYmdLabel(fest.eventStartDate),
-                          formatYmdLabel(fest.eventEndDate),
-                        ]
-                          .filter(Boolean)
-                          .join('–');
+                        const when = formatFestivalDetailDateRange(
+                          fest.eventStartDate,
+                          fest.eventEndDate,
+                        );
                         const place = String(fest.locality || fest.region || '').trim();
                         return (
                           <li key={fest.contentId}>

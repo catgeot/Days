@@ -8,21 +8,14 @@ import {
   normalizeFestivalItemImages,
   socialPromoPlaceLabel,
 } from './socialPromoFestivalsLogic.js';
-
-function formatYmdLabel(ymd) {
-  const s = String(ymd || '');
-  if (!/^\d{8}$/.test(s)) return '';
-  return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
-}
+import { formatFestivalDetailDateRange } from './festivalDateFilter.js';
 
 export function SocialPromoNearLine({ card, onSelect }) {
   const { t } = useTranslation();
   const item = card?.item;
   if (!item?.contentId) return null;
   const title = String(item.title || '').trim();
-  const start = formatYmdLabel(item.eventStartDate);
-  const end = formatYmdLabel(item.eventEndDate);
-  const range = start && end ? `${start} – ${end}` : start || end;
+  const range = formatFestivalDetailDateRange(item.eventStartDate, item.eventEndDate);
   const city = socialPromoPlaceLabel(item);
   return (
     <button
@@ -98,9 +91,7 @@ function SocialPromoCard({ item, onSelect }) {
   const { isEnglish, locale } = useLocale();
   const rowItem = normalizeFestivalItemImages(item);
   const titleLines = festivalListDisplayTitleLines(rowItem, locale);
-  const start = formatYmdLabel(item.eventStartDate);
-  const end = formatYmdLabel(item.eventEndDate);
-  const range = start && end ? `${start} – ${end}` : start || end;
+  const range = formatFestivalDetailDateRange(item.eventStartDate, item.eventEndDate);
 
   return (
     <button

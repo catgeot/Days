@@ -131,24 +131,36 @@ export function loadedFestivalDataEndYmd(items, todayYmd) {
 }
 
 /**
- * `10.3` in the Seoul year, `2028.2.1` when the year differs.
+ * Year prefix when the festival day is outside Seoul «today» month or calendar year.
  * @param {string} ymd
  * @param {string} todayYmd
  */
-export function formatFestivalMonthDay(ymd, todayYmd) {
+export function festivalDateShowsYear(ymd, todayYmd) {
+  if (!isYmd(ymd) || !isYmd(todayYmd)) return false;
+  if (ymd.slice(0, 4) !== todayYmd.slice(0, 4)) return true;
+  if (ymd.slice(4, 6) !== todayYmd.slice(4, 6)) return true;
+  return false;
+}
+
+/**
+ * `10.3` in the Seoul month, `2026.1.9` when outside the current month/year.
+ * @param {string} ymd
+ * @param {string} todayYmd
+ * @param {{ showYear?: boolean }} [opts]
+ */
+export function formatFestivalMonthDay(ymd, todayYmd, opts = {}) {
   if (!isYmd(ymd)) return '';
   const month = Number(ymd.slice(4, 6));
   const day = Number(ymd.slice(6, 8));
   const monthDay = `${month}.${day}`;
-  const todayYear = isYmd(todayYmd) ? todayYmd.slice(0, 4) : '';
-  if (todayYear && ymd.slice(0, 4) !== todayYear) {
-    return `${ymd.slice(0, 4)}.${monthDay}`;
-  }
+  const showYear =
+    opts.showYear ?? festivalDateShowsYear(ymd, isYmd(todayYmd) ? todayYmd : '');
+  if (showYear) return `${ymd.slice(0, 4)}.${monthDay}`;
   return monthDay;
 }
 
 /**
- * `10.24–10.25`. A single day omits the dash.
+ * `10.24–10.25`, `2026.1.9–1.31`. A single day omits the dash.
  * @param {string} startYmd
  * @param {string} endYmd
  * @param {string} todayYmd
@@ -157,9 +169,33 @@ export function formatFestivalRangeLabel(startYmd, endYmd, todayYmd) {
   const start = formatFestivalMonthDay(startYmd, todayYmd);
   if (!start) return '';
   if (!endYmd || endYmd === startYmd) return start;
-  const end = formatFestivalMonthDay(endYmd, todayYmd);
+  const startYearShown = /^\d{4}\./.test(start);
+  const sameYearAsStart =
+    isYmd(startYmd) && isYmd(endYmd) && startYmd.slice(0, 4) === endYmd.slice(0, 4);
+  const end = formatFestivalMonthDay(endYmd, todayYmd, {
+    showYear:
+      festivalDateShowsYear(endYmd, todayYmd) && !(startYearShown && sameYearAsStart),
+  });
   if (!end) return start;
   return `${start}\u2013${end}`;
+}
+
+/**
+ * Detail sheet · 인근 축제 rows — uses Seoul today when `todayYmd` is omitted.
+ * @param {string} startYmd
+ * @param {string} endYmd
+ * @param {string} [todayYmd]
+ */
+export function formatFestivalDetailDateRange(startYmd, endYmd, todayYmd = seoulTodayYmd()) {
+  if (!isYmd(String(startYmd || '')) && !isYmd(String(endYmd || ''))) return '';
+  const range = formatFestivalRangeLabel(
+    String(startYmd || ''),
+    String(endYmd || startYmd || ''),
+    todayYmd,
+  );
+  if (range) return range;
+  const single = formatFestivalMonthDay(String(startYmd || endYmd || ''), todayYmd);
+  return single;
 }
 
 /**

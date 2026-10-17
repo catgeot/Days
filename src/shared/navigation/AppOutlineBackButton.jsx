@@ -12,6 +12,8 @@ const VARIANT_CLASS = {
     'border-white/55 bg-white/15 text-white hover:bg-white/30 hover:border-white/75',
   solid:
     'border-stone-200 bg-white text-stone-800 shadow-[0_2px_10px_rgba(28,25,23,0.22)] hover:bg-stone-50 hover:border-stone-300',
+  onBrightPhoto:
+    'border-white/80 bg-white/90 text-stone-900 shadow-[0_2px_12px_rgba(28,25,23,0.28)] hover:bg-white hover:border-white/90',
 };
 
 /**

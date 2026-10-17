@@ -68,5 +68,14 @@ export default defineConfig({
       testMatch: /korea-festival-hero-credit-en\.spec\.js/,
       use: { ...devices['iPhone 13'] },
     },
+    {
+      name: 'webkit-pr1-festival',
+      testMatch: /pr1-festival-detail-screenshots\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+      },
+    },
   ],
 });

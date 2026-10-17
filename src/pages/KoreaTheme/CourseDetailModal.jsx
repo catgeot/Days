@@ -14,6 +14,7 @@ import { detectSidoCode } from '../Korea/festivalRegionTags';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
+import { formatFestivalDetailDateRange } from '../Korea/festivalDateFilter.js';
 
 function stripHtml(html) {
   if (!html) return '';
@@ -40,12 +41,6 @@ function formatDistKm(km) {
   if (!Number.isFinite(km)) return '';
   if (km < 1) return `${Math.max(1, Math.round(km * 1000))}m`;
   return `${km < 10 ? km.toFixed(1) : Math.round(km)}km`;
-}
-
-function formatYmdLabel(ymd) {
-  const s = String(ymd || '');
-  if (!/^\d{8}$/.test(s)) return '';
-  return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
 }
 
 /**
@@ -356,12 +351,10 @@ export default function CourseDetailModal({
                       {nearbyFestivals.map((fest) => {
                         const thumbFest = toHttps(fest.firstImage);
                         const dist = formatDistKm(fest.distKm);
-                        const when = [
-                          formatYmdLabel(fest.eventStartDate),
-                          formatYmdLabel(fest.eventEndDate),
-                        ]
-                          .filter(Boolean)
-                          .join('–');
+                        const when = formatFestivalDetailDateRange(
+                          fest.eventStartDate,
+                          fest.eventEndDate,
+                        );
                         const place = String(fest.locality || fest.region || '').trim();
                         return (
                           <li key={fest.contentId}>

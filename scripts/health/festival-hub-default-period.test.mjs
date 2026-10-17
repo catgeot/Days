@@ -58,15 +58,15 @@ test('flag-on default range matches window30, not the 31-day device window', () 
 test('default meta uses ~end; 한 달 이내 chip uses the until label in the same slot', () => {
   assert.equal(
     festivalHubPeriodMetaLabel({ timeTab: 'thisMonth', now: SEOUL_NOON, locale: 'ko' }),
-    '~11.15',
+    '~2026.11.15',
   );
   assert.equal(
     festivalHubPeriodMetaLabel({ timeTab: 'window30', now: SEOUL_NOON, locale: 'ko' }),
-    '11.15까지',
+    '2026.11.15까지',
   );
   assert.equal(
     festivalHubPeriodMetaLabel({ timeTab: 'thisMonth', now: SEOUL_NOON, locale: 'en' }),
-    'until 11.15',
+    'until 2026.11.15',
   );
   const base = buildFestivalPanelListMetaSegments({
     areaCode: 'all',
@@ -81,7 +81,7 @@ test('default meta uses ~end; 한 달 이내 chip uses the until label in the sa
       festivalHubPeriodMetaLabel({ timeTab: 'thisMonth', now: SEOUL_NOON, locale: 'ko' }),
     ),
   );
-  assert.equal(text, '전국 · ~11.15 · 221건 · 시·도별');
+  assert.equal(text, '전국 · ~2026.11.15 · 221건 · 시·도별');
   const dropped = formatFestivalPanelListMetaPlain(
     omitFestivalMetaRegionDuplicatingHeading(
       insertWindow30MetaPeriodSegment(
@@ -91,7 +91,7 @@ test('default meta uses ~end; 한 달 이내 chip uses the until label in the sa
       '전국',
     ),
   );
-  assert.equal(dropped, '~11.15 · 221건 · 시·도별');
+  assert.equal(dropped, '~2026.11.15 · 221건 · 시·도별');
 });
 
 test('meta drops a region prefix only when it repeats the heading', () => {
