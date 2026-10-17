@@ -173,6 +173,18 @@ export function formatWindow30RangeSuffix(endMonthDay) {
 }
 
 /**
+ * Panel meta line for «한 달 이내» — `11.14까지` / EN `until 11.14`.
+ * @param {string} endMonthDay
+ * @param {string} [locale]
+ */
+export function formatWindow30UntilMetaLabel(endMonthDay, locale) {
+  const end = String(endMonthDay || '').replace(/^~/, '').trim();
+  if (!end) return '';
+  if (String(locale || '').startsWith('en')) return `until ${end}`;
+  return `${end}까지`;
+}
+
+/**
  * «30일 안» replaces «이번 달»; «날짜» follows it. Weekend and seasons stay put.
  * Optional `headline` is the one-line list title (chip label may differ).
  * @param {{ id: string, label: string }[]} tabs

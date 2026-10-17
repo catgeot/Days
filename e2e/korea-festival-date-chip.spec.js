@@ -202,8 +202,9 @@ test.describe('Korea festival date chips', () => {
     await expect(page.locator('[data-festival-list-heading] h2')).toHaveText(
       '서울특별시 · 한 달 이내',
     );
-    await expect(page.locator('[data-festival-list-meta]')).toContainText('~11.14');
-    await expect(page.locator('[data-festival-list-meta]')).toContainText('3');
+    await expect(page.locator('[data-festival-list-meta]')).toHaveText(
+      /서울특별시\s*·\s*11\.14까지\s*·\s*3/,
+    );
     await expect(page.locator('[data-period-id="date"] [data-period-count]')).toHaveCount(0);
     await expect(listCards(page).filter({ hasText: '서울 경계 축제' })).toHaveCount(1);
   });
