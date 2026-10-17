@@ -1515,46 +1515,56 @@ function festivalAccessTransitGroundingLine(ctx, locale = 'ko') {
   return en ? row.en : row.ko;
 }
 
-const SEOUL_STATION_LINE3_CLEAN_SENTENCE =
-  '서울역에는 3호선이 없어요. 지하철 3호선 안국역이나 경복궁역에서 내리면 궁중문화축전 권역에 가까워요.';
+const SEOUL_STATION_LINE3_WRONG_FRAG_RE =
+  /서울역에서\s*(?:지하철\s*)?3\s*호선/g;
 
-const PALACE_LINE3_MANGLED_SENTENCE_RE = /가까워요에서|궁역\s*인근은\s*지하철\s*3호선\s*안국역·경복궁역이\s*가까워요에서/;
+const SEOUL_STATION_LINE3_TRANSIT_FIX =
+  '서울역에서 1호선을 타고 종로3가역에서 3호선으로 갈아타';
 
-function palaceAccessSentencePairsSeoulStationWithLine3(sentence) {
-  const t = String(sentence || '');
-  return /서울역/.test(t) && /3\s*호선/.test(t);
+const PALACE_LINE3_MANGLED_FRAGMENT_RE = /가까워요에서/;
+
+function palaceAccessTextAlreadyNamesPalaceStations(text) {
+  return /안국역|경복궁역/.test(String(text || ''));
 }
 
-function palaceAccessSentenceClaimsImpossibleSeoulLine3Route(sentence) {
-  const t = String(sentence || '');
-  if (!palaceAccessSentencePairsSeoulStationWithLine3(t)) return false;
-  if (/서울역에는\s*3호선이\s*없어요/.test(t) && !/서울역에서\s*(?:지하철\s*)?3\s*호선/.test(t)) {
-    return false;
+function palaceAccessSentenceHasWrongSeoulStationLine3Fragment(sentence) {
+  return SEOUL_STATION_LINE3_WRONG_FRAG_RE.test(String(sentence || ''));
+}
+
+function minimalFixPalaceSeoulLine3Sentence(sentence) {
+  let s = String(sentence || '');
+  if (!palaceAccessSentenceHasWrongSeoulStationLine3Fragment(s)) return s;
+  return s
+    .replace(SEOUL_STATION_LINE3_WRONG_FRAG_RE, SEOUL_STATION_LINE3_TRANSIT_FIX)
+    .replace(/서울역에서\s*지하철\s*3\s*호선/g, SEOUL_STATION_LINE3_TRANSIT_FIX);
+}
+
+function fixPalaceAccessMangledLine3Fragment(sentence, fullText = '') {
+  let s = String(sentence || '');
+  if (!PALACE_LINE3_MANGLED_FRAGMENT_RE.test(s)) return s;
+  s = s.replace(/가까워요에서/g, '가까워요.');
+  if (palaceAccessTextAlreadyNamesPalaceStations(fullText)) {
+    return s.replace(
+      /궁역\s*인근은\s*지하철\s*3호선\s*(안국역·경복궁역|경복궁역·안국역)이\s*가까워요/g,
+      '$1이 가까워요',
+    );
   }
-  return /서울역에서|서울역\s*에서|지하철\s*3\s*호선\s*경복궁|3\s*호선[^.!?。]{0,48}경복궁역/.test(t);
-}
-
-function fixPalaceAccessMangledLine3Sentence(sentence) {
-  if (!PALACE_LINE3_MANGLED_SENTENCE_RE.test(sentence)) return String(sentence || '');
-  return '지하철 3호선 안국역이나 경복궁역에서 내리면 궁중문화축전 권역에 가까워요.';
+  return s;
 }
 
 function rewriteImpossibleSeoulStationLine3Access(text, options = {}) {
   if (String(options.contentId || '').trim() !== PALACE_FESTIVAL_ID) return String(text || '');
-  const paragraphs = String(text || '').split(/\n{2,}/);
+  const source = String(text || '');
+  const paragraphs = source.split(/\n{2,}/);
   const fixed = paragraphs.map((paragraph) => {
     const sentences = paragraph
       .split(/(?<=[.!?。])\s+/)
       .map((part) => part.trim())
       .filter(Boolean);
     const next = sentences.map((sentence) => {
-      if (palaceAccessSentenceClaimsImpossibleSeoulLine3Route(sentence)) {
-        return SEOUL_STATION_LINE3_CLEAN_SENTENCE;
-      }
-      if (PALACE_LINE3_MANGLED_SENTENCE_RE.test(sentence)) {
-        return fixPalaceAccessMangledLine3Sentence(sentence);
-      }
-      return sentence;
+      let out = minimalFixPalaceSeoulLine3Sentence(sentence);
+      out = fixPalaceAccessMangledLine3Fragment(out, source);
+      return out;
     });
     return next.join(' ');
   });
@@ -2577,7 +2587,44 @@ export function ensureFestivalSightsNearbyLine(text, options = {}) {
   const line = en
     ? `Nearby you have ${names.join(', ')}.`
     : formatKoSightsNearbySentence(names);
-  return `${String(text || '').trim()} ${line}`.trim();
+  const body = String(text || '').trim();
+  return body ? `${body}\n\n${line}` : line;
+}
+
+const FESTIVAL_SIGHTS_PROGRAM_DETAIL_RE =
+  /체험|프로그램|부스|공연|퍼레이드|마당|거리가|거리는|program|booth|parade|performance/i;
+
+function splitSightsNearbyParagraph(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const marker = en ? 'Nearby you have' : '근처에는';
+  const s = String(text || '').trim();
+  const idx = s.indexOf(marker);
+  if (idx <= 0) return s;
+  if (s.slice(Math.max(0, idx - 2), idx) === '\n\n') return s;
+  return `${s.slice(0, idx).trimEnd()}\n\n${s.slice(idx).trimStart()}`;
+}
+
+/** Split intro vs program detail and isolate the nearby line for readability. */
+export function ensureFestivalSightsParagraphBreaks(text, options = {}) {
+  if (!isFestivalSightsAsk(options)) return String(text || '').trim();
+  let s = splitSightsNearbyParagraph(String(text || '').trim(), options.locale);
+  if (/\n\n/.test(s)) return s;
+  const sentences = splitAccessPolishSentences(s);
+  if (sentences.length < 3) return s;
+  const nearbyIdx = sentences.findIndex((row) => /^(근처에는|Nearby you have)\b/.test(row));
+  const searchEnd = nearbyIdx >= 0 ? nearbyIdx : sentences.length;
+  let splitAt = -1;
+  for (let i = 1; i < searchEnd; i += 1) {
+    if (FESTIVAL_SIGHTS_PROGRAM_DETAIL_RE.test(sentences[i])) {
+      splitAt = i;
+      break;
+    }
+  }
+  if (splitAt < 1 && s.length >= 140) splitAt = Math.min(2, sentences.length - 1);
+  if (splitAt < 1 || splitAt >= sentences.length) return s;
+  const lead = sentences.slice(0, splitAt).join(' ');
+  const tail = sentences.slice(splitAt).join(' ');
+  return `${lead}\n\n${tail}`.trim();
 }
 
 function sightsSentenceFingerprint(sentence) {
@@ -2925,6 +2972,7 @@ export function polishFestivalModelReplyBaseline(reply, options = {}) {
   text = stripFestivalSightsDecorative(text, options);
   text = ensureFestivalSightsNearbyLine(text, options);
   text = dedupeConsecutiveFestivalSightsSentences(text, options);
+  text = ensureFestivalSightsParagraphBreaks(text, options);
   const foodCtx = { chipId, locale, userText: options.userText || '' };
   if (chipId === 'festival_nearby' || isFestivalFoodAsk(foodCtx)) {
     text = stripUnaskedFoodTransportSentences(text, { ...foodCtx, chipId: 'festival_nearby' });
@@ -2985,6 +3033,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   text = stripFestivalSightsDecorative(text, options);
   text = ensureFestivalSightsNearbyLine(text, options);
   text = dedupeConsecutiveFestivalSightsSentences(text, options);
+  text = ensureFestivalSightsParagraphBreaks(text, options);
   text = rewriteLeadingBareFestivalPeriod(text, options);
   if (!isFestivalLodgingAsk(options)) {
     text = collapseDoubledFestivalCloser(text, options.festivalTitle);
