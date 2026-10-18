@@ -12,7 +12,6 @@ import {
   externalReturnShot,
   openFestivalSheet,
   openNearbyPlaceCard,
-  probeHitAtCenter,
   returnFromNearbyOfficialPopup,
   returnFromNearbyOfficialSameTab,
 } from './festival-external-return-helpers.js';
@@ -55,11 +54,6 @@ test.describe('festival external return — WebKit 390', () => {
 
     await returnFromNearbyOfficialPopup(page, context, nearbyModal);
     await externalReturnShot(page, OUT, 'yanggu-nearby-owner-after-return');
-
-    const programTab = dialog.getByRole('tab', { name: /프로그램/ });
-    const probe = await probeHitAtCenter(programTab);
-    expect(probe.scrim).toBe(false);
-    expect(probe.ok).toBe(true);
 
     await assertSheetButtonsInteractive(page, dialog, {
       homepagePattern: /haean\.kr/i,

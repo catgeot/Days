@@ -75,16 +75,42 @@ export async function closeNearbyPlaceModal(page) {
   if (!(await modal.isVisible().catch(() => false))) return;
   await dispatchPersistedReturn(page);
   const headerClose = modal.locator('button[aria-label="닫기"]').first();
-  const clicked = await headerClose
-    .click({ timeout: 8_000 })
-    .then(() => true)
-    .catch(() => false);
-  if (!clicked) {
-    await page.keyboard.press('Escape').catch(() => {});
-  }
-  if (await modal.isVisible().catch(() => false)) {
-    await page.keyboard.press('Escape').catch(() => {});
-  }
+
+  await expect
+    .poll(
+      async () => {
+        if (!(await modal.isVisible().catch(() => false))) return true;
+        const probe = await probeHitAtCenter(headerClose);
+        if (probe.ok && !probe.scrim) {
+          await headerClose.click({ timeout: 5_000 }).catch(() => {});
+        } else {
+          await page.keyboard.press('Escape').catch(() => {});
+        }
+        return !(await modal.isVisible().catch(() => false));
+      },
+      { timeout: 25_000, intervals: [50, 100, 200, 400] },
+    )
+    .toBe(true);
+  await expect(modal).toBeHidden({ timeout: 5_000 });
+}
+
+/** After nearby official popup return: nested modal gone, festival sheet tabs hittable. */
+export async function waitForFestivalSheetAfterExternalReturn(page, dialog) {
+  await expect(nearbyPlaceModal(page)).toBeHidden({ timeout: 20_000 });
+  await expect(dialog).toBeVisible({ timeout: 20_000 });
+  await expect(dialog.locator('#korea-festival-sheet-title')).toBeVisible({ timeout: 20_000 });
+
+  const programTab = dialog.getByRole('tab', { name: /프로그램/ });
+  const pollTimeout = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 35_000 : 25_000;
+  await expect
+    .poll(
+      async () => {
+        const probe = await probeHitAtCenter(programTab);
+        return probe.ok && !probe.scrim;
+      },
+      { timeout: pollTimeout, intervals: [50, 100, 200, 400] },
+    )
+    .toBe(true);
 }
 
 /**
@@ -92,14 +118,22 @@ export async function closeNearbyPlaceModal(page) {
  */
 export async function returnFromNearbyOfficialPopup(page, context, nearbyModal) {
   const official = nearbyModal.locator('[data-theme-spot-official-home]');
-  const popupPromise = context.waitForEvent('page');
+  await expect(official).toBeVisible({ timeout: 15_000 });
+  const popupPromise = context.waitForEvent('page', { timeout: 25_000 });
   await official.click();
   const popup = await popupPromise;
   await popup.waitForLoadState('domcontentloaded');
-  await popup.close();
+  if (!popup.isClosed()) {
+    await Promise.all([
+      popup.waitForEvent('close', { timeout: 20_000 }),
+      popup.close(),
+    ]);
+  }
   await page.bringToFront();
   await dispatchPersistedReturn(page);
   await closeNearbyPlaceModal(page);
+  const dialog = festivalSheetDialog(page);
+  await waitForFestivalSheetAfterExternalReturn(page, dialog);
 }
 
 export async function returnFromNearbyOfficialSameTab(page, nearbyModal) {
