@@ -138,6 +138,7 @@ import {
   manualFestivalTourDetail,
 } from './manualFestivalEntries';
 import { formatFestivalDetailDateRange } from './festivalDateFilter.js';
+import { scrollFestivalOverviewToTop } from './festivalSheetOverviewScroll.js';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -1784,42 +1785,7 @@ export default function FestivalDetailSheet({
   const scrollFestivalSheetToTop = useCallback(() => {
     const sheet = sheetScrollRef.current;
     if (!sheet) return;
-
-    const targets = [sheet];
-    const contentCol = sheet.querySelector('[data-festival-sheet-content]');
-    if (contentCol instanceof HTMLElement) targets.push(contentCol);
-
-    const restores = targets.map((el) => {
-      const prevOverflow = el.style.overflow;
-      const prevTouch = el.style.getPropertyValue('-webkit-overflow-scrolling');
-      el.style.overflow = 'hidden';
-      el.style.setProperty('-webkit-overflow-scrolling', 'auto');
-      return () => {
-        el.style.overflow = prevOverflow;
-        if (prevTouch) el.style.setProperty('-webkit-overflow-scrolling', prevTouch);
-        else el.style.removeProperty('-webkit-overflow-scrolling');
-      };
-    });
-
-    const clampAndScrollToTop = (el) => {
-      const maxTop = Math.max(0, el.scrollHeight - el.clientHeight);
-      el.scrollTop = Math.min(el.scrollTop, maxTop);
-      el.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      el.scrollTop = 0;
-    };
-
-    const run = () => {
-      for (const el of targets) clampAndScrollToTop(el);
-    };
-
-    run();
-    requestAnimationFrame(() => {
-      run();
-      requestAnimationFrame(() => {
-        run();
-        restores.forEach((restore) => restore());
-      });
-    });
+    scrollFestivalOverviewToTop(sheet);
   }, []);
 
   const returnToOverviewTab = useCallback(() => {

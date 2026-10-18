@@ -35,9 +35,8 @@ test('festival detail bottom close returns sub-tabs to the overview', () => {
     sheet,
     /overviewScrollPendingRef\.current = true[\s\S]*useLayoutEffect/,
   );
-  assert.match(sheet, /scrollFestivalSheetToTop/);
-  assert.match(sheet, /-webkit-overflow-scrolling/);
-  assert.match(sheet, /scrollHeight - el\.clientHeight/);
+  assert.match(sheet, /scrollFestivalOverviewToTop/);
+  assert.match(sheet, /festivalSheetOverviewScroll/);
   assert.match(sheet, /data-festival-sheet-content/);
   assert.match(
     button,
