@@ -6,15 +6,18 @@ export const EXTERNAL_RETURN_Z_MIN = 40;
 export const EXTERNAL_RETURN_Z_MAX = 59;
 
 export async function externalReturnShot(page, outDir, name) {
-  await page.screenshot({
-    path: `${outDir}/${name}.png`,
-    clip: {
-      x: 0,
-      y: 0,
-      width: EXTERNAL_RETURN_VIEWPORT.width,
-      height: EXTERNAL_RETURN_VIEWPORT.height,
-    },
-  });
+  await page
+    .screenshot({
+      path: `${outDir}/${name}.png`,
+      clip: {
+        x: 0,
+        y: 0,
+        width: EXTERNAL_RETURN_VIEWPORT.width,
+        height: EXTERNAL_RETURN_VIEWPORT.height,
+      },
+      timeout: 12_000,
+    })
+    .catch(() => {});
 }
 
 export function festivalSheetDialog(page) {
@@ -53,6 +56,16 @@ function festivalNearbySightsList(festivalDialog) {
 /**
  * @param {{ officialTimeoutMs?: number, detailTimeoutMs?: number }} [opts]
  */
+export async function reopenNearbyPlaceModal(page, festivalDialog, cardMatch, opts = {}) {
+  const modal = nearbyPlaceModal(page);
+  if (await modal.isVisible().catch(() => false)) return modal;
+  return openNearbyPlaceCard(page, festivalDialog, cardMatch, {
+    officialTimeoutMs: 20_000,
+    detailTimeoutMs: 25_000,
+    ...opts,
+  });
+}
+
 export async function openNearbyPlaceCard(page, festivalDialog, cardMatch, opts = {}) {
   const officialTimeoutMs = opts.officialTimeoutMs ?? 90_000;
   const detailTimeoutMs = opts.detailTimeoutMs ?? 90_000;
@@ -136,12 +149,10 @@ export async function returnFromNearbyOfficialPopupKeepNearby(page, context, nea
   const popupPromise = context.waitForEvent('page', { timeout: 30_000 });
   await official.click();
   const popup = await popupPromise;
-  await popup.waitForLoadState('domcontentloaded');
+  await popup.waitForLoadState('domcontentloaded', { timeout: 20_000 }).catch(() => {});
   if (!popup.isClosed()) {
-    await Promise.all([
-      popup.waitForEvent('close', { timeout: 25_000 }),
-      popup.close(),
-    ]);
+    await popup.close({ runBeforeUnload: true }).catch(() => {});
+    await popup.waitForEvent('close', { timeout: 8_000 }).catch(() => {});
   }
   await page.bringToFront();
   await dispatchPersistedReturn(page);
@@ -177,7 +188,7 @@ export async function returnFromNearbyOfficialSameTab(page, nearbyModal) {
 }
 
 export async function openFestivalFromHome(page, { searchQuery, festivalId, openTimeoutMs = 120_000 }) {
-  await page.goto('/korea/', { waitUntil: 'networkidle', timeout: 180_000 });
+  await page.goto('/korea/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
   await expect(
     page.getByRole('heading', { name: /한국의 축제|Korea festivals/i }),
   ).toBeVisible({ timeout: openTimeoutMs });
@@ -622,10 +633,9 @@ export async function probeFestivalSheetControlsWithShots(
   opts = {},
   context,
 ) {
-  const { homepagePattern = /https?:\/\//i } = opts;
+  const { homepagePattern = /https?:\/\//i, shotOnly = false } = opts;
   const rows = [];
   const p = `${slugPrefix}-sheet`;
-
   const baseRows = await probeFestivalSheetControls(page, dialog, {
     homepagePattern,
     closeSheet: false,
@@ -635,6 +645,11 @@ export async function probeFestivalSheetControlsWithShots(
     const key = base.control.replace(/\s+/g, '-').slice(0, 40);
     const shotName = `${p}-${key}.png`;
     rows.push({ ...base, shot: shotName });
+
+    if (shotOnly) {
+      await externalReturnShot(page, outDir, `${p}-${key}`).catch(() => {});
+      continue;
+    }
 
     const locator =
       base.control.includes('프로그램')

@@ -85,7 +85,7 @@ import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { openExternalHomepageFromAnchorClick } from '../Korea/lib/festivalHomepageProtocol.js';
 import {
-  clearFestivalSheetPointerBlockers,
+  clearThemeSpotChromePointerBlockers,
   nudgeFestivalSheetScrollAndRepaint,
 } from '../Korea/lib/festivalSheetInteractionRestore.js';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -997,7 +997,7 @@ export default function ThemeSpotDetailModal({
     const dialog = dialogRef.current;
     if (!dialog) return;
     nudgeFestivalSheetScrollAndRepaint(dialog);
-    clearFestivalSheetPointerBlockers(dialog);
+    clearThemeSpotChromePointerBlockers(dialog);
     if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }

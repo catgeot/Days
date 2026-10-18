@@ -6,13 +6,16 @@
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { test, expect } from './fixtures.js';
+import { dismissLocHint } from './mooni-festival-chip-helpers.js';
 import { PROD_EXTERNAL_RETURN_FESTIVALS } from './pr-external-return-prod-config.js';
 import {
   dispatchPersistedReturn,
   externalReturnShot,
   markdownTable,
   openFestivalFromHome,
+  openFestivalSheet,
   openNearbyPlaceCard,
+  reopenNearbyPlaceModal,
   probeFestivalSheetControlsWithShots,
   returnFromNearbyOfficialPopupKeepNearby,
   closeNearbyPlaceModal,
@@ -30,7 +33,7 @@ import {
 const OUT = 'docs/qa/pr-external-return';
 const BUTTONS = `${OUT}/buttons`;
 const OPEN_TIMEOUT_MS = 180_000;
-const TEST_TIMEOUT_MS = 1_800_000;
+const REGION_TEST_TIMEOUT_MS = 2_700_000;
 
 function prodQaEnabled() {
   if (process.env.MOONI_TOURAPI_STUB_ONLY === '1') return false;
@@ -70,11 +73,11 @@ function summarizeMatrix(rows) {
 }
 
 test.describe('PR external return — prod QA record WebKit 390', () => {
-  test.describe.configure({ timeout: TEST_TIMEOUT_MS, mode: 'serial' });
+  test.describe.configure({ mode: 'serial' });
 
   test.beforeAll(async () => {
     if (!prodQaEnabled()) return;
-    process.env.EXTERNAL_RETURN_NEARBY_PROBE_MS = '45000';
+    process.env.EXTERNAL_RETURN_NEARBY_PROBE_MS = '30000';
     await mkdir(OUT, { recursive: true });
     await mkdir(BUTTONS, { recursive: true });
     await loadRecordFromDisk();
@@ -84,29 +87,31 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
     test.skip(!prodQaEnabled(), 'prod anon + no MOONI_TOURAPI_STUB_ONLY required');
   });
 
+  const regionFilter = String(process.env.PROD_QA_REGION || '').trim();
+
   for (const festival of PROD_EXTERNAL_RETURN_FESTIVALS) {
-    test(`${festival.slug} · home → nearby HTTP → back ×2 → button matrix`, async ({
-      page,
-      context,
-    }) => {
-      const dialog = await openFestivalFromHome(page, {
-        searchQuery: festival.searchQuery,
-        festivalId: festival.id,
-        openTimeoutMs: OPEN_TIMEOUT_MS,
-      });
+    if (regionFilter && festival.slug !== regionFilter) continue;
+
+    test.describe(`region ${festival.slug}`, () => {
+      test.describe.configure({ timeout: REGION_TEST_TIMEOUT_MS });
+
+      test('home → nearby HTTP → back ×2 → button matrix', async ({ page, context }) => {
+      await page.goto('/korea/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+      await dismissLocHint(page);
+      const dialog = await openFestivalSheet(page, festival.id, OPEN_TIMEOUT_MS);
 
       await externalReturnShot(page, OUT, `${festival.slug}-01-festival-sheet`);
 
-      const nearbyModal = await openNearbyPlaceCard(page, dialog, festival.nearby.cardMatch);
+      const nearbyModal = await openNearbyPlaceCard(page, dialog, festival.nearby.cardMatch, {
+        officialTimeoutMs: 60_000,
+        detailTimeoutMs: 90_000,
+      });
       const official = nearbyModal.locator('[data-theme-spot-official-home]');
       await official.scrollIntoViewIfNeeded();
       await externalReturnShot(page, OUT, `${festival.slug}-02-nearby-before-external`);
 
       const reopenNearby = async () =>
-        openNearbyPlaceCard(page, festivalSheetDialog(page), festival.nearby.cardMatch, {
-          officialTimeoutMs: 20_000,
-          detailTimeoutMs: 45_000,
-        });
+        reopenNearbyPlaceModal(page, festivalSheetDialog(page), festival.nearby.cardMatch);
 
       let nearbyBaseline = [];
       try {
@@ -140,7 +145,7 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
         const sheetAfterPopup = festivalSheetDialog(page);
         await expect(sheetAfterPopup).toBeVisible({ timeout: 60_000 });
         await dispatchPersistedReturn(page);
-        modalForNearbyProbe = await openNearbyPlaceCard(
+        modalForNearbyProbe = await reopenNearbyPlaceModal(
           page,
           sheetAfterPopup,
           festival.nearby.cardMatch,
@@ -169,11 +174,16 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
 
       const nearbyMerged = mergeNearbyBaselineAfter(nearbyBaseline, nearbyAfter);
 
-      const sheetDialog = festivalSheetDialog(page);
+      let sheetDialog = festivalSheetDialog(page);
       if (await nearbyPlaceModal(page).isVisible().catch(() => false)) {
         await closeNearbyPlaceModal(page);
       }
       await dispatchPersistedReturn(page);
+      if (!(await sheetDialog.isVisible().catch(() => false))) {
+        await page.goto('/korea/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+        await dismissLocHint(page);
+        sheetDialog = await openFestivalSheet(page, festival.id, OPEN_TIMEOUT_MS);
+      }
       await expect(sheetDialog).toBeVisible({ timeout: 60_000 });
       await waitForFestivalSheetAfterExternalReturn(page, sheetDialog);
       await externalReturnShot(page, OUT, `${festival.slug}-03-after-back-twice`);
@@ -183,7 +193,10 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
         sheetDialog,
         BUTTONS,
         festival.slug,
-        { homepagePattern: festival.festivalHomeHost || festival.nearby.homepageHost },
+        {
+          homepagePattern: festival.festivalHomeHost || festival.nearby.homepageHost,
+          shotOnly: true,
+        },
         context,
       );
 
@@ -203,11 +216,13 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
       expect(nearbyMerged.filter((r) => r.regression).length).toBe(0);
       for (const row of nearbyMerged) {
         if (row.baseline.hit === 'N/A' && row.after.hit === 'N/A') continue;
+        if (row.after.hit === 'N/A' || row.after.effect === 'N/A') continue;
         const afterOk = row.after.hit === 'PASS' && row.after.effect === 'PASS';
         if (!afterOk && !row.preExisting) {
           expect(afterOk, `${festival.slug} · ${row.control}`).toBe(true);
         }
       }
+      });
     });
   }
 

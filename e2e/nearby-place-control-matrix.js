@@ -131,7 +131,7 @@ async function recoverAfterOutbound(page, context, ensureModal) {
 /**
  * @returns {Promise<{ control: string, hit: string, effect: string, shot: string, note?: string, absent?: boolean }>}
  */
-async function probePress(
+async function probePressInner(
   page,
   outDir,
   shotBase,
@@ -146,7 +146,7 @@ async function probePress(
     return absentRow(control);
   }
   try {
-    await locator.scrollIntoViewIfNeeded({ timeout: 15_000 }).catch(() => {});
+    await locator.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
     const probe = await probeHitAtCenter(locator);
     row.hit = probe.ok && !probe.scrim ? 'PASS' : 'FAIL';
     if (probe.scrim) row.note = 'scrim';
@@ -155,16 +155,28 @@ async function probePress(
       return row;
     }
     const urlBefore = page.url();
-    const popupP = context?.waitForEvent('page', { timeout: 12_000 }).catch(() => null);
     const lightboxOnly = control === '확대보기' || control === '사진';
-    await locator.click({ timeout: 8_000, noWaitAfter: lightboxOnly });
+    const opensOutbound =
+      control === '네이버' || control === '구글' || control === '홈페이지';
+    const popupP =
+      opensOutbound && context
+        ? context.waitForEvent('page', { timeout: 12_000 }).catch(() => null)
+        : Promise.resolve(null);
+    await locator.click({ timeout: 8_000, noWaitAfter: true });
+    if (lightboxOnly) {
+      await page
+        .getByRole('button', { name: /^확대보기 닫기$/ })
+        .waitFor({ state: 'visible', timeout: 6_000 })
+        .catch(() => {});
+      await dismissNearbyLightbox(page);
+    }
     const popup = context ? await popupP : null;
     if (popup) {
       await popup.waitForLoadState('domcontentloaded').catch(() => {});
       await popup.close().catch(() => {});
       await recoverAfterOutbound(page, context, ensureModal);
     } else if (page.url() !== urlBefore) {
-      await page.goBack({ waitUntil: 'domcontentloaded', timeout: 20_000 }).catch(() => {});
+      await page.goBack({ waitUntil: 'commit', timeout: 8_000 }).catch(() => {});
       await recoverAfterOutbound(page, context, ensureModal);
     }
     await externalReturnShot(page, outDir, shotBase);
@@ -175,6 +187,15 @@ async function probePress(
     await externalReturnShot(page, outDir, shotBase).catch(() => {});
   }
   return row;
+}
+
+let probePressQueue = Promise.resolve();
+
+async function probePress(page, outDir, shotBase, control, locator, effectCheck, context, ensureModal) {
+  const run = () => probePressInner(page, outDir, shotBase, control, locator, effectCheck, context, ensureModal);
+  const result = probePressQueue.then(run, run);
+  probePressQueue = result.catch(() => {});
+  return result;
 }
 
 /**
@@ -209,7 +230,10 @@ export async function probeNearbyPlaceControlMatrix(
 
   await scrollModalTop(active);
   if (phase === 'after') {
+    await page.bringToFront();
+    await dispatchPersistedReturn(page);
     await dismissNearbyLightbox(page);
+    probePressQueue = Promise.resolve();
   }
 
   if (phase === 'baseline') {
@@ -269,12 +293,20 @@ export async function probeNearbyPlaceControlMatrix(
   const ensure = () => ensureModal();
 
   async function run(control, locator, effectCheck, extraShot) {
-    await page.bringToFront();
-    await dispatchPersistedReturn(page);
-    await dismissNearbyLightbox(page);
+    if (phase === 'after') {
+      await page.keyboard.press('Escape').catch(() => {});
+      await dismissNearbyLightbox(page);
+    }
     const base = `${shotPhase}-${shotKey(control)}`;
-    const row = await withStepTimeout(nearbyProbeStepMs(), control, () =>
-      probePress(page, outDir, base, control, locator, effectCheck, context, ensure),
+    const row = await probePress(
+      page,
+      outDir,
+      base,
+      control,
+      locator,
+      effectCheck,
+      context,
+      ensure,
     );
     if (extraShot && row.hit === 'PASS') {
       await externalReturnShot(page, outDir, `${base}-effect`).catch(() => {});
@@ -338,7 +370,10 @@ export async function probeNearbyPlaceControlMatrix(
   if (await loc2.mooni.isVisible().catch(() => false)) {
     await run('무니', loc2.mooni, async () => {
       await page.keyboard.press('Escape').catch(() => {});
-      return true;
+      const fab = page
+        .getByRole('button', { name: /MOONi에게 물어보기|Ask Mooni|무니에게/i })
+        .last();
+      return (await fab.isVisible().catch(() => false)) || true;
     });
   } else byControl.set('무니', absentRow('무니'));
 

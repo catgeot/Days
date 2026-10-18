@@ -21,6 +21,33 @@ function isInZBand(el) {
   return z >= Z_MIN && z <= Z_MAX;
 }
 
+function clearBlockerAtPoint(x, y, dialogEl) {
+  if (typeof document === 'undefined') return;
+  if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) return;
+  const hit = document.elementFromPoint(x, y);
+  if (!hit) return;
+  if (dialogEl && dialogEl.contains(hit)) return;
+
+  let el = hit instanceof HTMLElement ? hit : hit.parentElement;
+  while (el && el !== document.body) {
+    const style = window.getComputedStyle(el);
+    const fixedLike =
+      style.position === 'fixed' || style.position === 'sticky' || style.position === 'absolute';
+    if (fixedLike && isInZBand(el) && !el.closest('[role="dialog"]')) {
+      if (
+        !el.hasAttribute('data-festival-sheet-preserve-hit') &&
+        !el.hasAttribute('data-festival-sheet-scrim') &&
+        !el.hasAttribute('data-theme-spot-modal-scrim')
+      ) {
+        el.style.pointerEvents = 'none';
+        el.setAttribute('data-festival-sheet-blocker-cleared', '');
+      }
+      break;
+    }
+    el = el.parentElement;
+  }
+}
+
 /**
  * Safari bfcache 복귀 후 sheet 위 fixed z40–59 레이어가 히트를 가로채는 경우를 끈다.
  * @param {HTMLElement} dialogEl
@@ -38,30 +65,22 @@ export function clearFestivalSheetPointerBlockers(dialogEl) {
   ];
 
   for (const [rx, ry] of probes) {
-    const x = rect.left + rect.width * rx;
-    const y = rect.top + rect.height * ry;
-    if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) continue;
-    const hit = document.elementFromPoint(x, y);
-    if (!hit || dialogEl.contains(hit)) continue;
+    clearBlockerAtPoint(rect.left + rect.width * rx, rect.top + rect.height * ry, dialogEl);
+  }
+}
 
-    let el = hit instanceof HTMLElement ? hit : hit.parentElement;
-    while (el && el !== document.body) {
-      const style = window.getComputedStyle(el);
-      const fixedLike =
-        style.position === 'fixed' || style.position === 'sticky' || style.position === 'absolute';
-      if (fixedLike && isInZBand(el) && !el.closest('[role="dialog"]')) {
-        if (
-          !el.hasAttribute('data-festival-sheet-preserve-hit') &&
-          !el.hasAttribute('data-festival-sheet-scrim') &&
-          !el.hasAttribute('data-theme-spot-modal-scrim')
-        ) {
-          el.style.pointerEvents = 'none';
-          el.setAttribute('data-festival-sheet-blocker-cleared', '');
-        }
-        break;
-      }
-      el = el.parentElement;
-    }
+/** Theme spot modal + fixed Mooni FAB (outside dialog box). */
+export function clearThemeSpotChromePointerBlockers(dialogEl) {
+  clearFestivalSheetPointerBlockers(dialogEl);
+  if (typeof window === 'undefined') return;
+  const fabProbes = [
+    [0.9, 0.62],
+    [0.9, 0.72],
+    [0.9, 0.82],
+    [0.9, 0.9],
+  ];
+  for (const [rx, ry] of fabProbes) {
+    clearBlockerAtPoint(window.innerWidth * rx, window.innerHeight * ry, dialogEl);
   }
 }
 
