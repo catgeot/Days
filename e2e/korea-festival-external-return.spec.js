@@ -14,6 +14,8 @@ import {
   openNearbyPlaceCard,
   returnFromNearbyOfficialPopup,
   returnFromNearbyOfficialSameTab,
+  waitForFestivalSheetAfterExternalReturn,
+  festivalSheetDialog,
 } from './festival-external-return-helpers.js';
 
 const OUT = 'docs/qa/pr-external-return';
@@ -98,9 +100,11 @@ test.describe('festival external return — WebKit 390', () => {
     });
     await page.waitForURL(/example\.com/i, { timeout: 15_000 });
     await page.goBack({ waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await expect(dialog).toBeVisible({ timeout: OPEN_TIMEOUT_MS });
+    await page.waitForURL(/\/korea\//i, { timeout: OPEN_TIMEOUT_MS });
+    const sheetAfterNav = festivalSheetDialog(page);
+    await waitForFestivalSheetAfterExternalReturn(page, sheetAfterNav);
     await dispatchPersistedReturn(page);
-    await assertSheetButtonsInteractive(page, dialog, {
+    await assertSheetButtonsInteractive(page, sheetAfterNav, {
       homepagePattern: /haean\.kr/i,
       closeSheet: true,
     });

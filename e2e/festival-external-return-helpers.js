@@ -74,21 +74,32 @@ export async function closeNearbyPlaceModal(page) {
   const modal = nearbyPlaceModal(page);
   if (!(await modal.isVisible().catch(() => false))) return;
   await dispatchPersistedReturn(page);
-  const headerClose = modal.locator('button[aria-label="닫기"]').first();
+
+  const pollTimeout =
+    process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 35_000 : 25_000;
 
   await expect
     .poll(
       async () => {
         if (!(await modal.isVisible().catch(() => false))) return true;
-        const probe = await probeHitAtCenter(headerClose);
-        if (probe.ok && !probe.scrim) {
-          await headerClose.click({ timeout: 5_000 }).catch(() => {});
+        const headerClose = modal.locator('button[aria-label="닫기"]').first();
+        if (await headerClose.isVisible().catch(() => false)) {
+          const probe = await probeHitAtCenter(headerClose);
+          if (probe.ok && !probe.scrim) {
+            await headerClose.click({ timeout: 5_000 }).catch(() => {});
+          } else {
+            await page.keyboard.press('Escape').catch(() => {});
+          }
         } else {
           await page.keyboard.press('Escape').catch(() => {});
         }
+        const scrim = modal.locator('[data-theme-spot-modal-scrim]').first();
+        if (await scrim.isVisible().catch(() => false)) {
+          await scrim.click({ position: { x: 8, y: 8 }, timeout: 3_000 }).catch(() => {});
+        }
         return !(await modal.isVisible().catch(() => false));
       },
-      { timeout: 25_000, intervals: [50, 100, 200, 400] },
+      { timeout: pollTimeout, intervals: [50, 100, 200, 400] },
     )
     .toBe(true);
   await expect(modal).toBeHidden({ timeout: 5_000 });
@@ -214,7 +225,11 @@ export async function dispatchPersistedReturn(page) {
 }
 
 export async function probeHitAtCenter(locator) {
-  await locator.scrollIntoViewIfNeeded();
+  try {
+    await locator.scrollIntoViewIfNeeded({ timeout: 5_000 });
+  } catch {
+    return { ok: false, scrim: false, hitTag: '' };
+  }
   return locator.evaluate((target) => {
     const rect = target.getBoundingClientRect();
     if (rect.width < 1 || rect.height < 1) {
