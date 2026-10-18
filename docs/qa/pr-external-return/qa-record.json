@@ -188,5 +188,12 @@
         "shot": "masan-637693-sheet-닫기-(X).png"
       }
     ]
+  },
+  "yanggu-haean-owner-repro": {
+    "newTabAttrs": "yanggu-haean-official-link-new-tab-attrs.png",
+    "newTabSheet": "yanggu-haean-official-opens-new-tab-sheet-stays.png",
+    "sameTabVisit": "yanggu-haean-same-tab-http-visit.png",
+    "afterBack": "yanggu-haean-after-back-from-http-warning-path.png",
+    "recovery": "yanggu-haean-after-persisted-recovery.png"
   }
 }

@@ -4,7 +4,9 @@
 
 **데이터:** `npm run build` + `vite preview` (`http://127.0.0.1:4173`) · production `VITE_SUPABASE_*` · read-only guard · **stub 없음**
 
-**Owner repro:** 축제 홈 → 카드 → 주변 볼거리 → 중첩 명소 → **공식 홈(HTTP 가능)** → 뒤로 ×2 → 시트·명소 버튼 dead-tap 방지.
+**Owner repro:** 축제 홈 → 카드 → 주변 **해안야생화공원** → `http://haean.kr/…` → (권장) **새 탭** · iOS 동일 탭 HTTP 경고 → 뒤로 → 흰 화면 시 `pageshow.persisted` 1회 reload.
+
+**20:13 KST iPhone Safari:** [`yanggu-haean-official-link-new-tab-attrs.png`](./yanggu-haean-official-link-new-tab-attrs.png) · [`yanggu-haean-official-opens-new-tab-sheet-stays.png`](./yanggu-haean-official-opens-new-tab-sheet-stays.png) · [`yanggu-haean-same-tab-http-visit.png`](./yanggu-haean-same-tab-http-visit.png) · [`yanggu-haean-after-back-from-http-warning-path.png`](./yanggu-haean-after-back-from-http-warning-path.png) · [`yanggu-haean-after-persisted-recovery.png`](./yanggu-haean-after-persisted-recovery.png)
 
 ## 재생성
 
@@ -25,7 +27,7 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 
 | 권역 | 축제 ID | 주변 명소 | nearby 버튼 | sheet 버튼 |
 | --- | --- | --- | --- | --- |
-| 강원·양구 | `1122739` | 해안야생화공원 | — | **PASS** |
+| 강원·양구 | `1122739` | 해안야생화공원 | — | — |
 | 강원·강릉 | `2930716` | 강릉 오금집 | — | **PASS** |
 | 경남·마산 | `637693` | 마산항 | — | **PASS** |
 
@@ -39,7 +41,7 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 
 | 컨트롤 | elementFromPoint | 동작/효과 | 스크린샷 | 비고 |
 | --- | --- | --- | --- | --- |
-| nearby matrix | FAIL | FAIL |  | nearby probe budget exceeded |
+| nearby matrix | FAIL | FAIL |  | withNearbyProbeBudget is not defined |
 
 ### 축제 시트 — 버튼별
 
@@ -47,13 +49,12 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 | --- | --- | --- | --- | --- |
 | z40–59 투명 히트 차단 없음 | PASS | PASS | `yanggu-1122739-sheet-z40–59-투명-히트-차단-없음.png` |  |
 | 스크림이 탭 hit 아님 | PASS | PASS | `yanggu-1122739-sheet-스크림이-탭-hit-아님.png` |  |
-| 탭 · 프로그램 | PASS | PASS | `yanggu-1122739-sheet-탭-·-프로그램.png` |  |
-| 안내로 돌아가기 | PASS | PASS | `yanggu-1122739-sheet-안내로-돌아가기.png` |  |
+| 탭 · 프로그램 | FAIL | FAIL |  |  |
+| 안내로 돌아가기 | FAIL | FAIL |  |  |
 | 맨 위로 | PASS | PASS | `yanggu-1122739-sheet-맨-위로.png` | QA record — 맨 위로 생략 |
-| 탭 · 사진 | PASS | PASS | `yanggu-1122739-sheet-탭-·-사진.png` |  |
-| 공식 홈페이지 | PASS | PASS | `yanggu-1122739-sheet-공식-홈페이지.png` |  |
-| 히어로 썸네일 | PASS | PASS | `yanggu-1122739-sheet-히어로-썸네일.png` |  |
-| 닫기 (X) | PASS | PASS | `yanggu-1122739-sheet-닫기-(X).png` |  |
+| 공식 홈페이지 | FAIL | FAIL |  |  |
+| 히어로 썸네일 | FAIL | FAIL |  |  |
+| 닫기 (X) | FAIL | FAIL |  |  |
 
 ## 강원·강릉 — 강릉국수축제 (`2930716`)
 

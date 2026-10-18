@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { maybeReloadBlankPersistedPage } from '../../shared/lib/persistedBlankPageReload.js';
 import { runFestivalSheetInteractionRestore } from './lib/festivalSheetInteractionRestore.js';
 
 /**
@@ -31,6 +32,7 @@ export function useFestivalSheetInteractionRestore({
     };
 
     const onPageShow = (event) => {
+      if (maybeReloadBlankPersistedPage(event)) return;
       restore(Boolean(event.persisted));
     };
 

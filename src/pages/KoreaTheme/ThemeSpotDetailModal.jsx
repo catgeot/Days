@@ -83,6 +83,7 @@ import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
+import { openExternalHomepageFromAnchorClick } from '../Korea/lib/festivalHomepageProtocol.js';
 import { useLocale } from '../../i18n/LocaleProvider';
 import {
   formatScenicSpotPlaceLabel,
@@ -1976,7 +1977,9 @@ export default function ThemeSpotDetailModal({
                     target="_blank"
                     rel="noopener noreferrer"
                     data-theme-spot-official-home=""
-                    onClick={() => onOfficialHomeNavigate?.()}
+                    onClick={(event) =>
+                      openExternalHomepageFromAnchorClick(event, onOfficialHomeNavigate)
+                    }
                     className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
                   >
                     {homepageDisplayLabel(normalizeHomepage(spot.homepage), t)}
@@ -2055,7 +2058,9 @@ export default function ThemeSpotDetailModal({
                       rel="noopener noreferrer"
                       title={homepage}
                       data-theme-spot-official-home=""
-                      onClick={() => onOfficialHomeNavigate?.()}
+                      onClick={(event) =>
+                        openExternalHomepageFromAnchorClick(event, onOfficialHomeNavigate)
+                      }
                       className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
                     >
                       {homepageDisplayLabel(homepage, t)}

@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { ExternalLink } from 'lucide-react';
+import { openExternalHomepageFromAnchorClick } from './lib/festivalHomepageProtocol.js';
 
 function ReserveLine() {
   return (
@@ -133,7 +134,9 @@ export function FestivalDetailFirstSummary({
                 rel="noopener noreferrer"
                 data-festival-official-home=""
                 className={officialLinkClass}
-                onClick={() => onOfficialHomeClick?.()}
+                onClick={(event) =>
+                  openExternalHomepageFromAnchorClick(event, onOfficialHomeClick)
+                }
               >
                 <ExternalLink size={14} aria-hidden="true" />
                 {officialLabel}

@@ -1,3 +1,19 @@
+/**
+ * iOS Safari can follow HTTP official links in the same tab (interstitial → back → white bfcache).
+ * @param {import('react').MouseEvent<HTMLAnchorElement>} event
+ * @param {() => void} [onBeforeNavigate]
+ */
+export function openExternalHomepageFromAnchorClick(event, onBeforeNavigate) {
+  onBeforeNavigate?.();
+  const anchor = event.currentTarget;
+  if (!(anchor instanceof HTMLAnchorElement)) return;
+  const href = (anchor.getAttribute('href') || anchor.href || '').trim();
+  if (!href) return;
+  event.preventDefault();
+  event.stopPropagation();
+  window.open(href, '_blank', 'noopener,noreferrer');
+}
+
 /** @param {unknown} url */
 export function isHttpOnlyHomepage(url) {
   const s = String(url || '').trim();

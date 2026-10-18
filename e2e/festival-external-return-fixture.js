@@ -29,9 +29,9 @@ export const EXTERNAL_RETURN_FESTIVALS = [
     homepage: 'http://haean.kr',
     nearby: {
       contentId: '1287701',
-      title: 'DMZ야생화공원',
-      cardMatch: '야생화',
-      homepage: 'http://yanggu-wildflower.e2e.test/',
+      title: '해안야생화공원',
+      cardMatch: /해안야생화|야생화/,
+      homepage: 'http://haean.kr/user/sub1-2.php',
     },
   },
   {
