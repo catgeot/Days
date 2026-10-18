@@ -7,6 +7,11 @@
         "effect": "PASS"
       },
       {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
         "control": "탭 · 프로그램",
         "hit": "PASS",
         "effect": "PASS"
@@ -17,12 +22,12 @@
         "effect": "PASS"
       },
       {
-        "control": "탭 · 사진",
+        "control": "맨 위로",
         "hit": "PASS",
         "effect": "PASS"
       },
       {
-        "control": "맨 위로",
+        "control": "탭 · 사진",
         "hit": "PASS",
         "effect": "PASS"
       },
@@ -49,6 +54,11 @@
         "effect": "PASS"
       },
       {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
         "control": "탭 · 프로그램",
         "hit": "PASS",
         "effect": "PASS"
@@ -59,12 +69,12 @@
         "effect": "PASS"
       },
       {
-        "control": "탭 · 사진",
+        "control": "맨 위로",
         "hit": "PASS",
         "effect": "PASS"
       },
       {
-        "control": "맨 위로",
+        "control": "탭 · 사진",
         "hit": "PASS",
         "effect": "PASS"
       },
@@ -93,6 +103,11 @@
         "effect": "PASS"
       },
       {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
         "control": "탭 · 프로그램",
         "hit": "PASS",
         "effect": "PASS"
@@ -103,12 +118,12 @@
         "effect": "PASS"
       },
       {
-        "control": "탭 · 사진",
+        "control": "맨 위로",
         "hit": "PASS",
         "effect": "PASS"
       },
       {
-        "control": "맨 위로",
+        "control": "탭 · 사진",
         "hit": "PASS",
         "effect": "PASS"
       },
@@ -135,6 +150,11 @@
         "effect": "PASS"
       },
       {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
         "control": "탭 · 프로그램",
         "hit": "PASS",
         "effect": "PASS"
@@ -145,12 +165,12 @@
         "effect": "PASS"
       },
       {
-        "control": "탭 · 사진",
+        "control": "맨 위로",
         "hit": "PASS",
         "effect": "PASS"
       },
       {
-        "control": "맨 위로",
+        "control": "탭 · 사진",
         "hit": "PASS",
         "effect": "PASS"
       },
@@ -179,6 +199,11 @@
         "effect": "PASS"
       },
       {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
         "control": "탭 · 프로그램",
         "hit": "PASS",
         "effect": "PASS"
@@ -189,12 +214,12 @@
         "effect": "PASS"
       },
       {
-        "control": "탭 · 사진",
+        "control": "맨 위로",
         "hit": "PASS",
         "effect": "PASS"
       },
       {
-        "control": "맨 위로",
+        "control": "탭 · 사진",
         "hit": "PASS",
         "effect": "PASS"
       },
@@ -221,6 +246,11 @@
         "effect": "PASS"
       },
       {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
         "control": "탭 · 프로그램",
         "hit": "PASS",
         "effect": "PASS"
@@ -231,12 +261,12 @@
         "effect": "PASS"
       },
       {
-        "control": "탭 · 사진",
+        "control": "맨 위로",
         "hit": "PASS",
         "effect": "PASS"
       },
       {
-        "control": "맨 위로",
+        "control": "탭 · 사진",
         "hit": "PASS",
         "effect": "PASS"
       },

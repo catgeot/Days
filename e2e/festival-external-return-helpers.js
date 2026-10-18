@@ -36,16 +36,25 @@ export async function dispatchPersistedReturn(page) {
   });
 }
 
-async function hitTarget(locator) {
+export async function probeHitAtCenter(locator) {
   await locator.scrollIntoViewIfNeeded();
   return locator.evaluate((target) => {
     const rect = target.getBoundingClientRect();
-    if (rect.width < 1 || rect.height < 1) return false;
+    if (rect.width < 1 || rect.height < 1) {
+      return { ok: false, scrim: false, hitTag: '' };
+    }
     const x = rect.left + rect.width / 2;
     const y = rect.top + rect.height / 2;
     const hit = document.elementFromPoint(x, y);
-    return Boolean(hit && (target === hit || target.contains(hit)));
+    const ok = Boolean(hit && (target === hit || target.contains(hit)));
+    const scrim = Boolean(hit?.closest('[data-festival-sheet-scrim]'));
+    return { ok, scrim, hitTag: hit?.tagName || '' };
   });
+}
+
+async function hitTarget(locator) {
+  const { ok } = await probeHitAtCenter(locator);
+  return ok;
 }
 
 async function zBandBlockersOverDialog(dialog) {
@@ -115,6 +124,14 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
   const infoTab = dialog.getByRole('tab', { name: /^안내$/ });
   const programTab = dialog.getByRole('tab', { name: /프로그램/ });
   const photosTab = dialog.getByRole('tab', { name: /^사진/ });
+
+  const programProbe = await probeHitAtCenter(programTab);
+  push(
+    '스크림이 탭 hit 아님',
+    !programProbe.scrim,
+    !programProbe.scrim,
+    programProbe.scrim ? 'data-festival-sheet-scrim' : '',
+  );
 
   let programHit = false;
   try {

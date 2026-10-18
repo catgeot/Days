@@ -10,6 +10,7 @@ import {
   dispatchPersistedReturn,
   externalReturnShot,
   openFestivalSheet,
+  probeHitAtCenter,
 } from './festival-external-return-helpers.js';
 
 const OUT = 'docs/qa/pr-external-return';
@@ -36,6 +37,24 @@ test.describe('festival external return — WebKit 390', () => {
       '보안 연결',
     );
     await externalReturnShot(page, OUT, 'http-official-label');
+  });
+
+  test('Safari same-tab HTTP round-trip — sheet controls not under scrim', async ({ page }) => {
+    const dialog = await openFestivalSheet(page, HTTP_HOME_FESTIVAL_ID, OPEN_TIMEOUT_MS);
+    await page.goto('http://haean.kr/', { waitUntil: 'domcontentloaded' });
+    await page.goBack({ waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await expect(dialog).toBeVisible({ timeout: OPEN_TIMEOUT_MS });
+    await dispatchPersistedReturn(page);
+
+    const programTab = dialog.getByRole('tab', { name: /프로그램/ });
+    const probe = await probeHitAtCenter(programTab);
+    expect(probe.scrim).toBe(false);
+    expect(probe.ok).toBe(true);
+
+    await assertSheetButtonsInteractive(page, dialog, {
+      homepagePattern: /haean\.kr/i,
+      closeSheet: true,
+    });
   });
 
   test('popup official home then sheet controls stay tappable', async ({ page, context }) => {
