@@ -14,18 +14,23 @@ import {
   openFestivalFromHome,
   openNearbyPlaceCard,
   probeFestivalSheetControlsWithShots,
-  probeNearbyPlaceControlsWithShots,
   returnFromNearbyOfficialPopupKeepNearby,
   closeNearbyPlaceModal,
   nearbyPlaceModal,
   waitForFestivalSheetAfterExternalReturn,
   festivalSheetDialog,
 } from './festival-external-return-helpers.js';
+import {
+  mergeNearbyBaselineAfter,
+  markdownTableNearbyMerged,
+  probeNearbyPlaceControlMatrix,
+  summarizeNearbyMerged,
+} from './nearby-place-control-matrix.js';
 
 const OUT = 'docs/qa/pr-external-return';
 const BUTTONS = `${OUT}/buttons`;
 const OPEN_TIMEOUT_MS = 180_000;
-const TEST_TIMEOUT_MS = 720_000;
+const TEST_TIMEOUT_MS = 1_800_000;
 
 function prodQaEnabled() {
   if (process.env.MOONI_TOURAPI_STUB_ONLY === '1') return false;
@@ -69,7 +74,7 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
 
   test.beforeAll(async () => {
     if (!prodQaEnabled()) return;
-    process.env.EXTERNAL_RETURN_NEARBY_PROBE_MS = '90000';
+    process.env.EXTERNAL_RETURN_NEARBY_PROBE_MS = '45000';
     await mkdir(OUT, { recursive: true });
     await mkdir(BUTTONS, { recursive: true });
     await loadRecordFromDisk();
@@ -97,6 +102,29 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
       await official.scrollIntoViewIfNeeded();
       await externalReturnShot(page, OUT, `${festival.slug}-02-nearby-before-external`);
 
+      const reopenNearby = async () =>
+        openNearbyPlaceCard(page, festivalSheetDialog(page), festival.nearby.cardMatch);
+
+      let nearbyBaseline = [];
+      try {
+        nearbyBaseline = await probeNearbyPlaceControlMatrix(
+          page,
+          nearbyModal,
+          BUTTONS,
+          festival.slug,
+          context,
+          { phase: 'baseline' },
+        );
+      } catch (err) {
+        nearbyBaseline.push({
+          control: 'nearby baseline',
+          hit: 'FAIL',
+          effect: 'SKIP',
+          shot: '',
+          note: String(err?.message || err).slice(0, 100),
+        });
+      }
+
       if (festival.nearby.homepage.startsWith('http://')) {
         await externalReturnShot(page, OUT, `${festival.slug}-nearby-http-official-row`);
       }
@@ -116,21 +144,18 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
         );
       }
 
-      let nearbyRows = [];
+      let nearbyAfter = [];
       try {
-        nearbyRows = await probeNearbyPlaceControlsWithShots(
+        nearbyAfter = await probeNearbyPlaceControlMatrix(
           page,
           modalForNearbyProbe,
           BUTTONS,
           festival.slug,
           context,
-          {
-            reopenNearbyModal: async () =>
-              openNearbyPlaceCard(page, festivalSheetDialog(page), festival.nearby.cardMatch),
-          },
+          { phase: 'after', reopenNearbyModal: reopenNearby },
         );
       } catch (err) {
-        nearbyRows.push({
+        nearbyAfter.push({
           control: 'nearby matrix',
           hit: 'FAIL',
           effect: 'FAIL',
@@ -138,6 +163,8 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
           note: String(err?.message || err).slice(0, 100),
         });
       }
+
+      const nearbyMerged = mergeNearbyBaselineAfter(nearbyBaseline, nearbyAfter);
 
       const sheetDialog = festivalSheetDialog(page);
       if (await nearbyPlaceModal(page).isVisible().catch(() => false)) {
@@ -157,7 +184,12 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
         context,
       );
 
-      record[festival.slug] = { nearby: nearbyRows, sheet: sheetRows };
+      record[festival.slug] = {
+        nearbyMerged,
+        nearbyBaseline,
+        nearbyAfter,
+        sheet: sheetRows,
+      };
       await persistRecord();
       const rowOk = (r) => r.hit === 'SKIP' || (r.hit === 'PASS' && r.effect === 'PASS');
       const critical = sheetRows.filter((r) =>
@@ -165,6 +197,14 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
       );
       expect(critical.every(rowOk)).toBe(true);
       expect(sheetRows.filter((r) => r.hit !== 'SKIP').length).toBeGreaterThan(4);
+      expect(nearbyMerged.filter((r) => r.regression).length).toBe(0);
+      for (const row of nearbyMerged) {
+        if (row.baseline.hit === 'N/A' && row.after.hit === 'N/A') continue;
+        const afterOk = row.after.hit === 'PASS' && row.after.effect === 'PASS';
+        if (!afterOk && !row.preExisting) {
+          expect(afterOk, `${festival.slug} · ${row.control}`).toBe(true);
+        }
+      }
     });
   }
 
@@ -260,7 +300,7 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
     await loadRecordFromDisk();
     const generatedAt = new Date().toISOString().slice(0, 10);
     const sections = PROD_EXTERNAL_RETURN_FESTIVALS.map((f) => {
-      const data = record[f.slug] || { nearby: [], sheet: [] };
+      const data = record[f.slug] || { nearbyMerged: [], sheet: [] };
       const ownerNote = f.ownerE2eId
         ? ` (owner e2e id \`${f.ownerE2eId}\` → prod \`${f.id}\`)`
         : '';
@@ -270,9 +310,9 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
 
 경로: 축제 홈 → 검색 카드 → 주변 볼거리 → 공식 홈 → 팝업 닫기 → 명소 닫기
 
-### 주변 명소 상세 — 버튼별 (복귀 후)
+### 주변 명소 상세 — 9컨트롤 (baseline vs 복귀 후)
 
-${markdownTable(data.nearby)}
+${markdownTableNearbyMerged(data.nearbyMerged || [])}
 
 ### 축제 시트 — 버튼별
 
@@ -311,7 +351,7 @@ CI e2e (fixtures): \`e2e/korea-festival-external-return.spec.js\` · \`MOONI_TOU
 | --- | --- | --- | --- | --- |
 ${PROD_EXTERNAL_RETURN_FESTIVALS.map((f) => {
   const data = record[f.slug];
-  return `| ${f.region} | \`${f.id}\` | ${f.nearby.title} | ${summarizeMatrix(data?.nearby)} | ${summarizeMatrix(data?.sheet)} |`;
+  return `| ${f.region} | \`${f.id}\` | ${f.nearby.title} | ${summarizeNearbyMerged(data?.nearbyMerged || [])} | ${summarizeMatrix(data?.sheet)} |`;
 }).join('\n')}
 
 ${sections.join('\n')}

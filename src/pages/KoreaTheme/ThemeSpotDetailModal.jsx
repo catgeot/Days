@@ -84,6 +84,10 @@ import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { openExternalHomepageFromAnchorClick } from '../Korea/lib/festivalHomepageProtocol.js';
+import {
+  clearFestivalSheetPointerBlockers,
+  nudgeFestivalSheetScrollAndRepaint,
+} from '../Korea/lib/festivalSheetInteractionRestore.js';
 import { useLocale } from '../../i18n/LocaleProvider';
 import {
   formatScenicSpotPlaceLabel,
@@ -899,6 +903,7 @@ export default function ThemeSpotDetailModal({
   const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const dialogRef = useRef(null);
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState('');
@@ -988,6 +993,53 @@ export default function ThemeSpotDetailModal({
   const nestedChildZ = overlayElevated ? 'z-[60]' : 'z-[55]';
   const lightboxZ = overlayElevated ? 'z-[65]' : 'z-[60]';
 
+  const restoreThemeSpotInteraction = useCallback(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    nudgeFestivalSheetScrollAndRepaint(dialog);
+    clearFestivalSheetPointerBlockers(dialog);
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!spot) return undefined;
+
+    const onPageShow = (event) => {
+      if (event.persisted) restoreThemeSpotInteraction();
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') restoreThemeSpotInteraction();
+    };
+    const onFocus = () => {
+      restoreThemeSpotInteraction();
+      window.requestAnimationFrame(() => restoreThemeSpotInteraction());
+    };
+
+    window.addEventListener('pageshow', onPageShow);
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('focus', onFocus);
+    restoreThemeSpotInteraction();
+
+    return () => {
+      window.removeEventListener('pageshow', onPageShow);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [spot, restoreThemeSpotInteraction]);
+
+  const handleOfficialHomeClick = useCallback(
+    (event) => {
+      openExternalHomepageFromAnchorClick(event, () => {
+        onOfficialHomeNavigate?.();
+        restoreThemeSpotInteraction();
+        window.setTimeout(() => restoreThemeSpotInteraction(), 120);
+      });
+    },
+    [onOfficialHomeNavigate, restoreThemeSpotInteraction],
+  );
+
   const imageUrls = useMemo(() => {
     const heroUrl = toHttps(detail?.imageUrl || spot?.imageUrl || spot?.firstImage);
     const gallerySource =
@@ -1021,7 +1073,8 @@ export default function ThemeSpotDetailModal({
     setLightboxOpen(false);
     resetLightboxPinch();
     resetIosZoomAfterInput();
-  }, [resetLightboxPinch]);
+    restoreThemeSpotInteraction();
+  }, [resetLightboxPinch, restoreThemeSpotInteraction]);
 
   const openLightboxAt = useCallback(
     (index) => {
@@ -1823,6 +1876,7 @@ export default function ThemeSpotDetailModal({
         }}
       />
       <div
+        ref={dialogRef}
         className="relative z-10 pointer-events-auto flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,52rem)] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
         role="dialog"
         aria-modal="true"
@@ -1977,9 +2031,7 @@ export default function ThemeSpotDetailModal({
                     target="_blank"
                     rel="noopener noreferrer"
                     data-theme-spot-official-home=""
-                    onClick={(event) =>
-                      openExternalHomepageFromAnchorClick(event, onOfficialHomeNavigate)
-                    }
+                    onClick={handleOfficialHomeClick}
                     className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
                   >
                     {homepageDisplayLabel(normalizeHomepage(spot.homepage), t)}
@@ -2059,7 +2111,7 @@ export default function ThemeSpotDetailModal({
                       title={homepage}
                       data-theme-spot-official-home=""
                       onClick={(event) =>
-                        openExternalHomepageFromAnchorClick(event, onOfficialHomeNavigate)
+                        handleOfficialHomeClick(event)
                       }
                       className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
                     >
