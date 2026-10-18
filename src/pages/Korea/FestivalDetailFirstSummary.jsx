@@ -45,7 +45,6 @@ const officialLinkClass =
  *   hideOfficialHomepage?: boolean,
  *   officialLabel: string,
  *   officialHttpNotice?: string | null,
- *   onOfficialHomeClick?: () => void,
  *   bookingSlot?: React.ReactNode,
  *   mooniSlot?: React.ReactNode,
  *   footnote?: React.ReactNode,
@@ -65,7 +64,6 @@ export function FestivalDetailFirstSummary({
   hideOfficialHomepage,
   officialLabel,
   officialHttpNotice = null,
-  onOfficialHomeClick,
   bookingSlot,
   mooniSlot,
   footnote = null,
@@ -133,7 +131,6 @@ export function FestivalDetailFirstSummary({
                 rel="noopener noreferrer"
                 data-festival-official-home=""
                 className={officialLinkClass}
-                onClick={() => onOfficialHomeClick?.()}
               >
                 <ExternalLink size={14} aria-hidden="true" />
                 {officialLabel}

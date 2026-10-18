@@ -4,6 +4,8 @@
 
 권역 3건(양구 HTTP 공식 홈, 강릉, 마산)에서 **시트 열기 → 공식 홈페이지 → 복귀** 후 시트 컨트롤별 **elementFromPoint(hit)** · **클릭 효과**를 표로 기록합니다.
 
+**범위:** WebKit 390에서 **웹(Preview) 시트** 회귀 가드. 인앱 WKWebView에서 공식 홈 복귀 후 버튼이 죽는 증상은 **네이티브 앱** 쪽 이슈로 분리했으며, 이 Playwright 시나리오는 해당 dead-tap을 **재현하지 않습니다**(복귀 후 프로브는 모두 PASS).
+
 
 HTTP 라벨 스크린샷: [`yanggu-http-http-label.png`](./yanggu-http-http-label.png) · [`http-official-label.png`](./http-official-label.png)
 
