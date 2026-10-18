@@ -1,0 +1,38 @@
+-- DRAFT — do NOT apply via automated migration pipeline until ops signs off.
+-- Weekly YouTube policy refresh for place_videos (refresh-place-videos edge).
+-- Schedule: Sunday 03:00 KST = Saturday 18:00 UTC (cron minute hour dom month dow).
+--
+-- Prerequisites (manual):
+--   1. Deploy supabase/functions/refresh-place-videos with secrets:
+--        YOUTUBE_API_KEY (or VITE_YOUTUBE_API_KEY), REFRESH_VIDEOS_TOKEN,
+--        SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+--   2. Store the same REFRESH_VIDEOS_TOKEN in Vault / cron caller (see docs/ops/youtube-weekly-refresh.md)
+--   3. Enable extensions on the project (if not already):
+--
+-- CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA extensions;
+-- CREATE EXTENSION IF NOT EXISTS pg_net WITH SCHEMA extensions;
+--
+-- Replace placeholders before apply:
+--   <PROJECT_REF>  — Supabase project ref
+--   <REFRESH_VIDEOS_TOKEN> — shared secret (must match edge secret)
+
+-- SELECT cron.unschedule('place-videos-weekly-refresh')
+--   WHERE jobid = (SELECT jobid FROM cron.job WHERE jobname = 'place-videos-weekly-refresh');
+
+-- SELECT cron.schedule(
+--   'place-videos-weekly-refresh',
+--   '0 18 * * 6',
+--   $$
+--   SELECT net.http_post(
+--     url := 'https://<PROJECT_REF>.supabase.co/functions/v1/refresh-place-videos',
+--     headers := jsonb_build_object(
+--       'Content-Type', 'application/json',
+--       'x-refresh-videos-token', '<REFRESH_VIDEOS_TOKEN>'
+--     ),
+--     body := '{}'::jsonb,
+--     timeout_milliseconds := 300000
+--   ) AS request_id;
+--   $$
+-- );
+
+-- Rollback: SELECT cron.unschedule('place-videos-weekly-refresh');
