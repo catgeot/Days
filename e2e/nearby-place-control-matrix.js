@@ -213,10 +213,15 @@ export async function probeNearbyPlaceControlMatrix(
   const shotPhase = phase === 'baseline' ? `${slugPrefix}-nearby-baseline` : `${slugPrefix}-nearby`;
 
   async function ensureModal() {
-    if (await modal.isVisible().catch(() => false)) return modal;
+    const live = nearbyPlaceModal(page);
+    if (await live.isVisible().catch(() => false)) return live;
     if (typeof reopenNearbyModal === 'function') {
-      const reopened = await reopenNearbyModal();
-      if (reopened) return reopened;
+      try {
+        const reopened = await reopenNearbyModal();
+        if (reopened && (await reopened.isVisible().catch(() => false))) return reopened;
+      } catch {
+        /* fall through */
+      }
     }
     return nearbyPlaceModal(page);
   }
@@ -234,6 +239,8 @@ export async function probeNearbyPlaceControlMatrix(
     await dispatchPersistedReturn(page);
     await dismissNearbyLightbox(page);
     probePressQueue = Promise.resolve();
+    active = nearbyPlaceModal(page);
+    await expect(active).toBeVisible({ timeout: 30_000 });
   }
 
   if (phase === 'baseline') {
@@ -404,7 +411,10 @@ export function mergeNearbyBaselineAfter(baselineRows, afterRows) {
     const after = afterMap.get(control) || absentRow(control);
     const baselineOk = baseline.hit === 'PASS' && (baseline.effect === 'PASS' || baseline.effect === 'SKIP');
     const afterOk = after.hit === 'PASS' && after.effect === 'PASS';
-    const regression = baselineOk && !afterOk && after.hit !== 'N/A';
+    const afterAbsentButWasPresent =
+      baseline.hit === 'PASS' && after.hit === 'N/A' && !baseline.absent;
+    const regression =
+      afterAbsentButWasPresent || (baselineOk && !afterOk && after.hit !== 'N/A');
     const preExisting =
       !baselineOk && !afterOk && baseline.hit !== 'N/A' && after.hit !== 'N/A';
     let note = after.note || '';

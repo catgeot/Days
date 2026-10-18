@@ -59,11 +59,23 @@ function festivalNearbySightsList(festivalDialog) {
 export async function reopenNearbyPlaceModal(page, festivalDialog, cardMatch, opts = {}) {
   const modal = nearbyPlaceModal(page);
   if (await modal.isVisible().catch(() => false)) return modal;
-  return openNearbyPlaceCard(page, festivalDialog, cardMatch, {
-    officialTimeoutMs: 20_000,
-    detailTimeoutMs: 25_000,
+  await dispatchPersistedReturn(page);
+  const openOpts = {
+    officialTimeoutMs: 45_000,
+    detailTimeoutMs: 60_000,
     ...opts,
-  });
+  };
+  try {
+    return await openNearbyPlaceCard(page, festivalDialog, cardMatch, openOpts);
+  } catch {
+    await dispatchPersistedReturn(page);
+    await page.waitForTimeout(400);
+    return await openNearbyPlaceCard(page, festivalDialog, cardMatch, {
+      ...openOpts,
+      officialTimeoutMs: 60_000,
+      detailTimeoutMs: 90_000,
+    });
+  }
 }
 
 export async function openNearbyPlaceCard(page, festivalDialog, cardMatch, opts = {}) {

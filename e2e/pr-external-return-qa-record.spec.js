@@ -24,6 +24,7 @@ import {
   festivalSheetDialog,
 } from './festival-external-return-helpers.js';
 import {
+  NEARBY_MATRIX_CONTROLS,
   mergeNearbyBaselineAfter,
   markdownTableNearbyMerged,
   probeNearbyPlaceControlMatrix,
@@ -140,37 +141,37 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
       await returnFromNearbyOfficialPopupKeepNearby(page, context, nearbyModal);
       await externalReturnShot(page, OUT, `${festival.slug}-03-after-official-popup-return`);
 
+      const sheetAfterPopup = festivalSheetDialog(page);
+      await expect(sheetAfterPopup).toBeVisible({ timeout: 60_000 });
+      await expect
+        .poll(
+          async () => {
+            await dispatchPersistedReturn(page);
+            return await nearbyPlaceModal(page).isVisible().catch(() => false);
+          },
+          { timeout: 90_000, intervals: [100, 250, 500, 1000] },
+        )
+        .toBe(true);
+
       let modalForNearbyProbe = nearbyPlaceModal(page);
       if (!(await modalForNearbyProbe.isVisible().catch(() => false))) {
-        const sheetAfterPopup = festivalSheetDialog(page);
-        await expect(sheetAfterPopup).toBeVisible({ timeout: 60_000 });
-        await dispatchPersistedReturn(page);
         modalForNearbyProbe = await reopenNearbyPlaceModal(
           page,
           sheetAfterPopup,
           festival.nearby.cardMatch,
         );
       }
+      await expect(modalForNearbyProbe).toBeVisible({ timeout: 30_000 });
 
-      let nearbyAfter = [];
-      try {
-        nearbyAfter = await probeNearbyPlaceControlMatrix(
-          page,
-          modalForNearbyProbe,
-          BUTTONS,
-          festival.slug,
-          context,
-          { phase: 'after', reopenNearbyModal: reopenNearby },
-        );
-      } catch (err) {
-        nearbyAfter.push({
-          control: 'nearby matrix',
-          hit: 'FAIL',
-          effect: 'FAIL',
-          shot: '',
-          note: String(err?.message || err).slice(0, 100),
-        });
-      }
+      const nearbyAfter = await probeNearbyPlaceControlMatrix(
+        page,
+        modalForNearbyProbe,
+        BUTTONS,
+        festival.slug,
+        context,
+        { phase: 'after', reopenNearbyModal: reopenNearby },
+      );
+      expect(nearbyAfter.length).toBe(NEARBY_MATRIX_CONTROLS.length);
 
       const nearbyMerged = mergeNearbyBaselineAfter(nearbyBaseline, nearbyAfter);
 
@@ -216,6 +217,9 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
       expect(nearbyMerged.filter((r) => r.regression).length).toBe(0);
       for (const row of nearbyMerged) {
         if (row.baseline.hit === 'N/A' && row.after.hit === 'N/A') continue;
+        if (row.regression) {
+          expect(row.regression, `${festival.slug} · ${row.control} regression`).toBe(false);
+        }
         if (row.after.hit === 'N/A' || row.after.effect === 'N/A') continue;
         const afterOk = row.after.hit === 'PASS' && row.after.effect === 'PASS';
         if (!afterOk && !row.preExisting) {
