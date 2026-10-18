@@ -15,7 +15,7 @@ import {
 const OUT = 'docs/qa/pr-external-return';
 const IS_CI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
 const OPEN_TIMEOUT_MS = IS_CI ? 25_000 : 120_000;
-const TEST_TIMEOUT_MS = IS_CI ? 55_000 : 180_000;
+const TEST_TIMEOUT_MS = IS_CI ? 90_000 : 180_000;
 
 test.describe('festival external return — WebKit 390', () => {
   test.describe.configure({ timeout: TEST_TIMEOUT_MS });

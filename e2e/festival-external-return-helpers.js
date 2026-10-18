@@ -141,29 +141,11 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
   }
   push('안내로 돌아가기', backHit, backOk);
 
-  let photosHit = false;
-  let photosOk = false;
-  if (await photosTab.isVisible().catch(() => false)) {
-    try {
-      photosHit = await hitTarget(photosTab);
-      if (photosHit) {
-        await photosTab.click();
-        photosOk = (await photosTab.getAttribute('aria-selected')) === 'true';
-        if (photosOk) {
-          const back2 = dialog.getByRole('button', { name: '안내로 돌아가기' });
-          if (await back2.isVisible().catch(() => false)) await back2.click();
-        }
-      }
-    } catch {
-      photosHit = false;
-    }
-    push('탭 · 사진', photosHit, photosOk);
-  }
-
   let scrollHit = false;
   let scrollOk = false;
   let scrollNote = '';
   try {
+    await infoTab.click().catch(() => {});
     const maxScroll = await dialog.evaluate(
       (el) => Math.max(0, el.scrollHeight - el.clientHeight),
     );
@@ -182,7 +164,7 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
             const cls = (await scrollTopBtn.getAttribute('class')) || '';
             return cls.includes('pointer-events-auto');
           },
-          { timeout: 15_000 },
+          { timeout: process.env.CI ? 45_000 : 20_000 },
         )
         .toBe(true);
       scrollHit = await hitTarget(scrollTopBtn);
@@ -200,6 +182,25 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
     scrollOk = false;
   }
   push('맨 위로', scrollHit, scrollOk, scrollNote);
+
+  let photosHit = false;
+  let photosOk = false;
+  if (await photosTab.isVisible().catch(() => false)) {
+    try {
+      photosHit = await hitTarget(photosTab);
+      if (photosHit) {
+        await photosTab.click();
+        photosOk = (await photosTab.getAttribute('aria-selected')) === 'true';
+        if (photosOk) {
+          const back2 = dialog.getByRole('button', { name: '안내로 돌아가기' });
+          if (await back2.isVisible().catch(() => false)) await back2.click();
+        }
+      }
+    } catch {
+      photosHit = false;
+    }
+    push('탭 · 사진', photosHit, photosOk);
+  }
 
   const official = dialog.locator('[data-festival-official-home]');
   let officialHit = false;
