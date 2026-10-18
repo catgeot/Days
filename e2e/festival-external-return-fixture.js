@@ -13,24 +13,60 @@ const PNG_1X1 = Buffer.from(
   'base64',
 );
 
-export const HTTP_HOME_FESTIVAL_ID = '8099001';
+/** @type {Array<{ id: string, slug: string, region: string, title: string, addr1: string, mapx: string, mapy: string, eventStartDate: string, eventEndDate: string, venue: string, homepage: string }>} */
+export const EXTERNAL_RETURN_FESTIVALS = [
+  {
+    id: '8099001',
+    slug: 'yanggu-http',
+    region: '강원·양구',
+    title: '청춘양구 펀치볼 시래기사과축제',
+    addr1: '강원특별자치도 양구군 양구읍',
+    mapx: '127.989',
+    mapy: '38.107',
+    eventStartDate: '20261010',
+    eventEndDate: '20261012',
+    venue: '양구읍 일원',
+    homepage: 'http://haean.kr',
+  },
+  {
+    id: '2930716',
+    slug: 'gangneung',
+    region: '강원·강릉',
+    title: '강릉 국수 축제',
+    addr1: '강원특별자치도 강릉시 경강로 2111 (임당동)',
+    mapx: '128.8976016584',
+    mapy: '37.7557770169',
+    eventStartDate: '20261015',
+    eventEndDate: '20261018',
+    venue: '강릉 월화거리 일원',
+    homepage: `${E2E_IMAGE_ORIGIN}/official/gangneung`,
+  },
+  {
+    id: '637693',
+    slug: 'masan',
+    region: '경남·마산',
+    title: '마산가고파국화축제',
+    addr1: '경상남도 창원시 마산합포구',
+    mapx: '128.489574',
+    mapy: '35.194419',
+    eventStartDate: '20261031',
+    eventEndDate: '20261108',
+    venue: '3·15해양누리공원',
+    homepage: `${E2E_IMAGE_ORIGIN}/official/masan`,
+  },
+];
 
-export const HTTP_HOME_FESTIVAL_ROW = {
-  id: HTTP_HOME_FESTIVAL_ID,
-  title: '청춘양구 펀치볼 시래기사과축제',
-  addr1: '강원특별자치도 양구군 양구읍',
-  mapx: '127.989',
-  mapy: '38.107',
-  eventStartDate: '20261010',
-  eventEndDate: '20261012',
-  venue: '양구읍 일원',
-};
+export const HTTP_HOME_FESTIVAL_ID = EXTERNAL_RETURN_FESTIVALS[0].id;
 
 const CORS = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'POST, OPTIONS',
   'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+function rowById(contentId) {
+  return EXTERNAL_RETURN_FESTIVALS.find((r) => r.id === String(contentId)) || null;
+}
 
 function detailImageItems(contentId, count = 4) {
   return Array.from({ length: count }, (_, i) => ({
@@ -42,12 +78,12 @@ function detailImageItems(contentId, count = 4) {
   }));
 }
 
-export function buildHttpHomeFestivalDetail() {
-  const row = HTTP_HOME_FESTIVAL_ROW;
+export function buildExternalReturnFestivalDetail(row) {
   const id = row.id;
   const hero = `${E2E_IMAGE_ORIGIN}/festival-hero-${id}.png`;
-  const program = `${String(RECORDED_DETAIL.intro?.program || '').trim()}\n\n`.repeat(12);
-  const overview = `${String(RECORDED_DETAIL.common?.overview || '').trim()}\n\n`.repeat(12);
+  const scrollPad = '\n\n'.repeat(48);
+  const program = `${String(RECORDED_DETAIL.intro?.program || '').trim()}${scrollPad}`;
+  const overview = `${String(RECORDED_DETAIL.common?.overview || '').trim()}${scrollPad}`;
 
   return {
     ok: true,
@@ -56,7 +92,7 @@ export function buildHttpHomeFestivalDetail() {
       ...RECORDED_DETAIL.intro,
       contentId: id,
       program,
-      eventhomepage: 'http://haean.kr',
+      eventhomepage: row.homepage,
       eventplace: row.venue,
       eventStartDate: row.eventStartDate,
       eventEndDate: row.eventEndDate,
@@ -71,18 +107,26 @@ export function buildHttpHomeFestivalDetail() {
       mapx: row.mapx,
       mapy: row.mapy,
       overview,
-      homepage: 'http://haean.kr',
+      homepage: row.homepage,
       firstimage: hero,
       imageUrl: hero,
     },
     info: (RECORDED_DETAIL.info || []).slice(0, 2).map((entry, index) => ({
       ...entry,
       contentId: id,
-      infotext: index === 0 ? 'e2e 읽을거리 — HTTP 공식 홈 복귀 QA' : String(entry.infotext || ''),
+      infotext:
+        index === 0
+          ? `e2e 외부 복귀 QA — ${row.region}`
+          : String(entry.infotext || '').slice(0, 120),
     })),
     items: [{ ...RECORDED_DETAIL.intro, contentId: id, program }],
     fromCache: true,
   };
+}
+
+/** @deprecated use buildExternalReturnFestivalDetail */
+export function buildHttpHomeFestivalDetail() {
+  return buildExternalReturnFestivalDetail(EXTERNAL_RETURN_FESTIVALS[0]);
 }
 
 function jsonFulfill(route, payload) {
@@ -96,38 +140,37 @@ function jsonFulfill(route, payload) {
 
 function payloadForTourAction(action, contentId) {
   const id = String(contentId || '').trim();
+  const row = rowById(id);
 
   if (action === 'festivalWindow') {
     return {
       ok: true,
       action: 'festivalWindow',
-      items: [
-        {
-          contentId: HTTP_HOME_FESTIVAL_ROW.id,
-          contentTypeId: '15',
-          title: HTTP_HOME_FESTIVAL_ROW.title,
-          eventStartDate: HTTP_HOME_FESTIVAL_ROW.eventStartDate,
-          eventEndDate: HTTP_HOME_FESTIVAL_ROW.eventEndDate,
-          addr1: HTTP_HOME_FESTIVAL_ROW.addr1,
-          mapx: HTTP_HOME_FESTIVAL_ROW.mapx,
-          mapy: HTTP_HOME_FESTIVAL_ROW.mapy,
-        },
-      ],
-      rawCount: 1,
+      items: EXTERNAL_RETURN_FESTIVALS.map((r) => ({
+        contentId: r.id,
+        contentTypeId: '15',
+        title: r.title,
+        eventStartDate: r.eventStartDate,
+        eventEndDate: r.eventEndDate,
+        addr1: r.addr1,
+        mapx: r.mapx,
+        mapy: r.mapy,
+      })),
+      rawCount: EXTERNAL_RETURN_FESTIVALS.length,
     };
   }
 
-  if (action === 'festivalDetail' && id === HTTP_HOME_FESTIVAL_ID) {
-    return buildHttpHomeFestivalDetail();
+  if (action === 'festivalDetail' && row) {
+    return buildExternalReturnFestivalDetail(row);
   }
 
-  if ((action === 'detailIntro' || action === 'detailCommon') && id === HTTP_HOME_FESTIVAL_ID) {
-    const detail = buildHttpHomeFestivalDetail();
+  if ((action === 'detailIntro' || action === 'detailCommon') && row) {
+    const detail = buildExternalReturnFestivalDetail(row);
     if (action === 'detailIntro') return { ok: true, intro: detail.intro };
     return { ok: true, common: detail.common };
   }
 
-  if (action === 'detailImage' && id === HTTP_HOME_FESTIVAL_ID) {
+  if (action === 'detailImage' && row) {
     return { ok: true, items: detailImageItems(id), rawCount: 4, fromCache: true };
   }
 
@@ -139,15 +182,32 @@ function payloadForTourAction(action, contentId) {
     return { ok: true, items: [], rawCount: 0, fromCache: true };
   }
 
-  return { ok: true, items: [], fromCache: true };
+  return { ok: true, items: [], rawCount: 0, fromCache: true };
 }
 
 export async function installFestivalExternalReturnFixtures(context) {
   await context.route(new RegExp(E2E_IMAGE_ORIGIN.replace(/\./g, '\\.'), 'i'), async (route) => {
+    const url = route.request().url();
+    if (/\/official\//i.test(url)) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html; charset=utf-8',
+        body: '<!doctype html><title>e2e official</title><p>stub official homepage</p>',
+      });
+      return;
+    }
     await route.fulfill({
       status: 200,
       contentType: 'image/png',
       body: PNG_1X1,
+    });
+  });
+
+  await context.route(/^http:\/\/haean\.kr/i, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/html; charset=utf-8',
+      body: '<!doctype html><title>haean.kr</title><p>e2e http official</p>',
     });
   });
 

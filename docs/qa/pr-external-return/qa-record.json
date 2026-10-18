@@ -1,0 +1,260 @@
+{
+  "yanggu-http": {
+    "popup": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS"
+      }
+    ],
+    "goBack": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS"
+      }
+    ]
+  },
+  "gangneung": {
+    "popup": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS"
+      }
+    ],
+    "goBack": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS"
+      }
+    ]
+  },
+  "masan": {
+    "popup": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS"
+      }
+    ],
+    "goBack": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS"
+      }
+    ]
+  }
+}
