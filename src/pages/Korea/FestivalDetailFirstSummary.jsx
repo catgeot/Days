@@ -44,6 +44,8 @@ const officialLinkClass =
  *   homepage?: string,
  *   hideOfficialHomepage?: boolean,
  *   officialLabel: string,
+ *   officialHttpNotice?: string | null,
+ *   onOfficialHomeClick?: () => void,
  *   bookingSlot?: React.ReactNode,
  *   mooniSlot?: React.ReactNode,
  *   footnote?: React.ReactNode,
@@ -62,6 +64,8 @@ export function FestivalDetailFirstSummary({
   homepage,
   hideOfficialHomepage,
   officialLabel,
+  officialHttpNotice = null,
+  onOfficialHomeClick,
   bookingSlot,
   mooniSlot,
   footnote = null,
@@ -122,16 +126,27 @@ export function FestivalDetailFirstSummary({
           {bookingSlot}
           {mooniSlot}
           {showOfficial ? (
-            <a
-              href={homepage}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-festival-official-home=""
-              className={officialLinkClass}
-            >
-              <ExternalLink size={14} aria-hidden="true" />
-              {officialLabel}
-            </a>
+            <div className="flex flex-col gap-1.5">
+              <a
+                href={homepage}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-festival-official-home=""
+                className={officialLinkClass}
+                onClick={() => onOfficialHomeClick?.()}
+              >
+                <ExternalLink size={14} aria-hidden="true" />
+                {officialLabel}
+              </a>
+              {officialHttpNotice ? (
+                <p
+                  className="px-1 text-[11px] font-medium leading-snug text-stone-500"
+                  data-festival-official-home-http-notice=""
+                >
+                  {officialHttpNotice}
+                </p>
+              ) : null}
+            </div>
           ) : reserveOfficial ? (
             <div className={`${officialLinkClass} text-transparent`} aria-hidden="true">
               <ExternalLink size={14} aria-hidden="true" />

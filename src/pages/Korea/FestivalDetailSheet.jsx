@@ -139,6 +139,11 @@ import {
 } from './manualFestivalEntries';
 import { formatFestivalDetailDateRange } from './festivalDateFilter.js';
 import { scrollFestivalOverviewToTop } from './festivalSheetOverviewScroll.js';
+import {
+  isHttpOnlyHomepage,
+  markFestivalSheetExternalReturn,
+} from './lib/festivalHomepageProtocol.js';
+import { useFestivalSheetInteractionRestore } from './useFestivalSheetInteractionRestore.js';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -1217,6 +1222,25 @@ export default function FestivalDetailSheet({
     resetIosZoomAfterInput();
   }, [resetLightboxPinch]);
 
+  const resetFestivalSheetOverlayUi = useCallback(() => {
+    setLightboxOpen(false);
+    resetLightboxPinch();
+    setMooniOpen(false);
+    mooniWasOpenRef.current = false;
+    setSelectedNearby(null);
+    setSelectedScenic(null);
+    setSelectedCourse(null);
+    setCourseDetail(null);
+    setCourseDetailLoading(false);
+  }, [resetLightboxPinch]);
+
+  useFestivalSheetInteractionRestore({
+    enabled: Boolean(item?.contentId),
+    contentId: String(item?.contentId || ''),
+    sheetScrollRef,
+    onResetUi: resetFestivalSheetOverlayUi,
+  });
+
   const openLightbox = useCallback(() => {
     if (!imageUrls[activeImage] && !imageUrls[0]) return;
     setLightboxOpen(true);
@@ -2061,7 +2085,21 @@ export default function FestivalDetailSheet({
             placeText={summaryFields.placeText}
             homepage={homepage}
             hideOfficialHomepage={hideOfficialHomepage}
-            officialLabel={t('korea.festival.detail.officialSite')}
+            officialLabel={
+              isHttpOnlyHomepage(homepage)
+                ? t('korea.festival.detail.officialSiteHttp')
+                : t('korea.festival.detail.officialSite')
+            }
+            officialHttpNotice={
+              isHttpOnlyHomepage(homepage)
+                ? t('korea.festival.detail.officialSiteHttpNotice')
+                : null
+            }
+            onOfficialHomeClick={() => {
+              if (item?.contentId) {
+                markFestivalSheetExternalReturn(String(item.contentId));
+              }
+            }}
               footnote={
               item.detailAsOf?.fromDetailDeepLink ? (
                 <FestivalDetailAsOfLine
