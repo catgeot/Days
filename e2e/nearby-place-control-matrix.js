@@ -115,11 +115,13 @@ async function resolveLocators(page, modal) {
 async function recoverAfterOutbound(page, context, ensureModal) {
   await page.bringToFront();
   await dispatchPersistedReturn(page);
-  let m = await ensureModal();
+  let m = nearbyPlaceModal(page);
+  if (await m.isVisible().catch(() => false)) return m;
+  m = await ensureModal();
   if (await m.isVisible().catch(() => false)) return m;
   await expect
-    .poll(async () => (await m.isVisible().catch(() => false)) || (await ensureModal()).isVisible(), {
-      timeout: 20_000,
+    .poll(async () => (await nearbyPlaceModal(page).isVisible().catch(() => false)), {
+      timeout: 8_000,
     })
     .toBe(true)
     .catch(() => {});

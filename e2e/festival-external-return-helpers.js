@@ -50,7 +50,12 @@ function festivalNearbySightsList(festivalDialog) {
   return festivalDialog.getByRole('list', { name: /주변 볼거리|Nearby sights/i });
 }
 
-export async function openNearbyPlaceCard(page, festivalDialog, cardMatch) {
+/**
+ * @param {{ officialTimeoutMs?: number, detailTimeoutMs?: number }} [opts]
+ */
+export async function openNearbyPlaceCard(page, festivalDialog, cardMatch, opts = {}) {
+  const officialTimeoutMs = opts.officialTimeoutMs ?? 90_000;
+  const detailTimeoutMs = opts.detailTimeoutMs ?? 90_000;
   await waitForFestivalNearbySights(festivalDialog);
   await scrollFestivalSheetToBottom(festivalDialog);
   const card = festivalNearbySightsList(festivalDialog)
@@ -62,11 +67,11 @@ export async function openNearbyPlaceCard(page, festivalDialog, cardMatch) {
   const modal = nearbyPlaceModal(page);
   await expect(modal).toBeVisible({ timeout: 30_000 });
   await expect(modal.getByText(/상세.*불러오는 중|Loading details/i)).toHaveCount(0, {
-    timeout: 90_000,
+    timeout: detailTimeoutMs,
   });
   const official = modal.locator('[data-theme-spot-official-home]');
-  await official.scrollIntoViewIfNeeded({ timeout: 90_000 }).catch(() => {});
-  await expect(official).toBeVisible({ timeout: 90_000 });
+  await official.scrollIntoViewIfNeeded({ timeout: officialTimeoutMs }).catch(() => {});
+  await expect(official).toBeVisible({ timeout: officialTimeoutMs });
   return modal;
 }
 

@@ -103,7 +103,10 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
       await externalReturnShot(page, OUT, `${festival.slug}-02-nearby-before-external`);
 
       const reopenNearby = async () =>
-        openNearbyPlaceCard(page, festivalSheetDialog(page), festival.nearby.cardMatch);
+        openNearbyPlaceCard(page, festivalSheetDialog(page), festival.nearby.cardMatch, {
+          officialTimeoutMs: 20_000,
+          detailTimeoutMs: 45_000,
+        });
 
       let nearbyBaseline = [];
       try {
