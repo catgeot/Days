@@ -682,6 +682,7 @@ export default function FestivalDetailSheet({
   const lightboxSwipeStartRef = useRef(null);
   const suppressHeroTapRef = useRef(false);
   const tabListRef = useRef(null);
+  const overviewScrollPendingRef = useRef(false);
   const detailFetchGenRef = useRef(0);
 
   const festivalAreaCode = useMemo(() => {
@@ -1780,6 +1781,28 @@ export default function FestivalDetailSheet({
     };
   }, [item?.contentId, showFestivalStayStrip]);
 
+  const scrollFestivalSheetToTop = useCallback(() => {
+    const sheet = sheetScrollRef.current;
+    if (!sheet) return;
+    sheet.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    const contentCol = sheet.querySelector('[data-festival-sheet-content]');
+    if (contentCol instanceof HTMLElement) {
+      contentCol.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, []);
+
+  const returnToOverviewTab = useCallback(() => {
+    overviewScrollPendingRef.current = true;
+    setActiveTab(TAB_INFO);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (activeTab !== TAB_INFO || !overviewScrollPendingRef.current) return;
+    overviewScrollPendingRef.current = false;
+    scrollFestivalSheetToTop();
+    requestAnimationFrame(scrollFestivalSheetToTop);
+  }, [activeTab, scrollFestivalSheetToTop]);
+
   const festivalEnded = isFestivalEnded(item?.eventEndDate || intro?.eventEndDate);
 
   if (!item) {
@@ -1988,7 +2011,10 @@ export default function FestivalDetailSheet({
           </div>
         ) : null}
 
-        <div className="min-w-0 shrink-0 overflow-visible px-5 pt-5 pb-[max(8.5rem,calc(env(safe-area-inset-bottom)+7rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar">
+        <div
+          data-festival-sheet-content=""
+          className="min-w-0 shrink-0 overflow-visible px-5 pt-5 pb-[max(8.5rem,calc(env(safe-area-inset-bottom)+7rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar"
+        >
           <div className="space-y-1.5 pr-10">
             <div className="flex items-start justify-between gap-2">
               <span className="min-w-0 flex-1" aria-hidden="true" />
@@ -2821,24 +2847,12 @@ export default function FestivalDetailSheet({
 
           <button
             type="button"
-            onClick={(event) => {
+            onClick={() => {
               if (activeTab === TAB_INFO) {
                 onClose();
                 return;
               }
-              const button = event.currentTarget;
-              setActiveTab(TAB_INFO);
-              const scrollOverviewTop = () => {
-                const sheet = sheetScrollRef.current;
-                if (sheet) sheet.scrollTop = 0;
-                let node = button?.parentElement;
-                while (node && node !== sheet) {
-                  node.scrollTop = 0;
-                  node = node.parentElement;
-                }
-              };
-              scrollOverviewTop();
-              requestAnimationFrame(scrollOverviewTop);
+              returnToOverviewTab();
             }}
             className="w-full py-3 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"
           >

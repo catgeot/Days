@@ -27,7 +27,11 @@ export default function ReadableDetailProse({
   return (
     <div className={`${gapClass} min-w-0 max-w-full ${className}`.trim()}>
       {paragraphs.map((paragraph, index) => (
-        <p key={`readable-p-${index}`} className={typeClass} {...textProps}>
+        <p
+          key={`readable-p-${index}`}
+          className={`${typeClass}${paragraph.includes('\n') ? ' whitespace-pre-wrap' : ''}`}
+          {...textProps}
+        >
           {paragraph}
         </p>
       ))}
