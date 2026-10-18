@@ -52,7 +52,8 @@ export function clearFestivalSheetPointerBlockers(dialogEl) {
       if (fixedLike && isInZBand(el) && !el.closest('[role="dialog"]')) {
         if (
           !el.hasAttribute('data-festival-sheet-preserve-hit') &&
-          !el.hasAttribute('data-festival-sheet-scrim')
+          !el.hasAttribute('data-festival-sheet-scrim') &&
+          !el.hasAttribute('data-theme-spot-modal-scrim')
         ) {
           el.style.pointerEvents = 'none';
           el.setAttribute('data-festival-sheet-blocker-cleared', '');
@@ -101,6 +102,14 @@ export function runFestivalSheetInteractionRestore(opts) {
     resetIosZoomAfterInput();
     if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
+    }
+    if (typeof document !== 'undefined') {
+      const themeSpotOpen = document.querySelector(
+        '[aria-labelledby="korea-theme-spot-modal-title"]',
+      );
+      if (!themeSpotOpen && document.body.style.overflow === 'hidden') {
+        document.body.style.overflow = '';
+      }
     }
   }
 

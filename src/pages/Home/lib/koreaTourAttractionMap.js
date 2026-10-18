@@ -155,6 +155,7 @@ export function mapTourAttractionRow(row) {
     cat1,
     cat2,
     cat3,
+    homepage: row?.homepage != null ? String(row.homepage).trim() || null : null,
     source: 'db',
   };
 }

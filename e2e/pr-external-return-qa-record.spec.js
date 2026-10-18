@@ -14,7 +14,10 @@ import {
   externalReturnShot,
   markdownTable,
   openFestivalSheet,
+  openNearbyPlaceCard,
   probeFestivalSheetControls,
+  returnFromNearbyOfficialPopup,
+  returnFromNearbyOfficialSameTab,
 } from './festival-external-return-helpers.js';
 
 const OUT = 'docs/qa/pr-external-return';
@@ -47,59 +50,41 @@ test.describe('PR external return — QA record WebKit 390', () => {
   });
 
   for (const festival of EXTERNAL_RETURN_FESTIVALS) {
-    const homepagePattern = homepagePatternFor(festival.homepage);
+    const nearbyPattern = homepagePatternFor(festival.nearby.homepage);
 
-    test(`${festival.slug} · popup close`, async ({ page, context }) => {
+    test(`${festival.slug} · nearby popup close`, async ({ page, context }) => {
       const dialog = await openFestivalSheet(page, festival.id, OPEN_TIMEOUT_MS);
-      if (festival.homepage.startsWith('http://')) {
-        await expect(dialog.locator('[data-festival-official-home-http-notice]')).toBeVisible();
-        await externalReturnShot(page, OUT, `${festival.slug}-http-label`);
+      const nearbyModal = await openNearbyPlaceCard(page, dialog, festival.nearby.cardMatch);
+      if (festival.nearby.homepage.startsWith('http://')) {
+        await externalReturnShot(page, OUT, `${festival.slug}-nearby-http-label`);
       }
 
-      const official = dialog.locator('[data-festival-official-home]');
-      const popupPromise = context.waitForEvent('page');
-      await official.click();
-      const popup = await popupPromise;
-      await popup.waitForLoadState('domcontentloaded');
-      await popup.close();
-      await page.bringToFront();
-      await dispatchPersistedReturn(page);
-
+      await returnFromNearbyOfficialPopup(page, context, nearbyModal);
       await externalReturnShot(page, OUT, `${festival.slug}-popup-after-return`);
+
       const rows = await probeFestivalSheetControls(page, dialog, {
-        homepagePattern,
+        homepagePattern: /haean\.kr|gangneung|masan|e2e-static/i,
         closeSheet: false,
       });
       record[festival.slug] = record[festival.slug] || { popup: [], goBack: [] };
       record[festival.slug].popup = rows;
+      expect(rows.every((r) => r.hit === 'PASS' && r.effect === 'PASS')).toBe(true);
     });
 
-    test(`${festival.slug} · goBack`, async ({ page, context }) => {
+    test(`${festival.slug} · nearby same-tab goBack`, async ({ page }) => {
       const dialog = await openFestivalSheet(page, festival.id, OPEN_TIMEOUT_MS);
-      const official = dialog.locator('[data-festival-official-home]');
-      const popupPromise = context.waitForEvent('page');
-      await official.click();
-      const popup = await popupPromise;
-      await popup.waitForLoadState('domcontentloaded');
-      await popup.close();
-      await page.bringToFront();
-
-      await page.evaluate(() => {
-        window.location.assign('https://example.com/');
-      });
-      await page.waitForURL(/example\.com/i, { timeout: 15_000 });
-      await page.goBack({ waitUntil: 'domcontentloaded', timeout: 30_000 });
-      await expect(page.getByRole('dialog')).toBeVisible({ timeout: OPEN_TIMEOUT_MS });
-      const dialogAfter = page.getByRole('dialog');
+      const nearbyModal = await openNearbyPlaceCard(page, dialog, festival.nearby.cardMatch);
+      await returnFromNearbyOfficialSameTab(page, nearbyModal);
       await dispatchPersistedReturn(page);
 
       await externalReturnShot(page, OUT, `${festival.slug}-goback-after-return`);
-      const rows = await probeFestivalSheetControls(page, dialogAfter, {
-        homepagePattern,
+      const rows = await probeFestivalSheetControls(page, dialog, {
+        homepagePattern: /haean\.kr|gangneung|masan|e2e-static/i,
         closeSheet: false,
       });
       record[festival.slug] = record[festival.slug] || { popup: [], goBack: [] };
       record[festival.slug].goBack = rows;
+      expect(rows.every((r) => r.hit === 'PASS' && r.effect === 'PASS')).toBe(true);
     });
   }
 
@@ -109,15 +94,15 @@ test.describe('PR external return — QA record WebKit 390', () => {
       const data = record[f.slug] || { popup: [], goBack: [] };
       return `## ${f.region} — ${f.title} (\`${f.id}\`)
 
-공식 홈: \`${f.homepage}\`
+주변 명소: **${f.nearby.title}** (\`${f.nearby.contentId}\`) · 공식 홈 \`${f.nearby.homepage}\`
 
-### 복귀 경로 A — 공식 홈 팝업 닫기
+### 복귀 경로 A — 주변 명소 상세 → 공식 홈 팝업 닫기 → 뒤로(시트)
 
 스크린샷: [\`${f.slug}-popup-after-return.png\`](./${f.slug}-popup-after-return.png)
 
 ${markdownTable(data.popup)}
 
-### 복귀 경로 B — 공식 홈 팝업 닫기 → example.com → \`goBack()\`
+### 복귀 경로 B — 주변 명소 상세 → 공식 홈 동일 탭 \`goBack\` + \`pageshow\` persisted
 
 스크린샷: [\`${f.slug}-goback-after-return.png\`](./${f.slug}-goback-after-return.png)
 
@@ -125,32 +110,31 @@ ${markdownTable(data.goBack)}
 `;
     });
 
-    const yangguLabel = EXTERNAL_RETURN_FESTIVALS[0].homepage.startsWith('http://')
-      ? `\nHTTP 라벨 스크린샷: [\`yanggu-http-http-label.png\`](./yanggu-http-http-label.png) · [\`http-official-label.png\`](./http-official-label.png)\n`
+    const yangguLabel = EXTERNAL_RETURN_FESTIVALS[0].nearby.homepage.startsWith('http://')
+      ? `\n양구 주변 HTTP 라벨: [\`yanggu-http-nearby-http-label.png\`](./yanggu-http-nearby-http-label.png) · 축제 요약 HTTP: [\`http-official-label.png\`](./http-official-label.png)\n`
       : '';
 
     const readme = `# Festival sheet — external link return QA (WebKit 390)
 
 생성일: ${generatedAt} · Playwright \`webkit-external-return-qa-record\` · 뷰포트 390×844
 
-권역 3건(양구 HTTP 공식 홈, 강릉, 마산)에서 **시트 열기 → 공식 홈페이지 → 복귀** 후 시트 컨트롤별 **elementFromPoint(hit)** · **클릭 효과**를 표로 기록합니다.
+**Owner repro (Safari 탭):** 축제 시트 → **주변 볼거리 카드** → 중첩 명소 상세 → **공식 홈(HTTP)** → 비보안 경고 → 뒤로 → 뒤로 → 축제 시트 버튼 dead-tap.
 
-**환경:** iPhone Safari **웹 탭**(gateo.kr) — 공식 홈(HTTP) → 비보안 경고 → 뒤로가기 후 시트 버튼 dead-tap(Mooni FAB만 동작) 재현 경로를 Playwright WebKit 390으로 가드합니다.
+권역 3건에서 위 경로 후 시트 컨트롤별 **elementFromPoint(hit)** · **클릭 효과**를 표로 기록합니다.
 
 ## 근본 원인 (수정)
 
-Safari bfcache/\`pageshow\` persisted·동일 탭 \`goBack\` 복귀 후, 축제 시트 **전체 화면 오버레이 래퍼**(\`fixed inset-0 z-40\` + \`backdrop-blur\`)가 flex 박스 전체에 히트 타깃을 잡아 **스크림/블러 레이어가 시트 패널 위에 남으면** \`elementFromPoint\`가 탭·버튼 대신 오버레이를 맞춥니다. Mooni FAB는 \`fixed z-[55]\`로 상위라 살아남.
+중첩 \`ThemeSpotDetailModal\`(\`z-[55]\`)도 축제 시트와 같이 **전체 화면 flex 오버레이 + backdrop-blur**가 히트를 가로채 Safari bfcache 복귀 후 명소·시트 버튼이 dead-tap. Mooni FAB는 모달 내부 \`fixed\`로 상대적으로 살아남. \`document.body.style.overflow = hidden\` 이 cleanup 없이 남는 경우도 방어.
 
 | | 파일·위치 |
 | --- | --- |
-| **원인** | \`src/pages/Korea/FestivalDetailSheet.jsx\` — 오버레이 래퍼가 스크림+시트를 한 덩어리로 덮음 (구: 래퍼에 blur·pointer hit) |
-| **구조 수정** | 동 파일 L148–151 \`FESTIVAL_SHEET_OVERLAY_WRAP\` (\`pointer-events-none\`), L150–151 \`FESTIVAL_SHEET_SCRIM\`, L1930–1947 스크림 \`data-festival-sheet-scrim\` + 시트 \`pointer-events-auto\` |
-| **방어(훅)** | \`useFestivalSheetInteractionRestore.js\`, \`lib/festivalSheetInteractionRestore.js\` — \`pageshow\` persisted, \`visibilitychange\`, \`focus\`, sessionStorage 마커 후 scroll nudge·z40–59 오버레이 정리 |
-| **HTTP 표시** | \`lib/festivalHomepageProtocol.js\`, \`FestivalDetailFirstSummary.jsx\`, i18n \`officialSiteHttp*\` |
+| **중첩 모달 (주 원인)** | \`src/pages/KoreaTheme/ThemeSpotDetailModal.jsx\` — L47–51 스크림 상수, L1810–1825 \`data-theme-spot-modal-scrim\` + \`pointer-events-none\` 래퍼 |
+| **축제 시트** | \`FestivalDetailSheet.jsx\` L148–151, L1930–1947 |
+| **방어 훅** | \`useFestivalSheetInteractionRestore.js\` + \`lib/festivalSheetInteractionRestore.js\` (sessionStorage는 \`FestivalDetailSheet\` → 중첩 모달 공식 홈 클릭 시 \`markFestivalSheetExternalReturn\`) |
 
 ## Safari 주소창이 안 보이는 이유
 
-시트는 \`max-h-[100dvh]\` 전면 모달이고 **document body는 스크롤하지 않으며** 내용은 \`sheetScrollRef\`(\`overflow-y-auto\`)만 스크롤합니다. iOS Safari는 문서 스크롤이 없으면 URL bar를 축소·숨김(미니멀 UI / compact bar, iOS 26 포함) — 시트가 거의 전체 화면이라 주소창이 계속 보이지 않는 것처럼 느껴질 수 있습니다.
+축제 시트·중첩 명소 모달 모두 **body 스크롤 없이** 내부 스크롤 컨테이너만 사용 → iOS Safari URL bar 축소/숨김.
 
 ${yangguLabel}
 
@@ -159,18 +143,18 @@ ${yangguLabel}
 \`\`\`bash
 npm run build
 npx vite --host 127.0.0.1 --port 5173 --strictPort &
-SMOKE_SITE_URL=https://127.0.0.1:5173 MOONI_TOURAPI_STUB_ONLY=1 npx playwright test e2e/pr-external-return-qa-record.spec.js --project=webkit-external-return-qa-record
-SMOKE_SITE_URL=https://127.0.0.1:5173 MOONI_TOURAPI_STUB_ONLY=1 npx playwright test e2e/korea-festival-external-return.spec.js --project=webkit-festival-external-return
+SMOKE_SITE_URL=http://127.0.0.1:5173 MOONI_TOURAPI_STUB_ONLY=1 npx playwright test e2e/pr-external-return-qa-record.spec.js --project=webkit-external-return-qa-record
+SMOKE_SITE_URL=http://127.0.0.1:5173 MOONI_TOURAPI_STUB_ONLY=1 npx playwright test e2e/korea-festival-external-return.spec.js --project=webkit-festival-external-return
 \`\`\`
 
-## 요약 (3권역 × 2복귀경로)
+## 요약 (3권역 × 2복귀경로 · 주변 명소 공식 홈)
 
-| 권역 | 축제 ID | popup 닫기 | goBack 경로 |
-| --- | --- | --- | --- |
+| 권역 | 축제 ID | 주변 명소 | popup 닫기 | same-tab goBack |
+| --- | --- | --- | --- | --- |
 ${EXTERNAL_RETURN_FESTIVALS.map((f) => {
   const p = record[f.slug]?.popup?.every((r) => r.hit === 'PASS' && r.effect === 'PASS');
   const g = record[f.slug]?.goBack?.every((r) => r.hit === 'PASS' && r.effect === 'PASS');
-  return `| ${f.region} | \`${f.id}\` | ${p ? '**PASS**' : 'FAIL'} | ${g ? '**PASS**' : 'FAIL'} |`;
+  return `| ${f.region} | \`${f.id}\` | ${f.nearby.title} | ${p ? '**PASS**' : 'FAIL'} | ${g ? '**PASS**' : 'FAIL'} |`;
 }).join('\n')}
 
 ${sections.join('\n')}

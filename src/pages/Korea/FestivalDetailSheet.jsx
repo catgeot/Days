@@ -2935,6 +2935,11 @@ export default function FestivalDetailSheet({
           favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedNearby))}
           onToggleFavorite={handleScenicSpotFavorite}
           mooniFab
+          onOfficialHomeNavigate={() => {
+            if (item?.contentId) {
+              markFestivalSheetExternalReturn(String(item.contentId));
+            }
+          }}
           onClose={() => setSelectedNearby(null)}
         />
       )}
@@ -2948,6 +2953,11 @@ export default function FestivalDetailSheet({
           favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedScenic))}
           onToggleFavorite={handleScenicSpotFavorite}
           mooniFab
+          onOfficialHomeNavigate={() => {
+            if (item?.contentId) {
+              markFestivalSheetExternalReturn(String(item.contentId));
+            }
+          }}
           onClose={() => setSelectedScenic(null)}
         />
       )}

@@ -16,9 +16,97 @@ export async function externalReturnShot(page, outDir, name) {
   });
 }
 
+export function festivalSheetDialog(page) {
+  return page.locator('[role="dialog"][aria-labelledby="korea-festival-sheet-title"]');
+}
+
+export function nearbyPlaceModal(page) {
+  return page.locator('[role="dialog"][aria-labelledby="korea-theme-spot-modal-title"]');
+}
+
+export async function waitForFestivalNearbySights(festivalDialog, timeoutMs = 60_000) {
+  await expect(festivalDialog.getByText(/주변 볼거리 불러오는 중|Loading nearby/i)).toHaveCount(0, {
+    timeout: timeoutMs,
+  });
+}
+
+export async function scrollFestivalSheetToBottom(festivalDialog) {
+  await festivalDialog.evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+    const contentCol = el.querySelector('[data-festival-sheet-content]');
+    if (contentCol instanceof HTMLElement) {
+      contentCol.scrollTop = contentCol.scrollHeight;
+    }
+  });
+}
+
+/**
+ * @param {import('@playwright/test').Page} page
+ * @param {import('@playwright/test').Locator} festivalDialog
+ * @param {string | RegExp} cardMatch
+ */
+export async function openNearbyPlaceCard(page, festivalDialog, cardMatch) {
+  await waitForFestivalNearbySights(festivalDialog);
+  await scrollFestivalSheetToBottom(festivalDialog);
+  const card = festivalDialog.locator('li button').filter({ hasText: cardMatch }).first();
+  await expect(card).toBeVisible({ timeout: 30_000 });
+  await card.click();
+  const modal = nearbyPlaceModal(page);
+  await expect(modal).toBeVisible({ timeout: 30_000 });
+  await expect(modal.getByText(/상세.*불러오는 중|Loading details/i)).toHaveCount(0, {
+    timeout: 90_000,
+  });
+  const official = modal.locator('[data-theme-spot-official-home]');
+  await official.scrollIntoViewIfNeeded({ timeout: 90_000 }).catch(() => {});
+  await expect(official).toBeVisible({ timeout: 90_000 });
+  return modal;
+}
+
+export async function closeNearbyPlaceModal(page) {
+  const modal = nearbyPlaceModal(page);
+  if (!(await modal.isVisible().catch(() => false))) return;
+  const headerClose = modal.locator('button[aria-label="닫기"]').first();
+  await headerClose.click({ timeout: 10_000 });
+  await expect(modal).toBeHidden({ timeout: 15_000 });
+}
+
+/**
+ * Owner repro: nearby official http → external → back → back (close nested modal).
+ */
+export async function returnFromNearbyOfficialPopup(page, context, nearbyModal) {
+  const official = nearbyModal.locator('[data-theme-spot-official-home]');
+  const popupPromise = context.waitForEvent('page');
+  await official.click();
+  const popup = await popupPromise;
+  await popup.waitForLoadState('domcontentloaded');
+  await popup.close();
+  await page.bringToFront();
+  await dispatchPersistedReturn(page);
+  await closeNearbyPlaceModal(page);
+}
+
+export async function returnFromNearbyOfficialSameTab(page, nearbyModal) {
+  const official = nearbyModal.locator('[data-theme-spot-official-home]');
+  const href = await official.getAttribute('href');
+  expect(href).toBeTruthy();
+  await page.goto(href, { waitUntil: 'domcontentloaded' });
+  await page.goBack({ waitUntil: 'domcontentloaded', timeout: 30_000 });
+  await dispatchPersistedReturn(page);
+  const modalAfter = nearbyPlaceModal(page);
+  if (await modalAfter.isVisible().catch(() => false)) {
+    await closeNearbyPlaceModal(page);
+  }
+  const sheet = festivalSheetDialog(page);
+  if (!(await sheet.isVisible().catch(() => false))) {
+    await page.goBack({ waitUntil: 'domcontentloaded', timeout: 15_000 }).catch(() => {});
+    await dispatchPersistedReturn(page);
+  }
+  await expect(festivalSheetDialog(page)).toBeVisible({ timeout: 30_000 });
+}
+
 export async function openFestivalSheet(page, festivalId, openTimeoutMs) {
   await page.goto(`/korea/?festival=${festivalId}`, { waitUntil: 'domcontentloaded' });
-  const dialog = page.getByRole('dialog');
+  const dialog = festivalSheetDialog(page);
   await expect(dialog).toBeVisible({ timeout: openTimeoutMs });
   await expect(dialog.locator('#korea-festival-sheet-title')).toBeVisible({
     timeout: openTimeoutMs,
@@ -47,7 +135,9 @@ export async function probeHitAtCenter(locator) {
     const y = rect.top + rect.height / 2;
     const hit = document.elementFromPoint(x, y);
     const ok = Boolean(hit && (target === hit || target.contains(hit)));
-    const scrim = Boolean(hit?.closest('[data-festival-sheet-scrim]'));
+    const scrim = Boolean(
+      hit?.closest('[data-festival-sheet-scrim], [data-theme-spot-modal-scrim]'),
+    );
     return { ok, scrim, hitTag: hit?.tagName || '' };
   });
 }
