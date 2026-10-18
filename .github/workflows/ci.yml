@@ -65,7 +65,7 @@ jobs:
     name: Festival back to overview E2E (WebKit 390)
     runs-on: ubuntu-latest
     needs: lint-and-build
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v5

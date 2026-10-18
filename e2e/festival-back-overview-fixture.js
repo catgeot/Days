@@ -65,13 +65,68 @@ export const BACK_OVERVIEW_FESTIVAL_ROWS = [
 
 const PROGRAM_BODY = String(RECORDED_DETAIL.intro?.program || '').trim();
 const OVERVIEW_BODY = String(RECORDED_DETAIL.common?.overview || '').trim();
-const SCROLL_PAD = '\n\n'.repeat(40);
+const PROGRAM_SECTION_REPEATS = 48;
+const OVERVIEW_PARAGRAPH_REPEATS = 28;
+const DETAIL_IMAGE_COUNT = 144;
+const READING_VIDEO_COUNT = 10;
+
+function buildLongProgram() {
+  const blocks = [];
+  for (let i = 0; i < PROGRAM_SECTION_REPEATS; i += 1) {
+    blocks.push(
+      `${i + 1}. e2e 무대·체험 블록 ${i + 1}\n` +
+        '- 육군 태권도 시범 및 의장대 동작 시범\n' +
+        '- 군악대 연주와 장병 공연\n' +
+        '- 문화예술단체 초청 공연과 체험 부스\n' +
+        '- 푸드트럭과 지역 먹거리 존 운영\n' +
+        PROGRAM_BODY,
+    );
+  }
+  return blocks.join('\n\n');
+}
+
+function buildLongOverview() {
+  const chunks = [];
+  for (let i = 0; i < OVERVIEW_PARAGRAPH_REPEATS; i += 1) {
+    chunks.push(
+      `e2e 개요 단락 ${i + 1}. ${OVERVIEW_BODY} ` +
+        '온 가족이 함께 호국의 의미를 배우고 즐길 수 있는 프로그램이 마련되어 있다.',
+    );
+  }
+  return chunks.join('\n\n');
+}
+
+function buildLongInfoRows(contentId) {
+  const rows = [];
+  for (let i = 0; i < 18; i += 1) {
+    rows.push({
+      fldgubun: '2',
+      infoname: `e2e 행사 안내 ${i + 1}`,
+      infotext:
+        `${i + 1}. 현장 안내 — 셔틀버스는 정각마다 운행하며 주차장은 서측 입구를 이용한다. ` +
+        '우천 시 일부 체험은 실내로 이동하며, 문의는 현장 안내 데스크로 연락한다.',
+      contentId,
+      serialnum: String(100 + i),
+      contentTypeId: '15',
+    });
+  }
+  return rows;
+}
+
+function buildReadingVideos() {
+  return Array.from({ length: READING_VIDEO_COUNT }, (_, i) => ({
+    id: `e2evideo${String(i).padStart(3, '0')}`,
+    title:
+      `e2e 축제 현장 스케치 ${i + 1} — ` +
+      '공연 하이라이트와 체험 부스, 야간 경관 영상을 담은 가이드 클립입니다.',
+  }));
+}
 
 function rowById(contentId) {
   return BACK_OVERVIEW_FESTIVAL_ROWS.find((r) => r.id === String(contentId)) || null;
 }
 
-function detailImageItems(contentId, count = 8) {
+function detailImageItems(contentId, count = DETAIL_IMAGE_COUNT) {
   return Array.from({ length: count }, (_, i) => ({
     contentId: String(contentId),
     contentTypeId: '15',
@@ -83,7 +138,7 @@ function detailImageItems(contentId, count = 8) {
 
 function nearbyItems(originId) {
   const base = Number(originId) || 900000;
-  return Array.from({ length: 6 }, (_, i) => ({
+  return Array.from({ length: 14 }, (_, i) => ({
     contentId: String(base + i + 1),
     contentTypeId: '12',
     title: `e2e-nearby-${originId}-${i + 1}`,
@@ -96,16 +151,19 @@ function nearbyItems(originId) {
 export function buildBackOverviewFestivalDetail(row) {
   const id = row.id;
   const hero = `${E2E_IMAGE_ORIGIN}/festival-hero-${id}.png`;
-  const program = `${PROGRAM_BODY}${SCROLL_PAD}`;
-  const overview = `${OVERVIEW_BODY}${SCROLL_PAD}`;
-  const info = (RECORDED_DETAIL.info || []).map((entry, index) => ({
-    ...entry,
-    contentId: id,
-    infotext:
-      index === 0
-        ? 'e2e 읽을거리 보조 안내 — 주차·셔틀·현장 유의사항을 확인하세요.'
-        : String(entry.infotext || '').slice(0, 200),
-  }));
+  const program = buildLongProgram();
+  const overview = buildLongOverview();
+  const info = [
+    ...(RECORDED_DETAIL.info || []).map((entry, index) => ({
+      ...entry,
+      contentId: id,
+      infotext:
+        index === 0
+          ? 'e2e 읽을거리 보조 안내 — 주차·셔틀·현장 유의사항을 확인하세요.'
+          : String(entry.infotext || '').slice(0, 200),
+    })),
+    ...buildLongInfoRows(id),
+  ];
 
   return {
     ok: true,
@@ -179,7 +237,12 @@ function payloadForTourAction(action, contentId) {
   }
 
   if (action === 'detailImage' && row) {
-    return { ok: true, items: detailImageItems(id), rawCount: 8, fromCache: true };
+    return {
+      ok: true,
+      items: detailImageItems(id),
+      rawCount: DETAIL_IMAGE_COUNT,
+      fromCache: true,
+    };
   }
 
   if (action === 'searchPhoto') {
@@ -211,7 +274,7 @@ export async function installFestivalBackOverviewFixtures(context) {
   });
 
   await context.route(/\/functions\/v1\/fetch-place-videos/i, async (route) => {
-    await jsonFulfill(route, { ok: true, videos: [] });
+    await jsonFulfill(route, { success: true, videos: buildReadingVideos() });
   });
 
   await context.route(/tourapi-proxy/i, async (route) => {
