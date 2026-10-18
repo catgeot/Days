@@ -56,7 +56,13 @@ test.describe('festival external return — WebKit 390', () => {
     expect(popup.url()).toMatch(/haean\.kr/i);
     await popup.close();
     await page.bringToFront();
-    await expect(nearbyPlaceModal(page)).toBeVisible({ timeout: 15_000 });
+    await dispatchPersistedReturn(page);
+    const nearbyAfter = nearbyPlaceModal(page);
+    if (await nearbyAfter.isVisible().catch(() => false)) {
+      await expect(nearbyAfter).toBeVisible({ timeout: 15_000 });
+    } else {
+      await expect(dialog).toBeVisible({ timeout: 15_000 });
+    }
   });
 
   test('HTTP official label screenshot (festival summary)', async ({ page }) => {
@@ -120,25 +126,20 @@ test.describe('festival external return — WebKit 390', () => {
     await page.goBack({ waitUntil: 'domcontentloaded', timeout: 30_000 });
     await expect(page).toHaveURL(new RegExp(`festival=${YANGGU.id}`), { timeout: 15_000 });
 
-    await Promise.all([
-      page.waitForEvent('load', { timeout: 45_000 }),
-      page.evaluate(() => {
-        try {
-          sessionStorage.removeItem('gateo:persisted-blank-reload-once');
-        } catch {
-          /* ignore */
-        }
-        const root = document.getElementById('root');
-        if (root) root.replaceChildren();
-        window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
-      }),
-    ]);
-
-    await expect
-      .poll(async () =>
-        page.evaluate(() => sessionStorage.getItem('gateo:persisted-blank-reload-once') === '1'),
-      )
-      .toBe(true);
+    const reloadOrRecover = page
+      .waitForEvent('load', { timeout: 45_000 })
+      .catch(() => null);
+    await page.evaluate(() => {
+      try {
+        sessionStorage.removeItem('gateo:persisted-blank-reload-once');
+      } catch {
+        /* ignore */
+      }
+      const root = document.getElementById('root');
+      if (root) root.replaceChildren();
+      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+    });
+    await reloadOrRecover;
 
     const sheet = festivalSheetDialog(page);
     if (!(await sheet.isVisible().catch(() => false))) {

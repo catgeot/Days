@@ -15,14 +15,17 @@ import {
   openNearbyPlaceCard,
   probeFestivalSheetControlsWithShots,
   probeNearbyPlaceControlsWithShots,
-  returnFromNearbyOfficialPopup,
+  returnFromNearbyOfficialPopupKeepNearby,
+  closeNearbyPlaceModal,
+  nearbyPlaceModal,
+  waitForFestivalSheetAfterExternalReturn,
   festivalSheetDialog,
 } from './festival-external-return-helpers.js';
 
 const OUT = 'docs/qa/pr-external-return';
 const BUTTONS = `${OUT}/buttons`;
 const OPEN_TIMEOUT_MS = 180_000;
-const TEST_TIMEOUT_MS = 420_000;
+const TEST_TIMEOUT_MS = 720_000;
 
 function prodQaEnabled() {
   if (process.env.MOONI_TOURAPI_STUB_ONLY === '1') return false;
@@ -48,11 +51,25 @@ async function persistRecord() {
   await writeFile(`${OUT}/qa-record.json`, JSON.stringify(record, null, 2), 'utf8');
 }
 
+function rowOk(r) {
+  return r.hit === 'SKIP' || (r.hit === 'PASS' && r.effect === 'PASS');
+}
+
+function summarizeMatrix(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) return '— (empty)';
+  const ok = rows.filter(rowOk).length;
+  if (ok === rows.length) return '**PASS**';
+  const fail = rows.filter((r) => r.hit === 'FAIL' || r.effect === 'FAIL').length;
+  if (fail === rows.length) return '**FAIL**';
+  return `**PARTIAL** (${ok}/${rows.length} PASS)`;
+}
+
 test.describe('PR external return — prod QA record WebKit 390', () => {
   test.describe.configure({ timeout: TEST_TIMEOUT_MS, mode: 'serial' });
 
   test.beforeAll(async () => {
     if (!prodQaEnabled()) return;
+    process.env.EXTERNAL_RETURN_NEARBY_PROBE_MS = '90000';
     await mkdir(OUT, { recursive: true });
     await mkdir(BUTTONS, { recursive: true });
     await loadRecordFromDisk();
@@ -84,38 +101,53 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
         await externalReturnShot(page, OUT, `${festival.slug}-nearby-http-official-row`);
       }
 
-      await returnFromNearbyOfficialPopup(page, context, nearbyModal);
-      await externalReturnShot(page, OUT, `${festival.slug}-03-after-back-twice`);
+      await returnFromNearbyOfficialPopupKeepNearby(page, context, nearbyModal);
+      await externalReturnShot(page, OUT, `${festival.slug}-03-after-official-popup-return`);
+
+      let modalForNearbyProbe = nearbyPlaceModal(page);
+      if (!(await modalForNearbyProbe.isVisible().catch(() => false))) {
+        const sheetAfterPopup = festivalSheetDialog(page);
+        await expect(sheetAfterPopup).toBeVisible({ timeout: 60_000 });
+        await dispatchPersistedReturn(page);
+        modalForNearbyProbe = await openNearbyPlaceCard(
+          page,
+          sheetAfterPopup,
+          festival.nearby.cardMatch,
+        );
+      }
 
       let nearbyRows = [];
-      if (await festivalSheetDialog(page).isVisible().catch(() => false)) {
-        try {
-          const nearbyAgain = await openNearbyPlaceCard(page, dialog, festival.nearby.cardMatch);
-          nearbyRows = await probeNearbyPlaceControlsWithShots(
-            page,
-            nearbyAgain,
-            BUTTONS,
-            festival.slug,
-            context,
-          );
-        } catch (err) {
-          nearbyRows.push({
-            control: 'nearby matrix',
-            hit: 'FAIL',
-            effect: 'FAIL',
-            shot: '',
-            note: String(err?.message || err).slice(0, 100),
-          });
-        }
-      } else {
-        await page.goto(`/korea/?festival=${festival.id}`, {
-          waitUntil: 'networkidle',
-          timeout: 180_000,
+      try {
+        nearbyRows = await probeNearbyPlaceControlsWithShots(
+          page,
+          modalForNearbyProbe,
+          BUTTONS,
+          festival.slug,
+          context,
+          {
+            reopenNearbyModal: async () =>
+              openNearbyPlaceCard(page, festivalSheetDialog(page), festival.nearby.cardMatch),
+          },
+        );
+      } catch (err) {
+        nearbyRows.push({
+          control: 'nearby matrix',
+          hit: 'FAIL',
+          effect: 'FAIL',
+          shot: '',
+          note: String(err?.message || err).slice(0, 100),
         });
       }
 
-      await expect(festivalSheetDialog(page)).toBeVisible({ timeout: 60_000 });
       const sheetDialog = festivalSheetDialog(page);
+      if (await nearbyPlaceModal(page).isVisible().catch(() => false)) {
+        await closeNearbyPlaceModal(page);
+      }
+      await dispatchPersistedReturn(page);
+      await expect(sheetDialog).toBeVisible({ timeout: 60_000 });
+      await waitForFestivalSheetAfterExternalReturn(page, sheetDialog);
+      await externalReturnShot(page, OUT, `${festival.slug}-03-after-back-twice`);
+
       const sheetRows = await probeFestivalSheetControlsWithShots(
         page,
         sheetDialog,
@@ -279,11 +311,7 @@ CI e2e (fixtures): \`e2e/korea-festival-external-return.spec.js\` · \`MOONI_TOU
 | --- | --- | --- | --- | --- |
 ${PROD_EXTERNAL_RETURN_FESTIVALS.map((f) => {
   const data = record[f.slug];
-  const rowOk = (r) => r.hit === 'SKIP' || (r.hit === 'PASS' && r.effect === 'PASS');
-  const n =
-    (data?.nearby?.length || 0) > 0 && data.nearby.every(rowOk);
-  const s = data?.sheet?.every(rowOk);
-  return `| ${f.region} | \`${f.id}\` | ${f.nearby.title} | ${n ? '**PASS**' : '—'} | ${s ? '**PASS**' : '—'} |`;
+  return `| ${f.region} | \`${f.id}\` | ${f.nearby.title} | ${summarizeMatrix(data?.nearby)} | ${summarizeMatrix(data?.sheet)} |`;
 }).join('\n')}
 
 ${sections.join('\n')}

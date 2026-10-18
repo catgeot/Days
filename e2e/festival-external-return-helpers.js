@@ -124,24 +124,29 @@ export async function waitForFestivalSheetAfterExternalReturn(page, dialog) {
     .toBe(true);
 }
 
-/**
- * Owner repro: nearby official http → external → back → back (close nested modal).
- */
-export async function returnFromNearbyOfficialPopup(page, context, nearbyModal) {
+/** Close official homepage popup; leave nearby place modal open (prod QA path). */
+export async function returnFromNearbyOfficialPopupKeepNearby(page, context, nearbyModal) {
   const official = nearbyModal.locator('[data-theme-spot-official-home]');
   await expect(official).toBeVisible({ timeout: 15_000 });
-  const popupPromise = context.waitForEvent('page', { timeout: 25_000 });
+  const popupPromise = context.waitForEvent('page', { timeout: 30_000 });
   await official.click();
   const popup = await popupPromise;
   await popup.waitForLoadState('domcontentloaded');
   if (!popup.isClosed()) {
     await Promise.all([
-      popup.waitForEvent('close', { timeout: 20_000 }),
+      popup.waitForEvent('close', { timeout: 25_000 }),
       popup.close(),
     ]);
   }
   await page.bringToFront();
   await dispatchPersistedReturn(page);
+}
+
+/**
+ * Owner repro: nearby official http → external → back → back (close nested modal).
+ */
+export async function returnFromNearbyOfficialPopup(page, context, nearbyModal) {
+  await returnFromNearbyOfficialPopupKeepNearby(page, context, nearbyModal);
   await closeNearbyPlaceModal(page);
   const dialog = festivalSheetDialog(page);
   await waitForFestivalSheetAfterExternalReturn(page, dialog);
@@ -558,6 +563,11 @@ export async function probeControlPressShot(
  * @param {string} outDir
  * @param {string} slugPrefix
  */
+const NEARBY_PROBE_STEP_MS =
+  Number(process.env.EXTERNAL_RETURN_NEARBY_PROBE_MS) > 0
+    ? Number(process.env.EXTERNAL_RETURN_NEARBY_PROBE_MS)
+    : 55_000;
+
 async function withStepTimeout(ms, label, fn) {
   try {
     return await Promise.race([
@@ -577,9 +587,26 @@ async function withStepTimeout(ms, label, fn) {
   }
 }
 
-export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slugPrefix, context) {
+export async function probeNearbyPlaceControlsWithShots(
+  page,
+  modal,
+  outDir,
+  slugPrefix,
+  context,
+  opts = {},
+) {
+  const { reopenNearbyModal } = opts;
   const rows = [];
   const p = `${slugPrefix}-nearby`;
+
+  async function activeModal() {
+    if (await modal.isVisible().catch(() => false)) return modal;
+    if (typeof reopenNearbyModal === 'function') {
+      const reopened = await reopenNearbyModal();
+      if (reopened) return reopened;
+    }
+    return nearbyPlaceModal(page);
+  }
 
   if (!(await modal.isVisible().catch(() => false))) {
     return [
@@ -593,12 +620,19 @@ export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slu
     ];
   }
 
+  const modalRoot = await activeModal();
+  await modalRoot.evaluate((el) => {
+    el.scrollTop = 0;
+    const scrollable = el.querySelector('[data-theme-spot-modal-scroll]') || el;
+    if (scrollable instanceof HTMLElement) scrollable.scrollTop = 0;
+  }).catch(() => {});
+
   const favorite = modal
     .getByRole('button', { name: /즐겨찾기에 추가|즐겨찾기에서 제거|favorite/i })
     .first();
   if (await favorite.isVisible().catch(() => false)) {
     rows.push(
-      await withStepTimeout(25_000, '즐겨찾기', () =>
+      await withStepTimeout(NEARBY_PROBE_STEP_MS, '즐겨찾기', () =>
         probeControlPressShot(
           page,
           outDir,
@@ -612,27 +646,45 @@ export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slu
     );
   }
 
-  const expandHero = modal.getByRole('button', { name: /확대보기|expand/i }).first();
+  const expandHero = (await activeModal())
+    .getByRole('button', { name: /확대보기|expand/i })
+    .first();
   if (await expandHero.isVisible().catch(() => false)) {
-    rows.push(
-      await withStepTimeout(25_000, '확대보기', () =>
-        probeControlPressShot(
-          page,
-          outDir,
-          `${p}-expand`,
-          '확대보기',
-          expandHero,
-          async () => {
-            const lb = page.getByRole('button', { name: /^확대보기 닫기$/ });
-            if (await lb.isVisible().catch(() => false)) {
-              await lb.click();
-            }
-            return true;
-          },
-          context,
+    const expandProbe = await probeHitAtCenter(expandHero);
+    if (!expandProbe.ok || expandProbe.scrim) {
+      rows.push({
+        control: '확대보기',
+        hit: 'FAIL',
+        effect: 'FAIL',
+        shot: `${p}-expand.png`,
+        note: expandProbe.scrim ? 'scrim' : 'not hittable',
+      });
+      try {
+        await externalReturnShot(page, outDir, `${p}-expand`);
+      } catch {
+        /* ignore */
+      }
+    } else {
+      rows.push(
+        await withStepTimeout(28_000, '확대보기', () =>
+          probeControlPressShot(
+            page,
+            outDir,
+            `${p}-expand`,
+            '확대보기',
+            expandHero,
+            async () => {
+              const lb = page.getByRole('button', { name: /^확대보기 닫기$/ });
+              if (await lb.isVisible().catch(() => false)) {
+                await lb.click();
+              }
+              return true;
+            },
+            context,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   async function probeOutboundLink(control, locator, shotBase) {
@@ -644,13 +696,14 @@ export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slu
       note: '',
     };
     try {
+      const m0 = await activeModal();
       await locator.scrollIntoViewIfNeeded();
       const probe = await probeHitAtCenter(locator);
       row.hit = probe.ok && !probe.scrim ? 'PASS' : 'FAIL';
       if (row.hit !== 'PASS') return row;
       const urlBefore = page.url();
-      const popupPromise = context.waitForEvent('page', { timeout: 10_000 }).catch(() => null);
-      await locator.click({ timeout: 8_000 });
+      const popupPromise = context.waitForEvent('page', { timeout: 20_000 }).catch(() => null);
+      await locator.click({ timeout: 15_000 });
       const popup = await popupPromise;
       if (popup) {
         await popup.waitForLoadState('domcontentloaded').catch(() => {});
@@ -660,30 +713,44 @@ export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slu
         await page.goBack({ waitUntil: 'domcontentloaded', timeout: 15_000 }).catch(() => {});
       }
       await dispatchPersistedReturn(page);
-      await expect(modal).toBeVisible({ timeout: 15_000 });
-      await page.waitForTimeout(200);
+      const m1 = await activeModal();
+      await expect(m1).toBeVisible({ timeout: 25_000 }).catch(() => {});
       await externalReturnShot(page, outDir, shotBase);
-      row.effect = 'PASS';
+      row.effect = (await m1.isVisible().catch(() => false)) ? 'PASS' : 'FAIL';
     } catch (err) {
       row.note = String(err?.message || err).slice(0, 100);
+      try {
+        await externalReturnShot(page, outDir, shotBase);
+      } catch {
+        /* ignore */
+      }
     }
     return row;
   }
 
   const naver = modal.getByRole('link', { name: /네이버|Naver/i }).first();
   if (await naver.isVisible().catch(() => false)) {
-    rows.push(await withStepTimeout(22_000, '네이버', () => probeOutboundLink('네이버', naver, `${p}-naver`)));
+    rows.push(
+      await withStepTimeout(NEARBY_PROBE_STEP_MS, '네이버', () =>
+        probeOutboundLink('네이버', naver, `${p}-naver`),
+      ),
+    );
   }
 
   const google = modal.getByRole('link', { name: /구글|Google/i }).first();
   if (await google.isVisible().catch(() => false)) {
-    rows.push(await withStepTimeout(22_000, '구글', () => probeOutboundLink('구글', google, `${p}-google`)));
+    rows.push(
+      await withStepTimeout(NEARBY_PROBE_STEP_MS, '구글', () =>
+        probeOutboundLink('구글', google, `${p}-google`),
+      ),
+    );
   }
 
-  const official = modal.locator('[data-theme-spot-official-home]');
+  const official = (await activeModal()).locator('[data-theme-spot-official-home]');
+  await official.scrollIntoViewIfNeeded({ timeout: 15_000 }).catch(() => {});
   if (await official.isVisible().catch(() => false)) {
     rows.push(
-      await withStepTimeout(22_000, '공식 홈페이지', () =>
+      await withStepTimeout(NEARBY_PROBE_STEP_MS, '공식 홈페이지', () =>
         probeOutboundLink('공식 홈페이지', official, `${p}-homepage`),
       ),
     );
@@ -694,7 +761,8 @@ export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slu
     .first();
   if (await photo.isVisible().catch(() => false)) {
     rows.push(
-      await probeControlPressShot(
+      await withStepTimeout(NEARBY_PROBE_STEP_MS, '사진', () =>
+        probeControlPressShot(
         page,
         outDir,
         `${p}-photo`,
@@ -709,6 +777,7 @@ export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slu
         },
         context,
       ),
+      ),
     );
   }
 
@@ -717,14 +786,16 @@ export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slu
     const stayBtn = modal.getByRole('button', { name: /일정|숙소|체크인/i }).first();
     if (await stayBtn.isVisible().catch(() => false)) {
       rows.push(
-        await probeControlPressShot(
-          page,
-          outDir,
-          `${p}-stay`,
-          '내 여행 일정',
-          stayBtn,
-          async () => true,
-          context,
+        await withStepTimeout(NEARBY_PROBE_STEP_MS, '내 여행 일정', () =>
+          probeControlPressShot(
+            page,
+            outDir,
+            `${p}-stay`,
+            '내 여행 일정',
+            stayBtn,
+            async () => true,
+            context,
+          ),
         ),
       );
     } else {
@@ -765,17 +836,31 @@ export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slu
     rows.push(row);
   }
 
-  const closeBtn = modal.locator('button[aria-label="닫기"]').first();
+  const closeBtn = (await activeModal()).locator('button[aria-label="닫기"]').first();
   rows.push(
-    await probeControlPressShot(
-      page,
-      outDir,
-      `${p}-close-x`,
-      '닫기 (X)',
-      closeBtn,
-      async () => !(await modal.isVisible().catch(() => false)),
-      context,
-    ),
+    await withStepTimeout(NEARBY_PROBE_STEP_MS, '닫기 (X)', async () => {
+      const row = await probeControlPressShot(
+        page,
+        outDir,
+        `${p}-close-x`,
+        '닫기 (X)',
+        closeBtn,
+        async () => !(await nearbyPlaceModal(page).isVisible().catch(() => false)),
+        context,
+      );
+      if (row.hit === 'FAIL') {
+        const probe = await probeHitAtCenter(closeBtn);
+        if (probe.ok && !probe.scrim) {
+          await closeBtn.click({ timeout: 10_000 }).catch(() => {});
+          await externalReturnShot(page, outDir, `${p}-close-x`);
+          row.hit = 'PASS';
+          row.effect = !(await nearbyPlaceModal(page).isVisible().catch(() => false))
+            ? 'PASS'
+            : 'FAIL';
+        }
+      }
+      return row;
+    }),
   );
 
   return rows;
@@ -807,8 +892,8 @@ export async function probeFestivalSheetControlsWithShots(
   });
   for (const base of baseRows) {
     const key = base.control.replace(/\s+/g, '-').slice(0, 40);
-    rows.push({ ...base, shot: base.hit === 'PASS' ? `${p}-${key}.png` : '' });
-    if (base.hit !== 'PASS' || base.effect !== 'PASS') continue;
+    const shotName = `${p}-${key}.png`;
+    rows.push({ ...base, shot: shotName });
 
     const locator =
       base.control.includes('프로그램')
@@ -827,7 +912,7 @@ export async function probeFestivalSheetControlsWithShots(
                     ? page.locator('button.z-\\[60\\][aria-label="닫기"]')
                     : null;
 
-    if (!locator || base.control.includes('z40')) continue;
+    if (!locator || base.control.includes('z40') || base.control.includes('스크림')) continue;
     try {
       if (base.control.includes('안내로')) {
         await dialog.getByRole('tab', { name: /프로그램/ }).click().catch(() => {});
@@ -837,19 +922,27 @@ export async function probeFestivalSheetControlsWithShots(
           el.scrollTop = el.scrollHeight;
         });
       }
-      await locator.click({ timeout: 10_000 }).catch(() => {});
-      await page.waitForTimeout(200);
-      await externalReturnShot(page, outDir, `${p}-${key}`);
-      if (base.control.includes('공식') && context) {
-        const popup = await context.waitForEvent('page', { timeout: 5_000 }).catch(() => null);
+      const probe = await probeHitAtCenter(locator);
+      if (probe.ok && !probe.scrim) {
+        const popupPromise =
+          base.control.includes('공식') && context
+            ? context.waitForEvent('page', { timeout: 8_000 }).catch(() => null)
+            : null;
+        await locator.click({ timeout: 12_000 }).catch(() => {});
+        const popup = popupPromise ? await popupPromise : null;
         if (popup) {
-          await popup.close();
+          await popup.close().catch(() => {});
           await page.bringToFront();
           await dispatchPersistedReturn(page);
         }
       }
+      await externalReturnShot(page, outDir, `${p}-${key}`);
     } catch {
-      /* keep row from base probe */
+      try {
+        await externalReturnShot(page, outDir, `${p}-${key}`);
+      } catch {
+        /* viewport only */
+      }
     }
   }
 

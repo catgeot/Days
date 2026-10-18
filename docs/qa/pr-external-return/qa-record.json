@@ -2,11 +2,39 @@
   "yanggu-1122739": {
     "nearby": [
       {
-        "control": "nearby matrix",
-        "hit": "FAIL",
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-naver.png",
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
         "effect": "FAIL",
-        "shot": "",
-        "note": "withNearbyProbeBudget is not defined"
+        "shot": "yanggu-1122739-nearby-google.png",
+        "note": ""
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-homepage.png",
+        "note": ""
+      },
+      {
+        "control": "내 여행 일정",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-stay.png",
+        "note": ""
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-close-x.png",
+        "note": ""
       }
     ],
     "sheet": [
@@ -24,15 +52,15 @@
       },
       {
         "control": "탭 · 프로그램",
-        "hit": "FAIL",
-        "effect": "FAIL",
-        "shot": ""
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-탭-·-프로그램.png"
       },
       {
         "control": "안내로 돌아가기",
-        "hit": "FAIL",
-        "effect": "FAIL",
-        "shot": ""
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-안내로-돌아가기.png"
       },
       {
         "control": "맨 위로",
@@ -42,27 +70,69 @@
         "shot": "yanggu-1122739-sheet-맨-위로.png"
       },
       {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-탭-·-사진.png"
+      },
+      {
         "control": "공식 홈페이지",
-        "hit": "FAIL",
-        "effect": "FAIL",
-        "shot": ""
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-공식-홈페이지.png"
       },
       {
         "control": "히어로 썸네일",
-        "hit": "FAIL",
-        "effect": "FAIL",
-        "shot": ""
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-히어로-썸네일.png"
       },
       {
         "control": "닫기 (X)",
-        "hit": "FAIL",
-        "effect": "FAIL",
-        "shot": ""
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-닫기-(X).png"
       }
     ]
   },
   "gangneung-2930716": {
-    "nearby": [],
+    "nearby": [
+      {
+        "control": "확대보기",
+        "hit": "FAIL",
+        "effect": "FAIL",
+        "shot": "",
+        "note": "확대보기 timeout 28000ms"
+      },
+      {
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-naver.png",
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
+        "effect": "FAIL",
+        "shot": "gangneung-2930716-nearby-google.png",
+        "note": ""
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "FAIL",
+        "shot": "gangneung-2930716-nearby-homepage.png",
+        "note": ""
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-close-x.png",
+        "note": ""
+      }
+    ],
     "sheet": [
       {
         "control": "z40–59 투명 히트 차단 없음",
@@ -124,11 +194,39 @@
   "masan-637693": {
     "nearby": [
       {
-        "control": "nearby matrix",
+        "control": "확대보기",
         "hit": "FAIL",
         "effect": "FAIL",
         "shot": "",
-        "note": "nearby probe budget exceeded"
+        "note": "확대보기 timeout 28000ms"
+      },
+      {
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-naver.png",
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-google.png",
+        "note": ""
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "FAIL",
+        "shot": "masan-637693-nearby-homepage.png",
+        "note": ""
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-close-x.png",
+        "note": ""
       }
     ],
     "sheet": [
