@@ -1,13 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildManual638576E2eOverlay } from './fixtures/festival-back-overview-manual-638576-overlay.js';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const RECORDED_DETAIL = JSON.parse(
   readFileSync(join(__dir, 'fixtures/festival-2989642-detail.json'), 'utf8'),
 );
 
-const E2E_IMAGE_ORIGIN = 'https://e2e-static.gateo.test';
+export const E2E_IMAGE_ORIGIN = 'https://e2e-static.gateo.test';
 const PNG_1X1 = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
   'base64',
@@ -70,7 +71,7 @@ const OVERVIEW_PARAGRAPH_REPEATS = 28;
 const DETAIL_IMAGE_COUNT = 144;
 const READING_VIDEO_COUNT = 10;
 
-function buildLongProgram() {
+export function buildLongProgramAppendix() {
   const blocks = [];
   for (let i = 0; i < PROGRAM_SECTION_REPEATS; i += 1) {
     blocks.push(
@@ -83,6 +84,10 @@ function buildLongProgram() {
     );
   }
   return blocks.join('\n\n');
+}
+
+function buildLongProgram() {
+  return buildLongProgramAppendix();
 }
 
 function buildLongOverview() {
@@ -261,6 +266,10 @@ function payloadForTourAction(action, contentId) {
  * Deterministic TourAPI + Edge stubs for festival back-to-overview E2E (CI example.supabase.co).
  */
 export async function installFestivalBackOverviewFixtures(context) {
+  await context.addInitScript((patch) => {
+    globalThis.__GATEO_E2E_MANUAL_FESTIVAL_PATCH__ = patch;
+  }, { '638576': buildManual638576E2eOverlay() });
+
   await context.route(new RegExp(E2E_IMAGE_ORIGIN.replace(/\./g, '\\.'), 'i'), async (route) => {
     await route.fulfill({
       status: 200,

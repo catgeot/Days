@@ -6,8 +6,18 @@ const byId = new Map(
   Object.entries(entries).map(([id, row]) => [String(id), { ...row, contentId: String(id) }]),
 );
 
+function e2eManualEntryPatch(contentId) {
+  if (typeof globalThis === 'undefined') return null;
+  const table = globalThis.__GATEO_E2E_MANUAL_FESTIVAL_PATCH__;
+  if (!table || typeof table !== 'object') return null;
+  const row = table[contentId];
+  return row && typeof row === 'object' ? row : null;
+}
+
 export function getManualFestivalEntry(contentId) {
   const id = String(contentId || '').trim();
+  const patched = e2eManualEntryPatch(id);
+  if (patched) return { ...patched, contentId: id };
   return id ? byId.get(id) || null : null;
 }
 
