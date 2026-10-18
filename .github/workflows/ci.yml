@@ -61,6 +61,28 @@ jobs:
           fi
           SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/korea-festival-hero-credit-en.spec.js --project=webkit-festival-hero-credit -g "direct \\?lang=en" --reporter=line
 
+      - name: Festival back to overview E2E (WebKit 390)
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+        run: |
+          npx playwright install --with-deps webkit
+          npx vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival-back.log 2>&1 &
+          ready=0
+          for _ in $(seq 1 90); do
+            if curl -sf -o /dev/null http://127.0.0.1:5173/; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" != 1 ]; then
+            cat /tmp/vite-festival-back.log
+            exit 1
+          fi
+          SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/korea-festival-back-overview.spec.js --project=webkit-festival-back-overview --reporter=line
+
   # YouTube 탭 세션(더 보기). 프로덕션 일일 헬스(e2e-health)에서는 제외.
   e2e-youtube-session:
     runs-on: ubuntu-latest
