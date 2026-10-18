@@ -30,6 +30,33 @@ export function splitPlaceOverview(location, locale = 'ko') {
   };
 }
 
+function normalizeProgramBlock(segment) {
+  return String(segment || '')
+    .split(/\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join('\n')
+    .trim();
+}
+
+function splitNumberedProgramBlocks(text) {
+  const raw = String(text ?? '').trim();
+  if (!raw || !/(?:^|\n)\s*\d+\.\s/.test(raw)) return null;
+
+  const segments = raw.split(/\n(?=\s*\d+\.\s)/);
+  const out = [];
+  for (const segment of segments) {
+    const trimmed = segment.trim();
+    if (!trimmed) continue;
+    if (!/^\d+\.\s/.test(trimmed)) {
+      out.push(trimmed.replace(/\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim());
+      continue;
+    }
+    out.push(normalizeProgramBlock(trimmed));
+  }
+  return out.length ? out : null;
+}
+
 /**
  * 써머리 본문을 읽기 쉬운 문단 배열로 나눔.
  * - 기존 빈 줄 단락 유지
@@ -38,6 +65,9 @@ export function splitPlaceOverview(location, locale = 'ko') {
 export function splitOverviewParagraphs(text) {
   const raw = String(text ?? '').trim();
   if (!raw) return [];
+
+  const numbered = splitNumberedProgramBlocks(raw);
+  if (numbered) return numbered;
 
   if (/\n\s*\n/.test(raw)) {
     return raw

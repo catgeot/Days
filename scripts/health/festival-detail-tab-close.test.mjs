@@ -29,9 +29,15 @@ test('festival detail bottom close returns sub-tabs to the overview', () => {
     500,
   );
   assert.match(button, /if \(activeTab === TAB_INFO\) \{\s*onClose\(\);/);
-  assert.match(button, /setActiveTab\(TAB_INFO\)/);
-  assert.match(button, /sheet\.scrollTop = 0/);
+  assert.match(button, /returnToOverviewTab\(\)/);
   assert.doesNotMatch(button, /onClick=\{onClose\}/);
+  assert.match(
+    sheet,
+    /overviewScrollPendingRef\.current = true[\s\S]*useLayoutEffect/,
+  );
+  assert.match(sheet, /scrollFestivalOverviewToTop/);
+  assert.match(sheet, /festivalSheetOverviewScroll/);
+  assert.match(sheet, /data-festival-sheet-content/);
   assert.match(
     button,
     /activeTab === TAB_INFO\s*\?\s*t\('korea\.common\.close'\)\s*:\s*t\('korea\.festival\.detail\.backToOverview'\)/,
