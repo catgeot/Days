@@ -1,7 +1,13 @@
 import { mkdir } from 'node:fs/promises';
 import { test, expect } from './fixtures.js';
+import { dismissLocHint } from './mooni-festival-chip-helpers.js';
+import { installFestivalBackOverviewFixtures } from './festival-back-overview-fixture.js';
 
 const OUT = 'docs/qa/pr-festival-back-blank';
+const IS_CI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
+const OPEN_TIMEOUT_MS = IS_CI ? 25_000 : 120_000;
+const TAB_WAIT_MS = IS_CI ? 12_000 : 90_000;
+const TEST_TIMEOUT_MS = IS_CI ? 55_000 : 180_000;
 const VIEWPORT = { width: 390, height: 844 };
 const TITLE_TOP_MIN_RATIO = 0.05;
 const TITLE_TOP_MAX_RATIO = 0.58;
@@ -30,9 +36,9 @@ async function shot(page, name) {
 async function openFestival(page, festivalId) {
   await page.goto(`/korea/?festival=${festivalId}`, { waitUntil: 'domcontentloaded' });
   const dialog = page.getByRole('dialog');
-  await expect(dialog).toBeVisible({ timeout: 120_000 });
+  await expect(dialog).toBeVisible({ timeout: OPEN_TIMEOUT_MS });
   await expect(dialog.locator('#korea-festival-sheet-title')).toBeVisible({
-    timeout: 120_000,
+    timeout: OPEN_TIMEOUT_MS,
   });
   return dialog;
 }
@@ -121,8 +127,16 @@ async function assertOverviewTopInViewport(dialog) {
 }
 
 test.describe('festival back to overview — WebKit 390', () => {
+  test.describe.configure({ timeout: TEST_TIMEOUT_MS });
+
   test.beforeAll(async () => {
     await mkdir(OUT, { recursive: true });
+  });
+
+  test.beforeEach(async ({ context, page }) => {
+    await installFestivalBackOverviewFixtures(context);
+    await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
+    await dismissLocHint(page);
   });
 
   for (const { id, slug } of FESTIVALS) {
@@ -133,7 +147,7 @@ test.describe('festival back to overview — WebKit 390', () => {
         const dialog = await openFestival(page, id);
         const tab = dialog.getByRole('tab', { name: pattern });
         try {
-          await tab.waitFor({ state: 'visible', timeout: 90_000 });
+          await tab.waitFor({ state: 'visible', timeout: TAB_WAIT_MS });
         } catch {
           test.skip(true, `${slug}: ${key} tab not offered`);
         }
