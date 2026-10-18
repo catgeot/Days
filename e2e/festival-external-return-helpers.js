@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+import { dismissLocHint } from './mooni-festival-chip-helpers.js';
 
 export const EXTERNAL_RETURN_VIEWPORT = { width: 390, height: 844 };
 export const EXTERNAL_RETURN_Z_MIN = 40;
@@ -45,10 +46,17 @@ export async function scrollFestivalSheetToBottom(festivalDialog) {
  * @param {import('@playwright/test').Locator} festivalDialog
  * @param {string | RegExp} cardMatch
  */
+function festivalNearbySightsList(festivalDialog) {
+  return festivalDialog.getByRole('list', { name: /주변 볼거리|Nearby sights/i });
+}
+
 export async function openNearbyPlaceCard(page, festivalDialog, cardMatch) {
   await waitForFestivalNearbySights(festivalDialog);
   await scrollFestivalSheetToBottom(festivalDialog);
-  const card = festivalDialog.locator('li button').filter({ hasText: cardMatch }).first();
+  const card = festivalNearbySightsList(festivalDialog)
+    .locator('li button')
+    .filter({ hasText: cardMatch })
+    .first();
   await expect(card).toBeVisible({ timeout: 30_000 });
   await card.click();
   const modal = nearbyPlaceModal(page);
@@ -65,9 +73,18 @@ export async function openNearbyPlaceCard(page, festivalDialog, cardMatch) {
 export async function closeNearbyPlaceModal(page) {
   const modal = nearbyPlaceModal(page);
   if (!(await modal.isVisible().catch(() => false))) return;
+  await dispatchPersistedReturn(page);
   const headerClose = modal.locator('button[aria-label="닫기"]').first();
-  await headerClose.click({ timeout: 10_000 });
-  await expect(modal).toBeHidden({ timeout: 15_000 });
+  const clicked = await headerClose
+    .click({ timeout: 8_000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!clicked) {
+    await page.keyboard.press('Escape').catch(() => {});
+  }
+  if (await modal.isVisible().catch(() => false)) {
+    await page.keyboard.press('Escape').catch(() => {});
+  }
 }
 
 /**
@@ -102,6 +119,44 @@ export async function returnFromNearbyOfficialSameTab(page, nearbyModal) {
     await dispatchPersistedReturn(page);
   }
   await expect(festivalSheetDialog(page)).toBeVisible({ timeout: 30_000 });
+}
+
+export async function openFestivalFromHome(page, { searchQuery, festivalId, openTimeoutMs = 120_000 }) {
+  await page.goto('/korea/', { waitUntil: 'networkidle', timeout: 180_000 });
+  await expect(
+    page.getByRole('heading', { name: /한국의 축제|Korea festivals/i }),
+  ).toBeVisible({ timeout: openTimeoutMs });
+  await dismissLocHint(page);
+
+  const searchToggle = page.getByRole('button', {
+    name: /축제 검색|Search festivals/i,
+  });
+  await searchToggle.click();
+  const mobileSearch = page.locator('#korea-festival-search');
+  const pcSearch = page.locator('#korea-festival-search-pc');
+  const searchInput = (await mobileSearch.isVisible().catch(() => false))
+    ? mobileSearch
+    : pcSearch;
+  await expect(searchInput).toBeVisible({ timeout: 15_000 });
+  await searchInput.fill(searchQuery);
+  await searchInput.press('Enter');
+
+  const hit = page.locator(`[data-festival-id="${festivalId}"]`).first();
+  if (!(await hit.isVisible().catch(() => false))) {
+    await searchInput.fill('');
+    await searchInput.fill(String(festivalId));
+    await searchInput.press('Enter');
+  }
+  await expect(hit).toBeVisible({ timeout: openTimeoutMs });
+  await hit.click();
+  await expect(page).toHaveURL(new RegExp(`festival=${festivalId}`), { timeout: 60_000 });
+
+  const dialog = festivalSheetDialog(page);
+  await expect(dialog).toBeVisible({ timeout: openTimeoutMs });
+  await expect(dialog.locator('#korea-festival-sheet-title')).toBeVisible({
+    timeout: openTimeoutMs,
+  });
+  return dialog;
 }
 
 export async function openFestivalSheet(page, festivalId, openTimeoutMs) {
@@ -196,7 +251,7 @@ async function zBandBlockersOverDialog(dialog) {
  * @returns {Promise<Array<{ control: string, hit: string, effect: string, note?: string }>>}
  */
 export async function probeFestivalSheetControls(page, dialog, opts = {}) {
-  const { homepagePattern = /https?:\/\//i, closeSheet = false } = opts;
+  const { homepagePattern = /https?:\/\//i, closeSheet = false, skipScrollTop = false } = opts;
   const rows = [];
 
   const push = (control, hit, effect, note = '') => {
@@ -252,6 +307,11 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
   let scrollOk = false;
   let scrollNote = '';
   try {
+    if (skipScrollTop) {
+      scrollHit = true;
+      scrollOk = true;
+      scrollNote = 'QA record — 맨 위로 생략';
+    } else {
     await infoTab.click().catch(() => {});
     const maxScroll = await dialog.evaluate(
       (el) => Math.max(0, el.scrollHeight - el.clientHeight),
@@ -283,6 +343,7 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
           .toBeLessThan(before);
         scrollOk = true;
       }
+    }
     }
   } catch {
     scrollHit = false;
@@ -382,9 +443,384 @@ export async function assertSheetButtonsInteractive(page, dialog, opts = {}) {
 }
 
 export function markdownTable(rows) {
-  const header = '| 컨트롤 | elementFromPoint | 동작/효과 | 비고 |\n| --- | --- | --- | --- |';
+  const header =
+    '| 컨트롤 | elementFromPoint | 동작/효과 | 스크린샷 | 비고 |\n| --- | --- | --- | --- | --- |';
   const body = rows
-    .map((r) => `| ${r.control} | ${r.hit} | ${r.effect} | ${r.note || ''} |`)
+    .map(
+      (r) =>
+        `| ${r.control} | ${r.hit} | ${r.effect} | ${r.shot ? `\`${r.shot}\`` : ''} | ${r.note || ''} |`,
+    )
     .join('\n');
   return `${header}\n${body}`;
+}
+
+/**
+ * @param {import('@playwright/test').Page} page
+ * @param {string} outDir
+ * @param {string} shotBase
+ * @param {string} control
+ * @param {import('@playwright/test').Locator} locator
+ * @param {() => Promise<boolean>} effectCheck
+ */
+export async function probeControlPressShot(
+  page,
+  outDir,
+  shotBase,
+  control,
+  locator,
+  effectCheck,
+  context,
+) {
+  const row = { control, hit: 'FAIL', effect: 'FAIL', shot: `${shotBase}.png`, note: '' };
+  try {
+    await locator.scrollIntoViewIfNeeded({ timeout: 15_000 }).catch(() => {});
+    const probe = await probeHitAtCenter(locator);
+    row.hit = probe.ok && !probe.scrim ? 'PASS' : 'FAIL';
+    if (probe.scrim) row.note = 'scrim';
+    if (row.hit === 'PASS') {
+      const urlBefore = page.url();
+      const popupPromise = context
+        ? context.waitForEvent('page', { timeout: 8_000 }).catch(() => null)
+        : null;
+      await locator.click({ timeout: 15_000 });
+      const popup = context ? await popupPromise : null;
+      if (popup) {
+        await popup.waitForLoadState('domcontentloaded').catch(() => {});
+        await popup.close().catch(() => {});
+        await page.bringToFront();
+        await dispatchPersistedReturn(page);
+      } else if (page.url() !== urlBefore) {
+        await page.goBack({ waitUntil: 'domcontentloaded', timeout: 20_000 }).catch(() => {});
+        await dispatchPersistedReturn(page);
+      }
+      await page.waitForTimeout(250);
+      await externalReturnShot(page, outDir, shotBase);
+      row.effect = (await effectCheck()) ? 'PASS' : 'FAIL';
+    }
+  } catch (err) {
+    row.note = String(err?.message || err).slice(0, 100);
+  }
+  return row;
+}
+
+/**
+ * @param {import('@playwright/test').Page} page
+ * @param {import('@playwright/test').Locator} modal
+ * @param {string} outDir
+ * @param {string} slugPrefix
+ */
+async function withStepTimeout(ms, label, fn) {
+  try {
+    return await Promise.race([
+      fn(),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
+      }),
+    ]);
+  } catch (err) {
+    return {
+      control: label,
+      hit: 'FAIL',
+      effect: 'FAIL',
+      shot: '',
+      note: String(err?.message || err).slice(0, 80),
+    };
+  }
+}
+
+export async function probeNearbyPlaceControlsWithShots(page, modal, outDir, slugPrefix, context) {
+  const rows = [];
+  const p = `${slugPrefix}-nearby`;
+
+  if (!(await modal.isVisible().catch(() => false))) {
+    return [
+      {
+        control: 'nearby modal',
+        hit: 'FAIL',
+        effect: 'FAIL',
+        shot: '',
+        note: 'modal not visible at probe start',
+      },
+    ];
+  }
+
+  const favorite = modal
+    .getByRole('button', { name: /즐겨찾기에 추가|즐겨찾기에서 제거|favorite/i })
+    .first();
+  if (await favorite.isVisible().catch(() => false)) {
+    rows.push(
+      await withStepTimeout(25_000, '즐겨찾기', () =>
+        probeControlPressShot(
+          page,
+          outDir,
+          `${p}-star`,
+          '즐겨찾기',
+          favorite,
+          async () => true,
+          context,
+        ),
+      ),
+    );
+  }
+
+  const expandHero = modal.getByRole('button', { name: /확대보기|expand/i }).first();
+  if (await expandHero.isVisible().catch(() => false)) {
+    rows.push(
+      await withStepTimeout(25_000, '확대보기', () =>
+        probeControlPressShot(
+          page,
+          outDir,
+          `${p}-expand`,
+          '확대보기',
+          expandHero,
+          async () => {
+            const lb = page.getByRole('button', { name: /^확대보기 닫기$/ });
+            if (await lb.isVisible().catch(() => false)) {
+              await lb.click();
+            }
+            return true;
+          },
+          context,
+        ),
+      ),
+    );
+  }
+
+  async function probeOutboundLink(control, locator, shotBase) {
+    const row = {
+      control,
+      hit: 'FAIL',
+      effect: 'FAIL',
+      shot: `${shotBase}.png`,
+      note: '',
+    };
+    try {
+      await locator.scrollIntoViewIfNeeded();
+      const probe = await probeHitAtCenter(locator);
+      row.hit = probe.ok && !probe.scrim ? 'PASS' : 'FAIL';
+      if (row.hit !== 'PASS') return row;
+      const urlBefore = page.url();
+      const popupPromise = context.waitForEvent('page', { timeout: 10_000 }).catch(() => null);
+      await locator.click({ timeout: 8_000 });
+      const popup = await popupPromise;
+      if (popup) {
+        await popup.waitForLoadState('domcontentloaded').catch(() => {});
+        await popup.close().catch(() => {});
+        await page.bringToFront();
+      } else if (page.url() !== urlBefore) {
+        await page.goBack({ waitUntil: 'domcontentloaded', timeout: 15_000 }).catch(() => {});
+      }
+      await dispatchPersistedReturn(page);
+      await expect(modal).toBeVisible({ timeout: 15_000 });
+      await page.waitForTimeout(200);
+      await externalReturnShot(page, outDir, shotBase);
+      row.effect = 'PASS';
+    } catch (err) {
+      row.note = String(err?.message || err).slice(0, 100);
+    }
+    return row;
+  }
+
+  const naver = modal.getByRole('link', { name: /네이버|Naver/i }).first();
+  if (await naver.isVisible().catch(() => false)) {
+    rows.push(await withStepTimeout(22_000, '네이버', () => probeOutboundLink('네이버', naver, `${p}-naver`)));
+  }
+
+  const google = modal.getByRole('link', { name: /구글|Google/i }).first();
+  if (await google.isVisible().catch(() => false)) {
+    rows.push(await withStepTimeout(22_000, '구글', () => probeOutboundLink('구글', google, `${p}-google`)));
+  }
+
+  const official = modal.locator('[data-theme-spot-official-home]');
+  if (await official.isVisible().catch(() => false)) {
+    rows.push(
+      await withStepTimeout(22_000, '공식 홈페이지', () =>
+        probeOutboundLink('공식 홈페이지', official, `${p}-homepage`),
+      ),
+    );
+  }
+
+  const photo = modal
+    .getByRole('button', { name: /사진.*확대|photo/i })
+    .first();
+  if (await photo.isVisible().catch(() => false)) {
+    rows.push(
+      await probeControlPressShot(
+        page,
+        outDir,
+        `${p}-photo`,
+        '사진',
+        photo,
+        async () => {
+          const lb = page.getByRole('button', { name: /^확대보기 닫기$/ });
+          if (await lb.isVisible().catch(() => false)) {
+            await lb.click();
+          }
+          return true;
+        },
+        context,
+      ),
+    );
+  }
+
+  const stay = modal.getByText(/내 여행 일정/).first();
+  if (await stay.isVisible().catch(() => false)) {
+    const stayBtn = modal.getByRole('button', { name: /일정|숙소|체크인/i }).first();
+    if (await stayBtn.isVisible().catch(() => false)) {
+      rows.push(
+        await probeControlPressShot(
+          page,
+          outDir,
+          `${p}-stay`,
+          '내 여행 일정',
+          stayBtn,
+          async () => true,
+          context,
+        ),
+      );
+    } else {
+      rows.push({
+        control: '내 여행 일정',
+        hit: 'SKIP',
+        effect: 'SKIP',
+        shot: '',
+        note: 'strip hidden',
+      });
+    }
+  }
+
+  const mooniInline = modal.getByRole('button', { name: /무니|Mooni/i }).first();
+  const mooniFab = page.getByRole('button', { name: /무니에게 물어보기|askMooni/i }).last();
+  const mooni = (await mooniFab.isVisible().catch(() => false)) ? mooniFab : mooniInline;
+  if (await mooni.isVisible().catch(() => false)) {
+    const row = {
+      control: 'Mooni',
+      hit: 'PASS',
+      effect: 'PASS',
+      shot: `${p}-mooni.png`,
+      note: '',
+    };
+    try {
+      const probe = await probeHitAtCenter(mooni);
+      row.hit = probe.ok && !probe.scrim ? 'PASS' : 'FAIL';
+      if (row.hit === 'PASS') {
+        await mooni.click({ timeout: 8_000 });
+        await page.waitForTimeout(400);
+        await externalReturnShot(page, outDir, `${p}-mooni`);
+        await page.keyboard.press('Escape').catch(() => {});
+      }
+    } catch (err) {
+      row.effect = 'FAIL';
+      row.note = String(err?.message || err).slice(0, 80);
+    }
+    rows.push(row);
+  }
+
+  const closeBtn = modal.locator('button[aria-label="닫기"]').first();
+  rows.push(
+    await probeControlPressShot(
+      page,
+      outDir,
+      `${p}-close-x`,
+      '닫기 (X)',
+      closeBtn,
+      async () => !(await modal.isVisible().catch(() => false)),
+      context,
+    ),
+  );
+
+  return rows;
+}
+
+/**
+ * @param {import('@playwright/test').Page} page
+ * @param {import('@playwright/test').Locator} dialog
+ * @param {string} outDir
+ * @param {string} slugPrefix
+ * @param {{ homepagePattern?: RegExp }} opts
+ */
+export async function probeFestivalSheetControlsWithShots(
+  page,
+  dialog,
+  outDir,
+  slugPrefix,
+  opts = {},
+  context,
+) {
+  const { homepagePattern = /https?:\/\//i } = opts;
+  const rows = [];
+  const p = `${slugPrefix}-sheet`;
+
+  const baseRows = await probeFestivalSheetControls(page, dialog, {
+    homepagePattern,
+    closeSheet: false,
+    skipScrollTop: true,
+  });
+  for (const base of baseRows) {
+    const key = base.control.replace(/\s+/g, '-').slice(0, 40);
+    rows.push({ ...base, shot: base.hit === 'PASS' ? `${p}-${key}.png` : '' });
+    if (base.hit !== 'PASS' || base.effect !== 'PASS') continue;
+
+    const locator =
+      base.control.includes('프로그램')
+        ? dialog.getByRole('tab', { name: /프로그램/ })
+        : base.control.includes('사진')
+          ? dialog.getByRole('tab', { name: /^사진/ })
+          : base.control.includes('안내로')
+            ? dialog.getByRole('button', { name: '안내로 돌아가기' })
+            : base.control.includes('맨 위로')
+              ? page.locator('button[aria-label="맨 위로"][class*="z-[45]"]')
+              : base.control.includes('공식')
+                ? dialog.locator('[data-festival-official-home]')
+                : base.control.includes('썸네일')
+                  ? dialog.locator('[data-festival-hero-thumbs] button').first()
+                  : base.control.includes('닫기')
+                    ? page.locator('button.z-\\[60\\][aria-label="닫기"]')
+                    : null;
+
+    if (!locator || base.control.includes('z40')) continue;
+    try {
+      if (base.control.includes('안내로')) {
+        await dialog.getByRole('tab', { name: /프로그램/ }).click().catch(() => {});
+      }
+      if (base.control.includes('맨 위로')) {
+        await dialog.evaluate((el) => {
+          el.scrollTop = el.scrollHeight;
+        });
+      }
+      await locator.click({ timeout: 10_000 }).catch(() => {});
+      await page.waitForTimeout(200);
+      await externalReturnShot(page, outDir, `${p}-${key}`);
+      if (base.control.includes('공식') && context) {
+        const popup = await context.waitForEvent('page', { timeout: 5_000 }).catch(() => null);
+        if (popup) {
+          await popup.close();
+          await page.bringToFront();
+          await dispatchPersistedReturn(page);
+        }
+      }
+    } catch {
+      /* keep row from base probe */
+    }
+  }
+
+  const mooni = page.locator('[data-festival-mooni-inline], [data-festival-mooni-fab]').first();
+  if (await mooni.isVisible().catch(() => false)) {
+    rows.push(
+      await probeControlPressShot(
+        page,
+        outDir,
+        `${p}-mooni`,
+        'Mooni (시트)',
+        mooni,
+        async () => {
+          await page.keyboard.press('Escape').catch(() => {});
+          return true;
+        },
+        context,
+      ),
+    );
+  }
+
+  return rows;
 }

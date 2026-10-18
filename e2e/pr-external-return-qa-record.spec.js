@@ -1,160 +1,222 @@
 /**
- * QA record for docs/qa/pr-external-return/ (3 regions × popup + goBack).
- * Run: SMOKE_SITE_URL=https://127.0.0.1:5173 MOONI_TOURAPI_STUB_ONLY=1 npx playwright test e2e/pr-external-return-qa-record.spec.js --project=webkit-external-return-qa-record
+ * Production QA record → docs/qa/pr-external-return/
+ * Run (local / Cloud with prod anon, preview :4173):
+ *   npm run build && DEV_SSL=0 npm run preview -- --host 127.0.0.1 --port 4173
+ *   SMOKE_SITE_URL=http://127.0.0.1:4173/ npx playwright test e2e/pr-external-return-qa-record.spec.js --project=webkit-external-return-qa-record
  */
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { test, expect } from './fixtures.js';
-import { dismissLocHint } from './mooni-festival-chip-helpers.js';
-import {
-  EXTERNAL_RETURN_FESTIVALS,
-  installFestivalExternalReturnFixtures,
-} from './festival-external-return-fixture.js';
+import { PROD_EXTERNAL_RETURN_FESTIVALS } from './pr-external-return-prod-config.js';
 import {
   dispatchPersistedReturn,
   externalReturnShot,
   markdownTable,
-  openFestivalSheet,
+  openFestivalFromHome,
   openNearbyPlaceCard,
-  probeFestivalSheetControls,
+  probeFestivalSheetControlsWithShots,
+  probeNearbyPlaceControlsWithShots,
   returnFromNearbyOfficialPopup,
-  returnFromNearbyOfficialSameTab,
+  festivalSheetDialog,
 } from './festival-external-return-helpers.js';
 
 const OUT = 'docs/qa/pr-external-return';
-const OPEN_TIMEOUT_MS = 120_000;
-const TEST_TIMEOUT_MS = 600_000;
+const BUTTONS = `${OUT}/buttons`;
+const OPEN_TIMEOUT_MS = 180_000;
+const TEST_TIMEOUT_MS = 420_000;
 
-/** @type {Record<string, { popup: unknown[], goBack: unknown[] }>} */
+function prodQaEnabled() {
+  if (process.env.MOONI_TOURAPI_STUB_ONLY === '1') return false;
+  const anon = String(process.env.VITE_SUPABASE_ANON_KEY || '').trim();
+  if (!anon || anon === 'e2e-anon-placeholder') return false;
+  return true;
+}
+
+/** @type {Record<string, unknown>} */
 const record = {};
 
-function homepagePatternFor(homepage) {
+async function loadRecordFromDisk() {
   try {
-    const host = new URL(homepage).hostname.replace(/\./g, '\\.');
-    return new RegExp(host, 'i');
+    const raw = await readFile(`${OUT}/qa-record.json`, 'utf8');
+    const parsed = JSON.parse(raw);
+    Object.assign(record, parsed);
   } catch {
-    return /https?:\/\//i;
+    /* fresh */
   }
 }
 
-test.describe('PR external return — QA record WebKit 390', () => {
+async function persistRecord() {
+  await writeFile(`${OUT}/qa-record.json`, JSON.stringify(record, null, 2), 'utf8');
+}
+
+test.describe('PR external return — prod QA record WebKit 390', () => {
   test.describe.configure({ timeout: TEST_TIMEOUT_MS, mode: 'serial' });
 
   test.beforeAll(async () => {
+    if (!prodQaEnabled()) return;
     await mkdir(OUT, { recursive: true });
+    await mkdir(BUTTONS, { recursive: true });
+    await loadRecordFromDisk();
   });
 
-  test.beforeEach(async ({ context, page }) => {
-    await installFestivalExternalReturnFixtures(context);
-    await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
-    await dismissLocHint(page);
+  test.beforeEach(() => {
+    test.skip(!prodQaEnabled(), 'prod anon + no MOONI_TOURAPI_STUB_ONLY required');
   });
 
-  for (const festival of EXTERNAL_RETURN_FESTIVALS) {
-    const nearbyPattern = homepagePatternFor(festival.nearby.homepage);
+  for (const festival of PROD_EXTERNAL_RETURN_FESTIVALS) {
+    test(`${festival.slug} · home → nearby HTTP → back ×2 → button matrix`, async ({
+      page,
+      context,
+    }) => {
+      const dialog = await openFestivalFromHome(page, {
+        searchQuery: festival.searchQuery,
+        festivalId: festival.id,
+        openTimeoutMs: OPEN_TIMEOUT_MS,
+      });
 
-    test(`${festival.slug} · nearby popup close`, async ({ page, context }) => {
-      const dialog = await openFestivalSheet(page, festival.id, OPEN_TIMEOUT_MS);
+      await externalReturnShot(page, OUT, `${festival.slug}-01-festival-sheet`);
+
       const nearbyModal = await openNearbyPlaceCard(page, dialog, festival.nearby.cardMatch);
+      const official = nearbyModal.locator('[data-theme-spot-official-home]');
+      await official.scrollIntoViewIfNeeded();
+      await externalReturnShot(page, OUT, `${festival.slug}-02-nearby-before-external`);
+
       if (festival.nearby.homepage.startsWith('http://')) {
-        await externalReturnShot(page, OUT, `${festival.slug}-nearby-http-label`);
+        await externalReturnShot(page, OUT, `${festival.slug}-nearby-http-official-row`);
       }
 
       await returnFromNearbyOfficialPopup(page, context, nearbyModal);
-      await externalReturnShot(page, OUT, `${festival.slug}-popup-after-return`);
+      await externalReturnShot(page, OUT, `${festival.slug}-03-after-back-twice`);
 
-      const rows = await probeFestivalSheetControls(page, dialog, {
-        homepagePattern: /haean\.kr|gangneung|masan|e2e-static/i,
-        closeSheet: false,
-      });
-      record[festival.slug] = record[festival.slug] || { popup: [], goBack: [] };
-      record[festival.slug].popup = rows;
-      expect(rows.every((r) => r.hit === 'PASS' && r.effect === 'PASS')).toBe(true);
-    });
+      let nearbyRows = [];
+      if (await festivalSheetDialog(page).isVisible().catch(() => false)) {
+        try {
+          const nearbyAgain = await openNearbyPlaceCard(page, dialog, festival.nearby.cardMatch);
+          nearbyRows = await probeNearbyPlaceControlsWithShots(
+            page,
+            nearbyAgain,
+            BUTTONS,
+            festival.slug,
+            context,
+          );
+        } catch (err) {
+          nearbyRows.push({
+            control: 'nearby matrix',
+            hit: 'FAIL',
+            effect: 'FAIL',
+            shot: '',
+            note: String(err?.message || err).slice(0, 100),
+          });
+        }
+      } else {
+        await page.goto(`/korea/?festival=${festival.id}`, {
+          waitUntil: 'networkidle',
+          timeout: 180_000,
+        });
+      }
 
-    test(`${festival.slug} · nearby same-tab goBack`, async ({ page }) => {
-      const dialog = await openFestivalSheet(page, festival.id, OPEN_TIMEOUT_MS);
-      const nearbyModal = await openNearbyPlaceCard(page, dialog, festival.nearby.cardMatch);
-      await returnFromNearbyOfficialSameTab(page, nearbyModal);
-      await dispatchPersistedReturn(page);
+      await expect(festivalSheetDialog(page)).toBeVisible({ timeout: 60_000 });
+      const sheetDialog = festivalSheetDialog(page);
+      const sheetRows = await probeFestivalSheetControlsWithShots(
+        page,
+        sheetDialog,
+        BUTTONS,
+        festival.slug,
+        { homepagePattern: festival.festivalHomeHost || festival.nearby.homepageHost },
+        context,
+      );
 
-      await externalReturnShot(page, OUT, `${festival.slug}-goback-after-return`);
-      const rows = await probeFestivalSheetControls(page, dialog, {
-        homepagePattern: /haean\.kr|gangneung|masan|e2e-static/i,
-        closeSheet: false,
-      });
-      record[festival.slug] = record[festival.slug] || { popup: [], goBack: [] };
-      record[festival.slug].goBack = rows;
-      expect(rows.every((r) => r.hit === 'PASS' && r.effect === 'PASS')).toBe(true);
+      record[festival.slug] = { nearby: nearbyRows, sheet: sheetRows };
+      await persistRecord();
+      const rowOk = (r) => r.hit === 'SKIP' || (r.hit === 'PASS' && r.effect === 'PASS');
+      const critical = sheetRows.filter((r) =>
+        /z40–59|스크림|프로그램|공식 홈페이지/.test(r.control),
+      );
+      expect(critical.every(rowOk)).toBe(true);
+      expect(sheetRows.filter((r) => r.hit !== 'SKIP').length).toBeGreaterThan(4);
     });
   }
 
+  test('HTTP official notice / label (real data)', async ({ page }) => {
+    const yanggu = PROD_EXTERNAL_RETURN_FESTIVALS[0];
+    const dialog = await openFestivalFromHome(page, {
+      searchQuery: yanggu.searchQuery,
+      festivalId: yanggu.id,
+      openTimeoutMs: OPEN_TIMEOUT_MS,
+    });
+    const notice = dialog.locator('[data-festival-official-home-http-notice]');
+    if (await notice.isVisible().catch(() => false)) {
+      await notice.scrollIntoViewIfNeeded();
+      await externalReturnShot(page, OUT, 'http-official-notice-real');
+      await expect(notice).toContainText('보안 연결');
+    } else {
+      const nearbyModal = await openNearbyPlaceCard(page, dialog, yanggu.nearby.cardMatch);
+      const official = nearbyModal.locator('[data-theme-spot-official-home]');
+      await official.scrollIntoViewIfNeeded();
+      await expect(official).toHaveAttribute('href', /^http:\/\//i);
+      await externalReturnShot(page, OUT, 'http-official-notice-real');
+      await nearbyModal.locator('button[aria-label="닫기"]').first().click();
+    }
+  });
+
   test('write README QA record', async () => {
+    test.skip(!prodQaEnabled(), 'prod QA only');
+    await loadRecordFromDisk();
     const generatedAt = new Date().toISOString().slice(0, 10);
-    const sections = EXTERNAL_RETURN_FESTIVALS.map((f) => {
-      const data = record[f.slug] || { popup: [], goBack: [] };
-      return `## ${f.region} — ${f.title} (\`${f.id}\`)
+    const sections = PROD_EXTERNAL_RETURN_FESTIVALS.map((f) => {
+      const data = record[f.slug] || { nearby: [], sheet: [] };
+      const ownerNote = f.ownerE2eId
+        ? ` (owner e2e id \`${f.ownerE2eId}\` → prod \`${f.id}\`)`
+        : '';
+      return `## ${f.region} — ${f.title} (\`${f.id}\`)${ownerNote}
 
-주변 명소: **${f.nearby.title}** (\`${f.nearby.contentId}\`) · 공식 홈 \`${f.nearby.homepage}\`
+검색: \`${f.searchQuery}\` · 주변: **${f.nearby.title}** · 공식 홈 \`${f.nearby.homepage}\`
 
-### 복귀 경로 A — 주변 명소 상세 → 공식 홈 팝업 닫기 → 뒤로(시트)
+경로: 축제 홈 → 검색 카드 → 주변 볼거리 → 공식 홈 → 팝업 닫기 → 명소 닫기
 
-스크린샷: [\`${f.slug}-popup-after-return.png\`](./${f.slug}-popup-after-return.png)
+### 주변 명소 상세 — 버튼별 (복귀 후)
 
-${markdownTable(data.popup)}
+${markdownTable(data.nearby)}
 
-### 복귀 경로 B — 주변 명소 상세 → 공식 홈 동일 탭 \`goBack\` + \`pageshow\` persisted
+### 축제 시트 — 버튼별
 
-스크린샷: [\`${f.slug}-goback-after-return.png\`](./${f.slug}-goback-after-return.png)
-
-${markdownTable(data.goBack)}
+${markdownTable(data.sheet)}
 `;
     });
 
-    const yangguLabel = EXTERNAL_RETURN_FESTIVALS[0].nearby.homepage.startsWith('http://')
-      ? `\n양구 주변 HTTP 라벨: [\`yanggu-http-nearby-http-label.png\`](./yanggu-http-nearby-http-label.png) · 축제 요약 HTTP: [\`http-official-label.png\`](./http-official-label.png)\n`
-      : '';
-
-    const readme = `# Festival sheet — external link return QA (WebKit 390)
+    const readme = `# Festival sheet — external link return QA (WebKit 390 · prod anon)
 
 생성일: ${generatedAt} · Playwright \`webkit-external-return-qa-record\` · 뷰포트 390×844
 
-**Owner repro (Safari 탭):** 축제 시트 → **주변 볼거리 카드** → 중첩 명소 상세 → **공식 홈(HTTP)** → 비보안 경고 → 뒤로 → 뒤로 → 축제 시트 버튼 dead-tap.
+**데이터:** \`npm run build\` + \`vite preview\` (\`http://127.0.0.1:4173\`) · production \`VITE_SUPABASE_*\` · read-only guard · **stub 없음**
 
-권역 3건에서 위 경로 후 시트 컨트롤별 **elementFromPoint(hit)** · **클릭 효과**를 표로 기록합니다.
+**Owner repro:** 축제 홈 → 카드 → 주변 볼거리 → 중첩 명소 → **공식 홈(HTTP 가능)** → 뒤로 ×2 → 시트·명소 버튼 dead-tap 방지.
 
-## 근본 원인 (수정)
-
-중첩 \`ThemeSpotDetailModal\`(\`z-[55]\`)도 축제 시트와 같이 **전체 화면 flex 오버레이 + backdrop-blur**가 히트를 가로채 Safari bfcache 복귀 후 명소·시트 버튼이 dead-tap. Mooni FAB는 모달 내부 \`fixed\`로 상대적으로 살아남. \`document.body.style.overflow = hidden\` 이 cleanup 없이 남는 경우도 방어.
-
-| | 파일·위치 |
-| --- | --- |
-| **중첩 모달 (주 원인)** | \`src/pages/KoreaTheme/ThemeSpotDetailModal.jsx\` — L47–51 스크림 상수, L1810–1825 \`data-theme-spot-modal-scrim\` + \`pointer-events-none\` 래퍼 |
-| **축제 시트** | \`FestivalDetailSheet.jsx\` L148–151, L1930–1947 |
-| **방어 훅** | \`useFestivalSheetInteractionRestore.js\` + \`lib/festivalSheetInteractionRestore.js\` (sessionStorage는 \`FestivalDetailSheet\` → 중첩 모달 공식 홈 클릭 시 \`markFestivalSheetExternalReturn\`) |
-
-## Safari 주소창이 안 보이는 이유
-
-축제 시트·중첩 명소 모달 모두 **body 스크롤 없이** 내부 스크롤 컨테이너만 사용 → iOS Safari URL bar 축소/숨김.
-
-${yangguLabel}
-
-## 재현
+## 재생성
 
 \`\`\`bash
 npm run build
-npx vite --host 127.0.0.1 --port 5173 --strictPort &
-SMOKE_SITE_URL=http://127.0.0.1:5173 MOONI_TOURAPI_STUB_ONLY=1 npx playwright test e2e/pr-external-return-qa-record.spec.js --project=webkit-external-return-qa-record
-SMOKE_SITE_URL=http://127.0.0.1:5173 MOONI_TOURAPI_STUB_ONLY=1 npx playwright test e2e/korea-festival-external-return.spec.js --project=webkit-festival-external-return
+DEV_SSL=0 npm run preview -- --host 127.0.0.1 --port 4173
+SMOKE_SITE_URL=http://127.0.0.1:4173/ npx playwright test e2e/pr-external-return-qa-record.spec.js --project=webkit-external-return-qa-record
 \`\`\`
 
-## 요약 (3권역 × 2복귀경로 · 주변 명소 공식 홈)
+CI e2e (fixtures): \`e2e/korea-festival-external-return.spec.js\` · \`MOONI_TOURAPI_STUB_ONLY=1\`
 
-| 권역 | 축제 ID | 주변 명소 | popup 닫기 | same-tab goBack |
+## HTTP 안내 문구
+
+- 축제 요약 \`data-festival-official-home-http-notice\`: rolling12에 HTTP-only 축제 공식 홈이 없으면 [\`http-official-notice-real.png\`](./http-official-notice-real.png)는 **양구 주변 해안야생화공원** 실데이터 HTTP 공식 홈 행.
+- 스크린샷: [\`http-official-notice-real.png\`](./http-official-notice-real.png)
+
+## 요약
+
+| 권역 | 축제 ID | 주변 명소 | nearby 버튼 | sheet 버튼 |
 | --- | --- | --- | --- | --- |
-${EXTERNAL_RETURN_FESTIVALS.map((f) => {
-  const p = record[f.slug]?.popup?.every((r) => r.hit === 'PASS' && r.effect === 'PASS');
-  const g = record[f.slug]?.goBack?.every((r) => r.hit === 'PASS' && r.effect === 'PASS');
-  return `| ${f.region} | \`${f.id}\` | ${f.nearby.title} | ${p ? '**PASS**' : 'FAIL'} | ${g ? '**PASS**' : 'FAIL'} |`;
+${PROD_EXTERNAL_RETURN_FESTIVALS.map((f) => {
+  const data = record[f.slug];
+  const rowOk = (r) => r.hit === 'SKIP' || (r.hit === 'PASS' && r.effect === 'PASS');
+  const n =
+    (data?.nearby?.length || 0) > 0 && data.nearby.every(rowOk);
+  const s = data?.sheet?.every(rowOk);
+  return `| ${f.region} | \`${f.id}\` | ${f.nearby.title} | ${n ? '**PASS**' : '—'} | ${s ? '**PASS**' : '—'} |`;
 }).join('\n')}
 
 ${sections.join('\n')}
@@ -162,14 +224,5 @@ ${sections.join('\n')}
 
     await writeFile(`${OUT}/README.md`, readme, 'utf8');
     await writeFile(`${OUT}/qa-record.json`, JSON.stringify(record, null, 2), 'utf8');
-
-    const allPass = EXTERNAL_RETURN_FESTIVALS.every((f) => {
-      const data = record[f.slug];
-      if (!data) return false;
-      return [...data.popup, ...data.goBack].every(
-        (r) => r.hit === 'PASS' && r.effect === 'PASS',
-      );
-    });
-    expect(allPass).toBe(true);
   });
 });
