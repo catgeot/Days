@@ -48,6 +48,26 @@ function corsHeaders() {
   };
 }
 
+function stripAuthHeaders(headers) {
+  const out = { ...headers };
+  for (const key of Object.keys(out)) {
+    if (key.toLowerCase() === 'authorization') delete out[key];
+  }
+  return out;
+}
+
+async function fetchSupabasePublic(route) {
+  const req = route.request();
+  return route.fetch({ headers: stripAuthHeaders(req.headers()) });
+}
+
+async function activateQaAuthSession(page, supabaseUrl, session) {
+  const storageKey = authStorageKey(supabaseUrl);
+  await page.evaluate(({ storageKey: key, session: sess }) => {
+    localStorage.setItem(key, JSON.stringify(sess));
+  }, { storageKey, session });
+}
+
 async function clipShot(page, fileName) {
   const { width = 390, height = 844 } = page.viewportSize() || {};
   await page.screenshot({
@@ -98,7 +118,7 @@ async function openCairoFromHomeSearch(page, baseURL) {
 
 async function installReviewMocks(page, supabaseUrl) {
   const headers = corsHeaders();
-  const mockReviews = [];
+  const postedReviewStubs = [];
   const storageKey = authStorageKey(supabaseUrl);
   const session = {
     access_token: 'qa-place-collapse-token',
@@ -113,10 +133,6 @@ async function installReviewMocks(page, supabaseUrl) {
       email: 'qa-place-collapse@gateo.test',
     },
   };
-
-  await page.addInitScript(({ storageKey: key, session: sess }) => {
-    localStorage.setItem(key, JSON.stringify(sess));
-  }, { storageKey, session });
 
   await page.route(/\.supabase\.co\//i, async (route) => {
     const req = route.request();
@@ -138,59 +154,73 @@ async function installReviewMocks(page, supabaseUrl) {
       });
     }
 
-    if (url.includes('/rest/v1/reports')) {
-      if (method === 'GET' || method === 'HEAD') {
-        return route.fulfill({ status: 200, headers, body: '[]' });
-      }
+    if (url.includes('/rest/v1/place_reviews') && method === 'POST') {
+      const payload = JSON.parse(req.postData() || '[]');
+      const row = Array.isArray(payload) ? payload[0] : payload;
+      const created = {
+        id: `mock-review-${Date.now()}`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        place_slug: row.place_slug || 'cairo',
+        place_name: row.place_name || '카이로',
+        user_id: MOCK_USER_ID,
+        is_public: row.is_public !== false,
+        is_editorial: true,
+        content: row.content || MOCK_REVIEW_TEXT,
+        content_blocks: row.content_blocks ?? null,
+        persona_label: null,
+        rating: row.rating ?? 5,
+        images: row.images ?? [],
+        views_count: 0,
+        user: {
+          id: MOCK_USER_ID,
+          display_name: 'QA Traveler',
+          avatar_url: null,
+        },
+        likes: [],
+      };
+      postedReviewStubs.unshift(created);
+      return route.fulfill({ status: 201, headers, body: JSON.stringify(created) });
     }
 
-    if (url.includes('/rest/v1/place_reviews')) {
-      if (method === 'GET' || method === 'HEAD') {
-        const range = mockReviews.length;
-        return route.fulfill({
-          status: 200,
-          headers: {
-            ...headers,
-            'content-range': `0-${range > 0 ? range - 1 : 0}/${range}`,
-          },
-          body: JSON.stringify(mockReviews),
-        });
+    if (url.includes('/rest/v1/reports') && (method === 'GET' || method === 'HEAD')) {
+      const upstream = await fetchSupabasePublic(route);
+      return route.fulfill({
+        status: upstream.status(),
+        headers: { ...upstream.headers(), ...headers },
+        body: await upstream.text(),
+      });
+    }
+
+    if (url.includes('/rest/v1/place_reviews') && (method === 'GET' || method === 'HEAD')) {
+      const upstream = await fetchSupabasePublic(route);
+      let rows = [];
+      try {
+        const parsed = JSON.parse(await upstream.text());
+        rows = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        rows = [];
       }
-      if (method === 'POST') {
-        const payload = JSON.parse(req.postData() || '[]');
-        const row = Array.isArray(payload) ? payload[0] : payload;
-        const created = {
-          id: `mock-review-${Date.now()}`,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          place_slug: row.place_slug || 'cairo',
-          place_name: row.place_name || '카이로',
-          user_id: MOCK_USER_ID,
-          is_public: row.is_public !== false,
-          is_editorial: false,
-          content: row.content || MOCK_REVIEW_TEXT,
-          content_blocks: row.content_blocks ?? null,
-          persona_label: null,
-          rating: row.rating ?? 5,
-          images: row.images ?? [],
-          views_count: 0,
-          user: {
-            id: MOCK_USER_ID,
-            display_name: 'QA Traveler',
-            avatar_url: null,
-          },
-          likes: [],
-        };
-        mockReviews.unshift(created);
-        return route.fulfill({ status: 201, headers, body: JSON.stringify(created) });
+      if (postedReviewStubs.length) {
+        const byId = new Map(rows.map((item) => [String(item.id), item]));
+        for (const stub of postedReviewStubs) {
+          byId.set(String(stub.id), stub);
+        }
+        rows = [...byId.values()].sort(
+          (a, b) => Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0),
+        );
       }
-      if (method === 'PATCH' || method === 'DELETE') {
-        return route.fulfill({ status: 200, headers, body: '{}' });
-      }
+      return route.fulfill({
+        status: upstream.status(),
+        headers: { ...upstream.headers(), ...headers },
+        body: JSON.stringify(rows),
+      });
     }
 
     return route.continue();
   });
+
+  await activateQaAuthSession(page, supabaseUrl, session);
 }
 
 async function captureUserEntryCollapsed(page, baseURL, tag) {
@@ -210,14 +240,19 @@ async function captureUserEntryCollapsed(page, baseURL, tag) {
 }
 
 async function captureReviewReturnFlow(page, baseURL, supabaseUrl, tag) {
-  await installReviewMocks(page, supabaseUrl);
   await openCairoFromHomeSearch(page, baseURL);
+  await installReviewMocks(page, supabaseUrl);
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 120_000 });
+  await page.locator('[data-place-gallery-scroll]').waitFor({ state: 'attached', timeout: 120_000 });
 
   const reviewsTab = page.getByRole('button', { name: /^리뷰$/ }).locator('visible=true').first();
   await reviewsTab.click();
   await page.waitForURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
 
-  const writeBtn = page.getByRole('button', { name: '작성하기' }).first();
+  const writeBtn = page
+    .getByRole('button', { name: /^(작성하기|작성|리뷰 작성하기)$/ })
+    .locator('visible=true')
+    .first();
   await writeBtn.waitFor({ state: 'visible', timeout: 30_000 });
   await writeBtn.click();
 
