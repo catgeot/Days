@@ -21,7 +21,6 @@ import {
   Search,
   Sparkles,
   Star,
-  Undo2,
   X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
@@ -407,6 +406,46 @@ function flapChipClass(active) {
   }`;
 }
 
+function parentRegionBackButtonClass() {
+  return 'inline-flex min-h-11 shrink-0 items-center border-0 bg-transparent px-1 text-xs font-semibold text-amber-900 underline-offset-2 hover:text-amber-950 hover:underline';
+}
+
+function parentRegionSideBackClass() {
+  return 'flex w-full min-h-11 items-center border-0 border-b border-stone-100 bg-transparent px-1 text-left text-[11px] font-semibold text-amber-900 hover:bg-amber-50/80 hover:text-amber-950';
+}
+
+function ParentRegionBackButton({ parentRegionLabel, onBack, layout = 'row' }) {
+  const { t } = useTranslation();
+  if (!parentRegionLabel) return null;
+  const label = t('korea.common.parentRegionBack', { label: parentRegionLabel });
+  const aria = t('korea.common.parentRegionBackAria', { label: parentRegionLabel });
+  if (layout === 'side') {
+    return (
+      <button
+        type="button"
+        onClick={onBack}
+        className={parentRegionSideBackClass()}
+        aria-label={aria}
+        title={t('korea.common.parentRegionList')}
+      >
+        <span className="truncate">{label}</span>
+      </button>
+    );
+  }
+  return (
+    <>
+      <button type="button" onClick={onBack} className={parentRegionBackButtonClass()} aria-label={aria}>
+        {label}
+      </button>
+      <span
+        role="separator"
+        aria-hidden="true"
+        className="mx-0.5 h-6 w-px shrink-0 self-center bg-stone-200"
+      />
+    </>
+  );
+}
+
 /**
  * 모바일 가로 칩 스크롤 — 하단 스크롤 트랙만(인지용 · 화살표 없음).
  * PC는 트랙 숨김.
@@ -554,17 +593,11 @@ function RelatedChipFlap({
         ariaLabel={t('korea.common.regionChips')}
       >
         {showParentUp && (
-          <button
-            type="button"
-            onClick={() => onSelectCity('all')}
-            className={chipClass(false)}
-            aria-label={t('korea.common.parentRegionAll', {
-              label: parentRegionLabel,
-            })}
-          >
-            <Undo2 size={12} aria-hidden="true" />
-            {parentRegionLabel}
-          </button>
+          <ParentRegionBackButton
+            parentRegionLabel={parentRegionLabel}
+            onBack={() => onSelectCity('all')}
+            layout="row"
+          />
         )}
         {childChips.map((c) => (
           <button
@@ -588,20 +621,11 @@ function RelatedChipFlap({
   return (
     <div className={shell} aria-label={t('korea.common.relatedChips')}>
       {showParentUp && (
-        <button
-          type="button"
-          onClick={() => onSelectCity('all')}
-          className={flapChipClass(false)}
-          aria-label={t('korea.common.parentRegionAll', {
-            label: parentRegionLabel,
-          })}
-          title={t('korea.common.parentRegionList')}
-        >
-          <span className="flex min-w-0 items-center gap-0.5 truncate">
-            <Undo2 size={11} className="shrink-0" aria-hidden="true" />
-            <span className="truncate">{parentRegionLabel}</span>
-          </span>
-        </button>
+        <ParentRegionBackButton
+          parentRegionLabel={parentRegionLabel}
+          onBack={() => onSelectCity('all')}
+          layout="side"
+        />
       )}
       {hasChild && (
         <div className="space-y-1">

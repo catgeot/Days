@@ -1750,6 +1750,7 @@ export default function FestivalDetailSheet({
   }
   if (imageUrls.length > 1) photoLatchRef.current.on = true;
   const hasPhotoTab = imageUrls.length > 1 || photoLatchRef.current.on;
+  const hasVideoTab = videos.length > 0;
   const showTabs = true;
   const nearbyPending = nearbyStatus === 'loading' || nearbyStatus === 'idle';
 
@@ -1758,11 +1759,13 @@ export default function FestivalDetailSheet({
       setActiveTab(TAB_INFO);
     } else if (activeTab === TAB_PHOTOS && !hasPhotoTab) {
       setActiveTab(TAB_INFO);
+    } else if (activeTab === TAB_READING && !hasVideoTab) {
+      setActiveTab(TAB_INFO);
     }
-  }, [activeTab, hasProgramTab, hasPhotoTab]);
+  }, [activeTab, hasProgramTab, hasPhotoTab, hasVideoTab]);
 
   useEffect(() => {
-    if (activeTab !== TAB_READING || !item?.contentId || !item?.title) return;
+    if (!item?.contentId || !item?.title) return;
     const id = String(item.contentId);
     if (videosLoadedFor === id) return;
 
@@ -1802,7 +1805,6 @@ export default function FestivalDetailSheet({
       cancelled = true;
     };
   }, [
-    activeTab,
     item?.contentId,
     item?.title,
     item?.eventStartDate,
@@ -2259,12 +2261,14 @@ export default function FestivalDetailSheet({
                   {t('korea.festival.detail.tabPhotos')}
                 </TabChip>
               )}
-              <TabChip
-                selected={activeTab === TAB_READING}
-                onClick={() => selectTab(TAB_READING)}
-              >
-                {t('korea.festival.detail.tabReading')}
-              </TabChip>
+              {hasVideoTab && (
+                <TabChip
+                  selected={activeTab === TAB_READING}
+                  onClick={() => selectTab(TAB_READING)}
+                >
+                  {t('korea.festival.detail.tabReading')}
+                </TabChip>
+              )}
             </div>
           )}
 

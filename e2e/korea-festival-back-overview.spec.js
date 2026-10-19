@@ -25,7 +25,7 @@ const FESTIVALS = [
 const SUB_TABS_WITH_BACK = [
   { pattern: /프로그램/, key: 'program' },
   { pattern: /^사진/, key: 'photos' },
-  { pattern: /읽을거리/, key: 'reading' },
+  { pattern: /영상/, key: 'reading' },
 ];
 
 async function shot(page, name) {
@@ -285,7 +285,7 @@ test.describe('festival back to overview — WebKit 390', () => {
         const programTab = dialog.getByRole('tab', { name: /프로그램/ });
         if (key === 'reading') {
           // Reading pane is capped at 10 videos; deep-scroll program first to satisfy the
-          // “scroll far past overview height” precondition, then exercise back from 읽을거리.
+          // “scroll far past overview height” precondition, then exercise back from 영상 tab.
           await programTab.click();
           await waitForProgramTabReady(dialog);
           await scrollPrimarySheetToBottom(dialog);
