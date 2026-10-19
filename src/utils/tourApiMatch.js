@@ -69,6 +69,23 @@ export function isDomesticKoreaLocationForTourApi(location) {
 }
 
 /**
+ * TourAPI 차단: 명시적 해외 국가 또는 한반도 밖 좌표만. 미지정 country/좌표는 차단하지 않음.
+ *
+ * @param {{ country?: string, country_en?: string, lat?: number, lng?: number } | null | undefined} location
+ * @returns {boolean}
+ */
+export function isExplicitlyOverseasForTourApi(location) {
+  if (!location || typeof location !== 'object') return false;
+  if (hasExplicitNonKoreaCountry(location)) return true;
+  const lat = Number(location.lat);
+  const lng = Number(location.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)) {
+    return !coordsInKorea(lat, lng);
+  }
+  return false;
+}
+
+/**
  * @param {Array<{ country?: string, country_en?: string, lat?: number, lng?: number } | null | undefined> | null | undefined} locations
  * @param {TourApiPlaceMapping | null | undefined} resolvedTourMapping
  * @returns {boolean}
@@ -77,9 +94,10 @@ export function shouldUseTourApiGalleryForPlace(locations, resolvedTourMapping) 
   const locs = (Array.isArray(locations) ? locations : [locations]).filter(
     (loc) => loc && typeof loc === 'object',
   );
-  if (locs.some(hasExplicitNonKoreaCountry)) return false;
+  if (locs.some(isExplicitlyOverseasForTourApi)) return false;
   if (locs.some(isDomesticKoreaLocationForTourApi)) return true;
-  if (resolvedTourMapping?.curated && locs.length === 0) return true;
+  if (resolvedTourMapping?.curated) return true;
+  if (locs.some(isDomesticKoreaLocation)) return true;
   return false;
 }
 

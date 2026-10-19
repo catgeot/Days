@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   hasExplicitNonKoreaCountry,
   isDomesticKoreaLocationForTourApi,
+  isExplicitlyOverseasForTourApi,
   resolveTourApiPlace,
   shouldUseTourApiGalleryForPlace,
 } from '../../src/utils/tourApiMatch.js';
@@ -74,4 +75,25 @@ test('domestic Jeju still enables TourAPI gallery path', () => {
   assert.equal(isDomesticKoreaLocationForTourApi(JEJU), true);
   const mapping = resolveTourApiPlace(JEJU);
   assert.equal(shouldUseTourApiGalleryForPlace([JEJU], mapping), true);
+});
+
+test('curated hub card without country keeps TourAPI (양구-style hub entry)', () => {
+  const yangguHub = { slug: 'yanggu', hubId: 'yanggu', name: '양구' };
+  const mapping = resolveTourApiPlace(yangguHub);
+  assert.equal(mapping?.curated, true);
+  assert.equal(isExplicitlyOverseasForTourApi(yangguHub), false);
+  assert.equal(shouldUseTourApiGalleryForPlace([yangguHub], mapping), true);
+});
+
+test('dubai with cached TourAPI risk stays off TourAPI gallery', () => {
+  const dubai = {
+    slug: 'dubai',
+    name: '두바이',
+    country: '아랍에미리트',
+    country_en: 'United Arab Emirates',
+    lat: 25.2048,
+    lng: 55.2708,
+  };
+  assert.equal(isExplicitlyOverseasForTourApi(dubai), true);
+  assert.equal(shouldUseTourApiGalleryForPlace([dubai], resolveTourApiPlace(dubai)), false);
 });
