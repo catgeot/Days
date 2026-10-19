@@ -98,7 +98,7 @@ export default function FestivalDateSheet({
   const weekShortcuts = useMemo(
     () => [
       { id: 0, weeksAhead: 0, label: t('korea.festival.dateSheetWeekThis') },
-      { id: 1, weeksAhead: 2, label: t('korea.festival.dateSheetWeekNext') },
+      { id: 1, weeksAhead: 1, label: t('korea.festival.dateSheetWeekNext') },
     ],
     [t],
   );

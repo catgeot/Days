@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays } from 'lucide-react';
 import { useLocale } from '../../i18n/LocaleProvider';
+import { localizedSocialPromoRegionPlaceLabel } from '../../i18n/koreaRegionLabels.js';
 import { festivalListDisplayTitleLines } from './festivalDisplayTitle.js';
 import { FestivalListThumbBox } from './festivalListThumbBox.jsx';
 import {
@@ -12,11 +13,12 @@ import { formatFestivalDetailDateRange } from './festivalDateFilter.js';
 
 export function SocialPromoNearLine({ card, onSelect }) {
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const item = card?.item;
   if (!item?.contentId) return null;
   const title = String(item.title || '').trim();
   const range = formatFestivalDetailDateRange(item.eventStartDate, item.eventEndDate);
-  const city = socialPromoPlaceLabel(item);
+  const city = localizedSocialPromoRegionPlaceLabel(locale, item);
   return (
     <button
       type="button"
@@ -92,6 +94,7 @@ function SocialPromoCard({ item, onSelect }) {
   const rowItem = normalizeFestivalItemImages(item);
   const titleLines = festivalListDisplayTitleLines(rowItem, locale);
   const range = formatFestivalDetailDateRange(item.eventStartDate, item.eventEndDate);
+  const regionPlace = localizedSocialPromoRegionPlaceLabel(locale, item);
 
   return (
     <button
@@ -123,6 +126,14 @@ function SocialPromoCard({ item, onSelect }) {
             {titleLines?.primary}
           </p>
         )}
+        {regionPlace ? (
+          <p
+            className="mt-0.5 text-[10px] font-semibold text-stone-500 break-keep"
+            data-social-promo-region=""
+          >
+            {regionPlace}
+          </p>
+        ) : null}
         {range ? (
           <p className="mt-0.5 flex items-center gap-1 text-[10px] font-bold text-amber-800">
             <CalendarDays size={10} className="shrink-0" aria-hidden="true" />

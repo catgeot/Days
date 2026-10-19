@@ -4,7 +4,7 @@ import {
   isFestivalEnded,
   todayYmdKst,
 } from './festivalDeepLinkItem.js';
-import { filterByRegion, extractSubregionLabels } from './festivalRegionTags.js';
+import { filterByRegion, extractSubregionLabels, sidoLabel } from './festivalRegionTags.js';
 import { resolveFestivalItemSidoCode } from './koreaAreaFilter.js';
 import { festivalLngLat } from './koreaFestivalCorridors.js';
 
@@ -264,6 +264,15 @@ export function socialPromoPlaceLabel(item) {
   const raw = String(labels[0] || '').trim();
   if (!raw) return '';
   return raw.replace(/(특별자치시|광역시|특별시|자치시|시|군|구)$/u, '') || raw;
+}
+
+/** Promo card region hint — 시도 chip label + 시·군 (e.g. 전남 함평, 경남 창원). */
+export function socialPromoRegionPlaceLabel(item) {
+  const areaCode = resolveFestivalItemSidoCode(item);
+  const sido = sidoLabel(areaCode);
+  const place = socialPromoPlaceLabel(item);
+  if (sido && place) return `${sido} ${place}`;
+  return place || sido || '';
 }
 
 /**

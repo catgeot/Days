@@ -368,13 +368,13 @@ test.describe('Korea festival date chips', () => {
       'false',
     );
     await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
-      '10.26\u201311.1',
+      '10.19\u201310.25',
     );
-    await expect(sheet.locator('[data-ymd="20261026"]')).toHaveAttribute(
+    await expect(sheet.locator('[data-ymd="20261019"]')).toHaveAttribute(
       'aria-pressed',
       'true',
     );
-    await expect(sheet.locator('[data-ymd="20261101"]')).toHaveAttribute(
+    await expect(sheet.locator('[data-ymd="20261025"]')).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -383,9 +383,9 @@ test.describe('Korea festival date chips', () => {
     await sheet.locator('[data-week-step="forward"]').click();
     await sheet.locator('[data-week-step="forward"]').click();
     await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
-      '2026.11.9\u201311.15',
+      '2026.11.2\u201311.8',
     );
-    await expect(sheet.locator('[data-ymd="20261109"]')).toBeInViewport();
+    await expect(sheet.locator('[data-ymd="20261102"]')).toBeInViewport();
     await expect(sheet.locator('[data-calendar-month="202611"]')).toBeInViewport();
 
     for (let i = 0; i < 6; i += 1) {
@@ -428,11 +428,11 @@ test.describe('Korea festival date chips', () => {
     await sheet.getByRole('button', { name: '이 기간 보기' }).click();
     await expect(dateChip).toContainText('날짜 선택');
     await expect(page.locator('[data-festival-list-meta]')).toContainText(
-      '10.26\u201311.1',
+      '10.19\u201310.25',
     );
     await dateChip.click();
     await expect(sheet.locator('[data-festival-date-range]')).toHaveText(
-      '10.26\u201311.1',
+      '10.19\u201310.25',
     );
     await expect(sheet.locator('[data-week-shortcut="1"]')).toHaveAttribute(
       'aria-pressed',

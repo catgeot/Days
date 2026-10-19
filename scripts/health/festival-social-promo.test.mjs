@@ -28,6 +28,7 @@ import {
   resolveSocialPromoPresentation,
   resolveSocialPromoRow,
   socialPromoPlaceLabel,
+  socialPromoRegionPlaceLabel,
   shouldShowSessionPinnedHomeRow,
   shouldShowSessionPinnedRow,
   shouldShowSocialPromoHomeRow,
@@ -332,6 +333,14 @@ test('promo row shows on every region chip; filterSocialPromoCardsByRegion still
   assert.equal(liveLike.show, true);
   assert.equal(liveLike.cards.length, 2);
   assert.equal(socialPromoPlaceLabel(GUKHYANG), '함평');
+  assert.equal(socialPromoRegionPlaceLabel(GUKHYANG), '전남 함평');
+  assert.equal(
+    socialPromoRegionPlaceLabel({
+      contentId: '637693',
+      addr1: '경상남도 창원시 마산합포구',
+    }),
+    '경남 창원',
+  );
 });
 
 test('promo strip is this month only; 내 주변 is one nearest line', () => {
@@ -538,6 +547,7 @@ test('hub wires session pin, promo row, and merge', () => {
     'utf8',
   );
   assert.match(promoRow, /data-social-promo-loading/);
+  assert.match(promoRow, /data-social-promo-region/);
   assert.match(promoRow, /flex-col/);
 });
 

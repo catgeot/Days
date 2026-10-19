@@ -261,18 +261,18 @@ test('date sheet week shortcuts — Monday anchor and Sunday edge (2026-10-19 / 
     startYmd: '20261019',
     endYmd: '20261025',
   });
-  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(2, '20261019'), {
-    startYmd: '20261102',
-    endYmd: '20261108',
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(1, '20261019'), {
+    startYmd: '20261026',
+    endYmd: '20261101',
   });
 
   assert.deepEqual(festivalDateSheetWeekRangeFromYmd(0, '20261025'), {
     startYmd: '20261025',
     endYmd: '20261025',
   });
-  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(2, '20261025'), {
-    startYmd: '20261102',
-    endYmd: '20261108',
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(1, '20261025'), {
+    startYmd: '20261026',
+    endYmd: '20261101',
   });
 });
 
