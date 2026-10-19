@@ -144,6 +144,7 @@ import {
   markFestivalSheetExternalReturn,
 } from './lib/festivalHomepageProtocol.js';
 import { useFestivalSheetInteractionRestore } from './useFestivalSheetInteractionRestore.js';
+import { runFestivalSheetInteractionRestore } from './lib/festivalSheetInteractionRestore.js';
 
 const FESTIVAL_SHEET_OVERLAY_WRAP =
   'fixed inset-0 z-40 flex items-end md:items-stretch justify-center p-0 md:py-2 md:px-3 lg:px-4 pointer-events-none';
@@ -1247,6 +1248,23 @@ export default function FestivalDetailSheet({
     sheetScrollRef,
     onResetUi: resetFestivalSheetOverlayUi,
   });
+
+  const hadNestedSpotRef = useRef(false);
+  useEffect(() => {
+    const nestedOpen = Boolean(selectedNearby || selectedScenic || selectedCourse);
+    if (nestedOpen) {
+      hadNestedSpotRef.current = true;
+      return;
+    }
+    if (!hadNestedSpotRef.current || !item?.contentId) return;
+    hadNestedSpotRef.current = false;
+    runFestivalSheetInteractionRestore({
+      contentId: String(item.contentId),
+      sheetScrollRef,
+      onResetUi: resetFestivalSheetOverlayUi,
+      forceFull: false,
+    });
+  }, [selectedNearby, selectedScenic, selectedCourse, item?.contentId, resetFestivalSheetOverlayUi]);
 
   const openLightbox = useCallback(() => {
     if (!imageUrls[activeImage] && !imageUrls[0]) return;

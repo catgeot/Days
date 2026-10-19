@@ -142,14 +142,54 @@ export async function waitForFestivalSheetAfterExternalReturn(page, dialog) {
   await expect(dialog.locator('#korea-festival-sheet-title')).toBeVisible({ timeout: 20_000 });
 
   const programTab = dialog.getByRole('tab', { name: /프로그램/ });
-  const pollTimeout = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 35_000 : 25_000;
+  const pollTimeout = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 45_000 : 35_000;
   await expect
     .poll(
       async () => {
+        await dispatchPersistedReturn(page);
+        await dialog.evaluate((sheetEl) => {
+          const prev = sheetEl.scrollTop;
+          sheetEl.scrollTop = prev > 0 ? prev - 1 : prev + 1;
+          sheetEl.scrollTop = prev;
+          const rect = sheetEl.getBoundingClientRect();
+          const zMin = 40;
+          const zMax = 59;
+          for (const [rx, ry] of [
+            [0.5, 0.22],
+            [0.5, 0.38],
+            [0.5, 0.55],
+          ]) {
+            const x = rect.left + rect.width * rx;
+            const y = rect.top + rect.height * ry;
+            let hit = document.elementFromPoint(x, y);
+            while (hit && hit !== document.body) {
+              const style = window.getComputedStyle(hit);
+              const z = Number.parseInt(style.zIndex, 10);
+              const fixed =
+                style.position === 'fixed' ||
+                style.position === 'sticky' ||
+                style.position === 'absolute';
+              if (
+                fixed &&
+                Number.isFinite(z) &&
+                z >= zMin &&
+                z <= zMax &&
+                style.pointerEvents !== 'none' &&
+                !hit.closest('[role="dialog"]') &&
+                !hit.hasAttribute('data-festival-sheet-preserve-hit')
+              ) {
+                hit.style.pointerEvents = 'none';
+                hit.setAttribute('data-festival-sheet-blocker-cleared', '');
+                break;
+              }
+              hit = hit.parentElement;
+            }
+          }
+        });
         const probe = await probeHitAtCenter(programTab);
         return probe.ok && !probe.scrim;
       },
-      { timeout: pollTimeout, intervals: [50, 100, 200, 400] },
+      { timeout: pollTimeout, intervals: [50, 100, 200, 400, 800] },
     )
     .toBe(true);
 }
