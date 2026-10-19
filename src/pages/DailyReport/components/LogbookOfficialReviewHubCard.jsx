@@ -37,6 +37,7 @@ const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
   const [expanded, setExpanded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [brokenThumbIds, setBrokenThumbIds] = useState(() => new Set());
   const { enabled, rows, isLoading, loadFailed, totalCount } = useLogbookOfficialReviewHub();
 
   const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
@@ -83,7 +84,8 @@ const LogbookOfficialReviewHubCard = () => {
             {visibleRows.map((review) => {
               const slug = String(review.place_slug || '').trim();
               const href = slug ? `/place/${slug}/reviews` : '#';
-              const thumb = editorialReviewThumbSrc(review);
+              const thumb =
+                !brokenThumbIds.has(review.id) ? editorialReviewThumbSrc(review) : null;
               const preview = editorialReviewListPreview(review);
               const placeName = String(review.place_name || '').trim();
               const dateLabel = formatLogbookDisplayDate(review.created_at);
@@ -94,18 +96,27 @@ const LogbookOfficialReviewHubCard = () => {
                     to={href}
                     className="flex gap-3 py-3 px-1 rounded-lg hover:bg-gray-50 transition-colors"
                     data-testid="logbook-official-review-hub-item"
+                    data-hub-place-slug={slug || undefined}
+                    data-review-id={review.id}
                   >
                     {thumb ? (
                       <img
                         src={thumb}
                         alt=""
                         className="h-14 w-14 shrink-0 rounded-lg object-cover bg-gray-100"
-                        loading="lazy"
+                        loading="eager"
                         decoding="async"
+                        fetchPriority="low"
+                        onError={() => {
+                          setBrokenThumbIds((prev) => {
+                            if (prev.has(review.id)) return prev;
+                            const next = new Set(prev);
+                            next.add(review.id);
+                            return next;
+                          });
+                        }}
                       />
-                    ) : (
-                      <div className="h-14 w-14 shrink-0 rounded-lg bg-gray-100" aria-hidden />
-                    )}
+                    ) : null}
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-1">
                         <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700">
