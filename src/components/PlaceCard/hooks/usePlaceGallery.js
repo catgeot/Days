@@ -51,6 +51,7 @@ import {
   isStockOnlyGallery,
   isTourApiGalleryImageRecord,
   shouldPersistKoreanGalleryToPlaceStats,
+  shouldRunTourApiLiveGalleryFetch,
 } from '../../../utils/galleryStockRelevance.js';
 import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
@@ -69,8 +70,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.25 — 국내 스톡 slug/alt 관련성 · 서브스팟 stock-only place_stats 금지 */
-const CACHE_VERSION = 'v1.25';
+/** v1.26 — 국내 스톡 전체 지명 토큰 · TourAPI homonym gate · 로딩 오버레이 */
+const CACHE_VERSION = 'v1.26';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -679,14 +680,38 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         : typeof locationSource === 'object' && locationSource
           ? locationSource
           : null;
+    const parentPlaceTokens = [];
+    const hubIdToken = String(
+      (typeof tourPlaceWithCategory === 'object' && tourPlaceWithCategory?.hubId) ||
+        (typeof locationSource === 'object' && locationSource?.hubId) ||
+        '',
+    ).trim();
+    if (hubIdToken) parentPlaceTokens.push(hubIdToken);
+    const parentCity = String(
+      (typeof targetSpot === 'object' && targetSpot?.parentCity) ||
+        (typeof locationSource === 'object' && locationSource?.parentCity) ||
+        '',
+    ).trim();
+    if (parentCity) parentPlaceTokens.push(parentCity);
+
     const galleryStockCtx = {
       applyKoreanStockPolicy: allowTourApiGallery,
       koreanName,
-      primaryQuery,
       englishName:
         typeof targetSpot === 'object' && targetSpot ? pickLatinPlaceName(targetSpot) : '',
+      parentPlaceTokens,
     };
     galleryStockCtx.relevanceTokens = buildGalleryStockRelevanceTokens(galleryStockCtx);
+    const tourApiLiveCtx = {
+      hasOfficialTourContentId,
+      koreanName,
+      englishName: galleryStockCtx.englishName,
+    };
+    const runTourApiLive = shouldRunTourApiLiveGalleryFetch(
+      tourMapping,
+      galleryStockLocation,
+      tourApiLiveCtx,
+    );
     const applyKoreaStockFilter = (images) =>
       filterGalleryStockForKoreaPolicy(images, galleryStockCtx);
 
@@ -800,7 +825,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         const candidate =
           mode === 'merge_keep_hero' ? allImagesRef.current : images;
         if (
-          !shouldPersistKoreanGalleryToPlaceStats(candidate, galleryStockLocation)
+          !shouldPersistKoreanGalleryToPlaceStats(candidate, galleryStockLocation, galleryStockCtx)
         ) {
           return;
         }
@@ -1101,7 +1126,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
       // 3) TourAPI LIVE — 국내 공식 contentId 또는 curated hub photoKeyword (DB miss)
       // Unsplash 「Yanggu」오매칭이 soft(스톡0)보다 먼저 막히지 않게 curated는 여기 우선.
-      if (allowTourApiGallery && tourMapping?.photoKeyword) {
+      if (allowTourApiGallery && tourMapping?.photoKeyword && runTourApiLive) {
         try {
           const tourImages = await fetchTourApiGallery({
             photoKeyword: tourMapping.photoKeyword,
@@ -1137,6 +1162,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         } catch (tourErr) {
           console.warn('⚠️ TourAPI gallery miss — fallback Unsplash/Pexels', tourErr);
         }
+      } else if (allowTourApiGallery && tourMapping?.photoKeyword && !runTourApiLive) {
+        console.warn(
+          '⚠️ TourAPI LIVE skipped — photoKeyword lacks full place name (homonym guard)',
+        );
       }
     } else {
       // 더보기: TourAPI page2는 중복·공허한 경우가 많아 건너뛰고 Unsplash/Pexels만 append
@@ -1148,6 +1177,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
     try {
       let results = [];
+      let stockRawBeforeKoreaFilter = 0;
 
       if (primaryQuery && ACCESS_KEY) {
         results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, unsplashPageRef.current);
@@ -1202,6 +1232,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
       }
 
+      stockRawBeforeKoreaFilter = results.length;
       results = applyKoreaStockFilter(results);
 
       if (isStale()) return;
@@ -1211,7 +1242,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         !forceRefresh &&
         results.length === 0 &&
         allowTourApiGallery &&
-        !hasOfficialTourContentId &&
+        runTourApiLive &&
         tourMapping?.photoKeyword
       ) {
         try {
@@ -1315,7 +1346,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
         if (!isStale()) {
           processAndSetImages([]);
-          setLoadFailed(true);
+          const koreaStockFilteredEmpty =
+            allowTourApiGallery && stockRawBeforeKoreaFilter > 0;
+          setLoadFailed(!koreaStockFilteredEmpty);
         }
       }
     } catch (error) {

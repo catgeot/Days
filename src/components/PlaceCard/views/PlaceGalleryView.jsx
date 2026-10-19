@@ -392,7 +392,9 @@ const PlaceGalleryView = React.memo(({
       paintTarget > 0 &&
       paintedCount < paintTarget,
   );
-  const showLoadingChrome = Boolean(showInitialSkeleton || isPaintPending);
+  const showLoadingChrome = Boolean(
+    showInitialSkeleton || (isPaintPending && !hasImages),
+  );
   const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton && !galleryAtMax);
   const gallerySourcesAttribution = useMemo(
     () =>
