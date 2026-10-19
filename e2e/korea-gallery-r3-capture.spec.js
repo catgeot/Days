@@ -101,17 +101,20 @@ async function auditGrid(page) {
           rect.top < viewBottom - 2;
         if (!visible) return null;
         const img = tile.querySelector('img[alt^="place-img"]');
+        const hasPulse = Boolean(tile.querySelector('.animate-pulse'));
         const nw = img?.naturalWidth ?? 0;
         const src = (img?.currentSrc || img?.src || '').trim();
         const style = img ? getComputedStyle(img) : null;
         const opacity = style ? Number(style.opacity) : 0;
-        const painted = nw > 0 && opacity > 0.05;
+        const painted = nw > 0 && opacity > 0.05 && !hasPulse;
         const imgHidden = img ? style.display === 'none' : false;
         const broken = Boolean(
           imgHidden || (img && img.complete && nw === 0 && src.length > 0),
         );
         const empty = Boolean(
-          !painted && !broken && (!img || nw === 0 || opacity <= 0.05),
+          !painted &&
+            !broken &&
+            (hasPulse || !img || nw === 0 || opacity <= 0.05),
         );
         return { painted, broken, empty, src };
       })
