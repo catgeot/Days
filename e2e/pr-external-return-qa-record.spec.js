@@ -143,15 +143,7 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
 
       const sheetAfterPopup = festivalSheetDialog(page);
       await expect(sheetAfterPopup).toBeVisible({ timeout: 60_000 });
-      await expect
-        .poll(
-          async () => {
-            await dispatchPersistedReturn(page);
-            return await nearbyPlaceModal(page).isVisible().catch(() => false);
-          },
-          { timeout: 90_000, intervals: [100, 250, 500, 1000] },
-        )
-        .toBe(true);
+      await dispatchPersistedReturn(page);
 
       let modalForNearbyProbe = nearbyPlaceModal(page);
       if (!(await modalForNearbyProbe.isVisible().catch(() => false))) {
@@ -161,7 +153,7 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
           festival.nearby.cardMatch,
         );
       }
-      await expect(modalForNearbyProbe).toBeVisible({ timeout: 30_000 });
+      await expect(modalForNearbyProbe).toBeVisible({ timeout: 90_000 });
 
       const nearbyAfter = await probeNearbyPlaceControlMatrix(
         page,

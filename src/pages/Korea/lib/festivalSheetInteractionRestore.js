@@ -109,24 +109,33 @@ export function nudgeFestivalSheetScrollAndRepaint(sheetEl) {
  *   forceFull?: boolean,
  * }} opts
  */
+function themeSpotDetailModalOpen() {
+  if (typeof document === 'undefined') return false;
+  return Boolean(
+    document.querySelector('[aria-labelledby="korea-theme-spot-modal-title"]'),
+  );
+}
+
 export function runFestivalSheetInteractionRestore(opts) {
   const { contentId, sheetScrollRef, onResetUi, forceFull = false } = opts;
   const fromSession = consumeFestivalSheetExternalReturn(contentId);
   const full = forceFull || fromSession;
 
   const sheet = sheetScrollRef.current;
+  const nestedSpotOpen = themeSpotDetailModalOpen();
 
   if (full) {
-    onResetUi();
-    resetIosZoomAfterInput();
-    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
+    if (!nestedSpotOpen) {
+      onResetUi();
+    } else {
+      resetIosZoomAfterInput();
+      if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      if (sheet) clearThemeSpotChromePointerBlockers(sheet);
     }
     if (typeof document !== 'undefined') {
-      const themeSpotOpen = document.querySelector(
-        '[aria-labelledby="korea-theme-spot-modal-title"]',
-      );
-      if (!themeSpotOpen && document.body.style.overflow === 'hidden') {
+      if (!nestedSpotOpen && document.body.style.overflow === 'hidden') {
         document.body.style.overflow = '';
       }
     }

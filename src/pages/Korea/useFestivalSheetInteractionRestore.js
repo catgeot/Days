@@ -37,11 +37,11 @@ export function useFestivalSheetInteractionRestore({
     };
 
     const onVisibility = () => {
-      if (document.visibilityState === 'visible') restore(true);
+      if (document.visibilityState === 'visible') restore(false);
     };
 
     const onFocus = () => {
-      restore(true);
+      restore(false);
     };
 
     window.addEventListener('pageshow', onPageShow);
