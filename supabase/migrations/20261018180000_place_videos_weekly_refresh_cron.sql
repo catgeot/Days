@@ -6,6 +6,9 @@
 --   1. Deploy supabase/functions/refresh-place-videos with secrets:
 --        YOUTUBE_API_KEY (or VITE_YOUTUBE_API_KEY), REFRESH_VIDEOS_TOKEN,
 --        SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+--        Do NOT set REFRESH_VIDEOS_APPLY (default report-only; no DB writes).
+--        After ~4 weekly report runs, enable writes: REFRESH_VIDEOS_APPLY=on
+--        Optional: REFRESH_VIDEOS_MAX_REMOVE_PCT (default 5)
 --   2. Store the same REFRESH_VIDEOS_TOKEN in Vault / cron caller (see docs/ops/youtube-weekly-refresh.md)
 --   3. Enable extensions on the project (if not already):
 --

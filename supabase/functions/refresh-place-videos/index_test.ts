@@ -139,7 +139,7 @@ Deno.test("dry_run does not write; uses videos.list not search", async () => {
   assert(lastYtPath.endsWith("/videos"), "videos.list only");
 });
 
-Deno.test("409 removal_guard blocks writes", async () => {
+Deno.test("409 cap_exceeded blocks writes", async () => {
   reset();
   const old = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   store.set("a", {
@@ -157,12 +157,63 @@ Deno.test("409 removal_guard blocks writes", async () => {
   const res = await call("");
   assertEquals(res.status, 409);
   const body = await res.json();
-  assertEquals(body.error, "removal_guard");
+  assertEquals(body.error, "cap_exceeded");
   assertEquals(store.get("a")?.videos.length, 5);
+  assert(Array.isArray(body.candidates));
 });
 
-Deno.test("empty row only bumps last_updated on success", async () => {
+Deno.test("default report-only (no APPLY) does not write without dry_run query", async () => {
   reset();
+  Deno.env.delete("REFRESH_VIDEOS_APPLY");
+  const old = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  store.set("tokyo", {
+    place_id: "tokyo",
+    videos: [{ id: "v1", title: "old" }],
+    last_updated: old,
+  });
+  ytItems = {
+    v1: {
+      id: "v1",
+      status: { privacyStatus: "public", embeddable: true },
+      snippet: { title: "fresh", channelTitle: "ch" },
+    },
+  };
+  const res = await call("");
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.report_only, true);
+  assertEquals(body.apply, false);
+  assertEquals(store.get("tokyo")?.videos, [{ id: "v1", title: "old" }]);
+});
+
+Deno.test("apply path writes when REFRESH_VIDEOS_APPLY=on", async () => {
+  reset();
+  Deno.env.set("REFRESH_VIDEOS_APPLY", "on");
+  const old = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  store.set("seoul", {
+    place_id: "seoul",
+    videos: [{ id: "v1", title: "old" }],
+    last_updated: old,
+  });
+  ytItems = {
+    v1: {
+      id: "v1",
+      status: { privacyStatus: "public", embeddable: true },
+      snippet: { title: "fresh", channelTitle: "ch" },
+    },
+  };
+  const res = await call("");
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.apply, true);
+  assertEquals(body.dry_run, false);
+  assertEquals(store.get("seoul")?.videos[0]?.title, "fresh");
+  Deno.env.delete("REFRESH_VIDEOS_APPLY");
+});
+
+Deno.test("empty row only bumps last_updated when apply on", async () => {
+  reset();
+  Deno.env.set("REFRESH_VIDEOS_APPLY", "on");
   const old = "2020-01-01T00:00:00.000Z";
   store.set("empty-cache", {
     place_id: "empty-cache",
@@ -175,6 +226,7 @@ Deno.test("empty row only bumps last_updated on success", async () => {
   const row = store.get("empty-cache")!;
   assertEquals(row.videos, []);
   assert(row.last_updated > old);
+  Deno.env.delete("REFRESH_VIDEOS_APPLY");
 });
 
 Deno.test("shared classification unit sanity", () => {
@@ -184,5 +236,5 @@ Deno.test("shared classification unit sanity", () => {
     snippet: { title: "a", channelTitle: "b" },
   });
   assert(v.keep === true);
-  assertEquals(exceedsRemovalGuard(5, 2), true);
+  assertEquals(exceedsRemovalGuard(20, 2, 0.05), true);
 });

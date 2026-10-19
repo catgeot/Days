@@ -3,7 +3,21 @@
 export const STALE_DAYS = 23;
 export const STALE_MS = STALE_DAYS * 24 * 60 * 60 * 1000;
 export const YT_VIDEOS_LIST_BATCH = 50;
-export const REMOVAL_GUARD_RATIO = 0.2;
+export const DEFAULT_MAX_REMOVE_PCT = 5;
+
+/** @param {string | undefined} raw @param {number} [fallbackPct] */
+export function parseMaxRemovePct(raw, fallbackPct = DEFAULT_MAX_REMOVE_PCT) {
+  const s = (raw ?? "").trim();
+  if (!s) return fallbackPct;
+  const n = Number(s);
+  if (!Number.isFinite(n) || n < 0) return fallbackPct;
+  return n;
+}
+
+export function maxRemoveRatioFromPct(pct) {
+  const p = parseMaxRemovePct(String(pct), DEFAULT_MAX_REMOVE_PCT);
+  return p / 100;
+}
 
 const HTML_ENTITY_NAMED = {
   amp: "&",
@@ -99,6 +113,7 @@ export function classifyYoutubeListItem(item) {
 export function refreshVideosForPlace(cachedVideos, ytById) {
   const list = Array.isArray(cachedVideos) ? cachedVideos : [];
   const videos = [];
+  const removals = [];
   let examined = 0;
   let removed = 0;
   let titleUpdates = 0;
@@ -108,16 +123,19 @@ export function refreshVideosForPlace(cachedVideos, ytById) {
     const id = videoIdFromCached(entry);
     if (!id) {
       removed += 1;
+      removals.push({ videoId: "", reason: "invalid_id" });
       continue;
     }
     const ytItem = ytById.get(id);
     if (!ytItem) {
       removed += 1;
+      removals.push({ videoId: id, reason: "missing" });
       continue;
     }
     const verdict = classifyYoutubeListItem(ytItem);
     if (!verdict.keep) {
       removed += 1;
+      removals.push({ videoId: id, reason: verdict.reason });
       continue;
     }
     const next = typeof entry === "object" && entry !== null
@@ -130,19 +148,20 @@ export function refreshVideosForPlace(cachedVideos, ytById) {
     videos.push(next);
   }
 
-  return { videos, examined, removed, titleUpdates, kept: videos.length };
+  return { videos, examined, removed, titleUpdates, kept: videos.length, removals };
 }
 
-export function exceedsRemovalGuard(examined, removed) {
+export function exceedsRemovalGuard(examined, removed, maxRatio = maxRemoveRatioFromPct(DEFAULT_MAX_REMOVE_PCT)) {
   if (!Number.isFinite(examined) || examined <= 0) return false;
   if (!Number.isFinite(removed) || removed < 0) return false;
-  return removed / examined > REMOVAL_GUARD_RATIO;
+  const cap = Number.isFinite(maxRatio) && maxRatio >= 0 ? maxRatio : maxRemoveRatioFromPct(DEFAULT_MAX_REMOVE_PCT);
+  return removed / examined > cap;
 }
 
 /**
  * @param {Array<{ examined: number, removed: number, places: number, emptyPlace: boolean }>} parts
  */
-export function summarizeRefreshRun(parts) {
+export function summarizeRefreshRun(parts, maxRatio = maxRemoveRatioFromPct(DEFAULT_MAX_REMOVE_PCT)) {
   let places = 0;
   let placesWithVideos = 0;
   let examined = 0;
@@ -167,6 +186,7 @@ export function summarizeRefreshRun(parts) {
     removed,
     titleUpdates,
     removalRate: examined > 0 ? removed / examined : 0,
-    guardTriggered: exceedsRemovalGuard(examined, removed),
+    guardTriggered: exceedsRemovalGuard(examined, removed, maxRatio),
+    maxRemovePct: maxRatio * 100,
   };
 }

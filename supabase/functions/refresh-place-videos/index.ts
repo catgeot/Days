@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   chunkVideoIds,
+  parseMaxRemovePct,
+  maxRemoveRatioFromPct,
   refreshVideosForPlace,
   staleCutoffIso,
   summarizeRefreshRun,
@@ -24,6 +26,7 @@ type RunPart = {
   titleUpdates: number;
   emptyPlace: boolean;
   videos: unknown[];
+  removals: Array<{ videoId: string; reason: string }>;
 };
 
 function json(body: Record<string, unknown>, status: number): Response {
@@ -42,6 +45,14 @@ function tokenAuthorized(req: Request): boolean {
 
 function youtubeApiKey(): string {
   return (Deno.env.get("YOUTUBE_API_KEY") ?? Deno.env.get("VITE_YOUTUBE_API_KEY") ?? "").trim();
+}
+
+function refreshVideosApplyEnabled(): boolean {
+  return (Deno.env.get("REFRESH_VIDEOS_APPLY") ?? "").trim().toLowerCase() === "on";
+}
+
+function maxRemoveRatio(): number {
+  return maxRemoveRatioFromPct(parseMaxRemovePct(Deno.env.get("REFRESH_VIDEOS_MAX_REMOVE_PCT")));
 }
 
 async function fetchVideosListBatch(
@@ -111,7 +122,12 @@ serve(async (req) => {
   }
 
   const url = new URL(req.url);
-  const dryRun = url.searchParams.get("dry_run") === "1";
+  const dryRunQuery = url.searchParams.get("dry_run") === "1";
+  const applyEnabled = refreshVideosApplyEnabled();
+  const dryRun = dryRunQuery || !applyEnabled;
+  const reportOnly = !applyEnabled;
+  const maxRatio = maxRemoveRatio();
+  const maxRemovePct = maxRatio * 100;
 
   const apiKey = youtubeApiKey();
   if (!apiKey) {
@@ -164,27 +180,44 @@ serve(async (req) => {
       titleUpdates: refreshed.titleUpdates,
       emptyPlace,
       videos: refreshed.videos,
+      removals: refreshed.removals,
     });
   }
 
-  const summary = summarizeRefreshRun(parts);
+  const summary = summarizeRefreshRun(parts, maxRatio);
+  const candidates = parts.flatMap((p) =>
+    p.removals.map((r) => ({
+      place_id: p.place_id,
+      video_id: r.videoId,
+      reason: r.reason,
+    })),
+  );
+
   if (summary.guardTriggered) {
-    return json({
+    const report = {
       success: false,
-      error: "removal_guard",
+      error: "cap_exceeded",
       dry_run: dryRun,
+      report_only: reportOnly,
+      apply: applyEnabled && !dryRunQuery,
       cutoff: cutoffIso,
       summary,
-      message: `Would remove ${summary.removed} of ${summary.examined} cached videos (${(summary.removalRate * 100).toFixed(1)}%), above ${20}% cap — no rows written`,
-    }, 409);
+      candidates,
+      message: `Would remove ${summary.removed} of ${summary.examined} cached videos (${(summary.removalRate * 100).toFixed(1)}%), above ${maxRemovePct}% cap — no rows written`,
+    };
+    console.log(JSON.stringify({ event: "refresh_place_videos_cap_exceeded", ...report }));
+    return json(report, 409);
   }
 
   if (dryRun) {
-    return json({
+    const report = {
       success: true,
       dry_run: true,
+      report_only: reportOnly,
+      apply: false,
       cutoff: cutoffIso,
       summary,
+      candidates,
       places: parts.map((p) => ({
         place_id: p.place_id,
         examined: p.examined,
@@ -193,7 +226,16 @@ serve(async (req) => {
         titleUpdates: p.titleUpdates,
         emptyPlace: p.emptyPlace,
       })),
-    }, 200);
+    };
+    console.log(JSON.stringify({
+      event: "refresh_place_videos_report",
+      report_only: reportOnly,
+      examined: summary.examined,
+      removed: summary.removed,
+      removal_pct: summary.examined > 0 ? (summary.removalRate * 100).toFixed(2) : "0",
+      candidate_count: candidates.length,
+    }));
+    return json(report, 200);
   }
 
   let updated = 0;
@@ -220,8 +262,11 @@ serve(async (req) => {
   return json({
     success: true,
     dry_run: false,
+    report_only: false,
+    apply: true,
     cutoff: cutoffIso,
     summary,
+    candidates,
     updated,
   }, 200);
 });

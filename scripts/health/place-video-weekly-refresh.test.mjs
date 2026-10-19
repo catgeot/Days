@@ -11,7 +11,9 @@ const {
   classifyYoutubeListItem,
   exceedsRemovalGuard,
   refreshVideosForPlace,
-  REMOVAL_GUARD_RATIO,
+  DEFAULT_MAX_REMOVE_PCT,
+  maxRemoveRatioFromPct,
+  parseMaxRemovePct,
   chunkVideoIds,
   videoIdFromCached,
 } = await import(logicUrl);
@@ -56,11 +58,23 @@ test('refreshVideosForPlace drops missing API rows and refreshes titles', () => 
   assert.equal(out.videos[0].ai_context.x, 1);
 });
 
-test('exceedsRemovalGuard uses strict 20% threshold', () => {
-  assert.equal(exceedsRemovalGuard(10, 2), false);
-  assert.equal(exceedsRemovalGuard(10, 3), true);
-  assert.equal(exceedsRemovalGuard(0, 5), false);
-  assert.equal(REMOVAL_GUARD_RATIO, 0.2);
+test('exceedsRemovalGuard uses strict max-remove pct threshold (default 5%)', () => {
+  const cap = maxRemoveRatioFromPct(DEFAULT_MAX_REMOVE_PCT);
+  assert.equal(exceedsRemovalGuard(20, 1, cap), false);
+  assert.equal(exceedsRemovalGuard(20, 2, cap), true);
+  assert.equal(exceedsRemovalGuard(0, 5, cap), false);
+  assert.equal(DEFAULT_MAX_REMOVE_PCT, 5);
+  assert.equal(parseMaxRemovePct(undefined), 5);
+  assert.equal(parseMaxRemovePct('10'), 10);
+});
+
+test('refreshVideosForPlace records removal candidates with reasons', () => {
+  const cached = [{ id: 'gone' }, { id: 'priv', title: 'y' }];
+  const map = new Map([['priv', ytItem('priv', { privacy: 'private' })]]);
+  const out = refreshVideosForPlace(cached, map);
+  assert.equal(out.removals.length, 2);
+  assert.equal(out.removals[0].reason, 'missing');
+  assert.equal(out.removals[1].reason, 'privacy:private');
 });
 
 test('chunkVideoIds batches by 50', () => {

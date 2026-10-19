@@ -13,8 +13,10 @@ Edge function: `supabase/functions/refresh-place-videos`
 | Drop | Missing from API, non-`public`, or `embeddable === false` |
 | Update | Refresh `title` / `channelTitle`; set `last_updated = now()` |
 | Empty cache | Rows with **zero** videos are kept; only `last_updated` is bumped |
-| Safety | If removals would exceed **20%** of examined video entries, **no writes** and HTTP **409** `removal_guard` |
-| Dry run | `?dry_run=1` — compute summary, no DB updates |
+| Report-only (default) | **`REFRESH_VIDEOS_APPLY` unset** — same as dry run: candidates report, **no DB writes**. Weekly cron should stay in this mode for the first ~4 runs. |
+| Apply | Set **`REFRESH_VIDEOS_APPLY=on`** on the edge function to allow writes (still blocked by `?dry_run=1`). |
+| Safety cap | If removals would exceed **`REFRESH_VIDEOS_MAX_REMOVE_PCT`** (default **5**) of examined video entries, **no writes** and HTTP **409** `cap_exceeded` |
+| Dry run | `?dry_run=1` — compute summary + removal candidates, no DB updates (even when apply is on) |
 
 ## Auth
 
@@ -34,6 +36,8 @@ Set `REFRESH_VIDEOS_TOKEN` on the edge function (generate a long random string).
 |--------|---------|
 | `YOUTUBE_API_KEY` | Same key as `fetch-place-videos` (falls back to `VITE_YOUTUBE_API_KEY`) |
 | `REFRESH_VIDEOS_TOKEN` | Shared cron/manual auth header |
+| `REFRESH_VIDEOS_APPLY` | Set to `on` to allow DB writes; **omit for report-only** (recommended for cron until ops review reports) |
+| `REFRESH_VIDEOS_MAX_REMOVE_PCT` | Max share of examined videos removable in one run (default **5**); exceed → `cap_exceeded`, no writes |
 | `SUPABASE_URL` | Service client |
 | `SUPABASE_SERVICE_ROLE_KEY` | Read/update `place_videos` |
 
@@ -54,7 +58,14 @@ curl -sS "https://<PROJECT_REF>.supabase.co/functions/v1/refresh-place-videos?dr
   -H "x-refresh-videos-token: <REFRESH_VIDEOS_TOKEN>"
 ```
 
-Live run:
+Report-only (default — no `REFRESH_VIDEOS_APPLY`):
+
+```bash
+curl -sS -X POST "https://<PROJECT_REF>.supabase.co/functions/v1/refresh-place-videos" \
+  -H "x-refresh-videos-token: <REFRESH_VIDEOS_TOKEN>"
+```
+
+Live apply (after `npx supabase secrets set REFRESH_VIDEOS_APPLY=on`):
 
 ```bash
 curl -sS -X POST "https://<PROJECT_REF>.supabase.co/functions/v1/refresh-place-videos" \
