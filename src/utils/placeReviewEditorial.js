@@ -4,6 +4,18 @@ import { stripReviewInlineMarkdown } from './reviewInlineMarkdown.js';
 const BADGE_PREFIX = 'GATEO 리뷰어 · ';
 const VISIT_STORY_TITLE_MAX = 40;
 
+/** Short persona label for compare/sort (strips display prefix from DB values). */
+export function normalizePersonaLabel(personaLabel) {
+  let label = (personaLabel || '').trim();
+  if (!label) return '';
+  if (label.startsWith(BADGE_PREFIX)) {
+    label = label.slice(BADGE_PREFIX.length).trim();
+  } else if (label.startsWith('GATEO 리뷰어')) {
+    label = label.slice('GATEO 리뷰어'.length).replace(/^[·\s]+/, '').trim();
+  }
+  return label;
+}
+
 /**
  * Short label for «다녀온 이야기» rows (place_reviews has no title column).
  * @param {{ content?: string, content_blocks?: unknown, is_editorial?: boolean }} review
@@ -43,14 +55,6 @@ export function isUserReviewForStats(review) {
 }
 
 export function formatGateoReviewerBadge(personaLabel) {
-  let label = (personaLabel || '').trim();
-  if (!label) {
-    return 'GATEO 리뷰어';
-  }
-  if (label.startsWith(BADGE_PREFIX)) {
-    label = label.slice(BADGE_PREFIX.length).trim();
-  } else if (label.startsWith('GATEO 리뷰어')) {
-    label = label.slice('GATEO 리뷰어'.length).replace(/^[·\s]+/, '').trim();
-  }
+  const label = normalizePersonaLabel(personaLabel);
   return label ? `${BADGE_PREFIX}${label}` : 'GATEO 리뷰어';
 }

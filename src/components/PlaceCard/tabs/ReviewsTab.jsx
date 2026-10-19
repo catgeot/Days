@@ -291,7 +291,10 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
   };
 
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+    <div
+      className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow"
+      data-review-id={review.id}
+    >
       {/* 작성자 및 별점 정보 */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-3">
