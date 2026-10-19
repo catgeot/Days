@@ -1,28 +1,36 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isPlaceTravelogueCardEnabled } from '../../../utils/placeEditorialTravelogueFlag';
 import {
+  filterEditorialLocationFallback,
   mergePlaceEditorialTravelogues,
+  placeNameCandidates,
   placeSlugFromLocation,
   selectPlaceEditorialTravelogueCards,
 } from '../../../utils/placeEditorialTravelogue';
-import { fetchEditorialTraveloguesByPlaceSlug, fetchRelatedBlogRows } from './relatedBlogsQuery';
+import { fetchEditorialTraveloguesByLocationName, fetchEditorialTraveloguesByPlaceSlug } from './relatedBlogsQuery';
 import { useVisitStories } from './useVisitStories';
 
+const DISABLED_PLACE_TRAVELOGUES = Object.freeze({
+  enabled: false,
+  items: [],
+  isLoading: false,
+});
+
 export function usePlaceEditorialTravelogues(location) {
-  const enabled = isPlaceTravelogueCardEnabled();
+  // Build-time flag. Off must return before useVisitStories — that hook queries reports and place_reviews, which PlaceVisitStories already does (Cairo).
+  if (!isPlaceTravelogueCardEnabled()) return DISABLED_PLACE_TRAVELOGUES;
+  return usePlaceEditorialTraveloguesEnabled(location);
+}
+
+function usePlaceEditorialTraveloguesEnabled(location) {
   const placeSlug = placeSlugFromLocation(location);
-  const locationName = location?.name || location?.name_en || '';
+  const names = placeNameCandidates(location);
+  const namesKey = names.join('\n');
   const [rows, setRows] = useState([]);
-  const [isLoading, setIsLoading] = useState(enabled);
+  const [isLoading, setIsLoading] = useState(true);
   const { stories, isLoading: storiesLoading } = useVisitStories(location);
 
   useEffect(() => {
-    if (!enabled) {
-      setRows([]);
-      setIsLoading(false);
-      return undefined;
-    }
-
     let cancelled = false;
     setIsLoading(true);
 
@@ -30,8 +38,9 @@ export function usePlaceEditorialTravelogues(location) {
       try {
         const bySlug = await fetchEditorialTraveloguesByPlaceSlug(placeSlug);
         let locationRows = [];
-        if (bySlug.length < 2 && locationName) {
-          locationRows = await fetchRelatedBlogRows(locationName);
+        if (bySlug.length < 2 && names.length) {
+          const batches = await Promise.all(names.map((name) => fetchEditorialTraveloguesByLocationName(name)));
+          locationRows = filterEditorialLocationFallback(batches.flat(), { placeSlug, names });
         }
         if (cancelled) return;
         setRows(mergePlaceEditorialTravelogues(bySlug, locationRows));
@@ -47,16 +56,16 @@ export function usePlaceEditorialTravelogues(location) {
     return () => {
       cancelled = true;
     };
-  }, [enabled, placeSlug, locationName]);
+  }, [placeSlug, namesKey]);
 
   const items = useMemo(
-    () => (enabled ? selectPlaceEditorialTravelogueCards(rows, stories) : []),
-    [enabled, rows, stories],
+    () => selectPlaceEditorialTravelogueCards(rows, stories),
+    [rows, stories],
   );
 
   return {
-    enabled,
+    enabled: true,
     items,
-    isLoading: enabled && (isLoading || storiesLoading),
+    isLoading: isLoading || storiesLoading,
   };
 }
