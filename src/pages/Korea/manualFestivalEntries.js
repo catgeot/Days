@@ -7,6 +7,7 @@ const byId = new Map(
 );
 
 function e2eManualEntryPatch(contentId) {
+  if (import.meta.env.PROD) return null;
   if (typeof globalThis === 'undefined') return null;
   const table = globalThis.__GATEO_E2E_MANUAL_FESTIVAL_PATCH__;
   if (!table || typeof table !== 'object') return null;
