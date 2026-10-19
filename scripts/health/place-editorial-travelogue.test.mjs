@@ -2,6 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   dedupeTraveloguesAgainstVisitStories,
+  editorialLocationIlikePatterns,
+  editorialRowMatchesLocationFallback,
+  filterEditorialLocationFallback,
+  locationTextMatchesPlaceName,
   mergePlaceEditorialTravelogues,
   placeSlugFromLocation,
   selectPlaceEditorialTravelogueCards,
@@ -70,6 +74,68 @@ test('dedupeTraveloguesAgainstVisitStories removes cairo visit story overlap', (
   ];
   const out = dedupeTraveloguesAgainstVisitStories([row], visitStories);
   assert.equal(out.length, 0);
+});
+
+test('location ILIKE patterns are anchored, not a contains match', () => {
+  const patterns = editorialLocationIlikePatterns('제주');
+  assert.ok(patterns.includes('제주'));
+  assert.ok(patterns.includes('제주도'));
+  assert.equal(patterns.some((pattern) => pattern === '*제주*' || pattern === '*%제주%*'), false);
+  assert.equal(patterns.some((pattern) => pattern.startsWith('*') && pattern.endsWith('*') && !pattern.includes(',')), false);
+});
+
+test('location text matches a place token, not a mention inside another article', () => {
+  assert.equal(locationTextMatchesPlaceName('제주', '제주'), true);
+  assert.equal(locationTextMatchesPlaceName('제주도', '제주'), true);
+  assert.equal(locationTextMatchesPlaceName('제주시', '제주'), true);
+  assert.equal(locationTextMatchesPlaceName('제주, 한국', '제주'), true);
+  assert.equal(locationTextMatchesPlaceName('Jeju Island', 'Jeju'), true);
+  assert.equal(locationTextMatchesPlaceName('신제주', '제주'), false);
+  assert.equal(locationTextMatchesPlaceName('제주항공', '제주'), false);
+  assert.equal(locationTextMatchesPlaceName('부산에서 제주를 그리워하다', '제주'), false);
+  assert.equal(locationTextMatchesPlaceName('오사카, 제주 항공 환승', '제주'), false);
+});
+
+test('location-name fallback drops a non-Jeju article that contains 제주', () => {
+  const jeju = publishedEditorial({
+    id: 67,
+    slug: 'jeju-travelogue',
+    place_slug: 'jeju',
+    location: '제주',
+    title: '장날 아침, 사라봉 저녁',
+  });
+  const osakaMention = publishedEditorial({
+    id: 80,
+    slug: 'osaka-via-jeju',
+    place_slug: 'osaka',
+    location: '오사카, 제주 항공 환승',
+    title: '오사카 기행',
+  });
+  const untaggedMention = publishedEditorial({
+    id: 81,
+    slug: 'busan-mentions-jeju',
+    place_slug: '',
+    location: '부산에서 제주를 그리워하다',
+    title: '부산 기행',
+  });
+  assert.equal(
+    editorialRowMatchesLocationFallback(osakaMention, { placeSlug: 'jeju', names: ['제주', 'Jeju'] }),
+    false,
+  );
+  const filtered = filterEditorialLocationFallback([osakaMention, untaggedMention, jeju], {
+    placeSlug: 'jeju',
+    names: ['제주', 'Jeju'],
+  });
+  assert.deepEqual(filtered.map((row) => row.slug), ['jeju-travelogue']);
+});
+
+test('flag off: usePlaceEditorialTravelogues does not call useVisitStories', async () => {
+  globalThis.__VITE_ENV__ = { ...(globalThis.__VITE_ENV__ || {}), VITE_GATEO_PLACE_TRAVELOGUE_CARD: '' };
+  const { usePlaceEditorialTravelogues } = await import(
+    '../../src/components/PlaceCard/hooks/usePlaceEditorialTravelogues.js'
+  );
+  const result = usePlaceEditorialTravelogues({ id: 'cairo', slug: 'cairo', name: '카이로' });
+  assert.deepEqual(result, { enabled: false, items: [], isLoading: false });
 });
 
 test('selectPlaceEditorialTravelogueCards applies dedupe then max', () => {

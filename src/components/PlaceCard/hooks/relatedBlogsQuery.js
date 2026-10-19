@@ -1,6 +1,7 @@
 import { supabase } from '../../../shared/api/supabase';
 import { isReportsMissingColumnError } from '../../../utils/reportsSchemaFallback';
 import { filterPublicLogbookFeedRows } from '../../../utils/logbookPublicFeed';
+import { editorialLocationIlikePatterns } from '../../../utils/placeEditorialTravelogue';
 
 export const RELATED_BLOGS_SELECT_LEGACY = `
   id,
@@ -82,6 +83,31 @@ export async function fetchEditorialTraveloguesByPlaceSlug(placeSlug) {
   if (error && isReportsMissingColumnError(error)) {
     return [];
   }
+  if (error) throw error;
+  return filterPublicLogbookFeedRows(data || []);
+}
+
+function quotePostgrestIlike(pattern) {
+  return `"${String(pattern).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
+export async function fetchEditorialTraveloguesByLocationName(locationName) {
+  const patterns = editorialLocationIlikePatterns(locationName);
+  if (!patterns.length) return [];
+
+  const orFilter = patterns.map((pattern) => `location.ilike.${quotePostgrestIlike(pattern)}`).join(',');
+  let { data, error } = await supabase
+    .from('reports')
+    .select(EDITORIAL_TRAVELOGUE_SELECT)
+    .eq('is_public', true)
+    .eq('is_deleted', false)
+    .eq('is_editorial', true)
+    .eq('status', 'published')
+    .or(orFilter)
+    .order('date', { ascending: false })
+    .limit(20);
+
+  if (error && isReportsMissingColumnError(error)) return [];
   if (error) throw error;
   return filterPublicLogbookFeedRows(data || []);
 }

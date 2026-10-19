@@ -34,7 +34,7 @@ function fulfillReports(route, rows) {
       body: JSON.stringify(filtered),
     });
   }
-  if (url.searchParams.get('location')) {
+  if (url.searchParams.get('location') || String(url.searchParams.get('or') || '').includes('location.ilike')) {
     return route.fulfill({
       status: 200,
       contentType: 'application/json',

@@ -7,28 +7,44 @@ import { resolveLogbookDek } from '../../../utils/logbookDek';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { travelogueRowKey } from '../../../utils/placeEditorialTravelogue';
 
-function TravelogueCover({ report }) {
-  const [broken, setBroken] = useState(false);
-  const thumb = logbookHeroImageUrl(report.images, { role: 'thumb' });
-  if (!thumb || broken) {
-    return (
-      <div
-        className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500/15 via-violet-500/10 to-black/40 flex items-center justify-center"
-        aria-hidden
-      >
-        <BookOpen className="h-7 w-7 text-indigo-200/50" />
-      </div>
-    );
-  }
+function TravelogueCoverFallback() {
   return (
-    <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black/40">
-      <img
-        src={thumb}
-        alt=""
-        className="h-full w-full object-cover"
-        loading="lazy"
-        onError={() => setBroken(true)}
-      />
+    <div
+      className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-500/20 via-violet-500/15 to-indigo-950/50"
+      data-place-travelogue-thumb="fallback"
+      aria-hidden
+    >
+      <BookOpen className="h-7 w-7 text-indigo-100/80" />
+    </div>
+  );
+}
+
+function TravelogueCover({ report }) {
+  const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(false);
+  const thumb = logbookHeroImageUrl(report.images, { role: 'thumb' });
+  const showImage = Boolean(thumb) && !failed;
+
+  const settle = (img) => {
+    if (!img?.complete) return;
+    if (img.naturalWidth > 0) setReady(true);
+    else setFailed(true);
+  };
+
+  return (
+    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-indigo-400/20 bg-indigo-950/40">
+      {showImage && ready ? null : <TravelogueCoverFallback />}
+      {showImage ? (
+        <img
+          src={thumb}
+          alt=""
+          ref={settle}
+          className={`h-full w-full object-cover ${ready ? 'relative' : 'absolute opacity-0'}`}
+          data-place-travelogue-thumb={ready ? 'image' : 'pending'}
+          onLoad={(event) => settle(event.currentTarget)}
+          onError={() => setFailed(true)}
+        />
+      ) : null}
     </div>
   );
 }
