@@ -82,6 +82,7 @@ function HubTitleRow({
   onToggle,
   headerRound,
   asToggle = true,
+  showChevron = true,
 }) {
   const rowClass = `flex w-full min-w-0 items-center gap-2 px-4 py-3.5 text-left ${headerRound}`;
   const inner = (
@@ -98,16 +99,19 @@ function HubTitleRow({
           {totalCount}편
         </span>
       ) : null}
-      <span
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100"
-        aria-hidden
-      >
-        <ChevronDown
-          size={22}
-          strokeWidth={2.5}
-          className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
-        />
-      </span>
+      {showChevron ? (
+        <span
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100"
+          data-testid="logbook-official-review-hub-chevron"
+          aria-hidden
+        >
+          <ChevronDown
+            size={22}
+            strokeWidth={2.5}
+            className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+          />
+        </span>
+      ) : null}
     </>
   );
 
@@ -153,7 +157,13 @@ const LogbookOfficialReviewHubCard = () => {
         data-testid="logbook-official-review-hub"
         data-hub-state="load-failed"
       >
-        <HubTitleRow panelId={panelId} expanded={false} asToggle={false} headerRound="rounded-t-2xl" />
+        <HubTitleRow
+          panelId={panelId}
+          expanded={false}
+          asToggle={false}
+          showChevron={false}
+          headerRound="rounded-t-2xl"
+        />
         <div className="border-t border-gray-100 px-4 pb-3.5 pt-2">
           <p className="text-sm text-gray-600">리뷰를 불러오지 못했어요</p>
           <button

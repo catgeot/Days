@@ -126,6 +126,24 @@ test('hub card shows loadFailed retry UI (not blank)', () => {
   assert.match(src, /data-hub-state="load-failed"/);
   assert.match(src, /LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE/);
   assert.match(src, /md:max-w-\[min\(80rem,calc\(100vw-16rem-3rem\)\)\]/);
+  assert.match(src, /showChevron=\{false\}/);
+  assert.doesNotMatch(
+    src.split('data-hub-state="load-failed"')[1]?.split('if (!isLoading')[0] ?? '',
+    /logbook-official-review-hub-toggle/,
+  );
+});
+
+test('retry capture script asserts success and fail-again flows', () => {
+  const cap = readFileSync(
+    join(healthRoot, 'scripts/capture-logbook-review-hub-retry.mjs'),
+    'utf8',
+  );
+  assert.match(cap, /assertLoadFailedUi/);
+  assert.match(cap, /assertReadyWithCount/);
+  assert.match(cap, /logbook-official-review-hub-retry/);
+  assert.match(cap, /retry-success-\$\{tag\}-02-after-retry-count/);
+  assert.match(cap, /retry-fail-again-\$\{tag\}-02-still-failed/);
+  assert.match(cap, /editorialGate\.allowFetch/);
 });
 
 test('이틀컷 persona badge uses DB label (no rename to 문턱없이)', () => {
