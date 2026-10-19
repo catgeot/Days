@@ -1,5 +1,18 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  DETAIL_INTRO_DAILY_CAP,
+  FESTIVAL_WINDOW_INTRO_PER_REQUEST,
+  INTRO_SNIPPET_TTL_MS,
+  applyHomepagePolicyToItem,
+  canMakeDetailIntroCall,
+  detailIntroCounterCacheKey,
+  festivalItemWithinIntroWindow,
+  introSnippetCacheKey,
+  isIntroHomepageEnabled,
+  kstYmd,
+  mergeIntroSnippetOntoItem,
+} from "./intro_homepage.mjs";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -67,6 +80,10 @@ const DETAIL_STALE_MS = 30 * 24 * 60 * 60 * 1000;
 const FESTIVAL_WINDOW_MAX_PAGES = 12;
 const FESTIVAL_WINDOW_PAGE_ROWS = 50;
 const FESTIVAL_CONTENT_TYPE_ID = "15";
+
+function introHomepageFlagOn(): boolean {
+  return isIntroHomepageEnabled();
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -699,6 +716,111 @@ async function readFestivalCache(
   return (data as CacheRow | null) ?? null;
 }
 
+async function readDetailIntroDailyCount(): Promise<number> {
+  const key = detailIntroCounterCacheKey(kstYmd());
+  const row = await readFestivalCache(key);
+  const count = Number(
+    (row?.payload as { count?: unknown } | null)?.count ?? 0,
+  );
+  return Number.isFinite(count) && count > 0 ? Math.floor(count) : 0;
+}
+
+async function incrementDetailIntroDailyCount(): Promise<void> {
+  const key = detailIntroCounterCacheKey(kstYmd());
+  const current = await readDetailIntroDailyCount();
+  await writeFestivalCache(key, { count: current + 1 });
+}
+
+async function readIntroSnippetCache(
+  locale: TourApiLocale,
+  contentId: string,
+): Promise<{ playtime?: string; usetimefestival?: string } | null> {
+  const cacheKey = introSnippetCacheKey(locale, contentId);
+  const row = await readFestivalCache(cacheKey);
+  if (!row?.fetched_at) return null;
+  if (ageMs(row.fetched_at) > INTRO_SNIPPET_TTL_MS) return null;
+  const payload = row.payload as {
+    playtime?: string;
+    usetimefestival?: string;
+  } | null;
+  if (!payload) return null;
+  const playtime = String(payload.playtime ?? "").trim();
+  const usetimefestival = String(payload.usetimefestival ?? "").trim();
+  if (!playtime && !usetimefestival) return null;
+  return { playtime, usetimefestival };
+}
+
+async function writeIntroSnippetCache(
+  locale: TourApiLocale,
+  contentId: string,
+  snippet: { playtime?: string; usetimefestival?: string },
+): Promise<void> {
+  const playtime = String(snippet.playtime ?? "").trim();
+  const usetimefestival = String(snippet.usetimefestival ?? "").trim();
+  if (!playtime && !usetimefestival) return;
+  await writeFestivalCache(introSnippetCacheKey(locale, contentId), {
+    playtime,
+    usetimefestival,
+  });
+}
+
+async function enrichFestivalWindowIntroFields(
+  items: Record<string, unknown>[],
+  locale: TourApiLocale,
+  serviceKey: string,
+): Promise<void> {
+  if (!introHomepageFlagOn()) return;
+
+  const eligible = items.filter((item) =>
+    festivalItemWithinIntroWindow(item),
+  );
+  if (!eligible.length) return;
+
+  let used = await readDetailIntroDailyCount();
+  let callsThisResponse = 0;
+
+  for (const item of eligible) {
+    const contentId = String(item.contentId ?? "").trim();
+    if (!contentId) continue;
+
+    const cachedSnippet = await readIntroSnippetCache(locale, contentId);
+    if (cachedSnippet) {
+      mergeIntroSnippetOntoItem(item, cachedSnippet);
+      continue;
+    }
+
+    if (!canMakeDetailIntroCall(used)) continue;
+    if (callsThisResponse >= FESTIVAL_WINDOW_INTRO_PER_REQUEST) continue;
+
+    try {
+      const introResult = await callTourApi(
+        locale,
+        "detailIntro",
+        { contentId, contentTypeId: FESTIVAL_CONTENT_TYPE_ID },
+        serviceKey,
+      );
+      used += 1;
+      callsThisResponse += 1;
+      await incrementDetailIntroDailyCount();
+
+      if (!introResult.ok) continue;
+      const row = introResult.items[0];
+      if (!row) continue;
+
+      const snippet = {
+        playtime: row.playtime != null ? String(row.playtime) : "",
+        usetimefestival: row.usetimefestival != null
+          ? String(row.usetimefestival)
+          : "",
+      };
+      await writeIntroSnippetCache(locale, contentId, snippet);
+      mergeIntroSnippetOntoItem(item, snippet);
+    } catch {
+      // skip silently — keep existing list fields
+    }
+  }
+}
+
 async function writeFestivalCache(
   cacheKey: string,
   payload: unknown,
@@ -848,6 +970,7 @@ async function handleFestivalWindow(
     eventEndDate,
   );
   if (live.ok) {
+    await enrichFestivalWindowIntroFields(live.items, locale, serviceKey);
     await writeFestivalCache(cacheKey, { items: live.items });
     return jsonResponse({
       ok: true,
@@ -917,12 +1040,19 @@ async function handleFestivalDetail(
     (cachedPayload.intro || cachedPayload.common ||
       (Array.isArray(cachedPayload.info) && cachedPayload.info.length > 0))
   ) {
+    let freshCommon = cachedPayload.common || null;
+    if (introHomepageFlagOn() && freshCommon) {
+      freshCommon = applyHomepagePolicyToItem(
+        { ...freshCommon },
+        contentId,
+      );
+    }
     return jsonResponse({
       ok: true,
       action: "festivalDetail",
       contentId,
       intro: cachedPayload.intro || null,
-      common: cachedPayload.common || null,
+      common: freshCommon,
       info: Array.isArray(cachedPayload.info) ? cachedPayload.info : [],
       items: cachedPayload.intro ? [cachedPayload.intro] : [],
       rawCount: 1,
@@ -966,14 +1096,17 @@ async function handleFestivalDetail(
   }
 
   const intro = introResult?.ok ? (introResult.items[0] || null) : null;
-  const common = commonResult?.ok ? (commonResult.items[0] || null) : null;
+  const commonStored = commonResult?.ok ? (commonResult.items[0] || null) : null;
+  const common = introHomepageFlagOn() && commonStored
+    ? applyHomepagePolicyToItem({ ...commonStored }, contentId)
+    : commonStored;
   const info = infoResult?.ok && Array.isArray(infoResult.items)
     ? infoResult.items
     : [];
-  const anyOk = Boolean(intro || common || info.length > 0);
+  const anyOk = Boolean(intro || commonStored || info.length > 0);
 
   if (anyOk) {
-    const payload = { intro, common, info };
+    const payload = { intro, common: commonStored, info };
     await writeFestivalCache(cacheKey, payload);
     return jsonResponse({
       ok: true,
@@ -996,12 +1129,16 @@ async function handleFestivalDetail(
     (cachedPayload.intro || cachedPayload.common ||
       (Array.isArray(cachedPayload.info) && cachedPayload.info.length > 0))
   ) {
+    const staleStored = cachedPayload.common || null;
+    const staleCommon = introHomepageFlagOn() && staleStored
+      ? applyHomepagePolicyToItem({ ...staleStored }, contentId)
+      : staleStored;
     return jsonResponse({
       ok: true,
       action: "festivalDetail",
       contentId,
       intro: cachedPayload.intro || null,
-      common: cachedPayload.common || null,
+      common: staleCommon,
       info: Array.isArray(cachedPayload.info) ? cachedPayload.info : [],
       items: cachedPayload.intro ? [cachedPayload.intro] : [],
       rawCount: 1,
@@ -1131,11 +1268,20 @@ serve(async (req) => {
       });
     }
 
+    let responseItems = result.items;
+    if (introHomepageFlagOn() && typedAction === "detailCommon") {
+      responseItems = result.items.map((row) => {
+        const contentId = String(row.contentId ?? body.contentId ?? "").trim();
+        if (!contentId) return row;
+        return applyHomepagePolicyToItem({ ...row }, contentId);
+      });
+    }
+
     const okPayload = {
       ok: true as const,
       action: typedAction,
       locale,
-      items: result.items,
+      items: responseItems,
       rawCount: result.rawCount,
       resultCode: result.resultCode,
     };

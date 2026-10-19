@@ -1540,9 +1540,31 @@ export default function FestivalDetailSheet({
       item?.eventStartDate || intro?.eventStartDate,
       item?.eventEndDate || intro?.eventEndDate,
     );
+    const introForSummary = (() => {
+      const fromDetail = omitEventHours && intro ? { ...intro, playtime: '' } : intro;
+      if (omitEventHours) return fromDetail;
+      const listPlaytime = String(item?.playtime || '').trim();
+      const listFee = String(item?.usetimefestival || '').trim();
+      if (!listPlaytime && !listFee) return fromDetail;
+      if (!fromDetail) {
+        return {
+          ...(listPlaytime ? { playtime: listPlaytime } : {}),
+          ...(listFee ? { usetimefestival: listFee } : {}),
+        };
+      }
+      return {
+        ...fromDetail,
+        ...(!String(fromDetail.playtime || '').trim() && listPlaytime
+          ? { playtime: listPlaytime }
+          : {}),
+        ...(!String(fromDetail.usetimefestival || '').trim() && listFee
+          ? { usetimefestival: listFee }
+          : {}),
+      };
+    })();
     const base = buildFestivalDetailSummary({
       item,
-      intro: omitEventHours && intro ? { ...intro, playtime: '' } : intro,
+      intro: introForSummary,
       range: dateRange,
       freeLabel: t('korea.festival.detail.feeFree'),
       locale,
