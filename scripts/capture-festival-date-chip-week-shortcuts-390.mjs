@@ -73,7 +73,6 @@ const regions = [
 const shortcuts = [
   { slug: 'this-week', shortcutId: '0' },
   { slug: 'next-week', shortcutId: '1' },
-  { slug: 'in-2-weeks', shortcutId: '2' },
 ];
 
 const browser = await webkit.launch();

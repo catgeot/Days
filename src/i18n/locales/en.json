@@ -1587,7 +1587,7 @@
       "dateSheetApply": "Show this period",
       "dateSheetWeekThis": "This week",
       "dateSheetWeekNext": "Next week",
-      "dateSheetWeekNext2": "Week after",
+      "dateSheetWeekNext2": "In two weeks",
       "dateSheetWeekBack": "‹",
       "dateSheetWeekForward": "Following week ›",
       "dateSheetMonth": "{{month}}/{{year}}",

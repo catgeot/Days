@@ -4,7 +4,7 @@ import {
   isFestivalEnded,
   todayYmdKst,
 } from './festivalDeepLinkItem.js';
-import { filterByRegion, extractSubregionLabels } from './festivalRegionTags.js';
+import { filterByRegion, extractSubregionLabels, sidoLabel } from './festivalRegionTags.js';
 import { resolveFestivalItemSidoCode } from './koreaAreaFilter.js';
 import { festivalLngLat } from './koreaFestivalCorridors.js';
 
@@ -266,6 +266,15 @@ export function socialPromoPlaceLabel(item) {
   return raw.replace(/(특별자치시|광역시|특별시|자치시|시|군|구)$/u, '') || raw;
 }
 
+/** Promo card region hint — 시도 chip label + 시·군 (e.g. 전남 함평, 경남 창원). */
+export function socialPromoRegionPlaceLabel(item) {
+  const areaCode = resolveFestivalItemSidoCode(item);
+  const sido = sidoLabel(areaCode);
+  const place = socialPromoPlaceLabel(item);
+  if (sido && place) return `${sido} ${place}`;
+  return place || sido || '';
+}
+
 /**
  * Nearest in-window promo festival. No distance → earliest start.
  * If that festival is already in the nearby list, return null.
@@ -305,10 +314,6 @@ export function resolveSocialPromoPresentation(row, ctx = {}) {
   const searchActive = Boolean(ctx.searchActive);
   const nearActive = Boolean(ctx.nearActive);
   const timeTab = ctx.timeTab == null || ctx.timeTab === '' ? 'thisMonth' : String(ctx.timeTab);
-  const regionFilter = {
-    areaCode: ctx.areaCode,
-    cityName: ctx.cityName,
-  };
   if (!shouldShowSocialPromoHomeRow(searchActive) || timeTab !== 'thisMonth') {
     return hiddenPromo();
   }
@@ -325,16 +330,11 @@ export function resolveSocialPromoPresentation(row, ctx = {}) {
       }),
     };
   }
-  const nationwide = isNationwideRegionFilter(
-    regionFilter.areaCode,
-    regionFilter.cityName,
-  );
   if (row.status === 'loading') {
-    if (!nationwide) return hiddenPromo();
     return { show: true, cards: row.cards, loading: true, nearLine: null };
   }
   if (row.status === 'ready') {
-    const cards = filterSocialPromoCardsByRegion(row.cards, regionFilter);
+    const cards = row.cards || [];
     return { show: cards.length > 0, cards, loading: false, nearLine: null };
   }
   return hiddenPromo();

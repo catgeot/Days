@@ -4,6 +4,8 @@ import {
   isMetroArea,
   sidoLabel,
 } from '../pages/Korea/festivalRegionTags.js';
+import { resolveFestivalItemSidoCode } from '../pages/Korea/koreaAreaFilter.js';
+import { socialPromoPlaceLabel } from '../pages/Korea/socialPromoFestivalsLogic.js';
 import { JEONNAM_GWANGJU_INTEGRATED_SIDO_LEGAL_NAME } from '../pages/Home/lib/koreaTourAddrNormalize.js';
 import {
   KOREA_AREA_CODE_EN,
@@ -137,6 +139,20 @@ function hubEnWithAdminSuffix(ko, hubEn) {
   if (/-(si|gun|gu)$/i.test(en)) return en;
   const suf = m[0] === '시' ? 'si' : m[0] === '군' ? 'gun' : 'gu';
   return `${en}-${suf}`;
+}
+
+/**
+ * @param {string | null | undefined} locale
+ * @param {Record<string, unknown> | null | undefined} item
+ */
+export function localizedSocialPromoRegionPlaceLabel(locale, item) {
+  const areaCode = String(resolveFestivalItemSidoCode(item) || '').trim();
+  const sidoKo = sidoLabel(areaCode);
+  const sido = localizedAreaCodeLabel(locale, areaCode, sidoKo);
+  const placeKo = socialPromoPlaceLabel(item);
+  const place = localizedSubregionLabel(locale, placeKo);
+  if (sido && place) return `${sido} ${place}`;
+  return place || sido || '';
 }
 
 export function localizedSubregionLabel(locale, labelKo) {
