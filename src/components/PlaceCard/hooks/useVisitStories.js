@@ -3,6 +3,10 @@ import { supabase } from '../../../shared/api/supabase';
 import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
 import { selectVisitStories } from '../../../data/placeVerifiedFacts/localInfoLayout.js';
 import { publicLogbookDetailPath } from '../../../utils/logbookEditorial';
+import {
+  placeReviewVisitStoryDisplayTitle,
+  placeReviewVisibleInVisitStories,
+} from '../../../utils/placeReviewEditorial.js';
 import { useRelatedBlogs } from './useRelatedBlogs';
 
 function reviewPlaceSlug(location) {
@@ -31,14 +35,21 @@ export function useVisitStories(location) {
     setReviewsLoading(true);
     supabase
       .from('place_reviews')
-      .select('id, title, is_editorial, created_at')
+      .select('id, content, content_blocks, persona_label, is_public, is_editorial, created_at')
       .eq('place_slug', slug)
+      .eq('is_public', true)
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) {
+          if (import.meta.env.DEV) {
+            console.warn(
+              '[useVisitStories] place_reviews fetch failed',
+              error.code || error.message || 'unknown',
+            );
+          }
           setReviews([]);
         } else {
-          setReviews((data || []).filter((row) => String(row?.title || '').trim()));
+          setReviews((data || []).filter(placeReviewVisibleInVisitStories));
         }
         setReviewsLoading(false);
       });
@@ -70,7 +81,7 @@ export function useVisitStories(location) {
       ...reviews.map((review) => ({
         id: review.id,
         kind: 'review',
-        title: review.title,
+        title: placeReviewVisitStoryDisplayTitle(review),
         editorial: review.is_editorial,
         date: review.created_at,
       })),
