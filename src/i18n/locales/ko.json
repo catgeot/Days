@@ -1511,6 +1511,7 @@
         "relatedVideos": "관련 영상",
         "videosLoading": "영상 불러오는 중…",
         "videosNotFound": "관련 영상이 아직 없어요",
+        "videosLoadFailed": "영상을 불러오지 못했습니다.",
         "youtubeFallback": "YouTube 영상",
         "videosMore": "동영상 더보기",
         "officialSite": "공식 홈페이지",

@@ -39,7 +39,8 @@ test('festival detail bottom close returns sub-tabs to the overview', () => {
   assert.match(sheet, /festivalSheetOverviewScroll/);
   assert.match(sheet, /data-festival-sheet-content/);
   assert.match(sheet, /hasVideoTab &&/);
-  assert.match(sheet, /const hasVideoTab = videos\.length > 0/);
+  assert.match(sheet, /videosLoadSettled/);
+  assert.match(sheet, /fetchFestivalVideosCacheOnly/);
   assert.match(
     button,
     /activeTab === TAB_INFO\s*\?\s*t\('korea\.common\.close'\)\s*:\s*t\('korea\.festival\.detail\.backToOverview'\)/,

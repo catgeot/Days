@@ -40,6 +40,61 @@ function withTimeout(promise, ms, label) {
  *   error?: string,
  * }>}
  */
+/**
+ * DB `place_videos` only — never invokes fetch-place-videos / YouTube.
+ * @returns {Promise<{
+ *   ok: boolean,
+ *   videos: Array<{ id: string, title: string }>,
+ *   fromCache: boolean,
+ *   cacheMiss: boolean,
+ *   knownEmpty?: boolean,
+ * }>}
+ */
+export async function fetchFestivalVideosCacheOnly(opts) {
+  const contentId = String(opts?.contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) {
+    return { ok: false, videos: [], fromCache: false, cacheMiss: true };
+  }
+
+  const placeId = `festival:${contentId}`;
+
+  try {
+    const { data: cached, error: cacheReadError } = await supabase
+      .from('place_videos')
+      .select('videos, next_retry_at, last_updated')
+      .eq('place_id', placeId)
+      .limit(1)
+      .maybeSingle();
+
+    let cacheRow = cached;
+    if (cacheReadError) {
+      const { data: legacy } = await supabase
+        .from('place_videos')
+        .select('videos')
+        .eq('place_id', placeId)
+        .limit(1)
+        .maybeSingle();
+      cacheRow = legacy;
+    }
+
+    if (!cacheRow || !Array.isArray(cacheRow.videos) || shouldRefreshPlaceVideoCache(cacheRow)) {
+      return { ok: true, videos: [], fromCache: false, cacheMiss: true };
+    }
+
+    const videos = placeVideosForClient(cacheRow).slice(0, FESTIVAL_VIDEOS_MAX);
+    return {
+      ok: true,
+      videos,
+      fromCache: true,
+      cacheMiss: false,
+      knownEmpty: videos.length === 0,
+    };
+  } catch (err) {
+    console.warn('[festival-videos] cache read failed:', err?.message || err);
+    return { ok: true, videos: [], fromCache: false, cacheMiss: true };
+  }
+}
+
 export async function fetchFestivalVideos(opts) {
   const contentId = String(opts?.contentId ?? '').trim();
   const title = String(opts?.title ?? '').trim();

@@ -1748,6 +1748,7 @@
         "relatedVideos": "Related videos",
         "videosLoading": "Loading videos…",
         "videosNotFound": "No videos yet",
+        "videosLoadFailed": "Could not load videos.",
         "youtubeFallback": "YouTube video",
         "videosMore": "Load more videos",
         "officialSite": "Official website",
