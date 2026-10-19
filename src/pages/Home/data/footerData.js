@@ -36,7 +36,7 @@ Contact: admin@gateo.kr`,
   terms: {
     title: 'Terms of Service (이용약관)',
     titleEn: 'Terms of Service',
-    content: `최종 업데이트: 2026-08-03
+    content: `최종 업데이트: 2026-10-19
 
 제 1 조 (목적·서비스의 성격)
 1. GATEO(이하 "서비스", 도메인 gateo.kr)는 여행 정보 제공 및 계획 보조 플랫폼입니다. 운영 주체는 GATEO입니다.
@@ -64,8 +64,12 @@ Contact: admin@gateo.kr`,
 제 6 조 (준거법·분쟁)
 본 약관은 대한민국 법을 준거법으로 합니다. 서비스 이용과 관련한 분쟁은 관련 법령에 따른 관할 법원에 제기할 수 있습니다.
 
+제 7 조 (YouTube)
+1. 서비스의 장소·축제 등 관련 화면에서 YouTube 동영상 검색·목록·재생(임베드) 기능을 이용하는 경우, 이용자는 Google LLC가 제공하는 YouTube 서비스 약관(YouTube Terms of Service)에 동의한 것으로 봅니다.
+2. YouTube 약관 전문: https://www.youtube.com/t/terms
+
 문의: admin@gateo.kr`,
-    contentEn: `Last updated: 2026-08-03
+    contentEn: `Last updated: 2026-10-19
 
 Article 1 (Purpose & nature of the service)
 1. GATEO (the "Service", domain gateo.kr) is a travel information and trip-planning assistance platform. It is operated by GATEO.
@@ -93,12 +97,16 @@ As a small independent project, the Service may change, limit, temporarily suspe
 Article 6 (Governing law & disputes)
 These Terms are governed by the laws of the Republic of Korea. Disputes related to use of the Service may be brought before courts with jurisdiction under applicable law.
 
+Article 7 (YouTube)
+1. When you use YouTube video search, listings, or embedded playback on place, festival, and related screens, you agree to be bound by the YouTube Terms of Service provided by Google LLC.
+2. YouTube Terms of Service: https://www.youtube.com/t/terms
+
 Contact: admin@gateo.kr`,
   },
   privacy: {
     title: 'Privacy Policy (개인정보처리방침)',
     titleEn: 'Privacy Policy',
-    content: `최종 업데이트: 2026-08-03
+    content: `최종 업데이트: 2026-10-19
 
 GATEO(gateo.kr)는 「개인정보 보호법」 등 관련 법령을 준수하며, 아래와 같이 개인정보를 처리합니다.
 
@@ -149,9 +157,17 @@ GATEO(gateo.kr)는 「개인정보 보호법」 등 관련 법령을 준수하�
 9. 정책 변경
 본 방침을 변경하는 경우 서비스 내(본 Privacy 탭·Updates 등)에 게시하며, 중요 변경은 시행 전에 고지하도록 노력합니다.
 
-10. 문의
+10. YouTube API 서비스(동영상 기능)
+GATEO는 장소 카드·축제 등에서 관련 YouTube 동영상을 보여 주기 위해 YouTube API Services(YouTube Data API v3)를 사용합니다.
+- 이용자의 YouTube 계정 로그인·OAuth 동영상 데이터는 요청하거나 저장하지 않습니다. (회원 가입용 Google 로그인은 위 1·3항에 따릅니다.)
+- 서버(Supabase Edge 함수 fetch-place-videos)는 장소명·검색어 등 공개 여행지 정보를 바탕으로 YouTube에서 동영상을 검색합니다. YouTube API가 반환하는 공개 메타데이터(동영상 ID, 제목, 채널명, 게시 일시, 영상 설명 등)를 Supabase 데이터베이스(place_videos)에 일정 기간 캐시할 수 있습니다.
+- 동영상 탭 이용 시 브라우저는 장소 식별자·검색어·더보기 페이지 요청 등 기능 제공에 필요한 정보를 Edge 함수로 전송합니다. 연결 IP 주소는 서버에서 호출 제한(어뷰징 방지) 목적으로만 사용하며, YouTube 이용자 계정과 연결하지 않습니다.
+- 동영상 재생은 youtube.com 임베드 플레이어(iframe)로 이루어집니다. 재생·썸네일 로드 시 Google·YouTube가 쿠키·기기 정보 등을 수집할 수 있으며, 해당 처리에는 Google 개인정보처리방침(https://policies.google.com/privacy)이 적용됩니다. 목록 미리보기 썸네일은 YouTube가 제공하는 공개 이미지 URL(img.youtube.com)을 브라우저에서 불러올 수 있습니다.
+- 위 Google 보안 설정(https://myaccount.google.com/permissions)에서 GATEO가 YouTube 계정 데이터에 접근하는 앱을 철회할 필요는 없습니다.
+
+11. 문의
 개인정보 관련 문의: admin@gateo.kr`,
-    contentEn: `Last updated: 2026-08-03
+    contentEn: `Last updated: 2026-10-19
 
 GATEO (gateo.kr) processes personal information as described below in compliance with the Personal Information Protection Act of Korea and related laws.
 
@@ -202,7 +218,15 @@ However, under Korean law, collecting or using personal information of children 
 9. Policy changes
 When this policy changes, we will post it in the Service (this Privacy tab, Updates, etc.) and aim to notify you before material changes take effect.
 
-10. Contact
+10. YouTube API Services (video features)
+GATEO uses YouTube API Services (YouTube Data API v3) to show related YouTube videos on place cards, festivals, and similar screens.
+- We do not request or store your YouTube account login or OAuth video data. (Google sign-in for membership is covered in sections 1 and 3 above.)
+- Our server (Supabase Edge function fetch-place-videos) searches YouTube using public place names and search terms. Public metadata returned by the YouTube API (video ID, title, channel name, publish date, video description, etc.) may be cached for a period in our Supabase database (place_videos).
+- When you use the video tab, your browser sends place identifiers, search terms, and pagination requests needed to operate the feature to the Edge function. Connection IP addresses are used only on the server for rate limiting and abuse prevention and are not linked to your YouTube account.
+- Playback uses the youtube.com embedded player (iframe). During playback and thumbnail loading, Google and YouTube may collect cookies and device information; Google's Privacy Policy applies (https://policies.google.com/privacy). List thumbnails may be loaded in your browser from YouTube's public image URLs (img.youtube.com).
+- You do not need to revoke GATEO under Google security settings (https://myaccount.google.com/permissions) for YouTube account data, because we do not access your YouTube account through OAuth.
+
+11. Contact
 Privacy inquiries: admin@gateo.kr`,
   },
   contact: {
