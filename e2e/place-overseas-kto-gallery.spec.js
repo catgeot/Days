@@ -24,13 +24,13 @@ async function assertSectionToggle(page) {
   await expect(localInfo).toBeVisible({ timeout: 60_000 });
   const headerBtn = localInfo.getByRole('button', { name: /현지 정보/ }).first();
   await expect(headerBtn).toBeVisible();
-  await expect(headerBtn).toHaveAttribute('aria-expanded', 'true');
-  await expect(localInfo.locator('[data-section-toggle-label]')).toContainText(/접기|펼치기/);
-  await headerBtn.click();
   await expect(headerBtn).toHaveAttribute('aria-expanded', 'false');
+  await expect(localInfo.locator('[data-section-toggle-label]')).toContainText(/접기|펼치기/);
   await expect(page.locator('[data-local-info-row]:visible')).toHaveCount(0);
   await headerBtn.click();
   await expect(headerBtn).toHaveAttribute('aria-expanded', 'true');
+  await headerBtn.click();
+  await expect(headerBtn).toHaveAttribute('aria-expanded', 'false');
 }
 
 async function clipShot(page, fileName) {

@@ -41,6 +41,8 @@ test.describe('place card local info v2', () => {
     await expect(gallery).toBeVisible();
     await expect(gallery).toContainText('현지 정보');
     await expect(gallery).toContainText('4개 주제');
+    const factsHeader = page.getByRole('button', { name: /현지 정보/ }).first();
+    await factsHeader.click();
     const rows = page.locator('[data-local-info-row]:visible');
     await expect(rows).toHaveCount(4);
     await expect(rows.nth(0)).toContainText('입국');
@@ -57,6 +59,10 @@ test.describe('place card local info v2', () => {
     await expect(page.locator('[data-fact-checked-at]:visible')).toContainText('2026-10-11');
     await expect(page).toHaveURL(urlBefore);
 
+    const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
+    if (await storiesHeader.isVisible().catch(() => false)) {
+      await storiesHeader.click();
+    }
     const storyTitles = await page.locator('[data-visit-story-title]:visible').allTextContents();
     for (const title of storyTitles) {
       const text = title.trim();
@@ -97,6 +103,7 @@ test.describe('place card local info v2', () => {
     await openPlaceFromSearch(page, '기자 피라미드', '카이로 기자피라미드');
     await expect(page).toHaveURL(/\/place\/giza-pyramids(?:\/|$|\?)/, { timeout: 30_000 });
 
+    await page.getByRole('button', { name: /현지 정보/ }).first().click();
     const rows = page.locator('[data-local-info-row]:visible');
     await expect(rows).toHaveCount(5);
     await expect(page.locator('[data-local-info-row="hours"]:visible')).toContainText('운영시간');

@@ -865,8 +865,8 @@
       "inlineTitle": "Local info · {{label}}",
       "storiesTitle": "Trip notes",
       "storyCount": "{{count}}",
-      "collapse": "Collapse",
-      "expand": "Expand",
+      "collapse": "Hide",
+      "expand": "Show",
       "logbookLink": "Logbook",
       "reviewLink": "Reviews",
       "confirmed": {

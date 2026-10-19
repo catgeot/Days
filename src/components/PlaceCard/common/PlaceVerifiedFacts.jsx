@@ -1,5 +1,5 @@
-import React, { useId, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Compass, PenLine } from 'lucide-react';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -24,7 +24,54 @@ import {
   slotLooksEmpty,
 } from '../../../data/placeVerifiedFacts/schema.js';
 import { buildPlacePath } from '../../../utils/placePlannerPath';
+import {
+  PLACE_GALLERY_SECTION,
+  consumePlaceGallerySectionAfterReview,
+  parsePlaceGallerySectionFromLocation,
+  peekPlaceGallerySectionAfterReview,
+  scrollPlaceGallerySectionIntoView,
+} from '../../../utils/placeGallerySectionFocus.js';
+import { getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
 import { useVisitStories } from '../hooks/useVisitStories';
+
+function usePlaceGallerySectionOpen(sectionId, placeKey) {
+  const routeLocation = useLocation();
+  const [open, setOpen] = useState(false);
+  const autoOpenedRef = useRef(false);
+
+  useEffect(() => {
+    autoOpenedRef.current = false;
+  }, [placeKey]);
+
+  useEffect(() => {
+    const key = String(placeKey || '').trim();
+    if (!key) return;
+    const locationLike = {
+      hash: routeLocation.hash,
+      search: routeLocation.search,
+    };
+    const fromUrl = parsePlaceGallerySectionFromLocation(locationLike);
+    const fromReview = peekPlaceGallerySectionAfterReview(key);
+    const target = fromUrl ?? fromReview;
+    if (target !== sectionId) return;
+    setOpen(true);
+    if (!fromUrl && fromReview === sectionId) {
+      consumePlaceGallerySectionAfterReview(key);
+    }
+    if (!autoOpenedRef.current) {
+      autoOpenedRef.current = true;
+      requestAnimationFrame(() => scrollPlaceGallerySectionIntoView(sectionId));
+    }
+  }, [
+    placeKey,
+    sectionId,
+    routeLocation.pathname,
+    routeLocation.hash,
+    routeLocation.search,
+  ]);
+
+  return [open, setOpen];
+}
 
 function slotHeading(slot, t) {
   return t(`place.facts.slots.${slot.id}`, { defaultValue: slot.label });
@@ -207,8 +254,8 @@ function PlaceSectionToggleHeader({
         className={`mt-0.5 shrink-0 ${light ? 'text-amber-700' : 'text-amber-200'}`}
         aria-hidden
       />
-      <span className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2.5">
-        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+      <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
+        <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <span className={`text-base font-bold tracking-tight ${light ? 'text-[#111827]' : 'text-white'}`}>
             {title}
           </span>
@@ -219,12 +266,14 @@ function PlaceSectionToggleHeader({
           ) : null}
         </span>
         <span
-          className={`inline-flex items-center gap-1 text-xs font-semibold ${light ? 'text-[#4b5563]' : 'text-white/55'}`}
+          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-sm font-semibold leading-none ${light
+            ? 'border border-amber-600/35 bg-amber-100 text-amber-950'
+            : 'border border-amber-300/45 bg-amber-500/25 text-amber-50'}`}
           data-section-toggle-label=""
         >
           <span>{toggleLabel}</span>
           <ChevronDown
-            size={14}
+            size={16}
             className={`shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
             aria-hidden
           />
@@ -313,7 +362,8 @@ export default function PlaceVerifiedFacts({ location, className = '' }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const panelId = useId();
-  const [open, setOpen] = useState(true);
+  const placeKey = getPlaceStableKey(location) || location?.slug || location?.id || '';
+  const [open, setOpen] = usePlaceGallerySectionOpen(PLACE_GALLERY_SECTION.FACTS, placeKey);
   const card = resolveVerifiedFacts(location);
   if (!card) return null;
   const filled = verifiedFactSlots(card);
@@ -322,12 +372,13 @@ export default function PlaceVerifiedFacts({ location, className = '' }) {
 
   return (
     <section
+      id={PLACE_GALLERY_SECTION.FACTS}
       data-verified-facts={card.slug}
       data-verified-kind={card.kind}
       data-local-info="gallery"
       data-unverified-items={unverified || undefined}
       aria-label={t('place.facts.localTitle')}
-      className={`${galleryFactsSectionClass()} ${className}`.trim()}
+      className={`scroll-mt-6 ${galleryFactsSectionClass()} ${className}`.trim()}
     >
       <PlaceSectionToggleHeader
         title={t('place.facts.localTitle')}
@@ -413,7 +464,8 @@ export function PlaceVisitStories({ location, className = '' }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const panelId = useId();
-  const [open, setOpen] = useState(true);
+  const placeKey = getPlaceStableKey(location) || location?.slug || location?.id || '';
+  const [open, setOpen] = usePlaceGallerySectionOpen(PLACE_GALLERY_SECTION.STORIES, placeKey);
   const card = resolveVerifiedFacts(location);
   const { stories, isLoading } = useVisitStories(location);
   if (!card || isLoading || !stories.length) return null;
@@ -421,10 +473,11 @@ export function PlaceVisitStories({ location, className = '' }) {
 
   return (
     <section
+      id={PLACE_GALLERY_SECTION.STORIES}
       data-visit-stories=""
       data-local-info="stories"
       aria-label={t('place.facts.storiesTitle')}
-      className={`${galleryFactsSectionClass()} ${className}`.trim()}
+      className={`scroll-mt-6 ${galleryFactsSectionClass()} ${className}`.trim()}
     >
       <PlaceSectionToggleHeader
         title={t('place.facts.storiesTitle')}
