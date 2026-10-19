@@ -39,7 +39,19 @@ import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
 import { pickKoreanNameGallery } from '../../../utils/placeStatsNameGallery.js';
 import { lookupTourContentIdByName } from '../../../utils/tourKeywordPick.js';
-import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
+import {
+  resolveGalleryStockQuery,
+  isLatinPlaceName,
+  pickLatinPlaceName,
+} from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
+import {
+  buildGalleryStockRelevanceTokens,
+  filterGalleryStockForKoreaPolicy,
+  isKoreanGallerySubSpot,
+  isStockOnlyGallery,
+  isTourApiGalleryImageRecord,
+  shouldPersistKoreanGalleryToPlaceStats,
+} from '../../../utils/galleryStockRelevance.js';
 import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
@@ -57,8 +69,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.23 — Tour 시설 컷 후 스톡 보강 · 라틴 지명 스톡 · 단일 인물 제외 */
-const CACHE_VERSION = 'v1.24';
+/** v1.25 — 국내 스톡 slug/alt 관련성 · 서브스팟 stock-only place_stats 금지 */
+const CACHE_VERSION = 'v1.25';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -145,9 +157,7 @@ function withTimeout(promise, ms, label) {
 }
 
 function isTourApiGalleryImage(img) {
-  if (!img || typeof img !== 'object') return false;
-  if (img.source === 'tourapi') return true;
-  return String(img.id ?? '').startsWith('tourapi');
+  return isTourApiGalleryImageRecord(img);
 }
 
 function filterGalleryForTourApiPolicy(images, allowTourApi) {
@@ -663,6 +673,23 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
     const hasOfficialTourContentId = Boolean(tourMapping?.contentId);
 
+    const galleryStockLocation =
+      typeof tourPlaceWithCategory === 'object' && tourPlaceWithCategory
+        ? tourPlaceWithCategory
+        : typeof locationSource === 'object' && locationSource
+          ? locationSource
+          : null;
+    const galleryStockCtx = {
+      applyKoreanStockPolicy: allowTourApiGallery,
+      koreanName,
+      primaryQuery,
+      englishName:
+        typeof targetSpot === 'object' && targetSpot ? pickLatinPlaceName(targetSpot) : '',
+    };
+    galleryStockCtx.relevanceTokens = buildGalleryStockRelevanceTokens(galleryStockCtx);
+    const applyKoreaStockFilter = (images) =>
+      filterGalleryStockForKoreaPolicy(images, galleryStockCtx);
+
     const localScenicOverlay = lookupLocalScenicMemberOverlayForSpot(
       typeof tourPlaceWithCategory === 'object' && tourPlaceWithCategory
         ? {
@@ -768,6 +795,19 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       });
     };
 
+    const mayPersistGallery = (mode, images, imageUrl) => {
+      if (mode !== 'thumb' && !thumbnailOnly) {
+        const candidate =
+          mode === 'merge_keep_hero' ? allImagesRef.current : images;
+        if (
+          !shouldPersistKoreanGalleryToPlaceStats(candidate, galleryStockLocation)
+        ) {
+          return;
+        }
+      }
+      persistGallery(mode, images, imageUrl);
+    };
+
     const runStockSwr = async () => {
       if (
         !shouldRunGalleryStockSwr({
@@ -790,6 +830,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (results.length === 0 && backupQuery) {
           results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, 1);
         }
+        results = applyKoreaStockFilter(results);
         if (runId !== galleryLoadSeqRef.current) return;
         const beforeIds = new Set((allImagesRef.current || []).map((img) => img?.id).filter(Boolean));
         const { merged, added } = mergeGalleryFreshKeepHero(
@@ -805,7 +846,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         processAndSetImages(merged);
         saveToSmartCache(CACHE_KEY, allImagesRef.current);
         const fresh = allImagesRef.current.filter((img) => img?.id && !beforeIds.has(img.id));
-        persistGallery('merge_keep_hero', fresh);
+        mayPersistGallery('merge_keep_hero', fresh);
         console.log(`✅ Gallery SWR ${added}장 병합 (hero 유지)`);
       } catch (err) {
         console.warn('⚠️ Gallery SWR miss — DB/session 유지', err);
@@ -828,7 +869,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         )
           .then((pexelsImages) => {
             if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
-            const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
+            const filtered = applyKoreaStockFilter(pexelsImages);
+            if (!filtered.length) return;
+            const { merged, added } = mergeGalleryAppend(allImagesRef.current, filtered);
             if (added === 0) return;
             processAndSetImages(merged);
             saveToSmartCache(CACHE_KEY, allImagesRef.current);
@@ -874,15 +917,17 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           '⚠️ session cache stock-only with official Tour contentId — live TourAPI refetch',
         );
       }
+      const relevanceFilteredCache =
+        validCache && validCache.length > 0 ? applyKoreaStockFilter(validCache) : validCache;
       if (
-        validCache &&
-        validCache.length > 0 &&
-        !isThinStockGallery(validCache) &&
-        !isSparseTourApiGallery(validCache) &&
+        relevanceFilteredCache &&
+        relevanceFilteredCache.length > 0 &&
+        !isThinStockGallery(relevanceFilteredCache) &&
+        !isSparseTourApiGallery(relevanceFilteredCache) &&
         !stockCacheBlocksOfficialTour
       ) {
         if (isStale()) return;
-        processAndSetImages(validCache);
+        processAndSetImages(relevanceFilteredCache);
         if (allImagesRef.current.length === 0) {
           console.warn('⚠️ session cache all portraits — live Unsplash/Pexels refetch');
         } else {
@@ -893,7 +938,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           return;
         }
       }
-      if (validCache?.length > 0 && isThinStockGallery(validCache)) {
+      if (validCache?.length > 0 && !relevanceFilteredCache?.length) {
+        console.warn('⚠️ session cache stock drift — live TourAPI/refetch');
+      } else if (validCache?.length > 0 && isThinStockGallery(relevanceFilteredCache)) {
         console.warn('⚠️ session cache thin stock — live Unsplash/Pexels refetch');
       }
 
@@ -952,10 +999,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               const rawGallerySlice = thumbnailOnly
                 ? dbData.gallery_urls.slice(0, 1)
                 : dbData.gallery_urls;
-              const gallerySlice = filterGalleryForTourApiPolicy(
+              let gallerySlice = filterGalleryForTourApiPolicy(
                 rawGallerySlice,
                 allowTourApiGallery,
               );
+              gallerySlice = applyKoreaStockFilter(gallerySlice);
+              if (
+                allowTourApiGallery &&
+                isKoreanGallerySubSpot(galleryStockLocation) &&
+                isStockOnlyGallery(gallerySlice) &&
+                gallerySlice.length > 0
+              ) {
+                console.warn(
+                  '⚠️ place_stats stock-only sub-spot — live TourAPI/refetch',
+                );
+                gallerySlice = [];
+              }
               if (
                 !allowTourApiGallery &&
                 rawGallerySlice.length > 0 &&
@@ -1042,11 +1101,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
       // 3) TourAPI LIVE — 국내 공식 contentId 또는 curated hub photoKeyword (DB miss)
       // Unsplash 「Yanggu」오매칭이 soft(스톡0)보다 먼저 막히지 않게 curated는 여기 우선.
-      if (
-        allowTourApiGallery &&
-        tourMapping?.photoKeyword &&
-        (hasOfficialTourContentId || tourMapping.curated)
-      ) {
+      if (allowTourApiGallery && tourMapping?.photoKeyword) {
         try {
           const tourImages = await fetchTourApiGallery({
             photoKeyword: tourMapping.photoKeyword,
@@ -1068,9 +1123,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 const thumbnailToSave =
                   allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
                 if (thumbnailOnly) {
-                  if (thumbnailToSave) persistGallery('thumb', null, thumbnailToSave);
+                  if (thumbnailToSave) mayPersistGallery('thumb', null, thumbnailToSave);
                 } else {
-                  persistGallery('replace', allImagesRef.current);
+                  mayPersistGallery('replace', allImagesRef.current);
                 }
               }
               finishLoading();
@@ -1146,6 +1201,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           console.error('⚠️ Pexels API Error:', pexelsError);
         }
       }
+
+      results = applyKoreaStockFilter(results);
 
       if (isStale()) return;
 
@@ -1230,9 +1287,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (!forceRefresh && allImagesRef.current.length > 0 && (loadedStatsPlaceIdRef.current || canonicalStatsIdRef.current)) {
           const thumbnailToSave = allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
           if (thumbnailOnly) {
-            if (thumbnailToSave) persistGallery('thumb', null, thumbnailToSave);
+            if (thumbnailToSave) mayPersistGallery('thumb', null, thumbnailToSave);
           } else {
-            persistGallery('replace', allImagesRef.current);
+            mayPersistGallery('replace', allImagesRef.current);
           }
         }
         if (!forceRefresh) writeGallerySwrAt(stablePlaceKey);
