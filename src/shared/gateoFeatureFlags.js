@@ -5,6 +5,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   PLACE_CROSSLINK: 'VITE_GATEO_PLACE_CROSSLINK',
   SITE_SEARCH: 'VITE_GATEO_SITE_SEARCH',
   FESTIVAL_DATE_CHIP: 'VITE_GATEO_FESTIVAL_DATE_CHIP',
+  LOGBOOK_REVIEW_HUB: 'VITE_GATEO_LOGBOOK_REVIEW_HUB',
+  REVIEW_DEEPLINK: 'VITE_GATEO_REVIEW_DEEPLINK',
 };
 
 /** @param {string} name */
@@ -28,4 +30,12 @@ export function isGateoSiteSearchEnabled() {
 
 export function isGateoFestivalDateChipEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.FESTIVAL_DATE_CHIP);
+}
+
+export function isGateoLogbookReviewHubEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.LOGBOOK_REVIEW_HUB);
+}
+
+export function isGateoReviewDeeplinkEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.REVIEW_DEEPLINK);
 }
