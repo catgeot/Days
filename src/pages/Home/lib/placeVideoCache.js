@@ -1,6 +1,15 @@
 import { filterBlockedPlaceVideos } from '../../../../supabase/functions/_shared/videoBlocklist.mjs';
 
 const METADATA_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+/** Empty `videos:[]` older than this is treated as cache miss (client may search again). */
+export const PLACE_VIDEO_EMPTY_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+export function isStaleEmptyPlaceVideoCache(row, now = Date.now()) {
+  if (!row || !Array.isArray(row.videos) || row.videos.length > 0) return false;
+  const updated = Date.parse(row.last_updated || '');
+  if (!Number.isFinite(updated)) return true;
+  return now - updated > PLACE_VIDEO_EMPTY_CACHE_MAX_AGE_MS;
+}
 
 export function isMetadataExpired(lastUpdated, now = Date.now()) {
   if (!lastUpdated) return false;

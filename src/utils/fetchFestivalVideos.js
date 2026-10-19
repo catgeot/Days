@@ -1,6 +1,10 @@
 import { supabase } from '../shared/api/supabase';
 import { filterBlockedPlaceVideos } from '../../supabase/functions/_shared/videoBlocklist.mjs';
-import { placeVideosForClient, shouldRefreshPlaceVideoCache } from '../pages/Home/lib/placeVideoCache.js';
+import {
+  isStaleEmptyPlaceVideoCache,
+  placeVideosForClient,
+  shouldRefreshPlaceVideoCache,
+} from '../pages/Home/lib/placeVideoCache.js';
 import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 
 const INVOKE_TIMEOUT_MS = 15_000;
@@ -77,7 +81,12 @@ export async function fetchFestivalVideosCacheOnly(opts) {
       cacheRow = legacy;
     }
 
-    if (!cacheRow || !Array.isArray(cacheRow.videos) || shouldRefreshPlaceVideoCache(cacheRow)) {
+    if (
+      !cacheRow ||
+      !Array.isArray(cacheRow.videos) ||
+      isStaleEmptyPlaceVideoCache(cacheRow) ||
+      shouldRefreshPlaceVideoCache(cacheRow)
+    ) {
       return { ok: true, videos: [], fromCache: false, cacheMiss: true };
     }
 
@@ -127,7 +136,12 @@ export async function fetchFestivalVideos(opts) {
         .maybeSingle();
       cacheRow = legacy;
     }
-    if (cacheRow && Array.isArray(cacheRow.videos) && !shouldRefreshPlaceVideoCache(cacheRow)) {
+    if (
+      cacheRow &&
+      Array.isArray(cacheRow.videos) &&
+      !isStaleEmptyPlaceVideoCache(cacheRow) &&
+      !shouldRefreshPlaceVideoCache(cacheRow)
+    ) {
       return {
         ok: true,
         videos: placeVideosForClient(cacheRow).slice(0, FESTIVAL_VIDEOS_MAX),

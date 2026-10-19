@@ -22,6 +22,11 @@ function assert(cond, msg) {
 
 assert(index.includes('function ParentRegionBackButton'), 'ParentRegionBackButton exists');
 assert(index.includes('parentRegionBackButtonClass'), 'borderless row back styles');
+assert(index.includes('data-festival-region-back'), 'region back data attribute for QA');
+assert(
+  index.includes("rowCompanionSidePanel ? ' lg:hidden' : ''"),
+  'row back visible on desktop unless map split side flap',
+);
 assert(index.includes('role="separator"'), 'divider after row back control');
 assert(index.includes("layout=\"row\""), 'row layout uses ParentRegionBackButton');
 assert(!index.includes('Undo2'), 'legacy undo chip icon removed from hub');

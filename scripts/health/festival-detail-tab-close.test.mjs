@@ -40,6 +40,9 @@ test('festival detail bottom close returns sub-tabs to the overview', () => {
   assert.match(sheet, /data-festival-sheet-content/);
   assert.match(sheet, /hasVideoTab &&/);
   assert.match(sheet, /videosLoadSettled/);
+  assert.match(sheet, /videosKnownEmptyFromCache/);
+  assert.match(sheet, /videosUserEmptyOnTab/);
+  assert.match(sheet, /videosNotFound/);
   assert.match(sheet, /fetchFestivalVideosCacheOnly/);
   assert.match(
     button,

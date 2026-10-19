@@ -639,6 +639,8 @@ export default function FestivalDetailSheet({
   const [videosCacheCheckedFor, setVideosCacheCheckedFor] = useState('');
   const [videosFullFetchFor, setVideosFullFetchFor] = useState('');
   const [videosLoadSettled, setVideosLoadSettled] = useState(false);
+  const [videosKnownEmptyFromCache, setVideosKnownEmptyFromCache] = useState(false);
+  const [videosUserEmptyOnTab, setVideosUserEmptyOnTab] = useState(false);
   const [videosInvokeFailed, setVideosInvokeFailed] = useState(false);
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -1013,6 +1015,8 @@ export default function FestivalDetailSheet({
       setVideosCacheCheckedFor('');
       setVideosFullFetchFor('');
       setVideosLoadSettled(false);
+      setVideosKnownEmptyFromCache(false);
+      setVideosUserEmptyOnTab(false);
       setVideosInvokeFailed(false);
       setVideosExpanded(false);
       setNearbySpots([]);
@@ -1044,6 +1048,8 @@ export default function FestivalDetailSheet({
     setVideosCacheCheckedFor('');
     setVideosFullFetchFor('');
     setVideosLoadSettled(false);
+    setVideosKnownEmptyFromCache(false);
+    setVideosUserEmptyOnTab(false);
     setVideosInvokeFailed(false);
     setVideosExpanded(false);
     setSelectedNearby(null);
@@ -1765,10 +1771,12 @@ export default function FestivalDetailSheet({
   if (imageUrls.length > 1) photoLatchRef.current.on = true;
   const hasPhotoTab = imageUrls.length > 1 || photoLatchRef.current.on;
   const hasVideoTab =
-    !videosLoadSettled ||
-    videosLoading ||
+    videosUserEmptyOnTab ||
+    videosInvokeFailed ||
     videos.length > 0 ||
-    videosInvokeFailed;
+    videosLoading ||
+    !videosLoadSettled ||
+    !videosKnownEmptyFromCache;
   const showTabs = true;
   const nearbyPending = nearbyStatus === 'loading' || nearbyStatus === 'idle';
 
@@ -1809,6 +1817,7 @@ export default function FestivalDetailSheet({
       setVideosExpanded(false);
       if (result.cacheMiss) {
         setVideos([]);
+        setVideosKnownEmptyFromCache(false);
         setVideosLoading(false);
         return;
       }
@@ -1816,6 +1825,7 @@ export default function FestivalDetailSheet({
         ? result.videos.slice(0, FESTIVAL_VIDEOS_MAX)
         : [];
       setVideos(list);
+      setVideosKnownEmptyFromCache(Boolean(result.knownEmpty));
       setVideosLoading(false);
       setVideosLoadSettled(true);
     })();
@@ -1857,6 +1867,12 @@ export default function FestivalDetailSheet({
         ? result.videos.slice(0, FESTIVAL_VIDEOS_MAX)
         : [];
       setVideos(list);
+      if (list.length === 0) {
+        setVideosUserEmptyOnTab(true);
+      } else {
+        setVideosUserEmptyOnTab(false);
+        setVideosKnownEmptyFromCache(false);
+      }
     })();
 
     return () => {
@@ -1878,6 +1894,7 @@ export default function FestivalDetailSheet({
     if (!item?.contentId) return;
     setVideosFullFetchFor('');
     setVideosInvokeFailed(false);
+    setVideosUserEmptyOnTab(false);
     setVideosError('');
     setVideosLoadSettled(false);
     if (activeTab !== TAB_READING) {
@@ -2969,6 +2986,14 @@ export default function FestivalDetailSheet({
                     )}
                   </div>
                 )}
+                {!videosLoading &&
+                  !videosError &&
+                  videos.length === 0 &&
+                  videosUserEmptyOnTab && (
+                    <p className="text-sm text-stone-500 py-2">
+                      {t('korea.festival.detail.videosNotFound')}
+                    </p>
+                  )}
                 {!videosLoading && videos.length > 0 && (
                   <>
                     <ul className="space-y-2">

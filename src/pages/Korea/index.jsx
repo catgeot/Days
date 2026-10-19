@@ -423,6 +423,7 @@ function ParentRegionBackButton({ parentRegionLabel, onBack, layout = 'row' }) {
     return (
       <button
         type="button"
+        data-festival-region-back=""
         onClick={onBack}
         className={parentRegionSideBackClass()}
         aria-label={aria}
@@ -434,7 +435,13 @@ function ParentRegionBackButton({ parentRegionLabel, onBack, layout = 'row' }) {
   }
   return (
     <>
-      <button type="button" onClick={onBack} className={parentRegionBackButtonClass()} aria-label={aria}>
+      <button
+        type="button"
+        data-festival-region-back=""
+        onClick={onBack}
+        className={parentRegionBackButtonClass()}
+        aria-label={aria}
+      >
         {label}
       </button>
       <span
@@ -572,6 +579,7 @@ function RelatedChipFlap({
   neighborLabel,
   parentRegionLabel = '',
   layout = 'side',
+  rowCompanionSidePanel = false,
 }) {
   const { t } = useTranslation();
   const neighbor = neighborLabel ?? t('korea.common.neighbor');
@@ -589,7 +597,9 @@ function RelatedChipFlap({
     if (!hasChild && !showParentUp) return null;
     return (
       <ChipScrollRow
-        className="shrink-0 border-b border-stone-200 px-3 py-2 md:hidden"
+        className={`shrink-0 border-b border-stone-200 px-3 py-2${
+          rowCompanionSidePanel ? ' lg:hidden' : ''
+        }`}
         ariaLabel={t('korea.common.regionChips')}
       >
         {showParentUp && (
@@ -2336,7 +2346,7 @@ export default function KoreaFestivalHub() {
 
   const selectCity = (id) => {
     userRegionOverrideRef.current = true;
-    setCityName(id);
+    setCityName(String(id) === 'all' ? 'all' : id);
     setChipPanel('region');
     clearSearchFilter();
     clearNear();
@@ -3211,6 +3221,7 @@ export default function KoreaFestivalHub() {
             {personalTab == null && flapHasRelated && !mapOpen && (
               <RelatedChipFlap
                 layout="row"
+                rowCompanionSidePanel={mapSplitActive}
                 childChips={flapChildChips}
                 neighborChips={flapNeighborChips}
                 tasteSiblingChips={flapTasteChips}

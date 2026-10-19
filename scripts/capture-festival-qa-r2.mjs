@@ -122,6 +122,35 @@ async function shotViewport(page, name, width) {
   console.log('saved', name, width);
 }
 
+async function assertProvinceWideList(page, scenarioKey) {
+  const meta = page.locator('[data-festival-list-meta]').first();
+  await meta.waitFor({ state: 'visible', timeout: 10_000 });
+  const text = (await meta.innerText()).replace(/\s+/g, ' ').trim();
+  const subRow = page.locator('[aria-label="지역 구분 칩"], [aria-label="Region chips"]');
+  const cityPressed = await subRow
+    .getByRole('button', { pressed: true })
+    .allTextContents()
+    .catch(() => []);
+  const hasCityChipActive = cityPressed.some((l) => /군|시|구/.test(l));
+  if (hasCityChipActive) {
+    throw new Error(`${scenarioKey}: city chip still pressed after back (${cityPressed.join(',')})`);
+  }
+  if (/군\s*·|시\s*·/.test(text) && !text.includes('시·도별')) {
+    const cityPart = REGION_DRILLS.find((s) => s.key === scenarioKey)?.city;
+    if (cityPart && (await meta.innerText()).match(cityPart)) {
+      throw new Error(`${scenarioKey}: meta still shows city after back: ${text}`);
+    }
+  }
+  console.log('assert ok', scenarioKey, text.slice(0, 60));
+}
+
+async function clickRegionBack(page) {
+  const back = page.locator('[data-festival-region-back]').first();
+  await back.waitFor({ state: 'visible', timeout: 15_000 });
+  await back.click({ timeout: 15_000 });
+  await page.waitForTimeout(900);
+}
+
 async function main() {
   await mkdir(OUT, { recursive: true });
   const browser = await webkit.launch();
@@ -139,13 +168,7 @@ async function main() {
         timeout: 120_000,
       });
       const dialog = await festivalDialog(page);
-      if (w === 390 && fest.key === 'yanggu') {
-        timings.push(await measureTabStability(page, dialog, fest.id));
-      }
-      if (w === 390 && fest.key === 'hampyeong') {
-        timings.push(await measureTabStability(page, dialog, fest.id));
-      }
-      if (w === 390 && fest.key === 'gangneung') {
+      if (w === 390) {
         timings.push(await measureTabStability(page, dialog, fest.id));
       }
       await shotTabBar(page, dialog, `tabbar-${fest.key}`, w);
@@ -181,22 +204,22 @@ async function main() {
     }
   }
   try {
-  if (zeroVideoId) {
-    for (const w of [390, 1280]) {
-      await page.setViewportSize({ width: w, height: w === 390 ? 844 : 900 });
-      await page.goto(`${BASE}/korea/?festival=${zeroVideoId}`, {
-        waitUntil: 'domcontentloaded',
-        timeout: 120_000,
-      });
-      const dialog = await festivalDialog(page);
-      await page.waitForTimeout(2000);
-      await shotTabBar(page, dialog, `zero-video-${zeroVideoId}-tabbar`, w);
-      const tabs = await dialog.locator('[role="tab"]').allTextContents();
-      notes.push(`zero-video-${w}: tabs=${tabs.join(',')}`);
+    if (zeroVideoId) {
+      for (const w of [390, 1280]) {
+        await page.setViewportSize({ width: w, height: w === 390 ? 844 : 900 });
+        await page.goto(`${BASE}/korea/?festival=${zeroVideoId}`, {
+          waitUntil: 'domcontentloaded',
+          timeout: 120_000,
+        });
+        const dialog = await festivalDialog(page);
+        await page.waitForTimeout(2000);
+        await shotTabBar(page, dialog, `zero-video-${zeroVideoId}-tabbar`, w);
+        const tabs = await dialog.locator('[role="tab"]').allTextContents();
+        notes.push(`zero-video-${w}: tabs=${tabs.join(',')}`);
+      }
+    } else {
+      notes.push('zero-video-probe: NOT FOUND in first 40 list cards');
     }
-  } else {
-    notes.push('zero-video-probe: NOT FOUND in first 40 list cards');
-  }
   } catch (err) {
     notes.push(`zero-video-probe: ERROR ${err.message}`);
   }
@@ -208,10 +231,8 @@ async function main() {
       for (const w of [390, 1280]) {
         await shotViewport(page, `${scenario.key}-before-back-${w}`, w);
       }
-      const subRow = page.locator('[aria-label="지역 구분 칩"], [aria-label="Region chips"]');
-      const back = subRow.getByRole('button').first();
-      await back.click({ timeout: 15_000 });
-      await page.waitForTimeout(900);
+      await clickRegionBack(page);
+      await assertProvinceWideList(page, scenario.key);
       for (const w of [390, 1280]) {
         await shotViewport(page, `${scenario.key}-after-back-${w}`, w);
       }
@@ -222,24 +243,27 @@ async function main() {
   }
 
   try {
+    const scenario = REGION_DRILLS[0];
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(`${BASE}/korea/`, { waitUntil: 'domcontentloaded' });
     await dismissLocHint(page);
-    await page.getByRole('button', { name: /지도|Map/i }).first().click({ timeout: 20_000 }).catch(() => {});
-    await page.waitForTimeout(1200);
-    await openHubDrill(page, REGION_DRILLS[0]);
-    const sideBack = page
-      .getByRole('button', { name: /전체로 돌아가기/ })
-      .first();
-    if (await sideBack.isVisible().catch(() => false)) {
-      await sideBack.click();
-      await page.waitForTimeout(800);
-      await shotViewport(page, 'gangwon-yanggu-side-panel-after-back-1280', 1280);
-    } else {
-      notes.push('side-panel-back: not visible at 1280 (map split may be off)');
-    }
+    await page
+      .getByRole('button', { name: /지도로 위치|지도.*동선|Map.*route|Open map/i })
+      .first()
+      .click({ timeout: 20_000 });
+    await page.waitForTimeout(1500);
+    await openHubDrill(page, scenario);
+    await shotViewport(page, `${scenario.key}-side-panel-before-back-1280`, 1280);
+    const sideBack = page.locator('[data-festival-region-back]').first();
+    await sideBack.waitFor({ state: 'visible', timeout: 15_000 });
+    await sideBack.click();
+    await page.waitForTimeout(900);
+    await assertProvinceWideList(page, `${scenario.key}-side`);
+    await shotViewport(page, `${scenario.key}-side-panel-after-back-1280`, 1280);
+    notes.push('side-panel-back: OK gangwon-yanggu at 1280 map split');
   } catch (err) {
     notes.push(`side-panel-back: ERROR ${err.message}`);
+    console.error('side-panel', err);
   }
 
   await writeFile(
@@ -250,7 +274,11 @@ Base: ${BASE}
 
 ## Video fetch / quota (one line)
 
-Sheet open reads **\`place_videos\` only** (\`fetchFestivalVideosCacheOnly\`); **\`fetch-place-videos\` / YouTube runs only when the user opens the 영상 tab** (cache miss or stale). Cached rows do not add YouTube quota on open.
+Sheet open reads **\`place_videos\` only** (\`fetchFestivalVideosCacheOnly\`); **\`fetch-place-videos\` / YouTube runs only when the user opens the 영상 tab** (cache miss or stale). Cached rows do not add YouTube quota on open. Empty \`videos:[]\` older than **7 days** → cache miss (tab stays for fresh search).
+
+## Stale empty cache / cron
+
+Client: \`isStaleEmptyPlaceVideoCache\` in \`placeVideoCache.js\` (7d). Server: \`refresh-place-videos\` edge loads stale rows via \`staleCutoffIso\` (weekly pg_cron draft in \`20261018180000_place_videos_weekly_refresh_cron.sql\`) including \`emptyPlace\` rows.
 
 ## Tab bar stability (ms until tab label signature stable, 390px)
 
@@ -258,15 +286,19 @@ ${timings.map((t) => `- ${t.festivalId}: ${t.stableMs ?? 'timeout'} ms — \`${t
 
 ## Zero-video festival
 
-${zeroVideoId ? `contentId **${zeroVideoId}** — screenshots \`zero-video-${zeroVideoId}-tabbar-*\` (no 영상 tab).` : 'No 0-video festival found in probe — see log.'}
+${zeroVideoId ? `contentId **${zeroVideoId}** — screenshots \`zero-video-${zeroVideoId}-tabbar-*\` (no 영상 tab on open).` : 'No 0-video festival found in probe — see log.'}
 
 ## Region back press
 
-For each region: \`*-before-back-*\` (city selected) → click \`‹ … 전체\` → \`*-after-back-*\` (province-wide).
+For each region: \`*-before-back-*\` (city selected) → \`[data-festival-region-back]\` → \`*-after-back-*\` (province meta, no city chip pressed). Row back visible on desktop when map list-only (\`lg:hidden\` only when map split side flap).
+
+## Map split side panel (1280)
+
+\`gangwon-yanggu-side-panel-before-back-1280\` → side back → \`gangwon-yanggu-side-panel-after-back-1280\`
 
 ## Tab bar crops
 
-\`tabbar-{yanggu,hampyeong,gangneung}-{390,1280}.png\` — clip centered on \`role=tablist\` so **영상** label is visible.
+\`tabbar-{yanggu,hampyeong,gangneung}-{390,1280}.png\`
 
 ## Log
 
