@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   DETAIL_INTRO_DAILY_CAP,
+  FESTIVAL_WINDOW_INTRO_PER_REQUEST,
   INTRO_SNIPPET_TTL_MS,
   applyHomepagePolicyToItem,
   canMakeDetailIntroCall,
@@ -776,6 +777,7 @@ async function enrichFestivalWindowIntroFields(
   if (!eligible.length) return;
 
   let used = await readDetailIntroDailyCount();
+  let callsThisResponse = 0;
 
   for (const item of eligible) {
     const contentId = String(item.contentId ?? "").trim();
@@ -788,6 +790,7 @@ async function enrichFestivalWindowIntroFields(
     }
 
     if (!canMakeDetailIntroCall(used)) continue;
+    if (callsThisResponse >= FESTIVAL_WINDOW_INTRO_PER_REQUEST) continue;
 
     try {
       const introResult = await callTourApi(
@@ -797,6 +800,7 @@ async function enrichFestivalWindowIntroFields(
         serviceKey,
       );
       used += 1;
+      callsThisResponse += 1;
       await incrementDetailIntroDailyCount();
 
       if (!introResult.ok) continue;

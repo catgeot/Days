@@ -16,6 +16,8 @@ import {
   parseHomepageUrl,
   resolvePublicHomepage,
   canMakeDetailIntroCall,
+  FESTIVAL_WINDOW_INTRO_PER_REQUEST,
+  extractHomepageHrefCandidates,
 } from '../../supabase/functions/tourapi-proxy/intro_homepage.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -46,6 +48,40 @@ test('homepage filter — bare host and portal paths on go.kr', () => {
       parseHomepageUrl('https://www.changwon.go.kr/cwportal/depart/11063/14383/14384.web'),
     ),
     false,
+  );
+});
+
+test('homepage HTML — extract hrefs and pick first valid non-portal URL', () => {
+  const single =
+    '<a href="https://festival.example.com/info">공식홈페이지</a>';
+  assert.equal(
+    resolvePublicHomepage('1', single),
+    'https://festival.example.com/info',
+  );
+
+  const multi =
+    '<a href="https://www.seoul.go.kr/">시청</a><br><a href="https://festival.example.com/ticket">티켓</a>';
+  assert.equal(
+    resolvePublicHomepage('1', multi),
+    'https://festival.example.com/ticket',
+  );
+
+  assert.equal(
+    resolvePublicHomepage('1', 'https://festival.example.com/event'),
+    'https://festival.example.com/event',
+  );
+
+  assert.equal(
+    resolvePublicHomepage('1', '<a href="https://www.busan.go.kr/">부산</a>'),
+    null,
+  );
+
+  assert.equal(resolvePublicHomepage('1', 'not a url at all <<<'), null);
+  assert.deepEqual(
+    extractHomepageHrefCandidates(
+      '<a href="https://a.example/one">1</a> <a href="https://b.example/two">2</a>',
+    ),
+    ['https://a.example/one', 'https://b.example/two'],
   );
 });
 
@@ -116,6 +152,7 @@ test('mergeIntroSnippetOntoItem only fills missing fields', () => {
 
 test('daily cap constant', () => {
   assert.equal(DETAIL_INTRO_DAILY_CAP, 250);
+  assert.equal(FESTIVAL_WINDOW_INTRO_PER_REQUEST, 10);
 });
 
 test('cap behaviour — at cap, no more detailIntro calls', () => {
@@ -132,4 +169,5 @@ test('flag OFF — index gates intro/homepage helpers', () => {
   assert.match(indexSrc, /function introHomepageFlagOn\(\)/);
   assert.match(indexSrc, /if \(!introHomepageFlagOn\(\)\) return;/);
   assert.match(indexSrc, /introHomepageFlagOn\(\) && typedAction === "detailCommon"/);
+  assert.match(indexSrc, /callsThisResponse >= FESTIVAL_WINDOW_INTRO_PER_REQUEST/);
 });

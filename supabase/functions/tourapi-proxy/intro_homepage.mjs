@@ -2,6 +2,9 @@
 
 export const DETAIL_INTRO_DAILY_CAP = 250;
 
+/** Max live detailIntro calls per festivalWindow response (cold-cache safety). */
+export const FESTIVAL_WINDOW_INTRO_PER_REQUEST = 10;
+
 export const INTRO_SNIPPET_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function isIntroHomepageEnabled(envValue = undefined) {
@@ -51,11 +54,37 @@ export function addDaysYmd(ymd, days) {
 }
 
 /**
+ * TourAPI homepage is often HTML (<a href="...">) with optional <br> or multiple links.
  * @param {string | null | undefined} raw
+ * @returns {string[]}
+ */
+export function extractHomepageHrefCandidates(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s) return [];
+
+  const hrefs = [];
+  const re = /href\s*=\s*["']([^"']+)["']/gi;
+  let m;
+  while ((m = re.exec(s)) !== null) {
+    const href = String(m[1] ?? "").trim();
+    if (!href || href.startsWith("#") || /^javascript:/i.test(href)) continue;
+    hrefs.push(href);
+  }
+  if (hrefs.length) return hrefs;
+
+  const urlInText = s.match(/https?:\/\/[^\s<>"']+/i)?.[0];
+  if (urlInText) return [urlInText.trim()];
+
+  if (!/<[a-z][\s\S]*>/i.test(s)) return [s];
+  return [];
+}
+
+/**
+ * @param {string} candidate
  * @returns {URL | null}
  */
-export function parseHomepageUrl(raw) {
-  const s = String(raw ?? "").trim();
+export function homepageUrlFromCandidate(candidate) {
+  const s = String(candidate ?? "").trim();
   if (!s) return null;
   let toParse = s;
   if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(s)) {
@@ -68,6 +97,28 @@ export function parseHomepageUrl(raw) {
   } catch {
     return null;
   }
+}
+
+/**
+ * @param {string | null | undefined} raw
+ * @returns {URL | null}
+ */
+export function parseHomepageUrl(raw) {
+  for (const candidate of extractHomepageHrefCandidates(raw)) {
+    const url = homepageUrlFromCandidate(candidate);
+    if (url) return url;
+  }
+  return null;
+}
+
+/**
+ * @param {string} candidate
+ * @param {URL} url
+ */
+export function formatResolvedHomepageUrl(candidate, url) {
+  const c = String(candidate ?? "").trim();
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(c)) return c;
+  return url.href;
 }
 
 /**
@@ -101,14 +152,13 @@ export function resolvePublicHomepage(contentId, rawHomepage) {
   const raw = String(rawHomepage ?? "").trim();
   if (!raw) return null;
 
-  const url = parseHomepageUrl(raw);
-  if (!url) return null;
-  if (isGoKrPortalFrontPage(url)) return null;
-
-  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) {
-    return raw;
+  for (const candidate of extractHomepageHrefCandidates(raw)) {
+    const url = homepageUrlFromCandidate(candidate);
+    if (!url) continue;
+    if (isGoKrPortalFrontPage(url)) continue;
+    return formatResolvedHomepageUrl(candidate, url);
   }
-  return url.href;
+  return null;
 }
 
 /**

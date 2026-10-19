@@ -1542,6 +1542,7 @@ export default function FestivalDetailSheet({
     );
     const introForSummary = (() => {
       const fromDetail = omitEventHours && intro ? { ...intro, playtime: '' } : intro;
+      if (omitEventHours) return fromDetail;
       const listPlaytime = String(item?.playtime || '').trim();
       const listFee = String(item?.usetimefestival || '').trim();
       if (!listPlaytime && !listFee) return fromDetail;
