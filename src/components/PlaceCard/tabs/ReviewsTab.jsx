@@ -11,6 +11,10 @@ import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
+import {
+  PLACE_GALLERY_SECTION,
+  queuePlaceGallerySectionAfterReview,
+} from '../../../utils/placeGallerySectionFocus.js';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
@@ -831,7 +835,10 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
           existingReview={editingReview}
           onSuccess={() => {
             setIsModalOpen(false);
-            refetch(); // 작성/수정 성공 시 피드 새로고침
+            refetch();
+            if (!editingReview) {
+              queuePlaceGallerySectionAfterReview(placeSlug, PLACE_GALLERY_SECTION.STORIES);
+            }
           }}
         />
       )}
