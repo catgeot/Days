@@ -37,7 +37,7 @@ export function worldEventVideosPlaceId(eventId, locale = 'ko') {
 function normalizeVideo(video) {
   return {
     id: String(video?.id || '').trim(),
-    title: String(video?.title || '').trim() || video?.id || '',
+    title: String(video?.title || '').trim(),
   };
 }
 

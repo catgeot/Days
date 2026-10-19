@@ -1911,6 +1911,7 @@
       "googleSearch": "구글 검색",
       "naverSearch": "네이버 검색",
       "youtubeTitle": "관련 영상",
+      "youtubeVideoFallback": "YouTube 영상",
       "youtubeLoading": "한국어 영상을 불러오는 중…",
       "youtubeLoadMore": "영상 {{count}}개 더보기",
       "youtubeSearch": "YouTube에서 더 찾기",
