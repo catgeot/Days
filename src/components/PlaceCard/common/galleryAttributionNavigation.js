@@ -22,11 +22,19 @@ export function isMobileGalleryAttributionSameTab() {
   return window.matchMedia(MOBILE_ATTRIBUTION_SAME_TAB_QUERY).matches;
 }
 
+export function readGalleryGridScrollTop() {
+  if (typeof document === 'undefined') return 0;
+  const el = document.querySelector('[data-place-gallery-scroll]');
+  const n = Number(el?.scrollTop);
+  return Number.isFinite(n) && n >= 0 ? n : 0;
+}
+
 export function saveGalleryAttributionReturnState({
   placeKey,
   image,
   context = 'gallery',
   lightboxIndex = null,
+  galleryScrollTop = null,
 }) {
   if (!placeKey || !image?.id) return;
   try {
@@ -38,6 +46,8 @@ export function saveGalleryAttributionReturnState({
         imageUrl: image.urls?.regular || image.urls?.small || null,
         context,
         lightboxIndex: typeof lightboxIndex === 'number' ? lightboxIndex : null,
+        galleryScrollTop:
+          typeof galleryScrollTop === 'number' && galleryScrollTop >= 0 ? galleryScrollTop : null,
         savedAt: Date.now(),
       }),
     );
@@ -93,14 +103,23 @@ export function findImageForReturnState(images, returnState) {
   return null;
 }
 
-/** 모바일 — 같은 탭 + sessionStorage 복원용. 데스크톱 — 새 탭 유지 */
+/** 모바일 — 같은 탭 + sessionStorage 복원용. 데스크톱 — 새 탭 유지 (항상 stopPropagation). */
 export function navigateGalleryAttributionLink(event, { placeKey, image, href, context = 'gallery', lightboxIndex }) {
+  event.stopPropagation();
   if (!isMobileGalleryAttributionSameTab()) return;
 
   event.preventDefault();
-  event.stopPropagation();
 
-  saveGalleryAttributionReturnState({ placeKey, image, context, lightboxIndex });
+  const galleryScrollTop =
+    context === 'gallery-grid' ? readGalleryGridScrollTop() : null;
+
+  saveGalleryAttributionReturnState({
+    placeKey,
+    image,
+    context,
+    lightboxIndex,
+    galleryScrollTop,
+  });
   window.location.assign(href);
 }
 

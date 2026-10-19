@@ -1,4 +1,6 @@
 import { supabase } from '../shared/api/supabase';
+import { filterBlockedPlaceVideos } from '../../supabase/functions/_shared/videoBlocklist.mjs';
+import { placeVideosForClient, shouldRefreshPlaceVideoCache } from '../pages/Home/lib/placeVideoCache.js';
 import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
 
 const INVOKE_TIMEOUT_MS = 15_000;
@@ -54,16 +56,14 @@ export async function fetchFestivalVideos(opts) {
   try {
     const { data: cached, error: cacheReadError } = await supabase
       .from('place_videos')
-      .select('videos, next_retry_at')
+      .select('videos, next_retry_at, last_updated')
       .eq('place_id', placeId)
       .limit(1)
       .maybeSingle();
 
     // 3v 전(컬럼 없음)에는 기존 10개 규칙. 있으면 행이 있고 만료 전.
     let cacheRow = cached;
-    let legacyCountRule = false;
     if (cacheReadError) {
-      legacyCountRule = true;
       const { data: legacy } = await supabase
         .from('place_videos')
         .select('videos')
@@ -72,15 +72,10 @@ export async function fetchFestivalVideos(opts) {
         .maybeSingle();
       cacheRow = legacy;
     }
-    const retryAt = cacheRow?.next_retry_at ? Date.parse(cacheRow.next_retry_at) : NaN;
-    const notExpired = !cacheRow?.next_retry_at || (Number.isFinite(retryAt) && retryAt > Date.now());
-    const countOk = legacyCountRule
-      ? Array.isArray(cacheRow?.videos) && cacheRow.videos.length >= FESTIVAL_VIDEOS_MAX
-      : Array.isArray(cacheRow?.videos);
-    if (cacheRow && countOk && (legacyCountRule || notExpired)) {
+    if (cacheRow && Array.isArray(cacheRow.videos) && !shouldRefreshPlaceVideoCache(cacheRow)) {
       return {
         ok: true,
-        videos: cacheRow.videos.slice(0, FESTIVAL_VIDEOS_MAX),
+        videos: placeVideosForClient(cacheRow).slice(0, FESTIVAL_VIDEOS_MAX),
         fromCache: true,
       };
     }
@@ -112,9 +107,10 @@ export async function fetchFestivalVideos(opts) {
     }
     return {
       ok: true,
-      videos: Array.isArray(data.videos)
-        ? data.videos.slice(0, FESTIVAL_VIDEOS_MAX)
-        : [],
+      videos: filterBlockedPlaceVideos(Array.isArray(data.videos) ? data.videos : []).slice(
+        0,
+        FESTIVAL_VIDEOS_MAX,
+      ),
       fromCache: false,
     };
   } catch (err) {

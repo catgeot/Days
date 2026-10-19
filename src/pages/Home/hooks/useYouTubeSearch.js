@@ -10,6 +10,7 @@ import {
   markYoutubeIdUnplayable,
   clearYoutubeIdsUnplayable,
 } from '../../../utils/youtubeUnplayableStorage.js';
+import { filterBlockedPlaceVideos } from '../../../../supabase/functions/_shared/videoBlocklist.mjs';
 import { placeVideosForClient, shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
 import {
   freeSearchYouTubeUrl,
@@ -342,7 +343,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
 
     if (fetchGenRef.current !== gen) return;
 
-    const list = edgeData.videos || [];
+    const list = filterBlockedPlaceVideos(edgeData.videos || []);
     const token = edgeData.nextPageToken || null;
     const source = edgeData.paginationSource || null;
     liveRef.current = {
@@ -513,7 +514,9 @@ export const useYouTubeSearch = (location, mediaMode) => {
       if (fetchGenRef.current !== gen || placeKeyRef.current !== placeKeyAtStart) return;
 
       const seen = new Set(excludeVideoIds);
-      const incoming = (edgeData.videos || []).filter((v) => v?.id && !seen.has(v.id));
+      const incoming = filterBlockedPlaceVideos(edgeData.videos || []).filter(
+        (v) => v?.id && !seen.has(v.id),
+      );
       const token = edgeData.nextPageToken || null;
 
       if (incoming.length === 0) {
