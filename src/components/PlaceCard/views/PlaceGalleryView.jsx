@@ -13,7 +13,9 @@ import {
   formatGalleryDisplaySourcesAttribution,
   getGalleryImageAttribution,
 } from '../common/galleryImageAttribution';
+import GalleryGridPhotoCredit from '../common/GalleryGridPhotoCredit';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
+import { isPlaceGalleryPhotoCreditEnabled } from '../../../utils/placeGalleryPhotoCreditFlag';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
@@ -48,6 +50,8 @@ const MOBILE_SWIPE_DIRECTION_RATIO = 1.25;
 const TILE_LOAD_HANG_MS = 6_000;
 
 /** 그리드 셀 — URL decode 전 검은 빈칸 방지 */
+const galleryPhotoCreditFlagOn = isPlaceGalleryPhotoCreditEnabled();
+
 const GalleryGridTile = React.memo(function GalleryGridTile({
   img,
   index,
@@ -57,6 +61,9 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   enableLongPress = false,
   onBroken,
   onPainted,
+  showPhotoCredit = false,
+  photoCreditLocation,
+  photoCreditLocale,
 }) {
   const [loaded, setLoaded] = useState(false);
   const paintedRef = useRef(false);
@@ -185,6 +192,13 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20} />
+      {showPhotoCredit ? (
+        <GalleryGridPhotoCredit
+          image={img}
+          location={photoCreditLocation}
+          locale={photoCreditLocale}
+        />
+      ) : null}
     </div>
   );
 });
@@ -1184,6 +1198,9 @@ const PlaceGalleryView = React.memo(({
                       img={img}
                       index={i}
                       eager={i < 4}
+                      showPhotoCredit={galleryPhotoCreditFlagOn}
+                      photoCreditLocation={location}
+                      photoCreditLocale={locale}
                       onPainted={onTilePainted}
                       onOpen={() => {
                         suppressOpenClickRef.current = true;

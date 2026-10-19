@@ -247,6 +247,7 @@
     "test:site-search-open": "node --import ./scripts/register-src-esm.mjs --test scripts/site-search-open.test.mjs",
     "test:site-search-enter-immediate": "node scripts/site-search-enter-immediate-477.mjs",
     "test:gallery-display-sources": "node --import ./scripts/register-src-esm.mjs --test scripts/gallery-display-sources-attribution.test.mjs",
+    "test:gallery-photo-credit": "node --import ./scripts/register-src-esm.mjs --test scripts/health/gallery-photo-credit.test.mjs",
     "generate:place-crosslink-festival-seed": "node --import ./scripts/register-src-esm.mjs scripts/generate-place-crosslink-festival-seed.mjs",
     "warn:place-crosslink-festival-seed-age": "node scripts/warn-place-crosslink-festival-seed-age.mjs",
     "test:gateo-feature-flags": "node --import ./scripts/register-src-esm.mjs --test scripts/gateo-feature-flags.test.mjs",
@@ -296,6 +297,8 @@
     "globals": "^16.5.0",
     "jsdom": "^29.1.1",
     "pg": "^8.22.0",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "vite": "^7.2.4"
