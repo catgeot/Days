@@ -3,6 +3,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import catalog from "./placeVideoCatalog.json" with { type: "json" };
 import { clientIp } from "../_shared/placeVideoClientIp.ts";
 import { buildFreeSearchVideo } from "../_shared/freeSearchPlaceVideo.js";
+import {
+  isMetadataExpired,
+  isRetryBlockingRefetch,
+  stripVideosYoutubeMetadata,
+} from "../_shared/placeVideoRefresh.mjs";
 
 const corsBase = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -219,6 +224,10 @@ function ipDailyUnits(): number {
 
 function rowFresh(row: PlaceVideoRow | null): boolean {
   if (!row || !Array.isArray(row.videos)) return false;
+  if (isMetadataExpired(row.last_updated) && isRetryBlockingRefetch(row)) {
+    return true;
+  }
+  if (isMetadataExpired(row.last_updated)) return false;
   if (row.next_retry_at == null || row.next_retry_at === "") return true;
   const t = Date.parse(row.next_retry_at);
   if (!Number.isFinite(t)) return true;
@@ -232,6 +241,18 @@ function backoffMs(failCount: number): number {
 
 function preservedVideos(row: PlaceVideoRow | null): unknown[] {
   return Array.isArray(row?.videos) ? row.videos : [];
+}
+
+function serveCachedVideos(row: PlaceVideoRow | null): unknown[] {
+  const videos = preservedVideos(row);
+  if (!row || !isMetadataExpired(row.last_updated)) return videos;
+  return stripVideosYoutubeMetadata(videos).videos;
+}
+
+function videosForFailureWrite(row: PlaceVideoRow | null): unknown[] {
+  const videos = preservedVideos(row);
+  if (!row || !isMetadataExpired(row.last_updated)) return videos;
+  return stripVideosYoutubeMetadata(videos).videos;
 }
 
 function logFail(placeId: string, reason: string, ytStatus: number | null): void {
@@ -518,7 +539,7 @@ serve(async (req) => {
       : null;
     return json(req, {
       success: true,
-      videos: preservedVideos(row),
+      videos: serveCachedVideos(row),
       nextPageToken: null,
       paginationSource: null,
       retry_after: retryAt,
@@ -565,12 +586,12 @@ serve(async (req) => {
     if (!denied) continue;
     // Per-minute rejection still shows videos already stored for this place.
     if (key.endsWith(":m")) {
-      const videos = preservedVideos(row);
-      if (!skipUpsert && videos.length > 0) {
-        return json(req, {
-          success: true,
-          videos,
-          stale: true,
+        const videos = serveCachedVideos(row);
+        if (!skipUpsert && videos.length > 0) {
+          return json(req, {
+            success: true,
+            videos,
+            stale: true,
           nextPageToken: null,
           paginationSource: null,
         }, 200);
@@ -620,7 +641,7 @@ serve(async (req) => {
   };
 
   const staleVideos = () => {
-    const videos = preservedVideos(row);
+    const videos = serveCachedVideos(row);
     if (skipUpsert || videos.length === 0) return null;
     return json(req, {
       success: true,
@@ -642,7 +663,7 @@ serve(async (req) => {
       if (proxied.ok) {
         resolved = resolvedFromTitle(`scenic:${scenicId}`, proxied.hit, "place");
       } else if (proxied.unknown) {
-        const existing = preservedVideos(row);
+        const existing = videosForFailureWrite(row);
         const { error } = await supabaseAdmin.from("place_videos").upsert({
           place_id: placeId,
           videos: existing,
@@ -722,7 +743,7 @@ serve(async (req) => {
     const ms = emptyPlaceTab ? 3 * DAY_MS : backoffMs(nextFail);
     const { error } = await supabaseAdmin.from("place_videos").upsert({
       place_id: placeId,
-      videos: preservedVideos(row),
+      videos: videosForFailureWrite(row),
       last_updated: row?.last_updated ?? new Date().toISOString(),
       last_error: reason.slice(0, 300),
       fail_count: nextFail,
@@ -806,7 +827,7 @@ serve(async (req) => {
     await writeFailure("empty", placeTabEmpty);
     return json(req, {
       success: true,
-      videos: preservedVideos(row),
+      videos: serveCachedVideos(row),
       nextPageToken: null,
       paginationSource: null,
       retry_after: null,

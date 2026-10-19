@@ -294,7 +294,7 @@ Deno.test("quotaExceeded keeps cached videos and does not start a backoff", asyn
   const body = await first.json();
   assertEquals(body.success, true);
   assertEquals(body.stale, true);
-  assertEquals(body.videos, [{ id: "keep-me", title: "old" }]);
+  assertEquals(body.videos, [{ id: "keep-me" }]);
   assertEquals(ytCalls, 1);
   const row = store.get("paris")!;
   assertEquals(row.videos, [{ id: "keep-me", title: "old" }]);
@@ -328,7 +328,7 @@ Deno.test("a failed search does not delete existing videos", async () => {
   assertEquals(res.status, 200);
   const body = await res.json();
   assertEquals(body.stale, true);
-  assertEquals(body.videos, [{ id: "stay", title: "kept" }]);
+  assertEquals(body.videos, [{ id: "stay" }]);
   assertEquals(store.get("tokyo")?.videos, [{ id: "stay", title: "kept" }]);
   assertEquals(store.get("tokyo")?.fail_count, 0);
   assertEquals(store.get("tokyo")?.next_retry_at, expired);
@@ -974,7 +974,7 @@ Deno.test("unknown content does not wipe videos that are already cached", async 
   const keptVideos = await post({ placeId: "scenic:556" });
   assertEquals(keptVideos.status, 200);
   assertEquals((await keptVideos.json()).stale, true);
-  assertEquals(store.get("scenic:556")?.videos, [{ id: "keep", title: "old" }]);
+  assertEquals(store.get("scenic:556")?.videos, [{ id: "keep" }]);
   assertEquals(store.get("scenic:556")?.fail_count, 0);
   assertEquals(proxyCalls, 1);
   const again = await post({ placeId: "scenic:556" });
@@ -1019,10 +1019,48 @@ Deno.test("a per-minute rejection still returns stored videos", async () => {
   assertEquals(res.status, 200);
   const body = await res.json();
   assertEquals(body.stale, true);
-  assertEquals(body.videos, [{ id: "keep-me", title: "old" }]);
+  assertEquals(body.videos, [{ id: "keep-me" }]);
   assertEquals(ytCalls, 0);
   assertEquals(store.get("paris")?.fail_count, 0);
   assert(Date.parse(store.get("paris")?.next_retry_at ?? "") < Date.now(), "minute cap must not write a backoff");
+});
+
+Deno.test("expired metadata with future next_retry_at serves stripped cache without YouTube", async () => {
+  reset();
+  const future = new Date(Date.now() + 2 * DAY).toISOString();
+  store.set("paris", {
+    place_id: "paris",
+    videos: [{ id: "keep-me", title: "old", channelTitle: "ch", publishedAt: "2019-01-01T00:00:00Z" }],
+    fail_count: 2,
+    last_error: "quotaExceeded",
+    next_retry_at: future,
+    last_updated: "2020-01-01T00:00:00.000Z",
+  });
+  const res = await post({ query: "파리", placeId: "paris" });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.videos.length, 1);
+  assertEquals(body.videos[0]?.id, "keep-me");
+  assertEquals(body.videos[0]?.title, undefined);
+  assertEquals(ytCalls, 0);
+});
+
+Deno.test("fresh last_updated serves title metadata on cache hit", async () => {
+  reset();
+  const recent = new Date().toISOString();
+  store.set("paris", {
+    place_id: "paris",
+    videos: [{ id: "v1", title: "Recent title", channelTitle: "ch" }],
+    fail_count: 0,
+    last_error: null,
+    next_retry_at: null,
+    last_updated: recent,
+  });
+  const res = await post({ query: "파리", placeId: "paris" });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.videos[0]?.title, "Recent title");
+  assertEquals(ytCalls, 0);
 });
 
 Deno.test("ports and ipv4-mapped addresses share one bucket", async () => {

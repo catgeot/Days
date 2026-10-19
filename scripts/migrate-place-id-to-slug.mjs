@@ -23,6 +23,21 @@ const ARCHIVE_TABLE = {
   place_toolkit: 'place_toolkit_archive',
 };
 
+/** YouTube ToS: do not retain title/channelTitle/publishedAt in archives. */
+function stripYoutubeMetadataFromVideos(videos) {
+  if (!Array.isArray(videos)) return videos;
+  return videos.map((entry) => {
+    if (!entry || typeof entry !== 'object') return entry;
+    const { title, channelTitle, publishedAt, ...rest } = entry;
+    return rest;
+  });
+}
+
+function rowForArchive(tableName, row) {
+  if (tableName !== 'place_videos' || !row) return row;
+  return { ...row, videos: stripYoutubeMetadataFromVideos(row.videos) };
+}
+
 const dryRun = process.argv.includes('--dry-run');
 const apply = process.argv.includes('--apply');
 const tablesArg = process.argv.find((a) => a.startsWith('--tables='));
@@ -159,7 +174,7 @@ async function applyAction(supabase, action) {
     if (!row) return;
 
     const archiveRow = {
-      ...row,
+      ...rowForArchive(action.table, row),
       archived_at: new Date().toISOString(),
       archive_reason: action.reason,
       superseded_by: action.superseded_by,

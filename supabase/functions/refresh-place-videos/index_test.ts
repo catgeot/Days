@@ -19,9 +19,12 @@ function assert(cond: unknown, msg: string): void {
 type Row = { place_id: string; videos: unknown[]; last_updated: string };
 
 const store = new Map<string, Row>();
+const runRows: Record<string, unknown>[] = [];
 let ytItems: Record<string, unknown> = {};
+let ytBatchFail = new Set<string>();
 let ytCalls = 0;
 let lastYtPath = "";
+let writeFailPlace = "";
 
 const originalFetch = globalThis.fetch;
 globalThis.fetch = (input: Request | URL | string) => {
@@ -30,6 +33,9 @@ globalThis.fetch = (input: Request | URL | string) => {
     ytCalls += 1;
     lastYtPath = new URL(url).pathname;
     const ids = new URL(url).searchParams.get("id")?.split(",") ?? [];
+    if (ids.some((id) => ytBatchFail.has(id))) {
+      return Promise.resolve(new Response(JSON.stringify({ error: { message: "fail" } }), { status: 500 }));
+    }
     const items = ids.map((id) => ytItems[id]).filter(Boolean);
     return Promise.resolve(new Response(JSON.stringify({ items }), { status: 200 }));
   }
@@ -44,6 +50,30 @@ function staleRows(cutoff: string): Row[] {
 
 (globalThis as Record<string, unknown>).__createSupabaseClient = () => ({
   from: (table: string) => {
+    if (table === "place_videos_refresh_runs") {
+      return {
+        insert(payload: Record<string, unknown>) {
+          runRows.push(payload);
+          return Promise.resolve({ error: null });
+        },
+        select() {
+          return {
+            order() {
+              return {
+                limit() {
+                  return {
+                    maybeSingle() {
+                      const latest = runRows[runRows.length - 1] ?? null;
+                      return Promise.resolve({ data: latest, error: null });
+                    },
+                  };
+                },
+              };
+            },
+          };
+        },
+      };
+    }
     if (table !== "place_videos") throw new Error(`unexpected table ${table}`);
     let cutoff = "";
     return {
@@ -65,6 +95,9 @@ function staleRows(cutoff: string): Row[] {
       update(payload: { videos: unknown[]; last_updated: string }) {
         return {
           eq(_col: string, placeId: string) {
+            if (writeFailPlace === placeId) {
+              return Promise.resolve({ error: { message: "write fail" } });
+            }
             const row = store.get(placeId);
             if (row) {
               store.set(placeId, {
@@ -103,9 +136,12 @@ function call(path: string, headers?: Record<string, string>) {
 
 function reset() {
   store.clear();
+  runRows.length = 0;
   ytItems = {};
+  ytBatchFail = new Set();
   ytCalls = 0;
   lastYtPath = "";
+  writeFailPlace = "";
 }
 
 Deno.test("401 without token", async () => {
@@ -233,8 +269,113 @@ Deno.test("shared classification unit sanity", () => {
   const v = classifyYoutubeListItem({
     id: "x",
     status: { privacyStatus: "public", embeddable: true },
-    snippet: { title: "a", channelTitle: "b" },
+    snippet: { title: "a", channelTitle: "b", publishedAt: "2020-01-01T00:00:00Z" },
   });
   assert(v.keep === true);
+  if (v.keep) assertEquals(v.publishedAt, "2020-01-01T00:00:00Z");
   assertEquals(exceedsRemovalGuard(20, 2, 0.05), true);
+});
+
+Deno.test("status=1 returns latest persisted run", async () => {
+  reset();
+  const old = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  store.set("paris", {
+    place_id: "paris",
+    videos: [{ id: "v1", title: "old" }],
+    last_updated: old,
+  });
+  ytItems = {
+    v1: {
+      id: "v1",
+      status: { privacyStatus: "public", embeddable: true },
+      snippet: { title: "fresh", channelTitle: "ch", publishedAt: "2021-01-01T00:00:00Z" },
+    },
+  };
+  await call("?dry_run=1");
+  const res = await call("?status=1");
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.ok, true);
+  assert(body.latest != null);
+});
+
+Deno.test("cutoff_days and limit echoed in response", async () => {
+  reset();
+  const res = await call("?dry_run=1&cutoff_days=99&limit=2");
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.cutoff_days, 30);
+  assertEquals(body.limit, 2);
+});
+
+Deno.test("youtube batch failure does not abort other places", async () => {
+  reset();
+  const old = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  store.set("a", {
+    place_id: "a",
+    videos: [{ id: "fail1", title: "x" }],
+    last_updated: old,
+  });
+  store.set("b", {
+    place_id: "b",
+    videos: [{ id: "ok1", title: "y" }],
+    last_updated: old,
+  });
+  ytBatchFail.add("fail1");
+  ytItems = {
+    ok1: {
+      id: "ok1",
+      status: { privacyStatus: "public", embeddable: true },
+      snippet: { title: "fresh", channelTitle: "ch", publishedAt: "2020-01-01T00:00:00Z" },
+    },
+  };
+  Deno.env.set("REFRESH_VIDEOS_APPLY", "on");
+  const res = await call("");
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.success, false);
+  assert(body.failed_count >= 1);
+  assertEquals(store.get("b")?.videos[0]?.title, "fresh");
+  Deno.env.delete("REFRESH_VIDEOS_APPLY");
+});
+
+Deno.test("batch fail metadata blank does not bump last_updated", async () => {
+  reset();
+  Deno.env.set("REFRESH_VIDEOS_APPLY", "on");
+  const oldLu = "2020-01-01T00:00:00.000Z";
+  store.set("stale", {
+    place_id: "stale",
+    videos: [{ id: "fail1", title: "old" }],
+    last_updated: oldLu,
+  });
+  ytBatchFail.add("fail1");
+  const res = await call("");
+  assertEquals(res.status, 200);
+  assertEquals(store.get("stale")?.last_updated, oldLu);
+  const vids = store.get("stale")?.videos as Array<Record<string, unknown>>;
+  assertEquals(vids[0]?.id, "fail1");
+  assertEquals(vids[0]?.title, undefined);
+  Deno.env.delete("REFRESH_VIDEOS_APPLY");
+});
+
+Deno.test("apply updates publishedAt from snippet", async () => {
+  reset();
+  Deno.env.set("REFRESH_VIDEOS_APPLY", "on");
+  const old = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  store.set("rome", {
+    place_id: "rome",
+    videos: [{ id: "v1", title: "old", publishedAt: "2019-01-01T00:00:00Z" }],
+    last_updated: old,
+  });
+  ytItems = {
+    v1: {
+      id: "v1",
+      status: { privacyStatus: "public", embeddable: true },
+      snippet: { title: "fresh", channelTitle: "ch", publishedAt: "2022-06-01T12:00:00Z" },
+    },
+  };
+  const res = await call("");
+  assertEquals(res.status, 200);
+  assertEquals(store.get("rome")?.videos[0]?.publishedAt, "2022-06-01T12:00:00Z");
+  Deno.env.delete("REFRESH_VIDEOS_APPLY");
 });

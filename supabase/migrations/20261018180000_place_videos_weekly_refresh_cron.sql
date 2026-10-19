@@ -1,6 +1,6 @@
 -- DRAFT — do NOT apply via automated migration pipeline until ops signs off.
 -- Weekly YouTube policy refresh for place_videos (refresh-place-videos edge).
--- Schedule: Sunday 03:00 KST = Saturday 18:00 UTC (cron minute hour dom month dow).
+-- Schedule: Monday 04:50 KST = Sunday 19:50 UTC (cron minute hour dom month dow).
 --
 -- Prerequisites (manual):
 --   1. Deploy supabase/functions/refresh-place-videos with secrets:
@@ -24,7 +24,7 @@
 
 -- SELECT cron.schedule(
 --   'place-videos-weekly-refresh',
---   '0 18 * * 6',
+--   '50 19 * * 0',
 --   $$
 --   SELECT net.http_post(
 --     url := 'https://<PROJECT_REF>.supabase.co/functions/v1/refresh-place-videos',

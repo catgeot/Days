@@ -8,9 +8,15 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const logicUrl = pathToFileURL(join(root, 'supabase/functions/_shared/placeVideoRefresh.mjs')).href;
 
 const {
+  STALE_DAYS,
   classifyYoutubeListItem,
   exceedsRemovalGuard,
   refreshVideosForPlace,
+  summarizeRefreshRunForCap,
+  isRetryBlockingRefetch,
+  stripVideosYoutubeMetadata,
+  parseCutoffDaysParam,
+  parseLimitParam,
   DEFAULT_MAX_REMOVE_PCT,
   maxRemoveRatioFromPct,
   parseMaxRemovePct,
@@ -56,6 +62,8 @@ test('refreshVideosForPlace drops missing API rows and refreshes titles', () => 
   assert.equal(out.videos[0].title, 'New & Title');
   assert.equal(out.videos[0].channelTitle, 'Ch2');
   assert.equal(out.videos[0].ai_context.x, 1);
+  assert.equal(out.publishedAtUpdates, 1);
+  assert.equal(out.titleUpdates, 1);
 });
 
 test('exceedsRemovalGuard uses strict max-remove pct threshold (default 5%)', () => {
@@ -88,6 +96,45 @@ test('chunkVideoIds batches by 50', () => {
 test('videoIdFromCached reads id field', () => {
   assert.equal(videoIdFromCached({ id: ' abc ' }), 'abc');
   assert.equal(videoIdFromCached({ videoId: 'x' }), 'x');
+});
+
+test('STALE_DAYS default is 20', () => {
+  assert.equal(STALE_DAYS, 20);
+});
+
+test('parseCutoffDaysParam clamps 0..30', () => {
+  assert.equal(parseCutoffDaysParam('99'), 30);
+  assert.equal(parseCutoffDaysParam('-3'), 0);
+  assert.equal(parseCutoffDaysParam('7'), 7);
+});
+
+test('parseLimitParam clamps 1..1000', () => {
+  assert.equal(parseLimitParam('0'), 1);
+  assert.equal(parseLimitParam('5000'), 1000);
+});
+
+test('isRetryBlockingRefetch when next_retry_at is in the future', () => {
+  const now = Date.now();
+  assert.equal(isRetryBlockingRefetch({ next_retry_at: new Date(now + 3600000).toISOString() }, now), true);
+  assert.equal(isRetryBlockingRefetch({ next_retry_at: null }, now), false);
+});
+
+test('stripVideosYoutubeMetadata keeps id and GATEO fields', () => {
+  const out = stripVideosYoutubeMetadata([
+    { id: 'a', title: 't', channelTitle: 'c', publishedAt: 'x', ai_context: { z: 1 } },
+  ]);
+  assert.equal(out.strippedCount, 1);
+  assert.deepEqual(out.videos[0], { id: 'a', ai_context: { z: 1 } });
+});
+
+test('summarizeRefreshRunForCap ignores checkOk=false parts', () => {
+  const cap = summarizeRefreshRunForCap([
+    { examined: 100, removed: 2, emptyPlace: false, checkOk: true },
+    { examined: 100, removed: 90, emptyPlace: false, checkOk: false },
+  ]);
+  assert.equal(cap.examined, 100);
+  assert.equal(cap.removed, 2);
+  assert.equal(cap.guardTriggered, false);
 });
 
 const edgeEntry = join(root, 'supabase/functions/refresh-place-videos/index.ts');
