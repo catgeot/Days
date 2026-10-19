@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-11T20:06:34.538Z",
+    "generatedAt": "2026-10-19T13:08:29.054Z",
     "eventCount": 23,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -158,713 +158,6 @@
           "id": "innere-stadt-stay",
           "promptKo": "1구 숙소 추천 기준 알려줘",
           "promptEn": "How to pick a hotel in Innere Stadt?"
-        }
-      ],
-      "priority": 1
-    },
-    {
-      "id": "bali-galungan-season-2026",
-      "slug": "bali",
-      "type": "season",
-      "title": "갈룽안·사원 축제 시즌",
-      "startDate": "2026-09-16",
-      "endDate": "2026-09-26",
-      "recurrence": "annual",
-      "source": "curated",
-      "hubId": "bali",
-      "titleEn": "Galungan & Temple Festival Season",
-      "recurrenceNote": "210일 주기 · 갈룽안·쿠닝안",
-      "recurrenceNoteEn": "210-day cycle · Galungan & Kuningan",
-      "venue": {
-        "name": "Bali islandwide temples"
-      },
-      "sourceUrl": "https://en.wikipedia.org/wiki/Galungan",
-      "bookingHints": "우붓·스미냑 — 사원 방문 시 사례 복장 준비",
-      "detailOverview": "발리 힌두력 210일 주기 축제로, 9월 16일(수) 갈룽안에 시즌이 열리고 9월 26일(토) 쿠닝안(갈룽안 10일 후)에 마무리됩니다. 이 10일 사이 펜져 장식·사원 제례가 섬 전역에서 이어지며, 방문 일정은 보통 「갈룽안 전후」「쿠닝안 전후」「둘 다 커버」 중 하나를 기준으로 잡습니다.",
-      "detailOverviewEn": "Bali's Galungan season follows the 210-day Balinese calendar, opening on Wed 16 Sep 2026 and closing with Kuningan ten days later on Sat 26 Sep. Penjor decorations and temple ceremonies ripple across the island — plan around Galungan, Kuningan, or a trip that covers both.",
-      "highlights": [
-        "9/16(수) 갈룽안 — 조상을 맞이하는 날 · 사원·가옥 펜져·제례 절정(사례 복장 필수)",
-        "9/26(토) 쿠닝안 — 갈룽안 10일 후 마무리 제례 · 사원 방문·지역 행사 재피크",
-        "우붓(사원·마을) + 스미냑(해변) 분할 숙박 — 시즌 중 이동 1~1.5시간 · 렌터카·드라이버 권장"
-      ],
-      "highlightsEn": [
-        "Wed 16 Sep Galungan — ancestors return home; penjor poles and temple offerings peak (modest temple dress required)",
-        "Sat 26 Sep Kuningan — closing ceremonies ten days after Galungan; temple visits and village events pick up again",
-        "Split stays in Ubud (temples, villages) and Seminyak (beach) — 1–1.5 hr drives in season; car or driver recommended"
-      ],
-      "stayAreas": [
-        {
-          "name": "우붓 · Ubud",
-          "nameEn": "Ubud",
-          "mrtKeyword": "Ubud Bali",
-          "note": "사원·전통 마을 · 갈룽안 제례 밀집",
-          "noteEn": "Temples & villages · dense Galungan ceremonies"
-        },
-        {
-          "name": "스미냑 · Seminyak",
-          "nameEn": "Seminyak",
-          "mrtKeyword": "Seminyak Bali",
-          "note": "해변·레스토랑 · 우붓 당일 투어 1~1.5시간",
-          "noteEn": "Beach & dining · 1–1.5 hr day trip to Ubud"
-        }
-      ],
-      "recommendedNights": 4,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg",
-      "heroImages": [
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg",
-          "captionKo": "발리 제례 공양",
-          "captionEn": "Balinese temple offerings"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Penjor_Galungan_Ubud_Bali_20120906a.jpg/1280px-Penjor_Galungan_Ubud_Bali_20120906a.jpg",
-          "captionKo": "갈룽안 펜져 장식",
-          "captionEn": "Galungan penjor decorations"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Penjor_Galungan_Ubud_Bali_20120906b.jpg/1280px-Penjor_Galungan_Ubud_Bali_20120906b.jpg",
-          "captionKo": "갈룽안 시즌 사원 장식",
-          "captionEn": "Galungan season temple decor"
-        }
-      ],
-      "glossaryTerms": [
-        {
-          "id": "galungan",
-          "termKo": "갈룽안",
-          "promptKo": "발리 갈룽안 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
-          "searchQueryKo": "발리 갈룽안 축제",
-          "termEn": "Galungan",
-          "promptEn": "Explain Galungan for Bali travelers in 3 short sentences.",
-          "searchQueryEn": "Bali Galungan festival",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Galungan"
-        },
-        {
-          "id": "kuningan",
-          "termKo": "쿠닝안",
-          "promptKo": "발리 쿠닝안이 갈룽안과 어떤 관계인지, 여행 일정에 왜 중요한지 3문장 이내로 설명해줘.",
-          "searchQueryKo": "발리 쿠닝안 축제",
-          "termEn": "Kuningan",
-          "promptEn": "Explain Kuningan and its relation to Galungan for travelers in 3 short sentences.",
-          "searchQueryEn": "Bali Kuningan festival",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Kuningan"
-        },
-        {
-          "id": "penjor",
-          "termKo": "펜져",
-          "promptKo": "발리 갈룽안 시즌 펜져 장식이 무엇인지, 어디서 볼 수 있는지 3문장 이내로 설명해줘.",
-          "searchQueryKo": "발리 갈룽안 펜져 장식",
-          "termEn": "penjor",
-          "promptEn": "What are Galungan penjor decorations and where to see them? 3 short sentences.",
-          "searchQueryEn": "Bali Galungan penjor decoration"
-        },
-        {
-          "id": "ceremonial-dress",
-          "termKo": "사례 복장",
-          "promptKo": "발리 사원 방문 시 사례 복장(사롱·셀endang) 규정을 여행자 관점에서 3문장 이내로 설명해줘.",
-          "searchQueryKo": "발리 사원 사례 복장 사롱",
-          "termEn": "ceremonial dress",
-          "promptEn": "Temple dress code (sarong, sash) for Bali visitors in 3 short sentences.",
-          "searchQueryEn": "Bali temple dress code sarong"
-        },
-        {
-          "id": "sarong",
-          "termKo": "사롱",
-          "promptKo": "발리 사원 방문용 사롱이 무엇인지, 대여·구매 팁을 3문장 이내로 설명해줘.",
-          "searchQueryKo": "발리 사롱 대여 우붓",
-          "termEn": "sarong",
-          "promptEn": "What is a sarong for Bali temples and how to get one? 3 short sentences.",
-          "searchQueryEn": "Bali sarong rental Ubud"
-        }
-      ],
-      "highlightContextLinks": [
-        {
-          "highlightIndex": 0,
-          "links": [
-            {
-              "id": "galungan-official",
-              "labelKo": "갈룽안 안내",
-              "kind": "shop",
-              "labelEn": "Galungan guide",
-              "href": "https://en.wikipedia.org/wiki/Galungan"
-            },
-            {
-              "id": "sarong-klook",
-              "labelKo": "사롱 Klook 검색",
-              "kind": "shop",
-              "labelEn": "Sarong on Klook",
-              "searchQueryKo": "발리 사롱 대여",
-              "searchQueryEn": "Bali sarong rental",
-              "searchTarget": "klook"
-            }
-          ]
-        },
-        {
-          "highlightIndex": 2,
-          "links": [
-            {
-              "id": "bali-rental",
-              "labelKo": "발리 렌터카",
-              "kind": "rental",
-              "labelEn": "Bali car rental"
-            },
-            {
-              "id": "bali-driver-tour",
-              "labelKo": "기사 포함 투어",
-              "kind": "tour",
-              "labelEn": "Private driver tour"
-            }
-          ]
-        }
-      ],
-      "youtubeVideos": [
-        {
-          "id": "AJhPk93ksso",
-          "titleKo": "갈룽안 축제 영상",
-          "titleEn": "Galungan festival film"
-        },
-        {
-          "id": "8ix-YkhHl_E",
-          "titleKo": "발리 갈룽안·우붓 체험",
-          "titleEn": "Galungan in Ubud"
-        }
-      ],
-      "youtubeSearchQueryKo": "발리 갈룽안 축제",
-      "youtubeSearchQueryEn": "Bali Galungan festival",
-      "heroGallerySearchQueryEn": "Galungan penjor temple festival",
-      "actionChips": [
-        {
-          "id": "galungan-guide",
-          "labelKo": "갈룽안 안내",
-          "href": "https://en.wikipedia.org/wiki/Galungan",
-          "labelEn": "Galungan guide",
-          "kind": "official"
-        },
-        {
-          "id": "ubud-temples-map",
-          "labelKo": "우붓 사원 지도",
-          "href": "https://www.google.com/maps/search/?api=1&query=Ubud+temples+Bali",
-          "labelEn": "Ubud temples map",
-          "kind": "map"
-        },
-        {
-          "id": "penjor-search",
-          "labelKo": "펜져 장식 검색",
-          "href": "https://www.google.com/search?q=Bali+Galungan+penjor+decoration+Ubud&hl=en",
-          "labelEn": "Penjor decorations",
-          "kind": "search"
-        },
-        {
-          "id": "sarong-rental",
-          "labelKo": "사롱·복장 대여",
-          "href": "https://www.google.com/search?q=%EB%B0%9C%EB%A6%AC+%EC%82%AC%EC%9B%90+%EC%82%AC%EB%A1%80+%EB%B3%B5%EC%9E%A5+%EC%82%AC%EB%A1%B1&hl=ko",
-          "labelEn": "Sarong & temple dress rental",
-          "kind": "shop"
-        },
-        {
-          "id": "sarong-klook",
-          "labelKo": "사롱 Klook 검색",
-          "href": "https://www.klook.com/ko/search/result/?query=%EB%B0%9C%EB%A6%AC+%EC%82%AC%EB%A1%B1+%EB%8C%80%EC%97%AC",
-          "labelEn": "Sarong on Klook",
-          "kind": "shop"
-        }
-      ],
-      "mooniChips": [
-        {
-          "id": "temple-etiquette",
-          "promptKo": "갈룽안 때 사원 방문 예절 알려줘",
-          "promptEn": "Temple etiquette during Galungan?"
-        },
-        {
-          "id": "ubud-itinerary",
-          "promptKo": "우붓 기준 4박 일정 짜줘",
-          "promptEn": "Plan a 4-night Ubud-based Galungan itinerary"
-        },
-        {
-          "id": "penjor-spots",
-          "promptKo": "펜져 장식 볼 수 있는 곳은?",
-          "promptEn": "Where can I see penjor decorations?"
-        }
-      ],
-      "priority": 1
-    },
-    {
-      "id": "barcelona-la-merce-2026",
-      "slug": "barcelona",
-      "type": "festival",
-      "title": "라 메르세",
-      "startDate": "2026-09-18",
-      "endDate": "2026-09-24",
-      "recurrence": "annual",
-      "source": "official_url",
-      "hubId": "barcelona",
-      "titleEn": "La Mercè",
-      "recurrenceNote": "9월 셋째 주 · 수호성인의 날 9/24",
-      "recurrenceNoteEn": "Third week of Sep · feast day Sep 24",
-      "venue": {
-        "name": "Barcelona citywide · Plaça de Sant Jaume"
-      },
-      "sourceUrl": "https://www.barcelona.cat/lamerce/en",
-      "bookingHints": "고딕 지구·엘 본·그라시아 — 축제 주간 2~4박 · 9/24 전후 교통 통제",
-      "detailOverview": "바르셀로나 수호성인 메르세(Mercè)를 기념하는 도시 축제로, 9월 셋째 주 전후 약 일주일간 거리 공연·카스텔레르스(인탑)·코레포크(불꽃 퍼레이드)가 이어집니다. 전체 시즌 숙박보다 9/22~24 절정 전후 2~3박으로 고딕 지구·엘 본 기점을 잡아 야간 행사와 메트로 이동을 묶는 방문이 일반적입니다.",
-      "highlights": [
-        "Plaça de Sant Jaume — 개막·폐막·공식 행사 중심 · 고딕 지구 도보권",
-        "Castellers(인탑) — 광장·거리 공연 · 혼잡 구간 조기 도착 권장",
-        "Correfoc·불꽃·콘서트 — 야간 행사 다수 · 9/24 전후 교통·지하철 운행 변경"
-      ],
-      "stayAreas": [
-        {
-          "name": "고딕 지구 · El Born",
-          "mrtKeyword": "Barcelona Gothic Quarter",
-          "note": "산트 자우메·엘 본 도보 · 축제 행사 밀집"
-        },
-        {
-          "name": "그라시아 · Gràcia",
-          "mrtKeyword": "Barcelona Gracia",
-          "note": "현지 분위기 · L3·L4 환승으로 중심가 15분"
-        }
-      ],
-      "recommendedNights": 3,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg/1280px-Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg",
-      "heroImages": [
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg/1280px-Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg",
-          "captionKo": "라 메르세 카스텔레르스",
-          "captionEn": "La Mercè castellers"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Sagrada_Familia_March_2015-19bw.jpg/1280px-Sagrada_Familia_March_2015-19bw.jpg",
-          "captionKo": "사그라다 파밀리아",
-          "captionEn": "Sagrada Família"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/La_Merc%C3%A8_2024_-_Diada_castellera_de_la_Merc%C3%A8_-_20240924_152106.jpg/1280px-La_Merc%C3%A8_2024_-_Diada_castellera_de_la_Merc%C3%A8_-_20240924_152106.jpg",
-          "captionKo": "라 메르세 2024 인탑 행사",
-          "captionEn": "La Mercè 2024 castell diada"
-        }
-      ],
-      "glossaryTerms": [
-        {
-          "id": "la-merce",
-          "termKo": "라 메르세",
-          "promptKo": "바르셀로나 라 메르세(La Mercè) 축제가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.",
-          "searchQueryKo": "바르셀로나 라 메르세 축제",
-          "termEn": "La Mercè",
-          "promptEn": "What is La Mercè festival in Barcelona for travelers in 3 short sentences.",
-          "searchQueryEn": "Barcelona La Mercè festival",
-          "referenceUrl": "https://en.wikipedia.org/wiki/La_Merc%C3%A8",
-          "referenceUrlKo": "https://ko.wikipedia.org/wiki/%EB%9D%BC_%EB%A9%94%EB%A5%B4%EC%84%B8"
-        },
-        {
-          "id": "castellers",
-          "termKo": "카스텔레르스",
-          "promptKo": "카스텔레르스(인탑)가 라 메르세에서 왜 중요한지 3문장 이내로 설명해줘.",
-          "searchQueryKo": "바르셀로나 카스텔레르스 인탑",
-          "termEn": "castellers",
-          "promptEn": "Why castellers matter at La Mercè in 3 short sentences.",
-          "searchQueryEn": "Barcelona castellers human towers",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Castell"
-        },
-        {
-          "id": "correfoc",
-          "termKo": "코레포크",
-          "promptKo": "라 메르세 코레포크(불꽃 퍼레이드)가 무엇인지 안전·관람 팁을 3문장 이내로 설명해줘.",
-          "searchQueryKo": "바르셀로나 코레포크 라 메르세",
-          "termEn": "correfoc",
-          "promptEn": "What is correfoc at La Mercè and how to watch safely in 3 short sentences.",
-          "searchQueryEn": "Barcelona correfoc La Mercè"
-        },
-        {
-          "id": "sant-jaume",
-          "termKo": "산트 자우메 광장",
-          "promptKo": "산트 자우메 광장이 라 메르세 공식 행사의 중심인 이유를 3문장 이내로 설명해줘.",
-          "searchQueryKo": "바르셀로나 산트 자우메 광장",
-          "termEn": "Plaça de Sant Jaume",
-          "promptEn": "Why Plaça de Sant Jaume is the hub of La Mercè in 3 short sentences.",
-          "searchQueryEn": "Plaça de Sant Jaume Barcelona"
-        }
-      ],
-      "highlightContextLinks": [
-        {
-          "highlightIndex": 0,
-          "links": [
-            {
-              "id": "merce-official",
-              "labelKo": "공식 일정",
-              "kind": "shop",
-              "labelEn": "Official programme",
-              "href": "https://www.barcelona.cat/lamerce/en"
-            }
-          ]
-        },
-        {
-          "highlightIndex": 2,
-          "links": [
-            {
-              "id": "correfoc-guide",
-              "labelKo": "코레포크 안내",
-              "kind": "shop",
-              "labelEn": "Correfoc guide",
-              "searchQueryKo": "바르셀로나 코레포크 라 메르세",
-              "searchQueryEn": "Barcelona correfoc La Mercè",
-              "searchTarget": "google"
-            }
-          ]
-        }
-      ],
-      "youtubeSearchQueryKo": "바르셀로나 라 메르세",
-      "youtubeSearchQueryEn": "Barcelona La Mercè",
-      "heroGallerySearchQueryEn": "La Merce festival parade",
-      "mooniChips": [
-        {
-          "id": "best-nights",
-          "promptKo": "9월 중 어느 박이 라 메르세 보기 좋아?",
-          "promptEn": "Which nights in September are best for La Mercè?"
-        },
-        {
-          "id": "castellers-spots",
-          "promptKo": "카스텔레르스 보기 좋은 장소 알려줘",
-          "promptEn": "Where is best to watch castellers?"
-        },
-        {
-          "id": "stay-area",
-          "promptKo": "고딕 지구랑 그라시아 중 어디 숙소가 나아?",
-          "promptEn": "Gothic Quarter or Gràcia — where should I stay?"
-        }
-      ],
-      "priority": 1
-    },
-    {
-      "id": "munich-oktoberfest-2026",
-      "slug": "munich",
-      "type": "festival",
-      "title": "옥토버페스트",
-      "startDate": "2026-09-19",
-      "endDate": "2026-10-04",
-      "recurrence": "annual",
-      "source": "official_url",
-      "hubId": "munich",
-      "titleEn": "Oktoberfest",
-      "recurrenceNote": "9월 중순~10월 초",
-      "recurrenceNoteEn": "Mid-Sep–early Oct",
-      "venue": {
-        "name": "Theresienwiese"
-      },
-      "sourceUrl": "https://www.oktoberfest.de/en",
-      "bookingHints": "테레지엔비제·하이드하우저 근처 숙소는 6~12개월 전 예약 권장",
-      "detailOverview": "뮌헨 테레지엔비제에서 열리는 세계 최대 맥주 축제로, 약 2주간 대형 맥주 텐트·놀이기구·스트리트 푸드가 이어집니다. 개막 주말·중순 주말 등 핵심 2~3일만 방문하는 짧은 일정이 일반적입니다.",
-      "detailOverviewEn": "Munich's Theresienwiese hosts the world's biggest beer festival for about two weeks of giant beer tents, rides, and street food. Most travelers visit just the key 2–3 days around opening weekend or mid-festival weekends.",
-      "highlights": [
-        "대형 맥주 텐트 — 좌석·단체 예약은 공식 파트너·호텔 패키지 조기 마감",
-        "U4/U5 Theresienwiese·Hackerbrücke 역 도보 접근",
-        "평일 낮·저녁은 상대적으로 한산 — 주말·개막일 혼잡 최대"
-      ],
-      "highlightsEn": [
-        "Large beer tents — table and group reservations sell out through official partners and hotel packages",
-        "Walk from U4/U5 Theresienwiese or Hackerbrücke stations",
-        "Weekday afternoons and evenings are calmer — weekends and opening day are busiest"
-      ],
-      "stayAreas": [
-        {
-          "name": "테레지엔비제 · Schwanthalerhöhe",
-          "nameEn": "Theresienwiese · Schwanthalerhöhe",
-          "mrtKeyword": "Munich Theresienwiese",
-          "note": "축제장 도보 5~10분 · 성수기 6~12개월 전 마감",
-          "noteEn": "5–10 min walk to grounds · books out 6–12 months ahead in peak season"
-        },
-        {
-          "name": "Hauptbahnhof · Ludwigsvorstadt",
-          "nameEn": "Hauptbahnhof · Ludwigsvorstadt",
-          "mrtKeyword": "Munich Hauptbahnhof",
-          "note": "S-Bahn·U-Bahn 환승 · 텐트까지 15~20분",
-          "noteEn": "S-Bahn/U-Bahn hub · 15–20 min to tents"
-        }
-      ],
-      "recommendedNights": 3,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg",
-      "heroImages": [
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg",
-          "captionKo": "옥토버페스트 개막 현장",
-          "captionEn": "Oktoberfest opening celebration"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Hofbraudedans.jpg/1280px-Hofbraudedans.jpg",
-          "captionKo": "호프브로이 텐트 내부",
-          "captionEn": "Hofbräu beer tent interior"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG",
-          "captionKo": "옥토버페스트 축제장",
-          "captionEn": "Oktoberfest grounds"
-        }
-      ],
-      "glossaryTerms": [
-        {
-          "id": "theresienwiese",
-          "termKo": "테레지엔비제",
-          "promptKo": "뮌헨 테레지엔비제가 옥토버페스트와 어떤 관계인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
-          "searchQueryKo": "뮌헨 테레지엔비제 옥토버페스트",
-          "termEn": "Theresienwiese",
-          "promptEn": "What is Theresienwiese and why it matters for Oktoberfest visitors? 3 short sentences.",
-          "searchQueryEn": "Theresienwiese Munich Oktoberfest",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Theresienwiese"
-        },
-        {
-          "id": "beer-tent",
-          "termKo": "맥주 텐트",
-          "promptKo": "옥토버페스트 맥주 텐트 예약·좌석 규정을 여행자 관점에서 3문장 이내로 설명해줘.",
-          "searchQueryKo": "옥토버페스트 맥주 텐트 예약",
-          "termEn": "beer tent",
-          "promptEn": "Oktoberfest beer tent seating and reservations for travelers in 3 short sentences.",
-          "searchQueryEn": "Oktoberfest beer tent reservation"
-        },
-        {
-          "id": "oktoberfest",
-          "termKo": "옥토버페스트",
-          "promptKo": "뮌헨 옥토버페스트의 역사와 여행 일정 팁을 3문장 이내로 설명해줘.",
-          "searchQueryKo": "뮌헨 옥토버페스트 가이드",
-          "termEn": "Oktoberfest",
-          "promptEn": "Munich Oktoberfest basics and trip tips in 3 short sentences.",
-          "searchQueryEn": "Munich Oktoberfest guide",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Oktoberfest",
-          "referenceUrlKo": "https://ko.wikipedia.org/wiki/옥토버페스트"
-        },
-        {
-          "id": "hackerbruecke",
-          "termKo": "Hackerbrücke",
-          "promptKo": "옥토버페스트 때 Hackerbrücke 역 접근과 혼잡 팁을 3문장 이내로 설명해줘.",
-          "searchQueryKo": "옥토버페스트 Hackerbrücke 역",
-          "termEn": "Hackerbrücke",
-          "promptEn": "Hackerbrücke station access during Oktoberfest in 3 short sentences.",
-          "searchQueryEn": "Oktoberfest Hackerbrücke station"
-        }
-      ],
-      "highlightContextLinks": [
-        {
-          "highlightIndex": 0,
-          "links": [
-            {
-              "id": "tent-reservation",
-              "labelKo": "텐트 예약 검색",
-              "kind": "shop",
-              "labelEn": "Tent reservations",
-              "searchQueryKo": "옥토버페스트 맥주 텐트 예약",
-              "searchQueryEn": "Oktoberfest beer tent reservation",
-              "searchTarget": "google"
-            }
-          ]
-        },
-        {
-          "highlightIndex": 1,
-          "links": [
-            {
-              "id": "theresienwiese-search",
-              "labelKo": "Theresienwiese 검색",
-              "kind": "shop",
-              "labelEn": "Search Theresienwiese",
-              "searchQueryKo": "뮌헨 테레지엔비제 옥토버페스트",
-              "searchQueryEn": "Theresienwiese Munich Oktoberfest",
-              "searchTarget": "google"
-            }
-          ]
-        }
-      ],
-      "youtubeVideos": [
-        {
-          "id": "B5GN30_FRWU",
-          "titleKo": "뮌헨·옥토버페스트 가이드",
-          "titleEn": "Munich & Oktoberfest guide"
-        },
-        {
-          "id": "wHr51Uh9a0E",
-          "titleKo": "옥토버페스트 현장",
-          "titleEn": "Inside Oktoberfest"
-        }
-      ],
-      "heroGallerySearchQueryEn": "Oktoberfest Munich beer tent",
-      "actionChips": [
-        {
-          "id": "official-site",
-          "labelKo": "공식 사이트",
-          "href": "https://www.oktoberfest.de/en",
-          "labelEn": "Official site",
-          "kind": "official"
-        },
-        {
-          "id": "theresienwiese-map",
-          "labelKo": "Theresienwiese 지도",
-          "href": "https://www.google.com/maps/search/?api=1&query=Theresienwiese+Munich",
-          "labelEn": "Theresienwiese map",
-          "kind": "map"
-        },
-        {
-          "id": "tent-reservation",
-          "labelKo": "텐트 예약 검색",
-          "href": "https://www.google.com/search?q=Oktoberfest+beer+tent+reservation&hl=ko",
-          "labelEn": "Tent reservations",
-          "kind": "search"
-        }
-      ],
-      "mooniChips": [
-        {
-          "id": "tent-booking",
-          "promptKo": "맥주 텐트 예약은 어떻게 해?",
-          "promptEn": "How do I book an Oktoberfest beer tent?"
-        },
-        {
-          "id": "weekday-weekend",
-          "promptKo": "평일이랑 주말 중 언제 가는 게 나아?",
-          "promptEn": "Weekday or weekend — when is better to visit?"
-        },
-        {
-          "id": "transport",
-          "promptKo": "Theresienwiese 가는 교통 알려줘",
-          "promptEn": "How do I get to Theresienwiese?"
-        }
-      ],
-      "priority": 1
-    },
-    {
-      "id": "singapore-gp-2026",
-      "slug": "singapore",
-      "type": "festival",
-      "title": "싱가포르 그랑프리",
-      "startDate": "2026-10-09",
-      "endDate": "2026-10-11",
-      "recurrence": "annual",
-      "source": "official_url",
-      "hubId": "singapore",
-      "titleEn": "Singapore Grand Prix",
-      "recurrenceNote": "10월 첫째 주말 전후",
-      "recurrenceNoteEn": "Around the first weekend in Oct",
-      "venue": {
-        "name": "Marina Bay Street Circuit"
-      },
-      "sourceUrl": "https://singaporegp.sg/en/",
-      "bookingHints": "마리나 베이·버기스·시티홀 — 레이스 주말 3~6개월 전 숙소·티켓 조기 마감",
-      "detailOverview": "마리나 베이 스트리트 서킷에서 열리는 F1 나이트 레이스로, 금~일 3일간 레이스·콘서트·축제가 이어집니다. 전체 시즌 숙박보다 레이스 주말 전후 2~3박으로 마리나 베이·시티홀 기점을 잡아 야간 레이스와 주변 행사를 둘러보는 방문이 일반적입니다.",
-      "highlights": [
-        "Marina Bay Street Circuit — 세계 유일의 F1 나이트 스트리트 레이스 · Padang 콘서트·불꽃",
-        "Bayfront·Promenade·Esplanade MRT — 서킷 도보·셔틀 접근 · 레이스 당일 교통 통제",
-        "그랜드스탠드·Zone 4 패스 — 공식 티켓 조기 매진 · 호텔 패키지·재판매 주의"
-      ],
-      "stayAreas": [
-        {
-          "name": "마리나 베이 · Marina Bay",
-          "mrtKeyword": "Marina Bay Singapore",
-          "note": "서킷·MBS 도보 · 레이스 주말 최고가"
-        },
-        {
-          "name": "버기스 · Bugis",
-          "mrtKeyword": "Bugis Singapore",
-          "note": "MRT 2~3정거장 · 상대적 가성비"
-        }
-      ],
-      "recommendedNights": 3,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg",
-      "heroImages": [
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg",
-          "captionKo": "싱가포르 GP 나이트 레이스",
-          "captionEn": "Singapore GP night race"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Valtteri_Bottas_on_track%2C_Singapore_Grand_Prix_2024.jpg/1280px-Valtteri_Bottas_on_track%2C_Singapore_Grand_Prix_2024.jpg",
-          "captionKo": "마리나 베이 서킷",
-          "captionEn": "Marina Bay circuit"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Singapore_Marina_Bay_Dusk_2018-02-27.jpg/1280px-Singapore_Marina_Bay_Dusk_2018-02-27.jpg",
-          "captionKo": "마리나 베이 스카이라인",
-          "captionEn": "Marina Bay skyline"
-        }
-      ],
-      "glossaryTerms": [
-        {
-          "id": "marina-bay-circuit",
-          "termKo": "마리나 베이 서킷",
-          "promptKo": "싱가포르 그랑프리 마리나 베이 스트리트 서킷의 특징과 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
-          "searchQueryKo": "싱가포르 그랑프리 마리나 베이 서킷",
-          "termEn": "Marina Bay Street Circuit",
-          "promptEn": "Marina Bay Street Circuit and Singapore GP basics for travelers in 3 short sentences.",
-          "searchQueryEn": "Singapore Grand Prix Marina Bay circuit",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit",
-          "referenceUrlKo": "https://ko.wikipedia.org/wiki/마리나_베이_시가지_서킷"
-        },
-        {
-          "id": "night-race",
-          "termKo": "나이트 레이스",
-          "promptKo": "F1 나이트 레이스가 싱가포르 GP에서 왜 특별한지 3문장 이내로 설명해줘.",
-          "searchQueryKo": "싱가포르 그랑프리 나이트 레이스",
-          "termEn": "night race",
-          "promptEn": "Why the Singapore GP night race is special for visitors in 3 short sentences.",
-          "searchQueryEn": "Singapore Grand Prix night race"
-        },
-        {
-          "id": "grandstand",
-          "termKo": "그랜드스탠드",
-          "promptKo": "싱가포르 GP 그랜드스탠드·Zone 티켓 종류와 예매 팁을 여행자 관점에서 3문장 이내로 설명해줘.",
-          "searchQueryKo": "싱가포르 그랑프리 티켓 예매",
-          "termEn": "grandstand",
-          "promptEn": "Singapore GP grandstand and zone tickets for travelers in 3 short sentences.",
-          "searchQueryEn": "Singapore Grand Prix tickets"
-        },
-        {
-          "id": "padang",
-          "termKo": "Padang",
-          "promptKo": "싱가포르 GP Padang 콘서트·축제 구역이 레이스 주말에 어떤 역할을 하는지 3문장 이내로 설명해줘.",
-          "searchQueryKo": "싱가포르 그랑프리 Padang 콘서트",
-          "termEn": "Padang",
-          "promptEn": "Padang concerts during Singapore GP race weekend in 3 short sentences.",
-          "searchQueryEn": "Singapore GP Padang concerts"
-        }
-      ],
-      "highlightContextLinks": [
-        {
-          "highlightIndex": 0,
-          "links": [
-            {
-              "id": "gp-tickets",
-              "labelKo": "공식 티켓",
-              "kind": "shop",
-              "labelEn": "Official tickets",
-              "href": "https://singaporegp.sg/en/tickets"
-            }
-          ]
-        },
-        {
-          "highlightIndex": 1,
-          "links": [
-            {
-              "id": "marina-bay-mrt",
-              "labelKo": "Marina Bay MRT",
-              "kind": "shop",
-              "labelEn": "Marina Bay MRT",
-              "searchQueryKo": "싱가포르 마리나 베이 MRT 그랑프리",
-              "searchQueryEn": "Marina Bay MRT Singapore Grand Prix",
-              "searchTarget": "google"
-            }
-          ]
-        }
-      ],
-      "youtubeSearchQueryKo": "싱가포르 그랑프리",
-      "youtubeSearchQueryEn": "Singapore Grand Prix",
-      "heroGallerySearchQueryEn": "Singapore Grand Prix night race",
-      "mooniChips": [
-        {
-          "id": "ticket-types",
-          "promptKo": "그랜드스탠드랑 Zone 패스 차이 알려줘",
-          "promptEn": "What is the difference between grandstand and zone passes?"
-        },
-        {
-          "id": "best-days",
-          "promptKo": "레이스 주말 중 언제 가는 게 좋아?",
-          "promptEn": "Which day of race weekend is best to visit?"
-        },
-        {
-          "id": "marina-bay-stay",
-          "promptKo": "마리나 베이 근처 숙소 추천 기준 알려줘",
-          "promptEn": "How to pick a hotel near Marina Bay for the GP?"
         }
       ],
       "priority": 1
@@ -3430,14 +2723,10 @@
       ],
       "youtubeVideos": [
         {
-          "id": "_YXE3yAUrvA",
-          "titleKo": "에든버러 프린지·올드타운 가이드",
-          "titleEn": "Edinburgh Fringe Old Town guide"
+          "id": "_YXE3yAUrvA"
         },
         {
-          "id": "6jxgY3vCAjw",
-          "titleKo": "프린지 방문 전 알아둘 것",
-          "titleEn": "Before you go to the Fringe"
+          "id": "6jxgY3vCAjw"
         }
       ],
       "heroGallerySearchQueryEn": "Edinburgh Fringe street performance",
@@ -3715,6 +3004,705 @@
           "id": "stay-area",
           "promptKo": "노팅힐이랑 Bayswater 중 어디 숙소가 나아?",
           "promptEn": "Notting Hill or Bayswater — where should I stay?"
+        }
+      ],
+      "priority": 1
+    },
+    {
+      "id": "bali-galungan-season-2026",
+      "slug": "bali",
+      "type": "season",
+      "title": "갈룽안·사원 축제 시즌",
+      "startDate": "2026-09-16",
+      "endDate": "2026-09-26",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "bali",
+      "titleEn": "Galungan & Temple Festival Season",
+      "recurrenceNote": "210일 주기 · 갈룽안·쿠닝안",
+      "recurrenceNoteEn": "210-day cycle · Galungan & Kuningan",
+      "venue": {
+        "name": "Bali islandwide temples"
+      },
+      "sourceUrl": "https://en.wikipedia.org/wiki/Galungan",
+      "bookingHints": "우붓·스미냑 — 사원 방문 시 사례 복장 준비",
+      "detailOverview": "발리 힌두력 210일 주기 축제로, 9월 16일(수) 갈룽안에 시즌이 열리고 9월 26일(토) 쿠닝안(갈룽안 10일 후)에 마무리됩니다. 이 10일 사이 펜져 장식·사원 제례가 섬 전역에서 이어지며, 방문 일정은 보통 「갈룽안 전후」「쿠닝안 전후」「둘 다 커버」 중 하나를 기준으로 잡습니다.",
+      "detailOverviewEn": "Bali's Galungan season follows the 210-day Balinese calendar, opening on Wed 16 Sep 2026 and closing with Kuningan ten days later on Sat 26 Sep. Penjor decorations and temple ceremonies ripple across the island — plan around Galungan, Kuningan, or a trip that covers both.",
+      "highlights": [
+        "9/16(수) 갈룽안 — 조상을 맞이하는 날 · 사원·가옥 펜져·제례 절정(사례 복장 필수)",
+        "9/26(토) 쿠닝안 — 갈룽안 10일 후 마무리 제례 · 사원 방문·지역 행사 재피크",
+        "우붓(사원·마을) + 스미냑(해변) 분할 숙박 — 시즌 중 이동 1~1.5시간 · 렌터카·드라이버 권장"
+      ],
+      "highlightsEn": [
+        "Wed 16 Sep Galungan — ancestors return home; penjor poles and temple offerings peak (modest temple dress required)",
+        "Sat 26 Sep Kuningan — closing ceremonies ten days after Galungan; temple visits and village events pick up again",
+        "Split stays in Ubud (temples, villages) and Seminyak (beach) — 1–1.5 hr drives in season; car or driver recommended"
+      ],
+      "stayAreas": [
+        {
+          "name": "우붓 · Ubud",
+          "nameEn": "Ubud",
+          "mrtKeyword": "Ubud Bali",
+          "note": "사원·전통 마을 · 갈룽안 제례 밀집",
+          "noteEn": "Temples & villages · dense Galungan ceremonies"
+        },
+        {
+          "name": "스미냑 · Seminyak",
+          "nameEn": "Seminyak",
+          "mrtKeyword": "Seminyak Bali",
+          "note": "해변·레스토랑 · 우붓 당일 투어 1~1.5시간",
+          "noteEn": "Beach & dining · 1–1.5 hr day trip to Ubud"
+        }
+      ],
+      "recommendedNights": 4,
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg",
+          "captionKo": "발리 제례 공양",
+          "captionEn": "Balinese temple offerings"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Penjor_Galungan_Ubud_Bali_20120906a.jpg/1280px-Penjor_Galungan_Ubud_Bali_20120906a.jpg",
+          "captionKo": "갈룽안 펜져 장식",
+          "captionEn": "Galungan penjor decorations"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Penjor_Galungan_Ubud_Bali_20120906b.jpg/1280px-Penjor_Galungan_Ubud_Bali_20120906b.jpg",
+          "captionKo": "갈룽안 시즌 사원 장식",
+          "captionEn": "Galungan season temple decor"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "galungan",
+          "termKo": "갈룽안",
+          "promptKo": "발리 갈룽안 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 갈룽안 축제",
+          "termEn": "Galungan",
+          "promptEn": "Explain Galungan for Bali travelers in 3 short sentences.",
+          "searchQueryEn": "Bali Galungan festival",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Galungan"
+        },
+        {
+          "id": "kuningan",
+          "termKo": "쿠닝안",
+          "promptKo": "발리 쿠닝안이 갈룽안과 어떤 관계인지, 여행 일정에 왜 중요한지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 쿠닝안 축제",
+          "termEn": "Kuningan",
+          "promptEn": "Explain Kuningan and its relation to Galungan for travelers in 3 short sentences.",
+          "searchQueryEn": "Bali Kuningan festival",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Kuningan"
+        },
+        {
+          "id": "penjor",
+          "termKo": "펜져",
+          "promptKo": "발리 갈룽안 시즌 펜져 장식이 무엇인지, 어디서 볼 수 있는지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 갈룽안 펜져 장식",
+          "termEn": "penjor",
+          "promptEn": "What are Galungan penjor decorations and where to see them? 3 short sentences.",
+          "searchQueryEn": "Bali Galungan penjor decoration"
+        },
+        {
+          "id": "ceremonial-dress",
+          "termKo": "사례 복장",
+          "promptKo": "발리 사원 방문 시 사례 복장(사롱·셀endang) 규정을 여행자 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 사원 사례 복장 사롱",
+          "termEn": "ceremonial dress",
+          "promptEn": "Temple dress code (sarong, sash) for Bali visitors in 3 short sentences.",
+          "searchQueryEn": "Bali temple dress code sarong"
+        },
+        {
+          "id": "sarong",
+          "termKo": "사롱",
+          "promptKo": "발리 사원 방문용 사롱이 무엇인지, 대여·구매 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 사롱 대여 우붓",
+          "termEn": "sarong",
+          "promptEn": "What is a sarong for Bali temples and how to get one? 3 short sentences.",
+          "searchQueryEn": "Bali sarong rental Ubud"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "galungan-official",
+              "labelKo": "갈룽안 안내",
+              "kind": "shop",
+              "labelEn": "Galungan guide",
+              "href": "https://en.wikipedia.org/wiki/Galungan"
+            },
+            {
+              "id": "sarong-klook",
+              "labelKo": "사롱 Klook 검색",
+              "kind": "shop",
+              "labelEn": "Sarong on Klook",
+              "searchQueryKo": "발리 사롱 대여",
+              "searchQueryEn": "Bali sarong rental",
+              "searchTarget": "klook"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 2,
+          "links": [
+            {
+              "id": "bali-rental",
+              "labelKo": "발리 렌터카",
+              "kind": "rental",
+              "labelEn": "Bali car rental"
+            },
+            {
+              "id": "bali-driver-tour",
+              "labelKo": "기사 포함 투어",
+              "kind": "tour",
+              "labelEn": "Private driver tour"
+            }
+          ]
+        }
+      ],
+      "youtubeVideos": [
+        {
+          "id": "AJhPk93ksso"
+        },
+        {
+          "id": "8ix-YkhHl_E"
+        }
+      ],
+      "youtubeSearchQueryKo": "발리 갈룽안 축제",
+      "youtubeSearchQueryEn": "Bali Galungan festival",
+      "heroGallerySearchQueryEn": "Galungan penjor temple festival",
+      "actionChips": [
+        {
+          "id": "galungan-guide",
+          "labelKo": "갈룽안 안내",
+          "href": "https://en.wikipedia.org/wiki/Galungan",
+          "labelEn": "Galungan guide",
+          "kind": "official"
+        },
+        {
+          "id": "ubud-temples-map",
+          "labelKo": "우붓 사원 지도",
+          "href": "https://www.google.com/maps/search/?api=1&query=Ubud+temples+Bali",
+          "labelEn": "Ubud temples map",
+          "kind": "map"
+        },
+        {
+          "id": "penjor-search",
+          "labelKo": "펜져 장식 검색",
+          "href": "https://www.google.com/search?q=Bali+Galungan+penjor+decoration+Ubud&hl=en",
+          "labelEn": "Penjor decorations",
+          "kind": "search"
+        },
+        {
+          "id": "sarong-rental",
+          "labelKo": "사롱·복장 대여",
+          "href": "https://www.google.com/search?q=%EB%B0%9C%EB%A6%AC+%EC%82%AC%EC%9B%90+%EC%82%AC%EB%A1%80+%EB%B3%B5%EC%9E%A5+%EC%82%AC%EB%A1%B1&hl=ko",
+          "labelEn": "Sarong & temple dress rental",
+          "kind": "shop"
+        },
+        {
+          "id": "sarong-klook",
+          "labelKo": "사롱 Klook 검색",
+          "href": "https://www.klook.com/ko/search/result/?query=%EB%B0%9C%EB%A6%AC+%EC%82%AC%EB%A1%B1+%EB%8C%80%EC%97%AC",
+          "labelEn": "Sarong on Klook",
+          "kind": "shop"
+        }
+      ],
+      "mooniChips": [
+        {
+          "id": "temple-etiquette",
+          "promptKo": "갈룽안 때 사원 방문 예절 알려줘",
+          "promptEn": "Temple etiquette during Galungan?"
+        },
+        {
+          "id": "ubud-itinerary",
+          "promptKo": "우붓 기준 4박 일정 짜줘",
+          "promptEn": "Plan a 4-night Ubud-based Galungan itinerary"
+        },
+        {
+          "id": "penjor-spots",
+          "promptKo": "펜져 장식 볼 수 있는 곳은?",
+          "promptEn": "Where can I see penjor decorations?"
+        }
+      ],
+      "priority": 1
+    },
+    {
+      "id": "barcelona-la-merce-2026",
+      "slug": "barcelona",
+      "type": "festival",
+      "title": "라 메르세",
+      "startDate": "2026-09-18",
+      "endDate": "2026-09-24",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "barcelona",
+      "titleEn": "La Mercè",
+      "recurrenceNote": "9월 셋째 주 · 수호성인의 날 9/24",
+      "recurrenceNoteEn": "Third week of Sep · feast day Sep 24",
+      "venue": {
+        "name": "Barcelona citywide · Plaça de Sant Jaume"
+      },
+      "sourceUrl": "https://www.barcelona.cat/lamerce/en",
+      "bookingHints": "고딕 지구·엘 본·그라시아 — 축제 주간 2~4박 · 9/24 전후 교통 통제",
+      "detailOverview": "바르셀로나 수호성인 메르세(Mercè)를 기념하는 도시 축제로, 9월 셋째 주 전후 약 일주일간 거리 공연·카스텔레르스(인탑)·코레포크(불꽃 퍼레이드)가 이어집니다. 전체 시즌 숙박보다 9/22~24 절정 전후 2~3박으로 고딕 지구·엘 본 기점을 잡아 야간 행사와 메트로 이동을 묶는 방문이 일반적입니다.",
+      "highlights": [
+        "Plaça de Sant Jaume — 개막·폐막·공식 행사 중심 · 고딕 지구 도보권",
+        "Castellers(인탑) — 광장·거리 공연 · 혼잡 구간 조기 도착 권장",
+        "Correfoc·불꽃·콘서트 — 야간 행사 다수 · 9/24 전후 교통·지하철 운행 변경"
+      ],
+      "stayAreas": [
+        {
+          "name": "고딕 지구 · El Born",
+          "mrtKeyword": "Barcelona Gothic Quarter",
+          "note": "산트 자우메·엘 본 도보 · 축제 행사 밀집"
+        },
+        {
+          "name": "그라시아 · Gràcia",
+          "mrtKeyword": "Barcelona Gracia",
+          "note": "현지 분위기 · L3·L4 환승으로 중심가 15분"
+        }
+      ],
+      "recommendedNights": 3,
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg/1280px-Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg/1280px-Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg",
+          "captionKo": "라 메르세 카스텔레르스",
+          "captionEn": "La Mercè castellers"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Sagrada_Familia_March_2015-19bw.jpg/1280px-Sagrada_Familia_March_2015-19bw.jpg",
+          "captionKo": "사그라다 파밀리아",
+          "captionEn": "Sagrada Família"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/La_Merc%C3%A8_2024_-_Diada_castellera_de_la_Merc%C3%A8_-_20240924_152106.jpg/1280px-La_Merc%C3%A8_2024_-_Diada_castellera_de_la_Merc%C3%A8_-_20240924_152106.jpg",
+          "captionKo": "라 메르세 2024 인탑 행사",
+          "captionEn": "La Mercè 2024 castell diada"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "la-merce",
+          "termKo": "라 메르세",
+          "promptKo": "바르셀로나 라 메르세(La Mercè) 축제가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "바르셀로나 라 메르세 축제",
+          "termEn": "La Mercè",
+          "promptEn": "What is La Mercè festival in Barcelona for travelers in 3 short sentences.",
+          "searchQueryEn": "Barcelona La Mercè festival",
+          "referenceUrl": "https://en.wikipedia.org/wiki/La_Merc%C3%A8",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/%EB%9D%BC_%EB%A9%94%EB%A5%B4%EC%84%B8"
+        },
+        {
+          "id": "castellers",
+          "termKo": "카스텔레르스",
+          "promptKo": "카스텔레르스(인탑)가 라 메르세에서 왜 중요한지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "바르셀로나 카스텔레르스 인탑",
+          "termEn": "castellers",
+          "promptEn": "Why castellers matter at La Mercè in 3 short sentences.",
+          "searchQueryEn": "Barcelona castellers human towers",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Castell"
+        },
+        {
+          "id": "correfoc",
+          "termKo": "코레포크",
+          "promptKo": "라 메르세 코레포크(불꽃 퍼레이드)가 무엇인지 안전·관람 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "바르셀로나 코레포크 라 메르세",
+          "termEn": "correfoc",
+          "promptEn": "What is correfoc at La Mercè and how to watch safely in 3 short sentences.",
+          "searchQueryEn": "Barcelona correfoc La Mercè"
+        },
+        {
+          "id": "sant-jaume",
+          "termKo": "산트 자우메 광장",
+          "promptKo": "산트 자우메 광장이 라 메르세 공식 행사의 중심인 이유를 3문장 이내로 설명해줘.",
+          "searchQueryKo": "바르셀로나 산트 자우메 광장",
+          "termEn": "Plaça de Sant Jaume",
+          "promptEn": "Why Plaça de Sant Jaume is the hub of La Mercè in 3 short sentences.",
+          "searchQueryEn": "Plaça de Sant Jaume Barcelona"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "merce-official",
+              "labelKo": "공식 일정",
+              "kind": "shop",
+              "labelEn": "Official programme",
+              "href": "https://www.barcelona.cat/lamerce/en"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 2,
+          "links": [
+            {
+              "id": "correfoc-guide",
+              "labelKo": "코레포크 안내",
+              "kind": "shop",
+              "labelEn": "Correfoc guide",
+              "searchQueryKo": "바르셀로나 코레포크 라 메르세",
+              "searchQueryEn": "Barcelona correfoc La Mercè",
+              "searchTarget": "google"
+            }
+          ]
+        }
+      ],
+      "youtubeSearchQueryKo": "바르셀로나 라 메르세",
+      "youtubeSearchQueryEn": "Barcelona La Mercè",
+      "heroGallerySearchQueryEn": "La Merce festival parade",
+      "mooniChips": [
+        {
+          "id": "best-nights",
+          "promptKo": "9월 중 어느 박이 라 메르세 보기 좋아?",
+          "promptEn": "Which nights in September are best for La Mercè?"
+        },
+        {
+          "id": "castellers-spots",
+          "promptKo": "카스텔레르스 보기 좋은 장소 알려줘",
+          "promptEn": "Where is best to watch castellers?"
+        },
+        {
+          "id": "stay-area",
+          "promptKo": "고딕 지구랑 그라시아 중 어디 숙소가 나아?",
+          "promptEn": "Gothic Quarter or Gràcia — where should I stay?"
+        }
+      ],
+      "priority": 1
+    },
+    {
+      "id": "munich-oktoberfest-2026",
+      "slug": "munich",
+      "type": "festival",
+      "title": "옥토버페스트",
+      "startDate": "2026-09-19",
+      "endDate": "2026-10-04",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "munich",
+      "titleEn": "Oktoberfest",
+      "recurrenceNote": "9월 중순~10월 초",
+      "recurrenceNoteEn": "Mid-Sep–early Oct",
+      "venue": {
+        "name": "Theresienwiese"
+      },
+      "sourceUrl": "https://www.oktoberfest.de/en",
+      "bookingHints": "테레지엔비제·하이드하우저 근처 숙소는 6~12개월 전 예약 권장",
+      "detailOverview": "뮌헨 테레지엔비제에서 열리는 세계 최대 맥주 축제로, 약 2주간 대형 맥주 텐트·놀이기구·스트리트 푸드가 이어집니다. 개막 주말·중순 주말 등 핵심 2~3일만 방문하는 짧은 일정이 일반적입니다.",
+      "detailOverviewEn": "Munich's Theresienwiese hosts the world's biggest beer festival for about two weeks of giant beer tents, rides, and street food. Most travelers visit just the key 2–3 days around opening weekend or mid-festival weekends.",
+      "highlights": [
+        "대형 맥주 텐트 — 좌석·단체 예약은 공식 파트너·호텔 패키지 조기 마감",
+        "U4/U5 Theresienwiese·Hackerbrücke 역 도보 접근",
+        "평일 낮·저녁은 상대적으로 한산 — 주말·개막일 혼잡 최대"
+      ],
+      "highlightsEn": [
+        "Large beer tents — table and group reservations sell out through official partners and hotel packages",
+        "Walk from U4/U5 Theresienwiese or Hackerbrücke stations",
+        "Weekday afternoons and evenings are calmer — weekends and opening day are busiest"
+      ],
+      "stayAreas": [
+        {
+          "name": "테레지엔비제 · Schwanthalerhöhe",
+          "nameEn": "Theresienwiese · Schwanthalerhöhe",
+          "mrtKeyword": "Munich Theresienwiese",
+          "note": "축제장 도보 5~10분 · 성수기 6~12개월 전 마감",
+          "noteEn": "5–10 min walk to grounds · books out 6–12 months ahead in peak season"
+        },
+        {
+          "name": "Hauptbahnhof · Ludwigsvorstadt",
+          "nameEn": "Hauptbahnhof · Ludwigsvorstadt",
+          "mrtKeyword": "Munich Hauptbahnhof",
+          "note": "S-Bahn·U-Bahn 환승 · 텐트까지 15~20분",
+          "noteEn": "S-Bahn/U-Bahn hub · 15–20 min to tents"
+        }
+      ],
+      "recommendedNights": 3,
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg",
+          "captionKo": "옥토버페스트 개막 현장",
+          "captionEn": "Oktoberfest opening celebration"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Hofbraudedans.jpg/1280px-Hofbraudedans.jpg",
+          "captionKo": "호프브로이 텐트 내부",
+          "captionEn": "Hofbräu beer tent interior"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG",
+          "captionKo": "옥토버페스트 축제장",
+          "captionEn": "Oktoberfest grounds"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "theresienwiese",
+          "termKo": "테레지엔비제",
+          "promptKo": "뮌헨 테레지엔비제가 옥토버페스트와 어떤 관계인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
+          "searchQueryKo": "뮌헨 테레지엔비제 옥토버페스트",
+          "termEn": "Theresienwiese",
+          "promptEn": "What is Theresienwiese and why it matters for Oktoberfest visitors? 3 short sentences.",
+          "searchQueryEn": "Theresienwiese Munich Oktoberfest",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Theresienwiese"
+        },
+        {
+          "id": "beer-tent",
+          "termKo": "맥주 텐트",
+          "promptKo": "옥토버페스트 맥주 텐트 예약·좌석 규정을 여행자 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "옥토버페스트 맥주 텐트 예약",
+          "termEn": "beer tent",
+          "promptEn": "Oktoberfest beer tent seating and reservations for travelers in 3 short sentences.",
+          "searchQueryEn": "Oktoberfest beer tent reservation"
+        },
+        {
+          "id": "oktoberfest",
+          "termKo": "옥토버페스트",
+          "promptKo": "뮌헨 옥토버페스트의 역사와 여행 일정 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "뮌헨 옥토버페스트 가이드",
+          "termEn": "Oktoberfest",
+          "promptEn": "Munich Oktoberfest basics and trip tips in 3 short sentences.",
+          "searchQueryEn": "Munich Oktoberfest guide",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Oktoberfest",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/옥토버페스트"
+        },
+        {
+          "id": "hackerbruecke",
+          "termKo": "Hackerbrücke",
+          "promptKo": "옥토버페스트 때 Hackerbrücke 역 접근과 혼잡 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "옥토버페스트 Hackerbrücke 역",
+          "termEn": "Hackerbrücke",
+          "promptEn": "Hackerbrücke station access during Oktoberfest in 3 short sentences.",
+          "searchQueryEn": "Oktoberfest Hackerbrücke station"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "tent-reservation",
+              "labelKo": "텐트 예약 검색",
+              "kind": "shop",
+              "labelEn": "Tent reservations",
+              "searchQueryKo": "옥토버페스트 맥주 텐트 예약",
+              "searchQueryEn": "Oktoberfest beer tent reservation",
+              "searchTarget": "google"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 1,
+          "links": [
+            {
+              "id": "theresienwiese-search",
+              "labelKo": "Theresienwiese 검색",
+              "kind": "shop",
+              "labelEn": "Search Theresienwiese",
+              "searchQueryKo": "뮌헨 테레지엔비제 옥토버페스트",
+              "searchQueryEn": "Theresienwiese Munich Oktoberfest",
+              "searchTarget": "google"
+            }
+          ]
+        }
+      ],
+      "youtubeVideos": [
+        {
+          "id": "B5GN30_FRWU"
+        },
+        {
+          "id": "wHr51Uh9a0E"
+        }
+      ],
+      "heroGallerySearchQueryEn": "Oktoberfest Munich beer tent",
+      "actionChips": [
+        {
+          "id": "official-site",
+          "labelKo": "공식 사이트",
+          "href": "https://www.oktoberfest.de/en",
+          "labelEn": "Official site",
+          "kind": "official"
+        },
+        {
+          "id": "theresienwiese-map",
+          "labelKo": "Theresienwiese 지도",
+          "href": "https://www.google.com/maps/search/?api=1&query=Theresienwiese+Munich",
+          "labelEn": "Theresienwiese map",
+          "kind": "map"
+        },
+        {
+          "id": "tent-reservation",
+          "labelKo": "텐트 예약 검색",
+          "href": "https://www.google.com/search?q=Oktoberfest+beer+tent+reservation&hl=ko",
+          "labelEn": "Tent reservations",
+          "kind": "search"
+        }
+      ],
+      "mooniChips": [
+        {
+          "id": "tent-booking",
+          "promptKo": "맥주 텐트 예약은 어떻게 해?",
+          "promptEn": "How do I book an Oktoberfest beer tent?"
+        },
+        {
+          "id": "weekday-weekend",
+          "promptKo": "평일이랑 주말 중 언제 가는 게 나아?",
+          "promptEn": "Weekday or weekend — when is better to visit?"
+        },
+        {
+          "id": "transport",
+          "promptKo": "Theresienwiese 가는 교통 알려줘",
+          "promptEn": "How do I get to Theresienwiese?"
+        }
+      ],
+      "priority": 1
+    },
+    {
+      "id": "singapore-gp-2026",
+      "slug": "singapore",
+      "type": "festival",
+      "title": "싱가포르 그랑프리",
+      "startDate": "2026-10-09",
+      "endDate": "2026-10-11",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "singapore",
+      "titleEn": "Singapore Grand Prix",
+      "recurrenceNote": "10월 첫째 주말 전후",
+      "recurrenceNoteEn": "Around the first weekend in Oct",
+      "venue": {
+        "name": "Marina Bay Street Circuit"
+      },
+      "sourceUrl": "https://singaporegp.sg/en/",
+      "bookingHints": "마리나 베이·버기스·시티홀 — 레이스 주말 3~6개월 전 숙소·티켓 조기 마감",
+      "detailOverview": "마리나 베이 스트리트 서킷에서 열리는 F1 나이트 레이스로, 금~일 3일간 레이스·콘서트·축제가 이어집니다. 전체 시즌 숙박보다 레이스 주말 전후 2~3박으로 마리나 베이·시티홀 기점을 잡아 야간 레이스와 주변 행사를 둘러보는 방문이 일반적입니다.",
+      "highlights": [
+        "Marina Bay Street Circuit — 세계 유일의 F1 나이트 스트리트 레이스 · Padang 콘서트·불꽃",
+        "Bayfront·Promenade·Esplanade MRT — 서킷 도보·셔틀 접근 · 레이스 당일 교통 통제",
+        "그랜드스탠드·Zone 4 패스 — 공식 티켓 조기 매진 · 호텔 패키지·재판매 주의"
+      ],
+      "stayAreas": [
+        {
+          "name": "마리나 베이 · Marina Bay",
+          "mrtKeyword": "Marina Bay Singapore",
+          "note": "서킷·MBS 도보 · 레이스 주말 최고가"
+        },
+        {
+          "name": "버기스 · Bugis",
+          "mrtKeyword": "Bugis Singapore",
+          "note": "MRT 2~3정거장 · 상대적 가성비"
+        }
+      ],
+      "recommendedNights": 3,
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg",
+          "captionKo": "싱가포르 GP 나이트 레이스",
+          "captionEn": "Singapore GP night race"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Valtteri_Bottas_on_track%2C_Singapore_Grand_Prix_2024.jpg/1280px-Valtteri_Bottas_on_track%2C_Singapore_Grand_Prix_2024.jpg",
+          "captionKo": "마리나 베이 서킷",
+          "captionEn": "Marina Bay circuit"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Singapore_Marina_Bay_Dusk_2018-02-27.jpg/1280px-Singapore_Marina_Bay_Dusk_2018-02-27.jpg",
+          "captionKo": "마리나 베이 스카이라인",
+          "captionEn": "Marina Bay skyline"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "marina-bay-circuit",
+          "termKo": "마리나 베이 서킷",
+          "promptKo": "싱가포르 그랑프리 마리나 베이 스트리트 서킷의 특징과 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
+          "searchQueryKo": "싱가포르 그랑프리 마리나 베이 서킷",
+          "termEn": "Marina Bay Street Circuit",
+          "promptEn": "Marina Bay Street Circuit and Singapore GP basics for travelers in 3 short sentences.",
+          "searchQueryEn": "Singapore Grand Prix Marina Bay circuit",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/마리나_베이_시가지_서킷"
+        },
+        {
+          "id": "night-race",
+          "termKo": "나이트 레이스",
+          "promptKo": "F1 나이트 레이스가 싱가포르 GP에서 왜 특별한지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "싱가포르 그랑프리 나이트 레이스",
+          "termEn": "night race",
+          "promptEn": "Why the Singapore GP night race is special for visitors in 3 short sentences.",
+          "searchQueryEn": "Singapore Grand Prix night race"
+        },
+        {
+          "id": "grandstand",
+          "termKo": "그랜드스탠드",
+          "promptKo": "싱가포르 GP 그랜드스탠드·Zone 티켓 종류와 예매 팁을 여행자 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "싱가포르 그랑프리 티켓 예매",
+          "termEn": "grandstand",
+          "promptEn": "Singapore GP grandstand and zone tickets for travelers in 3 short sentences.",
+          "searchQueryEn": "Singapore Grand Prix tickets"
+        },
+        {
+          "id": "padang",
+          "termKo": "Padang",
+          "promptKo": "싱가포르 GP Padang 콘서트·축제 구역이 레이스 주말에 어떤 역할을 하는지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "싱가포르 그랑프리 Padang 콘서트",
+          "termEn": "Padang",
+          "promptEn": "Padang concerts during Singapore GP race weekend in 3 short sentences.",
+          "searchQueryEn": "Singapore GP Padang concerts"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "gp-tickets",
+              "labelKo": "공식 티켓",
+              "kind": "shop",
+              "labelEn": "Official tickets",
+              "href": "https://singaporegp.sg/en/tickets"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 1,
+          "links": [
+            {
+              "id": "marina-bay-mrt",
+              "labelKo": "Marina Bay MRT",
+              "kind": "shop",
+              "labelEn": "Marina Bay MRT",
+              "searchQueryKo": "싱가포르 마리나 베이 MRT 그랑프리",
+              "searchQueryEn": "Marina Bay MRT Singapore Grand Prix",
+              "searchTarget": "google"
+            }
+          ]
+        }
+      ],
+      "youtubeSearchQueryKo": "싱가포르 그랑프리",
+      "youtubeSearchQueryEn": "Singapore Grand Prix",
+      "heroGallerySearchQueryEn": "Singapore Grand Prix night race",
+      "mooniChips": [
+        {
+          "id": "ticket-types",
+          "promptKo": "그랜드스탠드랑 Zone 패스 차이 알려줘",
+          "promptEn": "What is the difference between grandstand and zone passes?"
+        },
+        {
+          "id": "best-days",
+          "promptKo": "레이스 주말 중 언제 가는 게 좋아?",
+          "promptEn": "Which day of race weekend is best to visit?"
+        },
+        {
+          "id": "marina-bay-stay",
+          "promptKo": "마리나 베이 근처 숙소 추천 기준 알려줘",
+          "promptEn": "How to pick a hotel near Marina Bay for the GP?"
         }
       ],
       "priority": 1
