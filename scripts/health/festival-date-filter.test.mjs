@@ -256,6 +256,26 @@ test('date sheet week step moves Mon–Sun and never before this week', () => {
   assert.equal(mondayFirstColumnYmd('20261101'), 6);
 });
 
+test('date sheet week shortcuts — Monday anchor and Sunday edge (2026-10-19 / 2026-10-25)', () => {
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(0, '20261019'), {
+    startYmd: '20261019',
+    endYmd: '20261025',
+  });
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(2, '20261019'), {
+    startYmd: '20261102',
+    endYmd: '20261108',
+  });
+
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(0, '20261025'), {
+    startYmd: '20261025',
+    endYmd: '20261025',
+  });
+  assert.deepEqual(festivalDateSheetWeekRangeFromYmd(2, '20261025'), {
+    startYmd: '20261102',
+    endYmd: '20261108',
+  });
+});
+
 test('weekend window on Sat–Sun is today through Sunday (Seoul)', () => {
   const sat = new Date('2026-10-17T03:00:00.000Z');
   assert.equal(seoulTodayYmd(sat), '20261017');

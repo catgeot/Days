@@ -305,10 +305,6 @@ export function resolveSocialPromoPresentation(row, ctx = {}) {
   const searchActive = Boolean(ctx.searchActive);
   const nearActive = Boolean(ctx.nearActive);
   const timeTab = ctx.timeTab == null || ctx.timeTab === '' ? 'thisMonth' : String(ctx.timeTab);
-  const regionFilter = {
-    areaCode: ctx.areaCode,
-    cityName: ctx.cityName,
-  };
   if (!shouldShowSocialPromoHomeRow(searchActive) || timeTab !== 'thisMonth') {
     return hiddenPromo();
   }
@@ -325,16 +321,11 @@ export function resolveSocialPromoPresentation(row, ctx = {}) {
       }),
     };
   }
-  const nationwide = isNationwideRegionFilter(
-    regionFilter.areaCode,
-    regionFilter.cityName,
-  );
   if (row.status === 'loading') {
-    if (!nationwide) return hiddenPromo();
     return { show: true, cards: row.cards, loading: true, nearLine: null };
   }
   if (row.status === 'ready') {
-    const cards = filterSocialPromoCardsByRegion(row.cards, regionFilter);
+    const cards = row.cards || [];
     return { show: cards.length > 0, cards, loading: false, nearLine: null };
   }
   return hiddenPromo();

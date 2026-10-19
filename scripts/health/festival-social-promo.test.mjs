@@ -269,7 +269,7 @@ test('chip counts match list groups when session pin stays in panel (no exclude)
   assert.equal(nationwide.ok, true, JSON.stringify(nationwide));
 });
 
-test('promo row filters by region chip; hidden when no match', () => {
+test('promo row shows on every region chip; filterSocialPromoCardsByRegion still filters', () => {
   const ready = resolveSocialPromoRow(
     socialPromoFestivals,
     new Map([
@@ -302,8 +302,8 @@ test('promo row filters by region chip; hidden when no match', () => {
     areaCode: '32',
     cityName: 'all',
   });
-  assert.equal(gangwon.show, false);
-  assert.equal(gangwon.cards.length, 0);
+  assert.equal(gangwon.show, true);
+  assert.equal(gangwon.cards.length, 2);
 
   const jeonnam = filterSocialPromoCardsByRegion(ready.cards, {
     areaCode: '38',
@@ -329,7 +329,8 @@ test('promo row filters by region chip; hidden when no match', () => {
       },
     ],
   }, { searchActive: false, areaCode: '32', cityName: 'all', timeTab: 'thisMonth' });
-  assert.equal(liveLike.show, false, '강원 chip must not keep 함평·마산');
+  assert.equal(liveLike.show, true);
+  assert.equal(liveLike.cards.length, 2);
   assert.equal(socialPromoPlaceLabel(GUKHYANG), '함평');
 });
 

@@ -97,8 +97,8 @@ export default function FestivalDateSheet({
 
   const weekShortcuts = useMemo(
     () => [
-      { id: 1, label: t('korea.festival.dateSheetWeekNext') },
-      { id: 2, label: t('korea.festival.dateSheetWeekNext2') },
+      { id: 0, weeksAhead: 0, label: t('korea.festival.dateSheetWeekThis') },
+      { id: 1, weeksAhead: 2, label: t('korea.festival.dateSheetWeekNext') },
     ],
     [t],
   );
@@ -154,6 +154,9 @@ export default function FestivalDateSheet({
     return Boolean(startYmd && startYmd === draftStart && endYmd === draftEnd);
   };
 
+  const shortcutMatchesDraft = (shortcut) =>
+    rangeMatchesWeek(shortcut.weeksAhead);
+
   const pickDay = (ymd) => {
     if (!draftStart || (draftEnd && draftEnd !== draftStart)) {
       setDraftStart(ymd);
@@ -168,8 +171,8 @@ export default function FestivalDateSheet({
     setDraftEnd(ymd);
   };
 
-  const applyWeekAhead = (weeksAhead) => {
-    const raw = festivalDateSheetWeekRangeFromYmd(weeksAhead, todayYmd);
+  const applyWeekShortcut = (shortcut) => {
+    const raw = festivalDateSheetWeekRangeFromYmd(shortcut.weeksAhead, todayYmd);
     const { startYmd, endYmd } = clampYmdRangeToBounds(raw, todayYmd, maxYmd);
     if (!startYmd || !endYmd) return;
     setDraftStart(startYmd);
@@ -231,14 +234,14 @@ export default function FestivalDateSheet({
             data-festival-date-week-shortcuts=""
           >
             {weekShortcuts.map((item) => {
-              const active = rangeMatchesWeek(item.id);
+              const active = shortcutMatchesDraft(item);
               return (
                 <button
                   key={item.id}
                   type="button"
                   data-week-shortcut={item.id}
                   aria-pressed={active}
-                  onClick={() => applyWeekAhead(item.id)}
+                  onClick={() => applyWeekShortcut(item)}
                   className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${
                     active ? CHIP_ACTIVE : CHIP_IDLE
                   }`}
