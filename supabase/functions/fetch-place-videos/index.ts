@@ -8,6 +8,10 @@ import {
   isRetryBlockingRefetch,
   stripVideosYoutubeMetadata,
 } from "../_shared/placeVideoRefresh.mjs";
+import {
+  filterBlockedPlaceVideos,
+  snippetLooksLikeShorts,
+} from "../_shared/videoBlocklist.mjs";
 
 const corsBase = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -245,8 +249,10 @@ function preservedVideos(row: PlaceVideoRow | null): unknown[] {
 
 function serveCachedVideos(row: PlaceVideoRow | null): unknown[] {
   const videos = preservedVideos(row);
-  if (!row || !isMetadataExpired(row.last_updated)) return videos;
-  return stripVideosYoutubeMetadata(videos).videos;
+  const base = !row || !isMetadataExpired(row.last_updated)
+    ? videos
+    : stripVideosYoutubeMetadata(videos).videos;
+  return filterBlockedPlaceVideos(base as Array<{ id?: string; title?: string }>);
 }
 
 function videosForFailureWrite(row: PlaceVideoRow | null): unknown[] {
@@ -431,8 +437,13 @@ async function proxyDetailHit(contentId: string): Promise<ProxyDetail> {
   return { ok: true, hit: { title, year: "" } };
 }
 
-function primaryQuery(resolved: ResolvedPlace): string {
-  if (resolved.mode === "festival") return resolved.query;
+function primaryQuery(resolved: ResolvedPlace, relevanceLanguage: string): string {
+  if (resolved.mode === "festival") {
+    const travel = relevanceLanguage === "en" ? "travel" : "여행";
+    const base = resolved.query;
+    if (/\btravel\b/i.test(base) || base.includes("여행")) return sanitizeQuery(base);
+    return sanitizeQuery(`${base} ${travel}`);
+  }
   return sanitizeQuery(`${resolved.query} 여행 브이로그`);
 }
 
@@ -701,7 +712,7 @@ serve(async (req) => {
 
   const mode = resolved.mode;
   const query = resolved.query;
-  const primaryQ = primaryQuery(resolved);
+  const primaryQ = primaryQuery(resolved, relevanceLanguage);
   const fallbackQ = resolved.fallback || primaryQ;
   if (!youtubeApiKey) {
     logFail(placeId, "youtube_key_missing", null);
@@ -719,8 +730,10 @@ serve(async (req) => {
       regionCode,
       videoEmbeddable: 'true',
       videoSyndicated: 'true',
+      safeSearch: "strict",
       key: youtubeApiKey,
     });
+    if (mode === "festival") p.set("videoDuration", "medium");
     if (token) p.set("pageToken", token);
     let res: Response;
     try {
@@ -797,21 +810,24 @@ serve(async (req) => {
   }
 
   const mapSnippetItems = (items: YtItem[]) =>
-    (items || []).map((item) => ({
-      id: item?.id?.videoId,
-      title: decodeHtmlEntities(item?.snippet?.title || ""),
-      location_keyword: query,
-      channelTitle: item?.snippet?.channelTitle || null,
-      publishedAt: item?.snippet?.publishedAt || null,
-      ai_context: {
-        summary: item?.snippet?.description || "영상 설명이 없습니다.",
-        tags: [`#${query}`, ...tagBase],
-        best_moment: { time: "00:00", desc: "자동 생성된 영상" },
-        timeline: [],
-      },
-    })).filter((v) => Boolean(v.id));
+    (items || [])
+      .filter((item) => mode !== "festival" || !snippetLooksLikeShorts(item?.snippet))
+      .map((item) => ({
+        id: item?.id?.videoId,
+        title: decodeHtmlEntities(item?.snippet?.title || ""),
+        location_keyword: query,
+        channelTitle: item?.snippet?.channelTitle || null,
+        publishedAt: item?.snippet?.publishedAt || null,
+        ai_context: {
+          summary: item?.snippet?.description || "영상 설명이 없습니다.",
+          tags: [`#${query}`, ...tagBase],
+          best_moment: { time: "00:00", desc: "자동 생성된 영상" },
+          timeline: [],
+        },
+      }))
+      .filter((v) => Boolean(v.id));
 
-  let collected = mapSnippetItems(data.items || []);
+  let collected = filterBlockedPlaceVideos(mapSnippetItems(data.items || []));
   if (excludeSet.size > 0) {
     collected = collected.filter((v) => v.id && !excludeSet.has(v.id));
   }

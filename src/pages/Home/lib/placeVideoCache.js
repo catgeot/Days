@@ -1,3 +1,5 @@
+import { filterBlockedPlaceVideos } from '../../../../supabase/functions/_shared/videoBlocklist.mjs';
+
 const METADATA_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export function isMetadataExpired(lastUpdated, now = Date.now()) {
@@ -33,8 +35,10 @@ export function stripYoutubeDisplayMetadata(videos) {
 /** Serve cached row videos with >30d metadata stripped (ToS), ids + GATEO fields kept. */
 export function placeVideosForClient(row) {
   const videos = Array.isArray(row?.videos) ? row.videos : [];
-  if (!isMetadataExpired(row?.last_updated)) return videos;
-  return stripYoutubeDisplayMetadata(videos);
+  const base = !isMetadataExpired(row?.last_updated)
+    ? videos
+    : stripYoutubeDisplayMetadata(videos);
+  return filterBlockedPlaceVideos(base);
 }
 
 export function shouldRefreshPlaceVideoCache(row, now = Date.now()) {

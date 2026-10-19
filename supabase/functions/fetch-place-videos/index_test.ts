@@ -31,7 +31,7 @@ const state: {
   rpcError: boolean;
   forceLimited: boolean;
   festivalError: boolean;
-  yt: "three" | "empty" | "quota" | "boom";
+  yt: "three" | "empty" | "quota" | "boom" | "blocklist";
   proxyBody: { ok?: boolean; items: unknown };
   proxyStatus: number;
 } = {
@@ -79,6 +79,22 @@ globalThis.fetch = (input: Request | URL | string, init?: RequestInit) => {
   }
   if (state.yt === "empty") {
     return Promise.resolve(new Response(JSON.stringify({ items: [] }), { status: 200 }));
+  }
+  if (state.yt === "blocklist") {
+    return Promise.resolve(new Response(JSON.stringify({
+      items: [
+        {
+          id: { videoId: "BATsLpppQms" },
+          snippet: {
+            title: "발리 사망사고 #shorts",
+            description: "심약자주의",
+            channelTitle: "ch",
+            publishedAt: "2020-01-01T00:00:00Z",
+          },
+        },
+        ytItem("good-vid"),
+      ],
+    }), { status: 200 }));
   }
   return Promise.resolve(new Response(JSON.stringify({
     items: [ytItem("v1"), ytItem("v2"), ytItem("v3")],
@@ -542,7 +558,7 @@ Deno.test("an expired row still serves its videos when the global quota is exhau
     fail_count: 0,
     last_error: null,
     next_retry_at: new Date(Date.now() - DAY).toISOString(),
-    last_updated: "2020-01-01T00:00:00.000Z",
+    last_updated: new Date().toISOString(),
   });
   counts.set("global:yt:u", 6000);
   const res = await post({ query: "ignore", placeId: "paris" });
@@ -1092,6 +1108,56 @@ Deno.test("CLIENT_IP_HEADER=x-real-ip is ignored and the XFF fallback skips the 
   assertEquals(res.status, 200);
   assert(counts.has("page:ip:198.51.100.8:paris"), [...counts.keys()].join(","));
   assert(![...counts.keys()].some((key) => /9\.9\.9\.9|1\.2\.3\.4|3\.2\.51\.9/.test(key)), [...counts.keys()].join(","));
+});
+
+Deno.test("fresh search drops blocklisted IDs and uses safeSearch=strict", async () => {
+  reset();
+  state.yt = "blocklist";
+  const res = await post({ placeId: "paris" });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.videos.map((v: { id?: string }) => v.id), ["good-vid"]);
+  assert(lastYtUrl.includes("safeSearch=strict"), lastYtUrl);
+  assertEquals(store.get("paris")?.videos.length, 1);
+});
+
+Deno.test("cached row serves videos without blocklisted IDs", async () => {
+  reset();
+  const recent = new Date().toISOString();
+  store.set("paris", {
+    place_id: "paris",
+    videos: [
+      { id: "BATsLpppQms", title: "bad" },
+      { id: "keep-me", title: "nice trip" },
+    ],
+    fail_count: 0,
+    last_error: null,
+    next_retry_at: null,
+    last_updated: recent,
+  });
+  const res = await post({ placeId: "paris" });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.videos.map((v: { id?: string }) => v.id), ["keep-me"]);
+  assertEquals(ytCalls, 0);
+});
+
+Deno.test("festival search adds travel suffix and medium duration", async () => {
+  reset();
+  festivals.push({
+    cache_key: "detail:ko:42",
+    payload: {
+      intro: null,
+      common: { title: "진주 축제", contentid: "42", eventstartdate: "20260301" },
+      info: [],
+    },
+  });
+  const res = await post({ placeId: "festival:42" });
+  assertEquals(res.status, 200);
+  const q = youtubeQuery();
+  assert(q.includes("여행"), q);
+  assert(lastYtUrl.includes("safeSearch=strict"), lastYtUrl);
+  assert(lastYtUrl.includes("videoDuration=medium"), lastYtUrl);
 });
 
 Deno.test("an entity-wrapped word is kept when tags are stripped", async () => {
