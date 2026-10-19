@@ -73,7 +73,9 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   const [loaded, setLoaded] = useState(false);
   const [broken, setBroken] = useState(false);
   const paintedRef = useRef(false);
+  const tileRef = useRef(null);
   const imgElRef = useRef(null);
+  const hangTimerRef = useRef(null);
   const imgPropRef = useRef(img);
   const onBrokenRef = useRef(onBroken);
   const onPaintedRef = useRef(onPainted);
@@ -136,25 +138,65 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         })
         .catch(() => {});
     }
-    const hangTimer = window.setTimeout(() => {
-      if (paintedRef.current) return;
-      const el = imgElRef.current;
-      if (el?.naturalWidth > 0) {
-        settleLoaded();
-        return;
+    const clearHang = () => {
+      if (hangTimerRef.current) {
+        window.clearTimeout(hangTimerRef.current);
+        hangTimerRef.current = null;
       }
-      // 6초 후에도 decode 없으면 빈 칸/회색 타일 대신 제거(재배치).
-      settleBroken();
-    }, TILE_LOAD_HANG_MS);
+    };
+
+    const scheduleHangIfVisible = () => {
+      clearHang();
+      const tile = tileRef.current;
+      if (!tile || paintedRef.current) return;
+      const scroller = tile.closest('.custom-scrollbar-blue');
+      const root = scroller instanceof Element ? scroller : null;
+      const rect = tile.getBoundingClientRect();
+      const rootRect = root?.getBoundingClientRect();
+      const vTop = rootRect?.top ?? 0;
+      const vBottom = rootRect?.bottom ?? window.innerHeight;
+      const inView = rect.width > 0 && rect.bottom > vTop && rect.top < vBottom;
+      if (!inView) return;
+
+      hangTimerRef.current = window.setTimeout(() => {
+        if (paintedRef.current) return;
+        const el = imgElRef.current;
+        if (el?.naturalWidth > 0) {
+          settleLoaded();
+          return;
+        }
+        settleBroken();
+      }, TILE_LOAD_HANG_MS);
+    };
+
+    const scroller = tileRef.current?.closest('.custom-scrollbar-blue');
+    const ioRoot = scroller instanceof Element ? scroller : null;
+    const observer =
+      typeof IntersectionObserver !== 'undefined' && tileRef.current
+        ? new IntersectionObserver(
+            (entries) => {
+              if (entries.some((e) => e.isIntersecting)) scheduleHangIfVisible();
+              else clearHang();
+            },
+            { root: ioRoot, threshold: 0.02, rootMargin: '48px' },
+          )
+        : null;
+    if (observer && tileRef.current) observer.observe(tileRef.current);
+    scheduleHangIfVisible();
 
     return () => {
       window.cancelAnimationFrame(raf);
-      window.clearTimeout(hangTimer);
+      clearHang();
+      observer?.disconnect();
     };
   }, [src, settleLoaded, settleBroken, markPainted]);
 
+  const paintAttr = broken ? 'broken' : loaded ? 'painted' : 'pending';
+
   return (
     <div
+      ref={tileRef}
+      data-gallery-paint={paintAttr}
       onClick={(e) => {
         if (longPress.consumeClickSuppression()) {
           e.preventDefault();
