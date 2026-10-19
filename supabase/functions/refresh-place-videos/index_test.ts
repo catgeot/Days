@@ -339,6 +339,25 @@ Deno.test("youtube batch failure does not abort other places", async () => {
   Deno.env.delete("REFRESH_VIDEOS_APPLY");
 });
 
+Deno.test("batch fail metadata blank does not bump last_updated", async () => {
+  reset();
+  Deno.env.set("REFRESH_VIDEOS_APPLY", "on");
+  const oldLu = "2020-01-01T00:00:00.000Z";
+  store.set("stale", {
+    place_id: "stale",
+    videos: [{ id: "fail1", title: "old" }],
+    last_updated: oldLu,
+  });
+  ytBatchFail.add("fail1");
+  const res = await call("");
+  assertEquals(res.status, 200);
+  assertEquals(store.get("stale")?.last_updated, oldLu);
+  const vids = store.get("stale")?.videos as Array<Record<string, unknown>>;
+  assertEquals(vids[0]?.id, "fail1");
+  assertEquals(vids[0]?.title, undefined);
+  Deno.env.delete("REFRESH_VIDEOS_APPLY");
+});
+
 Deno.test("apply updates publishedAt from snippet", async () => {
   reset();
   Deno.env.set("REFRESH_VIDEOS_APPLY", "on");

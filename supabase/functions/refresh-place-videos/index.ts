@@ -30,11 +30,13 @@ type RunPart = {
   examined: number;
   removed: number;
   titleUpdates: number;
+  publishedAtUpdates: number;
   emptyPlace: boolean;
   videos: unknown[];
   removals: Array<{ videoId: string; reason: string }>;
   checkOk: boolean;
   metadataBlanked: number;
+  sourceLastUpdated: string | null;
 };
 
 type RunFailure = { place_id: string; stage: string; error: string };
@@ -281,11 +283,13 @@ serve(async (req) => {
         examined: 0,
         removed: 0,
         titleUpdates: 0,
+        publishedAtUpdates: 0,
         emptyPlace,
         videos,
         removals: [],
         checkOk: false,
         metadataBlanked,
+        sourceLastUpdated: row.last_updated,
       });
       continue;
     }
@@ -303,11 +307,13 @@ serve(async (req) => {
       examined: refreshed.examined,
       removed: refreshed.removed,
       titleUpdates: refreshed.titleUpdates,
+      publishedAtUpdates: refreshed.publishedAtUpdates,
       emptyPlace,
       videos: refreshed.videos,
       removals: refreshed.removals,
       checkOk: !refreshed.batchFailed,
       metadataBlanked: 0,
+      sourceLastUpdated: row.last_updated,
     });
   }
 
@@ -377,6 +383,7 @@ serve(async (req) => {
         removed: p.removed,
         kept: p.videos.length,
         titleUpdates: p.titleUpdates,
+        publishedAtUpdates: p.publishedAtUpdates,
         emptyPlace: p.emptyPlace,
         checkOk: p.checkOk,
         metadataBlanked: p.metadataBlanked,
@@ -433,7 +440,7 @@ serve(async (req) => {
     if (!part.checkOk && writeVideos != null) {
       const { error } = await supabaseAdmin
         .from("place_videos")
-        .update({ videos: writeVideos, last_updated: nowIso })
+        .update({ videos: writeVideos })
         .eq("place_id", part.place_id);
       if (error) {
         failures.push({

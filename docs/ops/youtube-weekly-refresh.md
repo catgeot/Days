@@ -63,7 +63,7 @@ Returns `{ ok: true, latest: { ... } }` for the most recent row in `place_videos
 | `REFRESH_VIDEOS_TOKEN` | Same token as edge (status endpoint auth) |
 | `SUPABASE_URL` | Project URL (`https://<ref>.supabase.co`) |
 
-Workflow: `.github/workflows/youtube-refresh-check.yml` — schedule **Mon 05:20 KST** (`20 20 * * 0` UTC), ~30 minutes after pg_cron refresh. Fails the job (GitHub email) if the latest run is missing, older than ~2 hours, `success=false`, or `failed_count > 0`.
+Workflow: `.github/workflows/youtube-refresh-check.yml` — **`workflow_dispatch` only** until pg_cron is applied in production. After cron is live, uncomment the `schedule` block (`20 20 * * 0` UTC = Mon 05:20 KST). Fails the job (GitHub email) if the latest run is missing, older than ~2 hours, `success=false`, or `failed_count > 0`.
 
 ## Deploy
 

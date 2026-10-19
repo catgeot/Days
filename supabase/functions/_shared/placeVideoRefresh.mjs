@@ -59,6 +59,15 @@ export function isMetadataExpired(lastUpdated, nowMs = Date.now()) {
   return nowMs - t > METADATA_TTL_MS;
 }
 
+/** Search backoff: next_retry_at in the future blocks YouTube refetch even when metadata expired. */
+export function isRetryBlockingRefetch(row, nowMs = Date.now()) {
+  if (!row || typeof row !== "object") return false;
+  const raw = row.next_retry_at;
+  if (raw == null || raw === "") return false;
+  const t = Date.parse(String(raw));
+  return Number.isFinite(t) && t > nowMs;
+}
+
 /**
  * Strip YouTube non-ID metadata (title, channelTitle, publishedAt). Keeps id and GATEO fields.
  * @param {unknown} entry
@@ -186,6 +195,7 @@ export function refreshVideosForPlace(cachedVideos, ytById, batchFailedIds = new
   let examined = 0;
   let removed = 0;
   let titleUpdates = 0;
+  let publishedAtUpdates = 0;
   let batchFailed = false;
 
   for (const entry of list) {
@@ -219,7 +229,7 @@ export function refreshVideosForPlace(cachedVideos, ytById, batchFailedIds = new
     if (next.title !== verdict.title) titleUpdates += 1;
     next.title = verdict.title;
     next.channelTitle = verdict.channelTitle;
-    if (next.publishedAt !== verdict.publishedAt) titleUpdates += 1;
+    if (next.publishedAt !== verdict.publishedAt) publishedAtUpdates += 1;
     next.publishedAt = verdict.publishedAt;
     videos.push(next);
   }
@@ -229,6 +239,7 @@ export function refreshVideosForPlace(cachedVideos, ytById, batchFailedIds = new
     examined,
     removed,
     titleUpdates,
+    publishedAtUpdates,
     kept: videos.length,
     removals,
     batchFailed,
@@ -251,6 +262,7 @@ export function summarizeRefreshRun(parts, maxRatio = maxRemoveRatioFromPct(DEFA
   let examined = 0;
   let removed = 0;
   let titleUpdates = 0;
+  let publishedAtUpdates = 0;
   let emptyPlacesTouched = 0;
 
   for (const p of parts) {
@@ -260,6 +272,7 @@ export function summarizeRefreshRun(parts, maxRatio = maxRemoveRatioFromPct(DEFA
     examined += p.examined ?? 0;
     removed += p.removed ?? 0;
     titleUpdates += p.titleUpdates ?? 0;
+    publishedAtUpdates += p.publishedAtUpdates ?? 0;
   }
 
   return {
@@ -269,6 +282,7 @@ export function summarizeRefreshRun(parts, maxRatio = maxRemoveRatioFromPct(DEFA
     examined,
     removed,
     titleUpdates,
+    publishedAtUpdates,
     removalRate: examined > 0 ? removed / examined : 0,
     guardTriggered: exceedsRemovalGuard(examined, removed, maxRatio),
     maxRemovePct: maxRatio * 100,

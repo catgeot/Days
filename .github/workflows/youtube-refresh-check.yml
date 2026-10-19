@@ -6,9 +6,9 @@ permissions:
   contents: read
 
 on:
-  schedule:
-    # Mon 05:20 KST = Sun 20:20 UTC (cron runs ~30m after pg_cron refresh at 50 19 * * 0 UTC)
-    - cron: '20 20 * * 0'
+  # Enable schedule after pg_cron `place-videos-weekly-refresh` is applied (see docs/ops/youtube-weekly-refresh.md).
+  # schedule:
+  #   - cron: '20 20 * * 0'  # Mon 05:20 KST (~30m after weekly refresh)
   workflow_dispatch:
 
 jobs:

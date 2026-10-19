@@ -10,7 +10,7 @@ import {
   markYoutubeIdUnplayable,
   clearYoutubeIdsUnplayable,
 } from '../../../utils/youtubeUnplayableStorage.js';
-import { shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
+import { placeVideosForClient, shouldRefreshPlaceVideoCache } from '../lib/placeVideoCache.js';
 import {
   freeSearchYouTubeUrl,
   isFreeSearchLocation,
@@ -282,7 +282,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     let cachedData = null;
     const cachedRes = await supabase
       .from('place_videos')
-      .select('videos, next_retry_at')
+      .select('videos, next_retry_at, last_updated')
       .in('place_id', candidateIds)
       .limit(1)
       .maybeSingle();
@@ -312,12 +312,13 @@ export const useYouTubeSearch = (location, mediaMode) => {
       };
       liveRef.current = {
         ...emptyLive(),
-        rawVideos: cachedData.videos,
+        rawVideos: placeVideosForClient(cachedData),
         hasMorePages: cachedData.videos.length > 0,
       };
-      setRawVideos(cachedData.videos);
-      setHasMorePages(cachedData.videos.length > 0);
-      setIsEmptyResult(cachedData.videos.length === 0);
+      const clientVideos = placeVideosForClient(cachedData);
+      setRawVideos(clientVideos);
+      setHasMorePages(clientVideos.length > 0);
+      setIsEmptyResult(clientVideos.length === 0);
       return;
     }
 

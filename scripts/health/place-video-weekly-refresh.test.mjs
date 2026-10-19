@@ -13,6 +13,7 @@ const {
   exceedsRemovalGuard,
   refreshVideosForPlace,
   summarizeRefreshRunForCap,
+  isRetryBlockingRefetch,
   stripVideosYoutubeMetadata,
   parseCutoffDaysParam,
   parseLimitParam,
@@ -61,6 +62,8 @@ test('refreshVideosForPlace drops missing API rows and refreshes titles', () => 
   assert.equal(out.videos[0].title, 'New & Title');
   assert.equal(out.videos[0].channelTitle, 'Ch2');
   assert.equal(out.videos[0].ai_context.x, 1);
+  assert.equal(out.publishedAtUpdates, 1);
+  assert.equal(out.titleUpdates, 1);
 });
 
 test('exceedsRemovalGuard uses strict max-remove pct threshold (default 5%)', () => {
@@ -108,6 +111,12 @@ test('parseCutoffDaysParam clamps 0..30', () => {
 test('parseLimitParam clamps 1..1000', () => {
   assert.equal(parseLimitParam('0'), 1);
   assert.equal(parseLimitParam('5000'), 1000);
+});
+
+test('isRetryBlockingRefetch when next_retry_at is in the future', () => {
+  const now = Date.now();
+  assert.equal(isRetryBlockingRefetch({ next_retry_at: new Date(now + 3600000).toISOString() }, now), true);
+  assert.equal(isRetryBlockingRefetch({ next_retry_at: null }, now), false);
 });
 
 test('stripVideosYoutubeMetadata keeps id and GATEO fields', () => {

@@ -1025,6 +1025,26 @@ Deno.test("a per-minute rejection still returns stored videos", async () => {
   assert(Date.parse(store.get("paris")?.next_retry_at ?? "") < Date.now(), "minute cap must not write a backoff");
 });
 
+Deno.test("expired metadata with future next_retry_at serves stripped cache without YouTube", async () => {
+  reset();
+  const future = new Date(Date.now() + 2 * DAY).toISOString();
+  store.set("paris", {
+    place_id: "paris",
+    videos: [{ id: "keep-me", title: "old", channelTitle: "ch", publishedAt: "2019-01-01T00:00:00Z" }],
+    fail_count: 2,
+    last_error: "quotaExceeded",
+    next_retry_at: future,
+    last_updated: "2020-01-01T00:00:00.000Z",
+  });
+  const res = await post({ query: "파리", placeId: "paris" });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.videos.length, 1);
+  assertEquals(body.videos[0]?.id, "keep-me");
+  assertEquals(body.videos[0]?.title, undefined);
+  assertEquals(ytCalls, 0);
+});
+
 Deno.test("fresh last_updated serves title metadata on cache hit", async () => {
   reset();
   const recent = new Date().toISOString();

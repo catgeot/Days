@@ -138,7 +138,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
 
         return {
             mode: 'VIDEO',
-            title: decodeHtmlEntities(activeVideoData?.title || '') || t('place.fallback.videoMissing'),
+            title: decodeHtmlEntities(activeVideoData?.title || '').trim() || t('place.fallback.youtubeVideo'),
             summary: null,
             channelLine,
             tags: activeVideoData?.ai_context?.tags || ['Travel', 'Video'],

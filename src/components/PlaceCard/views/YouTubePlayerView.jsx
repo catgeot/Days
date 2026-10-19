@@ -90,7 +90,10 @@ const YouTubePlayerView = forwardRef(({
     isPlayingRef.current = isPlaying;
   }, [isPlaying]);
 
-  const displayTitle = (title) => decodeHtmlEntities(title || '');
+  const displayTitle = (title) => {
+    const decoded = decodeHtmlEntities(title || '').trim();
+    return decoded || t('place.fallback.youtubeVideo');
+  };
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {

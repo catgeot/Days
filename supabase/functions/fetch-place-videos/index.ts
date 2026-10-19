@@ -5,6 +5,7 @@ import { clientIp } from "../_shared/placeVideoClientIp.ts";
 import { buildFreeSearchVideo } from "../_shared/freeSearchPlaceVideo.js";
 import {
   isMetadataExpired,
+  isRetryBlockingRefetch,
   stripVideosYoutubeMetadata,
 } from "../_shared/placeVideoRefresh.mjs";
 
@@ -223,6 +224,9 @@ function ipDailyUnits(): number {
 
 function rowFresh(row: PlaceVideoRow | null): boolean {
   if (!row || !Array.isArray(row.videos)) return false;
+  if (isMetadataExpired(row.last_updated) && isRetryBlockingRefetch(row)) {
+    return true;
+  }
   if (isMetadataExpired(row.last_updated)) return false;
   if (row.next_retry_at == null || row.next_retry_at === "") return true;
   const t = Date.parse(row.next_retry_at);
