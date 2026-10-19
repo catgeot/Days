@@ -151,12 +151,85 @@ async function clickRegionBack(page) {
   await page.waitForTimeout(900);
 }
 
+/** Cache miss on open + empty live edge — no YouTube quota in capture. */
+async function installZeroLiveVideoRoutes(page) {
+  await page.route(/\/rest\/v1\/place_videos/i, async (route) => {
+    if (route.request().method() === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '[]',
+      });
+      return;
+    }
+    await route.continue();
+  });
+  await page.route(/fetch-place-videos/i, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, videos: [] }),
+    });
+  });
+}
+
+async function captureZeroLiveEmpty(context, notes) {
+  const festivalId = process.env.ZERO_LIVE_FESTIVAL_ID || '1122739';
+  const page = await context.newPage();
+  await installZeroLiveVideoRoutes(page);
+  for (const w of [390, 1280]) {
+    const height = w === 390 ? 844 : 900;
+    await page.setViewportSize({ width: w, height });
+    await page.goto(`${BASE}/korea/?festival=${festivalId}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 120_000,
+    });
+    const dialog = await festivalDialog(page);
+    const videoTab = dialog.getByRole('tab', { name: /^영상$/ });
+    await videoTab.waitFor({ state: 'visible', timeout: 90_000 });
+    await videoTab.click();
+    const emptyCopy = dialog.getByText('관련 영상이 아직 없어요');
+    await emptyCopy.waitFor({ state: 'visible', timeout: 45_000 });
+    const tabStill = dialog.getByRole('tab', { name: /^영상$/, selected: true });
+    if ((await tabStill.count()) === 0) {
+      throw new Error('영상 tab not selected after live empty');
+    }
+    const infoTab = dialog.getByRole('tab', { name: /^안내$/, selected: true });
+    if ((await infoTab.count()) > 0) {
+      throw new Error('bounced to 안내 after live empty');
+    }
+    await page.screenshot({
+      path: join(OUT, `zero-live-empty-${w}.png`),
+      clip: { x: 0, y: 0, width: w, height },
+    });
+    console.log('saved zero-live-empty', w);
+  }
+  notes.push(
+    `zero-live-empty: OK festival ${festivalId} — tap 영상 → intercepted empty live; tab stays; copy shown`,
+  );
+  await page.close();
+}
+
 async function main() {
   await mkdir(OUT, { recursive: true });
   const browser = await webkit.launch();
   const context = await browser.newContext({ locale: 'ko-KR', ignoreHTTPSErrors: true });
-  const page = await context.newPage();
   const notes = [];
+
+  if (process.env.ZERO_LIVE_ONLY === '1') {
+    try {
+      await captureZeroLiveEmpty(context, notes);
+    } catch (err) {
+      notes.push(`zero-live-empty: ERROR ${err.message}`);
+      console.error(err);
+      process.exitCode = 1;
+    }
+    await writeFile(join(OUT, 'NOTES-zero-live.md'), notes.join('\n'), 'utf8');
+    await browser.close();
+    return;
+  }
+
+  const page = await context.newPage();
   const timings = [];
   let zeroVideoId = process.env.ZERO_VIDEO_ID || '';
 
@@ -266,6 +339,13 @@ async function main() {
     console.error('side-panel', err);
   }
 
+  try {
+    await captureZeroLiveEmpty(context, notes);
+  } catch (err) {
+    notes.push(`zero-live-empty: ERROR ${err.message}`);
+    console.error('zero-live-empty', err);
+  }
+
   await writeFile(
     join(OUT, 'NOTES.md'),
     `# tab-videos-r2 QA evidence
@@ -295,9 +375,13 @@ Sheet open reads **\`place_videos\` only** (\`fetchFestivalVideosCacheOnly\`); *
 
 ${timings.map((t) => `- ${t.festivalId}: ${t.stableMs ?? 'timeout'} ms — \`${t.tabLabels}\``).join('\n')}
 
-## Zero-video festival
+## Zero-video festival (cache-empty on open)
 
 ${zeroVideoId ? `contentId **${zeroVideoId}** — screenshots \`zero-video-${zeroVideoId}-tabbar-*\` (no 영상 tab on open).` : 'No 0-video festival found in probe — see log.'}
+
+## Live search empty (user taps 영상)
+
+Intercept: \`place_videos\` GET → \`[]\`, \`fetch-place-videos\` → \`{ success: true, videos: [] }\`. Screenshots \`zero-live-empty-{390,1280}.png\` — **영상** tab stays, copy **관련 영상이 아직 없어요**.
 
 ## Region back press
 
