@@ -15,8 +15,12 @@ import {
 } from '../../../utils/placeReviewContentBlocks.js';
 import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
 
-const PAGE_SIZE = 10;
+export const LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE = 10;
 const LIST_PREVIEW_MAX = 120;
+
+/** Keeps hub inside the logbook main column when sidebar + max-w-7xl would exceed the viewport. */
+const HUB_CARD_LAYOUT_CLASS =
+  'mb-6 w-full min-w-0 max-w-full box-border md:max-w-[min(80rem,calc(100vw-16rem-3rem))] overflow-x-hidden rounded-2xl border border-gray-200 bg-white shadow-sm';
 
 function editorialReviewListPreview(review) {
   const titled = placeReviewVisitStoryDisplayTitle(review, LIST_PREVIEW_MAX);
@@ -71,15 +75,101 @@ function HubReviewListThumbnail({ src }) {
   );
 }
 
+function HubTitleRow({
+  panelId,
+  expanded,
+  totalCount,
+  onToggle,
+  headerRound,
+  asToggle = true,
+}) {
+  const rowClass = `flex w-full min-w-0 items-center gap-2 px-4 py-3.5 text-left ${headerRound}`;
+  const inner = (
+    <>
+      <Sparkles size={18} className="shrink-0 text-indigo-500" aria-hidden />
+      <span className="min-w-0 flex-1 truncate text-sm font-bold text-gray-900">
+        {LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
+      </span>
+      {typeof totalCount === 'number' ? (
+        <span
+          className="shrink-0 whitespace-nowrap tabular-nums text-xs font-semibold text-gray-600"
+          data-testid="logbook-official-review-hub-count"
+        >
+          {totalCount}편
+        </span>
+      ) : null}
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100"
+        aria-hidden
+      >
+        <ChevronDown
+          size={22}
+          strokeWidth={2.5}
+          className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+        />
+      </span>
+    </>
+  );
+
+  if (!asToggle) {
+    return (
+      <div className={rowClass} data-testid="logbook-official-review-hub-title-row">
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${rowClass} transition-colors hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
+      aria-expanded={expanded}
+      aria-controls={panelId}
+      data-testid="logbook-official-review-hub-toggle"
+      onClick={onToggle}
+    >
+      {inner}
+    </button>
+  );
+}
+
 const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
   const [expanded, setExpanded] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const { enabled, rows, isLoading, loadFailed, totalCount } = useLogbookOfficialReviewHub();
+  const [visibleCount, setVisibleCount] = useState(LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE);
+  const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
 
   const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
 
-  if (!enabled || loadFailed || (!isLoading && totalCount === 0)) {
+  if (!enabled) {
+    return null;
+  }
+
+  if (loadFailed) {
+    return (
+      <section
+        className={HUB_CARD_LAYOUT_CLASS}
+        aria-label={LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
+        data-testid="logbook-official-review-hub"
+        data-hub-state="load-failed"
+      >
+        <HubTitleRow panelId={panelId} expanded={false} asToggle={false} headerRound="rounded-t-2xl" />
+        <div className="border-t border-gray-100 px-4 pb-3.5 pt-2">
+          <p className="text-sm text-gray-600">리뷰를 불러오지 못했어요</p>
+          <button
+            type="button"
+            className="mt-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+            data-testid="logbook-official-review-hub-retry"
+            onClick={retry}
+          >
+            다시 시도
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (!isLoading && totalCount === 0) {
     return null;
   }
 
@@ -88,35 +178,29 @@ const LogbookOfficialReviewHubCard = () => {
   }
 
   const hasMore = visibleCount < totalCount;
+  const headerRound = expanded ? 'rounded-t-2xl' : 'rounded-2xl';
 
   return (
     <section
-      className="mb-6 rounded-2xl border border-gray-200 bg-white shadow-sm"
+      className={HUB_CARD_LAYOUT_CLASS}
       aria-label={LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
       data-testid="logbook-official-review-hub"
+      data-hub-state="ready"
     >
-      <button
-        type="button"
-        className="flex w-full items-center gap-2.5 px-4 py-3.5 text-left transition-colors hover:bg-gray-50 rounded-2xl"
-        aria-expanded={expanded}
-        aria-controls={panelId}
-        data-testid="logbook-official-review-hub-toggle"
-        onClick={() => setExpanded((open) => !open)}
-      >
-        <Sparkles size={18} className="shrink-0 text-indigo-500" aria-hidden />
-        <span className="min-w-0 flex-1 text-sm font-bold text-gray-900">{LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}</span>
-        <span className="shrink-0 text-xs font-semibold text-gray-400">
-          {totalCount}편
-        </span>
-        <ChevronDown
-          size={18}
-          className={`shrink-0 text-gray-400 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
-          aria-hidden
-        />
-      </button>
+      <HubTitleRow
+        panelId={panelId}
+        expanded={expanded}
+        totalCount={totalCount}
+        headerRound={headerRound}
+        onToggle={() => setExpanded((open) => !open)}
+      />
 
       {expanded ? (
-        <div id={panelId} className="border-t border-gray-100 px-3 pb-4 pt-2 sm:px-4" data-testid="logbook-official-review-hub-panel">
+        <div
+          id={panelId}
+          className="border-t border-gray-100 px-3 pb-4 pt-2 sm:px-4"
+          data-testid="logbook-official-review-hub-panel"
+        >
           <ul className="divide-y divide-gray-100">
             {visibleRows.map((review) => {
               const slug = String(review.place_slug || '').trim();
@@ -125,6 +209,7 @@ const LogbookOfficialReviewHubCard = () => {
               const preview = editorialReviewListPreview(review);
               const placeName = String(review.place_name || '').trim();
               const dateLabel = formatLogbookDisplayDate(review.created_at);
+              const badgeLabel = formatGateoReviewerBadge(review.persona_label);
 
               return (
                 <li key={review.id}>
@@ -135,12 +220,16 @@ const LogbookOfficialReviewHubCard = () => {
                     data-hub-place-slug={slug || undefined}
                     data-review-id={review.id}
                     data-hub-has-thumb={thumbSrc ? 'true' : 'false'}
+                    data-hub-persona-badge={badgeLabel}
                   >
                     {thumbSrc ? <HubReviewListThumbnail key={thumbSrc} src={thumbSrc} /> : null}
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-1">
-                        <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700">
-                          {formatGateoReviewerBadge(review.persona_label)}
+                        <span
+                          className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700"
+                          data-testid="logbook-official-review-hub-persona-badge"
+                        >
+                          {badgeLabel}
                         </span>
                         {placeName ? (
                           <span className="text-xs font-semibold text-gray-700">{placeName}</span>
@@ -164,7 +253,11 @@ const LogbookOfficialReviewHubCard = () => {
                 type="button"
                 className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 px-4 py-2"
                 data-testid="logbook-official-review-hub-more"
-                onClick={() => setVisibleCount((n) => Math.min(n + PAGE_SIZE, totalCount))}
+                onClick={() =>
+                  setVisibleCount((n) =>
+                    Math.min(n + LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE, totalCount),
+                  )
+                }
               >
                 더 보기
               </button>

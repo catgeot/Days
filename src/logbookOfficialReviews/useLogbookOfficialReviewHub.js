@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../shared/api/supabase';
 import { isGateoLogbookReviewHubEnabled } from '../shared/gateoFeatureFlags';
 import { fetchEditorialReviewIndex } from './editorialReviewIndex.js';
@@ -11,6 +11,11 @@ export function useLogbookOfficialReviewHub() {
   const [rows, setRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [reloadNonce, setReloadNonce] = useState(0);
+
+  const retry = useCallback(() => {
+    setReloadNonce((n) => n + 1);
+  }, []);
 
   useEffect(() => {
     if (!enabled) {
@@ -30,7 +35,12 @@ export function useLogbookOfficialReviewHub() {
         setRows(data);
       })
       .catch((error) => {
-        console.error('[logbook-review-hub] fetch failed', error);
+        if (import.meta.env.DEV) {
+          console.warn(
+            '[logbook-review-hub] fetch failed',
+            error?.code || error?.message || error,
+          );
+        }
         if (!cancelled) {
           setRows([]);
           setLoadFailed(true);
@@ -43,7 +53,7 @@ export function useLogbookOfficialReviewHub() {
     return () => {
       cancelled = true;
     };
-  }, [enabled]);
+  }, [enabled, reloadNonce]);
 
   return {
     enabled,
@@ -51,5 +61,6 @@ export function useLogbookOfficialReviewHub() {
     isLoading,
     loadFailed,
     totalCount: rows.length,
+    retry,
   };
 }
