@@ -634,6 +634,8 @@
       "inlineTitle": "현지 정보 · {{label}}",
       "storiesTitle": "다녀온 이야기",
       "storyCount": "{{count}}건",
+      "collapse": "접기",
+      "expand": "펼치기",
       "logbookLink": "로그북",
       "reviewLink": "리뷰",
       "confirmed": {

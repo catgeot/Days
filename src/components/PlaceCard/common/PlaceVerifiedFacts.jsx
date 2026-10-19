@@ -172,6 +172,68 @@ function shellClass(light) {
     : 'rounded-2xl border border-white/10 bg-black/35 backdrop-blur-md';
 }
 
+function galleryFactsSectionClass() {
+  return 'mb-5';
+}
+
+const sectionToggleBtnClass = (light) => (light
+  ? 'flex w-full min-h-11 items-start gap-2.5 rounded-lg px-1 py-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600'
+  : 'flex w-full min-h-11 items-start gap-2.5 rounded-lg px-1 py-2 text-left transition-colors hover:bg-white/[0.04] active:bg-white/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300/60');
+
+function PlaceSectionToggleHeader({
+  title,
+  count,
+  open,
+  controls,
+  onClick,
+  light,
+  icon: Icon = Compass,
+}) {
+  const { t } = useTranslation();
+  const toggleLabel = open ? t('place.facts.collapse') : t('place.facts.expand');
+  return (
+    <button
+      type="button"
+      className={sectionToggleBtnClass(light)}
+      aria-expanded={open}
+      aria-controls={controls}
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
+    >
+      <Icon
+        size={18}
+        className={`mt-0.5 shrink-0 ${light ? 'text-amber-700' : 'text-amber-200'}`}
+        aria-hidden
+      />
+      <span className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2.5">
+        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className={`text-base font-bold tracking-tight ${light ? 'text-[#111827]' : 'text-white'}`}>
+            {title}
+          </span>
+          {count ? (
+            <span className={`text-xs font-semibold ${light ? 'text-[#4b5563]' : 'text-white/45'}`}>
+              {count}
+            </span>
+          ) : null}
+        </span>
+        <span
+          className={`inline-flex items-center gap-1 text-xs font-semibold ${light ? 'text-[#4b5563]' : 'text-white/55'}`}
+          data-section-toggle-label=""
+        >
+          <span>{toggleLabel}</span>
+          <ChevronDown
+            size={14}
+            className={`shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+            aria-hidden
+          />
+        </span>
+      </span>
+    </button>
+  );
+}
+
 function DisclosureHeader({
   title,
   count,
@@ -182,37 +244,15 @@ function DisclosureHeader({
   icon: Icon = Compass,
 }) {
   return (
-    <button
-      type="button"
-      className={light
-        ? 'flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-gray-50'
-        : 'flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-white/[0.04]'}
-      aria-expanded={open}
-      aria-controls={controls}
-      onClick={(event) => {
-        event.stopPropagation();
-        onClick();
-      }}
-    >
-      <Icon
-        size={16}
-        className={`shrink-0 ${light ? 'text-amber-700' : 'text-amber-200'}`}
-        aria-hidden
-      />
-      <span className={`min-w-0 flex-1 text-sm font-bold ${light ? 'text-[#111827]' : 'text-white'}`}>
-        {title}
-      </span>
-      {count ? (
-        <span className={`shrink-0 text-[10px] font-semibold ${light ? 'text-[#4b5563]' : 'text-white/45'}`}>
-          {count}
-        </span>
-      ) : null}
-      <ChevronDown
-        size={16}
-        className={`shrink-0 transition-transform duration-200 ${light ? 'text-[#374151]' : 'text-white/60'} ${open ? 'rotate-180' : ''}`}
-        aria-hidden
-      />
-    </button>
+    <PlaceSectionToggleHeader
+      title={title}
+      count={count}
+      open={open}
+      controls={controls}
+      onClick={onClick}
+      light={light}
+      icon={Icon}
+    />
   );
 }
 
@@ -236,7 +276,9 @@ function FactTopicRow({ slot, slug, locale, light }) {
     >
       <button
         type="button"
-        className="flex w-full items-center justify-between gap-3 px-3.5 py-3 text-left"
+        className={`flex w-full min-h-11 items-center justify-between gap-3 px-3.5 py-3 text-left transition-colors ${light
+          ? 'hover:bg-gray-50 active:bg-gray-100'
+          : 'hover:bg-white/[0.06] active:bg-white/[0.1]'}`}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={(event) => {
@@ -250,11 +292,12 @@ function FactTopicRow({ slot, slug, locale, light }) {
         >
           {label}
         </span>
-        <ChevronDown
-          size={16}
-          className={`shrink-0 transition-transform duration-200 ${light ? 'text-[#4b5563]' : 'text-white/50'} ${open ? 'rotate-180' : ''}`}
+        <span
+          className={`shrink-0 text-lg leading-none ${light ? 'text-[#6b7280]' : 'text-white/45'}`}
           aria-hidden
-        />
+        >
+          ›
+        </span>
       </button>
       {open ? (
         <div id={panelId} className="px-3.5 pb-3.5">
@@ -284,9 +327,9 @@ export default function PlaceVerifiedFacts({ location, className = '' }) {
       data-local-info="gallery"
       data-unverified-items={unverified || undefined}
       aria-label={t('place.facts.localTitle')}
-      className={`${shellClass(false)} mb-4 ${className}`.trim()}
+      className={`${galleryFactsSectionClass()} ${className}`.trim()}
     >
-      <DisclosureHeader
+      <PlaceSectionToggleHeader
         title={t('place.facts.localTitle')}
         count={t('place.facts.topicCount', { count: filled.length })}
         open={open}
@@ -295,7 +338,7 @@ export default function PlaceVerifiedFacts({ location, className = '' }) {
         light={false}
       />
       {open ? (
-        <div id={panelId} className="space-y-2.5 px-3 pb-3.5">
+        <div id={panelId} className="mt-2 space-y-2.5 px-0.5 pb-1">
           {filled.map((slot) => (
             <FactTopicRow
               key={slot.id}
@@ -381,9 +424,9 @@ export function PlaceVisitStories({ location, className = '' }) {
       data-visit-stories=""
       data-local-info="stories"
       aria-label={t('place.facts.storiesTitle')}
-      className={`${shellClass(false)} mb-4 ${className}`.trim()}
+      className={`${galleryFactsSectionClass()} ${className}`.trim()}
     >
-      <DisclosureHeader
+      <PlaceSectionToggleHeader
         title={t('place.facts.storiesTitle')}
         count={t('place.facts.storyCount', { count: stories.length })}
         open={open}
@@ -393,12 +436,12 @@ export function PlaceVisitStories({ location, className = '' }) {
         icon={PenLine}
       />
       {open ? (
-        <div id={panelId} className="space-y-2 px-3 pb-3.5">
+        <div id={panelId} className="mt-2 space-y-2 px-0.5 pb-1">
           {stories.map((story) => {
             const kindLabel = story.kind === 'review'
               ? t('place.facts.reviewLink')
               : t('place.facts.logbookLink');
-            const rowClass = 'flex w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-left';
+            const rowClass = 'flex w-full min-h-11 items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-left transition-colors hover:bg-white/[0.07] active:bg-white/[0.1]';
             const body = (
               <>
                 <span data-visit-story-title="" className="min-w-0 flex-1 truncate text-sm font-medium text-white">

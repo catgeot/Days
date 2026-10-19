@@ -1234,7 +1234,9 @@ const PlaceGalleryView = React.memo(({
                     </button>
                   ) : null}
                   {gallerySourcesAttribution ? (
-                    <p className="text-[10px] text-white/25">{gallerySourcesAttribution}</p>
+                    <p data-gallery-photo-credit="" className="text-[10px] text-white/25">
+                      {gallerySourcesAttribution}
+                    </p>
                   ) : null}
                 </div>
               )}

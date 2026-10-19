@@ -1,5 +1,6 @@
 import travelSpotTourApi from '../pages/Home/data/travelSpotTourApi.json' with { type: 'json' };
 import { inferPlaceMatchCategory, PLACE_MATCH_CATEGORY } from '../pages/Home/lib/placeMatchCategory.js';
+import { coordsInKorea } from '../pages/Home/lib/visitedPlaceSearch.js';
 
 /**
  * @typedef {{
@@ -34,6 +35,70 @@ export function isDomesticKoreaLocation(location) {
     isDomesticKoreaCountry(location.country) ||
     isDomesticKoreaCountry(location.country_en)
   );
+}
+
+/**
+ * @param {{ country?: string, country_en?: string } | null | undefined} location
+ * @returns {boolean}
+ */
+export function hasExplicitNonKoreaCountry(location) {
+  if (!location || typeof location !== 'object') return false;
+  const country = String(location.country || '').trim();
+  const countryEn = String(location.country_en || '').trim();
+  if (country && !isDomesticKoreaCountry(country)) return true;
+  if (countryEn && !isDomesticKoreaCountry(countryEn)) return true;
+  return false;
+}
+
+/**
+ * TourAPI/KTO 갤러리 허용 — 국가·한반도 좌표만 (한글 지명만으로는 true 금지).
+ *
+ * @param {{ country?: string, country_en?: string, lat?: number, lng?: number } | null | undefined} location
+ * @returns {boolean}
+ */
+export function isDomesticKoreaLocationForTourApi(location) {
+  if (!location || typeof location !== 'object') return false;
+  if (hasExplicitNonKoreaCountry(location)) return false;
+  if (isDomesticKoreaLocation(location)) return true;
+  const lat = Number(location.lat);
+  const lng = Number(location.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)) {
+    return coordsInKorea(lat, lng);
+  }
+  return false;
+}
+
+/**
+ * TourAPI 차단: 명시적 해외 국가 또는 한반도 밖 좌표만. 미지정 country/좌표는 차단하지 않음.
+ *
+ * @param {{ country?: string, country_en?: string, lat?: number, lng?: number } | null | undefined} location
+ * @returns {boolean}
+ */
+export function isExplicitlyOverseasForTourApi(location) {
+  if (!location || typeof location !== 'object') return false;
+  if (hasExplicitNonKoreaCountry(location)) return true;
+  const lat = Number(location.lat);
+  const lng = Number(location.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)) {
+    return !coordsInKorea(lat, lng);
+  }
+  return false;
+}
+
+/**
+ * @param {Array<{ country?: string, country_en?: string, lat?: number, lng?: number } | null | undefined> | null | undefined} locations
+ * @param {TourApiPlaceMapping | null | undefined} resolvedTourMapping
+ * @returns {boolean}
+ */
+export function shouldUseTourApiGalleryForPlace(locations, resolvedTourMapping) {
+  const locs = (Array.isArray(locations) ? locations : [locations]).filter(
+    (loc) => loc && typeof loc === 'object',
+  );
+  if (locs.some(isExplicitlyOverseasForTourApi)) return false;
+  if (locs.some(isDomesticKoreaLocationForTourApi)) return true;
+  if (resolvedTourMapping?.curated) return true;
+  if (locs.some(isDomesticKoreaLocation)) return true;
+  return false;
 }
 
 /**
