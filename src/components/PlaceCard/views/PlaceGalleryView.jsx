@@ -6,6 +6,11 @@ import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download
 import { i18n } from '../../../i18n/config';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
+import {
+  consumeGalleryAttributionReturnState,
+  readGalleryAttributionReturnState,
+  clearGalleryAttributionReturnState,
+} from '../common/galleryAttributionNavigation';
 import { placeGalleryScrollToRestore, rememberPlaceGalleryScroll } from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
@@ -144,6 +149,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
           return;
         }
         if (e.ctrlKey || e.metaKey) return;
+        if (e.target instanceof Element && e.target.closest('a')) return;
         e.stopPropagation();
         onOpen?.(e);
       }}
@@ -190,8 +196,12 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         onLoad={settleLoaded}
         onError={settleBroken}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20} />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <Maximize2
+        className="pointer-events-none absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100"
+        size={20}
+        aria-hidden
+      />
       {showPhotoCredit ? (
         <GalleryGridPhotoCredit
           image={img}
@@ -421,11 +431,62 @@ const PlaceGalleryView = React.memo(({
     setGalleryVisuallyReady(false);
   }, [galleryPlaceKey]);
 
+  /** 모바일 그리드 출처 같은 탭 복귀 — 라이트박스 없이 갤러리 스크롤만 복원 */
+  useLayoutEffect(() => {
+    if (!galleryPlaceKey || images.length === 0) return undefined;
+
+    const pending = consumeGalleryAttributionReturnState(galleryPlaceKey, 'gallery-grid');
+    if (!pending) return undefined;
+
+    const scrollTop = Number(pending.galleryScrollTop);
+    if (!Number.isFinite(scrollTop) || scrollTop <= 0) return undefined;
+
+    pendingPlaceScrollResetRef.current = false;
+    pendingPlaceScrollRestoreRef.current = scrollTop;
+    rememberPlaceGalleryScroll(galleryPlaceKey, scrollTop);
+    setShowScrollToTop(scrollTop > 280);
+
+    const applyScroll = () => {
+      const el = scrollContainerRef.current;
+      if (!el) return;
+      el.scrollTop = scrollTop;
+    };
+
+    applyScroll();
+    const raf = window.requestAnimationFrame(applyScroll);
+    const timers = [120, 400, 900].map((ms) => window.setTimeout(applyScroll, ms));
+    return () => {
+      window.cancelAnimationFrame(raf);
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, [galleryPlaceKey, images.length]);
+
+  useEffect(() => {
+    if (!galleryPlaceKey) return undefined;
+
+    const onPageShow = (event) => {
+      if (!event.persisted) return;
+      const pending = readGalleryAttributionReturnState();
+      if (!pending || pending.placeKey !== galleryPlaceKey) return;
+      if (pending.context !== 'gallery-grid') return;
+      clearGalleryAttributionReturnState();
+    };
+
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, [galleryPlaceKey]);
+
   const navigationTypeRef = useRef(navigationType);
   navigationTypeRef.current = navigationType;
 
   useLayoutEffect(() => {
     const el = scrollContainerRef.current;
+    const gridPending = readGalleryAttributionReturnState();
+    const gridScrollPending =
+      gridPending?.context === 'gallery-grid' &&
+      gridPending.placeKey === galleryPlaceKey &&
+      Number(gridPending.galleryScrollTop) > 0;
+
     const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationTypeRef.current);
     if (restore > 0) {
       pendingPlaceScrollResetRef.current = false;
@@ -442,6 +503,13 @@ const PlaceGalleryView = React.memo(({
         if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
       };
     }
+    if (gridScrollPending) {
+      pendingPlaceScrollResetRef.current = false;
+      pendingPlaceScrollRestoreRef.current = Number(gridPending.galleryScrollTop);
+      if (el) el.scrollTop = Number(gridPending.galleryScrollTop);
+      return undefined;
+    }
+
     pendingPlaceScrollRestoreRef.current = 0;
     pendingPlaceScrollResetRef.current = true;
     resetPlaceMediaScrollInstant(el);
@@ -1126,6 +1194,7 @@ const PlaceGalleryView = React.memo(({
           <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
           <div
             ref={scrollContainerRef}
+            data-place-gallery-scroll=""
             className={`flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} md:pt-10 ${mobilePlaceGalleryFooterScrollPadding} md:pb-6`}
           >
 

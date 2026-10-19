@@ -1051,6 +1051,8 @@
       "refreshTitle": "Unsplash·Pexels에서 추가 사진 불러오기",
       "sourcesRateLimit": "Unsplash · Pexels · {{seconds}}초에 한 번",
       "photoCreditKtoPrefix": "사진:",
+      "photoCreditBy": "사진",
+      "photoCreditOn": "·",
       "photoCreditUnsplash": "사진 <photographer>{{name}}</photographer> · <provider>Unsplash</provider>",
       "photoCreditPexels": "사진 <photographer>{{name}}</photographer> · <provider>Pexels</provider>",
       "enlargeImage": "{{alt}} 확대하기",
