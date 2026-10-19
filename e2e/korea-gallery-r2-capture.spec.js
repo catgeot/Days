@@ -57,15 +57,30 @@ function attachStockCounters(page, bag) {
 async function waitGallerySettled(page, startedAt) {
   const loading = page.getByText('사진을 불러오는 중', { exact: false });
   await expect
+    .poll(async () => (await loading.isVisible().catch(() => false)) ? 1 : 0, {
+      timeout: 45_000,
+    })
+    .toBe(0);
+
+  await expect
     .poll(
       async () => {
-        const spinVisible = await loading.isVisible().catch(() => false);
         const busy = await page.locator('[aria-busy="true"]').count();
-        return spinVisible || busy > 0 ? 1 : 0;
+        const refreshBusy = await page
+          .getByText(/추가 사진을 불러오는 중/)
+          .isVisible()
+          .catch(() => false);
+        const imgs = await page.locator('img[alt^="place-img"]').count();
+        const empty = await page
+          .getByText(/등록된 이미지가 없습니다|사진을 불러올 수 없/i)
+          .isVisible()
+          .catch(() => false);
+        return busy === 0 && !refreshBusy && (imgs > 0 || empty) ? 0 : 1;
       },
       { timeout: 45_000 },
     )
     .toBe(0);
+
   return Date.now() - startedAt;
 }
 
