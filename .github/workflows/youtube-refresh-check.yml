@@ -1,0 +1,54 @@
+# After weekly place_videos refresh (Mon 04:50 KST), fail if the latest run is missing or unhealthy.
+# Uses GET ?status=1 on refresh-place-videos (REFRESH_VIDEOS_TOKEN only — no service role in GH).
+name: YouTube weekly refresh check
+
+permissions:
+  contents: read
+
+on:
+  schedule:
+    # Mon 05:20 KST = Sun 20:20 UTC (cron runs ~30m after pg_cron refresh at 50 19 * * 0 UTC)
+    - cron: '20 20 * * 0'
+  workflow_dispatch:
+
+jobs:
+  check-latest-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify latest refresh run
+        env:
+          REFRESH_VIDEOS_TOKEN: ${{ secrets.REFRESH_VIDEOS_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${REFRESH_VIDEOS_TOKEN:-}" ] || [ -z "${SUPABASE_URL:-}" ]; then
+            echo "Missing required secrets (REFRESH_VIDEOS_TOKEN, SUPABASE_URL)."
+            exit 1
+          fi
+          base="${SUPABASE_URL%/}/functions/v1/refresh-place-videos"
+          resp="$(curl -fsS "${base}?status=1" -H "x-refresh-videos-token: ${REFRESH_VIDEOS_TOKEN}")"
+          ok="$(node -e "
+            const j = JSON.parse(process.argv[1]);
+            if (!j.ok || !j.latest) {
+              console.error('No latest run row');
+              process.exit(2);
+            }
+            const finished = Date.parse(j.latest.finished_at);
+            const ageMs = Date.now() - finished;
+            const maxAgeMs = 2 * 60 * 60 * 1000;
+            if (!Number.isFinite(finished) || ageMs > maxAgeMs) {
+              console.error('Latest run too old or invalid finished_at');
+              process.exit(3);
+            }
+            if (j.latest.success !== true) {
+              console.error('Latest run success=false');
+              process.exit(4);
+            }
+            if (Number(j.latest.failed_count) > 0) {
+              console.error('Latest run failed_count > 0');
+              process.exit(5);
+            }
+            console.log('ok');
+          " "$resp")"
+          echo "$ok"

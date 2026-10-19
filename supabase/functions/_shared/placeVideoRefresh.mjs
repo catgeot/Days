@@ -1,9 +1,12 @@
 /** Pure helpers for refresh-place-videos (YouTube videos.list compliance). */
 
-export const STALE_DAYS = 23;
+export const STALE_DAYS = 20;
 export const STALE_MS = STALE_DAYS * 24 * 60 * 60 * 1000;
+export const METADATA_TTL_DAYS = 30;
+export const METADATA_TTL_MS = METADATA_TTL_DAYS * 24 * 60 * 60 * 1000;
 export const YT_VIDEOS_LIST_BATCH = 50;
 export const DEFAULT_MAX_REMOVE_PCT = 5;
+export const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** @param {string | undefined} raw @param {number} [fallbackPct] */
 export function parseMaxRemovePct(raw, fallbackPct = DEFAULT_MAX_REMOVE_PCT) {
@@ -19,6 +22,22 @@ export function maxRemoveRatioFromPct(pct) {
   return p / 100;
 }
 
+/** @param {string | null | undefined} raw @param {number} [fallback] */
+export function parseCutoffDaysParam(raw, fallback = STALE_DAYS) {
+  if (raw == null || String(raw).trim() === "") return fallback;
+  const n = Math.floor(Number(raw));
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(30, Math.max(0, n));
+}
+
+/** @param {string | null | undefined} raw @param {number} [fallback] */
+export function parseLimitParam(raw, fallback = 1000) {
+  if (raw == null || String(raw).trim() === "") return fallback;
+  const n = Math.floor(Number(raw));
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(1000, Math.max(1, n));
+}
+
 const HTML_ENTITY_NAMED = {
   amp: "&",
   lt: "<",
@@ -28,8 +47,54 @@ const HTML_ENTITY_NAMED = {
   "#39": "'",
 };
 
-export function staleCutoffIso(nowMs = Date.now()) {
-  return new Date(nowMs - STALE_MS).toISOString();
+export function staleCutoffIso(nowMs = Date.now(), cutoffDays = STALE_DAYS) {
+  const days = parseCutoffDaysParam(String(cutoffDays), STALE_DAYS);
+  return new Date(nowMs - days * DAY_MS).toISOString();
+}
+
+export function isMetadataExpired(lastUpdated, nowMs = Date.now()) {
+  if (!lastUpdated) return true;
+  const t = Date.parse(lastUpdated);
+  if (!Number.isFinite(t)) return true;
+  return nowMs - t > METADATA_TTL_MS;
+}
+
+/**
+ * Strip YouTube non-ID metadata (title, channelTitle, publishedAt). Keeps id and GATEO fields.
+ * @param {unknown} entry
+ * @returns {{ video: Record<string, unknown>, stripped: boolean }}
+ */
+export function stripYoutubeNonIdMetadata(entry) {
+  if (!entry || typeof entry !== "object") {
+    return { video: {}, stripped: false };
+  }
+  const rec = { ...entry };
+  let stripped = false;
+  if ("title" in rec) {
+    delete rec.title;
+    stripped = true;
+  }
+  if ("channelTitle" in rec) {
+    delete rec.channelTitle;
+    stripped = true;
+  }
+  if ("publishedAt" in rec) {
+    delete rec.publishedAt;
+    stripped = true;
+  }
+  return { video: rec, stripped };
+}
+
+/** @param {unknown[]} videos */
+export function stripVideosYoutubeMetadata(videos) {
+  const list = Array.isArray(videos) ? videos : [];
+  let strippedCount = 0;
+  const out = list.map((entry) => {
+    const { video, stripped } = stripYoutubeNonIdMetadata(entry);
+    if (stripped) strippedCount += 1;
+    return video;
+  });
+  return { videos: out, strippedCount };
 }
 
 export function decodeHtmlEntities(input) {
@@ -75,7 +140,7 @@ export function videoIdFromCached(entry) {
 
 /**
  * @param {unknown} item YouTube videos.list item
- * @returns {{ keep: true, title: string, channelTitle: string | null } | { keep: false, reason: string }}
+ * @returns {{ keep: true, title: string, channelTitle: string | null, publishedAt: string | null } | { keep: false, reason: string }}
  */
 export function classifyYoutubeListItem(item) {
   if (!item || typeof item !== "object") {
@@ -100,23 +165,28 @@ export function classifyYoutubeListItem(item) {
   const channelTitle = snippet.channelTitle != null
     ? decodeHtmlEntities(String(snippet.channelTitle).trim())
     : null;
+  const publishedAt = snippet.publishedAt != null
+    ? String(snippet.publishedAt).trim() || null
+    : null;
   if (!title) {
     return { keep: false, reason: "missing" };
   }
-  return { keep: true, title, channelTitle };
+  return { keep: true, title, channelTitle, publishedAt };
 }
 
 /**
  * @param {unknown[]} cachedVideos
  * @param {Map<string, unknown>} ytById
+ * @param {Set<string>} [batchFailedIds]
  */
-export function refreshVideosForPlace(cachedVideos, ytById) {
+export function refreshVideosForPlace(cachedVideos, ytById, batchFailedIds = new Set()) {
   const list = Array.isArray(cachedVideos) ? cachedVideos : [];
   const videos = [];
   const removals = [];
   let examined = 0;
   let removed = 0;
   let titleUpdates = 0;
+  let batchFailed = false;
 
   for (const entry of list) {
     examined += 1;
@@ -124,6 +194,10 @@ export function refreshVideosForPlace(cachedVideos, ytById) {
     if (!id) {
       removed += 1;
       removals.push({ videoId: "", reason: "invalid_id" });
+      continue;
+    }
+    if (batchFailedIds.has(id)) {
+      batchFailed = true;
       continue;
     }
     const ytItem = ytById.get(id);
@@ -145,10 +219,20 @@ export function refreshVideosForPlace(cachedVideos, ytById) {
     if (next.title !== verdict.title) titleUpdates += 1;
     next.title = verdict.title;
     next.channelTitle = verdict.channelTitle;
+    if (next.publishedAt !== verdict.publishedAt) titleUpdates += 1;
+    next.publishedAt = verdict.publishedAt;
     videos.push(next);
   }
 
-  return { videos, examined, removed, titleUpdates, kept: videos.length, removals };
+  return {
+    videos,
+    examined,
+    removed,
+    titleUpdates,
+    kept: videos.length,
+    removals,
+    batchFailed,
+  };
 }
 
 export function exceedsRemovalGuard(examined, removed, maxRatio = maxRemoveRatioFromPct(DEFAULT_MAX_REMOVE_PCT)) {
@@ -189,4 +273,13 @@ export function summarizeRefreshRun(parts, maxRatio = maxRemoveRatioFromPct(DEFA
     guardTriggered: exceedsRemovalGuard(examined, removed, maxRatio),
     maxRemovePct: maxRatio * 100,
   };
+}
+
+/**
+ * Removal cap uses only places that completed YouTube checks (no batch-fail / skipped).
+ * @param {Array<{ examined: number, removed: number, emptyPlace: boolean, checkOk?: boolean }>} parts
+ */
+export function summarizeRefreshRunForCap(parts, maxRatio = maxRemoveRatioFromPct(DEFAULT_MAX_REMOVE_PCT)) {
+  const ok = parts.filter((p) => p.checkOk !== false);
+  return summarizeRefreshRun(ok, maxRatio);
 }
