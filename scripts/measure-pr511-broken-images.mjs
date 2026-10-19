@@ -2,6 +2,9 @@
 /**
  * PR511 QA: broken vs loading vs OK image counts + loaded screenshots.
  * node scripts/measure-pr511-broken-images.mjs
+ *
+ * Local fix preview: build with prod public flags, e.g.
+ *   VITE_GATEO_PLACE_TRAVELOGUE_CARD=1 npm run build
  */
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
