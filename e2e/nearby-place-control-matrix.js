@@ -172,7 +172,7 @@ async function probePressInner(
     }
     const popup = context ? await popupP : null;
     if (popup) {
-      await popup.waitForLoadState('domcontentloaded').catch(() => {});
+      await popup.waitForLoadState('domcontentloaded', { timeout: 15_000 }).catch(() => {});
       await popup.close().catch(() => {});
       await recoverAfterOutbound(page, context, ensureModal);
     } else if (page.url() !== urlBefore) {
@@ -192,7 +192,12 @@ async function probePressInner(
 let probePressQueue = Promise.resolve();
 
 async function probePress(page, outDir, shotBase, control, locator, effectCheck, context, ensureModal) {
-  const run = () => probePressInner(page, outDir, shotBase, control, locator, effectCheck, context, ensureModal);
+  const run = () =>
+    withStepTimeout(
+      nearbyProbeStepMs(),
+      control,
+      () => probePressInner(page, outDir, shotBase, control, locator, effectCheck, context, ensureModal),
+    );
   const result = probePressQueue.then(run, run);
   probePressQueue = result.catch(() => {});
   return result;
