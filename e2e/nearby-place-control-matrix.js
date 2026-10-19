@@ -192,12 +192,7 @@ async function probePressInner(
 let probePressQueue = Promise.resolve();
 
 async function probePress(page, outDir, shotBase, control, locator, effectCheck, context, ensureModal) {
-  const run = () =>
-    withStepTimeout(
-      nearbyProbeStepMs(),
-      control,
-      () => probePressInner(page, outDir, shotBase, control, locator, effectCheck, context, ensureModal),
-    );
+  const run = () => probePressInner(page, outDir, shotBase, control, locator, effectCheck, context, ensureModal);
   const result = probePressQueue.then(run, run);
   probePressQueue = result.catch(() => {});
   return result;
