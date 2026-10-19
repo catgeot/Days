@@ -1,0 +1,55 @@
+-- PROPOSED ONLY — do not run on production without human review.
+-- Purpose: hide TourAPI/KTO images from place_stats.gallery_urls for overseas place_ids.
+-- Rollback: restore gallery_urls from backup table (see BACKUP section).
+
+-- 1) BACKUP (run first; adjust place_id list from gateo-ops/audit/overseas-kto-gallery-*.csv)
+-- CREATE TABLE IF NOT EXISTS place_stats_gallery_backup_20261019 AS
+-- SELECT place_id, gallery_urls, image_url, updated_at
+-- FROM place_stats
+-- WHERE place_id IN ('cairo', /* …from audit csv… */);
+
+-- 2) PREVIEW rows that would change (read-only)
+-- SELECT place_id,
+--        jsonb_array_length(gallery_urls) AS before_count,
+--        jsonb_array_length(
+--          (
+--            SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)
+--            FROM jsonb_array_elements(gallery_urls) AS elem
+--            WHERE NOT (
+--              (elem->>'source') = 'tourapi'
+--              OR (elem->>'id') LIKE 'tourapi%'
+--              OR COALESCE(elem->'urls'->>'regular', elem->'urls'->>'small', '') ILIKE '%visitkorea%'
+--            )
+--          )
+--        ) AS after_count
+-- FROM place_stats
+-- WHERE place_id IN (SELECT slug FROM /* audit csv as temp table */);
+
+-- 3) UPDATE (execute only after backup + preview OK)
+-- UPDATE place_stats ps
+-- SET gallery_urls = filtered.gallery
+-- FROM (
+--   SELECT place_id,
+--     COALESCE(
+--       (
+--         SELECT jsonb_agg(elem)
+--         FROM jsonb_array_elements(ps.gallery_urls) AS elem
+--         WHERE NOT (
+--           (elem->>'source') = 'tourapi'
+--           OR (elem->>'id') LIKE 'tourapi%'
+--           OR COALESCE(elem->'urls'->>'regular', elem->'urls'->>'small', '') ILIKE '%visitkorea%'
+--         )
+--       ),
+--       '[]'::jsonb
+--     ) AS gallery
+--   FROM place_stats ps
+--   WHERE place_id IN ('cairo', /* … */)
+-- ) AS filtered
+-- WHERE ps.place_id = filtered.place_id;
+
+-- 4) ROLLBACK
+-- UPDATE place_stats ps
+-- SET gallery_urls = b.gallery_urls,
+--     image_url = b.image_url
+-- FROM place_stats_gallery_backup_20261019 b
+-- WHERE ps.place_id = b.place_id;

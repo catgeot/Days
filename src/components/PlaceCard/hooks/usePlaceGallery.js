@@ -25,7 +25,10 @@ import {
   withoutDroppedGalleryImages,
 } from '../../../shared/api/placeGalleryPersist';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
-import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
+import {
+  resolveTourApiPlace,
+  shouldUseTourApiGalleryForPlace,
+} from '../../../utils/tourApiMatch';
 import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
 import {
   lookupLocalScenicMemberOverlayForSpot,
@@ -145,6 +148,11 @@ function isTourApiGalleryImage(img) {
   if (!img || typeof img !== 'object') return false;
   if (img.source === 'tourapi') return true;
   return String(img.id ?? '').startsWith('tourapi');
+}
+
+function filterGalleryForTourApiPolicy(images, allowTourApi) {
+  if (allowTourApi || !Array.isArray(images)) return images;
+  return images.filter((img) => !isTourApiGalleryImage(img));
 }
 
 /** place_stats가 TourAPI 위주면 soft는 스톡 API로 갱신(절약은 세션·스톡 DB 히트) */
@@ -602,18 +610,16 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       resolveTourApiPlace(tourPlaceWithCategory) ||
       (typeof locationSource === 'object' ? resolveTourApiPlace(locationSource) : null) ||
       (koreanName ? resolveTourApiPlace(koreanName) : null);
-    /** 해외는 TourAPI 제외 · SSOT curated(국내 시드) 또는 country=한국만 허용 */
-    const isDomesticKorea =
-      isDomesticKoreaLocation(
-        typeof targetSpot === 'object' && targetSpot ? targetSpot : null,
-      ) ||
-      isDomesticKoreaLocation(
-        typeof locationSource === 'object' && locationSource ? locationSource : null,
-      ) ||
-      Boolean(resolvedTourMapping?.curated) ||
-      Boolean(koreanName && /[\uAC00-\uD7A3]/.test(koreanName));
-    let tourMapping = isDomesticKorea ? resolvedTourMapping : null;
-    if (isDomesticKorea && !tourMapping?.contentId) {
+    const tourGalleryLocations = [
+      typeof targetSpot === 'object' && targetSpot ? targetSpot : null,
+      typeof locationSource === 'object' && locationSource ? locationSource : null,
+    ];
+    const allowTourApiGallery = shouldUseTourApiGalleryForPlace(
+      tourGalleryLocations,
+      resolvedTourMapping,
+    );
+    let tourMapping = allowTourApiGallery ? resolvedTourMapping : null;
+    if (allowTourApiGallery && !tourMapping?.contentId) {
       const loc =
         (typeof targetSpot === 'object' && targetSpot) ||
         (typeof locationSource === 'object' && locationSource) ||
@@ -943,12 +949,35 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               return;
             }
             if (dbData.gallery_urls && dbData.gallery_urls.length > 0) {
-              const gallerySlice = thumbnailOnly
+              const rawGallerySlice = thumbnailOnly
                 ? dbData.gallery_urls.slice(0, 1)
                 : dbData.gallery_urls;
+              const gallerySlice = filterGalleryForTourApiPolicy(
+                rawGallerySlice,
+                allowTourApiGallery,
+              );
+              if (
+                !allowTourApiGallery &&
+                rawGallerySlice.length > 0 &&
+                gallerySlice.length === 0
+              ) {
+                console.warn(
+                  '⚠️ place_stats TourAPI-only gallery stripped for overseas — live refetch',
+                );
+              } else if (
+                !allowTourApiGallery &&
+                gallerySlice.length < rawGallerySlice.length
+              ) {
+                console.warn(
+                  '⚠️ place_stats mixed gallery — TourAPI rows stripped for overseas',
+                );
+              }
+              if (gallerySlice.length === 0) {
+                /* fall through to live stock */
+              } else {
               const tourDominant = isTourApiDominantGallery(gallerySlice);
               if (
-                isDomesticKorea &&
+                allowTourApiGallery &&
                 !hasOfficialTourContentId &&
                 tourDominant
               ) {
@@ -956,7 +985,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                   '⚠️ place_stats TourAPI-heavy — soft stock refresh (skip DB short-circuit)',
                 );
               } else if (
-                isDomesticKorea &&
+                allowTourApiGallery &&
                 tourMapping?.curated &&
                 !hasOfficialTourContentId &&
                 !tourDominant
@@ -965,7 +994,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 console.warn(
                   '⚠️ place_stats stock-heavy curated — prefer TourAPI (skip DB short-circuit)',
                 );
-              } else if (isDomesticKorea && hasOfficialTourContentId && !tourDominant) {
+              } else if (allowTourApiGallery && hasOfficialTourContentId && !tourDominant) {
                 console.warn(
                   '⚠️ place_stats stock gallery — official Tour contentId (skip DB short-circuit)',
                 );
@@ -1003,6 +1032,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                   return;
                 }
               }
+              }
             }
           }
         } catch {
@@ -1013,7 +1043,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       // 3) TourAPI LIVE — 국내 공식 contentId 또는 curated hub photoKeyword (DB miss)
       // Unsplash 「Yanggu」오매칭이 soft(스톡0)보다 먼저 막히지 않게 curated는 여기 우선.
       if (
-        isDomesticKorea &&
+        allowTourApiGallery &&
         tourMapping?.photoKeyword &&
         (hasOfficialTourContentId || tourMapping.curated)
       ) {
@@ -1123,7 +1153,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       if (
         !forceRefresh &&
         results.length === 0 &&
-        isDomesticKorea &&
+        allowTourApiGallery &&
         !hasOfficialTourContentId &&
         tourMapping?.photoKeyword
       ) {
