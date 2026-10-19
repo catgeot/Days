@@ -85,6 +85,19 @@ test('curated hub card without country keeps TourAPI (양구-style hub entry)', 
   assert.equal(shouldUseTourApiGalleryForPlace([yangguHub], mapping), true);
 });
 
+test('venice (Italy) blocked by explicit country and overseas coords', () => {
+  const venice = {
+    slug: 'venice',
+    name: '베니스',
+    country: '이탈리아',
+    country_en: 'Italy',
+    lat: 45.4408,
+    lng: 12.3155,
+  };
+  assert.equal(isExplicitlyOverseasForTourApi(venice), true);
+  assert.equal(shouldUseTourApiGalleryForPlace([venice], resolveTourApiPlace(venice)), false);
+});
+
 test('dubai with cached TourAPI risk stays off TourAPI gallery', () => {
   const dubai = {
     slug: 'dubai',

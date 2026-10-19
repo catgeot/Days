@@ -16,6 +16,7 @@ const OVERSEAS = [
   { slug: 'bangkok', query: '방콕', result: '방콕', expectKto: false },
   { slug: 'paris', query: '파리', result: '파리', expectKto: false },
   { slug: 'dubai', query: '두바이', result: '두바이', expectKto: false },
+  { slug: 'venice', query: '베니스', result: '베니스', expectKto: false },
 ];
 
 const DOMESTIC = { slug: 'jeju', query: '제주', result: '제주', expectKto: true };
